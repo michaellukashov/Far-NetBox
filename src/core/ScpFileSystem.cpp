@@ -344,7 +344,7 @@ UnicodeString TCommandSet::ExtractCommand(const UnicodeString & Command)
 TStrings * TCommandSet::CreateCommandList()
 {
   TStrings * CommandList = new TStringList();
-  for (Integer Index = 0; Index < ShellCommandCount; Index++)
+  for (intptr_t Index = 0; Index < ShellCommandCount; ++Index)
   {
     UnicodeString Cmd = GetCommands(static_cast<TFSCommand>(Index));
     if (!Cmd.IsEmpty())
@@ -375,7 +375,7 @@ void TSCPFileSystem::Init(void * Data)
   FFileSystemInfo.ProtocolBaseName = L"SCP";
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
   // capabilities of SCP protocol are fixed
-  for (int Index = 0; Index < fcCount; Index++)
+  for (intptr_t Index = 0; Index < fcCount; ++Index)
   {
     FFileSystemInfo.IsCapable[Index] = IsCapable(static_cast<TFSCapability>(Index));
   }
@@ -883,7 +883,7 @@ void TSCPFileSystem::DetectReturnVar()
     UnicodeString ReturnVars[2] = { L"status", L"?" };
     UnicodeString NewReturnVar = L"";
     FTerminal->LogEvent(L"Detecting variable containing return code of last command.");
-    for (int Index = 0; Index < 2; Index++)
+    for (intptr_t Index = 0; Index < 2; ++Index)
     {
       bool Success = true;
 
@@ -954,7 +954,7 @@ void TSCPFileSystem::ClearAliases()
     TStrings * CommandList = FCommandSet->CreateCommandList();
     TRY_FINALLY (
     {
-      for (int Index = 0; Index < CommandList->GetCount(); Index++)
+      for (intptr_t Index = 0; Index < CommandList->GetCount(); ++Index)
       {
         ClearAlias(CommandList->Strings[Index]);
       }
@@ -977,7 +977,7 @@ void TSCPFileSystem::UnsetNationalVars()
   try
   {
     FTerminal->LogEvent(L"Clearing national user variables.");
-    for (int Index = 0; Index < NationalVarCount; Index++)
+    for (intptr_t Index = 0; Index < NationalVarCount; ++Index)
     {
       ExecCommand2(fsUnset, NationalVars[Index], false);
     }
@@ -1190,10 +1190,10 @@ void TSCPFileSystem::CustomReadFile(const UnicodeString & FileName,
     Params);
   if (FOutput->GetCount())
   {
-    int LineIndex = 0;
+    intptr_t LineIndex = 0;
     if (IsTotalListingLine(FOutput->Strings[LineIndex]) && FOutput->GetCount() > 1)
     {
-      LineIndex++;
+      ++LineIndex;
     }
 
     File = CreateRemoteFile(FOutput->Strings[LineIndex], ALinkedByFile);

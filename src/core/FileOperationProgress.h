@@ -37,8 +37,8 @@ private:
   std::vector<__int64> FTotalTransferredThen;
 
 protected:
-  void __fastcall ClearTransfer();
-  inline void __fastcall DoProgress();
+  void ClearTransfer();
+  inline void DoProgress();
 
 public:
   // common data
@@ -77,56 +77,56 @@ public:
 
   bool Suspended;
 
-  explicit /* __fastcall */ TFileOperationProgressType();
-  explicit /* __fastcall */ TFileOperationProgressType(
+  explicit TFileOperationProgressType();
+  explicit TFileOperationProgressType(
     TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished);
-  virtual /* __fastcall */ ~TFileOperationProgressType();
-  void __fastcall AddLocallyUsed(__int64 ASize);
-  void __fastcall AddTransfered(__int64 ASize, bool AddToTotals = true);
-  void __fastcall AddResumed(__int64 ASize);
-  void __fastcall Clear();
-  unsigned int __fastcall CPS();
-  void __fastcall Finish(UnicodeString FileName, bool Success,
+  virtual ~TFileOperationProgressType();
+  void AddLocallyUsed(__int64 ASize);
+  void AddTransfered(__int64 ASize, bool AddToTotals = true);
+  void AddResumed(__int64 ASize);
+  void Clear();
+  unsigned int CPS();
+  void Finish(UnicodeString FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
-  unsigned long __fastcall LocalBlockSize();
-  bool __fastcall IsLocallyDone() const;
-  bool __fastcall IsTransferDone() const;
-  void __fastcall SetFile(UnicodeString AFileName, bool AFileInProgress = true);
-  void __fastcall SetFileInProgress();
-  intptr_t __fastcall OperationProgress() const;
-  unsigned long __fastcall TransferBlockSize();
-  unsigned long __fastcall AdjustToCPSLimit(unsigned long Size);
-  static unsigned long __fastcall StaticBlockSize();
-  void __fastcall Reset();
-  void __fastcall Resume();
-  void __fastcall SetLocalSize(__int64 ASize);
-  void __fastcall SetAsciiTransfer(bool AAsciiTransfer);
-  void __fastcall SetResumeStatus(TResumeStatus AResumeStatus);
-  void __fastcall SetTransferSize(__int64 ASize);
-  void __fastcall ChangeTransferSize(__int64 ASize);
-  void __fastcall RollbackTransfer();
-  void __fastcall SetTotalSize(__int64 ASize);
-  void __fastcall Start(TFileOperation AOperation, TOperationSide ASide, intptr_t ACount);
-  void __fastcall Start(TFileOperation AOperation,
+  unsigned long LocalBlockSize();
+  bool IsLocallyDone() const;
+  bool IsTransferDone() const;
+  void SetFile(UnicodeString AFileName, bool AFileInProgress = true);
+  void SetFileInProgress();
+  intptr_t OperationProgress() const;
+  unsigned long TransferBlockSize();
+  unsigned long AdjustToCPSLimit(unsigned long Size);
+  static unsigned long StaticBlockSize();
+  void Reset();
+  void Resume();
+  void SetLocalSize(__int64 ASize);
+  void SetAsciiTransfer(bool AAsciiTransfer);
+  void SetResumeStatus(TResumeStatus AResumeStatus);
+  void SetTransferSize(__int64 ASize);
+  void ChangeTransferSize(__int64 ASize);
+  void RollbackTransfer();
+  void SetTotalSize(__int64 ASize);
+  void Start(TFileOperation AOperation, TOperationSide ASide, intptr_t ACount);
+  void Start(TFileOperation AOperation,
     TOperationSide ASide, intptr_t ACount, bool ATemp, const UnicodeString & ADirectory,
     unsigned long ACPSLimit);
-  void __fastcall Stop();
-  void __fastcall Suspend();
+  void Stop();
+  void Suspend();
   // whole operation
-  TDateTime __fastcall TimeElapsed() const;
+  TDateTime TimeElapsed() const;
   // only current file
-  TDateTime __fastcall TimeExpected();
-  TDateTime __fastcall TotalTimeExpected();
-  TDateTime __fastcall TotalTimeLeft();
-  intptr_t __fastcall TransferProgress() const;
-  intptr_t __fastcall OverallProgress() const;
-  intptr_t __fastcall TotalTransferProgress() const;
+  TDateTime TimeExpected();
+  TDateTime TotalTimeExpected();
+  TDateTime TotalTimeLeft();
+  intptr_t TransferProgress() const;
+  intptr_t OverallProgress() const;
+  intptr_t TotalTransferProgress() const;
 };
 //---------------------------------------------------------------------------
 class TSuspendFileOperationProgress
 {
 public:
-  explicit /* __fastcall */ TSuspendFileOperationProgress(TFileOperationProgressType * OperationProgress)
+  explicit TSuspendFileOperationProgress(TFileOperationProgressType * OperationProgress)
   {
     FOperationProgress = OperationProgress;
     if (FOperationProgress != NULL)
@@ -135,7 +135,7 @@ public:
     }
   }
 
-  virtual /* __fastcall */ ~TSuspendFileOperationProgress()
+  virtual ~TSuspendFileOperationProgress()
   {
     if (FOperationProgress != NULL)
     {

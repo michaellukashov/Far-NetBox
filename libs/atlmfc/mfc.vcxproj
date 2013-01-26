@@ -68,29 +68,29 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.lib</TargetExt>
-    <OutDir>.\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
-    <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
+    <OutDir>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
+    <IntDir>..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
     <EnableManagedIncrementalBuild>false</EnableManagedIncrementalBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.lib</TargetExt>
-    <OutDir>.\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
-    <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
+    <OutDir>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
+    <IntDir>..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
     <EnableManagedIncrementalBuild>false</EnableManagedIncrementalBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <TargetExt>.lib</TargetExt>
-    <OutDir>.\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
-    <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
+    <OutDir>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
+    <IntDir>..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
     <EnableManagedIncrementalBuild>false</EnableManagedIncrementalBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetExt>.lib</TargetExt>
-    <OutDir>.\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
-    <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
+    <OutDir>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
+    <IntDir>..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
     <EnableManagedIncrementalBuild>false</EnableManagedIncrementalBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -116,8 +116,8 @@
       <CompileAsManaged>false</CompileAsManaged>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <DisableSpecificWarnings>4995;4100</DisableSpecificWarnings>
-      <ObjectFileName>..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
-      <ProgramDataBaseFileName>..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <ObjectFileName>..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -126,7 +126,7 @@
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
-      <OutputFile>.\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\mfc.lib</OutputFile>
+      <OutputFile>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\mfc.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -154,8 +154,8 @@
       <CompileAsManaged>false</CompileAsManaged>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <DisableSpecificWarnings>4995;4100</DisableSpecificWarnings>
-      <ObjectFileName>..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
-      <ProgramDataBaseFileName>..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <ObjectFileName>..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -164,7 +164,7 @@
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
-      <OutputFile>.\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\mfc.lib</OutputFile>
+      <OutputFile>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\mfc.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -188,8 +188,8 @@
       <Optimization>MinSpace</Optimization>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <ObjectFileName>..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
-      <ProgramDataBaseFileName>..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <ObjectFileName>..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -198,7 +198,7 @@
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
-      <OutputFile>.\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\mfc.lib</OutputFile>
+      <OutputFile>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\mfc.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -223,8 +223,8 @@
       <Optimization>MinSpace</Optimization>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <ObjectFileName>..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
-      <ProgramDataBaseFileName>..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <ObjectFileName>..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -233,7 +233,7 @@
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
-      <OutputFile>.\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\mfc.lib</OutputFile>
+      <OutputFile>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\mfc.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>

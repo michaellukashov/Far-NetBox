@@ -9,31 +9,31 @@ enum TOptionType { otParam, otSwitch };
 class TOptions
 {
 public:
-  /* __fastcall */ TOptions();
+  TOptions();
 
-  bool __fastcall FindSwitch(const UnicodeString & Switch);
-  bool __fastcall FindSwitch(const UnicodeString & Switch, UnicodeString & Value);
-  bool __fastcall FindSwitch(const UnicodeString & Switch, int & ParamsStart,
+  bool FindSwitch(const UnicodeString & Switch);
+  bool FindSwitch(const UnicodeString & Switch, UnicodeString & Value);
+  bool FindSwitch(const UnicodeString & Switch, int & ParamsStart,
     int & ParamsCount);
-  bool __fastcall FindSwitch(const UnicodeString & Switch, TStrings * Params,
+  bool FindSwitch(const UnicodeString & Switch, TStrings * Params,
     int ParamsMax = -1);
-  void __fastcall ParamsProcessed(int Position, int Count);
-  UnicodeString __fastcall SwitchValue(const UnicodeString & Switch, const UnicodeString & Default = L"");
-  bool __fastcall SwitchValue(const UnicodeString & Switch, bool Default);
-  bool __fastcall SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence);
-  bool __fastcall UnusedSwitch(UnicodeString & Switch) const;
+  void ParamsProcessed(int Position, int Count);
+  UnicodeString SwitchValue(const UnicodeString & Switch, const UnicodeString & Default = L"");
+  bool SwitchValue(const UnicodeString & Switch, bool Default);
+  bool SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence);
+  bool UnusedSwitch(UnicodeString & Switch) const;
 
-  int __fastcall GetParamCount() const { return FParamCount; }
-  UnicodeString __fastcall GetParam(int Index);
-  bool __fastcall GetEmpty() const;
+  intptr_t GetParamCount() const { return FParamCount; }
+  UnicodeString GetParam(intptr_t Index);
+  bool GetEmpty() const;
 
 protected:
   UnicodeString FSwitchMarks;
   UnicodeString FSwitchValueDelimiters;
 
-  void __fastcall Add(UnicodeString Option);
+  void Add(UnicodeString Option);
 
-  bool __fastcall FindSwitch(const UnicodeString & Switch,
+  bool FindSwitch(const UnicodeString & Switch,
     UnicodeString & Value, int & ParamsStart, int & ParamsCount);
 
 private:
@@ -47,7 +47,7 @@ private:
 
   std::vector<TOption> FOptions;
   bool FNoMoreSwitches;
-  int FParamCount;
+  intptr_t FParamCount;
 };
 //---------------------------------------------------------------------------
 #endif

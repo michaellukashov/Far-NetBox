@@ -6,7 +6,7 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-int /* __fastcall */ NamedObjectSortProc(const void * Item1, const void * Item2)
+int NamedObjectSortProc(const void * Item1, const void * Item2)
 {
   bool HasPrefix1 = (static_cast<const TNamedObject *>(Item1))->GetHidden();
   bool HasPrefix2 = (static_cast<const TNamedObject *>(Item2))->GetHidden();
@@ -24,7 +24,7 @@ int /* __fastcall */ NamedObjectSortProc(const void * Item1, const void * Item2)
   }
 }
 //--- TNamedObject ----------------------------------------------------------
-/* __fastcall */ TNamedObject::TNamedObject(UnicodeString AName) :
+TNamedObject::TNamedObject(UnicodeString AName) :
   FHidden(false)
 {
   SetName(AName);
@@ -76,7 +76,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
 //--- TNamedObjectList ------------------------------------------------------
 const UnicodeString TNamedObjectList::HiddenPrefix = L"_!_";
 //---------------------------------------------------------------------------
-/* __fastcall */ TNamedObjectList::TNamedObjectList():
+TNamedObjectList::TNamedObjectList():
   TObjectList(),
   FHiddenCount(0),
   AutoSort(true)

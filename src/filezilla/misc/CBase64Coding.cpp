@@ -57,7 +57,7 @@ static inline BYTE __get_character( const BYTE * buffer, const BYTE * decoder_ta
       }
 
       return_value = buffer[ index ];
-      index++;
+      ++index;
    }
    while( return_value != END_OF_BASE64_ENCODED_DATA &&
           decoder_table[ return_value ] == BASE64_IGNORABLE_CHARACTER );
@@ -110,7 +110,7 @@ BOOL CBase64Coding::Encode( const char * source, int len, char * destination_str
       destination[number_of_bytes_encoded ] = static_cast<char>( byte_to_add );
       number_of_bytes_encoded++;
 
-      loop_index++;
+      ++loop_index;
 
       if ( loop_index >= number_of_bytes_to_encode )
       {
@@ -145,7 +145,7 @@ BOOL CBase64Coding::Encode( const char * source, int len, char * destination_str
       destination[ number_of_bytes_encoded ] = byte_to_add;
       number_of_bytes_encoded++;
 
-      loop_index++;
+      ++loop_index;
 
       if ( loop_index >= number_of_bytes_to_encode )
       {
@@ -172,7 +172,7 @@ BOOL CBase64Coding::Encode( const char * source, int len, char * destination_str
          byte_3 = source[ loop_index ];
       }
 
-      loop_index++;
+      ++loop_index;
 
       byte_to_add = alphabet[ ( ( ( byte_2 & 0x0F ) << 2 ) | ( ( byte_3 & 0xC0 ) >> 6 ) ) ];
 

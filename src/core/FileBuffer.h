@@ -13,27 +13,27 @@ class TFileBuffer
 public:
   TFileBuffer();
   virtual ~TFileBuffer();
-  void __fastcall Convert(char * Source, char * Dest, int Params, bool & Token);
-  void __fastcall Convert(TEOLType Source, TEOLType Dest, int Params, bool & Token);
-  void __fastcall Convert(char * Source, TEOLType Dest, int Params, bool & Token);
-  void __fastcall Convert(TEOLType Source, char * Dest, int Params, bool & Token);
-  void __fastcall Insert(__int64 Index, const char * Buf, size_t Len);
-  void __fastcall Delete(__int64 Index, size_t Len);
-  __int64 __fastcall LoadStream(TStream * Stream, const __int64 Len, bool ForceLen);
-  __int64 __fastcall ReadStream(TStream * Stream, const __int64 Len, bool ForceLen);
-  void __fastcall WriteToStream(TStream * Stream, const __int64 Len);
+  void Convert(char * Source, char * Dest, int Params, bool & Token);
+  void Convert(TEOLType Source, TEOLType Dest, int Params, bool & Token);
+  void Convert(char * Source, TEOLType Dest, int Params, bool & Token);
+  void Convert(TEOLType Source, char * Dest, int Params, bool & Token);
+  void Insert(__int64 Index, const char * Buf, size_t Len);
+  void Delete(__int64 Index, size_t Len);
+  __int64 LoadStream(TStream * Stream, const __int64 Len, bool ForceLen);
+  __int64 ReadStream(TStream * Stream, const __int64 Len, bool ForceLen);
+  void WriteToStream(TStream * Stream, const __int64 Len);
 
 private:
   TMemoryStream * FMemory;
 
 public:
-  TMemoryStream * __fastcall GetMemory() { return FMemory; }
-  void __fastcall SetMemory(TMemoryStream * Value);
-  char * __fastcall GetData() const { return static_cast<char *>(FMemory->GetMemory()); }
-  __int64 __fastcall GetSize() const { return FMemory->Size; }
-  void __fastcall SetSize(__int64 Value);
-  void __fastcall SetPosition(__int64 Value);
-  __int64 __fastcall GetPosition() const;
+  TMemoryStream * GetMemory() { return FMemory; }
+  void SetMemory(TMemoryStream * Value);
+  char * GetData() const { return static_cast<char *>(FMemory->GetMemory()); }
+  __int64 GetSize() const { return FMemory->Size; }
+  void SetSize(__int64 Value);
+  void SetPosition(__int64 Value);
+  __int64 GetPosition() const;
 
 private:
   TFileBuffer(const TFileBuffer &);

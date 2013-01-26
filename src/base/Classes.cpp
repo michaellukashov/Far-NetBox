@@ -756,7 +756,7 @@ intptr_t TStrings::IndexOf(const UnicodeString & S)
 
 intptr_t TStrings::IndexOfName(const UnicodeString & Name)
 {
-  for (intptr_t Index = 0; Index < GetCount(); Index++)
+  for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     UnicodeString S = GetStrings(Index);
     intptr_t P = ::AnsiPos(S, L'=');

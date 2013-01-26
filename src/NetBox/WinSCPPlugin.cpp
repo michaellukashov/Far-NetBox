@@ -212,7 +212,7 @@ intptr_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo
       FarConfiguration->GetEditorMultiple())
   {
     TWinSCPFileSystem * FileSystem = NULL;
-    for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); Index++)
+    for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
     {
       FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->GetItem(Index));
       FileSystem->ProcessEditorEvent(Info->Event, Info->Param);

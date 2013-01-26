@@ -2,10 +2,10 @@
 #ifndef PuttyIntfH
 #define PuttyIntfH
 //---------------------------------------------------------------------------
-void __fastcall PuttyInitialize();
-void __fastcall PuttyFinalize();
+void PuttyInitialize();
+void PuttyFinalize();
 //---------------------------------------------------------------------------
-void __fastcall DontSaveRandomSeed();
+void DontSaveRandomSeed();
 //---------------------------------------------------------------------------
 #include "PuttyTools.h"
 //---------------------------------------------------------------------------

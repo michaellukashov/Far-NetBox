@@ -65,163 +65,163 @@ private:
   int FSessionReopenAutoMaximumNumberOfRetries;
 
 public:
-  UnicodeString __fastcall GetOSVersionStr();
-  TVSFixedFileInfo *__fastcall GetFixedApplicationInfo();
-  void * __fastcall GetApplicationInfo();
-  virtual UnicodeString __fastcall GetVersionStr();
-  virtual UnicodeString __fastcall GetVersion();
-  UnicodeString __fastcall GetProductVersion();
-  UnicodeString __fastcall GetProductName();
-  UnicodeString __fastcall GetCompanyName();
-  UnicodeString __fastcall TrimVersion(const UnicodeString & Version);
-  UnicodeString __fastcall GetStoredSessionsSubKey();
-  UnicodeString __fastcall GetPuttySessionsKey();
-  void __fastcall SetRandomSeedFile(const UnicodeString & Value);
-  UnicodeString __fastcall GetRandomSeedFileName();
-  void __fastcall SetPuttyRegistryStorageKey(const UnicodeString & Value);
-  UnicodeString __fastcall GetSshHostKeysSubKey();
-  UnicodeString __fastcall GetRootKeyStr();
-  UnicodeString __fastcall GetConfigurationSubKey();
-  TEOLType __fastcall GetLocalEOLType();
-  void __fastcall SetLogging(bool Value);
-  void __fastcall SetLogFileName(const UnicodeString & Value);
-  bool __fastcall GetLogToFile();
-  void __fastcall SetLogWindowLines(int Value);
-  void __fastcall SetLogWindowComplete(bool Value);
-  bool __fastcall GetLogWindowComplete();
-  void __fastcall SetLogFileAppend(bool Value);
-  void __fastcall SetLogProtocol(int Value);
-  void __fastcall SetLogActions(bool Value);
-  void __fastcall SetActionsLogFileName(const UnicodeString & Value);
-  UnicodeString __fastcall GetDefaultLogFileName();
-  UnicodeString __fastcall GetTimeFormat();
-  void __fastcall SetStorage(TStorage Value);
-  UnicodeString __fastcall GetRegistryStorageKey();
-  UnicodeString __fastcall GetIniFileStorageName();
-  void __fastcall SetIniFileStorageName(const UnicodeString & Value);
-  UnicodeString __fastcall GetPartialExt() const;
-  UnicodeString __fastcall GetFileInfoString(const UnicodeString & Key);
-  bool __fastcall GetGSSAPIInstalled();
-  void __fastcall SetSessionReopenAuto(int Value);
-  void __fastcall SetSessionReopenBackground(int Value);
-  void __fastcall SetSessionReopenTimeout(int Value);
-  void __fastcall SetSessionReopenAutoStall(int Value);
-  void __fastcall SetTunnelLocalPortNumberLow(int Value);
-  void __fastcall SetTunnelLocalPortNumberHigh(int Value);
-  void __fastcall SetCacheDirectoryChangesMaxSize(int Value);
-  void __fastcall SetShowFtpWelcomeMessage(bool Value);
-  int __fastcall GetCompoundVersion();
-  void __fastcall UpdateActualLogProtocol();
-  void __fastcall SetExternalIpAddress(const UnicodeString & Value);
-  bool __fastcall GetCollectUsage();
-  void __fastcall SetCollectUsage(bool Value);
+  UnicodeString GetOSVersionStr();
+  TVSFixedFileInfo *GetFixedApplicationInfo();
+  void * GetApplicationInfo();
+  virtual UnicodeString GetVersionStr();
+  virtual UnicodeString GetVersion();
+  UnicodeString GetProductVersion();
+  UnicodeString GetProductName();
+  UnicodeString GetCompanyName();
+  UnicodeString TrimVersion(const UnicodeString & Version);
+  UnicodeString GetStoredSessionsSubKey();
+  UnicodeString GetPuttySessionsKey();
+  void SetRandomSeedFile(const UnicodeString & Value);
+  UnicodeString GetRandomSeedFileName();
+  void SetPuttyRegistryStorageKey(const UnicodeString & Value);
+  UnicodeString GetSshHostKeysSubKey();
+  UnicodeString GetRootKeyStr();
+  UnicodeString GetConfigurationSubKey();
+  TEOLType GetLocalEOLType();
+  void SetLogging(bool Value);
+  void SetLogFileName(const UnicodeString & Value);
+  bool GetLogToFile();
+  void SetLogWindowLines(int Value);
+  void SetLogWindowComplete(bool Value);
+  bool GetLogWindowComplete();
+  void SetLogFileAppend(bool Value);
+  void SetLogProtocol(int Value);
+  void SetLogActions(bool Value);
+  void SetActionsLogFileName(const UnicodeString & Value);
+  UnicodeString GetDefaultLogFileName();
+  UnicodeString GetTimeFormat();
+  void SetStorage(TStorage Value);
+  UnicodeString GetRegistryStorageKey();
+  UnicodeString GetIniFileStorageName();
+  void SetIniFileStorageName(const UnicodeString & Value);
+  UnicodeString GetPartialExt() const;
+  UnicodeString GetFileInfoString(const UnicodeString & Key);
+  bool GetGSSAPIInstalled();
+  void SetSessionReopenAuto(int Value);
+  void SetSessionReopenBackground(int Value);
+  void SetSessionReopenTimeout(int Value);
+  void SetSessionReopenAutoStall(int Value);
+  void SetTunnelLocalPortNumberLow(int Value);
+  void SetTunnelLocalPortNumberHigh(int Value);
+  void SetCacheDirectoryChangesMaxSize(int Value);
+  void SetShowFtpWelcomeMessage(bool Value);
+  int GetCompoundVersion();
+  void UpdateActualLogProtocol();
+  void SetExternalIpAddress(const UnicodeString & Value);
+  bool GetCollectUsage();
+  void SetCollectUsage(bool Value);
 
 protected:
   TStorage FStorage;
   TCriticalSection * FCriticalSection;
 
 public:
-  virtual TStorage __fastcall GetStorage();
-  virtual void __fastcall Changed();
-  virtual void __fastcall SaveData(THierarchicalStorage * Storage, bool All);
-  virtual void __fastcall LoadData(THierarchicalStorage * Storage);
-  virtual void __fastcall CopyData(THierarchicalStorage * Source, THierarchicalStorage * Target);
-  virtual void __fastcall LoadAdmin(THierarchicalStorage * Storage);
-  virtual UnicodeString __fastcall GetDefaultKeyFile();
-  virtual void __fastcall Saved();
-  void __fastcall CleanupRegistry(const UnicodeString & CleanupSubKey);
-  UnicodeString __fastcall BannerHash(const UnicodeString & Banner);
+  virtual TStorage GetStorage();
+  virtual void Changed();
+  virtual void SaveData(THierarchicalStorage * Storage, bool All);
+  virtual void LoadData(THierarchicalStorage * Storage);
+  virtual void CopyData(THierarchicalStorage * Source, THierarchicalStorage * Target);
+  virtual void LoadAdmin(THierarchicalStorage * Storage);
+  virtual UnicodeString GetDefaultKeyFile();
+  virtual void Saved();
+  void CleanupRegistry(const UnicodeString & CleanupSubKey);
+  UnicodeString BannerHash(const UnicodeString & Banner);
 
-  virtual bool __fastcall GetConfirmOverwriting();
-  virtual void __fastcall SetConfirmOverwriting(bool Value);
-  bool __fastcall GetConfirmResume();
-  void __fastcall SetConfirmResume(bool Value);
-  bool __fastcall GetAutoReadDirectoryAfterOp();
-  void __fastcall SetAutoReadDirectoryAfterOp(bool Value);
-  virtual bool __fastcall GetRememberPassword();
+  virtual bool GetConfirmOverwriting();
+  virtual void SetConfirmOverwriting(bool Value);
+  bool GetConfirmResume();
+  void SetConfirmResume(bool Value);
+  bool GetAutoReadDirectoryAfterOp();
+  void SetAutoReadDirectoryAfterOp(bool Value);
+  virtual bool GetRememberPassword();
 
-  virtual UnicodeString __fastcall ModuleFileName();
+  virtual UnicodeString ModuleFileName();
 
-  UnicodeString __fastcall GetFileFileInfoString(const UnicodeString & Key,
+  UnicodeString GetFileFileInfoString(const UnicodeString & Key,
     const UnicodeString & FileName);
-  void * __fastcall GetFileApplicationInfo(const UnicodeString & FileName);
-  UnicodeString __fastcall GetFileProductVersion(const UnicodeString & FileName);
-  UnicodeString __fastcall GetFileProductName(const UnicodeString & FileName);
-  UnicodeString __fastcall GetFileCompanyName(const UnicodeString & FileName);
+  void * GetFileApplicationInfo(const UnicodeString & FileName);
+  UnicodeString GetFileProductVersion(const UnicodeString & FileName);
+  UnicodeString GetFileProductName(const UnicodeString & FileName);
+  UnicodeString GetFileCompanyName(const UnicodeString & FileName);
 
-  bool __fastcall GetPermanentLogging() { return FPermanentLogging; }
-  void __fastcall SetPermanentLogging(bool Value) { FPermanentLogging = Value; }
-  UnicodeString __fastcall GetPermanentLogFileName();
-  void __fastcall SetPermanentLogFileName(const UnicodeString & Value);
-  bool __fastcall GetPermanentLogActions() { return FPermanentLogActions; }
-  void __fastcall SetPermanentLogActions(bool Value) { FPermanentLogActions = Value; }
-  UnicodeString __fastcall GetPermanentActionsLogFileName();
-  void __fastcall SetPermanentActionsLogFileName(const UnicodeString & Value);
+  bool GetPermanentLogging() { return FPermanentLogging; }
+  void SetPermanentLogging(bool Value) { FPermanentLogging = Value; }
+  UnicodeString GetPermanentLogFileName();
+  void SetPermanentLogFileName(const UnicodeString & Value);
+  bool GetPermanentLogActions() { return FPermanentLogActions; }
+  void SetPermanentLogActions(bool Value) { FPermanentLogActions = Value; }
+  UnicodeString GetPermanentActionsLogFileName();
+  void SetPermanentActionsLogFileName(const UnicodeString & Value);
 
 public:
-  /* __fastcall */ TConfiguration();
-  virtual /* __fastcall */ ~TConfiguration();
+  TConfiguration();
+  virtual ~TConfiguration();
 
-  virtual void __fastcall Default();
-  virtual void __fastcall Load();
-  virtual void __fastcall Save(bool All, bool Explicit);
-  void __fastcall SetNulStorage();
-  void __fastcall SetDefaultStorage();
-  void __fastcall Export(const UnicodeString & FileName);
-  void __fastcall CleanupConfiguration();
-  void __fastcall CleanupIniFile();
-  void __fastcall CleanupHostKeys();
-  void __fastcall CleanupRandomSeedFile();
-  void __fastcall BeginUpdate();
-  void __fastcall EndUpdate();
-  void __fastcall LoadDirectoryChangesCache(const UnicodeString & SessionKey,
+  virtual void Default();
+  virtual void Load();
+  virtual void Save(bool All, bool Explicit);
+  void SetNulStorage();
+  void SetDefaultStorage();
+  void Export(const UnicodeString & FileName);
+  void CleanupConfiguration();
+  void CleanupIniFile();
+  void CleanupHostKeys();
+  void CleanupRandomSeedFile();
+  void BeginUpdate();
+  void EndUpdate();
+  void LoadDirectoryChangesCache(const UnicodeString & SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  void __fastcall SaveDirectoryChangesCache(const UnicodeString & SessionKey,
+  void SaveDirectoryChangesCache(const UnicodeString & SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  bool __fastcall ShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner);
-  void __fastcall NeverShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner);
-  virtual THierarchicalStorage * __fastcall CreateScpStorage(bool SessionList);
-  void __fastcall TemporaryLogging(const UnicodeString & ALogFileName);
-  void __fastcall TemporaryActionsLogging(const UnicodeString & ALogFileName);
-  virtual RawByteString __fastcall EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
-  virtual UnicodeString __fastcall DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
-  virtual RawByteString __fastcall StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
+  bool ShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner);
+  void NeverShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner);
+  virtual THierarchicalStorage * CreateScpStorage(bool SessionList);
+  void TemporaryLogging(const UnicodeString & ALogFileName);
+  void TemporaryActionsLogging(const UnicodeString & ALogFileName);
+  virtual RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
+  virtual UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
+  virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
 
-  // TUsage * __fastcall GetUsage() { return FUsage; };
-  UnicodeString __fastcall GetPuttyRegistryStorageKey() { return FPuttyRegistryStorageKey; }
-  UnicodeString __fastcall GetRandomSeedFile() const { return FRandomSeedFile; }
-  bool __fastcall GetLogging() { return FLogging; }
-  UnicodeString __fastcall GetLogFileName() { return FLogFileName; }
-  bool __fastcall GetLogFileAppend() { return FLogFileAppend; }
-  int __fastcall GetLogProtocol() { return FLogProtocol; }
-  int __fastcall GetActualLogProtocol() { return FActualLogProtocol; }
-  bool __fastcall GetLogActions() { return FLogActions; }
-  UnicodeString __fastcall GetActionsLogFileName() const { return FActionsLogFileName; }
-  int __fastcall GetLogWindowLines() { return FLogWindowLines; }
-  TNotifyEvent & __fastcall GetOnChange() { return FOnChange; }
-  void __fastcall SetOnChange(TNotifyEvent Value) { FOnChange = Value; }
-  int __fastcall GetSessionReopenAuto() { return FSessionReopenAuto; }
+  // TUsage * GetUsage() { return FUsage; };
+  UnicodeString GetPuttyRegistryStorageKey() { return FPuttyRegistryStorageKey; }
+  UnicodeString GetRandomSeedFile() const { return FRandomSeedFile; }
+  bool GetLogging() { return FLogging; }
+  UnicodeString GetLogFileName() { return FLogFileName; }
+  bool GetLogFileAppend() { return FLogFileAppend; }
+  int GetLogProtocol() { return FLogProtocol; }
+  int GetActualLogProtocol() { return FActualLogProtocol; }
+  bool GetLogActions() { return FLogActions; }
+  UnicodeString GetActionsLogFileName() const { return FActionsLogFileName; }
+  int GetLogWindowLines() { return FLogWindowLines; }
+  TNotifyEvent & GetOnChange() { return FOnChange; }
+  void SetOnChange(TNotifyEvent Value) { FOnChange = Value; }
+  int GetSessionReopenAuto() { return FSessionReopenAuto; }
   int GetSessionReopenBackground() { return FSessionReopenBackground; }
-  int __fastcall GetSessionReopenTimeout() { return FSessionReopenTimeout; }
-  int __fastcall GetSessionReopenAutoStall() { return FSessionReopenAutoStall; }
-  int __fastcall GetTunnelLocalPortNumberLow() { return FTunnelLocalPortNumberLow; }
-  int __fastcall GetTunnelLocalPortNumberHigh() { return FTunnelLocalPortNumberHigh; }
-  int __fastcall GetCacheDirectoryChangesMaxSize() { return FCacheDirectoryChangesMaxSize; }
-  bool __fastcall GetShowFtpWelcomeMessage() { return FShowFtpWelcomeMessage; }
-  UnicodeString __fastcall GetExternalIpAddress() const { return FExternalIpAddress; }
-  bool __fastcall GetDisablePasswordStoring() { return FDisablePasswordStoring; }
-  bool __fastcall GetForceBanners() { return FForceBanners; }
-  bool __fastcall GetDisableAcceptingHostKeys() { return FDisableAcceptingHostKeys; }
-  void __fastcall SetLogToFile(bool Value);
-  int __fastcall GetSessionReopenAutoMaximumNumberOfRetries() const { return FSessionReopenAutoMaximumNumberOfRetries; }
-  void __fastcall SetSessionReopenAutoMaximumNumberOfRetries(int Value);
+  int GetSessionReopenTimeout() { return FSessionReopenTimeout; }
+  int GetSessionReopenAutoStall() { return FSessionReopenAutoStall; }
+  int GetTunnelLocalPortNumberLow() { return FTunnelLocalPortNumberLow; }
+  int GetTunnelLocalPortNumberHigh() { return FTunnelLocalPortNumberHigh; }
+  int GetCacheDirectoryChangesMaxSize() { return FCacheDirectoryChangesMaxSize; }
+  bool GetShowFtpWelcomeMessage() { return FShowFtpWelcomeMessage; }
+  UnicodeString GetExternalIpAddress() const { return FExternalIpAddress; }
+  bool GetDisablePasswordStoring() { return FDisablePasswordStoring; }
+  bool GetForceBanners() { return FForceBanners; }
+  bool GetDisableAcceptingHostKeys() { return FDisableAcceptingHostKeys; }
+  void SetLogToFile(bool Value);
+  int GetSessionReopenAutoMaximumNumberOfRetries() const { return FSessionReopenAutoMaximumNumberOfRetries; }
+  void SetSessionReopenAutoMaximumNumberOfRetries(int Value);
 };
 //---------------------------------------------------------------------------
 class TShortCuts
 {
 public:
-  void __fastcall Add(TShortCut ShortCut);
-  bool __fastcall Has(TShortCut ShortCut) const;
+  void Add(TShortCut ShortCut);
+  bool Has(TShortCut ShortCut) const;
 
 private:
   std::set<TShortCut> FShortCuts;

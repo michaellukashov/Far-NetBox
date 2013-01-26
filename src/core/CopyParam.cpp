@@ -8,21 +8,21 @@
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"
 //---------------------------------------------------------------------------
-/* __fastcall */ TCopyParamType::TCopyParamType()
+TCopyParamType::TCopyParamType()
 {
   Default();
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TCopyParamType::TCopyParamType(const TCopyParamType & Source)
+TCopyParamType::TCopyParamType(const TCopyParamType & Source)
 {
   Assign(&Source);
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TCopyParamType::~TCopyParamType()
+TCopyParamType::~TCopyParamType()
 {
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TCopyParamType::Default()
+void TCopyParamType::Default()
 {
   // when changing defaults, make sure GetInfoStr() can handle it
   SetFileNameCase(ncNoChange);
@@ -47,7 +47,7 @@ void /* __fastcall */ TCopyParamType::Default()
   SetCPSLimit(0);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCopyParamType::GetInfoStr(const UnicodeString & Separator, int Options) const
+UnicodeString TCopyParamType::GetInfoStr(const UnicodeString & Separator, int Options) const
 {
   TCopyParamType Defaults;
   UnicodeString Result;
@@ -183,7 +183,7 @@ UnicodeString __fastcall TCopyParamType::GetInfoStr(const UnicodeString & Separa
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamType::Assign(const TCopyParamType * Source)
+void TCopyParamType::Assign(const TCopyParamType * Source)
 {
   assert(Source != NULL);
   #define COPY(Prop) Set ## Prop(Source->Get ## Prop())
@@ -208,13 +208,13 @@ void __fastcall TCopyParamType::Assign(const TCopyParamType * Source)
   #undef COPY
 }
 //---------------------------------------------------------------------------
-TCopyParamType & __fastcall TCopyParamType::operator =(const TCopyParamType & rhp)
+TCopyParamType & TCopyParamType::operator =(const TCopyParamType & rhp)
 {
   Assign(&rhp);
   return *this;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamType::SetLocalInvalidChars(const UnicodeString & Value)
+void TCopyParamType::SetLocalInvalidChars(const UnicodeString & Value)
 {
   if (Value != GetLocalInvalidChars())
   {
@@ -223,12 +223,12 @@ void __fastcall TCopyParamType::SetLocalInvalidChars(const UnicodeString & Value
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCopyParamType::GetReplaceInvalidChars() const
+bool TCopyParamType::GetReplaceInvalidChars() const
 {
   return (GetInvalidCharsReplacement() != NoReplacement);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamType::SetReplaceInvalidChars(bool Value)
+void TCopyParamType::SetReplaceInvalidChars(bool Value)
 {
   if (GetReplaceInvalidChars() != Value)
   {
@@ -236,12 +236,12 @@ void __fastcall TCopyParamType::SetReplaceInvalidChars(bool Value)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCopyParamType::ValidLocalFileName(const UnicodeString & FileName) const
+UnicodeString TCopyParamType::ValidLocalFileName(const UnicodeString & FileName) const
 {
   return ::ValidLocalFileName(FileName, GetInvalidCharsReplacement(), FTokenizibleChars, LocalInvalidChars);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCopyParamType::RestoreChars(const UnicodeString & FileName) const
+UnicodeString TCopyParamType::RestoreChars(const UnicodeString & FileName) const
 {
   UnicodeString FileName2 = FileName; 
   if (GetInvalidCharsReplacement() == TokenReplacement)
@@ -283,7 +283,7 @@ UnicodeString __fastcall TCopyParamType::RestoreChars(const UnicodeString & File
   return FileName2;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCopyParamType::ValidLocalPath(const UnicodeString & Path) const
+UnicodeString TCopyParamType::ValidLocalPath(const UnicodeString & Path) const
 {
   UnicodeString Result;
   UnicodeString Path2 = Path;
@@ -298,7 +298,7 @@ UnicodeString __fastcall TCopyParamType::ValidLocalPath(const UnicodeString & Pa
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCopyParamType::ChangeFileName(const UnicodeString & FileName,
+UnicodeString TCopyParamType::ChangeFileName(const UnicodeString & FileName,
   TOperationSide Side, bool FirstLevel) const
 {
   CALLSTACK;
@@ -337,7 +337,7 @@ UnicodeString __fastcall TCopyParamType::ChangeFileName(const UnicodeString & Fi
   return FileName2;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCopyParamType::UseAsciiTransfer(const UnicodeString & FileName,
+bool TCopyParamType::UseAsciiTransfer(const UnicodeString & FileName,
   TOperationSide Side, const TFileMasks::TParams & Params) const
 {
   switch (GetTransferMode())
@@ -350,7 +350,7 @@ bool __fastcall TCopyParamType::UseAsciiTransfer(const UnicodeString & FileName,
   }
 }
 //---------------------------------------------------------------------------
-TRights __fastcall TCopyParamType::RemoteFileRights(Integer Attrs) const
+TRights TCopyParamType::RemoteFileRights(intptr_t Attrs) const
 {
   CALLSTACK;
   TRights R = GetRights();
@@ -360,7 +360,7 @@ TRights __fastcall TCopyParamType::RemoteFileRights(Integer Attrs) const
   return R;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCopyParamType::GetLogStr() const
+UnicodeString TCopyParamType::GetLogStr() const
 {
   wchar_t CaseC[] = L"NULFS";
   wchar_t ModeC[] = L"BAM";
@@ -388,7 +388,7 @@ UnicodeString __fastcall TCopyParamType::GetLogStr() const
      GetAsciiFileMask().GetMasks().c_str());
 }
 //---------------------------------------------------------------------------
-int __fastcall TCopyParamType::LocalFileAttrs(const TRights & Rights) const
+int TCopyParamType::LocalFileAttrs(const TRights & Rights) const
 {
   int Result = 0;
   if (GetPreserveReadOnly() && !Rights.GetRight(TRights::rrUserWrite))
@@ -398,7 +398,7 @@ int __fastcall TCopyParamType::LocalFileAttrs(const TRights & Rights) const
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCopyParamType::AllowResume(__int64 Size) const
+bool TCopyParamType::AllowResume(__int64 Size) const
 {
   switch (GetResumeSupport())
   {
@@ -409,12 +409,12 @@ bool __fastcall TCopyParamType::AllowResume(__int64 Size) const
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCopyParamType::AllowAnyTransfer() const
+bool TCopyParamType::AllowAnyTransfer() const
 {
   return GetIncludeFileMask().GetMasks().IsEmpty();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCopyParamType::AllowTransfer(const UnicodeString & FileName,
+bool TCopyParamType::AllowTransfer(const UnicodeString & FileName,
   TOperationSide Side, bool Directory, const TFileMasks::TParams & Params) const
 {
   CALLSTACK;
@@ -428,7 +428,7 @@ bool __fastcall TCopyParamType::AllowTransfer(const UnicodeString & FileName,
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamType::Load(THierarchicalStorage * Storage)
+void TCopyParamType::Load(THierarchicalStorage * Storage)
 {
   CALLSTACK;
   SetAddXToDirectories(Storage->ReadBool(L"AddXToDirectories", GetAddXToDirectories()));
@@ -471,7 +471,7 @@ void __fastcall TCopyParamType::Load(THierarchicalStorage * Storage)
   SetCPSLimit(Storage->ReadInteger(L"CPSLimit", GetCPSLimit()));
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamType::Save(THierarchicalStorage * Storage) const
+void TCopyParamType::Save(THierarchicalStorage * Storage) const
 {
   Storage->WriteBool(L"AddXToDirectories", GetAddXToDirectories());
   Storage->WriteString(L"Masks", GetAsciiFileMask().GetMasks());
@@ -496,7 +496,7 @@ void __fastcall TCopyParamType::Save(THierarchicalStorage * Storage) const
 }
 //---------------------------------------------------------------------------
 #define C(Property) (Get ## Property() == rhp.Get ## Property())
-bool __fastcall TCopyParamType::operator==(const TCopyParamType & rhp) const
+bool TCopyParamType::operator==(const TCopyParamType & rhp) const
 {
   return
     C(AddXToDirectories) &&
@@ -520,57 +520,57 @@ bool __fastcall TCopyParamType::operator==(const TCopyParamType & rhp) const
 }
 #undef C
 //---------------------------------------------------------------------------
-const TFileMasks & __fastcall TCopyParamType::GetAsciiFileMask() const
+const TFileMasks & TCopyParamType::GetAsciiFileMask() const
 {
   return FAsciiFileMask;
 }
 //---------------------------------------------------------------------------
-TFileMasks & __fastcall TCopyParamType::GetAsciiFileMask()
+TFileMasks & TCopyParamType::GetAsciiFileMask()
 {
   return FAsciiFileMask;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamType::SetAsciiFileMask(TFileMasks Value)
+void TCopyParamType::SetAsciiFileMask(TFileMasks Value)
 {
   FAsciiFileMask = Value;
 }
 //---------------------------------------------------------------------------
-const TFileNameCase & __fastcall TCopyParamType::GetFileNameCase() const
+const TFileNameCase & TCopyParamType::GetFileNameCase() const
 {
   return FFileNameCase;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCopyParamType::GetLocalInvalidChars() const
+UnicodeString TCopyParamType::GetLocalInvalidChars() const
 {
   return FLocalInvalidChars;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCopyParamType::GetFileMask() const
+UnicodeString TCopyParamType::GetFileMask() const
 {
   return FFileMask;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamType::SetFileMask(const UnicodeString & Value)
+void TCopyParamType::SetFileMask(const UnicodeString & Value)
 {
   FFileMask = Value;
 }
 //---------------------------------------------------------------------------
-const TFileMasks & __fastcall TCopyParamType::GetIncludeFileMask() const
+const TFileMasks & TCopyParamType::GetIncludeFileMask() const
 {
   return FIncludeFileMask;
 }
 //---------------------------------------------------------------------------
-TFileMasks & __fastcall TCopyParamType::GetIncludeFileMask()
+TFileMasks & TCopyParamType::GetIncludeFileMask()
 {
   return FIncludeFileMask;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamType::SetIncludeFileMask(TFileMasks Value)
+void TCopyParamType::SetIncludeFileMask(TFileMasks Value)
 {
   FIncludeFileMask = Value;
 }
 //---------------------------------------------------------------------------
-unsigned long __fastcall GetSpeedLimit(const UnicodeString & Text)
+unsigned long GetSpeedLimit(const UnicodeString & Text)
 {
   unsigned long Speed = 0;
   if (AnsiSameText(Text, LoadStr(SPEED_UNLIMITED)))
@@ -590,7 +590,7 @@ unsigned long __fastcall GetSpeedLimit(const UnicodeString & Text)
   return Speed * 1024;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall SetSpeedLimit(unsigned long Limit)
+UnicodeString SetSpeedLimit(unsigned long Limit)
 {
   UnicodeString Text;
   if (Limit == 0)

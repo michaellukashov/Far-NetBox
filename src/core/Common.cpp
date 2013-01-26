@@ -292,7 +292,7 @@ const UnicodeString LocalInvalidChars = L"/\\:*?\"<>|";
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
   UnicodeString Result = Str;
-  for (intptr_t Index = 0; Index < Result.Length(); Index++)
+  for (intptr_t Index = 0; Index < Result.Length(); ++Index)
     if (Result[Index+1] == A)
     {
       Result[Index+1] = B;
@@ -337,7 +337,7 @@ UnicodeString MakeValidFileName(const UnicodeString & FileName)
 {
   UnicodeString Result = FileName;
   static UnicodeString IllegalChars = L":;,=+<>|\"[] \\/?*";
-  for (intptr_t Index = 0; Index < IllegalChars.Length(); Index++)
+  for (intptr_t Index = 0; Index < IllegalChars.Length(); ++Index)
   {
     Result = ReplaceChar(Result, IllegalChars[Index+1], L'-');
   }
@@ -858,7 +858,7 @@ bool IsReservedName(const UnicodeString & FileName)
       L"CON", L"PRN", L"AUX", L"NUL",
       L"COM1", L"COM2", L"COM3", L"COM4", L"COM5", L"COM6", L"COM7", L"COM8", L"COM9",
       L"LPT1", L"LPT2", L"LPT3", L"LPT4", L"LPT5", L"LPT6", L"LPT7", L"LPT8", L"LPT9" };
-    for (unsigned int Index = 0; Index < LENOF(Reserved); Index++)
+    for (intptr_t Index = 0; Index < LENOF(Reserved); ++Index)
     {
       if (SameText(fileName, Reserved[Index]))
       {
@@ -880,14 +880,14 @@ UnicodeString DisplayableStr(const RawByteString & Str)
     {
       Displayable = false;
     }
-    Index++;
+    ++Index;
   }
 
   UnicodeString Result;
   if (Displayable)
   {
     Result = L"\"";
-    for (int Index = 1; Index <= Str.Length(); Index++)
+    for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
     {
       switch (Str[Index])
       {
@@ -1371,7 +1371,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
   intptr_t Index = 1;
   while ((Index <= S.Length()) && (S[Index] >= '0') && (S[Index] <= '9'))
   {
-    Index++;
+    ++Index;
   }
   UnicodeString NumberStr = S.SubString(1, Index - 1);
   int Number = 0;
@@ -1633,7 +1633,7 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
     if ((F == L'\'') || (F == L'\"'))
     {
       AsIs = !AsIs;
-      Index++;
+      ++Index;
     }
     else if (!AsIs && ((F == L'a') || (F == L'A')))
     {
@@ -1651,7 +1651,7 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
       }
       else
       {
-        Index++;
+        ++Index;
       }
     }
     else
@@ -1664,7 +1664,7 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
 
       while ((Index <= Result.Length()) && (F == Result[Index]))
       {
-        Index++;
+        ++Index;
       }
     }
   }
@@ -1992,11 +1992,11 @@ bool CutToken(UnicodeString & Str, UnicodeString & Token,
   Token = L"";
 
   // inspired by Putty's sftp_getcmd() from PSFTP.C
-  int Index = 1;
+  intptr_t Index = 1;
   while ((Index <= Str.Length()) &&
     ((Str[Index] == L' ') || (Str[Index] == L'\t')))
   {
-    Index++;
+    ++Index;
   }
 
   if (Index <= Str.Length())
@@ -2017,13 +2017,13 @@ bool CutToken(UnicodeString & Str, UnicodeString & Token,
       }
       else if (Str[Index] == L'"')
       {
-        Index++;
+        ++Index;
         Quoting = !Quoting;
       }
       else
       {
         Token += Str[Index];
-        Index++;
+        ++Index;
       }
     }
 
@@ -2034,7 +2034,7 @@ bool CutToken(UnicodeString & Str, UnicodeString & Token,
 
     if (Index <= Str.Length())
     {
-      Index++;
+      ++Index;
     }
 
     Str = Str.SubString(Index, Str.Length());

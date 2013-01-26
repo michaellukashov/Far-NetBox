@@ -8,7 +8,7 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-/* __fastcall */ TOptions::TOptions()
+TOptions::TOptions()
 {
   FSwitchMarks = L"-/";
   FSwitchValueDelimiters = L":=";
@@ -16,7 +16,7 @@
   FParamCount = 0;
 }
 //---------------------------------------------------------------------------
-void __fastcall TOptions::Add(UnicodeString Value)
+void TOptions::Add(UnicodeString Value)
 {
   if (!FNoMoreSwitches &&
       (Value.Length() == 2) &&
@@ -72,7 +72,7 @@ void __fastcall TOptions::Add(UnicodeString Value)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TOptions::GetParam(int Index)
+UnicodeString TOptions::GetParam(intptr_t Index)
 {
   assert((Index >= 1) && (Index <= FParamCount));
 
@@ -95,18 +95,18 @@ UnicodeString __fastcall TOptions::GetParam(int Index)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::GetEmpty() const
+bool TOptions::GetEmpty() const
 {
   return FOptions.empty();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::FindSwitch(const UnicodeString & Switch,
+bool TOptions::FindSwitch(const UnicodeString & Switch,
   UnicodeString & Value, int & ParamsStart, int & ParamsCount)
 {
   ParamsStart = 0;
-  int Index = 0;
+  intptr_t Index = 0;
   bool Found = false;
-  while ((Index < int(FOptions.size())) && !Found)
+  while ((Index < static_cast<intptr_t>(FOptions.size())) && !Found)
   {
     if (FOptions[Index].Type == otParam)
     {
@@ -121,7 +121,7 @@ bool __fastcall TOptions::FindSwitch(const UnicodeString & Switch,
         FOptions[Index].Used = true;
       }
     }
-    Index++;
+    ++Index;
   }
 
   ParamsCount = 0;
@@ -142,14 +142,14 @@ bool __fastcall TOptions::FindSwitch(const UnicodeString & Switch,
   return Found;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::FindSwitch(const UnicodeString & Switch, UnicodeString & Value)
+bool TOptions::FindSwitch(const UnicodeString & Switch, UnicodeString & Value)
 {
   int ParamsStart;
   int ParamsCount;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::FindSwitch(const UnicodeString & Switch)
+bool TOptions::FindSwitch(const UnicodeString & Switch)
 {
   UnicodeString Value;
   int ParamsStart;
@@ -157,7 +157,7 @@ bool __fastcall TOptions::FindSwitch(const UnicodeString & Switch)
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::FindSwitch(const UnicodeString & Switch,
+bool TOptions::FindSwitch(const UnicodeString & Switch,
   TStrings * Params, int ParamsMax)
 {
   UnicodeString Value;
@@ -171,18 +171,18 @@ bool __fastcall TOptions::FindSwitch(const UnicodeString & Switch,
       ParamsCount = ParamsMax;
     }
 
-    int Index = 0;
+    intptr_t Index = 0;
     while (Index < ParamsCount)
     {
       Params->Add(GetParam(ParamsStart + Index));
-      Index++;
+      ++Index;
     }
     ParamsProcessed(ParamsStart, ParamsCount);
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TOptions::SwitchValue(const UnicodeString & Switch,
+UnicodeString TOptions::SwitchValue(const UnicodeString & Switch,
   const UnicodeString & Default)
 {
   UnicodeString Value;
@@ -194,7 +194,7 @@ UnicodeString __fastcall TOptions::SwitchValue(const UnicodeString & Switch,
   return Value;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence)
+bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence)
 {
   bool Result;
   int IntValue;
@@ -226,12 +226,12 @@ bool __fastcall TOptions::SwitchValue(const UnicodeString & Switch, bool Default
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::SwitchValue(const UnicodeString & Switch, bool Default)
+bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default)
 {
   return SwitchValue(Switch, Default, Default);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::UnusedSwitch(UnicodeString & Switch) const
+bool TOptions::UnusedSwitch(UnicodeString & Switch) const
 {
   bool Result = false;
   size_t Index = 0;
@@ -249,7 +249,7 @@ bool __fastcall TOptions::UnusedSwitch(UnicodeString & Switch) const
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TOptions::ParamsProcessed(int ParamsStart, int ParamsCount)
+void TOptions::ParamsProcessed(int ParamsStart, int ParamsCount)
 {
   if (ParamsCount > 0)
   {
@@ -274,7 +274,7 @@ void __fastcall TOptions::ParamsProcessed(int ParamsStart, int ParamsCount)
           }
         }
       }
-      Index++;
+      ++Index;
     }
   }
 }

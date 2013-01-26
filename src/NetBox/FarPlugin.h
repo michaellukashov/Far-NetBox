@@ -342,8 +342,8 @@ public:
 
   void ClearFileKeyBarTitles();
   void ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
-    int FunctionKeyStart, int FunctionKeyEnd = 0);
-  void SetKeyBarTitle(TFarShiftStatus ShiftStatus, int FunctionKey,
+    intptr_t FunctionKeyStart, intptr_t FunctionKeyEnd = 0);
+  void SetKeyBarTitle(TFarShiftStatus ShiftStatus, intptr_t FunctionKey,
     const UnicodeString & Title);
 
 private:

@@ -9,14 +9,14 @@
 //---------------------------------------------------------------------------
 #define TRANSFER_BUF_SIZE 4096
 //---------------------------------------------------------------------------
-/* __fastcall */ TFileOperationProgressType::TFileOperationProgressType()
+TFileOperationProgressType::TFileOperationProgressType()
 {
   FOnProgress = NULL;
   FOnFinished = NULL;
   Clear();
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TFileOperationProgressType::TFileOperationProgressType(
+TFileOperationProgressType::TFileOperationProgressType(
   TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished)
 {
   FOnProgress = AOnProgress;
@@ -25,13 +25,13 @@
   Clear();
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TFileOperationProgressType::~TFileOperationProgressType()
+TFileOperationProgressType::~TFileOperationProgressType()
 {
   assert(!InProgress || FReset);
   assert(!Suspended || FReset);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::Clear()
+void TFileOperationProgressType::Clear()
 {
   FSuspendTime = 0,
   FFileStartTime = 0.0;
@@ -72,7 +72,7 @@ void __fastcall TFileOperationProgressType::Clear()
   ClearTransfer();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::ClearTransfer()
+void TFileOperationProgressType::ClearTransfer()
 {
   if ((TransferSize > 0) && (TransferedSize < TransferSize))
   {
@@ -88,13 +88,13 @@ void __fastcall TFileOperationProgressType::ClearTransfer()
   FLastSecond = 0;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::Start(TFileOperation AOperation,
+void TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, intptr_t ACount)
 {
   Start(AOperation, ASide, ACount, false, L"", 0);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::Start(TFileOperation AOperation,
+void TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, intptr_t ACount, bool ATemp,
   const UnicodeString & ADirectory, unsigned long ACPSLimit)
 {
@@ -111,13 +111,13 @@ void __fastcall TFileOperationProgressType::Start(TFileOperation AOperation,
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::Reset()
+void TFileOperationProgressType::Reset()
 {
   CALLSTACK;
   FReset = true;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::Stop()
+void TFileOperationProgressType::Stop()
 {
   CALLSTACK;
   // added to include remaining bytes to TotalSkipped, in case
@@ -127,7 +127,7 @@ void __fastcall TFileOperationProgressType::Stop()
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::Suspend()
+void TFileOperationProgressType::Suspend()
 {
   CALLSTACK;
   assert(!Suspended);
@@ -136,7 +136,7 @@ void __fastcall TFileOperationProgressType::Suspend()
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::Resume()
+void TFileOperationProgressType::Resume()
 {
   CALLSTACK;
   assert(Suspended);
@@ -155,7 +155,7 @@ void __fastcall TFileOperationProgressType::Resume()
   DoProgress();
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFileOperationProgressType::OperationProgress() const
+intptr_t TFileOperationProgressType::OperationProgress() const
 {
   CCALLSTACK(TRACE_PROGRESS);
   assert(Count);
@@ -164,7 +164,7 @@ intptr_t __fastcall TFileOperationProgressType::OperationProgress() const
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFileOperationProgressType::TransferProgress() const
+intptr_t TFileOperationProgressType::TransferProgress() const
 {
   CCALLSTACK(TRACE_PROGRESS);
   intptr_t Result;
@@ -180,7 +180,7 @@ intptr_t __fastcall TFileOperationProgressType::TransferProgress() const
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFileOperationProgressType::TotalTransferProgress() const
+intptr_t TFileOperationProgressType::TotalTransferProgress() const
 {
   CCALLSTACK(TRACE_PROGRESS);
   assert(TotalSizeSet);
@@ -189,7 +189,7 @@ intptr_t __fastcall TFileOperationProgressType::TotalTransferProgress() const
   return Result < 100 ? Result : 100;
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFileOperationProgressType::OverallProgress() const
+intptr_t TFileOperationProgressType::OverallProgress() const
 {
   CCALLSTACK(TRACE_PROGRESS);
   if (TotalSizeSet)
@@ -203,13 +203,13 @@ intptr_t __fastcall TFileOperationProgressType::OverallProgress() const
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::DoProgress()
+void TFileOperationProgressType::DoProgress()
 {
   SetThreadExecutionState(ES_SYSTEM_REQUIRED);
   FOnProgress(*this, Cancel);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::Finish(UnicodeString FileName,
+void TFileOperationProgressType::Finish(UnicodeString FileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   assert(InProgress);
@@ -221,7 +221,7 @@ void __fastcall TFileOperationProgressType::Finish(UnicodeString FileName,
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::SetFile(UnicodeString AFileName, bool AFileInProgress)
+void TFileOperationProgressType::SetFile(UnicodeString AFileName, bool AFileInProgress)
 {
   CALLSTACK;
   FileName = AFileName;
@@ -231,20 +231,20 @@ void __fastcall TFileOperationProgressType::SetFile(UnicodeString AFileName, boo
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::SetFileInProgress()
+void TFileOperationProgressType::SetFileInProgress()
 {
   assert(!FileInProgress);
   FileInProgress = true;
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::SetLocalSize(__int64 ASize)
+void TFileOperationProgressType::SetLocalSize(__int64 ASize)
 {
   LocalSize = ASize;
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::AddLocallyUsed(__int64 ASize)
+void TFileOperationProgressType::AddLocallyUsed(__int64 ASize)
 {
   LocallyUsed += ASize;
   if (LocallyUsed > LocalSize)
@@ -254,13 +254,13 @@ void __fastcall TFileOperationProgressType::AddLocallyUsed(__int64 ASize)
   DoProgress();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileOperationProgressType::IsLocallyDone() const
+bool TFileOperationProgressType::IsLocallyDone() const
 {
   assert(LocallyUsed <= LocalSize);
   return (LocallyUsed == LocalSize);
 }
 //---------------------------------------------------------------------------
-unsigned long __fastcall TFileOperationProgressType::AdjustToCPSLimit(
+unsigned long TFileOperationProgressType::AdjustToCPSLimit(
   unsigned long Size)
 {
   if (CPSLimit > 0)
@@ -299,7 +299,7 @@ unsigned long __fastcall TFileOperationProgressType::AdjustToCPSLimit(
   return Size;
 }
 //---------------------------------------------------------------------------
-unsigned long __fastcall TFileOperationProgressType::LocalBlockSize()
+unsigned long TFileOperationProgressType::LocalBlockSize()
 {
   unsigned long Result = TRANSFER_BUF_SIZE;
   if (LocallyUsed + Result > LocalSize)
@@ -310,20 +310,20 @@ unsigned long __fastcall TFileOperationProgressType::LocalBlockSize()
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::SetTotalSize(__int64 ASize)
+void TFileOperationProgressType::SetTotalSize(__int64 ASize)
 {
   TotalSize = ASize;
   TotalSizeSet = true;
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::SetTransferSize(__int64 ASize)
+void TFileOperationProgressType::SetTransferSize(__int64 ASize)
 {
   TransferSize = ASize;
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::ChangeTransferSize(__int64 ASize)
+void TFileOperationProgressType::ChangeTransferSize(__int64 ASize)
 {
   // reflect change on file size (due to text transfer mode conversion particulary)
   // on total transfer size
@@ -335,7 +335,7 @@ void __fastcall TFileOperationProgressType::ChangeTransferSize(__int64 ASize)
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::RollbackTransfer()
+void TFileOperationProgressType::RollbackTransfer()
 {
   TransferedSize -= SkippedSize;
   assert(TransferedSize <= TotalTransfered);
@@ -350,7 +350,7 @@ void __fastcall TFileOperationProgressType::RollbackTransfer()
   LocallyUsed = 0;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::AddTransfered(__int64 ASize,
+void TFileOperationProgressType::AddTransfered(__int64 ASize,
   bool AddToTotals)
 {
   TransferedSize += ASize;
@@ -385,7 +385,7 @@ void __fastcall TFileOperationProgressType::AddTransfered(__int64 ASize,
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::AddResumed(__int64 ASize)
+void TFileOperationProgressType::AddResumed(__int64 ASize)
 {
   TotalSkipped += ASize;
   SkippedSize += ASize;
@@ -393,7 +393,7 @@ void __fastcall TFileOperationProgressType::AddResumed(__int64 ASize)
   AddLocallyUsed(ASize);
 }
 //---------------------------------------------------------------------------
-unsigned long __fastcall TFileOperationProgressType::TransferBlockSize()
+unsigned long TFileOperationProgressType::TransferBlockSize()
 {
   unsigned long Result = TRANSFER_BUF_SIZE;
   if (TransferedSize + Result > TransferSize)
@@ -404,35 +404,35 @@ unsigned long __fastcall TFileOperationProgressType::TransferBlockSize()
   return Result;
 }
 //---------------------------------------------------------------------------
-unsigned long __fastcall TFileOperationProgressType::StaticBlockSize()
+unsigned long TFileOperationProgressType::StaticBlockSize()
 {
   return TRANSFER_BUF_SIZE;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileOperationProgressType::IsTransferDone() const
+bool TFileOperationProgressType::IsTransferDone() const
 {
   assert(TransferedSize <= TransferSize);
   return (TransferedSize == TransferSize);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::SetAsciiTransfer(bool AAsciiTransfer)
+void TFileOperationProgressType::SetAsciiTransfer(bool AAsciiTransfer)
 {
   AsciiTransfer = AAsciiTransfer;
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::SetResumeStatus(TResumeStatus AResumeStatus)
+void TFileOperationProgressType::SetResumeStatus(TResumeStatus AResumeStatus)
 {
   ResumeStatus = AResumeStatus;
   DoProgress();
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall TFileOperationProgressType::TimeElapsed() const
+TDateTime TFileOperationProgressType::TimeElapsed() const
 {
   return Now() - StartTime;
 }
 //---------------------------------------------------------------------------
-unsigned int __fastcall TFileOperationProgressType::CPS()
+unsigned int TFileOperationProgressType::CPS()
 {
   unsigned int Result;
   if (FTicks.empty())
@@ -466,7 +466,7 @@ unsigned int __fastcall TFileOperationProgressType::CPS()
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall TFileOperationProgressType::TimeExpected()
+TDateTime TFileOperationProgressType::TimeExpected()
 {
   unsigned int CurCps = CPS();
   if (CurCps)
@@ -479,7 +479,7 @@ TDateTime __fastcall TFileOperationProgressType::TimeExpected()
   }
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall TFileOperationProgressType::TotalTimeExpected()
+TDateTime TFileOperationProgressType::TotalTimeExpected()
 {
   assert(TotalSizeSet);
   unsigned int CurCps = CPS();
@@ -495,7 +495,7 @@ TDateTime __fastcall TFileOperationProgressType::TotalTimeExpected()
   }
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall TFileOperationProgressType::TotalTimeLeft()
+TDateTime TFileOperationProgressType::TotalTimeLeft()
 {
   assert(TotalSizeSet);
   unsigned int CurCps = CPS();
