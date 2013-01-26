@@ -507,9 +507,9 @@ TStrings * __fastcall TCopyParamList::GetNameList() const
   {
     FNameList = new TStringList();
 
-    for (int i = 0; i < GetCount(); i++)
+    for (intptr_t I = 0; I < GetCount(); ++I)
     {
-      FNameList->Add(FNames->Strings[i]);
+      FNameList->Add(FNames->Strings[I]);
     }
   }
   return FNameList;
@@ -518,11 +518,11 @@ TStrings * __fastcall TCopyParamList::GetNameList() const
 bool __fastcall TCopyParamList::GetAnyRule() const
 {
   bool Result = false;
-  int i = 0;
-  while ((i < GetCount()) && !Result)
+  intptr_t I = 0;
+  while ((I < GetCount()) && !Result)
   {
-    Result = (GetRule(i) != NULL);
-    i++;
+    Result = (GetRule(I) != NULL);
+    ++I;
   }
   return Result;
 }
