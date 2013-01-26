@@ -537,6 +537,7 @@ UnicodeString ExceptionLogString(Exception *E)
 bool IsNumber(const UnicodeString & Str)
 {
   int Value = 0;
+  if (Str == L"0") return true;
   return TryStrToInt(Str, Value);
 }
 //---------------------------------------------------------------------------
