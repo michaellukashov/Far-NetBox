@@ -156,6 +156,7 @@ bool TryStrToInt(const std::wstring & StrValue, int & Value)
   if (Result)
   {
     Value = _wtoi(StrValue.c_str());
+    Result = Value != 0;
   }
   return Result;
 }
