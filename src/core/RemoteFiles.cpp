@@ -106,13 +106,13 @@ UnicodeString ExtractFileName(const UnicodeString & Path, bool Unix)
 //---------------------------------------------------------------------------
 bool ExtractCommonPath(TStrings * Files, UnicodeString & Path)
 {
-  assert(Files->Count > 0);
+  assert(Files->GetCount() > 0);
 
   Path = ExtractFilePath(Files->Strings[0]);
   bool Result = !Path.IsEmpty();
   if (Result)
   {
-    for (int Index = 1; Index < Files->Count; Index++)
+    for (intptr_t Index = 1; Index < Files->GetCount(); Index++)
     {
       while (!Path.IsEmpty() &&
         (Files->Strings[Index].SubString(1, Path.Length()) != Path))
@@ -133,13 +133,13 @@ bool ExtractCommonPath(TStrings * Files, UnicodeString & Path)
 //---------------------------------------------------------------------------
 bool UnixExtractCommonPath(TStrings * Files, UnicodeString & Path)
 {
-  assert(Files->Count > 0);
+  assert(Files->GetCount() > 0);
 
   Path = UnixExtractFilePath(Files->Strings[0]);
   bool Result = !Path.IsEmpty();
   if (Result)
   {
-    for (int Index = 1; Index < Files->Count; Index++)
+    for (intptr_t Index = 1; Index < Files->GetCount(); Index++)
     {
       while (!Path.IsEmpty() &&
         (Files->Strings[Index].SubString(1, Path.Length()) != Path))
@@ -310,7 +310,7 @@ UnicodeString MinimizeName(const UnicodeString & FileName, intptr_t MaxLen, bool
 UnicodeString MakeFileList(TStrings * FileList)
 {
   UnicodeString Result;
-  for (int Index = 0; Index < FileList->Count; Index++)
+  for (intptr_t Index = 0; Index < FileList->GetCount(); Index++)
   {
     if (!Result.IsEmpty())
     {
@@ -706,9 +706,9 @@ void TRemoteTokenList::Log(TTerminal * Terminal, const wchar_t * Title)
   }
 }
 //---------------------------------------------------------------------------
-int TRemoteTokenList::Count() const
+intptr_t TRemoteTokenList::GetCount() const
 {
-  return (int)FTokens.size();
+  return static_cast<intptr_t>(FTokens.size());
 }
 //---------------------------------------------------------------------------
 const TRemoteToken * TRemoteTokenList::Token(int Index) const
@@ -1468,7 +1468,7 @@ void TRemoteFileList::DuplicateTo(TRemoteFileList * Copy)
 {
   CALLSTACK;
   Copy->Clear();
-  for (int Index = 0; Index < Count; Index++)
+  for (intptr_t Index = 0; Index < GetCount(); Index++)
   {
     TRemoteFile * File = GetFiles(Index);
     Copy->AddFile(File->Duplicate(false));
@@ -1513,14 +1513,14 @@ UnicodeString TRemoteFileList::GetParentPath()
 __int64 TRemoteFileList::GetTotalSize()
 {
   __int64 Result = 0;
-  for (Integer Index = 0; Index < Count; Index++)
+  for (Integer Index = 0; Index < GetCount(); Index++)
     if (!GetFiles(Index)->GetIsDirectory()) { Result += GetFiles(Index)->GetSize(); }
   return Result;
 }
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & FileName)
 {
-  for (Integer Index = 0; Index < Count; Index++)
+  for (Integer Index = 0; Index < GetCount(); Index++)
     if (GetFiles(Index)->GetFileName() == FileName) { return GetFiles(Index); }
   return NULL;
 }
@@ -1609,7 +1609,7 @@ TStrings * TRemoteDirectory::GetSelectedFiles()
     FSelectedFiles->Clear();
   }
 
-  for (int Index = 0; Index < Count; Index ++)
+  for (intptr_t Index = 0; Index < GetCount(); Index ++)
   {
     if (GetFiles(Index)->GetSelected())
     {
@@ -1679,7 +1679,7 @@ void TRemoteDirectoryCache::Clear()
 
   TRY_FINALLY (
   {
-    for (int Index = 0; Index < Count; Index++)
+    for (intptr_t Index = 0; Index < GetCount(); Index++)
     {
       delete dynamic_cast<TRemoteFileList *>(Objects[Index]);
       Objects(Index, NULL);
@@ -1696,7 +1696,7 @@ bool TRemoteDirectoryCache::GetIsEmpty() const
 {
   TGuard Guard(FSection);
 
-  return (const_cast<TRemoteDirectoryCache*>(this)->Count == 0);
+  return (const_cast<TRemoteDirectoryCache*>(this)->GetCount() == 0);
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory)
@@ -1774,7 +1774,7 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & Directory, boo
   if (SubDirs)
   {
     Directory2 = UnixIncludeTrailingBackslash(Directory2);
-    Index = Count-1;
+    Index = GetCount() - 1;
     while (Index >= 0)
     {
       if (Strings[Index].SubString(1, Directory2.Length()) == Directory2)
@@ -1806,7 +1806,7 @@ void TRemoteDirectoryChangesCache::Clear()
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryChangesCache::GetIsEmpty() const
 {
-  return (const_cast<TRemoteDirectoryChangesCache*>(this)->Count == 0);
+  return (const_cast<TRemoteDirectoryChangesCache*>(this)->GetCount() == 0);
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::SetValue(const UnicodeString & Name,
@@ -1846,7 +1846,7 @@ void TRemoteDirectoryChangesCache::AddDirectoryChange(
 void TRemoteDirectoryChangesCache::ClearDirectoryChange(
   const UnicodeString & SourceDir)
 {
-  for (intptr_t Index = 0; Index < Count; Index++)
+  for (intptr_t Index = 0; Index < GetCount(); Index++)
   {
     if (Names[Index].SubString(1, SourceDir.Length()) == SourceDir)
     {
@@ -1864,7 +1864,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
   DirectoryChangeKey(UnixExcludeTrailingBackslash(UnixExtractFilePath(TargetDir)),
     UnixExtractFileName(TargetDir), Key);
 
-  for (intptr_t Index = 0; Index < Count; Index++)
+  for (intptr_t Index = 0; Index < GetCount(); Index++)
   {
     UnicodeString Name = Names[Index];
     if ((Name.SubString(1, TargetDir.Length()) == TargetDir) ||
@@ -1916,7 +1916,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
 void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
 {
   Data = L"A";
-  intptr_t ACount = Count;
+  intptr_t ACount = GetCount();
   if (ACount > FMaxSize)
   {
     TStrings * Limited = new TStringList();
@@ -2579,7 +2579,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * FileList)
 {
   // TODO: Modification and LastAccess
   TRemoteProperties CommonProperties;
-  for (int Index = 0; Index < FileList->Count; Index++)
+  for (intptr_t Index = 0; Index < FileList->GetCount(); Index++)
   {
     TRemoteFile * File = static_cast<TRemoteFile *>(FileList->Objects[Index]);
     assert(File);

@@ -1036,8 +1036,8 @@ public:
     TSFTPQueuePacket * Request;
     TSFTPPacket * Response;
 
-    assert(FResponses->Count == FRequests->Count);
-    for (int Index = 0; Index < FRequests->Count; Index++)
+    assert(FResponses->GetCount() == FRequests->GetCount());
+    for (intptr_t Index = 0; Index < FRequests->GetCount(); ++Index)
     {
       Request = static_cast<TSFTPQueuePacket*>(FRequests->Items[Index]);
       assert(Request);
@@ -1065,9 +1065,9 @@ public:
     TSFTPQueuePacket * Request;
     TSFTPPacket * Response;
 
-    while (FRequests->Count)
+    while (FRequests->GetCount())
     {
-      assert(FResponses->Count);
+      assert(FResponses->GetCount());
 
       Request = static_cast<TSFTPQueuePacket*>(FRequests->Items[0]);
       assert(Request);
@@ -1114,7 +1114,7 @@ public:
   bool ReceivePacket(TSFTPPacket * Packet,
     int ExpectedType = -1, int AllowStatus = -1, void ** Token = NULL)
   {
-    assert(FRequests->Count);
+    assert(FRequests->GetCount());
     bool Result;
     TSFTPQueuePacket * Request = NULL;
     TSFTPPacket * Response = NULL;
@@ -1475,7 +1475,7 @@ protected:
   virtual bool ReceivePacketAsynchronously()
   {
     // do not read response to close request
-    bool Result = (FRequests->Count > 0);
+    bool Result = (FRequests->GetCount() > 0);
     if (Result)
     {
       ReceivePacket(NULL, SSH_FXP_STATUS);
@@ -1534,7 +1534,7 @@ protected:
   virtual bool InitRequest(TSFTPQueuePacket * Request)
   {
     bool Result = false;
-    while (!Result && (FIndex < FFileList->Count))
+    while (!Result && (FIndex < FFileList->GetCount()))
     {
       TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->Objects[FIndex]);
       FIndex++;
@@ -1568,14 +1568,14 @@ protected:
   virtual bool SendRequest()
   {
     bool Result =
-      (FIndex < FFileList->Count) &&
+      (FIndex < FFileList->GetCount()) &&
       TSFTPFixedLenQueue::SendRequest();
     return Result;
   }
 
   virtual bool End(TSFTPPacket * /*Response*/)
   {
-    return (FRequests->Count == 0);
+    return (FRequests->GetCount() == 0);
   }
 
 private:
@@ -1621,7 +1621,7 @@ protected:
   virtual bool InitRequest(TSFTPQueuePacket * Request)
   {
     bool Result = false;
-    while (!Result && (FIndex < FFileList->Count))
+    while (!Result && (FIndex < FFileList->GetCount()))
     {
       TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->Objects[FIndex]);
       assert(File != NULL);
@@ -1651,14 +1651,14 @@ protected:
   virtual bool SendRequest()
   {
     bool Result =
-      (FIndex < FFileList->Count) &&
+      (FIndex < FFileList->GetCount()) &&
       TSFTPFixedLenQueue::SendRequest();
     return Result;
   }
 
   virtual bool End(TSFTPPacket * /*Response*/)
   {
-    return (FRequests->Count == 0);
+    return (FRequests->GetCount() == 0);
   }
 
 private:
@@ -1797,13 +1797,13 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
       FFileSystemInfo.AdditionalInfo += LoadStr(FS_RENAME_NOT_SUPPORTED) + L"\r\n\r\n";
     }
 
-    if (FExtensions->Count > 0)
+    if (FExtensions->GetCount() > 0)
     {
       UnicodeString Name;
       UnicodeString Value;
       UnicodeString Line;
       FFileSystemInfo.AdditionalInfo += LoadStr(SFTP_EXTENSION_INFO) + L"\r\n";
-      for (int Index = 0; Index < FExtensions->Count; Index++)
+      for (int Index = 0; Index < FExtensions->GetCount(); Index++)
       {
         UnicodeString Name = FExtensions->Names[Index];
         UnicodeString Value = FExtensions->Values[Name];
@@ -1878,7 +1878,7 @@ void TSFTPFileSystem::Idle()
 void TSFTPFileSystem::ResetConnection()
 {
   // there must be no valid packet reservation at the end
-  for (int i = 0; i < FPacketReservations->Count; i++)
+  for (int i = 0; i < FPacketReservations->GetCount(); i++)
   {
     assert(FPacketReservations->Items[i] == NULL);
     delete static_cast<TSFTPPacket *>(FPacketReservations->Items[i]);
@@ -2232,7 +2232,7 @@ unsigned long TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
 {
-  for (intptr_t Index = Reservation+1; Index < FPacketReservations->Count; Index++)
+  for (intptr_t Index = Reservation+1; Index < FPacketReservations->GetCount(); Index++)
   {
     FPacketNumbers[Index-1] = FPacketNumbers[Index];
   }
@@ -2334,7 +2334,7 @@ uintptr_t TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
         TRACE("4");
         TSFTPPacket * ReservedPacket;
         unsigned int MessageNumber;
-        for (int Index = 0; Index < FPacketReservations->Count; Index++)
+        for (int Index = 0; Index < FPacketReservations->GetCount(); Index++)
         {
           TRACE("4a");
           MessageNumber = (unsigned int)FPacketNumbers[Index];
@@ -2412,11 +2412,11 @@ void TSFTPFileSystem::ReserveResponse(const TSFTPPacket * Packet,
     Response->SetReservedBy(this);
   }
   FPacketReservations->Add(Response);
-  if ((size_t)FPacketReservations->Count >= FPacketNumbers.size())
+  if ((size_t)FPacketReservations->GetCount() >= FPacketNumbers.size())
   {
-    FPacketNumbers.resize(FPacketReservations->Count + 10);
+    FPacketNumbers.resize(FPacketReservations->GetCount() + 10);
   }
-  FPacketNumbers[FPacketReservations->Count - 1] = Packet->GetMessageNumber();
+  FPacketNumbers[FPacketReservations->GetCount() - 1] = Packet->GetMessageNumber();
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::UnreserveResponse(TSFTPPacket * Response)
@@ -2781,14 +2781,14 @@ void TSFTPFileSystem::DoStartup()
              int(FSupport->OpenBlockMasks),
              int(FSupport->BlockMasks),
              int(FSupport->MaxReadSize)));
-          FTerminal->LogEvent(FORMAT(L"  Attribute extensions (%d)\n", FSupport->AttribExtensions->Count.get()));
-          for (int Index = 0; Index < FSupport->AttribExtensions->Count; Index++)
+          FTerminal->LogEvent(FORMAT(L"  Attribute extensions (%d)\n", FSupport->AttribExtensions->GetCount()));
+          for (int Index = 0; Index < FSupport->AttribExtensions->GetCount(); Index++)
           {
             FTerminal->LogEvent(
               FORMAT(L"    %s", FSupport->AttribExtensions->Strings[Index].c_str()));
           }
-          FTerminal->LogEvent(FORMAT(L"  Extensions (%d)\n", FSupport->Extensions->Count.get()));
-          for (int Index = 0; Index < FSupport->Extensions->Count; Index++)
+          FTerminal->LogEvent(FORMAT(L"  Extensions (%d)\n", FSupport->Extensions->GetCount()));
+          for (int Index = 0; Index < FSupport->Extensions->GetCount(); Index++)
           {
             FTerminal->LogEvent(
               FORMAT(L"    %s", FSupport->Extensions->Strings[Index].c_str()));
@@ -3537,7 +3537,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
   if (FSupport->Loaded)
   {
     TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK(TTerminal::DoFinished, FTerminal));
-    Progress.Start(foGetProperties, osRemote, FileList->Count);
+    Progress.Start(foGetProperties, osRemote, FileList->GetCount());
 
     FTerminal->FOperationProgress = &Progress; //-V506
 
@@ -3596,7 +3596,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
   // recurse into subdirectories only if we have callback function
   if (OnCalculatedChecksum != NULL)
   {
-    for (int Index = 0; Index < FileList->Count; Index++)
+    for (int Index = 0; Index < FileList->GetCount(); Index++)
     {
       TRemoteFile * File = static_cast<TRemoteFile *>(FileList->Objects[Index]);
       assert(File != NULL);
@@ -3615,7 +3615,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
           {
             OperationProgress->SetFile(File->GetFileName());
 
-            for (int Index = 0; Index < SubFiles->Count; Index++)
+            for (int Index = 0; Index < SubFiles->GetCount(); Index++)
             {
               TRemoteFile * SubFile = SubFiles->GetFiles(Index);
               SubFileList->AddObject(SubFile->GetFullFileName(), SubFile);
@@ -3717,7 +3717,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
   TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK(TTerminal::DoFinished, FTerminal));
-  Progress.Start(foCalculateChecksum, osRemote, FileList->Count);
+  Progress.Start(foCalculateChecksum, osRemote, FileList->GetCount());
 
   FTerminal->FOperationProgress = &Progress; //-V506
 
@@ -3796,7 +3796,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   UnicodeString FileName, FileNameOnly;
   UnicodeString FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
   int Index = 0;
-  while (Index < FilesToCopy->Count && !OperationProgress->Cancel)
+  while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     bool Success = false;
     FileName = FilesToCopy->Strings[Index];
@@ -4976,7 +4976,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   const TRemoteFile * File;
   bool Success;
   int Index = 0;
-  while (Index < FilesToCopy->Count && !OperationProgress->Cancel)
+  while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     Success = false;
     FileName = FilesToCopy->Strings[Index];

@@ -103,7 +103,6 @@ void TPersistent::AssignError(TPersistent * Source)
 //---------------------------------------------------------------------------
 TList::TList()
 {
-  Count(this);
   Items(this);
 }
 
@@ -283,10 +282,10 @@ void QuickSort(std::vector<void *> & SortList, intptr_t L, intptr_t R,
 
 void TList::Sort(CompareFunc Func)
 {
-  if (Count > 1)
+  if (GetCount() > 1)
   {
-    // qsort(FList.front(), Count.get(), sizeof(void *), Func);
-    QuickSort(FList, 0, Count - 1, Func);
+    // qsort(FList.front(), GetCount().get(), sizeof(void *), Func);
+    QuickSort(FList, 0, GetCount() - 1, Func);
   }
 }
 
@@ -422,7 +421,6 @@ TStrings::TStrings() :
   FQuoteChar(L'"'),
   FUpdateCount(0)
 {
-  Count(this);
   Text(this);
   CommaText(this);
   CaseSensitive(this);
@@ -693,11 +691,11 @@ void TStrings::InsertObject(intptr_t Index, const UnicodeString & Key, TObject *
 bool TStrings::Equals(TStrings * Strings) const
 {
   bool Result = false;
-  if (Count != Strings->GetCount())
+  if (GetCount() != Strings->GetCount())
   {
     return false;
   }
-  for (int I = 0; I < Count; I++)
+  for (intptr_t I = 0; I < GetCount(); ++I)
   {
     if (GetStrings(I) != Strings->GetStrings(I))
     {

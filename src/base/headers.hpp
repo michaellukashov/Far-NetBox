@@ -99,7 +99,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define False false
 #endif
 #ifndef Integer
-typedef int Integer;
+typedef intptr_t Integer;
 #endif
 #ifndef Int64
 typedef __int64 Int64;

@@ -62,7 +62,7 @@ public:
   const TRemoteToken * Find(const UnicodeString & Name) const;
   void Log(TTerminal * Terminal, const wchar_t * Title);
 
-  int Count() const;
+  intptr_t GetCount() const;
   const TRemoteToken * Token(int Index) const;
 
 private:

@@ -191,7 +191,7 @@ void __fastcall ExtException::AddMoreMessages(const Exception * E)
       FMoreMessages->Insert(0, Msg);
     }
 
-    if (FMoreMessages->Count == 0)
+    if (FMoreMessages->GetCount() == 0)
     {
       delete FMoreMessages;
       FMoreMessages = NULL;

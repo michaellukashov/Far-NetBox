@@ -172,7 +172,7 @@ bool __fastcall TXmlStorage::DoOpenSubKey(const UnicodeString & MungedSubKey, bo
 void TXmlStorage::CloseSubKey()
 {
   THierarchicalStorage::CloseSubKey();
-  if (FKeyHistory->Count && !FSubElements.empty())
+  if (FKeyHistory->GetCount() && !FSubElements.empty())
   {
     FCurrentElement = FSubElements.back();
     FSubElements.pop_back();

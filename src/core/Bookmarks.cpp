@@ -27,7 +27,7 @@
 //---------------------------------------------------------------------------
 void __fastcall TBookmarks::Clear()
 {
-  for (int i = 0; i < FBookmarkLists->Count; i++)
+  for (int i = 0; i < FBookmarkLists->GetCount(); i++)
   {
     delete FBookmarkLists->Objects[i];
   }
@@ -39,7 +39,7 @@ UnicodeString TBookmarks::Keys[] = { L"Local", L"Remote", L"ShortCuts", L"Option
 void __fastcall TBookmarks::Load(THierarchicalStorage * Storage)
 {
   CALLSTACK;
-  for (int i = 0; i <= 3; i++)
+  for (intptr_t i = 0; i <= 3; i++)
   {
     if (Storage->OpenSubKey(Keys[i], false))
     {
@@ -47,7 +47,7 @@ void __fastcall TBookmarks::Load(THierarchicalStorage * Storage)
       TRY_FINALLY (
       {
         Storage->GetSubKeyNames(BookmarkKeys);
-        for (int Index = 0; Index < BookmarkKeys->Count; Index++)
+        for (intptr_t Index = 0; Index < BookmarkKeys->GetCount(); ++Index)
         {
           UnicodeString Key = BookmarkKeys->Strings[Index];
           if (Storage->OpenSubKey(Key, false))
@@ -93,7 +93,7 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
     UnicodeString Name;
     UnicodeString Directory;
     TShortCut ShortCut(0);
-    for (intptr_t I = 0; I < Names->Count; ++I)
+    for (intptr_t I = 0; I < Names->GetCount(); ++I)
     {
       Name = Names->Strings[I];
       bool IsDirectory = (Index == 0) || (Index == 1);
@@ -114,8 +114,7 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
       if (!Name.IsEmpty())
       {
         TBookmark * Bookmark = BookmarkList->FindByName(Key, Name);
-        bool New;
-        New = (Bookmark == NULL);
+        bool New = (Bookmark == NULL);
         if (New)
         {
           Bookmark = new TBookmark();
@@ -144,7 +143,7 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
     }
 
     Storage->GetSubKeyNames(Names);
-    for (int I = 0; I < Names->Count; I++)
+    for (intptr_t I = 0; I < Names->GetCount(); ++I)
     {
       Name = Names->Strings[I];
       if (Storage->OpenSubKey(Name, false))
@@ -167,7 +166,7 @@ void __fastcall TBookmarks::Save(THierarchicalStorage * Storage, bool All)
   {
     if (Storage->OpenSubKey(Keys[i], true))
     {
-      for (int Index = 0; Index < FBookmarkLists->Count; Index++)
+      for (int Index = 0; Index < FBookmarkLists->GetCount(); Index++)
       {
         TBookmarkList * BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->Objects[Index]);
         if (All || BookmarkList->GetModified())
@@ -234,7 +233,7 @@ void __fastcall TBookmarks::Save(THierarchicalStorage * Storage, bool All)
 void __fastcall TBookmarks::ModifyAll(bool Modify)
 {
   TBookmarkList * BookmarkList;
-  for (int i = 0; i < FBookmarkLists->Count; i++)
+  for (int i = 0; i < FBookmarkLists->GetCount(); i++)
   {
     BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->Objects[i]);
     assert(BookmarkList);
@@ -302,7 +301,7 @@ void __fastcall TBookmarks::SetSharedBookmarks(TBookmarkList * Value)
 //---------------------------------------------------------------------------
 void __fastcall TBookmarkList::Clear()
 {
-  for (int i = 0; i < FBookmarks->Count; i++)
+  for (int i = 0; i < FBookmarks->GetCount(); i++)
   {
     delete FBookmarks->Objects[i];
   }
@@ -317,7 +316,7 @@ void TBookmarkList::Assign(TPersistent * Source)
   if (SourceList)
   {
     Clear();
-    for (int i = 0; i < SourceList->FBookmarks->Count; i++)
+    for (int i = 0; i < SourceList->FBookmarks->GetCount(); i++)
     {
       TBookmark * Bookmark = new TBookmark();
       Bookmark->Assign(dynamic_cast<TBookmark *>(SourceList->FBookmarks->Objects[i]));
@@ -430,7 +429,7 @@ TBookmark * __fastcall TBookmarkList::FindByName(const UnicodeString & Node, con
 //---------------------------------------------------------------------------
 TBookmark * __fastcall TBookmarkList::FindByShortCut(TShortCut ShortCut)
 {
-  for (int Index = 0; Index < FBookmarks->Count; Index++)
+  for (int Index = 0; Index < FBookmarks->GetCount(); Index++)
   {
     if (GetBookmarks(Index)->GetShortCut() == ShortCut)
     {
@@ -442,7 +441,7 @@ TBookmark * __fastcall TBookmarkList::FindByShortCut(TShortCut ShortCut)
 //---------------------------------------------------------------------------
 intptr_t __fastcall TBookmarkList::GetCount()
 {
-  return FBookmarks->Count;
+  return FBookmarks->GetCount();
 }
 //---------------------------------------------------------------------------
 TBookmark * __fastcall TBookmarkList::GetBookmarks(intptr_t Index)

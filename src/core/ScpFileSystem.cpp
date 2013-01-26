@@ -423,7 +423,7 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
       try
       {
         AnyCommand(L"uname -a", NULL);
-        for (int Index = 0; Index < GetOutput()->Count; Index++)
+        for (intptr_t Index = 0; Index < GetOutput()->GetCount(); ++Index)
         {
           if (Index > 0)
           {
@@ -703,7 +703,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const UnicodeString * Cmd)
       TRACE("6");
       UnicodeString Message = FSecureShell->GetStdError();
       TRACE("7");
-      if ((Params & coExpectNoOutput) && FOutput->Count)
+      if ((Params & coExpectNoOutput) && FOutput->GetCount())
       {
         TRACE("8");
         if (!Message.IsEmpty()) { Message += L"\n"; }
@@ -725,7 +725,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const UnicodeString * Cmd)
         FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED_CODEONLY, GetReturnCode()));
       }
       else if (!(Params & coOnlyReturnCode) &&
-          ((!Message.IsEmpty() && ((FOutput->Count == 0) || !(Params & coIgnoreWarnings))) ||
+          ((!Message.IsEmpty() && ((FOutput->GetCount() == 0) || !(Params & coIgnoreWarnings))) ||
            WrongReturnCode))
       {
         TRACE("12");
@@ -786,8 +786,8 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args,
   {
     Integer MinL = FCommandSet->GetMinLines(Cmd);
     Integer MaxL = FCommandSet->GetMaxLines(Cmd);
-    if (((MinL >= 0) && (MinL > FOutput->Count)) ||
-        ((MaxL >= 0) && (MaxL > FOutput->Count)))
+    if (((MinL >= 0) && (MinL > FOutput->GetCount())) ||
+        ((MaxL >= 0) && (MaxL > FOutput->GetCount())))
     {
       FTerminal->TerminalError(FmtLoadStr(INVALID_OUTPUT_ERROR,
         ARRAYOFCONST((FullCommand, GetOutput()->Text))));
@@ -809,8 +809,8 @@ void TSCPFileSystem::ExecCommand2(TFSCommand Cmd, ...)
   {
     int MinL = FCommandSet->GetMinLines(Cmd);
     int MaxL = FCommandSet->GetMaxLines(Cmd);
-    if (((MinL >= 0) && (MinL > static_cast<int>(FOutput->Count))) ||
-        ((MaxL >= 0) && (MaxL > static_cast<int>(FOutput->Count))))
+    if (((MinL >= 0) && (MinL > static_cast<int>(FOutput->GetCount()))) ||
+        ((MaxL >= 0) && (MaxL > static_cast<int>(FOutput->GetCount()))))
     {
       FTerminal->TerminalError(::FmtLoadStr(INVALID_OUTPUT_ERROR,
         FullCommand.c_str(), GetOutput()->Text.get().c_str()));
@@ -859,7 +859,7 @@ void TSCPFileSystem::LookupUsersGroups()
   ExecCommand2(fsLookupUsersGroups);
   FTerminal->FUsers.Clear();
   FTerminal->FGroups.Clear();
-  if (FOutput->Count > 0)
+  if (FOutput->GetCount() > 0)
   {
     UnicodeString Groups = FOutput->Strings[0];
     while (!Groups.IsEmpty())
@@ -891,9 +891,9 @@ void TSCPFileSystem::DetectReturnVar()
       {
         FTerminal->LogEvent(FORMAT(L"Trying \"$%s\".", ReturnVars[Index].c_str()));
         ExecCommand2(fsVarValue, ReturnVars[Index].c_str());
-        UnicodeString str = GetOutput()->Count > 0 ? GetOutput()->Strings[0] : L"";
+        UnicodeString str = GetOutput()->GetCount() > 0 ? GetOutput()->Strings[0] : L"";
         int val = StrToIntDef(str, 256);
-        if ((GetOutput()->Count != 1) || str.IsEmpty() || (val > 255))
+        if ((GetOutput()->GetCount() != 1) || str.IsEmpty() || (val > 255))
         {
           FTerminal->LogEvent(L"The response is not numerical exit code");
           Abort();
@@ -954,7 +954,7 @@ void TSCPFileSystem::ClearAliases()
     TStrings * CommandList = FCommandSet->CreateCommandList();
     TRY_FINALLY (
     {
-      for (int Index = 0; Index < CommandList->Count; Index++)
+      for (int Index = 0; Index < CommandList->GetCount(); Index++)
       {
         ClearAlias(CommandList->Strings[Index]);
       }
@@ -1069,7 +1069,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       // If output is not empty, we have succesfully got file listing,
       // otherwise there was an error, in case it was "permission denied"
       // we try to get at least parent directory (see "else" statement below)
-      if (FOutput->Count > 0)
+      if (FOutput->GetCount() > 0)
       {
         // Copy LS command output, because eventual symlink analysis would
         // modify FTerminal->Output
@@ -1086,7 +1086,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             OutputCopy->Delete(0);
           }
 
-          for (intptr_t Index = 0; Index < OutputCopy->Count; Index++)
+          for (intptr_t Index = 0; Index < OutputCopy->GetCount(); ++Index)
           {
             TRemoteFile * File = NULL;
             File = CreateRemoteFile(OutputCopy->Strings[Index]);
@@ -1188,10 +1188,10 @@ void TSCPFileSystem::CustomReadFile(const UnicodeString & FileName,
   ExecCommand2(fsListFile,
     FTerminal->GetSessionData()->GetListingCommand().c_str(), Options, DelimitStr(FileName).c_str(),
     Params);
-  if (FOutput->Count)
+  if (FOutput->GetCount())
   {
     int LineIndex = 0;
-    if (IsTotalListingLine(FOutput->Strings[LineIndex]) && FOutput->Count > 1)
+    if (IsTotalListingLine(FOutput->Strings[LineIndex]) && FOutput->GetCount() > 1)
     {
       LineIndex++;
     }
@@ -1524,7 +1524,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     }
     CopyBatchStarted = true;
 
-    for (int IFile = 0; (IFile < FilesToCopy->Count) &&
+    for (int IFile = 0; (IFile < FilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; IFile++)
     {
       UnicodeString FileName = FilesToCopy->Strings[IFile];
@@ -2120,12 +2120,12 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 
   TRACE("1");
   FTerminal->LogEvent(FORMAT(L"Copying %d files/directories to local directory "
-    L"\"%s\"", FilesToCopy->Count.get(), TargetDir.c_str()));
+    L"\"%s\"", FilesToCopy->GetCount(), TargetDir.c_str()));
   FTerminal->LogEvent(CopyParam->GetLogStr());
 
   TRY_FINALLY (
   {
-    for (int IFile = 0; (IFile < FilesToCopy->Count) &&
+    for (int IFile = 0; (IFile < FilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; IFile++)
     {
       TRACE("2");

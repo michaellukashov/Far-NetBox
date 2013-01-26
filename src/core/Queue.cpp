@@ -539,7 +539,7 @@ void __fastcall TTerminalQueue::Init()
     TGuard Guard(FItemsSection);
 
     TTerminalItem * TerminalItem;
-    while (FTerminals->Count > 0)
+    while (FTerminals->GetCount() > 0)
     {
       TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->Items[0]);
       FTerminals->Delete(0);
@@ -550,7 +550,7 @@ void __fastcall TTerminalQueue::Init()
     delete FTerminals;
     delete FForcedItems;
 
-    for (int Index = 0; Index < FItems->Count; Index++)
+    for (intptr_t Index = 0; Index < FItems->GetCount(); ++Index)
     {
       delete GetItem(Index);
     }
@@ -682,7 +682,7 @@ void __fastcall TTerminalQueue::DeleteItem(TQueueItem * Item)
 
       Empty = true;
       Index = 0;
-      while (Empty && (Index < FItems->Count))
+      while (Empty && (Index < FItems->GetCount()))
       {
         Empty = (GetItem(Index)->GetCompleteEvent() != INVALID_HANDLE_VALUE);
         Index++;
@@ -715,7 +715,7 @@ TTerminalQueueStatus * __fastcall TTerminalQueue::CreateStatus(TTerminalQueueSta
 
       TQueueItem * Item;
       TQueueItemProxy * ItemProxy;
-      for (int Index = 0; Index < FItems->Count; Index++)
+      for (intptr_t Index = 0; Index < FItems->GetCount(); ++Index)
       {
         Item = GetItem(Index);
         if (Current != NULL)
@@ -859,7 +859,7 @@ bool __fastcall TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
           FItems->Move(Index, FItemsInProcess);
         }
 
-        if ((FTransfersLimit >= 0) && (FTerminals->Count >= FTransfersLimit) &&
+        if ((FTransfersLimit >= 0) && (FTerminals->GetCount() >= FTransfersLimit) &&
             // when queue is disabled, we may have idle terminals,
             // even when there are pending queue items
             (FFreeTerminals == 0))
@@ -992,7 +992,7 @@ void __fastcall TTerminalQueue::Idle()
         // take the last free terminal, because TerminalFree() puts it to the
         // front, this ensures we cycle thru all free terminals
         TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->Items[FFreeTerminals - 1]);
-        FTerminals->Move(FFreeTerminals - 1, FTerminals->Count - 1);
+        FTerminals->Move(FFreeTerminals - 1, FTerminals->GetCount() - 1);
         FFreeTerminals--;
       }
     }
@@ -1015,7 +1015,7 @@ void __fastcall TTerminalQueue::ProcessEvent()
     TerminalItem = NULL;
     Item = NULL;
 
-    if (FItems->Count > FItemsInProcess)
+    if (FItems->GetCount() > FItemsInProcess)
     {
       TGuard Guard(FItemsSection);
 
@@ -1026,7 +1026,7 @@ void __fastcall TTerminalQueue::ProcessEvent()
       {
         if ((FFreeTerminals == 0) &&
             ((FTransfersLimit < 0) ||
-             (FTerminals->Count < FTransfersLimit + FTemporaryTerminals)))
+             (FTerminals->GetCount() < FTransfersLimit + FTemporaryTerminals)))
         {
           FOverallTerminals++;
           TerminalItem = new TTerminalItem(this);
@@ -1036,7 +1036,7 @@ void __fastcall TTerminalQueue::ProcessEvent()
         else if (FFreeTerminals > 0)
         {
           TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->Items[0]);
-          FTerminals->Move(0, FTerminals->Count - 1);
+          FTerminals->Move(0, FTerminals->GetCount() - 1);
           FFreeTerminals--;
         }
 
@@ -1124,7 +1124,7 @@ void __fastcall TTerminalQueue::SetEnabled(bool value)
 bool __fastcall TTerminalQueue::GetIsEmpty()
 {
   TGuard Guard(FItemsSection);
-  return (FItems->Count == 0);
+  return (FItems->GetCount() == 0);
 }
 //---------------------------------------------------------------------------
 // TBackgroundItem
@@ -1807,7 +1807,7 @@ intptr_t __fastcall TQueueItemProxy::GetIndex()
 //---------------------------------------------------------------------------
 /* __fastcall */ TTerminalQueueStatus::~TTerminalQueueStatus()
 {
-  for (int Index = 0; Index < FList->Count; Index++)
+  for (intptr_t Index = 0; Index < FList->GetCount(); ++Index)
   {
     delete GetItem(Index);
   }
@@ -1826,7 +1826,7 @@ intptr_t __fastcall TTerminalQueueStatus::GetActiveCount()
   {
     FActiveCount = 0;
 
-    while ((FActiveCount < FList->Count) &&
+    while ((FActiveCount < FList->GetCount()) &&
       (GetItem(FActiveCount)->GetStatus() != TQueueItem::qsPending))
     {
       FActiveCount++;
@@ -1852,7 +1852,7 @@ void __fastcall TTerminalQueueStatus::Delete(TQueueItemProxy * ItemProxy)
 //---------------------------------------------------------------------------
 intptr_t __fastcall TTerminalQueueStatus::GetCount() const
 {
-  return FList->Count;
+  return FList->GetCount();
 }
 //---------------------------------------------------------------------------
 TQueueItemProxy * __fastcall TTerminalQueueStatus::GetItem(intptr_t Index)
@@ -1864,7 +1864,7 @@ TQueueItemProxy * __fastcall TTerminalQueueStatus::FindByQueueItem(
   TQueueItem * QueueItem)
 {
   TQueueItemProxy * Item;
-  for (int Index = 0; Index < FList->Count; Index++)
+  for (intptr_t Index = 0; Index < FList->GetCount(); ++Index)
   {
     Item = GetItem(Index);
     if (Item->FQueueItem == QueueItem)
@@ -1909,7 +1909,7 @@ void __fastcall TLocatedQueueItem::DoExecute(TTerminal * Terminal)
 
   assert(FilesToCopy != NULL);
   FFilesToCopy = new TStringList();
-  for (int Index = 0; Index < FilesToCopy->Count; Index++)
+  for (intptr_t Index = 0; Index < FilesToCopy->GetCount(); ++Index)
   {
     FFilesToCopy->AddObject(FilesToCopy->Strings[Index],
       ((FilesToCopy->Objects[Index] == NULL) || (Side == osLocal)) ? NULL :
@@ -1926,7 +1926,7 @@ void __fastcall TLocatedQueueItem::DoExecute(TTerminal * Terminal)
 //---------------------------------------------------------------------------
 /* __fastcall */ TTransferQueueItem::~TTransferQueueItem()
 {
-  for (int Index = 0; Index < FFilesToCopy->Count; Index++)
+  for (intptr_t Index = 0; Index < FFilesToCopy->GetCount(); ++Index)
   {
     delete FFilesToCopy->Objects[Index];
   }
@@ -1941,7 +1941,7 @@ void __fastcall TLocatedQueueItem::DoExecute(TTerminal * Terminal)
   const TCopyParamType * CopyParam, int Params) :
   TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osLocal)
 {
-  if (FilesToCopy->Count > 1)
+  if (FilesToCopy->GetCount() > 1)
   {
     if (FLAGSET(Params, cpTemporary))
     {
@@ -1966,7 +1966,7 @@ void __fastcall TLocatedQueueItem::DoExecute(TTerminal * Terminal)
     }
     else
     {
-      assert(FilesToCopy->Count > 0);
+      assert(FilesToCopy->GetCount() > 0);
       FInfo->Source = FilesToCopy->Strings[0];
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
         IncludeTrailingBackslash(ExtractFilePath(FInfo->Source));
@@ -1994,7 +1994,7 @@ void /* __fastcall */ TUploadQueueItem::DoExecute(TTerminal * Terminal)
   TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osRemote)
 {
   CALLSTACK;
-  if (FilesToCopy->Count > 1)
+  if (FilesToCopy->GetCount() > 1)
   {
     if (!UnixExtractCommonPath(FilesToCopy, FInfo->Source))
     {
@@ -2006,7 +2006,7 @@ void /* __fastcall */ TUploadQueueItem::DoExecute(TTerminal * Terminal)
   }
   else
   {
-    assert(FilesToCopy->Count > 0);
+    assert(FilesToCopy->GetCount() > 0);
     FInfo->Source = FilesToCopy->Strings[0];
     if (UnixExtractFilePath(FInfo->Source).IsEmpty())
     {

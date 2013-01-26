@@ -130,9 +130,9 @@ void __fastcall THierarchicalStorage::SetAccessMode(TStorageAccessMode value)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall THierarchicalStorage::GetCurrentSubKeyMunged() const
 {
-  if (FKeyHistory->Count)
+  if (FKeyHistory->GetCount())
   {
-    return FKeyHistory->Strings[FKeyHistory->Count-1];
+    return FKeyHistory->Strings[FKeyHistory->GetCount() - 1];
   }
   else
   {
@@ -203,10 +203,10 @@ bool __fastcall THierarchicalStorage::OpenSubKey(const UnicodeString & SubKey, b
 //---------------------------------------------------------------------------
 void __fastcall THierarchicalStorage::CloseSubKey()
 {
-  if (FKeyHistory->Count == 0)
+  if (FKeyHistory->GetCount() == 0)
     throw Exception(L"");
   else
-    FKeyHistory->Delete(FKeyHistory->Count-1);
+    FKeyHistory->Delete(FKeyHistory->GetCount() - 1);
 }
 //---------------------------------------------------------------------------
 void __fastcall THierarchicalStorage::ClearSubKeys()
@@ -215,7 +215,7 @@ void __fastcall THierarchicalStorage::ClearSubKeys()
   TRY_FINALLY (
   {
     GetSubKeyNames(SubKeys);
-    for (int Index = 0; Index < SubKeys->Count; Index++)
+    for (intptr_t Index = 0; Index < SubKeys->GetCount(); ++Index)
     {
       RecursiveDeleteSubKey(SubKeys->Strings[Index]);
     }
@@ -244,7 +244,7 @@ bool __fastcall THierarchicalStorage::HasSubKeys()
   TRY_FINALLY (
   {
     GetSubKeyNames(SubKeys);
-    Result = (SubKeys->Count > 0);
+    Result = (SubKeys->GetCount() > 0);
   }
   ,
   {
@@ -276,7 +276,7 @@ void __fastcall THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
   TRY_FINALLY (
   {
     GetValueNames(Names);
-    for (int Index = 0; Index < Names->Count; Index++)
+    for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
     {
       if (MaintainKeys)
       {
@@ -302,7 +302,7 @@ void __fastcall THierarchicalStorage::ClearValues()
   TRY_FINALLY (
   {
     GetValueNames(Names);
-    for (int Index = 0; Index < Names->Count; Index++)
+    for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
     {
       DeleteValue(Names->Strings[Index]);
     }
@@ -321,7 +321,7 @@ void __fastcall THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
 
   if (Strings)
   {
-    for (int Index = 0; Index < Strings->Count; Index++)
+    for (intptr_t Index = 0; Index < Strings->GetCount(); ++Index)
     {
       if (MaintainKeys)
       {
@@ -466,8 +466,8 @@ bool __fastcall TRegistryStorage::Copy(TRegistryStorage * Storage)
   {
     Registry->GetValueNames(Names);
     std::vector<unsigned char> Buffer(1024, 0);
-    int Index = 0;
-    while ((Index < Names->Count) && Result)
+    intptr_t Index = 0;
+    while ((Index < Names->GetCount()) && Result)
     {
       UnicodeString Name = MungeStr(Names->Strings[Index], GetForceAnsi());
       DWORD Size = static_cast<DWORD>(Buffer.size());
@@ -529,7 +529,7 @@ void __fastcall TRegistryStorage::SetAccessMode(TStorageAccessMode value)
 bool __fastcall TRegistryStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate)
 {
   CCALLSTACK(TRACE_ACCESS);
-  if (FKeyHistory->Count > 0) { FRegistry->CloseKey(); }
+  if (FKeyHistory->GetCount() > 0) { FRegistry->CloseKey(); }
   UnicodeString K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + SubKey);
   CTRACEFMT(TRACE_ACCESS, "1 [%s] [%d]", K.c_str(), int(CanCreate));
   return FRegistry->OpenKey(K, CanCreate);
@@ -540,7 +540,7 @@ void __fastcall TRegistryStorage::CloseSubKey()
   CCALLSTACK(TRACE_ACCESS);
   FRegistry->CloseKey();
   THierarchicalStorage::CloseSubKey();
-  if (FKeyHistory->Count)
+  if (FKeyHistory->GetCount())
   {
     FRegistry->OpenKey(GetStorage() + GetCurrentSubKeyMunged(), True);
   }
@@ -550,7 +550,7 @@ bool __fastcall TRegistryStorage::DeleteSubKey(const UnicodeString & SubKey)
 {
   CCALLSTACK(TRACE_ACCESS);
   UnicodeString K;
-  if (FKeyHistory->Count == 0) { K = GetStorage() + GetCurrentSubKey(); }
+  if (FKeyHistory->GetCount() == 0) { K = GetStorage() + GetCurrentSubKey(); }
   K += MungeKeyName(SubKey);
   CTRACEFMT(TRACE_ACCESS, "1 [%s]", K.c_str());
   return FRegistry->DeleteKey(K);
@@ -560,7 +560,7 @@ void __fastcall TRegistryStorage::GetSubKeyNames(Classes::TStrings* Strings)
 {
   CCALLSTACK(TRACE_ACCESS);
   FRegistry->GetKeyNames(Strings);
-  for (int Index = 0; Index < Strings->Count; Index++)
+  for (int Index = 0; Index < Strings->GetCount(); Index++)
   {
     Strings->Strings[Index] = UnMungeStr(Strings->Strings[Index]);
     CTRACEFMT(TRACE_ACCESS, "1 [%s]", Strings->Strings[Index].c_str());
@@ -786,11 +786,11 @@ bool __fastcall TCustomIniFileStorage::DoOpenSubKey(const UnicodeString & SubKey
       Sections->Sorted = true;
       FIniFile->ReadSections(Sections);
       UnicodeString NewKey = ExcludeTrailingBackslash(GetCurrentSubKey()+SubKey);
-      if (Sections->Count)
+      if (Sections->GetCount())
       {
         int Index = -1;
         Result = Sections->Find(NewKey, Index);
-        if (!Result && Index < Sections->Count &&
+        if (!Result && Index < Sections->GetCount() &&
             Sections->Strings[Index].SubString(1, NewKey.Length()+1) == NewKey + L"\\")
         {
           Result = true;
@@ -829,7 +829,7 @@ void __fastcall TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings
   {
     Strings->Clear();
     FIniFile->ReadSections(Sections);
-    for (int i = 0; i < Sections->Count; i++)
+    for (int i = 0; i < Sections->GetCount(); i++)
     {
       UnicodeString Section = Sections->Strings[i];
       if (AnsiCompareText(GetCurrentSubKey(),
@@ -859,7 +859,7 @@ void __fastcall TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings
 void __fastcall TCustomIniFileStorage::GetValueNames(Classes::TStrings* Strings)
 {
   FIniFile->ReadSection(GetCurrentSection(), Strings);
-  for (int Index = 0; Index < Strings->Count; Index++)
+  for (int Index = 0; Index < Strings->GetCount(); Index++)
   {
     Strings->Strings[Index] = UnMungeIniName(Strings->Strings[Index]);
   }
@@ -1049,7 +1049,7 @@ void __fastcall TCustomIniFileStorage::WriteBinaryData(const UnicodeString & Nam
   FOriginal = new TStringList();
   dynamic_cast<TMemIniFile *>(FIniFile)->GetStrings(FOriginal);
 //!CLEANBEGIN
-  for (int Index = 0; Index < FOriginal->Count; Index++)
+  for (int Index = 0; Index < FOriginal->GetCount(); Index++)
   {
     TRACEFMT("ini [%s]", FOriginal->Strings[Index].c_str());
   }
@@ -1154,7 +1154,7 @@ void __fastcall TIniFileStorage::ApplyOverrides()
   {
     Sections->Clear();
     FIniFile->ReadSections(Sections);
-    for (int i = 0; i < Sections->Count; i++)
+    for (int i = 0; i < Sections->GetCount(); i++)
     {
       UnicodeString Section = Sections->Strings[i];
 
@@ -1170,7 +1170,7 @@ void __fastcall TIniFileStorage::ApplyOverrides()
         {
           FIniFile->ReadSection(Section, Names);
 
-          for (int ii = 0; ii < Names->Count; ii++)
+          for (int ii = 0; ii < Names->GetCount(); ii++)
           {
             UnicodeString Name = Names->Strings[ii];
             UnicodeString Value = FIniFile->ReadString(Section, Name, L"");
@@ -1251,7 +1251,7 @@ void __fastcall TOptionsIniFile::ReadSection(const UnicodeString & Section, TStr
 
   TRY_FINALLY (
   {
-    for (int Index = 0; Index < FOptions->Count; Index++)
+    for (int Index = 0; Index < FOptions->GetCount(); Index++)
     {
       Strings->Add(FOptions->Names[Index]);
     }

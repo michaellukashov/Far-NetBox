@@ -3119,7 +3119,7 @@ config_read_auth_data(apr_hash_t ** hash,
   TRY_FINALLY (
   {
     Storage->GetValueNames(Keys);
-    for (int Index = 0; Index < Keys->Count; Index++)
+    for (intptr_t Index = 0; Index < Keys->GetCount(); ++Index)
     {
       UnicodeString Key = Keys->Strings[Index];
       UnicodeString Value = Storage->ReadStringRaw(Key, L"");
@@ -12703,13 +12703,13 @@ void TWebDAVFileSystem::CreateDirectory(const UnicodeString & DirName)
     Strings.SetDelimiter(L'/');
     Strings.SetDelimitedText(DirName);
     UnicodeString CurDir;
-    for (int i = 0; i < Strings.Count; i++)
+    for (intptr_t I = 0; I < Strings.GetCount(); ++I)
     {
-      if (Strings.Strings[i].IsEmpty())
+      if (Strings.Strings[I].IsEmpty())
       {
         continue;
       }
-      CurDir += L"/" + Strings.Strings[i];
+      CurDir += L"/" + Strings.Strings[I];
       res = WebDAVMakeDirectory(CurDir.c_str());
     }
     if (!res)
@@ -12903,8 +12903,8 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
   UnicodeString FileName, FileNameOnly;
   UnicodeString TargetDir = AbsolutePath(ATargetDir, false);
   UnicodeString FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
-  int Index = 0;
-  while ((Index < FilesToCopy->Count) && !OperationProgress->Cancel)
+  intptr_t Index = 0;
+  while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
     bool Success = false;
     FileName = FilesToCopy->Strings[Index];
@@ -13317,8 +13317,8 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
   Params &= ~cpAppend;
   UnicodeString FullTargetDir = IncludeTrailingBackslash(TargetDir);
 
-  int Index = 0;
-  while (Index < FilesToCopy->Count && !OperationProgress->Cancel)
+  intptr_t Index = 0;
+  while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     UnicodeString FileName = FilesToCopy->Strings[Index];
     const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->Objects[Index]);

@@ -184,12 +184,10 @@ public:
   virtual void Notify(void * Ptr, TListNotification Action);
   virtual void Sort();
 
-protected:
   intptr_t GetCount() const;
   void SetCount(intptr_t Value);
 
 private:
-  intptr_t PropertyGetCount() { return GetCount(); }
   void PropertySetCount(intptr_t Value) { SetCount(Value); }
   void *& PropertyGetItem(intptr_t Index)
   {
@@ -201,7 +199,6 @@ private:
   }
 
 public:
-  RWProperty<intptr_t, TList, &TList::PropertyGetCount, &TList::PropertySetCount> Count;
   IndexedPropertyVoid<intptr_t, TList, &TList::PropertyGetItem, &TList::PropertySetItem> Items;
 
 private:
@@ -294,6 +291,7 @@ public:
   virtual intptr_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2);
   int GetUpdateCount() const { return FUpdateCount; }
   virtual void Assign(TPersistent * Source);
+  virtual intptr_t GetCount() const = 0;
 
 protected:
   virtual UnicodeString GetText();
@@ -305,7 +303,6 @@ protected:
   virtual bool GetSorted() const = 0;
   virtual void SetSorted(bool Value) = 0;
   void SetDuplicates(TDuplicatesEnum Value);
-  virtual intptr_t GetCount() const = 0;
   virtual UnicodeString & GetString(intptr_t Index) = 0;
   virtual UnicodeString GetStrings(intptr_t Index) const = 0;
   virtual void PutString(intptr_t Index, const UnicodeString & S) = 0;
@@ -316,7 +313,6 @@ protected:
   void SetValue(const UnicodeString & Name, const UnicodeString & Value);
 
 private:
-  intptr_t PropertyGetCount() { return GetCount(); }
   UnicodeString PropertyGetText() { return GetText(); }
   void PropertySetText(UnicodeString Value) { SetText(Value); }
   UnicodeString PropertyGetCommaText() { return GetCommaText(); }
@@ -362,7 +358,6 @@ private:
   }
 
 public:
-  ROProperty<intptr_t, TStrings, &TStrings::PropertyGetCount> Count;
   RWProperty<UnicodeString, TStrings, &TStrings::PropertyGetText, &TStrings::PropertySetText> Text;
   RWProperty<UnicodeString, TStrings, &TStrings::PropertyGetCommaText, &TStrings::PropertySetCommaText> CommaText;
   RWProperty<bool, TStrings, &TStrings::PropertyGetCaseSensitive, &TStrings::PropertySetCaseSensitive> CaseSensitive;
@@ -415,7 +410,7 @@ public:
 
   void LoadFromFile(const UnicodeString & FileName);
   TNotifyEvent & GetOnChange() { return FOnChange; }
-  void SetOnChange(TNotifyEvent onChange) { FOnChange = onChange; }
+  void SetOnChange(TNotifyEvent OnChange) { FOnChange = OnChange; }
   TNotifyEvent & GetOnChanging() { return FOnChanging; }
   void SetOnChanging(TNotifyEvent onChanging) { FOnChanging = onChanging; }
 
@@ -424,13 +419,13 @@ public:
   virtual void Changed();
   virtual void Insert(intptr_t Index, const UnicodeString & S);
   virtual intptr_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2);
+  virtual intptr_t GetCount() const;
 
 protected:
   virtual bool GetCaseSensitive() const;
   virtual void SetCaseSensitive(bool Value);
   virtual bool GetSorted() const;
   virtual void SetSorted(bool Value);
-  virtual intptr_t GetCount() const;
   virtual UnicodeString & GetString(intptr_t Index);
   virtual UnicodeString GetStrings(intptr_t Index) const;
   virtual void PutString(intptr_t Index, const UnicodeString & S);
