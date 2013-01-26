@@ -1711,11 +1711,12 @@ UnicodeString __fastcall StandardTimestamp(const TDateTime & DateTime)
 #ifndef _MSC_VER
   return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
 #else
+  TDateTime DT = ConvertTimestampToUTC(DateTime);
   unsigned short Y, M, D, H, N, S, MS;
-  DateTime.DecodeDate(Y, M, D);
-  DateTime.DecodeTime(H, N, S, MS);
-  UnicodeString dt = FORMAT(L"%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", Y, M, D, H, N, S, MS);
-  return dt;
+  DT.DecodeDate(Y, M, D);
+  DT.DecodeTime(H, N, S, MS);
+  UnicodeString Result = FORMAT(L"%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", Y, M, D, H, N, S, MS);
+  return Result;
 #endif
 }
 //---------------------------------------------------------------------------
