@@ -87,7 +87,7 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
 {
   CALLSTACK;
   TStrings * Names = new TStringList();
-  // TRY_FINALLY (
+  TRY_FINALLY (
   {
     Storage->GetValueNames(Names);
     UnicodeString Name;
@@ -153,11 +153,11 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
       }
     }
   }
-  //,
-  //{
-  //  delete Names;
-  //}
-  //);
+  ,
+  {
+   delete Names;
+  }
+  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TBookmarks::Save(THierarchicalStorage * Storage, bool All)
