@@ -27,9 +27,9 @@
 //---------------------------------------------------------------------------
 void __fastcall TBookmarks::Clear()
 {
-  for (int i = 0; i < FBookmarkLists->GetCount(); i++)
+  for (intptr_t I = 0; I < FBookmarkLists->GetCount(); I++)
   {
-    delete FBookmarkLists->Objects[i];
+    delete FBookmarkLists->Objects[I];
   }
   FBookmarkLists->Clear();
 }
@@ -39,9 +39,9 @@ UnicodeString TBookmarks::Keys[] = { L"Local", L"Remote", L"ShortCuts", L"Option
 void __fastcall TBookmarks::Load(THierarchicalStorage * Storage)
 {
   CALLSTACK;
-  for (intptr_t i = 0; i <= 3; i++)
+  for (intptr_t I = 0; I <= 3; I++)
   {
-    if (Storage->OpenSubKey(Keys[i], false))
+    if (Storage->OpenSubKey(Keys[I], false))
     {
       TStrings * BookmarkKeys = new TStringList();
       TRY_FINALLY (
@@ -58,9 +58,9 @@ void __fastcall TBookmarks::Load(THierarchicalStorage * Storage)
               BookmarkList = new TBookmarkList();
               FBookmarkLists->AddObject(Key, BookmarkList);
             }
-            if (i < 3)
+            if (I < 3)
             {
-              LoadLevel(Storage, L"", i, BookmarkList);
+              LoadLevel(Storage, L"", I, BookmarkList);
             }
             else
             {
@@ -162,11 +162,11 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
 //---------------------------------------------------------------------------
 void __fastcall TBookmarks::Save(THierarchicalStorage * Storage, bool All)
 {
-  for (int i = 0; i <= 3; i++)
+  for (intptr_t I = 0; I <= 3; I++)
   {
-    if (Storage->OpenSubKey(Keys[i], true))
+    if (Storage->OpenSubKey(Keys[I], true))
     {
-      for (int Index = 0; Index < FBookmarkLists->GetCount(); Index++)
+      for (intptr_t Index = 0; Index < FBookmarkLists->GetCount(); Index++)
       {
         TBookmarkList * BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->Objects[Index]);
         if (All || BookmarkList->GetModified())
@@ -176,19 +176,19 @@ void __fastcall TBookmarks::Save(THierarchicalStorage * Storage, bool All)
           Storage->RecursiveDeleteSubKey(Key);
           if (Storage->OpenSubKey(Key, true))
           {
-            if (i < 3)
+            if (I < 3)
             {
-              for (int IndexB = 0; IndexB < BookmarkList->GetCount(); IndexB++)
+              for (intptr_t IndexB = 0; IndexB < BookmarkList->GetCount(); IndexB++)
               {
                 TBookmark * Bookmark = BookmarkList->GetBookmarks(IndexB);
                 // avoid creating empty subfolder if there's no shortcut
-                if ((i == 0) || (i == 1) ||
-                    ((i == 2) && (Bookmark->GetShortCut() != 0)))
+                if ((I == 0) || (I == 1) ||
+                    ((I == 2) && (Bookmark->GetShortCut() != 0)))
                 {
                   bool HasNode = !Bookmark->GetNode().IsEmpty();
                   if (!HasNode || Storage->OpenSubKey(Bookmark->GetNode(), true))
                   {
-                    switch (i)
+                    switch (I)
                     {
                       case 0:
                         Storage->WriteString(Bookmark->GetName(), Bookmark->GetLocal());
