@@ -1041,12 +1041,12 @@ intptr_t TFarDialogContainer::GetItemCount() const
 //---------------------------------------------------------------------------
 TFarDialogItem::TFarDialogItem(TFarDialog * ADialog, uintptr_t AType) :
   TObject(),
-  FDefaultType(0),
+  FDefaultType(AType),
   FGroup(0),
   FTag(0),
   FOnExit(NULL),
   FOnMouseClick(NULL),
-  FDialog(NULL),
+  FDialog(ADialog),
   FEnabledFollow(NULL),
   FEnabledDependency(NULL),
   FEnabledDependencyNegative(NULL),
@@ -1058,9 +1058,6 @@ TFarDialogItem::TFarDialogItem(TFarDialog * ADialog, uintptr_t AType) :
   FColorMask(0)
 {
   assert(ADialog);
-  FDialog = ADialog;
-  FDefaultType = AType;
-
   GetDialog()->Add(this);
 
   GetDialogItem()->Type = static_cast<int>(AType);
