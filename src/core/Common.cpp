@@ -38,7 +38,7 @@ void __callstack(const wchar_t*, const wchar_t*, unsigned int, const wchar_t*)
 {
 }
 //---------------------------------------------------------------------------
-void __fastcall SetTraceFile(HANDLE ATraceFile)
+void SetTraceFile(HANDLE ATraceFile)
 {
   TraceFile = ATraceFile;
   IsTracing = (TraceFile != 0);
@@ -48,7 +48,7 @@ void __fastcall SetTraceFile(HANDLE ATraceFile)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall CleanupTracing()
+void CleanupTracing()
 {
   if (TracingCriticalSection != NULL)
   {
@@ -70,7 +70,7 @@ struct TTraceInMemory
 typedef std::vector<TTraceInMemory> TTracesInMemory;
 TTracesInMemory TracesInMemory;
 //---------------------------------------------------------------------------
-int __fastcall TraceThreadProc(void *)
+int TraceThreadProc(void *)
 {
   TRACE(">");
   try
@@ -97,7 +97,7 @@ int __fastcall TraceThreadProc(void *)
   return 0;
 }
 //---------------------------------------------------------------------------
-void __fastcall Trace(const wchar_t * SourceFile, const wchar_t * Func,
+void Trace(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * Message)
 {
   if (TracingCriticalSection != NULL)
@@ -124,17 +124,17 @@ void __fastcall Trace(const wchar_t * SourceFile, const wchar_t * Func,
 }
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
-void __fastcall TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * AFormat, TVarRec * /*Args*/, const int /*Args_Size*/)
 #else
-void __fastcall TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * AFormat, ...)
 #endif
 {
   Trace(SourceFile, Func, Line, AFormat);
 }
 //---------------------------------------------------------------------------
-void __fastcall TraceDumpToFile()
+void TraceDumpToFile()
 {
   if (TraceFile != NULL)
   {
@@ -182,12 +182,12 @@ void __fastcall TraceDumpToFile()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TraceInMemoryCallback(System::UnicodeString Msg)
+void TraceInMemoryCallback(System::UnicodeString Msg)
 {
   Trace(L"PAS", L"unk", 0, Msg.c_str());
 }
 #else
-void __fastcall Trace(const wchar_t * SourceFile, const wchar_t * Func,
+void Trace(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * Message)
 {
   assert(IsTracing);
@@ -216,10 +216,10 @@ void __fastcall Trace(const wchar_t * SourceFile, const wchar_t * Func,
 }
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
-void __fastcall TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * AFormat, TVarRec * Args, const int Args_Size)
 #else
-void __fastcall TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * AFormat, ...)
 #endif
 {
@@ -236,7 +236,7 @@ void __fastcall TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
 }
 #endif
 //---------------------------------------------------------------------------
-void __fastcall DoAssert(wchar_t * Message, wchar_t * Filename, int LineNumber)
+void DoAssert(wchar_t * Message, wchar_t * Filename, int LineNumber)
 {
   if (IsTracing)
   {
@@ -253,28 +253,28 @@ void __fastcall DoAssert(wchar_t * Message, wchar_t * Filename, int LineNumber)
 //---------------------------------------------------------------------------
 // TGuard
 //---------------------------------------------------------------------------
-/* __fastcall */ TGuard::TGuard(TCriticalSection * ACriticalSection) :
+TGuard::TGuard(TCriticalSection * ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
   assert(ACriticalSection != NULL);
   FCriticalSection->Enter();
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TGuard::~TGuard()
+TGuard::~TGuard()
 {
   FCriticalSection->Leave();
 }
 //---------------------------------------------------------------------------
 // TUnguard
 //---------------------------------------------------------------------------
-/* __fastcall */ TUnguard::TUnguard(TCriticalSection * ACriticalSection) :
+TUnguard::TUnguard(TCriticalSection * ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
   assert(ACriticalSection != NULL);
   FCriticalSection->Leave();
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TUnguard::~TUnguard()
+TUnguard::~TUnguard()
 {
   FCriticalSection->Enter();
 }
@@ -323,7 +323,7 @@ void PackStr(RawByteString &Str)
   Str = Str.c_str();
 }
 //---------------------------------------------------------------------------
-void __fastcall Shred(UnicodeString & Str)
+void Shred(UnicodeString & Str)
 {
   if (!Str.IsEmpty())
   {
@@ -536,11 +536,11 @@ UnicodeString ExceptionLogString(Exception *E)
 //---------------------------------------------------------------------------
 bool IsNumber(const UnicodeString & Str)
 {
-  int Value;
+  int Value = 0;
   return TryStrToInt(Str, Value);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall SystemTemporaryDirectory()
+UnicodeString SystemTemporaryDirectory()
 {
   UnicodeString TempDir;
   TempDir.SetLength(MAX_PATH);
@@ -548,7 +548,7 @@ UnicodeString __fastcall SystemTemporaryDirectory()
   return TempDir;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall GetShellFolderPath(int CSIdl)
+UnicodeString GetShellFolderPath(int CSIdl)
 {
   UnicodeString Result;
   wchar_t Path[2 * MAX_PATH + 10] = L"\0";
@@ -559,7 +559,7 @@ UnicodeString __fastcall GetShellFolderPath(int CSIdl)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall StripPathQuotes(const UnicodeString & Path)
+UnicodeString StripPathQuotes(const UnicodeString & Path)
 {
   if ((Path.Length() >= 2) &&
       (Path[1] == L'\"') && (Path[Path.Length()] == L'\"'))
@@ -572,7 +572,7 @@ UnicodeString __fastcall StripPathQuotes(const UnicodeString & Path)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall AddPathQuotes(const UnicodeString & Path)
+UnicodeString AddPathQuotes(const UnicodeString & Path)
 {
   UnicodeString Result = StripPathQuotes(Path);
   if (Result.Pos(L" ") > 0)
@@ -582,7 +582,7 @@ UnicodeString __fastcall AddPathQuotes(const UnicodeString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-static wchar_t * __fastcall ReplaceChar(
+static wchar_t * ReplaceChar(
   UnicodeString & FileName, wchar_t * InvalidChar, wchar_t InvalidCharsReplacement)
 {
   CALLSTACK;
@@ -609,12 +609,12 @@ static wchar_t * __fastcall ReplaceChar(
   return InvalidChar;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall ValidLocalFileName(const UnicodeString & FileName)
+UnicodeString ValidLocalFileName(const UnicodeString & FileName)
 {
   return ValidLocalFileName(FileName, L'_', L"", LocalInvalidChars);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall ValidLocalFileName(
+UnicodeString ValidLocalFileName(
   const UnicodeString & FileName, wchar_t InvalidCharsReplacement,
   const UnicodeString & TokenizibleChars, const UnicodeString & LocalInvalidChars)
 {
@@ -669,7 +669,7 @@ UnicodeString __fastcall ValidLocalFileName(
   return FileName2;
 }
 //---------------------------------------------------------------------------
-void __fastcall SplitCommand(const UnicodeString & Command, UnicodeString & Program,
+void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
   UnicodeString & Params, UnicodeString & Dir)
 {
   UnicodeString Cmd = Command.Trim();
@@ -709,7 +709,7 @@ void __fastcall SplitCommand(const UnicodeString & Command, UnicodeString & Prog
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall ExtractProgram(const UnicodeString & Command)
+UnicodeString ExtractProgram(const UnicodeString & Command)
 {
   UnicodeString Program;
   UnicodeString Params;
@@ -720,7 +720,7 @@ UnicodeString __fastcall ExtractProgram(const UnicodeString & Command)
   return Program;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall FormatCommand(const UnicodeString & Program, const UnicodeString & Params)
+UnicodeString FormatCommand(const UnicodeString & Program, const UnicodeString & Params)
 {
   UnicodeString Result = Program.Trim();
   UnicodeString Params2 = Params.Trim();
@@ -731,7 +731,7 @@ UnicodeString __fastcall FormatCommand(const UnicodeString & Program, const Unic
 //---------------------------------------------------------------------------
 const wchar_t ShellCommandFileNamePattern[] = L"!.!";
 //---------------------------------------------------------------------------
-void __fastcall ReformatFileNameCommand(UnicodeString & Command)
+void ReformatFileNameCommand(UnicodeString & Command)
 {
   if (!Command.IsEmpty())
   {
@@ -745,14 +745,14 @@ void __fastcall ReformatFileNameCommand(UnicodeString & Command)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall ExpandFileNameCommand(const UnicodeString & Command,
+UnicodeString ExpandFileNameCommand(const UnicodeString & Command,
   const UnicodeString & FileName)
 {
   return AnsiReplaceStr(Command, ShellCommandFileNamePattern,
     AddPathQuotes(FileName));
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall EscapePuttyCommandParam(const UnicodeString & Param)
+UnicodeString EscapePuttyCommandParam(const UnicodeString & Param)
 {
   UnicodeString Result = Param;
   bool Space = false;
@@ -797,7 +797,7 @@ UnicodeString __fastcall EscapePuttyCommandParam(const UnicodeString & Param)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall ExpandEnvironmentVariables(const UnicodeString & Str)
+UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str)
 {
   UnicodeString Buf;
   intptr_t Size = 1024;
@@ -818,7 +818,7 @@ UnicodeString __fastcall ExpandEnvironmentVariables(const UnicodeString & Str)
   return Buf;
 }
 //---------------------------------------------------------------------------
-bool __fastcall CompareFileName(const UnicodeString & Path1, const UnicodeString & Path2)
+bool CompareFileName(const UnicodeString & Path1, const UnicodeString & Path2)
 {
   UnicodeString ShortPath1 = ExtractShortPathName(Path1);
   UnicodeString ShortPath2 = ExtractShortPathName(Path2);
@@ -836,13 +836,13 @@ bool __fastcall CompareFileName(const UnicodeString & Path1, const UnicodeString
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall ComparePaths(const UnicodeString & Path1, const UnicodeString & Path2)
+bool ComparePaths(const UnicodeString & Path1, const UnicodeString & Path2)
 {
   // TODO: ExpandUNCFileName
   return AnsiSameText(IncludeTrailingBackslash(Path1), IncludeTrailingBackslash(Path2));
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsReservedName(const UnicodeString & FileName)
+bool IsReservedName(const UnicodeString & FileName)
 {
   UnicodeString fileName = FileName;
   intptr_t P = fileName.Pos(L".");
@@ -868,7 +868,7 @@ bool __fastcall IsReservedName(const UnicodeString & FileName)
   return false;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall DisplayableStr(const RawByteString & Str)
+UnicodeString DisplayableStr(const RawByteString & Str)
 {
   bool Displayable = true;
   int Index = 1;
@@ -928,7 +928,7 @@ UnicodeString __fastcall DisplayableStr(const RawByteString & Str)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall ByteToHex(unsigned char B, bool UpperCase)
+UnicodeString ByteToHex(unsigned char B, bool UpperCase)
 {
   static wchar_t UpperDigits[] = L"0123456789ABCDEF";
   static wchar_t LowerDigits[] = L"0123456789abcdef";
@@ -941,7 +941,7 @@ UnicodeString __fastcall ByteToHex(unsigned char B, bool UpperCase)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall BytesToHex(const unsigned char * B, uintptr_t Length, bool UpperCase, wchar_t Separator)
+UnicodeString BytesToHex(const unsigned char * B, uintptr_t Length, bool UpperCase, wchar_t Separator)
 {
   UnicodeString Result;
   for (uintptr_t i = 0; i < Length; i++)
@@ -955,17 +955,17 @@ UnicodeString __fastcall BytesToHex(const unsigned char * B, uintptr_t Length, b
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall BytesToHex(const RawByteString & Str, bool UpperCase, wchar_t Separator)
+UnicodeString BytesToHex(const RawByteString & Str, bool UpperCase, wchar_t Separator)
 {
   return BytesToHex(reinterpret_cast<const unsigned char *>(Str.c_str()), Str.Length(), UpperCase, Separator);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall CharToHex(wchar_t Ch, bool UpperCase)
+UnicodeString CharToHex(wchar_t Ch, bool UpperCase)
 {
   return BytesToHex(reinterpret_cast<const unsigned char *>(&Ch), sizeof(Ch), UpperCase);
 }
 //---------------------------------------------------------------------------
-RawByteString __fastcall HexToBytes(const UnicodeString & Hex)
+RawByteString HexToBytes(const UnicodeString & Hex)
 {
   static UnicodeString Digits = L"0123456789ABCDEF";
   RawByteString Result;
@@ -990,7 +990,7 @@ RawByteString __fastcall HexToBytes(const UnicodeString & Hex)
   return Result;
 }
 //---------------------------------------------------------------------------
-unsigned char __fastcall HexToByte(const UnicodeString & Hex)
+unsigned char HexToByte(const UnicodeString & Hex)
 {
   static UnicodeString Digits = L"0123456789ABCDEF";
   assert(Hex.Length() == 2);
@@ -1001,7 +1001,7 @@ unsigned char __fastcall HexToByte(const UnicodeString & Hex)
     static_cast<unsigned char>(((P1 <= 0) || (P2 <= 0)) ? 0 : (((P1 - 1) << 4) + (P2 - 1)));
 }
 //---------------------------------------------------------------------------
-int __fastcall FindCheck(int Result)
+int FindCheck(int Result)
 {
   if ((Result != ERROR_SUCCESS) &&
       (Result != ERROR_FILE_NOT_FOUND) &&
@@ -1012,7 +1012,7 @@ int __fastcall FindCheck(int Result)
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall FindFirstChecked(const UnicodeString & Path, int Attr, TSearchRec & F)
+int FindFirstChecked(const UnicodeString & Path, int Attr, TSearchRec & F)
 {
   return FindCheck(FindFirst(Path, Attr, F));
 }
@@ -1020,12 +1020,12 @@ int __fastcall FindFirstChecked(const UnicodeString & Path, int Attr, TSearchRec
 // It can make sense to use FindNextChecked, even if unchecked FindFirst is used.
 // I.e. even if we do not care that FindFirst failed, if FindNext
 // failes after successfull FindFirst, it mean some terrible problem
-int __fastcall FindNextChecked(TSearchRec & F)
+int FindNextChecked(TSearchRec & F)
 {
   return FindCheck(FindNext(F));
 }
 //---------------------------------------------------------------------------
-bool __fastcall FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec)
+bool FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec)
 {
   int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   bool Result = (FindFirst(FileName, FindAttrs, Rec) == 0);
@@ -1036,7 +1036,7 @@ bool __fastcall FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall ProcessLocalDirectory(const UnicodeString & DirName,
+void ProcessLocalDirectory(const UnicodeString & DirName,
   TProcessLocalFileEvent CallBackFunc, void * Param,
   int FindAttrs)
 {
@@ -1070,7 +1070,7 @@ void __fastcall ProcessLocalDirectory(const UnicodeString & DirName,
   }
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall EncodeDateVerbose(Word Year, Word Month, Word Day)
+TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)
 {
   try
   {
@@ -1083,7 +1083,7 @@ TDateTime __fastcall EncodeDateVerbose(Word Year, Word Month, Word Day)
   return TDateTime();
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
+TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
 {
   try
   {
@@ -1121,17 +1121,17 @@ struct TDateTimeParams
 typedef std::map<int, TDateTimeParams> TYearlyDateTimeParams;
 static TYearlyDateTimeParams YearlyDateTimeParams;
 static std::auto_ptr<TCriticalSection> DateTimeParamsSection(new TCriticalSection());
-static void __fastcall EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
+static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
   TDateTime & Result);
 //---------------------------------------------------------------------------
-static unsigned short __fastcall DecodeYear(const TDateTime & DateTime)
+static unsigned short DecodeYear(const TDateTime & DateTime)
 {
   unsigned short Year, Month, Day;
   DecodeDate(DateTime, Year, Month, Day);
   return Year;
 }
 //---------------------------------------------------------------------------
-static const TDateTimeParams * __fastcall GetDateTimeParams(unsigned short Year)
+static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
 {
   TGuard Guard(DateTimeParamsSection.get());
 
@@ -1234,7 +1234,7 @@ static const TDateTimeParams * __fastcall GetDateTimeParams(unsigned short Year)
   return Result;
 }
 //---------------------------------------------------------------------------
-static void __fastcall EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
+static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
   TDateTime & Result)
 {
   CCALLSTACK(TRACE_TIMESTAMP);
@@ -1270,7 +1270,7 @@ static void __fastcall EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Y
   CTRACEFMT(TRACE_TIMESTAMP, "1 [%s]", Result.FormatString(L"c").c_str());
 }
 //---------------------------------------------------------------------------
-static bool __fastcall IsDateInDST(const TDateTime & DateTime)
+static bool IsDateInDST(const TDateTime & DateTime)
 {
   CCALLSTACK(TRACE_TIMESTAMP);
 
@@ -1309,12 +1309,12 @@ static bool __fastcall IsDateInDST(const TDateTime & DateTime)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall UsesDaylightHack()
+bool UsesDaylightHack()
 {
   return GetDateTimeParams(0)->DaylightHack;
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
+TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
 {
   CCALLSTACK(TRACE_TIMESTAMP);
   assert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
@@ -1357,14 +1357,14 @@ TDateTime __fastcall UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
   return Result;
 }
 //---------------------------------------------------------------------------
-__int64 __fastcall Round(double Number)
+__int64 Round(double Number)
 {
   double Floor = floor(Number);
   double Ceil = ceil(Number);
   return static_cast<__int64>(((Number - Floor) > (Ceil - Number)) ? Ceil : Floor);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
+bool TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
 {
   UnicodeString S = Str.Trim();
   intptr_t Index = 1;
@@ -1409,7 +1409,7 @@ bool __fastcall TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & 
   return Result;
 }
 //---------------------------------------------------------------------------
-static __int64 __fastcall DateTimeToUnix(const TDateTime DateTime)
+static __int64 DateTimeToUnix(const TDateTime DateTime)
 {
   CCALLSTACK(TRACE_TIMESTAMP);
   const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
@@ -1420,7 +1420,7 @@ static __int64 __fastcall DateTimeToUnix(const TDateTime DateTime)
     CurrentParams->CurrentDifferenceSec;
 }
 //---------------------------------------------------------------------------
-FILETIME __fastcall DateTimeToFileTime(const TDateTime DateTime,
+FILETIME DateTimeToFileTime(const TDateTime DateTime,
   TDSTMode /*DSTMode*/)
 {
   CCALLSTACK(TRACE_TIMESTAMP);
@@ -1445,7 +1445,7 @@ FILETIME __fastcall DateTimeToFileTime(const TDateTime DateTime,
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall FileTimeToDateTime(const FILETIME & FileTime)
+TDateTime FileTimeToDateTime(const FILETIME & FileTime)
 {
   // duplicated in DirView.pas
   CCALLSTACK(TRACE_TIMESTAMP);
@@ -1470,7 +1470,7 @@ TDateTime __fastcall FileTimeToDateTime(const FILETIME & FileTime)
   return Result;
 }
 //---------------------------------------------------------------------------
-__int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
+__int64 ConvertTimestampToUnix(const FILETIME & FileTime,
   TDSTMode DSTMode)
 {
   CCALLSTACK(TRACE_TIMESTAMP);
@@ -1519,7 +1519,7 @@ __int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
   return Result;
 }
 //---------------------------------------------------------------------------
-static TDateTime __fastcall ConvertTimestampToUTC(TDateTime DateTime)
+static TDateTime ConvertTimestampToUTC(TDateTime DateTime)
 {
   CCALLSTACK(TRACE_TIMESTAMP);
 
@@ -1538,7 +1538,7 @@ static TDateTime __fastcall ConvertTimestampToUTC(TDateTime DateTime)
   return DateTime;
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall ConvertFileTimestampFromUTC(TDateTime DateTime)
+TDateTime ConvertFileTimestampFromUTC(TDateTime DateTime)
 {
   CCALLSTACK(TRACE_TIMESTAMP);
 
@@ -1560,7 +1560,7 @@ TDateTime __fastcall ConvertFileTimestampFromUTC(TDateTime DateTime)
   return DateTime;
 }
 //---------------------------------------------------------------------------
-__int64 __fastcall ConvertTimestampToUnixSafe(const FILETIME & FileTime,
+__int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode)
 {
   CCALLSTACK(TRACE_TIMESTAMP);
@@ -1577,7 +1577,7 @@ __int64 __fastcall ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode)
+TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode)
 {
   CCALLSTACK(TRACE_TIMESTAMP);
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
@@ -1620,7 +1620,7 @@ TDateTime __fastcall AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode
   return DateTime;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall FixedLenDateTimeFormat(const UnicodeString & Format)
+UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
 {
   UnicodeString Result = Format;
   bool AsIs = false;
@@ -1671,7 +1671,7 @@ UnicodeString __fastcall FixedLenDateTimeFormat(const UnicodeString & Format)
   return Result;
 }
 //---------------------------------------------------------------------------
-static UnicodeString __fastcall FormatTimeZone(long Sec)
+static UnicodeString FormatTimeZone(long Sec)
 {
   // TTimeSpan Span = TTimeSpan::FromSeconds(Sec);
   UnicodeString Str;
@@ -1692,7 +1692,7 @@ static UnicodeString __fastcall FormatTimeZone(long Sec)
   return Str;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall GetTimeZoneLogString()
+UnicodeString GetTimeZoneLogString()
 {
   const TDateTimeParams * Params = GetDateTimeParams(0);
 
@@ -1706,7 +1706,7 @@ UnicodeString __fastcall GetTimeZoneLogString()
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall StandardTimestamp(const TDateTime & DateTime)
+UnicodeString StandardTimestamp(const TDateTime & DateTime)
 {
 #ifndef _MSC_VER
   return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
@@ -1720,13 +1720,13 @@ UnicodeString __fastcall StandardTimestamp(const TDateTime & DateTime)
 #endif
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall StandardTimestamp()
+UnicodeString StandardTimestamp()
 {
   return StandardTimestamp(Now());
 }
 //---------------------------------------------------------------------------
 static TDateTime TwoSeconds(0, 0, 2, 0);
-int __fastcall CompareFileTime(TDateTime T1, TDateTime T2)
+int CompareFileTime(TDateTime T1, TDateTime T2)
 {
   CCALLSTACK(TRACE_TIMESTAMP);
   // "FAT" time precision
@@ -1759,7 +1759,7 @@ int __fastcall CompareFileTime(TDateTime T1, TDateTime T2)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin)
+bool RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin)
 {
   SHFILEOPSTRUCT Data;
 
@@ -1795,7 +1795,7 @@ bool __fastcall RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecyc
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall CancelAnswer(intptr_t Answers)
+intptr_t CancelAnswer(intptr_t Answers)
 {
   intptr_t Result;
   if ((Answers & qaCancel) != 0)
@@ -1822,7 +1822,7 @@ intptr_t __fastcall CancelAnswer(intptr_t Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall AbortAnswer(intptr_t Answers)
+intptr_t AbortAnswer(intptr_t Answers)
 {
   intptr_t Result;
   if (FLAGSET(Answers, qaAbort))
@@ -1836,7 +1836,7 @@ intptr_t __fastcall AbortAnswer(intptr_t Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall ContinueAnswer(intptr_t Answers)
+intptr_t ContinueAnswer(intptr_t Answers)
 {
   intptr_t Result;
   if (FLAGSET(Answers, qaSkip))
@@ -1866,7 +1866,7 @@ intptr_t __fastcall ContinueAnswer(intptr_t Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall LoadStr(int Ident, intptr_t MaxLength)
+UnicodeString LoadStr(int Ident, intptr_t MaxLength)
 {
   UnicodeString Result;
   Result.SetLength(MaxLength > 0 ? MaxLength : 1024);
@@ -1877,7 +1877,7 @@ UnicodeString __fastcall LoadStr(int Ident, intptr_t MaxLength)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall LoadStrPart(int Ident, int Part)
+UnicodeString LoadStrPart(int Ident, int Part)
 {
   UnicodeString Result;
   UnicodeString Str = LoadStr(Ident);
@@ -1890,7 +1890,7 @@ UnicodeString __fastcall LoadStrPart(int Ident, int Part)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall DecodeUrlChars(const UnicodeString & S)
+UnicodeString DecodeUrlChars(const UnicodeString & S)
 {
   UnicodeString Result = S;
   int I = 1;
@@ -1919,7 +1919,7 @@ UnicodeString __fastcall DecodeUrlChars(const UnicodeString & S)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall DoEncodeUrl(const UnicodeString & S, const UnicodeString & Chars)
+UnicodeString DoEncodeUrl(const UnicodeString & S, const UnicodeString & Chars)
 {
   UnicodeString Result = S;
   intptr_t i = 1;
@@ -1937,7 +1937,7 @@ UnicodeString __fastcall DoEncodeUrl(const UnicodeString & S, const UnicodeStrin
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall EncodeUrlChars(const UnicodeString & S, const UnicodeString & Ignore)
+UnicodeString EncodeUrlChars(const UnicodeString & S, const UnicodeString & Ignore)
 {
   UnicodeString Chars;
   if (Ignore.Pos(L' ') == 0)
@@ -1951,7 +1951,7 @@ UnicodeString __fastcall EncodeUrlChars(const UnicodeString & S, const UnicodeSt
   return DoEncodeUrl(S, Chars);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall NonUrlChars()
+UnicodeString NonUrlChars()
 {
   UnicodeString S;
   for (unsigned int I = 0; I <= 127; I++)
@@ -1972,18 +1972,18 @@ UnicodeString __fastcall NonUrlChars()
   return S;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall EncodeUrlString(const UnicodeString & S)
+UnicodeString EncodeUrlString(const UnicodeString & S)
 {
   return DoEncodeUrl(S, NonUrlChars());
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall EscapeHotkey(const UnicodeString & Caption)
+UnicodeString EscapeHotkey(const UnicodeString & Caption)
 {
   return StringReplace(Caption, L"&", L"&&", TReplaceFlags() << rfReplaceAll);
 }
 //---------------------------------------------------------------------------
 // duplicated in console's Main.cpp
-bool __fastcall CutToken(UnicodeString & Str, UnicodeString & Token,
+bool CutToken(UnicodeString & Str, UnicodeString & Token,
   UnicodeString * RawToken)
 {
   bool Result;
@@ -2049,7 +2049,7 @@ bool __fastcall CutToken(UnicodeString & Str, UnicodeString & Token,
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter)
+void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter)
 {
   if (!Value.IsEmpty())
   {
@@ -2063,19 +2063,19 @@ void __fastcall AddToList(UnicodeString & List, const UnicodeString & Value, con
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall Is2000()
+bool Is2000()
 {
   return (Win32MajorVersion >= 5);
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsWin7()
+bool IsWin7()
 {
   return
     (Win32MajorVersion > 6) ||
     ((Win32MajorVersion == 6) && (Win32MinorVersion >= 1));
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsExactly2008R2()
+bool IsExactly2008R2()
 {
   CALLSTACK;
   HINSTANCE Kernel32 = GetModuleHandle(kernel32);
@@ -2134,13 +2134,13 @@ bool __fastcall IsExactly2008R2()
   return Result;
 }
 //---------------------------------------------------------------------------
-LCID __fastcall GetDefaultLCID()
+LCID GetDefaultLCID()
 {
   return Is2000() ? GetUserDefaultLCID() : GetThreadLocale();
 }
 //---------------------------------------------------------------------------
 static UnicodeString ADefaultEncodingName;
-UnicodeString __fastcall DefaultEncodingName()
+UnicodeString DefaultEncodingName()
 {
   if (ADefaultEncodingName.IsEmpty())
   {
@@ -2151,7 +2151,7 @@ UnicodeString __fastcall DefaultEncodingName()
   return ADefaultEncodingName;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall WindowsProductName()
+UnicodeString WindowsProductName()
 {
   UnicodeString Result;
   TRegistry * Registry = new TRegistry();
@@ -2175,7 +2175,7 @@ UnicodeString __fastcall WindowsProductName()
   return Result;
 }
 //---------------------------------------------------------------------------
-uintptr_t __fastcall StrToVersionNumber(const UnicodeString & VersionMumberStr)
+uintptr_t StrToVersionNumber(const UnicodeString & VersionMumberStr)
 {
   uintptr_t Result = 0;
   UnicodeString Version = VersionMumberStr;
@@ -2189,7 +2189,7 @@ uintptr_t __fastcall StrToVersionNumber(const UnicodeString & VersionMumberStr)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall VersionNumberToStr(uintptr_t VersionNumber)
+UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
 {
   DWORD Major = (VersionNumber>>16) & 0xFF;
   DWORD Minor = (VersionNumber>>8) & 0xFF; 
@@ -2198,7 +2198,7 @@ UnicodeString __fastcall VersionNumberToStr(uintptr_t VersionNumber)
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall FormatBytes(__int64 Bytes, bool UseOrders)
+UnicodeString FormatBytes(__int64 Bytes, bool UseOrders)
 {
   UnicodeString Result;
 

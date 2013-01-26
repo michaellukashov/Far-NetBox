@@ -42,7 +42,7 @@ UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B);
 UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C);
 void PackStr(UnicodeString & Str);
 void PackStr(RawByteString & Str);
-void __fastcall Shred(UnicodeString & Str);
+void Shred(UnicodeString & Str);
 UnicodeString MakeValidFileName(const UnicodeString & FileName);
 UnicodeString RootKeyToStr(HKEY RootKey);
 UnicodeString BooleanToStr(bool B);
@@ -55,65 +55,65 @@ UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars)
 UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote);
 UnicodeString ExceptionLogString(Exception *E);
 bool IsNumber(const UnicodeString & Str);
-UnicodeString __fastcall SystemTemporaryDirectory();
-UnicodeString __fastcall GetShellFolderPath(int CSIdl);
-UnicodeString __fastcall StripPathQuotes(const UnicodeString & Path);
-UnicodeString __fastcall AddPathQuotes(const UnicodeString & Path);
-void __fastcall SplitCommand(const UnicodeString & Command, UnicodeString & Program,
+UnicodeString SystemTemporaryDirectory();
+UnicodeString GetShellFolderPath(int CSIdl);
+UnicodeString StripPathQuotes(const UnicodeString & Path);
+UnicodeString AddPathQuotes(const UnicodeString & Path);
+void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
   UnicodeString & Params, UnicodeString & Dir);
-UnicodeString __fastcall ValidLocalFileName(const UnicodeString & FileName);
-UnicodeString __fastcall ValidLocalFileName(
+UnicodeString ValidLocalFileName(const UnicodeString & FileName);
+UnicodeString ValidLocalFileName(
   const UnicodeString & FileName, wchar_t InvalidCharsReplacement,
   const UnicodeString & TokenizibleChars, const UnicodeString & LocalInvalidChars);
-UnicodeString __fastcall ExtractProgram(const UnicodeString & Command);
-UnicodeString __fastcall FormatCommand(const UnicodeString & Program, const UnicodeString & Params);
-UnicodeString __fastcall ExpandFileNameCommand(const UnicodeString & Command,
+UnicodeString ExtractProgram(const UnicodeString & Command);
+UnicodeString FormatCommand(const UnicodeString & Program, const UnicodeString & Params);
+UnicodeString ExpandFileNameCommand(const UnicodeString & Command,
   const UnicodeString & FileName);
-void __fastcall ReformatFileNameCommand(UnicodeString & Command);
-UnicodeString __fastcall EscapePuttyCommandParam(const UnicodeString & Param);
-UnicodeString __fastcall ExpandEnvironmentVariables(const UnicodeString & Str);
-bool __fastcall ComparePaths(const UnicodeString & Path1, const UnicodeString & Path2);
-bool __fastcall CompareFileName(const UnicodeString & Path1, const UnicodeString & Path2);
-bool __fastcall IsReservedName(const UnicodeString & FileName);
-UnicodeString __fastcall DisplayableStr(const RawByteString & Str);
-UnicodeString __fastcall ByteToHex(unsigned char B, bool UpperCase = true);
-UnicodeString __fastcall BytesToHex(const unsigned char * B, uintptr_t Length, bool UpperCase = true, wchar_t Separator = L'\0');
-UnicodeString __fastcall BytesToHex(const RawByteString & Str, bool UpperCase = true, wchar_t Separator = L'\0');
-UnicodeString __fastcall CharToHex(wchar_t Ch, bool UpperCase = true);
-RawByteString __fastcall HexToBytes(const UnicodeString & Hex);
-unsigned char __fastcall HexToByte(const UnicodeString & Hex);
-UnicodeString __fastcall DecodeUrlChars(const UnicodeString & S);
-UnicodeString __fastcall EncodeUrlChars(const UnicodeString & S, const UnicodeString & Ignore = UnicodeString());
-UnicodeString __fastcall EncodeUrlString(const UnicodeString & S);
-bool __fastcall RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin);
-intptr_t __fastcall CancelAnswer(intptr_t Answers);
-intptr_t __fastcall AbortAnswer(intptr_t Answers);
-intptr_t __fastcall ContinueAnswer(intptr_t Answers);
-UnicodeString __fastcall LoadStr(int Ident, intptr_t MaxLength = 0);
-UnicodeString __fastcall LoadStrPart(int Ident, int Part);
-UnicodeString __fastcall EscapeHotkey(const UnicodeString & Caption);
-bool __fastcall CutToken(UnicodeString & Str, UnicodeString & Token,
+void ReformatFileNameCommand(UnicodeString & Command);
+UnicodeString EscapePuttyCommandParam(const UnicodeString & Param);
+UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str);
+bool ComparePaths(const UnicodeString & Path1, const UnicodeString & Path2);
+bool CompareFileName(const UnicodeString & Path1, const UnicodeString & Path2);
+bool IsReservedName(const UnicodeString & FileName);
+UnicodeString DisplayableStr(const RawByteString & Str);
+UnicodeString ByteToHex(unsigned char B, bool UpperCase = true);
+UnicodeString BytesToHex(const unsigned char * B, uintptr_t Length, bool UpperCase = true, wchar_t Separator = L'\0');
+UnicodeString BytesToHex(const RawByteString & Str, bool UpperCase = true, wchar_t Separator = L'\0');
+UnicodeString CharToHex(wchar_t Ch, bool UpperCase = true);
+RawByteString HexToBytes(const UnicodeString & Hex);
+unsigned char HexToByte(const UnicodeString & Hex);
+UnicodeString DecodeUrlChars(const UnicodeString & S);
+UnicodeString EncodeUrlChars(const UnicodeString & S, const UnicodeString & Ignore = UnicodeString());
+UnicodeString EncodeUrlString(const UnicodeString & S);
+bool RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin);
+intptr_t CancelAnswer(intptr_t Answers);
+intptr_t AbortAnswer(intptr_t Answers);
+intptr_t ContinueAnswer(intptr_t Answers);
+UnicodeString LoadStr(int Ident, intptr_t MaxLength = 0);
+UnicodeString LoadStrPart(int Ident, int Part);
+UnicodeString EscapeHotkey(const UnicodeString & Caption);
+bool CutToken(UnicodeString & Str, UnicodeString & Token,
   UnicodeString * RawToken = NULL);
-void __fastcall AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter);
-bool __fastcall Is2000();
-bool __fastcall IsWin7();
-bool __fastcall IsExactly2008R2();
+void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter);
+bool Is2000();
+bool IsWin7();
+bool IsExactly2008R2();
 #ifndef _MSC_VER
-TLibModule * __fastcall FindModule(void * Instance);
+TLibModule * FindModule(void * Instance);
 #endif
-__int64 __fastcall Round(double Number);
-bool __fastcall TryRelativeStrToDateTime(const UnicodeString & S, TDateTime & DateTime);
-LCID __fastcall GetDefaultLCID();
-UnicodeString __fastcall DefaultEncodingName();
-UnicodeString __fastcall WindowsProductName();
+__int64 Round(double Number);
+bool TryRelativeStrToDateTime(const UnicodeString & S, TDateTime & DateTime);
+LCID GetDefaultLCID();
+UnicodeString DefaultEncodingName();
+UnicodeString WindowsProductName();
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);
-bool __fastcall FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec);
-int __fastcall FindCheck(int Result);
-int __fastcall FindFirstChecked(const UnicodeString & Path, int Attr, TSearchRec & F);
-int __fastcall FindNextChecked(TSearchRec & F);
-void __fastcall ProcessLocalDirectory(const UnicodeString & DirName,
+bool FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec);
+int FindCheck(int Result);
+int FindFirstChecked(const UnicodeString & Path, int Attr, TSearchRec & F);
+int FindNextChecked(TSearchRec & F);
+void ProcessLocalDirectory(const UnicodeString & DirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = NULL, int FindAttrs = -1);
 //---------------------------------------------------------------------------
 enum TDSTMode
@@ -122,27 +122,27 @@ enum TDSTMode
   dstmUnix = 1, // adjust UTC time to Windows "bug"
   dstmKeep = 2
 };
-bool __fastcall UsesDaylightHack();
-TDateTime __fastcall EncodeDateVerbose(Word Year, Word Month, Word Day);
-TDateTime __fastcall EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec);
-TDateTime __fastcall UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode);
-TDateTime __fastcall ConvertFileTimestampFromUTC(TDateTime DateTime);
-FILETIME __fastcall DateTimeToFileTime(const TDateTime DateTime, TDSTMode DSTMode);
-TDateTime __fastcall AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode);
-void __fastcall UnifyDateTimePrecision(TDateTime & DateTime1, TDateTime & DateTime2);
-TDateTime __fastcall FileTimeToDateTime(const FILETIME & FileTime);
-__int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
+bool UsesDaylightHack();
+TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day);
+TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec);
+TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode);
+TDateTime ConvertFileTimestampFromUTC(TDateTime DateTime);
+FILETIME DateTimeToFileTime(const TDateTime DateTime, TDSTMode DSTMode);
+TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode);
+void UnifyDateTimePrecision(TDateTime & DateTime1, TDateTime & DateTime2);
+TDateTime FileTimeToDateTime(const FILETIME & FileTime);
+__int64 ConvertTimestampToUnix(const FILETIME & FileTime,
   TDSTMode DSTMode);
-__int64 __fastcall ConvertTimestampToUnixSafe(const FILETIME & FileTime,
+__int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode);
-UnicodeString __fastcall FixedLenDateTimeFormat(const UnicodeString & Format);
-UnicodeString __fastcall StandardTimestamp(const TDateTime & DateTime);
-UnicodeString __fastcall StandardTimestamp();
-UnicodeString __fastcall GetTimeZoneLogString();
-int __fastcall CompareFileTime(TDateTime T1, TDateTime T2);
+UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format);
+UnicodeString StandardTimestamp(const TDateTime & DateTime);
+UnicodeString StandardTimestamp();
+UnicodeString GetTimeZoneLogString();
+int CompareFileTime(TDateTime T1, TDateTime T2);
 //---------------------------------------------------------------------------
 template<class MethodT>
-MethodT __fastcall MakeMethod(void * Data, void * Code)
+MethodT MakeMethod(void * Data, void * Code)
 {
   MethodT Method;
   ((TMethod*)&Method)->Data = Data;
@@ -153,8 +153,8 @@ MethodT __fastcall MakeMethod(void * Data, void * Code)
 class TGuard
 {
 public:
-  explicit /* __fastcall */ TGuard(TCriticalSection * ACriticalSection);
-  /* __fastcall */ ~TGuard();
+  explicit TGuard(TCriticalSection * ACriticalSection);
+  ~TGuard();
 
 private:
   TCriticalSection * FCriticalSection;
@@ -163,8 +163,8 @@ private:
 class TUnguard
 {
 public:
-  explicit /* __fastcall */ TUnguard(TCriticalSection * ACriticalSection);
-  /* __fastcall */ ~TUnguard();
+  explicit TUnguard(TCriticalSection * ACriticalSection);
+  ~TUnguard();
 
 private:
   TCriticalSection * FCriticalSection;
@@ -174,13 +174,13 @@ template<class T>
 class TValueRestorer
 {
 public:
-  inline /* __fastcall */ TValueRestorer(T & Target, const T & Value) :
+  inline TValueRestorer(T & Target, const T & Value) :
     FTarget(Target),
     FValue(Value)
   {
   }
 
-  inline /* __fastcall */ ~TValueRestorer()
+  inline ~TValueRestorer()
   {
     FTarget = FValue;
   }
@@ -193,7 +193,7 @@ private:
 class TBoolRestorer : TValueRestorer<bool>
 {
 public:
-  inline /* __fastcall */ TBoolRestorer(bool & Target) :
+  inline TBoolRestorer(bool & Target) :
     TValueRestorer<bool>(Target, !Target)
   {
   }
@@ -218,24 +218,24 @@ public:
 #define _TRACEFMT_FAKE(SOURCE, FUNC, LINE, FORMAT, ...)
 
 #ifdef _DEBUG
-void __fastcall SetTraceFile(HANDLE TraceFile);
-void __fastcall CleanupTracing();
+void SetTraceFile(HANDLE TraceFile);
+void CleanupTracing();
 #define TRACEENV "WINSCPTRACE"
 extern bool IsTracing;
 const unsigned int CallstackTlsOff = (unsigned int)-1;
 extern unsigned int CallstackTls;
-void __fastcall Trace(const wchar_t * SourceFile, const wchar_t * Func,
+void Trace(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * Message);
 #ifndef _MSC_VER
-void __fastcall TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * Format, TVarRec * Args, const int Args_Size);
 #else
-void __fastcall TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * Format, ...);
 #endif
 #ifdef TRACE_IN_MEMORY
-void __fastcall TraceDumpToFile();
-void __fastcall TraceInMemoryCallback(System::UnicodeString Msg);
+void TraceDumpToFile();
+void TraceInMemoryCallback(System::UnicodeString Msg);
 #endif
 #define CTRACEIMPL(TRACING, MESSAGE) \
   _TRACING_TRACE TRACING (TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, (MESSAGE))
@@ -329,8 +329,8 @@ void __callstack(const wchar_t*, const wchar_t*, unsigned int, const wchar_t*);
 //!CLEANBEGIN
 #ifndef DESIGN_ONLY
 #undef assert
-void __fastcall DoAssert(wchar_t * Message, wchar_t * Filename, int LineNumber);
-inline bool __fastcall DoAlwaysTrue(bool Value, wchar_t * Message, wchar_t * Filename, int LineNumber)
+void DoAssert(wchar_t * Message, wchar_t * Filename, int LineNumber);
+inline bool DoAlwaysTrue(bool Value, wchar_t * Message, wchar_t * Filename, int LineNumber)
 {
   if (!Value)
   {
@@ -364,13 +364,13 @@ struct TVersionInfo
   DWORD Build;
 };
 #define MAKEVERSIONNUMBER(major,minor,revision) ( ((major)<<16) | ((minor)<<8) | (revision))
-uintptr_t __fastcall StrToVersionNumber(const UnicodeString & VersionMumberStr);
-UnicodeString __fastcall VersionNumberToStr(uintptr_t VersionNumber);
-uintptr_t inline __fastcall GetVersionNumber219() { return MAKEVERSIONNUMBER(2,1,9); }
-uintptr_t inline __fastcall GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
-uintptr_t inline __fastcall GetVersionNumber2121() { return MAKEVERSIONNUMBER(2,1,21); }
-uintptr_t inline __fastcall GetCurrentVersionNumber() { return StrToVersionNumber(NETBOX_VERSION_NUMBER); }
+uintptr_t StrToVersionNumber(const UnicodeString & VersionMumberStr);
+UnicodeString VersionNumberToStr(uintptr_t VersionNumber);
+uintptr_t inline GetVersionNumber219() { return MAKEVERSIONNUMBER(2,1,9); }
+uintptr_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
+uintptr_t inline GetVersionNumber2121() { return MAKEVERSIONNUMBER(2,1,21); }
+uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(NETBOX_VERSION_NUMBER); }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall FormatBytes(__int64 Bytes, bool UseOrders = true);
+UnicodeString FormatBytes(__int64 Bytes, bool UseOrders = true);
 //---------------------------------------------------------------------------
 #endif

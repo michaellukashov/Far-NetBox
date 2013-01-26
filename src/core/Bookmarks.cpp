@@ -87,15 +87,15 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
 {
   CALLSTACK;
   TStrings * Names = new TStringList();
-  TRY_FINALLY (
+  // TRY_FINALLY (
   {
     Storage->GetValueNames(Names);
     UnicodeString Name;
     UnicodeString Directory;
     TShortCut ShortCut(0);
-    for (intptr_t i = 0; i < Names->Count; i++)
+    for (intptr_t I = 0; I < Names->Count; ++I)
     {
-      Name = Names->Strings[i];
+      Name = Names->Strings[I];
       bool IsDirectory = (Index == 0) || (Index == 1);
       if (IsDirectory)
       {
@@ -144,9 +144,9 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
     }
 
     Storage->GetSubKeyNames(Names);
-    for (int i = 0; i < Names->Count; i++)
+    for (int I = 0; I < Names->Count; I++)
     {
-      Name = Names->Strings[i];
+      Name = Names->Strings[I];
       if (Storage->OpenSubKey(Name, false))
       {
         LoadLevel(Storage, Key + (Key.IsEmpty() ? L"" : L"/") + Name, Index, BookmarkList);
@@ -154,11 +154,11 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
       }
     }
   }
-  ,
-  {
-    delete Names;
-  }
-  );
+  //,
+  //{
+  //  delete Names;
+  //}
+  //);
 }
 //---------------------------------------------------------------------------
 void __fastcall TBookmarks::Save(THierarchicalStorage * Storage, bool All)
