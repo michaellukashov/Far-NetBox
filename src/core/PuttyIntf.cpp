@@ -120,7 +120,7 @@ int from_backend_untrusted(void * /*frontend*/, const char * /*data*/, int /*len
   return 0;
 }
 //---------------------------------------------------------------------------
-int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
+int GetUserpassInput(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
 {
   CALLSTACK;
   assert(p != NULL);
@@ -171,6 +171,11 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
 
   TRACE("/");
   return Result;
+}
+//---------------------------------------------------------------------------
+int get_userpass_input(prompts_t * p, unsigned char * in, int inlen)
+{
+  return GetUserpassInput(p, in, inlen);
 }
 //---------------------------------------------------------------------------
 char * get_ttymode(void * /*frontend*/, const char * /*mode*/)
@@ -278,9 +283,14 @@ void modalfatalbox(char * fmt, ...)
   va_end(Param);
 }
 //---------------------------------------------------------------------------
-void cleanup_exit(int /*code*/)
+void CleanupExit(int /*code*/)
 {
   throw ESshFatal(NULL, "");
+}
+//---------------------------------------------------------------------------
+void cleanup_exit(int code)
+{
+  CleanupExit(code);
 }
 //---------------------------------------------------------------------------
 int askappend(void * /*frontend*/, Filename /*filename*/,

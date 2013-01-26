@@ -621,18 +621,6 @@ struct TCalculateSizeParams
   TCalculateSizeStats * Stats;
 };
 //---------------------------------------------------------------------------
-struct TOverwriteFileParams
-{
-  TOverwriteFileParams();
-
-  __int64 SourceSize;
-  __int64 DestSize;
-  TDateTime SourceTimestamp;
-  TDateTime DestTimestamp;
-  TModificationFmt SourcePrecision;
-  TModificationFmt DestPrecision;
-};
-//---------------------------------------------------------------------------
 struct TMakeLocalFileListParams
 {
   TStrings * FileList;

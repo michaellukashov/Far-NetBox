@@ -89,7 +89,7 @@ void __fastcall TFar3Storage::CloseSubKey()
   // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   THierarchicalStorage::CloseSubKey();
   // assert(FKeyHistory->GetCount() == FSubKeyIds.size() - 1);
-  if (FKeyHistory->Count && FSubKeyIds.size())
+  if (FKeyHistory->GetCount() && FSubKeyIds.size())
   {
     FRoot = FSubKeyIds.back();
     FSubKeyIds.pop_back();
@@ -104,7 +104,7 @@ void __fastcall TFar3Storage::CloseSubKey()
 bool __fastcall TFar3Storage::DeleteSubKey(const UnicodeString & SubKey)
 {
   UnicodeString K;
-  if (FKeyHistory->Count == 0)
+  if (FKeyHistory->GetCount() == 0)
   {
     K = GetFullCurrentSubKey();
     FRoot = FPluginSettings.OpenSubKey(FRoot, K.c_str());

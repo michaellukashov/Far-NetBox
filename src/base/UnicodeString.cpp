@@ -634,7 +634,7 @@ bool operator !=(const UnicodeString & lhs, const wchar_t * rhs)
 
 bool operator !=(const wchar_t * lhs, const UnicodeString & rhs)
 {
-  return wcscmp(lhs, rhs.Data.c_str()) == 0;
+  return wcscmp(lhs, rhs.Data.c_str()) != 0;
 }
 
 //------------------------------------------------------------------------------

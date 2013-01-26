@@ -81,26 +81,26 @@ public:
   UnicodeString GetFirstLine() const;
   bool GetInteractiveCommand(TFSCommand Cmd) const;
   UnicodeString GetLastLine() const;
-  UnicodeString GetReturnVar();
+  UnicodeString GetReturnVar() const;
 public:
   TCommandSet(TSessionData *aSessionData);
   void Default();
   void CopyFrom(TCommandSet * Source);
 #ifndef _MSC_VER
-  UnicodeString Command(TFSCommand Cmd, const TVarRec * args, int size);
+  UnicodeString Command(TFSCommand Cmd, const TVarRec * args, int size) const;
 #else
-  UnicodeString Command(TFSCommand Cmd, ...);
-  UnicodeString Command(TFSCommand Cmd, va_list args);
+  UnicodeString Command(TFSCommand Cmd, ...) const;
+  UnicodeString Command(TFSCommand Cmd, va_list args) const;
 #endif
   TStrings * CreateCommandList();
 #ifndef _MSC_VER
-  UnicodeString FullCommand(TFSCommand Cmd, const TVarRec * args, int size);
+  UnicodeString FullCommand(TFSCommand Cmd, const TVarRec * args, int size) const;
 #else
-  UnicodeString FullCommand(TFSCommand Cmd, ...);
-  UnicodeString FullCommand(TFSCommand Cmd, va_list args);
+  UnicodeString FullCommand(TFSCommand Cmd, ...) const;
+  UnicodeString FullCommand(TFSCommand Cmd, va_list args) const;
 #endif
-  static UnicodeString ExtractCommand(UnicodeString Command);
-  TSessionData * GetSessionData() { return FSessionData; }
+  static UnicodeString ExtractCommand(const UnicodeString & Command);
+  TSessionData * GetSessionData() const { return FSessionData; }
   void SetSessionData(TSessionData * Value) { FSessionData = Value; }
   void SetReturnVar(const UnicodeString & Value) { FReturnVar = Value; }
 };
@@ -213,7 +213,7 @@ UnicodeString TCommandSet::GetCommands(TFSCommand Cmd) const
 }
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
-UnicodeString TCommandSet::Command(TFSCommand Cmd, const TVarRec * args, int size)
+UnicodeString TCommandSet::Command(TFSCommand Cmd, const TVarRec * args, int size) const
 {
   if (args)
     return Format(GetCommands(Cmd), args, size);
@@ -222,7 +222,7 @@ UnicodeString TCommandSet::Command(TFSCommand Cmd, const TVarRec * args, int siz
 }
 #endif
 //---------------------------------------------------------------------------
-UnicodeString TCommandSet::Command(TFSCommand Cmd, ...)
+UnicodeString TCommandSet::Command(TFSCommand Cmd, ...) const
 {
   UnicodeString result;
   va_list args;
@@ -232,7 +232,7 @@ UnicodeString TCommandSet::Command(TFSCommand Cmd, ...)
   return result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TCommandSet::Command(TFSCommand Cmd, va_list args)
+UnicodeString TCommandSet::Command(TFSCommand Cmd, va_list args) const
 {
   UnicodeString result;
   result = ::Format(GetCommands(Cmd).c_str(), args);
@@ -261,7 +261,7 @@ UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, const TVarRec * args, int
 }
 #endif
 //---------------------------------------------------------------------------
-UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, ...)
+UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, ...) const
 {
   UnicodeString Result;
   va_list args;
@@ -271,7 +271,7 @@ UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, ...)
   return Result.c_str();
 }
 //---------------------------------------------------------------------------
-UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, va_list args)
+UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, va_list args) const
 {
   UnicodeString Separator;
   if (GetOneLineCommand(Cmd))
@@ -313,7 +313,7 @@ UnicodeString TCommandSet::GetLastLine() const
   return LAST_LINE;
 }
 //---------------------------------------------------------------------------
-UnicodeString TCommandSet::GetReturnVar()
+UnicodeString TCommandSet::GetReturnVar() const
 {
   assert(GetSessionData());
   if (!FReturnVar.IsEmpty())
@@ -330,14 +330,15 @@ UnicodeString TCommandSet::GetReturnVar()
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TCommandSet::ExtractCommand(UnicodeString Command)
+UnicodeString TCommandSet::ExtractCommand(const UnicodeString & Command)
 {
-  intptr_t P = Command.Pos(L" ");
+  UnicodeString Result = Command;
+  intptr_t P = Result.Pos(L" ");
   if (P > 0)
   {
-    Command.SetLength(P-1);
+    Result.SetLength(P-1);
   }
-  return Command;
+  return Result;
 }
 //---------------------------------------------------------------------------
 TStrings * TCommandSet::CreateCommandList()
@@ -422,7 +423,7 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
       try
       {
         AnyCommand(L"uname -a", NULL);
-        for (int Index = 0; Index < GetOutput()->Count; Index++)
+        for (intptr_t Index = 0; Index < GetOutput()->GetCount(); ++Index)
         {
           if (Index > 0)
           {
@@ -702,7 +703,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const UnicodeString * Cmd)
       TRACE("6");
       UnicodeString Message = FSecureShell->GetStdError();
       TRACE("7");
-      if ((Params & coExpectNoOutput) && FOutput->Count)
+      if ((Params & coExpectNoOutput) && FOutput->GetCount())
       {
         TRACE("8");
         if (!Message.IsEmpty()) { Message += L"\n"; }
@@ -724,7 +725,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const UnicodeString * Cmd)
         FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED_CODEONLY, GetReturnCode()));
       }
       else if (!(Params & coOnlyReturnCode) &&
-          ((!Message.IsEmpty() && ((FOutput->Count == 0) || !(Params & coIgnoreWarnings))) ||
+          ((!Message.IsEmpty() && ((FOutput->GetCount() == 0) || !(Params & coIgnoreWarnings))) ||
            WrongReturnCode))
       {
         TRACE("12");
@@ -785,8 +786,8 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args,
   {
     Integer MinL = FCommandSet->GetMinLines(Cmd);
     Integer MaxL = FCommandSet->GetMaxLines(Cmd);
-    if (((MinL >= 0) && (MinL > FOutput->Count)) ||
-        ((MaxL >= 0) && (MaxL > FOutput->Count)))
+    if (((MinL >= 0) && (MinL > FOutput->GetCount())) ||
+        ((MaxL >= 0) && (MaxL > FOutput->GetCount())))
     {
       FTerminal->TerminalError(FmtLoadStr(INVALID_OUTPUT_ERROR,
         ARRAYOFCONST((FullCommand, GetOutput()->Text))));
@@ -808,8 +809,8 @@ void TSCPFileSystem::ExecCommand2(TFSCommand Cmd, ...)
   {
     int MinL = FCommandSet->GetMinLines(Cmd);
     int MaxL = FCommandSet->GetMaxLines(Cmd);
-    if (((MinL >= 0) && (MinL > static_cast<int>(FOutput->Count))) ||
-        ((MaxL >= 0) && (MaxL > static_cast<int>(FOutput->Count))))
+    if (((MinL >= 0) && (MinL > static_cast<int>(FOutput->GetCount()))) ||
+        ((MaxL >= 0) && (MaxL > static_cast<int>(FOutput->GetCount()))))
     {
       FTerminal->TerminalError(::FmtLoadStr(INVALID_OUTPUT_ERROR,
         FullCommand.c_str(), GetOutput()->Text.get().c_str()));
@@ -858,7 +859,7 @@ void TSCPFileSystem::LookupUsersGroups()
   ExecCommand2(fsLookupUsersGroups);
   FTerminal->FUsers.Clear();
   FTerminal->FGroups.Clear();
-  if (FOutput->Count > 0)
+  if (FOutput->GetCount() > 0)
   {
     UnicodeString Groups = FOutput->Strings[0];
     while (!Groups.IsEmpty())
@@ -890,9 +891,9 @@ void TSCPFileSystem::DetectReturnVar()
       {
         FTerminal->LogEvent(FORMAT(L"Trying \"$%s\".", ReturnVars[Index].c_str()));
         ExecCommand2(fsVarValue, ReturnVars[Index].c_str());
-        UnicodeString str = GetOutput()->Count > 0 ? GetOutput()->Strings[0] : L"";
+        UnicodeString str = GetOutput()->GetCount() > 0 ? GetOutput()->Strings[0] : L"";
         int val = StrToIntDef(str, 256);
-        if ((GetOutput()->Count != 1) || str.IsEmpty() || (val > 255))
+        if ((GetOutput()->GetCount() != 1) || str.IsEmpty() || (val > 255))
         {
           FTerminal->LogEvent(L"The response is not numerical exit code");
           Abort();
@@ -953,7 +954,7 @@ void TSCPFileSystem::ClearAliases()
     TStrings * CommandList = FCommandSet->CreateCommandList();
     TRY_FINALLY (
     {
-      for (int Index = 0; Index < CommandList->Count; Index++)
+      for (int Index = 0; Index < CommandList->GetCount(); Index++)
       {
         ClearAlias(CommandList->Strings[Index]);
       }
@@ -1065,12 +1066,10 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           Params);
       }
 
-      TRemoteFile * File = NULL;
-
       // If output is not empty, we have succesfully got file listing,
       // otherwise there was an error, in case it was "permission denied"
       // we try to get at least parent directory (see "else" statement below)
-      if (FOutput->Count > 0)
+      if (FOutput->GetCount() > 0)
       {
         // Copy LS command output, because eventual symlink analysis would
         // modify FTerminal->Output
@@ -1087,8 +1086,9 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             OutputCopy->Delete(0);
           }
 
-          for (int Index = 0; Index < OutputCopy->Count; Index++)
+          for (intptr_t Index = 0; Index < OutputCopy->GetCount(); ++Index)
           {
+            TRemoteFile * File = NULL;
             File = CreateRemoteFile(OutputCopy->Strings[Index]);
             FileList->AddFile(File);
           }
@@ -1188,10 +1188,10 @@ void TSCPFileSystem::CustomReadFile(const UnicodeString & FileName,
   ExecCommand2(fsListFile,
     FTerminal->GetSessionData()->GetListingCommand().c_str(), Options, DelimitStr(FileName).c_str(),
     Params);
-  if (FOutput->Count)
+  if (FOutput->GetCount())
   {
     int LineIndex = 0;
-    if (IsTotalListingLine(FOutput->Strings[LineIndex]) && FOutput->Count > 1)
+    if (IsTotalListingLine(FOutput->Strings[LineIndex]) && FOutput->GetCount() > 1)
     {
       LineIndex++;
     }
@@ -1524,7 +1524,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     }
     CopyBatchStarted = true;
 
-    for (int IFile = 0; (IFile < FilesToCopy->Count) &&
+    for (int IFile = 0; (IFile < FilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; IFile++)
     {
       UnicodeString FileName = FilesToCopy->Strings[IFile];
@@ -2121,12 +2121,12 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 
   TRACE("1");
   FTerminal->LogEvent(FORMAT(L"Copying %d files/directories to local directory "
-    L"\"%s\"", FilesToCopy->Count.get(), TargetDir.c_str()));
+    L"\"%s\"", FilesToCopy->GetCount(), TargetDir.c_str()));
   FTerminal->LogEvent(CopyParam->GetLogStr());
 
   TRY_FINALLY (
   {
-    for (int IFile = 0; (IFile < FilesToCopy->Count) &&
+    for (int IFile = 0; (IFile < FilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; IFile++)
     {
       TRACE("2");

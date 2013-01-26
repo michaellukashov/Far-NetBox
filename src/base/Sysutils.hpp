@@ -323,14 +323,14 @@ UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & Path);
 extern int RandSeed;
 extern void Randomize();
 //---------------------------------------------------------------------------
-TDateTime IncYear(const TDateTime AValue, const Int64 ANumberOfYears = 1);
-TDateTime IncMonth(const TDateTime AValue, const Int64 NumberOfMonths = 1);
-TDateTime IncWeek(const TDateTime AValue, const Int64 ANumberOfWeeks = 1);
-TDateTime IncDay(const TDateTime AValue, const Int64 ANumberOfDays = 1);
-TDateTime IncHour(const TDateTime AValue, const Int64 ANumberOfHours = 1);
-TDateTime IncMinute(const TDateTime AValue, const Int64 ANumberOfMinutes = 1);
-TDateTime IncSecond(const TDateTime AValue, const Int64 ANumberOfSeconds = 1);
-TDateTime IncMilliSecond(const TDateTime AValue, const Int64 ANumberOfMilliSeconds = 1);
+TDateTime IncYear(const TDateTime & AValue, const Int64 ANumberOfYears = 1);
+TDateTime IncMonth(const TDateTime & AValue, const Int64 NumberOfMonths = 1);
+TDateTime IncWeek(const TDateTime & AValue, const Int64 ANumberOfWeeks = 1);
+TDateTime IncDay(const TDateTime & AValue, const Int64 ANumberOfDays = 1);
+TDateTime IncHour(const TDateTime & AValue, const Int64 ANumberOfHours = 1);
+TDateTime IncMinute(const TDateTime & AValue, const Int64 ANumberOfMinutes = 1);
+TDateTime IncSecond(const TDateTime & AValue, const Int64 ANumberOfSeconds = 1);
+TDateTime IncMilliSecond(const TDateTime & AValue, const Int64 ANumberOfMilliSeconds = 1);
 
 Boolean IsLeapYear(Word Year);
 

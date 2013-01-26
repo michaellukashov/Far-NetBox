@@ -147,7 +147,7 @@ public:
           Attrs = L" recursive=\"true\"";
         }
         FLog->AddIndented(FORMAT(L"<%s%s>", Name,  Attrs.c_str()));
-        for (int Index = 0; Index < FNames->Count; Index++)
+        for (int Index = 0; Index < FNames->GetCount(); Index++)
         {
           UnicodeString Value = FValues->Strings[Index];
           if (Value.IsEmpty())
@@ -163,7 +163,7 @@ public:
         if (FFileList != NULL)
         {
           FLog->AddIndented(L"  <files>");
-          for (int Index = 0; Index < FFileList->Count; Index++)
+          for (int Index = 0; Index < FFileList->GetCount(); Index++)
           {
             TRemoteFile * File = FFileList->GetFiles(Index);
 
@@ -900,7 +900,7 @@ void __fastcall TSessionLog::DeleteUnnecessary()
     else
     {
       CTRACE(TRACE_LOG_ADD2, "2");
-      while (!FConfiguration->GetLogWindowComplete() && (Count > FConfiguration->GetLogWindowLines()))
+      while (!FConfiguration->GetLogWindowComplete() && (GetCount() > FConfiguration->GetLogWindowLines()))
       {
         Delete(0);
         FTopIndex++;
@@ -1163,7 +1163,7 @@ void __fastcall TSessionLog::AddSeparator()
 //---------------------------------------------------------------------------
 intptr_t __fastcall TSessionLog::GetBottomIndex()
 {
-  return (Count > 0 ? (GetTopIndex() + Count - 1) : -1);
+  return (GetCount() > 0 ? (GetTopIndex() + GetCount() - 1) : -1);
 }
 //---------------------------------------------------------------------------
 bool __fastcall TSessionLog::GetLoggingToFile()
@@ -1176,7 +1176,7 @@ void TSessionLog::Clear()
 {
   TGuard Guard(FCriticalSection);
 
-  FTopIndex += Count;
+  FTopIndex += GetCount();
   TStringList::Clear();
 }
 //---------------------------------------------------------------------------
@@ -1264,7 +1264,7 @@ intptr_t TSessionLog::GetCount() const
 /* __fastcall */ TActionLog::~TActionLog()
 {
   CALLSTACK;
-  assert(FPendingActions->Count == 0);
+  assert(FPendingActions->GetCount() == 0);
   delete FPendingActions;
   FClosed = true;
   ReflectSettings();
@@ -1363,7 +1363,7 @@ void __fastcall TActionLog::AddFailure(Exception * E)
 void __fastcall TActionLog::AddMessages(UnicodeString Indent, TStrings * Messages)
 {
   CALLSTACK;
-  for (int Index = 0; Index < Messages->Count; Index++)
+  for (int Index = 0; Index < Messages->GetCount(); Index++)
   {
     AddIndented(
       FORMAT((Indent + L"<message>%s</message>").c_str(), XmlEscape(Messages->Strings[Index]).c_str()));
@@ -1454,7 +1454,7 @@ void __fastcall TActionLog::AddPendingAction(TSessionActionRecord * Action)
 //---------------------------------------------------------------------------
 void __fastcall TActionLog::RecordPendingActions()
 {
-  while ((FPendingActions->Count > 0) &&
+  while ((FPendingActions->GetCount() > 0) &&
          static_cast<TSessionActionRecord *>(FPendingActions->Items[0])->Record())
   {
     FPendingActions->Delete(0);

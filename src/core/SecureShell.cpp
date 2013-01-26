@@ -470,7 +470,7 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
   CALLSTACK;
   // there can be zero prompts!
 
-  assert(Results->Count == Prompts->Count);
+  assert(Results->GetCount() == Prompts->GetCount());
 
   TPromptKind PromptKind;
   // beware of changing order
@@ -554,7 +554,7 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
   else if (Index == 6)
   {
     TRACE("7");
-    assert(Prompts->Count == 1);
+    assert(Prompts->GetCount() == 1);
     Prompts->Strings[0] = LoadStr(PASSWORD_PROMPT);
     PromptKind = pkPassword;
   }
@@ -576,7 +576,7 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
     assert(false);
   }
 
-  LogEvent(FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(), Instructions.c_str(), (Prompts->Count > 0 ? Prompts->Strings[0].c_str() : UnicodeString(L"<no prompt>").c_str())).c_str());
+  LogEvent(FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(), Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->Strings[0].c_str() : UnicodeString(L"<no prompt>").c_str())).c_str());
 
   Name = Name.Trim();
 
@@ -590,8 +590,8 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
   // on terminal console
   Instructions2 = Instructions2.Trim();
 
-  TRACEFMT("8a [%d]", Prompts->Count.get());
-  for (intptr_t Index = 0; Index < Prompts->Count; Index++)
+  TRACEFMT("8a [%d]", Prompts->GetCount());
+  for (intptr_t Index = 0; Index < Prompts->GetCount(); ++Index)
   {
     UnicodeString Prompt = Prompts->Strings[Index];
     TRACEFMT("8b [%s]", Prompt.c_str());
@@ -643,7 +643,7 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
   {
     TRACE("12");
     if (FSessionData->GetAuthKIPassword() && !FSessionData->GetPassword().IsEmpty() &&
-        !FStoredPasswordTriedForKI && (Prompts->Count == 1) &&
+        !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
         !(Prompts->Objects[0]))
     {
       TRACE("13");
@@ -653,7 +653,7 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
       Results->Strings[0] = FSessionData->GetPassword();
       FStoredPasswordTriedForKI = true;
     }
-    else if (Instructions2.IsEmpty() && !InstructionsRequired && (Prompts->Count == 0))
+    else if (Instructions2.IsEmpty() && !InstructionsRequired && (Prompts->GetCount() == 0))
     {
       TRACE("14");
       LogEvent(L"Ignoring empty SSH server authentication request");
@@ -683,7 +683,7 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
     if (Result)
     {
       TRACE("18");
-      if ((PromptKind == pkUserName) && (Prompts->Count == 1))
+      if ((PromptKind == pkUserName) && (Prompts->GetCount() == 1))
       {
         TRACE("19");
         FUserName = Results->Strings[0];

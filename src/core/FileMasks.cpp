@@ -162,7 +162,7 @@ UnicodeString __fastcall TFileMasks::ComposeMaskStr(
 {
   UnicodeString Result;
   UnicodeString ResultNoDirMask;
-  for (int I = 0; I < MasksStr->Count; I++)
+  for (intptr_t I = 0; I < MasksStr->GetCount(); ++I)
   {
     UnicodeString Str = MasksStr->Strings[I].Trim();
     if (!Str.IsEmpty())

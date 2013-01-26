@@ -394,7 +394,7 @@ int __fastcall TCopyParamList::Find(const TCopyParamRuleData & Value) const
 {
   int Result = -1;
   int i = 0;
-  while ((i < FRules->Count) && (Result < 0))
+  while ((i < FRules->GetCount()) && (Result < 0))
   {
     if (FRules->Items[i] != NULL)
     {
@@ -483,7 +483,7 @@ void __fastcall TCopyParamList::Save(THierarchicalStorage * Storage) const
 //---------------------------------------------------------------------------
 intptr_t __fastcall TCopyParamList::GetCount() const
 {
-  return FCopyParams->Count;
+  return FCopyParams->GetCount();
 }
 //---------------------------------------------------------------------------
 const TCopyParamRule * __fastcall TCopyParamList::GetRule(intptr_t Index) const
@@ -638,7 +638,7 @@ void __fastcall TGUIConfiguration::DefaultLocalized()
 void __fastcall TGUIConfiguration::UpdateStaticUsage()
 {
   CALLSTACK;
-  // Usage->Set(L"CopyParamsCount", (FCopyParamListDefaults ? 0 : FCopyParamList->Count));
+  // Usage->Set(L"CopyParamsCount", (FCopyParamListDefaults ? 0 : FCopyParamList->GetCount()));
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TGUIConfiguration::PropertyToKey(const UnicodeString & Property)
@@ -1052,7 +1052,7 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
       LCID Locale;
 
       TRACE("TGUIConfiguration::GetLocales 4");
-      Count = Langs->Count;
+      Count = Langs->GetCount();
       Index = -1;
       while (Index < Count)
       {
@@ -1105,7 +1105,7 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
       }
       */
       TRACE("TGUIConfiguration::GetLocales 10");
-      for (int Index = 0; Index < Exts->Count; Index++)
+      for (int Index = 0; Index < Exts->GetCount(); Index++)
       {
         TRACE("TGUIConfiguration::GetLocales 11");
         if ((Exts->Objects[Index] == NULL) &&

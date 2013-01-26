@@ -1,6 +1,9 @@
 .svn/
 *.log
 Temp/
+build/
+Release/
+Debug/
 Far2_x86/
 Far2_x64/
 Far3_x86/
@@ -29,9 +32,6 @@ ipch/
 *.7z
 *.orig
 tags
-build/
-Release/
-Debug/
 src/NetBox/NetBox/
 
 *.vsp

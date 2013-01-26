@@ -212,7 +212,7 @@ intptr_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo
       FarConfiguration->GetEditorMultiple())
   {
     TWinSCPFileSystem * FileSystem = NULL;
-    for (intptr_t Index = 0; Index < FOpenedPlugins->Count; Index++)
+    for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); Index++)
     {
       FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->GetItem(Index));
       FileSystem->ProcessEditorEvent(Info->Event, Info->Param);
@@ -678,11 +678,11 @@ intptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
         if ((Params != NULL) && (Params->Timeout != 0) && \
             (Params->TimeoutAnswer == qa ## TYPE)) \
         { \
-          TimeoutButton = ButtonLabels->Count - 1; \
+          TimeoutButton = ButtonLabels->GetCount() - 1; \
         } \
         if (NeverAskAgainPending && CANNEVERASK) \
         { \
-          ButtonLabels->Objects(ButtonLabels->Count - 1, reinterpret_cast<TObject *>((size_t)true)); \
+          ButtonLabels->Objects(ButtonLabels->GetCount() - 1, reinterpret_cast<TObject *>((size_t)true)); \
           NeverAskAgainPending = false; \
         } \
       }
@@ -754,7 +754,7 @@ intptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
     FarParams.Token = &Data;
     FarParams.ClickEvent = MAKE_CALLBACK(TWinSCPPlugin::MessageClick, this);
 
-    if (MoreMessages && (MoreMessages->Count > 0))
+    if (MoreMessages && (MoreMessages->GetCount() > 0))
     {
       FarParams.MoreMessages = MoreMessages;
     }

@@ -91,9 +91,12 @@ TNamedObject * TNamedObjectList::AtObject(intptr_t Index)
 //---------------------------------------------------------------------------
 void TNamedObjectList::Recount()
 {
-  int i = 0;
-  while ((i < TObjectList::Count) && (static_cast<TNamedObject *>(Items[i])->GetHidden())) { i++; }
-  FHiddenCount = i;
+  intptr_t I = 0;
+  while ((I < TObjectList::GetCount()) && (static_cast<TNamedObject *>(Items[I])->GetHidden()))
+  {
+    ++I;
+  }
+  FHiddenCount = I;
 }
 //---------------------------------------------------------------------------
 void TNamedObjectList::AlphaSort()
@@ -111,11 +114,13 @@ void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
 TNamedObject * TNamedObjectList::FindByName(UnicodeString Name,
   Boolean CaseSensitive)
 {
-  for (Integer Index = 0; Index < TObjectList::Count; Index++)
+  for (Integer Index = 0; Index < TObjectList::GetCount(); ++Index)
+  {
     if (!(static_cast<TNamedObject *>(Items[Index]))->CompareName(Name, CaseSensitive))
     {
       return static_cast<TNamedObject *>(Items[Index]);
     }
+  }
   return NULL;
 }
 //---------------------------------------------------------------------------
@@ -126,6 +131,6 @@ void TNamedObjectList::SetCount(intptr_t Value)
 //---------------------------------------------------------------------------
 intptr_t TNamedObjectList::GetCount()
 {
-  return TObjectList::Count - GetHiddenCount();
+  return TObjectList::GetCount() - GetHiddenCount();
 }
 
