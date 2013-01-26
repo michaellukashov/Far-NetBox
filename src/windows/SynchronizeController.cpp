@@ -14,7 +14,7 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-/* __fastcall */ TSynchronizeController::TSynchronizeController(
+TSynchronizeController::TSynchronizeController(
   TSynchronizeEvent AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,
   TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories)
 {
@@ -31,13 +31,13 @@
   FOnSynchronizeThreads = NULL;
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TSynchronizeController::~TSynchronizeController()
+TSynchronizeController::~TSynchronizeController()
 {
   CALLSTACK;
   assert(FSynchronizeMonitor == NULL);
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
+void TSynchronizeController::StartStop(TObject * Sender,
   bool Start, const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
   TSynchronizeOptions * Options,
   TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
@@ -115,7 +115,7 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::SynchronizeChange(
+void TSynchronizeController::SynchronizeChange(
   TObject * /*Sender*/, const UnicodeString & Directory, bool & SubdirsChanged)
 {
   CALLSTACK;
@@ -200,7 +200,7 @@ void __fastcall TSynchronizeController::SynchronizeChange(
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::SynchronizeAbort(bool Close)
+void TSynchronizeController::SynchronizeAbort(bool Close)
 {
   CALLSTACK;
   if (FSynchronizeMonitor != NULL)
@@ -212,7 +212,7 @@ void __fastcall TSynchronizeController::SynchronizeAbort(bool Close)
   FSynchronizeAbort(NULL, Close);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
+void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
   const UnicodeString & FileName)
 {
   CALLSTACK;
@@ -237,7 +237,7 @@ void __fastcall TSynchronizeController::LogOperation(TSynchronizeOperation Opera
   SynchronizeLog(Entry, Message);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
+void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
   const UnicodeString & Message)
 {
   CALLSTACK;
@@ -247,7 +247,7 @@ void __fastcall TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entr
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
+void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
   const UnicodeString & DirectoryName, bool & Add)
 {
   CALLSTACK;
@@ -264,7 +264,7 @@ void __fastcall TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
   Add = Add && FCopyParam.AllowTransfer(DirectoryName, osLocal, true, MaskParams);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::SynchronizeInvalid(
+void TSynchronizeController::SynchronizeInvalid(
   TObject * /*Sender*/, const UnicodeString & Directory, const UnicodeString & ErrorStr)
 {
   CALLSTACK;
@@ -276,7 +276,7 @@ void __fastcall TSynchronizeController::SynchronizeInvalid(
   SynchronizeAbort(false);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::SynchronizeTooManyDirectories(
+void TSynchronizeController::SynchronizeTooManyDirectories(
   TObject * /*Sender*/, int & MaxDirectories)
 {
   CALLSTACK;
@@ -286,7 +286,7 @@ void __fastcall TSynchronizeController::SynchronizeTooManyDirectories(
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::SynchronizeDirectoriesChange(
+void TSynchronizeController::SynchronizeDirectoriesChange(
   TObject * /*Sender*/, int Directories)
 {
   CALLSTACK;

@@ -361,7 +361,7 @@ static int fcrypt_end(unsigned char mac[], fcrypt_ctx cx[1])
 //---------------------------------------------------------------------------
 #define PASSWORD_MANAGER_AES_MODE 3
 //---------------------------------------------------------------------------
-static void __fastcall FillBufferWithRandomData(char * Buf, intptr_t Len)
+static void FillBufferWithRandomData(char * Buf, intptr_t Len)
 {
   while (Len > 0)
   {
@@ -371,7 +371,7 @@ static void __fastcall FillBufferWithRandomData(char * Buf, intptr_t Len)
   }
 }
 //---------------------------------------------------------------------------
-static RawByteString __fastcall AES256Salt()
+static RawByteString AES256Salt()
 {
   RawByteString Result;
   Result.SetLength(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
@@ -379,7 +379,7 @@ static RawByteString __fastcall AES256Salt()
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall AES256EncyptWithMAC(RawByteString Input, UnicodeString Password,
+void AES256EncyptWithMAC(RawByteString Input, UnicodeString Password,
   RawByteString & Salt, RawByteString & Output, RawByteString & Mac)
 {
   fcrypt_ctx aes;
@@ -399,7 +399,7 @@ void __fastcall AES256EncyptWithMAC(RawByteString Input, UnicodeString Password,
   fcrypt_end(reinterpret_cast<unsigned char *>(const_cast<char *>(Mac.c_str())), &aes);
 }
 //---------------------------------------------------------------------------
-void __fastcall AES256EncyptWithMAC(RawByteString Input, UnicodeString Password,
+void AES256EncyptWithMAC(RawByteString Input, UnicodeString Password,
   RawByteString & Output)
 {
   RawByteString Salt;
@@ -409,7 +409,7 @@ void __fastcall AES256EncyptWithMAC(RawByteString Input, UnicodeString Password,
   Output = Salt + Encrypted + Mac;
 }
 //---------------------------------------------------------------------------
-bool __fastcall AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
+bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
   RawByteString Salt, RawByteString & Output, RawByteString Mac)
 {
   fcrypt_ctx aes;
@@ -428,7 +428,7 @@ bool __fastcall AES256DecryptWithMAC(RawByteString Input, UnicodeString Password
   return (Mac2 == Mac);
 }
 //---------------------------------------------------------------------------
-bool __fastcall AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
+bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
   RawByteString & Output)
 {
   bool Result =
@@ -447,7 +447,7 @@ bool __fastcall AES256DecryptWithMAC(RawByteString Input, UnicodeString Password
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall AES256CreateVerifier(UnicodeString Input, RawByteString & Verifier)
+void AES256CreateVerifier(UnicodeString Input, RawByteString & Verifier)
 {
   RawByteString Salt = AES256Salt();
   RawByteString Dummy = AES256Salt();
@@ -459,7 +459,7 @@ void __fastcall AES256CreateVerifier(UnicodeString Input, RawByteString & Verifi
   Verifier = Salt + Dummy + Mac;
 }
 //---------------------------------------------------------------------------
-bool __fastcall AES256Verify(UnicodeString Input, RawByteString Verifier)
+bool AES256Verify(UnicodeString Input, RawByteString Verifier)
 {
   int SaltLength = SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
   RawByteString Salt = Verifier.SubString(1, SaltLength);
@@ -498,7 +498,7 @@ unsigned char SScrambleTable[256] =
 unsigned char * ScrambleTable;
 unsigned char * UnscrambleTable;
 //---------------------------------------------------------------------------
-RawByteString __fastcall ScramblePassword(UnicodeString Password)
+RawByteString ScramblePassword(UnicodeString Password)
 {
   #define SCRAMBLE_LENGTH_EXTENSION 50
   UTF8String UtfPassword = Password;
@@ -532,7 +532,7 @@ RawByteString __fastcall ScramblePassword(UnicodeString Password)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
+bool UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
 {
   Scrambled.Unique();
   char * S = const_cast<char *>(Scrambled.c_str());
@@ -576,7 +576,7 @@ bool __fastcall UnscramblePassword(RawByteString Scrambled, UnicodeString & Pass
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall CryptographyInitialize()
+void CryptographyInitialize()
 {
   ScrambleTable = SScrambleTable;
   UnscrambleTable = new unsigned char[256];
@@ -587,19 +587,19 @@ void __fastcall CryptographyInitialize()
   srand((unsigned int)time(NULL) ^ (unsigned int)getpid());
 }
 //---------------------------------------------------------------------------
-void __fastcall CryptographyFinalize()
+void CryptographyFinalize()
 {
   delete[] UnscrambleTable;
   UnscrambleTable = NULL;
   ScrambleTable = NULL;
 }
 //---------------------------------------------------------------------------
-int __fastcall PasswordMaxLength()
+int PasswordMaxLength()
 {
   return 128;
 }
 //---------------------------------------------------------------------------
-int __fastcall IsValidPassword(UnicodeString Password)
+int IsValidPassword(UnicodeString Password)
 {
   if (Password.IsEmpty() || (Password.Length() > PasswordMaxLength()))
   {

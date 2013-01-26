@@ -69,21 +69,21 @@ public:
   TBookmarkList * GetBookmarks(const UnicodeString & Key);
   void SetBookmarks(const UnicodeString & Key, TBookmarkList * Value);
 
-  virtual void __fastcall Load();
-  virtual void __fastcall Save(bool All, bool Explicit);
-  virtual void __fastcall Default();
-  virtual THierarchicalStorage * __fastcall CreateScpStorage(bool SessionList);
+  virtual void Load();
+  virtual void Save(bool All, bool Explicit);
+  virtual void Default();
+  virtual THierarchicalStorage * CreateScpStorage(bool SessionList);
   void CacheFarSettings();
 
 protected:
-  virtual bool __fastcall GetConfirmOverwriting();
-  virtual void __fastcall SetConfirmOverwriting(bool Value);
+  virtual bool GetConfirmOverwriting();
+  virtual void SetConfirmOverwriting(bool Value);
 
-  virtual void __fastcall SaveData(THierarchicalStorage * Storage, bool All);
-  virtual void __fastcall LoadData(THierarchicalStorage * Storage);
+  virtual void SaveData(THierarchicalStorage * Storage, bool All);
+  virtual void LoadData(THierarchicalStorage * Storage);
 
-  virtual UnicodeString __fastcall ModuleFileName();
-  virtual void __fastcall Saved();
+  virtual UnicodeString ModuleFileName();
+  virtual void Saved();
 
 private:
   TCustomFarPlugin * FFarPlugin;

@@ -39,30 +39,30 @@ public:
   explicit TFileZillaImpl(TFTPFileSystem * FileSystem);
   virtual ~TFileZillaImpl() {}
 
-  virtual const wchar_t * __fastcall Option(int OptionID) const;
-  virtual int __fastcall OptionVal(int OptionID) const;
+  virtual const wchar_t * Option(int OptionID) const;
+  virtual int OptionVal(int OptionID) const;
 
 protected:
-  virtual bool __fastcall DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam);
+  virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam);
 
-  virtual bool __fastcall HandleStatus(const wchar_t * Status, int Type);
-  virtual bool __fastcall HandleAsynchRequestOverwrite(
+  virtual bool HandleStatus(const wchar_t * Status, int Type);
+  virtual bool HandleAsynchRequestOverwrite(
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
     __int64 Size1, __int64 Size2, time_t Time1, time_t Time2,
     bool HasTime1, bool HasTime2, void * UserData, int & RequestResult);
-  virtual bool __fastcall HandleAsynchRequestVerifyCertificate(
+  virtual bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult);
-  virtual bool __fastcall HandleAsynchRequestNeedPass(
+  virtual bool HandleAsynchRequestNeedPass(
     struct TNeedPassRequestData & Data, int & RequestResult);
-  virtual bool __fastcall HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
+  virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     unsigned int Count);
-  virtual bool __fastcall HandleTransferStatus(bool Valid, __int64 TransferSize,
+  virtual bool HandleTransferStatus(bool Valid, __int64 TransferSize,
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer);
-  virtual bool __fastcall HandleReply(int Command, unsigned int Reply);
-  virtual bool __fastcall HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
-  virtual bool __fastcall CheckError(int ReturnCode, const wchar_t * Context);
+  virtual bool HandleReply(int Command, unsigned int Reply);
+  virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
+  virtual bool CheckError(int ReturnCode, const wchar_t * Context);
 
 private:
   TFTPFileSystem * FFileSystem;
@@ -74,31 +74,31 @@ TFileZillaImpl::TFileZillaImpl(TFTPFileSystem * FileSystem) :
 {
 }
 //---------------------------------------------------------------------------
-const wchar_t * __fastcall TFileZillaImpl::Option(int OptionID) const
+const wchar_t * TFileZillaImpl::Option(int OptionID) const
 {
   CCALLSTACK(TRACE_FZAPI);
   return FFileSystem->GetOption(OptionID);
 }
 //---------------------------------------------------------------------------
-int __fastcall TFileZillaImpl::OptionVal(int OptionID) const
+int TFileZillaImpl::OptionVal(int OptionID) const
 {
   CCALLSTACK(TRACE_FZAPI);
   return FFileSystem->GetOptionVal(OptionID);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileZillaImpl::DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam)
+bool TFileZillaImpl::DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam)
 {
   CCALLSTACK(TRACE_FZAPI);
   return FFileSystem->PostMessage(Type, wParam, lParam);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileZillaImpl::HandleStatus(const wchar_t * Status, int Type)
+bool TFileZillaImpl::HandleStatus(const wchar_t * Status, int Type)
 {
   CALLSTACK;
   return FFileSystem->HandleStatus(Status, Type);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileZillaImpl::HandleAsynchRequestOverwrite(
+bool TFileZillaImpl::HandleAsynchRequestOverwrite(
   wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
   const wchar_t * Path1, const wchar_t * Path2,
   __int64 Size1, __int64 Size2, time_t Time1, time_t Time2,
@@ -110,28 +110,28 @@ bool __fastcall TFileZillaImpl::HandleAsynchRequestOverwrite(
     HasTime1, HasTime2, UserData, RequestResult);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileZillaImpl::HandleAsynchRequestVerifyCertificate(
+bool TFileZillaImpl::HandleAsynchRequestVerifyCertificate(
   const TFtpsCertificateData & Data, int & RequestResult)
 {
   CALLSTACK;
   return FFileSystem->HandleAsynchRequestVerifyCertificate(Data, RequestResult);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileZillaImpl::HandleAsynchRequestNeedPass(
+bool TFileZillaImpl::HandleAsynchRequestNeedPass(
   struct TNeedPassRequestData & Data, int & RequestResult)
 {
   CALLSTACK;
   return FFileSystem->HandleAsynchRequestNeedPass(Data, RequestResult);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileZillaImpl::HandleListData(const wchar_t * Path,
+bool TFileZillaImpl::HandleListData(const wchar_t * Path,
   const TListDataEntry * Entries, unsigned int Count)
 {
   CALLSTACK;
   return FFileSystem->HandleListData(Path, Entries, Count);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileZillaImpl::HandleTransferStatus(bool Valid, __int64 TransferSize,
+bool TFileZillaImpl::HandleTransferStatus(bool Valid, __int64 TransferSize,
   __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
   bool FileTransfer)
 {
@@ -140,19 +140,19 @@ bool __fastcall TFileZillaImpl::HandleTransferStatus(bool Valid, __int64 Transfe
     TimeElapsed, TimeLeft, TransferRate, FileTransfer);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileZillaImpl::HandleReply(int Command, unsigned int Reply)
+bool TFileZillaImpl::HandleReply(int Command, unsigned int Reply)
 {
   CALLSTACK;
   return FFileSystem->HandleReply(Command, Reply);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileZillaImpl::HandleCapabilities(TFTPServerCapabilities * ServerCapabilities)
+bool TFileZillaImpl::HandleCapabilities(TFTPServerCapabilities * ServerCapabilities)
 {
   CALLSTACK;
   return FFileSystem->HandleCapabilities(ServerCapabilities);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileZillaImpl::CheckError(int ReturnCode, const wchar_t * Context)
+bool TFileZillaImpl::CheckError(int ReturnCode, const wchar_t * Context)
 {
   CALLSTACK;
   return FFileSystem->CheckError(ReturnCode, Context);

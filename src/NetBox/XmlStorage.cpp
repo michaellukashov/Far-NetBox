@@ -129,7 +129,7 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TXmlStorage::DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi)
+bool TXmlStorage::DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi)
 {
   Classes::Error(SNotImplemented, 3024);
   UnicodeString K = PuttyMungeStr(SubKey);
@@ -137,7 +137,7 @@ bool __fastcall TXmlStorage::DoKeyExists(const UnicodeString & SubKey, bool Forc
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TXmlStorage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate)
+bool TXmlStorage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate)
 {
   tinyxml2::XMLElement * OldCurrentElement = FCurrentElement;
   tinyxml2::XMLElement * Element = NULL;

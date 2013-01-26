@@ -58,7 +58,7 @@ public:
     TSynchronizeOptions * Options,
     TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
     TSynchronizeLogEvent OnSynchronizeLog);
-  void __fastcall LogOperation(TSynchronizeOperation Operation, const UnicodeString & FileName);
+  void LogOperation(TSynchronizeOperation Operation, const UnicodeString & FileName);
 
 private:
   TSynchronizeEvent FOnSynchronize;
@@ -72,16 +72,16 @@ private:
   TSynchronizeLogEvent FSynchronizeLog;
   TCopyParamType FCopyParam;
 
-  void __fastcall SynchronizeChange(TObject * Sender, const UnicodeString & Directory,
+  void SynchronizeChange(TObject * Sender, const UnicodeString & Directory,
     bool & SubdirsChanged);
-  void __fastcall SynchronizeAbort(bool Close);
-  void __fastcall SynchronizeLog(TSynchronizeLogEntry Entry, const UnicodeString & Message);
-  void __fastcall SynchronizeInvalid(TObject * Sender, const UnicodeString & Directory,
+  void SynchronizeAbort(bool Close);
+  void SynchronizeLog(TSynchronizeLogEntry Entry, const UnicodeString & Message);
+  void SynchronizeInvalid(TObject * Sender, const UnicodeString & Directory,
     const UnicodeString & ErrorStr);
-  void __fastcall SynchronizeFilter(TObject * Sender, const UnicodeString & DirectoryName,
+  void SynchronizeFilter(TObject * Sender, const UnicodeString & DirectoryName,
     bool & Add);
-  void __fastcall SynchronizeTooManyDirectories(TObject * Sender, int & MaxDirectories);
-  void __fastcall SynchronizeDirectoriesChange(TObject * Sender, int Directories);
+  void SynchronizeTooManyDirectories(TObject * Sender, int & MaxDirectories);
+  void SynchronizeDirectoriesChange(TObject * Sender, int Directories);
 };
 //---------------------------------------------------------------------------
 #endif

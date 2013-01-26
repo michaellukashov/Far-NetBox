@@ -210,7 +210,7 @@ public:
     TCustomCommand * ChildCustomCommand);
 
 protected:
-  virtual void __fastcall Prompt(intptr_t Index, const UnicodeString & Prompt,
+  virtual void Prompt(intptr_t Index, const UnicodeString & Prompt,
     UnicodeString & Value);
 
 private:
@@ -224,7 +224,7 @@ TFarInteractiveCustomCommand::TFarInteractiveCustomCommand(
   FPlugin = Plugin;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarInteractiveCustomCommand::Prompt(intptr_t /*Index*/,
+void TFarInteractiveCustomCommand::Prompt(intptr_t /*Index*/,
   const UnicodeString & Prompt, UnicodeString & Value)
 {
   UnicodeString APrompt = Prompt;
@@ -248,9 +248,9 @@ public:
   explicit TKeepaliveThread(TWinSCPFileSystem * FileSystem, TDateTime Interval);
   virtual ~TKeepaliveThread()
   {}
-  virtual void __fastcall Init();
-  virtual void __fastcall Execute();
-  virtual void __fastcall Terminate();
+  virtual void Init();
+  virtual void Execute();
+  virtual void Terminate();
 
 private:
   TWinSCPFileSystem * FFileSystem;

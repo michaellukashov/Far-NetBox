@@ -20,7 +20,7 @@ bool SaveRandomSeed;
 char appname_[50];
 const char *const appname = appname_;
 //---------------------------------------------------------------------------
-void __fastcall PuttyInitialize()
+void PuttyInitialize()
 {
   SaveRandomSeed = true;
 
@@ -42,7 +42,7 @@ void __fastcall PuttyInitialize()
   strcpy(appname_, AppName.c_str());
 }
 //---------------------------------------------------------------------------
-void __fastcall PuttyFinalize()
+void PuttyFinalize()
 {
   if (SaveRandomSeed)
   {
@@ -55,7 +55,7 @@ void __fastcall PuttyFinalize()
   DeleteCriticalSection(&noise_section);
 }
 //---------------------------------------------------------------------------
-void __fastcall DontSaveRandomSeed()
+void DontSaveRandomSeed()
 {
   SaveRandomSeed = false;
 }
@@ -537,13 +537,13 @@ UnicodeString KeyTypeName(TKeyType KeyType)
   return key_type_to_str(KeyType);
 }
 //---------------------------------------------------------------------------
-__int64 __fastcall ParseSize(const UnicodeString & SizeStr)
+__int64 ParseSize(const UnicodeString & SizeStr)
 {
   AnsiString AnsiSizeStr = SizeStr;
   return parse_blocksize(AnsiSizeStr.c_str());
 }
 //---------------------------------------------------------------------------
-bool __fastcall HasGSSAPI()
+bool HasGSSAPI()
 {
   static int has = -1;
   if (has < 0)

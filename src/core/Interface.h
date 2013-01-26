@@ -8,16 +8,16 @@
 #include "SessionData.h"
 #define HELP_NONE ""
 //---------------------------------------------------------------------------
-TConfiguration * __fastcall CreateConfiguration();
+TConfiguration * CreateConfiguration();
 
-void __fastcall ShowExtendedException(Exception * E);
+void ShowExtendedException(Exception * E);
 
-UnicodeString __fastcall GetRegistryKey();
-void __fastcall Busy(bool Start);
-UnicodeString __fastcall AppNameString();
-UnicodeString __fastcall SshVersionString();
-void __fastcall CopyToClipboard(const UnicodeString & Text);
-HANDLE __fastcall StartThread(void * SecurityAttributes, unsigned StackSize,
+UnicodeString GetRegistryKey();
+void Busy(bool Start);
+UnicodeString AppNameString();
+UnicodeString SshVersionString();
+void CopyToClipboard(const UnicodeString & Text);
+HANDLE StartThread(void * SecurityAttributes, unsigned StackSize,
   /* TThreadFunc ThreadFunc, */ void * Parameter, unsigned CreationFlags,
   TThreadID & ThreadId);
 
@@ -85,7 +85,7 @@ enum TPromptKind
   pkNewPassword
 };
 
-bool __fastcall IsAuthenticationPrompt(TPromptKind Kind);
+bool IsAuthenticationPrompt(TPromptKind Kind);
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE4(TFileFoundEvent, void,
   TTerminal * /* Terminal */, const UnicodeString & /* FileName */, const TRemoteFile * /* File */,

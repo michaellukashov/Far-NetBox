@@ -10,12 +10,12 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-TConfiguration * __fastcall CreateConfiguration()
+TConfiguration * CreateConfiguration()
 {
   return new TFarConfiguration(FarPlugin);
 }
 //---------------------------------------------------------------------------
-void __fastcall ShowExtendedException(Exception * E)
+void ShowExtendedException(Exception * E)
 {
   assert(FarPlugin != NULL);
   TWinSCPPlugin * WinSCPPlugin = dynamic_cast<TWinSCPPlugin *>(FarPlugin);
@@ -23,23 +23,23 @@ void __fastcall ShowExtendedException(Exception * E)
   WinSCPPlugin->ShowExtendedException(E);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall AppNameString()
+UnicodeString AppNameString()
 {
   return L"NetBox";
 }
 
 //---------------------------------------------------------------------------
-UnicodeString __fastcall GetRegistryKey()
+UnicodeString GetRegistryKey()
 {
   return L"Software\\Far2\\Plugins\\NetBox 2";
 }
 //---------------------------------------------------------------------------
-void __fastcall Busy(bool /*Start*/)
+void Busy(bool /*Start*/)
 {
   // nothing
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall SshVersionString()
+UnicodeString SshVersionString()
 {
   return FORMAT(L"NetBox-FAR-release-%s", Configuration->GetVersion().c_str());
 }
@@ -69,7 +69,7 @@ void EndThread(int ExitCode)
 }
 
 //---------------------------------------------------------------------------
-HANDLE __fastcall StartThread(void * SecurityAttributes, unsigned int StackSize,
+HANDLE StartThread(void * SecurityAttributes, unsigned int StackSize,
   void * Parameter, unsigned int CreationFlags,
   DWORD & ThreadId)
 {
@@ -77,7 +77,7 @@ HANDLE __fastcall StartThread(void * SecurityAttributes, unsigned int StackSize,
     CreationFlags, ThreadId);
 }
 //---------------------------------------------------------------------------
-void __fastcall CopyToClipboard(const UnicodeString & Text)
+void CopyToClipboard(const UnicodeString & Text)
 {
   assert(FarPlugin != NULL);
   FarPlugin->FarCopyToClipboard(Text);

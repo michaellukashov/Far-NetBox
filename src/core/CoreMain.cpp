@@ -39,7 +39,7 @@ TQueryParams::TQueryParams(unsigned int AParams, UnicodeString AHelpKeyword)
   HelpKeyword = AHelpKeyword;
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsAuthenticationPrompt(TPromptKind Kind)
+bool IsAuthenticationPrompt(TPromptKind Kind)
 {
   return
     (Kind == pkUserName) || (Kind == pkPassphrase) || (Kind == pkTIS) ||

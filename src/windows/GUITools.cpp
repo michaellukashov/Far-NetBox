@@ -17,7 +17,7 @@
 extern const UnicodeString PageantTool = L"pageant.exe";
 extern const UnicodeString PuttygenTool = L"puttygen.exe";
 //---------------------------------------------------------------------------
-bool __fastcall FindFile(UnicodeString & Path)
+bool FindFile(UnicodeString & Path)
 {
   bool Result = FileExists(Path);
   if (!Result)
@@ -40,12 +40,12 @@ bool __fastcall FindFile(UnicodeString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall FileExistsEx(UnicodeString Path)
+bool FileExistsEx(UnicodeString Path)
 {
   return FindFile(Path);
 }
 //---------------------------------------------------------------------------
-void __fastcall OpenSessionInPutty(const UnicodeString & PuttyPath,
+void OpenSessionInPutty(const UnicodeString & PuttyPath,
   TSessionData * SessionData, UnicodeString Password)
 {
   CALLSTACK;
@@ -154,7 +154,7 @@ void __fastcall OpenSessionInPutty(const UnicodeString & PuttyPath,
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall FindTool(const UnicodeString & Name, UnicodeString & Path)
+bool FindTool(const UnicodeString & Name, UnicodeString & Path)
 {
   UnicodeString AppPath = IncludeTrailingBackslash(ExtractFilePath(Configuration->ModuleFileName()));
   Path = AppPath + Name;
@@ -174,7 +174,7 @@ bool __fastcall FindTool(const UnicodeString & Name, UnicodeString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall ExecuteShell(const UnicodeString & Path, const UnicodeString & Params)
+bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params)
 {
   CALLSTACK;
   TRACEFMT("1 [%s] [%s]", Path.c_str(), Params.c_str());
@@ -182,7 +182,7 @@ bool __fastcall ExecuteShell(const UnicodeString & Path, const UnicodeString & P
     const_cast<wchar_t*>(Params.data()), NULL, SW_SHOWNORMAL) > 32);
 }
 //---------------------------------------------------------------------------
-bool __fastcall ExecuteShell(const UnicodeString & Path, const UnicodeString & Params,
+bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params,
   HANDLE & Handle)
 {
   CALLSTACK;
@@ -209,7 +209,7 @@ bool __fastcall ExecuteShell(const UnicodeString & Path, const UnicodeString & P
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Path,
+bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Path,
   const UnicodeString & Params, TProcessMessagesEvent ProcessMessages)
 {
   bool Result = false;
@@ -248,7 +248,7 @@ bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Path
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Command,
+bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Command,
   TProcessMessagesEvent ProcessMessages)
 {
   UnicodeString Program, Params, Dir;
@@ -256,7 +256,7 @@ bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Comm
   return ExecuteShellAndWait(Handle, Program, Params, ProcessMessages);
 }
 //---------------------------------------------------------------------------
-bool __fastcall SpecialFolderLocation(int PathID, UnicodeString & Path)
+bool SpecialFolderLocation(int PathID, UnicodeString & Path)
 {
   LPITEMIDLIST Pidl;
   wchar_t Buf[MAX_PATH];
@@ -269,7 +269,7 @@ bool __fastcall SpecialFolderLocation(int PathID, UnicodeString & Path)
   return false;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall ItemsFormatString(const UnicodeString & SingleItemFormat,
+UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   const UnicodeString & MultiItemsFormat, intptr_t Count, const UnicodeString & FirstItem)
 {
   UnicodeString Result;
@@ -284,14 +284,14 @@ UnicodeString __fastcall ItemsFormatString(const UnicodeString & SingleItemForma
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall ItemsFormatString(const UnicodeString & SingleItemFormat,
+UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   const UnicodeString & MultiItemsFormat, TStrings * Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
     Items->GetCount(), (Items->GetCount() > 0 ? Items->Strings[0] : UnicodeString()));
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall FileNameFormatString(const UnicodeString & SingleFileFormat,
+UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
   const UnicodeString & MultiFilesFormat, TStrings * Files, bool Remote)
 {
   assert(Files != NULL);
@@ -305,7 +305,7 @@ UnicodeString __fastcall FileNameFormatString(const UnicodeString & SingleFileFo
     Files->GetCount(), Item);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & Identity,
+UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & Identity,
   bool Mask)
 {
   UnicodeString TempDir;
@@ -334,7 +334,7 @@ UnicodeString __fastcall UniqTempDir(const UnicodeString & BaseDir, const Unicod
   return TempDir;
 }
 //---------------------------------------------------------------------------
-bool __fastcall DeleteDirectory(const UnicodeString & DirName)
+bool DeleteDirectory(const UnicodeString & DirName)
 {
   TSearchRec sr = {0};
   bool retval = true;
@@ -373,7 +373,7 @@ bool __fastcall DeleteDirectory(const UnicodeString & DirName)
   return retval;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall FormatDateTimeSpan(const UnicodeString & TimeFormat, TDateTime DateTime)
+UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, TDateTime DateTime)
 {
   UnicodeString Result;
   if (static_cast<int>(DateTime) > 0)
@@ -411,7 +411,7 @@ TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
   FLocalFileName = LocalFileName;
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TLocalCustomCommand::PatternLen(intptr_t Index, wchar_t PatternCmd)
+intptr_t TLocalCustomCommand::PatternLen(intptr_t Index, wchar_t PatternCmd)
 {
   intptr_t Len = 0;
   if (PatternCmd == L'^')
@@ -425,7 +425,7 @@ intptr_t __fastcall TLocalCustomCommand::PatternLen(intptr_t Index, wchar_t Patt
   return Len;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TLocalCustomCommand::PatternReplacement(intptr_t Index,
+bool TLocalCustomCommand::PatternReplacement(intptr_t Index,
   const UnicodeString & Pattern, UnicodeString & Replacement, bool & Delimit)
 {
   bool Result = false;
@@ -441,18 +441,18 @@ bool __fastcall TLocalCustomCommand::PatternReplacement(intptr_t Index,
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TLocalCustomCommand::DelimitReplacement(
+void TLocalCustomCommand::DelimitReplacement(
   UnicodeString & /*Replacement*/, wchar_t /*Quote*/)
 {
   // never delimit local commands
 }
 //---------------------------------------------------------------------------
-bool __fastcall TLocalCustomCommand::HasLocalFileName(const UnicodeString & Command)
+bool TLocalCustomCommand::HasLocalFileName(const UnicodeString & Command)
 {
   return FindPattern(Command, L'^');
 }
 //---------------------------------------------------------------------------
-bool __fastcall TLocalCustomCommand::IsFileCommand(const UnicodeString & Command)
+bool TLocalCustomCommand::IsFileCommand(const UnicodeString & Command)
 {
   return TFileCustomCommand::IsFileCommand(Command) || HasLocalFileName(Command);
 }

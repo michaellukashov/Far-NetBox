@@ -137,75 +137,75 @@ public:
     SERVER_FTP_TLS_EXPLICIT = 0x1400
   };
 
-  static void __fastcall Initialize();
-  static void __fastcall Finalize();
-  static void __fastcall SetResourceModule(void * ResourceHandle);
+  static void Initialize();
+  static void Finalize();
+  static void SetResourceModule(void * ResourceHandle);
 
-  explicit /* __fastcall */ TFileZillaIntf();
-  virtual /* __fastcall */ ~TFileZillaIntf();
+  explicit TFileZillaIntf();
+  virtual ~TFileZillaIntf();
 
-  bool __fastcall Init();
-  void __fastcall Destroying();
+  bool Init();
+  void Destroying();
 
-  bool __fastcall SetCurrentPath(const wchar_t * Path);
-  bool __fastcall GetCurrentPath(wchar_t * Path, size_t MaxLen);
+  bool SetCurrentPath(const wchar_t * Path);
+  bool GetCurrentPath(wchar_t * Path, size_t MaxLen);
 
-  bool __fastcall Cancel();
+  bool Cancel();
 
-  bool __fastcall Connect(const wchar_t * Host, int Port, const wchar_t * User,
+  bool Connect(const wchar_t * Host, int Port, const wchar_t * User,
     const wchar_t * Pass, const wchar_t * Account, bool FwByPass,
     const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8,
     int iForcePasvIp, int iUseMlsd);
-  bool __fastcall Close(bool AllowBusy);
+  bool Close(bool AllowBusy);
 
-  bool __fastcall List();
-  bool __fastcall List(const wchar_t * Path);
+  bool List();
+  bool List(const wchar_t * Path);
 #ifdef MPEXT
-  bool __fastcall ListFile(const wchar_t * FullFileName);
+  bool ListFile(const wchar_t * FullFileName);
 #endif
 
-  bool __fastcall CustomCommand(const wchar_t * Command);
+  bool CustomCommand(const wchar_t * Command);
 
-  bool __fastcall MakeDir(const wchar_t* Path);
-  bool __fastcall Chmod(int Value, const wchar_t* FileName, const wchar_t* Path);
-  bool __fastcall Delete(const wchar_t* FileName, const wchar_t* Path);
-  bool __fastcall RemoveDir(const wchar_t* FileName, const wchar_t* Path);
-  bool __fastcall Rename(const wchar_t* OldName, const wchar_t* NewName,
+  bool MakeDir(const wchar_t* Path);
+  bool Chmod(int Value, const wchar_t* FileName, const wchar_t* Path);
+  bool Delete(const wchar_t* FileName, const wchar_t* Path);
+  bool RemoveDir(const wchar_t* FileName, const wchar_t* Path);
+  bool Rename(const wchar_t* OldName, const wchar_t* NewName,
     const wchar_t* Path, const wchar_t* NewPath);
 
-  bool __fastcall FileTransfer(const wchar_t * LocalFile, const wchar_t * RemoteFile,
+  bool FileTransfer(const wchar_t * LocalFile, const wchar_t * RemoteFile,
     const wchar_t * RemotePath, bool Get, __int64 Size, int Type, void * UserData);
 
-  virtual const wchar_t * __fastcall Option(int OptionID) const = 0;
-  virtual int __fastcall OptionVal(int OptionID) const = 0;
+  virtual const wchar_t * Option(int OptionID) const = 0;
+  virtual int OptionVal(int OptionID) const = 0;
 
-  void __fastcall SetDebugLevel(TLogLevel Level);
-  bool __fastcall HandleMessage(WPARAM wParam, LPARAM lParam);
+  void SetDebugLevel(TLogLevel Level);
+  bool HandleMessage(WPARAM wParam, LPARAM lParam);
 
 protected:
-  bool __fastcall PostMessage(WPARAM wParam, LPARAM lParam);
-  virtual bool __fastcall DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) = 0;
+  bool PostMessage(WPARAM wParam, LPARAM lParam);
+  virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) = 0;
 
-  virtual bool __fastcall HandleStatus(const wchar_t * Status, int Type) = 0;
-  virtual bool __fastcall HandleAsynchRequestOverwrite(
+  virtual bool HandleStatus(const wchar_t * Status, int Type) = 0;
+  virtual bool HandleAsynchRequestOverwrite(
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
     __int64 Size1, __int64 Size2, time_t Time1, time_t Time2,
     bool HasTime1, bool HasTime2, void * UserData, int & RequestResult) = 0;
-  virtual bool __fastcall HandleAsynchRequestVerifyCertificate(
+  virtual bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult) = 0;
-  virtual bool __fastcall HandleAsynchRequestNeedPass(
+  virtual bool HandleAsynchRequestNeedPass(
     struct TNeedPassRequestData & Data, int & RequestResult) = 0;
-  virtual bool __fastcall HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
+  virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     unsigned int Count) = 0;
-  virtual bool __fastcall HandleTransferStatus(bool Valid, __int64 TransferSize,
+  virtual bool HandleTransferStatus(bool Valid, __int64 TransferSize,
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer) = 0;
-  virtual bool __fastcall HandleReply(int Command, unsigned int Reply) = 0;
-  virtual bool __fastcall HandleCapabilities(TFTPServerCapabilities * ServerCapabilities) = 0;
-  virtual bool __fastcall CheckError(int ReturnCode, const wchar_t * Context);
+  virtual bool HandleReply(int Command, unsigned int Reply) = 0;
+  virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities) = 0;
+  virtual bool CheckError(int ReturnCode, const wchar_t * Context);
 
-  inline bool __fastcall Check(int ReturnCode, const wchar_t * Context, int Expected = -1);
+  inline bool Check(int ReturnCode, const wchar_t * Context, int Expected = -1);
 
 private:
   CFileZillaApi * FFileZillaApi;
