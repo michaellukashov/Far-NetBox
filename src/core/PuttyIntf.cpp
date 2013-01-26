@@ -133,7 +133,7 @@ int GetUserpassInput(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
   TRY_FINALLY (
   {
     TRACEFMT("1 [%d]", int(p->n_prompts));
-    for (int Index = 0; Index < static_cast<int>(p->n_prompts); Index++)
+    for (intptr_t Index = 0; Index < static_cast<int>(p->n_prompts); ++Index)
     {
       prompt_t * Prompt = p->prompts[Index];
       Prompts->AddObject(Prompt->prompt, reinterpret_cast<TObject *>(static_cast<size_t>(Prompt->echo)));
@@ -143,7 +143,7 @@ int GetUserpassInput(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
     if (SecureShell->PromptUser(p->to_server != 0, p->name, p->name_reqd != 0,
           UnicodeString(p->instruction), p->instr_reqd != 0, Prompts, Results))
     {
-      for (int Index = 0; Index < int(p->n_prompts); Index++)
+      for (intptr_t Index = 0; Index < int(p->n_prompts); ++Index)
       {
         prompt_t * Prompt = p->prompts[Index];
         AnsiString Str = Results->Strings[Index].c_str();
@@ -553,7 +553,7 @@ bool __fastcall HasGSSAPI()
     ssh_gss_liblist * List = ssh_gss_setup(&cfg);
     TRY_FINALLY (
     {
-      for (int Index = 0; (has <= 0) && (Index < List->nlibraries); Index++)
+      for (intptr_t Index = 0; (has <= 0) && (Index < List->nlibraries); ++Index)
       {
         ssh_gss_library * library = &List->libraries[Index];
         Ssh_gss_ctx ctx;

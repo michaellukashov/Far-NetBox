@@ -156,9 +156,9 @@ void aes_set_encrypt_key(const unsigned char in_key[], unsigned int klen, void *
 
 void aes_encrypt_block(const unsigned char in_blk[], unsigned char out_blk[], void * cx)
 {
-  int Index;
+  intptr_t Index;
   memmove(out_blk, in_blk, BLOCK_SIZE);
-  for (Index = 0; Index < 4; Index++)
+  for (Index = 0; Index < 4; ++Index)
   {
     unsigned char t;
     t = out_blk[Index * 4 + 0];
@@ -169,7 +169,7 @@ void aes_encrypt_block(const unsigned char in_blk[], unsigned char out_blk[], vo
     out_blk[Index * 4 + 2] = t;
   }
   call_aes_encrypt(cx, reinterpret_cast<unsigned int*>(out_blk));
-  for (Index = 0; Index < 4; Index++)
+  for (Index = 0; Index < 4; ++Index)
   {
     unsigned char t;
     t = out_blk[Index * 4 + 0];
@@ -505,7 +505,7 @@ RawByteString __fastcall ScramblePassword(UnicodeString Password)
   intptr_t Len = UtfPassword.Length();
   char * Buf = new char[Len + SCRAMBLE_LENGTH_EXTENSION];
   intptr_t Padding = (((Len + 3) / 17) * 17 + 17) - 3 - Len;
-  for (int Index = 0; Index < Padding; Index++)
+  for (intptr_t Index = 0; Index < Padding; ++Index)
   {
     int P = 0;
     while ((P <= 0) || (P > 255) || ((P >= '0') && (P <= '9')))
@@ -580,7 +580,7 @@ void __fastcall CryptographyInitialize()
 {
   ScrambleTable = SScrambleTable;
   UnscrambleTable = new unsigned char[256];
-  for (int Index = 0; Index < 256; Index++)
+  for (intptr_t Index = 0; Index < 256; ++Index)
   {
     UnscrambleTable[SScrambleTable[Index]] = (unsigned char)Index;
   }
@@ -611,7 +611,7 @@ int __fastcall IsValidPassword(UnicodeString Password)
     int B = 0;
     int C = 0;
     int D = 0;
-    for (int Index = 1; Index <= Password.Length(); Index++)
+    for (intptr_t Index = 1; Index <= Password.Length(); ++Index)
     {
       if ((Password[Index] >= L'a') && (Password[Index] <= L'z'))
       {

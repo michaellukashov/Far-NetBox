@@ -685,7 +685,7 @@ void __fastcall TTerminalQueue::DeleteItem(TQueueItem * Item)
       while (Empty && (Index < FItems->GetCount()))
       {
         Empty = (GetItem(Index)->GetCompleteEvent() != INVALID_HANDLE_VALUE);
-        Index++;
+        ++Index;
       }
     }
 

@@ -152,7 +152,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
           wchar_t ** StringArray = new wchar_t *[NAME.GetCount()]; \
           FPluginInfo.NAME = StringArray; \
           FPluginInfo.NAME ## Number = static_cast<int>(NAME.GetCount()); \
-          for (int Index = 0; Index < NAME.GetCount(); Index++) \
+          for (intptr_t Index = 0; Index < NAME.GetCount(); ++Index) \
           { \
             StringArray[Index] = DuplicateStr(NAME.Strings[Index]); \
           } \
@@ -164,7 +164,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
 
     #undef COMPOSESTRINGARRAY
     UnicodeString CommandPrefix;
-    for (intptr_t Index = 0; Index < CommandPrefixes.GetCount(); Index++)
+    for (intptr_t Index = 0; Index < CommandPrefixes.GetCount(); ++Index)
     {
       CommandPrefix = CommandPrefix + (CommandPrefix.IsEmpty() ? L"" : L":") +
                       CommandPrefixes.Strings[Index];
@@ -191,7 +191,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
   if (Info.StructSize)
   {
     #define FREESTRINGARRAY(NAME) \
-      for (intptr_t Index = 0; Index < Info.NAME ## Number; Index++) \
+      for (intptr_t Index = 0; Index < Info.NAME ## Number; ++Index) \
       { \
         delete[] Info.NAME[Index]; \
       } \
@@ -264,7 +264,7 @@ TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
     {
       Result = FileSystem;
     }
-    Index++;
+    ++Index;
   }
   // DEBUG_PRINTF(L"end");
   return Result;
@@ -711,7 +711,7 @@ intptr_t TCustomFarPlugin::MaxMenuItemLength()
 intptr_t TCustomFarPlugin::MaxLength(TStrings * Strings)
 {
   intptr_t Result = 0;
-  for (intptr_t Index = 0; Index < Strings->GetCount(); Index++)
+  for (intptr_t Index = 0; Index < Strings->GetCount(); ++Index)
   {
     if (Result < Strings->Strings[Index].Length())
     {
@@ -853,7 +853,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
 
       if (MaxMessageWidth < Button->GetRight() - GetBorderBox()->GetLeft())
       {
-        for (intptr_t PIndex = 0; PIndex < GetItemCount(); PIndex++)
+        for (intptr_t PIndex = 0; PIndex < GetItemCount(); ++PIndex)
         {
           TFarButton * PrevButton = dynamic_cast<TFarButton *>(GetItem(PIndex));
           if ((PrevButton != NULL) && (PrevButton != Button))
@@ -976,7 +976,7 @@ void TFarMessageDialog::Change()
   {
     if ((FCheckBox != NULL) && (FCheckBoxChecked != FCheckBox->GetChecked()))
     {
-      for (intptr_t Index = 0; Index < GetItemCount(); Index++)
+      for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
       {
         TFarButton * Button = dynamic_cast<TFarButton *>(GetItem(Index));
         if ((Button != NULL) && (Button->GetTag() == 0))
@@ -1074,13 +1074,13 @@ intptr_t TCustomFarPlugin::FarMessage(DWORD Flags,
       MessageLines->Delete(MessageLines->GetCount() - 1);
     }
 
-    for (intptr_t Index = 0; Index < Buttons->GetCount(); Index++)
+    for (intptr_t Index = 0; Index < Buttons->GetCount(); ++Index)
     {
       MessageLines->Add(Buttons->Strings[Index]);
     }
 
     Items = new wchar_t *[MessageLines->GetCount()];
-    for (intptr_t Index = 0; Index < MessageLines->GetCount(); Index++)
+    for (intptr_t Index = 0; Index < MessageLines->GetCount(); ++Index)
     {
       UnicodeString S = MessageLines->Strings[Index];
       MessageLines->Strings[Index] = UnicodeString(S);
@@ -1823,7 +1823,7 @@ void TCustomFarFileSystem::ClearOpenPluginInfo(OpenPluginInfo & Info)
     assert(!Info.DescrFiles);
     assert(!Info.DescrFilesNumber);
     assert(Info.PanelModesNumber == 0 || Info.PanelModesNumber == PANEL_MODES_COUNT);
-    for (int Index = 0; Index < Info.PanelModesNumber; Index++)
+    for (intptr_t Index = 0; Index < Info.PanelModesNumber; ++Index)
     {
       assert(Info.PanelModesArray);
       TFarPanelModes::ClearPanelMode(
@@ -1904,7 +1904,7 @@ intptr_t TCustomFarFileSystem::GetFindData(
       *PanelItem = new PluginPanelItem[PanelItems->GetCount()];
       memset(*PanelItem, 0, PanelItems->GetCount() * sizeof(PluginPanelItem));
       *ItemsNumber = static_cast<int>(PanelItems->GetCount());
-      for (intptr_t Index = 0; Index < PanelItems->GetCount(); Index++)
+      for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
       {
         static_cast<TCustomFarPanelItem *>(PanelItems->GetItem(Index))->FillPanelItem(
           &((*PanelItem)[Index]));
@@ -1927,7 +1927,7 @@ void TCustomFarFileSystem::FreeFindData(
   if (PanelItem)
   {
     assert(ItemsNumber > 0);
-    for (int Index = 0; Index < ItemsNumber; Index++)
+    for (intptr_t Index = 0; Index < ItemsNumber; ++Index)
     {
       delete[] PanelItem[Index].FindData.lpwszFileName;
       delete[] PanelItem[Index].Description;
@@ -2191,7 +2191,7 @@ TObjectList * TCustomFarFileSystem::CreatePanelItemList(
   PanelItems->SetOwnsObjects(true);
   try
   {
-    for (int Index = 0; Index < ItemsNumber; Index++)
+    for (intptr_t Index = 0; Index < ItemsNumber; ++Index)
     {
       PanelItems->Add(new TFarPanelItem(&PanelItem[Index], false));
     }
@@ -2214,7 +2214,7 @@ TFarPanelModes::~TFarPanelModes()
 {
   if (!FReferenced)
   {
-    for (size_t Index = 0; Index < LENOF(FPanelModes); Index++)
+    for (intptr_t Index = 0; Index < LENOF(FPanelModes); ++Index)
     {
       ClearPanelMode(FPanelModes[Index]);
     }
@@ -2237,7 +2237,7 @@ void TFarPanelModes::SetPanelMode(size_t Mode, const UnicodeString & ColumnTypes
   FPanelModes[Mode].ColumnWidths = TCustomFarPlugin::DuplicateStr(ColumnWidths);
   if (ColumnTitles)
   {
-    for (intptr_t Index = 0; Index < ColumnTypesCount; Index++)
+    for (intptr_t Index = 0; Index < ColumnTypesCount; ++Index)
     {
       Titles[Index] = TCustomFarPlugin::DuplicateStr(ColumnTitles->Strings[Index]);
     }
@@ -2267,7 +2267,7 @@ void TFarPanelModes::ClearPanelMode(PanelMode & Mode)
     delete[] Mode.ColumnWidths;
     if (Mode.ColumnTitles)
     {
-      for (int Index = 0; Index < ColumnTypesCount; Index++)
+      for (intptr_t Index = 0; Index < ColumnTypesCount; ++Index)
       {
         delete[] Mode.ColumnTitles[Index];
       }
@@ -2332,7 +2332,7 @@ void TFarKeyBarTitles::ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
   {
     FunctionKeyEnd = FunctionKeyStart;
   }
-  for (int Index = FunctionKeyStart; Index <= FunctionKeyEnd; Index++)
+  for (intptr_t Index = FunctionKeyStart; Index <= FunctionKeyEnd; ++Index)
   {
     SetKeyBarTitle(ShiftStatus, Index, L"");
   }
@@ -2378,7 +2378,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
 //---------------------------------------------------------------------------
 void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
 {
-  for (size_t Index = 0; Index < LENOF(Titles.Titles); Index++)
+  for (intptr_t Index = 0; Index < LENOF(Titles.Titles); ++Index)
   {
     delete[] Titles.Titles[Index];
     delete[] Titles.CtrlTitles[Index];
@@ -2438,7 +2438,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   PanelItem->Owner = TCustomFarPlugin::DuplicateStr(Owner);
   // PanelItem->CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
   wchar_t ** CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
-  for (int Index = 0; Index < PanelItem->CustomColumnNumber; Index++)
+  for (intptr_t Index = 0; Index < PanelItem->CustomColumnNumber; ++Index)
   {
     CustomColumnData[Index] =
       TCustomFarPlugin::DuplicateStr(GetCustomColumnData(Index));
@@ -2609,7 +2609,7 @@ TObjectList * TFarPanelInfo::GetItems()
   // DEBUG_PRINTF(L"FPanelInfo->ItemsNumber = %d", FPanelInfo->ItemsNumber);
   if (FOwner)
   {
-    for (intptr_t Index = 0; Index < FPanelInfo->ItemsNumber; Index++)
+    for (intptr_t Index = 0; Index < FPanelInfo->ItemsNumber; ++Index)
     {
       // DEBUG_PRINTF(L"Index = %d", Index);
       // TODO: move to common function

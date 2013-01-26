@@ -1101,7 +1101,7 @@ void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
     }
     );
-    Index++;
+    ++Index;
   }
 }
 //---------------------------------------------------------------------------
@@ -1394,7 +1394,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
     }
     );
-    Index++;
+    ++Index;
   }
   TRACE("/");
 }
@@ -2272,7 +2272,7 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
       }
     }
 
-    for (int Index = 0; Index < fcCount; Index++)
+    for (intptr_t Index = 0; Index < fcCount; ++Index)
     {
       FFileSystemInfo.IsCapable[Index] = IsCapable(static_cast<TFSCapability>(Index));
     }
@@ -3654,7 +3654,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
     assert(UnixComparePaths(AbsolutePath(FFileList->GetDirectory(), false), Path));
     USEDPARAM(Path);
 
-    for (unsigned int Index = 0; Index < Count; Index++)
+    for (unsigned int Index = 0; Index < Count; ++Index)
     {
       TRACE("4");
       const TListDataEntry * Entry = &Entries[Index];
@@ -3933,14 +3933,14 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
         }
         else
         {
-          Index++;
+          ++Index;
         }
         break;
 
       case QUOTE:
         if (Str[Index] == Quote)
         {
-          Index++;
+          ++Index;
         }
         else
         {

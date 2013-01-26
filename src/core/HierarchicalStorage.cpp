@@ -560,7 +560,7 @@ void __fastcall TRegistryStorage::GetSubKeyNames(Classes::TStrings* Strings)
 {
   CCALLSTACK(TRACE_ACCESS);
   FRegistry->GetKeyNames(Strings);
-  for (int Index = 0; Index < Strings->GetCount(); Index++)
+  for (intptr_t Index = 0; Index < Strings->GetCount(); ++Index)
   {
     Strings->Strings[Index] = UnMungeStr(Strings->Strings[Index]);
     CTRACEFMT(TRACE_ACCESS, "1 [%s]", Strings->Strings[Index].c_str());
@@ -859,7 +859,7 @@ void __fastcall TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings
 void __fastcall TCustomIniFileStorage::GetValueNames(Classes::TStrings* Strings)
 {
   FIniFile->ReadSection(GetCurrentSection(), Strings);
-  for (int Index = 0; Index < Strings->GetCount(); Index++)
+  for (intptr_t Index = 0; Index < Strings->GetCount(); ++Index)
   {
     Strings->Strings[Index] = UnMungeIniName(Strings->Strings[Index]);
   }
@@ -1049,7 +1049,7 @@ void __fastcall TCustomIniFileStorage::WriteBinaryData(const UnicodeString & Nam
   FOriginal = new TStringList();
   dynamic_cast<TMemIniFile *>(FIniFile)->GetStrings(FOriginal);
 //!CLEANBEGIN
-  for (int Index = 0; Index < FOriginal->GetCount(); Index++)
+  for (intptr_t Index = 0; Index < FOriginal->GetCount(); ++Index)
   {
     TRACEFMT("ini [%s]", FOriginal->Strings[Index].c_str());
   }
@@ -1251,7 +1251,7 @@ void __fastcall TOptionsIniFile::ReadSection(const UnicodeString & Section, TStr
 
   TRY_FINALLY (
   {
-    for (int Index = 0; Index < FOptions->GetCount(); Index++)
+    for (intptr_t Index = 0; Index < FOptions->GetCount(); ++Index)
     {
       Strings->Add(FOptions->Names[Index]);
     }

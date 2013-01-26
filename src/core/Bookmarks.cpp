@@ -166,7 +166,7 @@ void __fastcall TBookmarks::Save(THierarchicalStorage * Storage, bool All)
   {
     if (Storage->OpenSubKey(Keys[I], true))
     {
-      for (intptr_t Index = 0; Index < FBookmarkLists->GetCount(); Index++)
+      for (intptr_t Index = 0; Index < FBookmarkLists->GetCount(); ++Index)
       {
         TBookmarkList * BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->Objects[Index]);
         if (All || BookmarkList->GetModified())
@@ -429,7 +429,7 @@ TBookmark * __fastcall TBookmarkList::FindByName(const UnicodeString & Node, con
 //---------------------------------------------------------------------------
 TBookmark * __fastcall TBookmarkList::FindByShortCut(TShortCut ShortCut)
 {
-  for (int Index = 0; Index < FBookmarks->GetCount(); Index++)
+  for (intptr_t Index = 0; Index < FBookmarks->GetCount(); ++Index)
   {
     if (GetBookmarks(Index)->GetShortCut() == ShortCut)
     {
@@ -477,7 +477,7 @@ void __fastcall TBookmarkList::ShortCuts(TShortCuts & ShortCuts)
 {
   CALLSTACK;
   TRACE(">");
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     TBookmark * Bookmark = GetBookmarks(Index);
     if (Bookmark->GetShortCut() != 0)

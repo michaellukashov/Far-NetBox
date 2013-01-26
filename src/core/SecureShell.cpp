@@ -322,7 +322,7 @@ void __fastcall TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, b
   cfg->nopty = TRUE;
   cfg->tcp_keepalives = 0;
   cfg->ssh_show_banner = TRUE;
-  for (int Index = 0; Index < ngsslibs; Index++)
+  for (intptr_t Index = 0; Index < ngsslibs; ++Index)
   {
     cfg->ssh_gsslist[Index] = gsslibkeywords[Index].v;
   }
@@ -919,7 +919,7 @@ Integer __fastcall TSecureShell::Receive(unsigned char * Buf, Integer Len)
 UnicodeString __fastcall TSecureShell::ReceiveLine()
 {
   CCALLSTACK(TRACE_TRANSMIT);
-  unsigned Index = 0;
+  intptr_t Index = 0;
   AnsiString Line;
   Boolean EOL = False;
 
@@ -933,7 +933,7 @@ UnicodeString __fastcall TSecureShell::ReceiveLine()
       // Repeat until we walk thru whole buffer or reach end-of-line
       while ((Index < PendLen) && (!Index || (Pending[Index-1] != '\n')))
       {
-        Index++;
+        ++Index;
       }
       EOL = static_cast<Boolean>(Index && (Pending[Index-1] == '\n'));
       intptr_t PrevLen = Line.Length();
@@ -1132,7 +1132,7 @@ int __fastcall TSecureShell::TranslatePuttyMessage(
   const TPuttyTranslation * Translation, size_t Count, UnicodeString & Message) const
 {
   int Result = -1;
-  for (unsigned int Index = 0; Index < Count; Index++)
+  for (intptr_t Index = 0; Index < Count; ++Index)
   {
     const wchar_t * Original = Translation[Index].Original;
     const wchar_t * Div = wcschr(Original, L'%');
@@ -1608,7 +1608,7 @@ bool __fastcall TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS 
     noise_ultralight(AEvents.lNetworkEvents);
 
     Events.lNetworkEvents |= AEvents.lNetworkEvents;
-    for (int Index = 0; Index < FD_MAX_EVENTS; Index++)
+    for (intptr_t Index = 0; Index < FD_MAX_EVENTS; ++Index)
     {
       if (AEvents.iErrorCode[Index] != 0)
       {
@@ -1892,7 +1892,7 @@ TCipher __fastcall TSecureShell::FuncToSsh1Cipher(const void * Cipher)
   assert(LENOF(CipherFuncs) == LENOF(TCiphers));
   TCipher Result = cipWarn;
 
-  for (unsigned int Index = 0; Index < LENOF(TCiphers); Index++)
+  for (intptr_t Index = 0; Index < LENOF(TCiphers); ++Index)
   {
     if (static_cast<ssh_cipher *>(const_cast<void *>(Cipher)) == CipherFuncs[Index])
     {

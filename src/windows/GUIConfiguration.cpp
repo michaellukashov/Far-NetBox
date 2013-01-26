@@ -272,7 +272,7 @@ TCopyParamList & __fastcall TCopyParamList::operator=(const TCopyParamList & rhl
 {
   Clear();
 
-  for (int Index = 0; Index < rhl.GetCount(); Index++)
+  for (intptr_t Index = 0; Index < rhl.GetCount(); ++Index)
   {
     TCopyParamType * CopyParam = new TCopyParamType(*rhl.GetCopyParam(Index));
     TCopyParamRule * Rule = NULL;
@@ -411,7 +411,7 @@ int __fastcall TCopyParamList::Find(const TCopyParamRuleData & Value) const
 void __fastcall TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
 {
   CALLSTACK;
-  for (int Index = 0; Index < ACount; Index++)
+  for (intptr_t Index = 0; Index < ACount; ++Index)
   {
     UnicodeString Name = IntToStr(Index);
     TCopyParamRule * Rule = NULL;
@@ -455,7 +455,7 @@ void __fastcall TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
 void __fastcall TCopyParamList::Save(THierarchicalStorage * Storage) const
 {
   Storage->ClearSubKeys();
-  for (intptr_t Index = 0; Index < GetCount(); Index++)
+  for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     if (Storage->OpenSubKey(IntToStr((int)Index), true))
     {
@@ -1101,11 +1101,11 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
           Name += LocaleStr;
           FLocales->AddObject(Name, reinterpret_cast<TObject*>(Locale));
         }
-        Index++;
+        ++Index;
       }
       */
       TRACE("TGUIConfiguration::GetLocales 10");
-      for (int Index = 0; Index < Exts->GetCount(); Index++)
+      for (intptr_t Index = 0; Index < Exts->GetCount(); ++Index)
       {
         TRACE("TGUIConfiguration::GetLocales 11");
         if ((Exts->Objects[Index] == NULL) &&

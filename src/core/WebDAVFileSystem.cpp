@@ -12941,7 +12941,7 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
       OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
     }
     );
-    Index++;
+    ++Index;
   }
 }
 
@@ -13345,7 +13345,7 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
       FTerminal->SetExceptionOnFail(false);
     }
     );
-    Index++;
+    ++Index;
   }
 }
 //---------------------------------------------------------------------------
@@ -13641,7 +13641,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
     assert(UnixComparePaths(AbsolutePath(FFileList->GetDirectory(), false), Path));
     USEDPARAM(Path);
 
-    for (intptr_t Index = 0; Index < Count; Index++)
+    for (intptr_t Index = 0; Index < Count; ++Index)
     {
       const TListDataEntry * Entry = &Entries[Index];
       TRemoteFile * File = new TRemoteFile();

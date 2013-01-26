@@ -157,7 +157,7 @@ void __fastcall TSynchronizeController::SynchronizeChange(
             TRACE("3");
             SubdirsChanged = false;
             assert(Checklist != NULL);
-            for (int Index = 0; Index < Checklist->GetCount(); Index++)
+            for (intptr_t Index = 0; Index < Checklist->GetCount(); ++Index)
             {
               TRACE("4");
               const TSynchronizeChecklist::TItem * Item = Checklist->GetItem(Index);

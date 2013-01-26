@@ -104,9 +104,9 @@ bool __fastcall TOptions::FindSwitch(const UnicodeString & Switch,
   UnicodeString & Value, int & ParamsStart, int & ParamsCount)
 {
   ParamsStart = 0;
-  int Index = 0;
+  intptr_t Index = 0;
   bool Found = false;
-  while ((Index < int(FOptions.size())) && !Found)
+  while ((Index < static_cast<intptr_t>(FOptions.size())) && !Found)
   {
     if (FOptions[Index].Type == otParam)
     {
@@ -121,7 +121,7 @@ bool __fastcall TOptions::FindSwitch(const UnicodeString & Switch,
         FOptions[Index].Used = true;
       }
     }
-    Index++;
+    ++Index;
   }
 
   ParamsCount = 0;
@@ -171,11 +171,11 @@ bool __fastcall TOptions::FindSwitch(const UnicodeString & Switch,
       ParamsCount = ParamsMax;
     }
 
-    int Index = 0;
+    intptr_t Index = 0;
     while (Index < ParamsCount)
     {
       Params->Add(GetParam(ParamsStart + Index));
-      Index++;
+      ++Index;
     }
     ParamsProcessed(ParamsStart, ParamsCount);
   }
@@ -274,7 +274,7 @@ void __fastcall TOptions::ParamsProcessed(int ParamsStart, int ParamsCount)
           }
         }
       }
-      Index++;
+      ++Index;
     }
   }
 }

@@ -87,11 +87,11 @@ void __fastcall TSessionData::Default()
   SetSshProt(ssh2);
   SetSsh2DES(false);
   SetSshNoUserAuth(false);
-  for (int Index = 0; Index < CIPHER_COUNT; Index++)
+  for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
   {
     SetCipher(Index, DefaultCipherList[Index]);
   }
-  for (int Index = 0; Index < KEX_COUNT; Index++)
+  for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
   {
     SetKex(Index, DefaultKexList[Index]);
   }
@@ -112,7 +112,7 @@ void __fastcall TSessionData::Default()
   SetProxyDNS(asAuto);
   SetProxyLocalhost(false);
 
-  for (unsigned int Index = 0; Index < LENOF(FBugs); Index++)
+  for (intptr_t Index = 0; Index < LENOF(FBugs); ++Index)
   {
     SetBug(static_cast<TSshBug>(Index), asAuto);
   }
@@ -164,7 +164,7 @@ void __fastcall TSessionData::Default()
   SetSFTPMaxPacketSize(0);
   SetSFTPMinPacketSize(0);
 
-  for (unsigned int Index = 0; Index < LENOF(FSFTPBugs); Index++)
+  for (intptr_t Index = 0; Index < LENOF(FSFTPBugs); ++Index)
   {
     SetSFTPBug(static_cast<TSftpBug>(Index), asAuto);
   }
@@ -338,13 +338,13 @@ void TSessionData::Assign(TPersistent * Source)
     ADVANCED_PROPERTIES;
     #undef PROPERTY
 
-    for (unsigned int Index = 0; Index < LENOF(FBugs); Index++)
+    for (intptr_t Index = 0; Index < LENOF(FBugs); ++Index)
     {
       // PROPERTY(Bug[(TSshBug)Index]);
       (static_cast<TSessionData *>(Source))->SetBug(static_cast<TSshBug>(Index),
           GetBug(static_cast<TSshBug>(Index)));
     }
-    for (unsigned int Index = 0; Index < LENOF(FSFTPBugs); Index++)
+    for (unsigned int Index = 0; Index < LENOF(FSFTPBugs); ++Index)
     {
       // PROPERTY(SFTPBug[(TSftpBug)Index]);
       (static_cast<TSessionData *>(Source))->SetSFTPBug(static_cast<TSftpBug>(Index),
@@ -372,12 +372,12 @@ bool __fastcall TSessionData::IsSame(const TSessionData * Default, bool Advanced
   ADVANCED_PROPERTIES;
   #undef PROPERTY
 
-  for (unsigned int Index = 0; Index < LENOF(FBugs); Index++)
+  for (intptr_t Index = 0; Index < LENOF(FBugs); ++Index)
   {
     // PROPERTY(Bug[(TSshBug)Index]);
     if (GetBug(static_cast<TSshBug>(Index)) != Default->GetBug(static_cast<TSshBug>(Index))) return false;
   }
-  for (unsigned int Index = 0; Index < LENOF(FSFTPBugs); Index++)
+  for (intptr_t Index = 0; Index < LENOF(FSFTPBugs); ++Index)
   {
     // PROPERTY(SFTPBug[(TSftpBug)Index]);
     if (GetSFTPBug(static_cast<TSftpBug>(Index)) != Default->GetSFTPBug(static_cast<TSftpBug>(Index))) return false;
@@ -1696,22 +1696,22 @@ void __fastcall TSessionData::SetCipherList(const UnicodeString & Value)
       {
         SetCipher(Index, static_cast<TCipher>(C));
         Used[C] = true;
-        Index++;
+        ++Index;
         break;
       }
     }
   }
 
-  for (int C = 0; C < CIPHER_COUNT && Index < CIPHER_COUNT; C++)
+  for (intptr_t C = 0; C < CIPHER_COUNT && Index < CIPHER_COUNT; C++)
   {
-    if (!Used[DefaultCipherList[C]]) { SetCipher(Index++, DefaultCipherList[C]); }
+    if (!Used[DefaultCipherList[C]]) { SetCipher(++Index, DefaultCipherList[C]); }
   }
 }
 //---------------------------------------------------------------------
 UnicodeString __fastcall TSessionData::GetCipherList() const
 {
   UnicodeString Result;
-  for (int Index = 0; Index < CIPHER_COUNT; Index++)
+  for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
   {
     Result += UnicodeString(Index ? L"," : L"") + CipherNames[GetCipher(Index)];
   }
@@ -1747,22 +1747,22 @@ void __fastcall TSessionData::SetKexList(const UnicodeString & Value)
       {
         SetKex(Index, static_cast<TKex>(K));
         Used[K] = true;
-        Index++;
+        ++Index;
         break;
       }
     }
   }
 
-  for (int K = 0; K < KEX_COUNT && Index < KEX_COUNT; K++)
+  for (intptr_t K = 0; K < KEX_COUNT && Index < KEX_COUNT; K++)
   {
-    if (!Used[DefaultKexList[K]]) { SetKex(Index++, DefaultKexList[K]); }
+    if (!Used[DefaultKexList[K]]) { SetKex(++Index, DefaultKexList[K]); }
   }
 }
 //---------------------------------------------------------------------
 UnicodeString __fastcall TSessionData::GetKexList() const
 {
   UnicodeString Result;
-  for (int Index = 0; Index < KEX_COUNT; Index++)
+  for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
   {
     Result += UnicodeString(Index ? L"," : L"") + KexNames[GetKex(Index)];
   }
@@ -1855,7 +1855,7 @@ bool __fastcall TSessionData::GetDefaultShell()
 void __fastcall TSessionData::SetProtocolStr(const UnicodeString & Value)
 {
   FProtocol = ptRaw;
-  for (int Index = 0; Index < PROTOCOL_COUNT; Index++)
+  for (intptr_t Index = 0; Index < PROTOCOL_COUNT; ++Index)
   {
     if (Value.CompareIC(ProtocolNames[Index]) == 0)
     {
@@ -2732,7 +2732,7 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
   TRY_FINALLY (
   {
     Storage->GetSubKeyNames(SubKeys);
-    for (int Index = 0; Index < SubKeys->GetCount(); Index++)
+    for (intptr_t Index = 0; Index < SubKeys->GetCount(); ++Index)
     {
       TSessionData * SessionData = NULL;
       UnicodeString SessionName = SubKeys->Strings[Index];
@@ -2840,7 +2840,7 @@ void __fastcall TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   TRY_FINALLY (
   {
     DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults);
-    for (intptr_t Index = 0; Index < GetCount() + GetHiddenCount(); Index++)
+    for (intptr_t Index = 0; Index < GetCount() + GetHiddenCount(); ++Index)
     {
       TSessionData * SessionData = static_cast<TSessionData *>(Items[Index]);
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults);
@@ -2930,7 +2930,7 @@ void __fastcall TStoredSessionList::SelectAll(bool Select)
 void __fastcall TStoredSessionList::Import(TStoredSessionList * From,
   bool OnlySelected)
 {
-  for (int Index = 0; Index < From->GetCount(); Index++)
+  for (intptr_t Index = 0; Index < From->GetCount(); ++Index)
   {
     if (!OnlySelected || From->AtSession(Index)->GetSelected())
     {
@@ -2998,7 +2998,7 @@ void __fastcall TStoredSessionList::UpdateStaticUsage()
   bool Folders = false;
   bool Workspaces = false;
   std::auto_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
-  for (int Index = 0; Index < Count; Index++)
+  for (intptr_t Index = 0; Index < Count; ++Index)
   {
     TSessionData * Data = AtSession(Index);
     switch (Data->GetFSProtocol())
@@ -3164,14 +3164,14 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString & TargetK
       TSessionData * Session;
       UnicodeString HostKeyName;
       assert(Sessions != NULL);
-      for (int Index = 0; Index < Sessions->GetCount(); Index++)
+      for (intptr_t Index = 0; Index < Sessions->GetCount(); ++Index)
       {
         Session = Sessions->AtSession(Index);
         if (!OnlySelected || Session->GetSelected())
         {
           HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostName().c_str()));
           UnicodeString KeyName;
-          for (int KeyIndex = 0; KeyIndex < KeyList->GetCount(); KeyIndex++)
+          for (intptr_t KeyIndex = 0; KeyIndex < KeyList->GetCount(); ++KeyIndex)
           {
             KeyName = KeyList->Strings[KeyIndex];
             intptr_t P = KeyName.Pos(HostKeyName);
@@ -3277,7 +3277,7 @@ UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TSessionData * S
 {
   UnicodeString ANewFileName = StripPathQuotes(ExpandEnvironmentVariables(LogFileName));
   TDateTime N = Now();
-  for (intptr_t Index = 1; Index < ANewFileName.Length(); Index++)
+  for (intptr_t Index = 1; Index < ANewFileName.Length(); ++Index)
   {
     if (ANewFileName[Index] == L'&')
     {

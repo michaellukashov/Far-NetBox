@@ -121,12 +121,12 @@ void TFileBuffer::Convert(char * Source, char * Dest, int Params,
     bool PrevToken = Token;
     Token = false;
 
-    for (int Index = 0; Index < GetSize(); Index++)
+    for (intptr_t Index = 0; Index < GetSize(); ++Index)
     {
       // EOL already in wanted format, make sure to pass unmodified
       if ((Index < GetSize() - 1) && (*Ptr == Dest[0]) && (*(Ptr+1) == Dest[1]))
       {
-        Index++;
+        ++Index;
         Ptr++;
       }
       // last buffer ended with the first char of wanted EOL format,
@@ -147,7 +147,7 @@ void TFileBuffer::Convert(char * Source, char * Dest, int Params,
         if (Dest[1])
         {
           Insert(Index+1, Dest+1, 1);
-          Index++;
+          ++Index;
           Ptr = GetData() + Index;
         }
       }
@@ -157,8 +157,8 @@ void TFileBuffer::Convert(char * Source, char * Dest, int Params,
   // two character source EOL
   else
   {
-    int Index;
-    for (Index = 0; Index < GetSize() - 1; Index++)
+    intptr_t Index;
+    for (Index = 0; Index < GetSize() - 1; ++Index)
     {
       if ((*Ptr == Source[0]) && (*(Ptr+1) == Source[1]))
       {
@@ -166,7 +166,7 @@ void TFileBuffer::Convert(char * Source, char * Dest, int Params,
         if (Dest[1])
         {
           *(Ptr+1) = Dest[1];
-          Index++; Ptr++;
+          ++Index; ++Ptr;
         }
         else
         {

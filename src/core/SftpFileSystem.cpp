@@ -755,7 +755,7 @@ public:
     if (Flags & SSH_FILEXFER_ATTR_EXTENDED)
     {
       unsigned int ExtendedCount = GetCardinal();
-      for (unsigned int Index = 0; Index < ExtendedCount; Index++)
+      for (intptr_t Index = 0; Index < ExtendedCount; ++Index)
       {
         GetRawByteString(); // skip extended_type
         GetRawByteString(); // skip extended_data
@@ -830,7 +830,7 @@ public:
           memset(Byte, '\0', sizeof(Byte));
         }
       }
-      Index++;
+      ++Index;
     }
     DataUpdated(Length);
   }
@@ -838,7 +838,7 @@ public:
   UnicodeString Dump() const
   {
     UnicodeString Result;
-    for (unsigned int Index = 0; Index < GetLength(); Index++)
+    for (intptr_t Index = 0; Index < GetLength(); ++Index)
     {
       Result += ByteToHex(GetData()[Index]) + L",";
       if (((Index + 1) % 25) == 0)
@@ -1537,7 +1537,7 @@ protected:
     while (!Result && (FIndex < FFileList->GetCount()))
     {
       TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->Objects[FIndex]);
-      FIndex++;
+      ++FIndex;
 
       bool MissingRights =
         (FLAGSET(FFileSystem->FSupport->AttributeMask, SSH_FILEXFER_ATTR_PERMISSIONS) &&
@@ -1625,7 +1625,7 @@ protected:
     {
       TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->Objects[FIndex]);
       assert(File != NULL);
-      FIndex++;
+      ++FIndex;
 
       Result = !File->GetIsDirectory();
       if (Result)
@@ -1803,7 +1803,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
       UnicodeString Value;
       UnicodeString Line;
       FFileSystemInfo.AdditionalInfo += LoadStr(SFTP_EXTENSION_INFO) + L"\r\n";
-      for (int Index = 0; Index < FExtensions->GetCount(); Index++)
+      for (intptr_t Index = 0; Index < FExtensions->GetCount(); ++Index)
       {
         UnicodeString Name = FExtensions->Names[Index];
         UnicodeString Value = FExtensions->Values[Name];
@@ -1826,7 +1826,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 
     FFileSystemInfo.ProtocolBaseName = L"SFTP";
     FFileSystemInfo.ProtocolName = FMTLOAD(SFTP_PROTOCOL_NAME2, FVersion);
-    for (int Index = 0; Index < fcCount; Index++)
+    for (intptr_t Index = 0; Index < fcCount; ++Index)
     {
       FFileSystemInfo.IsCapable[Index] = IsCapable(static_cast<TFSCapability>(Index));
     }
@@ -2232,7 +2232,7 @@ unsigned long TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
 {
-  for (intptr_t Index = Reservation+1; Index < FPacketReservations->GetCount(); Index++)
+  for (intptr_t Index = Reservation+1; Index < FPacketReservations->GetCount(); ++Index)
   {
     FPacketNumbers[Index-1] = FPacketNumbers[Index];
   }
@@ -2334,7 +2334,7 @@ uintptr_t TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
         TRACE("4");
         TSFTPPacket * ReservedPacket;
         unsigned int MessageNumber;
-        for (int Index = 0; Index < FPacketReservations->GetCount(); Index++)
+        for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); ++Index)
         {
           TRACE("4a");
           MessageNumber = (unsigned int)FPacketNumbers[Index];
@@ -2782,13 +2782,13 @@ void TSFTPFileSystem::DoStartup()
              int(FSupport->BlockMasks),
              int(FSupport->MaxReadSize)));
           FTerminal->LogEvent(FORMAT(L"  Attribute extensions (%d)\n", FSupport->AttribExtensions->GetCount()));
-          for (int Index = 0; Index < FSupport->AttribExtensions->GetCount(); Index++)
+          for (intptr_t Index = 0; Index < FSupport->AttribExtensions->GetCount(); ++Index)
           {
             FTerminal->LogEvent(
               FORMAT(L"    %s", FSupport->AttribExtensions->Strings[Index].c_str()));
           }
           FTerminal->LogEvent(FORMAT(L"  Extensions (%d)\n", FSupport->Extensions->GetCount()));
-          for (int Index = 0; Index < FSupport->Extensions->GetCount(); Index++)
+          for (intptr_t Index = 0; Index < FSupport->Extensions->GetCount(); ++Index)
           {
             FTerminal->LogEvent(
               FORMAT(L"    %s", FSupport->Extensions->Strings[Index].c_str()));
@@ -2969,7 +2969,7 @@ void TSFTPFileSystem::LookupUsersGroups()
   TRemoteTokenList * Lists[] = { &FTerminal->FUsers, &FTerminal->FGroups };
   wchar_t ListTypes[] = { OGQ_LIST_OWNERS, OGQ_LIST_GROUPS };
 
-  for (size_t Index = 0; Index < LENOF(Packets); Index++)
+  for (intptr_t Index = 0; Index < LENOF(Packets); ++Index)
   {
     TSFTPPacket * Packet = Packets[Index];
     Packet->AddString(RawByteString(SFTP_EXT_OWNER_GROUP));
@@ -2978,7 +2978,7 @@ void TSFTPFileSystem::LookupUsersGroups()
     ReserveResponse(Packet, Packet);
   }
 
-  for (size_t Index = 0; Index < LENOF(Packets); Index++)
+  for (intptr_t Index = 0; Index < LENOF(Packets); ++Index)
   {
     TSFTPPacket * Packet = Packets[Index];
 
@@ -3140,7 +3140,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         unsigned int Count = ListingPacket.GetCardinal();
 
         TRACE("4");
-        for (unsigned long Index = 0; !isEOF && (Index < Count); Index++)
+        for (intptr_t Index = 0; !isEOF && (Index < Count); ++Index)
         {
           File = LoadFile(&ListingPacket, NULL, L"", FileList);
           if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
@@ -3596,7 +3596,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
   // recurse into subdirectories only if we have callback function
   if (OnCalculatedChecksum != NULL)
   {
-    for (int Index = 0; Index < FileList->GetCount(); Index++)
+    for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
       TRemoteFile * File = static_cast<TRemoteFile *>(FileList->Objects[Index]);
       assert(File != NULL);
@@ -3615,7 +3615,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
           {
             OperationProgress->SetFile(File->GetFileName());
 
-            for (int Index = 0; Index < SubFiles->GetCount(); Index++)
+            for (intptr_t Index = 0; Index < SubFiles->GetCount(); ++Index)
             {
               TRemoteFile * SubFile = SubFiles->GetFiles(Index);
               SubFileList->AddObject(SubFile->GetFullFileName(), SubFile);
@@ -3795,7 +3795,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
   UnicodeString FileName, FileNameOnly;
   UnicodeString FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
-  int Index = 0;
+  intptr_t Index = 0;
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     bool Success = false;
@@ -3844,7 +3844,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
     }
     );
-    Index++;
+    ++Index;
   }
 }
 //---------------------------------------------------------------------------
@@ -4975,7 +4975,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   UnicodeString FullTargetDir = IncludeTrailingBackslash(TargetDir);
   const TRemoteFile * File;
   bool Success;
-  int Index = 0;
+  intptr_t Index = 0;
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     Success = false;
@@ -5011,7 +5011,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
     }
     );
-    Index++;
+    ++Index;
   }
 }
 //---------------------------------------------------------------------------
