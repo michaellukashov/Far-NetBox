@@ -63,7 +63,7 @@ public:
   void Log(TTerminal * Terminal, const wchar_t * Title);
 
   intptr_t GetCount() const;
-  const TRemoteToken * Token(int Index) const;
+  const TRemoteToken * Token(intptr_t Index) const;
 
 private:
   typedef std::vector<TRemoteToken> TTokens;

@@ -768,7 +768,7 @@ void __fastcall TSecureShell::FromBackend(bool IsStdErr, const unsigned char * D
   {
     CTRACE(TRACE_TRANSMIT, "3");
     const unsigned char *p = Data;
-    unsigned Len = (unsigned)Length;
+    intptr_t Len = Length;
 
     // with event-select mechanism we can now receive data even before we
     // actually expect them (OutPtr can be NULL)
@@ -776,7 +776,7 @@ void __fastcall TSecureShell::FromBackend(bool IsStdErr, const unsigned char * D
     if ((OutPtr != NULL) && (OutLen > 0) && (Len > 0))
     {
       CTRACE(TRACE_TRANSMIT, "4");
-      unsigned Used = OutLen;
+      intptr_t Used = OutLen;
       if (Used > Len) { Used = Len; }
       memmove(OutPtr, p, Used);
       OutPtr += Used; OutLen -= Used;
@@ -866,7 +866,7 @@ Integer __fastcall TSecureShell::Receive(unsigned char * Buf, Integer Len)
       if (PendLen > 0)
       {
         CTRACE(TRACE_TRANSMIT, "3");
-        unsigned PendUsed = PendLen;
+        intptr_t PendUsed = PendLen;
         if (PendUsed > OutLen)
         {
           PendUsed = OutLen;
@@ -1129,7 +1129,7 @@ void __fastcall TSecureShell::SendLine(const UnicodeString & Line)
 }
 //---------------------------------------------------------------------------
 int __fastcall TSecureShell::TranslatePuttyMessage(
-  const TPuttyTranslation * Translation, size_t Count, UnicodeString & Message) const
+  const TPuttyTranslation * Translation, intptr_t Count, UnicodeString & Message) const
 {
   int Result = -1;
   for (intptr_t Index = 0; Index < Count; ++Index)

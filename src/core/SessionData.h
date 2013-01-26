@@ -209,10 +209,10 @@ public:
   void __fastcall SetSshProt(TSshProt Value);
   void __fastcall SetSsh2DES(bool Value);
   void __fastcall SetSshNoUserAuth(bool Value);
-  void __fastcall SetCipher(int Index, TCipher Value);
-  TCipher __fastcall GetCipher(int Index) const;
-  void __fastcall SetKex(int Index, TKex Value);
-  TKex __fastcall GetKex(int Index) const;
+  void __fastcall SetCipher(intptr_t Index, TCipher Value);
+  TCipher __fastcall GetCipher(intptr_t Index) const;
+  void __fastcall SetKex(intptr_t Index, TKex Value);
+  TKex __fastcall GetKex(intptr_t Index) const;
   void __fastcall SetPublicKeyFile(const UnicodeString & Value);
 
   void __fastcall SetProtocolStr(const UnicodeString & Value);
@@ -506,12 +506,12 @@ public:
   void __fastcall SelectAll(bool Select);
   void __fastcall Import(TStoredSessionList * From, bool OnlySelected);
   void __fastcall RecryptPasswords();
-  TSessionData * __fastcall AtSession(int Index)
+  TSessionData * __fastcall AtSession(intptr_t Index)
     { return static_cast<TSessionData *>(AtObject(Index)); }
   void __fastcall SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void __fastcall Cleanup();
   void __fastcall UpdateStaticUsage();
-  int __fastcall IndexOf(TSessionData * Data);
+  intptr_t IndexOf(TSessionData * Data);
   TSessionData * __fastcall FindSame(TSessionData * Data);
   TSessionData * __fastcall NewSession(UnicodeString SessionName, TSessionData * Session);
   TSessionData * __fastcall ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,

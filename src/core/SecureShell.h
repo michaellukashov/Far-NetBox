@@ -48,9 +48,9 @@ private:
   int FWaiting;
   bool FSimple;
 
-  unsigned PendLen;
-  unsigned PendSize;
-  unsigned OutLen;
+  intptr_t PendLen;
+  intptr_t PendSize;
+  intptr_t OutLen;
   unsigned char * OutPtr;
   unsigned char * Pending;
   TSessionLog * FLog;
@@ -94,7 +94,7 @@ protected:
 
   void __fastcall GotHostKey();
   int __fastcall TranslatePuttyMessage(const TPuttyTranslation * Translation,
-    size_t Count, UnicodeString & Message) const;
+    intptr_t Count, UnicodeString & Message) const;
   int __fastcall TranslateAuthenticationMessage(UnicodeString & Message) const;
   int __fastcall TranslateErrorMessage(UnicodeString & Message) const;
   void __fastcall AddStdError(const UnicodeString & Str);

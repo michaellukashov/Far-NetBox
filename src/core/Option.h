@@ -23,8 +23,8 @@ public:
   bool __fastcall SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence);
   bool __fastcall UnusedSwitch(UnicodeString & Switch) const;
 
-  int __fastcall GetParamCount() const { return FParamCount; }
-  UnicodeString __fastcall GetParam(int Index);
+  intptr_t __fastcall GetParamCount() const { return FParamCount; }
+  UnicodeString __fastcall GetParam(intptr_t Index);
   bool __fastcall GetEmpty() const;
 
 protected:
@@ -47,7 +47,7 @@ private:
 
   std::vector<TOption> FOptions;
   bool FNoMoreSwitches;
-  int FParamCount;
+  intptr_t FParamCount;
 };
 //---------------------------------------------------------------------------
 #endif

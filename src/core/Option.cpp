@@ -72,7 +72,7 @@ void __fastcall TOptions::Add(UnicodeString Value)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TOptions::GetParam(int Index)
+UnicodeString __fastcall TOptions::GetParam(intptr_t Index)
 {
   assert((Index >= 1) && (Index <= FParamCount));
 

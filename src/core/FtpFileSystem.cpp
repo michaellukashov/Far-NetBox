@@ -2053,7 +2053,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         FDoListAll = (FListAll == asOn);
         TRACE("2");
       }
-      catch(Exception & E)
+      catch(Exception &)
       {
         FDoListAll = false;
         TRACEFMT("3 [%d]", int(FListAll));

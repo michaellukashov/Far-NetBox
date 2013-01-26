@@ -108,9 +108,9 @@ protected:
   virtual void SelectTab(intptr_t Tab);
   void TabButtonClick(TFarButton * Sender, bool & Close);
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
-  virtual UnicodeString TabName(int Tab);
-  TTabButton * TabButton(int Tab);
-  int GetTabCount() const { return FTabCount; }
+  virtual UnicodeString TabName(intptr_t Tab);
+  TTabButton * TabButton(intptr_t Tab);
+  intptr_t GetTabCount() const { return FTabCount; }
 
 private:
   UnicodeString FOrigCaption;
@@ -198,7 +198,7 @@ void TTabbedDialog::SelectTab(intptr_t Tab)
   SetCaption(FORMAT(L"%s - %s", TabName(Tab).c_str(), FOrigCaption.c_str()));
 }
 //---------------------------------------------------------------------------
-TTabButton * TTabbedDialog::TabButton(int Tab)
+TTabButton * TTabbedDialog::TabButton(intptr_t Tab)
 {
   TTabButton * Result = NULL;
   for (intptr_t I = 0; I < GetItemCount(); I++)
@@ -220,7 +220,7 @@ TTabButton * TTabbedDialog::TabButton(int Tab)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TTabbedDialog::TabName(int Tab)
+UnicodeString TTabbedDialog::TabName(intptr_t Tab)
 {
   return TabButton(Tab)->GetTabName();
 }
@@ -241,7 +241,7 @@ bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
   bool Result = false;
   if (KeyCode == KEY_CTRLPGDN || KeyCode == KEY_CTRLPGUP)
   {
-    int NewTab = FTab;
+    intptr_t NewTab = FTab;
     do
     {
       if (KeyCode == KEY_CTRLPGDN)
@@ -1658,10 +1658,10 @@ private:
   void FillCodePageEdit();
   void CodePageEditAdd(unsigned int cp);
 
-  void ChangeTabs(int FirstVisibleTabIndex);
-  int GetVisibleTabsCount(int TabIndex, bool Forward);
+  void ChangeTabs(intptr_t FirstVisibleTabIndex);
+  intptr_t GetVisibleTabsCount(intptr_t TabIndex, bool Forward);
 
-  intptr_t AddTab(int TabID, const wchar_t * TabCaption);
+  intptr_t AddTab(intptr_t TabID, const wchar_t * TabCaption);
 };
 //---------------------------------------------------------------------------
 #define BUG(BUGID, MSG, PREFIX) \
@@ -4129,18 +4129,18 @@ void TSessionDialog::NextTabClick(TFarButton * /* Sender */, bool & Close)
   Close = false;
 }
 //---------------------------------------------------------------------------
-void TSessionDialog::ChangeTabs(int FirstVisibleTabIndex)
+void TSessionDialog::ChangeTabs(intptr_t FirstVisibleTabIndex)
 {
   // Calculate which tabs are visible
-  int VisibleTabsCount = GetVisibleTabsCount(FirstVisibleTabIndex, true);
-  int LastVisibleTabIndex = FirstVisibleTabIndex + VisibleTabsCount;
+  intptr_t VisibleTabsCount = GetVisibleTabsCount(FirstVisibleTabIndex, true);
+  intptr_t LastVisibleTabIndex = FirstVisibleTabIndex + VisibleTabsCount;
   // Change visibility
   for (intptr_t I = 0; I < FirstVisibleTabIndex; I++)
   {
     TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I]);
     TabBtn->SetVisible(false);
   }
-  int LeftPos = GetBorderBox()->GetLeft() + 2;
+  intptr_t LeftPos = GetBorderBox()->GetLeft() + 2;
   for (intptr_t I = FirstVisibleTabIndex; I <= LastVisibleTabIndex; I++)
   {
     TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I]);
@@ -4157,9 +4157,9 @@ void TSessionDialog::ChangeTabs(int FirstVisibleTabIndex)
   }
 }
 //---------------------------------------------------------------------------
-int TSessionDialog::GetVisibleTabsCount(int TabIndex, bool Forward)
+intptr_t TSessionDialog::GetVisibleTabsCount(intptr_t TabIndex, bool Forward)
 {
-  int Result = 0;
+  intptr_t Result = 0;
   intptr_t PWidth = PrevTab->GetWidth();
   intptr_t NWidth = NextTab->GetWidth();
   intptr_t DialogWidth = GetBorderBox()->GetWidth() - 2 - PWidth - NWidth - 2;
@@ -4268,7 +4268,7 @@ void TSessionDialog::CodePageEditAdd(unsigned int cp)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TSessionDialog::AddTab(int TabID, const wchar_t * TabCaption)
+intptr_t TSessionDialog::AddTab(intptr_t TabID, const wchar_t * TabCaption)
 {
   TFarButtonBrackets TabBrackets = brNone; // brSpace; // 
   TTabButton * Tab = new TTabButton(this);

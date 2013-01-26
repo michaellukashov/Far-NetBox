@@ -344,7 +344,7 @@ void TSessionData::Assign(TPersistent * Source)
       (static_cast<TSessionData *>(Source))->SetBug(static_cast<TSshBug>(Index),
           GetBug(static_cast<TSshBug>(Index)));
     }
-    for (unsigned int Index = 0; Index < LENOF(FSFTPBugs); ++Index)
+    for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FSFTPBugs)); ++Index)
     {
       // PROPERTY(SFTPBug[(TSftpBug)Index]);
       (static_cast<TSessionData *>(Source))->SetSFTPBug(static_cast<TSftpBug>(Index),
@@ -1667,13 +1667,13 @@ bool __fastcall TSessionData::GetUsesSsh()
   return (GetFSProtocol() < fsFTP);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetCipher(int Index, TCipher Value)
+void __fastcall TSessionData::SetCipher(intptr_t Index, TCipher Value)
 {
   assert(Index >= 0 && Index < CIPHER_COUNT);
   SET_SESSION_PROPERTY(Ciphers[Index]);
 }
 //---------------------------------------------------------------------
-TCipher __fastcall TSessionData::GetCipher(int Index) const
+TCipher __fastcall TSessionData::GetCipher(intptr_t Index) const
 {
   assert(Index >= 0 && Index < CIPHER_COUNT);
   return FCiphers[Index];
@@ -1682,10 +1682,13 @@ TCipher __fastcall TSessionData::GetCipher(int Index) const
 void __fastcall TSessionData::SetCipherList(const UnicodeString & Value)
 {
   bool Used[CIPHER_COUNT];
-  for (int C = 0; C < CIPHER_COUNT; C++) { Used[C] = false; }
+  for (intptr_t C = 0; C < CIPHER_COUNT; C++)
+  {
+    Used[C] = false;
+  }
 
   UnicodeString CipherStr;
-  int Index = 0;
+  intptr_t Index = 0;
   UnicodeString Value2 = Value;
   while (!Value2.IsEmpty() && (Index < CIPHER_COUNT))
   {
@@ -1718,13 +1721,13 @@ UnicodeString __fastcall TSessionData::GetCipherList() const
   return Result;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetKex(int Index, TKex Value)
+void __fastcall TSessionData::SetKex(intptr_t Index, TKex Value)
 {
   assert(Index >= 0 && Index < KEX_COUNT);
   SET_SESSION_PROPERTY(Kex[Index]);
 }
 //---------------------------------------------------------------------
-TKex __fastcall TSessionData::GetKex(int Index) const
+TKex __fastcall TSessionData::GetKex(intptr_t Index) const
 {
   assert(Index >= 0 && Index < KEX_COUNT);
   return FKex[Index];
@@ -1736,7 +1739,7 @@ void __fastcall TSessionData::SetKexList(const UnicodeString & Value)
   for (int K = 0; K < KEX_COUNT; K++) { Used[K] = false; }
 
   UnicodeString KexStr;
-  int Index = 0;
+  intptr_t Index = 0;
   UnicodeString Value2 = Value;
   while (!Value2.IsEmpty() && (Index < KEX_COUNT))
   {
@@ -3089,7 +3092,7 @@ TSessionData * __fastcall TStoredSessionList::FindSame(TSessionData * Data)
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall TStoredSessionList::IndexOf(TSessionData * Data)
+intptr_t TStoredSessionList::IndexOf(TSessionData * Data)
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {

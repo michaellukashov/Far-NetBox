@@ -2326,7 +2326,7 @@ void TFarKeyBarTitles::ClearFileKeyBarTitles()
 }
 //---------------------------------------------------------------------------
 void TFarKeyBarTitles::ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
-  int FunctionKeyStart, int FunctionKeyEnd)
+  intptr_t FunctionKeyStart, intptr_t FunctionKeyEnd)
 {
   if (!FunctionKeyEnd)
   {
@@ -2339,7 +2339,7 @@ void TFarKeyBarTitles::ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
 }
 //---------------------------------------------------------------------------
 void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
-  int FunctionKey, const UnicodeString & Title)
+  intptr_t FunctionKey, const UnicodeString & Title)
 {
   assert(FunctionKey >= 1 && FunctionKey <= static_cast<intptr_t>(LENOF(FKeyBarTitles.Titles)));
   wchar_t ** Titles = NULL;
