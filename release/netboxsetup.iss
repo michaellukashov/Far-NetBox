@@ -1,10 +1,9 @@
-#define FarVer "Far2"
+#ifndef FAR_VERSION
+#define FAR_VERSION "Far2"
+#endif
 
-#define ParentRegistryKey "Software\{#FarVer}\Plugins"
-#define RegistryKey ParentRegistryKey + "\NetBox 2"
-#define Year 2013
-
-#define Status "release"
+#define YEAR 2013
+#define STATUS "release"
 #ifndef ROOT_DIR
 #define ROOT_DIR ".."
 #endif
@@ -41,30 +40,30 @@
 #define Build
 #expr ParseVersion(FileSourceMain_x86, Major, Minor, Rev, Build)
 #define Version Str(Major) + "." + Str(Minor) + (Rev > 0 ? "." + Str(Rev) : "") + \
-  (Status != "" ? " " + Status : "")
+  (STATUS != "" ? " " + STATUS : "")
 
 [Setup]
 AppId=netbox
 AppMutex=NetBox
-AppName=NetBox plugin for {#FarVer}
+AppName=NetBox plugin for {#FAR_VERSION}
 AppPublisher=Michael Lukashov
 AppPublisherURL=https://github.com/michaellukashov/Far-NetBox
 AppSupportURL=http://forum.farmanager.com/viewtopic.php?f=39&t=6638
 AppUpdatesURL=http://plugring.farmanager.com/plugin.php?pid=859&l=en
 VersionInfoCompany=Michael Lukashov
-VersionInfoDescription=Setup for NetBox plugin for {#FarVer} {#Version}
+VersionInfoDescription=Setup for NetBox plugin for {#FAR_VERSION} {#Version}
 VersionInfoVersion={#Major}.{#Minor}.{#Rev}.{#Build}
 VersionInfoTextVersion={#Version}
-VersionInfoCopyright=(c) 2011-{#Year} Michael Lukashov
-DefaultDirName={pf}\{#FarVer}\Plugins\{#PluginSubDirName}
+VersionInfoCopyright=(c) 2011-{#YEAR} Michael Lukashov
+DefaultDirName={pf}\{#FAR_VERSION}\Plugins\{#PluginSubDirName}
 DisableProgramGroupPage=true
 LicenseFile=licence.setup
 ; UninstallDisplayIcon={app}\winscp.ico
 OutputDir={#OUTPUT_DIR}
 DisableStartupPrompt=yes
 AppVersion={#Version}
-AppVerName=NetBox plugin for {#FarVer} {#Version}
-OutputBaseFilename=FarNetBox-{#Major}.{#Minor}.{#Rev}_{#FarVer}_x86_x64
+AppVerName=NetBox plugin for {#FAR_VERSION} {#Version}
+OutputBaseFilename=FarNetBox-{#Major}.{#Minor}.{#Rev}_{#FAR_VERSION}_x86_x64
 Compression=lzma2/ultra
 SolidCompression=yes
 PrivilegesRequired=none
@@ -82,8 +81,8 @@ Name: custom; Description: "Custom installation"; Flags: iscustom
 ; Languages: en ru
 
 [Components]
-Name: main_x86; Description: "NetBox plugin for {#FarVer} x86"; Types: full custom; check: IsFarX86Installed
-Name: main_x64; Description: "NetBox plugin for {#FarVer} x64"; Types: full custom; check: IsWin64 and IsFarX64Installed
+Name: main_x86; Description: "NetBox plugin for {#FAR_VERSION} x86"; Types: full custom; check: IsFarX86Installed
+Name: main_x64; Description: "NetBox plugin for {#FAR_VERSION} x64"; Types: full custom; check: IsWin64 and IsFarX64Installed
 Name: pageant; Description: "Pageant (SSH authentication agent)"; Types: full
 Name: puttygen; Description: "PuTTYgen (key generator)"; Types: full
 
@@ -132,8 +131,8 @@ function GetFarX86InstallDir(): String;
 var
   InstallDir: String;
 begin
-  if RegQueryStringValue(HKCU, 'Software\{#FarVer}', 'InstallDir', InstallDir) or
-     RegQueryStringValue(HKLM, 'Software\{#FarVer}', 'InstallDir', InstallDir) then
+  if RegQueryStringValue(HKCU, 'Software\{#FAR_VERSION}', 'InstallDir', InstallDir) or
+     RegQueryStringValue(HKLM, 'Software\{#FAR_VERSION}', 'InstallDir', InstallDir) then
   begin
     Result := InstallDir;
   end;
@@ -143,8 +142,8 @@ function GetFarX64InstallDir(): String;
 var
   InstallDir: String;
 begin
-  if RegQueryStringValue(HKCU, 'Software\{#FarVer}', 'InstallDir_x64', InstallDir) or
-     RegQueryStringValue(HKLM, 'Software\{#FarVer}', 'InstallDir_x64', InstallDir) then
+  if RegQueryStringValue(HKCU, 'Software\{#FAR_VERSION}', 'InstallDir_x64', InstallDir) or
+     RegQueryStringValue(HKLM, 'Software\{#FAR_VERSION}', 'InstallDir_x64', InstallDir) then
   begin
     Result := InstallDir;
   end;
@@ -171,7 +170,7 @@ begin
   end
   else
   begin
-    Result := ExpandConstant('{pf}\{#FarVer}\Plugins\{#PluginSubDirName}');
+    Result := ExpandConstant('{pf}\{#FAR_VERSION}\Plugins\{#PluginSubDirName}');
   end;
 end;
 
@@ -186,7 +185,7 @@ begin
   end
   else
   begin
-    Result := ExpandConstant('{pf}\{#FarVer}\Plugins\{#PluginSubDirName}');
+    Result := ExpandConstant('{pf}\{#FAR_VERSION}\Plugins\{#PluginSubDirName}');
   end;
 end;
 
@@ -204,16 +203,16 @@ procedure CreateTheWizardPage;
 begin
   // Input dirs
   InputDirsPage := CreateInputDirPage(wpSelectComponents,
-  'Select {#FarVer} plugin location', 'Where {#FarVer} plugin should be installed?',
-  '{#FarVer} plugin will be installed in the following folder.'#13#10#13#10 +
+  'Select {#FAR_VERSION} plugin location', 'Where {#FAR_VERSION} plugin should be installed?',
+  '{#FAR_VERSION} plugin will be installed in the following folder.'#13#10#13#10 +
   'To continue, click Next. If you would like to select a different folder, click Browse.',
-  False, '{#FarVer} plugin folder');
+  False, '{#FAR_VERSION} plugin folder');
   begin
-    InputDirsPage.Add('{#FarVer} x86 plugin location:');
+    InputDirsPage.Add('{#FAR_VERSION} x86 plugin location:');
     InputDirsPage.Values[0] := GetDefaultFarX86Dir();
   end;
   begin
-    InputDirsPage.Add('{#FarVer} x64 plugin location:');
+    InputDirsPage.Add('{#FAR_VERSION} x64 plugin location:');
     InputDirsPage.Values[1] := GetDefaultFarX64Dir();
   end;
 end;
