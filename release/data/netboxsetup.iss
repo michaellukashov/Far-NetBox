@@ -25,8 +25,8 @@
 #define PUTTY_SOURCE_DIR "C:/Program Files/Putty"
 #endif
 
-#define FileSourceMain_x64 BINARIES_DIR_X64 + "/NetBox.dll"
 #define FileSourceMain_x86 BINARIES_DIR_X86 + "/NetBox.dll"
+#define FileSourceMain_x64 BINARIES_DIR_X64 + "/NetBox.dll"
 #define FileSourceEng SOURCE_DIR + "/NetBoxEng.lng"
 #define FileSourceRus SOURCE_DIR + "/NetBoxRus.lng"
 #define FileSourceChangeLog ROOT_DIR + "/ChangeLog"
@@ -169,17 +169,48 @@ end;
 procedure CreateTheWizardPage;
 begin
   { Input dirs }
-  InputDirsPage := CreateInputDirPage(wpSelectDir,
+  InputDirsPage := CreateInputDirPage(wpSelectComponents,
   'Select {#FarVer} plugin location', 'Where {#FarVer} plugin should be installed?',
   '{#FarVer} plugin will be installed in the following folder.'#13#10#13#10 +
   'To continue, click Next. If you would like to select a different folder, click Browse.',
   False, '{#FarVer} plugin folder');
-  InputDirsPage.Add('{#FarVer} x86 plugin location:');
-  if IsWin64() then
+  begin
+    InputDirsPage.Add('{#FarVer} x86 plugin location:');
+    InputDirsPage.Values[0] := GetDefaultFarx86Dir();
+  end;
+  begin
     InputDirsPage.Add('{#FarVer} x64 plugin location:');
-  InputDirsPage.Values[0] := GetDefaultFarx86Dir();
-  if IsWin64() then
     InputDirsPage.Values[1] := GetDefaultFarx64Dir();
+  end;
+end;
+
+procedure SetupInputDirs();
+begin
+  InputDirsPage.Edits[0].Visible := IsComponentSelected('main_x86');
+  InputDirsPage.Buttons[0].Visible := IsComponentSelected('main_x86');
+  InputDirsPage.PromptLabels[0].Visible := IsComponentSelected('main_x86');
+
+  InputDirsPage.Edits[1].Visible := IsComponentSelected('main_x64');
+  InputDirsPage.Buttons[1].Visible := IsComponentSelected('main_x64');
+  InputDirsPage.PromptLabels[1].Visible := IsComponentSelected('main_x64');
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+begin
+  if CurPageID = wpSelectComponents then
+  begin
+    SetupInputDirs();
+  end;
+  Result := True;
+end;
+
+function PrevButtonClick(CurPageID: Integer): Boolean;
+begin
+  if CurPageID = wpReady then
+  begin
+    SetupInputDirs();
+  end;
+  Result := True;
 end;
 
 procedure InitializeWizard();
