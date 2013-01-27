@@ -56,6 +56,7 @@ VersionInfoVersion={#Major}.{#Minor}.{#Rev}.{#Build}
 VersionInfoTextVersion={#Version}
 VersionInfoCopyright=(c) 2011-{#YEAR} Michael Lukashov
 DefaultDirName={pf}\{#FAR_VERSION}\Plugins\{#PluginSubDirName}
+UsePreviousAppDir=false
 DisableProgramGroupPage=true
 LicenseFile=licence.setup
 ; UninstallDisplayIcon={app}\winscp.ico
@@ -83,8 +84,8 @@ Name: custom; Description: "Custom installation"; Flags: iscustom
 [Components]
 Name: main_x86; Description: "NetBox plugin for {#FAR_VERSION} x86"; Types: full custom; check: IsFarX86Installed
 Name: main_x64; Description: "NetBox plugin for {#FAR_VERSION} x64"; Types: full custom; check: IsWin64 and IsFarX64Installed
-Name: pageant; Description: "Pageant (SSH authentication agent)"; Types: full
-Name: puttygen; Description: "PuTTYgen (key generator)"; Types: full
+; Name: pageant; Description: "Pageant (SSH authentication agent)"; Types: full
+; Name: puttygen; Description: "PuTTYgen (key generator)"; Types: full
 
 [Files]
 Source: "{#FileSourceMain_x86}"; DestName: "NetBox.dll"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
@@ -103,24 +104,16 @@ Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{code:GetPl
 Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
 Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
 Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
-Source: "{#PUTTY_SOURCE_DIR}\LICENCE"; DestDir: "{code:GetPluginX86Dir}\PuTTY"; Components: main_x86 pageant puttygen; Flags: ignoreversion
-Source: "{#PUTTY_SOURCE_DIR}\LICENCE"; DestDir: "{code:GetPluginX64Dir}\PuTTY"; Components: main_x64 pageant puttygen; Flags: ignoreversion
-Source: "{#PUTTY_SOURCE_DIR}\putty.hlp"; DestDir: "{code:GetPluginX86Dir}\PuTTY"; Components: main_x86 pageant puttygen; Flags: ignoreversion
-Source: "{#PUTTY_SOURCE_DIR}\putty.hlp"; DestDir: "{code:GetPluginX64Dir}\PuTTY"; Components: main_x64 pageant puttygen; Flags: ignoreversion
-Source: "{#PUTTY_SOURCE_DIR}\pageant.exe"; DestDir: "{code:GetPluginX86Dir}\PuTTY"; Components: main_x86 pageant; Flags: ignoreversion
-Source: "{#PUTTY_SOURCE_DIR}\pageant.exe"; DestDir: "{code:GetPluginX64Dir}\PuTTY"; Components: main_x64 pageant; Flags: ignoreversion
-Source: "{#PUTTY_SOURCE_DIR}\puttygen.exe"; DestDir: "{code:GetPluginX86Dir}\PuTTY"; Components: main_x86 puttygen; Flags: ignoreversion
-Source: "{#PUTTY_SOURCE_DIR}\puttygen.exe"; DestDir: "{code:GetPluginX64Dir}\PuTTY"; Components: main_x64 puttygen; Flags: ignoreversion
+; Source: "{#PUTTY_SOURCE_DIR}\LICENCE"; DestDir: "{code:GetPluginX86Dir}\PuTTY"; Components: main_x86 pageant puttygen; Flags: ignoreversion
+; Source: "{#PUTTY_SOURCE_DIR}\LICENCE"; DestDir: "{code:GetPluginX64Dir}\PuTTY"; Components: main_x64 pageant puttygen; Flags: ignoreversion
+; Source: "{#PUTTY_SOURCE_DIR}\putty.hlp"; DestDir: "{code:GetPluginX86Dir}\PuTTY"; Components: main_x86 pageant puttygen; Flags: ignoreversion
+; Source: "{#PUTTY_SOURCE_DIR}\putty.hlp"; DestDir: "{code:GetPluginX64Dir}\PuTTY"; Components: main_x64 pageant puttygen; Flags: ignoreversion
+; Source: "{#PUTTY_SOURCE_DIR}\pageant.exe"; DestDir: "{code:GetPluginX86Dir}\PuTTY"; Components: main_x86 pageant; Flags: ignoreversion
+; Source: "{#PUTTY_SOURCE_DIR}\pageant.exe"; DestDir: "{code:GetPluginX64Dir}\PuTTY"; Components: main_x64 pageant; Flags: ignoreversion
+; Source: "{#PUTTY_SOURCE_DIR}\puttygen.exe"; DestDir: "{code:GetPluginX86Dir}\PuTTY"; Components: main_x86 puttygen; Flags: ignoreversion
+; Source: "{#PUTTY_SOURCE_DIR}\puttygen.exe"; DestDir: "{code:GetPluginX64Dir}\PuTTY"; Components: main_x64 puttygen; Flags: ignoreversion
 
 [InstallDelete]
-Type: files; Name: "{app}\NetBox.dll"
-Type: files; Name: "{app}\NetBoxEng.lng"
-Type: files; Name: "{app}\NetBoxRus.lng"
-Type: files; Name: "{app}\ChangeLog"
-Type: files; Name: "{app}\ChangeLog"
-Type: files; Name: "{app}\README.md"
-Type: files; Name: "{app}\README.RU.md"
-Type: files; Name: "{app}\LICENSE.txt"
 
 [Code]
 
@@ -254,6 +247,11 @@ begin
   if CurPageID = wpSelectComponents then
   begin
     SetupInputDirs();
+  end
+  else
+  if CurPageID = InputDirsPage.ID then
+  begin
+    WizardForm.DirEdit.Text := InputDirsPage.Values[0];
   end;
   Result := True;
 end;
