@@ -82,36 +82,36 @@ Name: custom; Description: "Custom installation"; Flags: iscustom
 ; Languages: en ru
 
 [Components]
-Name: main_x86; Description: "NetBox plugin for {#FarVer} x86"; Types: full custom
-Name: main_x64; Description: "NetBox plugin for {#FarVer} x64"; Types: full custom; check: IsWin64
+Name: main_x86; Description: "NetBox plugin for {#FarVer} x86"; Types: full custom; check: IsFarX86Installed
+Name: main_x64; Description: "NetBox plugin for {#FarVer} x64"; Types: full custom; check: IsWin64 and IsFarX64Installed
 Name: pageant; Description: "Pageant (SSH authentication agent)"; Types: full
 Name: puttygen; Description: "PuTTYgen (key generator)"; Types: full
 
 [Files]
-Source: "{#FileSourceMain_x86}"; DestName: "NetBox.dll"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceMain_x64}"; DestName: "NetBox.dll"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
-Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
-Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
-Source: "{#FileSourceRus}"; DestName: "NetBoxRus.lng"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceRus}"; DestName: "NetBoxRus.lng"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
-Source: "{#FileSourceChangeLog}"; DestName: "ChangeLog"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceChangeLog}"; DestName: "ChangeLog"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
-Source: "{#FileSourceReadmeEng}"; DestName: "README.md"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceReadmeEng}"; DestName: "README.md"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
-Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
-Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
-Source: "{#PUTTY_SOURCE_DIR}\LICENCE"; DestDir: "{code:GetPluginx86Dir}\PuTTY"; Components: main_x86 pageant puttygen; Flags: ignoreversion
-Source: "{#PUTTY_SOURCE_DIR}\LICENCE"; DestDir: "{code:GetPluginx64Dir}\PuTTY"; Components: main_x64 pageant puttygen; Flags: ignoreversion
-Source: "{#PUTTY_SOURCE_DIR}\putty.hlp"; DestDir: "{code:GetPluginx86Dir}\PuTTY"; Components: main_x86 pageant puttygen; Flags: ignoreversion
-Source: "{#PUTTY_SOURCE_DIR}\putty.hlp"; DestDir: "{code:GetPluginx64Dir}\PuTTY"; Components: main_x64 pageant puttygen; Flags: ignoreversion
-Source: "{#PUTTY_SOURCE_DIR}\pageant.exe"; DestDir: "{code:GetPluginx86Dir}\PuTTY"; Components: main_x86 pageant; Flags: ignoreversion
-Source: "{#PUTTY_SOURCE_DIR}\pageant.exe"; DestDir: "{code:GetPluginx64Dir}\PuTTY"; Components: main_x64 pageant; Flags: ignoreversion
-Source: "{#PUTTY_SOURCE_DIR}\puttygen.exe"; DestDir: "{code:GetPluginx86Dir}\PuTTY"; Components: main_x86 puttygen; Flags: ignoreversion
-Source: "{#PUTTY_SOURCE_DIR}\puttygen.exe"; DestDir: "{code:GetPluginx64Dir}\PuTTY"; Components: main_x64 puttygen; Flags: ignoreversion
+Source: "{#FileSourceMain_x86}"; DestName: "NetBox.dll"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceMain_x64}"; DestName: "NetBox.dll"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
+Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
+Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
+Source: "{#FileSourceRus}"; DestName: "NetBoxRus.lng"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceRus}"; DestName: "NetBoxRus.lng"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
+Source: "{#FileSourceChangeLog}"; DestName: "ChangeLog"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceChangeLog}"; DestName: "ChangeLog"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
+Source: "{#FileSourceReadmeEng}"; DestName: "README.md"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceReadmeEng}"; DestName: "README.md"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
+Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
+Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
+Source: "{#PUTTY_SOURCE_DIR}\LICENCE"; DestDir: "{code:GetPluginX86Dir}\PuTTY"; Components: main_x86 pageant puttygen; Flags: ignoreversion
+Source: "{#PUTTY_SOURCE_DIR}\LICENCE"; DestDir: "{code:GetPluginX64Dir}\PuTTY"; Components: main_x64 pageant puttygen; Flags: ignoreversion
+Source: "{#PUTTY_SOURCE_DIR}\putty.hlp"; DestDir: "{code:GetPluginX86Dir}\PuTTY"; Components: main_x86 pageant puttygen; Flags: ignoreversion
+Source: "{#PUTTY_SOURCE_DIR}\putty.hlp"; DestDir: "{code:GetPluginX64Dir}\PuTTY"; Components: main_x64 pageant puttygen; Flags: ignoreversion
+Source: "{#PUTTY_SOURCE_DIR}\pageant.exe"; DestDir: "{code:GetPluginX86Dir}\PuTTY"; Components: main_x86 pageant; Flags: ignoreversion
+Source: "{#PUTTY_SOURCE_DIR}\pageant.exe"; DestDir: "{code:GetPluginX64Dir}\PuTTY"; Components: main_x64 pageant; Flags: ignoreversion
+Source: "{#PUTTY_SOURCE_DIR}\puttygen.exe"; DestDir: "{code:GetPluginX86Dir}\PuTTY"; Components: main_x86 puttygen; Flags: ignoreversion
+Source: "{#PUTTY_SOURCE_DIR}\puttygen.exe"; DestDir: "{code:GetPluginX64Dir}\PuTTY"; Components: main_x64 puttygen; Flags: ignoreversion
 
 [InstallDelete]
 Type: files; Name: "{app}\NetBox.dll"
@@ -128,28 +128,45 @@ Type: files; Name: "{app}\LICENSE.txt"
 var
   InputDirsPage: TInputDirWizardPage;
 
-function GetDefaultFarx86Dir(): String;
+function GetFarX86InstallDir(): String;
 var
   InstallDir: String;
 begin
   if RegQueryStringValue(HKCU, 'Software\{#FarVer}', 'InstallDir', InstallDir) or
      RegQueryStringValue(HKLM, 'Software\{#FarVer}', 'InstallDir', InstallDir) then
   begin
-    Result := AddBackslash(InstallDir) + 'Plugins\{#PluginSubDirName}';
-  end
-  else
-  begin
-    Result := ExpandConstant('{pf}\{#FarVer}\Plugins\{#PluginSubDirName}');
+    Result := InstallDir;
   end;
 end;
 
-function GetDefaultFarx64Dir(): String;
+function GetFarX64InstallDir(): String;
 var
   InstallDir: String;
 begin
   if RegQueryStringValue(HKCU, 'Software\{#FarVer}', 'InstallDir_x64', InstallDir) or
      RegQueryStringValue(HKLM, 'Software\{#FarVer}', 'InstallDir_x64', InstallDir) then
   begin
+    Result := InstallDir;
+  end;
+end;
+
+function IsFarX86Installed(): Boolean;
+begin
+  Result := GetFarX86InstallDir() <> '';
+end;
+
+function IsFarX64Installed(): Boolean;
+begin
+  Result := GetFarX64InstallDir() <> '';
+end;
+
+function GetDefaultFarX86Dir(): String;
+var
+  InstallDir: String;
+begin
+  InstallDir := GetFarX86InstallDir();
+  if InstallDir <> '' then
+  begin
     Result := AddBackslash(InstallDir) + 'Plugins\{#PluginSubDirName}';
   end
   else
@@ -158,12 +175,27 @@ begin
   end;
 end;
 
-function GetPluginx86Dir(Param: String): String;
+function GetDefaultFarX64Dir(): String;
+var
+  InstallDir: String;
+begin
+  InstallDir := GetFarX64InstallDir();
+  if InstallDir <> '' then
+  begin
+    Result := AddBackslash(InstallDir) + 'Plugins\{#PluginSubDirName}';
+  end
+  else
+  begin
+    Result := ExpandConstant('{pf}\{#FarVer}\Plugins\{#PluginSubDirName}');
+  end;
+end;
+
+function GetPluginX86Dir(Param: String): String;
 begin
   Result := InputDirsPage.Values[0];
 end;
 
-function GetPluginx64Dir(Param: String): String;
+function GetPluginX64Dir(Param: String): String;
 begin
   Result := InputDirsPage.Values[1];
 end;
@@ -178,27 +210,48 @@ begin
   False, '{#FarVer} plugin folder');
   begin
     InputDirsPage.Add('{#FarVer} x86 plugin location:');
-    InputDirsPage.Values[0] := GetDefaultFarx86Dir();
+    InputDirsPage.Values[0] := GetDefaultFarX86Dir();
   end;
   begin
     InputDirsPage.Add('{#FarVer} x64 plugin location:');
-    InputDirsPage.Values[1] := GetDefaultFarx64Dir();
+    InputDirsPage.Values[1] := GetDefaultFarX64Dir();
+  end;
+end;
+
+procedure SetupComponents();
+begin
+  if IsFarX86Installed() then
+  begin
+    MsgBox('IsFarX86Installed: true', mbInformation, mb_Ok);
+  end;
+  if IsFarX64Installed() then
+  begin
+    MsgBox('IsFarX64Installed: true', mbInformation, mb_Ok);
   end;
 end;
 
 procedure SetupInputDirs();
 begin
-  InputDirsPage.Edits[0].Visible := IsComponentSelected('main_x86');
-  InputDirsPage.Buttons[0].Visible := IsComponentSelected('main_x86');
-  InputDirsPage.PromptLabels[0].Visible := IsComponentSelected('main_x86');
+  InputDirsPage.Edits[0].Enabled := IsComponentSelected('main_x86');
+  InputDirsPage.Buttons[0].Enabled := IsComponentSelected('main_x86');
+  InputDirsPage.PromptLabels[0].Enabled := IsComponentSelected('main_x86');
 
-  InputDirsPage.Edits[1].Visible := IsComponentSelected('main_x64');
-  InputDirsPage.Buttons[1].Visible := IsComponentSelected('main_x64');
-  InputDirsPage.PromptLabels[1].Visible := IsComponentSelected('main_x64');
+  InputDirsPage.Edits[1].Visible := IsWin64();
+  InputDirsPage.Buttons[1].Visible := IsWin64();
+  InputDirsPage.PromptLabels[1].Visible := IsWin64();
+
+  InputDirsPage.Edits[1].Enabled := IsComponentSelected('main_x64');
+  InputDirsPage.Buttons[1].Enabled := IsComponentSelected('main_x64');
+  InputDirsPage.PromptLabels[1].Enabled := IsComponentSelected('main_x64');
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
 begin
+  if CurPageID = wpWelcome then
+  begin
+    SetupComponents();
+  end
+  else
   if CurPageID = wpSelectComponents then
   begin
     SetupInputDirs();
@@ -206,8 +259,13 @@ begin
   Result := True;
 end;
 
-function PrevButtonClick(CurPageID: Integer): Boolean;
+function BackButtonClick(CurPageID: Integer): Boolean;
 begin
+  // MsgBox('CurPageID: ' + IntToStr(CurPageID), mbInformation, mb_Ok);
+  if CurPageID = InputDirsPage.ID then
+  begin
+    SetupComponents();
+  end;
   if CurPageID = wpReady then
   begin
     SetupInputDirs();
