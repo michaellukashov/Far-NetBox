@@ -166,6 +166,7 @@ friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
 friend class TFTPFileSystem;
 friend class TWebDAVFileSystem;
+
 friend class TTunnelUI;
 friend class TCallbackGuard;
 

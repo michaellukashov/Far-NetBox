@@ -1,5 +1,11 @@
-NetBox 2.1.22 ??.01.2013
+NetBox 2.1.22 27.01.2013
 --------------------
+  * Minor bugfixes
+  * Bug 967: Issuer and Subject swapped on Certificate verification prompt
+    (http://winscp.net/tracker/show_bug.cgi?id=967)
+  * Bug 965: Text mode transfers should not be resumed FTP protocol
+    (http://winscp.net/tracker/show_bug.cgi?id=965)
+  * Create distributive using InnoSetup 5.5.2
 
 NetBox 2.1.21 20.01.2013
 --------------------

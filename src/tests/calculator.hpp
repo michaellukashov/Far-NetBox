@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 #include <dl\include.hpp>
 
 DL_NS_BLOCK((team)
@@ -11,3 +11,4 @@ DL_NS_BLOCK((team)
     (double, sqrt, (double,x))
   )
 ))
+*/

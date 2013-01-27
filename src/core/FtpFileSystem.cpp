@@ -846,11 +846,12 @@ bool TFTPFileSystem::ConfirmOverwrite(UnicodeString & FileName,
   bool Result;
   TRACE("1");
   bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
-  // when resuming transfer after interrupted connection,
-  // do nothing (dummy resume) when the files has the same size.
-  // this is workaround for servers that strangely fails just after successful
-  // upload.
   bool CanResume =
+    !OperationProgress->AsciiTransfer &&
+    // when resuming transfer after interrupted connection,
+    // do nothing (dummy resume) when the files has the same size.
+    // this is workaround for servers that strangely fails just after successful
+    // upload.
     (FileParams != NULL) &&
     (((FileParams->DestSize < FileParams->SourceSize)) ||
      ((FileParams->DestSize == FileParams->SourceSize) && CanAutoResume));
@@ -3346,7 +3347,7 @@ struct TClipboardHandler
 };
 #endif
 //---------------------------------------------------------------------------
-UnicodeString  FormatContactList(UnicodeString Entry1, UnicodeString Entry2)
+UnicodeString FormatContactList(UnicodeString Entry1, UnicodeString Entry2)
 {
   if (!Entry1.IsEmpty() && !Entry2.IsEmpty())
   {
@@ -3358,7 +3359,7 @@ UnicodeString  FormatContactList(UnicodeString Entry1, UnicodeString Entry2)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString  FormatContact(const TFtpsCertificateData::TContact & Contact)
+UnicodeString FormatContact(const TFtpsCertificateData::TContact & Contact)
 {
   UnicodeString Result =
     FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 1).c_str(),
@@ -3498,8 +3499,8 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
     FSessionInfo.Certificate =
       FMTLOAD(CERT_TEXT,
-        FormatContact(Data.Subject).c_str(),
         FormatContact(Data.Issuer).c_str(),
+        FormatContact(Data.Subject).c_str(),
         FormatValidityTime(Data.ValidFrom).c_str(),
         FormatValidityTime(Data.ValidUntil).c_str(),
         FSessionInfo.CertificateFingerprint.c_str(),

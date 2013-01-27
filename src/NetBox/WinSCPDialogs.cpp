@@ -2238,7 +2238,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_FTP_POST_LOGIN_COMMANDS));
 
-  for (intptr_t Index = 0; Index < LENOF(PostLoginCommandsEdits); ++Index)
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(PostLoginCommandsEdits)); ++Index)
   {
     TFarEdit * Edit = new TFarEdit(this);
     PostLoginCommandsEdits[Index] = Edit;
@@ -3561,7 +3561,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     TStrings * PostLoginCommands = new TStringList();
     std::auto_ptr<TStrings> PostLoginCommandsPtr;
     PostLoginCommandsPtr.reset(PostLoginCommands);
-    for (intptr_t Index = 0; Index < LENOF(PostLoginCommandsEdits); ++Index)
+    for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(PostLoginCommandsEdits)); ++Index)
     {
       UnicodeString Text = PostLoginCommandsEdits[Index]->GetText();
       if (!Text.IsEmpty())

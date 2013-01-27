@@ -112,7 +112,7 @@ void TSessionData::Default()
   SetProxyDNS(asAuto);
   SetProxyLocalhost(false);
 
-  for (intptr_t Index = 0; Index < LENOF(FBugs); ++Index)
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FBugs)); ++Index)
   {
     SetBug(static_cast<TSshBug>(Index), asAuto);
   }
@@ -164,7 +164,7 @@ void TSessionData::Default()
   SetSFTPMaxPacketSize(0);
   SetSFTPMinPacketSize(0);
 
-  for (intptr_t Index = 0; Index < LENOF(FSFTPBugs); ++Index)
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FSFTPBugs)); ++Index)
   {
     SetSFTPBug(static_cast<TSftpBug>(Index), asAuto);
   }
@@ -338,7 +338,7 @@ void TSessionData::Assign(TPersistent * Source)
     ADVANCED_PROPERTIES;
     #undef PROPERTY
 
-    for (intptr_t Index = 0; Index < LENOF(FBugs); ++Index)
+    for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FBugs)); ++Index)
     {
       // PROPERTY(Bug[(TSshBug)Index]);
       (static_cast<TSessionData *>(Source))->SetBug(static_cast<TSshBug>(Index),
@@ -372,12 +372,12 @@ bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly)
   ADVANCED_PROPERTIES;
   #undef PROPERTY
 
-  for (intptr_t Index = 0; Index < LENOF(FBugs); ++Index)
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FBugs)); ++Index)
   {
     // PROPERTY(Bug[(TSshBug)Index]);
     if (GetBug(static_cast<TSshBug>(Index)) != Default->GetBug(static_cast<TSshBug>(Index))) return false;
   }
-  for (intptr_t Index = 0; Index < LENOF(FSFTPBugs); ++Index)
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FSFTPBugs)); ++Index)
   {
     // PROPERTY(SFTPBug[(TSftpBug)Index]);
     if (GetSFTPBug(static_cast<TSftpBug>(Index)) != Default->GetSFTPBug(static_cast<TSftpBug>(Index))) return false;
@@ -1664,7 +1664,7 @@ UnicodeString TSessionData::GetSshProtStr()
 //---------------------------------------------------------------------
 bool TSessionData::GetUsesSsh()
 {
-  return (GetFSProtocol() < fsFTP);
+  return (FFSProtocol == fsSCPonly) || (FFSProtocol == fsSFTP) || (FFSProtocol == fsSFTPonly);
 }
 //---------------------------------------------------------------------
 void TSessionData::SetCipher(intptr_t Index, TCipher Value)
