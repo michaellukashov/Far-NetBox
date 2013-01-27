@@ -72,7 +72,7 @@ PrivilegesRequired=none
 Uninstallable=no
 MinVersion=5.1
 DisableDirPage=yes
-AlwaysShowDirOnReadyPage=yes
+; AlwaysShowDirOnReadyPage=yes
 
 ArchitecturesInstallIn64BitMode=x64
 
@@ -84,18 +84,27 @@ Name: custom; Description: "Custom installation"; Flags: iscustom
 
 [Components]
 Name: main_x86; Description: "NetBox plugin for {#FarVer} x86"; Types: full custom
+Name: main_x64; Description: "NetBox plugin for {#FarVer} x64"; Types: full custom; check: IsWin64
 ; Name: pageant; Description: "Pageant (SSH authentication agent)"; Types: full
 ; Name: puttygen; Description: "PuTTYgen (key generator)"; Types: full
 
 [Files]
-Source: "{#FileSourceMain_x64}"; DestName: "NetBox.dll"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "{#FileSourceMain_x86}"; DestName: "NetBox.dll"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceRus}"; DestName: "NetBoxRus.lng"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceChangeLog}"; DestName: "ChangeLog"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceReadmeEng}"; DestName: "README.md"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceMain_x86}"; DestName: "NetBox.dll"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceMain_x64}"; DestName: "NetBox.dll"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
+Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
+Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
+Source: "{#FileSourceRus}"; DestName: "NetBoxRus.lng"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceRus}"; DestName: "NetBoxRus.lng"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
+Source: "{#FileSourceChangeLog}"; DestName: "ChangeLog"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceChangeLog}"; DestName: "ChangeLog"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
+Source: "{#FileSourceReadmeEng}"; DestName: "README.md"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceReadmeEng}"; DestName: "README.md"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
+Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
+Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
 ; Source: "licence"; DestName: "licence"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion
 ; Source: "C:\Program Files\PuTTY\LICENCE"; DestDir: "{app}\PuTTY"; Components: pageant puttygen; Flags: ignoreversion
 ; Source: "C:\Program Files\PuTTY\putty.hlp"; DestDir: "{app}\PuTTY"; Components: pageant puttygen; Flags: ignoreversion
@@ -112,6 +121,14 @@ Type: files; Name: "{app}\README.RU.md"
 Type: files; Name: "{app}\LICENSE.txt"
 
 [Code]
+
+var
+  InputDirsPage: TInputDirWizardPage;
+
+function x64Selected(): Boolean;
+begin
+  Result := IsWin64() and True;
+end;
 
 procedure ComponentsListClickCheck(Sender: TObject);
 begin
@@ -140,7 +157,7 @@ begin
 
   if Is64BitInstallMode() then
   begin
-    MsgBox('Is64BitInstallMode: true', mbInformation, mb_Ok);
+    // MsgBox('Is64BitInstallMode: true', mbInformation, mb_Ok);
     if RegQueryStringValue(HKCU, 'Software\{#FarVer}', 'InstallDir_x64', InstallDir) or
        RegQueryStringValue(HKLM, 'Software\{#FarVer}', 'InstallDir_x64', InstallDir) then
     begin
@@ -162,12 +179,7 @@ begin
 end;
 *)
 
-procedure ButtonOnClick(Sender: TObject);
-begin
-  MsgBox('You clicked the button!', mbInformation, mb_Ok);
-end;
-
-function GetFarx86Dir(): String;
+function GetDefaultFarx86Dir(): String;
 var
   InstallDir: String;
 begin
@@ -182,7 +194,7 @@ begin
   end;
 end;
 
-function GetFarx64Dir(): String;
+function GetDefaultFarx64Dir(): String;
 var
   InstallDir: String;
 begin
@@ -197,190 +209,30 @@ begin
   end;
 end;
 
+function GetPluginx86Dir(Param: String): String;
+begin
+  Result := InputDirsPage.Values[0];
+end;
+
+function GetPluginx64Dir(Param: String): String;
+begin
+  Result := InputDirsPage.Values[1];
+end;
+
 procedure CreateTheWizardPages;
-var
-  Page: TWizardPage;
-  InputDirsPage: TInputDirWizardPage;
-  Button: TNewButton;
-  Panel: TPanel;
-  CheckBox: TNewCheckBox;
-  Edit: TNewEdit;
-  // PasswordEdit: TPasswordEdit;
-  // Memo: TNewMemo;
-  // ComboBox: TNewComboBox;
-  // ListBox: TNewListBox;
-  // StaticText, ProgressBarLabel: TNewStaticText;
-  // ProgressBar, ProgressBar2, ProgressBar3: TNewProgressBar;
-  // CheckListBox, CheckListBox2: TNewCheckListBox;
-  // FolderTreeView: TFolderTreeView;
-  // BitmapImage, BitmapImage2, BitmapImage3: TBitmapImage;
-  // BitmapFileName: String;
-  // RichEditViewer: TRichEditViewer;
 begin
   { Input dirs }
   InputDirsPage := CreateInputDirPage(wpSelectDir,
-  'Select {#FarVer} x86 plugin location', 'Where {#FarVer} x86 plugin should be installed?',
-  '{#FarVer} x86 plugin will be installed in the following folder.'#13#10#13#10 +
+  'Select {#FarVer} plugin location', 'Where {#FarVer} plugin should be installed?',
+  '{#FarVer} plugin will be installed in the following folder.'#13#10#13#10 +
   'To continue, click Next. If you would like to select a different folder, click Browse.',
-  False, '{#FarVer} x86 plugin folder');
-  InputDirsPage.Add('');
-  InputDirsPage.Add('');
-  InputDirsPage.Values[0] := GetFarx86Dir(); // ExpandConstant('{userappdata}\My Company\My Program');
-  InputDirsPage.Values[1] := GetFarx64Dir(); // ExpandConstant('{userappdata}\My Company\My Program');
-  // DataDir := InputDirsPage.Values[0];
-  { TButton and others }
-
-  Page := CreateCustomPage(wpSelectDir, 'Custom wizard page controls', 'TButton and others');
-
-  Button := TNewButton.Create(Page);
-  Button.Width := ScaleX(75);
-  Button.Height := ScaleY(23);
-  Button.Caption := 'TNewButton';
-  Button.OnClick := @ButtonOnClick;
-  Button.Parent := Page.Surface;
-
-  Panel := TPanel.Create(Page);
-  Panel.Width := Page.SurfaceWidth div 2 - ScaleX(8);
-  Panel.Left :=  Page.SurfaceWidth - Panel.Width;
-  Panel.Height := Button.Height * 2;
-  Panel.Caption := 'TPanel';
-  Panel.Color := clWindow;
-  Panel.ParentBackground := False;
-  Panel.Parent := Page.Surface;
-
-  CheckBox := TNewCheckBox.Create(Page);
-  CheckBox.Top := Button.Top + Button.Height + ScaleY(8);
-  CheckBox.Width := Page.SurfaceWidth div 2;
-  CheckBox.Height := ScaleY(17);
-  CheckBox.Caption := 'TNewCheckBox';
-  CheckBox.Checked := True;
-  CheckBox.Parent := Page.Surface;
-
-  Edit := TNewEdit.Create(Page);
-  Edit.Top := CheckBox.Top + CheckBox.Height + ScaleY(8);
-  Edit.Width := Page.SurfaceWidth div 2 - ScaleX(8);
-  Edit.Text := 'TNewEdit';
-  Edit.Parent := Page.Surface;
-
-  (* PasswordEdit := TPasswordEdit.Create(Page);
-  PasswordEdit.Left := Page.SurfaceWidth - Edit.Width;
-  PasswordEdit.Top := CheckBox.Top + CheckBox.Height + ScaleY(8);
-  PasswordEdit.Width := Edit.Width;
-  PasswordEdit.Text := 'TPasswordEdit';
-  PasswordEdit.Parent := Page.Surface; *)
-
-  (* Memo := TNewMemo.Create(Page);
-  Memo.Top := Edit.Top + Edit.Height + ScaleY(8);
-  Memo.Width := Page.SurfaceWidth;
-  Memo.Height := ScaleY(89);
-  Memo.ScrollBars := ssVertical;
-  Memo.Text := 'TNewMemo';
-  Memo.Parent := Page.Surface; *)
-
-  (* FormButton := TNewButton.Create(Page);
-  FormButton.Top := Memo.Top + Memo.Height + ScaleY(8);
-  FormButton.Width := ScaleX(75);
-  FormButton.Height := ScaleY(23);
-  FormButton.Caption := 'TSetupForm';
-  FormButton.OnClick := @FormButtonOnClick;
-  FormButton.Parent := Page.Surface;
-
-  { TComboBox and others }
-
-  Page := CreateCustomPage(Page.ID, 'Custom wizard page controls', 'TComboBox and others');
-
-  ComboBox := TNewComboBox.Create(Page);
-  ComboBox.Width := Page.SurfaceWidth;
-  ComboBox.Parent := Page.Surface;
-  ComboBox.Style := csDropDownList;
-  ComboBox.Items.Add('TComboBox');
-  ComboBox.ItemIndex := 0;
-
-  ListBox := TNewListBox.Create(Page);
-  ListBox.Top := ComboBox.Top + ComboBox.Height + ScaleY(8);
-  ListBox.Width := Page.SurfaceWidth;
-  ListBox.Height := ScaleY(97);
-  ListBox.Parent := Page.Surface;
-  ListBox.Items.Add('TListBox');
-  ListBox.ItemIndex := 0;
-
-  StaticText := TNewStaticText.Create(Page);
-  StaticText.Top := ListBox.Top + ListBox.Height + ScaleY(8);
-  StaticText.Caption := 'TNewStaticText';
-  StaticText.AutoSize := True;
-  StaticText.Parent := Page.Surface;
-
-  ProgressBarLabel := TNewStaticText.Create(Page);
-  ProgressBarLabel.Top := StaticText.Top + StaticText.Height + ScaleY(8);
-  ProgressBarLabel.Caption := 'TNewProgressBar';
-  ProgressBarLabel.AutoSize := True;
-  ProgressBarLabel.Parent := Page.Surface;
-
-  ProgressBar := TNewProgressBar.Create(Page);
-  ProgressBar.Left := ProgressBarLabel.Width + ScaleX(8);
-  ProgressBar.Top := ProgressBarLabel.Top;
-  ProgressBar.Width := Page.SurfaceWidth - ProgressBar.Left;
-  ProgressBar.Height := ProgressBarLabel.Height + ScaleY(8);
-  ProgressBar.Parent := Page.Surface;
-  ProgressBar.Position := 25;
-
-  ProgressBar2 := TNewProgressBar.Create(Page);
-  ProgressBar2.Left := ProgressBarLabel.Width + ScaleX(8);
-  ProgressBar2.Top := ProgressBar.Top + ProgressBar.Height + ScaleY(4);
-  ProgressBar2.Width := Page.SurfaceWidth - ProgressBar.Left;
-  ProgressBar2.Height := ProgressBarLabel.Height + ScaleY(8);
-  ProgressBar2.Parent := Page.Surface;
-  ProgressBar2.Position := 50;
-  { Note: TNewProgressBar.State property only has an effect on Windows Vista and newer }
-  ProgressBar2.State := npbsError;
-
-  ProgressBar3 := TNewProgressBar.Create(Page);
-  ProgressBar3.Left := ProgressBarLabel.Width + ScaleX(8);
-  ProgressBar3.Top := ProgressBar2.Top + ProgressBar2.Height + ScaleY(4);
-  ProgressBar3.Width := Page.SurfaceWidth - ProgressBar.Left;
-  ProgressBar3.Height := ProgressBarLabel.Height + ScaleY(8);
-  ProgressBar3.Parent := Page.Surface;
-  { Note: TNewProgressBar.Style property only has an effect on Windows XP and newer }
-  ProgressBar3.Style := npbstMarquee;
-  
-  { TNewCheckListBox }
-
-  Page := CreateCustomPage(Page.ID, 'Custom wizard page controls', 'TNewCheckListBox');
-
-  CheckListBox := TNewCheckListBox.Create(Page);
-  CheckListBox.Width := Page.SurfaceWidth;
-  CheckListBox.Height := ScaleY(97);
-  CheckListBox.Flat := True;
-  CheckListBox.Parent := Page.Surface;
-  CheckListBox.AddCheckBox('TNewCheckListBox', '', 0, True, True, False, True, nil);
-  CheckListBox.AddRadioButton('TNewCheckListBox', '', 1, True, True, nil);
-  CheckListBox.AddRadioButton('TNewCheckListBox', '', 1, False, True, nil);
-  CheckListBox.AddCheckBox('TNewCheckListBox', '', 0, True, True, False, True, nil);
-
-  CheckListBox2 := TNewCheckListBox.Create(Page);
-  CheckListBox2.Top := CheckListBox.Top + CheckListBox.Height + ScaleY(8);
-  CheckListBox2.Width := Page.SurfaceWidth;
-  CheckListBox2.Height := ScaleY(97);
-  CheckListBox2.BorderStyle := bsNone;
-  CheckListBox2.ParentColor := True;
-  CheckListBox2.MinItemHeight := WizardForm.TasksList.MinItemHeight;
-  CheckListBox2.ShowLines := False;
-  CheckListBox2.WantTabs := True;
-  CheckListBox2.Parent := Page.Surface;
-  CheckListBox2.AddGroup('TNewCheckListBox', '', 0, nil);
-  CheckListBox2.AddRadioButton('TNewCheckListBox', '', 0, True, True, nil);
-  CheckListBox2.AddRadioButton('TNewCheckListBox', '', 0, False, True, nil);
-*)
-  { TFolderTreeView }
-(*
-  Page := CreateCustomPage(Page.ID, 'Custom wizard page controls', 'TFolderTreeView');
-
-  FolderTreeView := TFolderTreeView.Create(Page);
-  FolderTreeView.Width := Page.SurfaceWidth;
-  FolderTreeView.Height := Page.SurfaceHeight;
-  FolderTreeView.Parent := Page.Surface;
-  FolderTreeView.Directory := ExpandConstant('{src}');
-*)
+  False, '{#FarVer} plugin folder');
+  InputDirsPage.Add('{#FarVer} x86 plugin location:');
+  if IsWin64() then
+    InputDirsPage.Add('{#FarVer} x64 plugin location:');
+  InputDirsPage.Values[0] := GetDefaultFarx86Dir();
+  if IsWin64() then
+    InputDirsPage.Values[1] := GetDefaultFarx64Dir();
 end;
 
 procedure InitializeWizard();
@@ -393,7 +245,7 @@ begin
 
   if Is64BitInstallMode() then
   begin
-    MsgBox('Is64BitInstallMode: true', mbInformation, mb_Ok);
+    // MsgBox('Is64BitInstallMode: true', mbInformation, mb_Ok);
     if RegQueryStringValue(HKCU, 'Software\{#FarVer}', 'InstallDir_x64', InstallDir) or
        RegQueryStringValue(HKLM, 'Software\{#FarVer}', 'InstallDir_x64', InstallDir) then
     begin
