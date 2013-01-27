@@ -202,7 +202,7 @@ end;
 
 procedure CreateTheWizardPage;
 begin
-  { Input dirs }
+  // Input dirs
   InputDirsPage := CreateInputDirPage(wpSelectComponents,
   'Select {#FarVer} plugin location', 'Where {#FarVer} plugin should be installed?',
   '{#FarVer} plugin will be installed in the following folder.'#13#10#13#10 +
@@ -218,7 +218,7 @@ begin
   end;
 end;
 
-procedure SetupComponents();
+(*procedure SetupComponents();
 begin
   if IsFarX86Installed() then
   begin
@@ -228,7 +228,7 @@ begin
   begin
     MsgBox('IsFarX64Installed: true', mbInformation, mb_Ok);
   end;
-end;
+end;*)
 
 procedure SetupInputDirs();
 begin
@@ -249,7 +249,7 @@ function NextButtonClick(CurPageID: Integer): Boolean;
 begin
   if CurPageID = wpWelcome then
   begin
-    SetupComponents();
+    // SetupComponents();
   end
   else
   if CurPageID = wpSelectComponents then
@@ -264,7 +264,7 @@ begin
   // MsgBox('CurPageID: ' + IntToStr(CurPageID), mbInformation, mb_Ok);
   if CurPageID = InputDirsPage.ID then
   begin
-    SetupComponents();
+    // SetupComponents();
   end;
   if CurPageID = wpReady then
   begin
