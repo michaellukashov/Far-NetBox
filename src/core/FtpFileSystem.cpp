@@ -846,11 +846,12 @@ bool TFTPFileSystem::ConfirmOverwrite(UnicodeString & FileName,
   bool Result;
   TRACE("1");
   bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
-  // when resuming transfer after interrupted connection,
-  // do nothing (dummy resume) when the files has the same size.
-  // this is workaround for servers that strangely fails just after successful
-  // upload.
   bool CanResume =
+    !OperationProgress->AsciiTransfer &&
+    // when resuming transfer after interrupted connection,
+    // do nothing (dummy resume) when the files has the same size.
+    // this is workaround for servers that strangely fails just after successful
+    // upload.
     (FileParams != NULL) &&
     (((FileParams->DestSize < FileParams->SourceSize)) ||
      ((FileParams->DestSize == FileParams->SourceSize) && CanAutoResume));
