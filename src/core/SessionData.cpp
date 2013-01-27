@@ -1664,7 +1664,7 @@ UnicodeString TSessionData::GetSshProtStr()
 //---------------------------------------------------------------------
 bool TSessionData::GetUsesSsh()
 {
-  return (GetFSProtocol() < fsFTP);
+  return (FFSProtocol == fsSCPonly) || (FFSProtocol == fsSFTP) || (FFSProtocol == fsSFTPonly);
 }
 //---------------------------------------------------------------------
 void TSessionData::SetCipher(intptr_t Index, TCipher Value)
