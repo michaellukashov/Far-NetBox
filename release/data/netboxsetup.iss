@@ -66,11 +66,13 @@ AppVersion={#Version}
 AppVerName=NetBox plugin for {#FarVer} {#Version}
 OutputBaseFilename=FarNetBox-{#Major}.{#Minor}.{#Rev}_{#FarVer}_x86_x64
 Compression=lzma2
+; /ultra
 SolidCompression=yes
 PrivilegesRequired=none
 Uninstallable=no
 MinVersion=5.1
-; DisableDirPage=yes
+DisableDirPage=yes
+AlwaysShowDirOnReadyPage=yes
 
 ArchitecturesInstallIn64BitMode=x64
 
@@ -114,7 +116,7 @@ begin
     WizardForm.ComponentsList.Checked[0] := True;
 end;
 
-procedure InitializeWizard();
+(* procedure InitializeWizard();
 var
   InstallDir: string;
   PluginDir: String;
@@ -132,6 +134,217 @@ begin
 
   // prevent the main component to be unchecked
   WizardForm.ComponentsList.OnClickCheck := @ComponentsListClickCheck;
+
+  if Is64BitInstallMode() then
+  begin
+    MsgBox('Is64BitInstallMode: true', mbInformation, mb_Ok);
+    if RegQueryStringValue(HKCU, 'Software\{#FarVer}', 'InstallDir_x64', InstallDir) or
+       RegQueryStringValue(HKLM, 'Software\{#FarVer}', 'InstallDir_x64', InstallDir) then
+    begin
+      // MsgBox('InstallDir: ' + InstallDir, mbInformation, mb_Ok);
+    end;
+  end
+  else
+  if RegQueryStringValue(HKCU, 'Software\{#FarVer}', 'InstallDir', InstallDir) or
+     RegQueryStringValue(HKLM, 'Software\{#FarVer}', 'InstallDir', InstallDir) then
+  begin
+    // MsgBox('InstallDir: ' + InstallDir, mbInformation, mb_Ok);
+  end;
+  // MsgBox('InstallDir: ' + InstallDir, mbInformation, mb_Ok);
+  if InstallDir <> '' then
+  begin
+    PluginDir := AddBackslash(InstallDir) + 'Plugins\{#PluginSubDirName}';
+    WizardForm.DirEdit.Text := PluginDir;
+  end;
+end;
+*)
+
+procedure ButtonOnClick(Sender: TObject);
+begin
+  MsgBox('You clicked the button!', mbInformation, mb_Ok);
+end;
+
+procedure CreateTheWizardPages;
+var
+  Page: TWizardPage;
+  Button, FormButton: TNewButton;
+  Panel: TPanel;
+  CheckBox: TNewCheckBox;
+  Edit: TNewEdit;
+  // PasswordEdit: TPasswordEdit;
+  // Memo: TNewMemo;
+  // ComboBox: TNewComboBox;
+  // ListBox: TNewListBox;
+  // StaticText, ProgressBarLabel: TNewStaticText;
+  // ProgressBar, ProgressBar2, ProgressBar3: TNewProgressBar;
+  // CheckListBox, CheckListBox2: TNewCheckListBox;
+  // FolderTreeView: TFolderTreeView;
+  // BitmapImage, BitmapImage2, BitmapImage3: TBitmapImage;
+  // BitmapFileName: String;
+  // RichEditViewer: TRichEditViewer;
+begin
+  { TButton and others }
+
+  Page := CreateCustomPage(wpWelcome, 'Custom wizard page controls', 'TButton and others');
+
+  Button := TNewButton.Create(Page);
+  Button.Width := ScaleX(75);
+  Button.Height := ScaleY(23);
+  Button.Caption := 'TNewButton';
+  Button.OnClick := @ButtonOnClick;
+  Button.Parent := Page.Surface;
+
+  Panel := TPanel.Create(Page);
+  Panel.Width := Page.SurfaceWidth div 2 - ScaleX(8);
+  Panel.Left :=  Page.SurfaceWidth - Panel.Width;
+  Panel.Height := Button.Height * 2;
+  Panel.Caption := 'TPanel';
+  Panel.Color := clWindow;
+  Panel.ParentBackground := False;
+  Panel.Parent := Page.Surface;
+
+  CheckBox := TNewCheckBox.Create(Page);
+  CheckBox.Top := Button.Top + Button.Height + ScaleY(8);
+  CheckBox.Width := Page.SurfaceWidth div 2;
+  CheckBox.Height := ScaleY(17);
+  CheckBox.Caption := 'TNewCheckBox';
+  CheckBox.Checked := True;
+  CheckBox.Parent := Page.Surface;
+
+  Edit := TNewEdit.Create(Page);
+  Edit.Top := CheckBox.Top + CheckBox.Height + ScaleY(8);
+  Edit.Width := Page.SurfaceWidth div 2 - ScaleX(8);
+  Edit.Text := 'TNewEdit';
+  Edit.Parent := Page.Surface;
+
+  (* PasswordEdit := TPasswordEdit.Create(Page);
+  PasswordEdit.Left := Page.SurfaceWidth - Edit.Width;
+  PasswordEdit.Top := CheckBox.Top + CheckBox.Height + ScaleY(8);
+  PasswordEdit.Width := Edit.Width;
+  PasswordEdit.Text := 'TPasswordEdit';
+  PasswordEdit.Parent := Page.Surface; *)
+
+  (* Memo := TNewMemo.Create(Page);
+  Memo.Top := Edit.Top + Edit.Height + ScaleY(8);
+  Memo.Width := Page.SurfaceWidth;
+  Memo.Height := ScaleY(89);
+  Memo.ScrollBars := ssVertical;
+  Memo.Text := 'TNewMemo';
+  Memo.Parent := Page.Surface; *)
+
+  (* FormButton := TNewButton.Create(Page);
+  FormButton.Top := Memo.Top + Memo.Height + ScaleY(8);
+  FormButton.Width := ScaleX(75);
+  FormButton.Height := ScaleY(23);
+  FormButton.Caption := 'TSetupForm';
+  FormButton.OnClick := @FormButtonOnClick;
+  FormButton.Parent := Page.Surface;
+
+  { TComboBox and others }
+
+  Page := CreateCustomPage(Page.ID, 'Custom wizard page controls', 'TComboBox and others');
+
+  ComboBox := TNewComboBox.Create(Page);
+  ComboBox.Width := Page.SurfaceWidth;
+  ComboBox.Parent := Page.Surface;
+  ComboBox.Style := csDropDownList;
+  ComboBox.Items.Add('TComboBox');
+  ComboBox.ItemIndex := 0;
+
+  ListBox := TNewListBox.Create(Page);
+  ListBox.Top := ComboBox.Top + ComboBox.Height + ScaleY(8);
+  ListBox.Width := Page.SurfaceWidth;
+  ListBox.Height := ScaleY(97);
+  ListBox.Parent := Page.Surface;
+  ListBox.Items.Add('TListBox');
+  ListBox.ItemIndex := 0;
+
+  StaticText := TNewStaticText.Create(Page);
+  StaticText.Top := ListBox.Top + ListBox.Height + ScaleY(8);
+  StaticText.Caption := 'TNewStaticText';
+  StaticText.AutoSize := True;
+  StaticText.Parent := Page.Surface;
+
+  ProgressBarLabel := TNewStaticText.Create(Page);
+  ProgressBarLabel.Top := StaticText.Top + StaticText.Height + ScaleY(8);
+  ProgressBarLabel.Caption := 'TNewProgressBar';
+  ProgressBarLabel.AutoSize := True;
+  ProgressBarLabel.Parent := Page.Surface;
+
+  ProgressBar := TNewProgressBar.Create(Page);
+  ProgressBar.Left := ProgressBarLabel.Width + ScaleX(8);
+  ProgressBar.Top := ProgressBarLabel.Top;
+  ProgressBar.Width := Page.SurfaceWidth - ProgressBar.Left;
+  ProgressBar.Height := ProgressBarLabel.Height + ScaleY(8);
+  ProgressBar.Parent := Page.Surface;
+  ProgressBar.Position := 25;
+
+  ProgressBar2 := TNewProgressBar.Create(Page);
+  ProgressBar2.Left := ProgressBarLabel.Width + ScaleX(8);
+  ProgressBar2.Top := ProgressBar.Top + ProgressBar.Height + ScaleY(4);
+  ProgressBar2.Width := Page.SurfaceWidth - ProgressBar.Left;
+  ProgressBar2.Height := ProgressBarLabel.Height + ScaleY(8);
+  ProgressBar2.Parent := Page.Surface;
+  ProgressBar2.Position := 50;
+  { Note: TNewProgressBar.State property only has an effect on Windows Vista and newer }
+  ProgressBar2.State := npbsError;
+
+  ProgressBar3 := TNewProgressBar.Create(Page);
+  ProgressBar3.Left := ProgressBarLabel.Width + ScaleX(8);
+  ProgressBar3.Top := ProgressBar2.Top + ProgressBar2.Height + ScaleY(4);
+  ProgressBar3.Width := Page.SurfaceWidth - ProgressBar.Left;
+  ProgressBar3.Height := ProgressBarLabel.Height + ScaleY(8);
+  ProgressBar3.Parent := Page.Surface;
+  { Note: TNewProgressBar.Style property only has an effect on Windows XP and newer }
+  ProgressBar3.Style := npbstMarquee;
+  
+  { TNewCheckListBox }
+
+  Page := CreateCustomPage(Page.ID, 'Custom wizard page controls', 'TNewCheckListBox');
+
+  CheckListBox := TNewCheckListBox.Create(Page);
+  CheckListBox.Width := Page.SurfaceWidth;
+  CheckListBox.Height := ScaleY(97);
+  CheckListBox.Flat := True;
+  CheckListBox.Parent := Page.Surface;
+  CheckListBox.AddCheckBox('TNewCheckListBox', '', 0, True, True, False, True, nil);
+  CheckListBox.AddRadioButton('TNewCheckListBox', '', 1, True, True, nil);
+  CheckListBox.AddRadioButton('TNewCheckListBox', '', 1, False, True, nil);
+  CheckListBox.AddCheckBox('TNewCheckListBox', '', 0, True, True, False, True, nil);
+
+  CheckListBox2 := TNewCheckListBox.Create(Page);
+  CheckListBox2.Top := CheckListBox.Top + CheckListBox.Height + ScaleY(8);
+  CheckListBox2.Width := Page.SurfaceWidth;
+  CheckListBox2.Height := ScaleY(97);
+  CheckListBox2.BorderStyle := bsNone;
+  CheckListBox2.ParentColor := True;
+  CheckListBox2.MinItemHeight := WizardForm.TasksList.MinItemHeight;
+  CheckListBox2.ShowLines := False;
+  CheckListBox2.WantTabs := True;
+  CheckListBox2.Parent := Page.Surface;
+  CheckListBox2.AddGroup('TNewCheckListBox', '', 0, nil);
+  CheckListBox2.AddRadioButton('TNewCheckListBox', '', 0, True, True, nil);
+  CheckListBox2.AddRadioButton('TNewCheckListBox', '', 0, False, True, nil);
+*)
+  { TFolderTreeView }
+(*
+  Page := CreateCustomPage(Page.ID, 'Custom wizard page controls', 'TFolderTreeView');
+
+  FolderTreeView := TFolderTreeView.Create(Page);
+  FolderTreeView.Width := Page.SurfaceWidth;
+  FolderTreeView.Height := Page.SurfaceHeight;
+  FolderTreeView.Parent := Page.Surface;
+  FolderTreeView.Directory := ExpandConstant('{src}');
+*)
+end;
+
+procedure InitializeWizard();
+var
+  InstallDir: string;
+  PluginDir: String;
+begin
+  { Custom wizard pages }
+  CreateTheWizardPages;
 
   if Is64BitInstallMode() then
   begin
