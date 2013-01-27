@@ -219,7 +219,7 @@ begin
   Result := InputDirsPage.Values[1];
 end;
 
-procedure CreateTheWizardPages;
+procedure CreateTheWizardPage;
 begin
   { Input dirs }
   InputDirsPage := CreateInputDirPage(wpSelectDir,
@@ -236,32 +236,7 @@ begin
 end;
 
 procedure InitializeWizard();
-var
-  InstallDir: string;
-  PluginDir: String;
 begin
-  { Custom wizard pages }
-  CreateTheWizardPages;
-
-  if Is64BitInstallMode() then
-  begin
-    // MsgBox('Is64BitInstallMode: true', mbInformation, mb_Ok);
-    if RegQueryStringValue(HKCU, 'Software\{#FarVer}', 'InstallDir_x64', InstallDir) or
-       RegQueryStringValue(HKLM, 'Software\{#FarVer}', 'InstallDir_x64', InstallDir) then
-    begin
-      // MsgBox('InstallDir: ' + InstallDir, mbInformation, mb_Ok);
-    end;
-  end
-  else
-  if RegQueryStringValue(HKCU, 'Software\{#FarVer}', 'InstallDir', InstallDir) or
-     RegQueryStringValue(HKLM, 'Software\{#FarVer}', 'InstallDir', InstallDir) then
-  begin
-    // MsgBox('InstallDir: ' + InstallDir, mbInformation, mb_Ok);
-  end;
-  // MsgBox('InstallDir: ' + InstallDir, mbInformation, mb_Ok);
-  if InstallDir <> '' then
-  begin
-    PluginDir := AddBackslash(InstallDir) + 'Plugins\{#PluginSubDirName}';
-    WizardForm.DirEdit.Text := PluginDir;
-  end;
+  // Custom wizard page
+  CreateTheWizardPage;
 end;
