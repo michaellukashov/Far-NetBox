@@ -3347,7 +3347,7 @@ struct TClipboardHandler
 };
 #endif
 //---------------------------------------------------------------------------
-UnicodeString  FormatContactList(UnicodeString Entry1, UnicodeString Entry2)
+UnicodeString FormatContactList(UnicodeString Entry1, UnicodeString Entry2)
 {
   if (!Entry1.IsEmpty() && !Entry2.IsEmpty())
   {
@@ -3359,7 +3359,7 @@ UnicodeString  FormatContactList(UnicodeString Entry1, UnicodeString Entry2)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString  FormatContact(const TFtpsCertificateData::TContact & Contact)
+UnicodeString FormatContact(const TFtpsCertificateData::TContact & Contact)
 {
   UnicodeString Result =
     FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 1).c_str(),
@@ -3499,8 +3499,8 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
     FSessionInfo.Certificate =
       FMTLOAD(CERT_TEXT,
-        FormatContact(Data.Subject).c_str(),
         FormatContact(Data.Issuer).c_str(),
+        FormatContact(Data.Subject).c_str(),
         FormatValidityTime(Data.ValidFrom).c_str(),
         FormatValidityTime(Data.ValidUntil).c_str(),
         FSessionInfo.CertificateFingerprint.c_str(),
