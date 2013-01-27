@@ -112,6 +112,7 @@ Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPlug
 ; Source: "C:\Program Files\PuTTY\puttygen.exe"; DestDir: "{app}\PuTTY"; Components: puttygen; Flags: ignoreversion
 
 [InstallDelete]
+Type: files; Name: "{app}\NetBox.dll"
 Type: files; Name: "{app}\NetBoxEng.lng"
 Type: files; Name: "{app}\NetBoxRus.lng"
 Type: files; Name: "{app}\ChangeLog"
@@ -124,60 +125,6 @@ Type: files; Name: "{app}\LICENSE.txt"
 
 var
   InputDirsPage: TInputDirWizardPage;
-
-function x64Selected(): Boolean;
-begin
-  Result := IsWin64() and True;
-end;
-
-procedure ComponentsListClickCheck(Sender: TObject);
-begin
-  if not WizardForm.ComponentsList.Checked[0] then
-    WizardForm.ComponentsList.Checked[0] := True;
-end;
-
-(* procedure InitializeWizard();
-var
-  InstallDir: string;
-  PluginDir: String;
-begin
-  // allow installation without requiring user to accept licence
-  WizardForm.LicenseAcceptedRadio.Checked := True;
-  WizardForm.LicenseAcceptedRadio.Visible := False;
-  WizardForm.LicenseLabel1.Visible := False;
-  WizardForm.LicenseNotAcceptedRadio.Visible := False;
-  WizardForm.LicenseMemo.Top := WizardForm.LicenseLabel1.Top;
-  WizardForm.LicenseMemo.Height :=
-    WizardForm.LicenseNotAcceptedRadio.Top +
-    WizardForm.LicenseNotAcceptedRadio.Height -
-    WizardForm.LicenseMemo.Top - 5;
-
-  // prevent the main component to be unchecked
-  WizardForm.ComponentsList.OnClickCheck := @ComponentsListClickCheck;
-
-  if Is64BitInstallMode() then
-  begin
-    // MsgBox('Is64BitInstallMode: true', mbInformation, mb_Ok);
-    if RegQueryStringValue(HKCU, 'Software\{#FarVer}', 'InstallDir_x64', InstallDir) or
-       RegQueryStringValue(HKLM, 'Software\{#FarVer}', 'InstallDir_x64', InstallDir) then
-    begin
-      // MsgBox('InstallDir: ' + InstallDir, mbInformation, mb_Ok);
-    end;
-  end
-  else
-  if RegQueryStringValue(HKCU, 'Software\{#FarVer}', 'InstallDir', InstallDir) or
-     RegQueryStringValue(HKLM, 'Software\{#FarVer}', 'InstallDir', InstallDir) then
-  begin
-    // MsgBox('InstallDir: ' + InstallDir, mbInformation, mb_Ok);
-  end;
-  // MsgBox('InstallDir: ' + InstallDir, mbInformation, mb_Ok);
-  if InstallDir <> '' then
-  begin
-    PluginDir := AddBackslash(InstallDir) + 'Plugins\{#PluginSubDirName}';
-    WizardForm.DirEdit.Text := PluginDir;
-  end;
-end;
-*)
 
 function GetDefaultFarx86Dir(): String;
 var
