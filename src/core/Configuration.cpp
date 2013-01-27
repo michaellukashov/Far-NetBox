@@ -159,6 +159,8 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
   {
     Classes::Error(SNotImplemented, 3005);
   }
+  assert(false);
+  return NULL;
 }
 //---------------------------------------------------------------------------
 #define LASTELEM(ELEM) \

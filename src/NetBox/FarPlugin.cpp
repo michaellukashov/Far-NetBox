@@ -2261,7 +2261,7 @@ TFarPanelModes::~TFarPanelModes()
 {
   if (!FReferenced)
   {
-    for (intptr_t Index = 0; Index < LENOF(FPanelModes); ++Index)
+    for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FPanelModes)); ++Index)
     {
       ClearPanelMode(FPanelModes[Index]);
     }

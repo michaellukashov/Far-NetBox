@@ -111,7 +111,7 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
     int MaxMessageWidth = 20;
     FarWrapText(Message, &MessageLines, MaxMessageWidth);
     BOOST_TEST_MESSAGE("MessageLines = " << W2MB(MessageLines.Text.get().c_str()));
-    BOOST_CHECK_EQUAL(3, MessageLines.Count);
+    BOOST_CHECK_EQUAL(3, MessageLines.GetCount());
     BOOST_CHECK_EQUAL("long long long long ", W2MB(MessageLines.Strings[0].c_str()).c_str());
     BOOST_CHECK_EQUAL("long long long long ", W2MB(MessageLines.Strings[1].c_str()).c_str());
     BOOST_CHECK_EQUAL("long text", W2MB(MessageLines.Strings[2].c_str()).c_str());
@@ -255,7 +255,7 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
     Lines.Add(L"aaa");
     Lines.Add(L"aaa");
     Lines.Add(L"bbb");
-    BOOST_CHECK(3 == Lines.Count);
+    BOOST_CHECK(3 == Lines.GetCount());
     BOOST_CHECK(0 == Lines.IndexOf(L"aaa"));
     BOOST_CHECK(2 == Lines.IndexOf(L"bbb"));
   }
@@ -266,7 +266,7 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
     Lines.Add(L"aaa");
     Lines.Add(L"aaa");
     Lines.Add(L"bbb");
-    BOOST_CHECK(2 == Lines.Count);
+    BOOST_CHECK(2 == Lines.GetCount());
     BOOST_CHECK(1 == Lines.IndexOf(L"bbb"));
   }
   Lines.Clear();
@@ -553,13 +553,13 @@ BOOST_FIXTURE_TEST_CASE(test18, base_fixture_t)
   TCopyParamType * CopyParam = new TCopyParamType(FDefaultCopyParam);
   CopyParam->SetTransferMode(tmAscii);
   TCopyParamList FCopyParamList;
-  // BOOST_TEST_MESSAGE("FCopyParamList.Count = " << FCopyParamList.GetCount());
+  // BOOST_TEST_MESSAGE("FCopyParamList.GetCount() = " << FCopyParamList.GetCount());
   FCopyParamList.Add(LoadStr(COPY_PARAM_PRESET_ASCII), CopyParam, NULL);
-  // BOOST_TEST_MESSAGE("FCopyParamList.Count = " << FCopyParamList.GetCount());
+  // BOOST_TEST_MESSAGE("FCopyParamList.GetCount() = " << FCopyParamList.GetCount());
   CopyParam = new TCopyParamType(FDefaultCopyParam);
   CopyParam->SetTransferMode(tmAscii);
   FCopyParamList.Add(LoadStr(COPY_PARAM_PRESET_BINARY), CopyParam, NULL);
-  // BOOST_TEST_MESSAGE("FCopyParamList.Count = " << FCopyParamList.GetCount());
+  // BOOST_TEST_MESSAGE("FCopyParamList.GetCount() = " << FCopyParamList.GetCount());
 }
 
 BOOST_FIXTURE_TEST_CASE(test19, base_fixture_t)

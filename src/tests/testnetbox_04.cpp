@@ -23,7 +23,7 @@
 #include "ne_session.h"
 #include "ne_request.h"
 
-#include "dl/include.hpp"
+// #include "dl/include.hpp"
 
 #include "calculator.hpp"
 
@@ -87,12 +87,12 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
   WSACleanup();
 }
 
-BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
+/*BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
 {
   team::calculator calc("calculator_dll.dll");
   BOOST_TEST_MESSAGE("sum = " << calc.sum(10, 20));
   BOOST_TEST_MESSAGE("mul = " << calc.mul(10, 20));
   BOOST_TEST_MESSAGE("sqrt = " << calc.sqrt(25));
-}
+}*/
 
 BOOST_AUTO_TEST_SUITE_END()
