@@ -7,6 +7,7 @@
 #ifndef ROOT_DIR
 #define ROOT_DIR ".."
 #endif
+#define BUILD_DIR ROOT_DIR + "/build/Far2/
 #ifndef SOURCE_DIR
 #define SOURCE_DIR ROOT_DIR + "/src/NetBox"
 #endif
@@ -14,10 +15,10 @@
 #define OUTPUT_DIR ROOT_DIR + "/build"
 #endif
 #ifndef BINARIES_DIR_X86
-#define BINARIES_DIR_X86 ROOT_DIR + "/src/NetBox/NetBox/x86"
+#define BINARIES_DIR_X86 BUILD_DIR + "/NetBox/x86"
 #endif
 #ifndef BINARIES_DIR_X64
-#define BINARIES_DIR_X64 ROOT_DIR + "/src/NetBox/NetBox/x64"
+#define BINARIES_DIR_X64 BUILD_DIR + "/NetBox/x64"
 #endif
 
 #ifndef PUTTY_SOURCE_DIR
