@@ -187,7 +187,7 @@ public:
 
 private:
   T & FTarget;
-  const T & FValue;
+  T FValue;
 };
 //---------------------------------------------------------------------------
 class TBoolRestorer : TValueRestorer<bool>
