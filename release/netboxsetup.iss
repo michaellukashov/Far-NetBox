@@ -1,5 +1,5 @@
 #ifndef FAR_VERSION
-#define FAR_VERSION "Far2"
+#define FAR_VERSION "Far3"
 #endif
 
 #define YEAR 2013
@@ -124,8 +124,8 @@ function GetFarX86InstallDir(): String;
 var
   InstallDir: String;
 begin
-  if RegQueryStringValue(HKCU, 'Software\{#FAR_VERSION}', 'InstallDir', InstallDir) or
-     RegQueryStringValue(HKLM, 'Software\{#FAR_VERSION}', 'InstallDir', InstallDir) then
+  if RegQueryStringValue(HKCU, 'Software\Far Manager', 'InstallDir', InstallDir) or
+     RegQueryStringValue(HKLM, 'Software\Far Manager', 'InstallDir', InstallDir) then
   begin
     Result := InstallDir;
   end;
@@ -135,8 +135,8 @@ function GetFarX64InstallDir(): String;
 var
   InstallDir: String;
 begin
-  if RegQueryStringValue(HKCU, 'Software\{#FAR_VERSION}', 'InstallDir_x64', InstallDir) or
-     RegQueryStringValue(HKLM, 'Software\{#FAR_VERSION}', 'InstallDir_x64', InstallDir) then
+  if RegQueryStringValue(HKCU, 'Software\Far Manager', 'InstallDir_x64', InstallDir) or
+     RegQueryStringValue(HKLM, 'Software\Far Manager', 'InstallDir_x64', InstallDir) then
   begin
     Result := InstallDir;
   end;
