@@ -7,7 +7,7 @@
 #ifndef ROOT_DIR
 #define ROOT_DIR ".."
 #endif
-#define BUILD_DIR ROOT_DIR + "/build/Far2/
+#define BUILD_DIR ROOT_DIR + "/build/Far3/
 #ifndef SOURCE_DIR
 #define SOURCE_DIR ROOT_DIR + "/src/NetBox"
 #endif
