@@ -6,7 +6,7 @@
 
 #define Status "release"
 #ifndef ROOT_DIR
-#define ROOT_DIR "../.."
+#define ROOT_DIR ".."
 #endif
 #ifndef SOURCE_DIR
 #define SOURCE_DIR ROOT_DIR + "/src/NetBox"
