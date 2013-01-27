@@ -1892,7 +1892,7 @@ TCipher TSecureShell::FuncToSsh1Cipher(const void * Cipher)
   assert(LENOF(CipherFuncs) == LENOF(TCiphers));
   TCipher Result = cipWarn;
 
-  for (intptr_t Index = 0; Index < LENOF(TCiphers); ++Index)
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(TCiphers)); ++Index)
   {
     if (static_cast<ssh_cipher *>(const_cast<void *>(Cipher)) == CipherFuncs[Index])
     {

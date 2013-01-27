@@ -6133,7 +6133,6 @@ uri_is_canonical(const char * uri, apr_pool_t * pool)
   return TRUE;
 }
 
-/* */
 static const char *
 uri_skip_ancestor(const char * parent_uri,
   const char * child_uri)

@@ -2214,7 +2214,7 @@ TFarPanelModes::~TFarPanelModes()
 {
   if (!FReferenced)
   {
-    for (intptr_t Index = 0; Index < LENOF(FPanelModes); ++Index)
+    for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FPanelModes)); ++Index)
     {
       ClearPanelMode(FPanelModes[Index]);
     }
@@ -2378,7 +2378,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
 //---------------------------------------------------------------------------
 void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
 {
-  for (intptr_t Index = 0; Index < LENOF(Titles.Titles); ++Index)
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(Titles.Titles)); ++Index)
   {
     delete[] Titles.Titles[Index];
     delete[] Titles.CtrlTitles[Index];
