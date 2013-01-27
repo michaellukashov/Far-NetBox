@@ -83,22 +83,20 @@ Name: custom; Description: "Custom installation"; Flags: iscustom
 ; Languages: en ru
 
 [Components]
-Name: main; Description: "NetBox plugin for {#FarVer}"; Types: full custom
+Name: main_x86; Description: "NetBox plugin for {#FarVer} x86"; Types: full custom
 ; Name: pageant; Description: "Pageant (SSH authentication agent)"; Types: full
 ; Name: puttygen; Description: "PuTTYgen (key generator)"; Types: full
 
 [Files]
-Source: "{#FileSourceMain_x64}"; DestName: "NetBox.dll"; DestDir: "{app}"; Components: main; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "{#FileSourceMain_x86}"; DestName: "NetBox.dll"; DestDir: "{app}"; Components: main; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{app}"; Components: main; Flags: ignoreversion
-Source: "{#FileSourceRus}"; DestName: "NetBoxRus.lng"; DestDir: "{app}"; Components: main; Flags: ignoreversion
-Source: "{#FileSourceRus}"; DestName: "ChangeLog"; DestDir: "{app}"; Components: main; Flags: ignoreversion
-Source: "{#FileSourceChangeLog}"; DestName: "ChangeLog"; DestDir: "{app}"; Components: main; Flags: ignoreversion
-Source: "{#FileSourceReadmeEng}"; DestName: "README.md"; DestDir: "{app}"; Components: main; Flags: ignoreversion
-Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{app}"; Components: main; Flags: ignoreversion
-Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{app}"; Components: main; Flags: ignoreversion
-; Source: "WinSCP.ico"; DestDir: "{app}"; Components: main; Flags: ignoreversion
-; Source: "licence"; DestName: "licence"; DestDir: "{app}"; Components: main; Flags: ignoreversion
+Source: "{#FileSourceMain_x64}"; DestName: "NetBox.dll"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "{#FileSourceMain_x86}"; DestName: "NetBox.dll"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceRus}"; DestName: "NetBoxRus.lng"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceChangeLog}"; DestName: "ChangeLog"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceReadmeEng}"; DestName: "README.md"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion
+Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion
+; Source: "licence"; DestName: "licence"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion
 ; Source: "C:\Program Files\PuTTY\LICENCE"; DestDir: "{app}\PuTTY"; Components: pageant puttygen; Flags: ignoreversion
 ; Source: "C:\Program Files\PuTTY\putty.hlp"; DestDir: "{app}\PuTTY"; Components: pageant puttygen; Flags: ignoreversion
 ; Source: "C:\Program Files\PuTTY\pageant.exe"; DestDir: "{app}\PuTTY"; Components: pageant; Flags: ignoreversion
@@ -107,6 +105,11 @@ Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{app}"; Compo
 [InstallDelete]
 Type: files; Name: "{app}\NetBoxEng.lng"
 Type: files; Name: "{app}\NetBoxRus.lng"
+Type: files; Name: "{app}\ChangeLog"
+Type: files; Name: "{app}\ChangeLog"
+Type: files; Name: "{app}\README.md"
+Type: files; Name: "{app}\README.RU.md"
+Type: files; Name: "{app}\LICENSE.txt"
 
 [Code]
 
@@ -164,10 +167,41 @@ begin
   MsgBox('You clicked the button!', mbInformation, mb_Ok);
 end;
 
+function GetFarx86Dir(): String;
+var
+  InstallDir: String;
+begin
+  if RegQueryStringValue(HKCU, 'Software\{#FarVer}', 'InstallDir', InstallDir) or
+     RegQueryStringValue(HKLM, 'Software\{#FarVer}', 'InstallDir', InstallDir) then
+  begin
+    Result := AddBackslash(InstallDir) + 'Plugins\{#PluginSubDirName}';
+  end
+  else
+  begin
+    Result := ExpandConstant('{pf}\{#FarVer}\Plugins\{#PluginSubDirName}');
+  end;
+end;
+
+function GetFarx64Dir(): String;
+var
+  InstallDir: String;
+begin
+  if RegQueryStringValue(HKCU, 'Software\{#FarVer}', 'InstallDir_x64', InstallDir) or
+     RegQueryStringValue(HKLM, 'Software\{#FarVer}', 'InstallDir_x64', InstallDir) then
+  begin
+    Result := AddBackslash(InstallDir) + 'Plugins\{#PluginSubDirName}';
+  end
+  else
+  begin
+    Result := ExpandConstant('{pf}\{#FarVer}\Plugins\{#PluginSubDirName}');
+  end;
+end;
+
 procedure CreateTheWizardPages;
 var
   Page: TWizardPage;
-  Button, FormButton: TNewButton;
+  InputDirsPage: TInputDirWizardPage;
+  Button: TNewButton;
   Panel: TPanel;
   CheckBox: TNewCheckBox;
   Edit: TNewEdit;
@@ -183,9 +217,20 @@ var
   // BitmapFileName: String;
   // RichEditViewer: TRichEditViewer;
 begin
+  { Input dirs }
+  InputDirsPage := CreateInputDirPage(wpSelectDir,
+  'Select {#FarVer} x86 plugin location', 'Where {#FarVer} x86 plugin should be installed?',
+  '{#FarVer} x86 plugin will be installed in the following folder.'#13#10#13#10 +
+  'To continue, click Next. If you would like to select a different folder, click Browse.',
+  False, '{#FarVer} x86 plugin folder');
+  InputDirsPage.Add('');
+  InputDirsPage.Add('');
+  InputDirsPage.Values[0] := GetFarx86Dir(); // ExpandConstant('{userappdata}\My Company\My Program');
+  InputDirsPage.Values[1] := GetFarx64Dir(); // ExpandConstant('{userappdata}\My Company\My Program');
+  // DataDir := InputDirsPage.Values[0];
   { TButton and others }
 
-  Page := CreateCustomPage(wpWelcome, 'Custom wizard page controls', 'TButton and others');
+  Page := CreateCustomPage(wpSelectDir, 'Custom wizard page controls', 'TButton and others');
 
   Button := TNewButton.Create(Page);
   Button.Width := ScaleX(75);
