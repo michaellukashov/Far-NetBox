@@ -65,8 +65,7 @@ DisableStartupPrompt=yes
 AppVersion={#Version}
 AppVerName=NetBox plugin for {#FarVer} {#Version}
 OutputBaseFilename=FarNetBox-{#Major}.{#Minor}.{#Rev}_{#FarVer}_x86_x64
-Compression=lzma2
-; /ultra
+Compression=lzma2/ultra
 SolidCompression=yes
 PrivilegesRequired=none
 Uninstallable=no
@@ -85,8 +84,8 @@ Name: custom; Description: "Custom installation"; Flags: iscustom
 [Components]
 Name: main_x86; Description: "NetBox plugin for {#FarVer} x86"; Types: full custom
 Name: main_x64; Description: "NetBox plugin for {#FarVer} x64"; Types: full custom; check: IsWin64
-; Name: pageant; Description: "Pageant (SSH authentication agent)"; Types: full
-; Name: puttygen; Description: "PuTTYgen (key generator)"; Types: full
+Name: pageant; Description: "Pageant (SSH authentication agent)"; Types: full
+Name: puttygen; Description: "PuTTYgen (key generator)"; Types: full
 
 [Files]
 Source: "{#FileSourceMain_x86}"; DestName: "NetBox.dll"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
@@ -105,11 +104,14 @@ Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{code:GetPl
 Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
 Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPluginx86Dir}"; Components: main_x86; Flags: ignoreversion
 Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPluginx64Dir}"; Components: main_x64; Flags: ignoreversion
-; Source: "licence"; DestName: "licence"; DestDir: "{app}"; Components: main_x86; Flags: ignoreversion
-; Source: "C:\Program Files\PuTTY\LICENCE"; DestDir: "{app}\PuTTY"; Components: pageant puttygen; Flags: ignoreversion
-; Source: "C:\Program Files\PuTTY\putty.hlp"; DestDir: "{app}\PuTTY"; Components: pageant puttygen; Flags: ignoreversion
-; Source: "C:\Program Files\PuTTY\pageant.exe"; DestDir: "{app}\PuTTY"; Components: pageant; Flags: ignoreversion
-; Source: "C:\Program Files\PuTTY\puttygen.exe"; DestDir: "{app}\PuTTY"; Components: puttygen; Flags: ignoreversion
+Source: "{#PUTTY_SOURCE_DIR}\LICENCE"; DestDir: "{code:GetPluginx86Dir}\PuTTY"; Components: main_x86 pageant puttygen; Flags: ignoreversion
+Source: "{#PUTTY_SOURCE_DIR}\LICENCE"; DestDir: "{code:GetPluginx64Dir}\PuTTY"; Components: main_x64 pageant puttygen; Flags: ignoreversion
+Source: "{#PUTTY_SOURCE_DIR}\putty.hlp"; DestDir: "{code:GetPluginx86Dir}\PuTTY"; Components: main_x86 pageant puttygen; Flags: ignoreversion
+Source: "{#PUTTY_SOURCE_DIR}\putty.hlp"; DestDir: "{code:GetPluginx64Dir}\PuTTY"; Components: main_x64 pageant puttygen; Flags: ignoreversion
+Source: "{#PUTTY_SOURCE_DIR}\pageant.exe"; DestDir: "{code:GetPluginx86Dir}\PuTTY"; Components: main_x86 pageant; Flags: ignoreversion
+Source: "{#PUTTY_SOURCE_DIR}\pageant.exe"; DestDir: "{code:GetPluginx64Dir}\PuTTY"; Components: main_x64 pageant; Flags: ignoreversion
+Source: "{#PUTTY_SOURCE_DIR}\puttygen.exe"; DestDir: "{code:GetPluginx86Dir}\PuTTY"; Components: main_x86 puttygen; Flags: ignoreversion
+Source: "{#PUTTY_SOURCE_DIR}\puttygen.exe"; DestDir: "{code:GetPluginx64Dir}\PuTTY"; Components: main_x64 puttygen; Flags: ignoreversion
 
 [InstallDelete]
 Type: files; Name: "{app}\NetBox.dll"
