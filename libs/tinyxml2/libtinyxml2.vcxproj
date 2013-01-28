@@ -68,29 +68,29 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
+    <OutDir>..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IntDir>..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
+    <IntDir>..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
+    <OutDir>..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
+    <IntDir>..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
+    <OutDir>..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IntDir>..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
+    <IntDir>..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
+    <OutDir>..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IntDir>..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
+    <IntDir>..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -102,7 +102,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <ObjectFileName>..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
+      <ObjectFileName>..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -122,7 +122,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <ObjectFileName>../../build/$(SolutionName)/$(Configuration)\x64/$(ProjectName)/</ObjectFileName>
+      <ObjectFileName>..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -144,7 +144,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <ObjectFileName>..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
+      <ObjectFileName>..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -171,7 +171,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <ObjectFileName>..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
+      <ObjectFileName>..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
