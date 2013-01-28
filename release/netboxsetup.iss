@@ -245,7 +245,6 @@ begin
   if InstallDir <> '' then
   begin
     Result := AddBackslash(InstallDir) + 'Plugins\{#PluginSubDirName}';
-    MsgBox('Result: ' + Result, mbInformation, mb_Ok);
   end
   else
   begin
