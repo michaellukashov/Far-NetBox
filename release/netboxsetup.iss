@@ -360,4 +360,6 @@ procedure InitializeWizard();
 begin
   // Custom wizard page
   CreateTheWizardPage;
+
+  WizardForm.LicenseAcceptedRadio.Checked := True;
 end;
