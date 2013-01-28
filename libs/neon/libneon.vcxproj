@@ -86,20 +86,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
-    <IntDir>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
+    <OutDir>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
+    <IntDir>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
-    <IntDir>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
+    <OutDir>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
+    <IntDir>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
-    <IntDir>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
+    <OutDir>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
+    <IntDir>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
-    <IntDir>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
+    <OutDir>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
+    <IntDir>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -111,11 +111,11 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_LIB;NE_HAVE_SSL;HAVE_OPENSSL;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;USE_GETADDRINFO;WIN32_LEAN_AND_MEAN;NOUSER;NOGDI;NONLS;NOCRYPT;_CRT_SECURE_NO_WARNINGS;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</AssemblerListingLocation>
+      <AssemblerListingLocation>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
-      <PrecompiledHeaderOutputFile>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libneon.pch</PrecompiledHeaderOutputFile>
-      <ObjectFileName>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
-      <ProgramDataBaseFileName>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libneon.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <AdditionalIncludeDirectories>src;..\openssl\x86\inc32;..\expat\lib;..\zlib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
@@ -126,11 +126,11 @@
     </ResourceCompile>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libneon.bsc</OutputFile>
+      <OutputFile>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libneon.bsc</OutputFile>
     </Bscmake>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libneon.lib</OutputFile>
+      <OutputFile>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libneon.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -143,11 +143,11 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_WINDOWS;_LIB;NE_HAVE_SSL;HAVE_OPENSSL;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;USE_GETADDRINFO;WIN32_LEAN_AND_MEAN;NOUSER;NOGDI;NONLS;NOCRYPT;_CRT_SECURE_NO_WARNINGS;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</AssemblerListingLocation>
+      <AssemblerListingLocation>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
-      <PrecompiledHeaderOutputFile>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libneon.pch</PrecompiledHeaderOutputFile>
-      <ObjectFileName>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
-      <ProgramDataBaseFileName>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libneon.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <AdditionalIncludeDirectories>src;..\openssl\x64\inc32;..\expat\lib;..\zlib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
@@ -158,11 +158,11 @@
     </ResourceCompile>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libneon.bsc</OutputFile>
+      <OutputFile>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libneon.bsc</OutputFile>
     </Bscmake>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libneon.lib</OutputFile>
+      <OutputFile>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libneon.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -175,10 +175,10 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_LIB;NE_HAVE_SSL;HAVE_OPENSSL;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;USE_GETADDRINFO;WIN32_LEAN_AND_MEAN;NOUSER;NOGDI;NONLS;NOCRYPT;_CRT_SECURE_NO_WARNINGS;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libneon.pch</PrecompiledHeaderOutputFile>
-      <ObjectFileName>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
-      <ProgramDataBaseFileName>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ProgramDataBaseFileName>
+      <AssemblerListingLocation>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libneon.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>src;..\openssl\x86\inc32;..\expat\lib;..\zlib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -196,11 +196,11 @@
     </ResourceCompile>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libneon.bsc</OutputFile>
+      <OutputFile>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libneon.bsc</OutputFile>
     </Bscmake>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libneon.lib</OutputFile>
+      <OutputFile>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libneon.lib</OutputFile>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
     </Lib>
   </ItemDefinitionGroup>
@@ -214,10 +214,10 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;NDEBUG;_LIB;NE_HAVE_SSL;HAVE_OPENSSL;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;USE_GETADDRINFO;WIN32_LEAN_AND_MEAN;NOUSER;NOGDI;NONLS;NOCRYPT;_CRT_SECURE_NO_WARNINGS;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libneon.pch</PrecompiledHeaderOutputFile>
-      <ObjectFileName>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
-      <ProgramDataBaseFileName>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ProgramDataBaseFileName>
+      <AssemblerListingLocation>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libneon.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>src;..\openssl\x64\inc32;..\expat\lib;..\zlib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -235,11 +235,11 @@
     </ResourceCompile>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libneon.bsc</OutputFile>
+      <OutputFile>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libneon.bsc</OutputFile>
     </Bscmake>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libneon.lib</OutputFile>
+      <OutputFile>.\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libneon.lib</OutputFile>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
     </Lib>
   </ItemDefinitionGroup>
