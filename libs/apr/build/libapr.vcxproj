@@ -136,37 +136,37 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
-    <IntDir>..\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
+    <OutDir>..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
+    <IntDir>..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
-    <IntDir>..\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
+    <OutDir>..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
+    <IntDir>..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>..\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
-    <OutDir>..\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
+    <IntDir>..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
+    <OutDir>..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>..\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
-    <OutDir>..\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
+    <IntDir>..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
+    <OutDir>..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IntDir>..\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
-    <OutDir>..\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
+    <IntDir>..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
+    <OutDir>..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IntDir>..\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
-    <OutDir>..\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
+    <IntDir>..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
+    <OutDir>..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IntDir>..\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
-    <OutDir>..\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
+    <IntDir>..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
+    <OutDir>..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IntDir>..\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
-    <OutDir>..\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
+    <IntDir>..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
+    <OutDir>..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -180,17 +180,17 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AssemblerListingLocation>.\..\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</AssemblerListingLocation>
-      <ObjectFileName>.\..\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
-      <ProgramDataBaseFileName>.\..\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
-      <XMLDocumentationFileName>.\..\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</XMLDocumentationFileName>
+      <AssemblerListingLocation>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</AssemblerListingLocation>
+      <ObjectFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <XMLDocumentationFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</XMLDocumentationFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <OutputFile>.\..\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libapr.lib</OutputFile>
+      <OutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libapr.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -205,17 +205,17 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AssemblerListingLocation>.\..\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</AssemblerListingLocation>
-      <ObjectFileName>.\..\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
-      <ProgramDataBaseFileName>.\..\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
-      <XMLDocumentationFileName>.\..\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</XMLDocumentationFileName>
+      <AssemblerListingLocation>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</AssemblerListingLocation>
+      <ObjectFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <XMLDocumentationFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</XMLDocumentationFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <OutputFile>.\..\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libapr.lib</OutputFile>
+      <OutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libapr.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -247,7 +247,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <OutputFile>.\..\..\..\build\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libapr.lib</OutputFile>
+      <OutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libapr.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -279,7 +279,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <OutputFile>.\..\..\..\build\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libapr.lib</OutputFile>
+      <OutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libapr.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

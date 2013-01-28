@@ -1,32 +1,30 @@
-#ifndef FAR_VERSION
-#define FAR_VERSION "Far3"
-#endif
-
 #define YEAR 2013
 #define STATUS "release"
 #ifndef ROOT_DIR
 #define ROOT_DIR ".."
 #endif
-#define BUILD_DIR ROOT_DIR + "/build/Far3/
+#define BUILD_DIR ROOT_DIR + "/build/NetBox/
 #ifndef SOURCE_DIR
 #define SOURCE_DIR ROOT_DIR + "/src/NetBox"
 #endif
 #ifndef OUTPUT_DIR
 #define OUTPUT_DIR ROOT_DIR + "/build"
 #endif
-#ifndef BINARIES_DIR_X86
-#define BINARIES_DIR_X86 BUILD_DIR + "/NetBox/x86"
+#ifndef BINARIES_DIR_FAR2
+#define BINARIES_DIR_FAR2 BUILD_DIR + "/Far2"
 #endif
-#ifndef BINARIES_DIR_X64
-#define BINARIES_DIR_X64 BUILD_DIR + "/NetBox/x64"
+#ifndef BINARIES_DIR_FAR3
+#define BINARIES_DIR_FAR3 BUILD_DIR + "/Far3"
 #endif
 
 #ifndef PUTTY_SOURCE_DIR
 #define PUTTY_SOURCE_DIR "C:/Program Files/Putty"
 #endif
 
-#define FileSourceMain_x86 BINARIES_DIR_X86 + "/NetBox.dll"
-#define FileSourceMain_x64 BINARIES_DIR_X64 + "/NetBox.dll"
+#define FileSourceMain_Far2x86 BINARIES_DIR_FAR2 + "/x86/NetBox.dll"
+#define FileSourceMain_Far2x64 BINARIES_DIR_FAR2 + "/x64/NetBox.dll"
+#define FileSourceMain_Far3x86 BINARIES_DIR_FAR3 + "/x86/NetBox.dll"
+#define FileSourceMain_Far3x64 BINARIES_DIR_FAR3 + "/x64/NetBox.dll"
 #define FileSourceEng SOURCE_DIR + "/NetBoxEng.lng"
 #define FileSourceRus SOURCE_DIR + "/NetBoxRus.lng"
 #define FileSourceChangeLog ROOT_DIR + "/ChangeLog"
@@ -46,17 +44,17 @@
 [Setup]
 AppId=netbox
 AppMutex=NetBox
-AppName=NetBox plugin for {#FAR_VERSION}
+AppName=NetBox plugin for Far2/Far3
 AppPublisher=Michael Lukashov
 AppPublisherURL=https://github.com/michaellukashov/Far-NetBox
 AppSupportURL=http://forum.farmanager.com/viewtopic.php?f=39&t=6638
 AppUpdatesURL=http://plugring.farmanager.com/plugin.php?pid=859&l=en
 VersionInfoCompany=Michael Lukashov
-VersionInfoDescription=Setup for NetBox plugin for {#FAR_VERSION} {#Version}
+VersionInfoDescription=Setup for NetBox plugin for Far2/Far3 {#Version}
 VersionInfoVersion={#Major}.{#Minor}.{#Rev}.{#Build}
 VersionInfoTextVersion={#Version}
 VersionInfoCopyright=(c) 2011-{#YEAR} Michael Lukashov
-DefaultDirName={pf}\{#FAR_VERSION}\Plugins\{#PluginSubDirName}
+DefaultDirName={pf}\Far Manager\Plugins\{#PluginSubDirName}
 UsePreviousAppDir=false
 DisableProgramGroupPage=true
 LicenseFile=licence.setup
@@ -64,8 +62,8 @@ LicenseFile=licence.setup
 OutputDir={#OUTPUT_DIR}
 DisableStartupPrompt=yes
 AppVersion={#Version}
-AppVerName=NetBox plugin for {#FAR_VERSION} {#Version}
-OutputBaseFilename=FarNetBox-{#Major}.{#Minor}.{#Rev}_{#FAR_VERSION}_x86_x64
+AppVerName=NetBox plugin for Far2/Far3 {#Version}
+OutputBaseFilename=FarNetBox-{#Major}.{#Minor}.{#Rev}_Far2_Far3_x86_x64
 Compression=lzma2/ultra
 SolidCompression=yes
 PrivilegesRequired=none
@@ -83,28 +81,40 @@ Name: custom; Description: "Custom installation"; Flags: iscustom
 ; Languages: en ru
 
 [Components]
-Name: main_x86; Description: "NetBox plugin for {#FAR_VERSION} x86"; Types: full custom; check: IsFarX86Installed
-Name: main_x64; Description: "NetBox plugin for {#FAR_VERSION} x64"; Types: full custom; check: IsWin64 and IsFarX64Installed
+Name: main_far2_x86; Description: "NetBox plugin for Far2 x86"; Types: full custom; check: IsFarX86Installed
+Name: main_far2_x64; Description: "NetBox plugin for Far2 x64"; Types: full custom; check: IsWin64 and IsFarX64Installed
 ; Name: pageant; Description: "Pageant (SSH authentication agent)"; Types: full
 ; Name: puttygen; Description: "PuTTYgen (key generator)"; Types: full
 
 [Files]
-Source: "{#FileSourceMain_x86}"; DestName: "NetBox.dll"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceMain_x64}"; DestName: "NetBox.dll"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
-Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
-Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
-Source: "{#FileSourceRus}"; DestName: "NetBoxRus.lng"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceRus}"; DestName: "NetBoxRus.lng"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
-Source: "{#FileSourceChangeLog}"; DestName: "ChangeLog"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceChangeLog}"; DestName: "ChangeLog"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
-Source: "{#FileSourceReadmeEng}"; DestName: "README.md"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceReadmeEng}"; DestName: "README.md"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
-Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
-Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPluginX86Dir}"; Components: main_x86; Flags: ignoreversion
-Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPluginX64Dir}"; Components: main_x64; Flags: ignoreversion
+Source: "{#FileSourceMain_Far2x86}"; DestName: "NetBox.dll"; DestDir: "{code:GetPlugin2X86Dir}"; Components: main_far2_x86; Flags: ignoreversion
+Source: "{#FileSourceMain_Far2x64}"; DestName: "NetBox.dll"; DestDir: "{code:GetPlugin2X64Dir}"; Components: main_far2_x64; Flags: ignoreversion
+Source: "{#FileSourceMain_Far3x86}"; DestName: "NetBox.dll"; DestDir: "{code:GetPlugin2X86Dir}"; Components: main_far3_x86; Flags: ignoreversion
+Source: "{#FileSourceMain_Far3x64}"; DestName: "NetBox.dll"; DestDir: "{code:GetPlugin2X64Dir}"; Components: main_far3_x64; Flags: ignoreversion
+Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPlugin2X86Dir}"; Components: main_far2_x86; Flags: ignoreversion
+Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPlugin2X64Dir}"; Components: main_far2_x64; Flags: ignoreversion
+Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPlugin3X86Dir}"; Components: main_far3_x86; Flags: ignoreversion
+Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPlugin3X64Dir}"; Components: main_far3_x64; Flags: ignoreversion
+Source: "{#FileSourceRus}"; DestName: "NetBoxRus.lng"; DestDir: "{code:GetPlugin2X86Dir}"; Components: main_far2_x86; Flags: ignoreversion
+Source: "{#FileSourceRus}"; DestName: "NetBoxRus.lng"; DestDir: "{code:GetPlugin2X64Dir}"; Components: main_far2_x64; Flags: ignoreversion
+Source: "{#FileSourceRus}"; DestName: "NetBoxRus.lng"; DestDir: "{code:GetPlugin3X86Dir}"; Components: main_far3_x86; Flags: ignoreversion
+Source: "{#FileSourceRus}"; DestName: "NetBoxRus.lng"; DestDir: "{code:GetPlugin3X64Dir}"; Components: main_far3_x64; Flags: ignoreversion
+Source: "{#FileSourceChangeLog}"; DestName: "ChangeLog"; DestDir: "{code:GetPlugin2X86Dir}"; Components: main_far2_x86; Flags: ignoreversion
+Source: "{#FileSourceChangeLog}"; DestName: "ChangeLog"; DestDir: "{code:GetPlugin2X64Dir}"; Components: main_far2_x64; Flags: ignoreversion
+Source: "{#FileSourceChangeLog}"; DestName: "ChangeLog"; DestDir: "{code:GetPlugin3X86Dir}"; Components: main_far3_x86; Flags: ignoreversion
+Source: "{#FileSourceChangeLog}"; DestName: "ChangeLog"; DestDir: "{code:GetPlugin3X64Dir}"; Components: main_far3_x64; Flags: ignoreversion
+Source: "{#FileSourceReadmeEng}"; DestName: "README.md"; DestDir: "{code:GetPlugin2X86Dir}"; Components: main_far2_x86; Flags: ignoreversion
+Source: "{#FileSourceReadmeEng}"; DestName: "README.md"; DestDir: "{code:GetPlugin2X64Dir}"; Components: main_far2_x64; Flags: ignoreversion
+Source: "{#FileSourceReadmeEng}"; DestName: "README.md"; DestDir: "{code:GetPlugin3X86Dir}"; Components: main_far3_x86; Flags: ignoreversion
+Source: "{#FileSourceReadmeEng}"; DestName: "README.md"; DestDir: "{code:GetPlugin3X64Dir}"; Components: main_far3_x64; Flags: ignoreversion
+Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{code:GetPlugin2X86Dir}"; Components: main_far2_x86; Flags: ignoreversion
+Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{code:GetPlugin2X64Dir}"; Components: main_far2_x64; Flags: ignoreversion
+Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{code:GetPlugin3X86Dir}"; Components: main_far3_x86; Flags: ignoreversion
+Source: "{#FileSourceReadmeRu}"; DestName: "README.RU.md"; DestDir: "{code:GetPlugin3X64Dir}"; Components: main_far3_x64; Flags: ignoreversion
+Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPlugin2X86Dir}"; Components: main_far2_x86; Flags: ignoreversion
+Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPlugin2X64Dir}"; Components: main_far2_x64; Flags: ignoreversion
+Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPlugin3X86Dir}"; Components: main_far3_x86; Flags: ignoreversion
+Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPlugin3X64Dir}"; Components: main_far3_x64; Flags: ignoreversion
 ; Source: "{#PUTTY_SOURCE_DIR}\LICENCE"; DestDir: "{code:GetPluginX86Dir}\PuTTY"; Components: main_x86 pageant puttygen; Flags: ignoreversion
 ; Source: "{#PUTTY_SOURCE_DIR}\LICENCE"; DestDir: "{code:GetPluginX64Dir}\PuTTY"; Components: main_x64 pageant puttygen; Flags: ignoreversion
 ; Source: "{#PUTTY_SOURCE_DIR}\putty.hlp"; DestDir: "{code:GetPluginX86Dir}\PuTTY"; Components: main_x86 pageant puttygen; Flags: ignoreversion
@@ -121,7 +131,79 @@ Source: "{#FileSourceLicense}"; DestName: "LICENSE.txt"; DestDir: "{code:GetPlug
 var
   InputDirsPage: TInputDirWizardPage;
 
-function GetFarX86InstallDir(): String;
+function GetFar2X86InstallDir(): String;
+var
+  InstallDir: String;
+begin
+  if RegQueryStringValue(HKCU, 'Software\Far2', 'InstallDir', InstallDir) or
+     RegQueryStringValue(HKLM, 'Software\Far2', 'InstallDir', InstallDir) then
+  begin
+    Result := InstallDir;
+  end;
+end;
+
+function GetFar2X64InstallDir(): String;
+var
+  InstallDir: String;
+begin
+  if RegQueryStringValue(HKCU, 'Software\Far2', 'InstallDir_x64', InstallDir) or
+     RegQueryStringValue(HKLM, 'Software\Far2', 'InstallDir_x64', InstallDir) then
+  begin
+    Result := InstallDir;
+  end;
+end;
+
+function IsFar2X86Installed(): Boolean;
+begin
+  Result := GetFar2X86InstallDir() <> '';
+end;
+
+function IsFar2X64Installed(): Boolean;
+begin
+  Result := GetFar2X64InstallDir() <> '';
+end;
+
+function GetDefaultFar2X86Dir(): String;
+var
+  InstallDir: String;
+begin
+  InstallDir := GetFar2X86InstallDir();
+  if InstallDir <> '' then
+  begin
+    Result := AddBackslash(InstallDir) + 'Plugins\{#PluginSubDirName}';
+  end
+  else
+  begin
+    Result := ExpandConstant('{pf}\Far2\Plugins\{#PluginSubDirName}');
+  end;
+end;
+
+function GetDefaultFar2X64Dir(): String;
+var
+  InstallDir: String;
+begin
+  InstallDir := GetFar2X64InstallDir();
+  if InstallDir <> '' then
+  begin
+    Result := AddBackslash(InstallDir) + 'Plugins\{#PluginSubDirName}';
+  end
+  else
+  begin
+    Result := ExpandConstant('{pf}\Far2\Plugins\{#PluginSubDirName}');
+  end;
+end;
+
+function GetPlugin2X86Dir(Param: String): String;
+begin
+  Result := InputDirsPage.Values[0];
+end;
+
+function GetPlugin2X64Dir(Param: String): String;
+begin
+  Result := InputDirsPage.Values[1];
+end;
+
+function GetFar3X86InstallDir(): String;
 var
   InstallDir: String;
 begin
@@ -132,7 +214,7 @@ begin
   end;
 end;
 
-function GetFarX64InstallDir(): String;
+function GetFar3X64InstallDir(): String;
 var
   InstallDir: String;
 begin
@@ -143,99 +225,99 @@ begin
   end;
 end;
 
-function IsFarX86Installed(): Boolean;
+function IsFar3X86Installed(): Boolean;
 begin
-  Result := GetFarX86InstallDir() <> '';
+  Result := GetFar3X86InstallDir() <> '';
 end;
 
-function IsFarX64Installed(): Boolean;
+function IsFar3X64Installed(): Boolean;
 begin
-  Result := GetFarX64InstallDir() <> '';
+  Result := GetFar3X64InstallDir() <> '';
 end;
 
-function GetDefaultFarX86Dir(): String;
+function GetDefaultFar3X86Dir(): String;
 var
   InstallDir: String;
 begin
-  InstallDir := GetFarX86InstallDir();
+  InstallDir := GetFar3X86InstallDir();
   if InstallDir <> '' then
   begin
     Result := AddBackslash(InstallDir) + 'Plugins\{#PluginSubDirName}';
   end
   else
   begin
-    Result := ExpandConstant('{pf}\{#FAR_VERSION}\Plugins\{#PluginSubDirName}');
+    Result := ExpandConstant('{pf}\Far Manager\Plugins\{#PluginSubDirName}');
   end;
 end;
 
-function GetDefaultFarX64Dir(): String;
+function GetDefaultFar3X64Dir(): String;
 var
   InstallDir: String;
 begin
-  InstallDir := GetFarX64InstallDir();
+  InstallDir := GetFar3X64InstallDir();
   if InstallDir <> '' then
   begin
     Result := AddBackslash(InstallDir) + 'Plugins\{#PluginSubDirName}';
   end
   else
   begin
-    Result := ExpandConstant('{pf}\{#FAR_VERSION}\Plugins\{#PluginSubDirName}');
+    Result := ExpandConstant('{pf}\Far Manager\Plugins\{#PluginSubDirName}');
   end;
 end;
 
-function GetPluginX86Dir(Param: String): String;
+function GetPlugin3X86Dir(Param: String): String;
 begin
-  Result := InputDirsPage.Values[0];
+  Result := InputDirsPage.Values[2];
 end;
 
-function GetPluginX64Dir(Param: String): String;
+function GetPlugin3X64Dir(Param: String): String;
 begin
-  Result := InputDirsPage.Values[1];
+  Result := InputDirsPage.Values[3];
 end;
 
 procedure CreateTheWizardPage;
 begin
   // Input dirs
   InputDirsPage := CreateInputDirPage(wpSelectComponents,
-  'Select {#FAR_VERSION} plugin location', 'Where {#FAR_VERSION} plugin should be installed?',
-  '{#FAR_VERSION} plugin will be installed in the following folder.'#13#10#13#10 +
+  'Select plugin location', 'Where plugin should be installed?',
+  'Plugin will be installed in the following folder(s).'#13#10#13#10 +
   'To continue, click Next. If you would like to select a different folder, click Browse.',
-  False, '{#FAR_VERSION} plugin folder');
-  begin
-    InputDirsPage.Add('{#FAR_VERSION} x86 plugin location:');
-    InputDirsPage.Values[0] := GetDefaultFarX86Dir();
-  end;
-  begin
-    InputDirsPage.Add('{#FAR_VERSION} x64 plugin location:');
-    InputDirsPage.Values[1] := GetDefaultFarX64Dir();
-  end;
+  False, 'Plugin folder');
+  InputDirsPage.Add('Far2/x86 plugin location:');
+  InputDirsPage.Values[0] := GetDefaultFar2X86Dir();
+  InputDirsPage.Add('Far2/x64 plugin location:');
+  InputDirsPage.Values[1] := GetDefaultFar2X64Dir();
+  InputDirsPage.Add('Far3/x86 plugin location:');
+  InputDirsPage.Values[2] := GetDefaultFar3X64Dir();
+  InputDirsPage.Add('Far3/x64 plugin location:');
+  InputDirsPage.Values[3] := GetDefaultFar3X64Dir();
 end;
-
-(*procedure SetupComponents();
-begin
-  if IsFarX86Installed() then
-  begin
-    MsgBox('IsFarX86Installed: true', mbInformation, mb_Ok);
-  end;
-  if IsFarX64Installed() then
-  begin
-    MsgBox('IsFarX64Installed: true', mbInformation, mb_Ok);
-  end;
-end;*)
 
 procedure SetupInputDirs();
 begin
-  InputDirsPage.Edits[0].Enabled := IsComponentSelected('main_x86');
-  InputDirsPage.Buttons[0].Enabled := IsComponentSelected('main_x86');
-  InputDirsPage.PromptLabels[0].Enabled := IsComponentSelected('main_x86');
+  InputDirsPage.Edits[0].Enabled := IsComponentSelected('main_far2_x86');
+  InputDirsPage.Buttons[0].Enabled := IsComponentSelected('main_far2_x86');
+  InputDirsPage.PromptLabels[0].Enabled := IsComponentSelected('main_far2_x86');
 
-  InputDirsPage.Edits[1].Visible := IsWin64();
-  InputDirsPage.Buttons[1].Visible := IsWin64();
-  InputDirsPage.PromptLabels[1].Visible := IsWin64();
+  // InputDirsPage.Edits[1].Visible := IsWin64();
+  // InputDirsPage.Buttons[1].Visible := IsWin64();
+  // InputDirsPage.PromptLabels[1].Visible := IsWin64();
 
-  InputDirsPage.Edits[1].Enabled := IsComponentSelected('main_x64');
-  InputDirsPage.Buttons[1].Enabled := IsComponentSelected('main_x64');
-  InputDirsPage.PromptLabels[1].Enabled := IsComponentSelected('main_x64');
+  InputDirsPage.Edits[1].Enabled := IsComponentSelected('main_far2_x64');
+  InputDirsPage.Buttons[1].Enabled := IsComponentSelected('main_far2_x64');
+  InputDirsPage.PromptLabels[1].Enabled := IsComponentSelected('main_far2_x64');
+
+  InputDirsPage.Edits[2].Enabled := IsComponentSelected('main_far3_x86');
+  InputDirsPage.Buttons[2].Enabled := IsComponentSelected('main_far3_x86');
+  InputDirsPage.PromptLabels[2].Enabled := IsComponentSelected('main_far3_x86');
+
+  // InputDirsPage.Edits[3].Visible := IsWin64();
+  // InputDirsPage.Buttons[3].Visible := IsWin64();
+  // InputDirsPage.PromptLabels[3].Visible := IsWin64();
+
+  InputDirsPage.Edits[3].Enabled := IsComponentSelected('main_far3_x64');
+  InputDirsPage.Buttons[3].Enabled := IsComponentSelected('main_far3_x64');
+  InputDirsPage.PromptLabels[3].Enabled := IsComponentSelected('main_far3_x64');
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
