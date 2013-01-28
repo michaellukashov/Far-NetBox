@@ -12,7 +12,7 @@ if "%PLUGIN_VERSION_TXT%" equ "" echo Undefined version & exit 1
 set PLUGINVER=%PLUGIN_VERSION_TXT%
 
 :: Package name
-set PKGNAME=Far%PLUGINNAME%-%PLUGINVER%_%FARVER%_x86_x64.7z
+set PKGNAME=Far%PLUGINNAME%-%PLUGINVER%_Far2_Far3_x86_x64.7z
 
 :: Create temp directory
 set PKGDIR=..\..\build\%PLUGINNAME%\%FARVER%\
@@ -36,7 +36,7 @@ copy ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME%\%PLUGINNAME%.dll %PKGDIRAR
 :: Make archive
 if exist %PKGNAME% del %PKGNAME%
 if exist "C:\Program Files\7-Zip\7z.exe" (
-  REM call "C:\Program Files\7-Zip\7z.exe" a -mx9 -t7z -r %PKGNAME% %PKGDIR%/* > NUL
+  call "C:\Program Files\7-Zip\7z.exe" a -mx9 -t7z -r %PKGNAME% ../../build/%PLUGINNAME%/* > NUL
   REM if errorlevel 1 echo Error creating archive & exit 1 /b
   @rem rmdir /S /Q %PKGDIRARCH%
   REM echo Package %PKGNAME% created
