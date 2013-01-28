@@ -37,7 +37,7 @@
 #define Minor
 #define Rev
 #define Build
-#expr ParseVersion(FileSourceMain_x86, Major, Minor, Rev, Build)
+#expr ParseVersion(FileSourceMain_Far2x86, Major, Minor, Rev, Build)
 #define Version Str(Major) + "." + Str(Minor) + (Rev > 0 ? "." + Str(Rev) : "") + \
   (STATUS != "" ? " " + STATUS : "")
 
@@ -81,16 +81,18 @@ Name: custom; Description: "Custom installation"; Flags: iscustom
 ; Languages: en ru
 
 [Components]
-Name: main_far2_x86; Description: "NetBox plugin for Far2 x86"; Types: full custom; check: IsFarX86Installed
-Name: main_far2_x64; Description: "NetBox plugin for Far2 x64"; Types: full custom; check: IsWin64 and IsFarX64Installed
+Name: main_far2_x86; Description: "NetBox plugin for Far2 x86"; Types: full custom; check: IsFar2X86Installed
+Name: main_far2_x64; Description: "NetBox plugin for Far2 x64"; Types: full custom; check: IsWin64 and IsFar3X64Installed
+Name: main_far3_x86; Description: "NetBox plugin for Far3 x86"; Types: full custom; check: IsFar3X86Installed
+Name: main_far3_x64; Description: "NetBox plugin for Far3 x64"; Types: full custom; check: IsWin64 and IsFar3X64Installed
 ; Name: pageant; Description: "Pageant (SSH authentication agent)"; Types: full
 ; Name: puttygen; Description: "PuTTYgen (key generator)"; Types: full
 
 [Files]
 Source: "{#FileSourceMain_Far2x86}"; DestName: "NetBox.dll"; DestDir: "{code:GetPlugin2X86Dir}"; Components: main_far2_x86; Flags: ignoreversion
 Source: "{#FileSourceMain_Far2x64}"; DestName: "NetBox.dll"; DestDir: "{code:GetPlugin2X64Dir}"; Components: main_far2_x64; Flags: ignoreversion
-Source: "{#FileSourceMain_Far3x86}"; DestName: "NetBox.dll"; DestDir: "{code:GetPlugin2X86Dir}"; Components: main_far3_x86; Flags: ignoreversion
-Source: "{#FileSourceMain_Far3x64}"; DestName: "NetBox.dll"; DestDir: "{code:GetPlugin2X64Dir}"; Components: main_far3_x64; Flags: ignoreversion
+Source: "{#FileSourceMain_Far3x86}"; DestName: "NetBox.dll"; DestDir: "{code:GetPlugin3X86Dir}"; Components: main_far3_x86; Flags: ignoreversion
+Source: "{#FileSourceMain_Far3x64}"; DestName: "NetBox.dll"; DestDir: "{code:GetPlugin3X64Dir}"; Components: main_far3_x64; Flags: ignoreversion
 Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPlugin2X86Dir}"; Components: main_far2_x86; Flags: ignoreversion
 Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPlugin2X64Dir}"; Components: main_far2_x64; Flags: ignoreversion
 Source: "{#FileSourceEng}"; DestName: "NetBoxEng.lng"; DestDir: "{code:GetPlugin3X86Dir}"; Components: main_far3_x86; Flags: ignoreversion
@@ -135,8 +137,8 @@ function GetFar2X86InstallDir(): String;
 var
   InstallDir: String;
 begin
-  if RegQueryStringValue(HKCU, 'Software\Far2', 'InstallDir', InstallDir) or
-     RegQueryStringValue(HKLM, 'Software\Far2', 'InstallDir', InstallDir) then
+  if RegQueryStringValue(HKLM, 'Software\Far2', 'InstallDir', InstallDir) or
+     RegQueryStringValue(HKCU, 'Software\Far2', 'InstallDir', InstallDir) then
   begin
     Result := InstallDir;
   end;
@@ -207,8 +209,8 @@ function GetFar3X86InstallDir(): String;
 var
   InstallDir: String;
 begin
-  if RegQueryStringValue(HKCU, 'Software\Far Manager', 'InstallDir', InstallDir) or
-     RegQueryStringValue(HKLM, 'Software\Far Manager', 'InstallDir', InstallDir) then
+  if RegQueryStringValue(HKLM, 'Software\Far Manager', 'InstallDir', InstallDir) or
+     RegQueryStringValue(HKCU, 'Software\Far Manager', 'InstallDir', InstallDir) then
   begin
     Result := InstallDir;
   end;
@@ -218,8 +220,8 @@ function GetFar3X64InstallDir(): String;
 var
   InstallDir: String;
 begin
-  if RegQueryStringValue(HKCU, 'Software\Far Manager', 'InstallDir_x64', InstallDir) or
-     RegQueryStringValue(HKLM, 'Software\Far Manager', 'InstallDir_x64', InstallDir) then
+  if RegQueryStringValue(HKLM, 'Software\Far Manager', 'InstallDir_x64', InstallDir) or
+     RegQueryStringValue(HKCU, 'Software\Far Manager', 'InstallDir_x64', InstallDir) then
   begin
     Result := InstallDir;
   end;
@@ -281,14 +283,15 @@ begin
   InputDirsPage := CreateInputDirPage(wpSelectComponents,
   'Select plugin location', 'Where plugin should be installed?',
   'Plugin will be installed in the following folder(s).'#13#10#13#10 +
-  'To continue, click Next. If you would like to select a different folder, click Browse.',
+  // 'To continue, click Next. If you would like to select a different folder, click Browse.',
+  '',
   False, 'Plugin folder');
   InputDirsPage.Add('Far2/x86 plugin location:');
   InputDirsPage.Values[0] := GetDefaultFar2X86Dir();
   InputDirsPage.Add('Far2/x64 plugin location:');
   InputDirsPage.Values[1] := GetDefaultFar2X64Dir();
   InputDirsPage.Add('Far3/x86 plugin location:');
-  InputDirsPage.Values[2] := GetDefaultFar3X64Dir();
+  InputDirsPage.Values[2] := GetDefaultFar3X86Dir();
   InputDirsPage.Add('Far3/x64 plugin location:');
   InputDirsPage.Values[3] := GetDefaultFar3X64Dir();
 end;
