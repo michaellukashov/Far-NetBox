@@ -3528,7 +3528,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetShell((SessionData->GetDefaultShell() ? UnicodeString() : ShellEdit->GetText()));
     SessionData->SetDetectReturnVar(ReturnVarEdit->GetText() == ReturnVarEdit->GetItems()->Strings[0]);
     SessionData->SetReturnVar((SessionData->GetDetectReturnVar() ? UnicodeString() : ReturnVarEdit->GetText()));
-    SessionData->SetLookupUserGroups((TAutoSwitch)LookupUserGroupsCheck->GetChecked());
+    SessionData->SetLookupUserGroups(LookupUserGroupsCheck->GetChecked() ? asOn : asOff);
     SessionData->SetClearAliases(ClearAliasesCheck->GetChecked());
     SessionData->SetIgnoreLsWarnings(IgnoreLsWarningsCheck->GetChecked());
     SessionData->SetScp1Compatibility(Scp1CompatibilityCheck->GetChecked());
