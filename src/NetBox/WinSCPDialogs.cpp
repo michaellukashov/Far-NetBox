@@ -3743,7 +3743,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     // BUGS();
 
     // WebDAV tab
-    SessionData->SetCompression(WebDAVCompressionCheck->GetChecked());
+    if (GetFSProtocol() == fsWebDAV)
+      SessionData->SetCompression(WebDAVCompressionCheck->GetChecked());
 
     #undef TRISTATE
     SessionData->SetBug(sbIgnore1, static_cast<TAutoSwitch>(2 - BugIgnore1Combo->GetItemIndex()));
