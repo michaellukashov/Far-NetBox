@@ -326,21 +326,21 @@ size_t TXmlStorage::BinaryDataSize(const UnicodeString & Name)
 //---------------------------------------------------------------------------
 bool TXmlStorage::ReadBool(const UnicodeString & Name, bool Default)
 {
-  UnicodeString res = ReadString(Name, L"");
-  if (res.IsEmpty())
+  UnicodeString Result = ReadString(Name, L"");
+  if (Result.IsEmpty())
   {
     return Default;
   }
   else
   {
-    return AnsiCompareIC(res, ::BooleanToEngStr(true)) == 0;
+    return AnsiCompareIC(Result, ::BooleanToEngStr(true)) == 0;
   }
 }
 //---------------------------------------------------------------------------
 TDateTime TXmlStorage::ReadDateTime(const UnicodeString & Name, TDateTime Default)
 {
-  double res = ReadFloat(Name, Default.operator double());
-  return TDateTime(res);
+  double Result = ReadFloat(Name, Default.operator double());
+  return TDateTime(Result);
 }
 //---------------------------------------------------------------------------
 double TXmlStorage::ReadFloat(const UnicodeString & Name, double Default)
