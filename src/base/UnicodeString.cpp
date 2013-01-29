@@ -383,7 +383,7 @@ void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
   Data.resize(Length);
   if (Length > 0)
   {
-      memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
+    memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
   }
   Data = Data.c_str();
 }
