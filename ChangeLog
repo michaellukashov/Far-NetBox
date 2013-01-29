@@ -1,6 +1,7 @@
 NetBox 2.1.23 ??.02.2013
 --------------------
-  * Bugfix: SSH: [x] Enable compression option was not restored
+  * Bugfix: SSH: "[] Lookup user groups" option was not stored
+  * Bugfix: SSH: "[] Enable compression" option was not stored
 
 NetBox 2.1.22 27.01.2013
 --------------------
