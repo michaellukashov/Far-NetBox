@@ -327,7 +327,6 @@ void Shred(UnicodeString & Str)
 {
   if (!Str.IsEmpty())
   {
-    Str.Unique();
     memset(const_cast<wchar_t *>(Str.c_str()), 0, Str.Length() * sizeof(*Str.c_str()));
     Str = L"";
   }
@@ -804,13 +803,11 @@ UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str)
   intptr_t Size = 1024;
 
   Buf.SetLength(Size);
-  Buf.Unique();
   intptr_t Len = ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), (DWORD)Size);
 
   if (Len > Size)
   {
     Buf.SetLength(Len);
-    Buf.Unique();
     ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), (DWORD)Len);
   }
 

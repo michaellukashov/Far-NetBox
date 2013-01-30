@@ -139,7 +139,6 @@ public:
   UnicodeString TrimLeft() const;
   UnicodeString TrimRight() const;
 
-  void Unique() const {}
   void sprintf(const wchar_t * fmt, ...);
 
 public:
@@ -193,7 +192,6 @@ public:
   wchar_t & operator [](intptr_t Idx)
   {
     ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-    Unique();                 // Ensure we're not ref-counted (and Unicode)
     return Data[Idx-1];
   }
 
@@ -250,7 +248,6 @@ public:
   char & operator [](intptr_t Idx)
   {
     ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-    Unique();                 // Ensure we're not ref-counted (and Unicode)
     return Data[Idx-1];
   }
 
@@ -286,8 +283,6 @@ public:
   { return lhs.Data == rhs.Data; }
   friend bool operator !=(const AnsiString & lhs, const AnsiString & rhs)
   { return lhs.Data != rhs.Data; }
-
-  void Unique() const {}
 
 private:
   void Init(const wchar_t * Str, intptr_t Length);
@@ -367,8 +362,6 @@ public:
   { return lhs.Data == rhs.Data; }
   friend bool operator !=(RawByteString & lhs, RawByteString & rhs)
   { return lhs.Data != rhs.Data; }
-
-  void Unique() const {}
 
 private:
   void Init(const wchar_t * Str, intptr_t Length);

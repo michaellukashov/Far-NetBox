@@ -126,7 +126,7 @@ AnsiString & AnsiString::operator +=(const char Ch)
   return *this;
 }
 
-void  __cdecl AnsiString::ThrowIfOutOfRange(intptr_t Idx) const
+void AnsiString::ThrowIfOutOfRange(intptr_t Idx) const
 {
   if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
     throw std::runtime_error("Index is out of range"); // ERangeError(Sysconst_SRangeError);
@@ -584,7 +584,7 @@ UnicodeString & UnicodeString::operator +=(const wchar_t Ch)
   return *this;
 }
 
-void  __cdecl UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const
+void UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const
 {
   if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
     throw std::runtime_error("Index is out of range"); // ERangeError(Sysconst_SRangeError);
