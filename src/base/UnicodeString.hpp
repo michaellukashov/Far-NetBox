@@ -49,10 +49,10 @@ public:
   UTF8String operator +(const UTF8String & rhs) const;
   UTF8String operator +(const std::wstring & rhs) const;
   UTF8String operator +(const RawByteString & rhs) const;
-  const UTF8String & operator +=(const UTF8String & rhs);
-  const UTF8String & operator +=(const RawByteString & rhs);
-  const UTF8String & operator +=(const char rhs);
-  const UTF8String & operator +=(const char * rhs);
+  UTF8String & operator +=(const UTF8String & rhs);
+  UTF8String & operator +=(const RawByteString & rhs);
+  UTF8String & operator +=(const char rhs);
+  UTF8String & operator +=(const char * rhs);
 
   friend bool operator ==(const UTF8String & lhs, const UTF8String & rhs);
   friend bool operator !=(const UTF8String & lhs, const UTF8String & rhs);
@@ -167,14 +167,14 @@ public:
   friend UnicodeString operator +(const UnicodeString & lhs, const wchar_t * rhs);
   friend UnicodeString operator +(const UnicodeString & lhs, const char * rhs);
 
-  const UnicodeString & operator +=(const UnicodeString & rhs);
-  const UnicodeString & operator +=(const wchar_t * rhs);
-  const UnicodeString & operator +=(const UTF8String & rhs);
-  const UnicodeString & operator +=(const RawByteString & rhs);
-  const UnicodeString & operator +=(const std::wstring & rhs);
-  const UnicodeString & operator +=(const char rhs);
-  const UnicodeString & operator +=(const char * rhs);
-  const UnicodeString & operator +=(const wchar_t rhs);
+  UnicodeString & operator +=(const UnicodeString & rhs);
+  UnicodeString & operator +=(const wchar_t * rhs);
+  UnicodeString & operator +=(const UTF8String & rhs);
+  UnicodeString & operator +=(const RawByteString & rhs);
+  UnicodeString & operator +=(const std::wstring & rhs);
+  UnicodeString & operator +=(const char rhs);
+  UnicodeString & operator +=(const char * rhs);
+  UnicodeString & operator +=(const wchar_t rhs);
 
   bool operator ==(const UnicodeString & Str) const { return Data == Str.Data; }
   bool operator !=(const UnicodeString & Str) const { return Data != Str.Data; }
@@ -275,12 +275,12 @@ public:
   AnsiString operator +(const UTF8String & rhs) const;
   AnsiString operator +(const std::wstring & rhs) const;
 
-  const AnsiString & operator +=(const UnicodeString & rhs);
-  const AnsiString & operator +=(const RawByteString & rhs);
-  const AnsiString & operator +=(const AnsiString & rhs);
-  const AnsiString & operator +=(const UTF8String & rhs);
-  const AnsiString & operator +=(const char Ch);
-  const AnsiString & operator +=(const char * rhs);
+  AnsiString & operator +=(const UnicodeString & rhs);
+  AnsiString & operator +=(const RawByteString & rhs);
+  AnsiString & operator +=(const AnsiString & rhs);
+  AnsiString & operator +=(const UTF8String & rhs);
+  AnsiString & operator +=(const char Ch);
+  AnsiString & operator +=(const char * rhs);
 
   friend bool operator ==(const AnsiString & lhs, const AnsiString & rhs)
   { return lhs.Data == rhs.Data; }
@@ -353,13 +353,13 @@ public:
   RawByteString operator +(const UTF8String & rhs) const;
   RawByteString operator +(const std::wstring & rhs) const;
 
-  const RawByteString & operator +=(const UnicodeString & rhs);
-  const RawByteString & operator +=(const RawByteString & rhs);
-  const RawByteString & operator +=(const AnsiString & rhs);
-  const RawByteString & operator +=(const UTF8String & rhs);
-  const RawByteString & operator +=(const std::wstring & rhs);
-  const RawByteString & operator +=(const char Ch);
-  const RawByteString & operator +=(const char * rhs);
+  RawByteString & operator +=(const UnicodeString & rhs);
+  RawByteString & operator +=(const RawByteString & rhs);
+  RawByteString & operator +=(const AnsiString & rhs);
+  RawByteString & operator +=(const UTF8String & rhs);
+  RawByteString & operator +=(const std::wstring & rhs);
+  RawByteString & operator +=(const char Ch);
+  RawByteString & operator +=(const char * rhs);
 
   bool operator ==(const char * rhs) const
   { return strcmp(reinterpret_cast<const char *>(Data.c_str()), rhs) == 0; }
