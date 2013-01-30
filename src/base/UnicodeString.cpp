@@ -102,31 +102,31 @@ AnsiString AnsiString::operator +(const RawByteString & rhs) const
   return AnsiString(Result.c_str(), Result.size());
 }
 
-const AnsiString & AnsiString::operator +=(const RawByteString & rhs)
+AnsiString & AnsiString::operator +=(const RawByteString & rhs)
 {
   Data.append(reinterpret_cast<const char *>(rhs.c_str()), rhs.size());
   return *this;
 }
 
-const AnsiString & AnsiString::operator +=(const AnsiString & rhs)
+AnsiString & AnsiString::operator +=(const AnsiString & rhs)
 {
   Data.append(rhs.c_str(), rhs.size());
   return *this;
 }
 
-const AnsiString & AnsiString::operator +=(const UTF8String & rhs)
+AnsiString & AnsiString::operator +=(const UTF8String & rhs)
 {
   Data.append(reinterpret_cast<const char *>(rhs.c_str()), rhs.size());
   return *this;
 }
 
-const AnsiString & AnsiString::operator +=(const char Ch)
+AnsiString & AnsiString::operator +=(const char Ch)
 {
   Data.append(1, Ch);
   return *this;
 }
 
-void  __cdecl AnsiString::ThrowIfOutOfRange(intptr_t Idx) const
+void AnsiString::ThrowIfOutOfRange(intptr_t Idx) const
 {
   if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
     throw std::runtime_error("Index is out of range"); // ERangeError(Sysconst_SRangeError);
@@ -251,19 +251,19 @@ RawByteString RawByteString::operator +(const RawByteString & rhs) const
   return RawByteString(reinterpret_cast<const char *>(Result.c_str()), Result.size());
 }
 
-const RawByteString & RawByteString::operator +=(const RawByteString & rhs)
+RawByteString & RawByteString::operator +=(const RawByteString & rhs)
 {
   Data.append(reinterpret_cast<const unsigned char *>(rhs.c_str()), rhs.size());
   return *this;
 }
 
-const RawByteString & RawByteString::operator +=(const UTF8String & rhs)
+RawByteString & RawByteString::operator +=(const UTF8String & rhs)
 {
   Data.append(reinterpret_cast<const unsigned char *>(rhs.c_str()), rhs.size());
   return *this;
 }
 
-const RawByteString & RawByteString::operator +=(const char Ch)
+RawByteString & RawByteString::operator +=(const char Ch)
 {
   unsigned char ch(static_cast<unsigned char>(Ch));
   Data.append(1, ch);
@@ -346,20 +346,20 @@ UTF8String UTF8String::operator +(const UTF8String & rhs) const
   return UTF8String(Result.c_str(), Result.size());
 }
 
-const UTF8String & UTF8String::operator +=(const UTF8String & rhs)
+UTF8String & UTF8String::operator +=(const UTF8String & rhs)
 {
   Data.append(rhs.Data.c_str(), rhs.size());
   return *this;
 }
 
-const UTF8String & UTF8String::operator +=(const RawByteString & rhs)
+UTF8String & UTF8String::operator +=(const RawByteString & rhs)
 {
   UTF8String s(rhs.c_str(), rhs.size());
   Data.append(s.Data.c_str(), s.size());
   return *this;
 }
 
-const UTF8String & UTF8String::operator +=(const char Ch)
+UTF8String & UTF8String::operator +=(const char Ch)
 {
   unsigned char ch(static_cast<unsigned char>(Ch));
   Data.append(1, ch);
@@ -383,7 +383,7 @@ void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
   Data.resize(Length);
   if (Length > 0)
   {
-      memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
+    memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
   }
   Data = Data.c_str();
 }
@@ -547,44 +547,44 @@ UnicodeString UnicodeString::operator +(const UnicodeString & rhs) const
   return UnicodeString(Result.c_str(), Result.size());
 }
 
-const UnicodeString & UnicodeString::operator +=(const UnicodeString & rhs)
+UnicodeString & UnicodeString::operator +=(const UnicodeString & rhs)
 {
   Data.append(rhs.Data.c_str(), rhs.size());
   return *this;
 }
 
-const UnicodeString & UnicodeString::operator +=(const wchar_t * rhs)
+UnicodeString & UnicodeString::operator +=(const wchar_t * rhs)
 {
   Data.append(rhs);
   return *this;
 }
 
-const UnicodeString & UnicodeString::operator +=(const RawByteString & rhs)
+UnicodeString & UnicodeString::operator +=(const RawByteString & rhs)
 {
   UnicodeString s(rhs.c_str(), rhs.size());
   Data.append(s.Data.c_str(), s.size());
   return *this;
 }
 
-const UnicodeString & UnicodeString::operator +=(const std::wstring & rhs)
+UnicodeString & UnicodeString::operator +=(const std::wstring & rhs)
 {
   Data.append(rhs.c_str(), rhs.size());
   return *this;
 }
 
-const UnicodeString & UnicodeString::operator +=(const char Ch)
+UnicodeString & UnicodeString::operator +=(const char Ch)
 {
   Data.append(1, Ch);
   return *this;
 }
 
-const UnicodeString & UnicodeString::operator +=(const wchar_t Ch)
+UnicodeString & UnicodeString::operator +=(const wchar_t Ch)
 {
   Data += Ch;
   return *this;
 }
 
-void  __cdecl UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const
+void UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const
 {
   if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
     throw std::runtime_error("Index is out of range"); // ERangeError(Sysconst_SRangeError);

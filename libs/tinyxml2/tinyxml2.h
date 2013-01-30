@@ -100,7 +100,7 @@ inline int TIXML_SNPRINTF( char* buffer, size_t size, const char* format, ... )
 
 static const int TIXML2_MAJOR_VERSION = 1;
 static const int TIXML2_MINOR_VERSION = 0;
-static const int TIXML2_PATCH_VERSION = 9;
+static const int TIXML2_PATCH_VERSION = 10;
 
 namespace tinyxml2
 {
@@ -464,6 +464,19 @@ public:
     static bool IsWhiteSpace( char p )					{
         return !IsUTF8Continuation(p) && std::isspace( static_cast<unsigned char>(p) );
     }
+    
+    inline static bool IsNameStartChar( unsigned char ch ) {
+        return ( ( ch < 128 ) ? std::isalpha( ch ) : 1 )
+               || ch == ':'
+               || ch == '_';
+    }
+    
+    inline static bool IsNameChar( unsigned char ch ) {
+        return IsNameStartChar( ch )
+               || std::isdigit( ch )
+               || ch == '.'
+               || ch == '-';
+    }
 
     inline static bool StringEqual( const char* p, const char* q, int nChar=INT_MAX )  {
         int n = 0;
@@ -480,14 +493,9 @@ public:
         }
         return false;
     }
+    
     inline static int IsUTF8Continuation( const char p ) {
         return p & 0x80;
-    }
-    inline static int IsAlphaNum( unsigned char anyByte )	{
-        return ( anyByte < 128 ) ? std::isalnum( anyByte ) : 1;
-    }
-    inline static int IsAlpha( unsigned char anyByte )		{
-        return ( anyByte < 128 ) ? std::isalpha( anyByte ) : 1;
     }
 
     static const char* ReadBOM( const char* p, bool* hasBOM );

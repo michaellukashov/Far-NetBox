@@ -146,6 +146,7 @@ bool TryStrToInt(const std::wstring & StrValue, __int64 & Value)
   if (Result)
   {
     Value = _wtoi64(StrValue.c_str());
+    Result = (errno == 0);
   }
   return Result;
 }
@@ -156,7 +157,7 @@ bool TryStrToInt(const std::wstring & StrValue, int & Value)
   if (Result)
   {
     Value = _wtoi(StrValue.c_str());
-    Result = Value != 0;
+    Result = (errno == 0);
   }
   return Result;
 }

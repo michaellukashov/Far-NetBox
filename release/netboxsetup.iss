@@ -81,10 +81,10 @@ Name: custom; Description: "Custom installation"; Flags: iscustom
 ; Languages: en ru
 
 [Components]
-Name: main_far2_x86; Description: "NetBox plugin for Far2 x86"; Types: full custom; check: IsFar2X86Installed
-Name: main_far2_x64; Description: "NetBox plugin for Far2 x64"; Types: full custom; check: IsWin64 and IsFar3X64Installed
-Name: main_far3_x86; Description: "NetBox plugin for Far3 x86"; Types: full custom; check: IsFar3X86Installed
-Name: main_far3_x64; Description: "NetBox plugin for Far3 x64"; Types: full custom; check: IsWin64 and IsFar3X64Installed
+Name: main_far2_x86; Description: "NetBox for Far2/x86"; Types: full custom; check: IsFar2X86Installed
+Name: main_far2_x64; Description: "NetBox for Far2/x64"; Types: full custom; check: IsWin64 and IsFar3X64Installed
+Name: main_far3_x86; Description: "NetBox for Far3/x86"; Types: full custom; check: IsFar3X86Installed
+Name: main_far3_x64; Description: "NetBox for Far3/x64"; Types: full custom; check: IsWin64 and IsFar3X64Installed
 ; Name: pageant; Description: "Pageant (SSH authentication agent)"; Types: full
 ; Name: puttygen; Description: "PuTTYgen (key generator)"; Types: full
 
@@ -283,8 +283,7 @@ begin
   InputDirsPage := CreateInputDirPage(wpSelectComponents,
   'Select plugin location', 'Where plugin should be installed?',
   'Plugin will be installed in the following folder(s).'#13#10#13#10 +
-  // 'To continue, click Next. If you would like to select a different folder, click Browse.',
-  '',
+  'To continue, click Next. If you would like to select a different folder, click Browse.',
   False, 'Plugin folder');
   InputDirsPage.Add('Far2/x86 plugin location:');
   InputDirsPage.Values[0] := GetDefaultFar2X86Dir();
@@ -360,4 +359,6 @@ procedure InitializeWizard();
 begin
   // Custom wizard page
   CreateTheWizardPage;
+
+  WizardForm.LicenseAcceptedRadio.Checked := True;
 end;

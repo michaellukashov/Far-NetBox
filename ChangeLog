@@ -1,3 +1,8 @@
+NetBox 2.1.23 30.01.2013
+--------------------
+  * Bugfix: Issue #48: SCP: Cannot connect
+  * Bugfix: Issue #49: SSH: "[] Lookup user groups" "[] Enable compression" options was not stored
+
 NetBox 2.1.22 27.01.2013
 --------------------
   * Minor bugfixes

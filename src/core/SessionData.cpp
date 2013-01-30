@@ -48,13 +48,14 @@ TDateTime SecToDateTime(int Sec)
     static_cast<unsigned short>(Sec/SecsPerMin%MinsPerHour), static_cast<unsigned short>(Sec%SecsPerMin), 0);
 }
 //--- TSessionData ----------------------------------------------------
-TSessionData::TSessionData(UnicodeString aName):
+TSessionData::TSessionData(UnicodeString aName) :
   TNamedObject(aName),
   FIEProxyConfig(NULL)
 {
   Default();
   FModified = true;
 }
+//---------------------------------------------------------------------
 TSessionData::~TSessionData()
 {
   if (NULL != FIEProxyConfig)
@@ -461,7 +462,6 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetRekeyData(Storage->ReadString(L"RekeyBytes", GetRekeyData()));
   SetRekeyTime(Storage->ReadInteger(L"RekeyTime", GetRekeyTime()));
 
-  DEBUG_PRINTF(L"GetSessionVersion() = %x", GetSessionVersion());
   if (GetSessionVersion() < GetVersionNumber2121())
   {
     SetFSProtocol(TranslateFSProtocolNumber(Storage->ReadInteger(L"FSProtocol", GetFSProtocol())));

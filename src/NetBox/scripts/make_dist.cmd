@@ -35,10 +35,14 @@ copy ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME%\%PLUGINNAME%.dll %PKGDIRAR
 
 :: Make archive
 if exist %PKGNAME% del %PKGNAME%
-if exist "C:\Program Files\7-Zip\7z.exe" (
-  call "C:\Program Files\7-Zip\7z.exe" a -mx9 -t7z -r ../../build/%PKGNAME% ../../build/%PLUGINNAME%/* > NUL
-  REM if errorlevel 1 echo Error creating archive & exit 1 /b
-  @rem rmdir /S /Q %PKGDIRARCH%
-  REM echo Package %PKGNAME% created
+if exist ../../build/%PLUGINNAME%/Far2 (
+  if exist ../../build/%PLUGINNAME%/Far3 (
+    if exist "C:\Program Files\7-Zip\7z.exe" (
+      call "C:\Program Files\7-Zip\7z.exe" a -mx9 -t7z -r ../../build/%PKGNAME% ../../build/%PLUGINNAME%/* > NUL
+      if errorlevel 1 echo Error creating archive & exit 1 /b
+      @rem rmdir /S /Q %PKGDIRARCH%
+      echo Package %PKGNAME% created
+    )
+  )
 )
 exit 0 /b
