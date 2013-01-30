@@ -224,19 +224,19 @@ UnicodeString TCommandSet::Command(TFSCommand Cmd, const TVarRec * args, int siz
 //---------------------------------------------------------------------------
 UnicodeString TCommandSet::Command(TFSCommand Cmd, ...) const
 {
-  UnicodeString result;
+  UnicodeString Result;
   va_list args;
   va_start(args, Cmd);
-  result = Command(Cmd, args);
+  Result = Command(Cmd, args);
   va_end(args);
-  return result;
+  return Result;
 }
 //---------------------------------------------------------------------------
 UnicodeString TCommandSet::Command(TFSCommand Cmd, va_list args) const
 {
-  UnicodeString result;
-  result = ::Format(GetCommands(Cmd).c_str(), args);
-  return result.c_str();
+  UnicodeString Result;
+  Result = ::Format(GetCommands(Cmd).c_str(), args);
+  return Result.c_str();
 }
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
