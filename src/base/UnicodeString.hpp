@@ -198,7 +198,7 @@ public:
 private:
   void Init(const wchar_t * Str, intptr_t Length);
   void Init(const char * Str, intptr_t Length);
-  void  __cdecl ThrowIfOutOfRange(intptr_t Idx) const;
+  void ThrowIfOutOfRange(intptr_t Idx) const;
 
   std::wstring Data;
 };
@@ -288,7 +288,7 @@ private:
   void Init(const wchar_t * Str, intptr_t Length);
   void Init(const char * Str, intptr_t Length);
   void Init(const unsigned char * Str, intptr_t Length);
-  void  __cdecl ThrowIfOutOfRange(intptr_t Idx) const;
+  void ThrowIfOutOfRange(intptr_t Idx) const;
 
   std::string Data;
 };

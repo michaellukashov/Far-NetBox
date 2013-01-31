@@ -3339,7 +3339,7 @@ struct TClipboardHandler
 {
   UnicodeString Text;
 
-  void  Copy(TObject * /*Sender*/)
+  void Copy(TObject * /*Sender*/)
   {
     CopyToClipboard(Text.c_str());
   }
@@ -3383,7 +3383,7 @@ UnicodeString FormatContact(const TFtpsCertificateData::TContact & Contact)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString  FormatValidityTime(const TFtpsCertificateData::TValidityTime & ValidityTime)
+UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & ValidityTime)
 {
   /*
   return FormatDateTime(L"ddddd tt",
