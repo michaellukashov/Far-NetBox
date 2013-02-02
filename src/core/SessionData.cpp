@@ -5,6 +5,7 @@
 #define TRACE_ALL NOTRACING
 #include <Winhttp.h>
 
+#include <StrUtils.hpp>
 #include "SessionData.h"
 
 #include "Common.h"
@@ -14,7 +15,6 @@
 #include "TextsCore.h"
 #include "PuttyIntf.h"
 #include "RemoteFiles.h"
-#include <StrUtils.hpp>
 #include "plugin_version.hpp"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
