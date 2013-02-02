@@ -1,10 +1,14 @@
 NetBox 2.1.24 ??.01.2013
 --------------------
+  * Far3: Bugfix: List index out of bounds if bookmark is set
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=103143#p103143
 
 NetBox 2.1.23 30.01.2013
 --------------------
-  * Bugfix: Issue #48: SCP: Cannot connect
+  * Bugfix: Issue #48: Cannot connect using SCP protocol
+    (https://github.com/michaellukashov/Far-NetBox/issues/48)
   * Bugfix: Issue #49: SSH: "[] Lookup user groups" "[] Enable compression" options was not stored
+    (https://github.com/michaellukashov/Far-NetBox/issues/49)
 
 NetBox 2.1.22 27.01.2013
 --------------------
