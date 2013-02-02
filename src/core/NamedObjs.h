@@ -9,12 +9,13 @@ class TNamedObjectList;
 class TNamedObject : public TPersistent
 {
 public:
+  explicit TNamedObject(const UnicodeString & aName);
+  explicit TNamedObject() : TPersistent(), FHidden(false) {};
+
   bool GetHidden() const { return FHidden; }
   UnicodeString GetName() const { return FName; }
   void SetName(const UnicodeString & Value);
-  explicit TNamedObject() : TPersistent(), FHidden(false) {};
-  Integer CompareName(UnicodeString aName, Boolean CaseSensitive = False);
-  explicit TNamedObject(UnicodeString aName);
+  Integer CompareName(const UnicodeString & aName, Boolean CaseSensitive = False);
   void MakeUniqueIn(TNamedObjectList * List);
 private:
   UnicodeString FName;
