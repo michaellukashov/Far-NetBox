@@ -37,9 +37,10 @@ TMessageParams::TMessageParams()
   TimeoutAnswer = 0;
 }
 //---------------------------------------------------------------------------
-TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) : TCustomFarPlugin(HInst)
+TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) :
+  TCustomFarPlugin(HInst),
+  FInitialized(false)
 {
-  FInitialized = false;
 }
 //---------------------------------------------------------------------------
 TWinSCPPlugin::~TWinSCPPlugin()
