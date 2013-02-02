@@ -36,7 +36,7 @@ const int FtpPortNumber = 21;
 const int FtpsImplicitPortNumber = 990;
 const int HTTPPortNumber = 80;
 const int HTTPSPortNumber = 443;
-const int DefaultSendBuf = 262144;
+const int DefaultSendBuf = 256 * 1024;
 const UnicodeString AnonymousUserName(L"anonymous");
 const UnicodeString AnonymousPassword(L"anonymous@example.com");
 
