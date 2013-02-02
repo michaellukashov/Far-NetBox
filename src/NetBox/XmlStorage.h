@@ -16,9 +16,9 @@ public:
 
   virtual void CloseSubKey();
   virtual bool DeleteSubKey(const UnicodeString & SubKey);
-  virtual bool DeleteValue(const UnicodeString & Name);
   virtual void GetSubKeyNames(TStrings * Strings);
   virtual bool ValueExists(const UnicodeString & Value);
+  virtual bool DeleteValue(const UnicodeString & Name);
 
   virtual size_t BinaryDataSize(const UnicodeString & Name);
 
