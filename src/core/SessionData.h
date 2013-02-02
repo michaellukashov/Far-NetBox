@@ -329,12 +329,12 @@ public:
   void Modify();
   UnicodeString GetSource();
   void DoLoad(THierarchicalStorage * Storage, bool & RewritePassword);
-  static RawByteString EncryptPassword(const UnicodeString & Password, UnicodeString Key);
-  static UnicodeString DecryptPassword(const RawByteString & Password, UnicodeString Key);
-  static RawByteString StronglyRecryptPassword(const RawByteString & Password, UnicodeString Key);
+  static RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
+  static UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
+  static RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
 
 public:
-  explicit TSessionData(const UnicodeString & aName);
+  explicit TSessionData(const UnicodeString & AName);
   virtual ~TSessionData();
   void Default();
   void NonPersistant();

@@ -36,16 +36,16 @@ void TNamedObject::SetName(const UnicodeString & Value)
   FName = Value;
 }
 //---------------------------------------------------------------------------
-Integer TNamedObject::CompareName(const UnicodeString & aName,
+Integer TNamedObject::CompareName(const UnicodeString & AName,
   Boolean CaseSensitive)
 {
   if (CaseSensitive)
   {
-    return GetName().Compare(aName);
+    return GetName().Compare(AName);
   }
   else
   {
-    return GetName().CompareIC(aName);
+    return GetName().CompareIC(AName);
   }
 }
 //---------------------------------------------------------------------------

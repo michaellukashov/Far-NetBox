@@ -48,8 +48,8 @@ TDateTime SecToDateTime(int Sec)
     static_cast<unsigned short>(Sec/SecsPerMin%MinsPerHour), static_cast<unsigned short>(Sec%SecsPerMin), 0);
 }
 //--- TSessionData ----------------------------------------------------
-TSessionData::TSessionData(const UnicodeString & aName) :
-  TNamedObject(aName),
+TSessionData::TSessionData(const UnicodeString & AName) :
+  TNamedObject(AName),
   FIEProxyConfig(NULL)
 {
   Default();
@@ -1448,17 +1448,17 @@ void TSessionData::ValidateName(const UnicodeString & Name)
   }
 }
 //---------------------------------------------------------------------
-RawByteString TSessionData::EncryptPassword(const UnicodeString & Password, UnicodeString Key)
+RawByteString TSessionData::EncryptPassword(const UnicodeString & Password, const UnicodeString & Key)
 {
   return Configuration->EncryptPassword(Password, Key);
 }
 //---------------------------------------------------------------------
-RawByteString TSessionData::StronglyRecryptPassword(const RawByteString & Password, UnicodeString Key)
+RawByteString TSessionData::StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key)
 {
   return Configuration->StronglyRecryptPassword(Password, Key);
 }
 //---------------------------------------------------------------------
-UnicodeString TSessionData::DecryptPassword(const RawByteString & Password, UnicodeString Key)
+UnicodeString TSessionData::DecryptPassword(const RawByteString & Password, const UnicodeString & Key)
 {
   UnicodeString Result;
   try
@@ -1819,14 +1819,17 @@ void TSessionData::SetFSProtocol(TFSProtocol Value)
 UnicodeString TSessionData::GetFSProtocolStr() const
 {
   // DEBUG_PRINTF(L"begin");
+  UnicodeString Result;
   assert(GetFSProtocol() >= 0);
   if (GetFSProtocol() < FSPROTOCOL_COUNT)
   {
-    return FSProtocolNames[GetFSProtocol()];
+    Result = FSProtocolNames[GetFSProtocol()];
   }
-  assert(false);
+  // assert(!Result.IsEmpty());
   // DEBUG_PRINTF(L"end");
-  return UnicodeString(L"");
+  if (Result.IsEmpty())
+    Result = FSProtocolNames[fsSFTP];
+  return Result;
 }
 //---------------------------------------------------------------------------
 void TSessionData::SetDetectReturnVar(bool Value)
