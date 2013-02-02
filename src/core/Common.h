@@ -235,7 +235,7 @@ void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
 #endif
 #ifdef TRACE_IN_MEMORY
 void TraceDumpToFile();
-void TraceInMemoryCallback(System::UnicodeString Msg);
+void TraceInMemoryCallback(const UnicodeString & Msg);
 #endif
 #define CTRACEIMPL(TRACING, MESSAGE) \
   _TRACING_TRACE TRACING (TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, (MESSAGE))

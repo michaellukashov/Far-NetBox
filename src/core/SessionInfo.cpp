@@ -678,7 +678,7 @@ void TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString & Line)
 void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
 {
   CCALLSTACK(TRACE_LOG_ADD);
-  if (static_cast<int>(FTopIndex) < 0)
+  if (FTopIndex < 0)
   {
     FTopIndex = 0;
   }

@@ -182,7 +182,7 @@ void TraceDumpToFile()
   }
 }
 //---------------------------------------------------------------------------
-void TraceInMemoryCallback(System::UnicodeString Msg)
+void TraceInMemoryCallback(const UnicodeString & Msg)
 {
   Trace(L"PAS", L"unk", 0, Msg.c_str());
 }
