@@ -129,7 +129,7 @@ void TFar3Storage::GetSubKeyNames(TStrings * Strings)
       // DEBUG_PRINTF(L"settings.Items[%d].Type = %d", Index, settings.Items[Index].Type);
       if (settings.Items[Index].Type == FST_SUBKEY)
       {
-        Strings->Strings[Index] = PuttyUnMungeStr(settings.Items[Index].Name);
+        Strings->Add(PuttyUnMungeStr(settings.Items[Index].Name));
       }
     }
   }
