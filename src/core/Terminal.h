@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef TerminalH
 #define TerminalH
 
@@ -10,7 +10,7 @@
 #include "FileOperationProgress.h"
 #include "FileMasks.h"
 #include "Exceptions.h"
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class TCopyParamType;
 class TFileOperationProgressType;
 class TRemoteDirectory;
@@ -29,7 +29,7 @@ struct TSpaceAvailable;
 struct TFilesFindParams;
 class TTunnelUI;
 class TCallbackGuard;
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE8(TQueryUserEvent, void,
   TObject * /* Sender */, const UnicodeString & /* Query */, TStrings * /* MoreMessages */ , unsigned int /* Answers */,
   const TQueryParams * /* Params */, unsigned int & /* Answer */, TQueryType /* QueryType */, void * /* Arg */);
@@ -72,7 +72,7 @@ DEFINE_CALLBACK_TYPE1(TRemoveLocalDirectoryEvent, BOOL,
   const UnicodeString & /* LocalDirName */);
 DEFINE_CALLBACK_TYPE2(TCreateLocalDirectoryEvent, BOOL,
   const UnicodeString & /* LocalDirName */, LPSECURITY_ATTRIBUTES /* SecurityAttributes */);
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #define SUSPEND_OPERATION(Command)                            \
   {                                                           \
     TSuspendFileOperationProgress Suspend(OperationProgress); \
@@ -120,26 +120,26 @@ DEFINE_CALLBACK_TYPE2(TCreateLocalDirectoryEvent, BOOL,
 
 #define FILE_OPERATION_LOOP(MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_EX(True, MESSAGE, OPERATION)
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsFTPS, cfsWebDAV };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 const int cpDelete = 0x01;
 const int cpTemporary = 0x04;
 const int cpNoConfirmation = 0x08;
 const int cpNewerOnly = 0x10;
 const int cpAppend = 0x20;
 const int cpResume = 0x40;
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 const int ccApplyToDirectories = 0x01;
 const int ccRecursive = 0x02;
 const int ccUser = 0x100;
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 const int csIgnoreErrors = 0x01;
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 const int ropNoReadDirectory = 0x02;
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 const int boDisableNeverShowAgain = 0x01;
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class TTerminal : public TObject, public TSessionUI
 {
 public:
@@ -549,7 +549,7 @@ private:
   TTerminal(const TTerminal &);
   TTerminal & operator = (const TTerminal &);
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class TSecondaryTerminal : public TTerminal
 {
 public:
@@ -572,7 +572,7 @@ private:
   bool FMasterTunnelPasswordTried;
   TTerminal * FMainTerminal;
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class TTerminalList : public TObjectList
 {
 public:
@@ -597,14 +597,14 @@ private:
 public:
   void SetMasks(const UnicodeString & Value);
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 struct TCustomCommandParams
 {
   UnicodeString Command;
   int Params;
   TCaptureOutputEvent OutputEvent;
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 struct TCalculateSizeStats
 {
   TCalculateSizeStats();
@@ -613,7 +613,7 @@ struct TCalculateSizeStats
   int Directories;
   int SymLinks;
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 struct TCalculateSizeParams
 {
   __int64 Size;
@@ -621,14 +621,14 @@ struct TCalculateSizeParams
   const TCopyParamType * CopyParam;
   TCalculateSizeStats * Stats;
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 struct TMakeLocalFileListParams
 {
   TStrings * FileList;
   bool IncludeDirs;
   bool Recursive;
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 struct TSynchronizeOptions
 {
   TSynchronizeOptions();
@@ -639,7 +639,7 @@ struct TSynchronizeOptions
   bool FilterFind(const UnicodeString & FileName);
   bool MatchesFilter(const UnicodeString & FileName);
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class TSynchronizeChecklist
 {
 friend class TTerminal;
@@ -700,7 +700,7 @@ private:
 
   static int Compare(const void * Item1, const void * Item2);
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 struct TSpaceAvailable
 {
   TSpaceAvailable();
@@ -711,7 +711,7 @@ struct TSpaceAvailable
   __int64 UnusedBytesAvailableToUser;
   unsigned long BytesPerAllocationUnit;
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 UnicodeString GetSessionUrl(const TTerminal * Terminal);
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif
