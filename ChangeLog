@@ -1,4 +1,4 @@
-NetBox 2.1.24 ??.02.2013
+NetBox 2.1.24 03.02.2013
 --------------------
   * Improvement: Added command-line parameters -codepage=<number> -username=<string> -password=<string>
     Example:
