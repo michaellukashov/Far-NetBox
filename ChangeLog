@@ -1,5 +1,6 @@
-NetBox 2.1.24 ??.01.2013
+NetBox 2.1.24 ??.02.2013
 --------------------
+  * Bugfix: Protocol settings were not restored correctly
   * Far3: Bugfix: List index out of bounds if bookmark is set
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=103143#p103143
 
