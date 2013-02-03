@@ -1656,7 +1656,7 @@ private:
   void TransferProtocolComboChange();
   void LoginTypeComboChange();
   void FillCodePageEdit();
-  void CodePageEditAdd(unsigned int cp);
+  void CodePageEditAdd(unsigned int Cp);
 
   void ChangeTabs(intptr_t FirstVisibleTabIndex);
   intptr_t GetVisibleTabsCount(intptr_t TabIndex, bool Forward);
@@ -4259,10 +4259,10 @@ void TSessionDialog::FillCodePageEdit()
   CodePageEditAdd(20866); // KOI8-r
 }
 //---------------------------------------------------------------------------
-void TSessionDialog::CodePageEditAdd(unsigned int cp)
+void TSessionDialog::CodePageEditAdd(unsigned int Cp)
 {
   CPINFOEX cpInfoEx;
-  if (::GetCodePageInfo(cp, cpInfoEx))
+  if (::GetCodePageInfo(Cp, cpInfoEx))
   {
     CodePageEdit->GetItems()->AddObject(cpInfoEx.CodePageName,
       static_cast<TObject *>(reinterpret_cast<void *>(cpInfoEx.CodePage)));
