@@ -486,8 +486,8 @@ private:
   void ParseIEProxyConfig() const;
   void FromURI(const UnicodeString & ProxyURI,
     UnicodeString & ProxyUrl, int & ProxyPort, TProxyMethod & ProxyMethod) const;
-  void AdjustHostName(UnicodeString & hostName, const UnicodeString & Prefix);
-  void RemoveProtocolPrefix(UnicodeString & hostName);
+  void AdjustHostName(UnicodeString & HostName, const UnicodeString & Prefix);
+  void RemoveProtocolPrefix(UnicodeString & HostName);
 };
 //---------------------------------------------------------------------------
 class TStoredSessionList : public TNamedObjectList

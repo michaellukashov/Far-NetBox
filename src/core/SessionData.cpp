@@ -2624,24 +2624,24 @@ void TSessionData::SetCodePage(const UnicodeString & Value)
   SET_SESSION_PROPERTY(CodePage);
 }
 //---------------------------------------------------------------------
-void TSessionData::AdjustHostName(UnicodeString & hostName, const UnicodeString & Prefix)
+void TSessionData::AdjustHostName(UnicodeString & HostName, const UnicodeString & Prefix)
 {
-  if (::LowerCase(hostName.SubString(1, Prefix.Length())) == Prefix)
+  if (::LowerCase(HostName.SubString(1, Prefix.Length())) == Prefix)
   {
-    hostName.Delete(1, Prefix.Length());
+    HostName.Delete(1, Prefix.Length());
     intptr_t Pos = 1;
-    hostName = CopyToChars(hostName, Pos, L"/", true, NULL, false);
+    HostName = CopyToChars(HostName, Pos, L"/", true, NULL, false);
   }
 }
 //---------------------------------------------------------------------
-void TSessionData::RemoveProtocolPrefix(UnicodeString & hostName)
+void TSessionData::RemoveProtocolPrefix(UnicodeString & HostName)
 {
-  AdjustHostName(hostName, L"scp://");
-  AdjustHostName(hostName, L"sftp://");
-  AdjustHostName(hostName, L"ftp://");
-  AdjustHostName(hostName, L"ftps://");
-  AdjustHostName(hostName, L"http://");
-  AdjustHostName(hostName, L"https://");
+  AdjustHostName(HostName, L"scp://");
+  AdjustHostName(HostName, L"sftp://");
+  AdjustHostName(HostName, L"ftp://");
+  AdjustHostName(HostName, L"ftps://");
+  AdjustHostName(HostName, L"http://");
+  AdjustHostName(HostName, L"https://");
 }
 //---------------------------------------------------------------------
 TFSProtocol TSessionData::TranslateFSProtocolNumber(int FSProtocol)
