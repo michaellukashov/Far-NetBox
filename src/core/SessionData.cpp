@@ -698,6 +698,10 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       { \
         Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
       }
+    #define WRITE_DATA_EX2(TYPE, NAME, PROPERTY, CONV) \
+      { \
+        Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
+      }
     #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
     #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, TEXT(#PROPERTY), Get ## PROPERTY(), )
 
@@ -764,7 +768,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     {
       WRITE_DATA(String, UserName);
       WRITE_DATA(String, PublicKeyFile);
-      WRITE_DATA_EX(String, L"FSProtocol", GetFSProtocolStr(), );
+      WRITE_DATA_EX2(String, L"FSProtocol", GetFSProtocolStr(), );
       WRITE_DATA(String, LocalDirectory);
       WRITE_DATA(String, RemoteDirectory);
       WRITE_DATA(Bool, SynchronizeBrowsing);
