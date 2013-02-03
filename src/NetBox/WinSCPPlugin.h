@@ -68,7 +68,7 @@ protected:
 
 private:
   void CleanupConfiguration();
-  void ParseCommandLine(const UnicodeString & CommandLine,
+  void ParseCommandLine(UnicodeString & CommandLine,
     TOptions ** Options);
 
 private:

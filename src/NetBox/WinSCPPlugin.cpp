@@ -368,18 +368,19 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
   return FileSystem;
 }
 //---------------------------------------------------------------------------
-void TWinSCPPlugin::ParseCommandLine(const UnicodeString & CommandLine,
+void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
   TOptions ** Options)
 {
   // UnicodeString CommandLineParams;
   TOptions * Opt = new TProgramParams();
   // Opt->Clear();
   intptr_t Pos = FirstDelimiter(Opt->GetSwitchMarks(), CommandLine);
-  if (Pos > 0)
+  if ((Pos > 1) && (CommandLine[Pos-1] == L' '))
   {
     UnicodeString CommandLineParams = CommandLine.SubString(Pos, -1);
     DEBUG_PRINTF(L"CommandLineParams = %s", CommandLineParams.c_str());
     Opt->ParseParams(CommandLineParams);
+    CommandLine = CommandLine.SubString(1, Pos-1);
   }
   if (Opt->GetEmpty())
   {
