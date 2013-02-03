@@ -43,7 +43,7 @@ TProgramParams * TProgramParams::Instance()
 TProgramParams::TProgramParams()
 {
   CALLSTACK;
-  UnicodeString CommandLine = CmdLine;
+  UnicodeString CommandLine; //  = CmdLine;
   
   UnicodeString Param;
   CutToken(CommandLine, Param);
