@@ -3274,8 +3274,8 @@ bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx)
     CodePageInfoEx.CodePageName[0] = L'\0';
   }
 
-  if (CodePageInfoEx.MaxCharSize != 1)
-    return false;
+  //if (CodePageInfoEx.MaxCharSize != 1)
+  //  return false;
 
   return true;
 }
