@@ -163,6 +163,7 @@ intptr_t AnsiPos(const UnicodeString & Str2, wchar_t c);
 intptr_t Pos(const UnicodeString & Str2, const UnicodeString & Substr);
 UnicodeString StringReplace(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To, TReplaceFlags Flags);
 bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, intptr_t index);
+intptr_t FirstDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
 intptr_t LastDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
 //---------------------------------------------------------------------------
 

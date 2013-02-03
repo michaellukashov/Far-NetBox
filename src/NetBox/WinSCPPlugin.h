@@ -3,6 +3,7 @@
 #define WinSCPPluginH
 //---------------------------------------------------------------------------
 #include <Interface.h>
+#include <Option.h>
 #include "FarPlugin.h"
 //---------------------------------------------------------------------------
 class TWinSCPFileSystem;
@@ -67,6 +68,8 @@ protected:
 
 private:
   void CleanupConfiguration();
+  void ParseCommandLine(UnicodeString & CommandLine,
+    TOptions ** Options);
 
 private:
   bool FInitialized;
