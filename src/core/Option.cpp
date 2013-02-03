@@ -16,6 +16,20 @@ TOptions::TOptions() :
 {
 }
 //---------------------------------------------------------------------------
+void TOptions::ParseParams(const UnicodeString & Params)
+{
+  UnicodeString Param;
+  UnicodeString ParamsLocal = Params;
+  // CutToken(Params, Param); // To remove program name
+  // TRACEFMT("Program [%s]", Param.c_str());
+  while (CutToken(ParamsLocal, Param))
+  {
+    // TRACEFMT("Param [%s]", Param.c_str());
+    DEBUG_PRINTF(L"Param = %s", Param.c_str());
+    Add(Param);
+  }
+}
+//---------------------------------------------------------------------------
 void TOptions::Add(const UnicodeString & Value)
 {
   if (!FNoMoreSwitches &&

@@ -10,6 +10,7 @@ class TOptions
 {
 public:
   TOptions();
+  void ParseParams(const UnicodeString & Params);
 
   bool FindSwitch(const UnicodeString & Switch);
   bool FindSwitch(const UnicodeString & Switch, UnicodeString & Value);
@@ -25,6 +26,7 @@ public:
 
   intptr_t GetParamCount() const { return FParamCount; }
   UnicodeString GetParam(intptr_t Index);
+  void Clear() { FOptions.resize(0); FNoMoreSwitches = false; FParamCount = 0; }
   bool GetEmpty() const;
   UnicodeString GetSwitchMarks() const { return FSwitchMarks; }
 
