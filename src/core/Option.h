@@ -31,7 +31,7 @@ protected:
   UnicodeString FSwitchMarks;
   UnicodeString FSwitchValueDelimiters;
 
-  void Add(UnicodeString Option);
+  void Add(const UnicodeString & Option);
 
   bool FindSwitch(const UnicodeString & Switch,
     UnicodeString & Value, int & ParamsStart, int & ParamsCount);

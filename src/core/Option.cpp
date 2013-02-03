@@ -16,7 +16,7 @@ TOptions::TOptions()
   FParamCount = 0;
 }
 //---------------------------------------------------------------------------
-void TOptions::Add(UnicodeString Value)
+void TOptions::Add(const UnicodeString & Value)
 {
   if (!FNoMoreSwitches &&
       (Value.Length() == 2) &&
