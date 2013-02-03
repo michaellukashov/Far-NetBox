@@ -210,12 +210,12 @@ UnicodeString LowerCase(const UnicodeString & Str)
 
 wchar_t UpCase(const wchar_t c)
 {
-  return c;
+  return ::toupper(c);
 }
 
 wchar_t LowCase(const wchar_t c)
 {
-  return c;
+  return ::tolower(c);
 }
 
 //---------------------------------------------------------------------------
@@ -253,9 +253,9 @@ bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, in
   if (Index <= Str.Length())
   {
     wchar_t c = Str[Index];
-    for (intptr_t i = 1; i <= Delimiters.Length(); i++)
+    for (intptr_t I = 1; I <= Delimiters.Length(); I++)
     {
-      if (Delimiters[i] == c)
+      if (Delimiters[I] == c)
       {
         return true;
       }
