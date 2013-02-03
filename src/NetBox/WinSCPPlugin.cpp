@@ -370,7 +370,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
 void TWinSCPPlugin::ParseCommandLine(const UnicodeString & CommandLine,
   TOptions ** Options)
 {
-  TOptions * Opt = NULL;
+  TOptions * Opt = TProgramParams::Instance();
   UnicodeString CommandLineParams;
   *Options = Opt;
 }
