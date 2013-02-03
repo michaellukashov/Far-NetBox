@@ -373,15 +373,31 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
 {
   // UnicodeString CommandLineParams;
   TOptions * Opt = new TProgramParams();
-  // Opt->Clear();
-  intptr_t Pos = FirstDelimiter(Opt->GetSwitchMarks(), CommandLine);
-  if ((Pos > 1) && (CommandLine[Pos-1] == L' '))
+  UnicodeString CmdLine = CommandLine;
+  // intptr_t Pos = FirstDelimiter(Opt->GetSwitchMarks(), CmdLine);
+  intptr_t Index = 1;
+  // Skip session name
   {
-    UnicodeString CommandLineParams = CommandLine.SubString(Pos, -1);
-    DEBUG_PRINTF(L"CommandLineParams = %s", CommandLineParams.c_str());
-    Opt->ParseParams(CommandLineParams);
-    CommandLine = CommandLine.SubString(1, Pos-1);
+    while ((Index < CmdLine.Length()) && (CmdLine[Index] == L' '))
+     ++Index;
+    if (CmdLine[Index] == L'"')
+    {
+      ++Index;
+      while ((Index < CmdLine.Length()) && (CmdLine[Index] != L'"'))
+        ++Index;
+      ++Index;
+    }
+    while ((Index < CmdLine.Length()) && (CmdLine[Index] != L' '))
+      ++Index;
   }
+  CmdLine = CmdLine.SubString(Index, -1);
+  // Parse params
+  intptr_t Pos = FirstDelimiter(Opt->GetSwitchMarks(), CmdLine);
+  UnicodeString CommandLineParams = CmdLine.SubString(Pos, -1);
+  // DEBUG_PRINTF(L"CommandLineParams = %s", CommandLineParams.c_str());
+  Opt->ParseParams(CommandLineParams);
+  if (!CommandLineParams.IsEmpty())
+    CommandLine = CommandLine.SubString(1, CommandLine.Length() - CommandLineParams.Length()).Trim();
   if (Opt->GetEmpty())
   {
     delete Opt;
