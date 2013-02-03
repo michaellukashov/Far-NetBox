@@ -5,6 +5,7 @@
 #define TRACE_ALL NOTRACING
 #include <Winhttp.h>
 
+#include <StrUtils.hpp>
 #include "SessionData.h"
 
 #include "Common.h"
@@ -14,7 +15,6 @@
 #include "TextsCore.h"
 #include "PuttyIntf.h"
 #include "RemoteFiles.h"
-#include <StrUtils.hpp>
 #include "plugin_version.hpp"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -36,11 +36,12 @@ const int FtpPortNumber = 21;
 const int FtpsImplicitPortNumber = 990;
 const int HTTPPortNumber = 80;
 const int HTTPSPortNumber = 443;
-const int DefaultSendBuf = 262144;
+const int DefaultSendBuf = 256 * 1024;
 const UnicodeString AnonymousUserName(L"anonymous");
 const UnicodeString AnonymousPassword(L"anonymous@example.com");
 
 const unsigned int CONST_DEFAULT_CODEPAGE = CP_ACP;
+const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
 //---------------------------------------------------------------------
 TDateTime SecToDateTime(int Sec)
 {
@@ -48,8 +49,8 @@ TDateTime SecToDateTime(int Sec)
     static_cast<unsigned short>(Sec/SecsPerMin%MinsPerHour), static_cast<unsigned short>(Sec%SecsPerMin), 0);
 }
 //--- TSessionData ----------------------------------------------------
-TSessionData::TSessionData(UnicodeString aName) :
-  TNamedObject(aName),
+TSessionData::TSessionData(const UnicodeString & AName) :
+  TNamedObject(AName),
   FIEProxyConfig(NULL)
 {
   Default();
@@ -119,7 +120,7 @@ void TSessionData::Default()
   }
 
   SetSpecial(false);
-  SetFSProtocol(fsSFTP);
+  SetFSProtocol(CONST_DEFAULT_PROTOCOL);
   SetAddressFamily(afAuto);
   SetRekeyData(L"1G");
   SetRekeyTime(MinsPerHour);
@@ -697,6 +698,10 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       { \
         Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
       }
+    #define WRITE_DATA_EX2(TYPE, NAME, PROPERTY, CONV) \
+      { \
+        Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
+      }
     #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
     #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, TEXT(#PROPERTY), Get ## PROPERTY(), )
 
@@ -763,7 +768,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     {
       WRITE_DATA(String, UserName);
       WRITE_DATA(String, PublicKeyFile);
-      WRITE_DATA_EX(String, L"FSProtocol", GetFSProtocolStr(), );
+      WRITE_DATA_EX2(String, L"FSProtocol", GetFSProtocolStr(), );
       WRITE_DATA(String, LocalDirectory);
       WRITE_DATA(String, RemoteDirectory);
       WRITE_DATA(Bool, SynchronizeBrowsing);
@@ -1448,17 +1453,17 @@ void TSessionData::ValidateName(const UnicodeString & Name)
   }
 }
 //---------------------------------------------------------------------
-RawByteString TSessionData::EncryptPassword(const UnicodeString & Password, UnicodeString Key)
+RawByteString TSessionData::EncryptPassword(const UnicodeString & Password, const UnicodeString & Key)
 {
   return Configuration->EncryptPassword(Password, Key);
 }
 //---------------------------------------------------------------------
-RawByteString TSessionData::StronglyRecryptPassword(const RawByteString & Password, UnicodeString Key)
+RawByteString TSessionData::StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key)
 {
   return Configuration->StronglyRecryptPassword(Password, Key);
 }
 //---------------------------------------------------------------------
-UnicodeString TSessionData::DecryptPassword(const RawByteString & Password, UnicodeString Key)
+UnicodeString TSessionData::DecryptPassword(const RawByteString & Password, const UnicodeString & Key)
 {
   UnicodeString Result;
   try
@@ -1813,20 +1818,24 @@ void TSessionData::SetProtocol(TProtocol Value)
 //---------------------------------------------------------------------------
 void TSessionData::SetFSProtocol(TFSProtocol Value)
 {
+  // DEBUG_PRINTF(L"Value = %d", Value);
   SET_SESSION_PROPERTY(FSProtocol);
 }
 //---------------------------------------------------------------------
 UnicodeString TSessionData::GetFSProtocolStr() const
 {
-  // DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin, GetFSProtocol = %d", GetFSProtocol());
+  UnicodeString Result;
   assert(GetFSProtocol() >= 0);
   if (GetFSProtocol() < FSPROTOCOL_COUNT)
   {
-    return FSProtocolNames[GetFSProtocol()];
+    Result = FSProtocolNames[GetFSProtocol()];
   }
-  assert(false);
-  // DEBUG_PRINTF(L"end");
-  return UnicodeString(L"");
+  // assert(!Result.IsEmpty());
+  if (Result.IsEmpty())
+    Result = FSProtocolNames[CONST_DEFAULT_PROTOCOL];
+  // DEBUG_PRINTF(L"end, Result = %s", Result.c_str());
+  return Result;
 }
 //---------------------------------------------------------------------------
 void TSessionData::SetDetectReturnVar(bool Value)
@@ -2669,6 +2678,7 @@ TFSProtocol TSessionData::TranslateFSProtocolNumber(int FSProtocol)
 TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID)
 {
   // Find protocol by string id
+  // DEBUG_PRINTF(L"ProtocolID = %s", ProtocolID.c_str());
   TFSProtocol Result = static_cast<TFSProtocol>(-1);
   for (intptr_t Index = 0; Index < FSPROTOCOL_COUNT; ++Index)
   {
@@ -2679,8 +2689,9 @@ TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID)
     }
   }
   if (Result == -1)
-    Result = fsSCPonly;
+    Result = CONST_DEFAULT_PROTOCOL;
   assert(Result != -1);
+  // DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
 //---------------------------------------------------------------------

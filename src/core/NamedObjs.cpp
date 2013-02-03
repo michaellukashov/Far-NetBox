@@ -24,7 +24,7 @@ int NamedObjectSortProc(const void * Item1, const void * Item2)
   }
 }
 //--- TNamedObject ----------------------------------------------------------
-TNamedObject::TNamedObject(UnicodeString AName) :
+TNamedObject::TNamedObject(const UnicodeString & AName) :
   FHidden(false)
 {
   SetName(AName);
@@ -36,16 +36,16 @@ void TNamedObject::SetName(const UnicodeString & Value)
   FName = Value;
 }
 //---------------------------------------------------------------------------
-Integer TNamedObject::CompareName(UnicodeString aName,
+Integer TNamedObject::CompareName(const UnicodeString & AName,
   Boolean CaseSensitive)
 {
   if (CaseSensitive)
   {
-    return GetName().Compare(aName);
+    return GetName().Compare(AName);
   }
   else
   {
-    return GetName().CompareIC(aName);
+    return GetName().CompareIC(AName);
   }
 }
 //---------------------------------------------------------------------------
