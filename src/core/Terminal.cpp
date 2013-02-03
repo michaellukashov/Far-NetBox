@@ -495,7 +495,51 @@ TTerminal::TTerminal() :
   TSessionUI()
 {
 }
+//---------------------------------------------------------------------------
+TTerminal::~TTerminal()
+{
+  CALLSTACK;
+  if (GetActive())
+  {
+    TRACE("1");
+    Close();
+  }
 
+  if (FCallbackGuard != NULL)
+  {
+    TRACE("2");
+    // see TTerminal::HandleExtendedException
+    FCallbackGuard->Dismiss();
+  }
+  assert(FTunnel == NULL);
+
+  SAFE_DESTROY(FCommandSession);
+
+  if (GetSessionData()->GetCacheDirectoryChanges() && GetSessionData()->GetPreserveDirectoryChanges() &&
+      (FDirectoryChangesCache != NULL))
+  {
+    TRACE("3");
+    Configuration->SaveDirectoryChangesCache(GetSessionData()->GetSessionKey(),
+      FDirectoryChangesCache);
+  }
+
+  TRACE("4");
+  SAFE_DESTROY_EX(TCustomFileSystem, FFileSystem);
+  TRACE("5");
+  SAFE_DESTROY_EX(TSessionLog, FLog);
+  TRACE("5a");
+  SAFE_DESTROY_EX(TActionLog, FActionLog);
+  TRACE("6");
+  delete FFiles;
+  TRACE("7");
+  delete FDirectoryCache;
+  TRACE("8");
+  delete FDirectoryChangesCache;
+  TRACE("9");
+  SAFE_DESTROY(FSessionData);
+  TRACE("/");
+}
+//---------------------------------------------------------------------------
 void TTerminal::Init(TSessionData * SessionData, TConfiguration * Configuration)
 {
   CALLSTACK;
@@ -551,50 +595,6 @@ void TTerminal::Init(TSessionData * SessionData, TConfiguration * Configuration)
   FOperationProgress = NULL;
   FClosedOnCompletion = NULL;
   FTunnel = NULL;
-}
-//---------------------------------------------------------------------------
-TTerminal::~TTerminal()
-{
-  CALLSTACK;
-  if (GetActive())
-  {
-    TRACE("1");
-    Close();
-  }
-
-  if (FCallbackGuard != NULL)
-  {
-    TRACE("2");
-    // see TTerminal::HandleExtendedException
-    FCallbackGuard->Dismiss();
-  }
-  assert(FTunnel == NULL);
-
-  SAFE_DESTROY(FCommandSession);
-
-  if (GetSessionData()->GetCacheDirectoryChanges() && GetSessionData()->GetPreserveDirectoryChanges() &&
-      (FDirectoryChangesCache != NULL))
-  {
-    TRACE("3");
-    Configuration->SaveDirectoryChangesCache(GetSessionData()->GetSessionKey(),
-      FDirectoryChangesCache);
-  }
-
-  TRACE("4");
-  SAFE_DESTROY_EX(TCustomFileSystem, FFileSystem);
-  TRACE("5");
-  SAFE_DESTROY_EX(TSessionLog, FLog);
-  TRACE("5a");
-  SAFE_DESTROY_EX(TActionLog, FActionLog);
-  TRACE("6");
-  delete FFiles;
-  TRACE("7");
-  delete FDirectoryCache;
-  TRACE("8");
-  delete FDirectoryChangesCache;
-  TRACE("9");
-  SAFE_DESTROY(FSessionData);
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TTerminal::Idle()
