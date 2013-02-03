@@ -1,12 +1,11 @@
-//---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
 
 #include <Common.h>
 #include "ProgParams.h"
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #pragma package(smart_init)
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // auto_ptr-like class
 class TProgramParamsOwner
 {
@@ -33,26 +32,25 @@ public:
 private:
   TProgramParams * FProgramParams;  
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TProgramParamsOwner ProgramParamsOwner;
-//---------------------------------------------------------------------------
-TProgramParams * __fastcall TProgramParams::Instance()
+//------------------------------------------------------------------------------
+TProgramParams * TProgramParams::Instance()
 {
   return ProgramParamsOwner.Get();
 }
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TProgramParams::TProgramParams()
 {
   CALLSTACK;
   UnicodeString CommandLine = CmdLine;
-  TRACEFMT("Commmandline [%s]", (CommandLine));
-
+  
   UnicodeString Param;
   CutToken(CommandLine, Param);
-  TRACEFMT("Program [%s]", (Param));
+  // TRACEFMT("Program [%s]", Param.c_str());
   while (CutToken(CommandLine, Param))
   {
-    TRACEFMT("Param [%s]", (Param));
+    // TRACEFMT("Param [%s]", Param.c_str());
     Add(Param);
   }
 }
