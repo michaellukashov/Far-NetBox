@@ -1917,21 +1917,23 @@ void TSessionData::SetRekeyTime(unsigned int Value)
 //---------------------------------------------------------------------
 UnicodeString TSessionData::GetDefaultSessionName()
 {
+  UnicodeString Result;
   UnicodeString HostName = GetHostName();
   UnicodeString UserName = GetUserName();
   RemoveProtocolPrefix(HostName);
   if (!HostName.IsEmpty() && !UserName.IsEmpty())
   {
-    return FORMAT(L"%s@%s", UserName.c_str(), HostName.c_str());
+    Result = FORMAT(L"%s@%s", UserName.c_str(), HostName.c_str());
   }
   else if (!HostName.IsEmpty())
   {
-    return HostName;
+    Result = HostName;
   }
   else
   {
-    return L"session";
+    Result = L"session";
   }
+  return Result;
 }
 //---------------------------------------------------------------------
 bool TSessionData::HasSessionName()
