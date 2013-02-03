@@ -1409,6 +1409,14 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
         SetPortNumber(FtpPortNumber);
       }
     }
+    if (Options->FindSwitch(L"codepage", Value))
+    {
+      int CodePage = StrToIntDef(Value, 0);
+      if (CodePage != 0)
+      {
+        SetCodePage(GetCodePageAsString(CodePage));
+      }
+    }
   }
 
   return true;
