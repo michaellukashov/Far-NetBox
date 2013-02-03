@@ -41,6 +41,7 @@ const UnicodeString AnonymousUserName(L"anonymous");
 const UnicodeString AnonymousPassword(L"anonymous@example.com");
 
 const unsigned int CONST_DEFAULT_CODEPAGE = CP_ACP;
+const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
 //---------------------------------------------------------------------
 TDateTime SecToDateTime(int Sec)
 {
@@ -119,7 +120,7 @@ void TSessionData::Default()
   }
 
   SetSpecial(false);
-  SetFSProtocol(fsSFTP);
+  SetFSProtocol(CONST_DEFAULT_PROTOCOL);
   SetAddressFamily(afAuto);
   SetRekeyData(L"1G");
   SetRekeyTime(MinsPerHour);
@@ -1813,12 +1814,13 @@ void TSessionData::SetProtocol(TProtocol Value)
 //---------------------------------------------------------------------------
 void TSessionData::SetFSProtocol(TFSProtocol Value)
 {
+  // DEBUG_PRINTF(L"Value = %d", Value);
   SET_SESSION_PROPERTY(FSProtocol);
 }
 //---------------------------------------------------------------------
 UnicodeString TSessionData::GetFSProtocolStr() const
 {
-  // DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin, GetFSProtocol = %d", GetFSProtocol());
   UnicodeString Result;
   assert(GetFSProtocol() >= 0);
   if (GetFSProtocol() < FSPROTOCOL_COUNT)
@@ -1826,9 +1828,9 @@ UnicodeString TSessionData::GetFSProtocolStr() const
     Result = FSProtocolNames[GetFSProtocol()];
   }
   // assert(!Result.IsEmpty());
-  // DEBUG_PRINTF(L"end");
   if (Result.IsEmpty())
-    Result = FSProtocolNames[fsSFTP];
+    Result = FSProtocolNames[CONST_DEFAULT_PROTOCOL];
+  // DEBUG_PRINTF(L"end, Result = %s", Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2672,6 +2674,7 @@ TFSProtocol TSessionData::TranslateFSProtocolNumber(int FSProtocol)
 TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID)
 {
   // Find protocol by string id
+  // DEBUG_PRINTF(L"ProtocolID = %s", ProtocolID.c_str());
   TFSProtocol Result = static_cast<TFSProtocol>(-1);
   for (intptr_t Index = 0; Index < FSPROTOCOL_COUNT; ++Index)
   {
@@ -2682,8 +2685,9 @@ TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID)
     }
   }
   if (Result == -1)
-    Result = fsSCPonly;
+    Result = CONST_DEFAULT_PROTOCOL;
   assert(Result != -1);
+  // DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
 //---------------------------------------------------------------------
