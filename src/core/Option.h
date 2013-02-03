@@ -26,6 +26,7 @@ public:
   intptr_t GetParamCount() const { return FParamCount; }
   UnicodeString GetParam(intptr_t Index);
   bool GetEmpty() const;
+  UnicodeString GetSwitchMarks() const { return FSwitchMarks; }
 
 protected:
   UnicodeString FSwitchMarks;
