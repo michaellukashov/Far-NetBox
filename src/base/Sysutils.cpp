@@ -263,7 +263,22 @@ bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, in
   }
   return false;
 }
-
+//---------------------------------------------------------------------------
+intptr_t FirstDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str)
+{
+  if (Str.Length())
+  {
+    for (intptr_t I = 1; I <= Str.Length(); ++I)
+    {
+      if (Str.IsDelimiter(Delimiters, I))
+      {
+        return I;
+      }
+    }
+  }
+  return 0;
+}
+//---------------------------------------------------------------------------
 intptr_t LastDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str)
 {
   if (Str.Length())
