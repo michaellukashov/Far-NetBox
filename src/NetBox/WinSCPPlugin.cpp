@@ -264,20 +264,20 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
       else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
       {
         UnicodeString Directory;
-        UnicodeString Name = reinterpret_cast<wchar_t *>(Item);
+        UnicodeString CommandLine = reinterpret_cast<wchar_t *>(Item);
         if (OpenFrom == OPEN_SHORTCUT)
         {
-          intptr_t P = Name.Pos(L"\1");
+          intptr_t P = CommandLine.Pos(L"\1");
           if (P > 0)
           {
-            Directory = Name.SubString(P + 1, Name.Length() - P);
-            Name.SetLength(P - 1);
+            Directory = CommandLine.SubString(P + 1, CommandLine.Length() - P);
+            CommandLine.SetLength(P - 1);
           }
 
           TWinSCPFileSystem * PanelSystem;
           PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
           if (PanelSystem && PanelSystem->Connected() &&
-              PanelSystem->GetTerminal()->GetSessionData()->GetSessionUrl() == Name)
+              PanelSystem->GetTerminal()->GetSessionData()->GetSessionUrl() == CommandLine)
           {
             PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
             if (PanelSystem->UpdatePanel())
@@ -290,8 +290,10 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
           Directory = L"";
         }
         assert(StoredSessions);
-        bool DefaultsOnly;
-        TSessionData * Session = StoredSessions->ParseUrl(Name, NULL, DefaultsOnly);
+        bool DefaultsOnly = false;
+        TOptions * Options = NULL;
+        ParseCommandLine(CommandLine, &Options);
+        TSessionData * Session = StoredSessions->ParseUrl(CommandLine, Options, DefaultsOnly);
         TRY_FINALLY (
         {
           if (DefaultsOnly)
@@ -311,7 +313,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
         }
         ,
         {
-          delete Session;
+         delete Session;
         }
         );
       }
@@ -344,8 +346,8 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
         }
         ,
         {
-          delete ImportStorage;
-          delete Session;
+         delete ImportStorage;
+         delete Session;
         }
         );
       }
@@ -362,6 +364,14 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
   }
 
   return FileSystem;
+}
+//---------------------------------------------------------------------------
+void TWinSCPPlugin::ParseCommandLine(const UnicodeString & CommandLine,
+  TOptions ** Options)
+{
+  TOptions * Opt = NULL;
+  UnicodeString CommandLineParams;
+  *Options = Opt;
 }
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
