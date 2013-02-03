@@ -7,8 +7,7 @@
 class TProgramParams : public TOptions
 {
 public:
-  static TProgramParams * Instance();
-
-  TProgramParams();
+  explicit TProgramParams();
+  // static TProgramParams * Instance();
 };
 //------------------------------------------------------------------------------

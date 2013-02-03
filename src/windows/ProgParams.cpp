@@ -30,27 +30,26 @@ public:
   }
 
 private:
-  TProgramParams * FProgramParams;  
+  TProgramParams * FProgramParams;
 };
 //------------------------------------------------------------------------------
-TProgramParamsOwner ProgramParamsOwner;
+// TProgramParamsOwner ProgramParamsOwner;
 //------------------------------------------------------------------------------
-TProgramParams * TProgramParams::Instance()
-{
-  return ProgramParamsOwner.Get();
-}
+// TProgramParams * TProgramParams::Instance()
+// {
+  // return ProgramParamsOwner.Get();
+// }
 //------------------------------------------------------------------------------
 TProgramParams::TProgramParams()
 {
-  CALLSTACK;
   UnicodeString CommandLine; //  = CmdLine;
-  
   UnicodeString Param;
-  CutToken(CommandLine, Param);
+  // CutToken(CommandLine, Param); // To remove program name
   // TRACEFMT("Program [%s]", Param.c_str());
   while (CutToken(CommandLine, Param))
   {
     // TRACEFMT("Param [%s]", Param.c_str());
+    DEBUG_PRINTF(L"Param = %s", Param.c_str());
     Add(Param);
   }
 }
