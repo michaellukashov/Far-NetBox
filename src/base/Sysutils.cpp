@@ -268,11 +268,11 @@ intptr_t LastDelimiter(const UnicodeString & Delimiters, const UnicodeString & S
 {
   if (Str.Length())
   {
-    for (intptr_t i = Str.Length(); i >= 1; --i)
+    for (intptr_t I = Str.Length(); I >= 1; --I)
     {
-      if (Str.IsDelimiter(Delimiters, i))
+      if (Str.IsDelimiter(Delimiters, I))
       {
-        return i;
+        return I;
       }
     }
   }
