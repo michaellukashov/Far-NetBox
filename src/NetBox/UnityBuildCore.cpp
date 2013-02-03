@@ -40,5 +40,6 @@
 #include "../windows/SynchronizeController.cpp"
 #include "../windows/GUIConfiguration.cpp"
 #include "../windows/GUITools.cpp"
+#include "../windows/ProgParams.cpp"
 
 #pragma warning(pop)
