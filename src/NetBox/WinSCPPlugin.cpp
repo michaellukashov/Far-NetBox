@@ -2,6 +2,12 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <Common.h>
+#include <CoreMain.h>
+#include <Exceptions.h>
+#include <Terminal.h>
+#include <GUITools.h>
+#include <ProgParams.h>
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
 #include "FarConfiguration.h"
@@ -9,11 +15,6 @@
 #include "FarDialog.h"
 #include "plugin.hpp"
 #include "XmlStorage.h"
-#include <Common.h>
-#include <CoreMain.h>
-#include <Exceptions.h>
-#include <Terminal.h>
-#include <GUITools.h>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
