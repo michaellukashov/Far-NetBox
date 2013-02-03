@@ -178,7 +178,7 @@
       <DelayLoadDLLs>gdi32.dll;winhttp.dll;ole32.dll;shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;winspool.drv;comdlg32.dll;</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
-      <Command>scripts\make_dist.cmd x86 Far3</Command>
+      <Command>scripts\make_dist.cmd Far3 x86</Command>
     </PostBuildEvent>
     <ResourceCompile>
       <AdditionalIncludeDirectories>.;..\..\libs\atlmfc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -217,7 +217,7 @@
       <DelayLoadDLLs>gdi32.dll;winhttp.dll;ole32.dll;shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;winspool.drv;comdlg32.dll;</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
-      <Command>scripts\make_dist.cmd x64 Far3</Command>
+      <Command>scripts\make_dist.cmd Far3 x64</Command>
     </PostBuildEvent>
     <ResourceCompile>
       <AdditionalIncludeDirectories>.\..\..\libs\atlmfc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

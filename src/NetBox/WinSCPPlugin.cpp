@@ -2,6 +2,12 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <Common.h>
+#include <CoreMain.h>
+#include <Exceptions.h>
+#include <Terminal.h>
+#include <GUITools.h>
+#include <ProgParams.h>
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
 #include "FarConfiguration.h"
@@ -9,11 +15,6 @@
 #include "FarDialog.h"
 #include "plugin.hpp"
 #include "XmlStorage.h"
-#include <Common.h>
-#include <CoreMain.h>
-#include <Exceptions.h>
-#include <Terminal.h>
-#include <GUITools.h>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -267,34 +268,34 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
       else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
       {
         UnicodeString Directory;
-        UnicodeString Name;
+        UnicodeString CommandLine;
         FAROPENSHORTCUTFLAGS Flags = FOSF_NONE;
         if (OpenFrom == OPEN_SHORTCUT)
         {
           OpenShortcutInfo * Info = reinterpret_cast<OpenShortcutInfo *>(Item);
-          Name = Info->ShortcutData;
+          CommandLine = Info->ShortcutData;
           Flags = Info->Flags;
         }
         else
         {
           OpenCommandLineInfo * Info = reinterpret_cast<OpenCommandLineInfo *>(Item);
-          Name = Info->CommandLine;
+          CommandLine = Info->CommandLine;
           // DEBUG_PRINTF(L"Name = %s", Name.c_str());
         }
         if (OpenFrom == OPEN_SHORTCUT)
         {
-          intptr_t P = Name.Pos(L"\1");
+          intptr_t P = CommandLine.Pos(L"\1");
           if (P > 0)
           {
-            Directory = Name.SubString(P + 1, Name.Length() - P);
-            Name.SetLength(P - 1);
+            Directory = CommandLine.SubString(P + 1, CommandLine.Length() - P);
+            CommandLine.SetLength(P - 1);
           }
 
           TWinSCPFileSystem * PanelSystem;
           bool Another = !(Flags & FOSF_ACTIVE);
           PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem(Another));
           if (PanelSystem && PanelSystem->Connected() &&
-              PanelSystem->GetTerminal()->GetSessionData()->GetSessionUrl() == Name)
+              PanelSystem->GetTerminal()->GetSessionData()->GetSessionUrl() == CommandLine)
           {
             PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
             if (PanelSystem->UpdatePanel(false, Another))
@@ -307,8 +308,10 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
           Directory = L"";
         }
         assert(StoredSessions);
-        bool DefaultsOnly;
-        TSessionData * Session = StoredSessions->ParseUrl(Name, NULL, DefaultsOnly);
+        bool DefaultsOnly = false;
+        TOptions * Options = NULL;
+        ParseCommandLine(CommandLine, &Options);
+        TSessionData * Session = StoredSessions->ParseUrl(CommandLine, Options, DefaultsOnly);
         TRY_FINALLY (
         {
           if (DefaultsOnly)
@@ -328,6 +331,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         }
         ,
         {
+          delete Options;
           delete Session;
         }
         );
@@ -380,6 +384,46 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
   }
 
   return FileSystem;
+}
+//---------------------------------------------------------------------------
+void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
+  TOptions ** Options)
+{
+  // UnicodeString CommandLineParams;
+  TOptions * Opt = new TProgramParams();
+  UnicodeString CmdLine = CommandLine;
+  // intptr_t Pos = FirstDelimiter(Opt->GetSwitchMarks(), CmdLine);
+  intptr_t Index = 1;
+  // Skip session name
+  {
+    while ((Index < CmdLine.Length()) && (CmdLine[Index] == L' '))
+     ++Index;
+    if (CmdLine[Index] == L'"')
+    {
+      ++Index;
+      while ((Index < CmdLine.Length()) && (CmdLine[Index] != L'"'))
+        ++Index;
+      ++Index;
+    }
+    while ((Index < CmdLine.Length()) && (CmdLine[Index] != L' '))
+      ++Index;
+  }
+  CmdLine = CmdLine.SubString(Index, -1);
+  // Parse params
+  intptr_t Pos = FirstDelimiter(Opt->GetSwitchMarks(), CmdLine);
+  UnicodeString CommandLineParams = CmdLine.SubString(Pos, -1);
+  // DEBUG_PRINTF(L"CommandLineParams = %s", CommandLineParams.c_str());
+  Opt->ParseParams(CommandLineParams);
+  if (!CommandLineParams.IsEmpty())
+    CommandLine = CommandLine.SubString(1, CommandLine.Length() - CommandLineParams.Length()).Trim();
+  if (Opt->GetEmpty())
+  {
+    delete Opt;
+  }
+  else
+  {
+    *Options = Opt;
+  }
 }
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)

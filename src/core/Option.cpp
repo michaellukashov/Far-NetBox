@@ -8,15 +8,28 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-TOptions::TOptions()
+TOptions::TOptions() :
+  FSwitchMarks(L"-/"),
+  FSwitchValueDelimiters(L":="),
+  FNoMoreSwitches(false),
+  FParamCount(0)
 {
-  FSwitchMarks = L"-/";
-  FSwitchValueDelimiters = L":=";
-  FNoMoreSwitches = false;
-  FParamCount = 0;
 }
 //---------------------------------------------------------------------------
-void TOptions::Add(UnicodeString Value)
+void TOptions::ParseParams(const UnicodeString & Params)
+{
+  UnicodeString Param;
+  UnicodeString ParamsLocal = Params;
+  // CutToken(Params, Param); // To remove program name
+  // TRACEFMT("Program [%s]", Param.c_str());
+  while (CutToken(ParamsLocal, Param))
+  {
+    // TRACEFMT("Param [%s]", Param.c_str());
+    Add(Param);
+  }
+}
+//---------------------------------------------------------------------------
+void TOptions::Add(const UnicodeString & Value)
 {
   if (!FNoMoreSwitches &&
       (Value.Length() == 2) &&
@@ -28,7 +41,7 @@ void TOptions::Add(UnicodeString Value)
   else
   {
     bool Switch = false;
-    int Index = 0; // shut up
+    intptr_t Index = 0; // shut up
     if (!FNoMoreSwitches &&
         (Value.Length() >= 2) &&
         (FSwitchMarks.Pos(Value[1]) > 0))

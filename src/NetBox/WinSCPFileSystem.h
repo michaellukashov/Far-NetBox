@@ -1,7 +1,7 @@
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef WinSCPFileSystemH
 #define WinSCPFileSystemH
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #include <Interface.h>
 #include "FarPlugin.h"
 #include <FileOperationProgress.h>
@@ -9,7 +9,7 @@
 #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
 #include <Queue.h>
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class TTerminal;
 class TSessionData;
 class TRemoteFile;
@@ -36,7 +36,7 @@ struct TMessageParams;
 #define MOVE_TO_HISTORY L"WinscpMoveTo"
 #define EXCLUDE_FILE_MASK_HISTORY L"WinscpExcludeFileMask"
 #define MAKE_SESSION_FOLDER_HISTORY L"WinscpSessionFolder"
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // for Properties dialog
 const int cpMode =  0x01;
 const int cpOwner = 0x02;
@@ -52,7 +52,7 @@ const int soAllowSelectedOnly = 0x01;
 const int fsoDisableTimestamp = 0x01;
 const int fsoAllowSelectedOnly = 0x02;
 enum TSessionActionEnum { saAdd, saEdit, saConnect };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
   int /* Params */, TSynchronizeOptions & /* Options */);
 DEFINE_CALLBACK_TYPE3(TGetSpaceAvailableEvent, void,
@@ -72,9 +72,9 @@ struct TEditHistory
   UnicodeString Directory;
   bool operator==(const TEditHistory & rh) const { return (FileName == rh.FileName) && (Directory == rh.Directory); }
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE2(TProcessSessionEvent, void, TSessionData * /* Data */, void * /* Param */);
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class TWinSCPFileSystem : public TCustomFarFileSystem
 {
   friend class TWinSCPPlugin;
@@ -340,7 +340,7 @@ private:
 private:
   UnicodeString GetFileNameHash(const UnicodeString & FileName);
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class TSessionPanelItem : public TCustomFarPanelItem
 {
 public:
@@ -360,7 +360,7 @@ protected:
     uintptr_t & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class TSessionFolderPanelItem : public TCustomFarPanelItem
 {
 public:
@@ -376,7 +376,7 @@ protected:
     uintptr_t & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class TRemoteFilePanelItem : public TCustomFarPanelItem
 {
 public:
@@ -397,5 +397,5 @@ protected:
   static void TranslateColumnTypes(UnicodeString & ColumnTypes,
     TStrings * ColumnTitles);
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

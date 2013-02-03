@@ -1,10 +1,11 @@
 @echo off
 
 set PLUGINNAME=NetBox
-set PLUGINARCH=%1
-if "%PLUGINARCH%" equ "" set PLUGINARCH=x86
-set FARVER=%2
+
+set FARVER=%1
 if "%FARVER%" equ "" set FARVER=Far3
+set PLUGINARCH=%2
+if "%PLUGINARCH%" equ "" set PLUGINARCH=x86
 
 :: Get plugin version from resource
 for /F "tokens=2,3 skip=2" %%i in (resource.h) do set %%i=%%~j
@@ -12,7 +13,7 @@ if "%PLUGIN_VERSION_TXT%" equ "" echo Undefined version & exit 1
 set PLUGINVER=%PLUGIN_VERSION_TXT%
 
 :: Package name
-set PKGNAME=Far%PLUGINNAME%-%PLUGINVER%_Far2_Far3_x86_x64.7z
+set PKGNAME=Far%PLUGINNAME%-%PLUGINVER%_%FARVER%_%PLUGINARCH%.7z
 
 :: Create temp directory
 set PKGDIR=..\..\build\%PLUGINNAME%\%FARVER%\
@@ -35,10 +36,9 @@ copy ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME%\%PLUGINNAME%.dll %PKGDIRAR
 
 :: Make archive
 if exist %PKGNAME% del %PKGNAME%
-if exist ../../build/%PLUGINNAME%/Far2 (
-  if exist ../../build/%PLUGINNAME%/Far3 (
+if exist ../../build/%PLUGINNAME%/%FARVER%/%PLUGINARCH% (
     if exist "C:\Program Files\7-Zip\7z.exe" (
-      call "C:\Program Files\7-Zip\7z.exe" a -mx9 -t7z -r ../../build/%PKGNAME% ../../build/%PLUGINNAME%/* > NUL
+      call "C:\Program Files\7-Zip\7z.exe" a -mx9 -t7z -r ../../build/%PKGNAME% ../../build/%PLUGINNAME%/%FARVER%/%PLUGINARCH%/* > NUL
       if errorlevel 1 echo Error creating archive & exit 1 /b
       @rem rmdir /S /Q %PKGDIRARCH%
       echo Package %PKGNAME% created

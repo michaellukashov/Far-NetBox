@@ -550,14 +550,15 @@ bool TSCPFileSystem::IsCapable(int Capability) const
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TSCPFileSystem::DelimitStr(UnicodeString Str)
+UnicodeString TSCPFileSystem::DelimitStr(const UnicodeString & Str)
 {
-  if (!Str.IsEmpty())
+  UnicodeString Result = Str;
+  if (!Result.IsEmpty())
   {
-    Str = ::DelimitStr(Str, L"\\`$\"");
-    if (Str[1] == L'-') Str = L"./"+Str;
+    Result = ::DelimitStr(Result, L"\\`$\"");
+    if (Result[1] == L'-') Result = L"./"+Result;
   }
-  return Str;
+  return Result;
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::EnsureLocation()
@@ -934,7 +935,7 @@ void TSCPFileSystem::DetectReturnVar()
   }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::ClearAlias(UnicodeString Alias)
+void TSCPFileSystem::ClearAlias(const UnicodeString & Alias)
 {
   if (!Alias.IsEmpty())
   {

@@ -1,12 +1,12 @@
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef HierarchicalStorageH
 #define HierarchicalStorageH
 
 #include <registry.hpp>
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 enum TStorage { stDetect, stRegistry, stIniFile, stNul, stXmlFile, stFar3Storage };
 enum TStorageAccessMode { smRead, smReadWrite };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class THierarchicalStorage
 {
 public:
@@ -90,7 +90,7 @@ private:
   THierarchicalStorage(const THierarchicalStorage &);
   THierarchicalStorage & operator=(const THierarchicalStorage &);
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class TRegistryStorage : public THierarchicalStorage
 {
 public:
@@ -141,7 +141,7 @@ private:
   int FFailed;
 };
 #ifndef _MSC_VER
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class TCustomIniFileStorage : public THierarchicalStorage
 {
 public:
@@ -184,7 +184,7 @@ protected:
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate);
   virtual UnicodeString GetSource();
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class TIniFileStorage : public TCustomIniFileStorage
 {
 public:
@@ -197,15 +197,15 @@ private:
   TStrings * FOriginal;
   void ApplyOverrides();
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class TOptionsStorage : public TCustomIniFileStorage
 {
 public:
   explicit TOptionsStorage(TStrings * Options);
 };
 #endif
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 UnicodeString PuttyMungeStr(const UnicodeString & Str);
 UnicodeString PuttyUnMungeStr(const UnicodeString & Str);
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif
