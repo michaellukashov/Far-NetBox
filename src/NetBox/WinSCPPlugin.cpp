@@ -314,6 +314,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
         }
         ,
         {
+         delete Options;
          delete Session;
         }
         );
@@ -370,9 +371,24 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
 void TWinSCPPlugin::ParseCommandLine(const UnicodeString & CommandLine,
   TOptions ** Options)
 {
-  TOptions * Opt = TProgramParams::Instance();
-  UnicodeString CommandLineParams;
-  *Options = Opt;
+  // UnicodeString CommandLineParams;
+  TOptions * Opt = new TProgramParams();
+  // Opt->Clear();
+  intptr_t Pos = FirstDelimiter(Opt->GetSwitchMarks(), CommandLine);
+  if (Pos > 0)
+  {
+    UnicodeString CommandLineParams = CommandLine.SubString(Pos, -1);
+    DEBUG_PRINTF(L"CommandLineParams = %s", CommandLineParams.c_str());
+    Opt->ParseParams(CommandLineParams);
+  }
+  if (Opt->GetEmpty())
+  {
+    delete Opt;
+  }
+  else
+  {
+    *Options = Opt;
+  }
 }
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
