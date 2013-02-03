@@ -90,10 +90,10 @@ private:
   TCaptureOutputEvent FOnCaptureOutput;
 
   void ClearAliases();
-  void ClearAlias(UnicodeString Alias);
+  void ClearAlias(const UnicodeString & Alias);
   void CustomReadFile(const UnicodeString & FileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);
-  static UnicodeString DelimitStr(UnicodeString Str);
+  static UnicodeString DelimitStr(const UnicodeString & Str);
   void DetectReturnVar();
   bool IsLastLine(UnicodeString & Line);
   static bool IsTotalListingLine(const UnicodeString & Line);
