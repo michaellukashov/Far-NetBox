@@ -8,12 +8,12 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-TOptions::TOptions()
+TOptions::TOptions() :
+  FSwitchMarks(L"-/"),
+  FSwitchValueDelimiters(L":="),
+  FNoMoreSwitches(false),
+  FParamCount(0)
 {
-  FSwitchMarks = L"-/";
-  FSwitchValueDelimiters = L":=";
-  FNoMoreSwitches = false;
-  FParamCount = 0;
 }
 //---------------------------------------------------------------------------
 void TOptions::Add(const UnicodeString & Value)
@@ -28,7 +28,7 @@ void TOptions::Add(const UnicodeString & Value)
   else
   {
     bool Switch = false;
-    int Index = 0; // shut up
+    intptr_t Index = 0; // shut up
     if (!FNoMoreSwitches &&
         (Value.Length() >= 2) &&
         (FSwitchMarks.Pos(Value[1]) > 0))
