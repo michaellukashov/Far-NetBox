@@ -2013,7 +2013,7 @@ void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & Path,
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ShowInformation()
 {
-  TSessionInfo SessionInfo = GetTerminal()->GetSessionInfo();
+  const TSessionInfo & SessionInfo = GetTerminal()->GetSessionInfo();
   TFileSystemInfo FileSystemInfo = GetTerminal()->GetFileSystemInfo();
   TGetSpaceAvailableEvent OnGetSpaceAvailable;
   if (GetTerminal()->GetIsCapable(fcCheckingSpaceAvailable))
