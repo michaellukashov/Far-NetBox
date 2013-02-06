@@ -12395,6 +12395,7 @@ void TWebDAVFileSystem::Close()
 {
   assert(FActive);
   FTerminal->Closed();
+  FActive = false;
 }
 //---------------------------------------------------------------------------
 bool TWebDAVFileSystem::GetActive()
