@@ -745,6 +745,7 @@ neon_request_dispatch(
   const char * body,
   int okay_1,
   int okay_2,
+  bool check_errors,
   apr_pool_t * pool);
 
 static error_t
@@ -805,6 +806,7 @@ neon_get_props_resource(
   neon_session_t * sess,
   const char * url,
   const ne_propname * which_props,
+  bool check_errors,
   apr_pool_t * pool);
 
 //------------------------------------------------------------------------------
@@ -7801,6 +7803,7 @@ parsed_request(
   void * baton,
   apr_hash_t * extra_headers,
   int * status_code,
+  bool check_errors,
   apr_pool_t * pool)
 {
   ne_xml_parser * success_parser = NULL;
@@ -7831,7 +7834,9 @@ parsed_request(
   WEBDAV_ERR(neon_request_dispatch(
     status_code, req, extra_headers, body,
     (strcmp(method, "PROPFIND") == 0) ? 207 : 200,
-    0, pool));
+    0,
+    check_errors,
+    pool));
 
   WEBDAV_ERR(neon_check_parse_error(method, success_parser, url));
 
@@ -7852,6 +7857,7 @@ neon_parsed_request(
   void * baton,
   apr_hash_t * extra_headers,
   int * status_code,
+  bool check_errors,
   apr_pool_t * pool)
 {
   // create/prep the request
@@ -7863,6 +7869,7 @@ neon_parsed_request(
   err = parsed_request(req, sess, method, url, body, body_file,
     set_parser, startelm_cb, cdata_cb, endelm_cb,
     baton, extra_headers, status_code,
+    check_errors,
     pool);
 
   neon_request_destroy(req);
@@ -7890,7 +7897,7 @@ neon_simple_request(
   // reader. Neon will take care of the Content-Length calculation
   err = neon_request_dispatch(code, req, extra_headers,
     body ? body : "",
-    okay_1, okay_2, pool);
+    okay_1, okay_2, false, pool);
   neon_request_destroy(req);
 
   return err;
@@ -8523,6 +8530,7 @@ neon_request_dispatch(
   const char * body,
   int okay_1,
   int okay_2,
+  bool check_errors,
   apr_pool_t * pool)
 {
   // add any extra headers passed in by caller.
@@ -8545,6 +8553,8 @@ neon_request_dispatch(
   // attach a standard <D:error> body parser to the request
   ne_xml_parser * error_parser = error_parser_create(req);
 
+  if (check_errors)
+    multistatus_parser_create(req);
   // run the request, see what comes back.
   req->rv = ne_request_dispatch(req->ne_req);
 
@@ -8887,6 +8897,7 @@ custom_get_request(
   err = neon_request_dispatch(NULL, request, NULL, NULL,
     200 /* OK */,
     226 /* IM Used */,
+    false,
     pool);
   neon_request_destroy(request);
 
@@ -10484,6 +10495,7 @@ neon_exchange_capabilities(
       "</D:options>",
       200,
       relocation_location ? 301 : 0,
+      false,
       pool)) != WEBDAV_NO_ERROR)
     goto cleanup;
   if (req->code == 301)
@@ -10582,10 +10594,11 @@ neon_get_starting_props(
   neon_resource_t ** rsrc,
   neon_session_t * sess,
   const char * url,
+  bool check_errors,
   apr_pool_t * pool)
 {
   WEBDAV_ERR(neon_get_props_resource(rsrc, sess, url,
-    starting_props, pool));
+    starting_props, check_errors, pool));
 
   // Cache some of the resource information.
 
@@ -10648,6 +10661,7 @@ neon_search_for_starting_props(
   {
     webdav_pool_clear(iterpool);
     err = neon_get_starting_props(rsrc, sess, path_s->data,
+      false,
       iterpool);
     if (!err)
       break;   // found an existing, readable parent!
@@ -11138,6 +11152,7 @@ neon_get_props(
   const char * url,
   int depth,
   const ne_propname * which_props,
+  bool check_errors,
   apr_pool_t * pool)
 {
   apr_hash_t * extra_headers = apr_hash_make(pool);
@@ -11188,7 +11203,9 @@ neon_get_props(
     props_start_element,
     neon_xml_collect_cdata,
     props_end_element,
-    &pc, extra_headers, NULL, pool));
+    &pc, extra_headers, NULL,
+    check_errors,
+    pool));
 
   *results = pc.props;
   return WEBDAV_NO_ERROR;
@@ -11200,6 +11217,7 @@ neon_get_props_resource(
   neon_session_t * sess,
   const char * url,
   const ne_propname * which_props,
+  bool check_errors,
   apr_pool_t * pool)
 {
   apr_hash_t * props = NULL;
@@ -11210,7 +11228,7 @@ neon_get_props_resource(
     url_path[len - 1] = '\0';
 
   WEBDAV_ERR(neon_get_props(&props, sess, url_path, NEON__DEPTH_ZERO,
-    which_props, pool));
+    which_props, check_errors, pool));
 
   // HACK.  We need to have the client canonicalize paths, get rid
   // of double slashes and such.  This check is just a check against
@@ -11355,6 +11373,7 @@ client_put_file(
   err = neon_request_dispatch(&code, request, extra_headers, NULL,
     201 /* Created */,
     204 /* No Content */,
+    false,
     pool);
   if (err && (err == WEBDAV_ERR_DAV_REQUEST_FAILED))
   {
@@ -11529,6 +11548,7 @@ client_send_propfind_request(
 
   WEBDAV_ERR(neon_get_props(&props, ras, url_path, NEON__DEPTH_ZERO,
     starting_props,
+    false,
     pool));
 
   if (err && (err == WEBDAV_ERR_DAV_REQUEST_FAILED))
@@ -12395,7 +12415,9 @@ neon_get_file(
 
   neon_resource_t * rsrc = NULL;
   WEBDAV_ERR(neon_get_props_resource(&rsrc, ras, final_url,
-    which_props, pool));
+    which_props,
+    false,
+    pool));
   if (rsrc->is_collection)
   {
     return error_create(WEBDAV_ERR_FS_NOT_FILE, NULL,
@@ -12435,7 +12457,9 @@ neon_get_dir(
     apr_hash_t * resources = NULL;
     WEBDAV_ERR(neon_get_props(&resources, ras,
       final_url, NEON__DEPTH_ONE,
-      starting_props, pool));
+      starting_props,
+      false,
+      pool));
 
     // Count the number of path components in final_url.
     apr_size_t final_url_n_components = path_component_count(final_url);
@@ -12531,7 +12555,7 @@ neon_check_path(
     const char * full_bc_url = url;
 
     // query the DAV:resourcetype of the full, assembled URL.
-    err = neon_get_starting_props(&rsrc, ras, full_bc_url, pool);
+    err = neon_get_starting_props(&rsrc, ras, full_bc_url, true, pool);
     if (!err)
       is_dir = rsrc->is_collection != 0;
   }
@@ -12575,6 +12599,7 @@ neon_stat(
   error_t err = neon_get_props(&resources, ras, final_url,
     NEON__DEPTH_ZERO,
     starting_props,
+    false,
     pool);
   if (err)
   {
