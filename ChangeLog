@@ -1,6 +1,8 @@
 NetBox 2.1.25 ??.02.2013
 --------------------
-
+  * Bugfix: Issue #51: Uploaded directories are not created with WebDAV
+    (https://github.com/michaellukashov/Far-NetBox/issues/51)
+  
 NetBox 2.1.24 03.02.2013
 --------------------
   * Improvement: Added command-line parameters -codepage=<number> -username=<string> -password=<string>
