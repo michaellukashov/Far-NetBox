@@ -17,11 +17,8 @@
 # is implemented, so that scatter-/gathering can be tuned without
 # bn_exp.c modifications.
 
-$0 =~ s/\\/\//gm;
 $flavour = shift;
 $output  = shift;
-$flavour =~ s/\\/\//gm;
-$output =~ s/\\/\//gm;
 if ($flavour =~ /\./) { $output = $flavour; undef $flavour; }
 
 $win64=0; $win64=1 if ($flavour =~ /[nm]asm|mingw64/ || $output =~ /\.asm$/);
@@ -31,7 +28,8 @@ $0 =~ m/(.*[\/\\])[^\/\\]+$/; $dir=$1;
 ( $xlate="${dir}../../perlasm/x86_64-xlate.pl" and -f $xlate) or
 die "can't locate x86_64-xlate.pl";
 
-open STDOUT,"| $^X $xlate $flavour $output";
+open OUT,"| \"$^X\" $xlate $flavour $output";
+*STDOUT=*OUT;
 
 # int bn_mul_mont_gather5(
 $rp="%rdi";	# BN_ULONG *rp,

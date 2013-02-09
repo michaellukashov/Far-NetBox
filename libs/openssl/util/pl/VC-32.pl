@@ -47,7 +47,7 @@ if ($FLAVOR =~ /WIN64/)
     $lib_cflag='/Zl' if (!$shlib);	# remove /DEFAULTLIBs from static lib
     $opt_cflags=$f.' /Ox';
     $dbg_cflags=$f.'d /Od -DDEBUG -D_DEBUG';
-    $lflags="/nologo /subsystem:console /opt:ref /opt:icf";
+    $lflags="/nologo /subsystem:console /opt:ref";
 
     *::perlasm_compile_target = sub {
 	my ($target,$source,$bname)=@_;
@@ -118,7 +118,7 @@ elsif ($FLAVOR =~ /CE/)
     $base_cflags.=' -I$(WCECOMPAT)/include'		if (defined($ENV{'WCECOMPAT'}));
     $base_cflags.=' -I$(PORTSDK_LIBPATH)/../../include'	if (defined($ENV{'PORTSDK_LIBPATH'}));
     $opt_cflags=' /MC /O1i';	# optimize for space, but with intrinsics...
-    $dbg_clfags=' /MC /Od -DDEBUG -D_DEBUG';
+    $dbg_cflags=' /MC /Od -DDEBUG -D_DEBUG';
     $lflags="/nologo /opt:ref $wcelflag";
     }
 else	# Win32
@@ -126,9 +126,9 @@ else	# Win32
     $base_cflags= " $mf_cflag";
     my $f = $shlib || $fips ?' /MD':' /MT';
     $lib_cflag='/Zl' if (!$shlib);	# remove /DEFAULTLIBs from static lib
-    $opt_cflags=$f.' /Ox /O2 /Ob1';
+    $opt_cflags=$f.' /Ox /O2 /Ob2';
     $dbg_cflags=$f.'d /Od -DDEBUG -D_DEBUG';
-    $lflags="/nologo /subsystem:console /opt:ref /opt:icf";
+    $lflags="/nologo /subsystem:console /opt:ref";
     }
 $mlflags='';
 
