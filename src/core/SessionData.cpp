@@ -2692,7 +2692,7 @@ TFSProtocol TSessionData::TranslateFSProtocolNumber(int FSProtocol)
         break;
     }
   }
-  assert(Result != -1);
+  // assert(Result != -1);
   return Result;
 }
 //---------------------------------------------------------------------
