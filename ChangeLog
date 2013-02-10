@@ -7,7 +7,7 @@ NetBox 2.1.25 10.02.2013
   * Upgrade openssl to 1.0.1d
   * Bugfix: Issue #51: Uploaded directories are not created with WebDAV
     (https://github.com/michaellukashov/Far-NetBox/issues/51)
-  
+
 NetBox 2.1.24 03.02.2013
 --------------------
   * Improvement: Added command-line parameters -codepage=<number> -username=<string> -password=<string>
@@ -88,7 +88,7 @@ NetBox 2.1.16 20.10.2012
   * Bugfix: "Netbox commands" - "Open directory" dialog: fix shortcuts
   * Bugfix: "Netbox commands" - "Syncronize" was not working
   * Bugfix: Issue #41: Cannot change directory when option "[x] Cache visited remote directories" is on
-    
+
 NetBox 2.1.15 07.10.2012
 --------------------
   * Fixed x64 issues
@@ -233,7 +233,7 @@ NetBox 2.1.1 16.05.2012
   * SFTP: Bugfix: error when trying to edit remote file
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=660#p95836)
   * WinSCP core upgraded to 5.0.7
-  
+
 NetBox 2.1.0 15.05.2012
 ---------------------
   * WebDAV: bugfix: files not copied when trying to copy directory tree to remote server
@@ -289,7 +289,7 @@ NetBox 2.0.15 17.03.2012
 NetBox 2.0.14 09.03.2012
 ---------------------
   * FTP: Query reopen connection if error occurs in background transfer
-  * SFTP: Add button "Resume" in "Confirm overwrite" dialog 
+  * SFTP: Add button "Resume" in "Confirm overwrite" dialog
     (http://forum.farmanager.com/viewtopic.php?f=39&t=6638#p90521)
   * Rename option "Automatically reconnect session, if it breaks during transfer" --> "Reconnect after [ ] seconds";
     add option "Maximum number of retries" (F11 --> NetBox commands --> Configure --> NetBox --> Endurance settings --> Maximum number of retries: [ ])
