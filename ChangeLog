@@ -1,5 +1,6 @@
 NetBox 2.1.25 ??.02.2013
 --------------------
+  * Upgrade openssl to 1.0.1d
   * Bugfix: Issue #51: Uploaded directories are not created with WebDAV
     (https://github.com/michaellukashov/Far-NetBox/issues/51)
   
