@@ -1826,7 +1826,7 @@ void TFTPFileSystem::DoStartup()
       {
         FFileZillaIntf->CustomCommand(Command.c_str());
 
-        GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
+        GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_3XX_CODE);
       }
     }
   }
