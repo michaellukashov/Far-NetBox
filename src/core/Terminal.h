@@ -255,6 +255,7 @@ public:
   UnicodeString GetPassword();
   UnicodeString GetTunnelPassword();
   bool GetStoredCredentialsTried();
+  TCustomFileSystem * GetFileSystem() { return FFileSystem; }
 
 protected:
   bool FReadCurrentDirectoryPending;

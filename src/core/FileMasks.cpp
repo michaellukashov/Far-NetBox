@@ -1096,7 +1096,7 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
 intptr_t TFileCustomCommand::PatternLen(intptr_t /*Index*/, wchar_t PatternCmd)
 {
   intptr_t Len;
-  switch (toupper(PatternCmd))
+  switch (UpCase(PatternCmd))
   {
     case L'@':
     case L'U':

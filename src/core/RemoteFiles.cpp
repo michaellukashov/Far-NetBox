@@ -860,7 +860,7 @@ void TRemoteFile::SetIsHidden(bool Value)
 //---------------------------------------------------------------------------
 Boolean TRemoteFile::GetIsDirectory() const
 {
-  return (toupper(GetType()) == FILETYPE_DIRECTORY);
+  return (UpCase(GetType()) == FILETYPE_DIRECTORY);
 }
 //---------------------------------------------------------------------------
 Boolean TRemoteFile::GetIsParentDirectory() const
@@ -886,7 +886,10 @@ Boolean TRemoteFile::GetIsInaccesibleDirectory() const
         ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
          (AnsiCompareText(GetTerminal()->GetUserName(), GetFileOwner().GetName()) == 0)));
   }
-  else { Result = False; }
+  else
+  {
+    Result = False;
+  }
   return Result;
 }
 //---------------------------------------------------------------------------
