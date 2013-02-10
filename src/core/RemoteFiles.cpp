@@ -860,7 +860,7 @@ void TRemoteFile::SetIsHidden(bool Value)
 //---------------------------------------------------------------------------
 Boolean TRemoteFile::GetIsDirectory() const
 {
-  return (toupper(GetType()) == FILETYPE_DIRECTORY);
+  return (UpCase(GetType()) == FILETYPE_DIRECTORY);
 }
 //---------------------------------------------------------------------------
 Boolean TRemoteFile::GetIsParentDirectory() const
