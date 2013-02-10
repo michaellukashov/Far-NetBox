@@ -7520,7 +7520,6 @@ end_207_element(
   const char * nspace,
   const char * name)
 {
-  DEBUG_PRINTF2("begin, name = %s", name);
   multistatus_baton_t * b = static_cast<multistatus_baton_t *>(baton);
 
   switch (state)
@@ -7561,11 +7560,7 @@ end_207_element(
         if (!b->in_propstat)
           b->contains_error |= (status.klass != 2);
         else
-        {
           b->propstat_has_error = (status.klass != 2);
-          DEBUG_PRINTF(L"b->cdata = %s", b->cdata);
-          DEBUG_PRINTF(L"status.klass = %d, b->propstat_has_error = %d", status.klass, b->propstat_has_error);
-        }
 
         // Handle "412 Precondition Failed" specially
         if (status.code == 412)
@@ -7598,7 +7593,6 @@ end_207_element(
   // we'll set it all up in start_207_element() again
   b->want_cdata = NULL;
 
-  DEBUG_PRINTF(L"end");
   return WEBDAV_NO_ERROR;
 }
 
@@ -8562,7 +8556,6 @@ neon_request_dispatch(
   const ne_status * statstruct = ne_get_status(req->ne_req);
   req->code_desc = apr_pstrdup(pool, statstruct->reason_phrase);
   req->code = statstruct->code;
-  DEBUG_PRINTF2("req->rv = %d, req->code = %d, req->code_desc = %s", req->rv, req->code, req->code_desc);
 
   // If we see a successful request that used authentication, we should store
   // the credentials for future use.
@@ -11196,7 +11189,6 @@ neon_get_props(
   pc.cdata = stringbuf_create("", pool);
 
   // Create and dispatch the request!
-  DEBUG_PRINTF(L"1");
   WEBDAV_ERR(neon_parsed_request(sess, "PROPFIND", url,
     body->data, 0,
     props_set_parser,
