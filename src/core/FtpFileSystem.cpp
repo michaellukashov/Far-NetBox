@@ -2117,7 +2117,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & FileName,
   CALLSTACK;
   UnicodeString Path = UnixExtractFilePath(FileName);
   UnicodeString NameOnly = UnixExtractFileName(FileName);
-  TRemoteFile *AFile = NULL;
+  TRemoteFile * AFile = NULL;
   bool Own = false;
   if (FServerCapabilities->GetCapability(mlsd_command) == yes)
   {
@@ -2241,8 +2241,8 @@ TStrings * TFTPFileSystem::GetFixedPaths()
   return NULL;
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::SpaceAvailable(const UnicodeString & /*Path*/,
-  TSpaceAvailable & /*ASpaceAvailable*/)
+void TFTPFileSystem::SpaceAvailable(const UnicodeString & /* Path */,
+  TSpaceAvailable & /* ASpaceAvailable */)
 {
   assert(false);
 }
