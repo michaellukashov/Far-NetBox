@@ -5,13 +5,14 @@ $output  = shift;
 if ($flavour =~ /\./) { $output = $flavour; undef $flavour; }
 
 $win64=0; $win64=1 if ($flavour =~ /[nm]asm|mingw64/ || $output =~ /\.asm$/);
-$output =~ s/\\/\//gm;
+
 $0 =~ m/(.*[\/\\])[^\/\\]+$/; $dir=$1;
-( $xlate="${dir}/x86_64-xlate.pl" and -f $xlate ) or
-( $xlate="${dir}/perlasm/x86_64-xlate.pl" and -f $xlate) or
+( $xlate="${dir}x86_64-xlate.pl" and -f $xlate ) or
+( $xlate="${dir}perlasm/x86_64-xlate.pl" and -f $xlate) or
 die "can't locate x86_64-xlate.pl";
 
-open STDOUT,"| $^X $xlate $flavour $output";
+open OUT,"| \"$^X\" $xlate $flavour $output";
+*STDOUT=*OUT;
 
 ($arg1,$arg2,$arg3,$arg4)=$win64?("%rcx","%rdx","%r8", "%r9") :	# Win64 order
 				 ("%rdi","%rsi","%rdx","%rcx");	# Unix order

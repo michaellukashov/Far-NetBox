@@ -43,8 +43,8 @@ From now on, we assume that your source tree is C:/src/Far-NetBox
 Compile openssl:
 
     cd libs/openssl  
-    call src/NetBox/scripts/build_openssl.bat x86  
-    call src/NetBox/scripts/build_openssl.bat x64  
+    call ../../src/NetBox/scripts/build_openssl.bat x86  
+    call ../../src/NetBox/scripts/build_openssl.bat x64  
 
 Either open src/NetBox/NetBox.sln in Visual Studio, or compile NetBox plugin on the command line as follows:
 

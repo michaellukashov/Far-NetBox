@@ -48,11 +48,8 @@
 # Westmere	1.31		1.55		1.80
 # Sandy Bridge	0.93		1.06		1.22
 
-$0 =~ s/\\/\//gm;
 $flavour = shift;
 $output  = shift;
-$flavour =~ s/\\/\//gm;
-$output =~ s/\\/\//gm;
 if ($flavour =~ /\./) { $output = $flavour; undef $flavour; }
 
 $win64=0; $win64=1 if ($flavour =~ /[nm]asm|mingw64/ || $output =~ /\.asm$/);
@@ -72,7 +69,8 @@ $avx=1 if (!$avx && $win64 && ($flavour =~ /masm/ || $ENV{ASM} =~ /ml64/) &&
 	   `ml64 2>&1` =~ /Version ([0-9]+)\./ &&
 	   $1>=10);
 
-open STDOUT,"| $^X $xlate $flavour $output";
+open OUT,"| \"$^X\" $xlate $flavour $output";
+*STDOUT=*OUT;
 
 # void aesni_cbc_sha1_enc(const void *inp,
 #			void *out,

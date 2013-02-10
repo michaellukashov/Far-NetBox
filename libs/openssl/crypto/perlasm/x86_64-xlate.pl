@@ -58,13 +58,9 @@
 # a. If function accepts more than 4 arguments *and* >4th argument
 #    is declared as non 64-bit value, do clear its upper part.
 
-$0 =~ s/\\/\//gm;
 my $flavour = shift;
 my $output  = shift;
-$flavour =~ s/\\/\//gm;
-$output =~ s/\\/\//gm;
 if ($flavour =~ /\./) { $output = $flavour; undef $flavour; }
-print "$flavour $output\n";
 
 open STDOUT,">$output" || die "can't open $output: $!"
 	if (defined($output));
