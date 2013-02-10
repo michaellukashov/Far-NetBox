@@ -2788,7 +2788,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
         }
         else
         {
-          SessionData = static_cast<TSessionData*>(FindByName(SessionName));
+          SessionData = static_cast<TSessionData *>(FindByName(SessionName));
         }
 
         if ((SessionData != FDefaultSettings) || !UseDefaults)
