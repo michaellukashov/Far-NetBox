@@ -476,10 +476,22 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
         FTerminal->ReloadDirectory();
       }
 
-      TRemoteFile * File;
+      TCustomFileSystem * FileSystem = GetTerminal()->GetFileSystem();
       for (intptr_t Index = 0; Index < FTerminal->GetFiles()->GetCount(); ++Index)
       {
-        File = FTerminal->GetFiles()->GetFiles(Index);
+        TRemoteFile * File = FTerminal->GetFiles()->GetFiles(Index);
+        if (File->GetIsSymLink())
+        {
+          // Check what kind of symlink this is
+          const UnicodeString LinkFileName = File->GetLinkTo();
+          TRemoteFile * LinkFile = NULL;
+          FileSystem->ReadFile(LinkFileName, LinkFile);
+          if ((LinkFile != NULL) && LinkFile->GetIsDirectory())
+          {
+            File->SetType(FILETYPE_DIRECTORY);
+          }
+          delete LinkFile;
+        }
         PanelItems->Add(static_cast<TObject *>(new TRemoteFilePanelItem(File)));
       }
     }

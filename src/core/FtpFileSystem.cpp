@@ -1826,7 +1826,7 @@ void TFTPFileSystem::DoStartup()
       {
         FFileZillaIntf->CustomCommand(Command.c_str());
 
-        GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
+        GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_3XX_CODE);
       }
     }
   }
@@ -2117,7 +2117,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & FileName,
   CALLSTACK;
   UnicodeString Path = UnixExtractFilePath(FileName);
   UnicodeString NameOnly = UnixExtractFileName(FileName);
-  TRemoteFile *AFile = NULL;
+  TRemoteFile * AFile = NULL;
   bool Own = false;
   if (FServerCapabilities->GetCapability(mlsd_command) == yes)
   {
@@ -2241,8 +2241,8 @@ TStrings * TFTPFileSystem::GetFixedPaths()
   return NULL;
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::SpaceAvailable(const UnicodeString & /*Path*/,
-  TSpaceAvailable & /*ASpaceAvailable*/)
+void TFTPFileSystem::SpaceAvailable(const UnicodeString & /* Path */,
+  TSpaceAvailable & /* ASpaceAvailable */)
 {
   assert(false);
 }
@@ -2711,7 +2711,7 @@ void TFTPFileSystem::GotNonCommandReply(unsigned int Reply)
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
-  UnicodeString Error, unsigned int * Code, TStrings ** Response)
+  const UnicodeString & Error, unsigned int * Code, TStrings ** Response)
 {
   CALLSTACK;
   TRACEFMT("Reply=%x Flags=%x Error='%s'", int(Reply), int(Flags), Error.c_str());
@@ -2860,11 +2860,12 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
         throw;
       }
 
+      UnicodeString ErrorStr = Error;
       if (Error.IsEmpty() && (MoreMessages != NULL))
       {
         TRACE("17");
         assert(MoreMessages->GetCount() > 0);
-        Error = MoreMessages->Strings[0];
+        ErrorStr = MoreMessages->Strings[0];
         MoreMessages->Delete(0);
       }
 
@@ -2873,7 +2874,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
         TRACE("18");
         // for fatal error, it is essential that there is some message
         assert(!Error.IsEmpty());
-        ExtException * E = new ExtException(Error, MoreMessages, true);
+        ExtException * E = new ExtException(ErrorStr, MoreMessages, true);
         TRY_FINALLY (
         {
           TRACE("19");
@@ -2888,7 +2889,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
       else
       {
         TRACE("20");
-        throw ExtException(Error, MoreMessages, true, HelpKeyword);
+        throw ExtException(ErrorStr, MoreMessages, true, HelpKeyword);
       }
     }
 

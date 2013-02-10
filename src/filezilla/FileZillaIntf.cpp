@@ -328,7 +328,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
       if (FZ_MSG_PARAM(wParam) == FZ_ASYNCREQUEST_OVERWRITE)
       {
         TRACE("Overwrite");
-        int RequestResult;
+        int RequestResult = 0;
         wchar_t FileName1[MAX_PATH];
         COverwriteRequestData * Data = (COverwriteRequestData *)lParam;
         try

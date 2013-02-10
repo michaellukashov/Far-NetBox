@@ -161,11 +161,8 @@ $PREFIX="aesni";	# if $PREFIX is set to "AES", the script
 			# generates drop-in replacement for
 			# crypto/aes/asm/aes-x86_64.pl:-)
 
-$0 =~ s/\\/\//gm;
 $flavour = shift;
 $output  = shift;
-$flavour =~ s/\\/\//gm;
-$output =~ s/\\/\//gm;
 if ($flavour =~ /\./) { $output = $flavour; undef $flavour; }
 
 $win64=0; $win64=1 if ($flavour =~ /[nm]asm|mingw64/ || $output =~ /\.asm$/);
@@ -175,7 +172,8 @@ $0 =~ m/(.*[\/\\])[^\/\\]+$/; $dir=$1;
 ( $xlate="${dir}../../perlasm/x86_64-xlate.pl" and -f $xlate) or
 die "can't locate x86_64-xlate.pl";
 
-open STDOUT,"| $^X $xlate $flavour $output";
+open OUT,"| \"$^X\" $xlate $flavour $output";
+*STDOUT=*OUT;
 
 $movkey = $PREFIX eq "aesni" ? "movups" : "movups";
 @_4args=$win64?	("%rcx","%rdx","%r8", "%r9") :	# Win64 order

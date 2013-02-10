@@ -61,18 +61,15 @@
 # Westmere	7.1		5.6/+27%	-
 # Sandy Bridge	7.9		6.3/+25%	5.2/+51%
 
-$0 =~ s/\\/\//gm;
 $flavour = shift;
 $output  = shift;
-$flavour =~ s/\\/\//gm;
-$output =~ s/\\/\//gm;
 if ($flavour =~ /\./) { $output = $flavour; undef $flavour; }
 
 $win64=0; $win64=1 if ($flavour =~ /[nm]asm|mingw64/ || $output =~ /\.asm$/);
 
 $0 =~ m/(.*[\/\\])[^\/\\]+$/; $dir=$1;
-( $xlate="${dir}/x86_64-xlate.pl" and -f $xlate ) or
-( $xlate="${dir}/../../perlasm/x86_64-xlate.pl" and -f $xlate) or
+( $xlate="${dir}x86_64-xlate.pl" and -f $xlate ) or
+( $xlate="${dir}../../perlasm/x86_64-xlate.pl" and -f $xlate) or
 die "can't locate x86_64-xlate.pl";
 
 $avx=1 if (`$ENV{CC} -Wa,-v -c -o /dev/null -x assembler /dev/null 2>&1`
@@ -85,7 +82,8 @@ $avx=1 if (!$avx && $win64 && ($flavour =~ /masm/ || $ENV{ASM} =~ /ml64/) &&
 	   `ml64 2>&1` =~ /Version ([0-9]+)\./ &&
 	   $1>=10);
 
-open STDOUT,"| $^X $xlate $flavour $output";
+open OUT,"| \"$^X\" $xlate $flavour $output";
+*STDOUT=*OUT;
 
 $ctx="%rdi";	# 1st arg
 $inp="%rsi";	# 2nd arg

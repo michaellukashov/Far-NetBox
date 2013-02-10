@@ -309,8 +309,8 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         }
         assert(StoredSessions);
         bool DefaultsOnly = false;
-        TOptions * Options = NULL;
-        ParseCommandLine(CommandLine, &Options);
+        TOptions * Options = new TProgramParams();
+        ParseCommandLine(CommandLine, Options);
         TSessionData * Session = StoredSessions->ParseUrl(CommandLine, Options, DefaultsOnly);
         TRY_FINALLY (
         {
@@ -387,10 +387,9 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
 }
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
-  TOptions ** Options)
+  TOptions * Options)
 {
   // UnicodeString CommandLineParams;
-  TOptions * Opt = new TProgramParams();
   UnicodeString CmdLine = CommandLine;
   // intptr_t Pos = FirstDelimiter(Opt->GetSwitchMarks(), CmdLine);
   intptr_t Index = 1;
@@ -410,19 +409,15 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
   }
   CmdLine = CmdLine.SubString(Index, -1);
   // Parse params
-  intptr_t Pos = FirstDelimiter(Opt->GetSwitchMarks(), CmdLine);
-  UnicodeString CommandLineParams = CmdLine.SubString(Pos, -1);
+  intptr_t Pos = FirstDelimiter(Options->GetSwitchMarks(), CmdLine);
+  UnicodeString CommandLineParams;
+  if (Pos > 0)
+    CommandLineParams = CmdLine.SubString(Pos, -1);
   // DEBUG_PRINTF(L"CommandLineParams = %s", CommandLineParams.c_str());
-  Opt->ParseParams(CommandLineParams);
   if (!CommandLineParams.IsEmpty())
+  {
+    Options->ParseParams(CommandLineParams);
     CommandLine = CommandLine.SubString(1, CommandLine.Length() - CommandLineParams.Length()).Trim();
-  if (Opt->GetEmpty())
-  {
-    delete Opt;
-  }
-  else
-  {
-    *Options = Opt;
   }
 }
 //---------------------------------------------------------------------------

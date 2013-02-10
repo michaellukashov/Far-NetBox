@@ -20,11 +20,8 @@
 # these coefficients are not ones for bn_GF2m_mul_2x2 itself, as not
 # all CPU time is burnt in it...
 
-$0 =~ s/\\/\//gm;
 $flavour = shift;
 $output  = shift;
-$flavour =~ s/\\/\//gm;
-$output =~ s/\\/\//gm;
 if ($flavour =~ /\./) { $output = $flavour; undef $flavour; }
 
 $win64=0; $win64=1 if ($flavour =~ /[nm]asm|mingw64/ || $output =~ /\.asm$/);
@@ -34,7 +31,7 @@ $0 =~ m/(.*[\/\\])[^\/\\]+$/; $dir=$1;
 ( $xlate="${dir}../../perlasm/x86_64-xlate.pl" and -f $xlate) or
 die "can't locate x86_64-xlate.pl";
 
-open STDOUT,"| $^X $xlate $flavour $output";
+open STDOUT,"| \"$^X\" $xlate $flavour $output";
 
 ($lo,$hi)=("%rax","%rdx");	$a=$lo;
 ($i0,$i1)=("%rsi","%rdi");

@@ -80,7 +80,7 @@ protected:
 private:
   void CleanupConfiguration();
   void ParseCommandLine(UnicodeString & CommandLine,
-    TOptions ** Options);
+    TOptions * Options);
 
 private:
   bool FInitialized;
