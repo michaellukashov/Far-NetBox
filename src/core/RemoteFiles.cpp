@@ -886,7 +886,10 @@ Boolean TRemoteFile::GetIsInaccesibleDirectory() const
         ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
          (AnsiCompareText(GetTerminal()->GetUserName(), GetFileOwner().GetName()) == 0)));
   }
-  else { Result = False; }
+  else
+  {
+    Result = False;
+  }
   return Result;
 }
 //---------------------------------------------------------------------------
