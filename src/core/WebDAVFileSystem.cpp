@@ -793,11 +793,6 @@ dirent_is_root(
   apr_size_t len);
 
 //------------------------------------------------------------------------------
-// from svn_fspth.h
-
-#define urlpath_basename             fspath_basename
-
-//------------------------------------------------------------------------------
 // from svn_props.h
 
 static error_t
@@ -10669,7 +10664,7 @@ neon_search_for_starting_props(
     // TODO: path_s is an absolute, schema-less URI, but
     // technically not an FS_PATH.
     stringbuf_set(lopped_path,
-      relpath_join(urlpath_basename(path_s->data,
+      relpath_join(fspath_basename(path_s->data,
         iterpool),
         lopped_path->data, iterpool));
 
