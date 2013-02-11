@@ -229,7 +229,7 @@ wchar_t * TCustomFarPlugin::DuplicateStr(const UnicodeString & Str, bool AllowEm
 //---------------------------------------------------------------------------
 RECT TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
 {
-  PanelInfo Info;
+  PanelInfo Info = {0};
   FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<intptr_t>(&Info), PanelHandle);
   RECT Bounds;
   memset(&Bounds, -1, sizeof(Bounds));
@@ -1300,7 +1300,8 @@ void TCustomFarPlugin::FarCopyToClipboard(TStrings * Strings)
 TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor)
 {
   // DEBUG_PRINTF(L"begin");
-  CONSOLE_SCREEN_BUFFER_INFO BufferInfo = {0};
+  CONSOLE_SCREEN_BUFFER_INFO BufferInfo;
+  memset(&BufferInfo, 0, sizeof(BufferInfo));
   GetConsoleScreenBufferInfo(FConsoleOutput, &BufferInfo);
 
   TPoint Result(BufferInfo.dwSize.X, BufferInfo.dwSize.Y);

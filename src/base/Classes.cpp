@@ -1108,7 +1108,7 @@ void TStringList::LoadFromFile(const UnicodeString & FileName)
     __int64 Size = Stream.GetSize();
     TFileBuffer FileBuffer;
     __int64 Read = FileBuffer.LoadStream(&Stream, Size, True);
-    bool ConvertToken;
+    bool ConvertToken = false;
     FileBuffer.Convert(eolCRLF, eolCRLF, cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
     ::CloseHandle(FileHandle);
     UnicodeString Str(FileBuffer.GetData(), static_cast<intptr_t>(FileBuffer.GetSize()));

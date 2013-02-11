@@ -709,7 +709,7 @@ bool TFarDialog::CloseQuery()
 //---------------------------------------------------------------------------
 void TFarDialog::RefreshBounds()
 {
-  SMALL_RECT Rect;
+  SMALL_RECT Rect = {0};
   SendMessage(DM_GETDLGRECT, 0, reinterpret_cast<LONG_PTR>(&Rect));
   FBounds.Left = Rect.Left;
   FBounds.Top = Rect.Top;
@@ -1118,7 +1118,7 @@ void TFarDialogItem::UpdateBounds()
   if (GetDialog()->GetHandle())
   {
     TRect B = GetActualBounds();
-    SMALL_RECT Rect;
+    SMALL_RECT Rect = {0};
     Rect.Left = static_cast<short int>(B.Left);
     Rect.Top = static_cast<short int>(B.Top);
     Rect.Right = static_cast<short int>(B.Right);
@@ -1625,7 +1625,7 @@ void TFarDialogItem::Init()
 {
   if (GetFlag(DIF_CENTERGROUP))
   {
-    SMALL_RECT Rect;
+    SMALL_RECT Rect = {0};
 
     // at least for "text" item, returned item size is not correct (on 1.70 final)
     SendMessage(DM_GETITEMPOSITION, reinterpret_cast<LONG_PTR>(&Rect));
@@ -2305,7 +2305,7 @@ intptr_t TFarList::GetTopIndex()
   }
   else
   {
-    FarListPos ListPos;
+      FarListPos ListPos = {0};
     assert(GetDialogItem() != NULL);
     GetDialogItem()->SendMessage(DM_LISTGETCURPOS, reinterpret_cast<LONG_PTR>(&ListPos));
     Result = static_cast<intptr_t>(ListPos.TopPos);

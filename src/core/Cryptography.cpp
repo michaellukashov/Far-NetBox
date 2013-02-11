@@ -224,7 +224,7 @@ static void derive_key(const unsigned char pwd[],  /* the PASSWORD     */
 {
     unsigned int    i, j, k, n_blk;
     unsigned char uu[OUT_BLOCK_LENGTH], ux[OUT_BLOCK_LENGTH];
-    hmac_ctx c1[1], c2[1], c3[1];
+    hmac_ctx c1[1] = {0}, c2[1] = {0}, c3[1] = {0};
 
     /* set HMAC context (c1) for password               */
     hmac_sha1_begin(c1);

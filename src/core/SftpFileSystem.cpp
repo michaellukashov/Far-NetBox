@@ -5364,7 +5364,8 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           TSFTPPacket DataPacket(GetSessionData()->GetCodePageAsNumber());
 
           TRACE("4");
-          int QueueLen = int(File->GetSize() / DownloadBlockSize(OperationProgress)) + 1;
+          unsigned long BlSize = DownloadBlockSize(OperationProgress);
+          int QueueLen = int(File->GetSize() / (BlSize != 0 ? BlSize : 1)) + 1;
           if ((QueueLen > GetSessionData()->GetSFTPDownloadQueue()) ||
               (QueueLen < 0))
           {

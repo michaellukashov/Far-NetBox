@@ -829,8 +829,7 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & Key,
     if ((Info != NULL) && (GetTranslationCount(Info) > 0))
     {
       TRACE("1");
-      TTranslation Translation;
-      Translation = GetTranslation(Info, 0);
+      TTranslation Translation = GetTranslation(Info, 0);
       try
       {
         Result = ::GetFileInfoString(Info, Translation, Key);
