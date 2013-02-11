@@ -10504,39 +10504,6 @@ cleanup:
 }
 
 //------------------------------------------------------------------------------
-// from iter.c
-
-static const void *
-apr_hash_index_key(
-  const apr_hash_index_t * hi)
-{
-  const void * key;
-
-  apr_hash_this((apr_hash_index_t *)hi, &key, NULL, NULL);
-  return key;
-}
-
-static apr_ssize_t
-apr_hash_index_klen(
-  const apr_hash_index_t * hi)
-{
-  apr_ssize_t klen;
-
-  apr_hash_this((apr_hash_index_t *)hi, NULL, &klen, NULL);
-  return klen;
-}
-
-static void *
-apr_hash_index_val(
-  const apr_hash_index_t * hi)
-{
-  void * val;
-
-  apr_hash_this((apr_hash_index_t *)hi, NULL, NULL, &val);
-  return val;
-}
-
-//------------------------------------------------------------------------------
 // from props.c
 
 typedef struct propfind_ctx_t
