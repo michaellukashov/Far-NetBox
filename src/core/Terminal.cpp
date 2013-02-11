@@ -2587,12 +2587,19 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
         FReadingCurrentDirectory = false;
         TRemoteDirectory * OldFiles = FFiles;
         FFiles = Files;
-        DoReadDirectory(ReloadOnly);
-        // delete only after loading new files to dir view,
-        // not to destroy the fil objects that the view holds
-        // (can be issue in multi threaded environment, such as when the
-        // terminal is reconnecting in the terminal thread)
-        delete OldFiles;
+        TRY_FINALLY (
+        {
+            DoReadDirectory(ReloadOnly);
+        }
+        ,
+        {
+            // delete only after loading new files to dir view,
+            // not to destroy the file objects that the view holds
+            // (can be issue in multi threaded environment, such as when the
+            // terminal is reconnecting in the terminal thread)
+            delete OldFiles;
+        }
+        );
         if (GetActive())
         {
           if (GetSessionData()->GetCacheDirectories())
