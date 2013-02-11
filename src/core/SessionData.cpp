@@ -2750,6 +2750,7 @@ TStoredSessionList::TStoredSessionList(bool aReadOnly):
 {
   assert(Configuration);
   FDefaultSettings = new TSessionData(DefaultName);
+  SetOwnsObjects(true);
 }
 //---------------------------------------------------------------------
 TStoredSessionList::~TStoredSessionList()
