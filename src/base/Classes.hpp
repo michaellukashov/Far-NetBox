@@ -789,6 +789,7 @@ class DelphiSet
 {
 private:
   std::set<T> FSet;
+
 public:
   DelphiSet()
   {}
@@ -925,7 +926,7 @@ public:
   }
   bool operator != (const DelphiSet<T>& rhs) const
   {
-    return !operator == (rhs);
+    return !(operator == (rhs));
   }
 
   DelphiSet<T>& AddItems(T FirstItem, ...)

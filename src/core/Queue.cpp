@@ -541,7 +541,7 @@ TTerminalQueue::~TTerminalQueue()
     TTerminalItem * TerminalItem;
     while (FTerminals->GetCount() > 0)
     {
-      TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->Items[0]);
+      TerminalItem = reinterpret_cast<TTerminalItem *>(FTerminals->Items[0]);
       FTerminals->Delete(0);
       TerminalItem->Terminate();
       TerminalItem->WaitFor();
