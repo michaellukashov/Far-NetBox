@@ -901,6 +901,7 @@ bool TTerminalQueue::ItemDelete(TQueueItem * Item)
         {
           FItems->Delete(Index);
           FForcedItems->Remove(Item);
+          delete Item;
           UpdateList = true;
         }
         else
