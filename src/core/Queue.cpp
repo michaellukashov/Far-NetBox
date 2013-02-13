@@ -1913,7 +1913,7 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
   {
     FFilesToCopy->AddObject(FilesToCopy->Strings[Index],
       ((FilesToCopy->Objects[Index] == NULL) || (Side == osLocal)) ? NULL :
-        dynamic_cast<TRemoteFile*>(FilesToCopy->Objects[Index])->Duplicate());
+        dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index])->Duplicate());
   }
 
   FTargetDir = TargetDir;
