@@ -578,7 +578,7 @@ void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
       }
 
       // Index may be >= FTransfersLimit also when the transfer limit was
-      // recently decresed, then
+      // recently decreased, then
       // FTemporaryTerminals < FTerminals->Count - FTransfersLimit
       if ((FTransfersLimit >= 0) && (Index >= FTransfersLimit) && (FTemporaryTerminals > 0))
       {
