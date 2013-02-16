@@ -2438,7 +2438,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
         if (Data->GetName().SubString(1, Folder.Length()) == Folder)
         {
           ProcessSession(Data, Param);
-          if (StoredSessions->GetSession(Index2) != Data)
+          if ((Index2 < StoredSessions->GetCount()) && StoredSessions->GetSession(Index2) != Data)
           {
             Index2--;
           }
