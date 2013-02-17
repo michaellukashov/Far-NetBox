@@ -4234,7 +4234,7 @@ UnicodeString TWinSCPFileSystem::GetFileNameHash(const UnicodeString & FileName)
   RawByteString Result;
   Result.SetLength(16);
   md5checksum(
-    reinterpret_cast<const char *>(FileName.c_str()), (int)(FileName.Length() * sizeof(wchar_t)),
+    reinterpret_cast<const char *>(FileName.c_str()), static_cast<int>(FileName.Length() * sizeof(wchar_t)),
     reinterpret_cast<unsigned char *>(const_cast<char *>(Result.c_str())));
   return BytesToHex(Result);
 }
