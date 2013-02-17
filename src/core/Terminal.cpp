@@ -4028,7 +4028,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & Command,
       FCommandSession->FFileSystem->ReadCurrentDirectory();
 
       TRACE("3b");
-      // synchronize pwd (by purpose we lose transaction optimisation here)
+      // synchronize pwd (by purpose we lose transaction optimization here)
       ChangeDirectory(FCommandSession->GetCurrentDirectory());
     }
     TRACE("4");

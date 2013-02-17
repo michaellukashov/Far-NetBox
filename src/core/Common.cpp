@@ -1736,7 +1736,7 @@ int CompareFileTime(TDateTime T1, TDateTime T2)
   if (T1 == T2)
   {
     CTRACE(TRACE_TIMESTAMP, "1");
-    // just optimisation
+    // just optimization
     Result = 0;
   }
   else if ((T1 < T2) && (T2 - T1 >= TwoSeconds))
