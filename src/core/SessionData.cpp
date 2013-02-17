@@ -3264,11 +3264,10 @@ TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString & Sessio
 //---------------------------------------------------------------------
 void TStoredSessionList::Load(const UnicodeString & AKey, bool UseDefaults)
 {
-  TRegistryStorage * Storage = new TRegistryStorage(AKey);
+  std::auto_ptr<TRegistryStorage> Storage(new TRegistryStorage(AKey));
+  if (Storage->OpenRootKey(false))
   {
-    std::auto_ptr<TRegistryStorage> StoragePtr;
-    StoragePtr.reset(Storage);
-    if (Storage->OpenRootKey(false)) { Load(Storage, false, UseDefaults); }
+    Load(Storage.get(), false, UseDefaults);
   }
 }
 //---------------------------------------------------------------------
