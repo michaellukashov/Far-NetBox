@@ -4987,9 +4987,16 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 
     TRY_FINALLY (
     {
+      UnicodeString TargetDirectory = FullTargetDir;
+      UnicodeString FileNamePath = ::ExtractFilePath(File->GetFileName());
+      if (!FileNamePath.IsEmpty())
+      {
+        TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
+        ::ForceDirectories(TargetDirectory);
+      }
       try
       {
-        SFTPSinkRobust(LocalCanonify(FileName), File, FullTargetDir, CopyParam,
+        SFTPSinkRobust(LocalCanonify(FileName), File, TargetDirectory, CopyParam,
           Params, OperationProgress, tfFirstLevel);
         Success = true;
       }
