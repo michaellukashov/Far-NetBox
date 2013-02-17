@@ -145,8 +145,9 @@ bool TryStrToInt(const std::wstring & StrValue, __int64 & Value)
   bool Result = !StrValue.empty();
   if (Result)
   {
+    errno = 0;
     Value = _wtoi64(StrValue.c_str());
-    Result = (errno == 0);
+    Result = (errno != EINVAL) && (errno != ERANGE);
   }
   return Result;
 }
@@ -156,8 +157,9 @@ bool TryStrToInt(const std::wstring & StrValue, int & Value)
   bool Result = !StrValue.empty();
   if (Result)
   {
+    errno = 0;
     Value = _wtoi(StrValue.c_str());
-    Result = (errno == 0);
+    Result = (errno != EINVAL) && (errno != ERANGE);
   }
   return Result;
 }
