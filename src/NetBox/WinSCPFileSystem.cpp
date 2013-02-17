@@ -4058,20 +4058,20 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   UnicodeString NewFileName = GetFileNameHash(FullFileName) + UnixExtractFileExt(FileName);
   FileDuplicate->SetFileName(NewFileName);
 
-  TMultipleEdits::iterator i = FMultipleEdits.begin();
-  while (i != FMultipleEdits.end())
+  TMultipleEdits::iterator it = FMultipleEdits.begin();
+  while (it != FMultipleEdits.end())
   {
-    if (UnixComparePaths(Directory, i->second.Directory) &&
-        (NewFileName == i->second.FileName))
+    if (UnixComparePaths(Directory, it->second.Directory) &&
+        (NewFileName == it->second.FileName))
     {
       break;
     }
-    ++i;
+    ++it;
   }
 
   FLastMultipleEditReadOnly = false;
   bool Edit = true;
-  if (i != FMultipleEdits.end())
+  if (it != FMultipleEdits.end())
   {
     TMessageParams Params;
     TQueryButtonAlias Aliases[3];
@@ -4123,6 +4123,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     {
       FNoProgressFinish = false;
       delete FileList;
+      delete FileDuplicate;
     }
     );
 
@@ -4140,7 +4141,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   }
   else
   {
-    assert(i != FMultipleEdits.end());
+    assert(it != FMultipleEdits.end());
 
     intptr_t WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT);
     int Pos = 0;
@@ -4149,12 +4150,12 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
       WindowInfo Window = {0};
       Window.Pos = Pos;
       UnicodeString EditedFileName(1024, 0);
-      Window.Name = (wchar_t *)EditedFileName.c_str();
+      Window.Name = const_cast<wchar_t *>(EditedFileName.c_str());
       Window.NameSize = EditedFileName.GetLength();
       if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, &Window) != 0)
       {
         if ((Window.Type == WTYPE_EDITOR) &&
-            Window.Name && AnsiSameText(Window.Name, i->second.LocalFileName))
+            Window.Name && AnsiSameText(Window.Name, it->second.LocalFileName))
         {
           if (FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW, reinterpret_cast<void *>(Pos)) != 0)
             FarPlugin->FarAdvControl(ACTL_COMMIT, 0);
@@ -4166,7 +4167,6 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
 
     assert(Pos < WindowCount);
   }
-  delete FileDuplicate;
 }
 //---------------------------------------------------------------------------------
 bool TWinSCPFileSystem::IsEditHistoryEmpty()
