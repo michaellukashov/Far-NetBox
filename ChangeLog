@@ -1,5 +1,6 @@
 NetBox 2.1.26 ??.02.2013
 --------------------
+  * Bugfix: Wrong protocol type when old .netbox session file is imported
   * Bugfix: Issue #34: Problem with editing 2 files with same name over scp
     (https://github.com/michaellukashov/Far-NetBox/issues/34)
   * Fix minor bugs and memory leaks
