@@ -3887,7 +3887,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
 
           if (!FLastMultipleEditFile.IsEmpty())
           {
-            bool IsLastMultipleEditFile = AnsiSameText(FLastMultipleEditFile, Info->GetFileName());
+            bool IsLastMultipleEditFile = AnsiSameText(::FromUnixPath(FLastMultipleEditFile), ::FromUnixPath(Info->GetFileName()));
             assert(IsLastMultipleEditFile);
             if (IsLastMultipleEditFile)
             {
