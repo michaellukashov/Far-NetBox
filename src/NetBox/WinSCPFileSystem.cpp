@@ -3853,11 +3853,11 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
         {
           std::auto_ptr<TFarEditorInfo> InfoPtr;
           InfoPtr.reset(Info);
-          TMultipleEdits::iterator I = FMultipleEdits.find((int)Info->GetEditorID());
-          if (I != FMultipleEdits.end())
+          TMultipleEdits::iterator it = FMultipleEdits.find((int)Info->GetEditorID());
+          if (it != FMultipleEdits.end())
           {
-            UnicodeString FullFileName = ::UnixIncludeTrailingBackslash(I->second.Directory) +
-              I->second.FileTitle;
+            UnicodeString FullFileName = ::UnixIncludeTrailingBackslash(it->second.Directory) +
+              it->second.FileTitle;
             WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
               static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
           }
