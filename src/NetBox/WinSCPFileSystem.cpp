@@ -4055,7 +4055,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   UnicodeString FullFileName = ::UnixIncludeTrailingBackslash(Directory) + FileName;
 
   TRemoteFile * FileDuplicate = File->Duplicate();
-  UnicodeString NewFileName = GetFileNameHash(FullFileName) + ::UnixExtractFileExt(FileName);
+  UnicodeString NewFileName = FullFileName; // ::UnixIncludeTrailingBackslash(GetFileNameHash(FullFileName)) + FileName;
   FileDuplicate->SetFileName(NewFileName);
 
   TMultipleEdits::iterator it = FMultipleEdits.begin();
