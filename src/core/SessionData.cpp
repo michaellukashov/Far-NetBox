@@ -390,7 +390,7 @@ bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly)
 //---------------------------------------------------------------------
 void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword)
 {
-  SetSessionVersion(::StrToVersionNumber(Storage->ReadString(L"Version", ::VersionNumberToStr(GetDefaultVersion()))));
+  SetSessionVersion(::StrToVersionNumber(Storage->ReadString(L"Version", L"")));
   SetPortNumber(Storage->ReadInteger(L"PortNumber", GetPortNumber()));
   SetUserName(Storage->ReadString(L"UserName", GetUserName()));
   // must be loaded after UserName, because HostName may be in format user@host
