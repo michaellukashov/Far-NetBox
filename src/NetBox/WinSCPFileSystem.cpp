@@ -2743,7 +2743,7 @@ intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int 
   if (Connected())
   {
     FFileList = CreateFileList(PanelItems, osLocal);
-    //TRY_FINALLY (
+    TRY_FINALLY (
     {
       FPanelItems = PanelItems;
 
@@ -2785,12 +2785,12 @@ intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int 
         FTerminal->SetCurrentDirectory(CurrentDirectory);
       }
     }
-    //,
+    ,
     {
       FPanelItems = NULL;
       SAFE_DESTROY(FFileList);
     }
-    //);
+    );
   }
   else if (SessionList())
   {
@@ -4134,7 +4134,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     if (FarPlugin->Editor(FLastMultipleEditFile, FullFileName,
            EF_NONMODAL | EF_IMMEDIATERETURN | EF_DISABLEHISTORY))
     {
-      assert(FLastMultipleEditFile == L"");
+      // assert(FLastMultipleEditFile == L"");
     }
     FLastMultipleEditFile = L"";
     FLastMultipleEditFileTitle = L"";
