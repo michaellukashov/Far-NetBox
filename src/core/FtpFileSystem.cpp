@@ -1083,9 +1083,17 @@ void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 
     TRY_FINALLY (
     {
+      UnicodeString AbsoluteFilePath = AbsolutePath(FileName, false);
+      UnicodeString TargetDirectory = FullTargetDir;
+      UnicodeString FileNamePath = ::ExtractFilePath(File->GetFileName());
+      if (!FileNamePath.IsEmpty())
+      {
+        TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
+        ::ForceDirectories(TargetDirectory);
+      }
       try
       {
-        SinkRobust(AbsolutePath(FileName, false), File, FullTargetDir, CopyParam, Params,
+        SinkRobust(AbsoluteFilePath, File, TargetDirectory, CopyParam, Params,
           OperationProgress, tfFirstLevel);
         Success = true;
         FLastDataSent = Now();

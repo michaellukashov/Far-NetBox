@@ -2126,14 +2126,26 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 
   TRY_FINALLY (
   {
-    for (int IFile = 0; (IFile < FilesToCopy->GetCount()) &&
-      !OperationProgress->Cancel; IFile++)
+    for (intptr_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
+      !OperationProgress->Cancel; ++IFile)
     {
       TRACE("2");
       UnicodeString FileName = FilesToCopy->Strings[IFile];
       TRemoteFile * File = static_cast<TRemoteFile *>(FilesToCopy->Objects[IFile]);
       assert(File);
 
+      // Filename is used for error messaging and excluding files only
+      // Send in full path to allow path-based excluding
+      // operation succeded (no exception), so it's ok that
+      // remote side closed SCP, but we continue with next file
+      UnicodeString FullFileName = ::UnixExcludeTrailingBackslash(File->GetFullFileName());
+      UnicodeString TargetDirectory = TargetDir;
+      UnicodeString FileNamePath = ::ExtractFilePath(File->GetFileName());
+      if (!FileNamePath.IsEmpty())
+      {
+        TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
+        ::ForceDirectories(TargetDirectory);
+      }
       try
       {
         TRACE("3");
@@ -2142,13 +2154,8 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
           Options.c_str(), DelimitStr(FileName).c_str()));
         SkipFirstLine();
 
-        // Filename is used for error messaging and excluding files only
-        // Send in full path to allow path-based excluding
-        UnicodeString FullFileName = UnixExcludeTrailingBackslash(File->GetFullFileName());
-        SCPSink(FullFileName, File, TargetDir, UnixExtractFilePath(FullFileName),
+        SCPSink(FullFileName, File, TargetDirectory, UnixExtractFilePath(FullFileName),
           CopyParam, Success, OperationProgress, Params, 0);
-        // operation succeded (no exception), so it's ok that
-        // remote side closed SCP, but we continue with next file
         if (OperationProgress->Cancel == csRemoteAbort)
         {
           OperationProgress->Cancel = csContinue;
