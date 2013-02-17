@@ -478,7 +478,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
       for (intptr_t Index = 0; Index < FTerminal->GetFiles()->GetCount(); ++Index)
       {
         TRemoteFile * File = FTerminal->GetFiles()->GetFiles(Index);
-        if (File->GetIsSymLink())
+        /*if (File->GetIsSymLink())
         {
           // Check what kind of symlink this is
           const UnicodeString LinkFileName = File->GetLinkTo();
@@ -489,7 +489,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
             File->SetType(FILETYPE_DIRECTORY);
           }
           delete LinkFile;
-        }
+        }*/
         PanelItems->Add(static_cast<TObject *>(new TRemoteFilePanelItem(File)));
       }
     }
