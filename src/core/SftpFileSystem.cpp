@@ -585,7 +585,7 @@ public:
 
   inline UnicodeString GetString(bool Utf)
   {
-	(void)Utf;
+    (void)Utf;
     return GetStringW();
   }
 

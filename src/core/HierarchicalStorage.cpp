@@ -1047,7 +1047,7 @@ TIniFileStorage::TIniFileStorage(const UnicodeString & AStorage):
   CALLSTACK;
   TRACEFMT("1 [%s]", GetStorage().c_str());
   FOriginal = new TStringList();
-  dynamic_cast<TMemIniFile *>(FIniFile)->GetStrings(FOriginal);
+  dynamic_cast<TMemIniFile *>(FIniFile)->GetString(FOriginal);
 //!CLEANBEGIN
   for (intptr_t Index = 0; Index < FOriginal->GetCount(); ++Index)
   {
@@ -1067,7 +1067,7 @@ void TIniFileStorage::Flush()
     TRY_FINALLY (
     {
       TRACE("0");
-      dynamic_cast<TMemIniFile *>(FIniFile)->GetStrings(Strings);
+      dynamic_cast<TMemIniFile *>(FIniFile)->GetString(Strings);
       TRACE("1");
       if (!Strings->Equals(FOriginal))
       {
