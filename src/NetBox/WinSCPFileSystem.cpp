@@ -4127,7 +4127,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     }
     );
 
-    FLastMultipleEditFile = IncludeTrailingBackslash(TempDir) + NewFileName;
+    FLastMultipleEditFile = ::IncludeTrailingBackslash(TempDir) + NewFileName;
     FLastMultipleEditFileTitle = FileName;
     FLastMultipleEditDirectory = Directory;
 

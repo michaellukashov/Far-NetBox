@@ -13301,7 +13301,7 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
   Params &= ~cpAppend;
   UnicodeString FileName, FileNameOnly;
   UnicodeString TargetDir = AbsolutePath(ATargetDir, false);
-  UnicodeString FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
+  UnicodeString FullTargetDir = ::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
   while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
@@ -13714,7 +13714,7 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
   TOnceDoneOperation & OnceDoneOperation)
 {
   Params &= ~cpAppend;
-  UnicodeString FullTargetDir = IncludeTrailingBackslash(TargetDir);
+  UnicodeString FullTargetDir = ::IncludeTrailingBackslash(TargetDir);
 
   intptr_t Index = 0;
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
@@ -13764,7 +13764,7 @@ void TWebDAVFileSystem::SinkRobust(const UnicodeString & FileName,
     try
     {
       Sink(FileName, File, TargetDir, CopyParam, Params, OperationProgress,
-           Flags, Action);
+        Flags, Action);
     }
     catch (Exception & E)
     {
@@ -13824,7 +13824,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
   if (File->GetIsDirectory())
   {
     bool CanProceed = true;
-    if (DirectoryExists(DestFullName))
+    if (::DirectoryExists(DestFullName))
     {
       unsigned int Answer = 0;
       UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly.c_str());
@@ -14001,7 +14001,7 @@ void TWebDAVFileSystem::SinkFile(const UnicodeString & FileName,
   try
   {
     SinkRobust(FileName, File, Params->TargetDir, Params->CopyParam,
-               Params->Params, Params->OperationProgress, Params->Flags);
+      Params->Params, Params->OperationProgress, Params->Flags);
   }
   catch (EScpSkipFile & E)
   {
