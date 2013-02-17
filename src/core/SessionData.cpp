@@ -390,7 +390,7 @@ bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly)
 //---------------------------------------------------------------------
 void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword)
 {
-  SetSessionVersion(::StrToVersionNumber(Storage->ReadString(L"Version", ::VersionNumberToStr(GetDefaultVersion()))));
+  SetSessionVersion(::StrToVersionNumber(Storage->ReadString(L"Version", L"")));
   SetPortNumber(Storage->ReadInteger(L"PortNumber", GetPortNumber()));
   SetUserName(Storage->ReadString(L"UserName", GetUserName()));
   // must be loaded after UserName, because HostName may be in format user@host
@@ -3264,11 +3264,10 @@ TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString & Sessio
 //---------------------------------------------------------------------
 void TStoredSessionList::Load(const UnicodeString & AKey, bool UseDefaults)
 {
-  TRegistryStorage * Storage = new TRegistryStorage(AKey);
+  std::auto_ptr<TRegistryStorage> Storage(new TRegistryStorage(AKey));
+  if (Storage->OpenRootKey(false))
   {
-    std::auto_ptr<TRegistryStorage> StoragePtr;
-    StoragePtr.reset(Storage);
-    if (Storage->OpenRootKey(false)) { Load(Storage, false, UseDefaults); }
+    Load(Storage.get(), false, UseDefaults);
   }
 }
 //---------------------------------------------------------------------
