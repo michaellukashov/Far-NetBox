@@ -3850,17 +3850,15 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
       TFarEditorInfo * Info = WinSCPPlugin()->EditorInfo();
       if (Info != NULL)
       {
+        std::auto_ptr<TFarEditorInfo> InfoPtr;
+        InfoPtr.reset(Info);
+        TMultipleEdits::iterator it = FMultipleEdits.find((int)Info->GetEditorID());
+        if (it != FMultipleEdits.end())
         {
-          std::auto_ptr<TFarEditorInfo> InfoPtr;
-          InfoPtr.reset(Info);
-          TMultipleEdits::iterator it = FMultipleEdits.find((int)Info->GetEditorID());
-          if (it != FMultipleEdits.end())
-          {
-            UnicodeString FullFileName = ::UnixIncludeTrailingBackslash(it->second.Directory) +
-              it->second.FileTitle;
-            WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
-              static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
-          }
+          UnicodeString FullFileName = ::UnixIncludeTrailingBackslash(it->second.Directory) +
+            it->second.FileTitle;
+          WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
+            static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
         }
       }
     }
