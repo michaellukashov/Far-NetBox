@@ -13725,9 +13725,17 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
     FTerminal->SetExceptionOnFail(true);
     TRY_FINALLY (
     {
+      UnicodeString AbsoluteFilePath = AbsolutePath(FileName, false);
+      UnicodeString TargetDirectory = FullTargetDir;
+      UnicodeString FileNamePath = ::ExtractFilePath(File->GetFileName());
+      if (!FileNamePath.IsEmpty())
+      {
+        TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
+        ::ForceDirectories(TargetDirectory);
+      }
       try
       {
-        SinkRobust(AbsolutePath(FileName, false), File, FullTargetDir, CopyParam, Params,
+        SinkRobust(AbsoluteFilePath, File, TargetDirectory, CopyParam, Params,
           OperationProgress, tfFirstLevel);
         Success = true;
       }
@@ -13861,7 +13869,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
         );
 
         TSinkFileParams SinkFileParams;
-        SinkFileParams.TargetDir = IncludeTrailingBackslash(DestFullName);
+        SinkFileParams.TargetDir = ::IncludeTrailingBackslash(DestFullName);
         SinkFileParams.CopyParam = CopyParam;
         SinkFileParams.Params = Params;
         SinkFileParams.OperationProgress = OperationProgress;
@@ -13937,7 +13945,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
 
       TFileTransferData UserData;
 
-      UnicodeString FilePath = UnixExtractFilePath(FileName);
+      UnicodeString FilePath = ::UnixExtractFilePath(FileName);
       if (FilePath.IsEmpty())
       {
         FilePath = L"/";
