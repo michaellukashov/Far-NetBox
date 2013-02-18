@@ -2234,7 +2234,6 @@ path_component_count(
 {
   if (!path) return 0;
   apr_size_t count = 0;
-  assert(is_canonical(path, strlen(path)));
 
   while (*path)
   {
@@ -5681,17 +5680,6 @@ canonicalize(
     src = next + slash_len;
   }
 
-  // Remove the trailing slash if there was at least one
-  // canonical segment and the last segment ends with a slash.
-  // But keep in mind that, for URLs, the scheme counts as a
-  // canonical segment -- so if path is ONLY a scheme (such
-  // as "https://") we should NOT remove the trailing slash.
-  if (((canon_segments > 0) && (*(dst - 1) == '/')) &&
-      !(url && (path[schemelen] == '\0')))
-  {
-    dst --;
-  }
-
   *dst = '\0';
 
 #ifdef WEBDAV_USE_DOS_PATHS
@@ -6235,9 +6223,6 @@ uri_is_canonical(
 
     if (*ptr == '/' && *(ptr+1) == '/')
       return FALSE;  //  //
-
-    if (!*ptr && *(ptr - 1) == '/' && ptr - 1 != uri)
-      return FALSE;  // foo/
 
     if (!*ptr)
       break;
@@ -12175,20 +12160,12 @@ neon_open(
     ne_set_useragent(sess, useragent.c_str());
   }
 
-  // clean up trailing slashes from the URL
-  apr_size_t len = strlen(uri->path);
-  if (len > 1 && (uri->path)[len - 1] == '/')
-  {
-    (uri->path)[len - 1] = '\0';
-  }
-
   // Create and fill a session_baton.
   neon_session_t * ras = static_cast<neon_session_t *>(apr_pcalloc(pool, sizeof(*ras)));
   ras->pool = pool;
   {
     // canonicalize url
-    const char * remote_url = NULL;
-    remote_url = urlpath_canonicalize(session_URL, pool);
+    const char * remote_url = urlpath_canonicalize(session_URL, pool);
     ras->url = stringbuf_create(remote_url, pool);
   }
   // copies uri pointer members, they get free'd in __close.
@@ -12706,6 +12683,7 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
   FFileTransferCancelled(false),
   FFileTransferResumed(0),
   FFileTransferPreserveTime(false),
+  FHasTrailingSlash(false),
   FFileTransferCPSLimit(0),
   FLastReadDirectoryProgress(0),
   FCurrentOperationProgress(NULL),
@@ -12739,6 +12717,7 @@ TWebDAVFileSystem::~TWebDAVFileSystem()
 void TWebDAVFileSystem::Open()
 {
   FCurrentDirectory = L"";
+  FHasTrailingSlash = false;
 
   TSessionData * Data = FTerminal->GetSessionData();
 
@@ -12952,6 +12931,7 @@ void TWebDAVFileSystem::DoChangeDirectory(const UnicodeString & Directory)
 void TWebDAVFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
 {
   UnicodeString Directory = ADirectory;
+  bool HasTrailingSlash = (Directory.Length() > 0) && (Directory[Directory.Length()] == L'/');
   try
   {
     // For changing directory, we do not make paths absolute, instead we
@@ -12968,6 +12948,8 @@ void TWebDAVFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
     if (FTerminal->GetActive())
     {
       Directory = AbsolutePath(Directory, false);
+      if (HasTrailingSlash)
+        Directory = ::UnixIncludeTrailingBackslash(Directory);
     }
     else
     {
@@ -12976,6 +12958,8 @@ void TWebDAVFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
   }
 
   FCurrentDirectory = AbsolutePath(Directory, false);
+  if (HasTrailingSlash)
+    FCurrentDirectory = ::UnixIncludeTrailingBackslash(FCurrentDirectory);
 
   // make next ReadCurrentDirectory retrieve actual server-side current directory
   FCachedDirectoryChange = L"";
@@ -13001,6 +12985,8 @@ void TWebDAVFileSystem::DoReadDirectory(TRemoteFileList * FileList)
   // 1) List() lists again the last listed directory, not the current working directory
   // 2) we handle this way the cached directory change
   UnicodeString Directory = AbsolutePath(FileList->GetDirectory(), false);
+  if (FHasTrailingSlash)
+    Directory = ::UnixIncludeTrailingBackslash(Directory);
   WebDAVGetList(Directory);
 }
 //------------------------------------------------------------------------------
@@ -14510,6 +14496,7 @@ webdav::error_t TWebDAVFileSystem::OpenURL(
   if (WEBDAV_NO_ERROR == webdav::parse_ne_uri(&uri, url, pool))
   {
     FCurrentDirectory = uri->path;
+    FHasTrailingSlash = (FCurrentDirectory.Length() > 0) && (FCurrentDirectory[FCurrentDirectory.Length()] == L'/');
   }
   FSession = session_p;
   return WEBDAV_NO_ERROR;
