@@ -1221,7 +1221,7 @@ public:
   explicit TPasswordDialog(TCustomFarPlugin * AFarPlugin,
     const UnicodeString & SessionName, TPromptKind Kind, const UnicodeString & Name,
     const UnicodeString & Instructions, TStrings * Prompts, bool StoredCredentialsTried);
-
+  virtual ~TPasswordDialog();
   bool Execute(TStrings * Results);
 
 private:
@@ -1242,7 +1242,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   const UnicodeString & Instructions, TStrings * Prompts, bool StoredCredentialsTried) :
   TFarDialog(AFarPlugin),
   FSessionData(NULL),
-  FEdits(NULL),
+  FEdits(new TList()),
   SavePasswordCheck(NULL)
 {
   TFarButton * Button;
@@ -1298,6 +1298,11 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetCenterGroup(true);
 }
 //------------------------------------------------------------------------------
+TPasswordDialog::~TPasswordDialog()
+{
+  delete FEdits;
+}
+//------------------------------------------------------------------------------
 void TPasswordDialog::GenerateLabel(const UnicodeString & Caption,
   bool & Truncated)
 {
@@ -1330,8 +1335,6 @@ TFarEdit * TPasswordDialog::GenerateEdit(bool Echo)
 void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
   const UnicodeString & Instructions, TStrings * Prompts, bool & Truncated)
 {
-  FEdits = new TList;
-
   TPoint S = TPoint(40, ShowSavePassword ? 1 : 0);
 
   int x = static_cast<int>(Instructions.Length());
