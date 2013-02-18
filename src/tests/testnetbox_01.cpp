@@ -721,6 +721,7 @@ BOOST_FIXTURE_TEST_CASE(test28, base_fixture_t)
   }
 }
 //------------------------------------------------------------------------------
+#if 0
 class Foo
 {
 public:
@@ -748,6 +749,7 @@ BOOST_FIXTURE_TEST_CASE(test29, base_fixture_t)
   delete f;
   delete b;
 }
+#endif
 //------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

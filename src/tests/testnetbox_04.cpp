@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 // testnetbox_04.cpp
-// testnetbox_04 --run_test=testnetbox_04/test1 --log_level=all 2>&1 | tee res.txt
+// testnetbox_04 --run_test=netbox/test1 --log_level=all 2>&1 | tee res.txt
 //------------------------------------------------------------------------------
 
 #include <Classes.hpp>
@@ -56,7 +56,7 @@ protected:
 
 //------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE(testnetbox_04)
+BOOST_AUTO_TEST_SUITE(netbox)
 
 BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
 {
