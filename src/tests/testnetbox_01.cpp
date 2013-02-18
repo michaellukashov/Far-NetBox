@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 // testnetbox_01.cpp
 // Тесты для NetBox
-// testnetbox_01 --run_test=testnetbox_01/test1 --log_level=all 2>&1 | tee res.txt
+// testnetbox_01 --run_test=netbox/test1 --log_level=all 2>&1 | tee res.txt
 //------------------------------------------------------------------------------
 
 // #include "leak_detector.h"
@@ -17,7 +17,6 @@
 #include "boostdefines.hpp"
 #define BOOST_TEST_MODULE "testnetbox_01"
 #define BOOST_TEST_MAIN
-// #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 // #include <boost/type_traits/is_base_of.hpp>
 
@@ -68,7 +67,7 @@ protected:
 
 //------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE(testnetbox_01)
+BOOST_AUTO_TEST_SUITE(netbox)
 
 BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
 {
