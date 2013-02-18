@@ -11233,7 +11233,6 @@ client_list2(
   // always need it.
   dirent_fields |= WEBDAV_DIRENT_KIND;
 
-  // Get an RA plugin for this filesystem object.
   WEBDAV_ERR(init_session_from_path(session,
     &url, path_or_url,
     pool));
@@ -12417,8 +12416,8 @@ neon_get_dir(
     apr_size_t final_url_n_components = path_component_count(final_url);
 
     // Now we have a hash that maps a bunch of url children to resource
-    // objects.  Each resource object contains the properties of the
-    // child.   Parse these resources into dirent_t structs.
+    // objects. Each resource object contains the properties of the
+    // child. Parse these resources into dirent_t structs.
     *dirents = apr_hash_make(pool);
     for (apr_hash_index_t * hi = apr_hash_first(pool, resources); hi;
          hi = apr_hash_next(hi))
@@ -12956,7 +12955,7 @@ void TWebDAVFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
   try
   {
     // For changing directory, we do not make paths absolute, instead we
-    // delegate this to the server, hence we sychronize current working
+    // delegate this to the server, hence we synchronize current working
     // directory with the server and only then we ask for the change with
     // relative path.
     // But if synchronization fails, typically because current working directory
