@@ -9076,12 +9076,12 @@ session_open(
   const char * corrected_url = NULL;
   // Ask the library to open the session.
   WEBDAV_ERR_W(vtable->open_session(
-                session,
-                &corrected_url,
-                session_URL,
-                callbacks, callback_baton, sesspool),
-    apr_psprintf(pool, "Unable to connect to a WebDAV resource at URL '%s'",
-      session_URL));
+    session,
+    &corrected_url,
+    session_URL,
+    callbacks, callback_baton, sesspool),
+      apr_psprintf(pool, "Unable to connect to a WebDAV resource at URL '%s'",
+        session_URL));
 
   if (corrected_url_p && corrected_url)
   {
@@ -11121,11 +11121,10 @@ neon_get_props(
   // Are we asking for specific propert(y/ies), or just all of them?
   if (which_props)
   {
-    int n;
     apr_pool_t * iterpool = webdav_pool_create(pool);
 
     stringbuf_appendcstr(body, "<prop>" DEBUG_CR);
-    for (n = 0; which_props[n].name != NULL; n++)
+    for (int n = 0; which_props[n].name != NULL; n++)
     {
       webdav_pool_clear(iterpool);
       stringbuf_appendcstr(body, apr_pstrcat(iterpool, "<", which_props[n].name,
@@ -11242,9 +11241,9 @@ client_list2(
   WEBDAV_ERR(get_webdav_resource_root2(session, &webdav_root, pool));
 
   WEBDAV_ERR(client_path_relative_to_root(&fs_path,
-             url,
-             webdav_root, TRUE, session,
-             pool, pool));
+    url,
+    webdav_root, TRUE, session,
+    pool, pool));
 
   err = stat(session, "", &dirent, pool);
 
@@ -11262,11 +11261,12 @@ client_list2(
   if (dirent->kind == node_dir && (depth == depth_files ||
       depth == depth_immediates ||
       depth == depth_infinity))
+  {
     WEBDAV_ERR(get_dir_contents(dirent_fields, "",
       session,
       fs_path, depth,
       list_func, baton, pool));
-
+  }
   return WEBDAV_NO_ERROR;
 }
 
