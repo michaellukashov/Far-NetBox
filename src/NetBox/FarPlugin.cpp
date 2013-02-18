@@ -1601,9 +1601,9 @@ bool TCustomFarPlugin::Editor(const UnicodeString & FileName,
 {
   TFarEnvGuard Guard;
   int Result = FStartupInfo.Editor(
-                 FileName.c_str(),
-                 Title.c_str(), 0, 0, -1, -1, Flags, -1, -1,
-                 CP_AUTODETECT);
+    FileName.c_str(),
+    Title.c_str(), 0, 0, -1, -1, Flags, -1, -1,
+    CP_AUTODETECT);
   return (Result == EEC_MODIFIED) || (Result == EEC_NOT_MODIFIED);
 }
 //---------------------------------------------------------------------------

@@ -4128,7 +4128,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     FLastMultipleEditDirectory = Directory;
 
     if (FarPlugin->Editor(FLastMultipleEditFile, FullFileName,
-           EF_NONMODAL | EF_IMMEDIATERETURN | EF_DISABLEHISTORY))
+          EF_NONMODAL | EF_IMMEDIATERETURN | EF_DISABLEHISTORY))
     {
       // assert(FLastMultipleEditFile == L"");
     }
