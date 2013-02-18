@@ -179,9 +179,9 @@ public:
   bool operator !=(const UnicodeString & Str) const { return Data != Str.Data; }
 
   friend bool operator ==(const UnicodeString & lhs, const wchar_t * rhs);
-  friend bool operator ==(const wchar_t * rhs, const UnicodeString & lhs);
+  friend bool operator ==(const wchar_t * lhs, const UnicodeString & rhs);
   friend bool operator !=(const UnicodeString & lhs, const wchar_t * rhs);
-  friend bool operator !=(const wchar_t * rhs, const UnicodeString & lhs);
+  friend bool operator !=(const wchar_t * lhs, const UnicodeString & rhs);
 
   wchar_t operator [](intptr_t Idx) const
   {
@@ -279,10 +279,22 @@ public:
   AnsiString & operator +=(const char Ch);
   AnsiString & operator +=(const char * rhs);
 
+  // bool operator ==(const AnsiString & Str) const { return Data == Str.Data; }
+  // bool operator !=(const AnsiString & Str) const { return Data != Str.Data; }
+
   friend bool operator ==(const AnsiString & lhs, const AnsiString & rhs)
-  { return lhs.Data == rhs.Data; }
+  { return strcmp(lhs.Data.c_str(), rhs.Data.c_str()) == 0; }
   friend bool operator !=(const AnsiString & lhs, const AnsiString & rhs)
-  { return lhs.Data != rhs.Data; }
+  { return strcmp(lhs.Data.c_str(), rhs.Data.c_str()) != 0; }
+
+  friend bool operator ==(const AnsiString & lhs, const char * rhs)
+  { return strcmp(lhs.Data.c_str(), rhs ? rhs : "") == 0; }
+  friend bool operator ==(const char * lhs, const AnsiString & rhs)
+  { return strcmp(lhs ? lhs : "", rhs.Data.c_str()) == 0; }
+  friend bool operator !=(const AnsiString & lhs, const char * rhs)
+  { return strcmp(lhs.Data.c_str(), rhs ? rhs : "") != 0; }
+  friend bool operator !=(const char * lhs, const AnsiString & rhs)
+  { return strcmp(lhs ? lhs : "", rhs.Data.c_str()) != 0; }
 
 private:
   void Init(const wchar_t * Str, intptr_t Length);
