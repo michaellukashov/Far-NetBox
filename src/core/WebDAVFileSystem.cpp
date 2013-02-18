@@ -5841,8 +5841,8 @@ fspath_canonicalize(
 
 // Examine PATH as a potential URI, and return a substring of PATH
 // that immediately follows the (scheme):// portion of the URI, or
-// NULL if PATH doesn't appear to be a valid URI.  The returned value
-// is not alloced -- it shares memory with PATH.
+// NULL if PATH doesn't appear to be a valid URI. The returned value
+// is not allocated -- it shares memory with PATH.
 static const char *
 skip_uri_scheme(
   const char * path)
