@@ -677,32 +677,46 @@ BOOST_FIXTURE_TEST_CASE(test27, base_fixture_t)
 //------------------------------------------------------------------------------
 BOOST_FIXTURE_TEST_CASE(test28, base_fixture_t)
 {
-  UnicodeString Buf;
-  UnicodeString DestFileName(L"FileName");
-  TFileBuffer AsciiBuf;
   DEBUG_PRINTF(L"1");
-  AsciiBuf.SetSize(0xFFFFFFFFFF);
-  DEBUG_PRINTF(L"2");
-  Buf.Clear();
-  Buf.SetLength(MAX_PATH * 2);
-  DEBUG_PRINTF(L"AsciiBuf.GetSize = %lld", AsciiBuf.GetSize());
-  swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %lld %s",
-    L"",
-    AsciiBuf.GetSize(),
-    DestFileName.c_str());
-  DEBUG_PRINTF(L"3");
-  BOOST_TEST_MESSAGE("Buf1 = " << AnsiString(Buf).c_str());
-  DEBUG_PRINTF(L"Buf = %s", Buf.c_str());
-  BOOST_CHECK(Buf.GetLength() > 0);
-  if (0)
+  if (1)
   {
-    // causes error
-    swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %ld %s",
+    UnicodeString Buf;
+    UnicodeString DestFileName(L"FileName");
+    TFileBuffer AsciiBuf;
+    AsciiBuf.SetSize(0x1000);
+    DEBUG_PRINTF(L"2");
+    Buf.Clear();
+    Buf.SetLength(MAX_PATH * 2);
+    DEBUG_PRINTF(L"AsciiBuf.GetSize = %lld", AsciiBuf.GetSize());
+    swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %lld %s",
+      L"",
+      AsciiBuf.GetSize(),
+      DestFileName.c_str());
+    DEBUG_PRINTF(L"3");
+    BOOST_TEST_MESSAGE("Buf1 = " << AnsiString(Buf).c_str());
+    DEBUG_PRINTF(L"Buf = %s", Buf.c_str());
+    BOOST_CHECK(Buf.GetLength() > 0);
+  }
+  if (1)
+  {
+    UnicodeString Buf;
+    Buf.SetLength(20);
+    UnicodeString DestFileName(L"FileName");
+    TFileBuffer AsciiBuf;
+    // swprintf_s causes error
+    swprintf(const_cast<wchar_t *>(Buf.c_str()), L"C%s %lld %s",
       L"",
       AsciiBuf.GetSize(),
       DestFileName.c_str());
     BOOST_TEST_MESSAGE("Buf2 = " << AnsiString(Buf).c_str());
+    BOOST_CHECK(AnsiString(Buf) == "C 0 FileName");
+    BOOST_CHECK("C 0 FileName" == AnsiString(Buf));
+    BOOST_CHECK(AnsiString(Buf) == AnsiString("C 0 FileName"));
+    BOOST_CHECK(Buf == L"C 0 FileName");
+    BOOST_CHECK(L"C 0 FileName" == Buf);
   }
+  DEBUG_PRINTF(L"4");
+  if (1)
   {
     // Ctrl = T, Line = 1338899268 0 1338899268 0
     UnicodeString Line = L"1338899268 0 1338899268 0";
@@ -712,13 +726,22 @@ BOOST_FIXTURE_TEST_CASE(test28, base_fixture_t)
     BOOST_CHECK(MTime == 1338899268LU);
     BOOST_CHECK(ATime == 1338899268LU);
   }
+  DEBUG_PRINTF(L"5");
+  if (1)
   {
-    int errCode = 0xFF;
-    wchar_t codeNum[16] = {0};
-    swprintf_s(codeNum, sizeof(codeNum), L"[0x%08X]", errCode);
+    intptr_t errCode = 0xFF;
+    wchar_t codeNum[16];
+    DEBUG_PRINTF(L"6");
+    // swprintf_s(codeNum, sizeof(codeNum), L"[0x%08X]", errCode);  // Causes AV x64
+    swprintf(codeNum, L"[0x%08X]", errCode);
+    DEBUG_PRINTF(L"7");
     BOOST_TEST_MESSAGE("codeNum = " << AnsiString(codeNum).c_str());
-    BOOST_CHECK(AnsiString(codeNum) == AnsiString("[0x000000FF]"));
+    DEBUG_PRINTF(L"8");
+    BOOST_CHECK(AnsiString(codeNum) == AnsiString("[0x000000FF]")); // Causes AV x64
+    // BOOST_CHECK(AnsiString(codeNum) == AnsiString(""));
+    BOOST_CHECK(wcscmp(codeNum, L"[0x000000FF]") == 0);
   }
+  DEBUG_PRINTF(L"9");
 }
 //------------------------------------------------------------------------------
 #if 0
