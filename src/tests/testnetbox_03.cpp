@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 // testnetbox_03.cpp
 // Тесты для NetBox
-// testnetbox_03 --run_test=testnetbox_03/test1 --log_level=all 2>&1 | tee res.txt
+// testnetbox_03 --run_test=netbox/test1 --log_level=all 2>&1 | tee res.txt
 //------------------------------------------------------------------------------
 
 #include <Classes.hpp>
@@ -53,7 +53,7 @@ protected:
 
 //------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE(testnetbox_03)
+BOOST_AUTO_TEST_SUITE(netbox)
 
 BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
 {
@@ -140,8 +140,8 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
     BOOST_CHECK_EQUAL(0, strings.GetCount());
     strings.Add(L"line 1");
     str = strings.Text;
-    // DEBUG_PRINTF(L"str = %s", str.c_str());
-    BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 1\n");
+    DEBUG_PRINTF(L"str = '%s'", str.c_str());
+    BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 1\r\n");
   }
   if (1)
   {
@@ -149,11 +149,11 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
     BOOST_CHECK_EQUAL(2, strings.GetCount());
     str = strings.Text;
     // DEBUG_PRINTF(L"str = %s", str.c_str());
-    BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 1\nline 2\n");
+    BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 1\r\nline 2\r\n");
     strings.Insert(0, L"line 0");
     BOOST_CHECK_EQUAL(3, strings.GetCount());
     str = strings.Text;
-    BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 0\nline 1\nline 2\n");
+    BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 0\r\nline 1\r\nline 2\r\n");
     strings.Objects(0, NULL);
     UnicodeString str = strings.Strings[0];
     BOOST_CHECK_EQUAL(W2MB(str.c_str()), "line 0");
@@ -177,7 +177,7 @@ BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
   UnicodeString Text = L"text, text text, text text1\ntext text text, text text2\n";
   TStringList Lines;
   Lines.CommaText = Text;
-  BOOST_CHECK_EQUAL(6, Lines.GetCount());
+  BOOST_CHECK_EQUAL(5, Lines.GetCount());
   BOOST_CHECK_EQUAL("text", W2MB(Lines.Strings[0].c_str()).c_str());
   BOOST_CHECK_EQUAL(" text text", W2MB(Lines.Strings[1].c_str()).c_str());
   BOOST_CHECK_EQUAL(" text text1", W2MB(Lines.Strings[2].c_str()).c_str());
@@ -185,7 +185,7 @@ BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
   BOOST_CHECK_EQUAL(" text text2", W2MB(Lines.Strings[4].c_str()).c_str());
   UnicodeString Text2 = Lines.CommaText;
   BOOST_TEST_MESSAGE("Text2 = " << W2MB(Text2.c_str()));
-  BOOST_CHECK_EQUAL("\"text\",\" text text\",\" text text1\",\"text text text\",\" text text2\",\"\"", W2MB(Text2.c_str()).c_str());
+  BOOST_CHECK_EQUAL("\"text\",\" text text\",\" text text1\",\"text text text\",\" text text2\"", W2MB(Text2.c_str()).c_str());
 }
 
 BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)
@@ -400,7 +400,7 @@ BOOST_FIXTURE_TEST_CASE(test15, base_fixture_t)
 {
   UnicodeString res = ::IntToHex(10, 2);
   BOOST_TEST_MESSAGE("res = " << W2MB(res.c_str()));
-  BOOST_CHECK(res == L"0a");
+  BOOST_CHECK(res == L"0A");
 }
 
 BOOST_FIXTURE_TEST_CASE(test16, base_fixture_t)
