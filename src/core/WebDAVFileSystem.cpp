@@ -9064,10 +9064,8 @@ session_open(
         WEBDAV_AUTH_PARAM_NO_AUTH_CACHE, "");
   }
 
-  // Find the library.
   const vtable_t * vtable = NULL;
-  init_func_t initfunc = neon_init;
-  WEBDAV_ERR(initfunc(&vtable, sesspool));
+  WEBDAV_ERR(neon_init(&vtable, sesspool));
 
   // Create the session object.
   session_t * session = static_cast<session_t *>(apr_pcalloc(sesspool, sizeof(*session)));
