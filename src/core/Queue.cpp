@@ -563,7 +563,6 @@ TTerminalQueue::~TTerminalQueue()
 //---------------------------------------------------------------------------
 void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
 {
-  CALLSTACK;
   if (!FTerminated)
   {
     {
@@ -596,7 +595,6 @@ void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
 //---------------------------------------------------------------------------
 bool TTerminalQueue::TerminalFree(TTerminalItem * TerminalItem)
 {
-  CALLSTACK;
   bool Result = true;
 
   if (!FTerminated)

@@ -4,6 +4,7 @@
 #include "FileZillaIntf.h"
 #include "FileZillaIntern.h"
 #include "FzApiStructures.h"
+#include "FileZillaApi.h"
 #include "structures.h"
 #include "Common.h"
 //---------------------------------------------------------------------------
@@ -59,7 +60,7 @@ bool TFileZillaIntf::Init()
 
   FFileZillaApi = new CFileZillaApi();
 
-  bool Result = Check(FFileZillaApi->Init(FIntern), L"init");
+  bool Result = Check(FFileZillaApi->Init(FIntern, this), L"init");
 
   if (!Result)
   {
@@ -302,13 +303,26 @@ void CopyValidityTime(TFtpsCertificateData::TValidityTime & Dest,
   Dest.Sec = Source.s;
 }
 //---------------------------------------------------------------------------
+void CopyFileTime(TRemoteFileTime & Dest, const t_directory::t_direntry::t_date & Source)
+{
+  Dest.Year = Source.year;
+  Dest.Month = Source.month;
+  Dest.Day = Source.day;
+  Dest.Hour = Source.hour;
+  Dest.Minute = Source.minute;
+  Dest.Second = Source.second;
+  Dest.HasTime = Source.hastime;
+  Dest.HasDate = Source.hasdate;
+  Dest.HasSeconds = Source.hasseconds;
+  Dest.Utc = Source.utc;
+}
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
 {
   bool Result;
 
   CString a;
   unsigned int MessageID = FZ_MSG_ID(wParam);
-  TRACEFMT("1 [%x] (%d) [%x]", wParam, MessageID, lParam);
 
   switch (MessageID)
   {
@@ -324,10 +338,8 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
       break;
 
     case FZ_MSG_ASYNCREQUEST:
-      TRACE("AsyncRequest");
       if (FZ_MSG_PARAM(wParam) == FZ_ASYNCREQUEST_OVERWRITE)
       {
-        TRACE("Overwrite");
         int RequestResult = 0;
         wchar_t FileName1[MAX_PATH];
         COverwriteRequestData * Data = (COverwriteRequestData *)lParam;
@@ -336,32 +348,18 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           ASSERT(Data != NULL);
           wcsncpy(FileName1, Data->FileName1, LENOF(FileName1));
           FileName1[LENOF(FileName1) - 1] = L'\0';
-          TRACE("Before HandleAsynchRequestOverwrite");
-          TRACEFMT("FileName1 [%s]", FileName1);
-          TRACEFMT("FileName2 [%s]", (const wchar_t*)Data->FileName2);
-          TRACEFMT("path1 [%s]", (const wchar_t*)Data->path1);
-          TRACEFMT("path2 [%s]", (const wchar_t*)Data->path2);
-          TRACEFMT("size1 [%d]", (int)Data->size1);
-          TRACEFMT("size2 [%d]", (int)Data->size2);
-          TRACEFMT("time1 [%x]", Data->time1);
-          TRACEFMT("time1 [%d]", ((Data->time1 != NULL) ? Data->time1->GetTime() : 0));
-          TRACEFMT("time2 [%x]", Data->time2);
-          TRACEFMT("time2 [%d]", ((Data->time2 != NULL) ? Data->time2->GetTime() : 0));
-          TRACEFMT("HasTime1 [%d]", (Data->time1 != NULL) && ((Data->time1->GetHour() != 0) || (Data->time1->GetMinute() != 0)));
-          TRACEFMT("HasTime2 [%d]", (Data->time2 != NULL) && ((Data->time2->GetHour() != 0) || (Data->time2->GetMinute() != 0)));
-          TRACEFMT("nUserData [%x]", reinterpret_cast<void*>(Data->pTransferFile->UserData));
+          TRemoteFileTime RemoteTime;
+          CopyFileTime(RemoteTime, Data->remotetime);
           Result = HandleAsynchRequestOverwrite(
             FileName1, LENOF(FileName1), Data->FileName2, Data->path1, Data->path2,
             Data->size1, Data->size2,
-            (Data->time1 != NULL) ? Data->time1->GetTime() : 0,
-            (Data->time2 != NULL) ? Data->time2->GetTime() : 0,
-            (Data->time1 != NULL) && ((Data->time1->GetHour() != 0) || (Data->time1->GetMinute() != 0)),
-            (Data->time2 != NULL) && ((Data->time2->GetHour() != 0) || (Data->time2->GetMinute() != 0)),
-            reinterpret_cast<void*>(Data->pTransferFile->UserData), RequestResult);
+            (Data->localtime != NULL) ? Data->localtime->GetTime() : 0,
+            (Data->localtime != NULL) && ((Data->localtime->GetHour() != 0) || (Data->localtime->GetMinute() != 0)),
+            RemoteTime,
+            reinterpret_cast<void *>(Data->pTransferFile->UserData), RequestResult);
         }
         catch(...)
         {
-          TRACE("overwrite exception");
           FFileZillaApi->SetAsyncRequestResult(FILEEXISTS_SKIP, Data);
           throw;
         }
@@ -393,7 +391,6 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         }
         catch(...)
         {
-          TRACE("cert exception");
           FFileZillaApi->SetAsyncRequestResult(0, AData);
           throw;
         }
@@ -461,16 +458,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           Dest.Size = Source.size;
           Dest.Dir = Source.dir;
           Dest.Link = Source.bLink;
-          Dest.Year = Source.date.year;
-          Dest.Month = Source.date.month;
-          Dest.Day = Source.date.day;
-          Dest.Hour = Source.date.hour;
-          Dest.Minute = Source.date.minute;
-          Dest.Second = Source.date.second;
-          Dest.HasTime = Source.date.hastime;
-          Dest.HasDate = Source.date.hasdate;
-          Dest.HasSeconds = Source.date.hasseconds;
-          Dest.Utc = Source.date.utc;
+          CopyFileTime(Dest.Time, Source.date);
           Dest.LinkTarget = Source.linkTarget;
         }
 

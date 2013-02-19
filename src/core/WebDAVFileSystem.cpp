@@ -9180,15 +9180,15 @@ list_func(
     entry.Size = dir == 0 ? dirent->size : 0;
     entry.Dir = dir != 0;
     entry.Link = false;
-    entry.Year = exp_time.tm_year + 1900;
-    entry.Month = exp_time.tm_mon + 1;
-    entry.Day = exp_time.tm_mday;
-    entry.Hour = exp_time.tm_hour;
-    entry.Minute = exp_time.tm_min;
-    entry.Second = exp_time.tm_sec;
-    entry.HasTime = true;
-    entry.HasSeconds = true;
-    entry.HasDate = true;
+    entry.Time.Year = exp_time.tm_year + 1900;
+    entry.Time.Month = exp_time.tm_mon + 1;
+    entry.Time.Day = exp_time.tm_mday;
+    entry.Time.Hour = exp_time.tm_hour;
+    entry.Time.Minute = exp_time.tm_min;
+    entry.Time.Second = exp_time.tm_sec;
+    entry.Time.HasTime = true;
+    entry.Time.HasSeconds = true;
+    entry.Time.HasDate = true;
     entry.LinkTarget = L"";
     pb->entries->push_back(entry);
   }
@@ -14097,20 +14097,20 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
         }
 
         // ModificationFmt must be set after Modification
-        if (Entry->HasDate)
+        if (Entry->Time.HasDate)
         {
           // should be the same as ConvertRemoteTimestamp
           TDateTime Modification =
-            EncodeDateVerbose(static_cast<unsigned short>(Entry->Year), static_cast<unsigned short>(Entry->Month),
-              static_cast<unsigned short>(Entry->Day));
-          if (Entry->HasTime)
+            EncodeDateVerbose(static_cast<unsigned short>(Entry->Time.Year), static_cast<unsigned short>(Entry->Time.Month),
+              static_cast<unsigned short>(Entry->Time.Day));
+          if (Entry->Time.HasTime)
           {
             unsigned short seconds = 0;
-            if (Entry->HasSeconds)
-              seconds = static_cast<unsigned short>(Entry->Second);
+            if (Entry->Time.HasSeconds)
+              seconds = static_cast<unsigned short>(Entry->Time.Second);
             File->SetModification(Modification +
-              EncodeTimeVerbose(static_cast<unsigned short>(Entry->Hour),
-                static_cast<unsigned short>(Entry->Minute),
+              EncodeTimeVerbose(static_cast<unsigned short>(Entry->Time.Hour),
+                static_cast<unsigned short>(Entry->Time.Minute),
                 seconds, 0));
             // not exact as we got year as well, but it is most probably
             // guessed by FZAPI anyway
@@ -14143,8 +14143,8 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
                  Entry->Permissions,
                  Entry->OwnerGroup,
                  Entry->Size,
-                 int(Entry->Dir), int(Entry->Link), Entry->Year, Entry->Month, Entry->Day,
-                 Entry->Hour, Entry->Minute, int(Entry->HasTime), int(Entry->HasDate));
+                 int(Entry->Dir), int(Entry->Link), Entry->Time.Year, Entry->Time.Month, Entry->Time.Day,
+                 Entry->Time.Hour, Entry->Time.Minute, int(Entry->Time.HasTime), int(Entry->Time.HasDate));
         throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()));
       }
 

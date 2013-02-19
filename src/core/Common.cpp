@@ -1509,17 +1509,14 @@ __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
       const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
       Result -= (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
-      CTRACEFMT(TRACE_TIMESTAMP, "4 [%s]", Int64ToStr(Result).c_str());
     }
   }
 
-  CTRACEFMT(TRACE_TIMESTAMP, "5 [%s]", Int64ToStr(Result).c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
-static TDateTime ConvertTimestampToUTC(TDateTime DateTime)
+TDateTime ConvertTimestampToUTC(TDateTime DateTime)
 {
-  CCALLSTACK(TRACE_TIMESTAMP);
 
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
   DateTime +=
@@ -1536,17 +1533,13 @@ static TDateTime ConvertTimestampToUTC(TDateTime DateTime)
   return DateTime;
 }
 //---------------------------------------------------------------------------
-TDateTime ConvertFileTimestampFromUTC(TDateTime DateTime)
+TDateTime ConvertTimestampFromUTC(TDateTime DateTime)
 {
-  CCALLSTACK(TRACE_TIMESTAMP);
 
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
   DateTime -=
     (IsDateInDST(DateTime) ?
-      // Note the difference to ConvertTimestampToUTC()
-      // This is to compensate CTime::GetGmtTm for MFMT FTP conversion
-      Params->DaylightDifference : -Params->DaylightDifference);
-
+      Params->DaylightDifference : Params->StandardDifference);
   DateTime -= Params->BaseDifference;
 
   if (Params->DaylightHack)
@@ -1561,7 +1554,6 @@ TDateTime ConvertFileTimestampFromUTC(TDateTime DateTime)
 __int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode)
 {
-  CCALLSTACK(TRACE_TIMESTAMP);
   __int64 Result;
   if ((FileTime.dwLowDateTime == 0) &&
       (FileTime.dwHighDateTime == 0))
@@ -1577,7 +1569,6 @@ __int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
 //---------------------------------------------------------------------------
 TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode)
 {
-  CCALLSTACK(TRACE_TIMESTAMP);
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
 
   if (Params->DaylightHack)
@@ -1726,35 +1717,39 @@ UnicodeString StandardTimestamp()
 static TDateTime TwoSeconds(0, 0, 2, 0);
 int CompareFileTime(TDateTime T1, TDateTime T2)
 {
-  CCALLSTACK(TRACE_TIMESTAMP);
   // "FAT" time precision
   // (when one time is seconds-precision and other is millisecond-precision,
   // we may have times like 12:00:00.000 and 12:00:01.999, which should
   // be treated the same)
   int Result;
-  CTRACEFMT(TRACE_TIMESTAMP, "2Sec [%.7f], T1 [%s] [%.7f], T2 [%s] [%.7f], T2-T1 [%.7f], T1-T2 [%.7f]", double(TwoSeconds), T1.TimeString().c_str(), double(T1), T2.TimeString().c_str(), double(T2), double(T2-T1), double(T1-T2));
   if (T1 == T2)
   {
-    CTRACE(TRACE_TIMESTAMP, "1");
     // just optimization
     Result = 0;
   }
   else if ((T1 < T2) && (T2 - T1 >= TwoSeconds))
   {
-    CTRACE(TRACE_TIMESTAMP, "2");
     Result = -1;
   }
   else if ((T1 > T2) && (T1 - T2 >= TwoSeconds))
   {
-    CTRACE(TRACE_TIMESTAMP, "3");
     Result = 1;
   }
   else
   {
-    CTRACE(TRACE_TIMESTAMP, "4");
     Result = 0;
   }
   return Result;
+}
+//---------------------------------------------------------------------------
+int TimeToMSec(TDateTime T)
+{
+  return int(Round(double(T) * double(MSecsPerDay)));
+}
+//---------------------------------------------------------------------------
+int TimeToMinutes(TDateTime T)
+{
+  return TimeToMSec(T) / MSecsPerSec / SecsPerMin;
 }
 //---------------------------------------------------------------------------
 bool RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin)
