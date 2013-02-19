@@ -23,8 +23,6 @@
 
 class CServerPath;
 
-#include "FileZillaApi.h"
-
 class t_directory
 {
 public:

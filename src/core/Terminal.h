@@ -377,6 +377,7 @@ protected:
   TRemoteFileList * DoReadDirectoryListing(UnicodeString Directory, bool UseCache);
   RawByteString EncryptPassword(const UnicodeString & Password);
   UnicodeString DecryptPassword(const RawByteString & Password);
+  void LogFile(TRemoteFile * File);
 
   TFileOperationProgressType * GetOperationProgress() { return FOperationProgress; }
 
@@ -484,6 +485,7 @@ public:
     TFileOperationProgressType * OperationProgress);
   UnicodeString PeekCurrentDirectory();
   void FatalAbort();
+  void ReflectSettings();
 
   const TSessionInfo & GetSessionInfo() const;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
