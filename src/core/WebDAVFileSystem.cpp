@@ -14093,7 +14093,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
         }
         else
         {
-          File->SetType('-');
+          File->SetType(L'-');
         }
 
         // ModificationFmt must be set after Modification
