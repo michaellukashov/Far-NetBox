@@ -409,8 +409,6 @@ typedef struct list_func_baton_t
       WEBDAV_ERR(WEBDAV_UNKNOWN_ERROR);                         \
   } while (0)
 
-#define WEBDAV_USE_DOS_PATHS 1
-
 #define error_trace(expr)  (expr)
 
 // Create a pool as a subpool of @a parent_pool
@@ -5598,14 +5596,11 @@ canonicalize(
     {
       *(dst++) = *(src++);
 
-#ifdef WEBDAV_USE_DOS_PATHS
       // On Windows permit two leading separator characters which means an
       // UNC path.
       if ((type == type_dirent) && *src == '/')
         *(dst++) = *(src++);
-#endif // WEBDAV_USE_DOS_PATHS
     }
-#ifdef WEBDAV_USE_DOS_PATHS
     // On Windows the first segment can be a drive letter, which we normalize
     // to upper case.
     else if ((type == type_dirent) &&
@@ -5618,7 +5613,6 @@ canonicalize(
       // by the following code block, so we need not care whether it has
       // a slash after it.
     }
-#endif // WEBDAV_USE_DOS_PATHS
   }
 
   while (*src)
@@ -5652,7 +5646,6 @@ canonicalize(
       // Empty or noop segment, so do nothing.  (For URIs, '%2E'
       // is equivalent to '.').
     }
-#ifdef WEBDAV_USE_DOS_PATHS
     // If this is the first path segment of a file:// URI and it contains a
     // windows drive letter, convert the drive letter to upper case.
     else if (url && (canon_segments == 1) && (seglen == 2) &&
@@ -5665,7 +5658,6 @@ canonicalize(
         *(dst++) = *next;
       canon_segments++;
     }
-#endif // WEBDAV_USE_DOS_PATHS
     else
     {
       // An actual segment, append it to the destination path
@@ -5682,7 +5674,6 @@ canonicalize(
 
   *dst = '\0';
 
-#ifdef WEBDAV_USE_DOS_PATHS
   // Skip leading double slashes when there are less than 2
   // canon segments. UNC paths *MUST* have two segments.
   if ((type == type_dirent) && canon[0] == '/' && canon[1] == '/')
@@ -5701,7 +5692,6 @@ canonicalize(
         *dst = canonicalize_to_lower(*dst);
     }
   }
-#endif // WEBDAV_USE_DOS_PATHS
 
   // Check the normalization of characters in a uri
   if (schema_data)
@@ -5887,7 +5877,6 @@ dirent_is_root(
   const char * dirent,
   apr_size_t len)
 {
-#ifdef WEBDAV_USE_DOS_PATHS
   // On Windows and Cygwin, 'H:' or 'H:/' (where 'H' is any letter)
   // are also root directories
   if ((len == 2 || ((len == 3) && (dirent[2] == '/'))) &&
@@ -5914,7 +5903,6 @@ dirent_is_root(
     }
     return (segments == 1); // //drive is invalid on plain Windows
   }
-#endif
 
   // directory is root if it's equal to '/'
   if (len == 1 && dirent[0] == '/')
@@ -6022,7 +6010,6 @@ dirent_canonicalize(
 {
   const char * dst = canonicalize(type_dirent, dirent, pool);
 
-#ifdef WEBDAV_USE_DOS_PATHS
   // Handle a specific case on Windows where path == "X:/". Here we have to
   // append the final '/', as path_canonicalize will chop this of.
   if (((dirent[0] >= 'A' && dirent[0] <= 'Z') ||
@@ -6038,7 +6025,6 @@ dirent_canonicalize(
 
     return dst_slash;
   }
-#endif // WEBDAV_USE_DOS_PATHS
 
   return dst;
 }
@@ -6052,7 +6038,6 @@ dirent_is_canonical(
   if (*ptr == '/')
   {
     ptr++;
-#ifdef WEBDAV_USE_DOS_PATHS
     // Check for UNC paths
     if (*ptr == '/')
     {
@@ -6061,9 +6046,7 @@ dirent_is_canonical(
       // ### Fall back to old implementation
       return (strcmp(dirent, dirent_canonicalize(dirent, pool)) == 0);
     }
-#endif // WEBDAV_USE_DOS_PATHS
   }
-#ifdef WEBDAV_USE_DOS_PATHS
   else if (((*ptr >= 'a' && *ptr <= 'z') || (*ptr >= 'A' && *ptr <= 'Z')) &&
           (ptr[1] == ':'))
   {
@@ -6076,7 +6059,6 @@ dirent_is_canonical(
     if (*ptr == '/')
       ptr++;
   }
-#endif // WEBDAV_USE_DOS_PATHS
 
   return relpath_is_canonical(ptr);
 }
@@ -6092,16 +6074,17 @@ dirent_basename(
   assert(!pool || dirent_is_canonical(dirent, pool));
 
   if (dirent_is_root(dirent, len))
+  {
     return "";
+  }
   else
   {
     start = len;
-    while ((start > 0) && (dirent[start - 1] != '/')
-#ifdef WEBDAV_USE_DOS_PATHS
-          && (dirent[start - 1] != ':')
-#endif
-         )
+    while ((start > 0) && (dirent[start - 1] != '/') &&
+          (dirent[start - 1] != ':'))
+    {
       --start;
+    }
   }
 
   if (pool)
@@ -6153,14 +6136,12 @@ dirent_is_rooted(
 
   // On Windows, dirent is also absolute when it starts with 'H:' or 'H:/'
   // where 'H' is any letter.
-#ifdef WEBDAV_USE_DOS_PATHS
   if (((dirent[0] >= 'A' && dirent[0] <= 'Z') ||
       (dirent[0] >= 'a' && dirent[0] <= 'z')) &&
       (dirent[1] == ':'))
   {
     return TRUE;
   }
-#endif // WEBDAV_USE_DOS_PATHS
 
   return FALSE;
 }
@@ -6218,11 +6199,9 @@ is_child(
   */
   if (path1[i] == '\0' && path2[i])
   {
-    if (path1[i - 1] == '/'
-#ifdef WEBDAV_USE_DOS_PATHS
-        || ((type == type_dirent) && path1[i - 1] == ':')
-#endif
-      )
+    if ((path1[i - 1] == '/') ||
+        ((type == type_dirent) && path1[i - 1] == ':')
+    )
     {
       if (path2[i] == '/')
         /* .../
@@ -6274,7 +6253,7 @@ static bool
 fspath_is_canonical(
   const char * fspath)
 {
-  return fspath[0] == '/' && relpath_is_canonical(fspath + 1);
+  return (fspath[0] == '/') && relpath_is_canonical(fspath + 1);
 }
 
 static const char *
@@ -6300,22 +6279,18 @@ dirent_is_absolute(
 
   // dirent is absolute if it starts with '/' on non-Windows platforms
   // or with '//' on Windows platforms
-  if (dirent[0] == '/'
-#ifdef WEBDAV_USE_DOS_PATHS
-      && dirent[1] == '/' // Single '/' depends on current drive
-#endif
-    )
+  if ((dirent[0] == '/') &&
+      (dirent[1] == '/')) // Single '/' depends on current drive
+  {
     return TRUE;
-
+  }
   // On Windows, dirent is also absolute when it starts with 'H:/'
   // where 'H' is any letter.
-#ifdef WEBDAV_USE_DOS_PATHS
   if (((dirent[0] >= 'A' && dirent[0] <= 'Z')) &&
       (dirent[1] == ':') && (dirent[2] == '/'))
   {
     return TRUE;
   }
-#endif // WEBDAV_USE_DOS_PATHS
 
   return FALSE;
 }
