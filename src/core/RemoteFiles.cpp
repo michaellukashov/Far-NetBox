@@ -178,12 +178,12 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Pat
   }
   else if (Path[1] == L'/')
   {
-    Result = UnixExcludeTrailingBackslash(Path);
+    Result = ::UnixExcludeTrailingBackslash(Path);
   }
   else
   {
-    Result = UnixIncludeTrailingBackslash(
-      UnixIncludeTrailingBackslash(Base) + Path);
+    Result = ::UnixIncludeTrailingBackslash(
+      ::UnixIncludeTrailingBackslash(Base) + Path);
     intptr_t P;
     while ((P = Result.Pos(L"/../")) > 0)
     {
@@ -195,7 +195,7 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Pat
     {
       Result.Delete(P, 2);
     }
-    Result = UnixExcludeTrailingBackslash(Result);
+    Result = ::UnixExcludeTrailingBackslash(Result);
   }
   return Result;
 }

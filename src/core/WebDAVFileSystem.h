@@ -142,6 +142,7 @@ private:
   bool FFileTransferCancelled;
   __int64 FFileTransferResumed;
   bool FFileTransferPreserveTime;
+  bool FHasTrailingSlash;
   size_t FFileTransferCPSLimit;
   size_t FLastReadDirectoryProgress;
   TFileOperationProgressType * FCurrentOperationProgress;

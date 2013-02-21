@@ -409,8 +409,6 @@ typedef struct list_func_baton_t
       WEBDAV_ERR(WEBDAV_UNKNOWN_ERROR);                         \
   } while (0)
 
-#define WEBDAV_USE_DOS_PATHS 1
-
 #define error_trace(expr)  (expr)
 
 // Create a pool as a subpool of @a parent_pool
@@ -2234,7 +2232,6 @@ path_component_count(
 {
   if (!path) return 0;
   apr_size_t count = 0;
-  assert(is_canonical(path, strlen(path)));
 
   while (*path)
   {
@@ -5599,14 +5596,11 @@ canonicalize(
     {
       *(dst++) = *(src++);
 
-#ifdef WEBDAV_USE_DOS_PATHS
       // On Windows permit two leading separator characters which means an
       // UNC path.
       if ((type == type_dirent) && *src == '/')
         *(dst++) = *(src++);
-#endif // WEBDAV_USE_DOS_PATHS
     }
-#ifdef WEBDAV_USE_DOS_PATHS
     // On Windows the first segment can be a drive letter, which we normalize
     // to upper case.
     else if ((type == type_dirent) &&
@@ -5619,7 +5613,6 @@ canonicalize(
       // by the following code block, so we need not care whether it has
       // a slash after it.
     }
-#endif // WEBDAV_USE_DOS_PATHS
   }
 
   while (*src)
@@ -5653,7 +5646,6 @@ canonicalize(
       // Empty or noop segment, so do nothing.  (For URIs, '%2E'
       // is equivalent to '.').
     }
-#ifdef WEBDAV_USE_DOS_PATHS
     // If this is the first path segment of a file:// URI and it contains a
     // windows drive letter, convert the drive letter to upper case.
     else if (url && (canon_segments == 1) && (seglen == 2) &&
@@ -5666,7 +5658,6 @@ canonicalize(
         *(dst++) = *next;
       canon_segments++;
     }
-#endif // WEBDAV_USE_DOS_PATHS
     else
     {
       // An actual segment, append it to the destination path
@@ -5681,20 +5672,8 @@ canonicalize(
     src = next + slash_len;
   }
 
-  // Remove the trailing slash if there was at least one
-  // canonical segment and the last segment ends with a slash.
-  // But keep in mind that, for URLs, the scheme counts as a
-  // canonical segment -- so if path is ONLY a scheme (such
-  // as "https://") we should NOT remove the trailing slash.
-  if (((canon_segments > 0) && (*(dst - 1) == '/')) &&
-      !(url && (path[schemelen] == '\0')))
-  {
-    dst --;
-  }
-
   *dst = '\0';
 
-#ifdef WEBDAV_USE_DOS_PATHS
   // Skip leading double slashes when there are less than 2
   // canon segments. UNC paths *MUST* have two segments.
   if ((type == type_dirent) && canon[0] == '/' && canon[1] == '/')
@@ -5713,7 +5692,6 @@ canonicalize(
         *dst = canonicalize_to_lower(*dst);
     }
   }
-#endif // WEBDAV_USE_DOS_PATHS
 
   // Check the normalization of characters in a uri
   if (schema_data)
@@ -5841,8 +5819,8 @@ fspath_canonicalize(
 
 // Examine PATH as a potential URI, and return a substring of PATH
 // that immediately follows the (scheme):// portion of the URI, or
-// NULL if PATH doesn't appear to be a valid URI.  The returned value
-// is not alloced -- it shares memory with PATH.
+// NULL if PATH doesn't appear to be a valid URI. The returned value
+// is not allocated -- it shares memory with PATH.
 static const char *
 skip_uri_scheme(
   const char * path)
@@ -5899,7 +5877,6 @@ dirent_is_root(
   const char * dirent,
   apr_size_t len)
 {
-#ifdef WEBDAV_USE_DOS_PATHS
   // On Windows and Cygwin, 'H:' or 'H:/' (where 'H' is any letter)
   // are also root directories
   if ((len == 2 || ((len == 3) && (dirent[2] == '/'))) &&
@@ -5926,7 +5903,6 @@ dirent_is_root(
     }
     return (segments == 1); // //drive is invalid on plain Windows
   }
-#endif
 
   // directory is root if it's equal to '/'
   if (len == 1 && dirent[0] == '/')
@@ -6034,7 +6010,6 @@ dirent_canonicalize(
 {
   const char * dst = canonicalize(type_dirent, dirent, pool);
 
-#ifdef WEBDAV_USE_DOS_PATHS
   // Handle a specific case on Windows where path == "X:/". Here we have to
   // append the final '/', as path_canonicalize will chop this of.
   if (((dirent[0] >= 'A' && dirent[0] <= 'Z') ||
@@ -6050,7 +6025,6 @@ dirent_canonicalize(
 
     return dst_slash;
   }
-#endif // WEBDAV_USE_DOS_PATHS
 
   return dst;
 }
@@ -6064,7 +6038,6 @@ dirent_is_canonical(
   if (*ptr == '/')
   {
     ptr++;
-#ifdef WEBDAV_USE_DOS_PATHS
     // Check for UNC paths
     if (*ptr == '/')
     {
@@ -6073,9 +6046,7 @@ dirent_is_canonical(
       // ### Fall back to old implementation
       return (strcmp(dirent, dirent_canonicalize(dirent, pool)) == 0);
     }
-#endif // WEBDAV_USE_DOS_PATHS
   }
-#ifdef WEBDAV_USE_DOS_PATHS
   else if (((*ptr >= 'a' && *ptr <= 'z') || (*ptr >= 'A' && *ptr <= 'Z')) &&
           (ptr[1] == ':'))
   {
@@ -6088,7 +6059,6 @@ dirent_is_canonical(
     if (*ptr == '/')
       ptr++;
   }
-#endif // WEBDAV_USE_DOS_PATHS
 
   return relpath_is_canonical(ptr);
 }
@@ -6104,16 +6074,17 @@ dirent_basename(
   assert(!pool || dirent_is_canonical(dirent, pool));
 
   if (dirent_is_root(dirent, len))
+  {
     return "";
+  }
   else
   {
     start = len;
-    while ((start > 0) && (dirent[start - 1] != '/')
-#ifdef WEBDAV_USE_DOS_PATHS
-          && (dirent[start - 1] != ':')
-#endif
-         )
+    while ((start > 0) && (dirent[start - 1] != '/') &&
+          (dirent[start - 1] != ':'))
+    {
       --start;
+    }
   }
 
   if (pool)
@@ -6122,177 +6093,12 @@ dirent_basename(
     return dirent + start;
 }
 
-static bool
-uri_is_canonical(
-  const char * uri,
-  apr_pool_t * pool)
-{
-  const char * ptr = uri, *seg = uri;
-  const char * schema_data = NULL;
-
-  // URI is canonical if it has:
-  // - lowercase URL scheme
-  // - lowercase URL hostname
-  // - no '.' segments
-  // - no closing '/'
-  // - no '//'
-  // - uppercase hex-encoded pair digits ("%AB", not "%ab")
-
-  if (*uri == '\0')
-    return FALSE;
-
-  if (!path_is_url(uri))
-    return FALSE;
-
-  // Skip the scheme.
-  while (*ptr && (*ptr != '/') && (*ptr != ':'))
-    ptr++;
-
-  // No scheme?  No good.
-  if (!(*ptr == ':' && *(ptr+1) == '/' && *(ptr+2) == '/'))
-    return FALSE;
-
-  // Found a scheme, check that it's all lowercase.
-  ptr = uri;
-  while (*ptr != ':')
-  {
-    if (*ptr >= 'A' && *ptr <= 'Z')
-      return FALSE;
-    ptr++;
-  }
-  // Skip ://
-  ptr += 3;
-
-  // Scheme only?  That works.
-  if (!*ptr)
-    return TRUE;
-
-  // This might be the hostname
-  seg = ptr;
-  while (*ptr && (*ptr != '/') && (*ptr != '@'))
-    ptr++;
-
-  if (*ptr == '@')
-    seg = ptr + 1;
-
-  // Found a hostname, check that it's all lowercase.
-  ptr = seg;
-  while (*ptr && *ptr != '/' && *ptr != ':')
-  {
-    if (*ptr >= 'A' && *ptr <= 'Z')
-      return FALSE;
-    ptr++;
-  }
-
-  // Found a portnumber
-  if (*ptr == ':')
-  {
-    apr_int64_t port = 0;
-
-    ptr++;
-    schema_data = ptr;
-
-    while (*ptr >= '0' && *ptr <= '9')
-    {
-      port = 10 * port + (*ptr - '0');
-      ptr++;
-    }
-
-    if (ptr == schema_data)
-      return FALSE; // Fail on "http://host:"
-
-    if (*ptr && *ptr != '/')
-      return FALSE; // Not a port number
-
-    /*if (port == 80 && strncmp(uri, "http:", 5) == 0)
-      return FALSE;
-    else if (port == 443 && strncmp(uri, "https:", 6) == 0)
-      return FALSE;*/
-  }
-
-  schema_data = ptr;
-
-#ifdef WEBDAV_USE_DOS_PATHS
-  if (schema_data && *ptr == '/')
-  {
-    // If this is a file url, ptr now points to the third '/' in
-    // file:///C:/path. Check that if we have such a URL the drive
-    // letter is in uppercase.
-    if (strncmp(uri, "file:", 5) == 0 &&
-        !(*(ptr+1) >= 'A' && *(ptr+1) <= 'Z') &&
-        *(ptr+2) == ':')
-      return FALSE;
-  }
-#endif // WEBDAV_USE_DOS_PATHS
-
-  // Now validate the rest of the URI.
-  while (1)
-  {
-    apr_size_t seglen = ptr - seg;
-
-    if (seglen == 1 && *seg == '.')
-      return FALSE;  //  /./
-
-    if (*ptr == '/' && *(ptr+1) == '/')
-      return FALSE;  //  //
-
-    if (!*ptr && *(ptr - 1) == '/' && ptr - 1 != uri)
-      return FALSE;  // foo/
-
-    if (!*ptr)
-      break;
-
-    if (*ptr == '/')
-      ptr++;
-    seg = ptr;
-
-    while (*ptr && (*ptr != '/'))
-      ptr++;
-  }
-
-  ptr = schema_data;
-
-  while (*ptr)
-  {
-    if (*ptr == '%')
-    {
-      char digitz[3];
-      int val;
-
-      // Can't usectype_isxdigit() because lower case letters are
-      // not in our canonical format
-      if (((*(ptr+1) < '0' || *(ptr+1) > '9')) &&
-           (*(ptr+1) < 'A' || *(ptr+1) > 'F'))
-        return FALSE;
-      else if (((*(ptr+2) < '0' || *(ptr+2) > '9')) &&
-               (*(ptr+2) < 'A' || *(ptr+2) > 'F'))
-        return FALSE;
-
-      digitz[0] = *(++ptr);
-      digitz[1] = *(++ptr);
-      digitz[2] = '\0';
-      val = (int)strtol(digitz, NULL, 16);
-
-      if (uri_char_validity[val])
-        return FALSE; // Should not have been escaped
-    }
-    else if (*ptr != '/' && !uri_char_validity[(unsigned char)*ptr])
-      return FALSE; // Character should have been escaped
-    ptr++;
-  }
-
-  return TRUE;
-}
-
 static const char *
 uri_skip_ancestor(
   const char * parent_uri,
   const char * child_uri)
 {
   apr_size_t len = strlen(parent_uri);
-
-  assert(uri_is_canonical(parent_uri, NULL));
-  assert(uri_is_canonical(child_uri, NULL));
 
   if (0 != strncmp(parent_uri, child_uri, len))
     return NULL; // parent_uri is no ancestor of child_uri
@@ -6330,14 +6136,12 @@ dirent_is_rooted(
 
   // On Windows, dirent is also absolute when it starts with 'H:' or 'H:/'
   // where 'H' is any letter.
-#ifdef WEBDAV_USE_DOS_PATHS
   if (((dirent[0] >= 'A' && dirent[0] <= 'Z') ||
       (dirent[0] >= 'a' && dirent[0] <= 'z')) &&
       (dirent[1] == ':'))
   {
     return TRUE;
   }
-#endif // WEBDAV_USE_DOS_PATHS
 
   return FALSE;
 }
@@ -6395,11 +6199,9 @@ is_child(
   */
   if (path1[i] == '\0' && path2[i])
   {
-    if (path1[i - 1] == '/'
-#ifdef WEBDAV_USE_DOS_PATHS
-        || ((type == type_dirent) && path1[i - 1] == ':')
-#endif
-      )
+    if ((path1[i - 1] == '/') ||
+        ((type == type_dirent) && path1[i - 1] == ':')
+    )
     {
       if (path2[i] == '/')
         /* .../
@@ -6440,8 +6242,6 @@ uri_is_child(
   const char * relpath = NULL;
 
   assert(pool); // hysterical raisins.
-  assert(uri_is_canonical(parent_uri, NULL));
-  assert(uri_is_canonical(child_uri, NULL));
 
   relpath = is_child(type_uri, parent_uri, child_uri, pool);
   if (relpath)
@@ -6453,7 +6253,7 @@ static bool
 fspath_is_canonical(
   const char * fspath)
 {
-  return fspath[0] == '/' && relpath_is_canonical(fspath + 1);
+  return (fspath[0] == '/') && relpath_is_canonical(fspath + 1);
 }
 
 static const char *
@@ -6479,22 +6279,18 @@ dirent_is_absolute(
 
   // dirent is absolute if it starts with '/' on non-Windows platforms
   // or with '//' on Windows platforms
-  if (dirent[0] == '/'
-#ifdef WEBDAV_USE_DOS_PATHS
-      && dirent[1] == '/' // Single '/' depends on current drive
-#endif
-    )
+  if ((dirent[0] == '/') &&
+      (dirent[1] == '/')) // Single '/' depends on current drive
+  {
     return TRUE;
-
+  }
   // On Windows, dirent is also absolute when it starts with 'H:/'
   // where 'H' is any letter.
-#ifdef WEBDAV_USE_DOS_PATHS
   if (((dirent[0] >= 'A' && dirent[0] <= 'Z')) &&
       (dirent[1] == ':') && (dirent[2] == '/'))
   {
     return TRUE;
   }
-#endif // WEBDAV_USE_DOS_PATHS
 
   return FALSE;
 }
@@ -9064,10 +8860,8 @@ session_open(
         WEBDAV_AUTH_PARAM_NO_AUTH_CACHE, "");
   }
 
-  // Find the library.
   const vtable_t * vtable = NULL;
-  init_func_t initfunc = neon_init;
-  WEBDAV_ERR(initfunc(&vtable, sesspool));
+  WEBDAV_ERR(neon_init(&vtable, sesspool));
 
   // Create the session object.
   session_t * session = static_cast<session_t *>(apr_pcalloc(sesspool, sizeof(*session)));
@@ -9078,12 +8872,12 @@ session_open(
   const char * corrected_url = NULL;
   // Ask the library to open the session.
   WEBDAV_ERR_W(vtable->open_session(
-                session,
-                &corrected_url,
-                session_URL,
-                callbacks, callback_baton, sesspool),
-    apr_psprintf(pool, "Unable to connect to a WebDAV resource at URL '%s'",
-      session_URL));
+    session,
+    &corrected_url,
+    session_URL,
+    callbacks, callback_baton, sesspool),
+      apr_psprintf(pool, "Unable to connect to a WebDAV resource at URL '%s'",
+        session_URL));
 
   if (corrected_url_p && corrected_url)
   {
@@ -11123,11 +10917,10 @@ neon_get_props(
   // Are we asking for specific propert(y/ies), or just all of them?
   if (which_props)
   {
-    int n;
     apr_pool_t * iterpool = webdav_pool_create(pool);
 
     stringbuf_appendcstr(body, "<prop>" DEBUG_CR);
-    for (n = 0; which_props[n].name != NULL; n++)
+    for (int n = 0; which_props[n].name != NULL; n++)
     {
       webdav_pool_clear(iterpool);
       stringbuf_appendcstr(body, apr_pstrcat(iterpool, "<", which_props[n].name,
@@ -11236,7 +11029,6 @@ client_list2(
   // always need it.
   dirent_fields |= WEBDAV_DIRENT_KIND;
 
-  // Get an RA plugin for this filesystem object.
   WEBDAV_ERR(init_session_from_path(session,
     &url, path_or_url,
     pool));
@@ -11244,9 +11036,9 @@ client_list2(
   WEBDAV_ERR(get_webdav_resource_root2(session, &webdav_root, pool));
 
   WEBDAV_ERR(client_path_relative_to_root(&fs_path,
-             url,
-             webdav_root, TRUE, session,
-             pool, pool));
+    url,
+    webdav_root, TRUE, session,
+    pool, pool));
 
   err = stat(session, "", &dirent, pool);
 
@@ -11264,11 +11056,12 @@ client_list2(
   if (dirent->kind == node_dir && (depth == depth_files ||
       depth == depth_immediates ||
       depth == depth_infinity))
+  {
     WEBDAV_ERR(get_dir_contents(dirent_fields, "",
       session,
       fs_path, depth,
       list_func, baton, pool));
-
+  }
   return WEBDAV_NO_ERROR;
 }
 
@@ -12178,20 +11971,12 @@ neon_open(
     ne_set_useragent(sess, useragent.c_str());
   }
 
-  // clean up trailing slashes from the URL
-  apr_size_t len = strlen(uri->path);
-  if (len > 1 && (uri->path)[len - 1] == '/')
-  {
-    (uri->path)[len - 1] = '\0';
-  }
-
   // Create and fill a session_baton.
   neon_session_t * ras = static_cast<neon_session_t *>(apr_pcalloc(pool, sizeof(*ras)));
   ras->pool = pool;
   {
     // canonicalize url
-    const char * remote_url = NULL;
-    remote_url = urlpath_canonicalize(session_URL, pool);
+    const char * remote_url = urlpath_canonicalize(session_URL, pool);
     ras->url = stringbuf_create(remote_url, pool);
   }
   // copies uri pointer members, they get free'd in __close.
@@ -12419,8 +12204,8 @@ neon_get_dir(
     apr_size_t final_url_n_components = path_component_count(final_url);
 
     // Now we have a hash that maps a bunch of url children to resource
-    // objects.  Each resource object contains the properties of the
-    // child.   Parse these resources into dirent_t structs.
+    // objects. Each resource object contains the properties of the
+    // child. Parse these resources into dirent_t structs.
     *dirents = apr_hash_make(pool);
     for (apr_hash_index_t * hi = apr_hash_first(pool, resources); hi;
          hi = apr_hash_next(hi))
@@ -12709,6 +12494,7 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
   FFileTransferCancelled(false),
   FFileTransferResumed(0),
   FFileTransferPreserveTime(false),
+  FHasTrailingSlash(false),
   FFileTransferCPSLimit(0),
   FLastReadDirectoryProgress(0),
   FCurrentOperationProgress(NULL),
@@ -12742,6 +12528,7 @@ TWebDAVFileSystem::~TWebDAVFileSystem()
 void TWebDAVFileSystem::Open()
 {
   FCurrentDirectory = L"";
+  FHasTrailingSlash = false;
 
   TSessionData * Data = FTerminal->GetSessionData();
 
@@ -12955,10 +12742,11 @@ void TWebDAVFileSystem::DoChangeDirectory(const UnicodeString & Directory)
 void TWebDAVFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
 {
   UnicodeString Directory = ADirectory;
+  bool HasTrailingSlash = (Directory.Length() > 0) && (Directory[Directory.Length()] == L'/');
   try
   {
     // For changing directory, we do not make paths absolute, instead we
-    // delegate this to the server, hence we sychronize current working
+    // delegate this to the server, hence we synchronize current working
     // directory with the server and only then we ask for the change with
     // relative path.
     // But if synchronization fails, typically because current working directory
@@ -12971,6 +12759,8 @@ void TWebDAVFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
     if (FTerminal->GetActive())
     {
       Directory = AbsolutePath(Directory, false);
+      if (HasTrailingSlash)
+        Directory = ::UnixIncludeTrailingBackslash(Directory);
     }
     else
     {
@@ -12979,6 +12769,8 @@ void TWebDAVFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
   }
 
   FCurrentDirectory = AbsolutePath(Directory, false);
+  if (HasTrailingSlash)
+    FCurrentDirectory = ::UnixIncludeTrailingBackslash(FCurrentDirectory);
 
   // make next ReadCurrentDirectory retrieve actual server-side current directory
   FCachedDirectoryChange = L"";
@@ -13004,6 +12796,8 @@ void TWebDAVFileSystem::DoReadDirectory(TRemoteFileList * FileList)
   // 1) List() lists again the last listed directory, not the current working directory
   // 2) we handle this way the cached directory change
   UnicodeString Directory = AbsolutePath(FileList->GetDirectory(), false);
+  if (FHasTrailingSlash)
+    Directory = ::UnixIncludeTrailingBackslash(Directory);
   WebDAVGetList(Directory);
 }
 //------------------------------------------------------------------------------
@@ -14513,6 +14307,7 @@ webdav::error_t TWebDAVFileSystem::OpenURL(
   if (WEBDAV_NO_ERROR == webdav::parse_ne_uri(&uri, url, pool))
   {
     FCurrentDirectory = uri->path;
+    FHasTrailingSlash = (FCurrentDirectory.Length() > 0) && (FCurrentDirectory[FCurrentDirectory.Length()] == L'/');
   }
   FSession = session_p;
   return WEBDAV_NO_ERROR;
