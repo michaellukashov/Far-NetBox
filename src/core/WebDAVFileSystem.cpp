@@ -1744,7 +1744,7 @@ static const apr_uint32_t ctype_table_internal[256] =
   /* xff */ 0
 };
 
-static const apr_uint32_t * const ctype_table = ctype_table_internal;
+const apr_uint32_t * const ctype_table = ctype_table_internal;
 
 static const unsigned char casefold_table[256] =
 {
@@ -11903,7 +11903,6 @@ neon_open(
     {
 #ifdef NETBOX_DEBUG
       debug_file_baton_t * baton = static_cast<debug_file_baton_t *>(apr_pcalloc(pool, sizeof(*baton)));
-      apr_status_t rv;
       neon_debug_file_name = apr_pstrcat(pool, neon_debug_file_name, ".neondebug.log", NULL);
       baton->file = _fsopen(neon_debug_file_name, "w", SH_DENYWR);
       if (baton->file)
