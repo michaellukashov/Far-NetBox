@@ -98,7 +98,7 @@ public:
   virtual ~TCopyParamList();
   int Find(const TCopyParamRuleData & Value) const;
 
-  void Load(THierarchicalStorage * Storage, int Count);
+  void Load(THierarchicalStorage * Storage, intptr_t Count);
   void Save(THierarchicalStorage * Storage) const;
 
   static void ValidateName(const UnicodeString & Name);

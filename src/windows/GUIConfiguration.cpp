@@ -408,7 +408,7 @@ int TCopyParamList::Find(const TCopyParamRuleData & Value) const
   return Result;
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
+void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
 {
   CALLSTACK;
   for (intptr_t Index = 0; Index < ACount; ++Index)
