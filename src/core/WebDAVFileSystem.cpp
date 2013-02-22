@@ -11226,6 +11226,12 @@ client_check_path(
   }
   if (*target == '/')
   {
+    // check if root has trailing slash
+    apr_size_t len = strlen(ras->webdav_root);
+    if ((len > 1) && ((ras->webdav_root)[len - 1] == '/'))
+    {
+      target++;
+    }
     const char * abs_path = apr_pstrcat(pool, ras->webdav_root, target, NULL);
 
     err = get_path_relative_to_root(
