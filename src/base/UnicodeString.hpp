@@ -31,7 +31,6 @@ public:
   void SetLength(intptr_t nLength) { Data.resize(nLength); }
   UTF8String & Delete(intptr_t Index, intptr_t Count) { Data.erase(Index - 1, Count); return *this; }
 
-  UTF8String & Insert(intptr_t Pos, const wchar_t * Str, intptr_t StrLen) { return Insert(Str, Pos); }
   UTF8String & Insert(const wchar_t * Str, intptr_t Pos);
 
   UTF8String SubString(intptr_t Pos, intptr_t Len = -1) const { return std::wstring(Data.substr(Pos - 1, Len)); }

@@ -469,7 +469,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   }
   else
   {
-    SetFSProtocol(TranslateFSProtocol(Storage->ReadString(L"FSProtocol", GetFSProtocol())));
+    SetFSProtocol(TranslateFSProtocol(Storage->ReadString(L"FSProtocol", GetFSProtocolStr())));
   }
   SetLocalDirectory(Storage->ReadString(L"LocalDirectory", GetLocalDirectory()));
   SetRemoteDirectory(Storage->ReadString(L"RemoteDirectory", GetRemoteDirectory()));
