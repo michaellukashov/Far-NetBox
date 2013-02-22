@@ -194,11 +194,11 @@ typedef struct stringbuf_t
 
 // Rename these types and constants to abstract from Neon
 
-#define NEON__XML_DECLINE NE_XML_DECLINE
-#define NEON__XML_INVALID NE_XML_ABORT
+#define NEON_XML_DECLINE NE_XML_DECLINE
+#define NEON_XML_INVALID NE_XML_ABORT
 
-#define NEON__XML_CDATA   (1<<1)
-#define NEON__XML_COLLECT ((1<<2) | NEON__XML_CDATA)
+#define NEON_XML_CDATA   (1<<1)
+#define NEON_XML_COLLECT ((1<<2) | NEON_XML_CDATA)
 
 // ### Related to anonymous enum below?
 typedef int neon_xml_elmid;
@@ -211,8 +211,8 @@ typedef struct neon_xml_elm_t
 
   // Processing flags for this namespace:tag.
   // 0 (zero)          - regular element, may have children,
-  // NEON__XML_CDATA   - child-less element,
-  // NEON__XML_COLLECT - complete contents of such element must be
+  // NEON_XML_CDATA    - child-less element,
+  // NEON_XML_COLLECT  - complete contents of such element must be
   //                     collected as CDATA, includes *_CDATA flag.
   unsigned int flags;
 
@@ -427,7 +427,7 @@ typedef struct list_func_baton_t
 // making sure we don't leak any in case we encounter more than one error.
 // Sets the 'err' field of REQ to the value obtained by evaluating NEW_ERR.
 
-#define NEON__REQ_ERR(req, new_err)              \
+#define NEON_REQ_ERR(req, new_err)               \
    do {                                          \
      error_t err__tmp = (new_err);               \
      if ((req)->err && !(req)->marshalled_error) \
@@ -667,15 +667,15 @@ cstring_from_utf8(
 #define DEBUG_CR ""
 #endif
 
-#define NEON__DEPTH_ZERO      0
-#define NEON__DEPTH_ONE       1
-#define NEON__DEPTH_INFINITE -1
+#define NEON_DEPTH_ZERO      0
+#define NEON_DEPTH_ONE       1
+#define NEON_DEPTH_INFINITE -1
 
-// NEON__PROP_*: properties that we fetch from the server
+// NEON_PROP_*: properties that we fetch from the server
 // These are simply symbolic names for some standard properties that we fetch.
 
-#define NEON__PROP_CREATIONDATE   "DAV:creationdate"
-#define NEON__PROP_GETCONTENTLENGTH "DAV:getcontentlength"
+#define NEON_PROP_CREATIONDATE   "DAV:creationdate"
+#define NEON_PROP_GETCONTENTLENGTH "DAV:getcontentlength"
 
 typedef struct neon_resource_t
 {
@@ -699,8 +699,8 @@ typedef struct neon_resource_t
 // Our equivalent of ne_xml_startelm_cb, the difference being that it
 // returns errors in a error_t, and returns the element type via
 // ELEM.  To ignore the element *ELEM should be set to
-// NEON__XML_DECLINE and WEBDAV_NO_ERROR should be returned.
-// *ELEM can be set to NEON__XML_INVALID to indicate invalid XML
+// NEON_XML_DECLINE and WEBDAV_NO_ERROR should be returned.
+// *ELEM can be set to NEON_XML_INVALID to indicate invalid XML
 // (and abort the parse).
 
 typedef error_t (*neon_startelm_cb_t)(int * elem,
@@ -2150,7 +2150,7 @@ path_join(
   if (WEBDAV_PATH_IS_EMPTY(component))
     return (char *)apr_pmemdup(pool, base, blen + 1);
 
-  if (blen == 1 && base[0] == '/')
+  if ((blen == 1) && (base[0] == '/'))
     blen = 0; // Ignore base, just return separator + component
 
   // Construct the new, combined path.
@@ -2242,7 +2242,7 @@ path_component_count(
 
     start = path;
 
-    while (*path && *path != '/')
+    while (*path && (*path != '/'))
       ++path;
 
     if (path != start)
@@ -2278,10 +2278,10 @@ previous_segment(
   if (len == 0)
     return 0;
 
-  while (len > 0 && path[--len] != '/')
+  while ((len > 0) && (path[--len] != '/'))
     ;
 
-  if (len == 0 && path[0] == '/')
+  if ((len == 0) && (path[0] == '/'))
     return 1;
   else
     return len;
@@ -2333,11 +2333,11 @@ path_is_backpath_present(
   size_t len;
 
   // 0 and 1-length paths do not have a backpath
-  if (path[0] == '\0' || path[1] == '\0')
+  if ((path[0] == '\0') || (path[1] == '\0'))
     return FALSE;
 
   // Handle ".." or a leading "../"
-  if (path[0] == '.' && path[1] == '.' && (path[2] == '\0' || path[2] == '/'))
+  if ((path[0] == '.') && (path[1] == '.') && ((path[2] == '\0') || (path[2] == '/')))
     return TRUE;
 
   // Paths of length 2 (at this point) have no backpath present.
@@ -2350,7 +2350,7 @@ path_is_backpath_present(
 
   // Does the path end in "/.." ?
   len = strlen(path);
-  return path[len - 3] == '/' && path[len - 2] == '.' && path[len - 1] == '.';
+  return (path[len - 3] == '/') && (path[len - 2] == '.') && (path[len - 1] == '.');
 }
 
 //------------------------------------------------------------------------------
@@ -5505,7 +5505,7 @@ canonicalize(
     while (*src && (*src != '/') && (*src != ':'))
       src++;
 
-    if (*src == ':' && *(src+1) == '/' && *(src+2) == '/')
+    if ((*src == ':') && (*(src+1) == '/') && (*(src+2) == '/'))
     {
       const char * seg;
 
@@ -5560,7 +5560,7 @@ canonicalize(
         {
           src += 4;
         }
-        else if (src[1] == '/' || !src[1])
+        else if ((src[1] == '/') || !src[1])
         {
           src += 1;
         }
@@ -5598,7 +5598,7 @@ canonicalize(
 
       // On Windows permit two leading separator characters which means an
       // UNC path.
-      if ((type == type_dirent) && *src == '/')
+      if ((type == type_dirent) && (*src == '/'))
         *(dst++) = *(src++);
     }
     // On Windows the first segment can be a drive letter, which we normalize
@@ -5664,7 +5664,9 @@ canonicalize(
       memcpy(dst, src, seglen);
       dst += seglen;
       if (slash_len)
+      {
         *(dst++) = '/';
+      }
       canon_segments++;
     }
 
@@ -5676,7 +5678,7 @@ canonicalize(
 
   // Skip leading double slashes when there are less than 2
   // canon segments. UNC paths *MUST* have two segments.
-  if ((type == type_dirent) && canon[0] == '/' && canon[1] == '/')
+  if ((type == type_dirent) && (canon[0] == '/') && (canon[1] == '/'))
   {
     if (canon_segments < 2)
       return canon + 1;
@@ -5688,7 +5690,7 @@ canonicalize(
       // Note: normally the share name is treated as case insensitive too,
       // but it seems to be possible to configure Samba to treat those as
       // case sensitive, so better leave that alone.
-      for (dst = canon + 2; *dst && *dst != '/'; dst++)
+      for (dst = canon + 2; *dst && (*dst != '/'); dst++)
         *dst = canonicalize_to_lower(*dst);
     }
   }
@@ -5828,11 +5830,11 @@ skip_uri_scheme(
   size_t j = 0;
 
   // A scheme is terminated by a : and cannot contain any /'s.
-  for (j = 0; path[j] && path[j] != ':'; ++j)
+  for (j = 0; path[j] && (path[j] != ':'); ++j)
     if (path[j] == '/')
       return NULL;
 
-  if (j > 0 && path[j] == ':' && path[j+1] == '/' && path[j+2] == '/')
+  if ((j > 0) && (path[j] == ':') && (path[j+1] == '/') && (path[j+2] == '/'))
     return path + j + 3;
 
   return NULL;
@@ -5891,8 +5893,7 @@ dirent_is_root(
       (dirent[len - 1] != '/'))
   {
     int segments = 0;
-    size_t i;
-    for (i = len; i >= 2; i--)
+    for (size_t i = len; i >= 2; i--)
     {
       if (dirent[i] == '/')
       {
@@ -5905,7 +5906,7 @@ dirent_is_root(
   }
 
   // directory is root if it's equal to '/'
-  if (len == 1 && dirent[0] == '/')
+  if ((len == 1) && (dirent[0] == '/'))
     return TRUE;
 
   return FALSE;
@@ -5933,13 +5934,13 @@ relpath_is_canonical(
   {
     apr_size_t seglen = ptr - seg;
 
-    if (seglen == 1 && *seg == '.')
+    if ((seglen == 1) && (*seg == '.'))
       return FALSE;  //  /./
 
-    if (*ptr == '/' && *(ptr+1) == '/')
+    if ((*ptr == '/') && (*(ptr+1) == '/'))
       return FALSE;  //  //
 
-    if (!*ptr && *(ptr - 1) == '/')
+    if (!*ptr && (*(ptr - 1) == '/'))
       return FALSE;  // foo/
 
     if (!*ptr)
@@ -5967,7 +5968,7 @@ relpath_basename(
   assert(relpath_is_canonical(relpath));
 
   start = len;
-  while (start > 0 && relpath[start - 1] != '/')
+  while ((start > 0) && (relpath[start - 1] != '/'))
     --start;
 
   if (pool)
@@ -6014,8 +6015,8 @@ dirent_canonicalize(
   // append the final '/', as path_canonicalize will chop this of.
   if (((dirent[0] >= 'A' && dirent[0] <= 'Z') ||
       (dirent[0] >= 'a' && dirent[0] <= 'z')) &&
-      dirent[1] == ':' && dirent[2] == '/' &&
-      dst[3] == '\0')
+      (dirent[1] == ':') && (dirent[2] == '/') &&
+      (dst[3] == '\0'))
   {
     char * dst_slash = static_cast<char *>(apr_pcalloc(pool, 4));
     dst_slash[0] = canonicalize_to_upper(dirent[0]);
@@ -6081,7 +6082,7 @@ dirent_basename(
   {
     start = len;
     while ((start > 0) && (dirent[start - 1] != '/') &&
-          (dirent[start - 1] != ':'))
+      (dirent[start - 1] != ':'))
     {
       --start;
     }
@@ -6197,11 +6198,10 @@ is_child(
 
      Check for '//' to avoid matching '/' and '//srv'.
   */
-  if (path1[i] == '\0' && path2[i])
+  if ((path1[i] == '\0') && path2[i])
   {
     if ((path1[i - 1] == '/') ||
-        ((type == type_dirent) && path1[i - 1] == ':')
-    )
+        ((type == type_dirent) && path1[i - 1] == ':'))
     {
       if (path2[i] == '/')
         /* .../
@@ -7152,11 +7152,13 @@ path_from_url(
   // Look for the scheme/authority separator.  Stop if we see a path
   // separator - that indicates that this definitely isn't an absolute URL.
   for (p = url; *p; p++)
-    if (*p == ':' || *p == '/')
+  {
+    if ((*p == ':') || (*p == '/'))
       break;
+  }
 
   // Check whether we found the scheme/authority separator.
-  if (*p++ != ':' || *p++ != '/' || *p++ != '/')
+  if ((*p++ != ':') || (*p++ != '/') || (*p++ != '/'))
   {
     // No separator, so it must already be relative.
     return url;
@@ -7165,8 +7167,10 @@ path_from_url(
   // Find the end of the authority section, indicated by the start of
   // a path, query, or fragment section.
   for (; *p; p++)
-    if (*p == '/' || *p == '?' || *p == '#')
+  {
+    if ((*p == '/') || (*p == '?') || (*p == '#'))
       break;
+  }
 
   // Return a pointer to the rest of the URL, or to "/" if there
   // was no next section.
@@ -7184,12 +7188,12 @@ static const neon_xml_elm_t multistatus_elements[] =
   { "DAV:", "response", ELEM_response, 0 },
   {
     "DAV:", "responsedescription", ELEM_responsedescription,
-    NEON__XML_CDATA
+    NEON_XML_CDATA
   },
-  { "DAV:", "status", ELEM_status, NEON__XML_CDATA },
-  { "DAV:", "href", ELEM_href, NEON__XML_CDATA },
-  { "DAV:", "propstat", ELEM_propstat, NEON__XML_CDATA },
-  { "DAV:", "prop", ELEM_prop, NEON__XML_CDATA },
+  { "DAV:", "status", ELEM_status, NEON_XML_CDATA },
+  { "DAV:", "href", ELEM_href, NEON_XML_CDATA },
+  { "DAV:", "propstat", ELEM_propstat, NEON_XML_CDATA },
+  { "DAV:", "prop", ELEM_prop, NEON_XML_CDATA },
 
   // We start out basic and are not interested in other elements
   { "", "", ELEM_unknown, 0 },
@@ -7199,24 +7203,24 @@ static const neon_xml_elm_t multistatus_elements[] =
 
 static const int multistatus_nesting_table[][5] =
 {
-  { ELEM_root, ELEM_multistatus, NEON__XML_INVALID },
+  { ELEM_root, ELEM_multistatus, NEON_XML_INVALID },
   {
     ELEM_multistatus, ELEM_response, ELEM_responsedescription,
-    NEON__XML_DECLINE
+    NEON_XML_DECLINE
   },
-  { ELEM_responsedescription, NEON__XML_INVALID },
+  { ELEM_responsedescription, NEON_XML_INVALID },
   {
     ELEM_response, ELEM_href, ELEM_status, ELEM_propstat,
-    NEON__XML_DECLINE
+    NEON_XML_DECLINE
   },
-  { ELEM_status, NEON__XML_INVALID },
-  { ELEM_href, NEON__XML_INVALID },
+  { ELEM_status, NEON_XML_INVALID },
+  { ELEM_href, NEON_XML_INVALID },
   {
     ELEM_propstat, ELEM_prop, ELEM_status, ELEM_responsedescription,
-    NEON__XML_INVALID
+    NEON_XML_INVALID
   },
-  { ELEM_prop, NEON__XML_DECLINE },
-  { NEON__XML_DECLINE },
+  { ELEM_prop, NEON_XML_DECLINE },
+  { NEON_XML_DECLINE },
 };
 
 static int
@@ -7268,7 +7272,7 @@ start_207_element(
   multistatus_baton_t * b = static_cast<multistatus_baton_t *>(baton);
   const neon_xml_elm_t * elm =
     neon_lookup_xml_elem(multistatus_elements, nspace, name);
-  *elem = elm ? multistatus_validate_element(parent, elm->id) : NEON__XML_DECLINE;
+  *elem = elm ? multistatus_validate_element(parent, elm->id) : NEON_XML_DECLINE;
 
   if (parent == ELEM_prop)
   {
@@ -7293,8 +7297,8 @@ start_207_element(
       break;
   }
 
-  // We're guaranteed to have ELM now: NEON__XML_DECLINE < 1
-  if (elm->flags & NEON__XML_CDATA)
+  // We're guaranteed to have ELM now: NEON_XML_DECLINE < 1
+  if (elm->flags & NEON_XML_CDATA)
   {
     stringbuf_setempty(b->cdata);
     b->want_cdata = b->cdata;
@@ -7461,8 +7465,7 @@ cancellation_callback(
 
   if (ras->callbacks->cancel_func)
   {
-    NEON__REQ_ERR(b->req,
-     (ras->callbacks->cancel_func)(ras->callback_baton));
+    NEON_REQ_ERR(b->req, (ras->callbacks->cancel_func)(ras->callback_baton));
   }
   if (b->req->err)
     return 1;
@@ -7505,7 +7508,8 @@ ra_neon_body_provider(
   if (req->sess->callbacks &&
       req->sess->callbacks->cancel_func)
   {
-    NEON__REQ_ERR(req, (req->sess->callbacks->cancel_func)(req->sess->callback_baton));
+    NEON_REQ_ERR(req, (req->sess->callbacks->cancel_func)(
+      req->sess->callback_baton));
   }
 
   if (req->err)
@@ -7516,8 +7520,7 @@ ra_neon_body_provider(
   {
     // This is the beginning of a new body pull. Rewind the file.
     apr_off_t offset = 0;
-    NEON__REQ_ERR(b->req,
-     io_file_seek(body_file, APR_SET, &offset, req->iterpool));
+    NEON_REQ_ERR(b->req, io_file_seek(body_file, APR_SET, &offset, req->iterpool));
     return (req->err ? -1 : 0);
   }
   else
@@ -7541,7 +7544,7 @@ ra_neon_body_provider(
         return 0;
       }
 
-      NEON__REQ_ERR(req, err);
+      NEON_REQ_ERR(req, err);
       return -1;
     }
     else
@@ -7694,12 +7697,12 @@ neon_add_depth_header(
   int depth)
 {
   assert(extra_headers != NULL);
-  assert(depth == NEON__DEPTH_ZERO ||
-         depth == NEON__DEPTH_ONE ||
-         depth == NEON__DEPTH_INFINITE);
+  assert(depth == NEON_DEPTH_ZERO ||
+         depth == NEON_DEPTH_ONE ||
+         depth == NEON_DEPTH_INFINITE);
   apr_hash_set(extra_headers, "Depth", APR_HASH_KEY_STRING,
-               (depth == NEON__DEPTH_INFINITE) ?
-                 "infinity" : (depth == NEON__DEPTH_ZERO) ? "0" : "1");
+               (depth == NEON_DEPTH_INFINITE) ?
+                 "infinity" : (depth == NEON_DEPTH_ZERO) ? "0" : "1");
 
   return;
 }
@@ -7776,7 +7779,7 @@ static const neon_xml_elm_t error_elements[] =
   { "DAV:", "error", ELEM_error, 0 },
   {
     "http://apache.org/dav/xmlns", "human-readable",
-    ELEM_human_readable, NEON__XML_CDATA
+    ELEM_human_readable, NEON_XML_CDATA
   },
 
   // our validator doesn't yet recognize the rich, specific
@@ -7825,17 +7828,17 @@ validate_error_elements(
       if (child == ELEM_error)
         return child;
       else
-        return NEON__XML_INVALID;
+        return NEON_XML_INVALID;
 
     case ELEM_error:
       if ((child == ELEM_error) ||
           (child == ELEM_human_readable))
         return child;
       else
-        return NEON__XML_DECLINE;  // ignore if something else
+        return NEON_XML_DECLINE;  // ignore if something else
                                    // was in there
     default:
-      return NEON__XML_DECLINE;
+      return NEON_XML_DECLINE;
   }
 
   // NOTREACHED
@@ -7939,7 +7942,7 @@ start_err_element(
   const char ** atts)
 {
   const neon_xml_elm_t * elm = neon_lookup_xml_elem(error_elements, nspace, name);
-  int acc = elm ? validate_error_elements(parent, elm->id) : NEON__XML_DECLINE;
+  int acc = elm ? validate_error_elements(parent, elm->id) : NEON_XML_DECLINE;
   error_parser_baton_t * b = static_cast<error_parser_baton_t *>(baton);
   error_t * err = &(b->tmp_err);
 
@@ -8024,7 +8027,7 @@ end_err_element(
         if (*cd == '\n')
           ++cd;
         len = strlen(cd);
-        if (len > 0 && cd[len-1] == '\n')
+        if (len > 0 && cd[len - 1] == '\n')
           --len;
       }
       break;
@@ -8151,18 +8154,17 @@ wrapper_startelm_cb(
   const char ** atts)
 {
   parser_wrapper_baton_t * pwb = static_cast<parser_wrapper_baton_t *>(baton);
-  int elem = NEON__XML_DECLINE;
+  int elem = NEON_XML_DECLINE;
 
   if (pwb->startelm_cb)
   {
-    NEON__REQ_ERR(pwb->req,
-     pwb->startelm_cb(&elem, pwb->baton, parent, nspace, name, atts));
+    NEON_REQ_ERR(pwb->req, pwb->startelm_cb(&elem, pwb->baton, parent, nspace,
+      name, atts));
   }
 
-  if (elem == NEON__XML_INVALID)
+  if (elem == NEON_XML_INVALID)
   {
-    NEON__REQ_ERR(pwb->req,
-     error_create(WEBDAV_ERR_XML_MALFORMED, NULL, NULL));
+    NEON_REQ_ERR(pwb->req, error_create(WEBDAV_ERR_XML_MALFORMED, NULL, NULL));
   }
 
   if (pwb->req->err)
@@ -8182,8 +8184,7 @@ wrapper_cdata_cb(
 
   if (pwb->cdata_cb)
   {
-    NEON__REQ_ERR(pwb->req,
-     pwb->cdata_cb(pwb->baton, state, cdata, len));
+    NEON_REQ_ERR(pwb->req, pwb->cdata_cb(pwb->baton, state, cdata, len));
   }
 
   if (pwb->req->err)
@@ -8203,8 +8204,7 @@ wrapper_endelm_cb(
 
   if (pwb->endelm_cb)
   {
-    NEON__REQ_ERR(pwb->req,
-     pwb->endelm_cb(pwb->baton, state, nspace, name));
+    NEON_REQ_ERR(pwb->req, pwb->endelm_cb(pwb->baton, state, nspace, name));
   }
 
   if (pwb->req->err)
@@ -8243,8 +8243,7 @@ wrapper_reader_cb(
 
   if (sess->callbacks->cancel_func)
   {
-    NEON__REQ_ERR(pwb->req,
-     (sess->callbacks->cancel_func)(sess->callback_baton));
+    NEON_REQ_ERR(pwb->req, (sess->callbacks->cancel_func)(sess->callback_baton));
   }
 
   if (pwb->req->err)
@@ -8254,10 +8253,9 @@ wrapper_reader_cb(
   if (parser_status)
   {
     // Pass XML parser error.
-    NEON__REQ_ERR(pwb->req,
-      neon_check_parse_error(pwb->req->method,
-        pwb->parser,
-        pwb->req->url));
+    NEON_REQ_ERR(pwb->req, neon_check_parse_error(pwb->req->method,
+      pwb->parser,
+      pwb->req->url));
   }
 
   return parser_status;
@@ -8447,9 +8445,10 @@ get_path_relative_to_session(
   {
     *rel_path = uri_is_child(sess_url, url, pool);
     if (!*rel_path)
+    {
       return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
-        "'%s' isn't a child of session URL '%s'",
-        url, sess_url);
+        "'%s' isn't a child of session URL '%s'", url, sess_url);
+    }
   }
   return WEBDAV_NO_ERROR;
 }
@@ -8496,9 +8495,10 @@ client_path_relative_to_root(
     if (err)
     {
       if (err == WEBDAV_ERR_ILLEGAL_URL)
+      {
         return error_createf(WEBDAV_ERR_CLIENT_UNRELATED_RESOURCES, &err,
-          "URL '%s' is not inside WebDAV resource root",
-          abspath_or_url);
+          "URL '%s' is not inside WebDAV resource root", abspath_or_url);
+      }
 
       return error_trace(err);
     }
@@ -8551,7 +8551,7 @@ body_reader_wrapper(
     // We already had an error? Bail out.
     return 1;
 
-  NEON__REQ_ERR(b->req, b->real_reader(b->real_baton, data, len));
+  NEON_REQ_ERR(b->req, b->real_reader(b->real_baton, data, len));
 
   if (b->req->err)
     return 1;
@@ -8632,8 +8632,8 @@ get_file_reader(
   if (cgc->req->sess->callbacks &&
       cgc->req->sess->callbacks->cancel_func)
   {
-    NEON__REQ_ERR(cgc->req,
-      (cgc->req->sess->callbacks->cancel_func)(cgc->req->sess->callback_baton));
+    NEON_REQ_ERR(cgc->req, (cgc->req->sess->callbacks->cancel_func)(
+      cgc->req->sess->callback_baton));
   }
 
   assert(cgc->callback_baton);
@@ -8761,10 +8761,10 @@ get_path_relative_to_root(
   {
     *rel_path = uri_is_child(root_url, url, pool);
     if (!*rel_path)
+    {
       return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
-        "'%s' isn't a child of root "
-        "URL '%s'",
-        url, root_url);
+        "'%s' isn't a child of root URL '%s'", url, root_url);
+    }
   }
 
   return WEBDAV_NO_ERROR;
@@ -8809,10 +8809,11 @@ session_open(
 
   ne_uri * webdav_URI = NULL;
   error_t err = parse_ne_uri(&webdav_URI, session_URL, sesspool);
-  if (err != WEBDAV_NO_ERROR || webdav_URI->host == NULL)
+  if ((err != WEBDAV_NO_ERROR) || (webdav_URI->host == NULL))
+  {
     return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
-      "Illegal URL '%s'",
-      session_URL);
+      "Illegal URL '%s'", session_URL);
+  }
 
   // Auth caching parameters.
   bool store_passwords = WEBDAV_CONFIG_DEFAULT_OPTION_STORE_PASSWORDS;
@@ -10164,7 +10165,7 @@ get_dir_contents(
 
 static const neon_xml_elm_t options_elements[] =
 {
-  { "DAV:", "href", ELEM_href, NEON__XML_CDATA },
+  { "DAV:", "href", ELEM_href, NEON_XML_CDATA },
   { "DAV:", "options-response", ELEM_options_response, 0 },
 
   { NULL }
@@ -10191,13 +10192,13 @@ options_validate_element(
       if (child == ELEM_options_response)
         return child;
       else
-        return NEON__XML_INVALID;
+        return NEON_XML_INVALID;
 
     case ELEM_options_response:
-      return NEON__XML_DECLINE; // not concerned with other response
+      return NEON_XML_DECLINE; // not concerned with other response
 
     default:
-      return NEON__XML_DECLINE;
+      return NEON_XML_DECLINE;
   }
 
   // NOTREACHED
@@ -10215,7 +10216,7 @@ options_start_element(
   options_ctx_t * oc = static_cast<options_ctx_t *>(baton);
   const neon_xml_elm_t * elm = neon_lookup_xml_elem(options_elements, nspace, name);
 
-  *elem = elm ? options_validate_element(parent, elm->id) : NEON__XML_DECLINE;
+  *elem = elm ? options_validate_element(parent, elm->id) : NEON_XML_DECLINE;
   if (*elem < 1)  // Not a valid element
     return WEBDAV_NO_ERROR;
 
@@ -10261,7 +10262,7 @@ neon_exchange_capabilities(
   // ### Use a symbolic name somewhere for this MIME type?
   ne_add_request_header(req->ne_req, "Content-Type", "text/xml");
   apr_hash_t * extra_headers = apr_hash_make(pool);
-  neon_add_depth_header(extra_headers, NEON__DEPTH_ZERO);
+  neon_add_depth_header(extra_headers, NEON_DEPTH_ZERO);
 
   // Create a parser to read the normal response body
   parser = neon_xml_parser_create(req, ne_accept_2xx, options_start_element,
@@ -10442,9 +10443,10 @@ neon_search_for_starting_props(
 
   // error out if entire URL was bogus)
   if (path_is_empty(path_s->data))
+  {
     return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
-      "No part of path '%s' was found in "
-      "WebDAV resource", parsed_url.path);
+      "No part of path '%s' was found in WebDAV resource", parsed_url.path);
+  }
 
   // Duplicate rsrc out of iterpool into pool
   {
@@ -10565,15 +10567,15 @@ static const elem_defn elem_definitions[] =
   // DAV elements
   { ELEM_multistatus, "DAV:multistatus", 0 },
   { ELEM_response, "DAV:response", 0 },
-  { ELEM_href, "DAV:href", NEON__XML_CDATA },
+  { ELEM_href, "DAV:href", NEON_XML_CDATA },
   { ELEM_propstat, "DAV:propstat", 0 },
   { ELEM_prop, "DAV:prop", 0 },
-  { ELEM_status, "DAV:status", NEON__XML_CDATA },
-  { ELEM_baseline, "DAV:baseline", NEON__XML_CDATA },
-  { ELEM_collection, "DAV:collection", NEON__XML_CDATA },
+  { ELEM_status, "DAV:status", NEON_XML_CDATA },
+  { ELEM_baseline, "DAV:baseline", NEON_XML_CDATA },
+  { ELEM_collection, "DAV:collection", NEON_XML_CDATA },
   { ELEM_resourcetype, "DAV:resourcetype", 0 },
-  { ELEM_get_content_length, NEON__PROP_GETCONTENTLENGTH, 1 },
-  { ELEM_creationdate, NEON__PROP_CREATIONDATE, 1 },
+  { ELEM_get_content_length, NEON_PROP_GETCONTENTLENGTH, 1 },
+  { ELEM_creationdate, NEON_PROP_CREATIONDATE, 1 },
 
   { 0 }
 };
@@ -10586,23 +10588,23 @@ static const neon_xml_elm_t propfind_elements[] =
   // DAV elements
   { "DAV:", "multistatus", ELEM_multistatus, 0 },
   { "DAV:", "response", ELEM_response, 0 },
-  { "DAV:", "href", ELEM_href, NEON__XML_CDATA },
+  { "DAV:", "href", ELEM_href, NEON_XML_CDATA },
   { "DAV:", "propstat", ELEM_propstat, 0 },
   { "DAV:", "prop", ELEM_prop, 0 },
-  { "DAV:", "status", ELEM_status, NEON__XML_CDATA },
-  { "DAV:", "baseline", ELEM_baseline, NEON__XML_CDATA },
-  { "DAV:", "baseline-collection", ELEM_baseline_coll, NEON__XML_CDATA },
-  { "DAV:", "collection", ELEM_collection, NEON__XML_CDATA },
+  { "DAV:", "status", ELEM_status, NEON_XML_CDATA },
+  { "DAV:", "baseline", ELEM_baseline, NEON_XML_CDATA },
+  { "DAV:", "baseline-collection", ELEM_baseline_coll, NEON_XML_CDATA },
+  { "DAV:", "collection", ELEM_collection, NEON_XML_CDATA },
   { "DAV:", "resourcetype", ELEM_resourcetype, 0 },
-  { "DAV:", "getcontentlength", ELEM_get_content_length, NEON__XML_CDATA },
-  { "DAV:", "getlastmodified", ELEM_get_last_modified, NEON__XML_CDATA },
+  { "DAV:", "getcontentlength", ELEM_get_content_length, NEON_XML_CDATA },
+  { "DAV:", "getlastmodified", ELEM_get_last_modified, NEON_XML_CDATA },
   {
     "DAV:", "creator-displayname", ELEM_creator_displayname,
-    NEON__XML_CDATA
+    NEON_XML_CDATA
   },
 
   // Unknowns
-  { "", "", ELEM_unknown, NEON__XML_COLLECT },
+  { "", "", ELEM_unknown, NEON_XML_COLLECT },
 
   { NULL }
 };
@@ -10649,7 +10651,7 @@ assign_rsrc_url(
 
   // Clean up trailing slashes from the URL.
   len = strlen(url_path);
-  if (len > 1 && url_path[len - 1] == '/')
+  if ((len > 1) && (url_path[len - 1] == '/'))
     url_path[len - 1] = '\0';
   rsrc->url = url_path;
 
@@ -10658,7 +10660,7 @@ assign_rsrc_url(
 
 // Determine whether we're receiving the expected XML response.
 // Return CHILD when interested in receiving the child's contents
-// or one of NEON__XML_INVALID and NEON__XML_DECLINE
+// or one of NEON_XML_INVALID and NEON_XML_DECLINE
 // when respectively this is the incorrect response or
 // the element (and its children) are uninteresting
 static int
@@ -10672,25 +10674,25 @@ props_validate_element(
       if (child == ELEM_multistatus)
         return child;
       else
-        return NEON__XML_INVALID;
+        return NEON_XML_INVALID;
 
     case ELEM_multistatus:
       if (child == ELEM_response)
         return child;
       else
-        return NEON__XML_DECLINE;
+        return NEON_XML_DECLINE;
 
     case ELEM_response:
       if ((child == ELEM_href) || (child == ELEM_propstat))
         return child;
       else
-        return NEON__XML_DECLINE;
+        return NEON_XML_DECLINE;
 
     case ELEM_propstat:
       if ((child == ELEM_prop) || (child == ELEM_status))
         return child;
       else
-        return NEON__XML_DECLINE;
+        return NEON_XML_DECLINE;
 
     case ELEM_prop:
       return child; // handle all children of <prop>
@@ -10701,11 +10703,11 @@ props_validate_element(
       if ((child == ELEM_collection) || (child == ELEM_baseline))
         return child;
       else
-        return NEON__XML_DECLINE; // not concerned with other types
+        return NEON_XML_DECLINE; // not concerned with other types
                                   // (### now)
 
     default:
-      return NEON__XML_DECLINE;
+      return NEON_XML_DECLINE;
   }
 
   // NOTREACHED
@@ -10723,7 +10725,7 @@ props_start_element(
   propfind_ctx_t * pc = static_cast<propfind_ctx_t *>(baton);
   const neon_xml_elm_t * elm = neon_lookup_xml_elem(propfind_elements, nspace, name);
 
-  *elem = elm ? props_validate_element(parent, elm->id) : NEON__XML_DECLINE;
+  *elem = elm ? props_validate_element(parent, elm->id) : NEON_XML_DECLINE;
   if (*elem < 1)  // not a valid element
     return WEBDAV_NO_ERROR;
 
@@ -10971,10 +10973,10 @@ neon_get_props_resource(
   char * url_path = apr_pstrdup(pool, url);
   apr_size_t len = strlen(url);
   // Clean up any trailing slashes.
-  if (len > 1 && url[len - 1] == '/')
+  if ((len > 1) && (url[len - 1] == '/'))
     url_path[len - 1] = '\0';
 
-  WEBDAV_ERR(neon_get_props(&props, sess, url_path, NEON__DEPTH_ZERO,
+  WEBDAV_ERR(neon_get_props(&props, sess, url_path, NEON_DEPTH_ZERO,
     which_props, check_errors, pool));
 
   // HACK.  We need to have the client canonicalize paths, get rid
@@ -11154,7 +11156,7 @@ client_move_file_or_directory(
 
   apr_hash_t * extra_headers = apr_hash_make(pool);
   apr_hash_set(extra_headers, "Destination", APR_HASH_KEY_STRING, target_to);
-  neon_add_depth_header(extra_headers, NEON__DEPTH_INFINITE);
+  neon_add_depth_header(extra_headers, NEON_DEPTH_INFINITE);
   err = neon_simple_request(&code, ras, "MOVE", target_from,
     extra_headers, NULL,
     201 /* Created */,
@@ -11218,7 +11220,7 @@ client_check_path(
 
   const char * rel_path = NULL;
   apr_size_t len = strlen(target);
-  if (len > 1 && (target)[len - 1] == '/')
+  if ((len > 1) && ((target)[len - 1] == '/'))
   {
     (target)[len - 1] = '\0';
   }
@@ -11293,7 +11295,7 @@ client_send_propfind_request(
   const char * target = path_uri_encode(remote_path, pool);
   char * url_path = apr_pstrdup(pool, target);
 
-  WEBDAV_ERR(neon_get_props(&props, ras, url_path, NEON__DEPTH_ZERO,
+  WEBDAV_ERR(neon_get_props(&props, ras, url_path, NEON_DEPTH_ZERO,
     starting_props,
     false,
     pool));
@@ -12194,7 +12196,7 @@ neon_get_dir(
     // PROPFIND on the directory of depth 1.
     apr_hash_t * resources = NULL;
     WEBDAV_ERR(neon_get_props(&resources, ras,
-      final_url, NEON__DEPTH_ONE,
+      final_url, NEON_DEPTH_ONE,
       starting_props,
       false,
       pool));
@@ -12221,7 +12223,7 @@ neon_get_dir(
       resource = static_cast<neon_resource_t *>(val);
 
       // Skip the effective '.' entry that comes back from
-      // NEON__DEPTH_ONE. The children must have one more
+      // NEON_DEPTH_ONE. The children must have one more
       // component then final_url.
       // Note that we can't just strcmp the URLs because of URL encoding
       // differences (i.e. %3c vs. %3C etc.)
@@ -12240,7 +12242,7 @@ neon_get_dir(
       {
         // size
         propval = static_cast<const string_t *>(apr_hash_get(resource->propset,
-          NEON__PROP_GETCONTENTLENGTH,
+          NEON_PROP_GETCONTENTLENGTH,
           APR_HASH_KEY_STRING));
         if (propval == NULL)
           entry->size = 0;
@@ -12251,7 +12253,7 @@ neon_get_dir(
       if (dirent_fields & WEBDAV_DIRENT_TIME)
       {
         propval = static_cast<const string_t *>(apr_hash_get(resource->propset,
-          NEON__PROP_CREATIONDATE,
+          NEON_PROP_CREATIONDATE,
           APR_HASH_KEY_STRING));
         if (propval != NULL)
           WEBDAV_ERR(time_from_cstring(&(entry->time),
@@ -12335,7 +12337,7 @@ neon_stat(
   // Depth-zero PROPFIND is the One True DAV Way.
   apr_hash_t * resources = NULL;
   error_t err = neon_get_props(&resources, ras, final_url,
-    NEON__DEPTH_ZERO,
+    NEON_DEPTH_ZERO,
     starting_props,
     false,
     pool);
@@ -12371,14 +12373,14 @@ neon_stat(
     if (entry->kind == node_file)
     {
       propval = static_cast<const string_t *>(apr_hash_get(resource->propset,
-        NEON__PROP_GETCONTENTLENGTH,
+        NEON_PROP_GETCONTENTLENGTH,
         APR_HASH_KEY_STRING));
       if (propval)
         entry->size = atoui64(propval->data);
     }
 
     propval = static_cast<const string_t *>(apr_hash_get(resource->propset,
-      NEON__PROP_CREATIONDATE,
+      NEON_PROP_CREATIONDATE,
       APR_HASH_KEY_STRING));
     if (propval != NULL)
       WEBDAV_ERR(time_from_cstring(&(entry->time),
@@ -13124,7 +13126,10 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
       catch (EScpSkipFile & E)
       {
         SUSPEND_OPERATION (
-          if (!FTerminal->HandleException(&E)) throw;
+          if (!FTerminal->HandleException(&E))
+          {
+            throw;
+          }
         );
       }
     }
@@ -13369,13 +13374,11 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
     FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
   // create DestFullName if it does not exist
+  int IsDir = 0;
+  bool Exists = WebDAVCheckExisting(DestFullName.c_str(), IsDir);
+  if (!Exists)
   {
-    int is_dir = 0;
-    bool isExist = WebDAVCheckExisting(DestFullName.c_str(), is_dir);
-    if (!isExist)
-    {
       CreateDirectory(DestFullName);
-    }
   }
 
   OperationProgress->SetFile(DirectoryName);
@@ -13421,7 +13424,10 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
           // here a message to user was displayed, which was not appropriate
           // when user refused to overwrite the file in subdirectory.
           // hopefuly it won't be missing in other situations.
-          if (!FTerminal->HandleException(&E)) throw;
+          if (!FTerminal->HandleException(&E))
+          {
+            throw;
+          }
         );
       }
 
@@ -13535,7 +13541,10 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
       catch (EScpSkipFile & E)
       {
         SUSPEND_OPERATION (
-          if (!FTerminal->HandleException(&E)) throw;
+          if (!FTerminal->HandleException(&E))
+          {
+            throw;
+          }
         );
       }
     }
@@ -13810,7 +13819,10 @@ void TWebDAVFileSystem::SinkFile(const UnicodeString & FileName,
 
     Params->Skipped = true;
     SUSPEND_OPERATION (
-      if (!FTerminal->HandleException(&E)) { throw; }
+      if (!FTerminal->HandleException(&E))
+      {
+        throw;
+      }
     );
 
     if (OperationProgress->Cancel)
@@ -14360,12 +14372,16 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
   {
     int l_proxy_port = Data->GetProxyPort();
     if (l_proxy_port < 0)
+    {
       return webdav::error_create(WEBDAV_ERR_ILLEGAL_URL, NULL,
         "Invalid URL: negative proxy port number");
+    }
     if (l_proxy_port > 65535)
+    {
       return webdav::error_create(WEBDAV_ERR_ILLEGAL_URL, NULL,
         "Invalid URL: proxy port number greater "
         "than maximum TCP port number 65535");
+    }
     *proxy_port = l_proxy_port;
   }
 
