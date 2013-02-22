@@ -2880,7 +2880,10 @@ void TTerminal::ReadFile(const UnicodeString & FileName,
   }
   catch (Exception &E)
   {
-    if (File) { delete File; }
+    if (File)
+    {
+      delete File;
+    }
     File = NULL;
     CommandError(&E, FMTLOAD(CANT_GET_ATTRS, FileName.c_str()));
   }
