@@ -2623,10 +2623,13 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
 //---------------------------------------------------------------------------
 void TTerminal::LogFile(TRemoteFile * File)
 {
-  LogEvent(FORMAT(L"%s;%c;%lld;%s;%s;%s;%s;%d",
-    File->GetFileName().c_str(), File->GetType(), File->GetSize(), StandardTimestamp(File->GetModification()).c_str(),
-    File->GetFileOwner().GetLogText().c_str(), File->GetFileGroup().GetLogText().c_str(), File->GetRights()->GetText().c_str(),
-    File->GetAttr()));
+  if (File)
+  {
+    LogEvent(FORMAT(L"%s;%c;%lld;%s;%s;%s;%s;%d",
+      File->GetFileName().c_str(), File->GetType(), File->GetSize(), StandardTimestamp(File->GetModification()).c_str(),
+      File->GetFileOwner().GetLogText().c_str(), File->GetFileGroup().GetLogText().c_str(), File->GetRights()->GetText().c_str(),
+      File->GetAttr()));
+  }
 }
 //------------------------------------------------------------------------------
 void TTerminal::CustomReadDirectory(TRemoteFileList * FileList)
