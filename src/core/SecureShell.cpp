@@ -1500,7 +1500,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result)
     }
     TRACE_CATCH_ALL
     {
-      // TRACE_EXCEPT;
+      TRACE_EXCEPT;
       // if we let the exception out, it may popup another message dialog
       // in whole event loop, another call to PoolForData from original dialog
       // would be invoked, leading to an infinite loop.

@@ -321,7 +321,7 @@ inline bool DoAlwaysTrue(bool Value, wchar_t * Message, wchar_t * Filename, int 
 #define TRACE_EXCEPT_BEGIN try {
 #define TRACE_EXCEPT_END } catch (Exception & TraceE) { TRACEFMT("E [%s]", TraceE.Message.c_str()); throw; }
 #define TRACE_CATCH_ALL catch (Exception & TraceE)
-#define TRACEE_(E) TRACEFMT(#E" [%s]", E.Message.c_str())
+#define TRACEE_(E) TRACEFMT(#E L" [%s]", E.Message.c_str())
 #define TRACEE TRACEE_(E)
 #define TRACE_EXCEPT TRACEE_(TraceE)
 #define ALWAYS_TRUE(p) DoAlwaysTrue(p, TEXT(#p), TEXT(__FILE__), __LINE__)
