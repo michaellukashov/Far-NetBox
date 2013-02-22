@@ -258,20 +258,20 @@ unsigned GetTranslationCount(void * FileInfo)
 }
 //---------------------------------------------------------------------------
 // Return i-th translation in the file version info translation list
-TTranslation GetTranslation(void * FileInfo, unsigned i)
+TTranslation GetTranslation(void * FileInfo, unsigned I)
 {
   CALLSTACK;
-  PTranslations P;
+  PTranslations P = NULL;
   UINT Len;
 
   TRACE("GetTranslation 1");
   if (!VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
     throw Exception(L"File info translations not available");
   TRACE("GetTranslation 2");
-  if (i * sizeof(TTranslation) >= Len)
+  if (I * sizeof(TTranslation) >= Len)
     throw Exception(L"Specified translation not available");
   TRACE("GetTranslation 3");
-  return P[i];
+  return P[I];
 }
 //---------------------------------------------------------------------------
 // Return the name of the specified language

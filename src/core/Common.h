@@ -126,7 +126,8 @@ bool UsesDaylightHack();
 TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day);
 TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec);
 TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode);
-TDateTime ConvertFileTimestampFromUTC(TDateTime DateTime);
+TDateTime ConvertTimestampToUTC(TDateTime DateTime);
+TDateTime ConvertTimestampFromUTC(TDateTime DateTime);
 FILETIME DateTimeToFileTime(const TDateTime DateTime, TDSTMode DSTMode);
 TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode);
 void UnifyDateTimePrecision(TDateTime & DateTime1, TDateTime & DateTime2);
@@ -140,6 +141,8 @@ UnicodeString StandardTimestamp(const TDateTime & DateTime);
 UnicodeString StandardTimestamp();
 UnicodeString GetTimeZoneLogString();
 int CompareFileTime(TDateTime T1, TDateTime T2);
+int TimeToMSec(TDateTime T);
+int TimeToMinutes(TDateTime T);
 //---------------------------------------------------------------------------
 template<class MethodT>
 MethodT MakeMethod(void * Data, void * Code)
@@ -168,35 +171,6 @@ public:
 
 private:
   TCriticalSection * FCriticalSection;
-};
-//---------------------------------------------------------------------------
-template<class T>
-class TValueRestorer
-{
-public:
-  inline TValueRestorer(T & Target, const T & Value) :
-    FTarget(Target),
-    FValue(Value)
-  {
-  }
-
-  inline ~TValueRestorer()
-  {
-    FTarget = FValue;
-  }
-
-private:
-  T & FTarget;
-  T FValue;
-};
-//---------------------------------------------------------------------------
-class TBoolRestorer : TValueRestorer<bool>
-{
-public:
-  inline TBoolRestorer(bool & Target) :
-    TValueRestorer<bool>(Target, !Target)
-  {
-  }
 };
 //---------------------------------------------------------------------------
 //!CLEANBEGIN
@@ -347,7 +321,7 @@ inline bool DoAlwaysTrue(bool Value, wchar_t * Message, wchar_t * Filename, int 
 #define TRACE_EXCEPT_BEGIN try {
 #define TRACE_EXCEPT_END } catch (Exception & TraceE) { TRACEFMT("E [%s]", TraceE.Message.c_str()); throw; }
 #define TRACE_CATCH_ALL catch (Exception & TraceE)
-#define TRACEE_(E) TRACEFMT(#E" [%s]", E.Message.c_str())
+#define TRACEE_(E) TRACEFMT(#E L" [%s]", E.Message.c_str())
 #define TRACEE TRACEE_(E)
 #define TRACE_EXCEPT TRACEE_(TraceE)
 #define ALWAYS_TRUE(p) DoAlwaysTrue(p, TEXT(#p), TEXT(__FILE__), __LINE__)
@@ -356,6 +330,51 @@ inline bool DoAlwaysTrue(bool Value, wchar_t * Message, wchar_t * Filename, int 
 #ifndef USEDPARAM
 #define USEDPARAM(p) void(p);
 #endif
+//---------------------------------------------------------------------------
+template<class T>
+class TValueRestorer
+{
+public:
+  inline explicit TValueRestorer(T & Target, const T & Value) :
+    FTarget(Target),
+    FValue(Value)
+  {
+  }
+
+  inline ~TValueRestorer()
+  {
+    FTarget = FValue;
+  }
+
+protected:
+  T & FTarget;
+  T FValue;
+};
+//---------------------------------------------------------------------------
+class TBoolRestorer : TValueRestorer<bool>
+{
+public:
+  inline explicit TBoolRestorer(bool & Target) :
+    TValueRestorer<bool>(Target, !Target)
+  {
+  }
+};
+//---------------------------------------------------------------------------
+class TAutoNestingCounter : TValueRestorer<int>
+{
+public:
+  inline explicit TAutoNestingCounter(int & Target) :
+    TValueRestorer<int>(Target, Target)
+  {
+    assert(Target >= 0);
+    ++Target;
+  }
+
+  inline ~TAutoNestingCounter()
+  {
+    assert(FTarget == (FValue + 1));
+  }
+};
 //---------------------------------------------------------------------------
 struct TVersionInfo
 {

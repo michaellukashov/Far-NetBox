@@ -1,5 +1,6 @@
 #define PUTTY_DO_GLOBALS
 #define _CRT_SECURE_NO_WARNINGS
+#define _CRT_NON_CONFORMING_SWPRINTFS
 
 #pragma warning(push)
 #pragma warning(disable: 4068) // unknown pragma

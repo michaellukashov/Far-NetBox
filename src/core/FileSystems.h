@@ -25,7 +25,7 @@ const int dfNoRecursive = 0x01;
 const int dfAlternative = 0x02;
 const int dfForceDelete = 0x04;
 //---------------------------------------------------------------------------
-enum TOverwriteMode { omOverwrite, omAppend, omResume };
+enum TOverwriteMode { omOverwrite, omAppend, omResume, omComplete };
 //---------------------------------------------------------------------------
 const int tfFirstLevel =   0x01;
 const int tfAutoResume = 0x02;
@@ -45,6 +45,7 @@ struct TFileTransferData
 {
   TFileTransferData() :
     CopyParam(NULL),
+    Modification(0.0),
     Params(0),
     OverwriteResult(-1),
     AutoResume(false)
@@ -52,7 +53,8 @@ struct TFileTransferData
   }
 
   UnicodeString FileName;
-  const TCopyParamType *CopyParam;
+  const TCopyParamType * CopyParam;
+  TDateTime Modification;
   int Params;
   int OverwriteResult;
   bool AutoResume;

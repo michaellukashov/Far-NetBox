@@ -728,9 +728,7 @@ void TTerminal::ResetConnection()
 //------------------------------------------------------------------------------
 void TTerminal::Open()
 {
-  CALLSTACK;
-  FLog->ReflectSettings();
-  FActionLog->ReflectSettings();
+  ReflectSettings();
   bool Reopen = false;
   do
   {
@@ -2257,14 +2255,27 @@ unsigned int TTerminal::ConfirmFileOverwrite(const UnicodeString & FileName,
         break;
 
       case boOlder:
-        Result =
-          ((FileParams != NULL) &&
-           (CompareFileTime(
-             ReduceDateTimePrecision(FileParams->SourceTimestamp,
-               LessDateTimePrecision(FileParams->SourcePrecision, FileParams->DestPrecision)),
-             ReduceDateTimePrecision(FileParams->DestTimestamp,
-               LessDateTimePrecision(FileParams->SourcePrecision, FileParams->DestPrecision))) > 0)) ?
-          qaYes : qaNo;
+        if (FileParams == NULL)
+        {
+          Result = qaNo;
+        }
+        else
+        {
+          TModificationFmt Precision = LessDateTimePrecision(FileParams->SourcePrecision, FileParams->DestPrecision);
+          TDateTime ReducedSourceTimestamp =
+            ReduceDateTimePrecision(FileParams->SourceTimestamp, Precision);
+          TDateTime ReducedDestTimestamp =
+            ReduceDateTimePrecision(FileParams->DestTimestamp, Precision);
+
+          Result =
+            (CompareFileTime(ReducedSourceTimestamp, ReducedDestTimestamp) > 0) ?
+            qaYes : qaNo;
+
+          LogEvent(FORMAT(L"Source file timestamp is [%s], destination timestamp is [%s], will%s overwrite",
+            (StandardTimestamp(ReducedSourceTimestamp),
+             StandardTimestamp(ReducedDestTimestamp),
+             ((Result == qaYes) ? L"" : L" not"))));
+        }
         break;
 
       case boAlternateResume:
@@ -2527,19 +2538,16 @@ void TTerminal::ReadCurrentDirectory()
 //------------------------------------------------------------------------------
 void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
 {
-  CALLSTACK;
   bool LoadedFromCache = false;
 
   if (GetSessionData()->GetCacheDirectories() && FDirectoryCache->HasFileList(GetCurrentDirectory()))
   {
-    TRACE("1");
     if (ReloadOnly && !ForceCache)
     {
       LogEvent(L"Cached directory not reloaded.");
     }
     else
     {
-      TRACE("2");
       DoStartReadDirectory();
       TRY_FINALLY (
       {
@@ -2547,7 +2555,6 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
       }
       ,
       {
-        TRACE("3");
         DoReadDirectory(ReloadOnly);
       }
       );
@@ -2565,7 +2572,6 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
 
   if (!LoadedFromCache)
   {
-    TRACE("4");
     DoStartReadDirectory();
     FReadingCurrentDirectory = true;
     bool Cancel = false; // dummy
@@ -2573,7 +2579,6 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
 
     try
     {
-      TRACE("5");
       TRemoteDirectory * Files = new TRemoteDirectory(this, FFiles);
       TRY_FINALLY (
       {
@@ -2582,22 +2587,27 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
       }
       ,
       {
-        TRACE("6");
         DoReadDirectoryProgress(-1, Cancel);
         FReadingCurrentDirectory = false;
         TRemoteDirectory * OldFiles = FFiles;
         FFiles = Files;
-        DoReadDirectory(ReloadOnly);
-        // delete only after loading new files to dir view,
-        // not to destroy the fil objects that the view holds
-        // (can be issue in multi threaded environment, such as when the
-        // terminal is reconnecting in the terminal thread)
-        delete OldFiles;
+        TRY_FINALLY (
+        {
+          DoReadDirectory(ReloadOnly);
+        }
+        ,
+        {
+          // delete only after loading new files to dir view,
+          // not to destroy the file objects that the view holds
+          // (can be issue in multi threaded environment, such as when the
+          // terminal is reconnecting in the terminal thread)
+          delete OldFiles;
+        }
+        );
         if (GetActive())
         {
           if (GetSessionData()->GetCacheDirectories())
           {
-            TRACE("6a");
             DirectoryLoaded(FFiles);
           }
         }
@@ -2606,16 +2616,24 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     }
     catch (Exception &E)
     {
-      TRACE("7");
       CommandError(&E, FmtLoadStr(LIST_DIR_ERROR, FFiles->GetDirectory().c_str()));
     }
   }
-  TRACE("/");
+}
+//---------------------------------------------------------------------------
+void TTerminal::LogFile(TRemoteFile * File)
+{
+  if (File)
+  {
+    LogEvent(FORMAT(L"%s;%c;%lld;%s;%s;%s;%s;%d",
+      File->GetFileName().c_str(), File->GetType(), File->GetSize(), StandardTimestamp(File->GetModification()).c_str(),
+      File->GetFileOwner().GetLogText().c_str(), File->GetFileGroup().GetLogText().c_str(), File->GetRights()->GetText().c_str(),
+      File->GetAttr()));
+  }
 }
 //------------------------------------------------------------------------------
 void TTerminal::CustomReadDirectory(TRemoteFileList * FileList)
 {
-  CALLSTACK;
   assert(FileList);
   assert(FFileSystem);
   FFileSystem->ReadDirectory(FileList);
@@ -2624,11 +2642,7 @@ void TTerminal::CustomReadDirectory(TRemoteFileList * FileList)
   {
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = FileList->GetFiles(Index);
-      LogEvent(FORMAT(L"%s;%c;%lld;%s;%s;%s;%s;%d",
-        File->GetFileName().c_str(), File->GetType(), File->GetSize(), StandardTimestamp(File->GetModification()).c_str(),
-         File->GetFileOwner().GetLogText().c_str(), File->GetFileGroup().GetLogText().c_str(), File->GetRights()->GetText().c_str(),
-         File->GetAttr()));
+      LogFile(FileList->GetFiles(Index));
     }
   }
 
@@ -2637,7 +2651,6 @@ void TTerminal::CustomReadDirectory(TRemoteFileList * FileList)
 //------------------------------------------------------------------------------
 TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & Directory, const TFileMasks & Mask)
 {
-  CALLSTACK;
   TLsSessionAction Action(GetActionLog(), AbsolutePath(Directory, true));
   TRemoteFileList * FileList = NULL;
   try
@@ -2856,7 +2869,6 @@ void TTerminal::ReadSymlink(TRemoteFile * SymlinkFile,
 void TTerminal::ReadFile(const UnicodeString & FileName,
   TRemoteFile *& File)
 {
-  CALLSTACK;
   assert(FFileSystem);
   File = NULL;
   try
@@ -2864,16 +2876,17 @@ void TTerminal::ReadFile(const UnicodeString & FileName,
     LogEvent(FORMAT(L"Listing file \"%s\".", FileName.c_str()));
     FFileSystem->ReadFile(FileName, File);
     ReactOnCommand(fsListFile);
-    TRACE("1");
+    LogFile(File);
   }
   catch (Exception &E)
   {
-    TRACE("2");
-    if (File) { delete File; }
+    if (File)
+    {
+      delete File;
+    }
     File = NULL;
     CommandError(&E, FMTLOAD(CANT_GET_ATTRS, FileName.c_str()));
   }
-  TRACE("/");
 }
 //------------------------------------------------------------------------------
 bool TTerminal::FileExists(const UnicodeString & FileName, TRemoteFile ** AFile)
@@ -4021,7 +4034,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & Command,
       FCommandSession->FFileSystem->ReadCurrentDirectory();
 
       TRACE("3b");
-      // synchronize pwd (by purpose we lose transaction optimisation here)
+      // synchronize pwd (by purpose we lose transaction optimization here)
       ChangeDirectory(FCommandSession->GetCurrentDirectory());
     }
     TRACE("4");
@@ -5634,6 +5647,15 @@ BOOL TTerminal::CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECUR
   {
     return ::CreateDirectory(LocalDirName.c_str(), SecurityAttributes) != 0;
   }
+}
+//---------------------------------------------------------------------------
+void TTerminal::ReflectSettings()
+{
+  assert(FLog != NULL);
+  FLog->ReflectSettings();
+  assert(FActionLog != NULL);
+  FActionLog->ReflectSettings();
+  // also FTunnelLog ?
 }
 //------------------------------------------------------------------------------
 TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal) :

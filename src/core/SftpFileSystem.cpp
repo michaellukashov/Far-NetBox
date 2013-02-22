@@ -585,7 +585,7 @@ public:
 
   inline UnicodeString GetString(bool Utf)
   {
-	(void)Utf;
+    (void)Utf;
     return GetStringW();
   }
 
@@ -4987,9 +4987,16 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 
     TRY_FINALLY (
     {
+      UnicodeString TargetDirectory = FullTargetDir;
+      UnicodeString FileNamePath = ::ExtractFilePath(File->GetFileName());
+      if (!FileNamePath.IsEmpty())
+      {
+        TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
+        ::ForceDirectories(TargetDirectory);
+      }
       try
       {
-        SFTPSinkRobust(LocalCanonify(FileName), File, FullTargetDir, CopyParam,
+        SFTPSinkRobust(LocalCanonify(FileName), File, TargetDirectory, CopyParam,
           Params, OperationProgress, tfFirstLevel);
         Success = true;
       }
@@ -5364,7 +5371,8 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           TSFTPPacket DataPacket(GetSessionData()->GetCodePageAsNumber());
 
           TRACE("4");
-          int QueueLen = int(File->GetSize() / DownloadBlockSize(OperationProgress)) + 1;
+          unsigned long BlSize = DownloadBlockSize(OperationProgress);
+          int QueueLen = int(File->GetSize() / (BlSize != 0 ? BlSize : 1)) + 1;
           if ((QueueLen > GetSessionData()->GetSFTPDownloadQueue()) ||
               (QueueLen < 0))
           {

@@ -472,7 +472,7 @@ public:
   void SetSessionVersion(uintptr_t Value) { FSessionVersion = Value; }
 
 private:
-  uintptr_t GetDefaultVersion() { return ::GetVersionNumber219(); }
+  uintptr_t GetDefaultVersion() { return ::GetCurrentVersionNumber(); }
   TFSProtocol TranslateFSProtocolNumber(int FSProtocol);
   TFSProtocol TranslateFSProtocol(const UnicodeString & ProtocolID);
   TFtps TranslateFtpEncryptionNumber(int FtpEncryption);

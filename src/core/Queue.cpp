@@ -541,7 +541,7 @@ TTerminalQueue::~TTerminalQueue()
     TTerminalItem * TerminalItem;
     while (FTerminals->GetCount() > 0)
     {
-      TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->Items[0]);
+      TerminalItem = reinterpret_cast<TTerminalItem *>(FTerminals->Items[0]);
       FTerminals->Delete(0);
       TerminalItem->Terminate();
       TerminalItem->WaitFor();
@@ -563,7 +563,6 @@ TTerminalQueue::~TTerminalQueue()
 //---------------------------------------------------------------------------
 void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
 {
-  CALLSTACK;
   if (!FTerminated)
   {
     {
@@ -578,7 +577,7 @@ void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
       }
 
       // Index may be >= FTransfersLimit also when the transfer limit was
-      // recently decresed, then
+      // recently decreased, then
       // FTemporaryTerminals < FTerminals->Count - FTransfersLimit
       if ((FTransfersLimit >= 0) && (Index >= FTransfersLimit) && (FTemporaryTerminals > 0))
       {
@@ -596,7 +595,6 @@ void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
 //---------------------------------------------------------------------------
 bool TTerminalQueue::TerminalFree(TTerminalItem * TerminalItem)
 {
-  CALLSTACK;
   bool Result = true;
 
   if (!FTerminated)
@@ -901,6 +899,7 @@ bool TTerminalQueue::ItemDelete(TQueueItem * Item)
         {
           FItems->Delete(Index);
           FForcedItems->Remove(Item);
+          delete Item;
           UpdateList = true;
         }
         else
@@ -1913,7 +1912,7 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
   {
     FFilesToCopy->AddObject(FilesToCopy->Strings[Index],
       ((FilesToCopy->Objects[Index] == NULL) || (Side == osLocal)) ? NULL :
-        dynamic_cast<TRemoteFile*>(FilesToCopy->Objects[Index])->Duplicate());
+        dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index])->Duplicate());
   }
 
   FTargetDir = TargetDir;

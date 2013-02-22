@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 // testnetbox_02.cpp
 // Тесты для NetBox
-// testnetbox_02 --run_test=testnetbox_02/test1 --log_level=all 2>&1 | tee res.txt
+// testnetbox_02 --run_test=netbox/test1 --log_level=all 2>&1 | tee res.txt
 //------------------------------------------------------------------------------
 
 #include <Classes.hpp>
@@ -95,7 +95,7 @@ TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
 
 //------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE(testnetbox_02)
+BOOST_AUTO_TEST_SUITE(netbox)
 
 BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
 {
@@ -111,10 +111,11 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
     int MaxMessageWidth = 20;
     FarWrapText(Message, &MessageLines, MaxMessageWidth);
     BOOST_TEST_MESSAGE("MessageLines = " << W2MB(MessageLines.Text.get().c_str()));
-    BOOST_CHECK_EQUAL(3, MessageLines.GetCount());
-    BOOST_CHECK_EQUAL("long long long long ", W2MB(MessageLines.Strings[0].c_str()).c_str());
-    BOOST_CHECK_EQUAL("long long long long ", W2MB(MessageLines.Strings[1].c_str()).c_str());
-    BOOST_CHECK_EQUAL("long text", W2MB(MessageLines.Strings[2].c_str()).c_str());
+    BOOST_CHECK_EQUAL(4, MessageLines.GetCount());
+    BOOST_CHECK_EQUAL("long long long", W2MB(MessageLines.Strings[0].c_str()).c_str());
+    BOOST_CHECK_EQUAL("long long long", W2MB(MessageLines.Strings[1].c_str()).c_str());
+    BOOST_CHECK_EQUAL("long long long", W2MB(MessageLines.Strings[2].c_str()).c_str());
+    BOOST_CHECK_EQUAL("text", W2MB(MessageLines.Strings[3].c_str()).c_str());
   }
 }
 
@@ -145,25 +146,29 @@ private:
   TNotifyEvent FOnChange;
 };
 
+class TClass2;
+DEFINE_CALLBACK_TYPE2(TClickEvent, void, TClass2 *, int);
+
 class TClass2
 {
-  DEFINE_CALLBACK_TYPE2(TClickEvent, void, TClass2 *, int);
 
 public:
   TClass2() :
-    OnClickTriggered(false)
+    OnClickTriggered(false),
+    m_OnClick(NULL)
   {
   }
 
   TClickEvent GetOnClick() const { return m_OnClick; }
   void SetOnClick(TClickEvent onClick)
   {
-    return m_OnClick = onClick;
+    m_OnClick = onClick;
     // DEBUG_PRINTF(L"m_OnClick.num_slots = %d", m_OnClick.num_slots());
   }
   void Click()
   {
-    m_OnClick(this, 1);
+    if (m_OnClick)
+      m_OnClick(this, 1);
     OnClickTriggered = true;
   }
   bool OnClickTriggered;
@@ -391,16 +396,16 @@ BOOST_FIXTURE_TEST_CASE(test11, base_fixture_t)
     // UnicodeString CutToChar(UnicodeString &Str, char Ch, bool Trim)
     UnicodeString Str1 = L" part 1 | part 2 ";
     UnicodeString str1 = ::CutToChar(Str1, '|', false);
-    BOOST_TEST_MESSAGE("str1 = \"" << W2MB(str1.c_str()) << "\"");
-    BOOST_TEST_MESSAGE("Str1 = \"" << W2MB(Str1.c_str()) << "\"");
-    // BOOST_TEST_MESSAGE("Str1 = \"" << W2MB(Str1.c_str()) << "\"");
+    BOOST_TEST_MESSAGE("str1 = '" << W2MB(str1.c_str()) << "'");
+    BOOST_TEST_MESSAGE("Str1 = '" << W2MB(Str1.c_str()) << "'");
+    // BOOST_TEST_MESSAGE("Str1 = '" << W2MB(Str1.c_str()) << "'");
     // DEBUG_PRINTF(L"str1 = \"%s\"", str1.c_str());
     BOOST_CHECK_EQUAL(W2MB(str1.c_str()), std::string(" part 1 "));
 
     UnicodeString str2 = ::CutToChar(Str1, '|', true);
-    BOOST_TEST_MESSAGE("str2 = \"" << W2MB(str2.c_str()) << "\"");
-    BOOST_TEST_MESSAGE("Str1 = \"" << W2MB(Str1.c_str()) << "\"");
-    BOOST_CHECK_EQUAL(W2MB(str2.c_str()), std::string("part 2"));
+    BOOST_TEST_MESSAGE("str2 = '" << W2MB(str2.c_str()) << "'");
+    BOOST_TEST_MESSAGE("Str1 = '" << W2MB(Str1.c_str()) << "'");
+    BOOST_CHECK_EQUAL(W2MB(str2.c_str()), std::string(" part 2"));
   }
   {
     UnicodeString str = ::LoadStr(CONST_TEST_STRING);
@@ -471,12 +476,12 @@ BOOST_FIXTURE_TEST_CASE(test14, base_fixture_t)
   }
   {
     UnicodeString str = L"ABC";
-    BOOST_CHECK_EQUAL(::Pos(str, L"DEF"), -1);
-    BOOST_CHECK_EQUAL(::Pos(str, L"AB"), 0);
-    BOOST_CHECK_EQUAL(::Pos(str, L"BC"), 1);
-    BOOST_CHECK_EQUAL(::AnsiPos(str, 'D'), -1);
-    BOOST_CHECK_EQUAL(::AnsiPos(str, 'A'), 0);
-    BOOST_CHECK_EQUAL(::AnsiPos(str, 'B'), 1);
+    BOOST_CHECK_EQUAL(::Pos(str, L"DEF"), 0);
+    BOOST_CHECK_EQUAL(::Pos(str, L"AB"), 1);
+    BOOST_CHECK_EQUAL(::Pos(str, L"BC"), 2);
+    BOOST_CHECK_EQUAL(::AnsiPos(str, 'D'), 0);
+    BOOST_CHECK_EQUAL(::AnsiPos(str, 'A'), 1);
+    BOOST_CHECK_EQUAL(::AnsiPos(str, 'B'), 2);
   }
   {
     UnicodeString str = ::LowerCase(L"AA");
@@ -549,17 +554,17 @@ BOOST_FIXTURE_TEST_CASE(test17, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test18, base_fixture_t)
 {
-  TGUICopyParamType FDefaultCopyParam;
-  TCopyParamType * CopyParam = new TCopyParamType(FDefaultCopyParam);
+  TGUICopyParamType DefaultCopyParam;
+  TCopyParamType * CopyParam = new TCopyParamType(DefaultCopyParam);
   CopyParam->SetTransferMode(tmAscii);
-  TCopyParamList FCopyParamList;
-  // BOOST_TEST_MESSAGE("FCopyParamList.GetCount() = " << FCopyParamList.GetCount());
-  FCopyParamList.Add(LoadStr(COPY_PARAM_PRESET_ASCII), CopyParam, NULL);
-  // BOOST_TEST_MESSAGE("FCopyParamList.GetCount() = " << FCopyParamList.GetCount());
-  CopyParam = new TCopyParamType(FDefaultCopyParam);
+  TCopyParamList CopyParamList;
+  // BOOST_TEST_MESSAGE("CopyParamList.GetCount() = " << CopyParamList.GetCount());
+  CopyParamList.Add(LoadStr(COPY_PARAM_PRESET_ASCII), CopyParam, NULL);
+  // BOOST_TEST_MESSAGE("CopyParamList.GetCount() = " << CopyParamList.GetCount());
+  CopyParam = new TCopyParamType(DefaultCopyParam);
   CopyParam->SetTransferMode(tmAscii);
-  FCopyParamList.Add(LoadStr(COPY_PARAM_PRESET_BINARY), CopyParam, NULL);
-  // BOOST_TEST_MESSAGE("FCopyParamList.GetCount() = " << FCopyParamList.GetCount());
+  CopyParamList.Add(LoadStr(COPY_PARAM_PRESET_BINARY), CopyParam, NULL);
+  // BOOST_TEST_MESSAGE("CopyParamList.GetCount() = " << CopyParamList.GetCount());
 }
 
 BOOST_FIXTURE_TEST_CASE(test19, base_fixture_t)

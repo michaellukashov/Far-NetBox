@@ -145,8 +145,9 @@ bool TryStrToInt(const std::wstring & StrValue, __int64 & Value)
   bool Result = !StrValue.empty();
   if (Result)
   {
+    errno = 0;
     Value = _wtoi64(StrValue.c_str());
-    Result = (errno == 0);
+    Result = (errno != EINVAL) && (errno != ERANGE);
   }
   return Result;
 }
@@ -156,8 +157,9 @@ bool TryStrToInt(const std::wstring & StrValue, int & Value)
   bool Result = !StrValue.empty();
   if (Result)
   {
+    errno = 0;
     Value = _wtoi(StrValue.c_str());
-    Result = (errno == 0);
+    Result = (errno != EINVAL) && (errno != ERANGE);
   }
   return Result;
 }
@@ -388,8 +390,8 @@ double StrToFloatDef(const UnicodeString & Value, double DefVal)
 //---------------------------------------------------------------------------
 UnicodeString FormatFloat(const UnicodeString & Format, double Value)
 {
-  UnicodeString Result(20, 0);
-  swprintf_s(&Result[1], Result.Length(), L"%.2f", Value);
+  UnicodeString Result(20, L'\0');
+  swprintf(&Result[1], L"%.2f", Value);
   return Result.c_str();
 }
 

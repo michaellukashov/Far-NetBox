@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 // testnetbox_01.cpp
 // Тесты для NetBox
-// testnetbox_01 --run_test=testnetbox_01/test1 --log_level=all 2>&1 | tee res.txt
+// testnetbox_01 --run_test=netbox/test1 --log_level=all 2>&1 | tee res.txt
 //------------------------------------------------------------------------------
 
 // #include "leak_detector.h"
@@ -17,7 +17,6 @@
 #include "boostdefines.hpp"
 #define BOOST_TEST_MODULE "testnetbox_01"
 #define BOOST_TEST_MAIN
-// #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 // #include <boost/type_traits/is_base_of.hpp>
 
@@ -68,7 +67,7 @@ protected:
 
 //------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE(testnetbox_01)
+BOOST_AUTO_TEST_SUITE(netbox)
 
 BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
 {
@@ -199,15 +198,15 @@ BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
   UnicodeString Text = L"text, text text, text text1\ntext text text, text text2\n";
   TStringList Lines;
   Lines.CommaText = Text;
-  BOOST_CHECK_EQUAL(6, Lines.GetCount());
-  BOOST_CHECK_EQUAL("text", W2MB(Lines.Strings[0].c_str()).c_str());
-  BOOST_CHECK_EQUAL(" text text", W2MB(Lines.Strings[1].c_str()).c_str());
-  BOOST_CHECK_EQUAL(" text text1", W2MB(Lines.Strings[2].c_str()).c_str());
-  BOOST_CHECK_EQUAL("text text text", W2MB(Lines.Strings[3].c_str()).c_str());
-  BOOST_CHECK_EQUAL(" text text2", W2MB(Lines.Strings[4].c_str()).c_str());
+  BOOST_CHECK_EQUAL(5, Lines.GetCount());
+  BOOST_CHECK_EQUAL(0, wcscmp(L"text", Lines.Strings[0].c_str()));
+  BOOST_CHECK_EQUAL(0, wcscmp(L" text text", Lines.Strings[1].c_str()));
+  BOOST_CHECK_EQUAL(0, wcscmp(L" text text1", Lines.Strings[2].c_str()));
+  BOOST_CHECK_EQUAL(0, wcscmp(L"text text text", Lines.Strings[3].c_str()));
+  BOOST_CHECK_EQUAL(0, wcscmp(L" text text2", Lines.Strings[4].c_str()));
   UnicodeString Text2 = Lines.CommaText;
-  BOOST_TEST_MESSAGE("Text2 = " << W2MB(Text2.c_str()));
-  BOOST_CHECK_EQUAL("\"text\",\" text text\",\" text text1\",\"text text text\",\" text text2\",\"\"", W2MB(Text2.c_str()).c_str());
+  BOOST_TEST_MESSAGE("Text2 = '" << W2MB(Text2.c_str()) << "'");
+  BOOST_CHECK_EQUAL(0, wcscmp(L"\"text\",\" text text\",\" text text1\",\"text text text\",\" text text2\"", Text2.c_str()));
 }
 
 BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)
@@ -420,7 +419,7 @@ BOOST_FIXTURE_TEST_CASE(test15, base_fixture_t)
 {
   UnicodeString res = ::IntToHex(10, 2);
   BOOST_TEST_MESSAGE("res = " << W2MB(res.c_str()));
-  BOOST_CHECK(res == L"0a");
+  BOOST_CHECK(res == L"0A");
 }
 
 BOOST_FIXTURE_TEST_CASE(test16, base_fixture_t)
@@ -678,32 +677,46 @@ BOOST_FIXTURE_TEST_CASE(test27, base_fixture_t)
 //------------------------------------------------------------------------------
 BOOST_FIXTURE_TEST_CASE(test28, base_fixture_t)
 {
-  UnicodeString Buf;
-  UnicodeString DestFileName(L"FileName");
-  TFileBuffer AsciiBuf;
   DEBUG_PRINTF(L"1");
-  AsciiBuf.SetSize(0xFFFFFFFFFF);
-  DEBUG_PRINTF(L"2");
-  Buf.Clear();
-  Buf.SetLength(MAX_PATH * 2);
-  DEBUG_PRINTF(L"AsciiBuf.GetSize = %lld", AsciiBuf.GetSize());
-  swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %lld %s",
-    L"",
-    AsciiBuf.GetSize(),
-    DestFileName.c_str());
-  DEBUG_PRINTF(L"3");
-  BOOST_TEST_MESSAGE("Buf1 = " << AnsiString(Buf).c_str());
-  DEBUG_PRINTF(L"Buf = %s", Buf.c_str());
-  BOOST_CHECK(Buf.GetLength() > 0);
-  if (0)
+  if (1)
   {
-    // causes error
-    swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %ld %s",
+    UnicodeString Buf;
+    UnicodeString DestFileName(L"FileName");
+    TFileBuffer AsciiBuf;
+    AsciiBuf.SetSize(0x1000);
+    DEBUG_PRINTF(L"2");
+    Buf.Clear();
+    Buf.SetLength(MAX_PATH * 2);
+    DEBUG_PRINTF(L"AsciiBuf.GetSize = %lld", AsciiBuf.GetSize());
+    swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %lld %s",
+      L"",
+      AsciiBuf.GetSize(),
+      DestFileName.c_str());
+    DEBUG_PRINTF(L"3");
+    BOOST_TEST_MESSAGE("Buf1 = " << AnsiString(Buf).c_str());
+    DEBUG_PRINTF(L"Buf = %s", Buf.c_str());
+    BOOST_CHECK(Buf.GetLength() > 0);
+  }
+  if (1)
+  {
+    UnicodeString Buf;
+    Buf.SetLength(20);
+    UnicodeString DestFileName(L"FileName");
+    TFileBuffer AsciiBuf;
+    // swprintf_s causes error
+    swprintf(const_cast<wchar_t *>(Buf.c_str()), L"C%s %lld %s",
       L"",
       AsciiBuf.GetSize(),
       DestFileName.c_str());
     BOOST_TEST_MESSAGE("Buf2 = " << AnsiString(Buf).c_str());
+    BOOST_CHECK(AnsiString(Buf) == "C 0 FileName");
+    BOOST_CHECK("C 0 FileName" == AnsiString(Buf));
+    BOOST_CHECK(AnsiString(Buf) == AnsiString("C 0 FileName"));
+    BOOST_CHECK(Buf == L"C 0 FileName");
+    BOOST_CHECK(L"C 0 FileName" == Buf);
   }
+  DEBUG_PRINTF(L"4");
+  if (1)
   {
     // Ctrl = T, Line = 1338899268 0 1338899268 0
     UnicodeString Line = L"1338899268 0 1338899268 0";
@@ -713,15 +726,25 @@ BOOST_FIXTURE_TEST_CASE(test28, base_fixture_t)
     BOOST_CHECK(MTime == 1338899268LU);
     BOOST_CHECK(ATime == 1338899268LU);
   }
+  DEBUG_PRINTF(L"5");
+  if (1)
   {
-    int errCode = 0xFF;
-    wchar_t codeNum[16] = {0};
-    swprintf_s(codeNum, sizeof(codeNum), L"[0x%08X]", errCode);
+    intptr_t errCode = 0xFF;
+    wchar_t codeNum[16];
+    DEBUG_PRINTF(L"6");
+    // swprintf_s(codeNum, sizeof(codeNum), L"[0x%08X]", errCode);  // Causes AV x64
+    swprintf(codeNum, L"[0x%08X]", errCode);
+    DEBUG_PRINTF(L"7");
     BOOST_TEST_MESSAGE("codeNum = " << AnsiString(codeNum).c_str());
-    BOOST_CHECK(AnsiString(codeNum) == AnsiString("[0x000000FF]"));
+    DEBUG_PRINTF(L"8");
+    BOOST_CHECK(AnsiString(codeNum) == AnsiString("[0x000000FF]")); // Causes AV x64
+    // BOOST_CHECK(AnsiString(codeNum) == AnsiString(""));
+    BOOST_CHECK(wcscmp(codeNum, L"[0x000000FF]") == 0);
   }
+  DEBUG_PRINTF(L"9");
 }
 //------------------------------------------------------------------------------
+#if 0
 class Foo
 {
 public:
@@ -749,6 +772,7 @@ BOOST_FIXTURE_TEST_CASE(test29, base_fixture_t)
   delete f;
   delete b;
 }
+#endif
 //------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

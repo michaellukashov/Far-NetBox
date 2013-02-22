@@ -266,7 +266,7 @@ public:
   virtual void SetUpdateState(bool Updating);
   intptr_t AddObject(const UnicodeString & S, TObject * AObject);
   virtual void InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
-  bool Equals(TStrings * Value) const;
+  bool Equals(TStrings * Value);
   virtual void Clear() = 0;
   void Move(intptr_t CurIndex, intptr_t NewIndex);
   intptr_t IndexOf(const UnicodeString & S);
@@ -286,7 +286,7 @@ public:
   {
     FQuoteChar = Value;
   }
-  UnicodeString GetDelimitedText() const;
+  UnicodeString GetDelimitedText();
   void SetDelimitedText(const UnicodeString & Value);
   virtual intptr_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2);
   int GetUpdateCount() const { return FUpdateCount; }
@@ -304,11 +304,10 @@ protected:
   virtual void SetSorted(bool Value) = 0;
   void SetDuplicates(TDuplicatesEnum Value);
   virtual UnicodeString & GetString(intptr_t Index) = 0;
-  virtual UnicodeString GetStrings(intptr_t Index) const = 0;
   virtual void PutString(intptr_t Index, const UnicodeString & S) = 0;
   virtual TObject *& GetObjects(intptr_t Index) = 0;
   virtual void PutObject(intptr_t Index, TObject * AObject) = 0;
-  const UnicodeString GetName(intptr_t Index) const;
+  const UnicodeString GetName(intptr_t Index);
   const UnicodeString GetValue(const UnicodeString & Name);
   void SetValue(const UnicodeString & Name, const UnicodeString & Value);
 
@@ -427,7 +426,6 @@ protected:
   virtual bool GetSorted() const;
   virtual void SetSorted(bool Value);
   virtual UnicodeString & GetString(intptr_t Index);
-  virtual UnicodeString GetStrings(intptr_t Index) const;
   virtual void PutString(intptr_t Index, const UnicodeString & S);
   virtual TObject *& GetObjects(intptr_t Index);
   virtual void PutObject(intptr_t Index, TObject * AObject);
@@ -789,6 +787,7 @@ class DelphiSet
 {
 private:
   std::set<T> FSet;
+
 public:
   DelphiSet()
   {}
@@ -925,7 +924,7 @@ public:
   }
   bool operator != (const DelphiSet<T>& rhs) const
   {
-    return !operator == (rhs);
+    return !(operator == (rhs));
   }
 
   DelphiSet<T>& AddItems(T FirstItem, ...)

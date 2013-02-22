@@ -159,11 +159,11 @@ intptr_t TList::Add(void * Value)
   return Result;
 }
 
-void * TList::Extract(void * item)
+void * TList::Extract(void * Item)
 {
-  if (Remove(item) != NPOS)
+  if (Remove(Item) != NPOS)
   {
-    return item;
+    return Item;
   }
   else
   {
@@ -171,9 +171,9 @@ void * TList::Extract(void * item)
   }
 }
 
-intptr_t TList::Remove(void * item)
+intptr_t TList::Remove(void * Item)
 {
-  intptr_t Result = IndexOf(item);
+  intptr_t Result = IndexOf(Item);
   if (Result != NPOS)
   {
     Delete(Result);
@@ -488,19 +488,19 @@ UnicodeString TStrings::GetCommaText()
   return Result;
 }
 
-UnicodeString TStrings::GetDelimitedText() const
+UnicodeString TStrings::GetDelimitedText()
 {
   UnicodeString Result;
   intptr_t Count = GetCount();
-  if ((Count == 1) && GetStrings(0).IsEmpty())
+  if ((Count == 1) && GetString(0).IsEmpty())
   {
     Result = GetQuoteChar() + GetQuoteChar();
   }
   else
   {
-    for (intptr_t i = 0; i < GetCount(); i++)
+    for (intptr_t I = 0; I < GetCount(); I++)
     {
-      UnicodeString line = GetStrings(i);
+      UnicodeString line = GetString(I);
       Result += GetQuoteChar() + line + GetQuoteChar() + GetDelimiter();
     }
     if (Result.Length() > 0)
@@ -616,13 +616,13 @@ UnicodeString TStrings::GetTextStr()
   LB = sLineBreak;
   for (I = 0; I < Count; I++)
   {
-    Size += GetStrings(I).Length() + LB.Length();
+    Size += GetString(I).Length() + LB.Length();
   }
   Result.SetLength(Size);
   P = const_cast<wchar_t *>(Result.c_str());
   for (I = 0; I < Count; I++)
   {
-    S = GetStrings(I);
+    S = GetString(I);
     // DEBUG_PRINTF(L"  S = %s", S.c_str());
     L = S.Length() * sizeof(wchar_t);
     if (L != 0)
@@ -688,7 +688,7 @@ void TStrings::InsertObject(intptr_t Index, const UnicodeString & Key, TObject *
   PutObject(Index, AObject);
 }
 
-bool TStrings::Equals(TStrings * Strings) const
+bool TStrings::Equals(TStrings * Strings)
 {
   bool Result = false;
   if (GetCount() != Strings->GetCount())
@@ -697,7 +697,7 @@ bool TStrings::Equals(TStrings * Strings) const
   }
   for (intptr_t I = 0; I < GetCount(); ++I)
   {
-    if (GetStrings(I) != Strings->GetStrings(I))
+    if (GetString(I) != Strings->GetString(I))
     {
       return false;
     }
@@ -726,7 +726,7 @@ void TStrings::Move(intptr_t CurIndex, intptr_t NewIndex)
     {
       TRY_FINALLY (
       {
-        UnicodeString TempString = GetStrings(CurIndex);
+        UnicodeString TempString = GetString(CurIndex);
         TObject * TempObject = GetObjects(CurIndex);
         Delete(CurIndex);
         InsertObject(NewIndex, TempString, TempObject);
@@ -745,7 +745,7 @@ intptr_t TStrings::IndexOf(const UnicodeString & S)
   // DEBUG_PRINTF(L"begin");
   for (intptr_t Result = 0; Result < GetCount(); Result++)
   {
-    if (CompareStrings(GetStrings(Result), S) == 0)
+    if (CompareStrings(GetString(Result), S) == 0)
     {
       return Result;
     }
@@ -758,7 +758,7 @@ intptr_t TStrings::IndexOfName(const UnicodeString & Name)
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    UnicodeString S = GetStrings(Index);
+    UnicodeString S = GetString(Index);
     intptr_t P = ::AnsiPos(S, L'=');
     if ((P > 0) && (CompareStrings(S.SubStr(1, P - 1), Name) == 0))
     {
@@ -768,9 +768,9 @@ intptr_t TStrings::IndexOfName(const UnicodeString & Name)
   return NPOS;
 }
 
-const UnicodeString TStrings::GetName(intptr_t Index) const
+const UnicodeString TStrings::GetName(intptr_t Index)
 {
-  return ExtractName(GetStrings(Index));
+  return ExtractName(GetString(Index));
 }
 
 UnicodeString TStrings::ExtractName(const UnicodeString & S) const
@@ -795,7 +795,7 @@ const UnicodeString TStrings::GetValue(const UnicodeString & Name)
   // DEBUG_PRINTF(L"Name = %s, I = %d", Name.c_str(), I);
   if (I >= 0)
   {
-    Result = GetStrings(I).SubStr(Name.Length() + 2, -1);
+    Result = GetString(I).SubStr(Name.Length() + 2, -1);
   }
   // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
@@ -829,7 +829,7 @@ void TStrings::AddStrings(TStrings * Strings)
     {
       for (intptr_t I = 0; I < Strings->GetCount(); I++)
       {
-        AddObject(Strings->GetStrings(I), Strings->GetObjects(I));
+        AddObject(Strings->GetString(I), Strings->GetObjects(I));
       }
     }
     ,
@@ -1055,16 +1055,6 @@ UnicodeString & TStringList::GetString(intptr_t Index)
   return FList[Index].FString;
 }
 
-UnicodeString TStringList::GetStrings(intptr_t Index) const
-{
-  // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
-  if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FList.size())))
-  {
-    Classes::Error(SListIndexError, Index);
-  }
-  return FList[Index].FString;
-}
-
 bool TStringList::GetCaseSensitive() const
 {
   return FCaseSensitive;
@@ -1108,7 +1098,7 @@ void TStringList::LoadFromFile(const UnicodeString & FileName)
     __int64 Size = Stream.GetSize();
     TFileBuffer FileBuffer;
     __int64 Read = FileBuffer.LoadStream(&Stream, Size, True);
-    bool ConvertToken;
+    bool ConvertToken = false;
     FileBuffer.Convert(eolCRLF, eolCRLF, cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
     ::CloseHandle(FileHandle);
     UnicodeString Str(FileBuffer.GetData(), static_cast<intptr_t>(FileBuffer.GetSize()));

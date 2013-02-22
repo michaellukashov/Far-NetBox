@@ -466,8 +466,8 @@ UnicodeString TConfiguration::BannerHash(const UnicodeString & Banner)
   RawByteString Result;
   Result.SetLength(16);
   md5checksum(
-    reinterpret_cast<const char*>(Banner.c_str()), (int)(Banner.Length() * sizeof(wchar_t)),
-    (unsigned char*)Result.c_str());
+    reinterpret_cast<const char *>(Banner.c_str()), static_cast<int>(Banner.Length() * sizeof(wchar_t)),
+    reinterpret_cast<unsigned char *>(const_cast<char *>(Result.c_str())));
   return BytesToHex(Result);
 }
 //---------------------------------------------------------------------------
@@ -832,8 +832,7 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & Key,
     if ((Info != NULL) && (GetTranslationCount(Info) > 0))
     {
       TRACE("1");
-      TTranslation Translation;
-      Translation = GetTranslation(Info, 0);
+      TTranslation Translation = GetTranslation(Info, 0);
       try
       {
         Result = ::GetFileInfoString(Info, Translation, Key);

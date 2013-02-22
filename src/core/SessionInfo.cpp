@@ -1134,7 +1134,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     ADF(L"Cache directory changes: %s, Permanent: %s",
        BooleanToEngStr(Data->GetCacheDirectoryChanges()).c_str(),
        BooleanToEngStr(Data->GetPreserveDirectoryChanges()).c_str());
-    ADF(L"DST mode: %d", static_cast<int>(Data->GetDSTMode()));
+    int TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
+    ADF(L"DST mode: %d; Timezone offset: %dh %dm", static_cast<int>(Data->GetDSTMode()), (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour));
 
     if (Data->GetFSProtocol() == fsWebDAV)
     {
@@ -1372,7 +1373,6 @@ void TActionLog::AddMessages(UnicodeString Indent, TStrings * Messages)
 //---------------------------------------------------------------------------
 void TActionLog::ReflectSettings()
 {
-  CALLSTACK;
   TGuard Guard(FCriticalSection);
 
   bool ALogging =
@@ -1380,7 +1380,6 @@ void TActionLog::ReflectSettings()
 
   if (ALogging && !FLogging)
   {
-    TRACE("1");
     FLogging = true;
     Add(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     Add(FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
@@ -1392,27 +1391,26 @@ void TActionLog::ReflectSettings()
     {
       EndGroup();
     }
-    TRACE("2");
-    Add(L"</session>");
+    // do not try to close the file, if it has not been opened, to avoid recursion
+    if (FFile != NULL)
+    {
+      Add(L"</session>");
+    }
     CloseLogFile();
     FLogging = false;
   }
 
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TActionLog::CloseLogFile()
 {
-  CALLSTACK;
   if (FFile != NULL)
   {
-    TRACE("1");
     fclose((FILE *)FFile);
     FFile = NULL;
   }
   FCurrentLogFileName = L"";
   FCurrentFileName = L"";
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TActionLog::OpenLogFile()
@@ -1477,7 +1475,12 @@ void TActionLog::EndGroup()
   FInGroup = false;
   assert(FIndent == L"    ");
   FIndent = L"  ";
-  AddIndented(L"</group>");
+  // this is called from ReflectSettings that in turn is called when logging fails,
+  // so do not try to close the group, if it has not been opened, to avoid recursion
+  if (FFile != NULL)
+  {
+    AddIndented("</group>");
+  }
 }
 //---------------------------------------------------------------------------
 void TActionLog::SetEnabled(bool value)

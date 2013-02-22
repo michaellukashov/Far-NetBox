@@ -45,7 +45,7 @@ public:
 
 // Operationen
 public:
-	CFtpControlSocket(CMainThread *pMainThread);
+	CFtpControlSocket(CMainThread *pMainThread, CFileZillaTools * pTools);
 	virtual ~CFtpControlSocket();
 
 // Überschreibungen
@@ -133,6 +133,7 @@ protected:
 #ifdef MPEXT
 	bool IsRoutableAddress(const CString & host);
 	bool CheckForcePasvIp(CString & host);
+	void TransferFinished();
 #endif
 
 	CFile *m_pDataFile;

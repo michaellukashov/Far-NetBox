@@ -581,16 +581,16 @@ SET_TARGET_PROPERTIES(zlib
 SET(TESTNETBOX_01_DIR ${TESTS_ROOT})
 
 SET(TESTNETBOX_01_SOURCES
-    ${SRC_ROOT}/base/Classes.cpp
-    ${SRC_ROOT}/base/Sysutils.cpp
-    ${SRC_ROOT}/base/UnicodeString.cpp
-    ${SRC_ROOT}/base/local.cpp
-    ${SRC_ROOT}/core/Common.cpp
-    ${SRC_ROOT}/core/Exceptions.cpp
-    ${SRC_ROOT}/core/FileBuffer.cpp
-    ${SRC_ROOT}/resource/TextsCore1.rc
-    ${SRC_ROOT}/resource/rtlconsts.rc
-    ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
+  ${SRC_ROOT}/base/Classes.cpp
+  ${SRC_ROOT}/base/Sysutils.cpp
+  ${SRC_ROOT}/base/UnicodeString.cpp
+  ${SRC_ROOT}/base/local.cpp
+  ${SRC_ROOT}/core/Common.cpp
+  ${SRC_ROOT}/core/Exceptions.cpp
+  ${SRC_ROOT}/core/FileBuffer.cpp
+  ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
+  ${SRC_ROOT}/resource/TextsCore1.rc
+  ${SRC_ROOT}/resource/rtlconsts.rc
 )
 
 ADD_EXECUTABLE(testnetbox_01 ${TESTNETBOX_01_SOURCES})
@@ -620,6 +620,8 @@ SET(TESTNETBOX_02_SOURCES
   ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
   ${TESTNETBOX_02_DIR}/testnetbox_02.rc
   ${TESTNETBOX_02_DIR}/testnetbox_02.cpp
+  ${SRC_ROOT}/resource/TextsCore1.rc
+  ${SRC_ROOT}/resource/rtlconsts.rc
 )
 
 ADD_EXECUTABLE(testnetbox_02 ${TESTNETBOX_02_SOURCES})
@@ -652,6 +654,8 @@ SET(TESTNETBOX_03_SOURCES
   ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
   ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
   ${TESTNETBOX_03_DIR}/testnetbox_03.cpp
+  ${SRC_ROOT}/resource/TextsCore1.rc
+  ${SRC_ROOT}/resource/rtlconsts.rc
 )
 
 ADD_EXECUTABLE(testnetbox_03 ${TESTNETBOX_03_SOURCES})
@@ -683,6 +687,8 @@ SET(TESTNETBOX_04_SOURCES
   ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
   ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
   ${TESTNETBOX_04_DIR}/testnetbox_04.cpp
+  ${SRC_ROOT}/resource/TextsCore1.rc
+  ${SRC_ROOT}/resource/rtlconsts.rc
 )
 
 ADD_EXECUTABLE(testnetbox_04 ${TESTNETBOX_04_SOURCES})

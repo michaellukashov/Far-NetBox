@@ -1319,7 +1319,8 @@ void TCustomFarPlugin::FarCopyToClipboard(TStrings * Strings)
 TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor)
 {
   // DEBUG_PRINTF(L"begin");
-  CONSOLE_SCREEN_BUFFER_INFO BufferInfo = {0};
+  CONSOLE_SCREEN_BUFFER_INFO BufferInfo;
+  memset(&BufferInfo, 0, sizeof(BufferInfo));
   GetConsoleScreenBufferInfo(FConsoleOutput, &BufferInfo);
 
   TPoint Result(BufferInfo.dwSize.X, BufferInfo.dwSize.Y);
@@ -1620,9 +1621,9 @@ bool TCustomFarPlugin::Editor(const UnicodeString & FileName,
 {
   TFarEnvGuard Guard;
   int Result = FStartupInfo.Editor(
-                 FileName.c_str(),
-                 Title.c_str(), 0, 0, -1, -1, Flags, -1, -1,
-                 CP_DEFAULT);
+    FileName.c_str(),
+    Title.c_str(), 0, 0, -1, -1, Flags, -1, -1,
+    CP_DEFAULT);
   return (Result == EEC_MODIFIED) || (Result == EEC_NOT_MODIFIED);
 }
 //---------------------------------------------------------------------------
