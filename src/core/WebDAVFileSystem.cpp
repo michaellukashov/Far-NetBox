@@ -2554,22 +2554,6 @@ convert_cstring(
   return WEBDAV_NO_ERROR;
 }
 
-// Construct an error with code APR_EINVAL and with a suitable message
-// to describe the invalid UTF-8 sequence DATA of length LEN (which
-// may have embedded NULLs).  We can't simply print the data, almost
-// by definition we don't really know how it is encoded.
-
-static error_t
-invalid_utf8(
-  const char * data,
-  apr_size_t len,
-  apr_pool_t * pool)
-{
-  return error_createf(APR_EINVAL, NULL,
-    "invalid UTF-8 sequence\n(%s)",
-    data);
-}
-
 // Verify that the NULL terminated sequence DATA is valid UTF-8.
 // If it is not, return an error with code APR_EINVAL.
 static error_t
@@ -8573,20 +8557,6 @@ neon_add_response_body_reader(
   b->real_reader = reader;
 
   attach_ne_body_reader(req, accpt, body_reader_wrapper, b);
-}
-
-union endianTest
-{
-  long Long;
-  char Char[sizeof(long)];
-};
-
-static char
-isLittleEndian(void)
-{
-  static union endianTest u;
-  u.Long = 1;
-  return (u.Char[0] == 1);
 }
 
 //------------------------------------------------------------------------------
