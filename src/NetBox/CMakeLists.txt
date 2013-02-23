@@ -281,9 +281,12 @@ ADD_DEPENDENCIES(NetBox
 
 # USE_PRECOMPILED_HEADER(NETBOX_SOURCES stdafx.h stdafx.cpp netbox)
 
+STRING(REPLACE "/" "\\" OUTPUT_DIR ${OUTPUT_DIR})
+
 ADD_CUSTOM_COMMAND(TARGET NetBox
   POST_BUILD
-  COMMAND cp --remove-destination --target-directory=${OUTPUT_DIR} NetBox.dll
+  COMMAND if not exist "${OUTPUT_DIR}" ( mkdir "${OUTPUT_DIR}" )
+  COMMAND cp -f --remove-destination --target-directory=${OUTPUT_DIR} NetBox.dll
   WORKING_DIRECTORY ${BUILD_DIR}
   VERBATIM
 )
