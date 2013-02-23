@@ -372,7 +372,7 @@ typedef struct list_func_baton_t
 #define WEBDAV_ERR_CANNOT_PROPFIND 1065
 #define WEBDAV_ERR_BAD_PARAM 1070
 
-// @brief The application doesn't want any providers to save credentials
+// The application doesn't want any providers to save credentials
 // to disk. Property value is irrelevant; only property's existence
 // matters.
 #define AUTH_PARAM_NO_AUTH_CACHE AUTH_PARAM_PREFIX "no-auth-cache"
@@ -390,7 +390,7 @@ typedef struct list_func_baton_t
     return err__temp;                 \
   } while (0)
 
-// A statement macro, very similar to @c WEBDAV_ERR.
+// A statement macro, very similar to WEBDAV_ERR.
 // This macro will wrap the error with the specified text before
 // returning the error.
 
@@ -409,11 +409,11 @@ typedef struct list_func_baton_t
 
 #define error_trace(expr)  (expr)
 
-// Create a pool as a subpool of @a parent_pool
+// Create a pool as a subpool of parent_pool
 #define webdav_pool_create(parent_pool) webdav::pool_create_ex(parent_pool, NULL)
 #define webdav_pool_clear apr_pool_clear
-// Destroy a @a pool and all of its children.
-// This define for @c webdav_pool_destroy exists for symmetry and
+// Destroy a pool and all of its children.
+// This define for webdav_pool_destroy exists for symmetry and
 // completeness.
 
 #define webdav_pool_destroy apr_pool_destroy
@@ -563,13 +563,13 @@ parse_ne_uri(
 
 #define atoui64(X) ((apr_uint64_t) apr_atoi64(X))
 
-// An indication that you are interested in the @c kind field
+// An indication that you are interested in the kind field
 #define WEBDAV_DIRENT_KIND        0x00001
 
-// An indication that you are interested in the @c size field
+// An indication that you are interested in the size field
 #define WEBDAV_DIRENT_SIZE        0x00002
 
-// An indication that you are interested in the @c time field
+// An indication that you are interested in the time field
 #define WEBDAV_DIRENT_TIME        0x00010
 
 // A combination of all the dirent fields
@@ -885,8 +885,8 @@ neon_init(
 // Table of flags for character classification.
 extern const apr_uint32_t * const ctype_table;
 
-// Check if @a c is in the character class described by @a flags.
-// The @a flags is a bitwise-or combination of @c WEBDAV_CTYPE_*
+// Check if c is in the character class described by flags.
+// The flags is a bitwise-or combination of WEBDAV_CTYPE_*
 // constants. Uses #ctype_table.
 
 #define ctype_test(c, flags) \
@@ -914,40 +914,40 @@ extern const apr_uint32_t * const ctype_table;
 // All printable ASCII
 #define WEBDAV_CTYPE_PRINT    (WEBDAV_CTYPE_GRAPH | WEBDAV_CTYPE_SPACE)
 
-// Check if @a c is an ASCII control character.
+// Check if c is an ASCII control character.
 #define ctype_iscntrl(c)  ctype_test((c), WEBDAV_CTYPE_CNTRL)
 
-// Check if @a c is an ASCII whitespace character.
+// Check if c is an ASCII whitespace character.
 #define ctype_isspace(c)  ctype_test((c), WEBDAV_CTYPE_SPACE)
 
-// Check if @a c is an ASCII digit.
+// Check if c is an ASCII digit.
 #define ctype_isdigit(c)  ctype_test((c), WEBDAV_CTYPE_DIGIT)
 
-// Check if @a c is an ASCII uppercase letter.
+// Check if c is an ASCII uppercase letter.
 #define ctype_isupper(c)  ctype_test((c), WEBDAV_CTYPE_UPPER)
 
-// Check if @a c is an ASCII lowercase letter.
+// Check if c is an ASCII lowercase letter.
 #define ctype_islower(c)  ctype_test((c), WEBDAV_CTYPE_LOWER)
 
-// Check if @a c is an ASCII punctuation mark.
+// Check if c is an ASCII punctuation mark.
 #define ctype_ispunct(c)  ctype_test((c), WEBDAV_CTYPE_PUNCT)
 
-// Check if @a c is an ASCII character.
+// Check if c is an ASCII character.
 #define ctype_isascii(c)  ctype_test((c), WEBDAV_CTYPE_ASCII)
 
-// Check if @a c is an ASCII letter.
+// Check if c is an ASCII letter.
 #define ctype_isalpha(c)  ctype_test((c), WEBDAV_CTYPE_ALPHA)
 
-// Check if @a c is an ASCII letter or decimal digit.
+// Check if c is an ASCII letter or decimal digit.
 #define ctype_isalnum(c)  ctype_test((c), WEBDAV_CTYPE_ALNUM)
 
-// Check if @a c is an ASCII hexadecimal digit.
+// Check if c is an ASCII hexadecimal digit.
 #define ctype_isxdigit(c) ctype_test((c), WEBDAV_CTYPE_XDIGIT)
 
-// Check if @a c is an ASCII graphical (visible printable) character.
+// Check if c is an ASCII graphical (visible printable) character.
 #define ctype_isgraph(c)  ctype_test((c), WEBDAV_CTYPE_GRAPH)
 
-// Check if @a c is an ASCII printable character.
+// Check if c is an ASCII printable character.
 #define ctype_isprint(c)  ctype_test((c), WEBDAV_CTYPE_PRINT)
 
 // Basic extended character classes
@@ -963,16 +963,16 @@ extern const apr_uint32_t * const ctype_table;
 // All valid UTF-8 bytes.
 #define WEBDAV_CTYPE_UTF8     (WEBDAV_CTYPE_ASCII | WEBDAV_CTYPE_UTF8MBC)
 
-// Check if @a c is a UTF-8 multibyte lead byte.
+// Check if c is a UTF-8 multibyte lead byte.
 #define ctype_isutf8lead(c) ctype_test((c), WEBDAV_CTYPE_UTF8LEAD)
 
-// Check if @a c is a UTF-8 multibyte continuation (non-lead) byte.
+// Check if c is a UTF-8 multibyte continuation (non-lead) byte.
 #define ctype_isutf8cont(c) ctype_test((c), WEBDAV_CTYLE_UTF8CONT)
 
-// Check if @a c is part of a UTF-8 multibyte character.
+// Check if c is part of a UTF-8 multibyte character.
 #define ctype_isutf8mbc(c)  ctype_test((c), WEBDAV_CTYPE_UTF8MBC)
 
-// Check if @a c is valid in UTF-8.
+// Check if c is valid in UTF-8.
 #define ctype_isutf8(c)     ctype_test((c), WEBDAV_CTYPE_UTF8)
 
 #define WEBDAV_CTYPE_ASCII_MINUS            45 //< ASCII value of '-'
@@ -987,12 +987,12 @@ extern const apr_uint32_t * const ctype_table;
 //< ASCII value of a delete character
 
 /*
- * Compare two characters @a a and @a b, treating case-equivalent
+ * Compare two characters a and b, treating case-equivalent
  * unaccented Latin (ASCII subset) letters as equal.
  *
  * Returns in integer greater than, equal to, or less than 0,
- * according to whether @a a is considered greater than, equal to,
- * or less than @a b.
+ * according to whether a is considered greater than, equal to,
+ * or less than b.
  */
 
 static int
@@ -2919,9 +2919,9 @@ sort_hash(apr_hash_t * ht,
 #define WEBDAV_AUTH_SSL_EXPIRED     0x00000002
 // Certificate's CN (hostname) does not match the remote hostname.
 #define WEBDAV_AUTH_SSL_CNMISMATCH  0x00000004
-// @brief Certificate authority is unknown (i.e. not trusted)
+// Certificate authority is unknown (i.e. not trusted)
 #define WEBDAV_AUTH_SSL_UNKNOWNCA   0x00000008
-// @brief Other failure. This can happen if neon has introduced a new
+// Other failure. This can happen if neon has introduced a new
 // failure bit that we do not handle yet.
 #define WEBDAV_AUTH_SSL_OTHER       0x40000000
 
@@ -2931,13 +2931,13 @@ sort_hash(apr_hash_t * ht,
 // The auth-hash prefix indicating that the parameter is global.
 #define AUTH_PARAM_PREFIX "webdav:auth:"
 
-// @brief The following property is for SSL server cert providers. This
-// provides a pointer to an @c apr_uint32_t containing the failures
+// The following property is for SSL server cert providers. This
+// provides a pointer to an apr_uint32_t containing the failures
 // detected by the certificate validator.
 #define AUTH_PARAM_SSL_SERVER_FAILURES AUTH_PARAM_PREFIX \
   "ssl:failures"
 
-// @brief The following property is for SSL server cert providers. This
+// The following property is for SSL server cert providers. This
 // provides the cert info (auth_ssl_server_cert_info_t).
 #define AUTH_PARAM_SSL_SERVER_CERT_INFO AUTH_PARAM_PREFIX \
   "ssl:cert-info"
@@ -3080,7 +3080,7 @@ typedef error_t (*auth_password_set_t)(
   bool non_interactive,
   apr_pool_t * pool);
 
-// @c AUTH_CRED_SSL_CLIENT_CERT credentials.
+// AUTH_CRED_SSL_CLIENT_CERT credentials.
 typedef struct auth_cred_ssl_client_cert_t
 {
   // Absolute path to the certificate file
@@ -3101,7 +3101,7 @@ typedef error_t (*auth_plaintext_passphrase_prompt_func_t)(
   void * baton,
   apr_pool_t * pool);
 
-// @c AUTH_CRED_SSL_CLIENT_CERT_PW credentials.
+// AUTH_CRED_SSL_CLIENT_CERT_PW credentials.
 typedef struct auth_cred_ssl_client_cert_pw_t
 {
   // Certificate password
@@ -3109,7 +3109,7 @@ typedef struct auth_cred_ssl_client_cert_pw_t
   bool may_save;
 } auth_cred_ssl_client_cert_pw_t;
 
-// @c AUTH_CRED_SSL_SERVER_TRUST credentials.
+// AUTH_CRED_SSL_SERVER_TRUST credentials.
 typedef struct auth_cred_ssl_server_trust_t
 {
   bool may_save;
@@ -3117,7 +3117,7 @@ typedef struct auth_cred_ssl_server_trust_t
   apr_uint32_t accepted_failures;
 } auth_cred_ssl_server_trust_t;
 
-// SSL server certificate information used by @c
+// SSL server certificate information used by
 // AUTH_CRED_SSL_SERVER_TRUST providers.
 
 typedef struct auth_ssl_server_cert_info_t
@@ -6721,26 +6721,26 @@ io_file_read_full2(
 //------------------------------------------------------------------------------
 // from svn_io.h
 
-// Read handler function for a generic stream.  @see stream_t.
+// Read handler function for a generic stream. see stream_t.
 typedef error_t (*read_fn_t)(
   void * baton,
   char * buffer,
   apr_size_t * len);
 
-// Skip data handler function for a generic stream.  @see stream_t
+// Skip data handler function for a generic stream. see stream_t
 // and stream_skip().
 
 typedef error_t (*stream_skip_fn_t)(
   void * baton,
   apr_size_t len);
 
-// Write handler function for a generic stream.  @see stream_t.
+// Write handler function for a generic stream. see stream_t.
 typedef error_t (*write_fn_t)(
   void * baton,
   const char * data,
   apr_size_t * len);
 
-// Close handler function for a generic stream.  @see stream_t.
+// Close handler function for a generic stream. see stream_t.
 typedef error_t (*close_fn_t)(void * baton);
 
 typedef struct stream_mark_t stream_mark_t;
