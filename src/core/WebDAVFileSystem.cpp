@@ -291,9 +291,7 @@ enum
   ELEM_PROPS_UNUSED = ELEM_207_UNUSED + 100,
 
   // DAV elements
-  ELEM_baseline = ELEM_207_UNUSED,
-  ELEM_baseline_coll,
-  ELEM_collection,
+  ELEM_collection = ELEM_207_UNUSED,
   ELEM_comment,
   ELEM_creationdate,
   ELEM_creator_displayname,
@@ -10289,8 +10287,8 @@ typedef struct propfind_ctx_t
 
 } propfind_ctx_t;
 
-// when we begin a checkout, we fetch these from the "public" resources to
-// steer us towards a Baseline Collection. we fetch the resourcetype to
+// When we begin a checkout, we fetch these from the "public" resources.
+// We fetch the resourcetype to
 // verify that we're accessing a collection.
 static const ne_propname starting_props[] =
 {
@@ -10298,14 +10296,6 @@ static const ne_propname starting_props[] =
   { "DAV:", "creationdate" },
   { "DAV:", "getlastmodified" },
   { "DAV:", "getcontentlength" },
-  { NULL }
-};
-
-// when speaking to a Baseline to reach the Baseline Collection, fetch these
-// properties.
-static const ne_propname baseline_props[] =
-{
-  { "DAV:", "baseline-collection" },
   { NULL }
 };
 
@@ -10444,82 +10434,6 @@ neon_search_for_starting_props(
   return WEBDAV_NO_ERROR;
 }
 
-static error_t
-neon_get_baseline_props(
-  string_t * bc_relative,
-  neon_resource_t ** bln_rsrc,
-  neon_session_t * sess,
-  const char * url,
-  const ne_propname * which_props,
-  apr_pool_t * pool)
-{
-  const string_t * relative_path = NULL;
-  const char * my_bc_relative = NULL;
-  const char * lopped_path = NULL;
-
-  // we may be able to replace some/all of this code with an
-  // expand-property REPORT when that is available on the server.
-
-  // -------------------------------------------------------------------
-  // STEP 1
-
-  neon_resource_t * rsrc = NULL;
-  WEBDAV_ERR(neon_search_for_starting_props(&rsrc, &lopped_path,
-             sess, url, pool));
-
-  // Allocate our own bc_relative path.
-  relative_path = NULL;
-  if (relative_path != NULL)
-  {
-    // better error reporting...
-    // need an WEBDAV_ERR here
-    /*return error_create(APR_EGENERAL, NULL,
-        "The relative-path property was not "
-        "found on the resource");*/
-    my_bc_relative = relpath_join(relative_path->data,
-      path_uri_decode(lopped_path, pool),
-      pool);
-  }
-
-  // if they want the relative path (could be, they're just trying to find
-  // the baseline collection), then return it
-  if (bc_relative && my_bc_relative)
-  {
-    bc_relative->data = my_bc_relative;
-    bc_relative->len = strlen(my_bc_relative);
-  }
-
-  // Return the baseline rsrc, which now contains whatever set of
-  // props the caller wanted.
-  *bln_rsrc = rsrc;
-  return WEBDAV_NO_ERROR;
-}
-
-static error_t
-neon_get_baseline_info(
-  const char ** bc_relative_p,
-  neon_session_t * sess,
-  const char * url,
-  apr_pool_t * pool)
-{
-  neon_resource_t * baseline_rsrc = NULL;
-  string_t my_bc_rel = {0};
-
-  // Go fetch a BASELINE_RSRC that contains specific properties we
-  // want.  This routine will also fill in BC_RELATIVE as best it can.
-  WEBDAV_ERR(neon_get_baseline_props(&my_bc_rel,
-    &baseline_rsrc,
-    sess,
-    url,
-    baseline_props, // specific props
-    pool));
-
-  if (bc_relative_p)
-    *bc_relative_p = my_bc_rel.data;
-
-  return WEBDAV_NO_ERROR;
-}
-
 // Propfind Implementation
 
 typedef struct elem_defn
@@ -10541,7 +10455,6 @@ static const elem_defn elem_definitions[] =
   { ELEM_propstat, "DAV:propstat", 0 },
   { ELEM_prop, "DAV:prop", 0 },
   { ELEM_status, "DAV:status", NEON_XML_CDATA },
-  { ELEM_baseline, "DAV:baseline", NEON_XML_CDATA },
   { ELEM_collection, "DAV:collection", NEON_XML_CDATA },
   { ELEM_resourcetype, "DAV:resourcetype", 0 },
   { ELEM_get_content_length, NEON_PROP_GETCONTENTLENGTH, 1 },
@@ -10562,8 +10475,6 @@ static const neon_xml_elm_t propfind_elements[] =
   { "DAV:", "propstat", ELEM_propstat, 0 },
   { "DAV:", "prop", ELEM_prop, 0 },
   { "DAV:", "status", ELEM_status, NEON_XML_CDATA },
-  { "DAV:", "baseline", ELEM_baseline, NEON_XML_CDATA },
-  { "DAV:", "baseline-collection", ELEM_baseline_coll, NEON_XML_CDATA },
   { "DAV:", "collection", ELEM_collection, NEON_XML_CDATA },
   { "DAV:", "resourcetype", ELEM_resourcetype, 0 },
   { "DAV:", "getcontentlength", ELEM_get_content_length, NEON_XML_CDATA },
@@ -10667,10 +10578,8 @@ props_validate_element(
     case ELEM_prop:
       return child; // handle all children of <prop>
 
-    case ELEM_baseline_coll:
-
     case ELEM_resourcetype:
-      if ((child == ELEM_collection) || (child == ELEM_baseline))
+      if (child == ELEM_collection)
         return child;
       else
         return NEON_XML_DECLINE; // not concerned with other types
@@ -12376,22 +12285,6 @@ neon_get_webdav_resource_root(
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
   assert(ras);
-
-  if (!ras->webdav_root)
-  {
-    const char * bc_relative = "";
-
-    WEBDAV_ERR(neon_get_baseline_info(&bc_relative,
-      ras, ras->url->data,
-      pool));
-
-    // Remove as many path components from the URL as there are components
-    // in bc_relative.
-    stringbuf_t * url_buf = stringbuf_dup(ras->url, pool);
-    if (bc_relative)
-      path_remove_components(url_buf, path_component_count(bc_relative));
-    ras->webdav_root = apr_pstrdup(ras->pool, url_buf->data);
-  }
 
   *url = ras->webdav_root;
   return WEBDAV_NO_ERROR;
