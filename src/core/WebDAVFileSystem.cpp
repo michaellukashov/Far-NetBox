@@ -2517,7 +2517,7 @@ convert_to_stringbuf(// xlate_handle_node_t *node,
     err = error_create(apr_err, NULL, "");
     return error_create(apr_err, &err, errstr);
   }
-  // Else, exited due to success.  Trim the result buffer down to the
+  // Else, exited due to success. Trim the result buffer down to the
   // right length.
   (*dest)->data[(*dest)->len] = '\0';
 
@@ -2534,12 +2534,10 @@ convert_cstring(
   const char * src,
   apr_pool_t * pool)
 {
-  {
-    stringbuf_t * destbuf;
-    WEBDAV_ERR(convert_to_stringbuf(// node,
-                 src, strlen(src), &destbuf, pool));
-    *dest = destbuf->data;
-  }
+  stringbuf_t * destbuf;
+  WEBDAV_ERR(convert_to_stringbuf(// node,
+    src, strlen(src), &destbuf, pool));
+  *dest = destbuf->data;
   return WEBDAV_NO_ERROR;
 }
 
@@ -2552,7 +2550,7 @@ check_cstring_utf8(
 {
 
   // TODO: if (!utf_cstring_is_valid(data))
-    // return invalid_utf8(data, strlen(data), pool);
+  //   return invalid_utf8(data, strlen(data), pool);
   return WEBDAV_NO_ERROR;
 }
 
