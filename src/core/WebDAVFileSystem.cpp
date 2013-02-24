@@ -1318,15 +1318,6 @@ stringbuf_appendcstr(
   stringbuf_appendbytes(targetstr, cstr, strlen(cstr));
 }
 
-static stringbuf_t *
-stringbuf_dup(
-  const stringbuf_t * original_string,
-  apr_pool_t * pool)
-{
-  return (stringbuf_ncreate(original_string->data,
-    original_string->len, pool));
-}
-
 static error_t
 cstring_strtoi64(
   apr_int64_t * n,
@@ -10331,106 +10322,6 @@ neon_get_starting_props(
     }
   }
 
-  return WEBDAV_NO_ERROR;
-}
-
-static error_t
-neon_search_for_starting_props(
-  neon_resource_t ** rsrc,
-  const char ** missing_path,
-  neon_session_t * sess,
-  const char * url,
-  apr_pool_t * pool)
-{
-  error_t err = WEBDAV_NO_ERROR;
-  ne_uri parsed_url = {0};
-  stringbuf_t * lopped_path =
-    stringbuf_create(url, pool); // initialize to make sure it'll fit
-                                 // without reallocating
-  apr_pool_t * iterpool = webdav_pool_create(pool);
-
-  // Split the url into its component pieces (scheme, host, path,
-  // etc).  We want the path part.
-  ne_uri_parse(url, &parsed_url);
-  if (parsed_url.path == NULL)
-  {
-    ne_uri_free(&parsed_url);
-    return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
-      "Neon was unable to parse URL '%s'", url);
-  }
-
-  stringbuf_setempty(lopped_path);
-  stringbuf_t * path_s = stringbuf_create(parsed_url.path, pool);
-  ne_uri_free(&parsed_url);
-
-  // Try to get the starting_props from the public url.  If the
-  // resource no longer exists in HEAD or is forbidden, we'll get a
-  // failure.  That's fine: just keep removing components and trying
-  // to get the starting_props from parent directories.
-  while (!path_is_empty(path_s->data))
-  {
-    webdav_pool_clear(iterpool);
-    err = neon_get_starting_props(rsrc, sess, path_s->data,
-      false,
-      iterpool);
-    if (!err)
-      break;   // found an existing, readable parent!
-
-    if ((err != WEBDAV_ERR_FS_NOT_FOUND) &&
-        (err != WEBDAV_ERR_DAV_FORBIDDEN))
-    {
-      return err;  // found a _real_ error
-    }
-
-    // else... lop off the basename and try again.
-    // TODO: path_s is an absolute, schema-less URI, but
-    // technically not an FS_PATH.
-    stringbuf_set(lopped_path,
-      relpath_join(fspath_basename(path_s->data,
-        iterpool),
-        lopped_path->data, iterpool));
-
-    apr_size_t len = path_s->len;
-    path_remove_component(path_s);
-
-    // if we detect an infinite loop, get out.
-    if (path_s->len == len)
-      return error_createf(0, &err,
-        "The path was not part of a WebDAV resource");
-
-    error_clear(&err);
-  }
-
-  // error out if entire URL was bogus)
-  if (path_is_empty(path_s->data))
-  {
-    return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
-      "No part of path '%s' was found in WebDAV resource", parsed_url.path);
-  }
-
-  // Duplicate rsrc out of iterpool into pool
-  {
-    neon_resource_t * tmp = static_cast<neon_resource_t *>(apr_pcalloc(pool, sizeof(*tmp)));
-    tmp->url = apr_pstrdup(pool, (*rsrc)->url);
-    tmp->is_collection = (*rsrc)->is_collection;
-    tmp->pool = pool;
-    tmp->propset = apr_hash_make(pool);
-
-    for (apr_hash_index_t * hi = apr_hash_first(iterpool, (*rsrc)->propset); hi;
-         hi = apr_hash_next(hi))
-    {
-      const void * key;
-      void * val;
-
-      apr_hash_this(hi, &key, NULL, &val);
-      apr_hash_set(tmp->propset, apr_pstrdup(pool, static_cast<const char *>(key)), APR_HASH_KEY_STRING,
-        string_dup(static_cast<const string_t *>(val), pool));
-    }
-
-    *rsrc = tmp;
-  }
-  *missing_path = lopped_path->data;
-  webdav_pool_destroy(iterpool);
   return WEBDAV_NO_ERROR;
 }
 
