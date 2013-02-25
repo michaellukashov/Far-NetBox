@@ -37,7 +37,7 @@
 #ifdef NE_LFS
 typedef off64_t ne_off_t;
 #else
-typedef off_t ne_off_t;
+typedef __int64 ne_off_t;
 #endif
 
 /* define ssize_t for Win32 */

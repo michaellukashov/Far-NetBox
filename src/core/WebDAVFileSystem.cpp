@@ -137,8 +137,9 @@ typedef error_t (*cancel_func_t)(void * cancel_baton);
 //------------------------------------------------------------------------------
 // from svn_ra.h
 
-typedef void (*progress_notify_func_t)(off_t progress,
-  off_t total,
+typedef void (*progress_notify_func_t)(
+  apr_off_t progress,
+  apr_off_t total,
   void * baton,
   apr_pool_t * pool);
 
@@ -241,7 +242,7 @@ typedef struct neon_session_t
   progress_notify_func_t progress_func;
   void * progress_baton;
 
-  off_t total_progress;                 // Total number of bytes sent in this
+  apr_off_t total_progress;             // Total number of bytes sent in this
                                         // session with a -1 total marker
   apr_hash_t * capabilities;
 } neon_session_t;
@@ -11092,7 +11093,7 @@ client_send_propfind_request(
 typedef struct neonprogress_baton_t
 {
   neon_session_t * ras;
-  off_t last_progress;
+  apr_off_t last_progress;
   apr_time_t last_progress_time;
   apr_pool_t * pool;
 } neonprogress_baton_t;
@@ -11518,8 +11519,8 @@ cleanup_neon_debug_file(
 
 static void
 progress_func(
-  off_t progress,
-  off_t total,
+  apr_off_t progress,
+  apr_off_t total,
   void * baton,
   apr_pool_t * pool)
 {
@@ -11537,8 +11538,8 @@ progress_func(
 static void
 ra_neon_neonprogress(
   void * baton,
-  off_t progress,
-  off_t total)
+  apr_off_t progress,
+  apr_off_t total)
 {
   neonprogress_baton_t * pb = static_cast<neonprogress_baton_t *>(baton);
   neon_session_t * ras = pb->ras;
