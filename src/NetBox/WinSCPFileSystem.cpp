@@ -474,7 +474,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
         FTerminal->ReloadDirectory();
       }
 
-      TCustomFileSystem * FileSystem = GetTerminal()->GetFileSystem();
+      // TCustomFileSystem * FileSystem = GetTerminal()->GetFileSystem();
       for (intptr_t Index = 0; Index < FTerminal->GetFiles()->GetCount(); ++Index)
       {
         TRemoteFile * File = FTerminal->GetFiles()->GetFiles(Index);
