@@ -541,6 +541,8 @@ SET_TARGET_PROPERTIES(zlib
   LINK_FLAGS ${CMAKE_LINK_FLAGS}
 )
 
+IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
+
 #-------------------------------------------------------
 # target testnetbox_01
 
@@ -672,3 +674,4 @@ ADD_DEPENDENCIES(testnetbox_04 ${NETBOX_LIBRARIES}
 TARGET_LINK_LIBRARIES(testnetbox_04 ${NETBOX_LIBRARIES}
 )
 
+ENDIF(CMAKE_BUILD_TYPE STREQUAL "Debug")
