@@ -19,5 +19,6 @@ cd %PROJECT_BUIILDDIR%
 @call "%VS100COMNTOOLS%..\..\VC\vcvarsall.bat" %PROJECT_VARS%
 cmake.exe -D PROJECT_ROOT=%PROJECT_ROOT% -D CMAKE_BUILD_TYPE=%PROJECT_CONFIG% -G "%PROJECT_GEN%" -D CONF=%PROJECT_CONF% -D FAR_VERSION=%FAR_VERSION% %PROJECT_ROOT%\src\NetBox
 msbuild.exe NetBox.sln /t:NetBox;%PROJECT_BUILD% /maxcpucount:2 /p:Configuration=%PROJECT_CONFIG% /p:Platform=%PROJECT_PLATFORM% /p:Project=NetBox
+REM nmake
 
 @endlocal
