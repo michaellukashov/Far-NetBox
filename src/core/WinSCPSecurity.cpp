@@ -48,7 +48,7 @@ RawByteString EncryptPassword(UnicodeString UnicodePassword, UnicodeString Unico
   if (!RandSeed) Randomize();
   Password = Key + Password;
   Shift = (Password.Length() < PWALG_SIMPLE_MAXLEN) ?
-    static_cast<unsigned char>(random(PWALG_SIMPLE_MAXLEN - Password.Length())) : 0;
+    static_cast<unsigned char>(random(PWALG_SIMPLE_MAXLEN - static_cast<int>(Password.Length()))) : 0;
   Result += SimpleEncryptChar(static_cast<unsigned char>(PWALG_SIMPLE_FLAG)); // Flag
   Result += SimpleEncryptChar(static_cast<unsigned char>(PWALG_SIMPLE_INTERNAL)); // Dummy
   Result += SimpleEncryptChar(static_cast<unsigned char>(Password.Length()));

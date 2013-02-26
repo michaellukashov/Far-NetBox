@@ -838,7 +838,7 @@ public:
   UnicodeString Dump() const
   {
     UnicodeString Result;
-    for (intptr_t Index = 0; Index < static_cast<intptr_t>(GetLength()); ++Index)
+    for (uintptr_t Index = 0; Index < GetLength(); ++Index)
     {
       Result += ByteToHex(GetData()[Index]) + L",";
       if (((Index + 1) % 25) == 0)

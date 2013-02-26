@@ -1088,7 +1088,7 @@ void TSecureShell::Send(const unsigned char * Buf, intptr_t Len)
 {
   CCALLSTACK(TRACE_TRANSMIT);
   CheckConnection();
-  int BufSize = FBackend->send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), Len);
+  int BufSize = FBackend->send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), static_cast<int>(Len));
   CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", int(Len), int(BufSize));
   if (Configuration->GetActualLogProtocol() >= 1)
   {

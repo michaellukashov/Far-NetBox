@@ -670,7 +670,7 @@ public:
     bool IsDirectory;
     TFileInfo Local;
     TFileInfo Remote;
-    int ImageIndex;
+    intptr_t ImageIndex;
     bool Checked;
     TRemoteFile * RemoteFile;
 

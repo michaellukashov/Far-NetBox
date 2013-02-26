@@ -137,8 +137,9 @@ typedef error_t (*cancel_func_t)(void * cancel_baton);
 //------------------------------------------------------------------------------
 // from svn_ra.h
 
-typedef void (*progress_notify_func_t)(off_t progress,
-  off_t total,
+typedef void (*progress_notify_func_t)(
+  apr_off_t progress,
+  apr_off_t total,
   void * baton,
   apr_pool_t * pool);
 
@@ -241,7 +242,7 @@ typedef struct neon_session_t
   progress_notify_func_t progress_func;
   void * progress_baton;
 
-  off_t total_progress;                 // Total number of bytes sent in this
+  apr_off_t total_progress;             // Total number of bytes sent in this
                                         // session with a -1 total marker
   apr_hash_t * capabilities;
 } neon_session_t;
@@ -291,9 +292,7 @@ enum
   ELEM_PROPS_UNUSED = ELEM_207_UNUSED + 100,
 
   // DAV elements
-  ELEM_baseline = ELEM_207_UNUSED,
-  ELEM_baseline_coll,
-  ELEM_collection,
+  ELEM_collection = ELEM_207_UNUSED,
   ELEM_comment,
   ELEM_creationdate,
   ELEM_creator_displayname,
@@ -374,7 +373,7 @@ typedef struct list_func_baton_t
 #define WEBDAV_ERR_CANNOT_PROPFIND 1065
 #define WEBDAV_ERR_BAD_PARAM 1070
 
-// @brief The application doesn't want any providers to save credentials
+// The application doesn't want any providers to save credentials
 // to disk. Property value is irrelevant; only property's existence
 // matters.
 #define AUTH_PARAM_NO_AUTH_CACHE AUTH_PARAM_PREFIX "no-auth-cache"
@@ -392,7 +391,7 @@ typedef struct list_func_baton_t
     return err__temp;                 \
   } while (0)
 
-// A statement macro, very similar to @c WEBDAV_ERR.
+// A statement macro, very similar to WEBDAV_ERR.
 // This macro will wrap the error with the specified text before
 // returning the error.
 
@@ -411,11 +410,11 @@ typedef struct list_func_baton_t
 
 #define error_trace(expr)  (expr)
 
-// Create a pool as a subpool of @a parent_pool
+// Create a pool as a subpool of parent_pool
 #define webdav_pool_create(parent_pool) webdav::pool_create_ex(parent_pool, NULL)
 #define webdav_pool_clear apr_pool_clear
-// Destroy a @a pool and all of its children.
-// This define for @c webdav_pool_destroy exists for symmetry and
+// Destroy a pool and all of its children.
+// This define for webdav_pool_destroy exists for symmetry and
 // completeness.
 
 #define webdav_pool_destroy apr_pool_destroy
@@ -565,13 +564,13 @@ parse_ne_uri(
 
 #define atoui64(X) ((apr_uint64_t) apr_atoi64(X))
 
-// An indication that you are interested in the @c kind field
+// An indication that you are interested in the kind field
 #define WEBDAV_DIRENT_KIND        0x00001
 
-// An indication that you are interested in the @c size field
+// An indication that you are interested in the size field
 #define WEBDAV_DIRENT_SIZE        0x00002
 
-// An indication that you are interested in the @c time field
+// An indication that you are interested in the time field
 #define WEBDAV_DIRENT_TIME        0x00010
 
 // A combination of all the dirent fields
@@ -642,12 +641,6 @@ static error_t
 utf_cstring_from_utf8(
   const char ** dest,
   const char * src,
-  apr_pool_t * pool);
-
-static error_t
-invalid_utf8(
-  const char * data,
-  apr_size_t len,
   apr_pool_t * pool);
 
 // Local wrapper of path_cstring_from_utf8() that does no copying on
@@ -887,8 +880,8 @@ neon_init(
 // Table of flags for character classification.
 extern const apr_uint32_t * const ctype_table;
 
-// Check if @a c is in the character class described by @a flags.
-// The @a flags is a bitwise-or combination of @c WEBDAV_CTYPE_*
+// Check if c is in the character class described by flags.
+// The flags is a bitwise-or combination of WEBDAV_CTYPE_*
 // constants. Uses #ctype_table.
 
 #define ctype_test(c, flags) \
@@ -916,40 +909,40 @@ extern const apr_uint32_t * const ctype_table;
 // All printable ASCII
 #define WEBDAV_CTYPE_PRINT    (WEBDAV_CTYPE_GRAPH | WEBDAV_CTYPE_SPACE)
 
-// Check if @a c is an ASCII control character.
+// Check if c is an ASCII control character.
 #define ctype_iscntrl(c)  ctype_test((c), WEBDAV_CTYPE_CNTRL)
 
-// Check if @a c is an ASCII whitespace character.
+// Check if c is an ASCII whitespace character.
 #define ctype_isspace(c)  ctype_test((c), WEBDAV_CTYPE_SPACE)
 
-// Check if @a c is an ASCII digit.
+// Check if c is an ASCII digit.
 #define ctype_isdigit(c)  ctype_test((c), WEBDAV_CTYPE_DIGIT)
 
-// Check if @a c is an ASCII uppercase letter.
+// Check if c is an ASCII uppercase letter.
 #define ctype_isupper(c)  ctype_test((c), WEBDAV_CTYPE_UPPER)
 
-// Check if @a c is an ASCII lowercase letter.
+// Check if c is an ASCII lowercase letter.
 #define ctype_islower(c)  ctype_test((c), WEBDAV_CTYPE_LOWER)
 
-// Check if @a c is an ASCII punctuation mark.
+// Check if c is an ASCII punctuation mark.
 #define ctype_ispunct(c)  ctype_test((c), WEBDAV_CTYPE_PUNCT)
 
-// Check if @a c is an ASCII character.
+// Check if c is an ASCII character.
 #define ctype_isascii(c)  ctype_test((c), WEBDAV_CTYPE_ASCII)
 
-// Check if @a c is an ASCII letter.
+// Check if c is an ASCII letter.
 #define ctype_isalpha(c)  ctype_test((c), WEBDAV_CTYPE_ALPHA)
 
-// Check if @a c is an ASCII letter or decimal digit.
+// Check if c is an ASCII letter or decimal digit.
 #define ctype_isalnum(c)  ctype_test((c), WEBDAV_CTYPE_ALNUM)
 
-// Check if @a c is an ASCII hexadecimal digit.
+// Check if c is an ASCII hexadecimal digit.
 #define ctype_isxdigit(c) ctype_test((c), WEBDAV_CTYPE_XDIGIT)
 
-// Check if @a c is an ASCII graphical (visible printable) character.
+// Check if c is an ASCII graphical (visible printable) character.
 #define ctype_isgraph(c)  ctype_test((c), WEBDAV_CTYPE_GRAPH)
 
-// Check if @a c is an ASCII printable character.
+// Check if c is an ASCII printable character.
 #define ctype_isprint(c)  ctype_test((c), WEBDAV_CTYPE_PRINT)
 
 // Basic extended character classes
@@ -965,16 +958,16 @@ extern const apr_uint32_t * const ctype_table;
 // All valid UTF-8 bytes.
 #define WEBDAV_CTYPE_UTF8     (WEBDAV_CTYPE_ASCII | WEBDAV_CTYPE_UTF8MBC)
 
-// Check if @a c is a UTF-8 multibyte lead byte.
+// Check if c is a UTF-8 multibyte lead byte.
 #define ctype_isutf8lead(c) ctype_test((c), WEBDAV_CTYPE_UTF8LEAD)
 
-// Check if @a c is a UTF-8 multibyte continuation (non-lead) byte.
+// Check if c is a UTF-8 multibyte continuation (non-lead) byte.
 #define ctype_isutf8cont(c) ctype_test((c), WEBDAV_CTYLE_UTF8CONT)
 
-// Check if @a c is part of a UTF-8 multibyte character.
+// Check if c is part of a UTF-8 multibyte character.
 #define ctype_isutf8mbc(c)  ctype_test((c), WEBDAV_CTYPE_UTF8MBC)
 
-// Check if @a c is valid in UTF-8.
+// Check if c is valid in UTF-8.
 #define ctype_isutf8(c)     ctype_test((c), WEBDAV_CTYPE_UTF8)
 
 #define WEBDAV_CTYPE_ASCII_MINUS            45 //< ASCII value of '-'
@@ -989,12 +982,12 @@ extern const apr_uint32_t * const ctype_table;
 //< ASCII value of a delete character
 
 /*
- * Compare two characters @a a and @a b, treating case-equivalent
+ * Compare two characters a and b, treating case-equivalent
  * unaccented Latin (ASCII subset) letters as equal.
  *
  * Returns in integer greater than, equal to, or less than 0,
- * according to whether @a a is considered greater than, equal to,
- * or less than @a b.
+ * according to whether a is considered greater than, equal to,
+ * or less than b.
  */
 
 static int
@@ -1261,15 +1254,6 @@ string_createf(
   return str;
 }
 
-static string_t *
-string_dup(
-  const string_t * original_string,
-  apr_pool_t * pool)
-{
-  return (string_ncreate(original_string->data,
-    original_string->len, pool));
-}
-
 static bool
 string_compare(
   const string_t * str1,
@@ -1318,15 +1302,6 @@ stringbuf_appendcstr(
   const char * cstr)
 {
   stringbuf_appendbytes(targetstr, cstr, strlen(cstr));
-}
-
-static stringbuf_t *
-stringbuf_dup(
-  const stringbuf_t * original_string,
-  apr_pool_t * pool)
-{
-  return (stringbuf_ncreate(original_string->data,
-    original_string->len, pool));
 }
 
 static error_t
@@ -2252,18 +2227,6 @@ path_component_count(
   return count;
 }
 
-static int
-path_is_empty(
-  const char * path)
-{
-  assert(is_canonical(path, strlen(path)));
-
-  if (WEBDAV_PATH_IS_EMPTY(path))
-    return 1;
-
-  return 0;
-}
-
 // Return the length of substring necessary to encompass the entire
 // previous path segment in PATH, which should be a LEN byte string.
 // A trailing slash will not be included in the returned length except
@@ -2528,7 +2491,7 @@ convert_to_stringbuf(// xlate_handle_node_t *node,
     err = error_create(apr_err, NULL, "");
     return error_create(apr_err, &err, errstr);
   }
-  // Else, exited due to success.  Trim the result buffer down to the
+  // Else, exited due to success. Trim the result buffer down to the
   // right length.
   (*dest)->data[(*dest)->len] = '\0';
 
@@ -2545,12 +2508,10 @@ convert_cstring(
   const char * src,
   apr_pool_t * pool)
 {
-  {
-    stringbuf_t * destbuf;
-    WEBDAV_ERR(convert_to_stringbuf(// node,
-                 src, strlen(src), &destbuf, pool));
-    *dest = destbuf->data;
-  }
+  stringbuf_t * destbuf;
+  WEBDAV_ERR(convert_to_stringbuf(// node,
+    src, strlen(src), &destbuf, pool));
+  *dest = destbuf->data;
   return WEBDAV_NO_ERROR;
 }
 
@@ -2563,7 +2524,7 @@ check_cstring_utf8(
 {
 
   // TODO: if (!utf_cstring_is_valid(data))
-    // return invalid_utf8(data, strlen(data), pool);
+  //   return invalid_utf8(data, strlen(data), pool);
   return WEBDAV_NO_ERROR;
 }
 
@@ -2921,9 +2882,9 @@ sort_hash(apr_hash_t * ht,
 #define WEBDAV_AUTH_SSL_EXPIRED     0x00000002
 // Certificate's CN (hostname) does not match the remote hostname.
 #define WEBDAV_AUTH_SSL_CNMISMATCH  0x00000004
-// @brief Certificate authority is unknown (i.e. not trusted)
+// Certificate authority is unknown (i.e. not trusted)
 #define WEBDAV_AUTH_SSL_UNKNOWNCA   0x00000008
-// @brief Other failure. This can happen if neon has introduced a new
+// Other failure. This can happen if neon has introduced a new
 // failure bit that we do not handle yet.
 #define WEBDAV_AUTH_SSL_OTHER       0x40000000
 
@@ -2933,13 +2894,13 @@ sort_hash(apr_hash_t * ht,
 // The auth-hash prefix indicating that the parameter is global.
 #define AUTH_PARAM_PREFIX "webdav:auth:"
 
-// @brief The following property is for SSL server cert providers. This
-// provides a pointer to an @c apr_uint32_t containing the failures
+// The following property is for SSL server cert providers. This
+// provides a pointer to an apr_uint32_t containing the failures
 // detected by the certificate validator.
 #define AUTH_PARAM_SSL_SERVER_FAILURES AUTH_PARAM_PREFIX \
   "ssl:failures"
 
-// @brief The following property is for SSL server cert providers. This
+// The following property is for SSL server cert providers. This
 // provides the cert info (auth_ssl_server_cert_info_t).
 #define AUTH_PARAM_SSL_SERVER_CERT_INFO AUTH_PARAM_PREFIX \
   "ssl:cert-info"
@@ -3082,7 +3043,7 @@ typedef error_t (*auth_password_set_t)(
   bool non_interactive,
   apr_pool_t * pool);
 
-// @c AUTH_CRED_SSL_CLIENT_CERT credentials.
+// AUTH_CRED_SSL_CLIENT_CERT credentials.
 typedef struct auth_cred_ssl_client_cert_t
 {
   // Absolute path to the certificate file
@@ -3103,7 +3064,7 @@ typedef error_t (*auth_plaintext_passphrase_prompt_func_t)(
   void * baton,
   apr_pool_t * pool);
 
-// @c AUTH_CRED_SSL_CLIENT_CERT_PW credentials.
+// AUTH_CRED_SSL_CLIENT_CERT_PW credentials.
 typedef struct auth_cred_ssl_client_cert_pw_t
 {
   // Certificate password
@@ -3111,7 +3072,7 @@ typedef struct auth_cred_ssl_client_cert_pw_t
   bool may_save;
 } auth_cred_ssl_client_cert_pw_t;
 
-// @c AUTH_CRED_SSL_SERVER_TRUST credentials.
+// AUTH_CRED_SSL_SERVER_TRUST credentials.
 typedef struct auth_cred_ssl_server_trust_t
 {
   bool may_save;
@@ -3119,7 +3080,7 @@ typedef struct auth_cred_ssl_server_trust_t
   apr_uint32_t accepted_failures;
 } auth_cred_ssl_server_trust_t;
 
-// SSL server certificate information used by @c
+// SSL server certificate information used by
 // AUTH_CRED_SSL_SERVER_TRUST providers.
 
 typedef struct auth_ssl_server_cert_info_t
@@ -6234,27 +6195,6 @@ uri_is_child(
 }
 
 static bool
-fspath_is_canonical(
-  const char * fspath)
-{
-  return (fspath[0] == '/') && relpath_is_canonical(fspath + 1);
-}
-
-static const char *
-fspath_basename(
-  const char * fspath,
-  apr_pool_t * pool)
-{
-  const char * result = NULL;
-  assert(fspath_is_canonical(fspath));
-
-  result = relpath_basename(fspath + 1, pool);
-
-  assert(strchr(result, '/') == NULL);
-  return result;
-}
-
-static bool
 dirent_is_absolute(
   const char * dirent)
 {
@@ -6723,26 +6663,26 @@ io_file_read_full2(
 //------------------------------------------------------------------------------
 // from svn_io.h
 
-// Read handler function for a generic stream.  @see stream_t.
+// Read handler function for a generic stream. see stream_t.
 typedef error_t (*read_fn_t)(
   void * baton,
   char * buffer,
   apr_size_t * len);
 
-// Skip data handler function for a generic stream.  @see stream_t
+// Skip data handler function for a generic stream. see stream_t
 // and stream_skip().
 
 typedef error_t (*stream_skip_fn_t)(
   void * baton,
   apr_size_t len);
 
-// Write handler function for a generic stream.  @see stream_t.
+// Write handler function for a generic stream. see stream_t.
 typedef error_t (*write_fn_t)(
   void * baton,
   const char * data,
   apr_size_t * len);
 
-// Close handler function for a generic stream.  @see stream_t.
+// Close handler function for a generic stream. see stream_t.
 typedef error_t (*close_fn_t)(void * baton);
 
 typedef struct stream_mark_t stream_mark_t;
@@ -10289,8 +10229,8 @@ typedef struct propfind_ctx_t
 
 } propfind_ctx_t;
 
-// when we begin a checkout, we fetch these from the "public" resources to
-// steer us towards a Baseline Collection. we fetch the resourcetype to
+// When we begin a checkout, we fetch these from the "public" resources.
+// We fetch the resourcetype to
 // verify that we're accessing a collection.
 static const ne_propname starting_props[] =
 {
@@ -10298,14 +10238,6 @@ static const ne_propname starting_props[] =
   { "DAV:", "creationdate" },
   { "DAV:", "getlastmodified" },
   { "DAV:", "getcontentlength" },
-  { NULL }
-};
-
-// when speaking to a Baseline to reach the Baseline Collection, fetch these
-// properties.
-static const ne_propname baseline_props[] =
-{
-  { "DAV:", "baseline-collection" },
   { NULL }
 };
 
@@ -10344,182 +10276,6 @@ neon_get_starting_props(
   return WEBDAV_NO_ERROR;
 }
 
-static error_t
-neon_search_for_starting_props(
-  neon_resource_t ** rsrc,
-  const char ** missing_path,
-  neon_session_t * sess,
-  const char * url,
-  apr_pool_t * pool)
-{
-  error_t err = WEBDAV_NO_ERROR;
-  ne_uri parsed_url = {0};
-  stringbuf_t * lopped_path =
-    stringbuf_create(url, pool); // initialize to make sure it'll fit
-                                 // without reallocating
-  apr_pool_t * iterpool = webdav_pool_create(pool);
-
-  // Split the url into its component pieces (scheme, host, path,
-  // etc).  We want the path part.
-  ne_uri_parse(url, &parsed_url);
-  if (parsed_url.path == NULL)
-  {
-    ne_uri_free(&parsed_url);
-    return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
-      "Neon was unable to parse URL '%s'", url);
-  }
-
-  stringbuf_setempty(lopped_path);
-  stringbuf_t * path_s = stringbuf_create(parsed_url.path, pool);
-  ne_uri_free(&parsed_url);
-
-  // Try to get the starting_props from the public url.  If the
-  // resource no longer exists in HEAD or is forbidden, we'll get a
-  // failure.  That's fine: just keep removing components and trying
-  // to get the starting_props from parent directories.
-  while (!path_is_empty(path_s->data))
-  {
-    webdav_pool_clear(iterpool);
-    err = neon_get_starting_props(rsrc, sess, path_s->data,
-      false,
-      iterpool);
-    if (!err)
-      break;   // found an existing, readable parent!
-
-    if ((err != WEBDAV_ERR_FS_NOT_FOUND) &&
-        (err != WEBDAV_ERR_DAV_FORBIDDEN))
-    {
-      return err;  // found a _real_ error
-    }
-
-    // else... lop off the basename and try again.
-    // TODO: path_s is an absolute, schema-less URI, but
-    // technically not an FS_PATH.
-    stringbuf_set(lopped_path,
-      relpath_join(fspath_basename(path_s->data,
-        iterpool),
-        lopped_path->data, iterpool));
-
-    apr_size_t len = path_s->len;
-    path_remove_component(path_s);
-
-    // if we detect an infinite loop, get out.
-    if (path_s->len == len)
-      return error_createf(0, &err,
-        "The path was not part of a WebDAV resource");
-
-    error_clear(&err);
-  }
-
-  // error out if entire URL was bogus)
-  if (path_is_empty(path_s->data))
-  {
-    return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
-      "No part of path '%s' was found in WebDAV resource", parsed_url.path);
-  }
-
-  // Duplicate rsrc out of iterpool into pool
-  {
-    neon_resource_t * tmp = static_cast<neon_resource_t *>(apr_pcalloc(pool, sizeof(*tmp)));
-    tmp->url = apr_pstrdup(pool, (*rsrc)->url);
-    tmp->is_collection = (*rsrc)->is_collection;
-    tmp->pool = pool;
-    tmp->propset = apr_hash_make(pool);
-
-    for (apr_hash_index_t * hi = apr_hash_first(iterpool, (*rsrc)->propset); hi;
-         hi = apr_hash_next(hi))
-    {
-      const void * key;
-      void * val;
-
-      apr_hash_this(hi, &key, NULL, &val);
-      apr_hash_set(tmp->propset, apr_pstrdup(pool, static_cast<const char *>(key)), APR_HASH_KEY_STRING,
-        string_dup(static_cast<const string_t *>(val), pool));
-    }
-
-    *rsrc = tmp;
-  }
-  *missing_path = lopped_path->data;
-  webdav_pool_destroy(iterpool);
-  return WEBDAV_NO_ERROR;
-}
-
-static error_t
-neon_get_baseline_props(
-  string_t * bc_relative,
-  neon_resource_t ** bln_rsrc,
-  neon_session_t * sess,
-  const char * url,
-  const ne_propname * which_props,
-  apr_pool_t * pool)
-{
-  const string_t * relative_path = NULL;
-  const char * my_bc_relative = NULL;
-  const char * lopped_path = NULL;
-
-  // we may be able to replace some/all of this code with an
-  // expand-property REPORT when that is available on the server.
-
-  // -------------------------------------------------------------------
-  // STEP 1
-
-  neon_resource_t * rsrc = NULL;
-  WEBDAV_ERR(neon_search_for_starting_props(&rsrc, &lopped_path,
-             sess, url, pool));
-
-  // Allocate our own bc_relative path.
-  relative_path = NULL;
-  if (relative_path != NULL)
-  {
-    // better error reporting...
-    // need an WEBDAV_ERR here
-    /*return error_create(APR_EGENERAL, NULL,
-        "The relative-path property was not "
-        "found on the resource");*/
-    my_bc_relative = relpath_join(relative_path->data,
-      path_uri_decode(lopped_path, pool),
-      pool);
-  }
-
-  // if they want the relative path (could be, they're just trying to find
-  // the baseline collection), then return it
-  if (bc_relative && my_bc_relative)
-  {
-    bc_relative->data = my_bc_relative;
-    bc_relative->len = strlen(my_bc_relative);
-  }
-
-  // Return the baseline rsrc, which now contains whatever set of
-  // props the caller wanted.
-  *bln_rsrc = rsrc;
-  return WEBDAV_NO_ERROR;
-}
-
-static error_t
-neon_get_baseline_info(
-  const char ** bc_relative_p,
-  neon_session_t * sess,
-  const char * url,
-  apr_pool_t * pool)
-{
-  neon_resource_t * baseline_rsrc = NULL;
-  string_t my_bc_rel = {0};
-
-  // Go fetch a BASELINE_RSRC that contains specific properties we
-  // want.  This routine will also fill in BC_RELATIVE as best it can.
-  WEBDAV_ERR(neon_get_baseline_props(&my_bc_rel,
-    &baseline_rsrc,
-    sess,
-    url,
-    baseline_props, // specific props
-    pool));
-
-  if (bc_relative_p)
-    *bc_relative_p = my_bc_rel.data;
-
-  return WEBDAV_NO_ERROR;
-}
-
 // Propfind Implementation
 
 typedef struct elem_defn
@@ -10541,7 +10297,6 @@ static const elem_defn elem_definitions[] =
   { ELEM_propstat, "DAV:propstat", 0 },
   { ELEM_prop, "DAV:prop", 0 },
   { ELEM_status, "DAV:status", NEON_XML_CDATA },
-  { ELEM_baseline, "DAV:baseline", NEON_XML_CDATA },
   { ELEM_collection, "DAV:collection", NEON_XML_CDATA },
   { ELEM_resourcetype, "DAV:resourcetype", 0 },
   { ELEM_get_content_length, NEON_PROP_GETCONTENTLENGTH, 1 },
@@ -10562,8 +10317,6 @@ static const neon_xml_elm_t propfind_elements[] =
   { "DAV:", "propstat", ELEM_propstat, 0 },
   { "DAV:", "prop", ELEM_prop, 0 },
   { "DAV:", "status", ELEM_status, NEON_XML_CDATA },
-  { "DAV:", "baseline", ELEM_baseline, NEON_XML_CDATA },
-  { "DAV:", "baseline-collection", ELEM_baseline_coll, NEON_XML_CDATA },
   { "DAV:", "collection", ELEM_collection, NEON_XML_CDATA },
   { "DAV:", "resourcetype", ELEM_resourcetype, 0 },
   { "DAV:", "getcontentlength", ELEM_get_content_length, NEON_XML_CDATA },
@@ -10667,10 +10420,8 @@ props_validate_element(
     case ELEM_prop:
       return child; // handle all children of <prop>
 
-    case ELEM_baseline_coll:
-
     case ELEM_resourcetype:
-      if ((child == ELEM_collection) || (child == ELEM_baseline))
+      if (child == ELEM_collection)
         return child;
       else
         return NEON_XML_DECLINE; // not concerned with other types
@@ -11294,7 +11045,7 @@ client_send_propfind_request(
 typedef struct neonprogress_baton_t
 {
   neon_session_t * ras;
-  off_t last_progress;
+  apr_off_t last_progress;
   apr_time_t last_progress_time;
   apr_pool_t * pool;
 } neonprogress_baton_t;
@@ -11720,8 +11471,8 @@ cleanup_neon_debug_file(
 
 static void
 progress_func(
-  off_t progress,
-  off_t total,
+  apr_off_t progress,
+  apr_off_t total,
   void * baton,
   apr_pool_t * pool)
 {
@@ -11739,8 +11490,8 @@ progress_func(
 static void
 ra_neon_neonprogress(
   void * baton,
-  off_t progress,
-  off_t total)
+  apr_off_t progress,
+  apr_off_t total)
 {
   neonprogress_baton_t * pb = static_cast<neonprogress_baton_t *>(baton);
   neon_session_t * ras = pb->ras;
@@ -12376,22 +12127,6 @@ neon_get_webdav_resource_root(
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
   assert(ras);
-
-  if (!ras->webdav_root)
-  {
-    const char * bc_relative = "";
-
-    WEBDAV_ERR(neon_get_baseline_info(&bc_relative,
-      ras, ras->url->data,
-      pool));
-
-    // Remove as many path components from the URL as there are components
-    // in bc_relative.
-    stringbuf_t * url_buf = stringbuf_dup(ras->url, pool);
-    if (bc_relative)
-      path_remove_components(url_buf, path_component_count(bc_relative));
-    ras->webdav_root = apr_pstrdup(ras->pool, url_buf->data);
-  }
 
   *url = ras->webdav_root;
   return WEBDAV_NO_ERROR;

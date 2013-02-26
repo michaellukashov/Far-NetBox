@@ -1525,8 +1525,8 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     }
     CopyBatchStarted = true;
 
-    for (int IFile = 0; (IFile < FilesToCopy->GetCount()) &&
-      !OperationProgress->Cancel; IFile++)
+    for (intptr_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
+      !OperationProgress->Cancel; ++IFile)
     {
       UnicodeString FileName = FilesToCopy->Strings[IFile];
       TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[IFile]);

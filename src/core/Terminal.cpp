@@ -1103,8 +1103,8 @@ void TTerminal::Reopen(int Params)
   bool PrevAutoReadDirectory = FAutoReadDirectory;
   // here used to be a check for FExceptionOnFail being 0
   // but it can happen, e.g. when we are downloading file to execute it.
-  // however I'm not sure why we mind having excaption-on-fail enabled here
-  int PrevExceptionOnFail = FExceptionOnFail;
+  // however I'm not sure why we mind having exception-on-fail enabled here
+  Integer PrevExceptionOnFail = FExceptionOnFail;
   TRY_FINALLY (
   {
     TRACE("Reopen 1");

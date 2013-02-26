@@ -210,12 +210,12 @@ UnicodeString LowerCase(const UnicodeString & Str)
 
 //---------------------------------------------------------------------------
 
-wchar_t UpCase(const wchar_t c)
+inline wchar_t UpCase(const wchar_t c)
 {
   return ::toupper(c);
 }
 
-wchar_t LowCase(const wchar_t c)
+inline wchar_t LowCase(const wchar_t c)
 {
   return ::tolower(c);
 }
