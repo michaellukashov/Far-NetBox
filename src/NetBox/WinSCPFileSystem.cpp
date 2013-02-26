@@ -3791,37 +3791,34 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
   TFarEditorInfo * Info = WinSCPPlugin()->EditorInfo();
   if (Info != NULL)
   {
+    std::auto_ptr<TFarEditorInfo> InfoPtr(Info);
+    bool NativeEdit =
+      (FLastEditorID >= 0) &&
+      (FLastEditorID == Info->GetEditorID()) &&
+      !FLastEditFile.IsEmpty();
+
+    TMultipleEdits::iterator I = FMultipleEdits.find((int)Info->GetEditorID());
+    bool MultipleEdit = (I != FMultipleEdits.end());
+
+    if (NativeEdit || MultipleEdit)
     {
-      std::auto_ptr<TFarEditorInfo> InfoPtr;
-      InfoPtr.reset(Info);
-      bool NativeEdit =
-        (FLastEditorID >= 0) &&
-        (FLastEditorID == Info->GetEditorID()) &&
-        !FLastEditFile.IsEmpty();
+      // make sure this is reset before any dialog is shown as it may cause recursion
+      FEditorPendingSave = false;
 
-      TMultipleEdits::iterator I = FMultipleEdits.find((int)Info->GetEditorID());
-      bool MultipleEdit = (I != FMultipleEdits.end());
-
-      if (NativeEdit || MultipleEdit)
+      if (NativeEdit)
       {
-        // make sure this is reset before any dialog is shown as it may cause recursion
-        FEditorPendingSave = false;
+        assert(FLastEditFile == Info->GetFileName());
+        // always upload under the most recent name
+        UnicodeString CurrentDirectory = FTerminal->GetCurrentDirectory();
+        UploadFromEditor(NoReload, FLastEditFile, FLastEditFile, CurrentDirectory);
+        FTerminal->SetCurrentDirectory(CurrentDirectory);
+      }
 
-        if (NativeEdit)
-        {
-          assert(FLastEditFile == Info->GetFileName());
-          // always upload under the most recent name
-          UnicodeString CurrentDirectory = FTerminal->GetCurrentDirectory();
-          UploadFromEditor(NoReload, FLastEditFile, FLastEditFile, CurrentDirectory);
-          FTerminal->SetCurrentDirectory(CurrentDirectory);
-        }
-
-        if (MultipleEdit)
-        {
-          UploadFromEditor(NoReload, Info->GetFileName(), I->second.FileTitle, I->second.Directory);
-          // note that panel gets not refreshed upon switch to
-          // panel view. but that's intentional
-        }
+      if (MultipleEdit)
+      {
+        UploadFromEditor(NoReload, Info->GetFileName(), I->second.FileTitle, I->second.Directory);
+        // note that panel gets not refreshed upon switch to
+        // panel view. but that's intentional
       }
     }
   }
@@ -3848,8 +3845,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
       TFarEditorInfo * Info = WinSCPPlugin()->EditorInfo();
       if (Info != NULL)
       {
-        std::auto_ptr<TFarEditorInfo> InfoPtr;
-        InfoPtr.reset(Info);
+        std::auto_ptr<TFarEditorInfo> InfoPtr(Info);
         TMultipleEdits::iterator it = FMultipleEdits.find((int)Info->GetEditorID());
         if (it != FMultipleEdits.end())
         {
