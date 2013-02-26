@@ -245,7 +245,7 @@ SET_TARGET_PROPERTIES(NetBox
 
 #-------------------------------------------------------------------------------
 
-STRING(REPLACE "/" "\\" BUILD_DIR ${PROJECT_ROOT}/build/${CMAKE_BUILD_TYPE}/${CONF})
+STRING(REPLACE "/" "\\" BUILD_DIR ${PROJECT_ROOT}/build/${CMAKE_BUILD_TYPE}/${CONF}/${CMAKE_BUILD_TYPE})
 MESSAGE("BUILD_DIR: ${BUILD_DIR}")
 
 #-------------------------------------------------------------------------------
