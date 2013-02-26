@@ -6195,13 +6195,6 @@ uri_is_child(
 }
 
 static bool
-fspath_is_canonical(
-  const char * fspath)
-{
-  return (fspath[0] == '/') && relpath_is_canonical(fspath + 1);
-}
-
-static bool
 dirent_is_absolute(
   const char * dirent)
 {
