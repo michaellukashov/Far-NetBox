@@ -643,12 +643,6 @@ utf_cstring_from_utf8(
   const char * src,
   apr_pool_t * pool);
 
-static error_t
-invalid_utf8(
-  const char * data,
-  apr_size_t len,
-  apr_pool_t * pool);
-
 // Local wrapper of path_cstring_from_utf8() that does no copying on
 // operating systems where APR always uses utf-8 as native path format
 static error_t
@@ -1258,15 +1252,6 @@ string_createf(
   va_end(ap);
 
   return str;
-}
-
-static string_t *
-string_dup(
-  const string_t * original_string,
-  apr_pool_t * pool)
-{
-  return (string_ncreate(original_string->data,
-    original_string->len, pool));
 }
 
 static bool
@@ -2240,18 +2225,6 @@ path_component_count(
   }
 
   return count;
-}
-
-static int
-path_is_empty(
-  const char * path)
-{
-  assert(is_canonical(path, strlen(path)));
-
-  if (WEBDAV_PATH_IS_EMPTY(path))
-    return 1;
-
-  return 0;
 }
 
 // Return the length of substring necessary to encompass the entire
@@ -6226,20 +6199,6 @@ fspath_is_canonical(
   const char * fspath)
 {
   return (fspath[0] == '/') && relpath_is_canonical(fspath + 1);
-}
-
-static const char *
-fspath_basename(
-  const char * fspath,
-  apr_pool_t * pool)
-{
-  const char * result = NULL;
-  assert(fspath_is_canonical(fspath));
-
-  result = relpath_basename(fspath + 1, pool);
-
-  assert(strchr(result, '/') == NULL);
-  return result;
 }
 
 static bool
