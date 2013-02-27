@@ -1,5 +1,6 @@
 NetBox 2.1.27 ??.03.2013
 --------------------
+  * Bugfix: WebDAV: Invalid Content-Length in response when copying large (>4GB) file from server
 
 NetBox 2.1.26 22.02.2013
 --------------------
