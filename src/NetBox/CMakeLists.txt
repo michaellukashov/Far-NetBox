@@ -271,7 +271,7 @@ STRING(REPLACE "/" "\\" OUTPUT_DIR ${OUTPUT_DIR})
 ADD_CUSTOM_COMMAND(TARGET NetBox
   POST_BUILD
   COMMAND if not exist "${OUTPUT_DIR}" ( mkdir "${OUTPUT_DIR}" )
-  COMMAND cp -f --remove-destination --target-directory=${OUTPUT_DIR} NetBox.dll
+  COMMAND cp -f NetBox.dll ${OUTPUT_DIR}
   WORKING_DIRECTORY ${BUILD_DIR}
   VERBATIM
 )
@@ -280,7 +280,7 @@ IF(CMAKE_BUILD_TYPE STREQUAL "Release")
   ADD_CUSTOM_COMMAND(TARGET NetBox
     POST_BUILD
     DEPENDS ${BUILD_DIR}\\NetBox.dll
-    COMMAND scripts\\make_dist.cmd ${FAR_VERSION} ${CONF} 
+    COMMAND scripts\\make_dist.cmd ${FAR_VERSION} ${CONF}
     WORKING_DIRECTORY ${SRC_ROOT}/NetBox
     VERBATIM
   )

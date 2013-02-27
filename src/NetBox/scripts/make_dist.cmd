@@ -3,14 +3,18 @@
 set PLUGINNAME=NetBox
 
 set FARVER=%1
-if "%FARVER%" equ "" set FARVER=Far2
+if "%FARVER%" == "" set FARVER=Far2
 set PLUGINARCH=%2
-if "%PLUGINARCH%" equ "" set PLUGINARCH=x86
+if "%PLUGINARCH%" == "" set PLUGINARCH=x86
 
 :: Get plugin version from resource
-for /F "tokens=2,3 skip=2" %%i in (resource.h) do set %%i=%%~j
-if "%PLUGIN_VERSION_TXT%" equ "" echo Undefined version & exit 1
-set PLUGINVER=%PLUGIN_VERSION_TXT%
+gawk "/PLUGIN_VERSION_TXT/ {print $3;}" resource.h > version.tmp
+for /F %%i in (version.tmp) do set PLUGINVER=%%i
+rm version.tmp
+if "%PLUGINVER%" == "" (
+  echo Undefined version
+  exit 1
+)
 
 :: Package name
 set PKGNAME=Far%PLUGINNAME%-%PLUGINVER%_%FARVER%_%PLUGINARCH%.7z
@@ -24,17 +28,16 @@ if exist %PKGDIRARCH% rmdir /S /Q %PKGDIRARCH%
 if not exist %PKGDIR% ( mkdir %PKGDIR% > NUL )
 mkdir %PKGDIRARCH% > NUL
 
-if exist *.lng copy *.lng %PKGDIRARCH% > NUL
-if exist *.hlf copy *.hlf %PKGDIRARCH% > NUL
-if exist ..\..\ChangeLog copy ..\..\ChangeLog %PKGDIRARCH% > NUL
-if exist ..\..\*.md copy ..\..\*.md %PKGDIRARCH% > NUL
-if exist ..\..\LICENSE.txt copy ..\..\LICENSE.txt %PKGDIRARCH% > NUL
+copy *.lng %PKGDIRARCH% > NUL
+copy *.hlf %PKGDIRARCH% > NUL
+copy ..\..\ChangeLog %PKGDIRARCH% > NUL
+copy ..\..\*.md %PKGDIRARCH% > NUL
+copy ..\..\LICENSE.txt %PKGDIRARCH% > NUL
 
 REM if exist "C:\Program Files\PESuite\PETrim.exe" (
   REM "C:\Program Files\PESuite\PETrim.exe" ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME%\%PLUGINNAME%.dll /Sf:Y /Sd:Y
 REM )
 copy ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME%\%PLUGINNAME%.dll %PKGDIRARCH% > NUL
-@rem copy ..\..\dlls\%PLUGINARCH%\%PLUGINNAME%.dll %PKGDIRARCH% > NUL
 
 :: Make archive
 if exist %PKGNAME% del %PKGNAME%
