@@ -12268,7 +12268,7 @@ void TWebDAVFileSystem::Open()
     }
     catch (...)
     {
-      if (FFileTransferCancelled)
+      if (GetIsCancelled() || FFileTransferCancelled)
         break;
       apr_sleep(200000); // 0.2 sec
     }
