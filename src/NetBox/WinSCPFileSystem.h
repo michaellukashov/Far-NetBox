@@ -284,6 +284,7 @@ private:
   UnicodeString FNewSessionsFolder;
   UnicodeString FPrevSessionName;
 
+  bool TerminalCheckForEsc();
   void TerminalClose(TObject * Sender);
   void TerminalUpdateStatus(TTerminal * Terminal, bool Active);
   void TerminalChangeDirectory(TObject * Sender);

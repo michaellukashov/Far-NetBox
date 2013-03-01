@@ -3015,6 +3015,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
     FTerminal->SetOnMoveLocalFile(MAKE_CALLBACK(TWinSCPFileSystem::TerminalMoveLocalFile, this));
     FTerminal->SetOnRemoveLocalDirectory(MAKE_CALLBACK(TWinSCPFileSystem::TerminalRemoveLocalDirectory, this));
     FTerminal->SetOnCreateLocalDirectory(MAKE_CALLBACK(TWinSCPFileSystem::TerminalCreateLocalDirectory, this));
+    FTerminal->SetOnCheckForEsc(MAKE_CALLBACK(TWinSCPFileSystem::TerminalCheckForEsc, this));
     ConnectTerminal(FTerminal);
 
     FTerminal->SetOnClose(MAKE_CALLBACK(TWinSCPFileSystem::TerminalClose, this));
@@ -3090,6 +3091,11 @@ void TWinSCPFileSystem::Disconnect()
 void TWinSCPFileSystem::ConnectTerminal(TTerminal * Terminal)
 {
   Terminal->Open();
+}
+//------------------------------------------------------------------------------
+bool TWinSCPFileSystem::TerminalCheckForEsc()
+{
+  return WinSCPPlugin()->CheckForEsc();
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalClose(TObject * /*Sender*/)
