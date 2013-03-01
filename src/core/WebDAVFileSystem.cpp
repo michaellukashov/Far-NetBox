@@ -8295,8 +8295,8 @@ neon_request_dispatch(
 
   WEBDAV_ERR(neon_check_parse_error(req->method, error_parser, req->url));
 
-  // if ((req->rv == NE_OK) && (req->code == okay_1 || req->code == okay_2))
-    // return WEBDAV_NO_ERROR;
+  if ((req->rv == NE_OK) && (req->code == okay_1 || req->code == okay_2))
+    return WEBDAV_NO_ERROR;
 
   // We either have a neon error, or some other error
   // that we didn't expect.
