@@ -5657,6 +5657,14 @@ void TTerminal::ReflectSettings()
   FActionLog->ReflectSettings();
   // also FTunnelLog ?
 }
+bool TTerminal::CheckForEsc()
+{
+  if (FOnCheckForEsc)
+    return FOnCheckForEsc();
+  else
+    return (FOperationProgress && FOperationProgress->Cancel == csCancel);
+}
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal) :
   TTerminal(),

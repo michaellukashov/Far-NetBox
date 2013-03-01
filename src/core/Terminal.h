@@ -72,6 +72,7 @@ DEFINE_CALLBACK_TYPE1(TRemoveLocalDirectoryEvent, BOOL,
   const UnicodeString & /* LocalDirName */);
 DEFINE_CALLBACK_TYPE2(TCreateLocalDirectoryEvent, BOOL,
   const UnicodeString & /* LocalDirName */, LPSECURITY_ATTRIBUTES /* SecurityAttributes */);
+DEFINE_CALLBACK_TYPE0(TCheckForEscEvent, bool);
 //------------------------------------------------------------------------------
 #define SUSPEND_OPERATION(Command)                            \
   {                                                           \
@@ -226,6 +227,7 @@ private:
   TExtendedExceptionEvent FOnShowExtendedException;
   TInformationEvent FOnInformation;
   TNotifyEvent FOnClose;
+  TCheckForEscEvent FOnCheckForEsc;
   TCallbackGuard * FCallbackGuard;
   TFindingFileEvent FOnFindingFile;
 
@@ -486,6 +488,7 @@ public:
   UnicodeString PeekCurrentDirectory();
   void FatalAbort();
   void ReflectSettings();
+  bool CheckForEsc();
 
   const TSessionInfo & GetSessionInfo() const;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
@@ -544,6 +547,8 @@ public:
   void SetOnShowExtendedException(TExtendedExceptionEvent Value) { FOnShowExtendedException = Value; }
   TInformationEvent & GetOnInformation() { return FOnInformation; }
   void SetOnInformation(TInformationEvent Value) { FOnInformation = Value; }
+  TCheckForEscEvent & GetOnCheckForEsc() { return FOnCheckForEsc; }
+  void SetOnCheckForEsc(TCheckForEscEvent Value) { FOnCheckForEsc = Value; }
   TNotifyEvent & GetOnClose() { return FOnClose; }
   void SetOnClose(TNotifyEvent Value) { FOnClose = Value; }
   int GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
