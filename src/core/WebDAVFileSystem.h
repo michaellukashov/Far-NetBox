@@ -202,12 +202,15 @@ public:
   webdav::error_t CreateStorage(THierarchicalStorage *& Storage);
   uintptr_t AdjustToCPSLimit(uintptr_t len);
   bool GetIsCancelled();
+
 private:
   webdav::error_t OpenURL(const UnicodeString & repos_URL,
     apr_pool_t *pool);
+
 private:
   apr_pool_t *webdav_pool;
   webdav::session_t *FSession;
+
 private:
   TWebDAVFileSystem(const TWebDAVFileSystem &);
   TWebDAVFileSystem & operator=(const TWebDAVFileSystem &);

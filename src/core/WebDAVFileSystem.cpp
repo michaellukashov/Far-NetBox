@@ -201,7 +201,7 @@ typedef struct stringbuf_t
 #define NEON_XML_CDATA   (1<<1)
 #define NEON_XML_COLLECT ((1<<2) | NEON_XML_CDATA)
 
-// ### Related to anonymous enum below?
+// Related to anonymous enum below?
 typedef int neon_xml_elmid;
 
 typedef struct neon_xml_elm_t
@@ -267,8 +267,8 @@ typedef struct neon_request_t
                                         // for use within callbacks
 } neon_request_t;
 
-// ### Related to neon_xml_elmid?
-// ### add WEBDAV_NEON_ to these to prefix conflicts with (sys) headers?
+// Related to neon_xml_elmid?
+// add WEBDAV_NEON_ to these to prefix conflicts with (sys) headers?
 enum
 {
   // Redefine Neon elements
@@ -948,7 +948,6 @@ extern const apr_uint32_t * const ctype_table;
 // Basic extended character classes
 #define WEBDAV_CTYPE_UTF8LEAD 0x0100 //< UTF-8 multibyte lead byte
 #define WEBDAV_CTYPE_UTF8CONT 0x0200 //< UTF-8 multibyte non-lead byte
-// ### TBD
 #define WEBDAV_CTYPE_XMLNAME  0x0400
 #define WEBDAV_CTYPE_URISAFE  0x0800
 
@@ -1026,7 +1025,7 @@ my_realloc(
 {
   void * new_area = NULL;
 
-  // kff todo: it's a pity APR doesn't give us this -- sometimes it
+  // todo: it's a pity APR doesn't give us this -- sometimes it
   // could realloc the block merely by extending in place, sparing us
   // a memcpy(), but only the pool would know enough to be able to do
   // this.  We should add a realloc() to APR if someone hasn't
@@ -1057,7 +1056,7 @@ stringbuf_create_ensure(
   // apr_pcalloc will allocate multiples of 8.
   // Thus, we would waste some of that memory if we stuck to the
   // smaller size. Note that this is safe even if apr_pcalloc would
-  // use some other aligment or none at all.
+  // use some other alignment or none at all.
 
   ++blocksize; // + space for '\0'
   blocksize = APR_ALIGN_DEFAULT(blocksize);
@@ -1135,7 +1134,7 @@ stringbuf_ensure(
     str->data = (char *) my_realloc(str->data,
       str->len + 1,
       // We need to maintain (and thus copy)
-      // the trailing nul
+      // the trailing null
       str->blocksize,
       str->pool);
   }
@@ -1325,7 +1324,7 @@ cstring_strtoi64(
       str);
   if ((errno == ERANGE && (val == APR_INT64_MIN || val == APR_INT64_MAX)) ||
       val < minval || val > maxval)
-    // ### Mark this for translation when gettext doesn't choke on macros.
+    // Mark this for translation when gettext doesn't choke on macros.
     return error_createf(WEBDAV_ERR_INCORRECT_PARAMS, NULL,
       "Number '%s' is out of range "
       "'[%" APR_INT64_T_FMT ", %" APR_INT64_T_FMT "]'",
@@ -5267,7 +5266,7 @@ auth_save_credentials(
     return WEBDAV_NO_ERROR;
 
   // Otherwise, loop from the top of the list, asking every provider
-  // to attempt a save.  ### todo: someday optimize so we don't
+  // to attempt a save.  todo: someday optimize so we don't
   // necessarily start from the top of the list.
   for (i = 0; i < state->table->providers->nelts; i++)
   {
@@ -5989,7 +5988,7 @@ dirent_is_canonical(
     {
       // TODO: Scan hostname and sharename and fall back to part code
 
-      // ### Fall back to old implementation
+      // Fall back to old implementation
       return (strcmp(dirent, dirent_canonicalize(dirent, pool)) == 0);
     }
   }
@@ -7523,7 +7522,7 @@ parsed_request(
   if (body == NULL)
     WEBDAV_ERR(neon_set_neon_body_provider(req, body_file));
 
-  // ### use a symbolic name somewhere for this MIME type?
+  // use a symbolic name somewhere for this MIME type?
   ne_add_request_header(req->ne_req, "Content-Type", "text/xml");
 
   // create a parser to read the normal response body
@@ -7760,7 +7759,7 @@ validate_error_elements(
         return child;
       else
         return NEON_XML_DECLINE;  // ignore if something else
-                                   // was in there
+                                  // was in there
     default:
       return NEON_XML_DECLINE;
   }
@@ -9954,7 +9953,6 @@ client_open_session_internal(
   apr_pool_t * pool)
 {
   // prepare callbacks, contexts
-
   callbacks2_t * cbtable = static_cast<callbacks2_t *>(apr_pcalloc(pool, sizeof(*cbtable)));
   callback_baton_t * cb = static_cast<callback_baton_t *>(apr_pcalloc(pool, sizeof(*cb)));
 
@@ -10169,7 +10167,7 @@ neon_exchange_capabilities(
   WEBDAV_ERR(neon_request_create(&req, ras,
     "OPTIONS", ras->url->data, pool));
 
-  // ### Use a symbolic name somewhere for this MIME type?
+  // Use a symbolic name somewhere for this MIME type?
   ne_add_request_header(req->ne_req, "Content-Type", "text/xml");
   apr_hash_t * extra_headers = apr_hash_make(pool);
   neon_add_depth_header(extra_headers, NEON_DEPTH_ZERO);
@@ -10424,8 +10422,7 @@ props_validate_element(
       if (child == ELEM_collection)
         return child;
       else
-        return NEON_XML_DECLINE; // not concerned with other types
-                                  // (### now)
+        return NEON_XML_DECLINE; // not concerned with other types (now)
 
     default:
       return NEON_XML_DECLINE;
@@ -10520,8 +10517,7 @@ props_end_element(
       return WEBDAV_NO_ERROR;
 
     case ELEM_propstat:
-      // We're at the end of a set of properties.  Do the right thing
-      // status-wise.
+      // We're at the end of a set of properties.  Do the right thing status-wise.
       if (pc->status)
       {
         for (apr_hash_index_t * hi = apr_hash_first(pc->pool, pc->propbuffer); hi;
@@ -10538,7 +10534,7 @@ props_end_element(
       }
       else if (!pc->status)
       {
-        // No status at all?  Bogosity.
+        // No status at all? Bogosity.
         return error_create(WEBDAV_ERR_XML_MALFORMED, NULL, NULL);
       }
       return WEBDAV_NO_ERROR;
@@ -10631,8 +10627,7 @@ neon_get_props(
 
   neon_add_depth_header(extra_headers, depth);
 
-  // It's easier to roll our own PROPFIND here than use neon's current
-  // interfaces.
+  // It's easier to roll our own PROPFIND here than use neon's current interfaces.
   // The start of the request body is fixed:
   stringbuf_t * body = stringbuf_create("<?xml version=\"1.0\" encoding=\"utf-8\"?>" DEBUG_CR
     "<propfind xmlns=\"DAV:\">" DEBUG_CR, pool);
@@ -11333,8 +11328,7 @@ server_ssl_callback(
   return !server_creds;
 }
 
-// An `ne_request_auth' callback, see ne_auth.h.  USERDATA is a
-// `struct proxy_auth_baton_t *'.
+// An `ne_request_auth' callback, see ne_auth.h. USERDATA is a struct proxy_auth_baton_t *
 
 // If ATTEMPT < 10, copy USERDATA->username and USERDATA->password
 // into USERNAME and PASSWORD respectively (but do not copy more than
@@ -11421,7 +11415,7 @@ request_auth(
   simple_creds = static_cast<auth_cred_simple_t *>(creds);
 
   // Make neon_request_dispatch store the credentials after it
-  // sees a succesful response
+  // sees a successful response
   ras->auth_used = true;
 
   // silently truncates username/password to 256 chars.
@@ -11520,7 +11514,7 @@ ra_neon_neonprogress(
       }
       else
       {
-        // Neon provides total bytes to receive information. Pass literaly
+        // Neon provides total bytes to receive information. Pass literally
         // to allow providing a percentage.
         ras->progress_func(progress, total, ras->progress_baton, pb->pool);
       }
@@ -11730,20 +11724,17 @@ neon_open(
     if (authorities != NULL && *authorities)
     {
       const char * file = authorities;
-
+      ne_ssl_certificate * ca_cert = NULL;
+      ca_cert = ne_ssl_cert_read(file);
+      if (ca_cert == NULL)
       {
-        ne_ssl_certificate * ca_cert = NULL;
-        ca_cert = ne_ssl_cert_read(file);
-        if (ca_cert == NULL)
-        {
-          return error_createf(
-            WEBDAV_ERR_BAD_CONFIG_VALUE, NULL,
-            "Invalid config: unable to load certificate file '%s'", file);
-        }
-        ne_ssl_trust_cert(sess, ca_cert);
-        ne_ssl_cert_free(ca_cert);
-        ca_cert = NULL;
+        return error_createf(
+          WEBDAV_ERR_BAD_CONFIG_VALUE, NULL,
+          "Invalid config: unable to load certificate file '%s'", file);
       }
+      ne_ssl_trust_cert(sess, ca_cert);
+      ne_ssl_cert_free(ca_cert);
+      ca_cert = NULL;
     }
 
     // When the CA certificate or server certificate has
@@ -11770,8 +11761,7 @@ neon_open(
       // Share the provider between the two sessions.
       ne_ssl_set_pkcs11_provider(sess, provider);
 
-      ne_ssl_pkcs11_provider_pin(provider, client_ssl_pkcs11_pin_entry,
-        ras);
+      ne_ssl_pkcs11_provider_pin(provider, client_ssl_pkcs11_pin_entry, ras);
 
       apr_pool_cleanup_register(pool, provider, cleanup_p11provider,
         apr_pool_cleanup_null);
@@ -12081,7 +12071,7 @@ neon_stat(
       return err;
   }
 
-  // Copying parsing code from neon_get_dir() here.  The hash
+  // Copying parsing code from neon_get_dir() here. The hash
   // of resources only contains one item, but there's no other way to
   // get the item.
   for (apr_hash_index_t * hi = apr_hash_first(pool, resources); hi;
@@ -12259,17 +12249,17 @@ void TWebDAVFileSystem::Open()
   UnicodeString ProtocolName = !Ssl ? L"http" : L"https";
   UnicodeString UserName = Data->GetUserName();
   UnicodeString Path = Data->GetRemoteDirectory();
-  UnicodeString url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, Path.c_str());
+  UnicodeString Url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, Path.c_str());
 
   FPasswordFailed = false;
 
   FTerminal->Information(LoadStr(STATUS_CONNECT), true);
-  for (int i = 0; i < 5; i++)
+  for (int I = 0; I < 5; I++)
   {
     FActive = false;
     try
     {
-      FActive = (WEBDAV_NO_ERROR == OpenURL(url, webdav_pool));
+      FActive = (WEBDAV_NO_ERROR == OpenURL(Url, webdav_pool));
       if (FActive)
       {
         break;
@@ -13972,39 +13962,36 @@ webdav::error_t TWebDAVFileSystem::OpenURL(
   const UnicodeString & session_URL,
   apr_pool_t * pool)
 {
-  // prepare callbacks, contexts
-
   webdav::client_ctx_t * ctx = NULL;
-  {
-    WEBDAV_ERR(client_create_context(&ctx, pool));
+  WEBDAV_ERR(client_create_context(&ctx, pool));
 
-    const char * auth_username = NULL;
-    const char * auth_password = NULL;
-    WEBDAV_ERR(webdav::utf_cstring_to_utf8(&auth_username,
-      AnsiString(FTerminal->GetSessionData()->GetUserNameExpanded()).c_str(), pool));
-    WEBDAV_ERR(webdav::utf_cstring_to_utf8(&auth_password,
-      AnsiString(FTerminal->GetSessionData()->GetPassword()).c_str(), pool));
-    webdav::auth_baton_t * ab = NULL;
-    webdav::auth_baton_create(&ab, pool);
-    webdav::auth_baton_init(
-      ab,
-      FALSE, // non_interactive
-      auth_username,
-      auth_password,
-      FALSE, // no_auth_cache
-      TRUE, // trust_server_cert
-      this,
-      webdav::check_cancel, ab,
-      pool);
-    ctx->auth_baton = ab;
+  const char * auth_username = NULL;
+  const char * auth_password = NULL;
+  WEBDAV_ERR(webdav::utf_cstring_to_utf8(&auth_username,
+    AnsiString(FTerminal->GetSessionData()->GetUserNameExpanded()).c_str(), pool));
+  WEBDAV_ERR(webdav::utf_cstring_to_utf8(&auth_password,
+    AnsiString(FTerminal->GetSessionData()->GetPassword()).c_str(), pool));
+  webdav::auth_baton_t * ab = NULL;
+  webdav::auth_baton_create(&ab, pool);
+  webdav::auth_baton_init(
+    ab,
+    FALSE, // non_interactive
+    auth_username,
+    auth_password,
+    FALSE, // no_auth_cache
+    TRUE, // trust_server_cert
+    this,
+    webdav::check_cancel, ab,
+    pool);
+  ctx->auth_baton = ab;
 
-    // Set up our cancellation support.
-    ctx->cancel_func = webdav::check_cancel;
-    ctx->cancel_baton = ab;
+  // Set up our cancellation support.
+  ctx->cancel_func = webdav::check_cancel;
+  ctx->cancel_baton = ab;
 
-    ctx->progress_func = webdav::progress_func;
-    ctx->progress_baton = ctx;
-  }
+  ctx->progress_func = webdav::progress_func;
+  ctx->progress_baton = ctx;
+
   webdav::session_t * session_p = NULL;
   const char * corrected_url = NULL;
   AnsiString base_url = AnsiString(session_URL).c_str();
