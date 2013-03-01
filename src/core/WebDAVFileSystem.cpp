@@ -333,7 +333,8 @@ typedef struct list_func_baton_t
 
 //------------------------------------------------------------------------------
 
-#define DEFAULT_HTTP_TIMEOUT 3600
+// timeout (in seconds)
+#define DEFAULT_HTTP_TIMEOUT 10
 
 #define WEBDAV_ERR_DAV_SOCK_INIT 1000
 #define WEBDAV_ERR_XML_MALFORMED 1001
