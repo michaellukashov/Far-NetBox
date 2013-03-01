@@ -14266,7 +14266,6 @@ uintptr_t TWebDAVFileSystem::AdjustToCPSLimit(uintptr_t len)
 //------------------------------------------------------------------------------
 bool TWebDAVFileSystem::GetIsCancelled()
 {
-  TFileOperationProgressType * OperationProgress = FCurrentOperationProgress;
-  return (OperationProgress && OperationProgress->Cancel == csCancel);
+  return FTerminal->CheckForEsc();
 }
 //------------------------------------------------------------------------------
