@@ -1197,7 +1197,10 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             // in this case we assume last year.
             DecodeDate(Date(), Year, CurrMonth, CurrDay);
             if ((Month > CurrMonth) ||
-                (Month == CurrMonth && Day > CurrDay)) { Year--; }
+                (Month == CurrMonth && Day > CurrDay))
+            {
+              Year--;
+            }
             Sec = 0;
             FModificationFmt = mfMDHM;
           }
