@@ -2959,7 +2959,7 @@ void TStoredSessionList::SelectAll(bool Select)
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    AtSession(Index)->SetSelected(Select);
+    GetSession(Index)->SetSelected(Select);
   }
 }
 //---------------------------------------------------------------------
@@ -2968,10 +2968,10 @@ void TStoredSessionList::Import(TStoredSessionList * From,
 {
   for (intptr_t Index = 0; Index < From->GetCount(); ++Index)
   {
-    if (!OnlySelected || From->AtSession(Index)->GetSelected())
+    if (!OnlySelected || From->GetSession(Index)->GetSelected())
     {
       TSessionData *Session = new TSessionData(L"");
-      Session->Assign(From->AtSession(Index));
+      Session->Assign(From->GetSession(Index));
       Session->SetModified(true);
       Session->MakeUniqueIn(this);
       Add(Session);
@@ -2986,9 +2986,9 @@ void TStoredSessionList::SelectSessionsToImport
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    AtSession(Index)->SetSelected(
-      (!SSHOnly || (AtSession(Index)->GetProtocol() == ptSSH)) &&
-      !Dest->FindByName(AtSession(Index)->GetName()));
+    GetSession(Index)->SetSelected(
+      (!SSHOnly || (GetSession(Index)->GetProtocol() == ptSSH)) &&
+      !Dest->FindByName(GetSession(Index)->GetName()));
   }
 }
 //---------------------------------------------------------------------
@@ -3036,7 +3036,7 @@ void TStoredSessionList::UpdateStaticUsage()
   std::auto_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
   for (intptr_t Index = 0; Index < Count; ++Index)
   {
-    TSessionData * Data = AtSession(Index);
+    TSessionData * Data = GetSession(Index);
     switch (Data->GetFSProtocol())
     {
       case fsSCPonly:
@@ -3129,7 +3129,7 @@ intptr_t TStoredSessionList::IndexOf(TSessionData * Data)
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (Data == AtSession(Index))
+    if (Data == GetSession(Index))
     {
       return Index;
     }
@@ -3202,7 +3202,7 @@ void TStoredSessionList::ImportHostKeys(const UnicodeString & TargetKey,
       assert(Sessions != NULL);
       for (intptr_t Index = 0; Index < Sessions->GetCount(); ++Index)
       {
-        Session = Sessions->AtSession(Index);
+        Session = Sessions->GetSession(Index);
         if (!OnlySelected || Session->GetSelected())
         {
           HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostName().c_str()));

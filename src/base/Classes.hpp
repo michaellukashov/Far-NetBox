@@ -907,7 +907,6 @@ public:
       return true;
   }
 
-  bool In(const T Value) const { return Contains(Value); }
   bool Has(const T Value) const { return Contains(Value); }
   void Clear() { FSet.clear(); }
   void Empty() const { FSet.Clear(); }
