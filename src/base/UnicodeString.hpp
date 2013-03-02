@@ -23,7 +23,6 @@ public:
   ~UTF8String() {}
 
   operator const wchar_t * () const { return c_str(); }
-  intptr_t size() const { return Length(); }
   const wchar_t * c_str() const { return Data.c_str(); }
   intptr_t Length() const { return Data.size(); }
   intptr_t GetLength() const { return Length(); }
@@ -83,7 +82,6 @@ public:
 
   ~UnicodeString() {}
 
-  intptr_t size() const { return Length(); }
   const wchar_t * c_str() const { return Data.c_str(); }
   const wchar_t * data() const { return Data.c_str(); }
   intptr_t Length() const { return Data.size(); }
@@ -222,7 +220,6 @@ public:
   operator const char * () const { return Data.c_str(); }
   operator UnicodeString() const;
   operator std::string() const { return std::string(operator const char *()); }
-  intptr_t size() const { return Data.size(); }
   const char * c_str() const { return Data.c_str(); }
   intptr_t Length() const { return Data.size(); }
   intptr_t GetLength() const { return Length(); }
@@ -325,7 +322,6 @@ public:
 
   operator const char * () const { return reinterpret_cast<const char *>(Data.c_str()); }
   operator UnicodeString() const;
-  intptr_t size() const { return Data.size(); }
   const char * c_str() const { return reinterpret_cast<const char *>(Data.c_str()); }
   intptr_t Length() const { return Data.size(); }
   intptr_t GetLength() const { return Length(); }

@@ -104,19 +104,19 @@ AnsiString AnsiString::operator +(const RawByteString & rhs) const
 
 AnsiString & AnsiString::operator +=(const RawByteString & rhs)
 {
-  Data.append(reinterpret_cast<const char *>(rhs.c_str()), rhs.size());
+  Data.append(reinterpret_cast<const char *>(rhs.c_str()), rhs.Length());
   return *this;
 }
 
 AnsiString & AnsiString::operator +=(const AnsiString & rhs)
 {
-  Data.append(rhs.c_str(), rhs.size());
+  Data.append(rhs.c_str(), rhs.Length());
   return *this;
 }
 
 AnsiString & AnsiString::operator +=(const UTF8String & rhs)
 {
-  Data.append(reinterpret_cast<const char *>(rhs.c_str()), rhs.size());
+  Data.append(reinterpret_cast<const char *>(rhs.c_str()), rhs.Length());
   return *this;
 }
 
@@ -253,13 +253,13 @@ RawByteString RawByteString::operator +(const RawByteString & rhs) const
 
 RawByteString & RawByteString::operator +=(const RawByteString & rhs)
 {
-  Data.append(reinterpret_cast<const unsigned char *>(rhs.c_str()), rhs.size());
+  Data.append(reinterpret_cast<const unsigned char *>(rhs.c_str()), rhs.Length());
   return *this;
 }
 
 RawByteString & RawByteString::operator +=(const UTF8String & rhs)
 {
-  Data.append(reinterpret_cast<const unsigned char *>(rhs.c_str()), rhs.size());
+  Data.append(reinterpret_cast<const unsigned char *>(rhs.c_str()), rhs.Length());
   return *this;
 }
 
@@ -348,14 +348,14 @@ UTF8String UTF8String::operator +(const UTF8String & rhs) const
 
 UTF8String & UTF8String::operator +=(const UTF8String & rhs)
 {
-  Data.append(rhs.Data.c_str(), rhs.size());
+  Data.append(rhs.Data.c_str(), rhs.Length());
   return *this;
 }
 
 UTF8String & UTF8String::operator +=(const RawByteString & rhs)
 {
-  UTF8String s(rhs.c_str(), rhs.size());
-  Data.append(s.Data.c_str(), s.size());
+  UTF8String s(rhs.c_str(), rhs.Length());
+  Data.append(s.Data.c_str(), s.Length());
   return *this;
 }
 
@@ -549,7 +549,7 @@ UnicodeString UnicodeString::operator +(const UnicodeString & rhs) const
 
 UnicodeString & UnicodeString::operator +=(const UnicodeString & rhs)
 {
-  Data.append(rhs.Data.c_str(), rhs.size());
+  Data.append(rhs.Data.c_str(), rhs.Length());
   return *this;
 }
 
@@ -561,8 +561,8 @@ UnicodeString & UnicodeString::operator +=(const wchar_t * rhs)
 
 UnicodeString & UnicodeString::operator +=(const RawByteString & rhs)
 {
-  UnicodeString s(rhs.c_str(), rhs.size());
-  Data.append(s.Data.c_str(), s.size());
+  UnicodeString s(rhs.c_str(), rhs.Length());
+  Data.append(s.Data.c_str(), s.Length());
   return *this;
 }
 

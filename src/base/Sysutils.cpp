@@ -228,7 +228,7 @@ UnicodeString AnsiReplaceStr(const UnicodeString & Str, const UnicodeString & Fr
   intptr_t Pos = 0;
   while ((Pos = Result.Pos(From)) > 0)
   {
-    Result.Replace(Pos, From.size(), To);
+    Result.Replace(Pos, From.Length(), To);
   }
   return Result;
 }
@@ -1272,7 +1272,7 @@ UnicodeString IntToHex(unsigned int Int, size_t MinChars)
 {
   UnicodeString Result;
   Result.sprintf(L"%X", Int);
-  intptr_t Pad = MinChars - Result.size();
+  intptr_t Pad = MinChars - Result.Length();
   if (Pad > 0)
   {
     for (int i = 0; i < Pad; i++)
