@@ -270,7 +270,7 @@ public:
     SetCapacity (0);
     FType = AType;
     AddByte(FType);
-    if ((FType != 1) && (FType != SSH_FXP_INIT))
+    if (FType != SSH_FXP_INIT) // && (FType != 1)
     {
       AssignNumber();
       AddCardinal(FMessageNumber);
