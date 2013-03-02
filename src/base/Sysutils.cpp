@@ -971,12 +971,12 @@ static int FindMatchingFile(TSearchRec & Rec)
       return Result;
     }
   }
-  FileTimeToLocalFileTime(&Rec.FindData.ftLastWriteTime, (LPFILETIME)&LocalFileTime);
+  FileTimeToLocalFileTime(&Rec.FindData.ftLastWriteTime, reinterpret_cast<LPFILETIME>(&LocalFileTime));
   WORD Hi = (Rec.Time & 0xFFFF0000) >> 16;
   WORD Lo = Rec.Time & 0xFFFF;
-  FileTimeToDosDateTime((LPFILETIME)&LocalFileTime, &Hi, &Lo);
+  FileTimeToDosDateTime(reinterpret_cast<LPFILETIME>(&LocalFileTime), &Hi, &Lo);
   Rec.Time = (Hi << 16) + Lo;
-  Rec.Size = Rec.FindData.nFileSizeLow || Int64(Rec.FindData.nFileSizeHigh) << 32;
+  Rec.Size = Rec.FindData.nFileSizeLow || static_cast<Int64>(Rec.FindData.nFileSizeHigh) << 32;
   Rec.Attr = Rec.FindData.dwFileAttributes;
   Rec.Name = Rec.FindData.cFileName;
   Result = 0;
@@ -1247,13 +1247,13 @@ unsigned int HexToInt(const UnicodeString & Hex, size_t MinChars)
 {
   static std::wstring Digits = L"0123456789ABCDEF";
   int Result = 0;
-  int I = 1;
+  size_t I = 1;
   while (I <= Hex.Length())
   {
     size_t A = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[I])));
     if (A == std::wstring::npos)
     {
-      if ((MinChars == NPOS) || ((size_t)I <= MinChars))
+      if ((MinChars == NPOS) || (I <= MinChars))
       {
           Result = 0;
       }
@@ -1314,7 +1314,7 @@ static bool DecodeDateFully(const TDateTime & DateTime,
   static const int D400 = D100 * 4 + 1;
   bool Result = false;
   unsigned int T = DateTimeToTimeStamp(DateTime).Date;
-  if ((int)T <= 0)
+  if (static_cast<int>(T) <= 0)
   {
     Year = 0;
     Month = 0;
@@ -1347,10 +1347,10 @@ static bool DecodeDateFully(const TDateTime & DateTime,
     if (I == 4)
     {
       I--;
-      D += (Word)D1;
+      D += static_cast<Word>(D1);
     }
     Y += I;
-    Result = IsLeapYear((Word)Y);
+    Result = IsLeapYear(static_cast<Word>(Y));
     const TDayTable * DayTable = &MonthDays[Result];
     unsigned int M = 1;
     while (true)
@@ -1363,9 +1363,9 @@ static bool DecodeDateFully(const TDateTime & DateTime,
       D -= I;
       M++;
     }
-    Year = (unsigned short)Y;
-    Month = (unsigned short)M;
-    Day = (unsigned short)D + 1;
+    Year = static_cast<unsigned short>(Y);
+    Month = static_cast<unsigned short>(M);
+    Day = static_cast<unsigned short>(D + 1);
   }
   return Result;
 }
@@ -1386,16 +1386,16 @@ void DecodeTime(const TDateTime &DateTime, unsigned short &Hour,
   unsigned int H, M, S, MS;
   DivMod(MinCount, 60, H, M);
   DivMod(MSecCount, 1000, S, MS);
-  Hour = (unsigned short)H;
-  Min = (unsigned short)M;
-  Sec = (unsigned short)S;
-  MSec = (unsigned short)MS;
+  Hour = static_cast<unsigned short>(H);
+  Min = static_cast<unsigned short>(M);
+  Sec = static_cast<unsigned short>(S);
+  MSec = static_cast<unsigned short>(MS);
 }
 
 //---------------------------------------------------------------------------
 bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
 {
-  const TDayTable * DayTable = &MonthDays[IsLeapYear((Word)Year)];
+  const TDayTable * DayTable = &MonthDays[IsLeapYear(static_cast<Word>(Year))];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
       (Day >= 1) && (Day <= (*DayTable)[Month - 1]))
   {
@@ -1500,8 +1500,8 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, TDateTime DateTime)
 
 TDateTime ComposeDateTime(TDateTime Date, TDateTime Time)
 {
-  TDateTime Result = TDateTime(double(Date));
-  Result += double(Time);
+  TDateTime Result = TDateTime((double)Date);
+  Result += (double)Time;
   return Result;
 }
 
@@ -1541,11 +1541,11 @@ static void IncAMonth(Word & Year, Word & Month, Word & Day, Int64 NumberOfMonth
     Sign = -1;
   Year = Year + (NumberOfMonths % 12);
   NumberOfMonths = NumberOfMonths / 12;
-  Month += (Word)NumberOfMonths;
+  Month += static_cast<Word>(NumberOfMonths);
   if (Word(Month-1) > 11) // if Month <= 0, word(Month-1) > 11)
   {
-    Year += (Word)Sign;
-    Month += -12 * (Word)Sign;
+    Year += static_cast<Word>(Sign);
+    Month += -12 * static_cast<Word>(Sign);
   }
   const TDayTable * DayTable = &MonthDays[IsLeapYear(Year)];
   if (Day > (*DayTable)[Month]) Day = static_cast<Word>(*DayTable[Month]);

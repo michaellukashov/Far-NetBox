@@ -908,7 +908,7 @@ wchar_t TRemoteFile::GetType() const
 void TRemoteFile::SetType(wchar_t AType)
 {
   FType = AType;
-  FIsSymLink = ((wchar_t)towupper(FType) == FILETYPE_SYMLINK);
+  FIsSymLink = (static_cast<wchar_t>(towupper(FType)) == FILETYPE_SYMLINK);
 }
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFile::GetLinkedFile()
@@ -1186,12 +1186,12 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           }
           // GETNCOL; // We don't want to trim input strings (name with space at beginning???)
           // Check if we got time (contains :) or year
-          if ((P = (Word)Col.Pos(L':')) > 0)
+          if ((P = static_cast<Word>(Col.Pos(L':'))) > 0)
           {
             Word CurrMonth, CurrDay;
-            Hour = (Word)StrToInt(Col.SubString(1, P-1));
-            Min = (Word)StrToInt(Col.SubString(P+1, Col.Length() - P));
-            if (Hour > 23 || Min > 59) Abort();
+            Hour = static_cast<Word>(StrToInt(Col.SubString(1, P-1)));
+            Min = static_cast<Word>(StrToInt(Col.SubString(P+1, Col.Length() - P)));
+            if ((Hour > 23) || (Min > 59)) Abort();
             // When we don't got year, we assume current year
             // with exception that the date would be in future
             // in this case we assume last year.

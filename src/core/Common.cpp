@@ -285,8 +285,8 @@ const wchar_t EngShortMonthNames[12][4] =
    L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
 const std::string Bom = "\xEF\xBB\xBF";
 const wchar_t TokenPrefix = L'%';
-const wchar_t NoReplacement = wchar_t(false);
-const wchar_t TokenReplacement = wchar_t(true);
+const wchar_t NoReplacement = wchar_t(0);
+const wchar_t TokenReplacement = wchar_t(1);
 const UnicodeString LocalInvalidChars = L"/\\:*?\"<>|";
 //---------------------------------------------------------------------------
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
@@ -626,10 +626,8 @@ UnicodeString ValidLocalFileName(
     UnicodeString CharsStr = ATokenReplacement ? TokenizibleChars : LocalInvalidChars;
     const wchar_t * Chars = CharsStr.c_str();
     wchar_t * InvalidChar = const_cast<wchar_t *>(FileName2.c_str());
-    TRACEFMT("1 [%d] [%s] [%s]", int(ATokenReplacement), Chars, InvalidChar);
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != NULL)
     {
-      TRACEFMT("2 [%s]", InvalidChar);
       intptr_t Pos = (InvalidChar - FileName2.c_str() + 1);
       wchar_t Char;
       if (ATokenReplacement &&
@@ -644,7 +642,6 @@ UnicodeString ValidLocalFileName(
       {
         InvalidChar = ReplaceChar(FileName2, InvalidChar, InvalidCharsReplacement);
       }
-      TRACEFMT("3 [%s]", InvalidChar);
     }
 
     // Windows trim trailing space or dot, hence we must encode it to preserve it
@@ -808,7 +805,7 @@ UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str)
   if (Len > Size)
   {
     Buf.SetLength(Len);
-    ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), (DWORD)Len);
+    ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), static_cast<DWORD>(Len));
   }
 
   PackStr(Buf);

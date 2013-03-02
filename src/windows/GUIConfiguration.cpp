@@ -457,7 +457,7 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
   Storage->ClearSubKeys();
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (Storage->OpenSubKey(IntToStr((int)Index), true))
+    if (Storage->OpenSubKey(IntToStr(static_cast<int>(Index)), true))
     {
       TRY_FINALLY (
       {
@@ -819,8 +819,8 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     {
       TRACE("3");
       LOCALESIGNATURE LocSig;
-      GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, (LPWSTR)&LocSig, sizeof(LocSig) / sizeof(TCHAR));
-      LocaleName = *(LPWSTR)&LocSig;
+      GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, reinterpret_cast<LPWSTR>(&LocSig), sizeof(LocSig) / sizeof(TCHAR));
+      LocaleName = *reinterpret_cast<LPWSTR>(&LocSig);
       assert(!LocaleName.IsEmpty());
     }
     else

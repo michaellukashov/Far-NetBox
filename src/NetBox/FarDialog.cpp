@@ -393,7 +393,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
       // DM_CLOSE is sent after DN_CLOSE, if the dialog was closed programatically
       // by SendMessage(DM_CLOSE, ...)
       assert(Msg == DM_CLOSE);
-      Result = (LONG_PTR)0;
+      Result = static_cast<LONG_PTR>(0);
     }
     else
     {
@@ -494,7 +494,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
           Handled = true;
           if (!Close)
           {
-            Result = (int)true;
+            Result = static_cast<int>(true);
           }
         }
         break;
@@ -510,7 +510,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
       {
         case DN_INITDIALOG:
           Init();
-          Result = (int)true;
+          Result = static_cast<int>(true);
           break;
 
         case DN_DRAGGED:
@@ -527,7 +527,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
           break;
 
         case DN_CLOSE:
-          Result = (int)true;
+          Result = static_cast<int>(true);
           if (Param1 >= 0)
           {
             TFarButton * Button = dynamic_cast<TFarButton *>(GetItem(Param1));
@@ -540,7 +540,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
             if (Button == NULL)
             {
               assert(dynamic_cast<TFarListBox *>(GetItem(Param1)) != NULL);
-              Result = (intptr_t)false;
+              Result = static_cast<intptr_t>(false);
             }
             else
             {
@@ -601,7 +601,7 @@ LONG_PTR TFarDialog::FailDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
   switch (Msg)
   {
     case DN_CLOSE:
-      Result = (int)false;
+      Result = static_cast<int>(false);
       break;
 
     default:
@@ -1544,12 +1544,12 @@ void TFarDialogItem::SetWidth(intptr_t Value)
   TRect R = GetBounds();
   if (R.Left >= 0)
   {
-    R.Right = R.Left + (int)Value - 1;
+    R.Right = R.Left + static_cast<int>(Value - 1);
   }
   else
   {
     assert(R.Right < 0);
-    R.Left = R.Right - (int)Value + 1;
+    R.Left = R.Right - static_cast<int>(Value + 1);
   }
   SetBounds(R);
 }
@@ -2625,19 +2625,19 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
       {
         if (Row == 0)
         {
-          Buf += wchar_t(0x25B2); // L'\x1E'; // ucUpScroll
+          Buf += static_cast<wchar_t>(0x25B2); // L'\x1E'; // ucUpScroll
         }
         else if (Row == ScrollBarPos)
         {
-          Buf += wchar_t(0x2592); // L'\xB2'; // ucBox50
+          Buf += static_cast<wchar_t>(0x2592); // L'\xB2'; // ucBox50
         }
         else if (Row == GetHeight() - 1)
         {
-          Buf += wchar_t(0x25BC); // L'\x1F'; // ucDnScroll
+          Buf += static_cast<wchar_t>(0x25BC); // L'\x1F'; // ucDnScroll
         }
         else
         {
-          Buf += wchar_t(0x2591); // '\xB0'; // ucBox25
+          Buf += static_cast<wchar_t>(0x2591); // '\xB0'; // ucBox25
         }
       }
       Text(0, Row, Color, Buf);
@@ -2645,7 +2645,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
   }
   else if (Msg == DN_KEY)
   {
-    Result = (int)true;
+    Result = static_cast<int>(true);
 
     intptr_t NewTopIndex = GetTopIndex();
     if ((Param == KEY_UP) || (Param == KEY_LEFT))
@@ -2751,7 +2751,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
         NewTopIndex = static_cast<intptr_t>(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1)));
       }
 
-      Result = (int)true;
+      Result = static_cast<int>(true);
 
       SetTopIndex(NewTopIndex);
     }

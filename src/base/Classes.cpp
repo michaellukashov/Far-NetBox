@@ -21,7 +21,7 @@ int __cdecl debug_printf(const wchar_t * format, ...)
   va_start(args, format);
   len = _vscwprintf(format, args);
   std::wstring buf(len + 1, 0);
-  vswprintf((wchar_t *)buf.c_str(), buf.size(), format, args);
+  vswprintf(const_cast<wchar_t *>(buf.c_str()), buf.size(), format, args);
   va_end(args);
   OutputDebugStringW(buf.c_str());
 #endif
@@ -1593,7 +1593,7 @@ __int64 TMemoryStream::Read(void * Buffer, __int64 Count)
 
 __int64 TMemoryStream::Seek(__int64 Offset, int Origin)
 {
-  return Seek(Offset, (TSeekOrigin)Origin);
+  return Seek(Offset, static_cast<TSeekOrigin>(Origin));
 }
 
 __int64 TMemoryStream::Seek(const __int64 Offset, TSeekOrigin Origin)

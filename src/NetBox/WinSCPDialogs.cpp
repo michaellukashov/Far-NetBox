@@ -3553,7 +3553,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetSftpServer(
       (SftpServerEdit->GetText() == SftpServerEdit->GetItems()->Strings[0]) ?
       UnicodeString() : SftpServerEdit->GetText());
-    SessionData->SetSFTPMaxVersion((int)SFTPMaxVersionCombo->GetItemIndex());
+    SessionData->SetSFTPMaxVersion(static_cast<int>(SFTPMaxVersionCombo->GetItemIndex()));
     SessionData->SetSFTPMinPacketSize(SFTPMinPacketSizeEdit->GetAsInteger());
     SessionData->SetSFTPMaxPacketSize(SFTPMaxPacketSizeEdit->GetAsInteger());
 
@@ -3666,7 +3666,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     // Proxy tab
     SessionData->SetProxyMethod(GetProxyMethod());
-    SessionData->SetFtpProxyLogonType((int)GetFtpProxyLogonType());
+    SessionData->SetFtpProxyLogonType(static_cast<int>(GetFtpProxyLogonType()));
     SessionData->SetProxyHost(ProxyHostEdit->GetText());
     SessionData->SetProxyPort(ProxyPortEdit->GetAsInteger());
     SessionData->SetProxyUsername(ProxyUsernameEdit->GetText());
@@ -3729,7 +3729,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
     {
-      SessionData->SetKex(Index, (TKex)(intptr_t)KexListBox->GetItems()->Objects[Index]);
+      SessionData->SetKex(Index, static_cast<TKex>(reinterpret_cast<intptr_t>(KexListBox->GetItems()->Objects[Index])));
     }
 
     // Authentication tab
@@ -3976,7 +3976,7 @@ TFtps TSessionDialog::IndexToFtps(intptr_t Index)
 //------------------------------------------------------------------------------
 TFtps TSessionDialog::GetFtps()
 {
-  return (TFtps)IndexToFtps((int)FtpEncryptionCombo->GetItemIndex());
+  return static_cast<TFtps>(IndexToFtps(static_cast<int>(FtpEncryptionCombo->GetItemIndex())));
 }
 //------------------------------------------------------------------------------
 TLoginType TSessionDialog::GetLoginType()
@@ -6907,7 +6907,7 @@ void TFullSynchronizeDialog::AdaptSize()
   if (ShowCopyParam != CopyParamLister->GetVisible())
   {
     ShowGroup(1, ShowCopyParam);
-    SetHeight(FFullHeight - (int)(ShowCopyParam ? 0 : CopyParamLister->GetHeight() + 1));
+    SetHeight(FFullHeight - static_cast<int>(ShowCopyParam ? 0 : CopyParamLister->GetHeight() + 1));
   }
 }
 //------------------------------------------------------------------------------

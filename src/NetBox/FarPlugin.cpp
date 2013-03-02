@@ -294,7 +294,7 @@ intptr_t TCustomFarPlugin::Configure(intptr_t Item)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
-    return (int)false;
+    return static_cast<int>(false);
   }
 }
 //---------------------------------------------------------------------------
@@ -528,7 +528,7 @@ intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * Param)
     }
     else
     {
-      return (int)false;
+      return static_cast<int>(false);
     }
   }
   catch(Exception & E)
@@ -834,7 +834,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
       Button->SetOnClick(MAKE_CALLBACK(TFarMessageDialog::ButtonClick, this));
       UnicodeString Caption = Buttons->Strings[Index];
       if ((FParams->Timeout > 0) &&
-          (FParams->TimeoutButton == (size_t)Index))
+          (FParams->TimeoutButton == static_cast<size_t>(Index)))
       {
         FTimeoutButtonCaption = Caption;
         Caption = FORMAT(FParams->TimeoutStr.c_str(), Caption.c_str(), static_cast<int>(FParams->Timeout / 1000));
@@ -1229,7 +1229,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
         HistoryName.c_str(),
         AText.c_str(),
         const_cast<wchar_t *>(DestText.c_str()),
-        (int)MaxLen,
+        static_cast<int>(MaxLen),
         NULL,
         FIB_ENABLEEMPTY | FIB_BUTTONS | Flags);
     }
@@ -1527,7 +1527,7 @@ void TCustomFarPlugin::UpdateProgress(intptr_t State, intptr_t Progress)
     PROGRESSVALUE pv;
     pv.Completed = Progress < 0 ? 0 : Progress > 100 ? 100 : Progress;
     pv.Total = 100;
-    FarAdvControl(ACTL_SETPROGRESSVALUE, (void *)&pv);
+    FarAdvControl(ACTL_SETPROGRESSVALUE, static_cast<void *>(&pv));
   }
 }
 //---------------------------------------------------------------------------
@@ -2871,7 +2871,7 @@ UnicodeString TFarEditorInfo::GetFileName()
   if (buffLen)
   {
     Result.SetLength(buffLen + 1);
-    FarPlugin->FarEditorControl(ECTL_GETFILENAME, (wchar_t *)Result.c_str());
+    FarPlugin->FarEditorControl(ECTL_GETFILENAME, const_cast<wchar_t *>(Result.c_str()));
   }
   return Result.c_str();
 }

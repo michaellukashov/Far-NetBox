@@ -768,7 +768,7 @@ intptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
       if (Params->Timeout > 0)
       {
         FarParams.Timeout = Params->Timeout;
-        FarParams.TimeoutButton = (unsigned int)TimeoutButton;
+        FarParams.TimeoutButton = static_cast<unsigned int>(TimeoutButton);
         FarParams.TimeoutStr = GetMsg(MSG_BUTTON_TIMEOUT);
       }
     }

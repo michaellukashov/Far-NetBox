@@ -141,7 +141,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
   if (Found)
   {
     ParamsStart++;
-    while ((Index + ParamsCount < int(FOptions.size())) &&
+    while ((Index + ParamsCount < FOptions.size()) &&
            (FOptions[Index + ParamsCount].Type == otParam))
     {
       ParamsCount++;

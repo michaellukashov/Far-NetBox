@@ -167,7 +167,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
       if (DataSize >= BufSize)
       {
         ConvBuf = DataSize - VersionInfo->wLength;
-        memmove(((char*)(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 ? 4 : ConvBuf );
+        memmove((static_cast<char*>(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 ? 4 : ConvBuf );
       }
     }
   }
@@ -297,7 +297,7 @@ UnicodeString GetFileInfoString(void * FileInfo,
   if (!VerQueryValue(FileInfo, (UnicodeString(L"\\StringFileInfo\\") +
     IntToHex(Translation.Language, 4) +
     IntToHex(Translation.CharSet, 4) +
-    L"\\" + StringName).c_str(), (void**)&P, &Len))
+    L"\\" + StringName).c_str(), reinterpret_cast<void**>(&P), &Len))
   {
     throw Exception("Specified file info string not available");
   }

@@ -253,7 +253,7 @@ public:
 #ifndef _MSC_VER
       TraceFmt(FFile, FFunc, FLine, L"Exit: %s [%d]", ARRAYOFCONST((FMessage, int(FDepth))));
 #else
-      TraceFmt(FFile, FFunc, FLine, L"Exit: %s [%d]", FMessage, int(FDepth));
+      TraceFmt(FFile, FFunc, FLine, L"Exit: %s [%d]", FMessage, static_cast<int>(FDepth));
 #endif
     }
   }
