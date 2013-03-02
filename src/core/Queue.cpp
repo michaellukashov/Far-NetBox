@@ -342,7 +342,6 @@ TSimpleThread::TSimpleThread() :
 void TSimpleThread::Init()
 {
   FThread = StartThread(NULL, 0, this, CREATE_SUSPENDED, FThreadId);
-  TRACEFMT("[%x]", int(FThread));
 }
 //---------------------------------------------------------------------------
 TSimpleThread::~TSimpleThread()
@@ -352,10 +351,8 @@ TSimpleThread::~TSimpleThread()
 
   if (FThread != NULL)
   {
-    TRACEFMT("[%x]", int(FThread));
     CloseHandle(FThread);
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 bool TSimpleThread::IsFinished()
@@ -366,7 +363,6 @@ bool TSimpleThread::IsFinished()
 void TSimpleThread::Start()
 {
   CALLSTACK;
-  TRACEFMT("[%x]", int(FThread));
   if (ResumeThread(FThread) == 1)
   {
     FFinished = false;
@@ -386,13 +382,11 @@ void TSimpleThread::Close()
     Terminate();
     WaitFor();
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TSimpleThread::WaitFor(unsigned int Milliseconds)
 {
   CALLSTACK;
-  TRACEFMT("[%x]", int(FThread));
   WaitForSingleObject(FThread, Milliseconds);
 }
 //---------------------------------------------------------------------------
@@ -411,9 +405,7 @@ void TSignalThread::Init(bool LowPriority)
   TSimpleThread::Init();
   FEvent = CreateEvent(NULL, false, false, NULL);
   assert(FEvent != NULL);
-  TRACEFMT("[%x]", int(FEvent));
 
-  TRACEFMT("[%x]", int(FThread));
   if (LowPriority)
   {
     ::SetThreadPriority(FThread, THREAD_PRIORITY_BELOW_NORMAL);
@@ -427,12 +419,10 @@ TSignalThread::~TSignalThread()
   // destroying the event
   Close();
 
-  TRACEFMT("[%x]", int(FEvent));
   if (FEvent)
   {
     CloseHandle(FEvent);
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TSignalThread::Start()
@@ -445,14 +435,12 @@ void TSignalThread::Start()
 void TSignalThread::TriggerEvent()
 {
   CALLSTACK;
-  TRACEFMT("[%x] [%x]", int(FEvent), int(FThread));
   SetEvent(FEvent);
 }
 //---------------------------------------------------------------------------
 bool TSignalThread::WaitForEvent()
 {
   CALLSTACK;
-  TRACEFMT("[%x] [%x]", int(FEvent), int(FThread));
   // should never return -1, so it is only about 0 or 1
   return WaitForEvent(INFINITE) > 0;
 }
@@ -460,9 +448,7 @@ bool TSignalThread::WaitForEvent()
 int TSignalThread::WaitForEvent(unsigned int Timeout)
 {
   CALLSTACK;
-  TRACEFMT("1 [%x] [%x] [%d]", int(FEvent), int(FThread), int(Timeout));
   unsigned int Result = WaitForSingleObject(FEvent, Timeout);
-  TRACEFMT("2 [%d] [%d]", int(Result), int(FTerminated));
   if ((Result == WAIT_TIMEOUT) && !FTerminated)
   {
     return -1;
@@ -2115,7 +2101,6 @@ TTerminalThread::~TTerminalThread()
   FTerminal->SetOnReadDirectoryProgress(FOnReadDirectoryProgress);
 
   delete FSection;
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::Cancel()
@@ -2143,14 +2128,12 @@ void TTerminalThread::TerminalOpen()
 {
   CALLSTACK;
   RunAction(MAKE_CALLBACK(TTerminalThread::TerminalOpenEvent, this));
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalReopen()
 {
   CALLSTACK;
   RunAction(MAKE_CALLBACK(TTerminalThread::TerminalReopenEvent, this));
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::RunAction(TNotifyEvent Action)
@@ -2173,7 +2156,6 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
 
       do
       {
-        TRACE("1");
         switch (WaitForSingleObject(FActionEvent, 50))
         {
           case WAIT_OBJECT_0:
@@ -2210,13 +2192,10 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
       }
       while (!Done);
 
-      TRACE("1a");
-
       Rethrow(FException);
     }
     ,
     {
-      TRACE("2");
       FAction = NULL;
       SAFE_DESTROY(FException);
     }
@@ -2226,7 +2205,6 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
   {
     if (FCancelled)
     {
-      // TRACEFMT("3 [%s]", TraceE.Message.c_str());
       // even if the abort thrown as result of Cancel() was wrapper into
       // some higher-level exception, normalize back to message-less fatal
       // exception here
@@ -2234,7 +2212,6 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
     }
     else
     {
-      // TRACEFMT("4 [%s]", TraceE.Message.c_str());
       throw;
     }
   }
@@ -2275,7 +2252,6 @@ void TTerminalThread::Rethrow(Exception *& Exception)
   CALLSTACK;
   if (Exception != NULL)
   {
-    TRACEFMT("1 [%s]", Exception->Message.c_str());
     TRY_FINALLY (
     {
       RethrowException(Exception);
@@ -2300,7 +2276,6 @@ void TTerminalThread::FatalAbort()
 {
   CALLSTACK;
   FTerminal->FatalAbort();
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::CheckCancel()
@@ -2308,7 +2283,6 @@ void TTerminalThread::CheckCancel()
   CALLSTACK;
   if (FCancel && !FCancelled)
   {
-    TRACE("1");
     FCancelled = true;
     FatalAbort();
   }
@@ -2317,13 +2291,11 @@ void TTerminalThread::CheckCancel()
 void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 {
   CALLSTACK;
-  TRACEFMT("1 [%x]", int(this));
   DWORD Thread = GetCurrentThreadId();
   // we can get called from the main thread from within Idle,
   // should be only to call HandleExtendedException
   if (Thread == FMainThread)
   {
-    TRACE("2");
     if (UserAction != NULL)
     {
       UserAction->Execute(NULL);
@@ -2331,7 +2303,6 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
   }
   else
   {
-    TRACE("3");
     // we should be called from our thread only,
     // with exception noted above
     assert(Thread == FThreadId);
@@ -2346,8 +2317,6 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 
       while (true)
       {
-        TRACE("3a");
-
         {
           TGuard Guard(FSection);
           // If idle exception is already set, we are only waiting
@@ -2358,7 +2327,6 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
           // is not active anyway.
           if (FTerminal->GetActive() && FPendingIdle && (FIdleException == NULL))
           {
-            TRACE("3b");
             FPendingIdle = false;
             try
             {
@@ -2366,7 +2334,6 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
             }
             catch (Exception & E)
             {
-              TRACEFMT("3c [%s]", E.Message.c_str());
               SaveException(E, FIdleException);
             }
           }
@@ -2375,18 +2342,14 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
         int WaitResult = WaitForEvent(1000);
         if (WaitResult == 0)
         {
-          TRACE("3d");
           SAFE_DESTROY(FIdleException);
           FatalAbort();
         }
         else if (WaitResult > 0)
         {
-          TRACE("3e");
           break;
         }
       }
-
-      TRACE("4");
 
       Rethrow(FException);
 
@@ -2406,7 +2369,6 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     );
     CheckCancel();
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalInformation(

@@ -126,7 +126,6 @@ unsigned int GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long *
   unsigned int Len;
   if (IsWin7())
   {
-    TRACEFMT("(%s,%x)", FileName, int(Handle));
     *Handle = 0;
     Len = VERSION_GetFileVersionInfo_PE(FileName, 0, NULL);
 
@@ -152,8 +151,6 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
   if (IsWin7())
   {
     VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(Data);
-
-    TRACEFMT("(%s,%d,size=%d,data=%x)", FileName, (int)Handle, (int)DataSize, (int)Data);
 
     unsigned int Len = VERSION_GetFileVersionInfo_PE(FileName, DataSize, Data);
 
@@ -208,7 +205,7 @@ void * CreateFileInfo(UnicodeString FileName)
   }
   else
   {
-    TRACEFMT("CreateFileInfo E [%x]", (int)GetLastError());
+    TRACEFMT("CreateFileInfo E [%x]", static_cast<int>(GetLastError()));
   }
   return Result;
 }

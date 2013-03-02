@@ -2154,7 +2154,6 @@ void TRights::SetAllowUndef(bool Value)
 //---------------------------------------------------------------------------
 void TRights::SetText(const UnicodeString & Value)
 {
-  CALLSTACK;
   if (Value != GetText())
   {
     if ((Value.Length() != TextLen) ||
@@ -2211,7 +2210,6 @@ void TRights::SetText(const UnicodeString & Value)
     FText = KeepText ? Value : UnicodeString();
   }
   FUnknown = false;
-  TRACEFMT("Rights [%x] [%x] [%s]", int(FSet), int(FUnset), GetText().c_str());
 }
 //---------------------------------------------------------------------------
 UnicodeString TRights::GetText() const

@@ -113,7 +113,6 @@ bool TSynchronizeOptions::MatchesFilter(const UnicodeString & FileName)
   {
     intptr_t FoundIndex = 0;
     Result = Filter->Find(FileName, FoundIndex);
-    TRACEFMT("[%s] [%d]", FileName.c_str(), int(Result));
   }
   return Result;
 }
@@ -1197,35 +1196,27 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
 
   if (GetOnPromptUser() != NULL)
   {
-    TRACE("01");
     TCallbackGuard Guard(this);
     GetOnPromptUser()(this, Kind, Name, Instructions, Prompts, Results, AResult, NULL);
     Guard.Verify();
-    TRACE("02");
   }
 
-  TRACEFMT("1 [%d] [%d] [%d] [%d] [%d]", int(AResult), int(Configuration->GetRememberPassword()), int(Prompts->GetCount()), (Prompts->GetCount() > 0 ? int(!bool(Prompts->Objects[0] != NULL)) : 0), int(Kind));
   if (AResult && (Configuration->GetRememberPassword()) &&
       (Prompts->GetCount() == 1) && !(Prompts->Objects[0]) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
-    TRACE("2");
     RawByteString EncryptedPassword = EncryptPassword(Results->Strings[0]);
-    TRACEFMT("2a [%x] [%d] [%d]", int(this), Results->Strings[0].Length(), EncryptedPassword.Length());
     if (FTunnelOpening)
     {
-      TRACE("3");
       FTunnelPassword = EncryptedPassword;
     }
     else
     {
       FPassword = EncryptedPassword;
-      TRACE("4");
     }
   }
 
-  TRACE("/");
   return AResult;
 }
 //------------------------------------------------------------------------------
@@ -5273,18 +5264,14 @@ UnicodeString TTerminal::GetPassword()
   CALLSTACK;
   UnicodeString Result;
   // FPassword is empty also when stored password was used
-  TRACEFMT("1 [%x] [%d]", int(this), FPassword.Length());
   if (FPassword.IsEmpty())
   {
-    TRACE("1");
     Result = GetSessionData()->GetPassword();
   }
   else
   {
-    TRACE("2");
     Result = DecryptPassword(FPassword);
   }
-  TRACE("/");
   return Result;
 }
 //---------------------------------------------------------------------
@@ -5711,7 +5698,6 @@ bool TSecondaryTerminal::DoPromptUser(TSessionData * Data,
   CALLSTACK;
   bool AResult = false;
 
-  TRACEFMT("1 [%d] [%d] [%d]", Prompts->GetCount(), int(Prompts->Objects[0]), int(Kind));
   if ((Prompts->GetCount() == 1) && !(Prompts->Objects[0]) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
