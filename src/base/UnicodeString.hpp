@@ -92,15 +92,15 @@ public:
   UnicodeString & Delete(intptr_t Index, intptr_t Count) { Data.erase(Index - 1, Count); return *this; }
   UnicodeString & Clear() { Data.clear(); return *this; }
 
-  UnicodeString & Lower(int nStartPos = 1, int nLength = -1);
-  UnicodeString & Upper(int nStartPos = 1, int nLength = -1);
+  UnicodeString & Lower(intptr_t nStartPos = 1, intptr_t nLength = -1);
+  UnicodeString & Upper(intptr_t nStartPos = 1, intptr_t nLength = -1);
 
   UnicodeString & LowerCase() { return Lower(); }
   UnicodeString & UpperCase() { return Upper(); }
 
   int Compare(const UnicodeString & Str) const;
   int CompareIC(const UnicodeString & Str) const;
-  int ToInt() const;
+  intptr_t ToInt() const;
 
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str, intptr_t DataLen);
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const UnicodeString & Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }

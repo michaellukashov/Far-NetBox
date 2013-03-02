@@ -126,9 +126,9 @@ UnicodeString GetCurrentDir();
 
 UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase = true, char Separator = '\0');
 UnicodeString HexToStr(const UnicodeString & Hex);
-unsigned int HexToInt(const UnicodeString & Hex, size_t MinChars = 0);
-UnicodeString IntToHex(unsigned int Int, size_t MinChars = 0);
-char HexToChar(const UnicodeString & Hex, size_t MinChars = 0);
+uintptr_t HexToInt(const UnicodeString & Hex, uintptr_t MinChars = 0);
+UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars = 0);
+char HexToChar(const UnicodeString & Hex, uintptr_t MinChars = 0);
 
 UnicodeString ReplaceStrAll(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat);
 UnicodeString SysErrorMessage(int code);
@@ -180,14 +180,14 @@ int StringCmp(const wchar_t * s1, const wchar_t * s2);
 int StringCmpI(const wchar_t * s1, const wchar_t * s2);
 
 //---------------------------------------------------------------------------
-UnicodeString IntToStr(int Value);
+UnicodeString IntToStr(intptr_t Value);
 UnicodeString Int64ToStr(__int64 Value);
-int StrToInt(const UnicodeString & Value);
+intptr_t StrToInt(const UnicodeString & Value);
 __int64 ToInt(const UnicodeString & Value);
-int StrToIntDef(const UnicodeString & Value, int DefVal);
+intptr_t StrToIntDef(const UnicodeString & Value, intptr_t DefVal);
 __int64 StrToInt64(const UnicodeString & Value);
 __int64 StrToInt64Def(const UnicodeString & Value, __int64 DefVal);
-bool TryStrToInt(const std::wstring & StrValue, int & Value);
+bool TryStrToInt(const std::wstring & StrValue, intptr_t & Value);
 bool TryStrToInt(const std::wstring & StrValue, __int64 & Value);
 
 //---------------------------------------------------------------------------

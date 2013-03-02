@@ -535,7 +535,7 @@ UnicodeString ExceptionLogString(Exception *E)
 //---------------------------------------------------------------------------
 bool IsNumber(const UnicodeString & Str)
 {
-  int Value = 0;
+  intptr_t Value = 0;
   if (Str == L"0") return true;
   return TryStrToInt(Str, Value);
 }
@@ -866,7 +866,7 @@ bool IsReservedName(const UnicodeString & FileName)
 UnicodeString DisplayableStr(const RawByteString & Str)
 {
   bool Displayable = true;
-  int Index = 1;
+  intptr_t Index = 1;
   while ((Index <= Str.Length()) && Displayable)
   {
     if (((Str[Index] < '\x20') || (static_cast<unsigned char>(Str[Index]) >= static_cast<unsigned char>('\x80'))) &&
@@ -1150,7 +1150,6 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
     typedef BOOL (WINAPI * TGetTimeZoneInformationForYear)(USHORT wYear, PDYNAMIC_TIME_ZONE_INFORMATION pdtzi, LPTIME_ZONE_INFORMATION ptzi);
     TGetTimeZoneInformationForYear GetTimeZoneInformationForYear =
       (TGetTimeZoneInformationForYear)GetProcAddress(Kernel32, "GetTimeZoneInformationForYear");
-    TRACEFMT("2 [%x]", int(GetTimeZoneInformationForYear));
 
     if ((Year == 0) || (GetTimeZoneInformationForYear == NULL))
     {
@@ -1368,7 +1367,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
     ++Index;
   }
   UnicodeString NumberStr = S.SubString(1, Index - 1);
-  int Number = 0;
+  intptr_t Number = 0;
   bool Result = TryStrToInt(NumberStr, Number);
   if (Result)
   {
@@ -1883,7 +1882,7 @@ UnicodeString LoadStrPart(int Ident, int Part)
 UnicodeString DecodeUrlChars(const UnicodeString & S)
 {
   UnicodeString Result = S;
-  int I = 1;
+  intptr_t I = 1;
   while (I <= Result.Length())
   {
     switch (Result[I])

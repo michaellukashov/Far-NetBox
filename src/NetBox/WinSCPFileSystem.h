@@ -54,7 +54,7 @@ const int fsoAllowSelectedOnly = 0x02;
 enum TSessionActionEnum { saAdd, saEdit, saConnect };
 //------------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
-  int /* Params */, TSynchronizeOptions & /* Options */);
+  intptr_t /* Params */, TSynchronizeOptions & /* Options */);
 DEFINE_CALLBACK_TYPE3(TGetSpaceAvailableEvent, void,
   const UnicodeString & /* Path */, TSpaceAvailable & /* ASpaceAvailable */, bool & /* Close */);
 
@@ -166,19 +166,19 @@ protected:
     TGetSpaceAvailableEvent OnGetSpaceAvailable);
   bool OpenDirectoryDialog(bool Add, UnicodeString & Directory,
     TBookmarkList * BookmarkList);
-  bool ApplyCommandDialog(UnicodeString & Command, int & Params);
+  bool ApplyCommandDialog(UnicodeString & Command, intptr_t & Params);
   bool FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode,
-    int & Params, UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
+    intptr_t  & Params, UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
     TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode, int Options,
     const TUsableCopyParamAttrs & CopyParamAttrs);
   bool SynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
-    TTerminal::TSynchronizeMode Mode, int Params,
+    TTerminal::TSynchronizeMode Mode, intptr_t Params,
     const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory);
   bool RemoteTransferDialog(TStrings * FileList, UnicodeString & Target,
     UnicodeString & FileMask, bool Move);
   bool RenameFileDialog(TRemoteFile * File, UnicodeString & NewName);
-  intptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
-    TQueryType Type, int Answers, const TMessageParams * Params = NULL);
+  uintptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
+    TQueryType Type, uintptr_t Answers, const TMessageParams * Params = NULL);
   bool PasswordDialog(TSessionData * SessionData,
     TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
     TStrings * Results, bool StoredCredentialsTried);
@@ -198,14 +198,14 @@ protected:
   void DoSynchronizeInvalid(TSynchronizeController * Sender,
     const UnicodeString & Directory, const UnicodeString & ErrorStr);
   void DoSynchronizeTooManyDirectories(TSynchronizeController * Sender,
-    int & MaxDirectories);
+    intptr_t & MaxDirectories);
   void Synchronize(const UnicodeString & LocalDirectory,
     const UnicodeString & RemoteDirectory, TTerminal::TSynchronizeMode Mode,
-    const TCopyParamType & CopyParam, int Params, TSynchronizeChecklist ** Checklist,
+    const TCopyParamType & CopyParam, intptr_t Params, TSynchronizeChecklist ** Checklist,
     TSynchronizeOptions * Options);
   bool SynchronizeAllowSelectedOnly();
-  void GetSynchronizeOptions(int Params, TSynchronizeOptions & Options);
-  void RequireCapability(int Capability);
+  void GetSynchronizeOptions(intptr_t Params, TSynchronizeOptions & Options);
+  void RequireCapability(intptr_t Capability);
   void RequireLocalPanel(TFarPanelInfo * Panel, const UnicodeString & Message);
   bool AreCachesEmpty();
   void ClearCaches();
@@ -295,8 +295,8 @@ private:
   void TerminalInformation(TTerminal * Terminal,
     const UnicodeString & Str, bool Status, int Phase);
   void TerminalQueryUser(TObject * Sender,
-    const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
-    const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg);
+    const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+    const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal,
     TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result,

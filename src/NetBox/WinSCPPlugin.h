@@ -14,10 +14,10 @@ struct TMessageParams
   TMessageParams();
 
   const TQueryButtonAlias * Aliases;
-  int AliasesCount;
-  unsigned int Flags;
-  unsigned int Params;
-  unsigned int Timer;
+  intptr_t AliasesCount;
+  uintptr_t Flags;
+  uintptr_t Params;
+  uintptr_t Timer;
   TQueryParamsTimerEvent TimerEvent;
   UnicodeString TimerMessage;
   unsigned int TimerAnswers;
@@ -34,8 +34,8 @@ public:
   virtual intptr_t GetMinFarVersion();
 
   virtual void HandleException(Exception * E, int OpMode = 0);
-  intptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
-    TQueryType Type, int Answers, const TMessageParams * Params = NULL);
+  uintptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
+    TQueryType Type, uintptr_t Answers, const TMessageParams * Params = NULL);
   void ShowExtendedException(Exception * E);
   bool CopyParamCustomDialog(TCopyParamType & CopyParam,
     int CopyParamAttrs);

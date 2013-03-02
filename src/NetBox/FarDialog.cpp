@@ -855,28 +855,28 @@ void TFarDialog::Redraw()
   SendMessage(DM_REDRAW, 0, 0);
 }
 //---------------------------------------------------------------------------
-void TFarDialog::ShowGroup(int Group, bool Show)
+void TFarDialog::ShowGroup(intptr_t Group, bool Show)
 {
   ProcessGroup(Group, MAKE_CALLBACK(TFarDialog::ShowItem, this), &Show);
 }
 //---------------------------------------------------------------------------
-void TFarDialog::EnableGroup(int Group, bool Enable)
+void TFarDialog::EnableGroup(intptr_t Group, bool Enable)
 {
   ProcessGroup(Group, MAKE_CALLBACK(TFarDialog::EnableItem, this), &Enable);
 }
 //---------------------------------------------------------------------------
-void TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callback,
+void TFarDialog::ProcessGroup(intptr_t Group, TFarProcessGroupEvent Callback,
   void * Arg)
 {
   LockChanges();
   TRY_FINALLY (
   {
-    for (intptr_t i = 0; i < GetItemCount(); i++)
+    for (intptr_t I = 0; I < GetItemCount(); I++)
     {
-      TFarDialogItem * I = GetItem(i);
-      if (I->GetGroup() == Group)
+      TFarDialogItem * Item = GetItem(I);
+      if (Item->GetGroup() == Group)
       {
-        Callback(I, Arg);
+        Callback(Item, Arg);
       }
     }
   }
@@ -1010,7 +1010,7 @@ void TFarDialogContainer::SetPosition(int Index, int Value)
   if (Position != Value)
   {
     Position = Value;
-    for (int Index = 0; Index < GetItemCount(); ++Index)
+    for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
     {
       dynamic_cast<TFarDialogItem *>((*FItems)[Index])->DialogResized();
     }
@@ -2029,9 +2029,9 @@ void TFarEdit::SetHistoryMask(size_t Index, const UnicodeString & Value)
   }
 }
 //---------------------------------------------------------------------------
-void TFarEdit::SetAsInteger(int Value)
+void TFarEdit::SetAsInteger(intptr_t Value)
 {
-  int Int = GetAsInteger();
+  intptr_t Int = GetAsInteger();
   if (!Int || (Int != Value))
   {
     SetText(::IntToStr(Value));
@@ -2039,7 +2039,7 @@ void TFarEdit::SetAsInteger(int Value)
   }
 }
 //---------------------------------------------------------------------------
-int TFarEdit::GetAsInteger()
+intptr_t TFarEdit::GetAsInteger()
 {
   return ::StrToIntDef(::Trim(GetText()), 0);
 }

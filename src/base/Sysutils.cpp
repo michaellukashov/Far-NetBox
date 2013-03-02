@@ -67,7 +67,7 @@ Exception::Exception(int Ident) :
 }
 
 //---------------------------------------------------------------------------
-UnicodeString IntToStr(int Value)
+UnicodeString IntToStr(intptr_t Value)
 {
   UnicodeString Result;
   Result.sprintf(L"%d", Value);
@@ -83,12 +83,12 @@ UnicodeString Int64ToStr(__int64 Value)
 }
 
 //---------------------------------------------------------------------------
-int StrToInt(const UnicodeString & Value)
+intptr_t StrToInt(const UnicodeString & Value)
 {
   __int64 Result = 0;
   if (TryStrToInt(Value, Result))
   {
-    return static_cast<int>(Result);
+    return static_cast<intptr_t>(Result);
   }
   else
   {
@@ -109,12 +109,12 @@ __int64 ToInt(const UnicodeString & Value)
   }
 }
 
-int StrToIntDef(const UnicodeString & Value, int DefVal)
+intptr_t StrToIntDef(const UnicodeString & Value, intptr_t DefVal)
 {
   __int64 Result = DefVal;
   if (TryStrToInt(Value, Result))
   {
-    return static_cast<int>(Result);
+    return static_cast<intptr_t>(Result);
   }
   else
   {
@@ -212,12 +212,12 @@ UnicodeString LowerCase(const UnicodeString & Str)
 
 inline wchar_t UpCase(const wchar_t c)
 {
-  return ::toupper(c);
+  return static_cast<wchar_t>(::toupper(c));
 }
 
 inline wchar_t LowCase(const wchar_t c)
 {
-  return ::tolower(c);
+  return static_cast<wchar_t>(::tolower(c));
 }
 
 //---------------------------------------------------------------------------
@@ -1205,10 +1205,10 @@ UnicodeString GetCurrentDir()
 UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase, char Separator)
 {
   UnicodeString Result;
-  for (int i = 1; i <= Str.Length(); i++)
+  for (intptr_t I = 1; I <= Str.Length(); I++)
   {
-    Result += CharToHex(static_cast<char>(Str[i]), UpperCase);
-    if ((Separator != L'\0') && (i <= Str.Length()))
+    Result += CharToHex(static_cast<char>(Str[I]), UpperCase);
+    if ((Separator != L'\0') && (I <= Str.Length()))
     {
       Result += Separator;
     }
@@ -1224,10 +1224,10 @@ UnicodeString HexToStr(const UnicodeString & Hex)
   size_t L = Hex.Length() - 1;
   if (L % 2 == 0)
   {
-    for (int i = 1; i <= Hex.Length(); i += 2)
+    for (intptr_t I = 1; I <= Hex.Length(); I += 2)
     {
-      size_t P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[i])));
-      size_t P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[i + 1])));
+      size_t P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[I])));
+      size_t P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[I + 1])));
       if ((P1 == std::wstring::npos) || (P2 == std::wstring::npos))
       {
         Result = L"";
@@ -1243,17 +1243,17 @@ UnicodeString HexToStr(const UnicodeString & Hex)
 }
 
 //---------------------------------------------------------------------------
-unsigned int HexToInt(const UnicodeString & Hex, size_t MinChars)
+uintptr_t HexToInt(const UnicodeString & Hex, uintptr_t MinChars)
 {
   static std::wstring Digits = L"0123456789ABCDEF";
-  int Result = 0;
-  size_t I = 1;
+  uintptr_t Result = 0;
+  intptr_t I = 1;
   while (I <= Hex.Length())
   {
     size_t A = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[I])));
     if (A == std::wstring::npos)
     {
-      if ((MinChars == NPOS) || (I <= MinChars))
+      if ((MinChars == NPOS) || (I <= static_cast<intptr_t>(MinChars)))
       {
           Result = 0;
       }
@@ -1268,14 +1268,14 @@ unsigned int HexToInt(const UnicodeString & Hex, size_t MinChars)
 }
 
 //---------------------------------------------------------------------------
-UnicodeString IntToHex(unsigned int Int, size_t MinChars)
+UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars)
 {
   UnicodeString Result;
   Result.sprintf(L"%X", Int);
   intptr_t Pad = MinChars - Result.Length();
   if (Pad > 0)
   {
-    for (int i = 0; i < Pad; i++)
+    for (intptr_t I = 0; I < Pad; I++)
     {
       Result.Insert(L'0', 1);
     }
@@ -1284,13 +1284,13 @@ UnicodeString IntToHex(unsigned int Int, size_t MinChars)
 }
 
 //---------------------------------------------------------------------------
-char HexToChar(const UnicodeString & Hex, size_t MinChars)
+char HexToChar(const UnicodeString & Hex, uintptr_t MinChars)
 {
   return static_cast<char>(HexToInt(Hex, MinChars));
 }
 
 //---------------------------------------------------------------------------
-void ConvertError(int ErrorID)
+static void ConvertError(intptr_t ErrorID)
 {
   UnicodeString Msg = FMTLOAD(ErrorID, 0);
   throw EConvertError(Msg);

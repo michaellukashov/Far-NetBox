@@ -59,7 +59,7 @@ static UnicodeString DoXmlEscape(const UnicodeString & Str, bool NewLine)
     {
       Result[I] = L'&';
       Result.Insert(Repl, I + 1);
-      I += static_cast<int>(wcslen(Repl));
+      I += wcslen(Repl);
     }
   }
   return Result;
@@ -1026,7 +1026,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     ADF(L"Code Page: %d", Data->GetCodePageAsNumber());
     wchar_t * PingTypes = L"-NC";
     TPingType PingType;
-    int PingInterval;
+    intptr_t PingInterval;
     if (Data->GetFSProtocol() == fsFTP)
     {
       PingType = Data->GetFtpPingType();

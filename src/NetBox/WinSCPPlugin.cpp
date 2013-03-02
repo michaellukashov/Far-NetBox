@@ -633,8 +633,8 @@ void TWinSCPPlugin::MessageClick(void * Token, intptr_t Result, bool & Close)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
-  TStrings * MoreMessages, TQueryType Type, int Answers,
+uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
+  TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
   const TMessageParams * Params)
 {
   intptr_t Result = 0;
@@ -643,7 +643,7 @@ intptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   {
     std::auto_ptr<TStrings> ButtonLabelsPtr;
     ButtonLabelsPtr.reset(ButtonLabels);
-    unsigned int Flags = 0;
+    uintptr_t Flags = 0;
 
     if (Params != NULL)
     {
@@ -685,7 +685,7 @@ intptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
       }
     }
 
-    int AAnswers = Answers;
+    uintptr_t AAnswers = Answers;
     bool NeverAskAgainCheck = (Params != NULL) && FLAGSET(Params->Params, qpNeverAskAgainCheck);
     bool NeverAskAgainPending = NeverAskAgainCheck;
     intptr_t TimeoutButton = 0;
@@ -761,7 +761,7 @@ intptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
     {
       if (Params->Timer > 0)
       {
-        FarParams.Timer = Params->Timer;
+        FarParams.Timer = static_cast<unsigned int>(Params->Timer);
         FarParams.TimerEvent = Params->TimerEvent;
       }
 
@@ -785,7 +785,7 @@ intptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
       FarParams.MoreMessages = NULL;
     }
 
-    Result = Message(Flags, GetMsg(TitleId), DialogStr, ButtonLabels, &FarParams);
+    Result = Message(static_cast<DWORD>(Flags), GetMsg(TitleId), DialogStr, ButtonLabels, &FarParams);
     if (FarParams.TimerAnswer > 0)
     {
       Result = static_cast<intptr_t>(FarParams.TimerAnswer);

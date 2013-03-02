@@ -31,8 +31,8 @@ private:
   TFileOperationProgressEvent FOnProgress;
   TFileOperationFinishedEvent FOnFinished;
   bool FReset;
-  unsigned int FLastSecond;
-  unsigned long FRemainingCPS;
+  uintptr_t FLastSecond;
+  uintptr_t FRemainingCPS;
   std::vector<unsigned long> FTicks;
   std::vector<__int64> FTotalTransferredThen;
 
@@ -71,10 +71,9 @@ public:
 
   TBatchOverwrite BatchOverwrite;
   bool SkipToAll;
-  unsigned long CPSLimit;
+  uintptr_t CPSLimit;
 
   bool TotalSizeSet;
-
   bool Suspended;
 
   explicit TFileOperationProgressType();
@@ -85,18 +84,18 @@ public:
   void AddTransfered(__int64 ASize, bool AddToTotals = true);
   void AddResumed(__int64 ASize);
   void Clear();
-  unsigned int CPS();
+  uintptr_t CPS();
   void Finish(const UnicodeString & FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
-  unsigned long LocalBlockSize();
+  uintptr_t LocalBlockSize();
   bool IsLocallyDone() const;
   bool IsTransferDone() const;
   void SetFile(UnicodeString AFileName, bool AFileInProgress = true);
   void SetFileInProgress();
   intptr_t OperationProgress() const;
-  unsigned long TransferBlockSize();
-  unsigned long AdjustToCPSLimit(unsigned long Size);
-  static unsigned long StaticBlockSize();
+  uintptr_t TransferBlockSize();
+  uintptr_t AdjustToCPSLimit(uintptr_t Size);
+  static uintptr_t StaticBlockSize();
   void Reset();
   void Resume();
   void SetLocalSize(__int64 ASize);
@@ -109,7 +108,7 @@ public:
   void Start(TFileOperation AOperation, TOperationSide ASide, intptr_t ACount);
   void Start(TFileOperation AOperation,
     TOperationSide ASide, intptr_t ACount, bool ATemp, const UnicodeString & ADirectory,
-    unsigned long ACPSLimit);
+    uintptr_t ACPSLimit);
   void Stop();
   void Suspend();
   // whole operation

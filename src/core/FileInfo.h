@@ -18,7 +18,7 @@ PVSFixedFileInfo GetFixedFileInfo(void * FileInfo);
 unsigned GetTranslationCount(void * FileInfo);
 
 // Return i-th translation in the file version info translation list
-TTranslation GetTranslation(void * FileInfo, unsigned I);
+TTranslation GetTranslation(void * FileInfo, intptr_t I);
 
 // Return the name of the specified language
 UnicodeString GetLanguage(Word Language);

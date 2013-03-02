@@ -7,12 +7,12 @@
 
 void AnsiString::Init(const wchar_t * Str, intptr_t Length)
 {
-  int Size = WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0, nullptr, nullptr);
+  intptr_t Size = WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0, nullptr, nullptr);
   if (Length > 0)
   {
     Data.resize(Size + 1);
     WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1),
-      reinterpret_cast<LPSTR>(const_cast<char *>(Data.c_str())), Size, nullptr, nullptr);
+      reinterpret_cast<LPSTR>(const_cast<char *>(Data.c_str())), static_cast<int>(Size), nullptr, nullptr);
     Data[Size] = 0;
     Data = Data.c_str();
   }
@@ -136,12 +136,12 @@ void AnsiString::ThrowIfOutOfRange(intptr_t Idx) const
 
 void RawByteString::Init(const wchar_t * Str, intptr_t Length)
 {
-  int Size = WideCharToMultiByte(CP_ACP, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0, nullptr, nullptr);
+  intptr_t Size = WideCharToMultiByte(CP_ACP, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0, nullptr, nullptr);
   if (Length > 0)
   {
     Data.resize(Size + 1);
     WideCharToMultiByte(CP_ACP, 0, Str, static_cast<int>(Length > 0 ? Length : -1),
-      reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), Size, nullptr, nullptr);
+      reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), static_cast<int>(Size), nullptr, nullptr);
     Data[Size] = 0;
   }
   else
@@ -284,11 +284,11 @@ void UTF8String::Init(const wchar_t * Str, intptr_t Length)
 
 void UTF8String::Init(const char * Str, intptr_t Length)
 {
-  int Size = MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), NULL, 0);
+  intptr_t Size = MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), NULL, 0);
   Data.resize(Size + 1);
   if (Size > 0)
   {
-    MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size);
+    MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), static_cast<int>(Size));
     Data[Size] = 0;
   }
   Data = Data.c_str();
@@ -390,23 +390,23 @@ void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
 
 void UnicodeString::Init(const char * Str, intptr_t Length)
 {
-  int Size = MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), NULL, 0);
+  intptr_t Size = MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), NULL, 0);
   Data.resize(Size + 1);
   if (Size > 0)
   {
-    MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size);
+    MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), static_cast<int>(Size));
     Data[Size] = 0;
   }
   Data = Data.c_str();
 }
 
-UnicodeString & UnicodeString::Lower(int nStartPos, int nLength)
+UnicodeString & UnicodeString::Lower(intptr_t nStartPos, intptr_t nLength)
 {
   Data = Sysutils::LowerCase(SubString(nStartPos, nLength)).c_str();
   return *this;
 }
 
-UnicodeString & UnicodeString::Upper(int nStartPos, int nLength)
+UnicodeString & UnicodeString::Upper(intptr_t nStartPos, intptr_t nLength)
 {
   Data = Sysutils::UpperCase(SubString(nStartPos, nLength)).c_str();
   return *this;
@@ -422,7 +422,7 @@ int UnicodeString::CompareIC(const UnicodeString & Str) const
   return Sysutils::AnsiCompareIC(*this, Str);
 }
 
-int UnicodeString::ToInt() const
+intptr_t UnicodeString::ToInt() const
 {
   return Sysutils::StrToIntDef(*this, 0);
 }

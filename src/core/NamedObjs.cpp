@@ -61,7 +61,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
       if ((Name[Name.Length()] == L')') && ((P = Name.LastDelimiter(L'(')) > 0))
         try
         {
-          N = StrToInt(Name.SubString(P + 1, Name.Length() - P - 1));
+          N = Sysutils::StrToInt(Name.SubString(P + 1, Name.Length() - P - 1));
           Name.Delete(P, Name.Length() - P + 1);
           SetName(Name.TrimRight());
         }
@@ -70,7 +70,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
           (void)E;
           N = 0;
         }
-      SetName(Name + L" (" + IntToStr(static_cast<int>(N+1)) + L")");
+      SetName(Name + L" (" + IntToStr(N+1) + L")");
     }
 }
 //--- TNamedObjectList ------------------------------------------------------

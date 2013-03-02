@@ -9,8 +9,8 @@ struct TSynchronizeParamType
 {
   UnicodeString LocalDirectory;
   UnicodeString RemoteDirectory;
-  int Params;
-  int Options;
+  intptr_t Params;
+  intptr_t Options;
 };
 //---------------------------------------------------------------------------
 class TSynchronizeController;
@@ -36,7 +36,7 @@ DEFINE_CALLBACK_TYPE8(TSynchronizeEvent, void,
 DEFINE_CALLBACK_TYPE3(TSynchronizeInvalidEvent, void,
   TSynchronizeController * /* Sender */, const UnicodeString & /* Directory */, const UnicodeString & /* ErrorStr */);
 DEFINE_CALLBACK_TYPE2(TSynchronizeTooManyDirectoriesEvent, void,
-  TSynchronizeController * /* Sender */, int & /* MaxDirectories */);
+  TSynchronizeController * /* Sender */, intptr_t & /* MaxDirectories */);
 //---------------------------------------------------------------------------
 namespace Discmon
 {
@@ -80,8 +80,8 @@ private:
     const UnicodeString & ErrorStr);
   void SynchronizeFilter(TObject * Sender, const UnicodeString & DirectoryName,
     bool & Add);
-  void SynchronizeTooManyDirectories(TObject * Sender, int & MaxDirectories);
-  void SynchronizeDirectoriesChange(TObject * Sender, int Directories);
+  void SynchronizeTooManyDirectories(TObject * Sender, intptr_t & MaxDirectories);
+  void SynchronizeDirectoriesChange(TObject * Sender, intptr_t Directories);
 };
 //---------------------------------------------------------------------------
 #endif

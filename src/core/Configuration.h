@@ -32,7 +32,7 @@ private:
   bool FPermanentLogging;
   UnicodeString FLogFileName;
   UnicodeString FPermanentLogFileName;
-  int FLogWindowLines;
+  intptr_t FLogWindowLines;
   bool FLogFileAppend;
   int FLogProtocol;
   int FActualLogProtocol;
@@ -197,7 +197,7 @@ public:
   int GetActualLogProtocol() { return FActualLogProtocol; }
   bool GetLogActions() { return FLogActions; }
   UnicodeString GetActionsLogFileName() const { return FActionsLogFileName; }
-  int GetLogWindowLines() { return FLogWindowLines; }
+  intptr_t GetLogWindowLines() { return FLogWindowLines; }
   TNotifyEvent & GetOnChange() { return FOnChange; }
   void SetOnChange(TNotifyEvent Value) { FOnChange = Value; }
   int GetSessionReopenAuto() { return FSessionReopenAuto; }

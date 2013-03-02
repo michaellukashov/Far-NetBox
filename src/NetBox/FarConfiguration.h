@@ -23,8 +23,8 @@ public:
   void SetConfirmSynchronizedBrowsing(bool Value) { FConfirmSynchronizedBrowsing = Value; }
   bool GetDisksMenu() { return FDisksMenu; }
   void SetDisksMenu(bool Value) { FDisksMenu = Value; }
-  int GetDisksMenuHotKey() { return FDisksMenuHotKey; }
-  void SetDisksMenuHotKey(int Value) { FDisksMenuHotKey = Value; }
+  intptr_t GetDisksMenuHotKey() { return FDisksMenuHotKey; }
+  void SetDisksMenuHotKey(intptr_t Value) { FDisksMenuHotKey = Value; }
   bool GetPluginsMenu() { return FPluginsMenu; }
   void SetPluginsMenu(bool Value) { FPluginsMenu = Value; }
   bool GetPluginsMenuCommands() { return FPluginsMenuCommands; }
@@ -59,8 +59,8 @@ public:
 
   UnicodeString GetApplyCommandCommand() { return FApplyCommandCommand; }
   void SetApplyCommandCommand(const UnicodeString & Value) { FApplyCommandCommand = Value; }
-  int GetApplyCommandParams() { return FApplyCommandParams; }
-  void SetApplyCommandParams(int Value) { FApplyCommandParams = Value; }
+  intptr_t GetApplyCommandParams() { return FApplyCommandParams; }
+  void SetApplyCommandParams(intptr_t Value) { FApplyCommandParams = Value; }
 
   UnicodeString GetPageantPath() const { return FPageantPath; }
   void SetPageantPath(const UnicodeString & Value) { FPageantPath = Value; }
@@ -92,7 +92,7 @@ private:
   bool FConfirmSynchronizedBrowsing;
   bool FForceInheritance;
   bool FDisksMenu;
-  int FDisksMenuHotKey;
+  intptr_t FDisksMenuHotKey;
   bool FPluginsMenu;
   bool FPluginsMenuCommands;
   UnicodeString FCommandPrefixes;
@@ -105,7 +105,7 @@ private:
   UnicodeString FPageantPath;
   UnicodeString FPuttygenPath;
   UnicodeString FApplyCommandCommand;
-  int FApplyCommandParams;
+  intptr_t FApplyCommandParams;
 
   bool FCustomPanelModeDetailed;
   bool FFullScreenDetailed;

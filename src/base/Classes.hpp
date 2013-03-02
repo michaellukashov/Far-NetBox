@@ -46,8 +46,8 @@ extern const UnicodeString kernel32;
 UnicodeString MB2W(const char * src, const UINT cp = CP_ACP);
 std::string W2MB(const wchar_t * src, const UINT cp = CP_ACP);
 //---------------------------------------------------------------------------
-int __cdecl debug_printf(const wchar_t * format, ...);
-int __cdecl debug_printf2(const char * format, ...);
+intptr_t __cdecl debug_printf(const wchar_t * format, ...);
+intptr_t __cdecl debug_printf2(const char * format, ...);
 
 #ifdef NETBOX_DEBUG
 #define DEBUG_PRINTF(format, ...) do { debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", Sysutils::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
@@ -707,7 +707,7 @@ public:
   bool ReadBool(const UnicodeString & Name);
   TDateTime ReadDateTime(const UnicodeString & Name);
   double ReadFloat(const UnicodeString & Name) const;
-  int ReadInteger(const UnicodeString & Name) const;
+  intptr_t ReadInteger(const UnicodeString & Name) const;
   __int64 ReadInt64(const UnicodeString & Name);
   UnicodeString ReadString(const UnicodeString & Name);
   UnicodeString ReadStringRaw(const UnicodeString & Name);
@@ -719,7 +719,7 @@ public:
   void WriteFloat(const UnicodeString & Name, double Value);
   void WriteString(const UnicodeString & Name, const UnicodeString & Value);
   void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
-  void WriteInteger(const UnicodeString & Name, int Value);
+  void WriteInteger(const UnicodeString & Name, intptr_t Value);
   void WriteInt64(const UnicodeString & Name, __int64 Value);
   void WriteBinaryData(const UnicodeString & Name,
     const void * Buffer, size_t Size);
@@ -772,11 +772,11 @@ class TShortCut
 {
 public:
   explicit TShortCut();
-  explicit TShortCut(int Value);
-  operator int() const;
+  explicit TShortCut(intptr_t Value);
+  operator intptr_t() const;
   bool operator < (const TShortCut & rhs) const;
 private:
-  int FValue;
+  intptr_t FValue;
 };
 
 //---------------------------------------------------------------------------

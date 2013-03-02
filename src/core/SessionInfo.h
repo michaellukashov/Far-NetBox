@@ -57,11 +57,11 @@ public:
   explicit TSessionUI() {}
   virtual ~TSessionUI() {}
   virtual void Information(const UnicodeString & Str, bool Status) = 0;
-  virtual unsigned int QueryUser(const UnicodeString & Query,
-    TStrings * MoreMessages, unsigned int Answers, const TQueryParams * Params,
+  virtual uintptr_t QueryUser(const UnicodeString & Query,
+    TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
-  virtual unsigned int QueryUserException(const UnicodeString & Query,
-    Exception * E, unsigned int Answers, const TQueryParams * Params,
+  virtual uintptr_t QueryUserException(const UnicodeString & Query,
+    Exception * E, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,

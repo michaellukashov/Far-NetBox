@@ -348,7 +348,7 @@ double TXmlStorage::ReadFloat(const UnicodeString & Name, double Default)
   return StrToFloatDef(GetSubKeyText(Name), Default);
 }
 //---------------------------------------------------------------------------
-int TXmlStorage::ReadInteger(const UnicodeString & Name, int Default)
+intptr_t TXmlStorage::ReadInteger(const UnicodeString & Name, intptr_t Default)
 {
   return StrToIntDef(GetSubKeyText(Name), Default);
 }
@@ -394,7 +394,7 @@ void TXmlStorage::WriteStringRaw(const UnicodeString & Name, const UnicodeString
   AddNewElement(Name, Value);
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::WriteInteger(const UnicodeString & Name, int Value)
+void TXmlStorage::WriteInteger(const UnicodeString & Name, intptr_t Value)
 {
   RemoveIfExists(Name);
   AddNewElement(Name, ::IntToStr(Value));
@@ -413,9 +413,9 @@ void TXmlStorage::WriteBinaryData(const UnicodeString & Name,
   AddNewElement(Name, ::StrToHex(UnicodeString(reinterpret_cast<const wchar_t *>(Buffer), Size), true));
 }
 //---------------------------------------------------------------------------
-int TXmlStorage::GetFailed()
+intptr_t TXmlStorage::GetFailed()
 {
-  int Result = FFailed;
+  intptr_t Result = FFailed;
   FFailed = 0;
   return Result;
 }

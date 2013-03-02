@@ -91,7 +91,7 @@ __int64 TFileBuffer::LoadStream(TStream * Stream, const __int64 Len, bool ForceL
   return ReadStream(Stream, Len, ForceLen);
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::Convert(char * Source, char * Dest, int Params,
+void TFileBuffer::Convert(char * Source, char * Dest, intptr_t Params,
   bool & Token)
 {
   assert(strlen(Source) <= 2);
@@ -183,19 +183,19 @@ void TFileBuffer::Convert(char * Source, char * Dest, int Params,
   }
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::Convert(TEOLType Source, TEOLType Dest, int Params,
+void TFileBuffer::Convert(TEOLType Source, TEOLType Dest, intptr_t Params,
   bool & Token)
 {
   Convert(EOLToStr(Source), EOLToStr(Dest), Params, Token);
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::Convert(char * Source, TEOLType Dest, int Params,
+void TFileBuffer::Convert(char * Source, TEOLType Dest, intptr_t Params,
   bool & Token)
 {
   Convert(Source, EOLToStr(Dest), Params, Token);
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::Convert(TEOLType Source, char * Dest, int Params,
+void TFileBuffer::Convert(TEOLType Source, char * Dest, intptr_t Params,
   bool & Token)
 {
   Convert(EOLToStr(Source), Dest, Params, Token);

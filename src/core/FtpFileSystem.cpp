@@ -39,8 +39,8 @@ public:
   explicit TFileZillaImpl(TFTPFileSystem * FileSystem);
   virtual ~TFileZillaImpl() {}
 
-  virtual const wchar_t * Option(int OptionID) const;
-  virtual int OptionVal(int OptionID) const;
+  virtual const wchar_t * Option(intptr_t OptionID) const;
+  virtual intptr_t OptionVal(intptr_t OptionID) const;
 
 protected:
   virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam);
@@ -77,13 +77,13 @@ TFileZillaImpl::TFileZillaImpl(TFTPFileSystem * FileSystem) :
 {
 }
 //---------------------------------------------------------------------------
-const wchar_t * TFileZillaImpl::Option(int OptionID) const
+const wchar_t * TFileZillaImpl::Option(intptr_t OptionID) const
 {
   CCALLSTACK(TRACE_FZAPI);
   return FFileSystem->GetOption(OptionID);
 }
 //---------------------------------------------------------------------------
-int TFileZillaImpl::OptionVal(int OptionID) const
+intptr_t TFileZillaImpl::OptionVal(intptr_t OptionID) const
 {
   CCALLSTACK(TRACE_FZAPI);
   return FFileSystem->GetOptionVal(OptionID);
@@ -181,7 +181,7 @@ struct TFileTransferData
   }
 
   UnicodeString FileName;
-  int Params;
+  intptr_t Params;
   bool AutoResume;
   int OverwriteResult;
   const TCopyParamType * CopyParam;
@@ -198,10 +198,10 @@ struct TSinkFileParams
 {
   UnicodeString TargetDir;
   const TCopyParamType * CopyParam;
-  int Params;
+  intptr_t Params;
   TFileOperationProgressType * OperationProgress;
   bool Skipped;
-  unsigned int Flags;
+  uintptr_t Flags;
 };
 #endif
 //---------------------------------------------------------------------------
@@ -422,7 +422,7 @@ void TFTPFileSystem::Open()
   int Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
   int TimeZoneOffset = TimeToMinutes(Data->GetTimeDifference());
   int UTF8 = 0;
-  unsigned int CodePage = Data->GetCodePageAsNumber();
+  uintptr_t CodePage = Data->GetCodePageAsNumber();
   switch (CodePage)
   {
     case CP_ACP:
@@ -495,9 +495,9 @@ void TFTPFileSystem::Open()
 
     TRACE("connect");
     FActive = FFileZillaIntf->Connect(
-      HostName.c_str(), Data->GetPortNumber(), UserName.c_str(),
+      HostName.c_str(), static_cast<int>(Data->GetPortNumber()), UserName.c_str(),
       Password.c_str(), Account.c_str(), false, Path.c_str(),
-      ServerType, Pasv, TimeZoneOffset, UTF8, Data->GetFtpForcePasvIp(),
+      ServerType, Pasv, TimeZoneOffset, UTF8, static_cast<int>(Data->GetFtpForcePasvIp()),
       Data->GetFtpUseMlsd());
 
     assert(FActive);
@@ -843,7 +843,7 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
 }
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::ConfirmOverwrite(UnicodeString & FileName,
-  int Params, TFileOperationProgressType * OperationProgress,
+  intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOverwriteMode & OverwriteMode,
   bool AutoResume,
   const TOverwriteFileParams * FileParams)
@@ -859,7 +859,7 @@ bool TFTPFileSystem::ConfirmOverwrite(UnicodeString & FileName,
   bool CanResume =
     (DestIsSmaller || (DestIsSame && CanAutoResume));
 
-  unsigned int Answer;
+  uintptr_t Answer;
   if (CanAutoResume && CanResume)
   {
     if (DestIsSame)
@@ -1072,7 +1072,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & FileName,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
-  int Params, TFileOperationProgressType * OperationProgress,
+  intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
   CALLSTACK;
@@ -1121,8 +1121,8 @@ void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::SinkRobust(const UnicodeString & FileName,
   const TRemoteFile * File, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, unsigned int Flags)
+  const TCopyParamType * CopyParam, intptr_t Params,
+  TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   CALLSTACK;
   // the same in TSFTPFileSystem
@@ -1167,8 +1167,8 @@ void TFTPFileSystem::SinkRobust(const UnicodeString & FileName,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::Sink(const UnicodeString & FileName,
   const TRemoteFile * File, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, unsigned int Flags,
+  const TCopyParamType * CopyParam, intptr_t Params,
+  TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TDownloadSessionAction & Action)
 {
   CALLSTACK;
@@ -1317,7 +1317,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
     // If file is directory, do not delete it recursively, because it should be
     // empty already. If not, it should not be deleted (some files were
     // skipped or some new files were copied to it, while we were downloading)
-    int Params = dfNoRecursive;
+    intptr_t Params = dfNoRecursive;
     FTerminal->DeleteFile(FileName, File, &Params);
   }
 }
@@ -1355,7 +1355,7 @@ void TFTPFileSystem::SinkFile(const UnicodeString & FileName,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
-  int Params, TFileOperationProgressType * OperationProgress,
+  intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
   CALLSTACK;
@@ -1416,8 +1416,8 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::SourceRobust(const UnicodeString & FileName,
   const TRemoteFile * File,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, unsigned int Flags)
+  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
+  TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   CALLSTACK;
   TRACEFMT("0 [%s]", FileName.c_str());
@@ -1469,10 +1469,10 @@ void TFTPFileSystem::SourceRobust(const UnicodeString & FileName,
 // Copy file to remote host
 void TFTPFileSystem::Source(const UnicodeString & FileName,
   const TRemoteFile * File,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
+  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
   TOpenRemoteFileParams * OpenParams,
   TOverwriteFileParams * FileParams,
-  TFileOperationProgressType * OperationProgress, unsigned int Flags,
+  TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TUploadSessionAction & Action)
 {
   CALLSTACK;
@@ -1614,8 +1614,8 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
-  const UnicodeString & TargetDir, int Attrs, const TCopyParamType * CopyParam,
-  int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags)
+  const UnicodeString & TargetDir, intptr_t Attrs, const TCopyParamType * CopyParam,
+  intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   CALLSTACK;
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
@@ -1769,7 +1769,7 @@ void TFTPFileSystem::CreateLink(const UnicodeString & /*FileName*/,
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
-  const TRemoteFile * File, int Params, TRmSessionAction & Action)
+  const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action)
 {
   CALLSTACK;
   UnicodeString FileName = AbsolutePath(AFileName, false);
@@ -1819,7 +1819,7 @@ void TFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CustomCommandOnFile(const UnicodeString & /*FileName*/,
-  const TRemoteFile * /*File*/, const UnicodeString & /*Command*/, int /*Params*/,
+  const TRemoteFile * /*File*/, const UnicodeString & /*Command*/, intptr_t /*Params*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   // if ever implemented, do not forget to add EnsureLocation,
@@ -1868,7 +1868,7 @@ void TFTPFileSystem::HomeDirectory()
   FFileZillaIntf->SetCurrentPath(FCurrentDirectory.c_str());
 }
 //---------------------------------------------------------------------------
-bool TFTPFileSystem::IsCapable(int Capability) const
+bool TFTPFileSystem::IsCapable(intptr_t Capability) const
 {
   assert(FTerminal);
   switch (Capability)
@@ -2289,7 +2289,7 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 
     for (intptr_t Index = 0; Index < fcCount; ++Index)
     {
-      FFileSystemInfo.IsCapable[Index] = IsCapable(static_cast<TFSCapability>(Index));
+      FFileSystemInfo.IsCapable[Index] = IsCapable(Index);
     }
 
     FFileSystemInfoValid = true;
@@ -2317,7 +2317,7 @@ UnicodeString TFTPFileSystem::GetCurrentDirectory()
   return FCurrentDirectory;
 }
 //---------------------------------------------------------------------------
-const wchar_t * TFTPFileSystem::GetOption(int OptionID) const
+const wchar_t * TFTPFileSystem::GetOption(intptr_t OptionID) const
 {
   TSessionData * Data = FTerminal->GetSessionData();
 
@@ -2355,10 +2355,10 @@ const wchar_t * TFTPFileSystem::GetOption(int OptionID) const
   return FOptionScratch.c_str();
 }
 //---------------------------------------------------------------------------
-int TFTPFileSystem::GetOptionVal(int OptionID) const
+intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
 {
   TSessionData * Data = FTerminal->GetSessionData();
-  int Result;
+  intptr_t Result;
   TRACEFMT("1 [%d]", OptionID);
 
   switch (OptionID)
@@ -2458,7 +2458,7 @@ int TFTPFileSystem::GetOptionVal(int OptionID) const
 
     case OPTION_SPEEDLIMIT_DOWNLOAD_VALUE:
     case OPTION_SPEEDLIMIT_UPLOAD_VALUE:
-      Result = static_cast<int>((FFileTransferCPSLimit / 1024)); // FZAPI expects KiB/s
+      Result = static_cast<intptr_t>((FFileTransferCPSLimit / 1024)); // FZAPI expects KiB/s
       break;
 
     case OPTION_MPEXT_SHOWHIDDEN:
@@ -2725,7 +2725,7 @@ void TFTPFileSystem::GotNonCommandReply(unsigned int Reply)
   assert(false);
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
+void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
   const UnicodeString & Error, unsigned int * Code, TStrings ** Response)
 {
   CALLSTACK;
@@ -3530,7 +3530,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       Params.NoBatchAnswers = qaYes | qaRetry;
       Params.Aliases = Aliases;
       Params.AliasesCount = LENOF(Aliases);
-      unsigned int Answer = FTerminal->QueryUser(
+      uintptr_t Answer = FTerminal->QueryUser(
         FMTLOAD(VERIFY_CERT_PROMPT2, FSessionInfo.Certificate.c_str()),
         NULL, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
 

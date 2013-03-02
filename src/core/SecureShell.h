@@ -82,7 +82,7 @@ private:
   bool EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events);
   void HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events);
   bool ProcessNetworkEvents(SOCKET Socket);
-  bool EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
+  bool EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     WSANETWORKEVENTS * Events);
   void UpdateSessionInfo();
   void DispatchSendBuffer(int BufSize);

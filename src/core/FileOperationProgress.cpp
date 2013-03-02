@@ -96,7 +96,7 @@ void TFileOperationProgressType::Start(TFileOperation AOperation,
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, intptr_t ACount, bool ATemp,
-  const UnicodeString & ADirectory, unsigned long ACPSLimit)
+  const UnicodeString & ADirectory, uintptr_t ACPSLimit)
 {
   CALLSTACK;
   Clear();
@@ -260,8 +260,8 @@ bool TFileOperationProgressType::IsLocallyDone() const
   return (LocallyUsed == LocalSize);
 }
 //---------------------------------------------------------------------------
-unsigned long TFileOperationProgressType::AdjustToCPSLimit(
-  unsigned long Size)
+uintptr_t TFileOperationProgressType::AdjustToCPSLimit(
+  uintptr_t Size)
 {
   if (CPSLimit > 0)
   {
@@ -269,7 +269,7 @@ unsigned long TFileOperationProgressType::AdjustToCPSLimit(
     // we wait until the next second
     do
     {
-      unsigned int Second = (GetTickCount() / MSecsPerSec);
+      uintptr_t Second = (GetTickCount() / MSecsPerSec);
 
       if (Second != FLastSecond)
       {
@@ -299,12 +299,12 @@ unsigned long TFileOperationProgressType::AdjustToCPSLimit(
   return Size;
 }
 //---------------------------------------------------------------------------
-unsigned long TFileOperationProgressType::LocalBlockSize()
+uintptr_t TFileOperationProgressType::LocalBlockSize()
 {
-  unsigned long Result = TRANSFER_BUF_SIZE;
+  intptr_t Result = TRANSFER_BUF_SIZE;
   if (LocallyUsed + Result > LocalSize)
   {
-    Result = static_cast<unsigned long>(LocalSize - LocallyUsed);
+    Result = static_cast<uintptr_t>(LocalSize - LocallyUsed);
   }
   Result = AdjustToCPSLimit(Result);
   return Result;
@@ -393,9 +393,9 @@ void TFileOperationProgressType::AddResumed(__int64 ASize)
   AddLocallyUsed(ASize);
 }
 //---------------------------------------------------------------------------
-unsigned long TFileOperationProgressType::TransferBlockSize()
+uintptr_t TFileOperationProgressType::TransferBlockSize()
 {
-  unsigned long Result = TRANSFER_BUF_SIZE;
+  intptr_t Result = TRANSFER_BUF_SIZE;
   if (TransferedSize + Result > TransferSize)
   {
     Result = static_cast<unsigned long>(TransferSize - TransferedSize);
@@ -404,7 +404,7 @@ unsigned long TFileOperationProgressType::TransferBlockSize()
   return Result;
 }
 //---------------------------------------------------------------------------
-unsigned long TFileOperationProgressType::StaticBlockSize()
+uintptr_t TFileOperationProgressType::StaticBlockSize()
 {
   return TRANSFER_BUF_SIZE;
 }
@@ -432,17 +432,17 @@ TDateTime TFileOperationProgressType::TimeElapsed() const
   return Now() - StartTime;
 }
 //---------------------------------------------------------------------------
-unsigned int TFileOperationProgressType::CPS()
+uintptr_t TFileOperationProgressType::CPS()
 {
-  unsigned int Result;
+  uintptr_t Result;
   if (FTicks.empty())
   {
     Result = 0;
   }
   else
   {
-    unsigned long Ticks = (Suspended ? FSuspendTime : GetTickCount());
-    unsigned long TimeSpan;
+    uintptr_t Ticks = (Suspended ? FSuspendTime : GetTickCount());
+    uintptr_t TimeSpan;
     if (Ticks < FTicks.front())
     {
       // clocks has wrapped, guess 10 seconds difference
@@ -468,7 +468,7 @@ unsigned int TFileOperationProgressType::CPS()
 //---------------------------------------------------------------------------
 TDateTime TFileOperationProgressType::TimeExpected()
 {
-  unsigned int CurCps = CPS();
+  uintptr_t CurCps = CPS();
   if (CurCps)
   {
     return TDateTime(static_cast<double>((static_cast<double>(TransferSize - TransferedSize)) / CurCps) / SecsPerDay);
@@ -482,7 +482,7 @@ TDateTime TFileOperationProgressType::TimeExpected()
 TDateTime TFileOperationProgressType::TotalTimeExpected()
 {
   assert(TotalSizeSet);
-  unsigned int CurCps = CPS();
+  uintptr_t CurCps = CPS();
   // sanity check
   if ((CurCps > 0) && (TotalSize > TotalSkipped))
   {
@@ -498,7 +498,7 @@ TDateTime TFileOperationProgressType::TotalTimeExpected()
 TDateTime TFileOperationProgressType::TotalTimeLeft()
 {
   assert(TotalSizeSet);
-  unsigned int CurCps = CPS();
+  uintptr_t CurCps = CPS();
   // sanity check
   if ((CurCps > 0) && (TotalSize > TotalSkipped + TotalTransfered))
   {

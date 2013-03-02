@@ -22,7 +22,7 @@ bool FindFile(UnicodeString & Path)
   bool Result = FileExists(Path);
   if (!Result)
   {
-    int Len = GetEnvironmentVariable(L"PATH", NULL, 0);
+    intptr_t Len = GetEnvironmentVariable(L"PATH", NULL, 0);
     if (Len > 0)
     {
       UnicodeString Paths;
@@ -178,7 +178,7 @@ bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params)
 {
   CALLSTACK;
   TRACEFMT("1 [%s] [%s]", Path.c_str(), Params.c_str());
-  return ((int)::ShellExecute(NULL, L"open", const_cast<wchar_t*>(Path.data()),
+  return ((intptr_t)::ShellExecute(NULL, L"open", const_cast<wchar_t*>(Path.data()),
     const_cast<wchar_t*>(Params.data()), NULL, SW_SHOWNORMAL) > 32);
 }
 //---------------------------------------------------------------------------

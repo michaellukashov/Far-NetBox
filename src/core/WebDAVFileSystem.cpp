@@ -46,7 +46,7 @@ struct TSinkFileParams
 {
   UnicodeString TargetDir;
   const TCopyParamType * CopyParam;
-  int Params;
+  intptr_t Params;
   TFileOperationProgressType * OperationProgress;
   bool Skipped;
   unsigned int Flags;
@@ -63,7 +63,7 @@ struct TFileTransferData
   }
 
   UnicodeString FileName;
-  int Params;
+  intptr_t Params;
   bool AutoResume;
   int OverwriteResult;
   const TCopyParamType * CopyParam;
@@ -5837,12 +5837,12 @@ dirent_is_root(
   if ((len >= 2) && (dirent[0] == '/') && (dirent[1] == '/') &&
       (dirent[len - 1] != '/'))
   {
-    int segments = 0;
+    size_t segments = 0;
     for (size_t i = len; i >= 2; i--)
     {
       if (dirent[i] == '/')
       {
-        segments ++;
+        segments++;
         if (segments > 1)
           return FALSE;
       }
@@ -9408,7 +9408,7 @@ plaintext_prompt_helper(
     APR_HASH_KEY_STRING));
   assert(fs);
 
-  unsigned int RequestResult = 0;
+  uintptr_t RequestResult = 0;
   error_t err = fs->SimplePrompt(prompt_text, prompt_string, RequestResult);
   if (err)
   {
@@ -9553,7 +9553,7 @@ cmdline_auth_ssl_server_trust_prompt(
     APR_HASH_KEY_STRING));
   assert(fs);
 
-  unsigned int RequestResult = 0;
+  uintptr_t RequestResult = 0;
   WEBDAV_ERR(fs->VerifyCertificate(buf->data, cert_info->fingerprint, RequestResult));
 
   if (RequestResult == qaYes)
@@ -9598,7 +9598,7 @@ cmdline_auth_ssl_client_cert_prompt(
     APR_HASH_KEY_STRING));
   assert(fs);
 
-  unsigned int RequestResult = 0;
+  uintptr_t RequestResult = 0;
   WEBDAV_ERR(fs->AskForClientCertificateFilename(&cert_file, RequestResult, pool));
   if (RequestResult != qaOK) return WEBDAV_NO_ERROR;
 
@@ -9632,7 +9632,7 @@ cmdline_auth_ssl_client_cert_pw_prompt(
     APR_HASH_KEY_STRING));
   assert(fs);
 
-  unsigned int RequestResult = 0;
+  uintptr_t RequestResult = 0;
   const char * result = NULL;
   WEBDAV_ERR(fs->AskForPassphrase(&result, realm, RequestResult, pool));
   if (RequestResult != qaOK) return WEBDAV_NO_ERROR;
@@ -9666,7 +9666,7 @@ cmdline_auth_simple_prompt(
     CONST_FS_KEY,
     APR_HASH_KEY_STRING));
   assert(fs);
-  unsigned int RequestResult = 0;
+  uintptr_t RequestResult = 0;
 
   if (username)
     ret->username = apr_pstrdup(pool, username);
@@ -9705,7 +9705,7 @@ cmdline_auth_username_prompt(
     APR_HASH_KEY_STRING));
   assert(fs);
 
-  unsigned int RequestResult = 0;
+  uintptr_t RequestResult = 0;
   WEBDAV_ERR(fs->AskForUsername(&ret->username, RequestResult, pool));
   if (RequestResult != qaOK) return WEBDAV_NO_ERROR;
 
@@ -12328,7 +12328,7 @@ UnicodeString TWebDAVFileSystem::AbsolutePath(const UnicodeString & Path, bool /
   return ::AbsolutePath(GetCurrentDirectory(), Path);
 }
 //------------------------------------------------------------------------------
-bool TWebDAVFileSystem::IsCapable(int Capability) const
+bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
 {
   assert(FTerminal);
   switch (Capability)
@@ -12560,7 +12560,7 @@ void TWebDAVFileSystem::CustomReadFile(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::DeleteFile(const UnicodeString & FileName,
-  const TRemoteFile * File, int Params, TRmSessionAction & Action)
+  const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action)
 {
   USEDPARAM(File);
   USEDPARAM(Params);
@@ -12644,8 +12644,8 @@ void TWebDAVFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
 //------------------------------------------------------------------------------
 bool TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & FileName,
   TOverwriteMode & OverwriteMode, TFileOperationProgressType * OperationProgress,
-  const TOverwriteFileParams * FileParams, int Params, bool AutoResume,
-  unsigned int &Answer)
+  const TOverwriteFileParams * FileParams, intptr_t Params, bool AutoResume,
+  uintptr_t & Answer)
 {
   bool Result;
   bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
@@ -12661,7 +12661,7 @@ bool TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & FileName,
     // retry = "resume"
     // all = "yes to newer"
     // ignore = "rename"
-    int Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
+    intptr_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
     if (CanResume)
     {
       Answers |= qaRetry;
@@ -12742,7 +12742,7 @@ bool TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & FileName,
 
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & FileName,
-  const TRemoteFile * File, const UnicodeString & Command, int Params, TCaptureOutputEvent OutputEvent)
+  const TRemoteFile * File, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent)
 {
   assert(File);
   bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
@@ -12790,7 +12790,7 @@ void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & Path,
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
   const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
-  int Params, TFileOperationProgressType * OperationProgress,
+  intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
   assert((FilesToCopy != NULL) && (OperationProgress != NULL));
@@ -12847,8 +12847,8 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::WebDAVSourceRobust(const UnicodeString & FileName,
   const TRemoteFile * File,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, unsigned int Flags)
+  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
+  TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   bool Retry = false;
 
@@ -12888,8 +12888,8 @@ void TWebDAVFileSystem::WebDAVSourceRobust(const UnicodeString & FileName,
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
   const TRemoteFile * File,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, unsigned int Flags,
+  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
+  TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TUploadSessionAction & Action)
 {
   UnicodeString RealFileName = File ? File->GetFileName() : FileName;
@@ -12904,7 +12904,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
     TRemoteFile * File = FTerminal->FFiles->FindFile(FileNameOnly);
     if (File != NULL)
     {
-      unsigned int Answer = 0;
+      uintptr_t Answer = 0;
       if (File->GetIsDirectory())
       {
         UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, RealFileName.c_str());
@@ -13069,7 +13069,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryName,
   const UnicodeString & TargetDir, int Attrs, const TCopyParamType * CopyParam,
-  int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags)
+  intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
     ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
@@ -13211,7 +13211,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
-  int Params, TFileOperationProgressType * OperationProgress,
+  intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
   Params &= ~cpAppend;
@@ -13262,8 +13262,8 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::SinkRobust(const UnicodeString & FileName,
   const TRemoteFile * File, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, unsigned int Flags)
+  const TCopyParamType * CopyParam, intptr_t Params,
+  TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   // the same in TSFTPFileSystem
   bool Retry;
@@ -13307,8 +13307,8 @@ void TWebDAVFileSystem::SinkRobust(const UnicodeString & FileName,
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
   const TRemoteFile * File, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, unsigned int Flags,
+  const TCopyParamType * CopyParam, intptr_t Params,
+  TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TDownloadSessionAction & Action)
 {
   UnicodeString FileNameOnly = UnixExtractFileName(FileName);
@@ -13338,7 +13338,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
     bool CanProceed = true;
     if (::DirectoryExists(DestFullName))
     {
-      unsigned int Answer = 0;
+      uintptr_t Answer = 0;
       UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly.c_str());
       TQueryParams QueryParams(qpNeverAskAgainCheck);
       SUSPEND_OPERATION (
@@ -13415,7 +13415,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       FileParams.DestTimestamp = UnixToDateTime(MTime,
         FTerminal->GetSessionData()->GetDSTMode());
 
-      unsigned int Answer = 0;
+      uintptr_t Answer = 0;
       TOverwriteMode OverwriteMode = omOverwrite;
       bool AutoResume = false;
       ConfirmOverwrite(DestFullName, OverwriteMode, OperationProgress,
@@ -13500,7 +13500,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
     // If file is directory, do not delete it recursively, because it should be
     // empty already. If not, it should not be deleted (some files were
     // skipped or some new files were copied to it, while we were downloading)
-    int Params = dfNoRecursive;
+    intptr_t Params = dfNoRecursive;
     FTerminal->DeleteFile(FileName, File, &Params);
   }
 }
@@ -14069,7 +14069,7 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
   *ssl_authority_file = apr_pstrdup(pool, AnsiString(Data->GetPublicKeyFile()).c_str());
 
   {
-    int l_proxy_port = Data->GetProxyPort();
+    intptr_t l_proxy_port = Data->GetProxyPort();
     if (l_proxy_port < 0)
     {
       return webdav::error_create(WEBDAV_ERR_ILLEGAL_URL, NULL,
@@ -14081,15 +14081,15 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
         "Invalid URL: proxy port number greater "
         "than maximum TCP port number 65535");
     }
-    *proxy_port = l_proxy_port;
+    *proxy_port = static_cast<int>(l_proxy_port);
   }
 
   {
-    int l_timeout = Data->GetTimeout();
+    intptr_t l_timeout = Data->GetTimeout();
     if (l_timeout < 0)
       return webdav::error_create(WEBDAV_ERR_BAD_CONFIG_VALUE, NULL,
         "Invalid config: negative timeout value");
-    *timeout_seconds = l_timeout;
+    *timeout_seconds = static_cast<int>(l_timeout);
   }
 
   if (l_debug)
@@ -14118,7 +14118,7 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
 //------------------------------------------------------------------------------
 webdav::error_t TWebDAVFileSystem::VerifyCertificate(
   const char * Prompt, const char * fingerprint,
-  unsigned int & RequestResult)
+  uintptr_t & RequestResult)
 {
   RequestResult = 0;
   TClipboardHandler ClipboardHandler;
@@ -14134,7 +14134,7 @@ webdav::error_t TWebDAVFileSystem::VerifyCertificate(
   Params.NoBatchAnswers = qaYes | qaRetry;
   Params.Aliases = Aliases;
   Params.AliasesCount = LENOF(Aliases);
-  unsigned int Answer = FTerminal->QueryUser(
+  uintptr_t Answer = FTerminal->QueryUser(
     FMTLOAD(VERIFY_CERT_PROMPT2, UnicodeString(Prompt).c_str()),
     NULL, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
   RequestResult = Answer;
@@ -14149,7 +14149,7 @@ webdav::error_t TWebDAVFileSystem::VerifyCertificate(
 }
 //------------------------------------------------------------------------------
 webdav::error_t TWebDAVFileSystem::AskForClientCertificateFilename(
-  const char ** cert_file, unsigned int & RequestResult,
+  const char ** cert_file, uintptr_t & RequestResult,
   apr_pool_t * pool)
 {
   RequestResult = 0;
@@ -14168,7 +14168,7 @@ webdav::error_t TWebDAVFileSystem::AskForClientCertificateFilename(
 }
 //------------------------------------------------------------------------------
 webdav::error_t TWebDAVFileSystem::AskForUsername(
-  const char ** user_name, unsigned int & RequestResult,
+  const char ** user_name, uintptr_t & RequestResult,
   apr_pool_t * pool)
 {
   RequestResult = 0;
@@ -14188,7 +14188,7 @@ webdav::error_t TWebDAVFileSystem::AskForUsername(
 //------------------------------------------------------------------------------
 webdav::error_t TWebDAVFileSystem::AskForUserPassword(
   const char ** password,
-  unsigned int & RequestResult,
+  uintptr_t & RequestResult,
   apr_pool_t * pool)
 {
   RequestResult = 0;
@@ -14209,7 +14209,7 @@ webdav::error_t TWebDAVFileSystem::AskForUserPassword(
 webdav::error_t TWebDAVFileSystem::AskForPassphrase(
   const char ** passphrase,
   const char * realm,
-  unsigned int & RequestResult,
+  uintptr_t & RequestResult,
   apr_pool_t * pool)
 {
   RequestResult = 0;
@@ -14231,14 +14231,14 @@ webdav::error_t TWebDAVFileSystem::AskForPassphrase(
 webdav::error_t TWebDAVFileSystem::SimplePrompt(
   const char * prompt_text,
   const char * prompt_string,
-  unsigned int & RequestResult)
+  uintptr_t & RequestResult)
 {
   RequestResult = 0;
   TStrings * MoreMessages = new TStringList();
   TRY_FINALLY (
   {
     MoreMessages->Add(UnicodeString(prompt_string));
-    unsigned int Answer = FTerminal->QueryUser(
+    uintptr_t Answer = FTerminal->QueryUser(
       UnicodeString(prompt_text),
       MoreMessages, qaYes | qaNo | qaCancel, NULL, qtConfirmation);
     RequestResult = Answer;
@@ -14259,9 +14259,9 @@ webdav::error_t TWebDAVFileSystem::CreateStorage(
   return WEBDAV_NO_ERROR;
 }
 //------------------------------------------------------------------------------
-uintptr_t TWebDAVFileSystem::AdjustToCPSLimit(uintptr_t len)
+uintptr_t TWebDAVFileSystem::AdjustToCPSLimit(uintptr_t Len)
 {
-  return FCurrentOperationProgress ? (uintptr_t)FCurrentOperationProgress->AdjustToCPSLimit(static_cast<unsigned long>(len)) : len;
+  return FCurrentOperationProgress ? (uintptr_t)FCurrentOperationProgress->AdjustToCPSLimit(Len) : Len;
 }
 //------------------------------------------------------------------------------
 bool TWebDAVFileSystem::GetIsCancelled()

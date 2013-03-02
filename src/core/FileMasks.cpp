@@ -112,12 +112,12 @@ bool IsEffectiveFileNameMask(const UnicodeString & Mask)
 //---------------------------------------------------------------------------
 UnicodeString DelimitFileNameMask(UnicodeString Mask)
 {
-  for (int i = 1; i <= Mask.Length(); i++)
+  for (intptr_t I = 1; I <= Mask.Length(); I++)
   {
-    if (wcschr(L"\\*?", Mask[i]) != NULL)
+    if (wcschr(L"\\*?", Mask[I]) != NULL)
     {
-      Mask.Insert(L"\\", i);
-      i++;
+      Mask.Insert(L"\\", I);
+      I++;
     }
   }
   return Mask;
@@ -167,7 +167,7 @@ UnicodeString TFileMasks::ComposeMaskStr(
     UnicodeString Str = MasksStr->Strings[I].Trim();
     if (!Str.IsEmpty())
     {
-      for (int P = 1; P <= Str.Length(); P++)
+      for (intptr_t P = 1; P <= Str.Length(); P++)
       {
         if (Str.IsDelimiter(AllFileMasksDelimiters, P))
         {

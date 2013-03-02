@@ -39,8 +39,8 @@ public:
   virtual ~TFarDialog();
 
   intptr_t ShowModal();
-  void ShowGroup(int Group, bool Show);
-  void EnableGroup(int Group, bool Enable);
+  void ShowGroup(intptr_t Group, bool Show);
+  void EnableGroup(intptr_t Group, bool Enable);
 
   TRect GetBounds() const { return FBounds; }
   TRect GetClientRect() const;
@@ -107,7 +107,7 @@ protected:
   void BreakSynchronize();
   void Synchronize(TThreadMethod Method);
   void Close(TFarButton * Button);
-  void ProcessGroup(int Group, TFarProcessGroupEvent Callback, void * Arg);
+  void ProcessGroup(intptr_t Group, TFarProcessGroupEvent Callback, void * Arg);
   void ShowItem(TFarDialogItem * Item, void * Arg);
   void EnableItem(TFarDialogItem * Item, void * Arg);
   bool ChangesLocked();
@@ -134,8 +134,8 @@ private:
   TFarDialogItem * FItemFocused;
   TFarKeyEvent FOnKey;
   FarDialogItem * FDialogItems;
-  int FDialogItemsCapacity;
-  int FChangesLocked;
+  intptr_t FDialogItemsCapacity;
+  intptr_t FChangesLocked;
   bool FChangesPending;
   intptr_t FResult;
   bool FNeedsSynchronize;
@@ -415,8 +415,8 @@ public:
 
   virtual UnicodeString GetText() { return GetData(); }
   virtual void SetText(const UnicodeString & Value) { SetData(Value); }
-  int GetAsInteger();
-  void SetAsInteger(int Value);
+  intptr_t GetAsInteger();
+  void SetAsInteger(intptr_t Value);
   virtual bool GetPassword() { return GetAlterType(DI_PSWEDIT); }
   virtual void SetPassword(bool Value) { SetAlterType(DI_PSWEDIT, Value); }
   virtual bool GetFixed() { return GetAlterType(DI_FIXEDIT); }

@@ -34,7 +34,7 @@
 //------------------------------------------------------------------------------
 #define COMMAND_ERROR_ARI(MESSAGE, REPEAT) \
   { \
-    unsigned int Result = CommandError(&E, MESSAGE, qaRetry | qaSkip | qaAbort); \
+    uintptr_t Result = CommandError(&E, MESSAGE, qaRetry | qaSkip | qaAbort); \
     switch (Result) { \
       case qaRetry: { REPEAT; } break; \
       case qaAbort: Abort(); \
@@ -44,7 +44,7 @@
 // Note that the action may already be canceled when RollbackAction is called
 #define COMMAND_ERROR_ARI_ACTION(MESSAGE, REPEAT, ACTION) \
   { \
-    unsigned int Result; \
+    uintptr_t Result; \
     try \
     { \
       Result = CommandError(&E, MESSAGE, qaRetry | qaSkip | qaAbort); \
@@ -283,11 +283,11 @@ public:
   explicit TTunnelUI(TTerminal * Terminal);
   virtual ~TTunnelUI() {}
   virtual void Information(const UnicodeString & Str, bool Status);
-  virtual unsigned int QueryUser(const UnicodeString & Query,
-    TStrings * MoreMessages, unsigned int Answers, const TQueryParams * Params,
+  virtual uintptr_t QueryUser(const UnicodeString & Query,
+    TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType);
-  virtual unsigned int QueryUserException(const UnicodeString & Query,
-    Exception * E, unsigned int Answers, const TQueryParams * Params,
+  virtual uintptr_t QueryUserException(const UnicodeString & Query,
+    Exception * E, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType);
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
@@ -316,11 +316,11 @@ void TTunnelUI::Information(const UnicodeString & Str, bool Status)
   }
 }
 //------------------------------------------------------------------------------
-unsigned int TTunnelUI::QueryUser(const UnicodeString & Query,
-  TStrings * MoreMessages, unsigned int Answers, const TQueryParams * Params,
+uintptr_t TTunnelUI::QueryUser(const UnicodeString & Query,
+  TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
-  intptr_t Result;
+  uintptr_t Result;
   if (GetCurrentThreadId() == FTerminalThread)
   {
     Result = FTerminal->QueryUser(Query, MoreMessages, Answers, Params, QueryType);
@@ -329,15 +329,15 @@ unsigned int TTunnelUI::QueryUser(const UnicodeString & Query,
   {
     Result = AbortAnswer(static_cast<intptr_t>(Answers));
   }
-  return static_cast<unsigned int>(Result);
+  return Result;
 }
 //------------------------------------------------------------------------------
-unsigned int TTunnelUI::QueryUserException(const UnicodeString & Query,
-  Exception * E, unsigned int Answers, const TQueryParams * Params,
+uintptr_t TTunnelUI::QueryUserException(const UnicodeString & Query,
+  Exception * E, uintptr_t Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
   CALLSTACK;
-  intptr_t Result;
+  uintptr_t Result;
   if (GetCurrentThreadId() == FTerminalThread)
   {
     Result = FTerminal->QueryUserException(Query, E, Answers, Params, QueryType);
@@ -346,7 +346,7 @@ unsigned int TTunnelUI::QueryUserException(const UnicodeString & Query,
   {
     Result = AbortAnswer(static_cast<intptr_t>(Answers));
   }
-  return static_cast<unsigned int>(Result);
+  return Result;
 }
 //------------------------------------------------------------------------------
 bool TTunnelUI::PromptUser(TSessionData * Data, TPromptKind Kind,
@@ -970,7 +970,7 @@ void TTerminal::Open()
   TRACE("/");
 }
 //------------------------------------------------------------------------------
-bool TTerminal::IsListenerFree(unsigned int PortNumber)
+bool TTerminal::IsListenerFree(uintptr_t PortNumber)
 {
   SOCKET Socket = socket(AF_INET, SOCK_STREAM, 0);
   bool Result = (Socket != INVALID_SOCKET);
@@ -1091,7 +1091,7 @@ void TTerminal::Closed()
   FStatus = ssClosed;
 }
 //------------------------------------------------------------------------------
-void TTerminal::Reopen(int Params)
+void TTerminal::Reopen(intptr_t Params)
 {
   CALLSTACK;
   TFSProtocol OrigFSProtocol = GetSessionData()->GetFSProtocol();
@@ -1220,13 +1220,13 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   return AResult;
 }
 //------------------------------------------------------------------------------
-unsigned int TTerminal::QueryUser(const UnicodeString & Query,
-  TStrings * MoreMessages, unsigned int Answers, const TQueryParams * Params,
+uintptr_t TTerminal::QueryUser(const UnicodeString & Query,
+  TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
   CALLSTACK;
   LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), MoreMessages ? MoreMessages->CommaText.get().c_str() : L""));
-  unsigned int Answer = AbortAnswer(Answers);
+  uintptr_t Answer = AbortAnswer(Answers);
   if (FOnQueryUser)
   {
     TCallbackGuard Guard(this);
@@ -1237,12 +1237,12 @@ unsigned int TTerminal::QueryUser(const UnicodeString & Query,
   return Answer;
 }
 //------------------------------------------------------------------------------
-unsigned int TTerminal::QueryUserException(const UnicodeString & Query,
-  Exception * E, unsigned int Answers, const TQueryParams * Params,
+uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
+  Exception * E, uintptr_t Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
   CALLSTACK;
-  unsigned int Result;
+  intptr_t Result = 0;
   TStrings * MoreMessages = new TStringList();
   TRY_FINALLY (
   {
@@ -1464,7 +1464,7 @@ bool TTerminal::DoQueryReopen(Exception * E)
   }
   else
   {
-    int NumberOfRetries = FSessionData->GetNumberOfRetries();
+    intptr_t NumberOfRetries = FSessionData->GetNumberOfRetries();
     if (NumberOfRetries >= FConfiguration->GetSessionReopenAutoMaximumNumberOfRetries())
     {
       LogEvent(FORMAT(L"Reached maximum number of retries: %d", FConfiguration->GetSessionReopenAutoMaximumNumberOfRetries()));
@@ -1496,7 +1496,7 @@ bool TTerminal::DoQueryReopen(Exception * E)
   return Result;
 }
 //------------------------------------------------------------------------------
-bool TTerminal::QueryReopen(Exception * E, int Params,
+bool TTerminal::QueryReopen(Exception * E, intptr_t Params,
   TFileOperationProgressType * OperationProgress)
 {
   CALLSTACK;
@@ -1546,7 +1546,7 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
   CALLSTACK;
   bool Result = false;
   GetLog()->AddException(&E);
-  unsigned int Answer;
+  uintptr_t Answer;
 
   if (AllowSkip && OperationProgress->SkipToAll)
   {
@@ -1555,7 +1555,7 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
   }
   else
   {
-    int Answers = qaRetry | qaAbort |
+    uintptr_t Answers = qaRetry | qaAbort |
       FLAGMASK(AllowSkip, (qaSkip | qaAll)) |
       FLAGMASK(!SpecialRetry.IsEmpty(), qaYes);
     TQueryParams Params(qpAllowContinueOnError | FLAGMASK(!AllowSkip, qpFatalAbort));
@@ -2021,14 +2021,14 @@ void TTerminal::CommandError(Exception * E, const UnicodeString & Msg)
   TRACE("/");
 }
 //------------------------------------------------------------------------------
-unsigned int TTerminal::CommandError(Exception * E, const UnicodeString & Msg,
-  unsigned int Answers)
+uintptr_t TTerminal::CommandError(Exception * E, const UnicodeString & Msg,
+  uintptr_t Answers)
 {
   CALLSTACK;
   // may not be, particularly when TTerminal::Reopen is being called
   // from within OnShowExtendedException handler
   assert(FCallbackGuard == NULL);
-  unsigned int Result = 0;
+  uintptr_t Result = 0;
   if (E && (dynamic_cast<EFatal *>(E) != NULL))
   {
     FatalError(E, Msg);
@@ -2112,7 +2112,7 @@ void TTerminal::CloseOnCompletion(TOnceDoneOperation Operation, const UnicodeStr
 }
 //------------------------------------------------------------------------------
 TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
-  int Params, TFileOperationProgressType * OperationProgress, bool Special)
+  intptr_t Params, TFileOperationProgressType * OperationProgress, bool Special)
 {
   TBatchOverwrite Result;
   if (Special && FLAGSET(Params, cpResume))
@@ -2146,18 +2146,18 @@ TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
   return Result;
 }
 //------------------------------------------------------------------------------
-bool TTerminal::CheckRemoteFile(int Params, TFileOperationProgressType * OperationProgress)
+bool TTerminal::CheckRemoteFile(intptr_t Params, TFileOperationProgressType * OperationProgress)
 {
   return (EffectiveBatchOverwrite(Params, OperationProgress, true) != boAll);
 }
 //------------------------------------------------------------------------------
-unsigned int TTerminal::ConfirmFileOverwrite(const UnicodeString & FileName,
-  const TOverwriteFileParams * FileParams, unsigned int Answers, const TQueryParams * QueryParams,
-  TOperationSide Side, int Params, TFileOperationProgressType * OperationProgress,
+uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & FileName,
+  const TOverwriteFileParams * FileParams, uintptr_t Answers, const TQueryParams * QueryParams,
+  TOperationSide Side, intptr_t Params, TFileOperationProgressType * OperationProgress,
   UnicodeString Message)
 {
   CALLSTACK;
-  unsigned int Result = 0;
+  uintptr_t Result = 0;
   // duplicated in TSFTPFileSystem::SFTPConfirmOverwrite
   bool CanAlternateResume =
     (FileParams != NULL) &&
@@ -3067,7 +3067,7 @@ bool TTerminal::GetResolvingSymlinks()
   return GetSessionData()->GetResolveSymlinks() && GetIsCapable(fcResolveSymlink);
 }
 //------------------------------------------------------------------------------
-TUsableCopyParamAttrs TTerminal::UsableCopyParamAttrs(int Params)
+TUsableCopyParamAttrs TTerminal::UsableCopyParamAttrs(intptr_t Params)
 {
   TUsableCopyParamAttrs Result;
   Result.General =
@@ -3146,7 +3146,7 @@ void TTerminal::DeleteFile(const UnicodeString & FileName,
     if (GetOperationProgress()->Cancel != csContinue) { Abort(); }
     GetOperationProgress()->SetFile(LocalFileName);
   }
-  int Params = (AParams != NULL) ? *(static_cast<int*>(AParams)) : 0;
+  intptr_t Params = (AParams != NULL) ? *(static_cast<int*>(AParams)) : 0;
   bool Recycle =
     FLAGCLEAR(Params, dfForceDelete) &&
     (GetSessionData()->GetDeleteToRecycleBin() != FLAGSET(Params, dfAlternative)) &&
@@ -3165,7 +3165,7 @@ void TTerminal::DeleteFile(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 void TTerminal::DoDeleteFile(const UnicodeString & FileName,
-  const TRemoteFile * File, int Params)
+  const TRemoteFile * File, intptr_t Params)
 {
   CALLSTACK;
   TRmSessionAction Action(GetActionLog(), AbsolutePath(FileName, true));
@@ -3186,7 +3186,7 @@ void TTerminal::DoDeleteFile(const UnicodeString & FileName,
   }
 }
 //------------------------------------------------------------------------------
-bool TTerminal::DeleteFiles(TStrings * FilesToDelete, int Params)
+bool TTerminal::DeleteFiles(TStrings * FilesToDelete, intptr_t Params)
 {
   CALLSTACK;
   // TODO: avoid resolving symlinks while reading subdirectories.
@@ -3211,7 +3211,7 @@ void TTerminal::DeleteLocalFile(const UnicodeString & FileName,
   }
 }
 //------------------------------------------------------------------------------
-bool TTerminal::DeleteLocalFiles(TStrings * FileList, int Params)
+bool TTerminal::DeleteLocalFiles(TStrings * FileList, intptr_t Params)
 {
   CALLSTACK;
   return ProcessFiles(FileList, foDelete, MAKE_CALLBACK(TTerminal::DeleteLocalFile, this), &Params, osLocal);
@@ -3240,7 +3240,7 @@ void TTerminal::CustomCommandOnFile(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 void TTerminal::DoCustomCommandOnFile(UnicodeString FileName,
-  const TRemoteFile * File, UnicodeString Command, int Params,
+  const TRemoteFile * File, UnicodeString Command, intptr_t Params,
   TCaptureOutputEvent OutputEvent)
 {
   CALLSTACK;
@@ -3274,7 +3274,7 @@ void TTerminal::DoCustomCommandOnFile(UnicodeString FileName,
 }
 //------------------------------------------------------------------------------
 void TTerminal::CustomCommandOnFiles(UnicodeString Command,
-  int Params, TStrings * Files, TCaptureOutputEvent OutputEvent)
+  intptr_t Params, TStrings * Files, TCaptureOutputEvent OutputEvent)
 {
   CALLSTACK;
   if (!TRemoteCustomCommand().IsFileListCommand(Command))
@@ -3505,7 +3505,7 @@ void TTerminal::DoCalculateDirectorySize(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 void TTerminal::CalculateFilesSize(TStrings * FileList,
-  __int64 & Size, int Params, const TCopyParamType * CopyParam,
+  __int64 & Size, intptr_t Params, const TCopyParamType * CopyParam,
   TCalculateSizeStats * Stats)
 {
   CALLSTACK;
@@ -3557,7 +3557,7 @@ void TTerminal::RenameFile(const TRemoteFile * File,
         QuestionFmt = LoadStr(PROMPT_FILE_OVERWRITE);
       }
       TQueryParams Params(qpNeverAskAgainCheck);
-      unsigned int Result = QueryUser(FORMAT(QuestionFmt.c_str(), NewName.c_str()), NULL,
+      intptr_t Result = QueryUser(FORMAT(QuestionFmt.c_str(), NewName.c_str()), NULL,
         qaYes | qaNo, &Params);
       if (Result == qaNeverAskAgain)
       {
@@ -4077,7 +4077,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
           else if ((OperationProgress->BatchOverwrite != boAll) && !NoConfirmation)
           {
             TRACE("6");
-            unsigned int Answer;
+            uintptr_t Answer;
             SUSPEND_OPERATION
             (
               Answer = QueryUser(
@@ -4402,7 +4402,7 @@ struct TSynchronizeFileData
   TSynchronizeChecklist::TItem::TFileInfo Info;
   TSynchronizeChecklist::TItem::TFileInfo MatchingRemoteFile;
   TRemoteFile * MatchingRemoteFileFile;
-  int MatchingRemoteFileImageIndex;
+  intptr_t MatchingRemoteFileImageIndex;
   FILETIME LocalLastWriteTime;
 };
 //------------------------------------------------------------------------------
@@ -4412,7 +4412,7 @@ struct TSynchronizeData
   UnicodeString LocalDirectory;
   UnicodeString RemoteDirectory;
   TTerminal::TSynchronizeMode Mode;
-  int Params;
+  intptr_t Params;
   TSynchronizeDirectoryEvent OnSynchronizeDirectory;
   TSynchronizeOptions * Options;
   int Flags;
@@ -4423,7 +4423,7 @@ struct TSynchronizeData
 //------------------------------------------------------------------------------
 TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & LocalDirectory,
   const UnicodeString & RemoteDirectory, TSynchronizeMode Mode,
-  const TCopyParamType * CopyParam, int Params,
+  const TCopyParamType * CopyParam, intptr_t Params,
   TSynchronizeDirectoryEvent OnSynchronizeDirectory,
   TSynchronizeOptions * Options)
 {
@@ -4450,7 +4450,7 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & Loca
 //------------------------------------------------------------------------------
 void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirectory,
   const UnicodeString & RemoteDirectory, TSynchronizeMode Mode,
-  const TCopyParamType * CopyParam, int Params,
+  const TCopyParamType * CopyParam, intptr_t Params,
   TSynchronizeDirectoryEvent OnSynchronizeDirectory, TSynchronizeOptions * Options,
   int Flags, TSynchronizeChecklist * Checklist)
 {
@@ -4914,7 +4914,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
 //------------------------------------------------------------------------------
 void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
   const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
-  const TCopyParamType * CopyParam, int Params,
+  const TCopyParamType * CopyParam, intptr_t Params,
   TSynchronizeDirectoryEvent OnSynchronizeDirectory)
 {
   CALLSTACK;
@@ -5310,7 +5310,7 @@ bool TTerminal::GetStoredCredentialsTried()
 }
 //------------------------------------------------------------------------------
 bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params)
+  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params)
 {
   CALLSTACK;
   assert(FFileSystem);
@@ -5406,7 +5406,7 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
 }
 //------------------------------------------------------------------------------
 bool TTerminal::CopyToLocal(TStrings * FilesToCopy,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params)
+  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params)
 {
   CALLSTACK;
   assert(FFileSystem);
@@ -5830,7 +5830,7 @@ UnicodeString GetSessionUrl(const TTerminal * Terminal)
   const TSessionInfo & SessionInfo = Terminal->GetSessionInfo() ;
   UnicodeString Protocol = SessionInfo.ProtocolBaseName;
   UnicodeString HostName = Terminal->GetSessionData()->GetHostNameExpanded();
-  int Port = Terminal->GetSessionData()->GetPortNumber();
+  intptr_t Port = Terminal->GetSessionData()->GetPortNumber();
   UnicodeString SessionUrl = FORMAT(L"%s://%s:%d", Protocol.Lower().c_str(), HostName.c_str(), Port);
   return SessionUrl;
 }

@@ -13,10 +13,10 @@ class TFileBuffer
 public:
   TFileBuffer();
   virtual ~TFileBuffer();
-  void Convert(char * Source, char * Dest, int Params, bool & Token);
-  void Convert(TEOLType Source, TEOLType Dest, int Params, bool & Token);
-  void Convert(char * Source, TEOLType Dest, int Params, bool & Token);
-  void Convert(TEOLType Source, char * Dest, int Params, bool & Token);
+  void Convert(char * Source, char * Dest, intptr_t Params, bool & Token);
+  void Convert(TEOLType Source, TEOLType Dest, intptr_t Params, bool & Token);
+  void Convert(char * Source, TEOLType Dest, intptr_t Params, bool & Token);
+  void Convert(TEOLType Source, char * Dest, intptr_t Params, bool & Token);
   void Insert(__int64 Index, const char * Buf, size_t Len);
   void Delete(__int64 Index, size_t Len);
   __int64 LoadStream(TStream * Stream, const __int64 Len, bool ForceLen);

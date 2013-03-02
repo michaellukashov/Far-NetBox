@@ -37,8 +37,8 @@ public:
   UnicodeString GetName() const { return FName; }
   void SetName(const UnicodeString & Value) { FName = Value; }
   bool GetNameValid() const;
-  unsigned int GetID() const { return FID; }
-  void SetID(unsigned int Value);
+  intptr_t GetID() const { return FID; }
+  void SetID(intptr_t Value);
   bool GetIDValid() const { return FIDValid; }
   bool GetIsSet() const;
   UnicodeString GetLogText() const;
@@ -46,7 +46,7 @@ public:
 
 private:
   UnicodeString FName;
-  unsigned int FID;
+  intptr_t FID;
   bool FIDValid;
 };
 //---------------------------------------------------------------------------
@@ -68,7 +68,7 @@ public:
 private:
   typedef std::vector<TRemoteToken> TTokens;
   typedef std::map<UnicodeString, size_t> TNameMap;
-  typedef std::map<unsigned int, size_t> TIDMap;
+  typedef std::map<intptr_t, size_t> TIDMap;
   TTokens FTokens;
   TNameMap FNameMap;
   TIDMap FIDMap;

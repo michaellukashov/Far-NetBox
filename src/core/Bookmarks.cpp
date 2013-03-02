@@ -233,9 +233,9 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
 void TBookmarks::ModifyAll(bool Modify)
 {
   TBookmarkList * BookmarkList;
-  for (int i = 0; i < FBookmarkLists->GetCount(); i++)
+  for (intptr_t I = 0; I < FBookmarkLists->GetCount(); I++)
   {
-    BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->Objects[i]);
+    BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->Objects[I]);
     assert(BookmarkList);
     BookmarkList->SetModified(Modify);
   }
@@ -301,9 +301,9 @@ TBookmarkList::~TBookmarkList()
 //---------------------------------------------------------------------------
 void TBookmarkList::Clear()
 {
-  for (int i = 0; i < FBookmarks->GetCount(); i++)
+  for (intptr_t I = 0; I < FBookmarks->GetCount(); I++)
   {
-    delete FBookmarks->Objects[i];
+    delete FBookmarks->Objects[I];
   }
   FBookmarks->Clear();
   FOpenedNodes->Clear();
@@ -316,10 +316,10 @@ void TBookmarkList::Assign(TPersistent * Source)
   if (SourceList)
   {
     Clear();
-    for (int i = 0; i < SourceList->FBookmarks->GetCount(); i++)
+    for (intptr_t I = 0; I < SourceList->FBookmarks->GetCount(); I++)
     {
       TBookmark * Bookmark = new TBookmark();
-      Bookmark->Assign(dynamic_cast<TBookmark *>(SourceList->FBookmarks->Objects[i]));
+      Bookmark->Assign(dynamic_cast<TBookmark *>(SourceList->FBookmarks->Objects[I]));
       Add(Bookmark);
     }
     FOpenedNodes->Assign(SourceList->FOpenedNodes);

@@ -541,7 +541,7 @@ int TRemoteToken::Compare(const TRemoteToken & rht) const
   return Result;
 }
 //---------------------------------------------------------------------------
-void TRemoteToken::SetID(unsigned int Value)
+void TRemoteToken::SetID(intptr_t Value)
 {
   FID = Value;
   FIDValid = true;
@@ -565,7 +565,7 @@ UnicodeString TRemoteToken::GetDisplayText() const
   }
   else if (FIDValid)
   {
-    return IntToStr(static_cast<int>(FID));
+    return IntToStr(FID);
   }
   else
   {
@@ -1086,7 +1086,8 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
 
       bool FullTime = false;
       bool DayMonthFormat = false;
-      Word Day, Month, Year, Hour, Min, Sec, P;
+      Word Day, Month, Year, Hour, Min, Sec;
+      intptr_t P;
 
       GETCOL;
       // format dd mmm or mmm dd ?
@@ -1113,7 +1114,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         Min = static_cast<Word>(Col.SubString(4, 2).ToInt());
         if (Col.Length() >= 8)
         {
-          Sec = (Word)StrToInt(Col.SubString(7, 2));
+          Sec = static_cast<Word>(Sysutils::StrToInt(Col.SubString(7, 2)));
         }
         else
         {
@@ -1146,7 +1147,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         if (Day == 0)
         {
           GETNCOL;
-          Day = (Word)StrToInt(Col);
+          Day = static_cast<Word>(Sysutils::StrToInt(Col));
         }
         if ((Day < 1) || (Day > 31)) { Abort(); }
 
@@ -1159,13 +1160,13 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           {
             Abort();
           }
-          Hour = (Word)StrToInt(Col.SubString(1, 2));
-          Min = (Word)StrToInt(Col.SubString(4, 2));
-          Sec = (Word)StrToInt(Col.SubString(7, 2));
+          Hour = static_cast<Word>(Sysutils::StrToInt(Col.SubString(1, 2)));
+          Min = static_cast<Word>(Sysutils::StrToInt(Col.SubString(4, 2)));
+          Sec = static_cast<Word>(Sysutils::StrToInt(Col.SubString(7, 2)));
           FModificationFmt = mfFull;
           // do not trim leading space of filename
           GETNCOL;
-          Year = (Word)StrToInt(Col);
+          Year = static_cast<Word>(Sysutils::StrToInt(Col));
         }
         else
         {
@@ -1189,8 +1190,8 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           if ((P = static_cast<Word>(Col.Pos(L':'))) > 0)
           {
             Word CurrMonth, CurrDay;
-            Hour = static_cast<Word>(StrToInt(Col.SubString(1, P-1)));
-            Min = static_cast<Word>(StrToInt(Col.SubString(P+1, Col.Length() - P)));
+            Hour = static_cast<Word>(Sysutils::StrToInt(Col.SubString(1, P-1)));
+            Min = static_cast<Word>(Sysutils::StrToInt(Col.SubString(P+1, Col.Length() - P)));
             if ((Hour > 23) || (Min > 59)) Abort();
             // When we don't got year, we assume current year
             // with exception that the date would be in future
@@ -1206,7 +1207,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           }
             else
           {
-            Year = (Word)StrToInt(Col);
+            Year = static_cast<Word>(Sysutils::StrToInt(Col));
             if (Year > 10000) Abort();
             // When we don't got time we assume midnight
             Hour = 0; Min = 0; Sec = 0;
@@ -2280,9 +2281,9 @@ void TRights::SetOctal(const UnicodeString & Value)
     bool Correct = (AValue.Length() == 4);
     if (Correct)
     {
-      for (int i = 1; (i <= AValue.Length()) && Correct; i++)
+      for (intptr_t I = 1; (I <= AValue.Length()) && Correct; I++)
       {
-        Correct = (AValue[i] >= L'0') && (AValue[i] <= L'7');
+        Correct = (AValue[I] >= L'0') && (AValue[I] <= L'7');
       }
     }
 

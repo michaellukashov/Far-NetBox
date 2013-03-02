@@ -46,21 +46,21 @@ public:
     TCalculatedChecksumEvent OnCalculatedChecksum);
   virtual void CopyToLocal(TStrings * FilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
+    intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CopyToRemote(TStrings * FilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
+    intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CreateDirectory(const UnicodeString & DirName);
   virtual void CreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic);
   virtual void DeleteFile(const UnicodeString & FileName,
-    const TRemoteFile * File, int Params, TRmSessionAction & Action);
+    const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action);
   virtual void CustomCommandOnFile(const UnicodeString & FileName,
-    const TRemoteFile * File, const UnicodeString & Command, int Params, TCaptureOutputEvent OutputEvent);
+    const TRemoteFile * File, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
   virtual void DoStartup();
   virtual void HomeDirectory();
-  virtual bool IsCapable(int Capability) const;
+  virtual bool IsCapable(intptr_t Capability) const;
   virtual void LookupUsersGroups();
   virtual void ReadCurrentDirectory();
   virtual void ReadDirectory(TRemoteFileList * FileList);
@@ -95,30 +95,30 @@ protected:
 
   void Sink(const UnicodeString & FileName,
     const TRemoteFile * File, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags,
+    const TCopyParamType * CopyParam, intptr_t Params,
+    TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TDownloadSessionAction & Action);
   void SinkRobust(const UnicodeString & FileName,
     const TRemoteFile * File, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags);
+    const TCopyParamType * CopyParam, intptr_t Params,
+    TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   void SinkFile(const UnicodeString & FileName, const TRemoteFile * File, void * Param);
   void WebDAVSourceRobust(const UnicodeString & FileName,
     const TRemoteFile * File,
-    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags);
+    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
+    TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   void WebDAVSource(const UnicodeString & FileName,
     const TRemoteFile * File,
-    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags,
+    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
+    TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TUploadSessionAction & Action);
   void WebDAVDirectorySource(const UnicodeString & DirectoryName,
     const UnicodeString & TargetDir, int Attrs, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags);
+    intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   bool ConfirmOverwrite(UnicodeString & FileName,
     TOverwriteMode & OverwriteMode, TFileOperationProgressType * OperationProgress,
-    const TOverwriteFileParams * FileParams, int Params, bool AutoResume,
-    unsigned int &Answer);
+    const TOverwriteFileParams * FileParams, intptr_t Params, bool AutoResume,
+    uintptr_t & Answer);
   void ResetFileTransfer();
   void DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);
   void DoReadDirectory(TRemoteFileList * FileList);
@@ -178,29 +178,29 @@ public:
     apr_pool_t *pool);
   webdav::error_t VerifyCertificate(
     const char * Prompt, const char *fingerprint,
-    unsigned int & RequestResult);
+    uintptr_t & RequestResult);
   webdav::error_t AskForClientCertificateFilename(
-    const char **cert_file, unsigned int & RequestResult,
+    const char **cert_file, uintptr_t & RequestResult,
     apr_pool_t *pool);
   webdav::error_t AskForUsername(
     const char **user_name,
-    unsigned int & RequestResult,
+    uintptr_t & RequestResult,
     apr_pool_t *pool);
   webdav::error_t AskForUserPassword(
     const char **password, 
-    unsigned int & RequestResult,
+    uintptr_t & RequestResult,
     apr_pool_t *pool);
   webdav::error_t AskForPassphrase(
     const char **passphrase,
     const char *realm,
-    unsigned int & RequestResult,
+    uintptr_t & RequestResult,
     apr_pool_t *pool);
   webdav::error_t SimplePrompt(
     const char *prompt_text,
     const char *prompt_string,
-    unsigned int & RequestResult);
+    uintptr_t & RequestResult);
   webdav::error_t CreateStorage(THierarchicalStorage *& Storage);
-  uintptr_t AdjustToCPSLimit(uintptr_t len);
+  uintptr_t AdjustToCPSLimit(uintptr_t Len);
   bool GetIsCancelled();
 
 private:

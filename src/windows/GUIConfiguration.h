@@ -96,7 +96,7 @@ friend class TGUIConfiguration;
 public:
   explicit TCopyParamList();
   virtual ~TCopyParamList();
-  int Find(const TCopyParamRuleData & Value) const;
+  intptr_t Find(const TCopyParamRuleData & Value) const;
 
   void Load(THierarchicalStorage * Storage, intptr_t Count);
   void Save(THierarchicalStorage * Storage) const;
@@ -152,15 +152,15 @@ private:
   bool FPuttyPassword;
   bool FTelnetForFtpInPutty;
   UnicodeString FPuttySession;
-  int FSynchronizeParams;
-  int FSynchronizeOptions;
-  int FSynchronizeModeAuto;
-  int FSynchronizeMode;
-  int FMaxWatchDirectories;
+  intptr_t FSynchronizeParams;
+  intptr_t FSynchronizeOptions;
+  intptr_t FSynchronizeModeAuto;
+  intptr_t FSynchronizeMode;
+  intptr_t FMaxWatchDirectories;
   TDateTime FIgnoreCancelBeforeFinish;
   bool FQueueAutoPopup;
   bool FQueueRememberPassword;
-  int FQueueTransfersLimit;
+  intptr_t FQueueTransfersLimit;
   TGUICopyParamType FDefaultCopyParam;
   bool FBeepOnFinish;
   TDateTime FBeepOnFinishAfter;
@@ -170,9 +170,9 @@ private:
   bool FCopyParamListDefaults;
   UnicodeString FCopyParamCurrent;
   TRemoteProperties FNewDirectoryProperties;
-  int FKeepUpToDateChangeDelay;
+  intptr_t FKeepUpToDateChangeDelay;
   UnicodeString FChecksumAlg;
-  int FSessionReopenAutoIdle;
+  intptr_t FSessionReopenAutoIdle;
 
 protected:
   LCID FLocale;
@@ -201,7 +201,7 @@ public:
   TGUICopyParamType GetCurrentCopyParam();
   TGUICopyParamType GetCopyParamPreset(UnicodeString Name);
   bool GetHasCopyParamPreset(UnicodeString Name);
-  void SetCopyParamIndex(int Value);
+  void SetCopyParamIndex(intptr_t Value);
   void SetCopyParamCurrent(UnicodeString Value);
   void SetNewDirectoryProperties(const TRemoteProperties & Value);
   virtual void Saved();
@@ -218,18 +218,18 @@ public:
   void SetContinueOnError(bool Value) { FContinueOnError = Value; }
   bool GetConfirmCommandSession() { return FConfirmCommandSession; }
   void SetConfirmCommandSession(bool Value) { FConfirmCommandSession = Value; }
-  int GetSynchronizeParams() { return FSynchronizeParams; }
-  void SetSynchronizeParams(int Value) { FSynchronizeParams = Value; }
-  int GetSynchronizeOptions() { return FSynchronizeOptions; }
-  void SetSynchronizeOptions(int Value) { FSynchronizeOptions = Value; }
-  int GetSynchronizeModeAuto() { return FSynchronizeModeAuto; }
-  void SetSynchronizeModeAuto(int Value) { FSynchronizeModeAuto = Value; }
-  int GetSynchronizeMode() { return FSynchronizeMode; }
-  void SetSynchronizeMode(int Value) { FSynchronizeMode = Value; }
-  int GetMaxWatchDirectories() { return FMaxWatchDirectories; }
-  void SetMaxWatchDirectories(int Value) { FMaxWatchDirectories = Value; }
-  int GetQueueTransfersLimit() { return FQueueTransfersLimit; }
-  void SetQueueTransfersLimit(int Value) { FQueueTransfersLimit = Value; }
+  intptr_t GetSynchronizeParams() { return FSynchronizeParams; }
+  void SetSynchronizeParams(intptr_t Value) { FSynchronizeParams = Value; }
+  intptr_t GetSynchronizeOptions() { return FSynchronizeOptions; }
+  void SetSynchronizeOptions(intptr_t Value) { FSynchronizeOptions = Value; }
+  intptr_t GetSynchronizeModeAuto() { return FSynchronizeModeAuto; }
+  void SetSynchronizeModeAuto(intptr_t Value) { FSynchronizeModeAuto = Value; }
+  intptr_t GetSynchronizeMode() { return FSynchronizeMode; }
+  void SetSynchronizeMode(intptr_t Value) { FSynchronizeMode = Value; }
+  intptr_t GetMaxWatchDirectories() { return FMaxWatchDirectories; }
+  void SetMaxWatchDirectories(intptr_t Value) { FMaxWatchDirectories = Value; }
+  intptr_t GetQueueTransfersLimit() { return FQueueTransfersLimit; }
+  void SetQueueTransfersLimit(intptr_t Value) { FQueueTransfersLimit = Value; }
   bool GetQueueAutoPopup() { return FQueueAutoPopup; }
   void SetQueueAutoPopup(bool Value) { FQueueAutoPopup = Value; }
   bool GetQueueRememberPassword() { return FQueueRememberPassword; }
@@ -254,12 +254,12 @@ public:
   void SetBeepOnFinishAfter(TDateTime Value) { FBeepOnFinishAfter = Value; }
   UnicodeString GetCopyParamCurrent();
   TRemoteProperties GetNewDirectoryProperties() { return FNewDirectoryProperties; }
-  int GetKeepUpToDateChangeDelay() { return FKeepUpToDateChangeDelay; }
-  void SetKeepUpToDateChangeDelay(int Value) { FKeepUpToDateChangeDelay = Value; }
+  intptr_t GetKeepUpToDateChangeDelay() { return FKeepUpToDateChangeDelay; }
+  void SetKeepUpToDateChangeDelay(intptr_t Value) { FKeepUpToDateChangeDelay = Value; }
   UnicodeString GetChecksumAlg();
   void SetChecksumAlg(const UnicodeString & Value);
-  int GetSessionReopenAutoIdle() { return FSessionReopenAutoIdle; }
-  void SetSessionReopenAutoIdle(int Value) { FSessionReopenAutoIdle = Value; }
+  intptr_t GetSessionReopenAutoIdle() { return FSessionReopenAutoIdle; }
+  void SetSessionReopenAutoIdle(intptr_t Value) { FSessionReopenAutoIdle = Value; }
 };
 //---------------------------------------------------------------------------
 #define GUIConfiguration (dynamic_cast<TGUIConfiguration *>(Configuration))

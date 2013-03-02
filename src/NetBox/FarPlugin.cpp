@@ -1160,11 +1160,11 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString & Title,
     intptr_t Count = 0;
     for (intptr_t I = 0; I < Items->GetCount(); ++I)
     {
-      intptr_t Flags = reinterpret_cast<intptr_t>(Items->Objects[I]);
+      uintptr_t Flags = reinterpret_cast<uintptr_t>(Items->Objects[I]);
       if (FLAGCLEAR(Flags, MIF_HIDDEN))
       {
         memset(&MenuItems[Count], 0, sizeof(FarMenuItemEx));
-        MenuItems[Count].Flags = Flags;
+        MenuItems[Count].Flags = static_cast<DWORD>(Flags);
         if (MenuItems[Count].Flags & MIF_SELECTED)
         {
           assert(Selected == NPOS);

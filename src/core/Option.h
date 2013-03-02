@@ -14,11 +14,11 @@ public:
 
   bool FindSwitch(const UnicodeString & Switch);
   bool FindSwitch(const UnicodeString & Switch, UnicodeString & Value);
-  bool FindSwitch(const UnicodeString & Switch, int & ParamsStart,
-    int & ParamsCount);
+  bool FindSwitch(const UnicodeString & Switch, intptr_t & ParamsStart,
+    intptr_t & ParamsCount);
   bool FindSwitch(const UnicodeString & Switch, TStrings * Params,
-    int ParamsMax = -1);
-  void ParamsProcessed(int Position, int Count);
+    intptr_t ParamsMax = -1);
+  void ParamsProcessed(intptr_t Position, intptr_t Count);
   UnicodeString SwitchValue(const UnicodeString & Switch, const UnicodeString & Default = L"");
   bool SwitchValue(const UnicodeString & Switch, bool Default);
   bool SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence);
@@ -37,7 +37,7 @@ protected:
   void Add(const UnicodeString & Option);
 
   bool FindSwitch(const UnicodeString & Switch,
-    UnicodeString & Value, int & ParamsStart, int & ParamsCount);
+    UnicodeString & Value, intptr_t & ParamsStart, intptr_t & ParamsCount);
 
 private:
   struct TOption

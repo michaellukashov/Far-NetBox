@@ -102,9 +102,9 @@ public:
   TObject * Sender;
   UnicodeString Query;
   TStrings * MoreMessages;
-  unsigned int Answers;
+  uintptr_t Answers;
   const TQueryParams * Params;
-  unsigned int Answer;
+  uintptr_t Answer;
   TQueryType Type;
 
 private:
@@ -273,8 +273,8 @@ friend class TBackgroundTerminal;
 
 public:
   explicit TTerminalItem(TTerminalQueue * Queue);
-  virtual void Init(int Index);
   virtual ~TTerminalItem();
+  virtual void Init(intptr_t Index);
 
   void Process(TQueueItem * Item);
   bool ProcessUserAction(void * Arg);
@@ -298,8 +298,8 @@ protected:
   bool OverrideItemStatus(TQueueItem::TStatus & ItemStatus);
 
   void TerminalQueryUser(TObject * Sender,
-    const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
-    const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg);
+    const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+    const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
@@ -1068,38 +1068,38 @@ void TTerminalQueue::DoEvent(TQueueEvent Event)
   }
 }
 //---------------------------------------------------------------------------
-void TTerminalQueue::SetTransfersLimit(int value)
+void TTerminalQueue::SetTransfersLimit(intptr_t Value)
 {
   CALLSTACK;
-  if (FTransfersLimit != value)
+  if (FTransfersLimit != Value)
   {
     {
       TGuard Guard(FItemsSection);
 
-      if ((value >= 0) && (value < FItemsInProcess))
+      if ((Value >= 0) && (Value < FItemsInProcess))
       {
-        FTemporaryTerminals = (FItemsInProcess - value);
+        FTemporaryTerminals = (FItemsInProcess - Value);
       }
       else
       {
         FTemporaryTerminals = 0;
       }
-      FTransfersLimit = value;
+      FTransfersLimit = Value;
     }
 
     TriggerEvent();
   }
 }
 //---------------------------------------------------------------------------
-void TTerminalQueue::SetEnabled(bool value)
+void TTerminalQueue::SetEnabled(bool Value)
 {
   CALLSTACK;
-  if (FEnabled != value)
+  if (FEnabled != Value)
   {
     {
       TGuard Guard(FItemsSection);
 
-      FEnabled = value;
+      FEnabled = Value;
     }
 
     TriggerEvent();
@@ -1119,10 +1119,10 @@ class TBackgroundTerminal : public TSecondaryTerminal
   friend class TTerminalItem;
 public:
   explicit TBackgroundTerminal(TTerminal * MainTerminal);
+  virtual ~TBackgroundTerminal() {}
   void Init(
     TSessionData * SessionData, TConfiguration * Configuration,
     TTerminalItem * Item, const UnicodeString & Name);
-  virtual ~TBackgroundTerminal() {}
 protected:
   virtual bool DoQueryReopen(Exception * E);
 
@@ -1166,7 +1166,7 @@ TTerminalItem::TTerminalItem(TTerminalQueue * Queue) :
   CALLSTACK;
 }
 //---------------------------------------------------------------------------
-void TTerminalItem::Init(int Index)
+void TTerminalItem::Init(intptr_t Index)
 {
   TSignalThread::Init(true);
 
@@ -1400,8 +1400,8 @@ void TTerminalItem::Finished()
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::TerminalQueryUser(TObject * Sender,
-  const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
-  const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg)
+  const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+  const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg)
 {
   // so far query without queue item can occur only for key cofirmation
   // on re-key with non-cached host key. make it fail.
@@ -1886,7 +1886,7 @@ void TLocatedQueueItem::DoExecute(TTerminal * Terminal)
 //---------------------------------------------------------------------------
 TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
   TStrings * FilesToCopy, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int Params, TOperationSide Side) :
+  const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side) :
   TLocatedQueueItem(Terminal), FFilesToCopy(NULL), FCopyParam(NULL)
 {
   FInfo->Operation = (Params & cpDelete ? foMove : foCopy);
@@ -1923,7 +1923,7 @@ TTransferQueueItem::~TTransferQueueItem()
 //---------------------------------------------------------------------------
 TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
   TStrings * FilesToCopy, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int Params) :
+  const TCopyParamType * CopyParam, intptr_t Params) :
   TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osLocal)
 {
   if (FilesToCopy->GetCount() > 1)
@@ -1975,7 +1975,7 @@ void TUploadQueueItem::DoExecute(TTerminal * Terminal)
 //---------------------------------------------------------------------------
 TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   TStrings * FilesToCopy, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int Params) :
+  const TCopyParamType * CopyParam, intptr_t Params) :
   TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osRemote)
 {
   CALLSTACK;
@@ -2383,8 +2383,8 @@ void TTerminalThread::TerminalInformation(
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalQueryUser(TObject * Sender,
-  const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
-  const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg)
+  const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+  const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg)
 {
   CALLSTACK;
   USEDPARAM(Arg);
