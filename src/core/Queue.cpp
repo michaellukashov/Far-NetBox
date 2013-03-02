@@ -2317,25 +2317,23 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 
       while (true)
       {
+        TGuard Guard(FSection);
+        // If idle exception is already set, we are only waiting
+        // for the main thread to pick it up
+        // (or at least to finish handling the user action, so
+        // that we rethrow the idle exception below)
+        // Also if idle exception is set, it is probable that terminal
+        // is not active anyway.
+        if (FTerminal->GetActive() && FPendingIdle && (FIdleException == NULL))
         {
-          TGuard Guard(FSection);
-          // If idle exception is already set, we are only waiting
-          // for the main thread to pick it up
-          // (or at least to finish handling the user action, so
-          // that we rethrow the idle exception below)
-          // Also if idle exception is set, it is probable that terminal
-          // is not active anyway.
-          if (FTerminal->GetActive() && FPendingIdle && (FIdleException == NULL))
+          FPendingIdle = false;
+          try
           {
-            FPendingIdle = false;
-            try
-            {
-              FTerminal->Idle();
-            }
-            catch (Exception & E)
-            {
-              SaveException(E, FIdleException);
-            }
+            FTerminal->Idle();
+          }
+          catch (Exception & E)
+          {
+            SaveException(E, FIdleException);
           }
         }
 
