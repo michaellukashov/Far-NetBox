@@ -3698,7 +3698,7 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
 
     if (QueueItem != NULL)
     {
-      QueueItem->SetUserData(reinterpret_cast<void *>(true));
+      QueueItem->SetUserData(reinterpret_cast<void *>(1));
       FQueueItemInvalidated = true;
     }
   }
