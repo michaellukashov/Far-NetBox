@@ -86,7 +86,7 @@ public:
   void AddResumed(__int64 ASize);
   void Clear();
   unsigned int CPS();
-  void Finish(UnicodeString FileName, bool Success,
+  void Finish(const UnicodeString & FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
   unsigned long LocalBlockSize();
   bool IsLocallyDone() const;

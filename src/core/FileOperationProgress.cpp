@@ -209,7 +209,7 @@ void TFileOperationProgressType::DoProgress()
   FOnProgress(*this, Cancel);
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::Finish(UnicodeString FileName,
+void TFileOperationProgressType::Finish(const UnicodeString & FileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   assert(InProgress);

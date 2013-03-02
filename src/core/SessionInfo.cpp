@@ -18,12 +18,13 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-UnicodeString DoXmlEscape(UnicodeString Str, bool NewLine)
+static UnicodeString DoXmlEscape(const UnicodeString & Str, bool NewLine)
 {
-  for (int i = 1; i <= Str.Length(); i++)
+  UnicodeString Result = Str;
+  for (intptr_t I = 1; I <= Result.Length(); I++)
   {
     const wchar_t * Repl = NULL;
-    switch (Str[i])
+    switch (Result[I])
     {
       case L'&':
         Repl = L"amp;";
@@ -49,27 +50,27 @@ UnicodeString DoXmlEscape(UnicodeString Str, bool NewLine)
         break;
 
       case L'\r':
-        Str.Delete(i, 1);
-        i--;
+        Result.Delete(I, 1);
+        I--;
         break;
     }
 
     if (Repl != NULL)
     {
-      Str[i] = L'&';
-      Str.Insert(Repl, i + 1);
-      i += static_cast<int>(wcslen(Repl));
+      Result[I] = L'&';
+      Result.Insert(Repl, I + 1);
+      I += static_cast<int>(wcslen(Repl));
     }
   }
-  return Str;
+  return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString XmlEscape(UnicodeString Str)
+static UnicodeString XmlEscape(const UnicodeString & Str)
 {
   return DoXmlEscape(Str, false);
 }
 //---------------------------------------------------------------------------
-UnicodeString XmlAttributeEscape(UnicodeString Str)
+static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
 {
   return DoXmlEscape(Str, true);
 }
