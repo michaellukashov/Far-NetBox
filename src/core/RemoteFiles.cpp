@@ -1022,7 +1022,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     #define GETNCOL  \
       { if (Line.IsEmpty()) throw Exception(L""); \
         intptr_t P = Line.Pos(L' '); \
-        if (P) { Col = Line.SubString(1, P-1); Line.Delete(1, P); } \
+        if (P) { Col = Line; Col.SetLength(P-1); Line.Delete(1, P); } \
           else { Col = Line; Line = L""; } \
       }
     #define GETCOL { GETNCOL; Line = TrimLeft(Line); }
