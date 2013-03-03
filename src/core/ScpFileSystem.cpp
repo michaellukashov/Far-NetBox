@@ -613,11 +613,15 @@ bool TSCPFileSystem::IsTotalListingLine(const UnicodeString & Line)
 }
 //---------------------------------------------------------------------------
 bool TSCPFileSystem::RemoveLastLine(UnicodeString & Line,
-    int & ReturnCode, UnicodeString LastLine)
+  int & ReturnCode, const UnicodeString & ALastLine)
 {
   CALLSTACK;
   bool IsLastLine = false;
-  if (LastLine.IsEmpty()) { LastLine = LAST_LINE; }
+  UnicodeString LastLine = ALastLine;
+  if (LastLine.IsEmpty())
+  {
+    LastLine = LAST_LINE;
+  }
   // #55: fixed so, even when last line of command output does not
   // contain CR/LF, we can recognize last line
   intptr_t Pos = Line.Pos(LastLine);
@@ -1357,7 +1361,7 @@ void TSCPFileSystem::CaptureOutput(const UnicodeString & AddedLine, bool StdErro
   int ReturnCode;
   UnicodeString Line = AddedLine;
   if (StdError ||
-      !RemoveLastLine(Line, ReturnCode) ||
+      !RemoveLastLine(Line, ReturnCode, UnicodeString()) ||
       !Line.IsEmpty())
   {
     TRACE("1");

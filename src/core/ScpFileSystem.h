@@ -133,7 +133,8 @@ private:
     const TRemoteToken & Token, TFSCommand Cmd, const UnicodeString & RecursiveStr);
 
   static bool RemoveLastLine(UnicodeString & Line,
-    int & ReturnCode, UnicodeString LastLine = L"");
+    int & ReturnCode, const UnicodeString & ALastLine);
+
 private:
   TSCPFileSystem(const TSCPFileSystem &);
   TSCPFileSystem & operator=(const TSCPFileSystem &);
