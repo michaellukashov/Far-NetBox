@@ -609,12 +609,12 @@ AnsiString Format(const char * Format, va_list args)
 }
 
 //---------------------------------------------------------------------------
-UnicodeString FmtLoadStr(int id, ...)
+UnicodeString FmtLoadStr(intptr_t id, ...)
 {
   UnicodeString Result(64, 0);
   UnicodeString Format(64, 0);
   HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
-  intptr_t Length = ::LoadString(hInstance, id, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Format.c_str())),
+  intptr_t Length = ::LoadString(hInstance, static_cast<UINT>(id), reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Format.c_str())),
     static_cast<int>(Format.Length()));
   Format.SetLength(Length);
   if (!Length)
