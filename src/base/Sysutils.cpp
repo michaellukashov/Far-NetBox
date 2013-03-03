@@ -175,10 +175,13 @@ UnicodeString Trim(const UnicodeString & Str)
 UnicodeString TrimLeft(const UnicodeString & Str)
 {
   UnicodeString Result = Str;
-  while (Result.Length() > 0 && Result[1] == L' ')
+  intptr_t Len = Result.Length();
+  while (Len > 0 && Result[1] == L' ')
   {
-    Result = Result.SubString(2, Result.Length() - 1);
+    // Result = Result.SubString(2, Result.Length() - 1);
+    wmemmove(const_cast<wchar_t *>(Result.c_str()), Result.c_str() + 1, --Len);
   }
+  Result.SetLength(Len);
   return Result;
 }
 
