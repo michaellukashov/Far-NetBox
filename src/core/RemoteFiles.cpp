@@ -2221,8 +2221,7 @@ UnicodeString TRights::GetText() const
   }
   else
   {
-    UnicodeString Result;
-    Result.SetLength(TextLen);
+    UnicodeString Result(TextLen, 0);
 
     int Flag = 00001;
     int ExtendedFlag = 01000; //-V536

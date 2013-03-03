@@ -560,7 +560,7 @@ bool DeleteFile(const UnicodeString & File)
 
 UnicodeString Format(const wchar_t * format, ...)
 {
-  UnicodeString Result;
+  UnicodeString Result(64, 0);
   va_list args;
   va_start(args, format);
   Result = ::Format(format, args);
@@ -572,7 +572,7 @@ UnicodeString Format(const wchar_t * format, ...)
 
 UnicodeString Format(const wchar_t * Format, va_list args)
 {
-  UnicodeString Result;
+  UnicodeString Result(64, 0);
   if (Format && *Format)
   {
     intptr_t Len = _vscwprintf(Format, args);
@@ -586,7 +586,7 @@ UnicodeString Format(const wchar_t * Format, va_list args)
 
 AnsiString Format(const char * format, ...)
 {
-  AnsiString Result;
+  AnsiString Result(64, 0);
   va_list args;
   va_start(args, format);
   Result = ::Format(format, args);
@@ -598,7 +598,7 @@ AnsiString Format(const char * format, ...)
 
 AnsiString Format(const char * Format, va_list args)
 {
-  AnsiString Result;
+  AnsiString Result(64, 0);
   if (Format && *Format)
   {
     intptr_t Len = _vscprintf(Format, args);
@@ -611,9 +611,8 @@ AnsiString Format(const char * Format, va_list args)
 //---------------------------------------------------------------------------
 UnicodeString FmtLoadStr(int id, ...)
 {
-  UnicodeString Result;
-  UnicodeString Format;
-  Format.SetLength(1024);
+  UnicodeString Result(64, 0);
+  UnicodeString Format(64, 0);
   HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
   intptr_t Length = ::LoadString(hInstance, id, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Format.c_str())),
     static_cast<int>(Format.Length()));
