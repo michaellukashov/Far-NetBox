@@ -608,8 +608,8 @@ void TFileMasks::CreateMask(
       TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
       FormatSettings.DateSeparator = L'-';
       FormatSettings.TimeSeparator = L':';
-      FormatSettings.ShortDateFormat = "yyyy/mm/dd";
-      FormatSettings.ShortTimeFormat = "hh:nn:ss";
+      FormatSettings.ShortDateFormat = L"yyyy/mm/dd";
+      FormatSettings.ShortTimeFormat = L"hh:nn:ss";
 
       TDateTime Modification;
       if (TryStrToDateTime(PartStr, Modification, FormatSettings) ||
