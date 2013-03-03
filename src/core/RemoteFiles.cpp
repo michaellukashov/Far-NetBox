@@ -1177,7 +1177,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           }
           else
           {
-            // Time/Year indicator is always 5 charactes long (???), on most
+            // Time/Year indicator is always 5 characters long (???), on most
             // systems year is aligned to right (_YYYY), but on some to left (YYYY_),
             // we must ensure that trailing space is also deleted, so real
             // separator space is not treated as part of file name
