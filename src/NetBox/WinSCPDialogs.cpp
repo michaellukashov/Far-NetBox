@@ -4504,7 +4504,7 @@ void TRightsContainer::Change()
 //------------------------------------------------------------------------------
 TFarCheckBox * TRightsContainer::GetChecks(TRights::TRight Right)
 {
-  assert((Right >= 0) && (static_cast<intptr_t>(Right) < LENOF(FCheckBoxes)));
+  assert((Right >= 0) && (static_cast<size_t>(Right) < LENOF(FCheckBoxes)));
   return FCheckBoxes[Right];
 }
 //------------------------------------------------------------------------------
