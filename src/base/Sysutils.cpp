@@ -609,22 +609,21 @@ AnsiString Format(const char * Format, va_list args)
 }
 
 //---------------------------------------------------------------------------
-UnicodeString FmtLoadStr(intptr_t id, ...)
+UnicodeString FmtLoadStr(intptr_t Id, ...)
 {
   UnicodeString Result(64, 0);
-  UnicodeString Format(64, 0);
+  wchar_t Format[1024];
   HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
-  intptr_t Length = ::LoadString(hInstance, static_cast<UINT>(id), reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Format.c_str())),
-    static_cast<int>(Format.Length()));
-  Format.SetLength(Length);
+  intptr_t Length = ::LoadString(hInstance, static_cast<UINT>(Id),
+    Format, static_cast<int>(sizeof(Format)));
   if (!Length)
   {
-    DEBUG_PRINTF(L"Unknown resource string id: %d\n", id);
+    DEBUG_PRINTF(L"Unknown resource string id: %d\n", Id);
   }
   else
   {
     va_list args;
-    va_start(args, id);
+    va_start(args, Id);
     /*
     LPTSTR lpszTemp;
     if (::FormatMessage(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER,
@@ -638,11 +637,10 @@ UnicodeString FmtLoadStr(intptr_t id, ...)
     Result = lpszTemp;
     ::LocalFree(lpszTemp);
     */
-    intptr_t Len = _vscwprintf(Format.c_str(), args);
-    UnicodeString buf(Len + sizeof(wchar_t), 0);
-    vswprintf_s(&buf[1], buf.Length(), Format.c_str(), args);
+    intptr_t Len = _vscwprintf(Format, args);
+    Result.SetLength(Len + sizeof(wchar_t));
+    vswprintf_s(&Result[1], Result.Length(), Format, args);
     va_end(args);
-    Result = buf;
   }
   return Result;
 }

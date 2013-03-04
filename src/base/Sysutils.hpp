@@ -240,7 +240,7 @@ UnicodeString Format(const wchar_t * format, ...);
 UnicodeString Format(const wchar_t * format, va_list args);
 AnsiString Format(const char * format, ...);
 AnsiString Format(const char * format, va_list args);
-UnicodeString FmtLoadStr(intptr_t id, ...);
+UnicodeString FmtLoadStr(intptr_t Id, ...);
 //---------------------------------------------------------------------------
 UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth = 40);
 //---------------------------------------------------------------------------
