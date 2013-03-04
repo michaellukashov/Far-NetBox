@@ -2687,7 +2687,7 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
     int CopyParamAttrs =
       GetTerminal()->UsableCopyParamAttrs(Params).Upload |
       FLAGMASK(Edit, (cpaNoExcludeMask | cpaNoClearArchive));
-    // heurictics: do not ask for target directory when uploaded file
+    // heuristics: do not ask for target directory when uploaded file
     // was downloaded in edit mode
     int Options =
       FLAGMASK(Edit, coTempTransfer) |
