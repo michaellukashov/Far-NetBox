@@ -186,11 +186,13 @@ UnicodeString TrimLeft(const UnicodeString & Str)
 UnicodeString TrimRight(const UnicodeString & Str)
 {
   UnicodeString Result = Str;
-  while (Result.Length() > 0 &&
-    ((Result[Result.Length()] == L' ') || (Result[Result.Length()] == L'\n')))
+  intptr_t Len = Result.Length();
+  while (Len > 0 &&
+    ((Result[Len] == L' ') || (Result[Len] == L'\n')))
   {
-    Result.SetLength(Result.Length() - 1);
+    Len--;
   }
+  Result.SetLength(Len);
   return Result;
 }
 
