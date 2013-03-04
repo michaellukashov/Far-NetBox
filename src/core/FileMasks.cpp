@@ -1076,10 +1076,10 @@ TFileCustomCommand::TFileCustomCommand()
 }
 //---------------------------------------------------------------------------
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
-  const UnicodeString & Path)
+  const UnicodeString & Path) :
+  FData(Data),
+  FPath(Path)
 {
-  FData = Data;
-  FPath = Path;
 }
 //---------------------------------------------------------------------------
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
