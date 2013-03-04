@@ -12,12 +12,12 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-const int ccLocal = ccUser;
-const int ccShowResults = ccUser << 1;
-const int ccCopyResults = ccUser << 2;
-const int ccSet = 0x80000000;
+const intptr_t ccLocal = ccUser;
+const intptr_t ccShowResults = ccUser << 1;
+const intptr_t ccCopyResults = ccUser << 2;
+const intptr_t ccSet = 0x80000000;
 //---------------------------------------------------------------------------
-static const unsigned int AdditionaLanguageMask = 0xFFFFFF00;
+static const uintptr_t AdditionaLanguageMask = 0xFFFFFF00;
 static const UnicodeString AdditionaLanguagePrefix(L"XX");
 //---------------------------------------------------------------------------
 TGUICopyParamType::TGUICopyParamType()

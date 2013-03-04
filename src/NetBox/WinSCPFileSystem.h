@@ -151,14 +151,14 @@ protected:
     const UnicodeString & Directory,
     // TStrings * GroupList, TStrings * UserList,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
-    TRemoteProperties * Properties, int AllowedChanges);
+    TRemoteProperties * Properties, intptr_t AllowedChanges);
   bool ExecuteCommand(const UnicodeString & Command);
   void TerminalCaptureLog(const UnicodeString & AddedLine, bool StdError);
   bool CopyDialog(bool ToRemote, bool Move, TStrings * FileList,
     UnicodeString & TargetDirectory,
     TGUICopyParamType * Params,
-    int Options,
-    int CopyParamAttrs);
+    intptr_t Options,
+    intptr_t CopyParamAttrs);
   bool LinkDialog(UnicodeString & FileName, UnicodeString & PointTo, bool & Symbolic,
     bool Edit, bool AllowSymbolic);
   void FileSystemInfoDialog(const TSessionInfo & SessionInfo,
@@ -169,7 +169,7 @@ protected:
   bool ApplyCommandDialog(UnicodeString & Command, intptr_t & Params);
   bool FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode,
     intptr_t  & Params, UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
-    TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode, int Options,
+    TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode, intptr_t Options,
     const TUsableCopyParamAttrs & CopyParamAttrs);
   bool SynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
     TTerminal::TSynchronizeMode Mode, intptr_t Params,
@@ -183,13 +183,13 @@ protected:
     TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
     TStrings * Results, bool StoredCredentialsTried);
   bool BannerDialog(const UnicodeString & SessionName, const UnicodeString & Banner,
-    bool & NeverShowAgain, int Options);
+    bool & NeverShowAgain, intptr_t Options);
   bool CreateDirectoryDialog(UnicodeString & Directory,
     TRemoteProperties * Properties, bool & SaveSettings);
   bool QueueDialog(TTerminalQueueStatus * Status, bool ClosingPlugin);
   bool SynchronizeDialog(TSynchronizeParamType & Params,
     const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
-    bool & SaveSettings, int Options, int CopyParamAttrs,
+    bool & SaveSettings, intptr_t Options, intptr_t CopyParamAttrs,
     TGetSynchronizeOptionsEvent OnGetOptions);
   void DoSynchronize(TSynchronizeController * Sender,
     const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
@@ -303,7 +303,7 @@ private:
     void * Arg);
   void TerminalDisplayBanner(TTerminal * Terminal,
     UnicodeString SessionName, const UnicodeString & Banner, bool & NeverShowAgain,
-    int Options);
+    intptr_t Options);
   void TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
   void TerminalDeleteLocalFile(const UnicodeString & FileName, bool Alternative);

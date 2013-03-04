@@ -403,7 +403,7 @@ private:
     Exception * E, void * Arg);
   void TerminalDisplayBanner(TTerminal * Terminal,
     UnicodeString SessionName, const UnicodeString & Banner,
-    bool & NeverShowAgain, int Options);
+    bool & NeverShowAgain, intptr_t Options);
   void TerminalChangeDirectory(TObject * Sender);
   void TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly);
   void TerminalStartReadDirectory(TObject * Sender);

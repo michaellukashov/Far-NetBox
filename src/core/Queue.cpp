@@ -203,7 +203,7 @@ public:
   UnicodeString SessionName;
   UnicodeString Banner;
   bool NeverShowAgain;
-  int Options;
+  intptr_t Options;
 
 private:
   TDisplayBannerAction(const TDisplayBannerAction &);
@@ -2452,7 +2452,7 @@ void TTerminalThread::TerminalShowExtendedException(
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalDisplayBanner(TTerminal * Terminal,
   UnicodeString SessionName, const UnicodeString & Banner,
-  bool & NeverShowAgain, int Options)
+  bool & NeverShowAgain, intptr_t Options)
 {
   CALLSTACK;
   TDisplayBannerAction Action(FOnDisplayBanner);

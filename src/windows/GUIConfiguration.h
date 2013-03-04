@@ -9,10 +9,10 @@ class TGUIConfiguration;
 enum TLogView { lvNone, lvWindow, pvPanel };
 enum TInterface { ifCommander, ifExplorer };
 //---------------------------------------------------------------------------
-extern const int ccLocal;
-extern const int ccShowResults;
-extern const int ccCopyResults;
-extern const int ccSet;
+extern const intptr_t ccLocal;
+extern const intptr_t ccShowResults;
+extern const intptr_t ccCopyResults;
+extern const intptr_t ccSet;
 //---------------------------------------------------------------------------
 const int soRecurse =        0x01;
 const int soSynchronize =    0x02;

@@ -1429,7 +1429,7 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
-  const UnicodeString & Banner, bool & NeverShowAgain, int Options)
+  const UnicodeString & Banner, bool & NeverShowAgain, intptr_t Options)
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
@@ -3242,7 +3242,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   UnsetNationalVarsCheck->SetChecked(SessionData->GetUnsetNationalVars());
   ListingCommandEdit->SetText(SessionData->GetListingCommand());
   SCPLsFullTimeAutoCheck->SetChecked((SessionData->GetSCPLsFullTime() != asOff));
-  int TimeDifferenceMin = DateTimeToTimeStamp(SessionData->GetTimeDifference()).Time / 60000;
+  intptr_t TimeDifferenceMin = DateTimeToTimeStamp(SessionData->GetTimeDifference()).Time / 60000;
   if (static_cast<double>(SessionData->GetTimeDifference()) < 0)
   {
     TimeDifferenceMin = -TimeDifferenceMin;
@@ -4915,9 +4915,9 @@ bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
 }
 //------------------------------------------------------------------------------
 bool TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
-    const UnicodeString & Directory,
-    const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
-    TRemoteProperties * Properties, int AllowedChanges)
+  const UnicodeString & Directory,
+  const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
+  TRemoteProperties * Properties, intptr_t AllowedChanges)
 {
   bool Result = false;
   TPropertiesDialog * Dialog = new TPropertiesDialog(FPlugin, FileList,
@@ -4933,7 +4933,7 @@ class TCopyParamsContainer : public TFarDialogContainer
 {
 public:
   explicit TCopyParamsContainer(TFarDialog * ADialog,
-    int Options, int CopyParamAttrs);
+    intptr_t Options, intptr_t CopyParamAttrs);
 
 protected:
   TFarRadioButton * TMTextButton;
@@ -4974,7 +4974,7 @@ public:
 };
 //------------------------------------------------------------------------------
 TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
-    int Options, int CopyParamAttrs) :
+  intptr_t Options, intptr_t CopyParamAttrs) :
   TFarDialogContainer(ADialog),
   TMTextButton(NULL),
   TMBinaryButton(NULL),
@@ -5417,7 +5417,7 @@ class TCopyDialog : TFarDialog
 {
 public:
   explicit TCopyDialog(TCustomFarPlugin * AFarPlugin,
-    bool ToRemote, bool Move, TStrings * FileList, int Options, int CopyParamAttrs);
+    bool ToRemote, bool Move, TStrings * FileList, intptr_t Options, intptr_t CopyParamAttrs);
 
   bool Execute(UnicodeString & TargetDirectory, TGUICopyParamType * Params);
 
@@ -5445,7 +5445,7 @@ private:
 //------------------------------------------------------------------------------
 TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   bool ToRemote, bool Move, TStrings * FileList,
-  int Options, int CopyParamAttrs) : TFarDialog(AFarPlugin)
+  intptr_t Options, intptr_t CopyParamAttrs) : TFarDialog(AFarPlugin)
 {
   FToRemote = ToRemote;
   FOptions = Options;
@@ -5677,8 +5677,8 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   bool Move, TStrings * FileList,
   UnicodeString & TargetDirectory,
   TGUICopyParamType * Params,
-  int Options,
-  int CopyParamAttrs)
+  intptr_t Options,
+  intptr_t CopyParamAttrs)
 {
   bool Result = false;
   TCopyDialog * Dialog = new TCopyDialog(FPlugin, ToRemote,
@@ -7142,7 +7142,7 @@ bool TFullSynchronizeDialog::Execute(TTerminal::TSynchronizeMode & Mode,
 //------------------------------------------------------------------------------
 bool TWinSCPFileSystem::FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode,
   intptr_t & Params, UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
-  TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode, int Options,
+  TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode, intptr_t Options,
   const TUsableCopyParamAttrs & CopyParamAttrs)
 {
   bool Result = false;
@@ -7770,7 +7770,7 @@ class TSynchronizeDialog : TFarDialog
 public:
   TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
     TSynchronizeStartStopEvent OnStartStop,
-    int Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions);
+    intptr_t Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions);
   virtual ~TSynchronizeDialog();
 
   bool Execute(TSynchronizeParamType & Params,
@@ -7826,7 +7826,7 @@ private:
 //------------------------------------------------------------------------------
 TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   TSynchronizeStartStopEvent OnStartStop,
-  int Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions) :
+  intptr_t Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions) :
   TFarDialog(AFarPlugin)
 {
   TFarText * Text;
@@ -8213,8 +8213,8 @@ int TSynchronizeDialog::ActualCopyParamAttrs()
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
-    const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
-    bool & SaveSettings, int Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions)
+  const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
+  bool & SaveSettings, intptr_t Options, intptr_t CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions)
 {
   bool Result = false;
   TSynchronizeDialog * Dialog = new TSynchronizeDialog(FPlugin, OnStartStop,

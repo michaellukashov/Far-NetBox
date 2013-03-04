@@ -38,7 +38,7 @@ DEFINE_CALLBACK_TYPE8(TPromptUserEvent, void,
   TStrings * /* Prompts */, TStrings * /* Results */, bool & /* Result */, void * /* Arg */);
 DEFINE_CALLBACK_TYPE5(TDisplayBannerEvent, void,
   TTerminal * /* Terminal */, UnicodeString /* SessionName */, const UnicodeString & /* Banner */,
-  bool & /* NeverShowAgain */, int /* Options */);
+  bool & /* NeverShowAgain */, intptr_t /* Options */);
 DEFINE_CALLBACK_TYPE3(TExtendedExceptionEvent, void,
   TTerminal * /* Terminal */, Exception * /* E */, void * /* Arg */);
 DEFINE_CALLBACK_TYPE2(TReadDirectoryEvent, void, TObject * /* Sender */, Boolean /* ReloadOnly */);
