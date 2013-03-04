@@ -1937,7 +1937,7 @@ struct TClipboardHandler
 
   void Copy(TObject * /*Sender*/)
   {
-    CopyToClipboard(Text.c_str();
+    CopyToClipboard(Text.c_str());
   }
 };
 #endif
