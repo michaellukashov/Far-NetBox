@@ -297,7 +297,7 @@ UnicodeString GetFileInfoString(void * FileInfo,
   {
     throw Exception("Specified file info string not available");
   }
-  UnicodeString Result = UnicodeString(P, Len);
+  UnicodeString Result(P, Len);
   PackStr(Result);
   TRACEFMT("1 [%s] [%s]", StringName.c_str(), Result.c_str());
   return Result;
