@@ -2054,7 +2054,8 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
         FMTLOAD((Unknown ? UNKNOWN_KEY2 : DIFFERENT_KEY3), KeyType.c_str(), Fingerprint.c_str()),
         NULL, Answers, &Params, qtWarning);
 
-      switch (R) {
+      switch (R)
+      {
         case qaOK:
           assert(!Unknown);
           KeyStr2 = (StoredKeys + Delimiter + KeyStr);
