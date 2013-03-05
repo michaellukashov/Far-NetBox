@@ -1570,16 +1570,23 @@ UnicodeString TCustomFarPlugin::GetMsg(int MsgId)
 //---------------------------------------------------------------------------
 bool TCustomFarPlugin::CheckForEsc()
 {
-  INPUT_RECORD Rec;
-  DWORD ReadCount;
-  while (PeekConsoleInput(FConsoleInput, &Rec, 1, &ReadCount) && ReadCount)
+  static unsigned long LastTicks;
+  unsigned long Ticks = GetTickCount();
+  if ((LastTicks == 0) || (Ticks - LastTicks > 500))
   {
-    ReadConsoleInput(FConsoleInput, &Rec, 1, &ReadCount);
-    if (Rec.EventType == KEY_EVENT &&
-        Rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE &&
-        Rec.Event.KeyEvent.bKeyDown)
+    LastTicks = Ticks;
+
+    INPUT_RECORD Rec;
+    DWORD ReadCount;
+    while (PeekConsoleInput(FConsoleInput, &Rec, 1, &ReadCount) && ReadCount)
     {
-      return true;
+      ReadConsoleInput(FConsoleInput, &Rec, 1, &ReadCount);
+      if (Rec.EventType == KEY_EVENT &&
+          Rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE &&
+          Rec.Event.KeyEvent.bKeyDown)
+      {
+        return true;
+      }
     }
   }
   return false;
