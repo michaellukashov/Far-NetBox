@@ -989,7 +989,7 @@ unsigned int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
   CALLSTACK;
   FWaiting++;
 
-  unsigned int Answer;
+  uintptr_t Answer;
   TRY_FINALLY (
   {
     TQueryParams Params(qpFatalAbort | qpAllowContinueOnError | qpIgnoreAbort);

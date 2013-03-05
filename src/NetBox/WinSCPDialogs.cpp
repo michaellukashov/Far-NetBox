@@ -5438,8 +5438,8 @@ private:
   TFarCheckBox * QueueNoConfirmationCheck;
 
   bool FToRemote;
-  int FOptions;
-  int FCopyParamAttrs;
+  intptr_t FOptions;
+  intptr_t FCopyParamAttrs;
   TGUICopyParamType FCopyParams;
 };
 //------------------------------------------------------------------------------

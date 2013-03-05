@@ -1549,7 +1549,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         TRemoteFile * File = FTerminal->FFiles->FindFile(FileNameOnly);
         if (File != NULL)
         {
-          unsigned int Answer;
+          uintptr_t Answer;
           if (File->GetIsDirectory())
           {
             UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly.c_str());
@@ -1863,7 +1863,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
               OperationProgress->ChangeTransferSize(AsciiBuf.GetSize());
               while (!OperationProgress->IsTransferDone())
               {
-                unsigned long BlockSize = OperationProgress->TransferBlockSize();
+                uintptr_t BlockSize = OperationProgress->TransferBlockSize();
                 FSecureShell->Send(
                   reinterpret_cast<unsigned char *>(AsciiBuf.GetData() + (unsigned int)OperationProgress->TransferedSize),
                   BlockSize);
@@ -2523,7 +2523,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                   QueryParams.Aliases = Aliases;
                   QueryParams.AliasesCount = LENOF(Aliases);
 
-                  unsigned int Answer;
+                  uintptr_t Answer;
                   SUSPEND_OPERATION (
                     Answer = FTerminal->ConfirmFileOverwrite(
                       OperationProgress->FileName, &FileParams,
