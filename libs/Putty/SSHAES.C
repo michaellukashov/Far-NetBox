@@ -691,10 +691,11 @@ static void aes_encrypt_nb_4(AESContext * ctx, word32 * block)
 	MAKEWORD(1);
 	MAKEWORD(2);
 	MAKEWORD(3);
-	MOVEWORD(0);
-	MOVEWORD(1);
-	MOVEWORD(2);
-	MOVEWORD(3);
+	//MOVEWORD(0);
+	//MOVEWORD(1);
+	//MOVEWORD(2);
+	//MOVEWORD(3);
+  memmove(block, newstate, sizeof(newstate));
     }
     ADD_ROUND_KEY_4;
     LASTWORD(0);
