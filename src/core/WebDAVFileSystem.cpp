@@ -2187,20 +2187,6 @@ path_cstring_to_utf8(
     return utf_cstring_to_utf8(path_utf8, path_apr, pool);
 }
 
-static bool
-is_canonical(
-  const char * path,
-  apr_size_t len)
-{
-  return (!WEBDAV_PATH_IS_PLATFORM_EMPTY(path, len) &&
-    (strstr(path, "/./") == NULL) &&
-    ((len == 0) ||
-     ((len == 1) && (path[0] == '/')) ||
-     (path[len-1] != '/') ||
-     dirent_is_root(path, len)
-    ));
-}
-
 static apr_size_t
 path_component_count(
   const char * path)
@@ -2254,7 +2240,7 @@ static void
 path_remove_component(
   stringbuf_t * path)
 {
-  assert(is_canonical(path->data, path->len));
+  // assert(is_canonical(path->data, path->len));
 
   path->len = previous_segment(path->data, path->len);
   path->data[path->len] = '\0';
