@@ -2195,7 +2195,8 @@ void TFarList::Changed()
       FarListItem * Items = FListItems->Items;
       if (Count)
       {
-        FListItems->Items = static_cast<FarListItem *>(nb_malloc(sizeof(FarListItem) * Count));
+        FListItems->Items = static_cast<FarListItem *>(
+          nb_malloc(sizeof(FarListItem) * Count));
         for (intptr_t Index = 0; Index < Count; ++Index)
         {
           memset(&FListItems->Items[Index], 0, sizeof(FListItems->Items[Index]));
@@ -2212,10 +2213,10 @@ void TFarList::Changed()
       nb_free(Items);
       FListItems->ItemsNumber = static_cast<int>(GetCount());
     }
-    for (int i = 0; i < GetCount(); i++)
+    for (intptr_t I = 0; I < GetCount(); I++)
     {
-      UnicodeString Value = Strings[i];
-      FListItems->Items[i].Text = Strings[i].c_str();
+      // UnicodeString Value = Strings[I];
+      FListItems->Items[I].Text = Strings[I].c_str();
     }
     if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
     {

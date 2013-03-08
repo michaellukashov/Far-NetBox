@@ -460,7 +460,7 @@ protected:
 class TFarText : public TFarDialogItem
 {
 public:
-  explicit  TFarText(TFarDialog * ADialog);
+  explicit TFarText(TFarDialog * ADialog);
 
   virtual UnicodeString GetCaption() { return GetData(); }
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }

@@ -30,7 +30,7 @@ struct TUsableCopyParamAttrs
   int Download;
 };
 //---------------------------------------------------------------------------
-class TCopyParamType
+class TCopyParamType : public TObject
 {
 private:
   TFileMasks FAsciiFileMask;
