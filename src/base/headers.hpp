@@ -281,5 +281,95 @@ bool CheckStructSize(const T* s) {return s && (s->StructSize >= sizeof(T));}
 #define SELF_TEST(code)
 #endif
 
+//---------------------------------------------------------------------------
+
+template <typename T> class custom_nballocator_t;
+
+template <> class custom_nballocator_t<void>
+{
+public:
+    typedef void* pointer;
+    typedef const void* const_pointer;
+    // reference to void members are impossible.
+    typedef void value_type;
+    template <class U> 
+        struct rebind { typedef custom_nballocator_t<U> other; };
+};    
+
+template <typename T>
+class custom_nballocator_t
+{
+public:
+  typedef size_t size_type;
+  typedef ptrdiff_t difference_type;
+  typedef T* pointer;
+  typedef const T* const_pointer;
+  typedef T& reference;
+  typedef const T& const_reference;
+  typedef T value_type;
+
+  template <class U> 
+  struct rebind { typedef custom_nballocator_t<U> other; };
+  custom_nballocator_t()
+  {}
+  pointer address(reference x) const { return &x; }
+  const_pointer address(const_reference x) const { return &x; }
+  pointer allocate(size_type size, custom_nballocator_t<void>::const_pointer hint = 0)
+  {
+    return static_cast<pointer>(nb_malloc(size * sizeof(T)));
+  }
+  //for Dinkumware:
+  char *_Charalloc(size_type n)
+  {
+    return static_cast<char*>(nb_malloc(n));
+  }
+  // end Dinkumware
+
+  template <class U> custom_nballocator_t(const custom_nballocator_t<U>&)
+  {}
+  void deallocate(pointer p, size_type n)
+  {
+    nb_free(p);
+  }
+  void deallocate(void *p, size_type n)
+  {
+    nb_free(p);
+  }
+  size_type max_size() const throw()
+  {
+    return size_t(-1) / sizeof(value_type);
+  }
+  void construct(pointer p, const T& val)
+  {
+    new(static_cast<void*>(p)) T(val);
+  }
+  void construct(pointer p)
+  {
+    new(static_cast<void*>(p)) T();
+  }
+  void destroy(pointer p)
+  {
+    // pool_alloc::destruct(p);
+    // nb_free(p);
+    p->~T();
+  }
+  // static void dump(){mem_.dump();};
+private:
+};
+
+template <typename T, typename U>
+inline bool operator==(const custom_nballocator_t<T>&, const custom_nballocator_t<U>)
+{
+  return true;
+}
+
+template <typename T, typename U>
+inline bool operator!=(const custom_nballocator_t<T>&, const custom_nballocator_t<U>)
+{
+  return false;
+}
+
+//---------------------------------------------------------------------------
+
 #include "UnicodeString.hpp"
 #include "local.hpp"
