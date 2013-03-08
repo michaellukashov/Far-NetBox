@@ -294,7 +294,7 @@ private:
   intptr_t FMaxSize;
 };
 //---------------------------------------------------------------------------
-class TRights
+class TRights : public TObject
 {
 public:
   static const int TextLen = 9;

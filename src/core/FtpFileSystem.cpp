@@ -12,6 +12,7 @@
 #include "FtpFileSystem.h"
 #include "FileZillaIntf.h"
 
+#include "headers.hpp"
 #include "Common.h"
 #include "Exceptions.h"
 #include "Terminal.h"
@@ -164,7 +165,7 @@ bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-class TMessageQueue : public std::list<std::pair<WPARAM, LPARAM> >
+class TMessageQueue : public std::list<std::pair<WPARAM, LPARAM>, custom_nballocator_t<std::pair<WPARAM, LPARAM> > >
 {
 };
 //---------------------------------------------------------------------------
