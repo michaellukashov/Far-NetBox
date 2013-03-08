@@ -31,31 +31,6 @@ bool IsTracing = true;
 #else
 bool IsTracing = false;
 #endif
-unsigned int CallstackTls = CallstackTlsOff;
-TCriticalSection * TracingCriticalSection = NULL;
-//---------------------------------------------------------------------------
-void __callstack(const wchar_t*, const wchar_t*, unsigned int, const wchar_t*)
-{
-}
-//---------------------------------------------------------------------------
-void SetTraceFile(HANDLE ATraceFile)
-{
-  TraceFile = ATraceFile;
-  IsTracing = (TraceFile != 0);
-  if (TracingCriticalSection == NULL)
-  {
-    TracingCriticalSection = new TCriticalSection();
-  }
-}
-//---------------------------------------------------------------------------
-void CleanupTracing()
-{
-  if (TracingCriticalSection != NULL)
-  {
-    delete TracingCriticalSection;
-    TracingCriticalSection = NULL;
-  }
-}
 //---------------------------------------------------------------------------
 #ifdef TRACE_IN_MEMORY
 struct TTraceInMemory
@@ -191,6 +166,7 @@ void Trace(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * Message)
 {
   assert(IsTracing);
+  return;
 
   UnicodeString TimeString;
 #ifndef _MSC_VER
@@ -206,9 +182,9 @@ void Trace(const wchar_t * SourceFile, const wchar_t * Func,
   {
     SourceFile = Slash + 1;
   }
-  UTF8String Buffer = UTF8String(FORMAT(L"NetBox: [%s] [%.4X] [%s:%d:%s] %s\n",
-    TimeString.c_str(), int(GetCurrentThreadId()), NullToEmpty(SourceFile),
-    Line, NullToEmpty(Func), NullToEmpty(Message)));
+  //UTF8String Buffer = UTF8String(FORMAT(L"NetBox: [%s] [%.4X] [%s:%d:%s] %s\n",
+  //  TimeString.c_str(), int(GetCurrentThreadId()), NullToEmpty(SourceFile),
+  //  Line, NullToEmpty(Func), NullToEmpty(Message)));
   // DWORD Written;
   // WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
   // DEBUG_PRINTF(L"%s", Buffer.c_str());
