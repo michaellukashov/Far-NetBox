@@ -246,7 +246,7 @@ void TList::Clear()
   SetCount(0);
 }
 
-void QuickSort(std::vector<void *, custom_nballocator_t<void *> > & SortList, intptr_t L, intptr_t R,
+void QuickSort(std::vector<void *> & SortList, intptr_t L, intptr_t R,
   CompareFunc SCompare)
 {
   intptr_t I;

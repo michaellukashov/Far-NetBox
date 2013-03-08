@@ -203,7 +203,7 @@ public:
   IndexedPropertyVoid<intptr_t, TList, &TList::PropertyGetItem, &TList::PropertySetItem> Items;
 
 private:
-  std::vector<void *, custom_nballocator_t<void *> > FList;
+  std::vector<void *> FList;
 };
 
 class TObjectList : public TList
