@@ -384,7 +384,7 @@ struct TStringItem
 };
 
 class TStringList;
-typedef std::vector<TStringItem> TStringItemList;
+typedef std::vector<TStringItem, custom_nballocator_t<TStringItem> > TStringItemList;
 typedef intptr_t (TStringListSortCompare)(TStringList * List, intptr_t Index1, intptr_t Index2);
 
 class TStringList : public TStrings
