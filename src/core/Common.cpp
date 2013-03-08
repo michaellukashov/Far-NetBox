@@ -292,10 +292,10 @@ const UnicodeString LocalInvalidChars = L"/\\:*?\"<>|";
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
   UnicodeString Result = Str;
-  for (intptr_t Index = 0; Index < Result.Length(); ++Index)
-    if (Result[Index+1] == A)
+  for (wchar_t * Ch = const_cast<wchar_t *>(Result.c_str()); Ch && *Ch; ++Ch)
+    if (*Ch == A)
     {
-      Result[Index+1] = B;
+      *Ch = B;
     }
   return Result;
 }
