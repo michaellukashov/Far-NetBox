@@ -10,6 +10,18 @@
 #include <assert.h>
 #include "putty.h"
 
+#ifdef USE_DLMALLOC
+#define nb_malloc(size) dlmalloc(size)
+#define nb_calloc(count,size) dlcalloc(count,size)
+#define nb_realloc(ptr,size) dlrealloc(ptr,size)
+#define nb_free(ptr) dlfree(ptr)
+#else
+#define nb_malloc(size) malloc(size)
+#define nb_calloc(count,size) calloc(count,size)
+#define nb_realloc(ptr,size) realloc(ptr,size)
+#define nb_free(ptr) free(ptr)
+#endif
+
 /*
  * Parse a string block size specification. This is approximately a
  * subset of the block size specs supported by GNU fileutils:
@@ -493,7 +505,7 @@ void *safemalloc(size_t n, size_t size)
 #ifdef MINEFIELD
 	p = minefield_c_malloc(size);
 #else
-	p = malloc(size);
+	p = nb_malloc(size);
 #endif
     }
 
@@ -528,13 +540,13 @@ void *saferealloc(void *ptr, size_t n, size_t size)
 #ifdef MINEFIELD
 	    p = minefield_c_malloc(size);
 #else
-	    p = malloc(size);
+	    p = nb_malloc(size);
 #endif
 	} else {
 #ifdef MINEFIELD
 	    p = minefield_c_realloc(ptr, size);
 #else
-	    p = realloc(ptr, size);
+	    p = nb_realloc(ptr, size);
 #endif
 	}
     }
@@ -568,7 +580,7 @@ void safefree(void *ptr)
 #ifdef MINEFIELD
 	minefield_c_free(ptr);
 #else
-	free(ptr);
+	nb_free(ptr);
 #endif
     }
 #ifdef MALLOC_LOG
