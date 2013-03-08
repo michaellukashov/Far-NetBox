@@ -1094,7 +1094,7 @@ intptr_t TCustomFarPlugin::FarMessage(DWORD Flags,
   }
   ,
   {
-    delete[] Items;
+    nb_free(Items);
   }
   );
 
@@ -1822,10 +1822,10 @@ void TCustomFarFileSystem::ClearOpenPluginInfo(OpenPluginInfo & Info)
 {
   if (Info.StructSize)
   {
-    delete[] Info.HostFile;
-    delete[] Info.CurDir;
-    delete[] Info.Format;
-    delete[] Info.PanelTitle;
+    nb_free(Info.HostFile);
+    nb_free(Info.CurDir);
+    nb_free(Info.Format);
+    nb_free(Info.PanelTitle);
     assert(!Info.InfoLines);
     assert(!Info.InfoLinesNumber);
     assert(!Info.DescrFiles);
@@ -1937,16 +1937,16 @@ void TCustomFarFileSystem::FreeFindData(
     assert(ItemsNumber > 0);
     for (intptr_t Index = 0; Index < ItemsNumber; ++Index)
     {
-      delete[] PanelItem[Index].FindData.lpwszFileName;
-      delete[] PanelItem[Index].Description;
-      delete[] PanelItem[Index].Owner;
+      nb_free(PanelItem[Index].FindData.lpwszFileName);
+      nb_free(PanelItem[Index].Description);
+      nb_free(PanelItem[Index].Owner);
       for (intptr_t CustomIndex = 0; CustomIndex < PanelItem[Index].CustomColumnNumber; ++CustomIndex)
       {
-        delete[] PanelItem[Index].CustomColumnData[CustomIndex];
+        nb_free(PanelItem[Index].CustomColumnData[CustomIndex]);
       }
-      delete[] PanelItem[Index].CustomColumnData;
+      nb_free(PanelItem[Index].CustomColumnData);
     }
-    delete[] PanelItem;
+    nb_free(PanelItem);
   }
 }
 //---------------------------------------------------------------------------
@@ -2271,18 +2271,18 @@ void TFarPanelModes::ClearPanelMode(PanelMode & Mode)
     intptr_t ColumnTypesCount = Mode.ColumnTypes ?
       CommaCount(UnicodeString(Mode.ColumnTypes)) + 1 : 0;
 
-    delete[] Mode.ColumnTypes;
-    delete[] Mode.ColumnWidths;
+    nb_free(Mode.ColumnTypes);
+    nb_free(Mode.ColumnWidths);
     if (Mode.ColumnTitles)
     {
       for (intptr_t Index = 0; Index < ColumnTypesCount; ++Index)
       {
-        delete[] Mode.ColumnTitles[Index];
+        nb_free(Mode.ColumnTitles[Index]);
       }
-      delete[] Mode.ColumnTitles;
+      nb_free(Mode.ColumnTitles);
     }
-    delete[] Mode.StatusColumnTypes;
-    delete[] Mode.StatusColumnWidths;
+    nb_free(Mode.StatusColumnTypes);
+    nb_free(Mode.StatusColumnWidths);
     memset(&Mode, 0, sizeof(Mode));
   }
 }
@@ -2379,7 +2379,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   }
   if (Titles[FunctionKey-1])
   {
-    delete[] Titles[FunctionKey-1];
+    nb_free(Titles[FunctionKey-1]);
   }
   Titles[FunctionKey-1] = TCustomFarPlugin::DuplicateStr(Title, true);
 }
@@ -2388,13 +2388,13 @@ void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
 {
   for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(Titles.Titles)); ++Index)
   {
-    delete[] Titles.Titles[Index];
-    delete[] Titles.CtrlTitles[Index];
-    delete[] Titles.AltTitles[Index];
-    delete[] Titles.ShiftTitles[Index];
-    delete[] Titles.CtrlShiftTitles[Index];
-    delete[] Titles.AltShiftTitles[Index];
-    delete[] Titles.CtrlAltTitles[Index];
+    nb_free(Titles.Titles[Index]);
+    nb_free(Titles.CtrlTitles[Index]);
+    nb_free(Titles.AltTitles[Index]);
+    nb_free(Titles.ShiftTitles[Index]);
+    nb_free(Titles.CtrlShiftTitles[Index]);
+    nb_free(Titles.AltShiftTitles[Index]);
+    nb_free(Titles.CtrlAltTitles[Index]);
   }
 }
 //---------------------------------------------------------------------------
@@ -2444,7 +2444,6 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   // DEBUG_PRINTF(L"PanelItem->FindData.lpwszFileName = %s", PanelItem->FindData.lpwszFileName);
   PanelItem->Description = TCustomFarPlugin::DuplicateStr(Description);
   PanelItem->Owner = TCustomFarPlugin::DuplicateStr(Owner);
-  // PanelItem->CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
   wchar_t ** CustomColumnData = nb_malloc(sizeof(wchar_t *) * PanelItem->CustomColumnNumber);
   for (intptr_t Index = 0; Index < PanelItem->CustomColumnNumber; ++Index)
   {
