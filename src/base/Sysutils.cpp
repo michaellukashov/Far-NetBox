@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 
+#include <headers.hpp>
 #include <Classes.hpp>
 #include <Sysutils.hpp>
 #include "FarPlugin.h"
@@ -895,7 +896,7 @@ UnicodeString StringOfChar(const wchar_t c, intptr_t len)
 char * StrNew(const char * Str)
 {
   size_t sz = strlen(Str) + 1;
-  char * Result = new char[sz];
+  char * Result = nb_malloc(sizeof(char) * sz);
   strncpy_s(Result, sz, Str, sz);
   return Result;
 }
