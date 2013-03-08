@@ -932,7 +932,8 @@ public:
       FCapacity = ACapacity;
       if (FCapacity > 0)
       {
-        unsigned char * NData = nb_malloc(FCapacity + FSendPrefixLen);
+        unsigned char * NData = static_cast<unsigned char *>(
+          nb_malloc(FCapacity + FSendPrefixLen));
         NData += FSendPrefixLen;
         if (FData)
         {
