@@ -268,6 +268,7 @@ ADD_CUSTOM_COMMAND(TARGET NetBox
   POST_BUILD
   COMMAND if not exist "${OUTPUT_DIR}" ( mkdir "${OUTPUT_DIR}" )
   COMMAND cp -f NetBox.dll ${OUTPUT_DIR}
+  COMMAND if exist NetBox.pdb ( cp -f NetBox.pdb ${OUTPUT_DIR} )
   WORKING_DIRECTORY ${BUILD_DIR}
   VERBATIM
 )
