@@ -33,6 +33,18 @@
 
 #include "ne_alloc.h"
 
+#ifdef USE_DLMALLOC
+#define nb_malloc(size) dlmalloc(size)
+#define nb_calloc(count,size) dlcalloc(count,size)
+#define nb_realloc(ptr,size) dlrealloc(ptr,size)
+#define nb_free(ptr) dlfree(ptr)
+#else
+#define nb_malloc(size) ::malloc(size)
+#define nb_calloc(count,size) ::calloc(count,size)
+#define nb_realloc(ptr,size) ::realloc(ptr,size)
+#define nb_free(ptr) ::free(ptr)
+#endif
+
 static ne_oom_callback_fn oom;
 
 void ne_oom_callback(ne_oom_callback_fn callback)
@@ -43,7 +55,7 @@ void ne_oom_callback(ne_oom_callback_fn callback)
 #ifndef NEON_MEMLEAK
 
 #define DO_MALLOC(ptr, len) do {		\
-    ptr = malloc((len));			\
+    ptr = nb_malloc((len));			\
     if (!ptr) {					\
 	if (oom != NULL)			\
 	    oom();				\
@@ -67,7 +79,7 @@ void *ne_calloc(size_t len)
 
 void *ne_realloc(void *ptr, size_t len)
 {
-    void *ret = realloc(ptr, len);
+    void *ret = nb_realloc(ptr, len);
     if (!ret) {
 	if (oom)
 	    oom();
@@ -80,7 +92,7 @@ void *ne_realloc(void *ptr, size_t len)
 /* Implemented only to ensure free is bound to the correct DLL. */
 void ne_free(void *ptr)
 {
-    free(ptr);
+    nb_free(ptr);
 }
 #endif
 
@@ -130,7 +142,7 @@ void ne_alloc_dump(FILE *f)
 
 static void *tracking_malloc(size_t len, const char *file, int line)
 {
-    void *ptr = malloc((len));
+    void *ptr = nb_malloc((len));
     struct block *block;
 
     if (!ptr) {
@@ -138,7 +150,7 @@ static void *tracking_malloc(size_t len, const char *file, int line)
 	abort();
     }
     
-    block = malloc(sizeof *block);
+    block = nb_malloc(sizeof *block);
     if (block != NULL) {
         block->ptr = ptr;
         block->len = len;
@@ -170,7 +182,7 @@ void *ne_realloc_ml(void *ptr, size_t s, const char *file, int line)
     if (ptr == NULL)
         return tracking_malloc(s, file, line);
 
-    ret = realloc(ptr, s);
+    ret = nb_realloc(ptr, s);
     if (!ret) {
         if (oom) oom();
         abort();
@@ -212,12 +224,12 @@ void ne_free_ml(void *ptr)
                 last->next = b->next;
             else
                 blocks = b->next;
-            free(b);
+            nb_free(b);
             break;
         }
     }
 
-    free(ptr);
+    nb_free(ptr);
 }
 
 #endif /* NEON_MEMLEAK */
