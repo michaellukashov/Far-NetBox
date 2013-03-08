@@ -865,12 +865,12 @@ Boolean TRemoteFile::GetIsDirectory() const
 //---------------------------------------------------------------------------
 Boolean TRemoteFile::GetIsParentDirectory() const
 {
-  return (GetFileName() == PARENTDIRECTORY);
+  return wcscmp(FFileName.c_str(), PARENTDIRECTORY) == 0;
 }
 //---------------------------------------------------------------------------
 Boolean TRemoteFile::GetIsThisDirectory() const
 {
-  return (GetFileName() == THISDIRECTORY);
+  return wcscmp(FFileName.c_str(), THISDIRECTORY) == 0;
 }
 //---------------------------------------------------------------------------
 Boolean TRemoteFile::GetIsInaccesibleDirectory() const
