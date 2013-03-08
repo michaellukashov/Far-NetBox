@@ -21,10 +21,6 @@
 #include <headers.hpp>
 #include <CppProperties.h>
 
-#ifdef USE_DLMALLOC
-#include <dlmalloc/malloc-2.8.6.h>
-#endif
-
 #pragma warning(pop)
 
 #define NPOS static_cast<intptr_t>(-1)
@@ -69,103 +65,6 @@ DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /* Sender */);
 //---------------------------------------------------------------------------
 void Abort();
 void Error(int ErrorID, intptr_t data);
-//---------------------------------------------------------------------------
-#ifdef USE_DLMALLOC
-#define nb_malloc(size) dlmalloc(size)
-#define nb_calloc(count,size) dlcalloc(count,size)
-#define nb_realloc(ptr,size) dlrealloc(ptr,size)
-#define nb_free(ptr) dlfree(ptr)
-#else
-#define nb_malloc(size) ::malloc(size)
-#define nb_calloc(count,size) ::calloc(count,size)
-#define nb_realloc(ptr,size) ::realloc(ptr,size)
-#define nb_free(ptr) ::free(ptr)
-#endif
-
-#if defined(__cplusplus)
-inline void * operator_new(size_t size)
-{
-	void * p = nb_malloc(size);
-	/*if (!p)
-	{
-		static std::bad_alloc badalloc;
-		throw badalloc;
-	}*/
-	return p;
-}
-
-inline void operator_delete(void * p)
-{
-	nb_free(p);
-}
-#endif
-
-#ifdef USE_DLMALLOC
-/// custom memory allocation
-#define DEF_CUSTOM_MEM_ALLOCATION_IMPL            \
-	public:                                         \
- 	void * operator new(size_t size)                \
-	{                                               \
-		return operator_new(size);                    \
-	}                                               \
-	void operator delete(void * p, size_t size)     \
-	{                                               \
-		(void)(size);                                 \
-		operator_delete(p);                    \
-	}                                               \
- 	void * operator new[](size_t size)              \
-	{                                               \
-		return operator_new(size);                    \
-	}                                               \
-	void operator delete[](void * p, size_t size)   \
-	{                                               \
-		(void)(size);                                 \
-		operator_delete(p);                    \
-	}                                               \
- 	void * operator new(size_t size, void * p)      \
-	{                                               \
-		(void)(size);                                 \
-		return p;                                     \
-	}                                               \
-	void operator delete(void * p, void *)          \
-	{                                               \
-		(void)(p);                                    \
-	}                                               \
- 	void * operator new[](size_t size, void * p)    \
-	{                                               \
-		(void)(size);                                 \
-		return p;                                     \
-	}                                               \
-	void operator delete[](void * p, void *)        \
-	{                                               \
-		(void)(p);                                    \
-	}
-
-#ifdef _DEBUG
-#define CUSTOM_MEM_ALLOCATION_IMPL DEF_CUSTOM_MEM_ALLOCATION_IMPL \
- 	void * operator new(size_t size, LPCSTR /*lpszFileName*/, int /*nLine*/) \
-	{\
-		return operator_new(size);\
-	}\
- 	void* operator new[](size_t size, LPCSTR /*lpszFileName*/, int /*nLine*/)\
-	{\
-		return operator_new(size);\
-	}\
-	void operator delete(void* p, LPCSTR /*lpszFileName*/, int /*nLine*/)\
-	{\
-		operator_delete(p);\
-	}\
-	void operator delete[](void* p, LPCSTR /*lpszFileName*/, int /*nLine*/)\
-	{\
-		operator_delete(p);\
-	}
-#else
-#define CUSTOM_MEM_ALLOCATION_IMPL DEF_CUSTOM_MEM_ALLOCATION_IMPL
-#endif
-
-#else
-#define CUSTOM_MEM_ALLOCATION_IMPL 
-#endif
 //---------------------------------------------------------------------------
 class TObject
 {
