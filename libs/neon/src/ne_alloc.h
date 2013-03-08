@@ -51,7 +51,7 @@ char *ne_strndup(const char *s, size_t n) ne_attribute_malloc;
 #ifdef WIN32
 void ne_free(void *ptr);
 #else
-#define ne_free nb_free
+#define ne_free free
 #endif
 #endif
 
