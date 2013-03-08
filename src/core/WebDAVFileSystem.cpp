@@ -2,7 +2,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <malloc.h>
 #include <stdio.h>
 #include <wincrypt.h>
 
