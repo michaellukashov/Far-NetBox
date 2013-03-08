@@ -2112,7 +2112,7 @@ TFarList::TFarList(TFarDialogItem * ADialogItem) :
   assert((ADialogItem == NULL) ||
     (ADialogItem->GetType() == DI_COMBOBOX) || (ADialogItem->GetType() == DI_LISTBOX));
   FDialogItem = ADialogItem;
-  FListItems = new FarList;
+  FListItems = static_cast<FarList *>(nb_malloc(sizeof(FarList)));
   memset(FListItems, 0, sizeof(*FListItems));
   FNoDialogUpdate = false;
 }
@@ -2120,7 +2120,7 @@ TFarList::TFarList(TFarDialogItem * ADialogItem) :
 TFarList::~TFarList()
 {
   nb_free(FListItems->Items);
-  delete FListItems;
+  nb_free(FListItems);
 }
 //---------------------------------------------------------------------------
 void TFarList::Assign(TPersistent * Source)
