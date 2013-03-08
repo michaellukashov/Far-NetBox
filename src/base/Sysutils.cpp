@@ -572,12 +572,13 @@ UnicodeString Format(const wchar_t * format, ...)
 
 UnicodeString Format(const wchar_t * Format, va_list args)
 {
-  UnicodeString Result(64, 0);
+  UnicodeString Result;
   if (Format && *Format)
   {
     intptr_t Len = _vscwprintf(Format, args);
     Result.SetLength(Len + 1);
-    vswprintf_s(const_cast<wchar_t *>(Result.c_str()), Len + 1, Format, args);
+    // vswprintf(Buf, Len + 1, Format, args);
+    vswprintf(const_cast<wchar_t *>(Result.c_str()), Len + 1, Format, args);
   }
   return Result.c_str();
 }
