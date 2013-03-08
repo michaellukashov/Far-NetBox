@@ -1122,7 +1122,7 @@ void TStringList::LoadFromFile(const UnicodeString & FileName)
     // parse file content
     // GDisk.Tab.Caption=&GDisk
   }
-  free(content);*/
+  nb_free(content);*/
 }
 
 void TStringList::PutObject(intptr_t Index, TObject * AObject)
@@ -1658,18 +1658,18 @@ void * TMemoryStream::Realloc(__int64 & NewCapacity)
   {
     if (NewCapacity == 0)
     {
-      free(FMemory);
+      nb_free(FMemory);
       Result = NULL;
     }
     else
     {
       if (FCapacity == 0)
       {
-        Result = malloc(static_cast<size_t>(NewCapacity));
+        Result = nb_malloc(static_cast<size_t>(NewCapacity));
       }
       else
       {
-        Result = realloc(FMemory, static_cast<size_t>(NewCapacity));
+        Result = nb_realloc(FMemory, static_cast<size_t>(NewCapacity));
       }
       if (Result == NULL)
       {
