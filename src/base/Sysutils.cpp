@@ -560,10 +560,9 @@ bool DeleteFile(const UnicodeString & File)
 
 UnicodeString Format(const wchar_t * format, ...)
 {
-  UnicodeString Result(64, 0);
   va_list args;
   va_start(args, format);
-  Result = ::Format(format, args);
+  UnicodeString Result = ::Format(format, args);
   va_end(args);
   return Result.c_str();
 }
