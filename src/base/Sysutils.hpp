@@ -338,7 +338,7 @@ Boolean IsLeapYear(Word Year);
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 
-class TCriticalSection
+class TCriticalSection : public TObject
 {
 public:
   TCriticalSection();

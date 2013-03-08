@@ -191,13 +191,13 @@ void * CreateFileInfo(UnicodeString FileName)
   if (Size > 0)
   {
     TRACE("CreateFileInfo 2");
-    Result = new char[Size];
+    Result = nb_malloc(Size);
     // Get file version info block
     TRACE("CreateFileInfo 3");
     if (!GetFileVersionInfoFix(FileName.c_str(), Handle, Size, Result))
     {
       TRACE("CreateFileInfo 4");
-      delete[] Result;
+      nb_free(Result);
       Result = NULL;
     }
     TRACE("CreateFileInfo 5");
@@ -213,7 +213,7 @@ void * CreateFileInfo(UnicodeString FileName)
 void FreeFileInfo(void * FileInfo)
 {
   if (FileInfo)
-    delete[] FileInfo;
+    nb_free(FileInfo);
 }
 //---------------------------------------------------------------------------
 typedef TTranslation TTranslations[65536];

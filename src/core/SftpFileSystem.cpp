@@ -258,7 +258,7 @@ public:
   {
     if (FData != NULL)
     {
-      delete[] (FData - FSendPrefixLen);
+      nb_free(FData - FSendPrefixLen);
     }
     if (FReservedBy) { FReservedBy->UnreserveResponse(this); }
   }
@@ -932,19 +932,19 @@ public:
       FCapacity = ACapacity;
       if (FCapacity > 0)
       {
-        unsigned char * NData = new unsigned char[FCapacity + FSendPrefixLen];
+        unsigned char * NData = nb_malloc(FCapacity + FSendPrefixLen);
         NData += FSendPrefixLen;
         if (FData)
         {
           memmove(NData - FSendPrefixLen, FData - FSendPrefixLen,
             (FLength < FCapacity ? FLength : FCapacity) + FSendPrefixLen);
-          delete[] (FData - FSendPrefixLen);
+          nb_free(FData - FSendPrefixLen);
         }
         FData = NData;
       }
       else
       {
-        if (FData) { delete[] (FData - FSendPrefixLen); }
+        if (FData) { nb_free(FData - FSendPrefixLen); }
         FData = NULL;
       }
       if (FLength > FCapacity) { FLength = FCapacity; }
