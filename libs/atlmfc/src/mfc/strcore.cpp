@@ -153,7 +153,7 @@ CStringData* CAfxStringMgr::Allocate( int nChars, int nCharSize ) throw()
 	
 	nDataBytes = (nChars+1)*nCharSize;
 	nTotalSize = sizeof( CStringData )+nDataBytes;
-	pData = (CStringData*)nb_malloc( nTotalSize );
+	pData = (CStringData*)malloc( nTotalSize );
 	if (pData == NULL)
 		return NULL;
 	pData->pStringMgr = this;
@@ -166,7 +166,7 @@ CStringData* CAfxStringMgr::Allocate( int nChars, int nCharSize ) throw()
 
 void CAfxStringMgr::Free( CStringData* pData ) throw()
 {
-	nb_free(pData);
+	free(pData);
 }
 
 CStringData* CAfxStringMgr::Reallocate( CStringData* pData, int nChars, int nCharSize ) throw()
@@ -185,7 +185,7 @@ CStringData* CAfxStringMgr::Reallocate( CStringData* pData, int nChars, int nCha
 	
 	nDataBytes = (nChars+1)*nCharSize;
 	nTotalSize = sizeof( CStringData )+nDataBytes;
-	pNewData = (CStringData*)nb_realloc( pData, nTotalSize );
+	pNewData = (CStringData*)realloc( pData, nTotalSize );
 	if( pNewData == NULL )
 	{
 		return NULL;
