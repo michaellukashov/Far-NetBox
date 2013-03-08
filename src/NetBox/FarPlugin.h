@@ -466,7 +466,7 @@ private:
   intptr_t FItemFocused;
 };
 //---------------------------------------------------------------------------
-class TFarEditorInfo
+class TFarEditorInfo : public TObject
 {
 public:
   explicit TFarEditorInfo(EditorInfo * Info);

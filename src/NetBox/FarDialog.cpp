@@ -91,7 +91,7 @@ TFarDialog::~TFarDialog()
     GetItem(i)->Detach();
   }
   delete FItems;
-  delete[] FDialogItems;
+  nb_free(FDialogItems);
   FDialogItemsCapacity = 0;
   delete FContainers;
   if (FSynchronizeObjects[0] != INVALID_HANDLE_VALUE)
@@ -317,11 +317,11 @@ void TFarDialog::Add(TFarDialogItem * DialogItem)
   {
     int DialogItemsDelta = 10;
     FarDialogItem * NewDialogItems;
-    NewDialogItems = new FarDialogItem[GetItems()->GetCount() + DialogItemsDelta];
+    NewDialogItems = nb_malloc(sizeof(FarDialogItem) * (GetItems()->GetCount() + DialogItemsDelta));
     if (FDialogItems)
     {
       memmove(NewDialogItems, FDialogItems, FDialogItemsCapacity * sizeof(FarDialogItem));
-      delete[] FDialogItems;
+      nb_free(FDialogItems);
     }
     memset(NewDialogItems + FDialogItemsCapacity, 0,
       DialogItemsDelta * sizeof(FarDialogItem));
@@ -1068,7 +1068,7 @@ TFarDialogItem::~TFarDialogItem()
   assert(!GetDialog());
   if (GetDialog())
   {
-    delete[] GetDialogItem()->PtrData;
+    nb_free(GetDialogItem()->PtrData);
   }
 }
 //---------------------------------------------------------------------------
@@ -1089,7 +1089,7 @@ void TFarDialogItem::SetBounds(TRect Value)
 //---------------------------------------------------------------------------
 void TFarDialogItem::Detach()
 {
-  delete[] GetDialogItem()->PtrData;
+  nb_free(GetDialogItem()->PtrData);
   FDialog = NULL;
 }
 //---------------------------------------------------------------------------
@@ -1177,7 +1177,7 @@ void TFarDialogItem::SetDataInternal(const UnicodeString & Value)
   {
     SendMessage(DM_SETTEXTPTR, reinterpret_cast<LONG_PTR>(FarData.c_str()));
   }
-  delete[] GetDialogItem()->PtrData;
+  nb_free(GetDialogItem()->PtrData);
   GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
   DialogChange();
 }
@@ -1193,7 +1193,7 @@ void TFarDialogItem::SetData(const UnicodeString & Value)
 void TFarDialogItem::UpdateData(const UnicodeString & Value)
 {
   UnicodeString FarData = Value.c_str();
-  delete[] GetDialogItem()->PtrData;
+  nb_free(GetDialogItem()->PtrData);
   GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
 }
 //---------------------------------------------------------------------------
@@ -1970,7 +1970,7 @@ TFarEdit::TFarEdit(TFarDialog * ADialog) :
 //---------------------------------------------------------------------------
 void TFarEdit::Detach()
 {
-  delete[] GetDialogItem()->Mask;
+  nb_free(GetDialogItem()->Mask);
   // delete[] GetDialogItem()->History;
   TFarDialogItem::Detach();
 }
@@ -1980,7 +1980,7 @@ LONG_PTR TFarEdit::ItemProc(int Msg, LONG_PTR Param)
   if (Msg == DN_EDITCHANGE)
   {
     UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->PtrData;
-    delete[] GetDialogItem()->PtrData;
+    nb_free(GetDialogItem()->PtrData);
     GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
     // GetDialogItem()->MaxLen = Data.Length();
   }
@@ -2002,7 +2002,7 @@ void TFarEdit::SetHistoryMask(size_t Index, const UnicodeString & Value)
     assert(!GetDialog()->GetHandle());
     assert(&GetDialogItem()->Mask == &GetDialogItem()->History);
 
-    delete[] GetDialogItem()->Mask;
+    nb_free(GetDialogItem()->Mask);
     if (Value.IsEmpty())
     {
       GetDialogItem()->Mask = NULL;
@@ -2118,7 +2118,7 @@ TFarList::TFarList(TFarDialogItem * ADialogItem) :
 //---------------------------------------------------------------------------
 TFarList::~TFarList()
 {
-  delete[] FListItems->Items;
+  nb_free(FListItems->Items);
   delete FListItems;
 }
 //---------------------------------------------------------------------------
@@ -2140,7 +2140,7 @@ void TFarList::UpdateItem(intptr_t Index)
 {
   FarListItem * ListItem = &FListItems->Items[Index];
   UnicodeString Value = Strings[Index].c_str();
-  delete[] ListItem->Text;
+  nb_free(ListItem->Text);
   ListItem->Text = TCustomFarPlugin::DuplicateStr(Value, true);
 
   FarListUpdate ListUpdate;
@@ -2194,7 +2194,7 @@ void TFarList::Changed()
       FarListItem * Items = FListItems->Items;
       if (Count)
       {
-        FListItems->Items = new FarListItem[Count];
+        FListItems->Items = nb_malloc(sizeof(FarListItem) * Count);
         for (intptr_t Index = 0; Index < Count; ++Index)
         {
           memset(&FListItems->Items[Index], 0, sizeof(FListItems->Items[Index]));
@@ -2208,7 +2208,7 @@ void TFarList::Changed()
       {
         FListItems->Items = NULL;
       }
-      delete[] Items;
+      nb_free(Items);
       FListItems->ItemsNumber = static_cast<int>(GetCount());
     }
     for (int i = 0; i < GetCount(); i++)
@@ -2516,7 +2516,7 @@ LONG_PTR TFarComboBox::ItemProc(int Msg, LONG_PTR Param)
   if (Msg == DN_EDITCHANGE)
   {
     UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->PtrData;
-    delete[] GetDialogItem()->PtrData;
+    nb_free(GetDialogItem()->PtrData);
     GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
     // GetDialogItem()->MaxLen = Data.Length();
   }
