@@ -405,7 +405,7 @@ struct custom_nballocator_t
   {
     if (0 == s)
       return NULL;
-    pointer temp = (pointer)nb_calloc(s, sizeof(T)); 
+    pointer temp = (pointer)nb_malloc(s, sizeof(T)); 
     if (temp == NULL)
       throw std::bad_alloc();
     return temp;
