@@ -245,6 +245,7 @@ public:
 //---------------------------------------------------------------------------
 class TRemoteDirectoryCache : private TStringList
 {
+  CUSTOM_MEM_ALLOCATION_IMPL;
 public:
   TRemoteDirectoryCache();
   virtual ~TRemoteDirectoryCache();
@@ -266,6 +267,7 @@ private:
 //---------------------------------------------------------------------------
 class TRemoteDirectoryChangesCache : private TStringList
 {
+  CUSTOM_MEM_ALLOCATION_IMPL;
 public:
   explicit TRemoteDirectoryChangesCache(intptr_t MaxSize);
   virtual ~TRemoteDirectoryChangesCache(){}
