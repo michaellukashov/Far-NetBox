@@ -166,19 +166,19 @@ inline void operator_delete(void * p)
 
 #ifdef _DEBUG
 #define CUSTOM_MEM_ALLOCATION_IMPL DEF_CUSTOM_MEM_ALLOCATION_IMPL \
- 	void * operator new(size_t size, LPCSTR /*lpszFileName*/, int /*nLine*/) \
+ 	void * operator new(size_t size, const char * /*lpszFileName*/, int /*nLine*/) \
 	{\
 		return operator_new(size);\
 	}\
- 	void* operator new[](size_t size, LPCSTR /*lpszFileName*/, int /*nLine*/)\
+ 	void* operator new[](size_t size, const char * /*lpszFileName*/, int /*nLine*/)\
 	{\
 		return operator_new(size);\
 	}\
-	void operator delete(void* p, LPCSTR /*lpszFileName*/, int /*nLine*/)\
+	void operator delete(void* p, const char * /*lpszFileName*/, int /*nLine*/)\
 	{\
 		operator_delete(p);\
 	}\
-	void operator delete[](void* p, LPCSTR /*lpszFileName*/, int /*nLine*/)\
+	void operator delete[](void* p, const char * /*lpszFileName*/, int /*nLine*/)\
 	{\
 		operator_delete(p);\
 	}
