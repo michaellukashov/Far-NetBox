@@ -1659,6 +1659,7 @@ void * TMemoryStream::Realloc(__int64 & NewCapacity)
     if (NewCapacity == 0)
     {
       nb_free(FMemory);
+      FMemory = NULL;
       Result = NULL;
     }
     else
