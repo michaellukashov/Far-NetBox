@@ -201,14 +201,14 @@ void Trace(const wchar_t * SourceFile, const wchar_t * Func,
   DateTime.DecodeTime(H, N, S, MS);
   TimeString = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
 #endif
-  const wchar_t * Slash = wcsrchr(SourceFile, L'\\');
+  const wchar_t * Slash = wcsrchr(NullToEmpty(SourceFile), L'\\');
   if (Slash != NULL)
   {
     SourceFile = Slash + 1;
   }
   UTF8String Buffer = UTF8String(FORMAT(L"NetBox: [%s] [%.4X] [%s:%d:%s] %s\n",
-    TimeString.c_str(), int(GetCurrentThreadId()), SourceFile,
-     Line, Func, Message));
+    TimeString.c_str(), int(GetCurrentThreadId()), NullToEmpty(SourceFile),
+    Line, NullToEmpty(Func), NullToEmpty(Message)));
   // DWORD Written;
   // WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
   // DEBUG_PRINTF(L"%s", Buffer.c_str());
