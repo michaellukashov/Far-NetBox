@@ -20,7 +20,7 @@ class TRights;
 class TRemoteFileList;
 class THierarchicalStorage;
 //---------------------------------------------------------------------------
-class TRemoteToken
+class TRemoteToken : public TObject
 {
 public:
   TRemoteToken();
@@ -50,7 +50,7 @@ private:
   bool FIDValid;
 };
 //---------------------------------------------------------------------------
-class TRemoteTokenList
+class TRemoteTokenList : public TObject
 {
 public:
   TRemoteTokenList * Duplicate() const;
@@ -398,7 +398,7 @@ enum TValidProperty
 };
 // FIXME
 // typedef Set<TValidProperty, vpRights, vpLastAccess> TValidProperties;
-struct TValidProperties
+class TValidProperties : public TObject
 {
 public:
   TValidProperties() :
@@ -440,7 +440,7 @@ private:
 };
 #endif
 
-class TRemoteProperties
+class TRemoteProperties : public TObject
 {
 public:
   TValidProperties Valid;
