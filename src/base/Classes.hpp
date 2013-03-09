@@ -552,7 +552,7 @@ enum TSeekOrigin
 };
 
 //---------------------------------------------------------------------------
-class TStream
+class TStream : public TObject
 {
 public:
   TStream();
@@ -769,7 +769,7 @@ struct TTimeStamp
 
 //---------------------------------------------------------------------------
 // FIXME
-class TShortCut
+class TShortCut : public TObject
 {
 public:
   explicit TShortCut();

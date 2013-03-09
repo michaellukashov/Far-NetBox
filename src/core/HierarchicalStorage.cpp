@@ -6,12 +6,12 @@
 #define TRACE_WRITING NOTRACING
 #define TRACE_ACCESS NOTRACING
 
+#include <vector>
 #include "Common.h"
 #include "Exceptions.h"
 #include "PuttyIntf.h"
 #include "HierarchicalStorage.h"
 #include <TextsCore.h>
-#include <vector>
 //------------------------------------------------------------------------------
 #pragma package(smart_init)
 //------------------------------------------------------------------------------
@@ -463,10 +463,10 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
   TRegistry * Registry = Storage->FRegistry;
   bool Result = true;
   TStrings * Names = new TStringList();
+  std::vector<unsigned char, custom_nballocator_t<unsigned char> > Buffer(1024, 0);
   TRY_FINALLY (
   {
     Registry->GetValueNames(Names);
-    std::vector<unsigned char> Buffer(1024, 0);
     intptr_t Index = 0;
     while ((Index < Names->GetCount()) && Result)
     {
