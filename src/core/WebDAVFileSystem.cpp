@@ -2,7 +2,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <malloc.h>
 #include <stdio.h>
 #include <wincrypt.h>
 
@@ -7271,7 +7270,7 @@ end_207_element(
         if (status.code == 412)
           b->contains_precondition_error = TRUE;
 
-        free(status.reason_phrase);
+        ne_free(status.reason_phrase);
       }
       else
         return error_create(WEBDAV_ERR_DAV_REQUEST_FAILED, NULL,
@@ -10527,7 +10526,7 @@ props_end_element(
       // Parse the <status> tag's CDATA for a status code.
       if (ne_parse_statusline(cdata, &status))
         return error_create(WEBDAV_ERR_XML_MALFORMED, NULL, NULL);
-      free(status.reason_phrase);
+      ne_free(status.reason_phrase);
       pc->status = status.code;
       return WEBDAV_NO_ERROR;
 
