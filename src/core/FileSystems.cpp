@@ -16,5 +16,8 @@ TCustomFileSystem::TCustomFileSystem(TTerminal * ATerminal):
 //---------------------------------------------------------------------------
 TCustomFileSystem::~TCustomFileSystem()
 {
+#ifdef USE_DLMALLOC
+  dlmalloc_trim(0); // 64 * 1024);
+#endif
 }
 //---------------------------------------------------------------------------
