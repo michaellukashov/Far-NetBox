@@ -46,8 +46,8 @@ extern const UnicodeString kernel32;
 UnicodeString MB2W(const char * src, const UINT cp = CP_ACP);
 std::string W2MB(const wchar_t * src, const UINT cp = CP_ACP);
 //---------------------------------------------------------------------------
-int __cdecl debug_printf(const wchar_t * format, ...);
-int __cdecl debug_printf2(const char * format, ...);
+intptr_t __cdecl debug_printf(const wchar_t * format, ...);
+intptr_t __cdecl debug_printf2(const char * format, ...);
 
 #ifdef NETBOX_DEBUG
 #define DEBUG_PRINTF(format, ...) do { debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", Sysutils::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
@@ -68,6 +68,7 @@ void Error(int ErrorID, intptr_t data);
 //---------------------------------------------------------------------------
 class TObject
 {
+  CUSTOM_MEM_ALLOCATION_IMPL;
 public:
   TObject() {}
   virtual ~TObject() {}
@@ -202,7 +203,7 @@ public:
   IndexedPropertyVoid<intptr_t, TList, &TList::PropertyGetItem, &TList::PropertySetItem> Items;
 
 private:
-  std::vector<void *> FList;
+  std::vector<void *, custom_nballocator_t<void *> > FList;
 };
 
 class TObjectList : public TList
@@ -383,7 +384,7 @@ struct TStringItem
 };
 
 class TStringList;
-typedef std::vector<TStringItem> TStringItemList;
+typedef std::vector<TStringItem, custom_nballocator_t<TStringItem> > TStringItemList;
 typedef intptr_t (TStringListSortCompare)(TStringList * List, intptr_t Index1, intptr_t Index2);
 
 class TStringList : public TStrings
@@ -688,7 +689,7 @@ struct TRegDataInfo
 
 //---------------------------------------------------------------------------
 
-class TRegistry
+class TRegistry : public TObject
 {
 public:
   TRegistry();
@@ -707,7 +708,7 @@ public:
   bool ReadBool(const UnicodeString & Name);
   TDateTime ReadDateTime(const UnicodeString & Name);
   double ReadFloat(const UnicodeString & Name) const;
-  int ReadInteger(const UnicodeString & Name) const;
+  intptr_t ReadInteger(const UnicodeString & Name) const;
   __int64 ReadInt64(const UnicodeString & Name);
   UnicodeString ReadString(const UnicodeString & Name);
   UnicodeString ReadStringRaw(const UnicodeString & Name);
@@ -719,7 +720,7 @@ public:
   void WriteFloat(const UnicodeString & Name, double Value);
   void WriteString(const UnicodeString & Name, const UnicodeString & Value);
   void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
-  void WriteInteger(const UnicodeString & Name, int Value);
+  void WriteInteger(const UnicodeString & Name, intptr_t Value);
   void WriteInt64(const UnicodeString & Name, __int64 Value);
   void WriteBinaryData(const UnicodeString & Name,
     const void * Buffer, size_t Size);
@@ -772,11 +773,11 @@ class TShortCut
 {
 public:
   explicit TShortCut();
-  explicit TShortCut(int Value);
-  operator int() const;
+  explicit TShortCut(intptr_t Value);
+  operator intptr_t() const;
   bool operator < (const TShortCut & rhs) const;
 private:
-  int FValue;
+  intptr_t FValue;
 };
 
 //---------------------------------------------------------------------------
@@ -868,7 +869,7 @@ public:
   DelphiSet<T>& AddRange(const T RangeStartValue, const int Count)
   {
     T RangeStartForAdd = RangeStartValue;
-    for (int i = 0 ; i < Count; ++i)
+    for (int I = 0; I < Count; ++I)
       this->Add(RangeStartForAdd++);
     return *this;
   }
@@ -879,7 +880,7 @@ public:
       throw Sysutils::Exception(FORMAT("Start Value %d is greater than End Value %d", StartValue, EndValue));
     int Range = RangeEndValue - RangeStartValue;
     T RangeStartForAdd = RangeStartValue;
-    for (int i = 0 ; i < Range; ++i)
+    for (int I = 0 ; I < Range; ++I)
       this->Add(RangeStartForAdd++);
     return *this;
   }
@@ -894,8 +895,8 @@ public:
   {
     if (RangeEndValue < RangeStartValue)
       throw Sysutils::Exception(FORMAT("Start Value %d is greater than End Value %d", StartValue, EndValue));
-    for (T i = RangeStartValue ; i <= RangeEndValue; ++i)
-      this->Remove(i);
+    for (T I = RangeStartValue ; I <= RangeEndValue; ++I)
+      this->Remove(I);
     return *this;
   }
 
@@ -907,7 +908,6 @@ public:
       return true;
   }
 
-  bool In(const T Value) const { return Contains(Value); }
   bool Has(const T Value) const { return Contains(Value); }
   void Clear() { FSet.clear(); }
   void Empty() const { FSet.Clear(); }
@@ -962,7 +962,7 @@ public:
     return *NewOne;
   }
 
-  static DelphiSet<T>& InitRange(T FirstItem, T LastItem , const int Count)
+  static DelphiSet<T>& InitRange(T FirstItem, T LastItem, const int Count)
   {
     DelphiSet<T> *NewOne = new DelphiSet<T>();
     NewOne->AddRange(FirstItem, Count);

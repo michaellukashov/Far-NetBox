@@ -83,20 +83,20 @@ public:
   TTerminalQueueStatus * CreateStatus(TTerminalQueueStatus * Current);
   void Idle();
 
-  int GetTransfersLimit() { return FTransfersLimit; }
+  intptr_t GetTransfersLimit() { return FTransfersLimit; }
   bool GetEnabled() const { return FEnabled; }
   TQueryUserEvent & GetOnQueryUser() { return FOnQueryUser; }
-  void SetOnQueryUser(TQueryUserEvent value) { FOnQueryUser = value; }
+  void SetOnQueryUser(TQueryUserEvent Value) { FOnQueryUser = Value; }
   TPromptUserEvent & GetOnPromptUser() { return FOnPromptUser; }
-  void SetOnPromptUser(TPromptUserEvent value) { FOnPromptUser = value; }
+  void SetOnPromptUser(TPromptUserEvent Value) { FOnPromptUser = Value; }
   TExtendedExceptionEvent & GetOnShowExtendedException() { return FOnShowExtendedException; }
-  void SetOnShowExtendedException(TExtendedExceptionEvent value) { FOnShowExtendedException = value; }
+  void SetOnShowExtendedException(TExtendedExceptionEvent Value) { FOnShowExtendedException = Value; }
   TQueueListUpdateEvent & GetOnListUpdate() { return FOnListUpdate; }
-  void SetOnListUpdate(TQueueListUpdateEvent value) { FOnListUpdate = value; }
+  void SetOnListUpdate(TQueueListUpdateEvent Value) { FOnListUpdate = Value; }
   TQueueItemUpdateEvent & GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
-  void SetOnQueueItemUpdate(TQueueItemUpdateEvent value) { FOnQueueItemUpdate = value; }
+  void SetOnQueueItemUpdate(TQueueItemUpdateEvent Value) { FOnQueueItemUpdate = Value; }
   TQueueEventEvent & GetOnEvent() { return FOnEvent; }
-  void SetOnEvent(TQueueEventEvent value) { FOnEvent = value; }
+  void SetOnEvent(TQueueEventEvent Value) { FOnEvent = Value; }
 
 protected:
   friend class TTerminalItem;
@@ -114,14 +114,14 @@ protected:
   TConfiguration * FConfiguration;
   TSessionData * FSessionData;
   TList * FItems;
-  int FItemsInProcess;
+  intptr_t FItemsInProcess;
   TCriticalSection * FItemsSection;
-  int FFreeTerminals;
+  intptr_t FFreeTerminals;
   TList * FTerminals;
   TList * FForcedItems;
-  int FTemporaryTerminals;
-  int FOverallTerminals;
-  int FTransfersLimit;
+  intptr_t FTemporaryTerminals;
+  intptr_t FOverallTerminals;
+  intptr_t FTransfersLimit;
   bool FEnabled;
   TDateTime FIdleInterval;
   TDateTime FLastIdle;
@@ -149,8 +149,8 @@ public:
 
 public:
   void SetMasks(const UnicodeString & Value);
-  void SetTransfersLimit(int value);
-  void SetEnabled(bool value);
+  void SetTransfersLimit(intptr_t Value);
+  void SetEnabled(bool Value);
   bool GetIsEmpty();
 private:
   TTerminalQueue(const TTerminalQueue &);
@@ -180,7 +180,7 @@ public:
 
   TStatus GetStatus();
   HANDLE GetCompleteEvent() { return FCompleteEvent; }
-  void SetCompleteEvent(HANDLE value) { FCompleteEvent = value; }
+  void SetCompleteEvent(HANDLE Value) { FCompleteEvent = Value; }
 
 protected:
   TStatus FStatus;
@@ -230,7 +230,7 @@ public:
   bool GetProcessingUserAction() const { return FProcessingUserAction; }
   intptr_t GetIndex();
   void * GetUserData() { return FUserData; }
-  void SetUserData(void * value) { FUserData = value; }
+  void SetUserData(void * Value) { FUserData = Value; }
 
 private:
   TFileOperationProgressType * FProgressData;
@@ -299,14 +299,14 @@ class TTransferQueueItem : public TLocatedQueueItem
 public:
   explicit TTransferQueueItem(TTerminal * Terminal,
     TStrings * FilesToCopy, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, int Params, TOperationSide Side);
+    const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side);
   virtual ~TTransferQueueItem();
 
 protected:
   TStrings * FFilesToCopy;
   UnicodeString FTargetDir;
   TCopyParamType * FCopyParam;
-  int FParams;
+  intptr_t FParams;
 };
 //---------------------------------------------------------------------------
 class TUploadQueueItem : public TTransferQueueItem
@@ -314,7 +314,7 @@ class TUploadQueueItem : public TTransferQueueItem
 public:
   explicit TUploadQueueItem(TTerminal * Terminal,
     TStrings * FilesToCopy, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, int Params);
+    const TCopyParamType * CopyParam, intptr_t Params);
   virtual ~TUploadQueueItem() {}
 protected:
   virtual void DoExecute(TTerminal * Terminal);
@@ -325,7 +325,7 @@ class TDownloadQueueItem : public TTransferQueueItem
 public:
   explicit TDownloadQueueItem(TTerminal * Terminal,
     TStrings * FilesToCopy, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, int Params);
+    const TCopyParamType * CopyParam, intptr_t Params);
   virtual ~TDownloadQueueItem() {}
 protected:
   virtual void DoExecute(TTerminal * Terminal);
@@ -394,8 +394,8 @@ private:
   void TerminalInformation(
     TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase);
   void TerminalQueryUser(TObject * Sender,
-    const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
-    const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg);
+    const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+    const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
@@ -403,7 +403,7 @@ private:
     Exception * E, void * Arg);
   void TerminalDisplayBanner(TTerminal * Terminal,
     UnicodeString SessionName, const UnicodeString & Banner,
-    bool & NeverShowAgain, int Options);
+    bool & NeverShowAgain, intptr_t Options);
   void TerminalChangeDirectory(TObject * Sender);
   void TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly);
   void TerminalStartReadDirectory(TObject * Sender);

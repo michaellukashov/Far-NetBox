@@ -1,3 +1,8 @@
+NetBox 2.1.27 ??.03.2013
+--------------------
+  * Improvement: Fix speed issues
+  * WebDAV: Fix copying large (>4GB) files from/to WebDAV server
+
 NetBox 2.1.26 22.02.2013
 --------------------
   * Bugfix: WebDAV: Fix connection to Apache/WebDAV server

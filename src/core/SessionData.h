@@ -42,14 +42,14 @@ extern const wchar_t SshProtList[][10];
 extern const wchar_t ProxyMethodList[][10];
 extern const TCipher DefaultCipherList[CIPHER_COUNT];
 extern const TKex DefaultKexList[KEX_COUNT];
-extern const int DefaultSendBuf;
+extern const intptr_t DefaultSendBuf;
 extern const UnicodeString AnonymousUserName;
 extern const UnicodeString AnonymousPassword;
-extern const int SshPortNumber;
-extern const int FtpPortNumber;
-extern const int FtpsImplicitPortNumber;
-extern const int HTTPPortNumber;
-extern const int HTTPSPortNumber;
+extern const intptr_t SshPortNumber;
+extern const intptr_t FtpPortNumber;
+extern const intptr_t FtpsImplicitPortNumber;
+extern const intptr_t HTTPPortNumber;
+extern const intptr_t HTTPSPortNumber;
 //---------------------------------------------------------------------------
 struct TIEProxyConfig
 {
@@ -63,7 +63,7 @@ struct TIEProxyConfig
   UnicodeString Proxy; //< string in format "http=host:80;https=host:443;ftp=ftpproxy:20;socks=socksproxy:1080"
   UnicodeString ProxyBypass; //< string in format "*.local, foo.com, google.com"
   UnicodeString ProxyHost;
-  int ProxyPort;
+  intptr_t ProxyPort;
   TProxyMethod ProxyMethod;
 };
 //---------------------------------------------------------------------------
@@ -75,10 +75,10 @@ friend class TStoredSessionList;
 
 private:
   UnicodeString FHostName;
-  int FPortNumber;
+  intptr_t FPortNumber;
   UnicodeString FUserName;
   RawByteString FPassword;
-  int FPingInterval;
+  intptr_t FPingInterval;
   TPingType FPingType;
   bool FTryAgent;
   bool FAgentFwd;
@@ -117,33 +117,34 @@ private:
   bool FScp1Compatibility;
   UnicodeString FShell;
   UnicodeString FSftpServer;
-  int FTimeout;
+  intptr_t FTimeout;
   bool FUnsetNationalVars;
   bool FIgnoreLsWarnings;
   bool FTcpNoDelay;
-  int FSendBuf;
+  intptr_t FSendBuf;
   bool FSshSimple;
   TProxyMethod FProxyMethod;
   UnicodeString FProxyHost;
-  int FProxyPort;
+  intptr_t FProxyPort;
   UnicodeString FProxyUsername;
   RawByteString FProxyPassword;
   UnicodeString FProxyTelnetCommand;
   UnicodeString FProxyLocalCommand;
   TAutoSwitch FProxyDNS;
   bool FProxyLocalhost;
-  int FFtpProxyLogonType;
+  intptr_t FFtpProxyLogonType;
   TAutoSwitch FBugs[BUG_COUNT];
   UnicodeString FCustomParam1;
   UnicodeString FCustomParam2;
   bool FResolveSymlinks;
   TDateTime FTimeDifference;
-  int FSFTPDownloadQueue;
-  int FSFTPUploadQueue;
-  int FSFTPListingQueue;
-  int FSFTPMaxVersion;
-  unsigned long FSFTPMinPacketSize;
-  unsigned long FSFTPMaxPacketSize;
+  intptr_t FSFTPDownloadQueue;
+  intptr_t FSFTPUploadQueue;
+  intptr_t FSFTPListingQueue;
+  intptr_t FSFTPMaxVersion;
+  intptr_t FSecToDateTime;
+  uintptr_t FSFTPMinPacketSize;
+  uintptr_t FSFTPMaxPacketSize;
   TDSTMode FDSTMode;
   TAutoSwitch FSFTPBugs[SFTP_BUG_COUNT];
   bool FDeleteToRecycleBin;
@@ -155,47 +156,47 @@ private:
   bool FSslSessionReuse;
   TAddressFamily FAddressFamily;
   UnicodeString FRekeyData;
-  unsigned int FRekeyTime;
-  int FColor;
+  uintptr_t FRekeyTime;
+  intptr_t FColor;
   bool FTunnel;
   UnicodeString FTunnelHostName;
-  int FTunnelPortNumber;
+  intptr_t FTunnelPortNumber;
   UnicodeString FTunnelUserName;
   RawByteString FTunnelPassword;
   UnicodeString FTunnelPublicKeyFile;
-  int FTunnelLocalPortNumber;
+  intptr_t FTunnelLocalPortNumber;
   UnicodeString FTunnelPortFwd;
   UnicodeString FTunnelHostKey;
   bool FFtpPasvMode;
   TAutoSwitch FFtpForcePasvIp;
   TAutoSwitch FFtpUseMlsd;
   UnicodeString FFtpAccount;
-  int FFtpPingInterval;
+  intptr_t FFtpPingInterval;
   TPingType FFtpPingType;
   TFtps FFtps;
   TAutoSwitch FNotUtf;
   UnicodeString FHostKey;
 
   UnicodeString FOrigHostName;
-  int FOrigPortNumber;
+  intptr_t FOrigPortNumber;
   TProxyMethod FOrigProxyMethod;
   TSessionSource FSource;
   UnicodeString FCodePage;
   bool FFtpAllowEmptyPassword;
   TLoginType FLoginType;
-  int FNumberOfRetries;
+  intptr_t FNumberOfRetries;
   uintptr_t FSessionVersion;
 
 public:
   void SetHostName(const UnicodeString & Value);
   UnicodeString GetHostNameExpanded();
-  void SetPortNumber(int Value);
+  void SetPortNumber(intptr_t Value);
   void SetUserName(const UnicodeString & Value);
   UnicodeString GetUserNameExpanded();
   void SetPassword(const UnicodeString & Value);
   UnicodeString GetPassword() const;
   void SetPasswordless(bool Value);
-  void SetPingInterval(int Value);
+  void SetPingInterval(intptr_t Value);
   void SetTryAgent(bool Value);
   void SetAgentFwd(bool Value);
   void SetAuthTIS(bool Value);
@@ -252,11 +253,11 @@ public:
   void SetScp1Compatibility(bool Value);
   void SetShell(const UnicodeString & Value);
   void SetSftpServer(const UnicodeString & Value);
-  void SetTimeout(int Value);
+  void SetTimeout(intptr_t Value);
   void SetUnsetNationalVars(bool Value);
   void SetIgnoreLsWarnings(bool Value);
   void SetTcpNoDelay(bool Value);
-  void SetSendBuf(int Value);
+  void SetSendBuf(intptr_t Value);
   void SetSshSimple(bool Value);
   UnicodeString GetSshProtStr();
   bool GetUsesSsh();
@@ -266,7 +267,7 @@ public:
   UnicodeString GetKexList() const;
   void SetProxyMethod(TProxyMethod Value);
   void SetProxyHost(const UnicodeString & Value);
-  void SetProxyPort(int Value);
+  void SetProxyPort(intptr_t Value);
   void SetProxyUsername(const UnicodeString & Value);
   void SetProxyPassword(const UnicodeString & Value);
   void SetProxyTelnetCommand(const UnicodeString & Value);
@@ -274,19 +275,19 @@ public:
   void SetProxyDNS(TAutoSwitch Value);
   void SetProxyLocalhost(bool Value);
   UnicodeString GetProxyPassword() const;
-  void SetFtpProxyLogonType(int Value);
+  void SetFtpProxyLogonType(intptr_t Value);
   void SetBug(TSshBug Bug, TAutoSwitch Value);
   TAutoSwitch GetBug(TSshBug Bug) const;
   UnicodeString GetSessionKey();
   void SetCustomParam1(const UnicodeString & Value);
   void SetCustomParam2(const UnicodeString & Value);
   void SetResolveSymlinks(bool Value);
-  void SetSFTPDownloadQueue(int Value);
-  void SetSFTPUploadQueue(int Value);
-  void SetSFTPListingQueue(int Value);
-  void SetSFTPMaxVersion(int Value);
-  void SetSFTPMinPacketSize(unsigned long Value);
-  void SetSFTPMaxPacketSize(unsigned long Value);
+  void SetSFTPDownloadQueue(intptr_t Value);
+  void SetSFTPUploadQueue(intptr_t Value);
+  void SetSFTPListingQueue(intptr_t Value);
+  void SetSFTPMaxVersion(intptr_t Value);
+  void SetSFTPMinPacketSize(uintptr_t Value);
+  void SetSFTPMaxPacketSize(uintptr_t Value);
   void SetSFTPBug(TSftpBug Bug, TAutoSwitch Value);
   TAutoSwitch GetSFTPBug(TSftpBug Bug) const;
   void SetSCPLsFullTime(TAutoSwitch Value);
@@ -301,24 +302,24 @@ public:
   void SetPostLoginCommands(const UnicodeString & Value);
   void SetAddressFamily(TAddressFamily Value);
   void SetRekeyData(const UnicodeString & Value);
-  void SetRekeyTime(unsigned int Value);
-  void SetColor(int Value);
+  void SetRekeyTime(uintptr_t Value);
+  void SetColor(intptr_t Value);
   void SetTunnel(bool Value);
   void SetTunnelHostName(const UnicodeString & Value);
-  void SetTunnelPortNumber(int Value);
+  void SetTunnelPortNumber(intptr_t Value);
   void SetTunnelUserName(const UnicodeString & Value);
   void SetTunnelPassword(const UnicodeString & Value);
   UnicodeString GetTunnelPassword() const;
   void SetTunnelPublicKeyFile(const UnicodeString & Value);
   void SetTunnelPortFwd(const UnicodeString & Value);
-  void SetTunnelLocalPortNumber(int Value);
+  void SetTunnelLocalPortNumber(intptr_t Value);
   bool GetTunnelAutoassignLocalPortNumber();
   void SetTunnelHostKey(const UnicodeString & Value);
   void SetFtpPasvMode(bool Value);
   void SetFtpForcePasvIp(TAutoSwitch Value);
   void SetFtpUseMlsd(TAutoSwitch Value);
   void SetFtpAccount(const UnicodeString & Value);
-  void SetFtpPingInterval(int Value);
+  void SetFtpPingInterval(intptr_t Value);
   void SetFtpPingType(TPingType Value);
   void SetFtps(TFtps Value);
   void SetNotUtf(TAutoSwitch Value);
@@ -350,18 +351,18 @@ public:
     TStoredSessionList * StoredSessions, bool & DefaultsOnly,
     UnicodeString * FileName, bool * AProtocolDefined, UnicodeString * MaskedUrl);
   bool ParseOptions(TOptions * Options);
-  void ConfigureTunnel(int PortNumber);
+  void ConfigureTunnel(intptr_t PortNumber);
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
   bool IsSame(const TSessionData * Default, bool AdvancedOnly);
   static void ValidatePath(const UnicodeString & Path);
   static void ValidateName(const UnicodeString & Name);
   UnicodeString GetHostName() const { return FHostName; }
-  int GetPortNumber() const { return FPortNumber; }
+  intptr_t GetPortNumber() const { return FPortNumber; }
   TLoginType GetLoginType() const;
   void SetLoginType(TLoginType Value);
   UnicodeString GetUserName() const { return FUserName; }
-  int GetPingInterval() const { return FPingInterval; }
+  intptr_t GetPingInterval() const { return FPingInterval; }
   bool GetTryAgent() const { return FTryAgent; }
   bool GetAgentFwd() const { return FAgentFwd; }
   const UnicodeString GetListingCommand() const { return FListingCommand; }
@@ -401,11 +402,11 @@ public:
   bool GetScp1Compatibility() const { return FScp1Compatibility; }
   UnicodeString GetShell() const { return FShell; }
   UnicodeString GetSftpServer() const { return FSftpServer; }
-  int GetTimeout() const { return FTimeout; }
+  intptr_t GetTimeout() const { return FTimeout; }
   bool GetUnsetNationalVars() const { return FUnsetNationalVars; }
   bool GetIgnoreLsWarnings() const { return FIgnoreLsWarnings; }
   bool GetTcpNoDelay() const { return FTcpNoDelay; }
-  int GetSendBuf() const { return FSendBuf; }
+  intptr_t GetSendBuf() const { return FSendBuf; }
   bool GetSshSimple() const { return FSshSimple; }
   TProxyMethod GetProxyMethod() const { return FProxyMethod; }
   TProxyMethod GetActualProxyMethod() const
@@ -413,22 +414,22 @@ public:
     return GetProxyMethod() == pmSystem ? GetSystemProxyMethod() : GetProxyMethod();
   }
   UnicodeString GetProxyHost() const;
-  int GetProxyPort() const;
+  intptr_t GetProxyPort() const;
   UnicodeString GetProxyUsername() const;
   UnicodeString GetProxyTelnetCommand() const { return FProxyTelnetCommand; }
   UnicodeString GetProxyLocalCommand() const { return FProxyLocalCommand; }
   TAutoSwitch GetProxyDNS() const { return FProxyDNS; }
   bool GetProxyLocalhost() const { return FProxyLocalhost; }
-  int GetFtpProxyLogonType() const { return FFtpProxyLogonType; }
+  intptr_t GetFtpProxyLogonType() const { return FFtpProxyLogonType; }
   UnicodeString GetCustomParam1() const { return FCustomParam1; }
   UnicodeString GetCustomParam2() const { return FCustomParam2; }
   bool GetResolveSymlinks() const { return FResolveSymlinks; }
-  int GetSFTPDownloadQueue() const { return FSFTPDownloadQueue; }
-  int GetSFTPUploadQueue() const { return FSFTPUploadQueue; }
-  int GetSFTPListingQueue() const { return FSFTPListingQueue; }
-  int GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
-  unsigned long GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
-  unsigned long GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
+  intptr_t GetSFTPDownloadQueue() const { return FSFTPDownloadQueue; }
+  intptr_t GetSFTPUploadQueue() const { return FSFTPUploadQueue; }
+  intptr_t GetSFTPListingQueue() const { return FSFTPListingQueue; }
+  intptr_t GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
+  uintptr_t GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
+  uintptr_t GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
   TAutoSwitch GetSCPLsFullTime() const { return FSCPLsFullTime; }
   TAutoSwitch GetFtpListAll() const { return FFtpListAll; }
   bool GetSslSessionReuse() const { return FSslSessionReuse; }
@@ -440,16 +441,16 @@ public:
   TAddressFamily GetAddressFamily() const { return FAddressFamily; }
   UnicodeString GetCodePage() const { return FCodePage; }
   void SetCodePage(const UnicodeString & Value);
-  unsigned int GetCodePageAsNumber() const;
+  uintptr_t GetCodePageAsNumber() const;
   UnicodeString GetRekeyData() const { return FRekeyData; }
-  unsigned int GetRekeyTime() const { return FRekeyTime; }
-  int GetColor() const { return FColor; }
+  uintptr_t GetRekeyTime() const { return FRekeyTime; }
+  intptr_t GetColor() const { return FColor; }
   bool GetTunnel() const { return FTunnel; }
   UnicodeString GetTunnelHostName() const { return FTunnelHostName; }
-  int GetTunnelPortNumber() const { return FTunnelPortNumber; }
+  intptr_t GetTunnelPortNumber() const { return FTunnelPortNumber; }
   UnicodeString GetTunnelUserName() const { return FTunnelUserName; }
   UnicodeString GetTunnelPublicKeyFile() const { return FTunnelPublicKeyFile; }
-  int GetTunnelLocalPortNumber() const { return FTunnelLocalPortNumber; }
+  intptr_t GetTunnelLocalPortNumber() const { return FTunnelLocalPortNumber; }
   UnicodeString GetTunnelPortFwd() const { return FTunnelPortFwd; }
   UnicodeString GetTunnelHostKey() const { return FTunnelHostKey; }
   bool GetFtpPasvMode() const { return FFtpPasvMode; }
@@ -458,24 +459,24 @@ public:
   TAutoSwitch GetFtpForcePasvIp() const { return FFtpForcePasvIp; }
   TAutoSwitch GetFtpUseMlsd() const { return FFtpUseMlsd; }
   UnicodeString GetFtpAccount() const { return FFtpAccount; }
-  int GetFtpPingInterval() const { return FFtpPingInterval; }
+  intptr_t GetFtpPingInterval() const { return FFtpPingInterval; }
   TPingType GetFtpPingType() const { return FFtpPingType; }
   TFtps GetFtps() const { return FFtps; }
   TAutoSwitch GetNotUtf() const { return FNotUtf; }
   UnicodeString GetHostKey() const { return FHostKey; }
   UnicodeString GetOrigHostName() const { return FOrigHostName; }
-  int GetOrigPortNumber() const { return FOrigPortNumber; }
+  intptr_t GetOrigPortNumber() const { return FOrigPortNumber; }
 
-  int GetNumberOfRetries() const { return FNumberOfRetries; }
-  void SetNumberOfRetries(int Value) { FNumberOfRetries = Value; }
+  intptr_t GetNumberOfRetries() const { return FNumberOfRetries; }
+  void SetNumberOfRetries(intptr_t Value) { FNumberOfRetries = Value; }
   uintptr_t GetSessionVersion() const { return FSessionVersion; }
   void SetSessionVersion(uintptr_t Value) { FSessionVersion = Value; }
 
 private:
   uintptr_t GetDefaultVersion() { return ::GetCurrentVersionNumber(); }
-  TFSProtocol TranslateFSProtocolNumber(int FSProtocol);
+  TFSProtocol TranslateFSProtocolNumber(intptr_t FSProtocol);
   TFSProtocol TranslateFSProtocol(const UnicodeString & ProtocolID);
-  TFtps TranslateFtpEncryptionNumber(int FtpEncryption);
+  TFtps TranslateFtpEncryptionNumber(intptr_t FtpEncryption);
 
 private:
   mutable TIEProxyConfig * FIEProxyConfig;
@@ -485,7 +486,7 @@ private:
   void  PrepareProxyData() const;
   void ParseIEProxyConfig() const;
   void FromURI(const UnicodeString & ProxyURI,
-    UnicodeString & ProxyUrl, int & ProxyPort, TProxyMethod & ProxyMethod) const;
+    UnicodeString & ProxyUrl, intptr_t & ProxyPort, TProxyMethod & ProxyMethod) const;
   void AdjustHostName(UnicodeString & HostName, const UnicodeString & Prefix);
   void RemoveProtocolPrefix(UnicodeString & HostName);
 };
@@ -506,8 +507,6 @@ public:
   void SelectAll(bool Select);
   void Import(TStoredSessionList * From, bool OnlySelected);
   void RecryptPasswords();
-  TSessionData * AtSession(intptr_t Index)
-    { return static_cast<TSessionData *>(AtObject(Index)); }
   void SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void Cleanup();
   void UpdateStaticUsage();
@@ -536,8 +535,8 @@ private:
 };
 //---------------------------------------------------------------------------
 bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
-unsigned int GetCodePageAsNumber(const UnicodeString & CodePage);
-UnicodeString GetCodePageAsString(unsigned int cp);
+uintptr_t GetCodePageAsNumber(const UnicodeString & CodePage);
+UnicodeString GetCodePageAsString(uintptr_t cp);
 //---------------------------------------------------------------------------
 UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TSessionData * SessionData);
 //---------------------------------------------------------------------------

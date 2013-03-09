@@ -33,18 +33,16 @@ SET(TESTS_ROOT ${SRC_ROOT}/tests)
 #-------------------------------------------------------------------------------
 
 SET(LIBNEON_DEFS "-DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB -DUSE_GETADDRINFO")
-SET(LIBEXPAT_DEFS "-DCOMPILED_FROM_DSP -DXML_STATIC -DHAVE_MEMMOVE")
+SET(LIBEXPAT_DEFS "-DCOMPILED_FROM_DSP -DXML_STATIC")
 
 SET(CMAKE_C_FLAGS
-  "-D_WINDOWS -DWIN32 -D_WINDLL -D_USRDL -D_SCL_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES ${LIBEXPAT_DEFS} ${LIBNEON_DEFS} -DMPEXT -DNO_STRICT -DNOCRYPT"
+  "-D_WINDOWS -DWIN32 -D_WINDLL -D_USRDL -D_SCL_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES ${LIBEXPAT_DEFS} ${LIBNEON_DEFS} -DMPEXT -DNO_STRICT -DNOCRYPT -DUSE_DLMALLOC -DUSE_DL_PREFIX"
 )
 
 IF(PLATFORM STREQUAL "x64")
   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN64"
   )
-  SET(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage/x64)
 ELSE()
-  SET(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage)
 ENDIF()
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /EHsc /MP2"
@@ -53,7 +51,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /EHsc /MP2"
 SET(CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG -DNETBOX_DEBUG /Gm- /MTd /GS"
 )
 
-SET(FLAGS_RELEASE "-U_DEBUG -DNETBOX_DEBUG -DNDEBUG -DBOOST_DISABLE_ASSERTS /Gm- /MT -Ox -Ob1 -Oi -Os -Oy -GF -GS- -Gy"
+SET(FLAGS_RELEASE "-U_DEBUG -UNETBOX_DEBUG -DNDEBUG /Gm- /MT -Ox -Ob1 -Oi -Os -Oy -GF -GS- -Gy"
 )
 
 SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${FLAGS_RELEASE}")
@@ -108,7 +106,6 @@ SET(CMAKE_LINK_FLAGS
   /DELAYLOAD:comdlg32.dll
   /MANIFEST:NO
   /TLBID:1 /DYNAMICBASE /SUBSYSTEM:WINDOWS
-    /TLBID:1 /DYNAMICBASE
 "
 )
 
@@ -135,7 +132,6 @@ INCLUDE_DIRECTORIES(
   ${SRC_ROOT}/filezilla/misc
   ${LIBS_ROOT}
   ${LIBS_ROOT}/atlmfc/include
-  ${LIBS_ROOT}/boost
   ${LIBS_ROOT}/Putty
   ${LIBS_ROOT}/Putty/windows
   ${LIBS_ROOT}/Putty/charset
@@ -148,8 +144,6 @@ INCLUDE_DIRECTORIES(
   ${LIBS_ROOT}/apr/include/arch/win32
   ${LIBS_ROOT}/apr/include/arch/unix
 )
-
-LINK_DIRECTORIES(${BOOST_LINK_DIR})
 
 #-------------------------------------------------------------------------------
 # target NetBox
@@ -211,6 +205,7 @@ SET(NETBOX_LIBRARIES
   libneon
   libapr
   libexpat
+  dlmalloc
   Ws2_32.lib
   kernel32.lib
   user32.lib
@@ -224,42 +219,6 @@ SET(NETBOX_LIBRARIES
   delayimp.lib
 )
 
-IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set ( NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
-    libcmtd.lib
-    libcpmtd.lib
-  )
-ELSE()
-  set ( NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
-    libcmt.lib
-    libcpmt.lib
-  )
-ENDIF()
-
-IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set ( NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
-    libcmtd.lib
-    libcpmtd.lib
-  )
-ELSE()
-  set ( NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
-    libcmt.lib
-    libcpmt.lib
-  )
-ENDIF()
-
-IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set ( NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
-    libcmtd.lib
-    libcpmtd.lib
-  )
-ELSE()
-  set ( NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
-    libcmt.lib
-    libcpmt.lib
-  )
-ENDIF()
-
 IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
   SET(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
     libcmtd.lib
@@ -270,7 +229,7 @@ ELSE()
     libcmt.lib
     libcpmt.lib
   )
-ENDIF()
+ENDIF(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 ADD_LIBRARY(NetBox SHARED ${NETBOX_SOURCES})
 
@@ -309,6 +268,7 @@ ADD_CUSTOM_COMMAND(TARGET NetBox
   POST_BUILD
   COMMAND if not exist "${OUTPUT_DIR}" ( mkdir "${OUTPUT_DIR}" )
   COMMAND cp -f NetBox.dll ${OUTPUT_DIR}
+  COMMAND if exist NetBox.pdb ( cp -f NetBox.pdb ${OUTPUT_DIR} )
   WORKING_DIRECTORY ${BUILD_DIR}
   VERBATIM
 )
@@ -517,7 +477,7 @@ ADD_LIBRARY(libapr STATIC
 
 SET_TARGET_PROPERTIES(libapr
   PROPERTIES
-  COMPILE_FLAGS "-D_CRTIMP= -D_LIB -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES"
+  COMPILE_FLAGS "-D_CRTIMP= -D_LIB -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES /U_UNICODE /UUNICODE"
   LINK_FLAGS ${CMAKE_LINK_FLAGS}
 )
 
@@ -563,7 +523,35 @@ SET_TARGET_PROPERTIES(zlib
   LINK_FLAGS ${CMAKE_LINK_FLAGS}
 )
 
+#-------------------------------------------------------------------------------
+
+ADD_LIBRARY(dlmalloc STATIC
+  ${LIBS_ROOT}/dlmalloc/malloc.c
+)
+
+SET_TARGET_PROPERTIES(dlmalloc
+  PROPERTIES
+  COMPILE_FLAGS "-D_CRTIMP= -D_LIB"
+  LINK_FLAGS ${CMAKE_LINK_FLAGS}
+)
+
+#-------------------------------------------------------------------------------
+
 IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_DISABLE_ASSERTS"
+)
+
+INCLUDE_DIRECTORIES(
+  ${LIBS_ROOT}/boost
+)
+
+IF(PLATFORM STREQUAL "x64")
+  SET(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage/x64)
+ELSE()
+  SET(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage)
+ENDIF()
+LINK_DIRECTORIES(${BOOST_LINK_DIR})
 
 #-------------------------------------------------------
 # target testnetbox_01

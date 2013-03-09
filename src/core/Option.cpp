@@ -114,7 +114,7 @@ bool TOptions::GetEmpty() const
 }
 //---------------------------------------------------------------------------
 bool TOptions::FindSwitch(const UnicodeString & Switch,
-  UnicodeString & Value, int & ParamsStart, int & ParamsCount)
+  UnicodeString & Value, intptr_t & ParamsStart, intptr_t & ParamsCount)
 {
   ParamsStart = 0;
   intptr_t Index = 0;
@@ -141,7 +141,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
   if (Found)
   {
     ParamsStart++;
-    while ((Index + ParamsCount < int(FOptions.size())) &&
+    while ((Index + ParamsCount < static_cast<intptr_t>(FOptions.size())) &&
            (FOptions[Index + ParamsCount].Type == otParam))
     {
       ParamsCount++;
@@ -157,25 +157,25 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
 //---------------------------------------------------------------------------
 bool TOptions::FindSwitch(const UnicodeString & Switch, UnicodeString & Value)
 {
-  int ParamsStart;
-  int ParamsCount;
+  intptr_t ParamsStart;
+  intptr_t ParamsCount;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
 }
 //---------------------------------------------------------------------------
 bool TOptions::FindSwitch(const UnicodeString & Switch)
 {
   UnicodeString Value;
-  int ParamsStart;
-  int ParamsCount;
+  intptr_t ParamsStart;
+  intptr_t ParamsCount;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
 }
 //---------------------------------------------------------------------------
 bool TOptions::FindSwitch(const UnicodeString & Switch,
-  TStrings * Params, int ParamsMax)
+  TStrings * Params, intptr_t ParamsMax)
 {
   UnicodeString Value;
-  int ParamsStart;
-  int ParamsCount;
+  intptr_t ParamsStart;
+  intptr_t ParamsCount;
   bool Result = FindSwitch(Switch, Value, ParamsStart, ParamsCount);
   if (Result)
   {
@@ -262,7 +262,7 @@ bool TOptions::UnusedSwitch(UnicodeString & Switch) const
   return Result;
 }
 //---------------------------------------------------------------------------
-void TOptions::ParamsProcessed(int ParamsStart, int ParamsCount)
+void TOptions::ParamsProcessed(intptr_t ParamsStart, intptr_t ParamsCount)
 {
   if (ParamsCount > 0)
   {

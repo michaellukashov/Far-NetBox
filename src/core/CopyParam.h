@@ -30,7 +30,7 @@ struct TUsableCopyParamAttrs
   int Download;
 };
 //---------------------------------------------------------------------------
-class TCopyParamType
+class TCopyParamType : public TObject
 {
 private:
   TFileMasks FAsciiFileMask;
@@ -53,11 +53,12 @@ private:
   bool FNegativeExclude;
   TFileMasks FIncludeFileMask;
   bool FClearArchive;
-  unsigned long FCPSLimit;
+  uintptr_t FCPSLimit;
+
 public:
   static const wchar_t TokenPrefix = L'%';
-  static const wchar_t NoReplacement = wchar_t(false);
-  static const wchar_t TokenReplacement = wchar_t(true);
+  static const wchar_t NoReplacement = wchar_t(0);
+  static const wchar_t TokenReplacement = wchar_t(1);
 
 public:
   void SetLocalInvalidChars(const UnicodeString & Value);
@@ -120,24 +121,24 @@ public:
   void SetInvalidCharsReplacement(wchar_t value) { FInvalidCharsReplacement = value; }
   UnicodeString GetLocalInvalidChars() const;
   bool GetCalculateSize() const { return FCalculateSize; }
-  void SetCalculateSize(bool value) { FCalculateSize = value; }
+  void SetCalculateSize(bool Value) { FCalculateSize = Value; }
   UnicodeString GetFileMask() const;
   void SetFileMask(const UnicodeString & Value);
   const TFileMasks & GetIncludeFileMask() const;
   TFileMasks & GetIncludeFileMask();
-  void SetIncludeFileMask(TFileMasks value);
+  void SetIncludeFileMask(TFileMasks Value);
   const TFileMasks & GetExcludeFileMask() const { return FExcludeFileMask; }
   TFileMasks & GetExcludeFileMask() { return FExcludeFileMask; }
-  void SetExcludeFileMask(TFileMasks value) { FExcludeFileMask = value; }
+  void SetExcludeFileMask(TFileMasks Value) { FExcludeFileMask = Value; }
   bool GetNegativeExclude() const { return FNegativeExclude; }
-  void SetNegativeExclude(bool value) { FNegativeExclude = value; }
+  void SetNegativeExclude(bool Value) { FNegativeExclude = Value; }
   bool GetClearArchive() const { return FClearArchive; }
-  void SetClearArchive(bool value) { FClearArchive = value; }
-  unsigned long GetCPSLimit() const { return FCPSLimit; }
-  void SetCPSLimit(unsigned long value) { FCPSLimit = value; }
+  void SetClearArchive(bool Value) { FClearArchive = Value; }
+  uintptr_t GetCPSLimit() const { return FCPSLimit; }
+  void SetCPSLimit(uintptr_t Value) { FCPSLimit = Value; }
 };
 //---------------------------------------------------------------------------
-unsigned long GetSpeedLimit(const UnicodeString & Text);
-UnicodeString SetSpeedLimit(unsigned long Limit);
+uintptr_t  GetSpeedLimit(const UnicodeString & Text);
+UnicodeString SetSpeedLimit(uintptr_t Limit);
 //---------------------------------------------------------------------------
 #endif

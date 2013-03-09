@@ -126,7 +126,6 @@ unsigned int GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long *
   unsigned int Len;
   if (IsWin7())
   {
-    TRACEFMT("(%s,%x)", FileName, int(Handle));
     *Handle = 0;
     Len = VERSION_GetFileVersionInfo_PE(FileName, 0, NULL);
 
@@ -153,8 +152,6 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
   {
     VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(Data);
 
-    TRACEFMT("(%s,%d,size=%d,data=%x)", FileName, (int)Handle, (int)DataSize, (int)Data);
-
     unsigned int Len = VERSION_GetFileVersionInfo_PE(FileName, DataSize, Data);
 
     Result = (Len != 0);
@@ -162,12 +159,11 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
     {
       static const char Signature[] = "FE2X";
       unsigned int BufSize = (unsigned int)(VersionInfo->wLength + strlen(Signature));
-      unsigned int ConvBuf;
 
       if (DataSize >= BufSize)
       {
-        ConvBuf = DataSize - VersionInfo->wLength;
-        memmove(((char*)(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 ? 4 : ConvBuf );
+        unsigned int ConvBuf = DataSize - VersionInfo->wLength;
+        memmove((static_cast<char*>(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 ? 4 : ConvBuf );
       }
     }
   }
@@ -195,20 +191,20 @@ void * CreateFileInfo(UnicodeString FileName)
   if (Size > 0)
   {
     TRACE("CreateFileInfo 2");
-    Result = new char[Size];
+    Result = nb_malloc(Size);
     // Get file version info block
     TRACE("CreateFileInfo 3");
     if (!GetFileVersionInfoFix(FileName.c_str(), Handle, Size, Result))
     {
       TRACE("CreateFileInfo 4");
-      delete[] Result;
+      nb_free(Result);
       Result = NULL;
     }
     TRACE("CreateFileInfo 5");
   }
   else
   {
-    TRACEFMT("CreateFileInfo E [%x]", (int)GetLastError());
+    TRACEFMT("CreateFileInfo E [%x]", static_cast<int>(GetLastError()));
   }
   return Result;
 }
@@ -217,7 +213,7 @@ void * CreateFileInfo(UnicodeString FileName)
 void FreeFileInfo(void * FileInfo)
 {
   if (FileInfo)
-    delete[] FileInfo;
+    nb_free(FileInfo);
 }
 //---------------------------------------------------------------------------
 typedef TTranslation TTranslations[65536];
@@ -258,7 +254,7 @@ unsigned GetTranslationCount(void * FileInfo)
 }
 //---------------------------------------------------------------------------
 // Return i-th translation in the file version info translation list
-TTranslation GetTranslation(void * FileInfo, unsigned I)
+TTranslation GetTranslation(void * FileInfo, intptr_t I)
 {
   CALLSTACK;
   PTranslations P = NULL;
@@ -297,11 +293,11 @@ UnicodeString GetFileInfoString(void * FileInfo,
   if (!VerQueryValue(FileInfo, (UnicodeString(L"\\StringFileInfo\\") +
     IntToHex(Translation.Language, 4) +
     IntToHex(Translation.CharSet, 4) +
-    L"\\" + StringName).c_str(), (void**)&P, &Len))
+    L"\\" + StringName).c_str(), reinterpret_cast<void**>(&P), &Len))
   {
     throw Exception("Specified file info string not available");
   }
-  UnicodeString Result = UnicodeString(P, Len);
+  UnicodeString Result(P, Len);
   PackStr(Result);
   TRACEFMT("1 [%s] [%s]", StringName.c_str(), Result.c_str());
   return Result;

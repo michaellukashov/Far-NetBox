@@ -184,8 +184,8 @@ public:
   bool FileTransfer(const wchar_t * LocalFile, const wchar_t * RemoteFile,
     const wchar_t * RemotePath, bool Get, __int64 Size, int Type, void * UserData);
 
-  virtual const wchar_t * Option(int OptionID) const = 0;
-  virtual int OptionVal(int OptionID) const = 0;
+  virtual const wchar_t * Option(intptr_t OptionID) const = 0;
+  virtual intptr_t OptionVal(intptr_t OptionID) const = 0;
 
   void SetDebugLevel(TLogLevel Level);
   bool HandleMessage(WPARAM wParam, LPARAM lParam);

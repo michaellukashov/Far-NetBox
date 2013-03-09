@@ -12,12 +12,12 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-const int ccLocal = ccUser;
-const int ccShowResults = ccUser << 1;
-const int ccCopyResults = ccUser << 2;
-const int ccSet = 0x80000000;
+const intptr_t ccLocal = ccUser;
+const intptr_t ccShowResults = ccUser << 1;
+const intptr_t ccCopyResults = ccUser << 2;
+const intptr_t ccSet = 0x80000000;
 //---------------------------------------------------------------------------
-static const unsigned int AdditionaLanguageMask = 0xFFFFFF00;
+static const uintptr_t AdditionaLanguageMask = 0xFFFFFF00;
 static const UnicodeString AdditionaLanguagePrefix(L"XX");
 //---------------------------------------------------------------------------
 TGUICopyParamType::TGUICopyParamType()
@@ -293,13 +293,12 @@ bool TCopyParamList::operator==(const TCopyParamList & rhl) const
   bool Result = (GetCount() == rhl.GetCount());
   if (Result)
   {
-    int i = 0;
-    while ((i < GetCount()) && Result)
+    intptr_t I = 0;
+    while ((I < GetCount()) && Result)
     {
-      Result =
-        (GetName(i) == rhl.GetName(i)) &&
-        CompareItem(i, rhl.GetCopyParam(i), rhl.GetRule(i));
-      i++;
+      Result = (GetName(I) == rhl.GetName(I)) &&
+        CompareItem(I, rhl.GetCopyParam(I), rhl.GetRule(I));
+      I++;
     }
   }
   return Result;
@@ -390,20 +389,20 @@ void TCopyParamList::Delete(intptr_t Index)
   Modify();
 }
 //---------------------------------------------------------------------------
-int TCopyParamList::Find(const TCopyParamRuleData & Value) const
+intptr_t TCopyParamList::Find(const TCopyParamRuleData & Value) const
 {
-  int Result = -1;
-  int i = 0;
-  while ((i < FRules->GetCount()) && (Result < 0))
+  intptr_t Result = -1;
+  intptr_t I = 0;
+  while ((I < FRules->GetCount()) && (Result < 0))
   {
-    if (FRules->Items[i] != NULL)
+    if (FRules->Items[I] != NULL)
     {
-      if (GetRule(i)->Matches(Value))
+      if (GetRule(I)->Matches(Value))
       {
-        Result = i;
+        Result = I;
       }
     }
-    i++;
+    I++;
   }
   return Result;
 }
@@ -457,7 +456,7 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
   Storage->ClearSubKeys();
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (Storage->OpenSubKey(IntToStr((int)Index), true))
+    if (Storage->OpenSubKey(IntToStr(Index), true))
     {
       TRY_FINALLY (
       {
@@ -700,7 +699,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
       }
       else if (All || FCopyParamList->GetModified())
       {
-        Storage->WriteInteger(L"CopyParamList", static_cast<int>(FCopyParamList->GetCount()));
+        Storage->WriteInteger(L"CopyParamList", FCopyParamList->GetCount());
         FCopyParamList->Save(Storage);
       }
     }
@@ -739,13 +738,13 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   #undef KEY
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", false, true))
-  TRY_FINALLY (
+  // TRY_FINALLY (
   {
     // must be loaded before eventual setting defaults for CopyParamList
     FDefaultCopyParam.Load(Storage);
 
-    int CopyParamListCount = Storage->ReadInteger(L"CopyParamList", -1);
-    FCopyParamListDefaults = (CopyParamListCount < 0);
+    intptr_t CopyParamListCount = Storage->ReadInteger(L"CopyParamList", -1);
+    FCopyParamListDefaults = ((int)CopyParamListCount < 0);
     if (!FCopyParamListDefaults)
     {
       FCopyParamList->Clear();
@@ -758,11 +757,11 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     }
     FCopyParamList->Reset();
   }
-  ,
+  // ,
   {
     Storage->CloseSubKey();
   }
-  );
+  // );
 
   // Make it compatible with versions prior to 3.7.1 that have not saved PuttyPath
   // with quotes. First check for absence of quotes.
@@ -819,8 +818,8 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     {
       TRACE("3");
       LOCALESIGNATURE LocSig;
-      GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, (LPWSTR)&LocSig, sizeof(LocSig) / sizeof(TCHAR));
-      LocaleName = *(LPWSTR)&LocSig;
+      GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, reinterpret_cast<LPWSTR>(&LocSig), sizeof(LocSig) / sizeof(TCHAR));
+      LocaleName = *reinterpret_cast<LPWSTR>(&LocSig);
       assert(!LocaleName.IsEmpty());
     }
     else
@@ -1176,7 +1175,7 @@ intptr_t TGUIConfiguration::GetCopyParamIndex()
   return Result;
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetCopyParamIndex(int Value)
+void TGUIConfiguration::SetCopyParamIndex(intptr_t Value)
 {
   UnicodeString Name;
   if (Value < 0)

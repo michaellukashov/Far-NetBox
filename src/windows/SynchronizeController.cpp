@@ -277,7 +277,7 @@ void TSynchronizeController::SynchronizeInvalid(
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeTooManyDirectories(
-  TObject * /*Sender*/, int & MaxDirectories)
+  TObject * /*Sender*/, intptr_t & MaxDirectories)
 {
   CALLSTACK;
   if (FOnTooManyDirectories != NULL)
@@ -287,7 +287,7 @@ void TSynchronizeController::SynchronizeTooManyDirectories(
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeDirectoriesChange(
-  TObject * /*Sender*/, int Directories)
+  TObject * /*Sender*/, intptr_t Directories)
 {
   CALLSTACK;
   SynchronizeLog(slDirChange, FMTLOAD(SYNCHRONIZE_START, Directories));

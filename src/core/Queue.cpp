@@ -102,9 +102,9 @@ public:
   TObject * Sender;
   UnicodeString Query;
   TStrings * MoreMessages;
-  unsigned int Answers;
+  uintptr_t Answers;
   const TQueryParams * Params;
-  unsigned int Answer;
+  uintptr_t Answer;
   TQueryType Type;
 
 private:
@@ -203,7 +203,7 @@ public:
   UnicodeString SessionName;
   UnicodeString Banner;
   bool NeverShowAgain;
-  int Options;
+  intptr_t Options;
 
 private:
   TDisplayBannerAction(const TDisplayBannerAction &);
@@ -273,8 +273,8 @@ friend class TBackgroundTerminal;
 
 public:
   explicit TTerminalItem(TTerminalQueue * Queue);
-  virtual void Init(int Index);
   virtual ~TTerminalItem();
+  virtual void Init(intptr_t Index);
 
   void Process(TQueueItem * Item);
   bool ProcessUserAction(void * Arg);
@@ -298,8 +298,8 @@ protected:
   bool OverrideItemStatus(TQueueItem::TStatus & ItemStatus);
 
   void TerminalQueryUser(TObject * Sender,
-    const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
-    const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg);
+    const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+    const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
@@ -342,7 +342,6 @@ TSimpleThread::TSimpleThread() :
 void TSimpleThread::Init()
 {
   FThread = StartThread(NULL, 0, this, CREATE_SUSPENDED, FThreadId);
-  TRACEFMT("[%x]", int(FThread));
 }
 //---------------------------------------------------------------------------
 TSimpleThread::~TSimpleThread()
@@ -352,10 +351,8 @@ TSimpleThread::~TSimpleThread()
 
   if (FThread != NULL)
   {
-    TRACEFMT("[%x]", int(FThread));
     CloseHandle(FThread);
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 bool TSimpleThread::IsFinished()
@@ -366,7 +363,6 @@ bool TSimpleThread::IsFinished()
 void TSimpleThread::Start()
 {
   CALLSTACK;
-  TRACEFMT("[%x]", int(FThread));
   if (ResumeThread(FThread) == 1)
   {
     FFinished = false;
@@ -386,13 +382,11 @@ void TSimpleThread::Close()
     Terminate();
     WaitFor();
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TSimpleThread::WaitFor(unsigned int Milliseconds)
 {
   CALLSTACK;
-  TRACEFMT("[%x]", int(FThread));
   WaitForSingleObject(FThread, Milliseconds);
 }
 //---------------------------------------------------------------------------
@@ -411,9 +405,7 @@ void TSignalThread::Init(bool LowPriority)
   TSimpleThread::Init();
   FEvent = CreateEvent(NULL, false, false, NULL);
   assert(FEvent != NULL);
-  TRACEFMT("[%x]", int(FEvent));
 
-  TRACEFMT("[%x]", int(FThread));
   if (LowPriority)
   {
     ::SetThreadPriority(FThread, THREAD_PRIORITY_BELOW_NORMAL);
@@ -427,12 +419,10 @@ TSignalThread::~TSignalThread()
   // destroying the event
   Close();
 
-  TRACEFMT("[%x]", int(FEvent));
   if (FEvent)
   {
     CloseHandle(FEvent);
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TSignalThread::Start()
@@ -445,14 +435,12 @@ void TSignalThread::Start()
 void TSignalThread::TriggerEvent()
 {
   CALLSTACK;
-  TRACEFMT("[%x] [%x]", int(FEvent), int(FThread));
   SetEvent(FEvent);
 }
 //---------------------------------------------------------------------------
 bool TSignalThread::WaitForEvent()
 {
   CALLSTACK;
-  TRACEFMT("[%x] [%x]", int(FEvent), int(FThread));
   // should never return -1, so it is only about 0 or 1
   return WaitForEvent(INFINITE) > 0;
 }
@@ -460,9 +448,7 @@ bool TSignalThread::WaitForEvent()
 int TSignalThread::WaitForEvent(unsigned int Timeout)
 {
   CALLSTACK;
-  TRACEFMT("1 [%x] [%x] [%d]", int(FEvent), int(FThread), int(Timeout));
   unsigned int Result = WaitForSingleObject(FEvent, Timeout);
-  TRACEFMT("2 [%d] [%d]", int(Result), int(FTerminated));
   if ((Result == WAIT_TIMEOUT) && !FTerminated)
   {
     return -1;
@@ -1082,38 +1068,38 @@ void TTerminalQueue::DoEvent(TQueueEvent Event)
   }
 }
 //---------------------------------------------------------------------------
-void TTerminalQueue::SetTransfersLimit(int value)
+void TTerminalQueue::SetTransfersLimit(intptr_t Value)
 {
   CALLSTACK;
-  if (FTransfersLimit != value)
+  if (FTransfersLimit != Value)
   {
     {
       TGuard Guard(FItemsSection);
 
-      if ((value >= 0) && (value < FItemsInProcess))
+      if ((Value >= 0) && (Value < FItemsInProcess))
       {
-        FTemporaryTerminals = (FItemsInProcess - value);
+        FTemporaryTerminals = (FItemsInProcess - Value);
       }
       else
       {
         FTemporaryTerminals = 0;
       }
-      FTransfersLimit = value;
+      FTransfersLimit = Value;
     }
 
     TriggerEvent();
   }
 }
 //---------------------------------------------------------------------------
-void TTerminalQueue::SetEnabled(bool value)
+void TTerminalQueue::SetEnabled(bool Value)
 {
   CALLSTACK;
-  if (FEnabled != value)
+  if (FEnabled != Value)
   {
     {
       TGuard Guard(FItemsSection);
 
-      FEnabled = value;
+      FEnabled = Value;
     }
 
     TriggerEvent();
@@ -1133,10 +1119,10 @@ class TBackgroundTerminal : public TSecondaryTerminal
   friend class TTerminalItem;
 public:
   explicit TBackgroundTerminal(TTerminal * MainTerminal);
+  virtual ~TBackgroundTerminal() {}
   void Init(
     TSessionData * SessionData, TConfiguration * Configuration,
     TTerminalItem * Item, const UnicodeString & Name);
-  virtual ~TBackgroundTerminal() {}
 protected:
   virtual bool DoQueryReopen(Exception * E);
 
@@ -1180,7 +1166,7 @@ TTerminalItem::TTerminalItem(TTerminalQueue * Queue) :
   CALLSTACK;
 }
 //---------------------------------------------------------------------------
-void TTerminalItem::Init(int Index)
+void TTerminalItem::Init(intptr_t Index)
 {
   TSignalThread::Init(true);
 
@@ -1414,8 +1400,8 @@ void TTerminalItem::Finished()
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::TerminalQueryUser(TObject * Sender,
-  const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
-  const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg)
+  const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+  const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg)
 {
   // so far query without queue item can occur only for key cofirmation
   // on re-key with non-cached host key. make it fail.
@@ -1900,7 +1886,7 @@ void TLocatedQueueItem::DoExecute(TTerminal * Terminal)
 //---------------------------------------------------------------------------
 TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
   TStrings * FilesToCopy, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int Params, TOperationSide Side) :
+  const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side) :
   TLocatedQueueItem(Terminal), FFilesToCopy(NULL), FCopyParam(NULL)
 {
   FInfo->Operation = (Params & cpDelete ? foMove : foCopy);
@@ -1937,7 +1923,7 @@ TTransferQueueItem::~TTransferQueueItem()
 //---------------------------------------------------------------------------
 TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
   TStrings * FilesToCopy, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int Params) :
+  const TCopyParamType * CopyParam, intptr_t Params) :
   TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osLocal)
 {
   if (FilesToCopy->GetCount() > 1)
@@ -1989,7 +1975,7 @@ void TUploadQueueItem::DoExecute(TTerminal * Terminal)
 //---------------------------------------------------------------------------
 TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   TStrings * FilesToCopy, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int Params) :
+  const TCopyParamType * CopyParam, intptr_t Params) :
   TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osRemote)
 {
   CALLSTACK;
@@ -2115,7 +2101,6 @@ TTerminalThread::~TTerminalThread()
   FTerminal->SetOnReadDirectoryProgress(FOnReadDirectoryProgress);
 
   delete FSection;
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::Cancel()
@@ -2143,14 +2128,12 @@ void TTerminalThread::TerminalOpen()
 {
   CALLSTACK;
   RunAction(MAKE_CALLBACK(TTerminalThread::TerminalOpenEvent, this));
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalReopen()
 {
   CALLSTACK;
   RunAction(MAKE_CALLBACK(TTerminalThread::TerminalReopenEvent, this));
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::RunAction(TNotifyEvent Action)
@@ -2173,7 +2156,6 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
 
       do
       {
-        TRACE("1");
         switch (WaitForSingleObject(FActionEvent, 50))
         {
           case WAIT_OBJECT_0:
@@ -2210,13 +2192,10 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
       }
       while (!Done);
 
-      TRACE("1a");
-
       Rethrow(FException);
     }
     ,
     {
-      TRACE("2");
       FAction = NULL;
       SAFE_DESTROY(FException);
     }
@@ -2226,7 +2205,6 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
   {
     if (FCancelled)
     {
-      // TRACEFMT("3 [%s]", TraceE.Message.c_str());
       // even if the abort thrown as result of Cancel() was wrapper into
       // some higher-level exception, normalize back to message-less fatal
       // exception here
@@ -2234,7 +2212,6 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
     }
     else
     {
-      // TRACEFMT("4 [%s]", TraceE.Message.c_str());
       throw;
     }
   }
@@ -2275,7 +2252,6 @@ void TTerminalThread::Rethrow(Exception *& Exception)
   CALLSTACK;
   if (Exception != NULL)
   {
-    TRACEFMT("1 [%s]", Exception->Message.c_str());
     TRY_FINALLY (
     {
       RethrowException(Exception);
@@ -2300,7 +2276,6 @@ void TTerminalThread::FatalAbort()
 {
   CALLSTACK;
   FTerminal->FatalAbort();
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::CheckCancel()
@@ -2308,7 +2283,6 @@ void TTerminalThread::CheckCancel()
   CALLSTACK;
   if (FCancel && !FCancelled)
   {
-    TRACE("1");
     FCancelled = true;
     FatalAbort();
   }
@@ -2317,13 +2291,11 @@ void TTerminalThread::CheckCancel()
 void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 {
   CALLSTACK;
-  TRACEFMT("1 [%x]", int(this));
   DWORD Thread = GetCurrentThreadId();
   // we can get called from the main thread from within Idle,
   // should be only to call HandleExtendedException
   if (Thread == FMainThread)
   {
-    TRACE("2");
     if (UserAction != NULL)
     {
       UserAction->Execute(NULL);
@@ -2331,7 +2303,6 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
   }
   else
   {
-    TRACE("3");
     // we should be called from our thread only,
     // with exception noted above
     assert(Thread == FThreadId);
@@ -2346,47 +2317,37 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 
       while (true)
       {
-        TRACE("3a");
-
+        TGuard Guard(FSection);
+        // If idle exception is already set, we are only waiting
+        // for the main thread to pick it up
+        // (or at least to finish handling the user action, so
+        // that we rethrow the idle exception below)
+        // Also if idle exception is set, it is probable that terminal
+        // is not active anyway.
+        if (FTerminal->GetActive() && FPendingIdle && (FIdleException == NULL))
         {
-          TGuard Guard(FSection);
-          // If idle exception is already set, we are only waiting
-          // for the main thread to pick it up
-          // (or at least to finish handling the user action, so
-          // that we rethrow the idle exception below)
-          // Also if idle exception is set, it is probable that terminal
-          // is not active anyway.
-          if (FTerminal->GetActive() && FPendingIdle && (FIdleException == NULL))
+          FPendingIdle = false;
+          try
           {
-            TRACE("3b");
-            FPendingIdle = false;
-            try
-            {
-              FTerminal->Idle();
-            }
-            catch (Exception & E)
-            {
-              TRACEFMT("3c [%s]", E.Message.c_str());
-              SaveException(E, FIdleException);
-            }
+            FTerminal->Idle();
+          }
+          catch (Exception & E)
+          {
+            SaveException(E, FIdleException);
           }
         }
 
         int WaitResult = WaitForEvent(1000);
         if (WaitResult == 0)
         {
-          TRACE("3d");
           SAFE_DESTROY(FIdleException);
           FatalAbort();
         }
         else if (WaitResult > 0)
         {
-          TRACE("3e");
           break;
         }
       }
-
-      TRACE("4");
 
       Rethrow(FException);
 
@@ -2406,7 +2367,6 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     );
     CheckCancel();
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalInformation(
@@ -2423,8 +2383,8 @@ void TTerminalThread::TerminalInformation(
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalQueryUser(TObject * Sender,
-  const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
-  const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg)
+  const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+  const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg)
 {
   CALLSTACK;
   USEDPARAM(Arg);
@@ -2492,7 +2452,7 @@ void TTerminalThread::TerminalShowExtendedException(
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalDisplayBanner(TTerminal * Terminal,
   UnicodeString SessionName, const UnicodeString & Banner,
-  bool & NeverShowAgain, int Options)
+  bool & NeverShowAgain, intptr_t Options)
 {
   CALLSTACK;
   TDisplayBannerAction Action(FOnDisplayBanner);

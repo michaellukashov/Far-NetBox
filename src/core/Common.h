@@ -173,118 +173,16 @@ private:
   TCriticalSection * FCriticalSection;
 };
 //---------------------------------------------------------------------------
-//!CLEANBEGIN
-#undef TRACE_IN_MEMORY
-#include <tchar.h>
 #undef TEXT
 #define TEXT(x) (wchar_t *)MB2W(x).c_str()
-#define TRACING  (_TRACE,_TRACEFMT,Callstack,__callstack)
-#define NOTRACING  (_TRACE_FAKE, _TRACEFMT_FAKE, , )
-#define _TRACING_TRACE(TRACE, TRACEFMT, CALLSTACK, CALLSTACKI) TRACE
-#define _TRACING_TRACEFMT(TRACE, TRACEFMT, CALLSTACK, CALLSTACKI) TRACEFMT
-#define _TRACING_CALLSTACK(TRACE, TRACEFMT, CALLSTACK, CALLSTACKI) CALLSTACK
-#define _TRACING_CALLSTACKI(TRACE, TRACEFMT, CALLSTACK, CALLSTACKI) CALLSTACKI
-#define _TRACE(SOURCE, FUNC, LINE, MESSAGE) \
-  if (IsTracing) Trace(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, MESSAGE)
-#define _TRACEFMT(SOURCE, FUNC, LINE, FORMAT, ...) \
-  if (IsTracing) TraceFmt(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, FORMAT, __VA_ARGS__)
-#define _TRACE_FAKE(SOURCE, FUNC, LINE, MESSAGE)
-#define _TRACEFMT_FAKE(SOURCE, FUNC, LINE, FORMAT, ...)
-
-#ifdef _DEBUG
-void SetTraceFile(HANDLE TraceFile);
-void CleanupTracing();
-#define TRACEENV "WINSCPTRACE"
-extern bool IsTracing;
-const unsigned int CallstackTlsOff = (unsigned int)-1;
-extern unsigned int CallstackTls;
-void Trace(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * Message);
-#ifndef _MSC_VER
-void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * Format, TVarRec * Args, const int Args_Size);
-#else
-void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * Format, ...);
-#endif
-#ifdef TRACE_IN_MEMORY
-void TraceDumpToFile();
-void TraceInMemoryCallback(const UnicodeString & Msg);
-#endif
-#define CTRACEIMPL(TRACING, MESSAGE) \
-  _TRACING_TRACE TRACING (TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, (MESSAGE))
-// #define CTRACEIMPL(TRACING, MESSAGE) \
-  // DEBUG_PRINTF(MESSAGE);
-#define CTRACEFMTIMPL(TRACING, MESSAGE, ...) \
-  _TRACING_TRACEFMT TRACING (TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, MESSAGE, __VA_ARGS__)
-class Callstack
-{
-public:
-  inline Callstack(const wchar_t * File, const wchar_t * Func, unsigned int Line, const wchar_t * Message) :
-    FFile(File), FFunc(Func), FLine(Line), FMessage(Message ? Message : L""), FDepth(0)
-  {
-    if (IsTracing)
-    {
-      #ifndef TRACE_IN_MEMORY
-      if (CallstackTls != CallstackTlsOff)
-      {
-        FDepth = reinterpret_cast<intptr_t>(TlsGetValue(CallstackTls)) + 1;
-        TlsSetValue(CallstackTls, reinterpret_cast<void *>(FDepth));
-      }
-      #endif
-#ifndef _MSC_VER
-      TraceFmt(FFile, FFunc, FLine, L"Entry: %s [%d]", ARRAYOFCONST((FMessage, int(FDepth))));
-#else
-      TraceFmt(FFile, FFunc, FLine, L"Entry: %s [%d]", FMessage, int(FDepth));
-#endif
-    }
-  }
-
-  inline ~Callstack()
-  {
-    if (IsTracing)
-    {
-      #ifndef TRACE_IN_MEMORY
-      if (FDepth > 0)
-      {
-        TlsSetValue(CallstackTls, reinterpret_cast<void *>(FDepth - 1));
-      }
-      #endif
-#ifndef _MSC_VER
-      TraceFmt(FFile, FFunc, FLine, L"Exit: %s [%d]", ARRAYOFCONST((FMessage, int(FDepth))));
-#else
-      TraceFmt(FFile, FFunc, FLine, L"Exit: %s [%d]", FMessage, int(FDepth));
-#endif
-    }
-  }
-
-private:
-  const wchar_t * FFile;
-  const wchar_t * FFunc;
-  unsigned int FLine;
-  const wchar_t * FMessage;
-  intptr_t FDepth;
-};
-void __callstack(const wchar_t*, const wchar_t*, unsigned int, const wchar_t*);
-#define __callstack1 __callstack
-#define CCALLSTACKIMPL(TRACING, X) // _TRACING_CALLSTACK TRACING X(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, L"")
-#else // ifdef _DEBUG
-#define CTRACEIMPL(TRACING, ...)
-#define CTRACEFMTIMPL(TRACING, MESSAGE, ...)
-#define CCALLSTACKIMPL(TRACING, X)
-#endif // ifdef _DEBUG
-
+#define CALLSTACK 
+#define CCALLSTACK(TRACING) 
+#define TRACING 
 #undef TRACE
-#define TRACE(MESSAGE) CTRACEIMPL(TRACING, _T(MESSAGE))
-#define TRACEFMT(MESSAGE, ...) CTRACEFMTIMPL(TRACING, _T(MESSAGE), __VA_ARGS__)
-#define CTRACE(TRACING, MESSAGE) CTRACEIMPL(TRACING, _T(MESSAGE))
-#define CTRACEFMT(TRACING, MESSAGE, ...) CTRACEFMTIMPL(TRACING, _T(MESSAGE), __VA_ARGS__)
-
-#define CCALLSTACK(TRACING) CCALLSTACKIMPL(TRACING, _TRACING_CALLSTACKI TRACING)
-#define CCALLSTACK1(TRACING) CCALLSTACKIMPL(TRACING ,_TRACING_CALLSTACKI TRACING ## 1)
-#define CALLSTACK CCALLSTACK(TRACING)
-#define CALLSTACK1 CCALLSTACK1(TRACING)
-//!CLEANEND
+#define TRACE(MESSAGE) 
+#define TRACEFMT(MESSAGE, ...) 
+#define CTRACE(TRACING, MESSAGE) 
+#define CTRACEFMT(TRACING, MESSAGE, ...) 
 //---------------------------------------------------------------------------
 #include <assert.h>
 #ifndef _DEBUG

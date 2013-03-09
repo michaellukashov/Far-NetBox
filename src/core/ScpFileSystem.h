@@ -35,21 +35,21 @@ public:
     TCalculatedChecksumEvent OnCalculatedChecksum);
   virtual void CopyToLocal(TStrings * FilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
+    intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CopyToRemote(TStrings * FilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
+    intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CreateDirectory(const UnicodeString & DirName);
   virtual void CreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic);
   virtual void DeleteFile(const UnicodeString & FileName,
-    const TRemoteFile * File, int Params, TRmSessionAction & Action);
+    const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action);
   virtual void CustomCommandOnFile(const UnicodeString & FileName,
-    const TRemoteFile * File, const UnicodeString & Command, int Params, TCaptureOutputEvent OutputEvent);
+    const TRemoteFile * File, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
   virtual void DoStartup();
   virtual void HomeDirectory();
-  virtual bool IsCapable(int Capability) const;
+  virtual bool IsCapable(intptr_t Capability) const;
   virtual void LookupUsersGroups();
   virtual void ReadCurrentDirectory();
   virtual void ReadDirectory(TRemoteFileList * FileList);
@@ -98,18 +98,18 @@ private:
   bool IsLastLine(UnicodeString & Line);
   static bool IsTotalListingLine(const UnicodeString & Line);
   void EnsureLocation();
-  void ExecCommand(const UnicodeString & Cmd, int Params,
+  void ExecCommand(const UnicodeString & Cmd, intptr_t Params,
     const UnicodeString & CmdString);
 #ifndef _MSC_VER
   void ExecCommand(TFSCommand Cmd, const TVarRec * args = NULL,
-    int size = 0, int Params = -1);
+    int size = 0, intptr_t Params = -1);
 #else
   void ExecCommand2(TFSCommand Cmd, ...);
 #endif
-  void ReadCommandOutput(int Params, const UnicodeString * Cmd = NULL);
+  void ReadCommandOutput(intptr_t Params, const UnicodeString * Cmd = NULL);
   void SCPResponse(bool * GotLastLine = NULL);
   void SCPDirectorySource(const UnicodeString & DirectoryName,
-    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
+    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, int Level);
   void SCPError(const UnicodeString & Message, bool Fatal);
   void SCPSendError(const UnicodeString & Message, bool Fatal);
@@ -117,10 +117,10 @@ private:
     const TRemoteFile * File, const UnicodeString & TargetDir,
     const UnicodeString & SourceDir,
     const TCopyParamType * CopyParam, bool & Success,
-    TFileOperationProgressType * OperationProgress, int Params, int Level);
+    TFileOperationProgressType * OperationProgress, intptr_t Params, int Level);
   void SCPSource(const UnicodeString & FileName,
     const TRemoteFile * File,
-    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
+    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, int Level);
   void SendCommand(const UnicodeString & Cmd);
   void SkipFirstLine();
@@ -133,7 +133,8 @@ private:
     const TRemoteToken & Token, TFSCommand Cmd, const UnicodeString & RecursiveStr);
 
   static bool RemoveLastLine(UnicodeString & Line,
-    int & ReturnCode, UnicodeString LastLine = L"");
+    int & ReturnCode, const UnicodeString & ALastLine);
+
 private:
   TSCPFileSystem(const TSCPFileSystem &);
   TSCPFileSystem & operator=(const TSCPFileSystem &);

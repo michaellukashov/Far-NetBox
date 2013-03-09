@@ -96,8 +96,8 @@
       <WarningLevel>Level2</WarningLevel>
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;NO_STRICT;APR_DECLARE_STATIC;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far3;..\..\libs;..\..\libs\openssl\x86\inc32;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\apr\include;..\..\libs\apr\include\arch;..\..\libs\apr\include\arch\win32;..\..\libs\apr\include\arch\unix;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;NO_STRICT;APR_DECLARE_STATIC;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far3;..\..\libs;..\..\libs\openssl\x86\inc32;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\apr\include;..\..\libs\apr\include\arch;..\..\libs\apr\include\arch\win32;..\..\libs\apr\include\arch\unix;..\..\libs\dlmalloc;</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -108,8 +108,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\mfc;..\..\libs\openssl\x86;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libputty;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libtinyxml2;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libneon;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libapr;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libexpat;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmtd.lib;libcpmtd.lib;libtinyxml2.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\mfc;..\..\libs\openssl\x86;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libputty;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libtinyxml2;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libneon;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libapr;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libexpat;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\dlmalloc;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmtd.lib;libcpmtd.lib;libtinyxml2.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfcs100ud.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;mfc100ud.lib;Atl.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <AdditionalOptions>/verbose:lib /ignore:4099 /ignore:4204 %(AdditionalOptions)</AdditionalOptions>
@@ -124,16 +124,16 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;WIN64;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;NO_STRICT;APR_DECLARE_STATIC;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far3;..\..\libs;..\..\libs\openssl\x64\inc32;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\apr\include;..\..\libs\apr\include\arch;..\..\libs\apr\include\arch\win32;..\..\libs\apr\include\arch\unix;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;WIN64;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;NO_STRICT;APR_DECLARE_STATIC;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far3;..\..\libs;..\..\libs\openssl\x64\inc32;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\apr\include;..\..\libs\apr\include\arch;..\..\libs\apr\include\arch\win32;..\..\libs\apr\include\arch\unix;..\..\libs\dlmalloc;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\mfc;..\..\libs\openssl\x64;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libputty;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libtinyxml2;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libneon;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libapr;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libexpat;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmtd.lib;libcpmtd.lib;libtinyxml2.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\mfc;..\..\libs\openssl\x64;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libputty;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libtinyxml2;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libneon;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libapr;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libexpat;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\dlmalloc;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmtd.lib;libcpmtd.lib;libtinyxml2.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfc100ud.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;Atl.lib;mfcs100ud.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <AdditionalOptions>/verbose:lib /ignore:4099 /ignore:4204 %(AdditionalOptions)</AdditionalOptions>
@@ -152,8 +152,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
-      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;NO_STRICT;APR_DECLARE_STATIC;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far3;..\..\libs;..\..\libs\openssl\x86\inc32;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\apr\include;..\..\libs\apr\include\arch;..\..\libs\apr\include\arch\win32;..\..\libs\apr\include\arch\unix;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;NO_STRICT;APR_DECLARE_STATIC;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far3;..\..\libs;..\..\libs\openssl\x86\inc32;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\apr\include;..\..\libs\apr\include\arch;..\..\libs\apr\include\arch\win32;..\..\libs\apr\include\arch\unix;..\..\libs\dlmalloc;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
@@ -171,8 +171,8 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\mfc;..\..\libs\openssl\x86;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libputty;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libtinyxml2;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libneon;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libapr;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libexpat;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmt.lib;libcpmt.lib;libtinyxml2.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\mfc;..\..\libs\openssl\x86;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libputty;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libtinyxml2;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libneon;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libapr;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libexpat;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\dlmalloc;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmt.lib;libcpmt.lib;libtinyxml2.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>gdi32.dll;winhttp.dll;ole32.dll;shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;winspool.drv;comdlg32.dll;</DelayLoadDLLs>
@@ -191,8 +191,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
-      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;WIN64;NDEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;NO_STRICT;APR_DECLARE_STATIC;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far3;..\..\libs;..\..\libs\openssl\x64\inc32;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\apr\include;..\..\libs\apr\include\arch;..\..\libs\apr\include\arch\win32;..\..\libs\apr\include\arch\unix;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;WIN64;NDEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;NO_STRICT;APR_DECLARE_STATIC;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far3;..\..\libs;..\..\libs\openssl\x64\inc32;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\apr\include;..\..\libs\apr\include\arch;..\..\libs\apr\include\arch\win32;..\..\libs\apr\include\arch\unix;..\..\libs\dlmalloc;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
@@ -207,11 +207,11 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\mfc;..\..\libs\openssl\x64;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libputty;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libtinyxml2;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libneon;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libapr;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libexpat;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmt.lib;libcpmt.lib;libtinyxml2.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\mfc;..\..\libs\openssl\x64;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libputty;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libtinyxml2;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libneon;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libapr;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libexpat;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\dlmalloc;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmt.lib;libcpmt.lib;libtinyxml2.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>gdi32.dll;winhttp.dll;ole32.dll;shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;winspool.drv;comdlg32.dll;</DelayLoadDLLs>
@@ -251,6 +251,9 @@
     <ResourceCompile Include="..\resource\TextsFileZilla.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\libs\dlmalloc\dlmalloc.vcxproj">
+      <Project>{5423dd5f-c5f6-40a0-ba13-4b0deb51d38e}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\libs\tinyxml2\libtinyxml2.vcxproj">
       <Project>{593a4fb1-1787-4192-bf73-9c43bf8fc142}</Project>
     </ProjectReference>

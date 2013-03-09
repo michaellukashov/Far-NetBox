@@ -49,21 +49,21 @@ public:
     TCalculatedChecksumEvent OnCalculatedChecksum);
   virtual void CopyToLocal(TStrings * FilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
+    intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CopyToRemote(TStrings * FilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
+    intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CreateDirectory(const UnicodeString & DirName);
   virtual void CreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic);
   virtual void DeleteFile(const UnicodeString & FileName,
-    const TRemoteFile * File, int Params, TRmSessionAction & Action);
+    const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action);
   virtual void CustomCommandOnFile(const UnicodeString & FileName,
-    const TRemoteFile * File, const UnicodeString & Command, int Params, TCaptureOutputEvent OutputEvent);
+    const TRemoteFile * File, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
   virtual void DoStartup();
   virtual void HomeDirectory();
-  virtual bool IsCapable(int Capability) const;
+  virtual bool IsCapable(intptr_t Capability) const;
   virtual void LookupUsersGroups();
   virtual void ReadCurrentDirectory();
   virtual void ReadDirectory(TRemoteFileList * FileList);
@@ -107,10 +107,10 @@ protected:
   bool FSignedTS;
   bool FOpenSSH;
   TStrings * FFixedPaths;
-  unsigned long FMaxPacketSize;
+  uintptr_t FMaxPacketSize;
 
   void SendCustomReadFile(TSFTPPacket * Packet, TSFTPPacket * Response,
-    unsigned long Flags);
+    uintptr_t Flags);
   void CustomReadFile(const UnicodeString & FileName,
     TRemoteFile *& File, unsigned char Type, TRemoteFile * ALinkedByFile = NULL,
     int AllowStatus = -1);
@@ -151,14 +151,14 @@ protected:
 
   void SFTPSourceRobust(const UnicodeString & FileName,
     const TRemoteFile * File,
-    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags);
+    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
+    TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   void SFTPSource(const UnicodeString & FileName,
     const TRemoteFile * File,
-    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
+    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
     TOpenRemoteFileParams & OpenParams,
     TOverwriteFileParams & FileParams,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags,
+    TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TUploadSessionAction & Action, bool & ChildError);
   RawByteString SFTPOpenRemoteFile(const UnicodeString & FileName,
     unsigned int OpenType, __int64 Size = -1);
@@ -168,35 +168,35 @@ protected:
     bool TransferFinished, bool Request, TSFTPPacket * Packet);
   void SFTPDirectorySource(const UnicodeString & DirectoryName,
     const UnicodeString & TargetDir, int Attrs, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags);
+    intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   void SFTPConfirmOverwrite(UnicodeString & FileName,
-    int Params, TFileOperationProgressType * OperationProgress,
+    intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOverwriteMode & Mode, const TOverwriteFileParams * FileParams);
   bool SFTPConfirmResume(const UnicodeString & DestFileName, bool PartialBiggerThanSource,
     TFileOperationProgressType * OperationProgress);
   void SFTPSinkRobust(const UnicodeString & FileName,
     const TRemoteFile * File, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags);
+    const TCopyParamType * CopyParam, intptr_t Params,
+    TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   void SFTPSink(const UnicodeString & FileName,
     const TRemoteFile * File, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags,
+    const TCopyParamType * CopyParam, intptr_t Params,
+    TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TDownloadSessionAction & Action, bool & ChildError);
   void SFTPSinkFile(const UnicodeString & FileName,
     const TRemoteFile * File, void * Param);
   char * GetEOL() const;
   inline void BusyStart();
   inline void BusyEnd();
-  inline unsigned long TransferBlockSize(unsigned long Overhead,
+  uintptr_t TransferBlockSize(uintptr_t Overhead,
     TFileOperationProgressType * OperationProgress,
-    unsigned long MinPacketSize = 0,
-    unsigned long MaxPacketSize = 0);
-  inline unsigned long UploadBlockSize(const RawByteString & Handle,
+    uintptr_t MinPacketSize = 0,
+    uintptr_t MaxPacketSize = 0);
+  uintptr_t UploadBlockSize(const RawByteString & Handle,
     TFileOperationProgressType * OperationProgress);
-  inline unsigned long DownloadBlockSize(
+  uintptr_t DownloadBlockSize(
     TFileOperationProgressType * OperationProgress);
-  inline int PacketLength(unsigned char * LenBuf, int ExpectedType);
+  intptr_t PacketLength(unsigned char * LenBuf, intptr_t ExpectedType);
 
 private:
   const TSessionData * GetSessionData() const;

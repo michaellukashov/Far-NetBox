@@ -628,7 +628,7 @@ double TRegistryStorage::ReadFloat(const UnicodeString & Name, double Default)
   READ_REGISTRY(ReadFloat);
 }
 //------------------------------------------------------------------------------
-int TRegistryStorage::ReadInteger(const UnicodeString & Name, int Default)
+intptr_t TRegistryStorage::ReadInteger(const UnicodeString & Name, intptr_t Default)
 {
   CCALLSTACK(TRACE_READING);
   CTRACEFMT(TRACE_READING, "%s", Name.c_str());
@@ -712,7 +712,7 @@ void TRegistryStorage::WriteStringRaw(const UnicodeString & Name, const UnicodeS
   WRITE_REGISTRY(WriteString);
 }
 //------------------------------------------------------------------------------
-void TRegistryStorage::WriteInteger(const UnicodeString & Name, int Value)
+void TRegistryStorage::WriteInteger(const UnicodeString & Name, intptr_t Value)
 {
   CCALLSTACK(TRACE_WRITING);
   CTRACEFMT(TRACE_WRITING, "[%s] [%s] [%d]", FRegistry->CurrentPath.c_str(), Name.c_str(), Value);
@@ -746,9 +746,9 @@ void TRegistryStorage::WriteBinaryData(const UnicodeString & Name,
   }
 }
 //------------------------------------------------------------------------------
-int TRegistryStorage::GetFailed()
+intptr_t TRegistryStorage::GetFailed()
 {
-  int Result = FFailed;
+  intptr_t Result = FFailed;
   FFailed = 0;
   return Result;
 }
@@ -830,7 +830,7 @@ void TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings)
   {
     Strings->Clear();
     FIniFile->ReadSections(Sections);
-    for (int i = 0; i < Sections->GetCount(); i++)
+    for (intptr_t i = 0; i < Sections->GetCount(); i++)
     {
       UnicodeString Section = Sections->Strings[i];
       if (AnsiCompareText(GetCurrentSubKey(),
@@ -838,7 +838,7 @@ void TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings)
       {
         UnicodeString SubSection = Section.SubString(GetCurrentSubKey().Length() + 1,
           Section.Length() - GetCurrentSubKey().Length());
-        int P = SubSection.Pos(L"\\");
+        intptr_t P = SubSection.Pos(L"\\");
         if (P)
         {
           SubSection.SetLength(P - 1);
@@ -894,10 +894,10 @@ bool TCustomIniFileStorage::ReadBool(const UnicodeString & Name, bool Default)
   return FIniFile->ReadBool(GetCurrentSection(), MungeIniName(Name), Default);
 }
 //------------------------------------------------------------------------------
-int TCustomIniFileStorage::ReadInteger(const UnicodeString & Name, int Default)
+intptr_t TCustomIniFileStorage::ReadInteger(const UnicodeString & Name, intptr_t Default)
 {
   CCALLSTACK(TRACE_READING);
-  int Result = FIniFile->ReadInteger(GetCurrentSection(), MungeIniName(Name), Default);
+  intptr_t Result = FIniFile->ReadInteger(GetCurrentSection(), MungeIniName(Name), Default);
   CTRACEFMT(TRACE_READING, "[%s] [%s] [%d]", GetCurrentSection().c_str(), Name.c_str(), Result);
   return Result;
 }

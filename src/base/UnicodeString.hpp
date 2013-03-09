@@ -12,6 +12,7 @@ class AnsiString;
 
 class UTF8String
 {
+  CUSTOM_MEM_ALLOCATION_IMPL;
 public:
   UTF8String() {}
   UTF8String(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
@@ -23,7 +24,6 @@ public:
   ~UTF8String() {}
 
   operator const wchar_t * () const { return c_str(); }
-  intptr_t size() const { return Length(); }
   const wchar_t * c_str() const { return Data.c_str(); }
   intptr_t Length() const { return Data.size(); }
   intptr_t GetLength() const { return Length(); }
@@ -33,7 +33,10 @@ public:
 
   UTF8String & Insert(const wchar_t * Str, intptr_t Pos);
 
-  UTF8String SubString(intptr_t Pos, intptr_t Len = -1) const { return std::wstring(Data.substr(Pos - 1, Len)); }
+  UTF8String SubString(intptr_t Pos, intptr_t Len = -1) const
+  {
+    return UTF8String(Data.substr(Pos - 1, Len).c_str());
+  }
 
   intptr_t Pos(wchar_t Ch) const;
 
@@ -60,7 +63,7 @@ private:
   void Init(const wchar_t * Str, intptr_t Length);
   void Init(const char * Str, intptr_t Length);
 
-  typedef std::basic_string<wchar_t> wstring_t;
+  typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, custom_nballocator_t<wchar_t> > wstring_t;
   wstring_t Data;
 };
 
@@ -68,6 +71,7 @@ private:
 
 class UnicodeString
 {
+  CUSTOM_MEM_ALLOCATION_IMPL;
 public:
   UnicodeString() {}
   UnicodeString(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
@@ -83,7 +87,6 @@ public:
 
   ~UnicodeString() {}
 
-  intptr_t size() const { return Length(); }
   const wchar_t * c_str() const { return Data.c_str(); }
   const wchar_t * data() const { return Data.c_str(); }
   intptr_t Length() const { return Data.size(); }
@@ -94,15 +97,15 @@ public:
   UnicodeString & Delete(intptr_t Index, intptr_t Count) { Data.erase(Index - 1, Count); return *this; }
   UnicodeString & Clear() { Data.clear(); return *this; }
 
-  UnicodeString & Lower(int nStartPos = 1, int nLength = -1);
-  UnicodeString & Upper(int nStartPos = 1, int nLength = -1);
+  UnicodeString & Lower(intptr_t nStartPos = 1, intptr_t nLength = -1);
+  UnicodeString & Upper(intptr_t nStartPos = 1, intptr_t nLength = -1);
 
   UnicodeString & LowerCase() { return Lower(); }
   UnicodeString & UpperCase() { return Upper(); }
 
   int Compare(const UnicodeString & Str) const;
   int CompareIC(const UnicodeString & Str) const;
-  int ToInt() const;
+  intptr_t ToInt() const;
 
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str, intptr_t DataLen);
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const UnicodeString & Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
@@ -141,7 +144,7 @@ public:
   void sprintf(const wchar_t * fmt, ...);
 
 public:
-  operator std::wstring () const { return Data; }
+  operator std::wstring () const { return std::wstring(Data.c_str(), Data.size()); }
   operator LPCWSTR () const { return Data.c_str(); }
 
   UnicodeString & operator=(const UnicodeString & StrCopy);
@@ -199,7 +202,8 @@ private:
   void Init(const char * Str, intptr_t Length);
   void ThrowIfOutOfRange(intptr_t Idx) const;
 
-  std::wstring Data;
+  typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, custom_nballocator_t<wchar_t> > wstring_t;
+  wstring_t Data;
 };
 
 //------------------------------------------------------------------------------
@@ -207,8 +211,10 @@ class RawByteString;
 
 class AnsiString
 {
+  CUSTOM_MEM_ALLOCATION_IMPL;
 public:
   AnsiString() {}
+  AnsiString(intptr_t Size, char Ch) : Data(Size, Ch) {}
   AnsiString(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
   AnsiString(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
   AnsiString(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
@@ -222,7 +228,6 @@ public:
   operator const char * () const { return Data.c_str(); }
   operator UnicodeString() const;
   operator std::string() const { return std::string(operator const char *()); }
-  intptr_t size() const { return Data.size(); }
   const char * c_str() const { return Data.c_str(); }
   intptr_t Length() const { return Data.size(); }
   intptr_t GetLength() const { return Length(); }
@@ -270,6 +275,7 @@ public:
   AnsiString operator +(const AnsiString & rhs) const;
   AnsiString operator +(const UTF8String & rhs) const;
   AnsiString operator +(const std::wstring & rhs) const;
+  AnsiString operator +(const char * rhs) const;
 
   AnsiString & operator +=(const UnicodeString & rhs);
   AnsiString & operator +=(const RawByteString & rhs);
@@ -301,13 +307,15 @@ private:
   void Init(const unsigned char * Str, intptr_t Length);
   void ThrowIfOutOfRange(intptr_t Idx) const;
 
-  std::string Data;
+  typedef std::basic_string<char, std::char_traits<char>, custom_nballocator_t<char> > string_t;
+  string_t Data;
 };
 
 //------------------------------------------------------------------------------
 
 class RawByteString
 {
+  CUSTOM_MEM_ALLOCATION_IMPL;
 public:
   RawByteString() {}
   RawByteString(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
@@ -325,7 +333,6 @@ public:
 
   operator const char * () const { return reinterpret_cast<const char *>(Data.c_str()); }
   operator UnicodeString() const;
-  intptr_t size() const { return Data.size(); }
   const char * c_str() const { return reinterpret_cast<const char *>(Data.c_str()); }
   intptr_t Length() const { return Data.size(); }
   intptr_t GetLength() const { return Length(); }
@@ -379,7 +386,8 @@ private:
   void Init(const char * Str, intptr_t Length);
   void Init(const unsigned char * Str, intptr_t Length);
 
-  typedef std::basic_string<unsigned char> rawstring_t;
+  // typedef std::basic_string<unsigned char> rawstring_t;
+  typedef std::basic_string<unsigned char, std::char_traits<unsigned char>, custom_nballocator_t<unsigned char> > rawstring_t;
   rawstring_t Data;
 };
 

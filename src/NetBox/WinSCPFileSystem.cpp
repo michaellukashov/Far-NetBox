@@ -795,7 +795,7 @@ void TWinSCPFileSystem::RequireLocalPanel(TFarPanelInfo * Panel, const UnicodeSt
   }
 }
 //------------------------------------------------------------------------------
-void TWinSCPFileSystem::RequireCapability(int Capability)
+void TWinSCPFileSystem::RequireCapability(intptr_t Capability)
 {
   if (!FTerminal->GetIsCapable(static_cast<TFSCapability>(Capability)))
   {
@@ -819,7 +819,7 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
     {
       TMessageParams Params;
       Params.Params = qpNeverAskAgainCheck;
-      intptr_t Answer = MoreMessageDialog(FORMAT(GetMsg(PERFORM_ON_COMMAND_SESSION).c_str(),
+      uintptr_t Answer = MoreMessageDialog(FORMAT(GetMsg(PERFORM_ON_COMMAND_SESSION).c_str(),
         FTerminal->GetFileSystemInfo().ProtocolName.c_str(),
          FTerminal->GetFileSystemInfo().ProtocolName.c_str()), NULL,
         qtConfirmation, qaOK | qaCancel, &Params);
@@ -1071,7 +1071,7 @@ void TWinSCPFileSystem::CreateLink()
     if (Edit)
     {
       assert(File->GetFileName() == FileName);
-      int Params = dfNoRecursive;
+      intptr_t Params = dfNoRecursive;
       GetTerminal()->SetExceptionOnFail(true);
       TRY_FINALLY (
       {
@@ -1138,7 +1138,7 @@ void TWinSCPFileSystem::ApplyCommand()
     std::auto_ptr<TStrings> FileListPtr;
     FileListPtr.reset(FileList);
     {
-      int Params = FarConfiguration->GetApplyCommandParams();
+      intptr_t Params = FarConfiguration->GetApplyCommandParams();
       UnicodeString Command = FarConfiguration->GetApplyCommandCommand();
       if (ApplyCommandDialog(Command, Params))
       {
@@ -1374,7 +1374,7 @@ void TWinSCPFileSystem::ApplyCommand()
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::Synchronize(const UnicodeString & LocalDirectory,
   const UnicodeString & RemoteDirectory, TTerminal::TSynchronizeMode Mode,
-  const TCopyParamType & CopyParam, int Params, TSynchronizeChecklist ** Checklist,
+  const TCopyParamType & CopyParam, intptr_t Params, TSynchronizeChecklist ** Checklist,
   TSynchronizeOptions * Options)
 {
   TSynchronizeChecklist * AChecklist = NULL;
@@ -1436,7 +1436,7 @@ bool TWinSCPFileSystem::SynchronizeAllowSelectedOnly()
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::GetSynchronizeOptions(
-  int Params, TSynchronizeOptions & Options)
+  intptr_t Params, TSynchronizeOptions & Options)
 {
   if (FLAGSET(Params, spSelectedOnly) && SynchronizeAllowSelectedOnly())
   {
@@ -1468,7 +1468,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
   TTerminal::TSynchronizeMode Mode =
     (SaveMode ? (TTerminal::TSynchronizeMode)GUIConfiguration->GetSynchronizeModeAuto() :
      (Source ? TTerminal::smLocal : TTerminal::smRemote));
-  int Params = GUIConfiguration->GetSynchronizeParams();
+  intptr_t Params = GUIConfiguration->GetSynchronizeParams();
   bool SaveSettings = false;
 
   TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
@@ -1664,7 +1664,7 @@ void TWinSCPFileSystem::DoSynchronize(
 {
   try
   {
-    int PParams = Params.Params;
+    intptr_t PParams = Params.Params;
     if (!Full)
     {
       PParams |= TTerminal::spNoRecurse | TTerminal::spUseCache |
@@ -1708,7 +1708,7 @@ void TWinSCPFileSystem::DoSynchronizeInvalid(
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
-  TSynchronizeController * /*Sender*/, int & MaxDirectories)
+  TSynchronizeController * /*Sender*/, intptr_t & MaxDirectories)
 {
   if (MaxDirectories < GUIConfiguration->GetMaxWatchDirectories())
   {
@@ -1718,7 +1718,7 @@ void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
   {
     TMessageParams Params;
     Params.Params = qpNeverAskAgainCheck;
-    intptr_t Result = MoreMessageDialog(
+    uintptr_t Result = MoreMessageDialog(
       FORMAT(GetMsg(TOO_MANY_WATCH_DIRECTORIES).c_str(), MaxDirectories, MaxDirectories), NULL,
       qtConfirmation, qaYes | qaNo, &Params);
 
@@ -2538,7 +2538,7 @@ intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
       }
 
       // these parameters are known in advance
-      int Params =
+      intptr_t Params =
         FLAGMASK(Move, cpDelete);
 
       if (!Confirmed)
@@ -2684,7 +2684,7 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
   }
 
   // these parameters are known in advance
-  int Params =
+  intptr_t Params =
     FLAGMASK(Move, cpDelete);
 
   if (!Confirmed)
@@ -2692,7 +2692,7 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
     int CopyParamAttrs =
       GetTerminal()->UsableCopyParamAttrs(Params).Upload |
       FLAGMASK(Edit, (cpaNoExcludeMask | cpaNoClearArchive));
-    // heurictics: do not ask for target directory when uploaded file
+    // heuristics: do not ask for target directory when uploaded file
     // was downloaded in edit mode
     int Options =
       FLAGMASK(Edit, coTempTransfer) |
@@ -3020,6 +3020,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
     FTerminal->SetOnMoveLocalFile(MAKE_CALLBACK(TWinSCPFileSystem::TerminalMoveLocalFile, this));
     FTerminal->SetOnRemoveLocalDirectory(MAKE_CALLBACK(TWinSCPFileSystem::TerminalRemoveLocalDirectory, this));
     FTerminal->SetOnCreateLocalDirectory(MAKE_CALLBACK(TWinSCPFileSystem::TerminalCreateLocalDirectory, this));
+    FTerminal->SetOnCheckForEsc(MAKE_CALLBACK(TWinSCPFileSystem::TerminalCheckForEsc, this));
     ConnectTerminal(FTerminal);
 
     FTerminal->SetOnClose(MAKE_CALLBACK(TWinSCPFileSystem::TerminalClose, this));
@@ -3095,6 +3096,11 @@ void TWinSCPFileSystem::Disconnect()
 void TWinSCPFileSystem::ConnectTerminal(TTerminal * Terminal)
 {
   Terminal->Open();
+}
+//------------------------------------------------------------------------------
+bool TWinSCPFileSystem::TerminalCheckForEsc()
+{
+  return WinSCPPlugin()->CheckForEsc();
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalClose(TObject * /*Sender*/)
@@ -3322,8 +3328,8 @@ BOOL TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & Local
   }
 }
 //------------------------------------------------------------------------------
-intptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString & Str,
-  TStrings * MoreMessages, TQueryType Type, int Answers, const TMessageParams * Params)
+uintptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString & Str,
+  TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams * Params)
 {
   TMessageParams AParams;
 
@@ -3343,8 +3349,8 @@ intptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString & Str,
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
-  const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
-  const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * /*Arg*/)
+  const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+  const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * /*Arg*/)
 {
   TMessageParams AParams;
   UnicodeString AQuery = Query;
@@ -3367,7 +3373,7 @@ void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
     AParams.TimeoutAnswer = Params->TimeoutAnswer;
   }
 
-  Answer = static_cast<unsigned int>(MoreMessageDialog(AQuery, MoreMessages, Type, Answers, &AParams));
+  Answer = MoreMessageDialog(AQuery, MoreMessages, Type, Answers, &AParams);
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
@@ -3397,7 +3403,7 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalDisplayBanner(
   TTerminal * /*Terminal*/, UnicodeString SessionName,
-  const UnicodeString & Banner, bool & NeverShowAgain, int Options)
+  const UnicodeString & Banner, bool & NeverShowAgain, intptr_t Options)
 {
   BannerDialog(SessionName, Banner, NeverShowAgain, Options);
 }
@@ -3747,7 +3753,7 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
 
     if (QueueItem != NULL)
     {
-      QueueItem->SetUserData(reinterpret_cast<void *>(true));
+      QueueItem->SetUserData(reinterpret_cast<void *>(1));
       FQueueItemInvalidated = true;
     }
   }
@@ -3772,7 +3778,7 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
     TRY_FINALLY (
     {
       TCancelStatus ACancel;
-      intptr_t Result;
+      uintptr_t Result;
       if (ProgressData.TransferingFile &&
           (ProgressData.TimeExpected() > GUIConfiguration->GetIgnoreCancelBeforeFinish()))
       {
@@ -3846,37 +3852,34 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
   TFarEditorInfo * Info = WinSCPPlugin()->EditorInfo();
   if (Info != NULL)
   {
+    std::auto_ptr<TFarEditorInfo> InfoPtr(Info);
+    bool NativeEdit =
+      (FLastEditorID >= 0) &&
+      (FLastEditorID == Info->GetEditorID()) &&
+      !FLastEditFile.IsEmpty();
+
+    TMultipleEdits::iterator I = FMultipleEdits.find((int)Info->GetEditorID());
+    bool MultipleEdit = (I != FMultipleEdits.end());
+
+    if (NativeEdit || MultipleEdit)
     {
-      std::auto_ptr<TFarEditorInfo> InfoPtr;
-      InfoPtr.reset(Info);
-      bool NativeEdit =
-        (FLastEditorID >= 0) &&
-        (FLastEditorID == Info->GetEditorID()) &&
-        !FLastEditFile.IsEmpty();
+      // make sure this is reset before any dialog is shown as it may cause recursion
+      FEditorPendingSave = false;
 
-      TMultipleEdits::iterator I = FMultipleEdits.find((int)Info->GetEditorID());
-      bool MultipleEdit = (I != FMultipleEdits.end());
-
-      if (NativeEdit || MultipleEdit)
+      if (NativeEdit)
       {
-        // make sure this is reset before any dialog is shown as it may cause recursion
-        FEditorPendingSave = false;
+        assert(FLastEditFile == Info->GetFileName());
+        // always upload under the most recent name
+        UnicodeString CurrentDirectory = FTerminal->GetCurrentDirectory();
+        UploadFromEditor(NoReload, FLastEditFile, FLastEditFile, CurrentDirectory);
+        FTerminal->SetCurrentDirectory(CurrentDirectory);
+      }
 
-        if (NativeEdit)
-        {
-          assert(FLastEditFile == Info->GetFileName());
-          // always upload under the most recent name
-          UnicodeString CurrentDirectory = FTerminal->GetCurrentDirectory();
-          UploadFromEditor(NoReload, FLastEditFile, FLastEditFile, CurrentDirectory);
-          FTerminal->SetCurrentDirectory(CurrentDirectory);
-        }
-
-        if (MultipleEdit)
-        {
-          UploadFromEditor(NoReload, Info->GetFileName(), I->second.FileTitle, I->second.Directory);
-          // note that panel gets not refreshed upon switch to
-          // panel view. but that's intentional
-        }
+      if (MultipleEdit)
+      {
+        UploadFromEditor(NoReload, Info->GetFileName(), I->second.FileTitle, I->second.Directory);
+        // note that panel gets not refreshed upon switch to
+        // panel view. but that's intentional
       }
     }
   }
@@ -3903,8 +3906,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
       TFarEditorInfo * Info = WinSCPPlugin()->EditorInfo();
       if (Info != NULL)
       {
-        std::auto_ptr<TFarEditorInfo> InfoPtr;
-        InfoPtr.reset(Info);
+        std::auto_ptr<TFarEditorInfo> InfoPtr(Info);
         TMultipleEdits::iterator it = FMultipleEdits.find((int)Info->GetEditorID());
         if (it != FMultipleEdits.end())
         {

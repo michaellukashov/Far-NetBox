@@ -31,19 +31,19 @@ const TCipher DefaultCipherList[CIPHER_COUNT] =
 const TKex DefaultKexList[KEX_COUNT] =
   { kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexWarn };
 const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][11] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"WebDAV" };
-const int SshPortNumber = 22;
-const int FtpPortNumber = 21;
-const int FtpsImplicitPortNumber = 990;
-const int HTTPPortNumber = 80;
-const int HTTPSPortNumber = 443;
-const int DefaultSendBuf = 256 * 1024;
+const intptr_t SshPortNumber = 22;
+const intptr_t FtpPortNumber = 21;
+const intptr_t FtpsImplicitPortNumber = 990;
+const intptr_t HTTPPortNumber = 80;
+const intptr_t HTTPSPortNumber = 443;
+const intptr_t DefaultSendBuf = 256 * 1024;
 const UnicodeString AnonymousUserName(L"anonymous");
 const UnicodeString AnonymousPassword(L"anonymous@example.com");
 
-const unsigned int CONST_DEFAULT_CODEPAGE = CP_ACP;
+const uintptr_t CONST_DEFAULT_CODEPAGE = CP_ACP;
 const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
 //---------------------------------------------------------------------
-TDateTime SecToDateTime(int Sec)
+static TDateTime SecToDateTime(intptr_t Sec)
 {
   return TDateTime(static_cast<unsigned short>(Sec/SecsPerHour),
     static_cast<unsigned short>(Sec/SecsPerMin%MinsPerHour), static_cast<unsigned short>(Sec%SecsPerMin), 0);
@@ -410,7 +410,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   }
   SetHostKey(Storage->ReadString(L"HostKey", GetHostKey()));
   // Putty uses PingIntervalSecs
-  int PingIntervalSecs = Storage->ReadInteger(L"PingIntervalSecs", -1);
+  intptr_t PingIntervalSecs = Storage->ReadInteger(L"PingIntervalSecs", -1);
   if (PingIntervalSecs < 0)
   {
     PingIntervalSecs = Storage->ReadInteger(L"PingIntervalSec", GetPingInterval()%SecsPerMin);
@@ -509,8 +509,8 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetProxyMethod(static_cast<TProxyMethod>(Storage->ReadInteger(L"ProxyMethod", -1)));
   if (GetProxyMethod() < 0)
   {
-    int ProxyType = Storage->ReadInteger(L"ProxyType", pxNone);
-    int ProxySOCKSVersion;
+    intptr_t ProxyType = Storage->ReadInteger(L"ProxyType", pxNone);
+    intptr_t ProxySOCKSVersion = 0;
     switch (ProxyType) {
       case pxHTTP:
         SetProxyMethod(pmHTTP);
@@ -1064,7 +1064,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
   bool ProtocolDefined = false;
   bool PortNumberDefined = false;
   TFSProtocol AFSProtocol = fsSCPonly;
-  int APortNumber = 0;
+  intptr_t APortNumber = 0;
   TFtps AFtps = ftpsNone;
   if (url.SubString(1, 7).LowerCase() == L"netbox:")
   {
@@ -1329,7 +1329,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     if (Options->FindSwitch(L"timeout", Value))
     {
       TRACE("26");
-      SetTimeout(StrToInt(Value));
+      SetTimeout(Sysutils::StrToInt(Value));
     }
     if (Options->FindSwitch(L"hostkey", Value) ||
         Options->FindSwitch(L"certificate", Value))
@@ -1422,7 +1422,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     }
     if (Options->FindSwitch(L"codepage", Value))
     {
-      int CodePage = StrToIntDef(Value, 0);
+      uintptr_t CodePage = StrToIntDef(Value, 0);
       if (CodePage != 0)
       {
         SetCodePage(GetCodePageAsString(CodePage));
@@ -1433,7 +1433,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
   return true;
 }
 //---------------------------------------------------------------------
-void TSessionData::ConfigureTunnel(int APortNumber)
+void TSessionData::ConfigureTunnel(intptr_t APortNumber)
 {
   FOrigHostName = GetHostName();
   FOrigPortNumber = GetPortNumber();
@@ -1551,7 +1551,7 @@ UnicodeString TSessionData::GetHostNameExpanded()
   return ::ExpandEnvironmentVariables(GetHostName());
 }
 //---------------------------------------------------------------------
-void TSessionData::SetPortNumber(int Value)
+void TSessionData::SetPortNumber(intptr_t Value)
 {
   SET_SESSION_PROPERTY(PortNumber);
 }
@@ -1611,7 +1611,7 @@ UnicodeString TSessionData::GetPassword() const
   return DecryptPassword(FPassword, GetUserName() + GetHostName());
 }
 //---------------------------------------------------------------------
-void TSessionData::SetPingInterval(int Value)
+void TSessionData::SetPingInterval(intptr_t Value)
 {
   SET_SESSION_PROPERTY(PingInterval);
 }
@@ -1825,7 +1825,7 @@ TDateTime TSessionData::GetTimeoutDT()
   return SecToDateTime(GetTimeout());
 }
 //---------------------------------------------------------------------------
-void TSessionData::SetTimeout(int Value)
+void TSessionData::SetTimeout(intptr_t Value)
 {
   SET_SESSION_PROPERTY(Timeout);
 }
@@ -1929,7 +1929,7 @@ void TSessionData::SetRekeyData(const UnicodeString & Value)
   SET_SESSION_PROPERTY(RekeyData);
 }
 //---------------------------------------------------------------------------
-void TSessionData::SetRekeyTime(unsigned int Value)
+void TSessionData::SetRekeyTime(uintptr_t Value)
 {
   SET_SESSION_PROPERTY(RekeyTime);
 }
@@ -2121,7 +2121,7 @@ void TSessionData::SetTcpNoDelay(bool Value)
   SET_SESSION_PROPERTY(TcpNoDelay);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetSendBuf(int Value)
+void TSessionData::SetSendBuf(intptr_t Value)
 {
   SET_SESSION_PROPERTY(SendBuf);
 }
@@ -2141,7 +2141,7 @@ void TSessionData::SetProxyHost(const UnicodeString & Value)
   SET_SESSION_PROPERTY(ProxyHost);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetProxyPort(int Value)
+void TSessionData::SetProxyPort(intptr_t Value)
 {
   SET_SESSION_PROPERTY(ProxyPort);
 }
@@ -2164,6 +2164,7 @@ TProxyMethod TSessionData::GetSystemProxyMethod() const
     return FIEProxyConfig->ProxyMethod;
   return pmNone;
 }
+//---------------------------------------------------------------------
 UnicodeString TSessionData::GetProxyHost() const
 {
   PrepareProxyData();
@@ -2171,21 +2172,25 @@ UnicodeString TSessionData::GetProxyHost() const
     return FIEProxyConfig->ProxyHost;
   return FProxyHost;
 }
-int TSessionData::GetProxyPort() const
+//---------------------------------------------------------------------
+intptr_t TSessionData::GetProxyPort() const
 {
   PrepareProxyData();
   if ((GetProxyMethod() == pmSystem) && (NULL != FIEProxyConfig))
     return FIEProxyConfig->ProxyPort;
   return FProxyPort;
 }
+//---------------------------------------------------------------------
 UnicodeString TSessionData::GetProxyUsername() const
 {
   return FProxyUsername;
 }
+//---------------------------------------------------------------------
 UnicodeString TSessionData::GetProxyPassword() const
 {
   return DecryptPassword(FProxyPassword, GetProxyUsername() + GetProxyHost());
 }
+//---------------------------------------------------------------------
 static void FreeIEProxyConfig(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG * IEProxyConfig)
 {
   assert(IEProxyConfig);
@@ -2196,6 +2201,7 @@ static void FreeIEProxyConfig(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG * IEProxyConf
   if (IEProxyConfig->lpszProxyBypass)
     GlobalFree(IEProxyConfig->lpszProxyBypass);
 }
+//---------------------------------------------------------------------
 void TSessionData::PrepareProxyData() const
 {
   if ((GetProxyMethod() == pmSystem) && (NULL == FIEProxyConfig))
@@ -2227,6 +2233,7 @@ void TSessionData::PrepareProxyData() const
     }
   }
 }
+//---------------------------------------------------------------------
 void TSessionData::ParseIEProxyConfig() const
 {
   assert(FIEProxyConfig);
@@ -2234,10 +2241,10 @@ void TSessionData::ParseIEProxyConfig() const
   ProxyServerList.SetDelimiter(L';');
   ProxyServerList.SetDelimitedText(FIEProxyConfig->Proxy);
   UnicodeString ProxyUrl;
-  int ProxyPort = 0;
+  intptr_t ProxyPort = 0;
   TProxyMethod ProxyMethod = pmNone;
   UnicodeString ProxyUrlTmp;
-  int ProxyPortTmp = 0;
+  intptr_t ProxyPortTmp = 0;
   TProxyMethod ProxyMethodTmp = pmNone;
   for (intptr_t Index = 0; Index < ProxyServerList.GetCount(); ++Index)
   {
@@ -2293,8 +2300,9 @@ void TSessionData::ParseIEProxyConfig() const
   FIEProxyConfig->ProxyPort = ProxyPort;
   FIEProxyConfig->ProxyMethod = ProxyMethod;
 }
+//---------------------------------------------------------------------
 void TSessionData::FromURI(const UnicodeString & ProxyURI,
-  UnicodeString & ProxyUrl, int & ProxyPort, TProxyMethod & ProxyMethod) const
+  UnicodeString & ProxyUrl, intptr_t & ProxyPort, TProxyMethod & ProxyMethod) const
 {
   ProxyUrl.Clear();
   ProxyPort = 0;
@@ -2356,7 +2364,7 @@ void TSessionData::SetProxyLocalhost(bool Value)
   SET_SESSION_PROPERTY(ProxyLocalhost);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetFtpProxyLogonType(int Value)
+void TSessionData::SetFtpProxyLogonType(intptr_t Value)
 {
   SET_SESSION_PROPERTY(FtpProxyLogonType);
 }
@@ -2383,32 +2391,32 @@ void TSessionData::SetCustomParam2(const UnicodeString & Value)
   SET_SESSION_PROPERTY(CustomParam2);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetSFTPDownloadQueue(int Value)
+void TSessionData::SetSFTPDownloadQueue(intptr_t Value)
 {
   SET_SESSION_PROPERTY(SFTPDownloadQueue);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetSFTPUploadQueue(int Value)
+void TSessionData::SetSFTPUploadQueue(intptr_t Value)
 {
   SET_SESSION_PROPERTY(SFTPUploadQueue);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetSFTPListingQueue(int Value)
+void TSessionData::SetSFTPListingQueue(intptr_t Value)
 {
   SET_SESSION_PROPERTY(SFTPListingQueue);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetSFTPMaxVersion(int Value)
+void TSessionData::SetSFTPMaxVersion(intptr_t Value)
 {
   SET_SESSION_PROPERTY(SFTPMaxVersion);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetSFTPMinPacketSize(unsigned long Value)
+void TSessionData::SetSFTPMinPacketSize(uintptr_t Value)
 {
   SET_SESSION_PROPERTY(SFTPMinPacketSize);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetSFTPMaxPacketSize(unsigned long Value)
+void TSessionData::SetSFTPMaxPacketSize(uintptr_t Value)
 {
   SET_SESSION_PROPERTY(SFTPMaxPacketSize);
 }
@@ -2430,7 +2438,7 @@ void TSessionData::SetSCPLsFullTime(TAutoSwitch Value)
   SET_SESSION_PROPERTY(SCPLsFullTime);
 }
 //---------------------------------------------------------------------------
-void TSessionData::SetColor(int Value)
+void TSessionData::SetColor(intptr_t Value)
 {
   SET_SESSION_PROPERTY(Color);
 }
@@ -2462,7 +2470,7 @@ void TSessionData::SetTunnelHostName(const UnicodeString & Value)
   }
 }
 //---------------------------------------------------------------------
-void TSessionData::SetTunnelPortNumber(int Value)
+void TSessionData::SetTunnelPortNumber(intptr_t Value)
 {
   SET_SESSION_PROPERTY(TunnelPortNumber);
 }
@@ -2496,7 +2504,7 @@ void TSessionData::SetTunnelPublicKeyFile(const UnicodeString & Value)
   }
 }
 //---------------------------------------------------------------------
-void TSessionData::SetTunnelLocalPortNumber(int Value)
+void TSessionData::SetTunnelLocalPortNumber(intptr_t Value)
 {
   SET_SESSION_PROPERTY(TunnelLocalPortNumber);
 }
@@ -2541,7 +2549,7 @@ void TSessionData::SetFtpAccount(const UnicodeString & Value)
   SET_SESSION_PROPERTY(FtpAccount);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetFtpPingInterval(int Value)
+void TSessionData::SetFtpPingInterval(intptr_t Value)
 {
   SET_SESSION_PROPERTY(FtpPingInterval);
 }
@@ -2632,7 +2640,7 @@ void TSessionData::SetLoginType(TLoginType Value)
   }
 }
 //---------------------------------------------------------------------
-unsigned int TSessionData::GetCodePageAsNumber() const
+uintptr_t TSessionData::GetCodePageAsNumber() const
 {
   return ::GetCodePageAsNumber(GetCodePage());
 }
@@ -2663,7 +2671,7 @@ void TSessionData::RemoveProtocolPrefix(UnicodeString & HostName)
   AdjustHostName(HostName, L"https://");
 }
 //---------------------------------------------------------------------
-TFSProtocol TSessionData::TranslateFSProtocolNumber(int FSProtocol)
+TFSProtocol TSessionData::TranslateFSProtocolNumber(intptr_t FSProtocol)
 {
   TFSProtocol Result = static_cast<TFSProtocol>(-1);
   if (GetSessionVersion() >= GetVersionNumber2110())
@@ -2716,7 +2724,7 @@ TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID)
   return Result;
 }
 //---------------------------------------------------------------------
-TFtps TSessionData::TranslateFtpEncryptionNumber(int FtpEncryption)
+TFtps TSessionData::TranslateFtpEncryptionNumber(intptr_t FtpEncryption)
 {
   TFtps Result = GetFtps();
   if ((GetSessionVersion() < GetVersionNumber2110()) &&
@@ -2959,7 +2967,7 @@ void TStoredSessionList::SelectAll(bool Select)
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    AtSession(Index)->SetSelected(Select);
+    GetSession(Index)->SetSelected(Select);
   }
 }
 //---------------------------------------------------------------------
@@ -2968,10 +2976,10 @@ void TStoredSessionList::Import(TStoredSessionList * From,
 {
   for (intptr_t Index = 0; Index < From->GetCount(); ++Index)
   {
-    if (!OnlySelected || From->AtSession(Index)->GetSelected())
+    if (!OnlySelected || From->GetSession(Index)->GetSelected())
     {
       TSessionData *Session = new TSessionData(L"");
-      Session->Assign(From->AtSession(Index));
+      Session->Assign(From->GetSession(Index));
       Session->SetModified(true);
       Session->MakeUniqueIn(this);
       Add(Session);
@@ -2986,9 +2994,9 @@ void TStoredSessionList::SelectSessionsToImport
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    AtSession(Index)->SetSelected(
-      (!SSHOnly || (AtSession(Index)->GetProtocol() == ptSSH)) &&
-      !Dest->FindByName(AtSession(Index)->GetName()));
+    GetSession(Index)->SetSelected(
+      (!SSHOnly || (GetSession(Index)->GetProtocol() == ptSSH)) &&
+      !Dest->FindByName(GetSession(Index)->GetName()));
   }
 }
 //---------------------------------------------------------------------
@@ -3036,7 +3044,7 @@ void TStoredSessionList::UpdateStaticUsage()
   std::auto_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
   for (intptr_t Index = 0; Index < Count; ++Index)
   {
-    TSessionData * Data = AtSession(Index);
+    TSessionData * Data = GetSession(Index);
     switch (Data->GetFSProtocol())
     {
       case fsSCPonly:
@@ -3129,7 +3137,7 @@ intptr_t TStoredSessionList::IndexOf(TSessionData * Data)
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (Data == AtSession(Index))
+    if (Data == GetSession(Index))
     {
       return Index;
     }
@@ -3202,7 +3210,7 @@ void TStoredSessionList::ImportHostKeys(const UnicodeString & TargetKey,
       assert(Sessions != NULL);
       for (intptr_t Index = 0; Index < Sessions->GetCount(); ++Index)
       {
-        Session = Sessions->AtSession(Index);
+        Session = Sessions->GetSession(Index);
         if (!OnlySelected || Session->GetSelected())
         {
           HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostName().c_str()));
@@ -3291,13 +3299,13 @@ bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx)
   return true;
 }
 //---------------------------------------------------------------------
-unsigned int GetCodePageAsNumber(const UnicodeString & CodePage)
+uintptr_t GetCodePageAsNumber(const UnicodeString & CodePage)
 {
-  unsigned int codePage = _wtoi(CodePage.c_str());
-  return codePage == 0 ? CONST_DEFAULT_CODEPAGE : codePage;
+  uintptr_t codePage = _wtoi(CodePage.c_str());
+  return static_cast<uintptr_t >(codePage == 0 ? CONST_DEFAULT_CODEPAGE : codePage);
 }
 //---------------------------------------------------------------------
-UnicodeString GetCodePageAsString(unsigned int cp)
+UnicodeString GetCodePageAsString(uintptr_t cp)
 {
   CPINFOEX cpInfoEx;
   if (::GetCodePageInfo(cp, cpInfoEx))

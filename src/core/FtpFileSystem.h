@@ -48,21 +48,22 @@ public:
     TCalculatedChecksumEvent OnCalculatedChecksum);
   virtual void CopyToLocal(TStrings * FilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
+    intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CopyToRemote(TStrings * FilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
+    intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CreateDirectory(const UnicodeString & DirName);
   virtual void CreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic);
   virtual void DeleteFile(const UnicodeString & FileName,
-    const TRemoteFile * File, int Params, TRmSessionAction & Action);
+    const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action);
   virtual void CustomCommandOnFile(const UnicodeString & FileName,
-    const TRemoteFile * File, const UnicodeString & Command, int Params, TCaptureOutputEvent OutputEvent);
+    const TRemoteFile * File, const UnicodeString & Command, intptr_t Params,
+    TCaptureOutputEvent OutputEvent);
   virtual void DoStartup();
   virtual void HomeDirectory();
-  virtual bool IsCapable(int Capability) const;
+  virtual bool IsCapable(intptr_t Capability) const;
   virtual void LookupUsersGroups();
   virtual void ReadCurrentDirectory();
   virtual void ReadDirectory(TRemoteFileList * FileList);
@@ -89,8 +90,8 @@ protected:
 
   virtual UnicodeString GetCurrentDirectory();
 
-  const wchar_t * GetOption(int OptionID) const;
-  int GetOptionVal(int OptionID) const;
+  const wchar_t * GetOption(intptr_t OptionID) const;
+  intptr_t GetOptionVal(intptr_t OptionID) const;
 
   enum
   {
@@ -109,7 +110,7 @@ protected:
   void WaitForFatalNonCommandReply();
   void PoolForFatalNonCommandReply();
   void GotNonCommandReply(unsigned int Reply);
-  void GotReply(unsigned int Reply, unsigned int Flags = 0,
+  void GotReply(unsigned int Reply, uintptr_t Flags = 0,
     const UnicodeString & Error = L"", unsigned int * Code = NULL,
     TStrings ** Response = NULL);
   void ResetReply();
@@ -145,30 +146,30 @@ protected:
 
   void Sink(const UnicodeString & FileName,
     const TRemoteFile * File, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags,
+    const TCopyParamType * CopyParam, intptr_t Params,
+    TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TDownloadSessionAction & Action);
   void SinkRobust(const UnicodeString & FileName,
     const TRemoteFile * File, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags);
+    const TCopyParamType * CopyParam, intptr_t Params,
+    TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   void SinkFile(const UnicodeString & FileName, const TRemoteFile * File, void * Param);
   void SourceRobust(const UnicodeString & FileName,
     const TRemoteFile * File,
-    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags);
+    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
+    TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   void Source(const UnicodeString & FileName,
     const TRemoteFile * File,
-    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
+    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
     TOpenRemoteFileParams * OpenParams,
     TOverwriteFileParams * FileParams,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags,
+    TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TUploadSessionAction & Action);
   void DirectorySource(const UnicodeString & DirectoryName,
-    const UnicodeString & TargetDir, int Attrs, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags);
+    const UnicodeString & TargetDir, intptr_t Attrs, const TCopyParamType * CopyParam,
+    intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   bool ConfirmOverwrite(UnicodeString & FileName,
-    int Params, TFileOperationProgressType * OperationProgress,
+    intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOverwriteMode & OverwriteMode,
     bool AutoResume,
     const TOverwriteFileParams * FileParams);
@@ -235,7 +236,7 @@ private:
   bool FFileTransferCancelled;
   __int64 FFileTransferResumed;
   bool FFileTransferPreserveTime;
-  unsigned long FFileTransferCPSLimit;
+  uintptr_t FFileTransferCPSLimit;
   bool FAwaitingProgress;
   TCaptureOutputEvent FOnCaptureOutput;
   UnicodeString FUserName;

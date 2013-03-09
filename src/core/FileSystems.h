@@ -36,8 +36,8 @@ struct TSinkFileParams
   UnicodeString TargetDir;
   const TCopyParamType *CopyParam;
   TFileOperationProgressType *OperationProgress;
-  int Params;
-  unsigned int Flags;
+  intptr_t Params;
+  uintptr_t Flags;
   bool Skipped;
 };
 //---------------------------------------------------------------------------
@@ -55,7 +55,7 @@ struct TFileTransferData
   UnicodeString FileName;
   const TCopyParamType * CopyParam;
   TDateTime Modification;
-  int Params;
+  intptr_t Params;
   int OverwriteResult;
   bool AutoResume;
 };
@@ -105,7 +105,7 @@ struct TOpenRemoteFileParams
   UnicodeString RemoteFileName;
   TFileOperationProgressType * OperationProgress;
   const TCopyParamType * CopyParam;
-  int Params;
+  intptr_t Params;
   bool Resume;
   bool Resuming;
   TOverwriteMode OverwriteMode;
@@ -153,22 +153,22 @@ public:
     TCalculatedChecksumEvent OnCalculatedChecksum) = 0;
   virtual void CopyToLocal(TStrings * FilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
+    intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
   virtual void CopyToRemote(TStrings * FilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
+    intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
   virtual void CreateDirectory(const UnicodeString & DirName) = 0;
   virtual void CreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic) = 0;
   virtual void DeleteFile(const UnicodeString & FileName,
-    const TRemoteFile * File, int Params,
+    const TRemoteFile * File, intptr_t Params,
     TRmSessionAction & Action) = 0;
   virtual void CustomCommandOnFile(const UnicodeString & FileName,
-    const TRemoteFile * File, const UnicodeString & Command, int Params, TCaptureOutputEvent OutputEvent) = 0;
+    const TRemoteFile * File, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent) = 0;
   virtual void DoStartup() = 0;
   virtual void HomeDirectory() = 0;
-  virtual bool IsCapable(int Capability) const = 0;
+  virtual bool IsCapable(intptr_t Capability) const = 0;
   virtual void LookupUsersGroups() = 0;
   virtual void ReadCurrentDirectory() = 0;
   virtual void ReadDirectory(TRemoteFileList * FileList) = 0;

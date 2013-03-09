@@ -12,26 +12,26 @@
 
 namespace Classes {
 
-int __cdecl debug_printf(const wchar_t * format, ...)
+intptr_t __cdecl debug_printf(const wchar_t * format, ...)
 {
   (void)format;
-  int len = 0;
+  intptr_t len = 0;
 #ifdef NETBOX_DEBUG
   va_list args;
   va_start(args, format);
   len = _vscwprintf(format, args);
   std::wstring buf(len + 1, 0);
-  vswprintf((wchar_t *)buf.c_str(), buf.size(), format, args);
+  vswprintf(const_cast<wchar_t *>(buf.c_str()), buf.size(), format, args);
   va_end(args);
   OutputDebugStringW(buf.c_str());
 #endif
   return len;
 }
 
-int __cdecl debug_printf2(const char * format, ...)
+intptr_t __cdecl debug_printf2(const char * format, ...)
 {
   (void)format;
-  int len = 0;
+  intptr_t len = 0;
 #ifdef NETBOX_DEBUG
   va_list args;
   va_start(args, format);
@@ -124,8 +124,8 @@ void TList::SetCount(intptr_t NewCount)
   }
   if (NewCount <= static_cast<intptr_t>(FList.size()))
   {
-    int sz = static_cast<int>(FList.size());
-    for (int I = sz - 1; (I != NPOS) && (I >= NewCount); I--)
+    intptr_t sz = FList.size();
+    for (intptr_t I = sz - 1; (I != NPOS) && (I >= NewCount); I--)
     {
       Delete(I);
     }
@@ -246,7 +246,7 @@ void TList::Clear()
   SetCount(0);
 }
 
-void QuickSort(std::vector<void *> & SortList, intptr_t L, intptr_t R,
+void QuickSort(std::vector<void *, custom_nballocator_t<void *> > & SortList, intptr_t L, intptr_t R,
   CompareFunc SCompare)
 {
   intptr_t I;
@@ -1122,7 +1122,7 @@ void TStringList::LoadFromFile(const UnicodeString & FileName)
     // parse file content
     // GDisk.Tab.Caption=&GDisk
   }
-  free(content);*/
+  nb_free(content);*/
 }
 
 void TStringList::PutObject(intptr_t Index, TObject * AObject)
@@ -1270,15 +1270,15 @@ UnicodeString MB2W(const char * src, const UINT cp)
     return UnicodeString(L"");
   }
 
-  std::wstring wide;
-  const int reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
+  intptr_t reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
+  std::wstring wide(reqLength, 0);
   if (reqLength)
   {
     wide.resize(reqLength);
-    MultiByteToWideChar(cp, 0, src, -1, &wide[0], reqLength);
+    MultiByteToWideChar(cp, 0, src, -1, &wide[0], static_cast<int>(reqLength));
     wide.resize(wide.size() - 1);  //remove NULL character
   }
-  return wide;
+  return UnicodeString(wide.c_str());
 }
 
 /**
@@ -1295,15 +1295,15 @@ std::string W2MB(const wchar_t * src, const UINT cp)
     return std::string("");
   }
 
-  std::string mb;
-  const int reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, NULL, NULL);
+  intptr_t reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, NULL, NULL);
+  std::string mb(reqLength, 0);
   if (reqLength)
   {
     mb.resize(reqLength);
-    WideCharToMultiByte(cp, 0, src, -1, &mb[0], reqLength, NULL, NULL);
-    mb.erase(mb.length() - 1);  //remove NULL character
+    WideCharToMultiByte(cp, 0, src, -1, &mb[0], static_cast<int>(reqLength), NULL, NULL);
+    mb.resize(mb.length() - 1);  //remove NULL character
   }
-  return mb;
+  return mb.c_str();
 }
 
 //---------------------------------------------------------------------------
@@ -1593,7 +1593,7 @@ __int64 TMemoryStream::Read(void * Buffer, __int64 Count)
 
 __int64 TMemoryStream::Seek(__int64 Offset, int Origin)
 {
-  return Seek(Offset, (TSeekOrigin)Origin);
+  return Seek(Offset, static_cast<TSeekOrigin>(Origin));
 }
 
 __int64 TMemoryStream::Seek(const __int64 Offset, TSeekOrigin Origin)
@@ -1658,18 +1658,19 @@ void * TMemoryStream::Realloc(__int64 & NewCapacity)
   {
     if (NewCapacity == 0)
     {
-      free(FMemory);
+      nb_free(FMemory);
+      FMemory = NULL;
       Result = NULL;
     }
     else
     {
       if (FCapacity == 0)
       {
-        Result = malloc(static_cast<size_t>(NewCapacity));
+        Result = nb_malloc(static_cast<size_t>(NewCapacity));
       }
       else
       {
-        Result = realloc(FMemory, static_cast<size_t>(NewCapacity));
+        Result = nb_realloc(FMemory, static_cast<size_t>(NewCapacity));
       }
       if (Result == NULL)
       {
@@ -1837,7 +1838,7 @@ void TRegistry::GetKeyNames(TStrings * Strings) const
   UnicodeString S;
   if (GetKeyInfo(Info))
   {
-    S.SetLength(Info.MaxSubKeyLen + 1);
+    S.SetLength(static_cast<intptr_t>(Info.MaxSubKeyLen) + 1);
     for (unsigned int I = 0; I < Info.NumSubKeys; I++)
     {
       DWORD Len = Info.MaxSubKeyLen + 1;
@@ -1913,7 +1914,7 @@ bool TRegistry::DeleteKey(const UnicodeString & Key)
       {
         UnicodeString KeyName;
         KeyName.SetLength(Info.MaxSubKeyLen + 1);
-        for (int I = Info.NumSubKeys - 1; I >= 0; I--)
+        for (intptr_t I = Info.NumSubKeys - 1; I >= 0; I--)
         {
           DWORD Len = Info.MaxSubKeyLen + 1;
           if (RegEnumKeyEx(DeleteKey, static_cast<DWORD>(I), &KeyName[1], &Len,
@@ -2035,7 +2036,7 @@ double TRegistry::ReadFloat(const UnicodeString & Name) const
   return Result;
 }
 
-int TRegistry::ReadInteger(const UnicodeString & Name) const
+intptr_t TRegistry::ReadInteger(const UnicodeString & Name) const
 {
   DWORD Result = 0;
   TRegDataType RegData = rdUnknown;
@@ -2164,10 +2165,10 @@ void TRegistry::WriteStringRaw(const UnicodeString & Name, const UnicodeString &
   PutData(Name, Value.c_str(), Value.Length() * sizeof(wchar_t) + 1, rdString);
 }
 
-void TRegistry::WriteInteger(const UnicodeString & Name, int Value)
+void TRegistry::WriteInteger(const UnicodeString & Name, intptr_t Value)
 {
-  DWORD Val = Value;
-  PutData(Name, &Val, sizeof(DWORD), rdInteger);
+  DWORD Val = static_cast<DWORD>(Value);
+  PutData(Name, &Val, sizeof(Val), rdInteger);
   // WriteInt64(Name, Value);
 }
 
@@ -2223,16 +2224,16 @@ bool TRegistry::GetKeyInfo(TRegKeyInfo & Value) const
 }
 
 //---------------------------------------------------------------------------
-TShortCut::TShortCut()
+TShortCut::TShortCut() : FValue(0)
 {
 }
 
-TShortCut::TShortCut(int Value)
+TShortCut::TShortCut(intptr_t Value)
 {
   FValue = Value;
 }
 
-TShortCut::operator int() const
+TShortCut::operator intptr_t() const
 {
   return FValue;
 }

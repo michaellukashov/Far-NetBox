@@ -33,7 +33,7 @@ public:
   virtual size_t BinaryDataSize(const UnicodeString & Name) = 0;
 
   virtual bool ReadBool(const UnicodeString & Name, bool Default) = 0;
-  virtual int ReadInteger(const UnicodeString & Name, int Default) = 0;
+  virtual intptr_t ReadInteger(const UnicodeString & Name, intptr_t Default) = 0;
   virtual __int64 ReadInt64(const UnicodeString & Name, __int64 Default) = 0;
   virtual TDateTime ReadDateTime(const UnicodeString & Name, TDateTime Default) = 0;
   virtual double ReadFloat(const UnicodeString & Name, double Default) = 0;
@@ -46,7 +46,7 @@ public:
 
   virtual void WriteBool(const UnicodeString & Name, bool Value) = 0;
   virtual void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) = 0;
-  virtual void WriteInteger(const UnicodeString & Name, int Value) = 0;
+  virtual void WriteInteger(const UnicodeString & Name, intptr_t Value) = 0;
   virtual void WriteInt64(const UnicodeString & Name, __int64 Value) = 0;
   virtual void WriteDateTime(const UnicodeString & Name, TDateTime Value) = 0;
   virtual void WriteFloat(const UnicodeString & Name, double Value) = 0;
@@ -110,7 +110,7 @@ public:
   virtual size_t BinaryDataSize(const UnicodeString & Name);
 
   virtual bool ReadBool(const UnicodeString & Name, bool Default);
-  virtual int ReadInteger(const UnicodeString & Name, int Default);
+  virtual intptr_t ReadInteger(const UnicodeString & Name, intptr_t Default);
   virtual __int64 ReadInt64(const UnicodeString & Name, __int64 Default);
   virtual TDateTime ReadDateTime(const UnicodeString & Name, TDateTime Default);
   virtual double ReadFloat(const UnicodeString & Name, double Default);
@@ -118,7 +118,7 @@ public:
   virtual size_t ReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size);
 
   virtual void WriteBool(const UnicodeString & Name, bool Value);
-  virtual void WriteInteger(const UnicodeString & Name, int Value);
+  virtual void WriteInteger(const UnicodeString & Name, intptr_t Value);
   virtual void WriteInt64(const UnicodeString & Name, __int64 Value);
   virtual void WriteDateTime(const UnicodeString & Name, TDateTime Value);
   virtual void WriteFloat(const UnicodeString & Name, double Value);
@@ -127,8 +127,8 @@ public:
 
   virtual void GetValueNames(Classes::TStrings * Strings);
 
-  int GetFailed();
-  void SetFailed(int value) { FFailed = value; }
+  intptr_t GetFailed();
+  void SetFailed(intptr_t Value) { FFailed = Value; }
   virtual void SetAccessMode(TStorageAccessMode value);
 
 protected:
@@ -138,7 +138,7 @@ protected:
 
 private:
   TRegistry * FRegistry;
-  int FFailed;
+  intptr_t FFailed;
 };
 #ifndef _MSC_VER
 //------------------------------------------------------------------------------
@@ -157,7 +157,7 @@ public:
   virtual size_t BinaryDataSize(const UnicodeString & Name);
 
   virtual bool ReadBool(const UnicodeString & Name, bool Default);
-  virtual int ReadInteger(const UnicodeString & Name, int Default);
+  virtual intptr_t ReadInteger(const UnicodeString & Name, intptr_t Default);
   virtual __int64 ReadInt64(const UnicodeString & Name, __int64 Default);
   virtual TDateTime ReadDateTime(const UnicodeString & Name, TDateTime Default);
   virtual double ReadFloat(const UnicodeString & Name, double Default);

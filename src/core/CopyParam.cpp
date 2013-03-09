@@ -31,8 +31,8 @@ void TCopyParamType::Default()
   FRights.SetNumber(TRights::rfDefault);
   SetPreserveRights(false); // Was True until #106
   SetIgnorePermErrors(false);
-  FAsciiFileMask.SetMasks(L"*.*html; *.htm; *.txt; *.php; *.php3; *.cgi; *.c; *.cpp; *.h; *.pas; "
-    L"*.bas; *.tex; *.pl; *.js; .htaccess; *.xtml; *.css; *.cfg; *.ini; *.sh; *.xml");
+  FAsciiFileMask.SetMasks(UnicodeString(L"*.*html; *.htm; *.txt; *.php; *.php3; *.cgi; *.c; *.cpp; *.h; *.pas; "
+    L"*.bas; *.tex; *.pl; *.js; .htaccess; *.xtml; *.css; *.cfg; *.ini; *.sh; *.xml"));
   SetTransferMode(tmBinary);
   SetAddXToDirectories(true);
   SetResumeSupport(rsSmart);
@@ -577,16 +577,16 @@ void TCopyParamType::SetIncludeFileMask(TFileMasks Value)
   FIncludeFileMask = Value;
 }
 //---------------------------------------------------------------------------
-unsigned long GetSpeedLimit(const UnicodeString & Text)
+uintptr_t GetSpeedLimit(const UnicodeString & Text)
 {
-  unsigned long Speed = 0;
+  uintptr_t Speed = 0;
   if (AnsiSameText(Text, LoadStr(SPEED_UNLIMITED)))
   {
     Speed = 0;
   }
   else
   {
-    int SSpeed = 0;
+    intptr_t SSpeed = 0;
     if (!TryStrToInt(Text, SSpeed) ||
         (SSpeed < 0))
     {
@@ -597,7 +597,7 @@ unsigned long GetSpeedLimit(const UnicodeString & Text)
   return Speed * 1024;
 }
 //---------------------------------------------------------------------------
-UnicodeString SetSpeedLimit(unsigned long Limit)
+UnicodeString SetSpeedLimit(uintptr_t Limit)
 {
   UnicodeString Text;
   if (Limit == 0)
@@ -606,7 +606,7 @@ UnicodeString SetSpeedLimit(unsigned long Limit)
   }
   else
   {
-    Text = IntToStr(int(Limit / 1024));
+    Text = IntToStr(Limit / 1024);
   }
   return Text;
 }

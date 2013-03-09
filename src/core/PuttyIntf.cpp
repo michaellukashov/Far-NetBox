@@ -147,10 +147,10 @@ int GetUserpassInput(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
       {
         prompt_t * Prompt = p->prompts[Index];
         AnsiString Str = Results->Strings[Index].c_str();
-        if ((size_t)Str.size() >= Prompt->result_len)
+        if ((size_t)Str.Length() >= Prompt->result_len)
         {
-          Prompt->result = (char *)srealloc(Prompt->result, Str.size() + 1);
-          Prompt->result_len = Str.size() + 1;
+          Prompt->result = (char *)srealloc(Prompt->result, Str.Length() + 1);
+          Prompt->result_len = Str.Length() + 1;
         }
         strncpy(Prompt->result, AnsiString(Results->Strings[Index]).c_str(), Prompt->result_len);
         Prompt->result[Prompt->result_len - 1] = '\0';
@@ -482,7 +482,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
     assert(Type != NULL);
     *Type = REG_SZ;
     char * DataStr = reinterpret_cast<char *>(Data);
-    strncpy(DataStr, Value.c_str(), *DataSize);
+    strncpy(DataStr, Value.c_str(), static_cast<size_t>(*DataSize));
     DataStr[*DataSize - 1] = '\0';
     *DataSize = static_cast<unsigned long>(strlen(DataStr));
   }

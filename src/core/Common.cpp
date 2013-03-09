@@ -31,31 +31,6 @@ bool IsTracing = true;
 #else
 bool IsTracing = false;
 #endif
-unsigned int CallstackTls = CallstackTlsOff;
-TCriticalSection * TracingCriticalSection = NULL;
-//---------------------------------------------------------------------------
-void __callstack(const wchar_t*, const wchar_t*, unsigned int, const wchar_t*)
-{
-}
-//---------------------------------------------------------------------------
-void SetTraceFile(HANDLE ATraceFile)
-{
-  TraceFile = ATraceFile;
-  IsTracing = (TraceFile != 0);
-  if (TracingCriticalSection == NULL)
-  {
-    TracingCriticalSection = new TCriticalSection();
-  }
-}
-//---------------------------------------------------------------------------
-void CleanupTracing()
-{
-  if (TracingCriticalSection != NULL)
-  {
-    delete TracingCriticalSection;
-    TracingCriticalSection = NULL;
-  }
-}
 //---------------------------------------------------------------------------
 #ifdef TRACE_IN_MEMORY
 struct TTraceInMemory
@@ -191,6 +166,7 @@ void Trace(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * Message)
 {
   assert(IsTracing);
+  return;
 
   UnicodeString TimeString;
 #ifndef _MSC_VER
@@ -201,14 +177,14 @@ void Trace(const wchar_t * SourceFile, const wchar_t * Func,
   DateTime.DecodeTime(H, N, S, MS);
   TimeString = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
 #endif
-  const wchar_t * Slash = wcsrchr(SourceFile, L'\\');
+  const wchar_t * Slash = wcsrchr(NullToEmpty(SourceFile), L'\\');
   if (Slash != NULL)
   {
     SourceFile = Slash + 1;
   }
-  UTF8String Buffer = UTF8String(FORMAT(L"NetBox: [%s] [%.4X] [%s:%d:%s] %s\n",
-    TimeString.c_str(), int(GetCurrentThreadId()), SourceFile,
-     Line, Func, Message));
+  //UTF8String Buffer = UTF8String(FORMAT(L"NetBox: [%s] [%.4X] [%s:%d:%s] %s\n",
+  //  TimeString.c_str(), int(GetCurrentThreadId()), NullToEmpty(SourceFile),
+  //  Line, NullToEmpty(Func), NullToEmpty(Message)));
   // DWORD Written;
   // WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
   // DEBUG_PRINTF(L"%s", Buffer.c_str());
@@ -285,17 +261,17 @@ const wchar_t EngShortMonthNames[12][4] =
    L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
 const std::string Bom = "\xEF\xBB\xBF";
 const wchar_t TokenPrefix = L'%';
-const wchar_t NoReplacement = wchar_t(false);
-const wchar_t TokenReplacement = wchar_t(true);
+const wchar_t NoReplacement = wchar_t(0);
+const wchar_t TokenReplacement = wchar_t(1);
 const UnicodeString LocalInvalidChars = L"/\\:*?\"<>|";
 //---------------------------------------------------------------------------
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
   UnicodeString Result = Str;
-  for (intptr_t Index = 0; Index < Result.Length(); ++Index)
-    if (Result[Index+1] == A)
+  for (wchar_t * Ch = const_cast<wchar_t *>(Result.c_str()); Ch && *Ch; ++Ch)
+    if (*Ch == A)
     {
-      Result[Index+1] = B;
+      *Ch = B;
     }
   return Result;
 }
@@ -535,7 +511,7 @@ UnicodeString ExceptionLogString(Exception *E)
 //---------------------------------------------------------------------------
 bool IsNumber(const UnicodeString & Str)
 {
-  int Value = 0;
+  intptr_t Value = 0;
   if (Str == L"0") return true;
   return TryStrToInt(Str, Value);
 }
@@ -626,10 +602,8 @@ UnicodeString ValidLocalFileName(
     UnicodeString CharsStr = ATokenReplacement ? TokenizibleChars : LocalInvalidChars;
     const wchar_t * Chars = CharsStr.c_str();
     wchar_t * InvalidChar = const_cast<wchar_t *>(FileName2.c_str());
-    TRACEFMT("1 [%d] [%s] [%s]", int(ATokenReplacement), Chars, InvalidChar);
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != NULL)
     {
-      TRACEFMT("2 [%s]", InvalidChar);
       intptr_t Pos = (InvalidChar - FileName2.c_str() + 1);
       wchar_t Char;
       if (ATokenReplacement &&
@@ -644,7 +618,6 @@ UnicodeString ValidLocalFileName(
       {
         InvalidChar = ReplaceChar(FileName2, InvalidChar, InvalidCharsReplacement);
       }
-      TRACEFMT("3 [%s]", InvalidChar);
     }
 
     // Windows trim trailing space or dot, hence we must encode it to preserve it
@@ -808,7 +781,7 @@ UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str)
   if (Len > Size)
   {
     Buf.SetLength(Len);
-    ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), (DWORD)Len);
+    ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), static_cast<DWORD>(Len));
   }
 
   PackStr(Buf);
@@ -869,7 +842,7 @@ bool IsReservedName(const UnicodeString & FileName)
 UnicodeString DisplayableStr(const RawByteString & Str)
 {
   bool Displayable = true;
-  int Index = 1;
+  intptr_t Index = 1;
   while ((Index <= Str.Length()) && Displayable)
   {
     if (((Str[Index] < '\x20') || (static_cast<unsigned char>(Str[Index]) >= static_cast<unsigned char>('\x80'))) &&
@@ -1153,7 +1126,6 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
     typedef BOOL (WINAPI * TGetTimeZoneInformationForYear)(USHORT wYear, PDYNAMIC_TIME_ZONE_INFORMATION pdtzi, LPTIME_ZONE_INFORMATION ptzi);
     TGetTimeZoneInformationForYear GetTimeZoneInformationForYear =
       (TGetTimeZoneInformationForYear)GetProcAddress(Kernel32, "GetTimeZoneInformationForYear");
-    TRACEFMT("2 [%x]", int(GetTimeZoneInformationForYear));
 
     if ((Year == 0) || (GetTimeZoneInformationForYear == NULL))
     {
@@ -1371,7 +1343,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
     ++Index;
   }
   UnicodeString NumberStr = S.SubString(1, Index - 1);
-  int Number = 0;
+  intptr_t Number = 0;
   bool Result = TryStrToInt(NumberStr, Number);
   if (Result)
   {
@@ -1886,7 +1858,7 @@ UnicodeString LoadStrPart(int Ident, int Part)
 UnicodeString DecodeUrlChars(const UnicodeString & S)
 {
   UnicodeString Result = S;
-  int I = 1;
+  intptr_t I = 1;
   while (I <= Result.Length())
   {
     switch (Result[I])

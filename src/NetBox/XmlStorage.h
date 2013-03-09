@@ -23,7 +23,7 @@ public:
   virtual size_t BinaryDataSize(const UnicodeString & Name);
 
   virtual bool ReadBool(const UnicodeString & Name, bool Default);
-  virtual int ReadInteger(const UnicodeString & Name, int Default);
+  virtual intptr_t ReadInteger(const UnicodeString & Name, intptr_t Default);
   virtual __int64 ReadInt64(const UnicodeString & Name, __int64 Default);
   virtual TDateTime ReadDateTime(const UnicodeString & Name, TDateTime Default);
   virtual double ReadFloat(const UnicodeString & Name, double Default);
@@ -31,7 +31,7 @@ public:
   virtual size_t ReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size);
 
   virtual void WriteBool(const UnicodeString & Name, bool Value);
-  virtual void WriteInteger(const UnicodeString & Name, int Value);
+  virtual void WriteInteger(const UnicodeString & Name, intptr_t Value);
   virtual void WriteInt64(const UnicodeString & Name, __int64 Value);
   virtual void WriteDateTime(const UnicodeString & Name, TDateTime Value);
   virtual void WriteFloat(const UnicodeString & Name, double Value);
@@ -47,8 +47,8 @@ public:
 protected:
   virtual UnicodeString GetSource();
 
-  int GetFailed();
-  void SetFailed(int Value) { FFailed = Value; }
+  intptr_t GetFailed();
+  void SetFailed(intptr_t Value) { FFailed = Value; }
 
 private:
   UnicodeString GetSubKeyText(const UnicodeString & Name);
@@ -68,6 +68,6 @@ private:
   std::vector<tinyxml2::XMLElement *> FSubElements;
   tinyxml2::XMLElement * FCurrentElement;
   UnicodeString FStoredSessionsSubKey;
-  int FFailed;
+  intptr_t FFailed;
   bool FStoredSessionsOpened;
 };

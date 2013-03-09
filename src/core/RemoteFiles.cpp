@@ -541,7 +541,7 @@ int TRemoteToken::Compare(const TRemoteToken & rht) const
   return Result;
 }
 //---------------------------------------------------------------------------
-void TRemoteToken::SetID(unsigned int Value)
+void TRemoteToken::SetID(intptr_t Value)
 {
   FID = Value;
   FIDValid = true;
@@ -565,7 +565,7 @@ UnicodeString TRemoteToken::GetDisplayText() const
   }
   else if (FIDValid)
   {
-    return IntToStr(static_cast<int>(FID));
+    return IntToStr(FID);
   }
   else
   {
@@ -865,12 +865,12 @@ Boolean TRemoteFile::GetIsDirectory() const
 //---------------------------------------------------------------------------
 Boolean TRemoteFile::GetIsParentDirectory() const
 {
-  return (GetFileName() == PARENTDIRECTORY);
+  return wcscmp(FFileName.c_str(), PARENTDIRECTORY) == 0;
 }
 //---------------------------------------------------------------------------
 Boolean TRemoteFile::GetIsThisDirectory() const
 {
-  return (GetFileName() == THISDIRECTORY);
+  return wcscmp(FFileName.c_str(), THISDIRECTORY) == 0;
 }
 //---------------------------------------------------------------------------
 Boolean TRemoteFile::GetIsInaccesibleDirectory() const
@@ -908,7 +908,7 @@ wchar_t TRemoteFile::GetType() const
 void TRemoteFile::SetType(wchar_t AType)
 {
   FType = AType;
-  FIsSymLink = ((wchar_t)towupper(FType) == FILETYPE_SYMLINK);
+  FIsSymLink = (static_cast<wchar_t>(towupper(FType)) == FILETYPE_SYMLINK);
 }
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFile::GetLinkedFile()
@@ -1022,7 +1022,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     #define GETNCOL  \
       { if (Line.IsEmpty()) throw Exception(L""); \
         intptr_t P = Line.Pos(L' '); \
-        if (P) { Col = Line.SubString(1, P-1); Line.Delete(1, P); } \
+        if (P) { Col = Line; Col.SetLength(P-1); Line.Delete(1, P); } \
           else { Col = Line; Line = L""; } \
       }
     #define GETCOL { GETNCOL; Line = TrimLeft(Line); }
@@ -1086,7 +1086,8 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
 
       bool FullTime = false;
       bool DayMonthFormat = false;
-      Word Day, Month, Year, Hour, Min, Sec, P;
+      Word Day, Month, Year, Hour, Min, Sec;
+      intptr_t P;
 
       GETCOL;
       // format dd mmm or mmm dd ?
@@ -1113,7 +1114,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         Min = static_cast<Word>(Col.SubString(4, 2).ToInt());
         if (Col.Length() >= 8)
         {
-          Sec = (Word)StrToInt(Col.SubString(7, 2));
+          Sec = static_cast<Word>(Sysutils::StrToInt(Col.SubString(7, 2)));
         }
         else
         {
@@ -1146,7 +1147,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         if (Day == 0)
         {
           GETNCOL;
-          Day = (Word)StrToInt(Col);
+          Day = static_cast<Word>(Sysutils::StrToInt(Col));
         }
         if ((Day < 1) || (Day > 31)) { Abort(); }
 
@@ -1159,13 +1160,13 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           {
             Abort();
           }
-          Hour = (Word)StrToInt(Col.SubString(1, 2));
-          Min = (Word)StrToInt(Col.SubString(4, 2));
-          Sec = (Word)StrToInt(Col.SubString(7, 2));
+          Hour = static_cast<Word>(Sysutils::StrToInt(Col.SubString(1, 2)));
+          Min = static_cast<Word>(Sysutils::StrToInt(Col.SubString(4, 2)));
+          Sec = static_cast<Word>(Sysutils::StrToInt(Col.SubString(7, 2)));
           FModificationFmt = mfFull;
           // do not trim leading space of filename
           GETNCOL;
-          Year = (Word)StrToInt(Col);
+          Year = static_cast<Word>(Sysutils::StrToInt(Col));
         }
         else
         {
@@ -1177,7 +1178,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           }
           else
           {
-            // Time/Year indicator is always 5 charactes long (???), on most
+            // Time/Year indicator is always 5 characters long (???), on most
             // systems year is aligned to right (_YYYY), but on some to left (YYYY_),
             // we must ensure that trailing space is also deleted, so real
             // separator space is not treated as part of file name
@@ -1186,24 +1187,27 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           }
           // GETNCOL; // We don't want to trim input strings (name with space at beginning???)
           // Check if we got time (contains :) or year
-          if ((P = (Word)Col.Pos(L':')) > 0)
+          if ((P = static_cast<Word>(Col.Pos(L':'))) > 0)
           {
             Word CurrMonth, CurrDay;
-            Hour = (Word)StrToInt(Col.SubString(1, P-1));
-            Min = (Word)StrToInt(Col.SubString(P+1, Col.Length() - P));
-            if (Hour > 23 || Min > 59) Abort();
+            Hour = static_cast<Word>(Sysutils::StrToInt(Col.SubString(1, P-1)));
+            Min = static_cast<Word>(Sysutils::StrToInt(Col.SubString(P+1, Col.Length() - P)));
+            if ((Hour > 23) || (Min > 59)) Abort();
             // When we don't got year, we assume current year
             // with exception that the date would be in future
             // in this case we assume last year.
             DecodeDate(Date(), Year, CurrMonth, CurrDay);
             if ((Month > CurrMonth) ||
-                (Month == CurrMonth && Day > CurrDay)) { Year--; }
+                (Month == CurrMonth && Day > CurrDay))
+            {
+              Year--;
+            }
             Sec = 0;
             FModificationFmt = mfMDHM;
           }
             else
           {
-            Year = (Word)StrToInt(Col);
+            Year = static_cast<Word>(Sysutils::StrToInt(Col));
             if (Year > 10000) Abort();
             // When we don't got time we assume midnight
             Hour = 0; Min = 0; Sec = 0;
@@ -2151,7 +2155,6 @@ void TRights::SetAllowUndef(bool Value)
 //---------------------------------------------------------------------------
 void TRights::SetText(const UnicodeString & Value)
 {
-  CALLSTACK;
   if (Value != GetText())
   {
     if ((Value.Length() != TextLen) ||
@@ -2208,7 +2211,6 @@ void TRights::SetText(const UnicodeString & Value)
     FText = KeepText ? Value : UnicodeString();
   }
   FUnknown = false;
-  TRACEFMT("Rights [%x] [%x] [%s]", int(FSet), int(FUnset), GetText().c_str());
 }
 //---------------------------------------------------------------------------
 UnicodeString TRights::GetText() const
@@ -2219,8 +2221,7 @@ UnicodeString TRights::GetText() const
   }
   else
   {
-    UnicodeString Result;
-    Result.SetLength(TextLen);
+    UnicodeString Result(TextLen, 0);
 
     int Flag = 00001;
     int ExtendedFlag = 01000; //-V536
@@ -2279,9 +2280,9 @@ void TRights::SetOctal(const UnicodeString & Value)
     bool Correct = (AValue.Length() == 4);
     if (Correct)
     {
-      for (int i = 1; (i <= AValue.Length()) && Correct; i++)
+      for (intptr_t I = 1; (I <= AValue.Length()) && Correct; I++)
       {
-        Correct = (AValue[i] >= L'0') && (AValue[i] <= L'7');
+        Correct = (AValue[I] >= L'0') && (AValue[I] <= L'7');
       }
     }
 

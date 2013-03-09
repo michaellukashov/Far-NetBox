@@ -163,7 +163,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   // user-configurable settings
   ASCOPY(cfg->host, Data->GetHostNameExpanded());
   ASCOPY(cfg->username, Data->GetUserNameExpanded());
-  cfg->port = Data->GetPortNumber();
+  cfg->port = static_cast<int>(Data->GetPortNumber());
   cfg->protocol = PROT_SSH;
   // always set 0, as we will handle keepalives ourselves to avoid
   // multi-threaded issues in putty timer list
@@ -173,7 +173,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   cfg->agentfwd = Data->GetAgentFwd();
   cfg->addressfamily = Data->GetAddressFamily();
   ASCOPY(cfg->ssh_rekey_data, Data->GetRekeyData());
-  cfg->ssh_rekey_time = Data->GetRekeyTime();
+  cfg->ssh_rekey_time = static_cast<int>(Data->GetRekeyTime());
 
   for (int c = 0; c < CIPHER_COUNT; c++)
   {
@@ -219,7 +219,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
 
   cfg->proxy_type = Data->GetActualProxyMethod();
   ASCOPY(cfg->proxy_host, Data->GetProxyHost());
-  cfg->proxy_port = Data->GetProxyPort();
+  cfg->proxy_port = static_cast<int>(Data->GetProxyPort());
   ASCOPY(cfg->proxy_username, Data->GetProxyUsername());
   ASCOPY(cfg->proxy_password, Data->GetProxyPassword());
   if (Data->GetProxyMethod() == pmCmd)
@@ -315,8 +315,8 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
     }
   }
 
-  cfg->connect_timeout = Data->GetTimeout() * MSecsPerSec;
-  cfg->sndbuf = Data->GetSendBuf();
+  cfg->connect_timeout = static_cast<int>(Data->GetTimeout() * MSecsPerSec);
+  cfg->sndbuf = static_cast<int>(Data->GetSendBuf());
 
   // permanent settings
   cfg->nopty = TRUE;
@@ -351,7 +351,10 @@ void TSecureShell::Open()
   FreeBackend(); // in case we are reconnecting
   TRACEFMT("2 [%x]", int(FBackendHandle));
   const char * InitError = FBackend->init(this, &FBackendHandle, FConfig,
-    const_cast<char *>(W2MB(FSessionData->GetHostNameExpanded().c_str(), FSessionData->GetCodePageAsNumber()).c_str()), FSessionData->GetPortNumber(), &RealHost, 0,
+    const_cast<char *>(W2MB(FSessionData->GetHostNameExpanded().c_str(),
+    FSessionData->GetCodePageAsNumber()).c_str()),
+    static_cast<int>(FSessionData->GetPortNumber()),
+    &RealHost, 0,
     FConfig->tcp_keepalives);
   TRACEFMT("2b [%x]", int(FBackendHandle));
   sfree(RealHost);
@@ -833,7 +836,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
 //---------------------------------------------------------------------------
 bool TSecureShell::Peek(unsigned char *& Buf, intptr_t Len) const
 {
-  bool Result = (int(PendLen) >= Len);
+  bool Result = (PendLen >= Len);
 
   if (Result)
   {
@@ -986,7 +989,7 @@ unsigned int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
   CALLSTACK;
   FWaiting++;
 
-  unsigned int Answer;
+  uintptr_t Answer;
   TRY_FINALLY (
   {
     TQueryParams Params(qpFatalAbort | qpAllowContinueOnError | qpIgnoreAbort);
@@ -1118,7 +1121,7 @@ void TSecureShell::SendStr(const UnicodeString & Str)
 {
   CheckConnection();
   std::string AnsiStr = W2MB(Str.c_str(), FSessionData->GetCodePageAsNumber());
-  Send(reinterpret_cast<const unsigned char *>(AnsiStr.c_str()), (int)AnsiStr.size());
+  Send(reinterpret_cast<const unsigned char *>(AnsiStr.c_str()), AnsiStr.size());
 }
 //---------------------------------------------------------------------------
 void TSecureShell::SendLine(const UnicodeString & Line)
@@ -1687,7 +1690,7 @@ bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
+bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
   WSANETWORKEVENTS * Events)
 {
   CCALLSTACK(TRACE_TRANSMIT);
@@ -1934,7 +1937,7 @@ struct TClipboardHandler
 
   void Copy(TObject * /*Sender*/)
   {
-    CopyToClipboard(Text.c_str();
+    CopyToClipboard(Text.c_str());
   }
 };
 #endif
@@ -1954,7 +1957,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   if (FSessionData->GetTunnel())
   {
     Host2 = FSessionData->GetOrigHostName();
-    Port = FSessionData->GetOrigPortNumber();
+    Port = static_cast<int>(FSessionData->GetOrigPortNumber());
   }
 
   FSessionInfo.HostKeyFingerprint = Fingerprint;
@@ -2047,11 +2050,12 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       Params.HelpKeyword = (Unknown ? HELP_UNKNOWN_KEY : HELP_DIFFERENT_KEY);
       Params.Aliases = Aliases;
       Params.AliasesCount = AliasesCount;
-      unsigned int R = FUI->QueryUser(
+      uintptr_t R = FUI->QueryUser(
         FMTLOAD((Unknown ? UNKNOWN_KEY2 : DIFFERENT_KEY3), KeyType.c_str(), Fingerprint.c_str()),
         NULL, Answers, &Params, qtWarning);
 
-      switch (R) {
+      switch (R)
+      {
         case qaOK:
           assert(!Unknown);
           KeyStr2 = (StoredKeys + Delimiter + KeyStr);

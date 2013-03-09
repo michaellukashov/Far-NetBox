@@ -44,7 +44,7 @@
 
 #define NE_FMT_SIZE_T "u"
 #define NE_FMT_SSIZE_T "d"
-#define NE_FMT_OFF_T "ld"
+#define NE_FMT_OFF_T "lld"
 #define NE_FMT_NE_OFF_T NE_FMT_OFF_T
 
 #ifndef NE_FMT_XML_SIZE

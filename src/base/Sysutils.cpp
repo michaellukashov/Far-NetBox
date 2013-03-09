@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 
+#include <headers.hpp>
 #include <Classes.hpp>
 #include <Sysutils.hpp>
 #include "FarPlugin.h"
@@ -67,7 +68,7 @@ Exception::Exception(int Ident) :
 }
 
 //---------------------------------------------------------------------------
-UnicodeString IntToStr(int Value)
+UnicodeString IntToStr(intptr_t Value)
 {
   UnicodeString Result;
   Result.sprintf(L"%d", Value);
@@ -83,12 +84,12 @@ UnicodeString Int64ToStr(__int64 Value)
 }
 
 //---------------------------------------------------------------------------
-int StrToInt(const UnicodeString & Value)
+intptr_t StrToInt(const UnicodeString & Value)
 {
   __int64 Result = 0;
   if (TryStrToInt(Value, Result))
   {
-    return static_cast<int>(Result);
+    return static_cast<intptr_t>(Result);
   }
   else
   {
@@ -109,12 +110,12 @@ __int64 ToInt(const UnicodeString & Value)
   }
 }
 
-int StrToIntDef(const UnicodeString & Value, int DefVal)
+intptr_t StrToIntDef(const UnicodeString & Value, intptr_t DefVal)
 {
   __int64 Result = DefVal;
   if (TryStrToInt(Value, Result))
   {
-    return static_cast<int>(Result);
+    return static_cast<intptr_t>(Result);
   }
   else
   {
@@ -174,22 +175,25 @@ UnicodeString Trim(const UnicodeString & Str)
 
 UnicodeString TrimLeft(const UnicodeString & Str)
 {
-  UnicodeString Result = Str;
-  while (Result.Length() > 0 && Result[1] == L' ')
-  {
-    Result = Result.SubString(2, Result.Length() - 1);
-  }
-  return Result;
+  intptr_t Len = Str.Length();
+  intptr_t Pos = 1;
+  while ((Pos <= Len) && (Str[Pos] == L' ')) Pos++;
+  if (Pos > 1)
+    return Str.SubString(Pos, Len - Pos + 1);
+  else
+    return Str;
 }
 
 UnicodeString TrimRight(const UnicodeString & Str)
 {
   UnicodeString Result = Str;
-  while (Result.Length() > 0 &&
-    ((Result[Result.Length()] == L' ') || (Result[Result.Length()] == L'\n')))
+  intptr_t Len = Result.Length();
+  while (Len > 0 &&
+    ((Result[Len] == L' ') || (Result[Len] == L'\n')))
   {
-    Result.SetLength(Result.Length() - 1);
+    Len--;
   }
+  Result.SetLength(Len);
   return Result;
 }
 
@@ -212,12 +216,12 @@ UnicodeString LowerCase(const UnicodeString & Str)
 
 inline wchar_t UpCase(const wchar_t c)
 {
-  return ::toupper(c);
+  return static_cast<wchar_t>(::toupper(c));
 }
 
 inline wchar_t LowCase(const wchar_t c)
 {
-  return ::tolower(c);
+  return static_cast<wchar_t>(::tolower(c));
 }
 
 //---------------------------------------------------------------------------
@@ -228,7 +232,7 @@ UnicodeString AnsiReplaceStr(const UnicodeString & Str, const UnicodeString & Fr
   intptr_t Pos = 0;
   while ((Pos = Result.Pos(From)) > 0)
   {
-    Result.Replace(Pos, From.size(), To);
+    Result.Replace(Pos, From.Length(), To);
   }
   return Result;
 }
@@ -557,10 +561,9 @@ bool DeleteFile(const UnicodeString & File)
 
 UnicodeString Format(const wchar_t * format, ...)
 {
-  UnicodeString Result;
   va_list args;
   va_start(args, format);
-  Result = ::Format(format, args);
+  UnicodeString Result = ::Format(format, args);
   va_end(args);
   return Result.c_str();
 }
@@ -574,7 +577,8 @@ UnicodeString Format(const wchar_t * Format, va_list args)
   {
     intptr_t Len = _vscwprintf(Format, args);
     Result.SetLength(Len + 1);
-    vswprintf_s(const_cast<wchar_t *>(Result.c_str()), Len + 1, Format, args);
+    // vswprintf(Buf, Len + 1, Format, args);
+    vswprintf(const_cast<wchar_t *>(Result.c_str()), Len + 1, Format, args);
   }
   return Result.c_str();
 }
@@ -583,7 +587,7 @@ UnicodeString Format(const wchar_t * Format, va_list args)
 
 AnsiString Format(const char * format, ...)
 {
-  AnsiString Result;
+  AnsiString Result(64, 0);
   va_list args;
   va_start(args, format);
   Result = ::Format(format, args);
@@ -595,7 +599,7 @@ AnsiString Format(const char * format, ...)
 
 AnsiString Format(const char * Format, va_list args)
 {
-  AnsiString Result;
+  AnsiString Result(64, 0);
   if (Format && *Format)
   {
     intptr_t Len = _vscprintf(Format, args);
@@ -606,23 +610,21 @@ AnsiString Format(const char * Format, va_list args)
 }
 
 //---------------------------------------------------------------------------
-UnicodeString FmtLoadStr(int id, ...)
+UnicodeString FmtLoadStr(intptr_t Id, ...)
 {
-  UnicodeString Result;
-  UnicodeString Format;
-  Format.SetLength(1024);
+  UnicodeString Result(64, 0);
+  wchar_t Format[1024];
   HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
-  intptr_t Length = ::LoadString(hInstance, id, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Format.c_str())),
-    static_cast<int>(Format.Length()));
-  Format.SetLength(Length);
+  intptr_t Length = ::LoadString(hInstance, static_cast<UINT>(Id),
+    Format, static_cast<int>(sizeof(Format)));
   if (!Length)
   {
-    DEBUG_PRINTF(L"Unknown resource string id: %d\n", id);
+    DEBUG_PRINTF(L"Unknown resource string id: %d\n", Id);
   }
   else
   {
     va_list args;
-    va_start(args, id);
+    va_start(args, Id);
     /*
     LPTSTR lpszTemp;
     if (::FormatMessage(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER,
@@ -636,11 +638,10 @@ UnicodeString FmtLoadStr(int id, ...)
     Result = lpszTemp;
     ::LocalFree(lpszTemp);
     */
-    intptr_t Len = _vscwprintf(Format.c_str(), args);
-    UnicodeString buf(Len + sizeof(wchar_t), 0);
-    vswprintf_s(&buf[1], buf.Length(), Format.c_str(), args);
+    intptr_t Len = _vscwprintf(Format, args);
+    Result.SetLength(Len + sizeof(wchar_t));
+    vswprintf_s(&Result[1], Result.Length(), Format, args);
     va_end(args);
-    Result = buf;
   }
   return Result;
 }
@@ -896,7 +897,7 @@ UnicodeString StringOfChar(const wchar_t c, intptr_t len)
 char * StrNew(const char * Str)
 {
   size_t sz = strlen(Str) + 1;
-  char * Result = new char[sz];
+  char * Result = static_cast<char *>(nb_malloc(sizeof(char) * sz));
   strncpy_s(Result, sz, Str, sz);
   return Result;
 }
@@ -971,12 +972,12 @@ static int FindMatchingFile(TSearchRec & Rec)
       return Result;
     }
   }
-  FileTimeToLocalFileTime(&Rec.FindData.ftLastWriteTime, (LPFILETIME)&LocalFileTime);
+  FileTimeToLocalFileTime(&Rec.FindData.ftLastWriteTime, reinterpret_cast<LPFILETIME>(&LocalFileTime));
   WORD Hi = (Rec.Time & 0xFFFF0000) >> 16;
   WORD Lo = Rec.Time & 0xFFFF;
-  FileTimeToDosDateTime((LPFILETIME)&LocalFileTime, &Hi, &Lo);
+  FileTimeToDosDateTime(reinterpret_cast<LPFILETIME>(&LocalFileTime), &Hi, &Lo);
   Rec.Time = (Hi << 16) + Lo;
-  Rec.Size = Rec.FindData.nFileSizeLow || Int64(Rec.FindData.nFileSizeHigh) << 32;
+  Rec.Size = Rec.FindData.nFileSizeLow || static_cast<Int64>(Rec.FindData.nFileSizeHigh) << 32;
   Rec.Attr = Rec.FindData.dwFileAttributes;
   Rec.Name = Rec.FindData.cFileName;
   Result = 0;
@@ -1205,10 +1206,10 @@ UnicodeString GetCurrentDir()
 UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase, char Separator)
 {
   UnicodeString Result;
-  for (int i = 1; i <= Str.Length(); i++)
+  for (intptr_t I = 1; I <= Str.Length(); I++)
   {
-    Result += CharToHex(static_cast<char>(Str[i]), UpperCase);
-    if ((Separator != L'\0') && (i <= Str.Length()))
+    Result += CharToHex(static_cast<char>(Str[I]), UpperCase);
+    if ((Separator != L'\0') && (I <= Str.Length()))
     {
       Result += Separator;
     }
@@ -1224,10 +1225,10 @@ UnicodeString HexToStr(const UnicodeString & Hex)
   size_t L = Hex.Length() - 1;
   if (L % 2 == 0)
   {
-    for (int i = 1; i <= Hex.Length(); i += 2)
+    for (intptr_t I = 1; I <= Hex.Length(); I += 2)
     {
-      size_t P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[i])));
-      size_t P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[i + 1])));
+      size_t P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[I])));
+      size_t P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[I + 1])));
       if ((P1 == std::wstring::npos) || (P2 == std::wstring::npos))
       {
         Result = L"";
@@ -1243,17 +1244,17 @@ UnicodeString HexToStr(const UnicodeString & Hex)
 }
 
 //---------------------------------------------------------------------------
-unsigned int HexToInt(const UnicodeString & Hex, size_t MinChars)
+uintptr_t HexToInt(const UnicodeString & Hex, uintptr_t MinChars)
 {
   static std::wstring Digits = L"0123456789ABCDEF";
-  int Result = 0;
-  int I = 1;
+  uintptr_t Result = 0;
+  intptr_t I = 1;
   while (I <= Hex.Length())
   {
     size_t A = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[I])));
     if (A == std::wstring::npos)
     {
-      if ((MinChars == NPOS) || ((size_t)I <= MinChars))
+      if ((MinChars == NPOS) || (I <= static_cast<intptr_t>(MinChars)))
       {
           Result = 0;
       }
@@ -1268,14 +1269,14 @@ unsigned int HexToInt(const UnicodeString & Hex, size_t MinChars)
 }
 
 //---------------------------------------------------------------------------
-UnicodeString IntToHex(unsigned int Int, size_t MinChars)
+UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars)
 {
   UnicodeString Result;
   Result.sprintf(L"%X", Int);
-  intptr_t Pad = MinChars - Result.size();
+  intptr_t Pad = MinChars - Result.Length();
   if (Pad > 0)
   {
-    for (int i = 0; i < Pad; i++)
+    for (intptr_t I = 0; I < Pad; I++)
     {
       Result.Insert(L'0', 1);
     }
@@ -1284,13 +1285,13 @@ UnicodeString IntToHex(unsigned int Int, size_t MinChars)
 }
 
 //---------------------------------------------------------------------------
-char HexToChar(const UnicodeString & Hex, size_t MinChars)
+char HexToChar(const UnicodeString & Hex, uintptr_t MinChars)
 {
   return static_cast<char>(HexToInt(Hex, MinChars));
 }
 
 //---------------------------------------------------------------------------
-void ConvertError(int ErrorID)
+static void ConvertError(intptr_t ErrorID)
 {
   UnicodeString Msg = FMTLOAD(ErrorID, 0);
   throw EConvertError(Msg);
@@ -1314,7 +1315,7 @@ static bool DecodeDateFully(const TDateTime & DateTime,
   static const int D400 = D100 * 4 + 1;
   bool Result = false;
   unsigned int T = DateTimeToTimeStamp(DateTime).Date;
-  if ((int)T <= 0)
+  if (static_cast<int>(T) <= 0)
   {
     Year = 0;
     Month = 0;
@@ -1347,10 +1348,10 @@ static bool DecodeDateFully(const TDateTime & DateTime,
     if (I == 4)
     {
       I--;
-      D += (Word)D1;
+      D += static_cast<Word>(D1);
     }
     Y += I;
-    Result = IsLeapYear((Word)Y);
+    Result = IsLeapYear(static_cast<Word>(Y));
     const TDayTable * DayTable = &MonthDays[Result];
     unsigned int M = 1;
     while (true)
@@ -1363,9 +1364,9 @@ static bool DecodeDateFully(const TDateTime & DateTime,
       D -= I;
       M++;
     }
-    Year = (unsigned short)Y;
-    Month = (unsigned short)M;
-    Day = (unsigned short)D + 1;
+    Year = static_cast<unsigned short>(Y);
+    Month = static_cast<unsigned short>(M);
+    Day = static_cast<unsigned short>(D + 1);
   }
   return Result;
 }
@@ -1386,16 +1387,16 @@ void DecodeTime(const TDateTime &DateTime, unsigned short &Hour,
   unsigned int H, M, S, MS;
   DivMod(MinCount, 60, H, M);
   DivMod(MSecCount, 1000, S, MS);
-  Hour = (unsigned short)H;
-  Min = (unsigned short)M;
-  Sec = (unsigned short)S;
-  MSec = (unsigned short)MS;
+  Hour = static_cast<unsigned short>(H);
+  Min = static_cast<unsigned short>(M);
+  Sec = static_cast<unsigned short>(S);
+  MSec = static_cast<unsigned short>(MS);
 }
 
 //---------------------------------------------------------------------------
 bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
 {
-  const TDayTable * DayTable = &MonthDays[IsLeapYear((Word)Year)];
+  const TDayTable * DayTable = &MonthDays[IsLeapYear(static_cast<Word>(Year))];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
       (Day >= 1) && (Day <= (*DayTable)[Month - 1]))
   {
@@ -1500,8 +1501,8 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, TDateTime DateTime)
 
 TDateTime ComposeDateTime(TDateTime Date, TDateTime Time)
 {
-  TDateTime Result = TDateTime(double(Date));
-  Result += double(Time);
+  TDateTime Result = TDateTime((double)Date);
+  Result += (double)Time;
   return Result;
 }
 
@@ -1541,11 +1542,11 @@ static void IncAMonth(Word & Year, Word & Month, Word & Day, Int64 NumberOfMonth
     Sign = -1;
   Year = Year + (NumberOfMonths % 12);
   NumberOfMonths = NumberOfMonths / 12;
-  Month += (Word)NumberOfMonths;
+  Month += static_cast<Word>(NumberOfMonths);
   if (Word(Month-1) > 11) // if Month <= 0, word(Month-1) > 11)
   {
-    Year += (Word)Sign;
-    Month += -12 * (Word)Sign;
+    Year += static_cast<Word>(Sign);
+    Month += -12 * static_cast<Word>(Sign);
   }
   const TDayTable * DayTable = &MonthDays[IsLeapYear(Year)];
   if (Day > (*DayTable)[Month]) Day = static_cast<Word>(*DayTable[Month]);
