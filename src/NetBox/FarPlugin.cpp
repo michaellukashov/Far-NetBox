@@ -150,7 +150,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
         if (NAME.GetCount()) \
         { \
           wchar_t ** StringArray = static_cast<wchar_t **>(nb_malloc(sizeof(wchar_t *) * NAME.GetCount())); \
-          GUID *Guids = new GUID[NAME.GetCount()]; \
+          GUID *Guids = static_cast<GUID *>(nb_malloc(sizeof(GUID) * NAME.GetCount())); \
           FPluginInfo.NAME.Guids = Guids; \
           FPluginInfo.NAME.Strings = StringArray; \
           FPluginInfo.NAME.Count = NAME.GetCount(); \
