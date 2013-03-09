@@ -284,9 +284,16 @@ bool CheckStructSize(const T* s) {return s && (s->StructSize >= sizeof(T));}
 
 //---------------------------------------------------------------------------
 
-template <typename T> class custom_nballocator_t;
+namespace nballoc {
+  inline void destruct(char *){}
+  inline void destruct(wchar_t*){}
+  template <typename T> 
+  inline void destruct(T * t){t->~T();}
+} // namespace nballoc
 
-template <> class custom_nballocator_t<void>
+template <typename T> struct custom_nballocator_t;
+
+template <> struct custom_nballocator_t<void>
 {
 public:
     typedef void* pointer;
@@ -297,14 +304,7 @@ public:
         struct rebind { typedef custom_nballocator_t<U> other; };
 };    
 
-namespace alloc {
-  inline void destruct(char *){}
-  inline void destruct(wchar_t*){}
-  template <typename T> 
-  inline void destruct(T * t){t->~T();}
-} // namespace
-
-template <class T> 
+template <typename T> 
 struct custom_nballocator_t
 {
   typedef size_t size_type;
@@ -347,26 +347,25 @@ struct custom_nballocator_t
     return size_t(-1) / sizeof(T); 
   }
 
-  void construct(pointer p, const T& val)
+  void construct(pointer p, const T & val)
   {
     new((void *)p) T(val);
   }
 
   void destroy(pointer p)
   {
-    // p->~T();
-    alloc::destruct(p);
+    nballoc::destruct(p);
   }
 };
 
 template <typename T, typename U>
-inline bool operator==(const custom_nballocator_t<T>&, const custom_nballocator_t<U>&)
+inline bool operator==(const custom_nballocator_t<T> &, const custom_nballocator_t<U> &)
 {
   return false;
 }
 
 template <typename T, typename U>
-inline bool operator!=(const custom_nballocator_t<T>&, const custom_nballocator_t<U>&)
+inline bool operator!=(const custom_nballocator_t<T> &, const custom_nballocator_t<U> &)
 {
   return true;
 }
