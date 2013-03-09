@@ -66,7 +66,7 @@ bool TFar3Storage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCrea
   bool Result = true;
   {
     UnicodeString subKey = MungedSubKey;
-    assert(subKey.IsEmpty() || (subKey[subKey.size()] != '\\'));
+    assert(subKey.IsEmpty() || (subKey[subKey.Length()] != '\\'));
     // CutToChar(subKey, L'\\', false);
     while (!subKey.IsEmpty())
     {
