@@ -251,7 +251,7 @@ static int check_identity(const ne_uri *server, X509 *cert, char **identity)
 		char *name = dup_ia5string(nm->d.ia5);
                 if (identity && !found) *identity = ne_strdup(name);
 		match = ne__ssl_match_hostname(name, strlen(name), hostname);
-		ne_free(name);
+		free(name);
 		found = 1;
             } 
             else if (nm->type == GEN_IPADD) {
@@ -300,7 +300,7 @@ static int check_identity(const ne_uri *server, X509 *cert, char **identity)
                 }
 
                 ne_uri_free(&uri);
-                ne_free(name);
+                free(name);
             }
 	}
         /* free the whole stack. */
