@@ -129,7 +129,7 @@ public:
 };
 
 //---------------------------------------------------------------------------
-class TCustomFileSystem : public TFileSystemIntf
+class TCustomFileSystem : public TObject, public TFileSystemIntf
 {
 public:
   virtual ~TCustomFileSystem();
