@@ -3,6 +3,7 @@
 #define CommonH
 
 #include <CoreDefs.hpp>
+#include <headers.hpp>
 
 #include "Exceptions.h"
 #include "plugin_version.hpp"

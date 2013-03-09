@@ -67,8 +67,12 @@ public:
 
 private:
   typedef std::vector<TRemoteToken, custom_nballocator_t<TRemoteToken> > TTokens;
-  typedef std::map<UnicodeString, size_t> TNameMap;
-  typedef std::map<intptr_t, size_t> TIDMap;
+  typedef std::map<UnicodeString, size_t,
+    std::less<UnicodeString>,
+    custom_nballocator_t<std::pair<UnicodeString, size_t> > > TNameMap;
+  typedef std::map<intptr_t, size_t,
+    std::less<intptr_t>,
+    custom_nballocator_t<std::pair<intptr_t, size_t> > > TIDMap;
   TTokens FTokens;
   TNameMap FNameMap;
   TIDMap FIDMap;
