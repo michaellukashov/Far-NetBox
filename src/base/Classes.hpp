@@ -68,6 +68,7 @@ void Error(int ErrorID, intptr_t data);
 //---------------------------------------------------------------------------
 class TObject
 {
+  CUSTOM_MEM_ALLOCATION_IMPL;
 public:
   TObject() {}
   virtual ~TObject() {}
@@ -202,7 +203,7 @@ public:
   IndexedPropertyVoid<intptr_t, TList, &TList::PropertyGetItem, &TList::PropertySetItem> Items;
 
 private:
-  std::vector<void *> FList;
+  std::vector<void *, custom_nballocator_t<void *> > FList;
 };
 
 class TObjectList : public TList
@@ -383,7 +384,7 @@ struct TStringItem
 };
 
 class TStringList;
-typedef std::vector<TStringItem> TStringItemList;
+typedef std::vector<TStringItem, custom_nballocator_t<TStringItem> > TStringItemList;
 typedef intptr_t (TStringListSortCompare)(TStringList * List, intptr_t Index1, intptr_t Index2);
 
 class TStringList : public TStrings
@@ -688,7 +689,7 @@ struct TRegDataInfo
 
 //---------------------------------------------------------------------------
 
-class TRegistry
+class TRegistry : public TObject
 {
 public:
   TRegistry();
@@ -868,7 +869,7 @@ public:
   DelphiSet<T>& AddRange(const T RangeStartValue, const int Count)
   {
     T RangeStartForAdd = RangeStartValue;
-    for (int i = 0 ; i < Count; ++i)
+    for (int I = 0; I < Count; ++I)
       this->Add(RangeStartForAdd++);
     return *this;
   }
@@ -879,7 +880,7 @@ public:
       throw Sysutils::Exception(FORMAT("Start Value %d is greater than End Value %d", StartValue, EndValue));
     int Range = RangeEndValue - RangeStartValue;
     T RangeStartForAdd = RangeStartValue;
-    for (int i = 0 ; i < Range; ++i)
+    for (int I = 0 ; I < Range; ++I)
       this->Add(RangeStartForAdd++);
     return *this;
   }
@@ -894,8 +895,8 @@ public:
   {
     if (RangeEndValue < RangeStartValue)
       throw Sysutils::Exception(FORMAT("Start Value %d is greater than End Value %d", StartValue, EndValue));
-    for (T i = RangeStartValue ; i <= RangeEndValue; ++i)
-      this->Remove(i);
+    for (T I = RangeStartValue ; I <= RangeEndValue; ++I)
+      this->Remove(I);
     return *this;
   }
 
@@ -961,7 +962,7 @@ public:
     return *NewOne;
   }
 
-  static DelphiSet<T>& InitRange(T FirstItem, T LastItem , const int Count)
+  static DelphiSet<T>& InitRange(T FirstItem, T LastItem, const int Count)
   {
     DelphiSet<T> *NewOne = new DelphiSet<T>();
     NewOne->AddRange(FirstItem, Count);

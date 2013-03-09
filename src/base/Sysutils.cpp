@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 
+#include <headers.hpp>
 #include <Classes.hpp>
 #include <Sysutils.hpp>
 #include "FarPlugin.h"
@@ -560,10 +561,9 @@ bool DeleteFile(const UnicodeString & File)
 
 UnicodeString Format(const wchar_t * format, ...)
 {
-  UnicodeString Result(64, 0);
   va_list args;
   va_start(args, format);
-  Result = ::Format(format, args);
+  UnicodeString Result = ::Format(format, args);
   va_end(args);
   return Result.c_str();
 }
@@ -572,12 +572,13 @@ UnicodeString Format(const wchar_t * format, ...)
 
 UnicodeString Format(const wchar_t * Format, va_list args)
 {
-  UnicodeString Result(64, 0);
+  UnicodeString Result;
   if (Format && *Format)
   {
     intptr_t Len = _vscwprintf(Format, args);
     Result.SetLength(Len + 1);
-    vswprintf_s(const_cast<wchar_t *>(Result.c_str()), Len + 1, Format, args);
+    // vswprintf(Buf, Len + 1, Format, args);
+    vswprintf(const_cast<wchar_t *>(Result.c_str()), Len + 1, Format, args);
   }
   return Result.c_str();
 }
@@ -896,7 +897,7 @@ UnicodeString StringOfChar(const wchar_t c, intptr_t len)
 char * StrNew(const char * Str)
 {
   size_t sz = strlen(Str) + 1;
-  char * Result = new char[sz];
+  char * Result = static_cast<char *>(nb_malloc(sizeof(char) * sz));
   strncpy_s(Result, sz, Str, sz);
   return Result;
 }

@@ -66,7 +66,7 @@ public:
   const TRemoteToken * Token(intptr_t Index) const;
 
 private:
-  typedef std::vector<TRemoteToken> TTokens;
+  typedef std::vector<TRemoteToken, custom_nballocator_t<TRemoteToken> > TTokens;
   typedef std::map<UnicodeString, size_t> TNameMap;
   typedef std::map<intptr_t, size_t> TIDMap;
   TTokens FTokens;
@@ -245,6 +245,7 @@ public:
 //---------------------------------------------------------------------------
 class TRemoteDirectoryCache : private TStringList
 {
+  CUSTOM_MEM_ALLOCATION_IMPL;
 public:
   TRemoteDirectoryCache();
   virtual ~TRemoteDirectoryCache();
@@ -266,6 +267,7 @@ private:
 //---------------------------------------------------------------------------
 class TRemoteDirectoryChangesCache : private TStringList
 {
+  CUSTOM_MEM_ALLOCATION_IMPL;
 public:
   explicit TRemoteDirectoryChangesCache(intptr_t MaxSize);
   virtual ~TRemoteDirectoryChangesCache(){}
@@ -292,7 +294,7 @@ private:
   intptr_t FMaxSize;
 };
 //---------------------------------------------------------------------------
-class TRights
+class TRights : public TObject
 {
 public:
   static const int TextLen = 9;

@@ -31,31 +31,6 @@ bool IsTracing = true;
 #else
 bool IsTracing = false;
 #endif
-unsigned int CallstackTls = CallstackTlsOff;
-TCriticalSection * TracingCriticalSection = NULL;
-//---------------------------------------------------------------------------
-void __callstack(const wchar_t*, const wchar_t*, unsigned int, const wchar_t*)
-{
-}
-//---------------------------------------------------------------------------
-void SetTraceFile(HANDLE ATraceFile)
-{
-  TraceFile = ATraceFile;
-  IsTracing = (TraceFile != 0);
-  if (TracingCriticalSection == NULL)
-  {
-    TracingCriticalSection = new TCriticalSection();
-  }
-}
-//---------------------------------------------------------------------------
-void CleanupTracing()
-{
-  if (TracingCriticalSection != NULL)
-  {
-    delete TracingCriticalSection;
-    TracingCriticalSection = NULL;
-  }
-}
 //---------------------------------------------------------------------------
 #ifdef TRACE_IN_MEMORY
 struct TTraceInMemory
@@ -191,6 +166,7 @@ void Trace(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * Message)
 {
   assert(IsTracing);
+  return;
 
   UnicodeString TimeString;
 #ifndef _MSC_VER
@@ -201,14 +177,14 @@ void Trace(const wchar_t * SourceFile, const wchar_t * Func,
   DateTime.DecodeTime(H, N, S, MS);
   TimeString = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
 #endif
-  const wchar_t * Slash = wcsrchr(SourceFile, L'\\');
+  const wchar_t * Slash = wcsrchr(NullToEmpty(SourceFile), L'\\');
   if (Slash != NULL)
   {
     SourceFile = Slash + 1;
   }
-  UTF8String Buffer = UTF8String(FORMAT(L"NetBox: [%s] [%.4X] [%s:%d:%s] %s\n",
-    TimeString.c_str(), int(GetCurrentThreadId()), SourceFile,
-     Line, Func, Message));
+  //UTF8String Buffer = UTF8String(FORMAT(L"NetBox: [%s] [%.4X] [%s:%d:%s] %s\n",
+  //  TimeString.c_str(), int(GetCurrentThreadId()), NullToEmpty(SourceFile),
+  //  Line, NullToEmpty(Func), NullToEmpty(Message)));
   // DWORD Written;
   // WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
   // DEBUG_PRINTF(L"%s", Buffer.c_str());
@@ -292,10 +268,10 @@ const UnicodeString LocalInvalidChars = L"/\\:*?\"<>|";
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
   UnicodeString Result = Str;
-  for (intptr_t Index = 0; Index < Result.Length(); ++Index)
-    if (Result[Index+1] == A)
+  for (wchar_t * Ch = const_cast<wchar_t *>(Result.c_str()); Ch && *Ch; ++Ch)
+    if (*Ch == A)
     {
-      Result[Index+1] = B;
+      *Ch = B;
     }
   return Result;
 }

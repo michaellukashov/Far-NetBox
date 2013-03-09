@@ -31,8 +31,8 @@ void TCopyParamType::Default()
   FRights.SetNumber(TRights::rfDefault);
   SetPreserveRights(false); // Was True until #106
   SetIgnorePermErrors(false);
-  FAsciiFileMask.SetMasks(L"*.*html; *.htm; *.txt; *.php; *.php3; *.cgi; *.c; *.cpp; *.h; *.pas; "
-    L"*.bas; *.tex; *.pl; *.js; .htaccess; *.xtml; *.css; *.cfg; *.ini; *.sh; *.xml");
+  FAsciiFileMask.SetMasks(UnicodeString(L"*.*html; *.htm; *.txt; *.php; *.php3; *.cgi; *.c; *.cpp; *.h; *.pas; "
+    L"*.bas; *.tex; *.pl; *.js; .htaccess; *.xtml; *.css; *.cfg; *.ini; *.sh; *.xml"));
   SetTransferMode(tmBinary);
   SetAddXToDirectories(true);
   SetResumeSupport(rsSmart);

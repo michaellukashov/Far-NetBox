@@ -50,11 +50,6 @@ bool IsAuthenticationPrompt(TPromptKind Kind)
 void CoreInitialize()
 {
   CALLSTACK;
-//!CLEANBEGIN
-#ifdef _DEBUG
-  CallstackTls = TlsAlloc();
-#endif
-//!CLEANEND
   TRACE("CoreInitialize A");
   Randomize();
   CryptographyInitialize();
@@ -122,11 +117,6 @@ void CoreFinalize()
   Configuration = NULL;
 
   CryptographyFinalize();
-//!CLEANBEGIN
-#ifdef _DEBUG
-  TlsFree(CallstackTls);
-#endif
-//!CLEANEND
 }
 //---------------------------------------------------------------------------
 void CoreSetResourceModule(void * ResourceHandle)

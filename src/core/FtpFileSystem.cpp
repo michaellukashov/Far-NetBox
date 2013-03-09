@@ -12,6 +12,7 @@
 #include "FtpFileSystem.h"
 #include "FileZillaIntf.h"
 
+#include "headers.hpp"
 #include "Common.h"
 #include "Exceptions.h"
 #include "Terminal.h"
@@ -164,7 +165,7 @@ bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-class TMessageQueue : public std::list<std::pair<WPARAM, LPARAM> >
+class TMessageQueue : public std::list<std::pair<WPARAM, LPARAM> > //, custom_nballocator_t<std::pair<WPARAM, LPARAM> > >
 {
 };
 //---------------------------------------------------------------------------
@@ -2601,7 +2602,6 @@ bool TFTPFileSystem::NoFinalLastCode() const
 bool TFTPFileSystem::KeepWaitingForReply(unsigned int & ReplyToAwait, bool WantLastCode) const
 {
   CALLSTACK;
-  TRACEFMT("FReply[%d] ReplyToAwait[%d] WantLastCode[%d] FLastCodeClass[%d]", int(FReply), int(ReplyToAwait), int(WantLastCode), int(FLastCodeClass));
   // to keep waiting,
   // non-command reply must be unset,
   // the reply we wait for must be unset or
@@ -2658,7 +2658,6 @@ unsigned int TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
   CALLSTACK;
   assert(FReply == 0);
   assert(FCommandReply == 0);
-  TRACEFMT("1 [%x] FWaitingForReply [%d]", int(this), int(FWaitingForReply));
   assert(!FWaitingForReply);
   assert(!FTransferStatusCriticalSection->GetAcquired());
 
@@ -2684,7 +2683,6 @@ unsigned int TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
     FCommandReply = 0;
     assert(FWaitingForReply);
     FWaitingForReply = false;
-    TRACEFMT("6 [%x] FWaitingForReply [%d]", int(this), int(FWaitingForReply));
   }
   );
 
@@ -2729,7 +2727,6 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
   const UnicodeString & Error, unsigned int * Code, TStrings ** Response)
 {
   CALLSTACK;
-  TRACEFMT("Reply=%x Flags=%x Error='%s'", int(Reply), int(Flags), Error.c_str());
   TRY_FINALLY (
   {
     if (FLAGSET(Reply, TFileZillaIntf::REPLY_OK))
@@ -3064,7 +3061,6 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
 //---------------------------------------------------------------------------
 UnicodeString TFTPFileSystem::ExtractStatusMessage(UnicodeString Status)
 {
-  TRACEFMT("Status [%s]", Status.c_str());
   // CApiLog::LogMessage
   // (note that the formatting may not be present when LogMessageRaw is used)
   intptr_t P1 = Status.Pos(L"): ");
@@ -3788,13 +3784,11 @@ bool TFTPFileSystem::HandleReply(int Command, unsigned int Reply)
     // (it is typically used asynchronously to notify about disconnects)
     if (Command != 0)
     {
-      TRACEFMT("2 [%d]", int(Reply));
       assert(FCommandReply == 0);
       FCommandReply = Reply;
     }
     else
     {
-      TRACEFMT("3 [%d]", int(Reply));
       assert(FReply == 0);
       FReply = Reply;
     }
@@ -3826,7 +3820,6 @@ bool TFTPFileSystem::CheckError(int ReturnCode, const wchar_t * Context)
   // on higher level (this typically happens if connection is lost while
   // waiting for user interaction and is detected within call to
   // SetAsyncRequestResult)
-  TRACEFMT("1 [%x]", ReturnCode);
   if (FLAGSET(ReturnCode, TFileZillaIntf::REPLY_NOTCONNECTED))
   {
     TRACE("2");

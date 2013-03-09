@@ -36,7 +36,7 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
   // DEBUG_PRINTF(L"TCustomFarPlugin: begin");
   InitPlatformId();
   FFarThread = GetCurrentThreadId();
-  FCriticalSection = new TCriticalSection;
+  FCriticalSection = new TCriticalSection();
   FHandle = HInst;
   FFarVersion = 0;
   FTerminalScreenShowing = false;
@@ -149,7 +149,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
     #define COMPOSESTRINGARRAY(NAME) \
         if (NAME.GetCount()) \
         { \
-          wchar_t ** StringArray = new wchar_t *[NAME.GetCount()]; \
+          wchar_t ** StringArray = static_cast<wchar_t **>(nb_malloc(sizeof(wchar_t *) * NAME.GetCount())); \
           FPluginInfo.NAME = StringArray; \
           FPluginInfo.NAME ## Number = static_cast<int>(NAME.GetCount()); \
           for (intptr_t Index = 0; Index < NAME.GetCount(); ++Index) \
@@ -193,9 +193,9 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
     #define FREESTRINGARRAY(NAME) \
       for (intptr_t Index = 0; Index < Info.NAME ## Number; ++Index) \
       { \
-        delete[] Info.NAME[Index]; \
+        nb_free((void *)Info.NAME[Index]); \
       } \
-      delete[] Info.NAME; \
+      nb_free((void *)Info.NAME); \
       Info.NAME = NULL;
 
     FREESTRINGARRAY(DiskMenuStrings);
@@ -205,7 +205,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
     #undef FREESTRINGARRAY
 
     // FIXME delete[] Info.DiskMenuNumbers;
-    delete[] Info.CommandPrefix;
+    nb_free((void *)Info.CommandPrefix);
   }
   memset(&Info, 0, sizeof(Info));
   Info.StructSize = sizeof(Info);
@@ -221,7 +221,8 @@ wchar_t * TCustomFarPlugin::DuplicateStr(const UnicodeString & Str, bool AllowEm
   {
     // DEBUG_PRINTF(L"Str = %s", Str.c_str());
     const size_t sz = Str.Length() + 1;
-    wchar_t * Result = new wchar_t[sz];
+    wchar_t * Result = static_cast<wchar_t *>(
+      nb_malloc(sizeof(wchar_t) * sz));
     wcscpy_s(Result, sz, Str.c_str());
     return Result;
   }
@@ -1079,7 +1080,8 @@ intptr_t TCustomFarPlugin::FarMessage(DWORD Flags,
       MessageLines->Add(Buttons->Strings[Index]);
     }
 
-    Items = new wchar_t *[MessageLines->GetCount()];
+    Items = static_cast<wchar_t **>(
+      nb_malloc(sizeof(wchar_t *) * MessageLines->GetCount()));
     for (intptr_t Index = 0; Index < MessageLines->GetCount(); ++Index)
     {
       UnicodeString S = MessageLines->Strings[Index];
@@ -1094,7 +1096,7 @@ intptr_t TCustomFarPlugin::FarMessage(DWORD Flags,
   }
   ,
   {
-    delete[] Items;
+    nb_free((void *)Items);
   }
   );
 
@@ -1153,7 +1155,8 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString & Title,
 {
   assert(Items && Items->GetCount());
   intptr_t Result = 0;
-  FarMenuItemEx * MenuItems = new FarMenuItemEx[Items->GetCount()];
+  FarMenuItemEx * MenuItems = static_cast<FarMenuItemEx *>(
+    nb_malloc(sizeof(FarMenuItemEx) * Items->GetCount()));
   TRY_FINALLY (
   {
     intptr_t Selected = NPOS;
@@ -1195,7 +1198,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString & Title,
   }
   ,
   {
-    delete[] MenuItems;
+    nb_free(MenuItems);
   }
   );
   return Result;
@@ -1682,7 +1685,8 @@ intptr_t TCustomFarPlugin::FarEditorControl(uintptr_t Command, void * Param)
 TFarEditorInfo * TCustomFarPlugin::EditorInfo()
 {
   TFarEditorInfo * Result;
-  ::EditorInfo * Info = new ::EditorInfo;
+  ::EditorInfo * Info = static_cast<::EditorInfo *>(
+    nb_malloc(sizeof(::EditorInfo)));
   try
   {
     if (FarEditorControl(ECTL_GETINFO, Info))
@@ -1691,13 +1695,13 @@ TFarEditorInfo * TCustomFarPlugin::EditorInfo()
     }
     else
     {
-      delete Info;
+      nb_free(Info);
       Result = NULL;
     }
   }
   catch (...)
   {
-    delete Info;
+    nb_free(Info);
     throw;
   }
   return Result;
@@ -1781,7 +1785,7 @@ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
 
 void TCustomFarFileSystem::Init()
 {
-  FCriticalSection = new TCriticalSection;
+  FCriticalSection = new TCriticalSection();
   FPanelInfo[0] = NULL;
   FPanelInfo[1] = NULL;
   FClosed = false;
@@ -1822,10 +1826,10 @@ void TCustomFarFileSystem::ClearOpenPluginInfo(OpenPluginInfo & Info)
 {
   if (Info.StructSize)
   {
-    delete[] Info.HostFile;
-    delete[] Info.CurDir;
-    delete[] Info.Format;
-    delete[] Info.PanelTitle;
+    nb_free((void *)Info.HostFile);
+    nb_free((void *)Info.CurDir);
+    nb_free((void *)Info.Format);
+    nb_free((void *)Info.PanelTitle);
     assert(!Info.InfoLines);
     assert(!Info.InfoLinesNumber);
     assert(!Info.DescrFiles);
@@ -1840,9 +1844,9 @@ void TCustomFarFileSystem::ClearOpenPluginInfo(OpenPluginInfo & Info)
     if (Info.KeyBar)
     {
       TFarKeyBarTitles::ClearKeyBarTitles(const_cast<KeyBarTitles &>(*Info.KeyBar));
-      delete Info.KeyBar;
+      nb_free((void *)Info.KeyBar);
     }
-    delete[] Info.ShortcutData;
+    nb_free((void *)Info.ShortcutData);
   }
   memset(&Info, 0, sizeof(Info));
   Info.StructSize = sizeof(Info);
@@ -1909,7 +1913,8 @@ intptr_t TCustomFarFileSystem::GetFindData(
     // DEBUG_PRINTF(L"Result = %d, PanelItems->GetCount() = %d", Result, PanelItems->Count);
     if (Result && PanelItems->GetCount())
     {
-      *PanelItem = new PluginPanelItem[PanelItems->GetCount()];
+      *PanelItem = static_cast<PluginPanelItem *>(
+        nb_malloc(sizeof(PluginPanelItem) * PanelItems->GetCount()));
       memset(*PanelItem, 0, PanelItems->GetCount() * sizeof(PluginPanelItem));
       *ItemsNumber = static_cast<int>(PanelItems->GetCount());
       for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
@@ -1937,16 +1942,16 @@ void TCustomFarFileSystem::FreeFindData(
     assert(ItemsNumber > 0);
     for (intptr_t Index = 0; Index < ItemsNumber; ++Index)
     {
-      delete[] PanelItem[Index].FindData.lpwszFileName;
-      delete[] PanelItem[Index].Description;
-      delete[] PanelItem[Index].Owner;
+      nb_free((void *)PanelItem[Index].FindData.lpwszFileName);
+      nb_free((void *)PanelItem[Index].Description);
+      nb_free((void *)PanelItem[Index].Owner);
       for (intptr_t CustomIndex = 0; CustomIndex < PanelItem[Index].CustomColumnNumber; ++CustomIndex)
       {
-        delete[] PanelItem[Index].CustomColumnData[CustomIndex];
+        nb_free((void *)PanelItem[Index].CustomColumnData[CustomIndex]);
       }
-      delete[] PanelItem[Index].CustomColumnData;
+      nb_free((void *)PanelItem[Index].CustomColumnData);
     }
-    delete[] PanelItem;
+    nb_free((void *)PanelItem);
   }
 }
 //---------------------------------------------------------------------------
@@ -2079,9 +2084,10 @@ TFarPanelInfo * TCustomFarFileSystem::GetPanelInfo(int Another)
   bool another = Another != 0;
   if (FPanelInfo[another] == NULL)
   {
-    PanelInfo * Info = new PanelInfo;
+    PanelInfo * Info = static_cast<PanelInfo *>(
+      nb_malloc(sizeof(PanelInfo)));
     bool res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<intptr_t>(Info),
-                                    !another ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
+      !another ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
     if (!res)
     {
       memset(Info, 0, sizeof(*Info));
@@ -2240,7 +2246,8 @@ void TFarPanelModes::SetPanelMode(size_t Mode, const UnicodeString & ColumnTypes
   assert(!ColumnTitles || (ColumnTitles->GetCount() == ColumnTypesCount));
 
   ClearPanelMode(FPanelModes[Mode]);
-  wchar_t ** Titles = new wchar_t *[ColumnTypesCount];
+  wchar_t ** Titles = static_cast<wchar_t **>(
+    nb_malloc(sizeof(wchar_t *) * ColumnTypesCount));
   FPanelModes[Mode].ColumnTypes = TCustomFarPlugin::DuplicateStr(ColumnTypes);
   FPanelModes[Mode].ColumnWidths = TCustomFarPlugin::DuplicateStr(ColumnWidths);
   if (ColumnTitles)
@@ -2271,18 +2278,18 @@ void TFarPanelModes::ClearPanelMode(PanelMode & Mode)
     intptr_t ColumnTypesCount = Mode.ColumnTypes ?
       CommaCount(UnicodeString(Mode.ColumnTypes)) + 1 : 0;
 
-    delete[] Mode.ColumnTypes;
-    delete[] Mode.ColumnWidths;
+    nb_free((void *)Mode.ColumnTypes);
+    nb_free((void *)Mode.ColumnWidths);
     if (Mode.ColumnTitles)
     {
       for (intptr_t Index = 0; Index < ColumnTypesCount; ++Index)
       {
-        delete[] Mode.ColumnTitles[Index];
+        nb_free((void *)Mode.ColumnTitles[Index]);
       }
-      delete[] Mode.ColumnTitles;
+      nb_free((void *)Mode.ColumnTitles);
     }
-    delete[] Mode.StatusColumnTypes;
-    delete[] Mode.StatusColumnWidths;
+    nb_free((void *)Mode.StatusColumnTypes);
+    nb_free((void *)Mode.StatusColumnWidths);
     memset(&Mode, 0, sizeof(Mode));
   }
 }
@@ -2379,7 +2386,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   }
   if (Titles[FunctionKey-1])
   {
-    delete[] Titles[FunctionKey-1];
+    nb_free(Titles[FunctionKey-1]);
   }
   Titles[FunctionKey-1] = TCustomFarPlugin::DuplicateStr(Title, true);
 }
@@ -2388,20 +2395,21 @@ void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
 {
   for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(Titles.Titles)); ++Index)
   {
-    delete[] Titles.Titles[Index];
-    delete[] Titles.CtrlTitles[Index];
-    delete[] Titles.AltTitles[Index];
-    delete[] Titles.ShiftTitles[Index];
-    delete[] Titles.CtrlShiftTitles[Index];
-    delete[] Titles.AltShiftTitles[Index];
-    delete[] Titles.CtrlAltTitles[Index];
+    nb_free(Titles.Titles[Index]);
+    nb_free(Titles.CtrlTitles[Index]);
+    nb_free(Titles.AltTitles[Index]);
+    nb_free(Titles.ShiftTitles[Index]);
+    nb_free(Titles.CtrlShiftTitles[Index]);
+    nb_free(Titles.AltShiftTitles[Index]);
+    nb_free(Titles.CtrlAltTitles[Index]);
   }
 }
 //---------------------------------------------------------------------------
 void TFarKeyBarTitles::FillOpenPluginInfo(struct OpenPluginInfo * Info)
 {
   assert(Info);
-  KeyBarTitles * KeyBar = new KeyBarTitles;
+  KeyBarTitles * KeyBar = static_cast<KeyBarTitles *>(
+    nb_malloc(sizeof(KeyBarTitles)));
   Info->KeyBar = KeyBar;
   memmove(KeyBar, &FKeyBarTitles, sizeof(FKeyBarTitles));
   FReferenced = true;
@@ -2444,8 +2452,8 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   // DEBUG_PRINTF(L"PanelItem->FindData.lpwszFileName = %s", PanelItem->FindData.lpwszFileName);
   PanelItem->Description = TCustomFarPlugin::DuplicateStr(Description);
   PanelItem->Owner = TCustomFarPlugin::DuplicateStr(Owner);
-  // PanelItem->CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
-  wchar_t ** CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
+  wchar_t ** CustomColumnData = static_cast<wchar_t **>(
+    nb_malloc(sizeof(wchar_t *) * PanelItem->CustomColumnNumber));
   for (intptr_t Index = 0; Index < PanelItem->CustomColumnNumber; ++Index)
   {
     CustomColumnData[Index] =
@@ -2469,7 +2477,7 @@ TFarPanelItem::TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem):
 TFarPanelItem::~TFarPanelItem()
 {
   if (FOwnsItem)
-    free(FPanelItem);
+    nb_free(FPanelItem);
   FPanelItem = NULL;
 }
 
@@ -2571,7 +2579,7 @@ TFarPanelInfo::TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwn
 //---------------------------------------------------------------------------
 TFarPanelInfo::~TFarPanelInfo()
 {
-  delete FPanelInfo;
+  nb_free(FPanelInfo);
   delete FItems;
 }
 //---------------------------------------------------------------------------
@@ -2594,7 +2602,7 @@ intptr_t TFarPanelInfo::GetSelectedCount()
   {
     intptr_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, NULL);
     // DEBUG_PRINTF(L"size1 = %d, sizeof(PluginPanelItem) = %d", size, sizeof(PluginPanelItem));
-    PluginPanelItem * ppi = static_cast<PluginPanelItem *>(malloc(size));
+    PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_malloc(size));
     memset(ppi, 0, size);
     FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, reinterpret_cast<intptr_t>(ppi));
     if ((ppi->Flags & PPIF_SELECTED) == 0)
@@ -2602,7 +2610,7 @@ intptr_t TFarPanelInfo::GetSelectedCount()
       // DEBUG_PRINTF(L"ppi->Flags = %x", ppi->Flags);
       Count = 0;
     }
-    free(ppi);
+    nb_free(ppi);
   }
 
   return Count;
@@ -2622,7 +2630,7 @@ TObjectList * TFarPanelInfo::GetItems()
       // DEBUG_PRINTF(L"Index = %d", Index);
       // TODO: move to common function
       intptr_t size = FOwner->FarControl(FCTL_GETPANELITEM, Index, NULL);
-      PluginPanelItem * ppi = static_cast<PluginPanelItem *>(malloc(size));
+      PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_malloc(size));
       memset(ppi, 0, size);
       FOwner->FarControl(FCTL_GETPANELITEM, Index, reinterpret_cast<intptr_t>(ppi));
       // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FindData.lpwszFileName);
@@ -2863,7 +2871,7 @@ TFarEditorInfo::TFarEditorInfo(EditorInfo * Info) :
 //---------------------------------------------------------------------------
 TFarEditorInfo::~TFarEditorInfo()
 {
-  delete FEditorInfo;
+  nb_free(FEditorInfo);
 }
 //---------------------------------------------------------------------------
 intptr_t TFarEditorInfo::GetEditorID() const

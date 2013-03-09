@@ -61,8 +61,9 @@ AnsiString & AnsiString::Insert(const char * Str, intptr_t Pos)
 
 AnsiString AnsiString::SubString(intptr_t Pos, intptr_t Len) const
 {
-  std::string S = Data.substr(Pos - 1, Len);
-  AnsiString Result(S.c_str(), S.size());
+  // std::string S = std::string(Data.substr(Pos - 1, Len).c_str(), Len);
+  // AnsiString Result(S.c_str(), S.size());
+  AnsiString Result(Data.substr(Pos - 1, Len).c_str(), Len);
   return Result;
 }
 
@@ -98,8 +99,16 @@ AnsiString & AnsiString::operator=(const wchar_t * lpwszData)
 
 AnsiString AnsiString::operator +(const RawByteString & rhs) const
 {
-  std::string Result = Data + rhs.c_str();
-  return AnsiString(Result.c_str(), Result.size());
+  AnsiString Result = AnsiString(Data.c_str(), Data.size());
+  Result += rhs.c_str();
+  return Result;
+}
+
+AnsiString AnsiString::operator +(const char * rhs) const
+{
+  AnsiString Result = AnsiString(Data.c_str(), Data.size());
+  Result += rhs;
+  return Result;
 }
 
 AnsiString & AnsiString::operator +=(const RawByteString & rhs)
@@ -123,6 +132,12 @@ AnsiString & AnsiString::operator +=(const UTF8String & rhs)
 AnsiString & AnsiString::operator +=(const char Ch)
 {
   Data.append(1, Ch);
+  return *this;
+}
+
+AnsiString & AnsiString::operator +=(const char * rhs)
+{
+  Data.append(rhs);
   return *this;
 }
 
@@ -277,7 +292,7 @@ void UTF8String::Init(const wchar_t * Str, intptr_t Length)
   Data.resize(Length);
   if (Length > 0)
   {
-      memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
+    wmemmove(const_cast<wchar_t *>(Data.c_str()), Str, Length);
   }
   Data = Data.c_str();
 }
@@ -383,7 +398,7 @@ void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
   Data.resize(Length);
   if (Length > 0)
   {
-    memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
+    wmemmove(const_cast<wchar_t *>(Data.c_str()), Str, Length);
   }
   Data = Data.c_str();
 }
@@ -429,7 +444,7 @@ intptr_t UnicodeString::ToInt() const
 
 UnicodeString & UnicodeString::Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str, intptr_t DataLen)
 {
-  Data.replace(Pos - 1, Len, std::wstring(Str, DataLen));
+  Data.replace(Pos - 1, Len, wstring_t(Str, DataLen));
   return *this;
 }
 
@@ -454,8 +469,8 @@ bool UnicodeString::RPos(intptr_t & nPos, wchar_t Ch, intptr_t nStartPos) const
 
 UnicodeString UnicodeString::SubStr(intptr_t Pos, intptr_t Len) const
 {
-  std::wstring S(Data.substr(Pos - 1, Len));
-  return UnicodeString(S);
+  wstring_t Str(Data.substr(Pos - 1, Len));
+  return UnicodeString(Str.c_str(), Str.size());
 }
 
 bool UnicodeString::IsDelimiter(const UnicodeString & Chars, intptr_t Pos) const
@@ -543,7 +558,7 @@ UnicodeString & UnicodeString::operator=(const char * lpszData)
 
 UnicodeString UnicodeString::operator +(const UnicodeString & rhs) const
 {
-  std::wstring Result = Data + rhs.Data;
+  wstring_t Result = Data + rhs.Data;
   return UnicodeString(Result.c_str(), Result.size());
 }
 

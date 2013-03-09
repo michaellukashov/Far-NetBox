@@ -26,6 +26,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libapr", "..\..\libs\apr\bu
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mfc", "..\..\libs\atlmfc\mfc.vcxproj", "{EC262402-898F-49D4-8599-850B0C19C1C6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dlmalloc", "..\..\libs\dlmalloc\dlmalloc.vcxproj", "{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -125,6 +127,17 @@ Global
 		{EC262402-898F-49D4-8599-850B0C19C1C6}.Template|Win32.ActiveCfg = Release|x64
 		{EC262402-898F-49D4-8599-850B0C19C1C6}.Template|x64.ActiveCfg = Release|x64
 		{EC262402-898F-49D4-8599-850B0C19C1C6}.Template|x64.Build.0 = Release|x64
+		{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}.Debug|Win32.Build.0 = Debug|Win32
+		{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}.Debug|x64.ActiveCfg = Debug|x64
+		{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}.Debug|x64.Build.0 = Debug|x64
+		{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}.Release|Win32.ActiveCfg = Release|Win32
+		{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}.Release|Win32.Build.0 = Release|Win32
+		{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}.Release|x64.ActiveCfg = Release|x64
+		{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}.Release|x64.Build.0 = Release|x64
+		{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}.Template|Win32.ActiveCfg = Release|x64
+		{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}.Template|x64.ActiveCfg = Release|x64
+		{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}.Template|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
