@@ -178,6 +178,7 @@ private:
 #define CALLSTACK 
 #define CCALLSTACK(TRACING) 
 #define TRACING 
+#undef TRACE
 #define TRACE(MESSAGE) 
 #define TRACEFMT(MESSAGE, ...) 
 #define CTRACE(TRACING, MESSAGE) 
