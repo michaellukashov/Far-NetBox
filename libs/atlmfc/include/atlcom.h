@@ -5015,7 +5015,7 @@ public:
 	~CComDynamicUnkArray()
 	{
 		if (m_nSize > 0)
-			free(m_ppUnk);
+			nb_free(m_ppUnk);
 	}
 	DWORD Add(_In_ IUnknown* pUnk);
 	BOOL Remove(_In_ DWORD dwCookie);
@@ -5074,7 +5074,7 @@ public:
 	{
 		if (m_nSize > 0)
 		{
-			free(m_ppUnk);
+			nb_free(m_ppUnk);
 			m_ppUnk = 0;
 		}
 		m_nSize = 0;
@@ -5090,7 +5090,7 @@ inline DWORD CComDynamicUnkArray::Add(_In_ IUnknown* pUnk)
 	if (m_nSize == 0)
 	{
 		// Create array with _DEFAULT_VECTORLENGTH number of items.
-		ATLTRY(pp = (IUnknown**)calloc(sizeof(IUnknown*),_DEFAULT_VECTORLENGTH));
+		ATLTRY(pp = (IUnknown**)nb_calloc(sizeof(IUnknown*),_DEFAULT_VECTORLENGTH));
 		if (pp == NULL)
 			return 0;
 		memset(pp, 0, sizeof(IUnknown*)*_DEFAULT_VECTORLENGTH);
