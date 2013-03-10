@@ -3319,7 +3319,7 @@ struct TClipboardHandler
 };
 #endif
 //---------------------------------------------------------------------------
-UnicodeString FormatContactList(UnicodeString Entry1, UnicodeString Entry2)
+static UnicodeString FormatContactList(const UnicodeString & Entry1, const UnicodeString & Entry2)
 {
   if (!Entry1.IsEmpty() && !Entry2.IsEmpty())
   {
