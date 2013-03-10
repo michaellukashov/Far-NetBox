@@ -1271,14 +1271,14 @@ UnicodeString MB2W(const char * src, const UINT cp)
   }
 
   intptr_t reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
-  UnicodeString Result(reqLength, 0);
+  UnicodeString Result;
   if (reqLength)
   {
     Result.SetLength(reqLength);
-    MultiByteToWideChar(cp, 0, src, -1, &Result[0], static_cast<int>(reqLength));
+    MultiByteToWideChar(cp, 0, src, -1, (LPWSTR)Result.c_str(), static_cast<int>(reqLength));
     Result.SetLength(Result.Length() - 1);  //remove NULL character
   }
-  return Result;
+  return Result; // .c_str();
 }
 
 /**
@@ -1296,14 +1296,14 @@ AnsiString W2MB(const wchar_t * src, const UINT cp)
   }
 
   intptr_t reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, NULL, NULL);
-  AnsiString Result(reqLength, 0);
+  AnsiString Result;
   if (reqLength)
   {
     Result.SetLength(reqLength);
-    WideCharToMultiByte(cp, 0, src, -1, &Result[0], static_cast<int>(reqLength), NULL, NULL);
+    WideCharToMultiByte(cp, 0, src, -1, (LPSTR)Result.c_str(), static_cast<int>(reqLength), NULL, NULL);
     Result.SetLength(Result.Length() - 1);  //remove NULL character
   }
-  return Result;
+  return Result; //.c_str();
 }
 
 //---------------------------------------------------------------------------
