@@ -210,7 +210,7 @@ int AFX_CDECL AfxCriticalNewHandler(size_t nSize)
 		{
 			// give it all up
 			TRACE(traceMemory, 0, "Warning: Freeing application's memory safety pool!\n");
-			nb_free(pThreadState->m_pSafetyPoolBuffer);
+			free(pThreadState->m_pSafetyPoolBuffer);
 			pThreadState->m_pSafetyPoolBuffer = NULL;
 		}
 		else

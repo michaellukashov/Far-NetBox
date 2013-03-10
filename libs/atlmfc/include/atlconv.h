@@ -133,7 +133,7 @@ inline void AtlConvAllocMemory(
 			*ppBuff = ppReallocBuf;
 		} else
 		{
-			nb_free(*ppBuff);
+			free(*ppBuff);
 			*ppBuff=pszFixedBuffer;
 		}
 
@@ -141,7 +141,7 @@ inline void AtlConvAllocMemory(
 	{
 		if( nLength > nFixedBufferLength )
 		{
-			*ppBuff = static_cast< _CharType* >( nb_calloc(nLength,sizeof( _CharType ) ) );
+			*ppBuff = static_cast< _CharType* >( calloc(nLength,sizeof( _CharType ) ) );
 		} else
 		{			
 			*ppBuff=pszFixedBuffer;
@@ -163,7 +163,7 @@ inline void AtlConvFreeMemory(
 	(nFixedBufferLength);
 	if( pBuff != pszFixedBuffer )
 	{
-		nb_free( pBuff );
+		free( pBuff );
 	} 	
 #ifdef _DEBUG
 	else

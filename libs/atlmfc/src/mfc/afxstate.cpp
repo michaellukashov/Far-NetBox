@@ -144,7 +144,7 @@ _AFX_THREAD_STATE::~_AFX_THREAD_STATE()
 
 	// free safety pool buffer
 	if (m_pSafetyPoolBuffer != NULL)
-		nb_free(m_pSafetyPoolBuffer);
+		free(m_pSafetyPoolBuffer);
 
 	// parking window must have already been cleaned up by now!
 	ASSERT(m_pWndPark == NULL);

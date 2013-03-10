@@ -10,6 +10,8 @@
 
 #include "stdafx.h"
 
+
+
 /////////////////////////////////////////////////////////////////////////////
 // Debug memory globals and implementation helpers
 
@@ -33,7 +35,7 @@ void* PASCAL CObject::operator new(size_t nSize)
 void PASCAL CObject::operator delete(void* p)
 {
 #ifdef _AFX_NO_DEBUG_CRT
-	nb_free(p);
+	free(p);
 #else
 	_free_dbg(p, _AFX_CLIENT_BLOCK);
 #endif
@@ -42,7 +44,7 @@ void PASCAL CObject::operator delete(void* p)
 void PASCAL CObject::operator delete(void* p, void*)
 {
 #ifdef _AFX_NO_DEBUG_CRT
-	nb_free(p);
+	free(p);
 #else
 	_free_dbg(p, _AFX_CLIENT_BLOCK);
 #endif
@@ -83,7 +85,7 @@ CObject::operator delete(void *pObject, LPCSTR /* lpszFileName */,
 	int /* nLine */)
 {
 #ifdef _AFX_NO_DEBUG_CRT
-	nb_free(pObject);
+	free(pObject);
 #else
 	_free_dbg(pObject, _AFX_CLIENT_BLOCK);
 #endif
@@ -318,7 +320,7 @@ void* __cdecl operator new(size_t nSize)
 #if !defined(_AFX_NO_DEBUG_CRT) && defined(_DEBUG)
 		pResult = _malloc_dbg(nSize, _NORMAL_BLOCK, NULL, 0);
 #else
-		pResult = nb_malloc(nSize);
+		pResult = malloc(nSize);
 #endif
 		if (pResult != NULL)
 			return pResult;
@@ -344,7 +346,7 @@ void __cdecl operator delete(void* p)
 #if !defined(_AFX_NO_DEBUG_CRT) && defined(_DEBUG)
 		_free_dbg(p, _NORMAL_BLOCK);
 #else
-		nb_free(p);
+		free(p);
 #endif
 }
 
@@ -400,7 +402,7 @@ void __cdecl operator delete(void* p, int nType, LPCSTR /* lpszFileName */, int 
 #if !defined(_AFX_NO_DEBUG_CRT) && defined(_DEBUG)
 		_free_dbg(p, nType);
 #else
-		nb_free(p);
+		free(p);
 #endif
 }
 
