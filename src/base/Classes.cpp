@@ -1173,10 +1173,10 @@ void TStringList::Insert(intptr_t Index, const UnicodeString & S)
   {
     Classes::Error(SListIndexError, Index);
   }
-  TStringItem item;
-  item.FString = S;
-  item.FObject = NULL;
-  FList.insert(FList.begin() + Index, item);
+  TStringItem Item;
+  Item.FString = S;
+  Item.FObject = NULL;
+  FList.insert(FList.begin() + Index, Item);
   Changed();
 }
 
