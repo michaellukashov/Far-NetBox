@@ -302,7 +302,7 @@ intptr_t TCustomFarPlugin::Configure(intptr_t Item)
 void * TCustomFarPlugin::OpenPlugin(int OpenFrom, intptr_t Item)
 {
 #ifdef USE_DLMALLOC
-  dlmallopt(M_GRANULARITY, 128 * 1024);
+  // dlmallopt(M_GRANULARITY, 128 * 1024);
 #endif
 
   try
@@ -358,7 +358,7 @@ void TCustomFarPlugin::ClosePlugin(void * Plugin)
     );
     delete FileSystem;
 #ifdef USE_DLMALLOC
-    dlmalloc_trim(0); // 64 * 1024);
+    // dlmalloc_trim(0); // 64 * 1024);
 #endif
   }
   catch(Exception & E)
