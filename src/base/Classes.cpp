@@ -316,57 +316,57 @@ TObjectList::~TObjectList()
 
 TObject * TObjectList::operator [](intptr_t Index) const
 {
-  return static_cast<TObject *>(parent::operator[](Index));
+  return static_cast<TObject *>(TList::operator[](Index));
 }
 
 TObject *& TObjectList::GetItem(intptr_t Index)
 {
-  return reinterpret_cast<TObject *&>(parent::GetItem(Index));
+  return reinterpret_cast<TObject *&>(TList::GetItem(Index));
 }
 
 void TObjectList::SetItem(intptr_t Index, TObject * Value)
 {
-  parent::SetItem(Index, Value);
+  TList::SetItem(Index, Value);
 }
 
 intptr_t TObjectList::Add(TObject * Value)
 {
-  return parent::Add(Value);
+  return TList::Add(Value);
 }
 
 intptr_t TObjectList::Remove(TObject * Value)
 {
-  return parent::Remove(Value);
+  return TList::Remove(Value);
 }
 
 void TObjectList::Extract(TObject * Value)
 {
-  parent::Extract(Value);
+  TList::Extract(Value);
 }
 
 void TObjectList::Move(intptr_t Index, intptr_t To)
 {
-  parent::Move(Index, To);
+  TList::Move(Index, To);
 }
 
 void TObjectList::Delete(intptr_t Index)
 {
-  parent::Delete(Index);
+  TList::Delete(Index);
 }
 
 void TObjectList::Insert(intptr_t Index, TObject * Value)
 {
-  parent::Insert(Index, Value);
+  TList::Insert(Index, Value);
 }
 
 intptr_t TObjectList::IndexOf(TObject * Value) const
 {
-  return parent::IndexOf(Value);
+  return TList::IndexOf(Value);
 }
 
 void TObjectList::Clear()
 {
-  parent::Clear();
+  TList::Clear();
 }
 
 bool TObjectList::GetOwnsObjects() const
@@ -381,7 +381,7 @@ void TObjectList::SetOwnsObjects(bool Value)
 
 void TObjectList::Sort(CompareFunc func)
 {
-  parent::Sort(func);
+  TList::Sort(func);
 }
 
 void TObjectList::Notify(void * Ptr, TListNotification Action)
@@ -394,7 +394,7 @@ void TObjectList::Notify(void * Ptr, TListNotification Action)
       delete static_cast<TObject *>(Ptr);
     }
   }
-  parent::Notify(Ptr, Action);
+  TList::Notify(Ptr, Action);
 }
 
 //---------------------------------------------------------------------------
@@ -869,7 +869,7 @@ TStringList::~TStringList()
 
 void TStringList::Assign(TPersistent * Source)
 {
-  parent::Assign(Source);
+  TStrings::Assign(Source);
 }
 
 intptr_t TStringList::GetCount() const
@@ -952,7 +952,7 @@ intptr_t TStringList::IndexOf(const UnicodeString & S)
   intptr_t Result = NPOS;
   if (!GetSorted())
   {
-    Result = parent::IndexOf(S);
+    Result = TStrings::IndexOf(S);
   }
   else
   {
@@ -980,10 +980,10 @@ void TStringList::PutString(intptr_t Index, const UnicodeString & S)
   if (Index < static_cast<intptr_t>(FList.size()))
   {
     TObject * Temp = GetObjects(Index);
-    TStringItem item;
-    item.FString = S;
-    item.FObject = Temp;
-    FList[Index] = item;
+    TStringItem Item;
+    Item.FString = S;
+    Item.FObject = Temp;
+    FList[Index] = Item;
   }
   else
   {
