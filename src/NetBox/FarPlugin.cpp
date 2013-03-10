@@ -301,6 +301,10 @@ intptr_t TCustomFarPlugin::Configure(intptr_t Item)
 //---------------------------------------------------------------------------
 void * TCustomFarPlugin::OpenPlugin(int OpenFrom, intptr_t Item)
 {
+#ifdef USE_DLMALLOC
+  dlmallopt(M_GRANULARITY, 128 * 1024);
+#endif
+
   try
   {
     ResetCachedInfo();
