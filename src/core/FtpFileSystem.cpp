@@ -5,7 +5,7 @@
 #ifndef NO_FILEZILLA
 #define TRACE_FZAPI NOTRACING
 //---------------------------------------------------------------------------
-#include <list>
+#include <deque>
 #ifndef MPEXT
 #define MPEXT
 #endif
@@ -165,7 +165,7 @@ bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-class TMessageQueue : public TObject, public std::list<std::pair<WPARAM, LPARAM> > //, custom_nballocator_t<std::pair<WPARAM, LPARAM> > >
+class TMessageQueue : public TObject, public std::deque<std::pair<WPARAM, LPARAM>, custom_nballocator_t<std::pair<WPARAM, LPARAM> > >
 {
 };
 //---------------------------------------------------------------------------
