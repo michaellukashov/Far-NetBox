@@ -123,9 +123,9 @@ void THierarchicalStorage::Flush()
 {
 }
 //------------------------------------------------------------------------------
-void THierarchicalStorage::SetAccessMode(TStorageAccessMode value)
+void THierarchicalStorage::SetAccessMode(TStorageAccessMode Value)
 {
-  FAccessMode = value;
+  FAccessMode = Value;
 }
 //------------------------------------------------------------------------------
 UnicodeString THierarchicalStorage::GetCurrentSubKeyMunged() const
