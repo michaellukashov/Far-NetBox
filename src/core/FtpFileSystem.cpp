@@ -2522,7 +2522,7 @@ bool TFTPFileSystem::ProcessMessage()
     }
     else
     {
-      // now we are perfecly sure that the queue is empty as it is locked,
+      // now we are perfectly sure that the queue is empty as it is locked,
       // so reset the event
       ResetEvent(FQueueEvent);
     }
