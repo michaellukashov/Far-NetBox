@@ -316,8 +316,8 @@ struct custom_nballocator_t
   typedef T value_type;
 
   template <class U> struct rebind { typedef custom_nballocator_t<U> other; };
-  custom_nballocator_t() throw() {}
-  custom_nballocator_t(const custom_nballocator_t&) throw() {}
+  inline custom_nballocator_t() throw() {}
+  inline custom_nballocator_t(const custom_nballocator_t&) throw() {}
 
   template <class U> custom_nballocator_t(const custom_nballocator_t<U>&) throw(){}
 
