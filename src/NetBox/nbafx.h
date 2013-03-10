@@ -8,16 +8,6 @@
 #define SECURITY_WIN32
 #include <windows.h>
 #include <winsock2.h>
-#include <time.h>
-
-#include <string>
-#include <vector>
-#include <list>
-#include <map>
-#include <set>
-#include <iterator>
-#include <algorithm>
-#include <assert.h>
 
 #ifndef _export
 #define _export __declspec(dllexport)
@@ -37,5 +27,5 @@
 #include <farcolor.hpp>
 #pragma warning(pop)
 
-#include "FastDelegate.h"
-#include "FastDelegateBind.h"
+#include <FastDelegate.h>
+#include <FastDelegateBind.h>
