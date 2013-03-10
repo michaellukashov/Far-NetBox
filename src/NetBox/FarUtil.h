@@ -5,7 +5,7 @@
 /**
  * File read/write wrapper
  */
-class CNBFile
+class CNBFile : public TObject
 {
 public:
     CNBFile() : m_File(INVALID_HANDLE_VALUE), m_LastError(0) {}

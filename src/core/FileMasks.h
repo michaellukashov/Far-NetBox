@@ -17,7 +17,7 @@ public:
 extern const wchar_t IncludeExcludeFileMasksDelimiter;
 #define MASK_INDEX(DIRECTORY, INCLUDE) ((DIRECTORY ? 2 : 0) + (INCLUDE ? 0 : 1))
 //---------------------------------------------------------------------------
-class TFileMasks
+class TFileMasks : public TObject
 {
 public:
   struct TParams
@@ -144,7 +144,7 @@ DEFINE_CALLBACK_TYPE5(TCustomCommandPatternEvent, void,
   int /* Index */, const UnicodeString & /* Pattern */, void * /* Arg */, UnicodeString & /* Replacement */,
   bool & /* LastPass */);
 //---------------------------------------------------------------------------
-class TCustomCommand
+class TCustomCommand : public TObject
 {
 friend class TInteractiveCustomCommand;
 

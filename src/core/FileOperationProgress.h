@@ -20,7 +20,7 @@ DEFINE_CALLBACK_TYPE6(TFileOperationFinishedEvent, void,
   TFileOperation /* Operation */, TOperationSide /* Side */, bool /* Temp */,
   const UnicodeString & /* FileName */, bool /* Success */, TOnceDoneOperation & /* OnceDoneOperation */);
 //---------------------------------------------------------------------------
-class TFileOperationProgressType
+class TFileOperationProgressType : public TObject
 {
 private:
   // when it was last time suspended (to calculate suspend time in Resume())
@@ -122,7 +122,7 @@ public:
   intptr_t TotalTransferProgress() const;
 };
 //---------------------------------------------------------------------------
-class TSuspendFileOperationProgress
+class TSuspendFileOperationProgress : public TObject
 {
 public:
   explicit TSuspendFileOperationProgress(TFileOperationProgressType * OperationProgress)

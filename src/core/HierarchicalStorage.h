@@ -7,7 +7,7 @@
 enum TStorage { stDetect, stRegistry, stIniFile, stNul, stXmlFile };
 enum TStorageAccessMode { smRead, smReadWrite };
 //------------------------------------------------------------------------------
-class THierarchicalStorage
+class THierarchicalStorage : public TObject
 {
 public:
   explicit THierarchicalStorage(const UnicodeString & AStorage);

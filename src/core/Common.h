@@ -154,7 +154,7 @@ MethodT MakeMethod(void * Data, void * Code)
   return Method;
 }
 //---------------------------------------------------------------------------
-class TGuard
+class TGuard : public TObject
 {
 public:
   explicit TGuard(TCriticalSection * ACriticalSection);
@@ -164,7 +164,7 @@ private:
   TCriticalSection * FCriticalSection;
 };
 //---------------------------------------------------------------------------
-class TUnguard
+class TUnguard : public TObject
 {
 public:
   explicit TUnguard(TCriticalSection * ACriticalSection);
@@ -231,7 +231,7 @@ inline bool DoAlwaysTrue(bool Value, wchar_t * Message, wchar_t * Filename, int 
 #endif
 //---------------------------------------------------------------------------
 template<class T>
-class TValueRestorer
+class TValueRestorer : public TObject
 {
 public:
   inline explicit TValueRestorer(T & Target, const T & Value) :

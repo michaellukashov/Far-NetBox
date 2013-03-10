@@ -84,7 +84,7 @@ DEFINE_CALLBACK_TYPE3(TCalculatedChecksumEvent, void,
 class TSessionActionRecord;
 class TActionLog;
 //---------------------------------------------------------------------------
-class TSessionAction
+class TSessionAction : public TObject
 {
 public:
   explicit TSessionAction(TActionLog * Log, TLogAction Action);
@@ -278,7 +278,7 @@ private:
   TSessionLog & operator=(const TSessionLog &);
 };
 //---------------------------------------------------------------------------
-class TActionLog
+class TActionLog : public TObject
 {
 friend class TSessionAction;
 friend class TSessionActionRecord;

@@ -3,8 +3,9 @@
 #define FileZillaToolsH
 //---------------------------------------------------------------------------
 #include <ctime>
+#include <Classes.hpp>
 //---------------------------------------------------------------------------
-class CFileZillaTools
+class CFileZillaTools : public TObject
 {
 public:
   virtual void PreserveDownloadFileTime(HANDLE Handle, void * UserData) = 0;

@@ -648,7 +648,7 @@ struct TSynchronizeOptions
   bool MatchesFilter(const UnicodeString & FileName);
 };
 //------------------------------------------------------------------------------
-class TSynchronizeChecklist
+class TSynchronizeChecklist : public TObject
 {
 friend class TTerminal;
 

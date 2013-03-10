@@ -479,14 +479,14 @@ private:
   EditorInfo * FEditorInfo;
 };
 //---------------------------------------------------------------------------
-class TFarEnvGuard
+class TFarEnvGuard : public TObject
 {
 public:
   inline TFarEnvGuard();
   inline ~TFarEnvGuard();
 };
 //---------------------------------------------------------------------------
-class TFarPluginEnvGuard
+class TFarPluginEnvGuard : public TObject
 {
 public:
   inline TFarPluginEnvGuard();

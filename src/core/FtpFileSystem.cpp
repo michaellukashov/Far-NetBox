@@ -206,7 +206,7 @@ struct TSinkFileParams
 };
 #endif
 //---------------------------------------------------------------------------
-class TFTPFileListHelper
+class TFTPFileListHelper : public TObject
 {
 public:
   explicit TFTPFileListHelper(TFTPFileSystem * FileSystem, TRemoteFileList * FileList,

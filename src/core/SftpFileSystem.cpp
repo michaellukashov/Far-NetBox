@@ -1018,7 +1018,7 @@ private:
 //---------------------------------------------------------------------------
 int TSFTPPacket::FMessageCounter = 0;
 //---------------------------------------------------------------------------
-class TSFTPQueue
+class TSFTPQueue : public TObject
 {
 public:
   explicit TSFTPQueue(TSFTPFileSystem * AFileSystem, unsigned int codePage)
@@ -1670,7 +1670,7 @@ private:
 //---------------------------------------------------------------------------
 #pragma warn .inl
 //---------------------------------------------------------------------------
-class TSFTPBusy
+class TSFTPBusy : public TObject
 {
 public:
   explicit TSFTPBusy(TSFTPFileSystem * FileSystem)

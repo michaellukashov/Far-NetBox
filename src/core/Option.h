@@ -6,7 +6,7 @@
 //---------------------------------------------------------------------------
 enum TOptionType { otParam, otSwitch };
 //---------------------------------------------------------------------------
-class TOptions
+class TOptions : public TObject
 {
 public:
   TOptions();

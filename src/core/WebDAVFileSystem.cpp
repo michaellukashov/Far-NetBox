@@ -12134,7 +12134,7 @@ neon_init(
 //------------------------------------------------------------------------------
 class TSessionData;
 //------------------------------------------------------------------------------
-class TWebDAVFileListHelper
+class TWebDAVFileListHelper : public TObject
 {
 public:
   explicit TWebDAVFileListHelper(TWebDAVFileSystem * FileSystem, TRemoteFileList * FileList,

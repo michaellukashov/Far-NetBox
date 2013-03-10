@@ -1516,7 +1516,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result)
   CTRACE(TRACE_TRANSMIT, "/");
 }
 //---------------------------------------------------------------------------
-class TPoolForDataEvent
+class TPoolForDataEvent : public TObject
 {
 public:
   TPoolForDataEvent(TSecureShell * SecureShell, WSANETWORKEVENTS & Events) :
