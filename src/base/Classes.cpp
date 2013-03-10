@@ -1271,14 +1271,14 @@ UnicodeString MB2W(const char * src, const UINT cp)
   }
 
   intptr_t reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
-  std::wstring wide(reqLength, 0);
+  UnicodeString Result(reqLength, 0);
   if (reqLength)
   {
-    wide.resize(reqLength);
-    MultiByteToWideChar(cp, 0, src, -1, &wide[0], static_cast<int>(reqLength));
-    wide.resize(wide.size() - 1);  //remove NULL character
+    Result.SetLength(reqLength);
+    MultiByteToWideChar(cp, 0, src, -1, &Result[0], static_cast<int>(reqLength));
+    Result.SetLength(Result.Length() - 1);  //remove NULL character
   }
-  return UnicodeString(wide.c_str());
+  return Result;
 }
 
 /**
@@ -1287,23 +1287,23 @@ UnicodeString MB2W(const char * src, const UINT cp)
  * @param $cp code page
  * @return multibyte std::string
  */
-std::string W2MB(const wchar_t * src, const UINT cp)
+AnsiString W2MB(const wchar_t * src, const UINT cp)
 {
   // assert(src);
   if (!src || !*src)
   {
-    return std::string("");
+    return AnsiString("");
   }
 
   intptr_t reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, NULL, NULL);
-  std::string mb(reqLength, 0);
+  AnsiString Result(reqLength, 0);
   if (reqLength)
   {
-    mb.resize(reqLength);
-    WideCharToMultiByte(cp, 0, src, -1, &mb[0], static_cast<int>(reqLength), NULL, NULL);
-    mb.resize(mb.length() - 1);  //remove NULL character
+    Result.SetLength(reqLength);
+    WideCharToMultiByte(cp, 0, src, -1, &Result[0], static_cast<int>(reqLength), NULL, NULL);
+    Result.SetLength(Result.Length() - 1);  //remove NULL character
   }
-  return mb.c_str();
+  return Result;
 }
 
 //---------------------------------------------------------------------------

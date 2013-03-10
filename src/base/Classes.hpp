@@ -44,7 +44,7 @@ extern const int UnixDateDelta;
 extern const UnicodeString kernel32;
 //---------------------------------------------------------------------------
 UnicodeString MB2W(const char * src, const UINT cp = CP_ACP);
-std::string W2MB(const wchar_t * src, const UINT cp = CP_ACP);
+AnsiString W2MB(const wchar_t * src, const UINT cp = CP_ACP);
 //---------------------------------------------------------------------------
 intptr_t __cdecl debug_printf(const wchar_t * format, ...);
 intptr_t __cdecl debug_printf2(const char * format, ...);
