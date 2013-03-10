@@ -97,7 +97,7 @@
     <ClCompile>
       <WarningLevel>Level1</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;UNICODE;_UNICODE;_WIN32_WINNT=0x0501;_ATL_NO_DEBUG_CRT;_ATL_NO_UUIDOF;_ATL_NO_CONNECTION_POINTS;_ATL_NO_DATETIME_RESOURCES_;_ATL_NO_DEFAULT_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;UNICODE;_UNICODE;_WIN32_WINNT=0x0501;_ATL_NO_DEBUG_CRT;_ATL_NO_UUIDOF;_ATL_NO_CONNECTION_POINTS;_ATL_NO_DATETIME_RESOURCES_;_ATL_NO_DEFAULT_LIBS;USE_DLMALLOC;USE_DL_PREFIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -109,7 +109,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;../;</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <ExceptionHandling>Sync</ExceptionHandling>

@@ -62,14 +62,14 @@ BOOL AFXAPI AfxUnlockTempMaps(BOOL bDeleteTemps)
 				if (pThreadState->m_pSafetyPoolBuffer != NULL)
 				{
 					nOldSize = _msize(pThreadState->m_pSafetyPoolBuffer);
-					free(pThreadState->m_pSafetyPoolBuffer);
+					nb_free(pThreadState->m_pSafetyPoolBuffer);
 				}
 
 				// undo handler trap for the following allocation
 				BOOL bEnable = AfxEnableMemoryTracking(FALSE);
 				try
 				{
-					pThreadState->m_pSafetyPoolBuffer = malloc(pApp->m_nSafetyPoolSize);
+					pThreadState->m_pSafetyPoolBuffer = nb_malloc(pApp->m_nSafetyPoolSize);
 					if (pThreadState->m_pSafetyPoolBuffer == NULL)
 					{
 						TRACE(traceAppMsg, 0, "Warning: failed to reclaim %d bytes for memory safety pool.\n",
@@ -78,7 +78,7 @@ BOOL AFXAPI AfxUnlockTempMaps(BOOL bDeleteTemps)
 						if (nOldSize != 0)
 						{
 							//get it back
-							pThreadState->m_pSafetyPoolBuffer = malloc(nOldSize);
+							pThreadState->m_pSafetyPoolBuffer = nb_malloc(nOldSize);
 							ASSERT(pThreadState->m_pSafetyPoolBuffer != NULL);
 						}
 					}

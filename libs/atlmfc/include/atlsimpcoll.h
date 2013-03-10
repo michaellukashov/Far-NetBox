@@ -125,7 +125,7 @@ public:
 	{
         if (src.GetSize())
         {
-			m_aT = (T*)calloc(src.GetSize(), sizeof(T));
+			m_aT = (T*)nb_calloc(src.GetSize(), sizeof(T));
 			if (m_aT != NULL)
 			{
 				m_nAllocSize = src.GetSize();
@@ -139,7 +139,7 @@ public:
 		if (GetSize() != src.GetSize())
 		{
 			RemoveAll();
-			m_aT = (T*)calloc(src.GetSize(), sizeof(T));
+			m_aT = (T*)nb_calloc(src.GetSize(), sizeof(T));
 			if (m_aT != NULL)
 				m_nAllocSize = src.GetSize();
 		}
@@ -209,7 +209,7 @@ public:
 		{
 			for(int i = 0; i < m_nSize; i++)
 				m_aT[i].~T();
-			free(m_aT);
+			nb_free(m_aT);
 			m_aT = NULL;
 		}
 		m_nSize = 0;
@@ -387,12 +387,12 @@ public:
 				m_aKey[i].~TKey();
 				m_aVal[i].~TVal();
 			}
-			free(m_aKey);
+			nb_free(m_aKey);
 			m_aKey = NULL;
 		}
 		if(m_aVal != NULL)
 		{
-			free(m_aVal);
+			nb_free(m_aVal);
 			m_aVal = NULL;
 		}
 
