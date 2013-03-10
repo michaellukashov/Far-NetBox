@@ -128,58 +128,58 @@ inline void operator_delete(void * p)
 /// custom memory allocation
 #define DEF_CUSTOM_MEM_ALLOCATION_IMPL            \
 	public:                                         \
- 	void * operator new(size_t size)                \
+ 	void * __stdcall operator new(size_t size)                \
 	{                                               \
 		return operator_new(size);                    \
 	}                                               \
-	void operator delete(void * p, size_t size)     \
+	void __stdcall operator delete(void * p, size_t size)     \
 	{                                               \
 		(void)(size);                                 \
 		operator_delete(p);                    \
 	}                                               \
- 	void * operator new[](size_t size)              \
+ 	void * __stdcall operator new[](size_t size)              \
 	{                                               \
 		return operator_new(size);                    \
 	}                                               \
-	void operator delete[](void * p, size_t size)   \
+	void __stdcall operator delete[](void * p, size_t size)   \
 	{                                               \
 		(void)(size);                                 \
 		operator_delete(p);                    \
 	}                                               \
- 	void * operator new(size_t size, void * p)      \
+ 	void * __stdcall operator new(size_t size, void * p)      \
 	{                                               \
 		(void)(size);                                 \
 		return p;                                     \
 	}                                               \
-	void operator delete(void * p, void *)          \
+	void __stdcall operator delete(void * p, void *)          \
 	{                                               \
 		(void)(p);                                    \
 	}                                               \
- 	void * operator new[](size_t size, void * p)    \
+ 	void * __stdcall operator new[](size_t size, void * p)    \
 	{                                               \
 		(void)(size);                                 \
 		return p;                                     \
 	}                                               \
-	void operator delete[](void * p, void *)        \
+	void __stdcall operator delete[](void * p, void *)        \
 	{                                               \
 		(void)(p);                                    \
 	}
 
 #ifdef _DEBUG
 #define CUSTOM_MEM_ALLOCATION_IMPL DEF_CUSTOM_MEM_ALLOCATION_IMPL \
- 	void * operator new(size_t size, const char * /*lpszFileName*/, int /*nLine*/) \
+ 	void * __stdcall operator new(size_t size, const char * /*lpszFileName*/, int /*nLine*/) \
 	{\
 		return operator_new(size);\
 	}\
- 	void* operator new[](size_t size, const char * /*lpszFileName*/, int /*nLine*/)\
+ 	void* __stdcall operator new[](size_t size, const char * /*lpszFileName*/, int /*nLine*/)\
 	{\
 		return operator_new(size);\
 	}\
-	void operator delete(void* p, const char * /*lpszFileName*/, int /*nLine*/)\
+	void __stdcall operator delete(void* p, const char * /*lpszFileName*/, int /*nLine*/)\
 	{\
 		operator_delete(p);\
 	}\
-	void operator delete[](void* p, const char * /*lpszFileName*/, int /*nLine*/)\
+	void __stdcall operator delete[](void* p, const char * /*lpszFileName*/, int /*nLine*/)\
 	{\
 		operator_delete(p);\
 	}
