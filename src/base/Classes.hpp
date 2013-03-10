@@ -8,15 +8,6 @@
 
 #pragma warning(push, 1)
 
-#include <string>
-#include <vector>
-#include <list>
-#include <map>
-#include <set>
-#include <iterator>
-#include <algorithm>
-#include <assert.h>
-
 #include <rtlconsts.h>
 #include <headers.hpp>
 #include <CppProperties.h>
