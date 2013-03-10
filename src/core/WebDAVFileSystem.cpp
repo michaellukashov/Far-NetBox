@@ -11672,7 +11672,7 @@ neon_open(
   }
 
   {
-    static std::string useragent = "NetBox/" + W2MB(NETBOX_VERSION_NUMBER.c_str());
+    static AnsiString useragent = "NetBox/" + W2MB(NETBOX_VERSION_NUMBER.c_str());
     ne_set_useragent(sess, useragent.c_str());
   }
 

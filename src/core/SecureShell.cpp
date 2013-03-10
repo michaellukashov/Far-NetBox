@@ -1120,8 +1120,8 @@ void TSecureShell::SendNull()
 void TSecureShell::SendStr(const UnicodeString & Str)
 {
   CheckConnection();
-  std::string AnsiStr = W2MB(Str.c_str(), FSessionData->GetCodePageAsNumber());
-  Send(reinterpret_cast<const unsigned char *>(AnsiStr.c_str()), AnsiStr.size());
+  AnsiString AnsiStr = W2MB(Str.c_str(), FSessionData->GetCodePageAsNumber());
+  Send(reinterpret_cast<const unsigned char *>(AnsiStr.c_str()), AnsiStr.Length());
 }
 //---------------------------------------------------------------------------
 void TSecureShell::SendLine(const UnicodeString & Line)
