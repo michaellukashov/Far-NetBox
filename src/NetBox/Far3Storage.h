@@ -25,7 +25,7 @@ public:
   virtual size_t BinaryDataSize(const UnicodeString & Name);
 
   virtual bool ReadBool(const UnicodeString & Name, bool Default);
-  virtual int ReadInteger(const UnicodeString & Name, int Default);
+  virtual intptr_t ReadInteger(const UnicodeString & Name, intptr_t Default);
   virtual __int64 ReadInt64(const UnicodeString & Name, __int64 Default);
   virtual TDateTime ReadDateTime(const UnicodeString & Name, TDateTime Default);
   virtual double ReadFloat(const UnicodeString & Name, double Default);
@@ -34,7 +34,7 @@ public:
 
   virtual void WriteBool(const UnicodeString & Name, bool Value);
   virtual void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
-  virtual void WriteInteger(const UnicodeString & Name, int Value);
+  virtual void WriteInteger(const UnicodeString & Name, intptr_t Value);
   virtual void WriteInt64(const UnicodeString & Name, __int64 Value);
   virtual void WriteDateTime(const UnicodeString & Name, TDateTime Value);
   virtual void WriteFloat(const UnicodeString & Name, double Value);

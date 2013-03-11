@@ -212,7 +212,7 @@ double TFar3Storage::ReadFloat(const UnicodeString & Name, double Default)
   return Result;
 }
 //---------------------------------------------------------------------------
-int TFar3Storage::ReadInteger(const UnicodeString & Name, int Default)
+intptr_t TFar3Storage::ReadInteger(const UnicodeString & Name, intptr_t Default)
 {
   return FPluginSettings.Get(FRoot, Name.c_str(), Default);
 }
@@ -267,7 +267,7 @@ void TFar3Storage::WriteStringRaw(const UnicodeString & Name, const UnicodeStrin
   FPluginSettings.Set(FRoot, Name.c_str(), Value.c_str());
 }
 //---------------------------------------------------------------------------
-void TFar3Storage::WriteInteger(const UnicodeString & Name, int Value)
+void TFar3Storage::WriteInteger(const UnicodeString & Name, intptr_t Value)
 {
   // DEBUG_PRINTF(L"begin, FRoot = %d, Name = %s", FRoot, Name.c_str());
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
