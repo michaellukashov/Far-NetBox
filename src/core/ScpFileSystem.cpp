@@ -578,7 +578,7 @@ void TSCPFileSystem::EnsureLocation()
       // when location to cached directory fails, pretend again
       // location in cached directory
       // here used to be check (CurrentDirectory != Directory), but it is
-      // false always (currentdirectory is already set to cached directory),
+      // false always (current directory is already set to cached directory),
       // making the condition below useless. check removed.
       if (FTerminal->GetActive())
       {
@@ -944,7 +944,7 @@ void TSCPFileSystem::ClearAlias(const UnicodeString & Alias)
   if (!Alias.IsEmpty())
   {
     // this command usually fails, because there will never be
-    // aliases on all commands -> see last False parametr
+    // aliases on all commands -> see last False parameter
     ExecCommand2(fsUnalias, Alias.c_str(), false);
   }
 }
@@ -1040,7 +1040,7 @@ void TSCPFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
 void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   assert(FileList);
-  // emtying file list moved before command execution
+  // emptying file list moved before command execution
   FileList->Clear();
 
   bool Again;
@@ -1071,7 +1071,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           Params);
       }
 
-      // If output is not empty, we have succesfully got file listing,
+      // If output is not empty, we have successfully got file listing,
       // otherwise there was an error, in case it was "permission denied"
       // we try to get at least parent directory (see "else" statement below)
       if (FOutput->GetCount() > 0)
@@ -1113,7 +1113,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       {
           FTerminal->LogEvent(
             FORMAT(L"Directory listing with %s succeed, next time all errors during "
-              L"directory listing will be displayed immediatelly.",
+              L"directory listing will be displayed immediately.",
               FullTimeOption));
           FLsFullTime = asOn;
       }
@@ -1282,7 +1282,7 @@ void TSCPFileSystem::ChangeFileProperties(const UnicodeString & FileName,
     TRights Rights = Properties->Rights;
 
     // if we don't set modes recursively, we may add X at once with other
-    // options. Otherwise we have to add X after recusive command
+    // options. Otherwise we have to add X after recursive command
     if (!Recursive && IsDirectory && Properties->AddXToDirectories)
       Rights.AddExecute();
 
@@ -1691,7 +1691,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       catch (Exception &E)
       {
         // Only log error message (it should always succeed, but
-        // some pending error maybe in queque) }
+        // some pending error maybe in queue) }
         FTerminal->GetLog()->AddException(&E);
       }
     }
@@ -1753,7 +1753,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
 
       TDateTime Modification = UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
 
-      // Will we use ASCII of BINARY file tranfer?
+      // Will we use ASCII of BINARY file transfer?
       TFileMasks::TParams MaskParams;
       MaskParams.Size = Size;
       MaskParams.Modification = Modification;
@@ -1848,7 +1848,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
               DestFileName.data());
             FSecureShell->SendLine(Buf.c_str());
             SCPResponse();
-            // Indicate we started transfering file, we need to finish it
+            // Indicate we started transferring file, we need to finish it
             // If not, it's fatal error
             OperationProgress->TransferingFile = true;
 
@@ -1922,7 +1922,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
           throw;
         }
 
-        // We succeded transfering file, from now we can handle exceptions
+        // We succeeded transferring file, from now we can handle exceptions
         // normally -> no fatal error
         OperationProgress->TransferingFile = false;
       }
@@ -2050,7 +2050,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
             SCPSource(FileName, NULL, TargetDirFull, CopyParam, Params, OperationProgress, Level + 1);
           }
         }
-        // Previously we catched EScpSkipFile, making error being displayed
+        // Previously we caught EScpSkipFile, making error being displayed
         // even when file was excluded by mask. Now the EScpSkipFile is special
         // case without error message.
         catch (EScpFileSkipped &E)
@@ -2140,7 +2140,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 
       // Filename is used for error messaging and excluding files only
       // Send in full path to allow path-based excluding
-      // operation succeded (no exception), so it's ok that
+      // operation succeeded (no exception), so it's ok that
       // remote side closed SCP, but we continue with next file
       UnicodeString FullFileName = ::UnixExcludeTrailingBackslash(File->GetFullFileName());
       UnicodeString TargetDirectory = TargetDir;
@@ -2166,7 +2166,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         }
 
         // Move operation -> delete file/directory afterwards
-        // but only if copying succeded
+        // but only if copying succeeded
         if ((Params & cpDelete) && Success && !OperationProgress->Cancel)
         {
           TRACE("4");
@@ -2196,7 +2196,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
           catch (...)
           {
             TRACE("7");
-            // If user selects skip (or abort), nothing special actualy occurs
+            // If user selects skip (or abort), nothing special actually occurs
             // we just run DoFinished with Success = False, so file won't
             // be deselected in panel (depends on assigned event handler)
 
@@ -2227,7 +2227,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   {
     TRACE("10");
     // In case that copying doesn't cause fatal error (ie. connection is
-    // still active) but wasn't succesful (exception or user termination)
+    // still active) but wasn't successful (exception or user termination)
     // we need to ensure, that SCP on remote side is closed
     if (FTerminal->GetActive() && (CloseSCP ||
         (OperationProgress->Cancel == csCancel) ||
@@ -2308,10 +2308,10 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
     // See (switch ... case 'T':)
     if (FileData.SetTime) { FileData.SetTime--; }
 
-    // In case of error occured before control record arrived.
+    // In case of error occurred before control record arrived.
     // We can finally use full path here, as we get current path in FileName param
     // (we used to set the file into OperationProgress->FileName, but it collided
-    // with progress outputing, particularly for scripting)
+    // with progress outputting, particularly for scripting)
     UnicodeString AbsoluteFileName = FileName;
 
     try
@@ -2326,14 +2326,14 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
       {
         TRACE("3");
         // Remote side finished copying, so remote SCP was closed
-        // and we don't need to terminate it manualy, see CopyToLocal()
+        // and we don't need to terminate it manually, see CopyToLocal()
         OperationProgress->Cancel = csRemoteAbort;
         /* TODO 1 : Show stderror to user? */
         FSecureShell->ClearStdError();
         try
         {
           // coIgnoreWarnings should allow batch transfer to continue when
-          // download of one the files failes (user denies overwritting
+          // download of one the files fails (user denies overwriting
           // of target local file, no read permissions...)
           ReadCommandOutput(coExpectNoOutput | coRaiseExcept |
             coOnlyReturnCode | coIgnoreWarnings);
@@ -2362,7 +2362,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
         TRACE("6");
         Initialized = true;
 
-        // First characted distinguish type of control record
+        // First character distinguish type of control record
         wchar_t Ctrl = Line[1];
         Line.Delete(1, 1);
 
@@ -2464,7 +2464,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
             Level == 0);
 
         FileData.Attrs = FTerminal->GetLocalFileAttributes(DestFileName);
-        // If getting attrs failes, we suppose, that file/folder doesn't exists
+        // If getting attrs fails, we suppose, that file/folder doesn't exists
         FileData.Exists = (FileData.Attrs != -1);
         if (Dir)
         {
@@ -2562,7 +2562,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                 throw;
               }
 
-              // We succeded, so we confirm transfer to remote side
+              // We succeeded, so we confirm transfer to remote side
               FSecureShell->SendNull();
               // From now we need to finish file transfer, if not it's fatal error
               OperationProgress->TransferingFile = true;
@@ -2571,7 +2571,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
               // (not true with ASCII transfer)
               OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
-              // Will we use ASCII of BINARY file tranfer?
+              // Will we use ASCII of BINARY file transfer?
               OperationProgress->SetAsciiTransfer(
                 CopyParam->UseAsciiTransfer(SourceFullName, osRemote, MaskParams));
               FTerminal->LogEvent(UnicodeString((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
@@ -2707,7 +2707,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
         );
       }
       // this was inside above condition, but then transfer was considered
-      // succesfull, even when for example user refused to overwrite file
+      // successful, even when for example user refused to overwrite file
       Success = false;
     }
     catch (EScpSkipFile &E)

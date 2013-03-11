@@ -1244,7 +1244,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
   {
     FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to local directory started.", FileName.c_str()));
 
-    // Will we use ASCII of BINARY file tranfer?
+    // Will we use ASCII of BINARY file transfer?
     OperationProgress->SetAsciiTransfer(
       CopyParam->UseAsciiTransfer(FileName, osRemote, MaskParams));
     FTerminal->LogEvent(UnicodeString((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
@@ -1536,7 +1536,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
       FindClose(Handle);
     }
 
-    // Will we use ASCII of BINARY file tranfer?
+    // Will we use ASCII of BINARY file transfer?
     TFileMasks::TParams MaskParams;
     MaskParams.Size = Size;
     MaskParams.Modification = Modification;

@@ -1403,7 +1403,7 @@ void TTerminalItem::TerminalQueryUser(TObject * Sender,
   const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
   const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg)
 {
-  // so far query without queue item can occur only for key cofirmation
+  // so far query without queue item can occur only for key confirmation
   // on re-key with non-cached host key. make it fail.
   if (FItem != NULL)
   {
@@ -2114,8 +2114,8 @@ void TTerminalThread::Idle()
   CALLSTACK;
   TGuard Guard(FSection);
   // only when running user action already,
-  // so that the exception is catched, saved and actually
-  // passed back into the terminal thread, savex again
+  // so that the exception is caught, saved and actually
+  // passed back into the terminal thread, saved again
   // and passed back to us
   if ((FUserAction != NULL) && (FIdleException != NULL))
   {

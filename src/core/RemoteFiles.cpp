@@ -824,7 +824,7 @@ intptr_t TRemoteFile::GetIconIndex() const
 //---------------------------------------------------------------------------
 UnicodeString TRemoteFile::GetTypeName()
 {
-  // check avilability of type info by icon index, because type name can be empty
+  // check availability of type info by icon index, because type name can be empty
   if (FIconIndex < 0)
   {
     LoadTypeInfo();
@@ -913,7 +913,7 @@ void TRemoteFile::SetType(wchar_t AType)
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFile::GetLinkedFile()
 {
-  // do not call FindLinkedFile as it would be called releatedly for broken symlinks
+  // do not call FindLinkedFile as it would be called repeatedly for broken symlinks
   return FLinkedFile;
 }
 //---------------------------------------------------------------------------

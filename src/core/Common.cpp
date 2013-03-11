@@ -57,7 +57,7 @@ int TraceThreadProc(void *)
       TRACE("3");
       Sleep(60000);
       TRACE("4");
-      // if resuming from sleep causes the previous Sleep to immediatelly break,
+      // if resuming from sleep causes the previous Sleep to immediately break,
       // make sure we wait a little more before dumping
       Sleep(60000);
       TRACE("5");
@@ -990,7 +990,7 @@ int FindFirstChecked(const UnicodeString & Path, int Attr, TSearchRec & F)
 //---------------------------------------------------------------------------
 // It can make sense to use FindNextChecked, even if unchecked FindFirst is used.
 // I.e. even if we do not care that FindFirst failed, if FindNext
-// failes after successfull FindFirst, it mean some terrible problem
+// fails after successful FindFirst, it mean some terrible problem
 int FindNextChecked(TSearchRec & F)
 {
   return FindCheck(FindNext(F));

@@ -1006,7 +1006,7 @@ string_compare(
   if (len1 != len2)
     return FALSE;
 
-  // now the strings must have identical lenghths
+  // now the strings must have identical lengths
 
   if ((memcmp(str1, str2, len1)) == 0)
     return TRUE;
@@ -2694,7 +2694,7 @@ apr_base64_decode_binary(
     nprbytes -= 4;
   }
 
-  // Note: (nprbytes == 1) would be an error, so just ingore that case
+  // Note: (nprbytes == 1) would be an error, so just ignore that case
   if (nprbytes > 1)
   {
     *(bufout++) =
@@ -3311,7 +3311,7 @@ auth_simple_first_creds_helper(
   const char * default_username = NULL; // Default username from cache.
   const char * default_password = NULL; // Default password from cache.
 
-  // This checks if we should save the CREDS, iff saving the credentials is
+  // This checks if we should save the CREDS, if saving the credentials is
   // allowed by the run-time configuration.
   bool need_to_save = FALSE;
   apr_hash_t * creds_hash = NULL;
@@ -3514,7 +3514,7 @@ auth_simple_save_creds_helper(
           WEBDAV_CONFIG_ASK) == 0)
       {
         if (non_interactive)
-          // In non-interactive mode, the default behaviour is
+          // In non-interactive mode, the default behavior is
           // to not store the password, because it is usually
           // passed on the command line.
           may_save_password = FALSE;
@@ -4037,7 +4037,7 @@ auth_ssl_client_cert_pw_file_save_creds_helper(
       {
         if (non_interactive)
         {
-          // In non-interactive mode, the default behaviour is
+          // In non-interactive mode, the default behavior is
           // to not store the passphrase
           may_save_passphrase = FALSE;
         }
@@ -9860,7 +9860,7 @@ auth_baton_init(
 //------------------------------------------------------------------------------
 // from main.c
 
-// A flag to see if we've been cancelled by the client or not.
+// A flag to see if we've been canceled by the client or not.
 static volatile atomic_t cancelled = FALSE;
 
 // Our cancellation callback.
@@ -13000,7 +13000,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
       OperationProgress->SetTransferSize(OperationProgress->LocalSize);
       OperationProgress->TransferingFile = false;
 
-      // Will we use ASCII of BINARY file tranfer?
+      // Will we use ASCII of BINARY file transfer?
       TFileMasks::TParams MaskParams;
       MaskParams.Size = Size;
 
@@ -13107,7 +13107,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
         SUSPEND_OPERATION (
           // here a message to user was displayed, which was not appropriate
           // when user refused to overwrite the file in subdirectory.
-          // hopefuly it won't be missing in other situations.
+          // hopefully it won't be missing in other situations.
           if (!FTerminal->HandleException(&E))
           {
             throw;
