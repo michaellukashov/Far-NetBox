@@ -355,42 +355,42 @@ BOOST_FIXTURE_TEST_CASE(test11, base_fixture_t)
   {
     UnicodeString str2 = ::Format(L"test: %s %d", L"lalala", 42);
     BOOST_TEST_MESSAGE("str2 = " << W2MB(str2.c_str()));
-    BOOST_CHECK_EQUAL(W2MB(str2.c_str()), std::string("test: lalala 42"));
+    BOOST_CHECK_EQUAL(0, wcscmp(str2.c_str(), L"test: lalala 42"));
   }
   {
     UnicodeString str3 = FORMAT(L"test: %s %d", L"lalala", 42);
     BOOST_TEST_MESSAGE("str3 = " << W2MB(str3.c_str()));
-    BOOST_CHECK_EQUAL(W2MB(str3.c_str()), std::string("test: lalala 42"));
+    BOOST_CHECK_EQUAL(0, wcscmp(str3.c_str(), L"test: lalala 42"));
   }
   {
     UnicodeString str = ::TrimLeft(L"");
     BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
-    BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string(""));
+    BOOST_CHECK_EQUAL(0, wcscmp(str.c_str(), L""));
   }
   {
     UnicodeString str = ::TrimLeft(L"1");
     BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
-    BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string("1"));
+    BOOST_CHECK_EQUAL(0, wcscmp(str.c_str(), L"1"));
   }
   {
     UnicodeString str = ::TrimLeft(L" 1");
     BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
-    BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string("1"));
+    BOOST_CHECK_EQUAL(0, wcscmp(str.c_str(), L"1"));
   }
   {
     UnicodeString str = ::TrimRight(L"");
     BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
-    BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string(""));
+    BOOST_CHECK_EQUAL(0, wcscmp(str.c_str(), L""));
   }
   {
     UnicodeString str = ::TrimRight(L"1");
     BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
-    BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string("1"));
+    BOOST_CHECK_EQUAL(0, wcscmp(str.c_str(), L"1"));
   }
   {
     UnicodeString str = ::TrimRight(L"1 ");
     BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
-    BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string("1"));
+    BOOST_CHECK_EQUAL(0, wcscmp(str.c_str(), L"1"));
   }
   {
     // UnicodeString CutToChar(UnicodeString &Str, char Ch, bool Trim)
@@ -400,27 +400,27 @@ BOOST_FIXTURE_TEST_CASE(test11, base_fixture_t)
     BOOST_TEST_MESSAGE("Str1 = '" << W2MB(Str1.c_str()) << "'");
     // BOOST_TEST_MESSAGE("Str1 = '" << W2MB(Str1.c_str()) << "'");
     // DEBUG_PRINTF(L"str1 = \"%s\"", str1.c_str());
-    BOOST_CHECK_EQUAL(W2MB(str1.c_str()), std::string(" part 1 "));
+    BOOST_CHECK_EQUAL(0, wcscmp(str1.c_str(), L" part 1 "));
 
     UnicodeString str2 = ::CutToChar(Str1, '|', true);
     BOOST_TEST_MESSAGE("str2 = '" << W2MB(str2.c_str()) << "'");
     BOOST_TEST_MESSAGE("Str1 = '" << W2MB(Str1.c_str()) << "'");
-    BOOST_CHECK_EQUAL(W2MB(str2.c_str()), std::string(" part 2"));
+    BOOST_CHECK_EQUAL(0, wcscmp(str2.c_str(), L" part 2"));
   }
   {
     UnicodeString str = ::LoadStr(CONST_TEST_STRING);
     BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
-    BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string("test string: \"%s\" %d"));
+    BOOST_CHECK_EQUAL(0, wcscmp(str.c_str(), L"test string: \"%s\" %d"));
   }
   {
     UnicodeString str = ::LoadStrPart(CONST_TEST_STRING2, 1);
     BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
-    BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string("test string part 1"));
+    BOOST_CHECK_EQUAL(0, wcscmp(str.c_str(), L"test string part 1"));
   }
   {
     UnicodeString str = ::LoadStrPart(CONST_TEST_STRING2, 2);
     BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
-    BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string("part 2"));
+    BOOST_CHECK_EQUAL(0, wcscmp(str.c_str(), L"part 2"));
   }
 }
 
