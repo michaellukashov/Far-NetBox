@@ -8,15 +8,6 @@
 
 #pragma warning(push, 1)
 
-#include <string>
-#include <vector>
-#include <list>
-#include <map>
-#include <set>
-#include <iterator>
-#include <algorithm>
-#include <assert.h>
-
 #include <rtlconsts.h>
 #include <headers.hpp>
 #include <CppProperties.h>
@@ -44,7 +35,7 @@ extern const int UnixDateDelta;
 extern const UnicodeString kernel32;
 //---------------------------------------------------------------------------
 UnicodeString MB2W(const char * src, const UINT cp = CP_ACP);
-std::string W2MB(const wchar_t * src, const UINT cp = CP_ACP);
+AnsiString W2MB(const wchar_t * src, const UINT cp = CP_ACP);
 //---------------------------------------------------------------------------
 intptr_t __cdecl debug_printf(const wchar_t * format, ...);
 intptr_t __cdecl debug_printf2(const char * format, ...);
@@ -208,10 +199,10 @@ private:
 
 class TObjectList : public TList
 {
-  typedef TList parent;
 public:
   TObjectList();
   virtual ~TObjectList();
+
   TObject * operator [](intptr_t Index) const;
   TObject *& GetItem(intptr_t Index);
   void SetItem(intptr_t Index, TObject * Value);
@@ -223,8 +214,8 @@ public:
   void Insert(intptr_t Index, TObject * Value);
   intptr_t IndexOf(TObject * Value) const;
   virtual void Clear();
-  bool GetOwnsObjects() const;
-  void SetOwnsObjects(bool Value);
+  inline bool GetOwnsObjects() const;
+  inline void SetOwnsObjects(bool Value);
   virtual void Sort(CompareFunc func);
   virtual void Notify(void * Ptr, TListNotification Action);
 
@@ -240,6 +231,7 @@ private:
 
 public:
   IndexedProperty2<intptr_t, TObject *, TObjectList, &TObjectList::PropertyGetItem, &TObjectList::PropertySetItem > Items;
+
 private:
   bool FOwnsObjects;
 };
@@ -290,7 +282,7 @@ public:
   UnicodeString GetDelimitedText();
   void SetDelimitedText(const UnicodeString & Value);
   virtual intptr_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2);
-  int GetUpdateCount() const { return FUpdateCount; }
+  intptr_t GetUpdateCount() const { return FUpdateCount; }
   virtual void Assign(TPersistent * Source);
   virtual intptr_t GetCount() const = 0;
 
@@ -372,13 +364,14 @@ protected:
   TDuplicatesEnum FDuplicates;
   wchar_t FDelimiter;
   wchar_t FQuoteChar;
-  int FUpdateCount;
+  intptr_t FUpdateCount;
 };
 
 struct TStringItem
 {
   TStringItem() : FString(), FObject(NULL) {}
   ~TStringItem() { FString.Clear(); FObject = NULL; }
+
   UnicodeString FString;
   TObject * FObject;
 };
@@ -389,30 +382,30 @@ typedef intptr_t (TStringListSortCompare)(TStringList * List, intptr_t Index1, i
 
 class TStringList : public TStrings
 {
-  typedef TStrings parent;
   friend intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2);
 
 public:
   TStringList();
   virtual ~TStringList();
-  virtual void Assign(TPersistent * Source);
-  virtual void Clear();
+
   intptr_t Add(const UnicodeString & S);
   intptr_t AddObject(const UnicodeString & S, TObject * AObject);
-  virtual bool Find(const UnicodeString & S, intptr_t & Index);
-  virtual intptr_t IndexOf(const UnicodeString & S);
-  virtual void Delete(intptr_t Index);
-  virtual void InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
-  void InsertItem(intptr_t Index, const UnicodeString & S, TObject * AObject);
-  virtual void Sort();
-  virtual void CustomSort(TStringListSortCompare ACompareFunc);
-  void QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
-
   void LoadFromFile(const UnicodeString & FileName);
   TNotifyEvent & GetOnChange() { return FOnChange; }
   void SetOnChange(TNotifyEvent OnChange) { FOnChange = OnChange; }
   TNotifyEvent & GetOnChanging() { return FOnChanging; }
   void SetOnChanging(TNotifyEvent onChanging) { FOnChanging = onChanging; }
+  void InsertItem(intptr_t Index, const UnicodeString & S, TObject * AObject);
+  void QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
+
+  virtual void Assign(TPersistent * Source);
+  virtual void Clear();
+  virtual bool Find(const UnicodeString & S, intptr_t & Index);
+  virtual intptr_t IndexOf(const UnicodeString & S);
+  virtual void Delete(intptr_t Index);
+  virtual void InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
+  virtual void Sort();
+  virtual void CustomSort(TStringListSortCompare ACompareFunc);
 
   virtual void SetUpdateState(bool Updating);
   virtual void Changing();
@@ -437,15 +430,17 @@ private:
   TStringItemList FList;
   bool FSorted;
   bool FCaseSensitive;
+
 private:
   void ExchangeItems(intptr_t Index1, intptr_t Index2);
+
 private:
   TStringList(const TStringList &);
   TStringList & operator=(const TStringList &);
 };
 
 /// TDateTime: number of days since 12/30/1899
-class TDateTime
+class TDateTime : public TObject
 {
 public:
   TDateTime() :
@@ -528,7 +523,7 @@ TDateTime Now();
 
 //---------------------------------------------------------------------------
 
-class TSHFileInfo
+class TSHFileInfo : public TObject
 {
 public:
   TSHFileInfo();
@@ -650,10 +645,12 @@ public:
   virtual __int64 Write(const void * Buffer, __int64 Count);
 
   void * GetMemory() { return FMemory; }
+
 protected:
   void SetPointer(void * Ptr, __int64 Size);
   virtual void * Realloc(__int64 & NewCapacity);
   __int64 GetCapacity() const { return FCapacity; }
+
 private:
   void SetCapacity(__int64 NewCapacity);
 private:

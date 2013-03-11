@@ -63,7 +63,7 @@ extern const wchar_t NationalVars[NationalVarCount][15];
 
 class TSessionData;
 //---------------------------------------------------------------------------
-class TCommandSet
+class TCommandSet : public TObject
 {
 private:
   TCommandType CommandSet[ShellCommandCount];

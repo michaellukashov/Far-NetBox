@@ -94,7 +94,7 @@ TStrings * ExceptionToMessages(Exception * E)
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 #pragma warn -inl
-class TSessionActionRecord
+class TSessionActionRecord : public TObject
 {
 public:
   explicit TSessionActionRecord(TActionLog * Log, TLogAction Action) :

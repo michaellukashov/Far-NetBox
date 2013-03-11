@@ -217,7 +217,7 @@ public:
   void SetSessionReopenAutoMaximumNumberOfRetries(int Value);
 };
 //---------------------------------------------------------------------------
-class TShortCuts
+class TShortCuts : public TObject
 {
 public:
   void Add(TShortCut ShortCut);

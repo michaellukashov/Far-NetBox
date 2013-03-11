@@ -19,7 +19,7 @@ typedef UINT_PTR SOCKET;
 typedef std::set<SOCKET> TSockets;
 struct TPuttyTranslation;
 //---------------------------------------------------------------------------
-class TSecureShell
+class TSecureShell : public TObject
 {
 friend class TPoolForDataEvent;
 

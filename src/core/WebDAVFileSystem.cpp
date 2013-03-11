@@ -11672,7 +11672,7 @@ neon_open(
   }
 
   {
-    static std::string useragent = "NetBox/" + W2MB(NETBOX_VERSION_NUMBER.c_str());
+    static AnsiString useragent = "NetBox/" + W2MB(NETBOX_VERSION_NUMBER.c_str());
     ne_set_useragent(sess, useragent.c_str());
   }
 
@@ -12134,7 +12134,7 @@ neon_init(
 //------------------------------------------------------------------------------
 class TSessionData;
 //------------------------------------------------------------------------------
-class TWebDAVFileListHelper
+class TWebDAVFileListHelper : public TObject
 {
 public:
   explicit TWebDAVFileListHelper(TWebDAVFileSystem * FileSystem, TRemoteFileList * FileList,

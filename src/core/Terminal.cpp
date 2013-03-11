@@ -400,7 +400,7 @@ void TTunnelUI::Closed()
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-class TCallbackGuard
+class TCallbackGuard : public TObject
 {
 public:
   inline TCallbackGuard(TTerminal * FTerminal);
@@ -3966,7 +3966,7 @@ void TTerminal::AnyCommand(const UnicodeString & Command,
 {
   CALLSTACK;
 
-  class TOutputProxy
+  class TOutputProxy : public TObject
   {
   public:
     TOutputProxy(TCallSessionAction & Action, TCaptureOutputEvent OutputEvent) :

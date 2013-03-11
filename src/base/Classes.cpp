@@ -316,57 +316,57 @@ TObjectList::~TObjectList()
 
 TObject * TObjectList::operator [](intptr_t Index) const
 {
-  return static_cast<TObject *>(parent::operator[](Index));
+  return static_cast<TObject *>(TList::operator[](Index));
 }
 
 TObject *& TObjectList::GetItem(intptr_t Index)
 {
-  return reinterpret_cast<TObject *&>(parent::GetItem(Index));
+  return reinterpret_cast<TObject *&>(TList::GetItem(Index));
 }
 
 void TObjectList::SetItem(intptr_t Index, TObject * Value)
 {
-  parent::SetItem(Index, Value);
+  TList::SetItem(Index, Value);
 }
 
 intptr_t TObjectList::Add(TObject * Value)
 {
-  return parent::Add(Value);
+  return TList::Add(Value);
 }
 
 intptr_t TObjectList::Remove(TObject * Value)
 {
-  return parent::Remove(Value);
+  return TList::Remove(Value);
 }
 
 void TObjectList::Extract(TObject * Value)
 {
-  parent::Extract(Value);
+  TList::Extract(Value);
 }
 
 void TObjectList::Move(intptr_t Index, intptr_t To)
 {
-  parent::Move(Index, To);
+  TList::Move(Index, To);
 }
 
 void TObjectList::Delete(intptr_t Index)
 {
-  parent::Delete(Index);
+  TList::Delete(Index);
 }
 
 void TObjectList::Insert(intptr_t Index, TObject * Value)
 {
-  parent::Insert(Index, Value);
+  TList::Insert(Index, Value);
 }
 
 intptr_t TObjectList::IndexOf(TObject * Value) const
 {
-  return parent::IndexOf(Value);
+  return TList::IndexOf(Value);
 }
 
 void TObjectList::Clear()
 {
-  parent::Clear();
+  TList::Clear();
 }
 
 bool TObjectList::GetOwnsObjects() const
@@ -381,7 +381,7 @@ void TObjectList::SetOwnsObjects(bool Value)
 
 void TObjectList::Sort(CompareFunc func)
 {
-  parent::Sort(func);
+  TList::Sort(func);
 }
 
 void TObjectList::Notify(void * Ptr, TListNotification Action)
@@ -394,7 +394,7 @@ void TObjectList::Notify(void * Ptr, TListNotification Action)
       delete static_cast<TObject *>(Ptr);
     }
   }
-  parent::Notify(Ptr, Action);
+  TList::Notify(Ptr, Action);
 }
 
 //---------------------------------------------------------------------------
@@ -869,7 +869,7 @@ TStringList::~TStringList()
 
 void TStringList::Assign(TPersistent * Source)
 {
-  parent::Assign(Source);
+  TStrings::Assign(Source);
 }
 
 intptr_t TStringList::GetCount() const
@@ -952,7 +952,7 @@ intptr_t TStringList::IndexOf(const UnicodeString & S)
   intptr_t Result = NPOS;
   if (!GetSorted())
   {
-    Result = parent::IndexOf(S);
+    Result = TStrings::IndexOf(S);
   }
   else
   {
@@ -980,10 +980,10 @@ void TStringList::PutString(intptr_t Index, const UnicodeString & S)
   if (Index < static_cast<intptr_t>(FList.size()))
   {
     TObject * Temp = GetObjects(Index);
-    TStringItem item;
-    item.FString = S;
-    item.FObject = Temp;
-    FList[Index] = item;
+    TStringItem Item;
+    Item.FString = S;
+    Item.FObject = Temp;
+    FList[Index] = Item;
   }
   else
   {
@@ -1173,10 +1173,10 @@ void TStringList::Insert(intptr_t Index, const UnicodeString & S)
   {
     Classes::Error(SListIndexError, Index);
   }
-  TStringItem item;
-  item.FString = S;
-  item.FObject = NULL;
-  FList.insert(FList.begin() + Index, item);
+  TStringItem Item;
+  Item.FString = S;
+  Item.FObject = NULL;
+  FList.insert(FList.begin() + Index, Item);
   Changed();
 }
 
@@ -1271,14 +1271,14 @@ UnicodeString MB2W(const char * src, const UINT cp)
   }
 
   intptr_t reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
-  std::wstring wide(reqLength, 0);
+  UnicodeString Result;
   if (reqLength)
   {
-    wide.resize(reqLength);
-    MultiByteToWideChar(cp, 0, src, -1, &wide[0], static_cast<int>(reqLength));
-    wide.resize(wide.size() - 1);  //remove NULL character
+    Result.SetLength(reqLength);
+    MultiByteToWideChar(cp, 0, src, -1, (LPWSTR)Result.c_str(), static_cast<int>(reqLength));
+    Result.SetLength(Result.Length() - 1);  //remove NULL character
   }
-  return UnicodeString(wide.c_str());
+  return Result; // .c_str();
 }
 
 /**
@@ -1287,23 +1287,23 @@ UnicodeString MB2W(const char * src, const UINT cp)
  * @param $cp code page
  * @return multibyte std::string
  */
-std::string W2MB(const wchar_t * src, const UINT cp)
+AnsiString W2MB(const wchar_t * src, const UINT cp)
 {
   // assert(src);
   if (!src || !*src)
   {
-    return std::string("");
+    return AnsiString("");
   }
 
   intptr_t reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, NULL, NULL);
-  std::string mb(reqLength, 0);
+  AnsiString Result;
   if (reqLength)
   {
-    mb.resize(reqLength);
-    WideCharToMultiByte(cp, 0, src, -1, &mb[0], static_cast<int>(reqLength), NULL, NULL);
-    mb.resize(mb.length() - 1);  //remove NULL character
+    Result.SetLength(reqLength);
+    WideCharToMultiByte(cp, 0, src, -1, (LPSTR)Result.c_str(), static_cast<int>(reqLength), NULL, NULL);
+    Result.SetLength(Result.Length() - 1);  //remove NULL character
   }
-  return mb.c_str();
+  return Result; //.c_str();
 }
 
 //---------------------------------------------------------------------------

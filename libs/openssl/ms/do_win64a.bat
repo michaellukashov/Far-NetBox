@@ -1,7 +1,7 @@
 perl util\mkfiles.pl >MINFO
 
 cmd /c "nasm -f win64 -v" >NUL: 2>&1
-if %errorlevel% neq 0 goto ml64
+if not %errorlevel% == 0 goto ml64
 
 perl ms\uplink-x86_64.pl nasm > ms\uptable.asm
 nasm -f win64 -o ms\uptable.obj ms\uptable.asm

@@ -298,7 +298,7 @@ public:
 
 class CMainThread;
 class CFileZillaTools;
-class CFileZillaApi  
+class CFileZillaApi : public TObject
 {
 public:
 	BOOL IsValid() const;

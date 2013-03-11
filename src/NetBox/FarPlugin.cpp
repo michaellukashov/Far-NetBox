@@ -307,6 +307,10 @@ intptr_t TCustomFarPlugin::Configure(const struct ConfigureInfo *Info)
 //---------------------------------------------------------------------------
 void * TCustomFarPlugin::OpenPlugin(const struct OpenInfo *Info)
 {
+#ifdef USE_DLMALLOC
+  // dlmallopt(M_GRANULARITY, 128 * 1024);
+#endif
+
   try
   {
     ResetCachedInfo();
@@ -360,6 +364,9 @@ void TCustomFarPlugin::ClosePanel(void * Plugin)
     }
     );
     delete FileSystem;
+#ifdef USE_DLMALLOC
+    // dlmalloc_trim(0); // 64 * 1024);
+#endif
   }
   catch(Exception & E)
   {

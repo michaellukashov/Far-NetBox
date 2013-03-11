@@ -5,7 +5,7 @@
 #ifndef NO_FILEZILLA
 #define TRACE_FZAPI NOTRACING
 //---------------------------------------------------------------------------
-#include <list>
+#include <deque>
 #ifndef MPEXT
 #define MPEXT
 #endif
@@ -165,7 +165,7 @@ bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-class TMessageQueue : public std::list<std::pair<WPARAM, LPARAM> > //, custom_nballocator_t<std::pair<WPARAM, LPARAM> > >
+class TMessageQueue : public TObject, public std::deque<std::pair<WPARAM, LPARAM> > // , custom_nballocator_t<std::pair<WPARAM, LPARAM> > >
 {
 };
 //---------------------------------------------------------------------------
@@ -206,7 +206,7 @@ struct TSinkFileParams
 };
 #endif
 //---------------------------------------------------------------------------
-class TFTPFileListHelper
+class TFTPFileListHelper : public TObject
 {
 public:
   explicit TFTPFileListHelper(TFTPFileSystem * FileSystem, TRemoteFileList * FileList,
@@ -724,7 +724,7 @@ void TFTPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
   try
   {
     // For changing directory, we do not make paths absolute, instead we
-    // delegate this to the server, hence we sychronize current working
+    // delegate this to the server, hence we synchronize current working
     // directory with the server and only then we ask for the change with
     // relative path.
     // But if synchronization fails, typically because current working directory
@@ -1919,7 +1919,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
 {
   CALLSTACK;
   // ask the server for current directory on startup only
-  // and immediatelly after call to CWD,
+  // and immediately after call to CWD,
   // later our current directory may be not synchronized with FZAPI current
   // directory anyway, see comments in EnsureLocation
   if (FCurrentDirectory.IsEmpty())
@@ -2522,7 +2522,7 @@ bool TFTPFileSystem::ProcessMessage()
     }
     else
     {
-      // now we are perfecly sure that the queue is empty as it is locked,
+      // now we are perfectly sure that the queue is empty as it is locked,
       // so reset the event
       ResetEvent(FQueueEvent);
     }
@@ -3298,7 +3298,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
     if (RequestResult == TFileZillaIntf::FILEEXISTS_SKIP)
     {
       // when user chooses not to overwrite, break loop waiting for response code
-      // by setting dummy one, az FZAPI won't do anything then
+      // by setting dummy one, as FZAPI won't do anything then
       SetLastCode(DummyTimeoutCode);
     }
 
@@ -3319,7 +3319,7 @@ struct TClipboardHandler
 };
 #endif
 //---------------------------------------------------------------------------
-UnicodeString FormatContactList(UnicodeString Entry1, UnicodeString Entry2)
+static UnicodeString FormatContactList(const UnicodeString & Entry1, const UnicodeString & Entry2)
 {
   if (!Entry1.IsEmpty() && !Entry2.IsEmpty())
   {
@@ -3810,7 +3810,7 @@ bool TFTPFileSystem::CheckError(int ReturnCode, const wchar_t * Context)
 {
   CALLSTACK;
   // we do not expect any FZAPI call to fail as it generally can fail only due to:
-  // - invalid paramerers
+  // - invalid parameters
   // - busy FZAPI core
   // the only exception is REPLY_NOTCONNECTED that can happen if
   // connection is closed just between the last call to Idle()

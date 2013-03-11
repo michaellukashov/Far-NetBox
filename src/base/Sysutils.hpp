@@ -72,7 +72,7 @@ public:
 void RaiseLastOSError();
 //---------------------------------------------------------------------------
 
-struct TFormatSettings
+struct TFormatSettings : public TObject
 {
 private:
   // typedef StaticArray<UnicodeString, 12> _TFormatSettings__1;
