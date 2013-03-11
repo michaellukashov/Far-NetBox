@@ -214,8 +214,8 @@ public:
   void Insert(intptr_t Index, TObject * Value);
   intptr_t IndexOf(TObject * Value) const;
   virtual void Clear();
-  inline bool GetOwnsObjects() const;
-  inline void SetOwnsObjects(bool Value);
+  bool GetOwnsObjects() const { return FOwnsObjects; }
+  void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
   virtual void Sort(CompareFunc func);
   virtual void Notify(void * Ptr, TListNotification Action);
 
