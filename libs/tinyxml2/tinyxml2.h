@@ -1941,7 +1941,7 @@ private:
 
     bool _elementJustOpened;
     bool _firstElement;
-    std::FILE* fp;
+    std::FILE* _fp;
     int _depth;
     int _textDepth;
     bool _processEntities;
