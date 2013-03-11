@@ -369,16 +369,6 @@ void TObjectList::Clear()
   TList::Clear();
 }
 
-bool TObjectList::GetOwnsObjects() const
-{
-  return FOwnsObjects;
-}
-
-void TObjectList::SetOwnsObjects(bool Value)
-{
-  FOwnsObjects = Value;
-}
-
 void TObjectList::Sort(CompareFunc func)
 {
   TList::Sort(func);

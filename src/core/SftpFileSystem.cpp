@@ -618,7 +618,7 @@ public:
     {
       unsigned char FXType = GetByte();
       // -:regular, D:directory, L:symlink, S:special, U:unknown
-      // O:socket, C:char devide, B:block device, F:fifo
+      // O:socket, C:char device, B:block device, F:fifo
 
       // SSH-2.0-cryptlib returns file type 0 in response to SSH_FXP_LSTAT,
       // handle this undefined value as "unknown"
@@ -1442,7 +1442,7 @@ protected:
           __int64 PrevBufSize = BlockBuf.GetSize();
           BlockBuf.Convert(FTerminal->GetConfiguration()->GetLocalEOLType(),
             FFileSystem->GetEOL(), cpRemoveCtrlZ | cpRemoveBOM, FConvertToken);
-          // update transfer size with difference arised from EOL conversion
+          // update transfer size with difference araised from EOL conversion
           OperationProgress->ChangeTransferSize(OperationProgress->TransferSize -
             PrevBufSize + BlockBuf.GetSize());
         }
@@ -1940,7 +1940,7 @@ bool TSFTPFileSystem::IsCapable(intptr_t Capability) const
       return SupportsExtension(SFTP_EXT_OWNER_GROUP);
 
     case fcLoadingAdditionalProperties:
-      // we allow loading properties only, if "suported" extension is supported and
+      // we allow loading properties only, if "supported" extension is supported and
       // the server support "permissions" and/or "owner/group" attributes
       // (no other attributes are loaded)
       return FSupport->Loaded &&

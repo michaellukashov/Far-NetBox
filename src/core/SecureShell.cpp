@@ -401,7 +401,7 @@ void TSecureShell::Init()
         TRACE("1");
         if (Configuration->GetActualLogProtocol() >= 1)
         {
-          LogEvent(L"Waiting for the server to continue with the initialisation");
+          LogEvent(L"Waiting for the server to continue with the initialization");
         }
         WaitForData();
       }
@@ -506,7 +506,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     PromptTranslation = UsernamePromptTranslation;
     PromptKind = pkUserName;
   }
-  else if (Index == 1) // passhrase
+  else if (Index == 1) // passphrase
   {
     TRACE("3");
     static const TPuttyTranslation PassphrasePromptTranslation[] = {
@@ -1334,7 +1334,7 @@ void TSecureShell::UpdateSocket(SOCKET value, bool Startup)
   if (!FActive && !Startup)
   {
     // no-op
-    // Remove the branch eventualy:
+    // Remove the branch eventually:
     // When TCP connection fails, PuTTY does not release the memory allocated for
     // socket. As a simple hack we call sk_tcp_close() in ssh.c to release the memory,
     // until they fix it better. Unfortunately sk_tcp_close calls do_select,
@@ -1492,7 +1492,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result)
       }
 
       // in extreme condition it may happen that send buffer is full, but there
-      // will be no data comming and we may not empty the send buffer because we
+      // will be no data coming and we may not empty the send buffer because we
       // do not process FD_WRITE until we receive any FD_READ
       if (EventSelectLoop(0, false, &Events))
       {

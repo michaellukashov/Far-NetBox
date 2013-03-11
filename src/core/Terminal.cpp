@@ -448,7 +448,7 @@ void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg)
   assert(FGuarding);
 
   // make sure we do not bother about getting back the silent abort exception
-  // we issued outselves. this may happen when there is an exception handler
+  // we issued ourselves. this may happen when there is an exception handler
   // that converts any exception to fatal one (such as in TTerminal::Open).
   if (dynamic_cast<ECallbackGuardAbort *>(E) == NULL)
   {
@@ -458,7 +458,7 @@ void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg)
   }
 
   // silently abort what we are doing.
-  // non-silent exception would be catched probably by default application
+  // non-silent exception would be caught probably by default application
   // exception handler, which may not do an appropriate action
   // (particularly it will not resume broken transfer).
   throw ECallbackGuardAbort();
@@ -1182,7 +1182,7 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
 bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts, TStrings * Results)
 {
-  // If PromptUser is overriden in descendant class, the overriden version
+  // If PromptUser is overridden in descendant class, the overridden version
   // is not called when accessed via TSessionIU interface.
   // So this is workaround.
   return DoPromptUser(Data, Kind, Name, Instructions, Prompts, Results);
@@ -2057,7 +2057,7 @@ uintptr_t TTerminal::CommandError(Exception * E, const UnicodeString & Msg,
   }
   else
   {
-    // small hack to anable "skip to all" for COMMAND_ERROR_ARI
+    // small hack to enable "skip to all" for COMMAND_ERROR_ARI
     bool CanSkip = FLAGSET(Answers, qaSkip) && (GetOperationProgress() != NULL);
     if (CanSkip && GetOperationProgress()->SkipToAll)
     {
@@ -2507,7 +2507,7 @@ void TTerminal::ReadCurrentDirectory()
           FLastDirectoryChange, CurrentDirectory);
       }
       // not to broke the cache, if the next directory change would not
-      // be initialited by ChangeDirectory(), which sets it
+      // be initialized by ChangeDirectory(), which sets it
       // (HomeDirectory() particularly)
       FLastDirectoryChange = L"";
     }
@@ -3906,8 +3906,8 @@ bool TTerminal::AllowedAnyCommand(const UnicodeString & Command)
 //------------------------------------------------------------------------------
 bool TTerminal::GetCommandSessionOpened()
 {
-  // consider secodary terminal open in "ready" state only
-  // so we never do keepalives on it until it is completelly initialised
+  // consider secondary terminal open in "ready" state only
+  // so we never do keepalives on it until it is completely initialized
   return (FCommandSession != NULL) &&
     (FCommandSession->GetStatus() == ssOpened);
 }
@@ -3922,7 +3922,7 @@ TTerminal * TTerminal::GetCommandSession()
 
   if (FCommandSession == NULL)
   {
-    // transaction cannot be started yet to allow proper matching transation
+    // transaction cannot be started yet to allow proper matching transaction
     // levels between main and command session
     assert(FInTransaction == 0);
 
