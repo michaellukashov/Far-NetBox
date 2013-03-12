@@ -54,7 +54,8 @@
 
 // Class DynamicQueue makes a dynamic array which can grow as new data are added
 template <typename TX>
-class DynamicQueue {
+class DynamicQueue
+{
 public:
    DynamicQueue();                               // Constructor
    ~DynamicQueue();                              // Destructor
@@ -67,7 +68,7 @@ public:
    TX & operator[] (int i);                      // Access object with index i from the tail
    // Define desired allocation size
    enum DefineSize {
-      AllocateSpace = 1024                       // Minimum size, in bytes, of automatic re-allocation done by Put
+      AllocateSpace = 64 * 1024                       // Minimum size, in bytes, of automatic re-allocation done by Put
    };
 private:
    TX * Buffer;                                  // Buffer containing data
