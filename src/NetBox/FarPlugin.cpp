@@ -372,7 +372,7 @@ void TCustomFarPlugin::HandleFileSystemException(
   TCustomFarFileSystem * FileSystem, Exception * E, int OpMode)
 {
   // This method is called as last-resort exception handler before
-  // leaving plugin API. Especially for API fuctions that must update
+  // leaving plugin API. Especially for API functions that must update
   // panel contents on themselves (like ProcessKey), the instance of filesystem
   // may not exists anymore.
   // Check against object pointer is stupid, but no other idea so far.
