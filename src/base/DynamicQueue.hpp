@@ -60,7 +60,7 @@ public:
    ~DynamicQueue();                              // Destructor
    void Reserve(int num);                        // Allocate buffer for num objects
    int GetNum(){return NumEntries;};             // Get number of objects stored
-   bool empty() {return GetNum() == 0; };             // Get number of objects stored
+   bool IsEmpty() {return GetNum() == 0; };             // Get number of objects stored
    int GetMaxNum(){return MaxNum;};              // Get number of objects that can be stored without re-allocating memory
    void Put(TX const & obj);                     // Add object to head of queue
    TX Get();                                     // Take object out from tail of queue

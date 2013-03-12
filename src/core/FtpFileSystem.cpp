@@ -2528,7 +2528,7 @@ bool TFTPFileSystem::ProcessMessage()
     TGuard Guard(FQueueCriticalSection);
 
     TRACE("1");
-    Result = !FQueue->empty();
+    Result = !FQueue->IsEmpty();
     if (Result)
     {
       Message = FQueue->Get();
