@@ -176,7 +176,7 @@ struct message_t
 };
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-class TMessageQueue : public TObject, public DynamicQueue<message_t> // public std::deque<std::pair<WPARAM, LPARAM> > // , custom_nballocator_t<std::pair<WPARAM, LPARAM> > >
+class TMessageQueue : public TObject, public DynamicQueue<message_t>
 {
 public:
   typedef message_t value_type;
@@ -281,7 +281,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   FServerCapabilities(NULL)
 {
   CALLSTACK;
-  FQueue->Reserve(10000);
+  FQueue->Reserve(1000);
 }
 
 void TFTPFileSystem::Init(void *)
@@ -2512,7 +2512,6 @@ bool TFTPFileSystem::PostMessage(unsigned int Type, WPARAM wParam, LPARAM lParam
   TGuard Guard(FQueueCriticalSection);
 
   TRACEFMT("1 [%x] (%x) [%x]", int(wParam), int((wParam >> 16) & 0xFFFF), int(lParam));
-  // FQueue->push_back(TMessageQueue::value_type(wParam, lParam));
   FQueue->Put(TMessageQueue::value_type(wParam, lParam));
   SetEvent(FQueueEvent);
 
@@ -2533,7 +2532,6 @@ bool TFTPFileSystem::ProcessMessage()
     if (Result)
     {
       Message = FQueue->Get();
-      // FQueue->pop_front();
     }
     else
     {
