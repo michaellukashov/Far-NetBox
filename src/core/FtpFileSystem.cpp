@@ -281,7 +281,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   FServerCapabilities(NULL)
 {
   CALLSTACK;
-  FQueue->Reserve(1000);
+  FQueue->Reserve(10000);
 }
 
 void TFTPFileSystem::Init(void *)

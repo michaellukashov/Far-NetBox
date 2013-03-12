@@ -49,6 +49,8 @@
 #include <stdlib.h>                              // For exit in Error function
 #include <stdio.h>                               // Needed for example only
 
+#include <headers.hpp>
+
 
 // Class DynamicQueue makes a dynamic array which can grow as new data are added
 template <typename TX>
@@ -109,7 +111,7 @@ void DynamicQueue<TX>::Reserve(int num) {
       if (num <= 0) {
          if (num < 0) Error(1, num);
          // num = 0. Discard data and de-allocate buffer
-         if (Buffer) delete[] Buffer;            // De-allocate buffer
+         if (Buffer) nb_free(Buffer);            // De-allocate buffer
          Buffer = 0;                             // Reset everything
          MaxNum = NumEntries = head = tail = 0;
          return;
@@ -120,7 +122,7 @@ void DynamicQueue<TX>::Reserve(int num) {
    // num > MaxNum. Increase Buffer
    ReAllocate(num);
    // OldBuffer must be deleted after calling ReAllocate
-   if (OldBuffer) {delete[] OldBuffer;  OldBuffer = 0;}
+   if (OldBuffer) {nb_free(OldBuffer);  OldBuffer = 0;}
 }
 
 
@@ -129,10 +131,10 @@ void DynamicQueue<TX>::ReAllocate(int num) {
    // Increase size of memory buffer. 
    // This function is used only internally. 
    // Note: ReAllocate leaves OldBuffer to be deleted by the calling function
-   if (OldBuffer) delete[] OldBuffer;            // Should not occur in single-threaded applications
+   if (OldBuffer) nb_free(OldBuffer);            // Should not occur in single-threaded applications
 
    TX * Buffer2 = 0;                             // New buffer
-   Buffer2 = new TX[num];                        // Allocate new buffer
+   Buffer2 = static_cast<TX *>(nb_malloc(sizeof(TX) * num));                        // Allocate new buffer
    if (Buffer2 == 0) {Error(3,num); return;}     // Error can't allocate
    if (Buffer) {
       // A smaller buffer is previously allocated
@@ -171,7 +173,7 @@ void DynamicQueue<TX>::Put(const TX & obj) {
    // Insert new object at head
    Buffer[head] = obj;
    // Delete old buffer after copying object, in case obj was in old buffer
-   if (OldBuffer) {delete[] OldBuffer;  OldBuffer = 0;}
+   if (OldBuffer) {nb_free(OldBuffer);  OldBuffer = 0;}
    // Make head point to next vacant slot
    if (++head >= MaxNum) head = 0;
    // Count entries
