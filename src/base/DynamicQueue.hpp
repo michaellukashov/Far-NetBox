@@ -1,3 +1,4 @@
+#pragma once
 /*************************  DynamicQueue.cpp  *********************************
 * Author:        Agner Fog
 * Date created:  2008-06-12
@@ -232,8 +233,9 @@ void DynamicQueue<TX>::Error(int e, int n) {
    if ((unsigned int)e >= NumErrorTexts) e = 0;
 
    // Replace this with your own error routine, possibly with a message box:
-   fprintf(stderr, "\nDynamicArray error: %s (%i)\n", ErrorTexts[e], n);
+   // fprintf(stderr, "\nDynamicArray error: %s (%i)\n", ErrorTexts[e], n);
+   assert(false || ErrorTexts[e]);
 
    // Terminate execution
-   exit(1);
+   // exit(1);
 }
