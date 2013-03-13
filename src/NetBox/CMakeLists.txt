@@ -253,11 +253,13 @@ TARGET_LINK_LIBRARIES(NetBox ${NETBOX_LIBRARIES})
 ADD_DEPENDENCIES(NetBox
   atlmfc
   libputty
+  zlib
   libtinyxml2
   libneon
   libapr
   libexpat
-  zlib
+  dlmalloc
+  rdestl
 )
 
 # USE_PRECOMPILED_HEADER(NETBOX_SOURCES stdafx.h stdafx.cpp netbox)
