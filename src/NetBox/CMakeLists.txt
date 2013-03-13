@@ -141,6 +141,7 @@ INCLUDE_DIRECTORIES(
   ${LIBS_ROOT}/apr/include
   ${LIBS_ROOT}/apr/include/arch/win32
   ${LIBS_ROOT}/apr/include/arch/unix
+  ${LIBS_ROOT}/rdestl
 )
 
 #-------------------------------------------------------------------------------
@@ -204,6 +205,7 @@ SET(NETBOX_LIBRARIES
   libapr
   libexpat
   dlmalloc
+  rdestl
   Ws2_32.lib
   kernel32.lib
   user32.lib
@@ -531,6 +533,60 @@ ADD_LIBRARY(dlmalloc STATIC
 SET_TARGET_PROPERTIES(dlmalloc
   PROPERTIES
   COMPILE_FLAGS "-D_CRTIMP= -D_LIB -DNO_MALLINFO"
+  LINK_FLAGS ${CMAKE_LINK_FLAGS}
+)
+
+#-------------------------------------------------------------------------------
+
+ADD_LIBRARY(rdestl STATIC
+  ${LIBS_ROOT}/rdestl/allocator.cpp
+  ${LIBS_ROOT}/rdestl/intrusive_list.cpp
+  ${LIBS_ROOT}/rdestl/list.cpp
+  ${LIBS_ROOT}/rdestl/intrusive_slist.cpp
+  ${LIBS_ROOT}/rdestl/slist.cpp
+  ${LIBS_ROOT}/rdestl/sort.h
+  ${LIBS_ROOT}/rdestl/string_utils.h
+  ${LIBS_ROOT}/rdestl/intrusive_list.h
+  ${LIBS_ROOT}/rdestl/sorted_vector.h
+  ${LIBS_ROOT}/rdestl/allocator.h
+  ${LIBS_ROOT}/rdestl/hash_map.h
+  ${LIBS_ROOT}/rdestl/map.h
+  ${LIBS_ROOT}/rdestl/basic_string.h
+  ${LIBS_ROOT}/rdestl/list.h
+  ${LIBS_ROOT}/rdestl/type_traits.h
+  ${LIBS_ROOT}/rdestl/intrusive_slist.h
+  ${LIBS_ROOT}/rdestl/radix_sorter.h
+  ${LIBS_ROOT}/rdestl/stack_allocator.h
+  ${LIBS_ROOT}/rdestl/utility.h
+  ${LIBS_ROOT}/rdestl/vector.h
+  ${LIBS_ROOT}/rdestl/slist.h
+  ${LIBS_ROOT}/rdestl/fixed_array.h
+  ${LIBS_ROOT}/rdestl/pair.h
+  ${LIBS_ROOT}/rdestl/algorithm.h
+  ${LIBS_ROOT}/rdestl/fixed_list.h
+  ${LIBS_ROOT}/rdestl/hash.h
+  ${LIBS_ROOT}/rdestl/alignment.h
+  ${LIBS_ROOT}/rdestl/fixed_vector.h
+  ${LIBS_ROOT}/rdestl/rb_tree.h
+  ${LIBS_ROOT}/rdestl/buffer_allocator.h
+  ${LIBS_ROOT}/rdestl/sstream.h
+  ${LIBS_ROOT}/rdestl/rdestl_common.h
+  ${LIBS_ROOT}/rdestl/stack.h
+  ${LIBS_ROOT}/rdestl/cow_string_storage.h
+  ${LIBS_ROOT}/rdestl/fixed_sorted_vector.h
+  ${LIBS_ROOT}/rdestl/functional.h
+  ${LIBS_ROOT}/rdestl/simple_string_storage.h
+  ${LIBS_ROOT}/rdestl/fixed_substring.h
+  ${LIBS_ROOT}/rdestl/int_to_type.h
+  ${LIBS_ROOT}/rdestl/rde_string.h
+  ${LIBS_ROOT}/rdestl/rdestl.h
+  ${LIBS_ROOT}/rdestl/set.h
+  ${LIBS_ROOT}/rdestl/iterator.h
+)
+
+SET_TARGET_PROPERTIES(rdestl
+  PROPERTIES
+  COMPILE_FLAGS ""
   LINK_FLAGS ${CMAKE_LINK_FLAGS}
 )
 
