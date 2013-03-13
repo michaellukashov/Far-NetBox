@@ -23,14 +23,14 @@
 
 class CServerPath;
 
-class t_directory : public TObject
+class t_directory
 {
 public:
 	t_directory();
 	~t_directory();
 	CServerPath path;
 	int num;
-	class t_direntry : public TObject
+	class t_direntry
 	{
 	public:
 		t_direntry();
