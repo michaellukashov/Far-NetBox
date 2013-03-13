@@ -1,6 +1,22 @@
 #ifndef RDESTL_ALLOCATOR_H
 #define RDESTL_ALLOCATOR_H
 
+#ifdef USE_DLMALLOC
+#include <dlmalloc/malloc-2.8.6.h>
+#endif
+
+#ifdef USE_DLMALLOC
+#define nb_malloc(size) dlmalloc(size)
+#define nb_calloc(count,size) dlcalloc(count,size)
+#define nb_realloc(ptr,size) dlrealloc(ptr,size)
+#define nb_free(ptr) dlfree(ptr)
+#else
+#define nb_malloc(size) ::malloc(size)
+#define nb_calloc(count,size) ::calloc(count,size)
+#define nb_realloc(ptr,size) ::realloc(ptr,size)
+#define nb_free(ptr) ::free(ptr)
+#endif
+
 namespace rde
 {
 
@@ -39,12 +55,14 @@ inline bool operator!=(const allocator& lhs, const allocator& rhs)
 
 inline void* allocator::allocate(unsigned int bytes, int)
 {
-	return operator new(bytes);
+	// return operator new(bytes);
+	return nb_malloc(bytes);
 }
 
 inline void allocator::deallocate(void* ptr, unsigned int)
 {
-	operator delete(ptr);
+	// operator delete(ptr);
+	nb_free(ptr);
 }
 
 } // namespace rde
