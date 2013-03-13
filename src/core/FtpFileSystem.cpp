@@ -5,7 +5,6 @@
 #ifndef NO_FILEZILLA
 #define TRACE_FZAPI NOTRACING
 //---------------------------------------------------------------------------
-#include <deque>
 #ifndef MPEXT
 #define MPEXT
 #endif

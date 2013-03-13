@@ -6,7 +6,6 @@
 #define TRACE_WRITING NOTRACING
 #define TRACE_ACCESS NOTRACING
 
-#include <vector>
 #include "Common.h"
 #include "Exceptions.h"
 #include "PuttyIntf.h"

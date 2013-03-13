@@ -5,7 +5,6 @@
 #include "Configuration.h"
 #include "CopyParam.h"
 #include "Exceptions.h"
-#include <vector>
 //---------------------------------------------------------------------------
 class TFileOperationProgressType;
 enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,

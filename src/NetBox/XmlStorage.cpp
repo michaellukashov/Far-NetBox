@@ -1,6 +1,4 @@
 //---------------------------------------------------------------------------
-#include <vector>
-
 #include <Classes.hpp>
 #include <Common.h>
 #include "XmlStorage.h"

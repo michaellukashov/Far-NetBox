@@ -2,7 +2,6 @@
 #ifndef RemoteFilesH
 #define RemoteFilesH
 //---------------------------------------------------------------------------
-#include <vector>
 #include <map>
 //---------------------------------------------------------------------------
 enum TModificationFmt { mfNone, mfMDHM, mfMDY, mfFull };

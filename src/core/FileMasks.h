@@ -2,7 +2,6 @@
 #ifndef FileMasksH
 #define FileMasksH
 //---------------------------------------------------------------------------
-#include <vector>
 #include <CoreDefs.hpp>
 #include <Masks.hpp>
 //---------------------------------------------------------------------------

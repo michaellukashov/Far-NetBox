@@ -42,10 +42,6 @@
 
 //STL includes
 #include <list>
-#include <map>
-#include <vector>
-#include <deque>
-#include <set>
 #include <algorithm>
 //---------------------------------------------------------------------------
 class CFileFix;
