@@ -234,7 +234,7 @@ RDE_FORCEINLINE short abs(short x)
 }
 
 //-----------------------------------------------------------------------------
-template<typename T> inline
+/*template<typename T> inline
 T max(const T& x, const T& y)
 {
     return x > y ? x : y;
@@ -245,7 +245,7 @@ template<typename T> inline
 T min(const T& x, const T& y)
 {
 	return x < y ? x : y;
-}
+}*/
 // @TODO: determine if it REALLY is quicker than version with branches.
 /*RDE_FORCEINLINE float min(float x, float y)
 {
