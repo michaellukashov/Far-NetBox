@@ -1067,7 +1067,7 @@ TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
   return TDateTime();
 }
 //---------------------------------------------------------------------------
-struct TDateTimeParams
+struct TDateTimeParams : public TObject
 {
   TDateTime UnixEpoch;
   double BaseDifference;
