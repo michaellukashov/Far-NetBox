@@ -224,7 +224,7 @@ public:
   bool Has(TShortCut ShortCut) const;
 
 private:
-  std::set<TShortCut, std::less<TShortCut>, custom_nballocator_t<TShortCut> > FShortCuts;
+  std::set<TShortCut> FShortCuts; // , std::less<TShortCut>, custom_nballocator_t<TShortCut> > FShortCuts;
 
 public:
   // TShortCuts(const TShortCuts & rhs)

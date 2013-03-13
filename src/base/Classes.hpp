@@ -789,7 +789,7 @@ template <class T>
 class DelphiSet : public TObject
 {
 private:
-  std::set<T, std::less<T>, custom_nballocator_t<T> > FSet;
+  std::set<T> FSet; // , std::less<T>, custom_nballocator_t<T> > FSet;
 
 public:
   DelphiSet()
@@ -919,7 +919,7 @@ public:
     if (FSet.size() != rhs.FSet.size())
       return false;
 
-    std::set<T, std::less<T>, custom_nballocator_t<T> > setDifference;
+    std::set<T> setDifference; // , std::less<T>, custom_nballocator_t<T> > setDifference;
     set_symmetric_difference(FSet.begin(), FSet.end(), rhs.FSet.begin(), rhs.FSet.end(), back_inserter(setDifference));
     return (setDifference.size() == 0);
 

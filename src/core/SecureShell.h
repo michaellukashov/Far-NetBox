@@ -16,7 +16,7 @@ struct Config;
 struct _WSANETWORKEVENTS;
 typedef struct _WSANETWORKEVENTS WSANETWORKEVENTS;
 typedef UINT_PTR SOCKET;
-typedef std::set<SOCKET, std::less<SOCKET>, custom_nballocator_t<SOCKET> > TSockets;
+typedef std::set<SOCKET> TSockets; // , std::less<SOCKET>, custom_nballocator_t<SOCKET> > TSockets;
 struct TPuttyTranslation;
 //---------------------------------------------------------------------------
 class TSecureShell : public TObject
