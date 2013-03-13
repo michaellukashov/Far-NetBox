@@ -7,7 +7,7 @@
 #pragma package(smart_init)
 //------------------------------------------------------------------------------
 // auto_ptr-like class
-class TProgramParamsOwner
+class TProgramParamsOwner : public TObject
 {
 public:
   TProgramParamsOwner() :

@@ -64,7 +64,7 @@ struct TCopyParamRuleData
   void Default();
 };
 //---------------------------------------------------------------------------
-class TCopyParamRule
+class TCopyParamRule : public TObject
 {
 public:
   explicit TCopyParamRule();
@@ -90,7 +90,7 @@ private:
     const UnicodeString & Value, bool Path, bool Local = true) const;
 };
 //---------------------------------------------------------------------------
-class TCopyParamList
+class TCopyParamList : public TObject
 {
 friend class TGUIConfiguration;
 public:

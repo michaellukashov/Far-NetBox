@@ -45,7 +45,7 @@ class TDiscMonitor;
 //---------------------------------------------------------------------------
 enum TSynchronizeOperation { soUpload, soDelete };
 //---------------------------------------------------------------------------
-class TSynchronizeController
+class TSynchronizeController : public TObject
 {
 public:
   explicit TSynchronizeController(TSynchronizeEvent AOnSynchronize,

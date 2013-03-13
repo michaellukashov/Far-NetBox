@@ -5,7 +5,7 @@
 namespace Masks
 {
 
-class TMask
+class TMask : public TObject
 {
 public:
   explicit TMask(const UnicodeString & Mask)

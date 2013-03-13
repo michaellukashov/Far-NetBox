@@ -781,7 +781,7 @@ private:
 // from wxvcl\sysset.h
 
 template <class T>
-class DelphiSet
+class DelphiSet : public TObject
 {
 private:
   std::set<T> FSet;
@@ -1000,7 +1000,7 @@ inline double Trunc(double Value) { double intpart; modf(Value, &intpart); retur
 inline double Frac(double Value) { double intpart; return modf(Value, &intpart); }
 inline double Abs(double Value) { return fabs(Value); }
 //---------------------------------------------------------------------------
-class TCustomIniFile
+class TCustomIniFile : public TObject
 {
 public:
   TCustomIniFile() {}
