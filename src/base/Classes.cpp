@@ -246,7 +246,7 @@ void TList::Clear()
   SetCount(0);
 }
 
-void QuickSort(std::vector<void *, custom_nballocator_t<void *> > & SortList, intptr_t L, intptr_t R,
+void QuickSort(rde::vector<void *> & SortList, intptr_t L, intptr_t R,
   CompareFunc SCompare)
 {
   intptr_t I;
@@ -534,7 +534,7 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
   TRY_FINALLY (
   {
     Clear();
-    std::vector<std::wstring> lines;
+    rde::vector<std::wstring> lines;
     std::wstring delim = std::wstring(1, GetDelimiter());
     delim.append(1, L'\n');
     std::wstring StrValue = Value.c_str();

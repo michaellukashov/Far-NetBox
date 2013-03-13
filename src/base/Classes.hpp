@@ -1,9 +1,10 @@
 #pragma once
 
-#include <vector>
-#include <set>
 #include "stdafx.h"
 #include <CoreDefs.hpp>
+
+#include <vector.h>
+#include <set>
 
 #include <WinDef.h>
 #include <CommCtrl.h>
@@ -196,7 +197,8 @@ public:
   IndexedPropertyVoid<intptr_t, TList, &TList::PropertyGetItem, &TList::PropertySetItem> Items;
 
 private:
-  std::vector<void *, custom_nballocator_t<void *> > FList;
+  // std::vector<void *, custom_nballocator_t<void *> > FList;
+  rde::vector<void *> FList;
 };
 
 class TObjectList : public TList
@@ -379,7 +381,8 @@ struct TStringItem
 };
 
 class TStringList;
-typedef std::vector<TStringItem, custom_nballocator_t<TStringItem> > TStringItemList;
+// typedef std::vector<TStringItem, custom_nballocator_t<TStringItem> > TStringItemList;
+typedef rde::vector<TStringItem> TStringItemList;
 typedef intptr_t (TStringListSortCompare)(TStringList * List, intptr_t Index1, intptr_t Index2);
 
 class TStringList : public TStrings
@@ -786,7 +789,7 @@ template <class T>
 class DelphiSet : public TObject
 {
 private:
-  std::set<T> FSet;
+  std::set<T, std::less<T>, custom_nballocator_t<T> > FSet;
 
 public:
   DelphiSet()
@@ -916,7 +919,7 @@ public:
     if (FSet.size() != rhs.FSet.size())
       return false;
 
-    std::set<T> setDifference;
+    std::set<T, std::less<T>, custom_nballocator_t<T> > setDifference;
     set_symmetric_difference(FSet.begin(), FSet.end(), rhs.FSet.begin(), rhs.FSet.end(), back_inserter(setDifference));
     return (setDifference.size() == 0);
 

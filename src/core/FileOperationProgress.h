@@ -32,8 +32,8 @@ private:
   bool FReset;
   uintptr_t FLastSecond;
   uintptr_t FRemainingCPS;
-  std::vector<unsigned long, custom_nballocator_t<unsigned long> > FTicks;
-  std::vector<__int64, custom_nballocator_t<__int64> > FTotalTransferredThen;
+  rde::vector<unsigned long> FTicks;
+  rde::vector<__int64> FTotalTransferredThen;
 
 protected:
   void ClearTransfer();
