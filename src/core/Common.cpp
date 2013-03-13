@@ -1089,7 +1089,7 @@ struct TDateTimeParams : public TObject
   // This is actually global, not per-year
   bool DaylightHack;
 };
-typedef std::map<int, TDateTimeParams> TYearlyDateTimeParams;
+typedef rde::map<int, TDateTimeParams> TYearlyDateTimeParams;
 static TYearlyDateTimeParams YearlyDateTimeParams;
 static std::auto_ptr<TCriticalSection> DateTimeParamsSection(new TCriticalSection());
 static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
