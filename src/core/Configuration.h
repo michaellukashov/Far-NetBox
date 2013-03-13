@@ -225,25 +225,6 @@ public:
 
 private:
   std::set<TShortCut> FShortCuts; // , std::less<TShortCut>, custom_nballocator_t<TShortCut> > FShortCuts;
-
-public:
-  // TShortCuts(const TShortCuts & rhs)
-  // {
-    // for (rde::set<TShortCut>::iterator it = rhs.FShortCuts.begin();
-      // it != rhs.FShortCuts.end(); ++it)
-    // {
-      // FShortCuts.insert(*it);
-    // }
-  // }
-  // TShortCuts & operator = (const TShortCuts & rhs)
-  // {
-    // for (rde::set<TShortCut>::iterator it = rhs.FShortCuts.begin();
-      // it != rhs.FShortCuts.end(); ++it)
-    // {
-      // FShortCuts.insert(*it);
-    // }
-    // return *this;
-  // }
 };
 //---------------------------------------------------------------------------
 #endif

@@ -319,7 +319,7 @@ struct session_t
   void * priv;
 };
 
-typedef rde::vector<TListDataEntry> listdataentry_vector_t;
+typedef std::vector<TListDataEntry, custom_nballocator_t<TListDataEntry> > listdataentry_vector_t;
 
 // Baton used when listing directory entries.
 typedef struct list_func_baton_t

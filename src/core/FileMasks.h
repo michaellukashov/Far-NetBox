@@ -110,7 +110,7 @@ private:
     UnicodeString UserStr;
   };
 
-  typedef rde::vector<TMask> TMasks;
+  typedef std::vector<TMask, custom_nballocator_t<TMask> > TMasks;
   TMasks FMasks[4];
   mutable TStrings * FMasksStr[4];
 

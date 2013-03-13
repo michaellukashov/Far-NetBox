@@ -1312,6 +1312,6 @@ void TShortCuts::Add(TShortCut ShortCut)
 //---------------------------------------------------------------------------
 bool TShortCuts::Has(TShortCut ShortCut) const
 {
-  return (FShortCuts.find(ShortCut) != FShortCuts.end());
+  return (FShortCuts.count(ShortCut) != 0);
 }
 

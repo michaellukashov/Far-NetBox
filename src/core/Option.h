@@ -47,7 +47,7 @@ private:
     bool Used;
   };
 
-  rde::vector<TOption> FOptions;
+  std::vector<TOption, custom_nballocator_t<TOption> > FOptions;
   bool FNoMoreSwitches;
   intptr_t FParamCount;
 };

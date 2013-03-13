@@ -60,7 +60,7 @@ public:
      * \param fileContent file content
      * \return error code
      */
-    static DWORD SaveFile(const wchar_t *fileName, const rde::vector<char>& fileContent);
+    static DWORD SaveFile(const wchar_t *fileName, const std::vector<char>& fileContent);
     /**
      * Save file
      * \param fileName file name
@@ -74,7 +74,7 @@ public:
      * \param fileContent file content
      * \return error code
      */
-    static DWORD LoadFile(const wchar_t *fileName, rde::vector<char>& fileContent);
+    static DWORD LoadFile(const wchar_t *fileName, std::vector<char>& fileContent);
 
 private:
     HANDLE  m_File;          ///< File handle

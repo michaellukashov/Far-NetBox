@@ -276,7 +276,7 @@ private:
   typedef rde::map<intptr_t, TMultipleEdit> TMultipleEdits;
   TMultipleEdits FMultipleEdits;
   bool FLoadingSessionList;
-  typedef rde::vector<TEditHistory> TEditHistories;
+  typedef std::vector<TEditHistory> TEditHistories;
   TEditHistories FEditHistories;
   UnicodeString FLastPath;
   TStrings * FPathHistory;

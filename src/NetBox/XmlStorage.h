@@ -65,7 +65,7 @@ private:
 
 private:
   tinyxml2::XMLDocument * FXmlDoc;
-  rde::vector<tinyxml2::XMLElement *> FSubElements;
+  std::vector<tinyxml2::XMLElement *> FSubElements;
   tinyxml2::XMLElement * FCurrentElement;
   UnicodeString FStoredSessionsSubKey;
   intptr_t FFailed;
