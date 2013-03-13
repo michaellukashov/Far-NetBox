@@ -839,7 +839,7 @@ public:
     typename std::set<T>::const_iterator itr;
     for (itr = rhs.FSet.begin(); itr != rhs.FSet.end(); ++itr)
     {
-      if (FSet.find(*itr) ==  FSet.end())
+      if (FSet.find(*itr) == FSet.end())
         continue;
       FSet.erase(*itr);
     }
