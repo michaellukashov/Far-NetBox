@@ -1,7 +1,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <map>
+#include <map.h>
 
 #include "FarDialog.h"
 #include "Common.h"
@@ -377,7 +377,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
 {
   TFarPluginEnvGuard Guard;
 
-  static std::map<HANDLE, LONG_PTR> Dialogs;
+  static rde::map<HANDLE, LONG_PTR> Dialogs;
   TFarDialog * Dialog = NULL;
   LONG_PTR Result = 0;
   if (Msg == DN_INITDIALOG)

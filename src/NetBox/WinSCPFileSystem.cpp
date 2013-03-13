@@ -3949,7 +3949,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
             ::RemoveDir(ExcludeTrailingBackslash(ExtractFilePath(Info->GetFileName())));
           }
 
-          FMultipleEdits.erase(I);
+          FMultipleEdits.erase(I->first);
         }
       }
     }
