@@ -2,7 +2,7 @@
 #ifndef SecureShellH
 #define SecureShellH
 
-#include <set>
+#include <set.h>
 #include "PuttyIntf.h"
 #include "Configuration.h"
 #include "SessionData.h"
@@ -16,7 +16,7 @@ struct Config;
 struct _WSANETWORKEVENTS;
 typedef struct _WSANETWORKEVENTS WSANETWORKEVENTS;
 typedef UINT_PTR SOCKET;
-typedef std::set<SOCKET> TSockets;
+typedef rde::set<SOCKET> TSockets;
 struct TPuttyTranslation;
 //---------------------------------------------------------------------------
 class TSecureShell : public TObject
