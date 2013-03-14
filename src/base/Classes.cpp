@@ -1023,7 +1023,6 @@ void TStringList::InsertItem(intptr_t Index, const UnicodeString & S, TObject * 
     Classes::Error(SListIndexError, Index);
   }
   Changing();
-  // if (FCount == FCapacity) Grow();
   TStringItem Item;
   Item.FString = S;
   Item.FObject = AObject;
