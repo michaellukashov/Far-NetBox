@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <vector.h>
 #include "stdafx.h"
 #include <CoreDefs.hpp>
@@ -378,11 +379,11 @@ struct TStringItem
 };
 
 class TStringList;
-typedef rde::vector<TStringItem> TStringItemList;
 typedef intptr_t (TStringListSortCompare)(TStringList * List, intptr_t Index1, intptr_t Index2);
 
 class TStringList : public TStrings
 {
+  typedef rde::vector<TStringItem> TStringItemList;
   friend intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2);
 
 public:
