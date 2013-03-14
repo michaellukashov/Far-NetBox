@@ -12,7 +12,6 @@
 #include "FileZillaIntf.h"
 
 #include "headers.hpp"
-#include "DynamicQueue.hpp"
 #include "Common.h"
 #include "Exceptions.h"
 #include "Terminal.h"
@@ -175,7 +174,7 @@ struct message_t
 };
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-class TMessageQueue : public TObject, public DynamicQueue<message_t>
+class TMessageQueue : public TObject, public rde::vector<message_t>
 {
 public:
   typedef message_t value_type;
@@ -280,7 +279,6 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   FServerCapabilities(NULL)
 {
   CALLSTACK;
-  FQueue->Reserve(1000);
 }
 
 void TFTPFileSystem::Init(void *)
@@ -2511,7 +2509,7 @@ bool TFTPFileSystem::PostMessage(unsigned int Type, WPARAM wParam, LPARAM lParam
   TGuard Guard(FQueueCriticalSection);
 
   TRACEFMT("1 [%x] (%x) [%x]", int(wParam), int((wParam >> 16) & 0xFFFF), int(lParam));
-  FQueue->Put(TMessageQueue::value_type(wParam, lParam));
+  FQueue->push_back(TMessageQueue::value_type(wParam, lParam));
   SetEvent(FQueueEvent);
 
   return true;
@@ -2527,10 +2525,11 @@ bool TFTPFileSystem::ProcessMessage()
     TGuard Guard(FQueueCriticalSection);
 
     TRACE("1");
-    Result = !FQueue->IsEmpty();
+    Result = !FQueue->empty();
     if (Result)
     {
-      Message = FQueue->Get();
+      Message = FQueue->front();
+      FQueue->erase(FQueue->begin());
     }
     else
     {
