@@ -1904,7 +1904,7 @@ bool TRegistry::DeleteKey(const UnicodeString & Key)
       {
         UnicodeString KeyName;
         KeyName.SetLength(Info.MaxSubKeyLen + 1);
-        for (intptr_t I = Info.NumSubKeys - 1; I >= 0; I--)
+        for (intptr_t I = static_cast<intptr_t>(Info.NumSubKeys) - 1; I >= 0; I--)
         {
           DWORD Len = Info.MaxSubKeyLen + 1;
           if (RegEnumKeyEx(DeleteKey, static_cast<DWORD>(I), &KeyName[1], &Len,
