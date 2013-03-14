@@ -1027,7 +1027,10 @@ void TStringList::InsertItem(intptr_t Index, const UnicodeString & S, TObject * 
   TStringItem Item;
   Item.FString = S;
   Item.FObject = AObject;
-  FList.insert(FList.begin() + Index, Item);
+  if (Index == FList.size())
+    FList.push_back(Item);
+  else
+    FList.insert(FList.begin() + Index, Item);
   Changed();
 }
 
