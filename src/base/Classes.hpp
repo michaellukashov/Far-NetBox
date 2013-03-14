@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <set>
+#include <vector.h>
 #include "stdafx.h"
 #include <CoreDefs.hpp>
 
@@ -786,7 +786,7 @@ template <class T>
 class DelphiSet : public TObject
 {
 private:
-  std::set<T> FSet;
+  rde::vector<T> FSet;
 
 public:
   DelphiSet()
@@ -817,7 +817,7 @@ public:
     if (this != &rhs)
     {
       FSet.clear();
-      FSet.insert(rhs.FSet.begin(),rhs.FSet.end());
+      FSet.assign(&*rhs.FSet.begin(), &*rhs.FSet.end());
     }
     return *this;
   }
@@ -861,7 +861,7 @@ public:
 
   DelphiSet<T>& Add(const T Value)
   {
-    FSet.insert(Value);
+    FSet.push_back(Value);
     return *this;
   }
 
@@ -879,7 +879,7 @@ public:
       throw Sysutils::Exception(FORMAT("Start Value %d is greater than End Value %d", StartValue, EndValue));
     int Range = RangeEndValue - RangeStartValue;
     T RangeStartForAdd = RangeStartValue;
-    for (int I = 0 ; I < Range; ++I)
+    for (int I = 0; I < Range; ++I)
       this->Add(RangeStartForAdd++);
     return *this;
   }

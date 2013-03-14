@@ -2,7 +2,7 @@
 #ifndef ConfigurationH
 #define ConfigurationH
 
-#include <set>
+#include <vector.h>
 #include "RemoteFiles.h"
 #include "FileBuffer.h"
 #include "HierarchicalStorage.h"
@@ -220,11 +220,11 @@ public:
 class TShortCuts : public TObject
 {
 public:
-  void Add(TShortCut ShortCut);
-  bool Has(TShortCut ShortCut) const;
+  void Add(const TShortCut & ShortCut);
+  bool Has(const TShortCut & ShortCut) const;
 
 private:
-  std::set<TShortCut> FShortCuts; // , std::less<TShortCut>, custom_nballocator_t<TShortCut> > FShortCuts;
+  rde::vector<TShortCut> FShortCuts;
 };
 //---------------------------------------------------------------------------
 #endif
