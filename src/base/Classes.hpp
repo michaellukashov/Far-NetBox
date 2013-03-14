@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector>
 #include <vector.h>
 #include "stdafx.h"
 #include <CoreDefs.hpp>
