@@ -1824,7 +1824,7 @@ void TRegistry::GetKeyNames(TStrings * Strings) const
   if (GetKeyInfo(Info))
   {
     S.SetLength(static_cast<intptr_t>(Info.MaxSubKeyLen) + 1);
-    for (unsigned int I = 0; I < Info.NumSubKeys; I++)
+    for (DWORD I = 0; I < Info.NumSubKeys; I++)
     {
       DWORD Len = Info.MaxSubKeyLen + 1;
       RegEnumKeyEx(GetCurrentKey(), static_cast<DWORD>(I), &S[1], &Len, NULL, NULL, NULL, NULL);
