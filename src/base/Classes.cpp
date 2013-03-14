@@ -1162,15 +1162,7 @@ void TStringList::Changed()
 
 void TStringList::Insert(intptr_t Index, const UnicodeString & S)
 {
-  if ((Index == NPOS) || (Index > static_cast<intptr_t>(FList.size())))
-  {
-    Classes::Error(SListIndexError, Index);
-  }
-  TStringItem Item;
-  Item.FString = S;
-  Item.FObject = NULL;
-  FList.insert(FList.begin() + Index, Item);
-  Changed();
+  InsertItem(Index, S, NULL);
 }
 
 void TStringList::Sort()
