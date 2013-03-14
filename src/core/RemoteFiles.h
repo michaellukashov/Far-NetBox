@@ -67,11 +67,7 @@ public:
 private:
   typedef rde::vector<TRemoteToken, custom_nballocator_t<TRemoteToken> > TTokens;
   typedef rde::map<UnicodeString, size_t> TNameMap;
-    // rde::less<UnicodeString>,
-    // custom_nballocator_t<rde::pair<UnicodeString, size_t> > > TNameMap;
   typedef rde::map<intptr_t, size_t> TIDMap;
-    // rde::less<intptr_t>,
-    // custom_nballocator_t<rde::pair<intptr_t, size_t> > > TIDMap;
   TTokens FTokens;
   mutable TNameMap FNameMap;
   mutable TIDMap FIDMap;
