@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector>
 #include <vector.h>
 #include "stdafx.h"
 #include <CoreDefs.hpp>
@@ -196,7 +195,7 @@ public:
   IndexedPropertyVoid<intptr_t, TList, &TList::PropertyGetItem, &TList::PropertySetItem> Items;
 
 private:
-  std::vector<void *, custom_nballocator_t<void *> > FList;
+  rde::vector<void *> FList;
 };
 
 class TObjectList : public TList
@@ -379,7 +378,7 @@ struct TStringItem
 };
 
 class TStringList;
-typedef std::vector<TStringItem, custom_nballocator_t<TStringItem> > TStringItemList;
+typedef rde::vector<TStringItem> TStringItemList;
 typedef intptr_t (TStringListSortCompare)(TStringList * List, intptr_t Index1, intptr_t Index2);
 
 class TStringList : public TStrings
