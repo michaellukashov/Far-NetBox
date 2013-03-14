@@ -1328,7 +1328,7 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::UpdateSocket(SOCKET value, bool Startup)
+void TSecureShell::UpdateSocket(SOCKET Value, bool Startup)
 {
   CCALLSTACK(TRACE_TRANSMIT);
   if (!FActive && !Startup)
@@ -1344,14 +1344,14 @@ void TSecureShell::UpdateSocket(SOCKET value, bool Startup)
   {
     CCALLSTACK(TRACE_TRANSMIT);
     CTRACE(TRACE_TRANSMIT, "2");
-    assert(value);
-    assert((FActive && (FSocket == value)) || (!FActive && Startup));
+    assert(Value);
+    assert((FActive && (FSocket == Value)) || (!FActive && Startup));
 
     // filter our "local proxy" connection, which have no socket
-    if (value != INVALID_SOCKET)
+    if (Value != INVALID_SOCKET)
     {
       CTRACE(TRACE_TRANSMIT, "3");
-      SocketEventSelect(value, FSocketEvent, Startup);
+      SocketEventSelect(Value, FSocketEvent, Startup);
     }
     else
     {
@@ -1362,7 +1362,7 @@ void TSecureShell::UpdateSocket(SOCKET value, bool Startup)
     if (Startup)
     {
       CTRACE(TRACE_TRANSMIT, "5");
-      FSocket = value;
+      FSocket = Value;
       FActive = true;
     }
     else
@@ -1374,32 +1374,32 @@ void TSecureShell::UpdateSocket(SOCKET value, bool Startup)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::UpdatePortFwdSocket(SOCKET value, bool Startup)
+void TSecureShell::UpdatePortFwdSocket(SOCKET Value, bool Startup)
 {
   CCALLSTACK(TRACE_TRANSMIT);
-  CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", int(value), int(Startup));
+  CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", int(Value), int(Startup));
   if (Configuration->GetActualLogProtocol() >= 2)
   {
-    LogEvent(FORMAT(L"Updating forwarding socket %d (%d)", static_cast<int>(value), static_cast<int>(Startup)));
+    LogEvent(FORMAT(L"Updating forwarding socket %d (%d)", static_cast<int>(Value), static_cast<int>(Startup)));
   }
 
-  SocketEventSelect(value, FSocketEvent, Startup);
+  SocketEventSelect(Value, FSocketEvent, Startup);
 
   if (Startup)
   {
-    FPortFwdSockets.insert(value);
+    FPortFwdSockets.insert(Value);
   }
   else
   {
-    FPortFwdSockets.erase(value);
+    FPortFwdSockets.erase(Value);
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SetActive(bool value)
+void TSecureShell::SetActive(bool Value)
 {
-  if (FActive != value)
+  if (FActive != Value)
   {
-    if (value)
+    if (Value)
     {
       Open();
     }
