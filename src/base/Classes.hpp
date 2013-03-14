@@ -835,7 +835,7 @@ public:
 
   DelphiSet<T>& operator *= (const DelphiSet<T>& rhs)
   {
-    typename std::set<T>::const_iterator itr;
+    typename rde::vector<T>::const_iterator itr;
     for (itr = rhs.FSet.begin(); itr != rhs.FSet.end(); ++itr)
     {
       if (FSet.find(*itr) == FSet.end())
@@ -915,7 +915,7 @@ public:
     if (FSet.size() != rhs.FSet.size())
       return false;
 
-    std::set<T> setDifference;
+    rde::vector<T> setDifference;
     set_symmetric_difference(FSet.begin(), FSet.end(), rhs.FSet.begin(), rhs.FSet.end(), back_inserter(setDifference));
     return (setDifference.size() == 0);
 

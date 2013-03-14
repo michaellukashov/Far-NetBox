@@ -65,7 +65,7 @@ public:
   const TRemoteToken * Token(intptr_t Index) const;
 
 private:
-  typedef rde::vector<TRemoteToken, custom_nballocator_t<TRemoteToken> > TTokens;
+  typedef rde::vector<TRemoteToken> TTokens;
   typedef rde::map<UnicodeString, size_t> TNameMap;
   typedef rde::map<intptr_t, size_t> TIDMap;
   TTokens FTokens;
