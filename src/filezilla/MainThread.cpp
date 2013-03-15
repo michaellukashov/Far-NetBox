@@ -411,7 +411,7 @@ int CMainThread::GetOption(int nOption)
 {
 	int nValue=0;
 	ECS;
-	std::map<int, int>::iterator iter=m_Options.find(nOption);
+	rde::map<int, int>::iterator iter=m_Options.find(nOption);
 	if (iter!=m_Options.end())
 		nValue=iter->second;
 	LCS;

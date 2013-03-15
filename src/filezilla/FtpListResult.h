@@ -101,7 +101,7 @@ private:
 	tTempData m_TempData;
 
 	//Month names map
-	std::map<CString, int> m_MonthNamesMap;
+	rde::map<CString, int> m_MonthNamesMap;
 	
 protected:
 	bool *m_bUTF8;

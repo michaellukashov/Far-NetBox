@@ -123,7 +123,7 @@ protected:
 	CIdentServerControl *m_pIdentServer;
 #endif
 	t_directory *m_pWorkingDir;
-	std::map<int, int> m_Options;
+	rde::map<int, int> m_Options;
 	BOOL m_bQuit;
 	t_command *m_pPostKeepAliveCommand;
 	CServerPath m_CurrentPath;

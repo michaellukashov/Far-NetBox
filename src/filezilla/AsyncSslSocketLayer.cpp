@@ -283,7 +283,7 @@ int CAsyncSslSocketLayer::m_nSslRefCount = 0;
 HMODULE CAsyncSslSocketLayer::m_hSslDll1 = 0;
 HMODULE CAsyncSslSocketLayer::m_hSslDll2 = 0;
 #endif
-std::map<SSL_CTX *, int> CAsyncSslSocketLayer::m_contextRefCount;
+rde::map<SSL_CTX *, int> CAsyncSslSocketLayer::m_contextRefCount;
 
 CAsyncSslSocketLayer::CAsyncSslSocketLayer()
 {
@@ -1046,9 +1046,9 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
 		}
 
 #ifdef MPEXT
-		std::map<SSL_CTX *, int>::iterator iter = m_contextRefCount.find((SSL_CTX*)pSslContext);
+		rde::map<SSL_CTX *, int>::iterator iter = m_contextRefCount.find((SSL_CTX*)pSslContext);
 #else
-		std::map<SSL_CTX *, int>::iterator& iter = m_contextRefCount.find((SSL_CTX*)pSslContext);
+		rde::map<SSL_CTX *, int>::iterator& iter = m_contextRefCount.find((SSL_CTX*)pSslContext);
 #endif
 		if (iter == m_contextRefCount.end() || iter->second < 1)
 		{
@@ -1213,16 +1213,16 @@ void CAsyncSslSocketLayer::ResetSslSession()
 	if (m_ssl_ctx)
 	{
 #ifdef MPEXT
-		std::map<SSL_CTX *, int>::iterator iter = m_contextRefCount.find(m_ssl_ctx);
+		rde::map<SSL_CTX *, int>::iterator iter = m_contextRefCount.find(m_ssl_ctx);
 #else
-		std::map<SSL_CTX *, int>::iterator& iter = m_contextRefCount.find(m_ssl_ctx);
+		rde::map<SSL_CTX *, int>::iterator& iter = m_contextRefCount.find(m_ssl_ctx);
 #endif
 		if (iter != m_contextRefCount.end())
 		{
 			if (iter->second <= 1)
 			{
 				pSSL_CTX_free(m_ssl_ctx);
-				m_contextRefCount.erase(iter);
+				m_contextRefCount.erase(iter->first);
 			}
 			else
 				iter->second--;
