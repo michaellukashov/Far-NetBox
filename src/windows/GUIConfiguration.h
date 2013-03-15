@@ -262,6 +262,6 @@ public:
   void SetSessionReopenAutoIdle(intptr_t Value) { FSessionReopenAutoIdle = Value; }
 };
 //---------------------------------------------------------------------------
-#define GUIConfiguration (dynamic_cast<TGUIConfiguration *>(Configuration))
+#define GUIConfiguration (dynamic_cast<TGUIConfiguration *>(GetConfiguration()))
 //---------------------------------------------------------------------------
 #endif

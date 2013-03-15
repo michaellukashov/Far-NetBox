@@ -15,8 +15,40 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-TConfiguration * Configuration = NULL;
 TStoredSessionList * StoredSessions = NULL;
+//---------------------------------------------------------------------------
+TConfiguration * GetConfiguration()
+{
+  static TConfiguration * Configuration = NULL;
+  if (Configuration == NULL)
+  {
+    // configuration needs to be created and loaded before putty is initialized,
+    // so that random seed path is known
+    Configuration = CreateConfiguration();
+    try
+    {
+      Configuration->Load();
+    }
+    catch (Exception & E)
+    {
+      ShowExtendedException(&E);
+    }
+
+    PuttyInitialize();
+  }
+  return Configuration;
+}
+//---------------------------------------------------------------------------
+void DeleteConfiguration()
+{
+  static bool ConfigurationDeleted = false;
+  if (!ConfigurationDeleted)
+  {
+    delete GetConfiguration();
+    ConfigurationDeleted = true;
+  }
+}
+
 //---------------------------------------------------------------------------
 TQueryButtonAlias::TQueryButtonAlias() :
   Button(0)
@@ -49,23 +81,9 @@ bool IsAuthenticationPrompt(TPromptKind Kind)
 //---------------------------------------------------------------------------
 void CoreInitialize()
 {
-  CALLSTACK;
   Randomize();
   CryptographyInitialize();
 
-  // configuration needs to be created and loaded before putty is initialized,
-  // so that random seed path is known
-  Configuration = CreateConfiguration();
-  try
-  {
-    Configuration->Load();
-  }
-  catch (Exception & E)
-  {
-    ShowExtendedException(&E);
-  }
-
-  PuttyInitialize();
   #ifndef NO_FILEZILLA
   TFileZillaIntf::Initialize();
   #endif
@@ -87,7 +105,7 @@ void CoreFinalize()
   try
   {
     // only modified, implicit
-    Configuration->Save(false, false);
+    GetConfiguration()->Save(false, false);
   }
   catch(Exception & E)
   {
@@ -101,8 +119,7 @@ void CoreFinalize()
 
   delete StoredSessions;
   StoredSessions = NULL;
-  delete Configuration;
-  Configuration = NULL;
+  DeleteConfiguration();
 
   CryptographyFinalize();
 }

@@ -382,15 +382,15 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
 {
   CALLSTACK;
   long R;
-  assert(Configuration != NULL);
+  assert(GetConfiguration() != NULL);
 
   assert(Key == HKEY_CURRENT_USER);
   USEDPARAM(Key);
 
   UnicodeString RegKey = SubKey;
-  intptr_t PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().Length();
-  TRACEFMT("RegKey [%s] [%s] PuttyRegistryStorageKey [%s] [%d]", RegKey.c_str(), RegKey.SubString(1, PuttyKeyLen).c_str(), Configuration->GetPuttyRegistryStorageKey().c_str(), PuttyKeyLen);
-  assert(RegKey.SubString(1, PuttyKeyLen) == Configuration->GetPuttyRegistryStorageKey());
+  intptr_t PuttyKeyLen = GetConfiguration()->GetPuttyRegistryStorageKey().Length();
+  TRACEFMT("RegKey [%s] [%s] PuttyRegistryStorageKey [%s] [%d]", RegKey.c_str(), RegKey.SubString(1, PuttyKeyLen).c_str(), GetConfiguration()->GetPuttyRegistryStorageKey().c_str(), PuttyKeyLen);
+  assert(RegKey.SubString(1, PuttyKeyLen) == GetConfiguration()->GetPuttyRegistryStorageKey());
   RegKey = RegKey.SubString(PuttyKeyLen + 1, RegKey.Length() - PuttyKeyLen);
   if (!RegKey.IsEmpty())
   {
@@ -410,7 +410,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
     // we expect this to be called only from verify_host_key() or store_host_key()
     assert(RegKey == L"SshHostKeys");
 
-    THierarchicalStorage * Storage = Configuration->CreateScpStorage(false);
+    THierarchicalStorage * Storage = GetConfiguration()->CreateScpStorage(false);
     Storage->SetAccessMode((CanCreate ? smReadWrite : smRead));
     if (Storage->OpenSubKey(RegKey, CanCreate))
     {
@@ -447,7 +447,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
 {
   CALLSTACK;
   long R;
-  assert(Configuration != NULL);
+  assert(GetConfiguration() != NULL);
 
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
   AnsiString Value;
@@ -455,7 +455,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
   {
     if (UnicodeString(ValueName) == L"RandSeedFile")
     {
-      Value = Configuration->GetRandomSeedFileName();
+      Value = GetConfiguration()->GetRandomSeedFileName();
       R = ERROR_SUCCESS;
     }
     else
@@ -494,7 +494,7 @@ long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*R
   unsigned long Type, const unsigned char * Data, unsigned long DataSize)
 {
   CALLSTACK;
-  assert(Configuration != NULL);
+  assert(GetConfiguration() != NULL);
 
   assert(Type == REG_SZ);
   USEDPARAM(Type);
@@ -512,7 +512,7 @@ long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*R
 long reg_close_winscp_key(HKEY Key)
 {
   CALLSTACK;
-  assert(Configuration != NULL);
+  assert(GetConfiguration() != NULL);
 
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
   if (Storage != NULL)

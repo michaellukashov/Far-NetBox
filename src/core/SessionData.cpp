@@ -396,7 +396,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   // must be loaded after UserName, because HostName may be in format user@host
   SetHostName(Storage->ReadString(L"HostName", GetHostName()));
 
-  if (!Configuration->GetDisablePasswordStoring())
+  if (!GetConfiguration()->GetDisablePasswordStoring())
   {
     if (Storage->ValueExists(L"PasswordPlain"))
     {
@@ -597,7 +597,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   // must be loaded after TunnelUserName,
   // because TunnelHostName may be in format user@host
   SetTunnelHostName(Storage->ReadString(L"TunnelHostName", GetTunnelHostName()));
-  if (!Configuration->GetDisablePasswordStoring())
+  if (!GetConfiguration()->GetDisablePasswordStoring())
   {
     if (Storage->ValueExists(L"TunnelPasswordPlain"))
     {
@@ -935,7 +935,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 //---------------------------------------------------------------------
 void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExport)
 {
-  if (!Configuration->GetDisablePasswordStoring() && !PuttyExport && !FPassword.IsEmpty())
+  if (!GetConfiguration()->GetDisablePasswordStoring() && !PuttyExport && !FPassword.IsEmpty())
   {
     Storage->WriteBinaryDataAsString(L"Password", StronglyRecryptPassword(FPassword, GetUserName() + GetHostName()));
   }
@@ -963,7 +963,7 @@ void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExpor
     }
     Storage->DeleteValue(L"ProxyPassword");
 
-    if (!Configuration->GetDisablePasswordStoring() && !FTunnelPassword.IsEmpty())
+    if (!GetConfiguration()->GetDisablePasswordStoring() && !FTunnelPassword.IsEmpty())
     {
       Storage->WriteBinaryDataAsString(L"TunnelPassword", StronglyRecryptPassword(FTunnelPassword, GetTunnelUserName() + GetTunnelHostName()));
     }
@@ -1028,11 +1028,11 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
 //---------------------------------------------------------------------
 void TSessionData::Remove()
 {
-  THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
+  THierarchicalStorage * Storage = GetConfiguration()->CreateScpStorage(true);
   TRY_FINALLY (
   {
     Storage->SetExplicit(true);
-    if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false))
+    if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false))
     {
       Storage->RecursiveDeleteSubKey(GetInternalStorageKey());
     }
@@ -1383,7 +1383,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
         if (Options->FindSwitch(L"rawsettings", RawSettings))
         {
           TRACE("35");
-          OptionsStorage = new TRegistryStorage(Configuration->GetRegistryStorageKey());
+          OptionsStorage = new TRegistryStorage(GetConfiguration()->GetRegistryStorageKey());
 
           bool Dummy;
           DoLoad(OptionsStorage, Dummy);
@@ -1474,12 +1474,12 @@ void TSessionData::ValidateName(const UnicodeString & Name)
 //---------------------------------------------------------------------
 RawByteString TSessionData::EncryptPassword(const UnicodeString & Password, const UnicodeString & Key)
 {
-  return Configuration->EncryptPassword(Password, Key);
+  return GetConfiguration()->EncryptPassword(Password, Key);
 }
 //---------------------------------------------------------------------
 RawByteString TSessionData::StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key)
 {
-  return Configuration->StronglyRecryptPassword(Password, Key);
+  return GetConfiguration()->StronglyRecryptPassword(Password, Key);
 }
 //---------------------------------------------------------------------
 UnicodeString TSessionData::DecryptPassword(const RawByteString & Password, const UnicodeString & Key)
@@ -1487,7 +1487,7 @@ UnicodeString TSessionData::DecryptPassword(const RawByteString & Password, cons
   UnicodeString Result;
   try
   {
-    Result = Configuration->DecryptPassword(Password, Key);
+    Result = GetConfiguration()->DecryptPassword(Password, Key);
   }
   catch(EAbort &)
   {
@@ -2756,14 +2756,14 @@ TFtps TSessionData::TranslateFtpEncryptionNumber(intptr_t FtpEncryption)
 TStoredSessionList::TStoredSessionList(bool aReadOnly):
   TNamedObjectList(), FReadOnly(aReadOnly)
 {
-  assert(Configuration);
+  assert(GetConfiguration());
   FDefaultSettings = new TSessionData(DefaultName);
   SetOwnsObjects(true);
 }
 //---------------------------------------------------------------------
 TStoredSessionList::~TStoredSessionList()
 {
-  assert(Configuration);
+  assert(GetConfiguration());
   delete FDefaultSettings;
 }
 //---------------------------------------------------------------------
@@ -2845,10 +2845,10 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
 void TStoredSessionList::Load()
 {
   CALLSTACK;
-  THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
+  THierarchicalStorage * Storage = GetConfiguration()->CreateScpStorage(true);
   TRY_FINALLY (
   {
-    if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), False))
+    if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), False))
     {
       Load(Storage);
     }
@@ -2904,12 +2904,12 @@ void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
 //---------------------------------------------------------------------
 void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnly)
 {
-  THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
+  THierarchicalStorage * Storage = GetConfiguration()->CreateScpStorage(true);
   TRY_FINALLY (
   {
     Storage->SetAccessMode(smReadWrite);
     Storage->SetExplicit(Explicit);
-    if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
+    if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
     {
       DoSave(Storage, All, RecryptPasswordOnly);
     }
@@ -2950,7 +2950,7 @@ void TStoredSessionList::Export(const UnicodeString & FileName)
   TRY_FINALLY (
   {
     Storage->SetAccessMode(smReadWrite);
-    if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
+    if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
     {
       Save(Storage, true);
     }
@@ -3004,14 +3004,14 @@ void TStoredSessionList::Cleanup()
 {
   try
   {
-    if (Configuration->GetStorage() == stRegistry) { Clear(); }
-    TRegistryStorage * Storage = new TRegistryStorage(Configuration->GetRegistryStorageKey());
+    if (GetConfiguration()->GetStorage() == stRegistry) { Clear(); }
+    TRegistryStorage * Storage = new TRegistryStorage(GetConfiguration()->GetRegistryStorageKey());
     TRY_FINALLY (
     {
       Storage->SetAccessMode(smReadWrite);
       if (Storage->OpenRootKey(False))
       {
-        Storage->RecursiveDeleteSubKey(Configuration->GetStoredSessionsSubKey());
+        Storage->RecursiveDeleteSubKey(GetConfiguration()->GetStoredSessionsSubKey());
       }
     }
     ,
@@ -3104,18 +3104,18 @@ void TStoredSessionList::UpdateStaticUsage()
     }
   }
 
-  Configuration->GetUsage()->Set(L"StoredSessionsCountSCP", SCP);
-  Configuration->GetUsage()->Set(L"StoredSessionsCountSFTP", SFTP);
-  Configuration->GetUsage()->Set(L"StoredSessionsCountFTP", FTP);
-  Configuration->GetUsage()->Set(L"StoredSessionsCountFTPS", FTPS);
-  Configuration->GetUsage()->Set(L"StoredSessionsCountWebDAV", WebDAV);
-  Configuration->GetUsage()->Set(L"StoredSessionsCountWebDAVS", WebDAVS);
-  Configuration->GetUsage()->Set(L"StoredSessionsCountAdvanced", Advanced);
+  GetConfiguration()->GetUsage()->Set(L"StoredSessionsCountSCP", SCP);
+  GetConfiguration()->GetUsage()->Set(L"StoredSessionsCountSFTP", SFTP);
+  GetConfiguration()->GetUsage()->Set(L"StoredSessionsCountFTP", FTP);
+  GetConfiguration()->GetUsage()->Set(L"StoredSessionsCountFTPS", FTPS);
+  GetConfiguration()->GetUsage()->Set(L"StoredSessionsCountWebDAV", WebDAV);
+  GetConfiguration()->GetUsage()->Set(L"StoredSessionsCountWebDAVS", WebDAVS);
+  GetConfiguration()->GetUsage()->Set(L"StoredSessionsCountAdvanced", Advanced);
 
   bool CustomDefaultStoredSession = !FDefaultSettings->IsSame(FactoryDefaults.get(), false);
-  Configuration->GetUsage()->Set(L"UsingDefaultStoredSession", CustomDefaultStoredSession);
-  Configuration->GetUsage()->Set(L"UsingStoredSessionsFolders", Folders);
-  Configuration->GetUsage()->Set(L"UsingWorkspaces", Workspaces);
+  GetConfiguration()->GetUsage()->Set(L"UsingDefaultStoredSession", CustomDefaultStoredSession);
+  GetConfiguration()->GetUsage()->Set(L"UsingStoredSessionsFolders", Folders);
+  GetConfiguration()->GetUsage()->Set(L"UsingWorkspaces", Workspaces);
 */
 }
 //---------------------------------------------------------------------------

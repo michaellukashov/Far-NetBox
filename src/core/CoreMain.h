@@ -5,13 +5,13 @@
 #include "Common.h"
 //---------------------------------------------------------------------------
 class TConfiguration;
-extern TConfiguration *Configuration;
 class TStoredSessionList;
-extern TStoredSessionList *StoredSessions;
+extern TStoredSessionList * StoredSessions;
 //---------------------------------------------------------------------------
 void CoreInitialize();
 void CoreFinalize();
 void CoreSetResourceModule(void * ResourceHandle);
 void CoreMaintenanceTask();
+TConfiguration * GetConfiguration();
 //---------------------------------------------------------------------------
 #endif
