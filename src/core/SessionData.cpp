@@ -2771,75 +2771,66 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   bool AsModified, bool UseDefaults)
 {
   CALLSTACK;
-  TStringList * SubKeys = new TStringList();
-  TList * Loaded = new TList();
-  TRY_FINALLY (
+  std::auto_ptr<TStringList> SubKeys(new TStringList());
+  std::auto_ptr<TList> Loaded(new TList());
+  Storage->GetSubKeyNames(SubKeys.get());
+  for (intptr_t Index = 0; Index < SubKeys->GetCount(); ++Index)
   {
-    Storage->GetSubKeyNames(SubKeys);
-    for (intptr_t Index = 0; Index < SubKeys->GetCount(); ++Index)
+    TSessionData * SessionData = NULL;
+    UnicodeString SessionName = SubKeys->Strings[Index];
+    bool ValidName = true;
+    try
     {
-      TSessionData * SessionData = NULL;
-      UnicodeString SessionName = SubKeys->Strings[Index];
-      bool ValidName = true;
-      try
-      {
-        TSessionData::ValidatePath(SessionName);
-      }
-      catch(...)
-      {
-        ValidName = false;
-      }
-      if (ValidName)
-      {
-        if (SessionName == FDefaultSettings->GetName())
-        {
-          SessionData = FDefaultSettings;
-        }
-        else
-        {
-          SessionData = static_cast<TSessionData *>(FindByName(SessionName));
-        }
-
-        if ((SessionData != FDefaultSettings) || !UseDefaults)
-        {
-          if (!SessionData)
-          {
-            SessionData = new TSessionData(L"");
-            if (UseDefaults)
-            {
-              SessionData->Assign(GetDefaultSettings());
-            }
-            SessionData->SetName(SessionName);
-            Add(SessionData);
-          }
-          Loaded->Add(SessionData);
-          SessionData->Load(Storage);
-          if (AsModified)
-          {
-            SessionData->SetModified(true);
-          }
-        }
-      }
+      TSessionData::ValidatePath(SessionName);
     }
-
-    if (!AsModified)
+    catch(...)
     {
-      for (intptr_t Index = 0; Index < TObjectList::GetCount(); ++Index)
+      ValidName = false;
+    }
+    if (ValidName)
+    {
+      if (SessionName == FDefaultSettings->GetName())
       {
-        if (Loaded->IndexOf(GetItem(Index)) < 0)
+        SessionData = FDefaultSettings;
+      }
+      else
+      {
+        SessionData = static_cast<TSessionData *>(FindByName(SessionName));
+      }
+
+      if ((SessionData != FDefaultSettings) || !UseDefaults)
+      {
+        if (!SessionData)
         {
-          Delete(Index);
-          Index--;
+          SessionData = new TSessionData(L"");
+          if (UseDefaults)
+          {
+            SessionData->Assign(GetDefaultSettings());
+          }
+          SessionData->SetName(SessionName);
+          Add(SessionData);
+        }
+        Loaded->Add(SessionData);
+        SessionData->Load(Storage);
+        if (AsModified)
+        {
+          SessionData->SetModified(true);
         }
       }
     }
   }
-  ,
+
+  if (!AsModified)
   {
-    delete SubKeys;
-    delete Loaded;
+    for (intptr_t Index = 0; Index < TObjectList::GetCount(); ++Index)
+    {
+      if (Loaded->IndexOf(GetItem(Index)) < 0)
+      {
+        Delete(Index);
+        Index--;
+      }
+    }
   }
-  );
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::Load()
