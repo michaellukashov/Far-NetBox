@@ -64,7 +64,7 @@ public:
 	t_directory::t_direntry *getList(int &num, CTime EntryTime);
 
 private:
-	typedef std::list<t_directory::t_direntry> tEntryList;
+	typedef rde::list<t_directory::t_direntry> tEntryList;
 	tEntryList m_EntryList;
 	
 	BOOL parseLine(const char *lineToParse, const int linelen, t_directory::t_direntry &direntry, int &nFTPServerType);
@@ -97,7 +97,7 @@ private:
 		t_list *next;
 	} *listhead, *curpos, *m_curlistaddpos;
 
-	typedef std::list<int> tTempData;
+	typedef rde::list<int> tTempData;
 	tTempData m_TempData;
 
 	//Month names map

@@ -95,7 +95,7 @@ public:
 	t_directory *pDirectoryListing;
 	int nWaitNextOpState;
 	CServerPath MKDCurrent;
-	std::list<CString> MKDSegments;
+	rde::list<CString> MKDSegments;
 	int nMKDOpState;
 	CTime ListStartTime;
 	bool hasRemoteDate;
@@ -164,7 +164,7 @@ public:
 	virtual ~CMakeDirData() {}
 	CServerPath path;
 	CServerPath Current;
-	std::list<CString> Segments;
+	rde::list<CString> Segments;
 };
 
 #define MKD_INIT -1
@@ -5879,9 +5879,9 @@ void CFtpControlSocket::SetAsyncRequestResult(int nAction, CAsyncRequestData *pD
 	}
 }
 
-int CFtpControlSocket::OnLayerCallback(std::list<t_callbackMsg>& callbacks)
+int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 {
-	for (std::list<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); iter++)
+	for (rde::list<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); iter++)
 	{
 		if (iter->nType == LAYERCALLBACK_STATECHANGE)
 		{
@@ -6000,7 +6000,7 @@ int CFtpControlSocket::OnLayerCallback(std::list<t_callbackMsg>& callbacks)
 			}
 #endif
 		}
-		std::list<t_callbackMsg> tmp;
+		rde::list<t_callbackMsg> tmp;
 		tmp.push_back(*iter);
 		CControlSocket::OnLayerCallback(tmp);
 	}

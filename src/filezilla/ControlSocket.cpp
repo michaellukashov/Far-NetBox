@@ -55,11 +55,11 @@ static char THIS_FILE[]=__FILE__;
 #endif
 
 #ifndef MPEXT
-std::list<CControlSocket::t_ActiveList> CControlSocket::m_InstanceList[2];
+rde::list<CControlSocket::t_ActiveList> CControlSocket::m_InstanceList[2];
 #else
 // explicit initialization prevents an assertion in borland's compiler
-std::list<CControlSocket::t_ActiveList> CControlSocket::m_InstanceList[2] =
-  {std::list<CControlSocket::t_ActiveList>(), std::list<CControlSocket::t_ActiveList>()};
+rde::list<CControlSocket::t_ActiveList> CControlSocket::m_InstanceList[2] =
+  {rde::list<CControlSocket::t_ActiveList>(), rde::list<CControlSocket::t_ActiveList>()};
 #endif
 
 CTime CControlSocket::m_CurrentTransferTime[2] = { CTime::GetCurrentTime(), CTime::GetCurrentTime() };
@@ -214,11 +214,11 @@ void CControlSocket::SetDirectoryListing(t_directory *pDirectory, bool bSetWorki
 		m_pOwner->SetWorkingDir(pDirectory);
 }
 
-int CControlSocket::OnLayerCallback(std::list<t_callbackMsg>& callbacks)
+int CControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 {
 	USES_CONVERSION;
 
-	for (std::list<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); iter++)
+	for (rde::list<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); iter++)
 	{
 		if (iter->nType == LAYERCALLBACK_STATECHANGE)
 		{
@@ -332,7 +332,7 @@ _int64 CControlSocket::GetSpeedLimit(enum transferDirection direction, CTime &ti
 	return ( _int64)1000000000000;
 }
 
-_int64 CControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _int64 &curLimit, std::list<CControlSocket::t_ActiveList>::iterator &iter, enum transferDirection direction, int nBufSize)
+_int64 CControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _int64 &curLimit, rde::list<CControlSocket::t_ActiveList>::iterator &iter, enum transferDirection direction, int nBufSize)
 {
 	beenWaiting = false;
 
@@ -387,7 +387,7 @@ _int64 CControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _int6
 		__int64 nMax = curLimit / m_InstanceList[direction].size();
 		_int64 nLeft = 0;
 		int nCount = 0;
-		std::list<t_ActiveList>::iterator iter2;
+		rde::list<t_ActiveList>::iterator iter2;
 		for (iter2 = m_InstanceList[direction].begin(); iter2 != m_InstanceList[direction].end(); iter2++)
 		{
 			if (iter2->nBytesAvailable>0)
@@ -429,7 +429,7 @@ _int64 CControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _int6
 _int64 CControlSocket::GetAbleToTransferSize(enum transferDirection direction, bool &beenWaiting, int nBufSize)
 {
 	m_SpeedLimitSync.Lock();
-	std::list<t_ActiveList>::iterator iter;
+	rde::list<t_ActiveList>::iterator iter;
 	for (iter = m_InstanceList[direction].begin(); iter != m_InstanceList[direction].end(); iter++)
 		if (iter->pOwner == this)
 			break;
@@ -457,7 +457,7 @@ BOOL CControlSocket::RemoveActiveTransfer()
 {
 	BOOL bFound = FALSE;
 	m_SpeedLimitSync.Lock();
-	std::list<t_ActiveList>::iterator iter;
+	rde::list<t_ActiveList>::iterator iter;
 	for (int i = 0; i < 2; i++)
 	{
 		for (iter = m_InstanceList[i].begin(); iter != m_InstanceList[i].end(); iter++)
@@ -475,7 +475,7 @@ BOOL CControlSocket::RemoveActiveTransfer()
 BOOL CControlSocket::SpeedLimitAddTransferredBytes(enum transferDirection direction, _int64 nBytesTransferred)
 {
 	m_SpeedLimitSync.Lock();
-	std::list<t_ActiveList>::iterator iter;
+	rde::list<t_ActiveList>::iterator iter;
 	for (iter = m_InstanceList[direction].begin(); iter != m_InstanceList[direction].end(); iter++)
 		if (iter->pOwner == this)
 		{

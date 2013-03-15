@@ -108,7 +108,7 @@ protected:
 	void CheckForTimeout();
 	void SendKeepAliveCommand();
 
-	virtual int OnLayerCallback(std::list<t_callbackMsg>& callbacks);
+	virtual int OnLayerCallback(rde::list<t_callbackMsg>& callbacks);
 	void SetFileExistsAction(int nAction, COverwriteRequestData *pData);
 #ifndef MPEXT_NO_SSL
 	void SetVerifyCertResult( int nResult, t_SslCertData *pData );
@@ -142,7 +142,7 @@ protected:
 	CTime m_LastSendTime;
 	
 	CString m_ServerName;
-	std::list<CStringA> m_RecvBuffer;
+	rde::list<CStringA> m_RecvBuffer;
 	CTime m_LastRecvTime;
 	class CLogonData;
 	class CListData;

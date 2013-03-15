@@ -67,10 +67,10 @@ public:
 	
 protected:
 	BOOL m_bEmpty;
-	std::list<CString> m_Segments;
-	typedef std::list<CString>::iterator tIter;
-		typedef std::list<CString>::const_iterator tConstIter;
-	typedef std::list<CString>::const_iterator tConstIter;
+	rde::list<CString> m_Segments;
+	typedef rde::list<CString>::iterator tIter;
+		typedef rde::list<CString>::const_iterator tConstIter;
+	typedef rde::list<CString>::const_iterator tConstIter;
 	CString m_Prefix;
 	int m_nServerType;
 };
