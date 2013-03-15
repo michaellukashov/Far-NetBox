@@ -15,8 +15,40 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-TConfiguration * Configuration = NULL;
 TStoredSessionList * StoredSessions = NULL;
+//---------------------------------------------------------------------------
+TConfiguration * GetConfiguration()
+{
+  static TConfiguration * Configuration = NULL;
+  if (Configuration == NULL)
+  {
+    // configuration needs to be created and loaded before putty is initialized,
+    // so that random seed path is known
+    Configuration = CreateConfiguration();
+    try
+    {
+      Configuration->Load();
+    }
+    catch (Exception & E)
+    {
+      ShowExtendedException(&E);
+    }
+
+    PuttyInitialize();
+  }
+  return Configuration;
+}
+//---------------------------------------------------------------------------
+void DeleteConfiguration()
+{
+  static bool ConfigurationDeleted = false;
+  if (!ConfigurationDeleted)
+  {
+    delete GetConfiguration();
+    ConfigurationDeleted = true;
+  }
+}
+
 //---------------------------------------------------------------------------
 TQueryButtonAlias::TQueryButtonAlias() :
   Button(0)
@@ -49,49 +81,23 @@ bool IsAuthenticationPrompt(TPromptKind Kind)
 //---------------------------------------------------------------------------
 void CoreInitialize()
 {
-  CALLSTACK;
-  TRACE("CoreInitialize A");
   Randomize();
   CryptographyInitialize();
 
-  // configuration needs to be created and loaded before putty is initialized,
-  // so that random seed path is known
-  Configuration = CreateConfiguration();
-  TRACEFMT("CoreInitialize [%s]", Configuration->GetVersionStr().c_str());
-
-  TRACE("CoreInitialize E");
-  try
-  {
-    TRACE("CoreInitialize E1");
-    Configuration->Load();
-    TRACE("CoreInitialize F");
-  }
-  catch (Exception & E)
-  {
-    TRACE("CoreInitialize G");
-    ShowExtendedException(&E);
-  }
-
-  TRACE("CoreInitialize B");
-  PuttyInitialize();
   #ifndef NO_FILEZILLA
   TFileZillaIntf::Initialize();
   #endif
 
-  TRACE("CoreInitialize H");
   StoredSessions = new TStoredSessionList();
 
   try
   {
-    TRACE("CoreInitialize I");
     StoredSessions->Load();
   }
   catch (Exception & E)
   {
-    TRACE("CoreInitialize J");
     ShowExtendedException(&E);
   }
-  TRACE("CoreInitialize K");
 }
 //---------------------------------------------------------------------------
 void CoreFinalize()
@@ -99,7 +105,7 @@ void CoreFinalize()
   try
   {
     // only modified, implicit
-    Configuration->Save(false, false);
+    GetConfiguration()->Save(false, false);
   }
   catch(Exception & E)
   {
@@ -113,8 +119,7 @@ void CoreFinalize()
 
   delete StoredSessions;
   StoredSessions = NULL;
-  delete Configuration;
-  Configuration = NULL;
+  DeleteConfiguration();
 
   CryptographyFinalize();
 }

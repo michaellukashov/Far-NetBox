@@ -61,8 +61,8 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
     TRegistryStorage * SourceStorage = NULL;
     TRY_FINALLY (
     {
-      TRACEFMT("1a [%s]", Configuration->GetPuttySessionsKey().c_str());
-      Storage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
+      TRACEFMT("1a [%s]", GetConfiguration()->GetPuttySessionsKey().c_str());
+      Storage = new TRegistryStorage(GetConfiguration()->GetPuttySessionsKey());
       Storage->SetAccessMode(smReadWrite);
       // make it compatible with putty
       Storage->SetMungeStringValues(false);
@@ -78,7 +78,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
         else
         {
           TRACE("4");
-          SourceStorage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
+          SourceStorage = new TRegistryStorage(GetConfiguration()->GetPuttySessionsKey());
           SourceStorage->SetMungeStringValues(false);
           SourceStorage->SetForceAnsi(true);
           if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
@@ -156,7 +156,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
 //---------------------------------------------------------------------------
 bool FindTool(const UnicodeString & Name, UnicodeString & Path)
 {
-  UnicodeString AppPath = IncludeTrailingBackslash(ExtractFilePath(Configuration->ModuleFileName()));
+  UnicodeString AppPath = IncludeTrailingBackslash(ExtractFilePath(GetConfiguration()->ModuleFileName()));
   Path = AppPath + Name;
   bool Result = true;
   if (!FileExists(Path))

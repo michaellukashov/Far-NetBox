@@ -1,5 +1,6 @@
 NetBox 2.1.27 ??.03.2013
 --------------------
+  * Bugfix: x64: Plugin hangs when trying to delete session
   * Improvement: Fix speed issues
   * WebDAV: Fix copying large (>4GB) files from/to WebDAV server
 

@@ -518,7 +518,7 @@ TTerminal::~TTerminal()
       (FDirectoryChangesCache != NULL))
   {
     TRACE("3");
-    Configuration->SaveDirectoryChangesCache(GetSessionData()->GetSessionKey(),
+    FConfiguration->SaveDirectoryChangesCache(GetSessionData()->GetSessionKey(),
       FDirectoryChangesCache);
   }
 
@@ -545,8 +545,8 @@ void TTerminal::Init(TSessionData * SessionData, TConfiguration * Configuration)
   FConfiguration = Configuration;
   FSessionData = new TSessionData(L"");
   FSessionData->Assign(SessionData);
-  FLog = new TSessionLog(this, FSessionData, Configuration);
-  FActionLog = new TActionLog(this, FSessionData, Configuration);
+  FLog = new TSessionLog(this, FSessionData, FConfiguration);
+  FActionLog = new TActionLog(this, FSessionData, FConfiguration);
   FFiles = new TRemoteDirectory(this);
   FExceptionOnFail = 0;
   FInTransaction = 0;
@@ -604,7 +604,7 @@ void TTerminal::Idle()
   // "receives the information"
   if (GetActive())
   {
-    if (Configuration->GetActualLogProtocol() >= 1)
+    if (FConfiguration->GetActualLogProtocol() >= 1)
     {
       // LogEvent(L"Session upkeep");
     }
@@ -642,7 +642,7 @@ void TTerminal::Idle()
 //---------------------------------------------------------------------
 RawByteString TTerminal::EncryptPassword(const UnicodeString & Password)
 {
-  return Configuration->EncryptPassword(Password, GetSessionData()->GetSessionName());
+  return FConfiguration->EncryptPassword(Password, GetSessionData()->GetSessionName());
 }
 //---------------------------------------------------------------------
 UnicodeString TTerminal::DecryptPassword(const RawByteString & Password)
@@ -650,7 +650,7 @@ UnicodeString TTerminal::DecryptPassword(const RawByteString & Password)
   UnicodeString Result;
   try
   {
-    Result = Configuration->DecryptPassword(Password, GetSessionData()->GetSessionName());
+    Result = FConfiguration->DecryptPassword(Password, GetSessionData()->GetSessionName());
   }
   catch(EAbort &)
   {
@@ -821,7 +821,7 @@ void TTerminal::Open()
                 assert(FSecureShell == NULL);
                 TRY_FINALLY (
                 {
-                  FSecureShell = new TSecureShell(this, FSessionData, GetLog(), Configuration);
+                  FSecureShell = new TSecureShell(this, FSessionData, GetLog(), FConfiguration);
                   try
                   {
                     // there will be only one channel in this session
@@ -898,10 +898,10 @@ void TTerminal::Open()
             TRACE("Open 15");
             assert(FDirectoryChangesCache == NULL);
             FDirectoryChangesCache = new TRemoteDirectoryChangesCache(
-              Configuration->GetCacheDirectoryChangesMaxSize());
+              FConfiguration->GetCacheDirectoryChangesMaxSize());
             if (GetSessionData()->GetPreserveDirectoryChanges())
             {
-              Configuration->LoadDirectoryChangesCache(GetSessionData()->GetSessionKey(),
+              FConfiguration->LoadDirectoryChangesCache(GetSessionData()->GetSessionKey(),
                   FDirectoryChangesCache);
             }
           }
@@ -995,15 +995,15 @@ void TTerminal::OpenTunnel()
   FTunnelLocalPortNumber = FSessionData->GetTunnelLocalPortNumber();
   if (FTunnelLocalPortNumber == 0)
   {
-    FTunnelLocalPortNumber = Configuration->GetTunnelLocalPortNumberLow();
+    FTunnelLocalPortNumber = FConfiguration->GetTunnelLocalPortNumberLow();
     while (!IsListenerFree(FTunnelLocalPortNumber))
     {
       FTunnelLocalPortNumber++;
-      if (FTunnelLocalPortNumber > Configuration->GetTunnelLocalPortNumberHigh())
+      if (FTunnelLocalPortNumber > FConfiguration->GetTunnelLocalPortNumberHigh())
       {
         FTunnelLocalPortNumber = 0;
         FatalError(NULL, FMTLOAD(TUNNEL_NO_FREE_PORT,
-          Configuration->GetTunnelLocalPortNumberLow(), Configuration->GetTunnelLocalPortNumberHigh()));
+          FConfiguration->GetTunnelLocalPortNumberLow(), FConfiguration->GetTunnelLocalPortNumberHigh()));
       }
     }
     LogEvent(FORMAT(L"Autoselected tunnel local port number %d", FTunnelLocalPortNumber));
@@ -1033,12 +1033,12 @@ void TTerminal::OpenTunnel()
     FTunnelData->SetProxyDNS(FSessionData->GetProxyDNS());
     FTunnelData->SetProxyLocalhost(FSessionData->GetProxyLocalhost());
 
-    FTunnelLog = new TSessionLog(this, FTunnelData, Configuration);
+    FTunnelLog = new TSessionLog(this, FTunnelData, FConfiguration);
     FTunnelLog->SetParent(FLog);
     FTunnelLog->SetName(L"Tunnel");
     FTunnelLog->ReflectSettings();
     FTunnelUI = new TTunnelUI(this);
-    FTunnel = new TSecureShell(FTunnelUI, FTunnelData, FTunnelLog, Configuration);
+    FTunnel = new TSecureShell(FTunnelUI, FTunnelData, FTunnelLog, FConfiguration);
 
     FTunnelOpening = true;
     TRY_FINALLY (
@@ -1201,7 +1201,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
     Guard.Verify();
   }
 
-  if (AResult && (Configuration->GetRememberPassword()) &&
+  if (AResult && (FConfiguration->GetRememberPassword()) &&
       (Prompts->GetCount() == 1) && !(Prompts->Objects[0]) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
@@ -1277,19 +1277,19 @@ void TTerminal::DisplayBanner(const UnicodeString & Banner)
   CALLSTACK;
   if (GetOnDisplayBanner() != NULL)
   {
-    if (Configuration->GetForceBanners() ||
-        Configuration->ShowBanner(GetSessionData()->GetSessionKey(), Banner))
+    if (FConfiguration->GetForceBanners() ||
+        FConfiguration->ShowBanner(GetSessionData()->GetSessionKey(), Banner))
     {
       bool NeverShowAgain = false;
       int Options =
-        FLAGMASK(Configuration->GetForceBanners(), boDisableNeverShowAgain);
+        FLAGMASK(FConfiguration->GetForceBanners(), boDisableNeverShowAgain);
       TCallbackGuard Guard(this);
       GetOnDisplayBanner()(this, GetSessionData()->GetSessionName(), Banner,
         NeverShowAgain, Options);
       Guard.Verify();
-      if (!Configuration->GetForceBanners() && NeverShowAgain)
+      if (!FConfiguration->GetForceBanners() && NeverShowAgain)
       {
-        Configuration->NeverShowBanner(GetSessionData()->GetSessionKey(), Banner);
+        FConfiguration->NeverShowBanner(GetSessionData()->GetSessionKey(), Banner);
       }
     }
   }
@@ -1427,7 +1427,7 @@ void TTerminal::ReactOnCommand(int /*TFSCommand*/ Cmd)
       }
     }
   }
-  else if (ModifiesFiles && GetAutoReadDirectory() && Configuration->GetAutoReadDirectoryAfterOp())
+  else if (ModifiesFiles && GetAutoReadDirectory() && FConfiguration->GetAutoReadDirectoryAfterOp())
   {
     if (!InTransaction())
     {
@@ -1478,7 +1478,7 @@ bool TTerminal::DoQueryReopen(Exception * E)
       FSessionData->SetNumberOfRetries(NumberOfRetries);
 
       TQueryParams Params(qpAllowContinueOnError);
-      Params.Timeout = Configuration->GetSessionReopenAuto();
+      Params.Timeout = FConfiguration->GetSessionReopenAuto();
       Params.TimeoutAnswer = qaRetry;
       TQueryButtonAlias Aliases[1];
       Aliases[0].Button = qaRetry;
@@ -1522,8 +1522,8 @@ bool TTerminal::QueryReopen(Exception * E, intptr_t Params,
         {
           TRACE("QueryReopen 4");
           Result =
-            ((Configuration->GetSessionReopenTimeout() == 0) ||
-             (int(double(Now() - Start) * MSecsPerDay) < Configuration->GetSessionReopenTimeout())) &&
+            ((FConfiguration->GetSessionReopenTimeout() == 0) ||
+             (int(double(Now() - Start) * MSecsPerDay) < FConfiguration->GetSessionReopenTimeout())) &&
             DoQueryReopen(&E);
         }
         else
@@ -2128,7 +2128,7 @@ TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
     // no way to change batch overwrite mode when cpNewerOnly is on
     Result = boOlder;
   }
-  else if (FLAGSET(Params, cpNoConfirmation) || !Configuration->GetConfirmOverwriting())
+  else if (FLAGSET(Params, cpNoConfirmation) || !FConfiguration->GetConfirmOverwriting())
   {
     // no way to change batch overwrite mode when overwrite confirmations are off
     assert(OperationProgress->BatchOverwrite == boNo);
@@ -2206,7 +2206,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & FileName,
     switch (Result)
     {
       case qaNeverAskAgain:
-        Configuration->SetConfirmOverwriting(false);
+        FConfiguration->SetConfirmOverwriting(false);
         Result = qaYes;
         break;
 
@@ -2629,7 +2629,7 @@ void TTerminal::CustomReadDirectory(TRemoteFileList * FileList)
   assert(FFileSystem);
   FFileSystem->ReadDirectory(FileList);
 
-  if (Configuration->GetActualLogProtocol() >= 1)
+  if (FConfiguration->GetActualLogProtocol() >= 1)
   {
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
@@ -3541,7 +3541,7 @@ void TTerminal::RenameFile(const TRemoteFile * File,
   bool Proceed = true;
   // if filename doesn't contain path, we check for existence of file
   if ((File->GetFileName() != NewName) && CheckExistence &&
-      Configuration->GetConfirmOverwriting() &&
+      FConfiguration->GetConfirmOverwriting() &&
       UnixComparePaths(GetCurrentDirectory(), FFiles->GetDirectory()))
   {
     TRemoteFile * DuplicateFile = FFiles->FindFile(NewName);
@@ -3562,7 +3562,7 @@ void TTerminal::RenameFile(const TRemoteFile * File,
       if (Result == qaNeverAskAgain)
       {
         Proceed = true;
-        Configuration->SetConfirmOverwriting(false);
+        FConfiguration->SetConfirmOverwriting(false);
       }
       else
       {
@@ -3930,7 +3930,7 @@ TTerminal * TTerminal::GetCommandSession()
     {
       FCommandSession = new TSecondaryTerminal(this);
       (static_cast<TSecondaryTerminal *>(FCommandSession))->Init(GetSessionData(),
-        Configuration, L"Shell");
+        FConfiguration, L"Shell");
 
       FCommandSession->SetAutoReadDirectory(false);
 
@@ -5662,9 +5662,9 @@ TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal) :
 }
 
 void TSecondaryTerminal::Init(
-  TSessionData * ASessionData, TConfiguration * Configuration, const UnicodeString & Name)
+  TSessionData * ASessionData, TConfiguration * AConfiguration, const UnicodeString & Name)
 {
-  TTerminal::Init(ASessionData, Configuration);
+  TTerminal::Init(ASessionData, AConfiguration);
   assert(FMainTerminal != NULL);
   GetLog()->SetParent(FMainTerminal->GetLog());
   GetLog()->SetName(Name);
