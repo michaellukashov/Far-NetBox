@@ -217,9 +217,9 @@ UnicodeString TCopyParamRule::GetInfoStr(UnicodeString Separator) const
   return Result;
 }
 //---------------------------------------------------------------------------
-void TCopyParamRule::SetData(TCopyParamRuleData value)
+void TCopyParamRule::SetData(const TCopyParamRuleData & Value)
 {
-  FData = value;
+  FData = Value;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -1151,11 +1151,11 @@ const TCopyParamList * TGUIConfiguration::GetCopyParamList()
   return FCopyParamList;
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetCopyParamList(const TCopyParamList * value)
+void TGUIConfiguration::SetCopyParamList(const TCopyParamList * Value)
 {
-  if (!(*FCopyParamList == *value))
+  if (!(*FCopyParamList == *Value))
   {
-    *FCopyParamList = *value;
+    *FCopyParamList = *Value;
     FCopyParamListDefaults = false;
     Changed();
   }

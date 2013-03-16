@@ -80,7 +80,7 @@ public:
   bool operator ==(const TCopyParamRule & rhp) const;
 
   TCopyParamRuleData GetData() const { return FData; }
-  void SetData(TCopyParamRuleData Value);
+  void SetData(const TCopyParamRuleData & Value);
   bool GetEmpty() const;
 
 private:
