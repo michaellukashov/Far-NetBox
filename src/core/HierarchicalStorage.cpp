@@ -6,7 +6,6 @@
 #define TRACE_WRITING NOTRACING
 #define TRACE_ACCESS NOTRACING
 
-#include <vector>
 #include "Common.h"
 #include "Exceptions.h"
 #include "PuttyIntf.h"
@@ -463,7 +462,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
   TRegistry * Registry = Storage->FRegistry;
   bool Result = true;
   TStrings * Names = new TStringList();
-  std::vector<unsigned char, custom_nballocator_t<unsigned char> > Buffer(1024, 0);
+  rde::vector<unsigned char> Buffer(1024);
   TRY_FINALLY (
   {
     Registry->GetValueNames(Names);

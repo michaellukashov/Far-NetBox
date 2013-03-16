@@ -41,11 +41,7 @@
 #include <afxmt.h>
 
 //STL includes
-#include <list>
-#include <map>
-#include <vector>
-#include <deque>
-#include <set>
+#include <list.h>
 #include <algorithm>
 //---------------------------------------------------------------------------
 class CFileFix;

@@ -1591,7 +1591,7 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
       ProgressWidth - RemoteLabel.Length(), true) + L"\n";
     Message += StartTimeLabel + FSynchronizationStart.TimeString() + L"\n";
     Message += TimeElapsedLabel +
-      FormatDateTimeSpan(Configuration->GetTimeFormat(), TDateTime(Now() - FSynchronizationStart)) + L"\n";
+      FormatDateTimeSpan(GetConfiguration()->GetTimeFormat(), TDateTime(Now() - FSynchronizationStart)) + L"\n";
 
     WinSCPPlugin()->Message(0, (Collect ? ProgressTitleCompare : ProgressTitle), Message);
 
@@ -2650,13 +2650,13 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   // TCopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
   UnicodeString XmlFileName = IncludeTrailingBackslash(Param.DestPath) +
     ::ValidLocalFileName(::ExtractFilename(ExportData->GetName())) + L".netbox";
-  THierarchicalStorage * ExportStorage = new TXmlStorage(XmlFileName, Configuration->GetStoredSessionsSubKey());
+  THierarchicalStorage * ExportStorage = new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey());
   ExportStorage->Init();
   std::auto_ptr<THierarchicalStorage> ExportStoragePtr;
   ExportStoragePtr.reset(ExportStorage);
   ExportStorage->SetAccessMode(smReadWrite);
   {
-    if (ExportStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
+    if (ExportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
     {
       ExportData->Save(ExportStorage, false, FactoryDefaults);
     }
@@ -2834,10 +2834,10 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
       if (PanelItem->GetIsFile())
       {
         UnicodeString XmlFileName = ::IncludeTrailingBackslash(GetCurrentDir()) + FileName;
-        std::auto_ptr<THierarchicalStorage> ImportStoragePtr(new TXmlStorage(XmlFileName, Configuration->GetStoredSessionsSubKey()));
+        std::auto_ptr<THierarchicalStorage> ImportStoragePtr(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
         ImportStoragePtr->Init();
         ImportStoragePtr->SetAccessMode(smRead);
-        if (ImportStoragePtr->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false) &&
+        if (ImportStoragePtr->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
             ImportStoragePtr->HasSubKeys())
         {
           AnyData = true;
@@ -2999,7 +2999,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
   bool Result = false;
   assert(!FTerminal);
   FTerminal = new TTerminal();
-  FTerminal->Init(Data, Configuration);
+  FTerminal->Init(Data, GetConfiguration());
   try
   {
     FTerminal->SetOnQueryUser(MAKE_CALLBACK(TWinSCPFileSystem::TerminalQueryUser, this));
@@ -3026,7 +3026,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
     FTerminal->SetOnClose(MAKE_CALLBACK(TWinSCPFileSystem::TerminalClose, this));
 
     assert(FQueue == NULL);
-    FQueue = new TTerminalQueue(FTerminal, Configuration);
+    FQueue = new TTerminalQueue(FTerminal, GetConfiguration());
     FQueue->Init();
     FQueue->SetTransfersLimit(GUIConfiguration->GetQueueTransfersLimit());
     FQueue->SetOnQueryUser(MAKE_CALLBACK(TWinSCPFileSystem::TerminalQueryUser, this));
@@ -3564,7 +3564,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
       UnicodeString StatusLine;
       UnicodeString Value;
 
-      Value = FormatDateTimeSpan(Configuration->GetTimeFormat(), ProgressData.TimeElapsed());
+      Value = FormatDateTimeSpan(GetConfiguration()->GetTimeFormat(), ProgressData.TimeElapsed());
       StatusLine = TimeElapsedLabel +
                    ::StringOfChar(L' ', ProgressWidth / 2 - 1 - TimeElapsedLabel.Length() - Value.Length()) +
                    Value + L"  ";
@@ -3572,7 +3572,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
       UnicodeString LabelText;
       if (ProgressData.TotalSizeSet)
       {
-        Value = FormatDateTimeSpan(Configuration->GetTimeFormat(), ProgressData.TotalTimeLeft());
+        Value = FormatDateTimeSpan(GetConfiguration()->GetTimeFormat(), ProgressData.TotalTimeLeft());
         LabelText = TimeLeftLabel;
       }
       else
@@ -4006,7 +4006,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
             ::RemoveDir(ExcludeTrailingBackslash(ExtractFilePath(Info->GetFileName())));
           }
 
-          FMultipleEdits.erase(I);
+          FMultipleEdits.erase(I->first);
         }
       }
     }
@@ -4101,7 +4101,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   EditHistory.Directory = Directory;
   EditHistory.FileName = FileName;
 
-  TEditHistories::iterator ih = std::find(FEditHistories.begin(), FEditHistories.end(), EditHistory);
+  TEditHistories::iterator ih = rde::find(FEditHistories.begin(), FEditHistories.end(), EditHistory);
   if (ih != FEditHistories.end())
   {
     FEditHistories.erase(ih);

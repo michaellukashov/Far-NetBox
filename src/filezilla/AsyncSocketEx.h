@@ -265,7 +265,7 @@ protected:
 		CAsyncSocketExHelperWindow *m_pHelperWindow;
 		int nInstanceCount;
 		DWORD nThreadId;
-		std::list<CAsyncSocketEx*> layerCloseNotify;
+		rde::list<CAsyncSocketEx*> layerCloseNotify;
 	} *m_pLocalAsyncSocketExThreadData;
 
 	//List of the data structures for all threads
@@ -308,7 +308,7 @@ protected:
 	friend CAsyncSocketExLayer;
 
 	//Called by the layers to notify application of some events
-	virtual int OnLayerCallback(std::list<t_callbackMsg>& callbacks);
+	virtual int OnLayerCallback(rde::list<t_callbackMsg>& callbacks);
 #endif //NOLAYERS
 
 	// Used by Bind with AF_UNSPEC sockets
@@ -325,7 +325,7 @@ protected:
 
 #ifndef NOLAYERS
 	// Pending callbacks
-	std::list<t_callbackMsg> m_pendingCallbacks;
+	rde::list<t_callbackMsg> m_pendingCallbacks;
 #endif // NOLAYERS
 
 	virtual void LogSocketMessage(int nMessageType, LPCTSTR pMsgFormat) {};

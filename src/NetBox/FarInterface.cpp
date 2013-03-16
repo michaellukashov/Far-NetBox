@@ -41,7 +41,7 @@ void Busy(bool /*Start*/)
 //---------------------------------------------------------------------------
 UnicodeString SshVersionString()
 {
-  return FORMAT(L"NetBox-FAR-release-%s", Configuration->GetVersion().c_str());
+  return FORMAT(L"NetBox-FAR-release-%s", GetConfiguration()->GetVersion().c_str());
 }
 
 //---------------------------------------------------------------------------

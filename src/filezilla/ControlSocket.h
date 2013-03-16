@@ -113,7 +113,7 @@ public:
 	void ShowStatus(UINT nID, int type) const;
 	void ShowStatus(CString status,int type) const;
 
-	virtual int OnLayerCallback(std::list<t_callbackMsg>& callbacks);
+	virtual int OnLayerCallback(rde::list<t_callbackMsg>& callbacks);
 protected:
 
 	void Close();
@@ -145,11 +145,11 @@ protected:
 		__int64 nBytesAvailable;
 		__int64 nBytesTransferred;
 	};
-	static std::list<t_ActiveList> m_InstanceList[2];
+	static rde::list<t_ActiveList> m_InstanceList[2];
 	static CTime m_CurrentTransferTime[2];
 	static _int64 m_CurrentTransferLimit[2];
 	static CCriticalSection m_SpeedLimitSync;
-	_int64 GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _int64 &curLimit, std::list<t_ActiveList>::iterator &iter, enum transferDirection direction, int nBufSize);
+	_int64 GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _int64 &curLimit, rde::list<t_ActiveList>::iterator &iter, enum transferDirection direction, int nBufSize);
 #ifndef MPEXT_NO_SPEED_LIM_RULES
 	_int64 GetSpeedLimit(CTime &time, int valType, int valValue, SPEEDLIMITSLIST &list);
 #else

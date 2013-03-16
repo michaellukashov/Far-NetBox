@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector.h>
 #include "stdafx.h"
 #include <CoreDefs.hpp>
 
@@ -194,7 +195,7 @@ public:
   IndexedPropertyVoid<intptr_t, TList, &TList::PropertyGetItem, &TList::PropertySetItem> Items;
 
 private:
-  std::vector<void *, custom_nballocator_t<void *> > FList;
+  rde::vector<void *> FList;
 };
 
 class TObjectList : public TList
@@ -377,11 +378,11 @@ struct TStringItem
 };
 
 class TStringList;
-typedef std::vector<TStringItem, custom_nballocator_t<TStringItem> > TStringItemList;
 typedef intptr_t (TStringListSortCompare)(TStringList * List, intptr_t Index1, intptr_t Index2);
 
 class TStringList : public TStrings
 {
+  typedef rde::vector<TStringItem> TStringItemList;
   friend intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2);
 
 public:
@@ -781,10 +782,10 @@ private:
 // from wxvcl\sysset.h
 
 template <class T>
-class DelphiSet
+class DelphiSet : public TObject
 {
 private:
-  std::set<T> FSet;
+  rde::vector<T> FSet;
 
 public:
   DelphiSet()
@@ -815,7 +816,7 @@ public:
     if (this != &rhs)
     {
       FSet.clear();
-      FSet.insert(rhs.FSet.begin(),rhs.FSet.end());
+      FSet.assign(&*rhs.FSet.begin(), &*rhs.FSet.end());
     }
     return *this;
   }
@@ -834,10 +835,10 @@ public:
 
   DelphiSet<T>& operator *= (const DelphiSet<T>& rhs)
   {
-    typename std::set<T>::const_iterator itr;
+    typename rde::vector<T>::const_iterator itr;
     for (itr = rhs.FSet.begin(); itr != rhs.FSet.end(); ++itr)
     {
-      if (FSet.find(*itr) ==  FSet.end())
+      if (FSet.find(*itr) == FSet.end())
         continue;
       FSet.erase(*itr);
     }
@@ -859,7 +860,7 @@ public:
 
   DelphiSet<T>& Add(const T Value)
   {
-    FSet.insert(Value);
+    FSet.push_back(Value);
     return *this;
   }
 
@@ -877,7 +878,7 @@ public:
       throw Sysutils::Exception(FORMAT("Start Value %d is greater than End Value %d", StartValue, EndValue));
     int Range = RangeEndValue - RangeStartValue;
     T RangeStartForAdd = RangeStartValue;
-    for (int I = 0 ; I < Range; ++I)
+    for (int I = 0; I < Range; ++I)
       this->Add(RangeStartForAdd++);
     return *this;
   }
@@ -914,7 +915,7 @@ public:
     if (FSet.size() != rhs.FSet.size())
       return false;
 
-    std::set<T> setDifference;
+    rde::vector<T> setDifference;
     set_symmetric_difference(FSet.begin(), FSet.end(), rhs.FSet.begin(), rhs.FSet.end(), back_inserter(setDifference));
     return (setDifference.size() == 0);
 
@@ -1000,7 +1001,7 @@ inline double Trunc(double Value) { double intpart; modf(Value, &intpart); retur
 inline double Frac(double Value) { double intpart; return modf(Value, &intpart); }
 inline double Abs(double Value) { return fabs(Value); }
 //---------------------------------------------------------------------------
-class TCustomIniFile
+class TCustomIniFile : public TObject
 {
 public:
   TCustomIniFile() {}

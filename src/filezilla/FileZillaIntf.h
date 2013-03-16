@@ -2,7 +2,7 @@
 #ifndef FileZillaIntfH
 #define FileZillaIntfH
 //---------------------------------------------------------------------------
-#include <map>
+#include <map.h>
 
 #include <time.h>
 #include <FileZillaOpt.h>
@@ -248,9 +248,10 @@ enum ftp_capability_names_t
   rest_stream, // supports REST+STOR in addition to APPE
 };
 //---------------------------------------------------------------------------
-class TFTPServerCapabilities
+class TFTPServerCapabilities : public TObject
 {
 public:
+  TFTPServerCapabilities(){}
   ftp_capabilities_t GetCapability(ftp_capability_names_t Name);
   ftp_capabilities_t GetCapabilityString(ftp_capability_names_t Name, std::string * Option = NULL);
   void SetCapability(ftp_capability_names_t Name, ftp_capabilities_t Cap);
@@ -261,7 +262,11 @@ public:
     FCapabilityMap.clear();
     if (Source != NULL)
     {
-      FCapabilityMap = Source->FCapabilityMap;
+      for (rde::map<ftp_capability_names_t, t_cap>::iterator it = Source->FCapabilityMap.begin();
+        it != Source->FCapabilityMap.end(); ++it)
+      {
+        FCapabilityMap.insert(*it);
+      }
     }
   }
 protected:
@@ -277,7 +282,10 @@ protected:
     int number;
   };
 
-  std::map<ftp_capability_names_t, t_cap> FCapabilityMap;
+  rde::map<ftp_capability_names_t, t_cap> FCapabilityMap;
+private:
+  TFTPServerCapabilities(const TFTPServerCapabilities &);
+  TFTPServerCapabilities & operator = (const TFTPServerCapabilities &);
 };
 #endif
 //---------------------------------------------------------------------------

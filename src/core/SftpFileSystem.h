@@ -95,7 +95,7 @@ protected:
   UnicodeString FHomeDirectory;
   AnsiString FEOL;
   TList * FPacketReservations;
-  std::vector<uintptr_t, custom_nballocator_t<uintptr_t> > FPacketNumbers;
+  rde::vector<uintptr_t> FPacketNumbers;
   char FPreviousLoggedPacket;
   int FNotLoggedPackets;
   int FBusy;

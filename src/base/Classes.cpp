@@ -246,7 +246,7 @@ void TList::Clear()
   SetCount(0);
 }
 
-void QuickSort(std::vector<void *, custom_nballocator_t<void *> > & SortList, intptr_t L, intptr_t R,
+void QuickSort(rde::vector<void *> & SortList, intptr_t L, intptr_t R,
   CompareFunc SCompare)
 {
   intptr_t I;
@@ -534,7 +534,7 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
   TRY_FINALLY (
   {
     Clear();
-    std::vector<std::wstring> lines;
+    rde::vector<std::wstring> lines;
     std::wstring delim = std::wstring(1, GetDelimiter());
     delim.append(1, L'\n');
     std::wstring StrValue = Value.c_str();
@@ -1023,11 +1023,13 @@ void TStringList::InsertItem(intptr_t Index, const UnicodeString & S, TObject * 
     Classes::Error(SListIndexError, Index);
   }
   Changing();
-  // if (FCount == FCapacity) Grow();
   TStringItem Item;
   Item.FString = S;
   Item.FObject = AObject;
-  FList.insert(FList.begin() + Index, Item);
+  if (Index == FList.size())
+    FList.push_back(Item);
+  else
+    FList.insert(FList.begin() + Index, Item);
   Changed();
 }
 
@@ -1159,15 +1161,7 @@ void TStringList::Changed()
 
 void TStringList::Insert(intptr_t Index, const UnicodeString & S)
 {
-  if ((Index == NPOS) || (Index > static_cast<intptr_t>(FList.size())))
-  {
-    Classes::Error(SListIndexError, Index);
-  }
-  TStringItem Item;
-  Item.FString = S;
-  Item.FObject = NULL;
-  FList.insert(FList.begin() + Index, Item);
-  Changed();
+  InsertItem(Index, S, NULL);
 }
 
 void TStringList::Sort()
@@ -1829,7 +1823,7 @@ void TRegistry::GetKeyNames(TStrings * Strings) const
   if (GetKeyInfo(Info))
   {
     S.SetLength(static_cast<intptr_t>(Info.MaxSubKeyLen) + 1);
-    for (unsigned int I = 0; I < Info.NumSubKeys; I++)
+    for (DWORD I = 0; I < Info.NumSubKeys; I++)
     {
       DWORD Len = Info.MaxSubKeyLen + 1;
       RegEnumKeyEx(GetCurrentKey(), static_cast<DWORD>(I), &S[1], &Len, NULL, NULL, NULL, NULL);
@@ -1904,7 +1898,7 @@ bool TRegistry::DeleteKey(const UnicodeString & Key)
       {
         UnicodeString KeyName;
         KeyName.SetLength(Info.MaxSubKeyLen + 1);
-        for (intptr_t I = Info.NumSubKeys - 1; I >= 0; I--)
+        for (intptr_t I = static_cast<intptr_t>(Info.NumSubKeys) - 1; I >= 0; I--)
         {
           DWORD Len = Info.MaxSubKeyLen + 1;
           if (RegEnumKeyEx(DeleteKey, static_cast<DWORD>(I), &KeyName[1], &Len,

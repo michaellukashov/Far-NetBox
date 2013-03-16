@@ -5,7 +5,6 @@
 #ifndef NO_FILEZILLA
 #define TRACE_FZAPI NOTRACING
 //---------------------------------------------------------------------------
-#include <deque>
 #ifndef MPEXT
 #define MPEXT
 #endif
@@ -164,9 +163,21 @@ bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
   return FFileSystem->GetFileModificationTimeInUtc(FileName, Time);
 }
 //---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-class TMessageQueue : public TObject, public std::deque<std::pair<WPARAM, LPARAM> > // , custom_nballocator_t<std::pair<WPARAM, LPARAM> > >
+struct message_t
 {
+  message_t() : wparam(0), lparam(0)
+  {}
+  message_t(WPARAM w, LPARAM l) : wparam(w), lparam(l)
+  {}
+  WPARAM wparam;
+  LPARAM lparam;
+};
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+class TMessageQueue : public TObject, public rde::vector<message_t>
+{
+public:
+  typedef message_t value_type;
 };
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2518,7 +2529,7 @@ bool TFTPFileSystem::ProcessMessage()
     if (Result)
     {
       Message = FQueue->front();
-      FQueue->pop_front();
+      FQueue->erase(FQueue->begin());
     }
     else
     {
@@ -2531,7 +2542,7 @@ bool TFTPFileSystem::ProcessMessage()
   if (Result)
   {
     TRACEFMT("2 [%x] (%x) [%x]", int(Message.first), int((Message.first >> 16) & 0xFFFF), int(Message.second));
-    FFileZillaIntf->HandleMessage(Message.first, Message.second);
+    FFileZillaIntf->HandleMessage(Message.wparam, Message.lparam);
   }
 
   TRACE("/");

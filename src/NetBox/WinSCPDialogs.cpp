@@ -446,20 +446,20 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
 
   Dialog->AddStandardButtons();
 
-  AutoReadDirectoryAfterOpCheck->SetChecked(Configuration->GetAutoReadDirectoryAfterOp());
+  AutoReadDirectoryAfterOpCheck->SetChecked(GetConfiguration()->GetAutoReadDirectoryAfterOp());
 
   Result = (Dialog->ShowModal() == brOK);
 
   if (Result)
   {
-    Configuration->BeginUpdate();
+    GetConfiguration()->BeginUpdate();
     TRY_FINALLY (
     {
-      Configuration->SetAutoReadDirectoryAfterOp(AutoReadDirectoryAfterOpCheck->GetChecked());
+      GetConfiguration()->SetAutoReadDirectoryAfterOp(AutoReadDirectoryAfterOpCheck->GetChecked());
     }
     ,
     {
-      Configuration->EndUpdate();
+      GetConfiguration()->EndUpdate();
     }
     );
   }
@@ -532,35 +532,35 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 
   Dialog->AddStandardButtons();
 
-  LoggingCheck->SetChecked(Configuration->GetLogging());
-  LogProtocolCombo->SetItemIndex(Configuration->GetLogProtocol());
-  LogToFileCheck->SetChecked(Configuration->GetLogToFile());
+  LoggingCheck->SetChecked(GetConfiguration()->GetLogging());
+  LogProtocolCombo->SetItemIndex(GetConfiguration()->GetLogProtocol());
+  LogToFileCheck->SetChecked(GetConfiguration()->GetLogToFile());
   LogFileNameEdit->SetText(
-    (!Configuration->GetLogToFile() && Configuration->GetLogFileName().IsEmpty()) ?
+    (!GetConfiguration()->GetLogToFile() && GetConfiguration()->GetLogFileName().IsEmpty()) ?
     IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"&s.log" :
-    Configuration->GetLogFileName());
-  LogFileAppendButton->SetChecked(Configuration->GetLogFileAppend());
-  LogFileOverwriteButton->SetChecked(!Configuration->GetLogFileAppend());
+    GetConfiguration()->GetLogFileName());
+  LogFileAppendButton->SetChecked(GetConfiguration()->GetLogFileAppend());
+  LogFileOverwriteButton->SetChecked(!GetConfiguration()->GetLogFileAppend());
 
   Result = (Dialog->ShowModal() == brOK);
 
   if (Result)
   {
-    Configuration->BeginUpdate();
+    GetConfiguration()->BeginUpdate();
     TRY_FINALLY (
     {
-      Configuration->SetLogging(LoggingCheck->GetChecked());
-      Configuration->SetLogProtocol((int)LogProtocolCombo->GetItemIndex());
-      Configuration->SetLogToFile(LogToFileCheck->GetChecked());
+      GetConfiguration()->SetLogging(LoggingCheck->GetChecked());
+      GetConfiguration()->SetLogProtocol((int)LogProtocolCombo->GetItemIndex());
+      GetConfiguration()->SetLogToFile(LogToFileCheck->GetChecked());
       if (LogToFileCheck->GetChecked())
       {
-        Configuration->SetLogFileName(LogFileNameEdit->GetText());
+        GetConfiguration()->SetLogFileName(LogFileNameEdit->GetText());
       }
-      Configuration->SetLogFileAppend(LogFileAppendButton->GetChecked());
+      GetConfiguration()->SetLogFileAppend(LogFileAppendButton->GetChecked());
     }
     ,
     {
-      Configuration->EndUpdate();
+      GetConfiguration()->EndUpdate();
     }
     );
   }
@@ -671,17 +671,17 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   ResumeThresholdEdit->SetAsInteger(
     static_cast<int>(GUIConfiguration->GetDefaultCopyParam().GetResumeThreshold() / 1024));
 
-  SessionReopenAutoCheck->SetChecked((Configuration->GetSessionReopenAuto() > 0));
-  SessionReopenAutoEdit->SetAsInteger((Configuration->GetSessionReopenAuto() > 0 ?
-    (Configuration->GetSessionReopenAuto() / 1000) : 5));
-  SessionReopenNumberOfRetriesEdit->SetAsInteger((Configuration->GetSessionReopenAutoMaximumNumberOfRetries() > 0 ?
-    Configuration->GetSessionReopenAutoMaximumNumberOfRetries() : CONST_DEFAULT_NUMBER_OF_RETRIES));
+  SessionReopenAutoCheck->SetChecked((GetConfiguration()->GetSessionReopenAuto() > 0));
+  SessionReopenAutoEdit->SetAsInteger((GetConfiguration()->GetSessionReopenAuto() > 0 ?
+    (GetConfiguration()->GetSessionReopenAuto() / 1000) : 5));
+  SessionReopenNumberOfRetriesEdit->SetAsInteger((GetConfiguration()->GetSessionReopenAutoMaximumNumberOfRetries() > 0 ?
+    GetConfiguration()->GetSessionReopenAutoMaximumNumberOfRetries() : CONST_DEFAULT_NUMBER_OF_RETRIES));
 
   Result = (Dialog->ShowModal() == brOK);
 
   if (Result)
   {
-    Configuration->BeginUpdate();
+    GetConfiguration()->BeginUpdate();
     TRY_FINALLY (
     {
       TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
@@ -693,14 +693,14 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
       GUIConfiguration->SetDefaultCopyParam(CopyParam);
 
-      Configuration->SetSessionReopenAuto(
+      GetConfiguration()->SetSessionReopenAuto(
         (SessionReopenAutoCheck->GetChecked() ? (SessionReopenAutoEdit->GetAsInteger() * 1000) : 0));
-      Configuration->SetSessionReopenAutoMaximumNumberOfRetries(
+      GetConfiguration()->SetSessionReopenAutoMaximumNumberOfRetries(
         (SessionReopenAutoCheck->GetChecked() ? SessionReopenNumberOfRetriesEdit->GetAsInteger() : CONST_DEFAULT_NUMBER_OF_RETRIES));
     }
     ,
     {
-      Configuration->EndUpdate();
+      GetConfiguration()->EndUpdate();
     }
     );
   }
@@ -755,7 +755,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
 
   if (Result)
   {
-    Configuration->BeginUpdate();
+    GetConfiguration()->BeginUpdate();
     TRY_FINALLY (
     {
       TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
@@ -770,7 +770,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
     }
     ,
     {
-      Configuration->EndUpdate();
+      GetConfiguration()->EndUpdate();
     }
     );
   }
@@ -849,7 +849,7 @@ bool TTransferEditorConfigurationDialog::Execute()
 
   if (Result)
   {
-    Configuration->BeginUpdate();
+    GetConfiguration()->BeginUpdate();
     TRY_FINALLY (
     {
       FarConfiguration->SetEditorDownloadDefaultMode(EditorDownloadDefaultButton->GetChecked());
@@ -859,7 +859,7 @@ bool TTransferEditorConfigurationDialog::Execute()
     }
     ,
     {
-      Configuration->EndUpdate();
+      GetConfiguration()->EndUpdate();
     }
     );
   }
@@ -932,7 +932,7 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
   Dialog->AddStandardButtons();
 
   ConfirmOverwritingCheck->SetSelected(!FarConfiguration->GetConfirmOverwritingOverride() ?
-    BSTATE_3STATE : (Configuration->GetConfirmOverwriting() ? BSTATE_CHECKED :
+    BSTATE_3STATE : (GetConfiguration()->GetConfirmOverwriting() ? BSTATE_CHECKED :
                        BSTATE_UNCHECKED));
   ConfirmCommandSessionCheck->SetChecked(GUIConfiguration->GetConfirmCommandSession());
   ConfirmResumeCheck->SetChecked(GUIConfiguration->GetConfirmResume());
@@ -942,7 +942,7 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
 
   if (Result)
   {
-    Configuration->BeginUpdate();
+    GetConfiguration()->BeginUpdate();
     TRY_FINALLY (
     {
       FarConfiguration->SetConfirmOverwritingOverride(
@@ -951,13 +951,13 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
       GUIConfiguration->SetConfirmResume(ConfirmResumeCheck->GetChecked());
       if (FarConfiguration->GetConfirmOverwritingOverride())
       {
-        Configuration->SetConfirmOverwriting(ConfirmOverwritingCheck->GetChecked());
+        GetConfiguration()->SetConfirmOverwriting(ConfirmOverwritingCheck->GetChecked());
       }
       FarConfiguration->SetConfirmSynchronizedBrowsing(ConfirmSynchronizedBrowsingCheck->GetChecked());
     }
     ,
     {
-      Configuration->EndUpdate();
+      GetConfiguration()->EndUpdate();
     }
     );
   }
@@ -1011,7 +1011,7 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
 
   if (Result)
   {
-    Configuration->BeginUpdate();
+    GetConfiguration()->BeginUpdate();
     TRY_FINALLY (
     {
       GUIConfiguration->SetPuttyPath(PuttyPathEdit->GetText());
@@ -1022,7 +1022,7 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
     }
     ,
     {
-      Configuration->EndUpdate();
+      GetConfiguration()->EndUpdate();
     }
     );
   }
@@ -1050,18 +1050,18 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   TFarText * Text;
   TFarButton * Button;
 
-  // UnicodeString ProductName = Configuration->GetFileInfoString(L"ProductName");
+  // UnicodeString ProductName = GetConfiguration()->GetFileInfoString(L"ProductName");
   UnicodeString ProductName = LoadStr(WINSCPFAR_NAME);
   UnicodeString Comments;
   try
   {
-    Comments = Configuration->GetFileInfoString(L"Comments");
+    Comments = GetConfiguration()->GetFileInfoString(L"Comments");
   }
   catch (...)
   {
     Comments = L"";
   }
-  UnicodeString LegalCopyright; // = Configuration->GetFileInfoString(L"LegalCopyright");
+  UnicodeString LegalCopyright; // = GetConfiguration()->GetFileInfoString(L"LegalCopyright");
 
   int Height = 15;
   #ifndef NO_FILEZILLA
@@ -1084,11 +1084,11 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_ABOUT)).c_str()));
   Text = new TFarText(this);
-  Text->SetCaption(Configuration->GetFileInfoString(L"FileDescription"));
+  Text->SetCaption(GetConfiguration()->GetFileInfoString(L"FileDescription"));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  Text->SetCaption(FORMAT(GetMsg(ABOUT_VERSION).c_str(), Configuration->GetVersion().c_str(), NETBOX_VERSION_BUILD));
+  Text->SetCaption(FORMAT(GetMsg(ABOUT_VERSION).c_str(), GetConfiguration()->GetVersion().c_str(), NETBOX_VERSION_BUILD));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
@@ -1128,7 +1128,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   {
     Text = new TFarText(this);
     Text->Move(0, 1);
-    Text->SetCaption(Configuration->GetFileInfoString(L"LegalCopyright"));
+    Text->SetCaption(GetConfiguration()->GetFileInfoString(L"LegalCopyright"));
     Text->SetCenterGroup(true);
   }
 
@@ -2577,8 +2577,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TRY_FINALLY (
   {
     TunnelLocalPortNumberEdit->GetItems()->Add(GetMsg(LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN));
-    for (intptr_t Index = Configuration->GetTunnelLocalPortNumberLow();
-         Index <= Configuration->GetTunnelLocalPortNumberHigh(); ++Index)
+    for (intptr_t Index = GetConfiguration()->GetTunnelLocalPortNumberLow();
+         Index <= GetConfiguration()->GetTunnelLocalPortNumberHigh(); ++Index)
     {
       TunnelLocalPortNumberEdit->GetItems()->Add(IntToStr(Index));
     }
@@ -4078,7 +4078,7 @@ bool TSessionDialog::CloseQuery()
   }
 
   if (CanClose && !PasswordEdit->GetText().IsEmpty() &&
-      !Configuration->GetDisablePasswordStoring() &&
+      !GetConfiguration()->GetDisablePasswordStoring() &&
       (PasswordEdit->GetText() != FSessionData->GetPassword()) &&
       (((GetResult() == brOK)) ||
        ((GetResult() == brConnect) && (FAction == saEdit))))
@@ -4230,7 +4230,7 @@ void TSessionDialog::KexButtonClick(TFarButton * Sender, bool & Close)
 void TSessionDialog::AuthGSSAPICheckAllowChange(TFarDialogItem * /*Sender*/,
     void * NewState, bool & Allow)
 {
-  if ((reinterpret_cast<size_t>(NewState) == BSTATE_CHECKED) && !Configuration->GetGSSAPIInstalled())
+  if ((reinterpret_cast<size_t>(NewState) == BSTATE_CHECKED) && !GetConfiguration()->GetGSSAPIInstalled())
   {
     Allow = false;
     TWinSCPPlugin * WinSCPPlugin = dynamic_cast<TWinSCPPlugin *>(FarPlugin);
@@ -5585,7 +5585,7 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
       Params->SetQueueNoConfirmation(QueueNoConfirmationCheck->GetChecked());
     }
 
-    Configuration->BeginUpdate();
+    GetConfiguration()->BeginUpdate();
     TRY_FINALLY (
     {
       if (SaveSettingsCheck->GetChecked())
@@ -5595,7 +5595,7 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     }
     ,
     {
-      Configuration->EndUpdate();
+      GetConfiguration()->EndUpdate();
     }
     );
   }

@@ -26,6 +26,7 @@
 // #include "dl/include.hpp"
 
 #include "calculator.hpp"
+#include "DynamicQueue.hpp"
 
 using namespace boost::unit_test;
 
@@ -94,5 +95,23 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
   BOOST_TEST_MESSAGE("mul = " << calc.mul(10, 20));
   BOOST_TEST_MESSAGE("sqrt = " << calc.sqrt(25));
 }*/
+
+BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
+{
+  DynamicQueue<int> q;
+  q.Reserve(10);
+  q.Put(1);
+  q.Put(2);
+  q.Put(3);
+  int val = q.Get();
+  BOOST_TEST_MESSAGE("val = " << val);
+  BOOST_CHECK(val == 1);
+  val = q.Get();
+  BOOST_TEST_MESSAGE("val = " << val);
+  BOOST_CHECK(val == 2);
+  val = q.Get();
+  BOOST_TEST_MESSAGE("val = " << val);
+  BOOST_CHECK(val == 3);
+}
 
 BOOST_AUTO_TEST_SUITE_END()

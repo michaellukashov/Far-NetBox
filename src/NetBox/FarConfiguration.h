@@ -124,6 +124,6 @@ private:
   intptr_t FarConfirmations();
 };
 //---------------------------------------------------------------------------
-#define FarConfiguration (static_cast<TFarConfiguration *>(Configuration))
+#define FarConfiguration (dynamic_cast<TFarConfiguration *>(GetConfiguration()))
 //---------------------------------------------------------------------------
 #endif

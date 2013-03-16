@@ -1308,13 +1308,14 @@ void TConfiguration::SetPermanentActionsLogFileName(const UnicodeString & Value)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-void TShortCuts::Add(TShortCut ShortCut)
+void TShortCuts::Add(const TShortCut & ShortCut)
 {
-  FShortCuts.insert(ShortCut);
+  FShortCuts.push_back(ShortCut);
 }
 //---------------------------------------------------------------------------
-bool TShortCuts::Has(TShortCut ShortCut) const
+bool TShortCuts::Has(const TShortCut & ShortCut) const
 {
-  return (FShortCuts.count(ShortCut) != 0);
+  rde::vector<TShortCut>::iterator it = const_cast<TShortCuts *>(this)->FShortCuts.find(ShortCut);
+  return (it != FShortCuts.end());
 }
 

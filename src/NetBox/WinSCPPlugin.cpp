@@ -68,10 +68,6 @@ void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
   try
   {
     TCustomFarPlugin::SetStartupInfo(Info);
-    assert(!FInitialized);
-    CoreInitialize();
-    CleanupConfiguration();
-    FInitialized = true;
   }
   catch(Exception & E)
   {
@@ -249,6 +245,13 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
   TWinSCPFileSystem * FileSystem = NULL;
   try
   {
+    if (!FInitialized)
+    {
+      CoreInitialize();
+      CleanupConfiguration();
+      FInitialized = true;
+    }
+
     if ((OpenFrom == OPEN_PLUGINSMENU) &&
         (!FarConfiguration->GetPluginsMenu() || (Item == 1)))
     {
@@ -344,10 +347,10 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         THierarchicalStorage * ImportStorage = NULL;
         TRY_FINALLY (
         {
-          ImportStorage = new TXmlStorage(XmlFileName, Configuration->GetStoredSessionsSubKey());
+          ImportStorage = new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey());
           ImportStorage->Init();
           ImportStorage->SetAccessMode(smRead);
-          if (!(ImportStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false) &&
+          if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
                 ImportStorage->HasSubKeys()))
           {
             assert(false);

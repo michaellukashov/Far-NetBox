@@ -16,6 +16,18 @@
 #include <atlcore.h>
 #include <limits.h>
 
+#ifdef USE_DLMALLOC
+#include <dlmalloc/malloc-2.8.6.h>
+#define nb_malloc(size) dlmalloc(size)
+#define nb_calloc(count,size) dlcalloc(count,size)
+#define nb_realloc(ptr,size) dlrealloc(ptr,size)
+#define nb_free(ptr) dlfree(ptr)
+#else
+#define nb_malloc(size) ::malloc(size)
+#define nb_calloc(count,size) ::calloc(count,size)
+#define nb_realloc(ptr,size) ::realloc(ptr,size)
+#define nb_free(ptr) ::free(ptr)
+#endif
 
 #pragma pack(push,_ATL_PACKING)
 namespace ATL
@@ -54,17 +66,17 @@ class CCRTHeap :
 public:
 	_Ret_opt_bytecap_(nBytes) virtual void* Allocate(_In_ size_t nBytes) throw()
 	{
-		return( malloc( nBytes ) );
+		return( nb_malloc( nBytes ) );
 	}
 	virtual void Free(_In_opt_ void* p) throw()
 	{
-		free( p );
+		nb_free( p );
 	}
 	_Ret_opt_bytecap_(nBytes) virtual void* Reallocate(
 		_In_opt_ void* p,
 		_In_ size_t nBytes) throw()
 	{
-		return( realloc( p, nBytes ) );
+		return( nb_realloc( p, nBytes ) );
 	}
 	virtual size_t GetSize(_In_ void* p) throw()
 	{

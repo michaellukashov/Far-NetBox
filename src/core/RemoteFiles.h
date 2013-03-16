@@ -2,8 +2,7 @@
 #ifndef RemoteFilesH
 #define RemoteFilesH
 //---------------------------------------------------------------------------
-#include <vector>
-#include <map>
+#include <map.h>
 //---------------------------------------------------------------------------
 enum TModificationFmt { mfNone, mfMDHM, mfMDY, mfFull };
 //---------------------------------------------------------------------------
@@ -66,16 +65,12 @@ public:
   const TRemoteToken * Token(intptr_t Index) const;
 
 private:
-  typedef std::vector<TRemoteToken, custom_nballocator_t<TRemoteToken> > TTokens;
-  typedef std::map<UnicodeString, size_t,
-    std::less<UnicodeString>,
-    custom_nballocator_t<std::pair<UnicodeString, size_t> > > TNameMap;
-  typedef std::map<intptr_t, size_t,
-    std::less<intptr_t>,
-    custom_nballocator_t<std::pair<intptr_t, size_t> > > TIDMap;
+  typedef rde::vector<TRemoteToken> TTokens;
+  typedef rde::map<UnicodeString, size_t> TNameMap;
+  typedef rde::map<intptr_t, size_t> TIDMap;
   TTokens FTokens;
-  TNameMap FNameMap;
-  TIDMap FIDMap;
+  mutable TNameMap FNameMap;
+  mutable TIDMap FIDMap;
 };
 //---------------------------------------------------------------------------
 class TRemoteFile : public TPersistent

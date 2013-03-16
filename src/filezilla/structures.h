@@ -21,16 +21,18 @@
 
 #pragma once
 
+#include <Classes.hpp>
+
 class CServerPath;
 
-class t_directory
+class t_directory : public TObject
 {
 public:
 	t_directory();
 	~t_directory();
 	CServerPath path;
 	int num;
-	class t_direntry
+	class t_direntry : public Classes::TObject
 	{
 	public:
 		t_direntry();
@@ -42,7 +44,7 @@ public:
 		__int64 size;
 		bool dir;
 		bool bLink;
-		class t_date
+		class t_date : public Classes::TObject
 		{
 		public:
 			t_date();

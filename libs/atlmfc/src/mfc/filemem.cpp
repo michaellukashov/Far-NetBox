@@ -89,13 +89,13 @@ CMemFile::~CMemFile()
 
 BYTE* CMemFile::Alloc(SIZE_T nBytes)
 {
-	return (BYTE*)malloc(nBytes);
+	return (BYTE*)nb_malloc(nBytes);
 }
 
 BYTE* CMemFile::Realloc(BYTE* lpMem, SIZE_T nBytes)
 {
 	ASSERT(nBytes > 0);	// nBytes == 0 means free		
-	return (BYTE*)realloc(lpMem, nBytes);
+	return (BYTE*)nb_realloc(lpMem, nBytes);
 }
 
 BYTE* CMemFile::Memcpy(BYTE* lpMemTarget, const BYTE* lpMemSource,
@@ -115,7 +115,7 @@ void CMemFile::Free(BYTE* lpMem)
 {
 	ASSERT(lpMem != NULL);
 
-	free(lpMem);
+	nb_free(lpMem);
 }
 
 ULONGLONG CMemFile::GetPosition() const

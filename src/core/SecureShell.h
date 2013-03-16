@@ -2,7 +2,7 @@
 #ifndef SecureShellH
 #define SecureShellH
 
-#include <set>
+#include <vector.h>
 #include "PuttyIntf.h"
 #include "Configuration.h"
 #include "SessionData.h"
@@ -16,7 +16,7 @@ struct Config;
 struct _WSANETWORKEVENTS;
 typedef struct _WSANETWORKEVENTS WSANETWORKEVENTS;
 typedef UINT_PTR SOCKET;
-typedef std::set<SOCKET> TSockets;
+typedef rde::vector<SOCKET> TSockets;
 struct TPuttyTranslation;
 //---------------------------------------------------------------------------
 class TSecureShell : public TObject
@@ -68,7 +68,7 @@ private:
   static TCipher FuncToSsh2Cipher(const void * Cipher);
   UnicodeString FuncToCompression(int SshVersion, const void * Compress) const;
   void Init();
-  void SetActive(bool value);
+  void SetActive(bool Value);
   void inline CheckConnection(int Message = -1);
   void WaitForData();
   void Discard();
@@ -134,8 +134,8 @@ public:
   void UnregisterReceiveHandler(TNotifyEvent Handler);
 
   // interface to PuTTY core
-  void UpdateSocket(SOCKET value, bool Startup);
-  void UpdatePortFwdSocket(SOCKET value, bool Startup);
+  void UpdateSocket(SOCKET Value, bool Startup);
+  void UpdatePortFwdSocket(SOCKET Value, bool Startup);
   void PuttyFatalError(const UnicodeString & Error);
   bool PromptUser(bool ToServer,
     const UnicodeString & AName, bool NameRequired,
@@ -154,12 +154,12 @@ public:
   bool GetReady() const;
   bool GetActive() const { return FActive; }
   TCaptureOutputEvent & GetOnCaptureOutput() { return FOnCaptureOutput; }
-  void SetOnCaptureOutput(TCaptureOutputEvent value) { FOnCaptureOutput = value; }
+  void SetOnCaptureOutput(TCaptureOutputEvent Value) { FOnCaptureOutput = Value; }
   TDateTime GetLastDataSent() const { return FLastDataSent; }
   UnicodeString GetLastTunnelError() const { return FLastTunnelError; }
   UnicodeString GetUserName() const { return FUserName; }
   bool GetSimple() const { return FSimple; }
-  void SetSimple(bool value) { FSimple = value; }
+  void SetSimple(bool Value) { FSimple = Value; }
 private:
   TSecureShell(const TSecureShell &);
   TSecureShell & operator=(const TSecureShell &);

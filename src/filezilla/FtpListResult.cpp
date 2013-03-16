@@ -894,15 +894,13 @@ bool CFtpListResult::ParseShortDate(const char *str, int len, t_directory::t_dir
 
 	if (!numeric)
 	{
-		std::map<CString, int>::const_iterator iter;
-
 		char *tmpstr = new char[i + 1];
 		strncpy(tmpstr, str, i);
 		tmpstr[i] = 0;
 		strlwr(tmpstr);
 
 		USES_CONVERSION;
-		iter = m_MonthNamesMap.find(A2T(tmpstr));
+		rde::map<CString, int>::const_iterator iter = const_cast<CFtpListResult *>(this)->m_MonthNamesMap.find(A2T(tmpstr));
 		delete [] tmpstr;
 		if (iter == m_MonthNamesMap.end())
 			return false;
@@ -1028,7 +1026,6 @@ BOOL CFtpListResult::parseAsVMS(const char *line, const int linelen, t_directory
 	int pos = 0;
 	USES_CONVERSION;
 	
-	std::map<CString, int>::const_iterator iter;
 	t_directory::t_direntry dir;
 	
 	const char *str = GetNextToken(line, linelen, tokenlen, pos, 0);
@@ -1139,7 +1136,7 @@ BOOL CFtpListResult::parseAsVMS(const char *line, const int linelen, t_directory
 	char buffer[15] = {0};
 	memcpy(buffer, pMonth, p-pMonth);
 	strlwr(buffer);
-	iter = m_MonthNamesMap.find(A2T(buffer));
+	rde::map<CString, int>::const_iterator iter = m_MonthNamesMap.find(A2T(buffer));
 	if (iter == m_MonthNamesMap.end())
 		return FALSE;
 	dir.date.month = iter->second;
@@ -1540,7 +1537,6 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 	int prevstrlen = 0;
 
 	__int64 tmp = 0;
-	std::map<CString, int>::const_iterator iter;
 	while (str && !ParseSize(str, tokenlen, tmp) && !IsNumeric(skipped, skippedlen))
 	{
 		//Maybe the server has left no space between the group and the size
@@ -1551,7 +1547,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 		strlwr(tmpstr);
 
 		USES_CONVERSION;
-		iter = m_MonthNamesMap.find(A2T(tmpstr));
+		rde::map<CString, int>::const_iterator iter = m_MonthNamesMap.find(A2T(tmpstr));
 		delete [] tmpstr;
 		if (iter != m_MonthNamesMap.end())
 		{
@@ -1883,7 +1879,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 	{
 		//Try if we can recognize the month name
 		USES_CONVERSION;
-		iter = m_MonthNamesMap.find(A2T(lwr));
+		rde::map<CString, int>::const_iterator iter = m_MonthNamesMap.find(A2T(lwr));
 		delete [] lwr;
 		if (iter == m_MonthNamesMap.end())
 		{
@@ -2184,8 +2180,6 @@ BOOL CFtpListResult::parseAsOther(const char *line, const int linelen, t_directo
 	}
 	else
 	{
-		std::map<CString, int>::const_iterator iter;	
-
 		//Get size
 		direntry.size = strntoi64(skipped, skippedtokenlen);
 		
@@ -2198,7 +2192,7 @@ BOOL CFtpListResult::parseAsOther(const char *line, const int linelen, t_directo
 		strlwr(buffer);
 
 		USES_CONVERSION;
-		iter = m_MonthNamesMap.find(A2T(buffer));
+		rde::map<CString, int>::const_iterator iter = m_MonthNamesMap.find(A2T(buffer));
 		if (iter == m_MonthNamesMap.end())
 		{
 			direntry.dir = FALSE;

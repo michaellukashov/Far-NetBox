@@ -1,8 +1,5 @@
 #pragma once
 
-// #include <map>
-// #include <iostream>
-
 //------------------------------------------------------------------------------
 // Some utility templates for emulating properties --
 // preferring a library solution to a new language feature

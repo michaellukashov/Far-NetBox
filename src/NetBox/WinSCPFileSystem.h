@@ -273,10 +273,10 @@ private:
   TStrings * FCapturedLog;
   bool FOutputLog;
   TStrings * FAuthenticationLog;
-  typedef std::map<intptr_t, TMultipleEdit> TMultipleEdits;
+  typedef rde::map<intptr_t, TMultipleEdit> TMultipleEdits;
   TMultipleEdits FMultipleEdits;
   bool FLoadingSessionList;
-  typedef std::vector<TEditHistory> TEditHistories;
+  typedef rde::vector<TEditHistory> TEditHistories;
   TEditHistories FEditHistories;
   UnicodeString FLastPath;
   TStrings * FPathHistory;
