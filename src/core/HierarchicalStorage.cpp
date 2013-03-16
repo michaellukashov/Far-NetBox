@@ -436,7 +436,6 @@ TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(NULL)
 {
-  // DEBUG_PRINTF(L"AStorage = %s", AStorage.c_str());
   Init();
   CTRACEFMT(TRACE_ACCESS, "1 [%s] [%x]", AStorage.c_str(), int(ARootKey));
   FRegistry->RootKey = ARootKey;

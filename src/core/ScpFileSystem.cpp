@@ -1846,7 +1846,6 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
               Rights.GetOctal().data(),
               sz,
               DestFileName.data());
-            DEBUG_PRINTF(L"Buf = %s, DestFileName.c_str = %s", Buf.c_str(), DestFileName.c_str());
             FSecureShell->SendLine(Buf.c_str());
             SCPResponse();
             // Indicate we started transferring file, we need to finish it
