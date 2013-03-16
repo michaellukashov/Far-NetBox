@@ -2,8 +2,8 @@
 
 namespace rde
 {
-const char* allocator::get_name() const
+/*const char* allocator::get_name() const
 {
 	return m_name;
-}
+}*/
 } // rde
