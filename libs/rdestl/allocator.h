@@ -1,6 +1,8 @@
 #ifndef RDESTL_ALLOCATOR_H
 #define RDESTL_ALLOCATOR_H
 
+#include <stdlib.h>
+
 #ifdef USE_DLMALLOC
 #include <dlmalloc/malloc-2.8.6.h>
 #endif
