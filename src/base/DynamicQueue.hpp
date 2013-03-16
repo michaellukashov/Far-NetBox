@@ -62,13 +62,17 @@ public:
    void Reserve(int num);                        // Allocate buffer for num objects
    int GetNum(){return NumEntries;};             // Get number of objects stored
    bool IsEmpty() {return GetNum() == 0; };             // Get number of objects stored
+   inline bool empty() { return IsEmpty(); }
    int GetMaxNum(){return MaxNum;};              // Get number of objects that can be stored without re-allocating memory
    void Put(TX const & obj);                     // Add object to head of queue
+   inline TX push_back(TX const & obj) { Put(obj); }
    TX Get();                                     // Take object out from tail of queue
+   inline TX pop_front() { return Get(); }
    TX & operator[] (int i);                      // Access object with index i from the tail
+   inline TX front() { return operator[](GetNum() - 1); }
    // Define desired allocation size
    enum DefineSize {
-      AllocateSpace = 64 * 1024                       // Minimum size, in bytes, of automatic re-allocation done by Put
+      AllocateSpace = 4 * 1024                       // Minimum size, in bytes, of automatic re-allocation done by Put
    };
 private:
    TX * Buffer;                                  // Buffer containing data
