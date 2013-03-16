@@ -1186,9 +1186,9 @@ TSessionLog * TSessionLog::GetParent()
   return FParent;
 }
 //---------------------------------------------------------------------------
-void TSessionLog::SetParent(TSessionLog *value)
+void TSessionLog::SetParent(TSessionLog *Value)
 {
-  FParent = value;
+  FParent = Value;
 }
 //---------------------------------------------------------------------------
 bool TSessionLog::GetLogging()
@@ -1201,9 +1201,9 @@ TNotifyEvent & TSessionLog::GetOnChange()
   return TStringList::GetOnChange();
 }
 //---------------------------------------------------------------------------
-void TSessionLog::SetOnChange(TNotifyEvent value)
+void TSessionLog::SetOnChange(TNotifyEvent Value)
 {
-  TStringList::SetOnChange(value);
+  TStringList::SetOnChange(Value);
 }
 //---------------------------------------------------------------------------
 TNotifyEvent & TSessionLog::GetOnStateChange()
@@ -1211,9 +1211,9 @@ TNotifyEvent & TSessionLog::GetOnStateChange()
   return FOnStateChange;
 }
 //---------------------------------------------------------------------------
-void TSessionLog::SetOnStateChange(TNotifyEvent value)
+void TSessionLog::SetOnStateChange(TNotifyEvent Value)
 {
-  FOnStateChange = value;
+  FOnStateChange = Value;
 }
 //---------------------------------------------------------------------------
 UnicodeString TSessionLog::GetCurrentFileName()
@@ -1483,11 +1483,11 @@ void TActionLog::EndGroup()
   }
 }
 //---------------------------------------------------------------------------
-void TActionLog::SetEnabled(bool value)
+void TActionLog::SetEnabled(bool Value)
 {
-  if (GetEnabled() != value)
+  if (GetEnabled() != Value)
   {
-    FEnabled = value;
+    FEnabled = Value;
     ReflectSettings();
   }
 }

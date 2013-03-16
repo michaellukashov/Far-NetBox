@@ -63,7 +63,7 @@ public:
 public:
   void SetLocalInvalidChars(const UnicodeString & Value);
   bool GetReplaceInvalidChars() const;
-  void SetReplaceInvalidChars(bool value);
+  void SetReplaceInvalidChars(bool Value);
   UnicodeString RestoreChars(const UnicodeString & FileName) const;
 
 public:
@@ -94,31 +94,31 @@ public:
 
   const TFileMasks & GetAsciiFileMask() const;
   TFileMasks & GetAsciiFileMask();
-  void SetAsciiFileMask(TFileMasks value);
+  void SetAsciiFileMask(TFileMasks Value);
   const TFileNameCase & GetFileNameCase() const;
-  void SetFileNameCase(TFileNameCase value) { FFileNameCase = value; }
+  void SetFileNameCase(TFileNameCase Value) { FFileNameCase = Value; }
   bool GetPreserveReadOnly() const { return FPreserveReadOnly; }
-  void SetPreserveReadOnly(bool value) { FPreserveReadOnly = value; }
+  void SetPreserveReadOnly(bool Value) { FPreserveReadOnly = Value; }
   bool GetPreserveTime() const { return FPreserveTime; }
-  void SetPreserveTime(bool value) { FPreserveTime = value; }
+  void SetPreserveTime(bool Value) { FPreserveTime = Value; }
   const TRights & GetRights() const { return FRights; }
   TRights & GetRights() { return FRights; }
-  void SetRights(const TRights & value) { FRights.Assign(&value); }
+  void SetRights(const TRights & Value) { FRights.Assign(&Value); }
   TTransferMode GetTransferMode() const { return FTransferMode; }
-  void SetTransferMode(TTransferMode value) { FTransferMode = value; }
+  void SetTransferMode(TTransferMode Value) { FTransferMode = Value; }
   UnicodeString GetLogStr() const;
   bool GetAddXToDirectories() const { return FAddXToDirectories; }
-  void SetAddXToDirectories(bool value) { FAddXToDirectories = value; }
+  void SetAddXToDirectories(bool Value) { FAddXToDirectories = Value; }
   bool GetPreserveRights() const { return FPreserveRights; }
-  void SetPreserveRights(bool value) { FPreserveRights = value; }
+  void SetPreserveRights(bool Value) { FPreserveRights = Value; }
   bool GetIgnorePermErrors() const { return FIgnorePermErrors; }
-  void SetIgnorePermErrors(bool value) { FIgnorePermErrors = value; }
+  void SetIgnorePermErrors(bool Value) { FIgnorePermErrors = Value; }
   TResumeSupport GetResumeSupport() const { return FResumeSupport; }
-  void SetResumeSupport(TResumeSupport value) { FResumeSupport = value; }
+  void SetResumeSupport(TResumeSupport Value) { FResumeSupport = Value; }
   __int64 GetResumeThreshold() const { return FResumeThreshold; }
-  void SetResumeThreshold(__int64 value) { FResumeThreshold = value; }
+  void SetResumeThreshold(__int64 Value) { FResumeThreshold = Value; }
   wchar_t GetInvalidCharsReplacement() const { return FInvalidCharsReplacement; }
-  void SetInvalidCharsReplacement(wchar_t value) { FInvalidCharsReplacement = value; }
+  void SetInvalidCharsReplacement(wchar_t Value) { FInvalidCharsReplacement = Value; }
   UnicodeString GetLocalInvalidChars() const;
   bool GetCalculateSize() const { return FCalculateSize; }
   void SetCalculateSize(bool Value) { FCalculateSize = Value; }
