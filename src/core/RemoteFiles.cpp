@@ -333,19 +333,20 @@ UnicodeString MakeFileList(TStrings * FileList)
 }
 //---------------------------------------------------------------------------
 // copy from BaseUtils.pas
-TDateTime ReduceDateTimePrecision(TDateTime DateTime,
+TDateTime ReduceDateTimePrecision(const TDateTime & DateTime,
   TModificationFmt Precision)
 {
+  TDateTime Result = DateTime;
   if (Precision == mfNone)
   {
-    DateTime = double(0.0);
+    Result = double(0.0);
   }
   else if (Precision != mfFull)
   {
     unsigned short Y, M, D, H, N, S, MS;
 
-    DecodeDate(DateTime, Y, M, D);
-    DecodeTime(DateTime, H, N, S, MS);
+    DecodeDate(Result, Y, M, D);
+    DecodeTime(Result, H, N, S, MS);
     switch (Precision)
     {
       case mfMDHM:
@@ -364,9 +365,9 @@ TDateTime ReduceDateTimePrecision(TDateTime DateTime,
         assert(false);
     }
 
-    DateTime = EncodeDateVerbose(Y, M, D) + EncodeTimeVerbose(H, N, S, MS);
+    Result = EncodeDateVerbose(Y, M, D) + EncodeTimeVerbose(H, N, S, MS);
   }
-  return DateTime;
+  return Result;
 }
 //---------------------------------------------------------------------------
 TModificationFmt LessDateTimePrecision(
@@ -375,7 +376,7 @@ TModificationFmt LessDateTimePrecision(
   return (Precision1 < Precision2) ? Precision1 : Precision2;
 }
 //---------------------------------------------------------------------------
-UnicodeString UserModificationStr(TDateTime DateTime,
+UnicodeString UserModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision)
 {
   unsigned short Y, M, D, H, N, S, MS;
