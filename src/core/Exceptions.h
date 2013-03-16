@@ -78,7 +78,7 @@ public:
   explicit EFatal(Exception* E, UnicodeString Msg);
 
   bool GetReopenQueried() { return FReopenQueried; }
-  void SetReopenQueried(bool value) { FReopenQueried = value; }
+  void SetReopenQueried(bool Value) { FReopenQueried = Value; }
 
   virtual ExtException * Clone();
 

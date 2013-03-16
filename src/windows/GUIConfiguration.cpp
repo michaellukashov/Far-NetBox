@@ -217,9 +217,9 @@ UnicodeString TCopyParamRule::GetInfoStr(UnicodeString Separator) const
   return Result;
 }
 //---------------------------------------------------------------------------
-void TCopyParamRule::SetData(TCopyParamRuleData value)
+void TCopyParamRule::SetData(const TCopyParamRuleData & Value)
 {
-  FData = value;
+  FData = Value;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -909,14 +909,14 @@ LCID TGUIConfiguration::GetLocale()
   return FLocale;
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetLocale(LCID value)
+void TGUIConfiguration::SetLocale(LCID Value)
 {
-  if (GetLocale() != value)
+  if (GetLocale() != Value)
   {
-    HINSTANCE Module = LoadNewResourceModule(value);
+    HINSTANCE Module = LoadNewResourceModule(Value);
     if (Module != NULL)
     {
-      FLocale = value;
+      FLocale = Value;
       // SetResourceModule(Module);
     }
     else
@@ -926,10 +926,10 @@ void TGUIConfiguration::SetLocale(LCID value)
   }
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetLocaleSafe(LCID value)
+void TGUIConfiguration::SetLocaleSafe(LCID Value)
 {
   CALLSTACK;
-  if (GetLocale() != value)
+  if (GetLocale() != Value)
   {
     TRACE("1");
     HINSTANCE Module;
@@ -937,7 +937,7 @@ void TGUIConfiguration::SetLocaleSafe(LCID value)
     try
     {
       TRACE("2");
-      Module = LoadNewResourceModule(value);
+      Module = LoadNewResourceModule(Value);
       TRACE("3");
     }
     catch(...)
@@ -951,7 +951,7 @@ void TGUIConfiguration::SetLocaleSafe(LCID value)
     if (Module != NULL)
     {
       TRACE("6");
-      FLocale = value;
+      FLocale = Value;
       // SetResourceModule(Module);
       TRACE("7");
     }
@@ -1135,9 +1135,9 @@ TStrings * TGUIConfiguration::GetLocales()
   return FLocales;
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetDefaultCopyParam(const TGUICopyParamType & value)
+void TGUIConfiguration::SetDefaultCopyParam(const TGUICopyParamType & Value)
 {
-  FDefaultCopyParam.Assign(&value);
+  FDefaultCopyParam.Assign(&Value);
   Changed();
 }
 //---------------------------------------------------------------------------
@@ -1151,11 +1151,11 @@ const TCopyParamList * TGUIConfiguration::GetCopyParamList()
   return FCopyParamList;
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetCopyParamList(const TCopyParamList * value)
+void TGUIConfiguration::SetCopyParamList(const TCopyParamList * Value)
 {
-  if (!(*FCopyParamList == *value))
+  if (!(*FCopyParamList == *Value))
   {
-    *FCopyParamList = *value;
+    *FCopyParamList = *Value;
     FCopyParamListDefaults = false;
     Changed();
   }

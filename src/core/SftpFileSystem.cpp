@@ -863,9 +863,9 @@ public:
   uintptr_t GetCapacity() const { return FCapacity; }
   unsigned char GetType() const { return FType; }
   uintptr_t GetMessageNumber() const { return static_cast<uintptr_t>(FMessageNumber); }
-  void SetMessageNumber(unsigned long  value) { FMessageNumber = value; }
+  void SetMessageNumber(unsigned long  Value) { FMessageNumber = Value; }
   TSFTPFileSystem * GetReservedBy() const { return FReservedBy; }
-  void SetReservedBy(TSFTPFileSystem * value) { FReservedBy = value; }
+  void SetReservedBy(TSFTPFileSystem * Value) { FReservedBy = Value; }
 
 private:
   unsigned char * FData;

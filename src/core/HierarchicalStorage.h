@@ -61,13 +61,13 @@ public:
   UnicodeString GetStorage() const { return FStorage; }
   TStorageAccessMode GetAccessMode() const { return FAccessMode; }
   bool GetExplicit() const { return FExplicit; }
-  void SetExplicit(bool value) { FExplicit = value; }
+  void SetExplicit(bool Value) { FExplicit = Value; }
   bool GetForceAnsi() const { return FForceAnsi; }
-  void SetForceAnsi(bool value) { FForceAnsi = value; }
+  void SetForceAnsi(bool Value) { FForceAnsi = Value; }
   bool GetMungeStringValues() const { return FMungeStringValues; }
-  void SetMungeStringValues(bool value) { FMungeStringValues = value; }
+  void SetMungeStringValues(bool Value) { FMungeStringValues = Value; }
 
-  virtual void SetAccessMode(TStorageAccessMode value);
+  virtual void SetAccessMode(TStorageAccessMode Value);
   virtual UnicodeString GetSource() = 0;
 
 protected:
@@ -129,7 +129,7 @@ public:
 
   intptr_t GetFailed();
   void SetFailed(intptr_t Value) { FFailed = Value; }
-  virtual void SetAccessMode(TStorageAccessMode value);
+  virtual void SetAccessMode(TStorageAccessMode Value);
 
 protected:
   virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi);

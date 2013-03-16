@@ -478,11 +478,11 @@ UnicodeString FromUnixPath(const UnicodeString & Path);
 UnicodeString ToUnixPath(const UnicodeString & Path);
 UnicodeString MinimizeName(const UnicodeString & FileName, intptr_t MaxLen, bool Unix);
 UnicodeString MakeFileList(TStrings * FileList);
-TDateTime ReduceDateTimePrecision(TDateTime DateTime,
+TDateTime ReduceDateTimePrecision(const TDateTime & DateTime,
   TModificationFmt Precision);
 TModificationFmt LessDateTimePrecision(
   TModificationFmt Precision1, TModificationFmt Precision2);
-UnicodeString UserModificationStr(TDateTime DateTime,
+UnicodeString UserModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision);
 int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs = 0,
   UnicodeString * TypeName = NULL);

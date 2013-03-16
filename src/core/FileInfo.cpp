@@ -176,7 +176,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
 }
 //---------------------------------------------------------------------------
 // Return pointer to file version info block
-void * CreateFileInfo(UnicodeString FileName)
+void * CreateFileInfo(const UnicodeString & FileName)
 {
   CALLSTACK;
   unsigned long Handle;

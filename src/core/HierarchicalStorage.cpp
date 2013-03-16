@@ -506,10 +506,10 @@ UnicodeString TRegistryStorage::GetSource()
   return RootKeyToStr(FRegistry->RootKey.get()) + L"\\" + GetStorage();
 }
 //------------------------------------------------------------------------------
-void TRegistryStorage::SetAccessMode(TStorageAccessMode value)
+void TRegistryStorage::SetAccessMode(TStorageAccessMode Value)
 {
   CCALLSTACK(TRACE_ACCESS);
-  THierarchicalStorage::SetAccessMode(value);
+  THierarchicalStorage::SetAccessMode(Value);
   if (FRegistry)
   {
     switch (GetAccessMode()) {

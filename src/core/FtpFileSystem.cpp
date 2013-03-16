@@ -2030,7 +2030,8 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
   CALLSTACK;
   // whole below "-a" logic is for LIST,
   // if we know we are going to use MLSD, skip it
-  if (FServerCapabilities->GetCapability(mlsd_command) == yes)
+  if (FTerminal->GetSessionData()->GetFtpUseMlsd() &&
+      (FServerCapabilities->GetCapability(mlsd_command) == yes))
   {
     DoReadDirectory(FileList);
   }
