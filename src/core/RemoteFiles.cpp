@@ -32,8 +32,9 @@ UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & Path)
 UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & Path)
 {
   if ((Path.Length() > 1) && Path.IsDelimiter(L"/", Path.Length()))
-      return Path.SubString(1, Path.Length() - 1);
-    else return Path;
+    return Path.SubString(1, Path.Length() - 1);
+  else
+    return Path;
 }
 //---------------------------------------------------------------------------
 Boolean UnixComparePaths(const UnicodeString & Path1, const UnicodeString & Path2)
