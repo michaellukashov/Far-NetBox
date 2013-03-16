@@ -27,7 +27,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class CServerPath  
+class CServerPath
 {
 public:
 	BOOL AddSubdir(CString subdir);
@@ -69,7 +69,7 @@ protected:
 	BOOL m_bEmpty;
 	rde::list<CString> m_Segments;
 	typedef rde::list<CString>::iterator tIter;
-		typedef rde::list<CString>::const_iterator tConstIter;
+	typedef rde::list<CString>::const_iterator tConstIter;
 	typedef rde::list<CString>::const_iterator tConstIter;
 	CString m_Prefix;
 	int m_nServerType;
