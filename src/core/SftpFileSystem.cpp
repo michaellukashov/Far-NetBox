@@ -2545,7 +2545,7 @@ UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & Path,
     if (!Path.IsEmpty())
     {
       // this condition/block was outside (before) current block
-      // but it dod not work when Path was empty
+      // but it did not work when Path was empty
       if (!BaseDir.IsEmpty())
       {
         APath = UnixIncludeTrailingBackslash(BaseDir);
