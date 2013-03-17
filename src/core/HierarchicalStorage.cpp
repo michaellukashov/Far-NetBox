@@ -104,7 +104,6 @@ UnicodeString UnMungeIniName(const UnicodeString & Str)
 //===========================================================================
 THierarchicalStorage::THierarchicalStorage(const UnicodeString & AStorage)
 {
-  CALLSTACK;
   FStorage = AStorage;
   FKeyHistory = new TStringList();
   SetAccessMode(smRead);
@@ -427,8 +426,6 @@ TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage) :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(NULL)
 {
-  CALLSTACK;
-  CTRACEFMT(TRACE_ACCESS, "1 [%s]", AStorage.c_str());
   Init();
 }
 //------------------------------------------------------------------------------
@@ -437,13 +434,11 @@ TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey
   FRegistry(NULL)
 {
   Init();
-  CTRACEFMT(TRACE_ACCESS, "1 [%s] [%x]", AStorage.c_str(), int(ARootKey));
   FRegistry->RootKey = ARootKey;
 }
 //------------------------------------------------------------------------------
 void TRegistryStorage::Init()
 {
-  CCALLSTACK(TRACE_ACCESS);
   FFailed = 0;
   FRegistry = new TRegistry();
   FRegistry->Access = KEY_READ;
@@ -451,13 +446,11 @@ void TRegistryStorage::Init()
 //------------------------------------------------------------------------------
 TRegistryStorage::~TRegistryStorage()
 {
-  CCALLSTACK(TRACE_ACCESS);
   delete FRegistry;
 };
 //------------------------------------------------------------------------------
 bool TRegistryStorage::Copy(TRegistryStorage * Storage)
 {
-  CCALLSTACK(TRACE_ACCESS);
   TRegistry * Registry = Storage->FRegistry;
   bool Result = true;
   TStrings * Names = new TStringList();
@@ -508,7 +501,6 @@ UnicodeString TRegistryStorage::GetSource()
 //------------------------------------------------------------------------------
 void TRegistryStorage::SetAccessMode(TStorageAccessMode Value)
 {
-  CCALLSTACK(TRACE_ACCESS);
   THierarchicalStorage::SetAccessMode(Value);
   if (FRegistry)
   {
@@ -528,19 +520,16 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode Value)
 //------------------------------------------------------------------------------
 bool TRegistryStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate)
 {
-  CCALLSTACK(TRACE_ACCESS);
   if (FKeyHistory->GetCount() > 0)
   {
     FRegistry->CloseKey();
   }
   UnicodeString K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + SubKey);
-  CTRACEFMT(TRACE_ACCESS, "1 [%s] [%d]", K.c_str(), int(CanCreate));
   return FRegistry->OpenKey(K, CanCreate);
 }
 //------------------------------------------------------------------------------
 void TRegistryStorage::CloseSubKey()
 {
-  CCALLSTACK(TRACE_ACCESS);
   FRegistry->CloseKey();
   THierarchicalStorage::CloseSubKey();
   if (FKeyHistory->GetCount())
@@ -551,99 +540,75 @@ void TRegistryStorage::CloseSubKey()
 //------------------------------------------------------------------------------
 bool TRegistryStorage::DeleteSubKey(const UnicodeString & SubKey)
 {
-  CCALLSTACK(TRACE_ACCESS);
   UnicodeString K;
   if (FKeyHistory->GetCount() == 0)
   {
     K = GetStorage() + GetCurrentSubKey();
   }
   K += MungeKeyName(SubKey);
-  CTRACEFMT(TRACE_ACCESS, "1 [%s]", K.c_str());
   return FRegistry->DeleteKey(K);
 }
 //------------------------------------------------------------------------------
 void TRegistryStorage::GetSubKeyNames(Classes::TStrings* Strings)
 {
-  CCALLSTACK(TRACE_ACCESS);
   FRegistry->GetKeyNames(Strings);
   for (intptr_t Index = 0; Index < Strings->GetCount(); ++Index)
   {
     Strings->Strings[Index] = UnMungeStr(Strings->Strings[Index]);
-    CTRACEFMT(TRACE_ACCESS, "1 [%s]", Strings->Strings[Index].c_str());
   }
 }
 //------------------------------------------------------------------------------
 void TRegistryStorage::GetValueNames(Classes::TStrings* Strings)
 {
-  CCALLSTACK(TRACE_ACCESS);
   FRegistry->GetValueNames(Strings);
-  CTRACEFMT(TRACE_ACCESS, "[%s]", Strings->CommaText.c_str());
 }
 //------------------------------------------------------------------------------
 bool TRegistryStorage::DeleteValue(const UnicodeString & Name)
 {
-  CCALLSTACK(TRACE_ACCESS);
-  CTRACEFMT(TRACE_ACCESS, "[%s]", Name.c_str());
   return FRegistry->DeleteValue(Name);
 }
 //------------------------------------------------------------------------------
 bool TRegistryStorage::DoKeyExists(const UnicodeString & SubKey, bool AForceAnsi)
 {
-  CCALLSTACK(TRACE_ACCESS);
   UnicodeString K = MungeStr(SubKey, AForceAnsi);
   bool Result = FRegistry->KeyExists(K);
-  CTRACEFMT(TRACE_ACCESS, "[%s] [%d]", K.c_str(), int(Result));
   return Result;
 }
 //------------------------------------------------------------------------------
 bool TRegistryStorage::ValueExists(const UnicodeString & Value)
 {
-  CCALLSTACK(TRACE_ACCESS);
   bool Result = FRegistry->ValueExists(Value);
-  CTRACEFMT(TRACE_ACCESS, "[%s] [%d]", Value.c_str(), int(Result));
   return Result;
 }
 //------------------------------------------------------------------------------
 size_t TRegistryStorage::BinaryDataSize(const UnicodeString & Name)
 {
-  CCALLSTACK(TRACE_ACCESS);
   size_t Result = FRegistry->GetDataSize(Name);
-  CTRACEFMT(TRACE_ACCESS, "[%s] [%d]", Name.c_str(), int(Result));
   return Result;
 }
 //------------------------------------------------------------------------------
 bool TRegistryStorage::ReadBool(const UnicodeString & Name, bool Default)
 {
-  CCALLSTACK(TRACE_READING);
-  CTRACEFMT(TRACE_READING, "%s", Name.c_str());
   READ_REGISTRY(ReadBool);
 }
 //------------------------------------------------------------------------------
 TDateTime TRegistryStorage::ReadDateTime(const UnicodeString & Name, TDateTime Default)
 {
-  CCALLSTACK(TRACE_READING);
-  CTRACEFMT(TRACE_READING, "%s", Name.c_str());
   READ_REGISTRY(ReadDateTime);
 }
 //------------------------------------------------------------------------------
 double TRegistryStorage::ReadFloat(const UnicodeString & Name, double Default)
 {
-  CCALLSTACK(TRACE_READING);
-  CTRACEFMT(TRACE_READING, "%s", Name.c_str());
   READ_REGISTRY(ReadFloat);
 }
 //------------------------------------------------------------------------------
 intptr_t TRegistryStorage::ReadInteger(const UnicodeString & Name, intptr_t Default)
 {
-  CCALLSTACK(TRACE_READING);
-  CTRACEFMT(TRACE_READING, "%s", Name.c_str());
   READ_REGISTRY(ReadInteger);
 }
 //------------------------------------------------------------------------------
 __int64 TRegistryStorage::ReadInt64(const UnicodeString & Name, __int64 Default)
 {
-  CCALLSTACK(TRACE_READING);
-  CTRACEFMT(TRACE_READING, "%s", Name.c_str());
   __int64 Result = Default;
   if (FRegistry->ValueExists(Name))
   {
@@ -661,16 +626,12 @@ __int64 TRegistryStorage::ReadInt64(const UnicodeString & Name, __int64 Default)
 //------------------------------------------------------------------------------
 UnicodeString TRegistryStorage::ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default)
 {
-  CCALLSTACK(TRACE_READING);
-  CTRACEFMT(TRACE_READING, "%s", Name.c_str());
   READ_REGISTRY(ReadString);
 }
 //------------------------------------------------------------------------------
 size_t TRegistryStorage::ReadBinaryData(const UnicodeString & Name,
   void * Buffer, size_t Size)
 {
-  CCALLSTACK(TRACE_READING);
-  CTRACEFMT(TRACE_READING, "%s", Name.c_str());
   size_t Result;
   if (FRegistry->ValueExists(Name))
   {
@@ -693,8 +654,6 @@ size_t TRegistryStorage::ReadBinaryData(const UnicodeString & Name,
 //------------------------------------------------------------------------------
 void TRegistryStorage::WriteBool(const UnicodeString & Name, bool Value)
 {
-  CCALLSTACK(TRACE_WRITING);
-  CTRACEFMT(TRACE_WRITING, "[%s] [%s] [%d]", FRegistry->CurrentPath.c_str(), Name.c_str(), int(Value));
   WRITE_REGISTRY(WriteBool);
 }
 //------------------------------------------------------------------------------
@@ -705,31 +664,23 @@ void TRegistryStorage::WriteDateTime(const UnicodeString & Name, TDateTime Value
 //------------------------------------------------------------------------------
 void TRegistryStorage::WriteFloat(const UnicodeString & Name, double Value)
 {
-  CCALLSTACK(TRACE_WRITING);
-  CTRACEFMT(TRACE_WRITING, "[%s] [%s] [%d]", FRegistry->CurrentPath.c_str(), Name.c_str(), int(Value * 1000));
   WRITE_REGISTRY(WriteFloat);
 }
 //------------------------------------------------------------------------------
 void TRegistryStorage::WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value)
 {
-  CCALLSTACK(TRACE_WRITING);
-  CTRACEFMT(TRACE_WRITING, "[%s] [%s] [%s]", FRegistry->CurrentPath.c_str(), Name.c_str(), Value);
   WRITE_REGISTRY(WriteString);
 }
 //------------------------------------------------------------------------------
 void TRegistryStorage::WriteInteger(const UnicodeString & Name, intptr_t Value)
 {
-  CCALLSTACK(TRACE_WRITING);
-  CTRACEFMT(TRACE_WRITING, "[%s] [%s] [%d]", FRegistry->CurrentPath.c_str(), Name.c_str(), Value);
   WRITE_REGISTRY(WriteInteger);
 }
 //------------------------------------------------------------------------------
 void TRegistryStorage::WriteInt64(const UnicodeString & Name, __int64 Value)
 {
-  CCALLSTACK(TRACE_WRITING);
   try
   {
-    CTRACEFMT(TRACE_WRITING, "[%s] [%s] [%d]", FRegistry->CurrentPath.c_str(), Name.c_str(), int(Value));
     FRegistry->WriteBinaryData(Name, &Value, sizeof(Value));
   }
   catch(...)
