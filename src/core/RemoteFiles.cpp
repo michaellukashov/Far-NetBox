@@ -1035,7 +1035,8 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         intptr_t P = Line.Pos(L' '); \
         if (P) \
         { \
-          Col = Line; Col.SetLength(P-1); Line.Delete(1, P); } \
+          Col = Line; Col.SetLength(P-1); Line.Delete(1, P); \
+        } \
         else \
         { \
           Col = Line; Line = L""; \
