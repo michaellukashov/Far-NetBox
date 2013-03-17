@@ -738,7 +738,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   #undef KEY
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", false, true))
-  // TRY_FINALLY (
+  TRY_FINALLY (
   {
     // must be loaded before eventual setting defaults for CopyParamList
     FDefaultCopyParam.Load(Storage);
@@ -757,11 +757,11 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     }
     FCopyParamList->Reset();
   }
-  // ,
+  ,
   {
     Storage->CloseSubKey();
   }
-  // );
+  );
 
   // Make it compatible with versions prior to 3.7.1 that have not saved PuttyPath
   // with quotes. First check for absence of quotes.
