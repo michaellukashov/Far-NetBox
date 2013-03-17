@@ -1021,13 +1021,13 @@ int TSFTPPacket::FMessageCounter = 0;
 class TSFTPQueue : public TObject
 {
 public:
-  explicit TSFTPQueue(TSFTPFileSystem * AFileSystem, unsigned int codePage)
+  explicit TSFTPQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage)
   {
     FFileSystem = AFileSystem;
     assert(FFileSystem);
     FRequests = new TList();
     FResponses = new TList();
-    FCodePage = codePage;
+    FCodePage = CodePage;
   }
 
   virtual ~TSFTPQueue()
@@ -1166,13 +1166,13 @@ protected:
   TList * FRequests;
   TList * FResponses;
   TSFTPFileSystem * FFileSystem;
-  unsigned int FCodePage;
+  uintptr_t FCodePage;
 
   class TSFTPQueuePacket : public TSFTPPacket
   {
   public:
-    explicit TSFTPQueuePacket(unsigned int codePage) :
-      TSFTPPacket(codePage)
+    explicit TSFTPQueuePacket(uintptr_t CodePage) :
+      TSFTPPacket(CodePage)
     {
       Token = NULL;
     }
@@ -1229,7 +1229,7 @@ protected:
 class TSFTPFixedLenQueue : public TSFTPQueue
 {
 public:
-  explicit TSFTPFixedLenQueue(TSFTPFileSystem * AFileSystem, unsigned int codePage) : TSFTPQueue(AFileSystem, codePage)
+  explicit TSFTPFixedLenQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) : TSFTPQueue(AFileSystem, CodePage)
   {
     FMissedRequests = 0;
   }
@@ -1261,7 +1261,7 @@ protected:
 class TSFTPAsynchronousQueue : public TSFTPQueue
 {
 public:
-  explicit TSFTPAsynchronousQueue(TSFTPFileSystem * AFileSystem, unsigned int codePage) : TSFTPQueue(AFileSystem, codePage)
+  explicit TSFTPAsynchronousQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) : TSFTPQueue(AFileSystem, CodePage)
   {
     FFileSystem->FSecureShell->RegisterReceiveHandler(MAKE_CALLBACK(TSFTPAsynchronousQueue::ReceiveHandler, this));
     FReceiveHandlerRegistered = true;
@@ -1322,13 +1322,13 @@ private:
 class TSFTPDownloadQueue : public TSFTPFixedLenQueue
 {
 public:
-  explicit TSFTPDownloadQueue(TSFTPFileSystem * AFileSystem, unsigned int codePage) :
-    TSFTPFixedLenQueue(AFileSystem, codePage)
+  explicit TSFTPDownloadQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
+    TSFTPFixedLenQueue(AFileSystem, CodePage)
   {
   }
   virtual ~TSFTPDownloadQueue() {}
 
-  bool Init(int QueueLen, const RawByteString & AHandle,__int64 ATransfered,
+  bool Init(intptr_t QueueLen, const RawByteString & AHandle,__int64 ATransfered,
     TFileOperationProgressType * AOperationProgress)
   {
     FHandle = AHandle;
@@ -1338,17 +1338,17 @@ public:
     return TSFTPFixedLenQueue::Init(QueueLen);
   }
 
-  void InitFillGapRequest(__int64 Offset, unsigned long Missing,
+  void InitFillGapRequest(__int64 Offset, uintptr_t Missing,
     TSFTPPacket * Packet)
   {
     InitRequest(Packet, Offset, Missing);
   }
 
-  bool ReceivePacket(TSFTPPacket * Packet, unsigned long & BlockSize)
+  bool ReceivePacket(TSFTPPacket * Packet, uintptr_t & BlockSize)
   {
     void * Token;
     bool Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_DATA, asEOF, &Token);
-    BlockSize = reinterpret_cast<unsigned long>(Token);
+    BlockSize = reinterpret_cast<uintptr_t>(Token);
     return Result;
   }
 
@@ -1385,8 +1385,8 @@ private:
 class TSFTPUploadQueue : public TSFTPAsynchronousQueue
 {
 public:
-  explicit TSFTPUploadQueue(TSFTPFileSystem * AFileSystem, unsigned int codePage) :
-    TSFTPAsynchronousQueue(AFileSystem, codePage)
+  explicit TSFTPUploadQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
+    TSFTPAsynchronousQueue(AFileSystem, CodePage)
   {
     FStream = NULL;
     OperationProgress = NULL;
@@ -1509,14 +1509,14 @@ private:
 class TSFTPLoadFilesPropertiesQueue : public TSFTPFixedLenQueue
 {
 public:
-  explicit TSFTPLoadFilesPropertiesQueue(TSFTPFileSystem * AFileSystem, unsigned int codePage) :
-    TSFTPFixedLenQueue(AFileSystem, codePage)
+  explicit TSFTPLoadFilesPropertiesQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
+    TSFTPFixedLenQueue(AFileSystem, CodePage)
   {
     FIndex = 0;
   }
   virtual ~TSFTPLoadFilesPropertiesQueue() {}
 
-  bool Init(int QueueLen, TStrings * FileList)
+  bool Init(uintptr_t QueueLen, TStrings * FileList)
   {
     FFileList = FileList;
 
@@ -1587,8 +1587,8 @@ private:
 class TSFTPCalculateFilesChecksumQueue : public TSFTPFixedLenQueue
 {
 public:
-  explicit TSFTPCalculateFilesChecksumQueue(TSFTPFileSystem * AFileSystem, unsigned int codePage) :
-    TSFTPFixedLenQueue(AFileSystem, codePage)
+  explicit TSFTPCalculateFilesChecksumQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
+    TSFTPFixedLenQueue(AFileSystem, CodePage)
   {
     FIndex = 0;
   }
@@ -1692,7 +1692,7 @@ private:
 #ifndef _MSC_VER
 struct TOpenRemoteFileParams
 {
-  int LocalFileAttrs;
+  uintptr_t LocalFileAttrs;
   UnicodeString RemoteFileName;
   TFileOperationProgressType * OperationProgress;
   const TCopyParamType * CopyParam;
@@ -3115,7 +3115,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
   TRY_FINALLY (
   {
     bool isEOF = false;
-    intptr_t Total = 0;
+    int Total = 0;
     TRemoteFile * File;
 
     Packet.ChangeType(SSH_FXP_READDIR);
@@ -3138,7 +3138,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         SendPacket(&Packet);
         ReserveResponse(&Packet, &Response);
 
-        unsigned int Count = ListingPacket.GetCardinal();
+        uintptr_t Count = ListingPacket.GetCardinal();
 
         TRACE("4");
         for (intptr_t Index = 0; !isEOF && (Index < static_cast<intptr_t>(Count)); ++Index)
@@ -4861,7 +4861,7 @@ void TSFTPFileSystem::SFTPCloseRemote(const RawByteString Handle,
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
-  const UnicodeString & TargetDir, int Attrs, const TCopyParamType * CopyParam,
+  const UnicodeString & TargetDir, uintptr_t LocalFileAttrs, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
@@ -4896,7 +4896,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
     if (CopyParam->GetPreserveRights())
     {
       Properties.Valid = TValidProperties() << vpRights;
-      Properties.Rights = CopyParam->RemoteFileRights(Attrs);
+      Properties.Rights = CopyParam->RemoteFileRights(LocalFileAttrs);
     }
     FTerminal->CreateDirectory(DestFullName, &Properties);
     Flags |= tfNewDirectory;
@@ -4954,10 +4954,10 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
     {
       FTerminal->RemoveLocalDirectory(DirectoryName);
     }
-    else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
+    else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
     {
       FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~faArchive) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, LocalFileAttrs & ~faArchive) == 0);
       )
     }
   }
@@ -5110,8 +5110,8 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
     if (!File->GetIsSymLink())
     {
       FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
-        int Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
-        if ((Attrs & faDirectory) == 0) { EXCEPTION; }
+        uintptr_t LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
+        if ((LocalFileAttrs & faDirectory) == 0) { EXCEPTION; }
       );
 
       FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
@@ -5151,7 +5151,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
     bool ResumeTransfer = false;
     __int64 ResumeOffset;
 
-    // Will we use ASCII of BINARY file tranfer?
+    // Will we use ASCII of BINARY file transfer?
     OperationProgress->SetAsciiTransfer(
       CopyParam->UseAsciiTransfer(FileName, osRemote, MaskParams));
     FTerminal->LogEvent(UnicodeString((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
@@ -5371,8 +5371,8 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           TSFTPPacket DataPacket(GetSessionData()->GetCodePageAsNumber());
 
           TRACE("4");
-          unsigned long BlSize = DownloadBlockSize(OperationProgress);
-          int QueueLen = int(File->GetSize() / (BlSize != 0 ? BlSize : 1)) + 1;
+          uintptr_t BlSize = DownloadBlockSize(OperationProgress);
+          intptr_t QueueLen = intptr_t(File->GetSize() / (BlSize != 0 ? BlSize : 1)) + 1;
           if ((QueueLen > GetSessionData()->GetSFTPDownloadQueue()) ||
               (QueueLen < 0))
           {
@@ -5388,11 +5388,11 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
           bool Eof = false;
           bool PrevIncomplete = false;
-          int GapFillCount = 0;
-          int GapCount = 0;
-          unsigned long Missing = 0;
-          unsigned long DataLen = 0;
-          unsigned long BlockSize = 0;
+          intptr_t GapFillCount = 0;
+          intptr_t GapCount = 0;
+          uintptr_t Missing = 0;
+          uintptr_t DataLen = 0;
+          uintptr_t BlockSize = 0;
           bool ConvertToken = false;
 
           while (!Eof)
@@ -5538,15 +5538,15 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
       DeleteLocalFile = false;
 
-      if (Attrs == -1)
+      if (LocalFileAttrs == -1)
       {
-        Attrs = faArchive;
+        LocalFileAttrs = faArchive;
       }
-      int NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
-      if ((NewAttrs & Attrs) != NewAttrs)
+      uintptr_t NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
+      if ((NewAttrs & LocalFileAttrs) != NewAttrs)
       {
         FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, Attrs | NewAttrs) == 0);
+          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, LocalFileAttrs | NewAttrs) == 0);
         );
       }
 

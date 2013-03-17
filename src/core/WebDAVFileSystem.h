@@ -113,7 +113,7 @@ protected:
     TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TUploadSessionAction & Action);
   void WebDAVDirectorySource(const UnicodeString & DirectoryName,
-    const UnicodeString & TargetDir, int Attrs, const TCopyParamType * CopyParam,
+    const UnicodeString & TargetDir, uintptr_t Attrs, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   bool ConfirmOverwrite(UnicodeString & FileName,
     TOverwriteMode & OverwriteMode, TFileOperationProgressType * OperationProgress,

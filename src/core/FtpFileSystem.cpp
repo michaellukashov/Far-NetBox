@@ -1315,7 +1315,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
     {
       Attrs = faArchive;
     }
-    int NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
+    uintptr_t NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
     if ((NewAttrs & Attrs) != NewAttrs)
     {
       FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),

@@ -1719,7 +1719,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
   }
 
   HANDLE FileHandle;
-  int Attrs;
+  uintptr_t LocalFileAttrs;
   __int64 MTime, ATime;
   __int64 Size;
 
@@ -2000,7 +2000,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   TFileOperationProgressType * OperationProgress, int Level)
 {
   CALLSTACK;
-  int Attrs = 0;
+  uintptr_t LocalFileAttrs = 0;
 
   FTerminal->LogEvent(FORMAT(L"Entering directory \"%s\".", DirectoryName.c_str()));
 
@@ -2290,7 +2290,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
     FILETIME AcTime;
     FILETIME WrTime;
     TRights RemoteRights;
-    int Attrs;
+    uintptr_t LocalFileAttrs;
     bool Exists;
   } FileData;
   TDateTime SourceTimestamp;
@@ -2679,7 +2679,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
           }
 
           if (FileData.LocalFileAttrs == -1) { FileData.LocalFileAttrs = faArchive; }
-          int NewAttrs = CopyParam->LocalFileAttrs(FileData.RemoteRights);
+          uintptr_t NewAttrs = CopyParam->LocalFileAttrs(FileData.RemoteRights);
           if ((NewAttrs & FileData.LocalFileAttrs) != NewAttrs)
           {
             TRACE("26");

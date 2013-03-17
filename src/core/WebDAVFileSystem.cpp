@@ -12972,7 +12972,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
     }
 
     __int64 Size;
-    int Attrs;
+    uintptr_t LocalFileAttrs;
 
     FTerminal->OpenLocalFile(FileName, GENERIC_READ, &LocalFileAttrs,
       NULL, NULL, NULL, NULL, &Size);
@@ -13050,7 +13050,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryName,
-  const UnicodeString & TargetDir, int Attrs, const TCopyParamType * CopyParam,
+  const UnicodeString & TargetDir, uintptr_t Attrs, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
@@ -13465,7 +13465,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       {
         Attrs = faArchive;
       }
-      int NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
+      uintptr_t NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
       if ((NewAttrs & Attrs) != NewAttrs)
       {
         FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),

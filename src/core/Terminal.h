@@ -301,8 +301,8 @@ protected:
   bool CreateLocalFile(const UnicodeString & FileName,
     TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
-  void OpenLocalFile(const UnicodeString & FileName, unsigned int Access,
-    int * Attrs, HANDLE * Handle, __int64 * ACTime, __int64 * MTime,
+  void OpenLocalFile(const UnicodeString & FileName, uintptr_t Access,
+    uintptr_t * Attrs, HANDLE * Handle, __int64 * ACTime, __int64 * MTime,
     __int64 * ATime, __int64 * Size, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(const UnicodeString & FileName, const TCopyParamType *CopyParam);
   bool HandleException(Exception * E);

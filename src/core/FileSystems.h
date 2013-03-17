@@ -104,7 +104,7 @@ struct TOpenRemoteFileParams : public TObject
     FileParams(NULL),
     Confirmed(false)
   {}
-  int LocalFileAttrs;
+  uintptr_t LocalFileAttrs;
   UnicodeString RemoteFileName;
   TFileOperationProgressType * OperationProgress;
   const TCopyParamType * CopyParam;

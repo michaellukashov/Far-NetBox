@@ -4151,7 +4151,7 @@ bool TTerminal::CreateLocalFile(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 void TTerminal::OpenLocalFile(const UnicodeString & FileName,
-  unsigned int Access, int * AAttrs, HANDLE * AHandle, __int64 * ACTime,
+  uintptr_t Access, uintptr_t * AAttrs, HANDLE * AHandle, __int64 * ACTime,
   __int64 * AMTime, __int64 * AATime, __int64 * ASize,
   bool TryWriteReadOnly)
 {

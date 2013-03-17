@@ -984,7 +984,7 @@ void TSecureShell::SendEOF()
   SendSpecial(TS_EOF);
 }
 //---------------------------------------------------------------------------
-unsigned int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
+uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
 {
   CALLSTACK;
   FWaiting++;
@@ -1014,7 +1014,7 @@ unsigned int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
   return Answer;
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendBuffer(unsigned int & Result)
+void TSecureShell::SendBuffer(uintptr_t & Result)
 {
   CCALLSTACK(TRACE_TRANSMIT);
   // for comments see PoolForData
@@ -1038,7 +1038,7 @@ void TSecureShell::SendBuffer(unsigned int & Result)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::DispatchSendBuffer(int BufSize)
+void TSecureShell::DispatchSendBuffer(uintptr_t BufSize)
 {
   CCALLSTACK(TRACE_TRANSMIT);
   TDateTime Start = Now();
@@ -1063,7 +1063,7 @@ void TSecureShell::DispatchSendBuffer(int BufSize)
     if (Now() - Start > FSessionData->GetTimeoutDT())
     {
       LogEvent(L"Waiting for dispatching send buffer timed out, asking user what to do.");
-      unsigned int Answer = TimeoutPrompt(MAKE_CALLBACK(TSecureShell::SendBuffer, this));
+      uintptr_t Answer = TimeoutPrompt(MAKE_CALLBACK(TSecureShell::SendBuffer, this));
       switch (Answer)
       {
         case qaRetry:
@@ -1475,7 +1475,7 @@ void inline TSecureShell::CheckConnection(int Message)
   CTRACE(TRACE_TRANSMIT, "/");
 }
 //---------------------------------------------------------------------------
-void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result)
+void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, uintptr_t & Result)
 {
   CCALLSTACK(TRACE_TRANSMIT);
   if (!GetActive())
@@ -1527,7 +1527,7 @@ public:
   {
   }
 
-  void PoolForData(unsigned int & Result)
+  void PoolForData(uintptr_t & Result)
   {
     FSecureShell->PoolForData(FEvents, Result);
   }
@@ -1560,7 +1560,7 @@ void TSecureShell::WaitForData()
 
       CTRACE(TRACE_TRANSMIT, "1");
       LogEvent(L"Waiting for data timed out, asking user what to do.");
-      unsigned int Answer = TimeoutPrompt(MAKE_CALLBACK(TPoolForDataEvent::PoolForData, &Event));
+      uintptr_t Answer = TimeoutPrompt(MAKE_CALLBACK(TPoolForDataEvent::PoolForData, &Event));
       CTRACE(TRACE_TRANSMIT, "2");
       switch (Answer)
       {
@@ -1748,11 +1748,11 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
         }
 
         {
-          TSockets::iterator i = FPortFwdSockets.begin();
-          while (i != FPortFwdSockets.end())
+          TSockets::iterator it = FPortFwdSockets.begin();
+          while (it != FPortFwdSockets.end())
           {
-            ProcessNetworkEvents(*i);
-            ++i;
+            ProcessNetworkEvents(*it);
+            ++it;
           }
         }
       }
