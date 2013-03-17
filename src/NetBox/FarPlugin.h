@@ -26,21 +26,21 @@ enum TFarShiftStatus { fsNone, fsCtrl, fsAlt, fsShift, fsCtrlShift,
 enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessEvent };
 DEFINE_CALLBACK_TYPE1(TFarInputBoxValidateEvent, void, UnicodeString & /* Text */);
 //---------------------------------------------------------------------------
-DEFINE_CALLBACK_TYPE1(TFarMessageTimerEvent, void, unsigned int & /* Result */);
+DEFINE_CALLBACK_TYPE1(TFarMessageTimerEvent, void, uintptr_t & /* Result */);
 DEFINE_CALLBACK_TYPE3(TFarMessageClickEvent, void, void * /* Token */, intptr_t /* Result */, bool & /* Close */);
 //---------------------------------------------------------------------------
-struct TFarMessageParams
+struct TFarMessageParams : public TObject
 {
   TFarMessageParams();
 
   TStrings * MoreMessages;
   UnicodeString CheckBoxLabel;
   bool CheckBox;
-  unsigned int Timer;
-  unsigned int TimerAnswer;
+  uintptr_t Timer;
+  uintptr_t TimerAnswer;
   TFarMessageTimerEvent TimerEvent;
-  unsigned int Timeout;
-  unsigned int TimeoutButton;
+  uintptr_t Timeout;
+  uintptr_t TimeoutButton;
   UnicodeString TimeoutStr;
   TFarMessageClickEvent ClickEvent;
   void * Token;

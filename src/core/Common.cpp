@@ -1760,9 +1760,9 @@ bool RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin)
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t CancelAnswer(intptr_t Answers)
+uintptr_t CancelAnswer(uintptr_t Answers)
 {
-  intptr_t Result;
+  uintptr_t Result;
   if ((Answers & qaCancel) != 0)
   {
     Result = qaCancel;
@@ -1787,9 +1787,9 @@ intptr_t CancelAnswer(intptr_t Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t AbortAnswer(intptr_t Answers)
+uintptr_t AbortAnswer(uintptr_t Answers)
 {
-  intptr_t Result;
+  uintptr_t Result;
   if (FLAGSET(Answers, qaAbort))
   {
     Result = qaAbort;
@@ -1801,9 +1801,9 @@ intptr_t AbortAnswer(intptr_t Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t ContinueAnswer(intptr_t Answers)
+uintptr_t ContinueAnswer(uintptr_t Answers)
 {
-  intptr_t Result;
+  uintptr_t Result;
   if (FLAGSET(Answers, qaSkip))
   {
     Result = qaSkip;

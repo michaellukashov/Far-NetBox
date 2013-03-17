@@ -87,7 +87,7 @@ struct TOverwriteFileParams
     TModificationFmt DestPrecision;
 };
 //---------------------------------------------------------------------------
-struct TOpenRemoteFileParams
+struct TOpenRemoteFileParams : public TObject
 {
   TOpenRemoteFileParams() :
     LocalFileAttrs(0),
