@@ -126,13 +126,13 @@ NetBox 2.1.14 01.10.2012
 
 NetBox 2.1.13 16.09.2012
 --------------------
- * Bugfix: Issue #10: Check buttons width when calculating dialog size
-   (https://github.com/michaellukashov/Far-NetBox/issues/10)
- * Bugfix: Issue #27: Server Updated Key dialog box appearance
-   (https://github.com/michaellukashov/Far-NetBox/issues/27)
- * Bugfix: Issue #37: Fix date format parsing
-   (https://github.com/michaellukashov/Far-NetBox/issues/37)
- * Minor bugfix in "Edit session" dialog
+  * Bugfix: Issue #10: Check buttons width when calculating dialog size
+    (https://github.com/michaellukashov/Far-NetBox/issues/10)
+  * Bugfix: Issue #27: Server Updated Key dialog box appearance
+    (https://github.com/michaellukashov/Far-NetBox/issues/27)
+  * Bugfix: Issue #37: Fix date format parsing
+    (https://github.com/michaellukashov/Far-NetBox/issues/37)
+  * Minor bugfix in "Edit session" dialog
 
 NetBox 2.1.12 06.09.2012
 --------------------
@@ -148,16 +148,16 @@ NetBox 2.1.12 06.09.2012
 
 NetBox 2.1.11 03.09.2012
 --------------------
- * Minor changes in "Edit session" dialog
- * WebDAV: try to open session 5 times before throwing exception
-   (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=780#p97663)
- * Bugfix: issue #34: Problem with editing 2 files with same name over scp
-   (https://github.com/michaellukashov/Far-NetBox/issues/34,
-   http://forum.farmanager.com/viewtopic.php?f=39&p=97665#p97665)
- * FTP: Bugfix: Error retrieving file stats, if FTP server returns full file path in MLST response
+  * Minor changes in "Edit session" dialog
+  * WebDAV: try to open session 5 times before throwing exception
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=780#p97663)
+  * Bugfix: issue #34: Problem with editing 2 files with same name over scp
+    (https://github.com/michaellukashov/Far-NetBox/issues/34,
+    http://forum.farmanager.com/viewtopic.php?f=39&p=97665#p97665)
+  * FTP: Bugfix: Error retrieving file stats, if FTP server returns full file path in MLST response
    (http://winscp.net/tracker/show_bug.cgi?id=906)
- * FTP: Bugfix: Error when listing file with MLST FTP command fails
-   (http://winscp.net/tracker/show_bug.cgi?id=905)
+  * FTP: Bugfix: Error when listing file with MLST FTP command fails
+    (http://winscp.net/tracker/show_bug.cgi?id=905)
 
 NetBox 2.1.10 27.08.2012
 --------------------
