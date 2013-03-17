@@ -1,3 +1,6 @@
+NetBox 2.1.28 ??.03.2013
+--------------------
+
 NetBox 2.1.27 16.03.2013
 --------------------
   * Bugfix: x64: Plugin hangs when trying to delete session
