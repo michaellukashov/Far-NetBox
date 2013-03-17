@@ -167,7 +167,7 @@ protected:
     const UnicodeString & FileName, TFileOperationProgressType * OperationProgress,
     bool TransferFinished, bool Request, TSFTPPacket * Packet);
   void SFTPDirectorySource(const UnicodeString & DirectoryName,
-    const UnicodeString & TargetDir, int Attrs, const TCopyParamType * CopyParam,
+    const UnicodeString & TargetDir, uintptr_t LocalFileAttrs, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   void SFTPConfirmOverwrite(UnicodeString & FileName,
     intptr_t Params, TFileOperationProgressType * OperationProgress,

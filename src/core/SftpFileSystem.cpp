@@ -5168,10 +5168,10 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       CopyParam->AllowResume(OperationProgress->TransferSize);
     OperationProgress->SetResumeStatus(ResumeAllowed ? rsEnabled : rsDisabled);
 
-    int Attrs = 0;
+    uintptr_t LocalFileAttrs = 0;
     FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
-      Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
-      if ((Attrs >= 0) && (Attrs & faDirectory)) { EXCEPTION; }
+      LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
+      if ((LocalFileAttrs >= 0) && (LocalFileAttrs & faDirectory)) { EXCEPTION; }
     );
 
     OperationProgress->TransferingFile = false; // not set with SFTP protocol
@@ -5275,7 +5275,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       }
       );
 
-      if ((Attrs >= 0) && !ResumeTransfer)
+      if ((LocalFileAttrs >= 0) && !ResumeTransfer)
       {
         __int64 DestFileSize = 0;
         __int64 MTime = 0;

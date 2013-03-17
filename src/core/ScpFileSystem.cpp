@@ -1724,9 +1724,9 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
   __int64 Size;
 
   FTerminal->OpenLocalFile(FileName, GENERIC_READ,
-    &Attrs, &FileHandle, NULL, &MTime, &ATime, &Size);
+    &LocalFileAttrs, &FileHandle, NULL, &MTime, &ATime, &Size);
 
-  bool Dir = FLAGSET(Attrs, faDirectory);
+  bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
   TSafeHandleStream * Stream = new TSafeHandleStream(FileHandle);
   TRY_FINALLY (
   {
@@ -1767,7 +1767,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
       Action.FileName(ExpandUNCFileName(FileName));
       Action.Destination(AbsoluteFileName);
 
-      TRights Rights = CopyParam->RemoteFileRights(Attrs);
+      TRights Rights = CopyParam->RemoteFileRights(LocalFileAttrs);
 
       try
       {
@@ -1985,10 +1985,10 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
       )
     }
   }
-  else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
+  else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
   {
     FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
-      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(FileName, Attrs & ~faArchive) == 0);
+      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(FileName, LocalFileAttrs & ~faArchive) == 0);
     )
   }
 
@@ -2010,8 +2010,8 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
 
   // Get directory attributes
   FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, DirectoryName.c_str()),
-    Attrs = FTerminal->GetLocalFileAttributes(DirectoryName);
-    if (Attrs == -1) { RaiseLastOSError(); }
+    LocalFileAttrs = FTerminal->GetLocalFileAttributes(DirectoryName);
+    if (LocalFileAttrs == -1) { RaiseLastOSError(); }
   )
 
   UnicodeString TargetDirFull = UnixIncludeTrailingBackslash(TargetDir + DestFileName);
@@ -2022,7 +2022,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
 
   // Send directory modes (rights), filesize and file name
   Buf = FORMAT(L"D%s 0 %s",
-    CopyParam->RemoteFileRights(Attrs).GetOctal().c_str(), DestFileName.c_str());
+    CopyParam->RemoteFileRights(LocalFileAttrs).GetOctal().c_str(), DestFileName.c_str());
   FSecureShell->SendLine(Buf);
   SCPResponse();
 
@@ -2091,10 +2091,10 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
       {
         FTerminal->RemoveLocalDirectory(DirectoryName);
       }
-      else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
+      else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
       {
         FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
-          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~faArchive) == 0);
+          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, LocalFileAttrs & ~faArchive) == 0);
         )
       }
     }
@@ -2463,13 +2463,13 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
           CopyParam->ChangeFileName(OperationProgress->FileName, osRemote,
             Level == 0);
 
-        FileData.Attrs = FTerminal->GetLocalFileAttributes(DestFileName);
+        FileData.LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFileName);
         // If getting attrs fails, we suppose, that file/folder doesn't exists
-        FileData.Exists = (FileData.Attrs != -1);
+        FileData.Exists = (FileData.LocalFileAttrs != -1);
         if (Dir)
         {
           TRACE("11");
-          if (FileData.Exists && !(FileData.Attrs & faDirectory))
+          if (FileData.Exists && !(FileData.LocalFileAttrs & faDirectory))
           {
             SCPError(FMTLOAD(NOT_DIRECTORY_ERROR, DestFileName.c_str()), false);
           }
@@ -2678,13 +2678,13 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
             throw;
           }
 
-          if (FileData.Attrs == -1) { FileData.Attrs = faArchive; }
+          if (FileData.LocalFileAttrs == -1) { FileData.LocalFileAttrs = faArchive; }
           int NewAttrs = CopyParam->LocalFileAttrs(FileData.RemoteRights);
-          if ((NewAttrs & FileData.Attrs) != NewAttrs)
+          if ((NewAttrs & FileData.LocalFileAttrs) != NewAttrs)
           {
             TRACE("26");
             FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFileName.c_str()),
-              THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFileName, FileData.Attrs | NewAttrs) == 0);
+              THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFileName, FileData.LocalFileAttrs | NewAttrs) == 0);
             );
           }
         }
