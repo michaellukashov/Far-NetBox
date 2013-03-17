@@ -34,7 +34,7 @@ const int tfFirstLevel =   0x01;
 const int tfAutoResume = 0x02;
 const int tfNewDirectory = 0x04;
 //---------------------------------------------------------------------------
-struct TSinkFileParams
+struct TSinkFileParams : public TObject
 {
   UnicodeString TargetDir;
   const TCopyParamType *CopyParam;
@@ -44,7 +44,7 @@ struct TSinkFileParams
   bool Skipped;
 };
 //---------------------------------------------------------------------------
-struct TFileTransferData
+struct TFileTransferData : public TObject
 {
   TFileTransferData() :
     CopyParam(NULL),
@@ -63,7 +63,7 @@ struct TFileTransferData
   bool AutoResume;
 };
 //---------------------------------------------------------------------------
-struct TClipboardHandler
+struct TClipboardHandler : public TObject
 {
   UnicodeString Text;
 
@@ -73,7 +73,7 @@ struct TClipboardHandler
   }
 };
 //---------------------------------------------------------------------------
-struct TOverwriteFileParams
+struct TOverwriteFileParams : public TObject
 {
   TOverwriteFileParams() :
     SourceSize(0),
