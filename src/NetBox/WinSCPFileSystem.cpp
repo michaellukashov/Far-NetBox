@@ -1854,9 +1854,18 @@ void TWinSCPFileSystem::FileProperties()
         CurrentProperties = TRemoteProperties::CommonProperties(FileList);
 
         int Flags = 0;
-        if (FTerminal->GetIsCapable(fcModeChanging)) { Flags |= cpMode; }
-        if (FTerminal->GetIsCapable(fcOwnerChanging)) { Flags |= cpOwner; }
-        if (FTerminal->GetIsCapable(fcGroupChanging)) { Flags |= cpGroup; }
+        if (FTerminal->GetIsCapable(fcModeChanging))
+        {
+          Flags |= cpMode;
+        }
+        if (FTerminal->GetIsCapable(fcOwnerChanging))
+        {
+          Flags |= cpOwner;
+        }
+        if (FTerminal->GetIsCapable(fcGroupChanging))
+        {
+          Flags |= cpGroup;
+        }
 
         TRemoteProperties NewProperties = CurrentProperties;
         if (PropertiesDialog(FileList, FTerminal->GetCurrentDirectory(),

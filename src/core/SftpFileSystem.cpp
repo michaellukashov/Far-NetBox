@@ -260,7 +260,10 @@ public:
     {
       nb_free(FData - FSendPrefixLen);
     }
-    if (FReservedBy) { FReservedBy->UnreserveResponse(this); }
+    if (FReservedBy)
+    {
+      FReservedBy->UnreserveResponse(this);
+    }
   }
 
   void ChangeType(unsigned char AType)
@@ -945,10 +948,16 @@ public:
       }
       else
       {
-        if (FData) { nb_free(FData - FSendPrefixLen); }
+        if (FData)
+        {
+          nb_free(FData - FSendPrefixLen);
+        }
         FData = NULL;
       }
-      if (FLength > FCapacity) { FLength = FCapacity; }
+      if (FLength > FCapacity)
+      {
+        FLength = FCapacity;
+      }
     }
   }
 
@@ -2543,7 +2552,10 @@ UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & Path,
       }
       APath = APath + Path;
     }
-    if (APath.IsEmpty()) { APath = UnixIncludeTrailingBackslash(L"."); }
+    if (APath.IsEmpty())
+    {
+      APath = UnixIncludeTrailingBackslash(L".");
+    }
   }
   return RealPath(APath);
 }
@@ -5111,11 +5123,17 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
     {
       FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
         uintptr_t LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
-        if ((LocalFileAttrs & faDirectory) == 0) { EXCEPTION; }
+        if ((LocalFileAttrs & faDirectory) == 0)
+        {
+          EXCEPTION;
+        }
       );
 
       FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
-        if (!ForceDirectories(DestFullName)) { RaiseLastOSError(); }
+        if (!ForceDirectories(DestFullName))
+        {
+          RaiseLastOSError();
+        }
       );
 
       TSinkFileParams SinkFileParams;
@@ -5171,7 +5189,10 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
     uintptr_t LocalFileAttrs = 0;
     FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
-      if ((LocalFileAttrs >= 0) && (LocalFileAttrs & faDirectory)) { EXCEPTION; }
+      if ((LocalFileAttrs >= 0) && (LocalFileAttrs & faDirectory))
+      {
+        EXCEPTION;
+      }
     );
 
     OperationProgress->TransferingFile = false; // not set with SFTP protocol
@@ -5555,8 +5576,14 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
     ,
     {
       TRACE("2");
-      if (LocalHandle) { ::CloseHandle(LocalHandle); }
-      if (FileStream) { delete FileStream; }
+      if (LocalHandle)
+      {
+        ::CloseHandle(LocalHandle);
+      }
+      if (FileStream)
+      {
+        delete FileStream;
+      }
       if (DeleteLocalFile && (!ResumeAllowed || OperationProgress->LocallyUsed == 0) &&
           (OverwriteMode == omOverwrite))
       {

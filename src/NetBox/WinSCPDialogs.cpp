@@ -684,9 +684,18 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
     {
       TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
 
-      if (ResumeOnButton->GetChecked()) { CopyParam.SetResumeSupport(rsOn); }
-      if (ResumeSmartButton->GetChecked()) { CopyParam.SetResumeSupport(rsSmart); }
-      if (ResumeOffButton->GetChecked()) { CopyParam.SetResumeSupport(rsOff); }
+      if (ResumeOnButton->GetChecked())
+      {
+        CopyParam.SetResumeSupport(rsOn);
+      }
+      if (ResumeSmartButton->GetChecked())
+      {
+        CopyParam.SetResumeSupport(rsSmart);
+      }
+      if (ResumeOffButton->GetChecked())
+      {
+        CopyParam.SetResumeSupport(rsOff);
+      }
       CopyParam.SetResumeThreshold(ResumeThresholdEdit->GetAsInteger() * 1024);
 
       GUIConfiguration->SetDefaultCopyParam(CopyParam);
@@ -3711,10 +3720,22 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
       SessionData->SetSsh2DES(Ssh2DESCheck->GetChecked());
     }
 
-    if (SshProt1onlyButton->GetChecked()) { SessionData->SetSshProt(ssh1only); }
-    else if (SshProt1Button->GetChecked()) { SessionData->SetSshProt(ssh1); }
-    else if (SshProt2Button->GetChecked()) { SessionData->SetSshProt(ssh2); }
-    else { SessionData->SetSshProt(ssh2only); }
+    if (SshProt1onlyButton->GetChecked())
+    {
+      SessionData->SetSshProt(ssh1only);
+    }
+    else if (SshProt1Button->GetChecked())
+    {
+      SessionData->SetSshProt(ssh1);
+    }
+    else if (SshProt2Button->GetChecked())
+    {
+      SessionData->SetSshProt(ssh2);
+    }
+    else
+    {
+      SessionData->SetSshProt(ssh2only);
+    }
 
     for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
     {
@@ -4879,9 +4900,18 @@ void TPropertiesDialog::UpdateProperties(TRemoteProperties & Properties)
 bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
 {
   TValidProperties Valid;
-  if (Properties->Valid.Contains(vpRights) && FAllowedChanges & cpMode) { Valid << vpRights; }
-  if (Properties->Valid.Contains(vpOwner) && FAllowedChanges & cpOwner) { Valid << vpOwner; }
-  if (Properties->Valid.Contains(vpGroup) && FAllowedChanges & cpGroup) { Valid << vpGroup; }
+  if (Properties->Valid.Contains(vpRights) && FAllowedChanges & cpMode)
+  {
+    Valid << vpRights;
+  }
+  if (Properties->Valid.Contains(vpOwner) && FAllowedChanges & cpOwner)
+  {
+    Valid << vpOwner;
+  }
+  if (Properties->Valid.Contains(vpGroup) && FAllowedChanges & cpGroup)
+  {
+    Valid << vpGroup;
+  }
   FOrigProperties = *Properties;
   FOrigProperties.Valid = Valid;
   FOrigProperties.Recursive = false;
@@ -5343,9 +5373,18 @@ TCopyParamType TCopyParamsContainer::GetParams()
   TCopyParamType Result = FParams;
 
   assert(TMTextButton->GetChecked() || TMBinaryButton->GetChecked() || TMAutomaticButton->GetChecked());
-  if (TMTextButton->GetChecked()) { Result.SetTransferMode(tmAscii); }
-  else if (TMAutomaticButton->GetChecked()) { Result.SetTransferMode(tmAutomatic); }
-  else { Result.SetTransferMode(tmBinary); }
+  if (TMTextButton->GetChecked())
+  {
+    Result.SetTransferMode(tmAscii);
+  }
+  else if (TMAutomaticButton->GetChecked())
+  {
+    Result.SetTransferMode(tmAutomatic);
+  }
+  else
+  {
+    Result.SetTransferMode(tmBinary);
+  }
 
   if (Result.GetTransferMode() == tmAutomatic)
   {
@@ -5354,11 +5393,26 @@ TCopyParamType TCopyParamsContainer::GetParams()
     assert(Result.GetAsciiFileMask().GetIsValid(Start, Length));
   }
 
-  if (CCLowerCaseButton->GetChecked()) { Result.SetFileNameCase(ncLowerCase); }
-  else if (CCUpperCaseButton->GetChecked()) { Result.SetFileNameCase(ncUpperCase); }
-  else if (CCFirstUpperCaseButton->GetChecked()) { Result.SetFileNameCase(ncFirstUpperCase); }
-  else if (CCLowerCaseShortButton->GetChecked()) { Result.SetFileNameCase(ncLowerCaseShort); }
-  else { Result.SetFileNameCase(ncNoChange); }
+  if (CCLowerCaseButton->GetChecked())
+  {
+    Result.SetFileNameCase(ncLowerCase);
+  }
+  else if (CCUpperCaseButton->GetChecked())
+  {
+    Result.SetFileNameCase(ncUpperCase);
+  }
+  else if (CCFirstUpperCaseButton->GetChecked())
+  {
+    Result.SetFileNameCase(ncFirstUpperCase);
+  }
+  else if (CCLowerCaseShortButton->GetChecked())
+  {
+    Result.SetFileNameCase(ncLowerCaseShort);
+  }
+  else
+  {
+    Result.SetFileNameCase(ncNoChange);
+  }
 
   Result.SetAddXToDirectories(RightsContainer->GetAddXToDirectories());
   Result.SetRights(RightsContainer->GetRights());

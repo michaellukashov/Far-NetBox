@@ -205,7 +205,10 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   }
 
   UnicodeString SPublicKeyFile = Data->GetPublicKeyFile();
-  if (SPublicKeyFile.IsEmpty()) { SPublicKeyFile = GetConfiguration()->GetDefaultKeyFile(); }
+  if (SPublicKeyFile.IsEmpty())
+  {
+    SPublicKeyFile = GetConfiguration()->GetDefaultKeyFile();
+  }
   SPublicKeyFile = StripPathQuotes(ExpandEnvironmentVariables(SPublicKeyFile));
   ASCOPY(cfg->keyfile.path, SPublicKeyFile);
   cfg->sshprot = Data->GetSshProt();
@@ -780,7 +783,10 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
     {
       CTRACE(TRACE_TRANSMIT, "4");
       intptr_t Used = OutLen;
-      if (Used > Len) { Used = Len; }
+      if (Used > Len)
+      {
+        Used = Len;
+      }
       memmove(OutPtr, p, Used);
       OutPtr += Used; OutLen -= Used;
       p += Used; Len -= Used;
@@ -795,7 +801,10 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
         PendSize = PendLen + Len + 4096;
         Pending = static_cast<unsigned char *>
           (Pending ? srealloc(Pending, PendSize) : smalloc(PendSize));
-        if (!Pending) { FatalError(L"Out of memory"); }
+        if (!Pending)
+        {
+          FatalError(L"Out of memory");
+        }
       }
       memmove(Pending + PendLen, p, Len);
       PendLen += Len;
@@ -899,7 +908,10 @@ intptr_t TSecureShell::Receive(unsigned char * Buf, intptr_t Len)
       }
 
       // This seems ambiguous
-      if (Len <= 0) { FatalError(LoadStr(LOST_CONNECTION)); }
+      if (Len <= 0)
+      {
+        FatalError(LoadStr(LOST_CONNECTION));
+      }
       CTRACE(TRACE_TRANSMIT, "5");
     }
     ,

@@ -107,7 +107,10 @@ void TNamedObjectList::AlphaSort()
 void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
 {
   TObjectList::Notify(Ptr, Action);
-  if (AutoSort && (Action == lnAdded)) { AlphaSort(); }
+  if (AutoSort && (Action == lnAdded))
+  {
+    AlphaSort();
+  }
   Recount();
 }
 //---------------------------------------------------------------------------

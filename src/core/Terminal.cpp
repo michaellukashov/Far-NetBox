@@ -35,7 +35,8 @@
 #define COMMAND_ERROR_ARI(MESSAGE, REPEAT) \
   { \
     uintptr_t Result = CommandError(&E, MESSAGE, qaRetry | qaSkip | qaAbort); \
-    switch (Result) { \
+    switch (Result) \
+    { \
       case qaRetry: { REPEAT; } break; \
       case qaAbort: Abort(); \
     } \
@@ -54,7 +55,8 @@
       RollbackAction(ACTION, NULL, &E2); \
       throw; \
     } \
-    switch (Result) { \
+    switch (Result) \
+    { \
       case qaRetry: ACTION.Cancel(); { REPEAT; } break; \
       case qaAbort: RollbackAction(ACTION, NULL, &E); Abort(); \
       case qaSkip:  ACTION.Cancel(); break; \
@@ -1926,8 +1928,14 @@ void TTerminal::EndTransaction()
       TRY_FINALLY (
       {
         TRACE("2");
-        if (FReadCurrentDirectoryPending) { ReadCurrentDirectory(); }
-        if (FReadDirectoryPending) { ReadDirectory(!FReadCurrentDirectoryPending); }
+        if (FReadCurrentDirectoryPending)
+        {
+          ReadCurrentDirectory();
+        }
+        if (FReadDirectoryPending)
+        {
+          ReadDirectory(!FReadCurrentDirectoryPending);
+        }
       }
       ,
       {
@@ -3143,7 +3151,10 @@ void TTerminal::DeleteFile(const UnicodeString & FileName,
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foDelete)
   {
-    if (GetOperationProgress()->Cancel != csContinue) { Abort(); }
+    if (GetOperationProgress()->Cancel != csContinue)
+    {
+      Abort();
+    }
     GetOperationProgress()->SetFile(LocalFileName);
   }
   intptr_t Params = (AParams != NULL) ? *(static_cast<int*>(AParams)) : 0;
@@ -3158,7 +3169,10 @@ void TTerminal::DeleteFile(const UnicodeString & FileName,
   else
   {
     LogEvent(FORMAT(L"Deleting file \"%s\".", LocalFileName.c_str()));
-    if (File) { FileModified(File, LocalFileName, true); }
+    if (File)
+    {
+      FileModified(File, LocalFileName, true);
+    }
     DoDeleteFile(LocalFileName, File, Params);
     ReactOnCommand(fsDeleteFile);
   }
@@ -3228,12 +3242,18 @@ void TTerminal::CustomCommandOnFile(const UnicodeString & FileName,
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foCustomCommand)
   {
-    if (GetOperationProgress()->Cancel != csContinue) { Abort(); }
+    if (GetOperationProgress()->Cancel != csContinue)
+    {
+      Abort();
+    }
     GetOperationProgress()->SetFile(LocalFileName);
   }
   LogEvent(FORMAT(L"Executing custom command \"%s\" (%d) on file \"%s\".",
     Params->Command.c_str(), Params->Params, LocalFileName.c_str()));
-  if (File) { FileModified(File, LocalFileName); }
+  if (File)
+  {
+    FileModified(File, LocalFileName);
+  }
   DoCustomCommandOnFile(LocalFileName, File, Params->Command, Params->Params,
     Params->OutputEvent);
   ReactOnCommand(fsAnyCommand);

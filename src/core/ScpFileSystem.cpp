@@ -711,7 +711,10 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
       if ((Params & coExpectNoOutput) && FOutput->GetCount())
       {
         TRACE("8");
-        if (!Message.IsEmpty()) { Message += L"\n"; }
+        if (!Message.IsEmpty())
+        {
+          Message += L"\n";
+        }
         Message += FOutput->Text;
       }
       while (!Message.IsEmpty() && (Message.LastDelimiter(L"\n\r") == Message.Length()))
@@ -752,7 +755,10 @@ void TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, intptr_t Params,
   const UnicodeString & CmdString)
 {
   CALLSTACK;
-  if (Params < 0) { Params = ecDefault; }
+  if (Params < 0)
+  {
+    Params = ecDefault;
+  }
   if (FTerminal->GetUseBusyCursor())
   {
     Busy(true);
@@ -763,9 +769,18 @@ void TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, intptr_t Params,
 
     TRACE("1");
     int COParams = coWaitForLastLine;
-    if (Params & ecRaiseExcept) { COParams |= coRaiseExcept; }
-    if (Params & ecIgnoreWarnings) { COParams |= coIgnoreWarnings; }
-    if (Params & ecReadProgress) { COParams |= coReadProgress; }
+    if (Params & ecRaiseExcept)
+    {
+      COParams |= coRaiseExcept;
+    }
+    if (Params & ecIgnoreWarnings)
+    {
+      COParams |= coIgnoreWarnings;
+    }
+    if (Params & ecReadProgress)
+    {
+      COParams |= coReadProgress;
+    }
     ReadCommandOutput(COParams, &CmdString);
   }
   ,
@@ -835,7 +850,10 @@ void TSCPFileSystem::DoStartup()
   // otherwise session is to be closed.
   FTerminal->SetExceptionOnFail(true);
   SkipStartupMessage();
-  if (FTerminal->GetSessionData()->GetDetectReturnVar()) { DetectReturnVar(); }
+  if (FTerminal->GetSessionData()->GetDetectReturnVar())
+  {
+    DetectReturnVar();
+  }
   FTerminal->SetExceptionOnFail(false);
 
   #define COND_OPER(OPER) if (FTerminal->GetSessionData()->Get##OPER()) OPER()
@@ -1496,8 +1514,14 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
   UnicodeString TargetDirFull = UnixIncludeTrailingBackslash(TargetDir);
 
-  if (CopyParam->GetPreserveRights()) { Options = L"-p"; }
-  if (FTerminal->GetSessionData()->GetScp1Compatibility()) { Options += L" -1"; }
+  if (CopyParam->GetPreserveRights())
+  {
+    Options = L"-p";
+  }
+  if (FTerminal->GetSessionData()->GetScp1Compatibility())
+  {
+    Options += L" -1";
+  }
 
   SendCommand(FCommandSet->FullCommand(fsCopyToRemote,
     Options.c_str(), DelimitStr(UnixExcludeTrailingBackslash(TargetDir)).c_str()));
@@ -1596,7 +1620,10 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
               break;
 
             case qaCancel:
-              if (!OperationProgress->Cancel) { OperationProgress->Cancel = csCancel; }
+              if (!OperationProgress->Cancel)
+              {
+                OperationProgress->Cancel = csCancel;
+              }
             case qaNo:
               CanProceed = false;
               break;
@@ -2011,7 +2038,10 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   // Get directory attributes
   FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, DirectoryName.c_str()),
     LocalFileAttrs = FTerminal->GetLocalFileAttributes(DirectoryName);
-    if (LocalFileAttrs == -1) { RaiseLastOSError(); }
+    if (LocalFileAttrs == -1)
+    {
+      RaiseLastOSError();
+    }
   )
 
   UnicodeString TargetDirFull = UnixIncludeTrailingBackslash(TargetDir + DestFileName);
@@ -2120,8 +2150,14 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   bool CloseSCP = False;
   Params &= ~(cpAppend | cpResume);
   UnicodeString Options = L"";
-  if (CopyParam->GetPreserveRights() || CopyParam->GetPreserveTime()) { Options = L"-p"; }
-  if (FTerminal->GetSessionData()->GetScp1Compatibility()) { Options += L" -1"; }
+  if (CopyParam->GetPreserveRights() || CopyParam->GetPreserveTime())
+  {
+    Options = L"-p";
+  }
+  if (FTerminal->GetSessionData()->GetScp1Compatibility())
+  {
+    Options += L" -1";
+  }
 
   TRACE("1");
   FTerminal->LogEvent(FORMAT(L"Copying %d files/directories to local directory "
@@ -2250,7 +2286,10 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
       // Just in case, remote side already sent some more data (it's probable)
       // but we don't want to raise exception (user asked to terminate, it's not error)
       int ECParams = coOnlyReturnCode;
-      if (!LastLineRead) { ECParams |= coWaitForLastLine; }
+      if (!LastLineRead)
+      {
+        ECParams |= coWaitForLastLine;
+      }
       ReadCommandOutput(ECParams);
     }
   }
@@ -2306,7 +2345,10 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
   {
     TRACE("1");
     // See (switch ... case 'T':)
-    if (FileData.SetTime) { FileData.SetTime--; }
+    if (FileData.SetTime)
+    {
+      FileData.SetTime--;
+    }
 
     // In case of error occurred before control record arrived.
     // We can finally use full path here, as we get current path in FileName param
@@ -2320,7 +2362,10 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
       // Receive control record
       UnicodeString Line = FSecureShell->ReceiveLine();
 
-      if (Line.Length() == 0) { FTerminal->FatalError(NULL, LoadStr(SCP_EMPTY_LINE)); }
+      if (Line.Length() == 0)
+      {
+        FTerminal->FatalError(NULL, LoadStr(SCP_EMPTY_LINE));
+      }
 
       if (IsLastLine(Line))
       {
@@ -2477,7 +2522,10 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
           if (!FileData.Exists)
           {
             FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFileName.c_str()),
-              if (!ForceDirectories(DestFileName)) { RaiseLastOSError(); }
+              if (!ForceDirectories(DestFileName))
+              {
+                RaiseLastOSError();
+              }
             );
             /* SCP: can we set the timestamp for directories ? */
           }
@@ -2660,8 +2708,14 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
             ,
             {
               TRACE("25");
-              if (FileHandle) { ::CloseHandle(FileHandle); }
-              if (FileStream) { delete FileStream; }
+              if (FileHandle)
+              {
+                ::CloseHandle(FileHandle);
+              }
+              if (FileStream)
+              {
+                delete FileStream;
+              }
             }
             );
           }
@@ -2678,7 +2732,10 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
             throw;
           }
 
-          if (FileData.LocalFileAttrs == -1) { FileData.LocalFileAttrs = faArchive; }
+          if (FileData.LocalFileAttrs == -1)
+          {
+            FileData.LocalFileAttrs = faArchive;
+          }
           uintptr_t NewAttrs = CopyParam->LocalFileAttrs(FileData.RemoteRights);
           if ((NewAttrs & FileData.LocalFileAttrs) != NewAttrs)
           {
@@ -2715,7 +2772,10 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
       TRACEFMT("29 [%s]", E.Message.c_str());
       SCPSendError(E.Message, false);
       Success = false;
-      if (!FTerminal->HandleException(&E)) { throw; }
+      if (!FTerminal->HandleException(&E))
+      {
+        throw;
+      }
     }
   }
   TRACE("/");
