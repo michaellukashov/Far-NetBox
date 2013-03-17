@@ -14,12 +14,15 @@ struct TSpaceAvailable;
 class TFileOperationProgressType;
 class TRemoteProperties;
 //---------------------------------------------------------------------------
-enum TFSCommand { fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
+enum TFSCommand
+{
+  fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
   fsCurrentDirectory, fsChangeDirectory, fsListDirectory, fsListCurrentDirectory,
   fsListFile, fsLookupUsersGroups, fsCopyToRemote, fsCopyToLocal, fsDeleteFile,
   fsRenameFile, fsCreateDirectory, fsChangeMode, fsChangeGroup, fsChangeOwner,
   fsHomeDirectory, fsUnset, fsUnalias, fsCreateLink, fsCopyFile,
-  fsAnyCommand, fsReadSymlink, fsChangeProperties, fsMoveFile };
+  fsAnyCommand, fsReadSymlink, fsChangeProperties, fsMoveFile
+};
 //---------------------------------------------------------------------------
 const int dfNoRecursive = 0x01;
 const int dfAlternative = 0x02;
@@ -66,25 +69,25 @@ struct TClipboardHandler
 
   void Copy(TObject * /*Sender*/)
   {
-      CopyToClipboard(Text.c_str());
+    CopyToClipboard(Text.c_str());
   }
 };
 //---------------------------------------------------------------------------
 struct TOverwriteFileParams
 {
-    TOverwriteFileParams() :
-      SourceSize(0),
-      DestSize(0),
-      SourcePrecision(mfFull),
-      DestPrecision(mfFull)
-    {}
+  TOverwriteFileParams() :
+    SourceSize(0),
+    DestSize(0),
+    SourcePrecision(mfFull),
+    DestPrecision(mfFull)
+  {}
 
-    __int64 SourceSize;
-    __int64 DestSize;
-    TDateTime SourceTimestamp;
-    TDateTime DestTimestamp;
-    TModificationFmt SourcePrecision;
-    TModificationFmt DestPrecision;
+  __int64 SourceSize;
+  __int64 DestSize;
+  TDateTime SourceTimestamp;
+  TDateTime DestTimestamp;
+  TModificationFmt SourcePrecision;
+  TModificationFmt DestPrecision;
 };
 //---------------------------------------------------------------------------
 struct TOpenRemoteFileParams : public TObject

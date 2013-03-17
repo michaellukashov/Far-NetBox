@@ -534,14 +534,14 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
   TRY_FINALLY (
   {
     Clear();
-    rde::vector<std::wstring> lines;
+    rde::vector<std::wstring> Lines;
     std::wstring delim = std::wstring(1, GetDelimiter());
     delim.append(1, L'\n');
     std::wstring StrValue = Value.c_str();
-    tokenize(StrValue, lines, delim, true);
-    for (size_t i = 0; i < lines.size(); i++)
+    tokenize(StrValue, Lines, delim, true);
+    for (size_t I = 0; I < Lines.size(); I++)
     {
-      Add(lines[i]);
+      Add(Lines[I]);
     }
   }
   ,

@@ -512,7 +512,8 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode Value)
   THierarchicalStorage::SetAccessMode(Value);
   if (FRegistry)
   {
-    switch (GetAccessMode()) {
+    switch (GetAccessMode())
+    {
       case smRead:
         FRegistry->Access = KEY_READ;
         break;
@@ -528,7 +529,10 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode Value)
 bool TRegistryStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate)
 {
   CCALLSTACK(TRACE_ACCESS);
-  if (FKeyHistory->GetCount() > 0) { FRegistry->CloseKey(); }
+  if (FKeyHistory->GetCount() > 0)
+  {
+    FRegistry->CloseKey();
+  }
   UnicodeString K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + SubKey);
   CTRACEFMT(TRACE_ACCESS, "1 [%s] [%d]", K.c_str(), int(CanCreate));
   return FRegistry->OpenKey(K, CanCreate);
@@ -549,7 +553,10 @@ bool TRegistryStorage::DeleteSubKey(const UnicodeString & SubKey)
 {
   CCALLSTACK(TRACE_ACCESS);
   UnicodeString K;
-  if (FKeyHistory->GetCount() == 0) { K = GetStorage() + GetCurrentSubKey(); }
+  if (FKeyHistory->GetCount() == 0)
+  {
+    K = GetStorage() + GetCurrentSubKey();
+  }
   K += MungeKeyName(SubKey);
   CTRACEFMT(TRACE_ACCESS, "1 [%s]", K.c_str());
   return FRegistry->DeleteKey(K);

@@ -145,11 +145,11 @@ void TFileOperationProgressType::Resume()
   // shift timestamps for CPS calculation in advance
   // by the time the progress was suspended
   unsigned long Stopped = (GetTickCount() - FSuspendTime);
-  size_t i = 0;
-  while (i < FTicks.size())
+  size_t I = 0;
+  while (I < FTicks.size())
   {
-    FTicks[i] += Stopped;
-    ++i;
+    FTicks[I] += Stopped;
+    ++I;
   }
 
   DoProgress();
