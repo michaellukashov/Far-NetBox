@@ -4195,7 +4195,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
 
       TDateTime Modification = UnixToDateTime(MTime, GetSessionData()->GetDSTMode());
 
-      // Will we use ASCII of BINARY file tranfer?
+      // Will we use ASCII of BINARY file transfer?
       TFileMasks::TParams MaskParams;
       MaskParams.Size = Size;
       MaskParams.Modification = Modification;
