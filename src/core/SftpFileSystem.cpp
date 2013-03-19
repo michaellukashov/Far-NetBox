@@ -558,7 +558,6 @@ public:
     Result.SetLength(Len);
     memmove((void *)Result.c_str(), FData + FPosition, Len);
     FPosition += Len;
-    CTRACEFMT(TRACE_STRINGS, "[%s]", Result.c_str());
     return Result;
   }
 

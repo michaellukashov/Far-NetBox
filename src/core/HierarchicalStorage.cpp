@@ -846,7 +846,7 @@ size_t TCustomIniFileStorage::BinaryDataSize(const UnicodeString & Name)
 bool TCustomIniFileStorage::ReadBool(const UnicodeString & Name, bool Default)
 {
   CCALLSTACK(TRACE_READING);
-  CTRACEFMT(TRACE_READING, "[%s] [%s]", GetCurrentSection().c_str(), Name.c_str());
+
   return FIniFile->ReadBool(GetCurrentSection(), MungeIniName(Name), Default);
 }
 //------------------------------------------------------------------------------
@@ -854,14 +854,14 @@ intptr_t TCustomIniFileStorage::ReadInteger(const UnicodeString & Name, intptr_t
 {
   CCALLSTACK(TRACE_READING);
   intptr_t Result = FIniFile->ReadInteger(GetCurrentSection(), MungeIniName(Name), Default);
-  CTRACEFMT(TRACE_READING, "[%s] [%s] [%d]", GetCurrentSection().c_str(), Name.c_str(), Result);
+
   return Result;
 }
 //------------------------------------------------------------------------------
 __int64 TCustomIniFileStorage::ReadInt64(const UnicodeString & Name, __int64 Default)
 {
   CCALLSTACK(TRACE_READING);
-  CTRACEFMT(TRACE_READING, "[%s] [%s]", GetCurrentSection().c_str(), Name.c_str());
+
   __int64 Result = Default;
   UnicodeString Str;
   Str = ReadStringRaw(Name, L"");
@@ -875,7 +875,7 @@ __int64 TCustomIniFileStorage::ReadInt64(const UnicodeString & Name, __int64 Def
 TDateTime TCustomIniFileStorage::ReadDateTime(const UnicodeString & Name, TDateTime Default)
 {
   CCALLSTACK(TRACE_READING);
-  CTRACEFMT(TRACE_READING, "[%s] [%s]", GetCurrentSection().c_str(), Name.c_str());
+
   TDateTime Result;
   UnicodeString Value = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), L"");
   if (Value.IsEmpty())
@@ -908,7 +908,7 @@ TDateTime TCustomIniFileStorage::ReadDateTime(const UnicodeString & Name, TDateT
 double TCustomIniFileStorage::ReadFloat(const UnicodeString & Name, double Default)
 {
   CCALLSTACK(TRACE_READING);
-  CTRACEFMT(TRACE_READING, "[%s] [%s]", GetCurrentSection().c_str(), Name.c_str());
+
   double Result;
   UnicodeString Value = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), L"");
   if (Value.IsEmpty())
@@ -940,17 +940,13 @@ double TCustomIniFileStorage::ReadFloat(const UnicodeString & Name, double Defau
 //------------------------------------------------------------------------------
 UnicodeString TCustomIniFileStorage::ReadStringRaw(const UnicodeString & Name, UnicodeString & Default)
 {
-  CCALLSTACK(TRACE_READING);
   AnsiString Result = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), Default);
-  CTRACEFMT(TRACE_READING, "[%s] [%s] [%s]", GetCurrentSection().c_str(), Name.c_str(), Result.c_str());
   return Result;
 }
 //------------------------------------------------------------------------------
 size_t TCustomIniFileStorage::ReadBinaryData(const UnicodeString & Name,
   void * Buffer, size_t Size)
 {
-  CCALLSTACK(TRACE_READING);
-  CTRACEFMT(TRACE_READING, "[%s] [%s]", GetCurrentSection().c_str(), Name.c_str());
   RawByteString Value = HexToBytes(ReadStringRaw(Name, L""));
   size_t Len = Value.Length();
   if (Size > Len)

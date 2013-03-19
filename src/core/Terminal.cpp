@@ -4730,7 +4730,6 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
         Data->Options->MatchesFilter(File->GetFileName()) ||
         Data->Options->MatchesFilter(LocalFileName)))
   {
-    CTRACE(TRACE_SYNCH, "00b");
     TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
     TRY_FINALLY (
     {
@@ -4746,10 +4745,8 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
       bool Modified = false;
       intptr_t LocalIndex = Data->LocalFileList->IndexOf(LocalFileName.c_str());
       bool New = (LocalIndex < 0);
-      CTRACEFMT(TRACE_SYNCH, "00b1 [%d] [%d] [%s]", LocalIndex, int(New), LocalFileName.c_str());
       if (!New)
       {
-        CTRACE(TRACE_SYNCH, "00c");
         TSynchronizeFileData * LocalData =
           reinterpret_cast<TSynchronizeFileData *>(Data->LocalFileList->Objects[LocalIndex]);
 
@@ -4757,19 +4754,15 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
 
         if (File->GetIsDirectory() != LocalData->IsDirectory)
         {
-          CTRACE(TRACE_SYNCH, "01");
           LogEvent(FORMAT(L"%s is directory on one side, but file on the another",
             File->GetFileName().c_str()));
         }
         else if (!File->GetIsDirectory())
         {
-          CTRACE(TRACE_SYNCH, "02");
           ChecklistItem->Local = LocalData->Info;
 
-          CTRACEFMT(TRACE_SYNCH, "03 [%s] [%.7f] [%d]", ChecklistItem->Local.Modification.TimeString().c_str(), double(ChecklistItem->Local.Modification), File->GetModificationFmt());
           ChecklistItem->Local.Modification =
             ReduceDateTimePrecision(ChecklistItem->Local.Modification, File->GetModificationFmt());
-          CTRACEFMT(TRACE_SYNCH, "04 [%s] [%.7f] [%d]", ChecklistItem->Local.Modification.TimeString().c_str(), double(ChecklistItem->Local.Modification), File->GetModificationFmt());
 
           bool LocalModified = false;
           // for spTimestamp+spBySize require that the file sizes are the same
@@ -4780,27 +4773,22 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
                FLAGCLEAR(Data->Params, spBySize) ||
                (ChecklistItem->Local.Size == ChecklistItem->Remote.Size)))
           {
-            CTRACE(TRACE_SYNCH, "11");
             TimeCompare = CompareFileTime(ChecklistItem->Local.Modification,
                  ChecklistItem->Remote.Modification);
           }
           else
           {
-            CTRACE(TRACE_SYNCH, "12");
             TimeCompare = 0;
           }
-          CTRACEFMT(TRACE_SYNCH, "[%s] TimeCompare [%d]", File->GetFileName().c_str(), TimeCompare);
           if (TimeCompare < 0)
           {
             if ((FLAGCLEAR(Data->Params, spTimestamp) && FLAGCLEAR(Data->Params, spMirror)) ||
                 (Data->Mode == smBoth) || (Data->Mode == smLocal))
             {
-              CTRACE(TRACE_SYNCH, "13");
               Modified = true;
             }
             else
             {
-              CTRACE(TRACE_SYNCH, "14");
               LocalModified = true;
             }
           }
@@ -4809,12 +4797,10 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
             if ((FLAGCLEAR(Data->Params, spTimestamp) && FLAGCLEAR(Data->Params, spMirror)) ||
                 (Data->Mode == smBoth) || (Data->Mode == smRemote))
             {
-              CTRACE(TRACE_SYNCH, "15");
               LocalModified = true;
             }
             else
             {
-              CTRACE(TRACE_SYNCH, "16");
               Modified = true;
             }
           }
@@ -4822,14 +4808,12 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
                    (ChecklistItem->Local.Size != ChecklistItem->Remote.Size) &&
                    FLAGCLEAR(Data->Params, spTimestamp))
           {
-            CTRACE(TRACE_SYNCH, "17");
             Modified = true;
             LocalModified = true;
           }
 
           if (LocalModified)
           {
-            CTRACE(TRACE_SYNCH, "18");
             LocalData->Modified = true;
             LocalData->MatchingRemoteFile = ChecklistItem->Remote;
             LocalData->MatchingRemoteFileImageIndex = ChecklistItem->ImageIndex;
@@ -4868,7 +4852,6 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
       }
       else
       {
-        CTRACE(TRACE_SYNCH, "19");
         ChecklistItem->Local.Directory = Data->LocalDirectory;
         LogEvent(FORMAT(L"Remote file '%s' [%s] [%s] is new",
           FullRemoteFileName.c_str(), StandardTimestamp(File->GetModification()).c_str(), Int64ToStr(File->GetSize()).c_str()));
@@ -4876,16 +4859,13 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
 
       if (New || Modified)
       {
-        CTRACE(TRACE_SYNCH, "20");
         assert(!New || !Modified);
 
         // download the file if it changed or is new and we want to have it locally
         if ((Data->Mode == smBoth) || (Data->Mode == smLocal))
         {
-          CTRACE(TRACE_SYNCH, "21");
           if (FLAGCLEAR(Data->Params, spTimestamp) || Modified)
           {
-            CTRACE(TRACE_SYNCH, "22");
             ChecklistItem->Action =
               (Modified ? TSynchronizeChecklist::saDownloadUpdate : TSynchronizeChecklist::saDownloadNew);
             ChecklistItem->Checked =
@@ -4896,10 +4876,8 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
         }
         else if ((Data->Mode == smRemote) && New)
         {
-          CTRACE(TRACE_SYNCH, "23");
           if (FLAGCLEAR(Data->Params, spTimestamp))
           {
-            CTRACE(TRACE_SYNCH, "24");
             ChecklistItem->Action = TSynchronizeChecklist::saDeleteRemote;
             ChecklistItem->Checked =
               FLAGSET(Data->Params, spDelete) &&
@@ -4910,7 +4888,6 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
 
         if (ChecklistItem->Action != TSynchronizeChecklist::saNone)
         {
-          CTRACE(TRACE_SYNCH, "25");
           ChecklistItem->RemoteFile = File->Duplicate();
           Data->Checklist->Add(ChecklistItem);
           ChecklistItem = NULL;
@@ -4919,7 +4896,6 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
     }
     ,
     {
-      CTRACE(TRACE_SYNCH, "26");
       delete ChecklistItem;
     }
     );

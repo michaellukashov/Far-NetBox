@@ -405,7 +405,6 @@ int FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
   /*CCALLSTACK(TRACE_IMAGEINDEX);
   Attrs |= FILE_ATTRIBUTE_NORMAL;
 
-  CTRACE(TRACE_IMAGEINDEX, "FakeFileImageIndex 1");
   TSHFileInfoW SHFileInfo = {0};
   // On Win2k we get icon of "ZIP drive" for ".." (parent directory)
   if ((FileName == L"..") ||
@@ -423,13 +422,12 @@ int FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
     FileName.SetLength(FileName.Length() - PartialExtLen);
   }
 
-  CTRACEFMT(TRACE_IMAGEINDEX, "FakeFileImageIndex 2 [%s] [%d]", FileName.c_str(), int(Attrs));
   int Icon;
   if (SHGetFileInfo(UnicodeString(FileName).c_str(),
         Attrs, &SHFileInfo, sizeof(SHFileInfo),
         SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != 0)
   {
-    CTRACE(TRACE_IMAGEINDEX, "FakeFileImageIndex 2");
+
     if (TypeName != NULL)
     {
       *TypeName = SHFileInfo.szTypeName;
@@ -438,14 +436,13 @@ int FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
   }
   else
   {
-    CTRACE(TRACE_IMAGEINDEX, "FakeFileImageIndex 3");
     if (TypeName != NULL)
     {
       *TypeName = L"";
     }
     Icon = -1;
   }
-  CTRACEFMT(TRACE_IMAGEINDEX, "FakeFileImageIndex 4 [%d]", Icon);
+
 
   return Icon;*/
   return -1;

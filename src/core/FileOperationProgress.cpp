@@ -119,7 +119,6 @@ void TFileOperationProgressType::Reset()
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Stop()
 {
-  CALLSTACK;
   // added to include remaining bytes to TotalSkipped, in case
   // the progress happes to update before closing
   ClearTransfer();
@@ -129,7 +128,6 @@ void TFileOperationProgressType::Stop()
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Suspend()
 {
-  CALLSTACK;
   assert(!Suspended);
   Suspended = true;
   FSuspendTime = GetTickCount();
@@ -138,7 +136,6 @@ void TFileOperationProgressType::Suspend()
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Resume()
 {
-  CALLSTACK;
   assert(Suspended);
   Suspended = false;
 
@@ -157,16 +154,13 @@ void TFileOperationProgressType::Resume()
 //---------------------------------------------------------------------------
 intptr_t TFileOperationProgressType::OperationProgress() const
 {
-  CCALLSTACK(TRACE_PROGRESS);
   assert(Count);
   intptr_t Result = (FFilesFinished * 100)/Count;
-  CTRACEFMT(TRACE_PROGRESS, "[%d]", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
 intptr_t TFileOperationProgressType::TransferProgress() const
 {
-  CCALLSTACK(TRACE_PROGRESS);
   intptr_t Result;
   if (TransferSize)
   {
@@ -176,22 +170,18 @@ intptr_t TFileOperationProgressType::TransferProgress() const
   {
     Result = 0;
   }
-  CTRACEFMT(TRACE_PROGRESS, "[%d]", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
 intptr_t TFileOperationProgressType::TotalTransferProgress() const
 {
-  CCALLSTACK(TRACE_PROGRESS);
   assert(TotalSizeSet);
   intptr_t Result = TotalSize > 0 ? static_cast<intptr_t>(((TotalTransfered + TotalSkipped) * 100) / TotalSize) : 0;
-  CTRACEFMT(TRACE_PROGRESS, "[%d]", Result);
   return Result < 100 ? Result : 100;
 }
 //---------------------------------------------------------------------------
 intptr_t TFileOperationProgressType::OverallProgress() const
 {
-  CCALLSTACK(TRACE_PROGRESS);
   if (TotalSizeSet)
   {
     assert((Operation == foCopy) || (Operation == foMove));
