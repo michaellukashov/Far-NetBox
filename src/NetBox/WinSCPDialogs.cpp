@@ -5745,7 +5745,7 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
 }
 //------------------------------------------------------------------------------
 bool TWinSCPPlugin::CopyParamDialog(const UnicodeString & Caption,
-  TCopyParamType & CopyParam, int CopyParamAttrs)
+  TCopyParamType & CopyParam, intptr_t CopyParamAttrs)
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
@@ -5777,7 +5777,7 @@ bool TWinSCPPlugin::CopyParamDialog(const UnicodeString & Caption,
 }
 //------------------------------------------------------------------------------
 bool TWinSCPPlugin::CopyParamCustomDialog(TCopyParamType & CopyParam,
-    int CopyParamAttrs)
+  intptr_t CopyParamAttrs)
 {
   return CopyParamDialog(GetMsg(COPY_PARAM_CUSTOM_TITLE), CopyParam, CopyParamAttrs);
 }
@@ -7828,7 +7828,7 @@ class TSynchronizeDialog : TFarDialog
 public:
   TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
     TSynchronizeStartStopEvent OnStartStop,
-    intptr_t Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions);
+    intptr_t Options, intptr_t CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions);
   virtual ~TSynchronizeDialog();
 
   bool Execute(TSynchronizeParamType & Params,
@@ -7862,11 +7862,11 @@ private:
   bool FClose;
   TSynchronizeParamType FParams;
   TSynchronizeStartStopEvent FOnStartStop;
-  int FOptions;
+  intptr_t FOptions;
   TSynchronizeOptions * FSynchronizeOptions;
   TCopyParamType FCopyParams;
   TGetSynchronizeOptionsEvent FOnGetOptions;
-  int FCopyParamAttrs;
+  intptr_t FCopyParamAttrs;
 
   TFarEdit * LocalDirectoryEdit;
   TFarEdit * RemoteDirectoryEdit;
@@ -7884,7 +7884,7 @@ private:
 //------------------------------------------------------------------------------
 TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   TSynchronizeStartStopEvent OnStartStop,
-  intptr_t Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions) :
+  intptr_t Options, intptr_t CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions) :
   TFarDialog(AFarPlugin)
 {
   TFarText * Text;

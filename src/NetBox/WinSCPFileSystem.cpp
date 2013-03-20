@@ -1626,8 +1626,8 @@ void TWinSCPFileSystem::Synchronize()
   {
     bool SaveSettings = false;
     TCopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
-    int CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
-    int Options =
+    intptr_t CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
+    uintptr_t Options =
       FLAGMASK(SynchronizeAllowSelectedOnly(), soAllowSelectedOnly);
     if (SynchronizeDialog(Params, &CopyParam,
         MAKE_CALLBACK(TSynchronizeController::StartStop, &Controller),
@@ -2547,10 +2547,10 @@ intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
 
       if (!Confirmed)
       {
-        int CopyParamAttrs =
+        intptr_t CopyParamAttrs =
           GetTerminal()->UsableCopyParamAttrs(Params).Download |
           FLAGMASK(EditView, cpaNoExcludeMask);
-        int Options =
+        uintptr_t Options =
           FLAGMASK(EditView, coTempTransfer | coDisableNewerOnly);
         Confirmed = CopyDialog(false, Move, FFileList, DestPath,
           &CopyParam, Options, CopyParamAttrs);
@@ -2693,12 +2693,12 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
 
   if (!Confirmed)
   {
-    int CopyParamAttrs =
+    intptr_t CopyParamAttrs =
       GetTerminal()->UsableCopyParamAttrs(Params).Upload |
       FLAGMASK(Edit, (cpaNoExcludeMask | cpaNoClearArchive));
     // heuristics: do not ask for target directory when uploaded file
     // was downloaded in edit mode
-    int Options =
+    uintptr_t Options =
       FLAGMASK(Edit, coTempTransfer) |
       FLAGMASK(Edit || !GetTerminal()->GetIsCapable(fcNewerOnlyUpload), coDisableNewerOnly);
     Confirmed = CopyDialog(true, Move, FFileList, DestPath,
