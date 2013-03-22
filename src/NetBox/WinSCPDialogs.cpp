@@ -4640,7 +4640,7 @@ public:
     const UnicodeString & Directory,
     // TStrings * GroupList, TStrings * UserList,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
-    int AllowedChanges);
+    intptr_t AllowedChanges);
 
   bool Execute(TRemoteProperties * Properties);
 
@@ -4664,7 +4664,7 @@ private:
 TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   TStrings * FileList, const UnicodeString & Directory,
   const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
-  int AAllowedChanges) :
+  intptr_t AAllowedChanges) :
   TFarDialog(AFarPlugin),
   RightsContainer(NULL),
   OwnerComboBox(NULL),
@@ -4993,8 +4993,8 @@ protected:
   void UpdateControls();
 
 private:
-  int FOptions;
-  int FCopyParamAttrs;
+  intptr_t FOptions;
+  intptr_t FCopyParamAttrs;
   TCopyParamType FParams;
 
 public:

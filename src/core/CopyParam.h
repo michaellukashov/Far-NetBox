@@ -88,7 +88,7 @@ public:
 
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
-  UnicodeString GetInfoStr(const UnicodeString & Separator, int Attrs) const;
+  UnicodeString GetInfoStr(const UnicodeString & Separator, intptr_t Attrs) const;
 
   bool operator==(const TCopyParamType & rhp) const;
 

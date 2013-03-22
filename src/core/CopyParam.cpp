@@ -47,7 +47,7 @@ void TCopyParamType::Default()
   SetCPSLimit(0);
 }
 //---------------------------------------------------------------------------
-UnicodeString TCopyParamType::GetInfoStr(const UnicodeString & Separator, int Options) const
+UnicodeString TCopyParamType::GetInfoStr(const UnicodeString & Separator, intptr_t Options) const
 {
   TCopyParamType Defaults;
   UnicodeString Result;
