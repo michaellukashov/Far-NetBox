@@ -52,7 +52,7 @@ protected:
   virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD * Rec);
   bool CopyParamDialog(const UnicodeString & Caption, TCopyParamType & CopyParam,
     intptr_t CopyParamAttrs);
-  void MessageClick(void * Token, intptr_t Result, bool & Close);
+  void MessageClick(void * Token, uintptr_t Result, bool & Close);
 
   void CommandsMenu(bool FromFileSystem);
   bool ConfigurationDialog();

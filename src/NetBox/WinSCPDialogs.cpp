@@ -4650,7 +4650,7 @@ protected:
 
 private:
   bool FAnyDirectories;
-  int FAllowedChanges;
+  intptr_t FAllowedChanges;
   TRemoteProperties FOrigProperties;
   bool FMultiple;
 
@@ -6793,7 +6793,7 @@ protected:
   void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
   void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
 
-  int ActualCopyParamAttrs();
+  intptr_t ActualCopyParamAttrs();
   void CustomCopyParam();
   void AdaptSize();
 
@@ -7068,9 +7068,9 @@ void TFullSynchronizeDialog::Change()
   }
 }
 //------------------------------------------------------------------------------
-int TFullSynchronizeDialog::ActualCopyParamAttrs()
+intptr_t TFullSynchronizeDialog::ActualCopyParamAttrs()
 {
-  int Result;
+  intptr_t Result;
   if (SynchronizeTimestampsButton->GetChecked())
   {
     Result = cpaExcludeMaskOnly;
@@ -7852,7 +7852,7 @@ protected:
   virtual bool CloseQuery();
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
   TCopyParamType GetCopyParams();
-  int ActualCopyParamAttrs();
+  intptr_t ActualCopyParamAttrs();
   void CustomCopyParam();
 
 private:
@@ -8264,7 +8264,7 @@ TCopyParamType TSynchronizeDialog::GetCopyParams()
   return Result;
 }
 //------------------------------------------------------------------------------
-int TSynchronizeDialog::ActualCopyParamAttrs()
+intptr_t TSynchronizeDialog::ActualCopyParamAttrs()
 {
   return FCopyParamAttrs | cpaNoPreserveTime;
 }

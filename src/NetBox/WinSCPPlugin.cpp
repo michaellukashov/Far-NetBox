@@ -615,7 +615,7 @@ struct TFarMessageData
   uintptr_t ButtonCount;
 };
 //---------------------------------------------------------------------------
-void TWinSCPPlugin::MessageClick(void * Token, intptr_t Result, bool & Close)
+void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
 {
   TFarMessageData & Data = *static_cast<TFarMessageData *>(Token);
 
