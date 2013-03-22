@@ -1442,7 +1442,7 @@ void TTerminal::ReactOnCommand(int /*TFSCommand*/ Cmd)
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::TerminalError(UnicodeString Msg)
+void TTerminal::TerminalError(const UnicodeString & Msg)
 {
   TerminalError(NULL, Msg);
 }
@@ -1645,24 +1645,28 @@ int TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
   return Result;
 }
 //------------------------------------------------------------------------------
-UnicodeString TTerminal::TranslateLockedPath(UnicodeString Path, bool Lock)
+UnicodeString TTerminal::TranslateLockedPath(const UnicodeString & Path, bool Lock)
 {
-  if (!GetSessionData()->GetLockInHome() || Path.IsEmpty() || (Path[1] != L'/'))
-    return Path;
+  UnicodeString Result = Path;
+  if (!GetSessionData()->GetLockInHome() || Result.IsEmpty() || (Result[1] != L'/'))
+    return Result;
 
   if (Lock)
   {
-    if (Path.SubString(1, FLockDirectory.Length()) == FLockDirectory)
+    if (Result.SubString(1, FLockDirectory.Length()) == FLockDirectory)
     {
-      Path.Delete(1, FLockDirectory.Length());
-      if (Path.IsEmpty()) Path = L"/";
+      Result.Delete(1, FLockDirectory.Length());
+      if (Result.IsEmpty())
+      {
+        Result = L"/";
+      }
     }
   }
   else
   {
-    Path = UnixExcludeTrailingBackslash(FLockDirectory + Path);
+    Result = UnixExcludeTrailingBackslash(FLockDirectory + Result);
   }
-  return Path;
+  return Result;
 }
 //------------------------------------------------------------------------------
 void TTerminal::ClearCaches()
@@ -2735,7 +2739,7 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(const UnicodeString & Di
   return FileList;
 }
 //------------------------------------------------------------------------------
-TRemoteFileList * TTerminal::DoReadDirectoryListing(UnicodeString Directory, bool UseCache)
+TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & Directory, bool UseCache)
 {
   TRemoteFileList * FileList = new TRemoteFileList();
   try
@@ -3259,8 +3263,8 @@ void TTerminal::CustomCommandOnFile(const UnicodeString & FileName,
   ReactOnCommand(fsAnyCommand);
 }
 //------------------------------------------------------------------------------
-void TTerminal::DoCustomCommandOnFile(UnicodeString FileName,
-  const TRemoteFile * File, UnicodeString Command, intptr_t Params,
+void TTerminal::DoCustomCommandOnFile(const UnicodeString & FileName,
+  const TRemoteFile * File, const UnicodeString & Command, intptr_t Params,
   TCaptureOutputEvent OutputEvent)
 {
   CALLSTACK;
@@ -3293,7 +3297,7 @@ void TTerminal::DoCustomCommandOnFile(UnicodeString FileName,
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::CustomCommandOnFiles(UnicodeString Command,
+void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
   intptr_t Params, TStrings * Files, TCaptureOutputEvent OutputEvent)
 {
   CALLSTACK;
@@ -5196,7 +5200,7 @@ void TTerminal::FileFind(const UnicodeString & FileName,
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::DoFilesFind(UnicodeString Directory, TFilesFindParams & Params)
+void TTerminal::DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params)
 {
   Params.OnFindingFile(this, Directory, Params.Cancel);
   if (!Params.Cancel)
@@ -5218,7 +5222,7 @@ void TTerminal::DoFilesFind(UnicodeString Directory, TFilesFindParams & Params)
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::FilesFind(UnicodeString Directory, const TFileMasks & FileMask,
+void TTerminal::FilesFind(const UnicodeString & Directory, const TFileMasks & FileMask,
   TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile)
 {
   TFilesFindParams Params;

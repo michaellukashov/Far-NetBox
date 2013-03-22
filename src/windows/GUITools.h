@@ -21,7 +21,7 @@ DEFINE_CALLBACK_TYPE0(TProcessMessagesEvent, void);
 //---------------------------------------------------------------------------
 bool FindFile(UnicodeString & Path);
 bool FindTool(const UnicodeString & Name, UnicodeString & Path);
-bool FileExistsEx(UnicodeString Path);
+bool FileExistsEx(const UnicodeString & Path);
 bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params);
 bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params,
   HANDLE & Handle);

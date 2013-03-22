@@ -40,9 +40,10 @@ bool FindFile(UnicodeString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool FileExistsEx(UnicodeString Path)
+bool FileExistsEx(const UnicodeString & Path)
 {
-  return FindFile(Path);
+  UnicodeString LocalPath = Path;
+  return FindFile(LocalPath);
 }
 //---------------------------------------------------------------------------
 void OpenSessionInPutty(const UnicodeString & PuttyPath,

@@ -125,7 +125,7 @@ protected:
   void LoadFile(TRemoteFile * File, TSFTPPacket * Packet,
     bool Complete = true);
   UnicodeString LocalCanonify(const UnicodeString & Path);
-  UnicodeString Canonify(UnicodeString Path);
+  UnicodeString Canonify(const UnicodeString & Path);
   UnicodeString RealPath(const UnicodeString & Path);
   UnicodeString RealPath(const UnicodeString & Path, const UnicodeString & BaseDir);
   void ReserveResponse(const TSFTPPacket * Packet,
@@ -163,7 +163,7 @@ protected:
   RawByteString SFTPOpenRemoteFile(const UnicodeString & FileName,
     unsigned int OpenType, __int64 Size = -1);
   int SFTPOpenRemote(void * AOpenParams, void * Param2);
-  void SFTPCloseRemote(const RawByteString Handle,
+  void SFTPCloseRemote(const RawByteString & Handle,
     const UnicodeString & FileName, TFileOperationProgressType * OperationProgress,
     bool TransferFinished, bool Request, TSFTPPacket * Packet);
   void SFTPDirectorySource(const UnicodeString & DirectoryName,

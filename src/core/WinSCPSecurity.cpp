@@ -24,7 +24,7 @@ RawByteString SimpleEncryptChar(unsigned char Ch)
     PWALG_SIMPLE_STRING.SubString(((Ch & 0x0F) >> 0) + 1, 1);
 }
 //---------------------------------------------------------------------------
-unsigned char SimpleDecryptNextChar(RawByteString &Str)
+unsigned char SimpleDecryptNextChar(RawByteString & Str)
 {
   if (Str.Length() > 0)
   {
@@ -37,7 +37,7 @@ unsigned char SimpleDecryptNextChar(RawByteString &Str)
   else { return 0x00; }
 }
 //---------------------------------------------------------------------------
-RawByteString EncryptPassword(UnicodeString UnicodePassword, UnicodeString UnicodeKey, Integer /* Algorithm */)
+RawByteString EncryptPassword(const UnicodeString & UnicodePassword, const UnicodeString & UnicodeKey, Integer /* Algorithm */)
 {
   UTF8String Password = UnicodePassword;
   UTF8String Key = UnicodeKey;
@@ -62,24 +62,25 @@ RawByteString EncryptPassword(UnicodeString UnicodePassword, UnicodeString Unico
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString DecryptPassword(RawByteString Password, UnicodeString UnicodeKey, Integer /* Algorithm */)
+UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & UnicodeKey, Integer /* Algorithm */)
 {
   UTF8String Key = UnicodeKey;
   UTF8String Result("");
   Integer Index;
   unsigned char Length, Flag;
 
-  Flag = SimpleDecryptNextChar(Password);
+  RawByteString Psw = Password;
+  Flag = SimpleDecryptNextChar(Psw);
   if (Flag == PWALG_SIMPLE_FLAG)
   {
-    /* Dummy = */ SimpleDecryptNextChar(Password);
-    Length = SimpleDecryptNextChar(Password);
+    /* Dummy = */ SimpleDecryptNextChar(Psw);
+    Length = SimpleDecryptNextChar(Psw);
   }
   else
     Length = Flag;
-  Password.Delete(1, (static_cast<Integer>(SimpleDecryptNextChar(Password))*2));
+  Psw.Delete(1, (static_cast<Integer>(SimpleDecryptNextChar(Psw))*2));
   for (Index = 0; Index < Length; ++Index)
-    Result += static_cast<char>(SimpleDecryptNextChar(Password));
+    Result += static_cast<char>(SimpleDecryptNextChar(Psw));
   if (Flag == PWALG_SIMPLE_FLAG)
   {
     if (Result.SubString(1, Key.Length()) != Key)
@@ -90,7 +91,7 @@ UnicodeString DecryptPassword(RawByteString Password, UnicodeString UnicodeKey, 
   return UnicodeString(Result);
 }
 //---------------------------------------------------------------------------
-RawByteString SetExternalEncryptedPassword(RawByteString Password)
+RawByteString SetExternalEncryptedPassword(const RawByteString & Password)
 {
   RawByteString Result;
   Result += SimpleEncryptChar(static_cast<unsigned char>(PWALG_SIMPLE_FLAG));
@@ -99,14 +100,15 @@ RawByteString SetExternalEncryptedPassword(RawByteString Password)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool GetExternalEncryptedPassword(RawByteString Encrypted, RawByteString & Password)
+bool GetExternalEncryptedPassword(const RawByteString & Encrypted, RawByteString & Password)
 {
+  RawByteString Enc = Encrypted;
   bool Result =
-    (SimpleDecryptNextChar(Encrypted) == PWALG_SIMPLE_FLAG) &&
-    (SimpleDecryptNextChar(Encrypted) == PWALG_SIMPLE_EXTERNAL);
+    (SimpleDecryptNextChar(Enc) == PWALG_SIMPLE_FLAG) &&
+    (SimpleDecryptNextChar(Enc) == PWALG_SIMPLE_EXTERNAL);
   if (Result)
   {
-    Password = HexToBytes(UnicodeString(UTF8String(Encrypted.c_str(), Encrypted.Length())));
+    Password = HexToBytes(UnicodeString(UTF8String(Enc.c_str(), Enc.Length())));
   }
   return Result;
 }

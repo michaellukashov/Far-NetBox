@@ -8,9 +8,9 @@
 #define PWALG_SIMPLE_MAXLEN 50
 #define PWALG_SIMPLE_FLAG 0xFF
 int random(int range);
-RawByteString EncryptPassword(UnicodeString Password, UnicodeString Key, Integer Algorithm = PWALG_SIMPLE);
-UnicodeString DecryptPassword(RawByteString Password, UnicodeString Key, Integer Algorithm = PWALG_SIMPLE);
-RawByteString SetExternalEncryptedPassword(RawByteString Password);
-bool GetExternalEncryptedPassword(RawByteString Encrypted, RawByteString & Password);
+RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key, Integer Algorithm = PWALG_SIMPLE);
+UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key, Integer Algorithm = PWALG_SIMPLE);
+RawByteString SetExternalEncryptedPassword(const RawByteString & Password);
+bool GetExternalEncryptedPassword(const RawByteString & Encrypted, RawByteString & Password);
 //---------------------------------------------------------------------------
 #endif

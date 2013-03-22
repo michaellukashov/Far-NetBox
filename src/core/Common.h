@@ -50,7 +50,7 @@ UnicodeString BooleanToStr(bool B);
 UnicodeString BooleanToEngStr(bool B);
 UnicodeString DefaultStr(const UnicodeString & Str, const UnicodeString & Default);
 UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim);
-UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From, UnicodeString Chs, bool Trim,
+UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From, const UnicodeString & Chs, bool Trim,
   wchar_t * Delimiter = NULL, bool DoubleDelimiterEscapes = false);
 UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars);
 UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote);

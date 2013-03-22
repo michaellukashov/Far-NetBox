@@ -190,7 +190,7 @@ protected:
   void SetLastCode(int Code);
 
   static bool Unquote(UnicodeString & Str);
-  static UnicodeString ExtractStatusMessage(UnicodeString Status);
+  static UnicodeString ExtractStatusMessage(const UnicodeString & Status);
 
 private:
   enum TCommand

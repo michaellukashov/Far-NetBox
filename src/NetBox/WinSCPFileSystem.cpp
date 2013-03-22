@@ -2909,7 +2909,7 @@ TStrings * TWinSCPFileSystem::CreateSelectedFileList(
 }
 //------------------------------------------------------------------------------
 TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
-  TOperationSide Side, bool SelectedOnly, UnicodeString Directory, bool FileNameOnly,
+  TOperationSide Side, bool SelectedOnly, const UnicodeString & Directory, bool FileNameOnly,
   TStrings * AFileList)
 {
   TStrings * FileList = (AFileList == NULL ? new TStringList() : AFileList);
@@ -2937,11 +2937,12 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
           {
             if (!FileNameOnly)
             {
-              if (Directory.IsEmpty())
+              UnicodeString Dir = Directory;
+              if (Dir.IsEmpty())
               {
-                Directory = GetCurrentDir();
+                Dir = GetCurrentDir();
               }
-              FileName = IncludeTrailingBackslash(Directory) + FileName;
+              FileName = IncludeTrailingBackslash(Dir) + FileName;
             }
           }
           else
@@ -3356,7 +3357,7 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalDisplayBanner(
-  TTerminal * /*Terminal*/, UnicodeString SessionName,
+  TTerminal * /*Terminal*/, const UnicodeString & SessionName,
   const UnicodeString & Banner, bool & NeverShowAgain, intptr_t Options)
 {
   BannerDialog(SessionName, Banner, NeverShowAgain, Options);

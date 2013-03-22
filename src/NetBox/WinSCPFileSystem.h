@@ -302,7 +302,7 @@ private:
     TStrings * Prompts, TStrings * Results, bool & Result,
     void * Arg);
   void TerminalDisplayBanner(TTerminal * Terminal,
-    UnicodeString SessionName, const UnicodeString & Banner, bool & NeverShowAgain,
+    const UnicodeString & SessionName, const UnicodeString & Banner, bool & NeverShowAgain,
     intptr_t Options);
   void TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
@@ -321,7 +321,7 @@ private:
     TOnceDoneOperation & DisconnectWhenComplete);
   void CancelConfiguration(TFileOperationProgressType & ProgressData);
   TStrings * CreateFileList(TObjectList * PanelItems,
-    TOperationSide Side, bool SelectedOnly = false, UnicodeString Directory = L"",
+    TOperationSide Side, bool SelectedOnly = false, const UnicodeString & Directory = L"",
     bool FileNameOnly = false, TStrings * AFileList = NULL);
   TStrings * CreateSelectedFileList(TOperationSide Side,
     TFarPanelInfo * PanelInfo = NULL);

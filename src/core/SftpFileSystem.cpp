@@ -2573,16 +2573,16 @@ UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString & Path)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TSFTPFileSystem::Canonify(UnicodeString Path)
+UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & Path)
 {
   // inspired by canonify() from PSFTP.C
   UnicodeString Result;
   FTerminal->LogEvent(FORMAT(L"Canonifying: \"%s\"", Path.c_str()));
-  Path = LocalCanonify(Path);
+  Result = LocalCanonify(Path);
   bool TryParent = false;
   try
   {
-    Result = RealPath(Path);
+    Result = RealPath(Result);
   }
   catch(...)
   {
@@ -4837,7 +4837,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
   return 0;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SFTPCloseRemote(const RawByteString Handle,
+void TSFTPFileSystem::SFTPCloseRemote(const RawByteString & Handle,
   const UnicodeString & FileName, TFileOperationProgressType * OperationProgress,
   bool TransferFinished, bool Request, TSFTPPacket * Packet)
 {

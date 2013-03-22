@@ -211,7 +211,7 @@ void TFileOperationProgressType::Finish(const UnicodeString & FileName,
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::SetFile(UnicodeString AFileName, bool AFileInProgress)
+void TFileOperationProgressType::SetFile(const UnicodeString & AFileName, bool AFileInProgress)
 {
   CALLSTACK;
   FileName = AFileName;

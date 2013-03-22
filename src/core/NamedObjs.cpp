@@ -114,7 +114,7 @@ void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
   Recount();
 }
 //---------------------------------------------------------------------------
-TNamedObject * TNamedObjectList::FindByName(UnicodeString Name,
+TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name,
   Boolean CaseSensitive)
 {
   for (Integer Index = 0; Index < TObjectList::GetCount(); ++Index)

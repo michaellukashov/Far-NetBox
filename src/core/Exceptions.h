@@ -68,14 +68,14 @@ class EOSExtException : public ExtException
 {
 public:
   explicit EOSExtException();
-  explicit EOSExtException(UnicodeString Msg);
+  explicit EOSExtException(const UnicodeString & Msg);
 };
 //---------------------------------------------------------------------------
 class EFatal : public ExtException
 {
 public:
   // fatal errors are always copied, new message is only appended
-  explicit EFatal(Exception* E, UnicodeString Msg);
+  explicit EFatal(Exception* E, const UnicodeString & Msg);
 
   bool GetReopenQueried() { return FReopenQueried; }
   void SetReopenQueried(bool Value) { FReopenQueried = Value; }
@@ -101,7 +101,7 @@ DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal);
 class ESshTerminate : public EFatal
 {
 public:
-  explicit inline ESshTerminate(Exception* E, UnicodeString Msg, TOnceDoneOperation AOperation) :
+  explicit inline ESshTerminate(Exception* E, const UnicodeString & Msg, TOnceDoneOperation AOperation) :
     EFatal(E, Msg),
     Operation(AOperation)
   { }

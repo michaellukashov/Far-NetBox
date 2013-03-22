@@ -267,7 +267,7 @@ public:
   UnicodeString GetSessionName();
 
 private:
-  void DoAdd(TLogLineType Type, UnicodeString Line,
+  void DoAdd(TLogLineType Type, const UnicodeString & Line,
     TDoAddLogEvent Event);
   void DoAddToParent(TLogLineType aType, const UnicodeString & aLine);
   void DoAddToSelf(TLogLineType aType, const UnicodeString & aLine);
@@ -290,7 +290,7 @@ public:
   void ReflectSettings();
   void AddFailure(Exception * E);
   void AddFailure(TStrings * Messages);
-  void BeginGroup(UnicodeString Name);
+  void BeginGroup(const UnicodeString & Name);
   void EndGroup();
 
   UnicodeString GetCurrentFileName() const { return FCurrentFileName; };
@@ -302,7 +302,7 @@ protected:
   void RecordPendingActions();
   void Add(const UnicodeString & Line);
   void AddIndented(const UnicodeString & Line);
-  void AddMessages(UnicodeString Indent, TStrings * Messages);
+  void AddMessages(const UnicodeString & Indent, TStrings * Messages);
 
 private:
   TConfiguration * FConfiguration;

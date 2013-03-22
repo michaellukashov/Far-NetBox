@@ -8,7 +8,7 @@
 class EFileMasksException : public Exception
 {
 public:
-  explicit EFileMasksException(UnicodeString Message, intptr_t ErrorStart, intptr_t ErrorLen);
+  explicit EFileMasksException(const UnicodeString & Message, intptr_t ErrorStart, intptr_t ErrorLen);
   intptr_t ErrorStart;
   intptr_t ErrorLen;
 };
@@ -137,7 +137,7 @@ private:
 //---------------------------------------------------------------------------
 UnicodeString MaskFileName(const UnicodeString & FileName, const UnicodeString & Mask);
 bool IsEffectiveFileNameMask(const UnicodeString & Mask);
-UnicodeString DelimitFileNameMask(UnicodeString Mask);
+UnicodeString DelimitFileNameMask(const UnicodeString & Mask);
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE5(TCustomCommandPatternEvent, void,
   int /* Index */, const UnicodeString & /* Pattern */, void * /* Arg */, UnicodeString & /* Replacement */,

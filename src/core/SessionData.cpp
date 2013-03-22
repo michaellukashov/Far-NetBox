@@ -3149,7 +3149,7 @@ intptr_t TStoredSessionList::IndexOf(TSessionData * Data)
 }
 //---------------------------------------------------------------------------
 TSessionData * TStoredSessionList::NewSession(
-  UnicodeString SessionName, TSessionData * Session)
+  const UnicodeString & SessionName, TSessionData * Session)
 {
   TSessionData * DuplicateSession = static_cast<TSessionData*>(FindByName(SessionName));
   if (!DuplicateSession)
@@ -3319,7 +3319,7 @@ UnicodeString GetCodePageAsString(uintptr_t cp)
 }
 
 //---------------------------------------------------------------------
-UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TSessionData * SessionData)
+UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSessionData * SessionData)
 {
   UnicodeString ANewFileName = StripPathQuotes(ExpandEnvironmentVariables(LogFileName));
   TDateTime N = Now();

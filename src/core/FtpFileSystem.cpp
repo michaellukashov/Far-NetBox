@@ -3071,24 +3071,25 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
   TRACE("/");
 }
 //---------------------------------------------------------------------------
-UnicodeString TFTPFileSystem::ExtractStatusMessage(UnicodeString Status)
+UnicodeString TFTPFileSystem::ExtractStatusMessage(const UnicodeString & Status)
 {
   // CApiLog::LogMessage
   // (note that the formatting may not be present when LogMessageRaw is used)
-  intptr_t P1 = Status.Pos(L"): ");
+  UnicodeString Result = Status;
+  intptr_t P1 = Result.Pos(L"): ");
   if (P1 > 0)
   {
-    intptr_t P2 = Status.Pos(L".cpp(");
+    intptr_t P2 = Result.Pos(L".cpp(");
     if ((P2 > 0) && (P2 < P1))
     {
-      intptr_t P3 = Status.Pos(L"   caller=0x");
+      intptr_t P3 = Result.Pos(L"   caller=0x");
       if ((P3 > 0) && (P3 > P1))
       {
-        Status = Status.SubString(P1 + 3, P3 - P1 - 3);
+        Result = Result.SubString(P1 + 3, P3 - P1 - 3);
       }
     }
   }
-  return Status;
+  return Result;
 }
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)

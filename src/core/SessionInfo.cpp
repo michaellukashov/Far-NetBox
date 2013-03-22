@@ -264,7 +264,7 @@ public:
     Parameter(L"command", Command);
   }
 
-  void AddOutput(UnicodeString Output, bool StdError)
+  void AddOutput(const UnicodeString & Output, bool StdError)
   {
     const wchar_t * Name = (StdError ? L"erroroutput" : L"output");
     intptr_t Index = FNames->IndexOf(Name);
@@ -586,7 +586,7 @@ TFileSystemInfo::TFileSystemInfo()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-FILE * OpenFile(UnicodeString LogFileName, TSessionData * SessionData, bool Append, UnicodeString & NewFileName)
+FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * SessionData, bool Append, UnicodeString & NewFileName)
 {
   CALLSTACK;
   FILE * Result;
@@ -716,7 +716,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
   }
 }
 //---------------------------------------------------------------------------
-void TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
+void TSessionLog::DoAdd(TLogLineType Type, const UnicodeString & Line,
   TDoAddLogEvent Event)
 {
   CCALLSTACK(TRACE_LOG_ADD);
@@ -727,9 +727,11 @@ void TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
     Prefix = L"[" + GetName() + L"] ";
   }
 
-  while (!Line.IsEmpty())
+  UnicodeString Ln = Line;
+  while (!Ln.IsEmpty())
   {
-    Event(Type, Prefix + CutToChar(Line, L'\n', false));
+    // UnicodeString Param = ;
+    Event(Type, Prefix + CutToChar(Ln, L'\n', false));
   }
 }
 //---------------------------------------------------------------------------
@@ -1330,7 +1332,7 @@ void TActionLog::AddFailure(Exception * E)
   }
 }
 //---------------------------------------------------------------------------
-void TActionLog::AddMessages(UnicodeString Indent, TStrings * Messages)
+void TActionLog::AddMessages(const UnicodeString & Indent, TStrings * Messages)
 {
   CALLSTACK;
   for (intptr_t Index = 0; Index < Messages->GetCount(); ++Index)
@@ -1428,7 +1430,7 @@ void TActionLog::RecordPendingActions()
   }
 }
 //---------------------------------------------------------------------------
-void TActionLog::BeginGroup(UnicodeString Name)
+void TActionLog::BeginGroup(const UnicodeString & Name)
 {
   assert(!FInGroup);
   FInGroup = true;

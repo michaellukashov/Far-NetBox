@@ -42,7 +42,7 @@ public:
   virtual void Notify(void *Ptr, TListNotification Action);
   void AlphaSort();
   virtual TNamedObject * AtObject(intptr_t Index);
-  TNamedObject * FindByName(UnicodeString Name, Boolean CaseSensitive = False);
+  TNamedObject * FindByName(const UnicodeString & Name, Boolean CaseSensitive = False);
   intptr_t GetHiddenCount() { return FHiddenCount; }
   void SetHiddenCount(intptr_t Value) { FHiddenCount = Value; }
 };

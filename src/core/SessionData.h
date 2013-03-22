@@ -512,7 +512,7 @@ public:
   void UpdateStaticUsage();
   intptr_t IndexOf(TSessionData * Data);
   TSessionData * FindSame(TSessionData * Data);
-  TSessionData * NewSession(UnicodeString SessionName, TSessionData * Session);
+  TSessionData * NewSession(const UnicodeString & SessionName, TSessionData * Session);
   TSessionData * ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
     UnicodeString * FileName = NULL, bool * ProtocolDefined = NULL, UnicodeString * MaskedUrl = NULL);
   TSessionData * GetSession(intptr_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
@@ -538,6 +538,6 @@ bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
 uintptr_t GetCodePageAsNumber(const UnicodeString & CodePage);
 UnicodeString GetCodePageAsString(uintptr_t cp);
 //---------------------------------------------------------------------------
-UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TSessionData * SessionData);
+UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSessionData * SessionData);
 //---------------------------------------------------------------------------
 #endif
