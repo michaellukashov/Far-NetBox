@@ -25,7 +25,6 @@
 //!CLEANBEGIN
 #ifdef _DEBUG
 #include <stdio.h>
-static HANDLE TraceFile = NULL;
 #ifdef NETBOX_DEBUG
 bool IsTracing = true;
 #else
@@ -166,7 +165,6 @@ void Trace(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * Message)
 {
   assert(IsTracing);
-  return;
 
   UnicodeString TimeString;
 #ifndef _MSC_VER

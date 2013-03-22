@@ -619,7 +619,7 @@ void TWinSCPPlugin::MessageClick(void * Token, intptr_t Result, bool & Close)
 {
   TFarMessageData & Data = *static_cast<TFarMessageData *>(Token);
 
-  assert(Result >= 0 && Result < Data.ButtonCount);
+  assert(Result != -1 && Result < Data.ButtonCount);
 
   if ((Data.Params != NULL) && (Data.Params->Aliases != NULL))
   {
@@ -793,13 +793,13 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
     {
       Result = FarParams.TimerAnswer;
     }
-    else if (Result < 0)
+    else if (Result == NPOS)
     {
       Result = CancelAnswer(Answers);
     }
     else
     {
-      assert(Result >= 0 && Result < Data.ButtonCount);
+      assert(Result != -1 && Result < Data.ButtonCount);
       Result = Data.Buttons[Result];
     }
 

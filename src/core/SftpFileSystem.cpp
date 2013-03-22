@@ -5188,7 +5188,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
     uintptr_t LocalFileAttrs = 0;
     FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
-      if ((LocalFileAttrs >= 0) && (LocalFileAttrs & faDirectory))
+      if ((LocalFileAttrs != -1) && (LocalFileAttrs & faDirectory))
       {
         EXCEPTION;
       }
@@ -5295,7 +5295,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       }
       );
 
-      if ((LocalFileAttrs >= 0) && !ResumeTransfer)
+      if ((LocalFileAttrs != -1) && !ResumeTransfer)
       {
         __int64 DestFileSize = 0;
         __int64 MTime = 0;
