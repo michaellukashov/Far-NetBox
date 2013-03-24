@@ -830,39 +830,39 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPPlugin::DeleteLocalFile(const UnicodeString & LocalFileName)
+void TWinSCPPlugin::DeleteLocalFile(const UnicodeString & LocalFileName)
 {
   GetSystemFunctions()->DeleteFile(LocalFileName.c_str());
 }
 
-HANDLE __fastcall TWinSCPPlugin::CreateLocalFile(const UnicodeString & LocalFileName,
+HANDLE TWinSCPPlugin::CreateLocalFile(const UnicodeString & LocalFileName,
   DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
   return GetSystemFunctions()->CreateFile(LocalFileName.c_str(), DesiredAccess,
     ShareMode, NULL, CreationDisposition, FlagsAndAttributes, 0);
 }
 
-DWORD __fastcall TWinSCPPlugin::GetLocalFileAttributes(const UnicodeString & LocalFileName)
+DWORD TWinSCPPlugin::GetLocalFileAttributes(const UnicodeString & LocalFileName)
 {
   return GetSystemFunctions()->GetFileAttributes(LocalFileName.c_str());
 }
 
-BOOL __fastcall TWinSCPPlugin::SetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
+BOOL TWinSCPPlugin::SetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
 {
   return GetSystemFunctions()->SetFileAttributes(LocalFileName.c_str(), FileAttributes);
 }
 
-BOOL __fastcall TWinSCPPlugin::MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
+BOOL TWinSCPPlugin::MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
 {
   return GetSystemFunctions()->MoveFileEx(LocalFileName.c_str(), NewLocalFileName, Flags);
 }
 
-BOOL __fastcall TWinSCPPlugin::RemoveLocalDirectory(const UnicodeString & LocalDirName)
+BOOL TWinSCPPlugin::RemoveLocalDirectory(const UnicodeString & LocalDirName)
 {
   return GetSystemFunctions()->RemoveDirectory(LocalDirName.c_str());
 }
 
-BOOL __fastcall TWinSCPPlugin::CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
+BOOL TWinSCPPlugin::CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
   return GetSystemFunctions()->CreateDirectory(LocalDirName.c_str(), SecurityAttributes);
 }

@@ -46,7 +46,7 @@ public:
   TRect GetClientRect() const;
   UnicodeString GetHelpTopic() const { return FHelpTopic; }
   void SetHelpTopic(const UnicodeString & Value);
-  FARDIALOGITEMFLAGS __fastcall GetFlags() const { return FFlags; }
+  FARDIALOGITEMFLAGS GetFlags() const { return FFlags; }
   void SetFlags(const FARDIALOGITEMFLAGS value);
   bool GetCentered();
   void SetCentered(bool Value);
