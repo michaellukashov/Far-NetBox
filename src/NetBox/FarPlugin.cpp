@@ -2689,12 +2689,12 @@ TObjectList * TFarPanelInfo::GetItems()
     {
       // DEBUG_PRINTF(L"Index = %d", Index);
       // TODO: move to common function
-      intptr_t size = FOwner->FarControl(FCTL_GETPANELITEM, Index, NULL);
-      PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_malloc(size));
-      memset(ppi, 0, size);
+      intptr_t Size = FOwner->FarControl(FCTL_GETPANELITEM, Index, NULL);
+      PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_malloc(Size));
+      memset(ppi, 0, Size);
       FarGetPluginPanelItem gppi;
       gppi.StructSize = sizeof(FarGetPluginPanelItem);
-      gppi.Size = size;
+      gppi.Size = Size;
       gppi.Item = ppi;
       FOwner->FarControl(FCTL_GETPANELITEM, Index, static_cast<void *>(&gppi));
       // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FileName);
