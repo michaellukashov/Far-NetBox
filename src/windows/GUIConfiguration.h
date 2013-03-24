@@ -75,7 +75,7 @@ public:
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
 
-  UnicodeString GetInfoStr(UnicodeString Separator) const;
+  UnicodeString GetInfoStr(const UnicodeString & Separator) const;
 
   bool operator ==(const TCopyParamRule & rhp) const;
 
@@ -199,10 +199,10 @@ public:
   virtual void DefaultLocalized();
   intptr_t GetCopyParamIndex();
   TGUICopyParamType GetCurrentCopyParam();
-  TGUICopyParamType GetCopyParamPreset(UnicodeString Name);
-  bool GetHasCopyParamPreset(UnicodeString Name);
+  TGUICopyParamType GetCopyParamPreset(const UnicodeString & Name);
+  bool GetHasCopyParamPreset(const UnicodeString & Name);
   void SetCopyParamIndex(intptr_t Value);
-  void SetCopyParamCurrent(UnicodeString Value);
+  void SetCopyParamCurrent(const UnicodeString & Value);
   void SetNewDirectoryProperties(const TRemoteProperties & Value);
   virtual void Saved();
 
@@ -244,7 +244,7 @@ public:
   bool GetTelnetForFtpInPutty() { return FTelnetForFtpInPutty; }
   void SetTelnetForFtpInPutty(bool Value) { FTelnetForFtpInPutty = Value; }
   UnicodeString GetPuttySession();
-  void SetPuttySession(UnicodeString Value);
+  void SetPuttySession(const UnicodeString & Value);
   TDateTime GetIgnoreCancelBeforeFinish() { return FIgnoreCancelBeforeFinish; }
   void SetIgnoreCancelBeforeFinish(TDateTime Value) { FIgnoreCancelBeforeFinish = Value; }
   TGUICopyParamType & GetDefaultCopyParam() { return FDefaultCopyParam; }

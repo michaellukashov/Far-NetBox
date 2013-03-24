@@ -17,7 +17,7 @@ static UnicodeString DirectoryMaskDelimiters = L"/\\";
 static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1]) + L' ';
 //---------------------------------------------------------------------------
 EFileMasksException::EFileMasksException(
-    UnicodeString Message, intptr_t AErrorStart, intptr_t AErrorLen) :
+  const UnicodeString & Message, intptr_t AErrorStart, intptr_t AErrorLen) :
   Exception(Message)
 {
   ErrorStart = AErrorStart;
@@ -110,17 +110,18 @@ bool IsEffectiveFileNameMask(const UnicodeString & Mask)
   return !Mask.IsEmpty() && (Mask != L"*") && (Mask != L"*.*");
 }
 //---------------------------------------------------------------------------
-UnicodeString DelimitFileNameMask(UnicodeString Mask)
+UnicodeString DelimitFileNameMask(const UnicodeString & Mask)
 {
-  for (intptr_t I = 1; I <= Mask.Length(); I++)
+  UnicodeString Result = Mask;
+  for (intptr_t I = 1; I <= Result.Length(); I++)
   {
-    if (wcschr(L"\\*?", Mask[I]) != NULL)
+    if (wcschr(L"\\*?", Result[I]) != NULL)
     {
-      Mask.Insert(L"\\", I);
+      Result.Insert(L"\\", I);
       I++;
     }
   }
-  return Mask;
+  return Result;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

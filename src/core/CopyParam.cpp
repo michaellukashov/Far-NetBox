@@ -47,7 +47,7 @@ void TCopyParamType::Default()
   SetCPSLimit(0);
 }
 //---------------------------------------------------------------------------
-UnicodeString TCopyParamType::GetInfoStr(const UnicodeString & Separator, int Options) const
+UnicodeString TCopyParamType::GetInfoStr(const UnicodeString & Separator, intptr_t Options) const
 {
   TCopyParamType Defaults;
   UnicodeString Result;
@@ -357,7 +357,7 @@ bool TCopyParamType::UseAsciiTransfer(const UnicodeString & FileName,
   }
 }
 //---------------------------------------------------------------------------
-TRights TCopyParamType::RemoteFileRights(intptr_t Attrs) const
+TRights TCopyParamType::RemoteFileRights(uintptr_t Attrs) const
 {
   CALLSTACK;
   TRights R = GetRights();
@@ -395,9 +395,9 @@ UnicodeString TCopyParamType::GetLogStr() const
     GetAsciiFileMask().GetMasks().c_str());
 }
 //---------------------------------------------------------------------------
-int TCopyParamType::LocalFileAttrs(const TRights & Rights) const
+uintptr_t TCopyParamType::LocalFileAttrs(const TRights & Rights) const
 {
-  int Result = 0;
+  uintptr_t Result = 0;
   if (GetPreserveReadOnly() && !Rights.GetRight(TRights::rrUserWrite))
   {
     Result |= faReadOnly;

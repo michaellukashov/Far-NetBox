@@ -75,8 +75,8 @@ public:
   virtual void Default();
   UnicodeString ChangeFileName(const UnicodeString & FileName,
     TOperationSide Side, bool FirstLevel) const;
-  int LocalFileAttrs(const TRights & Rights) const;
-  TRights RemoteFileRights(intptr_t Attrs) const;
+  uintptr_t LocalFileAttrs(const TRights & Rights) const;
+  TRights RemoteFileRights(uintptr_t Attrs) const;
   bool UseAsciiTransfer(const UnicodeString & FileName, TOperationSide Side,
     const TFileMasks::TParams & Params) const;
   bool AllowResume(__int64 Size) const;
@@ -88,7 +88,7 @@ public:
 
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
-  UnicodeString GetInfoStr(const UnicodeString & Separator, int Attrs) const;
+  UnicodeString GetInfoStr(const UnicodeString & Separator, intptr_t Attrs) const;
 
   bool operator==(const TCopyParamType & rhp) const;
 

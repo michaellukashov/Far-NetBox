@@ -25,7 +25,6 @@
 //!CLEANBEGIN
 #ifdef _DEBUG
 #include <stdio.h>
-static HANDLE TraceFile = NULL;
 #ifdef NETBOX_DEBUG
 bool IsTracing = true;
 #else
@@ -166,7 +165,6 @@ void Trace(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * Message)
 {
   assert(IsTracing);
-  return;
 
   UnicodeString TimeString;
 #ifndef _MSC_VER
@@ -394,7 +392,7 @@ UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From, UnicodeString Chs, bool Trim,
+UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From, const UnicodeString & Chs, bool Trim,
   wchar_t * Delimiter, bool DoubleDelimiterEscapes)
 {
   UnicodeString Result;
@@ -1207,9 +1205,6 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
 static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
   TDateTime & Result)
 {
-  CCALLSTACK(TRACE_TIMESTAMP);
-  CTRACEFMT(TRACE_TIMESTAMP, "Year [%d]; Month [%d]; DayOfWeek [%d]; Day [%d]", int(Year), int(Date.wMonth), int(Date.wDayOfWeek), int(Date.wDay));
-  CTRACEFMT(TRACE_TIMESTAMP, "Hour [%d]; Minute [%d]; Second [%d]; Milliseconds [%d]", int(Date.wHour), int(Date.wMinute), int(Date.wSecond), int(Date.wMilliseconds));
   if (Date.wYear == 0)
   {
     TDateTime Temp = EncodeDateVerbose(Year, Date.wMonth, 1);
@@ -1237,7 +1232,6 @@ static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
     Result = EncodeDateVerbose(Year, Date.wMonth, Date.wDay) +
       EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond, Date.wMilliseconds);
   }
-  CTRACEFMT(TRACE_TIMESTAMP, "1 [%s]", Result.FormatString(L"c").c_str());
 }
 //---------------------------------------------------------------------------
 static bool IsDateInDST(const TDateTime & DateTime)
@@ -1255,13 +1249,10 @@ static bool IsDateInDST(const TDateTime & DateTime)
   if ((Params->SystemStandardDate.wMonth == 0) ||
       (Params->SystemDaylightDate.wMonth == 0))
   {
-    CTRACE(TRACE_TIMESTAMP, "1");
     Result = false;
   }
   else
   {
-    CTRACE(TRACE_TIMESTAMP, "2");
-
     if (Params->SummerDST)
     {
       Result =
@@ -1274,7 +1265,6 @@ static bool IsDateInDST(const TDateTime & DateTime)
         (DateTime < Params->StandardDate) ||
         (DateTime >= Params->DaylightDate);
     }
-    CTRACEFMT(TRACE_TIMESTAMP, "5 [%d]", int(Result));
   }
   return Result;
 }
@@ -1286,13 +1276,9 @@ bool UsesDaylightHack()
 //---------------------------------------------------------------------------
 TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
 {
-  CCALLSTACK(TRACE_TIMESTAMP);
   assert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
-  CTRACEFMT(TRACE_TIMESTAMP, "0 [%s]", Int64ToStr(TimeStamp).c_str());
   TDateTime Result = TDateTime(UnixDateDelta + (double(TimeStamp) / SecsPerDay));
-  CTRACEFMT(TRACE_TIMESTAMP, "1 [%s]", Result.FormatString(L"c").c_str());
-
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
 
   if (Params->DaylightHack)
@@ -1301,29 +1287,22 @@ TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
     {
       const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
       Result -= CurrentParams->CurrentDifference;
-      CTRACEFMT(TRACE_TIMESTAMP, "2 [%s]", Result.FormatString(L"c").c_str());
     }
     else if (DSTMode == dstmKeep)
     {
       Result -= Params->BaseDifference;
-      CTRACEFMT(TRACE_TIMESTAMP, "3 [%s]", Result.FormatString(L"c").c_str());
     }
   }
   else
   {
     Result -= Params->BaseDifference;
-    CTRACEFMT(TRACE_TIMESTAMP, "4 [%s]", Result.FormatString(L"c").c_str());
   }
 
   if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
   {
     Result -= (IsDateInDST(Result) ?
       Params->DaylightDifference : Params->StandardDifference);
-    CTRACEFMT(TRACE_TIMESTAMP, "5 [%s]", Result.FormatString(L"c").c_str());
   }
-
-  CTRACEFMT(TRACE_TIMESTAMP, "6 [%s]", Result.FormatString(L"c").c_str());
-  CTRACE(TRACE_TIMESTAMP, "/");
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1394,7 +1373,6 @@ FILETIME DateTimeToFileTime(const TDateTime DateTime,
   TDSTMode /*DSTMode*/)
 {
   CCALLSTACK(TRACE_TIMESTAMP);
-  CTRACEFMT(TRACE_TIMESTAMP, "DateTimeToFileTime 1 [%s] [%s]", DateTime.DateString().c_str(), DateTime.TimeString().c_str());
   __int64 UnixTimeStamp = ::DateTimeToUnix(DateTime);
 
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
@@ -1406,11 +1384,8 @@ FILETIME DateTimeToFileTime(const TDateTime DateTime,
     const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
     UnixTimeStamp -= CurrentParams->CurrentDaylightDifferenceSec;
   }
-
-  CTRACEFMT(TRACE_TIMESTAMP, "DateTimeToFileTime 2 [%s]", Int64ToStr(UnixTimeStamp).c_str());
   FILETIME Result;
   (*(__int64*)&(Result) = (__int64(UnixTimeStamp) + 11644473600LL) * 10000000LL);
-  CTRACEFMT(TRACE_TIMESTAMP, "DateTimeToFileTime 3 [%s] [%s]", IntToStr(__int64(Result.dwLowDateTime)).c_str(), IntToStr(__int64(Result.dwHighDateTime)).c_str());
 
   return Result;
 }
@@ -1434,9 +1409,7 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
     TRACEFMT("2b [%d] [%d]", int(LocalFileTime.dwLowDateTime), int(LocalFileTime.dwHighDateTime));
     FileTimeToSystemTime(&LocalFileTime, &SysTime);
   }
-  CTRACEFMT(TRACE_TIMESTAMP, "2c [%d/%d/%d] [%d] [%d:%d:%d.%d]", int(SysTime.wYear), int(SysTime.wMonth), int(SysTime.wDay), int(SysTime.wDayOfWeek), int(SysTime.wHour), int(SysTime.wMinute), int(SysTime.wSecond), int(SysTime.wMilliseconds));
   TDateTime Result = SystemTimeToDateTime(SysTime);
-  CTRACEFMT(TRACE_TIMESTAMP, "2d [%s] [%s]", Result.DateString().c_str(), Result.TimeString().c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1445,8 +1418,6 @@ __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
 {
   CCALLSTACK(TRACE_TIMESTAMP);
   __int64 Result = ((*(__int64*)&(FileTime)) / 10000000LL - 11644473600LL);
-
-  CTRACEFMT(TRACE_TIMESTAMP, "1 [%s] [%d]", Int64ToStr(Result).c_str(), int(DSTMode));
   if (UsesDaylightHack())
   {
     if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
@@ -1459,13 +1430,11 @@ __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
       const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
       Result += (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
-      CTRACEFMT(TRACE_TIMESTAMP, "2 [%s]", Int64ToStr(Result).c_str());
 
       if (DSTMode == dstmKeep)
       {
         const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
         Result -= CurrentParams->CurrentDaylightDifferenceSec;
-        CTRACEFMT(TRACE_TIMESTAMP, "3 [%s]", Int64ToStr(Result).c_str());
       }
     }
   }
@@ -1760,9 +1729,9 @@ bool RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin)
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t CancelAnswer(intptr_t Answers)
+uintptr_t CancelAnswer(uintptr_t Answers)
 {
-  intptr_t Result;
+  uintptr_t Result;
   if ((Answers & qaCancel) != 0)
   {
     Result = qaCancel;
@@ -1787,9 +1756,9 @@ intptr_t CancelAnswer(intptr_t Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t AbortAnswer(intptr_t Answers)
+uintptr_t AbortAnswer(uintptr_t Answers)
 {
-  intptr_t Result;
+  uintptr_t Result;
   if (FLAGSET(Answers, qaAbort))
   {
     Result = qaAbort;
@@ -1801,9 +1770,9 @@ intptr_t AbortAnswer(intptr_t Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t ContinueAnswer(intptr_t Answers)
+uintptr_t ContinueAnswer(uintptr_t Answers)
 {
-  intptr_t Result;
+  uintptr_t Result;
   if (FLAGSET(Answers, qaSkip))
   {
     Result = qaSkip;

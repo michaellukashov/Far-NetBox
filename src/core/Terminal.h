@@ -37,7 +37,7 @@ DEFINE_CALLBACK_TYPE8(TPromptUserEvent, void,
   TTerminal * /* Terminal */, TPromptKind /* Kind */, const UnicodeString & /* Name */, const UnicodeString & /* Instructions */,
   TStrings * /* Prompts */, TStrings * /* Results */, bool & /* Result */, void * /* Arg */);
 DEFINE_CALLBACK_TYPE5(TDisplayBannerEvent, void,
-  TTerminal * /* Terminal */, UnicodeString /* SessionName */, const UnicodeString & /* Banner */,
+  TTerminal * /* Terminal */, const UnicodeString & /* SessionName */, const UnicodeString & /* Banner */,
   bool & /* NeverShowAgain */, intptr_t /* Options */);
 DEFINE_CALLBACK_TYPE3(TExtendedExceptionEvent, void,
   TTerminal * /* Terminal */, Exception * /* E */, void * /* Arg */);
@@ -270,8 +270,8 @@ protected:
   void DoCreateDirectory(const UnicodeString & DirName);
   void DoDeleteFile(const UnicodeString & FileName, const TRemoteFile * File,
     intptr_t Params);
-  void DoCustomCommandOnFile(UnicodeString FileName,
-    const TRemoteFile * File, UnicodeString Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
+  void DoCustomCommandOnFile(const UnicodeString & FileName,
+    const TRemoteFile * File, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
   void DoRenameFile(const UnicodeString & FileName,
     const UnicodeString & NewName, bool Move);
   void DoCopyFile(const UnicodeString & FileName, const UnicodeString & NewName);
@@ -294,15 +294,15 @@ protected:
     TProcessFileEvent CallBackFunc, void * Param = NULL, bool UseCache = false,
     bool IgnoreErrors = false);
   void AnnounceFileListOperation();
-  UnicodeString TranslateLockedPath(UnicodeString Path, bool Lock);
+  UnicodeString TranslateLockedPath(const UnicodeString & Path, bool Lock);
   void ReadDirectory(TRemoteFileList * FileList);
   void CustomReadDirectory(TRemoteFileList * FileList);
   void DoCreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic);
   bool CreateLocalFile(const UnicodeString & FileName,
     TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
-  void OpenLocalFile(const UnicodeString & FileName, unsigned int Access,
-    int * Attrs, HANDLE * Handle, __int64 * ACTime, __int64 * MTime,
+  void OpenLocalFile(const UnicodeString & FileName, uintptr_t Access,
+    uintptr_t * Attrs, HANDLE * Handle, __int64 * ACTime, __int64 * MTime,
     __int64 * ATime, __int64 * Size, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(const UnicodeString & FileName, const TCopyParamType *CopyParam);
   bool HandleException(Exception * E);
@@ -351,7 +351,7 @@ protected:
     const UnicodeString & Name, const UnicodeString & Instructions, const UnicodeString & Prompt, bool Echo,
     int MaxLen, UnicodeString & Result);
   void FileFind(const UnicodeString & FileName, const TRemoteFile * File, void * Param);
-  void DoFilesFind(UnicodeString Directory, TFilesFindParams & Params);
+  void DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params);
   bool DoCreateLocalFile(const UnicodeString & FileName,
     TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
@@ -376,7 +376,7 @@ protected:
     TFileOperationProgressType * OperationProgress, Exception * E = NULL);
   void DoAnyCommand(const UnicodeString & Command, TCaptureOutputEvent OutputEvent,
     TCallSessionAction * Action);
-  TRemoteFileList * DoReadDirectoryListing(UnicodeString Directory, bool UseCache);
+  TRemoteFileList * DoReadDirectoryListing(const UnicodeString & Directory, bool UseCache);
   RawByteString EncryptPassword(const UnicodeString & Password);
   UnicodeString DecryptPassword(const RawByteString & Password);
   void LogFile(TRemoteFile * File);
@@ -434,7 +434,7 @@ public:
   bool IsRecycledFile(const UnicodeString & FileName);
   void CustomCommandOnFile(const UnicodeString & FileName,
     const TRemoteFile * File, void * AParams);
-  void CustomCommandOnFiles(UnicodeString Command, intptr_t Params,
+  void CustomCommandOnFiles(const UnicodeString & Command, intptr_t Params,
     TStrings * Files, TCaptureOutputEvent OutputEvent);
   void ChangeDirectory(const UnicodeString & Directory);
   void EndTransaction();
@@ -444,7 +444,7 @@ public:
   void ChangeFilesProperties(TStrings * FileList,
     const TRemoteProperties * Properties);
   bool LoadFilesProperties(TStrings * FileList);
-  void TerminalError(UnicodeString Msg);
+  void TerminalError(const UnicodeString & Msg);
   void TerminalError(Exception * E, UnicodeString Msg);
   void ReloadDirectory();
   void RefreshDirectory();
@@ -471,7 +471,7 @@ public:
     const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
     const TCopyParamType * CopyParam, intptr_t Params,
     TSynchronizeDirectoryEvent OnSynchronizeDirectory);
-  void FilesFind(UnicodeString Directory, const TFileMasks & FileMask,
+  void FilesFind(const UnicodeString & Directory, const TFileMasks & FileMask,
     TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
   void SpaceAvailable(const UnicodeString & Path, TSpaceAvailable & ASpaceAvailable);
   bool DirectoryFileList(const UnicodeString & Path,

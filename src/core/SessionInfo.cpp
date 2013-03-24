@@ -264,7 +264,7 @@ public:
     Parameter(L"command", Command);
   }
 
-  void AddOutput(UnicodeString Output, bool StdError)
+  void AddOutput(const UnicodeString & Output, bool StdError)
   {
     const wchar_t * Name = (StdError ? L"erroroutput" : L"output");
     intptr_t Index = FNames->IndexOf(Name);
@@ -586,7 +586,7 @@ TFileSystemInfo::TFileSystemInfo()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-FILE * OpenFile(UnicodeString LogFileName, TSessionData * SessionData, bool Append, UnicodeString & NewFileName)
+FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * SessionData, bool Append, UnicodeString & NewFileName)
 {
   CALLSTACK;
   FILE * Result;
@@ -716,7 +716,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
   }
 }
 //---------------------------------------------------------------------------
-void TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
+void TSessionLog::DoAdd(TLogLineType Type, const UnicodeString & Line,
   TDoAddLogEvent Event)
 {
   CCALLSTACK(TRACE_LOG_ADD);
@@ -727,41 +727,37 @@ void TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
     Prefix = L"[" + GetName() + L"] ";
   }
 
-  while (!Line.IsEmpty())
+  UnicodeString Ln = Line;
+  while (!Ln.IsEmpty())
   {
-    Event(Type, Prefix + CutToChar(Line, L'\n', false));
+    // UnicodeString Param = ;
+    Event(Type, Prefix + CutToChar(Ln, L'\n', false));
   }
 }
 //---------------------------------------------------------------------------
 void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
 {
   assert(FConfiguration);
-  CTRACEFMT(TRACE_LOG_ADD, "[%s]", Line.c_str());
   if (GetLogging())
   {
     try
     {
       if (FParent != NULL)
       {
-        CTRACE(TRACE_LOG_ADD, "Parent");
         DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToParent, this));
       }
       else
       {
-        CTRACE(TRACE_LOG_ADD, "Pre Guard");
         TGuard Guard(FCriticalSection);
 
-        CTRACE(TRACE_LOG_ADD, "Post Guard");
         BeginUpdate();
 
         TRY_FINALLY (
         {
-          CTRACE(TRACE_LOG_ADD, "DoAdd");
           DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
         }
         ,
         {
-          CTRACE(TRACE_LOG_ADD, "Finally");
           DeleteUnnecessary();
 
           EndUpdate();
@@ -771,7 +767,6 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
     }
     catch (Exception &E)
     {
-      CTRACE(TRACE_LOG_ADD, "E1");
       // We failed logging, turn it off and notify user.
       FConfiguration->SetLogging(false);
       try
@@ -780,13 +775,11 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
       }
       catch (Exception &E)
       {
-        CTRACEFMT(TRACE_LOG_ADD, "E2 [%s]", E.Message.c_str());
         AddException(&E);
         FUI->HandleExtendedException(&E);
       }
     }
   }
-  CTRACE(TRACE_LOG_ADD, "/");
 }
 //---------------------------------------------------------------------------
 void TSessionLog::AddException(Exception * E)
@@ -895,12 +888,10 @@ void TSessionLog::DeleteUnnecessary()
   {
     if (!GetLogging() || (FParent != NULL))
     {
-      CTRACE(TRACE_LOG_ADD2, "1");
       Clear();
     }
     else
     {
-      CTRACE(TRACE_LOG_ADD2, "2");
       while (!FConfiguration->GetLogWindowComplete() && (GetCount() > FConfiguration->GetLogWindowLines()))
       {
         Delete(0);
@@ -910,7 +901,6 @@ void TSessionLog::DeleteUnnecessary()
   }
   ,
   {
-    CTRACE(TRACE_LOG_ADD2, "3");
     EndUpdate();
   }
   );
@@ -1278,7 +1268,6 @@ TActionLog::~TActionLog()
 void TActionLog::Add(const UnicodeString & Line)
 {
   assert(FConfiguration);
-  CTRACEFMT(TRACE_LOG_ADD, "[%s]", Line.c_str());
   if (FLogging)
   {
     try
@@ -1293,28 +1282,12 @@ void TActionLog::Add(const UnicodeString & Line)
       if (FFile != NULL)
       {
         UTF8String UtfLine = UTF8String(Line);
-//!CLEANBEGIN
-        #ifdef _DEBUG
-        size_t Written =
-        #endif
-//!CLEANEND
         fwrite(UtfLine.c_str(), 1, UtfLine.Length(), (FILE *)FFile);
-//!CLEANBEGIN
-        #ifdef _DEBUG
-        Written +=
-        #endif
-//!CLEANEND
         fwrite("\n", 1, 1, (FILE *)FFile);
-//!CLEANBEGIN
-        #ifdef _DEBUG
-        TRACEFMT("2 [%d]", int(Written));
-        #endif
-//!CLEANEND
       }
     }
     catch (Exception &E)
     {
-      CTRACE(TRACE_LOG_ADD, "E");
       // We failed logging, turn it off and notify user.
       FConfiguration->SetLogActions(false);
       try
@@ -1323,12 +1296,10 @@ void TActionLog::Add(const UnicodeString & Line)
       }
       catch (Exception &E)
       {
-        CTRACEFMT(TRACE_LOG_ADD, "[%s]", E.Message.c_str());
         FUI->HandleExtendedException(&E);
       }
     }
   }
-  CTRACE(TRACE_LOG_ADD, "/");
 }
 //---------------------------------------------------------------------------
 void TActionLog::AddIndented(const UnicodeString & Line)
@@ -1362,7 +1333,7 @@ void TActionLog::AddFailure(Exception * E)
   }
 }
 //---------------------------------------------------------------------------
-void TActionLog::AddMessages(UnicodeString Indent, TStrings * Messages)
+void TActionLog::AddMessages(const UnicodeString & Indent, TStrings * Messages)
 {
   CALLSTACK;
   for (intptr_t Index = 0; Index < Messages->GetCount(); ++Index)
@@ -1460,7 +1431,7 @@ void TActionLog::RecordPendingActions()
   }
 }
 //---------------------------------------------------------------------------
-void TActionLog::BeginGroup(UnicodeString Name)
+void TActionLog::BeginGroup(const UnicodeString & Name)
 {
   assert(!FInGroup);
   FInGroup = true;

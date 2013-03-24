@@ -203,7 +203,7 @@ bool TCopyParamRule::GetEmpty() const
     FData.LocalDirectory.IsEmpty();
 }
 //---------------------------------------------------------------------------
-UnicodeString TCopyParamRule::GetInfoStr(UnicodeString Separator) const
+UnicodeString TCopyParamRule::GetInfoStr(const UnicodeString & Separator) const
 {
   UnicodeString Result;
   #define ADD(FMT, ELEM) \
@@ -738,7 +738,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   #undef KEY
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", false, true))
-  // TRY_FINALLY (
+  TRY_FINALLY (
   {
     // must be loaded before eventual setting defaults for CopyParamList
     FDefaultCopyParam.Load(Storage);
@@ -757,11 +757,11 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     }
     FCopyParamList->Reset();
   }
-  // ,
+  ,
   {
     Storage->CloseSubKey();
   }
-  // );
+  );
 
   // Make it compatible with versions prior to 3.7.1 that have not saved PuttyPath
   // with quotes. First check for absence of quotes.
@@ -1189,7 +1189,7 @@ void TGUIConfiguration::SetCopyParamIndex(intptr_t Value)
   SetCopyParamCurrent(Name);
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetCopyParamCurrent(UnicodeString Value)
+void TGUIConfiguration::SetCopyParamCurrent(const UnicodeString & Value)
 {
   SET_CONFIG_PROPERTY(CopyParamCurrent);
 }
@@ -1199,7 +1199,7 @@ TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam()
   return GetCopyParamPreset(GetCopyParamCurrent());
 }
 //---------------------------------------------------------------------------
-TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(UnicodeString Name)
+TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const UnicodeString & Name)
 {
   TGUICopyParamType Result = FDefaultCopyParam;
   if (!Name.IsEmpty())
@@ -1221,7 +1221,7 @@ TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(UnicodeString Name)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TGUIConfiguration::GetHasCopyParamPreset(UnicodeString Name)
+bool TGUIConfiguration::GetHasCopyParamPreset(const UnicodeString & Name)
 {
   return Name.IsEmpty() || (FCopyParamList->IndexOfName(Name) >= 0);
 }
@@ -1262,7 +1262,7 @@ UnicodeString TGUIConfiguration::GetPuttySession()
   return FPuttySession;
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetPuttySession(UnicodeString Value)
+void TGUIConfiguration::SetPuttySession(const UnicodeString & Value)
 {
   FPuttySession = Value;
 }

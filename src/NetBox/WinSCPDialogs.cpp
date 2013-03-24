@@ -686,9 +686,18 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
     {
       TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
 
-      if (ResumeOnButton->GetChecked()) { CopyParam.SetResumeSupport(rsOn); }
-      if (ResumeSmartButton->GetChecked()) { CopyParam.SetResumeSupport(rsSmart); }
-      if (ResumeOffButton->GetChecked()) { CopyParam.SetResumeSupport(rsOff); }
+      if (ResumeOnButton->GetChecked())
+      {
+        CopyParam.SetResumeSupport(rsOn);
+      }
+      if (ResumeSmartButton->GetChecked())
+      {
+        CopyParam.SetResumeSupport(rsSmart);
+      }
+      if (ResumeOffButton->GetChecked())
+      {
+        CopyParam.SetResumeSupport(rsOff);
+      }
       CopyParam.SetResumeThreshold(ResumeThresholdEdit->GetAsInteger() * 1024);
 
       GUIConfiguration->SetDefaultCopyParam(CopyParam);
@@ -3713,10 +3722,22 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
       SessionData->SetSsh2DES(Ssh2DESCheck->GetChecked());
     }
 
-    if (SshProt1onlyButton->GetChecked()) { SessionData->SetSshProt(ssh1only); }
-    else if (SshProt1Button->GetChecked()) { SessionData->SetSshProt(ssh1); }
-    else if (SshProt2Button->GetChecked()) { SessionData->SetSshProt(ssh2); }
-    else { SessionData->SetSshProt(ssh2only); }
+    if (SshProt1onlyButton->GetChecked())
+    {
+      SessionData->SetSshProt(ssh1only);
+    }
+    else if (SshProt1Button->GetChecked())
+    {
+      SessionData->SetSshProt(ssh1);
+    }
+    else if (SshProt2Button->GetChecked())
+    {
+      SessionData->SetSshProt(ssh2);
+    }
+    else
+    {
+      SessionData->SetSshProt(ssh2only);
+    }
 
     for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
     {
@@ -4621,7 +4642,7 @@ public:
     const UnicodeString & Directory,
     // TStrings * GroupList, TStrings * UserList,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
-    int AllowedChanges);
+    intptr_t AllowedChanges);
 
   bool Execute(TRemoteProperties * Properties);
 
@@ -4631,7 +4652,7 @@ protected:
 
 private:
   bool FAnyDirectories;
-  int FAllowedChanges;
+  intptr_t FAllowedChanges;
   TRemoteProperties FOrigProperties;
   bool FMultiple;
 
@@ -4645,7 +4666,7 @@ private:
 TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   TStrings * FileList, const UnicodeString & Directory,
   const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
-  int AAllowedChanges) :
+  intptr_t AAllowedChanges) :
   TFarDialog(AFarPlugin),
   RightsContainer(NULL),
   OwnerComboBox(NULL),
@@ -4881,9 +4902,18 @@ void TPropertiesDialog::UpdateProperties(TRemoteProperties & Properties)
 bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
 {
   TValidProperties Valid;
-  if (Properties->Valid.Contains(vpRights) && FAllowedChanges & cpMode) { Valid << vpRights; }
-  if (Properties->Valid.Contains(vpOwner) && FAllowedChanges & cpOwner) { Valid << vpOwner; }
-  if (Properties->Valid.Contains(vpGroup) && FAllowedChanges & cpGroup) { Valid << vpGroup; }
+  if (Properties->Valid.Contains(vpRights) && FAllowedChanges & cpMode)
+  {
+    Valid << vpRights;
+  }
+  if (Properties->Valid.Contains(vpOwner) && FAllowedChanges & cpOwner)
+  {
+    Valid << vpOwner;
+  }
+  if (Properties->Valid.Contains(vpGroup) && FAllowedChanges & cpGroup)
+  {
+    Valid << vpGroup;
+  }
   FOrigProperties = *Properties;
   FOrigProperties.Valid = Valid;
   FOrigProperties.Recursive = false;
@@ -4965,8 +4995,8 @@ protected:
   void UpdateControls();
 
 private:
-  int FOptions;
-  int FCopyParamAttrs;
+  intptr_t FOptions;
+  intptr_t FCopyParamAttrs;
   TCopyParamType FParams;
 
 public:
@@ -5345,9 +5375,18 @@ TCopyParamType TCopyParamsContainer::GetParams()
   TCopyParamType Result = FParams;
 
   assert(TMTextButton->GetChecked() || TMBinaryButton->GetChecked() || TMAutomaticButton->GetChecked());
-  if (TMTextButton->GetChecked()) { Result.SetTransferMode(tmAscii); }
-  else if (TMAutomaticButton->GetChecked()) { Result.SetTransferMode(tmAutomatic); }
-  else { Result.SetTransferMode(tmBinary); }
+  if (TMTextButton->GetChecked())
+  {
+    Result.SetTransferMode(tmAscii);
+  }
+  else if (TMAutomaticButton->GetChecked())
+  {
+    Result.SetTransferMode(tmAutomatic);
+  }
+  else
+  {
+    Result.SetTransferMode(tmBinary);
+  }
 
   if (Result.GetTransferMode() == tmAutomatic)
   {
@@ -5356,11 +5395,26 @@ TCopyParamType TCopyParamsContainer::GetParams()
     assert(Result.GetAsciiFileMask().GetIsValid(Start, Length));
   }
 
-  if (CCLowerCaseButton->GetChecked()) { Result.SetFileNameCase(ncLowerCase); }
-  else if (CCUpperCaseButton->GetChecked()) { Result.SetFileNameCase(ncUpperCase); }
-  else if (CCFirstUpperCaseButton->GetChecked()) { Result.SetFileNameCase(ncFirstUpperCase); }
-  else if (CCLowerCaseShortButton->GetChecked()) { Result.SetFileNameCase(ncLowerCaseShort); }
-  else { Result.SetFileNameCase(ncNoChange); }
+  if (CCLowerCaseButton->GetChecked())
+  {
+    Result.SetFileNameCase(ncLowerCase);
+  }
+  else if (CCUpperCaseButton->GetChecked())
+  {
+    Result.SetFileNameCase(ncUpperCase);
+  }
+  else if (CCFirstUpperCaseButton->GetChecked())
+  {
+    Result.SetFileNameCase(ncFirstUpperCase);
+  }
+  else if (CCLowerCaseShortButton->GetChecked())
+  {
+    Result.SetFileNameCase(ncLowerCaseShort);
+  }
+  else
+  {
+    Result.SetFileNameCase(ncNoChange);
+  }
 
   Result.SetAddXToDirectories(RightsContainer->GetAddXToDirectories());
   Result.SetRights(RightsContainer->GetRights());
@@ -5693,7 +5747,7 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
 }
 //------------------------------------------------------------------------------
 bool TWinSCPPlugin::CopyParamDialog(const UnicodeString & Caption,
-  TCopyParamType & CopyParam, int CopyParamAttrs)
+  TCopyParamType & CopyParam, intptr_t CopyParamAttrs)
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
@@ -5725,7 +5779,7 @@ bool TWinSCPPlugin::CopyParamDialog(const UnicodeString & Caption,
 }
 //------------------------------------------------------------------------------
 bool TWinSCPPlugin::CopyParamCustomDialog(TCopyParamType & CopyParam,
-    int CopyParamAttrs)
+  intptr_t CopyParamAttrs)
 {
   return CopyParamDialog(GetMsg(COPY_PARAM_CUSTOM_TITLE), CopyParam, CopyParamAttrs);
 }
@@ -6750,7 +6804,7 @@ protected:
   void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
   void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
 
-  int ActualCopyParamAttrs();
+  intptr_t ActualCopyParamAttrs();
   void CustomCopyParam();
   void AdaptSize();
 
@@ -7025,9 +7079,9 @@ void TFullSynchronizeDialog::Change()
   }
 }
 //------------------------------------------------------------------------------
-int TFullSynchronizeDialog::ActualCopyParamAttrs()
+intptr_t TFullSynchronizeDialog::ActualCopyParamAttrs()
 {
-  int Result;
+  intptr_t Result;
   if (SynchronizeTimestampsButton->GetChecked())
   {
     Result = cpaExcludeMaskOnly;
@@ -7788,7 +7842,7 @@ class TSynchronizeDialog : TFarDialog
 public:
   TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
     TSynchronizeStartStopEvent OnStartStop,
-    intptr_t Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions);
+    intptr_t Options, intptr_t CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions);
   virtual ~TSynchronizeDialog();
 
   bool Execute(TSynchronizeParamType & Params,
@@ -7812,7 +7866,7 @@ protected:
   virtual bool CloseQuery();
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
   TCopyParamType GetCopyParams();
-  int ActualCopyParamAttrs();
+  intptr_t ActualCopyParamAttrs();
   void CustomCopyParam();
 
 private:
@@ -7822,11 +7876,11 @@ private:
   bool FClose;
   TSynchronizeParamType FParams;
   TSynchronizeStartStopEvent FOnStartStop;
-  int FOptions;
+  intptr_t FOptions;
   TSynchronizeOptions * FSynchronizeOptions;
   TCopyParamType FCopyParams;
   TGetSynchronizeOptionsEvent FOnGetOptions;
-  int FCopyParamAttrs;
+  intptr_t FCopyParamAttrs;
 
   TFarEdit * LocalDirectoryEdit;
   TFarEdit * RemoteDirectoryEdit;
@@ -7844,7 +7898,7 @@ private:
 //------------------------------------------------------------------------------
 TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   TSynchronizeStartStopEvent OnStartStop,
-  intptr_t Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions) :
+  intptr_t Options, intptr_t CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions) :
   TFarDialog(AFarPlugin)
 {
   TFarText * Text;
@@ -8226,7 +8280,7 @@ TCopyParamType TSynchronizeDialog::GetCopyParams()
   return Result;
 }
 //------------------------------------------------------------------------------
-int TSynchronizeDialog::ActualCopyParamAttrs()
+intptr_t TSynchronizeDialog::ActualCopyParamAttrs()
 {
   return FCopyParamAttrs | cpaNoPreserveTime;
 }

@@ -223,13 +223,13 @@ UnicodeString LastSysErrorMessage()
   return Result;
 }
 //---------------------------------------------------------------------------
-EOSExtException::EOSExtException(UnicodeString Msg) :
+EOSExtException::EOSExtException(const UnicodeString & Msg) :
   ExtException(Msg, LastSysErrorMessage())
 {
   CALLSTACK;
 }
 //---------------------------------------------------------------------------
-EFatal::EFatal(Exception * E, UnicodeString Msg) :
+EFatal::EFatal(Exception * E, const UnicodeString & Msg) :
   ExtException(Msg, E),
   FReopenQueried(false)
 {

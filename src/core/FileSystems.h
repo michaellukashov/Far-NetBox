@@ -14,12 +14,15 @@ struct TSpaceAvailable;
 class TFileOperationProgressType;
 class TRemoteProperties;
 //---------------------------------------------------------------------------
-enum TFSCommand { fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
+enum TFSCommand
+{
+  fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
   fsCurrentDirectory, fsChangeDirectory, fsListDirectory, fsListCurrentDirectory,
   fsListFile, fsLookupUsersGroups, fsCopyToRemote, fsCopyToLocal, fsDeleteFile,
   fsRenameFile, fsCreateDirectory, fsChangeMode, fsChangeGroup, fsChangeOwner,
   fsHomeDirectory, fsUnset, fsUnalias, fsCreateLink, fsCopyFile,
-  fsAnyCommand, fsReadSymlink, fsChangeProperties, fsMoveFile };
+  fsAnyCommand, fsReadSymlink, fsChangeProperties, fsMoveFile
+};
 //---------------------------------------------------------------------------
 const int dfNoRecursive = 0x01;
 const int dfAlternative = 0x02;
@@ -31,7 +34,7 @@ const int tfFirstLevel =   0x01;
 const int tfAutoResume = 0x02;
 const int tfNewDirectory = 0x04;
 //---------------------------------------------------------------------------
-struct TSinkFileParams
+struct TSinkFileParams : public TObject
 {
   UnicodeString TargetDir;
   const TCopyParamType *CopyParam;
@@ -41,7 +44,7 @@ struct TSinkFileParams
   bool Skipped;
 };
 //---------------------------------------------------------------------------
-struct TFileTransferData
+struct TFileTransferData : public TObject
 {
   TFileTransferData() :
     CopyParam(NULL),
@@ -60,34 +63,34 @@ struct TFileTransferData
   bool AutoResume;
 };
 //---------------------------------------------------------------------------
-struct TClipboardHandler
+struct TClipboardHandler : public TObject
 {
   UnicodeString Text;
 
   void Copy(TObject * /*Sender*/)
   {
-      CopyToClipboard(Text.c_str());
+    CopyToClipboard(Text.c_str());
   }
 };
 //---------------------------------------------------------------------------
-struct TOverwriteFileParams
+struct TOverwriteFileParams : public TObject
 {
-    TOverwriteFileParams() :
-      SourceSize(0),
-      DestSize(0),
-      SourcePrecision(mfFull),
-      DestPrecision(mfFull)
-    {}
+  TOverwriteFileParams() :
+    SourceSize(0),
+    DestSize(0),
+    SourcePrecision(mfFull),
+    DestPrecision(mfFull)
+  {}
 
-    __int64 SourceSize;
-    __int64 DestSize;
-    TDateTime SourceTimestamp;
-    TDateTime DestTimestamp;
-    TModificationFmt SourcePrecision;
-    TModificationFmt DestPrecision;
+  __int64 SourceSize;
+  __int64 DestSize;
+  TDateTime SourceTimestamp;
+  TDateTime DestTimestamp;
+  TModificationFmt SourcePrecision;
+  TModificationFmt DestPrecision;
 };
 //---------------------------------------------------------------------------
-struct TOpenRemoteFileParams
+struct TOpenRemoteFileParams : public TObject
 {
   TOpenRemoteFileParams() :
     LocalFileAttrs(0),
@@ -101,7 +104,7 @@ struct TOpenRemoteFileParams
     FileParams(NULL),
     Confirmed(false)
   {}
-  int LocalFileAttrs;
+  uintptr_t LocalFileAttrs;
   UnicodeString RemoteFileName;
   TFileOperationProgressType * OperationProgress;
   const TCopyParamType * CopyParam;

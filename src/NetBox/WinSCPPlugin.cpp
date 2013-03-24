@@ -629,24 +629,24 @@ struct TFarMessageData
   }
 
   const TMessageParams * Params;
-  int Buttons[15 + 1];
-  int ButtonCount;
+  uintptr_t Buttons[15 + 1];
+  uintptr_t ButtonCount;
 };
 //---------------------------------------------------------------------------
-void TWinSCPPlugin::MessageClick(void * Token, intptr_t Result, bool & Close)
+void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
 {
   TFarMessageData & Data = *static_cast<TFarMessageData *>(Token);
 
-  assert(Result >= 0 && Result < Data.ButtonCount);
+  assert(Result != -1 && Result < Data.ButtonCount);
 
   if ((Data.Params != NULL) && (Data.Params->Aliases != NULL))
   {
-    for (int i = 0; i < Data.Params->AliasesCount; i++)
+    for (uintptr_t I = 0; I < Data.Params->AliasesCount; I++)
     {
-      if ((static_cast<int>(Data.Params->Aliases[i].Button) == Data.Buttons[Result]) &&
-          (Data.Params->Aliases[i].OnClick))
+      if ((Data.Params->Aliases[I].Button == Data.Buttons[Result]) &&
+          (Data.Params->Aliases[I].OnClick))
       {
-        Data.Params->Aliases[i].OnClick(NULL);
+        Data.Params->Aliases[I].OnClick(NULL);
         Close = false;
         break;
       }
@@ -658,7 +658,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
   const TMessageParams * Params)
 {
-  intptr_t Result = 0;
+  uintptr_t Result = 0;
   UnicodeString DialogStr = Str;
   TStrings * ButtonLabels = new TStringList();
   {
@@ -671,7 +671,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
       Flags = Params->Flags;
     }
 
-    int TitleId = 0;
+    intptr_t TitleId = 0;
     switch (Type)
     {
       case qtConfirmation: TitleId = MSG_TITLE_CONFIRMATION; break;
@@ -709,7 +709,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
     uintptr_t AAnswers = Answers;
     bool NeverAskAgainCheck = (Params != NULL) && FLAGSET(Params->Params, qpNeverAskAgainCheck);
     bool NeverAskAgainPending = NeverAskAgainCheck;
-    intptr_t TimeoutButton = 0;
+    uintptr_t TimeoutButton = 0;
 
     #define ADD_BUTTON_EX(TYPE, CANNEVERASK) \
       if (AAnswers & qa ## TYPE) \
@@ -755,11 +755,11 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
 
     if ((Params != NULL) && (Params->Aliases != NULL))
     {
-      for (int bi = 0; bi < Data.ButtonCount; bi++)
+      for (uintptr_t bi = 0; bi < Data.ButtonCount; bi++)
       {
-        for (int ai = 0; ai < Params->AliasesCount; ai++)
+        for (uintptr_t ai = 0; ai < Params->AliasesCount; ai++)
         {
-          if (static_cast<int>(Params->Aliases[ai].Button) == Data.Buttons[bi])
+          if (Params->Aliases[ai].Button == Data.Buttons[bi])
           {
             ButtonLabels->Strings[bi] = Params->Aliases[ai].Alias;
             break;
@@ -789,7 +789,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
       if (Params->Timeout > 0)
       {
         FarParams.Timeout = Params->Timeout;
-        FarParams.TimeoutButton = static_cast<unsigned int>(TimeoutButton);
+        FarParams.TimeoutButton = TimeoutButton;
         FarParams.TimeoutStr = GetMsg(MSG_BUTTON_TIMEOUT);
       }
     }
@@ -809,16 +809,16 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
     Result = Message(static_cast<DWORD>(Flags), GetMsg(TitleId), DialogStr, ButtonLabels, &FarParams);
     if (FarParams.TimerAnswer > 0)
     {
-      Result = static_cast<intptr_t>(FarParams.TimerAnswer);
+      Result = FarParams.TimerAnswer;
     }
-    else if (Result < 0)
+    else if (Result == NPOS)
     {
-      Result = static_cast<intptr_t>(CancelAnswer(Answers));
+      Result = CancelAnswer(Answers);
     }
     else
     {
-      assert(Result >= 0 && Result < Data.ButtonCount);
-      Result = static_cast<intptr_t>(Data.Buttons[Result]);
+      assert(Result != -1 && Result < Data.ButtonCount);
+      Result = Data.Buttons[Result];
     }
 
     if (FarParams.CheckBox)

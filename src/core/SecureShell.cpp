@@ -205,7 +205,10 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   }
 
   UnicodeString SPublicKeyFile = Data->GetPublicKeyFile();
-  if (SPublicKeyFile.IsEmpty()) { SPublicKeyFile = GetConfiguration()->GetDefaultKeyFile(); }
+  if (SPublicKeyFile.IsEmpty())
+  {
+    SPublicKeyFile = GetConfiguration()->GetDefaultKeyFile();
+  }
   SPublicKeyFile = StripPathQuotes(ExpandEnvironmentVariables(SPublicKeyFile));
   ASCOPY(cfg->keyfile.path, SPublicKeyFile);
   cfg->sshprot = Data->GetSshProt();
@@ -751,10 +754,8 @@ void TSecureShell::UnregisterReceiveHandler(TNotifyEvent Handler)
 //---------------------------------------------------------------------------
 void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr_t Length)
 {
-  CCALLSTACK(TRACE_TRANSMIT);
   CheckConnection();
 
-  CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", int(Length), int(IsStdErr));
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
     LogEvent(FORMAT(L"Received %u bytes (%d)", Length, static_cast<int>(IsStdErr)));
@@ -764,12 +765,10 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
 
   if (IsStdErr)
   {
-    CTRACE(TRACE_TRANSMIT, "2");
     AddStdError(UnicodeString(reinterpret_cast<const char *>(Data), Length));
   }
   else
   {
-    CTRACE(TRACE_TRANSMIT, "3");
     const unsigned char *p = Data;
     intptr_t Len = Length;
 
@@ -778,9 +777,11 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
 
     if ((OutPtr != NULL) && (OutLen > 0) && (Len > 0))
     {
-      CTRACE(TRACE_TRANSMIT, "4");
       intptr_t Used = OutLen;
-      if (Used > Len) { Used = Len; }
+      if (Used > Len)
+      {
+        Used = Len;
+      }
       memmove(OutPtr, p, Used);
       OutPtr += Used; OutLen -= Used;
       p += Used; Len -= Used;
@@ -788,14 +789,15 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
 
     if (Len > 0)
     {
-      CTRACE(TRACE_TRANSMIT, "5");
       if (PendSize < PendLen + Len)
       {
-        CTRACE(TRACE_TRANSMIT, "6");
         PendSize = PendLen + Len + 4096;
         Pending = static_cast<unsigned char *>
           (Pending ? srealloc(Pending, PendSize) : smalloc(PendSize));
-        if (!Pending) { FatalError(L"Out of memory"); }
+        if (!Pending)
+        {
+          FatalError(L"Out of memory");
+        }
       }
       memmove(Pending + PendLen, p, Len);
       PendLen += Len;
@@ -803,10 +805,8 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
 
     if (FOnReceive != NULL)
     {
-      CTRACE(TRACE_TRANSMIT, "7");
       if (!FFrozen)
       {
-        CTRACE(TRACE_TRANSMIT, "8");
         FFrozen = true;
         TRY_FINALLY (
         {
@@ -819,19 +819,16 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
         }
         ,
         {
-          CTRACE(TRACE_TRANSMIT, "9");
           FFrozen = false;
         }
         );
       }
       else
       {
-        CTRACE(TRACE_TRANSMIT, "10");
         FDataWhileFrozen = true;
       }
     }
   }
-  CTRACE(TRACE_TRANSMIT, "/");
 }
 //---------------------------------------------------------------------------
 bool TSecureShell::Peek(unsigned char *& Buf, intptr_t Len) const
@@ -850,11 +847,9 @@ intptr_t TSecureShell::Receive(unsigned char * Buf, intptr_t Len)
 {
   CCALLSTACK(TRACE_TRANSMIT);
   CheckConnection();
-  CTRACE(TRACE_TRANSMIT, "1");
 
   if (Len > 0)
   {
-    CTRACE(TRACE_TRANSMIT, "2");
     // Following is taken from scp.c ssh_scp_recv() and modified
 
     OutPtr = Buf;
@@ -868,7 +863,6 @@ intptr_t TSecureShell::Receive(unsigned char * Buf, intptr_t Len)
        */
       if (PendLen > 0)
       {
-        CTRACE(TRACE_TRANSMIT, "3");
         intptr_t PendUsed = PendLen;
         if (PendUsed > OutLen)
         {
@@ -885,12 +879,10 @@ intptr_t TSecureShell::Receive(unsigned char * Buf, intptr_t Len)
           sfree(Pending);
           Pending = NULL;
         }
-        CTRACE(TRACE_TRANSMIT, "4");
       }
 
       while (OutLen > 0)
       {
-        CTRACEFMT(TRACE_TRANSMIT, "4a [%d]", int(OutLen));
         if (GetConfiguration()->GetActualLogProtocol() >= 1)
         {
           LogEvent(FORMAT(L"Waiting for another %u bytes", static_cast<int>(OutLen)));
@@ -899,23 +891,22 @@ intptr_t TSecureShell::Receive(unsigned char * Buf, intptr_t Len)
       }
 
       // This seems ambiguous
-      if (Len <= 0) { FatalError(LoadStr(LOST_CONNECTION)); }
-      CTRACE(TRACE_TRANSMIT, "5");
+      if (Len <= 0)
+      {
+        FatalError(LoadStr(LOST_CONNECTION));
+      }
     }
     ,
     {
-      CTRACE(TRACE_TRANSMIT, "6");
       OutPtr = NULL;
     }
     );
   }
-  CTRACEFMT(TRACE_TRANSMIT, "7 [%d] [%d]", int(Len), int(PendLen));
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
     LogEvent(FORMAT(L"Read %u bytes (%d pending)",
       static_cast<int>(Len), static_cast<int>(PendLen)));
   }
-  CTRACE(TRACE_TRANSMIT, "/");
   return Len;
 }
 //---------------------------------------------------------------------------
@@ -931,7 +922,6 @@ UnicodeString TSecureShell::ReceiveLine()
     // If there is any buffer of received chars
     if (PendLen > 0)
     {
-      CTRACE(TRACE_TRANSMIT, "1");
       Index = 0;
       // Repeat until we walk thru whole buffer or reach end-of-line
       while ((Index < PendLen) && (!Index || (Pending[Index-1] != '\n')))
@@ -948,7 +938,6 @@ UnicodeString TSecureShell::ReceiveLine()
     // we read one more which causes receiving new buffer of chars
     if (!EOL)
     {
-      CTRACE(TRACE_TRANSMIT, "2");
       unsigned char Ch;
       Receive(&Ch, 1);
       Line += static_cast<char>(Ch);
@@ -957,14 +946,12 @@ UnicodeString TSecureShell::ReceiveLine()
   }
   while (!EOL);
 
-  CTRACE(TRACE_TRANSMIT, "3");
   // We don't want end-of-line character
   Line.SetLength(Line.Length()-1);
 
   // UnicodeString UnicodeLine = Line;
   UnicodeString UnicodeLine = ::TrimRight(MB2W(Line.c_str(), FSessionData->GetCodePageAsNumber()));
   CaptureOutput(llOutput, UnicodeLine);
-  CTRACE(TRACE_TRANSMIT, "/");
   return UnicodeLine;
 }
 //---------------------------------------------------------------------------
@@ -984,7 +971,7 @@ void TSecureShell::SendEOF()
   SendSpecial(TS_EOF);
 }
 //---------------------------------------------------------------------------
-unsigned int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
+uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
 {
   CALLSTACK;
   FWaiting++;
@@ -1014,7 +1001,7 @@ unsigned int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
   return Answer;
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendBuffer(unsigned int & Result)
+void TSecureShell::SendBuffer(uintptr_t & Result)
 {
   CCALLSTACK(TRACE_TRANSMIT);
   // for comments see PoolForData
@@ -1038,14 +1025,13 @@ void TSecureShell::SendBuffer(unsigned int & Result)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::DispatchSendBuffer(int BufSize)
+void TSecureShell::DispatchSendBuffer(uintptr_t BufSize)
 {
   CCALLSTACK(TRACE_TRANSMIT);
   TDateTime Start = Now();
   do
   {
     CheckConnection();
-    CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", BufSize, BufSize - MAX_BUFSIZE);
     if (GetConfiguration()->GetActualLogProtocol() >= 1)
     {
       LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer, "
@@ -1054,7 +1040,6 @@ void TSecureShell::DispatchSendBuffer(int BufSize)
     }
     EventSelectLoop(100, false, NULL);
     BufSize = FBackend->sendbuffer(FBackendHandle);
-    CTRACEFMT(TRACE_TRANSMIT, "2 [%d]", BufSize);
     if (GetConfiguration()->GetActualLogProtocol() >= 1)
     {
       LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
@@ -1063,7 +1048,7 @@ void TSecureShell::DispatchSendBuffer(int BufSize)
     if (Now() - Start > FSessionData->GetTimeoutDT())
     {
       LogEvent(L"Waiting for dispatching send buffer timed out, asking user what to do.");
-      unsigned int Answer = TimeoutPrompt(MAKE_CALLBACK(TSecureShell::SendBuffer, this));
+      uintptr_t Answer = TimeoutPrompt(MAKE_CALLBACK(TSecureShell::SendBuffer, this));
       switch (Answer)
       {
         case qaRetry:
@@ -1092,7 +1077,6 @@ void TSecureShell::Send(const unsigned char * Buf, intptr_t Len)
   CCALLSTACK(TRACE_TRANSMIT);
   CheckConnection();
   int BufSize = FBackend->send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), static_cast<int>(Len));
-  CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", int(Len), int(BufSize));
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
     LogEvent(FORMAT(L"Sent %u bytes", (static_cast<int>(Len))));
@@ -1307,7 +1291,6 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
     Events = 0;
   }
 
-  CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", int(Events), int(Socket));
   if (GetConfiguration()->GetActualLogProtocol() >= 2)
   {
     LogEvent(FORMAT(L"Selecting events %d for socket %d", static_cast<int>(Events), static_cast<int>(Socket)));
@@ -1315,7 +1298,6 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 
   if (WSAEventSelect(Socket, (WSAEVENT)Event, Events) == SOCKET_ERROR)
   {
-    CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", int(Events), int(Socket));
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
       LogEvent(FORMAT(L"Error selecting events %d for socket %d", static_cast<int>(Events), static_cast<int>(Socket)));
@@ -1343,31 +1325,26 @@ void TSecureShell::UpdateSocket(SOCKET Value, bool Startup)
   else
   {
     CCALLSTACK(TRACE_TRANSMIT);
-    CTRACE(TRACE_TRANSMIT, "2");
     assert(Value);
     assert((FActive && (FSocket == Value)) || (!FActive && Startup));
 
     // filter our "local proxy" connection, which have no socket
     if (Value != INVALID_SOCKET)
     {
-      CTRACE(TRACE_TRANSMIT, "3");
       SocketEventSelect(Value, FSocketEvent, Startup);
     }
     else
     {
-      CTRACE(TRACE_TRANSMIT, "4");
       assert(FSessionData->GetProxyMethod() == pmCmd);
     }
 
     if (Startup)
     {
-      CTRACE(TRACE_TRANSMIT, "5");
       FSocket = Value;
       FActive = true;
     }
     else
     {
-      CTRACE(TRACE_TRANSMIT, "6");
       FSocket = INVALID_SOCKET;
       Discard();
     }
@@ -1376,8 +1353,6 @@ void TSecureShell::UpdateSocket(SOCKET Value, bool Startup)
 //---------------------------------------------------------------------------
 void TSecureShell::UpdatePortFwdSocket(SOCKET Value, bool Startup)
 {
-  CCALLSTACK(TRACE_TRANSMIT);
-  CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", int(Value), int(Startup));
   if (GetConfiguration()->GetActualLogProtocol() >= 2)
   {
     LogEvent(FORMAT(L"Updating forwarding socket %d (%d)", static_cast<int>(Value), static_cast<int>(Startup)));
@@ -1459,23 +1434,19 @@ void TSecureShell::Close()
 //---------------------------------------------------------------------------
 void inline TSecureShell::CheckConnection(int Message)
 {
-  CCALLSTACK(TRACE_TRANSMIT);
   if (!FActive || get_ssh_state_closed(FBackendHandle))
   {
-    CTRACE(TRACE_TRANSMIT, "2");
     UnicodeString Str = LoadStr(Message >= 0 ? Message : NOT_CONNECTED);
     int ExitCode = get_ssh_exitcode(FBackendHandle);
     if (ExitCode >= 0)
     {
       Str += L" " + FMTLOAD(SSH_EXITCODE, ExitCode);
     }
-    CTRACE(TRACE_TRANSMIT, "3");
     FatalError(Str);
   }
-  CTRACE(TRACE_TRANSMIT, "/");
 }
 //---------------------------------------------------------------------------
-void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result)
+void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, uintptr_t & Result)
 {
   CCALLSTACK(TRACE_TRANSMIT);
   if (!GetActive())
@@ -1487,7 +1458,6 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result)
   {
     try
     {
-      CTRACE(TRACE_TRANSMIT, "1");
       if (GetConfiguration()->GetActualLogProtocol() >= 2)
       {
         LogEvent(L"Pooling for data in case they finally arrives");
@@ -1501,7 +1471,6 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result)
         LogEvent(L"Data has arrived, closing query to user.");
         Result = qaOK;
       }
-      CTRACE(TRACE_TRANSMIT, "2");
     }
     TRACE_CATCH_ALL
     {
@@ -1515,7 +1484,6 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result)
       Result = qaRetry;
     }
   }
-  CTRACE(TRACE_TRANSMIT, "/");
 }
 //---------------------------------------------------------------------------
 class TPoolForDataEvent : public TObject
@@ -1527,7 +1495,7 @@ public:
   {
   }
 
-  void PoolForData(unsigned int & Result)
+  void PoolForData(uintptr_t & Result)
   {
     FSecureShell->PoolForData(FEvents, Result);
   }
@@ -1545,7 +1513,6 @@ void TSecureShell::WaitForData()
 
   do
   {
-    CTRACE(TRACE_TRANSMIT, "1");
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
       LogEvent(L"Looking for incoming data");
@@ -1558,10 +1525,8 @@ void TSecureShell::WaitForData()
       memset(&Events, 0, sizeof(Events));
       TPoolForDataEvent Event(this, Events);
 
-      CTRACE(TRACE_TRANSMIT, "1");
       LogEvent(L"Waiting for data timed out, asking user what to do.");
-      unsigned int Answer = TimeoutPrompt(MAKE_CALLBACK(TPoolForDataEvent::PoolForData, &Event));
-      CTRACE(TRACE_TRANSMIT, "2");
+      uintptr_t Answer = TimeoutPrompt(MAKE_CALLBACK(TPoolForDataEvent::PoolForData, &Event));
       switch (Answer)
       {
         case qaRetry:
@@ -1584,11 +1549,9 @@ void TSecureShell::WaitForData()
           FatalError(LoadStr(USER_TERMINATED));
           break;
       }
-      CTRACE(TRACE_TRANSMIT, "3");
     }
   }
   while (!IncomingData);
-  CTRACE(TRACE_TRANSMIT, "/");
 }
 //---------------------------------------------------------------------------
 bool TSecureShell::SshFallbackCmd() const
@@ -1598,8 +1561,6 @@ bool TSecureShell::SshFallbackCmd() const
 //---------------------------------------------------------------------------
 bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 {
-  CCALLSTACK(TRACE_TRANSMIT);
-  CTRACEFMT(TRACE_TRANSMIT, "1 [%d]", int(Socket));
   if (GetConfiguration()->GetActualLogProtocol() >= 2)
   {
     LogEvent(FORMAT(L"Enumerating network events for socket %d", static_cast<int>(Socket)));
@@ -1621,7 +1582,6 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
       }
     }
 
-    CTRACEFMT(TRACE_TRANSMIT, "2 [%d] [%d] [%d]", int(AEvents.lNetworkEvents), int(Events.lNetworkEvents), int(Socket));
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
       LogEvent(FORMAT(L"Enumerated %d network events making %d cumulative events for socket %d",
@@ -1630,7 +1590,6 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
   }
   else
   {
-    CTRACEFMT(TRACE_TRANSMIT, "3 [%d]", int(Socket));
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
       LogEvent(FORMAT(L"Error enumerating network events for socket %d", static_cast<int>(Socket)));
@@ -1655,13 +1614,12 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
     { FD_CLOSE_BIT, FD_CLOSE, L"close" },
   };
 
-  CTRACE(TRACE_TRANSMIT, "1");
   for (unsigned int Event = 0; Event < LENOF(EventTypes); Event++)
   {
     if (FLAGSET(Events.lNetworkEvents, EventTypes[Event].Mask))
     {
       int Err = Events.iErrorCode[EventTypes[Event].Bit];
-      CTRACEFMT(TRACE_TRANSMIT, "2 [%s] [%d] [%d]", EventTypes[Event].Desc, int(Socket), Err);
+
       if (GetConfiguration()->GetActualLogProtocol() >= 2)
       {
         LogEvent(FORMAT(L"Handling network %s event on socket %d with error %d",
@@ -1678,7 +1636,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
       }
     }
   }
-  CTRACE(TRACE_TRANSMIT, "/");
+
 }
 //---------------------------------------------------------------------------
 bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
@@ -1688,7 +1646,7 @@ bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
   memset(&Events, 0, sizeof(Events));
   bool Result = EnumNetworkEvents(Socket, Events);
   HandleNetworkEvents(Socket, Events);
-  CTRACE(TRACE_TRANSMIT, "/");
+
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1702,7 +1660,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
 
   do
   {
-    CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", int(MSec), int(ReadEventRequired));
+
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
       // LogEvent(L"Looking for network events");
@@ -1713,7 +1671,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     HANDLE * Handles = handle_get_events(&HandleCount);
     TRY_FINALLY (
     {
-      CTRACE(TRACE_TRANSMIT, "1a");
+
       Handles = sresize(Handles, static_cast<size_t>(HandleCount + 1), HANDLE);
       Handles[HandleCount] = FSocketEvent;
       unsigned int WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, MSec);
@@ -1726,7 +1684,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       }
       else if (WaitResult == WAIT_OBJECT_0 + HandleCount)
       {
-        CTRACE(TRACE_TRANSMIT, "2");
+
         if (GetConfiguration()->GetActualLogProtocol() >= 1)
         {
           LogEvent(L"Detected network event");
@@ -1748,17 +1706,17 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
         }
 
         {
-          TSockets::iterator i = FPortFwdSockets.begin();
-          while (i != FPortFwdSockets.end())
+          TSockets::iterator it = FPortFwdSockets.begin();
+          while (it != FPortFwdSockets.end())
           {
-            ProcessNetworkEvents(*i);
-            ++i;
+            ProcessNetworkEvents(*it);
+            ++it;
           }
         }
       }
       else if (WaitResult == WAIT_TIMEOUT)
       {
-        CTRACE(TRACE_TRANSMIT, "3");
+
         if (GetConfiguration()->GetActualLogProtocol() >= 2)
         {
           // LogEvent(L"Timeout waiting for network events");
@@ -1768,7 +1726,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       }
       else
       {
-        CTRACEFMT(TRACE_TRANSMIT, "4 [%d]", int(WaitResult));
+
         if (GetConfiguration()->GetActualLogProtocol() >= 2)
         {
           LogEvent(FORMAT(L"Unknown waiting result %d", static_cast<int>(WaitResult)));
@@ -1800,7 +1758,6 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
   }
   while (ReadEventRequired && (MSec > 0) && !Result);
 
-  CTRACE(TRACE_TRANSMIT, "/");
   return Result;
 }
 //---------------------------------------------------------------------------

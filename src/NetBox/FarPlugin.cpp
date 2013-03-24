@@ -1591,7 +1591,7 @@ void TCustomFarPlugin::HandleException(Exception * E, int /*OpMode*/)
   Message(FMSG_WARNING | FMSG_MB_OK, L"", MB2W(E->what()));
 }
 //---------------------------------------------------------------------------
-UnicodeString TCustomFarPlugin::GetMsg(int MsgId)
+UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId)
 {
   TFarEnvGuard Guard;
   UnicodeString Result = FStartupInfo.GetMsg(&MainGuid, MsgId);

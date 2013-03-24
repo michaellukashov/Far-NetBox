@@ -89,7 +89,7 @@ public:
   uintptr_t LocalBlockSize();
   bool IsLocallyDone() const;
   bool IsTransferDone() const;
-  void SetFile(UnicodeString AFileName, bool AFileInProgress = true);
+  void SetFile(const UnicodeString & AFileName, bool AFileInProgress = true);
   void SetFileInProgress();
   intptr_t OperationProgress() const;
   uintptr_t TransferBlockSize();

@@ -137,7 +137,10 @@ void TConfiguration::Default()
 TConfiguration::~TConfiguration()
 {
   assert(!FUpdating);
-  if (FApplicationInfo) { FreeFileInfo(FApplicationInfo); }
+  if (FApplicationInfo)
+  {
+    FreeFileInfo(FApplicationInfo);
+  }
   delete FCriticalSection;
   // delete FUsage;
 }
@@ -213,7 +216,10 @@ void TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
 //---------------------------------------------------------------------------
 void TConfiguration::Save(bool All, bool Explicit)
 {
-  if (FDontSave) { return; }
+  if (FDontSave)
+  {
+    return;
+  }
 
   THierarchicalStorage * AStorage = CreateScpStorage(false);
   TRY_FINALLY (

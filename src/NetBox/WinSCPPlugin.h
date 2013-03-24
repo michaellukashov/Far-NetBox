@@ -14,15 +14,15 @@ struct TMessageParams
   TMessageParams();
 
   const TQueryButtonAlias * Aliases;
-  intptr_t AliasesCount;
+  uintptr_t AliasesCount;
   uintptr_t Flags;
   uintptr_t Params;
   uintptr_t Timer;
   TQueryParamsTimerEvent TimerEvent;
   UnicodeString TimerMessage;
-  unsigned int TimerAnswers;
-  unsigned int Timeout;
-  unsigned int TimeoutAnswer;
+  uintptr_t TimerAnswers;
+  uintptr_t Timeout;
+  uintptr_t TimeoutAnswer;
 };
 //---------------------------------------------------------------------------
 class TWinSCPPlugin : public TCustomFarPlugin
@@ -38,7 +38,7 @@ public:
     TQueryType Type, uintptr_t Answers, const TMessageParams * Params = NULL);
   void ShowExtendedException(Exception * E);
   bool CopyParamCustomDialog(TCopyParamType & CopyParam,
-    int CopyParamAttrs);
+    intptr_t CopyParamAttrs);
   virtual void SetStartupInfo(const struct PluginStartupInfo * Info);
 
 protected:
@@ -51,8 +51,8 @@ protected:
   virtual intptr_t ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info);
   virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD * Rec);
   bool CopyParamDialog(const UnicodeString & Caption, TCopyParamType & CopyParam,
-    int CopyParamAttrs);
-  void MessageClick(void * Token, intptr_t Result, bool & Close);
+    intptr_t CopyParamAttrs);
+  void MessageClick(void * Token, uintptr_t Result, bool & Close);
 
   void CommandsMenu(bool FromFileSystem);
   bool ConfigurationDialog();

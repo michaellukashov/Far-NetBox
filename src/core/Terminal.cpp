@@ -35,7 +35,8 @@
 #define COMMAND_ERROR_ARI(MESSAGE, REPEAT) \
   { \
     uintptr_t Result = CommandError(&E, MESSAGE, qaRetry | qaSkip | qaAbort); \
-    switch (Result) { \
+    switch (Result) \
+    { \
       case qaRetry: { REPEAT; } break; \
       case qaAbort: Abort(); \
     } \
@@ -54,7 +55,8 @@
       RollbackAction(ACTION, NULL, &E2); \
       throw; \
     } \
-    switch (Result) { \
+    switch (Result) \
+    { \
       case qaRetry: ACTION.Cancel(); { REPEAT; } break; \
       case qaAbort: RollbackAction(ACTION, NULL, &E); Abort(); \
       case qaSkip:  ACTION.Cancel(); break; \
@@ -1440,7 +1442,7 @@ void TTerminal::ReactOnCommand(int /*TFSCommand*/ Cmd)
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::TerminalError(UnicodeString Msg)
+void TTerminal::TerminalError(const UnicodeString & Msg)
 {
   TerminalError(NULL, Msg);
 }
@@ -1643,24 +1645,28 @@ int TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
   return Result;
 }
 //------------------------------------------------------------------------------
-UnicodeString TTerminal::TranslateLockedPath(UnicodeString Path, bool Lock)
+UnicodeString TTerminal::TranslateLockedPath(const UnicodeString & Path, bool Lock)
 {
-  if (!GetSessionData()->GetLockInHome() || Path.IsEmpty() || (Path[1] != L'/'))
-    return Path;
+  UnicodeString Result = Path;
+  if (!GetSessionData()->GetLockInHome() || Result.IsEmpty() || (Result[1] != L'/'))
+    return Result;
 
   if (Lock)
   {
-    if (Path.SubString(1, FLockDirectory.Length()) == FLockDirectory)
+    if (Result.SubString(1, FLockDirectory.Length()) == FLockDirectory)
     {
-      Path.Delete(1, FLockDirectory.Length());
-      if (Path.IsEmpty()) Path = L"/";
+      Result.Delete(1, FLockDirectory.Length());
+      if (Result.IsEmpty())
+      {
+        Result = L"/";
+      }
     }
   }
   else
   {
-    Path = UnixExcludeTrailingBackslash(FLockDirectory + Path);
+    Result = UnixExcludeTrailingBackslash(FLockDirectory + Result);
   }
-  return Path;
+  return Result;
 }
 //------------------------------------------------------------------------------
 void TTerminal::ClearCaches()
@@ -1926,8 +1932,14 @@ void TTerminal::EndTransaction()
       TRY_FINALLY (
       {
         TRACE("2");
-        if (FReadCurrentDirectoryPending) { ReadCurrentDirectory(); }
-        if (FReadDirectoryPending) { ReadDirectory(!FReadCurrentDirectoryPending); }
+        if (FReadCurrentDirectoryPending)
+        {
+          ReadCurrentDirectory();
+        }
+        if (FReadDirectoryPending)
+        {
+          ReadDirectory(!FReadCurrentDirectoryPending);
+        }
       }
       ,
       {
@@ -2727,7 +2739,7 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(const UnicodeString & Di
   return FileList;
 }
 //------------------------------------------------------------------------------
-TRemoteFileList * TTerminal::DoReadDirectoryListing(UnicodeString Directory, bool UseCache)
+TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & Directory, bool UseCache)
 {
   TRemoteFileList * FileList = new TRemoteFileList();
   try
@@ -3143,7 +3155,10 @@ void TTerminal::DeleteFile(const UnicodeString & FileName,
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foDelete)
   {
-    if (GetOperationProgress()->Cancel != csContinue) { Abort(); }
+    if (GetOperationProgress()->Cancel != csContinue)
+    {
+      Abort();
+    }
     GetOperationProgress()->SetFile(LocalFileName);
   }
   intptr_t Params = (AParams != NULL) ? *(static_cast<int*>(AParams)) : 0;
@@ -3158,7 +3173,10 @@ void TTerminal::DeleteFile(const UnicodeString & FileName,
   else
   {
     LogEvent(FORMAT(L"Deleting file \"%s\".", LocalFileName.c_str()));
-    if (File) { FileModified(File, LocalFileName, true); }
+    if (File)
+    {
+      FileModified(File, LocalFileName, true);
+    }
     DoDeleteFile(LocalFileName, File, Params);
     ReactOnCommand(fsDeleteFile);
   }
@@ -3228,19 +3246,25 @@ void TTerminal::CustomCommandOnFile(const UnicodeString & FileName,
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foCustomCommand)
   {
-    if (GetOperationProgress()->Cancel != csContinue) { Abort(); }
+    if (GetOperationProgress()->Cancel != csContinue)
+    {
+      Abort();
+    }
     GetOperationProgress()->SetFile(LocalFileName);
   }
   LogEvent(FORMAT(L"Executing custom command \"%s\" (%d) on file \"%s\".",
     Params->Command.c_str(), Params->Params, LocalFileName.c_str()));
-  if (File) { FileModified(File, LocalFileName); }
+  if (File)
+  {
+    FileModified(File, LocalFileName);
+  }
   DoCustomCommandOnFile(LocalFileName, File, Params->Command, Params->Params,
     Params->OutputEvent);
   ReactOnCommand(fsAnyCommand);
 }
 //------------------------------------------------------------------------------
-void TTerminal::DoCustomCommandOnFile(UnicodeString FileName,
-  const TRemoteFile * File, UnicodeString Command, intptr_t Params,
+void TTerminal::DoCustomCommandOnFile(const UnicodeString & FileName,
+  const TRemoteFile * File, const UnicodeString & Command, intptr_t Params,
   TCaptureOutputEvent OutputEvent)
 {
   CALLSTACK;
@@ -3273,7 +3297,7 @@ void TTerminal::DoCustomCommandOnFile(UnicodeString FileName,
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::CustomCommandOnFiles(UnicodeString Command,
+void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
   intptr_t Params, TStrings * Files, TCaptureOutputEvent OutputEvent)
 {
   CALLSTACK;
@@ -4151,7 +4175,7 @@ bool TTerminal::CreateLocalFile(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 void TTerminal::OpenLocalFile(const UnicodeString & FileName,
-  unsigned int Access, int * AAttrs, HANDLE * AHandle, __int64 * ACTime,
+  uintptr_t Access, uintptr_t * AAttrs, HANDLE * AHandle, __int64 * ACTime,
   __int64 * AMTime, __int64 * AATime, __int64 * ASize,
   bool TryWriteReadOnly)
 {
@@ -4710,7 +4734,6 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
         Data->Options->MatchesFilter(File->GetFileName()) ||
         Data->Options->MatchesFilter(LocalFileName)))
   {
-    CTRACE(TRACE_SYNCH, "00b");
     TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
     TRY_FINALLY (
     {
@@ -4726,10 +4749,8 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
       bool Modified = false;
       intptr_t LocalIndex = Data->LocalFileList->IndexOf(LocalFileName.c_str());
       bool New = (LocalIndex < 0);
-      CTRACEFMT(TRACE_SYNCH, "00b1 [%d] [%d] [%s]", LocalIndex, int(New), LocalFileName.c_str());
       if (!New)
       {
-        CTRACE(TRACE_SYNCH, "00c");
         TSynchronizeFileData * LocalData =
           reinterpret_cast<TSynchronizeFileData *>(Data->LocalFileList->Objects[LocalIndex]);
 
@@ -4737,19 +4758,15 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
 
         if (File->GetIsDirectory() != LocalData->IsDirectory)
         {
-          CTRACE(TRACE_SYNCH, "01");
           LogEvent(FORMAT(L"%s is directory on one side, but file on the another",
             File->GetFileName().c_str()));
         }
         else if (!File->GetIsDirectory())
         {
-          CTRACE(TRACE_SYNCH, "02");
           ChecklistItem->Local = LocalData->Info;
 
-          CTRACEFMT(TRACE_SYNCH, "03 [%s] [%.7f] [%d]", ChecklistItem->Local.Modification.TimeString().c_str(), double(ChecklistItem->Local.Modification), File->GetModificationFmt());
           ChecklistItem->Local.Modification =
             ReduceDateTimePrecision(ChecklistItem->Local.Modification, File->GetModificationFmt());
-          CTRACEFMT(TRACE_SYNCH, "04 [%s] [%.7f] [%d]", ChecklistItem->Local.Modification.TimeString().c_str(), double(ChecklistItem->Local.Modification), File->GetModificationFmt());
 
           bool LocalModified = false;
           // for spTimestamp+spBySize require that the file sizes are the same
@@ -4760,27 +4777,22 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
                FLAGCLEAR(Data->Params, spBySize) ||
                (ChecklistItem->Local.Size == ChecklistItem->Remote.Size)))
           {
-            CTRACE(TRACE_SYNCH, "11");
             TimeCompare = CompareFileTime(ChecklistItem->Local.Modification,
                  ChecklistItem->Remote.Modification);
           }
           else
           {
-            CTRACE(TRACE_SYNCH, "12");
             TimeCompare = 0;
           }
-          CTRACEFMT(TRACE_SYNCH, "[%s] TimeCompare [%d]", File->GetFileName().c_str(), TimeCompare);
           if (TimeCompare < 0)
           {
             if ((FLAGCLEAR(Data->Params, spTimestamp) && FLAGCLEAR(Data->Params, spMirror)) ||
                 (Data->Mode == smBoth) || (Data->Mode == smLocal))
             {
-              CTRACE(TRACE_SYNCH, "13");
               Modified = true;
             }
             else
             {
-              CTRACE(TRACE_SYNCH, "14");
               LocalModified = true;
             }
           }
@@ -4789,12 +4801,10 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
             if ((FLAGCLEAR(Data->Params, spTimestamp) && FLAGCLEAR(Data->Params, spMirror)) ||
                 (Data->Mode == smBoth) || (Data->Mode == smRemote))
             {
-              CTRACE(TRACE_SYNCH, "15");
               LocalModified = true;
             }
             else
             {
-              CTRACE(TRACE_SYNCH, "16");
               Modified = true;
             }
           }
@@ -4802,14 +4812,12 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
                    (ChecklistItem->Local.Size != ChecklistItem->Remote.Size) &&
                    FLAGCLEAR(Data->Params, spTimestamp))
           {
-            CTRACE(TRACE_SYNCH, "17");
             Modified = true;
             LocalModified = true;
           }
 
           if (LocalModified)
           {
-            CTRACE(TRACE_SYNCH, "18");
             LocalData->Modified = true;
             LocalData->MatchingRemoteFile = ChecklistItem->Remote;
             LocalData->MatchingRemoteFileImageIndex = ChecklistItem->ImageIndex;
@@ -4848,7 +4856,6 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
       }
       else
       {
-        CTRACE(TRACE_SYNCH, "19");
         ChecklistItem->Local.Directory = Data->LocalDirectory;
         LogEvent(FORMAT(L"Remote file '%s' [%s] [%s] is new",
           FullRemoteFileName.c_str(), StandardTimestamp(File->GetModification()).c_str(), Int64ToStr(File->GetSize()).c_str()));
@@ -4856,16 +4863,13 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
 
       if (New || Modified)
       {
-        CTRACE(TRACE_SYNCH, "20");
         assert(!New || !Modified);
 
         // download the file if it changed or is new and we want to have it locally
         if ((Data->Mode == smBoth) || (Data->Mode == smLocal))
         {
-          CTRACE(TRACE_SYNCH, "21");
           if (FLAGCLEAR(Data->Params, spTimestamp) || Modified)
           {
-            CTRACE(TRACE_SYNCH, "22");
             ChecklistItem->Action =
               (Modified ? TSynchronizeChecklist::saDownloadUpdate : TSynchronizeChecklist::saDownloadNew);
             ChecklistItem->Checked =
@@ -4876,10 +4880,8 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
         }
         else if ((Data->Mode == smRemote) && New)
         {
-          CTRACE(TRACE_SYNCH, "23");
           if (FLAGCLEAR(Data->Params, spTimestamp))
           {
-            CTRACE(TRACE_SYNCH, "24");
             ChecklistItem->Action = TSynchronizeChecklist::saDeleteRemote;
             ChecklistItem->Checked =
               FLAGSET(Data->Params, spDelete) &&
@@ -4890,7 +4892,6 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
 
         if (ChecklistItem->Action != TSynchronizeChecklist::saNone)
         {
-          CTRACE(TRACE_SYNCH, "25");
           ChecklistItem->RemoteFile = File->Duplicate();
           Data->Checklist->Add(ChecklistItem);
           ChecklistItem = NULL;
@@ -4899,7 +4900,6 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
     }
     ,
     {
-      CTRACE(TRACE_SYNCH, "26");
       delete ChecklistItem;
     }
     );
@@ -5200,7 +5200,7 @@ void TTerminal::FileFind(const UnicodeString & FileName,
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::DoFilesFind(UnicodeString Directory, TFilesFindParams & Params)
+void TTerminal::DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params)
 {
   Params.OnFindingFile(this, Directory, Params.Cancel);
   if (!Params.Cancel)
@@ -5222,7 +5222,7 @@ void TTerminal::DoFilesFind(UnicodeString Directory, TFilesFindParams & Params)
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::FilesFind(UnicodeString Directory, const TFileMasks & FileMask,
+void TTerminal::FilesFind(const UnicodeString & Directory, const TFileMasks & FileMask,
   TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile)
 {
   TFilesFindParams Params;

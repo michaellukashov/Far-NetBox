@@ -12972,19 +12972,19 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
     }
 
     __int64 Size;
-    int Attrs;
+    uintptr_t LocalFileAttrs;
 
-    FTerminal->OpenLocalFile(FileName, GENERIC_READ, &Attrs,
+    FTerminal->OpenLocalFile(FileName, GENERIC_READ, &LocalFileAttrs,
       NULL, NULL, NULL, NULL, &Size);
 
     OperationProgress->SetFileInProgress();
 
-    bool Dir = FLAGSET(Attrs, faDirectory);
+    bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
     if (Dir)
     {
       Action.Cancel();
       WebDAVDirectorySource(IncludeTrailingBackslash(FileName), TargetDir,
-        Attrs, CopyParam, Params, OperationProgress, Flags);
+        LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
     }
     else
     {
@@ -13040,17 +13040,17 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
         )
       }
     }
-    else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
+    else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
     {
       FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(FileName, Attrs & ~faArchive) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(FileName, LocalFileAttrs & ~faArchive) == 0);
       )
     }
   }
 }
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryName,
-  const UnicodeString & TargetDir, int Attrs, const TCopyParamType * CopyParam,
+  const UnicodeString & TargetDir, uintptr_t Attrs, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
@@ -13465,7 +13465,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       {
         Attrs = faArchive;
       }
-      int NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
+      uintptr_t NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
       if ((NewAttrs & Attrs) != NewAttrs)
       {
         FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),

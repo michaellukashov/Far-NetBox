@@ -1731,7 +1731,10 @@ void TSessionData::SetCipherList(const UnicodeString & Value)
 
   for (intptr_t C = 0; C < CIPHER_COUNT && Index < CIPHER_COUNT; C++)
   {
-    if (!Used[DefaultCipherList[C]]) { SetCipher(++Index, DefaultCipherList[C]); }
+    if (!Used[DefaultCipherList[C]])
+    {
+      SetCipher(++Index, DefaultCipherList[C]);
+    }
   }
 }
 //---------------------------------------------------------------------
@@ -1760,7 +1763,10 @@ TKex TSessionData::GetKex(intptr_t Index) const
 void TSessionData::SetKexList(const UnicodeString & Value)
 {
   bool Used[KEX_COUNT];
-  for (int K = 0; K < KEX_COUNT; K++) { Used[K] = false; }
+  for (int K = 0; K < KEX_COUNT; K++)
+  {
+    Used[K] = false;
+  }
 
   UnicodeString KexStr;
   intptr_t Index = 0;
@@ -1782,7 +1788,10 @@ void TSessionData::SetKexList(const UnicodeString & Value)
 
   for (intptr_t K = 0; K < KEX_COUNT && Index < KEX_COUNT; K++)
   {
-    if (!Used[DefaultKexList[K]]) { SetKex(++Index, DefaultKexList[K]); }
+    if (!Used[DefaultKexList[K]])
+    {
+      SetKex(++Index, DefaultKexList[K]);
+    }
   }
 }
 //---------------------------------------------------------------------
@@ -2995,7 +3004,10 @@ void TStoredSessionList::Cleanup()
 {
   try
   {
-    if (GetConfiguration()->GetStorage() == stRegistry) { Clear(); }
+    if (GetConfiguration()->GetStorage() == stRegistry)
+    {
+      Clear();
+    }
     TRegistryStorage * Storage = new TRegistryStorage(GetConfiguration()->GetRegistryStorageKey());
     TRY_FINALLY (
     {
@@ -3137,7 +3149,7 @@ intptr_t TStoredSessionList::IndexOf(TSessionData * Data)
 }
 //---------------------------------------------------------------------------
 TSessionData * TStoredSessionList::NewSession(
-  UnicodeString SessionName, TSessionData * Session)
+  const UnicodeString & SessionName, TSessionData * Session)
 {
   TSessionData * DuplicateSession = static_cast<TSessionData*>(FindByName(SessionName));
   if (!DuplicateSession)
@@ -3307,7 +3319,7 @@ UnicodeString GetCodePageAsString(uintptr_t cp)
 }
 
 //---------------------------------------------------------------------
-UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TSessionData * SessionData)
+UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSessionData * SessionData)
 {
   UnicodeString ANewFileName = StripPathQuotes(ExpandEnvironmentVariables(LogFileName));
   TDateTime N = Now();

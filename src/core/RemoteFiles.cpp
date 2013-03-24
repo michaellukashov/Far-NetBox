@@ -405,7 +405,6 @@ int FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
   /*CCALLSTACK(TRACE_IMAGEINDEX);
   Attrs |= FILE_ATTRIBUTE_NORMAL;
 
-  CTRACE(TRACE_IMAGEINDEX, "FakeFileImageIndex 1");
   TSHFileInfoW SHFileInfo = {0};
   // On Win2k we get icon of "ZIP drive" for ".." (parent directory)
   if ((FileName == L"..") ||
@@ -423,13 +422,12 @@ int FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
     FileName.SetLength(FileName.Length() - PartialExtLen);
   }
 
-  CTRACEFMT(TRACE_IMAGEINDEX, "FakeFileImageIndex 2 [%s] [%d]", FileName.c_str(), int(Attrs));
   int Icon;
   if (SHGetFileInfo(UnicodeString(FileName).c_str(),
         Attrs, &SHFileInfo, sizeof(SHFileInfo),
         SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != 0)
   {
-    CTRACE(TRACE_IMAGEINDEX, "FakeFileImageIndex 2");
+
     if (TypeName != NULL)
     {
       *TypeName = SHFileInfo.szTypeName;
@@ -438,14 +436,13 @@ int FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
   }
   else
   {
-    CTRACE(TRACE_IMAGEINDEX, "FakeFileImageIndex 3");
     if (TypeName != NULL)
     {
       *TypeName = L"";
     }
     Icon = -1;
   }
-  CTRACEFMT(TRACE_IMAGEINDEX, "FakeFileImageIndex 4 [%d]", Icon);
+
 
   return Icon;*/
   return -1;
@@ -806,8 +803,14 @@ void TRemoteFile::LoadTypeInfo()
   CCALLSTACK(TRACE_IMAGEINDEX);
   /* TODO : If file is link: Should be attributes taken from linked file? */
   /* unsigned long Attrs = 0;
-  if (GetIsDirectory()) { Attrs |= FILE_ATTRIBUTE_DIRECTORY; }
-  if (GetIsHidden()) { Attrs |= FILE_ATTRIBUTE_HIDDEN; }
+  if (GetIsDirectory())
+  {
+    Attrs |= FILE_ATTRIBUTE_DIRECTORY;
+  }
+  if (GetIsHidden())
+  {
+    Attrs |= FILE_ATTRIBUTE_HIDDEN;
+  }
 
   UnicodeString DumbFileName = (GetIsSymLink() && !GetLinkTo().IsEmpty() ? GetLinkTo() : GetFileName());
 
@@ -923,7 +926,10 @@ void TRemoteFile::SetLinkedFile(TRemoteFile * Value)
 {
   if (FLinkedFile != Value)
   {
-    if (FLinkedFile) { delete FLinkedFile; }
+    if (FLinkedFile)
+    {
+       delete FLinkedFile;
+    }
     FLinkedFile = Value;
   }
 }
@@ -1024,8 +1030,14 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     #define GETNCOL  \
       { if (Line.IsEmpty()) throw Exception(L""); \
         intptr_t P = Line.Pos(L' '); \
-        if (P) { Col = Line; Col.SetLength(P-1); Line.Delete(1, P); } \
-          else { Col = Line; Line = L""; } \
+        if (P) \
+        { \
+          Col = Line; Col.SetLength(P-1); Line.Delete(1, P); \
+        } \
+        else \
+        { \
+          Col = Line; Line = L""; \
+        } \
       }
     #define GETCOL { GETNCOL; Line = TrimLeft(Line); }
 
@@ -1102,7 +1114,10 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       Month = 0;
       #define COL2MONTH \
         for (Word IMonth = 0; IMonth < 12; IMonth++) \
-          if (!Col.CompareIC(EngShortMonthNames[IMonth])) { Month = IMonth; Month++; break; }
+          if (!Col.CompareIC(EngShortMonthNames[IMonth])) \
+          { \
+            Month = IMonth; Month++; break; \
+          }
       COL2MONTH;
       // if the column is not known month name, it may have been "yyyy-mm-dd"
       // for --full-time format
@@ -1151,7 +1166,10 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           GETNCOL;
           Day = static_cast<Word>(Sysutils::StrToInt(Col));
         }
-        if ((Day < 1) || (Day > 31)) { Abort(); }
+        if ((Day < 1) || (Day > 31))
+        {
+          Abort();
+        }
 
         // second full-time format
         // ddd mmm dd hh:nn:ss yyyy
@@ -1277,7 +1295,10 @@ void TRemoteFile::FindLinkedFile()
 {
   assert(GetTerminal() && GetIsSymLink());
 
-  if (FLinkedFile) { delete FLinkedFile; }
+  if (FLinkedFile)
+  {
+    delete FLinkedFile;
+  }
   FLinkedFile = NULL;
 
   FCyclicLink = false;
@@ -1357,9 +1378,18 @@ UnicodeString TRemoteFile::GetFullFileName() const
     assert(GetTerminal());
     assert(GetDirectory() != NULL);
     UnicodeString Path;
-    if (GetIsParentDirectory()) { Path = GetDirectory()->GetParentPath(); }
-    else if (GetIsDirectory()) { Path = UnixIncludeTrailingBackslash(GetDirectory()->GetFullDirectory() + GetFileName()); }
-    else { Path = GetDirectory()->GetFullDirectory() + GetFileName(); }
+    if (GetIsParentDirectory())
+    {
+      Path = GetDirectory()->GetParentPath();
+    }
+    else if (GetIsDirectory())
+    {
+      Path = UnixIncludeTrailingBackslash(GetDirectory()->GetFullDirectory() + GetFileName());
+    }
+    else
+    {
+      Path = GetDirectory()->GetFullDirectory() + GetFileName();
+    }
     return GetTerminal()->TranslateLockedPath(Path, true);
   }
   else
@@ -1376,8 +1406,14 @@ bool TRemoteFile::GetHaveFullFileName() const
 intptr_t TRemoteFile::GetAttr()
 {
   intptr_t Result = 0;
-  if (GetRights()->GetReadOnly()) { Result |= faReadOnly; }
-  if (GetIsHidden()) { Result |= faHidden; }
+  if (GetRights()->GetReadOnly())
+  {
+    Result |= faReadOnly;
+  }
+  if (GetIsHidden())
+  {
+    Result |= faHidden;
+  }
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1524,7 +1560,10 @@ __int64 TRemoteFileList::GetTotalSize()
   __int64 Result = 0;
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (!GetFiles(Index)->GetIsDirectory()) { Result += GetFiles(Index)->GetSize(); }
+    if (!GetFiles(Index)->GetIsDirectory())
+    {
+      Result += GetFiles(Index)->GetSize();
+    }
   }
   return Result;
 }
@@ -1533,7 +1572,10 @@ TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & FileName)
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (GetFiles(Index)->GetFileName() == FileName) { return GetFiles(Index); }
+    if (GetFiles(Index)->GetFileName() == FileName)
+    {
+      return GetFiles(Index);
+    }
   }
   return NULL;
 }
@@ -1580,8 +1622,14 @@ void TRemoteDirectory::SetDirectory(const UnicodeString & Value)
 //---------------------------------------------------------------------------
 void TRemoteDirectory::AddFile(TRemoteFile * File)
 {
-  if (File->GetIsThisDirectory()) { FThisDirectory = File; }
-  if (File->GetIsParentDirectory()) { FParentDirectory = File; }
+  if (File->GetIsThisDirectory())
+  {
+    FThisDirectory = File;
+  }
+  if (File->GetIsParentDirectory())
+  {
+    FParentDirectory = File;
+  }
 
   if ((!File->GetIsThisDirectory() || GetIncludeThisDirectory()) &&
       (!File->GetIsParentDirectory() || GetIncludeParentDirectory()))

@@ -128,60 +128,60 @@ inline void operator_delete(void * p)
 /// custom memory allocation
 #define DEF_CUSTOM_MEM_ALLOCATION_IMPL            \
 	public:                                         \
- 	void * __stdcall operator new(size_t size)                \
+ 	void * operator new(size_t size)                \
 	{                                               \
 		return operator_new(size);                    \
 	}                                               \
-	void __stdcall operator delete(void * p, size_t size)     \
+	void operator delete(void * p, size_t size)     \
 	{                                               \
 		(void)(size);                                 \
-		operator_delete(p);                    \
+		operator_delete(p);                           \
 	}                                               \
- 	void * __stdcall operator new[](size_t size)              \
+ 	void * operator new[](size_t size)              \
 	{                                               \
 		return operator_new(size);                    \
 	}                                               \
-	void __stdcall operator delete[](void * p, size_t size)   \
+	void operator delete[](void * p, size_t size)   \
 	{                                               \
 		(void)(size);                                 \
-		operator_delete(p);                    \
+		operator_delete(p);                           \
 	}                                               \
- 	void * __stdcall operator new(size_t size, void * p)      \
+ 	void * operator new(size_t size, void * p)      \
 	{                                               \
 		(void)(size);                                 \
 		return p;                                     \
 	}                                               \
-	void __stdcall operator delete(void * p, void *)          \
+	void operator delete(void * p, void *)          \
 	{                                               \
 		(void)(p);                                    \
 	}                                               \
- 	void * __stdcall operator new[](size_t size, void * p)    \
+ 	void * operator new[](size_t size, void * p)    \
 	{                                               \
 		(void)(size);                                 \
 		return p;                                     \
 	}                                               \
-	void __stdcall operator delete[](void * p, void *)        \
+	void operator delete[](void * p, void *)        \
 	{                                               \
 		(void)(p);                                    \
 	}
 
 #ifdef _DEBUG
 #define CUSTOM_MEM_ALLOCATION_IMPL DEF_CUSTOM_MEM_ALLOCATION_IMPL \
- 	void * __stdcall operator new(size_t size, const char * /*lpszFileName*/, int /*nLine*/) \
-	{\
-		return operator_new(size);\
-	}\
- 	void* __stdcall operator new[](size_t size, const char * /*lpszFileName*/, int /*nLine*/)\
-	{\
-		return operator_new(size);\
-	}\
-	void __stdcall operator delete(void* p, const char * /*lpszFileName*/, int /*nLine*/)\
-	{\
-		operator_delete(p);\
-	}\
-	void __stdcall operator delete[](void* p, const char * /*lpszFileName*/, int /*nLine*/)\
-	{\
-		operator_delete(p);\
+ 	void * operator new(size_t size, const char * /*lpszFileName*/, int /*nLine*/) \
+	{ \
+		return operator_new(size); \
+	} \
+ 	void * operator new[](size_t size, const char * /*lpszFileName*/, int /*nLine*/) \
+	{ \
+		return operator_new(size); \
+	} \
+	void operator delete(void* p, const char * /*lpszFileName*/, int /*nLine*/) \
+	{ \
+		operator_delete(p); \
+	} \
+	void operator delete[](void* p, const char * /*lpszFileName*/, int /*nLine*/) \
+	{ \
+		operator_delete(p); \
 	}
 #else
 #define CUSTOM_MEM_ALLOCATION_IMPL DEF_CUSTOM_MEM_ALLOCATION_IMPL
@@ -190,6 +190,94 @@ inline void operator_delete(void * p)
 #else
 #define CUSTOM_MEM_ALLOCATION_IMPL 
 #endif
+
+//---------------------------------------------------------------------------
+
+namespace nballoc {
+  inline void destruct(char *){}
+  inline void destruct(wchar_t*){}
+  template <typename T> 
+  inline void destruct(T * t){t->~T();}
+} // namespace nballoc
+
+template <typename T> struct custom_nballocator_t;
+
+template <> struct custom_nballocator_t<void>
+{
+public:
+    typedef void* pointer;
+    typedef const void* const_pointer;
+    // reference to void members are impossible.
+    typedef void value_type;
+    template <class U> 
+        struct rebind { typedef custom_nballocator_t<U> other; };
+};    
+
+template <typename T> 
+struct custom_nballocator_t
+{
+  typedef size_t size_type;
+  typedef ptrdiff_t difference_type;
+  typedef T* pointer;
+  typedef const T* const_pointer;
+  typedef T& reference;
+  typedef const T& const_reference;
+  typedef T value_type;
+
+  template <class U> struct rebind { typedef custom_nballocator_t<U> other; };
+  inline custom_nballocator_t() throw() {}
+  inline custom_nballocator_t(const custom_nballocator_t&) throw() {}
+
+  template <class U> custom_nballocator_t(const custom_nballocator_t<U>&) throw(){}
+
+  ~custom_nballocator_t() throw() {}
+
+  pointer address(reference x) const { return &x; }
+  const_pointer address(const_reference x) const { return &x; }
+
+  pointer allocate(size_type s, void const * = 0)
+  {
+    if (0 == s)
+      return NULL;
+    pointer temp = (pointer)nb_malloc(s * sizeof(T)); 
+    if (temp == NULL)
+      throw std::bad_alloc();
+    return temp;
+  }
+
+  void deallocate(pointer p, size_type)
+  {
+    nb_free(p);
+  }
+
+  size_type max_size() const throw()
+  {
+    // return std::numeric_limits<size_t>::max() / sizeof(T); 
+    return size_t(-1) / sizeof(T); 
+  }
+
+  void construct(pointer p, const T & val)
+  {
+    new((void *)p) T(val);
+  }
+
+  void destroy(pointer p)
+  {
+    nballoc::destruct(p);
+  }
+};
+
+template <typename T, typename U>
+inline bool operator==(const custom_nballocator_t<T> &, const custom_nballocator_t<U> &)
+{
+  return false;
+}
+
+template <typename T, typename U>
+inline bool operator!=(const custom_nballocator_t<T> &, const custom_nballocator_t<U> &)
+{
+  return true;
+}
 
 //---------------------------------------------------------------------------
 
@@ -281,94 +369,6 @@ bool CheckStructSize(const T* s) {return s && (s->StructSize >= sizeof(T));}
 #else
 #define SELF_TEST(code)
 #endif
-
-//---------------------------------------------------------------------------
-
-namespace nballoc {
-  inline void destruct(char *){}
-  inline void destruct(wchar_t*){}
-  template <typename T> 
-  inline void destruct(T * t){t->~T();}
-} // namespace nballoc
-
-template <typename T> struct custom_nballocator_t;
-
-template <> struct custom_nballocator_t<void>
-{
-public:
-    typedef void* pointer;
-    typedef const void* const_pointer;
-    // reference to void members are impossible.
-    typedef void value_type;
-    template <class U> 
-        struct rebind { typedef custom_nballocator_t<U> other; };
-};    
-
-template <typename T> 
-struct custom_nballocator_t
-{
-  typedef size_t size_type;
-  typedef ptrdiff_t difference_type;
-  typedef T* pointer;
-  typedef const T* const_pointer;
-  typedef T& reference;
-  typedef const T& const_reference;
-  typedef T value_type;
-
-  template <class U> struct rebind { typedef custom_nballocator_t<U> other; };
-  inline custom_nballocator_t() throw() {}
-  inline custom_nballocator_t(const custom_nballocator_t&) throw() {}
-
-  template <class U> custom_nballocator_t(const custom_nballocator_t<U>&) throw(){}
-
-  ~custom_nballocator_t() throw() {}
-
-  pointer address(reference x) const { return &x; }
-  const_pointer address(const_reference x) const { return &x; }
-
-  pointer allocate(size_type s, void const * = 0)
-  {
-    if (0 == s)
-      return NULL;
-    pointer temp = (pointer)nb_malloc(s * sizeof(T)); 
-    if (temp == NULL)
-      throw std::bad_alloc();
-    return temp;
-  }
-
-  void deallocate(pointer p, size_type)
-  {
-    nb_free(p);
-  }
-
-  size_type max_size() const throw()
-  {
-    // return std::numeric_limits<size_t>::max() / sizeof(T); 
-    return size_t(-1) / sizeof(T); 
-  }
-
-  void construct(pointer p, const T & val)
-  {
-    new((void *)p) T(val);
-  }
-
-  void destroy(pointer p)
-  {
-    nballoc::destruct(p);
-  }
-};
-
-template <typename T, typename U>
-inline bool operator==(const custom_nballocator_t<T> &, const custom_nballocator_t<U> &)
-{
-  return false;
-}
-
-template <typename T, typename U>
-inline bool operator!=(const custom_nballocator_t<T> &, const custom_nballocator_t<U> &)
-{
-  return true;
-}
 
 //---------------------------------------------------------------------------
 

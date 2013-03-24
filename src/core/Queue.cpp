@@ -2451,7 +2451,7 @@ void TTerminalThread::TerminalShowExtendedException(
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalDisplayBanner(TTerminal * Terminal,
-  UnicodeString SessionName, const UnicodeString & Banner,
+  const UnicodeString & SessionName, const UnicodeString & Banner,
   bool & NeverShowAgain, intptr_t Options)
 {
   CALLSTACK;

@@ -41,32 +41,32 @@ const int qpNeverAskAgainCheck =   0x02;
 const int qpAllowContinueOnError = 0x04;
 const int qpIgnoreAbort =          0x08;
 
-struct TQueryButtonAlias
+struct TQueryButtonAlias : public TObject
 {
   TQueryButtonAlias();
 
-  unsigned int Button;
+  uintptr_t Button;
   UnicodeString Alias;
   TNotifyEvent OnClick;
 };
 
 DEFINE_CALLBACK_TYPE1(TQueryParamsTimerEvent, void,
-  unsigned int & /* Result */);
+  uintptr_t & /* Result */);
 
-struct TQueryParams
+struct TQueryParams : public TObject
 {
   explicit TQueryParams(unsigned int AParams = 0, UnicodeString AHelpKeyword = HELP_NONE);
 
   const TQueryButtonAlias * Aliases;
-  unsigned int AliasesCount;
-  unsigned int Params;
-  unsigned int Timer;
+  uintptr_t AliasesCount;
+  uintptr_t Params;
+  uintptr_t Timer;
   TQueryParamsTimerEvent TimerEvent;
   UnicodeString TimerMessage;
-  unsigned int TimerAnswers;
-  unsigned int Timeout;
-  unsigned int TimeoutAnswer;
-  unsigned int NoBatchAnswers;
+  uintptr_t TimerAnswers;
+  uintptr_t Timeout;
+  uintptr_t TimeoutAnswer;
+  uintptr_t NoBatchAnswers;
   UnicodeString HelpKeyword;
 };
 
