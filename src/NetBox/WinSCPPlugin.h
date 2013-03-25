@@ -9,7 +9,7 @@
 class TWinSCPFileSystem;
 class TCopyParamType;
 //---------------------------------------------------------------------------
-struct TMessageParams
+struct TMessageParams : public TObject
 {
   TMessageParams();
 
