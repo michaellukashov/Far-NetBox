@@ -110,12 +110,12 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
     TStringList MessageLines;
     int MaxMessageWidth = 20;
     FarWrapText(Message, &MessageLines, MaxMessageWidth);
-    BOOST_TEST_MESSAGE("MessageLines = " << W2MB(MessageLines.Text.get().c_str()));
+    BOOST_TEST_MESSAGE("MessageLines = " << W2MB(MessageLines.GetText().c_str()));
     BOOST_CHECK_EQUAL(4, MessageLines.GetCount());
-    BOOST_CHECK_EQUAL("long long long", W2MB(MessageLines.Strings[0].c_str()).c_str());
-    BOOST_CHECK_EQUAL("long long long", W2MB(MessageLines.Strings[1].c_str()).c_str());
-    BOOST_CHECK_EQUAL("long long long", W2MB(MessageLines.Strings[2].c_str()).c_str());
-    BOOST_CHECK_EQUAL("text", W2MB(MessageLines.Strings[3].c_str()).c_str());
+    BOOST_CHECK_EQUAL("long long long", W2MB(MessageLines.GetString(0).c_str()).c_str());
+    BOOST_CHECK_EQUAL("long long long", W2MB(MessageLines.GetString(1).c_str()).c_str());
+    BOOST_CHECK_EQUAL("long long long", W2MB(MessageLines.GetString(2).c_str()).c_str());
+    BOOST_CHECK_EQUAL("text", W2MB(MessageLines.GetString(3).c_str()).c_str());
   }
 }
 
