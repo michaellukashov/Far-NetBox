@@ -288,8 +288,6 @@ public:
   virtual intptr_t GetCount() const = 0;
 
 protected:
-  UnicodeString GetCommaText();
-  void SetCommaText(const UnicodeString & Value);
   virtual bool GetCaseSensitive() const = 0;
   virtual void SetCaseSensitive(bool Value) = 0;
   virtual bool GetSorted() const = 0;
@@ -299,6 +297,8 @@ protected:
   virtual void PutObject(intptr_t Index, TObject * AObject) = 0;
 
 public:
+  UnicodeString GetCommaText();
+  void SetCommaText(const UnicodeString & Value);
   virtual UnicodeString GetText();
   virtual void SetText(const UnicodeString & Text);
   virtual UnicodeString & GetString(intptr_t Index) = 0;
@@ -309,8 +309,6 @@ public:
   void SetValue(const UnicodeString & Name, const UnicodeString & Value);
 
 private:
-  UnicodeString PropertyGetCommaText() { return GetCommaText(); }
-  void PropertySetCommaText(UnicodeString Value) { SetCommaText(Value); }
   bool PropertyGetCaseSensitive() { return GetCaseSensitive(); }
   void PropertySetCaseSensitive(bool Value) { SetCaseSensitive(Value); }
   bool PropertyGetSorted() { return GetSorted(); }
@@ -326,7 +324,6 @@ private:
   }
 
 public:
-  RWProperty<UnicodeString, TStrings, &TStrings::PropertyGetCommaText, &TStrings::PropertySetCommaText> CommaText;
   RWProperty<bool, TStrings, &TStrings::PropertyGetCaseSensitive, &TStrings::PropertySetCaseSensitive> CaseSensitive;
   RWProperty<bool, TStrings, &TStrings::PropertyGetSorted, &TStrings::PropertySetSorted> Sorted;
   WOProperty<TDuplicatesEnum, TStrings, &TStrings::PropertySetDuplicates> Duplicates;

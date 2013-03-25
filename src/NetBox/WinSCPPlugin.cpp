@@ -94,7 +94,7 @@ void TWinSCPPlugin::GetPluginInfoEx(DWORD & Flags,
     PluginMenuStrings->Add(GetMsg(MENU_COMMANDS));
   }
   PluginConfigStrings->Add(GetMsg(PLUGIN_NAME));
-  CommandPrefixes->CommaText = FarConfiguration->GetCommandPrefixes();
+  CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
 }
 //---------------------------------------------------------------------------
 bool TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)

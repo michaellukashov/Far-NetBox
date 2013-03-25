@@ -334,12 +334,12 @@ void TBookmarkList::Assign(TPersistent * Source)
 void TBookmarkList::LoadOptions(THierarchicalStorage * Storage)
 {
   CALLSTACK;
-  FOpenedNodes->CommaText = Storage->ReadString(L"OpenedNodes", L"");
+  FOpenedNodes->SetCommaText(Storage->ReadString(L"OpenedNodes", L""));
 }
 //---------------------------------------------------------------------------
 void TBookmarkList::SaveOptions(THierarchicalStorage * Storage)
 {
-  Storage->WriteString(L"OpenedNodes", FOpenedNodes->CommaText);
+  Storage->WriteString(L"OpenedNodes", FOpenedNodes->GetCommaText());
 }
 //---------------------------------------------------------------------------
 void TBookmarkList::Add(TBookmark * Bookmark)
