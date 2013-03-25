@@ -1878,13 +1878,13 @@ void TRemoteDirectoryChangesCache::SetValue(const UnicodeString & Name,
   {
     Delete(Index);
   }
-  Values(Name, Value);
+  TStringList::SetValue(Name, Value);
 }
 //---------------------------------------------------------------------------
 UnicodeString TRemoteDirectoryChangesCache::GetValue(const UnicodeString & Name)
 {
-  UnicodeString Value = Values[Name];
-  SetValue(Name, Value);
+  UnicodeString Value = TStringList::GetValue(Name);
+  TStringList::SetValue(Name, Value);
   return Value;
 }
 //---------------------------------------------------------------------------
@@ -1929,7 +1929,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
   {
     UnicodeString Name = Names[Index];
     if ((Name.SubString(1, TargetDir.Length()) == TargetDir) ||
-        (Values[Name].SubString(1, TargetDir.Length()) == TargetDir) ||
+        (GetValue(Name).SubString(1, TargetDir.Length()) == TargetDir) ||
         (!Key.IsEmpty() && (Name == Key)))
     {
       Delete(Index);

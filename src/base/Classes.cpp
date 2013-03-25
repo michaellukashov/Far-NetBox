@@ -419,7 +419,6 @@ TStrings::TStrings() :
   Strings(this);
   Objects(this);
   Names(this);
-  Values(this);
 }
 
 TStrings::~TStrings()

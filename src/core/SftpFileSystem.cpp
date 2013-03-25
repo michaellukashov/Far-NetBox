@@ -1815,7 +1815,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
       for (intptr_t Index = 0; Index < FExtensions->GetCount(); ++Index)
       {
         UnicodeString Name = FExtensions->Names[Index];
-        UnicodeString Value = FExtensions->Values[Name];
+        UnicodeString Value = FExtensions->GetValue(Name);
         UnicodeString Line;
         if (Value.IsEmpty())
         {
@@ -2877,7 +2877,7 @@ void TSFTPFileSystem::DoStartup()
         FTerminal->LogEvent(FORMAT(L"Unknown server extension %s=%s",
           ExtensionName.c_str(), ExtensionDisplayData.c_str()));
       }
-      FExtensions->Values(ExtensionName, ExtensionDisplayData);
+      FExtensions->SetValue(ExtensionName, ExtensionDisplayData);
     }
 
     if (SupportsExtension(SFTP_EXT_VENDOR_ID))

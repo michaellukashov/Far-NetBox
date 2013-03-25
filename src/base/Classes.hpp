@@ -302,6 +302,8 @@ protected:
   virtual TObject *& GetObjects(intptr_t Index) = 0;
   virtual void PutObject(intptr_t Index, TObject * AObject) = 0;
   const UnicodeString GetName(intptr_t Index);
+
+public:
   const UnicodeString GetValue(const UnicodeString & Name);
   void SetValue(const UnicodeString & Name, const UnicodeString & Value);
 
@@ -341,14 +343,6 @@ private:
     // SetName(Index, Value);
     Classes::Error(SNotImplemented, 2012);
   }
-  UnicodeString PropertyGetValue(UnicodeString Index)
-  {
-    return GetValue(Index);
-  }
-  void PropertySetValue(UnicodeString Index, UnicodeString Value)
-  {
-    SetValue(Index, Value);
-  }
 
 public:
   RWProperty<UnicodeString, TStrings, &TStrings::PropertyGetText, &TStrings::PropertySetText> Text;
@@ -359,7 +353,6 @@ public:
   IndexedProperty2<intptr_t, UnicodeString, TStrings, &TStrings::PropertyGetString, &TStrings::PropertySetString> Strings;
   IndexedProperty2<intptr_t, TObject *, TStrings, &TStrings::PropertyGetObject, &TStrings::PropertySetObject> Objects;
   IndexedProperty<intptr_t, UnicodeString, TStrings, &TStrings::PropertyGetName, &TStrings::PropertySetName> Names;
-  IndexedProperty<UnicodeString, UnicodeString, TStrings, &TStrings::PropertyGetValue, &TStrings::PropertySetValue> Values;
 
 protected:
   TDuplicatesEnum FDuplicates;
