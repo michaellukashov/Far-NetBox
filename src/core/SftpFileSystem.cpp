@@ -1411,7 +1411,7 @@ public:
 
   bool Init(const UnicodeString & AFileName,
     HANDLE AFile, TFileOperationProgressType * AOperationProgress,
-    const RawByteString AHandle, __int64 ATransfered)
+    const RawByteString & AHandle, __int64 ATransfered)
   {
     FFileName = AFileName;
     FStream = new TSafeHandleStream(AFile);

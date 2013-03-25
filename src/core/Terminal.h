@@ -320,7 +320,7 @@ protected:
   uintptr_t ConfirmFileOverwrite(const UnicodeString & FileName,
     const TOverwriteFileParams * FileParams, uintptr_t Answers, const TQueryParams * QueryParams,
     TOperationSide Side, intptr_t Params, TFileOperationProgressType * OperationProgress,
-    UnicodeString Message = L"");
+    const UnicodeString & Message = L"");
   void DoSynchronizeCollectDirectory(const UnicodeString & LocalDirectory,
     const UnicodeString & RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, intptr_t Params,
@@ -445,7 +445,7 @@ public:
     const TRemoteProperties * Properties);
   bool LoadFilesProperties(TStrings * FileList);
   void TerminalError(const UnicodeString & Msg);
-  void TerminalError(Exception * E, UnicodeString Msg);
+  void TerminalError(Exception * E, const UnicodeString & Msg);
   void ReloadDirectory();
   void RefreshDirectory();
   void RenameFile(const UnicodeString & FileName, const UnicodeString & NewName);

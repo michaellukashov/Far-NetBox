@@ -24,7 +24,7 @@ EFileMasksException::EFileMasksException(
   ErrorLen = AErrorLen;
 }
 //---------------------------------------------------------------------------
-UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeString & Mask, bool& Masked)
+UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeString & Mask, bool & Masked)
 {
   UnicodeString Result;
   intptr_t RestStart = 1;

@@ -1447,7 +1447,7 @@ void TTerminal::TerminalError(const UnicodeString & Msg)
   TerminalError(NULL, Msg);
 }
 //------------------------------------------------------------------------------
-void TTerminal::TerminalError(Exception * E, UnicodeString Msg)
+void TTerminal::TerminalError(Exception * E, const UnicodeString & Msg)
 {
   CALLSTACK;
   throw ETerminal(E, Msg);
@@ -2166,7 +2166,7 @@ bool TTerminal::CheckRemoteFile(intptr_t Params, TFileOperationProgressType * Op
 uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & FileName,
   const TOverwriteFileParams * FileParams, uintptr_t Answers, const TQueryParams * QueryParams,
   TOperationSide Side, intptr_t Params, TFileOperationProgressType * OperationProgress,
-  UnicodeString Message)
+  const UnicodeString & Message)
 {
   CALLSTACK;
   uintptr_t Result = 0;
@@ -2201,20 +2201,21 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & FileName,
 
   if (BatchOverwrite == boNo)
   {
-    if (Message.IsEmpty())
+    UnicodeString Msg = Message;
+    if (Msg.IsEmpty())
     {
-      Message = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE :
+      Msg = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE :
         REMOTE_FILE_OVERWRITE), FileName.c_str());
     }
     if (FileParams != NULL)
     {
-      Message = FMTLOAD(FILE_OVERWRITE_DETAILS, Message.c_str(),
+      Msg = FMTLOAD(FILE_OVERWRITE_DETAILS, Msg.c_str(),
         Int64ToStr(FileParams->SourceSize).c_str(),
         UserModificationStr(FileParams->SourceTimestamp, FileParams->SourcePrecision).c_str(),
         Int64ToStr(FileParams->DestSize).c_str(),
         UserModificationStr(FileParams->DestTimestamp, FileParams->DestPrecision).c_str());
     }
-    Result = QueryUser(Message, NULL, Answers, QueryParams);
+    Result = QueryUser(Msg, NULL, Answers, QueryParams);
     switch (Result)
     {
       case qaNeverAskAgain:

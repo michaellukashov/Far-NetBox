@@ -5907,7 +5907,7 @@ public:
     TGetSpaceAvailableEvent OnGetSpaceAvailable);
   virtual ~TFileSystemInfoDialog();
   void Execute(const TSessionInfo & SessionInfo,
-    const TFileSystemInfo & FileSystemInfo, UnicodeString SpaceAvailablePath);
+    const TFileSystemInfo & FileSystemInfo, const UnicodeString & SpaceAvailablePath);
 
 protected:
   void Feed(TFeedFileSystemDataEvent AddItem);
@@ -6335,7 +6335,7 @@ void TFileSystemInfoDialog::SelectTab(intptr_t Tab)
 //------------------------------------------------------------------------------
 void TFileSystemInfoDialog::Execute(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
-  UnicodeString SpaceAvailablePath)
+  const UnicodeString & SpaceAvailablePath)
 {
   FFileSystemInfo = FileSystemInfo;
   FSessionInfo = SessionInfo;

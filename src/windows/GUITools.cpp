@@ -47,7 +47,7 @@ bool FileExistsEx(const UnicodeString & Path)
 }
 //---------------------------------------------------------------------------
 void OpenSessionInPutty(const UnicodeString & PuttyPath,
-  TSessionData * SessionData, UnicodeString Password)
+  TSessionData * SessionData, const UnicodeString & Password)
 {
   CALLSTACK;
   UnicodeString Program, Params, Dir;
@@ -56,6 +56,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
   if (FindFile(Program))
   {
     TRACE("1");
+    UnicodeString Psw = Password;
     UnicodeString SessionName;
     TRegistryStorage * Storage = NULL;
     TSessionData * ExportData = NULL;
@@ -105,7 +106,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
               ExportData->SetProtocol(ptTelnet);
               ExportData->SetPortNumber(23);
               // PuTTY  does not allow -pw for telnet
-              Password = L"";
+              Psw = L"";
             }
             else
             {
@@ -134,10 +135,10 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
       TRACE("10");
       Params += L" ";
     }
-    if (!Password.IsEmpty())
+    if (!Psw.IsEmpty())
     {
       TRACE("11");
-      Params += FORMAT(L"-pw %s ", EscapePuttyCommandParam(Password).c_str());
+      Params += FORMAT(L"-pw %s ", EscapePuttyCommandParam(Psw).c_str());
     }
     Params += FORMAT(L"-load %s", EscapePuttyCommandParam(SessionName).c_str());
 

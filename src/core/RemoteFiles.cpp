@@ -399,7 +399,7 @@ UnicodeString UserModificationStr(const TDateTime & DateTime,
   }
 }
 //---------------------------------------------------------------------------
-int FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
+int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs,
   UnicodeString * TypeName)
 {
   /*CCALLSTACK(TRACE_IMAGEINDEX);

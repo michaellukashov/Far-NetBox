@@ -530,9 +530,10 @@ RawByteString ScramblePassword(const UnicodeString & Password)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
+bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Password)
 {
-  char * S = const_cast<char *>(Scrambled.c_str());
+  RawByteString LocalScrambled = Scrambled;
+  char * S = const_cast<char *>(LocalScrambled.c_str());
   int Last = 31;
   while (*S != '\0')
   {
@@ -546,7 +547,7 @@ bool UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
     S++;
   }
 
-  S = const_cast<char *>(Scrambled.c_str());
+  S = const_cast<char *>(LocalScrambled.c_str());
   while ((*S != '\0') && ((*S < '0') || (*S > '9')))
   {
     S++;
@@ -556,15 +557,15 @@ bool UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
   {
     int Len = (S[0] - '0') + 10 * (S[1] - '0') + 100 * (S[2] - '0');
     int Total = (((Len + 3) / 17) * 17 + 17);
-    if ((Len >= 0) && (Total == Scrambled.Length()) && (Total - (S - Scrambled.c_str()) - 3 == Len))
+    if ((Len >= 0) && (Total == LocalScrambled.Length()) && (Total - (S - LocalScrambled.c_str()) - 3 == Len))
     {
-      Scrambled.Delete(1, Scrambled.Length() - Len);
+      LocalScrambled.Delete(1, LocalScrambled.Length() - Len);
       Result = true;
     }
   }
   if (Result)
   {
-    Password = UTF8String(Scrambled.c_str(), Scrambled.Length());
+    Password = UTF8String(LocalScrambled.c_str(), LocalScrambled.Length());
   }
   else
   {

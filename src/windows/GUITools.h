@@ -30,7 +30,7 @@ bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Path,
 bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Command,
   TProcessMessagesEvent ProcessMessages);
 void OpenSessionInPutty(const UnicodeString & PuttyPath,
-  TSessionData * SessionData, UnicodeString Password);
+  TSessionData * SessionData, const UnicodeString & Password);
 bool SpecialFolderLocation(int PathID, UnicodeString & Path);
 UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   const UnicodeString & MultiItemsFormat, intptr_t Count, const UnicodeString & FirstItem);

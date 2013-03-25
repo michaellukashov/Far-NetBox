@@ -76,7 +76,7 @@ public:
   bool GetModifiesFiles(TFSCommand Cmd) const;
   bool GetChangesDirectory(TFSCommand Cmd) const;
   bool GetOneLineCommand(TFSCommand Cmd) const;
-  void SetCommands(TFSCommand Cmd, UnicodeString Value);
+  void SetCommands(TFSCommand Cmd, const UnicodeString & Value);
   UnicodeString GetCommands(TFSCommand Cmd) const;
   UnicodeString GetFirstLine() const;
   bool GetInteractiveCommand(TFSCommand Cmd) const;
@@ -200,7 +200,7 @@ bool TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/) const
   return True; //CommandSet[Cmd].OneLineCommand;
 }
 //---------------------------------------------------------------------------
-void TCommandSet::SetCommands(TFSCommand Cmd, UnicodeString Value)
+void TCommandSet::SetCommands(TFSCommand Cmd, const UnicodeString & Value)
 {
   CHECK_CMD;
   wcscpy(const_cast<wchar_t *>(CommandSet[Cmd].Command), Value.SubString(1, MaxCommandLen - 1).c_str());

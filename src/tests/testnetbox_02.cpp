@@ -136,7 +136,7 @@ public:
       OnChangeNotifyEventTriggered = true;
     }
   }
-  void Change(const UnicodeString str)
+  void Change(const UnicodeString & Str)
   {
     Changed();
   }
