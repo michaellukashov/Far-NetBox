@@ -561,7 +561,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   {
     TRACE("7");
     assert(Prompts->GetCount() == 1);
-    Prompts->Strings[0] = LoadStr(PASSWORD_PROMPT);
+    Prompts->SetString(0, LoadStr(PASSWORD_PROMPT));
     PromptKind = pkPassword;
   }
   else if (Index == 7)
@@ -582,7 +582,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     assert(false);
   }
 
-  LogEvent(FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(), Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->Strings[0].c_str() : UnicodeString(L"<no prompt>").c_str())).c_str());
+  LogEvent(FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(), Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : UnicodeString(L"<no prompt>").c_str())).c_str());
 
   Name = Name.Trim();
 
@@ -599,7 +599,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   TRACEFMT("8a [%d]", Prompts->GetCount());
   for (intptr_t Index = 0; Index < Prompts->GetCount(); ++Index)
   {
-    UnicodeString Prompt = Prompts->Strings[Index];
+    UnicodeString Prompt = Prompts->GetString(Index);
     TRACEFMT("8b [%s]", Prompt.c_str());
     if (PromptTranslation != NULL)
     {
@@ -607,7 +607,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     }
     // some servers add leading blank line to make the prompt look prettier
     // on terminal console
-    Prompts->Strings[Index] = Prompt.Trim();
+    Prompts->SetString(Index, Prompt.Trim());
   }
 
 //!CLEANBEGIN
@@ -626,7 +626,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 /*  Results->Add("");
   Results->Add("");
   Results->Add("");*/
-//  Prompts->Strings[0] = "The challenge is '14315716'";
+//  Prompts->SetString(0, "The challenge is '14315716'");
 //  Prompts->Objects[0] = (TObject *)true;
 //!CLEANEND
   bool Result = false;
@@ -640,7 +640,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       // use empty username if no username was filled on login dialog
       // and GSSAPI auth is enabled, hence there's chance that the server can
       // deduce the username otherwise
-      Results->Strings[0] = L"";
+      Results->SetString(0, L"");
       Result = true;
     }
   }
@@ -656,7 +656,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       LogEvent(L"Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
-      Results->Strings[0] = FSessionData->GetPassword();
+      Results->SetString(0, FSessionData->GetPassword());
       FStoredPasswordTriedForKI = true;
     }
     else if (Instructions2.IsEmpty() && !InstructionsRequired && (Prompts->GetCount() == 0))
@@ -675,7 +675,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       LogEvent(L"Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
-      Results->Strings[0] = FSessionData->GetPassword();
+      Results->SetString(0, FSessionData->GetPassword());
       FStoredPasswordTried = true;
     }
   }
@@ -692,7 +692,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       if ((PromptKind == pkUserName) && (Prompts->GetCount() == 1))
       {
         TRACE("19");
-        FUserName = Results->Strings[0];
+        FUserName = Results->GetString(0);
       }
     }
   }

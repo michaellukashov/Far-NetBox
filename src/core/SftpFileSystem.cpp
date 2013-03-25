@@ -2797,13 +2797,13 @@ void TSFTPFileSystem::DoStartup()
           for (intptr_t Index = 0; Index < FSupport->AttribExtensions->GetCount(); ++Index)
           {
             FTerminal->LogEvent(
-              FORMAT(L"    %s", FSupport->AttribExtensions->Strings[Index].c_str()));
+              FORMAT(L"    %s", FSupport->AttribExtensions->GetString(Index).c_str()));
           }
           FTerminal->LogEvent(FORMAT(L"  Extensions (%d)\n", FSupport->Extensions->GetCount()));
           for (intptr_t Index = 0; Index < FSupport->Extensions->GetCount(); ++Index)
           {
             FTerminal->LogEvent(
-              FORMAT(L"    %s", FSupport->Extensions->Strings[Index].c_str()));
+              FORMAT(L"    %s", FSupport->Extensions->GetString(Index).c_str()));
           }
         }
       }
@@ -3811,7 +3811,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     bool Success = false;
-    FileName = FilesToCopy->Strings[Index];
+    FileName = FilesToCopy->GetString(Index);
     TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index]);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ExtractFileName(RealFileName, false);
@@ -4990,7 +4990,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     Success = false;
-    FileName = FilesToCopy->Strings[Index];
+    FileName = FilesToCopy->GetString(Index);
     File = static_cast<TRemoteFile *>(FilesToCopy->Objects[Index]);
 
     assert(!FAvoidBusy);

@@ -1282,7 +1282,7 @@ void TWinSCPFileSystem::ApplyCommand()
                   if (LocalFileCommand)
                   {
                     assert(LocalFileList->GetCount() == 1);
-                    LocalFile = LocalFileList->Strings[0];
+                    LocalFile = LocalFileList->GetString(0);
                   }
 
                   TCustomCommandData Data2(FTerminal);
@@ -1295,11 +1295,11 @@ void TWinSCPFileSystem::ApplyCommand()
                 {
                   if (LocalFileList->GetCount() == 1)
                   {
-                    UnicodeString LocalFile = LocalFileList->Strings[0];
+                    UnicodeString LocalFile = LocalFileList->GetString(0);
 
                     for (intptr_t Index = 0; Index < RemoteFileList->GetCount(); ++Index)
                     {
-                      UnicodeString FileName = RemoteFileList->Strings[Index];
+                      UnicodeString FileName = RemoteFileList->GetString(Index);
                       TCustomCommandData Data3(FTerminal);
                       TLocalCustomCommand CustomCommand(Data3,
                         GetTerminal()->GetCurrentDirectory(), FileName, LocalFile, L"");
@@ -1309,14 +1309,14 @@ void TWinSCPFileSystem::ApplyCommand()
                   }
                   else if (RemoteFileList->GetCount() == 1)
                   {
-                    UnicodeString FileName = RemoteFileList->Strings[0];
+                    UnicodeString FileName = RemoteFileList->GetString(0);
 
                     for (intptr_t Index = 0; Index < LocalFileList->GetCount(); ++Index)
                     {
                       TCustomCommandData Data4(FTerminal);
                       TLocalCustomCommand CustomCommand(
                         Data4, GetTerminal()->GetCurrentDirectory(),
-                        FileName, LocalFileList->Strings[Index], L"");
+                        FileName, LocalFileList->GetString(Index), L"");
                       ExecuteShellAndWait(WinSCPPlugin()->GetHandle(),
                         CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                     }
@@ -1330,11 +1330,11 @@ void TWinSCPFileSystem::ApplyCommand()
 
                     for (intptr_t Index = 0; Index < LocalFileList->GetCount(); ++Index)
                     {
-                      UnicodeString FileName = RemoteFileList->Strings[Index];
+                      UnicodeString FileName = RemoteFileList->GetString(Index);
                       TCustomCommandData Data5(FTerminal);
                       TLocalCustomCommand CustomCommand(
                         Data5, GetTerminal()->GetCurrentDirectory(),
-                        FileName, LocalFileList->Strings[Index], L"");
+                        FileName, LocalFileList->GetString(Index), L"");
                       ExecuteShellAndWait(WinSCPPlugin()->GetHandle(),
                         CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                     }
@@ -1346,7 +1346,7 @@ void TWinSCPFileSystem::ApplyCommand()
                   {
                     TCustomCommandData Data6(FTerminal);
                     TLocalCustomCommand CustomCommand(Data6,
-                      GetTerminal()->GetCurrentDirectory(), RemoteFileList->Strings[Index], L"", L"");
+                      GetTerminal()->GetCurrentDirectory(), RemoteFileList->GetString(Index), L"", L"");
                     ExecuteShellAndWait(WinSCPPlugin()->GetHandle(),
                       CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                   }
@@ -2469,7 +2469,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
     {
       UnicodeString Query;
       bool Recycle = FTerminal->GetSessionData()->GetDeleteToRecycleBin() &&
-        !FTerminal->IsRecycledFile(FFileList->Strings[0]);
+        !FTerminal->IsRecycledFile(FFileList->GetString(0));
       if (PanelItems->GetCount() > 1)
       {
         Query = FORMAT(GetMsg(Recycle ? RECYCLE_FILES_CONFIRM : DELETE_FILES_CONFIRM).c_str(),
@@ -2572,7 +2572,7 @@ intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
         if ((FFileList->GetCount() == 1) && (OpMode & OPM_EDIT))
         {
           FOriginalEditFile = IncludeTrailingBackslash(DestPath) +
-            ::UnixExtractFileName(FFileList->Strings[0]);
+            ::UnixExtractFileName(FFileList->GetString(0));
           FLastEditFile = FOriginalEditFile;
           FLastEditCopyParam = CopyParam;
           FLastEditorID = -1;
@@ -2763,8 +2763,8 @@ intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int 
       // (since 1.70 alpha 6, DestPath in GetFiles is short path,
       // while current path in PutFiles is long path)
       if (FLAGCLEAR(OpMode, OPM_SILENT) && (FFileList->GetCount() == 1) &&
-          (CompareFileName(FFileList->Strings[0], FOriginalEditFile) ||
-           CompareFileName(FFileList->Strings[0], FLastEditFile)))
+          (CompareFileName(FFileList->GetString(0), FOriginalEditFile) ||
+           CompareFileName(FFileList->GetString(0), FLastEditFile)))
       {
         // editor should be closed already
         assert(FLastEditorID < 0);
@@ -2777,7 +2777,7 @@ intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int 
         else
         {
           // just in case file was saved under different name
-          FFileList->Strings[0] = FLastEditFile;
+          FFileList->SetString(0, FLastEditFile);
 
           FOriginalEditFile = L"";
           FLastEditFile = L"";
@@ -3138,8 +3138,8 @@ void TWinSCPFileSystem::LogAuthentication(
       {
         AuthenticationLogLines->Delete(0);
       }
-      AuthenticationLogLines->Strings[0] = AuthenticationLogLines->Strings[0] +
-        ::StringOfChar(' ', Width - AuthenticationLogLines->Strings[0].Length());
+      AuthenticationLogLines->SetString(0, AuthenticationLogLines->GetString(0) +
+        ::StringOfChar(' ', Width - AuthenticationLogLines->GetString(0).Length()));
       Message = AnsiReplaceStr(AuthenticationLogLines->Text, L"\r", L"");
       Count = AuthenticationLogLines->GetCount();
     }
@@ -3341,12 +3341,12 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
     assert(Instructions.IsEmpty());
     assert(Prompts->GetCount() == 1);
     assert((Prompts->Objects[0]) != NULL);
-    UnicodeString AResult = Results->Strings[0];
+    UnicodeString AResult = Results->GetString(0);
 
-    Result = WinSCPPlugin()->InputBox(Name, StripHotKey(Prompts->Strings[0]), AResult, FIB_NOUSELASTHISTORY);
+    Result = WinSCPPlugin()->InputBox(Name, StripHotKey(Prompts->GetString(0)), AResult, FIB_NOUSELASTHISTORY);
     if (Result)
     {
-      Results->Strings[0] = AResult;
+      Results->SetString(0, AResult);
     }
   }
   else
@@ -4039,7 +4039,7 @@ void TWinSCPFileSystem::MultipleEdit()
       FileListPtr.reset(FileList);
       if (FileList->GetCount() == 1)
       {
-        MultipleEdit(FTerminal->GetCurrentDirectory(), FileList->Strings[0],
+        MultipleEdit(FTerminal->GetCurrentDirectory(), FileList->GetString(0),
           static_cast<TRemoteFile *>(FileList->Objects[0]));
       }
     }

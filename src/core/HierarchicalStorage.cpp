@@ -130,7 +130,7 @@ UnicodeString THierarchicalStorage::GetCurrentSubKeyMunged() const
 {
   if (FKeyHistory->GetCount())
   {
-    return FKeyHistory->Strings[FKeyHistory->GetCount() - 1];
+    return FKeyHistory->GetString(FKeyHistory->GetCount() - 1);
   }
   else
   {
@@ -215,7 +215,7 @@ void THierarchicalStorage::ClearSubKeys()
     GetSubKeyNames(SubKeys);
     for (intptr_t Index = 0; Index < SubKeys->GetCount(); ++Index)
     {
-      RecursiveDeleteSubKey(SubKeys->Strings[Index]);
+      RecursiveDeleteSubKey(SubKeys->GetString(Index));
     }
   }
   ,
@@ -278,12 +278,12 @@ void THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
     {
       if (MaintainKeys)
       {
-        Strings->Add(FORMAT(L"%s=%s", Names->Strings[Index].c_str(),
-          ReadString(Names->Strings[Index], L"").c_str()));
+        Strings->Add(FORMAT(L"%s=%s", Names->GetString(Index).c_str(),
+          ReadString(Names->GetString(Index), L"").c_str()));
       }
       else
       {
-        Strings->Add(ReadString(Names->Strings[Index], L""));
+        Strings->Add(ReadString(Names->GetString(Index), L""));
       }
     }
   }
@@ -302,7 +302,7 @@ void THierarchicalStorage::ClearValues()
     GetValueNames(Names);
     for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
     {
-      DeleteValue(Names->Strings[Index]);
+      DeleteValue(Names->GetString(Index));
     }
   }
   ,
@@ -323,12 +323,12 @@ void THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
     {
       if (MaintainKeys)
       {
-        assert(Strings->Strings[Index].Pos(L"=") > 1);
+        assert(Strings->GetString(Index).Pos(L"=") > 1);
         WriteString(Strings->GetName(Index), Strings->GetValue(Strings->GetName(Index)));
       }
       else
       {
-        WriteString(IntToStr(Index), Strings->Strings[Index]);
+        WriteString(IntToStr(Index), Strings->GetString(Index));
       }
     }
   }
@@ -461,7 +461,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
     intptr_t Index = 0;
     while ((Index < Names->GetCount()) && Result)
     {
-      UnicodeString Name = MungeStr(Names->Strings[Index], GetForceAnsi());
+      UnicodeString Name = MungeStr(Names->GetString(Index), GetForceAnsi());
       DWORD Size = static_cast<DWORD>(Buffer.size());
       DWORD Type;
       int RegResult = 0;
@@ -554,7 +554,7 @@ void TRegistryStorage::GetSubKeyNames(Classes::TStrings* Strings)
   FRegistry->GetKeyNames(Strings);
   for (intptr_t Index = 0; Index < Strings->GetCount(); ++Index)
   {
-    Strings->Strings[Index] = UnMungeStr(Strings->Strings[Index]);
+    Strings->SetString(Index, UnMungeStr(Strings->GetString(Index)));
   }
 }
 //------------------------------------------------------------------------------
@@ -748,7 +748,7 @@ bool TCustomIniFileStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanC
         int Index = -1;
         Result = Sections->Find(NewKey, Index);
         if (!Result && Index < Sections->GetCount() &&
-            Sections->Strings[Index].SubString(1, NewKey.Length()+1) == NewKey + L"\\")
+            Sections->GetString(Index).SubString(1, NewKey.Length()+1) == NewKey + L"\\")
         {
           Result = true;
         }
@@ -788,7 +788,7 @@ void TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings)
     FIniFile->ReadSections(Sections);
     for (intptr_t i = 0; i < Sections->GetCount(); i++)
     {
-      UnicodeString Section = Sections->Strings[i];
+      UnicodeString Section = Sections->GetString(i);
       if (AnsiCompareText(GetCurrentSubKey(),
           Section.SubString(1, GetCurrentSubKey().Length())) == 0)
       {
@@ -818,7 +818,7 @@ void TCustomIniFileStorage::GetValueNames(Classes::TStrings* Strings)
   FIniFile->ReadSection(GetCurrentSection(), Strings);
   for (intptr_t Index = 0; Index < Strings->GetCount(); ++Index)
   {
-    Strings->Strings[Index] = UnMungeIniName(Strings->Strings[Index]);
+    Strings->SetString(Index, UnMungeIniName(Strings->GetString(Index)));
   }
 }
 //------------------------------------------------------------------------------
@@ -1004,7 +1004,7 @@ TIniFileStorage::TIniFileStorage(const UnicodeString & AStorage):
 //!CLEANBEGIN
   for (intptr_t Index = 0; Index < FOriginal->GetCount(); ++Index)
   {
-    TRACEFMT("ini [%s]", FOriginal->Strings[Index].c_str());
+    TRACEFMT("ini [%s]", FOriginal->GetString(Index).c_str());
   }
 //!CLEANEND
   ApplyOverrides();
@@ -1109,7 +1109,7 @@ void TIniFileStorage::ApplyOverrides()
     FIniFile->ReadSections(Sections);
     for (int i = 0; i < Sections->GetCount(); i++)
     {
-      UnicodeString Section = Sections->Strings[i];
+      UnicodeString Section = Sections->GetString(i);
 
       if (AnsiSameText(OverridesKey,
             Section.SubString(1, OverridesKey.Length())))
@@ -1125,7 +1125,7 @@ void TIniFileStorage::ApplyOverrides()
 
           for (int ii = 0; ii < Names->GetCount(); ii++)
           {
-            UnicodeString Name = Names->Strings[ii];
+            UnicodeString Name = Names->GetString(ii);
             UnicodeString Value = FIniFile->ReadString(Section, Name, L"");
             FIniFile->WriteString(SubKey, Name, Value);
           }

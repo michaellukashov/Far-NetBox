@@ -1094,7 +1094,7 @@ void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   intptr_t Index = 0;
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
-    UnicodeString FileName = FilesToCopy->Strings[Index];
+    UnicodeString FileName = FilesToCopy->GetString(Index);
     const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->Objects[Index]);
     bool Success = false;
 
@@ -1381,7 +1381,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
     bool Success = false;
-    FileName = FilesToCopy->Strings[Index];
+    FileName = FilesToCopy->GetString(Index);
     TRACEFMT("1 [%s]", FileName.c_str());
     TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index]);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
@@ -1848,7 +1848,7 @@ void TFTPFileSystem::DoStartup()
     PostLoginCommands->Text = FTerminal->GetSessionData()->GetPostLoginCommands();
     for (intptr_t Index = 0; Index < PostLoginCommands->GetCount(); ++Index)
     {
-      UnicodeString Command = PostLoginCommands->Strings[Index];
+      UnicodeString Command = PostLoginCommands->GetString(Index);
       if (!Command.IsEmpty())
       {
         FFileZillaIntf->CustomCommand(Command.c_str());
@@ -2296,7 +2296,7 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
         FORMAT(L"%s\r\n", LoadStr(FTP_FEATURE_INFO).c_str());
       for (intptr_t Index = 0; Index < FFeatures->GetCount(); ++Index)
       {
-        FFileSystemInfo.AdditionalInfo += FORMAT(L"  %s\r\n", FFeatures->Strings[Index].c_str());
+        FFileSystemInfo.AdditionalInfo += FORMAT(L"  %s\r\n", FFeatures->GetString(Index).c_str());
       }
     }
 
@@ -2889,7 +2889,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
       {
         TRACE("17");
         assert(MoreMessages->GetCount() > 0);
-        ErrorStr = MoreMessages->Strings[0];
+        ErrorStr = MoreMessages->GetString(0);
         MoreMessages->Delete(0);
       }
 

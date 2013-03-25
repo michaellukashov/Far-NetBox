@@ -1896,7 +1896,7 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
   FFilesToCopy = new TStringList();
   for (intptr_t Index = 0; Index < FilesToCopy->GetCount(); ++Index)
   {
-    FFilesToCopy->AddObject(FilesToCopy->Strings[Index],
+    FFilesToCopy->AddObject(FilesToCopy->GetString(Index),
       ((FilesToCopy->Objects[Index] == NULL) || (Side == osLocal)) ? NULL :
         dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index])->Duplicate());
   }
@@ -1946,13 +1946,13 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
   {
     if (FLAGSET(Params, cpTemporary))
     {
-      FInfo->Source = ::ExtractFileName(FilesToCopy->Strings[0], true);
+      FInfo->Source = ::ExtractFileName(FilesToCopy->GetString(0), true);
       FInfo->ModifiedLocal = L"";
     }
     else
     {
       assert(FilesToCopy->GetCount() > 0);
-      FInfo->Source = FilesToCopy->Strings[0];
+      FInfo->Source = FilesToCopy->GetString(0);
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
         IncludeTrailingBackslash(ExtractFilePath(FInfo->Source));
     }
@@ -1992,7 +1992,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   else
   {
     assert(FilesToCopy->GetCount() > 0);
-    FInfo->Source = FilesToCopy->Strings[0];
+    FInfo->Source = FilesToCopy->GetString(0);
     if (UnixExtractFilePath(FInfo->Source).IsEmpty())
     {
       FInfo->Source = UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory()) +

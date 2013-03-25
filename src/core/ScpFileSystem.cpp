@@ -429,7 +429,7 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
           {
             UName += L"; ";
           }
-          UName += GetOutput()->Strings[Index];
+          UName += GetOutput()->GetString(Index);
         }
       }
       catch(...)
@@ -884,7 +884,7 @@ void TSCPFileSystem::LookupUsersGroups()
   FTerminal->FGroups.Clear();
   if (FOutput->GetCount() > 0)
   {
-    UnicodeString Groups = FOutput->Strings[0];
+    UnicodeString Groups = FOutput->GetString(0);
     while (!Groups.IsEmpty())
     {
       UnicodeString NewGroup = CutToChar(Groups, L' ', false);
@@ -914,7 +914,7 @@ void TSCPFileSystem::DetectReturnVar()
       {
         FTerminal->LogEvent(FORMAT(L"Trying \"$%s\".", ReturnVars[Index].c_str()));
         ExecCommand2(fsVarValue, ReturnVars[Index].c_str());
-        UnicodeString Str = GetOutput()->GetCount() > 0 ? GetOutput()->Strings[0] : L"";
+        UnicodeString Str = GetOutput()->GetCount() > 0 ? GetOutput()->GetString(0) : L"";
         intptr_t Val = StrToIntDef(Str, 256);
         if ((GetOutput()->GetCount() != 1) || Str.IsEmpty() || (Val > 255))
         {
@@ -979,7 +979,7 @@ void TSCPFileSystem::ClearAliases()
     {
       for (intptr_t Index = 0; Index < CommandList->GetCount(); ++Index)
       {
-        ClearAlias(CommandList->Strings[Index]);
+        ClearAlias(CommandList->GetString(Index));
       }
     }
     ,
@@ -1016,7 +1016,7 @@ void TSCPFileSystem::ReadCurrentDirectory()
   if (FCachedDirectoryChange.IsEmpty())
   {
     ExecCommand2(fsCurrentDirectory);
-    FCurrentDirectory = UnixExcludeTrailingBackslash(FOutput->Strings[0]);
+    FCurrentDirectory = UnixExcludeTrailingBackslash(FOutput->GetString(0));
   }
   else
   {
@@ -1104,7 +1104,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           // delete leading "total xxx" line
           // On some hosts there is not "total" but "totalt". What's the reason??
           // see mail from "Jan Wiklund (SysOp)" <jan@park.se>
-          if (IsTotalListingLine(OutputCopy->Strings[0]))
+          if (IsTotalListingLine(OutputCopy->GetString(0)))
           {
             OutputCopy->Delete(0);
           }
@@ -1112,7 +1112,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           for (intptr_t Index = 0; Index < OutputCopy->GetCount(); ++Index)
           {
             TRemoteFile * File = NULL;
-            File = CreateRemoteFile(OutputCopy->Strings[Index]);
+            File = CreateRemoteFile(OutputCopy->GetString(Index));
             FileList->AddFile(File);
           }
         }
@@ -1214,12 +1214,12 @@ void TSCPFileSystem::CustomReadFile(const UnicodeString & FileName,
   if (FOutput->GetCount())
   {
     intptr_t LineIndex = 0;
-    if (IsTotalListingLine(FOutput->Strings[LineIndex]) && FOutput->GetCount() > 1)
+    if (IsTotalListingLine(FOutput->GetString(LineIndex)) && FOutput->GetCount() > 1)
     {
       ++LineIndex;
     }
 
-    File = CreateRemoteFile(FOutput->Strings[LineIndex], ALinkedByFile);
+    File = CreateRemoteFile(FOutput->GetString(LineIndex), ALinkedByFile);
   }
 }
 //---------------------------------------------------------------------------
@@ -1556,7 +1556,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     for (intptr_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; ++IFile)
     {
-      UnicodeString FileName = FilesToCopy->Strings[IFile];
+      UnicodeString FileName = FilesToCopy->GetString(IFile);
       TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[IFile]);
       UnicodeString RealFileName = File ? File->GetFileName() : FileName;
       bool CanProceed = false;
@@ -2170,7 +2170,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
       !OperationProgress->Cancel; ++IFile)
     {
       TRACE("2");
-      UnicodeString FileName = FilesToCopy->Strings[IFile];
+      UnicodeString FileName = FilesToCopy->GetString(IFile);
       TRemoteFile * File = static_cast<TRemoteFile *>(FilesToCopy->Objects[IFile]);
       assert(File);
 

@@ -743,7 +743,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
         {
           if (Params->Aliases[ai].Button == Data.Buttons[bi])
           {
-            ButtonLabels->Strings[bi] = Params->Aliases[ai].Alias;
+            ButtonLabels->SetString(bi, Params->Aliases[ai].Alias);
             break;
           }
         }

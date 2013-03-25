@@ -290,7 +290,7 @@ UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   const UnicodeString & MultiItemsFormat, TStrings * Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
-    Items->GetCount(), (Items->GetCount() > 0 ? Items->Strings[0] : UnicodeString()));
+    Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
 }
 //---------------------------------------------------------------------------
 UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
@@ -300,8 +300,8 @@ UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
   UnicodeString Item;
   if (Files->GetCount() > 0)
   {
-    Item = Remote ? UnixExtractFileName(Files->Strings[0]) :
-      ExtractFileName(Files->Strings[0], true);
+    Item = Remote ? UnixExtractFileName(Files->GetString(0)) :
+      ExtractFileName(Files->GetString(0), true);
   }
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
     Files->GetCount(), Item);

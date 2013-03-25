@@ -150,15 +150,15 @@ public:
         FLog->AddIndented(FORMAT(L"<%s%s>", Name,  Attrs.c_str()));
         for (intptr_t Index = 0; Index < FNames->GetCount(); ++Index)
         {
-          UnicodeString Value = FValues->Strings[Index];
+          UnicodeString Value = FValues->GetString(Index);
           if (Value.IsEmpty())
           {
-            FLog->AddIndented(FORMAT(L"  <%s />", FNames->Strings[Index].c_str()));
+            FLog->AddIndented(FORMAT(L"  <%s />", FNames->GetString(Index).c_str()));
           }
           else
           {
             FLog->AddIndented(FORMAT(L"  <%s value=\"%s\" />",
-              FNames->Strings[Index].c_str(), XmlAttributeEscape(Value).c_str()));
+              FNames->GetString(Index).c_str(), XmlAttributeEscape(Value).c_str()));
           }
         }
         if (FFileList != NULL)
@@ -270,7 +270,7 @@ public:
     intptr_t Index = FNames->IndexOf(Name);
     if (Index >= 0)
     {
-      FValues->Strings[Index] = FValues->Strings[Index] + L"\r\n" + Output;
+      FValues->SetString(Index, FValues->GetString(Index) + L"\r\n" + Output);
     }
     else
     {
@@ -661,7 +661,7 @@ UnicodeString TSessionLog::GetSessionName()
 //---------------------------------------------------------------------------
 UnicodeString TSessionLog::GetLine(intptr_t Index)
 {
-  return Strings[Index - FTopIndex];
+  return GetString(Index - FTopIndex);
 }
 //---------------------------------------------------------------------------
 TLogLineType TSessionLog::GetType(intptr_t Index)
@@ -1338,7 +1338,7 @@ void TActionLog::AddMessages(const UnicodeString & Indent, TStrings * Messages)
   for (intptr_t Index = 0; Index < Messages->GetCount(); ++Index)
   {
     AddIndented(
-      FORMAT((Indent + L"<message>%s</message>").c_str(), XmlEscape(Messages->Strings[Index]).c_str()));
+      FORMAT((Indent + L"<message>%s</message>").c_str(), XmlEscape(Messages->GetString(Index)).c_str()));
   }
 }
 //---------------------------------------------------------------------------

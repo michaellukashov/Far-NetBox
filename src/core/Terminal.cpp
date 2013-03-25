@@ -1169,7 +1169,7 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
 
     AResult = PromptUser(Data, Kind, Name, Instructions, Prompts, Results);
 
-    Result = Results->Strings[0];
+    Result = Results->GetString(0);
   }
   ,
   {
@@ -1208,7 +1208,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
-    RawByteString EncryptedPassword = EncryptPassword(Results->Strings[0]);
+    RawByteString EncryptedPassword = EncryptPassword(Results->GetString(0));
     if (FTunnelOpening)
     {
       FTunnelPassword = EncryptedPassword;
@@ -2975,7 +2975,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
         bool Success;
         while ((Index < FileList->GetCount()) && (Progress.Cancel == csContinue))
         {
-          FileName = FileList->Strings[Index];
+          FileName = FileList->GetString(Index);
           TRACEFMT("4 [%s]", FileName.c_str());
           try
           {
@@ -3325,7 +3325,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
           FileList += L" ";
         }
 
-        FileList += L"\"" + ShellDelimitStr(Files->Strings[I], L'"') + L"\"";
+        FileList += L"\"" + ShellDelimitStr(Files->GetString(I), L'"') + L"\"";
       }
     }
 
@@ -3678,9 +3678,9 @@ bool TTerminal::MoveFiles(TStrings * FileList, const UnicodeString & Target,
         // current directory
         if ((File != NULL) &&
             File->GetIsDirectory() &&
-            ((curDirectory.SubString(1, FileList->Strings[Index].Length()) == FileList->Strings[Index]) &&
-             ((FileList->Strings[Index].Length() == curDirectory.Length()) ||
-              (curDirectory[FileList->Strings[Index].Length() + 1] == '/'))))
+            ((curDirectory.SubString(1, FileList->GetString(Index).Length()) == FileList->GetString(Index)) &&
+             ((FileList->GetString(Index).Length() == curDirectory.Length()) ||
+              (curDirectory[FileList->GetString(Index).Length() + 1] == '/'))))
         {
           PossiblyMoved = true;
         }
@@ -4396,7 +4396,7 @@ void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
     TSearchRec Rec = {0};
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      UnicodeString FileName = FileList->Strings[Index];
+      UnicodeString FileName = FileList->GetString(Index);
       if (FileSearchRec(FileName, Rec))
       {
         CalculateLocalFileSize(FileName, Rec, &Params);
@@ -5723,8 +5723,8 @@ bool TSecondaryTerminal::DoPromptUser(TSessionData * Data,
         TRACE("3b");
         Password = FMainTerminal->GetPassword();
       }
-      Results->Strings[0] = Password;
-      if (!Results->Strings[0].IsEmpty())
+      Results->SetString(0, Password);
+      if (!Results->GetString(0).IsEmpty())
       {
         LogEvent(L"Using remembered password of the main session.");
         AResult = true;

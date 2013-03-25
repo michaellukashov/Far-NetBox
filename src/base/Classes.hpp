@@ -297,12 +297,12 @@ protected:
   virtual bool GetSorted() const = 0;
   virtual void SetSorted(bool Value) = 0;
   void SetDuplicates(TDuplicatesEnum Value);
-  virtual UnicodeString & GetString(intptr_t Index) = 0;
-  virtual void PutString(intptr_t Index, const UnicodeString & S) = 0;
   virtual TObject *& GetObjects(intptr_t Index) = 0;
   virtual void PutObject(intptr_t Index, TObject * AObject) = 0;
 
 public:
+  virtual UnicodeString & GetString(intptr_t Index) = 0;
+  virtual void SetString(intptr_t Index, const UnicodeString & S) = 0;
   const UnicodeString GetName(intptr_t Index);
   void SetName(intptr_t Index, const UnicodeString & Value);
   const UnicodeString GetValue(const UnicodeString & Name);
@@ -318,14 +318,6 @@ private:
   bool PropertyGetSorted() { return GetSorted(); }
   void PropertySetSorted(bool Value) { SetSorted(Value); }
   void PropertySetDuplicates(TDuplicatesEnum Value) { SetDuplicates(Value); }
-  UnicodeString & PropertyGetString(intptr_t Index)
-  {
-    return GetString(Index);
-  }
-  void PropertySetString(intptr_t Index, UnicodeString Value)
-  {
-    PutString(Index, Value);
-  }
   TObject *& PropertyGetObject(intptr_t Index)
   {
     return GetObjects(Index);
@@ -341,7 +333,6 @@ public:
   RWProperty<bool, TStrings, &TStrings::PropertyGetCaseSensitive, &TStrings::PropertySetCaseSensitive> CaseSensitive;
   RWProperty<bool, TStrings, &TStrings::PropertyGetSorted, &TStrings::PropertySetSorted> Sorted;
   WOProperty<TDuplicatesEnum, TStrings, &TStrings::PropertySetDuplicates> Duplicates;
-  IndexedProperty2<intptr_t, UnicodeString, TStrings, &TStrings::PropertyGetString, &TStrings::PropertySetString> Strings;
   IndexedProperty2<intptr_t, TObject *, TStrings, &TStrings::PropertyGetObject, &TStrings::PropertySetObject> Objects;
 
 protected:
@@ -403,10 +394,12 @@ protected:
   virtual void SetCaseSensitive(bool Value);
   virtual bool GetSorted() const;
   virtual void SetSorted(bool Value);
-  virtual UnicodeString & GetString(intptr_t Index);
-  virtual void PutString(intptr_t Index, const UnicodeString & S);
   virtual TObject *& GetObjects(intptr_t Index);
   virtual void PutObject(intptr_t Index, TObject * AObject);
+
+public:
+  virtual UnicodeString & GetString(intptr_t Index);
+  virtual void SetString(intptr_t Index, const UnicodeString & S);
 
 private:
   TNotifyEvent FOnChange;

@@ -2140,7 +2140,7 @@ void TFarList::Assign(TPersistent * Source)
 void TFarList::UpdateItem(intptr_t Index)
 {
   FarListItem * ListItem = &FListItems->Items[Index];
-  UnicodeString Value = Strings[Index].c_str();
+  UnicodeString Value = GetString(Index).c_str();
   nb_free((void *)ListItem->Text);
   ListItem->Text = TCustomFarPlugin::DuplicateStr(Value, true);
 
@@ -2158,7 +2158,7 @@ void TFarList::Put(intptr_t Index, const UnicodeString & S)
     FNoDialogUpdate = true;
     TRY_FINALLY (
     {
-      TStringList::PutString(Index, S);
+      TStringList::SetString(Index, S);
       if (GetUpdateCount() == 0)
       {
         UpdateItem(Index);
@@ -2172,7 +2172,7 @@ void TFarList::Put(intptr_t Index, const UnicodeString & S)
   }
   else
   {
-    TStringList::PutString(Index, S);
+    TStringList::SetString(Index, S);
   }
 }
 //---------------------------------------------------------------------------
@@ -2216,7 +2216,7 @@ void TFarList::Changed()
     for (intptr_t I = 0; I < GetCount(); I++)
     {
       // UnicodeString Value = Strings[I];
-      FListItems->Items[I].Text = Strings[I].c_str();
+      FListItems->Items[I].Text = GetString(I).c_str();
     }
     if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
     {
@@ -2251,7 +2251,7 @@ void TFarList::SetSelected(intptr_t Value)
     }
     else
     {
-      GetDialogItem()->SetData(Strings[Value]);
+      GetDialogItem()->SetData(GetString(Value));
     }
   }
 }
@@ -2320,9 +2320,9 @@ intptr_t TFarList::GetMaxLength()
   intptr_t Result = 0;
   for (int i = 0; i < GetCount(); i++)
   {
-    if (Result < Strings[i].Length())
+    if (Result < GetString(i).Length())
     {
-      Result = Strings[i].Length();
+      Result = GetString(i).Length();
     }
   }
   return Result;
@@ -2414,7 +2414,7 @@ LONG_PTR TFarList::ItemProc(int Msg, LONG_PTR Param)
     else
     {
       assert(Param >= 0 && Param < GetCount());
-      GetDialogItem()->UpdateData(Strings[Param]);
+      GetDialogItem()->UpdateData(GetString(Param));
     }
   }
   return 0;
@@ -2617,7 +2617,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
       Buf = L" ";
       if (Index < GetItems()->GetCount())
       {
-        UnicodeString Value = GetItems()->Strings[Index].SubString(1, DisplayWidth - 1);
+        UnicodeString Value = GetItems()->GetString(Index).SubString(1, DisplayWidth - 1);
         Buf += Value;
       }
       UnicodeString Value = ::StringOfChar(' ', DisplayWidth - Buf.Length());

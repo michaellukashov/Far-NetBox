@@ -416,7 +416,6 @@ TStrings::TStrings() :
   CaseSensitive(this);
   Sorted(this);
   Duplicates(this);
-  Strings(this);
   Objects(this);
 }
 
@@ -694,7 +693,7 @@ bool TStrings::Equals(TStrings * Strings)
   return Result;
 }
 
-void TStrings::PutString(intptr_t Index, const UnicodeString & S)
+void TStrings::SetString(intptr_t Index, const UnicodeString & S)
 {
   TObject * TempObject = GetObjects(Index);
   Delete(Index);
@@ -805,7 +804,7 @@ void TStrings::SetValue(const UnicodeString & Name, const UnicodeString & Value)
     {
       I = Add(L"");
     }
-    PutString(I, Name + L'=' + Value);
+    SetString(I, Name + L'=' + Value);
   }
   else
   {
@@ -960,7 +959,7 @@ intptr_t TStringList::IndexOf(const UnicodeString & S)
   return Result;
 }
 
-void TStringList::PutString(intptr_t Index, const UnicodeString & S)
+void TStringList::SetString(intptr_t Index, const UnicodeString & S)
 {
   if (GetSorted())
   {

@@ -109,14 +109,14 @@ bool ExtractCommonPath(TStrings * Files, UnicodeString & Path)
 {
   assert(Files->GetCount() > 0);
 
-  Path = ExtractFilePath(Files->Strings[0]);
+  Path = ExtractFilePath(Files->GetString(0));
   bool Result = !Path.IsEmpty();
   if (Result)
   {
     for (intptr_t Index = 1; Index < Files->GetCount(); ++Index)
     {
       while (!Path.IsEmpty() &&
-        (Files->Strings[Index].SubString(1, Path.Length()) != Path))
+        (Files->GetString(Index).SubString(1, Path.Length()) != Path))
       {
         intptr_t PrevLen = Path.Length();
         Path = ExtractFilePath(ExcludeTrailingBackslash(Path));
@@ -136,14 +136,14 @@ bool UnixExtractCommonPath(TStrings * Files, UnicodeString & Path)
 {
   assert(Files->GetCount() > 0);
 
-  Path = UnixExtractFilePath(Files->Strings[0]);
+  Path = UnixExtractFilePath(Files->GetString(0));
   bool Result = !Path.IsEmpty();
   if (Result)
   {
     for (intptr_t Index = 1; Index < Files->GetCount(); ++Index)
     {
       while (!Path.IsEmpty() &&
-        (Files->Strings[Index].SubString(1, Path.Length()) != Path))
+        (Files->GetString(Index).SubString(1, Path.Length()) != Path))
       {
         intptr_t PrevLen = Path.Length();
         Path = UnixExtractFilePath(UnixExcludeTrailingBackslash(Path));
@@ -318,7 +318,7 @@ UnicodeString MakeFileList(TStrings * FileList)
       Result += L" ";
     }
 
-    UnicodeString FileName = FileList->Strings[Index];
+    UnicodeString FileName = FileList->GetString(Index);
     // currently this is used for local file only, so no delimiting is done
     if (FileName.Pos(L" ") > 0)
     {
@@ -1838,7 +1838,7 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & Directory, boo
     Index = GetCount() - 1;
     while (Index >= 0)
     {
-      if (Strings[Index].SubString(1, Directory2.Length()) == Directory2)
+      if (GetString(Index).SubString(1, Directory2.Length()) == Directory2)
       {
         Delete(Index);
       }
@@ -1986,7 +1986,7 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
       intptr_t Index = ACount - FMaxSize;
       while (Index < ACount)
       {
-        Limited->Add(Strings[Index]);
+        Limited->Add(GetString(Index));
         ++Index;
       }
       Data += Limited->Text;
