@@ -122,7 +122,7 @@ protected:
   bool SessionDialog(TSessionData * Data, TSessionActionEnum & Action);
   void EditConnectSession(TSessionData * Data, bool Edit);
   void EditConnectSession(TSessionData * Data, bool Edit, bool NewData, bool FillInConnect);
-  void DuplicateRenameSession(TSessionData * Data,
+  void DuplicateOrRenameSession(TSessionData * Data,
     bool Duplicate);
   void FocusSession(TSessionData * Data);
   void DeleteSession(TSessionData * Data, void * Param);

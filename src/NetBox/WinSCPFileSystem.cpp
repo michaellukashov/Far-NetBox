@@ -583,7 +583,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
   return Result;
 }
 //------------------------------------------------------------------------------
-void TWinSCPFileSystem::DuplicateRenameSession(TSessionData * Data,
+void TWinSCPFileSystem::DuplicateOrRenameSession(TSessionData * Data,
  bool Duplicate)
 {
   assert(Data);
@@ -942,7 +942,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
     {
       if (Data != NULL)
       {
-        DuplicateRenameSession(Data, Key == VK_F5);
+        DuplicateOrRenameSession(Data, Key == VK_F5);
       }
       Handled = true;
     }
