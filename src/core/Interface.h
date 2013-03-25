@@ -55,7 +55,7 @@ DEFINE_CALLBACK_TYPE1(TQueryParamsTimerEvent, void,
 
 struct TQueryParams : public TObject
 {
-  explicit TQueryParams(unsigned int AParams = 0, const UnicodeString & AHelpKeyword = HELP_NONE);
+  explicit TQueryParams(uintptr_t AParams = 0, const UnicodeString & AHelpKeyword = HELP_NONE);
 
   const TQueryButtonAlias * Aliases;
   uintptr_t AliasesCount;
