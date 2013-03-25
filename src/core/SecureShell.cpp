@@ -21,7 +21,7 @@
 //---------------------------------------------------------------------------
 #define MAX_BUFSIZE 32768
 //---------------------------------------------------------------------------
-struct TPuttyTranslation : public TObject
+struct TPuttyTranslation
 {
   const wchar_t * Original;
   int Translation;
