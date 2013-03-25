@@ -418,7 +418,6 @@ TStrings::TStrings() :
   Duplicates(this);
   Strings(this);
   Objects(this);
-  Names(this);
 }
 
 TStrings::~TStrings()
@@ -760,6 +759,13 @@ intptr_t TStrings::IndexOfName(const UnicodeString & Name)
 const UnicodeString TStrings::GetName(intptr_t Index)
 {
   return ExtractName(GetString(Index));
+}
+
+void TStrings::SetName(intptr_t Index, const UnicodeString & Value)
+{
+  (void)Index;
+  // SetName(Index, Value);
+  Classes::Error(SNotImplemented, 2012);
 }
 
 UnicodeString TStrings::ExtractName(const UnicodeString & S) const

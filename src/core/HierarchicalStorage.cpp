@@ -324,7 +324,7 @@ void THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
       if (MaintainKeys)
       {
         assert(Strings->Strings[Index].Pos(L"=") > 1);
-        WriteString(Strings->Names[Index], Strings->GetValue(Strings->Names[Index]));
+        WriteString(Strings->GetName(Index), Strings->GetValue(Strings->GetName(Index)));
       }
       else
       {

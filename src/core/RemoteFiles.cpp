@@ -1909,7 +1909,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChange(
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (Names[Index].SubString(1, SourceDir.Length()) == SourceDir)
+    if (GetName(Index).SubString(1, SourceDir.Length()) == SourceDir)
     {
       Delete(Index);
       Index--;
@@ -1927,7 +1927,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
 
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    UnicodeString Name = Names[Index];
+    UnicodeString Name = GetName(Index);
     if ((Name.SubString(1, TargetDir.Length()) == TargetDir) ||
         (GetValue(Name).SubString(1, TargetDir.Length()) == TargetDir) ||
         (!Key.IsEmpty() && (Name == Key)))

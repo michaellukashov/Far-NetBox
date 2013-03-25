@@ -1814,7 +1814,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
       FFileSystemInfo.AdditionalInfo += LoadStr(SFTP_EXTENSION_INFO) + L"\r\n";
       for (intptr_t Index = 0; Index < FExtensions->GetCount(); ++Index)
       {
-        UnicodeString Name = FExtensions->Names[Index];
+        UnicodeString Name = FExtensions->GetName(Index);
         UnicodeString Value = FExtensions->GetValue(Name);
         UnicodeString Line;
         if (Value.IsEmpty())
