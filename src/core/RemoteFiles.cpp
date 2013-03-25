@@ -2219,40 +2219,40 @@ void TRights::SetText(const UnicodeString & Value)
     int Flag = 00001;
     int ExtendedFlag = 01000; //-V536
     bool KeepText = false;
-    for (int i = TextLen; i >= 1; i--)
+    for (intptr_t I = TextLen; I >= 1; I--)
     {
-      if (Value[i] == UnsetSymbol)
+      if (Value[I] == UnsetSymbol)
       {
         FUnset |= static_cast<unsigned short>(Flag | ExtendedFlag);
       }
-      else if (Value[i] == UndefSymbol)
+      else if (Value[I] == UndefSymbol)
       {
         // do nothing
       }
-      else if (Value[i] == CombinedSymbols[i - 1])
+      else if (Value[I] == CombinedSymbols[I - 1])
       {
         FSet |= static_cast<unsigned short>(Flag | ExtendedFlag);
       }
-      else if (Value[i] == ExtendedSymbols[i - 1])
+      else if (Value[I] == ExtendedSymbols[I - 1])
       {
         FSet |= static_cast<unsigned short>(ExtendedFlag);
         FUnset |= static_cast<unsigned short>(Flag);
       }
       else
       {
-        if (Value[i] != BasicSymbols[i - 1])
+        if (Value[I] != BasicSymbols[I - 1])
         {
           KeepText = true;
         }
         FSet |= static_cast<unsigned short>(Flag);
-        if (i % 3 == 0)
+        if (I % 3 == 0)
         {
           FUnset |= static_cast<unsigned short>(ExtendedFlag);
         }
       }
 
       Flag <<= 1;
-      if (i % 3 == 1)
+      if (I % 3 == 1)
       {
         ExtendedFlag <<= 1;
       }
@@ -2277,21 +2277,21 @@ UnicodeString TRights::GetText() const
     int ExtendedFlag = 01000; //-V536
     bool ExtendedPos = true;
     wchar_t Symbol;
-    int i = TextLen;
-    while (i >= 1)
+    intptr_t I = TextLen;
+    while (I >= 1)
     {
       if (ExtendedPos &&
           ((FSet & (Flag | ExtendedFlag)) == (Flag | ExtendedFlag)))
       {
-        Symbol = CombinedSymbols[i - 1];
+        Symbol = CombinedSymbols[I - 1];
       }
       else if ((FSet & Flag) != 0)
       {
-        Symbol = BasicSymbols[i - 1];
+        Symbol = BasicSymbols[I - 1];
       }
       else if (ExtendedPos && ((FSet & ExtendedFlag) != 0))
       {
-        Symbol = ExtendedSymbols[i - 1];
+        Symbol = ExtendedSymbols[I - 1];
       }
       else if ((!ExtendedPos && ((FUnset & Flag) == Flag)) ||
         (ExtendedPos && ((FUnset & (Flag | ExtendedFlag)) == (Flag | ExtendedFlag))))
@@ -2303,11 +2303,11 @@ UnicodeString TRights::GetText() const
         Symbol = UndefSymbol;
       }
 
-      Result[i] = Symbol;
+      Result[I] = Symbol;
 
       Flag <<= 1;
-      i--;
-      ExtendedPos = ((i % 3) == 0);
+      I--;
+      ExtendedPos = ((I % 3) == 0);
       if (ExtendedPos)
       {
         ExtendedFlag <<= 1;

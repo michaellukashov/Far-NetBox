@@ -786,9 +786,9 @@ void TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings)
   {
     Strings->Clear();
     FIniFile->ReadSections(Sections);
-    for (intptr_t i = 0; i < Sections->GetCount(); i++)
+    for (intptr_t I = 0; I < Sections->GetCount(); I++)
     {
-      UnicodeString Section = Sections->GetString(i);
+      UnicodeString Section = Sections->GetString(I);
       if (AnsiCompareText(GetCurrentSubKey(),
           Section.SubString(1, GetCurrentSubKey().Length())) == 0)
       {
@@ -1107,9 +1107,9 @@ void TIniFileStorage::ApplyOverrides()
   {
     Sections->Clear();
     FIniFile->ReadSections(Sections);
-    for (int i = 0; i < Sections->GetCount(); i++)
+    for (intptr_t I = 0; I < Sections->GetCount(); I++)
     {
-      UnicodeString Section = Sections->GetString(i);
+      UnicodeString Section = Sections->GetString(I);
 
       if (AnsiSameText(OverridesKey,
             Section.SubString(1, OverridesKey.Length())))
@@ -1123,9 +1123,9 @@ void TIniFileStorage::ApplyOverrides()
         {
           FIniFile->ReadSection(Section, Names);
 
-          for (int ii = 0; ii < Names->GetCount(); ii++)
+          for (intptr_t II = 0; II < Names->GetCount(); II++)
           {
-            UnicodeString Name = Names->GetString(ii);
+            UnicodeString Name = Names->GetString(II);
             UnicodeString Value = FIniFile->ReadString(Section, Name, L"");
             FIniFile->WriteString(SubKey, Name, Value);
           }

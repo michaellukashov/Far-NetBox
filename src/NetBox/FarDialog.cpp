@@ -86,9 +86,9 @@ TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
 //---------------------------------------------------------------------------
 TFarDialog::~TFarDialog()
 {
-  for (intptr_t i = 0; i < GetItemCount(); i++)
+  for (intptr_t I = 0; I < GetItemCount(); I++)
   {
-    GetItem(i)->Detach();
+    GetItem(I)->Detach();
   }
   delete FItems;
   nb_free(FDialogItems);
@@ -122,9 +122,9 @@ void TFarDialog::SetBounds(TRect Value)
         Coord.Y = static_cast<short int>(FBounds.Top);
         SendMessage(DM_MOVEDIALOG, (int)true, reinterpret_cast<LONG_PTR>(&Coord));
       }
-      for (intptr_t i = 0; i < GetItemCount(); i++)
+      for (intptr_t I = 0; I < GetItemCount(); I++)
       {
-        GetItem(i)->DialogResized();
+        GetItem(I)->DialogResized();
       }
     }
     ,
@@ -668,9 +668,9 @@ bool TFarDialog::HotKey(uintptr_t Key)
   if (Result)
   {
     Result = false;
-    for (intptr_t i = 0; i < GetItemCount(); i++)
+    for (intptr_t I = 0; I < GetItemCount(); I++)
     {
-      if (GetItem(i)->HotKey(HotKey))
+      if (GetItem(I)->HotKey(HotKey))
       {
         Result = true;
       }
@@ -683,13 +683,13 @@ bool TFarDialog::HotKey(uintptr_t Key)
 TFarDialogItem * TFarDialog::ItemAt(int X, int Y)
 {
   TFarDialogItem * Result = NULL;
-  for (intptr_t i = 0; i < GetItemCount(); i++)
+  for (intptr_t I = 0; I < GetItemCount(); I++)
   {
-    TRect Bounds = GetItem(i)->GetActualBounds();
+    TRect Bounds = GetItem(I)->GetActualBounds();
     if ((Bounds.Left <= X) && (X <= Bounds.Right) &&
         (Bounds.Top <= Y) && (Y <= Bounds.Bottom))
     {
-      Result = GetItem(i);
+      Result = GetItem(I);
     }
   }
   return Result;
@@ -698,9 +698,9 @@ TFarDialogItem * TFarDialog::ItemAt(int X, int Y)
 bool TFarDialog::CloseQuery()
 {
   bool Result = true;
-  for (intptr_t i = 0; i < GetItemCount() && Result; i++)
+  for (intptr_t I = 0; I < GetItemCount() && Result; I++)
   {
-    if (!GetItem(i)->CloseQuery())
+    if (!GetItem(I)->CloseQuery())
     {
       Result = false;
     }
@@ -720,9 +720,9 @@ void TFarDialog::RefreshBounds()
 //---------------------------------------------------------------------------
 void TFarDialog::Init()
 {
-  for (intptr_t i = 0; i < GetItemCount(); i++)
+  for (intptr_t I = 0; I < GetItemCount(); I++)
   {
-    GetItem(i)->Init();
+    GetItem(I)->Init();
   }
 
   RefreshBounds();
@@ -2318,11 +2318,11 @@ intptr_t TFarList::GetTopIndex()
 intptr_t TFarList::GetMaxLength()
 {
   intptr_t Result = 0;
-  for (int i = 0; i < GetCount(); i++)
+  for (intptr_t I = 0; I < GetCount(); I++)
   {
-    if (Result < GetString(i).Length())
+    if (Result < GetString(I).Length())
     {
-      Result = GetString(i).Length();
+      Result = GetString(I).Length();
     }
   }
   return Result;
