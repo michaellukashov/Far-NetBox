@@ -715,7 +715,7 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
         {
           Message += L"\n";
         }
-        Message += FOutput->Text;
+        Message += FOutput->GetText();
       }
       while (!Message.IsEmpty() && (Message.LastDelimiter(L"\n\r") == Message.Length()))
       {
@@ -810,7 +810,7 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args,
         ((MaxL >= 0) && (MaxL > FOutput->GetCount())))
     {
       FTerminal->TerminalError(FmtLoadStr(INVALID_OUTPUT_ERROR,
-        ARRAYOFCONST((FullCommand, GetOutput()->Text))));
+        ARRAYOFCONST((FullCommand, GetOutput()->GetText()))));
     }
   }
 }
@@ -833,7 +833,7 @@ void TSCPFileSystem::ExecCommand2(TFSCommand Cmd, ...)
         ((MaxL >= 0) && (MaxL > static_cast<int>(FOutput->GetCount()))))
     {
       FTerminal->TerminalError(::FmtLoadStr(INVALID_OUTPUT_ERROR,
-        FullCommand.c_str(), GetOutput()->Text.get().c_str()));
+        FullCommand.c_str(), GetOutput()->GetText().c_str()));
     }
   }
 }

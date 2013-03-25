@@ -801,7 +801,7 @@ public:
     TRY_FINALLY (
     {
       DumpLines->LoadFromFile(FileName);
-      Dump = AnsiString(DumpLines->Text);
+      Dump = AnsiString(DumpLines->GetText());
     }
     ,
     {

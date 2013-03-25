@@ -288,8 +288,6 @@ public:
   virtual intptr_t GetCount() const = 0;
 
 protected:
-  virtual UnicodeString GetText();
-  virtual void SetText(const UnicodeString & Text);
   UnicodeString GetCommaText();
   void SetCommaText(const UnicodeString & Value);
   virtual bool GetCaseSensitive() const = 0;
@@ -301,6 +299,8 @@ protected:
   virtual void PutObject(intptr_t Index, TObject * AObject) = 0;
 
 public:
+  virtual UnicodeString GetText();
+  virtual void SetText(const UnicodeString & Text);
   virtual UnicodeString & GetString(intptr_t Index) = 0;
   virtual void SetString(intptr_t Index, const UnicodeString & S) = 0;
   const UnicodeString GetName(intptr_t Index);
@@ -309,8 +309,6 @@ public:
   void SetValue(const UnicodeString & Name, const UnicodeString & Value);
 
 private:
-  UnicodeString PropertyGetText() { return GetText(); }
-  void PropertySetText(UnicodeString Value) { SetText(Value); }
   UnicodeString PropertyGetCommaText() { return GetCommaText(); }
   void PropertySetCommaText(UnicodeString Value) { SetCommaText(Value); }
   bool PropertyGetCaseSensitive() { return GetCaseSensitive(); }
@@ -328,7 +326,6 @@ private:
   }
 
 public:
-  RWProperty<UnicodeString, TStrings, &TStrings::PropertyGetText, &TStrings::PropertySetText> Text;
   RWProperty<UnicodeString, TStrings, &TStrings::PropertyGetCommaText, &TStrings::PropertySetCommaText> CommaText;
   RWProperty<bool, TStrings, &TStrings::PropertyGetCaseSensitive, &TStrings::PropertySetCaseSensitive> CaseSensitive;
   RWProperty<bool, TStrings, &TStrings::PropertyGetSorted, &TStrings::PropertySetSorted> Sorted;

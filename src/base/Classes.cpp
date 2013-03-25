@@ -411,7 +411,6 @@ TStrings::TStrings() :
   FQuoteChar(L'"'),
   FUpdateCount(0)
 {
-  Text(this);
   CommaText(this);
   CaseSensitive(this);
   Sorted(this);

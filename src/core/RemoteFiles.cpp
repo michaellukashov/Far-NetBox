@@ -1989,7 +1989,7 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
         Limited->Add(GetString(Index));
         ++Index;
       }
-      Data += Limited->Text;
+      Data += Limited->GetText();
     }
     ,
     {
@@ -1999,7 +1999,7 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
   }
   else
   {
-    Data += Text;
+    Data += GetText();
   }
 }
 //---------------------------------------------------------------------------
@@ -2007,11 +2007,11 @@ void TRemoteDirectoryChangesCache::Deserialize(const UnicodeString & Data)
 {
   if (Data.IsEmpty())
   {
-    Text = L"";
+    SetText(L"");
   }
   else
   {
-    Text = Data.c_str() + 1;
+    SetText(Data.c_str() + 1);
   }
 }
 //---------------------------------------------------------------------------

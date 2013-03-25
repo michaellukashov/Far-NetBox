@@ -3124,7 +3124,7 @@ void TWinSCPFileSystem::LogAuthentication(
     AuthenticationLogLinesPtr.reset(AuthenticationLogLines);
     intptr_t Width = 42;
     intptr_t Height = 11;
-    FarWrapText(::TrimRight(FAuthenticationLog->Text), AuthenticationLogLines, Width);
+    FarWrapText(::TrimRight(FAuthenticationLog->GetText()), AuthenticationLogLines, Width);
     intptr_t Count;
     UnicodeString Message;
     if (AuthenticationLogLines->GetCount() == 0)
@@ -3140,7 +3140,7 @@ void TWinSCPFileSystem::LogAuthentication(
       }
       AuthenticationLogLines->SetString(0, AuthenticationLogLines->GetString(0) +
         ::StringOfChar(' ', Width - AuthenticationLogLines->GetString(0).Length()));
-      Message = AnsiReplaceStr(AuthenticationLogLines->Text, L"\r", L"");
+      Message = AnsiReplaceStr(AuthenticationLogLines->GetText(), L"\r", L"");
       Count = AuthenticationLogLines->GetCount();
     }
 
