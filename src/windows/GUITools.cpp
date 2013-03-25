@@ -338,7 +338,7 @@ UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & I
 //---------------------------------------------------------------------------
 bool DeleteDirectory(const UnicodeString & DirName)
 {
-  TSearchRec sr = {0};
+  TSearchRec sr;
   bool retval = true;
   if (FindFirst(DirName + L"\\*", faAnyFile, sr) == 0) // VCL Function
   {

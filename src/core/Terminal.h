@@ -606,14 +606,14 @@ public:
   void SetMasks(const UnicodeString & Value);
 };
 //------------------------------------------------------------------------------
-struct TCustomCommandParams
+struct TCustomCommandParams : public TObject
 {
   UnicodeString Command;
   intptr_t Params;
   TCaptureOutputEvent OutputEvent;
 };
 //------------------------------------------------------------------------------
-struct TCalculateSizeStats
+struct TCalculateSizeStats : public TObject
 {
   TCalculateSizeStats();
 
@@ -622,7 +622,7 @@ struct TCalculateSizeStats
   int SymLinks;
 };
 //------------------------------------------------------------------------------
-struct TCalculateSizeParams
+struct TCalculateSizeParams : public TObject
 {
   __int64 Size;
   intptr_t Params;
@@ -630,14 +630,14 @@ struct TCalculateSizeParams
   TCalculateSizeStats * Stats;
 };
 //------------------------------------------------------------------------------
-struct TMakeLocalFileListParams
+struct TMakeLocalFileListParams : public TObject
 {
   TStrings * FileList;
   bool IncludeDirs;
   bool Recursive;
 };
 //------------------------------------------------------------------------------
-struct TSynchronizeOptions
+struct TSynchronizeOptions : public TObject
 {
   TSynchronizeOptions();
   ~TSynchronizeOptions();
@@ -662,7 +662,7 @@ public:
   friend class TTerminal;
 
   public:
-    struct TFileInfo
+    struct TFileInfo : public TObject
     {
       UnicodeString FileName;
       UnicodeString Directory;
@@ -709,7 +709,7 @@ private:
   static int Compare(const void * Item1, const void * Item2);
 };
 //------------------------------------------------------------------------------
-struct TSpaceAvailable
+struct TSpaceAvailable : public TObject
 {
   TSpaceAvailable();
 

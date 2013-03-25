@@ -601,7 +601,7 @@ void TWinSCPPlugin::HandleException(Exception * E, int OpMode)
   }
 }
 //---------------------------------------------------------------------------
-struct TFarMessageData
+struct TFarMessageData : public TObject
 {
   TFarMessageData()
   {

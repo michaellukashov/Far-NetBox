@@ -177,7 +177,7 @@ const int tfNewDirectory = 0x02;
 //---------------------------------------------------------------------------
 #pragma warn -inl
 //---------------------------------------------------------------------------
-struct TSFTPSupport
+struct TSFTPSupport : public TObject
 {
   TSFTPSupport() :
     AttribExtensions(new TStringList()),
@@ -1714,7 +1714,7 @@ struct TOpenRemoteFileParams
   bool Confirmed;
 };
 //---------------------------------------------------------------------------
-struct TSinkFileParams
+struct TSinkFileParams : public TObject
 {
   UnicodeString TargetDir;
   const TCopyParamType * CopyParam;

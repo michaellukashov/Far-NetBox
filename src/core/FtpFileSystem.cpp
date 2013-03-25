@@ -182,7 +182,7 @@ public:
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
-struct TFileTransferData
+struct TFileTransferData : public TObject
 {
   TFileTransferData()
   {

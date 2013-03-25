@@ -54,7 +54,7 @@ private:
   bool FNewerOnly;
 };
 //---------------------------------------------------------------------------
-struct TCopyParamRuleData
+struct TCopyParamRuleData : public TObject
 {
   UnicodeString HostName;
   UnicodeString UserName;

@@ -1014,7 +1014,7 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
   {
     FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   }
-  TSearchRec SearchRec = {0};
+  TSearchRec SearchRec;
 
   UnicodeString DirName2 = IncludeTrailingBackslash(DirName);
   if (FindFirst(DirName2 + L"*.*", FindAttrs, SearchRec) == 0)

@@ -58,7 +58,7 @@ DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
 DEFINE_CALLBACK_TYPE3(TGetSpaceAvailableEvent, void,
   const UnicodeString & /* Path */, TSpaceAvailable & /* ASpaceAvailable */, bool & /* Close */);
 
-struct TMultipleEdit
+struct TMultipleEdit : public TObject
 {
   UnicodeString FileName;
   UnicodeString FileTitle;
@@ -66,7 +66,8 @@ struct TMultipleEdit
   UnicodeString LocalFileName;
   bool PendingSave;
 };
-struct TEditHistory
+
+struct TEditHistory : public TObject
 {
   UnicodeString FileName;
   UnicodeString Directory;
