@@ -336,7 +336,7 @@ protected:
   intptr_t FUpdateCount;
 };
 
-struct TStringItem
+struct TStringItem : public TObject
 {
   TStringItem() : FString(), FObject(NULL) {}
   ~TStringItem() { FString.Clear(); FObject = NULL; }
