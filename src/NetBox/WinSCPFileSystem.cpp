@@ -772,6 +772,14 @@ bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void *Param)
       ProcessQueue(true);
     }
   }
+  else
+  {
+    if (Event == FE_COMMAND)
+    {
+      UnicodeString Command = static_cast<wchar_t *>(Param);
+      Result = true;
+    }
+  }
   return Result;
 }
 //------------------------------------------------------------------------------
