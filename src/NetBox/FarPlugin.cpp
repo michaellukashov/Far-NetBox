@@ -2821,14 +2821,14 @@ UnicodeString TFarPanelInfo::GetCurrentDirectory()
                                       FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
   if (Size)
   {
-    FarPanelDirectory * pfpd = static_cast<FarPanelDirectory *>(malloc(Size));
+    FarPanelDirectory * pfpd = static_cast<FarPanelDirectory *>(nb_malloc(Size));
 
     FarPlugin->FarControl(FCTL_GETPANELDIRECTORY,
       Size,
       pfpd,
       FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
     Result = pfpd->Name;
-    free(pfpd);
+    nb_free(pfpd);
   }
   return Result.c_str();
 }
