@@ -39,14 +39,14 @@ protected:
 class EAbort : public Exception
 {
 public:
-  EAbort(std::wstring what) : Exception(what)
+  EAbort(const std::wstring & what) : Exception(what)
   {}
 };
 
 class EAccessViolation : public Exception
 {
 public:
-  EAccessViolation(std::wstring what) : Exception(what)
+  EAccessViolation(const std::wstring & what) : Exception(what)
   {}
 };
 
@@ -131,7 +131,7 @@ UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars = 0);
 char HexToChar(const UnicodeString & Hex, uintptr_t MinChars = 0);
 
 UnicodeString ReplaceStrAll(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat);
-UnicodeString SysErrorMessage(int code);
+UnicodeString SysErrorMessage(int Code);
 
 bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
 UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
@@ -289,7 +289,7 @@ struct TFileTime
   Integer HighTime;
 };
 
-struct TSearchRec
+struct TSearchRec : public TObject
 {
   Integer Time;
   Int64 Size;

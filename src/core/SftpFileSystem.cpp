@@ -177,7 +177,7 @@ const int tfNewDirectory = 0x02;
 //---------------------------------------------------------------------------
 #pragma warn -inl
 //---------------------------------------------------------------------------
-struct TSFTPSupport
+struct TSFTPSupport : public TObject
 {
   TSFTPSupport() :
     AttribExtensions(new TStringList()),
@@ -801,7 +801,7 @@ public:
     TRY_FINALLY (
     {
       DumpLines->LoadFromFile(FileName);
-      Dump = AnsiString(DumpLines->Text);
+      Dump = AnsiString(DumpLines->GetText());
     }
     ,
     {
@@ -1411,7 +1411,7 @@ public:
 
   bool Init(const UnicodeString & AFileName,
     HANDLE AFile, TFileOperationProgressType * AOperationProgress,
-    const RawByteString AHandle, __int64 ATransfered)
+    const RawByteString & AHandle, __int64 ATransfered)
   {
     FFileName = AFileName;
     FStream = new TSafeHandleStream(AFile);
@@ -1714,7 +1714,7 @@ struct TOpenRemoteFileParams
   bool Confirmed;
 };
 //---------------------------------------------------------------------------
-struct TSinkFileParams
+struct TSinkFileParams : public TObject
 {
   UnicodeString TargetDir;
   const TCopyParamType * CopyParam;
@@ -1814,8 +1814,8 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
       FFileSystemInfo.AdditionalInfo += LoadStr(SFTP_EXTENSION_INFO) + L"\r\n";
       for (intptr_t Index = 0; Index < FExtensions->GetCount(); ++Index)
       {
-        UnicodeString Name = FExtensions->Names[Index];
-        UnicodeString Value = FExtensions->Values[Name];
+        UnicodeString Name = FExtensions->GetName(Index);
+        UnicodeString Value = FExtensions->GetValue(Name);
         UnicodeString Line;
         if (Value.IsEmpty())
         {
@@ -1887,10 +1887,10 @@ void TSFTPFileSystem::Idle()
 void TSFTPFileSystem::ResetConnection()
 {
   // there must be no valid packet reservation at the end
-  for (int i = 0; i < FPacketReservations->GetCount(); i++)
+  for (intptr_t I = 0; I < FPacketReservations->GetCount(); I++)
   {
-    assert(FPacketReservations->Items[i] == NULL);
-    delete static_cast<TSFTPPacket *>(FPacketReservations->Items[i]);
+    assert(FPacketReservations->Items[I] == NULL);
+    delete static_cast<TSFTPPacket *>(FPacketReservations->Items[I]);
   }
   FPacketReservations->Clear();
   FPacketNumbers.clear();
@@ -2797,13 +2797,13 @@ void TSFTPFileSystem::DoStartup()
           for (intptr_t Index = 0; Index < FSupport->AttribExtensions->GetCount(); ++Index)
           {
             FTerminal->LogEvent(
-              FORMAT(L"    %s", FSupport->AttribExtensions->Strings[Index].c_str()));
+              FORMAT(L"    %s", FSupport->AttribExtensions->GetString(Index).c_str()));
           }
           FTerminal->LogEvent(FORMAT(L"  Extensions (%d)\n", FSupport->Extensions->GetCount()));
           for (intptr_t Index = 0; Index < FSupport->Extensions->GetCount(); ++Index)
           {
             FTerminal->LogEvent(
-              FORMAT(L"    %s", FSupport->Extensions->Strings[Index].c_str()));
+              FORMAT(L"    %s", FSupport->Extensions->GetString(Index).c_str()));
           }
         }
       }
@@ -2877,7 +2877,7 @@ void TSFTPFileSystem::DoStartup()
         FTerminal->LogEvent(FORMAT(L"Unknown server extension %s=%s",
           ExtensionName.c_str(), ExtensionDisplayData.c_str()));
       }
-      FExtensions->Values(ExtensionName, ExtensionDisplayData);
+      FExtensions->SetValue(ExtensionName, ExtensionDisplayData);
     }
 
     if (SupportsExtension(SFTP_EXT_VENDOR_ID))
@@ -3811,7 +3811,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     bool Success = false;
-    FileName = FilesToCopy->Strings[Index];
+    FileName = FilesToCopy->GetString(Index);
     TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index]);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ExtractFileName(RealFileName, false);
@@ -4990,7 +4990,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     Success = false;
-    FileName = FilesToCopy->Strings[Index];
+    FileName = FilesToCopy->GetString(Index);
     File = static_cast<TRemoteFile *>(FilesToCopy->Objects[Index]);
 
     assert(!FAvoidBusy);

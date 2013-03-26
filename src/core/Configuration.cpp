@@ -366,8 +366,8 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
 
             for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
             {
-              Target->WriteBinaryData(Names->Strings[Index],
-                Source->ReadBinaryData(Names->Strings[Index]));
+              Target->WriteBinaryData(Names->GetString(Index),
+                Source->ReadBinaryData(Names->GetString(Index)));
             }
 
             Target->CloseSubKey();
@@ -384,8 +384,8 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
 
             for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
             {
-              Target->WriteString(Names->Strings[Index],
-                Source->ReadString(Names->Strings[Index], L""));
+              Target->WriteString(Names->GetString(Index),
+                Source->ReadString(Names->GetString(Index), L""));
             }
 
             Target->CloseSubKey();
@@ -407,8 +407,8 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
 
         for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
         {
-          Target->WriteStringRaw(Names->Strings[Index],
-            Source->ReadStringRaw(Names->Strings[Index], L""));
+          Target->WriteStringRaw(Names->GetString(Index),
+            Source->ReadStringRaw(Names->GetString(Index), L""));
         }
 
         Target->CloseSubKey();

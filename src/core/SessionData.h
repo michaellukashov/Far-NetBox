@@ -51,7 +51,7 @@ extern const intptr_t FtpsImplicitPortNumber;
 extern const intptr_t HTTPPortNumber;
 extern const intptr_t HTTPSPortNumber;
 //---------------------------------------------------------------------------
-struct TIEProxyConfig
+struct TIEProxyConfig : public TObject
 {
   TIEProxyConfig() :
     AutoDetect(false),

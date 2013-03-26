@@ -123,7 +123,7 @@ ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & More
   if (!MoreMessages.IsEmpty())
   {
     FMoreMessages = new TStringList();
-    FMoreMessages->Text = MoreMessages;
+    FMoreMessages->SetText(MoreMessages);
   }
   TRACE("/");
 }
@@ -135,7 +135,7 @@ ExtException::ExtException(const UnicodeString & Msg, TStrings* MoreMessages,
   FHelpKeyword(HelpKeyword)
 {
   CALLSTACK;
-  TRACEFMT("[%s] [%s]", Msg.c_str(), UnicodeString((MoreMessages != NULL) ? MoreMessages->Text : UnicodeString(L"<null>")).c_str());
+  TRACEFMT("[%s] [%s]", Msg.c_str(), UnicodeString((MoreMessages != NULL) ? MoreMessages->GetText() : UnicodeString(L"<null>")).c_str());
   if (Own)
   {
     FMoreMessages = MoreMessages;
@@ -171,7 +171,7 @@ void ExtException::AddMoreMessages(const Exception * E)
 
       if (ExtE->GetMoreMessages() != NULL)
       {
-        TRACEFMT("1 [%s]", ExtE->GetMoreMessages()->Text.get().c_str());
+        TRACEFMT("1 [%s]", ExtE->GetMoreMessages()->GetText().c_str());
         FMoreMessages->Assign(ExtE->GetMoreMessages());
       }
     }

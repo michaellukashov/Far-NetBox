@@ -56,7 +56,7 @@ TQueryButtonAlias::TQueryButtonAlias() :
   OnClick = NULL;
 }
 //---------------------------------------------------------------------------
-TQueryParams::TQueryParams(unsigned int AParams, UnicodeString AHelpKeyword)
+TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString & AHelpKeyword)
 {
   Params = AParams;
   Aliases = NULL;

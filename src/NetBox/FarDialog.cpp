@@ -86,9 +86,9 @@ TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
 //---------------------------------------------------------------------------
 TFarDialog::~TFarDialog()
 {
-  for (intptr_t i = 0; i < GetItemCount(); i++)
+  for (intptr_t I = 0; I < GetItemCount(); I++)
   {
-    GetItem(i)->Detach();
+    GetItem(I)->Detach();
   }
   delete FItems;
   nb_free(FDialogItems);
@@ -122,9 +122,9 @@ void TFarDialog::SetBounds(TRect Value)
         Coord.Y = static_cast<short int>(FBounds.Top);
         SendMessage(DM_MOVEDIALOG, (int)true, reinterpret_cast<void *>(&Coord));
       }
-      for (intptr_t i = 0; i < GetItemCount(); i++)
+      for (intptr_t I = 0; I < GetItemCount(); I++)
       {
-        GetItem(i)->DialogResized();
+        GetItem(I)->DialogResized();
       }
     }
     ,
@@ -676,9 +676,9 @@ bool TFarDialog::HotKey(uintptr_t Key, uintptr_t ControlState)
   if (Result)
   {
     Result = false;
-    for (intptr_t i = 0; i < GetItemCount(); i++)
+    for (intptr_t I = 0; I < GetItemCount(); I++)
     {
-      if (GetItem(i)->HotKey(HotKey))
+      if (GetItem(I)->HotKey(HotKey))
       {
         Result = true;
       }
@@ -691,13 +691,13 @@ bool TFarDialog::HotKey(uintptr_t Key, uintptr_t ControlState)
 TFarDialogItem * TFarDialog::ItemAt(int X, int Y)
 {
   TFarDialogItem * Result = NULL;
-  for (intptr_t i = 0; i < GetItemCount(); i++)
+  for (intptr_t I = 0; I < GetItemCount(); I++)
   {
-    TRect Bounds = GetItem(i)->GetActualBounds();
+    TRect Bounds = GetItem(I)->GetActualBounds();
     if ((Bounds.Left <= X) && (X <= Bounds.Right) &&
         (Bounds.Top <= Y) && (Y <= Bounds.Bottom))
     {
-      Result = GetItem(i);
+      Result = GetItem(I);
     }
   }
   return Result;
@@ -706,9 +706,9 @@ TFarDialogItem * TFarDialog::ItemAt(int X, int Y)
 bool TFarDialog::CloseQuery()
 {
   bool Result = true;
-  for (intptr_t i = 0; i < GetItemCount() && Result; i++)
+  for (intptr_t I = 0; I < GetItemCount() && Result; I++)
   {
-    if (!GetItem(i)->CloseQuery())
+    if (!GetItem(I)->CloseQuery())
     {
       Result = false;
     }
@@ -728,9 +728,9 @@ void TFarDialog::RefreshBounds()
 //---------------------------------------------------------------------------
 void TFarDialog::Init()
 {
-  for (intptr_t i = 0; i < GetItemCount(); i++)
+  for (intptr_t I = 0; I < GetItemCount(); I++)
   {
-    GetItem(i)->Init();
+    GetItem(I)->Init();
   }
 
   RefreshBounds();
@@ -2171,7 +2171,7 @@ void TFarList::Assign(TPersistent * Source)
 void TFarList::UpdateItem(intptr_t Index)
 {
   FarListItem * ListItem = &FListItems->Items[Index];
-  UnicodeString Value = Strings[Index].c_str();
+  UnicodeString Value = GetString(Index).c_str();
   nb_free((void *)ListItem->Text);
   ListItem->Text = TCustomFarPlugin::DuplicateStr(Value, true);
 
@@ -2190,7 +2190,7 @@ void TFarList::Put(intptr_t Index, const UnicodeString & S)
     FNoDialogUpdate = true;
     TRY_FINALLY (
     {
-      TStringList::PutString(Index, S);
+      TStringList::SetString(Index, S);
       if (GetUpdateCount() == 0)
       {
         UpdateItem(Index);
@@ -2204,7 +2204,7 @@ void TFarList::Put(intptr_t Index, const UnicodeString & S)
   }
   else
   {
-    TStringList::PutString(Index, S);
+    TStringList::SetString(Index, S);
   }
 }
 //---------------------------------------------------------------------------
@@ -2248,7 +2248,7 @@ void TFarList::Changed()
     for (intptr_t I = 0; I < GetCount(); I++)
     {
       // UnicodeString Value = Strings[I];
-      FListItems->Items[I].Text = Strings[I].c_str();
+      FListItems->Items[I].Text = GetString(I).c_str();
     }
     if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
     {
@@ -2283,7 +2283,7 @@ void TFarList::SetSelected(intptr_t Value)
     }
     else
     {
-      GetDialogItem()->SetData(Strings[Value]);
+      GetDialogItem()->SetData(GetString(Value));
     }
   }
 }
@@ -2352,11 +2352,11 @@ intptr_t TFarList::GetTopIndex()
 intptr_t TFarList::GetMaxLength()
 {
   intptr_t Result = 0;
-  for (int i = 0; i < GetCount(); i++)
+  for (intptr_t I = 0; I < GetCount(); I++)
   {
-    if (Result < Strings[i].Length())
+    if (Result < GetString(I).Length())
     {
-      Result = Strings[i].Length();
+      Result = GetString(I).Length();
     }
   }
   return Result;
@@ -2449,7 +2449,7 @@ intptr_t TFarList::ItemProc(intptr_t Msg, void * Param)
     {
       intptr_t param = reinterpret_cast<intptr_t>(Param);
       assert(param >= 0 && param < GetCount());
-      GetDialogItem()->UpdateData(Strings[param]);
+      GetDialogItem()->UpdateData(GetString(param));
     }
   }
   return 0;
@@ -2655,7 +2655,7 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
       Buf = L" ";
       if (Index < GetItems()->GetCount())
       {
-        UnicodeString Value = GetItems()->Strings[Index].SubString(1, DisplayWidth - 1);
+        UnicodeString Value = GetItems()->GetString(Index).SubString(1, DisplayWidth - 1);
         Buf += Value;
       }
       UnicodeString Value = ::StringOfChar(' ', DisplayWidth - Buf.Length());

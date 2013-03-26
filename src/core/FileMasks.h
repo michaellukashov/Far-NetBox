@@ -19,7 +19,7 @@ extern const wchar_t IncludeExcludeFileMasksDelimiter;
 class TFileMasks : public TObject
 {
 public:
-  struct TParams
+  struct TParams : public TObject
   {
     TParams();
     __int64 Size;
@@ -71,7 +71,7 @@ private:
   int FForceDirectoryMasks;
   UnicodeString FStr;
 
-  struct TMaskMask
+  struct TMaskMask : public TObject
   {
     TMaskMask() :
       Kind(Any),
@@ -81,7 +81,7 @@ private:
     Masks::TMask * Mask;
   };
 
-  struct TMask
+  struct TMask : public TObject
   {
     TMask() :
       HighSizeMask(None),
@@ -188,7 +188,7 @@ private:
 };
 //---------------------------------------------------------------------------
 class TTerminal;
-struct TCustomCommandData
+struct TCustomCommandData : public TObject
 {
   TCustomCommandData();
   explicit TCustomCommandData(TTerminal * Terminal);

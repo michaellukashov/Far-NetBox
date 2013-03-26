@@ -5,7 +5,7 @@
 #include <CoreDefs.hpp>
 #include <CopyParam.h>
 //---------------------------------------------------------------------------
-struct TSynchronizeParamType
+struct TSynchronizeParamType : public TObject
 {
   UnicodeString LocalDirectory;
   UnicodeString RemoteDirectory;

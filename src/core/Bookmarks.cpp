@@ -49,7 +49,7 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
         Storage->GetSubKeyNames(BookmarkKeys);
         for (intptr_t Index = 0; Index < BookmarkKeys->GetCount(); ++Index)
         {
-          UnicodeString Key = BookmarkKeys->Strings[Index];
+          UnicodeString Key = BookmarkKeys->GetString(Index);
           if (Storage->OpenSubKey(Key, false))
           {
             TBookmarkList * BookmarkList = GetBookmarks(Key);
@@ -95,7 +95,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString &
     TShortCut ShortCut(0);
     for (intptr_t I = 0; I < Names->GetCount(); ++I)
     {
-      Name = Names->Strings[I];
+      Name = Names->GetString(I);
       bool IsDirectory = (Index == 0) || (Index == 1);
       if (IsDirectory)
       {
@@ -145,7 +145,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString &
     Storage->GetSubKeyNames(Names);
     for (intptr_t I = 0; I < Names->GetCount(); ++I)
     {
-      Name = Names->Strings[I];
+      Name = Names->GetString(I);
       if (Storage->OpenSubKey(Name, false))
       {
         LoadLevel(Storage, Key + (Key.IsEmpty() ? L"" : L"/") + Name, Index, BookmarkList);
@@ -172,7 +172,7 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
         if (All || BookmarkList->GetModified())
         {
           UnicodeString Key;
-          Key = FBookmarkLists->Strings[Index];
+          Key = FBookmarkLists->GetString(Index);
           Storage->RecursiveDeleteSubKey(Key);
           if (Storage->OpenSubKey(Key, true))
           {
@@ -334,12 +334,12 @@ void TBookmarkList::Assign(TPersistent * Source)
 void TBookmarkList::LoadOptions(THierarchicalStorage * Storage)
 {
   CALLSTACK;
-  FOpenedNodes->CommaText = Storage->ReadString(L"OpenedNodes", L"");
+  FOpenedNodes->SetCommaText(Storage->ReadString(L"OpenedNodes", L""));
 }
 //---------------------------------------------------------------------------
 void TBookmarkList::SaveOptions(THierarchicalStorage * Storage)
 {
-  Storage->WriteString(L"OpenedNodes", FOpenedNodes->CommaText);
+  Storage->WriteString(L"OpenedNodes", FOpenedNodes->GetCommaText());
 }
 //---------------------------------------------------------------------------
 void TBookmarkList::Add(TBookmark * Bookmark)
@@ -411,12 +411,12 @@ void TBookmarkList::KeyChanged(intptr_t Index)
 {
   assert(Index < GetCount());
   TBookmark * Bookmark = dynamic_cast<TBookmark *>(FBookmarks->Objects[Index]);
-  assert(FBookmarks->Strings[Index] != Bookmark->GetKey());
+  assert(FBookmarks->GetString(Index) != Bookmark->GetKey());
   if (FBookmarks->IndexOf(Bookmark->GetKey().c_str()) >= 0)
   {
     throw Exception(FMTLOAD(DUPLICATE_BOOKMARK, Bookmark->GetName().c_str()));
   }
-  FBookmarks->Strings[Index] = Bookmark->GetKey();
+  FBookmarks->SetString(Index, Bookmark->GetKey());
 }
 //---------------------------------------------------------------------------
 TBookmark * TBookmarkList::FindByName(const UnicodeString & Node, const UnicodeString & Name)

@@ -2257,7 +2257,7 @@ void TSessionData::ParseIEProxyConfig() const
   TProxyMethod ProxyMethodTmp = pmNone;
   for (intptr_t Index = 0; Index < ProxyServerList.GetCount(); ++Index)
   {
-    UnicodeString ProxyServer = ProxyServerList.Strings[Index].Trim();
+    UnicodeString ProxyServer = ProxyServerList.GetString(Index).Trim();
     TStringList ProxyServerForScheme;
     ProxyServerForScheme.SetDelimiter(L'=');
     ProxyServerForScheme.SetDelimitedText(ProxyServer);
@@ -2265,15 +2265,15 @@ void TSessionData::ParseIEProxyConfig() const
     UnicodeString ProxyURI;
     if (ProxyServerForScheme.GetCount() == 2)
     {
-      ProxyScheme = ProxyServerList.Strings[0].Trim();
-      ProxyURI = ProxyServerList.Strings[1].Trim();
+      ProxyScheme = ProxyServerList.GetString(0).Trim();
+      ProxyURI = ProxyServerList.GetString(1).Trim();
     }
     else
     {
       if (ProxyServerForScheme.GetCount() == 1)
       {
         ProxyScheme = L"http";
-        ProxyURI = ProxyServerList.Strings[0].Trim();
+        ProxyURI = ProxyServerList.GetString(0).Trim();
         ProxyMethodTmp = pmHTTP;
       }
     }
@@ -2786,7 +2786,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   for (intptr_t Index = 0; Index < SubKeys->GetCount(); ++Index)
   {
     TSessionData * SessionData = NULL;
-    UnicodeString SessionName = SubKeys->Strings[Index];
+    UnicodeString SessionName = SubKeys->GetString(Index);
     bool ValidName = true;
     try
     {
@@ -2989,8 +2989,7 @@ void TStoredSessionList::Import(TStoredSessionList * From,
   Save(false, true);
 }
 //---------------------------------------------------------------------
-void TStoredSessionList::SelectSessionsToImport
-  (TStoredSessionList * Dest, bool SSHOnly)
+void TStoredSessionList::SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly)
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
@@ -3220,7 +3219,7 @@ void TStoredSessionList::ImportHostKeys(const UnicodeString & TargetKey,
           UnicodeString KeyName;
           for (intptr_t KeyIndex = 0; KeyIndex < KeyList->GetCount(); ++KeyIndex)
           {
-            KeyName = KeyList->Strings[KeyIndex];
+            KeyName = KeyList->GetString(KeyIndex);
             intptr_t P = KeyName.Pos(HostKeyName);
             if ((P > 0) && (P == KeyName.Length() - HostKeyName.Length() + 1))
             {

@@ -296,7 +296,7 @@ private:
 class TRights : public TObject
 {
 public:
-  static const int TextLen = 9;
+  static const intptr_t TextLen = 9;
   static const wchar_t UndefSymbol = L'$';
   static const wchar_t UnsetSymbol = L'-';
   static const wchar_t BasicSymbols[];

@@ -321,10 +321,10 @@ bool TCopyParamList::CompareItem(intptr_t Index,
 //---------------------------------------------------------------------------
 void TCopyParamList::Clear()
 {
-  for (intptr_t i = 0; i < GetCount(); i++)
+  for (intptr_t I = 0; I < GetCount(); I++)
   {
-    delete GetCopyParam(i);
-    delete GetRule(i);
+    delete GetCopyParam(I);
+    delete GetRule(I);
   }
   FCopyParams->Clear();
   FRules->Clear();
@@ -353,7 +353,7 @@ void TCopyParamList::Change(intptr_t Index, const UnicodeString & Name,
 {
   if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
   {
-    FNames->Strings[Index] = Name;
+    FNames->SetString(Index, Name);
     delete GetCopyParam(Index);
     FCopyParams->Items(Index, reinterpret_cast<TObject *>(CopyParam));
     delete GetRule(Index);
@@ -497,7 +497,7 @@ const TCopyParamType * TCopyParamList::GetCopyParam(intptr_t Index) const
 //---------------------------------------------------------------------------
 UnicodeString TCopyParamList::GetName(intptr_t Index) const
 {
-  return FNames->Strings[Index];
+  return FNames->GetString(Index);
 }
 //---------------------------------------------------------------------------
 TStrings * TCopyParamList::GetNameList() const
@@ -508,7 +508,7 @@ TStrings * TCopyParamList::GetNameList() const
 
     for (intptr_t I = 0; I < GetCount(); ++I)
     {
-      FNameList->Add(FNames->Strings[I]);
+      FNameList->Add(FNames->GetString(I));
     }
   }
   return FNameList;
@@ -1108,17 +1108,17 @@ TStrings * TGUIConfiguration::GetLocales()
       {
         TRACE("TGUIConfiguration::GetLocales 11");
         if ((Exts->Objects[Index] == NULL) &&
-            (Exts->Strings[Index].Length() == 3) &&
-            SameText(Exts->Strings[Index].SubString(1, 2), AdditionaLanguagePrefix))
+            (Exts->GetString(Index).Length() == 3) &&
+            SameText(Exts->GetString(Index).SubString(1, 2), AdditionaLanguagePrefix))
         {
           TRACE("TGUIConfiguration::GetLocales 12");
           UnicodeString LangName = GetFileFileInfoString(L"LangName",
-            ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->Strings[Index]));
+            ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetString(Index)));
           if (!LangName.IsEmpty())
           {
             TRACE("TGUIConfiguration::GetLocales 13");
             FLocales->AddObject(LangName, reinterpret_cast<TObject *>(static_cast<size_t>(
-              AdditionaLanguageMask + Exts->Strings[Index][3])));
+              AdditionaLanguageMask + Exts->GetString(Index)[3])));
           }
         }
       }

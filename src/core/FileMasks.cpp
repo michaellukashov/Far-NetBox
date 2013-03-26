@@ -24,7 +24,7 @@ EFileMasksException::EFileMasksException(
   ErrorLen = AErrorLen;
 }
 //---------------------------------------------------------------------------
-UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeString & Mask, bool& Masked)
+UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeString & Mask, bool & Masked)
 {
   UnicodeString Result;
   intptr_t RestStart = 1;
@@ -165,7 +165,7 @@ UnicodeString TFileMasks::ComposeMaskStr(
   UnicodeString ResultNoDirMask;
   for (intptr_t I = 0; I < MasksStr->GetCount(); ++I)
   {
-    UnicodeString Str = MasksStr->Strings[I].Trim();
+    UnicodeString Str = MasksStr->GetString(I).Trim();
     if (!Str.IsEmpty())
     {
       for (intptr_t P = 1; P <= Str.Length(); P++)

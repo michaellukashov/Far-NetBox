@@ -40,7 +40,7 @@ enum TFSCapability { fcUserGroupListing = 0, fcModeChanging, fcGroupChanging,
   fcModeChangingUpload, fcPreservingTimestampUpload, fcShellAnyCommand,
   fcSecondaryShell, fcCount };
 //---------------------------------------------------------------------------
-struct TFileSystemInfo
+struct TFileSystemInfo : public TObject
 {
   TFileSystemInfo();
 

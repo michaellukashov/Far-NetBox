@@ -490,7 +490,7 @@ UnicodeString ExceptionLogString(Exception *E)
       if (MoreMessages)
       {
         Msg += L"\n" +
-          StringReplace(MoreMessages->Text, L"\r", L"", TReplaceFlags() << rfReplaceAll);
+          StringReplace(MoreMessages->GetText(), L"\r", L"", TReplaceFlags() << rfReplaceAll);
       }
     }
     return Msg;
@@ -941,10 +941,10 @@ RawByteString HexToBytes(const UnicodeString & Hex)
   intptr_t L = Hex.Length();
   if (L % 2 == 0)
   {
-    for (intptr_t i = 1; i <= Hex.Length(); i += 2)
+    for (intptr_t I = 1; I <= Hex.Length(); I += 2)
     {
-      intptr_t P1 = Digits.Pos(UpCase(Hex[i]));
-      intptr_t P2 = Digits.Pos(UpCase(Hex[i + 1]));
+      intptr_t P1 = Digits.Pos(UpCase(Hex[I]));
+      intptr_t P2 = Digits.Pos(UpCase(Hex[I + 1]));
       if (P1 <= 0 || P2 <= 0)
       {
         Result = L"";
@@ -1014,7 +1014,7 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
   {
     FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   }
-  TSearchRec SearchRec = {0};
+  TSearchRec SearchRec;
 
   UnicodeString DirName2 = IncludeTrailingBackslash(DirName);
   if (FindFirst(DirName2 + L"*.*", FindAttrs, SearchRec) == 0)

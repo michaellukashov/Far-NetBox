@@ -411,15 +411,10 @@ TStrings::TStrings() :
   FQuoteChar(L'"'),
   FUpdateCount(0)
 {
-  Text(this);
-  CommaText(this);
   CaseSensitive(this);
   Sorted(this);
   Duplicates(this);
-  Strings(this);
   Objects(this);
-  Names(this);
-  Values(this);
 }
 
 TStrings::~TStrings()
@@ -696,7 +691,7 @@ bool TStrings::Equals(TStrings * Strings)
   return Result;
 }
 
-void TStrings::PutString(intptr_t Index, const UnicodeString & S)
+void TStrings::SetString(intptr_t Index, const UnicodeString & S)
 {
   TObject * TempObject = GetObjects(Index);
   Delete(Index);
@@ -763,6 +758,13 @@ const UnicodeString TStrings::GetName(intptr_t Index)
   return ExtractName(GetString(Index));
 }
 
+void TStrings::SetName(intptr_t Index, const UnicodeString & Value)
+{
+  (void)Index;
+  // SetName(Index, Value);
+  Classes::Error(SNotImplemented, 2012);
+}
+
 UnicodeString TStrings::ExtractName(const UnicodeString & S) const
 {
   UnicodeString Result = S;
@@ -800,7 +802,7 @@ void TStrings::SetValue(const UnicodeString & Name, const UnicodeString & Value)
     {
       I = Add(L"");
     }
-    PutString(I, Name + L'=' + Value);
+    SetString(I, Name + L'=' + Value);
   }
   else
   {
@@ -955,7 +957,7 @@ intptr_t TStringList::IndexOf(const UnicodeString & S)
   return Result;
 }
 
-void TStringList::PutString(intptr_t Index, const UnicodeString & S)
+void TStringList::SetString(intptr_t Index, const UnicodeString & S)
 {
   if (GetSorted())
   {

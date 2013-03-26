@@ -182,7 +182,7 @@ public:
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
-struct TFileTransferData
+struct TFileTransferData : public TObject
 {
   TFileTransferData()
   {
@@ -1094,7 +1094,7 @@ void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   intptr_t Index = 0;
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
-    UnicodeString FileName = FilesToCopy->Strings[Index];
+    UnicodeString FileName = FilesToCopy->GetString(Index);
     const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->Objects[Index]);
     bool Success = false;
 
@@ -1381,7 +1381,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
     bool Success = false;
-    FileName = FilesToCopy->Strings[Index];
+    FileName = FilesToCopy->GetString(Index);
     TRACEFMT("1 [%s]", FileName.c_str());
     TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index]);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
@@ -1845,10 +1845,10 @@ void TFTPFileSystem::DoStartup()
   TStrings * PostLoginCommands = new TStringList();
   TRY_FINALLY (
   {
-    PostLoginCommands->Text = FTerminal->GetSessionData()->GetPostLoginCommands();
+    PostLoginCommands->SetText(FTerminal->GetSessionData()->GetPostLoginCommands());
     for (intptr_t Index = 0; Index < PostLoginCommands->GetCount(); ++Index)
     {
-      UnicodeString Command = PostLoginCommands->Strings[Index];
+      UnicodeString Command = PostLoginCommands->GetString(Index);
       if (!Command.IsEmpty())
       {
         FFileZillaIntf->CustomCommand(Command.c_str());
@@ -1953,7 +1953,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
           (Response->GetCount() == 1))
       {
         TRACE("1");
-        UnicodeString Path = Response->Text;
+        UnicodeString Path = Response->GetText();
 
         intptr_t P = Path.Pos(L"\"");
         if (P == 0)
@@ -1988,7 +1988,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
       else
       {
         TRACE("6");
-        throw Exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, Response->Text.get().c_str()));
+        throw Exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, Response->GetText().c_str()));
       }
     }
     ,
@@ -2296,7 +2296,7 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
         FORMAT(L"%s\r\n", LoadStr(FTP_FEATURE_INFO).c_str());
       for (intptr_t Index = 0; Index < FFeatures->GetCount(); ++Index)
       {
-        FFileSystemInfo.AdditionalInfo += FORMAT(L"  %s\r\n", FFeatures->Strings[Index].c_str());
+        FFileSystemInfo.AdditionalInfo += FORMAT(L"  %s\r\n", FFeatures->GetString(Index).c_str());
       }
     }
 
@@ -2889,7 +2889,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
       {
         TRACE("17");
         assert(MoreMessages->GetCount() > 0);
-        ErrorStr = MoreMessages->Strings[0];
+        ErrorStr = MoreMessages->GetString(0);
         MoreMessages->Delete(0);
       }
 
@@ -3021,7 +3021,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
     {
       if (FTerminal->GetConfiguration()->GetShowFtpWelcomeMessage())
       {
-        FTerminal->DisplayBanner(FLastResponse->Text);
+        FTerminal->DisplayBanner(FLastResponse->GetText());
       }
     }
     else if (FLastCommand == PASS)
@@ -3038,7 +3038,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
       // Possitive reply to "SYST" must be 215, see RFC 959
       if (FLastCode == 215)
       {
-        FSystem = FLastResponse->Text.get().TrimRight();
+        FSystem = FLastResponse->GetText().TrimRight();
         // full name is "Personal FTP Server PRO K6.0"
         if ((FListAll == asAuto) &&
             (FSystem.Pos(L"Personal FTP Server") > 0))

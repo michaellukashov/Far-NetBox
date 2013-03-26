@@ -47,7 +47,7 @@ bool FileExistsEx(const UnicodeString & Path)
 }
 //---------------------------------------------------------------------------
 void OpenSessionInPutty(const UnicodeString & PuttyPath,
-  TSessionData * SessionData, UnicodeString Password)
+  TSessionData * SessionData, const UnicodeString & Password)
 {
   CALLSTACK;
   UnicodeString Program, Params, Dir;
@@ -56,6 +56,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
   if (FindFile(Program))
   {
     TRACE("1");
+    UnicodeString Psw = Password;
     UnicodeString SessionName;
     TRegistryStorage * Storage = NULL;
     TSessionData * ExportData = NULL;
@@ -105,7 +106,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
               ExportData->SetProtocol(ptTelnet);
               ExportData->SetPortNumber(23);
               // PuTTY  does not allow -pw for telnet
-              Password = L"";
+              Psw = L"";
             }
             else
             {
@@ -134,10 +135,10 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
       TRACE("10");
       Params += L" ";
     }
-    if (!Password.IsEmpty())
+    if (!Psw.IsEmpty())
     {
       TRACE("11");
-      Params += FORMAT(L"-pw %s ", EscapePuttyCommandParam(Password).c_str());
+      Params += FORMAT(L"-pw %s ", EscapePuttyCommandParam(Psw).c_str());
     }
     Params += FORMAT(L"-load %s", EscapePuttyCommandParam(SessionName).c_str());
 
@@ -289,7 +290,7 @@ UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   const UnicodeString & MultiItemsFormat, TStrings * Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
-    Items->GetCount(), (Items->GetCount() > 0 ? Items->Strings[0] : UnicodeString()));
+    Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
 }
 //---------------------------------------------------------------------------
 UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
@@ -299,8 +300,8 @@ UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
   UnicodeString Item;
   if (Files->GetCount() > 0)
   {
-    Item = Remote ? UnixExtractFileName(Files->Strings[0]) :
-      ExtractFileName(Files->Strings[0], true);
+    Item = Remote ? UnixExtractFileName(Files->GetString(0)) :
+      ExtractFileName(Files->GetString(0), true);
   }
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
     Files->GetCount(), Item);
@@ -337,7 +338,7 @@ UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & I
 //---------------------------------------------------------------------------
 bool DeleteDirectory(const UnicodeString & DirName)
 {
-  TSearchRec sr = {0};
+  TSearchRec sr;
   bool retval = true;
   if (FindFirst(DirName + L"\\*", faAnyFile, sr) == 0) // VCL Function
   {

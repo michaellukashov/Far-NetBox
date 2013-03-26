@@ -3153,7 +3153,7 @@ config_read_auth_data(
     Storage->GetValueNames(Keys);
     for (intptr_t Index = 0; Index < Keys->GetCount(); ++Index)
     {
-      UnicodeString Key = Keys->Strings[Index];
+      UnicodeString Key = Keys->GetString(Index);
       UnicodeString Value = Storage->ReadStringRaw(Key, L"");
       apr_hash_set(*hash, AUTHN_ASCII_CERT_KEY, APR_HASH_KEY_STRING,
         string_create(AnsiString(Key).c_str(), pool));
@@ -12583,11 +12583,11 @@ void TWebDAVFileSystem::CreateDirectory(const UnicodeString & DirName)
     UnicodeString CurDir;
     for (intptr_t I = 0; I < Strings.GetCount(); ++I)
     {
-      if (Strings.Strings[I].IsEmpty())
+      if (Strings.GetString(I).IsEmpty())
       {
         continue;
       }
-      CurDir += L"/" + Strings.Strings[I];
+      CurDir += L"/" + Strings.GetString(I);
       res = WebDAVMakeDirectory(CurDir.c_str());
     }
     if (!res)
@@ -12785,7 +12785,7 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
   while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
     bool Success = false;
-    FileName = FilesToCopy->Strings[Index];
+    FileName = FilesToCopy->GetString(Index);
     TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index]);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ExtractFileName(RealFileName, false);
@@ -13202,7 +13202,7 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
   intptr_t Index = 0;
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
-    UnicodeString FileName = FilesToCopy->Strings[Index];
+    UnicodeString FileName = FilesToCopy->GetString(Index);
     const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->Objects[Index]);
     bool Success = false;
     FTerminal->SetExceptionOnFail(true);

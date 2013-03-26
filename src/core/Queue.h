@@ -166,7 +166,7 @@ public:
   enum TStatus {
     qsPending, qsConnecting, qsProcessing, qsPrompt, qsQuery, qsError,
     qsPaused, qsDone };
-  struct TInfo
+  struct TInfo : public TObject
   {
     TFileOperation Operation;
     TOperationSide Side;

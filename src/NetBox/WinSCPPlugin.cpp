@@ -97,7 +97,7 @@ void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS & Flags,
   }
   PluginConfigStrings->AddObject(GetMsg(PLUGIN_NAME),
       reinterpret_cast<TObject *>(const_cast<GUID *>(&PluginConfigGuid)));
-  CommandPrefixes->CommaText = FarConfiguration->GetCommandPrefixes();
+  CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
 }
 //---------------------------------------------------------------------------
 bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
@@ -619,7 +619,7 @@ void TWinSCPPlugin::HandleException(Exception * E, int OpMode)
   }
 }
 //---------------------------------------------------------------------------
-struct TFarMessageData
+struct TFarMessageData : public TObject
 {
   TFarMessageData()
   {
@@ -761,7 +761,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
         {
           if (Params->Aliases[ai].Button == Data.Buttons[bi])
           {
-            ButtonLabels->Strings[bi] = Params->Aliases[ai].Alias;
+            ButtonLabels->SetString(bi, Params->Aliases[ai].Alias);
             break;
           }
         }

@@ -67,13 +67,13 @@
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_CUSTOM(this, ALLOW_SKIP, MESSAGE, OPERATION)
 //------------------------------------------------------------------------------
-struct TMoveFileParams
+struct TMoveFileParams : public TObject
 {
   UnicodeString Target;
   UnicodeString FileMask;
 };
 //------------------------------------------------------------------------------
-struct TFilesFindParams
+struct TFilesFindParams : public TObject
 {
   TFilesFindParams() :
     OnFileFound(NULL),
@@ -1169,7 +1169,7 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
 
     AResult = PromptUser(Data, Kind, Name, Instructions, Prompts, Results);
 
-    Result = Results->Strings[0];
+    Result = Results->GetString(0);
   }
   ,
   {
@@ -1208,7 +1208,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
-    RawByteString EncryptedPassword = EncryptPassword(Results->Strings[0]);
+    RawByteString EncryptedPassword = EncryptPassword(Results->GetString(0));
     if (FTunnelOpening)
     {
       FTunnelPassword = EncryptedPassword;
@@ -1227,7 +1227,7 @@ uintptr_t TTerminal::QueryUser(const UnicodeString & Query,
   TQueryType QueryType)
 {
   CALLSTACK;
-  LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), MoreMessages ? MoreMessages->CommaText.get().c_str() : L""));
+  LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), MoreMessages ? MoreMessages->GetCommaText().c_str() : L""));
   uintptr_t Answer = AbortAnswer(Answers);
   if (FOnQueryUser)
   {
@@ -1447,7 +1447,7 @@ void TTerminal::TerminalError(const UnicodeString & Msg)
   TerminalError(NULL, Msg);
 }
 //------------------------------------------------------------------------------
-void TTerminal::TerminalError(Exception * E, UnicodeString Msg)
+void TTerminal::TerminalError(Exception * E, const UnicodeString & Msg)
 {
   CALLSTACK;
   throw ETerminal(E, Msg);
@@ -2166,7 +2166,7 @@ bool TTerminal::CheckRemoteFile(intptr_t Params, TFileOperationProgressType * Op
 uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & FileName,
   const TOverwriteFileParams * FileParams, uintptr_t Answers, const TQueryParams * QueryParams,
   TOperationSide Side, intptr_t Params, TFileOperationProgressType * OperationProgress,
-  UnicodeString Message)
+  const UnicodeString & Message)
 {
   CALLSTACK;
   uintptr_t Result = 0;
@@ -2201,20 +2201,21 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & FileName,
 
   if (BatchOverwrite == boNo)
   {
-    if (Message.IsEmpty())
+    UnicodeString Msg = Message;
+    if (Msg.IsEmpty())
     {
-      Message = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE :
+      Msg = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE :
         REMOTE_FILE_OVERWRITE), FileName.c_str());
     }
     if (FileParams != NULL)
     {
-      Message = FMTLOAD(FILE_OVERWRITE_DETAILS, Message.c_str(),
+      Msg = FMTLOAD(FILE_OVERWRITE_DETAILS, Msg.c_str(),
         Int64ToStr(FileParams->SourceSize).c_str(),
         UserModificationStr(FileParams->SourceTimestamp, FileParams->SourcePrecision).c_str(),
         Int64ToStr(FileParams->DestSize).c_str(),
         UserModificationStr(FileParams->DestTimestamp, FileParams->DestPrecision).c_str());
     }
-    Result = QueryUser(Message, NULL, Answers, QueryParams);
+    Result = QueryUser(Msg, NULL, Answers, QueryParams);
     switch (Result)
     {
       case qaNeverAskAgain:
@@ -2974,7 +2975,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
         bool Success;
         while ((Index < FileList->GetCount()) && (Progress.Cancel == csContinue))
         {
-          FileName = FileList->Strings[Index];
+          FileName = FileList->GetString(Index);
           TRACEFMT("4 [%s]", FileName.c_str());
           try
           {
@@ -3324,7 +3325,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
           FileList += L" ";
         }
 
-        FileList += L"\"" + ShellDelimitStr(Files->Strings[I], L'"') + L"\"";
+        FileList += L"\"" + ShellDelimitStr(Files->GetString(I), L'"') + L"\"";
       }
     }
 
@@ -3677,9 +3678,9 @@ bool TTerminal::MoveFiles(TStrings * FileList, const UnicodeString & Target,
         // current directory
         if ((File != NULL) &&
             File->GetIsDirectory() &&
-            ((curDirectory.SubString(1, FileList->Strings[Index].Length()) == FileList->Strings[Index]) &&
-             ((FileList->Strings[Index].Length() == curDirectory.Length()) ||
-              (curDirectory[FileList->Strings[Index].Length() + 1] == '/'))))
+            ((curDirectory.SubString(1, FileList->GetString(Index).Length()) == FileList->GetString(Index)) &&
+             ((FileList->GetString(Index).Length() == curDirectory.Length()) ||
+              (curDirectory[FileList->GetString(Index).Length() + 1] == '/'))))
         {
           PossiblyMoved = true;
         }
@@ -4282,7 +4283,7 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
   if (!CopyParam->AllowAnyTransfer())
   {
-    WIN32_FIND_DATA FindData = {0};
+    WIN32_FIND_DATA FindData;
     HANDLE Handle = 0;
     FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
       Handle = FindFirstFile(FileName.c_str(), &FindData);
@@ -4392,10 +4393,10 @@ void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
 
     assert(!FOperationProgress);
     FOperationProgress = &OperationProgress;
-    TSearchRec Rec = {0};
+    TSearchRec Rec;
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      UnicodeString FileName = FileList->Strings[Index];
+      UnicodeString FileName = FileList->GetString(Index);
       if (FileSearchRec(FileName, Rec))
       {
         CalculateLocalFileSize(FileName, Rec, &Params);
@@ -4418,7 +4419,7 @@ void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   }
 }
 //------------------------------------------------------------------------------
-struct TSynchronizeFileData
+struct TSynchronizeFileData : public TObject
 {
   bool Modified;
   bool New;
@@ -4431,7 +4432,7 @@ struct TSynchronizeFileData
 };
 //------------------------------------------------------------------------------
 const int sfFirstLevel = 0x01;
-struct TSynchronizeData
+struct TSynchronizeData : public TObject
 {
   UnicodeString LocalDirectory;
   UnicodeString RemoteDirectory;
@@ -4507,7 +4508,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
   {
     TRACE("2");
     bool Found = false;
-    TSearchRec SearchRec = {0};
+    TSearchRec SearchRec;
     Data.LocalFileList = new TStringList();
     Data.LocalFileList->Sorted = true;
     Data.LocalFileList->CaseSensitive = false;
@@ -5722,8 +5723,8 @@ bool TSecondaryTerminal::DoPromptUser(TSessionData * Data,
         TRACE("3b");
         Password = FMainTerminal->GetPassword();
       }
-      Results->Strings[0] = Password;
-      if (!Results->Strings[0].IsEmpty())
+      Results->SetString(0, Password);
+      if (!Results->GetString(0).IsEmpty())
       {
         LogEvent(L"Using remembered password of the main session.");
         AResult = true;

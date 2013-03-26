@@ -90,7 +90,7 @@ private:
   class NAME : public BASE \
   { \
   public: \
-    explicit inline NAME(Exception* E, UnicodeString Msg) : BASE(E, Msg) {} \
+    explicit inline NAME(Exception* E, const UnicodeString & Msg) : BASE(E, Msg) {} \
     virtual ExtException * Clone() { return new NAME(this, L""); } \
   };
 //---------------------------------------------------------------------------

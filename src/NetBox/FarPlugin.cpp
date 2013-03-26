@@ -156,7 +156,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
           FPluginInfo.NAME.Count = NAME.GetCount(); \
           for (intptr_t Index = 0; Index < NAME.GetCount(); Index++) \
           { \
-            StringArray[Index] = DuplicateStr(NAME.Strings[Index]); \
+            StringArray[Index] = DuplicateStr(NAME.GetString(Index)); \
             Guids[Index] = *reinterpret_cast<const GUID *>(NAME.Objects[Index]); \
           } \
         }
@@ -170,7 +170,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
     for (intptr_t Index = 0; Index < CommandPrefixes.GetCount(); ++Index)
     {
       CommandPrefix = CommandPrefix + (CommandPrefix.IsEmpty() ? L"" : L":") +
-                      CommandPrefixes.Strings[Index];
+                      CommandPrefixes.GetString(Index);
     }
     // DEBUG_PRINTF(L"CommandPrefix = %s", CommandPrefix.c_str());
     FPluginInfo.CommandPrefix = DuplicateStr(CommandPrefix);
@@ -727,9 +727,9 @@ intptr_t TCustomFarPlugin::MaxLength(TStrings * Strings)
   intptr_t Result = 0;
   for (intptr_t Index = 0; Index < Strings->GetCount(); ++Index)
   {
-    if (Result < Strings->Strings[Index].Length())
+    if (Result < Strings->GetString(Index).Length())
     {
-      Result = Strings->Strings[Index].Length();
+      Result = Strings->GetString(Index).Length();
     }
   }
   return Result;
@@ -794,7 +794,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
     {
       MoreMessageLines = new TStringList();
       MoreMessageLinesPtr.reset(MoreMessageLines);
-      UnicodeString MoreMessages = FParams->MoreMessages->Text;
+      UnicodeString MoreMessages = FParams->MoreMessages->GetText();
       while (MoreMessages[MoreMessages.Length()] == L'\n' ||
              MoreMessages[MoreMessages.Length()] == L'\r')
       {
@@ -818,7 +818,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
     for (intptr_t Index = 0; Index < MessageLines->GetCount(); ++Index)
     {
       TFarText * Text = new TFarText(this);
-      Text->SetCaption(MessageLines->Strings[Index]);
+      Text->SetCaption(MessageLines->GetString(Index));
     }
 
     TFarLister * MoreMessagesLister = NULL;
@@ -846,7 +846,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
       Button->SetDefault(Index == 0);
       Button->SetBrackets(brNone);
       Button->SetOnClick(MAKE_CALLBACK(TFarMessageDialog::ButtonClick, this));
-      UnicodeString Caption = Buttons->Strings[Index];
+      UnicodeString Caption = Buttons->GetString(Index);
       if ((FParams->Timeout > 0) &&
           (FParams->TimeoutButton == static_cast<size_t>(Index)))
       {
@@ -1065,7 +1065,7 @@ intptr_t TCustomFarPlugin::FarMessage(unsigned int Flags,
     UnicodeString FullMessage = Message;
     if (Params->MoreMessages != NULL)
     {
-      FullMessage += UnicodeString(L"\n\x01\n") + Params->MoreMessages->Text;
+      FullMessage += UnicodeString(L"\n\x01\n") + Params->MoreMessages->GetText();
       while (FullMessage[FullMessage.Length()] == L'\n' ||
              FullMessage[FullMessage.Length()] == L'\r')
       {
@@ -1090,16 +1090,16 @@ intptr_t TCustomFarPlugin::FarMessage(unsigned int Flags,
 
     for (intptr_t Index = 0; Index < Buttons->GetCount(); ++Index)
     {
-      MessageLines->Add(Buttons->Strings[Index]);
+      MessageLines->Add(Buttons->GetString(Index));
     }
 
     Items = static_cast<wchar_t **>(
       nb_malloc(sizeof(wchar_t *) * MessageLines->GetCount()));
     for (intptr_t Index = 0; Index < MessageLines->GetCount(); ++Index)
     {
-      UnicodeString S = MessageLines->Strings[Index];
-      MessageLines->Strings[Index] = UnicodeString(S);
-      Items[Index] = const_cast<wchar_t *>(MessageLines->Strings[Index].c_str());
+      UnicodeString S = MessageLines->GetString(Index);
+      MessageLines->SetString(Index, UnicodeString(S));
+      Items[Index] = const_cast<wchar_t *>(MessageLines->GetString(Index).c_str());
     }
 
     TFarEnvGuard Guard;
@@ -1193,7 +1193,7 @@ intptr_t TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString & Title,
           assert(Selected == NPOS);
           Selected = I;
         }
-        MenuItems[Count].Text = Items->Strings[I].c_str();
+        MenuItems[Count].Text = Items->GetString(I).c_str();
         MenuItems[Count].UserData = I;
         Count++;
       }
@@ -1317,11 +1317,11 @@ void TCustomFarPlugin::FarCopyToClipboard(TStrings * Strings)
   {
     if (Strings->GetCount() == 1)
     {
-      FarCopyToClipboard(Strings->Strings[0]);
+      FarCopyToClipboard(Strings->GetString(0));
     }
     else
     {
-      FarCopyToClipboard(Strings->Text);
+      FarCopyToClipboard(Strings->GetText());
     }
   }
 }
@@ -1501,7 +1501,7 @@ void TCustomFarPlugin::ShowConsoleTitle(const UnicodeString & Title)
 void TCustomFarPlugin::ClearConsoleTitle()
 {
   assert(FSavedTitles->GetCount() > 0);
-  UnicodeString Title = FSavedTitles->Strings[FSavedTitles->GetCount()-1];
+  UnicodeString Title = FSavedTitles->GetString(FSavedTitles->GetCount() - 1);
   TObject * Object = FSavedTitles->Objects[FSavedTitles->GetCount()-1];
   TConsoleTitleParam * Param = dynamic_cast<TConsoleTitleParam *>(Object);
   if (Param->Own)
@@ -2308,7 +2308,7 @@ void TFarPanelModes::SetPanelMode(size_t Mode, const UnicodeString & ColumnTypes
   {
     for (intptr_t Index = 0; Index < ColumnTypesCount; ++Index)
     {
-      Titles[Index] = TCustomFarPlugin::DuplicateStr(ColumnTitles->Strings[Index]);
+      Titles[Index] = TCustomFarPlugin::DuplicateStr(ColumnTitles->GetString(Index));
     }
     FPanelModes[Mode].ColumnTitles = Titles;
   }
@@ -2626,15 +2626,12 @@ void THintPanelItem::GetData(
 //---------------------------------------------------------------------------
 TFarPanelInfo::TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner):
   TObject(),
-  FPanelInfo(NULL),
+  FPanelInfo(APanelInfo),
   FItems(NULL),
-  FOwner(NULL)
+  FOwner(AOwner)
 {
-  // if (!APanelInfo) throw ExtException(L"");
-  assert(APanelInfo);
-  FPanelInfo = APanelInfo;
-  FOwner = AOwner;
-  FItems = NULL;
+  // if (!FPanelInfo) throw ExtException(L"");
+  assert(FPanelInfo);
 }
 //---------------------------------------------------------------------------
 TFarPanelInfo::~TFarPanelInfo()
@@ -2996,11 +2993,11 @@ void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidt
 {
   size_t TabSize = 8;
   TStringList Lines;
-  Lines.Text = Text;
+  Lines.SetText(Text);
   TStringList WrappedLines;
   for (intptr_t Index = 0; Index < Lines.GetCount(); ++Index)
   {
-    UnicodeString WrappedLine = Lines.Strings[Index];
+    UnicodeString WrappedLine = Lines.GetString(Index);
     if (!WrappedLine.IsEmpty())
     {
       WrappedLine = ::ReplaceChar(WrappedLine, '\'', '\3');
@@ -3008,10 +3005,10 @@ void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidt
       WrappedLine = Sysutils::WrapText(WrappedLine, MaxWidth);
       WrappedLine = ::ReplaceChar(WrappedLine, '\3', '\'');
       WrappedLine = ::ReplaceChar(WrappedLine, '\4', '\"');
-      WrappedLines.Text = WrappedLine;
+      WrappedLines.SetText(WrappedLine);
       for (intptr_t WrappedIndex = 0; WrappedIndex < WrappedLines.GetCount(); ++WrappedIndex)
       {
-        UnicodeString FullLine = WrappedLines.Strings[WrappedIndex];
+        UnicodeString FullLine = WrappedLines.GetString(WrappedIndex);
         do
         {
           // WrapText does not wrap when not possible, enforce it

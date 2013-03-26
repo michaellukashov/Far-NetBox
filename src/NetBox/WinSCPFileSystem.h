@@ -58,7 +58,7 @@ DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
 DEFINE_CALLBACK_TYPE3(TGetSpaceAvailableEvent, void,
   const UnicodeString & /* Path */, TSpaceAvailable & /* ASpaceAvailable */, bool & /* Close */);
 
-struct TMultipleEdit
+struct TMultipleEdit : public TObject
 {
   UnicodeString FileName;
   UnicodeString FileTitle;
@@ -66,7 +66,8 @@ struct TMultipleEdit
   UnicodeString LocalFileName;
   bool PendingSave;
 };
-struct TEditHistory
+
+struct TEditHistory : public TObject
 {
   UnicodeString FileName;
   UnicodeString Directory;
@@ -122,7 +123,7 @@ protected:
   bool SessionDialog(TSessionData * Data, TSessionActionEnum & Action);
   void EditConnectSession(TSessionData * Data, bool Edit);
   void EditConnectSession(TSessionData * Data, bool Edit, bool NewData, bool FillInConnect);
-  void DuplicateRenameSession(TSessionData * Data,
+  void DuplicateOrRenameSession(TSessionData * Data,
     bool Duplicate);
   void FocusSession(TSessionData * Data);
   void DeleteSession(TSessionData * Data, void * Param);
