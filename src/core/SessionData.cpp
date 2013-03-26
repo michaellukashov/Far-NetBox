@@ -2989,8 +2989,7 @@ void TStoredSessionList::Import(TStoredSessionList * From,
   Save(false, true);
 }
 //---------------------------------------------------------------------
-void TStoredSessionList::SelectSessionsToImport
-  (TStoredSessionList * Dest, bool SSHOnly)
+void TStoredSessionList::SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly)
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
