@@ -595,6 +595,7 @@ void TWinSCPFileSystem::DuplicateRenameSession(TSessionData * Data,
         Name, NULL) &&
       !Name.IsEmpty() && (Name != Data->GetName()))
   {
+    Name = ReplaceChar(Name, L'\\', L'/');
     TNamedObject * EData = StoredSessions->FindByName(Name);
     if ((EData != NULL) && (EData != Data))
     {
