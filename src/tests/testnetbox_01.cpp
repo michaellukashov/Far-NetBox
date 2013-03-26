@@ -176,7 +176,7 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
     BOOST_CHECK_EQUAL(W2MB(str.c_str()), "line 0");
   }
   {
-    strings.GetString(0) = L"line 12";
+    strings.SetString(0, L"line 12");
     BOOST_CHECK_EQUAL(W2MB(strings.GetString(0).c_str()), "line 12");
   }
 }
