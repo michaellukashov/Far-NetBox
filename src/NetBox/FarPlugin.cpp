@@ -1116,7 +1116,7 @@ intptr_t TCustomFarPlugin::FarMessage(unsigned int Flags,
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::Message(unsigned int Flags,
+intptr_t TCustomFarPlugin::Message(uintptr_t Flags,
   const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons,
   TFarMessageParams * Params)
 {

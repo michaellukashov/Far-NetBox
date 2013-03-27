@@ -101,7 +101,7 @@ public:
   virtual void HandleException(Exception * E, int OpMode = 0);
 
   static wchar_t * DuplicateStr(const UnicodeString & Str, bool AllowEmpty = false);
-  intptr_t Message(unsigned int Flags, const UnicodeString & Title,
+  intptr_t Message(uintptr_t Flags, const UnicodeString & Title,
     const UnicodeString & Message, TStrings * Buttons = NULL,
     TFarMessageParams * Params = NULL);
   intptr_t MaxMessageLines();
