@@ -774,10 +774,9 @@ bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void *Param)
   }
   else
   {
-    if (Event == FE_COMMAND)
+    if (Event == FE_CLOSE && !FClosed)
     {
-      UnicodeString Command = static_cast<wchar_t *>(Param);
-      Result = true;
+      ClosePanel();
     }
   }
   return Result;
