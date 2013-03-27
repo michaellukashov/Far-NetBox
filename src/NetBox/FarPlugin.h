@@ -242,7 +242,7 @@ public:
   void FreeFindData(const struct FreeFindDataInfo *Info);
   intptr_t ProcessHostFile(const struct ProcessHostFileInfo *Info);
   intptr_t ProcessPanelInput(const struct ProcessPanelInputInfo *Info);
-  intptr_t  ProcessPanelEvent(int Event, void *Param);
+  intptr_t  ProcessPanelEvent(intptr_t Event, void *Param);
   intptr_t SetDirectory(const struct SetDirectoryInfo *Info);
   intptr_t MakeDirectory(struct MakeDirectoryInfo *Info);
   intptr_t DeleteFiles(const struct DeleteFilesInfo *Info);

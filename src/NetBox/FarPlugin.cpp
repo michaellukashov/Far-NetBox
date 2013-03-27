@@ -2034,7 +2034,7 @@ intptr_t TCustomFarFileSystem::ProcessPanelInput(const struct ProcessPanelInputI
   return FALSE;
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarFileSystem::ProcessPanelEvent(int Event, void * Param)
+intptr_t TCustomFarFileSystem::ProcessPanelEvent(intptr_t Event, void * Param)
 {
   ResetCachedInfo();
   return ProcessPanelEventEx(Event, Param);
