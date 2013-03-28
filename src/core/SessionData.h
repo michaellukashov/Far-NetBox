@@ -471,6 +471,7 @@ public:
   void SetNumberOfRetries(intptr_t Value) { FNumberOfRetries = Value; }
   uintptr_t GetSessionVersion() const { return FSessionVersion; }
   void SetSessionVersion(uintptr_t Value) { FSessionVersion = Value; }
+  void RemoveProtocolPrefix(UnicodeString & HostName);
 
 private:
   uintptr_t GetDefaultVersion() { return ::GetCurrentVersionNumber(); }
@@ -488,7 +489,6 @@ private:
   void FromURI(const UnicodeString & ProxyURI,
     UnicodeString & ProxyUrl, intptr_t & ProxyPort, TProxyMethod & ProxyMethod) const;
   void AdjustHostName(UnicodeString & HostName, const UnicodeString & Prefix);
-  void RemoveProtocolPrefix(UnicodeString & HostName);
 };
 //---------------------------------------------------------------------------
 class TStoredSessionList : public TNamedObjectList
