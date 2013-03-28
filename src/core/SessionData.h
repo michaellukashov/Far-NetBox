@@ -483,7 +483,7 @@ private:
 
 private:
   TProxyMethod GetSystemProxyMethod() const;
-  void  PrepareProxyData() const;
+  void PrepareProxyData() const;
   void ParseIEProxyConfig() const;
   void FromURI(const UnicodeString & ProxyURI,
     UnicodeString & ProxyUrl, intptr_t & ProxyPort, TProxyMethod & ProxyMethod) const;
