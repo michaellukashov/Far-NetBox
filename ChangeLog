@@ -1,5 +1,7 @@
 NetBox 2.1.28 ??.03.2013
 --------------------
+  * Improvement: When editin session, parse username, password and directory, if any
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=975#p106004)
   * Improvement: Do not highlight sessions in sessions list
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=990#p106051)
   * Bugfix: AV when macro is executed on plugin panel
