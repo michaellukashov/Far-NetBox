@@ -1529,6 +1529,11 @@ void TSessionData::SetHostName(const UnicodeString & Value)
   {
     UnicodeString Value2 = Value;
     RemoveProtocolPrefix(Value2);
+    // remove path
+    {
+      intptr_t Pos = 1;
+      Value2 = CopyToChars(Value2, Pos, L"/", true, NULL, false);
+    }
     // HostName is key for password encryption
     UnicodeString XPassword = GetPassword();
 
@@ -1949,6 +1954,11 @@ UnicodeString TSessionData::GetDefaultSessionName()
   UnicodeString HostName = GetHostName();
   UnicodeString UserName = GetUserName();
   RemoveProtocolPrefix(HostName);
+  // remove path
+  {
+    intptr_t Pos = 1;
+    HostName = CopyToChars(HostName, Pos, L"/", true, NULL, false);
+  }
   if (!HostName.IsEmpty() && !UserName.IsEmpty())
   {
     Result = FORMAT(L"%s@%s", UserName.c_str(), HostName.c_str());
@@ -2665,8 +2675,6 @@ void TSessionData::AdjustHostName(UnicodeString & HostName, const UnicodeString 
   if (::LowerCase(HostName.SubString(1, Prefix.Length())) == Prefix)
   {
     HostName.Delete(1, Prefix.Length());
-    intptr_t Pos = 1;
-    HostName = CopyToChars(HostName, Pos, L"/", true, NULL, false);
   }
 }
 //---------------------------------------------------------------------

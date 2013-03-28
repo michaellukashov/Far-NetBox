@@ -448,8 +448,8 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
   {
     CurDir = FSessionsFolder;
     Format = L"netbox";
-    Flags = !OPIF_DISABLESORTGROUPS | !OPIF_DISABLEHIGHLIGHTING | OPIF_ADDDOTS |
-               OPIF_SHOWPRESERVECASE | OPIF_SHORTCUT;
+    Flags = !OPIF_DISABLESORTGROUPS | !OPIF_DISABLEHIGHLIGHTING | OPIF_USEATTRHIGHLIGHTING |
+      OPIF_ADDDOTS | OPIF_SHOWPRESERVECASE | OPIF_SHORTCUT;
     PanelTitle = FORMAT(L" %s ", GetMsg(NB_STORED_SESSION_TITLE).c_str());
 
     TSessionPanelItem::SetPanelModes(PanelModes);

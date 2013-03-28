@@ -2875,20 +2875,11 @@ void TSessionDialog::Change()
   }
 }
 //------------------------------------------------------------------------------
-void AdjustRemoteDir(
-  TFarEdit * HostNameEdit,
+static void AdjustRemoteDir(
+  UnicodeString & HostName,
   TFarEdit * PortNumberEdit,
   TFarEdit * RemoteDirectoryEdit)
 {
-  UnicodeString HostName = HostNameEdit->GetText();
-  if (LowerCase(HostName.SubString(1, 7)) == L"http://")
-  {
-    HostName.Delete(1, 7);
-  }
-  else if (LowerCase(HostName.SubString(1, 8)) == L"https://")
-  {
-    HostName.Delete(1, 8);
-  }
   UnicodeString Dir;
   intptr_t P = HostName.Pos(L'/');
   if (P > 0)
@@ -2908,7 +2899,6 @@ void AdjustRemoteDir(
   if (RemoteDir.IsEmpty() && !Dir.IsEmpty())
   {
     RemoteDirectoryEdit->SetText(Dir);
-    HostNameEdit->SetText(HostName);
   }
 }
 //------------------------------------------------------------------------------
@@ -2950,7 +2940,9 @@ void TSessionDialog::TransferProtocolComboChange()
     if ((Port == FtpPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPSPortNumber))
     {
       PortNumberEdit->SetAsInteger(HTTPPortNumber);
-      ::AdjustRemoteDir(HostNameEdit, PortNumberEdit, RemoteDirectoryEdit);
+      UnicodeString HostName = HostNameEdit->GetText();
+      ::AdjustRemoteDir(HostName, PortNumberEdit, RemoteDirectoryEdit);
+      HostNameEdit->SetText(HostName);
     }
   }
   else if ((GetFSProtocol() == fsWebDAV) && (Ftps != ftpsNone))
@@ -2958,7 +2950,9 @@ void TSessionDialog::TransferProtocolComboChange()
     if ((Port == FtpPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPPortNumber))
     {
       PortNumberEdit->SetAsInteger(HTTPSPortNumber);
-      ::AdjustRemoteDir(HostNameEdit, PortNumberEdit, RemoteDirectoryEdit);
+      UnicodeString HostName = HostNameEdit->GetText();
+      ::AdjustRemoteDir(HostName, PortNumberEdit, RemoteDirectoryEdit);
+      HostNameEdit->SetText(HostName);
     }
   }
 }
@@ -3486,9 +3480,31 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
       Action = saEdit;
     }
 
-    if (GetFSProtocol() == fsWebDAV)
+    UnicodeString HostName = HostNameEdit->GetText();
+    UnicodeString UserName = UserNameEdit->GetText();
+    UnicodeString Password = PasswordEdit->GetText();
+    SessionData->RemoveProtocolPrefix(HostName);
+    // parse username, password and directory, if any
     {
-      ::AdjustRemoteDir(HostNameEdit, PortNumberEdit, RemoteDirectoryEdit);
+      intptr_t Pos = HostName.RPos(L'@');
+      if (Pos > 0)
+      {
+        UnicodeString UserNameAndPassword = HostName.SubString(1, Pos - 1);
+        Pos = UserNameAndPassword.RPos(L':');
+        if (Pos > 0)
+        {
+          UserName = UserNameAndPassword.SubString(1, Pos - 1);
+          Password = UserNameAndPassword.SubString(Pos + 1, - 1);
+        }
+        else
+        {
+          UserName = UserNameAndPassword;
+        }
+      }
+    }
+    // if (GetFSProtocol() == fsWebDAV)
+    {
+      ::AdjustRemoteDir(HostName, PortNumberEdit, RemoteDirectoryEdit);
     }
 
     // save session data
@@ -3496,10 +3512,10 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     // Basic tab
     SessionData->SetFSProtocol(GetFSProtocol());
 
-    SessionData->SetHostName(HostNameEdit->GetText());
+    SessionData->SetHostName(HostName);
     SessionData->SetPortNumber(PortNumberEdit->GetAsInteger());
-    SessionData->SetUserName(UserNameEdit->GetText());
-    SessionData->SetPassword(PasswordEdit->GetText());
+    SessionData->SetUserName(UserName);
+    SessionData->SetPassword(Password);
     SessionData->SetLoginType(GetLoginType());
     SessionData->SetPublicKeyFile(PrivateKeyEdit->GetText());
 
