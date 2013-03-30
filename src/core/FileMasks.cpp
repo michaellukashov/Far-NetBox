@@ -1084,11 +1084,10 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
 }
 //---------------------------------------------------------------------------
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
-    const UnicodeString & Path, const UnicodeString & FileName,
-    const UnicodeString & FileList) :
-  TCustomCommand()
+  const UnicodeString & Path, const UnicodeString & FileName,
+  const UnicodeString & FileList) :
+  FData(Data)
 {
-  FData = Data;
   FPath = Path;
   FFileName = FileName;
   FFileList = FileList;
