@@ -2793,7 +2793,6 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   Storage->GetSubKeyNames(SubKeys.get());
   for (intptr_t Index = 0; Index < SubKeys->GetCount(); ++Index)
   {
-    TSessionData * SessionData = NULL;
     UnicodeString SessionName = SubKeys->GetString(Index);
     bool ValidName = true;
     try
@@ -2806,6 +2805,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
     }
     if (ValidName)
     {
+      TSessionData * SessionData = NULL;
       if (SessionName == FDefaultSettings->GetName())
       {
         SessionData = FDefaultSettings;
@@ -3215,12 +3215,11 @@ void TStoredSessionList::ImportHostKeys(const UnicodeString & TargetKey,
     {
       SourceStorage->GetValueNames(KeyList);
 
-      TSessionData * Session;
       UnicodeString HostKeyName;
       assert(Sessions != NULL);
       for (intptr_t Index = 0; Index < Sessions->GetCount(); ++Index)
       {
-        Session = Sessions->GetSession(Index);
+        TSessionData * Session = Sessions->GetSession(Index);
         if (!OnlySelected || Session->GetSelected())
         {
           HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostName().c_str()));

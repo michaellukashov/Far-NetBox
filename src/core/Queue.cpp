@@ -524,10 +524,9 @@ TTerminalQueue::~TTerminalQueue()
   {
     TGuard Guard(FItemsSection);
 
-    TTerminalItem * TerminalItem;
     while (FTerminals->GetCount() > 0)
     {
-      TerminalItem = reinterpret_cast<TTerminalItem *>(FTerminals->Items[0]);
+      TTerminalItem * TerminalItem = reinterpret_cast<TTerminalItem *>(FTerminals->Items[0]);
       FTerminals->Delete(0);
       TerminalItem->Terminate();
       TerminalItem->WaitFor();
@@ -697,11 +696,10 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
     {
       TGuard Guard(FItemsSection);
 
-      TQueueItem * Item;
       TQueueItemProxy * ItemProxy;
       for (intptr_t Index = 0; Index < FItems->GetCount(); ++Index)
       {
-        Item = GetItem(Index);
+        TQueueItem * Item = GetItem(Index);
         if (Current != NULL)
         {
           ItemProxy = Current->FindByQueueItem(Item);
@@ -992,13 +990,10 @@ void TTerminalQueue::Idle()
 void TTerminalQueue::ProcessEvent()
 {
   CALLSTACK;
-  TTerminalItem * TerminalItem;
-  TQueueItem * Item;
-
+  TTerminalItem * TerminalItem = NULL;
   do
   {
-    TerminalItem = NULL;
-    Item = NULL;
+    TQueueItem * Item = NULL;
 
     if (FItems->GetCount() > FItemsInProcess)
     {
@@ -1848,10 +1843,9 @@ TQueueItemProxy * TTerminalQueueStatus::GetItem(intptr_t Index)
 TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
   TQueueItem * QueueItem)
 {
-  TQueueItemProxy * Item;
   for (intptr_t Index = 0; Index < FList->GetCount(); ++Index)
   {
-    Item = GetItem(Index);
+    TQueueItemProxy * Item = GetItem(Index);
     if (Item->FQueueItem == QueueItem)
     {
       return Item;

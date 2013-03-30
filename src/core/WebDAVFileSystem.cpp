@@ -1995,12 +1995,11 @@ uri_escape(
 {
   stringbuf_t * retstr = NULL;
   size_t i = 0, copied = 0;
-  int c = 0;
 
   retstr = stringbuf_create_ensure(strlen(path), pool);
   for (i = 0; path[i]; i++)
   {
-    c = (unsigned char)path[i];
+    int c = (unsigned char)path[i];
     if (table[c])
       continue;
 

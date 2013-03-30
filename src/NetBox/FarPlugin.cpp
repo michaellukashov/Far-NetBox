@@ -2647,10 +2647,9 @@ TObjectList * TFarPanelInfo::GetItems()
 TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & FileName)
 {
   TObjectList * AItems = GetItems();
-  TFarPanelItem * PanelItem;
   for (intptr_t Index = 0; Index < AItems->GetCount(); ++Index)
   {
-    PanelItem = static_cast<TFarPanelItem *>(AItems->GetItem(Index));
+    TFarPanelItem * PanelItem = static_cast<TFarPanelItem *>(AItems->GetItem(Index));
     if (PanelItem->GetFileName() == FileName)
     {
       return PanelItem;
@@ -2662,10 +2661,9 @@ TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & FileName)
 TFarPanelItem * TFarPanelInfo::FindUserData(void * UserData)
 {
   TObjectList * AItems = GetItems();
-  TFarPanelItem * PanelItem;
   for (intptr_t Index = 0; Index < AItems->GetCount(); ++Index)
   {
-    PanelItem = static_cast<TFarPanelItem *>(AItems->GetItem(Index));
+    TFarPanelItem * PanelItem = static_cast<TFarPanelItem *>(AItems->GetItem(Index));
     if (PanelItem->GetUserData() == UserData)
     {
       return PanelItem;

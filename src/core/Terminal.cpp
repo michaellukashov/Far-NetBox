@@ -2822,10 +2822,9 @@ void TTerminal::ProcessDirectory(const UnicodeString & DirName,
     {
       UnicodeString Directory = UnixIncludeTrailingBackslash(DirName);
 
-      TRemoteFile * File;
       for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
       {
-        File = FileList->GetFiles(Index);
+        TRemoteFile * File = FileList->GetFiles(Index);
         if (!File->GetIsParentDirectory() && !File->GetIsThisDirectory())
         {
           CallBackFunc(Directory + File->GetFileName(), File, Param);
@@ -5793,10 +5792,9 @@ TTerminal * TTerminalList::GetTerminal(intptr_t Index)
 intptr_t TTerminalList::GetActiveCount()
 {
   intptr_t Result = 0;
-  TTerminal * Terminal;
   for (intptr_t I = 0; I < GetCount(); ++I)
   {
-    Terminal = GetTerminal(I);
+    TTerminal * Terminal = GetTerminal(I);
     if (Terminal->GetActive())
     {
       Result++;
@@ -5807,10 +5805,9 @@ intptr_t TTerminalList::GetActiveCount()
 //------------------------------------------------------------------------------
 void TTerminalList::Idle()
 {
-  TTerminal * Terminal;
   for (intptr_t I = 0; I < GetCount(); ++I)
   {
-    Terminal = GetTerminal(I);
+    TTerminal * Terminal = GetTerminal(I);
     if (Terminal->GetStatus() == ssOpened)
     {
       Terminal->Idle();

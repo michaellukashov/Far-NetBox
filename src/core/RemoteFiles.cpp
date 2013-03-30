@@ -1101,7 +1101,6 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       bool FullTime = false;
       bool DayMonthFormat = false;
       Word Day, Month, Year, Hour, Min, Sec;
-      intptr_t P;
 
       GETCOL;
       // format dd mmm or mmm dd ?
@@ -1207,6 +1206,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           }
           // GETNCOL; // We don't want to trim input strings (name with space at beginning???)
           // Check if we got time (contains :) or year
+          intptr_t P;
           if ((P = static_cast<Word>(Col.Pos(L':'))) > 0)
           {
             Word CurrMonth, CurrDay;

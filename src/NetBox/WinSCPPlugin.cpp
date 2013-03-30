@@ -206,10 +206,9 @@ intptr_t TWinSCPPlugin::ProcessEditorEventEx(intptr_t Event, void * Param)
   if ((Event != EE_REDRAW) || FarConfiguration->GetEditorUploadOnSave() ||
       FarConfiguration->GetEditorMultiple())
   {
-    TWinSCPFileSystem * FileSystem = NULL;
     for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
     {
-      FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->GetItem(Index));
+      TWinSCPFileSystem * FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->GetItem(Index));
       FileSystem->ProcessEditorEvent(Event, Param);
     }
   }

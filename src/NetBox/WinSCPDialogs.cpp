@@ -8676,10 +8676,9 @@ void TQueueDialog::LoadQueue()
   std::auto_ptr<TFarList> ListPtr;
   ListPtr.reset(List);
   UnicodeString Line;
-  TQueueItemProxy * QueueItem = NULL;
   for (intptr_t Index = 0; Index < FStatus->GetCount(); ++Index)
   {
-    QueueItem = FStatus->GetItem(Index);
+    TQueueItemProxy * QueueItem = FStatus->GetItem(Index);
     size_t ILine = 0;
     while (FillQueueItemLine(Line, QueueItem, ILine))
     {

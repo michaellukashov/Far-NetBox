@@ -3605,10 +3605,9 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
 
     FQueueItemInvalidated = false;
 
-    TQueueItemProxy * QueueItem;
     for (intptr_t Index = 0; Index < FQueueStatus->GetActiveCount(); ++Index)
     {
-      QueueItem = FQueueStatus->GetItem(Index);
+      TQueueItemProxy * QueueItem = FQueueStatus->GetItem(Index);
       if (QueueItem->GetUserData() != NULL)
       {
         QueueItem->Update();

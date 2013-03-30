@@ -819,10 +819,9 @@ void TFarDialog::Change()
     {
       std::auto_ptr<TList> NotifiedContainersPtr;
       NotifiedContainersPtr.reset(NotifiedContainers);
-      TFarDialogItem * DItem;
       for (intptr_t I = 0; I < GetItemCount(); I++)
       {
-        DItem = GetItem(I);
+        TFarDialogItem * DItem = GetItem(I);
         DItem->Change();
         if (DItem->GetContainer() && NotifiedContainers->IndexOf(DItem->GetContainer()) == NPOS)
         {
