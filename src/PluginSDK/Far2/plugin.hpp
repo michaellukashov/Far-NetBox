@@ -1177,7 +1177,7 @@ struct WindowInfo
 	wchar_t *TypeName;
 	int TypeNameSize;
 	wchar_t *Name;
-	intptr_t NameSize;
+	int NameSize;
 };
 
 enum PROGRESSTATE
