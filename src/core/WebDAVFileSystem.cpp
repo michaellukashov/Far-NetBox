@@ -164,12 +164,6 @@ typedef struct callback_baton_t
 } callback_baton_t;
 
 //------------------------------------------------------------------------------
-// from ra_loader.h
-
-typedef error_t (*init_func_t)(const vtable_t ** vtable,
-  apr_pool_t * pool);
-
-//------------------------------------------------------------------------------
 // from svn_string.h
 
 // A simple counted string.
