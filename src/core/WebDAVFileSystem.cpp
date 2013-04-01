@@ -13412,10 +13412,10 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       OperationProgress->SetTransferSize(File->GetSize());
       OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
-      int Attrs = -1;
+      uintptr_t LocalFileAttrs = -1;
       FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
-        Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
-        if ((Attrs >= 0) && FLAGSET(Attrs, faDirectory)) { EXCEPTION; }
+        LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
+        if ((LocalFileAttrs >= 0) && FLAGSET(LocalFileAttrs, faDirectory)) { EXCEPTION; }
       );
 
       OperationProgress->TransferingFile = false; // not set with FTP protocol
@@ -13449,20 +13449,20 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       if (DestFileName != UserData.FileName)
       {
         DestFullName = TargetDir + UserData.FileName;
-        Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
+        LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
       }
 
       Action.Destination(ExpandUNCFileName(DestFullName));
 
-      if (Attrs == -1)
+      if (LocalFileAttrs == -1)
       {
-        Attrs = faArchive;
+        LocalFileAttrs = faArchive;
       }
       uintptr_t NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
-      if ((NewAttrs & Attrs) != NewAttrs)
+      if ((NewAttrs & LocalFileAttrs) != NewAttrs)
       {
         FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, Attrs | NewAttrs) == 0);
+          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, LocalFileAttrs | NewAttrs) == 0);
         );
       }
       // set time
