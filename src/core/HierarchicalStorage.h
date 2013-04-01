@@ -11,8 +11,9 @@ class THierarchicalStorage : public TObject
 {
 public:
   explicit THierarchicalStorage(const UnicodeString & AStorage);
-  virtual void Init() {}
   virtual ~THierarchicalStorage();
+  virtual void Init() {}
+
   bool OpenRootKey(bool CanCreate);
   bool OpenSubKey(const UnicodeString & SubKey, bool CanCreate, bool Path = false);
   virtual void CloseSubKey();
