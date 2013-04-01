@@ -4282,7 +4282,7 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
   if (!CopyParam->AllowAnyTransfer())
   {
-    WIN32_FIND_DATA FindData;
+    WIN32_FIND_DATA FindData = {};
     HANDLE Handle = 0;
     FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
       Handle = FindFirstFile(FileName.c_str(), &FindData);
