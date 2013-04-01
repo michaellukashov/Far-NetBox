@@ -688,7 +688,7 @@ TVSFixedFileInfo *TConfiguration::GetFixedApplicationInfo()
   return GetFixedFileInfo(GetApplicationInfo());
 }
 //---------------------------------------------------------------------------
-int TConfiguration::GetCompoundVersion()
+intptr_t  TConfiguration::GetCompoundVersion()
 {
   TVSFixedFileInfo * FileInfo = GetFixedApplicationInfo();
   if (FileInfo)
@@ -1143,7 +1143,7 @@ void TConfiguration::UpdateActualLogProtocol()
   FActualLogProtocol = FLogging ? FLogProtocol : 0;
 }
 //---------------------------------------------------------------------
-void TConfiguration::SetLogProtocol(int Value)
+void TConfiguration::SetLogProtocol(intptr_t Value)
 {
   SET_CONFIG_PROPERTY(LogProtocol);
   UpdateActualLogProtocol();
@@ -1164,7 +1164,7 @@ void TConfiguration::SetLogFileAppend(bool Value)
   SET_CONFIG_PROPERTY(LogFileAppend);
 }
 //---------------------------------------------------------------------
-void TConfiguration::SetLogWindowLines(int Value)
+void TConfiguration::SetLogWindowLines(intptr_t Value)
 {
   SET_CONFIG_PROPERTY(LogWindowLines);
 }
@@ -1245,42 +1245,42 @@ bool TConfiguration::GetRememberPassword()
   return false;
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetSessionReopenAuto(int Value)
+void TConfiguration::SetSessionReopenAuto(intptr_t Value)
 {
   SET_CONFIG_PROPERTY(SessionReopenAuto);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(int Value)
+void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(intptr_t Value)
 {
   SET_CONFIG_PROPERTY(SessionReopenAutoMaximumNumberOfRetries);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetSessionReopenBackground(int Value)
+void TConfiguration::SetSessionReopenBackground(intptr_t Value)
 {
   SET_CONFIG_PROPERTY(SessionReopenBackground);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetSessionReopenTimeout(int Value)
+void TConfiguration::SetSessionReopenTimeout(intptr_t Value)
 {
   SET_CONFIG_PROPERTY(SessionReopenTimeout);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetSessionReopenAutoStall(int Value)
+void TConfiguration::SetSessionReopenAutoStall(intptr_t Value)
 {
   SET_CONFIG_PROPERTY(SessionReopenAutoStall);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetTunnelLocalPortNumberLow(int Value)
+void TConfiguration::SetTunnelLocalPortNumberLow(intptr_t Value)
 {
   SET_CONFIG_PROPERTY(TunnelLocalPortNumberLow);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetTunnelLocalPortNumberHigh(int Value)
+void TConfiguration::SetTunnelLocalPortNumberHigh(intptr_t Value)
 {
   SET_CONFIG_PROPERTY(TunnelLocalPortNumberHigh);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetCacheDirectoryChangesMaxSize(int Value)
+void TConfiguration::SetCacheDirectoryChangesMaxSize(intptr_t Value)
 {
   SET_CONFIG_PROPERTY(CacheDirectoryChangesMaxSize);
 }
