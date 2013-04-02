@@ -321,23 +321,35 @@ public:
 	{
 		RDE_ASSERT(validate_iterator(it));
 		RDE_ASSERT(invariant());
-		const size_type index = (size_type)(it - m_begin);
-		const size_type prevSize = size();
-		RDE_ASSERT(index <= prevSize);
-		const size_type toMove = prevSize - index;
 		// @todo: optimize for toMove==0 --> push_back here?
+		const size_type index = (size_type)(it - m_begin);
 		if (m_end == m_capacityEnd)
 		{
 			grow();
 			it = m_begin + index;
 		}
 		else
-			rde::construct(m_begin + prevSize);
+		{
+			rde::construct(m_end);
+		}
 
 		// @note: conditional vs empty loop, what's better?
-		if (toMove > 0)
+		if (m_end > it)
 		{
-			rde::internal::move_n(it, toMove, it + 1, int_to_type<has_trivial_copy<T>::value>());
+			if(!has_trivial_copy<T>::value)
+			{
+				const size_type prevSize = size();
+				RDE_ASSERT(index <= prevSize);
+				const size_type toMove = prevSize - index;
+
+				rde::internal::move_n(it, toMove, it + 1, int_to_type<has_trivial_copy<T>::value>());
+			}
+			else
+			{
+				RDE_ASSERT(it < m_end);
+				const size_t n = reinterpret_cast<uintptr_t>(m_end) - reinterpret_cast<uintptr_t>(it);
+				Sys::MemMove(it + 1, it, n);
+			}
 		}
 		*it = val;
 		++m_end;
@@ -353,9 +365,12 @@ public:
 		RDE_ASSERT(validate_iterator(it));
 		RDE_ASSERT(it != end());
 		RDE_ASSERT(invariant());
-		// Move everything down, overwriting *it
-		move_down_1(it, int_to_type<has_trivial_copy<T>::value>());
 
+		// Move everything down, overwriting *it
+		if (it + 1 < m_end)
+		{
+			move_down_1(it, int_to_type<has_trivial_copy<T>::value>());
+		}
 		--m_end;
 		rde::destruct(m_end);
 		return it;
@@ -372,8 +387,7 @@ public:
 		const size_type toRemove = size_type(last - first);
 		if (toRemove > 0)
 		{
-			//const size_type toEnd = size_type(m_end - last);
-			rde::move(last, m_end, first);
+			move_down(last, first, int_to_type<has_trivial_copy<T>::value>());
 			shrink(size() - toRemove);
 		}
 		return m_begin + indexFirst;
@@ -492,6 +506,17 @@ private:
 	RDE_FORCEINLINE void move_down_1(iterator it, int_to_type<false> itt)
 	{
 		internal::copy(it + 1, m_end, it, itt);
+	}
+
+	RDE_FORCEINLINE void move_down(iterator it_start, iterator it_result, int_to_type<true> itt)
+	{
+		RDE_ASSERT(it_start > it_result);
+		internal::move(it_start, m_end, it_result, itt);
+	}
+	RDE_FORCEINLINE void move_down(iterator it_start, iterator it_result, int_to_type<false> itt)
+	{
+		RDE_ASSERT(it_start > it_result);
+		internal::copy(it_start, m_end, it_result, itt);
 	}
 };
 

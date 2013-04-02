@@ -70,7 +70,7 @@ void move_n(const T* from, size_t n, T* result)
 
 //-----------------------------------------------------------------------------
 template<typename T>
-void move(const T* first, const T* last, T* result)
+inline void move(const T* first, const T* last, T* result)
 {
 	RDE_ASSERT(first != result || first == last);
 	const size_t n = reinterpret_cast<uintptr_t>(last) - reinterpret_cast<uintptr_t>(first);
