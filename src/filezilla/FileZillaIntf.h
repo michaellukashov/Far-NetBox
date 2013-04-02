@@ -27,14 +27,14 @@ struct TRemoteFileTime
 //---------------------------------------------------------------------------
 struct TListDataEntry
 {
+  TRemoteFileTime Time;
   const wchar_t * Name;
   const wchar_t * Permissions;
   const wchar_t * OwnerGroup;
+  const wchar_t * LinkTarget;
   __int64 Size;
   bool Dir;
   bool Link;
-  TRemoteFileTime Time;
-  const wchar_t * LinkTarget;
 };
 //---------------------------------------------------------------------------
 struct TFtpsCertificateData

@@ -30,18 +30,21 @@ class t_directory : public TObject
 public:
 	t_directory();
 	~t_directory();
+	t_server server;
 	CServerPath path;
 	int num;
 	class t_direntry : public Classes::TObject
 	{
 	public:
 		t_direntry();
-		bool bUnsure; //Set by CControlSocket::FileTransfer when uploads fail after sending STOR/APPE
+		CTime EntryTime;
+		CString linkTarget;
 		CString name;
 		CString lName; //Name in lowercase characters
 		CString permissionstr;
 		CString ownergroup;
 		__int64 size;
+		bool bUnsure; //Set by CControlSocket::FileTransfer when uploads fail after sending STOR/APPE
 		bool dir;
 		bool bLink;
 		class t_date : public Classes::TObject
@@ -54,11 +57,8 @@ public:
 			bool hasdate;
 			bool utc;
 		} date;
-		CTime EntryTime;
-		CString linkTarget;
 	} *direntry;
 	void Merge(const t_directory &directory, CTime MergeTime);
-	t_server server;
 #ifndef MPEXT_NO_CACHE
 	BOOL bCached;
 #endif
