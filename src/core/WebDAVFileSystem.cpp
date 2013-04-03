@@ -13412,7 +13412,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       OperationProgress->SetTransferSize(File->GetSize());
       OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
-      uintptr_t LocalFileAttrs = -1;
+      uintptr_t LocalFileAttrs = 0;
       FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
         LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
         if ((LocalFileAttrs >= 0) && FLAGSET(LocalFileAttrs, faDirectory)) { EXCEPTION; }
