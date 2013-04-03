@@ -2038,7 +2038,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   // Get directory attributes
   FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, DirectoryName.c_str()),
     LocalFileAttrs = FTerminal->GetLocalFileAttributes(DirectoryName);
-    if (LocalFileAttrs == -1)
+    if ((DWORD)LocalFileAttrs == -1)
     {
       RaiseLastOSError();
     }
@@ -2510,7 +2510,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
 
         FileData.LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFileName);
         // If getting attrs fails, we suppose, that file/folder doesn't exists
-        FileData.Exists = (FileData.LocalFileAttrs != -1);
+        FileData.Exists = ((DWORD)FileData.LocalFileAttrs != -1);
         if (Dir)
         {
           TRACE("11");

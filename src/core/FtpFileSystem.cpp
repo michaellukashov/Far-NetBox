@@ -1268,7 +1268,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
     uintptr_t LocalFileAttrs = 0;
     FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
-      if ((LocalFileAttrs != (uintptr_t)-1) && FLAGSET(LocalFileAttrs, faDirectory))
+      if (((DWORD)LocalFileAttrs != -1) && FLAGSET(LocalFileAttrs, faDirectory))
       {
         EXCEPTION;
       }
@@ -1311,7 +1311,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
 
     Action.Destination(ExpandUNCFileName(DestFullName));
 
-    if (LocalFileAttrs == -1)
+    if ((DWORD)LocalFileAttrs == -1)
     {
       LocalFileAttrs = faArchive;
     }
