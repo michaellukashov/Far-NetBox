@@ -289,7 +289,7 @@ public:
 		{
 			const size_type numCopy		= prevSize - index;
 			const size_type numAppend	= indexEnd - prevSize;
-			RDE_ASSERT(numCopy >= 0 && numAppend >= 0);
+			RDE_ASSERT((int)numCopy >= 0 && (int)numAppend >= 0);
 			RDE_ASSERT(numAppend + numCopy == n);
 			iterator itOut = m_begin + prevSize;
 			for (size_type i = 0; i < numAppend; ++i, ++itOut)
