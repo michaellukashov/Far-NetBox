@@ -4180,7 +4180,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
   bool TryWriteReadOnly)
 {
   CALLSTACK;
-  int Attrs = 0;
+  uintptr_t Attrs = 0;
   HANDLE Handle = 0;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
 
