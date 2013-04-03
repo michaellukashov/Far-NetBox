@@ -763,7 +763,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
     {
       if (Params->Timer > 0)
       {
-        FarParams.Timer = static_cast<unsigned int>(Params->Timer);
+        FarParams.Timer = Params->Timer;
         FarParams.TimerEvent = Params->TimerEvent;
       }
 

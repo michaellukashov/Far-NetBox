@@ -548,7 +548,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
     TRY_FINALLY (
     {
       GetConfiguration()->SetLogging(LoggingCheck->GetChecked());
-      GetConfiguration()->SetLogProtocol((int)LogProtocolCombo->GetItemIndex());
+      GetConfiguration()->SetLogProtocol(LogProtocolCombo->GetItemIndex());
       GetConfiguration()->SetLogToFile(LogToFileCheck->GetChecked());
       if (LogToFileCheck->GetChecked())
       {

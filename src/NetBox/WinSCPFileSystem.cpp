@@ -3813,7 +3813,7 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
       (FLastEditorID == Info->GetEditorID()) &&
       !FLastEditFile.IsEmpty();
 
-    TMultipleEdits::iterator I = FMultipleEdits.find((int)Info->GetEditorID());
+    TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
     bool MultipleEdit = (I != FMultipleEdits.end());
 
     if (NativeEdit || MultipleEdit)
@@ -3862,7 +3862,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
       if (Info != NULL)
       {
         std::auto_ptr<TFarEditorInfo> InfoPtr(Info);
-        TMultipleEdits::iterator it = FMultipleEdits.find((int)Info->GetEditorID());
+        TMultipleEdits::iterator it = FMultipleEdits.find(Info->GetEditorID());
         if (it != FMultipleEdits.end())
         {
           UnicodeString FullFileName = ::UnixIncludeTrailingBackslash(it->second.Directory) +
@@ -3941,7 +3941,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
           FLastEditorID = -1;
         }
 
-        TMultipleEdits::iterator I = FMultipleEdits.find((int)Info->GetEditorID());
+        TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
         if (I != FMultipleEdits.end())
         {
           if (I->second.PendingSave)
@@ -3984,7 +3984,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
           }
         }
 
-        TMultipleEdits::iterator I = FMultipleEdits.find((int)Info->GetEditorID());
+        TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
         if (I != FMultipleEdits.end())
         {
           if (I->second.LocalFileName != Info->GetFileName())

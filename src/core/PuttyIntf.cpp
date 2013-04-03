@@ -133,7 +133,7 @@ int GetUserpassInput(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
   TRY_FINALLY (
   {
     TRACEFMT("1 [%d]", int(p->n_prompts));
-    for (intptr_t Index = 0; Index < static_cast<int>(p->n_prompts); ++Index)
+    for (intptr_t Index = 0; Index < p->n_prompts; ++Index)
     {
       prompt_t * Prompt = p->prompts[Index];
       Prompts->AddObject(Prompt->prompt, reinterpret_cast<TObject *>(static_cast<size_t>(Prompt->echo)));
@@ -143,7 +143,7 @@ int GetUserpassInput(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
     if (SecureShell->PromptUser(p->to_server != 0, p->name, p->name_reqd != 0,
           UnicodeString(p->instruction), p->instr_reqd != 0, Prompts, Results))
     {
-      for (intptr_t Index = 0; Index < int(p->n_prompts); ++Index)
+      for (intptr_t Index = 0; Index < p->n_prompts; ++Index)
       {
         prompt_t * Prompt = p->prompts[Index];
         AnsiString Str = Results->GetString(Index).c_str();
