@@ -75,7 +75,10 @@ AnsiString & AnsiString::operator=(const UnicodeString & StrCopy)
 
 AnsiString & AnsiString::operator=(const AnsiString & StrCopy)
 {
-  Init(StrCopy.c_str(), StrCopy.Length());
+  if (*this != StrCopy)
+  {
+    Init(StrCopy.c_str(), StrCopy.Length());
+  }
   return *this;
 }
 
@@ -508,8 +511,10 @@ void UnicodeString::sprintf(const wchar_t * fmt, ...)
 
 UnicodeString & UnicodeString::operator=(const UnicodeString & StrCopy)
 {
-  // Init(StrCopy.c_str(), StrCopy.Length());
-  Data = StrCopy.Data;
+  if (*this != StrCopy)
+  {
+    Data = StrCopy.Data;
+  }
   return *this;
 }
 
