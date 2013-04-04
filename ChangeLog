@@ -1,5 +1,7 @@
 NetBox 2.1.28 ??.04.2013
 --------------------
+  * Issue #42 Set empty anonymous password
+    (https://github.com/michaellukashov/Far-NetBox/issues/42)
   * Bugfix: AV when searching files on server
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=107082#p107082)
   * Bugfix: Store changes if configuration dialog is called from Plugins configuration

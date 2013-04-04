@@ -188,9 +188,11 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Pat
     intptr_t P;
     while ((P = Result.Pos(L"/../")) > 0)
     {
-      intptr_t P2 = Result.SubString(1, P-1).LastDelimiter(L"/");
-      assert(P2 > 0);
-      Result.Delete(P2, P - P2 + 3);
+      intptr_t P2 = Result.SubString(1, P-1).LastDelimiter(L"/\\");
+      if (P2 > 0)
+      {
+        Result.Delete(P2, P - P2 + 3);
+      }
     }
     while ((P = Result.Pos(L"/./")) > 0)
     {
