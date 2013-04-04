@@ -8,7 +8,7 @@ class simple_string_storage
 {
 public:
 	typedef E					value_type;
-	typedef int					size_type;
+	typedef size_t					size_type;
 	typedef TAllocator			allocator_type;
 	typedef const value_type*	const_iterator;
 	static const unsigned long	kGranularity = 32;	

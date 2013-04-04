@@ -115,7 +115,7 @@ public:
     typedef TAllocator															allocator_type;
 	typedef node_iterator<node*, value_type*, value_type&>						iterator;
 	typedef node_iterator<const node*, const value_type*, const value_type&>	const_iterator;
-    typedef int																	size_type;
+    typedef size_t																	size_type;
 	static const size_type														kNodeSize = sizeof(node);
 	static const size_type														kInitialCapacity = 64;
 
