@@ -55,10 +55,12 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
   if (List && (List->IndexOf(this) == -1))
     while (List->FindByName(GetName()))
     {
-      intptr_t N = 0, P = 0;
+      intptr_t P = 0;
+      intptr_t N = 0;
       // If name already contains number parenthesis remove it (and remember it)
       UnicodeString Name = GetName();
       if ((Name[Name.Length()] == L')') && ((P = Name.LastDelimiter(L'(')) > 0))
+      {
         try
         {
           N = Sysutils::StrToInt(Name.SubString(P + 1, Name.Length() - P - 1));
@@ -70,6 +72,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
           (void)E;
           N = 0;
         }
+      }
       SetName(Name + L" (" + IntToStr(N+1) + L")");
     }
 }

@@ -214,10 +214,9 @@ intptr_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo
   if ((Info->Event != EE_REDRAW) || FarConfiguration->GetEditorUploadOnSave() ||
       FarConfiguration->GetEditorMultiple())
   {
-    TWinSCPFileSystem * FileSystem = NULL;
     for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
     {
-      FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->GetItem(Index));
+      TWinSCPFileSystem * FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->GetItem(Index));
       FileSystem->ProcessEditorEvent(Info->Event, Info->Param);
     }
   }
@@ -787,7 +786,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
     {
       if (Params->Timer > 0)
       {
-        FarParams.Timer = static_cast<unsigned int>(Params->Timer);
+        FarParams.Timer = Params->Timer;
         FarParams.TimerEvent = Params->TimerEvent;
       }
 

@@ -164,12 +164,6 @@ typedef struct callback_baton_t
 } callback_baton_t;
 
 //------------------------------------------------------------------------------
-// from ra_loader.h
-
-typedef error_t (*init_func_t)(const vtable_t ** vtable,
-  apr_pool_t * pool);
-
-//------------------------------------------------------------------------------
 // from svn_string.h
 
 // A simple counted string.
@@ -1995,12 +1989,11 @@ uri_escape(
 {
   stringbuf_t * retstr = NULL;
   size_t i = 0, copied = 0;
-  int c = 0;
 
   retstr = stringbuf_create_ensure(strlen(path), pool);
   for (i = 0; path[i]; i++)
   {
-    c = (unsigned char)path[i];
+    int c = (unsigned char)path[i];
     if (table[c])
       continue;
 
@@ -13419,10 +13412,10 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       OperationProgress->SetTransferSize(File->GetSize());
       OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
-      int Attrs = -1;
+      uintptr_t LocalFileAttrs = 0;
       FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
-        Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
-        if ((Attrs >= 0) && FLAGSET(Attrs, faDirectory)) { EXCEPTION; }
+        LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
+        if (((DWORD)LocalFileAttrs != -1) && FLAGSET(LocalFileAttrs, faDirectory)) { EXCEPTION; }
       );
 
       OperationProgress->TransferingFile = false; // not set with FTP protocol
@@ -13456,20 +13449,20 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       if (DestFileName != UserData.FileName)
       {
         DestFullName = TargetDir + UserData.FileName;
-        Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
+        LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
       }
 
       Action.Destination(ExpandUNCFileName(DestFullName));
 
-      if (Attrs == -1)
+      if ((DWORD)LocalFileAttrs == -1)
       {
-        Attrs = faArchive;
+        LocalFileAttrs = faArchive;
       }
       uintptr_t NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
-      if ((NewAttrs & Attrs) != NewAttrs)
+      if ((NewAttrs & LocalFileAttrs) != NewAttrs)
       {
         FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, Attrs | NewAttrs) == 0);
+          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, LocalFileAttrs | NewAttrs) == 0);
         );
       }
       // set time

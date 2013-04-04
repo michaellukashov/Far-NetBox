@@ -2822,10 +2822,9 @@ void TTerminal::ProcessDirectory(const UnicodeString & DirName,
     {
       UnicodeString Directory = UnixIncludeTrailingBackslash(DirName);
 
-      TRemoteFile * File;
       for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
       {
-        File = FileList->GetFiles(Index);
+        TRemoteFile * File = FileList->GetFiles(Index);
         if (!File->GetIsParentDirectory() && !File->GetIsThisDirectory())
         {
           CallBackFunc(Directory + File->GetFileName(), File, Param);
@@ -4181,7 +4180,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
   bool TryWriteReadOnly)
 {
   CALLSTACK;
-  int Attrs = 0;
+  uintptr_t Attrs = 0;
   HANDLE Handle = 0;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
 
@@ -4283,7 +4282,7 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
   if (!CopyParam->AllowAnyTransfer())
   {
-    WIN32_FIND_DATA FindData;
+    WIN32_FIND_DATA FindData = {};
     HANDLE Handle = 0;
     FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
       Handle = FindFirstFile(FileName.c_str(), &FindData);
@@ -5793,10 +5792,9 @@ TTerminal * TTerminalList::GetTerminal(intptr_t Index)
 intptr_t TTerminalList::GetActiveCount()
 {
   intptr_t Result = 0;
-  TTerminal * Terminal;
   for (intptr_t I = 0; I < GetCount(); ++I)
   {
-    Terminal = GetTerminal(I);
+    TTerminal * Terminal = GetTerminal(I);
     if (Terminal->GetActive())
     {
       Result++;
@@ -5807,10 +5805,9 @@ intptr_t TTerminalList::GetActiveCount()
 //------------------------------------------------------------------------------
 void TTerminalList::Idle()
 {
-  TTerminal * Terminal;
   for (intptr_t I = 0; I < GetCount(); ++I)
   {
-    Terminal = GetTerminal(I);
+    TTerminal * Terminal = GetTerminal(I);
     if (Terminal->GetStatus() == ssOpened)
     {
       Terminal->Idle();

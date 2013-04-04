@@ -23,7 +23,7 @@ class TConfiguration : public TObject
 private:
   bool FDontSave;
   bool FChanged;
-  int FUpdating;
+  intptr_t FUpdating;
   TNotifyEvent FOnChange;
 
   void * FApplicationInfo;
@@ -34,8 +34,8 @@ private:
   UnicodeString FPermanentLogFileName;
   intptr_t FLogWindowLines;
   bool FLogFileAppend;
-  int FLogProtocol;
-  int FActualLogProtocol;
+  intptr_t FLogProtocol;
+  intptr_t FActualLogProtocol;
   bool FLogActions;
   bool FPermanentLogActions;
   UnicodeString FActionsLogFileName;
@@ -43,15 +43,15 @@ private:
   bool FConfirmOverwriting;
   bool FConfirmResume;
   bool FAutoReadDirectoryAfterOp;
-  int FSessionReopenAuto;
-  int FSessionReopenBackground;
-  int FSessionReopenTimeout;
-  int FSessionReopenAutoStall;
+  intptr_t FSessionReopenAuto;
+  intptr_t FSessionReopenBackground;
+  intptr_t FSessionReopenTimeout;
+  intptr_t FSessionReopenAutoStall;
   UnicodeString FIniFileStorageName;
   UnicodeString FVirtualIniFileStorageName;
-  int FTunnelLocalPortNumberLow;
-  int FTunnelLocalPortNumberHigh;
-  int FCacheDirectoryChangesMaxSize;
+  intptr_t FTunnelLocalPortNumberLow;
+  intptr_t FTunnelLocalPortNumberHigh;
+  intptr_t FCacheDirectoryChangesMaxSize;
   bool FShowFtpWelcomeMessage;
   UnicodeString FDefaultRandomSeedFile;
   UnicodeString FRandomSeedFile;
@@ -62,7 +62,7 @@ private:
   bool FForceBanners;
   bool FDisableAcceptingHostKeys;
   bool FDefaultCollectUsage;
-  int FSessionReopenAutoMaximumNumberOfRetries;
+  intptr_t FSessionReopenAutoMaximumNumberOfRetries;
 
 public:
   UnicodeString GetOSVersionStr();
@@ -86,11 +86,11 @@ public:
   void SetLogging(bool Value);
   void SetLogFileName(const UnicodeString & Value);
   bool GetLogToFile();
-  void SetLogWindowLines(int Value);
+  void SetLogWindowLines(intptr_t Value);
   void SetLogWindowComplete(bool Value);
   bool GetLogWindowComplete();
   void SetLogFileAppend(bool Value);
-  void SetLogProtocol(int Value);
+  void SetLogProtocol(intptr_t Value);
   void SetLogActions(bool Value);
   void SetActionsLogFileName(const UnicodeString & Value);
   UnicodeString GetDefaultLogFileName();
@@ -102,15 +102,15 @@ public:
   UnicodeString GetPartialExt() const;
   UnicodeString GetFileInfoString(const UnicodeString & Key);
   bool GetGSSAPIInstalled();
-  void SetSessionReopenAuto(int Value);
-  void SetSessionReopenBackground(int Value);
-  void SetSessionReopenTimeout(int Value);
-  void SetSessionReopenAutoStall(int Value);
-  void SetTunnelLocalPortNumberLow(int Value);
-  void SetTunnelLocalPortNumberHigh(int Value);
-  void SetCacheDirectoryChangesMaxSize(int Value);
+  void SetSessionReopenAuto(intptr_t Value);
+  void SetSessionReopenBackground(intptr_t Value);
+  void SetSessionReopenTimeout(intptr_t Value);
+  void SetSessionReopenAutoStall(intptr_t Value);
+  void SetTunnelLocalPortNumberLow(intptr_t Value);
+  void SetTunnelLocalPortNumberHigh(intptr_t Value);
+  void SetCacheDirectoryChangesMaxSize(intptr_t Value);
   void SetShowFtpWelcomeMessage(bool Value);
-  int GetCompoundVersion();
+  intptr_t GetCompoundVersion();
   void UpdateActualLogProtocol();
   void SetExternalIpAddress(const UnicodeString & Value);
   bool GetCollectUsage();
@@ -193,28 +193,28 @@ public:
   bool GetLogging() { return FLogging; }
   UnicodeString GetLogFileName() { return FLogFileName; }
   bool GetLogFileAppend() { return FLogFileAppend; }
-  int GetLogProtocol() { return FLogProtocol; }
-  int GetActualLogProtocol() { return FActualLogProtocol; }
+  intptr_t GetLogProtocol() { return FLogProtocol; }
+  intptr_t GetActualLogProtocol() { return FActualLogProtocol; }
   bool GetLogActions() { return FLogActions; }
   UnicodeString GetActionsLogFileName() const { return FActionsLogFileName; }
   intptr_t GetLogWindowLines() { return FLogWindowLines; }
   TNotifyEvent & GetOnChange() { return FOnChange; }
   void SetOnChange(TNotifyEvent Value) { FOnChange = Value; }
-  int GetSessionReopenAuto() { return FSessionReopenAuto; }
-  int GetSessionReopenBackground() { return FSessionReopenBackground; }
-  int GetSessionReopenTimeout() { return FSessionReopenTimeout; }
-  int GetSessionReopenAutoStall() { return FSessionReopenAutoStall; }
-  int GetTunnelLocalPortNumberLow() { return FTunnelLocalPortNumberLow; }
-  int GetTunnelLocalPortNumberHigh() { return FTunnelLocalPortNumberHigh; }
-  int GetCacheDirectoryChangesMaxSize() { return FCacheDirectoryChangesMaxSize; }
+  intptr_t GetSessionReopenAuto() { return FSessionReopenAuto; }
+  intptr_t GetSessionReopenBackground() { return FSessionReopenBackground; }
+  intptr_t GetSessionReopenTimeout() { return FSessionReopenTimeout; }
+  intptr_t GetSessionReopenAutoStall() { return FSessionReopenAutoStall; }
+  intptr_t GetTunnelLocalPortNumberLow() { return FTunnelLocalPortNumberLow; }
+  intptr_t GetTunnelLocalPortNumberHigh() { return FTunnelLocalPortNumberHigh; }
+  intptr_t GetCacheDirectoryChangesMaxSize() { return FCacheDirectoryChangesMaxSize; }
   bool GetShowFtpWelcomeMessage() { return FShowFtpWelcomeMessage; }
   UnicodeString GetExternalIpAddress() const { return FExternalIpAddress; }
   bool GetDisablePasswordStoring() { return FDisablePasswordStoring; }
   bool GetForceBanners() { return FForceBanners; }
   bool GetDisableAcceptingHostKeys() { return FDisableAcceptingHostKeys; }
   void SetLogToFile(bool Value);
-  int GetSessionReopenAutoMaximumNumberOfRetries() const { return FSessionReopenAutoMaximumNumberOfRetries; }
-  void SetSessionReopenAutoMaximumNumberOfRetries(int Value);
+  intptr_t GetSessionReopenAutoMaximumNumberOfRetries() const { return FSessionReopenAutoMaximumNumberOfRetries; }
+  void SetSessionReopenAutoMaximumNumberOfRetries(intptr_t Value);
 };
 //---------------------------------------------------------------------------
 class TShortCuts : public TObject

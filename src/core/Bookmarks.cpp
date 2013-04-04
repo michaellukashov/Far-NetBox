@@ -232,10 +232,9 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
 //---------------------------------------------------------------------------
 void TBookmarks::ModifyAll(bool Modify)
 {
-  TBookmarkList * BookmarkList;
   for (intptr_t I = 0; I < FBookmarkLists->GetCount(); I++)
   {
-    BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->Objects[I]);
+    TBookmarkList * BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->Objects[I]);
     assert(BookmarkList);
     BookmarkList->SetModified(Modify);
   }

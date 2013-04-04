@@ -160,10 +160,10 @@ const int tfNewDirectory = 0x02;
 //---------------------------------------------------------------------------
 #ifndef GET_32BIT
 #define GET_32BIT(cp) \
-    (((unsigned long)(unsigned char)(cp)[0] << 24) | \
-    ((unsigned long)(unsigned char)(cp)[1] << 16) | \
-    ((unsigned long)(unsigned char)(cp)[2] << 8) | \
-    ((unsigned long)(unsigned char)(cp)[3]))
+    (((rde::uint32)(unsigned char)(cp)[0] << 24) | \
+    ((rde::uint32)(unsigned char)(cp)[1] << 16) | \
+    ((rde::uint32)(unsigned char)(cp)[2] << 8) | \
+    ((rde::uint32)(unsigned char)(cp)[3]))
 #endif
 #ifndef PUT_32BIT
 #define PUT_32BIT((cp), (value)) { \
@@ -293,12 +293,12 @@ public:
     memmove(FData + 1, Buf, sizeof(Buf));
   }
 
-  void AddByte(unsigned char Value)
+  void AddByte(rde::uint8 Value)
   {
     Add(&Value, sizeof(Value));
   }
 
-  void AddCardinal(unsigned long Value)
+  void AddCardinal(rde::uint32 Value)
   {
     // duplicated in Reuse()
     unsigned char Buf[4];
@@ -308,8 +308,8 @@ public:
 
   void AddInt64(__int64 Value)
   {
-    AddCardinal((unsigned long)(Value >> 32));
-    AddCardinal((unsigned long)(Value & 0xFFFFFFFF));
+    AddCardinal((rde::uint32)(Value >> 32));
+    AddCardinal((rde::uint32)(Value & 0xFFFFFFFF));
   }
 
   void AddData(const void * Data, int ALength)
@@ -325,7 +325,7 @@ public:
 
   void AddString(const RawByteString & Value)
   {
-    AddCardinal(static_cast<unsigned long >(Value.Length()));
+    AddCardinal(static_cast<rde::uint32 >(Value.Length()));
     Add(Value.c_str(), Value.Length());
   }
 
@@ -430,10 +430,10 @@ public:
     if ((Version < 4) && ((MTime != NULL) || (ATime != NULL)))
     {
       // any way to reflect sbSignedTS here?
-      // (note that casting __int64 > 2^31 < 2^32 to unsigned long is wrapped,
+      // (note that casting __int64 > 2^31 < 2^32 to rde::uint32 is wrapped,
       // thus we never can set time after 2038, even if the server supports it)
-      AddCardinal(static_cast<unsigned long>(ATime != NULL ? *ATime : *MTime));
-      AddCardinal(static_cast<unsigned long>(MTime != NULL ? *MTime : *ATime));
+      AddCardinal(static_cast<rde::uint32>(ATime != NULL ? *ATime : *MTime));
+      AddCardinal(static_cast<rde::uint32>(MTime != NULL ? *MTime : *ATime));
     }
     if ((Version >= 4) && (ATime != NULL))
     {
@@ -523,18 +523,18 @@ public:
     return Result;
   }
 
-  unsigned long GetCardinal()
+  rde::uint32 GetCardinal()
   {
-    unsigned long Result;
+    rde::uint32 Result;
     Need(sizeof(Result));
     Result = GET_32BIT(FData + FPosition);
     FPosition += sizeof(Result);
     return Result;
   }
 
-  unsigned long GetSmallCardinal()
+  rde::uint32 GetSmallCardinal()
   {
-    unsigned long Result;
+    rde::uint32 Result;
     Need(2);
     Result = (FData[FPosition] << 8) + FData[FPosition + 1];
     FPosition += 2;
@@ -551,7 +551,7 @@ public:
   RawByteString GetRawByteString()
   {
     RawByteString Result;
-    unsigned long Len = GetCardinal();
+    rde::uint32 Len = GetCardinal();
     Need(Len);
     // cannot happen anyway as Need() would raise exception
     assert(Len < SFTP_MAX_PACKET_LEN);
@@ -603,7 +603,7 @@ public:
     assert(File);
     uintptr_t Flags;
     UnicodeString ListingStr;
-    unsigned long Permissions = 0;
+    rde::uint32 Permissions = 0;
     bool ParsingFailed = false;
     if (GetType() != SSH_FXP_ATTRS)
     {
@@ -658,12 +658,12 @@ public:
       {
         File->SetLastAccess(UnixToDateTime(
           SignedTS ?
-            static_cast<__int64>(static_cast<signed long>(GetCardinal())) :
+            static_cast<__int64>(static_cast<rde::int32>(GetCardinal())) :
             static_cast<__int64>(GetCardinal()),
           DSTMode));
         File->SetModification(UnixToDateTime(
           SignedTS ?
-            static_cast<__int64>(static_cast<signed long>(GetCardinal())) :
+            static_cast<__int64>(static_cast<rde::int32>(GetCardinal())) :
             static_cast<__int64>(GetCardinal()),
           DSTMode));
       }
@@ -713,7 +713,7 @@ public:
     {
       // while SSH_FILEXFER_ATTR_BITS is defined for SFTP5 only, vandyke 2.3.3 sets it
       // for SFTP4 as well
-      unsigned long Bits = GetCardinal();
+      rde::uint32 Bits = GetCardinal();
       if (FLAGSET(Bits, SSH_FILEXFER_ATTR_FLAGS_HIDDEN))
       {
         File->SetIsHidden(true);
@@ -756,7 +756,7 @@ public:
 
     if (Flags & SSH_FILEXFER_ATTR_EXTENDED)
     {
-      unsigned long ExtendedCount = GetCardinal();
+      rde::uint32 ExtendedCount = GetCardinal();
       for (intptr_t Index = 0; Index < static_cast<intptr_t>(ExtendedCount); ++Index)
       {
         GetRawByteString(); // skip extended_type
@@ -865,7 +865,7 @@ public:
   uintptr_t GetCapacity() const { return FCapacity; }
   unsigned char GetType() const { return FType; }
   uintptr_t GetMessageNumber() const { return static_cast<uintptr_t>(FMessageNumber); }
-  void SetMessageNumber(unsigned long  Value) { FMessageNumber = Value; }
+  void SetMessageNumber(rde::uint32  Value) { FMessageNumber = Value; }
   TSFTPFileSystem * GetReservedBy() const { return FReservedBy; }
   void SetReservedBy(TSFTPFileSystem * Value) { FReservedBy = Value; }
 
@@ -875,7 +875,7 @@ private:
   uintptr_t FCapacity;
   uintptr_t FPosition;
   unsigned char FType;
-  unsigned long FMessageNumber;
+  rde::uint32 FMessageNumber;
   TSFTPFileSystem * FReservedBy;
 
   static int FMessageCounter;
@@ -1465,7 +1465,7 @@ protected:
         Request->AddString(FHandle);
         Request->AddInt64(FTransfered);
         Request->AddData(BlockBuf.GetData(), (int)BlockBuf.GetSize());
-        FLastBlockSize = (unsigned long)BlockBuf.GetSize();
+        FLastBlockSize = (rde::uint32)BlockBuf.GetSize();
 
         FTransfered += BlockBuf.GetSize();
       }
@@ -1506,7 +1506,7 @@ private:
   TStream * FStream;
   TFileOperationProgressType * OperationProgress;
   UnicodeString FFileName;
-  unsigned long FLastBlockSize;
+  rde::uint32 FLastBlockSize;
   bool FEnd;
   __int64 FTransfered;
   RawByteString FHandle;
@@ -2070,7 +2070,7 @@ uintptr_t TSFTPFileSystem::UploadBlockSize(const RawByteString & Handle,
 {
   // handle length + offset + data size
   const uintptr_t UploadPacketOverhead =
-    sizeof(unsigned long) + sizeof(__int64) + sizeof(unsigned long);
+    sizeof(rde::uint32) + sizeof(__int64) + sizeof(rde::uint32);
   return TransferBlockSize(UploadPacketOverhead + static_cast<uintptr_t>(Handle.Length()), OperationProgress,
     GetSessionData()->GetSFTPMinPacketSize(),
     GetSessionData()->GetSFTPMaxPacketSize());
@@ -2079,7 +2079,7 @@ uintptr_t TSFTPFileSystem::UploadBlockSize(const RawByteString & Handle,
 uintptr_t TSFTPFileSystem::DownloadBlockSize(
   TFileOperationProgressType * OperationProgress)
 {
-  uintptr_t Result = TransferBlockSize(sizeof(unsigned long), OperationProgress,
+  uintptr_t Result = TransferBlockSize(sizeof(rde::uint32), OperationProgress,
     GetSessionData()->GetSFTPMinPacketSize(),
     GetSessionData()->GetSFTPMaxPacketSize());
   if (FSupport->Loaded && (FSupport->MaxReadSize > 0) &&
@@ -2132,10 +2132,10 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
   TRACE("/");
 }
 //---------------------------------------------------------------------------
-unsigned long TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
+rde::uint32 TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
   int AllowStatus)
 {
-  unsigned long Code = Packet->GetCardinal();
+  rde::uint32 Code = Packet->GetCardinal();
 
   static int Messages[] = {
     SFTP_STATUS_OK,
@@ -2827,7 +2827,7 @@ void TSFTPFileSystem::DoStartup()
           TSFTPPacket RootsPacket(ExtensionData, GetSessionData()->GetCodePageAsNumber());
           while (RootsPacket.GetNextData() != NULL)
           {
-            unsigned long Dummy = RootsPacket.GetCardinal();
+            rde::uint32 Dummy = RootsPacket.GetCardinal();
             if (Dummy != 1)
             {
               break;
@@ -3004,10 +3004,10 @@ void TSFTPFileSystem::LookupUsersGroups()
     else
     {
       TRemoteTokenList & List = *Lists[Index];
-      unsigned long Count = Packet->GetCardinal();
+      rde::uint32 Count = Packet->GetCardinal();
 
       List.Clear();
-      for (unsigned long Item = 0; Item < Count; Item++)
+      for (rde::uint32 Item = 0; Item < Count; Item++)
       {
         TRemoteToken Token(Packet->GetString(!FUtfNever));
         List.Add(Token);
@@ -3364,7 +3364,7 @@ void TSFTPFileSystem::CustomReadFile(const UnicodeString & FileName,
   TRemoteFile *& File, unsigned char Type, TRemoteFile * ALinkedByFile,
   int AllowStatus)
 {
-  unsigned long Flags = SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_PERMISSIONS |
+  rde::uint32 Flags = SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_PERMISSIONS |
     SSH_FILEXFER_ATTR_ACCESSTIME | SSH_FILEXFER_ATTR_MODIFYTIME |
     SSH_FILEXFER_ATTR_OWNERGROUP;
   TSFTPPacket Packet(Type, GetSessionData()->GetCodePageAsNumber());
@@ -4605,11 +4605,11 @@ RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
   else
   {
     TRACE("2");
-    unsigned long Access =
+    rde::uint32 Access =
       FLAGMASK(FLAGSET(OpenType, SSH_FXF_READ), ACE4_READ_DATA) |
       FLAGMASK(FLAGSET(OpenType, SSH_FXF_WRITE), ACE4_WRITE_DATA | ACE4_APPEND_DATA);
 
-    unsigned long Flags = 0;
+    rde::uint32 Flags = 0;
 
     if (FLAGSET(OpenType, SSH_FXF_CREAT | SSH_FXF_EXCL))
     {
@@ -5122,7 +5122,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
     {
       FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
         uintptr_t LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
-        if ((LocalFileAttrs != (DWORD)-1) && (LocalFileAttrs & faDirectory) == 0)
+        if (((DWORD)LocalFileAttrs != -1) && (LocalFileAttrs & faDirectory) == 0)
         {
           EXCEPTION;
         }
@@ -5188,7 +5188,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
     uintptr_t LocalFileAttrs = 0;
     FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
-      if ((LocalFileAttrs != (DWORD)-1) && (LocalFileAttrs & faDirectory))
+      if (((DWORD)LocalFileAttrs != -1) && (LocalFileAttrs & faDirectory))
       {
         EXCEPTION;
       }
