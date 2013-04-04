@@ -793,13 +793,13 @@ public:
 
   DelphiSet<T>& operator += (const DelphiSet<T>& rhs)
   {
-    FSet.insert(rhs.FSet.begin(),rhs.FSet.end());
+    FSet.insert(rhs.FSet.begin(), rhs.FSet.end());
     return *this;
   }
 
   DelphiSet<T>& operator -= (const DelphiSet<T>& rhs)
   {
-    FSet.erase(rhs.FSet.begin(),rhs.FSet.end());
+    FSet.erase(rhs.FSet.begin(), rhs.FSet.end());
     return *this;
   }
 

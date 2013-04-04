@@ -149,7 +149,7 @@ void TList::SetItem(intptr_t Index, void * Item)
   {
     Classes::Error(SListIndexError, Index);
   }
-  FList.insert(FList.begin() + Index, Item);
+  FList.insert(Index, 1, Item);
 }
 
 intptr_t TList::Add(void * Value)
@@ -219,7 +219,7 @@ void TList::Insert(intptr_t Index, void * Item)
   }
   if (Index <= static_cast<intptr_t>(FList.size()))
   {
-    FList.insert(FList.begin() + Index, Item);
+    FList.insert(Index, 1, Item);
   }
   if (Item != NULL)
   {
@@ -1028,10 +1028,10 @@ void TStringList::InsertItem(intptr_t Index, const UnicodeString & S, TObject * 
   TStringItem Item;
   Item.FString = S;
   Item.FObject = AObject;
-  if (Index == static_cast<intptr_t>(FList.size()))
+  if (Index == GetCount())
     FList.push_back(Item);
   else
-    FList.insert(FList.begin() + Index, Item);
+    FList.insert(Index, 1, Item);
   Changed();
 }
 

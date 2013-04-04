@@ -10,7 +10,7 @@ namespace internal
 {
 struct rb_tree_base
 {
-	typedef int	size_type;
+	typedef size_t	size_type;
 	enum color_e
 	{
 		red,

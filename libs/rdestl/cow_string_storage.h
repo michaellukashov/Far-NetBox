@@ -33,7 +33,7 @@ class cow_string_storage
 	typedef char ERR_CharTypeTooBigSeeM_BufferComment[sizeof(E) <= 2 ? 1 : -1];
 public:
 	typedef E					value_type;
-	typedef int					size_type;
+	typedef size_t					size_type;
 	typedef TAllocator			allocator_type;
 	typedef const value_type*	const_iterator;
 	static const unsigned long	kGranularity = 32;	

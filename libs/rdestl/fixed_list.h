@@ -126,7 +126,7 @@ private:
 
 public:
 	typedef T												value_type;
-	typedef int												size_type;
+	typedef size_t												size_type;
 	typedef node_iterator<node*, T*, T&>					iterator;
 	typedef node_iterator<const node*, const T*, const T&>	const_iterator;
 
