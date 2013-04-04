@@ -38,7 +38,7 @@ const intptr_t HTTPPortNumber = 80;
 const intptr_t HTTPSPortNumber = 443;
 const intptr_t DefaultSendBuf = 256 * 1024;
 const UnicodeString AnonymousUserName(L"anonymous");
-const UnicodeString AnonymousPassword(L"anonymous@example.com");
+const UnicodeString AnonymousPassword(L"");
 
 const uintptr_t CONST_DEFAULT_CODEPAGE = CP_ACP;
 const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
