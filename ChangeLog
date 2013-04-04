@@ -1,5 +1,7 @@
-NetBox 2.1.28 ??.03.2013
+NetBox 2.1.28 ??.04.2013
 --------------------
+  * Bugfix: AV when searching files on server
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=107082#p107082)
   * Bugfix: Store changes if configuration dialog is called from Plugins configuration
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=106645#p106645)
   * Improvement: When editin session, parse username, password and directory, if any
