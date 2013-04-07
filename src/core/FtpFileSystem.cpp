@@ -3493,10 +3493,9 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
     RequestResult = 0;
 
-    THierarchicalStorage * Storage =
-      FTerminal->GetConfiguration()->CreateScpStorage(false);
-    TRY_FINALLY (
     {
+      std::auto_ptr<THierarchicalStorage> Storage(
+        FTerminal->GetConfiguration()->CreateScpStorage(false));
       Storage->SetAccessMode(smRead);
 
       if (Storage->OpenSubKey(CertificateStorageKey, false) &&
@@ -3505,11 +3504,6 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         RequestResult = 1;
       }
     }
-    ,
-    {
-      delete Storage;
-    }
-    );
 
     if (RequestResult == 0)
     {
@@ -3567,22 +3561,18 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
       if (RequestResult == 2)
       {
-        THierarchicalStorage * Storage =
-          FTerminal->GetConfiguration()->CreateScpStorage(false);
-        TRY_FINALLY (
-        {
-          Storage->SetAccessMode(smReadWrite);
+        std::auto_ptr<THierarchicalStorage> Storage(
+          FTerminal->GetConfiguration()->CreateScpStorage(false));
+        Storage->SetAccessMode(smReadWrite);
 
           if (Storage->OpenSubKey(CertificateStorageKey, true))
           {
             Storage->WriteString(FSessionInfo.CertificateFingerprint, L"");
           }
         }
-        ,
         {
           delete Storage;
         }
-        );
       }
     }
 
