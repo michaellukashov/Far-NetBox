@@ -291,7 +291,7 @@ void PackStr(UnicodeString & Str)
   Str = Str.c_str();
 }
 //---------------------------------------------------------------------------
-void PackStr(RawByteString &Str)
+void PackStr(RawByteString & Str)
 {
   // Following will free unnecessary bytes
   Str = Str.c_str();
@@ -301,7 +301,7 @@ void Shred(UnicodeString & Str)
 {
   if (!Str.IsEmpty())
   {
-    memset(const_cast<wchar_t *>(Str.c_str()), 0, Str.Length() * sizeof(*Str.c_str()));
+    wmemset(const_cast<wchar_t *>(Str.c_str()), 0, Str.Length());
     Str = L"";
   }
 }
