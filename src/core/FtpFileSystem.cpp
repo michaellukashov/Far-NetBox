@@ -203,7 +203,7 @@ struct TFileTransferData : public TObject
 const int tfFirstLevel = 0x01;
 const int tfAutoResume = 0x02;
 #endif
-const wchar_t CertificateStorageKey[] = L"FtpsCertificates";
+static const wchar_t FtpsCertificateStorageKey[] = L"FtpsCertificates";
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 struct TSinkFileParams
@@ -3498,7 +3498,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         FTerminal->GetConfiguration()->CreateScpStorage(false));
       Storage->SetAccessMode(smRead);
 
-      if (Storage->OpenSubKey(CertificateStorageKey, false) &&
+      if (Storage->OpenSubKey(FtpsCertificateStorageKey, false) &&
           Storage->ValueExists(FSessionInfo.CertificateFingerprint))
       {
         RequestResult = 1;
@@ -3565,13 +3565,9 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
           FTerminal->GetConfiguration()->CreateScpStorage(false));
         Storage->SetAccessMode(smReadWrite);
 
-          if (Storage->OpenSubKey(CertificateStorageKey, true))
-          {
-            Storage->WriteString(FSessionInfo.CertificateFingerprint, L"");
-          }
-        }
+        if (Storage->OpenSubKey(FtpsCertificateStorageKey, true))
         {
-          delete Storage;
+          Storage->WriteString(FSessionInfo.CertificateFingerprint, FSessionInfo.CertificateFingerprint);
         }
       }
     }
