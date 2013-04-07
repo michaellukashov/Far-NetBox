@@ -1,5 +1,7 @@
 NetBox 2.1.28 ??.04.2013
 --------------------
+  * Bugfix: Far3: Certificate fingerprint was not stored
+    (http://forum.farmanager.com/viewtopic.php?f=9&t=7866&p=107299#p107299)
   * Issue #42 Set empty anonymous password
     (https://github.com/michaellukashov/Far-NetBox/issues/42)
   * Bugfix: AV when searching files on server
