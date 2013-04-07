@@ -3596,6 +3596,7 @@ bool TFTPFileSystem::HandleAsynchRequestNeedPass(
     else
     {
       RequestResult = TFileZillaIntf::REPLY_ABORTED;
+      Data.Password = NULL;
     }
     return true;
   }
