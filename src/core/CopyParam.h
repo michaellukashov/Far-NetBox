@@ -22,6 +22,7 @@ const int cpaNoPreserveTime =  0x10;
 const int cpaNoRights =        0x20;
 const int cpaNoPreserveReadOnly = 0x40;
 const int cpaNoIgnorePermErrors = 0x80;
+const int cpaNoNewerOnly        = 0x100;
 //---------------------------------------------------------------------------
 struct TUsableCopyParamAttrs
 {
@@ -44,6 +45,7 @@ private:
   bool FIgnorePermErrors;
   TResumeSupport FResumeSupport;
   __int64 FResumeThreshold;
+  UnicodeString GetLogStr() const;
   wchar_t FInvalidCharsReplacement;
   UnicodeString FLocalInvalidChars;
   UnicodeString FTokenizibleChars;
@@ -54,6 +56,7 @@ private:
   TFileMasks FIncludeFileMask;
   bool FClearArchive;
   uintptr_t FCPSLimit;
+  bool FNewerOnly;
 
 public:
   static const wchar_t TokenPrefix = L'%';
@@ -65,6 +68,8 @@ public:
   bool GetReplaceInvalidChars() const;
   void SetReplaceInvalidChars(bool Value);
   UnicodeString RestoreChars(const UnicodeString & FileName) const;
+  void DoGetInfoStr(const UnicodeString & Separator, intptr_t Attrs,
+    UnicodeString & Result, bool & SomeAttrIncluded) const;
 
 public:
   TCopyParamType();
@@ -89,6 +94,7 @@ public:
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
   UnicodeString GetInfoStr(const UnicodeString & Separator, intptr_t Attrs) const;
+  bool AnyUsableCopyParam(intptr_t Attrs) const;
 
   bool operator==(const TCopyParamType & rhp) const;
 
@@ -136,6 +142,8 @@ public:
   void SetClearArchive(bool Value) { FClearArchive = Value; }
   uintptr_t GetCPSLimit() const { return FCPSLimit; }
   void SetCPSLimit(uintptr_t Value) { FCPSLimit = Value; }
+  bool GetNewerOnly() const { return FNewerOnly; }
+  void SetNewerOnly(bool Value) { FNewerOnly = Value; }
 };
 //---------------------------------------------------------------------------
 uintptr_t  GetSpeedLimit(const UnicodeString & Text);

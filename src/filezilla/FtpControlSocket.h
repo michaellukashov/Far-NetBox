@@ -159,7 +159,6 @@ protected:
 	bool m_bAnnouncesUTF8;
 	bool m_hasClntCmd;
 #ifdef MPEXT
-	bool m_hasMfmtCmd;
 	TFTPServerCapabilities m_serverCapabilities;
 	CStringA m_ListFile;
 #endif

@@ -49,7 +49,7 @@ protected:
   explicit TSignalThread();
   virtual ~TSignalThread();
 
-  bool WaitForEvent();
+  virtual bool WaitForEvent();
   int WaitForEvent(unsigned int Timeout);
   virtual void Execute();
   virtual void ProcessEvent() = 0;
@@ -83,7 +83,9 @@ public:
   TTerminalQueueStatus * CreateStatus(TTerminalQueueStatus * Current);
   void Idle();
 
+  bool GetIsEmpty();
   intptr_t GetTransfersLimit() { return FTransfersLimit; }
+  intptr_t GetKeepDoneItemsFor() { return FKeepDoneItemsFor; }
   bool GetEnabled() const { return FEnabled; }
   TQueryUserEvent & GetOnQueryUser() { return FOnQueryUser; }
   void SetOnQueryUser(TQueryUserEvent Value) { FOnQueryUser = Value; }
@@ -114,6 +116,7 @@ protected:
   TConfiguration * FConfiguration;
   TSessionData * FSessionData;
   TList * FItems;
+  TList * FDoneItems;
   intptr_t FItemsInProcess;
   TCriticalSection * FItemsSection;
   intptr_t FFreeTerminals;
@@ -122,12 +125,18 @@ protected:
   intptr_t FTemporaryTerminals;
   intptr_t FOverallTerminals;
   intptr_t FTransfersLimit;
+  intptr_t FKeepDoneItemsFor;
   bool FEnabled;
   TDateTime FIdleInterval;
   TDateTime FLastIdle;
 
 public:
-  TQueueItem * GetItem(intptr_t Index);
+  inline static TQueueItem * GetItem(TList * List, intptr_t Index);
+  inline TQueueItem * GetItem(intptr_t Index);
+  void FreeItemsList(TList * List);
+  static bool EmptyButMonitoredItems(TList * List);
+  void UpdateStatusForList(
+    TTerminalQueueStatus * Status, TList * List, TTerminalQueueStatus * Current);
   bool ItemGetData(TQueueItem * Item, TQueueItemProxy * Proxy);
   bool ItemProcessUserAction(TQueueItem * Item, void * Arg);
   bool ItemMove(TQueueItem * Item, TQueueItem * BeforeItem);
@@ -137,8 +146,9 @@ public:
   bool ItemSetCPSLimit(TQueueItem * Item, unsigned long CPSLimit);
 
   void RetryItem(TQueueItem * Item);
-  void DeleteItem(TQueueItem * Item);
+  void DeleteItem(TQueueItem * Item, bool CanKeep);
 
+  virtual bool WaitForEvent();
   virtual void ProcessEvent();
   void TerminalFinished(TTerminalItem * TerminalItem);
   bool TerminalFree(TTerminalItem * TerminalItem);
@@ -150,8 +160,10 @@ public:
 public:
   void SetMasks(const UnicodeString & Value);
   void SetTransfersLimit(intptr_t Value);
+  void SetKeepDoneItemsFor(intptr_t Value);
   void SetEnabled(bool Value);
-  bool GetIsEmpty();
+  void SetEnabled(bool Value);
+
 private:
   TTerminalQueue(const TTerminalQueue &);
   TTerminalQueue & operator = (const TTerminalQueue &);
@@ -174,6 +186,7 @@ public:
     UnicodeString Destination;
     UnicodeString ModifiedLocal;
     UnicodeString ModifiedRemote;
+    bool SingleFile;
   };
 
   static bool IsUserActionStatus(TStatus Status);
@@ -191,6 +204,7 @@ protected:
   TTerminalQueue * FQueue;
   HANDLE FCompleteEvent;
   long FCPSLimit;
+  TDateTime FDoneAt;
 
   explicit TQueueItem();
   virtual ~TQueueItem();
@@ -205,6 +219,7 @@ private:
   void Execute(TTerminalItem * TerminalItem);
   virtual void DoExecute(TTerminal * Terminal) = 0;
   virtual UnicodeString StartupDirectory() = 0;
+  void Complete();
 };
 //---------------------------------------------------------------------------
 class TQueueItemProxy : public TObject
@@ -225,12 +240,15 @@ public:
   bool SetCPSLimit(unsigned long CPSLimit);
 
   TFileOperationProgressType * GetProgressData();
+  __int64 GetTotalTransferred();
   TQueueItem::TInfo * GetInfo() { return FInfo; }
   TQueueItem::TStatus GetStatus() const { return FStatus; }
   bool GetProcessingUserAction() const { return FProcessingUserAction; }
   intptr_t GetIndex();
   void * GetUserData() { return FUserData; }
   void SetUserData(void * Value) { FUserData = Value; }
+  TFileOperationProgressType * GetProgressData();
+  __int64 GetTotalTransferred();
 
 private:
   TFileOperationProgressType * FProgressData;
@@ -259,7 +277,10 @@ public:
   TQueueItemProxy * FindByQueueItem(TQueueItem * QueueItem);
 
   intptr_t GetCount() const;
+  intptr_t GetDoneCount() const { return FDoneCount; }
   intptr_t GetActiveCount();
+  intptr_t GetDoneAndActiveCount() const;
+  void SetDoneCount(intptr_t Value);
   TQueueItemProxy * GetItem(intptr_t Index);
 
 protected:
@@ -271,6 +292,8 @@ protected:
 
 private:
   TList * FList;
+  intptr_t FActiveCount;
+  intptr_t FDoneCount;
   intptr_t FActiveCount;
 
 public:
@@ -299,7 +322,8 @@ class TTransferQueueItem : public TLocatedQueueItem
 public:
   explicit TTransferQueueItem(TTerminal * Terminal,
     TStrings * FilesToCopy, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side);
+    const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side,
+    bool SingleFile);
   virtual ~TTransferQueueItem();
 
 protected:
@@ -314,7 +338,7 @@ class TUploadQueueItem : public TTransferQueueItem
 public:
   explicit TUploadQueueItem(TTerminal * Terminal,
     TStrings * FilesToCopy, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, intptr_t Params);
+    const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile);
   virtual ~TUploadQueueItem() {}
 protected:
   virtual void DoExecute(TTerminal * Terminal);
@@ -325,7 +349,7 @@ class TDownloadQueueItem : public TTransferQueueItem
 public:
   explicit TDownloadQueueItem(TTerminal * Terminal,
     TStrings * FilesToCopy, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, intptr_t Params);
+    const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile);
   virtual ~TDownloadQueueItem() {}
 protected:
   virtual void DoExecute(TTerminal * Terminal);
@@ -364,6 +388,7 @@ private:
   TReadDirectoryEvent FOnReadDirectory;
   TNotifyEvent FOnStartReadDirectory;
   TReadDirectoryProgressEvent FOnReadDirectoryProgress;
+  TNotifyEvent FOnInitializeLog;
 
   TNotifyEvent FOnIdle;
 
@@ -408,6 +433,7 @@ private:
   void TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly);
   void TerminalStartReadDirectory(TObject * Sender);
   void TerminalReadDirectoryProgress(TObject * Sender, int Progress, bool & Cancel);
+  void TerminalInitializeLog(TObject * Sender);
 
 private:
   TTerminalThread(const TTerminalThread &);

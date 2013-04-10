@@ -3,18 +3,15 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#define TRACE_TIMESTAMP TRACING
-
-#include <assert.h>
-#include <math.h>
-#include <shlobj.h>
-
 #include "Common.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
 #include "Interface.h"
 #include <StrUtils.hpp>
 #include <DateUtils.hpp>
+#include <assert.h>
+#include <math.h>
+#include <shlobj.h>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -22,208 +19,6 @@
 #include "FarPlugin.h"
 #endif
 //---------------------------------------------------------------------------
-//!CLEANBEGIN
-#ifdef _DEBUG
-#include <stdio.h>
-#ifdef NETBOX_DEBUG
-bool IsTracing = true;
-#else
-bool IsTracing = false;
-#endif
-//---------------------------------------------------------------------------
-#ifdef TRACE_IN_MEMORY
-struct TTraceInMemory
-{
-  DWORD Ticks;
-  DWORD Thread;
-  const wchar_t * SourceFile;
-  const wchar_t * Func;
-  int Line;
-  const wchar_t * Message;
-};
-typedef std::vector<TTraceInMemory> TTracesInMemory;
-TTracesInMemory TracesInMemory;
-//---------------------------------------------------------------------------
-int TraceThreadProc(void *)
-{
-  TRACE(">");
-  try
-  {
-    do
-    {
-      TRACE("2");
-      TraceDumpToFile();
-      TRACE("3");
-      Sleep(60000);
-      TRACE("4");
-      // if resuming from sleep causes the previous Sleep to immediately break,
-      // make sure we wait a little more before dumping
-      Sleep(60000);
-      TRACE("5");
-    }
-    while (true);
-  }
-  catch(...)
-  {
-    TRACE("E");
-  }
-  TRACE("/");
-  return 0;
-}
-//---------------------------------------------------------------------------
-void Trace(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * Message)
-{
-  if (TracingCriticalSection != NULL)
-  {
-    TTraceInMemory TraceInMemory;
-    TraceInMemory.Ticks = GetTickCount();
-    TraceInMemory.Thread = GetCurrentThreadId();
-    TraceInMemory.SourceFile = SourceFile;
-    TraceInMemory.Func = Func;
-    TraceInMemory.Line = Line;
-    TraceInMemory.Message = Message;
-
-    TGuard Guard(TracingCriticalSection);
-
-    if (TracesInMemory.capacity() == 0)
-    {
-      TracesInMemory.reserve(100000);
-      TThreadID ThreadID;
-      StartThread(NULL, 0, TraceThreadProc, NULL, 0, ThreadID);
-    }
-
-    TracesInMemory.push_back(TraceInMemory);
-  }
-}
-//---------------------------------------------------------------------------
-#ifndef _MSC_VER
-void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * AFormat, TVarRec * /*Args*/, const int /*Args_Size*/)
-#else
-void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * AFormat, ...)
-#endif
-{
-  Trace(SourceFile, Func, Line, AFormat);
-}
-//---------------------------------------------------------------------------
-void TraceDumpToFile()
-{
-  if (TraceFile != NULL)
-  {
-    TGuard Guard(TracingCriticalSection);
-
-    DWORD Written;
-
-    TDateTime N = Now();
-    DWORD Ticks = GetTickCount();
-
-    const UnicodeString TimestampFormat = L"hh:mm:ss.zzz";
-    UnicodeString TimeString = FormatDateTime(TimestampFormat, N);
-
-    UTF8String Buffer = UTF8String(
-      FORMAT("[%s] Dumping in-memory tracing =================================\n",
-        TimeString.c_str()));
-    WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
-
-    TTracesInMemory::const_iterator i = TracesInMemory.begin();
-    while (i != TracesInMemory.end())
-    {
-      const wchar_t * SourceFile = i->SourceFile;
-      const wchar_t * Slash = wcsrchr(SourceFile, L'\\');
-      if (Slash != NULL)
-      {
-        SourceFile = Slash + 1;
-      }
-
-      TimeString =
-        FormatDateTime(TimestampFormat,
-          IncMilliSecond(N, -static_cast<int>(Ticks - i->Ticks)));
-      Buffer = UTF8String(FORMAT(L"[%s] [%.4X] [%s:%d:%s] %s\n",
-        TimeString.c_str(), int(i->Thread), SourceFile,
-         i->Line, i->Func, i->Message));
-      WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
-      ++i;
-    }
-    TracesInMemory.clear();
-
-    TimeString = FormatDateTime(TimestampFormat, Now());
-    Buffer = UTF8String(
-      FORMAT("[%s] Done in-memory tracing =================================\n",
-        TimeString.c_str()));
-    WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
-  }
-}
-//---------------------------------------------------------------------------
-void TraceInMemoryCallback(const UnicodeString & Msg)
-{
-  Trace(L"PAS", L"unk", 0, Msg.c_str());
-}
-#else
-void Trace(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * Message)
-{
-  assert(IsTracing);
-
-  UnicodeString TimeString;
-#ifndef _MSC_VER
-  DateTimeToString(TimeString, L"hh:mm:ss.zzz", Now());
-#else
-  unsigned short H, N, S, MS;
-  TDateTime DateTime = Now();
-  DateTime.DecodeTime(H, N, S, MS);
-  TimeString = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
-#endif
-  const wchar_t * Slash = wcsrchr(NullToEmpty(SourceFile), L'\\');
-  if (Slash != NULL)
-  {
-    SourceFile = Slash + 1;
-  }
-  //UTF8String Buffer = UTF8String(FORMAT(L"NetBox: [%s] [%.4X] [%s:%d:%s] %s\n",
-  //  TimeString.c_str(), int(GetCurrentThreadId()), NullToEmpty(SourceFile),
-  //  Line, NullToEmpty(Func), NullToEmpty(Message)));
-  // DWORD Written;
-  // WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
-  // DEBUG_PRINTF(L"%s", Buffer.c_str());
-  // OutputDebugStringW(Buffer.c_str());
-}
-//---------------------------------------------------------------------------
-#ifndef _MSC_VER
-void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * AFormat, TVarRec * Args, const int Args_Size)
-#else
-void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * AFormat, ...)
-#endif
-{
-  assert(IsTracing);
-#ifndef _MSC_VER
-  UnicodeString Message = Format(AFormat, Args, Args_Size);
-#else
-  va_list args;
-  va_start(args, AFormat);
-  UnicodeString Message = Format(AFormat, args);
-  va_end(args);
-#endif
-  Trace(SourceFile, Func, Line, Message.c_str());
-}
-#endif
-//---------------------------------------------------------------------------
-void DoAssert(wchar_t * Message, wchar_t * Filename, int LineNumber)
-{
-  if (IsTracing)
-  {
-    Trace(Filename, L"assert", LineNumber, Message);
-  }
-#ifndef _MSC_VER
-  _assert(AnsiString(Message).c_str(), AnsiString(Filename).c_str(), LineNumber);
-#else
-  _wassert(Message, Filename, LineNumber);
-#endif
-}
-#endif // ifdef _DEBUG
-//!CLEANEND
 //---------------------------------------------------------------------------
 // TGuard
 //---------------------------------------------------------------------------
@@ -559,11 +354,9 @@ UnicodeString AddPathQuotes(const UnicodeString & Path)
 static wchar_t * ReplaceChar(
   UnicodeString & FileName, wchar_t * InvalidChar, wchar_t InvalidCharsReplacement)
 {
-  CALLSTACK;
   intptr_t Index = InvalidChar - FileName.c_str() + 1;
   if (InvalidCharsReplacement == TokenReplacement)
   {
-    TRACE("1");
     // currently we do not support unicode chars replacement
     if (FileName[Index] > 0xFF)
     {
@@ -576,7 +369,6 @@ static wchar_t * ReplaceChar(
   }
   else
   {
-    TRACE("2");
     FileName[Index] = InvalidCharsReplacement;
     InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index);
   }
@@ -592,7 +384,6 @@ UnicodeString ValidLocalFileName(
   const UnicodeString & FileName, wchar_t InvalidCharsReplacement,
   const UnicodeString & TokenizibleChars, const UnicodeString & LocalInvalidChars)
 {
-  CALLSTACK;
   UnicodeString FileName2 = FileName;
   if (InvalidCharsReplacement != NoReplacement)
   {
@@ -623,7 +414,6 @@ UnicodeString ValidLocalFileName(
         ((FileName2[FileName2.Length()] == L' ') ||
          (FileName2[FileName2.Length()] == L'.')))
     {
-      TRACE("4");
       ReplaceChar(FileName2, const_cast<wchar_t *>(FileName2.c_str() + FileName2.Length() - 1), InvalidCharsReplacement);
     }
 
@@ -1017,7 +807,7 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
   TSearchRec SearchRec;
 
   UnicodeString DirName2 = IncludeTrailingBackslash(DirName);
-  if (FindFirst(DirName2 + L"*.*", FindAttrs, SearchRec) == 0)
+  if (FindFirstChecked(DirName2 + L"*.*", FindAttrs, SearchRec) == 0)
   {
     TRY_FINALLY (
     {
@@ -1029,7 +819,7 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
           CallBackFunc(FileName, SearchRec, Param);
         }
 
-      } while (FindNext(SearchRec) == 0);
+      } while (FindNextChecked(SearchRec) == 0);
     }
     ,
     {
@@ -1113,7 +903,6 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
   }
   else
   {
-    TRACE("1");
     // creates new entry as a side effect
     Result = &YearlyDateTimeParams[Year];
     TIME_ZONE_INFORMATION TZI;
@@ -1157,31 +946,24 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
     Result->BaseDifferenceSec = TZI.Bias;
     Result->BaseDifference = double(TZI.Bias) / MinsPerDay;
     Result->BaseDifferenceSec *= SecsPerMin;
-    TRACEFMT("BaseDifference [%g], BaseDifference [%d]", Result->BaseDifference, int(Result->BaseDifferenceSec));
 
     Result->CurrentDifferenceSec = TZI.Bias +
       Result->CurrentDaylightDifferenceSec;
     Result->CurrentDifference =
       double(Result->CurrentDifferenceSec) / MinsPerDay;
     Result->CurrentDifferenceSec *= SecsPerMin;
-    TRACEFMT("CurrentDifference [%g], CurrentDifferenceSec [%d]", Result->CurrentDifference, int(Result->CurrentDifferenceSec));
 
     Result->CurrentDaylightDifference =
       double(Result->CurrentDaylightDifferenceSec) / MinsPerDay;
     Result->CurrentDaylightDifferenceSec *= SecsPerMin;
-    TRACEFMT("CurrentDaylightDifference [%g], CurrentDaylightDifferenceSec [%d]", Result->CurrentDaylightDifference, int(Result->CurrentDaylightDifferenceSec));
 
     Result->DaylightDifferenceSec = TZI.DaylightBias * SecsPerMin;
     Result->DaylightDifference = double(TZI.DaylightBias) / MinsPerDay;
-    TRACEFMT("DaylightDifference [%g], DaylightDifferenceSec [%d]", Result->DaylightDifference, int(Result->DaylightDifferenceSec));
     Result->StandardDifferenceSec = TZI.StandardBias * SecsPerMin;
     Result->StandardDifference = double(TZI.StandardBias) / MinsPerDay;
-    TRACEFMT("StandardDifference [%g], StandardDifferenceSec [%d]", Result->StandardDifference, int(Result->StandardDifferenceSec));
 
     Result->SystemStandardDate = TZI.StandardDate;
-    TRACEFMT("[%d/%d/%d] [%d] [%d:%d:%d.%d]", int(Result->SystemStandardDate.wYear), int(Result->SystemStandardDate.wMonth), int(Result->SystemStandardDate.wDay), int(Result->SystemStandardDate.wDayOfWeek), int(Result->SystemStandardDate.wHour), int(Result->SystemStandardDate.wMinute), int(Result->SystemStandardDate.wSecond), int(Result->SystemStandardDate.wMilliseconds));
     Result->SystemDaylightDate = TZI.DaylightDate;
-    TRACEFMT("[%d/%d/%d] [%d] [%d:%d:%d.%d]", int(Result->SystemDaylightDate.wYear), int(Result->SystemDaylightDate.wMonth), int(Result->SystemDaylightDate.wDay), int(Result->SystemDaylightDate.wDayOfWeek), int(Result->SystemDaylightDate.wHour), int(Result->SystemDaylightDate.wMinute), int(Result->SystemDaylightDate.wSecond), int(Result->SystemDaylightDate.wMilliseconds));
 
     unsigned short AYear = (Year != 0) ? Year : DecodeYear(Now());
     if (Result->SystemStandardDate.wMonth != 0)
@@ -1193,10 +975,8 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
       EncodeDSTMargin(Result->SystemDaylightDate, AYear, Result->DaylightDate);
     }
     Result->SummerDST = (Result->DaylightDate < Result->StandardDate);
-    TRACEFMT("Summer DST [%d]", int(Result->SummerDST));
 
     Result->DaylightHack = !IsWin7() || IsExactly2008R2();
-    TRACEFMT("DaylightHack [%d]", int(Result->DaylightHack));
   }
 
   return Result;
@@ -1236,7 +1016,6 @@ static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
 //---------------------------------------------------------------------------
 static bool IsDateInDST(const TDateTime & DateTime)
 {
-  CCALLSTACK(TRACE_TIMESTAMP);
 
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
 
@@ -1360,7 +1139,6 @@ bool TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
 //---------------------------------------------------------------------------
 static __int64 DateTimeToUnix(const TDateTime DateTime)
 {
-  CCALLSTACK(TRACE_TIMESTAMP);
   const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
 
   assert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
@@ -1372,7 +1150,6 @@ static __int64 DateTimeToUnix(const TDateTime DateTime)
 FILETIME DateTimeToFileTime(const TDateTime DateTime,
   TDSTMode /*DSTMode*/)
 {
-  CCALLSTACK(TRACE_TIMESTAMP);
   __int64 UnixTimeStamp = ::DateTimeToUnix(DateTime);
 
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
@@ -1393,9 +1170,7 @@ FILETIME DateTimeToFileTime(const TDateTime DateTime,
 TDateTime FileTimeToDateTime(const FILETIME & FileTime)
 {
   // duplicated in DirView.pas
-  CCALLSTACK(TRACE_TIMESTAMP);
   SYSTEMTIME SysTime;
-  TRACEFMT("1 [%d] [%d]", int(FileTime.dwLowDateTime), int(FileTime.dwHighDateTime));
   if (!UsesDaylightHack())
   {
     SYSTEMTIME UniverzalSysTime;
@@ -1406,7 +1181,6 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
   {
     FILETIME LocalFileTime;
     FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
-    TRACEFMT("2b [%d] [%d]", int(LocalFileTime.dwLowDateTime), int(LocalFileTime.dwHighDateTime));
     FileTimeToSystemTime(&LocalFileTime, &SysTime);
   }
   TDateTime Result = SystemTimeToDateTime(SysTime);
@@ -1416,7 +1190,6 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
 __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
   TDSTMode DSTMode)
 {
-  CCALLSTACK(TRACE_TIMESTAMP);
   __int64 Result = ((*(__int64*)&(FileTime)) / 10000000LL - 11644473600LL);
   if (UsesDaylightHack())
   {
@@ -2011,7 +1784,6 @@ bool IsWin7()
 //---------------------------------------------------------------------------
 bool IsExactly2008R2()
 {
-  CALLSTACK;
   HINSTANCE Kernel32 = GetModuleHandle(kernel32);
   typedef BOOL (WINAPI * TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
   TGetProductInfo GetProductInfo =
@@ -2025,7 +1797,6 @@ bool IsExactly2008R2()
   {
     DWORD Type;
     GetProductInfo(Win32MajorVersion, Win32MinorVersion, 0, 0, &Type);
-    TRACEFMT("1 [%x]", int(Type));
     switch (Type)
     {
       case 0x0008 /*PRODUCT_DATACENTER_SERVER*/:
@@ -2064,7 +1835,6 @@ bool IsExactly2008R2()
         break;
     }
   }
-  TRACEFMT("2 [%x]", int(Result));
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2104,7 +1874,21 @@ UnicodeString WindowsProductName()
   }
   catch(...)
   {
-    TRACE("E");
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+bool IsDirectoryWriteable(const UnicodeString & Path)
+{
+  UnicodeString FileName =
+    IncludeTrailingPathDelimiter(Path) +
+    FORMAT("wscp_%s_%d.tmp", (FormatDateTime(L"nnzzz", Now()), int(GetCurrentProcessId())));
+  HANDLE Handle = CreateFile(FileName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL,
+    CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, 0);
+  bool Result = (Handle != INVALID_HANDLE_VALUE);
+  if (Result)
+  {
+    CloseHandle(Handle);
   }
   return Result;
 }

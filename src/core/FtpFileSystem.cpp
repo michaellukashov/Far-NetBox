@@ -3,7 +3,6 @@
 #pragma hdrstop
 
 #ifndef NO_FILEZILLA
-#define TRACE_FZAPI NOTRACING
 //---------------------------------------------------------------------------
 #ifndef MPEXT
 #define MPEXT
@@ -79,25 +78,21 @@ TFileZillaImpl::TFileZillaImpl(TFTPFileSystem * FileSystem) :
 //---------------------------------------------------------------------------
 const wchar_t * TFileZillaImpl::Option(intptr_t OptionID) const
 {
-  CCALLSTACK(TRACE_FZAPI);
   return FFileSystem->GetOption(OptionID);
 }
 //---------------------------------------------------------------------------
 intptr_t TFileZillaImpl::OptionVal(intptr_t OptionID) const
 {
-  CCALLSTACK(TRACE_FZAPI);
   return FFileSystem->GetOptionVal(OptionID);
 }
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam)
 {
-  CCALLSTACK(TRACE_FZAPI);
   return FFileSystem->PostMessage(Type, wParam, lParam);
 }
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::HandleStatus(const wchar_t * Status, int Type)
 {
-  CALLSTACK;
   return FFileSystem->HandleStatus(Status, Type);
 }
 //---------------------------------------------------------------------------
@@ -278,7 +273,6 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   FDoListAll(false),
   FServerCapabilities(NULL)
 {
-  CALLSTACK;
 }
 
 void TFTPFileSystem::Init(void *)
@@ -295,8 +289,7 @@ void TFTPFileSystem::Init(void *)
 //---------------------------------------------------------------------------
 TFTPFileSystem::~TFTPFileSystem()
 {
-  CALLSTACK;
-  assert(FFileList == NULL);
+    assert(FFileList == NULL);
 
   FFileZillaIntf->Destroying();
 
@@ -330,7 +323,6 @@ TFTPFileSystem::~TFTPFileSystem()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::Open()
 {
-  CALLSTACK;
   // on reconnect, typically there may be pending status messages from previous session
   DiscardMessages();
 
@@ -366,7 +358,6 @@ void TFTPFileSystem::Open()
   // initialize FZAPI on the first connect only
   if (FFileZillaIntf == NULL)
   {
-    TRACE("1");
     FFileZillaIntf = new TFileZillaImpl(this);
 
     try
@@ -381,25 +372,15 @@ void TFTPFileSystem::Open()
           break;
 
         case 2:
-//!CLEANBEGIN
-          #ifdef _DEBUG
-          LogLevel = TFileZillaIntf::LOG_DEBUG;
-          #else
-//!CLEANEND
           LogLevel = TFileZillaIntf::LOG_INFO;
-//!CLEANBEGIN
-          #endif
-//!CLEANEND
           break;
       }
       FFileZillaIntf->SetDebugLevel(LogLevel);
 
-      TRACE("2");
       FFileZillaIntf->Init();
     }
     catch(...)
     {
-      TRACE("E");
       delete FFileZillaIntf;
       FFileZillaIntf = NULL;
       throw;
@@ -455,7 +436,6 @@ void TFTPFileSystem::Open()
 
   do
   {
-    TRACE("3");
     FSystem = L"";
     FFeatures->Clear();
     FFileSystemInfoValid = false;
@@ -466,7 +446,6 @@ void TFTPFileSystem::Open()
     // but keep previous one as default,
     if (Data->GetUserNameExpanded().IsEmpty())
     {
-      TRACE("4");
       FTerminal->LogEvent(L"Username prompt (no username provided)");
 
       if (!FPasswordFailed && !PromptedForCredentials)
@@ -489,7 +468,6 @@ void TFTPFileSystem::Open()
     // on retry ask for password
     if (FPasswordFailed)
     {
-      TRACE("5");
       FTerminal->LogEvent(L"Password prompt (last login attempt failed)");
 
       // on retry ask for new password
@@ -505,7 +483,6 @@ void TFTPFileSystem::Open()
     FOpening = true;
     TBoolRestorer OpeningRestorer(FOpening);
 
-    TRACE("connect");
     FActive = FFileZillaIntf->Connect(
       HostName.c_str(), static_cast<int>(Data->GetPortNumber()), UserName.c_str(),
       Password.c_str(), Account.c_str(), false, Path.c_str(),
@@ -516,7 +493,6 @@ void TFTPFileSystem::Open()
 
     try
     {
-      TRACE("wait");
       // do not wait for FTP response code as Connect is complex operation
       GotReply(WaitForCommandReply(false), REPLY_CONNECT, LoadStr(CONNECTION_FAILED));
 
@@ -529,7 +505,6 @@ void TFTPFileSystem::Open()
     }
     catch(...)
     {
-      TRACE("E2");
       if (FPasswordFailed)
       {
         FTerminal->Information(
@@ -545,12 +520,10 @@ void TFTPFileSystem::Open()
     }
   }
   while (FPasswordFailed);
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::Close()
 {
-  CALLSTACK;
   assert(FActive);
   bool Result;
   if (FFileZillaIntf->Close(FOpening))
@@ -564,7 +537,7 @@ void TFTPFileSystem::Close()
     Result = FOpening;
   }
 
-  if (Result)
+  if (ALWAYS_TRUE(Result))
   {
     assert(FActive);
     Discard();
@@ -579,7 +552,6 @@ bool TFTPFileSystem::GetActive()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::Idle()
 {
-  CALLSTACK;
   if (FActive && !FWaitingForReply)
   {
     try
@@ -629,7 +601,6 @@ void TFTPFileSystem::Idle()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::Discard()
 {
-  CALLSTACK;
   // remove all pending messages, to get complete log
   // note that we need to retry discard on reconnect, as there still may be another
   // "disconnect/timeout/..." status messages coming
@@ -665,7 +636,6 @@ UnicodeString TFTPFileSystem::ActualCurrentDirectory()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::EnsureLocation()
 {
-  CALLSTACK;
   // if we do not know what's the current directory, do nothing
   if (!FCurrentDirectory.IsEmpty())
   {
@@ -721,7 +691,6 @@ void TFTPFileSystem::AnnounceFileListOperation()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DoChangeDirectory(const UnicodeString & Directory)
 {
-  CALLSTACK;
   UnicodeString Command = FORMAT(L"CWD %s", Directory.c_str());
   FFileZillaIntf->CustomCommand(Command.c_str());
 
@@ -730,7 +699,6 @@ void TFTPFileSystem::DoChangeDirectory(const UnicodeString & Directory)
 //---------------------------------------------------------------------------
 void TFTPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
 {
-  CALLSTACK;
   UnicodeString Directory = ADirectory;
   try
   {
@@ -864,11 +832,12 @@ bool TFTPFileSystem::ConfirmOverwrite(UnicodeString & FileName,
   bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
   bool DestIsSmaller = (FileParams != NULL) && (FileParams->DestSize < FileParams->SourceSize);
   bool DestIsSame = (FileParams != NULL) && (FileParams->DestSize == FileParams->SourceSize);
-  // when resuming transfer after interrupted connection,
-  // do nothing (dummy resume) when the files has the same size.
-  // this is workaround for servers that strangely fails just after successful
-  // upload.
   bool CanResume =
+    !OperationProgress->AsciiTransfer &&
+    // when resuming transfer after interrupted connection,
+    // do nothing (dummy resume) when the files has the same size.
+    // this is workaround for servers that strangely fails just after successful
+    // upload.
     (DestIsSmaller || (DestIsSame && CanAutoResume));
 
   uintptr_t Answer;
@@ -975,7 +944,6 @@ bool TFTPFileSystem::ConfirmOverwrite(UnicodeString & FileName,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::ResetFileTransfer()
 {
-  CALLSTACK;
   FFileTransferAbort = ftaNone;
   FFileTransferCancelled = false;
   FFileTransferResumed = 0;
@@ -983,7 +951,6 @@ void TFTPFileSystem::ResetFileTransfer()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::ReadDirectoryProgress(__int64 Bytes)
 {
-  CALLSTACK;
   // with FTP we do not know exactly how many entries we have received,
   // instead we know number of bytes received only.
   // so we report approximation based on average size of entry.
@@ -996,7 +963,6 @@ void TFTPFileSystem::ReadDirectoryProgress(__int64 Bytes)
     if (Cancel)
     {
       FTerminal->DoReadDirectoryProgress(-2, Cancel);
-      TRACE("Cancel");
       FFileZillaIntf->Cancel();
     }
   }
@@ -1005,7 +971,6 @@ void TFTPFileSystem::ReadDirectoryProgress(__int64 Bytes)
 void TFTPFileSystem::DoFileTransferProgress(__int64 TransferSize,
   __int64 Bytes)
 {
-  CALLSTACK;
   TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
 
   OperationProgress->SetTransferSize(TransferSize);
@@ -1017,7 +982,6 @@ void TFTPFileSystem::DoFileTransferProgress(__int64 TransferSize,
   }
 
   __int64 Diff = Bytes - OperationProgress->TransferedSize;
-  TRACEFMT("TransferSize[%d] Bytes[%d] TransferedSize[%d] Diff[%d]", int(TransferSize), int(Bytes), int(OperationProgress->TransferedSize), int(Diff));
   assert(Diff >= 0);
   if (Diff >= 0)
   {
@@ -1028,7 +992,6 @@ void TFTPFileSystem::DoFileTransferProgress(__int64 TransferSize,
   {
     FFileTransferCancelled = true;
     FFileTransferAbort = ftaCancel;
-    TRACE("Cancel");
     FFileZillaIntf->Cancel();
   }
 
@@ -1041,11 +1004,9 @@ void TFTPFileSystem::DoFileTransferProgress(__int64 TransferSize,
 void TFTPFileSystem::FileTransferProgress(__int64 TransferSize,
   __int64 Bytes)
 {
-  CALLSTACK;
   TGuard Guard(FTransferStatusCriticalSection);
 
-  TRACE("1");
-  DoFileTransferProgress(TransferSize, Bytes);
+    DoFileTransferProgress(TransferSize, Bytes);
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::FileTransfer(const UnicodeString & FileName,
@@ -1053,7 +1014,6 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & FileName,
   const UnicodeString & RemotePath, bool Get, __int64 Size, int Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
-  CALLSTACK;
   FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
     FFileZillaIntf->FileTransfer(LocalFile.c_str(), Handle, RemoteFile.c_str(),
       RemotePath.c_str(), Get, Size, Type, &UserData);
@@ -1087,8 +1047,7 @@ void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
-  CALLSTACK;
-  Params &= ~cpAppend;
+    Params &= ~cpAppend;
   UnicodeString FullTargetDir = IncludeTrailingBackslash(TargetDir);
 
   intptr_t Index = 0;
@@ -1136,8 +1095,7 @@ void TFTPFileSystem::SinkRobust(const UnicodeString & FileName,
   const TCopyParamType * CopyParam, intptr_t Params,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
-  CALLSTACK;
-  // the same in TSFTPFileSystem
+    // the same in TSFTPFileSystem
   bool Retry;
 
   TDownloadSessionAction Action(FTerminal->GetActionLog());
@@ -1183,7 +1141,6 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TDownloadSessionAction & Action)
 {
-  CALLSTACK;
   UnicodeString OnlyFileName = UnixExtractFileName(FileName);
 
   Action.FileName(FileName);
@@ -1344,7 +1301,6 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
 void TFTPFileSystem::SinkFile(const UnicodeString & FileName,
   const TRemoteFile * File, void * Param)
 {
-  CALLSTACK;
   TSinkFileParams * Params = static_cast<TSinkFileParams *>(Param);
   assert(Params->OperationProgress);
   try
@@ -1377,7 +1333,6 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
-  CALLSTACK;
   assert((FilesToCopy != NULL) && (OperationProgress != NULL));
 
   Params &= ~cpAppend;
@@ -1389,7 +1344,6 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   {
     bool Success = false;
     FileName = FilesToCopy->GetString(Index);
-    TRACEFMT("1 [%s]", FileName.c_str());
     TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index]);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
 
@@ -1401,7 +1355,6 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       {
         if (FTerminal->GetSessionData()->GetCacheDirectories())
         {
-          TRACE("2");
           FTerminal->DirectoryModified(TargetDir, false);
 
           if (DirectoryExists(ExtractFilePath(FileName)))
@@ -1416,7 +1369,6 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       }
       catch(EScpSkipFile & E)
       {
-        TRACE("3");
         SUSPEND_OPERATION (
           if (!FTerminal->HandleException(&E)) throw;
         );
@@ -1424,13 +1376,11 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     }
     ,
     {
-      TRACE("4");
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
     }
     );
     ++Index;
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::SourceRobust(const UnicodeString & FileName,
@@ -1438,8 +1388,6 @@ void TFTPFileSystem::SourceRobust(const UnicodeString & FileName,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
-  CALLSTACK;
-  TRACEFMT("0 [%s]", FileName.c_str());
   // the same in TSFTPFileSystem
   bool Retry;
 
@@ -1450,7 +1398,6 @@ void TFTPFileSystem::SourceRobust(const UnicodeString & FileName,
 
   do
   {
-    TRACE("1");
     Retry = false;
     try
     {
@@ -1459,12 +1406,10 @@ void TFTPFileSystem::SourceRobust(const UnicodeString & FileName,
     }
     catch(Exception & E)
     {
-      TRACE("2");
       Retry = true;
       if (FTerminal->GetActive() ||
           !FTerminal->QueryReopen(&E, ropNoReadDirectory, OperationProgress))
       {
-        TRACE("3");
         FTerminal->RollbackAction(Action, OperationProgress, &E);
         throw;
       }
@@ -1472,7 +1417,6 @@ void TFTPFileSystem::SourceRobust(const UnicodeString & FileName,
 
     if (Retry)
     {
-      TRACE("4");
       OperationProgress->RollbackTransfer();
       Action.Restart();
       // prevent overwrite confirmations
@@ -1482,7 +1426,6 @@ void TFTPFileSystem::SourceRobust(const UnicodeString & FileName,
     }
   }
   while (Retry);
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 // Copy file to remote host
@@ -1494,7 +1437,6 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TUploadSessionAction & Action)
 {
-  CALLSTACK;
   UnicodeString RealFileName = File ? File->GetFileName() : FileName;
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", RealFileName.c_str()));
 
@@ -1504,7 +1446,6 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
 
   if (!FTerminal->AllowLocalFileTransfer(FileName, CopyParam))
   {
-    TRACE("1");
     FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", RealFileName.c_str()));
     THROW_SKIP_FILE_NULL;
   }
@@ -1521,14 +1462,12 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
   bool Dir = FLAGSET(OpenParams->LocalFileAttrs, faDirectory);
   if (Dir)
   {
-    TRACE("2");
-    Action.Cancel();
+        Action.Cancel();
     DirectorySource(IncludeTrailingBackslash(RealFileName), TargetDir,
       OpenParams->LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
   }
   else
   {
-    TRACE("3");
     UnicodeString DestFileName = CopyParam->ChangeFileName(ExtractFileName(RealFileName, false),
       osLocal, FLAGSET(Flags, tfFirstLevel));
 
@@ -1581,7 +1520,6 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
                                   FTerminal->GetSessionData()->GetDSTMode());
     bool DoResume = (ResumeAllowed && (OpenParams->OverwriteMode == omOverwrite));
     {
-      TRACE("4");
       // ignore file list
       TFTPFileListHelper Helper(this, NULL, true);
 
@@ -1614,7 +1552,6 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
   /* TODO : Delete also read-only files. */
   if (FLAGSET(Params, cpDelete))
   {
-    TRACE("5");
     if (!Dir)
     {
       FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
@@ -1624,24 +1561,20 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
   }
   else if (CopyParam->GetClearArchive() && FLAGSET(OpenParams->LocalFileAttrs, faArchive))
   {
-    TRACE("6");
     FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
       THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(FileName, OpenParams->LocalFileAttrs & ~faArchive) == 0);
     )
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   const UnicodeString & TargetDir, intptr_t Attrs, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
-  CALLSTACK;
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
     ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
     FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
-  TRACEFMT("1 [%s] [%s]", DirectoryName.c_str(), DestFullName.c_str());
 
   OperationProgress->SetFile(DirectoryName);
 
@@ -1650,7 +1583,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   bool FindOK = false;
 
   FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    FindOK = (bool)(FindFirst((DirectoryName + L"*.*").c_str(),
+    FindOK = (bool)(FindFirstChecked((DirectoryName + L"*.*").c_str(),
       FindAttrs, SearchRec) == 0);
   );
 
@@ -1661,12 +1594,10 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
     while (FindOK && !OperationProgress->Cancel)
     {
       UnicodeString FileName = DirectoryName + SearchRec.Name;
-      TRACEFMT("1a [%s]", FileName.c_str());
       try
       {
         if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
         {
-          TRACE("2");
           SourceRobust(FileName, NULL, DestFullName, CopyParam, Params, OperationProgress,
             Flags & ~(tfFirstLevel | tfAutoResume));
           // if any file got uploaded (i.e. there were any file in the
@@ -1678,7 +1609,6 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
       }
       catch (EScpSkipFile &E)
       {
-        TRACE("3");
         // If ESkipFile occurs, just log it and continue with next file
         SUSPEND_OPERATION (
           // here a message to user was displayed, which was not appropriate
@@ -1689,9 +1619,8 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
       }
 
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        FindOK = (FindNext(SearchRec) == 0);
+        FindOK = (FindNextChecked(SearchRec) == 0);
       );
-      TRACEFMT("3a [%d] [%d]", int(FindOK), int(OperationProgress->Cancel));
     }
   }
   ,
@@ -1702,7 +1631,6 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
 
   if (CreateDir)
   {
-    TRACE("4");
     TRemoteProperties Properties;
     if (CopyParam->GetPreserveRights())
     {
@@ -1725,7 +1653,6 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
     }
     catch(...)
     {
-      TRACE("4a");
       TRemoteFile * File = NULL;
       // ignore non-fatal error when the directory already exists
       UnicodeString fn = UnixExcludeTrailingBackslash(DestFullName);
@@ -1740,7 +1667,6 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
       delete File;
       if (Rethrow)
       {
-        TRACE("4b");
         throw;
       }
     }
@@ -1750,21 +1676,17 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   /* TODO : Show error message on failure. */
   if (!OperationProgress->Cancel)
   {
-    TRACE("5");
     if (FLAGSET(Params, cpDelete))
     {
-      TRACE("6");
       FTerminal->RemoveLocalDirectory(DirectoryName);
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
-      TRACE("7");
       FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
         THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~faArchive) == 0);
       )
     }
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CreateDirectory(const UnicodeString & ADirName)
@@ -1790,7 +1712,6 @@ void TFTPFileSystem::CreateLink(const UnicodeString & /*FileName*/,
 void TFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action)
 {
-  CALLSTACK;
   UnicodeString FileName = AbsolutePath(AFileName, false);
   UnicodeString FileNameOnly = UnixExtractFileName(FileName);
   UnicodeString FilePath = UnixExtractFilePath(FileName);
@@ -1848,7 +1769,6 @@ void TFTPFileSystem::CustomCommandOnFile(const UnicodeString & /*FileName*/,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DoStartup()
 {
-  CALLSTACK;
   TStrings * PostLoginCommands = new TStringList();
   TRY_FINALLY (
   {
@@ -1873,13 +1793,11 @@ void TFTPFileSystem::DoStartup()
   // retrieve initialize working directory to save it as home directory
   ReadCurrentDirectory();
   FHomeDirectory = FCurrentDirectory;
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::HomeDirectory()
 {
-  CALLSTACK;
-  // FHomeDirectory is an absolute path, so avoid unnecessary overhead
+    // FHomeDirectory is an absolute path, so avoid unnecessary overhead
   // of ChangeDirectory, such as EnsureLocation
   DoChangeDirectory(FHomeDirectory);
   FCurrentDirectory = FHomeDirectory;
@@ -1935,19 +1853,16 @@ void TFTPFileSystem::LookupUsersGroups()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::ReadCurrentDirectory()
 {
-  CALLSTACK;
   // ask the server for current directory on startup only
   // and immediately after call to CWD,
   // later our current directory may be not synchronized with FZAPI current
   // directory anyway, see comments in EnsureLocation
   if (FCurrentDirectory.IsEmpty())
   {
-    TRACE("0a");
     FFileZillaIntf->CustomCommand(L"PWD");
 
     unsigned int Code = 0;
     TStrings * Response = NULL;
-    TRACE("0b");
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE, L"", &Code, &Response);
 
     assert(Response != NULL);
@@ -1959,24 +1874,20 @@ void TFTPFileSystem::ReadCurrentDirectory()
       if ((Code == 257) &&
           (Response->GetCount() == 1))
       {
-        TRACE("1");
         UnicodeString Path = Response->GetText();
 
         intptr_t P = Path.Pos(L"\"");
         if (P == 0)
         {
-          TRACE("2");
           // some systems use single quotes, be tolerant
           P = Path.Pos(L"'");
         }
         if (P != 0)
         {
-          TRACE("3");
           Path.Delete(1, P - 1);
 
           if (Unquote(Path))
           {
-            TRACEFMT("4 [%s]", Path.c_str());
             FCurrentDirectory = UnixExcludeTrailingBackslash(Path);
             if (FCurrentDirectory.IsEmpty())
             {
@@ -1989,28 +1900,23 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
       if (Result)
       {
-        TRACE("5");
         FFileZillaIntf->SetCurrentPath(FCurrentDirectory.c_str());
       }
       else
       {
-        TRACE("6");
         throw Exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, Response->GetText().c_str()));
       }
     }
     ,
     {
-      TRACE("7");
       delete Response;
     }
     );
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 {
-  CALLSTACK;
   FileList->Clear();
   // FZAPI does not list parent directory, add it
   FileList->AddFile(new TRemoteParentDirectory(FTerminal));
@@ -2019,14 +1925,12 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 
   TFTPFileListHelper Helper(this, FileList, false);
 
-  TRACE("1");
   // always specify path to list, do not attempt to list "current" dir as:
   // 1) List() lists again the last listed directory, not the current working directory
   // 2) we handle this way the cached directory change
   UnicodeString Directory = AbsolutePath(FileList->GetDirectory(), false);
   FFileZillaIntf->List(Directory.c_str());
 
-  TRACE("2");
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
 
   FLastDataSent = Now();
@@ -2034,7 +1938,6 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 //---------------------------------------------------------------------------
 void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
-  CALLSTACK;
   // whole below "-a" logic is for LIST,
   // if we know we are going to use MLSD, skip it
   if (FTerminal->GetSessionData()->GetFtpUseMlsd() &&
@@ -2052,11 +1955,9 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       Repeat = false;
       try
       {
-        TRACE("1");
         FDoListAll = (FListAll == asAuto) || (FListAll == asOn);
         DoReadDirectory(FileList);
 
-        TRACEFMT("1a [%d]", FListAll);
         // We got no files with "-a", but again no files w/o "-a",
         // so it was not "-a"'s problem, revert to auto and let it decide the next time
         if (GotNoFilesForAll && (FileList->GetCount() == 0))
@@ -2080,26 +1981,22 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           {
             // reading first directory has succeeded, always use "-a"
             FListAll = asOn;
-            TRACEFMT("1b [%d]", FListAll);
           }
         }
 
         // use "-a" even for implicit directory reading by FZAPI?
         // (e.g. before file transfer)
         FDoListAll = (FListAll == asOn);
-        TRACE("2");
       }
       catch(Exception &)
       {
         FDoListAll = false;
-        TRACEFMT("3 [%d]", int(FListAll));
         // reading the first directory has failed,
         // further try without "-a" only as the server may not support it
         if (FListAll == asAuto)
         {
           if (!FTerminal->GetActive())
           {
-            TRACE("3b");
             FTerminal->Reopen(ropNoReadDirectory);
           }
 
@@ -2108,7 +2005,6 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         }
         else
         {
-          TRACE("4");
           throw;
         }
       }
@@ -2149,20 +2045,17 @@ void TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
 void TFTPFileSystem::ReadFile(const UnicodeString & FileName,
   TRemoteFile *& File)
 {
-  CALLSTACK;
   UnicodeString Path = UnixExtractFilePath(FileName);
   UnicodeString NameOnly = UnixExtractFileName(FileName);
   TRemoteFile * AFile = NULL;
   bool Own = false;
   if (FServerCapabilities->GetCapability(mlsd_command) == yes)
   {
-    TRACE("0");
     DoReadFile(FileName, AFile);
     Own = true;
   }
   else
   {
-    TRACE("1");
     // FZAPI does not have efficient way to read properties of one file.
     // In case we need properties of set of files from the same directory,
     // cache the file list for future
@@ -2176,7 +2069,6 @@ void TFTPFileSystem::ReadFile(const UnicodeString & FileName,
     // if cache is invalid or file is not in cache, (re)read the directory
     if (AFile == NULL)
     {
-      TRACE("4");
       TRemoteFileList * FileListCache = new TRemoteFileList();
       FileListCache->SetDirectory(Path);
       try
@@ -2207,10 +2099,8 @@ void TFTPFileSystem::ReadFile(const UnicodeString & FileName,
     throw Exception(FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()));
   }
 
-  TRACEFMT("2 [%d]", int(Own));
   assert(AFile != NULL);
   File = Own ? AFile : AFile->Duplicate();
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
@@ -2379,7 +2269,6 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
 {
   TSessionData * Data = FTerminal->GetSessionData();
   intptr_t Result;
-  TRACEFMT("1 [%d]", OptionID);
 
   switch (OptionID)
   {
@@ -2483,7 +2372,6 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
 
     case OPTION_MPEXT_SHOWHIDDEN:
       Result = (FDoListAll ? TRUE : FALSE);
-      TRACEFMT("1 [%d] [%d]", int(FListAll), int(FDoListAll), Result);
       break;
 
     case OPTION_MPEXT_SSLSESSIONREUSE:
@@ -2516,7 +2404,6 @@ bool TFTPFileSystem::PostMessage(unsigned int Type, WPARAM wParam, LPARAM lParam
 
   TGuard Guard(FQueueCriticalSection);
 
-  TRACEFMT("1 [%x] (%x) [%x]", int(wParam), int((wParam >> 16) & 0xFFFF), int(lParam));
   FQueue->push_back(TMessageQueue::value_type(wParam, lParam));
   SetEvent(FQueueEvent);
 
@@ -2525,14 +2412,12 @@ bool TFTPFileSystem::PostMessage(unsigned int Type, WPARAM wParam, LPARAM lParam
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::ProcessMessage()
 {
-  CALLSTACK;
   bool Result;
   TMessageQueue::value_type Message;
 
   {
     TGuard Guard(FQueueCriticalSection);
 
-    TRACE("1");
     Result = !FQueue->empty();
     if (Result)
     {
@@ -2549,42 +2434,33 @@ bool TFTPFileSystem::ProcessMessage()
 
   if (Result)
   {
-    TRACEFMT("2 [%x] (%x) [%x]", int(Message.first), int((Message.first >> 16) & 0xFFFF), int(Message.second));
     FFileZillaIntf->HandleMessage(Message.wparam, Message.lparam);
   }
 
-  TRACE("/");
   return Result;
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DiscardMessages()
 {
-  CALLSTACK;
   while (ProcessMessage());
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::WaitForMessages()
 {
-  CALLSTACK;
   unsigned int Result = WaitForSingleObject(FQueueEvent, INFINITE);
   if (Result != WAIT_OBJECT_0)
   {
-    TRACE("1");
     FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"ftp#1", IntToStr(Result).c_str()));
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::PoolForFatalNonCommandReply()
 {
-  CALLSTACK;
   assert(FReply == 0);
   assert(FCommandReply == 0);
-  TRACEFMT("1 [%x] FWaitingForReply [%d]", int(this), int(FWaitingForReply));
   assert(!FWaitingForReply);
 
   FWaitingForReply = true;
-  TRACEFMT("2 [%x] FWaitingForReply [%d]", int(this), int(FWaitingForReply));
 
   unsigned int Reply = 0;
 
@@ -2602,7 +2478,6 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
     FCommandReply = 0;
     assert(FWaitingForReply);
     FWaitingForReply = false;
-    TRACEFMT("3 [%x] FWaitingForReply [%d]", int(this), int(FWaitingForReply));
   }
   );
 
@@ -2620,8 +2495,7 @@ bool TFTPFileSystem::NoFinalLastCode() const
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::KeepWaitingForReply(unsigned int & ReplyToAwait, bool WantLastCode) const
 {
-  CALLSTACK;
-  // to keep waiting,
+    // to keep waiting,
   // non-command reply must be unset,
   // the reply we wait for must be unset or
   // last code must be unset (if we wait for it)
@@ -2633,12 +2507,10 @@ bool TFTPFileSystem::KeepWaitingForReply(unsigned int & ReplyToAwait, bool WantL
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DoWaitForReply(unsigned int & ReplyToAwait, bool WantLastCode)
 {
-  CALLSTACK;
   try
   {
     while (KeepWaitingForReply(ReplyToAwait, WantLastCode))
     {
-      TRACE("1");
       WaitForMessages();
       // wait for the first reply only,
       // i.e. in case two replies are posted get the first only.
@@ -2648,7 +2520,6 @@ void TFTPFileSystem::DoWaitForReply(unsigned int & ReplyToAwait, bool WantLastCo
       // is posted immediately afterwards. leave detection of that to Idle()
       while (ProcessMessage() && KeepWaitingForReply(ReplyToAwait, WantLastCode));
     }
-    TRACE("2");
 
     if (FReply != 0)
     {
@@ -2658,23 +2529,19 @@ void TFTPFileSystem::DoWaitForReply(unsigned int & ReplyToAwait, bool WantLastCo
   }
   catch(...)
   {
-    TRACE("3");
     // even if non-fatal error happens, we must process pending message,
     // so that we "eat" the reply message, so that it gets not mistakenly
     // associated with future connect
     if (FTerminal->GetActive())
     {
-      TRACE("4");
       DoWaitForReply(ReplyToAwait, WantLastCode);
     }
     throw;
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 unsigned int TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
 {
-  CALLSTACK;
   assert(FReply == 0);
   assert(FCommandReply == 0);
   assert(!FWaitingForReply);
@@ -2682,22 +2549,18 @@ unsigned int TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
 
   ResetReply();
   FWaitingForReply = true;
-  TRACEFMT("2 [%x] FWaitingForReply [%d]", int(this), int(FWaitingForReply));
 
   unsigned int Reply = 0;
 
   TRY_FINALLY (
   {
-    TRACE("3");
     unsigned int & ReplyToAwait = (Command ? FCommandReply : FReply);
     DoWaitForReply(ReplyToAwait, WantLastCode);
 
     Reply = ReplyToAwait;
-    TRACE("4");
   }
   ,
   {
-    TRACE("5");
     FReply = 0;
     FCommandReply = 0;
     assert(FWaitingForReply);
@@ -2705,33 +2568,28 @@ unsigned int TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
   }
   );
 
-  TRACE("/");
   return Reply;
 }
 //---------------------------------------------------------------------------
 unsigned int TFTPFileSystem::WaitForCommandReply(bool WantLastCode)
 {
-  CALLSTACK;
   return WaitForReply(true, WantLastCode);
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::WaitForFatalNonCommandReply()
 {
-  CALLSTACK;
   WaitForReply(false, false);
   assert(false);
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::ResetReply()
 {
-  CALLSTACK;
   FLastCode = 0;
   FLastCodeClass = 0;
   assert(FLastResponse != NULL);
   FLastResponse->Clear();
   assert(FLastError != NULL);
   FLastError->Clear();
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::GotNonCommandReply(unsigned int Reply)
@@ -2745,12 +2603,10 @@ void TFTPFileSystem::GotNonCommandReply(unsigned int Reply)
 void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
   const UnicodeString & Error, unsigned int * Code, TStrings ** Response)
 {
-  CALLSTACK;
   TRY_FINALLY (
   {
     if (FLAGSET(Reply, TFileZillaIntf::REPLY_OK))
     {
-      TRACE("2");
       assert(Reply == TFileZillaIntf::REPLY_OK);
 
       // With REPLY_2XX_CODE treat "OK" non-2xx code like an error.
@@ -2758,14 +2614,12 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
       if ((FLAGSET(Flags, REPLY_2XX_CODE) && (FLastCodeClass != 2)) &&
           ((FLAGCLEAR(Flags, REPLY_3XX_CODE) || (FLastCodeClass != 3))))
       {
-        TRACE("3");
         GotReply(TFileZillaIntf::REPLY_ERROR, Flags, Error);
       }
     }
     else if (FLAGSET(Reply, TFileZillaIntf::REPLY_CANCEL) &&
         FLAGSET(Flags, REPLY_ALLOW_CANCEL))
     {
-      TRACE("4");
       assert(
         (Reply == (TFileZillaIntf::REPLY_CANCEL | TFileZillaIntf::REPLY_ERROR)) ||
         (Reply == (TFileZillaIntf::REPLY_ABORTED | TFileZillaIntf::REPLY_CANCEL | TFileZillaIntf::REPLY_ERROR)));
@@ -2778,12 +2632,10 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
            TFileZillaIntf::REPLY_IDLE | TFileZillaIntf::REPLY_NOTINITIALIZED |
            TFileZillaIntf::REPLY_ALREADYINIZIALIZED))
     {
-      TRACE("5");
       FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"ftp#2", FORMAT(L"0x%x", static_cast<int>(Reply)).c_str()));
     }
     else
     {
-      TRACE("6");
       // everything else must be an error or disconnect notification
       assert(
         FLAGSET(Reply, TFileZillaIntf::REPLY_ERROR) ||
@@ -2802,20 +2654,16 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
       TStrings * MoreMessages = new TStringList();
       try
       {
-        TRACE("7");
         if (Disconnected)
         {
-          TRACE("8");
           if (FLAGCLEAR(Flags, REPLY_CONNECT))
           {
-            TRACE("9");
             MoreMessages->Add(LoadStr(LOST_CONNECTION));
             Discard();
             FTerminal->Closed();
           }
           else
           {
-            TRACE("9a");
             // For connection failure, do not report that connection was lost,
             // its obvious.
             // Also do not report to terminal that we are closed as
@@ -2829,28 +2677,23 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
 
         if (FLAGSET(Reply, TFileZillaIntf::REPLY_ABORTED))
         {
-          TRACE("10");
           MoreMessages->Add(LoadStr(USER_TERMINATED));
         }
 
         if (FLAGSET(Reply, TFileZillaIntf::REPLY_NOTSUPPORTED))
         {
-          TRACE("11");
           MoreMessages->Add(LoadStr(FZ_NOTSUPPORTED));
         }
 
         if (FLastCode == 530)
         {
-          TRACE("12");
           MoreMessages->Add(LoadStr(AUTHENTICATION_FAILED));
         }
 
         if (FLastCode == 425)
         {
-          TRACE("12a");
           if (!FTerminal->GetSessionData()->GetFtpPasvMode())
           {
-            TRACE("12b");
             MoreMessages->Add(LoadStr(FTP_CANNOT_OPEN_ACTIVE_CONNECTION2));
             HelpKeyword = HELP_FTP_CANNOT_OPEN_ACTIVE_CONNECTION;
           }
@@ -2861,11 +2704,9 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
         }
         if (FLastCode == DummyTimeoutCode)
         {
-          TRACE("12c");
           HelpKeyword = HELP_ERRORMSG_TIMEOUT;
         }
 
-        TRACE("13");
         MoreMessages->AddStrings(FLastError);
         // already cleared from WaitForReply, but GotReply can be also called
         // from Closed. then make sure that error from previous command not
@@ -2878,15 +2719,12 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
 
         if (MoreMessages->GetCount() == 0)
         {
-          TRACE("14");
           delete MoreMessages;
           MoreMessages = NULL;
         }
-        TRACE("15");
       }
       catch(...)
       {
-        TRACE("16");
         delete MoreMessages;
         throw;
       }
@@ -2894,7 +2732,6 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
       UnicodeString ErrorStr = Error;
       if (Error.IsEmpty() && (MoreMessages != NULL))
       {
-        TRACE("17");
         assert(MoreMessages->GetCount() > 0);
         ErrorStr = MoreMessages->GetString(0);
         MoreMessages->Delete(0);
@@ -2902,13 +2739,11 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
 
       if (Disconnected)
       {
-        TRACE("18");
         // for fatal error, it is essential that there is some message
         assert(!Error.IsEmpty());
         ExtException * E = new ExtException(ErrorStr, MoreMessages, true);
         TRY_FINALLY (
         {
-          TRACE("19");
           FTerminal->FatalError(E, L"");
         }
         ,
@@ -2919,43 +2754,36 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
       }
       else
       {
-        TRACE("20");
         throw ExtException(ErrorStr, MoreMessages, true, HelpKeyword);
       }
     }
 
     if ((Code != NULL) && (FLastCodeClass != DummyCodeClass))
     {
-      TRACE("21");
       *Code = FLastCode;
     }
 
     if (Response != NULL)
     {
-      TRACE("22");
       *Response = FLastResponse;
       FLastResponse = new TStringList();
     }
   }
   ,
   {
-    TRACE("23");
     ResetReply();
   }
   );
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::SetLastCode(int Code)
 {
-  CALLSTACK;
   FLastCode = Code;
   FLastCodeClass = (Code / 100);
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
 {
-  CALLSTACK;
   int Code = 0;
 
   if (FOnCaptureOutput != NULL)
@@ -3075,7 +2903,6 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
       }
     }
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 UnicodeString TFTPFileSystem::ExtractStatusMessage(const UnicodeString & Status)
@@ -3101,8 +2928,7 @@ UnicodeString TFTPFileSystem::ExtractStatusMessage(const UnicodeString & Status)
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
 {
-  CALLSTACK;
-  TLogLineType LogType = static_cast<TLogLineType>(-1);
+    TLogLineType LogType = static_cast<TLogLineType>(-1);
   UnicodeString Status(AStatus);
 
   switch (Type)
@@ -3141,7 +2967,6 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
       {
         if (Status == FTimeoutStatus)
         {
-          TRACE("Timeout");
           if (NoFinalLastCode())
           {
             SetLastCode(DummyTimeoutCode);
@@ -3149,7 +2974,6 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
         }
         else if (Status == FDisconnectStatus)
         {
-          TRACE("Disconnect");
           if (NoFinalLastCode())
           {
             SetLastCode(DummyDisconnectCode);
@@ -3188,7 +3012,6 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
     FTerminal->GetLog()->Add(LogType, Status);
   }
 
-  TRACE("/");
   return true;
 }
 //---------------------------------------------------------------------------
@@ -3322,7 +3145,6 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
       SetLastCode(DummyTimeoutCode);
     }
 
-    TRACE("/");
     return true;
   }
 }
@@ -3404,10 +3226,8 @@ UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & Val
 bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
   const TFtpsCertificateData & Data, int & RequestResult)
 {
-  CALLSTACK;
   if (!FActive)
   {
-    TRACE("TFTPFileSystem::HandleAsynchRequestVerifyCertificate 1");
     return false;
   }
   else
@@ -3518,7 +3338,14 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       while ((RequestResult == 0) && !Buf.IsEmpty())
       {
         UnicodeString ExpectedKey = CutToChar(Buf, L';', false);
-        if (ExpectedKey == FSessionInfo.CertificateFingerprint)
+        if (ExpectedKey == L"*")
+        {
+          UnicodeString Message = LoadStr(ANY_CERTIFICATE);
+          FTerminal->Information(Message, true);
+          FTerminal->Log->Add(llException, Message);
+          RequestResult = 1;
+        }
+        else if (ExpectedKey == FSessionInfo.CertificateFingerprint)
         {
           RequestResult = 1;
         }
@@ -3586,7 +3413,6 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 bool TFTPFileSystem::HandleAsynchRequestNeedPass(
   struct TNeedPassRequestData & Data, int & RequestResult) const
 {
-  CALLSTACK;
   if (!FActive)
   {
     return false;
@@ -3767,16 +3593,13 @@ bool TFTPFileSystem::HandleTransferStatus(bool Valid, __int64 TransferSize,
   {
     ReadDirectoryProgress(Bytes);
   }
-  TRACE("/");
   return true;
 }
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::HandleReply(int Command, unsigned int Reply)
 {
-  CALLSTACK;
   if (!FActive)
   {
-    TRACE("1");
     return false;
   }
   else
@@ -3799,7 +3622,6 @@ bool TFTPFileSystem::HandleReply(int Command, unsigned int Reply)
       assert(FReply == 0);
       FReply = Reply;
     }
-    TRACE("/");
     return true;
   }
 }
@@ -3807,7 +3629,6 @@ bool TFTPFileSystem::HandleReply(int Command, unsigned int Reply)
 bool TFTPFileSystem::HandleCapabilities(
   TFTPServerCapabilities * ServerCapabilities)
 {
-  CALLSTACK;
   FServerCapabilities->Assign(ServerCapabilities);
   FFileSystemInfoValid = false;
   return true;
@@ -3815,7 +3636,6 @@ bool TFTPFileSystem::HandleCapabilities(
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::CheckError(int ReturnCode, const wchar_t * Context)
 {
-  CALLSTACK;
   // we do not expect any FZAPI call to fail as it generally can fail only due to:
   // - invalid parameters
   // - busy FZAPI core
@@ -3829,23 +3649,19 @@ bool TFTPFileSystem::CheckError(int ReturnCode, const wchar_t * Context)
   // SetAsyncRequestResult)
   if (FLAGSET(ReturnCode, TFileZillaIntf::REPLY_NOTCONNECTED))
   {
-    TRACE("2");
     if (!FWaitingForReply)
     {
-      TRACE("3");
       // throws
       WaitForFatalNonCommandReply();
     }
   }
   else
   {
-    TRACE("4");
     FTerminal->FatalError(NULL,
       FMTLOAD(INTERNAL_ERROR, FORMAT(L"fz#%s", Context).c_str(), IntToHex(ReturnCode, 4).c_str()));
     assert(false);
   }
 
-  TRACE("/");
   return false;
 }
 //---------------------------------------------------------------------------

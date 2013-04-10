@@ -107,6 +107,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & S, TDateTime & DateTime);
 LCID GetDefaultLCID();
 UnicodeString DefaultEncodingName();
 UnicodeString WindowsProductName();
+bool IsDirectoryWriteable(const UnicodeString & Path);
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);
