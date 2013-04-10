@@ -360,6 +360,7 @@ void TConfiguration::LoadFrom(THierarchicalStorage * Storage)
   }
 }
 //---------------------------------------------------------------------------
+void __fastcall TConfiguration::Load()
 void TConfiguration::Load()
 {
   TGuard Guard(FCriticalSection);
