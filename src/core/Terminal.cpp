@@ -1740,6 +1740,16 @@ void TTerminal::DoInitializeLog()
     Guard.Verify();
   }
 }
+//---------------------------------------------------------------------------
+void TTerminal::DoInitializeLog()
+{
+  if (FOnInitializeLog)
+  {
+    TCallbackGuard Guard(this);
+    FOnInitializeLog(this);
+    Guard.Verify();
+  }
+}
 //------------------------------------------------------------------------------
 void TTerminal::DoChangeDirectory()
 {
