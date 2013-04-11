@@ -1632,7 +1632,9 @@ static void s_wrpkt(Ssh ssh, struct Packet *pkt)
     len = s_wrpkt_prepare(ssh, pkt, &offset);
     backlog = s_write(ssh, pkt->data + offset, len);
     if (backlog > SSH_MAX_BACKLOG)
+	{
 	ssh_throttle_all(ssh, 1, backlog);
+	}
     ssh_free_packet(pkt);
 }
 
@@ -2017,7 +2019,9 @@ static void ssh2_pkt_send_noqueue(Ssh ssh, struct Packet *pkt)
     len = ssh2_pkt_construct(ssh, pkt);
     backlog = s_write(ssh, pkt->data, len);
     if (backlog > SSH_MAX_BACKLOG)
+	{
 	ssh_throttle_all(ssh, 1, backlog);
+	}
 
     ssh->outgoing_data_size += pkt->encrypted_len;
     if (!ssh->kex_in_progress &&
@@ -2118,7 +2122,9 @@ static void ssh_pkt_defersend(Ssh ssh)
     sfree(ssh->deferred_send_data);
     ssh->deferred_send_data = NULL;
     if (backlog > SSH_MAX_BACKLOG)
+	{
 	ssh_throttle_all(ssh, 1, backlog);
+	}
 
     ssh->outgoing_data_size += ssh->deferred_data_size;
     if (!ssh->kex_in_progress &&
@@ -2958,7 +2964,9 @@ static void ssh_sent(Plug plug, int bufsize)
      * should unthrottle the whole world if it was throttled.
      */
     if (bufsize < SSH_MAX_BACKLOG)
+	{
 	ssh_throttle_all(ssh, 0, bufsize);
+	}
 }
 
 /*
@@ -6236,7 +6244,8 @@ static int do_ssh2_transport(Ssh ssh, void *vin, int inlen,
 	memset(keyspace, 0, sizeof(keyspace));
     }
 
-    #ifdef __CODEGUARD__
+    #ifdef _DEBUG
+	// To suppress CodeGuard warning
     logeventf(ssh, "Initialised %s client->server encryption",
 	      ssh->cscipher->text_name);
     logeventf(ssh, "Initialised %s client->server MAC algorithm",
@@ -6308,7 +6317,8 @@ static int do_ssh2_transport(Ssh ssh, void *vin, int inlen,
 	ssh->scmac->setkey(ssh->sc_mac_ctx, keyspace);
 	memset(keyspace, 0, sizeof(keyspace));
     }
-    #ifdef __CODEGUARD__
+    #ifdef _DEBUG
+	// To suppress CodeGuard warning
     logeventf(ssh, "Initialised %s server->client encryption",
 	      ssh->sccipher->text_name);
     logeventf(ssh, "Initialised %s server->client MAC algorithm",
@@ -8473,7 +8483,7 @@ static void do_ssh2_authconn(Ssh ssh, unsigned char *in, int inlen,
 		s->cur_prompt = new_prompts(ssh->frontend);
 		s->cur_prompt->to_server = TRUE;
 		s->cur_prompt->name = dupstr("SSH password");
-		#ifdef __CODEGUARD__
+		#ifdef _DEBUG
 		// To suppress CodeGuard warning
 		add_prompt(s->cur_prompt, dupprintf("%s@%s's password: ",
 		#else

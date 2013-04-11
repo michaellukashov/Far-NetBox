@@ -133,7 +133,7 @@ protected:
 #ifdef MPEXT
 	bool IsRoutableAddress(const CString & host);
 	bool CheckForcePasvIp(CString & host);
-	void TransferFinished();
+	void TransferFinished(bool preserveFileTimeForUploads);
 #endif
 
 	CFile *m_pDataFile;

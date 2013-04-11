@@ -193,6 +193,7 @@ private:
   TMoveLocalFileEvent FOnMoveLocalFile;
   TRemoveLocalDirectoryEvent FOnRemoveLocalDirectory;
   TCreateLocalDirectoryEvent FOnCreateLocalDirectory;
+  TNotifyEvent FOnInitializeLog;
   TRemoteTokenList FMembership;
   TRemoteTokenList FGroups;
   TRemoteTokenList FUsers;
@@ -278,6 +279,7 @@ protected:
   void DoChangeFileProperties(const UnicodeString & vFileName,
     const TRemoteFile * File, const TRemoteProperties * Properties);
   void DoChangeDirectory();
+  void DoInitializeLog();
   void EnsureNonExistence(const UnicodeString & FileName);
   void LookupUsersGroups();
   void FileModified(const TRemoteFile * File,
@@ -515,6 +517,8 @@ public:
   void SetOnReadDirectoryProgress(TReadDirectoryProgressEvent Value) { FOnReadDirectoryProgress = Value; }
   TDeleteLocalFileEvent & GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
   void SetOnDeleteLocalFile(TDeleteLocalFileEvent Value) { FOnDeleteLocalFile = Value; }
+  TNotifyEvent & GetOnInitializeLog() { return FOnInitializeLog; }
+  void SetOnInitializeLog(TNotifyEvent Value) { FOnInitializeLog = Value; }
   TCreateLocalFileEvent & GetOnCreateLocalFile() { return FOnCreateLocalFile; }
   void SetOnCreateLocalFile(TCreateLocalFileEvent Value) { FOnCreateLocalFile = Value; }
   TGetLocalFileAttributesEvent & GetOnGetLocalFileAttributes() { return FOnGetLocalFileAttributes; }

@@ -2,8 +2,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#define TRACE_SYNCH TRACING
-
 #include "Terminal.h"
 
 #include <SysUtils.hpp>
@@ -751,6 +749,8 @@ void TTerminal::Open()
             TRACE("Open 2");
             if (FFileSystem == NULL)
             {
+              GetLog()->AddSystemInfo();
+              DoInitializeLog();
               GetLog()->AddStartupInfo();
             }
 
@@ -1549,16 +1549,16 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
   bool Result = false;
   GetLog()->AddException(&E);
   uintptr_t Answer;
+  bool SkipPossible = AllowSkip && (OperationProgress != NULL);
 
-  if (AllowSkip && OperationProgress->SkipToAll)
+  if (SkipPossible && OperationProgress->SkipToAll)
   {
-    TRACE("1");
     Answer = qaSkip;
   }
   else
   {
     uintptr_t Answers = qaRetry | qaAbort |
-      FLAGMASK(AllowSkip, (qaSkip | qaAll)) |
+      FLAGMASK(SkipPossible, (qaSkip | qaAll)) |
       FLAGMASK(!SpecialRetry.IsEmpty(), qaYes);
     TQueryParams Params(qpAllowContinueOnError | FLAGMASK(!AllowSkip, qpFatalAbort));
     TQueryButtonAlias Aliases[2];
@@ -1592,13 +1592,12 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
 
     if (Answer == qaAll)
     {
-      TRACE("5");
+      assert(OperationProgress != NULL);
       OperationProgress->SkipToAll = true;
       Answer = qaSkip;
     }
     if (Answer == qaYes)
     {
-      TRACE("6");
       Result = true;
       Answer = qaRetry;
     }
@@ -1606,8 +1605,7 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
 
   if (Answer != qaRetry)
   {
-    TRACE("7");
-    if (Answer == qaAbort)
+    if ((Answer == qaAbort) && (OperationProgress != NULL))
     {
       TRACE("8");
       OperationProgress->Cancel = csCancel;
@@ -1648,23 +1646,23 @@ int TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
 UnicodeString TTerminal::TranslateLockedPath(const UnicodeString & Path, bool Lock)
 {
   UnicodeString Result = Path;
-  if (!GetSessionData()->GetLockInHome() || Result.IsEmpty() || (Result[1] != L'/'))
-    return Result;
-
-  if (Lock)
-  {
-    if (Result.SubString(1, FLockDirectory.Length()) == FLockDirectory)
+  if (GetSessionData()->GetLockInHome() && !Result.IsEmpty() && (Result[1] == L'/'))
+  {  
+    if (Lock)
     {
-      Result.Delete(1, FLockDirectory.Length());
-      if (Result.IsEmpty())
+      if (Result.SubString(1, FLockDirectory.Length()) == FLockDirectory)
       {
-        Result = L"/";
+        Result.Delete(1, FLockDirectory.Length());
+        if (Result.IsEmpty())
+        {
+          Result = L"/";
+        }
       }
     }
-  }
-  else
-  {
-    Result = UnixExcludeTrailingBackslash(FLockDirectory + Result);
+    else
+    {
+      Result = UnixExcludeTrailingBackslash(FLockDirectory + Result);
+    }
   }
   return Result;
 }
@@ -1774,13 +1772,14 @@ void TTerminal::SetCurrentDirectory(const UnicodeString & Value)
 //------------------------------------------------------------------------------
 UnicodeString TTerminal::GetCurrentDirectory()
 {
-  CALLSTACK;
-  if (FFileSystem)
+  if (FFileSystem != NULL)
   {
+    // there's occasional crash when assigning FFileSystem->CurrentDirectory
+    // to FCurrentDirectory, splitting the assignment to two statements
+    // to locate the crash more closely
     UnicodeString CurrentDirectory = FFileSystem->GetCurrentDirectory();
     if (FCurrentDirectory != CurrentDirectory)
     {
-      TRACE("1");
       FCurrentDirectory = CurrentDirectory;
       if (FCurrentDirectory.IsEmpty())
       {
@@ -1789,18 +1788,19 @@ UnicodeString TTerminal::GetCurrentDirectory()
     }
   }
 
-  return TranslateLockedPath(FCurrentDirectory, true);
+  UnicodeString Result = TranslateLockedPath(FCurrentDirectory, true);
+  return Result;
 }
 //------------------------------------------------------------------------------
 UnicodeString TTerminal::PeekCurrentDirectory()
 {
-  CALLSTACK;
   if (FFileSystem)
   {
     FCurrentDirectory = FFileSystem->GetCurrentDirectory();
   }
 
-  return TranslateLockedPath(FCurrentDirectory, true);
+  UnicodeString Result = TranslateLockedPath(FCurrentDirectory, true);
+  return Result;
 }
 //------------------------------------------------------------------------------
 const TRemoteTokenList * TTerminal::GetGroups()
@@ -1841,6 +1841,16 @@ bool TTerminal::GetAreCachesEmpty() const
 {
   return FDirectoryCache->GetIsEmpty() &&
     ((FDirectoryChangesCache == NULL) || FDirectoryChangesCache->GetIsEmpty());
+}
+//---------------------------------------------------------------------------
+void TTerminal::DoInitializeLog()
+{
+  if (FOnInitializeLog)
+  {
+    TCallbackGuard Guard(this);
+    FOnInitializeLog(this);
+    Guard.Verify();
+  }
 }
 //------------------------------------------------------------------------------
 void TTerminal::DoChangeDirectory()
