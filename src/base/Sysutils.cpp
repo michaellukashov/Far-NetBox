@@ -473,14 +473,13 @@ bool DirectoryExists(const UnicodeString & Filename)
 
 UnicodeString FileSearch(const UnicodeString & FileName, const UnicodeString & DirectoryList)
 {
-  intptr_t I;
   UnicodeString Temp;
   UnicodeString Result;
   Temp = DirectoryList;
   UnicodeString PathSeparators = L"/\\";
   do
   {
-    I = ::Pos(Temp, PathSeparators);
+    intptr_t I = ::Pos(Temp, PathSeparators);
     while ((Temp.Length() > 0) && (I == 0))
     {
       Temp.Delete(1, 1);
@@ -688,10 +687,7 @@ NextWord(const wchar_t * input)
 UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
 {
   UnicodeString Result;
-  const wchar_t * s = 0;
-  wchar_t * w = 0;
 
-  intptr_t lineCount = 0;
   intptr_t lenBuffer = 0;
   intptr_t spaceLeft = MaxWidth;
 
@@ -709,7 +705,7 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
    */
   while (Result.Length() == 0)
   {
-    lineCount = 0;
+    intptr_t lineCount = 0;
 
     if (lenBuffer)
     {
@@ -720,7 +716,7 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
         break;
       }
     }
-    w = const_cast<wchar_t *>(Result.c_str());
+    wchar_t * w = const_cast<wchar_t *>(Result.c_str());
 
     /* for each Word in Text
      *   if Width(Word) > SpaceLeft
@@ -729,7 +725,7 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
      *   else
      *     SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
      */
-    s = NextWord(Line.c_str());
+    const wchar_t * s = NextWord(Line.c_str());
     while (*s)
     {
       spaceLeft = MaxWidth;

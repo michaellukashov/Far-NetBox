@@ -1100,7 +1100,6 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     {
       FSize = ASize;
 
-      bool FullTime = false;
       bool DayMonthFormat = false;
       Word Day, Month, Year, Hour, Min, Sec;
 
@@ -1145,6 +1144,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       }
       else
       {
+        bool FullTime = false;
         // or it may have been day name for another format of --full-time
         if (Month == 0)
         {

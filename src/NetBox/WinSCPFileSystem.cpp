@@ -458,7 +458,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(DWORD & Flags,
 //------------------------------------------------------------------------------
 bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
 {
-  bool Result;
+  bool Result = false;
   if (Connected())
   {
     assert(!FNoProgress);

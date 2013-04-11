@@ -144,7 +144,7 @@ void TraceDumpToFile()
         TimeString.c_str(), int(i->Thread), SourceFile,
          i->Line, i->Func, i->Message));
       WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
-      i++;
+      ++i;
     }
     TracesInMemory.clear();
 
