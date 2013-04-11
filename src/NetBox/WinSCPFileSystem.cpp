@@ -2869,7 +2869,7 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(
   }
 
   TStrings * Result;
-  TFarPanelItem * PanelItem = GetPanelInfo()->GetFocusedItem();
+  TFarPanelItem * PanelItem = PanelInfo->GetFocusedItem();
   if (PanelItem->GetIsParentDirectory())
   {
     Result = NULL;
