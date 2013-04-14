@@ -1,5 +1,7 @@
 NetBox 2.1.29 ??.04.2013
 --------------------
+  * M0002146: Use privilege elevation API if possible
+    (http://bugs.farmanager.com/view.php?id=2146)
 
 NetBox 2.1.28 07.04.2013
 --------------------
