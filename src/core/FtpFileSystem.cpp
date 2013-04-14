@@ -1049,13 +1049,13 @@ void TFTPFileSystem::FileTransferProgress(__int64 TransferSize,
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::FileTransfer(const UnicodeString & FileName,
-  const UnicodeString & LocalFile, const UnicodeString & RemoteFile,
+  const UnicodeString & LocalFile, HANDLE Handle, const UnicodeString & RemoteFile,
   const UnicodeString & RemotePath, bool Get, __int64 Size, int Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
   CALLSTACK;
   FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
-    FFileZillaIntf->FileTransfer(LocalFile.c_str(), RemoteFile.c_str(),
+    FFileZillaIntf->FileTransfer(LocalFile.c_str(), Handle, RemoteFile.c_str(),
       RemotePath.c_str(), Get, Size, Type, &UserData);
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
@@ -1298,7 +1298,14 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
       UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
       UserData.CopyParam = CopyParam;
       UserData.Modification = File->GetModification();
-      FileTransfer(FileName, DestFullName, OnlyFileName,
+
+      HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
+      if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress,
+        &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
+      {
+        THROW_SKIP_FILE_NULL;
+      }
+      FileTransfer(FileName, DestFullName, LocalFileHandle, OnlyFileName,
         FilePath, true, File->GetSize(), TransferType, UserData, OperationProgress);
     }
 
@@ -1587,7 +1594,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
       UserData.AutoResume = FLAGSET(Flags, tfAutoResume) || DoResume;
       UserData.CopyParam = CopyParam;
       UserData.Modification = Modification;
-      FileTransfer(RealFileName, FileName, DestFileName,
+      FileTransfer(RealFileName, FileName, INVALID_HANDLE_VALUE, DestFileName,
         TargetDir, false, Size, TransferType, UserData, OperationProgress);
     }
 

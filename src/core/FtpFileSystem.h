@@ -180,7 +180,7 @@ protected:
   void CaptureOutput(const UnicodeString & Str);
   void DoReadDirectory(TRemoteFileList * FileList);
   void DoReadFile(const UnicodeString & FileName, TRemoteFile *& AFile);
-  void FileTransfer(const UnicodeString & FileName, const UnicodeString & LocalFile,
+  void FileTransfer(const UnicodeString & FileName, const UnicodeString & LocalFile, HANDLE Handle,
     const UnicodeString & RemoteFile, const UnicodeString & RemotePath, bool Get,
     __int64 Size, int Type, TFileTransferData & UserData,
     TFileOperationProgressType * OperationProgress);
