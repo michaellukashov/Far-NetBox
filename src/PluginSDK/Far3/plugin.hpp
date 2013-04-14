@@ -5,7 +5,7 @@
 /*
   plugin.hpp
 
-  Plugin API for Far Manager 3.0 build 2927
+  Plugin API for Far Manager 3.0 build 3331
 */
 
 /*
@@ -43,7 +43,7 @@ other possible license with no implications from the above license on them.
 #define FARMANAGERVERSION_MAJOR 3
 #define FARMANAGERVERSION_MINOR 0
 #define FARMANAGERVERSION_REVISION 0
-#define FARMANAGERVERSION_BUILD 2927
+#define FARMANAGERVERSION_BUILD 3331
 #define FARMANAGERVERSION_STAGE VS_RELEASE
 
 #ifndef RC_INVOKED
@@ -186,6 +186,7 @@ static const FARDIALOGITEMFLAGS
 	DIF_HISTORY               = 0x0000000000040000ULL,
 	DIF_BTNNOCLOSE            = 0x0000000000040000ULL,
 	DIF_CENTERTEXT            = 0x0000000000040000ULL,
+	DIF_SEPARATORUSER         = 0x0000000000080000ULL,
 	DIF_SETSHIELD             = 0x0000000000080000ULL,
 	DIF_EDITEXPAND            = 0x0000000000080000ULL,
 	DIF_DROPDOWNLIST          = 0x0000000000100000ULL,
@@ -207,6 +208,8 @@ static const FARDIALOGITEMFLAGS
 	DIF_DISABLE               = 0x0000000080000000ULL,
 	DIF_DEFAULTBUTTON         = 0x0000000100000000ULL,
 	DIF_FOCUS                 = 0x0000000200000000ULL,
+	DIF_RIGHTTEXT             = 0x0000000400000000ULL,
+	DIF_WORDWRAP              = 0x0000000800000000ULL,
 	DIF_NONE                  = 0;
 
 enum FARMESSAGE
@@ -672,6 +675,13 @@ struct FarPanelItemFreeInfo
 
 typedef void (WINAPI *FARPANELITEMFREECALLBACK)(void* UserData, const struct FarPanelItemFreeInfo* Info);
 
+struct UserDataItem
+{
+	void* Data;
+	FARPANELITEMFREECALLBACK FreeData;
+};
+
+
 struct PluginPanelItem
 {
 	FILETIME CreationTime;
@@ -687,11 +697,7 @@ struct PluginPanelItem
 	const wchar_t * const *CustomColumnData;
 	size_t CustomColumnNumber;
 	PLUGINPANELITEMFLAGS Flags;
-	struct
-	{
-		void* Data;
-		FARPANELITEMFREECALLBACK FreeData;
-	} UserData;
+	struct UserDataItem UserData;
 	uintptr_t FileAttributes;
 	uintptr_t NumberOfLinks;
 	uintptr_t CRC32;
@@ -835,6 +841,7 @@ enum FILE_CONTROL_COMMANDS
 	FCTL_GETPANELHOSTFILE           = 32,
 	FCTL_SETCASESENSITIVESORT       = 33,
 	FCTL_GETPANELPREFIX             = 34,
+	FCTL_SETACTIVEPANEL             = 35,
 };
 
 typedef void (WINAPI *FARAPITEXT)(
@@ -1077,6 +1084,7 @@ enum FARMACROVARTYPE
 	FMVT_DOUBLE                 = 3,
 	FMVT_BOOLEAN                = 4,
 	FMVT_BINARY                 = 5,
+	FMVT_POINTER                = 6,
 };
 
 struct FarMacroValue
@@ -1088,6 +1096,7 @@ struct FarMacroValue
 		__int64        Boolean;
 		double         Double;
 		const wchar_t *String;
+		void          *Pointer;
 		struct
 		{
 			void *Data;
@@ -1111,6 +1120,8 @@ enum MACROPLUGINRETURNTYPE
 	MPRT_PLUGINMENU    = 6,
 	MPRT_PLUGINCONFIG  = 7,
 	MPRT_PLUGINCOMMAND = 8,
+	MPRT_USERMENU      = 9,
+	MPRT_COMMONCASE    = 100
 };
 
 struct MacroPluginReturn
@@ -1128,7 +1139,6 @@ struct FarMacroCall
 	void (WINAPI *Callback)(void *CallbackData, struct FarMacroValue *Values, size_t Count);
 	void *CallbackData;
 };
-
 
 struct FarGetValue
 {
@@ -2137,6 +2147,18 @@ struct ArclitePrivateInfo
 	FARAPICREATEDIRECTORY CreateDirectory;
 };
 
+struct NetBoxPrivateInfo
+{
+	size_t StructSize;
+	FARAPICREATEFILE CreateFile;
+	FARAPIGETFILEATTRIBUTES GetFileAttributes;
+	FARAPISETFILEATTRIBUTES SetFileAttributes;
+	FARAPIMOVEFILEEX MoveFileEx;
+	FARAPIDELETEFILE DeleteFile;
+	FARAPIREMOVEDIRECTORY RemoveDirectory;
+	FARAPICREATEDIRECTORY CreateDirectory;
+};
+
 typedef intptr_t (WINAPI *FARAPICALLFAR)(intptr_t CheckCode, struct FarMacroCall* Data);
 
 struct MacroPrivateInfo
@@ -2325,6 +2347,7 @@ struct OpenPanelInfo
 	const struct KeyBarTitles   *KeyBar;
 	const wchar_t               *ShortcutData;
 	unsigned __int64             FreeSize;
+	struct UserDataItem          UserData;
 };
 
 struct AnalyseInfo
@@ -2392,6 +2415,13 @@ enum MACROCALLTYPE
 	MCT_MACROSTEP          = 1,
 	MCT_MACROFINAL         = 2,
 	MCT_MACROPARSE         = 3,
+	MCT_LOADMACROS         = 4,
+	MCT_ENUMMACROS         = 5,
+	MCT_WRITEMACROS        = 6,
+	MCT_GETMACRO           = 7,
+	MCT_PROCESSMACRO       = 8,
+	MCT_DELMACRO           = 9,
+	MCT_RUNSTARTMACRO      = 10,
 };
 
 struct OpenMacroPluginInfo
@@ -2429,8 +2459,9 @@ struct SetDirectoryInfo
 	size_t StructSize;
 	HANDLE hPanel;
 	const wchar_t *Dir;
-	intptr_t UserData;
+	intptr_t Reserved;
 	OPERATION_MODES OpMode;
+	struct UserDataItem UserData;
 };
 
 struct SetFindListInfo
