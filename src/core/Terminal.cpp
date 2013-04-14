@@ -4187,7 +4187,10 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
   TRACE("1");
   FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
     Attrs = GetLocalFileAttributes(FileName);
-    if (Attrs == -1) { RaiseLastOSError(); }
+    if (Attrs == -1)
+    {
+      RaiseLastOSError();
+    }
   )
 
   if ((Attrs & faDirectory) == 0)
@@ -4224,7 +4227,10 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
         FILETIME CTime;
         // Get last file access and modification time
         FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, FileName.c_str()),
-          if (!GetFileTime(Handle, &CTime, &ATime, &MTime)) RaiseLastOSError();
+          if (!GetFileTime(LocalFileHandle, &CTime, &ATime, &MTime))
+          {
+            RaiseLastOSError();
+          }
         );
         if (ACTime)
         {
@@ -4249,6 +4255,10 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
           unsigned long HSize;
           LSize = GetFileSize(Handle, &HSize);
           if ((LSize == 0xFFFFFFFF) && (GetLastError() != NO_ERROR)) { RaiseLastOSError(); }
+          if ((LSize == 0xFFFFFFFF) && (GetLastError() != NO_ERROR))
+          {
+            RaiseLastOSError();
+          }
           *ASize = (__int64(HSize) << 32) + LSize;
         );
       }
