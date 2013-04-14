@@ -113,6 +113,9 @@ typedef struct
 class CFileFix : public CFile
 {
 public:
+  explicit CFileFix() : CFile() {}
+  explicit CFileFix(HANDLE hFile) : CFile(hFile) {}
+  void SetCloseOnDelete(BOOL Value) { m_bCloseOnDelete = Value; }
   // MFC CFile::Read does not include file name into error message
   UINT Read(void * lpBuf, UINT nCount)
   {

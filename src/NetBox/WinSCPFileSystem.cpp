@@ -459,7 +459,7 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
 //------------------------------------------------------------------------------
 bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
 {
-  bool Result;
+  bool Result = false;
   if (Connected())
   {
     assert(!FNoProgress);
@@ -2881,7 +2881,7 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(
   }
 
   TStrings * Result;
-  TFarPanelItem * PanelItem = GetPanelInfo()->GetFocusedItem();
+  TFarPanelItem * PanelItem = PanelInfo->GetFocusedItem();
   if (PanelItem->GetIsParentDirectory())
   {
     Result = NULL;

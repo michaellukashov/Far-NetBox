@@ -250,11 +250,10 @@ void QuickSort(rde::vector<void *> & SortList, intptr_t L, intptr_t R,
   CompareFunc SCompare)
 {
   intptr_t I;
-  intptr_t J;
   do
   {
     I = L;
-    J = R;
+    intptr_t J = R;
     void * P = SortList[(L + R) >> 1];
     do
     {
@@ -591,7 +590,7 @@ UnicodeString TStrings::GetText()
 UnicodeString TStrings::GetTextStr()
 {
   UnicodeString Result;
-  intptr_t I, L, Size, Count;
+  intptr_t I, Size, Count;
   wchar_t * P = NULL;
   UnicodeString S, LB;
 
@@ -609,7 +608,7 @@ UnicodeString TStrings::GetTextStr()
   {
     S = GetString(I);
     // DEBUG_PRINTF(L"  S = %s", S.c_str());
-    L = S.Length() * sizeof(wchar_t);
+    intptr_t L = S.Length() * sizeof(wchar_t);
     if (L != 0)
     {
       memmove(P, S.c_str(), L);
@@ -1183,12 +1182,12 @@ void TStringList::CustomSort(TStringListSortCompare ACompareFunc)
 
 void TStringList::QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare)
 {
-  intptr_t I, J, P;
+  intptr_t I;
   do
   {
     I = L;
-    J = R;
-    P = (L + R) >> 1;
+    intptr_t J = R;
+    intptr_t P = (L + R) >> 1;
     // DEBUG_PRINTF(L"L = %d, R = %d, P = %d", L, R, P);
     do
     {

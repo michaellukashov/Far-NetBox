@@ -5196,7 +5196,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
     OperationProgress->TransferingFile = false; // not set with SFTP protocol
 
-    HANDLE LocalHandle = NULL;
+    HANDLE LocalFileHandle = NULL;
     TStream * FileStream = NULL;
     bool DeleteLocalFile = false;
     RawByteString RemoteHandle;
@@ -5213,7 +5213,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         if (FileExists(DestPartialFullName))
         {
           FTerminal->OpenLocalFile(DestPartialFullName, GENERIC_WRITE,
-            NULL, &LocalHandle, NULL, NULL, NULL, &ResumeOffset);
+            NULL, &LocalFileHandle, NULL, NULL, NULL, &ResumeOffset);
 
           bool PartialBiggerThanSource = (ResumeOffset > OperationProgress->TransferSize);
           if (FLAGCLEAR(Params, cpNoConfirmation))
@@ -5228,8 +5228,8 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
           if (!ResumeTransfer)
           {
-            CloseHandle(LocalHandle);
-            LocalHandle = NULL;
+            CloseHandle(LocalFileHandle);
+            LocalFileHandle = NULL;
             FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, DestPartialFullName.c_str()),
               THROWOSIFFALSE(Sysutils::DeleteFile(DestPartialFullName));
             )
@@ -5237,7 +5237,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           else
           {
             FTerminal->LogEvent(L"Resuming file transfer.");
-            FileSeek(LocalHandle, ResumeOffset, 0);
+            FileSeek(LocalFileHandle, ResumeOffset, 0);
             OperationProgress->AddResumed(ResumeOffset);
           }
         }
@@ -5300,7 +5300,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         __int64 DestFileSize = 0;
         __int64 MTime = 0;
         FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
-          NULL, &LocalHandle, NULL, &MTime, NULL, &DestFileSize, false);
+          NULL, &LocalFileHandle, NULL, &MTime, NULL, &DestFileSize, false);
 
         FTerminal->LogEvent(L"Confirming overwriting of file.");
         TOverwriteFileParams FileParams;
@@ -5334,23 +5334,23 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         if (OverwriteMode == omOverwrite)
         {
           // is NULL when overwritting read-only file
-          if (LocalHandle)
+          if (LocalFileHandle)
           {
-            CloseHandle(LocalHandle);
-            LocalHandle = NULL;
+            CloseHandle(LocalFileHandle);
+            LocalFileHandle = NULL;
           }
         }
         else
         {
-          // is NULL when overwritting read-only file, so following will
+          // is NULL when overwriting read-only file, so following will
           // probably fail anyway
-          if (LocalHandle == NULL)
+          if (LocalFileHandle == NULL)
           {
             FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
-              NULL, &LocalHandle, NULL, NULL, NULL, NULL);
+              NULL, &LocalFileHandle, NULL, NULL, NULL, NULL);
           }
           ResumeAllowed = false;
-          FileSeek(LocalHandle, DestFileSize, 0);
+          FileSeek(LocalFileHandle, DestFileSize, 0);
           if (OverwriteMode == omAppend)
           {
             FTerminal->LogEvent(L"Appending to file.");
@@ -5367,20 +5367,20 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       Action.Destination(ExpandUNCFileName(DestFullName));
 
       // if not already opened (resume, append...), create new empty file
-      if (!LocalHandle)
+      if (!LocalFileHandle)
       {
         if (!FTerminal->CreateLocalFile(LocalFileName, OperationProgress,
-               &LocalHandle, FLAGSET(Params, cpNoConfirmation)))
+            &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
         {
           THROW_SKIP_FILE_NULL;
         }
       }
-      assert(LocalHandle);
+      assert(LocalFileHandle);
 
       DeleteLocalFile = true;
 
       TRACE("2");
-      FileStream = new TSafeHandleStream((THandle)LocalHandle);
+      FileStream = new TSafeHandleStream((THandle)LocalFileHandle);
 
       // at end of this block queue is discarded
       {
@@ -5533,12 +5533,12 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
       if (CopyParam->GetPreserveTime())
       {
-        SetFileTime(LocalHandle, NULL, &AcTime, &WrTime);
+        SetFileTime(LocalFileHandle, NULL, &AcTime, &WrTime);
         // TRACEFMT("FileTime %d [%s %s]", FileGetDate(int(LocalHandle)), FileDateToDateTime(FileGetDate(int(LocalHandle))).DateString().c_str(), FileDateToDateTime(FileGetDate(int(LocalHandle))).TimeString().c_str());
       }
 
-      CloseHandle(LocalHandle);
-      LocalHandle = NULL;
+      CloseHandle(LocalFileHandle);
+      LocalFileHandle = NULL;
 
       if (ResumeAllowed)
       {
@@ -5575,9 +5575,9 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
     ,
     {
       TRACE("2");
-      if (LocalHandle)
+      if (LocalFileHandle)
       {
-        ::CloseHandle(LocalHandle);
+        ::CloseHandle(LocalFileHandle);
       }
       if (FileStream)
       {

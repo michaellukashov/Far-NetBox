@@ -4181,13 +4181,16 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
 {
   CALLSTACK;
   uintptr_t Attrs = 0;
-  HANDLE Handle = 0;
+  HANDLE LocalFileHandle = 0;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
 
   TRACE("1");
   FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
     Attrs = GetLocalFileAttributes(FileName);
-    if (Attrs == -1) { RaiseLastOSError(); }
+    if (Attrs == -1)
+    {
+      RaiseLastOSError();
+    }
   )
 
   if ((Attrs & faDirectory) == 0)
@@ -4204,12 +4207,12 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
 
     TRACE("4");
     FILE_OPERATION_LOOP (FMTLOAD(OPENFILE_ERROR, FileName.c_str()),
-      Handle = CreateLocalFile(FileName.c_str(), Access,
+      LocalFileHandle = CreateLocalFile(FileName.c_str(), Access,
         Access == GENERIC_READ ? FILE_SHARE_READ | FILE_SHARE_WRITE : FILE_SHARE_READ,
         OPEN_EXISTING, 0);
-      if (Handle == INVALID_HANDLE_VALUE)
+      if (LocalFileHandle == INVALID_HANDLE_VALUE)
       {
-        Handle = 0;
+        LocalFileHandle = 0;
         RaiseLastOSError();
       }
     );
@@ -4224,7 +4227,10 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
         FILETIME CTime;
         // Get last file access and modification time
         FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, FileName.c_str()),
-          if (!GetFileTime(Handle, &CTime, &ATime, &MTime)) RaiseLastOSError();
+          if (!GetFileTime(LocalFileHandle, &CTime, &ATime, &MTime))
+          {
+            RaiseLastOSError();
+          }
         );
         if (ACTime)
         {
@@ -4247,8 +4253,11 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
         FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, FileName.c_str()),
           unsigned long LSize;
           unsigned long HSize;
-          LSize = GetFileSize(Handle, &HSize);
-          if ((LSize == 0xFFFFFFFF) && (GetLastError() != NO_ERROR)) { RaiseLastOSError(); }
+          LSize = GetFileSize(LocalFileHandle, &HSize);
+          if ((LSize == 0xFFFFFFFF) && (GetLastError() != NO_ERROR))
+          {
+            RaiseLastOSError();
+          }
           *ASize = (__int64(HSize) << 32) + LSize;
         );
       }
@@ -4256,21 +4265,21 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
       if ((AHandle == NULL) || NoHandle)
       {
         TRACE("8");
-        CloseHandle(Handle);
-        Handle = NULL;
+        CloseHandle(LocalFileHandle);
+        LocalFileHandle = NULL;
       }
     }
     catch(...)
     {
       TRACE("9");
-      CloseHandle(Handle);
+      CloseHandle(LocalFileHandle);
       throw;
     }
   }
 
   TRACE("10");
   if (AAttrs) { *AAttrs = Attrs; }
-  if (AHandle) { *AHandle = Handle; }
+  if (AHandle) { *AHandle = LocalFileHandle; }
   TRACE("/");
 }
 //------------------------------------------------------------------------------
@@ -5564,7 +5573,7 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
 }
 //------------------------------------------------------------------------------
 HANDLE TTerminal::CreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
-    DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
+  DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
   if (GetOnCreateLocalFile())
   {
