@@ -1745,16 +1745,16 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
     THROW_SKIP_FILE_NULL;
   }
 
-  HANDLE FileHandle;
+  HANDLE LocalFileHandle;
   uintptr_t LocalFileAttrs;
   __int64 MTime, ATime;
   __int64 Size;
 
   FTerminal->OpenLocalFile(FileName, GENERIC_READ,
-    &LocalFileAttrs, &FileHandle, NULL, &MTime, &ATime, &Size);
+    &LocalFileAttrs, &LocalFileHandle, NULL, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
-  TSafeHandleStream * Stream = new TSafeHandleStream(FileHandle);
+  TSafeHandleStream * Stream = new TSafeHandleStream(LocalFileHandle);
   TRY_FINALLY (
   {
     OperationProgress->SetFileInProgress();
@@ -1766,7 +1766,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
     else
     {
       UnicodeString AbsoluteFileName = FTerminal->AbsolutePath(/* TargetDir + */DestFileName, false);
-      assert(FileHandle);
+      assert(LocalFileHandle);
 
       // File is regular file (not directory)
       FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", RealFileName.c_str()));
@@ -1994,9 +1994,9 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
   }
   ,
   {
-    if (FileHandle != NULL)
+    if (LocalFileHandle != NULL)
     {
-      ::CloseHandle(FileHandle);
+      ::CloseHandle(LocalFileHandle);
     }
     delete Stream;
   }
@@ -2542,7 +2542,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
           try
           {
             TRACE("12");
-            HANDLE FileHandle = NULL;
+            HANDLE LocalFileHandle = NULL;
             TStream * FileStream = NULL;
 
             /* TODO 1 : Turn off read-only attr */
@@ -2593,14 +2593,14 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                 Action.Destination(DestFileName);
 
                 if (!FTerminal->CreateLocalFile(DestFileName, OperationProgress,
-                       &FileHandle, FLAGSET(Params, cpNoConfirmation)))
+                       &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
                 {
                   TRACE("14");
                   SkipConfirmed = true;
                   EXCEPTION;
                 }
 
-                FileStream = new TSafeHandleStream(FileHandle);
+                FileStream = new TSafeHandleStream(LocalFileHandle);
               }
               catch (Exception &E)
               {
@@ -2702,15 +2702,15 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
               if (FileData.SetTime && CopyParam->GetPreserveTime())
               {
                 TRACE("24");
-                SetFileTime(FileHandle, NULL, &FileData.AcTime, &FileData.WrTime);
+                SetFileTime(LocalFileHandle, NULL, &FileData.AcTime, &FileData.WrTime);
               }
             }
             ,
             {
               TRACE("25");
-              if (FileHandle)
+              if (LocalFileHandle)
               {
-                ::CloseHandle(FileHandle);
+                ::CloseHandle(LocalFileHandle);
               }
               if (FileStream)
               {
