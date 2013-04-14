@@ -67,7 +67,7 @@ protected:
   void AboutDialog();
 
 protected:
-  ArclitePrivateInfo * GetSystemFunctions() { return static_cast<ArclitePrivateInfo *>(FStartupInfo.Private); }
+  NetBoxPrivateInfo * GetSystemFunctions() { return static_cast<NetBoxPrivateInfo *>(FStartupInfo.Private); }
   void DeleteLocalFile(const UnicodeString & LocalFileName);
   HANDLE CreateLocalFile(const UnicodeString & LocalFileName,
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
