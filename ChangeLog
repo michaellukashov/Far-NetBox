@@ -13,7 +13,7 @@ NetBox 2.1.28 07.04.2013
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=107082#p107082)
   * Bugfix: Store changes if configuration dialog is called from Plugins configuration
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=106645#p106645)
-  * Improvement: When editin session, parse username, password and directory, if any
+  * Improvement: When editing session, parse username, password and directory, if any
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=975#p106004)
   * Improvement: Do not highlight sessions in sessions list
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=990#p106051)
