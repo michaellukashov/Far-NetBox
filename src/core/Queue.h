@@ -246,8 +246,6 @@ public:
   bool GetProcessingUserAction() const { return FProcessingUserAction; }
   void * GetUserData() { return FUserData; }
   void SetUserData(void * Value) { FUserData = Value; }
-  TFileOperationProgressType * GetProgressData();
-  __int64 GetTotalTransferred();
 
 private:
   TFileOperationProgressType * FProgressData;
@@ -278,9 +276,6 @@ public:
 
   TQueueItemProxy * FindByQueueItem(TQueueItem * QueueItem);
 
-  intptr_t GetDoneCount() const { return FDoneCount; }
-  intptr_t GetDoneAndActiveCount() const;
-  void SetDoneCount(intptr_t Value);
 protected:
   TTerminalQueueStatus();
 
