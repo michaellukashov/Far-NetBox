@@ -244,11 +244,8 @@ public:
   TQueueItem::TInfo * GetInfo() { return FInfo; }
   TQueueItem::TStatus GetStatus() const { return FStatus; }
   bool GetProcessingUserAction() const { return FProcessingUserAction; }
-  intptr_t GetIndex();
   void * GetUserData() { return FUserData; }
   void SetUserData(void * Value) { FUserData = Value; }
-  TFileOperationProgressType * GetProgressData();
-  __int64 GetTotalTransferred();
 
 private:
   TFileOperationProgressType * FProgressData;
@@ -264,6 +261,9 @@ private:
   virtual ~TQueueItemProxy();
 public:
   void SetMasks(const UnicodeString & Value);
+  intptr_t GetIndex();
+  TFileOperationProgressType * GetProgressData();
+  __int64 GetTotalTransferred();
 };
 //---------------------------------------------------------------------------
 class TTerminalQueueStatus : public TObject
@@ -275,13 +275,6 @@ public:
   virtual ~TTerminalQueueStatus();
 
   TQueueItemProxy * FindByQueueItem(TQueueItem * QueueItem);
-
-  intptr_t GetCount() const;
-  intptr_t GetDoneCount() const { return FDoneCount; }
-  intptr_t GetActiveCount();
-  intptr_t GetDoneAndActiveCount() const;
-  void SetDoneCount(intptr_t Value);
-  TQueueItemProxy * GetItem(intptr_t Index);
 
 protected:
   TTerminalQueueStatus();
@@ -298,6 +291,12 @@ private:
 
 public:
   void SetMasks(const UnicodeString & Value);
+  intptr_t GetCount() const;
+  intptr_t GetDoneCount() const { return FDoneCount; }
+  intptr_t GetActiveCount();
+  intptr_t GetDoneAndActiveCount() const;
+  void SetDoneCount(intptr_t Value);
+  TQueueItemProxy * GetItem(intptr_t Index);
 
 private:
   TTerminalQueueStatus(const TTerminalQueueStatus &);

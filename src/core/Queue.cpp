@@ -17,6 +17,7 @@ public:
   explicit TUserAction() {}
   virtual ~TUserAction() {}
   virtual void Execute(void * Arg) = 0;
+  virtual bool Force() { return false; }
 private:
   TUserAction(const TUserAction &);
   TUserAction & operator = (const TUserAction &);
@@ -64,6 +65,13 @@ public:
     {
       OnInformation(Terminal, Str, Status, Phase);
     }
+  }
+
+  virtual bool Force()
+  {
+    // we need to propagate mainly the end-phase event even, when user cancels
+    // the connection, so that authentication window is closed
+    return TUserAction::Force() || (Phase >= 0);
   }
 
   TInformationEvent OnInformation;
@@ -449,14 +457,16 @@ int TSignalThread::WaitForEvent(unsigned int Timeout)
 {
   CALLSTACK;
   unsigned int Result = WaitForSingleObject(FEvent, Timeout);
+  int Return;
   if ((Result == WAIT_TIMEOUT) && !FTerminated)
   {
-    return -1;
+    Return = -1;
   }
   else
   {
-    return ((Result == WAIT_OBJECT_0) && !FTerminated) ? 1 : 0;
+    Return = ((Result == WAIT_OBJECT_0) && !FTerminated) ? 1 : 0;
   }
+  return Return;
 }
 //---------------------------------------------------------------------------
 void TSignalThread::Execute()
