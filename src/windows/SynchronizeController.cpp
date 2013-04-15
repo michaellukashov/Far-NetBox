@@ -139,7 +139,6 @@ void TSynchronizeController::SynchronizeChange(
 
     if (FOnSynchronize != NULL)
     {
-      TRACEFMT("1 [%s] [%s] [%x] [%x]", LocalDirectory.c_str(), RemoteDirectory.c_str(), FSynchronizeParams.Params, FSynchronizeParams.Options);
       // this is completelly wrong as the options structure
       // can contain non-root specific options in future
       TSynchronizeOptions * Options =
@@ -149,23 +148,19 @@ void TSynchronizeController::SynchronizeChange(
         FSynchronizeParams, &Checklist, Options, false);
       if (Checklist != NULL)
       {
-        TRACE("2");
         TRY_FINALLY (
         {
           if (FLAGSET(FSynchronizeParams.Options, soRecurse))
           {
-            TRACE("3");
             SubdirsChanged = false;
             assert(Checklist != NULL);
             for (intptr_t Index = 0; Index < Checklist->GetCount(); ++Index)
             {
-              TRACE("4");
               const TSynchronizeChecklist::TItem * Item = Checklist->GetItem(Index);
               // note that there may be action saDeleteRemote even if nothing has changed
               // so this is sub-optimal
               if (Item->IsDirectory)
               {
-                TRACE("5");
                 if ((Item->Action == TSynchronizeChecklist::saUploadNew) ||
                     (Item->Action == TSynchronizeChecklist::saDeleteRemote))
                 {
@@ -174,7 +169,6 @@ void TSynchronizeController::SynchronizeChange(
                 }
                 else
                 {
-                  TRACE("6");
                   assert(false);
                 }
               }
@@ -195,7 +189,6 @@ void TSynchronizeController::SynchronizeChange(
   }
   catch(Exception & E)
   {
-    TRACE("E");
     SynchronizeAbort(dynamic_cast<EFatal*>(&E) != NULL);
   }
 }

@@ -73,7 +73,6 @@ void TGUICopyParamType::GUIDefault()
 //---------------------------------------------------------------------------
 void TGUICopyParamType::Load(THierarchicalStorage * Storage)
 {
-  CALLSTACK;
   TCopyParamType::Load(Storage);
 
   SetQueue(Storage->ReadBool(L"Queue", GetQueue()));
@@ -175,7 +174,6 @@ bool TCopyParamRule::Matches(const TCopyParamRuleData & Value) const
 //---------------------------------------------------------------------------
 void TCopyParamRule::Load(THierarchicalStorage * Storage)
 {
-  CALLSTACK;
   FData.HostName = Storage->ReadString(L"HostName", FData.HostName);
   FData.UserName = Storage->ReadString(L"UserName", FData.UserName);
   FData.RemoteDirectory = Storage->ReadString(L"RemoteDirectory", FData.RemoteDirectory);
@@ -405,7 +403,6 @@ intptr_t TCopyParamList::Find(const TCopyParamRuleData & Value) const
 //---------------------------------------------------------------------------
 void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
 {
-  CALLSTACK;
   for (intptr_t Index = 0; Index < ACount; ++Index)
   {
     UnicodeString Name = IntToStr(Index);
@@ -635,7 +632,6 @@ void TGUIConfiguration::DefaultLocalized()
 //---------------------------------------------------------------------------
 void TGUIConfiguration::UpdateStaticUsage()
 {
-  CALLSTACK;
   // Usage->Set(L"CopyParamsCount", (FCopyParamListDefaults ? 0 : FCopyParamList->GetCount()));
 }
 //---------------------------------------------------------------------------
@@ -727,7 +723,6 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 //---------------------------------------------------------------------------
 void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
 {
-  CALLSTACK;
   TConfiguration::LoadData(Storage);
 
   // duplicated from core\configuration.cpp
@@ -803,21 +798,17 @@ void TGUIConfiguration::Saved()
 HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   UnicodeString * FileName)
 {
-  CALLSTACK;
   UnicodeString LibraryFileName;
   HINSTANCE NewInstance = 0;
   bool Internal = (ALocale == InternalLocale());
   if (!Internal)
   {
-    TRACE("1");
     UnicodeString Module;
     UnicodeString LocaleName;
 
     Module = ModuleFileName();
-    TRACEFMT("2 [%s]", Module.c_str());
     if ((ALocale & AdditionaLanguageMask) != AdditionaLanguageMask)
     {
-      TRACE("3");
       LOCALESIGNATURE LocSig;
       GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, reinterpret_cast<LPWSTR>(&LocSig), sizeof(LocSig) / sizeof(TCHAR));
       LocaleName = *reinterpret_cast<LPWSTR>(&LocSig);
@@ -825,18 +816,15 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     }
     else
     {
-      TRACE("4");
       LocaleName = AdditionaLanguagePrefix +
         static_cast<wchar_t>(ALocale & ~AdditionaLanguageMask);
     }
 
     Module = ChangeFileExt(Module, UnicodeString(L".") + LocaleName);
-    TRACEFMT("5 [%s]", Module.c_str());
     // Look for a potential language/country translation
     NewInstance = LoadLibraryEx(Module.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
     if (!NewInstance)
     {
-      TRACE("6");
       // Finally look for a language only translation
       Module.SetLength(Module.Length() - 1);
       NewInstance = LoadLibraryEx(Module.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
@@ -847,22 +835,18 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     }
     else
     {
-      TRACE("7");
       LibraryFileName = Module;
     }
   }
 
   if (!NewInstance && !Internal)
   {
-    TRACE("8");
     throw Exception(FMTLOAD(LOCALE_LOAD_ERROR, static_cast<int>(ALocale)));
   }
   else
   {
-    TRACE("9");
     if (Internal)
     {
-      TRACE("10");
       Classes::Error(SNotImplemented, 90);
       NewInstance = 0; // FIXME  HInstance;
     }
@@ -870,7 +854,6 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 
   if (FileName != NULL)
   {
-    TRACE("11");
     *FileName = LibraryFileName;
   }
 
@@ -879,20 +862,15 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 //---------------------------------------------------------------------------
 LCID TGUIConfiguration::InternalLocale()
 {
-  CALLSTACK;
   LCID Result;
   if (GetTranslationCount(GetApplicationInfo()) > 0)
   {
-    TRACE("TGUIConfiguration::InternalLocale 1");
     TTranslation Translation;
     Translation = GetTranslation(GetApplicationInfo(), 0);
-    TRACE("TGUIConfiguration::InternalLocale 2");
     Result = MAKELANGID(PRIMARYLANGID(Translation.Language), SUBLANG_DEFAULT);
-    TRACE("TGUIConfiguration::InternalLocale 3");
   }
   else
   {
-    TRACE("TGUIConfiguration::InternalLocale 4");
     assert(false);
     Result = 0;
   }
@@ -901,10 +879,8 @@ LCID TGUIConfiguration::InternalLocale()
 //---------------------------------------------------------------------------
 LCID TGUIConfiguration::GetLocale()
 {
-  CALLSTACK;
   if (!FLocale)
   {
-    TRACE("TGUIConfiguration::GetLocale 1");
     FLocale = InternalLocale();
   }
   return FLocale;
@@ -929,32 +905,24 @@ void TGUIConfiguration::SetLocale(LCID Value)
 //---------------------------------------------------------------------------
 void TGUIConfiguration::SetLocaleSafe(LCID Value)
 {
-  CALLSTACK;
   if (GetLocale() != Value)
   {
-    TRACE("1");
     HINSTANCE Module;
 
     try
     {
-      TRACE("2");
       Module = LoadNewResourceModule(Value);
-      TRACE("3");
     }
     catch(...)
     {
-      TRACE("4");
       // ignore any exception while loading locale
       Module = NULL;
     }
 
-    TRACE("5");
     if (Module != NULL)
     {
-      TRACE("6");
       FLocale = Value;
       // SetResourceModule(Module);
-      TRACE("7");
     }
   }
 }
@@ -962,7 +930,6 @@ void TGUIConfiguration::SetLocaleSafe(LCID Value)
 //---------------------------------------------------------------------------
 void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
 {
-  CALLSTACK;
   TLibModule * MainModule = FindModule(HInstance);
   if ((unsigned)Instance != MainModule->Instance)
   {
@@ -972,7 +939,6 @@ void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
 //---------------------------------------------------------------------------
 HANDLE TGUIConfiguration::ChangeResourceModule(HANDLE Instance)
 {
-  CALLSTACK;
   if (Instance == NULL)
   {
     Instance = HInstance;
@@ -1000,13 +966,11 @@ void TGUIConfiguration::SetResourceModule(HINSTANCE Instance)
 //---------------------------------------------------------------------------
 TStrings * TGUIConfiguration::GetLocales()
 {
-  CALLSTACK;
   Classes::Error(SNotImplemented, 93);
   UnicodeString LocalesExts;
   TStringList * Exts = new TStringList();
   TRY_FINALLY (
   {
-    TRACE("TGUIConfiguration::GetLocales 1");
     Exts->Sorted = true;
     Exts->CaseSensitive = false;
 
@@ -1038,32 +1002,27 @@ TStrings * TGUIConfiguration::GetLocales()
     }
     );
 
-    TRACE("TGUIConfiguration::GetLocales 2");
     if (FLastLocalesExts != LocalesExts)
     {
       FLastLocalesExts = LocalesExts;
       FLocales->Clear();
 
       /* // FIXME
-      TRACE("TGUIConfiguration::GetLocales 3");
       TLanguages * Langs = NULL; // FIXME LanguagesDEPF();
       int Ext, Index, Count;
       wchar_t LocaleStr[255];
       LCID Locale;
 
-      TRACE("TGUIConfiguration::GetLocales 4");
       Count = Langs->GetCount();
       Index = -1;
       while (Index < Count)
       {
-        TRACE("TGUIConfiguration::GetLocales 5");
         if (Index >= 0)
         {
           Locale = Langs->LocaleID[Index];
           Ext = Exts->IndexOf(Langs->Ext[Index]);
           if (Ext < 0)
           {
-            TRACE("TGUIConfiguration::GetLocales 6");
             Ext = Exts->IndexOf(Langs->Ext[Index].SubString(1, 2));
             if (Ext >= 0)
             {
@@ -1073,7 +1032,6 @@ TStrings * TGUIConfiguration::GetLocales()
 
           if (Ext >= 0)
           {
-            TRACE("TGUIConfiguration::GetLocales 7");
             Exts->Objects[Ext] = reinterpret_cast<TObject*>(Locale);
           }
           else
@@ -1083,13 +1041,11 @@ TStrings * TGUIConfiguration::GetLocales()
         }
         else
         {
-          TRACE("TGUIConfiguration::GetLocales 8");
           Locale = InternalLocale();
         }
 
         if (Locale)
         {
-          TRACE("TGUIConfiguration::GetLocales 9");
           UnicodeString Name;
           GetLocaleInfo(Locale, LOCALE_SENGLANGUAGE,
             LocaleStr, sizeof(LocaleStr));
@@ -1104,20 +1060,16 @@ TStrings * TGUIConfiguration::GetLocales()
         ++Index;
       }
       */
-      TRACE("TGUIConfiguration::GetLocales 10");
       for (intptr_t Index = 0; Index < Exts->GetCount(); ++Index)
       {
-        TRACE("TGUIConfiguration::GetLocales 11");
         if ((Exts->Objects[Index] == NULL) &&
             (Exts->GetString(Index).Length() == 3) &&
             SameText(Exts->GetString(Index).SubString(1, 2), AdditionaLanguagePrefix))
         {
-          TRACE("TGUIConfiguration::GetLocales 12");
           UnicodeString LangName = GetFileFileInfoString(L"LangName",
             ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetString(Index)));
           if (!LangName.IsEmpty())
           {
-            TRACE("TGUIConfiguration::GetLocales 13");
             FLocales->AddObject(LangName, reinterpret_cast<TObject *>(static_cast<size_t>(
               AdditionaLanguageMask + Exts->GetString(Index)[3])));
           }
@@ -1127,12 +1079,10 @@ TStrings * TGUIConfiguration::GetLocales()
   }
   ,
   {
-    TRACE("TGUIConfiguration::GetLocales 14");
     delete Exts;
   }
   );
 
-  TRACE("TGUIConfiguration::GetLocales 15");
   return FLocales;
 }
 //---------------------------------------------------------------------------
