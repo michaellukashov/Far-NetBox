@@ -38,7 +38,6 @@ UnicodeString TBookmarks::Keys[] = { L"Local", L"Remote", L"ShortCuts", L"Option
 //---------------------------------------------------------------------------
 void TBookmarks::Load(THierarchicalStorage * Storage)
 {
-  CALLSTACK;
   for (intptr_t I = 0; I <= 3; I++)
   {
     if (Storage->OpenSubKey(Keys[I], false))
@@ -85,7 +84,6 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
 void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
   intptr_t Index, TBookmarkList * BookmarkList)
 {
-  CALLSTACK;
   TStrings * Names = new TStringList();
   TRY_FINALLY (
   {
@@ -332,7 +330,6 @@ void TBookmarkList::Assign(TPersistent * Source)
 //---------------------------------------------------------------------------
 void TBookmarkList::LoadOptions(THierarchicalStorage * Storage)
 {
-  CALLSTACK;
   FOpenedNodes->SetCommaText(Storage->ReadString(L"OpenedNodes", L""));
 }
 //---------------------------------------------------------------------------
@@ -474,8 +471,6 @@ void TBookmarkList::SetNodeOpened(const UnicodeString & Index, bool Value)
 //---------------------------------------------------------------------------
 void TBookmarkList::ShortCuts(TShortCuts & ShortCuts)
 {
-  CALLSTACK;
-  TRACE(">");
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     TBookmark * Bookmark = GetBookmarks(Index);
@@ -484,7 +479,6 @@ void TBookmarkList::ShortCuts(TShortCuts & ShortCuts)
       ShortCuts.Add(Bookmark->GetShortCut());
     }
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

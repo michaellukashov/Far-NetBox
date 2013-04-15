@@ -2,7 +2,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#define TRACE_IMAGEINDEX NOTRACING
 
 #include "RemoteFiles.h"
 
@@ -404,8 +403,7 @@ UnicodeString UserModificationStr(const TDateTime & DateTime,
 int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs,
   UnicodeString * TypeName)
 {
-  /*CCALLSTACK(TRACE_IMAGEINDEX);
-  Attrs |= FILE_ATTRIBUTE_NORMAL;
+  /*Attrs |= FILE_ATTRIBUTE_NORMAL;
 
   TSHFileInfoW SHFileInfo = {0};
   // On Win2k we get icon of "ZIP drive" for ".." (parent directory)
@@ -753,15 +751,12 @@ TRemoteFile::~TRemoteFile()
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 {
-  CALLSTACK;
   TRemoteFile * Result;
   Result = new TRemoteFile();
   try
   {
-    TRACE("1");
     if (FLinkedFile)
     {
-      TRACE("2");
       Result->FLinkedFile = FLinkedFile->Duplicate(true);
       Result->FLinkedFile->FLinkedByFile = Result;
     }
@@ -786,23 +781,19 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
     #undef COPY_FP
     if (Standalone && (!FFullFileName.IsEmpty() || (GetDirectory() != NULL)))
     {
-      TRACE("3");
       Result->FFullFileName = GetFullFileName();
     }
   }
   catch(...)
   {
-    TRACE("4");
     delete Result;
     throw;
   }
-  TRACE("/");
   return Result;
 }
 //---------------------------------------------------------------------------
 void TRemoteFile::LoadTypeInfo()
 {
-  CCALLSTACK(TRACE_IMAGEINDEX);
   /* TODO : If file is link: Should be attributes taken from linked file? */
   /* unsigned long Attrs = 0;
   if (GetIsDirectory())
@@ -821,7 +812,6 @@ void TRemoteFile::LoadTypeInfo()
 //---------------------------------------------------------------------------
 intptr_t TRemoteFile::GetIconIndex() const
 {
-  CCALLSTACK(TRACE_IMAGEINDEX);
   if (FIconIndex == -1)
   {
     const_cast<TRemoteFile *>(this)->LoadTypeInfo();
@@ -1015,7 +1005,6 @@ UnicodeString TRemoteFile::GetRightsStr()
 //---------------------------------------------------------------------------
 void TRemoteFile::SetListingStr(const UnicodeString & Value)
 {
-  CALLSTACK;
   // Value stored in 'Value' can be used for error message
   UnicodeString Line = Value;
   FIconIndex = -1;
@@ -1513,17 +1502,14 @@ void TRemoteFileList::AddFile(TRemoteFile * File)
 //---------------------------------------------------------------------------
 void TRemoteFileList::DuplicateTo(TRemoteFileList * Copy)
 {
-  CALLSTACK;
   Copy->Clear();
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     TRemoteFile * File = GetFiles(Index);
     Copy->AddFile(File->Duplicate(false));
   }
-  TRACE("1");
   Copy->FDirectory = GetDirectory();
   Copy->FTimestamp = FTimestamp;
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TRemoteFileList::Clear()
@@ -1643,7 +1629,6 @@ void TRemoteDirectory::AddFile(TRemoteFile * File)
 //---------------------------------------------------------------------------
 void TRemoteDirectory::DuplicateTo(TRemoteFileList * Copy)
 {
-  CALLSTACK;
   TRemoteFileList::DuplicateTo(Copy);
   if (GetThisDirectory() && !GetIncludeThisDirectory())
   {
@@ -1653,7 +1638,6 @@ void TRemoteDirectory::DuplicateTo(TRemoteFileList * Copy)
   {
     Copy->AddFile(GetParentDirectory()->Duplicate(false));
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectory::GetLoaded()
@@ -1721,7 +1705,6 @@ void TRemoteDirectory::SetIncludeThisDirectory(Boolean Value)
 //===========================================================================
 TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
 {
-  CALLSTACK;
   FSection = new TCriticalSection();
   Sorted = true;
   Duplicates = dupError;
@@ -1730,7 +1713,6 @@ TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
 //---------------------------------------------------------------------------
 TRemoteDirectoryCache::~TRemoteDirectoryCache()
 {
-  CALLSTACK;
   Clear();
   delete FSection;
   FSection = NULL;
@@ -1804,7 +1786,6 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
 //---------------------------------------------------------------------------
 void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
 {
-  CALLSTACK;
   assert(FileList);
   TRemoteFileList * Copy = new TRemoteFileList();
   FileList->DuplicateTo(Copy);
@@ -1817,7 +1798,6 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
     DoClearFileList(FileList->GetDirectory(), false);
     AddObject(Copy->GetDirectory(), Copy);
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryCache::ClearFileList(const UnicodeString & Directory, bool SubDirs)

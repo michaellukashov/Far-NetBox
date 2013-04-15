@@ -2,10 +2,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#define TRACE_READING NOTRACING
-#define TRACE_WRITING NOTRACING
-#define TRACE_ACCESS NOTRACING
-
 #include "Common.h"
 #include "Exceptions.h"
 #include "PuttyIntf.h"
@@ -845,14 +841,12 @@ size_t TCustomIniFileStorage::BinaryDataSize(const UnicodeString & Name)
 //------------------------------------------------------------------------------
 bool TCustomIniFileStorage::ReadBool(const UnicodeString & Name, bool Default)
 {
-  CCALLSTACK(TRACE_READING);
 
   return FIniFile->ReadBool(GetCurrentSection(), MungeIniName(Name), Default);
 }
 //------------------------------------------------------------------------------
 intptr_t TCustomIniFileStorage::ReadInteger(const UnicodeString & Name, intptr_t Default)
 {
-  CCALLSTACK(TRACE_READING);
   intptr_t Result = FIniFile->ReadInteger(GetCurrentSection(), MungeIniName(Name), Default);
 
   return Result;
@@ -860,7 +854,6 @@ intptr_t TCustomIniFileStorage::ReadInteger(const UnicodeString & Name, intptr_t
 //------------------------------------------------------------------------------
 __int64 TCustomIniFileStorage::ReadInt64(const UnicodeString & Name, __int64 Default)
 {
-  CCALLSTACK(TRACE_READING);
 
   __int64 Result = Default;
   UnicodeString Str;
@@ -874,7 +867,6 @@ __int64 TCustomIniFileStorage::ReadInt64(const UnicodeString & Name, __int64 Def
 //------------------------------------------------------------------------------
 TDateTime TCustomIniFileStorage::ReadDateTime(const UnicodeString & Name, TDateTime Default)
 {
-  CCALLSTACK(TRACE_READING);
 
   TDateTime Result;
   UnicodeString Value = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), L"");
@@ -907,7 +899,6 @@ TDateTime TCustomIniFileStorage::ReadDateTime(const UnicodeString & Name, TDateT
 //------------------------------------------------------------------------------
 double TCustomIniFileStorage::ReadFloat(const UnicodeString & Name, double Default)
 {
-  CCALLSTACK(TRACE_READING);
 
   double Result;
   UnicodeString Value = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), L"");
@@ -997,40 +988,26 @@ void TCustomIniFileStorage::WriteBinaryData(const UnicodeString & Name,
 TIniFileStorage::TIniFileStorage(const UnicodeString & AStorage):
   TCustomIniFileStorage(AStorage, new TMemIniFile(AStorage))
 {
-  CALLSTACK;
-  TRACEFMT("1 [%s]", GetStorage().c_str());
   FOriginal = new TStringList();
   dynamic_cast<TMemIniFile *>(FIniFile)->GetString(FOriginal);
-//!CLEANBEGIN
-  for (intptr_t Index = 0; Index < FOriginal->GetCount(); ++Index)
-  {
-    TRACEFMT("ini [%s]", FOriginal->GetString(Index).c_str());
-  }
-//!CLEANEND
   ApplyOverrides();
-  TRACE("/");
 }
 //------------------------------------------------------------------------------
 void TIniFileStorage::Flush()
 {
-  CALLSTACK;
   if (FOriginal != NULL)
   {
     TStrings * Strings = new TStringList;
     TRY_FINALLY (
     {
-      TRACE("0");
       dynamic_cast<TMemIniFile *>(FIniFile)->GetString(Strings);
-      TRACE("1");
       if (!Strings->Equals(FOriginal))
       {
-        TRACE("2");
         int Attr;
         // preserve attributes (especially hidden)
         bool Exists = FileExists(GetStorage());
         if (Exists)
         {
-          TRACE("3");
           Attr = GetFileAttributes(UnicodeString(GetStorage()).c_str());
         }
         else
@@ -1043,26 +1020,21 @@ void TIniFileStorage::Flush()
 
         if (Handle == INVALID_HANDLE_VALUE)
         {
-          TRACE("4");
           // "access denied" errors upon implicit saves to existing file are ignored
           if (GetExplicit() || !Exists || (GetLastError() != ERROR_ACCESS_DENIED))
           {
-            TRACE("5");
             try
             {
-              TRACE("6");
               RaiseLastOSError();
             }
             catch(Exception & E)
             {
-              TRACE("7");
               throw ExtException(&E, FMTLOAD(CREATE_FILE_ERROR, (GetStorage())));
             }
           }
         }
         else
         {
-          TRACE("8");
           TStream * Stream = new THandleStream(Handle);
           TRY_FINALLY (
           {
@@ -1070,7 +1042,6 @@ void TIniFileStorage::Flush()
           }
           ,
           {
-            TRACE("9");
             ::CloseHandle(Handle);
             delete Stream;
           }
@@ -1080,15 +1051,11 @@ void TIniFileStorage::Flush()
     }
     ,
     {
-      TRACE("10");
       delete FOriginal;
       FOriginal = NULL;
-      TRACE("11");
       delete Strings;
-      TRACE("12");
     }
     );
-    TRACE("/");
   }
 }
 //------------------------------------------------------------------------------
@@ -1099,7 +1066,6 @@ TIniFileStorage::~TIniFileStorage()
 //------------------------------------------------------------------------------
 void TIniFileStorage::ApplyOverrides()
 {
-  CALLSTACK;
   UnicodeString OverridesKey = IncludeTrailingBackslash(L"Override");
 
   TStrings * Sections = new TStringList();
@@ -1145,7 +1111,6 @@ void TIniFileStorage::ApplyOverrides()
     delete Sections;
   }
   );
-  TRACE("/");
 }
 //===========================================================================
 #define NOT_IMPLEMENTED throw Exception("Not implemented")
@@ -1249,6 +1214,5 @@ void TOptionsIniFile::ReadSections(const UnicodeString & Section, TStrings* Stri
 TOptionsStorage::TOptionsStorage(TStrings * Options) :
   TCustomIniFileStorage(UnicodeString(L"Command-line options")) // , new TOptionsIniFile(Options))
 {
-  CALLSTACK;
 }
 #endif
