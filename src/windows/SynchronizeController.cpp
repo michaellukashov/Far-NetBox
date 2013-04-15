@@ -18,7 +18,6 @@ TSynchronizeController::TSynchronizeController(
   TSynchronizeEvent AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,
   TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories)
 {
-  CALLSTACK;
   FOnSynchronize = AOnSynchronize;
   FSynchronizeParams.Params = 0;
   FSynchronizeParams.Options = 0;
@@ -33,7 +32,6 @@ TSynchronizeController::TSynchronizeController(
 //---------------------------------------------------------------------------
 TSynchronizeController::~TSynchronizeController()
 {
-  CALLSTACK;
   assert(FSynchronizeMonitor == NULL);
 }
 //---------------------------------------------------------------------------
@@ -43,7 +41,6 @@ void TSynchronizeController::StartStop(TObject * Sender,
   TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
   TSynchronizeLogEvent OnSynchronizeLog)
 {
-  CALLSTACK;
   if (Start)
   {
     // Configuration->GetUsage()->Inc(L"KeepUpToDates");
@@ -118,7 +115,6 @@ void TSynchronizeController::StartStop(TObject * Sender,
 void TSynchronizeController::SynchronizeChange(
   TObject * /*Sender*/, const UnicodeString & Directory, bool & SubdirsChanged)
 {
-  CALLSTACK;
   try
   {
     UnicodeString RemoteDirectory;
@@ -195,7 +191,6 @@ void TSynchronizeController::SynchronizeChange(
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeAbort(bool Close)
 {
-  CALLSTACK;
   if (FSynchronizeMonitor != NULL)
   {
     // FIXME FSynchronizeMonitor->Close();
@@ -208,7 +203,6 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
 void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
   const UnicodeString & FileName)
 {
-  CALLSTACK;
   TSynchronizeLogEntry Entry;
   UnicodeString Message;
   switch (Operation)
@@ -233,7 +227,6 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
 void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
   const UnicodeString & Message)
 {
-  CALLSTACK;
   if (FSynchronizeLog != NULL)
   {
     FSynchronizeLog(this, Entry, Message);
@@ -243,7 +236,6 @@ void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
 void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
   const UnicodeString & DirectoryName, bool & Add)
 {
-  CALLSTACK;
   if ((FOptions != NULL) && (FOptions->Filter != NULL))
   {
     if (IncludeTrailingBackslash(ExtractFilePath(DirectoryName)) ==
@@ -260,7 +252,6 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
 void TSynchronizeController::SynchronizeInvalid(
   TObject * /*Sender*/, const UnicodeString & Directory, const UnicodeString & ErrorStr)
 {
-  CALLSTACK;
   if (FOnSynchronizeInvalid != NULL)
   {
     FOnSynchronizeInvalid(this, Directory, ErrorStr);
@@ -272,7 +263,6 @@ void TSynchronizeController::SynchronizeInvalid(
 void TSynchronizeController::SynchronizeTooManyDirectories(
   TObject * /*Sender*/, intptr_t & MaxDirectories)
 {
-  CALLSTACK;
   if (FOnTooManyDirectories != NULL)
   {
     FOnTooManyDirectories(this, MaxDirectories);
@@ -282,6 +272,5 @@ void TSynchronizeController::SynchronizeTooManyDirectories(
 void TSynchronizeController::SynchronizeDirectoriesChange(
   TObject * /*Sender*/, intptr_t Directories)
 {
-  CALLSTACK;
   SynchronizeLog(slDirChange, FMTLOAD(SYNCHRONIZE_START, Directories));
 }
