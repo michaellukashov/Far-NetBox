@@ -766,7 +766,7 @@ int FindCheck(int Result)
       (Result != ERROR_FILE_NOT_FOUND) &&
       (Result != ERROR_NO_MORE_FILES))
   {
-    RaiseLastOSError();
+    RaiseLastOSError(Result);
   }
   return Result;
 }
@@ -833,7 +833,8 @@ TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)
 {
   try
   {
-    return EncodeDate(Year, Month, Day);
+    TDateTime DateTime = EncodeDate(Year, Month, Day);
+    return DateTime;
   }
   catch (EConvertError & E)
   {
@@ -846,7 +847,8 @@ TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
 {
   try
   {
-    return EncodeTime(Hour, Min, Sec, MSec);
+    TDateTime DateTime = EncodeTime(Hour, Min, Sec, MSec);
+    return DateTime;
   }
   catch (EConvertError & E)
   {
