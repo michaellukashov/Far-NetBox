@@ -947,11 +947,11 @@ UnicodeString ExpandUNCFileName(const UnicodeString & FileName)
   return Result;
 }
 
-__int64 FileSeek(HANDLE file, __int64 offset, int Origin)
+__int64 FileSeek(HANDLE Handle, __int64 Offset, int Origin)
 {
-  LONG low = offset & 0xFFFFFFFF;
-  LONG high = offset >> 32;
-  low = ::SetFilePointer(file, low, &high, static_cast<DWORD>(Origin));
+  LONG low = Offset & 0xFFFFFFFF;
+  LONG high = Offset >> 32;
+  low = ::SetFilePointer(Handle, low, &high, static_cast<DWORD>(Origin));
   return ((_int64)high << 32) + low;
 }
 

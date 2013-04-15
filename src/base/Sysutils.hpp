@@ -265,7 +265,7 @@ UnicodeString ChangeFileExt(const UnicodeString & FileName, const UnicodeString 
 UnicodeString ExtractFileExt(const UnicodeString & FileName);
 UnicodeString ExpandUNCFileName(const UnicodeString & FileName);
 
-__int64 FileSeek(HANDLE file, __int64 offset, int Origin);
+__int64 FileSeek(HANDLE Handle, __int64 Offset, int Origin);
 
 //---------------------------------------------------------------------------
 typedef WIN32_FIND_DATA TWin32FindData;
