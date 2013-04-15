@@ -52,10 +52,7 @@ ExtException::ExtException(Exception * E) :
   FMoreMessages(NULL),
   FHelpKeyword()
 {
-  CALLSTACK;
-  TRACEFMT("[%s]", UnicodeString((E != NULL) ? E->Message : UnicodeString(L"<null>")).c_str());
   AddMoreMessages(E);
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(Exception* E, const UnicodeString & Msg):
@@ -70,10 +67,7 @@ ExtException::ExtException(ExtException* E, const UnicodeString & Msg):
   FMoreMessages(NULL),
   FHelpKeyword()
 {
-  CALLSTACK;
-  TRACEFMT("[%s] [%s]", UnicodeString((E != NULL) ? E->Message : UnicodeString(L"<null>")).c_str(), Msg.c_str());
   AddMoreMessages(E);
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(Exception * E, int Ident) :
@@ -81,7 +75,6 @@ ExtException::ExtException(Exception * E, int Ident) :
   FMoreMessages(NULL),
   FHelpKeyword()
 {
-  CALLSTACK;
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const UnicodeString & Msg, Exception* E) :
@@ -89,8 +82,6 @@ ExtException::ExtException(const UnicodeString & Msg, Exception* E) :
   FMoreMessages(NULL),
   FHelpKeyword()
 {
-  CALLSTACK;
-  TRACEFMT("[%s] [%s]", Msg.c_str(), UnicodeString((E != NULL) ? E->Message : UnicodeString(L"<null>")).c_str());
   // "copy exception"
   AddMoreMessages(E);
   // and append message to the end to more messages
@@ -109,7 +100,6 @@ ExtException::ExtException(const UnicodeString & Msg, Exception* E) :
       FMoreMessages->Append(Msg);
     }
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages,
@@ -118,14 +108,11 @@ ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & More
   FMoreMessages(NULL),
   FHelpKeyword(HelpKeyword)
 {
-  CALLSTACK;
-  TRACEFMT("[%s] [%s]", Msg.c_str(), MoreMessages.c_str());
   if (!MoreMessages.IsEmpty())
   {
     FMoreMessages = new TStringList();
     FMoreMessages->SetText(MoreMessages);
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const UnicodeString & Msg, TStrings* MoreMessages,
@@ -134,8 +121,6 @@ ExtException::ExtException(const UnicodeString & Msg, TStrings* MoreMessages,
   FMoreMessages(NULL),
   FHelpKeyword(HelpKeyword)
 {
-  CALLSTACK;
-  TRACEFMT("[%s] [%s]", Msg.c_str(), UnicodeString((MoreMessages != NULL) ? MoreMessages->GetText() : UnicodeString(L"<null>")).c_str());
   if (Own)
   {
     FMoreMessages = MoreMessages;
@@ -145,12 +130,10 @@ ExtException::ExtException(const UnicodeString & Msg, TStrings* MoreMessages,
     FMoreMessages = new TStringList();
     FMoreMessages->Assign(MoreMessages);
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void ExtException::AddMoreMessages(const Exception * E)
 {
-  CALLSTACK;
   if (E != NULL)
   {
     if (FMoreMessages == NULL)
@@ -171,7 +154,6 @@ void ExtException::AddMoreMessages(const Exception * E)
 
       if (ExtE->GetMoreMessages() != NULL)
       {
-        TRACEFMT("1 [%s]", ExtE->GetMoreMessages()->GetText().c_str());
         FMoreMessages->Assign(ExtE->GetMoreMessages());
       }
     }
@@ -181,7 +163,6 @@ void ExtException::AddMoreMessages(const Exception * E)
 
     // new exception does not have own message, this is in fact duplication of
     // the exception data, but the exception class may being changed
-    TRACEFMT("2 [%s]", Msg.c_str());
     if (Message.IsEmpty())
     {
       Message = Msg;
@@ -197,7 +178,6 @@ void ExtException::AddMoreMessages(const Exception * E)
       FMoreMessages = NULL;
     }
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 ExtException::~ExtException()
@@ -213,7 +193,6 @@ ExtException * ExtException::Clone()
 //---------------------------------------------------------------------------
 UnicodeString LastSysErrorMessage()
 {
-  CALLSTACK;
   int LastError = GetLastError();
   UnicodeString Result;
   if (LastError != 0)
@@ -226,7 +205,6 @@ UnicodeString LastSysErrorMessage()
 EOSExtException::EOSExtException(const UnicodeString & Msg) :
   ExtException(Msg, LastSysErrorMessage())
 {
-  CALLSTACK;
 }
 //---------------------------------------------------------------------------
 EFatal::EFatal(Exception * E, const UnicodeString & Msg) :
@@ -256,51 +234,41 @@ ECallbackGuardAbort::ECallbackGuardAbort() : EAbort(L"callback abort")
 //---------------------------------------------------------------------------
 Exception * CloneException(Exception * E)
 {
-  CALLSTACK;
   ExtException * Ext = dynamic_cast<ExtException *>(E);
   if (Ext != NULL)
   {
-    TRACE("1");
     return Ext->Clone();
   }
   else if (dynamic_cast<ECallbackGuardAbort *>(E) != NULL)
   {
-    TRACE("2");
     return new ECallbackGuardAbort();
   }
   else if (dynamic_cast<EAbort *>(E) != NULL)
   {
-    TRACE("3");
     return new EAbort(E->Message);
   }
   else
   {
-    TRACE("4");
     return new Exception(E->Message);
   }
 }
 //---------------------------------------------------------------------------
 void RethrowException(Exception * E)
 {
-  CALLSTACK;
   if (dynamic_cast<EFatal *>(E) != NULL)
   {
-    TRACE("1");
     throw EFatal(E, L"");
   }
   else if (dynamic_cast<ECallbackGuardAbort *>(E) != NULL)
   {
-    TRACE("2");
     throw ECallbackGuardAbort();
   }
   else if (dynamic_cast<EAbort *>(E) != NULL)
   {
-    TRACE("3");
     throw EAbort(E->Message);
   }
   else
   {
-    TRACE("4");
     throw ExtException(E, L"");
   }
 }

@@ -559,11 +559,9 @@ UnicodeString AddPathQuotes(const UnicodeString & Path)
 static wchar_t * ReplaceChar(
   UnicodeString & FileName, wchar_t * InvalidChar, wchar_t InvalidCharsReplacement)
 {
-  CALLSTACK;
   intptr_t Index = InvalidChar - FileName.c_str() + 1;
   if (InvalidCharsReplacement == TokenReplacement)
   {
-    TRACE("1");
     // currently we do not support unicode chars replacement
     if (FileName[Index] > 0xFF)
     {
@@ -576,7 +574,6 @@ static wchar_t * ReplaceChar(
   }
   else
   {
-    TRACE("2");
     FileName[Index] = InvalidCharsReplacement;
     InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index);
   }
@@ -592,7 +589,6 @@ UnicodeString ValidLocalFileName(
   const UnicodeString & FileName, wchar_t InvalidCharsReplacement,
   const UnicodeString & TokenizibleChars, const UnicodeString & LocalInvalidChars)
 {
-  CALLSTACK;
   UnicodeString FileName2 = FileName;
   if (InvalidCharsReplacement != NoReplacement)
   {
@@ -623,7 +619,6 @@ UnicodeString ValidLocalFileName(
         ((FileName2[FileName2.Length()] == L' ') ||
          (FileName2[FileName2.Length()] == L'.')))
     {
-      TRACE("4");
       ReplaceChar(FileName2, const_cast<wchar_t *>(FileName2.c_str() + FileName2.Length() - 1), InvalidCharsReplacement);
     }
 
@@ -1113,7 +1108,6 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
   }
   else
   {
-    TRACE("1");
     // creates new entry as a side effect
     Result = &YearlyDateTimeParams[Year];
     TIME_ZONE_INFORMATION TZI;
@@ -1157,31 +1151,24 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
     Result->BaseDifferenceSec = TZI.Bias;
     Result->BaseDifference = double(TZI.Bias) / MinsPerDay;
     Result->BaseDifferenceSec *= SecsPerMin;
-    TRACEFMT("BaseDifference [%g], BaseDifference [%d]", Result->BaseDifference, int(Result->BaseDifferenceSec));
 
     Result->CurrentDifferenceSec = TZI.Bias +
       Result->CurrentDaylightDifferenceSec;
     Result->CurrentDifference =
       double(Result->CurrentDifferenceSec) / MinsPerDay;
     Result->CurrentDifferenceSec *= SecsPerMin;
-    TRACEFMT("CurrentDifference [%g], CurrentDifferenceSec [%d]", Result->CurrentDifference, int(Result->CurrentDifferenceSec));
 
     Result->CurrentDaylightDifference =
       double(Result->CurrentDaylightDifferenceSec) / MinsPerDay;
     Result->CurrentDaylightDifferenceSec *= SecsPerMin;
-    TRACEFMT("CurrentDaylightDifference [%g], CurrentDaylightDifferenceSec [%d]", Result->CurrentDaylightDifference, int(Result->CurrentDaylightDifferenceSec));
 
     Result->DaylightDifferenceSec = TZI.DaylightBias * SecsPerMin;
     Result->DaylightDifference = double(TZI.DaylightBias) / MinsPerDay;
-    TRACEFMT("DaylightDifference [%g], DaylightDifferenceSec [%d]", Result->DaylightDifference, int(Result->DaylightDifferenceSec));
     Result->StandardDifferenceSec = TZI.StandardBias * SecsPerMin;
     Result->StandardDifference = double(TZI.StandardBias) / MinsPerDay;
-    TRACEFMT("StandardDifference [%g], StandardDifferenceSec [%d]", Result->StandardDifference, int(Result->StandardDifferenceSec));
 
     Result->SystemStandardDate = TZI.StandardDate;
-    TRACEFMT("[%d/%d/%d] [%d] [%d:%d:%d.%d]", int(Result->SystemStandardDate.wYear), int(Result->SystemStandardDate.wMonth), int(Result->SystemStandardDate.wDay), int(Result->SystemStandardDate.wDayOfWeek), int(Result->SystemStandardDate.wHour), int(Result->SystemStandardDate.wMinute), int(Result->SystemStandardDate.wSecond), int(Result->SystemStandardDate.wMilliseconds));
     Result->SystemDaylightDate = TZI.DaylightDate;
-    TRACEFMT("[%d/%d/%d] [%d] [%d:%d:%d.%d]", int(Result->SystemDaylightDate.wYear), int(Result->SystemDaylightDate.wMonth), int(Result->SystemDaylightDate.wDay), int(Result->SystemDaylightDate.wDayOfWeek), int(Result->SystemDaylightDate.wHour), int(Result->SystemDaylightDate.wMinute), int(Result->SystemDaylightDate.wSecond), int(Result->SystemDaylightDate.wMilliseconds));
 
     unsigned short AYear = (Year != 0) ? Year : DecodeYear(Now());
     if (Result->SystemStandardDate.wMonth != 0)
@@ -1193,10 +1180,8 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
       EncodeDSTMargin(Result->SystemDaylightDate, AYear, Result->DaylightDate);
     }
     Result->SummerDST = (Result->DaylightDate < Result->StandardDate);
-    TRACEFMT("Summer DST [%d]", int(Result->SummerDST));
 
     Result->DaylightHack = !IsWin7() || IsExactly2008R2();
-    TRACEFMT("DaylightHack [%d]", int(Result->DaylightHack));
   }
 
   return Result;
@@ -1236,7 +1221,6 @@ static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
 //---------------------------------------------------------------------------
 static bool IsDateInDST(const TDateTime & DateTime)
 {
-  CCALLSTACK(TRACE_TIMESTAMP);
 
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
 
@@ -1360,7 +1344,6 @@ bool TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
 //---------------------------------------------------------------------------
 static __int64 DateTimeToUnix(const TDateTime DateTime)
 {
-  CCALLSTACK(TRACE_TIMESTAMP);
   const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
 
   assert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
@@ -1372,7 +1355,6 @@ static __int64 DateTimeToUnix(const TDateTime DateTime)
 FILETIME DateTimeToFileTime(const TDateTime DateTime,
   TDSTMode /*DSTMode*/)
 {
-  CCALLSTACK(TRACE_TIMESTAMP);
   __int64 UnixTimeStamp = ::DateTimeToUnix(DateTime);
 
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
@@ -1393,9 +1375,7 @@ FILETIME DateTimeToFileTime(const TDateTime DateTime,
 TDateTime FileTimeToDateTime(const FILETIME & FileTime)
 {
   // duplicated in DirView.pas
-  CCALLSTACK(TRACE_TIMESTAMP);
   SYSTEMTIME SysTime;
-  TRACEFMT("1 [%d] [%d]", int(FileTime.dwLowDateTime), int(FileTime.dwHighDateTime));
   if (!UsesDaylightHack())
   {
     SYSTEMTIME UniverzalSysTime;
@@ -1406,7 +1386,6 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
   {
     FILETIME LocalFileTime;
     FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
-    TRACEFMT("2b [%d] [%d]", int(LocalFileTime.dwLowDateTime), int(LocalFileTime.dwHighDateTime));
     FileTimeToSystemTime(&LocalFileTime, &SysTime);
   }
   TDateTime Result = SystemTimeToDateTime(SysTime);
@@ -1416,7 +1395,6 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
 __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
   TDSTMode DSTMode)
 {
-  CCALLSTACK(TRACE_TIMESTAMP);
   __int64 Result = ((*(__int64*)&(FileTime)) / 10000000LL - 11644473600LL);
   if (UsesDaylightHack())
   {
@@ -2011,7 +1989,6 @@ bool IsWin7()
 //---------------------------------------------------------------------------
 bool IsExactly2008R2()
 {
-  CALLSTACK;
   HINSTANCE Kernel32 = GetModuleHandle(kernel32);
   typedef BOOL (WINAPI * TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
   TGetProductInfo GetProductInfo =
@@ -2025,7 +2002,6 @@ bool IsExactly2008R2()
   {
     DWORD Type;
     GetProductInfo(Win32MajorVersion, Win32MinorVersion, 0, 0, &Type);
-    TRACEFMT("1 [%x]", int(Type));
     switch (Type)
     {
       case 0x0008 /*PRODUCT_DATACENTER_SERVER*/:
@@ -2064,7 +2040,6 @@ bool IsExactly2008R2()
         break;
     }
   }
-  TRACEFMT("2 [%x]", int(Result));
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2104,7 +2079,6 @@ UnicodeString WindowsProductName()
   }
   catch(...)
   {
-    TRACE("E");
   }
   return Result;
 }

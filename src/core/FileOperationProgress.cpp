@@ -2,8 +2,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#define TRACE_PROGRESS TRACING
-
 #include "Common.h"
 #include "FileOperationProgress.h"
 //---------------------------------------------------------------------------
@@ -98,7 +96,6 @@ void TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, intptr_t ACount, bool ATemp,
   const UnicodeString & ADirectory, uintptr_t ACPSLimit)
 {
-  CALLSTACK;
   Clear();
   Operation = AOperation;
   Side = ASide;
@@ -113,7 +110,6 @@ void TFileOperationProgressType::Start(TFileOperation AOperation,
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Reset()
 {
-  CALLSTACK;
   FReset = true;
 }
 //---------------------------------------------------------------------------
@@ -213,7 +209,6 @@ void TFileOperationProgressType::Finish(const UnicodeString & FileName,
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::SetFile(const UnicodeString & AFileName, bool AFileInProgress)
 {
-  CALLSTACK;
   FileName = AFileName;
   FileInProgress = AFileInProgress;
   ClearTransfer();
