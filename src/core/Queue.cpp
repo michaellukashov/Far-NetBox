@@ -1039,34 +1039,58 @@ void TTerminalQueue::ProcessEvent()
     {
       TGuard Guard(FItemsSection);
 
-      Item = GetItem(FItemsInProcess);
-      intptr_t ForcedIndex = FForcedItems->IndexOf(Item);
 
-      if (FEnabled || (ForcedIndex >= 0))
+      // =0  do not keep
+      // <0  infinity
+      if (FKeepDoneItemsFor >= 0)
       {
-        if ((FFreeTerminals == 0) &&
-            ((FTransfersLimit < 0) ||
-             (FTerminals->GetCount() < FTransfersLimit + FTemporaryTerminals)))
+        TDateTime RemoveDoneItemsBefore = Now();
+        if (FKeepDoneItemsFor > 0)
         {
-          FOverallTerminals++;
-          TerminalItem = new TTerminalItem(this);
-          TerminalItem->Init(FOverallTerminals);
-          FTerminals->Add(TerminalItem);
+          RemoveDoneItemsBefore = IncSecond(RemoveDoneItemsBefore, -FKeepDoneItemsFor);
         }
-        else if (FFreeTerminals > 0)
+        for (int Index = 0; Index < FDoneItems->Count; Index++)
         {
-          TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->Items[0]);
-          FTerminals->Move(0, FTerminals->GetCount() - 1);
-          FFreeTerminals--;
-        }
-
-        if (TerminalItem != NULL)
-        {
-          if (ForcedIndex >= 0)
+          TQueueItem * Item = GetItem(FDoneItems, Index);
+          if (Item->FDoneAt <= RemoveDoneItemsBefore)
           {
-            FForcedItems->Delete(ForcedIndex);
+            FDoneItems->Delete(Index);
+            delete Item;
+            Index--;
+            DoListUpdate();
           }
-          FItemsInProcess++;
+        }
+      }
+
+      if (FItems->Count > FItemsInProcess)
+      {
+        Item = GetItem(FItemsInProcess);
+        int ForcedIndex = FForcedItems->IndexOf(Item);
+
+        if (FEnabled || (ForcedIndex >= 0))
+        {
+          if ((FFreeTerminals == 0) &&
+              ((FTransfersLimit < 0) ||
+               (FTerminals->Count < FTransfersLimit + FTemporaryTerminals)))
+          {
+            FOverallTerminals++;
+            TerminalItem = new TTerminalItem(this, FOverallTerminals);
+            FTerminals->Add(TerminalItem);
+          }
+          else if (FFreeTerminals > 0)
+          {
+            TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->Items[0]);
+            FTerminals->Move(0, FTerminals->Count - 1);
+            FFreeTerminals--;
+          }
+
+          if (TerminalItem != NULL)
+          {
+            if (ForcedIndex >= 0)
+            {
+              FForcedItems->Delete(ForcedIndex);
+            }
+            FItemsInProcess++;
         }
       }
     }
@@ -1865,11 +1889,12 @@ intptr_t TTerminalQueueStatus::GetActiveCount()
   {
     FActiveCount = 0;
 
-    int Index = FDoneCount;
+    intptr_t Index = FDoneCount;
     while ((Index < FList->GetCount()) &&
       (GetItem(Index)->GetStatus() != TQueueItem::qsPending))
     {
       FActiveCount++;
+      Index++;
     }
   }
 
@@ -1943,11 +1968,13 @@ void TLocatedQueueItem::DoExecute(TTerminal * Terminal)
 //---------------------------------------------------------------------------
 TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
   TStrings * FilesToCopy, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side) :
+  const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side,
+  bool SingleFile) :
   TLocatedQueueItem(Terminal), FFilesToCopy(NULL), FCopyParam(NULL)
 {
   FInfo->Operation = (Params & cpDelete ? foMove : foCopy);
   FInfo->Side = Side;
+  FInfo->SetSingleFile(SingleFile);
 
   assert(FilesToCopy != NULL);
   FFilesToCopy = new TStringList();
@@ -1980,8 +2007,8 @@ TTransferQueueItem::~TTransferQueueItem()
 //---------------------------------------------------------------------------
 TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
   TStrings * FilesToCopy, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, intptr_t Params) :
-  TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osLocal)
+  const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile) :
+  TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osLocal, SingleFile)
 {
   if (FilesToCopy->GetCount() > 1)
   {
@@ -2032,7 +2059,7 @@ void TUploadQueueItem::DoExecute(TTerminal * Terminal)
 //---------------------------------------------------------------------------
 TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   TStrings * FilesToCopy, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, intptr_t Params) :
+  const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile) :
   TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osRemote)
 {
   if (FilesToCopy->GetCount() > 1)
@@ -2114,6 +2141,7 @@ void TTerminalThread::Init()
   FOnReadDirectory = FTerminal->GetOnReadDirectory();
   FOnStartReadDirectory = FTerminal->GetOnStartReadDirectory();
   FOnReadDirectoryProgress = FTerminal->GetOnReadDirectoryProgress();
+  FOnInitializeLog = FTerminal->GetOnInitializeLog();
 
   FTerminal->SetOnInformation(MAKE_CALLBACK(TTerminalThread::TerminalInformation, this));
   FTerminal->SetOnQueryUser(MAKE_CALLBACK(TTerminalThread::TerminalQueryUser, this));
@@ -2124,6 +2152,7 @@ void TTerminalThread::Init()
   FTerminal->SetOnReadDirectory(MAKE_CALLBACK(TTerminalThread::TerminalReadDirectory, this));
   FTerminal->SetOnStartReadDirectory(MAKE_CALLBACK(TTerminalThread::TerminalStartReadDirectory, this));
   FTerminal->SetOnReadDirectoryProgress(MAKE_CALLBACK(TTerminalThread::TerminalReadDirectoryProgress, this));
+  FTerminal->SetOnInitializeLog(MAKE_CALLBACK(TTerminalThread::TerminalInitializeLog, this));
 
   Start();
 }
@@ -2143,6 +2172,7 @@ TTerminalThread::~TTerminalThread()
   assert(FTerminal->GetOnReadDirectory() == MAKE_CALLBACK(TTerminalThread::TerminalReadDirectory, this));
   assert(FTerminal->GetOnStartReadDirectory() == MAKE_CALLBACK(TTerminalThread::TerminalStartReadDirectory, this));
   assert(FTerminal->GetOnReadDirectoryProgress() == MAKE_CALLBACK(TTerminalThread::TerminalReadDirectoryProgress, this));
+  assert(FTerminal->GetOnInitializeLog() == MAKE_CALLBACK(TTerminalThread::TerminalInitializeLog, this));
 
   FTerminal->SetOnInformation(FOnInformation);
   FTerminal->SetOnQueryUser(FOnQueryUser);
@@ -2153,6 +2183,7 @@ TTerminalThread::~TTerminalThread()
   FTerminal->SetOnReadDirectory(FOnReadDirectory);
   FTerminal->SetOnStartReadDirectory(FOnStartReadDirectory);
   FTerminal->SetOnReadDirectoryProgress(FOnReadDirectoryProgress);
+  FTerminal->SetOnInitializeLog(FOnInitializeLog);
 
   delete FSection;
 }
@@ -2241,6 +2272,7 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
       }
       while (!Done);
 
+
       Rethrow(FException);
     }
     ,
@@ -2250,7 +2282,7 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
     }
     );
   }
-  TRACE_CATCH_ALL
+  catch(...)
   {
     if (FCancelled)
     {
@@ -2364,23 +2396,26 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 
       while (true)
       {
-        TGuard Guard(FSection);
-        // If idle exception is already set, we are only waiting
-        // for the main thread to pick it up
-        // (or at least to finish handling the user action, so
-        // that we rethrow the idle exception below)
-        // Also if idle exception is set, it is probable that terminal
-        // is not active anyway.
-        if (FTerminal->GetActive() && FPendingIdle && (FIdleException == NULL))
+
         {
-          FPendingIdle = false;
-          try
+          TGuard Guard(FSection);
+          // If idle exception is already set, we are only waiting
+          // for the main thread to pick it up
+          // (or at least to finish handling the user action, so
+          // that we rethrow the idle exception below)
+          // Also if idle exception is set, it is probable that terminal
+          // is not active anyway.
+          if (FTerminal->GetActive() && FPendingIdle && (FIdleException == NULL))
           {
-            FTerminal->Idle();
-          }
-          catch (Exception & E)
-          {
-            SaveException(E, FIdleException);
+            FPendingIdle = false;
+            try
+            {
+              FTerminal->Idle();
+            }
+            catch (Exception & E)
+            {
+              SaveException(E, FIdleException);
+            }
           }
         }
 

@@ -7,7 +7,12 @@
 class TProgramParams : public TOptions
 {
 public:
-  explicit TProgramParams();
   // static TProgramParams * Instance();
+
+  explicit TProgramParams();
+  TProgramParams(const UnicodeString & CmdLine);
+
+private:
+  void Init(const UnicodeString & CmdLine);
 };
 //------------------------------------------------------------------------------

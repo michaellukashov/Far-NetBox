@@ -878,7 +878,7 @@ bool TFTPFileSystem::ConfirmOverwrite(UnicodeString & FileName,
       Answer = FTerminal->ConfirmFileOverwrite(FileName, FileParams,
         Answers, &QueryParams,
         OperationProgress->Side == osLocal ? osRemote : osLocal,
-        Params, OperationProgress);
+        CopyParam, Params, OperationProgress);
     )
   }
 
