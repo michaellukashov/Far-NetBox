@@ -330,26 +330,42 @@ void TSecureShell::Open()
   SetActive(false);
 
   FAuthenticationLog = L"";
+  FNoConnectionResponse = false;
   FUI->Information(LoadStr(STATUS_LOOKUPHOST), true);
   StoreToConfig(FSessionData, FConfig, GetSimple());
 
-  char * RealHost = NULL;
-  FreeBackend(); // in case we are reconnecting
-  const char * InitError = FBackend->init(this, &FBackendHandle, FConfig,
-    const_cast<char *>(W2MB(FSessionData->GetHostNameExpanded().c_str(),
-    FSessionData->GetCodePageAsNumber()).c_str()),
-    static_cast<int>(FSessionData->GetPortNumber()),
-    &RealHost, 0,
-    FConfig->tcp_keepalives);
-  sfree(RealHost);
-  if (InitError)
+  try
   {
-    PuttyFatalError(UnicodeString(InitError));
-  }
-  FUI->Information(LoadStr(STATUS_CONNECT), true);
-  Init();
+    char * RealHost = NULL;
+    FreeBackend(); // in case we are reconnecting
+    const char * InitError = FBackend->init(this, &FBackendHandle, FConfig,
+      const_cast<char *>(W2MB(FSessionData->GetHostNameExpanded().c_str(),
+      FSessionData->GetCodePageAsNumber()).c_str()),
+      static_cast<int>(FSessionData->GetPortNumber()),
+      &RealHost, 0,
+      FConfig->tcp_keepalives);
+    sfree(RealHost);
+    if (InitError)
+    {
+      PuttyFatalError(UnicodeString(InitError));
+    }
+    FUI->Information(LoadStr(STATUS_CONNECT), true);
+    Init();
 
-  CheckConnection(CONNECTION_FAILED);
+    CheckConnection(CONNECTION_FAILED);
+  }
+  catch (Exception & E)
+  {
+    if (FNoConnectionResponse && TryFtp())
+    {
+      Configuration->Usage->Inc(L"ProtocolSuggestions");
+      FUI->FatalError(&E, LoadStr(FTP_SUGGESTION));
+    }
+    else
+    {
+      throw;
+    }
+  }
   FLastDataSent = Now();
 
   FSessionInfo.LoginTime = Now();
@@ -362,6 +378,73 @@ void TSecureShell::Open()
 
   assert(!FSessionInfo.SshImplementation.IsEmpty());
   FOpened = true;
+}
+//---------------------------------------------------------------------------
+bool TSecureShell::TryFtp()
+{
+  bool Result;
+  if (!FConfiguration->TryFtpWhenSshFails)
+  {
+    Result = false;
+  }
+  else
+  {
+    if (((FSessionData->FSProtocol != fsSFTP) && (FSessionData->FSProtocol != fsSFTPonly)) ||
+        (FSessionData->PortNumber != SshPortNumber) ||
+        FSessionData->Tunnel || (FSessionData->ProxyMethod != ::pmNone))
+    {
+      LogEvent(L"Using non-standard protocol or port, tunnel or proxy, will not knock FTP port.");
+      Result = false;
+    }
+    else
+    {
+      LogEvent(L"Knocking FTP port.");
+
+      SOCKET Socket = socket(AF_INET, SOCK_STREAM, 0);
+      Result = (Socket != INVALID_SOCKET);
+      if (Result)
+      {
+        LPHOSTENT HostEntry = gethostbyname(AnsiString(FSessionData->HostNameExpanded).c_str());
+        Result = (HostEntry != NULL);
+        if (Result)
+        {
+          SOCKADDR_IN Address;
+
+          memset(&Address, 0, sizeof(Address));
+          Address.sin_family = AF_INET;
+          int Port = FtpPortNumber;
+          Address.sin_port = htons(static_cast<short>(Port));
+          Address.sin_addr.s_addr = *((unsigned long *)*HostEntry->h_addr_list);
+
+          HANDLE Event = CreateEvent(NULL, false, false, NULL);
+          Result = (WSAEventSelect(Socket, (WSAEVENT)Event, FD_CONNECT | FD_CLOSE) != SOCKET_ERROR);
+
+          if (Result)
+          {
+            Result =
+              (connect(Socket, reinterpret_cast<sockaddr *>(&Address), sizeof(Address)) != SOCKET_ERROR) ||
+              (WSAGetLastError() == WSAEWOULDBLOCK);
+            if (Result)
+            {
+              Result = (WaitForSingleObject(Event, 2000) == WAIT_OBJECT_0);
+            }
+          }
+          CloseHandle(Event);
+        }
+        closesocket(Socket);
+      }
+
+      if (Result)
+      {
+        LogEvent(L"FTP port opened, will suggest using FTP protocol.");
+      }
+      else
+      {
+        LogEvent(L"FTP port did not open.");
+      }
+    }
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
 void TSecureShell::Init()
@@ -1189,7 +1272,14 @@ int TSecureShell::TranslateErrorMessage(UnicodeString & Message) const
     { L"Network error: Connection timed out", NET_TRANSL_TIMEOUT },
   };
 
-  return TranslatePuttyMessage(Translation, LENOF(Translation), Message);
+  int Index = TranslatePuttyMessage(Translation, LENOF(Translation), Message);
+
+  if ((Index == 0) || (Index == 1) || (Index == 2) || (Index == 3))
+  {
+    FNoConnectionResponse = true;
+  }
+
+  return Index;
 }
 //---------------------------------------------------------------------------
 void TSecureShell::PuttyFatalError(const UnicodeString & Error)
@@ -1839,7 +1929,14 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   while (!Result && !Buf.IsEmpty())
   {
     UnicodeString ExpectedKey = CutToChar(Buf, Delimiter, false);
-    if (ExpectedKey == Fingerprint)
+    if (ExpectedKey == L"*")
+    {
+      UnicodeString Message = LoadStr(ANY_HOSTKEY);
+      FUI->Information(Message, true);
+      FLog->Add(llException, Message);
+      Result = true;
+    }
+    else if (ExpectedKey == Fingerprint)
     {
       LogEvent(L"Host key matches configured key");
       Result = true;

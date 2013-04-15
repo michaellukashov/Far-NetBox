@@ -1583,7 +1583,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
               Answer = FTerminal->ConfirmFileOverwrite(
                 FileNameOnly /*not used*/, NULL,
                 qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
-                &QueryParams, osRemote, Params, OperationProgress, Message);
+                &QueryParams, osRemote, CopyParam, Params, OperationProgress, Message);
             );
           }
           else
@@ -1609,7 +1609,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
               Answer = FTerminal->ConfirmFileOverwrite(
                 FileNameOnly, &FileParams,
                 qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll,
-                &QueryParams, osRemote, Params, OperationProgress);
+                &QueryParams, osRemote, CopyParam, Params, OperationProgress);
             );
           }
 
@@ -2064,7 +2064,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
     bool FindOK = false;
     FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
       UnicodeString Path = IncludeTrailingBackslash(DirectoryName) + L"*.*";
-      FindOK = FindFirst(Path.c_str(),
+      FindOK = FindFirstChecked(Path.c_str(),
         FindAttrs, SearchRec) == 0;
     );
 
@@ -2103,7 +2103,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
           );
         }
         FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-          FindOK = (FindNext(SearchRec) == 0);
+          FindOK = (FindNextChecked(SearchRec) == 0);
         );
       }
     }
@@ -2576,7 +2576,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                     Answer = FTerminal->ConfirmFileOverwrite(
                       OperationProgress->FileName, &FileParams,
                       qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll,
-                      &QueryParams, osLocal, Params, OperationProgress);
+                      &QueryParams, osLocal, CopyParam, Params, OperationProgress);
                   );
 
                   switch (Answer)

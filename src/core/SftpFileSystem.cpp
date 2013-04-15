@@ -3768,7 +3768,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::SFTPConfirmOverwrite(UnicodeString & FileName,
-  intptr_t Params, TFileOperationProgressType * OperationProgress,
+  const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOverwriteMode & OverwriteMode, const TOverwriteFileParams * FileParams)
 {
   bool CanAppend = (FVersion < 4) || !OperationProgress->AsciiTransfer;
@@ -3805,7 +3805,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(UnicodeString & FileName,
     Answer = FTerminal->ConfirmFileOverwrite(FileName, FileParams,
       Answers, &QueryParams,
       OperationProgress->Side == osLocal ? osRemote : osLocal,
-      Params, OperationProgress);
+      CopyParam, Params, OperationProgress);
   );
 
   if (CanAppend &&
@@ -3826,7 +3826,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(UnicodeString & FileName,
     bool CanAlternateResume =
       FileParams ? (FileParams->DestSize < FileParams->SourceSize) && !OperationProgress->AsciiTransfer : false;
     TBatchOverwrite BatchOverwrite =
-      FTerminal->EffectiveBatchOverwrite(Params, OperationProgress, true);
+      FTerminal->EffectiveBatchOverwrite(CopyParam, Params, OperationProgress, true);
     // when mode is forced by batch, never query user
     if (BatchOverwrite == boAppend)
     {
@@ -4191,7 +4191,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
               {
                 UnicodeString PrevDestFileName = DestFileName;
                 SFTPConfirmOverwrite(DestFileName,
-                  Params, OperationProgress, OpenParams.OverwriteMode, &FileParams);
+                  CopyParam, Params, OperationProgress, OpenParams.OverwriteMode, &FileParams);
                 if (PrevDestFileName != DestFileName)
                 {
                   // update paths in case user changes the file name
@@ -4380,8 +4380,11 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
         std::auto_ptr<TTouchSessionAction> TouchAction;
         if (CopyParam->GetPreserveTime())
         {
+          TDateTime MDateTime = UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
+          FTerminal->LogEvent(FORMAT(L"Preserving timestamp [%s]",
+            StandardTimestamp(MDateTime)).c_str());
           TouchAction.reset(new TTouchSessionAction(FTerminal->GetActionLog(), DestFullName,
-            UnixToDateTime(MTime, GetSessionData()->GetDSTMode())));
+            MDateTime);
         }
         std::auto_ptr<TChmodSessionAction> ChmodAction;
         // do record chmod only if it was explicitly requested,
@@ -4544,7 +4547,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
     {
       ConfirmOverwriting =
         !OpenParams->Confirmed && !OpenParams->Resume &&
-        FTerminal->CheckRemoteFile(OpenParams->Params, OperationProgress);
+        FTerminal->CheckRemoteFile(OpenParams->CopyParam, OpenParams->Params, OperationProgress);
       OpenType = SSH_FXF_WRITE | SSH_FXF_CREAT;
       // when we want to preserve overwritten files, we need to find out that
       // they exist first... even if overwrite confirmation is disabled.
@@ -4616,7 +4619,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
           // confirmation duplicated in SFTPSource for resumable file transfers.
           UnicodeString RemoteFileNameOnly = UnixExtractFileName(OpenParams->RemoteFileName);
           SFTPConfirmOverwrite(RemoteFileNameOnly,
-            OpenParams->Params, OperationProgress, OpenParams->OverwriteMode, OpenParams->FileParams);
+            OpenParams->CopyParam, OpenParams->Params, OperationProgress, OpenParams->OverwriteMode, OpenParams->FileParams);
           if (RemoteFileNameOnly != UnixExtractFileName(OpenParams->RemoteFileName))
           {
             OpenParams->RemoteFileName =
@@ -4773,7 +4776,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
   bool FindOK = false;
 
   FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    FindOK = (bool)(FindFirst(DirectoryName + L"*.*",
+    FindOK = (bool)(FindFirstChecked(DirectoryName + L"*.*",
       FindAttrs, SearchRec) == 0);
   );
 
@@ -4802,7 +4805,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
       }
 
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        FindOK = (FindNext(SearchRec) == 0);
+        FindOK = (FindNextChecked(SearchRec) == 0);
       );
     }
   }
@@ -5062,6 +5065,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         FTerminal->LogEvent(L"Checking existence of partially transfered file.");
         if (FileExists(DestPartialFullName))
         {
+          FTerminal->LogEvent(L"Partially transfered file exists.");
           FTerminal->OpenLocalFile(DestPartialFullName, GENERIC_WRITE,
             NULL, &LocalFileHandle, NULL, NULL, NULL, &ResumeOffset);
 
@@ -5074,6 +5078,10 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           else
           {
             ResumeTransfer = !PartialBiggerThanSource;
+            if (!ResumeTransfer)
+            {
+              FTerminal->LogEvent(L"Partially transfered file is bigger that original file.");
+            }
           }
 
           if (!ResumeTransfer)
@@ -5157,7 +5165,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           GetSessionData()->GetDSTMode());
         FileParams.DestSize = DestFileSize;
         UnicodeString PrevDestFileName = DestFileName;
-        SFTPConfirmOverwrite(DestFileName, Params, OperationProgress, OverwriteMode, &FileParams);
+        SFTPConfirmOverwrite(DestFileName, CopyParam, Params, OperationProgress, OverwriteMode, &FileParams);
         if (PrevDestFileName != DestFileName)
         {
           DestFullName = TargetDir + DestFileName;
@@ -5375,7 +5383,9 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
       if (CopyParam->GetPreserveTime())
       {
-        SetFileTime(LocalFileHandle, NULL, &AcTime, &WrTime);
+        FTerminal->LogEvent(FORMAT(L"Preserving timestamp [%s]",
+          (StandardTimestamp(Modification))));
+        SetFileTime(LocalHandle, NULL, &AcTime, &WrTime);
       }
 
       CloseHandle(LocalFileHandle);

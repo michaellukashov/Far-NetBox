@@ -175,6 +175,8 @@ private:
   TPingType FFtpPingType;
   TFtps FFtps;
   TAutoSwitch FNotUtf;
+  bool FIsWorkspace;
+  UnicodeString FLink;
   UnicodeString FHostKey;
 
   UnicodeString FOrigHostName;
@@ -323,13 +325,18 @@ public:
   void SetFtpPingType(TPingType Value);
   void SetFtps(TFtps Value);
   void SetNotUtf(TAutoSwitch Value);
+  void SetIsWorkspace(bool Value);
+  void SetLink(const UnicodeString & Value);
   void SetHostKey(const UnicodeString & Value);
   TDateTime GetTimeoutDT();
   void SavePasswords(THierarchicalStorage * Storage, bool PuttyExport);
   UnicodeString GetLocalName();
+  UnicodeString GetFolderName();
   void Modify();
   UnicodeString GetSource();
   void DoLoad(THierarchicalStorage * Storage, bool & RewritePassword);
+  UnicodeString ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default);
+  int ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int Default);
   static RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
   static UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   static RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
@@ -355,6 +362,7 @@ public:
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
   bool IsSame(const TSessionData * Default, bool AdvancedOnly);
+  bool IsInFolderOrWorkspace(const UnicodeString & Name);
   static void ValidatePath(const UnicodeString & Path);
   static void ValidateName(const UnicodeString & Name);
   UnicodeString GetHostName() const { return FHostName; }
@@ -513,8 +521,16 @@ public:
   intptr_t IndexOf(TSessionData * Data);
   TSessionData * FindSame(TSessionData * Data);
   TSessionData * NewSession(const UnicodeString & SessionName, TSessionData * Session);
+  void NewWorkspace(const UnicodeString & Name, TList * DataList);
+  bool IsFolder(const UnicodeString & Name);
+  bool IsWorkspace(const UnicodeString & Name);
   TSessionData * ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
     UnicodeString * FileName = NULL, bool * ProtocolDefined = NULL, UnicodeString * MaskedUrl = NULL);
+  bool CanLogin(TSessionData * Data);
+  void GetFolderOrWorkspace(const UnicodeString & Name, TList * List);
+  TStrings * GetFolderOrWorkspaceList(const UnicodeString & Name);
+  TStrings * GetWorkspaces();
+  bool HasAnyWorkspace();
   TSessionData * GetSession(intptr_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   TSessionData * GetDefaultSettings() const { return FDefaultSettings; }
   void SetDefaultSettings(TSessionData * Value);
@@ -527,6 +543,7 @@ public:
 private:
   TSessionData * FDefaultSettings;
   bool FReadOnly;
+  void __fastcall SetDefaultSettings(TSessionData * value);
   void DoSave(THierarchicalStorage * Storage, bool All, bool RecryptPasswordOnly);
   void DoSave(bool All, bool Explicit, bool RecryptPasswordOnly);
   void DoSave(THierarchicalStorage * Storage,

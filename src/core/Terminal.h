@@ -597,9 +597,6 @@ public:
   virtual void Idle();
   void RecryptPasswords();
 
-  TTerminal * GetTerminal(intptr_t Index);
-  intptr_t GetActiveCount();
-
 protected:
   virtual TTerminal * CreateTerminal(TSessionData * Data);
 
@@ -608,6 +605,8 @@ private:
 
 public:
   void SetMasks(const UnicodeString & Value);
+  // intptr_t GetActiveCount();
+  TTerminal * GetTerminal(intptr_t Index);
 };
 //------------------------------------------------------------------------------
 struct TCustomCommandParams : public TObject

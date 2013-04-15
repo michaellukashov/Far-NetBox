@@ -1544,7 +1544,7 @@ UnicodeString TTerminal::TranslateLockedPath(const UnicodeString & Path, bool Lo
 {
   UnicodeString Result = Path;
   if (GetSessionData()->GetLockInHome() && !Result.IsEmpty() && (Result[1] == L'/'))
-  {  
+  {
     if (Lock)
     {
       if (Result.SubString(1, FLockDirectory.Length()) == FLockDirectory)
@@ -1662,7 +1662,7 @@ UnicodeString TTerminal::GetCurrentDirectory()
 {
   if (FFileSystem != NULL)
   {
-    // there's occasional crash when assigning FFileSystem->CurrentDirectory
+    // there's occassional crash when assigning FFileSystem->CurrentDirectory
     // to FCurrentDirectory, splitting the assignment to two statements
     // to locate the crash more closely
     UnicodeString CurrentDirectory = FFileSystem->GetCurrentDirectory();
@@ -2013,9 +2013,11 @@ TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
   {
     Result = boAppend;
   }
-  else if (FLAGSET(Params, cpNewerOnly))
+  else if (CopyParam->NewerOnly &&
+           (((OperationProgress->Side == osLocal) && IsCapable[fcNewerOnlyUpload]) ||
+            (OperationProgress->Side != osLocal)))
   {
-    // no way to change batch overwrite mode when cpNewerOnly is on
+    // no way to change batch overwrite mode when CopyParam->NewerOnly is on
     Result = boOlder;
   }
   else if (FLAGSET(Params, cpNoConfirmation) || !FConfiguration->GetConfirmOverwriting())
@@ -2036,7 +2038,8 @@ TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
   return Result;
 }
 //------------------------------------------------------------------------------
-bool TTerminal::CheckRemoteFile(intptr_t Params, TFileOperationProgressType * OperationProgress)
+bool TTerminal::CheckRemoteFile(
+  intptr_t Params, TFileOperationProgressType * OperationProgress)
 {
   return (EffectiveBatchOverwrite(Params, OperationProgress, true) != boAll);
 }
@@ -2052,7 +2055,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & FileName,
     (FileParams != NULL) &&
     (FileParams->DestSize < FileParams->SourceSize) &&
     !OperationProgress->AsciiTransfer;
-  TBatchOverwrite BatchOverwrite = EffectiveBatchOverwrite(Params, OperationProgress, true);
+  TBatchOverwrite BatchOverwrite = EffectiveBatchOverwrite(CopyParam, Params, OperationProgress, true);
   bool Applicable = true;
   switch (BatchOverwrite)
   {
@@ -2071,7 +2074,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & FileName,
 
   if (!Applicable)
   {
-    TBatchOverwrite ABatchOverwrite = EffectiveBatchOverwrite(Params, OperationProgress, false);
+    TBatchOverwrite ABatchOverwrite = EffectiveBatchOverwrite(CopyParam, Params, OperationProgress, false);
     assert(BatchOverwrite != ABatchOverwrite);
     BatchOverwrite = ABatchOverwrite;
   }
@@ -4062,7 +4065,7 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & FileName,
       Handle = FindFirstFile(FileName.c_str(), &FindData);
       if (Handle == INVALID_HANDLE_VALUE)
       {
-        Abort();
+        RaiseLastOSError();
       }
     )
     ::FindClose(Handle);
@@ -4279,7 +4282,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
 
     FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
       int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-      Found = (FindFirst(Data.LocalDirectory + L"*.*", FindAttrs, SearchRec) == 0);
+      Found = (FindFirstChecked(Data.LocalDirectory + L"*.*", FindAttrs, SearchRec) == 0);
     );
 
     if (Found)
@@ -4336,7 +4339,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
           }
 
           FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
-            Found = (FindNext(SearchRec) == 0);
+            Found = (FindNextChecked(SearchRec) == 0);
           );
         }
       }
@@ -4569,7 +4572,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
             // we need this for custom commands over checklist only,
             // not for sync itself
             LocalData->MatchingRemoteFileFile = File->Duplicate();
-            LogEvent(FORMAT(L"Local file '%s' [%s] [%s] is modifed comparing to remote file '%s' [%s] [%s]",
+            LogEvent(FORMAT(L"Local file '%s' [%s] [%s] is modified comparing to remote file '%s' [%s] [%s]",
               UnicodeString(LocalData->Info.Directory + LocalData->Info.FileName).c_str(),
                StandardTimestamp(LocalData->Info.Modification).c_str(),
                Int64ToStr(LocalData->Info.Size).c_str(),
@@ -4580,7 +4583,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
 
           if (Modified)
           {
-            LogEvent(FORMAT(L"Remote file '%s' [%s] [%s] is modifed comparing to local file '%s' [%s] [%s]",
+            LogEvent(FORMAT(L"Remote file '%s' [%s] [%s] is modified comparing to local file '%s' [%s] [%s]",
               FullRemoteFileName.c_str(),
                StandardTimestamp(File->GetModification()).c_str(),
                Int64ToStr(File->GetSize()).c_str(),
@@ -5037,7 +5040,6 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
   assert(FFileSystem);
   assert(FilesToCopy);
 
-  assert(GetIsCapable(fcNewerOnlyUpload) || FLAGCLEAR(Params, cpNewerOnly));
 
   bool Result = false;
   TOnceDoneOperation OnceDoneOperation = odoIdle;
@@ -5470,20 +5472,6 @@ void TTerminalList::FreeAndNullTerminal(TTerminal * & Terminal)
 TTerminal * TTerminalList::GetTerminal(intptr_t Index)
 {
   return dynamic_cast<TTerminal *>(Items[Index]);
-}
-//------------------------------------------------------------------------------
-intptr_t TTerminalList::GetActiveCount()
-{
-  intptr_t Result = 0;
-  for (intptr_t I = 0; I < GetCount(); ++I)
-  {
-    TTerminal * Terminal = GetTerminal(I);
-    if (Terminal->GetActive())
-    {
-      Result++;
-    }
-  }
-  return Result;
 }
 //------------------------------------------------------------------------------
 void TTerminalList::Idle()

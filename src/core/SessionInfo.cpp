@@ -754,7 +754,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
       FConfiguration->SetLogging(false);
       try
       {
-        throw ExtException(&E, LOG_GEN_ERROR);
+        throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
       }
       catch (Exception &E)
       {
@@ -875,8 +875,14 @@ void TSessionLog::DeleteUnnecessary()
   );
 }
 //---------------------------------------------------------------------------
-void TSessionLog::AddStartupInfo()
+void TSessionLog::AddSystemInfo()
 {
+  AddStartupInfo(true);
+}
+//---------------------------------------------------------------------------
+void TSessionLog::AddStartupInfo(bool System)
+{
+  TSessionData * Data = (System ? NULL : FSessionData);
   if (GetLogging())
   {
     if (FParent != NULL)
@@ -886,7 +892,7 @@ void TSessionLog::AddStartupInfo()
     }
     else
     {
-      DoAddStartupInfo(FSessionData);
+      DoAddStartupInfo(Data);
     }
   }
 }
@@ -899,19 +905,21 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
   try
   {
     #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
-    AddSeparator();
-    ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
-    THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
-    assert(Storage);
-    TRY_FINALLY (
+    if (Data == NULL)
     {
-      ADF(L"Configuration: %s", Storage->GetSource().c_str());
-    }
-    ,
-    {
-      delete Storage;
-    }
-    );
+      AddSeparator();
+      ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
+      THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
+      assert(Storage);
+      TRY_FINALLY (
+      {
+        ADF(L"Configuration: %s", Storage->GetSource().c_str());
+      }
+      ,
+      {
+        delete Storage;
+      }
+      );
 
     if (0)
     {
@@ -1342,7 +1350,7 @@ void TActionLog::OpenLogFile()
     FConfiguration->SetLogActions(false);
     try
     {
-      throw ExtException(&E, LOG_GEN_ERROR);
+      throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
     }
     catch (Exception & E)
     {

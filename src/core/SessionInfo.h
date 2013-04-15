@@ -213,6 +213,7 @@ public:
     TConfiguration * Configuration);
   virtual ~TSessionLog();
   HIDESBASE void Add(TLogLineType Type, const UnicodeString & Line);
+  void AddSystemInfo();
   void AddStartupInfo();
   void AddException(Exception * E);
   void AddSeparator();
@@ -271,6 +272,7 @@ private:
     TDoAddLogEvent Event);
   void DoAddToParent(TLogLineType aType, const UnicodeString & aLine);
   void DoAddToSelf(TLogLineType aType, const UnicodeString & aLine);
+  void AddStartupInfo(bool System);
   void DoAddStartupInfo(TSessionData * Data);
 
 private:
