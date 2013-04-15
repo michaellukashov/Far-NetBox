@@ -324,7 +324,6 @@ protected:
 //---------------------------------------------------------------------------
 int TSimpleThread::ThreadProc(void * Thread)
 {
-  CALLSTACK;
   TSimpleThread * SimpleThread = reinterpret_cast<TSimpleThread*>(Thread);
   assert(SimpleThread != NULL);
   try
@@ -344,7 +343,6 @@ int TSimpleThread::ThreadProc(void * Thread)
 TSimpleThread::TSimpleThread() :
   FThread(NULL), FFinished(true)
 {
-  CALLSTACK;
 }
 //---------------------------------------------------------------------------
 void TSimpleThread::Init()
@@ -354,7 +352,6 @@ void TSimpleThread::Init()
 //---------------------------------------------------------------------------
 TSimpleThread::~TSimpleThread()
 {
-  CALLSTACK;
   Close();
 
   if (FThread != NULL)
@@ -370,7 +367,6 @@ bool TSimpleThread::IsFinished()
 //---------------------------------------------------------------------------
 void TSimpleThread::Start()
 {
-  CALLSTACK;
   if (ResumeThread(FThread) == 1)
   {
     FFinished = false;
@@ -379,12 +375,10 @@ void TSimpleThread::Start()
 //---------------------------------------------------------------------------
 void TSimpleThread::Finished()
 {
-  CALLSTACK;
 }
 //---------------------------------------------------------------------------
 void TSimpleThread::Close()
 {
-  CALLSTACK;
   if (!FFinished)
   {
     Terminate();
@@ -394,7 +388,6 @@ void TSimpleThread::Close()
 //---------------------------------------------------------------------------
 void TSimpleThread::WaitFor(unsigned int Milliseconds)
 {
-  CALLSTACK;
   WaitForSingleObject(FThread, Milliseconds);
 }
 //---------------------------------------------------------------------------
@@ -405,7 +398,6 @@ TSignalThread::TSignalThread() :
   FEvent(NULL),
   FTerminated(true)
 {
-  CALLSTACK;
 }
 //---------------------------------------------------------------------------
 void TSignalThread::Init(bool LowPriority)
@@ -422,7 +414,6 @@ void TSignalThread::Init(bool LowPriority)
 //---------------------------------------------------------------------------
 TSignalThread::~TSignalThread()
 {
-  CALLSTACK;
   // cannot leave closing to TSimpleThread as we need to close it before
   // destroying the event
   Close();
@@ -435,27 +426,23 @@ TSignalThread::~TSignalThread()
 //---------------------------------------------------------------------------
 void TSignalThread::Start()
 {
-  CALLSTACK;
   FTerminated = false;
   TSimpleThread::Start();
 }
 //---------------------------------------------------------------------------
 void TSignalThread::TriggerEvent()
 {
-  CALLSTACK;
   SetEvent(FEvent);
 }
 //---------------------------------------------------------------------------
 bool TSignalThread::WaitForEvent()
 {
-  CALLSTACK;
   // should never return -1, so it is only about 0 or 1
   return WaitForEvent(INFINITE) > 0;
 }
 //---------------------------------------------------------------------------
 int TSignalThread::WaitForEvent(unsigned int Timeout)
 {
-  CALLSTACK;
   unsigned int Result = WaitForSingleObject(FEvent, Timeout);
   int Return;
   if ((Result == WAIT_TIMEOUT) && !FTerminated)
@@ -471,7 +458,6 @@ int TSignalThread::WaitForEvent(unsigned int Timeout)
 //---------------------------------------------------------------------------
 void TSignalThread::Execute()
 {
-  CALLSTACK;
   while (!FTerminated)
   {
     if (WaitForEvent())
@@ -483,7 +469,6 @@ void TSignalThread::Execute()
 //---------------------------------------------------------------------------
 void TSignalThread::Terminate()
 {
-  CALLSTACK;
   FTerminated = true;
   TriggerEvent();
 }
@@ -498,7 +483,6 @@ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   FFreeTerminals(0), FTerminals(NULL), FForcedItems(NULL), FTemporaryTerminals(0),
   FOverallTerminals(0), FTransfersLimit(2), FEnabled(true)
 {
-  CALLSTACK;
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::Init()
@@ -528,7 +512,6 @@ void TTerminalQueue::Init()
 //---------------------------------------------------------------------------
 TTerminalQueue::~TTerminalQueue()
 {
-  CALLSTACK;
   Close();
 
   {
@@ -617,7 +600,6 @@ bool TTerminalQueue::TerminalFree(TTerminalItem * TerminalItem)
 //---------------------------------------------------------------------------
 void TTerminalQueue::AddItem(TQueueItem * Item)
 {
-  CALLSTACK;
   assert(!FTerminated);
 
   Item->SetStatus(TQueueItem::qsPending);
@@ -636,7 +618,6 @@ void TTerminalQueue::AddItem(TQueueItem * Item)
 //---------------------------------------------------------------------------
 void TTerminalQueue::RetryItem(TQueueItem * Item)
 {
-  CALLSTACK;
   if (!FTerminated)
   {
     {
@@ -801,7 +782,6 @@ bool TTerminalQueue::ItemProcessUserAction(TQueueItem * Item, void * Arg)
 //---------------------------------------------------------------------------
 bool TTerminalQueue::ItemMove(TQueueItem * Item, TQueueItem * BeforeItem)
 {
-  CALLSTACK;
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
   if (Result)
@@ -832,7 +812,6 @@ bool TTerminalQueue::ItemMove(TQueueItem * Item, TQueueItem * BeforeItem)
 //---------------------------------------------------------------------------
 bool TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
 {
-  CALLSTACK;
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
   if (Result)
@@ -875,7 +854,6 @@ bool TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
 //---------------------------------------------------------------------------
 bool TTerminalQueue::ItemDelete(TQueueItem * Item)
 {
-  CALLSTACK;
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
   if (Result)
@@ -915,7 +893,6 @@ bool TTerminalQueue::ItemDelete(TQueueItem * Item)
 //---------------------------------------------------------------------------
 bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
 {
-  CALLSTACK;
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
   if (Result)
@@ -952,7 +929,6 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
 //---------------------------------------------------------------------------
 bool TTerminalQueue::ItemSetCPSLimit(TQueueItem * Item, unsigned long CPSLimit)
 {
-  CALLSTACK;
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
   if (Result)
@@ -999,7 +975,6 @@ void TTerminalQueue::Idle()
 //---------------------------------------------------------------------------
 void TTerminalQueue::ProcessEvent()
 {
-  CALLSTACK;
   TTerminalItem * TerminalItem = NULL;
   do
   {
@@ -1075,7 +1050,6 @@ void TTerminalQueue::DoEvent(TQueueEvent Event)
 //---------------------------------------------------------------------------
 void TTerminalQueue::SetTransfersLimit(intptr_t Value)
 {
-  CALLSTACK;
   if (FTransfersLimit != Value)
   {
     {
@@ -1098,7 +1072,6 @@ void TTerminalQueue::SetTransfersLimit(intptr_t Value)
 //---------------------------------------------------------------------------
 void TTerminalQueue::SetEnabled(bool Value)
 {
-  CALLSTACK;
   if (FEnabled != Value)
   {
     {
@@ -1168,7 +1141,6 @@ TTerminalItem::TTerminalItem(TTerminalQueue * Queue) :
   TSignalThread(), FQueue(Queue), FTerminal(NULL), FItem(NULL),
   FCriticalSection(NULL), FUserAction(NULL), FCancel(false), FPause(false)
 {
-  CALLSTACK;
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::Init(intptr_t Index)
@@ -1200,7 +1172,6 @@ void TTerminalItem::Init(intptr_t Index)
 //---------------------------------------------------------------------------
 TTerminalItem::~TTerminalItem()
 {
-  CALLSTACK;
   Close();
 
   assert(FItem == NULL);
@@ -1210,7 +1181,6 @@ TTerminalItem::~TTerminalItem()
 //---------------------------------------------------------------------------
 void TTerminalItem::Process(TQueueItem * Item)
 {
-  CALLSTACK;
   {
     TGuard Guard(FCriticalSection);
 
@@ -1223,7 +1193,6 @@ void TTerminalItem::Process(TQueueItem * Item)
 //---------------------------------------------------------------------------
 void TTerminalItem::ProcessEvent()
 {
-  CALLSTACK;
   TGuard Guard(FCriticalSection);
 
   bool Retry = true;
@@ -1314,7 +1283,6 @@ void TTerminalItem::Idle()
 //---------------------------------------------------------------------------
 void TTerminalItem::Cancel()
 {
-  CALLSTACK;
   FCancel = true;
   if ((FItem->GetStatus() == TQueueItem::qsPaused) ||
       TQueueItem::IsUserActionStatus(FItem->GetStatus()))
@@ -1336,7 +1304,6 @@ bool TTerminalItem::Pause()
 //---------------------------------------------------------------------------
 bool TTerminalItem::Resume()
 {
-  CALLSTACK;
   assert(FItem != NULL);
   bool Result = (FItem->GetStatus() == TQueueItem::qsPaused);
   if (Result)
@@ -1348,7 +1315,6 @@ bool TTerminalItem::Resume()
 //---------------------------------------------------------------------------
 bool TTerminalItem::ProcessUserAction(void * Arg)
 {
-  CALLSTACK;
   // When status is changed twice quickly, the controller when responding
   // to the first change (non-user-action) can be so slow to check only after
   // the second (user-action) change occurs. Thus it responds it.
@@ -1472,7 +1438,6 @@ void TTerminalItem::TerminalPromptUser(TTerminal * Terminal,
 void TTerminalItem::TerminalShowExtendedException(
   TTerminal * Terminal, Exception * E, void * Arg)
 {
-  CALLSTACK;
   USEDPARAM(Arg);
   assert(Arg == NULL);
 
@@ -1557,14 +1522,12 @@ TQueueItem::TQueueItem() :
   FQueue(NULL), FCompleteEvent(INVALID_HANDLE_VALUE),
   FCPSLimit(-1)
 {
-  CALLSTACK;
   FSection = new TCriticalSection();
   FInfo = new TInfo();
 }
 //---------------------------------------------------------------------------
 TQueueItem::~TQueueItem()
 {
-  CALLSTACK;
   if (FCompleteEvent != INVALID_HANDLE_VALUE)
   {
     SetEvent(FCompleteEvent);
@@ -1869,7 +1832,6 @@ TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
 TLocatedQueueItem::TLocatedQueueItem(TTerminal * Terminal) :
   TQueueItem()
 {
-  CALLSTACK;
   assert(Terminal != NULL);
   FCurrentDir = Terminal->GetCurrentDirectory();
 }
@@ -1881,7 +1843,6 @@ UnicodeString TLocatedQueueItem::StartupDirectory()
 //---------------------------------------------------------------------------
 void TLocatedQueueItem::DoExecute(TTerminal * Terminal)
 {
-  CALLSTACK;
   assert(Terminal != NULL);
   Terminal->SetCurrentDirectory(FCurrentDir);
 }
@@ -1982,7 +1943,6 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   const TCopyParamType * CopyParam, intptr_t Params) :
   TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osRemote)
 {
-  CALLSTACK;
   if (FilesToCopy->GetCount() > 1)
   {
     if (!UnixExtractCommonPath(FilesToCopy, FInfo->Source))
@@ -2036,7 +1996,6 @@ void TDownloadQueueItem::DoExecute(TTerminal * Terminal)
 TTerminalThread::TTerminalThread(TTerminal * Terminal) :
   TSignalThread(), FTerminal(Terminal)
 {
-  CALLSTACK;
   FAction = NULL;
   FActionEvent = CreateEvent(NULL, false, false, NULL);
   FException = NULL;
@@ -2079,7 +2038,6 @@ void TTerminalThread::Init()
 //---------------------------------------------------------------------------
 TTerminalThread::~TTerminalThread()
 {
-  CALLSTACK;
   Close();
 
   CloseHandle(FActionEvent);
@@ -2109,13 +2067,11 @@ TTerminalThread::~TTerminalThread()
 //---------------------------------------------------------------------------
 void TTerminalThread::Cancel()
 {
-  CALLSTACK;
   FCancel = true;
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::Idle()
 {
-  CALLSTACK;
   TGuard Guard(FSection);
   // only when running user action already,
   // so that the exception is caught, saved and actually
@@ -2130,19 +2086,16 @@ void TTerminalThread::Idle()
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalOpen()
 {
-  CALLSTACK;
   RunAction(MAKE_CALLBACK(TTerminalThread::TerminalOpenEvent, this));
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalReopen()
 {
-  CALLSTACK;
   RunAction(MAKE_CALLBACK(TTerminalThread::TerminalReopenEvent, this));
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::RunAction(TNotifyEvent Action)
 {
-  CALLSTACK;
   assert(FAction == NULL);
   assert(FException == NULL);
   assert(FIdleException == NULL);
@@ -2223,19 +2176,16 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalOpenEvent(TObject * /*Sender*/)
 {
-  CALLSTACK;
   FTerminal->Open();
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalReopenEvent(TObject * /*Sender*/)
 {
-  CALLSTACK;
   FTerminal->Reopen(0);
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::ProcessEvent()
 {
-  CALLSTACK;
   assert(FEvent != NULL);
   assert(FException == NULL);
 
@@ -2253,7 +2203,6 @@ void TTerminalThread::ProcessEvent()
 //---------------------------------------------------------------------------
 void TTerminalThread::Rethrow(Exception *& Exception)
 {
-  CALLSTACK;
   if (Exception != NULL)
   {
     TRY_FINALLY (
@@ -2270,7 +2219,6 @@ void TTerminalThread::Rethrow(Exception *& Exception)
 //---------------------------------------------------------------------------
 void TTerminalThread::SaveException(Exception & E, Exception *& Exception)
 {
-  CALLSTACK;
   assert(Exception == NULL);
 
   Exception = CloneException(&E);
@@ -2278,13 +2226,11 @@ void TTerminalThread::SaveException(Exception & E, Exception *& Exception)
 //---------------------------------------------------------------------------
 void TTerminalThread::FatalAbort()
 {
-  CALLSTACK;
   FTerminal->FatalAbort();
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::CheckCancel()
 {
-  CALLSTACK;
   if (FCancel && !FCancelled)
   {
     FCancelled = true;
@@ -2294,7 +2240,6 @@ void TTerminalThread::CheckCancel()
 //---------------------------------------------------------------------------
 void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 {
-  CALLSTACK;
   DWORD Thread = GetCurrentThreadId();
   // we can get called from the main thread from within Idle,
   // should be only to call HandleExtendedException
@@ -2376,7 +2321,6 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 void TTerminalThread::TerminalInformation(
   TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase)
 {
-  CALLSTACK;
   TInformationUserAction Action(FOnInformation);
   Action.Terminal = Terminal;
   Action.Str = Str;
@@ -2390,7 +2334,6 @@ void TTerminalThread::TerminalQueryUser(TObject * Sender,
   const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
   const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg)
 {
-  CALLSTACK;
   USEDPARAM(Arg);
   assert(Arg == NULL);
 
@@ -2421,7 +2364,6 @@ void TTerminalThread::TerminalPromptUser(TTerminal * Terminal,
   TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
   TStrings * Results, bool & Result, void * Arg)
 {
-  CALLSTACK;
   USEDPARAM(Arg);
   assert(Arg == NULL);
 
@@ -2443,7 +2385,6 @@ void TTerminalThread::TerminalPromptUser(TTerminal * Terminal,
 void TTerminalThread::TerminalShowExtendedException(
   TTerminal * Terminal, Exception * E, void * Arg)
 {
-  CALLSTACK;
   USEDPARAM(Arg);
   assert(Arg == NULL);
 
@@ -2458,7 +2399,6 @@ void TTerminalThread::TerminalDisplayBanner(TTerminal * Terminal,
   const UnicodeString & SessionName, const UnicodeString & Banner,
   bool & NeverShowAgain, intptr_t Options)
 {
-  CALLSTACK;
   TDisplayBannerAction Action(FOnDisplayBanner);
   Action.Terminal = Terminal;
   Action.SessionName = SessionName;
@@ -2473,7 +2413,6 @@ void TTerminalThread::TerminalDisplayBanner(TTerminal * Terminal,
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalChangeDirectory(TObject * Sender)
 {
-  CALLSTACK;
   TNotifyAction Action(FOnChangeDirectory);
   Action.Sender = Sender;
 
@@ -2482,7 +2421,6 @@ void TTerminalThread::TerminalChangeDirectory(TObject * Sender)
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly)
 {
-  CALLSTACK;
   TReadDirectoryAction Action(FOnReadDirectory);
   Action.Sender = Sender;
   Action.ReloadOnly = ReloadOnly;
@@ -2492,7 +2430,6 @@ void TTerminalThread::TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalStartReadDirectory(TObject * Sender)
 {
-  CALLSTACK;
   TNotifyAction Action(FOnStartReadDirectory);
   Action.Sender = Sender;
 
@@ -2502,7 +2439,6 @@ void TTerminalThread::TerminalStartReadDirectory(TObject * Sender)
 void TTerminalThread::TerminalReadDirectoryProgress(
   TObject * Sender, int Progress, bool & Cancel)
 {
-  CALLSTACK;
   TReadDirectoryProgressAction Action(FOnReadDirectoryProgress);
   Action.Sender = Sender;
   Action.Progress = Progress;
