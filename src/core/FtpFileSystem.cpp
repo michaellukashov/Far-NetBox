@@ -2730,7 +2730,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
       }
 
       UnicodeString ErrorStr = Error;
-      if (Error.IsEmpty() && (MoreMessages != NULL))
+      if (ErrorStr.IsEmpty() && (MoreMessages != NULL))
       {
         assert(MoreMessages->GetCount() > 0);
         ErrorStr = MoreMessages->GetString(0);
@@ -2740,7 +2740,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
       if (Disconnected)
       {
         // for fatal error, it is essential that there is some message
-        assert(!Error.IsEmpty());
+        assert(!ErrorStr.IsEmpty());
         ExtException * E = new ExtException(ErrorStr, MoreMessages, true);
         TRY_FINALLY (
         {
