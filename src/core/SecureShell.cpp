@@ -2,8 +2,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#define TRACE_TRANSMIT TRACING
-
 #include "PuttyIntf.h"
 #include "Exceptions.h"
 #include "Interface.h"
@@ -44,8 +42,6 @@ TSecureShell::TSecureShell(TSessionUI* UI,
   TSessionData * SessionData, TSessionLog * Log, TConfiguration * Configuration) :
   PendLen(0)
 {
-  CALLSTACK;
-  TRACEFMT("1 [%x]", int(this));
   FUI = UI;
   FSessionData = SessionData;
   FLog = Log;
@@ -69,8 +65,6 @@ TSecureShell::TSecureShell(TSessionUI* UI,
 //---------------------------------------------------------------------------
 TSecureShell::~TSecureShell()
 {
-  CALLSTACK;
-  TRACEFMT("1 [%x]", int(this));
   assert(FWaiting == 0);
   SetActive(false);
   ResetConnection();
@@ -78,20 +72,15 @@ TSecureShell::~TSecureShell()
   ClearConfig(FConfig);
   delete FConfig;
   FConfig = NULL;
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TSecureShell::ResetConnection()
 {
-  CALLSTACK;
   FreeBackend();
-  TRACE("1");
   ClearStdError();
   PendLen = 0;
   PendSize = 0;
-  TRACE("2");
   sfree(Pending);
-  TRACE("3");
   Pending = NULL;
   FCWriteTemp = L"";
   ResetSessionInfo();
@@ -99,7 +88,6 @@ void TSecureShell::ResetConnection()
   FAuthenticated = false;
   FStoredPasswordTried = false;
   FStoredPasswordTriedForKI = false;
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TSecureShell::ResetSessionInfo()
@@ -333,44 +321,34 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
 //---------------------------------------------------------------------------
 void TSecureShell::Open()
 {
-  CALLSTACK;
-  TRACE("0");
   FBackend = &ssh_backend;
-  TRACE("0a");
   ResetConnection();
 
   FAuthenticating = false;
   FAuthenticated = false;
 
   SetActive(false);
-  TRACE("0a");
 
-  TRACE("1");
   FAuthenticationLog = L"";
   FUI->Information(LoadStr(STATUS_LOOKUPHOST), true);
   StoreToConfig(FSessionData, FConfig, GetSimple());
 
   char * RealHost = NULL;
   FreeBackend(); // in case we are reconnecting
-  TRACEFMT("2 [%x]", int(FBackendHandle));
   const char * InitError = FBackend->init(this, &FBackendHandle, FConfig,
     const_cast<char *>(W2MB(FSessionData->GetHostNameExpanded().c_str(),
     FSessionData->GetCodePageAsNumber()).c_str()),
     static_cast<int>(FSessionData->GetPortNumber()),
     &RealHost, 0,
     FConfig->tcp_keepalives);
-  TRACEFMT("2b [%x]", int(FBackendHandle));
   sfree(RealHost);
   if (InitError)
   {
-    TRACE("3");
     PuttyFatalError(UnicodeString(InitError));
   }
-  TRACE("4");
   FUI->Information(LoadStr(STATUS_CONNECT), true);
   Init();
 
-  TRACE("5");
   CheckConnection(CONNECTION_FAILED);
   FLastDataSent = Now();
 
@@ -380,17 +358,14 @@ void TSecureShell::Open()
   FAuthenticated = true;
   FUI->Information(LoadStr(STATUS_AUTHENTICATED), true);
 
-  TRACE("6");
   ResetSessionInfo();
 
   assert(!FSessionInfo.SshImplementation.IsEmpty());
-  TRACE("7");
   FOpened = true;
 }
 //---------------------------------------------------------------------------
 void TSecureShell::Init()
 {
-  CALLSTACK;
   try
   {
     try
@@ -401,7 +376,6 @@ void TSecureShell::Init()
 
       while (!get_ssh_state_session(FBackendHandle))
       {
-        TRACE("1");
         if (GetConfiguration()->GetActualLogProtocol() >= 1)
         {
           LogEvent(L"Waiting for the server to continue with the initialization");
@@ -473,7 +447,6 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   const UnicodeString & Instructions, bool InstructionsRequired,
   TStrings * Prompts, TStrings * Results)
 {
-  CALLSTACK;
   // there can be zero prompts!
 
   assert(Results->GetCount() == Prompts->GetCount());
@@ -491,7 +464,6 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     { L"New SSH password", NEW_PASSWORD_TITLE },
   };
 
-  TRACE("1");
   UnicodeString Name = AName;
   int Index = TranslatePuttyMessage(NameTranslation, LENOF(NameTranslation), Name);
 
@@ -501,7 +473,6 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 
   if (Index == 0) // username
   {
-    TRACE("2");
     static const TPuttyTranslation UsernamePromptTranslation[] = {
       { L"login as: ", USERNAME_PROMPT2 },
     };
@@ -511,7 +482,6 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
   else if (Index == 1) // passphrase
   {
-    TRACE("3");
     static const TPuttyTranslation PassphrasePromptTranslation[] = {
       { L"Passphrase for key \"%\": ", PROMPT_KEY_PASSPHRASE },
     };
@@ -521,7 +491,6 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
   else if (Index == 2) // TIS
   {
-    TRACE("4");
     static const TPuttyTranslation TISInstructionTranslation[] = {
       { L"Using TIS authentication.%", TIS_INSTRUCTION },
     };
@@ -535,7 +504,6 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
   else if (Index == 3) // CryptoCard
   {
-    TRACE("5");
     static const TPuttyTranslation CryptoCardInstructionTranslation[] = {
       { L"Using CryptoCard authentication.%", CRYPTOCARD_INSTRUCTION },
     };
@@ -549,7 +517,6 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
   else if ((Index == 4) || (Index == 5))
   {
-    TRACE("6");
     static const TPuttyTranslation KeybInteractiveInstructionTranslation[] = {
       { L"Using keyboard-interactive authentication.%", KEYBINTER_INSTRUCTION },
     };
@@ -559,14 +526,12 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
   else if (Index == 6)
   {
-    TRACE("7");
     assert(Prompts->GetCount() == 1);
     Prompts->SetString(0, LoadStr(PASSWORD_PROMPT));
     PromptKind = pkPassword;
   }
   else if (Index == 7)
   {
-    TRACE("8");
     static const TPuttyTranslation NewPasswordPromptTranslation[] = {
       { L"Current password (blank for previously entered password): ", NEW_PASSWORD_CURRENT_PROMPT },
       { L"Enter new password: ", NEW_PASSWORD_NEW_PROMPT },
@@ -596,11 +561,9 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   // on terminal console
   Instructions2 = Instructions2.Trim();
 
-  TRACEFMT("8a [%d]", Prompts->GetCount());
   for (intptr_t Index = 0; Index < Prompts->GetCount(); ++Index)
   {
     UnicodeString Prompt = Prompts->GetString(Index);
-    TRACEFMT("8b [%s]", Prompt.c_str());
     if (PromptTranslation != NULL)
     {
       TranslatePuttyMessage(PromptTranslation, PromptTranslationCount, Prompt);
@@ -630,13 +593,10 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 //  Prompts->Objects[0] = (TObject *)true;
 //!CLEANEND
   bool Result = false;
-  TRACE("9");
   if (PromptKind == pkUserName)
   {
-    TRACE("10");
     if (FSessionData->GetAuthGSSAPI())
     {
-      TRACE("11");
       // use empty username if no username was filled on login dialog
       // and GSSAPI auth is enabled, hence there's chance that the server can
       // deduce the username otherwise
@@ -647,12 +607,10 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   else if ((PromptKind == pkTIS) || (PromptKind == pkCryptoCard) ||
       (PromptKind == pkKeybInteractive))
   {
-    TRACE("12");
     if (FSessionData->GetAuthKIPassword() && !FSessionData->GetPassword().IsEmpty() &&
         !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
         !(Prompts->Objects[0]))
     {
-      TRACE("13");
       LogEvent(L"Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
@@ -661,17 +619,14 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     }
     else if (Instructions2.IsEmpty() && !InstructionsRequired && (Prompts->GetCount() == 0))
     {
-      TRACE("14");
       LogEvent(L"Ignoring empty SSH server authentication request");
       Result = true;
     }
   }
   else if (PromptKind == pkPassword)
   {
-    TRACEFMT("15 [%d] [%d]", int(!FSessionData->GetPassword().IsEmpty()), int(!FStoredPasswordTried));
     if (!FSessionData->GetPassword().IsEmpty() && !FStoredPasswordTried)
     {
-      TRACE("16");
       LogEvent(L"Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
@@ -682,22 +637,18 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 
   if (!Result)
   {
-    TRACE("17");
     Result = FUI->PromptUser(FSessionData,
       PromptKind, Name, Instructions2, Prompts, Results);
 
     if (Result)
     {
-      TRACE("18");
       if ((PromptKind == pkUserName) && (Prompts->GetCount() == 1))
       {
-        TRACE("19");
         FUserName = Results->GetString(0);
       }
     }
   }
 
-  TRACE("/");
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -713,7 +664,6 @@ void TSecureShell::GotHostKey()
 //---------------------------------------------------------------------------
 void TSecureShell::CWrite(const char * Data, intptr_t Length)
 {
-  CALLSTACK;
   // some messages to stderr may indicate that something has changed with the
   // session, so reset the session info
   ResetSessionInfo();
@@ -845,7 +795,6 @@ bool TSecureShell::Peek(unsigned char *& Buf, intptr_t Len) const
 //---------------------------------------------------------------------------
 intptr_t TSecureShell::Receive(unsigned char * Buf, intptr_t Len)
 {
-  CCALLSTACK(TRACE_TRANSMIT);
   CheckConnection();
 
   if (Len > 0)
@@ -912,7 +861,6 @@ intptr_t TSecureShell::Receive(unsigned char * Buf, intptr_t Len)
 //---------------------------------------------------------------------------
 UnicodeString TSecureShell::ReceiveLine()
 {
-  CCALLSTACK(TRACE_TRANSMIT);
   intptr_t Index = 0;
   AnsiString Line;
   Boolean EOL = False;
@@ -957,7 +905,6 @@ UnicodeString TSecureShell::ReceiveLine()
 //---------------------------------------------------------------------------
 void TSecureShell::SendSpecial(int Code)
 {
-  CCALLSTACK(TRACE_TRANSMIT);
   LogEvent(FORMAT(L"Sending special code: %d", (Code)));
   CheckConnection();
   FBackend->special(FBackendHandle, static_cast<Telnet_Special>(Code));
@@ -967,13 +914,11 @@ void TSecureShell::SendSpecial(int Code)
 //---------------------------------------------------------------------------
 void TSecureShell::SendEOF()
 {
-  CCALLSTACK(TRACE_TRANSMIT);
   SendSpecial(TS_EOF);
 }
 //---------------------------------------------------------------------------
 uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
 {
-  CALLSTACK;
   FWaiting++;
 
   uintptr_t Answer;
@@ -1003,7 +948,6 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
 //---------------------------------------------------------------------------
 void TSecureShell::SendBuffer(uintptr_t & Result)
 {
-  CCALLSTACK(TRACE_TRANSMIT);
   // for comments see PoolForData
   if (!GetActive())
   {
@@ -1027,7 +971,6 @@ void TSecureShell::SendBuffer(uintptr_t & Result)
 //---------------------------------------------------------------------------
 void TSecureShell::DispatchSendBuffer(uintptr_t BufSize)
 {
-  CCALLSTACK(TRACE_TRANSMIT);
   TDateTime Start = Now();
   do
   {
@@ -1074,7 +1017,6 @@ void TSecureShell::DispatchSendBuffer(uintptr_t BufSize)
 //---------------------------------------------------------------------------
 void TSecureShell::Send(const unsigned char * Buf, intptr_t Len)
 {
-  CCALLSTACK(TRACE_TRANSMIT);
   CheckConnection();
   int BufSize = FBackend->send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), static_cast<int>(Len));
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
@@ -1095,7 +1037,6 @@ void TSecureShell::Send(const unsigned char * Buf, intptr_t Len)
 //---------------------------------------------------------------------------
 void TSecureShell::SendNull()
 {
-  CCALLSTACK(TRACE_TRANSMIT);
   LogEvent(L"Sending NULL.");
   unsigned char Null = 0;
   Send(&Null, 1);
@@ -1253,8 +1194,6 @@ int TSecureShell::TranslateErrorMessage(UnicodeString & Message) const
 //---------------------------------------------------------------------------
 void TSecureShell::PuttyFatalError(const UnicodeString & Error)
 {
-  CALLSTACK;
-  TRACEFMT("[%s]", Error.c_str());
   UnicodeString Error2 = Error;
   TranslateErrorMessage(Error2);
 
@@ -1263,14 +1202,11 @@ void TSecureShell::PuttyFatalError(const UnicodeString & Error)
 //---------------------------------------------------------------------------
 void TSecureShell::FatalError(const UnicodeString & Error)
 {
-  CALLSTACK;
-  TRACEFMT("[%s]", Error.c_str());
   FUI->FatalError(NULL, Error);
 }
 //---------------------------------------------------------------------------
 void TSecureShell::LogEvent(const UnicodeString & Str)
 {
-  TRACEFMT("[%s]", Str.c_str());
   if (FLog->GetLogging())
   {
     FLog->Add(llMessage, Str);
@@ -1279,7 +1215,6 @@ void TSecureShell::LogEvent(const UnicodeString & Str)
 //---------------------------------------------------------------------------
 void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 {
-  CCALLSTACK(TRACE_TRANSMIT);
   int Events;
 
   if (Startup)
@@ -1312,7 +1247,6 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 //---------------------------------------------------------------------------
 void TSecureShell::UpdateSocket(SOCKET Value, bool Startup)
 {
-  CCALLSTACK(TRACE_TRANSMIT);
   if (!FActive && !Startup)
   {
     // no-op
@@ -1324,7 +1258,6 @@ void TSecureShell::UpdateSocket(SOCKET Value, bool Startup)
   }
   else
   {
-    CCALLSTACK(TRACE_TRANSMIT);
     assert(Value);
     assert((FActive && (FSocket == Value)) || (!FActive && Startup));
 
@@ -1389,22 +1322,15 @@ void TSecureShell::SetActive(bool Value)
 //---------------------------------------------------------------------------
 void TSecureShell::FreeBackend()
 {
-  CALLSTACK;
-  TRACEFMT("1 [%x]", int(FBackendHandle));
   if (FBackendHandle != NULL)
   {
-    TRACE("1");
     FBackend->bfree(FBackendHandle);
-    TRACE("2");
     FBackendHandle = NULL;
-    TRACEFMT("3 [%x]", int(FBackendHandle));
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TSecureShell::Discard()
 {
-  CALLSTACK;
   bool WasActive = FActive;
   FActive = false;
   FOpened = false;
@@ -1413,12 +1339,10 @@ void TSecureShell::Discard()
   {
     FUI->Closed();
   }
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TSecureShell::Close()
 {
-  CALLSTACK;
   LogEvent(L"Closing connection.");
   assert(FActive);
 
@@ -1429,7 +1353,6 @@ void TSecureShell::Close()
   FreeBackend();
 
   Discard();
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void inline TSecureShell::CheckConnection(int Message)
@@ -1448,7 +1371,6 @@ void inline TSecureShell::CheckConnection(int Message)
 //---------------------------------------------------------------------------
 void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, uintptr_t & Result)
 {
-  CCALLSTACK(TRACE_TRANSMIT);
   if (!GetActive())
   {
     // see comment below
@@ -1472,9 +1394,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, uintptr_t & Result)
         Result = qaOK;
       }
     }
-    TRACE_CATCH_ALL
     {
-      TRACE_EXCEPT;
       // if we let the exception out, it may popup another message dialog
       // in whole event loop, another call to PoolForData from original dialog
       // would be invoked, leading to an infinite loop.
@@ -1507,7 +1427,6 @@ private:
 //---------------------------------------------------------------------------
 void TSecureShell::WaitForData()
 {
-  CCALLSTACK(TRACE_TRANSMIT);
   // see winsftp.c
   bool IncomingData;
 
@@ -1603,7 +1522,6 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 //---------------------------------------------------------------------------
 void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 {
-  CCALLSTACK(TRACE_TRANSMIT);
   static const struct { int Bit, Mask; const wchar_t * Desc; } EventTypes[] =
   {
     { FD_READ_BIT, FD_READ, L"read" },
@@ -1641,7 +1559,6 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 //---------------------------------------------------------------------------
 bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 {
-  CCALLSTACK(TRACE_TRANSMIT);
   WSANETWORKEVENTS Events;
   memset(&Events, 0, sizeof(Events));
   bool Result = EnumNetworkEvents(Socket, Events);
@@ -1653,7 +1570,6 @@ bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
   WSANETWORKEVENTS * Events)
 {
-  CCALLSTACK(TRACE_TRANSMIT);
   CheckConnection();
 
   bool Result = false;
@@ -1763,15 +1679,11 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
 //---------------------------------------------------------------------------
 void TSecureShell::Idle(unsigned int MSec)
 {
-  CALLSTACK;
-  TRACE_EXCEPT_BEGIN
   noise_regular();
 
   call_ssh_timer(FBackendHandle);
 
   EventSelectLoop(MSec, false, NULL);
-  TRACE_EXCEPT_END
-  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void TSecureShell::KeepAlive()
