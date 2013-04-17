@@ -335,8 +335,8 @@ public:
   void Modify();
   UnicodeString GetSource();
   void DoLoad(THierarchicalStorage * Storage, bool & RewritePassword);
-  UnicodeString ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default);
-  int ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int Default);
+  //UnicodeString ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default);
+  //int ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int Default);
   static RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
   static UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   static RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
