@@ -9,6 +9,7 @@
 #include <TextsCore.h>
 #include <Terminal.h>
 #include <CoreMain.h>
+#include <shlobj.h>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------

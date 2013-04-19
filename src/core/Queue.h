@@ -162,7 +162,7 @@ public:
   void SetTransfersLimit(intptr_t Value);
   void SetKeepDoneItemsFor(intptr_t Value);
   void SetEnabled(bool Value);
-  void SetEnabled(bool Value);
+  void SetIsEmpty(bool Value);
 
 private:
   TTerminalQueue(const TTerminalQueue &);

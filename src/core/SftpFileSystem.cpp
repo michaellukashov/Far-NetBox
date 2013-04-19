@@ -5384,7 +5384,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       if (CopyParam->GetPreserveTime())
       {
         FTerminal->LogEvent(FORMAT(L"Preserving timestamp [%s]",
-          (StandardTimestamp(Modification))));
+          StandardTimestamp(Modification).c_str());
         SetFileTime(LocalHandle, NULL, &AcTime, &WrTime);
       }
 

@@ -53,6 +53,7 @@ TProgramParams::TProgramParams(const UnicodeString & CmdLine)
 void TProgramParams::Init(const UnicodeString & CmdLine)
 {
   UnicodeString CommandLine = CmdLine;
+
   UnicodeString Param;
   CutToken(CommandLine, Param);
   while (CutToken(CommandLine, Param))

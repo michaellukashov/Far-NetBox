@@ -1084,7 +1084,30 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
       else
       {
-        throw Exception(FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()));
+        bool Empty;
+        if (ListCurrentDirectory)
+        {
+          // Empty file list -> probably "permission denied", we
+          // at least get link to parent directory ("..")
+          FTerminal->ReadFile(
+            UnixIncludeTrailingBackslash(FTerminal->FFiles->Directory) +
+              PARENTDIRECTORY, File);
+          Empty = (File == NULL);
+          if (!Empty)
+          {
+            assert(File->IsParentDirectory);
+            FileList->AddFile(File);
+          }
+        }
+        else
+        {
+          Empty = true;
+        }
+
+        if (Empty)
+        {
+          throw Exception(FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()));
+        }
       }
 
       if (FLsFullTime == asAuto)
@@ -2141,8 +2164,13 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
           Options.c_str(), DelimitStr(FileName).c_str()));
         SkipFirstLine();
 
+        // Filename is used for error messaging and excluding files only
+        // Send in full path to allow path-based excluding
+        // UnicodeString FullFileName = UnixExcludeTrailingBackslash(File->FullFileName);
         SCPSink(FullFileName, File, TargetDirectory, UnixExtractFilePath(FullFileName),
           CopyParam, Success, OperationProgress, Params, 0);
+        // operation succeeded (no exception), so it's ok that
+        // remote side closed SCP, but we continue with next file
         if (OperationProgress->Cancel == csRemoteAbort)
         {
           OperationProgress->Cancel = csContinue;

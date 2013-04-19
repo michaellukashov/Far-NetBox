@@ -537,7 +537,7 @@ TTerminalQueue::~TTerminalQueue()
   delete FSessionData;
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminalQueue::FreeItemsList(TList * List)
+void TTerminalQueue::FreeItemsList(TList * List)
 {
   for (intptr_t Index = 0; Index < List->GetCount(); ++Index)
   {
@@ -1035,10 +1035,8 @@ void TTerminalQueue::ProcessEvent()
   {
     TQueueItem * Item = NULL;
 
-    if (FItems->GetCount() > FItemsInProcess)
     {
       TGuard Guard(FItemsSection);
-
 
       // =0  do not keep
       // <0  infinity
@@ -1091,6 +1089,7 @@ void TTerminalQueue::ProcessEvent()
               FForcedItems->Delete(ForcedIndex);
             }
             FItemsInProcess++;
+          }
         }
       }
     }
@@ -1618,7 +1617,7 @@ TQueueItem::TQueueItem() :
   FInfo->SetSingleFile(false);
 }
 //---------------------------------------------------------------------------
-__fastcall TQueueItem::~TQueueItem()
+TQueueItem::~TQueueItem()
 {
   // we need to keep the total transfer size even after transfer completes
   delete FProgressData;
@@ -1901,7 +1900,7 @@ intptr_t TTerminalQueueStatus::GetActiveCount()
   return FActiveCount;
 }
 //---------------------------------------------------------------------------
-int __fastcall TTerminalQueueStatus::GetDoneAndActiveCount()
+int TTerminalQueueStatus::GetDoneAndActiveCount()
 {
   return DoneCount + ActiveCount;
 }
@@ -2060,7 +2059,7 @@ void TUploadQueueItem::DoExecute(TTerminal * Terminal)
 TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   TStrings * FilesToCopy, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile) :
-  TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osRemote)
+  TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osRemote, SingleFile)
 {
   if (FilesToCopy->GetCount() > 1)
   {

@@ -347,6 +347,7 @@ public:
   void Default();
   void NonPersistant();
   void Load(THierarchicalStorage * Storage);
+  void ImportFromFilezilla(_di_IXMLNode Node);
   void Save(THierarchicalStorage * Storage, bool PuttyExport,
     const TSessionData * Default = NULL);
   void SaveRecryptedPasswords(THierarchicalStorage * Storage);
@@ -508,6 +509,7 @@ public:
   void Load();
   void Save(bool All, bool Explicit);
   void Saved();
+  void ImportFromFilezilla(const UnicodeString & FileName);
   void Export(const UnicodeString & FileName);
   void Load(THierarchicalStorage * Storage, bool AsModified = false,
     bool UseDefaults = false);
@@ -543,12 +545,16 @@ public:
 private:
   TSessionData * FDefaultSettings;
   bool FReadOnly;
-  void __fastcall SetDefaultSettings(TSessionData * value);
+  void SetDefaultSettings(TSessionData * value);
   void DoSave(THierarchicalStorage * Storage, bool All, bool RecryptPasswordOnly);
   void DoSave(bool All, bool Explicit, bool RecryptPasswordOnly);
   void DoSave(THierarchicalStorage * Storage,
     TSessionData * Data, bool All, bool RecryptPasswordOnly,
     TSessionData * FactoryDefaults);
+  TSessionData * ResolveSessionData(TSessionData * Data);
+  bool IsFolderOrWorkspace(const UnicodeString & Name, bool Workspace);
+  TSessionData * CheckIsInFolderOrWorkspaceAndResolve(
+    TSessionData * Data, const UnicodeString & Name);
 };
 //---------------------------------------------------------------------------
 bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);

@@ -282,6 +282,44 @@ void TConfiguration::Export(const UnicodeString & FileName)
   */
 }
 //---------------------------------------------------------------------------
+void TConfiguration::Import(const UnicodeString & FileName)
+{
+  Classes::Error(SNotImplemented, 3005);
+/*
+  THierarchicalStorage * Storage = NULL;
+  THierarchicalStorage * ImportStorage = NULL;
+  try
+  {
+    ImportStorage = new TIniFileStorage(FileName);
+    ImportStorage->AccessMode = smRead;
+
+    Storage = CreateScpStorage(false);
+    Storage->AccessMode = smReadWrite;
+    Storage->Explicit = true;
+
+    CopyData(ImportStorage, Storage);
+
+    Default();
+    LoadFrom(ImportStorage);
+
+    if (ImportStorage->OpenSubKey(Configuration->StoredSessionsSubKey, false))
+    {
+      StoredSessions->Clear();
+      StoredSessions->DefaultSettings->Default();
+      StoredSessions->Load(ImportStorage);
+    }
+  }
+  __finally
+  {
+    delete ImportStorage;
+    delete Storage;
+  }
+
+  // save all and explicit
+  Save(true, true);
+*/
+}
+//---------------------------------------------------------------------------
 void TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
   #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR()))
@@ -322,7 +360,6 @@ void TConfiguration::LoadFrom(THierarchicalStorage * Storage)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::Load()
 void TConfiguration::Load()
 {
   TGuard Guard(FCriticalSection);
@@ -879,12 +916,12 @@ UnicodeString TConfiguration::GetIniFileStorageNameForReading()
   return GetIniFileStorageName(true);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::GetIniFileStorageNameForReadingWritting()
+UnicodeString TConfiguration::GetIniFileStorageNameForReadingWritting()
 {
   return GetIniFileStorageName(false);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::GetIniFileStorageName(bool ReadingOnly)
+UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
 {
   if (FIniFileStorageName.IsEmpty())
   {

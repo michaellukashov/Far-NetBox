@@ -317,12 +317,13 @@ protected:
   void CalculateLocalFilesSize(TStrings * FileList, __int64 & Size,
     const TCopyParamType * CopyParam = NULL);
   TBatchOverwrite EffectiveBatchOverwrite(
-    intptr_t Params, TFileOperationProgressType * OperationProgress, bool Special);
-  bool CheckRemoteFile(intptr_t Params, TFileOperationProgressType * OperationProgress);
+    const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress, bool Special);
+  bool CheckRemoteFile(
+    const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress);
   uintptr_t ConfirmFileOverwrite(const UnicodeString & FileName,
     const TOverwriteFileParams * FileParams, uintptr_t Answers, const TQueryParams * QueryParams,
-    TOperationSide Side, intptr_t Params, TFileOperationProgressType * OperationProgress,
-    const UnicodeString & Message = L"");
+    TOperationSide Side, const TCopyParamType * CopyParam, intptr_t Params,
+    TFileOperationProgressType * OperationProgress, const UnicodeString & Message = L"");
   void DoSynchronizeCollectDirectory(const UnicodeString & LocalDirectory,
     const UnicodeString & RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, intptr_t Params,

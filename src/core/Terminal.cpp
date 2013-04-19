@@ -2002,7 +2002,7 @@ void TTerminal::CloseOnCompletion(TOnceDoneOperation Operation, const UnicodeStr
 }
 //------------------------------------------------------------------------------
 TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
-  intptr_t Params, TFileOperationProgressType * OperationProgress, bool Special)
+  const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress, bool Special)
 {
   TBatchOverwrite Result;
   if (Special && FLAGSET(Params, cpResume))
@@ -2039,14 +2039,14 @@ TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
 }
 //------------------------------------------------------------------------------
 bool TTerminal::CheckRemoteFile(
-  intptr_t Params, TFileOperationProgressType * OperationProgress)
+  const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress)
 {
-  return (EffectiveBatchOverwrite(Params, OperationProgress, true) != boAll);
+  return (EffectiveBatchOverwrite(CopyParam, Params, OperationProgress, true) != boAll);
 }
 //------------------------------------------------------------------------------
 uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & FileName,
   const TOverwriteFileParams * FileParams, uintptr_t Answers, const TQueryParams * QueryParams,
-  TOperationSide Side, intptr_t Params, TFileOperationProgressType * OperationProgress,
+  TOperationSide Side, const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
   const UnicodeString & Message)
 {
   uintptr_t Result = 0;

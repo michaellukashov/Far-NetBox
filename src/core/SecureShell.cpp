@@ -1484,6 +1484,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, uintptr_t & Result)
         Result = qaOK;
       }
     }
+    catch(...)
     {
       // if we let the exception out, it may popup another message dialog
       // in whole event loop, another call to PoolForData from original dialog

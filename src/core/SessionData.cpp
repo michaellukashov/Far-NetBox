@@ -41,6 +41,7 @@ const UnicodeString AnonymousPassword(L"");
 
 const uintptr_t CONST_DEFAULT_CODEPAGE = CP_ACP;
 const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
+
 //---------------------------------------------------------------------
 static TDateTime SecToDateTime(intptr_t Sec)
 {
@@ -599,6 +600,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
 
   SetColor(Storage->ReadInteger(L"Color", GetColor()));
 
+  // ???
   SetProtocolStr(Storage->ReadString(L"Protocol", GetProtocolStr()));
 
   SetTunnel(Storage->ReadBool(L"Tunnel", GetTunnel()));
@@ -938,6 +940,134 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 
     Storage->CloseSubKey();
   }
+}
+//---------------------------------------------------------------------
+UnicodeString TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default)
+{
+  _di_IXMLNode TheNode = Node->ChildNodes->FindNode(Name);
+  UnicodeString Result;
+  if (TheNode != NULL)
+  {
+    Result = TheNode->Text.Trim();
+  }
+
+  if (Result.IsEmpty())
+  {
+    Result = Default;
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------
+int TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int Default)
+{
+  _di_IXMLNode TheNode = Node->ChildNodes->FindNode(Name);
+  int Result;
+  if (TheNode != NULL)
+  {
+    Result = StrToIntDef(TheNode->Text.Trim(), Default);
+  }
+  else
+  {
+    Result = Default;
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------
+void TSessionData::ImportFromFilezilla(_di_IXMLNode Node)
+{
+  Name = ReadXmlNode(Node, L"Name", Name);
+  HostName = ReadXmlNode(Node, L"Host", HostName);
+  PortNumber = ReadXmlNode(Node, L"Port", PortNumber);
+
+  int AProtocol = ReadXmlNode(Node, L"Protocol", 0);
+  // ServerProtocol enum
+  switch (AProtocol)
+  {
+    case 0: // FTP
+    default: // UNKNOWN, HTTP, HTTPS, INSECURE_FTP
+      FSProtocol = fsFTP;
+      break;
+
+    case 1: // SFTP
+      FSProtocol = fsSFTP;
+      break;
+
+    case 3: // FTPS
+      FSProtocol = fsFTP;
+      Ftps = ftpsImplicit;
+      break;
+
+    case 4: // FTPES
+      FSProtocol = fsFTP;
+      Ftps = ftpsExplicitSsl;
+      break;
+  }
+
+  // LogonType enum
+  int LogonType = ReadXmlNode(Node, L"LogonType", 0);
+  if (LogonType == 0) // ANONYMOUS
+  {
+    UserName = AnonymousUserName;
+    Password = AnonymousPassword;
+  }
+  else
+  {
+    UserName = ReadXmlNode(Node, L"User", UserName);
+    Password = ReadXmlNode(Node, L"Pass", Password);
+    FtpAccount = ReadXmlNode(Node, L"Account", FtpAccount);
+  }
+
+  int DefaultTimeDifference = TimeToMSec(TimeDifference) / MSecsPerSec;
+  TimeDifference =
+    (double(ReadXmlNode(Node, L"TimezoneOffset", DefaultTimeDifference) / SecsPerDay));
+
+  UnicodeString PasvMode = ReadXmlNode(Node, L"PasvMode", L"");
+  if (SameText(PasvMode, L"MODE_PASSIVE"))
+  {
+    FtpPasvMode = true;
+  }
+  else if (SameText(PasvMode, L"MODE_ACTIVE"))
+  {
+    FtpPasvMode = false;
+  }
+
+  UnicodeString EncodingType = ReadXmlNode(Node, L"EncodingType", L"");
+  if (SameText(EncodingType, L"Auto"))
+  {
+    NotUtf = asAuto;
+  }
+  else if (SameText(EncodingType, L"UTF-8"))
+  {
+    NotUtf = asOff;
+  }
+
+  // todo PostLoginCommands
+
+  LocalDirectory = ReadXmlNode(Node, L"LocalDir", LocalDirectory);
+
+  UnicodeString RemoteDir = ReadXmlNode(Node, L"RemoteDir", L"");
+  if (!RemoteDir.IsEmpty())
+  {
+    CutToChar(RemoteDir, L' ', false); // type
+    int PrefixSize = StrToIntDef(CutToChar(RemoteDir, L' ', false), 0); // prefix size
+    if (PrefixSize > 0)
+    {
+      RemoteDir.Delete(1, PrefixSize);
+    }
+    RemoteDirectory = L"/";
+    while (!RemoteDir.IsEmpty())
+    {
+      int SegmentSize = StrToIntDef(CutToChar(RemoteDir, L' ', false), 0);
+      UnicodeString Segment = RemoteDir.SubString(1, SegmentSize);
+      RemoteDirectory = UnixIncludeTrailingBackslash(RemoteDirectory) + Segment;
+      RemoteDir.Delete(1, SegmentSize + 1);
+    }
+  }
+
+  SynchronizeBrowsing = (ReadXmlNode(Node, L"SyncBrowsing", SynchronizeBrowsing ? 1 : 0) != 0);
+
 }
 //---------------------------------------------------------------------
 void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExport)

@@ -86,6 +86,7 @@ private:
   bool EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     WSANETWORKEVENTS * Events);
   void UpdateSessionInfo();
+  bool GetReady();
   void DispatchSendBuffer(uintptr_t BufSize);
   void SendBuffer(uintptr_t & Result);
   uintptr_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
@@ -102,7 +103,7 @@ protected:
   void AddStdError(const UnicodeString & Str);
   void AddStdErrorLine(const UnicodeString & Str);
   void LogEvent(const UnicodeString & Str);
-  void FatalError(Exception * E, const UnicodeString & Msg);
+  // void FatalError(Exception * E, const UnicodeString & Msg);
   void FatalError(const UnicodeString & Error);
   static void ClearConfig(Config * cfg);
   static void StoreToConfig(TSessionData * Data, Config * cfg, bool Simple);
