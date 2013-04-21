@@ -236,7 +236,6 @@ public:
   intptr_t GetMaxWatchDirectories() { return FMaxWatchDirectories; }
   void SetMaxWatchDirectories(intptr_t Value) { FMaxWatchDirectories = Value; }
   intptr_t GetQueueTransfersLimit() { return FQueueTransfersLimit; }
-  void SetQueueTransfersLimit(intptr_t Value) { FQueueTransfersLimit = Value; }
   bool GetQueueKeepDoneItems() { return FQueueKeepDoneItems; }
   intptr_t GetQueueKeepDoneItemsFor() { return FQueueKeepDoneItemsFor; }
   bool GetQueueAutoPopup() { return FQueueAutoPopup; }

@@ -1740,16 +1740,6 @@ void TTerminal::DoInitializeLog()
     Guard.Verify();
   }
 }
-//---------------------------------------------------------------------------
-void TTerminal::DoInitializeLog()
-{
-  if (FOnInitializeLog)
-  {
-    TCallbackGuard Guard(this);
-    FOnInitializeLog(this);
-    Guard.Verify();
-  }
-}
 //------------------------------------------------------------------------------
 void TTerminal::DoChangeDirectory()
 {
@@ -2023,8 +2013,8 @@ TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
   {
     Result = boAppend;
   }
-  else if (CopyParam->NewerOnly &&
-           (((OperationProgress->Side == osLocal) && IsCapable[fcNewerOnlyUpload]) ||
+  else if (CopyParam->GetNewerOnly() &&
+           (((OperationProgress->Side == osLocal) && GetIsCapable(fcNewerOnlyUpload)) ||
             (OperationProgress->Side != osLocal)))
   {
     // no way to change batch overwrite mode when CopyParam->NewerOnly is on

@@ -1883,7 +1883,7 @@ UnicodeString WindowsProductName()
 bool IsDirectoryWriteable(const UnicodeString & Path)
 {
   UnicodeString FileName =
-    IncludeTrailingPathDelimiter(Path) +
+    ::IncludeTrailingPathDelimiter(Path) +
     FORMAT("wscp_%s_%d.tmp", (FormatDateTime(L"nnzzz", Now()), int(GetCurrentProcessId())));
   HANDLE Handle = CreateFile(FileName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL,
     CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, 0);

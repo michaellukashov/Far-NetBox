@@ -69,7 +69,7 @@ public:
   DWORD ErrorCode;
 };
 
-void RaiseLastOSError();
+void RaiseLastOSError(int Result = 0);
 //---------------------------------------------------------------------------
 
 struct TFormatSettings : public TObject
@@ -123,6 +123,8 @@ UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str);
 UnicodeString ExtractFileDir(const UnicodeString & Str);
 UnicodeString ExtractFilePath(const UnicodeString & Str);
 UnicodeString GetCurrentDir();
+
+UnicodeString IncludeTrailingPathDelimiter(const UnicodeString & Str);
 
 UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase = true, char Separator = '\0');
 UnicodeString HexToStr(const UnicodeString & Hex);

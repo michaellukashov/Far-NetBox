@@ -347,7 +347,7 @@ public:
   void Default();
   void NonPersistant();
   void Load(THierarchicalStorage * Storage);
-  void ImportFromFilezilla(_di_IXMLNode Node);
+  // void ImportFromFilezilla(_di_IXMLNode Node);
   void Save(THierarchicalStorage * Storage, bool PuttyExport,
     const TSessionData * Default = NULL);
   void SaveRecryptedPasswords(THierarchicalStorage * Storage);
@@ -535,7 +535,6 @@ public:
   bool HasAnyWorkspace();
   TSessionData * GetSession(intptr_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   TSessionData * GetDefaultSettings() const { return FDefaultSettings; }
-  void SetDefaultSettings(TSessionData * Value);
   TSessionData * GetSessionByName(const UnicodeString & SessionName);
 
   static void ImportHostKeys(const UnicodeString & TargetKey,
@@ -545,7 +544,7 @@ public:
 private:
   TSessionData * FDefaultSettings;
   bool FReadOnly;
-  void SetDefaultSettings(TSessionData * value);
+  void SetDefaultSettings(TSessionData * Value);
   void DoSave(THierarchicalStorage * Storage, bool All, bool RecryptPasswordOnly);
   void DoSave(bool All, bool Explicit, bool RecryptPasswordOnly);
   void DoSave(THierarchicalStorage * Storage,

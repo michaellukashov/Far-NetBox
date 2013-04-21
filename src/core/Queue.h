@@ -239,8 +239,6 @@ public:
   bool Resume();
   bool SetCPSLimit(unsigned long CPSLimit);
 
-  TFileOperationProgressType * GetProgressData();
-  __int64 GetTotalTransferred();
   TQueueItem::TInfo * GetInfo() { return FInfo; }
   TQueueItem::TStatus GetStatus() const { return FStatus; }
   bool GetProcessingUserAction() const { return FProcessingUserAction; }
@@ -285,7 +283,6 @@ protected:
 
 private:
   TList * FList;
-  intptr_t FActiveCount;
   intptr_t FDoneCount;
   intptr_t FActiveCount;
 

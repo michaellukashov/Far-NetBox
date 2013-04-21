@@ -45,7 +45,6 @@ private:
   bool FIgnorePermErrors;
   TResumeSupport FResumeSupport;
   __int64 FResumeThreshold;
-  UnicodeString GetLogStr() const;
   wchar_t FInvalidCharsReplacement;
   UnicodeString FLocalInvalidChars;
   UnicodeString FTokenizibleChars;

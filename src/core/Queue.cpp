@@ -643,7 +643,7 @@ void TTerminalQueue::RetryItem(TQueueItem * Item)
   }
 }
 //---------------------------------------------------------------------------
-void TTerminalQueue::DeleteItem(TQueueItem * Item)
+void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
 {
   if (!FTerminated)
   {
@@ -663,7 +663,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item)
       // <0  infinity
       if ((FKeepDoneItemsFor != 0) && CanKeep)
       {
-        assert(Item->Status == TQueueItem::qsDone);
+        assert(Item->GetStatus() == TQueueItem::qsDone);
         Item->Complete();
         FDoneItems->Add(Item);
       }
@@ -691,7 +691,7 @@ bool TTerminalQueue::EmptyButMonitoredItems(TList * List)
 {
   bool Empty = true;
   int Index = 0;
-  while (Empty && (Index < List->Count))
+  while (Empty && (Index < List->GetCount()))
   {
     Empty = (GetItem(List, Index)->CompleteEvent != INVALID_HANDLE_VALUE);
     Index++;

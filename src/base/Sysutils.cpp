@@ -355,9 +355,9 @@ bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
   return ::Pos(Str1, Str2) > 0;
 }
 
-void RaiseLastOSError()
+void RaiseLastOSError(int LastError)
 {
-  int LastError = ::GetLastError();
+  if (LastError == 0) LastError = ::GetLastError();
   UnicodeString ErrorMsg;
   if (LastError != 0)
   {
@@ -1158,6 +1158,11 @@ UnicodeString IncludeTrailingBackslash(const UnicodeString & Str)
     Result += L'\\';
   }
   return Result;
+}
+
+UnicodeString IncludeTrailingPathDelimiter(const UnicodeString & Str)
+{
+  return IncludeTrailingBackslash(Str);
 }
 
 UnicodeString ExtractFileDir(const UnicodeString & Str)
