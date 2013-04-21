@@ -117,7 +117,9 @@ protected:
     intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   bool ConfirmOverwrite(UnicodeString & FileName,
     TOverwriteMode & OverwriteMode, TFileOperationProgressType * OperationProgress,
-    const TOverwriteFileParams * FileParams, intptr_t Params, bool AutoResume,
+    const TOverwriteFileParams * FileParams,
+    const TCopyParamType * CopyParam, intptr_t Params,
+    bool AutoResume,
     uintptr_t & Answer);
   void ResetFileTransfer();
   void DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);

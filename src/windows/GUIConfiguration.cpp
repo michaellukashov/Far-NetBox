@@ -1184,17 +1184,17 @@ void TGUIConfiguration::SetNewDirectoryProperties(
   SET_CONFIG_PROPERTY(NewDirectoryProperties);
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetQueueTransfersLimit(int value)
+void TGUIConfiguration::SetQueueTransfersLimit(intptr_t Value)
 {
   SET_CONFIG_PROPERTY(QueueTransfersLimit);
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetQueueKeepDoneItems(bool value)
+void TGUIConfiguration::SetQueueKeepDoneItems(bool Value)
 {
   SET_CONFIG_PROPERTY(QueueKeepDoneItems);
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetQueueKeepDoneItemsFor(int value)
+void TGUIConfiguration::SetQueueKeepDoneItemsFor(intptr_t Value)
 {
   SET_CONFIG_PROPERTY(QueueKeepDoneItemsFor);
 }
@@ -1203,17 +1203,17 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   TStoredSessionList * Sessions)
 {
   std::auto_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
-  ImportSessionList->DefaultSettings = Sessions->DefaultSettings;
+  ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
-  std::auto_ptr<TRegistryStorage> Storage(new TRegistryStorage(PuttySessionsKey));
-  Storage->ForceAnsi = true;
+  std::auto_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetPuttySessionsKey()));
+  Storage->SetForceAnsi(true);
   if (Storage->OpenRootKey(false))
   {
     ImportSessionList->Load(Storage.get(), false, true);
   }
 
   TSessionData * PuttySessionData =
-    (TSessionData *)ImportSessionList->FindByName(PuttySession);
+    (TSessionData *)ImportSessionList->FindByName(GetPuttySession());
   if (PuttySessionData != NULL)
   {
     ImportSessionList->Remove(PuttySessionData);
@@ -1228,7 +1228,7 @@ bool TGUIConfiguration::AnyPuttySessionForImport(TStoredSessionList * Sessions)
   try
   {
     std::auto_ptr<TStoredSessionList> Sesssions(SelectPuttySessionsForImport(Sessions));
-    return (Sesssions->Count > 0);
+    return (Sesssions->GetCount() > 0);
   }
   catch (...)
   {
@@ -1240,7 +1240,7 @@ TStoredSessionList * TGUIConfiguration::SelectFilezillaSessionsForImport(
   TStoredSessionList * Sessions)
 {
   std::auto_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
-  ImportSessionList->DefaultSettings = Sessions->DefaultSettings;
+  ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
   UnicodeString AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
   UnicodeString FilezillaSiteManagerFile =
@@ -1261,7 +1261,7 @@ bool TGUIConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessio
   try
   {
     std::auto_ptr<TStoredSessionList> Sesssions(SelectFilezillaSessionsForImport(Sessions));
-    return (Sesssions->Count > 0);
+    return (Sesssions->GetCount() > 0);
   }
   catch (...)
   {

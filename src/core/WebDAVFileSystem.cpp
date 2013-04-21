@@ -12619,7 +12619,9 @@ void TWebDAVFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
 //------------------------------------------------------------------------------
 bool TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & FileName,
   TOverwriteMode & OverwriteMode, TFileOperationProgressType * OperationProgress,
-  const TOverwriteFileParams * FileParams, intptr_t Params, bool AutoResume,
+  const TOverwriteFileParams * FileParams,
+  const TCopyParamType * CopyParam, intptr_t Params,
+  bool AutoResume,
   uintptr_t & Answer)
 {
   bool Result;
@@ -12655,7 +12657,7 @@ bool TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & FileName,
       Answer = FTerminal->ConfirmFileOverwrite(FileName, FileParams,
                  Answers, &QueryParams,
                  OperationProgress->Side == osLocal ? osRemote : osLocal,
-                 Params, OperationProgress);
+                 CopyParam, Params, OperationProgress);
     )
   }
 
@@ -12888,7 +12890,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
           Answer = FTerminal->ConfirmFileOverwrite(
             RealFileName /*not used*/, NULL,
             qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
-            &QueryParams, osRemote, Params, OperationProgress, Message);
+            &QueryParams, osRemote, CopyParam, Params, OperationProgress, Message);
         );
         switch (Answer)
         {
@@ -12924,7 +12926,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
         TOverwriteMode OverwriteMode = omOverwrite;
         bool AutoResume = false;
         ConfirmOverwrite(FileNameOnly, OverwriteMode, OperationProgress,
-            &FileParams, Params, AutoResume, Answer);
+            &FileParams, CopyParam, Params, AutoResume, Answer);
         switch (Answer)
         {
           case qaYes:
@@ -13320,7 +13322,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
         Answer = FTerminal->ConfirmFileOverwrite(
           FileNameOnly /*not used*/, NULL,
           qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
-          &QueryParams, osRemote, Params, OperationProgress, Message);
+          &QueryParams, osRemote, CopyParam, Params, OperationProgress, Message);
       );
       switch (Answer)
       {
@@ -13394,7 +13396,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       TOverwriteMode OverwriteMode = omOverwrite;
       bool AutoResume = false;
       ConfirmOverwrite(DestFullName, OverwriteMode, OperationProgress,
-          &FileParams, Params, AutoResume, Answer);
+          &FileParams, CopyParam, Params, AutoResume, Answer);
       switch (Answer)
       {
         case qaCancel:

@@ -9,26 +9,6 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-UnicodeString StripHotKey(const UnicodeString & Text)
-{
-  UnicodeString Result = Text;
-  intptr_t Len = Result.Length();
-  intptr_t Pos = 1;
-  while (Pos <= Len)
-  {
-    if (Result[Pos] == L'&')
-    {
-      Result.Delete(Pos, 1);
-      Len--;
-    }
-    else
-    {
-      Pos++;
-    }
-  }
-  return Result;
-}
-//---------------------------------------------------------------------------
 TRect Rect(int Left, int Top, int Right, int Bottom)
 {
   TRect Result = TRect(Left, Top, Right, Bottom);
@@ -1768,7 +1748,7 @@ void TFarButton::SetDataInternal(const UnicodeString & Value)
         Margin = 2;
         break;
     }
-    SetWidth(Margin + StripHotKey(AValue).Length() + Margin);
+    SetWidth(Margin + StripHotkey(AValue).GetLength() + Margin);
   }
 }
 //---------------------------------------------------------------------------
@@ -1912,7 +1892,7 @@ void TFarCheckBox::SetData(const UnicodeString & Value)
   TFarDialogItem::SetData(Value);
   if (GetLeft() >= 0 || GetRight() >= 0)
   {
-    SetWidth(4 + StripHotKey(Value).Length());
+    SetWidth(4 + StripHotkey(Value).Length());
   }
 }
 //---------------------------------------------------------------------------
@@ -1957,7 +1937,7 @@ void TFarRadioButton::SetData(const UnicodeString & Value)
   TFarDialogItem::SetData(Value);
   if (GetLeft() >= 0 || GetRight() >= 0)
   {
-    SetWidth(4 + StripHotKey(Value).Length());
+    SetWidth(4 + StripHotkey(Value).Length());
   }
 }
 //---------------------------------------------------------------------------
@@ -2100,7 +2080,7 @@ void TFarText::SetData(const UnicodeString & Value)
   TFarDialogItem::SetData(Value);
   if (GetLeft() >= 0 || GetRight() >= 0)
   {
-    SetWidth(StripHotKey(Value).Length());
+    SetWidth(StripHotkey(Value).Length());
   }
 }
 //---------------------------------------------------------------------------

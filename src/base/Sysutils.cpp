@@ -1671,5 +1671,29 @@ void TCriticalSection::Leave()
 }
 
 //---------------------------------------------------------------------------
-
+UnicodeString StripHotkey(const UnicodeString & Text)
+{
+  UnicodeString Result = Text;
+  intptr_t Len = Result.Length();
+  intptr_t Pos = 1;
+  while (Pos <= Len)
+  {
+    if (Result[Pos] == L'&')
+    {
+      Result.Delete(Pos, 1);
+      Len--;
+    }
+    else
+    {
+      Pos++;
+    }
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+bool StartsText(const UnicodeString & ASubText, const UnicodeString & AText)
+{
+  return AText.Pos(ASubText) == 1;
+}
+//---------------------------------------------------------------------------
 } // namespace Sysutils

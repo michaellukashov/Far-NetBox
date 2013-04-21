@@ -358,7 +358,7 @@ void TSecureShell::Open()
   {
     if (FNoConnectionResponse && TryFtp())
     {
-      Configuration->Usage->Inc(L"ProtocolSuggestions");
+      // GetConfiguration()->Usage->Inc(L"ProtocolSuggestions");
       FUI->FatalError(&E, LoadStr(FTP_SUGGESTION));
     }
     else
@@ -383,15 +383,15 @@ void TSecureShell::Open()
 bool TSecureShell::TryFtp()
 {
   bool Result;
-  if (!FConfiguration->TryFtpWhenSshFails)
+  if (!FConfiguration->GetTryFtpWhenSshFails())
   {
     Result = false;
   }
   else
   {
-    if (((FSessionData->FSProtocol != fsSFTP) && (FSessionData->FSProtocol != fsSFTPonly)) ||
-        (FSessionData->PortNumber != SshPortNumber) ||
-        FSessionData->Tunnel || (FSessionData->ProxyMethod != ::pmNone))
+    if (((FSessionData->GetFSProtocol() != fsSFTP) && (FSessionData->GetFSProtocol() != fsSFTPonly)) ||
+        (FSessionData->GetPortNumber() != SshPortNumber) ||
+        FSessionData->GetTunnel() || (FSessionData->GetProxyMethod() != ::pmNone))
     {
       LogEvent(L"Using non-standard protocol or port, tunnel or proxy, will not knock FTP port.");
       Result = false;
@@ -404,7 +404,7 @@ bool TSecureShell::TryFtp()
       Result = (Socket != INVALID_SOCKET);
       if (Result)
       {
-        LPHOSTENT HostEntry = gethostbyname(AnsiString(FSessionData->HostNameExpanded).c_str());
+        LPHOSTENT HostEntry = gethostbyname(AnsiString(FSessionData->GetHostNameExpanded()).c_str());
         Result = (HostEntry != NULL);
         if (Result)
         {
@@ -1263,7 +1263,7 @@ void TSecureShell::CaptureOutput(TLogLineType Type,
   FLog->Add(Type, Line);
 }
 //---------------------------------------------------------------------------
-int TSecureShell::TranslateErrorMessage(UnicodeString & Message) const
+int TSecureShell::TranslateErrorMessage(UnicodeString & Message)
 {
   static const TPuttyTranslation Translation[] = {
     { L"Server unexpectedly closed network connection", UNEXPECTED_CLOSE_ERROR },

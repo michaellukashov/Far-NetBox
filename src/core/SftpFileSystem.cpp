@@ -4384,7 +4384,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
           FTerminal->LogEvent(FORMAT(L"Preserving timestamp [%s]",
             StandardTimestamp(MDateTime)).c_str());
           TouchAction.reset(new TTouchSessionAction(FTerminal->GetActionLog(), DestFullName,
-            MDateTime);
+            MDateTime));
         }
         std::auto_ptr<TChmodSessionAction> ChmodAction;
         // do record chmod only if it was explicitly requested,
@@ -5384,7 +5384,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       if (CopyParam->GetPreserveTime())
       {
         FTerminal->LogEvent(FORMAT(L"Preserving timestamp [%s]",
-          StandardTimestamp(Modification).c_str());
+          StandardTimestamp(Modification).c_str()));
         SetFileTime(LocalHandle, NULL, &AcTime, &WrTime);
       }
 

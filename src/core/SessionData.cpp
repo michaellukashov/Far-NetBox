@@ -197,8 +197,8 @@ void TSessionData::Default()
   SetCustomParam1(L"");
   SetCustomParam2(L"");
 
-  SetIsWorkspace(false);
-  SetLink(L"");
+  // SetIsWorkspace(false);
+  // SetLink(L"");
 
   SetSelected(false);
   FModified = false;
@@ -326,15 +326,15 @@ void TSessionData::NonPersistant()
   \
   PROPERTY(FtpProxyLogonType); \
   \
-  PROPERTY(IsWorkspace); \
-  PROPERTY(Link); \
-  \
   PROPERTY(CustomParam1); \
   PROPERTY(CustomParam2); \
   \
   PROPERTY(CodePage); \
   PROPERTY(LoginType); \
   PROPERTY(FtpAllowEmptyPassword);
+
+  //PROPERTY(IsWorkspace); \
+  //PROPERTY(Link); \
 //---------------------------------------------------------------------
 void TSessionData::Assign(TPersistent * Source)
 {
@@ -394,9 +394,9 @@ bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly)
   return true;
 }
 //---------------------------------------------------------------------
-bool TSessionData::IsInFolderOrWorkspace(UnicodeString AFolder)
+bool TSessionData::IsInFolderOrWorkspace(const UnicodeString & AFolder)
 {
-  return StartsText(UnixIncludeTrailingBackslash(AFolder), Name);
+  return StartsText(UnixIncludeTrailingBackslash(AFolder), GetName());
 }
 //---------------------------------------------------------------------
 void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword)
@@ -638,8 +638,8 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
 
   SetFtpProxyLogonType(Storage->ReadInteger(L"FtpProxyLogonType", GetFtpProxyLogonType()));
 
-  SetIsWorkspace(Storage->ReadBool(L"IsWorkspace", GetIsWorkspace()));
-  SetLink(Storage->ReadString(L"Link", GetLink()));
+  // SetIsWorkspace(Storage->ReadBool(L"IsWorkspace", GetIsWorkspace()));
+  // SetLink(Storage->ReadString(L"Link", GetLink()));
 
   SetCustomParam1(Storage->ReadString(L"CustomParam1", GetCustomParam1()));
   SetCustomParam2(Storage->ReadString(L"CustomParam2", GetCustomParam2()));
@@ -942,7 +942,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
   }
 }
 //---------------------------------------------------------------------
-UnicodeString TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default)
+/*UnicodeString TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default)
 {
   _di_IXMLNode TheNode = Node->ChildNodes->FindNode(Name);
   UnicodeString Result;
@@ -1068,7 +1068,7 @@ void TSessionData::ImportFromFilezilla(_di_IXMLNode Node)
 
   SynchronizeBrowsing = (ReadXmlNode(Node, L"SyncBrowsing", SynchronizeBrowsing ? 1 : 0) != 0);
 
-}
+}*/
 //---------------------------------------------------------------------
 void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExport)
 {
@@ -1282,7 +1282,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     {
 
       TSessionData * AData = static_cast<TSessionData *>(StoredSessions->Items[Index]);
-      if (!AData->GetIsWorkspace() &&
+      if (// !AData->GetIsWorkspace() &&
           AnsiSameText(AData->GetName(), DecodedUrl) ||
           AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
       {
@@ -2683,15 +2683,15 @@ void TSessionData::SetNotUtf(TAutoSwitch Value)
   SET_SESSION_PROPERTY(NotUtf);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetIsWorkspace(bool value)
+/*void TSessionData::SetIsWorkspace(bool Value)
 {
   SET_SESSION_PROPERTY(IsWorkspace);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetLink(UnicodeString value)
+void TSessionData::SetLink(UnicodeString Value)
 {
   SET_SESSION_PROPERTY(Link);
-}
+}*/
 //---------------------------------------------------------------------
 void TSessionData::SetHostKey(const UnicodeString & Value)
 {
@@ -2705,7 +2705,7 @@ UnicodeString TSessionData::GetInfoTip()
     return FMTLOAD(SESSION_INFO_TIP2,
         GetHostName().c_str(), GetUserName().c_str(),
          (GetPublicKeyFile().IsEmpty() ? LoadStr(NO_STR).c_str() : LoadStr(YES_STR).c_str()),
-         FSProtocolStr.c_str());
+         GetFSProtocolStr().c_str());
   }
   else
   {
@@ -2736,12 +2736,12 @@ UnicodeString TSessionData::GetLocalName()
 UnicodeString TSessionData::GetFolderName()
 {
   UnicodeString Result;
-  if (HasSessionName() || GetIsWorkspace())
+  if (HasSessionName()) // || GetIsWorkspace())
   {
-    intptr_t P = Name.LastDelimiter(L"/");
+    intptr_t P = GetName().LastDelimiter(L"/");
     if (P > 0)
     {
-      Result = Name.SubString(1, P - 1);
+      Result = GetName().SubString(1, P - 1);
     }
   }
   return Result;
@@ -3233,7 +3233,7 @@ void TStoredSessionList::UpdateStaticUsage()
 TSessionData * TStoredSessionList::FindSame(TSessionData * Data)
 {
   TSessionData * Result;
-  if (Data->GetHidden() || Data->GetName().IsEmpty() || Data->GetIsWorkspace())
+  if (Data->GetHidden() || Data->GetName().IsEmpty()) // || Data->GetIsWorkspace())
   {
     Result = NULL;
   }
@@ -3396,12 +3396,12 @@ bool TStoredSessionList::IsFolderOrWorkspace(
   TSessionData * FirstData = NULL;
   if (!Name.IsEmpty())
   {
-    for (int Index = 0; !Result && (Index < Count); Index++)
+    for (intptr_t Index = 0; !Result && (Index < GetCount()); Index++)
     {
-      Result = Sessions[Index]->IsInFolderOrWorkspace(Name);
+      Result = GetSession(Index)->IsInFolderOrWorkspace(Name);
       if (Result)
       {
-        FirstData = Sessions[Index];
+        FirstData = GetSession(Index);
       }
     }
   }
@@ -3409,7 +3409,7 @@ bool TStoredSessionList::IsFolderOrWorkspace(
   return
     Result &&
     ALWAYS_TRUE(FirstData != NULL) &&
-    (FirstData->IsWorkspace == Workspace);
+    (FirstData->IsWorkspace() == Workspace);
 }
 //---------------------------------------------------------------------------
 bool TStoredSessionList::IsFolder(const UnicodeString & Name)
@@ -3429,8 +3429,8 @@ TSessionData * TStoredSessionList::CheckIsInFolderOrWorkspaceAndResolve(
   {
     Data = ResolveSessionData(Data);
 
-    if ((Data != NULL) && Data->CanLogin &&
-        ALWAYS_TRUE(Data->Link.IsEmpty()))
+    if ((Data != NULL) && Data->GetCanLogin()) // &&
+        // ALWAYS_TRUE(Data->Link.IsEmpty()))
     {
       return Data;
     }
@@ -3440,10 +3440,10 @@ TSessionData * TStoredSessionList::CheckIsInFolderOrWorkspaceAndResolve(
 //---------------------------------------------------------------------------
 void TStoredSessionList::GetFolderOrWorkspace(const UnicodeString & Name, TList * List)
 {
-  for (int Index = 0; (Index < Count); Index++)
+  for (intptr_t Index = 0; (Index < GetCount()); Index++)
   {
     TSessionData * Data =
-      CheckIsInFolderOrWorkspaceAndResolve(Sessions[Index], Name);
+      CheckIsInFolderOrWorkspaceAndResolve(GetSession(Index), Name);
 
     if (Data != NULL)
     {
@@ -3459,14 +3459,14 @@ TStrings * TStoredSessionList::GetFolderOrWorkspaceList(
 {
   std::auto_ptr<TStringList> Result(new TStringList());
 
-  for (int Index = 0; (Index < Count); Index++)
+  for (intptr_t Index = 0; Index < GetCount(); Index++)
   {
     TSessionData * Data =
-      CheckIsInFolderOrWorkspaceAndResolve(Sessions[Index], Name);
+      CheckIsInFolderOrWorkspaceAndResolve(GetSession(Index), Name);
 
     if (Data != NULL)
     {
-      Result->Add(Data->SessionName);
+      Result->Add(Data->GetSessionName());
     }
   }
 
@@ -3480,12 +3480,12 @@ TStrings * TStoredSessionList::GetWorkspaces()
   Result->Duplicates = dupIgnore;
   Result->CaseSensitive = false;
 
-  for (int Index = 0; (Index < Count); Index++)
+  for (intptr_t Index = 0; Index < GetCount(); Index++)
   {
-    TSessionData * Data = Sessions[Index];
-    if (Data->IsWorkspace)
+    TSessionData * Data = GetSession(Index);
+    if (Data->IsWorkspace())
     {
-      Result->Add(Data->FolderName);
+      Result->Add(Data->GetFolderName());
     }
   }
 
@@ -3493,11 +3493,11 @@ TStrings * TStoredSessionList::GetWorkspaces()
 }
 //---------------------------------------------------------------------------
 void TStoredSessionList::NewWorkspace(
-  UnicodeString Name, TList * DataList)
+  const UnicodeString & Name, TList * DataList)
 {
-  for (int Index = 0; (Index < Count); Index++)
+  for (intptr_t Index = 0; Index < GetCount(); Index++)
   {
-    TSessionData * Data = Sessions[Index];
+    TSessionData * Data = GetSession(Index);
     if (Data->IsInFolderOrWorkspace(Name))
     {
       Data->Remove();
@@ -3506,15 +3506,15 @@ void TStoredSessionList::NewWorkspace(
     }
   }
 
-  for (int Index = 0; (Index < DataList->Count); Index++)
+  for (intptr_t Index = 0; Index < DataList->GetCount(); Index++)
   {
     TSessionData * Data = static_cast<TSessionData *>(DataList->Items[Index]);
 
     TSessionData * Data2 = new TSessionData(L"");
     Data2->Assign(Data);
-    Data2->Name = Name + L"/" + Data->Name;
+    Data2->SetName(Name + L"/" + Data->GetName());
     // make sure, that new stored session is saved to registry
-    Data2->Modified = true;
+    Data2->SetModified(true);
     Add(Data2);
   }
 }
@@ -3522,10 +3522,10 @@ void TStoredSessionList::NewWorkspace(
 bool TStoredSessionList::HasAnyWorkspace()
 {
   bool Result = false;
-  for (int Index = 0; !Result && (Index < Count); Index++)
+  for (intptr_t Index = 0; !Result && (Index < GetCount()); Index++)
   {
-    TSessionData * Data = Sessions[Index];
-    Result = Data->IsWorkspace;
+    TSessionData * Data = GetSession(Index);
+    Result = Data->IsWorkspace();
   }
   return Result;
 }

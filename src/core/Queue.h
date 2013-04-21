@@ -291,7 +291,7 @@ public:
   intptr_t GetCount() const;
   intptr_t GetDoneCount() const { return FDoneCount; }
   intptr_t GetActiveCount();
-  intptr_t GetDoneAndActiveCount() const;
+  intptr_t GetDoneAndActiveCount();
   void SetDoneCount(intptr_t Value);
   TQueueItemProxy * GetItem(intptr_t Index);
 

@@ -356,6 +356,9 @@ private:
   int FAcquired;
 };
 //---------------------------------------------------------------------------
+UnicodeString StripHotkey(const UnicodeString & Text);
+bool StartsText(const UnicodeString & ASubText, const UnicodeString & AText);
+//---------------------------------------------------------------------------
 } // namespace Sysutils
 
 using namespace Sysutils;

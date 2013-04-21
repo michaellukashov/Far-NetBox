@@ -53,20 +53,20 @@ UnicodeString TCopyParamType::GetInfoStr(
 {
   UnicodeString Result;
   bool SomeAttrIncluded;
-  DoGetInfoStr(Separator, Attrs, Result, SomeAttrIncluded);
+  DoGetInfoStr(Separator, Options, Result, SomeAttrIncluded);
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TCopyParamType::AnyUsableCopyParam(int Attrs) const
+bool TCopyParamType::AnyUsableCopyParam(intptr_t Options) const
 {
   UnicodeString Result;
   bool SomeAttrIncluded;
-  DoGetInfoStr(L";", Attrs, Result, SomeAttrIncluded);
+  DoGetInfoStr(L";", Options, Result, SomeAttrIncluded);
   return SomeAttrIncluded;
 }
 //---------------------------------------------------------------------------
 void TCopyParamType::DoGetInfoStr(
-  UnicodeString Separator, int Options,
+  const UnicodeString & Separator, intptr_t Options,
   UnicodeString & Result, bool & SomeAttrIncluded) const
 {
   TCopyParamType Defaults;
@@ -85,15 +85,15 @@ void TCopyParamType::DoGetInfoStr(
     }
 
   bool TransferModeDiffers =
-    ((TransferMode != Defaults.TransferMode) ||
-     ((TransferMode == tmAutomatic) && !(AsciiFileMask == Defaults.AsciiFileMask)));
+    ((GetTransferMode() != Defaults.GetTransferMode()) ||
+     ((GetTransferMode() == tmAutomatic) && !(GetAsciiFileMask() == Defaults.GetAsciiFileMask())));
 
   if (FLAGCLEAR(Options, cpaIncludeMaskOnly | cpaNoTransferMode))
   {
     // Adding Transfer type unconditionally
     bool FormatMask;
     int Ident;
-    switch (TransferMode)
+    switch (GetTransferMode())
     {
       case tmBinary:
         FormatMask = false;
@@ -105,7 +105,7 @@ void TCopyParamType::DoGetInfoStr(
         break;
       case tmAutomatic:
       default:
-        FormatMask = !(AsciiFileMask == Defaults.AsciiFileMask);
+        FormatMask = !(GetAsciiFileMask() == Defaults.GetAsciiFileMask());
         Ident = FormatMask ? 4 : 5;
         break;
     }
@@ -113,7 +113,7 @@ void TCopyParamType::DoGetInfoStr(
       (LoadStrPart(COPY_INFO_TRANSFER_TYPE2, Ident)));
     if (FormatMask)
     {
-      S = FORMAT(S, (AsciiFileMask.Masks));
+      S = FORMAT(S, (GetAsciiFileMask().GetMasks()));
     }
     AddToList(Result, S, Separator);
 
@@ -223,9 +223,9 @@ void TCopyParamType::DoGetInfoStr(
     ADD(FMTLOAD(COPY_INFO_CPS_LIMIT, static_cast<int>(GetCPSLimit() / 1024)).c_str(), cpaIncludeMaskOnly);
   }
 
-  if (NewerOnly != Defaults.NewerOnly)
+  if (GetNewerOnly() != Defaults.GetNewerOnly())
   {
-    if (ALWAYS_TRUE(NewerOnly))
+    if (ALWAYS_TRUE(GetNewerOnly()))
     {
       ADD(StripHotkey(LoadStr(COPY_PARAM_NEWER_ONLY)), cpaIncludeMaskOnly | cpaNoNewerOnly);
     }

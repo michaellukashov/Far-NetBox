@@ -86,7 +86,7 @@ private:
   bool EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     WSANETWORKEVENTS * Events);
   void UpdateSessionInfo();
-  bool GetReady();
+  // bool GetReady();
   void DispatchSendBuffer(uintptr_t BufSize);
   void SendBuffer(uintptr_t & Result);
   uintptr_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
@@ -99,7 +99,7 @@ protected:
   int TranslatePuttyMessage(const TPuttyTranslation * Translation,
     intptr_t Count, UnicodeString & Message) const;
   int TranslateAuthenticationMessage(UnicodeString & Message) const;
-  int TranslateErrorMessage(UnicodeString & Message) const;
+  int TranslateErrorMessage(UnicodeString & Message);
   void AddStdError(const UnicodeString & Str);
   void AddStdErrorLine(const UnicodeString & Str);
   void LogEvent(const UnicodeString & Str);

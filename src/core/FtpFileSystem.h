@@ -172,7 +172,8 @@ protected:
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOverwriteMode & OverwriteMode,
     bool AutoResume,
-    const TOverwriteFileParams * FileParams);
+    const TOverwriteFileParams * FileParams,
+    const TCopyParamType * CopyParam);
   void ReadDirectoryProgress(__int64 Bytes);
   void ResetFileTransfer();
   void DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);

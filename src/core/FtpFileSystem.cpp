@@ -826,7 +826,8 @@ bool TFTPFileSystem::ConfirmOverwrite(UnicodeString & FileName,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOverwriteMode & OverwriteMode,
   bool AutoResume,
-  const TOverwriteFileParams * FileParams)
+  const TOverwriteFileParams * FileParams,
+  const TCopyParamType * CopyParam)
 {
   bool Result;
   bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
@@ -3096,7 +3097,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
       if (ConfirmOverwrite(FileName, UserData.Params, OperationProgress,
             OverwriteMode,
             UserData.AutoResume && UserData.CopyParam->AllowResume(FileParams.SourceSize),
-            NoFileParams ? NULL : &FileParams))
+            NoFileParams ? NULL : &FileParams, UserData.CopyParam))
       {
         switch (OverwriteMode)
         {
@@ -3342,7 +3343,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         {
           UnicodeString Message = LoadStr(ANY_CERTIFICATE);
           FTerminal->Information(Message, true);
-          FTerminal->Log->Add(llException, Message);
+          FTerminal->GetLog()->Add(llException, Message);
           RequestResult = 1;
         }
         else if (ExpectedKey == FSessionInfo.CertificateFingerprint)

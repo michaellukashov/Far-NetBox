@@ -353,14 +353,13 @@ void TConfiguration::LoadAdmin(THierarchicalStorage * Storage)
 //---------------------------------------------------------------------------
 void TConfiguration::LoadFrom(THierarchicalStorage * Storage)
 {
-  if (Storage->OpenSubKey(ConfigurationSubKey, false))
+  if (Storage->OpenSubKey(GetConfigurationSubKey(), false))
   {
     LoadData(Storage);
     Storage->CloseSubKey();
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::Load()
 void TConfiguration::Load()
 {
   TGuard Guard(FCriticalSection);
@@ -1110,7 +1109,7 @@ void TConfiguration::SetExternalIpAddress(const UnicodeString & Value)
   SET_CONFIG_PROPERTY(ExternalIpAddress);
 }
 //---------------------------------------------------------------------
-void TConfiguration::SetTryFtpWhenSshFails(bool value)
+void TConfiguration::SetTryFtpWhenSshFails(bool Value)
 {
   SET_CONFIG_PROPERTY(TryFtpWhenSshFails);
 }

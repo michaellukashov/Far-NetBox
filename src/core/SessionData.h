@@ -175,8 +175,8 @@ private:
   TPingType FFtpPingType;
   TFtps FFtps;
   TAutoSwitch FNotUtf;
-  bool FIsWorkspace;
-  UnicodeString FLink;
+  // bool FIsWorkspace;
+  // UnicodeString FLink;
   UnicodeString FHostKey;
 
   UnicodeString FOrigHostName;
@@ -325,8 +325,9 @@ public:
   void SetFtpPingType(TPingType Value);
   void SetFtps(TFtps Value);
   void SetNotUtf(TAutoSwitch Value);
-  void SetIsWorkspace(bool Value);
-  void SetLink(const UnicodeString & Value);
+  bool IsWorkspace() { return false; }
+  // void SetIsWorkspace(bool Value);
+  // void SetLink(const UnicodeString & Value);
   void SetHostKey(const UnicodeString & Value);
   TDateTime GetTimeoutDT();
   void SavePasswords(THierarchicalStorage * Storage, bool PuttyExport);
@@ -536,6 +537,7 @@ public:
   TSessionData * GetSession(intptr_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   TSessionData * GetDefaultSettings() const { return FDefaultSettings; }
   TSessionData * GetSessionByName(const UnicodeString & SessionName);
+  void SetDefaultSettings(TSessionData * Value);
 
   static void ImportHostKeys(const UnicodeString & TargetKey,
     const UnicodeString & SourceKey, TStoredSessionList * Sessions,
@@ -544,7 +546,6 @@ public:
 private:
   TSessionData * FDefaultSettings;
   bool FReadOnly;
-  void SetDefaultSettings(TSessionData * Value);
   void DoSave(THierarchicalStorage * Storage, bool All, bool RecryptPasswordOnly);
   void DoSave(bool All, bool Explicit, bool RecryptPasswordOnly);
   void DoSave(THierarchicalStorage * Storage,

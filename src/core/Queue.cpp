@@ -693,7 +693,7 @@ bool TTerminalQueue::EmptyButMonitoredItems(TList * List)
   int Index = 0;
   while (Empty && (Index < List->GetCount()))
   {
-    Empty = (GetItem(List, Index)->CompleteEvent != INVALID_HANDLE_VALUE);
+    Empty = (GetItem(List, Index)->GetCompleteEvent() != INVALID_HANDLE_VALUE);
     Index++;
   }
   return !Empty;
@@ -714,7 +714,7 @@ void TTerminalQueue::UpdateStatusForList(
 {
   TQueueItem * Item;
   TQueueItemProxy * ItemProxy;
-  for (int Index = 0; Index < List->Count; Index++)
+  for (intptr_t Index = 0; Index < List->GetCount(); Index++)
   {
     Item = GetItem(List, Index);
     if (Current != NULL)
@@ -749,7 +749,7 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
       TGuard Guard(FItemsSection);
 
       UpdateStatusForList(Status, FDoneItems, Current);
-      Status->SetDoneCount(Status->Count);
+      Status->SetDoneCount(Status->GetCount());
       UpdateStatusForList(Status, FItems, Current);
     }
     ,
@@ -1047,7 +1047,7 @@ void TTerminalQueue::ProcessEvent()
         {
           RemoveDoneItemsBefore = IncSecond(RemoveDoneItemsBefore, -FKeepDoneItemsFor);
         }
-        for (int Index = 0; Index < FDoneItems->Count; Index++)
+        for (intptr_t Index = 0; Index < FDoneItems->GetCount(); Index++)
         {
           TQueueItem * Item = GetItem(FDoneItems, Index);
           if (Item->FDoneAt <= RemoveDoneItemsBefore)
@@ -1060,7 +1060,7 @@ void TTerminalQueue::ProcessEvent()
         }
       }
 
-      if (FItems->Count > FItemsInProcess)
+      if (FItems->GetCount() > FItemsInProcess)
       {
         Item = GetItem(FItemsInProcess);
         int ForcedIndex = FForcedItems->IndexOf(Item);
@@ -1069,16 +1069,17 @@ void TTerminalQueue::ProcessEvent()
         {
           if ((FFreeTerminals == 0) &&
               ((FTransfersLimit < 0) ||
-               (FTerminals->Count < FTransfersLimit + FTemporaryTerminals)))
+               (FTerminals->GetCount() < FTransfersLimit + FTemporaryTerminals)))
           {
             FOverallTerminals++;
-            TerminalItem = new TTerminalItem(this, FOverallTerminals);
+            TerminalItem = new TTerminalItem(this);
+            TerminalItem->Init(FOverallTerminals);
             FTerminals->Add(TerminalItem);
           }
           else if (FFreeTerminals > 0)
           {
             TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->Items[0]);
-            FTerminals->Move(0, FTerminals->Count - 1);
+            FTerminals->Move(0, FTerminals->GetCount() - 1);
             FFreeTerminals--;
           }
 
@@ -1614,21 +1615,10 @@ TQueueItem::TQueueItem() :
 {
   FSection = new TCriticalSection();
   FInfo = new TInfo();
-  FInfo->SetSingleFile(false);
+  FInfo->SingleFile = false;
 }
 //---------------------------------------------------------------------------
 __fastcall TQueueItem::~TQueueItem()
-{
-  // we need to keep the total transfer size even after transfer completes
-  delete FProgressData;
-
-  Complete();
-
-  delete FSection;
-  delete FInfo;
-}
-//---------------------------------------------------------------------------
-void TQueueItem::Complete()
 {
   // we need to keep the total transfer size even after transfer completes
   delete FProgressData;
@@ -1766,7 +1756,7 @@ __int64 TQueueItemProxy::GetTotalTransferred()
   // want to show total transferred also for "completed" items,
   // for which GetProgressData() is NULL
   return
-    (FProgressData->Operation == Info->Operation) || (Status == TQueueItem::qsDone) ?
+    (FProgressData->Operation == GetInfo()->Operation) || (GetStatus() == TQueueItem::qsDone) ?
       FProgressData->TotalTransfered : -1;
 }
 //---------------------------------------------------------------------------
@@ -1911,9 +1901,9 @@ intptr_t TTerminalQueueStatus::GetActiveCount()
   return FActiveCount;
 }
 //---------------------------------------------------------------------------
-int TTerminalQueueStatus::GetDoneAndActiveCount()
+intptr_t TTerminalQueueStatus::GetDoneAndActiveCount()
 {
-  return DoneCount + ActiveCount;
+  return GetDoneCount() + GetActiveCount();
 }
 //---------------------------------------------------------------------------
 void TTerminalQueueStatus::Add(TQueueItemProxy * ItemProxy)
@@ -1984,7 +1974,7 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
 {
   FInfo->Operation = (Params & cpDelete ? foMove : foCopy);
   FInfo->Side = Side;
-  FInfo->SetSingleFile(SingleFile);
+  FInfo->SingleFile = SingleFile;
 
   assert(FilesToCopy != NULL);
   FFilesToCopy = new TStringList();

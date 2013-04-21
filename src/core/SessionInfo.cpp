@@ -920,6 +920,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         delete Storage;
       }
       );
+    }
 
     if (0)
     {

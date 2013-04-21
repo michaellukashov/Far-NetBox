@@ -182,7 +182,7 @@ BEGIN
   DELETE_LOCAL_FILE_ERROR, "Error deleting file '%s'."
   URL_OPTION_BOOL_VALUE_ERROR, "Invalid switch value '%s'. Valid values are 'on' and 'off'."
   FTP_ACCESS_DENIED_EMPTY_PASSWORD, "Access without password denied."
-  CANNOT_OPEN_SESSION_FOLDER, "Cannot open site folder or workspace."
+  // CANNOT_OPEN_SESSION_FOLDER, "Cannot open site folder or workspace."
   PROTOCOL_UNKNOWN, "Protocol '%s' is unknown."
 
   CORE_CONFIRMATION_STRINGS, "CORE_CONFIRMATION"
@@ -339,7 +339,7 @@ BEGIN
   FTPS_IMPLICIT, "SSL/TLS Implicit encryption"
   FTPS_EXPLICIT_SSL, "SSL Explicit encryption"
   FTPS_EXPLICIT_TLS, "TLS Explicit encryption"
-  FTPS_UNSUPPORTED, "This version does not support FTPS protocol."
+  // FTPS_UNSUPPORTED, "This version does not support FTPS protocol."
   SCRIPT_ECHO_DESC, "Displays its arguments as message"
   SCRIPT_STAT_DESC, "Retrieves attributes of remote file"
   HOSTKEY, "Host key fingerprint is %s."
@@ -350,8 +350,8 @@ BEGIN
   ANY_HOSTKEY, "WARNING! Giving up security and accepting any certificate as configured!"
   ANY_CERTIFICATE, "WARNING! Giving up security and accepting any key as configured!"
 
-  COPY_INFO_EXCLUDE_MASK, "Exclude mask: %s"
-  COPY_INFO_INCLUDE_MASK, "Include mask: %s"
+  // COPY_INFO_EXCLUDE_MASK, "Exclude mask: %s"
+  // COPY_INFO_INCLUDE_MASK, "Include mask: %s"
 
   CORE_VARIABLE_STRINGS, "CORE_VARIABLE"
   PUTTY_BASED_ON, "SSH and SCP code based on PuTTY %s"
