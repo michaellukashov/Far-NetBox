@@ -601,7 +601,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetColor(Storage->ReadInteger(L"Color", GetColor()));
 
   // ???
-  SetProtocolStr(Storage->ReadString(L"Protocol", GetProtocolStr()));
+  // SetProtocolStr(Storage->ReadString(L"Protocol", GetProtocolStr()));
 
   SetTunnel(Storage->ReadBool(L"Tunnel", GetTunnel()));
   SetTunnelPortNumber(Storage->ReadInteger(L"TunnelPortNumber", GetTunnelPortNumber()));
@@ -3348,24 +3348,6 @@ void TStoredSessionList::ImportHostKeys(const UnicodeString & TargetKey,
   );
 }
 //---------------------------------------------------------------------------
-TSessionData * TStoredSessionList::ParseUrl(const UnicodeString & Url,
-  TOptions * Options, bool & DefaultsOnly, UnicodeString * FileName,
-  bool * AProtocolDefined, UnicodeString * MaskedUrl)
-{
-  TSessionData * Data = new TSessionData(L"");
-  try
-  {
-    Data->ParseUrl(Url, Options, this, DefaultsOnly, FileName, AProtocolDefined, MaskedUrl);
-  }
-  catch(...)
-  {
-    delete Data;
-    throw;
-  }
-
-  return Data;
-}
-//---------------------------------------------------------------------------
 TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString & SessionName)
 {
   for (intptr_t I = 0; I < GetCount(); ++I)
@@ -3528,6 +3510,43 @@ bool TStoredSessionList::HasAnyWorkspace()
     Result = Data->IsWorkspace();
   }
   return Result;
+}
+//---------------------------------------------------------------------------
+TSessionData * TStoredSessionList::ParseUrl(const UnicodeString & Url,
+  TOptions * Options, bool & DefaultsOnly, UnicodeString * FileName,
+  bool * AProtocolDefined, UnicodeString * MaskedUrl)
+{
+  TSessionData * Data = new TSessionData(L"");
+  try
+  {
+    Data->ParseUrl(Url, Options, this, DefaultsOnly, FileName, AProtocolDefined, MaskedUrl);
+  }
+  catch(...)
+  {
+    delete Data;
+    throw;
+  }
+
+  return Data;
+}
+//---------------------------------------------------------------------
+TSessionData * TStoredSessionList::ResolveSessionData(TSessionData * Data)
+{
+  /*if (!Data->GetLink().IsEmpty())
+  {
+    Data = dynamic_cast<TSessionData *>(FindByName(Data->GetLink()));
+    if (Data != NULL)
+    {
+      Data = ResolveSessionData(Data);
+    }
+  }*/
+  return Data;
+}
+//---------------------------------------------------------------------
+bool TStoredSessionList::CanLogin(TSessionData * Data)
+{
+  Data = ResolveSessionData(Data);
+  return (Data != NULL) && Data->GetCanLogin();
 }
 //---------------------------------------------------------------------
 //---------------------------------------------------------------------

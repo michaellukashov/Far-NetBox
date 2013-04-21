@@ -1239,6 +1239,7 @@ bool TGUIConfiguration::AnyPuttySessionForImport(TStoredSessionList * Sessions)
 TStoredSessionList * TGUIConfiguration::SelectFilezillaSessionsForImport(
   TStoredSessionList * Sessions)
 {
+/*
   std::auto_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
@@ -1254,6 +1255,8 @@ TStoredSessionList * TGUIConfiguration::SelectFilezillaSessionsForImport(
   }
 
   return ImportSessionList.release();
+*/
+  return NULL;
 }
 //---------------------------------------------------------------------
 bool TGUIConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessions)

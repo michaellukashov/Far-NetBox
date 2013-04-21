@@ -880,6 +880,11 @@ void TSessionLog::AddSystemInfo()
   AddStartupInfo(true);
 }
 //---------------------------------------------------------------------------
+void TSessionLog::AddStartupInfo()
+{
+  AddStartupInfo(false);
+}
+//---------------------------------------------------------------------------
 void TSessionLog::AddStartupInfo(bool System)
 {
   TSessionData * Data = (System ? NULL : FSessionData);

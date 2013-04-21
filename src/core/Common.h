@@ -205,7 +205,6 @@ private:
 #else
 #define CHECK(p) { bool __CHECK_RESULT__ = (p); assert(__CHECK_RESULT__); }
 #define FAIL assert(false)
-#define ALWAYS_TRUE(p) DoAlwaysTrue(p, TEXT(#p), TEXT(__FILE__), __LINE__)
 #define ALWAYS_TRUE(p) p
 #define ALWAYS_FALSE(p) p
 #define CLEAN_INLINE

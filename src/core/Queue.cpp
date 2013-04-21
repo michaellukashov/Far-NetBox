@@ -1618,7 +1618,7 @@ TQueueItem::TQueueItem() :
   FInfo->SingleFile = false;
 }
 //---------------------------------------------------------------------------
-__fastcall TQueueItem::~TQueueItem()
+TQueueItem::~TQueueItem()
 {
   // we need to keep the total transfer size even after transfer completes
   delete FProgressData;
