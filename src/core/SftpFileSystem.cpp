@@ -4382,7 +4382,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
         {
           TDateTime MDateTime = UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
           FTerminal->LogEvent(FORMAT(L"Preserving timestamp [%s]",
-            StandardTimestamp(MDateTime)).c_str());
+            StandardTimestamp(MDateTime).c_str()));
           TouchAction.reset(new TTouchSessionAction(FTerminal->GetActionLog(), DestFullName,
             MDateTime));
         }

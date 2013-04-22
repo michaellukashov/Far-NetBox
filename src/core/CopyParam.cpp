@@ -110,10 +110,10 @@ void TCopyParamType::DoGetInfoStr(
         break;
     }
     UnicodeString S = FORMAT(LoadStrPart(COPY_INFO_TRANSFER_TYPE2, 1),
-      (LoadStrPart(COPY_INFO_TRANSFER_TYPE2, Ident)));
+      LoadStrPart(COPY_INFO_TRANSFER_TYPE2, Ident).c_str());
     if (FormatMask)
     {
-      S = FORMAT(S, (GetAsciiFileMask().GetMasks()));
+      S = FORMAT(S, GetAsciiFileMask().GetMasks().c_str());
     }
     AddToList(Result, S, Separator);
 
