@@ -1189,12 +1189,12 @@ void TTerminalItem::ProcessEvent()
 
   FCancel = false;
   FPause = false;
-  FItem->FTerminalItem = this;
 
   try
   {
     assert(FItem != NULL);
 
+    FItem->FTerminalItem = this;
     if (!FTerminal->GetActive())
     {
       FItem->SetStatus(TQueueItem::qsConnecting);
