@@ -1217,8 +1217,8 @@ void TTerminalItem::ProcessEvent()
     UnicodeString Message;
     if (ExceptionMessage(&E, Message))
     {
-      // do not show error messages, if task was cancelled anyway
-      // (for example if transfer is cancelled during reconnection attempts)
+      // do not show error messages, if task was canceled anyway
+      // (for example if transfer is canceled during reconnection attempts)
       if (!FCancel &&
           (FTerminal->QueryUserException(L"", &E, qaOK | qaCancel, NULL, qtError) == qaCancel))
       {
