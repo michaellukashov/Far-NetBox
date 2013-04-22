@@ -340,7 +340,7 @@ void TSecureShell::Open()
     FreeBackend(); // in case we are reconnecting
     const char * InitError = FBackend->init(this, &FBackendHandle, FConfig,
       const_cast<char *>(W2MB(FSessionData->GetHostNameExpanded().c_str(),
-      FSessionData->GetCodePageAsNumber()).c_str()),
+      (const UINT)FSessionData->GetCodePageAsNumber()).c_str()),
       static_cast<int>(FSessionData->GetPortNumber()),
       &RealHost, 0,
       FConfig->tcp_keepalives);
@@ -412,7 +412,7 @@ bool TSecureShell::TryFtp()
 
           memset(&Address, 0, sizeof(Address));
           Address.sin_family = AF_INET;
-          int Port = FtpPortNumber;
+          intptr_t Port = FtpPortNumber;
           Address.sin_port = htons(static_cast<short>(Port));
           Address.sin_addr.s_addr = *((unsigned long *)*HostEntry->h_addr_list);
 
@@ -981,7 +981,7 @@ UnicodeString TSecureShell::ReceiveLine()
   Line.SetLength(Line.Length()-1);
 
   // UnicodeString UnicodeLine = Line;
-  UnicodeString UnicodeLine = ::TrimRight(MB2W(Line.c_str(), FSessionData->GetCodePageAsNumber()));
+  UnicodeString UnicodeLine = ::TrimRight(MB2W(Line.c_str(), (UINT)FSessionData->GetCodePageAsNumber()));
   CaptureOutput(llOutput, UnicodeLine);
   return UnicodeLine;
 }
@@ -1128,7 +1128,7 @@ void TSecureShell::SendNull()
 void TSecureShell::SendStr(const UnicodeString & Str)
 {
   CheckConnection();
-  AnsiString AnsiStr = W2MB(Str.c_str(), FSessionData->GetCodePageAsNumber());
+  AnsiString AnsiStr = W2MB(Str.c_str(), (UINT)FSessionData->GetCodePageAsNumber());
   Send(reinterpret_cast<const unsigned char *>(AnsiStr.c_str()), AnsiStr.Length());
 }
 //---------------------------------------------------------------------------
@@ -1681,7 +1681,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
 
       Handles = sresize(Handles, static_cast<size_t>(HandleCount + 1), HANDLE);
       Handles[HandleCount] = FSocketEvent;
-      unsigned int WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, MSec);
+      unsigned int WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, (DWORD)MSec);
       if (WaitResult < WAIT_OBJECT_0 + HandleCount)
       {
         if (handle_got_event(Handles[WaitResult - WAIT_OBJECT_0]))
@@ -1953,7 +1953,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   {
     AnsiString AnsiStoredKeys;
     AnsiStoredKeys.SetLength(10240);
-    if (retrieve_host_key(W2MB(Host2.c_str(), FSessionData->GetCodePageAsNumber()).c_str(), Port, W2MB(KeyType.c_str(), FSessionData->GetCodePageAsNumber()).c_str(),
+    if (retrieve_host_key(W2MB(Host2.c_str(), (UINT)FSessionData->GetCodePageAsNumber()).c_str(), Port, W2MB(KeyType.c_str(), (UINT)FSessionData->GetCodePageAsNumber()).c_str(),
           const_cast<char *>(AnsiStoredKeys.c_str()), static_cast<int>(AnsiStoredKeys.Length())) == 0)
     {
       StoredKeys = AnsiStoredKeys.c_str();

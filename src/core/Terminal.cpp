@@ -3982,7 +3982,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
     }
 
     FILE_OPERATION_LOOP (FMTLOAD(OPENFILE_ERROR, FileName.c_str()),
-      LocalFileHandle = CreateLocalFile(FileName.c_str(), Access,
+      LocalFileHandle = CreateLocalFile(FileName.c_str(), (DWORD)Access,
         Access == GENERIC_READ ? FILE_SHARE_READ | FILE_SHARE_WRITE : FILE_SHARE_READ,
         OPEN_EXISTING, 0);
       if (LocalFileHandle == INVALID_HANDLE_VALUE)

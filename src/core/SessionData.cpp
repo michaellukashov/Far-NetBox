@@ -3578,7 +3578,7 @@ uintptr_t GetCodePageAsNumber(const UnicodeString & CodePage)
 UnicodeString GetCodePageAsString(uintptr_t cp)
 {
   CPINFOEX cpInfoEx;
-  if (::GetCodePageInfo(cp, cpInfoEx))
+  if (::GetCodePageInfo((UINT)cp, cpInfoEx))
   {
     return UnicodeString(cpInfoEx.CodePageName);
   }

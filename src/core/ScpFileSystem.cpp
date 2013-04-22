@@ -2587,7 +2587,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                   BlockBuf.SetSize(OperationProgress->TransferBlockSize());
                   BlockBuf.SetPosition(0);
 
-                  FSecureShell->Receive(reinterpret_cast<unsigned char *>(BlockBuf.GetData()), (int)BlockBuf.GetSize());
+                  FSecureShell->Receive(reinterpret_cast<unsigned char *>(BlockBuf.GetData()), BlockBuf.GetSize());
                   OperationProgress->AddTransfered(BlockBuf.GetSize());
 
                   if (OperationProgress->AsciiTransfer)
@@ -2681,7 +2681,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
           if ((NewAttrs & FileData.LocalFileAttrs) != NewAttrs)
           {
             FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFileName.c_str()),
-              THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFileName, FileData.LocalFileAttrs | NewAttrs) == 0);
+              THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFileName, (DWORD)(FileData.LocalFileAttrs | NewAttrs)) == 0);
             );
           }
         }

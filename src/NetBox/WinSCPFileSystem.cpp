@@ -4159,7 +4159,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
       Window.Pos = Pos;
       UnicodeString EditedFileName(1024, 0);
       Window.Name = const_cast<wchar_t *>(EditedFileName.c_str());
-      Window.NameSize = EditedFileName.GetLength();
+      Window.NameSize = (int)EditedFileName.GetLength();
       if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, &Window) != 0)
       {
         if ((Window.Type == WTYPE_EDITOR) &&

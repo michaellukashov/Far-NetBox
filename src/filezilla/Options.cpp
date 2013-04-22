@@ -34,5 +34,5 @@ int COptions::GetInstanceOptionVal(CApiLog * Instance, int OptionID)
 
   const TFileZillaIntf * Intf = Intern->GetOwner();
   ASSERT(Intf != NULL);
-  return Intf->OptionVal(OptionID);
+  return (int)Intf->OptionVal(OptionID);
 }

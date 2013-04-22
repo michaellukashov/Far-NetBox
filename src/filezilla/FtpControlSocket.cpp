@@ -6152,7 +6152,7 @@ CString CFtpControlSocket::GetReply()
 			if (GetReplyCode() == 2)
 				line = (LPCSTR)m_ListFile;
 		}
-		if (!utf8_valid((const unsigned char*)line, strlen(line)))
+		if (!utf8_valid((const unsigned char*)line, (int)strlen(line)))
 		{
 			if (m_CurrentServer.nUTF8 != 1)
 			{

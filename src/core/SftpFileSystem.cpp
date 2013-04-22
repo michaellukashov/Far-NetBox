@@ -311,7 +311,7 @@ public:
     AddCardinal((rde::uint32)(Value & 0xFFFFFFFF));
   }
 
-  void AddData(const void * Data, int ALength)
+  void AddData(const void * Data, intptr_t ALength)
   {
     AddCardinal(ALength);
     Add(Data, ALength);
@@ -319,7 +319,7 @@ public:
 
   void AddStringW(const UnicodeString & ValueW)
   {
-    AddString(W2MB(ValueW.c_str(), FCodePage).c_str());
+    AddString(W2MB(ValueW.c_str(), (UINT)FCodePage).c_str());
   }
 
   void AddString(const RawByteString & Value)
@@ -575,7 +575,7 @@ public:
 
   inline UnicodeString GetStringW()
   {
-    return MB2W(GetRawByteString().c_str(), FCodePage);
+    return MB2W(GetRawByteString().c_str(), (UINT)FCodePage);
   }
 
   inline UnicodeString GetString(bool Utf)
@@ -1445,7 +1445,7 @@ protected:
         Request->ChangeType(SSH_FXP_WRITE);
         Request->AddString(FHandle);
         Request->AddInt64(FTransfered);
-        Request->AddData(BlockBuf.GetData(), (int)BlockBuf.GetSize());
+        Request->AddData(BlockBuf.GetData(), BlockBuf.GetSize());
         FLastBlockSize = (rde::uint32)BlockBuf.GetSize();
 
         FTransfered += BlockBuf.GetSize();
@@ -5417,7 +5417,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       if ((NewAttrs & LocalFileAttrs) != NewAttrs)
       {
         FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, LocalFileAttrs | NewAttrs) == 0);
+          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, (DWORD)(LocalFileAttrs | NewAttrs)) == 0);
         );
       }
 

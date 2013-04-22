@@ -436,7 +436,7 @@ t_directory::t_direntry *CFtpListResult::getList(int &num, CTime EntryTime)
 		int tmp;
 		char *tmpline = new char[strlen(line) + 1];
 		strcpy(tmpline, line);
-		if (parseLine(tmpline, strlen(tmpline), direntry, tmp))
+		if (parseLine(tmpline, (int)strlen(tmpline), direntry, tmp))
 		{
 			delete [] tmpline;
 			if (tmp)

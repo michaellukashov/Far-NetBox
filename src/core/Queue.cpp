@@ -1063,7 +1063,7 @@ void TTerminalQueue::ProcessEvent()
       if (FItems->GetCount() > FItemsInProcess)
       {
         Item = GetItem(FItemsInProcess);
-        int ForcedIndex = FForcedItems->IndexOf(Item);
+        intptr_t ForcedIndex = FForcedItems->IndexOf(Item);
 
         if (FEnabled || (ForcedIndex >= 0))
         {
@@ -1220,7 +1220,7 @@ bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
   }
   else
   {
-    Sleep(GetConfiguration()->GetSessionReopenBackground());
+    Sleep((DWORD)GetConfiguration()->GetSessionReopenBackground());
     Result = true;
   }
   return Result;

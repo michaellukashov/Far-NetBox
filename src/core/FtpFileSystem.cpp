@@ -1284,7 +1284,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
     if ((NewAttrs & LocalFileAttrs) != NewAttrs)
     {
       FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, LocalFileAttrs | NewAttrs) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, (DWORD)(LocalFileAttrs | NewAttrs)) == 0);
       );
     }
   }

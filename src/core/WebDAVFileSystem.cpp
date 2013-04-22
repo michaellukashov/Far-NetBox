@@ -11207,7 +11207,7 @@ convert_neon_failures(
 {
   apr_uint32_t failures = 0;
 
-  for (apr_size_t i = 0; i < sizeof(neon_failure_map) / (2 * sizeof(int)); ++i)
+  for (apr_size_t i = 0; i < sizeof(neon_failure_map) / (2 * sizeof(apr_uint32_t)); ++i)
   {
     if (neon_failures & neon_failure_map[i][0])
     {
@@ -13463,7 +13463,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       if ((NewAttrs & LocalFileAttrs) != NewAttrs)
       {
         FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, LocalFileAttrs | NewAttrs) == 0);
+          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, (DWORD)(LocalFileAttrs | NewAttrs)) == 0);
         );
       }
       // set time

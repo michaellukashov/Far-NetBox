@@ -49,9 +49,9 @@ private:
   bool FSimple;
   bool FNoConnectionResponse;
 
-  uintptr_t PendLen;
-  uintptr_t PendSize;
-  uintptr_t OutLen;
+  intptr_t PendLen;
+  intptr_t PendSize;
+  intptr_t OutLen;
   unsigned char * OutPtr;
   unsigned char * Pending;
   TSessionLog * FLog;
