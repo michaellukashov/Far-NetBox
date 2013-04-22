@@ -7253,9 +7253,8 @@ end_207_element(
 
       if (ne_parse_statusline(b->cdata->data, &status) == 0)
       {
-        // I wanted ||=, but I guess the end result is the same
         if (!b->in_propstat)
-          b->contains_error |= (status.klass != 2);
+          b->contains_error = b->contains_error || (status.klass != 2);
         else
           b->propstat_has_error = (status.klass != 2);
 
@@ -7273,7 +7272,7 @@ end_207_element(
 
     case ELEM_propstat:
       b->in_propstat = FALSE;
-      b->contains_error |= b->propstat_has_error;
+      b->contains_error = b->contains_error || b->propstat_has_error;
       stringbuf_appendcstr(b->description,
         apr_psprintf(b->req->pool,
           "Error setting property '%s': ",

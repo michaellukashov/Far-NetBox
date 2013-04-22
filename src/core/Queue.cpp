@@ -1856,7 +1856,9 @@ intptr_t TQueueItemProxy::GetIndex()
 // TTerminalQueueStatus
 //---------------------------------------------------------------------------
 TTerminalQueueStatus::TTerminalQueueStatus() :
-  FList(NULL)
+  FList(NULL),
+  FDoneCount(0),
+  FActiveCount(0)
 {
   FList = new TList();
   ResetStats();

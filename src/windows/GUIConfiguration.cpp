@@ -535,6 +535,8 @@ TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
   FQueueAutoPopup(false),
   FQueueRememberPassword(false),
   FQueueTransfersLimit(0),
+  FQueueKeepDoneItems(false),
+  FQueueKeepDoneItemsFor(0),
   FBeepOnFinish(false),
   FCopyParamList(NULL),
   FCopyParamListDefaults(false),
@@ -1213,7 +1215,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   }
 
   TSessionData * PuttySessionData =
-    (TSessionData *)ImportSessionList->FindByName(GetPuttySession());
+    static_cast<TSessionData *>(ImportSessionList->FindByName(GetPuttySession()));
   if (PuttySessionData != NULL)
   {
     ImportSessionList->Remove(PuttySessionData);
