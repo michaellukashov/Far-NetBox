@@ -355,9 +355,9 @@ bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
   return ::Pos(Str1, Str2) > 0;
 }
 
-void RaiseLastOSError()
+void RaiseLastOSError(int LastError)
 {
-  int LastError = ::GetLastError();
+  if (LastError == 0) LastError = ::GetLastError();
   UnicodeString ErrorMsg;
   if (LastError != 0)
   {
@@ -947,11 +947,11 @@ UnicodeString ExpandUNCFileName(const UnicodeString & FileName)
   return Result;
 }
 
-__int64 FileSeek(HANDLE file, __int64 offset, int Origin)
+__int64 FileSeek(HANDLE Handle, __int64 Offset, int Origin)
 {
-  LONG low = offset & 0xFFFFFFFF;
-  LONG high = offset >> 32;
-  low = ::SetFilePointer(file, low, &high, static_cast<DWORD>(Origin));
+  LONG low = Offset & 0xFFFFFFFF;
+  LONG high = Offset >> 32;
+  low = ::SetFilePointer(Handle, low, &high, static_cast<DWORD>(Origin));
   return ((_int64)high << 32) + low;
 }
 
@@ -1158,6 +1158,11 @@ UnicodeString IncludeTrailingBackslash(const UnicodeString & Str)
     Result += L'\\';
   }
   return Result;
+}
+
+UnicodeString IncludeTrailingPathDelimiter(const UnicodeString & Str)
+{
+  return IncludeTrailingBackslash(Str);
 }
 
 UnicodeString ExtractFileDir(const UnicodeString & Str)
@@ -1666,5 +1671,29 @@ void TCriticalSection::Leave()
 }
 
 //---------------------------------------------------------------------------
-
+UnicodeString StripHotkey(const UnicodeString & Text)
+{
+  UnicodeString Result = Text;
+  intptr_t Len = Result.Length();
+  intptr_t Pos = 1;
+  while (Pos <= Len)
+  {
+    if (Result[Pos] == L'&')
+    {
+      Result.Delete(Pos, 1);
+      Len--;
+    }
+    else
+    {
+      Pos++;
+    }
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+bool StartsText(const UnicodeString & ASubText, const UnicodeString & AText)
+{
+  return AText.Pos(ASubText) == 1;
+}
+//---------------------------------------------------------------------------
 } // namespace Sysutils

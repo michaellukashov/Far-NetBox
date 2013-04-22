@@ -289,7 +289,7 @@ void TFTPFileSystem::Init(void *)
 //---------------------------------------------------------------------------
 TFTPFileSystem::~TFTPFileSystem()
 {
-  assert(FFileList == NULL);
+    assert(FFileList == NULL);
 
   FFileZillaIntf->Destroying();
 
@@ -537,7 +537,7 @@ void TFTPFileSystem::Close()
     Result = FOpening;
   }
 
-  if (Result)
+  if (ALWAYS_TRUE(Result))
   {
     assert(FActive);
     Discard();
@@ -826,17 +826,19 @@ bool TFTPFileSystem::ConfirmOverwrite(UnicodeString & FileName,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOverwriteMode & OverwriteMode,
   bool AutoResume,
-  const TOverwriteFileParams * FileParams)
+  const TOverwriteFileParams * FileParams,
+  const TCopyParamType * CopyParam)
 {
   bool Result;
   bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
   bool DestIsSmaller = (FileParams != NULL) && (FileParams->DestSize < FileParams->SourceSize);
   bool DestIsSame = (FileParams != NULL) && (FileParams->DestSize == FileParams->SourceSize);
-  // when resuming transfer after interrupted connection,
-  // do nothing (dummy resume) when the files has the same size.
-  // this is workaround for servers that strangely fails just after successful
-  // upload.
   bool CanResume =
+    !OperationProgress->AsciiTransfer &&
+    // when resuming transfer after interrupted connection,
+    // do nothing (dummy resume) when the files has the same size.
+    // this is workaround for servers that strangely fails just after successful
+    // upload.
     (DestIsSmaller || (DestIsSame && CanAutoResume));
 
   uintptr_t Answer;
@@ -877,7 +879,7 @@ bool TFTPFileSystem::ConfirmOverwrite(UnicodeString & FileName,
       Answer = FTerminal->ConfirmFileOverwrite(FileName, FileParams,
         Answers, &QueryParams,
         OperationProgress->Side == osLocal ? osRemote : osLocal,
-        Params, OperationProgress);
+        CopyParam, Params, OperationProgress);
     )
   }
 
@@ -1005,7 +1007,7 @@ void TFTPFileSystem::FileTransferProgress(__int64 TransferSize,
 {
   TGuard Guard(FTransferStatusCriticalSection);
 
-  DoFileTransferProgress(TransferSize, Bytes);
+    DoFileTransferProgress(TransferSize, Bytes);
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::FileTransfer(const UnicodeString & FileName,
@@ -1046,7 +1048,7 @@ void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
-  Params &= ~cpAppend;
+    Params &= ~cpAppend;
   UnicodeString FullTargetDir = IncludeTrailingBackslash(TargetDir);
 
   intptr_t Index = 0;
@@ -1094,7 +1096,7 @@ void TFTPFileSystem::SinkRobust(const UnicodeString & FileName,
   const TCopyParamType * CopyParam, intptr_t Params,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
-  // the same in TSFTPFileSystem
+    // the same in TSFTPFileSystem
   bool Retry;
 
   TDownloadSessionAction Action(FTerminal->GetActionLog());
@@ -1282,7 +1284,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
     if ((NewAttrs & LocalFileAttrs) != NewAttrs)
     {
       FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, LocalFileAttrs | NewAttrs) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, (DWORD)(LocalFileAttrs | NewAttrs)) == 0);
       );
     }
   }
@@ -1461,7 +1463,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
   bool Dir = FLAGSET(OpenParams->LocalFileAttrs, faDirectory);
   if (Dir)
   {
-    Action.Cancel();
+        Action.Cancel();
     DirectorySource(IncludeTrailingBackslash(RealFileName), TargetDir,
       OpenParams->LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
   }
@@ -1582,7 +1584,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   bool FindOK = false;
 
   FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    FindOK = (bool)(FindFirst((DirectoryName + L"*.*").c_str(),
+    FindOK = (bool)(FindFirstChecked((DirectoryName + L"*.*").c_str(),
       FindAttrs, SearchRec) == 0);
   );
 
@@ -1618,7 +1620,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
       }
 
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        FindOK = (FindNext(SearchRec) == 0);
+        FindOK = (FindNextChecked(SearchRec) == 0);
       );
     }
   }
@@ -1796,7 +1798,7 @@ void TFTPFileSystem::DoStartup()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::HomeDirectory()
 {
-  // FHomeDirectory is an absolute path, so avoid unnecessary overhead
+    // FHomeDirectory is an absolute path, so avoid unnecessary overhead
   // of ChangeDirectory, such as EnsureLocation
   DoChangeDirectory(FHomeDirectory);
   FCurrentDirectory = FHomeDirectory;
@@ -2494,7 +2496,7 @@ bool TFTPFileSystem::NoFinalLastCode() const
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::KeepWaitingForReply(unsigned int & ReplyToAwait, bool WantLastCode) const
 {
-  // to keep waiting,
+    // to keep waiting,
   // non-command reply must be unset,
   // the reply we wait for must be unset or
   // last code must be unset (if we wait for it)
@@ -2927,7 +2929,7 @@ UnicodeString TFTPFileSystem::ExtractStatusMessage(const UnicodeString & Status)
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
 {
-  TLogLineType LogType = static_cast<TLogLineType>(-1);
+    TLogLineType LogType = static_cast<TLogLineType>(-1);
   UnicodeString Status(AStatus);
 
   switch (Type)
@@ -3095,7 +3097,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
       if (ConfirmOverwrite(FileName, UserData.Params, OperationProgress,
             OverwriteMode,
             UserData.AutoResume && UserData.CopyParam->AllowResume(FileParams.SourceSize),
-            NoFileParams ? NULL : &FileParams))
+            NoFileParams ? NULL : &FileParams, UserData.CopyParam))
       {
         switch (OverwriteMode)
         {
@@ -3337,7 +3339,14 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       while ((RequestResult == 0) && !Buf.IsEmpty())
       {
         UnicodeString ExpectedKey = CutToChar(Buf, L';', false);
-        if (ExpectedKey == FSessionInfo.CertificateFingerprint)
+        if (ExpectedKey == L"*")
+        {
+          UnicodeString Message = LoadStr(ANY_CERTIFICATE);
+          FTerminal->Information(Message, true);
+          FTerminal->GetLog()->Add(llException, Message);
+          RequestResult = 1;
+        }
+        else if (ExpectedKey == FSessionInfo.CertificateFingerprint)
         {
           RequestResult = 1;
         }

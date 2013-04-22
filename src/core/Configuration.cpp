@@ -36,10 +36,12 @@ TConfiguration::TConfiguration() :
   FSessionReopenBackground(0),
   FSessionReopenTimeout(0),
   FSessionReopenAutoStall(0),
+  FProgramIniPathWrittable(0),
   FTunnelLocalPortNumberLow(0),
   FTunnelLocalPortNumberHigh(0),
   FCacheDirectoryChangesMaxSize(0),
   FShowFtpWelcomeMessage(false),
+  FTryFtpWhenSshFails(false),
   FDisablePasswordStoring(false),
   FForceBanners(false),
   FDisableAcceptingHostKeys(false),
@@ -110,6 +112,7 @@ void TConfiguration::Default()
   FCacheDirectoryChangesMaxSize = 100;
   FShowFtpWelcomeMessage = false;
   FExternalIpAddress = L"";
+  FTryFtpWhenSshFails = true;
   SetCollectUsage(FDefaultCollectUsage);
   FSessionReopenAutoMaximumNumberOfRetries = CONST_DEFAULT_NUMBER_OF_RETRIES;
   FDefaultCollectUsage = false;
@@ -126,6 +129,7 @@ void TConfiguration::Default()
   FPermanentLogActions = false;
   FActionsLogFileName = L"%TEMP%\\&S.xml";
   FPermanentActionsLogFileName = FActionsLogFileName;
+  FProgramIniPathWrittable = -1;
 
   Changed();
 }
@@ -183,6 +187,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
     KEY(Integer,  CacheDirectoryChangesMaxSize); \
     KEY(Bool,     ShowFtpWelcomeMessage); \
     KEY(String,   ExternalIpAddress); \
+    KEY(Bool,     TryFtpWhenSshFails); \
     KEY(Bool,     CollectUsage); \
     KEY(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
   ); \
@@ -279,6 +284,44 @@ void TConfiguration::Export(const UnicodeString & FileName)
   */
 }
 //---------------------------------------------------------------------------
+void TConfiguration::Import(const UnicodeString & FileName)
+{
+  Classes::Error(SNotImplemented, 3005);
+/*
+  THierarchicalStorage * Storage = NULL;
+  THierarchicalStorage * ImportStorage = NULL;
+  try
+  {
+    ImportStorage = new TIniFileStorage(FileName);
+    ImportStorage->AccessMode = smRead;
+
+    Storage = CreateScpStorage(false);
+    Storage->AccessMode = smReadWrite;
+    Storage->Explicit = true;
+
+    CopyData(ImportStorage, Storage);
+
+    Default();
+    LoadFrom(ImportStorage);
+
+    if (ImportStorage->OpenSubKey(Configuration->StoredSessionsSubKey, false))
+    {
+      StoredSessions->Clear();
+      StoredSessions->DefaultSettings->Default();
+      StoredSessions->Load(ImportStorage);
+    }
+  }
+  __finally
+  {
+    delete ImportStorage;
+    delete Storage;
+  }
+
+  // save all and explicit
+  Save(true, true);
+*/
+}
+//---------------------------------------------------------------------------
 void TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
   #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR()))
@@ -310,6 +353,15 @@ void TConfiguration::LoadAdmin(THierarchicalStorage * Storage)
   FDefaultCollectUsage = Storage->ReadBool(L"DefaultCollectUsage", FDefaultCollectUsage);
 }
 //---------------------------------------------------------------------------
+void TConfiguration::LoadFrom(THierarchicalStorage * Storage)
+{
+  if (Storage->OpenSubKey(GetConfigurationSubKey(), false))
+  {
+    LoadData(Storage);
+    Storage->CloseSubKey();
+  }
+}
+//---------------------------------------------------------------------------
 void TConfiguration::Load()
 {
   TGuard Guard(FCriticalSection);
@@ -318,12 +370,7 @@ void TConfiguration::Load()
   TRY_FINALLY (
   {
     Storage->SetAccessMode(smRead);
-    if (Storage->OpenSubKey(GetConfigurationSubKey(), false))
-    {
-      TRACE("1");
-      LoadData(Storage);
-    }
-    TRACE("2");
+    LoadFrom(Storage);
   }
   ,
   {
@@ -608,9 +655,9 @@ void TConfiguration::CleanupIniFile()
   try
   {
 #if 0
-    if (FileExists(GetIniFileStorageName()))
+    if (FileExists(GetIniFileStorageNameForReading()))
     {
-      if (!DeleteFile(GetIniFileStorageName()))
+      if (!DeleteFile(GetIniFileStorageNameForReading()))
       {
         RaiseLastOSError();
       }
@@ -743,6 +790,11 @@ UnicodeString TConfiguration::GetFileProductVersion(const UnicodeString & FileNa
   return TrimVersion(GetFileFileInfoString(L"ProductVersion", FileName));
 }
 //---------------------------------------------------------------------------
+UnicodeString TConfiguration::GetFileDescription(const UnicodeString & FileName)
+{
+  return GetFileFileInfoString(L"FileDescription", FileName);
+}
+//---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetProductVersion()
 {
   return GetFileProductVersion(L"");
@@ -818,7 +870,7 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & Key,
       }
       catch (const std::exception & e)
       {
-		(void)e;
+        (void)e;
         DEBUG_PRINTF(L"Error: %s", MB2W(e.what()).c_str());
         Result = L"";
       }
@@ -858,15 +910,54 @@ void TConfiguration::SetDefaultStorage()
 /*
 void TConfiguration::SetIniFileStorageName(const UnicodeString & Value)
 {
-  FIniFileStorageName = Value;
   FStorage = stIniFile;
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetIniFileStorageName()
+UnicodeString TConfiguration::GetIniFileStorageNameForReading()
+{
+  return GetIniFileStorageName(true);
+}
+//---------------------------------------------------------------------------
+UnicodeString TConfiguration::GetIniFileStorageNameForReadingWritting()
+{
+  return GetIniFileStorageName(false);
+}
+//---------------------------------------------------------------------------
+UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
 {
   if (FIniFileStorageName.IsEmpty())
   {
-    UnicodeString IniPath = ChangeFileExt(ParamStr(0), L".ini");
+    UnicodeString ProgramPath = ParamStr(0);
+
+    UnicodeString ProgramIniPath = ChangeFileExt(ProgramPath, L".ini");
+
+    UnicodeString IniPath;
+    if (FileExists(ProgramIniPath))
+    {
+      IniPath = ProgramIniPath;
+    }
+    else
+    {
+      UnicodeString AppDataIniPath =
+        IncludeTrailingBackslash(GetShellFolderPath(CSIDL_APPDATA)) +
+        ExtractFileName(ProgramIniPath);
+      if (FileExists(AppDataIniPath))
+      {
+        IniPath = AppDataIniPath;
+      }
+      else
+      {
+        // avoid expensive test if we are interested in existing files only
+        if (!ReadingOnly && (FProgramIniPathWrittable < 0))
+        {
+          UnicodeString ProgramDir = ExtractFilePath(ProgramPath);
+          FProgramIniPathWrittable = IsDirectoryWriteable(ProgramDir) ? 1 : 0;
+        }
+
+        // does not really matter what we return when < 0
+        IniPath = (FProgramIniPathWrittable == 0) ? AppDataIniPath : ProgramIniPath;
+      }
+    }
 
     if (FVirtualIniFileStorageName.IsEmpty() &&
         TPath::IsDriveRooted(IniPath))
@@ -1018,6 +1109,11 @@ UnicodeString TConfiguration::GetRandomSeedFileName()
 void TConfiguration::SetExternalIpAddress(const UnicodeString & Value)
 {
   SET_CONFIG_PROPERTY(ExternalIpAddress);
+}
+//---------------------------------------------------------------------
+void TConfiguration::SetTryFtpWhenSshFails(bool Value)
+{
+  SET_CONFIG_PROPERTY(TryFtpWhenSshFails);
 }
 //---------------------------------------------------------------------
 void TConfiguration::SetPuttyRegistryStorageKey(const UnicodeString & Value)

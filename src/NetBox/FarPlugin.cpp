@@ -1574,7 +1574,7 @@ void TCustomFarPlugin::HandleException(Exception * E, int /*OpMode*/)
 UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId)
 {
   TFarEnvGuard Guard;
-  UnicodeString Result = FStartupInfo.GetMsg(FStartupInfo.ModuleNumber, MsgId);
+  UnicodeString Result = FStartupInfo.GetMsg(FStartupInfo.ModuleNumber, (int)MsgId);
   return Result;
 }
 //---------------------------------------------------------------------------

@@ -193,6 +193,7 @@ private:
   TMoveLocalFileEvent FOnMoveLocalFile;
   TRemoveLocalDirectoryEvent FOnRemoveLocalDirectory;
   TCreateLocalDirectoryEvent FOnCreateLocalDirectory;
+  TNotifyEvent FOnInitializeLog;
   TRemoteTokenList FMembership;
   TRemoteTokenList FGroups;
   TRemoteTokenList FUsers;
@@ -278,6 +279,7 @@ protected:
   void DoChangeFileProperties(const UnicodeString & vFileName,
     const TRemoteFile * File, const TRemoteProperties * Properties);
   void DoChangeDirectory();
+  void DoInitializeLog();
   void EnsureNonExistence(const UnicodeString & FileName);
   void LookupUsersGroups();
   void FileModified(const TRemoteFile * File,
@@ -315,12 +317,13 @@ protected:
   void CalculateLocalFilesSize(TStrings * FileList, __int64 & Size,
     const TCopyParamType * CopyParam = NULL);
   TBatchOverwrite EffectiveBatchOverwrite(
-    intptr_t Params, TFileOperationProgressType * OperationProgress, bool Special);
-  bool CheckRemoteFile(intptr_t Params, TFileOperationProgressType * OperationProgress);
+    const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress, bool Special);
+  bool CheckRemoteFile(
+    const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress);
   uintptr_t ConfirmFileOverwrite(const UnicodeString & FileName,
     const TOverwriteFileParams * FileParams, uintptr_t Answers, const TQueryParams * QueryParams,
-    TOperationSide Side, intptr_t Params, TFileOperationProgressType * OperationProgress,
-    const UnicodeString & Message = L"");
+    TOperationSide Side, const TCopyParamType * CopyParam, intptr_t Params,
+    TFileOperationProgressType * OperationProgress, const UnicodeString & Message = L"");
   void DoSynchronizeCollectDirectory(const UnicodeString & LocalDirectory,
     const UnicodeString & RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, intptr_t Params,
@@ -515,6 +518,8 @@ public:
   void SetOnReadDirectoryProgress(TReadDirectoryProgressEvent Value) { FOnReadDirectoryProgress = Value; }
   TDeleteLocalFileEvent & GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
   void SetOnDeleteLocalFile(TDeleteLocalFileEvent Value) { FOnDeleteLocalFile = Value; }
+  TNotifyEvent & GetOnInitializeLog() { return FOnInitializeLog; }
+  void SetOnInitializeLog(TNotifyEvent Value) { FOnInitializeLog = Value; }
   TCreateLocalFileEvent & GetOnCreateLocalFile() { return FOnCreateLocalFile; }
   void SetOnCreateLocalFile(TCreateLocalFileEvent Value) { FOnCreateLocalFile = Value; }
   TGetLocalFileAttributesEvent & GetOnGetLocalFileAttributes() { return FOnGetLocalFileAttributes; }
@@ -593,9 +598,6 @@ public:
   virtual void Idle();
   void RecryptPasswords();
 
-  TTerminal * GetTerminal(intptr_t Index);
-  intptr_t GetActiveCount();
-
 protected:
   virtual TTerminal * CreateTerminal(TSessionData * Data);
 
@@ -604,6 +606,8 @@ private:
 
 public:
   void SetMasks(const UnicodeString & Value);
+  // intptr_t GetActiveCount();
+  TTerminal * GetTerminal(intptr_t Index);
 };
 //------------------------------------------------------------------------------
 struct TCustomCommandParams : public TObject

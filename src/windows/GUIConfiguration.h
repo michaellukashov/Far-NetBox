@@ -6,6 +6,7 @@
 #include "CopyParam.h"
 //---------------------------------------------------------------------------
 class TGUIConfiguration;
+class TStoredSessionList;
 enum TLogView { lvNone, lvWindow, pvPanel };
 enum TInterface { ifCommander, ifExplorer };
 //---------------------------------------------------------------------------
@@ -40,8 +41,6 @@ public:
   void SetQueueNoConfirmation(bool Value) { FQueueNoConfirmation = Value; }
   bool GetQueueIndividually() const { return FQueueIndividually; }
   void SetQueueIndividually(bool Value) { FQueueIndividually = Value; }
-  bool GetNewerOnly() const { return FNewerOnly; }
-  void SetNewerOnly(bool Value) { FNewerOnly = Value; }
 
 protected:
   void GUIDefault();
@@ -51,7 +50,6 @@ private:
   bool FQueue;
   bool FQueueNoConfirmation;
   bool FQueueIndividually;
-  bool FNewerOnly;
 };
 //---------------------------------------------------------------------------
 struct TCopyParamRuleData : public TObject
@@ -161,6 +159,8 @@ private:
   bool FQueueAutoPopup;
   bool FQueueRememberPassword;
   intptr_t FQueueTransfersLimit;
+  bool FQueueKeepDoneItems;
+  intptr_t FQueueKeepDoneItemsFor;
   TGUICopyParamType FDefaultCopyParam;
   bool FBeepOnFinish;
   TDateTime FBeepOnFinishAfter;
@@ -205,6 +205,9 @@ public:
   void SetCopyParamCurrent(const UnicodeString & Value);
   void SetNewDirectoryProperties(const TRemoteProperties & Value);
   virtual void Saved();
+  void SetQueueTransfersLimit(intptr_t Value);
+  void SetQueueKeepDoneItems(bool Value);
+  void SetQueueKeepDoneItemsFor(intptr_t Value);
 
 public:
   explicit TGUIConfiguration();
@@ -213,6 +216,10 @@ public:
   virtual void UpdateStaticUsage();
 
   HANDLE ChangeResourceModule(HANDLE Instance);
+  TStoredSessionList * SelectPuttySessionsForImport(TStoredSessionList * Sessions);
+  bool AnyPuttySessionForImport(TStoredSessionList * Sessions);
+  TStoredSessionList * SelectFilezillaSessionsForImport(TStoredSessionList * Sessions);
+  bool AnyFilezillaSessionForImport(TStoredSessionList * Sessions);
 
   bool GetContinueOnError() { return FContinueOnError; }
   void SetContinueOnError(bool Value) { FContinueOnError = Value; }
@@ -229,7 +236,8 @@ public:
   intptr_t GetMaxWatchDirectories() { return FMaxWatchDirectories; }
   void SetMaxWatchDirectories(intptr_t Value) { FMaxWatchDirectories = Value; }
   intptr_t GetQueueTransfersLimit() { return FQueueTransfersLimit; }
-  void SetQueueTransfersLimit(intptr_t Value) { FQueueTransfersLimit = Value; }
+  bool GetQueueKeepDoneItems() { return FQueueKeepDoneItems; }
+  intptr_t GetQueueKeepDoneItemsFor() { return FQueueKeepDoneItemsFor; }
   bool GetQueueAutoPopup() { return FQueueAutoPopup; }
   void SetQueueAutoPopup(bool Value) { FQueueAutoPopup = Value; }
   bool GetQueueRememberPassword() { return FQueueRememberPassword; }

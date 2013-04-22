@@ -286,7 +286,7 @@ void TTabButton::SetTabName(const UnicodeString & Value)
       C = Val;
     }
     SetCaption(C);
-    FTabName = StripHotKey(Val);
+    FTabName = StripHotkey(Val);
   }
 }
 //------------------------------------------------------------------------------
@@ -301,7 +301,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
 
   Dialog->SetSize(TPoint(67, 22));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_INTERFACE)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_INTERFACE)).c_str()));
 
   TFarCheckBox * DisksMenuCheck = new TFarCheckBox(Dialog);
   DisksMenuCheck->SetCaption(GetMsg(CONFIG_DISKS_MENU));
@@ -437,7 +437,7 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
   DialogPtr.reset(Dialog);
   Dialog->SetSize(TPoint(65, 7));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_PANEL)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_PANEL)).c_str()));
 
   TFarCheckBox * AutoReadDirectoryAfterOpCheck = new TFarCheckBox(Dialog);
   AutoReadDirectoryAfterOpCheck->SetCaption(GetMsg(CONFIG_AUTO_READ_DIRECTORY_AFTER_OP));
@@ -475,7 +475,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 
   Dialog->SetSize(TPoint(65, 15));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_LOGGING)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_LOGGING)).c_str()));
 
   TFarCheckBox * LoggingCheck = new TFarCheckBox(Dialog);
   LoggingCheck->SetCaption(GetMsg(LOGGING_ENABLE));
@@ -568,7 +568,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 bool TWinSCPPlugin::TransferConfigurationDialog()
 {
   UnicodeString Caption = FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_TRANSFER)).c_str());
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_TRANSFER)).c_str());
 
   TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
   bool Result = CopyParamDialog(Caption, CopyParam, 0);
@@ -591,7 +591,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
   Dialog->SetSize(TPoint(76, 13));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_ENDURANCE)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_ENDURANCE)).c_str()));
 
   Separator = new TFarSeparator(Dialog);
   Separator->SetCaption(GetMsg(TRANSFER_RESUME));
@@ -724,7 +724,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
 
   Dialog->SetSize(TPoint(76, 11));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_BACKGROUND)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_BACKGROUND)).c_str()));
 
   Text = new TFarText(Dialog);
   Text->SetCaption(GetMsg(TRANSFER_QUEUE_LIMIT));
@@ -814,7 +814,7 @@ TTransferEditorConfigurationDialog::TTransferEditorConfigurationDialog(
 
   SetSize(TPoint(55, 14));
   SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_TRANSFER_EDITOR)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_TRANSFER_EDITOR)).c_str()));
 
   EditorMultipleCheck = new TFarCheckBox(this);
   EditorMultipleCheck->SetCaption(GetMsg(TRANSFER_EDITOR_MULTIPLE));
@@ -921,7 +921,7 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
   DialogPtr.reset(Dialog);
   Dialog->SetSize(TPoint(65, 10));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_CONFIRMATIONS)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_CONFIRMATIONS)).c_str()));
 
   TFarCheckBox * ConfirmOverwritingCheck = new TFarCheckBox(Dialog);
   ConfirmOverwritingCheck->SetAllowGrayed(true);
@@ -981,7 +981,7 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
 
   Dialog->SetSize(TPoint(65, 14));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_INTEGRATION)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_INTEGRATION)).c_str()));
 
   Text = new TFarText(Dialog);
   Text->SetCaption(GetMsg(INTEGRATION_PUTTY));
@@ -1089,7 +1089,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   SetSize(TPoint(55, Height));
 
   SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_ABOUT)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_ABOUT)).c_str()));
   Text = new TFarText(this);
   Text->SetCaption(GetConfiguration()->GetFileInfoString(L"FileDescription"));
   Text->SetCenterGroup(true);
@@ -1776,10 +1776,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   intptr_t PWidth = PrevTab->GetWidth();
   intptr_t NWidth = NextTab->GetWidth();
   int R = S.x - 4;
-  PrevTab->SetLeft(R - PWidth - NWidth - 2);
-  PrevTab->SetWidth(PWidth);
-  NextTab->SetLeft(R - NWidth - 1);
-  NextTab->SetWidth(PWidth);
+  PrevTab->SetLeft((int)(R - PWidth - NWidth - 2));
+  PrevTab->SetWidth((int)PWidth);
+  NextTab->SetLeft((int)(R - NWidth - 1));
+  NextTab->SetWidth((int)PWidth);
 
   Index = AddTab(tabFTP, GetMsg(LOGIN_TAB_FTP).c_str());
   FtpTab = dynamic_cast<TTabButton *>(GetItem(Index));
@@ -4186,8 +4186,8 @@ void TSessionDialog::ChangeTabs(intptr_t FirstVisibleTabIndex)
   {
     TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I]);
     intptr_t Width = TabBtn->GetWidth();
-    TabBtn->SetLeft(LeftPos);
-    TabBtn->SetWidth(Width);
+    TabBtn->SetLeft((int)LeftPos);
+    TabBtn->SetWidth((int)Width);
     LeftPos += Width + 1;
     TabBtn->SetVisible(true);
   }
@@ -6980,7 +6980,7 @@ void TFullSynchronizeDialog::AdaptSize()
   if (ShowCopyParam != CopyParamLister->GetVisible())
   {
     ShowGroup(1, ShowCopyParam);
-    SetHeight(FFullHeight - (ShowCopyParam ? 0 : CopyParamLister->GetHeight() + 1));
+    SetHeight((int)(FFullHeight - (ShowCopyParam ? 0 : CopyParamLister->GetHeight() + 1)));
   }
 }
 //------------------------------------------------------------------------------

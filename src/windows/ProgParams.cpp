@@ -39,17 +39,25 @@ private:
 // {
   // return ProgramParamsOwner.Get();
 // }
-//------------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 TProgramParams::TProgramParams()
 {
-  UnicodeString CommandLine; //  = CmdLine;
+  Init(L"");
+}
+//---------------------------------------------------------------------------
+TProgramParams::TProgramParams(const UnicodeString & CmdLine)
+{
+  Init(CmdLine);
+}
+//---------------------------------------------------------------------------
+void TProgramParams::Init(const UnicodeString & CmdLine)
+{
+  UnicodeString CommandLine = CmdLine;
+
   UnicodeString Param;
-  // CutToken(CommandLine, Param); // To remove program name
-  // TRACEFMT("Program [%s]", Param.c_str());
+  CutToken(CommandLine, Param);
   while (CutToken(CommandLine, Param))
   {
-    // TRACEFMT("Param [%s]", Param.c_str());
     Add(Param);
   }
 }
-

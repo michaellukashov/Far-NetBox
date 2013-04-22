@@ -41,6 +41,7 @@ const UnicodeString AnonymousPassword(L"");
 
 const uintptr_t CONST_DEFAULT_CODEPAGE = CP_ACP;
 const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
+
 //---------------------------------------------------------------------
 static TDateTime SecToDateTime(intptr_t Sec)
 {
@@ -196,6 +197,9 @@ void TSessionData::Default()
   SetCustomParam1(L"");
   SetCustomParam2(L"");
 
+  // SetIsWorkspace(false);
+  // SetLink(L"");
+
   SetSelected(false);
   FModified = false;
   FSource = ::ssNone;
@@ -328,6 +332,9 @@ void TSessionData::NonPersistant()
   PROPERTY(CodePage); \
   PROPERTY(LoginType); \
   PROPERTY(FtpAllowEmptyPassword);
+
+  //PROPERTY(IsWorkspace); \
+  //PROPERTY(Link); \
 //---------------------------------------------------------------------
 void TSessionData::Assign(TPersistent * Source)
 {
@@ -385,6 +392,11 @@ bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly)
   }
 
   return true;
+}
+//---------------------------------------------------------------------
+bool TSessionData::IsInFolderOrWorkspace(const UnicodeString & AFolder)
+{
+  return StartsText(UnixIncludeTrailingBackslash(AFolder), GetName());
 }
 //---------------------------------------------------------------------
 void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword)
@@ -588,7 +600,8 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
 
   SetColor(Storage->ReadInteger(L"Color", GetColor()));
 
-  SetProtocolStr(Storage->ReadString(L"Protocol", GetProtocolStr()));
+  // ???
+  // SetProtocolStr(Storage->ReadString(L"Protocol", GetProtocolStr()));
 
   SetTunnel(Storage->ReadBool(L"Tunnel", GetTunnel()));
   SetTunnelPortNumber(Storage->ReadInteger(L"TunnelPortNumber", GetTunnelPortNumber()));
@@ -624,6 +637,9 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetSslSessionReuse(Storage->ReadBool(L"SslSessionReuse", GetSslSessionReuse()));
 
   SetFtpProxyLogonType(Storage->ReadInteger(L"FtpProxyLogonType", GetFtpProxyLogonType()));
+
+  // SetIsWorkspace(Storage->ReadBool(L"IsWorkspace", GetIsWorkspace()));
+  // SetLink(Storage->ReadString(L"Link", GetLink()));
 
   SetCustomParam1(Storage->ReadString(L"CustomParam1", GetCustomParam1()));
   SetCustomParam2(Storage->ReadString(L"CustomParam2", GetCustomParam2()));
@@ -875,11 +891,6 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     Storage->DeleteValue(L"BuggyMAC");
     Storage->DeleteValue(L"AliasGroupList");
 
-    if (PuttyExport)
-    {
-      WRITE_DATA_EX(String, L"Protocol", GetProtocolStr(), );
-    }
-
     if (!PuttyExport)
     {
       WRITE_DATA(String, SftpServer);
@@ -930,6 +941,134 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     Storage->CloseSubKey();
   }
 }
+//---------------------------------------------------------------------
+/*UnicodeString TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default)
+{
+  _di_IXMLNode TheNode = Node->ChildNodes->FindNode(Name);
+  UnicodeString Result;
+  if (TheNode != NULL)
+  {
+    Result = TheNode->Text.Trim();
+  }
+
+  if (Result.IsEmpty())
+  {
+    Result = Default;
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------
+int TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int Default)
+{
+  _di_IXMLNode TheNode = Node->ChildNodes->FindNode(Name);
+  int Result;
+  if (TheNode != NULL)
+  {
+    Result = StrToIntDef(TheNode->Text.Trim(), Default);
+  }
+  else
+  {
+    Result = Default;
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------
+void TSessionData::ImportFromFilezilla(_di_IXMLNode Node)
+{
+  Name = ReadXmlNode(Node, L"Name", Name);
+  HostName = ReadXmlNode(Node, L"Host", HostName);
+  PortNumber = ReadXmlNode(Node, L"Port", PortNumber);
+
+  int AProtocol = ReadXmlNode(Node, L"Protocol", 0);
+  // ServerProtocol enum
+  switch (AProtocol)
+  {
+    case 0: // FTP
+    default: // UNKNOWN, HTTP, HTTPS, INSECURE_FTP
+      FSProtocol = fsFTP;
+      break;
+
+    case 1: // SFTP
+      FSProtocol = fsSFTP;
+      break;
+
+    case 3: // FTPS
+      FSProtocol = fsFTP;
+      Ftps = ftpsImplicit;
+      break;
+
+    case 4: // FTPES
+      FSProtocol = fsFTP;
+      Ftps = ftpsExplicitSsl;
+      break;
+  }
+
+  // LogonType enum
+  int LogonType = ReadXmlNode(Node, L"LogonType", 0);
+  if (LogonType == 0) // ANONYMOUS
+  {
+    UserName = AnonymousUserName;
+    Password = AnonymousPassword;
+  }
+  else
+  {
+    UserName = ReadXmlNode(Node, L"User", UserName);
+    Password = ReadXmlNode(Node, L"Pass", Password);
+    FtpAccount = ReadXmlNode(Node, L"Account", FtpAccount);
+  }
+
+  int DefaultTimeDifference = TimeToMSec(TimeDifference) / MSecsPerSec;
+  TimeDifference =
+    (double(ReadXmlNode(Node, L"TimezoneOffset", DefaultTimeDifference) / SecsPerDay));
+
+  UnicodeString PasvMode = ReadXmlNode(Node, L"PasvMode", L"");
+  if (SameText(PasvMode, L"MODE_PASSIVE"))
+  {
+    FtpPasvMode = true;
+  }
+  else if (SameText(PasvMode, L"MODE_ACTIVE"))
+  {
+    FtpPasvMode = false;
+  }
+
+  UnicodeString EncodingType = ReadXmlNode(Node, L"EncodingType", L"");
+  if (SameText(EncodingType, L"Auto"))
+  {
+    NotUtf = asAuto;
+  }
+  else if (SameText(EncodingType, L"UTF-8"))
+  {
+    NotUtf = asOff;
+  }
+
+  // todo PostLoginCommands
+
+  LocalDirectory = ReadXmlNode(Node, L"LocalDir", LocalDirectory);
+
+  UnicodeString RemoteDir = ReadXmlNode(Node, L"RemoteDir", L"");
+  if (!RemoteDir.IsEmpty())
+  {
+    CutToChar(RemoteDir, L' ', false); // type
+    int PrefixSize = StrToIntDef(CutToChar(RemoteDir, L' ', false), 0); // prefix size
+    if (PrefixSize > 0)
+    {
+      RemoteDir.Delete(1, PrefixSize);
+    }
+    RemoteDirectory = L"/";
+    while (!RemoteDir.IsEmpty())
+    {
+      int SegmentSize = StrToIntDef(CutToChar(RemoteDir, L' ', false), 0);
+      UnicodeString Segment = RemoteDir.SubString(1, SegmentSize);
+      RemoteDirectory = UnixIncludeTrailingBackslash(RemoteDirectory) + Segment;
+      RemoteDir.Delete(1, SegmentSize + 1);
+    }
+  }
+
+  SynchronizeBrowsing = (ReadXmlNode(Node, L"SyncBrowsing", SynchronizeBrowsing ? 1 : 0) != 0);
+
+}*/
 //---------------------------------------------------------------------
 void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExport)
 {
@@ -1143,7 +1282,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     {
 
       TSessionData * AData = static_cast<TSessionData *>(StoredSessions->Items[Index]);
-      if (
+      if (// !AData->GetIsWorkspace() &&
           AnsiSameText(AData->GetName(), DecodedUrl) ||
           AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
       {
@@ -1156,7 +1295,6 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
 
     if (Data != NULL)
     {
-      DefaultsOnly = false;
       Assign(Data);
       int P = 1;
       while (!AnsiSameText(DecodeUrlChars(url.SubString(1, P)), Data->GetName()))
@@ -1856,24 +1994,6 @@ bool TSessionData::GetDefaultShell()
 {
   return GetShell().IsEmpty();
 }
-//---------------------------------------------------------------------------
-void TSessionData::SetProtocolStr(const UnicodeString & Value)
-{
-  FProtocol = ptRaw;
-  for (intptr_t Index = 0; Index < PROTOCOL_COUNT; ++Index)
-  {
-    if (Value.CompareIC(ProtocolNames[Index]) == 0)
-    {
-      FProtocol = static_cast<TProtocol>(Index);
-      break;
-    }
-  }
-}
-//---------------------------------------------------------------------
-UnicodeString TSessionData::GetProtocolStr() const
-{
-  return ProtocolNames[GetProtocol()];
-}
 //---------------------------------------------------------------------
 void TSessionData::SetPingIntervalDT(TDateTime Value)
 {
@@ -2563,6 +2683,16 @@ void TSessionData::SetNotUtf(TAutoSwitch Value)
   SET_SESSION_PROPERTY(NotUtf);
 }
 //---------------------------------------------------------------------
+/*void TSessionData::SetIsWorkspace(bool Value)
+{
+  SET_SESSION_PROPERTY(IsWorkspace);
+}
+//---------------------------------------------------------------------
+void TSessionData::SetLink(UnicodeString Value)
+{
+  SET_SESSION_PROPERTY(Link);
+}*/
+//---------------------------------------------------------------------
 void TSessionData::SetHostKey(const UnicodeString & Value)
 {
   SET_SESSION_PROPERTY(HostKey);
@@ -2572,10 +2702,10 @@ UnicodeString TSessionData::GetInfoTip()
 {
   if (GetUsesSsh())
   {
-    return FMTLOAD(SESSION_INFO_TIP,
+    return FMTLOAD(SESSION_INFO_TIP2,
         GetHostName().c_str(), GetUserName().c_str(),
          (GetPublicKeyFile().IsEmpty() ? LoadStr(NO_STR).c_str() : LoadStr(YES_STR).c_str()),
-         GetSshProtStr().c_str(), GetFSProtocolStr().c_str());
+         GetFSProtocolStr().c_str());
   }
   else
   {
@@ -2599,6 +2729,20 @@ UnicodeString TSessionData::GetLocalName()
   else
   {
     Result = GetDefaultSessionName();
+  }
+  return Result;
+}
+//---------------------------------------------------------------------
+UnicodeString TSessionData::GetFolderName()
+{
+  UnicodeString Result;
+  if (HasSessionName()) // || GetIsWorkspace())
+  {
+    intptr_t P = GetName().LastDelimiter(L"/");
+    if (P > 0)
+    {
+      Result = GetName().SubString(1, P - 1);
+    }
   }
   return Result;
 }
@@ -3089,7 +3233,7 @@ void TStoredSessionList::UpdateStaticUsage()
 TSessionData * TStoredSessionList::FindSame(TSessionData * Data)
 {
   TSessionData * Result;
-  if (Data->GetHidden() || Data->GetName().IsEmpty())
+  if (Data->GetHidden() || Data->GetName().IsEmpty()) // || Data->GetIsWorkspace())
   {
     Result = NULL;
   }
@@ -3204,24 +3348,6 @@ void TStoredSessionList::ImportHostKeys(const UnicodeString & TargetKey,
   );
 }
 //---------------------------------------------------------------------------
-TSessionData * TStoredSessionList::ParseUrl(const UnicodeString & Url,
-  TOptions * Options, bool & DefaultsOnly, UnicodeString * FileName,
-  bool * AProtocolDefined, UnicodeString * MaskedUrl)
-{
-  TSessionData * Data = new TSessionData(L"");
-  try
-  {
-    Data->ParseUrl(Url, Options, this, DefaultsOnly, FileName, AProtocolDefined, MaskedUrl);
-  }
-  catch(...)
-  {
-    delete Data;
-    throw;
-  }
-
-  return Data;
-}
-//---------------------------------------------------------------------------
 TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString & SessionName)
 {
   for (intptr_t I = 0; I < GetCount(); ++I)
@@ -3243,6 +3369,184 @@ void TStoredSessionList::Load(const UnicodeString & AKey, bool UseDefaults)
   {
     Load(Storage.get(), false, UseDefaults);
   }
+}
+//---------------------------------------------------------------------------
+bool TStoredSessionList::IsFolderOrWorkspace(
+  const UnicodeString & Name, bool Workspace)
+{
+  bool Result = false;
+  TSessionData * FirstData = NULL;
+  if (!Name.IsEmpty())
+  {
+    for (intptr_t Index = 0; !Result && (Index < GetCount()); Index++)
+    {
+      Result = GetSession(Index)->IsInFolderOrWorkspace(Name);
+      if (Result)
+      {
+        FirstData = GetSession(Index);
+      }
+    }
+  }
+
+  return
+    Result &&
+    ALWAYS_TRUE(FirstData != NULL) &&
+    (FirstData->IsWorkspace() == Workspace);
+}
+//---------------------------------------------------------------------------
+bool TStoredSessionList::IsFolder(const UnicodeString & Name)
+{
+  return IsFolderOrWorkspace(Name, false);
+}
+//---------------------------------------------------------------------------
+bool TStoredSessionList::IsWorkspace(const UnicodeString & Name)
+{
+  return IsFolderOrWorkspace(Name, true);
+}
+//---------------------------------------------------------------------------
+TSessionData * TStoredSessionList::CheckIsInFolderOrWorkspaceAndResolve(
+  TSessionData * Data, const UnicodeString & Name)
+{
+  if (Data->IsInFolderOrWorkspace(Name))
+  {
+    Data = ResolveSessionData(Data);
+
+    if ((Data != NULL) && Data->GetCanLogin()) // &&
+        // ALWAYS_TRUE(Data->Link.IsEmpty()))
+    {
+      return Data;
+    }
+  }
+  return NULL;
+}
+//---------------------------------------------------------------------------
+void TStoredSessionList::GetFolderOrWorkspace(const UnicodeString & Name, TList * List)
+{
+  for (intptr_t Index = 0; (Index < GetCount()); Index++)
+  {
+    TSessionData * Data =
+      CheckIsInFolderOrWorkspaceAndResolve(GetSession(Index), Name);
+
+    if (Data != NULL)
+    {
+      TSessionData * Data2 = new TSessionData(L"");
+      Data2->Assign(Data);
+      List->Add(Data2);
+    }
+  }
+}
+//---------------------------------------------------------------------------
+TStrings * TStoredSessionList::GetFolderOrWorkspaceList(
+  const UnicodeString & Name)
+{
+  std::auto_ptr<TStringList> Result(new TStringList());
+
+  for (intptr_t Index = 0; Index < GetCount(); Index++)
+  {
+    TSessionData * Data =
+      CheckIsInFolderOrWorkspaceAndResolve(GetSession(Index), Name);
+
+    if (Data != NULL)
+    {
+      Result->Add(Data->GetSessionName());
+    }
+  }
+
+  return Result.release();
+}
+//---------------------------------------------------------------------------
+TStrings * TStoredSessionList::GetWorkspaces()
+{
+  std::auto_ptr<TStringList> Result(new TStringList());
+  Result->Sorted = true;
+  Result->Duplicates = dupIgnore;
+  Result->CaseSensitive = false;
+
+  for (intptr_t Index = 0; Index < GetCount(); Index++)
+  {
+    TSessionData * Data = GetSession(Index);
+    if (Data->IsWorkspace())
+    {
+      Result->Add(Data->GetFolderName());
+    }
+  }
+
+  return Result.release();
+}
+//---------------------------------------------------------------------------
+void TStoredSessionList::NewWorkspace(
+  const UnicodeString & Name, TList * DataList)
+{
+  for (intptr_t Index = 0; Index < GetCount(); Index++)
+  {
+    TSessionData * Data = GetSession(Index);
+    if (Data->IsInFolderOrWorkspace(Name))
+    {
+      Data->Remove();
+      Remove(Data);
+      Index--;
+    }
+  }
+
+  for (intptr_t Index = 0; Index < DataList->GetCount(); Index++)
+  {
+    TSessionData * Data = static_cast<TSessionData *>(DataList->Items[Index]);
+
+    TSessionData * Data2 = new TSessionData(L"");
+    Data2->Assign(Data);
+    Data2->SetName(Name + L"/" + Data->GetName());
+    // make sure, that new stored session is saved to registry
+    Data2->SetModified(true);
+    Add(Data2);
+  }
+}
+//---------------------------------------------------------------------------
+bool TStoredSessionList::HasAnyWorkspace()
+{
+  bool Result = false;
+  for (intptr_t Index = 0; !Result && (Index < GetCount()); Index++)
+  {
+    TSessionData * Data = GetSession(Index);
+    Result = Data->IsWorkspace();
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+TSessionData * TStoredSessionList::ParseUrl(const UnicodeString & Url,
+  TOptions * Options, bool & DefaultsOnly, UnicodeString * FileName,
+  bool * AProtocolDefined, UnicodeString * MaskedUrl)
+{
+  TSessionData * Data = new TSessionData(L"");
+  try
+  {
+    Data->ParseUrl(Url, Options, this, DefaultsOnly, FileName, AProtocolDefined, MaskedUrl);
+  }
+  catch(...)
+  {
+    delete Data;
+    throw;
+  }
+
+  return Data;
+}
+//---------------------------------------------------------------------
+TSessionData * TStoredSessionList::ResolveSessionData(TSessionData * Data)
+{
+  /*if (!Data->GetLink().IsEmpty())
+  {
+    Data = dynamic_cast<TSessionData *>(FindByName(Data->GetLink()));
+    if (Data != NULL)
+    {
+      Data = ResolveSessionData(Data);
+    }
+  }*/
+  return Data;
+}
+//---------------------------------------------------------------------
+bool TStoredSessionList::CanLogin(TSessionData * Data)
+{
+  Data = ResolveSessionData(Data);
+  return (Data != NULL) && Data->GetCanLogin();
 }
 //---------------------------------------------------------------------
 //---------------------------------------------------------------------
@@ -3274,7 +3578,7 @@ uintptr_t GetCodePageAsNumber(const UnicodeString & CodePage)
 UnicodeString GetCodePageAsString(uintptr_t cp)
 {
   CPINFOEX cpInfoEx;
-  if (::GetCodePageInfo(cp, cpInfoEx))
+  if (::GetCodePageInfo((UINT)cp, cpInfoEx))
   {
     return UnicodeString(cpInfoEx.CodePageName);
   }

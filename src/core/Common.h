@@ -107,6 +107,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & S, TDateTime & DateTime);
 LCID GetDefaultLCID();
 UnicodeString DefaultEncodingName();
 UnicodeString WindowsProductName();
+bool IsDirectoryWriteable(const UnicodeString & Path);
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);
@@ -199,31 +200,13 @@ private:
 #define TRACEE
 #define TRACE_EXCEPT
 #define ALWAYS_TRUE(p) p
+#define ALWAYS_FALSE(p) p
+#define NOT_NULL(P) P
 #else
-//!CLEANBEGIN
-#ifndef DESIGN_ONLY
-#undef assert
-void DoAssert(wchar_t * Message, wchar_t * Filename, int LineNumber);
-inline bool DoAlwaysTrue(bool Value, wchar_t * Message, wchar_t * Filename, int LineNumber)
-{
-  if (!Value)
-  {
-    DoAssert(Message, Filename, LineNumber);
-  }
-  return Value;
-}
-#define assert(p) ((p) ? (void)0 : DoAssert(TEXT(#p), TEXT(__FILE__), __LINE__))
-#endif // ifndef DESIGN_ONLY
-//!CLEANEND
 #define CHECK(p) { bool __CHECK_RESULT__ = (p); assert(__CHECK_RESULT__); }
 #define FAIL assert(false)
-#define TRACE_EXCEPT_BEGIN try {
-#define TRACE_EXCEPT_END } catch (Exception & TraceE) { TRACEFMT("E [%s]", TraceE.Message.c_str()); throw; }
-#define TRACE_CATCH_ALL catch (Exception & TraceE)
-#define TRACEE_(E) TRACEFMT(#E L" [%s]", E.Message.c_str())
-#define TRACEE TRACEE_(E)
-#define TRACE_EXCEPT TRACEE_(TraceE)
-#define ALWAYS_TRUE(p) DoAlwaysTrue(p, TEXT(#p), TEXT(__FILE__), __LINE__)
+#define ALWAYS_TRUE(p) p
+#define ALWAYS_FALSE(p) p
 #define CLEAN_INLINE
 #endif
 #ifndef USEDPARAM

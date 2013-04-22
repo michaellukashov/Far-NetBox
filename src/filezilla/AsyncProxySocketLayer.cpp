@@ -1116,7 +1116,9 @@ BOOL CAsyncProxySocketLayer::Listen( int nConnectionBacklog)
 BOOL CAsyncProxySocketLayer::GetPeerName(CString &rPeerAddress, UINT &rPeerPort)
 {
 	if (m_ProxyData.nProxyType==PROXYTYPE_NOPROXY)
+	{
 		return GetPeerNameNext(rPeerAddress, rPeerPort);
+	}
 
 	if (GetLayerState()==notsock)
 	{

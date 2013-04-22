@@ -96,7 +96,7 @@ private:
 //---------------------------------------------------------------------------
 DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal);
 //---------------------------------------------------------------------------
-// exception that closes application, but displayes info message (not error message)
+// exception that closes application, but displays info message (not error message)
 // = close on completion
 class ESshTerminate : public EFatal
 {

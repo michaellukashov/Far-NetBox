@@ -331,7 +331,7 @@ bool DeleteDirectory(const UnicodeString & DirName)
 
     if (retval)
     {
-      while (FindNext(sr) == 0)
+      while (FindNextChecked(sr) == 0)
       { // VCL Function
         if (FLAGSET(sr.Attr, faDirectory))
         {

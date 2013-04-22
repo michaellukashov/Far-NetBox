@@ -133,7 +133,7 @@ protected:
 #ifdef MPEXT
 	bool IsRoutableAddress(const CString & host);
 	bool CheckForcePasvIp(CString & host);
-	void TransferFinished();
+	void TransferFinished(bool preserveFileTimeForUploads);
 #endif
 
 	CFile *m_pDataFile;
@@ -159,7 +159,6 @@ protected:
 	bool m_bAnnouncesUTF8;
 	bool m_hasClntCmd;
 #ifdef MPEXT
-	bool m_hasMfmtCmd;
 	TFTPServerCapabilities m_serverCapabilities;
 	CStringA m_ListFile;
 #endif

@@ -9,6 +9,7 @@
 #include <TextsCore.h>
 #include <Terminal.h>
 #include <CoreMain.h>
+#include <shlobj.h>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -55,7 +56,6 @@ void TGUICopyParamType::GUIAssign(const TGUICopyParamType * Source)
   SetQueue(Source->GetQueue());
   SetQueueNoConfirmation(Source->GetQueueNoConfirmation());
   SetQueueIndividually(Source->GetQueueIndividually());
-  SetNewerOnly(Source->GetNewerOnly());
 }
 //---------------------------------------------------------------------------
 void TGUICopyParamType::Default()
@@ -70,7 +70,6 @@ void TGUICopyParamType::GUIDefault()
   SetQueue(false);
   SetQueueNoConfirmation(true);
   SetQueueIndividually(false);
-  SetNewerOnly(false);
 }
 //---------------------------------------------------------------------------
 void TGUICopyParamType::Load(THierarchicalStorage * Storage)
@@ -80,7 +79,6 @@ void TGUICopyParamType::Load(THierarchicalStorage * Storage)
   SetQueue(Storage->ReadBool(L"Queue", GetQueue()));
   SetQueueNoConfirmation(Storage->ReadBool(L"QueueNoConfirmation", GetQueueNoConfirmation()));
   SetQueueIndividually(Storage->ReadBool(L"QueueIndividually", GetQueueIndividually()));
-  SetNewerOnly(Storage->ReadBool(L"NewerOnly", GetNewerOnly()));
 }
 //---------------------------------------------------------------------------
 void TGUICopyParamType::Save(THierarchicalStorage * Storage)
@@ -90,7 +88,6 @@ void TGUICopyParamType::Save(THierarchicalStorage * Storage)
   Storage->WriteBool(L"Queue", GetQueue());
   Storage->WriteBool(L"QueueNoConfirmation", GetQueueNoConfirmation());
   Storage->WriteBool(L"QueueIndividually", GetQueueIndividually());
-  Storage->WriteBool(L"NewerOnly", GetNewerOnly());
 }
 //---------------------------------------------------------------------------
 TGUICopyParamType & TGUICopyParamType::operator =(const TCopyParamType & rhp)
@@ -538,6 +535,8 @@ TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
   FQueueAutoPopup(false),
   FQueueRememberPassword(false),
   FQueueTransfersLimit(0),
+  FQueueKeepDoneItems(false),
+  FQueueKeepDoneItemsFor(0),
   FBeepOnFinish(false),
   FCopyParamList(NULL),
   FCopyParamListDefaults(false),
@@ -579,6 +578,8 @@ void TGUIConfiguration::Default()
   FMaxWatchDirectories = 500;
   FSynchronizeOptions = soRecurse | soSynchronizeAsk;
   FQueueTransfersLimit = 2;
+  FQueueKeepDoneItems = true;
+  FQueueKeepDoneItemsFor = 15;
   FQueueAutoPopup = true;
   FQueueRememberPassword = false;
   UnicodeString ProgramsFolder;
@@ -595,7 +596,7 @@ void TGUIConfiguration::Default()
   FCopyParamCurrent = L"";
   FKeepUpToDateChangeDelay = 500;
   FChecksumAlg = L"md5";
-  FSessionReopenAutoIdle = 5000;
+  FSessionReopenAutoIdle = 9000;
 
   FNewDirectoryProperties.Default();
   FNewDirectoryProperties.Rights = TRights::rfDefault | TRights::rfExec;
@@ -624,7 +625,8 @@ void TGUIConfiguration::DefaultLocalized()
 
       CopyParam = new TCopyParamType(FDefaultCopyParam);
       CopyParam->GetIncludeFileMask().SetMasks(L"|*.bak; *.tmp; ~$*; *.wbk; *~; #*; .#*");
-      FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_EXCLUDE), CopyParam, NULL);
+      CopyParam->SetNewerOnly(true);
+      FCopyParamList->Add(LoadStr(COPY_PARAM_NEWER_ONLY), CopyParam, NULL);
     }
 
     FCopyParamList->Reset();
@@ -658,6 +660,8 @@ UnicodeString TGUIConfiguration::PropertyToKey(const UnicodeString & Property)
     KEY(Integer,  SynchronizeMode); \
     KEY(Integer,  MaxWatchDirectories); \
     KEY(Integer,  QueueTransfersLimit); \
+    KEY(Integer,  QueueKeepDoneItems); \
+    KEY(Integer,  QueueKeepDoneItemsFor); \
     KEY(Bool,     QueueAutoPopup); \
     KEY(Bool,     QueueRememberPassword); \
     KEY(String,   PuttySession); \
@@ -738,8 +742,8 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     // must be loaded before eventual setting defaults for CopyParamList
     FDefaultCopyParam.Load(Storage);
 
-    intptr_t CopyParamListCount = Storage->ReadInteger(L"CopyParamList", -1);
-    FCopyParamListDefaults = ((int)CopyParamListCount < 0);
+    int CopyParamListCount = Storage->ReadInteger(L"CopyParamList", -1);
+    FCopyParamListDefaults = (CopyParamListCount < 0);
     if (!FCopyParamListDefaults)
     {
       FCopyParamList->Clear();
@@ -992,7 +996,7 @@ TStrings * TGUIConfiguration::GetLocales()
           LocalesExts += Ext;
           Exts->Add(Ext);
         }
-        Found = (FindNext(SearchRec) == 0);
+        Found = (FindNextChecked(SearchRec) == 0);
       }
     }
     ,
@@ -1180,6 +1184,94 @@ void TGUIConfiguration::SetNewDirectoryProperties(
   const TRemoteProperties & Value)
 {
   SET_CONFIG_PROPERTY(NewDirectoryProperties);
+}
+//---------------------------------------------------------------------------
+void TGUIConfiguration::SetQueueTransfersLimit(intptr_t Value)
+{
+  SET_CONFIG_PROPERTY(QueueTransfersLimit);
+}
+//---------------------------------------------------------------------------
+void TGUIConfiguration::SetQueueKeepDoneItems(bool Value)
+{
+  SET_CONFIG_PROPERTY(QueueKeepDoneItems);
+}
+//---------------------------------------------------------------------------
+void TGUIConfiguration::SetQueueKeepDoneItemsFor(intptr_t Value)
+{
+  SET_CONFIG_PROPERTY(QueueKeepDoneItemsFor);
+}
+//---------------------------------------------------------------------
+TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
+  TStoredSessionList * Sessions)
+{
+  std::auto_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
+  ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
+
+  std::auto_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetPuttySessionsKey()));
+  Storage->SetForceAnsi(true);
+  if (Storage->OpenRootKey(false))
+  {
+    ImportSessionList->Load(Storage.get(), false, true);
+  }
+
+  TSessionData * PuttySessionData =
+    static_cast<TSessionData *>(ImportSessionList->FindByName(GetPuttySession()));
+  if (PuttySessionData != NULL)
+  {
+    ImportSessionList->Remove(PuttySessionData);
+  }
+  ImportSessionList->SelectSessionsToImport(Sessions, true);
+
+  return ImportSessionList.release();
+}
+//---------------------------------------------------------------------
+bool TGUIConfiguration::AnyPuttySessionForImport(TStoredSessionList * Sessions)
+{
+  try
+  {
+    std::auto_ptr<TStoredSessionList> Sesssions(SelectPuttySessionsForImport(Sessions));
+    return (Sesssions->GetCount() > 0);
+  }
+  catch (...)
+  {
+    return false;
+  }
+}
+//---------------------------------------------------------------------
+TStoredSessionList * TGUIConfiguration::SelectFilezillaSessionsForImport(
+  TStoredSessionList * Sessions)
+{
+/*
+  std::auto_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
+  ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
+
+  UnicodeString AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
+  UnicodeString FilezillaSiteManagerFile =
+    IncludeTrailingBackslash(AppDataPath) + L"FileZilla\\sitemanager.xml";
+
+  if (FileExists(FilezillaSiteManagerFile))
+  {
+    ImportSessionList->ImportFromFilezilla(FilezillaSiteManagerFile);
+
+    ImportSessionList->SelectSessionsToImport(Sessions, true);
+  }
+
+  return ImportSessionList.release();
+*/
+  return NULL;
+}
+//---------------------------------------------------------------------
+bool TGUIConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessions)
+{
+  try
+  {
+    std::auto_ptr<TStoredSessionList> Sesssions(SelectFilezillaSessionsForImport(Sessions));
+    return (Sesssions->GetCount() > 0);
+  }
+  catch (...)
+  {
+    return false;
+  }
 }
 //---------------------------------------------------------------------------
 UnicodeString TGUIConfiguration::GetPuttyPath()

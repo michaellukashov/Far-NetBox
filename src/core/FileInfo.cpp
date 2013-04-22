@@ -33,6 +33,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
   }
   if (Module == NULL)
   {
+    Len = 0;
   }
   else
   {

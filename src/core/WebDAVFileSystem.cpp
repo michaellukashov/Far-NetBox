@@ -7253,9 +7253,8 @@ end_207_element(
 
       if (ne_parse_statusline(b->cdata->data, &status) == 0)
       {
-        // I wanted ||=, but I guess the end result is the same
         if (!b->in_propstat)
-          b->contains_error |= (status.klass != 2);
+          b->contains_error = b->contains_error || (status.klass != 2);
         else
           b->propstat_has_error = (status.klass != 2);
 
@@ -7273,7 +7272,7 @@ end_207_element(
 
     case ELEM_propstat:
       b->in_propstat = FALSE;
-      b->contains_error |= b->propstat_has_error;
+      b->contains_error = b->contains_error || b->propstat_has_error;
       stringbuf_appendcstr(b->description,
         apr_psprintf(b->req->pool,
           "Error setting property '%s': ",
@@ -11208,7 +11207,7 @@ convert_neon_failures(
 {
   apr_uint32_t failures = 0;
 
-  for (apr_size_t i = 0; i < sizeof(neon_failure_map) / (2 * sizeof(int)); ++i)
+  for (apr_size_t i = 0; i < sizeof(neon_failure_map) / (2 * sizeof(apr_uint32_t)); ++i)
   {
     if (neon_failures & neon_failure_map[i][0])
     {
@@ -12619,7 +12618,9 @@ void TWebDAVFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
 //------------------------------------------------------------------------------
 bool TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & FileName,
   TOverwriteMode & OverwriteMode, TFileOperationProgressType * OperationProgress,
-  const TOverwriteFileParams * FileParams, intptr_t Params, bool AutoResume,
+  const TOverwriteFileParams * FileParams,
+  const TCopyParamType * CopyParam, intptr_t Params,
+  bool AutoResume,
   uintptr_t & Answer)
 {
   bool Result;
@@ -12655,7 +12656,7 @@ bool TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & FileName,
       Answer = FTerminal->ConfirmFileOverwrite(FileName, FileParams,
                  Answers, &QueryParams,
                  OperationProgress->Side == osLocal ? osRemote : osLocal,
-                 Params, OperationProgress);
+                 CopyParam, Params, OperationProgress);
     )
   }
 
@@ -12888,7 +12889,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
           Answer = FTerminal->ConfirmFileOverwrite(
             RealFileName /*not used*/, NULL,
             qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
-            &QueryParams, osRemote, Params, OperationProgress, Message);
+            &QueryParams, osRemote, CopyParam, Params, OperationProgress, Message);
         );
         switch (Answer)
         {
@@ -12924,7 +12925,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
         TOverwriteMode OverwriteMode = omOverwrite;
         bool AutoResume = false;
         ConfirmOverwrite(FileNameOnly, OverwriteMode, OperationProgress,
-            &FileParams, Params, AutoResume, Answer);
+            &FileParams, CopyParam, Params, AutoResume, Answer);
         switch (Answer)
         {
           case qaYes:
@@ -13320,7 +13321,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
         Answer = FTerminal->ConfirmFileOverwrite(
           FileNameOnly /*not used*/, NULL,
           qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
-          &QueryParams, osRemote, Params, OperationProgress, Message);
+          &QueryParams, osRemote, CopyParam, Params, OperationProgress, Message);
       );
       switch (Answer)
       {
@@ -13394,7 +13395,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       TOverwriteMode OverwriteMode = omOverwrite;
       bool AutoResume = false;
       ConfirmOverwrite(DestFullName, OverwriteMode, OperationProgress,
-          &FileParams, Params, AutoResume, Answer);
+          &FileParams, CopyParam, Params, AutoResume, Answer);
       switch (Answer)
       {
         case qaCancel:
@@ -13462,7 +13463,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       if ((NewAttrs & LocalFileAttrs) != NewAttrs)
       {
         FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, LocalFileAttrs | NewAttrs) == 0);
+          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, (DWORD)(LocalFileAttrs | NewAttrs)) == 0);
         );
       }
       // set time

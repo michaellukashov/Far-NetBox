@@ -47,6 +47,7 @@ private:
   bool FOpened;
   int FWaiting;
   bool FSimple;
+  bool FNoConnectionResponse;
 
   intptr_t PendLen;
   intptr_t PendSize;
@@ -85,9 +86,11 @@ private:
   bool EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     WSANETWORKEVENTS * Events);
   void UpdateSessionInfo();
+  // bool GetReady();
   void DispatchSendBuffer(uintptr_t BufSize);
   void SendBuffer(uintptr_t & Result);
   uintptr_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
+  bool TryFtp();
 
 protected:
   TCaptureOutputEvent FOnCaptureOutput;
@@ -96,11 +99,11 @@ protected:
   int TranslatePuttyMessage(const TPuttyTranslation * Translation,
     intptr_t Count, UnicodeString & Message) const;
   int TranslateAuthenticationMessage(UnicodeString & Message) const;
-  int TranslateErrorMessage(UnicodeString & Message) const;
+  int TranslateErrorMessage(UnicodeString & Message);
   void AddStdError(const UnicodeString & Str);
   void AddStdErrorLine(const UnicodeString & Str);
-  void FatalError(Exception * E, const UnicodeString & Msg);
   void LogEvent(const UnicodeString & Str);
+  // void FatalError(Exception * E, const UnicodeString & Msg);
   void FatalError(const UnicodeString & Error);
   static void ClearConfig(Config * cfg);
   static void StoreToConfig(TSessionData * Data, Config * cfg, bool Simple);
