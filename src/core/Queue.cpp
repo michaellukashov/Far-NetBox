@@ -1069,7 +1069,7 @@ void TTerminalQueue::ProcessEvent()
         if (FEnabled || (ForcedIndex >= 0))
         {
           if ((FFreeTerminals == 0) &&
-              ((FTransfersLimit < 0) ||
+              ((FTransfersLimit <= 0) ||
                (FTerminals->GetCount() < FTransfersLimit + FTemporaryTerminals)))
           {
             FOverallTerminals++;
