@@ -3,18 +3,15 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#define TRACE_TIMESTAMP TRACING
-
-#include <assert.h>
-#include <math.h>
-#include <shlobj.h>
-
 #include "Common.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
 #include "Interface.h"
 #include <StrUtils.hpp>
 #include <DateUtils.hpp>
+#include <assert.h>
+#include <math.h>
+#include <shlobj.h>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -22,208 +19,6 @@
 #include "FarPlugin.h"
 #endif
 //---------------------------------------------------------------------------
-//!CLEANBEGIN
-#ifdef _DEBUG
-#include <stdio.h>
-#ifdef NETBOX_DEBUG
-bool IsTracing = true;
-#else
-bool IsTracing = false;
-#endif
-//---------------------------------------------------------------------------
-#ifdef TRACE_IN_MEMORY
-struct TTraceInMemory
-{
-  DWORD Ticks;
-  DWORD Thread;
-  const wchar_t * SourceFile;
-  const wchar_t * Func;
-  int Line;
-  const wchar_t * Message;
-};
-typedef std::vector<TTraceInMemory> TTracesInMemory;
-TTracesInMemory TracesInMemory;
-//---------------------------------------------------------------------------
-int TraceThreadProc(void *)
-{
-  TRACE(">");
-  try
-  {
-    do
-    {
-      TRACE("2");
-      TraceDumpToFile();
-      TRACE("3");
-      Sleep(60000);
-      TRACE("4");
-      // if resuming from sleep causes the previous Sleep to immediately break,
-      // make sure we wait a little more before dumping
-      Sleep(60000);
-      TRACE("5");
-    }
-    while (true);
-  }
-  catch(...)
-  {
-    TRACE("E");
-  }
-  TRACE("/");
-  return 0;
-}
-//---------------------------------------------------------------------------
-void Trace(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * Message)
-{
-  if (TracingCriticalSection != NULL)
-  {
-    TTraceInMemory TraceInMemory;
-    TraceInMemory.Ticks = GetTickCount();
-    TraceInMemory.Thread = GetCurrentThreadId();
-    TraceInMemory.SourceFile = SourceFile;
-    TraceInMemory.Func = Func;
-    TraceInMemory.Line = Line;
-    TraceInMemory.Message = Message;
-
-    TGuard Guard(TracingCriticalSection);
-
-    if (TracesInMemory.capacity() == 0)
-    {
-      TracesInMemory.reserve(100000);
-      TThreadID ThreadID;
-      StartThread(NULL, 0, TraceThreadProc, NULL, 0, ThreadID);
-    }
-
-    TracesInMemory.push_back(TraceInMemory);
-  }
-}
-//---------------------------------------------------------------------------
-#ifndef _MSC_VER
-void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * AFormat, TVarRec * /*Args*/, const int /*Args_Size*/)
-#else
-void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * AFormat, ...)
-#endif
-{
-  Trace(SourceFile, Func, Line, AFormat);
-}
-//---------------------------------------------------------------------------
-void TraceDumpToFile()
-{
-  if (TraceFile != NULL)
-  {
-    TGuard Guard(TracingCriticalSection);
-
-    DWORD Written;
-
-    TDateTime N = Now();
-    DWORD Ticks = GetTickCount();
-
-    const UnicodeString TimestampFormat = L"hh:mm:ss.zzz";
-    UnicodeString TimeString = FormatDateTime(TimestampFormat, N);
-
-    UTF8String Buffer = UTF8String(
-      FORMAT("[%s] Dumping in-memory tracing =================================\n",
-        TimeString.c_str()));
-    WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
-
-    TTracesInMemory::const_iterator i = TracesInMemory.begin();
-    while (i != TracesInMemory.end())
-    {
-      const wchar_t * SourceFile = i->SourceFile;
-      const wchar_t * Slash = wcsrchr(SourceFile, L'\\');
-      if (Slash != NULL)
-      {
-        SourceFile = Slash + 1;
-      }
-
-      TimeString =
-        FormatDateTime(TimestampFormat,
-          IncMilliSecond(N, -static_cast<int>(Ticks - i->Ticks)));
-      Buffer = UTF8String(FORMAT(L"[%s] [%.4X] [%s:%d:%s] %s\n",
-        TimeString.c_str(), int(i->Thread), SourceFile,
-         i->Line, i->Func, i->Message));
-      WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
-      ++i;
-    }
-    TracesInMemory.clear();
-
-    TimeString = FormatDateTime(TimestampFormat, Now());
-    Buffer = UTF8String(
-      FORMAT("[%s] Done in-memory tracing =================================\n",
-        TimeString.c_str()));
-    WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
-  }
-}
-//---------------------------------------------------------------------------
-void TraceInMemoryCallback(const UnicodeString & Msg)
-{
-  Trace(L"PAS", L"unk", 0, Msg.c_str());
-}
-#else
-void Trace(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * Message)
-{
-  assert(IsTracing);
-
-  UnicodeString TimeString;
-#ifndef _MSC_VER
-  DateTimeToString(TimeString, L"hh:mm:ss.zzz", Now());
-#else
-  unsigned short H, N, S, MS;
-  TDateTime DateTime = Now();
-  DateTime.DecodeTime(H, N, S, MS);
-  TimeString = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
-#endif
-  const wchar_t * Slash = wcsrchr(NullToEmpty(SourceFile), L'\\');
-  if (Slash != NULL)
-  {
-    SourceFile = Slash + 1;
-  }
-  //UTF8String Buffer = UTF8String(FORMAT(L"NetBox: [%s] [%.4X] [%s:%d:%s] %s\n",
-  //  TimeString.c_str(), int(GetCurrentThreadId()), NullToEmpty(SourceFile),
-  //  Line, NullToEmpty(Func), NullToEmpty(Message)));
-  // DWORD Written;
-  // WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
-  // DEBUG_PRINTF(L"%s", Buffer.c_str());
-  // OutputDebugStringW(Buffer.c_str());
-}
-//---------------------------------------------------------------------------
-#ifndef _MSC_VER
-void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * AFormat, TVarRec * Args, const int Args_Size)
-#else
-void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * AFormat, ...)
-#endif
-{
-  assert(IsTracing);
-#ifndef _MSC_VER
-  UnicodeString Message = Format(AFormat, Args, Args_Size);
-#else
-  va_list args;
-  va_start(args, AFormat);
-  UnicodeString Message = Format(AFormat, args);
-  va_end(args);
-#endif
-  Trace(SourceFile, Func, Line, Message.c_str());
-}
-#endif
-//---------------------------------------------------------------------------
-void DoAssert(wchar_t * Message, wchar_t * Filename, int LineNumber)
-{
-  if (IsTracing)
-  {
-    Trace(Filename, L"assert", LineNumber, Message);
-  }
-#ifndef _MSC_VER
-  _assert(AnsiString(Message).c_str(), AnsiString(Filename).c_str(), LineNumber);
-#else
-  _wassert(Message, Filename, LineNumber);
-#endif
-}
-#endif // ifdef _DEBUG
-//!CLEANEND
 //---------------------------------------------------------------------------
 // TGuard
 //---------------------------------------------------------------------------
@@ -971,7 +766,7 @@ int FindCheck(int Result)
       (Result != ERROR_FILE_NOT_FOUND) &&
       (Result != ERROR_NO_MORE_FILES))
   {
-    RaiseLastOSError();
+    RaiseLastOSError(Result);
   }
   return Result;
 }
@@ -1012,7 +807,7 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
   TSearchRec SearchRec;
 
   UnicodeString DirName2 = IncludeTrailingBackslash(DirName);
-  if (FindFirst(DirName2 + L"*.*", FindAttrs, SearchRec) == 0)
+  if (FindFirstChecked(DirName2 + L"*.*", FindAttrs, SearchRec) == 0)
   {
     TRY_FINALLY (
     {
@@ -1024,7 +819,7 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
           CallBackFunc(FileName, SearchRec, Param);
         }
 
-      } while (FindNext(SearchRec) == 0);
+      } while (FindNextChecked(SearchRec) == 0);
     }
     ,
     {
@@ -1038,7 +833,8 @@ TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)
 {
   try
   {
-    return EncodeDate(Year, Month, Day);
+    TDateTime DateTime = EncodeDate(Year, Month, Day);
+    return DateTime;
   }
   catch (EConvertError & E)
   {
@@ -1051,7 +847,8 @@ TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
 {
   try
   {
-    return EncodeTime(Hour, Min, Sec, MSec);
+    TDateTime DateTime = EncodeTime(Hour, Min, Sec, MSec);
+    return DateTime;
   }
   catch (EConvertError & E)
   {
@@ -2079,6 +1876,21 @@ UnicodeString WindowsProductName()
   }
   catch(...)
   {
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+bool IsDirectoryWriteable(const UnicodeString & Path)
+{
+  UnicodeString FileName =
+    ::IncludeTrailingPathDelimiter(Path) +
+    FORMAT(L"wscp_%s_%d.tmp", FormatDateTime(L"nnzzz", Now()).c_str(), int(GetCurrentProcessId()));
+  HANDLE Handle = CreateFile(FileName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL,
+    CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, 0);
+  bool Result = (Handle != INVALID_HANDLE_VALUE);
+  if (Result)
+  {
+    CloseHandle(Handle);
   }
   return Result;
 }

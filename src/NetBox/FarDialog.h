@@ -614,7 +614,6 @@ private:
   void ItemsChange(TObject * Sender);
 };
 //---------------------------------------------------------------------------
-UnicodeString StripHotKey(const UnicodeString & Text);
 TRect Rect(int Left, int Top, int Right, int Bottom);
 //---------------------------------------------------------------------------
 #endif

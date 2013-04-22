@@ -202,7 +202,6 @@ CFtpControlSocket::CFtpControlSocket(CMainThread *pMainThread, CFileZillaTools *
 	m_bUTF8 = true;
 	m_hasClntCmd = false;
 #ifdef MPEXT
-	m_hasMfmtCmd = false;
 	m_serverCapabilities.Clear();
 	m_ListFile = "";
 #endif
@@ -272,7 +271,6 @@ bool CFtpControlSocket::InitConnect()
 	m_bAnnouncesUTF8 = false;
 	m_hasClntCmd = false;
 #ifdef MPEXT
-	m_hasMfmtCmd = false;
 	m_serverCapabilities.Clear();
 	m_ListFile = "";
 #endif
@@ -1476,7 +1474,6 @@ void CFtpControlSocket::DoClose(int nError /*=0*/)
 	m_bUTF8 = false;
 	m_hasClntCmd = false;
 #ifdef MPEXT
-	m_hasMfmtCmd = false;
 	m_serverCapabilities.Clear();
 	m_ListFile = "";
 #endif
@@ -3993,7 +3990,8 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 			}
 			if (pData->nGotTransferEndReply==3)
 			{
-			    TransferFinished();
+					// Not really sure about a reason for the m_pDataFile condition here
+					TransferFinished(m_pDataFile != NULL);
 				return;
 			}
 			break;
@@ -4525,11 +4523,12 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 	}
 }
 
-void CFtpControlSocket::TransferFinished()
+void CFtpControlSocket::TransferFinished(bool preserveFileTimeForUploads)
 {
 	CFileTransferData *pData=static_cast<CFileTransferData *>(m_Operation.pData);
 
-	if (COptions::GetOptionVal(OPTION_PRESERVEDOWNLOADFILETIME) && m_pDataFile)
+	if (COptions::GetOptionVal(OPTION_PRESERVEDOWNLOADFILETIME) && m_pDataFile &&
+				pData->transferfile.get)
 	{
 		#ifdef MPEXT
 		m_pTools->PreserveDownloadFileTime(
@@ -4547,8 +4546,8 @@ void CFtpControlSocket::TransferFinished()
 	}
 #ifdef MPEXT
 	if (!pData->transferfile.get &&
-			COptions::GetOptionVal(OPTION_MPEXT_PRESERVEUPLOADFILETIME) && m_pDataFile &&
-			m_hasMfmtCmd)
+			COptions::GetOptionVal(OPTION_MPEXT_PRESERVEUPLOADFILETIME) && preserveFileTimeForUploads &&
+			(m_serverCapabilities.GetCapability(mfmt_command) == yes))
 	{
 		CString filename =
 			pData->transferfile.remotepath.FormatFilename(pData->transferfile.remotefile, !pData->bUseAbsolutePaths);
@@ -5298,8 +5297,10 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
 		break;
 	#ifdef MPEXT
 	case FILEEXISTS_COMPLETE:
-		TransferFinished();
-		break;
+		// Simulating transfer finish
+		m_Operation.nOpState=FILETRANSFER_WAITFINISH;
+		TransferFinished(true);
+		return; // Avoid call to FileTransfer below
 	}
 	#endif
 	if (nReplyError == FZ_REPLY_OK)
@@ -6091,7 +6092,9 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 			m_serverCapabilities.SetCapability(mlsd_command, yes, (LPCSTR)line.Mid(6, -1));
 		}
 		else if (line == _MPAT(" MFMT"))
-			m_hasMfmtCmd = true;
+		{
+			m_serverCapabilities.SetCapability(mfmt_command, yes);
+		}
 #endif
 	}
 #ifdef MPEXT
@@ -6149,7 +6152,7 @@ CString CFtpControlSocket::GetReply()
 			if (GetReplyCode() == 2)
 				line = (LPCSTR)m_ListFile;
 		}
-		if (!utf8_valid((const unsigned char*)line, strlen(line)))
+		if (!utf8_valid((const unsigned char*)line, (int)strlen(line)))
 		{
 			if (m_CurrentServer.nUTF8 != 1)
 			{

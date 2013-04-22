@@ -105,7 +105,17 @@ void TFileOperationProgressType::Start(TFileOperation AOperation,
   Directory = ADirectory;
   Temp = ATemp;
   CPSLimit = ACPSLimit;
-  DoProgress();
+  try
+  {
+    DoProgress();
+  }
+  catch (...)
+  {
+    // connection can be lost during progress callbacks
+    ClearTransfer();
+    InProgress = false;
+    throw;
+  }
 }
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Reset()
@@ -116,7 +126,7 @@ void TFileOperationProgressType::Reset()
 void TFileOperationProgressType::Stop()
 {
   // added to include remaining bytes to TotalSkipped, in case
-  // the progress happes to update before closing
+  // the progress happens to update before closing
   ClearTransfer();
   InProgress = false;
   DoProgress();

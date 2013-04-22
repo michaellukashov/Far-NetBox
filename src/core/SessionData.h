@@ -175,6 +175,8 @@ private:
   TPingType FFtpPingType;
   TFtps FFtps;
   TAutoSwitch FNotUtf;
+  // bool FIsWorkspace;
+  // UnicodeString FLink;
   UnicodeString FHostKey;
 
   UnicodeString FOrigHostName;
@@ -323,13 +325,19 @@ public:
   void SetFtpPingType(TPingType Value);
   void SetFtps(TFtps Value);
   void SetNotUtf(TAutoSwitch Value);
+  bool IsWorkspace() { return false; }
+  // void SetIsWorkspace(bool Value);
+  // void SetLink(const UnicodeString & Value);
   void SetHostKey(const UnicodeString & Value);
   TDateTime GetTimeoutDT();
   void SavePasswords(THierarchicalStorage * Storage, bool PuttyExport);
   UnicodeString GetLocalName();
+  UnicodeString GetFolderName();
   void Modify();
   UnicodeString GetSource();
   void DoLoad(THierarchicalStorage * Storage, bool & RewritePassword);
+  //UnicodeString ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default);
+  //int ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int Default);
   static RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
   static UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   static RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
@@ -340,6 +348,7 @@ public:
   void Default();
   void NonPersistant();
   void Load(THierarchicalStorage * Storage);
+  // void ImportFromFilezilla(_di_IXMLNode Node);
   void Save(THierarchicalStorage * Storage, bool PuttyExport,
     const TSessionData * Default = NULL);
   void SaveRecryptedPasswords(THierarchicalStorage * Storage);
@@ -355,6 +364,7 @@ public:
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
   bool IsSame(const TSessionData * Default, bool AdvancedOnly);
+  bool IsInFolderOrWorkspace(const UnicodeString & Name);
   static void ValidatePath(const UnicodeString & Path);
   static void ValidateName(const UnicodeString & Name);
   UnicodeString GetHostName() const { return FHostName; }
@@ -500,6 +510,7 @@ public:
   void Load();
   void Save(bool All, bool Explicit);
   void Saved();
+  void ImportFromFilezilla(const UnicodeString & FileName);
   void Export(const UnicodeString & FileName);
   void Load(THierarchicalStorage * Storage, bool AsModified = false,
     bool UseDefaults = false);
@@ -513,12 +524,20 @@ public:
   intptr_t IndexOf(TSessionData * Data);
   TSessionData * FindSame(TSessionData * Data);
   TSessionData * NewSession(const UnicodeString & SessionName, TSessionData * Session);
+  void NewWorkspace(const UnicodeString & Name, TList * DataList);
+  bool IsFolder(const UnicodeString & Name);
+  bool IsWorkspace(const UnicodeString & Name);
   TSessionData * ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
     UnicodeString * FileName = NULL, bool * ProtocolDefined = NULL, UnicodeString * MaskedUrl = NULL);
+  bool CanLogin(TSessionData * Data);
+  void GetFolderOrWorkspace(const UnicodeString & Name, TList * List);
+  TStrings * GetFolderOrWorkspaceList(const UnicodeString & Name);
+  TStrings * GetWorkspaces();
+  bool HasAnyWorkspace();
   TSessionData * GetSession(intptr_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   TSessionData * GetDefaultSettings() const { return FDefaultSettings; }
-  void SetDefaultSettings(TSessionData * Value);
   TSessionData * GetSessionByName(const UnicodeString & SessionName);
+  void SetDefaultSettings(TSessionData * Value);
 
   static void ImportHostKeys(const UnicodeString & TargetKey,
     const UnicodeString & SourceKey, TStoredSessionList * Sessions,
@@ -532,6 +551,10 @@ private:
   void DoSave(THierarchicalStorage * Storage,
     TSessionData * Data, bool All, bool RecryptPasswordOnly,
     TSessionData * FactoryDefaults);
+  TSessionData * ResolveSessionData(TSessionData * Data);
+  bool IsFolderOrWorkspace(const UnicodeString & Name, bool Workspace);
+  TSessionData * CheckIsInFolderOrWorkspaceAndResolve(
+    TSessionData * Data, const UnicodeString & Name);
 };
 //---------------------------------------------------------------------------
 bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);

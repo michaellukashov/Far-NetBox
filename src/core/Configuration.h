@@ -49,6 +49,7 @@ private:
   intptr_t FSessionReopenAutoStall;
   UnicodeString FIniFileStorageName;
   UnicodeString FVirtualIniFileStorageName;
+  intptr_t FProgramIniPathWrittable;
   intptr_t FTunnelLocalPortNumberLow;
   intptr_t FTunnelLocalPortNumberHigh;
   intptr_t FCacheDirectoryChangesMaxSize;
@@ -57,6 +58,7 @@ private:
   UnicodeString FRandomSeedFile;
   UnicodeString FPuttyRegistryStorageKey;
   UnicodeString FExternalIpAddress;
+  bool FTryFtpWhenSshFails;
 
   bool FDisablePasswordStoring;
   bool FForceBanners;
@@ -97,7 +99,9 @@ public:
   UnicodeString GetTimeFormat();
   void SetStorage(TStorage Value);
   UnicodeString GetRegistryStorageKey();
-  UnicodeString GetIniFileStorageName();
+  UnicodeString GetIniFileStorageNameForReadingWritting();
+  UnicodeString GetIniFileStorageNameForReading();
+  UnicodeString GetIniFileStorageName(bool ReadingOnly);
   void SetIniFileStorageName(const UnicodeString & Value);
   UnicodeString GetPartialExt() const;
   UnicodeString GetFileInfoString(const UnicodeString & Key);
@@ -113,6 +117,7 @@ public:
   intptr_t GetCompoundVersion();
   void UpdateActualLogProtocol();
   void SetExternalIpAddress(const UnicodeString & Value);
+  void SetTryFtpWhenSshFails(bool Value);
   bool GetCollectUsage();
   void SetCollectUsage(bool Value);
 
@@ -125,6 +130,7 @@ public:
   virtual void Changed();
   virtual void SaveData(THierarchicalStorage * Storage, bool All);
   virtual void LoadData(THierarchicalStorage * Storage);
+  virtual void LoadFrom(THierarchicalStorage * Storage);
   virtual void CopyData(THierarchicalStorage * Source, THierarchicalStorage * Target);
   virtual void LoadAdmin(THierarchicalStorage * Storage);
   virtual UnicodeString GetDefaultKeyFile();
@@ -168,6 +174,7 @@ public:
   void SetNulStorage();
   void SetDefaultStorage();
   void Export(const UnicodeString & FileName);
+  void Import(const UnicodeString & FileName);
   void CleanupConfiguration();
   void CleanupIniFile();
   void CleanupHostKeys();
@@ -186,6 +193,7 @@ public:
   virtual RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
   virtual UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
+  UnicodeString GetFileDescription(const UnicodeString & FileName);
 
   // TUsage * GetUsage() { return FUsage; };
   UnicodeString GetPuttyRegistryStorageKey() { return FPuttyRegistryStorageKey; }
@@ -209,6 +217,7 @@ public:
   intptr_t GetCacheDirectoryChangesMaxSize() { return FCacheDirectoryChangesMaxSize; }
   bool GetShowFtpWelcomeMessage() { return FShowFtpWelcomeMessage; }
   UnicodeString GetExternalIpAddress() const { return FExternalIpAddress; }
+  bool GetTryFtpWhenSshFails() { return FTryFtpWhenSshFails; }
   bool GetDisablePasswordStoring() { return FDisablePasswordStoring; }
   bool GetForceBanners() { return FForceBanners; }
   bool GetDisableAcceptingHostKeys() { return FDisableAcceptingHostKeys; }

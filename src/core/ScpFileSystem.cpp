@@ -1084,7 +1084,31 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
       else
       {
-        throw Exception(FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()));
+        bool Empty;
+        if (ListCurrentDirectory)
+        {
+          TRemoteFile * File = NULL;
+          // Empty file list -> probably "permission denied", we
+          // at least get link to parent directory ("..")
+          FTerminal->ReadFile(
+            UnixIncludeTrailingBackslash(FTerminal->FFiles->GetDirectory()) +
+              PARENTDIRECTORY, File);
+          Empty = (File == NULL);
+          if (!Empty)
+          {
+            assert(File->GetIsParentDirectory());
+            FileList->AddFile(File);
+          }
+        }
+        else
+        {
+          Empty = true;
+        }
+
+        if (Empty)
+        {
+          throw Exception(FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()));
+        }
       }
 
       if (FLsFullTime == asAuto)
@@ -1534,7 +1558,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
               Answer = FTerminal->ConfirmFileOverwrite(
                 FileNameOnly /*not used*/, NULL,
                 qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
-                &QueryParams, osRemote, Params, OperationProgress, Message);
+                &QueryParams, osRemote, CopyParam, Params, OperationProgress, Message);
             );
           }
           else
@@ -1560,7 +1584,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
               Answer = FTerminal->ConfirmFileOverwrite(
                 FileNameOnly, &FileParams,
                 qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll,
-                &QueryParams, osRemote, Params, OperationProgress);
+                &QueryParams, osRemote, CopyParam, Params, OperationProgress);
             );
           }
 
@@ -2014,7 +2038,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
     bool FindOK = false;
     FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
       UnicodeString Path = IncludeTrailingBackslash(DirectoryName) + L"*.*";
-      FindOK = FindFirst(Path.c_str(),
+      FindOK = FindFirstChecked(Path.c_str(),
         FindAttrs, SearchRec) == 0;
     );
 
@@ -2053,7 +2077,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
           );
         }
         FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-          FindOK = (FindNext(SearchRec) == 0);
+          FindOK = (FindNextChecked(SearchRec) == 0);
         );
       }
     }
@@ -2141,8 +2165,13 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
           Options.c_str(), DelimitStr(FileName).c_str()));
         SkipFirstLine();
 
+        // Filename is used for error messaging and excluding files only
+        // Send in full path to allow path-based excluding
+        // UnicodeString FullFileName = UnixExcludeTrailingBackslash(File->FullFileName);
         SCPSink(FullFileName, File, TargetDirectory, UnixExtractFilePath(FullFileName),
           CopyParam, Success, OperationProgress, Params, 0);
+        // operation succeeded (no exception), so it's ok that
+        // remote side closed SCP, but we continue with next file
         if (OperationProgress->Cancel == csRemoteAbort)
         {
           OperationProgress->Cancel = csContinue;
@@ -2500,7 +2529,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                     Answer = FTerminal->ConfirmFileOverwrite(
                       OperationProgress->FileName, &FileParams,
                       qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll,
-                      &QueryParams, osLocal, Params, OperationProgress);
+                      &QueryParams, osLocal, CopyParam, Params, OperationProgress);
                   );
 
                   switch (Answer)
@@ -2558,7 +2587,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                   BlockBuf.SetSize(OperationProgress->TransferBlockSize());
                   BlockBuf.SetPosition(0);
 
-                  FSecureShell->Receive(reinterpret_cast<unsigned char *>(BlockBuf.GetData()), (int)BlockBuf.GetSize());
+                  FSecureShell->Receive(reinterpret_cast<unsigned char *>(BlockBuf.GetData()), BlockBuf.GetSize());
                   OperationProgress->AddTransfered(BlockBuf.GetSize());
 
                   if (OperationProgress->AsciiTransfer)
@@ -2652,7 +2681,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
           if ((NewAttrs & FileData.LocalFileAttrs) != NewAttrs)
           {
             FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFileName.c_str()),
-              THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFileName, FileData.LocalFileAttrs | NewAttrs) == 0);
+              THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFileName, (DWORD)(FileData.LocalFileAttrs | NewAttrs)) == 0);
             );
           }
         }

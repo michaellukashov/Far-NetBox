@@ -69,7 +69,7 @@ public:
   DWORD ErrorCode;
 };
 
-void RaiseLastOSError();
+void RaiseLastOSError(int Result = 0);
 //---------------------------------------------------------------------------
 
 struct TFormatSettings : public TObject
@@ -123,6 +123,8 @@ UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str);
 UnicodeString ExtractFileDir(const UnicodeString & Str);
 UnicodeString ExtractFilePath(const UnicodeString & Str);
 UnicodeString GetCurrentDir();
+
+UnicodeString IncludeTrailingPathDelimiter(const UnicodeString & Str);
 
 UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase = true, char Separator = '\0');
 UnicodeString HexToStr(const UnicodeString & Hex);
@@ -265,7 +267,7 @@ UnicodeString ChangeFileExt(const UnicodeString & FileName, const UnicodeString 
 UnicodeString ExtractFileExt(const UnicodeString & FileName);
 UnicodeString ExpandUNCFileName(const UnicodeString & FileName);
 
-__int64 FileSeek(HANDLE file, __int64 offset, int Origin);
+__int64 FileSeek(HANDLE Handle, __int64 Offset, int Origin);
 
 //---------------------------------------------------------------------------
 typedef WIN32_FIND_DATA TWin32FindData;
@@ -353,6 +355,9 @@ private:
   CRITICAL_SECTION FSection;
   int FAcquired;
 };
+//---------------------------------------------------------------------------
+UnicodeString StripHotkey(const UnicodeString & Text);
+bool StartsText(const UnicodeString & ASubText, const UnicodeString & AText);
 //---------------------------------------------------------------------------
 } // namespace Sysutils
 

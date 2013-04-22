@@ -2402,7 +2402,7 @@ intptr_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int OpMode)
 
     if (((OpMode & OPM_SILENT) ||
          WinSCPPlugin()->InputBox(GetMsg(CREATE_FOLDER_TITLE),
-           StripHotKey(GetMsg(CREATE_FOLDER_PROMPT)),
+           StripHotkey(GetMsg(CREATE_FOLDER_PROMPT)),
            Name, 0, MAKE_SESSION_FOLDER_HISTORY)) &&
         !Name.IsEmpty())
     {
@@ -2575,7 +2575,7 @@ intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
             FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation) |
             FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
           QueueAddItem(new TDownloadQueueItem(FTerminal, FFileList,
-            DestPath, &CopyParam, Params));
+            DestPath, &CopyParam, Params, false));
           Confirmed = false;
         }
       }
@@ -2724,7 +2724,7 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
         FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation) |
         FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
       QueueAddItem(new TUploadQueueItem(FTerminal, FFileList,
-        DestPath, &CopyParam, Params));
+        DestPath, &CopyParam, Params, false));
       Confirmed = false;
     }
   }
@@ -3406,7 +3406,7 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
     assert((Prompts->Objects[0]) != NULL);
     UnicodeString AResult = Results->GetString(0);
 
-    Result = WinSCPPlugin()->InputBox(Name, StripHotKey(Prompts->GetString(0)), AResult, FIB_NOUSELASTHISTORY);
+    Result = WinSCPPlugin()->InputBox(Name, StripHotkey(Prompts->GetString(0)), AResult, FIB_NOUSELASTHISTORY);
     if (Result)
     {
       Results->SetString(0, AResult);
@@ -4225,7 +4225,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
       Window.Pos = Pos;
       UnicodeString EditedFileName(1024, 0);
       Window.Name = const_cast<wchar_t *>(EditedFileName.c_str());
-      Window.NameSize = EditedFileName.GetLength();
+      Window.NameSize = (int)EditedFileName.GetLength();
       if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, 0, &Window) != 0)
       {
         if ((Window.Type == WTYPE_EDITOR) &&

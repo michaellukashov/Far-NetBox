@@ -17,7 +17,7 @@ bool ExceptionMessage(const Exception * E, UnicodeString & Message)
   }
   else if (dynamic_cast<const EAccessViolation*>(E) != NULL)
   {
-    Message = LoadStr(ACCESS_VIOLATION_ERROR);
+    Message = LoadStr(ACCESS_VIOLATION_ERROR2);
   }
   else if (E && E->Message.IsEmpty())
   {
