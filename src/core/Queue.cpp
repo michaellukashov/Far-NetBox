@@ -699,7 +699,7 @@ bool TTerminalQueue::EmptyButMonitoredItems(TList * List)
   return !Empty;
 }
 //---------------------------------------------------------------------------
-TQueueItem * TTerminalQueue::GetItem(TList * List, int Index)
+TQueueItem * TTerminalQueue::GetItem(TList * List, intptr_t Index)
 {
   return reinterpret_cast<TQueueItem*>(List->Items[Index]);
 }
@@ -1149,7 +1149,7 @@ void TTerminalQueue::SetTransfersLimit(intptr_t Value)
   }
 }
 //---------------------------------------------------------------------------
-void TTerminalQueue::SetKeepDoneItemsFor(int Value)
+void TTerminalQueue::SetKeepDoneItemsFor(intptr_t Value)
 {
   if (FKeepDoneItemsFor != Value)
   {
@@ -1877,7 +1877,7 @@ void TTerminalQueueStatus::ResetStats()
   FActiveCount = -1;
 }
 //---------------------------------------------------------------------------
-void TTerminalQueueStatus::SetDoneCount(int Value)
+void TTerminalQueueStatus::SetDoneCount(intptr_t Value)
 {
   FDoneCount = Value;
   ResetStats();

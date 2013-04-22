@@ -35,8 +35,8 @@ private:
   TDateTime FLastDataSent;
   Backend * FBackend;
   void * FBackendHandle;
-  const uintptr_t * FMinPacketSize;
-  const uintptr_t * FMaxPacketSize;
+  const unsigned int * FMinPacketSize;
+  const unsigned int * FMaxPacketSize;
   Config * FConfig;
   TNotifyEvent FOnReceive;
   bool FFrozen;
