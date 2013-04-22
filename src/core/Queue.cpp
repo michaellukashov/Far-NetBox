@@ -965,9 +965,10 @@ void TTerminalQueue::Idle()
 //---------------------------------------------------------------------------
 void TTerminalQueue::ProcessEvent()
 {
-  TTerminalItem * TerminalItem = NULL;
+  TTerminalItem * TerminalItem;
   do
   {
+    TerminalItem = NULL;
     TQueueItem * Item = NULL;
 
     if (FItems->GetCount() > FItemsInProcess)
