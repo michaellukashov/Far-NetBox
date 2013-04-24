@@ -2544,11 +2544,11 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & Path)
 
   if (TryParent)
   {
-    UnicodeString APath = ::UnixExcludeTrailingBackslash(Path);
+    UnicodeString APath = ::UnixExcludeTrailingBackslash(Result);
     UnicodeString Name = ::UnixExtractFileName(APath);
     if (Name == THISDIRECTORY || Name == PARENTDIRECTORY)
     {
-      Result = Path;
+      // Result = Result;
     }
     else
     {
@@ -2562,7 +2562,7 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & Path)
       {
         if (FTerminal->GetActive())
         {
-          Result = Path;
+          // Result = Result;
         }
         else
         {
