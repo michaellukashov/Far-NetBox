@@ -32,6 +32,13 @@ SET(TESTS_ROOT ${SRC_ROOT}/tests)
 
 #-------------------------------------------------------------------------------
 
+IF(NOT DEFINED BUILD_DIR OR BUILD_DIR STREQUAL "")
+STRING(REPLACE "/" "\\" BUILD_DIR ${PROJECT_ROOT}/build/vc10/${CMAKE_BUILD_TYPE}/${CONF}/${CMAKE_BUILD_TYPE})
+ENDIF()
+MESSAGE("BUILD_DIR: ${BUILD_DIR}")
+
+#-------------------------------------------------------------------------------
+
 SET(LIBNEON_DEFS "-DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB -DUSE_GETADDRINFO"
 )
 
@@ -250,11 +257,6 @@ SET_TARGET_PROPERTIES(NetBox
   COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
   LINK_FLAGS ${CMAKE_LINK_FLAGS}
 )
-
-#-------------------------------------------------------------------------------
-
-STRING(REPLACE "/" "\\" BUILD_DIR ${PROJECT_ROOT}/build/${CMAKE_BUILD_TYPE}/${CONF}/${CMAKE_BUILD_TYPE})
-MESSAGE("BUILD_DIR: ${BUILD_DIR}")
 
 #-------------------------------------------------------------------------------
 
