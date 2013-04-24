@@ -33,7 +33,7 @@ SET(TESTS_ROOT ${SRC_ROOT}/tests)
 #-------------------------------------------------------------------------------
 
 IF(NOT DEFINED BUILD_DIR OR BUILD_DIR STREQUAL "")
-STRING(REPLACE "/" "\\" BUILD_DIR ${PROJECT_ROOT}/build/vc10/${CMAKE_BUILD_TYPE}/${CONF}/${CMAKE_BUILD_TYPE})
+STRING(REPLACE "/" "\\" BUILD_DIR ${PROJECT_ROOT}/build/vc10/${CMAKE_BUILD_TYPE}/${CONF})
 ENDIF()
 MESSAGE("BUILD_DIR: ${BUILD_DIR}")
 
