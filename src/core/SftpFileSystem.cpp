@@ -2455,7 +2455,7 @@ UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & Path)
       FTerminal->FatalError(NULL, LoadStr(SFTP_NON_ONE_FXP_NAME_PACKET));
     }
 
-    UnicodeString RealDir = UnixExcludeTrailingBackslash(Packet.GetPathString(FUtfStrings));
+    UnicodeString RealDir = ::UnixExcludeTrailingBackslash(Packet.GetPathString(FUtfStrings));
     // ignore rest of SSH_FXP_NAME packet
 
     FTerminal->LogEvent(FORMAT(L"Real path is '%s'", RealDir.c_str()));
@@ -2493,13 +2493,13 @@ UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & Path,
       // but it did not work when Path was empty
       if (!BaseDir.IsEmpty())
       {
-        APath = UnixIncludeTrailingBackslash(BaseDir);
+        APath = ::UnixIncludeTrailingBackslash(BaseDir);
       }
       APath = APath + Path;
     }
     if (APath.IsEmpty())
     {
-      APath = UnixIncludeTrailingBackslash(L".");
+      APath = ::UnixIncludeTrailingBackslash(L".");
     }
   }
   return RealPath(APath);
@@ -2509,7 +2509,7 @@ UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString & Path)
 {
   // TODO: improve (handle .. etc.)
   if (TTerminal::IsAbsolutePath(Path) ||
-      (!FCurrentDirectory.IsEmpty() && UnixComparePaths(FCurrentDirectory, Path)))
+      (!FCurrentDirectory.IsEmpty() && ::UnixComparePaths(FCurrentDirectory, Path)))
   {
     return Path;
   }
@@ -2544,19 +2544,19 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & Path)
 
   if (TryParent)
   {
-    UnicodeString APath = UnixExcludeTrailingBackslash(Path);
-    UnicodeString Name = UnixExtractFileName(APath);
+    UnicodeString APath = ::UnixExcludeTrailingBackslash(Path);
+    UnicodeString Name = ::UnixExtractFileName(APath);
     if (Name == THISDIRECTORY || Name == PARENTDIRECTORY)
     {
       Result = Path;
     }
     else
     {
-      UnicodeString FPath = UnixExtractFilePath(APath);
+      UnicodeString FPath = ::UnixExtractFilePath(APath);
       try
       {
         Result = RealPath(FPath);
-        Result = UnixIncludeTrailingBackslash(Result) + Name;
+        Result = ::UnixIncludeTrailingBackslash(Result) + Name;
       }
       catch(...)
       {
@@ -3028,7 +3028,7 @@ void TSFTPFileSystem::ChangeDirectory(const UnicodeString & Directory)
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
 {
-  FDirectoryToChangeTo = UnixExcludeTrailingBackslash(Directory);
+  FDirectoryToChangeTo = ::UnixExcludeTrailingBackslash(Directory);
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
@@ -3036,7 +3036,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
   assert(FileList && !FileList->GetDirectory().IsEmpty());
 
   UnicodeString Directory;
-  Directory = UnixExcludeTrailingBackslash(LocalCanonify(FileList->GetDirectory()));
+  Directory = ::UnixExcludeTrailingBackslash(LocalCanonify(FileList->GetDirectory()));
   FTerminal->LogEvent(FORMAT(L"Listing directory \"%s\".", Directory.c_str()));
 
   // moved before SSH_FXP_OPENDIR, so directory listing does not retain
@@ -3147,7 +3147,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           {
             File = NULL;
             FTerminal->ReadFile(
-              UnixIncludeTrailingBackslash(FileList->GetDirectory()) + PARENTDIRECTORY, File);
+              ::UnixIncludeTrailingBackslash(FileList->GetDirectory()) + PARENTDIRECTORY, File);
           }
           ,
           {
@@ -3235,7 +3235,7 @@ void TSFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   ReceiveResponse(&AttrsPacket, &AttrsPacket, SSH_FXP_ATTRS);
   // SymlinkFile->FileName was used instead SymlinkFile->LinkTo before, why?
   File = LoadFile(&AttrsPacket, SymlinkFile,
-    UnixExtractFileName(SymlinkFile->GetLinkTo()));
+    ::UnixExtractFileName(SymlinkFile->GetLinkTo()));
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::ReadFile(const UnicodeString & FileName,
@@ -3301,7 +3301,7 @@ void TSFTPFileSystem::CustomReadFile(const UnicodeString & FileName,
 
   if (Packet.GetType() == SSH_FXP_ATTRS)
   {
-    File = LoadFile(&Packet, ALinkedByFile, UnixExtractFileName(FileName));
+    File = LoadFile(&Packet, ALinkedByFile, ::UnixExtractFileName(FileName));
   }
   else
   {
@@ -3356,7 +3356,7 @@ void TSFTPFileSystem::RenameFile(const UnicodeString & FileName,
   if (UnixExtractFilePath(NewName).IsEmpty())
   {
     // rename case (TTerminal::RenameFile)
-    TargetName = UnixExtractFilePath(RealName) + NewName;
+    TargetName = ::UnixExtractFilePath(RealName) + NewName;
   }
   else
   {
@@ -3716,7 +3716,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   assert(FilesToCopy && OperationProgress);
 
   UnicodeString FileName, FileNameOnly;
-  UnicodeString FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
+  UnicodeString FullTargetDir = ::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
@@ -4097,7 +4097,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
       OperationProgress->SetTransferSize(OperationProgress->LocalSize);
       OperationProgress->TransferingFile = false;
 
-      TDateTime Modification = UnixToDateTime(MTime, GetSessionData()->GetDSTMode());
+      TDateTime Modification = ::UnixToDateTime(MTime, GetSessionData()->GetDSTMode());
 
       // Will we use ASCII of BINARY file transfer?
       TFileMasks::TParams MaskParams;
@@ -4227,9 +4227,9 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
       if (OpenParams.RemoteFileName != RemoteFileName)
       {
         assert(!DoResume);
-        assert(UnixExtractFilePath(OpenParams.RemoteFileName) == UnixExtractFilePath(RemoteFileName));
+        assert(UnixExtractFilePath(OpenParams.RemoteFileName) == ::UnixExtractFilePath(RemoteFileName));
         DestFullName = OpenParams.RemoteFileName;
-        UnicodeString NewFileName = UnixExtractFileName(DestFullName);
+        UnicodeString NewFileName = ::UnixExtractFileName(DestFullName);
         assert(DestFileName != NewFileName);
         DestFileName = NewFileName;
       }
@@ -4353,7 +4353,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
         if (DestFileExists)
         {
           FILE_OPERATION_LOOP(FMTLOAD(DELETE_ON_RESUME_ERROR,
-              UnixExtractFileName(DestFullName).c_str(), DestFullName.c_str()),
+              ::UnixExtractFileName(DestFullName).c_str(), DestFullName.c_str()),
 
             if (GetSessionData()->GetOverwrittenToRecycleBin() &&
                 !FTerminal->GetSessionData()->GetRecycleBinPath().IsEmpty())
@@ -4370,7 +4370,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
         // originally this was before CLOSE (last __finally statement),
         // on VShell it failed
         FILE_OPERATION_LOOP(FMTLOAD(RENAME_AFTER_RESUME_ERROR,
-            UnixExtractFileName(OpenParams.RemoteFileName.c_str()).c_str(), DestFileName.c_str()),
+            ::UnixExtractFileName(OpenParams.RemoteFileName.c_str()).c_str(), DestFileName.c_str()),
           RenameFile(OpenParams.RemoteFileName, DestFileName);
         );
       }
@@ -4380,7 +4380,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
         std::auto_ptr<TTouchSessionAction> TouchAction;
         if (CopyParam->GetPreserveTime())
         {
-          TDateTime MDateTime = UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
+          TDateTime MDateTime = ::UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
           FTerminal->LogEvent(FORMAT(L"Preserving timestamp [%s]",
             StandardTimestamp(MDateTime).c_str()));
           TouchAction.reset(new TTouchSessionAction(FTerminal->GetActionLog(), DestFullName,
@@ -4617,13 +4617,13 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
         if (ConfirmOverwriting)
         {
           // confirmation duplicated in SFTPSource for resumable file transfers.
-          UnicodeString RemoteFileNameOnly = UnixExtractFileName(OpenParams->RemoteFileName);
+          UnicodeString RemoteFileNameOnly = ::UnixExtractFileName(OpenParams->RemoteFileName);
           SFTPConfirmOverwrite(RemoteFileNameOnly,
             OpenParams->CopyParam, OpenParams->Params, OperationProgress, OpenParams->OverwriteMode, OpenParams->FileParams);
-          if (RemoteFileNameOnly != UnixExtractFileName(OpenParams->RemoteFileName))
+          if (RemoteFileNameOnly != ::UnixExtractFileName(OpenParams->RemoteFileName))
           {
             OpenParams->RemoteFileName =
-              UnixExtractFilePath(OpenParams->RemoteFileName) + RemoteFileNameOnly;
+              ::UnixExtractFilePath(OpenParams->RemoteFileName) + RemoteFileNameOnly;
           }
           OpenParams->Confirmed = true;
         }
@@ -4736,7 +4736,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
     ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
     FLAGSET(Flags, tfFirstLevel));
-  UnicodeString DestFullName = UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
+  UnicodeString DestFullName = ::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
 
   OperationProgress->SetFile(DirectoryName);
 
@@ -4947,7 +4947,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
   Action.FileName(FileName);
 
-  UnicodeString OnlyFileName = UnixExtractFileName(FileName);
+  UnicodeString OnlyFileName = ::UnixExtractFileName(FileName);
 
   TFileMasks::TParams MaskParams;
   assert(File);
@@ -5130,7 +5130,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         if (RemoteFilePacket.GetType() == SSH_FXP_ATTRS)
         {
           // load file, avoid completion (resolving symlinks) as we do not need that
-          AFile = LoadFile(&RemoteFilePacket, NULL, UnixExtractFileName(FileName),
+          AFile = LoadFile(&RemoteFilePacket, NULL, ::UnixExtractFileName(FileName),
             NULL, false);
         }
 
@@ -5161,7 +5161,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         TOverwriteFileParams FileParams;
         FileParams.SourceSize = OperationProgress->TransferSize;
         FileParams.SourceTimestamp = File->GetModification();
-        FileParams.DestTimestamp = UnixToDateTime(MTime,
+        FileParams.DestTimestamp = ::UnixToDateTime(MTime,
           GetSessionData()->GetDSTMode());
         FileParams.DestSize = DestFileSize;
         UnicodeString PrevDestFileName = DestFileName;
