@@ -1,5 +1,7 @@
 NetBox 2.1.29 ??.04.2013
 --------------------
+  * Bugfix: SFTP: Folder is created in root directory, not in current directory
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=108627#p108585)
   * Upgrade WinSCP core to 5.2.0
   * Bugfix: AV if transferring file in background mode
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=1065#p108302)
