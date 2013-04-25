@@ -36,7 +36,6 @@ CAtlBaseModule::CAtlBaseModule() throw()
 
 	if (FAILED(m_csResource.Init()))
 	{
-		ATLTRACE(atlTraceGeneral, 0, _T("ERROR : Unable to initialize critical section in CAtlBaseModule\n"));
 		ATLASSERT(0);
 		CAtlBaseModule::m_bInitFailed = true;
 	}
@@ -52,7 +51,6 @@ bool CAtlBaseModule::AddResourceInstance(HINSTANCE hInst) throw()
 	CComCritSecLock<CComCriticalSection> lock(m_csResource, false);
 	if (FAILED(lock.Lock()))
 	{
-		ATLTRACE(atlTraceGeneral, 0, _T("ERROR : Unable to lock critical section in CAtlBaseModule\n"));
 		ATLASSERT(0);
 		return false;
 	}
@@ -64,7 +62,6 @@ bool CAtlBaseModule::RemoveResourceInstance(HINSTANCE hInst) throw()
 	CComCritSecLock<CComCriticalSection> lock(m_csResource, false);
 	if (FAILED(lock.Lock()))
 	{
-			ATLTRACE(atlTraceGeneral, 0, _T("ERROR : Unable to lock critical section in CAtlBaseModule\n"));
 		ATLASSERT(0);
 		return false;
 	}
@@ -83,7 +80,6 @@ HINSTANCE CAtlBaseModule::GetHInstanceAt(int i) throw()
 	CComCritSecLock<CComCriticalSection> lock(m_csResource, false);
 	if (FAILED(lock.Lock()))
 	{
-		ATLTRACE(atlTraceGeneral, 0, _T("ERROR : Unable to lock critical section in CAtlBaseModule\n"));
 		ATLASSERT(0);
 		return NULL;
 	}

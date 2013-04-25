@@ -201,15 +201,12 @@ int AFX_CDECL AfxCriticalNewHandler(size_t nSize)
 {
 	// called during critical memory allocation
 	//  free up part of the app's safety cache
-	TRACE(traceMemory, 0, "Warning: Critical memory allocation failed!\n");
-	_AFX_THREAD_STATE* pThreadState = AfxGetThreadState();
 	if (pThreadState != NULL && pThreadState->m_pSafetyPoolBuffer != NULL)
 	{
 		size_t nOldBufferSize = _msize(pThreadState->m_pSafetyPoolBuffer);
 		if (nOldBufferSize <= nSize + MIN_MALLOC_OVERHEAD)
 		{
 			// give it all up
-			TRACE(traceMemory, 0, "Warning: Freeing application's memory safety pool!\n");
 			nb_free(pThreadState->m_pSafetyPoolBuffer);
 			pThreadState->m_pSafetyPoolBuffer = NULL;
 		}
@@ -219,13 +216,10 @@ int AFX_CDECL AfxCriticalNewHandler(size_t nSize)
 			_expand(pThreadState->m_pSafetyPoolBuffer,
 				nOldBufferSize - (nSize + MIN_MALLOC_OVERHEAD));
 			AfxEnableMemoryTracking(bEnable);
-			TRACE(traceMemory, 0, "Warning: Shrinking safety pool from %d to %d to satisfy request of %d bytes.\n",
-				 nOldBufferSize, _msize(pThreadState->m_pSafetyPoolBuffer), nSize);
 		}
 		return 1;       // retry it
 	}
 
-	TRACE(traceMemory, 0, "ERROR: Critical memory allocation from safety pool failed!\n");
 	AfxThrowMemoryException();      // oops
 }
 #endif // !_AFX_PORTABLE

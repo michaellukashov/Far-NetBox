@@ -582,7 +582,7 @@ public:
 	}
 
 private:
-	ATL_NOINLINE void AllocateHeap(_In_ size_t nBytes)
+	void AllocateHeap(_In_ size_t nBytes)
 	{
 		T* p = static_cast< T* >( Allocator::Allocate( nBytes ) );
 		if( p == NULL )
@@ -592,7 +592,7 @@ private:
 		m_p = p;
 	}
 
-	ATL_NOINLINE void ReAllocateHeap(_In_ size_t nNewSize)
+	void ReAllocateHeap(_In_ size_t nNewSize)
 	{
 		T* p = static_cast< T* >( Allocator::Reallocate(m_p, nNewSize) );
 		if ( p == NULL )
@@ -602,7 +602,7 @@ private:
 		m_p = p;
 	}
 
-	ATL_NOINLINE void FreeHeap() throw()
+	void FreeHeap() throw()
 	{
 		Allocator::Free( m_p );
 	}

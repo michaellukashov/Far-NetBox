@@ -2579,7 +2579,6 @@ private:
 			UINT nID = LOWORD( reinterpret_cast< DWORD_PTR >( pv ) );
 			if( !LoadString( nID ) )
 			{
-				ATLTRACE( atlTraceString, 2, _T( "Warning: implicit LoadString(%u) failed\n" ), nID );
 			}
 			bRet = true;
 		}
@@ -3027,7 +3026,6 @@ public:
 		(void)nActualChars;
 		(void)nFixedChars;
 		(void)pData;
-		ATLTRACE( atlTraceString, 0, _T( "CFixedStringMgr::Allocate() spilling to heap.  %d chars (fixed size = %d chars)\n" ), nActualChars, nFixedChars );
 	}
 	void OnReallocateSpill(
 		_In_ int nActualChars,
@@ -3037,7 +3035,6 @@ public:
 		(void)nActualChars;
 		(void)nFixedChars;
 		(void)pData;
-		ATLTRACE( atlTraceString, 0, _T( "CFixedStringMgr::Reallocate() spilling to heap.  %d chars (fixed size = %d chars)\n" ), nActualChars, nFixedChars );
 	}
 };
 

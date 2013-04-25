@@ -309,41 +309,6 @@ void CMapPtrToPtr::GetNextAssoc(POSITION& rNextPosition,
 /////////////////////////////////////////////////////////////////////////////
 // Diagnostics
 
-#ifdef _DEBUG
-void CMapPtrToPtr::Dump(CDumpContext& dc) const
-{
-	CObject::Dump(dc);
-
-	dc << "with " << LONGLONG(m_nCount) << " elements";
-	if (dc.GetDepth() > 0)
-	{
-		// Dump in format "[key] -> value"
-		void* key;
-		void* val;
-
-		POSITION pos = GetStartPosition();
-		while (pos != NULL)
-		{
-			GetNextAssoc(pos, key, val);
-			dc << "\n\t[" << key << "] = " << val;
-		}
-	}
-
-	dc << "\n";
-}
-
-void CMapPtrToPtr::AssertValid() const
-{
-	CObject::AssertValid();
-
-	ASSERT(m_nHashTableSize > 0);
-	ASSERT(m_nCount == 0 || m_pHashTable != NULL);
-		// non-empty map should have hash table
-}
-#endif //_DEBUG
-
-
-
 IMPLEMENT_DYNAMIC(CMapPtrToPtr, CObject)
 
 /////////////////////////////////////////////////////////////////////////////

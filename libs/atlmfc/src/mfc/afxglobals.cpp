@@ -36,15 +36,15 @@ AFX_GLOBAL_DATA::AFX_GLOBAL_DATA()
 	hbrBtnHilite = NULL;
 	hbrWindow = NULL;
 
-	m_hcurStretch = NULL;
-	m_hcurStretchVert = NULL;
-	m_hcurHand = NULL;
-	m_hcurSizeAll = NULL;
-	m_hiconTool = NULL;
-	m_hiconLink = NULL;
-	m_hiconColors = NULL;
-	m_hcurMoveTab = NULL;
-	m_hcurNoMoveTab = NULL;
+	// m_hcurStretch = NULL;
+	// m_hcurStretchVert = NULL;
+	// m_hcurHand = NULL;
+	// m_hcurSizeAll = NULL;
+	// m_hiconTool = NULL;
+	// m_hiconLink = NULL;
+	// m_hiconColors = NULL;
+	// m_hcurMoveTab = NULL;
+	// m_hcurNoMoveTab = NULL;
 
 	m_bUseSystemFont = FALSE;
 	m_bInSettingChange = FALSE;
@@ -67,7 +67,7 @@ AFX_GLOBAL_DATA::AFX_GLOBAL_DATA()
 
 	m_bUseBuiltIn32BitIcons = TRUE;
 
-	EnableAccessibilitySupport();
+	// EnableAccessibilitySupport();
 }
 
 AFX_GLOBAL_DATA::~AFX_GLOBAL_DATA()
@@ -142,7 +142,7 @@ BOOL AFX_GLOBAL_DATA::SetMenuFont(LPLOGFONT lpLogFont, BOOL bHorz)
 
 void AFX_GLOBAL_DATA::UpdateTextMetrics()
 {
-	CWindowDC dc(NULL);
+	/*CWindowDC dc(NULL);
 
 	TEXTMETRIC tm;
 	dc.GetTextMetrics(&tm);
@@ -158,15 +158,15 @@ void AFX_GLOBAL_DATA::UpdateTextMetrics()
 
 	m_nTextHeightVert = tm.tmHeight + nExtra;
 	m_nTextWidthVert = tm.tmMaxCharWidth + nExtra;
-
+*/
 }
 
 void AFX_GLOBAL_DATA::CleanUp()
 {
-	if (brLight.GetSafeHandle())
-	{
-		brLight.DeleteObject();
-	}
+	// if (brLight.GetSafeHandle())
+	// {
+		// brLight.DeleteObject();
+	// }
 
 	m_bEnableAccessibility = FALSE;
 }
@@ -176,7 +176,7 @@ void ControlBarCleanUp()
 	afxGlobalData.CleanUp();
 }
 
-COLORREF AFX_GLOBAL_DATA::GetColor(int nColor)
+/*COLORREF AFX_GLOBAL_DATA::GetColor(int nColor)
 {
 	switch(nColor)
 	{
@@ -208,17 +208,17 @@ COLORREF AFX_GLOBAL_DATA::GetColor(int nColor)
 	}
 
 	return ::GetSysColor(nColor);
-}
+}*/
 
 BOOL AFX_GLOBAL_DATA::SetLayeredAttrib(HWND hwnd, COLORREF crKey, BYTE bAlpha, DWORD dwFlags)
 {
 	return(::SetLayeredWindowAttributes(hwnd, crKey, bAlpha, dwFlags));
 }
 
-void AFX_GLOBAL_DATA::EnableAccessibilitySupport(BOOL bEnable/* = TRUE*/)
-{
-	m_bEnableAccessibility = bEnable;
-}
+// void AFX_GLOBAL_DATA::EnableAccessibilitySupport(BOOL bEnable/* = TRUE*/)
+// {
+	// m_bEnableAccessibility = bEnable;
+// }
 
 CString AFX_GLOBAL_DATA::RegisterWindowClass(LPCTSTR lpszClassNamePrefix)
 {
@@ -255,7 +255,7 @@ CString AFX_GLOBAL_DATA::RegisterWindowClass(LPCTSTR lpszClassNamePrefix)
 
 		if (!AfxRegisterClass(&wndcls))
 		{
-			AfxThrowResourceException();
+			// AfxThrowResourceException();
 		}
 	}
 
@@ -266,7 +266,7 @@ BOOL AFX_GLOBAL_DATA::Resume()
 {
 	if (m_bEnableAccessibility)
 	{
-		EnableAccessibilitySupport();
+		// EnableAccessibilitySupport();
 	}
 
 	return TRUE;

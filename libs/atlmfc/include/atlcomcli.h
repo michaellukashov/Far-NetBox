@@ -16,6 +16,7 @@
 #include <atlcore.h>
 #include <ole2.h>
 #include <olectl.h>
+#include <atlconv.h>
 
 #pragma warning (push)
 #pragma warning (disable: 4127)  // conditional expression constant
@@ -547,7 +548,6 @@ public:
 		if(p == NULL)
 			return E_INVALIDARG;
 		
-		ATLTRACE(atlTraceCOM, 2, _T("CPropertyHelper::PutProperty\n"));
 		DISPPARAMS dispparams = {NULL, NULL, 1, 1};
 		dispparams.rgvarg = pVar;
 		DISPID dispidPut = DISPID_PROPERTYPUT;
@@ -579,7 +579,6 @@ public:
 		if(p == NULL)
 			return E_INVALIDARG;
 			
-		ATLTRACE(atlTraceCOM, 2, _T("CPropertyHelper::GetProperty\n"));
 		DISPPARAMS dispparamsNoArgs = {NULL, NULL, 0, 0};
 		return p->Invoke(dwDispID, IID_NULL,
 				LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET,
@@ -948,11 +947,11 @@ public:
 		return AppendBSTR(bstrSrc.m_str);
 	}
 
-	_Check_return_ HRESULT Append(_In_z_ LPCOLESTR lpsz) throw()
+/*	_Check_return_ HRESULT Append(_In_z_ LPCOLESTR lpsz) throw()
 	{		
-		return Append(lpsz, UINT(ocslen(lpsz)));
+		return Append(lpsz, UINT(wcslen(lpsz)));
 	}
-
+*/
 	// a BSTR is just a LPCOLESTR so we need a special version to signify
 	// that we are appending a BSTR
 	_Check_return_ HRESULT AppendBSTR(_In_opt_z_ BSTR p) throw()
@@ -973,7 +972,7 @@ public:
 		return hr;
 	}
 
-	_Check_return_ HRESULT Append(_In_opt_count_(nLen) LPCOLESTR lpsz, _In_ int nLen) throw()
+/*	_Check_return_ HRESULT Append(_In_opt_count_(nLen) LPCOLESTR lpsz, _In_ int nLen) throw()
 	{
 		if (lpsz == NULL || (m_str != NULL && nLen == 0))
 		{
@@ -1073,7 +1072,7 @@ public:
 		m_str = b;
 		return S_OK;
 	}
-
+*/
 	_Check_return_ HRESULT AssignBSTR(_In_opt_z_ const BSTR bstrSrc) throw()
 	{
 		HRESULT hr = S_OK;
@@ -1474,7 +1473,6 @@ public:
 			// invalid data size
 			if (sizeof(cbStrLen) != cbRead)
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("Input stream is corrupted."));
 				hr = E_FAIL;
 			}
 			// read NULL string
@@ -1484,13 +1482,11 @@ public:
 			// invalid data length	
 			else if (cbStrLen < sizeof(OLECHAR))
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("Input stream is corrupted."));
 				hr = E_FAIL;
 			}
 			// security checks when system hang for huge stream of data
 			else if (cbStrLen > _ATL_STREAM_MAX_SIZE)
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("String exceeded the maximum allowed size see _ATL_STREAM_MAX_SIZE."));
 				hr = E_ACCESSDENIED;
 			}
 			else 
@@ -1511,7 +1507,6 @@ public:
 					{
 						if (cbRead != cbStrLen)
 						{
-							ATLTRACE(atlTraceCOM, 0, _T("Length of string data is different than expected."));
 							hr = E_FAIL;
 						}
 						else
@@ -1527,7 +1522,6 @@ public:
 								if (cbRead != sizeof(OLECHAR))
 #endif
 								{
-									ATLTRACE(atlTraceCOM, 0, _T("Cannot read NULL terminator from stream."));
 									hr = E_FAIL; 									
 								}								
 							}

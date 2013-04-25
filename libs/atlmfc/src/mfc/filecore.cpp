@@ -645,10 +645,6 @@ BOOL AFXAPI _AfxFullPath2(_Out_z_cap_c_(_MAX_PATH) LPTSTR lpszPathOut, LPCTSTR l
 	DWORD dwRet = GetFullPathName(lpszFileIn, _MAX_PATH, lpszPathOut, &lpszFilePart);
 	if (dwRet == 0)
 	{
-#ifdef _DEBUG
-		if (lpszFileIn != NULL && lpszFileIn[0] != '\0')
-			TRACE(traceAppMsg, 0, _T("Warning: could not parse the path '%s'.\n"), lpszFileIn);
-#endif
 		Checked::tcsncpy_s(lpszPathOut, _MAX_PATH, lpszFileIn, _TRUNCATE); // take it literally
 		_AfxFillExceptionInfo(pException,lpszFileIn);
 		return FALSE;
@@ -679,8 +675,6 @@ BOOL AFXAPI _AfxFullPath2(_Out_z_cap_c_(_MAX_PATH) LPTSTR lpszPathOut, LPCTSTR l
 		if (!GetVolumeInformation(strRoot, NULL, 0, NULL, &dwDummy, &dwFlags,
 			NULL, 0))
 		{
-			TRACE(traceAppMsg, 0, _T("Warning: could not get volume information '%s'.\n"),
-				(LPCTSTR)strRoot);
 			_AfxFillExceptionInfo(pException,lpszFileIn);
 			return FALSE;   // preserving case may not be correct
 		}
@@ -849,24 +843,6 @@ void AFXAPI AfxGetModuleShortFileName(HINSTANCE hInst, CString& strShortName)
 
 /////////////////////////////////////////////////////////////////////////////
 // CFile diagnostics
-
-#ifdef _DEBUG
-void CFile::AssertValid() const
-{
-	CObject::AssertValid();
-	// we permit the descriptor m_hFile to be any value for derived classes
-}
-
-void CFile::Dump(CDumpContext& dc) const
-{
-	CObject::Dump(dc);
-
-	dc << "with handle " << (void*)m_hFile;
-	dc << " and name \"" << m_strFileName << "\"";
-	dc << "\n";
-}
-#endif
-
 
 IMPLEMENT_DYNAMIC(CFile, CObject)
 

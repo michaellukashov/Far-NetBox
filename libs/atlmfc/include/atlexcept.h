@@ -15,8 +15,8 @@
 
 #if !defined(__MINGW32__)
 #include <atldef.h>
-#endif
 #include <atltrace.h>
+#endif
 
 
 #pragma pack(push,_ATL_PACKING)

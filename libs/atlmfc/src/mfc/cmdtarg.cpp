@@ -367,14 +367,6 @@ BOOL CCmdTarget::OnCmdMsg(UINT nID, int nCode, void* pExtra,
 		if (lpEntry != NULL)
 		{
 			// found it
-#ifdef _DEBUG
-			if (nCode == CN_COMMAND)
-				TRACE(traceCmdRouting, 1, "SENDING command id 0x%04X to %hs target.\n", nID,
-					GetRuntimeClass()->m_lpszClassName);
-			else if (nCode > CN_COMMAND)
-				TRACE(traceCmdRouting, 1, "SENDING control notification %d from control id 0x%04X to %hs window.\n",
-					nCode, nID, GetRuntimeClass()->m_lpszClassName);
-#endif //_DEBUG
 			return _AfxDispatchCmdMsg(this, nID, nCode,
 				lpEntry->pfn, pExtra, lpEntry->nSig, pHandlerInfo);
 		}
@@ -659,10 +651,10 @@ const AFX_OLECMDMAP* CCmdTarget::GetThisCommandMap()
 /////////////////////////////////////////////////////////////////////////////
 // Special access to view routing info
 
-CView* CCmdTarget::GetRoutingView()
-{
-	return GetRoutingView_();
-}
+// CView* CCmdTarget::GetRoutingView()
+// {
+	// return GetRoutingView_();
+// }
 
 /////////////////////////////////////////////////////////////////////////////
 // CCmdUI - User Interface for a command
@@ -741,10 +733,6 @@ BOOL CCmdUI::DoUpdate(CCmdTarget* pTarget, BOOL bDisableIfNoHndler)
 		info.pTarget = NULL;
 		BOOL bHandler = pTarget->OnCmdMsg(m_nID, CN_COMMAND, this, &info);
 
-#ifdef _DEBUG
-		if (!bHandler)
-			TRACE(traceCmdRouting, 1, "No handler for command ID 0x%04X, disabling it.\n", m_nID);
-#endif
 		// Enable or Disable based on whether there is a handler there
 		Enable(bHandler);
 	}
@@ -797,7 +785,6 @@ AFX_STATIC void AFXAPI _AfxLoadDotBitmap()
 			(LPVOID)rgbBitmap);
 	if (afxData.hbmMenuDot == NULL)
 	{
-		TRACE(traceAppMsg, 0, "Warning: using system arrow bitmap instead of dot.\n");
 		#define OBM_MNARROW         32739
 		afxData.hbmMenuDot = ::LoadBitmapW(NULL, MAKEINTRESOURCEW(OBM_MNARROW));
 	}
@@ -805,40 +792,6 @@ AFX_STATIC void AFXAPI _AfxLoadDotBitmap()
 
 /////////////////////////////////////////////////////////////////////////////
 // CCmdTarget diagnostics
-
-#ifdef _DEBUG
-void CCmdTarget::Dump(CDumpContext& dc) const
-{
-	CObject::Dump(dc);
-
-#ifndef _AFX_NO_OLE_SUPPORT
-	if (m_xDispatch.m_vtbl != 0)
-	{
-		dc << "with IDispatch (OLE Automation) capability\n";
-		dc << "m_bResultExpected = " << m_bResultExpected << "\n";
-	}
-	if (m_xConnPtContainer.m_vtbl != 0)
-	{
-		dc << "with OLE Connection Point capability\n";
-	}
-	if (GetInterfaceMap() != &CCmdTarget::interfaceMap)
-	{
-		dc << "with OLE capability";
-		dc << "\nm_dwRef = " << m_dwRef;
-		dc << "\nm_pOuterUnknown = " << m_pOuterUnknown;
-		if (m_xInnerUnknown != 0)
-			dc << "\nwith aggregation capability";
-		dc << "\n";
-	}
-#endif //!_AFX_NO_OLE_SUPPORT
-}
-
-void CCmdTarget::AssertValid() const
-{
-	CObject::AssertValid();
-}
-#endif
-
 
 IMPLEMENT_DYNAMIC(CCmdTarget, CObject)
 

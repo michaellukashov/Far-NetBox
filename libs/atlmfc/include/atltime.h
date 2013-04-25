@@ -78,10 +78,6 @@ public:
 	CString Format(_In_z_ LPCSTR pFormat) const;
 #endif
 
-#ifdef _AFX
-	CArchive& Serialize64(_In_ CArchive& ar);
-#endif
-
 private:
 	__time64_t m_timeSpan;
 };
@@ -158,10 +154,6 @@ public:
 	// for compatibility with MFC 3.x
 	CString Format(_In_z_ LPCSTR pFormat) const;
 	CString FormatGmt(_In_z_ LPCSTR pFormat) const;
-#endif
-
-#ifdef _AFX
-	CArchive& Serialize64(_In_ CArchive& ar);
 #endif
 
 private:

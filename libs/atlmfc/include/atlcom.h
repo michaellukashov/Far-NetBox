@@ -378,7 +378,6 @@ class ATL_NO_VTABLE IPersistImpl :
 public:
 	STDMETHOD(GetClassID)(_Out_ CLSID *pClassID)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistImpl::GetClassID\n"));
 		if (pClassID == NULL)
 			return E_FAIL;
 		*pClassID = T::GetObjectCLSID();
@@ -577,7 +576,6 @@ public:
 	// IPersist
 	STDMETHOD(GetClassID)(_Out_ CLSID *pClassID)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStreamInitImpl::GetClassID\n"));
 		if (pClassID == NULL)
 			return E_POINTER;
 		*pClassID = T::GetObjectCLSID();
@@ -587,13 +585,11 @@ public:
 	// IPersistStream
 	STDMETHOD(IsDirty)()
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStreamInitImpl::IsDirty\n"));
 		T* pT = static_cast<T*>(this);
 		return (pT->m_bRequiresSave) ? S_OK : S_FALSE;
 	}
 	STDMETHOD(Load)(_Inout_ LPSTREAM pStm)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStreamInitImpl::Load\n"));
 
 		T* pT = static_cast<T*>(this);
 		return pT->IPersistStreamInit_Load(pStm, T::GetPropertyMap());
@@ -601,14 +597,12 @@ public:
 	STDMETHOD(Save)(_Inout_ LPSTREAM pStm, _In_ BOOL fClearDirty)
 	{
 		T* pT = static_cast<T*>(this);
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStreamInitImpl::Save\n"));
 		return pT->IPersistStreamInit_Save(pStm, fClearDirty, T::GetPropertyMap());
 	}
 	STDMETHOD(GetSizeMax)(_Out_ ULARGE_INTEGER* pcbSize)
 	{
 		HRESULT hr = S_OK;
 		T* pT = static_cast<T*>(this);
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStreamInitImpl::GetSizeMax\n"));
 
 		ATLASSERT(pcbSize != NULL);
 		if (pcbSize == NULL)
@@ -664,7 +658,6 @@ public:
 					hr = pT->GetUnknown()->QueryInterface(*pMap[i].piidDispatch, (void**)&pDispatch);
 					if (FAILED(hr))
 					{
-						ATLTRACE(atlTraceCOM, 0, _T("Failed to get a dispatch pointer for property #%i\n"), i);						
 						break;
 					}
 					piidOld = pMap[i].piidDispatch;
@@ -673,14 +666,12 @@ public:
 				hr = pDispatch.GetProperty(pMap[i].dispid, &var);
 				if (FAILED(hr))
 				{
-					ATLTRACE(atlTraceCOM, 0, _T("Invoked failed on DISPID %x\n"), pMap[i].dispid);					
 					break;
 				}
 				
 				hr = var.GetSizeMax(&nVarSize);			
 				if (FAILED(hr))
 				{
-					ATLTRACE(atlTraceCOM, 0, _T("Failed to get size for property #%i\n"), i);					
 					break;
 				}
 			}
@@ -688,7 +679,6 @@ public:
 			hr = AtlAdd(&nSize.QuadPart, nSize.QuadPart, nVarSize.QuadPart);
 			if (FAILED(hr))
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("Result overflow after adding property #%i\n"), i);				
 				break;
 			}			
 		}
@@ -699,7 +689,6 @@ public:
 	// IPersistStreamInit
 	STDMETHOD(InitNew)()
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStreamInitImpl::InitNew\n"));
 		T* pT = static_cast<T*>(this);
 		pT->m_bRequiresSave = TRUE;
 		return S_OK;
@@ -743,7 +732,6 @@ public:
 	// IPersist
 	STDMETHOD(GetClassID)(_Out_ CLSID *pClassID)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStorageImpl::GetClassID\n"));
 		if (pClassID == NULL)
 			return E_POINTER;
 		*pClassID = T::GetObjectCLSID();
@@ -753,21 +741,18 @@ public:
 	// IPersistStorage
 	STDMETHOD(IsDirty)(void)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStorageImpl::IsDirty\n"));
 		CComPtr<IPersistStreamInit> p;
 		p.p = IPSI_GetIPersistStreamInit();
 		return (p != NULL) ? p->IsDirty() : E_FAIL;
 	}
 	STDMETHOD(InitNew)(_In_opt_ IStorage*)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStorageImpl::InitNew\n"));
 		CComPtr<IPersistStreamInit> p;
 		p.p = IPSI_GetIPersistStreamInit();
 		return (p != NULL) ? p->InitNew() : E_FAIL;
 	}
 	STDMETHOD(Load)(_Inout_ IStorage* pStorage)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStorageImpl::Load\n"));
 		if (pStorage == NULL)
 			return E_INVALIDARG;
 		CComPtr<IPersistStreamInit> p;
@@ -785,7 +770,6 @@ public:
 	}
 	STDMETHOD(Save)(_Inout_ IStorage* pStorage, _In_ BOOL fSameAsLoad)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStorageImpl::Save\n"));
 		if (pStorage == NULL)
 			return E_INVALIDARG;
 		CComPtr<IPersistStreamInit> p;
@@ -805,12 +789,10 @@ public:
 	}
 	STDMETHOD(SaveCompleted)(_Inout_opt_ IStorage* /* pStorage */)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStorageImpl::SaveCompleted\n"));
 		return S_OK;
 	}
 	STDMETHOD(HandsOffStorage)(void)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStorageImpl::HandsOffStorage\n"));
 		return S_OK;
 	}
 private:
@@ -838,7 +820,6 @@ public:
 	// IPersist
 	STDMETHOD(GetClassID)(_Out_ CLSID *pClassID)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistPropertyBagImpl::GetClassID\n"));
 		if (pClassID == NULL)
 			return E_POINTER;
 		*pClassID = T::GetObjectCLSID();
@@ -849,7 +830,6 @@ public:
 	//
 	STDMETHOD(InitNew)()
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistPropertyBagImpl::InitNew\n"));
 		T* pT = static_cast<T*>(this);
 		pT->m_bRequiresSave = TRUE;
 		return S_OK;
@@ -858,7 +838,6 @@ public:
 		_Inout_ LPPROPERTYBAG pPropBag, 
 		_Inout_opt_ LPERRORLOG pErrorLog)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistPropertyBagImpl::Load\n"));
 		T* pT = static_cast<T*>(this);
 		const ATL_PROPMAP_ENTRY* pMap = T::GetPropertyMap();
 		ATLASSERT(pMap != NULL);
@@ -869,7 +848,6 @@ public:
 		_In_ BOOL fClearDirty, 
 		_In_ BOOL fSaveAllProperties)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistPropertyBagImpl::Save\n"));
 		T* pT = static_cast<T*>(this);
 		const ATL_PROPMAP_ENTRY* pMap = T::GetPropertyMap();
 		ATLASSERT(pMap != NULL);
@@ -2614,7 +2592,6 @@ ATLPREFAST_SUPPRESS(6387)
 
 			if ((pUnkOuter != NULL) && !InlineIsEqualUnknown(riid))
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("CComClassFactory: asked for non IUnknown interface while creating an aggregated object"));
 				hRes = CLASS_E_NOAGGREGATION;
 			}
 			else
@@ -3151,7 +3128,6 @@ inline HRESULT CComTypeInfoHolder::GetTI(_In_ LCID lcid)
 	HRESULT hRes = lock.Lock();
 	if (FAILED(hRes))
 	{
-		ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to lock critical section in CComTypeInfoHolder::GetTI\n"));
 		ATLASSERT(0);
 		return hRes;
 	}
@@ -3212,8 +3188,6 @@ inline HRESULT CComTypeInfoHolder::GetTI(_In_ LCID lcid)
 								(pLibAttr->wMajorVerNum != m_wMajor ||
 								pLibAttr->wMinorVerNum != m_wMinor))
 							{
-								ATLTRACE(atlTraceCOM, 0, _T("Warning : CComTypeInfoHolder::GetTI : Loaded typelib does not match the typelib in the module : %s\n"), szFilePath);
-								ATLTRACE(atlTraceCOM, 0, _T("\tSee IDispatchImpl overview help topic for more information\n"));							
 							}
 							spTypeLibModule->ReleaseTLibAttr(pLibAttr);
 						}
@@ -3222,9 +3196,6 @@ inline HRESULT CComTypeInfoHolder::GetTI(_In_ LCID lcid)
 			}
 			else
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to load Typelibrary. (HRESULT = 0x%x)\n"), hRes);
-				ATLTRACE(atlTraceCOM, 0, _T("\tVerify TypelibID and major version specified with\n"));
-				ATLTRACE(atlTraceCOM, 0, _T("\tIDispatchImpl, CStockPropImpl, IProvideClassInfoImpl or IProvideCLassInfo2Impl\n"));
 			}
 #endif		
 		}
@@ -3276,7 +3247,6 @@ public:
 	}
 	STDMETHOD(SetSite)(_In_opt_ IUnknown *pUnkSite)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IObjectWithSiteImpl::SetSite\n"));
 		T* pT = static_cast<T*>(this);
 		pT->m_spUnkSite = pUnkSite;
 		return S_OK;
@@ -3285,7 +3255,6 @@ public:
 		_In_ REFIID riid, 
 		_Deref_out_ void** ppvSite)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IObjectWithSiteImpl::GetSite\n"));
 		T* pT = static_cast<T*>(this);
 		ATLASSERT(ppvSite);
 		HRESULT hRes = E_POINTER;
@@ -3336,7 +3305,6 @@ public:
 		_In_ REFIID riid, 
 		_Deref_out_ void** ppvObject)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IServiceProviderImpl::QueryService\n"));
 
 		T* pT = static_cast<T*>(this);
 		return pT->_InternalQueryService(guidService, riid, ppvObject);
@@ -4754,7 +4722,6 @@ public:
 	//
 	STDMETHOD(GetPages)(_Out_ CAUUID* pPages)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("ISpecifyPropertyPagesImpl::GetPages\n"));
 		const ATL_PROPMAP_ENTRY* pMap = T::GetPropertyMap();
 		return GetPagesHelper(pPages, pMap);
 	}
@@ -5650,7 +5617,6 @@ ATLPREFAST_UNSUPPRESS()
 			ATLENSURE_RETURN(pMap[i].piidDispatch);
 			if (FAILED(pUnk->QueryInterface(*pMap[i].piidDispatch, (void**)&pDispatch)))
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("Failed to get a dispatch pointer for property #%i\n"), i);	
 				hr = E_FAIL;
 				break;
 			}
@@ -5659,7 +5625,6 @@ ATLPREFAST_UNSUPPRESS()
 
 		if (FAILED(pDispatch.PutProperty(pMap[i].dispid, &var)))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("Invoked failed on DISPID %x\n"), pMap[i].dispid);
 			hr = E_FAIL;
 			break;
 		}
@@ -5718,7 +5683,6 @@ ATLPREFAST_UNSUPPRESS()
 			ATLENSURE_RETURN(pMap[i].piidDispatch);
 			if (FAILED(pUnk->QueryInterface(*pMap[i].piidDispatch, (void**)&pDispatch)))
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("Failed to get a dispatch pointer for property #%i\n"), i);
 				hr = E_FAIL;
 				break;
 			}
@@ -5727,7 +5691,6 @@ ATLPREFAST_UNSUPPRESS()
 
 		if (FAILED(pDispatch.GetProperty(pMap[i].dispid, &var)))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("Invoked failed on DISPID %x\n"), pMap[i].dispid);
 			hr = E_FAIL;
 			break;
 		}
@@ -5807,7 +5770,6 @@ ATLPREFAST_UNSUPPRESS()
 			ATLENSURE_RETURN(pMap[i].piidDispatch);
 			if (FAILED(pUnk->QueryInterface(*pMap[i].piidDispatch, (void**)&pDispatch)))
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("Failed to get a dispatch pointer for property #%i\n"), i);
 				return E_FAIL;
 			}
 			piidOld = pMap[i].piidDispatch;
@@ -5818,7 +5780,6 @@ ATLPREFAST_UNSUPPRESS()
 		{
 			if (FAILED(pDispatch.GetProperty(pMap[i].dispid, &var)))
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("Invoked failed on DISPID %x\n"), pMap[i].dispid);
 				return E_FAIL;
 			}
 			vt = var.vt;
@@ -5836,18 +5797,10 @@ ATLPREFAST_UNSUPPRESS()
 
 			if (hr == E_INVALIDARG)
 			{
-				if (lp == NULL)
-					ATLTRACE(atlTraceCOM, 0, _T("Property not in Bag\n"));
-				else
-					ATLTRACE(atlTraceCOM, 0, _T("Property %s not in Bag\n"), lp);
 			}
 			else
 			{
 				// Many containers return different ERROR values for Member not found
-				if (lp == NULL)
-					ATLTRACE(atlTraceCOM, 0, _T("Error attempting to read Property from PropertyBag \n"));
-				else
-					ATLTRACE(atlTraceCOM, 0, _T("Error attempting to read Property %s from PropertyBag \n"), lp);
 			}
 #endif			
 			var.vt = VT_EMPTY;
@@ -5856,7 +5809,6 @@ ATLPREFAST_UNSUPPRESS()
 
 		if (FAILED(pDispatch.PutProperty(pMap[i].dispid, &var)))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("Invoked failed on DISPID %x\n"), pMap[i].dispid);
 			return E_FAIL;
 		}
 	}
@@ -5872,7 +5824,6 @@ ATLINLINE ATLAPI AtlIPersistPropertyBag_Save(
 {
 	if (pPropBag == NULL)
 	{
-		ATLTRACE(atlTraceCOM, 0, _T("PropBag pointer passed in was invalid\n"));
 		return E_INVALIDARG;
 	}
 	if (pMap == NULL || pThis == NULL || pUnk == NULL)
@@ -5939,7 +5890,6 @@ ATLPREFAST_UNSUPPRESS()
 			ATLENSURE_RETURN(pMap[i].piidDispatch);
 			if (FAILED(pUnk->QueryInterface(*pMap[i].piidDispatch, (void**)&pDispatch)))
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("Failed to get a dispatch pointer for property #%i\n"), i);
 				return E_FAIL;
 			}
 			piidOld = pMap[i].piidDispatch;
@@ -5947,7 +5897,6 @@ ATLPREFAST_UNSUPPRESS()
 
 		if (FAILED(pDispatch.GetProperty(pMap[i].dispid, &var)))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("Invoked failed on DISPID %x\n"), pMap[i].dispid);
 			return E_FAIL;
 		}
 
@@ -5962,7 +5911,6 @@ ATLPREFAST_UNSUPPRESS()
 		{
 			if (var.punkVal == NULL)
 			{
-				ATLTRACE(atlTraceCOM, 2, _T("Warning skipping empty IUnknown in Save\n"));
 				continue;
 			}
 		}

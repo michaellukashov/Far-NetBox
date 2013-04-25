@@ -52,58 +52,7 @@ AFX_INLINE BOOL CWnd::GetWindowInfo(PWINDOWINFO pwi) const
 AFX_INLINE CWnd* CWnd::GetAncestor(UINT gaFlags) const
 	{ ASSERT(::IsWindow(m_hWnd)); return  CWnd::FromHandle(::GetAncestor(m_hWnd, gaFlags)); }
 
-AFX_INLINE BOOL CWnd::GetScrollBarInfo(LONG idObject, PSCROLLBARINFO psbi) const
-{
-	ASSERT(::IsWindow(m_hWnd));
-	ENSURE(psbi != NULL);
-	return ::GetScrollBarInfo(m_hWnd, idObject, psbi);
-}
-
-AFX_INLINE BOOL CWnd::GetTitleBarInfo(PTITLEBARINFO pti) const
-{
-	ASSERT(::IsWindow(m_hWnd));
-	ENSURE(pti != NULL);
-	return ::GetTitleBarInfo(m_hWnd, pti);
-}
-
-AFX_INLINE BOOL CWnd::AnimateWindow(DWORD dwTime, DWORD dwFlags)
-{
-	ASSERT(::IsWindow(m_hWnd));
-	return ::AnimateWindow(m_hWnd, dwTime, dwFlags);
-}
-
-AFX_INLINE BOOL CWnd::FlashWindowEx(DWORD dwFlags, UINT  uCount, DWORD dwTimeout)
-{
-	ASSERT(::IsWindow(m_hWnd));
-	FLASHWINFO fwi;
-	fwi.cbSize = sizeof(fwi);
-	fwi.hwnd = m_hWnd;
-	fwi.dwFlags = dwFlags;
-	fwi.uCount = uCount;
-	fwi.dwTimeout = dwTimeout;
-
-	return ::FlashWindowEx(&fwi);
-}
-
 #endif	// WINVER >= 0x0500
-
-#if(_WIN32_WINNT >= 0x0500)
-
-AFX_INLINE BOOL CWnd::SetLayeredWindowAttributes(COLORREF crKey, BYTE bAlpha, DWORD dwFlags)
-{
-	ASSERT(::IsWindow(m_hWnd));
-	return ::SetLayeredWindowAttributes(m_hWnd, crKey, bAlpha, dwFlags);
-}
-
-AFX_INLINE BOOL CWnd::UpdateLayeredWindow(CDC* pDCDst, POINT *pptDst, SIZE *psize,
-		CDC* pDCSrc, POINT *pptSrc, COLORREF crKey, BLENDFUNCTION *pblend, DWORD dwFlags)
-{
-	ASSERT(::IsWindow(m_hWnd));
-	return ::UpdateLayeredWindow(m_hWnd, pDCDst->GetSafeHdc(), pptDst, psize,
-		pDCSrc->GetSafeHdc(), pptSrc, crKey, pblend, dwFlags);
-}
-
-#endif	// _WIN32_WINNT >= 0x0500
 
 #if(_WIN32_WINNT >= 0x0501)
 

@@ -290,45 +290,6 @@ void CPtrArray::InsertAt(INT_PTR nStartIndex, CPtrArray* pNewArray)
 
 
 
-/////////////////////////////////////////////////////////////////////////////
-// Diagnostics
-
-#ifdef _DEBUG
-void CPtrArray::Dump(CDumpContext& dc) const
-{
-	CObject::Dump(dc);
-
-	dc << "with " << m_nSize << " elements";
-	if (dc.GetDepth() > 0)
-	{
-		for (INT_PTR i = 0; i < m_nSize; i++)
-			dc << "\n\t[" << i << "] = " << m_pData[i];
-	}
-
-	dc << "\n";
-}
-
-void CPtrArray::AssertValid() const
-{
-	CObject::AssertValid();
-
-	if (m_pData == NULL)
-	{
-		ASSERT(m_nSize == 0);
-		ASSERT(m_nMaxSize == 0);
-	}
-	else
-	{
-		ASSERT(m_nSize >= 0);
-		ASSERT(m_nMaxSize >= 0);
-		ASSERT(m_nSize <= m_nMaxSize);
-		ASSERT(AfxIsValidAddress(m_pData, m_nMaxSize * sizeof(void*)));
-	}
-}
-#endif //_DEBUG
-
-
-
 IMPLEMENT_DYNAMIC(CPtrArray, CObject)
 
 /////////////////////////////////////////////////////////////////////////////

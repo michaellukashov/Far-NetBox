@@ -110,11 +110,6 @@ Failed:
 	if (pError != NULL)
 		pError->m_sc = sc;
 
-#ifdef _DEBUG
-	TRACE(traceOle, 0, _T("Warning: CreateDispatch returning scode = %s.\n"),
-		AfxGetFullScodeString(sc));
-#endif
-
 	return FALSE;
 }
 
@@ -189,7 +184,6 @@ void COleDispatchDriver::InvokeHelperV(DISPID dwDispID, WORD wFlags,
 {
 	if (m_lpDispatch == NULL)
 	{
-		TRACE(traceOle, 0, "Warning: attempt to call Invoke with NULL m_lpDispatch!\n");
 		return;
 	}
 
@@ -470,7 +464,6 @@ void COleDispatchDriver::InvokeHelperV(DISPID dwDispID, WORD wFlags,
 			SCODE scChangeType = VariantChangeType(&vaResult, &vaResult, 0, vtRet);
 			if (FAILED(scChangeType))
 			{
-				TRACE(traceOle, 0, "Warning: automation return value coercion failed.\n");
 				VariantClear(&vaResult);
 				AfxThrowOleException(scChangeType);
 			}

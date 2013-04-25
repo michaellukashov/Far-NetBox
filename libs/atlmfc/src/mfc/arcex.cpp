@@ -51,8 +51,8 @@ BOOL CArchiveException::GetErrorMessage(_Out_z_cap_(nMaxError) LPTSTR lpszError,
 		CString strFileName = m_strFileName;
 		if (strFileName.IsEmpty())
 			strFileName.LoadString(AFX_IDS_UNNAMED_FILE);
-		AfxFormatString1(strMessage,
-			m_cause + AFX_IDP_ARCH_NONE, strFileName);
+		// AfxFormatString1(strMessage,
+			// m_cause + AFX_IDP_ARCH_NONE, strFileName);
 		Checked::tcsncpy_s(lpszError, nMaxError, strMessage, _TRUNCATE);
 	}
 	CATCH_ALL( pEx )
@@ -65,24 +65,6 @@ BOOL CArchiveException::GetErrorMessage(_Out_z_cap_(nMaxError) LPTSTR lpszError,
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
-// CArchiveException
-
-#ifdef _DEBUG
-void CArchiveException::Dump(CDumpContext& dc) const
-{
-	CObject::Dump(dc);
-
-	dc << " m_cause = ";
-	if (m_cause >= 0 && m_cause < _countof(rgszCArchiveExceptionCause))
-		dc << rgszCArchiveExceptionCause[m_cause];
-	else
-		dc << szUnknown;
-
-	dc << "\n";
-}
-#endif //_DEBUG
-
 void __declspec(noreturn) AFXAPI AfxThrowArchiveException(int cause,
 	LPCTSTR lpszArchiveName /* = NULL */)
 {
@@ -92,7 +74,6 @@ void __declspec(noreturn) AFXAPI AfxThrowArchiveException(int cause,
 		lpsz = rgszCArchiveExceptionCause[cause];
 	else
 		lpsz = szUnknown;
-	TRACE(traceAppMsg, 0, "CArchive exception: %hs.\n", lpsz);
 
 #endif //_DEBUG
 

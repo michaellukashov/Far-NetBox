@@ -368,43 +368,6 @@ POSITION CPtrList::Find(void* searchValue, POSITION startAfter) const
 /////////////////////////////////////////////////////////////////////////////
 // Diagnostics
 
-#ifdef _DEBUG
-void CPtrList::Dump(CDumpContext& dc) const
-{
-	CObject::Dump(dc);
-
-	dc << "with " << LONGLONG(m_nCount) << " elements";
-	if (dc.GetDepth() > 0)
-	{
-		POSITION pos = GetHeadPosition();
-		while (pos != NULL)
-			dc << "\n\t" << GetNext(pos);
-	}
-
-	dc << "\n";
-}
-
-void CPtrList::AssertValid() const
-{
-	CObject::AssertValid();
-
-	if (m_nCount == 0)
-	{
-		// empty list
-		ASSERT(m_pNodeHead == NULL);
-		ASSERT(m_pNodeTail == NULL);
-	}
-	else
-	{
-		// non-empty list
-		ASSERT(AfxIsValidAddress(m_pNodeHead, sizeof(CNode)));
-		ASSERT(AfxIsValidAddress(m_pNodeTail, sizeof(CNode)));
-	}
-}
-#endif //_DEBUG
-
-
-
 IMPLEMENT_DYNAMIC(CPtrList, CObject)
 
 /////////////////////////////////////////////////////////////////////////////

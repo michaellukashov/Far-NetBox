@@ -25,88 +25,6 @@
 #error _AFX_BYTESWAP is not supported.
 #endif
 
-UINT_PTR AFXAPI AfxReadStringLength(CArchive& ar, int& nCharSize)
-{
-	/*ULONGLONG qwLength;
-	DWORD dwLength;
-	WORD wLength;
-	BYTE bLength;
-
-	nCharSize = sizeof(char);
-
-	// First, try to read a one-byte length
-	ar>>bLength;
-	if (bLength < 0xff)
-		return bLength;
-
-	// Try a two-byte length
-	ar>>wLength;
-	if (wLength == 0xfffe)
-	{
-		// Unicode string.  Start over at 1-byte length
-		nCharSize = sizeof(wchar_t);
-
-		ar>>bLength;
-		if (bLength < 0xff)
-			return bLength;
-
-		// Two-byte length
-		ar>>wLength;
-		// Fall through to continue on same branch as ANSI string
-	}
-	if (wLength < 0xffff)
-		return wLength;
-
-	// 4-byte length
-	ar>>dwLength;
-	if (dwLength < 0xffffffff)
-		return dwLength;
-
-	// 8-byte length
-	ar>>qwLength;
-#ifndef _WIN64  // Big strings aren't supported on Win32 clients
-	if (qwLength > INT_MAX)
-		AfxThrowArchiveException(CArchiveException::genericException);
-#endif  // !_WIN64
-
-	return (UINT_PTR)qwLength;
-  */
-  return 0;
-}
-
-void AFXAPI AfxWriteStringLength(CArchive& ar, UINT_PTR nLength, BOOL bUnicode)
-{
-	/*if (bUnicode)
-	{
-		// Tag Unicode strings
-		ar<<(BYTE)0xff;
-		ar<<(WORD)0xfffe;
-	}
-
-	if (nLength < 255)
-	{
-		ar<<(BYTE)nLength;
-	}
-	else if (nLength < 0xfffe)
-	{
-		ar<<(BYTE)0xff;
-		ar<<(WORD)nLength;
-	}
-	else if (nLength < 0xffffffff)
-	{
-		ar<<(BYTE)0xff;
-		ar<<(WORD)0xffff;
-		ar<<(DWORD)nLength;
-	}
-	else
-	{
-		ar<<(BYTE)0xff;
-		ar<<(WORD)0xffff;
-		ar<<(DWORD)0xffffffff;
-		ar<<(ULONGLONG)nLength;
-	}*/
-}
-
 // Runtime class serialization code
 CObject* PASCAL CRuntimeClass::CreateObject(LPCSTR lpszClassName)
 {
@@ -117,8 +35,6 @@ CObject* PASCAL CRuntimeClass::CreateObject(LPCSTR lpszClassName)
 	if (pClass == NULL)
 	{
 		// not found, trace a warning for diagnostic purposes
-		TRACE(traceAppMsg, 0, "Warning: Cannot find %hs CRuntimeClass.  Class not defined.\n",
-			lpszClassName);
 		return NULL;
 	}
 
@@ -180,48 +96,6 @@ CRuntimeClass* PASCAL CRuntimeClass::FromName(LPCWSTR lpszClassName)
 	if( lpszClassName == NULL )
 		return NULL;
 	return CRuntimeClass::FromName( strClassName.GetString() );
-}
-
-CRuntimeClass* PASCAL CRuntimeClass::Load(CArchive& ar, UINT* pwSchemaNum)
-	// loads a runtime class description
-{
-	/*if(pwSchemaNum == NULL)
-	{
-		return NULL;
-	}
-	WORD nLen;
-	char szClassName[64];
-
-	WORD wTemp;
-	ar >> wTemp; *pwSchemaNum = wTemp;
-	ar >> nLen;
-
-	// load the class name
-	if (nLen >= _countof(szClassName) ||
-		ar.Read(szClassName, nLen*sizeof(char)) != nLen*sizeof(char))
-	{
-		return NULL;
-	}
-	szClassName[nLen] = '\0';
-
-	// match the string against an actual CRuntimeClass
-	CRuntimeClass* pClass = FromName(szClassName);
-	if (pClass == NULL)
-	{
-		// not found, trace a warning for diagnostic purposes
-		TRACE(traceAppMsg, 0, "Warning: Cannot load %hs from archive.  Class not defined.\n",
-			szClassName);
-	}
-*/
-	return NULL;
-}
-
-void CRuntimeClass::Store(CArchive& ar) const
-	// stores a runtime class description
-{
-	// WORD nLen = (WORD)lstrlenA(m_lpszClassName);
-	// ar << (WORD)m_wSchema << nLen;
-	// ar.Write(m_lpszClassName, nLen*sizeof(char));
 }
 
 ////////////////////////////////////////////////////////////////////////////

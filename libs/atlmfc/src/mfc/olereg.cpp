@@ -227,8 +227,6 @@ AFX_STATIC BOOL AFXAPI _AfxOleMakeSymbolTable(_AFX_OLESYMBOLTABLE& refTable,
 	lpszClassID = TASKSTRINGOLE2T(lpOleStr);
 	if (lpszClassID == NULL)
 	{
-		// TRACE(traceOle, 0, "Warning: StringFromCLSID failed in AfxOleRegisterServerName --\n");
-		// TRACE(traceOle, 0, "\tperhaps AfxOleInit() has not been called.\n");
 		return FALSE;
 	}
 	refTable.SetAt(0, lpszClassID);
@@ -433,11 +431,10 @@ BOOL AFXAPI AfxOleUnregisterHelper(LPCTSTR const* rglpszRegister,
 		if ((hKeyRoot == HKEY_CLASSES_ROOT) && (*lpszKey == '\0'))
 			continue;
 
-		AfxFormatStrings(strKey, lpszKey, rglpszSymbols, nSymbols);
+		// AfxFormatStrings(strKey, lpszKey, rglpszSymbols, nSymbols);
 
 		if ((hKeyRoot == HKEY_CLASSES_ROOT) && strKey.IsEmpty())
 		{
-			// TRACE(traceOle, 0, _T("Warning: skipping empty key '%s'.\n"), lpszKey);
 			continue;
 		}
 
@@ -474,12 +471,11 @@ BOOL AFXAPI AfxOleRegisterHelper(LPCTSTR const* rglpszRegister,
 
 		LPCTSTR lpszValue = lpszKey + lstrlen(lpszKey) + 1;
 
-		AfxFormatStrings(strKey, lpszKey, rglpszSymbols, nSymbols);
-		AfxFormatStrings(strValue, lpszValue, rglpszSymbols, nSymbols);
+		// AfxFormatStrings(strKey, lpszKey, rglpszSymbols, nSymbols);
+		// AfxFormatStrings(strValue, lpszValue, rglpszSymbols, nSymbols);
 
 		if ((hKeyRoot == HKEY_CLASSES_ROOT) && strKey.IsEmpty())
 		{
-			// TRACE(traceOle, 0, _T("Warning: skipping empty key '%s'.\n"), lpszKey);
 			continue;
 		}
 
@@ -489,13 +485,6 @@ BOOL AFXAPI AfxOleRegisterHelper(LPCTSTR const* rglpszRegister,
 			LONG lSize = sizeof(szBuffer);
 			if (AfxRegQueryValue(hKeyRoot, strKey, szBuffer, &lSize) == ERROR_SUCCESS)
 			{
-#ifdef _DEBUG
-				if (strValue != szBuffer)
-				{
-					// TRACE(traceOle, 0, _T("Warning: Leaving value '%s' for key '%s' in registry\n"), szBuffer, (LPCTSTR)strKey);
-					// TRACE(traceOle, 0, _T("\tintended value was '%s'.\n"), (LPCTSTR)strValue);
-				}
-#endif
 				continue;
 			}
 		}
@@ -503,7 +492,6 @@ BOOL AFXAPI AfxOleRegisterHelper(LPCTSTR const* rglpszRegister,
 		LONG lResult = AfxRegSetValue(hKeyRoot, strKey, REG_SZ, strValue, lstrlen(strValue) * sizeof(TCHAR));
 		if(lResult != ERROR_SUCCESS)
 		{
-			// TRACE(traceOle, 0, _T("Error: failed setting key '%s' to value '%s'.\n"), (LPCTSTR)strKey, (LPCTSTR)strValue);
 
 			if(lResult != ERROR_ACCESS_DENIED)
 			{
@@ -532,7 +520,6 @@ BOOL AFXAPI AfxRegisterPreviewHandler(LPCTSTR lpszCLSID, LPCTSTR lpszShortTypeNa
 
 	if (regPreviewHandlersKey.SetStringValue(lpszCLSID, strData) != ERROR_SUCCESS)
 	{
-		// TRACE(traceOle, 0, _T("Error: failed setting value '%s' for key HKEY_LOCAL_MACHINE\\'%s'.\n"), lpszCLSID, _afxPreviewHandlersRegPath);
 		return FALSE;
 	}
 
@@ -544,7 +531,6 @@ BOOL AFXAPI AfxRegisterPreviewHandler(LPCTSTR lpszCLSID, LPCTSTR lpszShortTypeNa
 
 	if (regKey.SetValue(NULL, REG_SZ, (LPCVOID)lpszCLSID, (ULONG)(_tcslen(lpszCLSID) * sizeof(TCHAR))) != ERROR_SUCCESS)
 	{
-		// TRACE(traceOle, 0, _T("Error: failed setting value '%s' for key HKEY_CLASSES_ROOT\\'%s'.\n"), lpszCLSID, strShellExKey);
 		return FALSE;
 	}
 
@@ -578,7 +564,6 @@ BOOL AFXAPI AfxRegisterThumbnailHandler(LPCTSTR lpszCLSID, LPCTSTR lpszFilterExt
 
 	if (regKey.SetValue(NULL, REG_SZ, (LPCVOID) lpszCLSID, (ULONG)(_tcslen(lpszCLSID) * sizeof(TCHAR))) != ERROR_SUCCESS)
 	{
-		// TRACE(traceOle, 0, _T("Error: failed setting value '%s' for key HKEY_CLASSES_ROOT\\'%s'.\n"), lpszCLSID, strShellExKey);
 		return FALSE;
 	}
 	else

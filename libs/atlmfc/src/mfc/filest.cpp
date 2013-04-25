@@ -25,22 +25,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // CFileStatus diagnostics
 
-#ifdef _DEBUG
-void CFileStatus::Dump(CDumpContext& dc) const
-{
-	dc << "a CFileStatus at " << (void*)this;
-
-	dc << "\nm_ctime = " << m_ctime;
-	dc << "\nm_mtime = " << m_mtime;
-	dc << "\nm_atime = " << m_atime;
-	dc << "\nm_size = " << m_size;
-	dc << "\nm_attribute = " << m_attribute;
-	dc << "\nm_szFullName = " << m_szFullName;
-
-	dc << "\n";
-}
-#endif
-
 /////////////////////////////////////////////////////////////////////////////
 // CFile name handlers
 
@@ -119,11 +103,6 @@ BOOL CFile::GetStatus(CFileStatus& rStatus) const
 			else
 			{
 				rStatus.m_attribute = (BYTE) dwAttribute;
-#ifdef _DEBUG
-				// MFC BUG: m_attribute is only a BYTE wide
-				if (dwAttribute & ~0xFF)
-					TRACE(traceAppMsg, 0, "Warning: CFile::GetStatus() returns m_attribute without high-order flags.\n");
-#endif
 			}
 		}
 

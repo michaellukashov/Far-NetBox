@@ -403,16 +403,6 @@ void CStdioFile::UnlockRange(ULONGLONG /* dwPos */, ULONGLONG /* dwCount */)
 	AfxThrowNotSupportedException();
 }
 
-#ifdef _DEBUG
-void CStdioFile::Dump(CDumpContext& dc) const
-{
-	CFile::Dump(dc);
-
-	dc << "m_pStream = " << (void*)m_pStream;
-	dc << "\n";
-}
-#endif
-
 
 IMPLEMENT_DYNAMIC(CStdioFile, CFile)
 

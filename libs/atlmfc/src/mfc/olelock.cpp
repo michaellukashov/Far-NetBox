@@ -74,18 +74,6 @@ void AFXAPI AfxOleUnlockApp()
 void AFXAPI AfxOleSetUserCtrl(BOOL bUserCtrl)
 {
 	AFX_MODULE_STATE* pModuleState = AfxGetModuleState();
-#ifdef _DEBUG
-	CWinApp* pApp = AfxGetApp();
-	if (bUserCtrl && !pModuleState->m_bUserCtrl &&
-		(pApp == NULL || pApp->m_pMainWnd == NULL ||
-		!pApp->m_pMainWnd->IsWindowVisible()))
-	{
-		// If the user gets control while the application window is
-		//  not visible, the application may not shutdown when the object
-		//  count reaches zero.
-		TRACE(traceOle, 0, "Warning: AfxOleSetUserCtrl(TRUE) called with application window hidden.\n");
-	}
-#endif
 	pModuleState->m_bUserCtrl = bUserCtrl;
 }
 

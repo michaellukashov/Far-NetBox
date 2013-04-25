@@ -62,90 +62,6 @@ AFX_INLINE void AFXAPI CopyElements(TYPE* pDest, const TYPE* pSrc, INT_PTR nCoun
 		*pDest++ = *pSrc++;
 }
 
-template<class TYPE>
-void AFXAPI SerializeElements(CArchive& ar, TYPE* pElements, INT_PTR nCount)
-{
-	ENSURE(nCount == 0 || pElements != NULL);
-	ASSERT(nCount == 0 ||
-		AfxIsValidAddress(pElements, (size_t)nCount * sizeof(TYPE)));
-
-	// default is bit-wise read/write
-	if (ar.IsStoring())
-	{
-		TYPE* pData;
-		UINT_PTR nElementsLeft;
-
-		nElementsLeft = nCount;
-		pData = pElements;
-		while( nElementsLeft > 0 )
-		{
-			UINT nElementsToWrite;
-
-			nElementsToWrite = UINT(__min(nElementsLeft, INT_MAX/sizeof(TYPE)));
-			ar.Write(pData, nElementsToWrite*sizeof(TYPE));
-			nElementsLeft -= nElementsToWrite;
-			pData += nElementsToWrite;
-		}
-	}
-	else
-	{
-		TYPE* pData;
-		UINT_PTR nElementsLeft;
-
-		nElementsLeft = nCount;
-		pData = pElements;
-		while( nElementsLeft > 0 )
-		{
-			UINT nElementsToRead;
-
-			nElementsToRead = UINT(__min(nElementsLeft, INT_MAX/sizeof(TYPE)));
-			ar.EnsureRead(pData, nElementsToRead*sizeof(TYPE));
-			nElementsLeft -= nElementsToRead;
-			pData += nElementsToRead;
-		}
-	}
-}
-
-template<class TYPE>
-void AFXAPI SerializeElementsInsertExtract(CArchive& ar, TYPE* pElements, 
-	INT_PTR nCount)
-{
-	ENSURE(nCount == 0 || pElements != NULL);
-	ASSERT((nCount == 0) || 
-		(AfxIsValidAddress(pElements, nCount*sizeof(TYPE))));
-
-	if (nCount == 0 || pElements == NULL)
-	{
-		return;
-	}
-
-	if (ar.IsStoring())
-	{
-		for (; nCount--; ++pElements)
-			ar << *pElements;
-	}
-	else
-	{
-		// for (; nCount--; ++pElements)
-			// ar >> *pElements;
-	}
-}
-
-#ifdef _DEBUG
-template<class TYPE>
-void AFXAPI DumpElements(CDumpContext& dc, const TYPE* pElements, INT_PTR nCount)
-{
-	ENSURE(nCount == 0 || pElements != NULL);
-	ASSERT(nCount == 0 ||
-		AfxIsValidAddress(pElements, (size_t)nCount * sizeof(TYPE), FALSE));
-	// UNREFERENCED_PARAMETER(dc); // not used
-	// UNREFERENCED_PARAMETER(pElements);  // not used
-	// UNREFERENCED_PARAMETER(nCount); // not used
-
-	// default does nothing
-}
-#endif
-
 template<class TYPE, class ARG_TYPE>
 BOOL AFXAPI CompareElements(const TYPE* pElement1, const ARG_TYPE* pElement2)
 {
@@ -173,26 +89,10 @@ template<> AFX_INLINE UINT AFXAPI HashKey<__int64>(__int64 key)
 	return (HashKey<DWORD>((DWORD)(key & 0xffffffffUL)) ^ HashKey<DWORD>((DWORD)(key >> 32)));
 }
 
-// special versions for CString
-template<> void AFXAPI SerializeElements<CStringA> (CArchive& ar, CStringA* pElements, INT_PTR nCount);
-template<> void AFXAPI SerializeElements<CStringW> (CArchive& ar, CStringW* pElements, INT_PTR nCount);
-template<> UINT AFXAPI HashKey<LPCWSTR> (LPCWSTR key);
-template<> UINT AFXAPI HashKey<LPCSTR> (LPCSTR key);
-
-// special versions for CComBSTR
-template<> void AFXAPI SerializeElements<CComBSTR> (CArchive& ar, CComBSTR* pElements, INT_PTR nCount);
-template<> UINT AFXAPI HashKey<CComBSTR> (CComBSTR key);
-
 // forward declarations
 class COleVariant;
 struct tagVARIANT;
 
-// special versions for COleVariant
-template<> void AFXAPI CopyElements<COleVariant> (COleVariant* pDest, const COleVariant* pSrc, INT_PTR nCount);
-template<> void AFXAPI SerializeElements<COleVariant> (CArchive& ar, COleVariant* pElements, INT_PTR nCount);
-#ifdef _DEBUG
-template<> void AFXAPI DumpElements<COleVariant> (CDumpContext& dc, const COleVariant* pElements, INT_PTR nCount);
-#endif
 template<> UINT AFXAPI HashKey<const struct tagVARIANT&> (const struct tagVARIANT& var);
 
 #define new DEBUG_NEW
@@ -254,11 +154,6 @@ protected:
 
 public:
 	~CArray();
-	void Serialize(CArchive&);
-#ifdef _DEBUG
-	void Dump(CDumpContext&) const;
-	void AssertValid() const;
-#endif
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -626,60 +521,6 @@ void CArray<TYPE, ARG_TYPE>::InsertAt(INT_PTR nStartIndex, CArray* pNewArray)
 	}
 }
 
-template<class TYPE, class ARG_TYPE>
-void CArray<TYPE, ARG_TYPE>::Serialize(CArchive& ar)
-{
-	ASSERT_VALID(this);
-
-	CObject::Serialize(ar);
-	if (ar.IsStoring())
-	{
-		ar.WriteCount(m_nSize);
-	}
-	else
-	{
-		DWORD_PTR nOldSize = ar.ReadCount();
-		SetSize(nOldSize, -1);
-	}
-	SerializeElements<TYPE>(ar, m_pData, m_nSize);
-}
-
-#ifdef _DEBUG
-template<class TYPE, class ARG_TYPE>
-void CArray<TYPE, ARG_TYPE>::Dump(CDumpContext& dc) const
-{
-	CObject::Dump(dc);
-
-	dc << "with " << m_nSize << " elements";
-	if (dc.GetDepth() > 0)
-	{
-		dc << "\n";
-		DumpElements<TYPE>(dc, m_pData, m_nSize);
-	}
-
-	dc << "\n";
-}
-
-template<class TYPE, class ARG_TYPE>
-void CArray<TYPE, ARG_TYPE>::AssertValid() const
-{
-	CObject::AssertValid();
-
-	if (m_pData == NULL)
-	{
-		ASSERT(m_nSize == 0);
-		ASSERT(m_nMaxSize == 0);
-	}
-	else
-	{
-		ASSERT(m_nSize >= 0);
-		ASSERT(m_nMaxSize >= 0);
-		ASSERT(m_nSize <= m_nMaxSize);
-		ASSERT(AfxIsValidAddress(m_pData, m_nMaxSize * sizeof(TYPE)));
-	}
-}
-#endif //_DEBUG
-
 /////////////////////////////////////////////////////////////////////////////
 // CList<TYPE, ARG_TYPE>
 
@@ -763,11 +604,6 @@ protected:
 
 public:
 	~CList();
-	void Serialize(CArchive&);
-#ifdef _DEBUG
-	void Dump(CDumpContext&) const;
-	void AssertValid() const;
-#endif
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1162,82 +998,6 @@ POSITION CList<TYPE, ARG_TYPE>::Find(ARG_TYPE searchValue, POSITION startAfter) 
 	return NULL;
 }
 
-template<class TYPE, class ARG_TYPE>
-void CList<TYPE, ARG_TYPE>::Serialize(CArchive& ar)
-{
-	ASSERT_VALID(this);
-
-	CObject::Serialize(ar);
-
-	if (ar.IsStoring())
-	{
-		ar.WriteCount(m_nCount);
-		for (CNode* pNode = m_pNodeHead; pNode != NULL; pNode = pNode->pNext)
-		{
-			ASSERT(AfxIsValidAddress(pNode, sizeof(CNode)));
-			TYPE* pData;
-			/* 
-			 * in some cases the & operator might be overloaded, and we cannot use it to obtain
-			 * the address of a given object.  We then use the following trick to get the address
-			 */
-			pData = reinterpret_cast< TYPE* >( &reinterpret_cast< int& >( static_cast< TYPE& >( pNode->data ) ) );
-			SerializeElements<TYPE>(ar, pData, 1);
-		}
-	}
-	else
-	{
-		DWORD_PTR nNewCount = ar.ReadCount();
-		while (nNewCount--)
-		{
-			TYPE newData[1];
-			SerializeElements<TYPE>(ar, newData, 1);
-			AddTail(newData[0]);
-		}
-	}
-}
-
-#ifdef _DEBUG
-template<class TYPE, class ARG_TYPE>
-void CList<TYPE, ARG_TYPE>::Dump(CDumpContext& dc) const
-{
-	CObject::Dump(dc);
-
-	dc << "with " << m_nCount << " elements";
-	if (dc.GetDepth() > 0)
-	{
-		POSITION pos = GetHeadPosition();
-		while (pos != NULL)
-		{
-			TYPE temp[1];
-			temp[0] = ((CList*)this)->GetNext(pos);
-			dc << "\n";
-			DumpElements<TYPE>(dc, temp, 1);
-		}
-	}
-
-	dc << "\n";
-}
-
-template<class TYPE, class ARG_TYPE>
-void CList<TYPE, ARG_TYPE>::AssertValid() const
-{
-	CObject::AssertValid();
-
-	if (m_nCount == 0)
-	{
-		// empty list
-		ASSERT(m_pNodeHead == NULL);
-		ASSERT(m_pNodeTail == NULL);
-	}
-	else
-	{
-		// non-empty list
-		ASSERT(AfxIsValidAddress(m_pNodeHead, sizeof(CNode)));
-		ASSERT(AfxIsValidAddress(m_pNodeTail, sizeof(CNode)));
-	}
-}
-#endif //_DEBUG
-
 /////////////////////////////////////////////////////////////////////////////
 // CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>
 
@@ -1321,11 +1081,6 @@ protected:
 
 public:
 	~CMap();
-	void Serialize(CArchive&);
-#ifdef _DEBUG
-	void Dump(CDumpContext&) const;
-	void AssertValid() const;
-#endif
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1741,92 +1496,6 @@ CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::PGetNextAssoc(const typename CMap<KEY, ARG
 
 	return pAssocNext;
 }
-
-template<class KEY, class ARG_KEY, class VALUE, class ARG_VALUE>
-void CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::Serialize(CArchive& ar)
-{
-	ASSERT_VALID(this);
-
-	CObject::Serialize(ar);
-
-	if (ar.IsStoring())
-	{
-		ar.WriteCount(m_nCount);
-		if (m_nCount == 0)
-			return;  // nothing more to do
-
-		ASSERT(m_pHashTable != NULL);
-		for (UINT nHash = 0; nHash < m_nHashTableSize; nHash++)
-		{
-			CAssoc* pAssoc;
-			for (pAssoc = m_pHashTable[nHash]; pAssoc != NULL;
-			  pAssoc = pAssoc->pNext)
-			{
-				KEY* pKey;
-				VALUE* pValue;
-				/* 
-				 * in some cases the & operator might be overloaded, and we cannot use it to 
-				 * obtain the address of a given object.  We then use the following trick to 
-				 * get the address
-				 */
-				pKey = reinterpret_cast< KEY* >( &reinterpret_cast< int& >( const_cast< KEY& > ( static_cast< const KEY& >( pAssoc->key ) ) ) );
-				pValue = reinterpret_cast< VALUE* >( &reinterpret_cast< int& >( static_cast< VALUE& >( pAssoc->value ) ) );
-				SerializeElements<KEY>(ar, pKey, 1);
-				SerializeElements<VALUE>(ar, pValue, 1);
-			}
-		}
-	}
-	else
-	{
-		DWORD_PTR nNewCount = ar.ReadCount();
-		while (nNewCount--)
-		{
-			KEY newKey[1];
-			VALUE newValue[1];
-			SerializeElements<KEY>(ar, newKey, 1);
-			SerializeElements<VALUE>(ar, newValue, 1);
-			SetAt(newKey[0], newValue[0]);
-		}
-	}
-}
-
-#ifdef _DEBUG
-template<class KEY, class ARG_KEY, class VALUE, class ARG_VALUE>
-void CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::Dump(CDumpContext& dc) const
-{
-	CObject::Dump(dc);
-
-	dc << "with " << m_nCount << " elements";
-	if (dc.GetDepth() > 0)
-	{
-		// Dump in format "[key] -> value"
-		KEY key[1];
-		VALUE val[1];
-
-		POSITION pos = GetStartPosition();
-		while (pos != NULL)
-		{
-			GetNextAssoc(pos, key[0], val[0]);
-			dc << "\n\t[";
-			DumpElements<KEY>(dc, key, 1);
-			dc << "] = ";
-			DumpElements<VALUE>(dc, val, 1);
-		}
-	}
-
-	dc << "\n";
-}
-
-template<class KEY, class ARG_KEY, class VALUE, class ARG_VALUE>
-void CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::AssertValid() const
-{
-	CObject::AssertValid();
-
-	ASSERT(m_nHashTableSize > 0);
-	ASSERT(m_nCount == 0 || m_pHashTable != NULL);
-		// non-empty map should have hash table
-}
-#endif //_DEBUG
 
 /////////////////////////////////////////////////////////////////////////////
 // CTypedPtrArray<BASE_CLASS, TYPE>

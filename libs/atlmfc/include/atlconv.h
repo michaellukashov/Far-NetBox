@@ -548,10 +548,6 @@ typedef CW2AEX<> CW2A;
 	#define USES_CONVERSION_EX int _convert_ex = 0; (_convert_ex); UINT _acp_ex = ATL::_AtlGetConversionACP(); (_acp_ex); LPCWSTR _lpw_ex = NULL; (_lpw_ex); LPCSTR _lpa_ex = NULL; (_lpa_ex); USES_ATL_SAFE_ALLOCA
 #endif
 
-#ifdef _WINGDI_
-	ATLAPI_(LPDEVMODEA) AtlDevModeW2A(_Inout_opt_ LPDEVMODEA lpDevModeA, _In_ const DEVMODEW* lpDevModeW);
-#endif
-
 /////////////////////////////////////////////////////////////////////////////
 // Global UNICODE<>ANSI translation helpers
 _Ret_opt_z_cap_(nChars) inline LPWSTR WINAPI AtlA2WHelper(
@@ -746,28 +742,6 @@ inline bool ocscat_s(
 #if defined(_UNICODE)
 
 // in these cases the default (TCHAR) is the same as OLECHAR
-
-_ATL_INSECURE_DEPRECATE("ocscpy is not safe. Intead, use ocscpy_s")
-inline OLECHAR* ocscpy(
-	_Inout_ _Post_z_ LPOLESTR dest, 
-	_In_z_ LPCOLESTR src) throw()
-{
-#pragma warning(push)
-#pragma warning(disable:4996)
-	return wcscpy(dest, src);
-#pragma warning(pop)
-}
-
-_ATL_INSECURE_DEPRECATE("ocscat is not safe. Intead, use ocscat_s")
-inline OLECHAR* ocscat(
-	_Inout_ _Post_z_ LPOLESTR dest, 
-	_In_z_ LPCOLESTR src) throw()
-{
-#pragma warning(push)
-#pragma warning(disable:4996)
-	return wcscat(dest, src);
-#pragma warning(pop)
-}
 
 _Ret_z_ inline LPCOLESTR T2COLE_EX(
 	_In_z_ LPCTSTR lp, 

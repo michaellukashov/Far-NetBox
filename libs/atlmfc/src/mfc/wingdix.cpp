@@ -136,75 +136,6 @@ CBrush* PASCAL CDC::GetHalftoneBrush()
 	return CBrush::FromHandle(_afxHalftoneBrush);
 }
 
-void CDC::DrawDragRect(LPCRECT lpRect, SIZE size,
-	LPCRECT lpRectLast, SIZE sizeLast, CBrush* pBrush, CBrush* pBrushLast)
-{
-	ASSERT(AfxIsValidAddress(lpRect, sizeof(RECT), FALSE));
-	ASSERT(lpRectLast == NULL ||
-		AfxIsValidAddress(lpRectLast, sizeof(RECT), FALSE));
-
-	// first, determine the update region and select it
-	CRgn rgnNew;
-	CRgn rgnOutside, rgnInside;
-	rgnOutside.CreateRectRgnIndirect(lpRect);
-	rgnNew.CreateRectRgn(0, 0, 0, 0);
-	rgnNew.CombineRgn(&rgnOutside, &rgnInside, RGN_XOR);
-
-	CBrush* pBrushOld = NULL;
-	if (pBrush == NULL)
-	{
-		pBrush = CDC::GetHalftoneBrush();
-	}
-
-	ENSURE(pBrush);
-
-	if (pBrushLast == NULL)
-	{
-		pBrushLast = pBrush;
-	}
-
-	CRgn rgnLast, rgnUpdate;
-	if (lpRectLast != NULL)
-	{
-		// find difference between new region and old region
-		rgnLast.CreateRectRgn(0, 0, 0, 0);
-		rgnOutside.SetRectRgn(lpRectLast);
-		rgnLast.CombineRgn(&rgnOutside, &rgnInside, RGN_XOR);
-
-		// only diff them if brushes are the same
-		if (pBrush->m_hObject == pBrushLast->m_hObject)
-		{
-			rgnUpdate.CreateRectRgn(0, 0, 0, 0);
-			rgnUpdate.CombineRgn(&rgnLast, &rgnNew, RGN_XOR);
-		}
-	}
-	if (pBrush->m_hObject != pBrushLast->m_hObject && lpRectLast != NULL)
-	{
-		// brushes are different -- erase old region first
-		SelectClipRgn(&rgnLast);
-		pBrushOld = NULL;
-	}
-
-	// draw into the update/new region
-	SelectClipRgn(rgnUpdate.m_hObject != NULL ? &rgnUpdate : &rgnNew);
-	pBrushOld = SelectObject(pBrush);
-
-	// cleanup DC
-	if (pBrushOld != NULL)
-		SelectObject(pBrushOld);
-	SelectClipRgn(NULL);
-}
-
-void CDC::FillSolidRect(LPCRECT lpRect, COLORREF clr)
-{
-	ENSURE_VALID(this);
-	ENSURE(m_hDC != NULL);
-	ENSURE(lpRect);
-
-	::SetBkColor(m_hDC, clr);
-	::ExtTextOut(m_hDC, 0, 0, ETO_OPAQUE, lpRect, NULL, 0, NULL);
-}
-
 void CDC::FillSolidRect(int x, int y, int cx, int cy, COLORREF clr)
 {
 	ASSERT_VALID(this);
@@ -229,54 +160,6 @@ void CDC::Draw3dRect(int x, int y, int cx, int cy,
 	FillSolidRect(x, y, 1, cy - 1, clrTopLeft);
 	FillSolidRect(x + cx, y, -1, cy, clrBottomRight);
 	FillSolidRect(x, y + cy, cx, -1, clrBottomRight);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// out-of-line CBrush, CFont, etc. helpers
-
-// nPointSize is actually scaled 10x
-BOOL CFont::CreatePointFont(int nPointSize, LPCTSTR lpszFaceName, CDC* pDC)
-{
-	ASSERT(AfxIsValidString(lpszFaceName));
-
-	LOGFONT logFont;
-	memset(&logFont, 0, sizeof(LOGFONT));
-	logFont.lfCharSet = DEFAULT_CHARSET;
-	logFont.lfHeight = nPointSize;
-	Checked::tcsncpy_s(logFont.lfFaceName, _countof(logFont.lfFaceName), lpszFaceName, _TRUNCATE);
-
-	return CreatePointFontIndirect(&logFont, pDC);
-}
-
-// pLogFont->nHeight is interpreted as PointSize * 10
-BOOL CFont::CreatePointFontIndirect(const LOGFONT* lpLogFont, CDC* pDC)
-{
-	ASSERT(AfxIsValidAddress(lpLogFont, sizeof(LOGFONT), FALSE));
-	HDC hDC;
-	if (pDC != NULL)
-	{
-		ASSERT_VALID(pDC);
-		ASSERT(pDC->m_hAttribDC != NULL);
-		hDC = pDC->m_hAttribDC;
-	}
-	else
-		hDC = ::GetDC(NULL);
-
-	// convert nPointSize to logical units based on pDC
-	LOGFONT logFont = *lpLogFont;
-	POINT pt;
-	// 72 points/inch, 10 decipoints/point
-	pt.y = ::MulDiv(::GetDeviceCaps(hDC, LOGPIXELSY), logFont.lfHeight, 720);
-	pt.x = 0;
-	::DPtoLP(hDC, &pt, 1);
-	POINT ptOrg = { 0, 0 };
-	::DPtoLP(hDC, &ptOrg, 1);
-	logFont.lfHeight = -abs(pt.y - ptOrg.y);
-
-	if (pDC == NULL)
-		ReleaseDC(NULL, hDC);
-
-	return CreateFontIndirect(&logFont);
 }
 
 /////////////////////////////////////////////////////////////////////////////

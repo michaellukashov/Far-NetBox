@@ -238,8 +238,8 @@ IF(PLATFORM STREQUAL "Win32")
     ${SRC_ROOT}/NetBox/vc10wrapper.cpp
     ${ASM_OBJECTS}
   )
-ENDIF()
-ENDIF()
+ENDIF(PLATFORM STREQUAL "Win32")
+ENDIF(MSVC)
 
 ADD_LIBRARY(libeay32 STATIC IMPORTED)
 SET_PROPERTY(TARGET libeay32
@@ -358,12 +358,7 @@ ADD_LIBRARY(atlmfc STATIC
   ${LIBS_ROOT}/atlmfc/mfc3.cpp
   ${LIBS_ROOT}/atlmfc/mfc4.cpp
   ${LIBS_ROOT}/atlmfc/mfc5.cpp
-  ${LIBS_ROOT}/atlmfc/src/mfc/map_so.cpp
-  ${LIBS_ROOT}/atlmfc/src/mfc/map_sp.cpp
-  ${LIBS_ROOT}/atlmfc/src/mfc/map_ss.cpp
   ${LIBS_ROOT}/atlmfc/src/mfc/thrdcore.cpp
-  ${LIBS_ROOT}/atlmfc/src/mfc/olecli1.cpp
-  ${LIBS_ROOT}/atlmfc/src/mfc/inet.cpp
   # ${LIBS_ROOT}/atlmfc/include/afxres.rc
   # ${LIBS_ROOT}/atlmfc/include/mfcdll.rc
 )

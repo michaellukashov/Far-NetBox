@@ -275,7 +275,6 @@ inline bool COleDateTime::ParseDateTime(
 		}
 		else
 		{
-			ATLTRACE(atlTraceTime, 0, _T("\nCOleDateTime VarDateFromStr call failed.\n\t"));
 			// Can't convert string to date, set -1 and invalidate
 			m_dt = -1;
 			m_status = invalid;

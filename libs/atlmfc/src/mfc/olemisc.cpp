@@ -419,10 +419,6 @@ LPCTSTR AFXAPI AfxGetFullScodeString(SCODE sc)
 
 void __declspec(noreturn) AFXAPI AfxThrowOleException(SCODE sc)
 {
-#ifdef _DEBUG
-	TRACE(traceOle, 0, _T("Warning: constructing COleException, scode = %s.\n"),
-		AfxGetFullScodeString(sc));
-#endif
 	COleException* pException = new COleException;
 	pException->m_sc = sc;
 	THROW(pException);

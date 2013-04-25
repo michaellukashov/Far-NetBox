@@ -91,7 +91,6 @@
 #include <atlsimpcoll.h>
 #include <atltrace.h>
 #include <atlexcept.h>
-// #include <atltransactionmanager.h>
 
 #define _ATL_TYPELIB_INDEX_LENGTH 10
 #define _ATL_QUOTES_SPACE 2
@@ -2378,7 +2377,6 @@ public:
 
 		if (FAILED(m_csObjMap.Init()))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to initialize critical section in CAtlComModule\n"));
 			ATLASSERT(0);
 			CAtlBaseModule::m_bInitFailed = true;
 			return;
@@ -2499,7 +2497,6 @@ public:
 	{
 		if (FAILED(m_cs.Init()))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to initialize critical section in CAtlDebugInterfacesModule\n"));
 			ATLASSERT(0);
 			CAtlBaseModule::m_bInitFailed = true;
 		}
@@ -2524,7 +2521,6 @@ public:
 		HRESULT hr = lock.Lock();
 		if (FAILED(hr))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to lock critical section in CAtlDebugInterfacesModule\n"));
 			ATLASSERT(0);
 			return hr;
 		}
@@ -2572,7 +2568,6 @@ public:
 		HRESULT hr = lock.Lock();
 		if (FAILED(hr))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to lock critical section in CAtlDebugInterfacesModule\n"));
 			ATLASSERT(0);
 			return hr;
 		}
@@ -2609,7 +2604,6 @@ public:
 		HRESULT hr = lock.Lock();
 		if (FAILED(hr))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to lock critical section in CAtlDebugInterfacesModule\n"));
 			ATLASSERT(0);
 			return;
 		}
@@ -2630,7 +2624,6 @@ public:
 		HRESULT hr = lock.Lock();
 		if (FAILED(hr))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to lock critical section in CAtlDebugInterfacesModule\n"));
 			ATLASSERT(0);
 			return;
 		}
@@ -2800,7 +2793,6 @@ public :
 
 		if (FAILED(m_csStaticDataInitAndTypeInfo.Init()))
 		{
-			ATLTRACE(atlTraceGeneral, 0, _T("ERROR : Unable to initialize critical section in CAtlModule\n"));
 			ATLASSERT(0);
 			CAtlBaseModule::m_bInitFailed = true;
 			return;
@@ -4991,12 +4983,10 @@ public:
 				if (SUCCEEDED(pdata->hRes))
 				{
 					pUnk->Release();
-					ATLTRACE(atlTraceCOM, 2, _T("Object created on thread = %d\n"), GetCurrentThreadId());
 				}
 #ifdef _DEBUG
 				else
 				{
-					ATLTRACE(atlTraceCOM, 2, _T("Failed to create Object on thread = %d\n"), GetCurrentThreadId());
 				}
 #endif
 				SetEvent(pdata->hEvent);
@@ -6275,7 +6265,6 @@ inline LONG CRegKey::RecurseDeleteKey(_In_z_ LPCTSTR lpszKey) throw()
 	{
 		if (lRes != ERROR_FILE_NOT_FOUND && lRes != ERROR_PATH_NOT_FOUND)
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("CRegKey::RecurseDeleteKey : Failed to Open Key %s(Error = %d)\n"), lpszKey, lRes);
 		}
 		return lRes;
 	}
@@ -6362,14 +6351,12 @@ inline HRESULT CComModule::RegisterAppId(_In_z_ LPCTSTR pAppId)
 					lRet = keyAppIDEXE.SetStringValue(_T("AppID"), pAppId);
 					if (lRet != ERROR_SUCCESS)
 					{
-						ATLTRACE(atlTraceCOM, 0, _T("CComModule::RegisterAppId : Failed to set app id string value\n"));
 						hr = AtlHresultFromWin32(lRet);
 						return hr;
 					}
 				}
 				else
 				{
-					ATLTRACE(atlTraceCOM, 0, _T("CComModule::RegisterAppId : Failed to create file name key\n"));
 					hr = AtlHresultFromWin32(lRet);
 					return hr;
 				}
@@ -6378,27 +6365,23 @@ inline HRESULT CComModule::RegisterAppId(_In_z_ LPCTSTR pAppId)
 					lRet = keyAppIDEXE.SetStringValue(NULL, pszFileName);
 					if (lRet != ERROR_SUCCESS)
 					{
-						ATLTRACE(atlTraceCOM, 0, _T("CComModule::RegisterAppId : Failed to set file name string value\n"));
 						hr = AtlHresultFromWin32(lRet);
 						return hr;
 					}
 				}
 				else
 				{
-					ATLTRACE(atlTraceCOM, 0, _T("CComModule::RegisterAppId : Failed to create app id key\n"));
 					hr = AtlHresultFromWin32(lRet);
 					return hr;
 				}
 			}
 			else
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("CComModule::RegisterAppId : Failed to get full path name for file %s\n"), szModule1);
 				hr = AtlHresultFromLastError();
 			}
 		}
 		else
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("CComModule::RegisterAppId : Failed to get module name\n"));
 			if( dwFLen == 0 )
 				hr = AtlHresultFromLastError();
 			else if( dwFLen == MAX_PATH )
@@ -6407,7 +6390,6 @@ inline HRESULT CComModule::RegisterAppId(_In_z_ LPCTSTR pAppId)
 	}
 	else
 	{
-		ATLTRACE(atlTraceCOM, 0, _T("CComModule::RegisterAppId : Failed to open registry key\n"));
 		hr = AtlHresultFromWin32(lRet);
 	}
 	return hr;
@@ -6443,13 +6425,11 @@ inline HRESULT CComModule::UnregisterAppId(_In_z_ LPCTSTR pAppId)
 			}
 			else
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("CComModule::UnregisterAppId : Failed to get full path name for file %s\n"), szModule1);
 				hr = AtlHresultFromLastError();
 			}
 		}
 		else
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("CComModule::UnregisterAppId : Failed to get module name\n"));
 			if( dwFLen == 0 )
 				hr = AtlHresultFromLastError();
 			else if( dwFLen == MAX_PATH )
@@ -6460,7 +6440,6 @@ inline HRESULT CComModule::UnregisterAppId(_In_z_ LPCTSTR pAppId)
 	{
 		if (lRet != ERROR_FILE_NOT_FOUND && lRet != ERROR_PATH_NOT_FOUND)
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("CComModule::UnregisterAppId : Failed to open registry key\n"));
 			hr = AtlHresultFromWin32(lRet);
 		}
 	}
@@ -6811,7 +6790,6 @@ inline HRESULT WINAPI CComModule::UnregisterClassHelper(
 		lRet = key.RecurseDeleteKey(lpszProgID);
 		if (lRet != ERROR_SUCCESS && lRet != ERROR_FILE_NOT_FOUND && lRet != ERROR_PATH_NOT_FOUND)
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("Failed to Unregister ProgID : %s\n"), lpszProgID);
 			key.Detach();
 			return AtlHresultFromWin32(lRet);
 		}
@@ -6821,7 +6799,6 @@ inline HRESULT WINAPI CComModule::UnregisterClassHelper(
 		lRet = key.RecurseDeleteKey(lpszVerIndProgID);
 		if (lRet != ERROR_SUCCESS && lRet != ERROR_FILE_NOT_FOUND && lRet != ERROR_PATH_NOT_FOUND)
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("Failed to Unregister Version Independent ProgID : %s\n"), lpszVerIndProgID);
 			key.Detach();
 			return AtlHresultFromWin32(lRet);
 		}
@@ -6844,26 +6821,12 @@ inline HRESULT WINAPI CComModule::UnregisterClassHelper(
 			lRet = key.RecurseDeleteKey(lpsz);
 		if (lRet != ERROR_SUCCESS && lRet != ERROR_FILE_NOT_FOUND && lRet != ERROR_PATH_NOT_FOUND)
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("Failed to delete CLSID : %s\n"), lpsz);
 			hr = AtlHresultFromWin32(lRet);
 		}
 		CoTaskMemFree(lpOleStr);
 	}
 	else
 	{
-		ATLTRACE(atlTraceCOM, 0, _T("Failed to delete CLSID : {%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x}"),
-			clsid.Data1,
-			clsid.Data2,
-			clsid.Data3,
-			clsid.Data4[0],
-			clsid.Data4[1],
-			clsid.Data4[2],
-			clsid.Data4[3],
-			clsid.Data4[4],
-			clsid.Data4[5],
-			clsid.Data4[6],
-			clsid.Data4[7]
-			);
 	}
 	key.Detach();
 	return hr;
@@ -7848,7 +7811,6 @@ inline HRESULT CComModule::GetClassObject(
 					hr = lock.Lock();
 					if (FAILED(hr))
 					{
-						ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to lock critical section in CComModule::GetClassObject\n"));
 						ATLASSERT(FALSE);
 						break;
 					}

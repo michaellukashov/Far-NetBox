@@ -72,11 +72,6 @@ public:
 // Implementation
 public:
 	virtual ~CSyncObject();
-#ifdef _DEBUG
-	CString m_strName;
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 	friend class CSingleLock;
 	friend class CMultiLock;
 };

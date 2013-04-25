@@ -108,67 +108,53 @@ struct AFX_GLOBAL_DATA
 	HBRUSH hbrWindow;
 
 	// color values of system colors used for CToolBar
-	COLORREF clrBtnFace, clrBtnShadow, clrBtnHilite;
-	COLORREF clrBtnText, clrWindowFrame;
-	COLORREF clrBtnDkShadow, clrBtnLight;
-	COLORREF clrGrayedText;
-	COLORREF clrHilite;
-	COLORREF clrTextHilite;
-	COLORREF clrHotLinkNormalText;
-	COLORREF clrHotLinkHoveredText;
-	COLORREF clrHotLinkVisitedText;
+	// COLORREF clrBtnFace, clrBtnShadow, clrBtnHilite;
+	// COLORREF clrBtnText, clrWindowFrame;
+	// COLORREF clrBtnDkShadow, clrBtnLight;
+	// COLORREF clrGrayedText;
+	// COLORREF clrHilite;
+	// COLORREF clrTextHilite;
+	// COLORREF clrHotLinkNormalText;
+	// COLORREF clrHotLinkHoveredText;
+	// COLORREF clrHotLinkVisitedText;
 
-	COLORREF clrBarWindow;
-	COLORREF clrBarFace;
-	COLORREF clrBarShadow, clrBarHilite;
-	COLORREF clrBarDkShadow, clrBarLight;
-	COLORREF clrBarText;
+	// COLORREF clrBarWindow;
+	// COLORREF clrBarFace;
+	// COLORREF clrBarShadow, clrBarHilite;
+	// COLORREF clrBarDkShadow, clrBarLight;
+	// COLORREF clrBarText;
 
-	COLORREF clrWindow;
-	COLORREF clrWindowText;
+	// COLORREF clrWindow;
+	// COLORREF clrWindowText;
 
-	COLORREF clrCaptionText;
-	COLORREF clrMenuText;
-	COLORREF clrActiveCaption;
-	COLORREF clrInactiveCaption;
-	COLORREF clrInactiveCaptionText;
+	// COLORREF clrCaptionText;
+	// COLORREF clrMenuText;
+	// COLORREF clrActiveCaption;
+	// COLORREF clrInactiveCaption;
+	// COLORREF clrInactiveCaptionText;
 	///<summary>
 	/// Specifies gradient color of active caption. Generally used for docking panes. </summary>
-	COLORREF clrActiveCaptionGradient;
+	// COLORREF clrActiveCaptionGradient;
 	///<summary>
 	/// Specifies gradient color of inactive active caption. Generally used for docking panes. </summary>
-	COLORREF clrInactiveCaptionGradient;
+	// COLORREF clrInactiveCaptionGradient;
 
-	COLORREF clrActiveBorder;
-	COLORREF clrInactiveBorder;
-
-	CBrush brBtnFace;
-	CBrush brHilite;
-	CBrush brLight;
-	CBrush brBlack;
-	CBrush brActiveCaption;
-	CBrush brInactiveCaption;
-	CBrush brWindow;
-
-	CBrush brBarFace;
-
-	CPen penHilite;
-	CPen penBarFace;
-	CPen penBarShadow;
+	// COLORREF clrActiveBorder;
+	// COLORREF clrInactiveBorder;
 
 	// Library cursors:
-	HCURSOR m_hcurStretch;
-	HCURSOR m_hcurStretchVert;
-	HCURSOR m_hcurHand;
-	HCURSOR m_hcurSizeAll;
-	HCURSOR m_hcurMoveTab;
-	HCURSOR m_hcurNoMoveTab;
+	// HCURSOR m_hcurStretch;
+	// HCURSOR m_hcurStretchVert;
+	// HCURSOR m_hcurHand;
+	// HCURSOR m_hcurSizeAll;
+	// HCURSOR m_hcurMoveTab;
+	// HCURSOR m_hcurNoMoveTab;
 
-	HCURSOR GetHandCursor();
+	// HCURSOR GetHandCursor();
 
-	HICON m_hiconTool;
-	HICON m_hiconLink;
-	HICON m_hiconColors;
+	// HICON m_hiconTool;
+	// HICON m_hiconLink;
+	// HICON m_hiconColors;
 
 	// Shell icon sizes:
 	CSize m_sizeSmallIcon;
@@ -226,7 +212,7 @@ struct AFX_GLOBAL_DATA
 	BOOL DrawParentBackground(CWnd* pWnd, CDC* pDC, LPRECT lpRect = NULL);
 	void CleanUp();
 
-	COLORREF GetColor(int nColor);
+	// COLORREF GetColor(int nColor);
 
 	BOOL SetLayeredAttrib(HWND hwnd, COLORREF crKey, BYTE bAlpha, DWORD dwFlags);
 	BOOL IsWindowsLayerSupportAvailable() const
@@ -254,7 +240,7 @@ struct AFX_GLOBAL_DATA
 	/// <returns> An integer value with encoded flags that specify positions of auto hide bars.
 	/// It may combine the following values: AFX_AUTOHIDE_BOTTOM, AFX_AUTOHIDE_TOP, AFX_AUTOHIDE_LEFT, 
 	/// AFX_AUTOHIDE_RIGHT.</returns>
-	int GetShellAutohideBars()
+	/*int GetShellAutohideBars()
 	{
 		if (m_bRefreshAutohideBars)
 		{
@@ -290,9 +276,9 @@ struct AFX_GLOBAL_DATA
 		}
 
 		return m_nShellAutohideBars;
-	}
+	}*/
 
-	void EnableAccessibilitySupport(BOOL bEnable = TRUE);
+	// void EnableAccessibilitySupport(BOOL bEnable = TRUE);
 
 	CString RegisterWindowClass(LPCTSTR lpszClassNamePrefix);
 
@@ -302,7 +288,7 @@ struct AFX_GLOBAL_DATA
 protected:
 
 	void UpdateTextMetrics();
-	HBITMAP CreateDitherBitmap(HDC hDC);
+	// HBITMAP CreateDitherBitmap(HDC hDC);
 	
 	int m_nTextHeightHorz;
 	int m_nTextHeightVert;

@@ -455,10 +455,6 @@ protected:
 // Implementation
 public:
 	virtual ~COleObjectFactory();
-#ifdef _DEBUG
-	void AssertValid() const;
-	void Dump(CDumpContext& dc) const;
-#endif
 
 public:
 	COleObjectFactory* m_pNextFactory;  // list of factories maintained
@@ -948,16 +944,6 @@ public:
 };
 
 // COleVariant diagnostics and serialization
-#ifdef _DEBUG
-CDumpContext& AFXAPI operator<<(CDumpContext& dc, COleVariant varSrc);
-#endif
-CArchive& AFXAPI operator<<(CArchive& ar, COleVariant varSrc);
-CArchive& AFXAPI operator>>(CArchive& ar, COleVariant& varSrc);
-
-// CComBSTR serialization
-CArchive& AFXAPI operator<<(CArchive& ar, CComBSTR string);
-CArchive& AFXAPI operator>>(CArchive& ar, CComBSTR& string);
-
 // Helper for initializing VARIANT structures
 void AFXAPI AfxVariantInit(LPVARIANT pVar);
 
@@ -1025,27 +1011,6 @@ public:
 	// formatting
 	CString Format(DWORD dwFlags = 0, LCID lcid = LANG_USER_DEFAULT) const;
 };
-
-// COleCurrency diagnostics and serialization
-#ifdef _DEBUG
-CDumpContext& AFXAPI operator<<(CDumpContext& dc, COleCurrency curSrc);
-#endif
-CArchive& AFXAPI operator<<(CArchive& ar, COleCurrency curSrc);
-CArchive& AFXAPI operator>>(CArchive& ar, COleCurrency& curSrc);
-
-// COleDateTime diagnostics and serialization
-#ifdef _DEBUG
-CDumpContext& AFXAPI operator<<(CDumpContext& dc, COleDateTime dateSrc);
-#endif
-CArchive& AFXAPI operator<<(CArchive& ar, COleDateTime dateSrc);
-CArchive& AFXAPI operator>>(CArchive& ar, COleDateTime& dateSrc);
-
-// COleDateTimeSpan diagnostics and serialization
-#ifdef _DEBUG
-CDumpContext& AFXAPI operator<<(CDumpContext& dc,COleDateTimeSpan dateSpanSrc);
-#endif
-CArchive& AFXAPI operator<<(CArchive& ar, COleDateTimeSpan dateSpanSrc);
-CArchive& AFXAPI operator>>(CArchive& ar, COleDateTimeSpan& dateSpanSrc);
 
 /////////////////////////////////////////////////////////////////////////////
 // Helper for initializing COleSafeArray
@@ -1129,11 +1094,6 @@ public:
 	DWORD m_dwElementSize;
 	DWORD m_dwDims;
 };
-
-// COleSafeArray diagnostics and serialization
-#ifdef _DEBUG
-CDumpContext& AFXAPI operator<<(CDumpContext& dc, COleSafeArray& saSrc);
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // DDX_ functions for OLE controls on dialogs

@@ -226,15 +226,12 @@ static void AFXAPI TraceDDE(LPCTSTR lpszPrefix, const MSG* pMsg)
 		if (!UnpackDDElParam(WM_DDE_EXECUTE, pMsg->lParam,
 			&nDummy, (UINT_PTR*)&hCommands))
 		{
-			TRACE(traceAppMsg, 0, "Warning: Unable to unpack WM_DDE_EXECUTE lParam %08lX.\n",
-				pMsg->lParam);
 			return;
 		}
 		ASSERT(hCommands != NULL);
 
 		LPCTSTR lpszCommands = (LPCTSTR)::GlobalLock(hCommands);
 		ENSURE_THROW(lpszCommands != NULL, ::AfxThrowMemoryException() );
-		TRACE(traceAppMsg, 0, _T("%s: Execute '%s'.\n"), lpszPrefix, lpszCommands);
 		::GlobalUnlock(hCommands);
 	}
 	else if (pMsg->message == WM_DDE_ADVISE)
@@ -245,8 +242,6 @@ static void AFXAPI TraceDDE(LPCTSTR lpszPrefix, const MSG* pMsg)
 		if (!UnpackDDElParam(WM_DDE_ADVISE, pMsg->lParam,
 			(UINT_PTR*)&hAdvise, &nItem))
 		{
-			TRACE(traceAppMsg, 0, "Warning: Unable to unpack WM_DDE_ADVISE lParam %08lX.\n",
-				pMsg->lParam);
 			return;
 		}
 		aItem = (ATOM)nItem;
@@ -338,27 +333,9 @@ void AFXAPI _AfxTraceMsg(LPCTSTR lpszPrefix, const MSG* pMsg)
 
 	if (lpszMsgName != NULL)
 	{
-#ifdef WIN64
-		TRACE(traceWinMsg, 4, _T("%s: hwnd=%p, msg = %hs (%p, %p)\n"),
-			lpszPrefix, pMsg->hwnd, lpszMsgName,
-			pMsg->wParam, pMsg->lParam);
-#else
-		TRACE(traceWinMsg, 4, _T("%s: hwnd=0x%08X, msg = %hs (0x%08X, 0x%08X)\n"),
-			lpszPrefix, pMsg->hwnd, lpszMsgName,
-			pMsg->wParam, pMsg->lParam);
-#endif
 	}
 	else
 	{
-#ifdef WIN64
-		TRACE(traceWinMsg, 4, _T("%s: hwnd=%p, msg = 0x%04X (%p, %p)\n"),
-			lpszPrefix, pMsg->hwnd, pMsg->message,
-			pMsg->wParam, pMsg->lParam);
-#else
-		TRACE(traceWinMsg, 4, _T("%s: hwnd=0x%08X, msg = 0x%04X (0x%08X, 0x%08X)\n"),
-			lpszPrefix, pMsg->hwnd, pMsg->message,
-			pMsg->wParam, pMsg->lParam);
-#endif
 	}
 
 	if (pMsg->message >= WM_DDE_FIRST && pMsg->message <= WM_DDE_LAST)

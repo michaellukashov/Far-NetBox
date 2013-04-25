@@ -349,8 +349,6 @@ void CArchive::WriteClass(const CRuntimeClass* pClassRef)
 
 	if (pClassRef->m_wSchema == 0xFFFF)
 	{
-		TRACE(traceAppMsg, 0, "Warning: Cannot call WriteClass/WriteObject for %hs.\n",
-			pClassRef->m_lpszClassName);
 		AfxThrowNotSupportedException();
 	}
 

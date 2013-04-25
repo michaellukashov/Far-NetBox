@@ -169,7 +169,6 @@ ATLINLINE ATLAPI AtlComModuleGetClassObject(
 					hr = lock.Lock();
 					if (FAILED(hr))
 					{
-						ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to lock critical section in AtlComModuleGetClassObject\n"));
 						ATLASSERT(FALSE);
 						break;
 					}
@@ -355,7 +354,6 @@ ATLINLINE ATLAPI_(void) AtlWinModuleAddCreateWndData(
 	CComCritSecLock<CComCriticalSection> lock(pWinModule->m_csWindowCreate, false);
 	if (FAILED(lock.Lock()))
 	{
-		ATLTRACE(atlTraceWindowing, 0, _T("ERROR : Unable to lock critical section in AtlWinModuleAddCreateWndData\n"));
 		ATLASSERT(0);
 		return;
 	}
@@ -373,7 +371,6 @@ ATLINLINE ATLAPI_(void*) AtlWinModuleExtractCreateWndData(
 	CComCritSecLock<CComCriticalSection> lock(pWinModule->m_csWindowCreate, false);
 	if (FAILED(lock.Lock()))
 	{
-		ATLTRACE(atlTraceWindowing, 0, _T("ERROR : Unable to lock critical section in AtlWinModuleExtractCreateWndData\n"));
 		ATLASSERT(0);
 		return pv;
 	}
@@ -415,7 +412,6 @@ ATLINLINE ATLAPI AtlWinModuleInit(
 	HRESULT hr = pWinModule->m_csWindowCreate.Init();
 	if (FAILED(hr))
 	{
-		ATLTRACE(atlTraceWindowing, 0, _T("ERROR : Unable to initialize critical section in AtlWinModuleInit\n"));
 		ATLASSERT(0);
 	}
 	return hr;
@@ -451,7 +447,6 @@ ATLINLINE ATLAPI AtlModuleAddTermFunc(
 		else
 		{
 			delete pNew;
-			ATLTRACE(atlTraceGeneral, 0, _T("ERROR : Unable to lock critical section in AtlModuleAddTermFunc\n"));
 			ATLASSERT(0);
 		}
 	}

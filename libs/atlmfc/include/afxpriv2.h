@@ -51,7 +51,7 @@ class COleControlLock;
 // Classes declared in this file
 
 //IStream
-	class CArchiveStream;
+	// class CArchiveStream;
 
 // Functions declared in this file
 
@@ -154,35 +154,6 @@ public:
 #ifdef __AFXDISP_H__
 #ifndef __AFXPRIV2_H__DISP__
 #define __AFXPRIV2_H__DISP__
-
-/////////////////////////////////////////////////////////////////////////////
-// CArchiveStream
-
-class CArchiveStream : public IStream
-{
-public:
-	CArchiveStream(CArchive* pArchive);
-
-// Implementation
-	CArchive* m_pArchive;
-
-	STDMETHOD_(ULONG, AddRef)();
-	STDMETHOD_(ULONG, Release)();
-	STDMETHOD(QueryInterface)(REFIID, LPVOID*);
-
-	STDMETHOD(Read)(void*, ULONG, ULONG*);
-	STDMETHOD(Write)(const void*, ULONG cb, ULONG*);
-	STDMETHOD(Seek)(LARGE_INTEGER, DWORD, ULARGE_INTEGER*);
-	STDMETHOD(SetSize)(ULARGE_INTEGER);
-	STDMETHOD(CopyTo)(LPSTREAM, ULARGE_INTEGER, ULARGE_INTEGER*,
-		ULARGE_INTEGER*);
-	STDMETHOD(Commit)(DWORD);
-	STDMETHOD(Revert)();
-	STDMETHOD(LockRegion)(ULARGE_INTEGER, ULARGE_INTEGER,DWORD);
-	STDMETHOD(UnlockRegion)(ULARGE_INTEGER, ULARGE_INTEGER, DWORD);
-	STDMETHOD(Stat)(STATSTG*, DWORD);
-	STDMETHOD(Clone)(LPSTREAM*);
-};
 
 /////////////////////////////////////////////////////////////////////////////
 // Global UNICODE<>ANSI translation helpers

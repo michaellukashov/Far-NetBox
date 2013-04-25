@@ -370,25 +370,25 @@ AFX_MODULE_THREAD_STATE::~AFX_MODULE_THREAD_STATE()
 	/*if (m_pToolTip != NULL)
 		m_pToolTip->DestroyToolTipCtrl();*/
 
-	delete m_pLastInfo;
+	// delete m_pLastInfo;
 
 	// cleanup temp/permanent maps (just the maps themselves)
-	delete m_pmapHWND;
-	delete m_pmapHMENU;
-	delete m_pmapHDC;
-	delete m_pmapHGDIOBJ;
-	delete m_pmapHIMAGELIST;
+	// delete m_pmapHWND;
+	// delete m_pmapHMENU;
+	// delete m_pmapHDC;
+	// delete m_pmapHGDIOBJ;
+	// delete m_pmapHIMAGELIST;
 
 #ifndef _AFX_NO_SOCKET_SUPPORT
 	// cleanup socket notification list
-	if (m_plistSocketNotifications != NULL)
-		while (!m_plistSocketNotifications->IsEmpty())
-			delete m_plistSocketNotifications->RemoveHead();
+	// if (m_plistSocketNotifications != NULL)
+		// while (!m_plistSocketNotifications->IsEmpty())
+			// delete m_plistSocketNotifications->RemoveHead();
 #ifndef _AFXDLL
 	// cleanup dynamically allocated socket maps
-	delete m_pmapSocketHandle;
-	delete m_pmapDeadSockets;
-	delete m_plistSocketNotifications;
+	// delete m_pmapSocketHandle;
+	// delete m_pmapDeadSockets;
+	// delete m_plistSocketNotifications;
 #endif
 #endif //!_AFX_NO_SOCKET_SUPPORT
 }

@@ -150,26 +150,17 @@ AFX_INLINE short APIENTRY GetFileTitle(LPCTSTR lpszFile, LPTSTR lpszTitle, WORD 
 	//CException
 		//CSimpleException
 			class CResourceException;// Win resource failure exception
-			class CUserException;    // Message Box alert and stop operation
-
-	class CGdiObject;            // CDC drawing tool
-		class CPen;              // a pen / HPEN wrapper
-		class CBrush;            // a brush / HBRUSH wrapper
-		class CFont;             // a font / HFONT wrapper
-		class CBitmap;           // a bitmap / HBITMAP wrapper
-		class CPalette;          // a palette / HPALLETE wrapper
-		class CRgn;              // a region / HRGN wrapper
+			// class CUserException;    // Message Box alert and stop operation
 
 	class CDC;                   // a Display Context / HDC wrapper
 		class CClientDC;         // CDC for client of window
 		class CWindowDC;         // CDC for entire window
-		class CPaintDC;          // embeddable BeginPaint struct helper
 
 	class CImageList;            // an image list / HIMAGELIST wrapper
 
 	class CCmdTarget;            // a target for user commands
 		class CWnd;                 // a window / HWND wrapper
-			class CDialog;          // a dialog
+			// class CDialog;          // a dialog
 
 			// standard windows controls
 			class CStatic;          // Static control
@@ -216,21 +207,6 @@ enum AFX_HELP_TYPE
 #ifndef __ATLTYPES_H__
 #include <atltypes.h>
 #endif
-
-#ifdef _DEBUG
-// Diagnostic Output
-CDumpContext& AFXAPI operator<<(CDumpContext& dc, SIZE size);
-CDumpContext& AFXAPI operator<<(CDumpContext& dc, POINT point);
-CDumpContext& AFXAPI operator<<(CDumpContext& dc, const RECT& rect);
-#endif //_DEBUG
-
-// Serialization
-CArchive& AFXAPI operator<<(CArchive& ar, SIZE size);
-CArchive& AFXAPI operator<<(CArchive& ar, POINT point);
-CArchive& AFXAPI operator<<(CArchive& ar, const RECT& rect);
-CArchive& AFXAPI operator>>(CArchive& ar, SIZE& size);
-CArchive& AFXAPI operator>>(CArchive& ar, POINT& point);
-CArchive& AFXAPI operator>>(CArchive& ar, RECT& rect);
 
 // macro to be used in ATL search/organize/preview/thumbnail handlers with MFC document support 
 #define DECLARE_DOCUMENT(classDocument)\
@@ -282,261 +258,6 @@ public:
 void AFXAPI AfxThrowResourceException();
 void AFXAPI AfxThrowUserException();
 
-void AFXAPI AfxGetGrayBitmap(const CBitmap &rSrc, CBitmap *pDest, COLORREF crBackground);
-void AFXAPI AfxDrawGrayBitmap(CDC *pDC, int x, int y, const CBitmap &rSrc, COLORREF crBackground);
-void AFXAPI AfxGetDitheredBitmap(const CBitmap &rSrc, CBitmap *pDest, COLORREF cr1, COLORREF cr2);
-void AFXAPI AfxDrawDitheredBitmap(CDC *pDC, int x, int y, const CBitmap &rSrc, COLORREF cr1, COLORREF cr2);
-
-/////////////////////////////////////////////////////////////////////////////
-// CGdiObject abstract class for CDC SelectObject
-
-class CGdiObject : public CObject
-{
-	DECLARE_DYNCREATE(CGdiObject)
-public:
-
-// Attributes
-	HGDIOBJ m_hObject;                  // must be first data member
-	operator HGDIOBJ() const;
-	HGDIOBJ GetSafeHandle() const;
-
-	static CGdiObject* PASCAL FromHandle(HGDIOBJ hObject);
-	static void PASCAL DeleteTempMap();
-	BOOL Attach(HGDIOBJ hObject);
-	HGDIOBJ Detach();
-
-// Constructors
-	CGdiObject(); // must Create a derived class object
-	BOOL DeleteObject();
-
-// Operations
-#pragma push_macro("GetObject")
-#undef GetObject
-	int _AFX_FUNCNAME(GetObject)(int nCount, LPVOID lpObject) const;
-	int GetObject(int nCount, LPVOID lpObject) const;
-#pragma pop_macro("GetObject")
-	UINT GetObjectType() const;
-	BOOL CreateStockObject(int nIndex);
-	BOOL UnrealizeObject();
-	BOOL operator==(const CGdiObject& obj) const;
-	BOOL operator!=(const CGdiObject& obj) const;
-
-// Implementation
-public:
-	virtual ~CGdiObject();
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-	virtual void AssertValid() const;
-#endif
-};
-
-/////////////////////////////////////////////////////////////////////////////
-// CGdiObject subclasses (drawing tools)
-
-class CPen : public CGdiObject
-{
-	DECLARE_DYNAMIC(CPen)
-
-public:
-	static CPen* PASCAL FromHandle(HPEN hPen);
-
-// Constructors
-	CPen();
-	CPen(int nPenStyle, int nWidth, COLORREF crColor);
-	CPen(int nPenStyle, int nWidth, const LOGBRUSH* pLogBrush,
-		int nStyleCount = 0, const DWORD* lpStyle = NULL);
-	BOOL CreatePen(int nPenStyle, int nWidth, COLORREF crColor);
-	BOOL CreatePen(int nPenStyle, int nWidth, const LOGBRUSH* pLogBrush,
-		int nStyleCount = 0, const DWORD* lpStyle = NULL);
-	BOOL CreatePenIndirect(LPLOGPEN lpLogPen);
-
-// Attributes
-	operator HPEN() const;
-	int GetLogPen(LOGPEN* pLogPen);
-	int GetExtLogPen(EXTLOGPEN* pLogPen);
-
-// Implementation
-public:
-	virtual ~CPen();
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-#endif
-};
-
-class CBrush : public CGdiObject
-{
-	DECLARE_DYNAMIC(CBrush)
-
-public:
-	static CBrush* PASCAL FromHandle(HBRUSH hBrush);
-
-// Constructors
-	CBrush();
-	CBrush(COLORREF crColor);             // CreateSolidBrush
-	CBrush(int nIndex, COLORREF crColor); // CreateHatchBrush
-	explicit CBrush(CBitmap* pBitmap);          // CreatePatternBrush
-
-	BOOL CreateSolidBrush(COLORREF crColor);
-	BOOL CreateHatchBrush(int nIndex, COLORREF crColor);
-	BOOL CreateBrushIndirect(const LOGBRUSH* lpLogBrush);
-	BOOL CreatePatternBrush(CBitmap* pBitmap);
-	BOOL CreateDIBPatternBrush(HGLOBAL hPackedDIB, UINT nUsage);
-	BOOL CreateDIBPatternBrush(const void* lpPackedDIB, UINT nUsage);
-	BOOL CreateSysColorBrush(int nIndex);
-
-// Attributes
-	operator HBRUSH() const;
-	int GetLogBrush(LOGBRUSH* pLogBrush);
-
-// Implementation
-public:
-	virtual ~CBrush();
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-#endif
-};
-
-class CFont : public CGdiObject
-{
-	DECLARE_DYNAMIC(CFont)
-
-public:
-	static CFont* PASCAL FromHandle(HFONT hFont);
-
-// Constructors
-	CFont();
-	BOOL CreateFontIndirect(const LOGFONT* lpLogFont);
-	BOOL CreateFont(int nHeight, int nWidth, int nEscapement,
-			int nOrientation, int nWeight, BYTE bItalic, BYTE bUnderline,
-			BYTE cStrikeOut, BYTE nCharSet, BYTE nOutPrecision,
-			BYTE nClipPrecision, BYTE nQuality, BYTE nPitchAndFamily,
-			LPCTSTR lpszFacename);
-	BOOL CreatePointFont(int nPointSize, LPCTSTR lpszFaceName, CDC* pDC = NULL);
-	BOOL CreatePointFontIndirect(const LOGFONT* lpLogFont, CDC* pDC = NULL);
-
-// Attributes
-	operator HFONT() const;
-	int GetLogFont(LOGFONT* pLogFont);
-
-// Implementation
-public:
-	virtual ~CFont();
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-#endif
-};
-
-class CBitmap : public CGdiObject
-{
-	DECLARE_DYNAMIC(CBitmap)
-
-public:
-	static CBitmap* PASCAL FromHandle(HBITMAP hBitmap);
-
-// Constructors
-	CBitmap();
-
-	BOOL LoadBitmap(LPCTSTR lpszResourceName);
-	BOOL LoadBitmap(UINT nIDResource);
-	BOOL LoadOEMBitmap(UINT nIDBitmap); // for OBM_/OCR_/OIC_
-#ifndef _AFX_NO_AFXCMN_SUPPORT
-	BOOL LoadMappedBitmap(UINT nIDBitmap, UINT nFlags = 0,
-		LPCOLORMAP lpColorMap = NULL, int nMapSize = 0);
-#endif
-	BOOL CreateBitmap(int nWidth, int nHeight, UINT nPlanes, UINT nBitcount,
-			const void* lpBits);
-	BOOL CreateBitmapIndirect(LPBITMAP lpBitmap);
-	BOOL CreateCompatibleBitmap(CDC* pDC, int nWidth, int nHeight);
-	BOOL CreateDiscardableBitmap(CDC* pDC, int nWidth, int nHeight);
-
-// Attributes
-	operator HBITMAP() const;
-	int GetBitmap(BITMAP* pBitMap);
-
-// Operations
-	DWORD SetBitmapBits(DWORD dwCount, const void* lpBits);
-	DWORD GetBitmapBits(DWORD dwCount, LPVOID lpBits) const;
-	CSize SetBitmapDimension(int nWidth, int nHeight);
-	CSize GetBitmapDimension() const;
-
-// Implementation
-public:
-	virtual ~CBitmap();
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-#endif
-};
-
-class CPalette : public CGdiObject
-{
-	DECLARE_DYNAMIC(CPalette)
-
-public:
-	static CPalette* PASCAL FromHandle(HPALETTE hPalette);
-
-// Constructors
-	CPalette();
-	BOOL CreatePalette(LPLOGPALETTE lpLogPalette);
-	BOOL CreateHalftonePalette(CDC* pDC);
-
-// Attributes
-	operator HPALETTE() const;
-	int GetEntryCount();
-	UINT GetPaletteEntries(UINT nStartIndex, UINT nNumEntries,
-			LPPALETTEENTRY lpPaletteColors) const;
-	UINT SetPaletteEntries(UINT nStartIndex, UINT nNumEntries,
-			LPPALETTEENTRY lpPaletteColors);
-
-// Operations
-	void AnimatePalette(UINT nStartIndex, UINT nNumEntries,
-			LPPALETTEENTRY lpPaletteColors);
-	UINT GetNearestPaletteIndex(COLORREF crColor) const;
-	BOOL ResizePalette(UINT nNumEntries);
-
-// Implementation
-	virtual ~CPalette();
-};
-
-class CRgn : public CGdiObject
-{
-	DECLARE_DYNAMIC(CRgn)
-
-public:
-	static CRgn* PASCAL FromHandle(HRGN hRgn);
-	operator HRGN() const;
-
-// Constructors
-	CRgn();
-	BOOL CreateRectRgn(int x1, int y1, int x2, int y2);
-	BOOL CreateRectRgnIndirect(LPCRECT lpRect);
-	BOOL CreateEllipticRgn(int x1, int y1, int x2, int y2);
-	BOOL CreateEllipticRgnIndirect(LPCRECT lpRect);
-	BOOL CreatePolygonRgn(LPPOINT lpPoints, int nCount, int nMode);
-	BOOL CreatePolyPolygonRgn(LPPOINT lpPoints, LPINT lpPolyCounts,
-			int nCount, int nPolyFillMode);
-	BOOL CreateRoundRectRgn(int x1, int y1, int x2, int y2, int x3, int y3);
-	BOOL CreateFromPath(CDC* pDC);
-	BOOL CreateFromData(const XFORM* lpXForm, int nCount,
-		const RGNDATA* pRgnData);
-
-// Operations
-	void SetRectRgn(int x1, int y1, int x2, int y2);
-	void SetRectRgn(LPCRECT lpRect);
-	int CombineRgn(const CRgn* pRgn1, const CRgn* pRgn2, int nCombineMode);
-	int CopyRgn(const CRgn* pRgnSrc);
-	BOOL EqualRgn(const CRgn* pRgn) const;
-	int OffsetRgn(int x, int y);
-	int OffsetRgn(POINT point);
-	int GetRgnBox(LPRECT lpRect) const;
-	BOOL PtInRegion(int x, int y) const;
-	BOOL PtInRegion(POINT point) const;
-	BOOL RectInRegion(LPCRECT lpRect) const;
-	int GetRegionData(LPRGNDATA lpRgnData, int nCount) const;
-
-// Implementation
-	virtual ~CRgn();
-};
-
 /////////////////////////////////////////////////////////////////////////////
 // The device context
 
@@ -563,12 +284,6 @@ public:
 	virtual void ReleaseOutputDC();     // Release the Output DC
 
 	BOOL IsPrinting() const;            // TRUE if being used for printing
-
-	CPen* GetCurrentPen() const;
-	CBrush* GetCurrentBrush() const;
-	CPalette* GetCurrentPalette() const;
-	CFont* GetCurrentFont() const;
-	CBitmap* GetCurrentBitmap() const;
 
 	// for bidi and mirrored localization
 	DWORD GetLayout() const;
@@ -598,18 +313,13 @@ public:
 
 // Type-safe selection helpers
 public:
-	virtual CGdiObject* SelectStockObject(int nIndex);
-	CPen* SelectObject(CPen* pPen);
-	CBrush* SelectObject(CBrush* pBrush);
-	virtual CFont* SelectObject(CFont* pFont);
-	CBitmap* SelectObject(CBitmap* pBitmap);
-	int SelectObject(CRgn* pRgn);       // special return for regions
-	CGdiObject* SelectObject(CGdiObject* pObject);
+	// int SelectObject(CRgn* pRgn);       // special return for regions
+	// CGdiObject* SelectObject(CGdiObject* pObject);
 		// CGdiObject* provided so compiler doesn't use SelectObject(HGDIOBJ)
 
 // Color and Color Palette Functions
 	COLORREF GetNearestColor(COLORREF crColor) const;
-	CPalette* SelectPalette(CPalette* pPalette, BOOL bForceBackground);
+	// CPalette* SelectPalette(CPalette* pPalette, BOOL bForceBackground);
 	UINT RealizePalette();
 	void UpdateColors();
 
@@ -681,17 +391,17 @@ public:
 	void HIMETRICtoLP(LPSIZE lpSize) const;
 
 // Region Functions
-	BOOL FillRgn(CRgn* pRgn, CBrush* pBrush);
-	BOOL FrameRgn(CRgn* pRgn, CBrush* pBrush, int nWidth, int nHeight);
-	BOOL InvertRgn(CRgn* pRgn);
-	BOOL PaintRgn(CRgn* pRgn);
+	// BOOL FillRgn(CRgn* pRgn, CBrush* pBrush);
+	// BOOL FrameRgn(CRgn* pRgn, CBrush* pBrush, int nWidth, int nHeight);
+	// BOOL InvertRgn(CRgn* pRgn);
+	// BOOL PaintRgn(CRgn* pRgn);
 
 // Clipping Functions
 	virtual int GetClipBox(LPRECT lpRect) const;
 	virtual BOOL PtVisible(int x, int y) const;
 			BOOL PtVisible(POINT point) const;
 	virtual BOOL RectVisible(LPCRECT lpRect) const;
-			int SelectClipRgn(CRgn* pRgn);
+			// int SelectClipRgn(CRgn* pRgn);
 			int ExcludeClipRect(int x1, int y1, int x2, int y2);
 			int ExcludeClipRect(LPCRECT lpRect);
 			int ExcludeUpdateRgn(CWnd* pWnd);
@@ -699,7 +409,7 @@ public:
 			int IntersectClipRect(LPCRECT lpRect);
 			int OffsetClipRgn(int x, int y);
 			int OffsetClipRgn(SIZE size);
-	int SelectClipRgn(CRgn* pRgn, int nMode);
+	// int SelectClipRgn(CRgn* pRgn, int nMode);
 
 // Line-Output Functions
 	BOOL LineTo(int x, int y);
@@ -709,8 +419,8 @@ public:
 	BOOL Polyline(const POINT* lpPoints, int nCount);
 
 	BOOL AngleArc(int x, int y, int nRadius, float fStartAngle, float fSweepAngle);
-	BOOL ArcTo(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4);
-	BOOL ArcTo(LPCRECT lpRect, POINT ptStart, POINT ptEnd);
+	// BOOL ArcTo(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4);
+	// BOOL ArcTo(LPCRECT lpRect, POINT ptStart, POINT ptEnd);
 	int GetArcDirection() const;
 	int SetArcDirection(int nArcDirection);
 
@@ -723,8 +433,8 @@ public:
 	BOOL PolyBezierTo(const POINT* lpPoints, int nCount);
 
 // Simple Drawing Functions
-	void FillRect(LPCRECT lpRect, CBrush* pBrush);
-	void FrameRect(LPCRECT lpRect, CBrush* pBrush);
+	// void FillRect(LPCRECT lpRect, CBrush* pBrush);
+	// void FrameRect(LPCRECT lpRect, CBrush* pBrush);
 	void InvertRect(LPCRECT lpRect);
 	BOOL DrawIcon(int x, int y, HICON hIcon);
 	BOOL DrawIcon(POINT point, HICON hIcon);
@@ -757,11 +467,6 @@ public:
 	COLORREF SetPixel(POINT point, COLORREF crColor);
 	BOOL FloodFill(int x, int y, COLORREF crColor);
 	BOOL ExtFloodFill(int x, int y, COLORREF crColor, UINT nFillType);
-	BOOL MaskBlt(int x, int y, int nWidth, int nHeight, CDC* pSrcDC,
-		int xSrc, int ySrc, CBitmap& maskBitmap, int xMask, int yMask,
-		DWORD dwRop);
-	BOOL PlgBlt(LPPOINT lpPoint, CDC* pSrcDC, int xSrc, int ySrc,
-		int nWidth, int nHeight, CBitmap& maskBitmap, int xMask, int yMask);
 	BOOL SetPixelV(int x, int y, COLORREF crColor);
 	BOOL SetPixelV(POINT point, COLORREF crColor);
    BOOL GradientFill(TRIVERTEX* pVertices, ULONG nVertices, 
@@ -819,9 +524,6 @@ public:
 		int nTabPositions, LPINT lpnTabStopPositions) const;
 	CSize GetOutputTabbedTextExtent(const CString& str,
 		int nTabPositions, LPINT lpnTabStopPositions) const;
-	virtual BOOL GrayString(CBrush* pBrush,
-		BOOL (CALLBACK* lpfnOutput)(HDC, LPARAM, int), LPARAM lpData,
-			int nCount, int x, int y, int nWidth, int nHeight);
 	UINT GetTextAlign() const;
 	UINT SetTextAlign(UINT nFlags);
 	int GetTextFace(_In_ int nCount, _Out_z_cap_post_count_(nCount, return) LPTSTR lpszFacename) const;
@@ -853,8 +555,8 @@ public:
 	BOOL DrawFrameControl(LPRECT lpRect, UINT nType, UINT nState);
 
 // Scrolling Functions
-	BOOL ScrollDC(int dx, int dy, LPCRECT lpRectScroll, LPCRECT lpRectClip,
-		CRgn* pRgnUpdate, LPRECT lpRectUpdate);
+	// BOOL ScrollDC(int dx, int dy, LPCRECT lpRectScroll, LPCRECT lpRectClip,
+		// CRgn* pRgnUpdate, LPRECT lpRectUpdate);
 
 // Font Functions
 	BOOL GetCharWidth(UINT nFirstChar, UINT nLastChar, LPINT lpBuffer) const;
@@ -921,10 +623,6 @@ public:
 	BOOL SelectClipPath(int nMode);
 
 // Misc Helper Functions
-	static CBrush* PASCAL GetHalftoneBrush();
-	void DrawDragRect(LPCRECT lpRect, SIZE size,
-		LPCRECT lpRectLast, SIZE sizeLast,
-		CBrush* pBrush = NULL, CBrush* pBrushLast = NULL);
 	void FillSolidRect(LPCRECT lpRect, COLORREF clr);
 	void FillSolidRect(int x, int y, int cx, int cy, COLORREF clr);
 	void Draw3dRect(LPCRECT lpRect, COLORREF clrTopLeft, COLORREF clrBottomRight);
@@ -934,10 +632,6 @@ public:
 // Implementation
 public:
 	virtual ~CDC();
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 
 	// advanced use and implementation
 	BOOL m_bPrinting;
@@ -945,35 +639,10 @@ public:
 
 protected:
 	// used for implementation of non-virtual SelectObject calls
-	static CGdiObject* PASCAL SelectGdiObject(HDC hDC, HGDIOBJ h);
+	// static CGdiObject* PASCAL SelectGdiObject(HDC hDC, HGDIOBJ h);
 };
 
 /////////////////////////////////////////////////////////////////////////////
-// CDC Helpers
-
-class CPaintDC : public CDC
-{
-	DECLARE_DYNAMIC(CPaintDC)
-
-// Constructors
-public:
-	explicit CPaintDC(CWnd* pWnd);   // BeginPaint
-
-// Attributes
-protected:
-	HWND m_hWnd;
-public:
-	PAINTSTRUCT m_ps;       // actual paint struct!
-
-// Implementation
-public:
-	virtual ~CPaintDC();
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
-};
-
 class CClientDC : public CDC
 {
 	DECLARE_DYNAMIC(CClientDC)
@@ -989,10 +658,6 @@ protected:
 // Implementation
 public:
 	virtual ~CClientDC();
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 };
 
 class CWindowDC : public CDC
@@ -1010,10 +675,6 @@ protected:
 // Implementation
 public:
 	virtual ~CWindowDC();
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1053,10 +714,7 @@ public:
 	BOOL DeleteImageList();
 	BOOL SetImageCount(UINT uNewCount);
 
-	int Add(CBitmap* pbmImage, CBitmap* pbmMask);
-	int Add(CBitmap* pbmImage, COLORREF crMask);
 	BOOL Remove(int nImage);
-	BOOL Replace(int nImage, CBitmap* pbmImage, CBitmap* pbmMask);
 	int Add(HICON hIcon);
 	int Replace(int nImage, HICON hIcon);
 	HICON ExtractIcon(int nImage);
@@ -1071,11 +729,6 @@ public:
 			COLORREF rgbBack = CLR_DEFAULT, COLORREF rgbFore = CLR_DEFAULT,
 			DWORD fState = ILS_NORMAL, DWORD Frame = 0, COLORREF crEffect = CLR_DEFAULT);
 
-#ifndef _AFX_NO_OLE_SUPPORT
-	BOOL Read(CArchive* pArchive);
-	BOOL Write(CArchive* pArchive);
-#endif
-
 // Drag APIs
 	static CImageList* PASCAL GetDragImage(LPPOINT lpPoint, LPPOINT lpPointHotSpot);
 	static BOOL PASCAL DragLeave(CWnd* pWndLock);
@@ -1083,10 +736,6 @@ public:
 // Implementation
 public:
 	virtual ~CImageList();
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-	virtual void AssertValid() const;
-#endif
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1684,10 +1333,6 @@ public:
 // Implementation
 public:
 	virtual ~CCmdTarget() = 0;
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-	virtual void AssertValid() const;
-#endif
 #ifndef _AFX_NO_OLE_SUPPORT
 	void GetNotSupported();
 	void SetNotSupported();
@@ -1696,8 +1341,8 @@ public:
 protected:
 	friend class CView;
 
-	CView* GetRoutingView();
-	static CView* PASCAL GetRoutingView_();
+	// CView* GetRoutingView();
+	// static CView* PASCAL GetRoutingView_();
 	DECLARE_MESSAGE_MAP()       // base class - no {{ }} macros
 
 #ifndef _AFX_NO_DOCOBJECT_SUPPORT
@@ -2088,8 +1733,6 @@ public:
 	int GetWindowText(_Out_z_cap_post_count_(nMaxCount, return + 1) LPTSTR lpszStringBuf, _In_ int nMaxCount) const;
 	void GetWindowText(CString& rString) const;
 	int GetWindowTextLength() const;
-	void SetFont(CFont* pFont, BOOL bRedraw = TRUE);
-	CFont* GetFont() const;
 
 // Window Size and Position Functions
 	BOOL IsIconic() const;
@@ -2124,8 +1767,6 @@ public:
 	void MapWindowPoints(CWnd* pwndTo, LPRECT lpRect) const;
 
 // Update/Painting Functions
-	CDC* BeginPaint(LPPAINTSTRUCT lpPaint);
-	void EndPaint(LPPAINTSTRUCT lpPaint);
 	CDC* GetDC();
 	CDC* GetWindowDC();
 	int ReleaseDC(CDC* pDC);
@@ -2135,22 +1776,22 @@ public:
 	void UpdateWindow();
 	void SetRedraw(BOOL bRedraw = TRUE);
 	BOOL GetUpdateRect(LPRECT lpRect, BOOL bErase = FALSE);
-	int GetUpdateRgn(CRgn* pRgn, BOOL bErase = FALSE);
+	// int GetUpdateRgn(CRgn* pRgn, BOOL bErase = FALSE);
 	void Invalidate(BOOL bErase = TRUE);
 	void InvalidateRect(LPCRECT lpRect, BOOL bErase = TRUE);
-	void InvalidateRgn(CRgn* pRgn, BOOL bErase = TRUE);
+	// void InvalidateRgn(CRgn* pRgn, BOOL bErase = TRUE);
 	void ValidateRect(LPCRECT lpRect);
-	void ValidateRgn(CRgn* pRgn);
+	// void ValidateRgn(CRgn* pRgn);
 	BOOL ShowWindow(int nCmdShow);
 	BOOL IsWindowVisible() const;
 	void ShowOwnedPopups(BOOL bShow = TRUE);
 
-	CDC* GetDCEx(CRgn* prgnClip, DWORD flags);
+	// CDC* GetDCEx(CRgn* prgnClip, DWORD flags);
 	BOOL LockWindowUpdate();
 	void UnlockWindowUpdate();
-	BOOL RedrawWindow(LPCRECT lpRectUpdate = NULL,
-		CRgn* prgnUpdate = NULL,
-		UINT flags = RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
+	// BOOL RedrawWindow(LPCRECT lpRectUpdate = NULL,
+		// CRgn* prgnUpdate = NULL,
+		// UINT flags = RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
 	BOOL EnableScrollBar(int nSBFlags, UINT nArrowFlags = ESB_ENABLE_BOTH);
 
 	BOOL DrawAnimatedRects(int idAni, CONST RECT *lprcFrom, CONST RECT *lprcTo);
@@ -2220,67 +1861,6 @@ public:
 	void CloseWindow();
 	BOOL OpenIcon();
 
-// Dialog-Box Item Functions
-// (NOTE: Dialog-Box Items/Controls are not necessarily in dialog boxes!)
-	void CheckDlgButton(int nIDButton, UINT nCheck);
-	void CheckRadioButton(int nIDFirstButton, int nIDLastButton,
-					int nIDCheckButton);
-	int GetCheckedRadioButton(int nIDFirstButton, int nIDLastButton) const;
-	int DlgDirList(_Inout_z_ LPTSTR lpPathSpec, _In_ int nIDListBox,
-					_In_ int nIDStaticPath, _In_ UINT nFileType);
-	int DlgDirListComboBox(_Inout_z_ LPTSTR lpPathSpec, _In_ int nIDComboBox,
-					_In_ int nIDStaticPath, _In_ UINT nFileType);
-	AFX_DEPRECATED("CWnd::DlgDirSelect(lpszOut, nControlId) is no longer supported. Instead, use CWnd::DlgDirSelect(lpszOut, nSize, nControlId)")
-		BOOL DlgDirSelect(_Out_z_cap_c_(_MAX_PATH) LPTSTR lpString, _In_ int nIDListBox);
-	BOOL DlgDirSelect(_Out_z_cap_(nSize) LPTSTR lpString, _In_ int nSize, _In_ int nIDListBox);
-	AFX_DEPRECATED("CWnd::DlgDirSelectComboBox(lpszOut, nControlId) is no longer supported. Instead, use CWnd::DlgDirSelectComboBox(lpszOut, nSize, nControlId)")
-		BOOL DlgDirSelectComboBox(_Out_z_cap_c_(_MAX_PATH) LPTSTR lpString, _In_ int nIDComboBox);
-	BOOL DlgDirSelectComboBox(_Out_z_cap_(nSize) LPTSTR lpString, _In_ int nSize, _In_ int nIDComboBox);
-
-	UINT GetDlgItemInt(int nID, BOOL* lpTrans = NULL,
-					BOOL bSigned = TRUE) const;
-	int GetDlgItemText(_In_ int nID, _Out_z_cap_post_count_(nMaxCount, return + 1) LPTSTR lpStr, _In_ int nMaxCount) const;
-	int GetDlgItemText(int nID, CString& rString) const;
-	CWnd* GetNextDlgGroupItem(CWnd* pWndCtl, BOOL bPrevious = FALSE) const;
-	COleControlSiteOrWnd* GetNextDlgGroupItem(COleControlSiteOrWnd *pCurSiteOrWnd = NULL) const;
-	COleControlSiteOrWnd* GetPrevDlgGroupItem(COleControlSiteOrWnd *pCurSiteOrWnd = NULL) const;
-	void RemoveRadioCheckFromGroup(const COleControlSiteOrWnd *pSiteOrWnd) const;
-	CWnd* GetNextDlgTabItem(CWnd* pWndCtl, BOOL bPrevious = FALSE) const;
-	COleControlSiteOrWnd* GetNextDlgTabItem(COleControlSiteOrWnd *pCurSiteOrWnd, BOOL bPrevious) const;
-	UINT IsDlgButtonChecked(int nIDButton) const;
-	LRESULT SendDlgItemMessage(int nID, UINT message,
-					WPARAM wParam = 0, LPARAM lParam = 0);
-	void SetDlgItemInt(int nID, UINT nValue, BOOL bSigned = TRUE);
-	void SetDlgItemText(int nID, LPCTSTR lpszString);
-	POSITION FindSiteOrWnd(const COleControlSiteOrWnd *pSiteOrWnd) const;
-	POSITION FindSiteOrWndWithFocus() const;
-
-// Scrolling Functions
-	int GetScrollPos(int nBar) const;
-	void GetScrollRange(int nBar, LPINT lpMinPos, LPINT lpMaxPos) const;
-	void ScrollWindow(int xAmount, int yAmount,
-					LPCRECT lpRect = NULL,
-					LPCRECT lpClipRect = NULL);
-	int SetScrollPos(int nBar, int nPos, BOOL bRedraw = TRUE);
-	void SetScrollRange(int nBar, int nMinPos, int nMaxPos,
-			BOOL bRedraw = TRUE);
-	void ShowScrollBar(UINT nBar, BOOL bShow = TRUE);
-	void EnableScrollBarCtrl(int nBar, BOOL bEnable = TRUE);
-
-	int ScrollWindowEx(int dx, int dy,
-				LPCRECT lpRectScroll, LPCRECT lpRectClip,
-				CRgn* prgnUpdate, LPRECT lpRectUpdate, UINT flags);
-	BOOL SetScrollInfo(int nBar, LPSCROLLINFO lpScrollInfo,
-		BOOL bRedraw = TRUE);
-	BOOL GetScrollInfo(int nBar, LPSCROLLINFO lpScrollInfo, UINT nMask = SIF_ALL);
-	int GetScrollLimit(int nBar);
-
-#if(WINVER >= 0x0500)
-
-	BOOL GetScrollBarInfo(LONG idObject, PSCROLLBARINFO psbi) const;
-
-#endif	// WINVER >= 0x0500
-
 // Window Access Functions
 	CWnd* ChildWindowFromPoint(POINT point) const;
 	CWnd* ChildWindowFromPoint(POINT point, UINT nFlags) const;
@@ -2323,7 +1903,6 @@ public:
 	static CWnd* PASCAL GetOpenClipboardWindow();
 
 // Caret Functions
-	void CreateCaret(CBitmap* pBitmap);
 	void CreateSolidCaret(int nWidth, int nHeight);
 	void CreateGrayCaret(int nWidth, int nHeight);
 	static void PASCAL SetCaretPos(POINT point);
@@ -2362,7 +1941,7 @@ public:
 
 	// dialog support
 	void UpdateDialogControls(CCmdTarget* pTarget, BOOL bDisableIfNoHndler);
-	void CenterWindow(CWnd* pAlternateOwner = NULL);
+	// void CenterWindow(CWnd* pAlternateOwner = NULL);
 	int RunModalLoop(DWORD dwFlags = 0);
 	virtual BOOL ContinueModal();
 	virtual void EndModalLoop(int nResult);
@@ -2401,7 +1980,7 @@ public :
 	/// <param name="bIsThumbnail"> Specifies whether this method is called for iconic thumbnail or live preview (peek).</param>
 	/// <param name="bAlphaChannelSet"> Output parameter. Set it to TRUE if your implementation initializes alpha channel of a bitmap
 	/// selected in dc.</param> 
-	virtual void OnDrawIconicThumbnailOrLivePreview(CDC& dc, CRect rect, CSize szRequiredThumbnailSize, BOOL bIsThumbnail, BOOL& bAlphaChannelSet);
+	// virtual void OnDrawIconicThumbnailOrLivePreview(CDC& dc, CRect rect, CSize szRequiredThumbnailSize, BOOL bIsThumbnail, BOOL& bAlphaChannelSet);
 
 protected :
 	bool m_bEnableActiveAccessibility;
@@ -2444,8 +2023,8 @@ protected:
 		virtual ULONG __stdcall AddRef(); 
 		virtual ULONG __stdcall Release(); 
 		virtual HRESULT __stdcall QueryInterface(REFIID iid, LPVOID* ppvObj); 
-		virtual HRESULT __stdcall GetHWND(HWND *phWnd);
-		virtual HRESULT __stdcall GetEnumVariant(IEnumVARIANT **ppEnumVariant);
+		// virtual HRESULT __stdcall GetHWND(HWND *phWnd);
+		// virtual HRESULT __stdcall GetEnumVariant(IEnumVARIANT **ppEnumVariant);
 	} m_xAccessibleServer;
 	friend class XAccessibleServer;
 
@@ -2473,8 +2052,6 @@ protected:
 	afx_msg void OnClose();
 	afx_msg BOOL OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-
-	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 
 	afx_msg void OnDestroy();
 	afx_msg void OnEnable(BOOL bEnable);
@@ -2510,7 +2087,7 @@ protected:
 	afx_msg BOOL OnNcActivate(BOOL bActive);
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
 	afx_msg BOOL OnNcCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnNcDestroy();
+	// afx_msg void OnNcDestroy();
 	afx_msg void OnNcPaint();
 
 // System message handler member functions
@@ -2646,7 +2223,7 @@ protected:
 	virtual BOOL OnChildNotify(UINT message, WPARAM wParam, LPARAM lParam, LRESULT* pResult);
 		// return TRUE if parent should not process this message
 	BOOL ReflectChildNotify(UINT message, WPARAM wParam, LPARAM lParam, LRESULT* pResult);
-	static BOOL PASCAL ReflectLastMsg(HWND hWndChild, LRESULT* pResult = NULL);
+	// static BOOL PASCAL ReflectLastMsg(HWND hWndChild, LRESULT* pResult = NULL);
 
 	// for touch:
 	BOOL m_bIsTouchWindowRegistered;
@@ -2655,10 +2232,6 @@ protected:
 public:
 	virtual ~CWnd();
 	virtual BOOL CheckAutoCenter();
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 	static BOOL PASCAL GrayCtlColor(HDC hDC, HWND hWnd, UINT nCtlColor,
 		HBRUSH hbrGray, COLORREF clrText);
 
@@ -2691,8 +2264,8 @@ protected:
 	static const UINT m_nMsgDragList;
 	int m_nModalResult; // for return values from CWnd::RunModalLoop
 
-	COleDropTarget* m_pDropTarget;  // for automatic cleanup of drop target
-	friend class COleDropTarget;
+	// COleDropTarget* m_pDropTarget;  // for automatic cleanup of drop target
+	// friend class COleDropTarget;
 
 	// for creating dialogs and dialog-like windows
 	BOOL CreateDlg(LPCTSTR lpszTemplateName, CWnd* pParentWnd);
@@ -2882,10 +2455,6 @@ public:
 // Implementation
 public:
 	virtual ~CWinThread();
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 	void CommonConstruct();
 	virtual void Delete();
 		// 'delete this' only if m_bAutoDelete == TRUE
@@ -3183,13 +2752,13 @@ protected:
 public:
 
 	// Override in derived class.
-	virtual void InitLibId();
+	// virtual void InitLibId();
 
 	// Register
-	virtual BOOL Register();
+	// virtual BOOL Register();
 
 	// Unregisters everything this app was known to register.
-	virtual BOOL Unregister();
+	// virtual BOOL Unregister();
 
 	/// <summary>
 	/// Deletes the subkeys and values of the specified key recursively.</summary>
@@ -3295,10 +2864,6 @@ public: // public for implementation access
 
 public:
 	virtual ~CWinApp();
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 
 	// helpers for registration
 
@@ -3353,142 +2918,11 @@ public:
 };
 
 /////////////////////////////////////////////////////////////////////////////
-// class CDocTemplate creates documents
-
-class AFX_NOVTABLE CDocTemplate : public CCmdTarget
-{
-	DECLARE_DYNAMIC(CDocTemplate)
-
-// Constructors
-protected:
-	CDocTemplate(UINT nIDResource, CRuntimeClass* pDocClass,
-		CRuntimeClass* pFrameClass, CRuntimeClass* pViewClass);
-
-public:
-	virtual void LoadTemplate();
-
-// Attributes
-public:
-	// setup for OLE containers
-	void SetContainerInfo(UINT nIDOleInPlaceContainer);
-
-	// setup for OLE servers
-	void SetServerInfo(UINT nIDOleEmbedding, UINT nIDOleInPlaceServer = 0,
-		CRuntimeClass* pOleFrameClass = NULL, CRuntimeClass* pOleViewClass = NULL);
-
-	/// <summary> 
-	/// Setups out of process preview handler. </summary>
-	/// <param name="nIDPreviewFrame">Specifies a resource ID of preview frame.</param>
-	/// <param name="pPreviewFrameClass">Specifies a pointer to a runtime class information of preview frame.</param>
-	/// <param name="pPreviewViewClass">Specifies a pointer to a runtime class information of preview view.</param>
-	void SetPreviewInfo(UINT nIDPreviewFrame, CRuntimeClass* pPreviewFrameClass = NULL, CRuntimeClass* pPreviewViewClass = NULL);
-
-	// iterating over open documents
-	virtual POSITION GetFirstDocPosition() const = 0;
-
-// Operations
-public:
-	enum DocStringIndex
-	{
-		windowTitle,        // default window title
-		docName,            // user visible name for default document
-		fileNewName,        // user visible name for FileNew
-		// for file based documents:
-		filterName,         // user visible name for FileOpen
-		filterExt,          // user visible extension for FileOpen
-		// for file based documents with Shell open support:
-		regFileTypeId,      // REGEDIT visible registered file type identifier
-		regFileTypeName,    // Shell visible registered file type name
-	};
-	virtual BOOL GetDocString(CString& rString,
-		enum DocStringIndex index) const; // get one of the info strings
-
-// Overridables
-public:
-	enum Confidence
-	{
-		noAttempt,
-		maybeAttemptForeign,
-		maybeAttemptNative,
-		yesAttemptForeign,
-		yesAttemptNative,
-		yesAlreadyOpen
-	};
-// Implementation
-public:
-	BOOL m_bAutoDelete;
-	virtual ~CDocTemplate() = 0;
-
-	// back pointer to OLE or other server (NULL if none or disabled)
-	CObject* m_pAttachedFactory;
-
-	// Class ID for preview handler - used for registration
-	CString m_strCLSID;
-	CLSID   m_clsid;
-
-	// menu & accelerator resources for in-place container
-	HMENU m_hMenuInPlace;
-	HACCEL m_hAccelInPlace;
-
-	// menu & accelerator resource for server editing embedding
-	HMENU m_hMenuEmbedding;
-	HACCEL m_hAccelEmbedding;
-
-	// menu & accelerator resource for server editing in-place
-	HMENU m_hMenuInPlaceServer;
-	HACCEL m_hAccelInPlaceServer;
-
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext&) const;
-	virtual void AssertValid() const;
-#endif
-	virtual void OnIdle();             // for all documents
-	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra,
-		AFX_CMDHANDLERINFO* pHandlerInfo);
-
-protected:
-	UINT m_nIDResource;						// IDR_ for frame/menu/accel as well
-	UINT m_nIDServerResource;				// IDR_ for OLE inplace frame/menu/accel
-	UINT m_nIDEmbeddingResource;			// IDR_ for OLE open frame/menu/accel
-	UINT m_nIDContainerResource;			// IDR_ for container frame/menu/accel
-	UINT m_nIDPreviewResource;				// IDR_ for preview frame. Do not load menu/accel
-
-	CRuntimeClass* m_pDocClass;				// class for creating new documents
-	CRuntimeClass* m_pFrameClass;			// class for creating new frames
-	CRuntimeClass* m_pViewClass;			// class for creating new views
-	CRuntimeClass* m_pOleFrameClass;		// class for creating in-place frame
-	CRuntimeClass* m_pOleViewClass;			// class for creating in-place view
-	CRuntimeClass* m_pPreviewFrameClass;	// class for creating in-place preview frame
-	CRuntimeClass* m_pPreviewViewClass;		// class for creating in-place preview view
-
-	CString m_strDocStrings;    // '\n' separated names
-		// The document names sub-strings are represented as _one_ string:
-		// windowTitle\ndocName\n ... (see DocStringIndex enum)
-};
-
-/////////////////////////////////////////////////////////////////////////////
 // Extra diagnostic tracing options
 
 #ifdef _DEBUG
 extern AFX_DATA UINT afxTraceFlags;
 #endif // _DEBUG
-
-#ifdef _DEBUG
-#define DECLARE_AFX_TRACE_CATEGORY( name ) extern AFX_DATA ATL::CTraceCategory name;
-#else
-#define DECLARE_AFX_TRACE_CATEGORY( name ) const DWORD_PTR name = 0;
-#endif
-
-DECLARE_AFX_TRACE_CATEGORY( traceAppMsg )        // main message pump trace (includes DDE)
-DECLARE_AFX_TRACE_CATEGORY( traceWinMsg )        // Windows message tracing
-DECLARE_AFX_TRACE_CATEGORY( traceCmdRouting )    // Windows command routing trace
-DECLARE_AFX_TRACE_CATEGORY( traceOle )          // special OLE callback trace
-DECLARE_AFX_TRACE_CATEGORY( traceDatabase )     // special database trace
-DECLARE_AFX_TRACE_CATEGORY( traceInternet )     // special Internet client trace
-DECLARE_AFX_TRACE_CATEGORY( traceDumpContext )	// traces from CDumpContext
-DECLARE_AFX_TRACE_CATEGORY( traceMemory )		// generic non-kernel memory traces
-DECLARE_AFX_TRACE_CATEGORY( traceHtml )			// Html traces
-DECLARE_AFX_TRACE_CATEGORY( traceSocket )		// Socket traces
 
 //////////////////////////////////////////////////////////////////////////////
 // MessageBox helpers
