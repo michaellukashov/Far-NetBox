@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <exception>
+
 /////////////////////////////////////////////////////////////////////////////
 
 #ifdef _DLL
@@ -25,7 +27,7 @@
 #endif
 #endif
 
-#if !defined(_M_IX86) && !defined(_M_AMD64)
+#if !defined(_M_IX86) && !defined(_M_AMD64) && !defined(_WIN64) && !defined(_WIN32)
 	#error Compiling for unsupported platform.  Only x86 and x64 platforms are supported by MFC.
 #endif
 
@@ -234,7 +236,9 @@ typedef __POSITION* POSITION;
 
 #define FALSE   0
 #define TRUE    1
+#ifndef NULL
 #define NULL    0
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // _AFX_FUNCNAME definition
@@ -900,11 +904,6 @@ public:
 		bufferFull
 	};
 
-#pragma warning(push)
-#pragma warning(disable:4996)
-	AFX_DEPRECATED("CArchiveException::generic clashes with future language keyword generic and should not be used. Use CArchiveException::genericException instead.") static const int __identifier(generic) = genericException;
-#pragma warning(pop)
-
 // Constructor
 	/* explicit */ CArchiveException(int cause = CArchiveException::none,
 		LPCTSTR lpszArchiveName = NULL);
@@ -945,11 +944,6 @@ public:
 		diskFull,
 		endOfFile
 	};
-
-#pragma warning(push)
-#pragma warning(disable:4996)
-	AFX_DEPRECATED("CFileException::generic clashes with future language keyword generic and should not be used. Use CFileException::genericException instead.") static const int __identifier(generic) = genericException;
-#pragma warning(pop)
 
 // Constructor
 	/* explicit */ CFileException(int cause = CFileException::none, LONG lOsError = -1,
@@ -1335,14 +1329,14 @@ BOOL AfxIsValidAtom(LPCTSTR psz);
 #if defined(_DEBUG) && !defined(_AFX_NO_DEBUG_CRT)
 
 // Memory tracking allocation
-void* AFX_CDECL operator new(size_t nSize, LPCSTR lpszFileName, int nLine);
+void* AFX_CDECL operator new(size_t nSize, LPCSTR lpszFileName, int nLine) throw(std::bad_alloc);
 #define DEBUG_NEW new(THIS_FILE, __LINE__)
-void AFX_CDECL operator delete(void* p, LPCSTR lpszFileName, int nLine);
+void AFX_CDECL operator delete(void* p, LPCSTR lpszFileName, int nLine) throw();
 
-void * __cdecl operator new[](size_t);
-void* __cdecl operator new[](size_t nSize, LPCSTR lpszFileName, int nLine);
-void __cdecl operator delete[](void* p, LPCSTR lpszFileName, int nLine);
-void __cdecl operator delete[](void *);
+void * __cdecl operator new[](size_t) throw(std::bad_alloc);
+void* __cdecl operator new[](size_t nSize, LPCSTR lpszFileName, int nLine) throw(std::bad_alloc);
+void __cdecl operator delete[](void* p, LPCSTR lpszFileName, int nLine) throw();
+void __cdecl operator delete[](void * p) throw();
 
 void* AFXAPI AfxAllocMemoryDebug(size_t nSize, BOOL bIsObject,
 	LPCSTR lpszFileName, int nLine);
@@ -1531,11 +1525,11 @@ public:
 	template< typename BaseType, class StringTraits >	
 	CArchive& operator<<(const ATL::CStringT<BaseType, StringTraits>& str);
 	
-	template < typename BaseType , bool t_bMFCDLL>
-	CArchive& operator>>(ATL::CSimpleStringT<BaseType, t_bMFCDLL>& str);
+	// template < typename BaseType , bool t_bMFCDLL>
+	// CArchive& operator>>(ATL::CSimpleStringT<BaseType, t_bMFCDLL>& str);
 
-	template< typename BaseType, class StringTraits >
-	CArchive& operator>>(ATL::CStringT<BaseType, StringTraits>& str);
+	// template< typename BaseType, class StringTraits >
+	// CArchive& operator>>(ATL::CStringT<BaseType, StringTraits>& str);
 
 	CArchive& operator<<(bool b);
 

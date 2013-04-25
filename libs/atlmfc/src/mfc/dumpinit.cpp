@@ -137,7 +137,11 @@ _AFX_DEBUG_STATE::~_AFX_DEBUG_STATE()
 #pragma warning(disable: 4074)
 #pragma init_seg(lib)
 
+#if !defined(__MINGW32__)
 PROCESS_LOCAL(_AFX_DEBUG_STATE, afxDebugState)
+#else
+CProcessLocal<_AFX_DEBUG_STATE> afxDebugState;
+#endif
 
 BOOL AFXAPI AfxDiagnosticInit(void)
 {

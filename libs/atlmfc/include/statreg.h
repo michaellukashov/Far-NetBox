@@ -445,6 +445,7 @@ inline HRESULT CRegObject::RegisterFromResource(
 	HGLOBAL     hReg;
 	DWORD       dwSize;
 	LPSTR       szRegA;
+  DWORD uniSize = 0;
 	CTempBuffer<TCHAR, 1024> szReg;
 
 	LPCTSTR lpszBSTRFileName = OLE2CT_EX(bstrFileName, _ATL_SAFE_ALLOCA_DEF_THRESHOLD);
@@ -500,9 +501,8 @@ inline HRESULT CRegObject::RegisterFromResource(
 		hr = E_OUTOFMEMORY;
 		goto ReturnHR;
 	}
-
 #ifdef _UNICODE
-	DWORD uniSize = ::MultiByteToWideChar(_AtlGetConversionACP(), 0, szRegA, dwSize, szReg, dwSize);
+	uniSize = ::MultiByteToWideChar(_AtlGetConversionACP(), 0, szRegA, dwSize, szReg, dwSize);
 	if (uniSize == 0)
 	{
 		hr = AtlHresultFromLastError();

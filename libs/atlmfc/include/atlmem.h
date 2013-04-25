@@ -49,9 +49,16 @@ inline N WINAPI AtlAlignDown(
 	return( N( n&~(N( nAlign )-1) ) );
 }
 
+#if !defined(__MINGW32__)
 __interface __declspec(uuid("654F7EF5-CFDF-4df9-A450-6C6A13C622C0")) IAtlMemMgr
+#else
+class IAtlMemMgr
+#endif
 {
 public:
+#if defined(__MINGW32__)
+  virtual ~IAtlMemMgr() {}
+#endif
 	void* Allocate(_In_ size_t nBytes) throw();
 	void Free(_Inout_opt_ void* p) throw();
 	void* Reallocate(
@@ -216,7 +223,7 @@ public:
 			return NULL;
 		}
 
-		return SAL_Assume_bytecap_for_opt_(::LocalReAlloc(p, nBytes, 0), nBytes);
+		return ::LocalReAlloc(p, nBytes, 0);
 	}
 	virtual size_t GetSize(_In_ void* p) throw()
 	{
@@ -249,7 +256,7 @@ public:
 			Free(p);
 			return NULL;
 		}
-		return SAL_Assume_bytecap_for_opt_(::GlobalReAlloc( p, nBytes, 0 ), nBytes);
+		return ::GlobalReAlloc( p, nBytes, 0 );
 	}
 	virtual size_t GetSize(_In_ void* p) throw()
 	{

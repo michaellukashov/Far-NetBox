@@ -61,14 +61,14 @@
 	// #include <shobjidl.h>    // for IPreviewHandler, IPreviewHandlerVisuals
 #endif
 
-#ifndef __IThumbnailProvider_INTERFACE_DEFINED__
-	#include <thumbcache.h>  // for IThumbnailProvider
-#endif
+// #ifndef __IThumbnailProvider_INTERFACE_DEFINED__
+	// #include <thumbcache.h>  // for IThumbnailProvider
+// #endif
 #endif 
 
-#ifndef __ATL_SO__
-	#include <atlhandler.h> // for IFilterChunkValue and IDocument
-#endif
+// #ifndef __ATL_SO__
+	// #include <atlhandler.h> // for IFilterChunkValue and IDocument
+// #endif
 
 // Avoid mapping GetFileTitle to GetFileTitle[A/W]
 #ifdef GetFileTitle
@@ -116,7 +116,7 @@ AFX_INLINE short APIENTRY GetFileTitle(LPCTSTR lpszFile, LPTSTR lpszTitle, WORD 
 #endif
 
 #ifndef __IPHLPAPI_H__
-	#include <iphlpapi.h>
+	// #include <iphlpapi.h>
 #endif
 #endif	// (_WIN32_WINNT >= 0x600)
 
@@ -2735,7 +2735,7 @@ protected:
 	// strOut   - the CString containing the received text
 
 	template <class TReturnType, class TCchType >
-	TReturnType EnlargeBufferGetText(_In_ TReturnType errCode, LPTSTR& pszText, TCchType& cch, TCchType cchBegin, TCchType cchEnd, UINT uMsg, WPARAM& wParam, LPARAM& lParam, CString& strOut) const throw(...)
+	TReturnType EnlargeBufferGetText(_In_ TReturnType errCode, LPTSTR& pszText, TCchType& cch, TCchType cchBegin, TCchType cchEnd, UINT uMsg, WPARAM& wParam, LPARAM& lParam, CString& strOut) const throw()
 	{
 		ENSURE(::IsWindow(m_hWnd));
 		ENSURE(cchBegin < cchEnd);
@@ -2769,13 +2769,13 @@ protected:
 
 
 	template <class TReturnType>
-	inline TReturnType EnlargeBufferGetText(TReturnType errCode, LPTSTR& pszText, int& pcch, UINT uMsg, WPARAM& wParam, LPARAM& lParam, CString& strOut) const throw(...)
+	inline TReturnType EnlargeBufferGetText(TReturnType errCode, LPTSTR& pszText, int& pcch, UINT uMsg, WPARAM& wParam, LPARAM& lParam, CString& strOut) const throw()
 	{
 		return EnlargeBufferGetText<TReturnType, int>(errCode, pszText, pcch, 256, INT_MAX, uMsg, wParam, lParam, strOut);
 	}
 
 	template <class TReturnType>
-	inline TReturnType EnlargeBufferGetText(TReturnType errCode, LPTSTR& pszText, UINT& pcch, UINT uMsg, WPARAM& wParam, LPARAM& lParam, CString& strOut) const throw(...)
+	inline TReturnType EnlargeBufferGetText(TReturnType errCode, LPTSTR& pszText, UINT& pcch, UINT uMsg, WPARAM& wParam, LPARAM& lParam, CString& strOut) const throw()
 	{
 		// using INT_MAX instead of UINT_MAX here because CString has a INT_MAX limit
 		return EnlargeBufferGetText<TReturnType, UINT>(errCode, pszText, pcch, 256, INT_MAX, uMsg, wParam, lParam, strOut);

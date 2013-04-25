@@ -471,8 +471,8 @@ void CMapStringToString::Serialize(CArchive& ar)
 		CString newValue;
 		while (nNewCount--)
 		{
-			ar >> newKey;
-			ar >> newValue;
+			// ar >> newKey;
+			// ar >> newValue;O
 			SetAt(newKey, newValue);
 		}
 	}

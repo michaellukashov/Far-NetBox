@@ -126,8 +126,8 @@ void AFXAPI SerializeElementsInsertExtract(CArchive& ar, TYPE* pElements,
 	}
 	else
 	{
-		for (; nCount--; ++pElements)
-			ar >> *pElements;
+		// for (; nCount--; ++pElements)
+			// ar >> *pElements;
 	}
 }
 
@@ -138,9 +138,9 @@ void AFXAPI DumpElements(CDumpContext& dc, const TYPE* pElements, INT_PTR nCount
 	ENSURE(nCount == 0 || pElements != NULL);
 	ASSERT(nCount == 0 ||
 		AfxIsValidAddress(pElements, (size_t)nCount * sizeof(TYPE), FALSE));
-	UNREFERENCED_PARAMETER(dc); // not used
-	UNREFERENCED_PARAMETER(pElements);  // not used
-	UNREFERENCED_PARAMETER(nCount); // not used
+	// UNREFERENCED_PARAMETER(dc); // not used
+	// UNREFERENCED_PARAMETER(pElements);  // not used
+	// UNREFERENCED_PARAMETER(nCount); // not used
 
 	// default does nothing
 }
@@ -2051,7 +2051,7 @@ public:
 
 	// Lookup
 	BOOL Lookup(typename BASE_CLASS::BASE_ARG_KEY key, VALUE& rValue) const
-		{ return BASE_CLASS::Lookup(key, (BASE_CLASS::BASE_VALUE&)rValue); }
+		{ return BASE_CLASS::Lookup(key, (typename BASE_CLASS::BASE_VALUE&)rValue); }
 
 	// Lookup and add if not there
 	VALUE& operator[](typename BASE_CLASS::BASE_ARG_KEY key)
@@ -2067,8 +2067,8 @@ public:
 
 	// iteration
 	void GetNextAssoc(POSITION& rPosition, KEY& rKey, VALUE& rValue) const
-		{ BASE_CLASS::GetNextAssoc(rPosition, (BASE_CLASS::BASE_KEY&)rKey,
-			(BASE_CLASS::BASE_VALUE&)rValue); }
+		{ BASE_CLASS::GetNextAssoc(rPosition, (typename BASE_CLASS::BASE_KEY&)rKey,
+			(typename BASE_CLASS::BASE_VALUE&)rValue); }
 };
 
 /////////////////////////////////////////////////////////////////////////////

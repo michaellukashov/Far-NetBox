@@ -253,7 +253,7 @@ class COleStreamFile : public CFile
 {
 	DECLARE_DYNAMIC(COleStreamFile)
 
-private:
+public:
    using CFile::Open;
 
 // Constructors and Destructors
@@ -320,7 +320,7 @@ class CMonikerFile: public COleStreamFile
 {
 	DECLARE_DYNAMIC(CMonikerFile)
 
-private:
+public:
    using COleStreamFile::Open;
 
 public:
@@ -399,7 +399,7 @@ class CAsyncMonikerFile: public CMonikerFile
 {
 	DECLARE_DYNAMIC(CAsyncMonikerFile)
 
-private:
+public:
    using CMonikerFile::Open;
 
 public:

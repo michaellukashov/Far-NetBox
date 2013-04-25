@@ -291,7 +291,7 @@ void CMapWordToOb::GetNextAssoc(POSITION& rNextPosition,
 
 void CMapWordToOb::Serialize(CArchive& ar)
 {
-	ASSERT_VALID(this);
+	/*ASSERT_VALID(this);
 
 	CObject::Serialize(ar);
 
@@ -324,7 +324,7 @@ void CMapWordToOb::Serialize(CArchive& ar)
 			ar >> newValue;
 			SetAt(newKey, newValue);
 		}
-	}
+	}*/
 }
 
 /////////////////////////////////////////////////////////////////////////////

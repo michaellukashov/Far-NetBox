@@ -177,14 +177,14 @@ template< int t_nBufferLength = 128 >
 class CW2WEX
 {
 public:
-	CW2WEX(_In_z_ LPCWSTR psz) throw(...) :
+	CW2WEX(_In_z_ LPCWSTR psz) throw() :
 		m_psz( m_szBuffer )
 	{
 		Init( psz );
 	}
 	CW2WEX(
 			_In_z_ LPCWSTR psz, 
-			_In_ UINT nCodePage) throw(...) :
+			_In_ UINT nCodePage) throw() :
 		m_psz( m_szBuffer )
 	{
 		(void)nCodePage;  // Code page doesn't matter
@@ -202,7 +202,7 @@ public:
 	}
 
 private:
-	void Init(_In_z_ LPCWSTR psz) throw(...)
+	void Init(_In_z_ LPCWSTR psz) throw()
 	{
 		if (psz == NULL)
 		{
@@ -229,14 +229,14 @@ template< int t_nBufferLength = 128 >
 class CA2AEX
 {
 public:
-	CA2AEX(_In_z_ LPCSTR psz) throw(...) :
+	CA2AEX(_In_z_ LPCSTR psz) throw() :
 		m_psz( m_szBuffer )
 	{
 		Init( psz );
 	}
 	CA2AEX(
 			_In_z_ LPCSTR psz, 
-			_In_ UINT nCodePage) throw(...) :
+			_In_ UINT nCodePage) throw() :
 		m_psz( m_szBuffer )
 	{
 		(void)nCodePage;  // Code page doesn't matter
@@ -254,7 +254,7 @@ public:
 	}
 
 private:
-	void Init(_In_z_ LPCSTR psz) throw(...)
+	void Init(_In_z_ LPCSTR psz) throw()
 	{
 		if (psz == NULL)
 		{
@@ -280,13 +280,13 @@ template< int t_nBufferLength = 128 >
 class CA2CAEX
 {
 public:
-	CA2CAEX(_In_z_ LPCSTR psz) throw(...) :
+	CA2CAEX(_In_z_ LPCSTR psz) throw() :
 		m_psz( psz )
 	{
 	}
 	CA2CAEX(
 			_In_z_ LPCSTR psz, 
-			_In_ UINT nCodePage) throw(...) :
+			_In_ UINT nCodePage) throw() :
 		m_psz( psz )
 	{
 		(void)nCodePage;
@@ -313,13 +313,13 @@ template< int t_nBufferLength = 128 >
 class CW2CWEX
 {
 public:
-	CW2CWEX(_In_z_ LPCWSTR psz) throw(...) :
+	CW2CWEX(_In_z_ LPCWSTR psz) throw() :
 		m_psz( psz )
 	{
 	}
 	CW2CWEX(
 			_In_z_ LPCWSTR psz, 
-			_In_ UINT nCodePage) throw(...) :
+			_In_ UINT nCodePage) throw() :
 		m_psz( psz )
 	{		
 		UNREFERENCED_PARAMETER(nCodePage);
@@ -346,14 +346,14 @@ template< int t_nBufferLength = 128 >
 class CA2WEX
 {
 public:
-	CA2WEX(_In_z_ LPCSTR psz) throw(...) :
+	CA2WEX(_In_z_ LPCSTR psz) throw() :
 		m_psz( m_szBuffer )
 	{
 		Init( psz, _AtlGetConversionACP() );
 	}
 	CA2WEX(
 			_In_z_ LPCSTR psz, 
-			_In_ UINT nCodePage) throw(...) :
+			_In_ UINT nCodePage) throw() :
 		m_psz( m_szBuffer )
 	{
 		Init( psz, nCodePage );
@@ -371,7 +371,7 @@ public:
 private:
 	void Init(
 		_In_z_ LPCSTR psz, 
-		_In_ UINT nCodePage) throw(...)
+		_In_ UINT nCodePage) throw()
 	{
 		if (psz == NULL)
 		{
@@ -413,14 +413,14 @@ template< int t_nBufferLength = 128 >
 class CW2AEX
 {
 public:
-	CW2AEX(_In_z_ LPCWSTR psz) throw(...) :
+	CW2AEX(_In_z_ LPCWSTR psz) throw() :
 		m_psz( m_szBuffer )
 	{
 		Init( psz, _AtlGetConversionACP() );
 	}
 	CW2AEX(
 			_In_z_ LPCWSTR psz, 
-			_In_ UINT nCodePage) throw(...) :
+			_In_ UINT nCodePage) throw() :
 		m_psz( m_szBuffer )
 	{
 		Init( psz, nCodePage );
@@ -438,7 +438,7 @@ public:
 private:
 	void Init(
 		_In_z_ LPCWSTR psz, 
-		_In_ UINT nConvertCodePage) throw(...)
+		_In_ UINT nConvertCodePage) throw()
 	{
 		if (psz == NULL)
 		{

@@ -521,7 +521,7 @@ _AfxCbtFilterHook(int code, WPARAM wParam, LPARAM lParam)
 				WNDCLASSEX wc;
 				memset(&wc, 0, sizeof(WNDCLASSEX));
 				wc.cbSize = sizeof(WNDCLASSEX);
-				s_atomMenu = (ATOM)::AfxCtxGetClassInfoEx(NULL, _T("#32768"), &wc);
+				// s_atomMenu = (ATOM)::AfxCtxGetClassInfoEx(NULL, _T("#32768"), &wc);
 			}
 
 			// Do not subclass menus.
@@ -656,9 +656,9 @@ BOOL CWnd::CreateEx(DWORD dwExStyle, LPCTSTR lpszClassName,
 	}
 
 	AfxHookWindowCreate(this);
-	HWND hWnd = ::AfxCtxCreateWindowEx(cs.dwExStyle, cs.lpszClass,
-			cs.lpszName, cs.style, cs.x, cs.y, cs.cx, cs.cy,
-			cs.hwndParent, cs.hMenu, cs.hInstance, cs.lpCreateParams);
+	HWND hWnd = 0; // ::AfxCtxCreateWindowEx(cs.dwExStyle, cs.lpszClass,
+			// cs.lpszName, cs.style, cs.x, cs.y, cs.cx, cs.cy,
+			// cs.hwndParent, cs.hMenu, cs.hInstance, cs.lpCreateParams);
 
 #ifdef _DEBUG
 	if (hWnd == NULL)
@@ -1159,19 +1159,19 @@ void CWnd::OnMeasureItem(int /*nIDCtl*/, LPMEASUREITEMSTRUCT lpMeasureItemStruct
 BOOL AFXAPI AfxRegisterClass(WNDCLASS* lpWndClass)
 {
 	WNDCLASS wndcls;		
-	if (AfxCtxGetClassInfo(lpWndClass->hInstance, lpWndClass->lpszClassName,
-		&wndcls))
+	// if (AfxCtxGetClassInfo(lpWndClass->hInstance, lpWndClass->lpszClassName,
+		// &wndcls))
 	{
 		// class already registered
 		return TRUE;
 	}
 
-	if (!::AfxCtxRegisterClass(lpWndClass))
-	{
-		TRACE(traceAppMsg, 0, _T("Can't register window class named %s\n"),
-			lpWndClass->lpszClassName);
-		return FALSE;
-	}
+	// if (!::AfxCtxRegisterClass(lpWndClass))
+	// {
+		// TRACE(traceAppMsg, 0, _T("Can't register window class named %s\n"),
+			// lpWndClass->lpszClassName);
+		// return FALSE;
+	// }
 
 	BOOL bRet = TRUE;
 
@@ -1220,7 +1220,7 @@ LPCTSTR AFXAPI AfxRegisterWndClass(UINT nClassStyle,
 	
 	// see if the class already exists
 	WNDCLASS wndcls;
-	if (::AfxCtxGetClassInfo(hInst, lpszName, &wndcls))
+	/*if (::AfxCtxGetClassInfo(hInst, lpszName, &wndcls))
 	{
 		// already registered, assert everything is good
 		ASSERT(wndcls.style == nClassStyle);
@@ -1230,7 +1230,7 @@ LPCTSTR AFXAPI AfxRegisterWndClass(UINT nClassStyle,
 		//  some internal translation or copying of those handles before
 		//  storing them in the internal WNDCLASS retrieved by GetClassInfo.
 		return lpszName;
-	}
+	}*/
 
 	// otherwise we need to register a new class
 	wndcls.style = nClassStyle;
@@ -1279,45 +1279,47 @@ LRESULT CWnd::OnNTCtlColor(WPARAM wParam, LPARAM lParam)
 
 BOOL CWnd::RegisterTouchWindow(BOOL bRegister, ULONG ulFlags)
 {
-	m_bIsTouchWindowRegistered = FALSE;
+	// m_bIsTouchWindowRegistered = FALSE;
 	
-	static HMODULE hUserDll = AfxCtxLoadLibrary(_T("user32.dll"));
-	ENSURE(hUserDll != NULL);
+	// static HMODULE hUserDll = AfxCtxLoadLibrary(_T("user32.dll"));
+	// ENSURE(hUserDll != NULL);
 
-	typedef	BOOL (__stdcall *PFNREGISTERTOUCHWINDOW)(HWND, ULONG);
-	typedef	BOOL (__stdcall *PFNUNREGISTERTOUCHWINDOW)(HWND);
+	// typedef	BOOL (__stdcall *PFNREGISTERTOUCHWINDOW)(HWND, ULONG);
+	// typedef	BOOL (__stdcall *PFNUNREGISTERTOUCHWINDOW)(HWND);
 
-	static PFNREGISTERTOUCHWINDOW pfRegister = (PFNREGISTERTOUCHWINDOW)GetProcAddress(hUserDll, "RegisterTouchWindow");
-	static PFNUNREGISTERTOUCHWINDOW pfUnregister = (PFNUNREGISTERTOUCHWINDOW)GetProcAddress(hUserDll, "UnregisterTouchWindow");
+	// static PFNREGISTERTOUCHWINDOW pfRegister = (PFNREGISTERTOUCHWINDOW)GetProcAddress(hUserDll, "RegisterTouchWindow");
+	// static PFNUNREGISTERTOUCHWINDOW pfUnregister = (PFNUNREGISTERTOUCHWINDOW)GetProcAddress(hUserDll, "UnregisterTouchWindow");
 
-	if (pfRegister == NULL || pfUnregister == NULL)
-	{
-		return FALSE;
-	}
+	// if (pfRegister == NULL || pfUnregister == NULL)
+	// {
+		// return FALSE;
+	// }
 
-	if (!bRegister)
-	{
-		return (*pfUnregister)(GetSafeHwnd());
-	}
+	// if (!bRegister)
+	// {
+		// return (*pfUnregister)(GetSafeHwnd());
+	// }
 	
-	m_bIsTouchWindowRegistered = (*pfRegister)(GetSafeHwnd(), ulFlags);
-	return m_bIsTouchWindowRegistered;
+	// m_bIsTouchWindowRegistered = (*pfRegister)(GetSafeHwnd(), ulFlags);
+	// return m_bIsTouchWindowRegistered;
+  return false;
 }
 
 BOOL CWnd::IsTouchWindow() const
 {
-	static HMODULE hUserDll = AfxCtxLoadLibrary(_T("user32.dll"));
-	ENSURE(hUserDll != NULL);
+	// static HMODULE hUserDll = AfxCtxLoadLibrary(_T("user32.dll"));
+	// ENSURE(hUserDll != NULL);
 
-	typedef	BOOL (__stdcall *PFNISTOUCHWINDOW)(HWND);
-	static PFNISTOUCHWINDOW pfIsTouchWindow = (PFNISTOUCHWINDOW)GetProcAddress(hUserDll, "IsTouchWindow");
+	// typedef	BOOL (__stdcall *PFNISTOUCHWINDOW)(HWND);
+	// static PFNISTOUCHWINDOW pfIsTouchWindow = (PFNISTOUCHWINDOW)GetProcAddress(hUserDll, "IsTouchWindow");
 
-	if (pfIsTouchWindow == NULL)
-	{
-		return FALSE;
-	}
+	// if (pfIsTouchWindow == NULL)
+	// {
+		// return FALSE;
+	// }
 
-	return (*pfIsTouchWindow)(GetSafeHwnd());
+	// return (*pfIsTouchWindow)(GetSafeHwnd());
+	return false;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1867,9 +1869,9 @@ LDispatch:
 	case AfxSig_u_u_u:
 		lResult = (this->*mmf.pfn_u_u_u)(static_cast<UINT>(wParam), static_cast<UINT>(lParam));
 		break;
-	case AfxSig_INPUTDEVICECHANGE:
-		(this->*mmf.pfn_INPUTDEVICECHANGE)(GET_DEVICE_CHANGE_WPARAM(wParam), reinterpret_cast<HANDLE>(lParam));
-		break;
+	// case AfxSig_INPUTDEVICECHANGE:
+		// (this->*mmf.pfn_INPUTDEVICECHANGE)(GET_DEVICE_CHANGE_WPARAM(wParam), reinterpret_cast<HANDLE>(lParam));
+		// break;
 	case AfxSig_v_u_hkl:
 		(this->*mmf.pfn_v_u_h)(static_cast<UINT>(wParam), reinterpret_cast<HKL>(lParam));
 		break;
@@ -2103,7 +2105,7 @@ int CWnd::MessageBox(LPCTSTR lpszText, LPCTSTR lpszCaption, UINT nType)
 {
 	if (lpszCaption == NULL)
 		lpszCaption = AfxGetAppName();
-	int nResult = ::AfxCtxMessageBox(GetSafeHwnd(), lpszText, lpszCaption, nType);
+	int nResult = 0; // ::AfxCtxMessageBox(GetSafeHwnd(), lpszText, lpszCaption, nType);
 	return nResult;
 }
 
@@ -2769,7 +2771,7 @@ public:
 	// also catch mismatched Release in debug builds
 	~CMFCComObject()
 	{
-		m_dwRef = -(LONG_MAX/2);
+		// m_dwRef = -(LONG_MAX/2);
 		FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
@@ -3470,7 +3472,7 @@ LONG AFXAPI _AfxInitCommonControls(LPINITCOMMONCONTROLSEX lpInitCtrls, LONG fToR
 	ASSERT(fToRegister != 0);
 
 	LONG lResult = 0;
-	if (AFX_COMCTL32_IF_EXISTS(InitCommonControlsEx))
+	// if (AFX_COMCTL32_IF_EXISTS(InitCommonControlsEx))
 	{
 		// if (AfxInitCommonControlsEx(lpInitCtrls))
 		{
@@ -3478,7 +3480,7 @@ LONG AFXAPI _AfxInitCommonControls(LPINITCOMMONCONTROLSEX lpInitCtrls, LONG fToR
 			// lResult = fToRegister;
 		}
 	}
-	else
+	// else
 	{
 		// not there, so call InitCommonControls if possible
 		if ((fToRegister & AFX_WIN95CTLS_MASK) == fToRegister)

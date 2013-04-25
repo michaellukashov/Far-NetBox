@@ -360,8 +360,8 @@ void CMapStringToOb::Serialize(CArchive& ar)
 		CObject* newValue;
 		while (nNewCount--)
 		{
-			ar >> newKey;
-			ar >> newValue;
+			// ar >> newKey;
+			// ar >> newValue;
 			SetAt(newKey, newValue);
 		}
 	}

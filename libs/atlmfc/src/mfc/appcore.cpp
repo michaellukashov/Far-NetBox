@@ -169,7 +169,7 @@ HINSTANCE AFXAPI AfxLoadLangResourceDLL(LPCTSTR pszFormat, LPCTSTR pszPath)
 	nLocales = 0;
 
 	// First, get the thread preferred UI languages (if supported)
-	HMODULE hKernel = AfxCtxLoadLibrary(_T("KERNEL32.DLL"));
+	HMODULE hKernel = NULL; // AfxCtxLoadLibrary(_T("KERNEL32.DLL"));
 	if (hKernel != NULL)
 	{
 		PFNGETPREFERREDUILANGS pfnGetThreadPreferredUILanguages = (PFNGETPREFERREDUILANGS)GetProcAddress(hKernel, "GetThreadPreferredUILanguages");
@@ -179,7 +179,7 @@ HINSTANCE AFXAPI AfxLoadLangResourceDLL(LPCTSTR pszFormat, LPCTSTR pszPath)
 			ULONG nLanguages = 0;
 			WCHAR wszLanguages[(5 * nMaxExpectedPreferredLangs) + 1] = {0}; // each lang has four chars plus NULL, plus terminating NULL
 			ULONG cchLanguagesBuffer = _countof(wszLanguages);
-			bGotPreferredLangs = pfnGetThreadPreferredUILanguages(MUI_LANGUAGE_ID | MUI_UI_FALLBACK, &nLanguages, wszLanguages, &cchLanguagesBuffer);
+			// bGotPreferredLangs = pfnGetThreadPreferredUILanguages(MUI_LANGUAGE_ID | MUI_UI_FALLBACK, &nLanguages, wszLanguages, &cchLanguagesBuffer);
 			if (bGotPreferredLangs)
 			{
 				WCHAR *pwz = wszLanguages;
@@ -923,7 +923,11 @@ IMPLEMENT_DYNAMIC(CWinApp, CWinThread)
 #pragma warning(disable: 4074)
 #pragma init_seg(lib)
 
+#if !defined(__MINGW32__)
 PROCESS_LOCAL(_AFX_WIN_STATE, _afxWinState)
+#else
+CProcessLocal<_AFX_WIN_STATE> _afxWinState;
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 ///////

@@ -22,7 +22,10 @@ BOOL AFXAPI AfxAssertFailedLine(LPCSTR lpszFileName, int nLine)
 	// won't display
 	MSG msg;
 	BOOL bQuit = PeekMessage(&msg, NULL, WM_QUIT, WM_QUIT, PM_REMOVE);
-	BOOL bResult = _CrtDbgReport(_CRT_ASSERT, lpszFileName, nLine, NULL, NULL);
+	BOOL bResult = FALSE;
+#if !defined(__MINGW32__)
+  bResult = _CrtDbgReport(_CRT_ASSERT, lpszFileName, nLine, NULL, NULL);
+#endif
 	if (bQuit)
 		PostQuitMessage((int)msg.wParam);
 	return bResult;

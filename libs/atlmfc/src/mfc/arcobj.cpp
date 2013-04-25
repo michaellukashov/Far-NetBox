@@ -388,7 +388,7 @@ void CArchive::WriteClass(const CRuntimeClass* pClassRef)
 CRuntimeClass* CArchive::ReadClass(const CRuntimeClass* pClassRefRequested,
 	UINT* pSchema, DWORD* pObTag)
 {
-	ASSERT(pClassRefRequested == NULL ||
+	/*ASSERT(pClassRefRequested == NULL ||
 		AfxIsValidAddress(pClassRefRequested, sizeof(CRuntimeClass), FALSE));
 	ASSERT(IsLoading());    // proper direction
 
@@ -522,6 +522,8 @@ CRuntimeClass* CArchive::ReadClass(const CRuntimeClass* pClassRefRequested,
 
 	// return the resulting CRuntimeClass*
 	return pClassRef;
+  */
+  return NULL;
 }
 
 void CArchive::SerializeClass(const CRuntimeClass* pClassRef)

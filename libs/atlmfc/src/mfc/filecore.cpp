@@ -47,7 +47,9 @@ AFX_STATIC inline BOOL IsDirSep(TCHAR ch)
 		EXTERN_C AFX_COMDAT const GUID afx##name \
 				= { l, w1, w2, { b1, b2,  b3,  b4,  b5,  b6,  b7,  b8 } }
 
+#ifndef DEFINE_SHLGUID
 #define DEFINE_SHLGUID(name, l, w1, w2) DEFINE_GUID(name, l, w1, w2, 0xC0,0,0,0,0,0,0,0x46)
+#endif
 
 DEFINE_SHLGUID(CLSID_ShellLink, 0x00021401L, 0, 0);
 #ifndef _UNICODE
@@ -67,7 +69,7 @@ DEFINE_SHLGUID(IID_IShellLinkW, 0x000214F9L, 0, 0);
 #define IShellLink IShellLinkW
 #endif
 
-#endif !_AFX_NO_OLE_SUPPORT
+#endif // !_AFX_NO_OLE_SUPPORT
 
 ////////////////////////////////////////////////////////////////////////////
 // CFile implementation
@@ -518,7 +520,7 @@ HRESULT AFX_COM::GetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv)
 		return REGDB_E_CLASSNOTREG;
 
 	// try to load it
-	hInst = AfxCtxLoadLibrary(strServer);
+	hInst = NULL; // AfxCtxLoadLibrary(strServer);
 	if (hInst == NULL)
 		return REGDB_E_CLASSNOTREG;
 

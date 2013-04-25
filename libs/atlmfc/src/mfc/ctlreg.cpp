@@ -145,7 +145,7 @@ BOOL AFXAPI AfxOleRegisterTypeLib(HINSTANCE hInstance, REFGUID tlid,
 	}
 	else
 	{
-		TRACE(traceAppMsg, 0, L"Warning: Could not load type library from %s\n", strPathNameW);
+		// TRACE(traceAppMsg, 0, L"Warning: Could not load type library from %s\n", strPathNameW);
 	}
 
 	return bSuccess;

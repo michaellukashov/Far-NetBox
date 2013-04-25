@@ -37,6 +37,7 @@ BOOL AFXAPI AfxGetAmbientActCtx();
 void AFXAPI AfxSetAmbientActCtx(BOOL bSet);
 /////////////////////////////////////////////////////////////////////////////
 
+/*
 #pragma push_macro("AFX_ISOLATIONAWARE_COMMON_ACTIVATE")
 #pragma push_macro("AFX_ISOLATIONAWARE_FUNC_ACTIVATE")
 #pragma push_macro("AFX_ISOLATIONAWARE_FUNC_DEACTIVATE")
@@ -57,7 +58,9 @@ void AFXAPI AfxSetAmbientActCtx(BOOL bSet);
 			return result;\
 		}\
 		__try {
+*/
 
+/*
 #define AFX_ISOLATIONAWARE_FUNC_DEACTIVATE(failure_retval) \
 }\
 		__finally\
@@ -71,7 +74,9 @@ void AFXAPI AfxSetAmbientActCtx(BOOL bSet);
 			}\
 		}\
 		return result;
+*/
 
+/*
 #define AFX_ISOLATIONAWARE_STATICLINK_FUNC(type, name, params, args, failure_retval) \
 	inline type AfxCtx##name##params \
 	{ \
@@ -102,8 +107,10 @@ void AFXAPI AfxSetAmbientActCtx(BOOL bSet);
 		name##args; \
 		AFX_ISOLATIONAWARE_PROC_DEACTIVATE() \
 	}
+*/
 	
 
+/*
 #define AFX_PROC_PTR_TYPE(type, name_with_postfix, params) \
 	struct name_with_postfix \
 	{ \
@@ -157,15 +164,16 @@ void AFXAPI AfxSetAmbientActCtx(BOOL bSet);
 			m__##name##args; \
 			AFX_ISOLATIONAWARE_PROC_DEACTIVATE() \
 	}
+*/
 
 
-#define AFX_COMCTL32_IF_EXISTS(proc) (afxComCtlWrapper->GetProcAddress_##proc() != NULL)
+// #define AFX_COMCTL32_IF_EXISTS(proc) (afxComCtlWrapper->GetProcAddress_##proc() != NULL)
 
-#if defined(_UNICODE)
-#define AFX_COMCTL32_IF_EXISTS2(proc) (afxComCtlWrapper->GetProcAddress_##proc##W() != NULL)
-#else
-#define AFX_COMCTL32_IF_EXISTS2(proc) (afxComCtlWrapper->GetProcAddress_##proc##A() != NULL)
-#endif
+// #if defined(_UNICODE)
+// #define AFX_COMCTL32_IF_EXISTS2(proc) (afxComCtlWrapper->GetProcAddress_##proc##W() != NULL)
+// #else
+// #define AFX_COMCTL32_IF_EXISTS2(proc) (afxComCtlWrapper->GetProcAddress_##proc##A() != NULL)
+// #endif
 
 /////////////////////////////////////////////////////////////////////////////
 // Base class for all dll wrappers
@@ -224,6 +232,7 @@ public:
 	}
 
 public:
+/*
 	AFX_ISOLATIONAWARE_PROC(InitCommonControls, (), ())
 	AFX_ISOLATIONAWARE_FUNC(BOOL, InitCommonControlsEx, (LPINITCOMMONCONTROLSEX unnamed1), (unnamed1), FALSE)
 	AFX_ISOLATIONAWARE_FUNC(HIMAGELIST, ImageList_Create, (int cx,int cy,UINT flags,int cInitial,int cGrow), (cx,cy,flags,cInitial,cGrow), NULL)
@@ -327,6 +336,7 @@ public:
 	AFX_ISOLATIONAWARE_FUNC(BOOL, DestroyPropertySheetPage, (HPROPSHEETPAGE unnamed1), (unnamed1),FALSE)
 	AFX_ISOLATIONAWARE_FUNC(INT_PTR, PropertySheetA, (LPCPROPSHEETHEADERA unnamed1), (unnamed1),-1)
 	AFX_ISOLATIONAWARE_FUNC(INT_PTR, PropertySheetW, (LPCPROPSHEETHEADERW unnamed1), (unnamed1),-1)
+*/
 };
 /////////////////////////////////////////////////////////////////////////////
 
@@ -358,6 +368,7 @@ public:
 	{
 	}
 public:
+/*
 	AFX_ISOLATIONAWARE_FUNC(BOOL,GetOpenFileNameA,(LPOPENFILENAMEA unnamed1),(unnamed1),FALSE)
 	AFX_ISOLATIONAWARE_FUNC(BOOL,GetOpenFileNameW,(LPOPENFILENAMEW unnamed1),(unnamed1),FALSE)
 	AFX_ISOLATIONAWARE_FUNC(BOOL,GetSaveFileNameA,(LPOPENFILENAMEA unnamed1),(unnamed1),FALSE)
@@ -377,11 +388,12 @@ public:
 	AFX_ISOLATIONAWARE_FUNC(DWORD ,CommDlgExtendedError,(void),(),0)
 	AFX_ISOLATIONAWARE_FUNC(BOOL ,PageSetupDlgA,(LPPAGESETUPDLGA unnamed1),(unnamed1),FALSE)
 	AFX_ISOLATIONAWARE_FUNC(BOOL ,PageSetupDlgW,(LPPAGESETUPDLGW unnamed1),(unnamed1),FALSE)
+*/
 //These 2 must be the last in struct, because MFC always build them and the user may not 
 //define WINVER >= 0x0500, so code in user module (inline funcs) will miscalculate the offsets. 
 #if defined(STDMETHOD) && (WINVER >= 0x0500)
-	AFX_ISOLATIONAWARE_FUNC(HRESULT ,PrintDlgExA,(LPPRINTDLGEXA unnamed1),(unnamed1),E_FAIL)
-	AFX_ISOLATIONAWARE_FUNC(HRESULT ,PrintDlgExW,(LPPRINTDLGEXW unnamed1),(unnamed1),E_FAIL)
+	// AFX_ISOLATIONAWARE_FUNC(HRESULT ,PrintDlgExA,(LPPRINTDLGEXA unnamed1),(unnamed1),E_FAIL)
+	// AFX_ISOLATIONAWARE_FUNC(HRESULT ,PrintDlgExW,(LPPRINTDLGEXW unnamed1),(unnamed1),E_FAIL)
 #endif /* defined(STDMETHOD) && (WINVER >= 0x0500) */
 };
 #ifdef _UNICODE
@@ -412,6 +424,7 @@ public:
 
 
 ////////////////////// WinUser.inl //////////////////////////////////////////
+/*
  AFX_ISOLATIONAWARE_STATICLINK_FUNC(ATOM ,RegisterClassA,(const WNDCLASSA*lpWndClass),(lpWndClass),0)
  AFX_ISOLATIONAWARE_STATICLINK_FUNC(ATOM ,RegisterClassW,(const WNDCLASSW*lpWndClass),(lpWndClass),0)
  AFX_ISOLATIONAWARE_STATICLINK_FUNC(BOOL ,UnregisterClassA,(LPCSTR lpClassName,HINSTANCE hInstance),(lpClassName,hInstance),FALSE)
@@ -438,7 +451,7 @@ public:
  AFX_ISOLATIONAWARE_STATICLINK_FUNC(int ,MessageBoxExW,(HWND hWnd,LPCWSTR lpText,LPCWSTR lpCaption,UINT uType,WORD wLanguageId),(hWnd,lpText,lpCaption,uType,wLanguageId),0)
  AFX_ISOLATIONAWARE_STATICLINK_FUNC(int ,MessageBoxIndirectA,(const MSGBOXPARAMSA*unnamed1),(unnamed1),0)
  AFX_ISOLATIONAWARE_STATICLINK_FUNC(int ,MessageBoxIndirectW,(const MSGBOXPARAMSW*unnamed1),(unnamed1),0)
-
+*/
 #ifdef _UNICODE
 #define AfxCtxRegisterClass   AfxCtxRegisterClassW
 #define AfxCtxUnregisterClass AfxCtxUnregisterClassW
@@ -471,10 +484,10 @@ public:
 
 ////////////////////// WinBase.inl //////////////////////////////////////////
 //Only the funcs that actually change in winbase.inl context are in this list.
-AFX_ISOLATIONAWARE_STATICLINK_FUNC(HMODULE,LoadLibraryA,(LPCSTR lpLibFileName),(lpLibFileName),NULL)
-AFX_ISOLATIONAWARE_STATICLINK_FUNC(HMODULE,LoadLibraryW,(LPCWSTR lpLibFileName),(lpLibFileName),NULL)
-AFX_ISOLATIONAWARE_STATICLINK_FUNC(HMODULE,LoadLibraryExA,(LPCSTR lpLibFileName,HANDLE hFile,DWORD dwFlags),(lpLibFileName,hFile,dwFlags),NULL)
-AFX_ISOLATIONAWARE_STATICLINK_FUNC(HMODULE,LoadLibraryExW,(LPCWSTR lpLibFileName,HANDLE hFile,DWORD dwFlags),(lpLibFileName,hFile,dwFlags),NULL)
+// AFX_ISOLATIONAWARE_STATICLINK_FUNC(HMODULE,LoadLibraryA,(LPCSTR lpLibFileName),(lpLibFileName),NULL)
+// AFX_ISOLATIONAWARE_STATICLINK_FUNC(HMODULE,LoadLibraryW,(LPCWSTR lpLibFileName),(lpLibFileName),NULL)
+// AFX_ISOLATIONAWARE_STATICLINK_FUNC(HMODULE,LoadLibraryExA,(LPCSTR lpLibFileName,HANDLE hFile,DWORD dwFlags),(lpLibFileName,hFile,dwFlags),NULL)
+// AFX_ISOLATIONAWARE_STATICLINK_FUNC(HMODULE,LoadLibraryExW,(LPCWSTR lpLibFileName,HANDLE hFile,DWORD dwFlags),(lpLibFileName,hFile,dwFlags),NULL)
 
 #ifdef _UNICODE
 #define AfxCtxLoadLibrary AfxCtxLoadLibraryW
@@ -493,18 +506,18 @@ public:
 	{
 	}
 public:
-	AFX_ISOLATIONAWARE_FUNC(BOOL,InitNetworkAddressControl, (void), (),FALSE)
+	// AFX_ISOLATIONAWARE_FUNC(BOOL,InitNetworkAddressControl, (void), (),FALSE)
 };
 
 /////////////////////////////////////////////////////////////////////////////
 
-#pragma pop_macro("AFX_ISOLATIONAWARE_FUNC")
-#pragma pop_macro("AFX_ISOLATIONAWARE_PROC")
-#pragma pop_macro("AFX_ISOLATIONAWARE_STATICLINK_FUNC")
-#pragma pop_macro("AFX_ISOLATIONAWARE_STATICLINK_PROC")
-#pragma pop_macro("AFX_ISOLATIONAWARE_FUNC_DEACTIVATE")
-#pragma pop_macro("AFX_ISOLATIONAWARE_FUNC_ACTIVATE")
-#pragma pop_macro("AFX_ISOLATIONAWARE_COMMON_ACTIVATE")
+// #pragma pop_macro("AFX_ISOLATIONAWARE_FUNC")
+// #pragma pop_macro("AFX_ISOLATIONAWARE_PROC")
+// #pragma pop_macro("AFX_ISOLATIONAWARE_STATICLINK_FUNC")
+// #pragma pop_macro("AFX_ISOLATIONAWARE_STATICLINK_PROC")
+// #pragma pop_macro("AFX_ISOLATIONAWARE_FUNC_DEACTIVATE")
+// #pragma pop_macro("AFX_ISOLATIONAWARE_FUNC_ACTIVATE")
+// #pragma pop_macro("AFX_ISOLATIONAWARE_COMMON_ACTIVATE")
 
 /////////////////////////////////////////////////////////////////////////////
 

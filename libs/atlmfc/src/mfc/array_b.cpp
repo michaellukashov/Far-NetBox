@@ -91,7 +91,7 @@ void CByteArray::SetSize(INT_PTR nNewSize, INT_PTR nGrowBy)
 		{
 			// heuristically determine growth when nGrowArrayBy == 0
 			//  (this avoids heap fragmentation in many situations)
-			nGrowArrayBy = min(1024, max(4, m_nSize / 8));
+			nGrowArrayBy = Min(1024, Max(4, m_nSize / 8));
 		}
 		INT_PTR nNewMax;
 		if (nNewSize < m_nMaxSize + nGrowArrayBy)
@@ -311,7 +311,7 @@ void CByteArray::Serialize(CArchive& ar)
 		pbData = m_pData;
 		while(nBytesLeft > 0)
 		{
-			nBytesToWrite = UINT(min(nBytesLeft, INT_MAX));
+			nBytesToWrite = UINT(Min(nBytesLeft, INT_MAX));
 			ar.Write(pbData, nBytesToWrite);
 			pbData += nBytesToWrite;
 			nBytesLeft -= nBytesToWrite;
@@ -325,7 +325,7 @@ void CByteArray::Serialize(CArchive& ar)
 		pbData = m_pData;
 		while(nBytesLeft > 0)
 		{
-			nBytesToRead = UINT(min(nBytesLeft, INT_MAX));
+			nBytesToRead = UINT(Min(nBytesLeft, INT_MAX));
 			ar.EnsureRead(pbData, nBytesToRead);
 			pbData += nBytesToRead;
 			nBytesLeft -= nBytesToRead;

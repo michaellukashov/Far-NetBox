@@ -387,7 +387,7 @@ inline CString COleDateTime::Format(_In_ UINT nFormatID) const
 	return Format(strFormat);
 }
 
-inline COleDateTime::COleDateTime(_In_ const DBTIMESTAMP& dbts)
+inline COleDateTime::COleDateTime(_In_ const DBTIMESTAMP& dbts) throw()
 {
 	SYSTEMTIME st;
 	::ZeroMemory(&st, sizeof(SYSTEMTIME));
@@ -402,7 +402,7 @@ inline COleDateTime::COleDateTime(_In_ const DBTIMESTAMP& dbts)
 	m_status = ::SystemTimeToVariantTime(&st, &m_dt) ? valid : invalid;
 }
 
-inline bool COleDateTime::GetAsDBTIMESTAMP(_Out_ DBTIMESTAMP& dbts) const
+inline bool COleDateTime::GetAsDBTIMESTAMP(_Out_ DBTIMESTAMP& dbts) const throw()
 {
 	UDATE ud;
 	if (S_OK != VarUdateFromDate(m_dt, 0, &ud))

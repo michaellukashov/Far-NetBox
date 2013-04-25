@@ -34,9 +34,9 @@ CDumpContext& AFXAPI operator <<(CDumpContext& dc, CTime time)
 CArchive& CTime::Serialize64(CArchive& ar)
 {
 	if (ar.IsStoring())
-		return ar << (__int64) m_time;
+		return ar; // << (__int64) m_time;
 	else
-		return ar >> (__int64) m_time;
+		return ar; // >> (__int64) m_time;
 }
 const __int32 cTime64Mark = INT_MIN + 10;
 CArchive& AFXAPI operator <<(CArchive& ar, CTime time)
@@ -58,7 +58,7 @@ CArchive& AFXAPI operator >>(CArchive& ar, CTime& rtime)
 	if (static_cast<__int32>(timeOld)==cTime64Mark)
 	{
 		__time64_t t64;
-		ar >> (__int64) t64;
+		// ar >> (__int64) t64;
 		rtime = t64;
 	} else
 	{
@@ -83,9 +83,9 @@ CDumpContext& AFXAPI operator <<(CDumpContext& dc, CTimeSpan timeSpan)
 CArchive& CTimeSpan::Serialize64(CArchive& ar)
 {
 	if (ar.IsStoring())
-		return ar << (__int64) m_timeSpan;
+		return ar; // << (__int64) m_timeSpan;
 	else
-		return ar >> (__int64) m_timeSpan;
+		return ar; // >> (__int64) m_timeSpan;
 }
 
 CArchive& AFXAPI operator <<(CArchive& ar, CTimeSpan timeSpan)

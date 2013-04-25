@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include "afxv_w32.h"
+
 #ifdef __cplusplus
 
 #pragma pack(push,_ATL_PACKING)

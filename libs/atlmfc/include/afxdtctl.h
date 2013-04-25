@@ -91,7 +91,7 @@ public:
 	DWORD GetMonthCalStyle() const;
 
 	// Retrieves information from the datetime picker control.
-	BOOL GetDateTimePickerInfo(_Out_ LPDATETIMEPICKERINFO pDateTimePickerInfo) const;
+	// BOOL GetDateTimePickerInfo(_Out_ LPDATETIMEPICKERINFO pDateTimePickerInfo) const;
 
 	// Retrieves the ideal size for the control (so that all the text fits).
 	BOOL GetIdealSize(_Out_ LPSIZE pSize) const;
@@ -186,7 +186,7 @@ public:
 	int GetCalendarCount() const;
 
 	// REVIEW: Retrieves information about the calendar grid.
-	BOOL GetCalendarGridInfo(_Out_ PMCGRIDINFO pmcGridInfo) const;
+	// BOOL GetCalendarGridInfo(_Out_ PMCGRIDINFO pmcGridInfo) const;
 
 	// REVIEW: Retrieves the calendar ID for the calendar control.
 	CALID GetCalID() const;

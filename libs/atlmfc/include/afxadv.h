@@ -127,19 +127,19 @@ public:
 	/// Adds a file to the MRU file list.</summary>
 	/// <param name="pItem"> Specifies a pointer to Shell Item to be added to the list.</param>
 	/// <param name="lpszAppID"> Specifies Application User Model ID for the application.</param>
-	void Add(IShellItem* pItem, LPCTSTR lpszAppID);
+	// void Add(IShellItem* pItem, LPCTSTR lpszAppID);
 
 	/// <summary>
 	/// Adds a file to the MRU file list.</summary>
 	/// <param name="pLink"> Specifies a pointer to Shell Link to be added to the list.</param>
 	/// <param name="lpszAppID"> Specifies Application User Model ID for the application.</param>
-	void Add(IShellLink* pLink, LPCTSTR lpszAppID);
+	// void Add(IShellLink* pLink, LPCTSTR lpszAppID);
 
 	/// <summary>
 	/// Adds a file to the MRU file list.</summary>
 	/// <param name="pidl"> Specifies the IDLIST for the shell item that should be added to the recent docs folder.</param>
 	/// <param name="lpszAppID"> Specifies Application User Model ID for the application.</param>
-	void Add(PIDLIST_ABSOLUTE pidl, LPCTSTR lpszAppID);
+	// void Add(PIDLIST_ABSOLUTE pidl, LPCTSTR lpszAppID);
 
 // Implementation
 	virtual ~CRecentFileList();
@@ -423,7 +423,7 @@ protected:
 	BOOL Init();
 
 protected:
-	::ATL::CComPtr<IApplicationDestinations> m_appDests;
+	// ::ATL::CComPtr<IApplicationDestinations> m_appDests;
 	CStringW  m_strAppID;
 };
 

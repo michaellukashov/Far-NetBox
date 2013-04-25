@@ -417,7 +417,7 @@ void CStringList::Serialize(CArchive& ar)
 		CString newData;
 		while (nNewCount--)
 		{
-			ar >> newData;
+			// ar >> newData;
 			AddTail(newData);
 		}
 	}

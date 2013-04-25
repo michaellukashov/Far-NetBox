@@ -91,7 +91,7 @@ void CUIntArray::SetSize(INT_PTR nNewSize, INT_PTR nGrowBy)
 		{
 			// heuristically determine growth when nGrowArrayBy == 0
 			//  (this avoids heap fragmentation in many situations)
-			nGrowArrayBy = min(1024, max(4, m_nSize / 8));
+			nGrowArrayBy = Min(1024, Max(4, m_nSize / 8));
 		}
 		INT_PTR nNewMax;
 		if (nNewSize < m_nMaxSize + nGrowArrayBy)

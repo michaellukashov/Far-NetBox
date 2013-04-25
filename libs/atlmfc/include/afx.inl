@@ -29,7 +29,7 @@ CArchive& CArchive::operator<<(const ATL::CStringT<BaseType, StringTraits>& str)
 	return *this;
 }   
 
-template < typename BaseType , bool t_bMFCDLL>
+/*template < typename BaseType , bool t_bMFCDLL>
 CArchive& CArchive::operator>>(ATL::CSimpleStringT<BaseType, t_bMFCDLL>& str)
 {
 	ATL::CStringT< BaseType, StrTraitMFC_DLL< BaseType > > cstrT;
@@ -65,7 +65,7 @@ CArchive& CArchive::operator>>(ATL::CStringT<BaseType, StringTraits>& str)
 	}
 
 	return *this;
-}
+}*/
 
 #endif //AFX_H_TEMPLATE_INCLUDE_GUARD
 
@@ -292,7 +292,7 @@ _AFX_INLINE CArchive& CArchive::operator<<(double d)
 	if (m_lpBufCur + sizeof(double) > m_lpBufMax) Flush();
 		*(UNALIGNED double*)m_lpBufCur = d; m_lpBufCur += sizeof(double); return *this; 
 }
-
+/*
 _AFX_INLINE CArchive& CArchive::operator>>(int& i)
 	{ return CArchive::operator>>((LONG&)i); }
 _AFX_INLINE CArchive& CArchive::operator>>(unsigned& u)
@@ -301,11 +301,12 @@ _AFX_INLINE CArchive& CArchive::operator>>(short& w)
 	{ return CArchive::operator>>((WORD&)w); }
 _AFX_INLINE CArchive& CArchive::operator>>(char& ch)
 	{ return CArchive::operator>>((BYTE&)ch); }
+*/
 #ifdef _NATIVE_WCHAR_T_DEFINED
-_AFX_INLINE CArchive& CArchive::operator>>(wchar_t& ch)
-	{ return CArchive::operator>>((WORD&)ch); }
+// _AFX_INLINE CArchive& CArchive::operator>>(wchar_t& ch)
+	// { return CArchive::operator>>((WORD&)ch); }
 #endif
-_AFX_INLINE CArchive& CArchive::operator>>(bool& b)
+/*_AFX_INLINE CArchive& CArchive::operator>>(bool& b)
 	{ BYTE by; CArchive& ar = CArchive::operator>>(by); b = (by ? true : false); return ar; }
 _AFX_INLINE CArchive& CArchive::operator>>(BYTE& by)
 { 
@@ -314,7 +315,7 @@ _AFX_INLINE CArchive& CArchive::operator>>(BYTE& by)
 	if (m_lpBufCur + sizeof(BYTE) > m_lpBufMax)
 		FillBuffer(UINT(sizeof(BYTE) - (m_lpBufMax - m_lpBufCur)));
 	by = *(UNALIGNED BYTE*)m_lpBufCur; m_lpBufCur += sizeof(BYTE); return *this; 
-}
+}*/
 
 _AFX_INLINE CArchive& CArchive::operator>>(LONGLONG& dwdw)
 { 
@@ -332,14 +333,14 @@ _AFX_INLINE CArchive& CArchive::operator>>(ULONGLONG& dwdw)
 		FillBuffer(sizeof(ULONGLONG) - (UINT)(m_lpBufMax - m_lpBufCur));
 	dwdw = *(UNALIGNED ULONGLONG*)m_lpBufCur; m_lpBufCur += sizeof(ULONGLONG); return *this; 
 }
-_AFX_INLINE CArchive& CArchive::operator>>(WORD& w)
+/*_AFX_INLINE CArchive& CArchive::operator>>(WORD& w)
 { 
 	if(!IsLoading())
 		AfxThrowArchiveException(CArchiveException::writeOnly,m_strFileName);
 	if (m_lpBufCur + sizeof(WORD) > m_lpBufMax)
 		FillBuffer(UINT(sizeof(WORD) - (m_lpBufMax - m_lpBufCur)));
 	w = *(UNALIGNED WORD*)m_lpBufCur; m_lpBufCur += sizeof(WORD); return *this; 
-}
+}*/
 _AFX_INLINE CArchive& CArchive::operator>>(DWORD& dw)
 { 
 	if(!IsLoading())
@@ -400,8 +401,8 @@ _AFX_INLINE void CDumpContext::SetDepth(int nNewDepth)
 	{ m_nDepth = nNewDepth; }
 _AFX_INLINE CDumpContext::CDumpContext(const CDumpContext& /* dcSrc */)
 	{ }
-_AFX_INLINE void CDumpContext::operator=(const CDumpContext& /* dcSrc */)
-	{ }
+//_AFX_INLINE void CDumpContext::operator=(const CDumpContext& /* dcSrc */)
+//	{ }
 
 /////////////////////////////////////////////////////////////////////////////
 #endif //AFX_INL_INCLUDE_GUARD

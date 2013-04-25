@@ -73,7 +73,7 @@ public:
 
 private:
 	CTrace(
-#ifdef _ATL_NO_DEBUG_CRT
+#if defined(_ATL_NO_DEBUG_CRT) || defined(__MINGW32__)
 		_In_opt_ fnCrtDbgReport_t pfnCrtDbgReport = NULL)
 #else
 		_In_opt_ fnCrtDbgReport_t pfnCrtDbgReport = _CrtDbgReport)

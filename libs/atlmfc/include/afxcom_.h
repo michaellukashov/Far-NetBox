@@ -353,7 +353,7 @@ public:
 		if (pUnknown == NULL)
 			return;
 		Interface* pInterface;
-		HRESULT hr = pUnknown->QueryInterface(GetIID(),
+		HRESULT hr = pUnknown->QueryInterface(this->GetIID(),
 			reinterpret_cast<void**>(&pInterface));
 		ASSERT(SUCCEEDED(hr));
 		Attach(pInterface);
@@ -375,7 +375,7 @@ public:
 
 	CIP& operator=(IUnknown* pUnknown)
 	{
-		HRESULT hr = QueryInterface(pUnknown);
+		HRESULT hr = this->QueryInterface(pUnknown);
 		ASSERT(SUCCEEDED(hr));
 		return *this;
 	}

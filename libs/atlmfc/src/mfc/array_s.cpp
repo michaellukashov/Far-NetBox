@@ -139,7 +139,7 @@ void CStringArray::SetSize(INT_PTR nNewSize, INT_PTR nGrowBy)
 		{
 			// heuristically determine growth when nGrowArrayBy == 0
 			//  (this avoids heap fragmentation in many situations)
-			nGrowArrayBy = min(1024, max(4, m_nSize / 8));
+			nGrowArrayBy = Min(1024, Max(4, m_nSize / 8));
 		}
 		INT_PTR nNewMax;
 		if (nNewSize < m_nMaxSize + nGrowArrayBy)
@@ -285,7 +285,7 @@ void CStringArray::InsertEmpty(INT_PTR nIndex, INT_PTR nCount)
 	{
 		// inserting in the middle of the array
 		INT_PTR nOldSize = m_nSize;
-		INT_PTR nOverlapSize = min(nCount, nOldSize - nIndex);
+		INT_PTR nOverlapSize = Min(nCount, nOldSize - nIndex);
 
 		SetSize(m_nSize + nCount);  // grow it to new size
 
@@ -396,8 +396,8 @@ void CStringArray::Serialize(CArchive& ar)
 	{
 		DWORD_PTR nOldSize = ar.ReadCount();
 		SetSize(nOldSize);
-		for (INT_PTR i = 0; i < m_nSize; i++)
-			ar >> m_pData[i];
+		// for (INT_PTR i = 0; i < m_nSize; i++)
+			// ar >> m_pData[i];
 	}
 }
 

@@ -199,7 +199,6 @@ LPUNKNOWN CCmdTarget::GetInterface(const void* iid)
 		if (IsTracingEnabled(traceOle, 1))
 		{
 			CString strIID = AfxGetIIDString(*(IID*)(iid));
-			TRACE(traceOle, 1, _T("QueryInterface(%s) succeeded\n"), strIID);
 		}
 #endif
 		return lpUnkHook;
@@ -232,7 +231,6 @@ LPUNKNOWN CCmdTarget::GetInterface(const void* iid)
 					if (IsTracingEnabled(traceOle, 1))
 					{
 						CString strIID = AfxGetIIDString(*(IID*)(iid));
-						TRACE(traceOle, 1, _T("QueryInterface(%s) succeeded\n"), strIID);
 					}
 #endif
 					return lpUnk;
@@ -254,7 +252,6 @@ LPUNKNOWN CCmdTarget::GetInterface(const void* iid)
 		if (IsTracingEnabled(traceOle, 1))
 		{
 			CString strIID = AfxGetIIDString(*(IID*)(iid));
-			TRACE(traceOle, 1, _T("QueryInterface(%s) failed\n"), strIID);
 		}
 #endif
 		// interface ID not found, fail the call
@@ -283,7 +280,6 @@ LPUNKNOWN CCmdTarget::GetInterface(const void* iid)
 					if (IsTracingEnabled(traceOle, 1))
 					{
 						CString strIID = AfxGetIIDString(*(IID*)(iid));
-						TRACE(traceOle, 1, _T("QueryInterface(%s) succeeded\n"), strIID);
 					}
 #endif
 					return lpUnk;
@@ -306,7 +302,6 @@ LPUNKNOWN CCmdTarget::GetInterface(const void* iid)
 	if (IsTracingEnabled(traceOle, 1))
 	{
 		CString strIID = AfxGetIIDString(*(IID*)(iid));
-		TRACE(traceOle, 1, _T("QueryInterface(%s) failed\n"), strIID);
 	}
 #endif
 	// interface ID not found, fail the call
@@ -390,10 +385,6 @@ DWORD CCmdTarget::ExternalQueryInterface(const void* iid,
 		if (IsTracingEnabled(traceOle, 1))
 		{
 			CString strIID = AfxGetIIDString(*(IID*)(iid));
-			if (SUCCEEDED(hRes))
-				TRACE(traceOle, 1, _T("QueryInterface(%s) succeeded\n"), strIID);
-			else
-				TRACE(traceOle, 1, _T("QueryInterface(%s) failed\n"), strIID);
 		}
 #endif
 		return hRes;

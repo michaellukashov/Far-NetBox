@@ -86,10 +86,10 @@ static BOOL CALLBACK InfoEnumProc( HMONITOR hMonitor, HDC /*hdcMonitor*/, LPRECT
 	{
 		CRect rectMon = mi.rcWork;
 
-		pRect->left = min(pRect->left, rectMon.left);
-		pRect->right = max(pRect->right, rectMon.right);
-		pRect->top = min(pRect->top, rectMon.top);
-		pRect->bottom = max(pRect->bottom, rectMon.bottom);
+		// pRect->left = std::min(pRect->left, rectMon.left);
+		// pRect->right = std::max(pRect->right, rectMon.right);
+		// pRect->top = std::min(pRect->top, rectMon.top);
+		// pRect->bottom = std::max(pRect->bottom, rectMon.bottom);
 	}
 
 	return TRUE;

@@ -91,7 +91,7 @@ void CObArray::SetSize(INT_PTR nNewSize, INT_PTR nGrowBy)
 		{
 			// heuristically determine growth when nGrowBy == 0
 			//  (this avoids heap fragmentation in many situations)
-			nGrowBySize = min(1024, max(4, m_nSize / 8));
+			nGrowBySize = Min(1024, Max(4, m_nSize / 8));
 		}
 		INT_PTR nNewMax;
 		if (nNewSize < m_nMaxSize + nGrowBySize)

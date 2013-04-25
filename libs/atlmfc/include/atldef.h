@@ -141,15 +141,25 @@ char (*__countof_helper(UNALIGNED _CountofType (&_Array)[_SizeOfArray]))[_SizeOf
 #endif
 #endif
 
+#if defined(__MINGW32__)
+#ifndef ATLASSERT
+#define ATLASSERT(expr) _ASSERTE(expr)
+#endif // ATLASSERT
+
+#include <atlexcept.h>
+#endif
+
 #ifndef AtlThrow
 #ifndef _ATL_CUSTOM_THROW
 #define AtlThrow ATL::AtlThrowImpl
 #endif
 #endif // AtlThrow
 
+#if !defined(__MINGW32__)
 #ifndef ATLASSERT
 #define ATLASSERT(expr) _ASSERTE(expr)
 #endif // ATLASSERT
+#endif
 
 /* 
 Why does ATLASSUME exist?
@@ -394,7 +404,7 @@ do { \
 
 #ifdef _ATL_NO_EXCEPTIONS
 	#ifdef _AFX
-	#error MFC projects cannot define _ATL_NO_EXCEPTIONS
+	// #error MFC projects cannot define _ATL_NO_EXCEPTIONS
 	#endif
 #else
 	#ifndef _CPPUNWIND
@@ -610,11 +620,16 @@ that we consider it dangerous to even throw an exception
 #define PTM_WARNING_DISABLE
 #define PTM_WARNING_RESTORE
 #else
+#if !defined(__MINGW32__)
 #define PTM_WARNING_DISABLE \
 	__pragma(warning( push )) \
 	__pragma(warning( disable : 4867 ))
 #define PTM_WARNING_RESTORE \
 	__pragma(warning( pop ))
+#else
+#define PTM_WARNING_DISABLE
+#define PTM_WARNING_RESTORE
+#endif
 #endif //_ATL_ENABLE_PTM_WARNING
 
 /* we have to define our own versions of MAKEINTRESOURCE and IS_INTRESOURCE to 
@@ -673,8 +688,13 @@ that we consider it dangerous to even throw an exception
 #define __out_bcount_part_z(size,length)                        __out_bcount_part(size,length) __post __nullterminated
 #endif
 
+#if !defined(__MINGW32__)
 #define ATLPREFAST_SUPPRESS(x) __pragma(warning(push)) __pragma(warning(disable: x))
 #define ATLPREFAST_UNSUPPRESS() __pragma(warning(pop))
+#else
+#define ATLPREFAST_SUPPRESS(x)
+#define ATLPREFAST_UNSUPPRESS()
+#endif
 	
 #ifndef _FormatMessage_format_string_
 #define _FormatMessage_format_string_
@@ -684,22 +704,6 @@ that we consider it dangerous to even throw an exception
 	Helper functions for SAL annotation
 */
 namespace ATL {
-
-template < typename T >
-_Ret_opt_bytecap_(dwLen) inline __declspec(noalias) T* SAL_Assume_bytecap_for_opt_(
-	_Out_opt_cap_c_(0) T* buf, 
-	_In_ size_t dwLen)
-{
-	(void)(dwLen);
-	return buf;
-}
-
-template < typename T >
-_Ret_z_ inline __declspec(noalias) T* SAL_Assume_notnull_for_opt_z_(_In_opt_z_ T* buf)
-{
-	ATLASSUME(buf!=0);
-	return buf;
-}		
 
 } // namespace ATL
 

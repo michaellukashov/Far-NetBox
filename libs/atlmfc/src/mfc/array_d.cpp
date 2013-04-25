@@ -91,7 +91,7 @@ void CDWordArray::SetSize(INT_PTR nNewSize, INT_PTR nGrowBy)
 		{
 			// heuristically determine growth when nGrowArrayBy == 0
 			//  (this avoids heap fragmentation in many situations)
-			nGrowArrayBy = min(1024, max(4, m_nSize / 8));
+			nGrowArrayBy = Min(1024, Max(4, m_nSize / 8));
 		}
 		INT_PTR nNewMax;
 		if (nNewSize < m_nMaxSize + nGrowArrayBy)
@@ -312,7 +312,7 @@ void CDWordArray::Serialize(CArchive& ar)
 		pdwData = m_pData;
 		while(nDWORDsLeft > 0)
 		{
-			nDWORDsToWrite = UINT(min(nDWORDsLeft, INT_MAX/sizeof(DWORD)));
+			nDWORDsToWrite = UINT(Min(nDWORDsLeft, INT_MAX/sizeof(DWORD)));
 			ar.Write(pdwData, nDWORDsToWrite*sizeof(DWORD));
 			nDWORDsLeft -= nDWORDsToWrite;
 			pdwData += nDWORDsToWrite;
@@ -326,7 +326,7 @@ void CDWordArray::Serialize(CArchive& ar)
 		pdwData = m_pData;
 		while(nDWORDsLeft > 0)
 		{
-			nDWORDsToRead = UINT(min(nDWORDsLeft, INT_MAX/sizeof(DWORD)));
+			nDWORDsToRead = UINT(Min(nDWORDsLeft, INT_MAX/sizeof(DWORD)));
 			ar.EnsureRead(pdwData, nDWORDsToRead*sizeof(DWORD));
 			nDWORDsLeft -= nDWORDsToRead;
 			pdwData += nDWORDsToRead;

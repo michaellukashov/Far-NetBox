@@ -707,7 +707,7 @@ void AFXAPI AfxVariantInit(LPVARIANT pVar)
 #ifdef _DEBUG
 CDumpContext& AFXAPI operator <<(CDumpContext& dc, COleVariant varSrc)
 {
-	LPCVARIANT pSrc = (LPCVARIANT)varSrc;
+	/*LPCVARIANT pSrc = (LPCVARIANT)varSrc;
 
 	dc << "\nCOleVariant Object:";
 	dc << "\n\t vt = " << pSrc->vt;
@@ -782,13 +782,14 @@ CDumpContext& AFXAPI operator <<(CDumpContext& dc, COleVariant varSrc)
 	default:
 		ASSERT(FALSE);
 		return dc;
-	}
+	}*/
+  return dc;
 }
 #endif // _DEBUG
 
 CArchive& AFXAPI operator<<(CArchive& ar, COleVariant varSrc)
 {
-	LPCVARIANT pSrc = (LPCVARIANT)varSrc;
+	/*LPCVARIANT pSrc = (LPCVARIANT)varSrc;
 
 	ar << pSrc->vt;
 
@@ -898,12 +899,13 @@ CArchive& AFXAPI operator<<(CArchive& ar, COleVariant varSrc)
 	default:
 		ASSERT(FALSE);
 		return ar;
-	}
+	}*/
+  return ar;
 }
 
 CArchive& AFXAPI operator>>(CArchive& ar, COleVariant& varSrc)
 {
-	LPVARIANT pSrc = &varSrc;
+	/*LPVARIANT pSrc = &varSrc;
 
 	// Free up current data if necessary
 	if (pSrc->vt != VT_EMPTY)
@@ -1042,7 +1044,8 @@ CArchive& AFXAPI operator>>(CArchive& ar, COleVariant& varSrc)
 	default:
 		ASSERT(FALSE);
 		return ar;
-	}
+	}*/
+  return ar;
 }
 
 
@@ -1053,25 +1056,25 @@ CArchive& AFXAPI operator>>(CArchive& ar, COleVariant& varSrc)
 
 CArchive& AFXAPI operator<<(CArchive& ar, CComBSTR string)
 {
-	ar << (DWORD)string.Length();
-	if( string.Length() > 0 )
-		ar.Write(string.m_str, string.Length()*sizeof(OLECHAR));
+	// ar << (DWORD)string.Length();
+	// if( string.Length() > 0 )
+		// ar.Write(string.m_str, string.Length()*sizeof(OLECHAR));
 	return ar;
 }
 
 CArchive& AFXAPI operator>>(CArchive& ar, CComBSTR& string)
 {
-	DWORD length;
-	ar >> length;
-	if( length > 0 )
-	{
-		BSTR temp = string.Detach();
-		SysReAllocStringLen( &temp, NULL, length );
-		ar.EnsureRead(temp, length*sizeof(OLECHAR));
-		string.Attach( temp );
-	}
-	else
-		string.Empty();
+	// DWORD length;
+	// ar >> length;
+	// if( length > 0 )
+	// {
+		// BSTR temp = string.Detach();
+		// SysReAllocStringLen( &temp, NULL, length );
+		// ar.EnsureRead(temp, length*sizeof(OLECHAR));
+		// string.Attach( temp );
+	// }
+	// else
+		// string.Empty();
 	return ar;
 }
 
@@ -1557,76 +1560,85 @@ CString COleCurrency::Format(DWORD dwFlags, LCID lcid) const
 #ifdef _DEBUG
 CDumpContext& AFXAPI operator<<(CDumpContext& dc, COleCurrency curSrc)
 {
-	dc << "\nCOleCurrency Object:";
-	dc << "\n\tm_status = " << (long)curSrc.m_status;
+	// dc << "\nCOleCurrency Object:";
+	// dc << "\n\tm_status = " << (long)curSrc.m_status;
 
-	return dc << "\n\tCurrency Hi = " << curSrc.m_cur.Hi << ", Lo = " << curSrc.m_cur.Lo;
+	// return dc << "\n\tCurrency Hi = " << curSrc.m_cur.Hi << ", Lo = " << curSrc.m_cur.Lo;
+  return dc;
 }
 #endif // _DEBUG
 
 CArchive& AFXAPI operator<<(CArchive& ar, COleCurrency curSrc)
 {
-	ar << (long)curSrc.m_status;
-	ar << curSrc.m_cur.Hi;
-	return ar << curSrc.m_cur.Lo;
+	// ar << (long)curSrc.m_status;
+	// ar << curSrc.m_cur.Hi;
+	// return ar << curSrc.m_cur.Lo;
+  return ar;
 }
 
 CArchive& AFXAPI operator>>(CArchive& ar, COleCurrency& curSrc)
 {
-	ar >> (long&)curSrc.m_status;
-	ar >> curSrc.m_cur.Hi;
-	return ar >> curSrc.m_cur.Lo;
+	// ar >> (long&)curSrc.m_status;
+	// ar >> curSrc.m_cur.Hi;
+	// return ar >> curSrc.m_cur.Lo;
+  return ar;
 }
 
 // serialization
 #ifdef _DEBUG
 CDumpContext& AFXAPI operator<<(CDumpContext& dc, COleDateTime dateSrc)
 {
-	dc << "\nCOleDateTime Object:";
-	dc << "\n\tm_status = " << (long)dateSrc.m_status;
+	// dc << "\nCOleDateTime Object:";
+	// dc << "\n\tm_status = " << (long)dateSrc.m_status;
 
-	COleVariant var(dateSrc);
-	var.ChangeType(VT_BSTR);
+	// COleVariant var(dateSrc);
+	// var.ChangeType(VT_BSTR);
 
-	return dc << "\n\tdate = " << var.bstrVal;
+	// return dc << "\n\tdate = " << var.bstrVal;
+  return dc;
 }
 #endif // _DEBUG
 
 CArchive& AFXAPI operator<<(CArchive& ar, COleDateTime dateSrc)
 {
-	ar << (long)dateSrc.m_status;
-	return ar << dateSrc.m_dt;
+	// ar << (long)dateSrc.m_status;
+	// return ar << dateSrc.m_dt;
+  return ar;
 }
 
 CArchive& AFXAPI operator>>(CArchive& ar, COleDateTime& dateSrc)
 {
-	ar >> (long&)dateSrc.m_status;
-	return ar >> dateSrc.m_dt;
+	// ar >> (long&)dateSrc.m_status;
+	// return ar >> dateSrc.m_dt;
+  return ar;
 }
 
 // serialization
 #ifdef _DEBUG
 CDumpContext& AFXAPI operator<<(CDumpContext& dc, COleDateTimeSpan dateSpanSrc)
 {
-	dc << "\nCOleDateTimeSpan Object:";
-	dc << "\n\tm_status = " << (long)dateSpanSrc.m_status;
-	COleVariant var(dateSpanSrc.m_span);
-	var.ChangeType(VT_BSTR);
+	// dc << "\nCOleDateTimeSpan Object:";
+	// dc << "\n\tm_status = " << (long)dateSpanSrc.m_status;
+	// COleVariant var(dateSpanSrc.m_span);
+	// var.ChangeType(VT_BSTR);
 
-	return dc << "\n\tdateSpan = " << var.bstrVal;
+	// return dc << "\n\tdateSpan = " << var.bstrVal;
+  return dc;
 }
 #endif // _DEBUG
 
 CArchive& AFXAPI operator<<(CArchive& ar, COleDateTimeSpan dateSpanSrc)
 {
-	ar << (long)dateSpanSrc.m_status;
-	return ar << dateSpanSrc.m_span;
+	// ar << (long)dateSpanSrc.m_status;
+	// return ar << dateSpanSrc.m_span;
+  return ar;
 }
 
 CArchive& AFXAPI operator>>(CArchive& ar, COleDateTimeSpan& dateSpanSrc)
 {
-	ar >> (long&)dateSpanSrc.m_status;
-	return ar >> dateSpanSrc.m_span;
+	// ar >> (long&)dateSpanSrc.m_status;
+	// return ar >> dateSpanSrc.m_span;
+  return ar;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1941,7 +1953,7 @@ void _AfxDumpSafeArrayElement(CDumpContext& dc, COleSafeArray& saSrc,
 
 CDumpContext& AFXAPI operator<<(CDumpContext& dc, COleSafeArray& saSrc)
 {
-   long iDimension;
+   /*long iDimension;
    long nDimensions;
    long* piLBounds;
    long* piUBounds;
@@ -2017,7 +2029,7 @@ CDumpContext& AFXAPI operator<<(CDumpContext& dc, COleSafeArray& saSrc)
 			}
 		 } while( bWrapped && (iDimension >= 0) );
 	  }
-   }
+   }*/
 
    return dc;
 }
@@ -2145,7 +2157,7 @@ void COleSafeArray::Create(VARTYPE vtSrc, DWORD dwDims, SAFEARRAYBOUND* rgsaboun
 	if (parray == NULL)
 		AfxThrowMemoryException();
 
-	vt = unsigned short(vtSrc | VT_ARRAY);
+	vt = (unsigned short)(vtSrc | VT_ARRAY);
 	m_dwDims = dwDims;
 	m_dwElementSize = GetElemSize();
 }

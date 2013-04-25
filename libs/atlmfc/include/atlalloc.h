@@ -314,7 +314,7 @@ public:
 			Free(p);
 			return NULL;
 		}
-		return SAL_Assume_bytecap_for_opt_(::LocalReAlloc(p, nBytes, 0), nBytes);
+		return ::LocalReAlloc(p, nBytes, 0);
 	}
 	static void Free(_In_ void* p) throw()
 	{
@@ -341,7 +341,7 @@ public:
 			Free(p);
 			return NULL;
 		}
-		return SAL_Assume_bytecap_for_opt_(::GlobalReAlloc(p, nBytes, 0), nBytes);
+		return ::GlobalReAlloc(p, nBytes, 0);
 	}
 	static void Free(_In_ void* p) throw()
 	{
@@ -480,7 +480,7 @@ public:
 		{
 			return false;
 		}
-		return AllocateBytes(nBytes);
+		return this->AllocateBytes(nBytes);
 	}
 
 	// Reallocate the buffer to hold a given number of elements
@@ -491,7 +491,7 @@ public:
 		{
 			return false;
 		}
-		return ReallocateBytes(nBytes);
+		return this->ReallocateBytes(nBytes);
 	}
 };
 
@@ -503,7 +503,7 @@ public:
 		m_p( NULL )
 	{
 	}
-	CTempBuffer(_In_ size_t nElements) throw( ... ) :
+	CTempBuffer(_In_ size_t nElements) throw() :
 		m_p( NULL )
 	{
 		Allocate( nElements );
@@ -527,18 +527,18 @@ public:
 		return( m_p );
 	}
 
-	_Ret_opt_bytecap_x_(nElements * sizeof(T)) T* Allocate(_In_ size_t nElements) throw( ... )
+	_Ret_opt_bytecap_x_(nElements * sizeof(T)) T* Allocate(_In_ size_t nElements) throw()
 	{
-		return( AllocateBytes( ::ATL::AtlMultiplyThrow(nElements,sizeof( T )) ) );
+		return( this->AllocateBytes( ::ATL::AtlMultiplyThrow(nElements,sizeof( T )) ) );
 	}
 
-	_Ret_opt_bytecap_x_(nElements * sizeof(T)) T* Reallocate(_In_ size_t nElements) throw( ... )
+	_Ret_opt_bytecap_x_(nElements * sizeof(T)) T* Reallocate(_In_ size_t nElements) throw()
 	{
 		ATLENSURE(nElements < size_t(-1)/sizeof(T) );
 		size_t nNewSize = nElements*sizeof( T ) ;
 
 		if (m_p == NULL)
-			return AllocateBytes(nNewSize);
+			return this->AllocateBytes(nNewSize);
 
 		if (nNewSize > t_nFixedBytes)
 		{
@@ -633,7 +633,11 @@ __declspec(noinline) inline bool _AtlVerifyStackAvailable(_In_ SIZE_T Size)
 {
     bool bStackAvailable = true;
 
+#if !defined(__MINGW32__)
     __try
+#else
+    try
+#endif
     {
 		SIZE_T size=0;
 		HRESULT hrAdd=::ATL::AtlAdd(&size, Size, static_cast<SIZE_T>(_ATL_STACK_MARGIN));
@@ -648,6 +652,7 @@ __declspec(noinline) inline bool _AtlVerifyStackAvailable(_In_ SIZE_T Size)
 			(p);
 		}
     }
+#if !defined(__MINGW32__)
     __except ((EXCEPTION_STACK_OVERFLOW == GetExceptionCode()) ?
                    EXCEPTION_EXECUTE_HANDLER :
                    EXCEPTION_CONTINUE_SEARCH)
@@ -655,6 +660,13 @@ __declspec(noinline) inline bool _AtlVerifyStackAvailable(_In_ SIZE_T Size)
         bStackAvailable = false;
         _resetstkoflw();
     }
+#else
+    catch (...)
+    {
+        bStackAvailable = false;
+        _resetstkoflw();
+    }
+#endif
     return bStackAvailable;
 }
 
@@ -743,6 +755,7 @@ public :
 			_AtlSafeAllocaManager.Allocate(nRequestedSize))\
 	__pragma(warning(pop))
 #else
+#if !defined(__MINGW32__)
 #define _ATL_SAFE_ALLOCA(nRequestedSize, nThreshold)	\
 	__pragma(warning(push))\
 	__pragma(warning(disable:4616))\
@@ -751,6 +764,13 @@ public :
 		_alloca(nRequestedSize) :	\
 		_AtlSafeAllocaManager.Allocate(nRequestedSize))\
 	__pragma(warning(pop))
+#else
+#define _ATL_SAFE_ALLOCA(nRequestedSize, nThreshold)	\
+	((nRequestedSize <= nThreshold && ATL::_ATL_SAFE_ALLOCA_IMPL::_AtlVerifyStackAvailable(nRequestedSize) ) ?	\
+		_alloca(nRequestedSize) :	\
+		_AtlSafeAllocaManager.Allocate(nRequestedSize))
+#endif
+
 #endif
 
 // Use 1024 bytes as the default threshold in ATL

@@ -451,7 +451,7 @@ struct ATL_PROPMAP_ENTRY
 	LPCOLESTR szDesc;
 	const CLSID* pclsidPropPage;
 	const IID* piidDispatch;
-	ClassesAllowedInStream rgclsidAllowed;
+	// ClassesAllowedInStream rgclsidAllowed;
 	DWORD cclsidAllowed;
 	DISPID dispid;
 	DWORD dwOffsetData;
@@ -462,8 +462,8 @@ struct ATL_PROPMAP_ENTRY
 template<VARTYPE V>
 struct AtlExpectedDispatchOrUnknown 
 {
-	ATLSTATIC_ASSERT(V == VT_DISPATCH || V == VT_UNKNOWN, 
-			"Incorrect VARTYPE value in PROP_ENTRY_INTERFACE definition. Expected VT_DISPATCH or VT_UNKNOWN.");
+	// ATLSTATIC_ASSERT(V == VT_DISPATCH || V == VT_UNKNOWN, 
+			// "Incorrect VARTYPE value in PROP_ENTRY_INTERFACE definition. Expected VT_DISPATCH or VT_UNKNOWN.");
 	static const VARTYPE value = V;	
 };
 
@@ -1138,14 +1138,16 @@ public:
 		_ComMapClass* p = (_ComMapClass*)pv;\
 		p->Lock();\
 		HRESULT hRes = E_FAIL; \
-		__try \
+		try \
 		{ \
 			hRes = ATL::CComObjectRootBase::_Cache(pv, iid, ppvObject, dw);\
 		} \
-		__finally \
+		catch(...) \
 		{ \
 			p->Unlock();\
+      throw;\
 		} \
+		p->Unlock();\
 		return hRes;\
 	}\
 	IUnknown* _GetRawUnknown() throw() \
@@ -1334,7 +1336,7 @@ class CComObjectRootBase
 public:
 	CComObjectRootBase()
 	{
-		m_dwRef = 0L;
+		// m_dwRef = 0L;
 	}
 	~CComObjectRootBase()
 	{
@@ -1399,17 +1401,17 @@ public:
 //Outer funcs
 	ULONG OuterAddRef()
 	{
-		return m_pOuterUnknown->AddRef();
+		return this->m_pOuterUnknown->AddRef();
 	}
 	ULONG OuterRelease()
 	{
-		return m_pOuterUnknown->Release();
+		return this->m_pOuterUnknown->Release();
 	}
 	HRESULT OuterQueryInterface(
 		_In_ REFIID iid, 
 		_Deref_out_ void** ppvObject)
 	{
-		return m_pOuterUnknown->QueryInterface(iid, ppvObject);
+		return this->m_pOuterUnknown->QueryInterface(iid, ppvObject);
 	}
 
 	void SetVoid(_In_opt_ void*) 
@@ -1420,7 +1422,7 @@ public:
 	}
 	void InternalFinalConstructRelease()
 	{
-		ATLASSUME(m_dwRef == 0);
+		// ATLASSUME(m_dwRef == 0);
 	}
 	// If this assert occurs, your object has probably been deleted
 	// Try using DECLARE_PROTECT_FINAL_CONSTRUCT()
@@ -1794,7 +1796,7 @@ public:
 	// also catch mismatched Release in debug builds
 	virtual ~CComObject() throw()
 	{
-		m_dwRef = -(LONG_MAX/2);
+		// m_dwRef = -(LONG_MAX/2);
 		FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
@@ -1882,7 +1884,7 @@ public:
 	// also catch mismatched Release in debug builds
 	virtual ~CComObjectCached()
 	{
-		m_dwRef = -(LONG_MAX/2);
+		// m_dwRef = -(LONG_MAX/2);
 		FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
@@ -1968,7 +1970,7 @@ public:
 
 	virtual ~CComObjectNoLock()
 	{
-		m_dwRef = -(LONG_MAX/2);
+		// m_dwRef = -(LONG_MAX/2);
 		FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
@@ -2009,6 +2011,7 @@ public:
 	CComObjectGlobal(_In_opt_ void* = NULL)
 	{
 		m_hResFinalConstruct = S_OK;
+#if !defined(__MINGW32__)
 		__if_exists(FinalConstruct)
 		{
 			__if_exists(InternalFinalConstructAddRef)
@@ -2023,15 +2026,18 @@ public:
 				InternalFinalConstructRelease();
 			}
 		}
+#endif
 	}
 	virtual ~CComObjectGlobal()
 	{
+#if !defined(__MINGW32__)
 		__if_exists(FinalRelease)
 		{
 			FinalRelease();
 		}
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
+#endif
 #endif
 	}
 
@@ -2105,7 +2111,7 @@ public:
 	CComObjectStackEx(_In_opt_ void* = NULL) 
 	{ 
 #ifdef _DEBUG
-		m_dwRef = 0;
+		// m_dwRef = 0;
 #endif
 		m_hResFinalConstruct = _AtlInitialConstruct();
 		if (SUCCEEDED(m_hResFinalConstruct))
@@ -2120,7 +2126,7 @@ public:
 		// lifetime of this object, so you must ensure
 		// by some other means that the object remains 
 		// alive while clients have references to its interfaces.
-		ATLASSUME(m_dwRef == 0);
+		// ATLASSUME(m_dwRef == 0);
 		FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
@@ -2163,13 +2169,13 @@ public:
 	typedef Base _BaseClass;
 	CComContainedObject(_In_opt_ void* pv) 
 	{
-		m_pOuterUnknown = (IUnknown*)pv;
+		this->m_pOuterUnknown = (IUnknown*)pv;
 	}
 #ifdef _ATL_DEBUG_INTERFACES
 	virtual ~CComContainedObject()
 	{
-		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
-		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(m_pOuterUnknown);
+		// _AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
+		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(this->m_pOuterUnknown);
 	}
 #endif
 
@@ -2199,10 +2205,10 @@ public:
 	{
 #ifdef _ATL_DEBUG_INTERFACES
 		IUnknown* p;
-		_AtlDebugInterfacesModule.AddNonAddRefThunk(m_pOuterUnknown, _T("CComContainedObject"), &p);
+		_AtlDebugInterfacesModule.AddNonAddRefThunk(this->m_pOuterUnknown, _T("CComContainedObject"), &p);
 		return p;
 #else
-		return m_pOuterUnknown;
+		return this->m_pOuterUnknown;
 #endif
 	}
 };
@@ -2234,19 +2240,20 @@ public:
 	// override it in your class and call each base class' version of this
 	HRESULT FinalConstruct()
 	{
-		CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalConstruct();
-		return m_contained.FinalConstruct();
+		// CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalConstruct();
+		// return m_contained.FinalConstruct();
+		return 0;
 	}
 	void FinalRelease()
 	{
-		CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalRelease();
-		m_contained.FinalRelease();
+		// CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalRelease();
+		// m_contained.FinalRelease();
 	}
 	// Set refcount to -(LONG_MAX/2) to protect destruction and 
 	// also catch mismatched Release in debug builds
 	virtual ~CComAggObject()
 	{
-		m_dwRef = -(LONG_MAX/2);
+		// m_dwRef = -(LONG_MAX/2);
 		FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(this);
@@ -2256,11 +2263,11 @@ public:
 
 	STDMETHOD_(ULONG, AddRef)() 
 	{
-		return InternalAddRef();
+		return this->InternalAddRef();
 	}
 	STDMETHOD_(ULONG, Release)()
 	{
-		ULONG l = InternalRelease();
+		ULONG l = this->InternalRelease();
 		if (l == 0)
 			delete this;
 		return l;
@@ -2354,22 +2361,22 @@ public:
 	HRESULT FinalConstruct()
 	{
 		InternalAddRef();
-		CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalConstruct();
-		HRESULT hr = m_contained.FinalConstruct();
-		InternalRelease();
+		// CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalConstruct();
+		HRESULT hr = 0; // m_contained.FinalConstruct();
+		this->InternalRelease();
 		return hr;
 	}
 	void FinalRelease()
 	{
-		CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalRelease();
-		m_contained.FinalRelease();
+		// CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalRelease();
+		// m_contained.FinalRelease();
 	}
 	// Set refcount to -(LONG_MAX/2) to protect destruction and 
 	// also catch mismatched Release in debug builds
 	virtual ~CComPolyObject()
 	{
-		m_dwRef = -(LONG_MAX/2);
-		FinalRelease();
+		// m_dwRef = -(LONG_MAX/2);
+		this->FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(this);
 #endif
@@ -2382,7 +2389,7 @@ public:
 	}
 	STDMETHOD_(ULONG, Release)()
 	{
-		ULONG l = InternalRelease();
+		ULONG l = this->InternalRelease();
 		if (l == 0)
 			delete this;
 		return l;
@@ -2462,28 +2469,28 @@ public:
 	CComTearOffObject(_In_ void* pv)
 	{
 		ATLASSUME(m_pOwner == NULL);
-		m_pOwner = reinterpret_cast<Base::_OwnerClass*>(pv);
-		m_pOwner->AddRef();
+		this->m_pOwner = reinterpret_cast<typename Base::_OwnerClass*>(pv);
+		this->m_pOwner->AddRef();
 	}
 	// Set refcount to -(LONG_MAX/2) to protect destruction and 
 	// also catch mismatched Release in debug builds
 	virtual ~CComTearOffObject()
 	{
-		m_dwRef = -(LONG_MAX/2);
-		FinalRelease();
+		// m_dwRef = -(LONG_MAX/2);
+		this->FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
 #endif
-		m_pOwner->Release();
+		this->m_pOwner->Release();
 	}
 
 	STDMETHOD_(ULONG, AddRef)() throw() 
 	{
-		return InternalAddRef();
+		return this->InternalAddRef();
 	}
 	STDMETHOD_(ULONG, Release)() throw()
 	{
-		ULONG l = InternalRelease();
+		ULONG l = this->InternalRelease();
 		if (l == 0)
 			delete this;
 		return l;
@@ -2492,7 +2499,7 @@ public:
 		_In_ REFIID iid, 
 		_Deref_out_ void** ppvObject) throw()
 	{
-		return m_pOwner->QueryInterface(iid, ppvObject);
+		return this->m_pOwner->QueryInterface(iid, ppvObject);
 	}
 };
 
@@ -2504,10 +2511,10 @@ class CComCachedTearOffObject :
 public:
 	typedef contained _BaseClass;
 	CComCachedTearOffObject(_In_ void* pv) :
-		m_contained(((contained::_OwnerClass*)pv)->GetControllingUnknown())
+		m_contained(((typename contained::_OwnerClass*)pv)->GetControllingUnknown())
 	{
 		ATLASSUME(m_contained.m_pOwner == NULL);
-		m_contained.m_pOwner = reinterpret_cast<contained::_OwnerClass*>(pv);
+		m_contained.m_pOwner = reinterpret_cast<typename contained::_OwnerClass*>(pv);
 	}
 	HRESULT _AtlInitialConstruct()
 	{
@@ -2522,19 +2529,19 @@ public:
 	// override it in your class and call each base class' version of this
 	HRESULT FinalConstruct()
 	{
-		CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalConstruct();
+		// CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalConstruct();
 		return m_contained.FinalConstruct();
 	}
 	void FinalRelease()
 	{
-		CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalRelease();
+		// CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalRelease();
 		m_contained.FinalRelease();
 	}
 	// Set refcount to -(LONG_MAX/2) to protect destruction and 
 	// also catch mismatched Release in debug builds
 	virtual ~CComCachedTearOffObject()
 	{
-		m_dwRef = -(LONG_MAX/2);
+		// m_dwRef = -(LONG_MAX/2);
 		FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(this);
@@ -2543,11 +2550,11 @@ public:
 
 	STDMETHOD_(ULONG, AddRef)() 
 	{
-		return InternalAddRef();
+		return this->InternalAddRef();
 	}
 	STDMETHOD_(ULONG, Release)()
 	{
-		ULONG l = InternalRelease();
+		ULONG l = this->InternalRelease();
 		if (l == 0)
 			delete this;
 		return l;
@@ -2562,7 +2569,7 @@ public:
 		*ppvObject = NULL;
 
 		HRESULT hRes = S_OK;
-		if (InlineIsEqualUnknown(iid))
+		if (this->InlineIsEqualUnknown(iid))
 		{
 			*ppvObject = (void*)(IUnknown*)this;
 			AddRef();
@@ -2583,9 +2590,9 @@ class CComClassFactory :
 	public CComObjectRootEx<CComGlobalsThreadModel>
 {
 public:
-	BEGIN_COM_MAP(CComClassFactory)
-		COM_INTERFACE_ENTRY(IClassFactory)
-	END_COM_MAP()
+	// BEGIN_COM_MAP(CComClassFactory)
+		// COM_INTERFACE_ENTRY(IClassFactory)
+	// END_COM_MAP()
 
 	virtual ~CComClassFactory()
 	{
@@ -2725,9 +2732,9 @@ class CComClassFactoryAutoThread :
 	public CComObjectRootEx<CComGlobalsThreadModel>
 {
 public:
-	BEGIN_COM_MAP(CComClassFactoryAutoThread)
-		COM_INTERFACE_ENTRY(IClassFactory)
-	END_COM_MAP()
+	// BEGIN_COM_MAP(CComClassFactoryAutoThread)
+		// COM_INTERFACE_ENTRY(IClassFactory)
+	// END_COM_MAP()
 
 	virtual ~CComClassFactoryAutoThread()
 	{
@@ -2810,7 +2817,7 @@ public:
 			{
 				if (m_hrCreate == S_OK && m_spObj == NULL)
 				{
-					__try
+					try
 					{
 						Lock();
 						// Did another thread get here first?
@@ -2828,10 +2835,12 @@ public:
 							}
 						}
 					}
-					__finally
+					catch(...)
 					{
 						Unlock();
+            throw;
 					}
+					Unlock();
 				}
 				if (m_hrCreate == S_OK)
 				{
@@ -2944,7 +2953,7 @@ public:
 	WORD m_wMinor;
 
 	ITypeInfo* m_pInfo;
-	long m_dwRef;
+	// long m_dwRef;
 	struct stringdispid
 	{
 		CComBSTR bstr;
@@ -2964,7 +2973,8 @@ public:
 		_In_ WORD wMajor, 
 		_In_ WORD wMinor) :
 		m_pguid(pguid), m_plibid(plibid), m_wMajor(wMajor), m_wMinor(wMinor), 
-		m_pInfo(NULL), m_dwRef(0), m_pMap(NULL), m_nCount(0)
+		m_pInfo(NULL), m_pMap(NULL), m_nCount(0)
+    // m_dwRef(0), 
 	{
 	}
 
@@ -3505,7 +3515,7 @@ public:
 		if (InlineIsEqualGUID(riid, IID_NULL))
 			return E_NOINTERFACE;
 
-		if (InlineIsEqualGUID(riid, *pdiid) || 
+		/*if (InlineIsEqualGUID(riid, *pdiid) || 
 			InlineIsEqualUnknown(riid) ||
 			InlineIsEqualGUID(riid, __uuidof(IDispatch)) ||
 			InlineIsEqualGUID(riid, m_iid))
@@ -3517,7 +3527,7 @@ public:
 #endif // _ATL_DEBUG_INTERFACES
 			return S_OK;
 		}
-		else
+		else*/
 			return E_NOINTERFACE;
 	}
 
@@ -3562,7 +3572,7 @@ public:
 		_In_opt_ EXCEPINFO* /*pexcepinfo*/, 
 		_In_opt_ UINT* /*puArgErr*/)
 	{
-		const _ATL_EVENT_ENTRY<T>* pMap = T::_GetSinkMap();
+		/*const _ATL_EVENT_ENTRY<T>* pMap = T::_GetSinkMap();
 		const _ATL_EVENT_ENTRY<T>* pFound = NULL;
 		while (pMap->piid != NULL)
 		{
@@ -3590,6 +3600,8 @@ public:
 				return S_OK;
 		}
 		return InvokeFromFuncInfo(pFound->pfn, *pInfo, pdispparams, pvarResult);
+    */
+    return S_OK;
 	}
 
 	//Helper for invoking the event
@@ -3674,15 +3686,15 @@ public:
 		_Inout_ IUnknown* pUnk, 
 		_In_ const IID* piid)
 	{
-		ATLENSURE(m_dwEventCookie == 0xFEFEFEFE);		
-		return AtlAdvise(pUnk, (IUnknown*)this, *piid, &m_dwEventCookie);
+		ATLENSURE(this->m_dwEventCookie == 0xFEFEFEFE);		
+		return AtlAdvise(pUnk, (IUnknown*)this, *piid, &this->m_dwEventCookie);
 	}
 	HRESULT DispEventUnadvise(
 		_Inout_ IUnknown* pUnk, 
 		_In_ const IID* piid)
 	{
-		HRESULT hr = AtlUnadvise(pUnk, *piid, m_dwEventCookie);
-		m_dwEventCookie = 0xFEFEFEFE;
+		HRESULT hr = AtlUnadvise(pUnk, *piid, this->m_dwEventCookie);
+		this->m_dwEventCookie = 0xFEFEFEFE;
 		return hr;
 	}
 	HRESULT DispEventAdvise(_Inout_ IUnknown* pUnk)
@@ -3701,7 +3713,7 @@ inline HRESULT AtlAdviseSinkMap(
 	_Inout_ T* pT, 
 	_In_ bool bAdvise)
 {
-	ATLASSERT(::IsWindow(pT->m_hWnd));
+	/*ATLASSERT(::IsWindow(pT->m_hWnd));
 	const _ATL_EVENT_ENTRY<T>* pEntries = T::_GetSinkMap();
 	if (pEntries == NULL)
 		return S_OK;
@@ -3751,7 +3763,8 @@ inline HRESULT AtlAdviseSinkMap(
 			break;
 		pEntries++;
 	}
-	return hr;
+	return hr;*/
+  return S_OK;
 }
 
 #pragma warning(push)
@@ -3882,10 +3895,10 @@ public:
 
 	IDispEventImpl()
 	{
-		m_libid = *plibid;
-		m_iid = *pdiid;
-		m_wMajorVerNum = wMajor;
-		m_wMinorVerNum = wMinor;
+		this->m_libid = *plibid;
+		this->m_iid = *pdiid;
+		this->m_wMajorVerNum = wMajor;
+		this->m_wMinorVerNum = wMinor;
 	}
 
 	STDMETHOD(GetTypeInfoCount)(_Out_ UINT* pctinfo)
@@ -3925,12 +3938,12 @@ public:
 	 
 		if (InlineIsEqualGUID(*_tih.m_plibid, GUID_NULL))
 		{
-			m_InnerLibid = m_libid; 
-			m_InnerIid = m_iid;
-			_tih.m_plibid = &m_InnerLibid;
-			_tih.m_pguid = &m_InnerIid;
-			_tih.m_wMajor = m_wMajorVerNum;
-			_tih.m_wMinor = m_wMinorVerNum;
+			m_InnerLibid = this->m_libid; 
+			m_InnerIid = this->m_iid;
+			_tih.m_plibid = &this->m_InnerLibid;
+			_tih.m_pguid = &this->m_InnerIid;
+			_tih.m_wMajor = this->m_wMajorVerNum;
+			_tih.m_wMinor = this->m_wMinorVerNum;
 
 		}
 		HRESULT hr = _tih.GetTI(lcid, &spTypeInfo);
@@ -4457,7 +4470,7 @@ STDMETHODIMP CComEnumImpl<Base, piid, T, Copy>::Skip(_In_ ULONG celt)
 	return (celt == nSkip) ? S_OK : S_FALSE;
 }
 
-ATLPREFAST_SUPPRESS(6387)
+/*ATLPREFAST_SUPPRESS(6387)
 template <class Base, const IID* piid, class T, class Copy>
 STDMETHODIMP CComEnumImpl<Base, piid, T, Copy>::Clone(
 	_Deref_out_ Base** ppEnum)
@@ -4537,12 +4550,12 @@ class ATL_NO_VTABLE CComEnum :
 public:
 	typedef CComEnum<Base, piid, T, Copy > _CComEnum;
 	typedef CComEnumImpl<Base, piid, T, Copy > _CComEnumBase;
-	BEGIN_COM_MAP(_CComEnum)
-		COM_INTERFACE_ENTRY_IID(*piid, _CComEnumBase)
-	END_COM_MAP()
+	// BEGIN_COM_MAP(_CComEnum)
+		// COM_INTERFACE_ENTRY_IID(*piid, _CComEnumBase)
+	// END_COM_MAP()
 };
-
-template <class Base, const IID* piid, class T, class Copy, class CollType>
+*/
+/*template <class Base, const IID* piid, class T, class Copy, class CollType>
 class ATL_NO_VTABLE IEnumOnSTLImpl : 
 	public Base
 {
@@ -4668,9 +4681,9 @@ class ATL_NO_VTABLE CComEnumOnSTL :
 public:
 	typedef CComEnumOnSTL<Base, piid, T, Copy, CollType, ThreadModel > _CComEnum;
 	typedef IEnumOnSTLImpl<Base, piid, T, Copy, CollType > _CComEnumBase;
-	BEGIN_COM_MAP(_CComEnum)
-		COM_INTERFACE_ENTRY_IID(*piid, _CComEnumBase)
-	END_COM_MAP()
+	// BEGIN_COM_MAP(_CComEnum)
+		// COM_INTERFACE_ENTRY_IID(*piid, _CComEnumBase)
+	// END_COM_MAP()
 };
 
 template <class T, class CollType, class ItemType, class CopyItem, class EnumType>
@@ -4729,7 +4742,7 @@ public:
 	}
 	CollType m_coll;
 };
-
+*/
 //////////////////////////////////////////////////////////////////////////////
 // ISpecifyPropertyPagesImpl
 template <class T>
@@ -5161,7 +5174,7 @@ public:
 	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;
 };
 
-template <class T, const IID* piid, class CDV = CComDynamicUnkArray >
+/*template <class T, const IID* piid, class CDV = CComDynamicUnkArray >
 class ATL_NO_VTABLE IConnectionPointImpl : 
 	public _ICPLocator<piid>
 {
@@ -5318,10 +5331,10 @@ STDMETHODIMP IConnectionPointImpl<T, piid, CDV>::EnumConnections(
 	return hRes;
 }
 ATLPREFAST_UNSUPPRESS()
-
+*/
 /////////////////////////////////////////////////////////////////////////////
 // IConnectionPointContainerImpl
-template <class T>
+/*template <class T>
 class ATL_NO_VTABLE IConnectionPointContainerImpl : 
 	public IConnectionPointContainer
 {
@@ -5428,7 +5441,7 @@ ATLPREFAST_UNSUPPRESS()
 		return hRes;
 	}
 };
-
+*/
 #endif //!_ATL_NO_CONNECTION_POINTS
 
 /////////////////////////////////////////////////////////////////////////////
@@ -5627,7 +5640,7 @@ ATLPREFAST_UNSUPPRESS()
 
 		CComVariant var;
 		
-		hr = var.ReadFromStream(pStm, pMap[i].vt, pMap[i].rgclsidAllowed, pMap[i].cclsidAllowed);
+		// hr = var.ReadFromStream(pStm, pMap[i].vt, pMap[i].rgclsidAllowed, pMap[i].cclsidAllowed);
 		if (FAILED(hr))
 			break;
 

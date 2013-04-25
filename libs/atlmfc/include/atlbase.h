@@ -140,7 +140,11 @@ void AFXAPI AfxOleUnlockApp();
 
 // Support Windows SDK v5.0
 #ifndef LSTATUS
+#if !defined(__MINGW32__)
 typedef __success(return==ERROR_SUCCESS) LONG LSTATUS;
+#else
+typedef LONG LSTATUS;
+#endif
 #endif
 
 namespace ATL
@@ -202,7 +206,7 @@ struct _ATL_OBJMAP_ENTRY30
 		IUnknown* p = NULL;
 		if (pfnGetClassObject == NULL)
 			return S_OK;
-		HRESULT hRes = pfnGetClassObject(pfnCreateInstance, __uuidof(IUnknown), (LPVOID*) &p);
+		HRESULT hRes = 0; // pfnGetClassObject(pfnCreateInstance, __uuidof(IUnknown), (LPVOID*) &p);
 		if (SUCCEEDED(hRes))
 			hRes = CoRegisterClassObject(*pclsid, p, dwClsContext, dwFlags, &dwRegister);
 		if (p != NULL)
@@ -4467,7 +4471,7 @@ public :
 #endif
 	}
 
-	~CComModule()
+	virtual ~CComModule() throw()
 	{
 #if !defined(_ATL_NATIVE_INITIALIZATION)
 #pragma warning(push)
@@ -4485,13 +4489,17 @@ public :
 #endif
 	}
 
+#if !defined(__MINGW32__)
 	__declspec(property(get = get_m_hInst)) HINSTANCE m_hInst;
+#endif
 	HINSTANCE& get_m_hInst() const throw()
 	{
 		return _AtlBaseModule.m_hInst;
 	}
 
+#if !defined(__MINGW32__)
 	__declspec(property(get = get_m_hInstResource, put = put_m_hInstResource)) HINSTANCE m_hInstResource;
+#endif
 	HINSTANCE& get_m_hInstResource() const throw()
 	{
 		return _AtlBaseModule.m_hInstResource;
@@ -4514,7 +4522,9 @@ public :
 		return _AtlBaseModule.m_hInstResource;
 	}
 
+#if !defined(__MINGW32__)
 	__declspec(property(get = get_m_hInstTypeLib, put = put_m_hInstTypeLib)) HINSTANCE m_hInstTypeLib;
+#endif
 	HINSTANCE& get_m_hInstTypeLib() const throw()
 	{
 		return _AtlComModule.m_hInstTypeLib;
@@ -4532,36 +4542,51 @@ public :
 	// For Backward compatibility
 	_ATL_OBJMAP_ENTRY* m_pObjMap;
 
+#if !defined(__MINGW32__)
 	__declspec(property(get  = get_m_csWindowCreate)) CRITICAL_SECTION m_csWindowCreate;
+#endif
 	CRITICAL_SECTION& get_m_csWindowCreate() throw();
 
+#if !defined(__MINGW32__)
 	__declspec(property(get  = get_m_csObjMap)) CRITICAL_SECTION m_csObjMap;
+#endif
 	CRITICAL_SECTION& get_m_csObjMap() throw();
 
+#if !defined(__MINGW32__)
 	__declspec(property(get  = get_m_csStaticDataInit)) CRITICAL_SECTION m_csTypeInfoHolder;
 	__declspec(property(get  = get_m_csStaticDataInit)) CRITICAL_SECTION m_csStaticDataInit;
+#else
+	CRITICAL_SECTION m_csTypeInfoHolder;
+	CRITICAL_SECTION m_csStaticDataInit;
+#endif
 	CRITICAL_SECTION& get_m_csStaticDataInit() throw();
 	void EnterStaticDataCriticalSection() throw()
 	{
-		EnterCriticalSection(&m_csStaticDataInit);
+		EnterCriticalSection(&this->m_csStaticDataInit);
 	}
 
 	void LeaveStaticDataCriticalSection() throw()
 	{
-		LeaveCriticalSection(&m_csStaticDataInit);
+		LeaveCriticalSection(&this->m_csStaticDataInit);
 	}
 
+#if !defined(__MINGW32__)
 	__declspec(property(get  = get_dwAtlBuildVer)) DWORD dwAtlBuildVer;
+#endif
 	DWORD& get_dwAtlBuildVer() throw()
 	{
 		return _AtlBaseModule.dwAtlBuildVer;
 	}
 
+#if !defined(__MINGW32__)
 	__declspec(property(get  = get_m_pCreateWndList, put = put_m_pCreateWndList)) _AtlCreateWndData* m_pCreateWndList;
+#endif
 	_AtlCreateWndData*& get_m_pCreateWndList() throw();
 	void put_m_pCreateWndList(_In_ _AtlCreateWndData* p) throw();
 
+#if !defined(__MINGW32__)
 	__declspec(property(get  = get_pguidVer)) const GUID* pguidVer;
+#endif
 	const GUID*& get_pguidVer() throw()
 	{
 		return _AtlBaseModule.pguidVer;
@@ -5018,15 +5043,27 @@ public:
 	int m_nThread;
 };
 
+#if !defined(__MINGW32__)
 __interface IAtlAutoThreadModule
+#else
+class IAtlAutoThreadModule
+#endif
 {
-	virtual HRESULT CreateInstance(
+public:
+#if defined(__MINGW32__)
+  virtual ~IAtlAutoThreadModule() {}
+#endif
+	HRESULT CreateInstance(
 		_In_ void* pfnCreateInstance,
 		_In_ REFIID riid,
 		_Deref_out_ void** ppvObj);
 };
 
+#if !defined(__MINGW32__)
 __declspec(selectany) IAtlAutoThreadModule* _pAtlAutoThreadModule;
+#else
+IAtlAutoThreadModule* _pAtlAutoThreadModule;
+#endif
 
 template <class T, class ThreadAllocator = CComSimpleThreadAllocator, DWORD dwWait = INFINITE>
 class ATL_NO_VTABLE CAtlAutoThreadModuleT : 
@@ -5261,6 +5298,7 @@ public:
 #endif
 	}
 
+#if !defined(__MINGW32__)
 	CComGITPtr(CComGITPtr&& rv)
 	{
 		m_dwCookie = rv.m_dwCookie;
@@ -5279,6 +5317,7 @@ public:
 
 		return *this;
 	}
+#endif
 
 	~CComGITPtr() throw()
 	{
@@ -6623,8 +6662,8 @@ inline HRESULT WINAPI CComModule::UpdateRegistryClass(
 	if (bRegister)
 	{
 		TCHAR szDesc[256];
-		LoadString(m_hInst, nDescID, szDesc, 256);
-		return RegisterClassHelper(clsid, lpszProgID, lpszVerIndProgID, szDesc, dwFlags);
+		// LoadString(m_hInst, nDescID, szDesc, 256);
+		return S_OK; // RegisterClassHelper(clsid, lpszProgID, lpszVerIndProgID, szDesc, dwFlags);
 	}
 	return UnregisterClassHelper(clsid, lpszProgID, lpszVerIndProgID);
 }
@@ -6674,7 +6713,7 @@ inline HRESULT WINAPI CComModule::RegisterClassHelper(
 	// then you have a non null terminated buffer (which may or may not be truncated)
 	// We pass (szModule + 1) because in case it's an EXE we need to quote the PATH
 	// The quote is done later in this method before the SetKeyValue is called
-	DWORD dwLen = GetModuleFileName(m_hInst, szModule + 1, MAX_PATH);
+	DWORD dwLen = 0; // GetModuleFileName(m_hInst, szModule + 1, MAX_PATH);
 	if (dwLen == 0)
 	{
 		return AtlHresultFromLastError();
@@ -6723,7 +6762,7 @@ inline HRESULT WINAPI CComModule::RegisterClassHelper(
 						lRes = lpszVerIndProgID ? key.SetKeyValue(szVIProgID, lpszVerIndProgID) : ERROR_SUCCESS;
 						if (lRes == ERROR_SUCCESS)
 						{
-							if ((m_hInst == NULL) || (m_hInst == GetModuleHandle(NULL))) // register as EXE
+							if ((get_m_hInst() == NULL) || (get_m_hInst() == GetModuleHandle(NULL))) // register as EXE
 							{
 								// If Registering as an EXE, then we quote the resultant path.
 								// We don't do it for a DLL, because LoadLibrary fails if the path is

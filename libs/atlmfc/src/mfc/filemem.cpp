@@ -386,12 +386,12 @@ UINT CMemFile::GetBufferPtr(UINT nCommand, UINT nCount,
 
 	// end of buffer depends on whether you are reading or writing
 	if (nCommand == bufferWrite)
-		*ppBufMax = m_lpBuffer + min(m_nBufferSize, m_nPosition + nCount);
+		*ppBufMax = m_lpBuffer + Min(m_nBufferSize, m_nPosition + nCount);
 	else
 	{
 		if (nCount == (UINT)-1)
 			nCount = UINT(m_nBufferSize - m_nPosition);
-		*ppBufMax = m_lpBuffer + min(m_nFileSize, m_nPosition + nCount);
+		*ppBufMax = m_lpBuffer + Min(m_nFileSize, m_nPosition + nCount);
 		m_nPosition += LPBYTE(*ppBufMax) - LPBYTE(*ppBufStart);
 	}
 

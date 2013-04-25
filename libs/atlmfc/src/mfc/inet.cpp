@@ -1093,7 +1093,7 @@ UINT CInternetFile::Read(LPVOID lpBuf, UINT nCount)
 
 	if (nCount >= m_nReadBufferSize)
 	{
-		DWORD dwMoved = max(0, (long)m_nReadBufferBytes - (long)m_nReadBufferPos);
+		DWORD dwMoved = Max(0, (long)m_nReadBufferBytes - (long)m_nReadBufferPos);
 		if (dwMoved <= nCount)
 		{
 			Checked::memcpy_s(lpBuf, nCount, 
@@ -1113,7 +1113,7 @@ UINT CInternetFile::Read(LPVOID lpBuf, UINT nCount)
 	{
 		if (m_nReadBufferPos + nCount >= m_nReadBufferBytes)
 		{
-			DWORD dwMoved = max(0, (long)m_nReadBufferBytes - (long)m_nReadBufferPos);
+			DWORD dwMoved = Max(0, (long)m_nReadBufferBytes - (long)m_nReadBufferPos);
 			if (dwMoved <= nCount)
 			{
 				Checked::memcpy_s(lpbBuf, nCount, 
@@ -1130,7 +1130,7 @@ UINT CInternetFile::Read(LPVOID lpBuf, UINT nCount)
 				AfxThrowInternetException(m_dwContext);
 			m_nReadBufferBytes = dwRead;
 
-			dwRead = min(nCount - dwMoved, m_nReadBufferBytes);
+			dwRead = Min(nCount - dwMoved, m_nReadBufferBytes);
 			Checked::memcpy_s(lpbBuf + dwMoved, nCount - dwMoved, m_pbReadBuffer, dwRead);
 			m_nReadBufferPos = dwRead;
 			dwBytes = dwMoved + dwRead;
@@ -2854,7 +2854,7 @@ BOOL CInternetException::GetErrorMessage(_Out_z_cap_(nMaxError) LPTSTR pstrError
 	BOOL bRet = TRUE;
 
 	HINSTANCE hWinINetLibrary;
-	hWinINetLibrary = ::AfxCtxLoadLibraryW(L"WININET.DLL");
+	hWinINetLibrary = NULL; // ::AfxCtxLoadLibraryW(L"WININET.DLL");
 
 	if (hWinINetLibrary == NULL ||
 		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_HMODULE,
