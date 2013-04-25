@@ -133,7 +133,7 @@ public:
 	{
         if(rhs.size() == 0) // nothing to do
             return;
-		reallocate_discard_old(rhs.capacity());
+		this->reallocate_discard_old(rhs.capacity());
 		rde::copy_construct_n(rhs.m_begin, rhs.size(), m_begin);
 		m_end = m_begin + rhs.size();
 		TStorage::record_high_watermark();
@@ -163,7 +163,7 @@ public:
 		const size_type newSize = rhs.size();
 		if (newSize > capacity())
 		{
-			reallocate_discard_old(rhs.capacity());
+			this->reallocate_discard_old(rhs.capacity());
 		}
 		rde::copy_construct_n(rhs.m_begin, newSize, m_begin);
 		m_end = m_begin + newSize;
@@ -266,7 +266,7 @@ public:
 		RDE_ASSERT(count > 0);
 		clear();
 		if (m_begin + count > m_capacityEnd)
-			reallocate_discard_old(compute_new_capacity(count));
+			this->reallocate_discard_old(compute_new_capacity(count));
 
 		rde::copy_n(first, count, m_begin);
 		m_end = m_begin + count;

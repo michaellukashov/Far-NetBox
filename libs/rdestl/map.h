@@ -84,9 +84,9 @@ class map
 		map_pair(const Tkm& k, const Tvm& v): pair<Tkm, Tvm>(k, v) {}
 		bool operator<(const map_pair& rhs) const
 		{
-			return first < rhs.first;
+			return this->first < rhs.first;
 		}
-		RDE_FORCEINLINE const Tkm& get_key() const	{ return first; }
+		RDE_FORCEINLINE const Tkm& get_key() const	{ return this->first; }
 	};
 	template<typename Tkm, typename Tvm>
 	struct map_traits
