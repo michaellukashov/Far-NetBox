@@ -42,14 +42,14 @@
 #include <Options.h>
 
 #ifdef _DEBUG
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #endif
 #define new DEBUG_NEW
 #endif
 
-#ifdef _MSC_VER
+#if !defined(__BORLANDC__)
 #define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
 #define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
 #endif

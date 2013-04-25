@@ -75,14 +75,14 @@ to tim.kosse@gmx.de
 #define GWL_USERDATA GWLP_USERDATA
 #endif
 
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 #ifdef MPEXT
 #pragma warn -inl
 #endif
 #endif
 
 #ifdef _DEBUG
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #endif
@@ -1431,7 +1431,7 @@ BOOL CAsyncSocketEx::GetPeerName( CString& rPeerAddress, UINT& rPeerPort )
 #ifndef NOLAYERS
 	if (m_pFirstLayer)
 		return m_pFirstLayer->GetPeerName(rPeerAddress, rPeerPort);
-#endif NOLAYERS
+#endif // NOLAYERS
 
 	SOCKADDR* sockAddr = NULL;
 	int nSockAddrLen = 0;

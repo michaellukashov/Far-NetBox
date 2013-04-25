@@ -32,7 +32,7 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
@@ -41,7 +41,7 @@ static char THIS_FILE[] = __FILE__;
 #define ECS m_CriticalSection.Lock()
 #define LCS m_CriticalSection.Unlock()
 
-#ifdef _MSC_VER
+#if !defined(__BORLANDC__)
 #define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
 #define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
 #endif

@@ -27,6 +27,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <Classes.hpp>
+
 #include "FzApiStructures.h"
 #include "structures.h"
 #ifndef MPEXT_NO_SSL

@@ -35,7 +35,7 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif

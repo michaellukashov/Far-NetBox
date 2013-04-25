@@ -150,7 +150,7 @@ void CApiLog::LogMessage(CString SourceFile, int nSourceLine, void *pInstance, i
 #endif
 
 	CString msg;
-	msg.Format(_T("%s(%d): %s   caller=0x%08x"), SourceFile, nSourceLine, text, (int)this);
+	msg.Format(_T("%s(%d): %s   caller=0x%08x"), (LPCTSTR)SourceFile, nSourceLine, (LPCTSTR)text, (int)this);
 	
 	SendLogMessage(nMessageType, msg);
 }
@@ -178,7 +178,7 @@ void CApiLog::LogMessageRaw(CString SourceFile, int nSourceLine, void *pInstance
 #endif
 
 	CString msg;
-	msg.Format(_T("%s(%d): %s   caller=0x%08x"), SourceFile, nSourceLine, pMsg, (int)this);
+	msg.Format(_T("%s(%d): %s   caller=0x%08x"), (LPCTSTR)SourceFile, nSourceLine, pMsg, (int)this);
 	
 	SendLogMessage(nMessageType, msg);
 }
