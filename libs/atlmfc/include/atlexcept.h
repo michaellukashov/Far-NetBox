@@ -13,8 +13,10 @@
 
 #pragma once
 
+#if !defined(__MINGW32__)
 #include <atldef.h>
 #include <atltrace.h>
+#endif
 
 
 #pragma pack(push,_ATL_PACKING)
@@ -53,6 +55,14 @@ public:
 	HRESULT m_hr;
 };
 
+#ifndef ATL_NOINLINE
+#ifdef _ATL_DISABLE_NOINLINE
+#define ATL_NOINLINE
+#else
+#define ATL_NOINLINE __declspec( noinline )
+#endif
+#endif
+
 #ifndef _ATL_NO_EXCEPTIONS
 
 // Throw a CAtlException with the given HRESULT
@@ -63,19 +73,7 @@ public:
 #else
 ATL_NOINLINE __declspec(noreturn) inline void WINAPI AtlThrowImpl(_In_ HRESULT hr)
 {
-	ATLTRACE(atlTraceException, 0, _T("AtlThrow: hr = 0x%x\n"), hr );
-#ifdef _AFX
-	if( hr == E_OUTOFMEMORY )
-	{
-		AfxThrowMemoryException();
-	}
-	else
-	{
-		AfxThrowOleException( hr );
-	}
-#else
 	throw CAtlException( hr );
-#endif
 };
 #endif
 
@@ -83,7 +81,7 @@ ATL_NOINLINE __declspec(noreturn) inline void WINAPI AtlThrowImpl(_In_ HRESULT h
 ATL_NOINLINE __declspec(noreturn) inline void WINAPI AtlThrowLastWin32()
 {
 	DWORD dwError = ::GetLastError();
-	AtlThrow( HRESULT_FROM_WIN32( dwError ) );
+	AtlThrowImpl( HRESULT_FROM_WIN32( dwError ) );
 }
 
 #else  // no exception handling
@@ -93,7 +91,6 @@ ATL_NOINLINE __declspec(noreturn) inline void WINAPI AtlThrowLastWin32()
 
 ATL_NOINLINE inline void WINAPI AtlThrowImpl(_In_ HRESULT hr)
 {
-	ATLTRACE(atlTraceException, 0, _T("AtlThrow: hr = 0x%x\n"), hr );
 	ATLASSERT( false );
 	DWORD dwExceptionCode;
 	switch(hr)
@@ -112,7 +109,7 @@ ATL_NOINLINE inline void WINAPI AtlThrowImpl(_In_ HRESULT hr)
 ATL_NOINLINE inline void WINAPI AtlThrowLastWin32()
 {
 	DWORD dwError = ::GetLastError();
-	AtlThrow( HRESULT_FROM_WIN32( dwError ) );
+	AtlThrowImpl( HRESULT_FROM_WIN32( dwError ) );
 }
 
 #endif  // no exception handling

@@ -15,7 +15,7 @@ struct hash<basic_string<E, TAllocator, TStorage> >
     {
         // Derived from: http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/142054
         hash_value_t h = 0;
-		for (basic_string<E, TAllocator, TStorage>::size_type p = 0; p < x.length(); ++p) 
+		for (typename basic_string<E, TAllocator, TStorage>::size_type p = 0; p < x.length(); ++p) 
 		{
             h = x[p] + (h<<6) + (h<<16) - h;
         }

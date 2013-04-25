@@ -37,7 +37,7 @@
 //------------------------------------------------------------------------------
 #pragma package(smart_init)
 //------------------------------------------------------------------------------
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 const int tfFirstLevel = 0x01;
 const int tfAutoResume = 0x02;
 //------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ struct TClipboardHandler
 
 namespace webdav {
 
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 
 #pragma warn -8004
 
@@ -481,7 +481,7 @@ error_createf(
   va_end(args);
 
   AnsiString Message2 = Format("Error, code: %d, message: %s", apr_err, Message.c_str());
-  throw ExtException(UnicodeString(Message2), NULL);
+  throw ExtException(UnicodeString(Message2.c_str()), NULL);
 
   return err;
 }
@@ -13029,7 +13029,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
     {
       if (!Dir)
       {
-        FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
+        FILE_OPERATION_LOOP (FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
           THROWOSIFFALSE(::DeleteFile(FileName.c_str()));
         )
       }
@@ -13720,7 +13720,7 @@ void TWebDAVFileSystem::FileTransfer(const UnicodeString & FileName,
       if (!Result)
       {
         ::CloseHandle(LocalFileHandle);
-        /*FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, LocalFile.c_str()),
+        /*FILE_OPERATION_LOOP (FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, LocalFile.c_str()),
           THROWOSIFFALSE(Sysutils::DeleteFile(LocalFile));
         )*/
       }

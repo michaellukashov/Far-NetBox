@@ -39,7 +39,7 @@ ATLTIME_INLINE CTimeSpan::CTimeSpan(
 	_In_ int nMins,
 	_In_ int nSecs) throw()
 {
- 	m_timeSpan = nSecs + 60* (nMins + 60* (nHours + __int64(24) * lDays));
+ 	m_timeSpan = nSecs + 60* (nMins + 60* (nHours + (__int64)(24) * lDays));
 }
 
 ATLTIME_INLINE LONGLONG CTimeSpan::GetDays() const throw()
@@ -415,7 +415,7 @@ ATLTIME_INLINE __time64_t CTime::GetTime() const throw()
 	return( m_time );
 }
 
-ATLTIME_INLINE int CTime::GetYear() const
+ATLTIME_INLINE int CTime::GetYear() const throw()
 {
 	struct tm ttm;
 	struct tm * ptm;
@@ -424,7 +424,7 @@ ATLTIME_INLINE int CTime::GetYear() const
 	return ptm ? (ptm->tm_year) + 1900 : 0 ;
 }
 
-ATLTIME_INLINE int CTime::GetMonth() const
+ATLTIME_INLINE int CTime::GetMonth() const throw()
 {
 	struct tm ttm;
 	struct tm * ptm;
@@ -433,7 +433,7 @@ ATLTIME_INLINE int CTime::GetMonth() const
 	return ptm ? ptm->tm_mon + 1 : 0;
 }
 
-ATLTIME_INLINE int CTime::GetDay() const
+ATLTIME_INLINE int CTime::GetDay() const throw()
 {
 	struct tm ttm;
 	struct tm * ptm;
@@ -442,7 +442,7 @@ ATLTIME_INLINE int CTime::GetDay() const
 	return ptm ? ptm->tm_mday : 0 ;
 }
 
-ATLTIME_INLINE int CTime::GetHour() const
+ATLTIME_INLINE int CTime::GetHour() const throw()
 {
 	struct tm ttm;
 	struct tm * ptm;
@@ -451,7 +451,7 @@ ATLTIME_INLINE int CTime::GetHour() const
 	return ptm ? ptm->tm_hour : -1 ;
 }
 
-ATLTIME_INLINE int CTime::GetMinute() const
+ATLTIME_INLINE int CTime::GetMinute() const throw()
 {
 	struct tm ttm;
 	struct tm * ptm;
@@ -460,7 +460,7 @@ ATLTIME_INLINE int CTime::GetMinute() const
 	return ptm ? ptm->tm_min : -1 ;
 }
 
-ATLTIME_INLINE int CTime::GetSecond() const
+ATLTIME_INLINE int CTime::GetSecond() const throw()
 {
 	struct tm ttm;
 	struct tm * ptm;
@@ -469,7 +469,7 @@ ATLTIME_INLINE int CTime::GetSecond() const
 	return ptm ? ptm->tm_sec : -1 ;
 }
 
-ATLTIME_INLINE int CTime::GetDayOfWeek() const
+ATLTIME_INLINE int CTime::GetDayOfWeek() const throw()
 {
 	struct tm ttm;
 	struct tm * ptm;

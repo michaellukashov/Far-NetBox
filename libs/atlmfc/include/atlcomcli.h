@@ -16,6 +16,7 @@
 #include <atlcore.h>
 #include <ole2.h>
 #include <olectl.h>
+#include <atlconv.h>
 
 #pragma warning (push)
 #pragma warning (disable: 4127)  // conditional expression constant
@@ -54,6 +55,7 @@ ATLAPI_(IUnknown*) AtlComQIPtrAssign(
 /////////////////////////////////////////////////////////////////////////////
 // Safe Ole Object Reading 
 
+#if !defined(__MINGW32__)
 union ClassesAllowedInStream 
 {
 	const CLSID *rgclsidAllowed;
@@ -62,12 +64,13 @@ union ClassesAllowedInStream
 		_In_ REFIID iidInterface, 
 		_Deref_out_opt_ void** ppvObj);
 };
+#endif
 
 _Check_return_ inline HRESULT AtlInternalOleLoadFromStream(
 	_Inout_ IStream* pStm, 
 	_In_ REFIID iidInterface, 
 	_Deref_out_ void** ppvObj, 
-	_In_ ClassesAllowedInStream rgclsidAllowed, 
+	// _In_ ClassesAllowedInStream rgclsidAllowed, 
 	_In_ DWORD cclsidAllowed);
 
 
@@ -212,7 +215,7 @@ public:
 	// Compare two objects for equivalence
 	bool IsEqualObject(_Inout_opt_ IUnknown* pOther) throw()
 	{
-		if (p == NULL && pOther == NULL)
+		/*if (p == NULL && pOther == NULL)
 			return true;	// They are both NULL objects
 
 		if (p == NULL || pOther == NULL)
@@ -222,7 +225,8 @@ public:
 		CComPtr<IUnknown> punk2;
 		p->QueryInterface(__uuidof(IUnknown), (void**)&punk1);
 		pOther->QueryInterface(__uuidof(IUnknown), (void**)&punk2);
-		return punk1 == punk2;
+		return punk1 == punk2;*/
+		return false;
 	}
 	// Attach to an existing interface (does not AddRef)
 	void Attach(_In_opt_ T* p2) throw()
@@ -308,7 +312,7 @@ public:
 	{
         if(*this!=lp)
         {
-    		return static_cast<T*>(AtlComPtrAssign((IUnknown**)&p, lp));
+    		return static_cast<T*>(AtlComPtrAssign((IUnknown**)&this->p, lp));
         }
         return *this;
 	}
@@ -317,7 +321,7 @@ public:
 	{
         if( !IsEqualObject(lp) )
         {
-    		return static_cast<T*>(AtlComQIPtrAssign((IUnknown**)&p, lp, __uuidof(T)));
+    		return static_cast<T*>(AtlComQIPtrAssign((IUnknown**)&this->p, lp, __uuidof(T)));
         }
         return *this;
 	}
@@ -325,10 +329,11 @@ public:
 	{
         if(*this!=lp)
         {
-    		return static_cast<T*>(AtlComPtrAssign((IUnknown**)&p, lp));
+    		return static_cast<T*>(AtlComPtrAssign((IUnknown**)&this->p, lp));
         }
         return *this;
 	}	
+#if !defined(__MINGW32__)
 	CComPtr(_Inout_ CComPtr<T>&& lp) throw() :	
 		CComPtrBase<T>()
 	{	
@@ -347,6 +352,7 @@ public:
 		}
 		return *this;		
 	}
+#endif
 };
 
 //specialization for IDispatch
@@ -370,7 +376,7 @@ public:
 	{
         if(*this!=lp)
         {
-            return static_cast<IDispatch*>(AtlComPtrAssign((IUnknown**)&p, lp));
+            return static_cast<IDispatch*>(AtlComPtrAssign((IUnknown**)&this->p, lp));
         }
         return *this;
 	}
@@ -378,10 +384,11 @@ public:
 	{
         if(*this!=lp)
         {
-    		return static_cast<IDispatch*>(AtlComPtrAssign((IUnknown**)&p, lp.p));
+    		return static_cast<IDispatch*>(AtlComPtrAssign((IUnknown**)&this->p, lp.p));
         }
         return *this;
 	}	
+#if !defined(__MINGW32__)
 	CComPtr(_Inout_ CComPtr<IDispatch>&& lp) throw() :	
 		CComPtrBase<IDispatch>()
 	{		
@@ -400,6 +407,7 @@ public:
 		}		
 		return *this;
 	}	
+#endif
 // IDispatch specific stuff
 	_Check_return_ HRESULT GetPropertyByName(
 		_In_z_ LPCOLESTR lpsz, 
@@ -540,7 +548,6 @@ public:
 		if(p == NULL)
 			return E_INVALIDARG;
 		
-		ATLTRACE(atlTraceCOM, 2, _T("CPropertyHelper::PutProperty\n"));
 		DISPPARAMS dispparams = {NULL, NULL, 1, 1};
 		dispparams.rgvarg = pVar;
 		DISPID dispidPut = DISPID_PROPERTYPUT;
@@ -572,7 +579,6 @@ public:
 		if(p == NULL)
 			return E_INVALIDARG;
 			
-		ATLTRACE(atlTraceCOM, 2, _T("CPropertyHelper::GetProperty\n"));
 		DISPPARAMS dispparamsNoArgs = {NULL, NULL, 0, 0};
 		return p->Invoke(dwDispID, IID_NULL,
 				LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET,
@@ -599,13 +605,13 @@ public:
 	CComQIPtr(_Inout_opt_ IUnknown* lp) throw()
 	{
 		if (lp != NULL)
-			lp->QueryInterface(*piid, (void **)&p);
+			lp->QueryInterface(*piid, (void **)&this->p);
 	}
 	T* operator=(_Inout_opt_ T* lp) throw()
 	{
         if(*this!=lp)
         {
-		    return static_cast<T*>(AtlComPtrAssign((IUnknown**)&p, lp));
+		    return static_cast<T*>(AtlComPtrAssign((IUnknown**)&this->p, lp));
         }
         return *this;
 	}
@@ -613,7 +619,7 @@ public:
 	{
         if(*this!=lp)
         {
-    		return static_cast<T*>(AtlComPtrAssign((IUnknown**)&p, lp.p));
+    		return static_cast<T*>(AtlComPtrAssign((IUnknown**)&this->p, lp.p));
         }
         return *this;
 	}
@@ -621,7 +627,7 @@ public:
 	{
         if(*this!=lp)
         {
-    		return static_cast<T*>(AtlComQIPtrAssign((IUnknown**)&p, lp, *piid));
+    		return static_cast<T*>(AtlComQIPtrAssign((IUnknown**)&this->p, lp, *piid));
         }
         return *this;
 	}
@@ -640,7 +646,7 @@ public:
 	{
 		//Actually do a QI to get identity
 		if (lp != NULL)
-			lp->QueryInterface(__uuidof(IUnknown), (void **)&p);
+			lp->QueryInterface(__uuidof(IUnknown), (void **)&this->p);
 	}
 	CComQIPtr(_Inout_ const CComQIPtr<IUnknown,&IID_IUnknown>& lp) throw() :
 		CComPtr<IUnknown>(lp.p)
@@ -651,7 +657,7 @@ public:
         if(*this!=lp)
         {
 		    //Actually do a QI to get identity
-		    return AtlComQIPtrAssign((IUnknown**)&p, lp, __uuidof(IUnknown));
+		    return AtlComQIPtrAssign((IUnknown**)&this->p, lp, __uuidof(IUnknown));
         }
         return *this;
 	}
@@ -660,13 +666,15 @@ public:
 	{
         if(*this!=lp)
         {
-    		return AtlComPtrAssign((IUnknown**)&p, lp.p);
+    		return AtlComPtrAssign((IUnknown**)&this->p, lp.p);
         }
         return *this;
 	}
 };
 
+#if !defined(__MINGW32__)
 typedef CComQIPtr<IDispatch, &__uuidof(IDispatch)> CComDispatchDriver;
+#endif
 
 #define com_cast ATL::CComQIPtr
 #ifndef _ATL_STREAM_MAX_SIZE
@@ -802,6 +810,7 @@ public:
 		}
 		return *this;
 	}
+#if !defined(__MINGW32__)
 	CComBSTR(_Inout_ CComBSTR&& src)
 	{
 		m_str = src.m_str;
@@ -818,6 +827,7 @@ public:
 		}
 		return *this;
 	}
+#endif
 	
 	~CComBSTR() throw();
 
@@ -937,11 +947,11 @@ public:
 		return AppendBSTR(bstrSrc.m_str);
 	}
 
-	_Check_return_ HRESULT Append(_In_z_ LPCOLESTR lpsz) throw()
+/*	_Check_return_ HRESULT Append(_In_z_ LPCOLESTR lpsz) throw()
 	{		
-		return Append(lpsz, UINT(ocslen(lpsz)));
+		return Append(lpsz, UINT(wcslen(lpsz)));
 	}
-
+*/
 	// a BSTR is just a LPCOLESTR so we need a special version to signify
 	// that we are appending a BSTR
 	_Check_return_ HRESULT AppendBSTR(_In_opt_z_ BSTR p) throw()
@@ -962,7 +972,7 @@ public:
 		return hr;
 	}
 
-	_Check_return_ HRESULT Append(_In_opt_count_(nLen) LPCOLESTR lpsz, _In_ int nLen) throw()
+/*	_Check_return_ HRESULT Append(_In_opt_count_(nLen) LPCOLESTR lpsz, _In_ int nLen) throw()
 	{
 		if (lpsz == NULL || (m_str != NULL && nLen == 0))
 		{
@@ -1062,7 +1072,7 @@ public:
 		m_str = b;
 		return S_OK;
 	}
-
+*/
 	_Check_return_ HRESULT AssignBSTR(_In_opt_z_ const BSTR bstrSrc) throw()
 	{
 		HRESULT hr = S_OK;
@@ -1463,7 +1473,6 @@ public:
 			// invalid data size
 			if (sizeof(cbStrLen) != cbRead)
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("Input stream is corrupted."));
 				hr = E_FAIL;
 			}
 			// read NULL string
@@ -1473,13 +1482,11 @@ public:
 			// invalid data length	
 			else if (cbStrLen < sizeof(OLECHAR))
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("Input stream is corrupted."));
 				hr = E_FAIL;
 			}
 			// security checks when system hang for huge stream of data
 			else if (cbStrLen > _ATL_STREAM_MAX_SIZE)
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("String exceeded the maximum allowed size see _ATL_STREAM_MAX_SIZE."));
 				hr = E_ACCESSDENIED;
 			}
 			else 
@@ -1500,7 +1507,6 @@ public:
 					{
 						if (cbRead != cbStrLen)
 						{
-							ATLTRACE(atlTraceCOM, 0, _T("Length of string data is different than expected."));
 							hr = E_FAIL;
 						}
 						else
@@ -1516,7 +1522,6 @@ public:
 								if (cbRead != sizeof(OLECHAR))
 #endif
 								{
-									ATLTRACE(atlTraceCOM, 0, _T("Cannot read NULL terminator from stream."));
 									hr = E_FAIL; 									
 								}								
 							}
@@ -1676,6 +1681,7 @@ public:
 		}		
 		return *this;
 	}	
+#if !defined(__MINGW32__)
 	CAdapt(_Inout_ T&& rSrc) :
 		m_T( static_cast<T&&>(rSrc) )
 	{
@@ -1698,6 +1704,7 @@ public:
 		}		
 		return *this;
 	}	
+#endif
 	bool operator<(_In_ const T& rSrc) const
 	{
 		return m_T < rSrc;
@@ -2887,7 +2894,7 @@ ATLPREFAST_UNSUPPRESS()
 	_Check_return_ HRESULT ReadFromStream(
 		_Inout_ IStream* pStream, 
 		_In_ VARTYPE vtExpected,
-		_In_ ClassesAllowedInStream rgclsidAllowed, 
+		// _In_ ClassesAllowedInStream rgclsidAllowed, 
 		_In_ DWORD cclsidAllowed);
 
 	// Return the size in bytes of the current contents
@@ -3026,16 +3033,17 @@ _Check_return_ inline HRESULT CComVariant::ReadFromStream(
 	_Inout_ IStream* pStream, 
 	_In_ VARTYPE vtExpected /* = VT_EMPTY */)
 {
-	ClassesAllowedInStream allowed;
-	allowed.rgclsidAllowed = NULL;
+	// ClassesAllowedInStream allowed;
+	// allowed.rgclsidAllowed = NULL;
 
-	return ReadFromStream(pStream, vtExpected, allowed, 0);
+	// return ReadFromStream(pStream, vtExpected, allowed, 0);
+	return S_OK;
 }
 
 _Check_return_ inline HRESULT CComVariant::ReadFromStream(
 	_Inout_ IStream* pStream, 
 	_In_ VARTYPE vtExpected, 
-	_In_ ClassesAllowedInStream rgclsidAllowed, 
+	// _In_ ClassesAllowedInStream rgclsidAllowed, 
 	_In_ DWORD cclsidAllowed)
 {
 	ATLASSERT(pStream != NULL);
@@ -3064,14 +3072,14 @@ _Check_return_ inline HRESULT CComVariant::ReadFromStream(
 	case VT_UNKNOWN:
 	case VT_DISPATCH:
 		{
-			punkVal = NULL;
+			/*punkVal = NULL;
 			hr = AtlInternalOleLoadFromStream(pStream,
 				(vtRead == VT_UNKNOWN) ? __uuidof(IUnknown) : __uuidof(IDispatch),
 				(void**)&punkVal, rgclsidAllowed, cclsidAllowed);
 			// If IPictureDisp or IFontDisp property is not set, 
 			// OleLoadFromStream() will return REGDB_E_CLASSNOTREG.
 			if (hr == REGDB_E_CLASSNOTREG)
-				hr = S_OK;
+				hr = S_OK;*/
 			return hr;
 		}
 	case VT_UI1:
@@ -3312,14 +3320,14 @@ _Check_return_ inline HRESULT AtlInternalOleLoadFromStream(
 	_Inout_ IStream* pStm, 
 	_In_ REFIID iidInterface, 
 	_Deref_out_ void** ppvObj, 
-	_In_ ClassesAllowedInStream rgclsidAllowed, 
+	// _In_ ClassesAllowedInStream rgclsidAllowed, 
 	_In_ DWORD cclsidAllowed)
 {
 	ATLASSUME(pStm != NULL);
 	*ppvObj = NULL;
 	CLSID clsid;
 
-	HRESULT hr = ReadClassStm(pStm, &clsid);
+	HRESULT hr = S_OK; /* ReadClassStm(pStm, &clsid);
 
 	if (FAILED(hr))
 	{		
@@ -3372,7 +3380,7 @@ _Check_return_ inline HRESULT AtlInternalOleLoadFromStream(
 		{
 			*ppvObj = punkVal.Detach();			
 		}
-	}
+	}*/
 	
 	return hr;
 }

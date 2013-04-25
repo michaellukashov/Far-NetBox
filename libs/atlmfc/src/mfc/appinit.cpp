@@ -74,13 +74,13 @@ void CWinApp::SetCurrentHandles()
 	TCHAR szBuff[_MAX_PATH];
 	DWORD dwRet = ::GetModuleFileName(m_hInstance, szBuff, _MAX_PATH);
 	ASSERT( dwRet != 0 && dwRet != _MAX_PATH );
-	if( dwRet == 0 || dwRet == _MAX_PATH )
-		AfxThrowUserException();
+	// if( dwRet == 0 || dwRet == _MAX_PATH )
+		// AfxThrowUserException();
 
 	LPTSTR lpszExt = ::PathFindExtension(szBuff);
 	ASSERT(lpszExt != NULL);
-	if( lpszExt == NULL )
-		AfxThrowUserException();
+	// if( lpszExt == NULL )
+		// AfxThrowUserException();
 
 	ASSERT(*lpszExt == '.');
 	*lpszExt = 0;       // no suffix
@@ -92,8 +92,8 @@ void CWinApp::SetCurrentHandles()
 	// get the exe title from the full path name [no extension]
 	dwRet = AfxGetFileName(szBuff, szExeName, _MAX_PATH);
 	ASSERT( dwRet == 0 );
-	if( dwRet != 0 )
-		AfxThrowUserException();
+	// if( dwRet != 0 )
+		// AfxThrowUserException();
 
 	if (m_pszExeName == NULL)
 	{
@@ -207,21 +207,4 @@ UINT AFXAPI AfxGetFileName(LPCTSTR lpszPathName, _Out_opt_cap_(nMax) LPTSTR lpsz
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma init_seg( lib )
-
-#ifdef _DEBUG
-ATL::CTraceCategory traceMultiApp(_T("MultiApp"));
-ATL::CTraceCategory traceAppMsg(_T("AppMsg"));
-ATL::CTraceCategory traceWinMsg(_T("WinMsg"));
-ATL::CTraceCategory traceCmdRouting(_T("CmdRouting"));
-ATL::CTraceCategory traceOle(_T("Ole"));
-ATL::CTraceCategory traceDatabase(_T("Database"));
-ATL::CTraceCategory traceInternet(_T("Internet"));
-ATL::CTraceCategory traceDumpContext(_T("CDumpContext"));
-ATL::CTraceCategory traceMemory(_T("Memory"));
-ATL::CTraceCategory traceGdi(_T("GDI"));
-ATL::CTraceCategory traceUser(_T("User"));
-ATL::CTraceCategory traceKernel(_T("Kernel"));
-ATL::CTraceCategory traceHtml(_T("HTML"));
-ATL::CTraceCategory traceSocket(_T("Socket"));
-#endif // _DEBUG
 

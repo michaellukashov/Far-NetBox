@@ -22,9 +22,6 @@ CSyncObject::CSyncObject(LPCTSTR pstrName)
 
 	m_hObject = NULL;
 
-#ifdef _DEBUG
-	m_strName = pstrName;
-#endif
 }
 
 CSyncObject::~CSyncObject()
@@ -44,23 +41,6 @@ BOOL CSyncObject::Lock(DWORD dwTimeout)
 	else
 		return FALSE;
 }
-
-#ifdef _DEBUG
-
-void CSyncObject::Dump(CDumpContext& dc) const
-{
-	dc << "Object ";
-	dc << m_hObject;
-	dc << " named " << m_strName << "\n";
-	CObject::Dump(dc);
-}
-
-void CSyncObject::AssertValid() const
-{
-	CObject::AssertValid();
-}
-
-#endif
 
 //////////////////////////////////////////////////////////////////////////////
 // Inline function declarations expanded out-of-line

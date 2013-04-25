@@ -29,9 +29,6 @@
 HINSTANCE AFXAPI AfxGetResourceHandle();
 HINSTANCE AFXAPI AfxFindStringResourceHandle(UINT nID);
 
-UINT_PTR AFXAPI AfxReadStringLength(CArchive& ar, int& nCharSize);
-void AFXAPI AfxWriteStringLength(CArchive& ar, UINT_PTR nLength, BOOL bUnicode);
-
 #include <atlcore.h>
 #include <cstringt.h>
 

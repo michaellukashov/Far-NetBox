@@ -37,7 +37,7 @@ inline BOOL _AfxRegDeleteKeySucceeded(LONG error)
 LONG AFXAPI _AfxRecursiveRegDeleteKey(HKEY hParentKey, _In_ LPTSTR szKeyName)
 {
 	// one implementation for everybody
-	return AfxDelRegTreeHelper(hParentKey, szKeyName);
+	return 0; // AfxDelRegTreeHelper(hParentKey, szKeyName);
 }
 
 void _AfxUnregisterInterfaces(ITypeLib* pTypeLib)
@@ -145,7 +145,7 @@ BOOL AFXAPI AfxOleRegisterTypeLib(HINSTANCE hInstance, REFGUID tlid,
 	}
 	else
 	{
-		TRACE(traceAppMsg, 0, L"Warning: Could not load type library from %s\n", strPathNameW);
+		// TRACE(traceAppMsg, 0, L"Warning: Could not load type library from %s\n", strPathNameW);
 	}
 
 	return bSuccess;

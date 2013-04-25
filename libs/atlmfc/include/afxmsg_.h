@@ -586,11 +586,6 @@ enum AfxSig
 		(AFX_PMSG)(AFX_PMSGW) \
 		(static_cast< BOOL (AFX_MSG_CALL CWnd::*)(LPCREATESTRUCT) > ( &ThisClass :: OnNcCreate)) },
 
-#define ON_WM_NCDESTROY() \
-	{ WM_NCDESTROY, 0, 0, 0, AfxSig_vv, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(void) > ( &ThisClass :: OnNcDestroy)) },
-
 #define ON_WM_NCCALCSIZE() \
 	{ WM_NCCALCSIZE, 0, 0, 0, AfxSig_vCALC, \
 		(AFX_PMSG)(AFX_PMSGW) \

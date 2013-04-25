@@ -91,7 +91,6 @@
 #include <atlsimpcoll.h>
 #include <atltrace.h>
 #include <atlexcept.h>
-// #include <atltransactionmanager.h>
 
 #define _ATL_TYPELIB_INDEX_LENGTH 10
 #define _ATL_QUOTES_SPACE 2
@@ -140,7 +139,11 @@ void AFXAPI AfxOleUnlockApp();
 
 // Support Windows SDK v5.0
 #ifndef LSTATUS
+#if !defined(__MINGW32__)
 typedef __success(return==ERROR_SUCCESS) LONG LSTATUS;
+#else
+typedef LONG LSTATUS;
+#endif
 #endif
 
 namespace ATL
@@ -202,7 +205,7 @@ struct _ATL_OBJMAP_ENTRY30
 		IUnknown* p = NULL;
 		if (pfnGetClassObject == NULL)
 			return S_OK;
-		HRESULT hRes = pfnGetClassObject(pfnCreateInstance, __uuidof(IUnknown), (LPVOID*) &p);
+		HRESULT hRes = 0; // pfnGetClassObject(pfnCreateInstance, __uuidof(IUnknown), (LPVOID*) &p);
 		if (SUCCEEDED(hRes))
 			hRes = CoRegisterClassObject(*pclsid, p, dwClsContext, dwFlags, &dwRegister);
 		if (p != NULL)
@@ -2374,7 +2377,6 @@ public:
 
 		if (FAILED(m_csObjMap.Init()))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to initialize critical section in CAtlComModule\n"));
 			ATLASSERT(0);
 			CAtlBaseModule::m_bInitFailed = true;
 			return;
@@ -2495,7 +2497,6 @@ public:
 	{
 		if (FAILED(m_cs.Init()))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to initialize critical section in CAtlDebugInterfacesModule\n"));
 			ATLASSERT(0);
 			CAtlBaseModule::m_bInitFailed = true;
 		}
@@ -2520,7 +2521,6 @@ public:
 		HRESULT hr = lock.Lock();
 		if (FAILED(hr))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to lock critical section in CAtlDebugInterfacesModule\n"));
 			ATLASSERT(0);
 			return hr;
 		}
@@ -2568,7 +2568,6 @@ public:
 		HRESULT hr = lock.Lock();
 		if (FAILED(hr))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to lock critical section in CAtlDebugInterfacesModule\n"));
 			ATLASSERT(0);
 			return hr;
 		}
@@ -2605,7 +2604,6 @@ public:
 		HRESULT hr = lock.Lock();
 		if (FAILED(hr))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to lock critical section in CAtlDebugInterfacesModule\n"));
 			ATLASSERT(0);
 			return;
 		}
@@ -2626,7 +2624,6 @@ public:
 		HRESULT hr = lock.Lock();
 		if (FAILED(hr))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to lock critical section in CAtlDebugInterfacesModule\n"));
 			ATLASSERT(0);
 			return;
 		}
@@ -2796,7 +2793,6 @@ public :
 
 		if (FAILED(m_csStaticDataInitAndTypeInfo.Init()))
 		{
-			ATLTRACE(atlTraceGeneral, 0, _T("ERROR : Unable to initialize critical section in CAtlModule\n"));
 			ATLASSERT(0);
 			CAtlBaseModule::m_bInitFailed = true;
 			return;
@@ -4467,7 +4463,7 @@ public :
 #endif
 	}
 
-	~CComModule()
+	virtual ~CComModule() throw()
 	{
 #if !defined(_ATL_NATIVE_INITIALIZATION)
 #pragma warning(push)
@@ -4485,13 +4481,17 @@ public :
 #endif
 	}
 
+#if !defined(__MINGW32__)
 	__declspec(property(get = get_m_hInst)) HINSTANCE m_hInst;
+#endif
 	HINSTANCE& get_m_hInst() const throw()
 	{
 		return _AtlBaseModule.m_hInst;
 	}
 
+#if !defined(__MINGW32__)
 	__declspec(property(get = get_m_hInstResource, put = put_m_hInstResource)) HINSTANCE m_hInstResource;
+#endif
 	HINSTANCE& get_m_hInstResource() const throw()
 	{
 		return _AtlBaseModule.m_hInstResource;
@@ -4514,7 +4514,9 @@ public :
 		return _AtlBaseModule.m_hInstResource;
 	}
 
+#if !defined(__MINGW32__)
 	__declspec(property(get = get_m_hInstTypeLib, put = put_m_hInstTypeLib)) HINSTANCE m_hInstTypeLib;
+#endif
 	HINSTANCE& get_m_hInstTypeLib() const throw()
 	{
 		return _AtlComModule.m_hInstTypeLib;
@@ -4532,36 +4534,51 @@ public :
 	// For Backward compatibility
 	_ATL_OBJMAP_ENTRY* m_pObjMap;
 
+#if !defined(__MINGW32__)
 	__declspec(property(get  = get_m_csWindowCreate)) CRITICAL_SECTION m_csWindowCreate;
+#endif
 	CRITICAL_SECTION& get_m_csWindowCreate() throw();
 
+#if !defined(__MINGW32__)
 	__declspec(property(get  = get_m_csObjMap)) CRITICAL_SECTION m_csObjMap;
+#endif
 	CRITICAL_SECTION& get_m_csObjMap() throw();
 
+#if !defined(__MINGW32__)
 	__declspec(property(get  = get_m_csStaticDataInit)) CRITICAL_SECTION m_csTypeInfoHolder;
 	__declspec(property(get  = get_m_csStaticDataInit)) CRITICAL_SECTION m_csStaticDataInit;
+#else
+	CRITICAL_SECTION m_csTypeInfoHolder;
+	CRITICAL_SECTION m_csStaticDataInit;
+#endif
 	CRITICAL_SECTION& get_m_csStaticDataInit() throw();
 	void EnterStaticDataCriticalSection() throw()
 	{
-		EnterCriticalSection(&m_csStaticDataInit);
+		EnterCriticalSection(&this->m_csStaticDataInit);
 	}
 
 	void LeaveStaticDataCriticalSection() throw()
 	{
-		LeaveCriticalSection(&m_csStaticDataInit);
+		LeaveCriticalSection(&this->m_csStaticDataInit);
 	}
 
+#if !defined(__MINGW32__)
 	__declspec(property(get  = get_dwAtlBuildVer)) DWORD dwAtlBuildVer;
+#endif
 	DWORD& get_dwAtlBuildVer() throw()
 	{
 		return _AtlBaseModule.dwAtlBuildVer;
 	}
 
+#if !defined(__MINGW32__)
 	__declspec(property(get  = get_m_pCreateWndList, put = put_m_pCreateWndList)) _AtlCreateWndData* m_pCreateWndList;
+#endif
 	_AtlCreateWndData*& get_m_pCreateWndList() throw();
 	void put_m_pCreateWndList(_In_ _AtlCreateWndData* p) throw();
 
+#if !defined(__MINGW32__)
 	__declspec(property(get  = get_pguidVer)) const GUID* pguidVer;
+#endif
 	const GUID*& get_pguidVer() throw()
 	{
 		return _AtlBaseModule.pguidVer;
@@ -4966,12 +4983,10 @@ public:
 				if (SUCCEEDED(pdata->hRes))
 				{
 					pUnk->Release();
-					ATLTRACE(atlTraceCOM, 2, _T("Object created on thread = %d\n"), GetCurrentThreadId());
 				}
 #ifdef _DEBUG
 				else
 				{
-					ATLTRACE(atlTraceCOM, 2, _T("Failed to create Object on thread = %d\n"), GetCurrentThreadId());
 				}
 #endif
 				SetEvent(pdata->hEvent);
@@ -5018,15 +5033,27 @@ public:
 	int m_nThread;
 };
 
+#if !defined(__MINGW32__)
 __interface IAtlAutoThreadModule
+#else
+class IAtlAutoThreadModule
+#endif
 {
-	virtual HRESULT CreateInstance(
+public:
+#if defined(__MINGW32__)
+  virtual ~IAtlAutoThreadModule() {}
+#endif
+	HRESULT CreateInstance(
 		_In_ void* pfnCreateInstance,
 		_In_ REFIID riid,
 		_Deref_out_ void** ppvObj);
 };
 
+#if !defined(__MINGW32__)
 __declspec(selectany) IAtlAutoThreadModule* _pAtlAutoThreadModule;
+#else
+IAtlAutoThreadModule* _pAtlAutoThreadModule;
+#endif
 
 template <class T, class ThreadAllocator = CComSimpleThreadAllocator, DWORD dwWait = INFINITE>
 class ATL_NO_VTABLE CAtlAutoThreadModuleT : 
@@ -5261,6 +5288,7 @@ public:
 #endif
 	}
 
+#if !defined(__MINGW32__)
 	CComGITPtr(CComGITPtr&& rv)
 	{
 		m_dwCookie = rv.m_dwCookie;
@@ -5279,6 +5307,7 @@ public:
 
 		return *this;
 	}
+#endif
 
 	~CComGITPtr() throw()
 	{
@@ -6236,7 +6265,6 @@ inline LONG CRegKey::RecurseDeleteKey(_In_z_ LPCTSTR lpszKey) throw()
 	{
 		if (lRes != ERROR_FILE_NOT_FOUND && lRes != ERROR_PATH_NOT_FOUND)
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("CRegKey::RecurseDeleteKey : Failed to Open Key %s(Error = %d)\n"), lpszKey, lRes);
 		}
 		return lRes;
 	}
@@ -6323,14 +6351,12 @@ inline HRESULT CComModule::RegisterAppId(_In_z_ LPCTSTR pAppId)
 					lRet = keyAppIDEXE.SetStringValue(_T("AppID"), pAppId);
 					if (lRet != ERROR_SUCCESS)
 					{
-						ATLTRACE(atlTraceCOM, 0, _T("CComModule::RegisterAppId : Failed to set app id string value\n"));
 						hr = AtlHresultFromWin32(lRet);
 						return hr;
 					}
 				}
 				else
 				{
-					ATLTRACE(atlTraceCOM, 0, _T("CComModule::RegisterAppId : Failed to create file name key\n"));
 					hr = AtlHresultFromWin32(lRet);
 					return hr;
 				}
@@ -6339,27 +6365,23 @@ inline HRESULT CComModule::RegisterAppId(_In_z_ LPCTSTR pAppId)
 					lRet = keyAppIDEXE.SetStringValue(NULL, pszFileName);
 					if (lRet != ERROR_SUCCESS)
 					{
-						ATLTRACE(atlTraceCOM, 0, _T("CComModule::RegisterAppId : Failed to set file name string value\n"));
 						hr = AtlHresultFromWin32(lRet);
 						return hr;
 					}
 				}
 				else
 				{
-					ATLTRACE(atlTraceCOM, 0, _T("CComModule::RegisterAppId : Failed to create app id key\n"));
 					hr = AtlHresultFromWin32(lRet);
 					return hr;
 				}
 			}
 			else
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("CComModule::RegisterAppId : Failed to get full path name for file %s\n"), szModule1);
 				hr = AtlHresultFromLastError();
 			}
 		}
 		else
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("CComModule::RegisterAppId : Failed to get module name\n"));
 			if( dwFLen == 0 )
 				hr = AtlHresultFromLastError();
 			else if( dwFLen == MAX_PATH )
@@ -6368,7 +6390,6 @@ inline HRESULT CComModule::RegisterAppId(_In_z_ LPCTSTR pAppId)
 	}
 	else
 	{
-		ATLTRACE(atlTraceCOM, 0, _T("CComModule::RegisterAppId : Failed to open registry key\n"));
 		hr = AtlHresultFromWin32(lRet);
 	}
 	return hr;
@@ -6404,13 +6425,11 @@ inline HRESULT CComModule::UnregisterAppId(_In_z_ LPCTSTR pAppId)
 			}
 			else
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("CComModule::UnregisterAppId : Failed to get full path name for file %s\n"), szModule1);
 				hr = AtlHresultFromLastError();
 			}
 		}
 		else
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("CComModule::UnregisterAppId : Failed to get module name\n"));
 			if( dwFLen == 0 )
 				hr = AtlHresultFromLastError();
 			else if( dwFLen == MAX_PATH )
@@ -6421,7 +6440,6 @@ inline HRESULT CComModule::UnregisterAppId(_In_z_ LPCTSTR pAppId)
 	{
 		if (lRet != ERROR_FILE_NOT_FOUND && lRet != ERROR_PATH_NOT_FOUND)
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("CComModule::UnregisterAppId : Failed to open registry key\n"));
 			hr = AtlHresultFromWin32(lRet);
 		}
 	}
@@ -6623,8 +6641,8 @@ inline HRESULT WINAPI CComModule::UpdateRegistryClass(
 	if (bRegister)
 	{
 		TCHAR szDesc[256];
-		LoadString(m_hInst, nDescID, szDesc, 256);
-		return RegisterClassHelper(clsid, lpszProgID, lpszVerIndProgID, szDesc, dwFlags);
+		// LoadString(m_hInst, nDescID, szDesc, 256);
+		return S_OK; // RegisterClassHelper(clsid, lpszProgID, lpszVerIndProgID, szDesc, dwFlags);
 	}
 	return UnregisterClassHelper(clsid, lpszProgID, lpszVerIndProgID);
 }
@@ -6674,7 +6692,7 @@ inline HRESULT WINAPI CComModule::RegisterClassHelper(
 	// then you have a non null terminated buffer (which may or may not be truncated)
 	// We pass (szModule + 1) because in case it's an EXE we need to quote the PATH
 	// The quote is done later in this method before the SetKeyValue is called
-	DWORD dwLen = GetModuleFileName(m_hInst, szModule + 1, MAX_PATH);
+	DWORD dwLen = 0; // GetModuleFileName(m_hInst, szModule + 1, MAX_PATH);
 	if (dwLen == 0)
 	{
 		return AtlHresultFromLastError();
@@ -6723,7 +6741,7 @@ inline HRESULT WINAPI CComModule::RegisterClassHelper(
 						lRes = lpszVerIndProgID ? key.SetKeyValue(szVIProgID, lpszVerIndProgID) : ERROR_SUCCESS;
 						if (lRes == ERROR_SUCCESS)
 						{
-							if ((m_hInst == NULL) || (m_hInst == GetModuleHandle(NULL))) // register as EXE
+							if ((get_m_hInst() == NULL) || (get_m_hInst() == GetModuleHandle(NULL))) // register as EXE
 							{
 								// If Registering as an EXE, then we quote the resultant path.
 								// We don't do it for a DLL, because LoadLibrary fails if the path is
@@ -6772,7 +6790,6 @@ inline HRESULT WINAPI CComModule::UnregisterClassHelper(
 		lRet = key.RecurseDeleteKey(lpszProgID);
 		if (lRet != ERROR_SUCCESS && lRet != ERROR_FILE_NOT_FOUND && lRet != ERROR_PATH_NOT_FOUND)
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("Failed to Unregister ProgID : %s\n"), lpszProgID);
 			key.Detach();
 			return AtlHresultFromWin32(lRet);
 		}
@@ -6782,7 +6799,6 @@ inline HRESULT WINAPI CComModule::UnregisterClassHelper(
 		lRet = key.RecurseDeleteKey(lpszVerIndProgID);
 		if (lRet != ERROR_SUCCESS && lRet != ERROR_FILE_NOT_FOUND && lRet != ERROR_PATH_NOT_FOUND)
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("Failed to Unregister Version Independent ProgID : %s\n"), lpszVerIndProgID);
 			key.Detach();
 			return AtlHresultFromWin32(lRet);
 		}
@@ -6805,26 +6821,12 @@ inline HRESULT WINAPI CComModule::UnregisterClassHelper(
 			lRet = key.RecurseDeleteKey(lpsz);
 		if (lRet != ERROR_SUCCESS && lRet != ERROR_FILE_NOT_FOUND && lRet != ERROR_PATH_NOT_FOUND)
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("Failed to delete CLSID : %s\n"), lpsz);
 			hr = AtlHresultFromWin32(lRet);
 		}
 		CoTaskMemFree(lpOleStr);
 	}
 	else
 	{
-		ATLTRACE(atlTraceCOM, 0, _T("Failed to delete CLSID : {%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x}"),
-			clsid.Data1,
-			clsid.Data2,
-			clsid.Data3,
-			clsid.Data4[0],
-			clsid.Data4[1],
-			clsid.Data4[2],
-			clsid.Data4[3],
-			clsid.Data4[4],
-			clsid.Data4[5],
-			clsid.Data4[6],
-			clsid.Data4[7]
-			);
 	}
 	key.Detach();
 	return hr;
@@ -7809,7 +7811,6 @@ inline HRESULT CComModule::GetClassObject(
 					hr = lock.Lock();
 					if (FAILED(hr))
 					{
-						ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to lock critical section in CComModule::GetClassObject\n"));
 						ATLASSERT(FALSE);
 						break;
 					}

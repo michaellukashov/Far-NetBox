@@ -54,14 +54,14 @@ struct AFX_CMDHANDLERINFO;      // Command routing implementation
 // Classes declared in this file
 
 	//CDC
-		class CPreviewDC;               // Virtual DC for print preview
+		// class CPreviewDC;               // Virtual DC for print preview
 
 	//CCmdTarget
 		//CWnd
 			//CView
-				class CPreviewView;     // Print preview view
+				// class CPreviewView;     // Print preview view
 
-class CDockContext;                     // for dragging control bars
+// class CDockContext;                     // for dragging control bars
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -235,112 +235,6 @@ protected:
 /////////////////////////////////////////////////////////////////////////////
 // Implementation of PrintPreview
 
-class CPreviewDC : public CDC
-{
-	DECLARE_DYNAMIC(CPreviewDC)
-
-public:
-	virtual void SetAttribDC(HDC hDC);  // Set the Attribute DC
-	virtual void SetOutputDC(HDC hDC);
-
-	virtual void ReleaseOutputDC();
-
-// Constructors
-	CPreviewDC();
-
-// Implementation
-public:
-	virtual ~CPreviewDC();
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
-
-	void SetScaleRatio(int nNumerator, int nDenominator);
-	void SetTopLeftOffset(CSize TopLeft);
-	void ClipToPage();
-
-	// These conversion functions can be used without an output DC
-
-	void PrinterDPtoScreenDP(LPPOINT lpPoint) const;
-
-// Device-Context Functions
-	virtual int SaveDC();
-	virtual BOOL RestoreDC(int nSavedDC);
-
-public:
-	virtual CGdiObject* SelectStockObject(int nIndex);
-	virtual CFont* SelectObject(CFont* pFont);
-
-// Drawing-Attribute Functions
-	virtual COLORREF SetBkColor(COLORREF crColor);
-	virtual COLORREF SetTextColor(COLORREF crColor);
-
-// Mapping Functions
-	virtual int SetMapMode(int nMapMode);
-	virtual CSize SetViewportExt(int x, int y);
-	virtual CSize ScaleViewportExt(int xNum, int xDenom, int yNum, int yDenom);
-	virtual CSize SetWindowExt(int x, int y);
-	virtual CSize ScaleWindowExt(int xNum, int xDenom, int yNum, int yDenom);
-
-// Text Functions
-	virtual BOOL TextOut(int x, int y, LPCTSTR lpszString, int nCount);
-	virtual BOOL ExtTextOut(int x, int y, UINT nOptions, LPCRECT lpRect,
-				LPCTSTR lpszString, UINT nCount, LPINT lpDxWidths);
-	virtual CSize TabbedTextOut(int x, int y, LPCTSTR lpszString, int nCount,
-				int nTabPositions, LPINT lpnTabStopPositions, int nTabOrigin);
-	virtual int _AFX_FUNCNAME(DrawText)(LPCTSTR lpszString, int nCount, LPRECT lpRect,
-				UINT nFormat);
-	virtual int _AFX_FUNCNAME(DrawTextEx)(_In_count_(nCount) LPTSTR lpszString, int nCount, LPRECT lpRect,
-				UINT nFormat, LPDRAWTEXTPARAMS lpDTParams);
-#pragma push_macro("DrawText")
-#pragma push_macro("DrawTextEx")
-#undef DrawText
-#undef DrawTextEx
-	int DrawText(LPCTSTR lpszString, int nCount, LPRECT lpRect,
-				UINT nFormat)
-	{
-		return _AFX_FUNCNAME(DrawText)(lpszString, nCount, lpRect, nFormat);
-	}
-	int DrawTextEx(_In_count_(nCount) LPTSTR lpszString, int nCount, LPRECT lpRect,
-				UINT nFormat, LPDRAWTEXTPARAMS lpDTParams)
-	{
-		return _AFX_FUNCNAME(DrawTextEx)(lpszString, nCount, lpRect, nFormat, lpDTParams);
-	}
-#pragma pop_macro("DrawText")
-#pragma pop_macro("DrawTextEx")
-	virtual BOOL GrayString(CBrush* pBrush,
-				BOOL (CALLBACK* lpfnOutput)(HDC, LPARAM, int),
-					LPARAM lpData, int nCount,
-					int x, int y, int nWidth, int nHeight);
-
-// Printer Escape Functions
-	virtual int Escape(int nEscape, int nCount, LPCSTR lpszInData, LPVOID lpOutData);
-
-// Implementation
-protected:
-	void MirrorMappingMode(BOOL bCompute);
-	void MirrorViewportOrg();
-	void MirrorFont();
-	void MirrorAttributes();
-
-	CSize ComputeDeltas(int& x, _In_z_ LPCTSTR lpszString, UINT& nCount, _In_ BOOL bTabbed,
-					_In_ UINT nTabStops, _In_count_(nTabStops) LPINT lpnTabStops, _In_ int nTabOrigin,
-					_Pre_notnull_ _Post_z_ LPTSTR lpszOutputString, int* pnDxWidths, int& nRightFixup);
-
-protected:
-	int m_nScaleNum;    // Scale ratio Numerator
-	int m_nScaleDen;    // Scale ratio Denominator
-	int m_nSaveDCIndex; // DC Save index when Screen DC Attached
-	int m_nSaveDCDelta; // delta between Attrib and output restore indices
-	CSize m_sizeTopLeft;// Offset for top left corner of page
-	HFONT m_hFont;      // Font selected into the screen DC (NULL if none)
-	HFONT m_hPrinterFont; // Font selected into the print DC
-
-	CSize m_sizeWinExt; // cached window extents computed for screen
-	CSize m_sizeVpExt;  // cached viewport extents computed for screen
-};
-
 // Zoom States
 #define _AFX_ZOOM_OUT    0
 #define _AFX_ZOOM_MIDDLE 1
@@ -366,131 +260,6 @@ protected:
 
 /////////////////////////////////////////////////////////////////////////////
 // toolbar docking support
-
-class CDockContext
-{
-public:
-// Construction
-	explicit CDockContext(CControlBar* pBar);
-
-// Attributes
-	CRect m_rectLast;
-	CSize m_sizeLast;
-	BOOL m_bDitherLast;
-
-	// Rectangles used during dragging or resizing
-	CRect m_rectDragHorz;
-	CRect m_rectDragVert;
-	CRect m_rectFrameDragHorz;
-	CRect m_rectFrameDragVert;
-
-	CControlBar* m_pBar;        // the toolbar that created this context
-	DWORD m_dwDockStyle;        // allowable dock styles for bar
-	DWORD m_dwOverDockStyle;    // style of dock that rect is over
-	DWORD m_dwStyle;            // style of control bar
-	BOOL m_bFlip;               // if shift key is down
-	BOOL m_bForceFrame;         // if ctrl key is down
-
-	CDC* m_pDC;                 // where to draw during drag
-	BOOL m_bDragging;
-	int m_nHitTest;
-
-	UINT m_uMRUDockID;
-	CRect m_rectMRUDockPos;
-
-	DWORD m_dwMRUFloatStyle;
-
-// Drag Operations
-	void OnKey(int nChar, BOOL bDown);
-
-// Resize Operations
-	void EndResize();
-
-// Double Click Operations
-	virtual void ToggleDocking();
-
-// Operations
-	void InitLoop();
-	void CancelLoop();
-
-// Implementation
-public:
-	virtual ~CDockContext();
-	BOOL Track();
-	void DrawFocusRect(BOOL bRemoveRect = FALSE);
-		// draws the correct outline
-	void UpdateState(BOOL* pFlag, BOOL bNewValue);
-	DWORD CanDock();
-};
-
-/////////////////////////////////////////////////////////////////////////////
-// CControlBarInfo - used for docking serialization
-
-class CControlBarInfo
-{
-public:
-// Implementation
-	CControlBarInfo();
-
-// Attributes
-	UINT m_nBarID;      // ID of this bar
-	BOOL m_bVisible;    // visibility of this bar
-	BOOL m_bFloating;   // whether floating or not
-	BOOL m_bHorz;       // orientation of floating dockbar
-	BOOL m_bDockBar;    // TRUE if a dockbar
-
-	UINT m_nMRUWidth;   // MRUWidth for Dynamic Toolbars
-	BOOL m_bDocking;    // TRUE if this bar has a DockContext
-	UINT m_uMRUDockID;  // most recent docked dockbar
-	CRect m_rectMRUDockPos; // most recent docked position
-	DWORD m_dwMRUFloatStyle; // most recent floating orientation
-
-	CUIntArray m_arrBarID;   // bar IDs for bars contained within this one
-	CControlBar* m_pBar;    // bar which this refers to (transient)
-
-	void Serialize(CArchive& ar, CDockState* pDockState);
-	BOOL LoadState(LPCTSTR lpszProfileName, int nIndex, CDockState* pDockState);
-	BOOL SaveState(LPCTSTR lpszProfileName, int nIndex);
-};
-
-/////////////////////////////////////////////////////////////////////////////
-// CDialogTemplate
-
-class CDialogTemplate
-{
-// Constructors
-public:
-	/* explicit */ CDialogTemplate(const DLGTEMPLATE* pTemplate = NULL);
-	explicit CDialogTemplate(HGLOBAL hGlobal);
-
-// Attributes
-	BOOL HasFont() const;
-	BOOL SetFont(LPCTSTR lpFaceName, WORD nFontSize);
-	BOOL SetSystemFont(WORD nFontSize = 0);
-	BOOL GetFont(CString& strFaceName, WORD& nFontSize) const;
-	void GetSizeInDialogUnits(SIZE* pSize) const;
-	void GetSizeInPixels(SIZE* pSize) const;
-
-	static BOOL AFX_CDECL GetFont(const DLGTEMPLATE* pTemplate,
-		CString& strFaceName, WORD& nFontSize);
-
-// Operations
-	BOOL Load(LPCTSTR lpDialogTemplateID);
-	HGLOBAL Detach();
-
-// Implementation
-public:
-	~CDialogTemplate();
-
-	HGLOBAL m_hTemplate;
-	DWORD m_dwTemplateSize;
-	BOOL m_bSystemFont;
-
-protected:
-	static BYTE* AFX_CDECL GetFontSizeField(const DLGTEMPLATE* pTemplate);
-	static UINT AFX_CDECL GetTemplateSize(const DLGTEMPLATE* pTemplate);
-	BOOL SetTemplate(const DLGTEMPLATE* pTemplate, UINT cb);
-};
 
 /////////////////////////////////////////////////////////////////////////////
 // WM_NOTIFY support

@@ -50,7 +50,7 @@ AFX_MODULE_STATE* AFXAPI AfxSetModuleState(AFX_MODULE_STATE* pNewState) throw()
 
 // AFX_MAINTAIN_STATE functions
 
-AFX_MAINTAIN_STATE::AFX_MAINTAIN_STATE(AFX_MODULE_STATE* pNewState)
+AFX_MAINTAIN_STATE::AFX_MAINTAIN_STATE(AFX_MODULE_STATE* pNewState) throw()
 {
 	m_pPrevModuleState = AfxSetModuleState(pNewState);
 }
@@ -157,7 +157,11 @@ _AFX_THREAD_STATE* AFXAPI AfxGetThreadState()
 	return pState;
 }
 
+#if !defined(__MINGW32__)
 THREAD_LOCAL(_AFX_THREAD_STATE, _afxThreadState)
+#else
+CThreadLocal<_AFX_THREAD_STATE> _afxThreadState;
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // AFX_MODULE_STATE implementation
@@ -366,25 +370,25 @@ AFX_MODULE_THREAD_STATE::~AFX_MODULE_THREAD_STATE()
 	/*if (m_pToolTip != NULL)
 		m_pToolTip->DestroyToolTipCtrl();*/
 
-	delete m_pLastInfo;
+	// delete m_pLastInfo;
 
 	// cleanup temp/permanent maps (just the maps themselves)
-	delete m_pmapHWND;
-	delete m_pmapHMENU;
-	delete m_pmapHDC;
-	delete m_pmapHGDIOBJ;
-	delete m_pmapHIMAGELIST;
+	// delete m_pmapHWND;
+	// delete m_pmapHMENU;
+	// delete m_pmapHDC;
+	// delete m_pmapHGDIOBJ;
+	// delete m_pmapHIMAGELIST;
 
 #ifndef _AFX_NO_SOCKET_SUPPORT
 	// cleanup socket notification list
-	if (m_plistSocketNotifications != NULL)
-		while (!m_plistSocketNotifications->IsEmpty())
-			delete m_plistSocketNotifications->RemoveHead();
+	// if (m_plistSocketNotifications != NULL)
+		// while (!m_plistSocketNotifications->IsEmpty())
+			// delete m_plistSocketNotifications->RemoveHead();
 #ifndef _AFXDLL
 	// cleanup dynamically allocated socket maps
-	delete m_pmapSocketHandle;
-	delete m_pmapDeadSockets;
-	delete m_plistSocketNotifications;
+	// delete m_pmapSocketHandle;
+	// delete m_pmapDeadSockets;
+	// delete m_plistSocketNotifications;
 #endif
 #endif //!_AFX_NO_SOCKET_SUPPORT
 }
@@ -405,7 +409,11 @@ public:
 		{ }
 };
 
+#if !defined(__MINGW32__)
 PROCESS_LOCAL(_AFX_BASE_MODULE_STATE, _afxBaseModuleState)
+#else
+CProcessLocal<_AFX_BASE_MODULE_STATE> _afxBaseModuleState;
+#endif
 
 #ifdef _AFXDLL
 

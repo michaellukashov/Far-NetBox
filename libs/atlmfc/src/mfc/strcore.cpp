@@ -47,16 +47,10 @@ template<> UINT AFXAPI HashKey<CComBSTR> (CComBSTR key)
 	return(uHashVal);
 }
 
-template<>
-void AFXAPI SerializeElements<CComBSTR> (CArchive& ar, CComBSTR* pElements, INT_PTR nCount)
-{
-	SerializeElementsInsertExtract(ar, pElements, nCount);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // CString support for template collections
 
-template<> UINT AFXAPI HashKey<LPCWSTR> (LPCWSTR key)
+/*template<> UINT AFXAPI HashKey<LPCWSTR> (LPCWSTR key)
 {
 	ENSURE_ARG(AfxIsValidString(key));
 
@@ -92,19 +86,7 @@ template<> UINT AFXAPI HashKey<LPCSTR> (LPCSTR key)
 	}
 
 	return(uHashVal);
-}
-
-template<>
-void AFXAPI SerializeElements< CStringA >(CArchive& ar, CStringA* pElements, INT_PTR nCount)
-{
-	SerializeElementsInsertExtract(ar, pElements, nCount);
-}
-
-template<>
-void AFXAPI SerializeElements< CStringW >(CArchive& ar, CStringW* pElements, INT_PTR nCount)
-{
-	SerializeElementsInsertExtract(ar, pElements, nCount);
-}
+}*/
 
 #pragma warning(disable: 4074)
 #pragma init_seg(compiler)

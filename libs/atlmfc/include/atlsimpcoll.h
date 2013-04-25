@@ -16,6 +16,7 @@
 #include <atldef.h>
 #include <atlchecked.h>
 #include <wchar.h>
+#include <atlalloc.h>
 
 #pragma push_macro("malloc")
 #undef malloc

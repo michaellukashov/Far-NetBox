@@ -22,7 +22,84 @@
 #endif
 
 // WinSDKVer.h contains the definition for _WIN32_WINNT_MAXVER (and other maximums).
+#if !defined(__MINGW32__)
 #include <winsdkver.h>
+#else
+
+#define _WIN32_MAXVER           0x0501
+#define _WIN32_WINDOWS_MAXVER   0x0501
+#define NTDDI_MAXVER            0x05010000
+#define _WIN32_IE_MAXVER        0x0700
+#define _WIN32_WINNT_MAXVER     0x0701
+#define WINVER_MAXVER           0x0701
+
+#define _In_
+#define _In_z_
+#define _Ret_z_
+#define _Inout_
+#define _Post_z_
+#define _Inout_opt_
+#define _Inout_opt_z_
+#define _In_opt_z_
+#define _Check_return_
+#define _Out_opt_
+#define _Inout_z_
+#define _Ret_opt_z_
+#define _Printf_format_string_
+#define ClassesAllowedInStream
+#define _Deref_pre_maybenull_
+#define _Deref_post_maybenull_
+#define _Deref_out_opt_
+#define _Deref_out_opt_z_
+#define _Deref_out_
+#define _Deref_out_z_
+#define _Deref_post_opt_valid_
+#define _Deref_opt_out_
+#define _Deref_pre_z_
+
+#define _Pre_notnull_
+#define __format_string
+
+#define _In_opt_count_(x)
+#define _Ret_opt_z_cap_(x)
+#define _Ret_opt_bytecap_(x)
+#define _Ret_opt_bytecap_x_(x)
+#define _Ret_opt_bytecount_x_(x)
+#define _Ret_opt_count_(x)
+#define _In_bytecount_(x)
+#define _Deref_post_cap_(x)
+#define _Inout_cap_(x)
+#define _Out_z_cap_(x)
+#define _Out_z_capcount_(x)
+#define _Out_opt_cap_(x)
+#define _Out_opt_z_cap_(x)
+#define _Inout_z_cap_(x)
+#define _Inout_z_bytecap_(x)
+#define _In_z_count_(x)
+#define _In_z_count_c_(x)
+#define _In_count_(x)
+#define _In_opt_bytecount_(x)
+#define _Prepost_opt_bytecount_x_(x)
+#define _Post_z_count_(x)
+#define _Out_bytecapcount_(x)
+#define _Inout_opt_bytecap_(x)
+#define _Ret_cap_(x)
+#define _Ret_count_x_(x)
+#define _Out_cap_(x)
+#define _Out_capcount_(x)
+#define _In_opt_z_count_(x)
+#define _Out_z_cap_c_(x)
+#define _Inout_z_cap_c_(x)
+#define _Out_bytecap_(x)
+#define _Success_(x)
+
+#define _Out_bytecap_post_bytecount_(x, n)
+#define _Out_bytecap_post_bytecount_(x, n)
+#define _Out_cap_post_count_(x, n)
+#define _Out_z_cap_post_count_(x, n)
+#define _Out_opt_z_cap_post_count_(x, n)
+
+#endif
 
 #ifndef _WIN32_WINNT
 #ifdef WINVER

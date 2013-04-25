@@ -18,11 +18,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // Helper routines that can be called from debugger
 
-void AFXAPI AfxDump(const CObject* pOb)
-{
-	afxDump << pOb;
-}
-
 /////////////////////////////////////////////////////////////////////////////
 // Diagnostic Trace
 
@@ -38,8 +33,6 @@ void AFX_CDECL AfxTrace(LPCTSTR lpszFormat, ...)
 
 	// was there an error? was the expanded string too long?
 	ASSERT(nBuf >= 0);
-
-	afxDump << szBuffer;
 
 	va_end(args);
 }

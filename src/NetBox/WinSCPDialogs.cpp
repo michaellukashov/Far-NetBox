@@ -92,6 +92,7 @@ void TWinSCPDialog::AddStandardButtons(int Shift, bool ButtonsOnly)
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+class TTabButton;
 class TTabbedDialog : public TWinSCPDialog
 {
   friend class TTabButton;

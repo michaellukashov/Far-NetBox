@@ -25,8 +25,8 @@ CSemaphore::CSemaphore(LONG lInitialCount, LONG lMaxCount,
 
 	m_hObject = ::CreateSemaphore(lpsaAttributes, lInitialCount, lMaxCount,
 		pstrName);
-	if (m_hObject == NULL)
-		AfxThrowResourceException();
+	// if (m_hObject == NULL)
+		// AfxThrowResourceException();
 }
 
 CSemaphore::~CSemaphore()
@@ -46,8 +46,8 @@ CMutex::CMutex(BOOL bInitiallyOwn, LPCTSTR pstrName,
 	: CSyncObject(pstrName)
 {
 	m_hObject = ::CreateMutex(lpsaAttribute, bInitiallyOwn, pstrName);
-	if (m_hObject == NULL)
-		AfxThrowResourceException();
+	// if (m_hObject == NULL)
+		// AfxThrowResourceException();
 }
 
 CMutex::~CMutex()
@@ -68,8 +68,8 @@ CEvent::CEvent(BOOL bInitiallyOwn, BOOL bManualReset, LPCTSTR pstrName,
 {
 	m_hObject = ::CreateEvent(lpsaAttribute, bManualReset,
 		bInitiallyOwn, pstrName);
-	if (m_hObject == NULL)
-		AfxThrowResourceException();
+	// if (m_hObject == NULL)
+		// AfxThrowResourceException();
 }
 
 CEvent::~CEvent()

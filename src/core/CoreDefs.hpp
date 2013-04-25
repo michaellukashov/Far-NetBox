@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 
 #define DEFINE_CALLBACK_TYPE0(EVENT, R) \
   typedef R __fastcall (__closure *EVENT)()

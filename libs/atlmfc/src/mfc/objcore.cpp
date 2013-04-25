@@ -67,60 +67,7 @@ CObject* AFX_CDECL AfxStaticDownCast(CRuntimeClass* pClass, CObject* pObject)
 /////////////////////////////////////////////////////////////////////////////
 // Diagnostic Support
 
-#ifdef _DEBUG
-void AFXAPI AfxAssertValidObject(const CObject* pOb,
-	LPCSTR lpszFileName, int nLine)
-{
-	if (pOb == NULL)
-	{
-		TRACE(traceAppMsg, 0, "ASSERT_VALID fails with NULL pointer.\n");
-		if (AfxAssertFailedLine(lpszFileName, nLine))
-			AfxDebugBreak();
-		return;     // quick escape
-	}
-	if (!AfxIsValidAddress(pOb, sizeof(CObject)))
-	{
-		TRACE(traceAppMsg, 0, "ASSERT_VALID fails with illegal pointer.\n");
-		if (AfxAssertFailedLine(lpszFileName, nLine))
-			AfxDebugBreak();
-		return;     // quick escape
-	}
-
-	// check to make sure the VTable pointer is valid
-	ASSERT(sizeof(CObject) == sizeof(void*));
-	if (!AfxIsValidAddress(*(void**)pOb, sizeof(void*), FALSE))
-	{
-		TRACE(traceAppMsg, 0, "ASSERT_VALID fails with illegal vtable pointer.\n");
-		if (AfxAssertFailedLine(lpszFileName, nLine))
-			AfxDebugBreak();
-		return;     // quick escape
-	}
-
-	if (!AfxIsValidAddress(pOb, pOb->GetRuntimeClass()->m_nObjectSize, FALSE))
-	{
-		TRACE(traceAppMsg, 0, "ASSERT_VALID fails with illegal pointer.\n");
-		if (AfxAssertFailedLine(lpszFileName, nLine))
-			AfxDebugBreak();
-		return;     // quick escape
-	}
-	pOb->AssertValid();
-}
-
-void CObject::AssertValid() const
-{
-	ASSERT(this != NULL);
-}
-
-void CObject::Dump(CDumpContext& dc) const
-{
-	dc << "a " << GetRuntimeClass()->m_lpszClassName <<
-		" at " << (void*)this << "\n";
-
-	UNUSED(dc); // unused in release build
-}
-#endif //_DEBUG
-
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 // Allocation/Creation
 
 CObject* CRuntimeClass::CreateObject()
@@ -129,10 +76,6 @@ CObject* CRuntimeClass::CreateObject()
 
 	if (m_pfnCreateObject == NULL)
 	{
-		TRACE(traceAppMsg, 0,
-			_T("Error: Trying to create object which is not ")
-			_T("DECLARE_DYNCREATE \nor DECLARE_SERIAL: %hs.\n"),
-			m_lpszClassName);
 		return NULL;
 	}
 

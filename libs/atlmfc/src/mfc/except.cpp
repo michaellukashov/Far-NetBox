@@ -106,12 +106,12 @@ int CException::ReportError(UINT nType /* = MB_OK */,
 	UINT    nHelpContext;
 
 	if (GetErrorMessage(szErrorMessage, _countof(szErrorMessage), &nHelpContext))
-		nDisposition = AfxMessageBox(szErrorMessage, nType, nHelpContext);
+		nDisposition = 0; // AfxMessageBox(szErrorMessage, nType, nHelpContext);
 	else
 	{
 		if (nError == 0)
 			nError = AFX_IDP_NO_ERROR_AVAILABLE;
-		nDisposition = AfxMessageBox(nError, nType, nHelpContext);
+		nDisposition = 0; // AfxMessageBox(nError, nType, nHelpContext);
 	}
 	return nDisposition;
 }
@@ -216,16 +216,19 @@ BOOL CSimpleException::GetErrorMessage(_Out_z_cap_(nMaxError) LPTSTR lpszError, 
 void __declspec(noreturn) AFXAPI AfxThrowMemoryException()
 {
 	THROW(&_simpleMemoryException);
+  // throw CMemoryException(FALSE, AFX_IDS_MEMORY_EXCEPTION);
 }
 
 void __declspec(noreturn) AFXAPI AfxThrowNotSupportedException()
 {
 	THROW(&_simpleNotSupportedException);
+  // throw CNotSupportedException(FALSE, AFX_IDS_NOT_SUPPORTED_EXCEPTION);
 }
 
 void __declspec(noreturn) AFXAPI AfxThrowInvalidArgException()
 {
 	THROW(&_simpleInvalidArgException);
+  // throw CInvalidArgException(FALSE, AFX_IDS_INVALID_ARG_EXCEPTION);
 }
 
 

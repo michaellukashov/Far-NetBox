@@ -47,14 +47,14 @@ const TCHAR _afxWndOleControl[] = AFX_WNDOLECONTROL;
 
 CWnd::CWnd()
 {
-	m_hWnd = NULL;
+	// m_hWnd = NULL;
 	m_bEnableActiveAccessibility = false;
 	m_bIsTouchWindowRegistered = FALSE;
 	m_hWndOwner = NULL;
 	m_nFlags = 0;
 	m_pfnSuper = NULL;
 	m_nModalResult = 0;
-	m_pDropTarget = NULL;
+	// m_pDropTarget = NULL;
 #ifndef _AFX_NO_OCC_SUPPORT	
 	m_pCtrlCont = NULL;
 	m_pCtrlSite = NULL;
@@ -63,14 +63,14 @@ CWnd::CWnd()
 
 CWnd::CWnd(HWND hWnd)
 {
-	m_hWnd = hWnd;
+	// m_hWnd = hWnd;
 	m_bEnableActiveAccessibility = false;
 	m_bIsTouchWindowRegistered = FALSE;
 	m_hWndOwner = NULL;
 	m_nFlags = 0;
 	m_pfnSuper = NULL;
 	m_nModalResult = 0;
-	m_pDropTarget = NULL;
+	// m_pDropTarget = NULL;
 #ifndef _AFX_NO_OCC_SUPPORT	
 	m_pCtrlCont = NULL;
 	m_pCtrlSite = NULL;
@@ -149,7 +149,7 @@ AFX_STATIC void AFXAPI _AfxPostInitDialog(
 		return;
 
 	// center modal dialog boxes/message boxes
-	pWnd->CenterWindow();
+	// pWnd->CenterWindow();
 }
 
 AFX_STATIC void AFXAPI
@@ -161,16 +161,6 @@ _AfxHandleActivate(CWnd* pWnd, WPARAM nState, CWnd* pWndOther)
 	if (!(pWnd->GetStyle() & WS_CHILD))
 	{
 		CWnd* pTopLevel= pWnd->GetTopLevelParent();
-		if (pTopLevel && (pWndOther == NULL || !::IsWindow(pWndOther->m_hWnd) || pTopLevel != pWndOther->GetTopLevelParent()))
-		{
-			// lParam points to window getting the WM_ACTIVATE message and
-			//  hWndOther from the WM_ACTIVATE.
-			HWND hWnd2[2];
-			hWnd2[0] = pWnd->m_hWnd;
-			hWnd2[1] = pWndOther->GetSafeHwnd();
-			// send it...
-			pTopLevel->SendMessage(WM_ACTIVATETOPLEVEL, nState, (LPARAM)&hWnd2[0]);
-		}
 	}
 }
 
@@ -209,10 +199,6 @@ LRESULT AFXAPI AfxCallWndProc(CWnd* pWnd, HWND hWnd, UINT nMsg,
 	pThreadState->m_lastSentMsg.wParam = wParam;
 	pThreadState->m_lastSentMsg.lParam = lParam;
 
-#ifdef _DEBUG
-	_AfxTraceMsg(_T("WndProc"), &pThreadState->m_lastSentMsg);
-#endif
-
 	// Catch exceptions thrown outside the scope of a callback
 	// in debug builds and warn the user.
 	LRESULT lResult;
@@ -240,8 +226,6 @@ LRESULT AFXAPI AfxCallWndProc(CWnd* pWnd, HWND hWnd, UINT nMsg,
 	CATCH_ALL(e)
 	{
 		lResult = AfxProcessWndProcException(e, &pThreadState->m_lastSentMsg);
-		TRACE(traceAppMsg, 0, "Warning: Uncaught exception in WindowProc (returning %ld).\n",
-			lResult);
 		DELETE_EXCEPTION(e);
 	}
 	END_CATCH_ALL
@@ -272,22 +256,23 @@ LRESULT CWnd::Default()
 CHandleMap* PASCAL afxMapHWND(BOOL bCreate)
 {
 	AFX_MODULE_THREAD_STATE* pState = AfxGetModuleThreadState();
-	if (pState->m_pmapHWND == NULL && bCreate)
+	// if (pState->m_pmapHWND == NULL && bCreate)
 	{
 		BOOL bEnable = AfxEnableMemoryTracking(FALSE);
 #ifndef _AFX_PORTABLE
 		_PNH pnhOldHandler = AfxSetNewHandler(&AfxCriticalNewHandler);
 #endif
-		pState->m_pmapHWND = new CHandleMap(RUNTIME_CLASS(CWnd),
-			ConstructDestruct<CWnd>::Construct, ConstructDestruct<CWnd>::Destruct, 
-			offsetof(CWnd, m_hWnd));
+		// pState->m_pmapHWND = new CHandleMap(RUNTIME_CLASS(CWnd),
+			// ConstructDestruct<CWnd>::Construct, ConstructDestruct<CWnd>::Destruct, 
+			// offsetof(CWnd, m_hWnd));
 
 #ifndef _AFX_PORTABLE
 		AfxSetNewHandler(pnhOldHandler);
 #endif
 		AfxEnableMemoryTracking(bEnable);
 	}
-	return pState->m_pmapHWND;
+	// return pState->m_pmapHWND;
+  return 0;
 }
 
 CWnd* PASCAL CWnd::FromHandle(HWND hWnd)
@@ -300,7 +285,7 @@ CWnd* PASCAL CWnd::FromHandle(HWND hWnd)
 	pWnd->AttachControlSite(pMap);
 #endif
 
-	ASSERT(pWnd == NULL || pWnd->m_hWnd == hWnd);
+	// ASSERT(pWnd == NULL || pWnd->m_hWnd == hWnd);
 	return pWnd;
 }
 
@@ -312,14 +297,14 @@ CWnd* PASCAL CWnd::FromHandlePermanent(HWND hWnd)
 	{
 		// only look in the permanent map - does no allocations
 		pWnd = (CWnd*)pMap->LookupPermanent(hWnd);
-		ASSERT(pWnd == NULL || pWnd->m_hWnd == hWnd);
+		// ASSERT(pWnd == NULL || pWnd->m_hWnd == hWnd);
 	}
 	return pWnd;
 }
 
 BOOL CWnd::Attach(HWND hWndNew)
 {
-	ASSERT(m_hWnd == NULL);     // only attach once, detach on destroy
+	// ASSERT(m_hWnd == NULL);     // only attach once, detach on destroy
 	ASSERT(FromHandlePermanent(hWndNew) == NULL);
 		// must not already be in permanent map
 
@@ -329,7 +314,7 @@ BOOL CWnd::Attach(HWND hWndNew)
 	CHandleMap* pMap = afxMapHWND(TRUE); // create map if not exist
 	ASSERT(pMap != NULL);
 
-	pMap->SetPermanent(m_hWnd = hWndNew, this);
+	// pMap->SetPermanent(m_hWnd = hWndNew, this);
 
 
 #ifndef _AFX_NO_OCC_SUPPORT
@@ -341,20 +326,20 @@ BOOL CWnd::Attach(HWND hWndNew)
 
 HWND CWnd::Detach()
 {
-	HWND hWnd = m_hWnd;
-	if (hWnd != NULL)
-	{
-		CHandleMap* pMap = afxMapHWND(); // don't create if not exist
-		if (pMap != NULL)
-			pMap->RemoveHandle(m_hWnd);
-	m_hWnd = NULL;
-	}
+	// HWND hWnd = m_hWnd;
+	// if (hWnd != NULL)
+	// {
+		// CHandleMap* pMap = afxMapHWND(); // don't create if not exist
+		// if (pMap != NULL)
+			// pMap->RemoveHandle(m_hWnd);
+	// m_hWnd = NULL;
+	// }
 
 #ifndef _AFX_NO_OCC_SUPPORT
 	m_pCtrlSite = NULL;
 #endif
 
-	return hWnd;
+	return 0; // hWnd;
 }
 
 void CWnd::PreSubclassWindow()
@@ -369,16 +354,17 @@ LRESULT CALLBACK
 AfxWndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
 	// special message which identifies the window as using AfxWndProc
-	if (nMsg == WM_QUERYAFXWNDPROC)
-		return 1;
+	// if (nMsg == WM_QUERYAFXWNDPROC)
+		// return 1;
 
 	// all other messages route through message map
-	CWnd* pWnd = CWnd::FromHandlePermanent(hWnd);
-	ASSERT(pWnd != NULL);					
-	ASSERT(pWnd==NULL || pWnd->m_hWnd == hWnd);
-	if (pWnd == NULL || pWnd->m_hWnd != hWnd)
-		return ::DefWindowProc(hWnd, nMsg, wParam, lParam);
-	return AfxCallWndProc(pWnd, hWnd, nMsg, wParam, lParam);
+	// CWnd* pWnd = CWnd::FromHandlePermanent(hWnd);
+	// ASSERT(pWnd != NULL);					
+	// ASSERT(pWnd==NULL || pWnd->m_hWnd == hWnd);
+	// if (pWnd == NULL || pWnd->m_hWnd != hWnd)
+		// return ::DefWindowProc(hWnd, nMsg, wParam, lParam);
+	// return AfxCallWndProc(pWnd, hWnd, nMsg, wParam, lParam);
+  return 0;
 }
 
 // always indirectly accessed via AfxGetAfxWndProc
@@ -450,8 +436,6 @@ _AfxActivationWndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		msg.wParam = wParam;
 		msg.lParam = lParam;
 		lResult = AfxProcessWndProcException(e, &msg);
-		TRACE(traceAppMsg, 0, "Warning: Uncaught exception in _AfxActivationWndProc (returning %ld).\n",
-			lResult);
 		DELETE_EXCEPTION(e);
 	}
 	END_CATCH_ALL
@@ -521,7 +505,7 @@ _AfxCbtFilterHook(int code, WPARAM wParam, LPARAM lParam)
 				WNDCLASSEX wc;
 				memset(&wc, 0, sizeof(WNDCLASSEX));
 				wc.cbSize = sizeof(WNDCLASSEX);
-				s_atomMenu = (ATOM)::AfxCtxGetClassInfoEx(NULL, _T("#32768"), &wc);
+				// s_atomMenu = (ATOM)::AfxCtxGetClassInfoEx(NULL, _T("#32768"), &wc);
 			}
 
 			// Do not subclass menus.
@@ -588,7 +572,7 @@ void AFXAPI AfxHookWindowCreate(CWnd* pWnd)
 	}
 	ASSERT(pThreadState->m_hHookOldCbtFilter != NULL);
 	ASSERT(pWnd != NULL);
-	ASSERT(pWnd->m_hWnd == NULL);   // only do once
+	// ASSERT(pWnd->m_hWnd == NULL);   // only do once
 
 	ASSERT(pThreadState->m_pWndInit == NULL);   // hook not already in progress
 	pThreadState->m_pWndInit = pWnd;
@@ -656,24 +640,16 @@ BOOL CWnd::CreateEx(DWORD dwExStyle, LPCTSTR lpszClassName,
 	}
 
 	AfxHookWindowCreate(this);
-	HWND hWnd = ::AfxCtxCreateWindowEx(cs.dwExStyle, cs.lpszClass,
-			cs.lpszName, cs.style, cs.x, cs.y, cs.cx, cs.cy,
-			cs.hwndParent, cs.hMenu, cs.hInstance, cs.lpCreateParams);
-
-#ifdef _DEBUG
-	if (hWnd == NULL)
-	{
-		TRACE(traceAppMsg, 0, "Warning: Window creation failed: GetLastError returns 0x%8.8X\n",
-			GetLastError());
-	}
-#endif
+	HWND hWnd = 0; // ::AfxCtxCreateWindowEx(cs.dwExStyle, cs.lpszClass,
+			// cs.lpszName, cs.style, cs.x, cs.y, cs.cx, cs.cy,
+			// cs.hwndParent, cs.hMenu, cs.hInstance, cs.lpCreateParams);
 
 	if (!AfxUnhookWindowCreate())
 		PostNcDestroy();        // cleanup if CreateWindowEx fails too soon
 
 	if (hWnd == NULL)
 		return FALSE;
-	ASSERT(hWnd == m_hWnd); // should have been set in send msg hook
+	// ASSERT(hWnd == m_hWnd); // should have been set in send msg hook
 	return TRUE;
 }
 
@@ -717,13 +693,11 @@ BOOL CWnd::Create(LPCTSTR lpszClassName,
 
 CWnd::~CWnd()
 {
-	if (m_hWnd != NULL &&
-		this != (CWnd*)&wndTop && this != (CWnd*)&wndBottom &&
-		this != (CWnd*)&wndTopMost && this != (CWnd*)&wndNoTopMost)
+	// if (m_hWnd != NULL &&
+		// this != (CWnd*)&wndTop && this != (CWnd*)&wndBottom &&
+		// this != (CWnd*)&wndTopMost && this != (CWnd*)&wndNoTopMost)
 	{
-		TRACE(traceAppMsg, 0, _T("Warning: calling DestroyWindow in CWnd::~CWnd; ")
-		   _T("OnDestroy or PostNcDestroy in derived class will not be called.\n"));
-		DestroyWindow();
+		// DestroyWindow();
 	}
 
 #ifndef _AFX_NO_OCC_SUPPORT
@@ -755,63 +729,6 @@ void CWnd::OnDestroy()
 	Default();
 }
 
-// WM_NCDESTROY is the absolute LAST message sent.
-void CWnd::OnNcDestroy()
-{
-	// cleanup main and active windows
-	CWinThread* pThread = AfxGetThread();
-	if (pThread != NULL)
-	{
-		if (pThread->m_pMainWnd == this)
-		{
-			if (!afxContextIsDLL)
-			{
-				// shut down current thread if possible
-				if (pThread != AfxGetApp() || AfxOleCanExitApp())
-					AfxPostQuitMessage(0);
-			}
-			pThread->m_pMainWnd = NULL;
-		}
-		if (pThread->m_pActiveWnd == this)
-			pThread->m_pActiveWnd = NULL;
-	}
-
-#ifndef _AFX_NO_OLE_SUPPORT
-	// cleanup OLE drop target interface
-	if (m_pDropTarget != NULL)
-	{
-		m_pDropTarget->Revoke();
-		m_pDropTarget = NULL;
-	}
-#endif
-
-#ifndef _AFX_NO_OCC_SUPPORT
-	// cleanup control container
-	delete m_pCtrlCont;
-	m_pCtrlCont = NULL;
-#endif
-
-	// cleanup tooltip support
-	if (m_nFlags & WF_TOOLTIPS)
-	{
-	}
-
-	// call default, unsubclass, and detach from the map
-	WNDPROC pfnWndProc = WNDPROC(GetWindowLongPtr(m_hWnd, GWLP_WNDPROC));
-	Default();
-	if (WNDPROC(GetWindowLongPtr(m_hWnd, GWLP_WNDPROC)) == pfnWndProc)
-	{
-		WNDPROC pfnSuper = *GetSuperWndProcAddr();
-		if (pfnSuper != NULL)
-			SetWindowLongPtr(m_hWnd, GWLP_WNDPROC, reinterpret_cast<INT_PTR>(pfnSuper));
-	}
-	Detach();
-	ASSERT(m_hWnd == NULL);
-
-	// call special post-cleanup routine
-	PostNcDestroy();
-}
-
 void CWnd::PostNcDestroy()
 {
 	// default to nothing
@@ -819,108 +736,11 @@ void CWnd::PostNcDestroy()
 
 void CWnd::OnFinalRelease()
 {
-	if (m_hWnd != NULL)
-		DestroyWindow();    // will call PostNcDestroy
-	else
-		PostNcDestroy();
+	// if (m_hWnd != NULL)
+		// DestroyWindow();    // will call PostNcDestroy
+	// else
+		// PostNcDestroy();
 }
-
-#ifdef _DEBUG
-void CWnd::AssertValid() const
-{
-	if (m_hWnd == NULL)
-		return;     // null (unattached) windows are valid
-
-	// check for special wnd??? values
-	ASSERT(HWND_TOP == NULL);       // same as desktop
-	if (m_hWnd == HWND_BOTTOM)
-		ASSERT(this == &CWnd::wndBottom);
-	else if (m_hWnd == HWND_TOPMOST)
-		ASSERT(this == &CWnd::wndTopMost);
-	else if (m_hWnd == HWND_NOTOPMOST)
-		ASSERT(this == &CWnd::wndNoTopMost);
-	else
-	{
-		// should be a normal window
-		ASSERT(::IsWindow(m_hWnd));
-
-		// should also be in the permanent or temporary handle map
-		CHandleMap* pMap = afxMapHWND();
-		ASSERT(pMap != NULL);
-
-		CObject* p=NULL;
-		if(pMap)
-		{
-			ASSERT( (p = pMap->LookupPermanent(m_hWnd)) != NULL ||
-					(p = pMap->LookupTemporary(m_hWnd)) != NULL);
-		}
-		ASSERT((CWnd*)p == this);   // must be us
-
-		// Note: if either of the above asserts fire and you are
-		// writing a multithreaded application, it is likely that
-		// you have passed a C++ object from one thread to another
-		// and have used that object in a way that was not intended.
-		// (only simple inline wrapper functions should be used)
-		//
-		// In general, CWnd objects should be passed by HWND from
-		// one thread to another.  The receiving thread can wrap
-		// the HWND with a CWnd object by using CWnd::FromHandle.
-		//
-		// It is dangerous to pass C++ objects from one thread to
-		// another, unless the objects are designed to be used in
-		// such a manner.
-	}
-}
-
-void CWnd::Dump(CDumpContext& dc) const
-{
-	CObject::Dump(dc);
-
-	dc << "\nm_hWnd = " << (void*)m_hWnd;
-
-	if (m_hWnd == NULL || m_hWnd == HWND_BOTTOM ||
-		m_hWnd == HWND_TOPMOST || m_hWnd == HWND_NOTOPMOST)
-	{
-		// not a normal window - nothing more to dump
-		return;
-	}
-
-	if (!::IsWindow(m_hWnd))
-	{
-		// not a valid window
-		dc << " (illegal HWND)";
-		return; // don't do anything more
-	}
-
-	CWnd* pWnd = CWnd::FromHandlePermanent(m_hWnd);
-	if (pWnd != this)
-		dc << " (Detached or temporary window)";
-	else
-		dc << " (permanent window)";
-
-	// dump out window specific statistics
-	TCHAR szBuf [64];
-	if (!::SendMessage(m_hWnd, WM_QUERYAFXWNDPROC, 0, 0) && pWnd == this)
-		GetWindowText(szBuf, _countof(szBuf));
-	else
-		::DefWindowProc(m_hWnd, WM_GETTEXT, _countof(szBuf), (LPARAM)&szBuf[0]);
-	dc << "\ncaption = \"" << szBuf << "\"";
-
-	::GetClassName(m_hWnd, szBuf, _countof(szBuf));
-	dc << "\nclass name = \"" << szBuf << "\"";
-
-	CRect rect;
-	GetWindowRect(&rect);
-	dc << "\nrect = " << rect;
-	dc << "\nparent CWnd* = " << (void*)GetParent();
-
-	dc << "\nstyle = " << (void*)(DWORD_PTR)::GetWindowLong(m_hWnd, GWL_STYLE);
-	if (::GetWindowLong(m_hWnd, GWL_STYLE) & WS_CHILD)
-		dc << "\nid = " << _AfxGetDlgCtrlID(m_hWnd);
-
-	dc << "\n";
-}
-#endif
 
 BOOL CWnd::DestroyWindow()
 {
@@ -929,37 +749,10 @@ BOOL CWnd::DestroyWindow()
 	HWND hWndOrig;
 	BOOL bResult;
 
-#ifndef _AFX_NO_OCC_SUPPORT
-	if ((m_hWnd == NULL) && (m_pCtrlSite == NULL))
-		return FALSE;
-#endif
-
 	bResult = FALSE;
 	pMap = NULL;
 	pWnd = NULL;
 	hWndOrig = NULL;
-	if (m_hWnd != NULL)
-	{
-		pMap = afxMapHWND();
-		ENSURE(pMap != NULL);
-		pWnd = (CWnd*)pMap->LookupPermanent(m_hWnd);
-#ifdef _DEBUG
-		hWndOrig = m_hWnd;
-#endif
-	}
-
-#ifdef _AFX_NO_OCC_SUPPORT
-	if (m_hWnd != NULL)
-		bResult = ::DestroyWindow(m_hWnd);
-#else //_AFX_NO_OCC_SUPPORT
-	if ((m_hWnd != NULL) || (m_pCtrlSite != NULL))
-	{
-		if (m_pCtrlSite == NULL)
-			bResult = ::DestroyWindow(m_hWnd);
-		else
-			bResult = m_pCtrlSite->DestroyControl();
-	}
-#endif //_AFX_NO_OCC_SUPPORT
 
 	if (hWndOrig != NULL)
 	{
@@ -974,9 +767,6 @@ BOOL CWnd::DestroyWindow()
 		}
 		else
 		{
-#ifdef _DEBUG
-			ASSERT(m_hWnd == hWndOrig);
-#endif
 		// Detach after DestroyWindow called just in case
 			Detach();
 		}
@@ -990,14 +780,15 @@ BOOL CWnd::DestroyWindow()
 
 LRESULT CWnd::DefWindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
-	if (m_pfnSuper != NULL)
-		return ::CallWindowProc(m_pfnSuper, m_hWnd, nMsg, wParam, lParam);
+	// if (m_pfnSuper != NULL)
+		// return ::CallWindowProc(m_pfnSuper, m_hWnd, nMsg, wParam, lParam);
 
-	WNDPROC pfnWndProc;
-	if ((pfnWndProc = *GetSuperWndProcAddr()) == NULL)
-		return ::DefWindowProc(m_hWnd, nMsg, wParam, lParam);
-	else
-		return ::CallWindowProc(pfnWndProc, m_hWnd, nMsg, wParam, lParam);
+	// WNDPROC pfnWndProc;
+	// if ((pfnWndProc = *GetSuperWndProcAddr()) == NULL)
+		// return ::DefWindowProc(m_hWnd, nMsg, wParam, lParam);
+	// else
+		// return ::CallWindowProc(pfnWndProc, m_hWnd, nMsg, wParam, lParam);
+  return 0;
 }
 
 WNDPROC* CWnd::GetSuperWndProcAddr()
@@ -1030,67 +821,7 @@ void PASCAL CWnd::CancelToolTips(BOOL bKeys)
 
 void CWnd::GetWindowText(CString& rString) const
 {
-	ASSERT(::IsWindow(m_hWnd));
-
-#ifndef _AFX_NO_OCC_SUPPORT
-	if (m_pCtrlSite == NULL)
-	{
-#endif
-		int nLen = ::GetWindowTextLength(m_hWnd);
-		::GetWindowText(m_hWnd, rString.GetBufferSetLength(nLen), nLen+1);
-		rString.ReleaseBuffer();
-
-#ifndef _AFX_NO_OCC_SUPPORT
-	}
-	else
-	{
-		m_pCtrlSite->GetWindowText(rString);
-	}
-#endif
-}
-
-int CWnd::GetDlgItemText(int nID, CString& rString) const
-{
-	ASSERT(::IsWindow(m_hWnd));
-	rString = _T("");    // empty without deallocating
-
-#ifndef _AFX_NO_OCC_SUPPORT
-	if (m_pCtrlCont == NULL)
-	{
-#endif
-		HWND hWnd = ::GetDlgItem(m_hWnd, nID);
-		if (hWnd != NULL)
-		{
-			int nLen = ::GetWindowTextLength(hWnd);
-			::GetWindowText(hWnd, rString.GetBufferSetLength(nLen), nLen+1);
-			rString.ReleaseBuffer();
-		}
-
-#ifndef _AFX_NO_OCC_SUPPORT
-	}
-	else
-	{
-		CWnd* pWnd = GetDlgItem(nID);
-		if (pWnd != NULL)
-			pWnd->GetWindowText(rString);
-	}
-#endif
-
-	return (int)rString.GetLength();
-}
-
-BOOL CWnd::GetWindowPlacement(WINDOWPLACEMENT* lpwndpl) const
-{
-	ASSERT(::IsWindow(m_hWnd));
-	lpwndpl->length = sizeof(WINDOWPLACEMENT);
-	return ::GetWindowPlacement(m_hWnd, lpwndpl);
-}
-
-BOOL CWnd::SetWindowPlacement(const WINDOWPLACEMENT* lpwndpl)
-{
-	ASSERT(::IsWindow(m_hWnd));
-	((WINDOWPLACEMENT*)lpwndpl)->length = sizeof(WINDOWPLACEMENT);
-	return ::SetWindowPlacement(m_hWnd, lpwndpl);
+	// ASSERT(::IsWindow(m_hWnd));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1104,8 +835,8 @@ void CWnd::OnDrawItem(int /*nIDCtl*/, LPDRAWITEMSTRUCT lpDrawItemStruct)
 	}
 
 	// reflect notification to child window control
-	if (ReflectLastMsg(lpDrawItemStruct->hwndItem))
-		return;     // eat it
+	// if (ReflectLastMsg(lpDrawItemStruct->hwndItem))
+		// return;     // eat it
 
 	// not handled - do default
 	Default();
@@ -1116,8 +847,8 @@ int CWnd::OnCompareItem(int /*nIDCtl*/, LPCOMPAREITEMSTRUCT lpCompareItemStruct)
 {
 	// reflect notification to child window control
 	LRESULT lResult;
-	if (ReflectLastMsg(lpCompareItemStruct->hwndItem, &lResult))
-		return (int)lResult;        // eat it
+	// if (ReflectLastMsg(lpCompareItemStruct->hwndItem, &lResult))
+		// return (int)lResult;        // eat it
 
 	// not handled - do default
 	return (int)Default();
@@ -1126,8 +857,8 @@ int CWnd::OnCompareItem(int /*nIDCtl*/, LPCOMPAREITEMSTRUCT lpCompareItemStruct)
 void CWnd::OnDeleteItem(int /*nIDCtl*/, LPDELETEITEMSTRUCT lpDeleteItemStruct)
 {
 	// reflect notification to child window control
-	if (ReflectLastMsg(lpDeleteItemStruct->hwndItem))
-		return;     // eat it
+	// if (ReflectLastMsg(lpDeleteItemStruct->hwndItem))
+		// return;     // eat it
 	// not handled - do default
 	Default();
 }
@@ -1140,8 +871,6 @@ void CWnd::OnMeasureItem(int /*nIDCtl*/, LPMEASUREITEMSTRUCT lpMeasureItemStruct
 		ASSERT(lpMeasureItemStruct->CtlID == 0);
 
 		{
-			TRACE(traceAppMsg, 0, "Warning: unknown WM_MEASUREITEM for menu item 0x%04X.\n",
-				lpMeasureItemStruct->itemID);
 		}
 	}
 	else
@@ -1159,19 +888,19 @@ void CWnd::OnMeasureItem(int /*nIDCtl*/, LPMEASUREITEMSTRUCT lpMeasureItemStruct
 BOOL AFXAPI AfxRegisterClass(WNDCLASS* lpWndClass)
 {
 	WNDCLASS wndcls;		
-	if (AfxCtxGetClassInfo(lpWndClass->hInstance, lpWndClass->lpszClassName,
-		&wndcls))
+	// if (AfxCtxGetClassInfo(lpWndClass->hInstance, lpWndClass->lpszClassName,
+		// &wndcls))
 	{
 		// class already registered
 		return TRUE;
 	}
 
-	if (!::AfxCtxRegisterClass(lpWndClass))
-	{
-		TRACE(traceAppMsg, 0, _T("Can't register window class named %s\n"),
-			lpWndClass->lpszClassName);
-		return FALSE;
-	}
+	// if (!::AfxCtxRegisterClass(lpWndClass))
+	// {
+		// TRACE(traceAppMsg, 0, _T("Can't register window class named %s\n"),
+			// lpWndClass->lpszClassName);
+		// return FALSE;
+	// }
 
 	BOOL bRet = TRUE;
 
@@ -1220,7 +949,7 @@ LPCTSTR AFXAPI AfxRegisterWndClass(UINT nClassStyle,
 	
 	// see if the class already exists
 	WNDCLASS wndcls;
-	if (::AfxCtxGetClassInfo(hInst, lpszName, &wndcls))
+	/*if (::AfxCtxGetClassInfo(hInst, lpszName, &wndcls))
 	{
 		// already registered, assert everything is good
 		ASSERT(wndcls.style == nClassStyle);
@@ -1230,7 +959,7 @@ LPCTSTR AFXAPI AfxRegisterWndClass(UINT nClassStyle,
 		//  some internal translation or copying of those handles before
 		//  storing them in the internal WNDCLASS retrieved by GetClassInfo.
 		return lpszName;
-	}
+	}*/
 
 	// otherwise we need to register a new class
 	wndcls.style = nClassStyle;
@@ -1242,8 +971,8 @@ LPCTSTR AFXAPI AfxRegisterWndClass(UINT nClassStyle,
 	wndcls.hbrBackground = hbrBackground;
 	wndcls.lpszMenuName = NULL;
 	wndcls.lpszClassName = lpszName;
-	if (!AfxRegisterClass(&wndcls))
-		AfxThrowResourceException();
+	// if (!AfxRegisterClass(&wndcls))
+		// AfxThrowResourceException();
 
 	// return thread-local pointer
 	return lpszName;
@@ -1279,45 +1008,47 @@ LRESULT CWnd::OnNTCtlColor(WPARAM wParam, LPARAM lParam)
 
 BOOL CWnd::RegisterTouchWindow(BOOL bRegister, ULONG ulFlags)
 {
-	m_bIsTouchWindowRegistered = FALSE;
+	// m_bIsTouchWindowRegistered = FALSE;
 	
-	static HMODULE hUserDll = AfxCtxLoadLibrary(_T("user32.dll"));
-	ENSURE(hUserDll != NULL);
+	// static HMODULE hUserDll = AfxCtxLoadLibrary(_T("user32.dll"));
+	// ENSURE(hUserDll != NULL);
 
-	typedef	BOOL (__stdcall *PFNREGISTERTOUCHWINDOW)(HWND, ULONG);
-	typedef	BOOL (__stdcall *PFNUNREGISTERTOUCHWINDOW)(HWND);
+	// typedef	BOOL (__stdcall *PFNREGISTERTOUCHWINDOW)(HWND, ULONG);
+	// typedef	BOOL (__stdcall *PFNUNREGISTERTOUCHWINDOW)(HWND);
 
-	static PFNREGISTERTOUCHWINDOW pfRegister = (PFNREGISTERTOUCHWINDOW)GetProcAddress(hUserDll, "RegisterTouchWindow");
-	static PFNUNREGISTERTOUCHWINDOW pfUnregister = (PFNUNREGISTERTOUCHWINDOW)GetProcAddress(hUserDll, "UnregisterTouchWindow");
+	// static PFNREGISTERTOUCHWINDOW pfRegister = (PFNREGISTERTOUCHWINDOW)GetProcAddress(hUserDll, "RegisterTouchWindow");
+	// static PFNUNREGISTERTOUCHWINDOW pfUnregister = (PFNUNREGISTERTOUCHWINDOW)GetProcAddress(hUserDll, "UnregisterTouchWindow");
 
-	if (pfRegister == NULL || pfUnregister == NULL)
-	{
-		return FALSE;
-	}
+	// if (pfRegister == NULL || pfUnregister == NULL)
+	// {
+		// return FALSE;
+	// }
 
-	if (!bRegister)
-	{
-		return (*pfUnregister)(GetSafeHwnd());
-	}
+	// if (!bRegister)
+	// {
+		// return (*pfUnregister)(GetSafeHwnd());
+	// }
 	
-	m_bIsTouchWindowRegistered = (*pfRegister)(GetSafeHwnd(), ulFlags);
-	return m_bIsTouchWindowRegistered;
+	// m_bIsTouchWindowRegistered = (*pfRegister)(GetSafeHwnd(), ulFlags);
+	// return m_bIsTouchWindowRegistered;
+  return false;
 }
 
 BOOL CWnd::IsTouchWindow() const
 {
-	static HMODULE hUserDll = AfxCtxLoadLibrary(_T("user32.dll"));
-	ENSURE(hUserDll != NULL);
+	// static HMODULE hUserDll = AfxCtxLoadLibrary(_T("user32.dll"));
+	// ENSURE(hUserDll != NULL);
 
-	typedef	BOOL (__stdcall *PFNISTOUCHWINDOW)(HWND);
-	static PFNISTOUCHWINDOW pfIsTouchWindow = (PFNISTOUCHWINDOW)GetProcAddress(hUserDll, "IsTouchWindow");
+	// typedef	BOOL (__stdcall *PFNISTOUCHWINDOW)(HWND);
+	// static PFNISTOUCHWINDOW pfIsTouchWindow = (PFNISTOUCHWINDOW)GetProcAddress(hUserDll, "IsTouchWindow");
 
-	if (pfIsTouchWindow == NULL)
-	{
-		return FALSE;
-	}
+	// if (pfIsTouchWindow == NULL)
+	// {
+		// return FALSE;
+	// }
 
-	return (*pfIsTouchWindow)(GetSafeHwnd());
+	// return (*pfIsTouchWindow)(GetSafeHwnd());
+	return false;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1336,25 +1067,24 @@ _AFX_HTMLHELP_STATE::~_AFX_HTMLHELP_STATE()
 // Message table implementation
 
 BEGIN_MESSAGE_MAP(CWnd, CCmdTarget)
-	ON_MESSAGE(WM_CTLCOLORSTATIC, &CWnd::OnNTCtlColor)
-	ON_MESSAGE(WM_CTLCOLOREDIT, &CWnd::OnNTCtlColor)
-	ON_MESSAGE(WM_CTLCOLORBTN, &CWnd::OnNTCtlColor)
-	ON_MESSAGE(WM_CTLCOLORLISTBOX, &CWnd::OnNTCtlColor)
-	ON_MESSAGE(WM_CTLCOLORDLG, &CWnd::OnNTCtlColor)
-	ON_MESSAGE(WM_CTLCOLORMSGBOX, &CWnd::OnNTCtlColor)
-	ON_MESSAGE(WM_CTLCOLORSCROLLBAR, &CWnd::OnNTCtlColor)
+	// ON_MESSAGE(WM_CTLCOLORSTATIC, &CWnd::OnNTCtlColor)
+	// ON_MESSAGE(WM_CTLCOLOREDIT, &CWnd::OnNTCtlColor)
+	// ON_MESSAGE(WM_CTLCOLORBTN, &CWnd::OnNTCtlColor)
+	// ON_MESSAGE(WM_CTLCOLORLISTBOX, &CWnd::OnNTCtlColor)
+	// ON_MESSAGE(WM_CTLCOLORDLG, &CWnd::OnNTCtlColor)
+	// ON_MESSAGE(WM_CTLCOLORMSGBOX, &CWnd::OnNTCtlColor)
+	// ON_MESSAGE(WM_CTLCOLORSCROLLBAR, &CWnd::OnNTCtlColor)
 	//{{AFX_MSG_MAP(CWnd)
     ON_WM_SETFOCUS()
-	ON_WM_DRAWITEM()
-	ON_WM_MEASUREITEM()
-	ON_WM_CTLCOLOR()
+	// ON_WM_DRAWITEM()
+	// ON_WM_MEASUREITEM()
+	// ON_WM_CTLCOLOR()
 	ON_WM_COMPAREITEM()
 	ON_WM_ENTERIDLE()
 	ON_WM_DELETEITEM()
-	ON_WM_NCDESTROY()
 	ON_WM_PARENTNOTIFY()
-	ON_WM_SYSCOLORCHANGE()
-	ON_WM_HELPINFO()
+	// ON_WM_SYSCOLORCHANGE()
+	// ON_WM_HELPINFO()
 	ON_WM_SETTINGCHANGE()
 	//}}AFX_MSG_MAP
 #ifndef _AFX_NO_OCC_SUPPORT
@@ -1362,7 +1092,7 @@ BEGIN_MESSAGE_MAP(CWnd, CCmdTarget)
 #endif
 	ON_MESSAGE(WM_ACTIVATETOPLEVEL, &CWnd::OnActivateTopLevel)
 	ON_MESSAGE(WM_DISPLAYCHANGE, &CWnd::OnDisplayChange)
-	ON_REGISTERED_MESSAGE(CWnd::m_nMsgDragList, &CWnd::OnDragList)
+	// ON_REGISTERED_MESSAGE(CWnd::m_nMsgDragList, &CWnd::OnDragList)
 	ON_MESSAGE(WM_GETOBJECT, &CWnd::OnGetObject)
 END_MESSAGE_MAP()
 
@@ -1432,10 +1162,10 @@ AfxFindMessageEntry(const AFX_MSGMAP_ENTRY* lpEntry,
 /////////////////////////////////////////////////////////////////////////////
 // Cache of most recently sent messages
 
-#ifndef iHashMax
+// #ifndef iHashMax
 // iHashMax must be a power of two
-	#define iHashMax 512
-#endif
+	#define iHashMax 16 // 512
+// #endif
 
 struct AFX_MSG_CACHE
 {
@@ -1596,9 +1326,6 @@ LDispatch:
 	default:
 		ASSERT(FALSE);
 		break;
-	case AfxSig_b_D_v:
-		lResult = (this->*mmf.pfn_b_D)(CDC::FromHandle(reinterpret_cast<HDC>(wParam)));
-		break;
 
 	case AfxSig_b_b_v:
 		lResult = (this->*mmf.pfn_b_b)(static_cast<BOOL>(wParam));
@@ -1648,53 +1375,7 @@ LDispatch:
 		lResult = (this->*mmf.pfn_b_HELPINFO)(reinterpret_cast<LPHELPINFO>(lParam));
 		break;
 
-	case AfxSig_CTLCOLOR:
-		{
-			// special case for OnCtlColor to avoid too many temporary objects
-			ASSERT(message == WM_CTLCOLOR);
-			AFX_CTLCOLOR* pCtl = reinterpret_cast<AFX_CTLCOLOR*>(lParam);
-			CDC dcTemp; 
-			dcTemp.m_hDC = pCtl->hDC;
-			CWnd wndTemp; 
-			wndTemp.m_hWnd = pCtl->hWnd;
-			UINT nCtlType = pCtl->nCtlType;
-			// if not coming from a permanent window, use stack temporary
-			CWnd* pWnd = CWnd::FromHandlePermanent(wndTemp.m_hWnd);
-			if (pWnd == NULL)
-			{
-#ifndef _AFX_NO_OCC_SUPPORT
-				// determine the site of the OLE control if it is one
-				COleControlSite* pSite;
-				if (m_pCtrlCont != NULL && (pSite = (COleControlSite*)
-					m_pCtrlCont->m_siteMap.GetValueAt(wndTemp.m_hWnd)) != NULL)
-				{
-					wndTemp.m_pCtrlSite = pSite;
-				}
-#endif
-				pWnd = &wndTemp;
-			}
-			HBRUSH hbr = (this->*mmf.pfn_B_D_W_u)(&dcTemp, pWnd, nCtlType);
-			// fast detach of temporary objects
-			dcTemp.m_hDC = NULL;
-			wndTemp.m_hWnd = NULL;
-			lResult = reinterpret_cast<LRESULT>(hbr);
-		}
-		break;
 
-	case AfxSig_CTLCOLOR_REFLECT:
-		{
-			// special case for CtlColor to avoid too many temporary objects
-			ASSERT(message == WM_REFLECT_BASE+WM_CTLCOLOR);
-			AFX_CTLCOLOR* pCtl = reinterpret_cast<AFX_CTLCOLOR*>(lParam);
-			CDC dcTemp; 
-			dcTemp.m_hDC = pCtl->hDC;
-			UINT nCtlType = pCtl->nCtlType;
-			HBRUSH hbr = (this->*mmf.pfn_B_D_u)(&dcTemp, nCtlType);
-			// fast detach of temporary objects
-			dcTemp.m_hDC = NULL;
-			lResult = reinterpret_cast<LRESULT>(hbr);
-		}
-		break;
 
 	case AfxSig_i_u_W_u:
 		lResult = (this->*mmf.pfn_i_u_W_u)(LOWORD(wParam),
@@ -1765,16 +1446,6 @@ LDispatch:
 
 	case AfxSig_v_w_l:
 		(this->*mmf.pfn_v_w_l)(wParam, lParam);
-		break;
-
-	case AfxSig_MDIACTIVATE:
-		(this->*mmf.pfn_v_b_W_W)(m_hWnd == reinterpret_cast<HWND>(lParam),
-			CWnd::FromHandle(reinterpret_cast<HWND>(lParam)),
-			CWnd::FromHandle(reinterpret_cast<HWND>(wParam)));
-		break;
-
-	case AfxSig_v_D_v:
-		(this->*mmf.pfn_v_D)(CDC::FromHandle(reinterpret_cast<HDC>(wParam)));
 		break;
 
 	case AfxSig_v_M_v:
@@ -1867,9 +1538,9 @@ LDispatch:
 	case AfxSig_u_u_u:
 		lResult = (this->*mmf.pfn_u_u_u)(static_cast<UINT>(wParam), static_cast<UINT>(lParam));
 		break;
-	case AfxSig_INPUTDEVICECHANGE:
-		(this->*mmf.pfn_INPUTDEVICECHANGE)(GET_DEVICE_CHANGE_WPARAM(wParam), reinterpret_cast<HANDLE>(lParam));
-		break;
+	// case AfxSig_INPUTDEVICECHANGE:
+		// (this->*mmf.pfn_INPUTDEVICECHANGE)(GET_DEVICE_CHANGE_WPARAM(wParam), reinterpret_cast<HANDLE>(lParam));
+		// break;
 	case AfxSig_v_u_hkl:
 		(this->*mmf.pfn_v_u_h)(static_cast<UINT>(wParam), reinterpret_cast<HKL>(lParam));
 		break;
@@ -1955,7 +1626,6 @@ BOOL CWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 		OnCmdMsg(nID, CN_UPDATE_COMMAND_UI, &state, NULL);
 		if (!state.m_bEnabled)
 		{
-			TRACE(traceAppMsg, 0, "Warning: not executing disabled command %d\n", nID);
 			return TRUE;
 		}
 
@@ -1967,23 +1637,14 @@ BOOL CWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 		// control notification
 		ASSERT(nID == 0 || ::IsWindow(hWndCtrl));
 
-		if (_afxThreadState->m_hLockoutNotifyWindow == m_hWnd)
-			return TRUE;        // locked out - ignore control notification
-
 		// reflect notification to child window control
-		if (ReflectLastMsg(hWndCtrl))
-			return TRUE;    // eaten by child
+		// if (ReflectLastMsg(hWndCtrl))
+			// return TRUE;    // eaten by child
 
 		// zero IDs for normal commands are not allowed
 		if (nID == 0)
 			return FALSE;
 	}
-
-#ifdef _DEBUG
-	if (nCode < 0 && nCode != (int)0x8000)
-		TRACE(traceAppMsg, 0, "Implementation Warning: control notification = $%X.\n",
-			nCode);
-#endif
 
 	return OnCmdMsg(nID, nCode, NULL, NULL);
 }
@@ -2001,12 +1662,9 @@ BOOL CWnd::OnNotify(WPARAM, LPARAM lParam, LRESULT* pResult)
 	ASSERT(hWndCtrl != NULL);
 	ASSERT(::IsWindow(hWndCtrl));
 
-	if (_afxThreadState->m_hLockoutNotifyWindow == m_hWnd)
-		return TRUE;        // locked out - ignore control notification
-
 	// reflect notification to child window control
-	if (ReflectLastMsg(hWndCtrl, pResult))
-		return TRUE;        // eaten by child
+	// if (ReflectLastMsg(hWndCtrl, pResult))
+		// return TRUE;        // eaten by child
 
 	AFX_NOTIFY notify;
 	notify.pResult = pResult;
@@ -2033,12 +1691,7 @@ CWnd* CWnd::GetTopLevelParent() const
 
 	ASSERT_VALID(this);
 
-	HWND hWndParent = m_hWnd;
-	HWND hWndT;
-	while ((hWndT = AfxGetParentOwner(hWndParent)) != NULL)
-		hWndParent = hWndT;
-
-	return CWnd::FromHandle(hWndParent);
+	return NULL; // CWnd::FromHandle(hWndParent);
 }
 
 CWnd* CWnd::GetTopLevelOwner() const
@@ -2048,12 +1701,7 @@ CWnd* CWnd::GetTopLevelOwner() const
 
 	ASSERT_VALID(this);
 
-	HWND hWndOwner = m_hWnd;
-	HWND hWndT;
-	while ((hWndT = ::GetWindow(hWndOwner, GW_OWNER)) != NULL)
-		hWndOwner = hWndT;
-
-	return CWnd::FromHandle(hWndOwner);
+	return 0; // CWnd::FromHandle(hWndOwner);
 }
 
 CWnd* CWnd::GetParentOwner() const
@@ -2063,20 +1711,11 @@ CWnd* CWnd::GetParentOwner() const
 
 	ASSERT_VALID(this);
 
-	HWND hWndParent = m_hWnd;
-	HWND hWndT;
-	while ((::GetWindowLong(hWndParent, GWL_STYLE) & WS_CHILD) &&
-		(hWndT = ::GetParent(hWndParent)) != NULL)
-	{
-		hWndParent = hWndT;
-	}
-
-	return CWnd::FromHandle(hWndParent);
+	return 0; // CWnd::FromHandle(hWndParent);
 }
 
 BOOL CWnd::IsTopParentActive() const
 {
-	ASSERT(m_hWnd != NULL);
 	ASSERT_VALID(this);
 
 	return false;
@@ -2086,16 +1725,11 @@ void CWnd::ActivateTopParent()
 {
 	// special activate logic for floating toolbars and palettes
 	CWnd* pActiveWnd = GetForegroundWindow();
-	if (pActiveWnd == NULL || !(pActiveWnd->m_hWnd == m_hWnd || ::IsChild(pActiveWnd->m_hWnd, m_hWnd)))
-	{
-		// clicking on floating frame when it does not have
-		// focus itself -- activate the toplevel frame instead.
-	}
 }
 
 CWnd* PASCAL CWnd::GetSafeOwner(CWnd* pParent, HWND* pWndTop)
 {
-	HWND hWnd = GetSafeOwner_(pParent->GetSafeHwnd(), pWndTop);
+	HWND hWnd = 0; // GetSafeOwner_(pParent->GetSafeHwnd(), pWndTop);
 	return CWnd::FromHandle(hWnd);
 }
 
@@ -2103,7 +1737,7 @@ int CWnd::MessageBox(LPCTSTR lpszText, LPCTSTR lpszCaption, UINT nType)
 {
 	if (lpszCaption == NULL)
 		lpszCaption = AfxGetAppName();
-	int nResult = ::AfxCtxMessageBox(GetSafeHwnd(), lpszText, lpszCaption, nType);
+	int nResult = 0; // ::AfxCtxMessageBox(GetSafeHwnd(), lpszText, lpszCaption, nType);
 	return nResult;
 }
 
@@ -2160,7 +1794,7 @@ void PASCAL CWnd::SendMessageToDescendants(HWND hWnd, UINT message,
 			if (pWnd != NULL)
 			{
 				// call window proc directly since it is a C++ window
-				AfxCallWndProc(pWnd, pWnd->m_hWnd, message, wParam, lParam);
+				// AfxCallWndProc(pWnd, pWnd->m_hWnd, message, wParam, lParam);
 			}
 		}
 		else
@@ -2184,219 +1818,6 @@ void PASCAL CWnd::SendMessageToDescendants(HWND hWnd, UINT message,
 // if the window doesn't have a _visible_ windows scrollbar - then
 //   look for a sibling with the appropriate ID
 
-int CWnd::SetScrollPos(int nBar, int nPos, BOOL bRedraw)
-{
-  return 0;
-}
-
-int CWnd::GetScrollPos(int nBar) const
-{
-  return 0;
-}
-
-void CWnd::SetScrollRange(int nBar, int nMinPos, int nMaxPos, BOOL bRedraw)
-{
-}
-
-void CWnd::GetScrollRange(int nBar, LPINT lpMinPos, LPINT lpMaxPos) const
-{
-}
-
-// Turn on/off non-control scrollbars
-//   for WS_?SCROLL scrollbars - show/hide them
-//   for control scrollbar - enable/disable them
-void CWnd::EnableScrollBarCtrl(int nBar, BOOL bEnable)
-{
-}
-
-BOOL CWnd::SetScrollInfo(int nBar, LPSCROLLINFO lpScrollInfo, BOOL bRedraw)
-{
-	ASSERT(lpScrollInfo != NULL);
-
-	HWND hWnd = m_hWnd;
-	::SetScrollInfo(hWnd, nBar, lpScrollInfo, bRedraw);
-	return TRUE;
-}
-
-BOOL CWnd::GetScrollInfo(int nBar, LPSCROLLINFO lpScrollInfo, UINT nMask)
-{
-	ASSERT(lpScrollInfo != NULL);
-
-	HWND hWnd = m_hWnd;
-	lpScrollInfo->cbSize = sizeof(*lpScrollInfo);
-	lpScrollInfo->fMask = nMask;
-	return ::GetScrollInfo(hWnd, nBar, lpScrollInfo);
-}
-
-int CWnd::GetScrollLimit(int nBar)
-{
-	int nMin, nMax;
-	GetScrollRange(nBar, &nMin, &nMax);
-	SCROLLINFO info;
-	if (GetScrollInfo(nBar, &info, SIF_PAGE))
-	{
-		nMax -= __max(info.nPage-1,0);
-	}
-	return nMax;
-}
-
-void CWnd::ScrollWindow(int xAmount, int yAmount,
-	LPCRECT lpRect, LPCRECT lpClipRect)
-{
-	ASSERT(::IsWindow(m_hWnd));
-
-	if (IsWindowVisible() || lpRect != NULL || lpClipRect != NULL)
-	{
-		// When visible, let Windows do the scrolling
-		::ScrollWindow(m_hWnd, xAmount, yAmount, lpRect, lpClipRect);
-	}
-	else
-	{
-		// Windows does not perform any scrolling if the window is
-		// not visible.  This leaves child windows unscrolled.
-		// To account for this oversight, the child windows are moved
-		// directly instead.
-		HWND hWndChild = ::GetWindow(m_hWnd, GW_CHILD);
-		if (hWndChild != NULL)
-		{
-			for (; hWndChild != NULL;
-				hWndChild = ::GetNextWindow(hWndChild, GW_HWNDNEXT))
-			{
-				CRect rect;
-				::GetWindowRect(hWndChild, &rect);
-				ScreenToClient(&rect);
-				::SetWindowPos(hWndChild, NULL,
-					rect.left+xAmount, rect.top+yAmount, 0, 0,
-					SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOZORDER);
-			}
-		}
-	}
-
-#ifndef _AFX_NO_OCC_SUPPORT
-
-	if ((m_pCtrlCont == NULL) || (lpRect != NULL))
-		return;
-
-	// the following code is for OLE control containers only
-
-	m_pCtrlCont->ScrollChildren(xAmount, yAmount);
-
-#endif // !_AFX_NO_OCC_SUPPORT
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// minimal layout support
-
-void CWnd::RepositionBars(UINT nIDFirst, UINT nIDLast, UINT nIDLeftOver,
-	UINT nFlags, LPRECT lpRectParam, LPCRECT lpRectClient, BOOL bStretch)
-{
-	ASSERT(nFlags == 0 || (nFlags & ~reposNoPosLeftOver) == reposQuery || 
-			(nFlags & ~reposNoPosLeftOver) == reposExtra);
-
-	// walk kids in order, control bars get the resize notification
-	//   which allow them to shrink the client area
-	// remaining size goes to the 'nIDLeftOver' pane
-	// NOTE: nIDFirst->nIDLast are usually 0->0xffff
-
-	AFX_SIZEPARENTPARAMS layout;
-	HWND hWndLeftOver = NULL;
-
-	layout.bStretch = bStretch;
-	layout.sizeTotal.cx = layout.sizeTotal.cy = 0;
-	if (lpRectClient != NULL)
-		layout.rect = *lpRectClient;    // starting rect comes from parameter
-	else
-		GetClientRect(&layout.rect);    // starting rect comes from client rect
-
-	if ((nFlags & ~reposNoPosLeftOver) != reposQuery)
-		layout.hDWP = ::BeginDeferWindowPos(8); // reasonable guess
-	else
-		layout.hDWP = NULL; // not actually doing layout
-
-	for (HWND hWndChild = ::GetTopWindow(m_hWnd); hWndChild != NULL;
-		hWndChild = ::GetNextWindow(hWndChild, GW_HWNDNEXT))
-	{
-		UINT_PTR nIDC = _AfxGetDlgCtrlID(hWndChild);
-		CWnd* pWnd = CWnd::FromHandlePermanent(hWndChild);
-		if (nIDC == nIDLeftOver)
-			hWndLeftOver = hWndChild;
-		else if (nIDC >= nIDFirst && nIDC <= nIDLast && pWnd != NULL)
-			::SendMessage(hWndChild, WM_SIZEPARENT, 0, (LPARAM)&layout);
-	}
-
-	// if just getting the available rectangle, return it now...
-	if ((nFlags & ~reposNoPosLeftOver) == reposQuery)
-	{
-		ASSERT(lpRectParam != NULL);
-		if (bStretch)
-			::CopyRect(lpRectParam, &layout.rect);
-		else
-		{
-			lpRectParam->left = lpRectParam->top = 0;
-			lpRectParam->right = layout.sizeTotal.cx;
-			lpRectParam->bottom = layout.sizeTotal.cy;
-		}
-		return;
-	}
-
-	// the rest is the client size of the left-over pane
-	if (nIDLeftOver != 0 && hWndLeftOver != NULL)
-	{
-		CWnd* pLeftOver = CWnd::FromHandle(hWndLeftOver);
-		// allow extra space as specified by lpRectBorder
-		if ((nFlags & ~reposNoPosLeftOver) == reposExtra)
-		{
-			ASSERT(lpRectParam != NULL);
-			layout.rect.left += lpRectParam->left;
-			layout.rect.top += lpRectParam->top;
-			layout.rect.right -= lpRectParam->right;
-			layout.rect.bottom -= lpRectParam->bottom;
-		}
-		// reposition the window
-		if ((nFlags & reposNoPosLeftOver) != reposNoPosLeftOver)
-		{
-			pLeftOver->CalcWindowRect(&layout.rect);
-			AfxRepositionWindow(&layout, hWndLeftOver, &layout.rect);
-		}
-	}
-
-	// move and resize all the windows at once!
-	if (layout.hDWP == NULL || !::EndDeferWindowPos(layout.hDWP))
-		TRACE(traceAppMsg, 0, "Warning: DeferWindowPos failed - low system resources.\n");
-}
-
-void AFXAPI AfxRepositionWindow(AFX_SIZEPARENTPARAMS* lpLayout,
-	HWND hWnd, LPCRECT lpRect)
-{
-	ASSERT(hWnd != NULL);
-	ASSERT(lpRect != NULL);
-	HWND hWndParent = ::GetParent(hWnd);
-	ASSERT(hWndParent != NULL);
-
-	if (lpLayout != NULL && lpLayout->hDWP == NULL)
-		return;
-
-	// first check if the new rectangle is the same as the current
-	CRect rectOld;
-	::GetWindowRect(hWnd, rectOld);
-	if (::EqualRect(rectOld, lpRect))
-		return;     // nothing to do
-
-	// try to use DeferWindowPos for speed, otherwise use SetWindowPos
-	if (lpLayout != NULL)
-	{
-		lpLayout->hDWP = ::DeferWindowPos(lpLayout->hDWP, hWnd, NULL,
-			lpRect->left, lpRect->top,  lpRect->right - lpRect->left,
-			lpRect->bottom - lpRect->top, SWP_NOACTIVATE|SWP_NOZORDER);
-	}
-	else
-	{
-		::SetWindowPos(hWnd, NULL, lpRect->left, lpRect->top,
-			lpRect->right - lpRect->left, lpRect->bottom - lpRect->top,
-			SWP_NOACTIVATE|SWP_NOZORDER);
-	}
-}
-
 void CWnd::CalcWindowRect(LPRECT lpClientRect, UINT nAdjustType)
 {
 	DWORD dwExStyle = GetExStyle();
@@ -2406,53 +1827,6 @@ void CWnd::CalcWindowRect(LPRECT lpClientRect, UINT nAdjustType)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// Special keyboard/system command processing
-
-BOOL CWnd::HandleFloatingSysCommand(UINT nID, LPARAM lParam)
-{
-	CWnd* pParent = GetTopLevelParent();
-	switch (nID & 0xfff0)
-	{
-	case SC_PREVWINDOW:
-	case SC_NEXTWINDOW:
-		if (LOWORD(lParam) == VK_F6 && pParent != NULL)
-		{
-			pParent->SetFocus();
-			return TRUE;
-		}
-		break;
-
-	case SC_CLOSE:
-	case SC_KEYMENU:
-		// Check lParam.  If it is 0L, then the user may have done
-		// an Alt+Tab, so just ignore it.  This breaks the ability to
-		// just press the Alt-key and have the first menu selected,
-		// but this is minor compared to what happens in the Alt+Tab
-		// case.
-		if ((nID & 0xfff0) == SC_CLOSE || lParam != 0L)
-		{
-			if (pParent != NULL)
-			{
-				// Sending the above WM_SYSCOMMAND may destroy the app,
-				// so we have to be careful about restoring activation
-				// and focus after sending it.
-				HWND hWndSave = m_hWnd;
-				HWND hWndFocus = ::GetFocus();
-				pParent->SetActiveWindow();
-				pParent->SendMessage(WM_SYSCOMMAND, nID, lParam);
-
-				// be very careful here...
-				if (::IsWindow(hWndSave))
-					::SetActiveWindow(hWndSave);
-				if (::IsWindow(hWndFocus))
-					::SetFocus(hWndFocus);
-			}
-		}
-		return TRUE;
-	}
-	return FALSE;
-}
-
 BOOL PASCAL CWnd::WalkPreTranslateTree(HWND hWndStop, MSG* pMsg)
 {
 	ASSERT(hWndStop == NULL || ::IsWindow(hWndStop));
@@ -2483,44 +1857,6 @@ BOOL CWnd::SendChildNotifyLastMsg(LRESULT* pResult)
 	_AFX_THREAD_STATE* pThreadState = _afxThreadState.GetData();
 	return OnChildNotify(pThreadState->m_lastSentMsg.message,
 		pThreadState->m_lastSentMsg.wParam, pThreadState->m_lastSentMsg.lParam, pResult);
-}
-
-BOOL PASCAL CWnd::ReflectLastMsg(HWND hWndChild, LRESULT* pResult)
-{
-	// get the map, and if no map, then this message does not need reflection
-	CHandleMap* pMap = afxMapHWND();
-	if (pMap == NULL)
-		return FALSE;
-
-	// check if in permanent map, if it is reflect it (could be OLE control)
-	CWnd* pWnd = (CWnd*)pMap->LookupPermanent(hWndChild);
-	ASSERT(pWnd == NULL || pWnd->m_hWnd == hWndChild);
-	if (pWnd == NULL)
-	{
-#ifndef _AFX_NO_OCC_SUPPORT
-		// check if the window is an OLE control
-		CWnd* pWndParent = (CWnd*)pMap->LookupPermanent(::GetParent(hWndChild));
-		if (pWndParent != NULL && pWndParent->m_pCtrlCont != NULL)
-		{
-			// If a matching control site exists, it's an OLE control
-			COleControlSite* pSite = (COleControlSite*)pWndParent->
-				m_pCtrlCont->m_siteMap.GetValueAt(hWndChild);
-			if (pSite != NULL)
-			{
-				CWnd wndTemp(hWndChild);
-				wndTemp.m_pCtrlSite = pSite;
-				LRESULT lResult = wndTemp.SendChildNotifyLastMsg(pResult);
-				wndTemp.m_hWnd = NULL;
-				return lResult != 0;
-			}
-		}
-#endif //!_AFX_NO_OCC_SUPPORT
-		return FALSE;
-	}
-
-	// only OLE controls and permanent windows will get reflected msgs
-	ASSERT(pWnd != NULL);
-	return pWnd->SendChildNotifyLastMsg(pResult);
 }
 
 BOOL CWnd::OnChildNotify(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT* pResult)
@@ -2619,8 +1955,8 @@ void CWnd::OnParentNotify(UINT message, LPARAM lParam)
 {
 	if ((LOWORD(message) == WM_CREATE || LOWORD(message) == WM_DESTROY))
 	{
-		if (ReflectLastMsg((HWND)lParam))
-			return;     // eat it
+		// if (ReflectLastMsg((HWND)lParam))
+			// return;     // eat it
 	}
 	// not handled - do default
 	Default();
@@ -2733,8 +2069,8 @@ LRESULT CWnd::OnDragList(WPARAM, LPARAM lParam)
 	ASSERT(lpInfo != NULL);
 
 	LRESULT lResult;
-	if (ReflectLastMsg(lpInfo->hWnd, &lResult))
-		return (int)lResult;    // eat it
+	// if (ReflectLastMsg(lpInfo->hWnd, &lResult))
+		// return (int)lResult;    // eat it
 
 	// not handled - do default
 	return (int)Default();
@@ -2769,7 +2105,7 @@ public:
 	// also catch mismatched Release in debug builds
 	~CMFCComObject()
 	{
-		m_dwRef = -(LONG_MAX/2);
+		// m_dwRef = -(LONG_MAX/2);
 		FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
@@ -2907,24 +2243,6 @@ HRESULT FAR EXPORT CWnd::XAccessibleServer::QueryInterface(
 	return (HRESULT)pThis->ExternalQueryInterface(&iid, ppvObj);
 }
 
-HRESULT CWnd::XAccessibleServer::GetHWND(HWND *phWnd)
-{
-	if (phWnd == NULL)
-		return E_POINTER;
-	METHOD_PROLOGUE(CWnd, AccessibleServer)
-	*phWnd = pThis->m_hWnd;
-	return S_OK;
-}
-
-HRESULT CWnd::XAccessibleServer::GetEnumVariant(IEnumVARIANT **ppEnumVariant)
-{
-	if (ppEnumVariant == NULL)
-		return E_POINTER;
-	*ppEnumVariant = NULL;
-	return E_NOTIMPL;
-}
-
-
 // Helpers for CWnd or derived class that contains Windowless Active X controls
 // Used by CView, CFormView, CDialog and CDialogBar
 long CWnd::GetWindowLessChildCount()
@@ -3058,15 +2376,6 @@ void CWnd::OnEnterIdle(UINT /*nWhy*/, CWnd* /*pWho*/)
 	Default();
 }
 
-HBRUSH CWnd::OnCtlColor(CDC*, CWnd* pWnd, UINT)
-{
-	ASSERT(pWnd != NULL && pWnd->m_hWnd != NULL);
-	LRESULT lResult;
-	if (pWnd->SendChildNotifyLastMsg(&lResult))
-		return (HBRUSH)lResult;     // eat it
-	return (HBRUSH)Default();
-}
-
 // implementation of OnCtlColor for default gray backgrounds
 //   (works for any window containing controls)
 //  return value of FALSE means caller must call DefWindowProc's default
@@ -3078,7 +2387,6 @@ BOOL PASCAL CWnd::GrayCtlColor(HDC hDC, HWND hWnd, UINT nCtlColor,
 	if (hDC == NULL)
 	{
 		// sometimes Win32 passes a NULL hDC in the WM_CTLCOLOR message.
-		TRACE(traceAppMsg, 0, "Warning: hDC is NULL in CWnd::GrayCtlColor; WM_CTLCOLOR not processed.\n");
 		return FALSE;
 	}
 
@@ -3112,15 +2420,11 @@ BOOL PASCAL CWnd::GrayCtlColor(HDC hDC, HWND hWnd, UINT nCtlColor,
 
 BOOL CWnd::UpdateData(BOOL bSaveAndValidate)
 {
-	ASSERT(::IsWindow(m_hWnd)); // calling UpdateData before DoModal?
-
 	CDataExchange dx(this, bSaveAndValidate);
 
 	// prevent control notifications from being dispatched during UpdateData
 	_AFX_THREAD_STATE* pThreadState = AfxGetThreadState();
 	HWND hWndOldLockout = pThreadState->m_hLockoutNotifyWindow;
-	ASSERT(hWndOldLockout != m_hWnd);   // must not recurse
-	pThreadState->m_hLockoutNotifyWindow = m_hWnd;
 
 	BOOL bOK = FALSE;       // assume failure
 	TRY
@@ -3128,13 +2432,13 @@ BOOL CWnd::UpdateData(BOOL bSaveAndValidate)
 		DoDataExchange(&dx);
 		bOK = TRUE;         // it worked
 	}
-	CATCH(CUserException, e)
-	{
+	// CATCH(CUserException, e)
+	// {
 		// validation failed - user already alerted, fall through
-		ASSERT(!bOK);
+		// ASSERT(!bOK);
 		// Note: DELETE_EXCEPTION_(e) not required
-	}
-	AND_CATCH_ALL(e)
+	// }
+	CATCH_ALL(e)
 	{
 		// validation failed due to OOM or other resource failure
 		e->ReportError(MB_ICONEXCLAMATION, AFX_IDP_INTERNAL_FAILURE);
@@ -3158,163 +2462,13 @@ CDataExchange::CDataExchange(CWnd* pDlgWnd, BOOL bSaveAndValidate)
 /////////////////////////////////////////////////////////////////////////////
 // Centering dialog support (works for any non-child window)
 
-void CWnd::CenterWindow(CWnd* pAlternateOwner)
-{
-	ASSERT(::IsWindow(m_hWnd));
-
-	// determine owner window to center against
-	DWORD dwStyle = GetStyle();
-	HWND hWndCenter = pAlternateOwner->GetSafeHwnd();
-	if (pAlternateOwner == NULL)
-	{
-		if (dwStyle & WS_CHILD)
-			hWndCenter = ::GetParent(m_hWnd);
-		else
-			hWndCenter = ::GetWindow(m_hWnd, GW_OWNER);
-		if (hWndCenter != NULL)
-		{
-			// let parent determine alternate center window
-			HWND hWndTemp =
-				(HWND)::SendMessage(hWndCenter, WM_QUERYCENTERWND, 0, 0);
-			if (hWndTemp != NULL)
-				hWndCenter = hWndTemp;
-		}
-	}
-
-	// get coordinates of the window relative to its parent
-	CRect rcDlg;
-	GetWindowRect(&rcDlg);
-	CRect rcArea;
-	CRect rcCenter;
-	HWND hWndParent;
-	if (!(dwStyle & WS_CHILD))
-	{
-		// don't center against invisible or minimized windows
-		if (hWndCenter != NULL)
-		{
-			DWORD dwAlternateStyle = ::GetWindowLong(hWndCenter, GWL_STYLE);
-			if (!(dwAlternateStyle & WS_VISIBLE) || (dwAlternateStyle & WS_MINIMIZE))
-				hWndCenter = NULL;
-		}
-
- 		MONITORINFO mi;
-		mi.cbSize = sizeof(mi);
-
-		// center within appropriate monitor coordinates
-		if (hWndCenter == NULL)
-		{
-			HWND hwDefault = AfxGetMainWnd()->GetSafeHwnd();
-
-			GetMonitorInfo(
-				MonitorFromWindow(hwDefault, MONITOR_DEFAULTTOPRIMARY), &mi);
-			rcCenter = mi.rcWork;
-			rcArea = mi.rcWork;
-		}
-		else
-		{
-			::GetWindowRect(hWndCenter, &rcCenter);
-			GetMonitorInfo(
-				MonitorFromWindow(hWndCenter, MONITOR_DEFAULTTONEAREST), &mi);
-			rcArea = mi.rcWork;
-		}
-	}
-	else
-	{
-		// center within parent client coordinates
-		hWndParent = ::GetParent(m_hWnd);
-		ASSERT(::IsWindow(hWndParent));
-
-		::GetClientRect(hWndParent, &rcArea);
-		ASSERT(::IsWindow(hWndCenter));
-		::GetClientRect(hWndCenter, &rcCenter);
-		::MapWindowPoints(hWndCenter, hWndParent, (POINT*)&rcCenter, 2);
-	}
-
-	// find dialog's upper left based on rcCenter
-	int xLeft = (rcCenter.left + rcCenter.right) / 2 - rcDlg.Width() / 2;
-	int yTop = (rcCenter.top + rcCenter.bottom) / 2 - rcDlg.Height() / 2;
-
-	// if the dialog is outside the screen, move it inside
-	if (xLeft + rcDlg.Width() > rcArea.right)
-		xLeft = rcArea.right - rcDlg.Width();
-	if (xLeft < rcArea.left)
-		xLeft = rcArea.left;
-
-	if (yTop + rcDlg.Height() > rcArea.bottom)
-		yTop = rcArea.bottom - rcDlg.Height();
-	if (yTop < rcArea.top)
-		yTop = rcArea.top;
-
-	// map screen coordinates to child coordinates
-	SetWindowPos(NULL, xLeft, yTop, -1, -1,
-		SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
-}
-
 BOOL CWnd::CheckAutoCenter()
 {
 	return TRUE;
 }
 
-void CWnd::UpdateDialogControls(CCmdTarget* pTarget, BOOL bDisableIfNoHndler)
-{
-	CCmdUI state;
-	CWnd wndTemp;       // very temporary window just for CmdUI update
-
-	// walk all the kids - assume the IDs are for buttons
-	for (HWND hWndChild = ::GetTopWindow(m_hWnd); hWndChild != NULL;
-			hWndChild = ::GetNextWindow(hWndChild, GW_HWNDNEXT))
-	{
-		// send to buttons
-		wndTemp.m_hWnd = hWndChild; // quick and dirty attach
-		state.m_nID = _AfxGetDlgCtrlID(hWndChild);
-		state.m_pOther = &wndTemp;
-
-		// check for reflect handlers in the child window
-		CWnd* pWnd = CWnd::FromHandlePermanent(hWndChild);
-		if (pWnd != NULL)
-		{
-			// call it directly to disable any routing
-			if (pWnd->CWnd::OnCmdMsg(0, MAKELONG(0xffff,
-				WM_COMMAND+WM_REFLECT_BASE), &state, NULL))
-				continue;
-		}
-
-		// check for handlers in the parent window
-		if (CWnd::OnCmdMsg((UINT)state.m_nID, CN_UPDATE_COMMAND_UI, &state, NULL))
-			continue;
-
-		// determine whether to disable when no handler exists
-		BOOL bDisableTemp = bDisableIfNoHndler;
-		if (bDisableTemp)
-		{
-			if ((wndTemp.SendMessage(WM_GETDLGCODE) & DLGC_BUTTON) == 0)
-			{
-				// non-button controls don't get automagically disabled
-				bDisableTemp = FALSE;
-			}
-			else
-			{
-				// only certain button controls get automagically disabled
-				UINT nStyle = (UINT)(wndTemp.GetStyle() & 0x0F);
-				if (nStyle == (UINT)BS_AUTOCHECKBOX ||
-					nStyle == (UINT)BS_AUTO3STATE ||
-					nStyle == (UINT)BS_GROUPBOX ||
-					nStyle == (UINT)BS_AUTORADIOBUTTON)
-				{
-					bDisableTemp = FALSE;
-				}
-			}
-		}
-		// check for handlers in the target (owner)
-		state.DoUpdate(pTarget, bDisableTemp);
-	}
-	wndTemp.m_hWnd = NULL;      // quick and dirty detach
-}
-
 BOOL CWnd::PreTranslateInput(LPMSG lpMsg)
 {
-	ASSERT(::IsWindow(m_hWnd));
-
 	// don't translate non-input events
 	if ((lpMsg->message < WM_KEYFIRST || lpMsg->message > WM_KEYLAST) &&
 		(lpMsg->message < WM_MOUSEFIRST || lpMsg->message > AFX_WM_MOUSELAST))
@@ -3325,14 +2479,12 @@ BOOL CWnd::PreTranslateInput(LPMSG lpMsg)
 
 int CWnd::RunModalLoop(DWORD dwFlags)
 {
-	ASSERT(::IsWindow(m_hWnd)); // window must be created
 	ASSERT(!(m_nFlags & WF_MODALLOOP)); // window must not already be in modal state
 
 	// for tracking the idle time state
 	BOOL bIdle = TRUE;
 	LONG lIdleCount = 0;
 	BOOL bShowIdle = (dwFlags & MLF_SHOWONIDLE) && !(GetStyle() & WS_VISIBLE);
-	HWND hWndParent = ::GetParent(m_hWnd);
 	m_nFlags |= (WF_MODALLOOP|WF_CONTINUEMODAL);
 	MSG *pMsg = AfxGetCurrentMessage();
 
@@ -3356,10 +2508,9 @@ int CWnd::RunModalLoop(DWORD dwFlags)
 			}
 
 			// call OnIdle while in bIdle state
-			if (!(dwFlags & MLF_NOIDLEMSG) && hWndParent != NULL && lIdleCount == 0)
+			// if (!(dwFlags & MLF_NOIDLEMSG) && hWndParent != NULL && lIdleCount == 0)
 			{
 				// send WM_ENTERIDLE to the parent
-				::SendMessage(hWndParent, WM_ENTERIDLE, MSGF_DIALOGBOX, (LPARAM)m_hWnd);
 			}
 			if ((dwFlags & MLF_NOKICKIDLE) ||
 				!SendMessage(WM_KICKIDLE, MSGF_DIALOGBOX, lIdleCount++))
@@ -3415,7 +2566,7 @@ BOOL CWnd::ContinueModal()
 
 void CWnd::EndModalLoop(int nResult)
 {
-	ASSERT(::IsWindow(m_hWnd));
+	// ASSERT(::IsWindow(m_hWnd));
 
 	// this result will be returned from CWnd::RunModalLoop
 	m_nModalResult = nResult;
@@ -3426,12 +2577,6 @@ void CWnd::EndModalLoop(int nResult)
 		m_nFlags &= ~WF_CONTINUEMODAL;
 		PostMessage(WM_NULL);
 	}
-}
-
-void CWnd::OnDrawIconicThumbnailOrLivePreview(CDC& dc, CRect /*rect*/, CSize /*szRequiredThumbnailSize*/, BOOL /*bIsThumbnail*/, BOOL& /*bAlphaChannelSet*/)
-{
-	ASSERT_VALID(&dc);
-	SendMessage(WM_PRINT, (WPARAM)dc.GetSafeHdc(), (LPARAM)(PRF_CLIENT | PRF_ERASEBKGND | PRF_CHILDREN | PRF_NONCLIENT));
 }
 
 #ifndef _AFX_NO_OCC_SUPPORT
@@ -3470,7 +2615,7 @@ LONG AFXAPI _AfxInitCommonControls(LPINITCOMMONCONTROLSEX lpInitCtrls, LONG fToR
 	ASSERT(fToRegister != 0);
 
 	LONG lResult = 0;
-	if (AFX_COMCTL32_IF_EXISTS(InitCommonControlsEx))
+	// if (AFX_COMCTL32_IF_EXISTS(InitCommonControlsEx))
 	{
 		// if (AfxInitCommonControlsEx(lpInitCtrls))
 		{
@@ -3478,7 +2623,7 @@ LONG AFXAPI _AfxInitCommonControls(LPINITCOMMONCONTROLSEX lpInitCtrls, LONG fToR
 			// lResult = fToRegister;
 		}
 	}
-	else
+	// else
 	{
 		// not there, so call InitCommonControls if possible
 		if ((fToRegister & AFX_WIN95CTLS_MASK) == fToRegister)
@@ -3691,10 +2836,6 @@ BOOL CWnd::SubclassWindow(HWND hWnd)
 #ifdef _DEBUG
 	else if (*lplpfn != oldWndProc)
 	{
-		TRACE(traceAppMsg, 0, "Error: Trying to use SubclassWindow with incorrect CWnd\n");
-		TRACE(traceAppMsg, 0, "\tderived class.\n");
-		TRACE(traceAppMsg, 0, "\thWnd = $%08X (nIDC=$%08X) is not a %hs.\n", (UINT)(UINT_PTR)hWnd,
-			_AfxGetDlgCtrlID(hWnd), GetRuntimeClass()->m_lpszClassName);
 		ASSERT(FALSE);
 		// undo the subclassing if continuing after assert
 	  ::SetWindowLongPtr(hWnd, GWLP_WNDPROC, (INT_PTR)oldWndProc);
@@ -3707,12 +2848,12 @@ BOOL CWnd::SubclassWindow(HWND hWnd)
 BOOL CWnd::SubclassDlgItem(UINT nID, CWnd* pParent)
 {
 	ASSERT(pParent != NULL);
-	ASSERT(::IsWindow(pParent->m_hWnd));
+	// ASSERT(::IsWindow(pParent->m_hWnd));
 
 	// check for normal dialog control first
-	HWND hWndControl = ::GetDlgItem(pParent->m_hWnd, nID);
-	if (hWndControl != NULL)
-		return SubclassWindow(hWndControl);
+	// HWND hWndControl = ::GetDlgItem(pParent->m_hWnd, nID);
+	// if (hWndControl != NULL)
+		// return SubclassWindow(hWndControl);
 
 #ifndef _AFX_NO_OCC_SUPPORT
 	if (pParent->m_pCtrlCont != NULL)
@@ -3721,14 +2862,14 @@ BOOL CWnd::SubclassDlgItem(UINT nID, CWnd* pParent)
 		COleControlSite* pSite = pParent->m_pCtrlCont->FindItem(nID);
 		if (pSite != NULL)
 		{
-			ASSERT(pSite->m_hWnd != NULL);
-			VERIFY(SubclassWindow(pSite->m_hWnd));
+			// ASSERT(pSite->m_hWnd != NULL);
+			// VERIFY(SubclassWindow(pSite->m_hWnd));
 
 #ifndef _AFX_NO_OCC_SUPPORT
 			// If the control has reparented itself (e.g., invisible control),
 			// make sure that the CWnd gets properly wired to its control site.
-			if (pParent->m_hWnd != ::GetParent(pSite->m_hWnd))
-				AttachControlSite(pParent);
+			// if (pParent->m_hWnd != ::GetParent(pSite->m_hWnd))
+				// AttachControlSite(pParent);
 #endif //!_AFX_NO_OCC_SUPPORT
 
 			return TRUE;
@@ -3741,11 +2882,11 @@ BOOL CWnd::SubclassDlgItem(UINT nID, CWnd* pParent)
 
 HWND CWnd::UnsubclassWindow()
 {
-	ASSERT(::IsWindow(m_hWnd));
+	// ASSERT(::IsWindow(m_hWnd));
 
 	// set WNDPROC back to original value
 	WNDPROC* lplpfn = GetSuperWndProcAddr();
-	SetWindowLongPtr(m_hWnd, GWLP_WNDPROC, (INT_PTR)*lplpfn);
+	// SetWindowLongPtr(m_hWnd, GWLP_WNDPROC, (INT_PTR)*lplpfn);
 	*lplpfn = NULL;
 
 	// and Detach the HWND from the CWnd object

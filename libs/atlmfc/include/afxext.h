@@ -39,7 +39,7 @@
 	//CCmdTarget;
 		//CWnd
 			//CButton
-				class CBitmapButton;    // Bitmap button (self-draw)
+				// class CBitmapButton;    // Bitmap button (self-draw)
 
 			class CControlBar;          // control bar
 				class CStatusBar;       // status bar

@@ -52,7 +52,7 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
@@ -484,14 +484,14 @@ void CFtpControlSocket::Connect(t_server &server)
 		temp=fwhost;
 		port=fwport;
 		if(fwport!=21)
-			fwhost.Format( _T("%s:%d"), fwhost, fwport); // add port to fwhost (only if port is not 21)
+			fwhost.Format( _T("%s:%d"), (LPCTSTR)fwhost, fwport); // add port to fwhost (only if port is not 21)
 	}
 
 	CString hostname = server.host;
 	if(server.port!=21)
-		hostname.Format( _T("%s:%d"), hostname, server.port); // add port to hostname (only if port is not 21)
+		hostname.Format( _T("%s:%d"), (LPCTSTR)hostname, server.port); // add port to hostname (only if port is not 21)
 	CString str;
-	str.Format(IDS_STATUSMSG_CONNECTING, hostname);
+	str.Format(IDS_STATUSMSG_CONNECTING, (LPCTSTR)hostname);
 	ShowStatus(str, 0);
 
 #ifndef MPEXT_NO_SSL
@@ -934,7 +934,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 		{
 
 			CString str;
-			str.Format(IDS_STATUSMSG_FWCONNECT,hostname);
+			str.Format(IDS_STATUSMSG_FWCONNECT,(LPCTSTR)hostname);
 			ShowStatus(str,0);
 		}
 		m_Operation.nOpState++;
@@ -1121,7 +1121,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 		}
 		m_MultiLine = "";
 		CString str;
-		str.Format(IDS_STATUSMSG_CONNECTEDWITH, m_ServerName);
+		str.Format(IDS_STATUSMSG_CONNECTEDWITH, (LPCTSTR)m_ServerName);
 		ShowStatus(str, 0);
 		m_pOwner->SetConnected(TRUE);
 	}
@@ -1308,7 +1308,7 @@ void CFtpControlSocket::OnConnect(int nErrorCode)
 #ifndef MPEXT_NO_SSL
 				m_pSslLayer ? IDS_STATUSMSG_CONNECTEDWITHSSL :
 #endif
-				IDS_STATUSMSG_CONNECTEDWITH, m_ServerName);
+				IDS_STATUSMSG_CONNECTEDWITH, (LPCTSTR)m_ServerName);
 			ShowStatus(str,0);
 		}
 	}
@@ -1550,7 +1550,7 @@ CString CFtpControlSocket::GetListingCmd()
 
 void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath path /*=CServerPath()*/, CString subdir /*=_MPT("")*/,int nListMode/*=0*/)
 {
-	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("List(%s,%d,\"%s\",\"%s\",%d)  OpMode=%d OpState=%d"), bFinish?_T("TRUE"):_T("FALSE"), nError, path.GetPath(), subdir, nListMode,
+	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("List(%s,%d,\"%s\",\"%s\",%d)  OpMode=%d OpState=%d"), bFinish?_T("TRUE"):_T("FALSE"), nError, (LPCTSTR)path.GetPath(), (LPCTSTR)subdir, nListMode,
 				m_Operation.nOpMode, m_Operation.nOpState);
 
 	USES_CONVERSION;
@@ -2367,7 +2367,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 #ifdef MPEXT
 void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fileName /*=""*/)
 {
-	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("ListFile(\"%s\",\"%s\")  OpMode=%d OpState=%d"), path.GetPath(), fileName,
+	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("ListFile(\"%s\",\"%s\")  OpMode=%d OpState=%d"), (LPCTSTR)path.GetPath(), (LPCTSTR)fileName,
 				m_Operation.nOpMode, m_Operation.nOpState);
 
 	USES_CONVERSION;
@@ -2752,7 +2752,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 
 		CString str;
 		str.Format(transferfile->get?IDS_STATUSMSG_DOWNLOADSTART:IDS_STATUSMSG_UPLOADSTART,
-					transferfile->get ? transferfile->remotepath.FormatFilename(transferfile->remotefile) : transferfile->localfile);
+					transferfile->get ? (LPCTSTR)transferfile->remotepath.FormatFilename(transferfile->remotefile) : (LPCTSTR)transferfile->localfile);
 		ShowStatus(str,0);
 
 		m_Operation.nOpMode=CSMODE_TRANSFER|(transferfile->get?CSMODE_DOWNLOAD:CSMODE_UPLOAD);
@@ -3168,12 +3168,12 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 					// More user-friendly message when the actual paths differ
 					if (m_pOwner->GetCurrentPath().GetPath() != pData->transferfile.remotepath.GetPath())
 					{
-						LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Real path and requested remote path do not match: \"%s\"  \"%s\""), m_pOwner->GetCurrentPath().GetPath(), pData->transferfile.remotepath.GetPath());
+						LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Real path and requested remote path do not match: \"%s\"  \"%s\""), (LPCTSTR)m_pOwner->GetCurrentPath().GetPath(), (LPCTSTR)pData->transferfile.remotepath.GetPath());
 					}
 					else
 #endif
 					{
-						LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Real path and requested remote path do not match: \"%s\"  \"%s\""), m_pOwner->GetCurrentPath().GetSafePath(), pData->transferfile.remotepath.GetSafePath());
+						LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Real path and requested remote path do not match: \"%s\"  \"%s\""), (LPCTSTR)m_pOwner->GetCurrentPath().GetSafePath(), (LPCTSTR)pData->transferfile.remotepath.GetSafePath());
 					}
 					nReplyError = FZ_REPLY_CRITICALERROR;
 				}
@@ -3778,7 +3778,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 				{
 					//Error opening the file
 					CString str;
-					str.Format(IDS_ERRORMSG_FILEOPENFAILED,pData->transferfile.localfile);
+					str.Format(IDS_ERRORMSG_FILEOPENFAILED,(LPCTSTR)pData->transferfile.localfile);
 					ShowStatus(str,1);
 					nReplyError = FZ_REPLY_ERROR;
 					break;
@@ -4840,7 +4840,7 @@ void CFtpControlSocket::ResetOperation(int nSuccessful /*=FALSE*/)
 
 void CFtpControlSocket::Delete(CString filename, const CServerPath &path)
 {
-	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("Delete(\"%s\", \"%s\")  OpMode=%d OpState=%d"), filename, path.GetPath(), m_Operation.nOpMode, m_Operation.nOpState);
+	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("Delete(\"%s\", \"%s\")  OpMode=%d OpState=%d"), (LPCTSTR)filename, (LPCTSTR)path.GetPath(), m_Operation.nOpMode, m_Operation.nOpState);
 
 	class CDeleteData : public CFtpControlSocket::t_operation::COpData
 	{
@@ -4957,7 +4957,7 @@ public:
 
 void CFtpControlSocket::RemoveDir(CString dirname, const CServerPath &path)
 {
-	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("RemoveDir(\"%s\", \"%s\")  OpMode=%d OpState=%d"), dirname, path.GetPath(), m_Operation.nOpMode, m_Operation.nOpState);
+	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("RemoveDir(\"%s\", \"%s\")  OpMode=%d OpState=%d"), (LPCTSTR)dirname, (LPCTSTR)path.GetPath(), m_Operation.nOpMode, m_Operation.nOpState);
 
 	class CRemoveDirData : public CFtpControlSocket::t_operation::COpData
 	{
@@ -5131,7 +5131,7 @@ int CFtpControlSocket::CheckOverwriteFile()
 					str += buffer;
 				else
 					str += _T("Unknown exception");
-				LogMessageRaw(__FILE__, __LINE__, this, FZ_LOG_WARNING, str);
+				LogMessageRaw(__FILE__, __LINE__, this, FZ_LOG_WARNING, (LPCTSTR)str);
 				localtime = NULL;
 			}
 			END_CATCH_ALL;
@@ -5324,7 +5324,7 @@ void CFtpControlSocket::MakeDir(const CServerPath &path)
 {
 	//Directory creation works like this:
 	//Find existing parent and create subdirs one by one
-	LogMessage(__FILE__, __LINE__, this, FZ_LOG_DEBUG, _T("MakeDir(\"%s\")  OpMode=%d OpState=%d"), path.GetPath(), m_Operation.nOpMode, m_Operation.nOpState);
+	LogMessage(__FILE__, __LINE__, this, FZ_LOG_DEBUG, _T("MakeDir(\"%s\")  OpMode=%d OpState=%d"), (LPCTSTR)path.GetPath(), m_Operation.nOpMode, m_Operation.nOpState);
 
 	if (m_Operation.nOpState == MKD_INIT)
 	{
@@ -5506,7 +5506,7 @@ void CFtpControlSocket::MakeDir(const CServerPath &path)
 
 void CFtpControlSocket::Rename(CString oldName, CString newName, const CServerPath &path, const CServerPath &newPath)
 {
-	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("Rename(\"%s\", \"%s\", \"%s\")  OpMode=%d OpState=%d"), oldName, newName, path.GetPath(),
+	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("Rename(\"%s\", \"%s\", \"%s\")  OpMode=%d OpState=%d"), (LPCTSTR)oldName, (LPCTSTR)newName, (LPCTSTR)path.GetPath(),
 			   m_Operation.nOpMode, m_Operation.nOpState);
 	class CRenameData : public CFtpControlSocket::t_operation::COpData
 	{
@@ -5785,7 +5785,7 @@ void CFtpControlSocket::Chmod(CString filename, const CServerPath &path, int nVa
 {
 	m_Operation.nOpMode=CSMODE_CHMOD;
 	CString str;
-	str.Format( _T("SITE CHMOD %03d %s"), nValue, path.FormatFilename(filename));
+	str.Format( _T("SITE CHMOD %03d %s"), nValue, (LPCTSTR)path.FormatFilename(filename));
 	Send(str);
 }
 
@@ -6284,7 +6284,7 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
 			}
 			else if (ahost != host)
 			{
-				LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Using host address %s instead of the one suggested by the server: %s"), ahost, host);
+				LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Using host address %s instead of the one suggested by the server: %s"), (LPCTSTR)ahost, (LPCTSTR)host);
 				host = ahost;
 			}
 			break;
@@ -6301,7 +6301,7 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
 			}
 			else if (!IsRoutableAddress(host) && IsRoutableAddress(ahost))
 			{
-				LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Server sent passive reply with unroutable address %s, using host address instead."), host, ahost);
+				LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Server sent passive reply with unroutable address %s, using host address instead."), (LPCTSTR)host, (LPCTSTR)ahost);
 				host = ahost;
 			}
 			break;

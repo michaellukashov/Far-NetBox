@@ -91,7 +91,7 @@ void CByteArray::SetSize(INT_PTR nNewSize, INT_PTR nGrowBy)
 		{
 			// heuristically determine growth when nGrowArrayBy == 0
 			//  (this avoids heap fragmentation in many situations)
-			nGrowArrayBy = min(1024, max(4, m_nSize / 8));
+			nGrowArrayBy = Min(1024, Max(4, m_nSize / 8));
 		}
 		INT_PTR nNewMax;
 		if (nNewSize < m_nMaxSize + nGrowArrayBy)
@@ -293,85 +293,8 @@ void CByteArray::InsertAt(INT_PTR nStartIndex, CByteArray* pNewArray)
 /////////////////////////////////////////////////////////////////////////////
 // Serialization
 
-void CByteArray::Serialize(CArchive& ar)
-{
-	UINT_PTR nBytesLeft;
-	UINT nBytesToWrite;
-	UINT nBytesToRead;
-	LPBYTE pbData;
-
-	ASSERT_VALID(this);
-
-	CObject::Serialize(ar);
-
-	if (ar.IsStoring())
-	{
-		ar.WriteCount(m_nSize);
-		nBytesLeft = m_nSize*sizeof(BYTE);
-		pbData = m_pData;
-		while(nBytesLeft > 0)
-		{
-			nBytesToWrite = UINT(min(nBytesLeft, INT_MAX));
-			ar.Write(pbData, nBytesToWrite);
-			pbData += nBytesToWrite;
-			nBytesLeft -= nBytesToWrite;
-		}
-	}
-	else
-	{
-		DWORD_PTR nOldSize = ar.ReadCount();
-		SetSize(nOldSize);
-		nBytesLeft = m_nSize*sizeof(BYTE);
-		pbData = m_pData;
-		while(nBytesLeft > 0)
-		{
-			nBytesToRead = UINT(min(nBytesLeft, INT_MAX));
-			ar.EnsureRead(pbData, nBytesToRead);
-			pbData += nBytesToRead;
-			nBytesLeft -= nBytesToRead;
-		}
-	}
-}
-
-
 /////////////////////////////////////////////////////////////////////////////
 // Diagnostics
-
-#ifdef _DEBUG
-void CByteArray::Dump(CDumpContext& dc) const
-{
-	CObject::Dump(dc);
-
-	dc << "with " << m_nSize << " elements";
-	if (dc.GetDepth() > 0)
-	{
-		for (INT_PTR i = 0; i < m_nSize; i++)
-			dc << "\n\t[" << i << "] = " << m_pData[i];
-	}
-
-	dc << "\n";
-}
-
-void CByteArray::AssertValid() const
-{
-	CObject::AssertValid();
-
-	if (m_pData == NULL)
-	{
-		ASSERT(m_nSize == 0);
-		ASSERT(m_nMaxSize == 0);
-	}
-	else
-	{
-		ASSERT(m_nSize >= 0);
-		ASSERT(m_nMaxSize >= 0);
-		ASSERT(m_nSize <= m_nMaxSize);
-		ASSERT(AfxIsValidAddress(m_pData, m_nMaxSize * sizeof(BYTE)));
-	}
-}
-#endif //_DEBUG
-
-
 
 IMPLEMENT_SERIAL(CByteArray, CObject, 0)
 

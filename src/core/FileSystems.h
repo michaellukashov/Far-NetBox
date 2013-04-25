@@ -125,7 +125,7 @@ struct TOpenRemoteFileParams : public TObject
 class TFileSystemIntf
 {
 public:
-  virtual ~TFileSystemIntf() = 0 {}
+  virtual ~TFileSystemIntf() {}
 
   virtual void Init(void *) = 0;
   virtual void FileTransferProgress(__int64 TransferSize, __int64 Bytes) = 0;

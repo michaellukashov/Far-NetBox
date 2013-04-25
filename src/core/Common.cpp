@@ -18,6 +18,20 @@
 #ifdef _MSC_VER
 #include "FarPlugin.h"
 #endif
+
+#if defined(__MINGW32__)
+typedef struct _TIME_DYNAMIC_ZONE_INFORMATION {
+  LONG       Bias;
+  WCHAR      StandardName[32];
+  SYSTEMTIME StandardDate;
+  LONG       StandardBias;
+  WCHAR      DaylightName[32];
+  SYSTEMTIME DaylightDate;
+  LONG       DaylightBias;
+  WCHAR      TimeZoneKeyName[128];
+  BOOLEAN    DynamicDaylightTimeDisabled;
+} DYNAMIC_TIME_ZONE_INFORMATION, *PDYNAMIC_TIME_ZONE_INFORMATION;
+#endif
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 // TGuard
@@ -274,7 +288,7 @@ UnicodeString ExceptionLogString(Exception *E)
   if (dynamic_cast<Exception *>(E) != NULL)
   {
     UnicodeString Msg;
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
     Msg = FORMAT(L"(%s) %s", (E->ClassName(), E->Message.c_str()));
 #else
     Msg = FORMAT(L"%s", ::MB2W(E->what()).c_str());
@@ -292,7 +306,7 @@ UnicodeString ExceptionLogString(Exception *E)
   }
   else
   {
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
     wchar_t Buffer[1024];
     ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, LENOF(Buffer));
     return UnicodeString(Buffer);
@@ -1164,7 +1178,7 @@ FILETIME DateTimeToFileTime(const TDateTime DateTime,
     UnixTimeStamp -= CurrentParams->CurrentDaylightDifferenceSec;
   }
   FILETIME Result;
-  (*(__int64*)&(Result) = (__int64(UnixTimeStamp) + 11644473600LL) * 10000000LL);
+  (*(__int64*)&(Result) = ((__int64)(UnixTimeStamp) + 11644473600LL) * 10000000LL);
 
   return Result;
 }
@@ -1413,7 +1427,7 @@ UnicodeString GetTimeZoneLogString()
 //---------------------------------------------------------------------------
 UnicodeString StandardTimestamp(const TDateTime & DateTime)
 {
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
   return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
 #else
   TDateTime DT = ConvertTimestampToUTC(DateTime);

@@ -33,23 +33,30 @@ namespace ATL
 
 struct CStringData;
 
+#if !defined(__MINGW32__)
 __interface IAtlStringMgr
+#else
+class IAtlStringMgr
+#endif
 {
 public:
+#if defined(__MINGW32__)
+  virtual ~IAtlStringMgr() {}
+#endif
 	// Allocate a new CStringData
-	CStringData* Allocate(
+	virtual CStringData* Allocate(
 		_In_ int nAllocLength,
 		_In_ int nCharSize) throw();
 	// Free an existing CStringData
-	void Free(_Inout_ CStringData* pData) throw();
+	virtual void Free(_Inout_ CStringData* pData) throw();
 	// Change the size of an existing CStringData
-	CStringData* Reallocate(
+	virtual CStringData* Reallocate(
 		_Inout_ CStringData* pData,
 		_In_ int nAllocLength,
 		_In_ int nCharSize) throw();
 	// Get the CStringData for a Nil string
-	CStringData* GetNilString() throw();
-	IAtlStringMgr* Clone() throw();
+	virtual CStringData* GetNilString() throw();
+	virtual IAtlStringMgr* Clone() throw();
 };
 
 #ifdef _M_IX86
@@ -944,7 +951,7 @@ public:
 	static const DWORD SET_LENGTH = 0x02;  // Set the length of the string object at GetBuffer time
 
 public:
-	explicit CStrBufT(_In_ StringType& str) throw( ... ) :
+	explicit CStrBufT(_In_ StringType& str) throw() :
 		m_str( str ),
 		m_pszBuffer( NULL ),
 #ifdef _DEBUG
@@ -958,7 +965,7 @@ public:
 	CStrBufT(
 			_In_ StringType& str,
 			_In_ int nMinLength,
-			_In_ DWORD dwFlags = AUTO_LENGTH) throw( ... ) :
+			_In_ DWORD dwFlags = AUTO_LENGTH) throw() :
 		m_str( str ),
 		m_pszBuffer( NULL ),
 #ifdef _DEBUG

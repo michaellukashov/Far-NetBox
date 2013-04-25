@@ -9,7 +9,7 @@ struct TOverwriteFileParams;
 struct TSFTPSupport;
 class TSecureShell;
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
 #endif
 //---------------------------------------------------------------------------

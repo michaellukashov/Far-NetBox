@@ -177,14 +177,14 @@ template< int t_nBufferLength = 128 >
 class CW2WEX
 {
 public:
-	CW2WEX(_In_z_ LPCWSTR psz) throw(...) :
+	CW2WEX(_In_z_ LPCWSTR psz) throw() :
 		m_psz( m_szBuffer )
 	{
 		Init( psz );
 	}
 	CW2WEX(
 			_In_z_ LPCWSTR psz, 
-			_In_ UINT nCodePage) throw(...) :
+			_In_ UINT nCodePage) throw() :
 		m_psz( m_szBuffer )
 	{
 		(void)nCodePage;  // Code page doesn't matter
@@ -202,7 +202,7 @@ public:
 	}
 
 private:
-	void Init(_In_z_ LPCWSTR psz) throw(...)
+	void Init(_In_z_ LPCWSTR psz) throw()
 	{
 		if (psz == NULL)
 		{
@@ -229,14 +229,14 @@ template< int t_nBufferLength = 128 >
 class CA2AEX
 {
 public:
-	CA2AEX(_In_z_ LPCSTR psz) throw(...) :
+	CA2AEX(_In_z_ LPCSTR psz) throw() :
 		m_psz( m_szBuffer )
 	{
 		Init( psz );
 	}
 	CA2AEX(
 			_In_z_ LPCSTR psz, 
-			_In_ UINT nCodePage) throw(...) :
+			_In_ UINT nCodePage) throw() :
 		m_psz( m_szBuffer )
 	{
 		(void)nCodePage;  // Code page doesn't matter
@@ -254,7 +254,7 @@ public:
 	}
 
 private:
-	void Init(_In_z_ LPCSTR psz) throw(...)
+	void Init(_In_z_ LPCSTR psz) throw()
 	{
 		if (psz == NULL)
 		{
@@ -280,13 +280,13 @@ template< int t_nBufferLength = 128 >
 class CA2CAEX
 {
 public:
-	CA2CAEX(_In_z_ LPCSTR psz) throw(...) :
+	CA2CAEX(_In_z_ LPCSTR psz) throw() :
 		m_psz( psz )
 	{
 	}
 	CA2CAEX(
 			_In_z_ LPCSTR psz, 
-			_In_ UINT nCodePage) throw(...) :
+			_In_ UINT nCodePage) throw() :
 		m_psz( psz )
 	{
 		(void)nCodePage;
@@ -313,13 +313,13 @@ template< int t_nBufferLength = 128 >
 class CW2CWEX
 {
 public:
-	CW2CWEX(_In_z_ LPCWSTR psz) throw(...) :
+	CW2CWEX(_In_z_ LPCWSTR psz) throw() :
 		m_psz( psz )
 	{
 	}
 	CW2CWEX(
 			_In_z_ LPCWSTR psz, 
-			_In_ UINT nCodePage) throw(...) :
+			_In_ UINT nCodePage) throw() :
 		m_psz( psz )
 	{		
 		UNREFERENCED_PARAMETER(nCodePage);
@@ -346,14 +346,14 @@ template< int t_nBufferLength = 128 >
 class CA2WEX
 {
 public:
-	CA2WEX(_In_z_ LPCSTR psz) throw(...) :
+	CA2WEX(_In_z_ LPCSTR psz) throw() :
 		m_psz( m_szBuffer )
 	{
 		Init( psz, _AtlGetConversionACP() );
 	}
 	CA2WEX(
 			_In_z_ LPCSTR psz, 
-			_In_ UINT nCodePage) throw(...) :
+			_In_ UINT nCodePage) throw() :
 		m_psz( m_szBuffer )
 	{
 		Init( psz, nCodePage );
@@ -371,7 +371,7 @@ public:
 private:
 	void Init(
 		_In_z_ LPCSTR psz, 
-		_In_ UINT nCodePage) throw(...)
+		_In_ UINT nCodePage) throw()
 	{
 		if (psz == NULL)
 		{
@@ -413,14 +413,14 @@ template< int t_nBufferLength = 128 >
 class CW2AEX
 {
 public:
-	CW2AEX(_In_z_ LPCWSTR psz) throw(...) :
+	CW2AEX(_In_z_ LPCWSTR psz) throw() :
 		m_psz( m_szBuffer )
 	{
 		Init( psz, _AtlGetConversionACP() );
 	}
 	CW2AEX(
 			_In_z_ LPCWSTR psz, 
-			_In_ UINT nCodePage) throw(...) :
+			_In_ UINT nCodePage) throw() :
 		m_psz( m_szBuffer )
 	{
 		Init( psz, nCodePage );
@@ -438,7 +438,7 @@ public:
 private:
 	void Init(
 		_In_z_ LPCWSTR psz, 
-		_In_ UINT nConvertCodePage) throw(...)
+		_In_ UINT nConvertCodePage) throw()
 	{
 		if (psz == NULL)
 		{
@@ -546,10 +546,6 @@ typedef CW2AEX<> CW2A;
 	#define USES_CONVERSION_EX int _convert_ex; (_convert_ex); UINT _acp_ex = ATL::_AtlGetConversionACP(); (_acp_ex); LPCWSTR _lpw_ex; (_lpw_ex); LPCSTR _lpa_ex; (_lpa_ex); USES_ATL_SAFE_ALLOCA
 #else
 	#define USES_CONVERSION_EX int _convert_ex = 0; (_convert_ex); UINT _acp_ex = ATL::_AtlGetConversionACP(); (_acp_ex); LPCWSTR _lpw_ex = NULL; (_lpw_ex); LPCSTR _lpa_ex = NULL; (_lpa_ex); USES_ATL_SAFE_ALLOCA
-#endif
-
-#ifdef _WINGDI_
-	ATLAPI_(LPDEVMODEA) AtlDevModeW2A(_Inout_opt_ LPDEVMODEA lpDevModeA, _In_ const DEVMODEW* lpDevModeW);
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -746,28 +742,6 @@ inline bool ocscat_s(
 #if defined(_UNICODE)
 
 // in these cases the default (TCHAR) is the same as OLECHAR
-
-_ATL_INSECURE_DEPRECATE("ocscpy is not safe. Intead, use ocscpy_s")
-inline OLECHAR* ocscpy(
-	_Inout_ _Post_z_ LPOLESTR dest, 
-	_In_z_ LPCOLESTR src) throw()
-{
-#pragma warning(push)
-#pragma warning(disable:4996)
-	return wcscpy(dest, src);
-#pragma warning(pop)
-}
-
-_ATL_INSECURE_DEPRECATE("ocscat is not safe. Intead, use ocscat_s")
-inline OLECHAR* ocscat(
-	_Inout_ _Post_z_ LPOLESTR dest, 
-	_In_z_ LPCOLESTR src) throw()
-{
-#pragma warning(push)
-#pragma warning(disable:4996)
-	return wcscat(dest, src);
-#pragma warning(pop)
-}
 
 _Ret_z_ inline LPCOLESTR T2COLE_EX(
 	_In_z_ LPCTSTR lp, 

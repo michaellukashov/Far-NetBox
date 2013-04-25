@@ -25,7 +25,7 @@
 #include "structures.h"
 
 #ifdef _DEBUG
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #endif
@@ -673,7 +673,7 @@ CString CServerPath::GetSubdirsOf(const CServerPath &path) const
 	while(IsParentOf(subdirs))
 	{
 		CString tmp;
-		tmp.Format(_T(" %d %s"), subdirs.GetLastSegment().GetLength(),subdirs.GetLastSegment());
+		tmp.Format(_T(" %d %s"), subdirs.GetLastSegment().GetLength(),(LPCTSTR)subdirs.GetLastSegment());
 		ret += tmp;
 		subdirs = subdirs.GetParent();
 	}

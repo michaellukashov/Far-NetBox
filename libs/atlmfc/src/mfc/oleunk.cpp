@@ -195,13 +195,6 @@ LPUNKNOWN CCmdTarget::GetInterface(const void* iid)
 	LPUNKNOWN lpUnkHook;
 	if ((lpUnkHook = GetInterfaceHook(iid)) != NULL)
 	{
-#ifdef _DEBUG
-		if (IsTracingEnabled(traceOle, 1))
-		{
-			CString strIID = AfxGetIIDString(*(IID*)(iid));
-			TRACE(traceOle, 1, _T("QueryInterface(%s) succeeded\n"), strIID);
-		}
-#endif
 		return lpUnkHook;
 	}
 
@@ -228,13 +221,6 @@ LPUNKNOWN CCmdTarget::GetInterface(const void* iid)
 				// check vtable pointer (can be NULL)
 				if (*(DWORD*)lpUnk != 0)
 				{
-#ifdef _DEBUG
-					if (IsTracingEnabled(traceOle, 1))
-					{
-						CString strIID = AfxGetIIDString(*(IID*)(iid));
-						TRACE(traceOle, 1, _T("QueryInterface(%s) succeeded\n"), strIID);
-					}
-#endif
 					return lpUnk;
 				}
 
@@ -250,13 +236,6 @@ LPUNKNOWN CCmdTarget::GetInterface(const void* iid)
 		} while ((pMap = pMap->pBaseMap) != NULL);
 #endif
 
-#ifdef _DEBUG
-		if (IsTracingEnabled(traceOle, 1))
-		{
-			CString strIID = AfxGetIIDString(*(IID*)(iid));
-			TRACE(traceOle, 1, _T("QueryInterface(%s) failed\n"), strIID);
-		}
-#endif
 		// interface ID not found, fail the call
 		return NULL;
 	}
@@ -279,13 +258,6 @@ LPUNKNOWN CCmdTarget::GetInterface(const void* iid)
 				// check vtable pointer (can be NULL)
 				if (*(DWORD*)lpUnk != 0)
 				{
-#ifdef _DEBUG
-					if (IsTracingEnabled(traceOle, 1))
-					{
-						CString strIID = AfxGetIIDString(*(IID*)(iid));
-						TRACE(traceOle, 1, _T("QueryInterface(%s) succeeded\n"), strIID);
-					}
-#endif
 					return lpUnk;
 				}
 			}
@@ -302,13 +274,6 @@ LPUNKNOWN CCmdTarget::GetInterface(const void* iid)
 	} while ((pMap = pMap->pBaseMap) != NULL);
 #endif
 
-#ifdef _DEBUG
-	if (IsTracingEnabled(traceOle, 1))
-	{
-		CString strIID = AfxGetIIDString(*(IID*)(iid));
-		TRACE(traceOle, 1, _T("QueryInterface(%s) failed\n"), strIID);
-	}
-#endif
 	// interface ID not found, fail the call
 	return NULL;
 }
@@ -386,16 +351,6 @@ DWORD CCmdTarget::ExternalQueryInterface(const void* iid,
 	if (m_pOuterUnknown != NULL)
 	{
 		HRESULT hRes = m_pOuterUnknown->QueryInterface(*(IID*)iid, ppvObj);
-#ifdef _DEBUG
-		if (IsTracingEnabled(traceOle, 1))
-		{
-			CString strIID = AfxGetIIDString(*(IID*)(iid));
-			if (SUCCEEDED(hRes))
-				TRACE(traceOle, 1, _T("QueryInterface(%s) succeeded\n"), strIID);
-			else
-				TRACE(traceOle, 1, _T("QueryInterface(%s) failed\n"), strIID);
-		}
-#endif
 		return hRes;
 	}
 

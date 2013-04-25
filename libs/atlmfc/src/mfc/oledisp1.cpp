@@ -104,7 +104,6 @@ SCODE CCmdTarget::SetStandardProp(const AFX_DISPMAP_ENTRY* pEntry,
 		sc = VariantChangeType(&va, pArg, 0, pEntry->vt);
 		if (FAILED(sc))
 		{
-			TRACE(traceOle, 0, "Warning: automation property coercion failed.\n");
 			*puArgErr = 0;
 			return sc;
 		}
@@ -696,7 +695,6 @@ SCODE CCmdTarget::PushStackArgs(BYTE* pStack, const BYTE* pbParams,
 					SCODE sc = VariantChangeType(pArgTemp, pArg, 0, vtTarget);
 					if (FAILED(sc))
 					{
-						TRACE(traceOle, 0, "Warning: automation argument coercion failed.\n");
 						*puArgErr = iArg;
 						return sc;
 					}

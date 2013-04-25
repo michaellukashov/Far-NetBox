@@ -151,7 +151,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
   {
     return new TRegistryStorage(GetRegistryStorageKey());
   }
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
   else if (GetStorage() == stNul)
   {
     return new TIniFileStorage(L"nul");
@@ -738,7 +738,7 @@ intptr_t  TConfiguration::GetCompoundVersion()
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::ModuleFileName()
 {
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
   return ParamStr(0);
 #endif
   Classes::Error(SNotImplemented, 204);

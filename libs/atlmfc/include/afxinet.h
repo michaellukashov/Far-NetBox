@@ -159,10 +159,6 @@ protected:
 	INTERNET_STATUS_CALLBACK m_pOldCallback;
 	BOOL m_bCallbackEnabled;
 
-public:
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 };
 
 
@@ -239,10 +235,6 @@ protected:
 	LPBYTE m_pbReadBuffer;
 	UINT m_nReadBufferBytes;
 
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 
 	friend class CInternetSession;
 	friend class CFtpConnection;
@@ -313,11 +305,6 @@ protected:
 	CString m_strObject;
 	CString m_strVerb;
 
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
-
 	friend class CHttpConnection;
 	friend class CInternetSession;
 	DECLARE_DYNAMIC(CHttpFile)
@@ -365,10 +352,6 @@ public:
 	~CInternetConnection();
 	DECLARE_DYNAMIC(CInternetConnection)
 
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-	void AssertValid() const;
-#endif
 };
 
 class CFtpConnection : public CInternetConnection
@@ -435,10 +418,6 @@ protected:
 	CString m_strServerName;
 
 public:
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-	virtual void AssertValid() const;
-#endif
 
 	DECLARE_DYNAMIC(CFtpConnection)
 };
@@ -488,10 +467,6 @@ protected:
 	static const LPCTSTR szHtmlVerbs[];
 
 public:
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-	virtual void AssertValid() const;
-#endif
 
 	friend class CInternetSession;  // just to access szHtmlVerbs
 	DECLARE_DYNAMIC(CHttpConnection)
@@ -527,10 +502,6 @@ public:
 	~CGopherConnection();
 
 public:
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-	virtual void AssertValid() const;
-#endif
 	DECLARE_DYNAMIC(CGopherConnection)
 };
 
@@ -556,10 +527,6 @@ protected:
 	DWORD_PTR m_dwContext;
 
 public:
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-	virtual void AssertValid() const;
-#endif
 
 	DECLARE_DYNAMIC(CFtpFileFind)
 };
@@ -611,11 +578,6 @@ protected:
 public:
 	virtual ~CGopherFile();
 
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
-
 	friend class CInternetSession;
 	friend class CGopherConnection;
 	DECLARE_DYNAMIC(CGopherFile)
@@ -665,10 +627,6 @@ public:
 	CString GetFileURL() const;
 	CString GetRoot() const;
 
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-	virtual void AssertValid() const;
-#endif
 	DECLARE_DYNAMIC(CGopherFileFind)
 };
 
@@ -689,9 +647,6 @@ public:
 // Implementation
 public:
 	~CInternetException();
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 	virtual BOOL GetErrorMessage(_Out_z_cap_(nMaxError) LPTSTR lpstrError, _In_ UINT nMaxError,
 		_Out_opt_ PUINT pnHelpContext = NULL) const;
 	DECLARE_DYNAMIC(CInternetException)

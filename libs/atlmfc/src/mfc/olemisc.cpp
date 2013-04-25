@@ -279,7 +279,7 @@ LPCTSTR AFXAPI AfxGetScodeString(SCODE sc)
 	#undef MAKE_SCODE_ENTRY
 
 	// look for it in the table
-	for (int i = 0; i < _countof(scNameTable); i++)
+	for (int i = 0; i < sizeof(scNameTable) / sizeof(scNameTable[0]); i++)
 	{
 		if (sc == scNameTable[i].sc)
 			return scNameTable[i].lpszName;
@@ -337,7 +337,7 @@ LPCTSTR AFXAPI AfxGetScodeRangeString(SCODE sc)
 	#undef MAKE_RANGE_ENTRY
 
 	// look for it in the table
-	for (int i = 0; i < _countof(scRangeTable); i++)
+	for (int i = 0; i < sizeof(scRangeTable) / sizeof(scRangeTable[0]); i++)
 	{
 		if (sc >= scRangeTable[i].scFirst && sc <= scRangeTable[i].scLast)
 			return scRangeTable[i].lpszName;
@@ -419,10 +419,6 @@ LPCTSTR AFXAPI AfxGetFullScodeString(SCODE sc)
 
 void __declspec(noreturn) AFXAPI AfxThrowOleException(SCODE sc)
 {
-#ifdef _DEBUG
-	TRACE(traceOle, 0, _T("Warning: constructing COleException, scode = %s.\n"),
-		AfxGetFullScodeString(sc));
-#endif
 	COleException* pException = new COleException;
 	pException->m_sc = sc;
 	THROW(pException);
@@ -955,13 +951,13 @@ HGLOBAL AFXAPI _AfxOleGetObjectDescriptorData(
 	SCODE							sc;
 	SIZEL							sizelHim;
 	BOOL							bFreeSrcOfCopy = FALSE;
-	::ATL::CComQIPtr<IViewObject2>	spViewObj2(lpOleObj);
-	::ATL::CComQIPtr<IOleLink>		spOleLink(lpOleObj);
+	// ::ATL::CComQIPtr<IViewObject2>	spViewObj2(lpOleObj);
+	// ::ATL::CComQIPtr<IOleLink>		spOleLink(lpOleObj);
 	BOOL							fIsLink;
 	DWORD							dwStatus = 0;
 
 	// query for IOleLink
-	fIsLink = (spOleLink != NULL);
+	// fIsLink = (spOleLink != NULL);
 
 	// Get CLSID
 	sc = lpOleObj->GetUserClassID(&clsid);
@@ -987,7 +983,7 @@ HGLOBAL AFXAPI _AfxOleGetObjectDescriptorData(
 		::ATL::CComHeapPtr<OLECHAR>	sposzNewFullUserTypeName;
 		if(sposzNewFullUserTypeName.Allocate(nBuf))
 		{
-			ATL_CRT_ERRORCHECK_SPRINTF(_snwprintf_s(sposzNewFullUserTypeName, nBuf, nBuf - 1, strLinkedTypeFmt.GetString(), sposzFullUserTypeName));
+			// ATL_CRT_ERRORCHECK_SPRINTF(_snwprintf_s(sposzNewFullUserTypeName, nBuf, nBuf - 1, strLinkedTypeFmt.GetString(), sposzFullUserTypeName));
 			sposzFullUserTypeName.Attach(sposzNewFullUserTypeName.Detach());
 		}
 	}
@@ -995,7 +991,7 @@ HGLOBAL AFXAPI _AfxOleGetObjectDescriptorData(
 	// get source of copy
 	if (fIsLink)
 	{
-		sc = spOleLink->GetSourceDisplayName((LPOLESTR*)&lpszSrcOfCopy);
+		// sc = spOleLink->GetSourceDisplayName((LPOLESTR*)&lpszSrcOfCopy);
 		bFreeSrcOfCopy = TRUE;
 	}
 	else if (lpszSrcOfCopy == NULL)
@@ -1017,14 +1013,14 @@ HGLOBAL AFXAPI _AfxOleGetObjectDescriptorData(
 		// Use extents passed by the caller
 		sizelHim = *lpSizelHim;
 	}
-	else if (spViewObj2)
-	{
+	// else if (spViewObj2)
+	// {
 		// Get the current extents from the object
-		sc = spViewObj2->GetExtent(dwDrawAspect, -1, NULL,
-			(LPSIZEL)&sizelHim);
-		if (sc != S_OK)
-			sizelHim.cx = sizelHim.cy = 0;
-	}
+		// sc = spViewObj2->GetExtent(dwDrawAspect, -1, NULL,
+			// (LPSIZEL)&sizelHim);
+		// if (sc != S_OK)
+			// sizelHim.cx = sizelHim.cy = 0;
+	// }
 	else
 	{
 		sizelHim.cx = sizelHim.cy = 0;

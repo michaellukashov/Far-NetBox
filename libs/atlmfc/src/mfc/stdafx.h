@@ -11,10 +11,22 @@
 // STDAFX.H is the header that includes the standard includes that are used
 //  for most of the project.  These are compiled into a pre-compiled header
 
+#if !defined(__MINGW32__)
 #include <winsdkver.h>
+#else
+#define _AFX_MFCS
+#define _AFX_ENABLE_INLINES
+// #define _ATL_NO_EXCEPTIONS
+// #define _AFXDLL
+// #define _ATL_NO_DEBUG_CRT
+// #define _ATL_NO_COMMODULE
+// #define _AFX_PORTABLE
+// #define _ATL_NO_CONNECTION_POINTS
 
 #undef _WIN32_WINNT
 #define _WIN32_WINNT _WIN32_WINNT_MAXVER
+
+#endif
 
 #include <sdkddkver.h>
 
@@ -32,6 +44,14 @@
 #ifndef ALL_WARNINGS
 #pragma warning(disable: 4073)  // disable warning about using init_seg
 #pragma warning(disable: 4702)  // unreachable code
+#endif
+
+#ifndef Max
+#define Max(a,b) (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef Min
+#define Min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
 
 // MFC inline constructors (including compiler generated) can get deep

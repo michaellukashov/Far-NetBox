@@ -93,7 +93,7 @@ Version 2.0:
 
 #if defined _DEBUG && defined _AFX
 #define new DEBUG_NEW
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif

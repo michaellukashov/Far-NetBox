@@ -91,7 +91,7 @@ void CPtrArray::SetSize(INT_PTR nNewSize, INT_PTR nGrowBy)
 		{
 			// heuristically determine growth when nGrowArrayBy == 0
 			//  (this avoids heap fragmentation in many situations)
-			nGrowArrayBy = min(1024, max(4, m_nSize / 8));
+			nGrowArrayBy = Min(1024, Max(4, m_nSize / 8));
 		}
 		INT_PTR nNewMax;
 		if (nNewSize < m_nMaxSize + nGrowArrayBy)
@@ -287,45 +287,6 @@ void CPtrArray::InsertAt(INT_PTR nStartIndex, CPtrArray* pNewArray)
 			SetAt(nStartIndex + i, pNewArray->GetAt(i));
 	}
 }
-
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Diagnostics
-
-#ifdef _DEBUG
-void CPtrArray::Dump(CDumpContext& dc) const
-{
-	CObject::Dump(dc);
-
-	dc << "with " << m_nSize << " elements";
-	if (dc.GetDepth() > 0)
-	{
-		for (INT_PTR i = 0; i < m_nSize; i++)
-			dc << "\n\t[" << i << "] = " << m_pData[i];
-	}
-
-	dc << "\n";
-}
-
-void CPtrArray::AssertValid() const
-{
-	CObject::AssertValid();
-
-	if (m_pData == NULL)
-	{
-		ASSERT(m_nSize == 0);
-		ASSERT(m_nMaxSize == 0);
-	}
-	else
-	{
-		ASSERT(m_nSize >= 0);
-		ASSERT(m_nMaxSize >= 0);
-		ASSERT(m_nSize <= m_nMaxSize);
-		ASSERT(AfxIsValidAddress(m_pData, m_nMaxSize * sizeof(void*)));
-	}
-}
-#endif //_DEBUG
 
 
 

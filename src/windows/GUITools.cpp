@@ -298,7 +298,7 @@ UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & I
     }
     else
     {
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
       TempDir += IncludeTrailingBackslash(FormatDateTime(L"nnzzz", Now()));
 #else
       TDateTime dt = Now();
@@ -361,7 +361,7 @@ UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, TDateTime Dat
   }
   // days are decremented, because when there are to many of them,
   // "integer overflow" error occurs
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
   Result += FormatDateTime(TimeFormat, DateTime - int(DateTime));
 #else
   TDateTime dt(DateTime - static_cast<int>(DateTime));

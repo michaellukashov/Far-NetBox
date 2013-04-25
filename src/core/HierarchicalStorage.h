@@ -141,7 +141,7 @@ private:
   TRegistry * FRegistry;
   intptr_t FFailed;
 };
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 //------------------------------------------------------------------------------
 class TCustomIniFileStorage : public THierarchicalStorage
 {

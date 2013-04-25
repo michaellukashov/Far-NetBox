@@ -1,11 +1,12 @@
 #pragma once
 
+#include <stdexcept>
+#include <stdarg.h>
 #include <vector.h>
 #include "stdafx.h"
 #include <CoreDefs.hpp>
 
 #include <WinDef.h>
-#include <CommCtrl.h>
 
 #pragma warning(push, 1)
 
@@ -16,6 +17,10 @@
 #pragma warning(pop)
 
 #define NPOS static_cast<intptr_t>(-1)
+
+namespace Sysutils {
+class Exception;
+}
 
 namespace Classes {
 
@@ -42,8 +47,13 @@ intptr_t __cdecl debug_printf(const wchar_t * format, ...);
 intptr_t __cdecl debug_printf2(const char * format, ...);
 
 #ifdef NETBOX_DEBUG
+#if defined(_MSC_VER)
 #define DEBUG_PRINTF(format, ...) do { debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", Sysutils::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
 #define DEBUG_PRINTF2(format, ...) do { debug_printf2("NetBox: [%s:%d] %s: "format "\n", W2MB(Sysutils::ExtractFilename(__FILEW__, '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
+#else
+#define DEBUG_PRINTF(format, ...) do { debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", Sysutils::ExtractFilename(MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, MB2W(__FUNCTION__).c_str(), ##__VA_ARGS__); } while (0)
+#define DEBUG_PRINTF2(format, ...) do { debug_printf2("NetBox: [%s:%d] %s: "format "\n", W2MB(Sysutils::ExtractFilename(MB2W(__FILE__).c_str(), '\\').c_str()).c_str(), __LINE__, __FUNCTION__, ##__VA_ARGS__); } while (0)
+#endif
 #else
 #define DEBUG_PRINTF(format, ...)
 #define DEBUG_PRINTF2(format, ...)
@@ -579,19 +589,19 @@ protected:
 };
 
 //---------------------------------------------------------------------------
-class EReadError : public std::exception
+class EReadError : public std::runtime_error
 {
 public:
   EReadError(const char * Msg) :
-    std::exception(Msg)
+    std::runtime_error(Msg)
   {}
 };
 
-class EWriteError : public std::exception
+class EWriteError : public std::runtime_error
 {
 public:
   EWriteError(const char * Msg) :
-    std::exception(Msg)
+    std::runtime_error(Msg)
   {}
 };
 
@@ -845,7 +855,7 @@ public:
   DelphiSet<T>& Add(const T RangeStartValue, const T RangeEndValue)
   {
     if (RangeEndValue < RangeStartValue)
-      throw Sysutils::Exception(FORMAT("Start Value %d is greater than End Value %d", StartValue, EndValue));
+      throw Sysutils::Exception(FORMAT("Start Value %d is greater than End Value %d", RangeStartValue, RangeEndValue));
     int Range = RangeEndValue - RangeStartValue;
     T RangeStartForAdd = RangeStartValue;
     for (int I = 0; I < Range; ++I)
@@ -862,7 +872,7 @@ public:
   DelphiSet<T>& Remove(T RangeStartValue, T RangeEndValue)
   {
     if (RangeEndValue < RangeStartValue)
-      throw Sysutils::Exception(FORMAT("Start Value %d is greater than End Value %d", StartValue, EndValue));
+      throw Sysutils::Exception(FORMAT("Start Value %d is greater than End Value %d", RangeStartValue, RangeEndValue));
     for (T I = RangeStartValue ; I <= RangeEndValue; ++I)
       this->Remove(I);
     return *this;

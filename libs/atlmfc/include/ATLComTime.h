@@ -275,7 +275,6 @@ inline bool COleDateTime::ParseDateTime(
 		}
 		else
 		{
-			ATLTRACE(atlTraceTime, 0, _T("\nCOleDateTime VarDateFromStr call failed.\n\t"));
 			// Can't convert string to date, set -1 and invalidate
 			m_dt = -1;
 			m_status = invalid;
@@ -387,7 +386,7 @@ inline CString COleDateTime::Format(_In_ UINT nFormatID) const
 	return Format(strFormat);
 }
 
-inline COleDateTime::COleDateTime(_In_ const DBTIMESTAMP& dbts)
+inline COleDateTime::COleDateTime(_In_ const DBTIMESTAMP& dbts) throw()
 {
 	SYSTEMTIME st;
 	::ZeroMemory(&st, sizeof(SYSTEMTIME));
@@ -402,7 +401,7 @@ inline COleDateTime::COleDateTime(_In_ const DBTIMESTAMP& dbts)
 	m_status = ::SystemTimeToVariantTime(&st, &m_dt) ? valid : invalid;
 }
 
-inline bool COleDateTime::GetAsDBTIMESTAMP(_Out_ DBTIMESTAMP& dbts) const
+inline bool COleDateTime::GetAsDBTIMESTAMP(_Out_ DBTIMESTAMP& dbts) const throw()
 {
 	UDATE ud;
 	if (S_OK != VarUdateFromDate(m_dt, 0, &ud))

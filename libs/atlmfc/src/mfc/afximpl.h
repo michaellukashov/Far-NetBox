@@ -160,8 +160,8 @@ public:
 		if (pThreadState != NULL)
 		{
 			pOldPushRoutingView = pThreadState->m_pPushRoutingView;
-			pOldRoutingView = pThreadState->m_pRoutingView;
-			pThreadState->m_pRoutingView = pNewRoutingView;
+			// pOldRoutingView = pThreadState->m_pRoutingView;
+			// pThreadState->m_pRoutingView = pNewRoutingView;
 			pThreadState->m_pPushRoutingView = this;
 		}
 	}
@@ -170,8 +170,8 @@ public:
 		if (pThreadState != NULL)
 		{
 			ASSERT( pThreadState->m_pPushRoutingView == this );
-			pThreadState->m_pRoutingView = pOldRoutingView;
-			pThreadState->m_pPushRoutingView = pOldPushRoutingView;
+			// pThreadState->m_pRoutingView = pOldRoutingView;
+			// pThreadState->m_pPushRoutingView = pOldPushRoutingView;
 		}
 	}
 	void Pop()
@@ -180,8 +180,8 @@ public:
 		if (pThreadState != NULL)
 		{
 			ASSERT( pThreadState->m_pPushRoutingView == this );
-			pThreadState->m_pRoutingView = pOldRoutingView;
-			pThreadState->m_pPushRoutingView = pOldPushRoutingView;
+			// pThreadState->m_pRoutingView = pOldRoutingView;
+			// pThreadState->m_pPushRoutingView = pOldPushRoutingView;
 			pThreadState = NULL;
 		}
 	}
@@ -426,9 +426,9 @@ inline int AfxInvariantStrICmp(const wchar_t *pwszLeft, const wchar_t *pwszRight
 /////////////////////////////////////////////////////////////////////////////
 // static exceptions
 
-extern CNotSupportedException _simpleNotSupportedException;
+// extern CNotSupportedException _simpleNotSupportedException;
 extern CMemoryException _simpleMemoryException;
-extern CUserException _simpleUserException;
+// extern CUserException _simpleUserException;
 extern CResourceException _simpleResourceException;
 
 /////////////////////////////////////////////////////////////////////////////

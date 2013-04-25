@@ -47,7 +47,9 @@ AFX_STATIC inline BOOL IsDirSep(TCHAR ch)
 		EXTERN_C AFX_COMDAT const GUID afx##name \
 				= { l, w1, w2, { b1, b2,  b3,  b4,  b5,  b6,  b7,  b8 } }
 
+#ifndef DEFINE_SHLGUID
 #define DEFINE_SHLGUID(name, l, w1, w2) DEFINE_GUID(name, l, w1, w2, 0xC0,0,0,0,0,0,0,0x46)
+#endif
 
 DEFINE_SHLGUID(CLSID_ShellLink, 0x00021401L, 0, 0);
 #ifndef _UNICODE
@@ -67,7 +69,7 @@ DEFINE_SHLGUID(IID_IShellLinkW, 0x000214F9L, 0, 0);
 #define IShellLink IShellLinkW
 #endif
 
-#endif !_AFX_NO_OLE_SUPPORT
+#endif // !_AFX_NO_OLE_SUPPORT
 
 ////////////////////////////////////////////////////////////////////////////
 // CFile implementation
@@ -518,7 +520,7 @@ HRESULT AFX_COM::GetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv)
 		return REGDB_E_CLASSNOTREG;
 
 	// try to load it
-	hInst = AfxCtxLoadLibrary(strServer);
+	hInst = NULL; // AfxCtxLoadLibrary(strServer);
 	if (hInst == NULL)
 		return REGDB_E_CLASSNOTREG;
 
@@ -643,10 +645,6 @@ BOOL AFXAPI _AfxFullPath2(_Out_z_cap_c_(_MAX_PATH) LPTSTR lpszPathOut, LPCTSTR l
 	DWORD dwRet = GetFullPathName(lpszFileIn, _MAX_PATH, lpszPathOut, &lpszFilePart);
 	if (dwRet == 0)
 	{
-#ifdef _DEBUG
-		if (lpszFileIn != NULL && lpszFileIn[0] != '\0')
-			TRACE(traceAppMsg, 0, _T("Warning: could not parse the path '%s'.\n"), lpszFileIn);
-#endif
 		Checked::tcsncpy_s(lpszPathOut, _MAX_PATH, lpszFileIn, _TRUNCATE); // take it literally
 		_AfxFillExceptionInfo(pException,lpszFileIn);
 		return FALSE;
@@ -677,8 +675,6 @@ BOOL AFXAPI _AfxFullPath2(_Out_z_cap_c_(_MAX_PATH) LPTSTR lpszPathOut, LPCTSTR l
 		if (!GetVolumeInformation(strRoot, NULL, 0, NULL, &dwDummy, &dwFlags,
 			NULL, 0))
 		{
-			TRACE(traceAppMsg, 0, _T("Warning: could not get volume information '%s'.\n"),
-				(LPCTSTR)strRoot);
 			_AfxFillExceptionInfo(pException,lpszFileIn);
 			return FALSE;   // preserving case may not be correct
 		}
@@ -847,24 +843,6 @@ void AFXAPI AfxGetModuleShortFileName(HINSTANCE hInst, CString& strShortName)
 
 /////////////////////////////////////////////////////////////////////////////
 // CFile diagnostics
-
-#ifdef _DEBUG
-void CFile::AssertValid() const
-{
-	CObject::AssertValid();
-	// we permit the descriptor m_hFile to be any value for derived classes
-}
-
-void CFile::Dump(CDumpContext& dc) const
-{
-	CObject::Dump(dc);
-
-	dc << "with handle " << (void*)m_hFile;
-	dc << " and name \"" << m_strFileName << "\"";
-	dc << "\n";
-}
-#endif
-
 
 IMPLEMENT_DYNAMIC(CFile, CObject)
 

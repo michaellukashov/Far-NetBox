@@ -386,12 +386,12 @@ UINT CMemFile::GetBufferPtr(UINT nCommand, UINT nCount,
 
 	// end of buffer depends on whether you are reading or writing
 	if (nCommand == bufferWrite)
-		*ppBufMax = m_lpBuffer + min(m_nBufferSize, m_nPosition + nCount);
+		*ppBufMax = m_lpBuffer + Min(m_nBufferSize, m_nPosition + nCount);
 	else
 	{
 		if (nCount == (UINT)-1)
 			nCount = UINT(m_nBufferSize - m_nPosition);
-		*ppBufMax = m_lpBuffer + min(m_nFileSize, m_nPosition + nCount);
+		*ppBufMax = m_lpBuffer + Min(m_nFileSize, m_nPosition + nCount);
 		m_nPosition += LPBYTE(*ppBufMax) - LPBYTE(*ppBufStart);
 	}
 
@@ -401,32 +401,6 @@ UINT CMemFile::GetBufferPtr(UINT nCommand, UINT nCount,
 
 /////////////////////////////////////////////////////////////////////////////
 // CMemFile diagonstics
-
-#ifdef _DEBUG
-void CMemFile::Dump(CDumpContext& dc) const
-{
-	CFile::Dump(dc);
-
-	dc << "m_nFileSize = " << ULONGLONG(m_nFileSize);
-	dc << "\nm_nBufferSize = " << ULONGLONG(m_nBufferSize);
-	dc << "\nm_nPosition = " << ULONGLONG(m_nPosition);
-	dc << "\nm_nGrowBytes = " << ULONGLONG(m_nGrowBytes);
-
-	dc << "\n";
-}
-
-void CMemFile::AssertValid() const
-{
-	CFile::AssertValid();
-
-	ASSERT((m_lpBuffer == NULL && m_nBufferSize == 0) ||
-		AfxIsValidAddress(m_lpBuffer, (UINT)m_nBufferSize, FALSE));
-	ASSERT(m_nFileSize <= m_nBufferSize);
-	// m_nPosition might be after the end of file, so we cannot ASSERT
-	// its validity
-}
-#endif // _DEBUG
-
 
 IMPLEMENT_DYNAMIC(CMemFile, CFile)
 

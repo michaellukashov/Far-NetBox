@@ -57,11 +57,6 @@ _AFXWIN_INLINE int CWnd::GetWindowText(_Out_z_cap_post_count_(nMaxCount, return 
 _AFXWIN_INLINE int CWnd::GetWindowTextLength() const
 	{ ASSERT(::IsWindow(m_hWnd)); return ::GetWindowTextLength(m_hWnd); }
 #endif //_AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE void CWnd::SetFont(CFont* pFont, BOOL bRedraw)
-	{ ASSERT(::IsWindow(m_hWnd)); ::SendMessage(m_hWnd, WM_SETFONT, (WPARAM)pFont->GetSafeHandle(), bRedraw); }
-_AFXWIN_INLINE CFont* CWnd::GetFont() const
-	{ ASSERT(::IsWindow(m_hWnd)); return CFont::FromHandle(
-		(HFONT)::SendMessage(m_hWnd, WM_GETFONT, 0, 0)); }
 _AFXWIN_INLINE void CWnd::DragAcceptFiles(BOOL bAccept)
 	{ ASSERT(::IsWindow(m_hWnd)); ::DragAcceptFiles(m_hWnd, bAccept); }
 #ifdef _AFX_NO_OCC_SUPPORT
@@ -112,14 +107,10 @@ _AFXWIN_INLINE void CWnd::ClientToScreen(LPPOINT lpPoint) const
 	{ ASSERT(::IsWindow(m_hWnd)); ::ClientToScreen(m_hWnd, lpPoint); }
 _AFXWIN_INLINE void CWnd::ScreenToClient(LPPOINT lpPoint) const
 	{ ASSERT(::IsWindow(m_hWnd)); ::ScreenToClient(m_hWnd, lpPoint); }
-_AFXWIN_INLINE CDC* CWnd::BeginPaint(LPPAINTSTRUCT lpPaint)
-	{ ASSERT(::IsWindow(m_hWnd)); return CDC::FromHandle(::BeginPaint(m_hWnd, lpPaint)); }
-_AFXWIN_INLINE void CWnd::EndPaint(LPPAINTSTRUCT lpPaint)
-	{ ASSERT(::IsWindow(m_hWnd)); ::EndPaint(m_hWnd, lpPaint); }
-_AFXWIN_INLINE CDC* CWnd::GetDC()
-	{ ASSERT(::IsWindow(m_hWnd)); return CDC::FromHandle(::GetDC(m_hWnd)); }
-_AFXWIN_INLINE CDC* CWnd::GetWindowDC()
-	{ ASSERT(::IsWindow(m_hWnd)); return CDC::FromHandle(::GetWindowDC(m_hWnd)); }
+// _AFXWIN_INLINE CDC* CWnd::GetDC()
+	// { ASSERT(::IsWindow(m_hWnd)); return CDC::FromHandle(::GetDC(m_hWnd)); }
+// _AFXWIN_INLINE CDC* CWnd::GetWindowDC()
+	// { ASSERT(::IsWindow(m_hWnd)); return CDC::FromHandle(::GetWindowDC(m_hWnd)); }
 _AFXWIN_INLINE int CWnd::ReleaseDC(CDC* pDC)
 	{ ASSERT(::IsWindow(m_hWnd)); return ::ReleaseDC(m_hWnd, pDC->m_hDC); }
 _AFXWIN_INLINE void CWnd::UpdateWindow()
@@ -128,18 +119,8 @@ _AFXWIN_INLINE void CWnd::SetRedraw(BOOL bRedraw)
 	{ ASSERT(::IsWindow(m_hWnd)); ::SendMessage(m_hWnd, WM_SETREDRAW, bRedraw, 0); }
 _AFXWIN_INLINE BOOL CWnd::GetUpdateRect(LPRECT lpRect, BOOL bErase)
 	{ ASSERT(::IsWindow(m_hWnd)); return ::GetUpdateRect(m_hWnd, lpRect, bErase); }
-_AFXWIN_INLINE int CWnd::GetUpdateRgn(CRgn* pRgn, BOOL bErase)
-	{ ASSERT(::IsWindow(m_hWnd)); return ::GetUpdateRgn(m_hWnd, (HRGN)pRgn->GetSafeHandle(), bErase); }
 _AFXWIN_INLINE void CWnd::Invalidate(BOOL bErase)
 	{ ASSERT(::IsWindow(m_hWnd)); ::InvalidateRect(m_hWnd, NULL, bErase); }
-_AFXWIN_INLINE void CWnd::InvalidateRect(LPCRECT lpRect, BOOL bErase)
-	{ ASSERT(::IsWindow(m_hWnd)); ::InvalidateRect(m_hWnd, lpRect, bErase); }
-_AFXWIN_INLINE void CWnd::InvalidateRgn(CRgn* pRgn, BOOL bErase)
-	{ ASSERT(::IsWindow(m_hWnd)); ::InvalidateRgn(m_hWnd, (HRGN)pRgn->GetSafeHandle(), bErase); }
-_AFXWIN_INLINE void CWnd::ValidateRect(LPCRECT lpRect)
-	{ ASSERT(::IsWindow(m_hWnd)); ::ValidateRect(m_hWnd, lpRect); }
-_AFXWIN_INLINE void CWnd::ValidateRgn(CRgn* pRgn)
-	{ ASSERT(::IsWindow(m_hWnd)); ::ValidateRgn(m_hWnd, (HRGN)pRgn->GetSafeHandle()); }
 #ifdef _AFX_NO_OCC_SUPPORT
 _AFXWIN_INLINE BOOL CWnd::ShowWindow(int nCmdShow)
 	{ ASSERT(::IsWindow(m_hWnd)); return ::ShowWindow(m_hWnd, nCmdShow); }
@@ -160,15 +141,10 @@ _AFXWIN_INLINE BOOL CWnd::IsDialogMessage(LPMSG lpMsg)
 	{ ASSERT(::IsWindow(m_hWnd)); return ::IsDialogMessage(m_hWnd, lpMsg); }
 #endif
 
-_AFXWIN_INLINE CDC* CWnd::GetDCEx(CRgn* prgnClip, DWORD flags)
-	{ ASSERT(::IsWindow(m_hWnd)); return CDC::FromHandle(::GetDCEx(m_hWnd, (HRGN)prgnClip->GetSafeHandle(), flags)); }
 _AFXWIN_INLINE BOOL CWnd::LockWindowUpdate()
 	{ ASSERT(::IsWindow(m_hWnd)); return ::LockWindowUpdate(m_hWnd); }
 _AFXWIN_INLINE void CWnd::UnlockWindowUpdate()
 	{ ASSERT(::IsWindow(m_hWnd)); ::LockWindowUpdate(NULL); }
-_AFXWIN_INLINE BOOL CWnd::RedrawWindow(LPCRECT lpRectUpdate, CRgn* prgnUpdate,
-	UINT flags)
-	{ ASSERT(::IsWindow(m_hWnd)); return ::RedrawWindow(m_hWnd, lpRectUpdate, (HRGN)prgnUpdate->GetSafeHandle(), flags); }
 _AFXWIN_INLINE BOOL CWnd::EnableScrollBar(int nSBFlags, UINT nArrowFlags)
 	{ ASSERT(::IsWindow(m_hWnd)); return (BOOL)::EnableScrollBar(m_hWnd, nSBFlags, nArrowFlags); }
 _AFXWIN_INLINE BOOL CWnd::DrawAnimatedRects(int idAni, CONST RECT *lprcFrom, CONST RECT *lprcTo)
@@ -204,72 +180,6 @@ _AFXWIN_INLINE CWnd* CWnd::SetFocus()
 #endif //_AFX_NO_OCC_SUPPORT
 _AFXWIN_INLINE CWnd* PASCAL CWnd::GetDesktopWindow()
 	{ return CWnd::FromHandle(::GetDesktopWindow()); }
-#ifdef _AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE void CWnd::CheckDlgButton(int nIDButton, UINT nCheck)
-	{ ASSERT(::IsWindow(m_hWnd)); ::CheckDlgButton(m_hWnd, nIDButton, nCheck); }
-_AFXWIN_INLINE void CWnd::CheckRadioButton(int nIDFirstButton, int nIDLastButton,
-		int nIDCheckButton)
-	{ ASSERT(::IsWindow(m_hWnd)); ::CheckRadioButton(m_hWnd, nIDFirstButton, nIDLastButton, nIDCheckButton); }
-#endif //_AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE int CWnd::DlgDirList(_Inout_z_ LPTSTR lpPathSpec, _In_ int nIDListBox,
-		_In_ int nIDStaticPath, _In_ UINT nFileType)
-	{ ASSERT(::IsWindow(m_hWnd)); return ::DlgDirList(m_hWnd, lpPathSpec, nIDListBox,
-			nIDStaticPath, nFileType); }
-_AFXWIN_INLINE int CWnd::DlgDirListComboBox(_Inout_z_ LPTSTR lpPathSpec, _In_ int nIDComboBox,
-		_In_ int nIDStaticPath, _In_ UINT nFileType)
-	{ ASSERT(::IsWindow(m_hWnd)); return ::DlgDirListComboBox(m_hWnd, lpPathSpec,
-			nIDComboBox, nIDStaticPath, nFileType); }
-_AFXWIN_INLINE BOOL CWnd::DlgDirSelect(_Out_z_cap_c_(_MAX_PATH) LPTSTR lpString, int nIDListBox)
-	{ ASSERT(::IsWindow(m_hWnd)); return ::DlgDirSelectEx(m_hWnd, lpString, _MAX_PATH, nIDListBox); }
-_AFXWIN_INLINE BOOL CWnd::DlgDirSelect(_Out_z_cap_(nSize) LPTSTR lpString, int nSize, int nIDListBox)
-	{ ASSERT(::IsWindow(m_hWnd)); return ::DlgDirSelectEx(m_hWnd, lpString, nSize, nIDListBox); }
-_AFXWIN_INLINE BOOL CWnd::DlgDirSelectComboBox(_Out_z_cap_c_(_MAX_PATH) LPTSTR lpString, int nIDComboBox)
-	{ ASSERT(::IsWindow(m_hWnd)); return ::DlgDirSelectComboBoxEx(m_hWnd, lpString, _MAX_PATH, nIDComboBox);}
-_AFXWIN_INLINE BOOL CWnd::DlgDirSelectComboBox(_Out_z_cap_(nSize) LPTSTR lpString, int nSize, int nIDComboBox)
-	{ ASSERT(::IsWindow(m_hWnd)); return ::DlgDirSelectComboBoxEx(m_hWnd, lpString, nSize, nIDComboBox);}
-#ifdef _AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE CWnd* CWnd::GetDlgItem(int nID) const
-	{ ASSERT(::IsWindow(m_hWnd)); return CWnd::FromHandle(::GetDlgItem(m_hWnd, nID)); }
-_AFXWIN_INLINE void CWnd::GetDlgItem(int nID, HWND* phWnd) const
-	{ ASSERT(::IsWindow(m_hWnd)); ASSERT(phWnd != NULL); *phWnd = ::GetDlgItem(m_hWnd, nID); }
-_AFXWIN_INLINE UINT CWnd::GetDlgItemInt(int nID, BOOL* lpTrans,
-		BOOL bSigned) const
-	{ ASSERT(::IsWindow(m_hWnd)); return ::GetDlgItemInt(m_hWnd, nID, lpTrans, bSigned);}
-_AFXWIN_INLINE int CWnd::GetDlgItemText(_In_ int nID, _Out_z_cap_post_count_(nMaxCount, return + 1) LPTSTR lpStr, _In_ int nMaxCount) const
-	{ ASSERT(::IsWindow(m_hWnd)); return ::GetDlgItemText(m_hWnd, nID, lpStr, nMaxCount);}
-#endif //_AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE CWnd* CWnd::GetNextDlgGroupItem(CWnd* pWndCtl, BOOL bPrevious) const
-	{ ASSERT(::IsWindow(m_hWnd)); return CWnd::FromHandle(::GetNextDlgGroupItem(m_hWnd,
-			pWndCtl->GetSafeHwnd(), bPrevious)); }
-_AFXWIN_INLINE CWnd* CWnd::GetNextDlgTabItem(CWnd* pWndCtl, BOOL bPrevious) const
-	{ ASSERT(::IsWindow(m_hWnd)); return CWnd::FromHandle(::GetNextDlgTabItem(m_hWnd,
-			pWndCtl->GetSafeHwnd(), bPrevious)); }
-#ifdef _AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE UINT CWnd::IsDlgButtonChecked(int nIDButton) const
-	{ ASSERT(::IsWindow(m_hWnd)); return ::IsDlgButtonChecked(m_hWnd, nIDButton); }
-_AFXWIN_INLINE LPARAM CWnd::SendDlgItemMessage(int nID, UINT message, WPARAM wParam, LPARAM lParam)
-	{ ASSERT(::IsWindow(m_hWnd)); return ::SendDlgItemMessage(m_hWnd, nID, message, wParam, lParam); }
-_AFXWIN_INLINE void CWnd::SetDlgItemInt(int nID, UINT nValue, BOOL bSigned)
-	{ ASSERT(::IsWindow(m_hWnd)); ::SetDlgItemInt(m_hWnd, nID, nValue, bSigned); }
-_AFXWIN_INLINE void CWnd::SetDlgItemText(int nID, LPCTSTR lpszString)
-	{ ASSERT(::IsWindow(m_hWnd)); ::SetDlgItemText(m_hWnd, nID, lpszString); }
-_AFXWIN_INLINE int CWnd::ScrollWindowEx(int dx, int dy,
-	LPCRECT lpRectScroll, LPCRECT lpRectClip,
-	CRgn* prgnUpdate, LPRECT lpRectUpdate, UINT flags)
-	{ ASSERT(::IsWindow(m_hWnd)); return ::ScrollWindowEx(m_hWnd, dx, dy, lpRectScroll, lpRectClip,
-			(HRGN)prgnUpdate->GetSafeHandle(), lpRectUpdate, flags); }
-#endif //_AFX_NO_OCC_SUPPORT
-
-_AFXWIN_INLINE void CWnd::ShowScrollBar(UINT nBar, BOOL bShow)
-	{ ASSERT(::IsWindow(m_hWnd)); ::ShowScrollBar(m_hWnd, nBar, bShow); }
-_AFXWIN_INLINE CWnd* CWnd::ChildWindowFromPoint(POINT point) const
-	{ ASSERT(::IsWindow(m_hWnd)); return CWnd::FromHandle(::ChildWindowFromPoint(m_hWnd, point)); }
-_AFXWIN_INLINE CWnd* CWnd::ChildWindowFromPoint(POINT point, UINT nFlags) const
-	{ ASSERT(::IsWindow(m_hWnd)); return CWnd::FromHandle(::ChildWindowFromPointEx(m_hWnd, point, nFlags)); }
-_AFXWIN_INLINE CWnd* PASCAL CWnd::FindWindow(LPCTSTR lpszClassName, LPCTSTR lpszWindowName)
-	{ return CWnd::FromHandle(::FindWindow(lpszClassName, lpszWindowName)); }
-_AFXWIN_INLINE CWnd* CWnd::FindWindowEx(HWND hwndParent, HWND hwndChildAfter, LPCTSTR lpszClass, LPCTSTR lpszWindow)
-	{ return CWnd::FromHandle(::FindWindowEx(hwndParent, hwndChildAfter, lpszClass, lpszWindow)); }
 
 _AFXWIN_INLINE CWnd* CWnd::GetNextWindow(UINT nFlag) const
 	{ ASSERT(::IsWindow(m_hWnd)); return CWnd::FromHandle(::GetNextWindow(m_hWnd, nFlag)); }
@@ -307,8 +217,6 @@ _AFXWIN_INLINE CWnd* PASCAL CWnd::GetClipboardOwner()
 	{ return CWnd::FromHandle(::GetClipboardOwner()); }
 _AFXWIN_INLINE CWnd* PASCAL CWnd::GetClipboardViewer()
 	{ return CWnd::FromHandle(::GetClipboardViewer()); }
-_AFXWIN_INLINE void CWnd::CreateCaret(CBitmap* pBitmap)
-	{ ASSERT(::IsWindow(m_hWnd)); ::CreateCaret(m_hWnd, (HBITMAP)pBitmap->GetSafeHandle(), 0, 0); }
 _AFXWIN_INLINE void CWnd::CreateSolidCaret(int nWidth, int nHeight)
 	{ ASSERT(::IsWindow(m_hWnd)); ::CreateCaret(m_hWnd, (HBITMAP)0, nWidth, nHeight); }
 _AFXWIN_INLINE void CWnd::CreateGrayCaret(int nWidth, int nHeight)

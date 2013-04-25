@@ -25,86 +25,6 @@
 #error _AFX_BYTESWAP is not supported.
 #endif
 
-UINT_PTR AFXAPI AfxReadStringLength(CArchive& ar, int& nCharSize)
-{
-	ULONGLONG qwLength;
-	DWORD dwLength;
-	WORD wLength;
-	BYTE bLength;
-
-	nCharSize = sizeof(char);
-
-	// First, try to read a one-byte length
-	ar>>bLength;
-	if (bLength < 0xff)
-		return bLength;
-
-	// Try a two-byte length
-	ar>>wLength;
-	if (wLength == 0xfffe)
-	{
-		// Unicode string.  Start over at 1-byte length
-		nCharSize = sizeof(wchar_t);
-
-		ar>>bLength;
-		if (bLength < 0xff)
-			return bLength;
-
-		// Two-byte length
-		ar>>wLength;
-		// Fall through to continue on same branch as ANSI string
-	}
-	if (wLength < 0xffff)
-		return wLength;
-
-	// 4-byte length
-	ar>>dwLength;
-	if (dwLength < 0xffffffff)
-		return dwLength;
-
-	// 8-byte length
-	ar>>qwLength;
-#ifndef _WIN64  // Big strings aren't supported on Win32 clients
-	if (qwLength > INT_MAX)
-		AfxThrowArchiveException(CArchiveException::genericException);
-#endif  // !_WIN64
-
-	return (UINT_PTR)qwLength;
-}
-
-void AFXAPI AfxWriteStringLength(CArchive& ar, UINT_PTR nLength, BOOL bUnicode)
-{
-	if (bUnicode)
-	{
-		// Tag Unicode strings
-		ar<<(BYTE)0xff;
-		ar<<(WORD)0xfffe;
-	}
-
-	if (nLength < 255)
-	{
-		ar<<(BYTE)nLength;
-	}
-	else if (nLength < 0xfffe)
-	{
-		ar<<(BYTE)0xff;
-		ar<<(WORD)nLength;
-	}
-	else if (nLength < 0xffffffff)
-	{
-		ar<<(BYTE)0xff;
-		ar<<(WORD)0xffff;
-		ar<<(DWORD)nLength;
-	}
-	else
-	{
-		ar<<(BYTE)0xff;
-		ar<<(WORD)0xffff;
-		ar<<(DWORD)0xffffffff;
-		ar<<(ULONGLONG)nLength;
-	}
-}
-
 // Runtime class serialization code
 CObject* PASCAL CRuntimeClass::CreateObject(LPCSTR lpszClassName)
 {
@@ -115,8 +35,6 @@ CObject* PASCAL CRuntimeClass::CreateObject(LPCSTR lpszClassName)
 	if (pClass == NULL)
 	{
 		// not found, trace a warning for diagnostic purposes
-		TRACE(traceAppMsg, 0, "Warning: Cannot find %hs CRuntimeClass.  Class not defined.\n",
-			lpszClassName);
 		return NULL;
 	}
 
@@ -178,48 +96,6 @@ CRuntimeClass* PASCAL CRuntimeClass::FromName(LPCWSTR lpszClassName)
 	if( lpszClassName == NULL )
 		return NULL;
 	return CRuntimeClass::FromName( strClassName.GetString() );
-}
-
-CRuntimeClass* PASCAL CRuntimeClass::Load(CArchive& ar, UINT* pwSchemaNum)
-	// loads a runtime class description
-{
-	if(pwSchemaNum == NULL)
-	{
-		return NULL;
-	}
-	WORD nLen;
-	char szClassName[64];
-
-	WORD wTemp;
-	ar >> wTemp; *pwSchemaNum = wTemp;
-	ar >> nLen;
-
-	// load the class name
-	if (nLen >= _countof(szClassName) ||
-		ar.Read(szClassName, nLen*sizeof(char)) != nLen*sizeof(char))
-	{
-		return NULL;
-	}
-	szClassName[nLen] = '\0';
-
-	// match the string against an actual CRuntimeClass
-	CRuntimeClass* pClass = FromName(szClassName);
-	if (pClass == NULL)
-	{
-		// not found, trace a warning for diagnostic purposes
-		TRACE(traceAppMsg, 0, "Warning: Cannot load %hs from archive.  Class not defined.\n",
-			szClassName);
-	}
-
-	return pClass;
-}
-
-void CRuntimeClass::Store(CArchive& ar) const
-	// stores a runtime class description
-{
-	WORD nLen = (WORD)lstrlenA(m_lpszClassName);
-	ar << (WORD)m_wSchema << nLen;
-	ar.Write(m_lpszClassName, nLen*sizeof(char));
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -361,7 +237,7 @@ void CArchive::Close()
 
 UINT CArchive::Read(void* lpBuf, UINT nMax)
 {
-	ASSERT_VALID(m_pFile);
+	/*ASSERT_VALID(m_pFile);
 
 	if (nMax == 0)
 		return 0;
@@ -460,12 +336,13 @@ UINT CArchive::Read(void* lpBuf, UINT nMax)
 			}
 		}
 	}
-	return nMax - nMaxTemp;
+	return nMax - nMaxTemp;*/
+  return 0;
 }
 
 void CArchive::Write(const void* lpBuf, UINT nMax)
 {
-	ASSERT_VALID(m_pFile);
+	/*ASSERT_VALID(m_pFile);
 
 	if (nMax == 0)
 		return;
@@ -518,7 +395,7 @@ void CArchive::Write(const void* lpBuf, UINT nMax)
 		ENSURE(m_lpBufCur == m_lpBufStart);
 		Checked::memcpy_s(m_lpBufCur, nMax, lpBuf, nMax);
 		m_lpBufCur += nMax;
-	}
+	}*/
 }
 
 void CArchive::Flush()
@@ -562,7 +439,7 @@ void CArchive::Flush()
 
 void CArchive::FillBuffer(UINT nAdditionalBytesNeeded)
 {
-	ASSERT_VALID(m_pFile);
+	/*ASSERT_VALID(m_pFile);
 
 	ASSERT(IsLoading());
 	if (!IsLoading())
@@ -649,12 +526,12 @@ void CArchive::FillBuffer(UINT nAdditionalBytesNeeded)
 	if ((ULONG)(m_lpBufMax - m_lpBufCur) < nTotalSizeWanted)
 	{
 		AfxThrowArchiveException(CArchiveException::endOfFile);
-	}
+	}*/
 }
 
 void CArchive::WriteCount(DWORD_PTR dwCount)
 {
-	if (dwCount < 0xFFFF)
+	/*if (dwCount < 0xFFFF)
 		*this << (WORD)dwCount;  // 16-bit count
 	else
 	{
@@ -670,12 +547,12 @@ void CArchive::WriteCount(DWORD_PTR dwCount)
 			*this << dwCount;
 		}
 #endif  // _WIN64
-	}
+	}*/
 }
 
 DWORD_PTR CArchive::ReadCount()
 {
-	WORD wCount;
+	/*WORD wCount;
 	*this >> wCount;
 	if (wCount != 0xFFFF)
 		return wCount;
@@ -692,6 +569,8 @@ DWORD_PTR CArchive::ReadCount()
 	*this >> qwCount;
 	return qwCount;
 #endif  // _WIN64
+*/
+  return 0;
 }
 
 // special functions for text file input and output
@@ -706,7 +585,7 @@ LPTSTR CArchive::ReadString(_Out_z_cap_(nMax+1) LPTSTR lpsz, _In_ UINT nMax)
 {
 	// if nMax is negative (such a large number doesn't make sense given today's
 	// 2gb address space), then assume it to mean "keep the newline".
-	int nStop = (int)nMax < 0 ? -(int)nMax : (int)nMax;
+	/*int nStop = (int)nMax < 0 ? -(int)nMax : (int)nMax;
 	ASSERT(AfxIsValidAddress(lpsz, (nStop+1) * sizeof(TCHAR)));
 
 	if(lpsz == NULL)
@@ -749,7 +628,7 @@ LPTSTR CArchive::ReadString(_Out_z_cap_(nMax+1) LPTSTR lpsz, _In_ UINT nMax)
 	}
 	END_CATCH
 
-	lpsz[nRead] = '\0';
+	lpsz[nRead] = '\0';*/
 	return lpsz;
 }
 

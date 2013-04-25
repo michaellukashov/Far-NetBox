@@ -21,9 +21,9 @@
 #define shrB(r,x,y) ( r.lo = (uint32)x.hi >> ((y)-32), r.hi = 0 )
 #define shrL(r,x,y) ( r.lo = ((uint32)x.lo >> (y)) | ((uint32)x.hi << (32-(y))), \
 		      r.hi = (uint32)x.hi >> (y) )
-#define and(r,x,y) ( r.lo = x.lo & y.lo, r.hi = x.hi & y.hi )
-#define xor(r,x,y) ( r.lo = x.lo ^ y.lo, r.hi = x.hi ^ y.hi )
-#define not(r,x) ( r.lo = ~x.lo, r.hi = ~x.hi )
+#define _and(r,x,y) ( r.lo = x.lo & y.lo, r.hi = x.hi & y.hi )
+#define _xor(r,x,y) ( r.lo = x.lo ^ y.lo, r.hi = x.hi ^ y.hi )
+#define _not(r,x) ( r.lo = ~x.lo, r.hi = ~x.hi )
 #define INIT(h,l) { h, l }
 #define BUILD(r,h,l) ( r.hi = h, r.lo = l )
 #define EXTRACT(h,l,r) ( h = r.hi, l = r.lo )
@@ -33,17 +33,17 @@
  * message digest.
  */
 
-#define Ch(r,t,x,y,z) ( not(t,x), and(r,t,z), and(t,x,y), xor(r,r,t) )
-#define Maj(r,t,x,y,z) ( and(r,x,y), and(t,x,z), xor(r,r,t), \
-			 and(t,y,z), xor(r,r,t) )
-#define bigsigma0(r,t,x) ( rorL(r,x,28), rorB(t,x,34), xor(r,r,t), \
-			   rorB(t,x,39), xor(r,r,t) )
-#define bigsigma1(r,t,x) ( rorL(r,x,14), rorL(t,x,18), xor(r,r,t), \
-			   rorB(t,x,41), xor(r,r,t) )
-#define smallsigma0(r,t,x) ( rorL(r,x,1), rorL(t,x,8), xor(r,r,t), \
-			     shrL(t,x,7), xor(r,r,t) )
-#define smallsigma1(r,t,x) ( rorL(r,x,19), rorB(t,x,61), xor(r,r,t), \
-			     shrL(t,x,6), xor(r,r,t) )
+#define Ch(r,t,x,y,z) ( _not(t,x), _and(r,t,z), _and(t,x,y), _xor(r,r,t) )
+#define Maj(r,t,x,y,z) ( _and(r,x,y), _and(t,x,z), _xor(r,r,t), \
+			 _and(t,y,z), _xor(r,r,t) )
+#define bigsigma0(r,t,x) ( rorL(r,x,28), rorB(t,x,34), _xor(r,r,t), \
+			   rorB(t,x,39), _xor(r,r,t) )
+#define bigsigma1(r,t,x) ( rorL(r,x,14), rorL(t,x,18), _xor(r,r,t), \
+			   rorB(t,x,41), _xor(r,r,t) )
+#define smallsigma0(r,t,x) ( rorL(r,x,1), rorL(t,x,8), _xor(r,r,t), \
+			     shrL(t,x,7), _xor(r,r,t) )
+#define smallsigma1(r,t,x) ( rorL(r,x,19), rorB(t,x,61), _xor(r,r,t), \
+			     shrL(t,x,6), _xor(r,r,t) )
 
 static void SHA512_Core_Init(SHA512_State *s) {
     static const uint64 iv[] = {
@@ -164,7 +164,7 @@ static void SHA512_Block(SHA512_State *s, uint64 *block) {
 /* ----------------------------------------------------------------------
  * Outer SHA512 algorithm: take an arbitrary length byte string,
  * convert it into 16-doubleword blocks with the prescribed padding
- * at the end, and pass those blocks to the core SHA512 algorithm.
+ * at the end, _and pass those blocks to the core SHA512 algorithm.
  */
 
 void putty_SHA512_Init(SHA512_State *s) {
@@ -197,7 +197,7 @@ void SHA512_Bytes(SHA512_State *s, const void *p, int len) {
         s->blkused += len;
     } else {
         /*
-         * We must complete and process at least one block.
+         * We must complete _and process at least one block.
          */
         while (s->blkused + len >= BLKSIZE) {
             memcpy(s->block + s->blkused, q, BLKSIZE - s->blkused);

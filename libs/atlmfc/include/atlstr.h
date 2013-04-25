@@ -81,10 +81,10 @@ public:
 			
 		m_pMemMgr->Free( pData );
 	}
-	_Ret_opt_bytecap_x_(sizeof(CStringData) + nChars*nCharSize) virtual CStringData* Reallocate(
-		_Inout_ _Post_bytecount_x_(sizeof(CStringData)) CStringData* pData,
-		_In_ int nChars,
-		_In_ int nCharSize) throw()
+	virtual CStringData* Reallocate(
+		CStringData* pData,
+		int nChars,
+		int nCharSize) throw()
 	{
 		CStringData* pNewData;
 		ULONG nTotalSize;
@@ -181,7 +181,7 @@ public:
 		}
 		return const_cast< _CharType* >( pch );
 	}
-	static _CharType* _strrev(_Inout_opt_z_ _CharType* psz) throw()
+	static _CharType* _strrev(_CharType* psz) throw()
 	{
 		// Optimize NULL, zero-length, and single-char case.
 		if ((psz == NULL) || (psz[0] == '\0') || (psz[1] == '\0'))
@@ -244,7 +244,7 @@ public:
 		_In_z_ LPCSTR pStr,
 		_In_z_ LPCSTR pCharSet) throw()
 	{
-		return strstrT< ChTraitsOS<XCHAR> >(pStr,pCharSet);
+		return strstrT< ChTraitsOS<_CharType> >(pStr,pCharSet);
 	}
 	static int strspn(
 		_In_z_ const _CharType* pStr,
@@ -1221,9 +1221,9 @@ inline typename ChTraits::PCXSTR strstrT(
 		return pStr;
 	//lstrlenA returns length in bytes, not chars.
 	size_t nStrLen = ChTraits::GetBaseTypeLength(pStr);
-	ChTraits::PCXSTR pStrEnd=pStr + nStrLen;
-	const ChTraits::XCHAR* pMatch;
-	const ChTraits::XCHAR* pStart = pStr;
+	typename ChTraits::PCXSTR pStrEnd=pStr + nStrLen;
+	const typename ChTraits::XCHAR* pMatch;
+	const typename ChTraits::XCHAR* pStart = pStr;
 	while ((pMatch = ChTraits::strchr(pStart, *pCharSet)) != NULL)
 	{
 		size_t nCharsLeftInStr=pStrEnd - pMatch;
@@ -1231,7 +1231,7 @@ inline typename ChTraits::PCXSTR strstrT(
 		{
 			break;
 		}
-		if (memcmp(pMatch, pCharSet, nCharSetLen*sizeof(ChTraits::XCHAR)) == 0)
+		if (memcmp(pMatch, pCharSet, nCharSetLen*sizeof(typename ChTraits::XCHAR)) == 0)
 		{
 			return pMatch;
 		}

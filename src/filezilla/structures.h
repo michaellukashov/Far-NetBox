@@ -33,7 +33,7 @@ public:
 	t_server server;
 	CServerPath path;
 	int num;
-	class t_direntry : public Classes::TObject
+	class t_direntry : public TObject
 	{
 	public:
 		t_direntry();

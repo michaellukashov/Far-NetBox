@@ -23,7 +23,6 @@ void AFXAPI AfxFormatStrings(CString& rString, UINT nIDS,
 	CString strFormat;
 	if (!strFormat.LoadString(nIDS) != 0)
 	{
-		TRACE(traceAppMsg, 0, "Error: failed to load AfxFormatString string 0x%04x.\n", nIDS);
 		ASSERT(FALSE);
 		return;
 	}
@@ -82,7 +81,6 @@ void AFXAPI AfxFormatStrings(CString& rString, LPCTSTR lpszFormat,
 			pchSrc += 2;
 			if (i >= nString)
 			{
-				TRACE(traceAppMsg, 0, "Error: illegal string index requested %d.\n", i);
 				*pchDest++ = '?';
 				nTotalLen--;
 			}

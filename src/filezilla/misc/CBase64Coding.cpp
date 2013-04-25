@@ -3,7 +3,7 @@
 #pragma hdrstop
 
 #ifdef MPEXT
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 #pragma warn -inl
 #endif
 #endif
@@ -32,7 +32,7 @@
 //Modified for use with CAsyncProxySocket, removed tracing code
 
 #if defined( _DEBUG ) && ! defined( WFC_STL )
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif

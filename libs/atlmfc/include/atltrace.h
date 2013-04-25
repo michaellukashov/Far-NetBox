@@ -73,7 +73,7 @@ public:
 
 private:
 	CTrace(
-#ifdef _ATL_NO_DEBUG_CRT
+#if defined(_ATL_NO_DEBUG_CRT) || defined(__MINGW32__)
 		_In_opt_ fnCrtDbgReport_t pfnCrtDbgReport = NULL)
 #else
 		_In_opt_ fnCrtDbgReport_t pfnCrtDbgReport = _CrtDbgReport)
@@ -361,36 +361,6 @@ namespace ATL
 #else
 #define DECLARE_TRACE_CATEGORY( name ) const DWORD_PTR name = 0;
 #endif
-
-DECLARE_TRACE_CATEGORY( atlTraceGeneral )
-DECLARE_TRACE_CATEGORY( atlTraceCOM )
-DECLARE_TRACE_CATEGORY( atlTraceQI )
-DECLARE_TRACE_CATEGORY( atlTraceRegistrar )
-DECLARE_TRACE_CATEGORY( atlTraceRefcount )
-DECLARE_TRACE_CATEGORY( atlTraceWindowing )
-DECLARE_TRACE_CATEGORY( atlTraceControls )
-DECLARE_TRACE_CATEGORY( atlTraceHosting )
-DECLARE_TRACE_CATEGORY( atlTraceDBClient )
-DECLARE_TRACE_CATEGORY( atlTraceDBProvider )
-DECLARE_TRACE_CATEGORY( atlTraceSnapin )
-DECLARE_TRACE_CATEGORY( atlTraceNotImpl )
-DECLARE_TRACE_CATEGORY( atlTraceAllocation )
-DECLARE_TRACE_CATEGORY( atlTraceException )
-DECLARE_TRACE_CATEGORY( atlTraceTime )
-DECLARE_TRACE_CATEGORY( atlTraceCache )
-DECLARE_TRACE_CATEGORY( atlTraceStencil )
-DECLARE_TRACE_CATEGORY( atlTraceString )
-DECLARE_TRACE_CATEGORY( atlTraceMap )
-DECLARE_TRACE_CATEGORY( atlTraceUtil )
-DECLARE_TRACE_CATEGORY( atlTraceSecurity )
-DECLARE_TRACE_CATEGORY( atlTraceSync )
-DECLARE_TRACE_CATEGORY( atlTraceISAPI )
-
-// atlTraceUser categories are no longer needed.  Just declare your own trace category using CTraceCategory.
-DECLARE_TRACE_CATEGORY( atlTraceUser )
-DECLARE_TRACE_CATEGORY( atlTraceUser2 )
-DECLARE_TRACE_CATEGORY( atlTraceUser3 )
-DECLARE_TRACE_CATEGORY( atlTraceUser4 )
 
 #pragma deprecated( atlTraceUser )
 #pragma deprecated( atlTraceUser2 )

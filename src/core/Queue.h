@@ -5,6 +5,7 @@
 #include "Terminal.h"
 #include "FileOperationProgress.h"
 //---------------------------------------------------------------------------
+class TTerminalItem;
 class TSimpleThread : public TObject
 {
 public:

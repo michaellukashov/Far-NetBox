@@ -39,11 +39,11 @@ BOOL AFXAPI AfxUnlockTempMaps(BOOL bDeleteTemps)
 			}
 
 			// clean up temp objects
-			pState->m_pmapHGDIOBJ->DeleteTemp();
-			pState->m_pmapHDC->DeleteTemp();
-			pState->m_pmapHMENU->DeleteTemp();
-			pState->m_pmapHWND->DeleteTemp();
-			pState->m_pmapHIMAGELIST->DeleteTemp();
+			// pState->m_pmapHGDIOBJ->DeleteTemp();
+			// pState->m_pmapHDC->DeleteTemp();
+			// pState->m_pmapHMENU->DeleteTemp();
+			// pState->m_pmapHWND->DeleteTemp();
+			// pState->m_pmapHIMAGELIST->DeleteTemp();
 		}
 
 #ifndef _AFX_PORTABLE
@@ -72,8 +72,6 @@ BOOL AFXAPI AfxUnlockTempMaps(BOOL bDeleteTemps)
 					pThreadState->m_pSafetyPoolBuffer = nb_malloc(pApp->m_nSafetyPoolSize);
 					if (pThreadState->m_pSafetyPoolBuffer == NULL)
 					{
-						TRACE(traceAppMsg, 0, "Warning: failed to reclaim %d bytes for memory safety pool.\n",
-							pApp->m_nSafetyPoolSize);
 						// at least get the old buffer back
 						if (nOldSize != 0)
 						{
@@ -265,25 +263,19 @@ void CHandleMap::DeleteTemp()
 
 void PASCAL CWnd::DeleteTempMap()
 {
-	CHandleMap* pMap = AfxGetModuleThreadState()->m_pmapHWND;
-	pMap->DeleteTemp();
+	// CHandleMap* pMap = AfxGetModuleThreadState()->m_pmapHWND;
+	// pMap->DeleteTemp();
 }
 
 void PASCAL CImageList::DeleteTempMap()
 {
-	CHandleMap* pMap = AfxGetModuleThreadState()->m_pmapHIMAGELIST;
-	pMap->DeleteTemp();
+	// CHandleMap* pMap = AfxGetModuleThreadState()->m_pmapHIMAGELIST;
+	// pMap->DeleteTemp();
 }
 
 void PASCAL CDC::DeleteTempMap()
 {
-	CHandleMap* pMap = AfxGetModuleThreadState()->m_pmapHDC;
-	pMap->DeleteTemp();
-}
-
-void PASCAL CGdiObject::DeleteTempMap()
-{
-	CHandleMap* pMap = AfxGetModuleThreadState()->m_pmapHGDIOBJ;
-	pMap->DeleteTemp();
+	// CHandleMap* pMap = AfxGetModuleThreadState()->m_pmapHDC;
+	// pMap->DeleteTemp();
 }
 

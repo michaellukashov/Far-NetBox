@@ -76,25 +76,6 @@
 #define AFX_DATA AFX_NET_DATA
 
 /////////////////////////////////////////////////////////////////////////////
-// CSocketWnd -- internal use only
-//  Implementation for sockets notification callbacks.
-//  Future versions of MFC may or may not include this exact class.
-
-class CSocketWnd : public CWnd
-{
-// Construction
-public:
-	CSocketWnd();
-
-protected:
-	//{{AFX_MSG(CSocketWnd)
-	LRESULT OnSocketNotify(WPARAM wParam, LPARAM lParam);
-	LRESULT OnSocketDead(WPARAM wParam, LPARAM lParam);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
-};
-
-/////////////////////////////////////////////////////////////////////////////
 // CAsyncSocket
 
 class CAsyncSocket : public CObject
@@ -220,13 +201,7 @@ public:
 		FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE,
 		int nProtocolType = 0, int nAddressFormat = PF_INET);
 
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
-
 protected:
-	friend class CSocketWnd;
 
 	virtual BOOL ConnectHelper(const SOCKADDR* lpSockAddr, int nSockAddrLen);
 	virtual int ReceiveFromHelper(void* lpBuf, int nBufLen,
@@ -282,7 +257,6 @@ public:
 	int SendChunk(const void* lpBuf, int nBufLen, int nFlags);
 
 protected:
-	friend class CSocketWnd;
 
 	BOOL* m_pbBlocking;
 	int m_nConnectError;
@@ -297,10 +271,6 @@ protected:
 
 	virtual BOOL PumpMessages(UINT uStopFlag);
 
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -322,10 +292,6 @@ public:
 
 	virtual UINT GetBufferPtr(UINT nCommand, UINT nCount, void** ppBufStart,
 		void** ppBufMax);
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 	virtual UINT Read(void* lpBuf, UINT nCount);
 	virtual void Write(const void* lpBuf, UINT nCount);
 	virtual void Close();

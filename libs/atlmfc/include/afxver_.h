@@ -61,11 +61,11 @@
 //  _USRDLL             create regular DLL (_AFXDLL is valid too)
 //
 
-#ifndef _DEBUG
+// #ifndef _DEBUG
 #ifndef _AFX_DISABLE_INLINES
 	#define _AFX_ENABLE_INLINES
 #endif
-#endif
+// #endif
 
 #define _AFX_NO_NESTED_DERIVATION
 

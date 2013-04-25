@@ -929,7 +929,7 @@ void TGUIConfiguration::SetLocaleSafe(LCID Value)
     }
   }
 }
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 //---------------------------------------------------------------------------
 void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
 {

@@ -138,11 +138,11 @@ public:
 
 	// temporary/permanent map state
 	DWORD m_nTempMapLock;           // if not 0, temp maps locked
-	CHandleMap* m_pmapHWND;
-	CHandleMap* m_pmapHMENU;
-	CHandleMap* m_pmapHDC;
-	CHandleMap* m_pmapHGDIOBJ;
-	CHandleMap* m_pmapHIMAGELIST;
+	// CHandleMap* m_pmapHWND;
+	// CHandleMap* m_pmapHMENU;
+	// CHandleMap* m_pmapHDC;
+	// CHandleMap* m_pmapHGDIOBJ;
+	// CHandleMap* m_pmapHIMAGELIST;
 
 	// thread-local MFC new handler (separate from C-runtime)
 	_PNH m_pfnNewHandler;
@@ -151,23 +151,23 @@ public:
 	// WinSock specific thread state
 	HWND m_hSocketWindow;
 #ifdef _AFXDLL
-	CEmbeddedButActsLikePtr<CMapPtrToPtr> m_pmapSocketHandle;
-	CEmbeddedButActsLikePtr<CMapPtrToPtr> m_pmapDeadSockets;
-	CEmbeddedButActsLikePtr<CPtrList> m_plistSocketNotifications;
+	// CEmbeddedButActsLikePtr<CMapPtrToPtr> m_pmapSocketHandle;
+	// CEmbeddedButActsLikePtr<CMapPtrToPtr> m_pmapDeadSockets;
+	// CEmbeddedButActsLikePtr<CPtrList> m_plistSocketNotifications;
 #else
-	CMapPtrToPtr* m_pmapSocketHandle;
-	CMapPtrToPtr* m_pmapDeadSockets;
-	CPtrList* m_plistSocketNotifications;
+	// CMapPtrToPtr* m_pmapSocketHandle;
+	// CMapPtrToPtr* m_pmapDeadSockets;
+	// CPtrList* m_plistSocketNotifications;
 #endif
 #endif
 
 	// common controls thread state
-	CToolTipCtrl* m_pToolTip;
+	// CToolTipCtrl* m_pToolTip;
 	CWnd* m_pLastHit;       // last window to own tooltip
 	INT_PTR m_nLastHit;         // last hittest code
 	TOOLINFO* m_pLastInfo;    // last TOOLINFO structure
 	INT_PTR m_nLastStatus;      // last flyby status message
-	CControlBar* m_pLastStatus; // last flyby status control bar
+	// CControlBar* m_pLastStatus; // last flyby status control bar
 };
 
 // forward references required for AFX_MODULE_STATE definition
@@ -399,7 +399,7 @@ public:
 	BOOL m_bInMsgFilter;
 
 	// other framework modal data
-	CView* m_pRoutingView;          // see CCmdTarget::GetRoutingView
+	// CView* m_pRoutingView;          // see CCmdTarget::GetRoutingView
    CPushRoutingView* m_pPushRoutingView;
    CPushRoutingFrame* m_pPushRoutingFrame;
 

@@ -378,7 +378,6 @@ class ATL_NO_VTABLE IPersistImpl :
 public:
 	STDMETHOD(GetClassID)(_Out_ CLSID *pClassID)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistImpl::GetClassID\n"));
 		if (pClassID == NULL)
 			return E_FAIL;
 		*pClassID = T::GetObjectCLSID();
@@ -451,7 +450,7 @@ struct ATL_PROPMAP_ENTRY
 	LPCOLESTR szDesc;
 	const CLSID* pclsidPropPage;
 	const IID* piidDispatch;
-	ClassesAllowedInStream rgclsidAllowed;
+	// ClassesAllowedInStream rgclsidAllowed;
 	DWORD cclsidAllowed;
 	DISPID dispid;
 	DWORD dwOffsetData;
@@ -462,8 +461,8 @@ struct ATL_PROPMAP_ENTRY
 template<VARTYPE V>
 struct AtlExpectedDispatchOrUnknown 
 {
-	ATLSTATIC_ASSERT(V == VT_DISPATCH || V == VT_UNKNOWN, 
-			"Incorrect VARTYPE value in PROP_ENTRY_INTERFACE definition. Expected VT_DISPATCH or VT_UNKNOWN.");
+	// ATLSTATIC_ASSERT(V == VT_DISPATCH || V == VT_UNKNOWN, 
+			// "Incorrect VARTYPE value in PROP_ENTRY_INTERFACE definition. Expected VT_DISPATCH or VT_UNKNOWN.");
 	static const VARTYPE value = V;	
 };
 
@@ -577,7 +576,6 @@ public:
 	// IPersist
 	STDMETHOD(GetClassID)(_Out_ CLSID *pClassID)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStreamInitImpl::GetClassID\n"));
 		if (pClassID == NULL)
 			return E_POINTER;
 		*pClassID = T::GetObjectCLSID();
@@ -587,13 +585,11 @@ public:
 	// IPersistStream
 	STDMETHOD(IsDirty)()
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStreamInitImpl::IsDirty\n"));
 		T* pT = static_cast<T*>(this);
 		return (pT->m_bRequiresSave) ? S_OK : S_FALSE;
 	}
 	STDMETHOD(Load)(_Inout_ LPSTREAM pStm)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStreamInitImpl::Load\n"));
 
 		T* pT = static_cast<T*>(this);
 		return pT->IPersistStreamInit_Load(pStm, T::GetPropertyMap());
@@ -601,14 +597,12 @@ public:
 	STDMETHOD(Save)(_Inout_ LPSTREAM pStm, _In_ BOOL fClearDirty)
 	{
 		T* pT = static_cast<T*>(this);
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStreamInitImpl::Save\n"));
 		return pT->IPersistStreamInit_Save(pStm, fClearDirty, T::GetPropertyMap());
 	}
 	STDMETHOD(GetSizeMax)(_Out_ ULARGE_INTEGER* pcbSize)
 	{
 		HRESULT hr = S_OK;
 		T* pT = static_cast<T*>(this);
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStreamInitImpl::GetSizeMax\n"));
 
 		ATLASSERT(pcbSize != NULL);
 		if (pcbSize == NULL)
@@ -664,7 +658,6 @@ public:
 					hr = pT->GetUnknown()->QueryInterface(*pMap[i].piidDispatch, (void**)&pDispatch);
 					if (FAILED(hr))
 					{
-						ATLTRACE(atlTraceCOM, 0, _T("Failed to get a dispatch pointer for property #%i\n"), i);						
 						break;
 					}
 					piidOld = pMap[i].piidDispatch;
@@ -673,14 +666,12 @@ public:
 				hr = pDispatch.GetProperty(pMap[i].dispid, &var);
 				if (FAILED(hr))
 				{
-					ATLTRACE(atlTraceCOM, 0, _T("Invoked failed on DISPID %x\n"), pMap[i].dispid);					
 					break;
 				}
 				
 				hr = var.GetSizeMax(&nVarSize);			
 				if (FAILED(hr))
 				{
-					ATLTRACE(atlTraceCOM, 0, _T("Failed to get size for property #%i\n"), i);					
 					break;
 				}
 			}
@@ -688,7 +679,6 @@ public:
 			hr = AtlAdd(&nSize.QuadPart, nSize.QuadPart, nVarSize.QuadPart);
 			if (FAILED(hr))
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("Result overflow after adding property #%i\n"), i);				
 				break;
 			}			
 		}
@@ -699,7 +689,6 @@ public:
 	// IPersistStreamInit
 	STDMETHOD(InitNew)()
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStreamInitImpl::InitNew\n"));
 		T* pT = static_cast<T*>(this);
 		pT->m_bRequiresSave = TRUE;
 		return S_OK;
@@ -743,7 +732,6 @@ public:
 	// IPersist
 	STDMETHOD(GetClassID)(_Out_ CLSID *pClassID)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStorageImpl::GetClassID\n"));
 		if (pClassID == NULL)
 			return E_POINTER;
 		*pClassID = T::GetObjectCLSID();
@@ -753,21 +741,18 @@ public:
 	// IPersistStorage
 	STDMETHOD(IsDirty)(void)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStorageImpl::IsDirty\n"));
 		CComPtr<IPersistStreamInit> p;
 		p.p = IPSI_GetIPersistStreamInit();
 		return (p != NULL) ? p->IsDirty() : E_FAIL;
 	}
 	STDMETHOD(InitNew)(_In_opt_ IStorage*)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStorageImpl::InitNew\n"));
 		CComPtr<IPersistStreamInit> p;
 		p.p = IPSI_GetIPersistStreamInit();
 		return (p != NULL) ? p->InitNew() : E_FAIL;
 	}
 	STDMETHOD(Load)(_Inout_ IStorage* pStorage)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStorageImpl::Load\n"));
 		if (pStorage == NULL)
 			return E_INVALIDARG;
 		CComPtr<IPersistStreamInit> p;
@@ -785,7 +770,6 @@ public:
 	}
 	STDMETHOD(Save)(_Inout_ IStorage* pStorage, _In_ BOOL fSameAsLoad)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStorageImpl::Save\n"));
 		if (pStorage == NULL)
 			return E_INVALIDARG;
 		CComPtr<IPersistStreamInit> p;
@@ -805,12 +789,10 @@ public:
 	}
 	STDMETHOD(SaveCompleted)(_Inout_opt_ IStorage* /* pStorage */)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStorageImpl::SaveCompleted\n"));
 		return S_OK;
 	}
 	STDMETHOD(HandsOffStorage)(void)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistStorageImpl::HandsOffStorage\n"));
 		return S_OK;
 	}
 private:
@@ -838,7 +820,6 @@ public:
 	// IPersist
 	STDMETHOD(GetClassID)(_Out_ CLSID *pClassID)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistPropertyBagImpl::GetClassID\n"));
 		if (pClassID == NULL)
 			return E_POINTER;
 		*pClassID = T::GetObjectCLSID();
@@ -849,7 +830,6 @@ public:
 	//
 	STDMETHOD(InitNew)()
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistPropertyBagImpl::InitNew\n"));
 		T* pT = static_cast<T*>(this);
 		pT->m_bRequiresSave = TRUE;
 		return S_OK;
@@ -858,7 +838,6 @@ public:
 		_Inout_ LPPROPERTYBAG pPropBag, 
 		_Inout_opt_ LPERRORLOG pErrorLog)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistPropertyBagImpl::Load\n"));
 		T* pT = static_cast<T*>(this);
 		const ATL_PROPMAP_ENTRY* pMap = T::GetPropertyMap();
 		ATLASSERT(pMap != NULL);
@@ -869,7 +848,6 @@ public:
 		_In_ BOOL fClearDirty, 
 		_In_ BOOL fSaveAllProperties)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IPersistPropertyBagImpl::Save\n"));
 		T* pT = static_cast<T*>(this);
 		const ATL_PROPMAP_ENTRY* pMap = T::GetPropertyMap();
 		ATLASSERT(pMap != NULL);
@@ -1138,14 +1116,16 @@ public:
 		_ComMapClass* p = (_ComMapClass*)pv;\
 		p->Lock();\
 		HRESULT hRes = E_FAIL; \
-		__try \
+		try \
 		{ \
 			hRes = ATL::CComObjectRootBase::_Cache(pv, iid, ppvObject, dw);\
 		} \
-		__finally \
+		catch(...) \
 		{ \
 			p->Unlock();\
+      throw;\
 		} \
+		p->Unlock();\
 		return hRes;\
 	}\
 	IUnknown* _GetRawUnknown() throw() \
@@ -1334,7 +1314,7 @@ class CComObjectRootBase
 public:
 	CComObjectRootBase()
 	{
-		m_dwRef = 0L;
+		// m_dwRef = 0L;
 	}
 	~CComObjectRootBase()
 	{
@@ -1399,17 +1379,17 @@ public:
 //Outer funcs
 	ULONG OuterAddRef()
 	{
-		return m_pOuterUnknown->AddRef();
+		return this->m_pOuterUnknown->AddRef();
 	}
 	ULONG OuterRelease()
 	{
-		return m_pOuterUnknown->Release();
+		return this->m_pOuterUnknown->Release();
 	}
 	HRESULT OuterQueryInterface(
 		_In_ REFIID iid, 
 		_Deref_out_ void** ppvObject)
 	{
-		return m_pOuterUnknown->QueryInterface(iid, ppvObject);
+		return this->m_pOuterUnknown->QueryInterface(iid, ppvObject);
 	}
 
 	void SetVoid(_In_opt_ void*) 
@@ -1420,7 +1400,7 @@ public:
 	}
 	void InternalFinalConstructRelease()
 	{
-		ATLASSUME(m_dwRef == 0);
+		// ATLASSUME(m_dwRef == 0);
 	}
 	// If this assert occurs, your object has probably been deleted
 	// Try using DECLARE_PROTECT_FINAL_CONSTRUCT()
@@ -1794,7 +1774,7 @@ public:
 	// also catch mismatched Release in debug builds
 	virtual ~CComObject() throw()
 	{
-		m_dwRef = -(LONG_MAX/2);
+		// m_dwRef = -(LONG_MAX/2);
 		FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
@@ -1882,7 +1862,7 @@ public:
 	// also catch mismatched Release in debug builds
 	virtual ~CComObjectCached()
 	{
-		m_dwRef = -(LONG_MAX/2);
+		// m_dwRef = -(LONG_MAX/2);
 		FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
@@ -1968,7 +1948,7 @@ public:
 
 	virtual ~CComObjectNoLock()
 	{
-		m_dwRef = -(LONG_MAX/2);
+		// m_dwRef = -(LONG_MAX/2);
 		FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
@@ -2009,6 +1989,7 @@ public:
 	CComObjectGlobal(_In_opt_ void* = NULL)
 	{
 		m_hResFinalConstruct = S_OK;
+#if !defined(__MINGW32__)
 		__if_exists(FinalConstruct)
 		{
 			__if_exists(InternalFinalConstructAddRef)
@@ -2023,15 +2004,18 @@ public:
 				InternalFinalConstructRelease();
 			}
 		}
+#endif
 	}
 	virtual ~CComObjectGlobal()
 	{
+#if !defined(__MINGW32__)
 		__if_exists(FinalRelease)
 		{
 			FinalRelease();
 		}
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
+#endif
 #endif
 	}
 
@@ -2105,7 +2089,7 @@ public:
 	CComObjectStackEx(_In_opt_ void* = NULL) 
 	{ 
 #ifdef _DEBUG
-		m_dwRef = 0;
+		// m_dwRef = 0;
 #endif
 		m_hResFinalConstruct = _AtlInitialConstruct();
 		if (SUCCEEDED(m_hResFinalConstruct))
@@ -2120,7 +2104,7 @@ public:
 		// lifetime of this object, so you must ensure
 		// by some other means that the object remains 
 		// alive while clients have references to its interfaces.
-		ATLASSUME(m_dwRef == 0);
+		// ATLASSUME(m_dwRef == 0);
 		FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
@@ -2163,13 +2147,13 @@ public:
 	typedef Base _BaseClass;
 	CComContainedObject(_In_opt_ void* pv) 
 	{
-		m_pOuterUnknown = (IUnknown*)pv;
+		this->m_pOuterUnknown = (IUnknown*)pv;
 	}
 #ifdef _ATL_DEBUG_INTERFACES
 	virtual ~CComContainedObject()
 	{
-		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
-		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(m_pOuterUnknown);
+		// _AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
+		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(this->m_pOuterUnknown);
 	}
 #endif
 
@@ -2199,10 +2183,10 @@ public:
 	{
 #ifdef _ATL_DEBUG_INTERFACES
 		IUnknown* p;
-		_AtlDebugInterfacesModule.AddNonAddRefThunk(m_pOuterUnknown, _T("CComContainedObject"), &p);
+		_AtlDebugInterfacesModule.AddNonAddRefThunk(this->m_pOuterUnknown, _T("CComContainedObject"), &p);
 		return p;
 #else
-		return m_pOuterUnknown;
+		return this->m_pOuterUnknown;
 #endif
 	}
 };
@@ -2234,19 +2218,20 @@ public:
 	// override it in your class and call each base class' version of this
 	HRESULT FinalConstruct()
 	{
-		CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalConstruct();
-		return m_contained.FinalConstruct();
+		// CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalConstruct();
+		// return m_contained.FinalConstruct();
+		return 0;
 	}
 	void FinalRelease()
 	{
-		CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalRelease();
-		m_contained.FinalRelease();
+		// CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalRelease();
+		// m_contained.FinalRelease();
 	}
 	// Set refcount to -(LONG_MAX/2) to protect destruction and 
 	// also catch mismatched Release in debug builds
 	virtual ~CComAggObject()
 	{
-		m_dwRef = -(LONG_MAX/2);
+		// m_dwRef = -(LONG_MAX/2);
 		FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(this);
@@ -2256,11 +2241,11 @@ public:
 
 	STDMETHOD_(ULONG, AddRef)() 
 	{
-		return InternalAddRef();
+		return this->InternalAddRef();
 	}
 	STDMETHOD_(ULONG, Release)()
 	{
-		ULONG l = InternalRelease();
+		ULONG l = this->InternalRelease();
 		if (l == 0)
 			delete this;
 		return l;
@@ -2354,22 +2339,22 @@ public:
 	HRESULT FinalConstruct()
 	{
 		InternalAddRef();
-		CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalConstruct();
-		HRESULT hr = m_contained.FinalConstruct();
-		InternalRelease();
+		// CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalConstruct();
+		HRESULT hr = 0; // m_contained.FinalConstruct();
+		this->InternalRelease();
 		return hr;
 	}
 	void FinalRelease()
 	{
-		CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalRelease();
-		m_contained.FinalRelease();
+		// CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalRelease();
+		// m_contained.FinalRelease();
 	}
 	// Set refcount to -(LONG_MAX/2) to protect destruction and 
 	// also catch mismatched Release in debug builds
 	virtual ~CComPolyObject()
 	{
-		m_dwRef = -(LONG_MAX/2);
-		FinalRelease();
+		// m_dwRef = -(LONG_MAX/2);
+		this->FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(this);
 #endif
@@ -2382,7 +2367,7 @@ public:
 	}
 	STDMETHOD_(ULONG, Release)()
 	{
-		ULONG l = InternalRelease();
+		ULONG l = this->InternalRelease();
 		if (l == 0)
 			delete this;
 		return l;
@@ -2462,28 +2447,28 @@ public:
 	CComTearOffObject(_In_ void* pv)
 	{
 		ATLASSUME(m_pOwner == NULL);
-		m_pOwner = reinterpret_cast<Base::_OwnerClass*>(pv);
-		m_pOwner->AddRef();
+		this->m_pOwner = reinterpret_cast<typename Base::_OwnerClass*>(pv);
+		this->m_pOwner->AddRef();
 	}
 	// Set refcount to -(LONG_MAX/2) to protect destruction and 
 	// also catch mismatched Release in debug builds
 	virtual ~CComTearOffObject()
 	{
-		m_dwRef = -(LONG_MAX/2);
-		FinalRelease();
+		// m_dwRef = -(LONG_MAX/2);
+		this->FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
 #endif
-		m_pOwner->Release();
+		this->m_pOwner->Release();
 	}
 
 	STDMETHOD_(ULONG, AddRef)() throw() 
 	{
-		return InternalAddRef();
+		return this->InternalAddRef();
 	}
 	STDMETHOD_(ULONG, Release)() throw()
 	{
-		ULONG l = InternalRelease();
+		ULONG l = this->InternalRelease();
 		if (l == 0)
 			delete this;
 		return l;
@@ -2492,7 +2477,7 @@ public:
 		_In_ REFIID iid, 
 		_Deref_out_ void** ppvObject) throw()
 	{
-		return m_pOwner->QueryInterface(iid, ppvObject);
+		return this->m_pOwner->QueryInterface(iid, ppvObject);
 	}
 };
 
@@ -2504,10 +2489,10 @@ class CComCachedTearOffObject :
 public:
 	typedef contained _BaseClass;
 	CComCachedTearOffObject(_In_ void* pv) :
-		m_contained(((contained::_OwnerClass*)pv)->GetControllingUnknown())
+		m_contained(((typename contained::_OwnerClass*)pv)->GetControllingUnknown())
 	{
 		ATLASSUME(m_contained.m_pOwner == NULL);
-		m_contained.m_pOwner = reinterpret_cast<contained::_OwnerClass*>(pv);
+		m_contained.m_pOwner = reinterpret_cast<typename contained::_OwnerClass*>(pv);
 	}
 	HRESULT _AtlInitialConstruct()
 	{
@@ -2522,19 +2507,19 @@ public:
 	// override it in your class and call each base class' version of this
 	HRESULT FinalConstruct()
 	{
-		CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalConstruct();
+		// CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalConstruct();
 		return m_contained.FinalConstruct();
 	}
 	void FinalRelease()
 	{
-		CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalRelease();
+		// CComObjectRootEx<contained::_ThreadModel::ThreadModelNoCS>::FinalRelease();
 		m_contained.FinalRelease();
 	}
 	// Set refcount to -(LONG_MAX/2) to protect destruction and 
 	// also catch mismatched Release in debug builds
 	virtual ~CComCachedTearOffObject()
 	{
-		m_dwRef = -(LONG_MAX/2);
+		// m_dwRef = -(LONG_MAX/2);
 		FinalRelease();
 #ifdef _ATL_DEBUG_INTERFACES
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(this);
@@ -2543,11 +2528,11 @@ public:
 
 	STDMETHOD_(ULONG, AddRef)() 
 	{
-		return InternalAddRef();
+		return this->InternalAddRef();
 	}
 	STDMETHOD_(ULONG, Release)()
 	{
-		ULONG l = InternalRelease();
+		ULONG l = this->InternalRelease();
 		if (l == 0)
 			delete this;
 		return l;
@@ -2562,7 +2547,7 @@ public:
 		*ppvObject = NULL;
 
 		HRESULT hRes = S_OK;
-		if (InlineIsEqualUnknown(iid))
+		if (this->InlineIsEqualUnknown(iid))
 		{
 			*ppvObject = (void*)(IUnknown*)this;
 			AddRef();
@@ -2583,9 +2568,9 @@ class CComClassFactory :
 	public CComObjectRootEx<CComGlobalsThreadModel>
 {
 public:
-	BEGIN_COM_MAP(CComClassFactory)
-		COM_INTERFACE_ENTRY(IClassFactory)
-	END_COM_MAP()
+	// BEGIN_COM_MAP(CComClassFactory)
+		// COM_INTERFACE_ENTRY(IClassFactory)
+	// END_COM_MAP()
 
 	virtual ~CComClassFactory()
 	{
@@ -2607,7 +2592,6 @@ ATLPREFAST_SUPPRESS(6387)
 
 			if ((pUnkOuter != NULL) && !InlineIsEqualUnknown(riid))
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("CComClassFactory: asked for non IUnknown interface while creating an aggregated object"));
 				hRes = CLASS_E_NOAGGREGATION;
 			}
 			else
@@ -2725,9 +2709,9 @@ class CComClassFactoryAutoThread :
 	public CComObjectRootEx<CComGlobalsThreadModel>
 {
 public:
-	BEGIN_COM_MAP(CComClassFactoryAutoThread)
-		COM_INTERFACE_ENTRY(IClassFactory)
-	END_COM_MAP()
+	// BEGIN_COM_MAP(CComClassFactoryAutoThread)
+		// COM_INTERFACE_ENTRY(IClassFactory)
+	// END_COM_MAP()
 
 	virtual ~CComClassFactoryAutoThread()
 	{
@@ -2810,7 +2794,7 @@ public:
 			{
 				if (m_hrCreate == S_OK && m_spObj == NULL)
 				{
-					__try
+					try
 					{
 						Lock();
 						// Did another thread get here first?
@@ -2828,10 +2812,12 @@ public:
 							}
 						}
 					}
-					__finally
+					catch(...)
 					{
 						Unlock();
+            throw;
 					}
+					Unlock();
 				}
 				if (m_hrCreate == S_OK)
 				{
@@ -2944,7 +2930,7 @@ public:
 	WORD m_wMinor;
 
 	ITypeInfo* m_pInfo;
-	long m_dwRef;
+	// long m_dwRef;
 	struct stringdispid
 	{
 		CComBSTR bstr;
@@ -2964,7 +2950,8 @@ public:
 		_In_ WORD wMajor, 
 		_In_ WORD wMinor) :
 		m_pguid(pguid), m_plibid(plibid), m_wMajor(wMajor), m_wMinor(wMinor), 
-		m_pInfo(NULL), m_dwRef(0), m_pMap(NULL), m_nCount(0)
+		m_pInfo(NULL), m_pMap(NULL), m_nCount(0)
+    // m_dwRef(0), 
 	{
 	}
 
@@ -3141,7 +3128,6 @@ inline HRESULT CComTypeInfoHolder::GetTI(_In_ LCID lcid)
 	HRESULT hRes = lock.Lock();
 	if (FAILED(hRes))
 	{
-		ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to lock critical section in CComTypeInfoHolder::GetTI\n"));
 		ATLASSERT(0);
 		return hRes;
 	}
@@ -3202,8 +3188,6 @@ inline HRESULT CComTypeInfoHolder::GetTI(_In_ LCID lcid)
 								(pLibAttr->wMajorVerNum != m_wMajor ||
 								pLibAttr->wMinorVerNum != m_wMinor))
 							{
-								ATLTRACE(atlTraceCOM, 0, _T("Warning : CComTypeInfoHolder::GetTI : Loaded typelib does not match the typelib in the module : %s\n"), szFilePath);
-								ATLTRACE(atlTraceCOM, 0, _T("\tSee IDispatchImpl overview help topic for more information\n"));							
 							}
 							spTypeLibModule->ReleaseTLibAttr(pLibAttr);
 						}
@@ -3212,9 +3196,6 @@ inline HRESULT CComTypeInfoHolder::GetTI(_In_ LCID lcid)
 			}
 			else
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to load Typelibrary. (HRESULT = 0x%x)\n"), hRes);
-				ATLTRACE(atlTraceCOM, 0, _T("\tVerify TypelibID and major version specified with\n"));
-				ATLTRACE(atlTraceCOM, 0, _T("\tIDispatchImpl, CStockPropImpl, IProvideClassInfoImpl or IProvideCLassInfo2Impl\n"));
 			}
 #endif		
 		}
@@ -3266,7 +3247,6 @@ public:
 	}
 	STDMETHOD(SetSite)(_In_opt_ IUnknown *pUnkSite)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IObjectWithSiteImpl::SetSite\n"));
 		T* pT = static_cast<T*>(this);
 		pT->m_spUnkSite = pUnkSite;
 		return S_OK;
@@ -3275,7 +3255,6 @@ public:
 		_In_ REFIID riid, 
 		_Deref_out_ void** ppvSite)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IObjectWithSiteImpl::GetSite\n"));
 		T* pT = static_cast<T*>(this);
 		ATLASSERT(ppvSite);
 		HRESULT hRes = E_POINTER;
@@ -3326,7 +3305,6 @@ public:
 		_In_ REFIID riid, 
 		_Deref_out_ void** ppvObject)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("IServiceProviderImpl::QueryService\n"));
 
 		T* pT = static_cast<T*>(this);
 		return pT->_InternalQueryService(guidService, riid, ppvObject);
@@ -3505,7 +3483,7 @@ public:
 		if (InlineIsEqualGUID(riid, IID_NULL))
 			return E_NOINTERFACE;
 
-		if (InlineIsEqualGUID(riid, *pdiid) || 
+		/*if (InlineIsEqualGUID(riid, *pdiid) || 
 			InlineIsEqualUnknown(riid) ||
 			InlineIsEqualGUID(riid, __uuidof(IDispatch)) ||
 			InlineIsEqualGUID(riid, m_iid))
@@ -3517,7 +3495,7 @@ public:
 #endif // _ATL_DEBUG_INTERFACES
 			return S_OK;
 		}
-		else
+		else*/
 			return E_NOINTERFACE;
 	}
 
@@ -3562,7 +3540,7 @@ public:
 		_In_opt_ EXCEPINFO* /*pexcepinfo*/, 
 		_In_opt_ UINT* /*puArgErr*/)
 	{
-		const _ATL_EVENT_ENTRY<T>* pMap = T::_GetSinkMap();
+		/*const _ATL_EVENT_ENTRY<T>* pMap = T::_GetSinkMap();
 		const _ATL_EVENT_ENTRY<T>* pFound = NULL;
 		while (pMap->piid != NULL)
 		{
@@ -3590,6 +3568,8 @@ public:
 				return S_OK;
 		}
 		return InvokeFromFuncInfo(pFound->pfn, *pInfo, pdispparams, pvarResult);
+    */
+    return S_OK;
 	}
 
 	//Helper for invoking the event
@@ -3674,15 +3654,15 @@ public:
 		_Inout_ IUnknown* pUnk, 
 		_In_ const IID* piid)
 	{
-		ATLENSURE(m_dwEventCookie == 0xFEFEFEFE);		
-		return AtlAdvise(pUnk, (IUnknown*)this, *piid, &m_dwEventCookie);
+		ATLENSURE(this->m_dwEventCookie == 0xFEFEFEFE);		
+		return AtlAdvise(pUnk, (IUnknown*)this, *piid, &this->m_dwEventCookie);
 	}
 	HRESULT DispEventUnadvise(
 		_Inout_ IUnknown* pUnk, 
 		_In_ const IID* piid)
 	{
-		HRESULT hr = AtlUnadvise(pUnk, *piid, m_dwEventCookie);
-		m_dwEventCookie = 0xFEFEFEFE;
+		HRESULT hr = AtlUnadvise(pUnk, *piid, this->m_dwEventCookie);
+		this->m_dwEventCookie = 0xFEFEFEFE;
 		return hr;
 	}
 	HRESULT DispEventAdvise(_Inout_ IUnknown* pUnk)
@@ -3701,7 +3681,7 @@ inline HRESULT AtlAdviseSinkMap(
 	_Inout_ T* pT, 
 	_In_ bool bAdvise)
 {
-	ATLASSERT(::IsWindow(pT->m_hWnd));
+	/*ATLASSERT(::IsWindow(pT->m_hWnd));
 	const _ATL_EVENT_ENTRY<T>* pEntries = T::_GetSinkMap();
 	if (pEntries == NULL)
 		return S_OK;
@@ -3751,7 +3731,8 @@ inline HRESULT AtlAdviseSinkMap(
 			break;
 		pEntries++;
 	}
-	return hr;
+	return hr;*/
+  return S_OK;
 }
 
 #pragma warning(push)
@@ -3882,10 +3863,10 @@ public:
 
 	IDispEventImpl()
 	{
-		m_libid = *plibid;
-		m_iid = *pdiid;
-		m_wMajorVerNum = wMajor;
-		m_wMinorVerNum = wMinor;
+		this->m_libid = *plibid;
+		this->m_iid = *pdiid;
+		this->m_wMajorVerNum = wMajor;
+		this->m_wMinorVerNum = wMinor;
 	}
 
 	STDMETHOD(GetTypeInfoCount)(_Out_ UINT* pctinfo)
@@ -3925,12 +3906,12 @@ public:
 	 
 		if (InlineIsEqualGUID(*_tih.m_plibid, GUID_NULL))
 		{
-			m_InnerLibid = m_libid; 
-			m_InnerIid = m_iid;
-			_tih.m_plibid = &m_InnerLibid;
-			_tih.m_pguid = &m_InnerIid;
-			_tih.m_wMajor = m_wMajorVerNum;
-			_tih.m_wMinor = m_wMinorVerNum;
+			m_InnerLibid = this->m_libid; 
+			m_InnerIid = this->m_iid;
+			_tih.m_plibid = &this->m_InnerLibid;
+			_tih.m_pguid = &this->m_InnerIid;
+			_tih.m_wMajor = this->m_wMajorVerNum;
+			_tih.m_wMinor = this->m_wMinorVerNum;
 
 		}
 		HRESULT hr = _tih.GetTI(lcid, &spTypeInfo);
@@ -4457,7 +4438,7 @@ STDMETHODIMP CComEnumImpl<Base, piid, T, Copy>::Skip(_In_ ULONG celt)
 	return (celt == nSkip) ? S_OK : S_FALSE;
 }
 
-ATLPREFAST_SUPPRESS(6387)
+/*ATLPREFAST_SUPPRESS(6387)
 template <class Base, const IID* piid, class T, class Copy>
 STDMETHODIMP CComEnumImpl<Base, piid, T, Copy>::Clone(
 	_Deref_out_ Base** ppEnum)
@@ -4537,12 +4518,12 @@ class ATL_NO_VTABLE CComEnum :
 public:
 	typedef CComEnum<Base, piid, T, Copy > _CComEnum;
 	typedef CComEnumImpl<Base, piid, T, Copy > _CComEnumBase;
-	BEGIN_COM_MAP(_CComEnum)
-		COM_INTERFACE_ENTRY_IID(*piid, _CComEnumBase)
-	END_COM_MAP()
+	// BEGIN_COM_MAP(_CComEnum)
+		// COM_INTERFACE_ENTRY_IID(*piid, _CComEnumBase)
+	// END_COM_MAP()
 };
-
-template <class Base, const IID* piid, class T, class Copy, class CollType>
+*/
+/*template <class Base, const IID* piid, class T, class Copy, class CollType>
 class ATL_NO_VTABLE IEnumOnSTLImpl : 
 	public Base
 {
@@ -4668,9 +4649,9 @@ class ATL_NO_VTABLE CComEnumOnSTL :
 public:
 	typedef CComEnumOnSTL<Base, piid, T, Copy, CollType, ThreadModel > _CComEnum;
 	typedef IEnumOnSTLImpl<Base, piid, T, Copy, CollType > _CComEnumBase;
-	BEGIN_COM_MAP(_CComEnum)
-		COM_INTERFACE_ENTRY_IID(*piid, _CComEnumBase)
-	END_COM_MAP()
+	// BEGIN_COM_MAP(_CComEnum)
+		// COM_INTERFACE_ENTRY_IID(*piid, _CComEnumBase)
+	// END_COM_MAP()
 };
 
 template <class T, class CollType, class ItemType, class CopyItem, class EnumType>
@@ -4729,7 +4710,7 @@ public:
 	}
 	CollType m_coll;
 };
-
+*/
 //////////////////////////////////////////////////////////////////////////////
 // ISpecifyPropertyPagesImpl
 template <class T>
@@ -4741,7 +4722,6 @@ public:
 	//
 	STDMETHOD(GetPages)(_Out_ CAUUID* pPages)
 	{
-		ATLTRACE(atlTraceCOM, 2, _T("ISpecifyPropertyPagesImpl::GetPages\n"));
 		const ATL_PROPMAP_ENTRY* pMap = T::GetPropertyMap();
 		return GetPagesHelper(pPages, pMap);
 	}
@@ -5161,7 +5141,7 @@ public:
 	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;
 };
 
-template <class T, const IID* piid, class CDV = CComDynamicUnkArray >
+/*template <class T, const IID* piid, class CDV = CComDynamicUnkArray >
 class ATL_NO_VTABLE IConnectionPointImpl : 
 	public _ICPLocator<piid>
 {
@@ -5318,10 +5298,10 @@ STDMETHODIMP IConnectionPointImpl<T, piid, CDV>::EnumConnections(
 	return hRes;
 }
 ATLPREFAST_UNSUPPRESS()
-
+*/
 /////////////////////////////////////////////////////////////////////////////
 // IConnectionPointContainerImpl
-template <class T>
+/*template <class T>
 class ATL_NO_VTABLE IConnectionPointContainerImpl : 
 	public IConnectionPointContainer
 {
@@ -5428,7 +5408,7 @@ ATLPREFAST_UNSUPPRESS()
 		return hRes;
 	}
 };
-
+*/
 #endif //!_ATL_NO_CONNECTION_POINTS
 
 /////////////////////////////////////////////////////////////////////////////
@@ -5627,7 +5607,7 @@ ATLPREFAST_UNSUPPRESS()
 
 		CComVariant var;
 		
-		hr = var.ReadFromStream(pStm, pMap[i].vt, pMap[i].rgclsidAllowed, pMap[i].cclsidAllowed);
+		// hr = var.ReadFromStream(pStm, pMap[i].vt, pMap[i].rgclsidAllowed, pMap[i].cclsidAllowed);
 		if (FAILED(hr))
 			break;
 
@@ -5637,7 +5617,6 @@ ATLPREFAST_UNSUPPRESS()
 			ATLENSURE_RETURN(pMap[i].piidDispatch);
 			if (FAILED(pUnk->QueryInterface(*pMap[i].piidDispatch, (void**)&pDispatch)))
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("Failed to get a dispatch pointer for property #%i\n"), i);	
 				hr = E_FAIL;
 				break;
 			}
@@ -5646,7 +5625,6 @@ ATLPREFAST_UNSUPPRESS()
 
 		if (FAILED(pDispatch.PutProperty(pMap[i].dispid, &var)))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("Invoked failed on DISPID %x\n"), pMap[i].dispid);
 			hr = E_FAIL;
 			break;
 		}
@@ -5705,7 +5683,6 @@ ATLPREFAST_UNSUPPRESS()
 			ATLENSURE_RETURN(pMap[i].piidDispatch);
 			if (FAILED(pUnk->QueryInterface(*pMap[i].piidDispatch, (void**)&pDispatch)))
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("Failed to get a dispatch pointer for property #%i\n"), i);
 				hr = E_FAIL;
 				break;
 			}
@@ -5714,7 +5691,6 @@ ATLPREFAST_UNSUPPRESS()
 
 		if (FAILED(pDispatch.GetProperty(pMap[i].dispid, &var)))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("Invoked failed on DISPID %x\n"), pMap[i].dispid);
 			hr = E_FAIL;
 			break;
 		}
@@ -5794,7 +5770,6 @@ ATLPREFAST_UNSUPPRESS()
 			ATLENSURE_RETURN(pMap[i].piidDispatch);
 			if (FAILED(pUnk->QueryInterface(*pMap[i].piidDispatch, (void**)&pDispatch)))
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("Failed to get a dispatch pointer for property #%i\n"), i);
 				return E_FAIL;
 			}
 			piidOld = pMap[i].piidDispatch;
@@ -5805,7 +5780,6 @@ ATLPREFAST_UNSUPPRESS()
 		{
 			if (FAILED(pDispatch.GetProperty(pMap[i].dispid, &var)))
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("Invoked failed on DISPID %x\n"), pMap[i].dispid);
 				return E_FAIL;
 			}
 			vt = var.vt;
@@ -5823,18 +5797,10 @@ ATLPREFAST_UNSUPPRESS()
 
 			if (hr == E_INVALIDARG)
 			{
-				if (lp == NULL)
-					ATLTRACE(atlTraceCOM, 0, _T("Property not in Bag\n"));
-				else
-					ATLTRACE(atlTraceCOM, 0, _T("Property %s not in Bag\n"), lp);
 			}
 			else
 			{
 				// Many containers return different ERROR values for Member not found
-				if (lp == NULL)
-					ATLTRACE(atlTraceCOM, 0, _T("Error attempting to read Property from PropertyBag \n"));
-				else
-					ATLTRACE(atlTraceCOM, 0, _T("Error attempting to read Property %s from PropertyBag \n"), lp);
 			}
 #endif			
 			var.vt = VT_EMPTY;
@@ -5843,7 +5809,6 @@ ATLPREFAST_UNSUPPRESS()
 
 		if (FAILED(pDispatch.PutProperty(pMap[i].dispid, &var)))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("Invoked failed on DISPID %x\n"), pMap[i].dispid);
 			return E_FAIL;
 		}
 	}
@@ -5859,7 +5824,6 @@ ATLINLINE ATLAPI AtlIPersistPropertyBag_Save(
 {
 	if (pPropBag == NULL)
 	{
-		ATLTRACE(atlTraceCOM, 0, _T("PropBag pointer passed in was invalid\n"));
 		return E_INVALIDARG;
 	}
 	if (pMap == NULL || pThis == NULL || pUnk == NULL)
@@ -5926,7 +5890,6 @@ ATLPREFAST_UNSUPPRESS()
 			ATLENSURE_RETURN(pMap[i].piidDispatch);
 			if (FAILED(pUnk->QueryInterface(*pMap[i].piidDispatch, (void**)&pDispatch)))
 			{
-				ATLTRACE(atlTraceCOM, 0, _T("Failed to get a dispatch pointer for property #%i\n"), i);
 				return E_FAIL;
 			}
 			piidOld = pMap[i].piidDispatch;
@@ -5934,7 +5897,6 @@ ATLPREFAST_UNSUPPRESS()
 
 		if (FAILED(pDispatch.GetProperty(pMap[i].dispid, &var)))
 		{
-			ATLTRACE(atlTraceCOM, 0, _T("Invoked failed on DISPID %x\n"), pMap[i].dispid);
 			return E_FAIL;
 		}
 
@@ -5949,7 +5911,6 @@ ATLPREFAST_UNSUPPRESS()
 		{
 			if (var.punkVal == NULL)
 			{
-				ATLTRACE(atlTraceCOM, 2, _T("Warning skipping empty IUnknown in Save\n"));
 				continue;
 			}
 		}

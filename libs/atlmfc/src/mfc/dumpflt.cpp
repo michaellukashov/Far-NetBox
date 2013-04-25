@@ -16,24 +16,4 @@
 /////////////////////////////////////////////////////////////////////////////
 // Diagnostic Stream output for floating point numbers
 
-#ifdef _DEBUG
-CDumpContext& CDumpContext::operator<<(float f)
-{
-	char szBuffer[32];
-	Checked::gcvt_s(szBuffer, 32, f, FLT_DIG);
-
-	*this << szBuffer;
-	return *this;
-}
-
-CDumpContext& CDumpContext::operator<<(double d)
-{
-	char szBuffer[32];
-	Checked::gcvt_s(szBuffer, 32, d, DBL_DIG);
-
-	*this << szBuffer;
-	return *this;
-}
-#endif
-
 /////////////////////////////////////////////////////////////////////////////

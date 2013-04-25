@@ -26,6 +26,7 @@ extern "C" {
 __declspec(naked) void AFXAPI
 _AfxDispatchCall(AFX_PMSG /*pfn*/, void* /*pArgs*/, UINT /*nSizeArgs*/)
 {
+#if !defined(__MINGW32__)
 	_asm
 	{
 		pop     edx         // edx = return address
@@ -39,6 +40,7 @@ _AfxDispatchCall(AFX_PMSG /*pfn*/, void* /*pArgs*/, UINT /*nSizeArgs*/)
 		call    eax         // call member function
 		ret                 // esp[0] should = scratch[0] = return address
 	}
+#endif
 }
 #endif // _X86_
 

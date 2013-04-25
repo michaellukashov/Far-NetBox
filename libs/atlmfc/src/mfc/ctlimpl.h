@@ -40,7 +40,6 @@ typedef LPVOID* LPLPVOID;
 /////////////////////////////////////////////////////////////////////////////
 // Functions
 
-LPSTREAM AFXAPI _AfxGetArchiveStream(CArchive& ar, CArchiveStream& stm);
 CLIPFORMAT AFXAPI _AfxGetClipboardFormatConvertVBX();
 CLIPFORMAT AFXAPI _AfxGetClipboardFormatPersistPropset();
 BOOL AFXAPI _AfxOleMatchPropsetClipFormat(CLIPFORMAT cfFormat, LPCLSID lpFmtID);
@@ -93,70 +92,6 @@ public:
 };
 
 EXTERN_THREAD_LOCAL(_AFXCTL_AMBIENT_CACHE, _afxAmbientCache)
-
-/////////////////////////////////////////////////////////////////////////////
-// CControlFrameWnd - used for a control's "open" (non-in-place) state.
-
-class CControlFrameWnd : public CWnd
-{
-private:
-   using CWnd::Create;
-
-public:
-	CControlFrameWnd(COleControl* pCtrl);
-	virtual BOOL Create(LPCTSTR pszTitle);
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-
-protected:
-	virtual void PostNcDestroy();
-
-	COleControl* m_pCtrl;
-
-	//{{AFX_MSG(CControlFrameWnd)
-	afx_msg void OnClose();
-	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
-};
-
-/////////////////////////////////////////////////////////////////////////////
-// CReflectorWnd - reflects window messages to a subclassed control.
-
-class CReflectorWnd : public CWnd
-{
-private:
-   using CWnd::Create;
-
-public:
-	CReflectorWnd() : m_pCtrl(NULL) { }
-
-	BOOL Create(const CRect& rect, HWND hWndParent);
-	void SetControl(COleControl* pCtrl);
-
-protected:
-	virtual LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
-	virtual void PostNcDestroy();
-
-	COleControl* m_pCtrl;
-};
-
-/////////////////////////////////////////////////////////////////////////////
-// CParkingWnd - "parking space" for not-yet-activated subclassed controls
-
-class CParkingWnd : public CWnd
-{
-public:
-	CParkingWnd()
-		{ AfxDeferRegisterClass(AFX_WNDOLECONTROL_REG);
-		  CreateEx(WS_EX_NOPARENTNOTIFY|WS_EX_TOOLWINDOW,
-			AFX_WNDOLECONTROL, NULL, WS_VISIBLE|WS_CHILD,
-			-1000, -1000, 1, 1, ::GetDesktopWindow(), 0); }
-	virtual LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-protected:
-	CMapPtrToPtr m_idMap;
-};
-
 
 /////////////////////////////////////////////////////////////////////////////
 //  Property sets
@@ -282,7 +217,7 @@ private:
 	// List of properties (CProperty)
 	CPtrList         m_PropList ;
 	// Dictionary of property names
-	CMapStringToPtr m_NameDict ;
+	// CMapStringToPtr m_NameDict ;
 	CString         m_strSectionName;
 
 public:
@@ -349,7 +284,6 @@ class CArchivePropExchange : public CPropExchange
 {
 // Constructors
 public:
-	CArchivePropExchange(CArchive& ar);
 
 // Operations
 	virtual BOOL ExchangeProp(LPCTSTR pszPropName, VARTYPE vtProp,
@@ -363,7 +297,6 @@ public:
 
 // Implementation
 protected:
-	CArchive& m_ar;
 };
 
 

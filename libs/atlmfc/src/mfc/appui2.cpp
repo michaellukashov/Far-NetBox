@@ -73,7 +73,7 @@ BOOL CWinApp::ProcessShellCommand(CCommandLineInfo& rCmdInfo)
 	// If we've been asked to unregister, unregister and then terminate
 	case CCommandLineInfo::AppUnregister:
 		{
-			BOOL bUnregistered = Unregister();
+			BOOL bUnregistered = FALSE; // Unregister();
 
 			if (!rCmdInfo.m_bRunEmbedded)
 			{

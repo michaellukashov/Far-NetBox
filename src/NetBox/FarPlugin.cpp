@@ -973,7 +973,7 @@ void TFarMessageDialog::Idle()
     else
     {
       UnicodeString Caption =
-        FORMAT(L" %s ", FORMAT(FParams->TimeoutStr.c_str(),
+        FORMAT(L" %s ", ::Format(FParams->TimeoutStr.c_str(),
                                FTimeoutButtonCaption.c_str(), static_cast<int>((FParams->Timeout - Running) / 1000)).c_str()).c_str();
       intptr_t sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ? FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
       Caption += ::StringOfChar(L' ', sz);
@@ -1731,7 +1731,7 @@ intptr_t TCustomFarPlugin::FarEditorControl(EDITOR_CONTROL_COMMANDS Command, int
 TFarEditorInfo * TCustomFarPlugin::EditorInfo()
 {
   TFarEditorInfo * Result;
-  ::EditorInfo * Info = static_cast<::EditorInfo *>(
+  ::EditorInfo * Info = static_cast< ::EditorInfo *>(
     nb_malloc(sizeof(::EditorInfo)));
   memset(Info, 0, sizeof(::EditorInfo));
   Info->StructSize = sizeof(::EditorInfo);

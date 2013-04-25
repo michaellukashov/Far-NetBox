@@ -70,7 +70,6 @@ protected:
 	rde::list<CString> m_Segments;
 	typedef rde::list<CString>::iterator tIter;
 	typedef rde::list<CString>::const_iterator tConstIter;
-	typedef rde::list<CString>::const_iterator tConstIter;
 	CString m_Prefix;
 	int m_nServerType;
 };

@@ -213,10 +213,6 @@ public:
 // Implementation
 public:
 	virtual ~COleDataSource();
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 
 protected:
 	AFX_DATACACHE_ENTRY* m_pDataCache;  // data cache itself
@@ -253,7 +249,7 @@ class COleStreamFile : public CFile
 {
 	DECLARE_DYNAMIC(COleStreamFile)
 
-private:
+public:
    using CFile::Open;
 
 // Constructors and Destructors
@@ -283,10 +279,6 @@ public:
 // Implementation
 public:
 	LPSTREAM m_lpStream;
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 	virtual ~COleStreamFile();
 
 	// attributes for implementation
@@ -320,7 +312,7 @@ class CMonikerFile: public COleStreamFile
 {
 	DECLARE_DYNAMIC(CMonikerFile)
 
-private:
+public:
    using COleStreamFile::Open;
 
 public:
@@ -375,12 +367,6 @@ public:
 
 	virtual void Flush();
 
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-	// Calls COleStreamFile::Dump(), and prints out moniker value.
-#endif
-
 protected:
 	IPTR(IMoniker) m_Moniker;
 	// The moniker provided or created to which this class is bound.
@@ -399,7 +385,7 @@ class CAsyncMonikerFile: public CMonikerFile
 {
 	DECLARE_DYNAMIC(CAsyncMonikerFile)
 
-private:
+public:
    using CMonikerFile::Open;
 
 public:
@@ -477,12 +463,6 @@ protected:
 // Implementation
 public:
 	virtual ~CAsyncMonikerFile();
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-	// Calls CMonikerFile::Dump(), and prints out IBinding,
-	// IBindStatusCallback, and m_pFormatEtc values.
-#endif
 	virtual UINT Read(void* lpBuf, UINT nCount);
 
 protected:
@@ -518,10 +498,6 @@ public:
 
 // Implementation
 public:
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-#endif
-
 public:
 	BEGIN_INTERFACE_PART(DropSource, IDropSource)
 		INIT_INTERFACE_PART(COleDropSource, DropSource)
@@ -559,10 +535,6 @@ public:
 // Implementation
 public:
 	virtual ~COleDropTarget();
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 
 protected:
 	HWND m_hWnd;            // HWND this IDropTarget is attached to
@@ -626,10 +598,6 @@ public:
 
 // Implementation
 public:
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 	virtual ~COleMessageFilter();
 	virtual BOOL IsSignificantMessage(MSG* pMsg);
 		// determine if any significant messages are present in the queue

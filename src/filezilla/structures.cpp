@@ -19,7 +19,7 @@
 #include "stdafx.h"
 
 
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 AFX_COMDAT int _afxInitDataA[] = { -1, 0, 0, 0 };
 AFX_COMDAT CStringDataA* _afxDataNilA = (CStringDataA*)&_afxInitDataA;
 AFX_COMDAT LPCSTR _afxPchNilA = (LPCSTR)(((BYTE*)&_afxInitDataA)+sizeof(CStringDataA));

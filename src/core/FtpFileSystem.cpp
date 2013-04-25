@@ -176,7 +176,7 @@ public:
 };
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 struct TFileTransferData : public TObject
 {
   TFileTransferData()
@@ -200,7 +200,7 @@ const int tfAutoResume = 0x02;
 #endif
 static const wchar_t FtpsCertificateStorageKey[] = L"FtpsCertificates";
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 struct TSinkFileParams
 {
   UnicodeString TargetDir;
@@ -1555,7 +1555,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
   {
     if (!Dir)
     {
-      FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
+      FILE_OPERATION_LOOP (FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
         THROWOSIFFALSE(Sysutils::DeleteFile(FileName));
       )
     }
@@ -3150,7 +3150,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
   }
 }
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 struct TClipboardHandler
 {
   UnicodeString Text;
@@ -3790,4 +3790,4 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
   return Result;
 }
 //---------------------------------------------------------------------------
-#endif NO_FILEZILLA
+#endif // NO_FILEZILLA

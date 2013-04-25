@@ -72,8 +72,8 @@ BOOL CFileException::GetErrorMessage(_Out_z_cap_(nMaxError) LPTSTR lpszError, _I
 	CString strFileName = m_strFileName;
 	if (strFileName.IsEmpty())
 		strFileName.LoadString(AFX_IDS_UNNAMED_FILE);
-	AfxFormatString1(strMessage,
-		m_cause + AFX_IDP_FILE_NONE, strFileName);
+	// AfxFormatString1(strMessage,
+		// m_cause + AFX_IDP_FILE_NONE, strFileName);
 	Checked::tcsncpy_s(lpszError, nMaxError, strMessage, _TRUNCATE);
 
 	return TRUE;
@@ -81,22 +81,6 @@ BOOL CFileException::GetErrorMessage(_Out_z_cap_(nMaxError) LPTSTR lpszError, _I
 
 /////////////////////////////////////////////////////////////////////////////
 // CFileException diagnostics
-
-#ifdef _DEBUG
-void CFileException::Dump(CDumpContext& dc) const
-{
-	CObject::Dump(dc);
-
-	dc << "m_cause = ";
-	if (m_cause >= 0 && m_cause < _countof(rgszCFileExceptionCause))
-		dc << rgszCFileExceptionCause[m_cause];
-	else
-		dc << szUnknown2;
-	dc << "\nm_lOsError = " << m_lOsError;
-
-	dc << "\n";
-}
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CFileException helpers
@@ -110,8 +94,6 @@ void __declspec(noreturn) AFXAPI AfxThrowFileException(int cause, LONG lOsError,
 		lpsz = rgszCFileExceptionCause[cause];
 	else
 		lpsz = szUnknown2;
-	TRACE(traceAppMsg, 0, _T("CFile exception: %hs, File %s, OS error information = %ld.\n"),
-		lpsz, (lpszFileName == NULL) ? _T("Unknown") : lpszFileName, lOsError);
 #endif
 	THROW(new CFileException(cause, lOsError, lpszFileName));
 }

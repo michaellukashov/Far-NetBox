@@ -80,8 +80,6 @@ UINT APIENTRY _AfxThreadEntry(void* pParam)
 		// Note: DELETE_EXCEPTION(e) not required.
 
 		// exception happened during thread initialization!!
-		TRACE(traceAppMsg, 0, "Warning: Error during thread initialization!\n");
-
 		// set error flag and allow the creating thread to notice the error
 		threadWnd.Detach();
 		pStartup->bError = TRUE;
@@ -152,22 +150,11 @@ BOOL AFXAPI AfxInternalPumpMessage()
 
 	if (!::GetMessage(&(pState->m_msgCur), NULL, NULL, NULL))
 	{
-#ifdef _DEBUG
-		TRACE(traceAppMsg, 1, "CWinThread::PumpMessage - Received WM_QUIT.\n");
-			pState->m_nDisablePumpCount++; // application must die
-#endif
 		// Note: prevents calling message loop things in 'ExitInstance'
 		// will never be decremented
 		return FALSE;
 	}
 
-#ifdef _DEBUG
-  if (pState->m_nDisablePumpCount != 0)
-	{
-	  TRACE(traceAppMsg, 0, "Error: CWinThread::PumpMessage called when not permitted.\n");
-	  ASSERT(FALSE);
-	}
-#endif
 
 #ifdef _DEBUG
 	_AfxTraceMsg(_T("PumpMessage"), &(pState->m_msgCur));
@@ -406,14 +393,6 @@ void AFXAPI AfxTermThread(HINSTANCE hInstTerm)
 {
 	try
 	{
-#ifdef _DEBUG
-		// check for missing AfxLockTempMap calls
-		if (AfxGetModuleThreadState()->m_nTempMapLock != 0)
-		{
-			TRACE(traceAppMsg, 0, "Warning: Temp map lock count non-zero (%ld).\n",
-				AfxGetModuleThreadState()->m_nTempMapLock);
-		}
-#endif
 		AfxLockTempMaps();
 		AfxUnlockTempMaps(-1);
 	}
@@ -527,7 +506,6 @@ BOOL CWinThread::CreateThread(DWORD dwCreateFlags, UINT nStackSize,
 	startup.dwCreateFlags = dwCreateFlags;
 	if (startup.hEvent == NULL || startup.hEvent2 == NULL)
 	{
-		TRACE(traceAppMsg, 0, "Warning: CreateEvent failed in CWinThread::CreateThread.\n");
 		if (startup.hEvent != NULL)
 			::CloseHandle(startup.hEvent);
 		if (startup.hEvent2 != NULL)
@@ -855,43 +833,6 @@ BOOL CWinThread::PumpMessage()
 
 /////////////////////////////////////////////////////////////////////////////
 // CWinThread diagnostics
-
-#ifdef _DEBUG
-void CWinThread::AssertValid() const
-{
-	CCmdTarget::AssertValid();
-}
-
-void CWinThread::Dump(CDumpContext& dc) const
-{
-	CCmdTarget::Dump(dc);
-	_AFX_THREAD_STATE *pState = AfxGetThreadState();
-
-	dc << "m_pThreadParams = " << m_pThreadParams;
-	dc << "\nm_pfnThreadProc = " << (void*)m_pfnThreadProc;
-	dc << "\nm_bAutoDelete = " << m_bAutoDelete;
-	dc << "\nm_hThread = " << (void*)m_hThread;
-	dc << "\nm_nThreadID = " << m_nThreadID;
-	dc << "\nm_nDisablePumpCount = " << pState->m_nDisablePumpCount;
-	if (AfxGetThread() == this)
-		dc << "\nm_pMainWnd = " << m_pMainWnd;
-
-	dc << "\nm_msgCur = {";
-	dc << "\n\thwnd = " << (void*)pState->m_msgCur.hwnd;
-	dc << "\n\tmessage = " << (UINT)pState->m_msgCur.message;
-	dc << "\n\twParam = " << (UINT)pState->m_msgCur.wParam;
-	dc << "\n\tlParam = " << (void*)pState->m_msgCur.lParam;
-	dc << "\n\ttime = " << pState->m_msgCur.time;
-	dc << "\n}";
-
-	dc << "\nm_pThreadParams = " << m_pThreadParams;
-	dc << "\nm_pfnThreadProc = " << (void*)m_pfnThreadProc;
-	dc << "\nm_nMsgLast = " << pState->m_nMsgLast;
-
-	dc << "\n";
-}
-#endif
-
 
 IMPLEMENT_DYNAMIC(CWinThread, CCmdTarget)
 

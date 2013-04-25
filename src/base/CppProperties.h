@@ -55,7 +55,7 @@ public:
 template <
   class T,
   class Object,
-  typename T (Object::*real_getter)()
+  T (Object::*real_getter)()
   >
 class ROProperty
 {
@@ -92,7 +92,7 @@ public:
 template <
   class T,
   class Object,
-  typename void (Object::*real_setter)(T)
+  void (Object::*real_setter)(T)
   >
 class WOProperty
 {
@@ -128,8 +128,8 @@ public:
 template <
   class T,
   class Object,
-  typename T (Object::*real_getter)(),
-  typename void (Object::*real_setter)(T)
+  T (Object::*real_getter)(),
+  void (Object::*real_setter)(T)
   >
 class RWProperty
 {
@@ -190,8 +190,8 @@ template <
   class Key,
   class T,
   class Object,
-  typename T (Object::*real_getter)(Key),
-  typename void (Object::*real_setter)(Key, T)
+  T (Object::*real_getter)(Key),
+  void (Object::*real_setter)(Key, T)
   >
 class IndexedProperty
 {
@@ -233,8 +233,8 @@ template <
   class Key,
   class T,
   class Object,
-  typename T & (Object::*real_getter)(Key),
-  typename void (Object::*real_setter)(Key, T)
+  T & (Object::*real_getter)(Key),
+  void (Object::*real_setter)(Key, T)
   >
 class IndexedProperty2
 {
@@ -276,7 +276,7 @@ template <
   class Key,
   class Object,
   void *& (Object::*real_getter)(Key),
-  typename void (Object::*real_setter)(Key, void *)
+  void (Object::*real_setter)(Key, void *)
   >
 class IndexedPropertyVoid
 {

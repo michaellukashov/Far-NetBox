@@ -69,10 +69,6 @@ public:
 	CDynLinkLibrary* m_pNextDLL;        // simple singly linked list
 	virtual ~CDynLinkLibrary();
 
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif //_DEBUG
 };
 
 // call in every DLL_PROCESS_ATTACH

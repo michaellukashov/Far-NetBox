@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <exception>
+
 /////////////////////////////////////////////////////////////////////////////
 
 #ifdef _DLL
@@ -25,7 +27,7 @@
 #endif
 #endif
 
-#if !defined(_M_IX86) && !defined(_M_AMD64)
+#if !defined(_M_IX86) && !defined(_M_AMD64) && !defined(_WIN64) && !defined(_WIN32)
 	#error Compiling for unsupported platform.  Only x86 and x64 platforms are supported by MFC.
 #endif
 
@@ -174,9 +176,6 @@ class CObject;                        // the root of all objects classes
 struct CFileStatus;                   // file status information
 struct CMemoryState;                  // diagnostic memory support
 
-class CArchive;                       // object persistence tool
-class CDumpContext;                   // object diagnostic dumping
-
 /////////////////////////////////////////////////////////////////////////////
 // Other includes from standard "C" runtimes
 
@@ -234,7 +233,9 @@ typedef __POSITION* POSITION;
 
 #define FALSE   0
 #define TRUE    1
+#ifndef NULL
 #define NULL    0
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // _AFX_FUNCNAME definition
@@ -290,10 +291,6 @@ typedef __POSITION* POSITION;
 BOOL AFXAPI AfxAssertFailedLine(LPCSTR lpszFileName, int nLine);
 
 void AFX_CDECL AfxTrace(LPCTSTR lpszFormat, ...);
-// Note: file names are still ANSI strings (filenames rarely need UNICODE)
-void AFXAPI AfxAssertValidObject(const CObject* pOb,
-				LPCSTR lpszFileName, int nLine);
-void AFXAPI AfxDump(const CObject* pOb); // Dump an object from CodeView
 
 #include <atltrace.h>
 
@@ -342,7 +339,7 @@ inline void AFX_CDECL AfxTrace(...) { }
 #define AFXASSUME(cond)			((void)0)
 #endif
 
-#define ASSERT_VALID(pOb)  DEBUG_ONLY((::AfxAssertValidObject(pOb, THIS_FILE, __LINE__)))
+#define ASSERT_VALID(pOb)  
 
 // Debug ASSERTs then throws. Retail throws if condition not met
 #define ENSURE_THROW(cond, exception)	\
@@ -371,11 +368,6 @@ inline void AFX_CDECL AfxTrace(...) { }
 #ifdef _DEBUG
 #define REPORT_EXCEPTION(pException, szMsg) \
 	do { \
-		TCHAR szErrorMessage[512]; \
-		if (pException->GetErrorMessage(szErrorMessage, sizeof(szErrorMessage)/sizeof(*szErrorMessage), 0)) \
-			TRACE(traceAppMsg, 0, _T("%s (%s:%d)\n%s\n"), szMsg, _T(__FILE__), __LINE__, szErrorMessage); \
-		else \
-			TRACE(traceAppMsg, 0, _T("%s (%s:%d)\n"), szMsg, _T(__FILE__), __LINE__); \
 		ASSERT(FALSE); \
 	} while (0)
 #else
@@ -387,7 +379,6 @@ inline void AFX_CDECL AfxTrace(...) { }
 			strMsg.Format(_T("%s (%s:%d)\n%s"), szMsg, _T(__FILE__), __LINE__, szErrorMessage); \
 		else \
 			strMsg.Format(_T("%s (%s:%d)"), szMsg, _T(__FILE__), __LINE__); \
-		AfxMessageBox(strMsg); \
 	} while (0)
 #endif
 
@@ -443,10 +434,6 @@ struct CRuntimeClass
 	static CRuntimeClass* PASCAL FromName(LPCWSTR lpszClassName);
 	static CObject* PASCAL CreateObject(LPCSTR lpszClassName);
 	static CObject* PASCAL CreateObject(LPCWSTR lpszClassName);
-
-// Implementation
-	void Store(CArchive& ar) const;
-	static CRuntimeClass* PASCAL Load(CArchive& ar, UINT* pwSchemaNum);
 
 	// CRuntimeClass objects linked together in simple list
 	CRuntimeClass* m_pNextClass;       // linked list of registered classes
@@ -541,15 +528,6 @@ public:
 	BOOL IsSerializable() const;
 	BOOL IsKindOf(const CRuntimeClass* pClass) const;
 
-// Overridables
-	virtual void Serialize(CArchive& ar);
-
-#if defined(_DEBUG) || defined(_AFXDLL)
-	// Diagnostic Support
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
-
 // Implementation
 public:
 	static const CRuntimeClass classCObject;
@@ -627,8 +605,7 @@ public: \
 	static CObject* PASCAL CreateObject();
 
 #define DECLARE_SERIAL(class_name) \
-	_DECLARE_DYNCREATE(class_name) \
-	AFX_API friend CArchive& AFXAPI operator>>(CArchive& ar, class_name* &pOb);
+	_DECLARE_DYNCREATE(class_name)
 
 #ifdef _AFXDLL
 #define IMPLEMENT_RUNTIMECLASS(class_name, base_class_name, wSchema, pfnNew, class_init) \
@@ -686,9 +663,6 @@ public: \
 	_IMPLEMENT_RUNTIMECLASS(class_name, base_class_name, wSchema, \
 		class_name::CreateObject, &_init_##class_name) \
 	AFX_CLASSINIT _init_##class_name(RUNTIME_CLASS(class_name)); \
-	CArchive& AFXAPI operator>>(CArchive& ar, class_name* &pOb) \
-		{ pOb = (class_name*) ar.ReadObject(RUNTIME_CLASS(class_name)); \
-			return ar; }
 
 // optional bit for schema number that enables object versioning
 #define VERSIONABLE_SCHEMA  (0x80000000)
@@ -900,11 +874,6 @@ public:
 		bufferFull
 	};
 
-#pragma warning(push)
-#pragma warning(disable:4996)
-	AFX_DEPRECATED("CArchiveException::generic clashes with future language keyword generic and should not be used. Use CArchiveException::genericException instead.") static const int __identifier(generic) = genericException;
-#pragma warning(pop)
-
 // Constructor
 	/* explicit */ CArchiveException(int cause = CArchiveException::none,
 		LPCTSTR lpszArchiveName = NULL);
@@ -916,9 +885,6 @@ public:
 // Implementation
 public:
 	virtual ~CArchiveException();
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 	virtual BOOL GetErrorMessage(_Out_z_cap_(nMaxError) LPTSTR lpszError, _In_ UINT nMaxError,
 		_Out_opt_ PUINT pnHelpContext = NULL) const;
 };
@@ -946,11 +912,6 @@ public:
 		endOfFile
 	};
 
-#pragma warning(push)
-#pragma warning(disable:4996)
-	AFX_DEPRECATED("CFileException::generic clashes with future language keyword generic and should not be used. Use CFileException::genericException instead.") static const int __identifier(generic) = genericException;
-#pragma warning(pop)
-
 // Constructor
 	/* explicit */ CFileException(int cause = CFileException::none, LONG lOsError = -1,
 		LPCTSTR lpszArchiveName = NULL);
@@ -972,9 +933,6 @@ public:
 // Implementation
 public:
 	virtual ~CFileException();
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext&) const;
-#endif
 	virtual BOOL GetErrorMessage(_Out_z_cap_(nMaxError) LPTSTR lpszError, _In_ UINT nMaxError,
 		_Out_opt_ PUINT pnHelpContext = NULL) const;
 };
@@ -1090,10 +1048,6 @@ public:
 // Implementation
 public:
 	virtual ~CFile();
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 	enum BufferCommand { bufferRead, bufferWrite, bufferCommit, bufferCheck };
 	enum BufferFlags 
 	{ 
@@ -1138,9 +1092,6 @@ public:
 // Implementation
 public:
 	virtual ~CStdioFile();
-#ifdef _DEBUG
-	void Dump(CDumpContext& dc) const;
-#endif
 	virtual ULONGLONG GetPosition() const;
 	virtual ULONGLONG GetLength() const;
 	virtual BOOL Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException* pError = NULL);
@@ -1197,10 +1148,6 @@ protected:
 
 public:
 	virtual ~CMemFile();
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-	virtual void AssertValid() const;
-#endif
 	virtual ULONGLONG GetPosition() const;
 	BOOL GetStatus(CFileStatus& rStatus) const;
 	virtual ULONGLONG Seek(LONGLONG lOff, UINT nFrom);
@@ -1279,27 +1226,8 @@ protected:
 	CString m_strRoot;
 	TCHAR m_chDirSeparator;     // not '\\' for Internet classes
 
-#ifdef _DEBUG
-	void Dump(CDumpContext& dc) const;
-	void AssertValid() const;
-#endif
-
 	DECLARE_DYNAMIC(CFileFind)
 };
-
-// CTimeSpan diagnostics and serialization
-#ifdef _DEBUG
-CDumpContext& AFXAPI operator<<(CDumpContext& dc,CTimeSpan dateSpanSrc);
-#endif
-CArchive& AFXAPI operator<<(CArchive& ar, CTimeSpan dateSpanSrc);
-CArchive& AFXAPI operator>>(CArchive& ar, CTimeSpan& dateSpanSrc);
-
-// CTime diagnostics and serialization
-#ifdef _DEBUG
-CDumpContext& AFXAPI operator<<(CDumpContext& dc, CTime dateSrc);
-#endif
-CArchive& AFXAPI operator<<(CArchive& ar, CTime dateSrc);
-CArchive& AFXAPI operator>>(CArchive& ar, CTime& dateSrc);
 
 /////////////////////////////////////////////////////////////////////////////
 // File status
@@ -1314,9 +1242,6 @@ struct CFileStatus
 	BYTE _m_padding;        // pad the structure to a WORD
 	TCHAR m_szFullName[_MAX_PATH]; // absolute path name
 
-#ifdef _DEBUG
-	void Dump(CDumpContext& dc) const;
-#endif
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1335,14 +1260,14 @@ BOOL AfxIsValidAtom(LPCTSTR psz);
 #if defined(_DEBUG) && !defined(_AFX_NO_DEBUG_CRT)
 
 // Memory tracking allocation
-void* AFX_CDECL operator new(size_t nSize, LPCSTR lpszFileName, int nLine);
+void* AFX_CDECL operator new(size_t nSize, LPCSTR lpszFileName, int nLine) throw(std::bad_alloc);
 #define DEBUG_NEW new(THIS_FILE, __LINE__)
-void AFX_CDECL operator delete(void* p, LPCSTR lpszFileName, int nLine);
+void AFX_CDECL operator delete(void* p, LPCSTR lpszFileName, int nLine) throw();
 
-void * __cdecl operator new[](size_t);
-void* __cdecl operator new[](size_t nSize, LPCSTR lpszFileName, int nLine);
-void __cdecl operator delete[](void* p, LPCSTR lpszFileName, int nLine);
-void __cdecl operator delete[](void *);
+void * __cdecl operator new[](size_t) throw(std::bad_alloc);
+void* __cdecl operator new[](size_t nSize, LPCSTR lpszFileName, int nLine) throw(std::bad_alloc);
+void __cdecl operator delete[](void* p, LPCSTR lpszFileName, int nLine) throw();
+void __cdecl operator delete[](void * p) throw();
 
 void* AFXAPI AfxAllocMemoryDebug(size_t nSize, BOOL bIsObject,
 	LPCSTR lpszFileName, int nLine);
@@ -1464,161 +1389,6 @@ class CArray;
 class CPtrArray;
 class CMapPtrToPtr;
 
-class CArchive
-{
-protected:
-	enum SchemaMapReservedRefs { objTypeArrayRef = 1 };
-	enum LoadArrayObjType{ typeUndefined = 0, typeCRuntimeClass = 1, typeCObject = 2 };	
-public:
-// Flag values
-	enum Mode { store = 0, load = 1, bNoFlushOnDelete = 2, bNoByteSwap = 4 };
-
-	CArchive(CFile* pFile, UINT nMode, int nBufSize = 4096, void* lpBuf = NULL);
-	~CArchive();
-
-// Attributes
-	BOOL IsLoading() const;
-	BOOL IsStoring() const;
-	BOOL IsByteSwapping() const;
-	BOOL IsBufferEmpty() const;
-
-	CFile* GetFile() const;
-	UINT GetObjectSchema(); // only valid when reading a CObject*
-	void SetObjectSchema(UINT nSchema);
-
-// Operations
-	UINT Read(void* lpBuf, UINT nMax);
-	void EnsureRead(void *lpBuf, UINT nCount);
-	void Write(const void* lpBuf, UINT nMax);
-	void Flush();
-	void Close();
-	void Abort();   // close and shutdown without exceptions
-
-	// reading and writing strings
-	void WriteString(LPCTSTR lpsz);
-	LPTSTR ReadString(_Out_z_cap_(nMax+1) LPTSTR lpsz, _In_ UINT nMax);
-	BOOL ReadString(CString& rString);
-
-public:
-	// Object I/O is pointer based to avoid added construction overhead.
-	// Use the Serialize member function directly for embedded objects.
-	friend CArchive& AFXAPI operator<<(CArchive& ar, const CObject* pOb);
-
-	friend CArchive& AFXAPI operator>>(CArchive& ar, CObject*& pOb);
-	friend CArchive& AFXAPI operator>>(CArchive& ar, const CObject*& pOb);
-
-	// insertion operations
-	CArchive& operator<<(BYTE by);
-	CArchive& operator<<(WORD w);
-	CArchive& operator<<(LONG l);
-	CArchive& operator<<(DWORD dw);
-	CArchive& operator<<(float f);
-	CArchive& operator<<(double d);
-	CArchive& operator<<(LONGLONG dwdw);
-	CArchive& operator<<(ULONGLONG dwdw);
-
-	CArchive& operator<<(int i);
-	CArchive& operator<<(short w);
-	CArchive& operator<<(char ch);
-#ifdef _NATIVE_WCHAR_T_DEFINED
-	CArchive& operator<<(wchar_t ch);
-#endif
-	CArchive& operator<<(unsigned u);
-
-	template < typename BaseType , bool t_bMFCDLL>
-	CArchive& operator<<(const ATL::CSimpleStringT<BaseType, t_bMFCDLL>& str);
-
-	template< typename BaseType, class StringTraits >	
-	CArchive& operator<<(const ATL::CStringT<BaseType, StringTraits>& str);
-	
-	template < typename BaseType , bool t_bMFCDLL>
-	CArchive& operator>>(ATL::CSimpleStringT<BaseType, t_bMFCDLL>& str);
-
-	template< typename BaseType, class StringTraits >
-	CArchive& operator>>(ATL::CStringT<BaseType, StringTraits>& str);
-
-	CArchive& operator<<(bool b);
-
-	// extraction operations
-	CArchive& operator>>(BYTE& by);
-	CArchive& operator>>(WORD& w);
-	CArchive& operator>>(DWORD& dw);
-	CArchive& operator>>(LONG& l);
-	CArchive& operator>>(float& f);
-	CArchive& operator>>(double& d);
-	CArchive& operator>>(LONGLONG& dwdw);
-	CArchive& operator>>(ULONGLONG& dwdw);
-
-	CArchive& operator>>(int& i);
-	CArchive& operator>>(short& w);
-	CArchive& operator>>(char& ch);
-#ifdef _NATIVE_WCHAR_T_DEFINED
-	CArchive& operator>>(wchar_t& ch);
-#endif
-	CArchive& operator>>(unsigned& u);
-	CArchive& operator>>(bool& b);
-
-	// object read/write
-	CObject* ReadObject(const CRuntimeClass* pClass);
-	void WriteObject(const CObject* pOb);
-	// advanced object mapping (used for forced references)
-	void MapObject(const CObject* pOb);
-
-	// advanced versioning support
-	void WriteClass(const CRuntimeClass* pClassRef);
-	CRuntimeClass* ReadClass(const CRuntimeClass* pClassRefRequested = NULL,
-		UINT* pSchema = NULL, DWORD* pObTag = NULL);
-	void SerializeClass(const CRuntimeClass* pClassRef);
-
-	// advanced operations (used when storing/loading many objects)
-	void SetStoreParams(UINT nHashSize = 2053, UINT nBlockSize = 128);
-	void SetLoadParams(UINT nGrowBy = 1024);
-
-	void EnsureSchemaMapExists(CArray<LoadArrayObjType, const LoadArrayObjType&>** ppObjTypeArray = NULL);
-// Implementation
-public:
-	BOOL m_bForceFlat;  // for COleClientItem implementation (default TRUE)
-	BOOL m_bDirectBuffer;   // TRUE if m_pFile supports direct buffering
-	BOOL m_bBlocking;  // TRUE if m_pFile can block for unbounded periods of time
-	void FillBuffer(UINT nAdditionalBytesNeeded);
-	void CheckCount();  // throw exception if m_nMapCount is too large
-
-	// special functions for reading and writing (16-bit compatible) counts
-	DWORD_PTR ReadCount();
-	void WriteCount(DWORD_PTR dwCount);
-
-	// public for advanced use
-	UINT m_nObjectSchema;
-	CString m_strFileName;
-
-protected:
-	// archive objects cannot be copied or assigned
-	CArchive(const CArchive& arSrc);
-	void operator=(const CArchive& arSrc);
-
-	BOOL m_nMode;
-	BOOL m_bUserBuf;
-	int m_nBufSize;
-	CFile* m_pFile;
-	BYTE* m_lpBufCur;
-	BYTE* m_lpBufMax;
-	BYTE* m_lpBufStart;
-
-	// array/map for CObject* and CRuntimeClass* load/store
-	UINT m_nMapCount;
-	union
-	{
-		CPtrArray* m_pLoadArray;
-		CMapPtrToPtr* m_pStoreMap;
-	};
-	// map to keep track of mismatched schemas
-	CMapPtrToPtr* m_pSchemaMap;
-
-	// advanced parameters (controls performance with large archives)
-	UINT m_nGrowSize;
-	UINT m_nHashSize;
-};
-
 /////////////////////////////////////////////////////////////////////////////
 // Diagnostic dumping
 
@@ -1635,91 +1405,8 @@ protected:
 #define AFX_STACK_DUMP_TARGET_DEFAULT           AFX_STACK_DUMP_TARGET_CLIPBOARD
 #endif
 
-void AFXAPI AfxDumpStack(DWORD dwFlags = AFX_STACK_DUMP_TARGET_DEFAULT);
-
-class CDumpContext
-{
-public:
-	CDumpContext(CFile* pFile = NULL);
-
-// Attributes
-	int GetDepth() const;      // 0 => this object, 1 => children objects
-	void SetDepth(int nNewDepth);
-
-// Operations
-	CDumpContext& operator<<(LPCTSTR lpsz);
-#ifdef _UNICODE
-	CDumpContext& operator<<(LPCSTR lpsz);  // automatically widened
-#else
-	CDumpContext& operator<<(LPCWSTR lpsz); // automatically thinned
-#endif
-	template< typename BaseType, class StringTraits >
-	CDumpContext& operator<<(const ATL::CStringT<BaseType, 
-		StringTraits>& str)
-	{
-		*this << static_cast< const BaseType* >( str );
-		return *this;
-	}
-	CDumpContext& operator<<(const void* lp);
-	CDumpContext& operator<<(const CObject* pOb);
-	CDumpContext& operator<<(const CObject& ob);
-	CDumpContext& operator<<(BYTE by);
-	CDumpContext& operator<<(WORD w);
-	CDumpContext& DumpAsHex(BYTE b);
-	CDumpContext& DumpAsHex(WORD w);
-#ifdef _WIN64
-	CDumpContext& operator<<(LONG l);
-	CDumpContext& operator<<(DWORD dw);
-	CDumpContext& operator<<(int n);
-	CDumpContext& operator<<(UINT u);
-	CDumpContext& DumpAsHex(LONG l);
-	CDumpContext& DumpAsHex(DWORD dw);
-	CDumpContext& DumpAsHex(int n);
-	CDumpContext& DumpAsHex(UINT u);
-#else
-	CDumpContext& operator<<(LONG_PTR l);
-	CDumpContext& operator<<(DWORD_PTR dw);
-	CDumpContext& operator<<(INT_PTR n);
-	CDumpContext& operator<<(UINT_PTR u);
-	CDumpContext& DumpAsHex(LONG_PTR l);
-	CDumpContext& DumpAsHex(DWORD_PTR dw);
-	CDumpContext& DumpAsHex(INT_PTR n);
-	CDumpContext& DumpAsHex(UINT_PTR u);
-#endif
-	CDumpContext& operator<<(float f);
-	CDumpContext& operator<<(double d);
-	CDumpContext& operator<<(LONGLONG n);
-	CDumpContext& operator<<(ULONGLONG n);
-	CDumpContext& DumpAsHex(LONGLONG n);
-	CDumpContext& DumpAsHex(ULONGLONG n);
-	CDumpContext& operator<<(HWND h);
-	CDumpContext& operator<<(HDC h);
-	CDumpContext& operator<<(HMENU h);
-	CDumpContext& operator<<(HACCEL h);
-	CDumpContext& operator<<(HFONT h);
-	void HexDump(LPCTSTR lpszLine, BYTE* pby, int nBytes, int nWidth);
-	void Flush();
-
-// Implementation
-protected:
-	// dump context objects cannot be copied or assigned
-	CDumpContext(const CDumpContext& dcSrc);
-	void operator=(const CDumpContext& dcSrc);
-	void OutputString(LPCTSTR lpsz);
-
-	int m_nDepth;
-
-public:
-	CFile* m_pFile;
-};
-
 /////////////////////////////////////////////////////////////////////////////
 int __cdecl _AfxInitManaged();
-
-#ifdef _DEBUG
-extern AFX_DATA CDumpContext afxDump;
-extern AFX_DATA BOOL afxTraceEnabled;
-#endif
 
 #ifdef _DEBUG
 #define AFXDUMP( exp ) (void)(afxDump<<exp)

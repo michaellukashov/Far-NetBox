@@ -533,7 +533,7 @@ template<typename TKey, class TAllocator = rde::allocator>
 class rb_tree : public rb_tree_base<internal::rb_tree_traits<TKey>, TAllocator>
 {
 public:
-	explicit rb_tree(TAllocator allocator = TAllocator()): rb_tree_base(allocator) {}
+	explicit rb_tree(TAllocator allocator = TAllocator()): rb_tree_base<internal::rb_tree_traits<TKey>, TAllocator>(allocator) {}
 };
 
 } // rde

@@ -19,35 +19,7 @@ namespace ATL
 
 #ifdef _DEBUG
 
-// CTraceCategory atlTraceGeneral("atlTraceGeneral");
-// CTraceCategory atlTraceCOM("atlTraceCOM");  
-// CTraceCategory atlTraceQI("atlTraceQI");	
-// CTraceCategory atlTraceRegistrar("atlTraceRegistrar");
-// CTraceCategory atlTraceRefcount("atlTraceRefcount");
-// CTraceCategory atlTraceWindowing("atlTraceWindowing");
-// CTraceCategory atlTraceControls("atlTraceControls");
-// CTraceCategory atlTraceHosting("atlTraceHosting"); 
-// CTraceCategory atlTraceDBClient("atlTraceDBClient");  
-// CTraceCategory atlTraceDBProvider("atlTraceDBProvider");
-// CTraceCategory atlTraceSnapin("atlTraceSnapin");
-// CTraceCategory atlTraceNotImpl("atlTraceNotImpl");   
-// CTraceCategory atlTraceAllocation("atlTraceAllocation");
-// CTraceCategory atlTraceException("atlTraceException");
-// CTraceCategory atlTraceTime("atlTraceTime");
-// CTraceCategory atlTraceCache("atlTraceCache");
-// CTraceCategory atlTraceStencil("atlTraceStencil");
-// CTraceCategory atlTraceString("atlTraceString");
-// CTraceCategory atlTraceMap("atlTraceMap");	
-// CTraceCategory atlTraceUtil("atlTraceUtil");		
-// CTraceCategory atlTraceSecurity("atlTraceSecurity");
-// CTraceCategory atlTraceSync("atlTraceSync");
-// CTraceCategory atlTraceISAPI("atlTraceISAPI");		
-
 #pragma warning( disable: 4995 )  // Ignore #pragma deprecated warnings
-// CTraceCategory atlTraceUser("atlTraceUser");		
-// CTraceCategory atlTraceUser2("atlTraceUser2");		
-// CTraceCategory atlTraceUser3("atlTraceUser3");		
-// CTraceCategory atlTraceUser4("atlTraceUser4");		
 
 #endif
 

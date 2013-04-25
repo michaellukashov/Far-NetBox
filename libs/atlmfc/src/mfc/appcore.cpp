@@ -169,7 +169,7 @@ HINSTANCE AFXAPI AfxLoadLangResourceDLL(LPCTSTR pszFormat, LPCTSTR pszPath)
 	nLocales = 0;
 
 	// First, get the thread preferred UI languages (if supported)
-	HMODULE hKernel = AfxCtxLoadLibrary(_T("KERNEL32.DLL"));
+	HMODULE hKernel = NULL; // AfxCtxLoadLibrary(_T("KERNEL32.DLL"));
 	if (hKernel != NULL)
 	{
 		PFNGETPREFERREDUILANGS pfnGetThreadPreferredUILanguages = (PFNGETPREFERREDUILANGS)GetProcAddress(hKernel, "GetThreadPreferredUILanguages");
@@ -179,7 +179,7 @@ HINSTANCE AFXAPI AfxLoadLangResourceDLL(LPCTSTR pszFormat, LPCTSTR pszPath)
 			ULONG nLanguages = 0;
 			WCHAR wszLanguages[(5 * nMaxExpectedPreferredLangs) + 1] = {0}; // each lang has four chars plus NULL, plus terminating NULL
 			ULONG cchLanguagesBuffer = _countof(wszLanguages);
-			bGotPreferredLangs = pfnGetThreadPreferredUILanguages(MUI_LANGUAGE_ID | MUI_UI_FALLBACK, &nLanguages, wszLanguages, &cchLanguagesBuffer);
+			// bGotPreferredLangs = pfnGetThreadPreferredUILanguages(MUI_LANGUAGE_ID | MUI_UI_FALLBACK, &nLanguages, wszLanguages, &cchLanguagesBuffer);
 			if (bGotPreferredLangs)
 			{
 				WCHAR *pwz = wszLanguages;
@@ -428,7 +428,7 @@ BOOL CWinApp::InitApplication()
 
 BOOL CWinApp::InitInstance()
 {
-	InitLibId();
+	// InitLibId();
 	m_hLangResourceDLL = LoadAppLangResourceDLL();
 	if(m_hLangResourceDLL != NULL)
 	{
@@ -739,7 +739,6 @@ int CWinApp::Run()
 	if (m_pMainWnd == NULL && AfxOleGetUserCtrl())
 	{
 		// Not launched /Embedding or /Automation, but has no main window!
-		TRACE(traceAppMsg, 0, "Warning: m_pMainWnd is NULL in CWinApp::Run - quitting application.\n");
 		AfxPostQuitMessage(0);
 	}
 	return CWinThread::Run();
@@ -805,11 +804,11 @@ LRESULT CWinApp::ProcessWndProcException(CException* e, const MSG* pMsg)
 	{
 		e->ReportError(MB_ICONEXCLAMATION|MB_SYSTEMMODAL, nIDP);
 	}
-	else if (!e->IsKindOf(RUNTIME_CLASS(CUserException)))
-	{
+	// else if (!e->IsKindOf(RUNTIME_CLASS(CUserException)))
+	// {
 		// user has not been alerted yet of this catastrophic problem
-		e->ReportError(MB_ICONSTOP, nIDP);
-	}
+		// e->ReportError(MB_ICONSTOP, nIDP);
+	// }
 	return lResult; // sensible default return from most WndProc functions
 }
 
@@ -869,61 +868,16 @@ void CWinApp::DevModeChange(_In_z_ LPTSTR lpDeviceName)
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////
-// CWinApp diagnostics
-
-#ifdef _DEBUG
-void CWinApp::AssertValid() const
-{
-	CWinThread::AssertValid();
-
-	ASSERT(afxCurrentWinApp == this);
-	ASSERT(afxCurrentInstanceHandle == m_hInstance);
-
-	if (AfxGetThread() != (CWinThread*)this)
-		return;     // only do subset if called from different thread
-
-}
-
-void CWinApp::Dump(CDumpContext& dc) const
-{
-	CWinThread::Dump(dc);
-
-	dc << "m_hInstance = " << (void*)m_hInstance;
-	dc << "\nm_nCmdShow = " << m_nCmdShow;
-	dc << "\nm_pszAppName = " << m_pszAppName;
-	dc << "\nm_pszExeName = " << m_pszExeName;
-	dc << "\nm_pszHelpFilePath = " << m_pszHelpFilePath;
-	dc << "\nm_pszProfileName = " << m_pszProfileName;
-	dc << "\nm_hDevMode = " << (void*)m_hDevMode;
-	dc << "\nm_hDevNames = " << (void*)m_hDevNames;
-	dc << "\nm_dwPromptContext = " << m_dwPromptContext;
-	dc << "\nm_eHelpType = " << m_eHelpType;
-
-	dc << "\nm_nWaitCursorCount = " << m_nWaitCursorCount;
-	dc << "\nm_hcurWaitCursorRestore = " << (void*)m_hcurWaitCursorRestore;
-	dc << "\nm_nNumPreviewPages = " << m_nNumPreviewPages;
-
-	_AFX_THREAD_STATE* pState = AfxGetThreadState();
-	dc << "\nm_msgCur = {";
-	dc << "\n\thwnd = " << (void*)pState->m_msgCur.hwnd;
-	dc << "\n\tmessage = " << (UINT)pState->m_msgCur.message;
-	dc << "\n\twParam = " << (UINT)pState->m_msgCur.wParam;
-	dc << "\n\tlParam = " << (void*)pState->m_msgCur.lParam;
-	dc << "\n\ttime = " << pState->m_msgCur.time;
-	dc << "\n}";
-
-	dc << "\n";
-}
-#endif
-
-
 IMPLEMENT_DYNAMIC(CWinApp, CWinThread)
 
 #pragma warning(disable: 4074)
 #pragma init_seg(lib)
 
+#if !defined(__MINGW32__)
 PROCESS_LOCAL(_AFX_WIN_STATE, _afxWinState)
+#else
+CProcessLocal<_AFX_WIN_STATE> _afxWinState;
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 ///////

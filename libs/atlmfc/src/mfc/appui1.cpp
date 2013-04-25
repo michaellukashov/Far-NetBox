@@ -39,8 +39,6 @@ int AFXAPI AfxMessageBox(UINT nIDPrompt, UINT nType, UINT nIDHelp)
 	CString string;
 	if (!string.LoadString(nIDPrompt))
 	{
-		TRACE(traceAppMsg, 0, "Error: failed to load message box prompt string 0x%04x.\n",
-			nIDPrompt);
 		ASSERT(FALSE);
 	}
 	if (nIDHelp == (UINT)-1)
