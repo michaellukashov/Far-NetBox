@@ -967,7 +967,7 @@ void TFarMessageDialog::Idle()
     else
     {
       UnicodeString Caption =
-        FORMAT(L" %s ", FORMAT(FParams->TimeoutStr.c_str(),
+        FORMAT(L" %s ", ::Format(FParams->TimeoutStr.c_str(),
                                FTimeoutButtonCaption.c_str(), static_cast<int>((FParams->Timeout - Running) / 1000)).c_str()).c_str();
       intptr_t sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ? FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
       Caption += ::StringOfChar(L' ', sz);
@@ -1692,7 +1692,7 @@ intptr_t TCustomFarPlugin::FarEditorControl(uintptr_t Command, void * Param)
 TFarEditorInfo * TCustomFarPlugin::EditorInfo()
 {
   TFarEditorInfo * Result;
-  ::EditorInfo * Info = static_cast<::EditorInfo *>(
+  ::EditorInfo * Info = static_cast< ::EditorInfo *>(
     nb_malloc(sizeof(::EditorInfo)));
   try
   {
@@ -2444,7 +2444,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   void * UserData = reinterpret_cast<void *>(PanelItem->UserData);
   GetData(PanelItem->Flags, FileName, Size, PanelItem->FindData.dwFileAttributes,
     LastWriteTime, LastAccess, PanelItem->NumberOfLinks, Description, Owner,
-    static_cast<void *>(UserData), PanelItem->CustomColumnNumber);
+    UserData, PanelItem->CustomColumnNumber);
   PanelItem->UserData = reinterpret_cast<uintptr_t>(UserData);
   // DEBUG_PRINTF(L"LastWriteTime = %f, LastAccess = %f", LastWriteTime, LastAccess);
   FILETIME FileTime = DateTimeToFileTime(LastWriteTime, dstmWin);
