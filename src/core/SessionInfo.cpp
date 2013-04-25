@@ -925,178 +925,181 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         delete Storage;
       }
       );
-    }
 
-    if (0)
-    {
-      typedef BOOL (WINAPI * TGetUserNameEx)(EXTENDED_NAME_FORMAT NameFormat, LPWSTR lpNameBuffer, PULONG nSize);
-      HINSTANCE Secur32 = LoadLibrary(L"secur32.dll");
-      TGetUserNameEx GetUserNameEx =
-        (Secur32 != NULL) ? reinterpret_cast<TGetUserNameEx>(GetProcAddress(Secur32, "GetUserNameExW")) : NULL;
-      wchar_t UserName[UNLEN + 1];
-      unsigned long UserNameSize = LENOF(UserName);
-      if ((GetUserNameEx == NULL) || !GetUserNameEx(NameSamCompatible, (LPWSTR)UserName, &UserNameSize))
-      {
-        wcscpy(UserName, L"<Failed to retrieve username>");
-      }
-      ADF(L"Local account: %s", UserName);
-    }
-    unsigned short Y, M, D, H, N, S, MS;
-    TDateTime DateTime = Now();
-    DateTime.DecodeDate(Y, M, D);
-    DateTime.DecodeTime(H, N, S, MS);
-    UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d", D, M, Y, H, N, S);
-    // ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
-    ADF(L"Working directory: %s", GetCurrentDir().c_str());
-    // ADF(L"Command-line: %s", CmdLine.c_str());
-    // ADF(L"Time zone: %s", GetTimeZoneLogString().c_str());
-    ADF(L"Login time: %s", dt.c_str());
-    AddSeparator();
-    if (0)
-    {
-      ADF(L"Session name: %s (%s)", Data->GetSessionName().c_str(), Data->GetSource().c_str());
-    }
-    ADF(L"Host name: %s (Port: %d)", Data->GetHostNameExpanded().c_str(), Data->GetPortNumber());
-    if (0)
-    {
-      ADF(L"User name: %s (Password: %s, Key file: %s)",
-        Data->GetUserNameExpanded().c_str(), BooleanToEngStr(!Data->GetPassword().IsEmpty()).c_str(),
-         BooleanToEngStr(!Data->GetPublicKeyFile().IsEmpty()).c_str())
-    }
-    ADF(L"Tunnel: %s", BooleanToEngStr(Data->GetTunnel()).c_str());
-    if (Data->GetTunnel())
-    {
-      ADF(L"Tunnel: Host name: %s (Port: %d)", Data->GetTunnelHostName().c_str(), Data->GetTunnelPortNumber());
       if (0)
       {
-        ADF(L"Tunnel: User name: %s (Password: %s, Key file: %s)",
-          Data->GetTunnelUserName().c_str(), BooleanToEngStr(!Data->GetTunnelPassword().IsEmpty()).c_str(),
-           BooleanToEngStr(!Data->GetTunnelPublicKeyFile().IsEmpty()).c_str());
-          ADF(L"Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
+        typedef BOOL (WINAPI * TGetUserNameEx)(EXTENDED_NAME_FORMAT NameFormat, LPWSTR lpNameBuffer, PULONG nSize);
+        HINSTANCE Secur32 = LoadLibrary(L"secur32.dll");
+        TGetUserNameEx GetUserNameEx =
+          (Secur32 != NULL) ? reinterpret_cast<TGetUserNameEx>(GetProcAddress(Secur32, "GetUserNameExW")) : NULL;
+        wchar_t UserName[UNLEN + 1];
+        unsigned long UserNameSize = LENOF(UserName);
+        if ((GetUserNameEx == NULL) || !GetUserNameEx(NameSamCompatible, (LPWSTR)UserName, &UserNameSize))
+        {
+          wcscpy(UserName, L"<Failed to retrieve username>");
+        }
+        ADF(L"Local account: %s", UserName);
       }
-    }
-    ADF(L"Transfer Protocol: %s", Data->GetFSProtocolStr().c_str());
-    ADF(L"Code Page: %d", Data->GetCodePageAsNumber());
-    wchar_t * PingTypes = L"-NC";
-    TPingType PingType;
-    intptr_t PingInterval;
-    if (Data->GetFSProtocol() == fsFTP)
-    {
-      PingType = Data->GetFtpPingType();
-      PingInterval = Data->GetFtpPingInterval();
+      unsigned short Y, M, D, H, N, S, MS;
+      TDateTime DateTime = Now();
+      DateTime.DecodeDate(Y, M, D);
+      DateTime.DecodeTime(H, N, S, MS);
+      UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d", D, M, Y, H, N, S);
+      // ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
+      ADF(L"Working directory: %s", GetCurrentDir().c_str());
+      // ADF(L"Command-line: %s", CmdLine.c_str());
+      // ADF(L"Time zone: %s", GetTimeZoneLogString().c_str());
+      ADF(L"Login time: %s", dt.c_str());
+      AddSeparator();
     }
     else
     {
-      PingType = Data->GetPingType();
-      PingInterval = Data->GetPingInterval();
-    }
-    ADF(L"Ping type: %s, Ping interval: %d sec; Timeout: %d sec",
-      UnicodeString(PingTypes[PingType]).c_str(), PingInterval, Data->GetTimeout());
-    ADF(L"Proxy: %s%s", ProxyMethodList[Data->GetProxyMethod()],
-      Data->GetProxyMethod() == pmSystem ?
-        ::Format(L" (%s)", ProxyMethodList[Data->GetActualProxyMethod()]).c_str() :
-        L"")
-    if (Data->GetProxyMethod() != ::pmNone)
-    {
-      ADF(L"HostName: %s (Port: %d); Username: %s; Passwd: %s",
-        Data->GetProxyHost().c_str(), Data->GetProxyPort(),
-         Data->GetProxyUsername().c_str(), BooleanToEngStr(!Data->GetProxyPassword().IsEmpty()).c_str());
-      if (Data->GetProxyMethod() == pmTelnet)
+      if (0)
       {
-        ADF(L"Telnet command: %s", Data->GetProxyTelnetCommand().c_str());
+        ADF(L"Session name: %s (%s)", Data->GetSessionName().c_str(), Data->GetSource().c_str());
       }
-      if (Data->GetProxyMethod() == pmCmd)
+      ADF(L"Host name: %s (Port: %d)", Data->GetHostNameExpanded().c_str(), Data->GetPortNumber());
+      if (0)
       {
-        ADF(L"Local command: %s", Data->GetProxyLocalCommand().c_str());
+        ADF(L"User name: %s (Password: %s, Key file: %s)",
+          Data->GetUserNameExpanded().c_str(), BooleanToEngStr(!Data->GetPassword().IsEmpty()).c_str(),
+           BooleanToEngStr(!Data->GetPublicKeyFile().IsEmpty()).c_str())
       }
-    }
-    wchar_t const * BugFlags = L"+-A";
-    if (Data->GetUsesSsh())
-    {
-      ADF(L"SSH protocol version: %s; Compression: %s",
-        Data->GetSshProtStr().c_str(), BooleanToEngStr(Data->GetCompression()).c_str());
-      ADF(L"Bypass authentication: %s",
-       BooleanToEngStr(Data->GetSshNoUserAuth()).c_str());
-      ADF(L"Try agent: %s; Agent forwarding: %s; TIS/CryptoCard: %s; KI: %s; GSSAPI: %s",
-         BooleanToEngStr(Data->GetTryAgent()).c_str(), BooleanToEngStr(Data->GetAgentFwd()).c_str(), BooleanToEngStr(Data->GetAuthTIS()).c_str(),
-         BooleanToEngStr(Data->GetAuthKI()).c_str(), BooleanToEngStr(Data->GetAuthGSSAPI()).c_str());
-      if (Data->GetAuthGSSAPI())
+      ADF(L"Tunnel: %s", BooleanToEngStr(Data->GetTunnel()).c_str());
+      if (Data->GetTunnel())
       {
-        ADF(L"GSSAPI: Forwarding: %s; Server realm: %s",
-          BooleanToEngStr(Data->GetGSSAPIFwdTGT()).c_str(), Data->GetGSSAPIServerRealm().c_str());
+        ADF(L"Tunnel: Host name: %s (Port: %d)", Data->GetTunnelHostName().c_str(), Data->GetTunnelPortNumber());
+        if (0)
+        {
+          ADF(L"Tunnel: User name: %s (Password: %s, Key file: %s)",
+            Data->GetTunnelUserName().c_str(), BooleanToEngStr(!Data->GetTunnelPassword().IsEmpty()).c_str(),
+             BooleanToEngStr(!Data->GetTunnelPublicKeyFile().IsEmpty()).c_str());
+            ADF(L"Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
+        }
       }
-      ADF(L"Ciphers: %s; Ssh2DES: %s",
-        Data->GetCipherList().c_str(), BooleanToEngStr(Data->GetSsh2DES()).c_str());
-      UnicodeString Bugs;
-      for (intptr_t Index = 0; Index < BUG_COUNT; ++Index)
+      ADF(L"Transfer Protocol: %s", Data->GetFSProtocolStr().c_str());
+      ADF(L"Code Page: %d", Data->GetCodePageAsNumber());
+      wchar_t * PingTypes = L"-NC";
+      TPingType PingType;
+      intptr_t PingInterval;
+      if (Data->GetFSProtocol() == fsFTP)
       {
-        Bugs += UnicodeString(BugFlags[Data->GetBug(static_cast<TSshBug>(Index))])+(Index<BUG_COUNT-1?L",":L"");
+        PingType = Data->GetFtpPingType();
+        PingInterval = Data->GetFtpPingInterval();
       }
-      ADF(L"SSH Bugs: %s", Bugs.c_str());
-      Bugs = L"";
-      for (intptr_t Index = 0; Index < SFTP_BUG_COUNT; ++Index)
+      else
       {
-        Bugs += UnicodeString(BugFlags[Data->GetSFTPBug(static_cast<TSftpBug>(Index))])+(Index<SFTP_BUG_COUNT-1 ? L"," : L"");
+        PingType = Data->GetPingType();
+        PingInterval = Data->GetPingInterval();
       }
-      ADF(L"SFTP Bugs: %s", Bugs.c_str());
-      ADF(L"Return code variable: %s; Lookup user groups: %c",
-         Data->GetDetectReturnVar() ? UnicodeString(L"Autodetect").c_str() : Data->GetReturnVar().c_str(),
-         BugFlags[Data->GetLookupUserGroups()]);
-      ADF(L"Shell: %s", Data->GetShell().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetShell().c_str());
-      ADF(L"EOL: %d, UTF: %d", Data->GetEOLType(), Data->GetNotUtf());
-      ADF(L"Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s",
-         BooleanToEngStr(Data->GetClearAliases()).c_str(), BooleanToEngStr(Data->GetUnsetNationalVars()).c_str(),
-         BooleanToEngStr(Data->GetResolveSymlinks()).c_str());
-      ADF(L"LS: %s, Ign LS warn: %s, Scp1 Comp: %s",
-         Data->GetListingCommand().c_str(),
-         BooleanToEngStr(Data->GetIgnoreLsWarnings()).c_str(),
-         BooleanToEngStr(Data->GetScp1Compatibility()).c_str());
-    }
-    if (Data->GetFSProtocol() == fsFTP)
-    {
-      UnicodeString Ftps;
-      switch (Data->GetFtps())
+      ADF(L"Ping type: %s, Ping interval: %d sec; Timeout: %d sec",
+        UnicodeString(PingTypes[PingType]).c_str(), PingInterval, Data->GetTimeout());
+      ADF(L"Proxy: %s%s", ProxyMethodList[Data->GetProxyMethod()],
+        Data->GetProxyMethod() == pmSystem ?
+          ::Format(L" (%s)", ProxyMethodList[Data->GetActualProxyMethod()]).c_str() :
+          L"")
+      if (Data->GetProxyMethod() != ::pmNone)
       {
-        case ftpsImplicit:
-          Ftps = L"Implicit SSL/TLS";
-          break;
+        ADF(L"HostName: %s (Port: %d); Username: %s; Passwd: %s",
+          Data->GetProxyHost().c_str(), Data->GetProxyPort(),
+           Data->GetProxyUsername().c_str(), BooleanToEngStr(!Data->GetProxyPassword().IsEmpty()).c_str());
+        if (Data->GetProxyMethod() == pmTelnet)
+        {
+          ADF(L"Telnet command: %s", Data->GetProxyTelnetCommand().c_str());
+        }
+        if (Data->GetProxyMethod() == pmCmd)
+        {
+          ADF(L"Local command: %s", Data->GetProxyLocalCommand().c_str());
+        }
+      }
+      wchar_t const * BugFlags = L"+-A";
+      if (Data->GetUsesSsh())
+      {
+        ADF(L"SSH protocol version: %s; Compression: %s",
+          Data->GetSshProtStr().c_str(), BooleanToEngStr(Data->GetCompression()).c_str());
+        ADF(L"Bypass authentication: %s",
+         BooleanToEngStr(Data->GetSshNoUserAuth()).c_str());
+        ADF(L"Try agent: %s; Agent forwarding: %s; TIS/CryptoCard: %s; KI: %s; GSSAPI: %s",
+           BooleanToEngStr(Data->GetTryAgent()).c_str(), BooleanToEngStr(Data->GetAgentFwd()).c_str(), BooleanToEngStr(Data->GetAuthTIS()).c_str(),
+           BooleanToEngStr(Data->GetAuthKI()).c_str(), BooleanToEngStr(Data->GetAuthGSSAPI()).c_str());
+        if (Data->GetAuthGSSAPI())
+        {
+          ADF(L"GSSAPI: Forwarding: %s; Server realm: %s",
+            BooleanToEngStr(Data->GetGSSAPIFwdTGT()).c_str(), Data->GetGSSAPIServerRealm().c_str());
+        }
+        ADF(L"Ciphers: %s; Ssh2DES: %s",
+          Data->GetCipherList().c_str(), BooleanToEngStr(Data->GetSsh2DES()).c_str());
+        UnicodeString Bugs;
+        for (intptr_t Index = 0; Index < BUG_COUNT; ++Index)
+        {
+          Bugs += UnicodeString(BugFlags[Data->GetBug(static_cast<TSshBug>(Index))])+(Index<BUG_COUNT-1?L",":L"");
+        }
+        ADF(L"SSH Bugs: %s", Bugs.c_str());
+        Bugs = L"";
+        for (intptr_t Index = 0; Index < SFTP_BUG_COUNT; ++Index)
+        {
+          Bugs += UnicodeString(BugFlags[Data->GetSFTPBug(static_cast<TSftpBug>(Index))])+(Index<SFTP_BUG_COUNT-1 ? L"," : L"");
+        }
+        ADF(L"SFTP Bugs: %s", Bugs.c_str());
+        ADF(L"Return code variable: %s; Lookup user groups: %c",
+           Data->GetDetectReturnVar() ? UnicodeString(L"Autodetect").c_str() : Data->GetReturnVar().c_str(),
+           BugFlags[Data->GetLookupUserGroups()]);
+        ADF(L"Shell: %s", Data->GetShell().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetShell().c_str());
+        ADF(L"EOL: %d, UTF: %d", Data->GetEOLType(), Data->GetNotUtf());
+        ADF(L"Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s",
+           BooleanToEngStr(Data->GetClearAliases()).c_str(), BooleanToEngStr(Data->GetUnsetNationalVars()).c_str(),
+           BooleanToEngStr(Data->GetResolveSymlinks()).c_str());
+        ADF(L"LS: %s, Ign LS warn: %s, Scp1 Comp: %s",
+           Data->GetListingCommand().c_str(),
+           BooleanToEngStr(Data->GetIgnoreLsWarnings()).c_str(),
+           BooleanToEngStr(Data->GetScp1Compatibility()).c_str());
+      }
+      if (Data->GetFSProtocol() == fsFTP)
+      {
+        UnicodeString Ftps;
+        switch (Data->GetFtps())
+        {
+          case ftpsImplicit:
+            Ftps = L"Implicit SSL/TLS";
+            break;
 
-        case ftpsExplicitSsl:
-          Ftps = L"Explicit SSL";
-          break;
+          case ftpsExplicitSsl:
+            Ftps = L"Explicit SSL";
+            break;
 
-        case ftpsExplicitTls:
-          Ftps = L"Explicit TLS";
-          break;
+          case ftpsExplicitTls:
+            Ftps = L"Explicit TLS";
+            break;
 
-        default:
-          assert(Data->GetFtps() == ftpsNone);
-          Ftps = L"None";
-          break;
+          default:
+            assert(Data->GetFtps() == ftpsNone);
+            Ftps = L"None";
+            break;
+        }
+        ADF(L"FTP: FTPS: %s; Passive: %s [Force IP: %c]; MLSD: %c",
+           Ftps.c_str(), BooleanToEngStr(Data->GetFtpPasvMode()).c_str(),
+           BugFlags[Data->GetFtpForcePasvIp()],
+           BugFlags[Data->GetFtpUseMlsd()]);
       }
-      ADF(L"FTP: FTPS: %s; Passive: %s [Force IP: %c]; MLSD: %c",
-         Ftps.c_str(), BooleanToEngStr(Data->GetFtpPasvMode()).c_str(),
-         BugFlags[Data->GetFtpForcePasvIp()],
-         BugFlags[Data->GetFtpUseMlsd()]);
-    }
-    ADF(L"Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
-      (Data->GetLocalDirectory().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetLocalDirectory().c_str()),
-       (Data->GetRemoteDirectory().IsEmpty() ? UnicodeString(L"home").c_str() : Data->GetRemoteDirectory().c_str()),
-       BooleanToEngStr(Data->GetUpdateDirectories()).c_str(),
-       BooleanToEngStr(Data->GetCacheDirectories()).c_str());
-    ADF(L"Cache directory changes: %s, Permanent: %s",
-       BooleanToEngStr(Data->GetCacheDirectoryChanges()).c_str(),
-       BooleanToEngStr(Data->GetPreserveDirectoryChanges()).c_str());
-    int TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
-    ADF(L"DST mode: %d; Timezone offset: %dh %dm", static_cast<int>(Data->GetDSTMode()), (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour));
+      ADF(L"Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
+        (Data->GetLocalDirectory().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetLocalDirectory().c_str()),
+         (Data->GetRemoteDirectory().IsEmpty() ? UnicodeString(L"home").c_str() : Data->GetRemoteDirectory().c_str()),
+         BooleanToEngStr(Data->GetUpdateDirectories()).c_str(),
+         BooleanToEngStr(Data->GetCacheDirectories()).c_str());
+      ADF(L"Cache directory changes: %s, Permanent: %s",
+         BooleanToEngStr(Data->GetCacheDirectoryChanges()).c_str(),
+         BooleanToEngStr(Data->GetPreserveDirectoryChanges()).c_str());
+      int TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
+      ADF(L"DST mode: %d; Timezone offset: %dh %dm", static_cast<int>(Data->GetDSTMode()), (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour));
 
-    if (Data->GetFSProtocol() == fsWebDAV)
-    {
-      ADF(L"Compression: %s",
-        BooleanToEngStr(Data->GetCompression()).c_str());
-    }
+      if (Data->GetFSProtocol() == fsWebDAV)
+      {
+        ADF(L"Compression: %s",
+          BooleanToEngStr(Data->GetCompression()).c_str());
+      }
 
-    AddSeparator();
+      AddSeparator();
+    }
 
     #undef ADF
   }
