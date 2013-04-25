@@ -9,6 +9,7 @@
 #include "Exceptions.h"
 #include <FileBuffer.h>
 #include <Sysutils.hpp>
+#include <rtlconsts.h>
 
 namespace Classes {
 
@@ -97,7 +98,7 @@ void TPersistent::AssignError(TPersistent * Source)
   // else
   // SourceName = "nil";
   // throw EConvertError(FMTLOAD(SAssignError, SourceName.c_str(), "nil"));
-  throw std::exception("Cannot assign");
+  throw Exception("Cannot assign");
 }
 
 //---------------------------------------------------------------------------
@@ -506,16 +507,16 @@ void tokenize(const std::wstring & str, ContainerT & tokens,
        pos = str.length();
 
        if(pos != lastPos || !trimEmpty)
-          tokens.push_back(ContainerT::value_type(str.data()+lastPos,
-                (ContainerT::value_type::size_type)pos-lastPos ));
+          tokens.push_back(typename ContainerT::value_type(str.data()+lastPos,
+                (typename ContainerT::value_type::size_type)pos-lastPos ));
 
        break;
     }
     else
     {
        if(pos != lastPos || !trimEmpty)
-          tokens.push_back(ContainerT::value_type(str.data()+lastPos,
-                (ContainerT::value_type::size_type)pos-lastPos ));
+          tokens.push_back(typename ContainerT::value_type(str.data()+lastPos,
+                (typename ContainerT::value_type::size_type)pos-lastPos ));
     }
 
     lastPos = pos + 1;
@@ -1464,7 +1465,7 @@ void TStream::ReadBuffer(void * Buffer, __int64 Count)
 {
   if ((Count != 0) && (Read(Buffer, Count) != Count))
   {
-    throw EReadError(Classes::W2MB(FMTLOAD(SReadError).c_str()).c_str());
+    throw Exception(FMTLOAD(SReadError));
   }
 }
 
@@ -1473,14 +1474,14 @@ void TStream::WriteBuffer(const void * Buffer, __int64 Count)
   // DEBUG_PRINTF(L"Count = %d", Count);
   if ((Count != 0) && (Write(Buffer, Count) != Count))
   {
-    throw EWriteError(Classes::W2MB(FMTLOAD(SWriteError).c_str()).c_str());
+    throw Exception(FMTLOAD(SWriteError));
   }
 }
 
 //---------------------------------------------------------------------------
 void ReadError(const UnicodeString & Name)
 {
-  throw std::exception("InvalidRegType"); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
+  throw Sysutils::Exception("InvalidRegType"); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
 
 //---------------------------------------------------------------------------
@@ -2104,7 +2105,7 @@ int TRegistry::GetData(const UnicodeString & Name, void * Buffer,
   if (RegQueryValueEx(GetCurrentKey(), Name.c_str(), NULL, &DataType,
     reinterpret_cast<BYTE *>(Buffer), &bufSize) != ERROR_SUCCESS)
   {
-    throw std::exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
+    throw Exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
   RegData = DataTypeToRegData(DataType);
   int Result = static_cast<int>(BufSize);
@@ -2119,7 +2120,7 @@ void TRegistry::PutData(const UnicodeString & Name, const void * Buffer,
   if (RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType,
                     reinterpret_cast<const BYTE *>(Buffer), static_cast<DWORD>(BufSize)) != ERROR_SUCCESS)
   {
-    throw std::exception("RegSetValueEx failed");    // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
+    throw Exception("RegSetValueEx failed");    // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
   }
 }
 

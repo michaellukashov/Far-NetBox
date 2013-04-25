@@ -14,7 +14,7 @@ typedef int TDayTable[12];
 extern const TDayTable MonthDays[];
 
 //---------------------------------------------------------------------------
-class Exception : public std::exception, public TObject
+class Exception : public std::runtime_error, public TObject
 {
 public:
   explicit Exception(const wchar_t * Msg);
@@ -24,6 +24,7 @@ public:
   explicit Exception(const UnicodeString & Msg, int AHelpContext);
   explicit Exception(Exception * E, int Ident);
   explicit Exception(int Ident);
+  ~Exception() throw() {}
 
   template<typename T>
   bool InheritsFrom() const { return dynamic_cast<const T *>(this) != NULL; }

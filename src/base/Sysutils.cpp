@@ -22,33 +22,33 @@ const TDayTable MonthDays[] =
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 Exception::Exception(Exception * E) :
-  std::exception(E ? E->what() : ""),
+  std::runtime_error(E ? E->what() : ""),
   Message(E ? E->Message : L"")
 {
 }
 
 //---------------------------------------------------------------------------
 Exception::Exception(const UnicodeString & Msg) :
-  std::exception(""),
+  std::runtime_error(""),
   Message(Msg)
 {
 }
 
 //---------------------------------------------------------------------------
 Exception::Exception(const wchar_t *Msg) :
-  std::exception(""),
+  std::runtime_error(""),
   Message(Msg)
 {
 }
 
 //---------------------------------------------------------------------------
 Exception::Exception(std::exception * E) :
-  std::exception(E ? E->what() : "")
+  std::runtime_error(E ? E->what() : "")
 {
 }
 
 Exception::Exception(const UnicodeString & Msg, int AHelpContext) :
-  std::exception(""),
+  std::runtime_error(""),
   Message(Msg)
 {
   // TODO: FHelpContext = AHelpContext
@@ -56,13 +56,13 @@ Exception::Exception(const UnicodeString & Msg, int AHelpContext) :
 }
 
 Exception::Exception(Exception * E, int Ident) :
-  std::exception(E ? E->what() : "")
+  std::runtime_error(E ? E->what() : "")
 {
   Message = FMTLOAD(Ident);
 }
 
 Exception::Exception(int Ident) :
-  std::exception()
+  std::runtime_error("")
 {
   Message = FMTLOAD(Ident);
 }
