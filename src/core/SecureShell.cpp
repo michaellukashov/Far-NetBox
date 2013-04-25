@@ -1892,7 +1892,7 @@ TCipher TSecureShell::FuncToSsh2Cipher(const void * Cipher)
   return Result;
 }
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 struct TClipboardHandler
 {
   UnicodeString Text;

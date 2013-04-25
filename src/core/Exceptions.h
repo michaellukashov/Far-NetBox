@@ -24,7 +24,7 @@ public:
   explicit ExtException(const UnicodeString & Msg, Exception* E);
   explicit ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = UnicodeString());
   explicit ExtException(const UnicodeString & Msg, TStrings* MoreMessages, bool Own, const UnicodeString & HelpKeyword = UnicodeString());
-  virtual ~ExtException(void);
+  virtual ~ExtException(void) throw();
   TStrings * GetMoreMessages() const { return FMoreMessages; }
   UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
 
@@ -52,7 +52,7 @@ private:
   { \
   public: \
     explicit inline NAME(Exception* E, const UnicodeString & Msg) : BASE(E, Msg) {} \
-    virtual inline ~NAME(void) { } \
+    virtual inline ~NAME(void) throw() { } \
     explicit inline  NAME(const UnicodeString & Msg, int AHelpContext) : BASE(Msg, AHelpContext) { } \
     virtual ExtException * Clone() { return new NAME(this, L""); } \
   };

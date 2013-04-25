@@ -86,14 +86,14 @@ public:
   TCommandSet(TSessionData *aSessionData);
   void Default();
   void CopyFrom(TCommandSet * Source);
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
   UnicodeString Command(TFSCommand Cmd, const TVarRec * args, int size) const;
 #else
   UnicodeString Command(TFSCommand Cmd, ...) const;
   UnicodeString Command(TFSCommand Cmd, va_list args) const;
 #endif
   TStrings * CreateCommandList();
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
   UnicodeString FullCommand(TFSCommand Cmd, const TVarRec * args, int size) const;
 #else
   UnicodeString FullCommand(TFSCommand Cmd, ...) const;
@@ -212,7 +212,7 @@ UnicodeString TCommandSet::GetCommands(TFSCommand Cmd) const
   return CommandSet[Cmd].Command;
 }
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 UnicodeString TCommandSet::Command(TFSCommand Cmd, const TVarRec * args, int size) const
 {
   if (args)
@@ -239,7 +239,7 @@ UnicodeString TCommandSet::Command(TFSCommand Cmd, va_list args) const
   return Result.c_str();
 }
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, const TVarRec * args, int size)
 {
   UnicodeString Separator;
@@ -760,7 +760,7 @@ void TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, intptr_t Params,
   );
 }
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 void TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args,
   int size, intptr_t Params)
 {
@@ -1982,7 +1982,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
   {
     if (!Dir)
     {
-      FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
+      FILE_OPERATION_LOOP (FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
         THROWOSIFFALSE(Sysutils::DeleteFile(FileName));
       )
     }

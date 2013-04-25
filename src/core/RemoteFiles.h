@@ -379,7 +379,7 @@ private:
   bool FUnknown;
 };
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 enum TValidProperty { vpRights, vpGroup, vpOwner, vpModification, vpLastAccess };
 typedef Set<TValidProperty, vpRights, vpLastAccess> TValidProperties;
 #else

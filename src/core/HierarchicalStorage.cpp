@@ -355,7 +355,7 @@ RawByteString THierarchicalStorage::ReadBinaryData(const UnicodeString & Name)
 //------------------------------------------------------------------------------
 RawByteString THierarchicalStorage::ReadStringAsBinaryData(const UnicodeString & Name, const RawByteString & Default)
 {
-  UnicodeString UnicodeDefault = UnicodeString(AnsiString(Default.c_str(), Default.Length()));
+  UnicodeString UnicodeDefault = UnicodeString(AnsiString(Default.c_str(), Default.Length()).c_str());
   // This should be exactly the same operation as calling ReadString in
   // C++Builder 6 (non-Unicode) on Unicode-based OS
   // (conversion is done by Ansi layer of the OS)
@@ -389,7 +389,7 @@ void THierarchicalStorage::WriteBinaryDataAsString(const UnicodeString & Name, c
   // C++Builder 6 (non-Unicode) on Unicode-based OS
   // (conversion is done by Ansi layer of the OS)
   AnsiString Ansi = AnsiString(Value.c_str(), Value.Length());
-  WriteString(Name, UnicodeString(Ansi));
+  WriteString(Name, UnicodeString(Ansi.c_str()));
 }
 //------------------------------------------------------------------------------
 UnicodeString THierarchicalStorage::IncludeTrailingBackslash(const UnicodeString & S)
@@ -704,7 +704,7 @@ intptr_t TRegistryStorage::GetFailed()
   FFailed = 0;
   return Result;
 }
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 //===========================================================================
 TCustomIniFileStorage::TCustomIniFileStorage(const UnicodeString & Storage, TCustomIniFile * IniFile) :
   THierarchicalStorage(Storage),

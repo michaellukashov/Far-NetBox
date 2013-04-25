@@ -2897,7 +2897,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
 bool TTerminal::ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
   TProcessFileEventEx ProcessFile, void * Param, TOperationSide Side)
 {
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
   return ProcessFiles(FileList, Operation, TProcessFileEvent(ProcessFile),
     Param, Side, true);
 #else
@@ -2965,7 +2965,7 @@ void TTerminal::RecycleFile(const UnicodeString & FileName,
 
     TMoveFileParams Params;
     Params.Target = GetSessionData()->GetRecycleBinPath();
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
     Params.FileMask = FORMAT(L"*-%s.*", (FormatDateTime(L"yyyymmdd-hhnnss", Now())));
 #else
     unsigned short Y, M, D, H, N, S, MS;
@@ -3794,33 +3794,33 @@ TTerminal * TTerminal::GetCommandSession()
   return FCommandSession;
 }
 //------------------------------------------------------------------------------
+class TOutputProxy : public TObject
+{
+public:
+  TOutputProxy(TCallSessionAction & Action, TCaptureOutputEvent OutputEvent) :
+    FAction(Action),
+    FOutputEvent(OutputEvent)
+  {
+  }
+
+  void Output(const UnicodeString & Str, bool StdError)
+  {
+    FAction.AddOutput(Str, StdError);
+    if (FOutputEvent != NULL)
+    {
+      FOutputEvent(Str, StdError);
+    }
+  }
+
+private:
+  TCallSessionAction & FAction;
+  TCaptureOutputEvent FOutputEvent;
+};
+
+//------------------------------------------------------------------------------
 void TTerminal::AnyCommand(const UnicodeString & Command,
   TCaptureOutputEvent OutputEvent)
 {
-
-  class TOutputProxy : public TObject
-  {
-  public:
-    TOutputProxy(TCallSessionAction & Action, TCaptureOutputEvent OutputEvent) :
-      FAction(Action),
-      FOutputEvent(OutputEvent)
-    {
-    }
-
-    void Output(const UnicodeString & Str, bool StdError)
-    {
-      FAction.AddOutput(Str, StdError);
-      if (FOutputEvent != NULL)
-      {
-        FOutputEvent(Str, StdError);
-      }
-    }
-
-  private:
-    TCallSessionAction & FAction;
-    TCaptureOutputEvent FOutputEvent;
-  };
-
   TCallSessionAction Action(GetActionLog(), Command, GetCurrentDirectory());
   TOutputProxy ProxyOutputEvent(Action, OutputEvent);
   DoAnyCommand(Command, MAKE_CALLBACK(TOutputProxy::Output, &ProxyOutputEvent), &Action);
@@ -4031,7 +4031,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
           {
             RaiseLastOSError();
           }
-          *ASize = (__int64(HSize) << 32) + LSize;
+          *ASize = ((__int64)(HSize) << 32) + LSize;
         );
       }
 

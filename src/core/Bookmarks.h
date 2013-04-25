@@ -32,6 +32,7 @@ private:
     intptr_t Index, TBookmarkList * BookmarkList);
 };
 //---------------------------------------------------------------------------
+class TBookmark;
 class TBookmarkList : public TPersistent
 {
 friend class TBookmarks;

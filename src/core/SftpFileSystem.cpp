@@ -152,7 +152,7 @@ const int asOpUnsupported = 1 << SSH_FX_OP_UNSUPPORTED;
 const int asNoSuchFile =    1 << SSH_FX_NO_SUCH_FILE;
 const int asAll = 0xFFFF;
 
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 const int tfFirstLevel =   0x01;
 const int tfNewDirectory = 0x02;
 #endif
@@ -565,7 +565,7 @@ public:
   // the content should be pure ASCII (e.g. extension names, etc.)
   inline UnicodeString GetAnsiString()
   {
-    return UnicodeString(AnsiString(GetRawByteString().c_str()));
+    return UnicodeString(AnsiString(GetRawByteString().c_str()).c_str());
   }
 
   inline RawByteString GetFileHandle()
@@ -1678,7 +1678,7 @@ private:
   TSFTPFileSystem * FFileSystem;
 };
 //===========================================================================
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 struct TOpenRemoteFileParams
 {
   uintptr_t LocalFileAttrs;
@@ -1718,7 +1718,7 @@ void TSFTPFileSystem::Init(void * Data)
   FFileSystemInfoValid = false;
   FVersion = NPOS;
   FPacketReservations = new TList();
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
   FPacketNumbers = VarArrayCreate(OPENARRAY(int, (0, 1)), varLongWord);
 #else
   FPacketNumbers.clear();
@@ -3612,7 +3612,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
           catch (Exception & E)
           {
             FTerminal->CommandError(&E, FMTLOAD(CHECKSUM_ERROR,
-              File != NULL ? File->GetFullFileName().c_str() : UnicodeString(L"")));
+              File != NULL ? File->GetFullFileName().c_str() : L""));
             // TODO: retries? resume?
             Next = false;
           }
@@ -4464,7 +4464,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
   {
     if (!Dir)
     {
-      FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
+      FILE_OPERATION_LOOP (FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
         THROWOSIFFALSE(Sysutils::DeleteFile(FileName));
       )
     }
@@ -5088,7 +5088,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           {
             CloseHandle(LocalFileHandle);
             LocalFileHandle = NULL;
-            FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, DestPartialFullName.c_str()),
+            FILE_OPERATION_LOOP (FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestPartialFullName.c_str()),
               THROWOSIFFALSE(Sysutils::DeleteFile(DestPartialFullName));
             )
           }
@@ -5174,7 +5174,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           {
             if (FileExists(DestPartialFullName))
             {
-              FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, DestPartialFullName.c_str()),
+              FILE_OPERATION_LOOP (FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestPartialFullName.c_str()),
                 THROWOSIFFALSE(Sysutils::DeleteFile(DestPartialFullName));
               )
             }
@@ -5435,7 +5435,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       if (DeleteLocalFile && (!ResumeAllowed || OperationProgress->LocallyUsed == 0) &&
           (OverwriteMode == omOverwrite))
       {
-        FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, LocalFileName.c_str()),
+        FILE_OPERATION_LOOP (FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, LocalFileName.c_str()),
           THROWOSIFFALSE(Sysutils::DeleteFile(LocalFileName));
         )
       }

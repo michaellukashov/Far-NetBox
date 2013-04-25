@@ -252,6 +252,6 @@ private:
   TFTPFileSystem & operator=(const TFTPFileSystem &);
 };
 //---------------------------------------------------------------------------
-#endif NO_FILEZILLA
+#endif // NO_FILEZILLA
 //---------------------------------------------------------------------------
 #endif // FtpFileSystemH

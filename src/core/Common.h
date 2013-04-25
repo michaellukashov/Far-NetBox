@@ -18,12 +18,12 @@
     strncpy(dest, CopyBuf.c_str(), LENOF(dest)); \
     dest[LENOF(dest)-1] = '\0'; \
   }
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 #define FORMAT(S, F) Format(S, ARRAYOFCONST(F))
 #define FMTLOAD(I, F) FmtLoadStr(I, ARRAYOFCONST(F))
 #else
-#define FORMAT(S, ...) ::Format(S, __VA_ARGS__)
-#define FMTLOAD(I, ...) ::FmtLoadStr(I, __VA_ARGS__)
+#define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
+#define FMTLOAD(I, ...) ::FmtLoadStr(I, ##__VA_ARGS__)
 #endif
 #define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
@@ -99,7 +99,7 @@ void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeS
 bool Is2000();
 bool IsWin7();
 bool IsExactly2008R2();
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
 TLibModule * FindModule(void * Instance);
 #endif
 __int64 Round(double Number);
@@ -146,6 +146,7 @@ int CompareFileTime(TDateTime T1, TDateTime T2);
 int TimeToMSec(TDateTime T);
 int TimeToMinutes(TDateTime T);
 //---------------------------------------------------------------------------
+#if defined(__BORLANDC__)
 template<class MethodT>
 MethodT MakeMethod(void * Data, void * Code)
 {
@@ -154,6 +155,7 @@ MethodT MakeMethod(void * Data, void * Code)
   ((TMethod*)&Method)->Code = Code;
   return Method;
 }
+#endif
 //---------------------------------------------------------------------------
 class TGuard : public TObject
 {

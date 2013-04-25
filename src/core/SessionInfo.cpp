@@ -682,7 +682,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
 
     if (FFile != NULL)
     {
-#ifndef _MSC_VER
+#if defined(__BORLANDC__)
       UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
       UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + Line + "\n");
       fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
@@ -909,7 +909,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
   BeginUpdate();
   try
   {
-    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
+    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
     if (Data == NULL)
     {
       AddSeparator();
@@ -994,7 +994,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       UnicodeString(PingTypes[PingType]).c_str(), PingInterval, Data->GetTimeout());
     ADF(L"Proxy: %s%s", ProxyMethodList[Data->GetProxyMethod()],
       Data->GetProxyMethod() == pmSystem ?
-        FORMAT(L" (%s)", ProxyMethodList[Data->GetActualProxyMethod()]).c_str() :
+        ::Format(L" (%s)", ProxyMethodList[Data->GetActualProxyMethod()]).c_str() :
         L"")
     if (Data->GetProxyMethod() != ::pmNone)
     {
