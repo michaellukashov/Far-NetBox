@@ -3879,11 +3879,11 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
     Done = (*AHandle != INVALID_HANDLE_VALUE);
     if (!Done)
     {
-      int FileAttr = 0;
+      DWORD LocalFileAttr = 0;
       if (::FileExists(FileName) &&
-        (((FileAttr = GetLocalFileAttributes(FileName)) & (faReadOnly | faHidden)) != 0))
+        (((LocalFileAttr = GetLocalFileAttributes(FileName)) & (faReadOnly | faHidden)) != 0))
       {
-        if (FLAGSET(FileAttr, faReadOnly))
+        if (FLAGSET(LocalFileAttr, faReadOnly))
         {
           if (OperationProgress->BatchOverwrite == boNone)
           {
@@ -3908,18 +3908,18 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
         }
         else
         {
-          assert(FLAGSET(FileAttr, faHidden));
+          assert(FLAGSET(LocalFileAttr, faHidden));
           Result = true;
         }
 
         if (Result)
         {
           CreateAttr |=
-            FLAGMASK(FLAGSET(FileAttr, faHidden), FILE_ATTRIBUTE_HIDDEN) |
-            FLAGMASK(FLAGSET(FileAttr, faReadOnly), FILE_ATTRIBUTE_READONLY);
+            FLAGMASK(FLAGSET(LocalFileAttr, faHidden), FILE_ATTRIBUTE_HIDDEN) |
+            FLAGMASK(FLAGSET(LocalFileAttr, faReadOnly), FILE_ATTRIBUTE_READONLY);
 
           FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
-            if (!SetLocalFileAttributes(FileName, FileAttr & ~(faReadOnly | faHidden)))
+            if (!SetLocalFileAttributes(FileName, LocalFileAttr & ~(faReadOnly | faHidden)))
             {
               RaiseLastOSError();
             }
@@ -3959,23 +3959,23 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
   __int64 * AMTime, __int64 * AATime, __int64 * ASize,
   bool TryWriteReadOnly)
 {
-  uintptr_t Attrs = 0;
+  uintptr_t LocalFileAttrs = 0;
   HANDLE LocalFileHandle = 0;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
 
   FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
-    Attrs = GetLocalFileAttributes(FileName);
-    if (Attrs == -1)
+    LocalFileAttrs = GetLocalFileAttributes(FileName);
+    if (LocalFileAttrs == -1)
     {
       RaiseLastOSError();
     }
   )
 
-  if ((Attrs & faDirectory) == 0)
+  if ((LocalFileAttrs & faDirectory) == 0)
   {
     bool NoHandle = false;
     if (!TryWriteReadOnly && (Access == GENERIC_WRITE) &&
-        ((Attrs & faReadOnly) != 0))
+        ((LocalFileAttrs & faReadOnly) != 0))
     {
       Access = GENERIC_READ;
       NoHandle = true;
@@ -4048,7 +4048,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
     }
   }
 
-  if (AAttrs) { *AAttrs = Attrs; }
+  if (AAttrs) { *AAttrs = LocalFileAttrs; }
   if (AHandle) { *AHandle = LocalFileHandle; }
 }
 //------------------------------------------------------------------------------
