@@ -3871,19 +3871,19 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
 {
   bool Result = true;
   bool Done;
-  unsigned int CreateAttr = FILE_ATTRIBUTE_NORMAL;
+  DWORD CreateAttrs = FILE_ATTRIBUTE_NORMAL;
   do
   {
     *AHandle = CreateLocalFile(FileName.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
-      CREATE_ALWAYS, CreateAttr);
+      CREATE_ALWAYS, CreateAttrs);
     Done = (*AHandle != INVALID_HANDLE_VALUE);
     if (!Done)
     {
-      DWORD LocalFileAttr = 0;
+      DWORD LocalFileAttrs = 0;
       if (::FileExists(FileName) &&
-        (((LocalFileAttr = GetLocalFileAttributes(FileName)) & (faReadOnly | faHidden)) != 0))
+        (((LocalFileAttrs = GetLocalFileAttributes(FileName)) & (faReadOnly | faHidden)) != 0))
       {
-        if (FLAGSET(LocalFileAttr, faReadOnly))
+        if (FLAGSET(LocalFileAttrs, faReadOnly))
         {
           if (OperationProgress->BatchOverwrite == boNone)
           {
@@ -3908,18 +3908,18 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
         }
         else
         {
-          assert(FLAGSET(LocalFileAttr, faHidden));
+          assert(FLAGSET(LocalFileAttrs, faHidden));
           Result = true;
         }
 
         if (Result)
         {
-          CreateAttr |=
-            FLAGMASK(FLAGSET(LocalFileAttr, faHidden), FILE_ATTRIBUTE_HIDDEN) |
-            FLAGMASK(FLAGSET(LocalFileAttr, faReadOnly), FILE_ATTRIBUTE_READONLY);
+          CreateAttrs |=
+            FLAGMASK(FLAGSET(LocalFileAttrs, faHidden), FILE_ATTRIBUTE_HIDDEN) |
+            FLAGMASK(FLAGSET(LocalFileAttrs, faReadOnly), FILE_ATTRIBUTE_READONLY);
 
           FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
-            if (!SetLocalFileAttributes(FileName, LocalFileAttr & ~(faReadOnly | faHidden)))
+            if (!SetLocalFileAttributes(FileName, LocalFileAttrs & ~(faReadOnly | faHidden)))
             {
               RaiseLastOSError();
             }
