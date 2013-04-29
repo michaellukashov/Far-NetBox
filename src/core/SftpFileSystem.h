@@ -116,7 +116,7 @@ protected:
     int AllowStatus = -1);
   virtual UnicodeString GetCurrentDirectory();
   UnicodeString GetHomeDirectory();
-  rde::uint32 GotStatusPacket(TSFTPPacket * Packet, int AllowStatus);
+  uintptr_t GotStatusPacket(TSFTPPacket * Packet, int AllowStatus);
   bool IsAbsolutePath(const UnicodeString & Path);
   bool RemoteFileExists(const UnicodeString & FullPath, TRemoteFile ** File = NULL);
   TRemoteFile * LoadFile(TSFTPPacket * Packet,
