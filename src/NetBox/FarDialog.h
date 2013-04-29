@@ -186,14 +186,14 @@ class TFarDialogItem : public TObject
 public:
   TRect GetBounds() { return FBounds; }
   TRect GetActualBounds();
-  int GetLeft() { return GetCoordinate(0); }
-  void SetLeft(int Value) { SetCoordinate(0, Value); }
-  int GetTop() { return GetCoordinate(1); }
-  void SetTop(int Value) { SetCoordinate(1, Value); }
-  int GetRight() { return GetCoordinate(2); }
-  void SetRight(int Value) { SetCoordinate(2, Value); }
-  int GetBottom() { return GetCoordinate(3); }
-  void SetBottom(int Value) { SetCoordinate(3, Value); }
+  intptr_t GetLeft() { return GetCoordinate(0); }
+  void SetLeft(intptr_t Value) { SetCoordinate(0, Value); }
+  intptr_t GetTop() { return GetCoordinate(1); }
+  void SetTop(intptr_t Value) { SetCoordinate(1, Value); }
+  intptr_t GetRight() { return GetCoordinate(2); }
+  void SetRight(intptr_t Value) { SetCoordinate(2, Value); }
+  intptr_t GetBottom() { return GetCoordinate(3); }
+  void SetBottom(intptr_t Value) { SetCoordinate(3, Value); }
   intptr_t GetWidth();
   void SetWidth(intptr_t Value);
   intptr_t GetHeight();
@@ -260,8 +260,8 @@ protected:
   FARDIALOGITEMFLAGS GetFlags();
   void SetFlags(FARDIALOGITEMFLAGS value);
   void UpdateFlags(FARDIALOGITEMFLAGS value);
-  int GetCoordinate(int Index);
-  void SetCoordinate(int Index, int Value);
+  intptr_t GetCoordinate(intptr_t Index);
+  void SetCoordinate(intptr_t Index, intptr_t Value);
   TFarDialogItem * GetPrevItem();
   void UpdateFocused(bool Value);
   void UpdateEnabled();

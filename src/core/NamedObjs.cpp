@@ -6,7 +6,7 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-int NamedObjectSortProc(const void * Item1, const void * Item2)
+static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
 {
   bool HasPrefix1 = (static_cast<const TNamedObject *>(Item1))->GetHidden();
   bool HasPrefix2 = (static_cast<const TNamedObject *>(Item2))->GetHidden();

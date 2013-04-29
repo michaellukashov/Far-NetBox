@@ -413,7 +413,7 @@ void TFTPFileSystem::Open()
       break;
   }
   int Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
-  int TimeZoneOffset = TimeToMinutes(Data->GetTimeDifference());
+  intptr_t TimeZoneOffset = TimeToMinutes(Data->GetTimeDifference());
   int UTF8 = 0;
   uintptr_t CodePage = Data->GetCodePageAsNumber();
   switch (CodePage)
@@ -486,7 +486,7 @@ void TFTPFileSystem::Open()
     FActive = FFileZillaIntf->Connect(
       HostName.c_str(), static_cast<int>(Data->GetPortNumber()), UserName.c_str(),
       Password.c_str(), Account.c_str(), false, Path.c_str(),
-      ServerType, Pasv, TimeZoneOffset, UTF8, static_cast<int>(Data->GetFtpForcePasvIp()),
+      ServerType, Pasv, static_cast<int>(TimeZoneOffset), UTF8, static_cast<int>(Data->GetFtpForcePasvIp()),
       Data->GetFtpUseMlsd());
 
     assert(FActive);
@@ -2448,7 +2448,7 @@ void TFTPFileSystem::DiscardMessages()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::WaitForMessages()
 {
-  unsigned int Result = WaitForSingleObject(FQueueEvent, INFINITE);
+  intptr_t Result = WaitForSingleObject(FQueueEvent, INFINITE);
   if (Result != WAIT_OBJECT_0)
   {
     FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"ftp#1", IntToStr(Result).c_str()));
@@ -2761,7 +2761,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
 
     if ((Code != NULL) && (FLastCodeClass != DummyCodeClass))
     {
-      *Code = FLastCode;
+      *Code = static_cast<int>(FLastCode);
     }
 
     if (Response != NULL)
@@ -2777,7 +2777,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
   );
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::SetLastCode(int Code)
+void TFTPFileSystem::SetLastCode(intptr_t Code)
 {
   FLastCode = Code;
   FLastCodeClass = (Code / 100);
@@ -2785,7 +2785,7 @@ void TFTPFileSystem::SetLastCode(int Code)
 //---------------------------------------------------------------------------
 void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
 {
-  int Code = 0;
+  intptr_t Code = 0;
 
   if (FOnCaptureOutput != NULL)
   {
@@ -2828,7 +2828,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
   }
   else
   {
-    int Start = 0;
+    intptr_t Start = 0;
     // response with code prefix
     if (HasCodePrefix && (FLastCode == Code))
     {
@@ -3679,7 +3679,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
   State = INIT;
   assert((Str.Length() > 0) && ((Str[1] == L'"') || (Str[1] == L'\'')));
 
-  int Index = 1;
+  intptr_t Index = 1;
   wchar_t Quote = 0;
   while (Index <= Str.Length())
   {

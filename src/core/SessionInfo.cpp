@@ -1090,7 +1090,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"Cache directory changes: %s, Permanent: %s",
          BooleanToEngStr(Data->GetCacheDirectoryChanges()).c_str(),
          BooleanToEngStr(Data->GetPreserveDirectoryChanges()).c_str());
-      int TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
+      intptr_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
       ADF(L"DST mode: %d; Timezone offset: %dh %dm", static_cast<int>(Data->GetDSTMode()), (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour));
 
       if (Data->GetFSProtocol() == fsWebDAV)

@@ -4,6 +4,7 @@
 
 #define CLEAN_SPACE_AVAILABLE
 
+#include <stdint.h>
 #include "SftpFileSystem.h"
 
 #include "PuttyTools.h"
@@ -205,13 +206,13 @@ struct TSFTPSupport : public TObject
     Loaded = false;
   }
 
-  unsigned int AttributeMask;
-  unsigned int AttributeBits;
-  unsigned int OpenFlags;
-  unsigned int AccessMask;
-  unsigned int MaxReadSize;
-  unsigned int OpenBlockMasks;
-  unsigned int BlockMasks;
+  uintptr_t AttributeMask;
+  uintptr_t AttributeBits;
+  uintptr_t OpenFlags;
+  uintptr_t AccessMask;
+  uintptr_t MaxReadSize;
+  uintptr_t OpenBlockMasks;
+  uintptr_t BlockMasks;
   TStrings * AttribExtensions;
   TStrings * Extensions;
   bool Loaded;
@@ -237,7 +238,7 @@ public:
     ChangeType(AType);
   }
 
-  explicit TSFTPPacket(const unsigned char * Source, unsigned int Len, uintptr_t codePage)
+  explicit TSFTPPacket(const unsigned char * Source, uintptr_t Len, uintptr_t codePage)
   {
     Init(codePage);
     FLength = Len;
@@ -297,7 +298,7 @@ public:
     Add(&Value, sizeof(Value));
   }
 
-  void AddCardinal(rde::uint32 Value)
+  void AddCardinal(uintptr_t Value)
   {
     // duplicated in Reuse()
     unsigned char Buf[4];
@@ -307,8 +308,8 @@ public:
 
   void AddInt64(__int64 Value)
   {
-    AddCardinal((rde::uint32)(Value >> 32));
-    AddCardinal((rde::uint32)(Value & 0xFFFFFFFF));
+    AddCardinal((uintptr_t)(Value >> 32));
+    AddCardinal((uintptr_t)(Value & 0xFFFFFFFF));
   }
 
   void AddData(const void * Data, intptr_t ALength)
@@ -324,7 +325,7 @@ public:
 
   void AddString(const RawByteString & Value)
   {
-    AddCardinal(static_cast<rde::uint32 >(Value.Length()));
+    AddCardinal(Value.Length());
     Add(Value.c_str(), Value.Length());
   }
 
@@ -352,9 +353,9 @@ public:
 
   void AddProperties(unsigned short * Rights, TRemoteToken * Owner,
     TRemoteToken * Group, __int64 * MTime, __int64 * ATime,
-    __int64 * Size, bool IsDirectory, int Version, bool Utf)
+    __int64 * Size, bool IsDirectory, intptr_t Version, bool Utf)
   {
-    int Flags = 0;
+    intptr_t Flags = 0;
     if (Size != NULL)
     {
       Flags |= SSH_FILEXFER_ATTR_SIZE;
@@ -429,8 +430,8 @@ public:
       // any way to reflect sbSignedTS here?
       // (note that casting __int64 > 2^31 < 2^32 to rde::uint32 is wrapped,
       // thus we never can set time after 2038, even if the server supports it)
-      AddCardinal(static_cast<rde::uint32>(ATime != NULL ? *ATime : *MTime));
-      AddCardinal(static_cast<rde::uint32>(MTime != NULL ? *MTime : *ATime));
+      AddCardinal(static_cast<uintptr_t>(ATime != NULL ? *ATime : *MTime));
+      AddCardinal(static_cast<uintptr_t>(MTime != NULL ? *MTime : *ATime));
     }
     if ((Version >= 4) && (ATime != NULL))
     {
@@ -443,7 +444,7 @@ public:
   }
 
   void AddProperties(const TRemoteProperties * Properties,
-    unsigned short BaseRights, bool IsDirectory, int Version, bool Utf,
+    unsigned short BaseRights, bool IsDirectory, intptr_t Version, bool Utf,
     TChmodSessionAction * Action)
   {
     enum TValid { valNone = 0, valRights = 0x01, valOwner = 0x02, valGroup = 0x04,
@@ -516,18 +517,18 @@ public:
     return Result;
   }
 
-  rde::uint32 GetCardinal()
+  uintptr_t GetCardinal()
   {
-    rde::uint32 Result;
+    uintptr_t Result;
     Need(sizeof(Result));
     Result = GET_32BIT(FData + FPosition);
     FPosition += sizeof(Result);
     return Result;
   }
 
-  rde::uint32 GetSmallCardinal()
+  uintptr_t GetSmallCardinal()
   {
-    rde::uint32 Result;
+    uintptr_t Result;
     Need(2);
     Result = (FData[FPosition] << 8) + FData[FPosition + 1];
     FPosition += 2;
@@ -544,7 +545,7 @@ public:
   RawByteString GetRawByteString()
   {
     RawByteString Result;
-    rde::uint32 Len = GetCardinal();
+    uintptr_t Len = GetCardinal();
     Need(Len);
     // cannot happen anyway as Need() would raise exception
     assert(Len < SFTP_MAX_PACKET_LEN);
@@ -590,12 +591,12 @@ public:
     return GetString(Utf);
   }
 
-  void GetFile(TRemoteFile * File, int Version, TDSTMode DSTMode, bool Utf, bool SignedTS, bool Complete)
+  void GetFile(TRemoteFile * File, intptr_t Version, TDSTMode DSTMode, bool Utf, bool SignedTS, bool Complete)
   {
     assert(File);
     uintptr_t Flags;
     UnicodeString ListingStr;
-    rde::uint32 Permissions = 0;
+    uintptr_t Permissions = 0;
     bool ParsingFailed = false;
     if (GetType() != SSH_FXP_ATTRS)
     {
@@ -648,12 +649,12 @@ public:
       {
         File->SetLastAccess(UnixToDateTime(
           SignedTS ?
-            static_cast<__int64>(static_cast<rde::int32>(GetCardinal())) :
+            static_cast<__int64>(static_cast<int32_t>(GetCardinal())) :
             static_cast<__int64>(GetCardinal()),
           DSTMode));
         File->SetModification(UnixToDateTime(
           SignedTS ?
-            static_cast<__int64>(static_cast<rde::int32>(GetCardinal())) :
+            static_cast<__int64>(static_cast<int32_t>(GetCardinal())) :
             static_cast<__int64>(GetCardinal()),
           DSTMode));
       }
@@ -703,7 +704,7 @@ public:
     {
       // while SSH_FILEXFER_ATTR_BITS is defined for SFTP5 only, vandyke 2.3.3 sets it
       // for SFTP4 as well
-      rde::uint32 Bits = GetCardinal();
+      uintptr_t Bits = GetCardinal();
       if (FLAGSET(Bits, SSH_FILEXFER_ATTR_FLAGS_HIDDEN))
       {
         File->SetIsHidden(true);
@@ -746,7 +747,7 @@ public:
 
     if (Flags & SSH_FILEXFER_ATTR_EXTENDED)
     {
-      rde::uint32 ExtendedCount = GetCardinal();
+      uintptr_t ExtendedCount = GetCardinal();
       for (intptr_t Index = 0; Index < static_cast<intptr_t>(ExtendedCount); ++Index)
       {
         GetRawByteString(); // skip extended_type
@@ -802,8 +803,8 @@ public:
     SetCapacity(1 * 1024 * 1024); // 20480);
     unsigned char Byte[3];
     memset(Byte, '\0', sizeof(Byte));
-    int Index = 1;
-    unsigned int Length = 0;
+    intptr_t Index = 1;
+    uintptr_t Length = 0;
     while (Index < Dump.Length())
     {
       char C = Dump[Index];
@@ -855,7 +856,7 @@ public:
   uintptr_t GetCapacity() const { return FCapacity; }
   unsigned char GetType() const { return FType; }
   uintptr_t GetMessageNumber() const { return static_cast<uintptr_t>(FMessageNumber); }
-  void SetMessageNumber(rde::uint32  Value) { FMessageNumber = Value; }
+  void SetMessageNumber(uintptr_t Value) { FMessageNumber = Value; }
   TSFTPFileSystem * GetReservedBy() const { return FReservedBy; }
   void SetReservedBy(TSFTPFileSystem * Value) { FReservedBy = Value; }
 
@@ -865,7 +866,7 @@ private:
   uintptr_t FCapacity;
   uintptr_t FPosition;
   unsigned char FType;
-  rde::uint32 FMessageNumber;
+  uintptr_t FMessageNumber;
   TSFTPFileSystem * FReservedBy;
 
   static int FMessageCounter;
@@ -2035,7 +2036,7 @@ uintptr_t TSFTPFileSystem::UploadBlockSize(const RawByteString & Handle,
 {
   // handle length + offset + data size
   const uintptr_t UploadPacketOverhead =
-    sizeof(rde::uint32) + sizeof(__int64) + sizeof(rde::uint32);
+    sizeof(uint32_t) + sizeof(__int64) + sizeof(uint32_t);
   return TransferBlockSize(UploadPacketOverhead + static_cast<uintptr_t>(Handle.Length()), OperationProgress,
     GetSessionData()->GetSFTPMinPacketSize(),
     GetSessionData()->GetSFTPMaxPacketSize());
@@ -2095,10 +2096,10 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
   );
 }
 //---------------------------------------------------------------------------
-rde::uint32 TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
+uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
   int AllowStatus)
 {
-  rde::uint32 Code = Packet->GetCardinal();
+  uintptr_t Code = Packet->GetCardinal();
 
   static int Messages[] = {
     SFTP_STATUS_OK,
@@ -2711,14 +2712,14 @@ void TSFTPFileSystem::DoStartup()
         {
           FSupport->OpenBlockMasks = SupportedStruct.GetSmallCardinal();
           FSupport->BlockMasks = SupportedStruct.GetSmallCardinal();
-          unsigned int ExtensionCount;
+          uintptr_t ExtensionCount;
           ExtensionCount = SupportedStruct.GetCardinal();
-          for (unsigned int i = 0; i < ExtensionCount; i++)
+          for (uintptr_t I = 0; I < ExtensionCount; I++)
           {
             FSupport->AttribExtensions->Add(SupportedStruct.GetAnsiString());
           }
           ExtensionCount = SupportedStruct.GetCardinal();
-          for (unsigned int i = 0; i < ExtensionCount; i++)
+          for (uintptr_t I = 0; I < ExtensionCount; I++)
           {
             FSupport->Extensions->Add(SupportedStruct.GetAnsiString());
           }
@@ -2771,7 +2772,7 @@ void TSFTPFileSystem::DoStartup()
           TSFTPPacket RootsPacket(ExtensionData, GetSessionData()->GetCodePageAsNumber());
           while (RootsPacket.GetNextData() != NULL)
           {
-            rde::uint32 Dummy = RootsPacket.GetCardinal();
+            uintptr_t Dummy = RootsPacket.GetCardinal();
             if (Dummy != 1)
             {
               break;
@@ -2947,10 +2948,10 @@ void TSFTPFileSystem::LookupUsersGroups()
     else
     {
       TRemoteTokenList & List = *Lists[Index];
-      rde::uint32 Count = Packet->GetCardinal();
+      uintptr_t Count = Packet->GetCardinal();
 
       List.Clear();
-      for (rde::uint32 Item = 0; Item < Count; Item++)
+      for (uintptr_t Item = 0; Item < Count; Item++)
       {
         TRemoteToken Token(Packet->GetString(!FUtfNever));
         List.Add(Token);
@@ -4478,7 +4479,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
 }
 //---------------------------------------------------------------------------
 RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
-  const UnicodeString & FileName, unsigned int OpenType, __int64 Size)
+  const UnicodeString & FileName, uintptr_t OpenType, __int64 Size)
 {
   TSFTPPacket Packet(SSH_FXP_OPEN, GetSessionData()->GetCodePageAsNumber());
 
@@ -4489,11 +4490,11 @@ RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
   }
   else
   {
-    rde::uint32 Access =
+    uintptr_t Access =
       FLAGMASK(FLAGSET(OpenType, SSH_FXF_READ), ACE4_READ_DATA) |
       FLAGMASK(FLAGSET(OpenType, SSH_FXF_WRITE), ACE4_WRITE_DATA | ACE4_APPEND_DATA);
 
-    rde::uint32 Flags = 0;
+    uintptr_t Flags = 0;
 
     if (FLAGSET(OpenType, SSH_FXF_CREAT | SSH_FXF_EXCL))
     {

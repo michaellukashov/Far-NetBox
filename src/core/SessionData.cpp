@@ -1181,7 +1181,7 @@ void TSessionData::Remove()
   );
 }
 //---------------------------------------------------------------------
-inline void MoveStr(UnicodeString & Source, UnicodeString * Dest, int Count)
+inline void MoveStr(UnicodeString & Source, UnicodeString * Dest, intptr_t Count)
 {
   if (Dest != NULL)
   {
@@ -1296,7 +1296,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     if (Data != NULL)
     {
       Assign(Data);
-      int P = 1;
+      intptr_t P = 1;
       while (!AnsiSameText(DecodeUrlChars(url.SubString(1, P)), Data->GetName()))
       {
         P++;
@@ -2000,7 +2000,7 @@ void TSessionData::SetPingIntervalDT(TDateTime Value)
   unsigned short hour, min, sec, msec;
 
   Value.DecodeTime(hour, min, sec, msec);
-  SetPingInterval((static_cast<int>(hour))*SecsPerHour + (static_cast<int>(min))*SecsPerMin + sec);
+  SetPingInterval(hour*SecsPerHour + min*SecsPerMin + sec);
 }
 //---------------------------------------------------------------------------
 TDateTime TSessionData::GetPingIntervalDT() const

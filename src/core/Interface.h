@@ -51,7 +51,7 @@ struct TQueryButtonAlias : public TObject
 };
 
 DEFINE_CALLBACK_TYPE1(TQueryParamsTimerEvent, void,
-  uintptr_t & /* Result */);
+  intptr_t & /* Result */);
 
 struct TQueryParams : public TObject
 {

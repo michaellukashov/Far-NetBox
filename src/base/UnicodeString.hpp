@@ -103,8 +103,8 @@ public:
   UnicodeString & LowerCase() { return Lower(); }
   UnicodeString & UpperCase() { return Upper(); }
 
-  int Compare(const UnicodeString & Str) const;
-  int CompareIC(const UnicodeString & Str) const;
+  intptr_t Compare(const UnicodeString & Str) const;
+  intptr_t CompareIC(const UnicodeString & Str) const;
   intptr_t ToInt() const;
 
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str, intptr_t DataLen);

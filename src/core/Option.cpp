@@ -208,7 +208,7 @@ UnicodeString TOptions::SwitchValue(const UnicodeString & Switch,
 bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence)
 {
   bool Result = false;
-  int IntValue = 0;
+  intptr_t IntValue = 0;
   UnicodeString Value;
   if (!FindSwitch(Switch, Value))
   {

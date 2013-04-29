@@ -901,8 +901,8 @@ struct _MFCDLLTraitsCheck<_CharType, StrTraitMFC_DLL<_CharType, ATL::ChTraitsCRT
 // The CStringT class has a few varargs member functions that will cause 4793
 // warnings if compiled /clr. Because of the way template classes are parsed,
 // we need to disable the warning for the entire class.
-//#pragma warning( push )
-//#pragma warning( disable : 4793 )
+#pragma warning( push )
+#pragma warning( disable : 4793 )
 
 
 template< typename BaseType, class StringTraits >

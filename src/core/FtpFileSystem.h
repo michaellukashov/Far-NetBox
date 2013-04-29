@@ -188,7 +188,7 @@ protected:
   TDateTime ConvertLocalTimestamp(time_t Time);
   void RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime & Source,
     TDateTime & DateTime, TModificationFmt & ModificationFmt);
-  void SetLastCode(int Code);
+  void SetLastCode(intptr_t Code);
 
   static bool Unquote(UnicodeString & Str);
   static UnicodeString ExtractStatusMessage(const UnicodeString & Status);
@@ -215,9 +215,9 @@ private:
   TCommand FLastCommand;
   bool FPasswordFailed;
   bool FMultineResponse;
-  int FLastCode;
-  int FLastCodeClass;
-  int FLastReadDirectoryProgress;
+  intptr_t FLastCode;
+  intptr_t FLastCodeClass;
+  intptr_t FLastReadDirectoryProgress;
   UnicodeString FTimeoutStatus;
   UnicodeString FDisconnectStatus;
   TStrings * FLastResponse;

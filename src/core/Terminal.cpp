@@ -176,7 +176,7 @@ void TSynchronizeChecklist::Add(TItem * Item)
   FList->Add(Item);
 }
 //------------------------------------------------------------------------------
-int TSynchronizeChecklist::Compare(const void * AItem1, const void * AItem2)
+intptr_t TSynchronizeChecklist::Compare(const void * AItem1, const void * AItem2)
 {
   const TItem * Item1 = static_cast<const TItem *>(AItem1);
   const TItem * Item2 = static_cast<const TItem *>(AItem2);
@@ -1431,7 +1431,7 @@ bool TTerminal::QueryReopen(Exception * E, intptr_t Params,
         {
           Result =
             ((FConfiguration->GetSessionReopenTimeout() == 0) ||
-             (int(double(Now() - Start) * MSecsPerDay) < FConfiguration->GetSessionReopenTimeout())) &&
+             ((intptr_t)((double)(Now() - Start) * MSecsPerDay) < FConfiguration->GetSessionReopenTimeout())) &&
             DoQueryReopen(&E);
         }
         else
@@ -3871,19 +3871,19 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
 {
   bool Result = true;
   bool Done;
-  unsigned int CreateAttr = FILE_ATTRIBUTE_NORMAL;
+  DWORD CreateAttrs = FILE_ATTRIBUTE_NORMAL;
   do
   {
     *AHandle = CreateLocalFile(FileName.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
-      CREATE_ALWAYS, CreateAttr);
+      CREATE_ALWAYS, CreateAttrs);
     Done = (*AHandle != INVALID_HANDLE_VALUE);
     if (!Done)
     {
-      int FileAttr = 0;
+      DWORD LocalFileAttrs = 0;
       if (::FileExists(FileName) &&
-        (((FileAttr = GetLocalFileAttributes(FileName)) & (faReadOnly | faHidden)) != 0))
+        (((LocalFileAttrs = GetLocalFileAttributes(FileName)) & (faReadOnly | faHidden)) != 0))
       {
-        if (FLAGSET(FileAttr, faReadOnly))
+        if (FLAGSET(LocalFileAttrs, faReadOnly))
         {
           if (OperationProgress->BatchOverwrite == boNone)
           {
@@ -3908,18 +3908,18 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
         }
         else
         {
-          assert(FLAGSET(FileAttr, faHidden));
+          assert(FLAGSET(LocalFileAttrs, faHidden));
           Result = true;
         }
 
         if (Result)
         {
-          CreateAttr |=
-            FLAGMASK(FLAGSET(FileAttr, faHidden), FILE_ATTRIBUTE_HIDDEN) |
-            FLAGMASK(FLAGSET(FileAttr, faReadOnly), FILE_ATTRIBUTE_READONLY);
+          CreateAttrs |=
+            FLAGMASK(FLAGSET(LocalFileAttrs, faHidden), FILE_ATTRIBUTE_HIDDEN) |
+            FLAGMASK(FLAGSET(LocalFileAttrs, faReadOnly), FILE_ATTRIBUTE_READONLY);
 
           FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
-            if (!SetLocalFileAttributes(FileName, FileAttr & ~(faReadOnly | faHidden)))
+            if (!SetLocalFileAttributes(FileName, LocalFileAttrs & ~(faReadOnly | faHidden)))
             {
               RaiseLastOSError();
             }
@@ -3959,23 +3959,23 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
   __int64 * AMTime, __int64 * AATime, __int64 * ASize,
   bool TryWriteReadOnly)
 {
-  uintptr_t Attrs = 0;
+  uintptr_t LocalFileAttrs = 0;
   HANDLE LocalFileHandle = 0;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
 
   FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
-    Attrs = GetLocalFileAttributes(FileName);
-    if (Attrs == -1)
+    LocalFileAttrs = GetLocalFileAttributes(FileName);
+    if (LocalFileAttrs == -1)
     {
       RaiseLastOSError();
     }
   )
 
-  if ((Attrs & faDirectory) == 0)
+  if ((LocalFileAttrs & faDirectory) == 0)
   {
     bool NoHandle = false;
     if (!TryWriteReadOnly && (Access == GENERIC_WRITE) &&
-        ((Attrs & faReadOnly) != 0))
+        ((LocalFileAttrs & faReadOnly) != 0))
     {
       Access = GENERIC_READ;
       NoHandle = true;
@@ -4048,7 +4048,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
     }
   }
 
-  if (AAttrs) { *AAttrs = Attrs; }
+  if (AAttrs) { *AAttrs = LocalFileAttrs; }
   if (AHandle) { *AHandle = LocalFileHandle; }
 }
 //------------------------------------------------------------------------------
@@ -4519,7 +4519,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
           bool LocalModified = false;
           // for spTimestamp+spBySize require that the file sizes are the same
           // before comparing file time
-          int TimeCompare;
+          intptr_t TimeCompare;
           if (FLAGCLEAR(Data->Params, spNotByTime) &&
               (FLAGCLEAR(Data->Params, spTimestamp) ||
                FLAGCLEAR(Data->Params, spBySize) ||

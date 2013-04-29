@@ -89,7 +89,7 @@ protected:
   TSecureShell * FSecureShell;
   TFileSystemInfo FFileSystemInfo;
   bool FFileSystemInfoValid;
-  int FVersion;
+  intptr_t FVersion;
   UnicodeString FCurrentDirectory;
   UnicodeString FDirectoryToChangeTo;
   UnicodeString FHomeDirectory;
@@ -116,7 +116,7 @@ protected:
     int AllowStatus = -1);
   virtual UnicodeString GetCurrentDirectory();
   UnicodeString GetHomeDirectory();
-  rde::uint32 GotStatusPacket(TSFTPPacket * Packet, int AllowStatus);
+  uintptr_t GotStatusPacket(TSFTPPacket * Packet, int AllowStatus);
   bool IsAbsolutePath(const UnicodeString & Path);
   bool RemoteFileExists(const UnicodeString & FullPath, TRemoteFile ** File = NULL);
   TRemoteFile * LoadFile(TSFTPPacket * Packet,
@@ -161,7 +161,7 @@ protected:
     TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TUploadSessionAction & Action, bool & ChildError);
   RawByteString SFTPOpenRemoteFile(const UnicodeString & FileName,
-    unsigned int OpenType, __int64 Size = -1);
+    uintptr_t OpenType, __int64 Size = -1);
   int SFTPOpenRemote(void * AOpenParams, void * Param2);
   void SFTPCloseRemote(const RawByteString & Handle,
     const UnicodeString & FileName, TFileOperationProgressType * OperationProgress,

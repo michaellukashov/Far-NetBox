@@ -74,7 +74,7 @@ private:
   void WaitForData();
   void Discard();
   void FreeBackend();
-  void PoolForData(WSANETWORKEVENTS & Events, uintptr_t & Result);
+  void PoolForData(WSANETWORKEVENTS & Events, intptr_t & Result);
   inline void CaptureOutput(TLogLineType Type,
     const UnicodeString & Line);
   void ResetConnection();
@@ -87,8 +87,8 @@ private:
     WSANETWORKEVENTS * Events);
   void UpdateSessionInfo();
   // bool GetReady();
-  void DispatchSendBuffer(uintptr_t BufSize);
-  void SendBuffer(uintptr_t & Result);
+  void DispatchSendBuffer(intptr_t BufSize);
+  void SendBuffer(intptr_t & Result);
   uintptr_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
   bool TryFtp();
 

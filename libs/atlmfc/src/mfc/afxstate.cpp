@@ -328,37 +328,13 @@ AFX_MODULE_STATE::~AFX_MODULE_STATE()
 
 void CTypeLibCacheMap::RemoveAll(void* pExcept)
 {
-	POSITION pos = GetStartPosition();
-	void* pTypeLibID, *pExceptKey = NULL;
-	CTypeLibCache* pCache, *pExceptCache = NULL;
-	
-	while (pos != NULL)
-	{
-		GetNextAssoc(pos, pTypeLibID, (void*&)pCache);
-		if (pCache != pExcept)
-		{
-			delete pCache;
-		}
-		else
-		{
-			pExceptKey = pTypeLibID;
-			pExceptCache = pCache;
-        }
-	}
-	
 	CMapPtrToPtr::RemoveAll();
-	
-	if(pExcept != NULL && pExceptKey != NULL)
-	{
-		CMapPtrToPtr::SetAt(pExceptKey, pExceptCache);
-    }
 }
 
 AFX_MODULE_THREAD_STATE::AFX_MODULE_THREAD_STATE()
 {
 	m_nLastHit = static_cast<INT_PTR>(-1);
 	m_nLastStatus = static_cast<INT_PTR>(-1);
-	m_pLastInfo = NULL;
 
 	// Note: it is only necessary to initialize non-zero data
 	m_pfnNewHandler = &AfxNewHandler;

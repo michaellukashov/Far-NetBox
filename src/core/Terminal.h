@@ -710,7 +710,7 @@ public:
 private:
   TList * FList;
 
-  static int Compare(const void * Item1, const void * Item2);
+  static intptr_t Compare(const void * Item1, const void * Item2);
 };
 //------------------------------------------------------------------------------
 struct TSpaceAvailable : public TObject
@@ -721,7 +721,7 @@ struct TSpaceAvailable : public TObject
   __int64 UnusedBytesOnDevice;
   __int64 BytesAvailableToUser;
   __int64 UnusedBytesAvailableToUser;
-  unsigned long BytesPerAllocationUnit;
+  uintptr_t BytesPerAllocationUnit;
 };
 //------------------------------------------------------------------------------
 UnicodeString GetSessionUrl(const TTerminal * Terminal);

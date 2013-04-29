@@ -960,23 +960,23 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
     }
 
     Result->BaseDifferenceSec = TZI.Bias;
-    Result->BaseDifference = double(TZI.Bias) / MinsPerDay;
+    Result->BaseDifference = (double)(TZI.Bias) / MinsPerDay;
     Result->BaseDifferenceSec *= SecsPerMin;
 
     Result->CurrentDifferenceSec = TZI.Bias +
       Result->CurrentDaylightDifferenceSec;
     Result->CurrentDifference =
-      double(Result->CurrentDifferenceSec) / MinsPerDay;
+      (double)(Result->CurrentDifferenceSec) / MinsPerDay;
     Result->CurrentDifferenceSec *= SecsPerMin;
 
     Result->CurrentDaylightDifference =
-      double(Result->CurrentDaylightDifferenceSec) / MinsPerDay;
+      (double)(Result->CurrentDaylightDifferenceSec) / MinsPerDay;
     Result->CurrentDaylightDifferenceSec *= SecsPerMin;
 
     Result->DaylightDifferenceSec = TZI.DaylightBias * SecsPerMin;
-    Result->DaylightDifference = double(TZI.DaylightBias) / MinsPerDay;
+    Result->DaylightDifference = (double)(TZI.DaylightBias) / MinsPerDay;
     Result->StandardDifferenceSec = TZI.StandardBias * SecsPerMin;
-    Result->StandardDifference = double(TZI.StandardBias) / MinsPerDay;
+    Result->StandardDifference = (double)(TZI.StandardBias) / MinsPerDay;
 
     Result->SystemStandardDate = TZI.StandardDate;
     Result->SystemDaylightDate = TZI.DaylightDate;
@@ -1073,7 +1073,7 @@ TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
 {
   assert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
-  TDateTime Result = TDateTime(UnixDateDelta + (double(TimeStamp) / SecsPerDay));
+  TDateTime Result = TDateTime(UnixDateDelta + ((double)(TimeStamp) / SecsPerDay));
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
 
   if (Params->DaylightHack)
@@ -1159,7 +1159,7 @@ static __int64 DateTimeToUnix(const TDateTime DateTime)
 
   assert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
-  return Round(double(DateTime - UnixDateDelta) * SecsPerDay) +
+  return Round((double)(DateTime - UnixDateDelta) * SecsPerDay) +
     CurrentParams->CurrentDifferenceSec;
 }
 //---------------------------------------------------------------------------
@@ -1445,13 +1445,14 @@ UnicodeString StandardTimestamp()
 }
 //---------------------------------------------------------------------------
 static TDateTime TwoSeconds(0, 0, 2, 0);
-int CompareFileTime(TDateTime T1, TDateTime T2)
+
+intptr_t CompareFileTime(TDateTime T1, TDateTime T2)
 {
   // "FAT" time precision
   // (when one time is seconds-precision and other is millisecond-precision,
   // we may have times like 12:00:00.000 and 12:00:01.999, which should
   // be treated the same)
-  int Result;
+  intptr_t Result;
   if (T1 == T2)
   {
     // just optimization
@@ -1472,12 +1473,12 @@ int CompareFileTime(TDateTime T1, TDateTime T2)
   return Result;
 }
 //---------------------------------------------------------------------------
-int TimeToMSec(TDateTime T)
+intptr_t TimeToMSec(TDateTime T)
 {
   return int(Round(double(T) * double(MSecsPerDay)));
 }
 //---------------------------------------------------------------------------
-int TimeToMinutes(TDateTime T)
+intptr_t TimeToMinutes(TDateTime T)
 {
   return TimeToMSec(T) / MSecsPerSec / SecsPerMin;
 }
