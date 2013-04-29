@@ -2761,7 +2761,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
 
     if ((Code != NULL) && (FLastCodeClass != DummyCodeClass))
     {
-      *Code = FLastCode;
+      *Code = static_cast<int>(FLastCode);
     }
 
     if (Response != NULL)
