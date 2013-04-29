@@ -26,18 +26,18 @@ namespace Classes {
 
 //---------------------------------------------------------------------------
 extern const UnicodeString sLineBreak;
-extern const int MonthsPerYear;
-extern const int DaysPerWeek;
-extern const int MinsPerHour;
-extern const int MinsPerDay;
-extern const int SecsPerMin;
-extern const int SecsPerHour;
-extern const int HoursPerDay;
-extern const int SecsPerDay;
-extern const int MSecsPerDay;
-extern const int MSecsPerSec;
-extern const int DateDelta;
-extern const int UnixDateDelta;
+extern const intptr_t MonthsPerYear;
+extern const intptr_t DaysPerWeek;
+extern const intptr_t MinsPerHour;
+extern const intptr_t MinsPerDay;
+extern const intptr_t SecsPerMin;
+extern const intptr_t SecsPerHour;
+extern const intptr_t HoursPerDay;
+extern const intptr_t SecsPerDay;
+extern const intptr_t MSecsPerDay;
+extern const intptr_t MSecsPerSec;
+extern const intptr_t DateDelta;
+extern const intptr_t UnixDateDelta;
 extern const UnicodeString kernel32;
 //---------------------------------------------------------------------------
 UnicodeString MB2W(const char * src, const UINT cp = CP_ACP);

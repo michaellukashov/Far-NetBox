@@ -2448,7 +2448,7 @@ void TFTPFileSystem::DiscardMessages()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::WaitForMessages()
 {
-  unsigned int Result = WaitForSingleObject(FQueueEvent, INFINITE);
+  intptr_t Result = WaitForSingleObject(FQueueEvent, INFINITE);
   if (Result != WAIT_OBJECT_0)
   {
     FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"ftp#1", IntToStr(Result).c_str()));
@@ -2785,7 +2785,7 @@ void TFTPFileSystem::SetLastCode(int Code)
 //---------------------------------------------------------------------------
 void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
 {
-  int Code = 0;
+  intptr_t Code = 0;
 
   if (FOnCaptureOutput != NULL)
   {
@@ -2828,7 +2828,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
   }
   else
   {
-    int Start = 0;
+    intptr_t Start = 0;
     // response with code prefix
     if (HasCodePrefix && (FLastCode == Code))
     {
@@ -3679,7 +3679,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
   State = INIT;
   assert((Str.Length() > 0) && ((Str[1] == L'"') || (Str[1] == L'\'')));
 
-  int Index = 1;
+  intptr_t Index = 1;
   wchar_t Quote = 0;
   while (Index <= Str.Length())
   {

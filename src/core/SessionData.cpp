@@ -2000,7 +2000,7 @@ void TSessionData::SetPingIntervalDT(TDateTime Value)
   unsigned short hour, min, sec, msec;
 
   Value.DecodeTime(hour, min, sec, msec);
-  SetPingInterval((static_cast<int>(hour))*SecsPerHour + (static_cast<int>(min))*SecsPerMin + sec);
+  SetPingInterval(hour*SecsPerHour + min*SecsPerMin + sec);
 }
 //---------------------------------------------------------------------------
 TDateTime TSessionData::GetPingIntervalDT() const

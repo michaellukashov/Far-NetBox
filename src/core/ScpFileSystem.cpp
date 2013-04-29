@@ -599,7 +599,7 @@ bool TSCPFileSystem::IsTotalListingLine(const UnicodeString & Line)
 }
 //---------------------------------------------------------------------------
 bool TSCPFileSystem::RemoveLastLine(UnicodeString & Line,
-  int & ReturnCode, const UnicodeString & ALastLine)
+  intptr_t & ReturnCode, const UnicodeString & ALastLine)
 {
   bool IsLastLine = false;
   UnicodeString LastLine = ALastLine;
@@ -735,7 +735,7 @@ void TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, intptr_t Params,
   {
     SendCommand(Cmd);
 
-    int COParams = coWaitForLastLine;
+    intptr_t COParams = coWaitForLastLine;
     if (Params & ecRaiseExcept)
     {
       COParams |= coRaiseExcept;
@@ -1355,7 +1355,7 @@ void TSCPFileSystem::CustomCommandOnFile(const UnicodeString & FileName,
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CaptureOutput(const UnicodeString & AddedLine, bool StdError)
 {
-  int ReturnCode;
+  intptr_t ReturnCode;
   UnicodeString Line = AddedLine;
   if (StdError ||
       !RemoveLastLine(Line, ReturnCode, UnicodeString()) ||

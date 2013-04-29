@@ -73,7 +73,7 @@ public:
 
 protected:
   TStrings * GetOutput() { return FOutput; };
-  int GetReturnCode() const { return FReturnCode; }
+  intptr_t GetReturnCode() const { return FReturnCode; }
 
   virtual UnicodeString GetCurrentDirectory();
 
@@ -83,7 +83,7 @@ private:
   TFileSystemInfo FFileSystemInfo;
   UnicodeString FCurrentDirectory;
   TStrings * FOutput;
-  int FReturnCode;
+  intptr_t FReturnCode;
   UnicodeString FCachedDirectoryChange;
   bool FProcessingCommand;
   int FLsFullTime;
@@ -133,7 +133,7 @@ private:
     const TRemoteToken & Token, TFSCommand Cmd, const UnicodeString & RecursiveStr);
 
   static bool RemoveLastLine(UnicodeString & Line,
-    int & ReturnCode, const UnicodeString & ALastLine);
+    intptr_t & ReturnCode, const UnicodeString & ALastLine);
 
 private:
   TSCPFileSystem(const TSCPFileSystem &);

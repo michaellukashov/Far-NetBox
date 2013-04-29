@@ -1445,13 +1445,14 @@ UnicodeString StandardTimestamp()
 }
 //---------------------------------------------------------------------------
 static TDateTime TwoSeconds(0, 0, 2, 0);
-int CompareFileTime(TDateTime T1, TDateTime T2)
+
+intptr_t CompareFileTime(TDateTime T1, TDateTime T2)
 {
   // "FAT" time precision
   // (when one time is seconds-precision and other is millisecond-precision,
   // we may have times like 12:00:00.000 and 12:00:01.999, which should
   // be treated the same)
-  int Result;
+  intptr_t Result;
   if (T1 == T2)
   {
     // just optimization
@@ -1472,12 +1473,12 @@ int CompareFileTime(TDateTime T1, TDateTime T2)
   return Result;
 }
 //---------------------------------------------------------------------------
-int TimeToMSec(TDateTime T)
+intptr_t TimeToMSec(TDateTime T)
 {
   return int(Round(double(T) * double(MSecsPerDay)));
 }
 //---------------------------------------------------------------------------
-int TimeToMinutes(TDateTime T)
+intptr_t TimeToMinutes(TDateTime T)
 {
   return TimeToMSec(T) / MSecsPerSec / SecsPerMin;
 }

@@ -142,9 +142,9 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format);
 UnicodeString StandardTimestamp(const TDateTime & DateTime);
 UnicodeString StandardTimestamp();
 UnicodeString GetTimeZoneLogString();
-int CompareFileTime(TDateTime T1, TDateTime T2);
-int TimeToMSec(TDateTime T);
-int TimeToMinutes(TDateTime T);
+intptr_t CompareFileTime(TDateTime T1, TDateTime T2);
+intptr_t TimeToMSec(TDateTime T);
+intptr_t TimeToMinutes(TDateTime T);
 //---------------------------------------------------------------------------
 #if defined(__BORLANDC__)
 template<class MethodT>
