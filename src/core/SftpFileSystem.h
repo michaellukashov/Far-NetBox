@@ -161,7 +161,7 @@ protected:
     TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TUploadSessionAction & Action, bool & ChildError);
   RawByteString SFTPOpenRemoteFile(const UnicodeString & FileName,
-    unsigned int OpenType, __int64 Size = -1);
+    uintptr_t OpenType, __int64 Size = -1);
   int SFTPOpenRemote(void * AOpenParams, void * Param2);
   void SFTPCloseRemote(const RawByteString & Handle,
     const UnicodeString & FileName, TFileOperationProgressType * OperationProgress,

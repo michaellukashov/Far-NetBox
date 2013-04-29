@@ -1500,23 +1500,23 @@ void TFarDialogItem::MoveAt(int X, int Y)
   Move(X - GetLeft(), Y - GetTop());
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetCoordinate(int Index, int Value)
+void TFarDialogItem::SetCoordinate(intptr_t Index, intptr_t Value)
 {
   assert(sizeof(TRect) == sizeof(int) * 4);
   TRect R = GetBounds();
   int * D = reinterpret_cast<int *>(&R);
   D += Index;
-  *D = Value;
+  *D = static_cast<int>(Value);
   SetBounds(R);
 }
 //---------------------------------------------------------------------------
-int TFarDialogItem::GetCoordinate(int Index)
+intptr_t TFarDialogItem::GetCoordinate(intptr_t Index)
 {
   assert(sizeof(TRect) == sizeof(int) * 4);
   TRect R = GetBounds();
   int * D = reinterpret_cast<int *>(&R);
   D += Index;
-  return *D;
+  return static_cast<intptr_t>(*D);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetWidth(intptr_t Value)

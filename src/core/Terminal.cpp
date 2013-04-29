@@ -176,7 +176,7 @@ void TSynchronizeChecklist::Add(TItem * Item)
   FList->Add(Item);
 }
 //------------------------------------------------------------------------------
-int TSynchronizeChecklist::Compare(const void * AItem1, const void * AItem2)
+intptr_t TSynchronizeChecklist::Compare(const void * AItem1, const void * AItem2)
 {
   const TItem * Item1 = static_cast<const TItem *>(AItem1);
   const TItem * Item2 = static_cast<const TItem *>(AItem2);
@@ -1431,7 +1431,7 @@ bool TTerminal::QueryReopen(Exception * E, intptr_t Params,
         {
           Result =
             ((FConfiguration->GetSessionReopenTimeout() == 0) ||
-             (int(double(Now() - Start) * MSecsPerDay) < FConfiguration->GetSessionReopenTimeout())) &&
+             ((intptr_t)((double)(Now() - Start) * MSecsPerDay) < FConfiguration->GetSessionReopenTimeout())) &&
             DoQueryReopen(&E);
         }
         else

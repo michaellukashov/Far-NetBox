@@ -357,7 +357,7 @@ UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, TDateTime Dat
   UnicodeString Result;
   if (static_cast<int>(DateTime) > 0)
   {
-    Result = IntToStr(static_cast<int>(DateTime)) + L", ";
+    Result = IntToStr(static_cast<intptr_t>((double)DateTime)) + L", ";
   }
   // days are decremented, because when there are to many of them,
   // "integer overflow" error occurs

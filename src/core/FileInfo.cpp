@@ -139,7 +139,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
 
       if (DataSize >= BufSize)
       {
-        unsigned int ConvBuf = DataSize - VersionInfo->wLength;
+        uintptr_t ConvBuf = DataSize - VersionInfo->wLength;
         memmove((static_cast<char*>(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 ? 4 : ConvBuf );
       }
     }
@@ -227,7 +227,7 @@ TTranslation GetTranslation(void * FileInfo, intptr_t I)
 // Return the name of the specified language
 UnicodeString GetLanguage(Word Language)
 {
-  UINT Len;
+  uintptr_t Len;
   wchar_t P[256];
 
   Len = VerLanguageName(Language, P, LENOF(P));

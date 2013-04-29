@@ -1777,10 +1777,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   intptr_t PWidth = PrevTab->GetWidth();
   intptr_t NWidth = NextTab->GetWidth();
   int R = S.x - 4;
-  PrevTab->SetLeft((int)(R - PWidth - NWidth - 2));
-  PrevTab->SetWidth((int)PWidth);
-  NextTab->SetLeft((int)(R - NWidth - 1));
-  NextTab->SetWidth((int)PWidth);
+  PrevTab->SetLeft(R - PWidth - NWidth - 2);
+  PrevTab->SetWidth(PWidth);
+  NextTab->SetLeft(R - NWidth - 1);
+  NextTab->SetWidth(PWidth);
 
   Index = AddTab(tabFTP, GetMsg(LOGIN_TAB_FTP).c_str());
   FtpTab = dynamic_cast<TTabButton *>(GetItem(Index));
@@ -4187,8 +4187,8 @@ void TSessionDialog::ChangeTabs(intptr_t FirstVisibleTabIndex)
   {
     TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I]);
     intptr_t Width = TabBtn->GetWidth();
-    TabBtn->SetLeft((int)LeftPos);
-    TabBtn->SetWidth((int)Width);
+    TabBtn->SetLeft(LeftPos);
+    TabBtn->SetWidth(Width);
     LeftPos += Width + 1;
     TabBtn->SetVisible(true);
   }

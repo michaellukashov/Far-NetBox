@@ -710,7 +710,7 @@ public:
 private:
   TList * FList;
 
-  static int Compare(const void * Item1, const void * Item2);
+  static intptr_t Compare(const void * Item1, const void * Item2);
 };
 //------------------------------------------------------------------------------
 struct TSpaceAvailable : public TObject

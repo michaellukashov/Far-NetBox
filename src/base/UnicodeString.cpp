@@ -430,12 +430,12 @@ UnicodeString & UnicodeString::Upper(intptr_t nStartPos, intptr_t nLength)
   return *this;
 }
 
-int UnicodeString::Compare(const UnicodeString & Str) const
+intptr_t UnicodeString::Compare(const UnicodeString & Str) const
 {
   return Sysutils::AnsiCompare(*this, Str);
 }
 
-int UnicodeString::CompareIC(const UnicodeString & Str) const
+intptr_t UnicodeString::CompareIC(const UnicodeString & Str) const
 {
   return Sysutils::AnsiCompareIC(*this, Str);
 }

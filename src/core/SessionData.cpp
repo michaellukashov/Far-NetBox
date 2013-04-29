@@ -1181,7 +1181,7 @@ void TSessionData::Remove()
   );
 }
 //---------------------------------------------------------------------
-inline void MoveStr(UnicodeString & Source, UnicodeString * Dest, int Count)
+inline void MoveStr(UnicodeString & Source, UnicodeString * Dest, intptr_t Count)
 {
   if (Dest != NULL)
   {
@@ -1296,7 +1296,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     if (Data != NULL)
     {
       Assign(Data);
-      int P = 1;
+      intptr_t P = 1;
       while (!AnsiSameText(DecodeUrlChars(url.SubString(1, P)), Data->GetName()))
       {
         P++;

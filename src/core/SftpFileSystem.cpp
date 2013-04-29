@@ -4,6 +4,7 @@
 
 #define CLEAN_SPACE_AVAILABLE
 
+#include <stdint.h>
 #include "SftpFileSystem.h"
 
 #include "PuttyTools.h"
@@ -237,7 +238,7 @@ public:
     ChangeType(AType);
   }
 
-  explicit TSFTPPacket(const unsigned char * Source, unsigned int Len, uintptr_t codePage)
+  explicit TSFTPPacket(const unsigned char * Source, uintptr_t Len, uintptr_t codePage)
   {
     Init(codePage);
     FLength = Len;
@@ -307,8 +308,8 @@ public:
 
   void AddInt64(__int64 Value)
   {
-    AddCardinal((rde::uint32)(Value >> 32));
-    AddCardinal((rde::uint32)(Value & 0xFFFFFFFF));
+    AddCardinal((uintptr_t)(Value >> 32));
+    AddCardinal((uintptr_t)(Value & 0xFFFFFFFF));
   }
 
   void AddData(const void * Data, intptr_t ALength)
@@ -324,7 +325,7 @@ public:
 
   void AddString(const RawByteString & Value)
   {
-    AddCardinal(static_cast<rde::uint32 >(Value.Length()));
+    AddCardinal(Value.Length());
     Add(Value.c_str(), Value.Length());
   }
 
@@ -354,7 +355,7 @@ public:
     TRemoteToken * Group, __int64 * MTime, __int64 * ATime,
     __int64 * Size, bool IsDirectory, intptr_t Version, bool Utf)
   {
-    int Flags = 0;
+    intptr_t Flags = 0;
     if (Size != NULL)
     {
       Flags |= SSH_FILEXFER_ATTR_SIZE;
@@ -429,8 +430,8 @@ public:
       // any way to reflect sbSignedTS here?
       // (note that casting __int64 > 2^31 < 2^32 to rde::uint32 is wrapped,
       // thus we never can set time after 2038, even if the server supports it)
-      AddCardinal(static_cast<rde::uint32>(ATime != NULL ? *ATime : *MTime));
-      AddCardinal(static_cast<rde::uint32>(MTime != NULL ? *MTime : *ATime));
+      AddCardinal(static_cast<uintptr_t>(ATime != NULL ? *ATime : *MTime));
+      AddCardinal(static_cast<uintptr_t>(MTime != NULL ? *MTime : *ATime));
     }
     if ((Version >= 4) && (ATime != NULL))
     {
@@ -518,7 +519,7 @@ public:
 
   uintptr_t GetCardinal()
   {
-    rde::uint32 Result;
+    uintptr_t Result;
     Need(sizeof(Result));
     Result = GET_32BIT(FData + FPosition);
     FPosition += sizeof(Result);
@@ -527,7 +528,7 @@ public:
 
   uintptr_t GetSmallCardinal()
   {
-    rde::uint32 Result;
+    uintptr_t Result;
     Need(2);
     Result = (FData[FPosition] << 8) + FData[FPosition + 1];
     FPosition += 2;
@@ -648,12 +649,12 @@ public:
       {
         File->SetLastAccess(UnixToDateTime(
           SignedTS ?
-            static_cast<__int64>(static_cast<rde::int32>(GetCardinal())) :
+            static_cast<__int64>(static_cast<int32_t>(GetCardinal())) :
             static_cast<__int64>(GetCardinal()),
           DSTMode));
         File->SetModification(UnixToDateTime(
           SignedTS ?
-            static_cast<__int64>(static_cast<rde::int32>(GetCardinal())) :
+            static_cast<__int64>(static_cast<int32_t>(GetCardinal())) :
             static_cast<__int64>(GetCardinal()),
           DSTMode));
       }
@@ -802,8 +803,8 @@ public:
     SetCapacity(1 * 1024 * 1024); // 20480);
     unsigned char Byte[3];
     memset(Byte, '\0', sizeof(Byte));
-    int Index = 1;
-    unsigned int Length = 0;
+    intptr_t Index = 1;
+    uintptr_t Length = 0;
     while (Index < Dump.Length())
     {
       char C = Dump[Index];
@@ -2035,7 +2036,7 @@ uintptr_t TSFTPFileSystem::UploadBlockSize(const RawByteString & Handle,
 {
   // handle length + offset + data size
   const uintptr_t UploadPacketOverhead =
-    sizeof(rde::uint32) + sizeof(__int64) + sizeof(rde::uint32);
+    sizeof(uint32_t) + sizeof(__int64) + sizeof(uint32_t);
   return TransferBlockSize(UploadPacketOverhead + static_cast<uintptr_t>(Handle.Length()), OperationProgress,
     GetSessionData()->GetSFTPMinPacketSize(),
     GetSessionData()->GetSFTPMaxPacketSize());
@@ -4478,7 +4479,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
 }
 //---------------------------------------------------------------------------
 RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
-  const UnicodeString & FileName, unsigned int OpenType, __int64 Size)
+  const UnicodeString & FileName, uintptr_t OpenType, __int64 Size)
 {
   TSFTPPacket Packet(SSH_FXP_OPEN, GetSessionData()->GetCodePageAsNumber());
 
@@ -4489,11 +4490,11 @@ RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
   }
   else
   {
-    rde::uint32 Access =
+    uintptr_t Access =
       FLAGMASK(FLAGSET(OpenType, SSH_FXF_READ), ACE4_READ_DATA) |
       FLAGMASK(FLAGSET(OpenType, SSH_FXF_WRITE), ACE4_WRITE_DATA | ACE4_APPEND_DATA);
 
-    rde::uint32 Flags = 0;
+    uintptr_t Flags = 0;
 
     if (FLAGSET(OpenType, SSH_FXF_CREAT | SSH_FXF_EXCL))
     {
