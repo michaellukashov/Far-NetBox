@@ -443,7 +443,7 @@ public:
   }
 
   void AddProperties(const TRemoteProperties * Properties,
-    unsigned short BaseRights, bool IsDirectory, int Version, bool Utf,
+    unsigned short BaseRights, bool IsDirectory, intptr_t Version, bool Utf,
     TChmodSessionAction * Action)
   {
     enum TValid { valNone = 0, valRights = 0x01, valOwner = 0x02, valGroup = 0x04,

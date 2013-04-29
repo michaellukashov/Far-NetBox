@@ -215,9 +215,9 @@ private:
   TCommand FLastCommand;
   bool FPasswordFailed;
   bool FMultineResponse;
-  int FLastCode;
-  int FLastCodeClass;
-  int FLastReadDirectoryProgress;
+  intptr_t FLastCode;
+  intptr_t FLastCodeClass;
+  intptr_t FLastReadDirectoryProgress;
   UnicodeString FTimeoutStatus;
   UnicodeString FDisconnectStatus;
   TStrings * FLastResponse;

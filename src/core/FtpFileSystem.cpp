@@ -2777,7 +2777,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
   );
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::SetLastCode(int Code)
+void TFTPFileSystem::SetLastCode(intptr_t Code)
 {
   FLastCode = Code;
   FLastCodeClass = (Code / 100);
