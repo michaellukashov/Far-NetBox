@@ -143,50 +143,6 @@ HWND WINAPI AfxHtmlHelp(HWND hWnd, LPCTSTR szHelpFilePath, UINT nCmd, DWORD_PTR 
 #undef AFX_DATA
 #define AFX_DATA
 
-////////////////////////////////////////////////////////////////////////////
-// other global state
-
-class CPushRoutingView
-{
-protected:
-	CView* pOldRoutingView;
-	_AFX_THREAD_STATE* pThreadState;
-	CPushRoutingView* pOldPushRoutingView;
-
-public:
-	CPushRoutingView(CView* pNewRoutingView)
-	{
-		pThreadState = AfxGetThreadState();
-		if (pThreadState != NULL)
-		{
-			pOldPushRoutingView = pThreadState->m_pPushRoutingView;
-			// pOldRoutingView = pThreadState->m_pRoutingView;
-			// pThreadState->m_pRoutingView = pNewRoutingView;
-			pThreadState->m_pPushRoutingView = this;
-		}
-	}
-	~CPushRoutingView()
-	{ 
-		if (pThreadState != NULL)
-		{
-			ASSERT( pThreadState->m_pPushRoutingView == this );
-			// pThreadState->m_pRoutingView = pOldRoutingView;
-			// pThreadState->m_pPushRoutingView = pOldPushRoutingView;
-		}
-	}
-	void Pop()
-	{
-		ASSERT( pThreadState != NULL );
-		if (pThreadState != NULL)
-		{
-			ASSERT( pThreadState->m_pPushRoutingView == this );
-			// pThreadState->m_pRoutingView = pOldRoutingView;
-			// pThreadState->m_pPushRoutingView = pOldPushRoutingView;
-			pThreadState = NULL;
-		}
-	}
-};
-
 // Note: afxData.cxBorder and afxData.cyBorder aren't used anymore
 #define AFX_CX_BORDER   1
 #define AFX_CY_BORDER   1

@@ -80,26 +80,6 @@ typedef struct _GUID GUID;
 #define REFGUID const GUID &
 #endif
 
-class CTypeLibCache
-{
-public:
-	CTypeLibCache() : m_cRef(0), m_lcid((LCID)-1), m_ptlib(NULL), m_ptinfo(NULL) {}
-	void Lock();
-	void Unlock();
-	BOOL Lookup(LCID lcid, LPTYPELIB* pptlib);
-	void Cache(LCID lcid, LPTYPELIB ptlib);
-	BOOL LookupTypeInfo(LCID lcid, REFGUID guid, LPTYPEINFO* pptinfo);
-	void CacheTypeInfo(LCID lcid, REFGUID guid, LPTYPEINFO ptinfo);
-	const GUID* m_pTypeLibID;
-
-protected:
-	LCID m_lcid;
-	LPTYPELIB m_ptlib;
-	GUID m_guidInfo;
-	LPTYPEINFO m_ptinfo;
-	long m_cRef;
-};
-
 #endif //!_AFX_NO_OLE_SUPPORT
 
 /////////////////////////////////////////////////////////////////////////////
@@ -108,8 +88,6 @@ protected:
 // forward references required for AFX_MODULE_THREAD_STATE definition
 class CWinThread;
 class CHandleMap;
-class CToolTipCtrl;
-class CControlBar;
 class CWnd;
 
 #ifndef _PNH_DEFINED
@@ -165,7 +143,6 @@ public:
 	// CToolTipCtrl* m_pToolTip;
 	CWnd* m_pLastHit;       // last window to own tooltip
 	INT_PTR m_nLastHit;         // last hittest code
-	TOOLINFO* m_pLastInfo;    // last TOOLINFO structure
 	INT_PTR m_nLastStatus;      // last flyby status message
 	// CControlBar* m_pLastStatus; // last flyby status control bar
 };
@@ -275,7 +252,6 @@ public:
 
 #ifndef _AFX_NO_OLE_SUPPORT
 	// Type library caches
-	CTypeLibCache m_typeLibCache;
 	CTypeLibCacheMap* m_pTypeLibCacheMap;
 #endif
 
@@ -349,13 +325,6 @@ protected:
 /////////////////////////////////////////////////////////////////////////////
 // Thread global state
 
-// forward references required for _AFX_THREAD_STATE definition
-class CView;
-class CToolTipCtrl;
-class CControlBar;
-class CPushRoutingFrame;
-class CPushRoutingView;
-
 #define _AFX_TEMP_CLASS_NAME_SIZE 96
 class _AFX_THREAD_STATE : public CNoTrackObject
 {
@@ -397,11 +366,6 @@ public:
 	TCHAR m_szTempClassName[_AFX_TEMP_CLASS_NAME_SIZE];    // see AfxRegisterWndClass
 	HWND m_hLockoutNotifyWindow;    // see CWnd::OnCommand
 	BOOL m_bInMsgFilter;
-
-	// other framework modal data
-	// CView* m_pRoutingView;          // see CCmdTarget::GetRoutingView
-   CPushRoutingView* m_pPushRoutingView;
-   CPushRoutingFrame* m_pPushRoutingFrame;
 
 	// MFC/DB thread-local data
 	BOOL m_bWaitForDataSource;

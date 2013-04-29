@@ -1981,14 +1981,6 @@ void CWnd::OnSetFocus(CWnd*)
 
 LRESULT CWnd::OnActivateTopLevel(WPARAM wParam, LPARAM)
 {
-	if (LOWORD(wParam) == WA_INACTIVE)
-	{
-		AFX_MODULE_THREAD_STATE* pModuleThreadState = AfxGetModuleThreadState();
-		if (pModuleThreadState->m_pLastInfo != NULL &&
-			!(pModuleThreadState->m_pLastInfo->uFlags & TTF_ALWAYSTIP))
-			CancelToolTips(TRUE);
-	}
-
 	return 0;
 }
 

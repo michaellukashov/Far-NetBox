@@ -271,35 +271,6 @@ struct AFX_NOTIFY
 };
 
 
-////////////////////////////////////////////////////////////////////////////
-// other global state
-class CPushRoutingFrame
-{
-protected:
-	_AFX_THREAD_STATE* pThreadState;
-   CPushRoutingFrame* pOldPushRoutingFrame;
-
-public:
-	explicit CPushRoutingFrame()
-	{ 
-	}
-	~CPushRoutingFrame()
-	{ 
-	  if (pThreadState != NULL)
-	  {
-		 ASSERT( pThreadState->m_pPushRoutingFrame == this );
-		 pThreadState->m_pPushRoutingFrame = pOldPushRoutingFrame;
-	  }
-   }
-   void Pop()
-   {
-	  ENSURE( pThreadState != NULL );
-	  ASSERT( pThreadState->m_pPushRoutingFrame == this );
-	  pThreadState->m_pPushRoutingFrame = pOldPushRoutingFrame;
-	  pThreadState = NULL;
-   }
-};
-
 /////////////////////////////////////////////////////////////////////////////
 // Global implementation helpers
 
