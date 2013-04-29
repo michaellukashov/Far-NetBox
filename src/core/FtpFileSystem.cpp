@@ -413,7 +413,7 @@ void TFTPFileSystem::Open()
       break;
   }
   int Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
-  int TimeZoneOffset = TimeToMinutes(Data->GetTimeDifference());
+  intptr_t TimeZoneOffset = TimeToMinutes(Data->GetTimeDifference());
   int UTF8 = 0;
   uintptr_t CodePage = Data->GetCodePageAsNumber();
   switch (CodePage)

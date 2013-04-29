@@ -205,13 +205,13 @@ struct TSFTPSupport : public TObject
     Loaded = false;
   }
 
-  unsigned int AttributeMask;
-  unsigned int AttributeBits;
-  unsigned int OpenFlags;
-  unsigned int AccessMask;
-  unsigned int MaxReadSize;
-  unsigned int OpenBlockMasks;
-  unsigned int BlockMasks;
+  uintptr_t AttributeMask;
+  uintptr_t AttributeBits;
+  uintptr_t OpenFlags;
+  uintptr_t AccessMask;
+  uintptr_t MaxReadSize;
+  uintptr_t OpenBlockMasks;
+  uintptr_t BlockMasks;
   TStrings * AttribExtensions;
   TStrings * Extensions;
   bool Loaded;
@@ -544,7 +544,7 @@ public:
   RawByteString GetRawByteString()
   {
     RawByteString Result;
-    rde::uint32 Len = GetCardinal();
+    uintptr_t Len = GetCardinal();
     Need(Len);
     // cannot happen anyway as Need() would raise exception
     assert(Len < SFTP_MAX_PACKET_LEN);
@@ -595,7 +595,7 @@ public:
     assert(File);
     uintptr_t Flags;
     UnicodeString ListingStr;
-    rde::uint32 Permissions = 0;
+    uintptr_t Permissions = 0;
     bool ParsingFailed = false;
     if (GetType() != SSH_FXP_ATTRS)
     {
@@ -2095,10 +2095,10 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
   );
 }
 //---------------------------------------------------------------------------
-rde::uint32 TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
+uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
   int AllowStatus)
 {
-  rde::uint32 Code = Packet->GetCardinal();
+  uintptr_t Code = Packet->GetCardinal();
 
   static int Messages[] = {
     SFTP_STATUS_OK,
@@ -2711,14 +2711,14 @@ void TSFTPFileSystem::DoStartup()
         {
           FSupport->OpenBlockMasks = SupportedStruct.GetSmallCardinal();
           FSupport->BlockMasks = SupportedStruct.GetSmallCardinal();
-          unsigned int ExtensionCount;
+          uintptr_t ExtensionCount;
           ExtensionCount = SupportedStruct.GetCardinal();
-          for (unsigned int i = 0; i < ExtensionCount; i++)
+          for (uintptr_t I = 0; I < ExtensionCount; I++)
           {
             FSupport->AttribExtensions->Add(SupportedStruct.GetAnsiString());
           }
           ExtensionCount = SupportedStruct.GetCardinal();
-          for (unsigned int i = 0; i < ExtensionCount; i++)
+          for (uintptr_t I = 0; I < ExtensionCount; I++)
           {
             FSupport->Extensions->Add(SupportedStruct.GetAnsiString());
           }
@@ -2771,7 +2771,7 @@ void TSFTPFileSystem::DoStartup()
           TSFTPPacket RootsPacket(ExtensionData, GetSessionData()->GetCodePageAsNumber());
           while (RootsPacket.GetNextData() != NULL)
           {
-            rde::uint32 Dummy = RootsPacket.GetCardinal();
+            uintptr_t Dummy = RootsPacket.GetCardinal();
             if (Dummy != 1)
             {
               break;
@@ -2947,10 +2947,10 @@ void TSFTPFileSystem::LookupUsersGroups()
     else
     {
       TRemoteTokenList & List = *Lists[Index];
-      rde::uint32 Count = Packet->GetCardinal();
+      uintptr_t Count = Packet->GetCardinal();
 
       List.Clear();
-      for (rde::uint32 Item = 0; Item < Count; Item++)
+      for (uintptr_t Item = 0; Item < Count; Item++)
       {
         TRemoteToken Token(Packet->GetString(!FUtfNever));
         List.Add(Token);

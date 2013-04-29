@@ -89,7 +89,7 @@ protected:
   TSecureShell * FSecureShell;
   TFileSystemInfo FFileSystemInfo;
   bool FFileSystemInfoValid;
-  int FVersion;
+  intptr_t FVersion;
   UnicodeString FCurrentDirectory;
   UnicodeString FDirectoryToChangeTo;
   UnicodeString FHomeDirectory;

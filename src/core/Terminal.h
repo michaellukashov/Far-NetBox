@@ -721,7 +721,7 @@ struct TSpaceAvailable : public TObject
   __int64 UnusedBytesOnDevice;
   __int64 BytesAvailableToUser;
   __int64 UnusedBytesAvailableToUser;
-  unsigned long BytesPerAllocationUnit;
+  uintptr_t BytesPerAllocationUnit;
 };
 //------------------------------------------------------------------------------
 UnicodeString GetSessionUrl(const TTerminal * Terminal);

@@ -4519,7 +4519,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
           bool LocalModified = false;
           // for spTimestamp+spBySize require that the file sizes are the same
           // before comparing file time
-          int TimeCompare;
+          intptr_t TimeCompare;
           if (FLAGCLEAR(Data->Params, spNotByTime) &&
               (FLAGCLEAR(Data->Params, spTimestamp) ||
                FLAGCLEAR(Data->Params, spBySize) ||
