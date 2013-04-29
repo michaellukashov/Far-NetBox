@@ -1029,7 +1029,7 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
   return Answer;
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendBuffer(uintptr_t & Result)
+void TSecureShell::SendBuffer(intptr_t & Result)
 {
   // for comments see PoolForData
   if (!GetActive())
@@ -1052,7 +1052,7 @@ void TSecureShell::SendBuffer(uintptr_t & Result)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::DispatchSendBuffer(uintptr_t BufSize)
+void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
 {
   TDateTime Start = Now();
   do
@@ -1459,7 +1459,7 @@ void inline TSecureShell::CheckConnection(int Message)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, uintptr_t & Result)
+void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, intptr_t & Result)
 {
   if (!GetActive())
   {
@@ -1506,7 +1506,7 @@ public:
   {
   }
 
-  void PoolForData(uintptr_t & Result)
+  void PoolForData(intptr_t & Result)
   {
     FSecureShell->PoolForData(FEvents, Result);
   }
