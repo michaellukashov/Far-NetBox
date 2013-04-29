@@ -3325,7 +3325,6 @@ _Check_return_ inline HRESULT AtlInternalOleLoadFromStream(
 {
 	ATLASSUME(pStm != NULL);
 	*ppvObj = NULL;
-	CLSID clsid;
 
 	HRESULT hr = S_OK; /* ReadClassStm(pStm, &clsid);
 
