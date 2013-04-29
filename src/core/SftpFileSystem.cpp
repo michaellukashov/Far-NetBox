@@ -297,7 +297,7 @@ public:
     Add(&Value, sizeof(Value));
   }
 
-  void AddCardinal(rde::uint32 Value)
+  void AddCardinal(uintptr_t Value)
   {
     // duplicated in Reuse()
     unsigned char Buf[4];
@@ -516,7 +516,7 @@ public:
     return Result;
   }
 
-  rde::uint32 GetCardinal()
+  uintptr_t GetCardinal()
   {
     rde::uint32 Result;
     Need(sizeof(Result));
@@ -525,7 +525,7 @@ public:
     return Result;
   }
 
-  rde::uint32 GetSmallCardinal()
+  uintptr_t GetSmallCardinal()
   {
     rde::uint32 Result;
     Need(2);
@@ -703,7 +703,7 @@ public:
     {
       // while SSH_FILEXFER_ATTR_BITS is defined for SFTP5 only, vandyke 2.3.3 sets it
       // for SFTP4 as well
-      rde::uint32 Bits = GetCardinal();
+      uintptr_t Bits = GetCardinal();
       if (FLAGSET(Bits, SSH_FILEXFER_ATTR_FLAGS_HIDDEN))
       {
         File->SetIsHidden(true);
@@ -746,7 +746,7 @@ public:
 
     if (Flags & SSH_FILEXFER_ATTR_EXTENDED)
     {
-      rde::uint32 ExtendedCount = GetCardinal();
+      uintptr_t ExtendedCount = GetCardinal();
       for (intptr_t Index = 0; Index < static_cast<intptr_t>(ExtendedCount); ++Index)
       {
         GetRawByteString(); // skip extended_type
@@ -855,7 +855,7 @@ public:
   uintptr_t GetCapacity() const { return FCapacity; }
   unsigned char GetType() const { return FType; }
   uintptr_t GetMessageNumber() const { return static_cast<uintptr_t>(FMessageNumber); }
-  void SetMessageNumber(rde::uint32  Value) { FMessageNumber = Value; }
+  void SetMessageNumber(uintptr_t Value) { FMessageNumber = Value; }
   TSFTPFileSystem * GetReservedBy() const { return FReservedBy; }
   void SetReservedBy(TSFTPFileSystem * Value) { FReservedBy = Value; }
 
@@ -865,7 +865,7 @@ private:
   uintptr_t FCapacity;
   uintptr_t FPosition;
   unsigned char FType;
-  rde::uint32 FMessageNumber;
+  uintptr_t FMessageNumber;
   TSFTPFileSystem * FReservedBy;
 
   static int FMessageCounter;
