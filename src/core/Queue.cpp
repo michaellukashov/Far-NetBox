@@ -1205,6 +1205,7 @@ TBackgroundTerminal::TBackgroundTerminal(TTerminal * MainTerminal) :
   FItem(NULL)
 {
 }
+//---------------------------------------------------------------------------
 void TBackgroundTerminal::Init(TSessionData * SessionData, TConfiguration * Configuration, TTerminalItem * Item,
     const UnicodeString & Name)
 {
