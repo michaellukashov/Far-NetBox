@@ -1406,7 +1406,7 @@ bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
       Day += (*DayTable)[I - 1];
     }
     int I = Year - 1;
-    Date = TDateTime(I * 365 + I / 4 - I / 100 + I / 400 + Day - DateDelta);
+    Date = TDateTime((double)(I * 365 + I / 4 - I / 100 + I / 400 + Day - DateDelta));
     return true;
   }
   return false;
