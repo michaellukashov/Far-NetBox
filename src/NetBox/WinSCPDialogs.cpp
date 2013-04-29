@@ -5525,7 +5525,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
 
   const intptr_t DlgLength = 78;
   SetSize(TPoint(DlgLength, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
-  TRect CRect = GetClientRect();
+  // TRect CRect = GetClientRect();
 
   SetCaption(GetMsg(Move ? MOVE_TITLE : COPY_TITLE));
 
@@ -8386,7 +8386,7 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
   TFarText * Text = NULL;
 
   SetSize(TPoint(80, 23));
-  TRect CRect = GetClientRect();
+  // TRect CRect = GetClientRect();
   int ListTop;
   int ListHeight = GetClientSize().y - 4;
 
