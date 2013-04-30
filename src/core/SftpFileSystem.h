@@ -2,6 +2,7 @@
 #ifndef SftpFileSystemH
 #define SftpFileSystemH
 
+#include <stdint.h>
 #include <FileSystems.h>
 //---------------------------------------------------------------------------
 class TSFTPPacket;
@@ -107,10 +108,10 @@ protected:
   bool FSignedTS;
   bool FOpenSSH;
   TStrings * FFixedPaths;
-  uintptr_t FMaxPacketSize;
+  uint32_t FMaxPacketSize;
 
   void SendCustomReadFile(TSFTPPacket * Packet, TSFTPPacket * Response,
-    uintptr_t Flags);
+    uint32_t Flags);
   void CustomReadFile(const UnicodeString & FileName,
     TRemoteFile *& File, unsigned char Type, TRemoteFile * ALinkedByFile = NULL,
     int AllowStatus = -1);
@@ -161,7 +162,7 @@ protected:
     TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TUploadSessionAction & Action, bool & ChildError);
   RawByteString SFTPOpenRemoteFile(const UnicodeString & FileName,
-    uintptr_t OpenType, __int64 Size = -1);
+    uint32_t OpenType, __int64 Size = -1);
   int SFTPOpenRemote(void * AOpenParams, void * Param2);
   void SFTPCloseRemote(const RawByteString & Handle,
     const UnicodeString & FileName, TFileOperationProgressType * OperationProgress,
@@ -188,13 +189,13 @@ protected:
   char * GetEOL() const;
   inline void BusyStart();
   inline void BusyEnd();
-  uintptr_t TransferBlockSize(uintptr_t Overhead,
+  uint32_t TransferBlockSize(uint32_t Overhead,
     TFileOperationProgressType * OperationProgress,
-    uintptr_t MinPacketSize = 0,
-    uintptr_t MaxPacketSize = 0);
-  uintptr_t UploadBlockSize(const RawByteString & Handle,
+    uint32_t MinPacketSize = 0,
+    uint32_t MaxPacketSize = 0);
+  uint32_t UploadBlockSize(const RawByteString & Handle,
     TFileOperationProgressType * OperationProgress);
-  uintptr_t DownloadBlockSize(
+  uint32_t DownloadBlockSize(
     TFileOperationProgressType * OperationProgress);
   intptr_t PacketLength(unsigned char * LenBuf, intptr_t ExpectedType);
 
