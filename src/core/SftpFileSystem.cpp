@@ -293,12 +293,12 @@ public:
     memmove(FData + 1, Buf, sizeof(Buf));
   }
 
-  void AddByte(rde::uint8 Value)
+  void AddByte(uint8_t Value)
   {
     Add(&Value, sizeof(Value));
   }
 
-  void AddCardinal(uintptr_t Value)
+  void AddCardinal(uint32_t Value)
   {
     // duplicated in Reuse()
     unsigned char Buf[4];
@@ -517,9 +517,9 @@ public:
     return Result;
   }
 
-  uintptr_t GetCardinal()
+  uint32_t GetCardinal()
   {
-    uintptr_t Result;
+    uint32_t Result;
     Need(sizeof(Result));
     Result = GET_32BIT(FData + FPosition);
     FPosition += sizeof(Result);
@@ -2045,7 +2045,7 @@ uintptr_t TSFTPFileSystem::UploadBlockSize(const RawByteString & Handle,
 uintptr_t TSFTPFileSystem::DownloadBlockSize(
   TFileOperationProgressType * OperationProgress)
 {
-  uintptr_t Result = TransferBlockSize(sizeof(rde::uint32), OperationProgress,
+  uintptr_t Result = TransferBlockSize(sizeof(uint32_t), OperationProgress,
     GetSessionData()->GetSFTPMinPacketSize(),
     GetSessionData()->GetSFTPMaxPacketSize());
   if (FSupport->Loaded && (FSupport->MaxReadSize > 0) &&
