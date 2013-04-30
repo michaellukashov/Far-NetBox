@@ -47,8 +47,6 @@
 #include <cstringt.inl>
 
 using ATL::CComBSTR;
-using ATL::COleDateTime;
-using ATL::COleDateTimeSpan;
 
 #ifdef _AFX_MINREBUILD
 #pragma component(minrebuild, off)
@@ -89,8 +87,6 @@ using ATL::COleDateTimeSpan;
 class COleDispatchDriver;           // helper class to call IDispatch
 
 class COleVariant;          // OLE VARIANT wrapper
-class COleCurrency;         // Based on OLE CY
-class COleSafeArray;        // Based on OLE VARIANT
 /////////////////////////////////////////////////////////////////////////////
 
 // AFXDLL support
@@ -884,7 +880,6 @@ public:
 	COleVariant(BYTE nSrc);
 	COleVariant(short nSrc, VARTYPE vtSrc = VT_I2);
 	COleVariant(long lSrc, VARTYPE vtSrc = VT_I4);
-	COleVariant(const COleCurrency& curSrc);
 
 #if (_WIN32_WINNT >= 0x0501) || defined(_ATL_SUPPORT_VT_I8)
 	COleVariant(LONGLONG nSrc);
@@ -893,7 +888,6 @@ public:
 
 	COleVariant(float fltSrc);
 	COleVariant(double dblSrc);
-	COleVariant(const COleDateTime& timeSrc);
 
 	COleVariant(const CByteArray& arrSrc);
 
@@ -920,7 +914,6 @@ public:
 	const COleVariant& operator=(BYTE nSrc);
 	const COleVariant& operator=(short nSrc);
 	const COleVariant& operator=(long lSrc);
-	const COleVariant& operator=(const COleCurrency& curSrc);
 
 #if (_WIN32_WINNT >= 0x0501) || defined(_ATL_SUPPORT_VT_I8)
 	const COleVariant& operator=(LONGLONG nSrc);
@@ -929,7 +922,6 @@ public:
 
 	const COleVariant& operator=(float fltSrc);
 	const COleVariant& operator=(double dblSrc);
-	const COleVariant& operator=(const COleDateTime& dateSrc);
 
 	const COleVariant& operator=(const CByteArray& arrSrc);
 
@@ -948,152 +940,9 @@ public:
 void AFXAPI AfxVariantInit(LPVARIANT pVar);
 
 /////////////////////////////////////////////////////////////////////////////
-// COleCurrency class
-
-class COleCurrency
-{
-// Constructors
-public:
-	COleCurrency();
-
-	COleCurrency(CURRENCY cySrc);
-	COleCurrency(const COleCurrency& curSrc);
-	COleCurrency(const VARIANT& varSrc);
-	COleCurrency(long nUnits, long nFractionalUnits);
-
-// Attributes
-public:
-	enum CurrencyStatus
-	{
-		valid = 0,
-		invalid = 1,    // Invalid currency (overflow, div 0, etc.)
-		null = 2,       // Literally has no value
-	};
-
-	CURRENCY m_cur;
-	CurrencyStatus m_status;
-
-	void SetStatus(CurrencyStatus status);
-	CurrencyStatus GetStatus() const;
-
-// Operations
-public:
-	const COleCurrency& operator=(CURRENCY cySrc);
-	const COleCurrency& operator=(const COleCurrency& curSrc);
-	const COleCurrency& operator=(const VARIANT& varSrc);
-
-	BOOL operator==(const COleCurrency& cur) const;
-	BOOL operator!=(const COleCurrency& cur) const;
-	BOOL operator<(const COleCurrency& cur) const;
-	BOOL operator>(const COleCurrency& cur) const;
-	BOOL operator<=(const COleCurrency& cur) const;
-	BOOL operator>=(const COleCurrency& cur) const;
-
-	// Currency math
-	COleCurrency operator+(const COleCurrency& cur) const;
-	COleCurrency operator-(const COleCurrency& cur) const;
-	const COleCurrency& operator+=(const COleCurrency& cur);
-	const COleCurrency& operator-=(const COleCurrency& cur);
-	COleCurrency operator-() const;
-
-	COleCurrency operator*(long nOperand) const;
-	COleCurrency operator/(long nOperand) const;
-	const COleCurrency& operator*=(long nOperand);
-	const COleCurrency& operator/=(long nOperand);
-
-	operator CURRENCY() const;
-
-	// Currency definition
-	void SetCurrency(long nUnits, long nFractionalUnits);
-	BOOL ParseCurrency(LPCTSTR lpszCurrency, DWORD dwFlags = 0,
-		LCID = LANG_USER_DEFAULT);
-
-	// formatting
-	CString Format(DWORD dwFlags = 0, LCID lcid = LANG_USER_DEFAULT) const;
-};
-
-/////////////////////////////////////////////////////////////////////////////
-// Helper for initializing COleSafeArray
-void AFXAPI AfxSafeArrayInit(COleSafeArray* psa);
-
-/////////////////////////////////////////////////////////////////////////////
 // CSafeArray class
 
 typedef const SAFEARRAY* LPCSAFEARRAY;
-
-class COleSafeArray : public tagVARIANT
-{
-//Constructors
-public:
-	COleSafeArray();
-	COleSafeArray(const SAFEARRAY& saSrc, VARTYPE vtSrc);
-	COleSafeArray(LPCSAFEARRAY pSrc, VARTYPE vtSrc);
-	COleSafeArray(const COleSafeArray& saSrc);
-	COleSafeArray(const VARIANT& varSrc);
-	COleSafeArray(LPCVARIANT pSrc);
-	COleSafeArray(const COleVariant& varSrc);
-
-// Operations
-public:
-	void Clear();
-	void Attach(VARIANT& varSrc);
-	VARIANT Detach();
-
-	COleSafeArray& operator=(const COleSafeArray& saSrc);
-	COleSafeArray& operator=(const VARIANT& varSrc);
-	COleSafeArray& operator=(LPCVARIANT pSrc);
-	COleSafeArray& operator=(const COleVariant& varSrc);
-
-	BOOL operator==(const SAFEARRAY& saSrc) const;
-	BOOL operator==(LPCSAFEARRAY pSrc) const;
-	BOOL operator==(const COleSafeArray& saSrc) const;
-	BOOL operator==(const VARIANT& varSrc) const;
-	BOOL operator==(LPCVARIANT pSrc) const;
-	BOOL operator==(const COleVariant& varSrc) const;
-
-	operator LPVARIANT();
-	operator LPCVARIANT() const;
-
-	// One dim array helpers
-	void CreateOneDim(VARTYPE vtSrc, DWORD dwElements,
-		const void* pvSrcData = NULL, long nLBound = 0);
-	DWORD GetOneDimSize();
-	void ResizeOneDim(DWORD dwElements);
-
-	// Multi dim array helpers
-	void Create(VARTYPE vtSrc, DWORD dwDims, DWORD* rgElements);
-
-	// SafeArray wrapper classes
-	void Create(VARTYPE vtSrc, DWORD dwDims, SAFEARRAYBOUND* rgsabounds);
-	void AccessData(void** ppvData);
-	void UnaccessData();
-	void AllocData();
-	void AllocDescriptor(DWORD dwDims);
-	void Copy(LPSAFEARRAY* ppsa);
-	void GetLBound(DWORD dwDim, long* pLBound);
-	void GetUBound(DWORD dwDim, long* pUBound);
-	void GetElement(long* rgIndices, void* pvData);
-	void PtrOfIndex(long* rgIndices, void** ppvData);
-	void PutElement(long* rgIndices, void* pvData);
-	void Redim(SAFEARRAYBOUND* psaboundNew);
-	void Lock();
-	void Unlock();
-	DWORD GetDim();
-	DWORD GetElemSize();
-	void Destroy();
-	void DestroyData();
-	void DestroyDescriptor();
-
-   void GetByteArray(CByteArray& bytes);
-
-// Implementation
-public:
-	~COleSafeArray();
-
-	// Cache info to make element access (operator []) faster
-	DWORD m_dwElementSize;
-	DWORD m_dwDims;
-};
 
 /////////////////////////////////////////////////////////////////////////////
 // DDX_ functions for OLE controls on dialogs

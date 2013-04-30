@@ -81,8 +81,6 @@ _AFXDISP_INLINE COleVariant::COleVariant(CString& strSrc)
 	{ vt = VT_EMPTY; *this = strSrc; }
 _AFXDISP_INLINE COleVariant::COleVariant(BYTE nSrc)
 	{ vt = VT_UI1; bVal = nSrc; }
-_AFXDISP_INLINE COleVariant::COleVariant(const COleCurrency& curSrc)
-	{ vt = VT_CY; cyVal = curSrc.m_cur; }
 #if (_WIN32_WINNT >= 0x0501) || defined(_ATL_SUPPORT_VT_I8)
 _AFXDISP_INLINE COleVariant::COleVariant(LONGLONG nSrc)
 	{ vt = VT_I8; llVal = nSrc; }
@@ -93,8 +91,6 @@ _AFXDISP_INLINE COleVariant::COleVariant(float fltSrc)
 	{ vt = VT_R4; fltVal = fltSrc; }
 _AFXDISP_INLINE COleVariant::COleVariant(double dblSrc)
 	{ vt = VT_R8; dblVal = dblSrc; }
-_AFXDISP_INLINE COleVariant::COleVariant(const COleDateTime& dateSrc)
-	{ vt = VT_DATE; date = dateSrc; }
 _AFXDISP_INLINE COleVariant::COleVariant(const CByteArray& arrSrc)
 	{ vt = VT_EMPTY; *this = arrSrc; }
 _AFXDISP_INLINE BOOL COleVariant::operator==(LPCVARIANT pSrc) const
@@ -103,53 +99,6 @@ _AFXDISP_INLINE COleVariant::operator LPVARIANT()
 	{ return this; }
 _AFXDISP_INLINE COleVariant::operator LPCVARIANT() const
 	{ return this; }
-
-// COleCurrency
-_AFXDISP_INLINE COleCurrency::COleCurrency()
-	{ m_cur.Hi = 0; m_cur.Lo = 0; SetStatus(valid); }
-_AFXDISP_INLINE COleCurrency::COleCurrency(CURRENCY cySrc)
-	{ m_cur = cySrc; SetStatus(valid); }
-_AFXDISP_INLINE COleCurrency::COleCurrency(const COleCurrency& curSrc)
-	{ m_cur = curSrc.m_cur; m_status = curSrc.m_status; }
-_AFXDISP_INLINE COleCurrency::COleCurrency(const VARIANT& varSrc)
-	{ *this = varSrc; }
-_AFXDISP_INLINE COleCurrency::CurrencyStatus COleCurrency::GetStatus() const
-	{ return m_status; }
-_AFXDISP_INLINE void COleCurrency::SetStatus(CurrencyStatus status)
-	{ m_status = status; }
-_AFXDISP_INLINE const COleCurrency& COleCurrency::operator+=(const COleCurrency& cur)
-	{ *this = *this + cur; return *this; }
-_AFXDISP_INLINE const COleCurrency& COleCurrency::operator-=(const COleCurrency& cur)
-	{ *this = *this - cur; return *this; }
-_AFXDISP_INLINE const COleCurrency& COleCurrency::operator*=(long nOperand)
-	{ *this = *this * nOperand; return *this; }
-_AFXDISP_INLINE const COleCurrency& COleCurrency::operator/=(long nOperand)
-	{ *this = *this / nOperand; return *this; }
-_AFXDISP_INLINE BOOL COleCurrency::operator==(const COleCurrency& cur) const
-	{ return(m_status == cur.m_status && m_cur.Hi == cur.m_cur.Hi &&
-		m_cur.Lo == cur.m_cur.Lo); }
-_AFXDISP_INLINE BOOL COleCurrency::operator!=(const COleCurrency& cur) const
-	{ return(m_status != cur.m_status || m_cur.Hi != cur.m_cur.Hi ||
-		m_cur.Lo != cur.m_cur.Lo); }
-_AFXDISP_INLINE COleCurrency::operator CURRENCY() const
-	{ return m_cur; }
-
-// COleSafeArray
-_AFXDISP_INLINE COleSafeArray::COleSafeArray()
-	{ AfxSafeArrayInit(this);
-		vt = VT_EMPTY; }
-_AFXDISP_INLINE COleSafeArray::~COleSafeArray()
-	{ Clear(); }
-_AFXDISP_INLINE void COleSafeArray::Clear()
-	{ VERIFY(::VariantClear(this) == NOERROR); }
-_AFXDISP_INLINE COleSafeArray::operator LPVARIANT()
-	{ return this; }
-_AFXDISP_INLINE COleSafeArray::operator LPCVARIANT() const
-	{ return this; }
-_AFXDISP_INLINE DWORD COleSafeArray::GetDim()
-	{ return ::SafeArrayGetDim(parray); }
-_AFXDISP_INLINE DWORD COleSafeArray::GetElemSize()
-	{ return ::SafeArrayGetElemsize(parray); }
 
 #endif //_AFXDISP_INLINE
 

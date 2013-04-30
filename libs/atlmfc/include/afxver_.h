@@ -328,6 +328,8 @@
 #define AFX_NOVTABLE
 #endif
 #endif
+#else
+#define AFX_NOVTABLE
 #endif
 
 // for global data that should be in COMDATs (packaged data)
