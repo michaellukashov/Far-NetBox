@@ -2967,8 +2967,8 @@ BOOL AFXAPI AfxOleCanExitApp();
 void AFXAPI AfxOleLockApp();
 void AFXAPI AfxOleUnlockApp();
 
-void AFXAPI AfxOleSetUserCtrl(BOOL bUserCtrl);
-BOOL AFXAPI AfxOleGetUserCtrl();
+// void AFXAPI AfxOleSetUserCtrl(BOOL bUserCtrl);
+// BOOL AFXAPI AfxOleGetUserCtrl();
 
 #ifndef _AFX_NO_OCC_SUPPORT
 BOOL AFXAPI AfxOleLockControl(REFCLSID clsid);

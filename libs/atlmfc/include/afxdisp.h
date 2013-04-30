@@ -46,7 +46,7 @@
 #include <atlcommem.h>
 #include <cstringt.inl>
 
-using ATL::CComBSTR;
+// using ATL::CComBSTR;
 
 #ifdef _AFX_MINREBUILD
 #pragma component(minrebuild, off)
@@ -57,11 +57,11 @@ using ATL::CComBSTR;
 /////////////////////////////////////////////////////////////////////////////
 // Win32 libraries
 
-#pragma comment(lib, "oledlg.lib")
-#pragma comment(lib, "ole32.lib")
-#pragma comment(lib, "oleaut32.lib")
-#pragma comment(lib, "uuid.lib")
-#pragma comment(lib, "urlmon.lib")
+// #pragma comment(lib, "oledlg.lib")
+// #pragma comment(lib, "ole32.lib")
+// #pragma comment(lib, "oleaut32.lib")
+// #pragma comment(lib, "uuid.lib")
+// #pragma comment(lib, "urlmon.lib")
 
 #endif //!_AFX_NOFORCE_LIBS
 
@@ -859,130 +859,9 @@ SCODE AFXAPI AfxDllCanUnloadNow(void);
 #define AFX_OLE_FALSE 0
 
 /////////////////////////////////////////////////////////////////////////////
-// COleVariant class - wraps VARIANT types
-
-typedef const VARIANT* LPCVARIANT;
-
-class COleVariant : public tagVARIANT
-{
-// Constructors
-public:
-	COleVariant();
-
-	COleVariant(const VARIANT& varSrc);
-	COleVariant(LPCVARIANT pSrc);
-	COleVariant(const COleVariant& varSrc);
-
-	COleVariant(LPCTSTR lpszSrc);
-	COleVariant(LPCTSTR lpszSrc, VARTYPE vtSrc); // used to set to ANSI string
-	COleVariant(CString& strSrc);
-
-	COleVariant(BYTE nSrc);
-	COleVariant(short nSrc, VARTYPE vtSrc = VT_I2);
-	COleVariant(long lSrc, VARTYPE vtSrc = VT_I4);
-
-#if (_WIN32_WINNT >= 0x0501) || defined(_ATL_SUPPORT_VT_I8)
-	COleVariant(LONGLONG nSrc);
-	COleVariant(ULONGLONG nSrc);
-#endif
-
-	COleVariant(float fltSrc);
-	COleVariant(double dblSrc);
-
-	COleVariant(const CByteArray& arrSrc);
-
-	COleVariant(LPCITEMIDLIST pidl);
-
-// Operations
-public:
-	void Clear();
-	void ChangeType(VARTYPE vartype, LPVARIANT pSrc = NULL);
-	void Attach(VARIANT& varSrc);
-	VARIANT Detach();
-   void GetByteArrayFromVariantArray(CByteArray& bytes);
-
-	BOOL operator==(const VARIANT& varSrc) const;
-	BOOL operator==(LPCVARIANT pSrc) const;
-
-	const COleVariant& operator=(const VARIANT& varSrc);
-	const COleVariant& operator=(LPCVARIANT pSrc);
-	const COleVariant& operator=(const COleVariant& varSrc);
-
-	const COleVariant& operator=(const LPCTSTR lpszSrc);
-	const COleVariant& operator=(const CString& strSrc);
-
-	const COleVariant& operator=(BYTE nSrc);
-	const COleVariant& operator=(short nSrc);
-	const COleVariant& operator=(long lSrc);
-
-#if (_WIN32_WINNT >= 0x0501) || defined(_ATL_SUPPORT_VT_I8)
-	const COleVariant& operator=(LONGLONG nSrc);
-	const COleVariant& operator=(ULONGLONG nSrc);
-#endif
-
-	const COleVariant& operator=(float fltSrc);
-	const COleVariant& operator=(double dblSrc);
-
-	const COleVariant& operator=(const CByteArray& arrSrc);
-
-	void SetString(LPCTSTR lpszSrc, VARTYPE vtSrc); // used to set ANSI string
-
-	operator LPVARIANT();
-	operator LPCVARIANT() const;
-
-// Implementation
-public:
-	~COleVariant();
-};
-
-// COleVariant diagnostics and serialization
-// Helper for initializing VARIANT structures
-void AFXAPI AfxVariantInit(LPVARIANT pVar);
-
-/////////////////////////////////////////////////////////////////////////////
 // CSafeArray class
 
 typedef const SAFEARRAY* LPCSAFEARRAY;
-
-/////////////////////////////////////////////////////////////////////////////
-// DDX_ functions for OLE controls on dialogs
-
-#ifndef _AFX_NO_OCC_SUPPORT
-
-void AFXAPI DDX_OCText(CDataExchange* pDX, int nIDC, DISPID dispid,
-	CString& value);
-void AFXAPI DDX_OCTextRO(CDataExchange* pDX, int nIDC, DISPID dispid,
-	CString& value);
-void AFXAPI DDX_OCBool(CDataExchange* pDX, int nIDC, DISPID dispid,
-	BOOL& value);
-void AFXAPI DDX_OCBoolRO(CDataExchange* pDX, int nIDC, DISPID dispid,
-	BOOL& value);
-void AFXAPI DDX_OCInt(CDataExchange* pDX, int nIDC, DISPID dispid,
-	int &value);
-void AFXAPI DDX_OCIntRO(CDataExchange* pDX, int nIDC, DISPID dispid,
-	int &value);
-void AFXAPI DDX_OCInt(CDataExchange* pDX, int nIDC, DISPID dispid,
-	long &value);
-void AFXAPI DDX_OCIntRO(CDataExchange* pDX, int nIDC, DISPID dispid,
-	long &value);
-void AFXAPI DDX_OCShort(CDataExchange* pDX, int nIDC, DISPID dispid,
-	short& value);
-void AFXAPI DDX_OCShortRO(CDataExchange* pDX, int nIDC, DISPID dispid,
-	short& value);
-void AFXAPI DDX_OCColor(CDataExchange* pDX, int nIDC, DISPID dispid,
-	OLE_COLOR& value);
-void AFXAPI DDX_OCColorRO(CDataExchange* pDX, int nIDC, DISPID dispid,
-	OLE_COLOR& value);
-void AFXAPI DDX_OCFloat(CDataExchange* pDX, int nIDC, DISPID dispid,
-	float& value);
-void AFXAPI DDX_OCFloatRO(CDataExchange* pDX, int nIDC, DISPID dispid,
-	float& value);
-void AFXAPI DDX_OCFloat(CDataExchange* pDX, int nIDC, DISPID dispid,
-	double& value);
-void AFXAPI DDX_OCFloatRO(CDataExchange* pDX, int nIDC, DISPID dispid,
-	double& value);
-
-#endif // !_AFX_NO_OCC_SUPPORT
 
 /////////////////////////////////////////////////////////////////////////////
 // Function to enable containment of OLE controls

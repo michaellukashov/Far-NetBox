@@ -68,38 +68,6 @@ _AFXDISP_INLINE COleDispatchDriver::~COleDispatchDriver()
 _AFXDISP_INLINE COleDispatchDriver::operator LPDISPATCH()
 	{ return m_lpDispatch; }
 
-// COleVariant
-_AFXDISP_INLINE COleVariant::COleVariant()
-	{ AfxVariantInit(this); }
-_AFXDISP_INLINE COleVariant::~COleVariant()
-	{ VERIFY(::VariantClear(this) == NOERROR); }
-_AFXDISP_INLINE void COleVariant::Clear()
-	{ VERIFY(::VariantClear(this) == NOERROR); }
-_AFXDISP_INLINE COleVariant::COleVariant(LPCTSTR lpszSrc)
-	{ vt = VT_EMPTY; *this = lpszSrc; }
-_AFXDISP_INLINE COleVariant::COleVariant(CString& strSrc)
-	{ vt = VT_EMPTY; *this = strSrc; }
-_AFXDISP_INLINE COleVariant::COleVariant(BYTE nSrc)
-	{ vt = VT_UI1; bVal = nSrc; }
-#if (_WIN32_WINNT >= 0x0501) || defined(_ATL_SUPPORT_VT_I8)
-_AFXDISP_INLINE COleVariant::COleVariant(LONGLONG nSrc)
-	{ vt = VT_I8; llVal = nSrc; }
-_AFXDISP_INLINE COleVariant::COleVariant(ULONGLONG nSrc)
-	{ vt = VT_UI8; ullVal = nSrc; }
-#endif
-_AFXDISP_INLINE COleVariant::COleVariant(float fltSrc)
-	{ vt = VT_R4; fltVal = fltSrc; }
-_AFXDISP_INLINE COleVariant::COleVariant(double dblSrc)
-	{ vt = VT_R8; dblVal = dblSrc; }
-_AFXDISP_INLINE COleVariant::COleVariant(const CByteArray& arrSrc)
-	{ vt = VT_EMPTY; *this = arrSrc; }
-_AFXDISP_INLINE BOOL COleVariant::operator==(LPCVARIANT pSrc) const
-	{ return *this == *pSrc; }
-_AFXDISP_INLINE COleVariant::operator LPVARIANT()
-	{ return this; }
-_AFXDISP_INLINE COleVariant::operator LPCVARIANT() const
-	{ return this; }
-
 #endif //_AFXDISP_INLINE
 
 /////////////////////////////////////////////////////////////////////////////

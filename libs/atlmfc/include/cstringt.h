@@ -930,10 +930,10 @@ public:
 	{
 	}
 
-	CStringT(_In_ const VARIANT& varSrc);
-	CStringT(
-		_In_ const VARIANT& varSrc,
-		_In_ IAtlStringMgr* pStringMgr);
+	// CStringT(_In_ const VARIANT& varSrc);
+	//CStringT(
+	//	_In_ const VARIANT& varSrc,
+	//	_In_ IAtlStringMgr* pStringMgr);
 
 	static void __cdecl Construct(_In_ CStringT* pString)
 	{
@@ -1277,7 +1277,7 @@ public:
 	}
 #endif // ndef _CSTRING_DISABLE_NARROW_WIDE_CONVERSION
 
-	CStringT& operator=(_In_ const VARIANT& var);
+	// CStringT& operator=(_In_ const VARIANT& var);
 
 	CStringT& operator+=(_In_ const CThisSimpleString& str)
 	{
@@ -1343,7 +1343,7 @@ public:
 	}
 #endif // def _CSTRING_DISABLE_NARROW_WIDE_CONVERSION
 
-	CStringT& operator+=(_In_ const VARIANT& var);
+	// CStringT& operator+=(_In_ const VARIANT& var);
 
 	// Override from base class
 	IAtlStringMgr* GetManager() const throw()

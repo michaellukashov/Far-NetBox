@@ -96,7 +96,6 @@ SCODE CCmdTarget::SetStandardProp(const AFX_DISPMAP_ENTRY* pEntry,
 	// it is a DISPATCH_PROPERTYSET (for standard, non-function property)
 	SCODE sc = S_OK;
 	VARIANT va;
-	AfxVariantInit(&va);
 	VARIANT* pArg = &pDispParams->rgvarg[0];
 	if (pEntry->vt != VT_VARIANT && pArg->vt != pEntry->vt)
 	{
@@ -1012,8 +1011,6 @@ STDMETHODIMP COleDispatchImpl::Invoke(
 	}
 
 	// make sure pvarResult is initialized
-	if (pvarResult != NULL)
-		AfxVariantInit(pvarResult);
 
 	// check arguments
 	if (riid != IID_NULL)
@@ -1087,7 +1084,6 @@ STDMETHODIMP COleDispatchImpl::Invoke(
 
 	DISPPARAMS paramsTemp;
 	VARIANT vaTemp;
-	AfxVariantInit(&vaTemp);
 
 	if (wFlags == DISPATCH_PROPERTYPUT)
 	{
@@ -1098,7 +1094,6 @@ STDMETHODIMP COleDispatchImpl::Invoke(
 			// remember old value for restore later
 			pvarParamSave = &pDispParams->rgvarg[0];
 			vaParamSave = pDispParams->rgvarg[0];
-			AfxVariantInit(&pDispParams->rgvarg[0]);
 
 			// get default value of right hand side
 			memset(&paramsTemp, 0, sizeof(DISPPARAMS));
@@ -1276,10 +1271,7 @@ STDMETHODIMP COleDispatchImpl::Invoke(
 		// otherwise, valid VT_DISPATCH was returned
 		pDispParams->cArgs = nOrigArgs;
 		LPDISPATCH lpTemp = pvarResult->pdispVal;
-		if (pvarResult != &vaTemp)
-			AfxVariantInit(pvarResult);
-		else
-			pvarResult = NULL;
+  	pvarResult = NULL;
 		sc = lpTemp->Invoke(DISPID_VALUE, riid, lcid, wFlags,
 			pDispParams, pvarResult, pexcepinfo, puArgErr);
 		lpTemp->Release();

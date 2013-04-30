@@ -653,11 +653,11 @@ LPCTSTR AtlDebugGetClassName(_In_opt_ T*)
 #pragma comment(lib, "kernel32.lib")
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "advapi32.lib")
-#pragma comment(lib, "ole32.lib")
-#pragma comment(lib, "shell32.lib")
-#pragma comment(lib, "oleaut32.lib")
-#pragma comment(lib, "uuid.lib")
-#pragma comment(lib, "shlwapi.lib")
+// #pragma comment(lib, "ole32.lib")
+// #pragma comment(lib, "shell32.lib")
+// #pragma comment(lib, "oleaut32.lib")
+// #pragma comment(lib, "uuid.lib")
+// #pragma comment(lib, "shlwapi.lib")
 #endif  // !_ATL_NO_DEFAULT_LIBS
 
 template< typename T >
@@ -7282,10 +7282,10 @@ ATLINLINE ATLAPIINL AtlUnRegisterTypeLib(
 
 			if( true == bRedirectionEnabled )
 			{
-				HMODULE hmodOleAut=::GetModuleHandleW(L"OLEAUT32.DLL");
-				if(hmodOleAut)
+				// HMODULE hmodOleAut=::GetModuleHandleW(L"OLEAUT32.DLL");
+				// if(hmodOleAut)
 				{
-					pfnUnRegisterTypeLib=reinterpret_cast<PFNUNREGISTERTYPELIB>(::GetProcAddress(hmodOleAut, "UnRegisterTypeLibForUser"));
+					// pfnUnRegisterTypeLib=reinterpret_cast<PFNUNREGISTERTYPELIB>(::GetProcAddress(hmodOleAut, "UnRegisterTypeLibForUser"));
 				}
 			}
 
@@ -7338,10 +7338,10 @@ ATLINLINE ATLAPIINL AtlRegisterTypeLib(
 
 		if( true == bRedirectionEnabled )
 		{
-			HMODULE hmodOleAut=::GetModuleHandleW(L"OLEAUT32.DLL");
-			if(hmodOleAut)
+			// HMODULE hmodOleAut=::GetModuleHandleW(L"OLEAUT32.DLL");
+			// if(hmodOleAut)
 			{
-				pfnRegisterTypeLib=reinterpret_cast<PFNREGISTERTYPELIB>(::GetProcAddress(hmodOleAut, "RegisterTypeLibForUser"));
+				// pfnRegisterTypeLib=reinterpret_cast<PFNREGISTERTYPELIB>(::GetProcAddress(hmodOleAut, "RegisterTypeLibForUser"));
 			}
 		}
 
