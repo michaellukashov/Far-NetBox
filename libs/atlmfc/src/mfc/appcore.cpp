@@ -580,23 +580,23 @@ void CCommandLineInfo::ParseParamFlag(const char* pszParam)
 	}
 	else if (lstrcmpA(pszParam, "ddenoshow") == 0)
 	{
-		AfxOleSetUserCtrl(FALSE);
+		// AfxOleSetUserCtrl(FALSE);
 		m_nShellCommand = FileDDENoShow;
 	}
 	else if (lstrcmpA(pszParam, "dde") == 0)
 	{
-		AfxOleSetUserCtrl(FALSE);
+		// AfxOleSetUserCtrl(FALSE);
 		m_nShellCommand = FileDDE;
 	}
 	else if (::AfxInvariantStrICmp(pszParam, "Embedding") == 0)
 	{
-		AfxOleSetUserCtrl(FALSE);
+		// AfxOleSetUserCtrl(FALSE);
 		m_bRunEmbedded = TRUE;
 		m_bShowSplash = FALSE;
 	}
 	else if (::AfxInvariantStrICmp(pszParam, "Automation") == 0)
 	{
-		AfxOleSetUserCtrl(FALSE);
+		// AfxOleSetUserCtrl(FALSE);
 		m_bRunAutomated = TRUE;
 		m_bShowSplash = FALSE;
 	}
@@ -736,7 +736,7 @@ int CWinApp::ExitInstance()
 // Main running routine until application exits
 int CWinApp::Run()
 {
-	if (m_pMainWnd == NULL && AfxOleGetUserCtrl())
+	if (m_pMainWnd == NULL) //  && AfxOleGetUserCtrl())
 	{
 		// Not launched /Embedding or /Automation, but has no main window!
 		AfxPostQuitMessage(0);

@@ -122,10 +122,10 @@ BOOL AFXAPI AfxOleRegisterTypeLib(HINSTANCE hInstance, REFGUID tlid,
 
 			if( TRUE == AfxGetPerUserRegistration() )
 			{
-				HMODULE hmodOleAut=::GetModuleHandleW(L"OLEAUT32.DLL");
-				if(hmodOleAut)
+				// HMODULE hmodOleAut=::GetModuleHandleW(L"OLEAUT32.DLL");
+				// if(hmodOleAut)
 				{
-					pfnRegisterTypeLib=reinterpret_cast<PFNREGISTERTYPELIB>(::GetProcAddress(hmodOleAut, "RegisterTypeLibForUser"));
+					// pfnRegisterTypeLib=reinterpret_cast<PFNREGISTERTYPELIB>(::GetProcAddress(hmodOleAut, "RegisterTypeLibForUser"));
 				}
 			}
 

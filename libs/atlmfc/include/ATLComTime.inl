@@ -299,11 +299,11 @@ ATLCOMTIME_INLINE COleDateTime::COleDateTime() throw() :
 {
 }
 
-ATLCOMTIME_INLINE COleDateTime::COleDateTime(_In_ const VARIANT& varSrc) throw() :
-	m_dt( 0 ), m_status(valid)
-{
-	*this = varSrc;
-}
+//ATLCOMTIME_INLINE COleDateTime::COleDateTime(_In_ const VARIANT& varSrc) throw() :
+//	m_dt( 0 ), m_status(valid)
+//{
+//	*this = varSrc;
+//}
 
 ATLCOMTIME_INLINE COleDateTime::COleDateTime(_In_ DATE dtSrc) throw() :
 	m_dt( dtSrc ), m_status(valid)
@@ -421,28 +421,28 @@ ATLCOMTIME_INLINE int COleDateTime::GetDayOfYear() const throw()
 	return GetAsUDATE(udate) ? udate.wDayOfYear : error;
 }
 
-ATLCOMTIME_INLINE COleDateTime& COleDateTime::operator=(_In_ const VARIANT& varSrc) throw()
-{
-	if (varSrc.vt != VT_DATE)
-	{
-		VARIANT varDest;
-		varDest.vt = VT_EMPTY;
-		if(SUCCEEDED(::VariantChangeType(&varDest, const_cast<VARIANT *>(&varSrc), 0, VT_DATE)))
-		{
-			m_dt = varDest.date;
-			m_status = valid;
-		}
-		else
-			m_status = invalid;
-	}
-	else
-	{
-		m_dt = varSrc.date;
-		m_status = valid;
-	}
-
-	return *this;
-}
+//ATLCOMTIME_INLINE COleDateTime& COleDateTime::operator=(_In_ const VARIANT& varSrc) throw()
+//{
+//	if (varSrc.vt != VT_DATE)
+//	{
+//		VARIANT varDest;
+//		varDest.vt = VT_EMPTY;
+//		if(SUCCEEDED(::VariantChangeType(&varDest, const_cast<VARIANT *>(&varSrc), 0, VT_DATE)))
+//		{
+//			m_dt = varDest.date;
+//			m_status = valid;
+//		}
+//		else
+//			m_status = invalid;
+//	}
+//	else
+//	{
+//		m_dt = varSrc.date;
+//		m_status = valid;
+//	}
+//
+//	return *this;
+//}
 
 ATLCOMTIME_INLINE COleDateTime& COleDateTime::operator=(_In_ DATE dtSrc) throw()
 {

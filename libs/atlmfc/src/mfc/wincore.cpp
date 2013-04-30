@@ -2162,20 +2162,22 @@ END_INTERFACE_MAP()
 ULONG FAR EXPORT CWnd::XAccessible::AddRef()
 {
 	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->ExternalAddRef();
+	// return pThis->ExternalAddRef();
+	return 0;
 }
 
 ULONG FAR EXPORT CWnd::XAccessible::Release()
 {
 	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->ExternalRelease();
+	// return pThis->ExternalRelease();
+	return 0;
 }
 
 HRESULT FAR EXPORT CWnd::XAccessible::QueryInterface(
 	REFIID iid, void FAR* FAR* ppvObj)
 {
 	METHOD_PROLOGUE(CWnd, Accessible)
-	return (HRESULT)pThis->ExternalQueryInterface(&iid, ppvObj);
+	return 0; // (HRESULT)pThis->ExternalQueryInterface(&iid, ppvObj);
 }
 
 HRESULT CWnd::XAccessible::Invoke(
@@ -2219,20 +2221,22 @@ HRESULT CWnd::XAccessible::GetTypeInfo(unsigned int /*iTInfo*/, LCID /*lcid*/, I
 ULONG FAR EXPORT CWnd::XAccessibleServer::AddRef()
 {
 	METHOD_PROLOGUE(CWnd, AccessibleServer)
-	return pThis->ExternalAddRef();
+	// return pThis->ExternalAddRef();
+	return 0;
 }
 
 ULONG FAR EXPORT CWnd::XAccessibleServer::Release()
 {
 	METHOD_PROLOGUE(CWnd, AccessibleServer)
-	return pThis->ExternalRelease();
+	// return pThis->ExternalRelease();
+	return 0;
 }
 
 HRESULT FAR EXPORT CWnd::XAccessibleServer::QueryInterface(
 	REFIID iid, void FAR* FAR* ppvObj)
 {
 	METHOD_PROLOGUE(CWnd, AccessibleServer)
-	return (HRESULT)pThis->ExternalQueryInterface(&iid, ppvObj);
+	return 0; // (HRESULT)pThis->ExternalQueryInterface(&iid, ppvObj);
 }
 
 // Helpers for CWnd or derived class that contains Windowless Active X controls

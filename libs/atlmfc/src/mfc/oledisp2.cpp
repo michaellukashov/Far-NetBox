@@ -376,7 +376,6 @@ void COleDispatchDriver::InvokeHelperV(DISPID dwDispID, WORD wFlags,
 	// initialize return value
 	VARIANT* pvarResult = NULL;
 	VARIANT vaResult;
-	AfxVariantInit(&vaResult);
 	if (vtRet != VT_EMPTY)
 		pvarResult = &vaResult;
 

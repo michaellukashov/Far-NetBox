@@ -117,7 +117,7 @@ public:
 
 	COleDateTime() throw();
 
-	COleDateTime(_In_ const VARIANT& varSrc) throw();
+	// COleDateTime(_In_ const VARIANT& varSrc) throw();
 	COleDateTime(_In_ DATE dtSrc) throw();
 
 	COleDateTime(_In_ __time32_t timeSrc) throw();
@@ -173,7 +173,7 @@ public:
 	int GetDayOfYear() const throw();
 
 // Operations
-	COleDateTime& operator=(_In_ const VARIANT& varSrc) throw();
+	// COleDateTime& operator=(_In_ const VARIANT& varSrc) throw();
 	COleDateTime& operator=(_In_ DATE dtSrc) throw();
 
 	COleDateTime& operator=(_In_ const __time32_t& timeSrc) throw();

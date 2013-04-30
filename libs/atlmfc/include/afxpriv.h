@@ -306,7 +306,7 @@ LONG AFXAPI AfxRegCreateKey(HKEY hKey, LPCTSTR lpSubKey, PHKEY phkResult);
 /// <param name="hKey">A handle to an open registry key.</param>
 /// <param name="lpSubKey">The name of a key that this function opens or creates.</param>
 /// <param name="phkResult">A pointer to a variable that receives a handle to the created key.</param>
-LONG AFXAPI AfxRegOpenKey(HKEY hKey, LPCTSTR lpSubKey, PHKEY phkResult);
+// LONG AFXAPI AfxRegOpenKey(HKEY hKey, LPCTSTR lpSubKey, PHKEY phkResult);
 
 /// <summary>
 /// Opens the specified registry key.</summary>
@@ -317,10 +317,10 @@ LONG AFXAPI AfxRegOpenKey(HKEY hKey, LPCTSTR lpSubKey, PHKEY phkResult);
 /// <param name="ulOptions">This parameter is reserved and must be zero.</param>
 /// <param name="samDesired">A mask that specifies the desired access rights to the key.</param>
 /// <param name="phkResult">A pointer to a variable that receives a handle to the openedkey.</param>
-LONG AFXAPI AfxRegOpenKeyEx(HKEY hKey, LPCTSTR lpSubKey, DWORD ulOptions, REGSAM samDesired, PHKEY phkResult);
+// LONG AFXAPI AfxRegOpenKeyEx(HKEY hKey, LPCTSTR lpSubKey, DWORD ulOptions, REGSAM samDesired, PHKEY phkResult);
 
-LONG AFXAPI AfxRegQueryValue(HKEY hKey, LPCTSTR lpSubKey, LPTSTR lpValue, PLONG lpcbValue);
-LONG AFXAPI AfxRegSetValue(HKEY hKey, LPCTSTR lpSubKey, DWORD dwType,  LPCTSTR lpData, DWORD cbData);
+// LONG AFXAPI AfxRegQueryValue(HKEY hKey, LPCTSTR lpSubKey, LPTSTR lpValue, PLONG lpcbValue);
+// LONG AFXAPI AfxRegSetValue(HKEY hKey, LPCTSTR lpSubKey, DWORD dwType,  LPCTSTR lpData, DWORD cbData);
 
 /// <summary>
 /// Deletes the specified registry key.</summary>

@@ -656,25 +656,6 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     Prompts->SetString(Index, Prompt.Trim());
   }
 
-//!CLEANBEGIN
-/*
-  PromptKind = pkKeybInteractive;
-  Name = "Server prompt";
-  //Instructions2 = "Using keyboard-interactive authentication.";
-  Instructions2 = "Using keyboard-interactive authentication.\nYour Kerberos password will expire in 16 days.";//"Using keyboard-interactive authentication.";
-  Prompts = new TStringList();
-*/
-//  Prompts->AddObject("The challenge is '14315716'", (TObject *)true);
-/*  Prompts->AddObject("&Current password:", (TObject *)false);
-  Prompts->AddObject("&New password:", (TObject *)false);
-  Prompts->AddObject("Confirm new &password:", (TObject *)false);*/
-//  Results = new TStringList();
-/*  Results->Add("");
-  Results->Add("");
-  Results->Add("");*/
-//  Prompts->SetString(0, "The challenge is '14315716'");
-//  Prompts->Objects[0] = (TObject *)true;
-//!CLEANEND
   bool Result = false;
   if (PromptKind == pkUserName)
   {
