@@ -2075,10 +2075,10 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
         }
         FTerminal->GetLog()->Add(llInput, FORMAT(L"Type: %s, Size: %d, Number: %d",
           Packet->GetTypeName().c_str(), (int)Packet->GetLength(), (int)Packet->GetMessageNumber()));
-        if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2)
+        /*if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2)
         {
           FTerminal->GetLog()->Add(llInput, Packet->Dump());
-        }
+        }*/
         FPreviousLoggedPacket = Packet->GetType();
       }
       else
@@ -2286,10 +2286,10 @@ uintptr_t TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
           }
           FTerminal->GetLog()->Add(llOutput, FORMAT(L"Type: %s, Size: %d, Number: %d",
             Packet->GetTypeName().c_str(), (int)Packet->GetLength(), (int)Packet->GetMessageNumber()));
-          if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2)
+          /*if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2)
           {
             FTerminal->GetLog()->Add(llOutput, Packet->Dump());
-          }
+          }*/
         }
         else
         {
