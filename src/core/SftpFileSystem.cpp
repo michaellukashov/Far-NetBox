@@ -159,10 +159,10 @@ const int tfNewDirectory = 0x02;
 //---------------------------------------------------------------------------
 #ifndef GET_32BIT
 #define GET_32BIT(cp) \
-    (((rde::uint32)(unsigned char)(cp)[0] << 24) | \
-    ((rde::uint32)(unsigned char)(cp)[1] << 16) | \
-    ((rde::uint32)(unsigned char)(cp)[2] << 8) | \
-    ((rde::uint32)(unsigned char)(cp)[3]))
+    (((uint32_t)(unsigned char)(cp)[0] << 24) | \
+    ((uint32_t)(unsigned char)(cp)[1] << 16) | \
+    ((uint32_t)(unsigned char)(cp)[2] << 8) | \
+    ((uint32_t)(unsigned char)(cp)[3]))
 #endif
 #ifndef PUT_32BIT
 #define PUT_32BIT((cp), (value)) { \
@@ -427,7 +427,7 @@ public:
     if ((Version < 4) && ((MTime != NULL) || (ATime != NULL)))
     {
       // any way to reflect sbSignedTS here?
-      // (note that casting __int64 > 2^31 < 2^32 to rde::uint32 is wrapped,
+      // (note that casting __int64 > 2^31 < 2^32 to uint32_t is wrapped,
       // thus we never can set time after 2038, even if the server supports it)
       AddCardinal(static_cast<uint32_t>(ATime != NULL ? *ATime : *MTime));
       AddCardinal(static_cast<uint32_t>(MTime != NULL ? *MTime : *ATime));
@@ -1487,7 +1487,7 @@ private:
   TStream * FStream;
   TFileOperationProgressType * OperationProgress;
   UnicodeString FFileName;
-  rde::uint32 FLastBlockSize;
+  uint32_t FLastBlockSize;
   bool FEnd;
   __int64 FTransfered;
   RawByteString FHandle;
@@ -3291,7 +3291,7 @@ void TSFTPFileSystem::CustomReadFile(const UnicodeString & FileName,
   TRemoteFile *& File, unsigned char Type, TRemoteFile * ALinkedByFile,
   int AllowStatus)
 {
-  rde::uint32 Flags = SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_PERMISSIONS |
+  uint32_t Flags = SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_PERMISSIONS |
     SSH_FILEXFER_ATTR_ACCESSTIME | SSH_FILEXFER_ATTR_MODIFYTIME |
     SSH_FILEXFER_ATTR_OWNERGROUP;
   TSFTPPacket Packet(Type, GetSessionData()->GetCodePageAsNumber());
