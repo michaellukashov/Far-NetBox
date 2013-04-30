@@ -4,7 +4,6 @@
 
 #define CLEAN_SPACE_AVAILABLE
 
-#include <stdint.h>
 #include "SftpFileSystem.h"
 
 #include "PuttyTools.h"
@@ -206,13 +205,13 @@ struct TSFTPSupport : public TObject
     Loaded = false;
   }
 
-  uintptr_t AttributeMask;
-  uintptr_t AttributeBits;
-  uintptr_t OpenFlags;
-  uintptr_t AccessMask;
-  uintptr_t MaxReadSize;
-  uintptr_t OpenBlockMasks;
-  uintptr_t BlockMasks;
+  uint32_t AttributeMask;
+  uint32_t AttributeBits;
+  uint32_t OpenFlags;
+  uint32_t AccessMask;
+  uint32_t MaxReadSize;
+  uint32_t OpenBlockMasks;
+  uint32_t BlockMasks;
   TStrings * AttribExtensions;
   TStrings * Extensions;
   bool Loaded;
@@ -312,7 +311,7 @@ public:
     AddCardinal((uintptr_t)(Value & 0xFFFFFFFF));
   }
 
-  void AddData(const void * Data, intptr_t ALength)
+  void AddData(const void * Data, int32_t ALength)
   {
     AddCardinal(ALength);
     Add(Data, ALength);
@@ -325,7 +324,7 @@ public:
 
   void AddString(const RawByteString & Value)
   {
-    AddCardinal(Value.Length());
+    AddCardinal(static_cast<uint32_t>(Value.Length()));
     Add(Value.c_str(), Value.Length());
   }
 
@@ -355,7 +354,7 @@ public:
     TRemoteToken * Group, __int64 * MTime, __int64 * ATime,
     __int64 * Size, bool IsDirectory, intptr_t Version, bool Utf)
   {
-    intptr_t Flags = 0;
+    uint32_t Flags = 0;
     if (Size != NULL)
     {
       Flags |= SSH_FILEXFER_ATTR_SIZE;
@@ -409,8 +408,8 @@ public:
       if (Version < 4)
       {
         assert(Owner->GetIDValid() && Group->GetIDValid());
-        AddCardinal(Owner->GetID());
-        AddCardinal(Group->GetID());
+        AddCardinal(static_cast<uint32_t>(Owner->GetID()));
+        AddCardinal(static_cast<uint32_t>(Group->GetID()));
       }
       else
       {
@@ -430,8 +429,8 @@ public:
       // any way to reflect sbSignedTS here?
       // (note that casting __int64 > 2^31 < 2^32 to rde::uint32 is wrapped,
       // thus we never can set time after 2038, even if the server supports it)
-      AddCardinal(static_cast<uintptr_t>(ATime != NULL ? *ATime : *MTime));
-      AddCardinal(static_cast<uintptr_t>(MTime != NULL ? *MTime : *ATime));
+      AddCardinal(static_cast<uint32_t>(ATime != NULL ? *ATime : *MTime));
+      AddCardinal(static_cast<uint32_t>(MTime != NULL ? *MTime : *ATime));
     }
     if ((Version >= 4) && (ATime != NULL))
     {
@@ -526,9 +525,9 @@ public:
     return Result;
   }
 
-  uintptr_t GetSmallCardinal()
+  uint32_t GetSmallCardinal()
   {
-    uintptr_t Result;
+    uint32_t Result;
     Need(2);
     Result = (FData[FPosition] << 8) + FData[FPosition + 1];
     FPosition += 2;
@@ -856,7 +855,7 @@ public:
   uintptr_t GetCapacity() const { return FCapacity; }
   unsigned char GetType() const { return FType; }
   uintptr_t GetMessageNumber() const { return static_cast<uintptr_t>(FMessageNumber); }
-  void SetMessageNumber(uintptr_t Value) { FMessageNumber = Value; }
+  void SetMessageNumber(uint32_t Value) { FMessageNumber = Value; }
   TSFTPFileSystem * GetReservedBy() const { return FReservedBy; }
   void SetReservedBy(TSFTPFileSystem * Value) { FReservedBy = Value; }
 
@@ -866,7 +865,7 @@ private:
   uintptr_t FCapacity;
   uintptr_t FPosition;
   unsigned char FType;
-  uintptr_t FMessageNumber;
+  uint32_t FMessageNumber;
   TSFTPFileSystem * FReservedBy;
 
   static int FMessageCounter;
@@ -1329,7 +1328,7 @@ public:
     return TSFTPFixedLenQueue::Init(QueueLen);
   }
 
-  void InitFillGapRequest(__int64 Offset, uintptr_t Missing,
+  void InitFillGapRequest(__int64 Offset, uint32_t Missing,
     TSFTPPacket * Packet)
   {
     InitRequest(Packet, Offset, Missing);
@@ -1346,7 +1345,7 @@ public:
 protected:
   virtual bool InitRequest(TSFTPQueuePacket * Request)
   {
-    uintptr_t BlockSize = FFileSystem->DownloadBlockSize(OperationProgress);
+    uint32_t BlockSize = FFileSystem->DownloadBlockSize(OperationProgress);
     InitRequest(Request, FTransfered, BlockSize);
     Request->Token = reinterpret_cast<void*>(BlockSize);
     FTransfered += BlockSize;
@@ -1354,7 +1353,7 @@ protected:
   }
 
   void InitRequest(TSFTPPacket * Request, __int64 Offset,
-    uintptr_t Size)
+    uint32_t Size)
   {
     Request->ChangeType(SSH_FXP_READ);
     Request->AddString(FHandle);
@@ -1446,8 +1445,8 @@ protected:
         Request->ChangeType(SSH_FXP_WRITE);
         Request->AddString(FHandle);
         Request->AddInt64(FTransfered);
-        Request->AddData(BlockBuf.GetData(), BlockBuf.GetSize());
-        FLastBlockSize = (rde::uint32)BlockBuf.GetSize();
+        Request->AddData(BlockBuf.GetData(), static_cast<uint32_t>(BlockBuf.GetSize()));
+        FLastBlockSize = static_cast<uint32_t>(BlockBuf.GetSize());
 
         FTransfered += BlockBuf.GetSize();
       }
@@ -1969,19 +1968,19 @@ inline void TSFTPFileSystem::BusyEnd()
   }
 }
 //---------------------------------------------------------------------------
-uintptr_t TSFTPFileSystem::TransferBlockSize(uintptr_t Overhead,
+uint32_t TSFTPFileSystem::TransferBlockSize(uint32_t Overhead,
   TFileOperationProgressType * OperationProgress,
-  uintptr_t MinPacketSize,
-  uintptr_t MaxPacketSize)
+  uint32_t MinPacketSize,
+  uint32_t MaxPacketSize)
 {
-  const uintptr_t minPacketSize = MinPacketSize ? MinPacketSize : 4096;
+  const uint32_t minPacketSize = MinPacketSize ? MinPacketSize : 4096;
 
   // size + message number + type
-  const uintptr_t SFTPPacketOverhead = 4 + 4 + 1;
-  uintptr_t AMinPacketSize = FSecureShell->MinPacketSize();
-  uintptr_t AMaxPacketSize = FSecureShell->MaxPacketSize();
+  const uint32_t SFTPPacketOverhead = 4 + 4 + 1;
+  uint32_t AMinPacketSize = FSecureShell->MinPacketSize();
+  uint32_t AMaxPacketSize = FSecureShell->MaxPacketSize();
   bool MaxPacketSizeValid = (AMaxPacketSize > 0);
-  uintptr_t Result = OperationProgress->CPS();
+  uint32_t Result = static_cast<uint32_t>(OperationProgress->CPS());
 
   if ((MaxPacketSize > 0) &&
       ((MaxPacketSize < AMaxPacketSize) || !MaxPacketSizeValid))
@@ -1999,7 +1998,7 @@ uintptr_t TSFTPFileSystem::TransferBlockSize(uintptr_t Overhead,
 
   if (Result == 0)
   {
-    Result = OperationProgress->StaticBlockSize();
+    Result = static_cast<uint32_t>(OperationProgress->StaticBlockSize());
   }
 
   if (Result < minPacketSize)
@@ -2026,28 +2025,28 @@ uintptr_t TSFTPFileSystem::TransferBlockSize(uintptr_t Overhead,
     }
   }
 
-  Result = OperationProgress->AdjustToCPSLimit(Result);
+  Result = static_cast<uint32_t>(OperationProgress->AdjustToCPSLimit(Result));
 
   return Result;
 }
 //---------------------------------------------------------------------------
-uintptr_t TSFTPFileSystem::UploadBlockSize(const RawByteString & Handle,
+uint32_t TSFTPFileSystem::UploadBlockSize(const RawByteString & Handle,
   TFileOperationProgressType * OperationProgress)
 {
   // handle length + offset + data size
   const uintptr_t UploadPacketOverhead =
     sizeof(uint32_t) + sizeof(__int64) + sizeof(uint32_t);
-  return TransferBlockSize(UploadPacketOverhead + static_cast<uintptr_t>(Handle.Length()), OperationProgress,
-    GetSessionData()->GetSFTPMinPacketSize(),
-    GetSessionData()->GetSFTPMaxPacketSize());
+  return TransferBlockSize(UploadPacketOverhead + static_cast<uint32_t>(Handle.Length()), OperationProgress,
+    static_cast<uint32_t>(GetSessionData()->GetSFTPMinPacketSize()),
+    static_cast<uint32_t>(GetSessionData()->GetSFTPMaxPacketSize()));
 }
 //---------------------------------------------------------------------------
-uintptr_t TSFTPFileSystem::DownloadBlockSize(
+uint32_t TSFTPFileSystem::DownloadBlockSize(
   TFileOperationProgressType * OperationProgress)
 {
-  uintptr_t Result = TransferBlockSize(sizeof(uint32_t), OperationProgress,
-    GetSessionData()->GetSFTPMinPacketSize(),
-    GetSessionData()->GetSFTPMaxPacketSize());
+  uint32_t Result = TransferBlockSize(sizeof(uint32_t), OperationProgress,
+    static_cast<uint32_t>(GetSessionData()->GetSFTPMinPacketSize()),
+    static_cast<uint32_t>(GetSessionData()->GetSFTPMaxPacketSize()));
   if (FSupport->Loaded && (FSupport->MaxReadSize > 0) &&
       (Result > FSupport->MaxReadSize))
   {
@@ -2642,7 +2641,7 @@ void TSFTPFileSystem::DoStartup()
   FVersion = -1;
   FFileSystemInfoValid = false;
   TSFTPPacket Packet(SSH_FXP_INIT, GetSessionData()->GetCodePageAsNumber());
-  intptr_t MaxVersion = GetSessionData()->GetSFTPMaxVersion();
+  uint32_t MaxVersion = static_cast<uint32_t>(GetSessionData()->GetSFTPMaxVersion());
   if (MaxVersion > SFTPMaxVersion)
   {
     MaxVersion = SFTPMaxVersion;
@@ -2881,7 +2880,7 @@ void TSFTPFileSystem::DoStartup()
     (GetSessionInfo().SshImplementation.Pos(L"OpenSSH") == 1) ||
     (GetSessionInfo().SshImplementation.Pos(L"Sun_SSH") == 1);
 
-  FMaxPacketSize = GetSessionData()->GetSFTPMaxPacketSize();
+  FMaxPacketSize = static_cast<uint32_t>(GetSessionData()->GetSFTPMaxPacketSize());
   if (FMaxPacketSize == 0)
   {
     if (FOpenSSH && (FVersion == 3) && !FSupport->Loaded)
@@ -3278,7 +3277,7 @@ bool TSFTPFileSystem::RemoteFileExists(const UnicodeString & FullPath,
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::SendCustomReadFile(TSFTPPacket * Packet,
-  TSFTPPacket * Response, uintptr_t Flags)
+  TSFTPPacket * Response, uint32_t Flags)
 {
   if (FVersion >= 4)
   {
@@ -4479,7 +4478,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
 }
 //---------------------------------------------------------------------------
 RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
-  const UnicodeString & FileName, uintptr_t OpenType, __int64 Size)
+  const UnicodeString & FileName, uint32_t OpenType, __int64 Size)
 {
   TSFTPPacket Packet(SSH_FXP_OPEN, GetSessionData()->GetCodePageAsNumber());
 
@@ -4490,11 +4489,11 @@ RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
   }
   else
   {
-    uintptr_t Access =
+    uint32_t Access =
       FLAGMASK(FLAGSET(OpenType, SSH_FXF_READ), ACE4_READ_DATA) |
       FLAGMASK(FLAGSET(OpenType, SSH_FXF_WRITE), ACE4_WRITE_DATA | ACE4_APPEND_DATA);
 
-    uintptr_t Flags = 0;
+    uint32_t Flags = 0;
 
     if (FLAGSET(OpenType, SSH_FXF_CREAT | SSH_FXF_EXCL))
     {
@@ -5260,10 +5259,10 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
           bool Eof = false;
           bool PrevIncomplete = false;
-          intptr_t GapFillCount = 0;
-          intptr_t GapCount = 0;
-          uintptr_t Missing = 0;
-          uintptr_t DataLen = 0;
+          int32_t GapFillCount = 0;
+          int32_t GapCount = 0;
+          uint32_t Missing = 0;
+          uint32_t DataLen = 0;
           uintptr_t BlockSize = 0;
           bool ConvertToken = false;
 
@@ -5331,7 +5330,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
                   if ((FVersion < 4) || !OperationProgress->AsciiTransfer)
                   {
                     GapCount++;
-                    Missing = BlockSize - DataLen;
+                    Missing = static_cast<uint32_t>(BlockSize - DataLen);
                   }
                 }
                 else
