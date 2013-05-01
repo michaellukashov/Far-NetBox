@@ -61,6 +61,7 @@ BOOST_AUTO_TEST_SUITE(netbox)
 
 BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
 {
+#if 0
   WSADATA wsaData;
   WSAStartup(MAKEWORD(2, 2), &wsaData);
 
@@ -86,6 +87,7 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
   ne_session_destroy(sess);
   
   WSACleanup();
+#endif
 }
 
 /*BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
