@@ -711,7 +711,7 @@ void CCmdUI::SetText(LPCTSTR lpszText)
 
 	{
 		ENSURE(m_pOther != NULL);
-		AfxSetWindowText(m_pOther->m_hWnd, lpszText);
+//		AfxSetWindowText(m_pOther->m_hWnd, lpszText);
 	}
 }
 

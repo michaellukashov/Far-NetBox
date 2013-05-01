@@ -354,7 +354,7 @@ DWORD AFXAPI _AfxGetComCtlVersion();
 int AFX_CDECL AfxCriticalNewHandler(size_t nSize);
 #endif
 
-void AFXAPI AfxGlobalFree(HGLOBAL hGlobal);
+//void AFXAPI AfxGlobalFree(HGLOBAL hGlobal);
 
 /////////////////////////////////////////////////////////////////////////////
 // locale-invariant comparison helpers till CRT gets that support

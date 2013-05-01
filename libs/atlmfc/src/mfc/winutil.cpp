@@ -138,20 +138,20 @@ void AFXAPI AfxCancelModes(HWND hWndRcvr)
 	::SendMessage(hWndCancel, CB_SHOWDROPDOWN, FALSE, 0L);
 }
 
-void AFXAPI AfxGlobalFree(HGLOBAL hGlobal)
-{
-	if (hGlobal == NULL)
-		return;
+//void AFXAPI AfxGlobalFree(HGLOBAL hGlobal)
+//{
+//	if (hGlobal == NULL)
+//		return;
 
-	// avoid bogus warning error messages from various debugging tools
-	ASSERT(GlobalFlags(hGlobal) != GMEM_INVALID_HANDLE);
-	UINT nCount = GlobalFlags(hGlobal) & GMEM_LOCKCOUNT;
-	while (nCount--)
-		GlobalUnlock(hGlobal);
+//	// avoid bogus warning error messages from various debugging tools
+//	ASSERT(GlobalFlags(hGlobal) != GMEM_INVALID_HANDLE);
+//	UINT nCount = GlobalFlags(hGlobal) & GMEM_LOCKCOUNT;
+//	while (nCount--)
+//		GlobalUnlock(hGlobal);
 
-	// finally, really free the handle
-	GlobalFree(hGlobal);
-}
+//	// finally, really free the handle
+//	GlobalFree(hGlobal);
+//}
 
 /////////////////////////////////////////////////////////////////////////////
 // Special new handler for safety pool on temp maps

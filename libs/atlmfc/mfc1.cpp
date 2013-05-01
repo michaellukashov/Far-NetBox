@@ -13,6 +13,6 @@
 #include "src\mfc\filest.cpp"
 #include "src\mfc\strcore.cpp"
 #include "src\mfc\winstr.cpp"
-#include "src\mfc\winutil.cpp"
+//#include "src\mfc\winutil.cpp"
 #include "src\mfc\fixalloc.cpp"
 #include "src\mfc\timecore.cpp"

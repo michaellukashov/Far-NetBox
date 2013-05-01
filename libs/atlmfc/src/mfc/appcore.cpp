@@ -654,10 +654,10 @@ CWinApp::~CWinApp()
 	}
 
 	// free printer info
-	if (m_hDevMode != NULL)
-		AfxGlobalFree(m_hDevMode);
-	if (m_hDevNames != NULL)
-		AfxGlobalFree(m_hDevNames);
+//	if (m_hDevMode != NULL)
+//		AfxGlobalFree(m_hDevMode);
+//	if (m_hDevNames != NULL)
+//		AfxGlobalFree(m_hDevNames);
 
 	// free atoms if used
 	if (m_atomApp != NULL)
@@ -847,8 +847,8 @@ void CWinApp::DevModeChange(_In_z_ LPTSTR lpDeviceName)
 			return;
 
 		// DEVMODE changed for the current printer
-		if (m_hDevMode != NULL)
-			AfxGlobalFree(m_hDevMode);
+//		if (m_hDevMode != NULL)
+//			AfxGlobalFree(m_hDevMode);
 
 		// A zero for last param returns the size of buffer needed.
 		int nSize = DocumentProperties(NULL, hPrinter, lpDeviceName,
@@ -861,8 +861,8 @@ void CWinApp::DevModeChange(_In_z_ LPTSTR lpDeviceName)
 		if (DocumentProperties(NULL, hPrinter, lpDeviceName, lpDevMode,
 			NULL, DM_OUT_BUFFER) != IDOK)
 		{
-			AfxGlobalFree(m_hDevMode);
-			m_hDevMode = NULL;
+//			AfxGlobalFree(m_hDevMode);
+            m_hDevMode = NULL;
 		}
 		ClosePrinter(hPrinter);
 	}
