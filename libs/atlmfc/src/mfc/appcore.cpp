@@ -832,42 +832,6 @@ BOOL CWinApp::OnIdle(LONG lCount)
 /////////////////////////////////////////////////////////////////////////////
 // CWinApp idle processing
 
-void CWinApp::DevModeChange(_In_z_ LPTSTR lpDeviceName)
-{
-	if (m_hDevNames == NULL)
-		return;
-
-	LPDEVNAMES lpDevNames = (LPDEVNAMES)::GlobalLock(m_hDevNames);
-	ASSERT(lpDevNames != NULL);
-	if (lstrcmp((LPCTSTR)lpDevNames + lpDevNames->wDeviceOffset,
-		lpDeviceName) == 0)
-	{
-		HANDLE hPrinter;
-		if (!OpenPrinter(lpDeviceName, &hPrinter, NULL))
-			return;
-
-		// DEVMODE changed for the current printer
-//		if (m_hDevMode != NULL)
-//			AfxGlobalFree(m_hDevMode);
-
-		// A zero for last param returns the size of buffer needed.
-		int nSize = DocumentProperties(NULL, hPrinter, lpDeviceName,
-			NULL, NULL, 0);
-		ASSERT(nSize >= 0);
-		m_hDevMode = GlobalAlloc(GHND, nSize);
-		LPDEVMODE lpDevMode = (LPDEVMODE)GlobalLock(m_hDevMode);
-
-		// Fill in the rest of the structure.
-		if (DocumentProperties(NULL, hPrinter, lpDeviceName, lpDevMode,
-			NULL, DM_OUT_BUFFER) != IDOK)
-		{
-//			AfxGlobalFree(m_hDevMode);
-            m_hDevMode = NULL;
-		}
-		ClosePrinter(hPrinter);
-	}
-}
-
 IMPLEMENT_DYNAMIC(CWinApp, CWinThread)
 
 #pragma warning(disable: 4074)

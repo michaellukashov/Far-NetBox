@@ -21,7 +21,7 @@
 CCmdTarget::CCmdTarget()
 {
 	// capture module state where object was constructed
-	m_pModuleState = AfxGetModuleState();
+//	m_pModuleState = AfxGetModuleState();
 	ASSERT(m_pModuleState != NULL);
 
 	// initialize state
@@ -42,7 +42,7 @@ CCmdTarget::~CCmdTarget()
 		((COleDispatchImpl*)&m_xDispatch)->Disconnect();
 	ASSERT(m_dwRef <= 1);
 #endif
-	m_pModuleState = NULL;
+//	m_pModuleState = NULL;
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -581,53 +581,6 @@ BOOL AFXAPI AfxGetInProcServer(LPCTSTR lpszCLSID, CString& str)
 #endif  //!_AFX_NO_OLE_SUPPORT
 
 
-BOOL AFXAPI AfxResolveShortcut(CWnd* pWnd, LPCTSTR lpszFileIn,
-	_Out_cap_(cchPath) LPTSTR lpszFileOut, int cchPath)
-{
-	AFX_COM com;
-	IShellLink* psl = NULL;
-	*lpszFileOut = 0;   // assume failure
-	
-	if (!pWnd)
-		return FALSE;
-
-	SHFILEINFO info;
-	if ((SHGetFileInfo(lpszFileIn, 0, &info, sizeof(info),
-		SHGFI_ATTRIBUTES) == 0) || !(info.dwAttributes & SFGAO_LINK))
-	{
-		return FALSE;
-	}
-
-	if (FAILED(com.CreateInstance(CLSID_ShellLink, NULL, IID_IShellLink,
-		(LPVOID*)&psl)) || psl == NULL)
-	{
-		return FALSE;
-	}
-
-	IPersistFile *ppf = NULL;
-	if (SUCCEEDED(psl->QueryInterface(IID_IPersistFile, (LPVOID*)&ppf)))
-	{
-		CStringW strFileIn(lpszFileIn);
-		if (ppf != NULL && SUCCEEDED(ppf->Load(strFileIn.GetString(), STGM_READ)))
-		{
-			/* Resolve the link, this may post UI to find the link */
-			if (SUCCEEDED(psl->Resolve(pWnd->GetSafeHwnd(),
-				SLR_ANY_MATCH)))
-			{
-				psl->GetPath(lpszFileOut, cchPath, NULL, 0);
-				ppf->Release();
-				psl->Release();
-				return TRUE;
-			}
-		}
-		if (ppf != NULL)
-			ppf->Release();
-	}
-	psl->Release();
-	return FALSE;
-}
-
-
 // turn a file, relative path or other into an absolute path
 BOOL AFXAPI _AfxFullPath2(_Out_z_cap_c_(_MAX_PATH) LPTSTR lpszPathOut, LPCTSTR lpszFileIn, CFileException* pException)
 	// lpszPathOut = buffer of _MAX_PATH
