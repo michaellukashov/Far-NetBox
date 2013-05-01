@@ -46,3 +46,4 @@ src/NetBox/NetBox/
 *.ctl
 
 README.html
+CMakeLists.txt.user
