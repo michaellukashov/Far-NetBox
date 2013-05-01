@@ -2292,7 +2292,7 @@ protected:
 
 	// standard message implementation
 	afx_msg LRESULT OnNTCtlColor(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnDisplayChange(WPARAM, LPARAM);
+//	afx_msg LRESULT OnDisplayChange(WPARAM, LPARAM);
 	afx_msg LRESULT OnDragList(WPARAM, LPARAM);
 
 	// Helper functions for retrieving Text from windows messsage / structure

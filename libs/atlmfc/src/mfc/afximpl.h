@@ -86,7 +86,7 @@ struct AUX_DATA
 	void UpdateSysMetrics();
 };
 
-extern AFX_DATA AUX_DATA afxData;
+// extern AFX_DATA AUX_DATA afxData;
 
 /////////////////////////////////////////////////////////////////////////////
 // _AFX_EDIT_STATE
@@ -324,8 +324,8 @@ void AFXAPI AfxDeleteObject(HGDIOBJ* pObject);
 BOOL AFXAPI AfxCustomLogFont(UINT nIDS, LOGFONT* pLogFont);
 BOOL AFXAPI AfxGetPropSheetFont(CString& strFace, WORD& wSize, BOOL bWizard);
 
-BOOL AFXAPI _AfxIsComboBoxControl(HWND hWnd, UINT nStyle);
-BOOL AFXAPI _AfxCheckCenterDialog(LPCTSTR lpszResource);
+//BOOL AFXAPI _AfxIsComboBoxControl(HWND hWnd, UINT nStyle);
+//BOOL AFXAPI _AfxCheckCenterDialog(LPCTSTR lpszResource);
 BOOL AFXAPI _AfxCompareClassName(HWND hWnd, LPCTSTR lpszClassName);
 HWND AFXAPI _AfxChildWindowFromPoint(HWND, POINT);
 HWND AFXAPI _AfxTopChildWindowFromPoint(HWND, POINT);
@@ -599,11 +599,11 @@ union MessageMapFunctions
 	void    (AFX_MSG_CALL CWnd::*pfn_vwwh)(UINT, UINT, HANDLE);
 };
 
-CHandleMap* PASCAL afxMapHWND(BOOL bCreate = FALSE);
-CHandleMap* PASCAL afxMapHIMAGELIST(BOOL bCreate = FALSE);
-CHandleMap* PASCAL afxMapHDC(BOOL bCreate = FALSE);
-CHandleMap* PASCAL afxMapHGDIOBJ(BOOL bCreate = FALSE);
-CHandleMap* PASCAL afxMapHMENU(BOOL bCreate = FALSE);
+//CHandleMap* PASCAL afxMapHWND(BOOL bCreate = FALSE);
+//CHandleMap* PASCAL afxMapHIMAGELIST(BOOL bCreate = FALSE);
+//CHandleMap* PASCAL afxMapHDC(BOOL bCreate = FALSE);
+//CHandleMap* PASCAL afxMapHGDIOBJ(BOOL bCreate = FALSE);
+//CHandleMap* PASCAL afxMapHMENU(BOOL bCreate = FALSE);
 
 /////////////////////////////////////////////////////////////////////////////
 // Debugging/Tracing helpers

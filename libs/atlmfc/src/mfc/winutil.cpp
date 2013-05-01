@@ -16,42 +16,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // Other helpers
 
-BOOL AFXAPI AfxCustomLogFont(UINT nIDS, LOGFONT* pLogFont)
-{
-	ENSURE_ARG(pLogFont != NULL);
-	ASSERT(nIDS != 0);
-
-	TCHAR szFontInfo[256];
-	if (!AfxLoadString(nIDS, szFontInfo,_countof(szFontInfo)))
-		return FALSE;
-
-	LPTSTR lpszSize = _tcschr(szFontInfo, '\n');
-	if (lpszSize != NULL)
-	{
-		// get point size and convert to pixels
-		pLogFont->lfHeight = _ttoi(lpszSize+1);
-		pLogFont->lfHeight =
-			MulDiv(pLogFont->lfHeight, afxData.cyPixelsPerInch, 72);
-		*lpszSize = '\0';
-	}
-	Checked::tcsncpy_s(pLogFont->lfFaceName, _countof(pLogFont->lfFaceName), szFontInfo, _TRUNCATE);
-	return TRUE;
-}
-
-BOOL AFXAPI _AfxIsComboBoxControl(HWND hWnd, UINT nStyle)
-{
-	if (hWnd == NULL)
-		return FALSE;
-	// do cheap style compare first
-	if ((UINT)(::GetWindowLong(hWnd, GWL_STYLE) & 0x0F) != nStyle)
-		return FALSE;
-
-	// do expensive classname compare next
-	TCHAR szCompare[_countof("combobox")+1];
-	::GetClassName(hWnd, szCompare, _countof(szCompare));
-	return ::AfxInvariantStrICmp(szCompare, _T("combobox")) == 0;
-}
-
 BOOL AFXAPI _AfxCompareClassName(HWND hWnd, LPCTSTR lpszClassName)
 {
 	ASSERT(::IsWindow(hWnd));
@@ -153,16 +117,16 @@ void AFXAPI AfxCancelModes(HWND hWndRcvr)
 		return;     // let input go to window with focus
 
 	// focus is in part of a combo-box
-	if (!_AfxIsComboBoxControl(hWndCancel, (UINT)CBS_DROPDOWNLIST))
-	{
-		// check as a dropdown
-		hWndCancel = ::GetParent(hWndCancel);   // parent of edit is combo
-		if (hWndCancel == hWndRcvr)
-			return;     // let input go to part of combo
+//	if (!_AfxIsComboBoxControl(hWndCancel, (UINT)CBS_DROPDOWNLIST))
+//	{
+//		// check as a dropdown
+//		hWndCancel = ::GetParent(hWndCancel);   // parent of edit is combo
+//		if (hWndCancel == hWndRcvr)
+//			return;     // let input go to part of combo
 
-		if (!_AfxIsComboBoxControl(hWndCancel, (UINT)CBS_DROPDOWN))
-			return;     // not a combo-box that is active
-	}
+//		if (!_AfxIsComboBoxControl(hWndCancel, (UINT)CBS_DROPDOWN))
+//			return;     // not a combo-box that is active
+//	}
 
 	// combo-box is active, but if receiver is a popup, do nothing
 	if (hWndRcvr != NULL &&

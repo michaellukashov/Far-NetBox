@@ -326,11 +326,6 @@ AFX_MODULE_STATE::~AFX_MODULE_STATE()
 	}
 }
 
-void CTypeLibCacheMap::RemoveAll(void* pExcept)
-{
-	CMapPtrToPtr::RemoveAll();
-}
-
 AFX_MODULE_THREAD_STATE::AFX_MODULE_THREAD_STATE()
 {
 	m_nLastHit = static_cast<INT_PTR>(-1);

@@ -172,13 +172,6 @@ class CComCtlWrapper;
 #endif
 class CCommDlgWrapper;
 
-class CTypeLibCacheMap : public CMapPtrToPtr
-{
-public:
-	virtual void RemoveAll(void* pExcept);
-};
-
-
 // AFX_MODULE_STATE (global data for a module)
 class AFX_MODULE_STATE : public CNoTrackObject
 {
@@ -252,7 +245,7 @@ public:
 
 #ifndef _AFX_NO_OLE_SUPPORT
 	// Type library caches
-	CTypeLibCacheMap* m_pTypeLibCacheMap;
+    // CTypeLibCacheMap* m_pTypeLibCacheMap;
 #endif
 
 	// define thread local portions of module state
