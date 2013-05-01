@@ -278,7 +278,7 @@ LRESULT CWnd::Default()
 CWnd* PASCAL CWnd::FromHandle(HWND hWnd)
 {
 //	CHandleMap* pMap = afxMapHWND(TRUE); //create map if not exist
-	ASSERT(pMap != NULL);
+	// ASSERT(pMap != NULL);
     CWnd* pWnd = NULL; // (CWnd*)pMap->FromHandle(hWnd);
 
 #ifndef _AFX_NO_OCC_SUPPORT
@@ -761,9 +761,6 @@ BOOL CWnd::DestroyWindow()
 		if (pWnd != NULL)
 		{
 			// Should have been detached by OnNcDestroy
-#ifdef _DEBUG
-			ASSERT(pMap->LookupPermanent(hWndOrig) == NULL);
-#endif
 		}
 		else
 		{

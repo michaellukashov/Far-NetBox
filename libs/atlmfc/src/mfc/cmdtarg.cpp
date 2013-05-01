@@ -22,7 +22,6 @@ CCmdTarget::CCmdTarget()
 {
 	// capture module state where object was constructed
 //	m_pModuleState = AfxGetModuleState();
-	ASSERT(m_pModuleState != NULL);
 
 	// initialize state
 #ifndef _AFX_NO_OLE_SUPPORT
