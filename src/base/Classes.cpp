@@ -845,8 +845,8 @@ void TStrings::SaveToStream(TStream * /*Stream*/) const
 //---------------------------------------------------------------------------
 intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2)
 {
-  intptr_t Result = List->CompareStrings(List->FList[Index1].FString,
-                                    List->FList[Index2].FString);
+  intptr_t Result = List->CompareStrings(List->FList[Index1].first,
+    List->FList[Index2].first);
   return Result;
 }
 
@@ -916,7 +916,7 @@ bool TStringList::Find(const UnicodeString & S, intptr_t & Index)
   while ((H != NPOS) && (L <= H))
   {
     intptr_t I = (L + H) >> 1;
-    intptr_t C = CompareStrings(FList[I].FString, S);
+    intptr_t C = CompareStrings(FList[I].first, S);
     if (C < 0)
     {
       L = I + 1;
@@ -973,8 +973,8 @@ void TStringList::SetString(intptr_t Index, const UnicodeString & S)
   {
     TObject * Temp = GetObjects(Index);
     TStringItem Item;
-    Item.FString = S;
-    Item.FObject = Temp;
+    Item.first = S;
+    Item.second = Temp;
     FList[Index] = Item;
   }
   else
@@ -1002,7 +1002,7 @@ TObject *& TStringList::GetObjects(intptr_t Index)
   {
     Classes::Error(SListIndexError, Index);
   }
-  return FList[Index].FObject;
+  return FList[Index].second;
 }
 
 void TStringList::InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject)
@@ -1025,9 +1025,7 @@ void TStringList::InsertItem(intptr_t Index, const UnicodeString & S, TObject * 
     Classes::Error(SListIndexError, Index);
   }
   Changing();
-  TStringItem Item;
-  Item.FString = S;
-  Item.FObject = AObject;
+  TStringItem Item = rde::make_pair(S, AObject);
   if (Index == GetCount())
     FList.push_back(Item);
   else
@@ -1046,7 +1044,7 @@ UnicodeString & TStringList::GetString(intptr_t Index)
   {
     InsertItem(Index, UnicodeString(), NULL);
   }
-  return FList[Index].FString;
+  return FList[Index].first;
 }
 
 bool TStringList::GetCaseSensitive() const
@@ -1126,9 +1124,7 @@ void TStringList::PutObject(intptr_t Index, TObject * AObject)
     Classes::Error(SListIndexError, Index);
   }
   Changing();
-  TStringItem item;
-  item.FString = FList[Index].FString;
-  item.FObject = AObject;
+  TStringItem item = rde::make_pair(FList[Index].first, AObject);
   FList[Index] = item;
   Changed();
 }
@@ -1221,12 +1217,12 @@ void TStringList::ExchangeItems(intptr_t Index1, intptr_t Index2)
 {
   TStringItem * Item1 = &FList[Index1];
   TStringItem * Item2 = &FList[Index2];
-  UnicodeString Temp1 = Item1->FString;
-  Item1->FString = Item2->FString;
-  Item2->FString = Temp1;
-  TObject * Temp2 = Item1->FObject;
-  Item1->FObject = Item2->FObject;
-  Item2->FObject = Temp2;
+  UnicodeString Temp1 = Item1->first;
+  Item1->first = Item2->first;
+  Item2->first = Temp1;
+  TObject * Temp2 = Item1->second;
+  Item1->second = Item2->second;
+  Item2->second = Temp2;
 }
 
 intptr_t TStringList::CompareStrings(const UnicodeString & S1, const UnicodeString & S2)
