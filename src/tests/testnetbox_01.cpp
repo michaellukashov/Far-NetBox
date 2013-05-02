@@ -774,5 +774,18 @@ BOOST_FIXTURE_TEST_CASE(test29, base_fixture_t)
 }
 #endif
 //------------------------------------------------------------------------------
+BOOST_FIXTURE_TEST_CASE(test30, base_fixture_t)
+{
+  UnicodeString Instructions = L"Using keyboard authentication.\x0A\x0A\x0APlease enter your password.";
+  BOOST_TEST_MESSAGE("Instructions = " << AnsiString(Instructions).c_str());
+  UnicodeString Instructions2 = ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
+  Instructions2 = ReplaceStrAll(Instructions, L"\x0A\x0D", L"\x01");
+  Instructions2 = ReplaceStrAll(Instructions, L"\x0A", L"\x01");
+  Instructions2 = ReplaceStrAll(Instructions, L"\x0D", L"\x01");
+  Instructions2 = ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
+  BOOST_TEST_MESSAGE("Instructions2 = " << AnsiString(Instructions2).c_str());
+  BOOST_CHECK(wcscmp(Instructions2.c_str(), UnicodeString(L"Using keyboard authentication.\x0D\x0A\x0D\x0A\x0D\x0APlease enter your password.").c_str()) == 0);
+}
+//------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()
