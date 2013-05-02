@@ -1069,11 +1069,11 @@ UnicodeString SysErrorMessage(int ErrorCode)
 UnicodeString ReplaceStrAll(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat)
 {
   UnicodeString Result = Str;
-  intptr_t Pos = Result.Pos(What.c_str());
+  intptr_t Pos = Result.Pos(What);
   while (Pos > 0)
   {
     Result.Replace(Pos, What.Length(), ByWhat.c_str(), ByWhat.Length());
-    Pos = Result.Pos(What.c_str());
+    Pos = Result.Pos(What);
   }
   return Result;
 }
