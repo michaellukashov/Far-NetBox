@@ -360,8 +360,8 @@ BOOL CWinApp::_LoadSysPolicies() throw()
 			rgExplorerData},
 		{_T("Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Network"),
 			rgNetworkData},
-		{_T("Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Comdlg32"),
-			rgComDlgData},
+//		{_T("Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Comdlg32"),
+//			rgComDlgData},
 		{NULL, NULL}
 	};
 
@@ -654,10 +654,10 @@ CWinApp::~CWinApp()
 	}
 
 	// free printer info
-	if (m_hDevMode != NULL)
-		AfxGlobalFree(m_hDevMode);
-	if (m_hDevNames != NULL)
-		AfxGlobalFree(m_hDevNames);
+//	if (m_hDevMode != NULL)
+//		AfxGlobalFree(m_hDevMode);
+//	if (m_hDevNames != NULL)
+//		AfxGlobalFree(m_hDevNames);
 
 	// free atoms if used
 	if (m_atomApp != NULL)
@@ -831,42 +831,6 @@ BOOL CWinApp::OnIdle(LONG lCount)
 
 /////////////////////////////////////////////////////////////////////////////
 // CWinApp idle processing
-
-void CWinApp::DevModeChange(_In_z_ LPTSTR lpDeviceName)
-{
-	if (m_hDevNames == NULL)
-		return;
-
-	LPDEVNAMES lpDevNames = (LPDEVNAMES)::GlobalLock(m_hDevNames);
-	ASSERT(lpDevNames != NULL);
-	if (lstrcmp((LPCTSTR)lpDevNames + lpDevNames->wDeviceOffset,
-		lpDeviceName) == 0)
-	{
-		HANDLE hPrinter;
-		if (!OpenPrinter(lpDeviceName, &hPrinter, NULL))
-			return;
-
-		// DEVMODE changed for the current printer
-		if (m_hDevMode != NULL)
-			AfxGlobalFree(m_hDevMode);
-
-		// A zero for last param returns the size of buffer needed.
-		int nSize = DocumentProperties(NULL, hPrinter, lpDeviceName,
-			NULL, NULL, 0);
-		ASSERT(nSize >= 0);
-		m_hDevMode = GlobalAlloc(GHND, nSize);
-		LPDEVMODE lpDevMode = (LPDEVMODE)GlobalLock(m_hDevMode);
-
-		// Fill in the rest of the structure.
-		if (DocumentProperties(NULL, hPrinter, lpDeviceName, lpDevMode,
-			NULL, DM_OUT_BUFFER) != IDOK)
-		{
-			AfxGlobalFree(m_hDevMode);
-			m_hDevMode = NULL;
-		}
-		ClosePrinter(hPrinter);
-	}
-}
 
 IMPLEMENT_DYNAMIC(CWinApp, CWinThread)
 

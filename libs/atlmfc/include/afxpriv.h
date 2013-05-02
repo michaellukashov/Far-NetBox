@@ -284,7 +284,7 @@ void AFXAPI AfxResetMsgCache();
 #define _AfxUnhookWindowCreate  AfxUnhookWindowCreate
 
 // string helpers
-void AFXAPI AfxSetWindowText(HWND hWndCtrl, LPCTSTR lpszNew);
+//void AFXAPI AfxSetWindowText(HWND hWndCtrl, LPCTSTR lpszNew);
 int AFXAPI AfxLoadString(_In_ UINT nIDS, _Out_z_cap_post_count_(nMaxBuf, return + 1) LPSTR lpszBuf, _In_ UINT nMaxBuf = 256);
 int AFXAPI AfxLoadString(_In_ UINT nIDS, _Out_z_cap_post_count_(nMaxBuf, return + 1) LPWSTR lpszBuf, _In_ UINT nMaxBuf = 256);
 

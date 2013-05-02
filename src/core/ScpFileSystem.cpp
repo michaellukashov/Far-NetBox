@@ -700,7 +700,7 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
       bool WrongReturnCode =
         (GetReturnCode() > 1) || (GetReturnCode() == 1 && !(Params & coIgnoreWarnings));
 
-      if (Params & coOnlyReturnCode && WrongReturnCode)
+      if ((Params & coOnlyReturnCode) && WrongReturnCode)
       {
         FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED_CODEONLY, GetReturnCode()));
       }
@@ -2238,14 +2238,12 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         (OperationProgress->Cancel == csCancel) ||
         (OperationProgress->Cancel == csCancelTransfer)))
     {
-      bool LastLineRead = false;
-
       // If we get LastLine, it means that remote side 'scp' is already
       // terminated, so we need not to terminate it. There is also
       // possibility that remote side waits for confirmation, so it will hang.
       // This should not happen (hope)
       UnicodeString Line = FSecureShell->ReceiveLine();
-      LastLineRead = IsLastLine(Line);
+      bool LastLineRead = IsLastLine(Line);
       if (!LastLineRead)
       {
         SCPSendError((OperationProgress->Cancel ? L"Terminated by user." : L"Exception"), true);
@@ -2592,7 +2590,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
 
                   if (OperationProgress->AsciiTransfer)
                   {
-                    unsigned int PrevBlockSize = static_cast<unsigned int>(BlockBuf.GetSize());
+                    __int64 PrevBlockSize = BlockBuf.GetSize();
                     BlockBuf.Convert(FTerminal->GetSessionData()->GetEOLType(),
                       FTerminal->GetConfiguration()->GetLocalEOLType(), 0, ConvertToken);
                     OperationProgress->SetLocalSize(

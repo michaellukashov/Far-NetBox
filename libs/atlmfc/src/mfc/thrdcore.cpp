@@ -58,7 +58,7 @@ UINT APIENTRY _AfxThreadEntry(void* pParam)
 
 		// set current thread pointer for AfxGetThread
 		AFX_MODULE_STATE* pModuleState = AfxGetModuleState();
-		pThread->m_pModuleState = pModuleState;
+//		pThread->m_pModuleState = pModuleState;
 		AFX_MODULE_THREAD_STATE* pState = pModuleState->m_thread;
 		pState->m_pCurrentWinThread = pThread;
 

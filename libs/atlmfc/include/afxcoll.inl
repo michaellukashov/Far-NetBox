@@ -293,98 +293,98 @@ _AFXCOLL_INLINE void CObList::SetAt(POSITION pos, CObject* newElement)
 
 ////////////////////////////////////////////////////////////////////////////
 
-_AFXCOLL_INLINE INT_PTR CStringList::GetCount() const
-	{ return m_nCount; }
-_AFXCOLL_INLINE INT_PTR CStringList::GetSize() const
-	{ return m_nCount; }
-_AFXCOLL_INLINE BOOL CStringList::IsEmpty() const
-	{ return m_nCount == 0; }
-_AFXCOLL_INLINE CString& CStringList::GetHead()
-	{ ASSERT(m_pNodeHead != NULL);
-		return m_pNodeHead->data; }
-_AFXCOLL_INLINE const CString& CStringList::GetHead() const
-	{ ASSERT(m_pNodeHead != NULL);
-		return m_pNodeHead->data; }
-_AFXCOLL_INLINE CString& CStringList::GetTail()
-	{ ASSERT(m_pNodeTail != NULL);
-		return m_pNodeTail->data; }
-_AFXCOLL_INLINE const CString& CStringList::GetTail() const
-	{ ASSERT(m_pNodeTail != NULL);
-		return m_pNodeTail->data; }
-_AFXCOLL_INLINE POSITION CStringList::GetHeadPosition() const
-	{ return (POSITION) m_pNodeHead; }
-_AFXCOLL_INLINE POSITION CStringList::GetTailPosition() const
-	{ return (POSITION) m_pNodeTail; }
-_AFXCOLL_INLINE CString& CStringList::GetNext(POSITION& rPosition) // return *Position++
-	{ CNode* pNode = (CNode*) rPosition;
-		ASSERT(AfxIsValidAddress(pNode, sizeof(CNode)));
-		if( pNode == NULL )
-			AfxThrowInvalidArgException();
-		rPosition = (POSITION) pNode->pNext;
-		return pNode->data; }
-_AFXCOLL_INLINE const CString& CStringList::GetNext(POSITION& rPosition) const // return *Position++
-	{ CNode* pNode = (CNode*) rPosition;
-		ASSERT(AfxIsValidAddress(pNode, sizeof(CNode)));
-		if( pNode == NULL )
-			AfxThrowInvalidArgException();
-		rPosition = (POSITION) pNode->pNext;
-		return pNode->data; }
-_AFXCOLL_INLINE CString& CStringList::GetPrev(POSITION& rPosition) // return *Position--
-	{ CNode* pNode = (CNode*) rPosition;
-		ASSERT(AfxIsValidAddress(pNode, sizeof(CNode)));
-		if( pNode == NULL )
-			AfxThrowInvalidArgException();
-		rPosition = (POSITION) pNode->pPrev;
-		return pNode->data; }
-_AFXCOLL_INLINE const CString& CStringList::GetPrev(POSITION& rPosition) const // return *Position--
-	{ CNode* pNode = (CNode*) rPosition;
-		ASSERT(AfxIsValidAddress(pNode, sizeof(CNode)));
-		if( pNode == NULL )
-			AfxThrowInvalidArgException();
-		rPosition = (POSITION) pNode->pPrev;
-		return pNode->data; }
-_AFXCOLL_INLINE CString& CStringList::GetAt(POSITION position)
-	{ CNode* pNode = (CNode*) position;
-		ASSERT(AfxIsValidAddress(pNode, sizeof(CNode)));
-		if( pNode == NULL )
-			AfxThrowInvalidArgException();
-		return pNode->data; }
-_AFXCOLL_INLINE const CString& CStringList::GetAt(POSITION position) const
-	{ CNode* pNode = (CNode*) position;
-		ASSERT(AfxIsValidAddress(pNode, sizeof(CNode)));
-		if( pNode == NULL )
-			AfxThrowInvalidArgException();
-		return pNode->data; }
-_AFXCOLL_INLINE void CStringList::SetAt(POSITION pos, LPCTSTR newElement)
-	{ CNode* pNode = (CNode*) pos;
-		ASSERT(AfxIsValidAddress(pNode, sizeof(CNode)));
-		if( pNode == NULL )
-			AfxThrowInvalidArgException();
-		pNode->data = newElement; }
+//_AFXCOLL_INLINE INT_PTR CStringList::GetCount() const
+//	{ return m_nCount; }
+//_AFXCOLL_INLINE INT_PTR CStringList::GetSize() const
+//	{ return m_nCount; }
+//_AFXCOLL_INLINE BOOL CStringList::IsEmpty() const
+//	{ return m_nCount == 0; }
+//_AFXCOLL_INLINE CString& CStringList::GetHead()
+//	{ ASSERT(m_pNodeHead != NULL);
+//		return m_pNodeHead->data; }
+//_AFXCOLL_INLINE const CString& CStringList::GetHead() const
+//	{ ASSERT(m_pNodeHead != NULL);
+//		return m_pNodeHead->data; }
+//_AFXCOLL_INLINE CString& CStringList::GetTail()
+//	{ ASSERT(m_pNodeTail != NULL);
+//		return m_pNodeTail->data; }
+//_AFXCOLL_INLINE const CString& CStringList::GetTail() const
+//	{ ASSERT(m_pNodeTail != NULL);
+//		return m_pNodeTail->data; }
+//_AFXCOLL_INLINE POSITION CStringList::GetHeadPosition() const
+//	{ return (POSITION) m_pNodeHead; }
+//_AFXCOLL_INLINE POSITION CStringList::GetTailPosition() const
+//	{ return (POSITION) m_pNodeTail; }
+//_AFXCOLL_INLINE CString& CStringList::GetNext(POSITION& rPosition) // return *Position++
+//	{ CNode* pNode = (CNode*) rPosition;
+//		ASSERT(AfxIsValidAddress(pNode, sizeof(CNode)));
+//		if( pNode == NULL )
+//			AfxThrowInvalidArgException();
+//		rPosition = (POSITION) pNode->pNext;
+//		return pNode->data; }
+//_AFXCOLL_INLINE const CString& CStringList::GetNext(POSITION& rPosition) const // return *Position++
+//	{ CNode* pNode = (CNode*) rPosition;
+//		ASSERT(AfxIsValidAddress(pNode, sizeof(CNode)));
+//		if( pNode == NULL )
+//			AfxThrowInvalidArgException();
+//		rPosition = (POSITION) pNode->pNext;
+//		return pNode->data; }
+//_AFXCOLL_INLINE CString& CStringList::GetPrev(POSITION& rPosition) // return *Position--
+//	{ CNode* pNode = (CNode*) rPosition;
+//		ASSERT(AfxIsValidAddress(pNode, sizeof(CNode)));
+//		if( pNode == NULL )
+//			AfxThrowInvalidArgException();
+//		rPosition = (POSITION) pNode->pPrev;
+//		return pNode->data; }
+//_AFXCOLL_INLINE const CString& CStringList::GetPrev(POSITION& rPosition) const // return *Position--
+//	{ CNode* pNode = (CNode*) rPosition;
+//		ASSERT(AfxIsValidAddress(pNode, sizeof(CNode)));
+//		if( pNode == NULL )
+//			AfxThrowInvalidArgException();
+//		rPosition = (POSITION) pNode->pPrev;
+//		return pNode->data; }
+//_AFXCOLL_INLINE CString& CStringList::GetAt(POSITION position)
+//	{ CNode* pNode = (CNode*) position;
+//		ASSERT(AfxIsValidAddress(pNode, sizeof(CNode)));
+//		if( pNode == NULL )
+//			AfxThrowInvalidArgException();
+//		return pNode->data; }
+//_AFXCOLL_INLINE const CString& CStringList::GetAt(POSITION position) const
+//	{ CNode* pNode = (CNode*) position;
+//		ASSERT(AfxIsValidAddress(pNode, sizeof(CNode)));
+//		if( pNode == NULL )
+//			AfxThrowInvalidArgException();
+//		return pNode->data; }
+//_AFXCOLL_INLINE void CStringList::SetAt(POSITION pos, LPCTSTR newElement)
+//	{ CNode* pNode = (CNode*) pos;
+//		ASSERT(AfxIsValidAddress(pNode, sizeof(CNode)));
+//		if( pNode == NULL )
+//			AfxThrowInvalidArgException();
+//		pNode->data = newElement; }
 
-_AFXCOLL_INLINE void CStringList::SetAt(POSITION pos, const CString& newElement)
-	{ CNode* pNode = (CNode*) pos;
-		ASSERT(AfxIsValidAddress(pNode, sizeof(CNode)));
-		if( pNode == NULL )
-			AfxThrowInvalidArgException();
-		pNode->data = newElement; }
+//_AFXCOLL_INLINE void CStringList::SetAt(POSITION pos, const CString& newElement)
+//	{ CNode* pNode = (CNode*) pos;
+//		ASSERT(AfxIsValidAddress(pNode, sizeof(CNode)));
+//		if( pNode == NULL )
+//			AfxThrowInvalidArgException();
+//		pNode->data = newElement; }
 
 
 
 ////////////////////////////////////////////////////////////////////////////
 
-_AFXCOLL_INLINE INT_PTR CMapPtrToPtr::GetCount() const
-	{ return m_nCount; }
-_AFXCOLL_INLINE INT_PTR CMapPtrToPtr::GetSize() const
-	{ return m_nCount; }
-_AFXCOLL_INLINE BOOL CMapPtrToPtr::IsEmpty() const
-	{ return m_nCount == 0; }
-_AFXCOLL_INLINE void CMapPtrToPtr::SetAt(void* key, void* newValue)
-	{ (*this)[key] = newValue; }
-_AFXCOLL_INLINE POSITION CMapPtrToPtr::GetStartPosition() const
-	{ return (m_nCount == 0) ? NULL : BEFORE_START_POSITION; }
-_AFXCOLL_INLINE UINT CMapPtrToPtr::GetHashTableSize() const
-	{ return m_nHashTableSize; }
+//_AFXCOLL_INLINE INT_PTR CMapPtrToPtr::GetCount() const
+//	{ return m_nCount; }
+//_AFXCOLL_INLINE INT_PTR CMapPtrToPtr::GetSize() const
+//	{ return m_nCount; }
+//_AFXCOLL_INLINE BOOL CMapPtrToPtr::IsEmpty() const
+//	{ return m_nCount == 0; }
+//_AFXCOLL_INLINE void CMapPtrToPtr::SetAt(void* key, void* newValue)
+//	{ (*this)[key] = newValue; }
+//_AFXCOLL_INLINE POSITION CMapPtrToPtr::GetStartPosition() const
+//	{ return (m_nCount == 0) ? NULL : BEFORE_START_POSITION; }
+//_AFXCOLL_INLINE UINT CMapPtrToPtr::GetHashTableSize() const
+//	{ return m_nHashTableSize; }
 
 
 /////////////////////////////////////////////////////////////////////////////

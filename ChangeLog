@@ -1,5 +1,7 @@
-NetBox 2.1.29 ??.04.2013
+NetBox 2.1.29 ??.05.2013
 --------------------
+  * Bugfix: WebDAV: Do not remove local file if file moving was canceled.
+    (http://forum.farmanager.com/viewtopic.php?p=109224#p109224)
   * zlib core upgraded to 1.2.8
   * Bugfix: SFTP: Folder is created in root directory, not in current directory
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=108627#p108585)

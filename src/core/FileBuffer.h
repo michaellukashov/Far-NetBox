@@ -36,8 +36,7 @@ public:
   __int64 GetPosition() const;
 
 private:
-  TFileBuffer(const TFileBuffer &);
-  TFileBuffer & operator=(const TFileBuffer &);
+  NB_DISABLE_COPY(TFileBuffer)
 };
 //---------------------------------------------------------------------------
 class TSafeHandleStream : public THandleStream

@@ -88,8 +88,7 @@ protected:
   UnicodeString MungeKeyName(const UnicodeString & Key);
 
 private:
-  THierarchicalStorage(const THierarchicalStorage &);
-  THierarchicalStorage & operator=(const THierarchicalStorage &);
+  NB_DISABLE_COPY(THierarchicalStorage)
 };
 //------------------------------------------------------------------------------
 class TRegistryStorage : public THierarchicalStorage

@@ -31,8 +31,7 @@ public:
   static int ThreadProc(void * Thread);
 
 private:
-  TSimpleThread(const TSimpleThread &);
-  TSimpleThread & operator = (const TSimpleThread &);
+  NB_DISABLE_COPY(TSimpleThread)
 };
 //---------------------------------------------------------------------------
 class TSignalThread : public TSimpleThread
@@ -166,8 +165,7 @@ public:
   void SetIsEmpty(bool Value);
 
 private:
-  TTerminalQueue(const TTerminalQueue &);
-  TTerminalQueue & operator = (const TTerminalQueue &);
+  NB_DISABLE_COPY(TTerminalQueue)
 };
 //---------------------------------------------------------------------------
 class TQueueItem : public TObject
@@ -297,8 +295,7 @@ public:
   TQueueItemProxy * GetItem(intptr_t Index);
 
 private:
-  TTerminalQueueStatus(const TTerminalQueueStatus &);
-  TTerminalQueueStatus & operator = (const TTerminalQueueStatus &);
+  NB_DISABLE_COPY(TTerminalQueueStatus)
 };
 //---------------------------------------------------------------------------
 class TLocatedQueueItem : public TQueueItem
@@ -433,8 +430,7 @@ private:
   void TerminalInitializeLog(TObject * Sender);
 
 private:
-  TTerminalThread(const TTerminalThread &);
-  TTerminalThread & operator = (const TTerminalThread &);
+  NB_DISABLE_COPY(TTerminalThread)
 };
 //---------------------------------------------------------------------------
 #endif

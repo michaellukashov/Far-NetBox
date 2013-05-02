@@ -248,8 +248,7 @@ private:
   mutable UnicodeString FOptionScratch;
 
 private:
-  TFTPFileSystem(const TFTPFileSystem &);
-  TFTPFileSystem & operator=(const TFTPFileSystem &);
+  NB_DISABLE_COPY(TFTPFileSystem)
 };
 //---------------------------------------------------------------------------
 #endif // NO_FILEZILLA

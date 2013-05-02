@@ -33,6 +33,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <nbglobals.h>
 #include "nbafx.h"
 
 #include <new>
@@ -40,14 +41,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cstdio>
 #include <cassert>
 #include <cwchar>
-#include <ctime>
-#include <cmath>
-#include <limits>
-#include <cfloat>
-
-#include <process.h>
-#include <search.h>
-#include <share.h>
 
 #undef _W32API_OLD
 
@@ -61,50 +54,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define WIN32_LEAN_AND_MEAN
 #define VC_EXTRALEAN
 
-#define WIN32_NO_STATUS //exclude ntstatus.h macros from winnt.h
-#include <windows.h>
-#undef WIN32_NO_STATUS
-#include <winioctl.h>
-#include <mmsystem.h>
-#include <winspool.h>
-#include <setupapi.h>
-#include <aclapi.h>
-#include <sddl.h>
-#include <dbt.h>
-#include <lm.h>
-#define SECURITY_WIN32
-#include <security.h>
-#define PSAPI_VERSION 1
-#include <psapi.h>
-#include <shlobj.h>
-#include <shellapi.h>
-
-#ifdef _MSC_VER
-// # include <shobjidl.h>
-# include <winternl.h>
-# include <cfgmgr32.h>
-# include <ntddscsi.h>
-# include <virtdisk.h>
-# include <RestartManager.h>
-#endif // _MSC_VER
-
-#ifdef USE_DLMALLOC
-#include <dlmalloc/malloc-2.8.6.h>
-#endif
-
 //---------------------------------------------------------------------------
-
-#ifdef USE_DLMALLOC
-#define nb_malloc(size) dlmalloc(size)
-#define nb_calloc(count,size) dlcalloc(count,size)
-#define nb_realloc(ptr,size) dlrealloc(ptr,size)
-#define nb_free(ptr) dlfree(ptr)
-#else
-#define nb_malloc(size) ::malloc(size)
-#define nb_calloc(count,size) ::calloc(count,size)
-#define nb_realloc(ptr,size) ::realloc(ptr,size)
-#define nb_free(ptr) ::free(ptr)
-#endif
 
 #if defined(__cplusplus)
 inline void * operator_new(size_t size)
@@ -122,7 +72,7 @@ inline void operator_delete(void * p)
 {
 	nb_free(p);
 }
-#endif
+#endif // #if defined(__cplusplus)
 
 #ifdef USE_DLMALLOC
 /// custom memory allocation
@@ -185,11 +135,11 @@ inline void operator_delete(void * p)
 	}
 #else
 #define CUSTOM_MEM_ALLOCATION_IMPL DEF_CUSTOM_MEM_ALLOCATION_IMPL
-#endif
+#endif // #ifdef _DEBUG
 
 #else
 #define CUSTOM_MEM_ALLOCATION_IMPL 
-#endif
+#endif // #ifdef USE_DLMALLOC
 
 //---------------------------------------------------------------------------
 
@@ -331,18 +281,10 @@ inline void ClearStruct(T* s) { T dont_instantiate_this_template_with_pointers =
 template<typename T, size_t N>
 inline void ClearArray(T (&a)[N]) { memset(a, 0, sizeof(a[0])*N); }
 
-#define SIGN_UNICODE    0xFEFF
-#define SIGN_REVERSEBOM 0xFFFE
-#define SIGN_UTF8       0xBFBBEF
-
 #ifdef __GNUC__
 #ifndef nullptr
 #define nullptr NULL
 #endif
-#endif
-
-#if defined(_MSC_VER) && _MSC_VER>1600
-enum LNGID:int;
 #endif
 
 #if defined(_MSC_VER) && _MSC_VER<1600
@@ -366,6 +308,12 @@ bool CheckStructSize(const T* s) {return s && (s->StructSize >= sizeof(T));}
 #else
 #define SELF_TEST(code)
 #endif
+
+//---------------------------------------------------------------------------
+
+#define NB_DISABLE_COPY(Class) \
+    Class(const Class &); \
+    Class &operator=(const Class &);
 
 //---------------------------------------------------------------------------
 

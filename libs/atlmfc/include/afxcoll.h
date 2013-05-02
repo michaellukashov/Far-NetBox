@@ -42,12 +42,12 @@
 
 	// Maps (aka Dictionaries)
 	// class CMapWordToPtr;        // map from WORD to void*
-	// class CMapPtrToWord;        // map from void* to WORD
-	class CMapPtrToPtr;         // map from void* to void*
+    // class CMapPtrToWord;        // map from void* to WORD
+//    class CMapPtrToPtr;         // map from void* to void*
 
 	// Special String variants
-	class CStringArray;         // array of CStrings
-	class CStringList;          // list of CStrings
+//	class CStringArray;         // array of CStrings
+//	class CStringList;          // list of CStrings
 	// class CMapStringToPtr;      // map from CString to void*
 	// class CMapStringToOb;       // map from CString to CObject*
 	// class CMapStringToString;   // map from CString to CString
@@ -457,187 +457,187 @@ public:
 
 /////////////////////////////////////////////////////////////////////////////
 
-class CStringList : public CObject
-{
+//class CStringList : public CObject
+//{
 
-	DECLARE_SERIAL(CStringList)
+//	DECLARE_SERIAL(CStringList)
 
-protected:
-	struct CNode
-	{
-		CNode* pNext;
-		CNode* pPrev;
-		CString data;
-	};
-public:
+//protected:
+//	struct CNode
+//	{
+//		CNode* pNext;
+//		CNode* pPrev;
+//		CString data;
+//	};
+//public:
 
-// Construction
-	/* explicit */ CStringList(INT_PTR nBlockSize = 10);
+//// Construction
+//	/* explicit */ CStringList(INT_PTR nBlockSize = 10);
 
-// Attributes (head and tail)
-	// count of elements
-	INT_PTR GetCount() const;
-	INT_PTR GetSize() const;
-	BOOL IsEmpty() const;
+//// Attributes (head and tail)
+//	// count of elements
+//	INT_PTR GetCount() const;
+//	INT_PTR GetSize() const;
+//	BOOL IsEmpty() const;
 
-	// peek at head or tail
-	CString& GetHead();
-	const CString& GetHead() const;
-	CString& GetTail();
-	const CString& GetTail() const;
+//	// peek at head or tail
+//	CString& GetHead();
+//	const CString& GetHead() const;
+//	CString& GetTail();
+//	const CString& GetTail() const;
 
-// Operations
-	// get head or tail (and remove it) - don't call on empty list!
-	CString RemoveHead();
-	CString RemoveTail();
+//// Operations
+//	// get head or tail (and remove it) - don't call on empty list!
+//	CString RemoveHead();
+//	CString RemoveTail();
 
-	// add before head or after tail
-	POSITION AddHead(LPCTSTR newElement);
-	POSITION AddTail(LPCTSTR newElement);
+//	// add before head or after tail
+//	POSITION AddHead(LPCTSTR newElement);
+//	POSITION AddTail(LPCTSTR newElement);
 
-	POSITION AddHead(const CString& newElement);
-	POSITION AddTail(const CString& newElement);
-
-
-	// add another list of elements before head or after tail
-	void AddHead(CStringList* pNewList);
-	void AddTail(CStringList* pNewList);
-
-	// remove all elements
-	void RemoveAll();
-
-	// iteration
-	POSITION GetHeadPosition() const;
-	POSITION GetTailPosition() const;
-	CString& GetNext(POSITION& rPosition); // return *Position++
-	const CString& GetNext(POSITION& rPosition) const; // return *Position++
-	CString& GetPrev(POSITION& rPosition); // return *Position--
-	const CString& GetPrev(POSITION& rPosition) const; // return *Position--
-
-	// getting/modifying an element at a given position
-	CString& GetAt(POSITION position);
-	const CString& GetAt(POSITION position) const;
-	void SetAt(POSITION pos, LPCTSTR newElement);
-
-	void SetAt(POSITION pos, const CString& newElement);
-
-	void RemoveAt(POSITION position);
-
-	// inserting before or after a given position
-	POSITION InsertBefore(POSITION position, LPCTSTR newElement);
-	POSITION InsertAfter(POSITION position, LPCTSTR newElement);
-
-	POSITION InsertBefore(POSITION position, const CString& newElement);
-	POSITION InsertAfter(POSITION position, const CString& newElement);
+//	POSITION AddHead(const CString& newElement);
+//	POSITION AddTail(const CString& newElement);
 
 
-	// helper functions (note: O(n) speed)
-	POSITION Find(LPCTSTR searchValue, POSITION startAfter = NULL) const;
-						// defaults to starting at the HEAD
-						// return NULL if not found
-	POSITION FindIndex(INT_PTR nIndex) const;
-						// get the 'nIndex'th element (may return NULL)
+//	// add another list of elements before head or after tail
+//	void AddHead(CStringList* pNewList);
+//	void AddTail(CStringList* pNewList);
 
-// Implementation
-protected:
-	CNode* m_pNodeHead;
-	CNode* m_pNodeTail;
-	INT_PTR m_nCount;
-	CNode* m_pNodeFree;
-	struct CPlex* m_pBlocks;
-	INT_PTR m_nBlockSize;
+//	// remove all elements
+//	void RemoveAll();
 
-	CNode* NewNode(CNode*, CNode*);
-	void FreeNode(CNode*);
+//	// iteration
+//	POSITION GetHeadPosition() const;
+//	POSITION GetTailPosition() const;
+//	CString& GetNext(POSITION& rPosition); // return *Position++
+//	const CString& GetNext(POSITION& rPosition) const; // return *Position++
+//	CString& GetPrev(POSITION& rPosition); // return *Position--
+//	const CString& GetPrev(POSITION& rPosition) const; // return *Position--
 
-public:
-	~CStringList();
+//	// getting/modifying an element at a given position
+//	CString& GetAt(POSITION position);
+//	const CString& GetAt(POSITION position) const;
+//	void SetAt(POSITION pos, LPCTSTR newElement);
 
-	// local typedefs for class templates
-	typedef CString BASE_TYPE;
-	typedef LPCTSTR BASE_ARG_TYPE;
-};
+//	void SetAt(POSITION pos, const CString& newElement);
+
+//	void RemoveAt(POSITION position);
+
+//	// inserting before or after a given position
+//	POSITION InsertBefore(POSITION position, LPCTSTR newElement);
+//	POSITION InsertAfter(POSITION position, LPCTSTR newElement);
+
+//	POSITION InsertBefore(POSITION position, const CString& newElement);
+//	POSITION InsertAfter(POSITION position, const CString& newElement);
+
+
+//	// helper functions (note: O(n) speed)
+//	POSITION Find(LPCTSTR searchValue, POSITION startAfter = NULL) const;
+//						// defaults to starting at the HEAD
+//						// return NULL if not found
+//	POSITION FindIndex(INT_PTR nIndex) const;
+//						// get the 'nIndex'th element (may return NULL)
+
+//// Implementation
+//protected:
+//	CNode* m_pNodeHead;
+//	CNode* m_pNodeTail;
+//	INT_PTR m_nCount;
+//	CNode* m_pNodeFree;
+//	struct CPlex* m_pBlocks;
+//	INT_PTR m_nBlockSize;
+
+//	CNode* NewNode(CNode*, CNode*);
+//	void FreeNode(CNode*);
+
+//public:
+//	~CStringList();
+
+//	// local typedefs for class templates
+//	typedef CString BASE_TYPE;
+//	typedef LPCTSTR BASE_ARG_TYPE;
+//};
 
 
 /////////////////////////////////////////////////////////////////////////////
 
-class CMapPtrToPtr : public CObject
-{
+//class CMapPtrToPtr : public CObject
+//{
 
-	DECLARE_DYNAMIC(CMapPtrToPtr)
-protected:
-	// Association
-	struct CAssoc
-	{
-		CAssoc* pNext;
+//	DECLARE_DYNAMIC(CMapPtrToPtr)
+//protected:
+//	// Association
+//	struct CAssoc
+//	{
+//		CAssoc* pNext;
 
-		void* key;
-		void* value;
-	};
+//		void* key;
+//		void* value;
+//	};
 
-public:
+//public:
 
-// Construction
-	/* explicit */ CMapPtrToPtr(INT_PTR nBlockSize = 10);
+//// Construction
+//	/* explicit */ CMapPtrToPtr(INT_PTR nBlockSize = 10);
 
-// Attributes
-	// number of elements
-	INT_PTR GetCount() const;
-	INT_PTR GetSize() const;
-	BOOL IsEmpty() const;
+//// Attributes
+//	// number of elements
+//	INT_PTR GetCount() const;
+//	INT_PTR GetSize() const;
+//	BOOL IsEmpty() const;
 
-	// Lookup
-	BOOL Lookup(void* key, void*& rValue) const;
+//	// Lookup
+//	BOOL Lookup(void* key, void*& rValue) const;
 
-// Operations
-	// Lookup and add if not there
-	void*& operator[](void* key);
+//// Operations
+//	// Lookup and add if not there
+//	void*& operator[](void* key);
 
-	// add a new (key, value) pair
-	void SetAt(void* key, void* newValue);
+//	// add a new (key, value) pair
+//	void SetAt(void* key, void* newValue);
 
-	// removing existing (key, ?) pair
-	BOOL RemoveKey(void* key);
-	void RemoveAll();
+//	// removing existing (key, ?) pair
+//	BOOL RemoveKey(void* key);
+//	void RemoveAll();
 
-	// iterating all (key, value) pairs
-	POSITION GetStartPosition() const;
-	void GetNextAssoc(POSITION& rNextPosition, void*& rKey, void*& rValue) const;
+//	// iterating all (key, value) pairs
+//	POSITION GetStartPosition() const;
+//	void GetNextAssoc(POSITION& rNextPosition, void*& rKey, void*& rValue) const;
 
-	// advanced features for derived classes
-	UINT GetHashTableSize() const;
-	void InitHashTable(UINT hashSize, BOOL bAllocNow = TRUE);
+//	// advanced features for derived classes
+//	UINT GetHashTableSize() const;
+//	void InitHashTable(UINT hashSize, BOOL bAllocNow = TRUE);
 
-// Overridables: special non-virtual (see map implementation for details)
-	// Routine used to user-provided hash keys
-	UINT HashKey(void* key) const;
+//// Overridables: special non-virtual (see map implementation for details)
+//	// Routine used to user-provided hash keys
+//	UINT HashKey(void* key) const;
 
-// Implementation
-protected:
-	CAssoc** m_pHashTable;
-	UINT m_nHashTableSize;
-	INT_PTR m_nCount;
-	CAssoc* m_pFreeList;
-	struct CPlex* m_pBlocks;
-	INT_PTR m_nBlockSize;
+//// Implementation
+//protected:
+//	CAssoc** m_pHashTable;
+//	UINT m_nHashTableSize;
+//	INT_PTR m_nCount;
+//	CAssoc* m_pFreeList;
+//	struct CPlex* m_pBlocks;
+//	INT_PTR m_nBlockSize;
 
-	CAssoc* NewAssoc();
-	void FreeAssoc(CAssoc*);
-	CAssoc* GetAssocAt(void*, UINT&, UINT&) const;
+//	CAssoc* NewAssoc();
+//	void FreeAssoc(CAssoc*);
+//	CAssoc* GetAssocAt(void*, UINT&, UINT&) const;
 
-public:
-	~CMapPtrToPtr();
+//public:
+//	~CMapPtrToPtr();
 
-	void* GetValueAt(void* key) const;
+//	void* GetValueAt(void* key) const;
 
 
-protected:
-	// local typedefs for CTypedPtrMap class template
-	typedef void* BASE_KEY;
-	typedef void* BASE_ARG_KEY;
-	typedef void* BASE_VALUE;
-	typedef void* BASE_ARG_VALUE;
-};
+//protected:
+//	// local typedefs for CTypedPtrMap class template
+//	typedef void* BASE_KEY;
+//	typedef void* BASE_ARG_KEY;
+//	typedef void* BASE_VALUE;
+//	typedef void* BASE_ARG_VALUE;
+//};
 
 
 #ifdef _AFX_PACKING

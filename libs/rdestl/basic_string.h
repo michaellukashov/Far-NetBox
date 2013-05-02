@@ -163,7 +163,11 @@ public:
 	{
 		return TStorage::length();
 	}
-	bool empty() const	{ return length() == 0; }
+    size_type size() const
+    {
+        return length();
+    }
+    bool empty() const	{ return length() == 0; }
 
 	const allocator_type& get_allocator() const	{ return TStorage::get_allocator; }
 

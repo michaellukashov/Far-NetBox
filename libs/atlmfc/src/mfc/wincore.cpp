@@ -253,33 +253,33 @@ LRESULT CWnd::Default()
 /////////////////////////////////////////////////////////////////////////////
 // Map from HWND to CWnd*
 
-CHandleMap* PASCAL afxMapHWND(BOOL bCreate)
-{
-	AFX_MODULE_THREAD_STATE* pState = AfxGetModuleThreadState();
-	// if (pState->m_pmapHWND == NULL && bCreate)
-	{
-		BOOL bEnable = AfxEnableMemoryTracking(FALSE);
-#ifndef _AFX_PORTABLE
-		_PNH pnhOldHandler = AfxSetNewHandler(&AfxCriticalNewHandler);
-#endif
-		// pState->m_pmapHWND = new CHandleMap(RUNTIME_CLASS(CWnd),
-			// ConstructDestruct<CWnd>::Construct, ConstructDestruct<CWnd>::Destruct, 
-			// offsetof(CWnd, m_hWnd));
+//CHandleMap* PASCAL afxMapHWND(BOOL bCreate)
+//{
+//	AFX_MODULE_THREAD_STATE* pState = AfxGetModuleThreadState();
+//	// if (pState->m_pmapHWND == NULL && bCreate)
+//	{
+//		BOOL bEnable = AfxEnableMemoryTracking(FALSE);
+//#ifndef _AFX_PORTABLE
+//		_PNH pnhOldHandler = AfxSetNewHandler(&AfxCriticalNewHandler);
+//#endif
+//		// pState->m_pmapHWND = new CHandleMap(RUNTIME_CLASS(CWnd),
+//			// ConstructDestruct<CWnd>::Construct, ConstructDestruct<CWnd>::Destruct,
+//			// offsetof(CWnd, m_hWnd));
 
-#ifndef _AFX_PORTABLE
-		AfxSetNewHandler(pnhOldHandler);
-#endif
-		AfxEnableMemoryTracking(bEnable);
-	}
-	// return pState->m_pmapHWND;
-  return 0;
-}
+//#ifndef _AFX_PORTABLE
+//		AfxSetNewHandler(pnhOldHandler);
+//#endif
+//		AfxEnableMemoryTracking(bEnable);
+//	}
+//	// return pState->m_pmapHWND;
+//  return 0;
+//}
 
 CWnd* PASCAL CWnd::FromHandle(HWND hWnd)
 {
-	CHandleMap* pMap = afxMapHWND(TRUE); //create map if not exist
-	ASSERT(pMap != NULL);
-	CWnd* pWnd = (CWnd*)pMap->FromHandle(hWnd);
+//	CHandleMap* pMap = afxMapHWND(TRUE); //create map if not exist
+	// ASSERT(pMap != NULL);
+    CWnd* pWnd = NULL; // (CWnd*)pMap->FromHandle(hWnd);
 
 #ifndef _AFX_NO_OCC_SUPPORT
 	pWnd->AttachControlSite(pMap);
@@ -291,14 +291,14 @@ CWnd* PASCAL CWnd::FromHandle(HWND hWnd)
 
 CWnd* PASCAL CWnd::FromHandlePermanent(HWND hWnd)
 {
-	CHandleMap* pMap = afxMapHWND();
+//	CHandleMap* pMap = afxMapHWND();
 	CWnd* pWnd = NULL;
-	if (pMap != NULL)
+    /*if (pMap != NULL)
 	{
 		// only look in the permanent map - does no allocations
 		pWnd = (CWnd*)pMap->LookupPermanent(hWnd);
 		// ASSERT(pWnd == NULL || pWnd->m_hWnd == hWnd);
-	}
+    }*/
 	return pWnd;
 }
 
@@ -311,8 +311,8 @@ BOOL CWnd::Attach(HWND hWndNew)
 	if (hWndNew == NULL)
 		return FALSE;
 
-	CHandleMap* pMap = afxMapHWND(TRUE); // create map if not exist
-	ASSERT(pMap != NULL);
+//	CHandleMap* pMap = afxMapHWND(TRUE); // create map if not exist
+//	ASSERT(pMap != NULL);
 
 	// pMap->SetPermanent(m_hWnd = hWndNew, this);
 
@@ -470,7 +470,7 @@ _AfxCbtFilterHook(int code, WPARAM wParam, LPARAM lParam)
 		WNDPROC oldWndProc;
 		if (pWndInit != NULL)
 		{
-			AFX_MANAGE_STATE(pWndInit->m_pModuleState);
+//			AFX_MANAGE_STATE(pWndInit->m_pModuleState);
 
 			// the window should not be in the permanent map at this time
 			ASSERT(CWnd::FromHandlePermanent(hWnd) == NULL);
@@ -761,9 +761,6 @@ BOOL CWnd::DestroyWindow()
 		if (pWnd != NULL)
 		{
 			// Should have been detached by OnNcDestroy
-#ifdef _DEBUG
-			ASSERT(pMap->LookupPermanent(hWndOrig) == NULL);
-#endif
 		}
 		else
 		{
@@ -1091,7 +1088,7 @@ BEGIN_MESSAGE_MAP(CWnd, CCmdTarget)
 	ON_WM_DESTROY()
 #endif
 	ON_MESSAGE(WM_ACTIVATETOPLEVEL, &CWnd::OnActivateTopLevel)
-	ON_MESSAGE(WM_DISPLAYCHANGE, &CWnd::OnDisplayChange)
+//	ON_MESSAGE(WM_DISPLAYCHANGE, &CWnd::OnDisplayChange)
 	// ON_REGISTERED_MESSAGE(CWnd::m_nMsgDragList, &CWnd::OnDragList)
 	ON_MESSAGE(WM_GETOBJECT, &CWnd::OnGetObject)
 END_MESSAGE_MAP()
@@ -1984,22 +1981,6 @@ LRESULT CWnd::OnActivateTopLevel(WPARAM wParam, LPARAM)
 	return 0;
 }
 
-void CWnd::OnSysColorChange()
-{
-	CWinApp* pApp = AfxGetApp();
-	if (pApp != NULL && pApp->m_pMainWnd == this)
-	{
-		// recolor global brushes used by control bars
-		afxData.UpdateSysColors();
-	}
-
-	// forward this message to all other child windows
-	if (!(GetStyle() & WS_CHILD))
-		SendMessageToDescendants(WM_SYSCOLORCHANGE, 0, 0L, TRUE, TRUE);
-
-	Default();
-}
-
 BOOL _afxGotScrollLines;
 
 void CWnd::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
@@ -2015,7 +1996,7 @@ void CWnd::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
 		m_pCtrlCont->BroadcastAmbientPropertyChange( DISPID_AMBIENT_LOCALEID );
 	}*/
 
-	CWnd::OnDisplayChange(0, 0);    // to update system metrics, etc.
+//	CWnd::OnDisplayChange(0, 0);    // to update system metrics, etc.
 }
 
 BOOL CWnd::OnHelpInfo(HELPINFO* /*pHelpInfo*/)
@@ -2033,26 +2014,6 @@ BOOL CWnd::OnHelpInfo(HELPINFO* /*pHelpInfo*/)
 		}
 	}
 	return Default() != 0;
-}
-
-LRESULT CWnd::OnDisplayChange(WPARAM, LPARAM)
-{
-	// update metrics if this window is the main window
-	if (AfxGetMainWnd() == this)
-	{
-		// update any system metrics cache
-		afxData.UpdateSysMetrics();
-	}
-
-	// forward this message to all other child windows
-	if (!(GetStyle() & WS_CHILD))
-	{
-		const MSG* pMsg = GetCurrentMessage();
-		SendMessageToDescendants(pMsg->message, pMsg->wParam, pMsg->lParam,
-			TRUE, TRUE);
-	}
-
-	return Default();
 }
 
 LRESULT CWnd::OnDragList(WPARAM, LPARAM lParam)
@@ -2154,110 +2115,6 @@ public:
 	}	
 };
 
-BEGIN_INTERFACE_MAP(CWnd, CCmdTarget)
-//	INTERFACE_PART(CWnd, __uuidof(IAccessible), Accessible)
-//	INTERFACE_PART(CWnd, __uuidof(IAccessibleServer), AccessibleServer)
-END_INTERFACE_MAP()
-
-ULONG FAR EXPORT CWnd::XAccessible::AddRef()
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	// return pThis->ExternalAddRef();
-	return 0;
-}
-
-ULONG FAR EXPORT CWnd::XAccessible::Release()
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	// return pThis->ExternalRelease();
-	return 0;
-}
-
-HRESULT FAR EXPORT CWnd::XAccessible::QueryInterface(
-	REFIID iid, void FAR* FAR* ppvObj)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return 0; // (HRESULT)pThis->ExternalQueryInterface(&iid, ppvObj);
-}
-
-HRESULT CWnd::XAccessible::Invoke(
-			/* [in] */ DISPID dispIdMember,
-			/* [in] */ REFIID refiid,
-			/* [in] */ LCID lcid,
-			/* [in] */ WORD wFlags,
-			/* [out][in] */ DISPPARAMS *pDispParams,
-			/* [out] */ VARIANT *pVarResult,
-			/* [out] */ EXCEPINFO *pExcepInfo,
-			/* [out] */ UINT *puArgErr) 
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return 0;
-} 
-
-HRESULT CWnd::XAccessible::GetIDsOfNames(
-	REFIID refiid,
-	LPOLESTR *rgszNames,
-	UINT cNames,
-	LCID lcid,
-	DISPID *rgDispId) 
-{
-	return 0;
-}
-
-HRESULT CWnd::XAccessible::GetTypeInfoCount(unsigned int*  pctinfo) 
-{
-	if (pctinfo == NULL) 
-	{
-		return E_POINTER;
-	}
-	*pctinfo = 1;
-	return S_OK;
-}
-HRESULT CWnd::XAccessible::GetTypeInfo(unsigned int /*iTInfo*/, LCID /*lcid*/, ITypeInfo** /*ppTInfo*/) 
-{
-	return E_NOTIMPL;
-}
-
-ULONG FAR EXPORT CWnd::XAccessibleServer::AddRef()
-{
-	METHOD_PROLOGUE(CWnd, AccessibleServer)
-	// return pThis->ExternalAddRef();
-	return 0;
-}
-
-ULONG FAR EXPORT CWnd::XAccessibleServer::Release()
-{
-	METHOD_PROLOGUE(CWnd, AccessibleServer)
-	// return pThis->ExternalRelease();
-	return 0;
-}
-
-HRESULT FAR EXPORT CWnd::XAccessibleServer::QueryInterface(
-	REFIID iid, void FAR* FAR* ppvObj)
-{
-	METHOD_PROLOGUE(CWnd, AccessibleServer)
-	return 0; // (HRESULT)pThis->ExternalQueryInterface(&iid, ppvObj);
-}
-
-// Helpers for CWnd or derived class that contains Windowless Active X controls
-// Used by CView, CFormView, CDialog and CDialogBar
-long CWnd::GetWindowLessChildCount()
-{
-	long lCount = 0;
- 	/*if (m_pCtrlCont != NULL)
-	{
-		// Add to the count the number of windowless active X controls.
-		POSITION pos = m_pCtrlCont->m_listSitesOrWnds.GetHeadPosition();
-		while(pos)
-		{
-			COleControlSiteOrWnd *pSiteOrWnd = m_pCtrlCont->m_listSitesOrWnds.GetNext(pos);
-			ASSERT(pSiteOrWnd);
-			if(pSiteOrWnd->m_pSite && pSiteOrWnd->m_pSite->m_bIsWindowless)
-				lCount ++;
-		}
-	}*/
-	return lCount;
-}
 long CWnd::GetWindowedChildCount()
 {
 	long lCount = 0;
@@ -2267,7 +2124,7 @@ long CWnd::GetWindowedChildCount()
 
 long CWnd::GetAccessibleChildCount()
 {
-	return GetWindowedChildCount() + GetWindowLessChildCount();
+    return 0; // GetWindowedChildCount() + GetWindowLessChildCount();
 }
 
 HRESULT CWnd::GetAccessibleChild(VARIANT varChild, IDispatch** ppdispChild)
@@ -2397,8 +2254,8 @@ BOOL PASCAL CWnd::GrayCtlColor(HDC hDC, HWND hWnd, UINT nCtlColor,
 	{
 		// only handle requests to draw the space between edit and drop button
 		//  in a drop-down combo (not a drop-down list)
-		if (!_AfxIsComboBoxControl(hWnd, (UINT)CBS_DROPDOWN))
-			return FALSE;
+//		if (!_AfxIsComboBoxControl(hWnd, (UINT)CBS_DROPDOWN))
+//			return FALSE;
 	}
 
 	// set background color and return handle to brush
@@ -2646,7 +2503,6 @@ BOOL AFXAPI AfxEndDeferRegisterClass(LONG fToRegister)
 	memset(&wndcls, 0, sizeof(WNDCLASS));   // start with NULL defaults
 	wndcls.lpfnWndProc = DefWindowProc;
 	wndcls.hInstance = AfxGetInstanceHandle();
-	wndcls.hCursor = afxData.hcurArrow;
 
 	INITCOMMONCONTROLSEX init;
 	init.dwSize = sizeof(init);

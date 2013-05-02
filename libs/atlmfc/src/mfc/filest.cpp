@@ -41,19 +41,6 @@ CString CFile::GetFileName() const
 	return strResult;
 }
 
-CString CFile::GetFileTitle() const
-{
-	ASSERT_VALID(this);
-
-	CFileStatus status;
-	GetStatus(status);
-	CString strResult;
-	AfxGetFileTitle(status.m_szFullName, strResult.GetBuffer(_MAX_FNAME),
-		_MAX_FNAME);
-	strResult.ReleaseBuffer();
-	return strResult;
-}
-
 CString CFile::GetFilePath() const
 {
 	ASSERT_VALID(this);

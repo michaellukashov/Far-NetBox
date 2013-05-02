@@ -57,14 +57,14 @@ struct ConstructDestruct
 
 class CWinThread;       // forward reference for friend declaration
 
-class CHandleMap
+/*class CHandleMap
 {
 private:    // implementation
 	CFixedAllocNoSync m_alloc;
 	void (PASCAL* m_pfnConstructObject)(CObject* pObject);
 	void (PASCAL* m_pfnDestructObject)(CObject* pObject);
-	CMapPtrToPtr m_permanentMap;
-	CMapPtrToPtr m_temporaryMap;
+//	CMapPtrToPtr m_permanentMap;
+//	CMapPtrToPtr m_temporaryMap;
 	CRuntimeClass* m_pClass;
 	size_t m_nOffset;       // offset of handles in the object
 	int m_nHandles;         // 1 or 2 (for CDC)
@@ -114,3 +114,4 @@ inline CObject* CHandleMap::LookupPermanent(HANDLE h)
 	{ return (CObject*)m_permanentMap.GetValueAt((LPVOID)h); }
 inline CObject* CHandleMap::LookupTemporary(HANDLE h)
 	{ return (CObject*)m_temporaryMap.GetValueAt((LPVOID)h); }
+*/

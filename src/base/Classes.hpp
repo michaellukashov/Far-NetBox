@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <stdarg.h>
 #include <vector.h>
+#include <rdestl/pair.h>
 #include "stdafx.h"
 #include <CoreDefs.hpp>
 
@@ -346,14 +347,7 @@ protected:
   intptr_t FUpdateCount;
 };
 
-struct TStringItem : public TObject
-{
-  TStringItem() : FString(), FObject(NULL) {}
-  ~TStringItem() { FString.Clear(); FObject = NULL; }
-
-  UnicodeString FString;
-  TObject * FObject;
-};
+typedef rde::pair<UnicodeString, TObject *> TStringItem;
 
 class TStringList;
 typedef intptr_t (TStringListSortCompare)(TStringList * List, intptr_t Index1, intptr_t Index2);
@@ -951,20 +945,17 @@ public:
   {
     return (FSet.size() == 0);
   }
-  /*
-      wxString ToString(void)
-      {
-        wxString Result;
-        Result.Alloc(FSet.size());
-        typename std::set<T>::const_iterator itr;
-        for(itr = FSet.begin(); itr != FSet.end(); itr++)
-        {
-          Result +=(wxChar) *itr;
-        }
+  UnicodeString ToString(void)
+  {
+    UnicodeString Result(FSet.size());
+    typename std::set<T>::const_iterator itr;
+    for(itr = FSet.begin(); itr != FSet.end(); itr++)
+    {
+      Result += (wchar_t)*itr;
+    }
 
-        return Result;
-      }
-  */
+    return Result;
+  }
 };
 
 //---------------------------------------------------------------------------

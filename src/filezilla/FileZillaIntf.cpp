@@ -38,9 +38,10 @@ void TFileZillaIntf::SetResourceModule(void * ResourceHandle)
 //---------------------------------------------------------------------------
 TFileZillaIntf::TFileZillaIntf() :
   FFileZillaApi(NULL),
-  FIntern(new TFileZillaIntern(this)),
+  FIntern(NULL),
   FServer(new t_server())
 {
+  FIntern = new TFileZillaIntern(this);
 }
 //---------------------------------------------------------------------------
 TFileZillaIntf::~TFileZillaIntf()

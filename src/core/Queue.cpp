@@ -19,8 +19,7 @@ public:
   virtual void Execute(void * Arg) = 0;
   virtual bool Force() { return false; }
 private:
-  TUserAction(const TUserAction &);
-  TUserAction & operator = (const TUserAction &);
+  NB_DISABLE_COPY(TUserAction)
 };
 //---------------------------------------------------------------------------
 class TNotifyAction : public TUserAction
@@ -44,8 +43,7 @@ public:
   TObject * Sender;
 
 private:
-  TNotifyAction(const TNotifyAction &);
-  TNotifyAction & operator = (const TNotifyAction &);
+  NB_DISABLE_COPY(TNotifyAction)
 };
 //---------------------------------------------------------------------------
 class TInformationUserAction : public TUserAction
@@ -80,8 +78,7 @@ public:
   bool Status;
   int Phase;
 private:
-  TInformationUserAction(const TInformationUserAction &);
-  TInformationUserAction & operator = (const TInformationUserAction &);
+  NB_DISABLE_COPY(TInformationUserAction)
 };
 //---------------------------------------------------------------------------
 class TQueryUserAction : public TUserAction
@@ -116,8 +113,7 @@ public:
   TQueryType Type;
 
 private:
-  TQueryUserAction(const TQueryUserAction &);
-  TQueryUserAction & operator = (const TQueryUserAction &);
+  NB_DISABLE_COPY(TQueryUserAction)
 };
 //---------------------------------------------------------------------------
 class TPromptUserAction : public TUserAction
@@ -156,8 +152,7 @@ public:
   bool Result;
 
 private:
-  TPromptUserAction(const TPromptUserAction &);
-  TPromptUserAction & operator = (const TPromptUserAction &);
+  NB_DISABLE_COPY(TPromptUserAction)
 };
 //---------------------------------------------------------------------------
 class TShowExtendedExceptionAction : public TUserAction
@@ -183,8 +178,7 @@ public:
   Exception * E;
 
 private:
-  TShowExtendedExceptionAction(const TShowExtendedExceptionAction &);
-  TShowExtendedExceptionAction & operator = (const TShowExtendedExceptionAction &);
+  NB_DISABLE_COPY(TShowExtendedExceptionAction)
 };
 //---------------------------------------------------------------------------
 class TDisplayBannerAction : public TUserAction
@@ -214,8 +208,7 @@ public:
   intptr_t Options;
 
 private:
-  TDisplayBannerAction(const TDisplayBannerAction &);
-  TDisplayBannerAction & operator = (const TDisplayBannerAction &);
+  NB_DISABLE_COPY(TDisplayBannerAction)
 };
 //---------------------------------------------------------------------------
 class TReadDirectoryAction : public TUserAction
@@ -241,8 +234,7 @@ public:
   bool ReloadOnly;
 
 private:
-  TReadDirectoryAction(const TReadDirectoryAction &);
-  TReadDirectoryAction & operator = (const TReadDirectoryAction &);
+  NB_DISABLE_COPY(TReadDirectoryAction)
 };
 //---------------------------------------------------------------------------
 class TReadDirectoryProgressAction : public TUserAction
@@ -270,8 +262,7 @@ public:
   bool Cancel;
 
 private:
-  TReadDirectoryProgressAction(const TReadDirectoryProgressAction &);
-  TReadDirectoryProgressAction & operator = (const TReadDirectoryProgressAction &);
+  NB_DISABLE_COPY(TReadDirectoryProgressAction)
 };
 //---------------------------------------------------------------------------
 class TTerminalItem : public TSignalThread
@@ -712,11 +703,10 @@ TQueueItem * TTerminalQueue::GetItem(intptr_t Index)
 void TTerminalQueue::UpdateStatusForList(
   TTerminalQueueStatus * Status, TList * List, TTerminalQueueStatus * Current)
 {
-  TQueueItem * Item;
-  TQueueItemProxy * ItemProxy;
   for (intptr_t Index = 0; Index < List->GetCount(); Index++)
   {
-    Item = GetItem(List, Index);
+    TQueueItem * Item = GetItem(List, Index);
+    TQueueItemProxy * ItemProxy;
     if (Current != NULL)
     {
       ItemProxy = Current->FindByQueueItem(Item);

@@ -66,21 +66,6 @@
 // #endif
 #endif 
 
-// #ifndef __ATL_SO__
-	// #include <atlhandler.h> // for IFilterChunkValue and IDocument
-// #endif
-
-// Avoid mapping GetFileTitle to GetFileTitle[A/W]
-#ifdef GetFileTitle
-#undef GetFileTitle
-AFX_INLINE short APIENTRY GetFileTitle(LPCTSTR lpszFile, LPTSTR lpszTitle, WORD cbBuf)
-#ifdef UNICODE
-	{ return ::GetFileTitleW(lpszFile, lpszTitle, cbBuf); }
-#else
-	{ return ::GetFileTitleA(lpszFile, lpszTitle, cbBuf); }
-#endif
-#endif
-
 #ifndef _AFX_NO_AFXCMN_SUPPORT
 #ifdef _AFX_PACKING
 #pragma pack(push, _AFX_PACKING)
@@ -1990,44 +1975,6 @@ protected :
 protected:
 	afx_msg LRESULT OnGetObject(WPARAM, LPARAM);
 
-#ifndef _AFX_NO_OLE_SUPPORT
-	DECLARE_INTERFACE_MAP()
-#endif
-
-	class XAccessible //: public IAccessible
-	{	
-	public:
-#ifndef _AFX_NO_NESTED_DERIVATION
-		size_t m_nOffset;
-		XAccessible()
-			{ m_nOffset = offsetof(CWnd, m_xAccessible); }
-#endif
-		virtual ULONG __stdcall AddRef(); 
-		virtual ULONG __stdcall Release(); 
-		virtual HRESULT __stdcall QueryInterface(REFIID iid, LPVOID* ppvObj); 
-		virtual HRESULT __stdcall Invoke(DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT *);
-		virtual HRESULT __stdcall GetIDsOfNames(REFIID, LPOLESTR *, UINT, LCID, DISPID *);
-		virtual HRESULT __stdcall GetTypeInfoCount(unsigned int *);
-		virtual HRESULT __stdcall GetTypeInfo(unsigned int, LCID, ITypeInfo**);
-	} m_xAccessible;
-	friend class XAccessible; 
-
-	class XAccessibleServer //: public IAccessibleServer
-	{	
-	public:
-#ifndef _AFX_NO_NESTED_DERIVATION
-		size_t m_nOffset;
-		XAccessibleServer()
-			{ m_nOffset = offsetof(CWnd, m_xAccessibleServer); }
-#endif		
-		virtual ULONG __stdcall AddRef(); 
-		virtual ULONG __stdcall Release(); 
-		virtual HRESULT __stdcall QueryInterface(REFIID iid, LPVOID* ppvObj); 
-		// virtual HRESULT __stdcall GetHWND(HWND *phWnd);
-		// virtual HRESULT __stdcall GetEnumVariant(IEnumVARIANT **ppEnumVariant);
-	} m_xAccessibleServer;
-	friend class XAccessibleServer;
-
 public :
 	// Helpers for windows that contain windowless controls
 	long GetWindowLessChildCount();
@@ -2292,7 +2239,7 @@ protected:
 
 	// standard message implementation
 	afx_msg LRESULT OnNTCtlColor(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnDisplayChange(WPARAM, LPARAM);
+//	afx_msg LRESULT OnDisplayChange(WPARAM, LPARAM);
 	afx_msg LRESULT OnDragList(WPARAM, LPARAM);
 
 	// Helper functions for retrieving Text from windows messsage / structure

@@ -86,7 +86,7 @@ struct AUX_DATA
 	void UpdateSysMetrics();
 };
 
-extern AFX_DATA AUX_DATA afxData;
+// extern AFX_DATA AUX_DATA afxData;
 
 /////////////////////////////////////////////////////////////////////////////
 // _AFX_EDIT_STATE
@@ -324,8 +324,8 @@ void AFXAPI AfxDeleteObject(HGDIOBJ* pObject);
 BOOL AFXAPI AfxCustomLogFont(UINT nIDS, LOGFONT* pLogFont);
 BOOL AFXAPI AfxGetPropSheetFont(CString& strFace, WORD& wSize, BOOL bWizard);
 
-BOOL AFXAPI _AfxIsComboBoxControl(HWND hWnd, UINT nStyle);
-BOOL AFXAPI _AfxCheckCenterDialog(LPCTSTR lpszResource);
+//BOOL AFXAPI _AfxIsComboBoxControl(HWND hWnd, UINT nStyle);
+//BOOL AFXAPI _AfxCheckCenterDialog(LPCTSTR lpszResource);
 BOOL AFXAPI _AfxCompareClassName(HWND hWnd, LPCTSTR lpszClassName);
 HWND AFXAPI _AfxChildWindowFromPoint(HWND, POINT);
 HWND AFXAPI _AfxTopChildWindowFromPoint(HWND, POINT);
@@ -354,7 +354,7 @@ DWORD AFXAPI _AfxGetComCtlVersion();
 int AFX_CDECL AfxCriticalNewHandler(size_t nSize);
 #endif
 
-void AFXAPI AfxGlobalFree(HGLOBAL hGlobal);
+//void AFXAPI AfxGlobalFree(HGLOBAL hGlobal);
 
 /////////////////////////////////////////////////////////////////////////////
 // locale-invariant comparison helpers till CRT gets that support
@@ -486,7 +486,6 @@ private:
 BOOL AFXAPI AfxFullPath(_Pre_notnull_ _Post_z_ LPTSTR lpszPathOut, LPCTSTR lpszFileIn);
 BOOL AFXAPI AfxComparePath(LPCTSTR lpszPath1, LPCTSTR lpszPath2);
 
-UINT AFXAPI AfxGetFileTitle(LPCTSTR lpszPathName, _Out_cap_(nMax) LPTSTR lpszTitle, UINT nMax);
 UINT AFXAPI AfxGetFileName(LPCTSTR lpszPathName, _Out_opt_cap_(nMax) LPTSTR lpszTitle, UINT nMax);
 void AFX_CDECL AfxTimeToFileTime(const CTime& time, LPFILETIME pFileTime);
 void AFXAPI AfxGetRoot(LPCTSTR lpszPath, CString& strRoot);
@@ -599,11 +598,11 @@ union MessageMapFunctions
 	void    (AFX_MSG_CALL CWnd::*pfn_vwwh)(UINT, UINT, HANDLE);
 };
 
-CHandleMap* PASCAL afxMapHWND(BOOL bCreate = FALSE);
-CHandleMap* PASCAL afxMapHIMAGELIST(BOOL bCreate = FALSE);
-CHandleMap* PASCAL afxMapHDC(BOOL bCreate = FALSE);
-CHandleMap* PASCAL afxMapHGDIOBJ(BOOL bCreate = FALSE);
-CHandleMap* PASCAL afxMapHMENU(BOOL bCreate = FALSE);
+//CHandleMap* PASCAL afxMapHWND(BOOL bCreate = FALSE);
+//CHandleMap* PASCAL afxMapHIMAGELIST(BOOL bCreate = FALSE);
+//CHandleMap* PASCAL afxMapHDC(BOOL bCreate = FALSE);
+//CHandleMap* PASCAL afxMapHGDIOBJ(BOOL bCreate = FALSE);
+//CHandleMap* PASCAL afxMapHMENU(BOOL bCreate = FALSE);
 
 /////////////////////////////////////////////////////////////////////////////
 // Debugging/Tracing helpers

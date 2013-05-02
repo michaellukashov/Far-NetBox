@@ -52,7 +52,7 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
           if (Storage->OpenSubKey(Key, false))
           {
             TBookmarkList * BookmarkList = GetBookmarks(Key);
-            if (!BookmarkList)
+            if (BookmarkList == NULL)
             {
               BookmarkList = new TBookmarkList();
               FBookmarkLists->AddObject(Key, BookmarkList);

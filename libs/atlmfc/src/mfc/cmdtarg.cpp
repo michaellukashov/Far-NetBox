@@ -21,8 +21,7 @@
 CCmdTarget::CCmdTarget()
 {
 	// capture module state where object was constructed
-	m_pModuleState = AfxGetModuleState();
-	ASSERT(m_pModuleState != NULL);
+//	m_pModuleState = AfxGetModuleState();
 
 	// initialize state
 #ifndef _AFX_NO_OLE_SUPPORT
@@ -42,7 +41,7 @@ CCmdTarget::~CCmdTarget()
 		((COleDispatchImpl*)&m_xDispatch)->Disconnect();
 	ASSERT(m_dwRef <= 1);
 #endif
-	m_pModuleState = NULL;
+//	m_pModuleState = NULL;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -711,7 +710,7 @@ void CCmdUI::SetText(LPCTSTR lpszText)
 
 	{
 		ENSURE(m_pOther != NULL);
-		AfxSetWindowText(m_pOther->m_hWnd, lpszText);
+//		AfxSetWindowText(m_pOther->m_hWnd, lpszText);
 	}
 }
 
@@ -747,48 +746,6 @@ AFX_STATIC_DATA const BYTE _afxDot[] =
 	{ 0x6, 0xF, 0xF, 0xF, 0x6 }; // simple byte bitmap, 1=> bit on
 #define DOT_WIDTH   4
 #define DOT_HEIGHT  5
-
-AFX_STATIC void AFXAPI _AfxLoadDotBitmap()
-{
-	ASSERT(afxData.hbmMenuDot == NULL);
-	// attempt to load special bitmap, else default to arrow
-	CSize size = ::GetMenuCheckMarkDimensions();
-	ENSURE(size.cx > 4 && size.cy > 5); // not too small please
-	if (size.cx > 32)
-		size.cx = 32;
-	int iwRow = (size.cx + 15) >> 4;    // # of WORDs per raster line
-	int nShift = (size.cx - DOT_WIDTH) / 2;     // # of bits to shift over
-	nShift += ((iwRow * 16) - size.cx); // padding for word alignment
-	if (nShift > 16 - DOT_WIDTH)
-		nShift = 16 - DOT_WIDTH;    // maximum shift for 1 word
-
-	if (size.cy > 32)
-		size.cy = 32;
-
-	// bitmap 2/4/4/4/2 pixels wide - centered (0 => black)
-	BYTE rgbBitmap[32 * 2 * sizeof(WORD)];
-	memset(rgbBitmap, 0xff, sizeof(rgbBitmap));
-
-	BYTE* pbOut = &rgbBitmap[iwRow * sizeof(WORD) *
-							((size.cy - (DOT_HEIGHT+1)) >> 1)];
-	const BYTE* pbIn = _afxDot;
-	for (int y = 0; y < DOT_HEIGHT; y++)
-	{
-		WORD w = (WORD)~(((DWORD)*pbIn++) << nShift);
-		// bitmaps are always hi-lo
-		pbOut[0] = HIBYTE(w);
-		pbOut[1] = LOBYTE(w);
-		pbOut += iwRow * sizeof(WORD);
-	}
-
-	afxData.hbmMenuDot = ::CreateBitmap(size.cx, size.cy, 1, 1,
-			(LPVOID)rgbBitmap);
-	if (afxData.hbmMenuDot == NULL)
-	{
-		#define OBM_MNARROW         32739
-		afxData.hbmMenuDot = ::LoadBitmapW(NULL, MAKEINTRESOURCEW(OBM_MNARROW));
-	}
-}
 
 /////////////////////////////////////////////////////////////////////////////
 // CCmdTarget diagnostics

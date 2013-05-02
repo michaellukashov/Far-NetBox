@@ -99,7 +99,7 @@ BOOL AFXAPI AfxUnlockTempMaps(BOOL bDeleteTemps)
 /////////////////////////////////////////////////////////////////////////////
 // CHandleMap implementation
 
-CHandleMap::CHandleMap(CRuntimeClass* pClass, 
+/*CHandleMap::CHandleMap(CRuntimeClass* pClass,
 	void (PASCAL* pfnConstructObject)(CObject*), 
 	void (PASCAL* pfnDestructObject)(CObject*),
 	size_t nOffset, int nHandles) : 
@@ -258,7 +258,7 @@ void CHandleMap::DeleteTemp()
 	m_temporaryMap.RemoveAll();       // free up dictionary links etc
 	m_alloc.FreeAll();	// free all the memory used for these temp objects
 }
-
+*/
 /////////////////////////////////////////////////////////////////////////////
 
 void PASCAL CWnd::DeleteTempMap()
