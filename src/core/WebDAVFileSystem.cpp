@@ -13880,6 +13880,11 @@ bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t * remotePath, const wchar_t 
     pool);
 
   webdav_pool_destroy(pool);
+  if (err == WEBDAV_ERR_CANCELLED)
+  {
+    FFileTransferCancelled = true;
+    FFileTransferAbort = ftaCancel;
+  }
   return err == WEBDAV_NO_ERROR;
 }
 //------------------------------------------------------------------------------
