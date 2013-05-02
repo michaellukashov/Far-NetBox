@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef USE_DLMALLOC
-#include <dlmalloc/malloc-2.8.6.h>
+#include "../../libs/dlmalloc/malloc-2.8.6.h"
 #endif
 
 #ifdef USE_DLMALLOC
