@@ -33,6 +33,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <nbglobals.h>
 #include "nbafx.h"
 
 #include <new>
@@ -53,23 +54,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define WIN32_LEAN_AND_MEAN
 #define VC_EXTRALEAN
 
-#ifdef USE_DLMALLOC
-#include <dlmalloc/malloc-2.8.6.h>
-#endif
-
 //---------------------------------------------------------------------------
-
-#ifdef USE_DLMALLOC
-#define nb_malloc(size) dlmalloc(size)
-#define nb_calloc(count,size) dlcalloc(count,size)
-#define nb_realloc(ptr,size) dlrealloc(ptr,size)
-#define nb_free(ptr) dlfree(ptr)
-#else
-#define nb_malloc(size) ::malloc(size)
-#define nb_calloc(count,size) ::calloc(count,size)
-#define nb_realloc(ptr,size) ::realloc(ptr,size)
-#define nb_free(ptr) ::free(ptr)
-#endif
 
 #if defined(__cplusplus)
 inline void * operator_new(size_t size)

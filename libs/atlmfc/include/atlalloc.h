@@ -13,21 +13,9 @@
 #define __ATLALLOC_H__
 #endif
 
+#include <nbglobals.h>
 #include <windows.h>
 #include <ole2.h>
-
-#ifdef USE_DLMALLOC
-#include <dlmalloc/malloc-2.8.6.h>
-#define nb_malloc(size) dlmalloc(size)
-#define nb_calloc(count,size) dlcalloc(count,size)
-#define nb_realloc(ptr,size) dlrealloc(ptr,size)
-#define nb_free(ptr) dlfree(ptr)
-#else
-#define nb_malloc(size) ::malloc(size)
-#define nb_calloc(count,size) ::calloc(count,size)
-#define nb_realloc(ptr,size) ::realloc(ptr,size)
-#define nb_free(ptr) ::free(ptr)
-#endif
 
 #pragma pack(push,_ATL_PACKING)
 namespace ATL

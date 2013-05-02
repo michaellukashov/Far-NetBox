@@ -2,6 +2,7 @@
  * Platform-independent routines shared between all PuTTY programs.
  */
 
+#include <nbglobals.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -9,20 +10,6 @@
 #include <ctype.h>
 #include <assert.h>
 #include "putty.h"
-
-#ifdef USE_DLMALLOC
-#include <dlmalloc/malloc-2.8.6.h>
-
-#define nb_malloc(size) dlmalloc(size)
-#define nb_calloc(count,size) dlcalloc(count,size)
-#define nb_realloc(ptr,size) dlrealloc(ptr,size)
-#define nb_free(ptr) dlfree(ptr)
-#else
-#define nb_malloc(size) malloc(size)
-#define nb_calloc(count,size) calloc(count,size)
-#define nb_realloc(ptr,size) realloc(ptr,size)
-#define nb_free(ptr) free(ptr)
-#endif
 
 /*
  * Parse a string block size specification. This is approximately a
