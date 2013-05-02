@@ -1003,20 +1003,20 @@ void TIniFileStorage::Flush()
       dynamic_cast<TMemIniFile *>(FIniFile)->GetString(Strings);
       if (!Strings->Equals(FOriginal))
       {
-        int Attr;
+        DWORD LocalFileAttr;
         // preserve attributes (especially hidden)
         bool Exists = FileExists(GetStorage());
         if (Exists)
         {
-          Attr = GetFileAttributes(UnicodeString(GetStorage()).c_str());
+          LocalFileAttr = GetFileAttributes(UnicodeString(GetStorage()).c_str());
         }
         else
         {
-          Attr = FILE_ATTRIBUTE_NORMAL;
+          LocalFileAttr = FILE_ATTRIBUTE_NORMAL;
         }
 
         HANDLE Handle = CreateFile(UnicodeString(GetStorage()).c_str(), GENERIC_READ | GENERIC_WRITE,
-          0, NULL, CREATE_ALWAYS, Attr, 0);
+          0, NULL, CREATE_ALWAYS, LocalFileAttr, 0);
 
         if (Handle == INVALID_HANDLE_VALUE)
         {
