@@ -100,8 +100,7 @@ protected:
   TSessionActionRecord * FRecord;
 
 private:
-  TSessionAction(const TSessionAction &);
-  TSessionAction & operator=(const TSessionAction &);
+  NB_DISABLE_COPY(TSessionAction)
 };
 //---------------------------------------------------------------------------
 class TFileSessionAction : public TSessionAction
@@ -276,8 +275,7 @@ private:
   void DoAddStartupInfo(TSessionData * Data);
 
 private:
-  TSessionLog(const TSessionLog &);
-  TSessionLog & operator=(const TSessionLog &);
+  NB_DISABLE_COPY(TSessionLog)
 };
 //---------------------------------------------------------------------------
 class TActionLog : public TObject
@@ -328,8 +326,7 @@ public:
   void SetEnabled(bool Value);
 
 private:
-  TActionLog(const TActionLog &);
-  TActionLog & operator=(const TActionLog &);
+  NB_DISABLE_COPY(TActionLog)
 };
 //---------------------------------------------------------------------------
 #endif

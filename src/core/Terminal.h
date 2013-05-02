@@ -559,8 +559,7 @@ public:
   intptr_t GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
 
 private:
-  TTerminal(const TTerminal &);
-  TTerminal & operator = (const TTerminal &);
+  NB_DISABLE_COPY(TTerminal)
 };
 //------------------------------------------------------------------------------
 class TSecondaryTerminal : public TTerminal

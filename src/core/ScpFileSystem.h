@@ -136,8 +136,7 @@ private:
     intptr_t & ReturnCode, const UnicodeString & ALastLine);
 
 private:
-  TSCPFileSystem(const TSCPFileSystem &);
-  TSCPFileSystem & operator=(const TSCPFileSystem &);
+  NB_DISABLE_COPY(TSCPFileSystem)
 };
 //---------------------------------------------------------------------------
 #endif // ScpFileSystemH

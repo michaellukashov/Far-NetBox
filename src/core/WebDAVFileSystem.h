@@ -214,8 +214,7 @@ private:
   webdav::session_t *FSession;
 
 private:
-  TWebDAVFileSystem(const TWebDAVFileSystem &);
-  TWebDAVFileSystem & operator=(const TWebDAVFileSystem &);
+  NB_DISABLE_COPY(TWebDAVFileSystem)
 };
 
 #endif

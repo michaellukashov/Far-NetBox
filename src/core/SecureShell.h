@@ -164,8 +164,7 @@ public:
   bool GetSimple() const { return FSimple; }
   void SetSimple(bool Value) { FSimple = Value; }
 private:
-  TSecureShell(const TSecureShell &);
-  TSecureShell & operator=(const TSecureShell &);
+  NB_DISABLE_COPY(TSecureShell)
 };
 //---------------------------------------------------------------------------
 #endif
