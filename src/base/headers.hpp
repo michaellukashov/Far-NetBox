@@ -122,7 +122,7 @@ inline void operator_delete(void * p)
 {
 	nb_free(p);
 }
-#endif
+#endif // #if defined(__cplusplus)
 
 #ifdef USE_DLMALLOC
 /// custom memory allocation
@@ -185,11 +185,11 @@ inline void operator_delete(void * p)
 	}
 #else
 #define CUSTOM_MEM_ALLOCATION_IMPL DEF_CUSTOM_MEM_ALLOCATION_IMPL
-#endif
+#endif // #ifdef _DEBUG
 
 #else
 #define CUSTOM_MEM_ALLOCATION_IMPL 
-#endif
+#endif // #ifdef USE_DLMALLOC
 
 //---------------------------------------------------------------------------
 
