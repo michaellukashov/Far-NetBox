@@ -2238,14 +2238,12 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         (OperationProgress->Cancel == csCancel) ||
         (OperationProgress->Cancel == csCancelTransfer)))
     {
-      bool LastLineRead = false;
-
       // If we get LastLine, it means that remote side 'scp' is already
       // terminated, so we need not to terminate it. There is also
       // possibility that remote side waits for confirmation, so it will hang.
       // This should not happen (hope)
       UnicodeString Line = FSecureShell->ReceiveLine();
-      LastLineRead = IsLastLine(Line);
+      bool LastLineRead = IsLastLine(Line);
       if (!LastLineRead)
       {
         SCPSendError((OperationProgress->Cancel ? L"Terminated by user." : L"Exception"), true);
