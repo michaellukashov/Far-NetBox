@@ -141,7 +141,6 @@ SET(CMAKE_LINK_FLAGS
   /DELAYLOAD:version.dll
   /DELAYLOAD:ws2_32.dll
   /DELAYLOAD:oleaut32.dll
-  /DELAYLOAD:gdi32.dll
   /DELAYLOAD:winhttp.dll
   /DELAYLOAD:shell32.dll
   /DELAYLOAD:shlwapi.dll
