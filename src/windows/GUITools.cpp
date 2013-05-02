@@ -169,8 +169,6 @@ bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params)
 bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params,
   HANDLE & Handle)
 {
-  bool Result = false;
-
   TShellExecuteInfoW ExecuteInfo;
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
@@ -180,7 +178,7 @@ bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params,
   ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
   ExecuteInfo.nShow = SW_SHOW;
 
-  Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
+  bool Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
   if (Result)
   {
     Handle = ExecuteInfo.hProcess;
@@ -191,8 +189,6 @@ bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params,
 bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Path,
   const UnicodeString & Params, TProcessMessagesEvent ProcessMessages)
 {
-  bool Result = false;
-
   TShellExecuteInfoW ExecuteInfo;
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
@@ -202,7 +198,7 @@ bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Path,
   ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
   ExecuteInfo.nShow = SW_SHOW;
 
-  Result = (ShellExecuteEx(&ExecuteInfo) != 0);
+  bool Result = (ShellExecuteEx(&ExecuteInfo) != 0);
   if (Result)
   {
     if (ProcessMessages != NULL)
