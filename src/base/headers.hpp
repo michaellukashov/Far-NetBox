@@ -40,14 +40,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cstdio>
 #include <cassert>
 #include <cwchar>
-#include <ctime>
-#include <cmath>
-#include <limits>
-#include <cfloat>
-
-#include <process.h>
-#include <search.h>
-#include <share.h>
 
 #undef _W32API_OLD
 
@@ -60,33 +52,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define WIN32_LEAN_AND_MEAN
 #define VC_EXTRALEAN
-
-#define WIN32_NO_STATUS //exclude ntstatus.h macros from winnt.h
-#include <windows.h>
-#undef WIN32_NO_STATUS
-#include <winioctl.h>
-#include <mmsystem.h>
-#include <winspool.h>
-#include <setupapi.h>
-#include <aclapi.h>
-#include <sddl.h>
-#include <dbt.h>
-#include <lm.h>
-#define SECURITY_WIN32
-#include <security.h>
-#define PSAPI_VERSION 1
-#include <psapi.h>
-#include <shlobj.h>
-#include <shellapi.h>
-
-#ifdef _MSC_VER
-// # include <shobjidl.h>
-# include <winternl.h>
-# include <cfgmgr32.h>
-# include <ntddscsi.h>
-# include <virtdisk.h>
-# include <RestartManager.h>
-#endif // _MSC_VER
 
 #ifdef USE_DLMALLOC
 #include <dlmalloc/malloc-2.8.6.h>
@@ -331,18 +296,10 @@ inline void ClearStruct(T* s) { T dont_instantiate_this_template_with_pointers =
 template<typename T, size_t N>
 inline void ClearArray(T (&a)[N]) { memset(a, 0, sizeof(a[0])*N); }
 
-#define SIGN_UNICODE    0xFEFF
-#define SIGN_REVERSEBOM 0xFFFE
-#define SIGN_UTF8       0xBFBBEF
-
 #ifdef __GNUC__
 #ifndef nullptr
 #define nullptr NULL
 #endif
-#endif
-
-#if defined(_MSC_VER) && _MSC_VER>1600
-enum LNGID:int;
 #endif
 
 #if defined(_MSC_VER) && _MSC_VER<1600
