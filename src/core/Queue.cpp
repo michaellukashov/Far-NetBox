@@ -712,11 +712,10 @@ TQueueItem * TTerminalQueue::GetItem(intptr_t Index)
 void TTerminalQueue::UpdateStatusForList(
   TTerminalQueueStatus * Status, TList * List, TTerminalQueueStatus * Current)
 {
-  TQueueItem * Item;
-  TQueueItemProxy * ItemProxy;
   for (intptr_t Index = 0; Index < List->GetCount(); Index++)
   {
-    Item = GetItem(List, Index);
+    TQueueItem * Item = GetItem(List, Index);
+    TQueueItemProxy * ItemProxy;
     if (Current != NULL)
     {
       ItemProxy = Current->FindByQueueItem(Item);

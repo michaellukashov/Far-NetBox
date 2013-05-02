@@ -700,7 +700,7 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
       bool WrongReturnCode =
         (GetReturnCode() > 1) || (GetReturnCode() == 1 && !(Params & coIgnoreWarnings));
 
-      if (Params & coOnlyReturnCode && WrongReturnCode)
+      if ((Params & coOnlyReturnCode) && WrongReturnCode)
       {
         FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED_CODEONLY, GetReturnCode()));
       }
