@@ -360,8 +360,8 @@ BOOL CWinApp::_LoadSysPolicies() throw()
 			rgExplorerData},
 		{_T("Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Network"),
 			rgNetworkData},
-		{_T("Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Comdlg32"),
-			rgComDlgData},
+//		{_T("Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Comdlg32"),
+//			rgComDlgData},
 		{NULL, NULL}
 	};
 

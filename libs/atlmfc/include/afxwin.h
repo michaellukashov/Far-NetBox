@@ -66,21 +66,6 @@
 // #endif
 #endif 
 
-// #ifndef __ATL_SO__
-	// #include <atlhandler.h> // for IFilterChunkValue and IDocument
-// #endif
-
-// Avoid mapping GetFileTitle to GetFileTitle[A/W]
-#ifdef GetFileTitle
-#undef GetFileTitle
-AFX_INLINE short APIENTRY GetFileTitle(LPCTSTR lpszFile, LPTSTR lpszTitle, WORD cbBuf)
-#ifdef UNICODE
-	{ return ::GetFileTitleW(lpszFile, lpszTitle, cbBuf); }
-#else
-	{ return ::GetFileTitleA(lpszFile, lpszTitle, cbBuf); }
-#endif
-#endif
-
 #ifndef _AFX_NO_AFXCMN_SUPPORT
 #ifdef _AFX_PACKING
 #pragma pack(push, _AFX_PACKING)

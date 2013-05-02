@@ -752,28 +752,6 @@ BOOL AFXAPI AfxComparePath(LPCTSTR lpszPath1, LPCTSTR lpszPath2)
 	return TRUE; // otherwise file name is truly the same
 }
 
-UINT AFXAPI AfxGetFileTitle(LPCTSTR lpszPathName, _Out_cap_(nMax) LPTSTR lpszTitle, UINT nMax)
-{
-	ASSERT(lpszTitle == NULL ||
-		AfxIsValidAddress(lpszTitle, _MAX_FNAME));
-	ASSERT(AfxIsValidString(lpszPathName));
-
-	// use a temporary to avoid bugs in ::GetFileTitle when lpszTitle is NULL
-	TCHAR szTemp[_MAX_PATH];
-	LPTSTR lpszTemp = lpszTitle;
-	if (lpszTemp == NULL)
-	{
-		lpszTemp = szTemp;
-		nMax = _countof(szTemp);
-	}
-	if (::GetFileTitle(lpszPathName, lpszTemp, (WORD)nMax) != 0)
-	{
-		// when ::GetFileTitle fails, use cheap imitation
-		return AfxGetFileName(lpszPathName, lpszTitle, nMax);
-	}
-	return lpszTitle == NULL ? lstrlen(lpszTemp)+1 : 0;
-}
-
 void AFXAPI AfxGetModuleFileName(HINSTANCE hInst, CString& strFileName)
 {
 	TCHAR szLongPathName[_MAX_PATH];

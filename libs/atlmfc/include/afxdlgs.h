@@ -35,23 +35,6 @@
 #endif
 #endif
 
-// Avoid mapping GetFileTitle to GetFileTitle[A/W]
-#ifdef GetFileTitle
-#undef GetFileTitle
-AFX_INLINE short APIENTRY GetFileTitle(LPCTSTR lpszFile, LPTSTR lpszTitle, WORD cbBuf)
-#ifdef UNICODE
-	{ return ::GetFileTitleW(lpszFile, lpszTitle, cbBuf); }
-#else
-	{ return ::GetFileTitleA(lpszFile, lpszTitle, cbBuf); }
-#endif
-#endif
-
-#ifndef _AFX_NO_RICHEDIT_SUPPORT
-	#ifndef _RICHEDIT_
-		#include <richedit.h>
-	#endif
-#endif
-
 #ifdef _AFX_MINREBUILD
 #pragma component(minrebuild, off)
 #endif 

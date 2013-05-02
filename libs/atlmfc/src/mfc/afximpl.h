@@ -486,7 +486,6 @@ private:
 BOOL AFXAPI AfxFullPath(_Pre_notnull_ _Post_z_ LPTSTR lpszPathOut, LPCTSTR lpszFileIn);
 BOOL AFXAPI AfxComparePath(LPCTSTR lpszPath1, LPCTSTR lpszPath2);
 
-UINT AFXAPI AfxGetFileTitle(LPCTSTR lpszPathName, _Out_cap_(nMax) LPTSTR lpszTitle, UINT nMax);
 UINT AFXAPI AfxGetFileName(LPCTSTR lpszPathName, _Out_opt_cap_(nMax) LPTSTR lpszTitle, UINT nMax);
 void AFX_CDECL AfxTimeToFileTime(const CTime& time, LPFILETIME pFileTime);
 void AFXAPI AfxGetRoot(LPCTSTR lpszPath, CString& strRoot);

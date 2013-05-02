@@ -217,7 +217,6 @@ AFX_MODULE_STATE::AFX_MODULE_STATE(BOOL bDLL)
 #ifndef _AFX_NO_AFXCMN_SUPPORT
 	m_pDllIsolationWrappers[_AFX_COMCTL32_ISOLATION_WRAPPER_INDEX] = new CComCtlWrapper;
 #endif
-	m_pDllIsolationWrappers[_AFX_COMMDLG_ISOLATION_WRAPPER_INDEX] = new CCommDlgWrapper;
 	m_pDllIsolationWrappers[_AFX_SHELL_ISOLATION_WRAPPER_INDEX] = new CShellWrapper;
 	AfxEnableMemoryTracking(bEnable);
 	m_bSetAmbientActCtx = TRUE;
@@ -316,7 +315,6 @@ AFX_MODULE_STATE::~AFX_MODULE_STATE()
 #ifndef _AFX_NO_AFXCMN_SUPPORT
 	delete m_pDllIsolationWrappers[_AFX_COMCTL32_ISOLATION_WRAPPER_INDEX];
 #endif
-	delete m_pDllIsolationWrappers[_AFX_COMMDLG_ISOLATION_WRAPPER_INDEX];
 	delete m_pDllIsolationWrappers[_AFX_SHELL_ISOLATION_WRAPPER_INDEX];
 	delete [] m_pDllIsolationWrappers;
 	if (m_hActCtx != NULL && m_hActCtx != INVALID_HANDLE_VALUE)

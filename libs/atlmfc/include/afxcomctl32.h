@@ -354,52 +354,11 @@ public:
 #define AfxPropertySheet AfxPropertySheetA
 #endif
 
-#define AfxImageList_RemoveAll(himl) AfxImageList_Remove(himl, -1)
-#define AfxImageList_ExtractIcon(hi, himl, i) AfxImageList_GetIcon(himl, i, 0)
-#define AfxImageList_LoadBitmap(hi, lpbmp, cx, cGrow, crMask) AfxImageList_LoadImage(hi, lpbmp, cx, cGrow, crMask, IMAGE_BITMAP, 0)
-#define AfxImageList_AddIcon(himl, hicon) AfxImageList_ReplaceIcon(himl, -1, hicon)
-
 ////////////////////// commdlg.h //////////////////////////////////////////
-class CCommDlgWrapper : public CDllIsolationWrapperBase
-{
-public:
-	CCommDlgWrapper() 
-	: CDllIsolationWrapperBase(_T("comdlg32.dll"))
-	{
-	}
-public:
-/*
-	AFX_ISOLATIONAWARE_FUNC(BOOL,GetOpenFileNameA,(LPOPENFILENAMEA unnamed1),(unnamed1),FALSE)
-	AFX_ISOLATIONAWARE_FUNC(BOOL,GetOpenFileNameW,(LPOPENFILENAMEW unnamed1),(unnamed1),FALSE)
-	AFX_ISOLATIONAWARE_FUNC(BOOL,GetSaveFileNameA,(LPOPENFILENAMEA unnamed1),(unnamed1),FALSE)
-	AFX_ISOLATIONAWARE_FUNC(BOOL,GetSaveFileNameW,(LPOPENFILENAMEW unnamed1),(unnamed1),FALSE)
-	AFX_ISOLATIONAWARE_FUNC(short,GetFileTitleA,(LPCSTR unnamed1,LPSTR unnamed2,WORD unnamed3),(unnamed1,unnamed2,unnamed3),-1)
-	AFX_ISOLATIONAWARE_FUNC(short ,GetFileTitleW,(LPCWSTR unnamed1,LPWSTR unnamed2,WORD unnamed3),(unnamed1,unnamed2,unnamed3),-1)
-	AFX_ISOLATIONAWARE_FUNC(BOOL ,ChooseColorA,(LPCHOOSECOLORA unnamed1),(unnamed1),FALSE)
-	AFX_ISOLATIONAWARE_FUNC(BOOL ,ChooseColorW,(LPCHOOSECOLORW unnamed1),(unnamed1),FALSE)
-	AFX_ISOLATIONAWARE_FUNC(HWND ,FindTextA,(LPFINDREPLACEA unnamed1),(unnamed1),NULL)
-	AFX_ISOLATIONAWARE_FUNC(HWND ,FindTextW,(LPFINDREPLACEW unnamed1),(unnamed1),NULL)
-	AFX_ISOLATIONAWARE_FUNC(HWND ,ReplaceTextA,(LPFINDREPLACEA unnamed1),(unnamed1),NULL)
-	AFX_ISOLATIONAWARE_FUNC(HWND ,ReplaceTextW,(LPFINDREPLACEW unnamed1),(unnamed1),NULL)
-	AFX_ISOLATIONAWARE_FUNC(BOOL ,ChooseFontA,(LPCHOOSEFONTA unnamed1),(unnamed1),FALSE)
-	AFX_ISOLATIONAWARE_FUNC(BOOL ,ChooseFontW,(LPCHOOSEFONTW unnamed1),(unnamed1),FALSE)
-	AFX_ISOLATIONAWARE_FUNC(BOOL ,PrintDlgA,(LPPRINTDLGA unnamed1),(unnamed1),FALSE)
-	AFX_ISOLATIONAWARE_FUNC(BOOL ,PrintDlgW,(LPPRINTDLGW unnamed1),(unnamed1),FALSE)
-	AFX_ISOLATIONAWARE_FUNC(DWORD ,CommDlgExtendedError,(void),(),0)
-	AFX_ISOLATIONAWARE_FUNC(BOOL ,PageSetupDlgA,(LPPAGESETUPDLGA unnamed1),(unnamed1),FALSE)
-	AFX_ISOLATIONAWARE_FUNC(BOOL ,PageSetupDlgW,(LPPAGESETUPDLGW unnamed1),(unnamed1),FALSE)
-*/
-//These 2 must be the last in struct, because MFC always build them and the user may not 
-//define WINVER >= 0x0500, so code in user module (inline funcs) will miscalculate the offsets. 
-#if defined(STDMETHOD) && (WINVER >= 0x0500)
-	// AFX_ISOLATIONAWARE_FUNC(HRESULT ,PrintDlgExA,(LPPRINTDLGEXA unnamed1),(unnamed1),E_FAIL)
-	// AFX_ISOLATIONAWARE_FUNC(HRESULT ,PrintDlgExW,(LPPRINTDLGEXW unnamed1),(unnamed1),E_FAIL)
-#endif /* defined(STDMETHOD) && (WINVER >= 0x0500) */
-};
 #ifdef _UNICODE
 #define AfxCtxGetOpenFileName AfxCtxGetOpenFileNameW
 #define AfxCtxGetSaveFileName AfxCtxGetSaveFileNameW
-#define AfxCtxGetFileTitle	  AfxCtxGetFileTitleW
+//#define AfxCtxGetFileTitle	  AfxCtxGetFileTitleW
 #define AfxCtxChooseColor	  AfxCtxChooseColorW
 #define AfxCtxFindText		  AfxCtxFindTextW
 #define AfxCtxReplaceText	  AfxCtxReplaceTextW
@@ -411,7 +370,7 @@ public:
 #else // ANSI
 #define AfxCtxGetOpenFileName AfxCtxGetOpenFileNameA
 #define AfxCtxGetSaveFileName AfxCtxGetSaveFileNameA
-#define AfxCtxGetFileTitle	  AfxCtxGetFileTitleA
+//#define AfxCtxGetFileTitle	  AfxCtxGetFileTitleA
 #define AfxCtxChooseColor	  AfxCtxChooseColorA
 #define AfxCtxFindText		  AfxCtxFindTextA
 #define AfxCtxReplaceText	  AfxCtxReplaceTextA
