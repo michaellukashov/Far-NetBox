@@ -2797,14 +2797,13 @@ sort_hash(apr_hash_t * ht,
   apr_pool_t * pool)
 {
   apr_array_header_t * ary = NULL;
-  bool sorted = FALSE;
   sort_item_t * prev_item = NULL;
 
   // allocate an array with enough elements to hold all the keys.
   ary = apr_array_make(pool, apr_hash_count(ht), sizeof(sort_item_t));
 
   // loop over hash table and push all keys into the array
-  sorted = TRUE;
+  bool sorted = TRUE;
   prev_item = NULL;
   for (apr_hash_index_t * hi = apr_hash_first(pool, ht); hi;
        hi = apr_hash_next(hi))
@@ -4329,11 +4328,10 @@ windows_password_encrypter(
 {
   DATA_BLOB blobin;
   DATA_BLOB blobout;
-  BOOL crypted = FALSE;
 
   blobin.cbData = (DWORD)strlen(in);
   blobin.pbData = (BYTE *) in;
-  crypted = CryptProtectData(&blobin, description, NULL, NULL, NULL,
+  BOOL crypted = CryptProtectData(&blobin, description, NULL, NULL, NULL,
     CRYPTPROTECT_UI_FORBIDDEN, &blobout);
   if (crypted)
   {
@@ -5402,7 +5400,6 @@ canonicalize(
   char * canon = NULL, *dst = NULL;
   const char * src = NULL;
   size_t seglen = 0;
-  size_t schemelen = 0;
   size_t canon_segments = 0;
   bool url = FALSE;
   char * schema_data = NULL;
@@ -5439,13 +5436,11 @@ canonicalize(
       while (*src != ':')
       {
         *(dst++) = canonicalize_to_lower((*src++));
-        schemelen++;
       }
       *(dst++) = ':';
       *(dst++) = '/';
       *(dst++) = '/';
       src += 3;
-      schemelen += 3;
 
       // This might be the hostname
       seg = src;
@@ -10233,13 +10228,12 @@ neon_get_starting_props(
 
     if (propval)
     {
-      ne_uri uri = {0};
       stringbuf_t * urlbuf = stringbuf_create(url, pool);
 
       path_remove_components(urlbuf,
         path_component_count(propval->data));
 
-      uri = sess->root;
+      ne_uri uri = sess->root;
       uri.path = urlbuf->data;
 
       sess->webdav_root = neon_uri_unparse(&uri, sess->pool);
@@ -12522,9 +12516,8 @@ void TWebDAVFileSystem::CustomReadFile(const UnicodeString & FileName,
   TRemoteFile *& File, TRemoteFile * ALinkedByFile)
 {
   File = NULL;
-  bool isExist = false;
   int is_dir = 0;
-  isExist = WebDAVCheckExisting(FileName.c_str(), is_dir);
+  bool isExist = WebDAVCheckExisting(FileName.c_str(), is_dir);
   if (isExist)
   {
     File = new TRemoteFile();
@@ -13711,7 +13704,7 @@ void TWebDAVFileSystem::FileTransfer(const UnicodeString & FileName,
   FCurrentOperationProgress = OperationProgress;
   FILE_OPERATION_LOOP (FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
     UnicodeString FullRemoteFileName = RemotePath + RemoteFile;
-    bool Result = false;
+    bool Result;
     if (Get)
     {
       HANDLE LocalFileHandle = FTerminal->CreateLocalFile(LocalFile,
