@@ -2592,7 +2592,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
 
                   if (OperationProgress->AsciiTransfer)
                   {
-                    unsigned int PrevBlockSize = static_cast<unsigned int>(BlockBuf.GetSize());
+                    __int64 PrevBlockSize = BlockBuf.GetSize();
                     BlockBuf.Convert(FTerminal->GetSessionData()->GetEOLType(),
                       FTerminal->GetConfiguration()->GetLocalEOLType(), 0, ConvertToken);
                     OperationProgress->SetLocalSize(

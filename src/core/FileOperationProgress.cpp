@@ -390,10 +390,10 @@ void TFileOperationProgressType::AddResumed(__int64 ASize)
 //---------------------------------------------------------------------------
 uintptr_t TFileOperationProgressType::TransferBlockSize()
 {
-  intptr_t Result = TRANSFER_BUF_SIZE;
+  uintptr_t Result = TRANSFER_BUF_SIZE;
   if (TransferedSize + Result > TransferSize)
   {
-    Result = static_cast<unsigned long>(TransferSize - TransferedSize);
+    Result = static_cast<uintptr_t>(TransferSize - TransferedSize);
   }
   Result = AdjustToCPSLimit(Result);
   return Result;
