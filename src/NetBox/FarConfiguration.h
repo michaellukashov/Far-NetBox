@@ -72,7 +72,7 @@ public:
   virtual void Load();
   virtual void Save(bool All, bool Explicit);
   virtual void Default();
-  virtual THierarchicalStorage * CreateScpStorage(bool SessionList);
+  virtual THierarchicalStorage * CreateStorage(bool SessionList);
   void CacheFarSettings();
 
 protected:

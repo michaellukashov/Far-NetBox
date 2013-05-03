@@ -3323,7 +3323,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
     {
       std::auto_ptr<THierarchicalStorage> Storage(
-        FTerminal->GetConfiguration()->CreateScpStorage(false));
+        FTerminal->GetConfiguration()->CreateStorage(false));
       Storage->SetAccessMode(smRead);
 
       if (Storage->OpenSubKey(FtpsCertificateStorageKey, false) &&
@@ -3397,7 +3397,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       if (RequestResult == 2)
       {
         std::auto_ptr<THierarchicalStorage> Storage(
-          FTerminal->GetConfiguration()->CreateScpStorage(false));
+          FTerminal->GetConfiguration()->CreateStorage(false));
         Storage->SetAccessMode(smReadWrite);
 
         if (Storage->OpenSubKey(FtpsCertificateStorageKey, true))

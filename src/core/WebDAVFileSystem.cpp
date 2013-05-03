@@ -14229,7 +14229,7 @@ webdav::error_t TWebDAVFileSystem::CreateStorage(
   THierarchicalStorage *& Storage)
 {
   Storage =
-    FTerminal->GetConfiguration()->CreateScpStorage(false);
+    FTerminal->GetConfiguration()->CreateStorage(false);
   return WEBDAV_NO_ERROR;
 }
 //------------------------------------------------------------------------------

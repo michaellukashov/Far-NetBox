@@ -1165,7 +1165,7 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
 //---------------------------------------------------------------------
 void TSessionData::Remove()
 {
-  THierarchicalStorage * Storage = GetConfiguration()->CreateScpStorage(true);
+  THierarchicalStorage * Storage = GetConfiguration()->CreateStorage(true);
   TRY_FINALLY (
   {
     Storage->SetExplicit(true);
@@ -2955,7 +2955,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
 //---------------------------------------------------------------------
 void TStoredSessionList::Load()
 {
-  THierarchicalStorage * Storage = GetConfiguration()->CreateScpStorage(true);
+  THierarchicalStorage * Storage = GetConfiguration()->CreateStorage(true);
   TRY_FINALLY (
   {
     if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), False))
@@ -3014,7 +3014,7 @@ void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
 //---------------------------------------------------------------------
 void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnly)
 {
-  THierarchicalStorage * Storage = GetConfiguration()->CreateScpStorage(true);
+  THierarchicalStorage * Storage = GetConfiguration()->CreateStorage(true);
   TRY_FINALLY (
   {
     Storage->SetAccessMode(smReadWrite);
