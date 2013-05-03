@@ -1,5 +1,7 @@
 NetBox 2.1.29 ??.05.2013
 --------------------
+  * Improvement: Store directory change if option "Remember last used directory" is set.
+    (http://forum.farmanager.com/viewtopic.php?p=108861#p108861)
   * Bugfix: WebDAV: Do not remove local file if file moving was canceled.
     (http://forum.farmanager.com/viewtopic.php?p=109224#p109224)
   * zlib core upgraded to 1.2.8
