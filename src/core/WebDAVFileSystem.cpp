@@ -5342,9 +5342,9 @@ auth_get_platform_specific_client_providers(
     }
 
     return error_createf(WEBDAV_ERR_BAD_CONFIG_VALUE, NULL,
-                         "Invalid config: unknown password store "
-                         "'%s'",
-                         password_store);
+      "Invalid config: unknown password store "
+      "'%s'",
+      password_store);
   }
 
   return WEBDAV_NO_ERROR;
