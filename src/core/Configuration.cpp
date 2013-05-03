@@ -145,7 +145,7 @@ TConfiguration::~TConfiguration()
   // delete FUsage;
 }
 //---------------------------------------------------------------------------
-THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
+THierarchicalStorage * TConfiguration::CreateStorage(bool /*SessionList*/)
 {
   if (GetStorage() == stRegistry)
   {
@@ -221,7 +221,7 @@ void TConfiguration::Save(bool All, bool Explicit)
     return;
   }
 
-  THierarchicalStorage * AStorage = CreateScpStorage(false);
+  THierarchicalStorage * AStorage = CreateStorage(false);
   TRY_FINALLY (
   {
     if (AStorage)
@@ -369,7 +369,7 @@ void TConfiguration::Load()
 {
   TGuard Guard(FCriticalSection);
 
-  THierarchicalStorage * Storage = CreateScpStorage(false);
+  THierarchicalStorage * Storage = CreateStorage(false);
   TRY_FINALLY (
   {
     Storage->SetAccessMode(smRead);
@@ -461,7 +461,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
 void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
-  THierarchicalStorage * Storage = CreateScpStorage(false);
+  THierarchicalStorage * Storage = CreateStorage(false);
   TRY_FINALLY (
   {
     Storage->SetAccessMode(smRead);
@@ -482,7 +482,7 @@ void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
 void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
-  THierarchicalStorage * Storage = CreateScpStorage(false);
+  THierarchicalStorage * Storage = CreateStorage(false);
   TRY_FINALLY (
   {
     Storage->SetAccessMode(smReadWrite);
@@ -515,7 +515,7 @@ bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
   const UnicodeString & Banner)
 {
   bool Result;
-  THierarchicalStorage * Storage = CreateScpStorage(false);
+  THierarchicalStorage * Storage = CreateStorage(false);
   TRY_FINALLY (
   {
     Storage->SetAccessMode(smRead);
@@ -537,7 +537,7 @@ bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
 void TConfiguration::NeverShowBanner(const UnicodeString & SessionKey,
   const UnicodeString & Banner)
 {
-  THierarchicalStorage * Storage = CreateScpStorage(false);
+  THierarchicalStorage * Storage = CreateStorage(false);
   TRY_FINALLY (
   {
     Storage->SetAccessMode(smReadWrite);
@@ -1034,12 +1034,12 @@ void TConfiguration::SetStorage(TStorage Value)
 
     TRY_FINALLY (
     {
-      SourceStorage = CreateScpStorage(false);
+      SourceStorage = CreateStorage(false);
       SourceStorage->SetAccessMode(smRead);
 
       FStorage = Value;
 
-      TargetStorage = CreateScpStorage(false);
+      TargetStorage = CreateStorage(false);
       TargetStorage->SetAccessMode(smReadWrite);
       TargetStorage->SetExplicit(true);
 

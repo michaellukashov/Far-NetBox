@@ -875,7 +875,7 @@ BOOL TWinSCPPlugin::CreateLocalDirectory(const UnicodeString & LocalDirName, LPS
 void TWinSCPPlugin::CleanupConfiguration()
 {
   // Check if key Configuration\Version exists
-  THierarchicalStorage * Storage = FarConfiguration->CreateScpStorage(false);
+  THierarchicalStorage * Storage = FarConfiguration->CreateStorage(false);
   TRY_FINALLY (
   {
     Storage->SetAccessMode(smReadWrite);

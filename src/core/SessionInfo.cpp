@@ -914,7 +914,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     {
       AddSeparator();
       ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
-      THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
+      THierarchicalStorage * Storage = FConfiguration->CreateStorage(false);
       assert(Storage);
     Storage->SetAccessMode(smRead);
       TRY_FINALLY (

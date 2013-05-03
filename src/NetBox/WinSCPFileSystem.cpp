@@ -3209,6 +3209,7 @@ void TWinSCPFileSystem::TerminalChangeDirectory(TObject * /*Sender*/)
     }
 
     FLastPath = Directory;
+    SaveSession(); // To save changed directory
   }
 }
 //------------------------------------------------------------------------------
