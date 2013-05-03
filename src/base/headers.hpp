@@ -315,6 +315,9 @@ bool CheckStructSize(const T* s) {return s && (s->StructSize >= sizeof(T));}
     Class(const Class &); \
     Class &operator=(const Class &);
 
+#define NB_STATIC_ASSERT(Condition, Message) \
+    static_assert(bool(Condition), Message)
+
 //---------------------------------------------------------------------------
 
 #include "UnicodeString.hpp"
