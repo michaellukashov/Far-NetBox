@@ -446,7 +446,7 @@ __int64 FileWrite(HANDLE Handle, const void * Buffer, __int64 Count)
 
 bool FileExists(const UnicodeString & FileName)
 {
-  return GetFileAttributes(FileName.c_str()) != 0xFFFFFFFF;
+  return FileGetAttr(FileName) != INVALID_FILE_ATTRIBUTES;
 }
 
 bool RenameFile(const UnicodeString & From, const UnicodeString & To)
@@ -462,9 +462,9 @@ bool DirectoryExists(const UnicodeString & Filename)
     return true;
   }
 
-  DWORD LocalFileAttrs = GetFileAttributes(Filename.c_str());
+  DWORD LocalFileAttrs = FileGetAttr(Filename);
 
-  if ((LocalFileAttrs != 0xFFFFFFFF) && FLAGSET(LocalFileAttrs, FILE_ATTRIBUTE_DIRECTORY))
+  if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, FILE_ATTRIBUTE_DIRECTORY))
   {
     return true;
   }
@@ -509,13 +509,13 @@ UnicodeString FileSearch(const UnicodeString & FileName, const UnicodeString & D
 
 DWORD FileGetAttr(const UnicodeString & Filename)
 {
-  DWORD LocalFileAttrs = GetFileAttributes(Filename.c_str());
+  DWORD LocalFileAttrs = ::GetFileAttributes(Filename.c_str());
   return LocalFileAttrs;
 }
 
 DWORD FileSetAttr(const UnicodeString & FileName, DWORD LocalFileAttrs)
 {
-  DWORD Result = SetFileAttributes(FileName.c_str(), LocalFileAttrs);
+  DWORD Result = ::SetFileAttributes(FileName.c_str(), LocalFileAttrs);
   return Result;
 }
 
