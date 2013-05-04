@@ -302,14 +302,14 @@ intptr_t LastDelimiter(const UnicodeString & Delimiters, const UnicodeString & S
 
 //---------------------------------------------------------------------------
 
-int StringCmp(const wchar_t * s1, const wchar_t * s2)
+int StringCmp(const wchar_t * S1, const wchar_t * S2)
 {
-  return ::CompareString(0, SORT_STRINGSORT, s1, -1, s2, -1) - 2;
+  return ::CompareString(0, SORT_STRINGSORT, S1, -1, S2, -1) - 2;
 }
 
-int StringCmpI(const wchar_t * s1, const wchar_t * s2)
+int StringCmpI(const wchar_t * S1, const wchar_t * S2)
 {
-  return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, s1, -1, s2, -1) - 2;
+  return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, S1, -1, S2, -1) - 2;
 }
 
 //---------------------------------------------------------------------------
@@ -355,7 +355,7 @@ bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
   return ::Pos(Str1, Str2) > 0;
 }
 
-void RaiseLastOSError(int LastError)
+void RaiseLastOSError(DWORD LastError)
 {
   if (LastError == 0) LastError = ::GetLastError();
   UnicodeString ErrorMsg;
@@ -440,6 +440,14 @@ __int64 FileWrite(HANDLE Handle, const void * Buffer, __int64 Count)
     Result = -1;
   }
   return Result;
+}
+
+__int64 FileSeek(HANDLE Handle, __int64 Offset, DWORD Origin)
+{
+  LONG low = Offset & 0xFFFFFFFF;
+  LONG high = Offset >> 32;
+  low = ::SetFilePointer(Handle, low, &high, Origin);
+  return ((_int64)high << 32) + low;
 }
 
 //---------------------------------------------------------------------------
@@ -557,52 +565,52 @@ bool DeleteFile(const UnicodeString & File)
 
 //---------------------------------------------------------------------------
 
-UnicodeString Format(const wchar_t * format, ...)
+UnicodeString Format(const wchar_t * Format, ...)
 {
-  va_list args;
-  va_start(args, format);
-  UnicodeString Result = ::Format(format, args);
-  va_end(args);
+  va_list Args;
+  va_start(Args, Format);
+  UnicodeString Result = ::Format(Format, Args);
+  va_end(Args);
   return Result.c_str();
 }
 
 //---------------------------------------------------------------------------
 
-UnicodeString Format(const wchar_t * Format, va_list args)
+UnicodeString Format(const wchar_t * Format, va_list Args)
 {
   UnicodeString Result;
   if (Format && *Format)
   {
-    intptr_t Len = _vscwprintf(Format, args);
+    intptr_t Len = _vscwprintf(Format, Args);
     Result.SetLength(Len + 1);
     // vswprintf(Buf, Len + 1, Format, args);
-    vswprintf(const_cast<wchar_t *>(Result.c_str()), Len + 1, Format, args);
+    vswprintf(const_cast<wchar_t *>(Result.c_str()), Len + 1, Format, Args);
   }
   return Result.c_str();
 }
 
 //---------------------------------------------------------------------------
 
-AnsiString Format(const char * format, ...)
+AnsiString Format(const char * Format, ...)
 {
   AnsiString Result(64, 0);
-  va_list args;
-  va_start(args, format);
-  Result = ::Format(format, args);
-  va_end(args);
+  va_list Args;
+  va_start(Args, Format);
+  Result = ::Format(Format, Args);
+  va_end(Args);
   return Result.c_str();
 }
 
 //---------------------------------------------------------------------------
 
-AnsiString Format(const char * Format, va_list args)
+AnsiString Format(const char * Format, va_list Args)
 {
   AnsiString Result(64, 0);
   if (Format && *Format)
   {
-    intptr_t Len = _vscprintf(Format, args);
+    intptr_t Len = _vscprintf(Format, Args);
     Result.SetLength(Len + 1);
-    vsprintf_s(&Result[1], Len + 1, Format, args);
+    vsprintf_s(&Result[1], Len + 1, Format, Args);
   }
   return Result.c_str();
 }
@@ -621,8 +629,8 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
   }
   else
   {
-    va_list args;
-    va_start(args, Id);
+    va_list Args;
+    va_start(Args, Id);
     /*
     LPTSTR lpszTemp;
     if (::FormatMessage(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER,
@@ -636,10 +644,10 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
     Result = lpszTemp;
     ::LocalFree(lpszTemp);
     */
-    intptr_t Len = _vscwprintf(Format, args);
+    intptr_t Len = _vscwprintf(Format, Args);
     Result.SetLength(Len + sizeof(wchar_t));
-    vswprintf_s(&Result[1], Result.Length(), Format, args);
-    va_end(args);
+    vswprintf_s(&Result[1], Result.Length(), Format, Args);
+    va_end(Args);
   }
   return Result;
 }
@@ -649,7 +657,7 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
  * return the next available word, ignoring whitespace
  */
 static const wchar_t *
-NextWord(const wchar_t * input)
+NextWord(const wchar_t * Input)
 {
   static wchar_t buffer[1024];
   static const wchar_t * text = NULL;
@@ -657,9 +665,9 @@ NextWord(const wchar_t * input)
   wchar_t * endOfBuffer = buffer + LENOF(buffer) - 1;
   wchar_t * pBuffer = buffer;
 
-  if (input)
+  if (Input)
   {
-    text = input;
+    text = Input;
   }
 
   if (text)
@@ -687,8 +695,8 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
 {
   UnicodeString Result;
 
-  intptr_t lenBuffer = 0;
-  intptr_t spaceLeft = MaxWidth;
+  intptr_t LenBuffer = 0;
+  intptr_t SpaceLeft = MaxWidth;
 
   if (MaxWidth == 0)
   {
@@ -704,12 +712,12 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
    */
   while (Result.Length() == 0)
   {
-    intptr_t lineCount = 0;
+    intptr_t LineCount = 0;
 
-    if (lenBuffer)
+    if (LenBuffer)
     {
       /* second pass, so create the wrapped buffer */
-      Result.SetLength(lenBuffer + 1);
+      Result.SetLength(LenBuffer + 1);
       if (Result.Length() == 0)
       {
         break;
@@ -727,20 +735,20 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
     const wchar_t * s = NextWord(Line.c_str());
     while (*s)
     {
-      spaceLeft = MaxWidth;
+      SpaceLeft = MaxWidth;
 
       /* force the first word to always be completely copied */
       while (*s)
       {
         if (Result.Length() == 0)
         {
-          ++lenBuffer;
+          ++LenBuffer;
         }
         else
         {
           *(w++) = *s;
         }
-        --spaceLeft;
+        --SpaceLeft;
         ++s;
       }
       if (!*s)
@@ -749,26 +757,26 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
       }
 
       /* copy as many words as will fit onto the current line */
-      while (*s && static_cast<intptr_t>(wcslen(s) + 1) <= spaceLeft)
+      while (*s && static_cast<intptr_t>(wcslen(s) + 1) <= SpaceLeft)
       {
         if (Result.Length() == 0)
         {
-          ++lenBuffer;
+          ++LenBuffer;
         }
-        --spaceLeft;
+        --SpaceLeft;
 
         /* then copy the word */
         while (*s)
         {
           if (Result.Length() == 0)
           {
-            ++lenBuffer;
+            ++LenBuffer;
           }
           else
           {
             *(w++) = *s;
           }
-          --spaceLeft;
+          --SpaceLeft;
           ++s;
         }
         if (!*s)
@@ -786,7 +794,7 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
         /* add a new line here */
         if (Result.Length() == 0)
         {
-          ++lenBuffer;
+          ++LenBuffer;
         }
         else
         {
@@ -799,10 +807,10 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
         }
       }
 
-      ++lineCount;
+      ++LineCount;
     }
 
-    lenBuffer += 2;
+    LenBuffer += 2;
 
     if (w)
     {
@@ -834,19 +842,19 @@ UnicodeString TranslateExceptionMessage(std::exception * E)
 }
 
 //---------------------------------------------------------------------------
-void AppendWChar(UnicodeString & Str, const wchar_t ch)
+void AppendWChar(UnicodeString & Str, const wchar_t Ch)
 {
-  if (!Str.IsEmpty() && Str[Str.Length()] != ch)
+  if (!Str.IsEmpty() && Str[Str.Length()] != Ch)
   {
-    Str += ch;
+    Str += Ch;
   }
 }
 
-void AppendChar(std::string & Str, const char ch)
+void AppendChar(std::string & Str, const char Ch)
 {
-  if (!Str.empty() && Str[Str.length() - 1] != ch)
+  if (!Str.empty() && Str[Str.length() - 1] != Ch)
   {
-    Str += ch;
+    Str += Ch;
   }
 }
 
@@ -876,12 +884,12 @@ UnicodeString ExpandEnvVars(const UnicodeString & Str)
   return Result;
 }
 
-UnicodeString StringOfChar(const wchar_t c, intptr_t len)
+UnicodeString StringOfChar(const wchar_t c, intptr_t Len)
 {
   UnicodeString Result;
-  if (len < 0) len = 0;
-  Result.SetLength(len);
-  for (intptr_t i = 1; i <= len; i++) Result[i] = c;
+  if (Len < 0) Len = 0;
+  Result.SetLength(Len);
+  for (intptr_t i = 1; i <= Len; i++) Result[i] = c;
   return Result;
 }
 
@@ -941,14 +949,6 @@ UnicodeString ExpandUNCFileName(const UnicodeString & FileName)
   return Result;
 }
 
-__int64 FileSeek(HANDLE Handle, __int64 Offset, int Origin)
-{
-  LONG low = Offset & 0xFFFFFFFF;
-  LONG high = Offset >> 32;
-  low = ::SetFilePointer(Handle, low, &high, static_cast<DWORD>(Origin));
-  return ((_int64)high << 32) + low;
-}
-
 //---------------------------------------------------------------------------
 static int FindMatchingFile(TSearchRec & Rec)
 {
@@ -975,29 +975,29 @@ static int FindMatchingFile(TSearchRec & Rec)
 }
 
 //---------------------------------------------------------------------------
-int FindFirst(const UnicodeString & FileName, DWORD LocalFileAttrs, TSearchRec & Rec)
+DWORD FindFirst(const UnicodeString & FileName, DWORD LocalFileAttrs, TSearchRec & Rec)
 {
-  const int faSpecial = faHidden | faSysFile | faDirectory;
+  const DWORD faSpecial = faHidden | faSysFile | faDirectory;
   // HANDLE hFind = FindFirstFileW(FileName.c_str(), &Rec);
   // bool Result = (hFind != INVALID_HANDLE_VALUE);
   // if (Result) Classes::FindClose(Rec);
   // return Result;
   Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
   Rec.FindHandle = FindFirstFileW(FileName.c_str(), &Rec.FindData);
-  int Result = 0;
+  DWORD Result = 0;
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)
   {
     Result = FindMatchingFile(Rec);
     if (Result != 0) FindClose(Rec);
   }
   else
-    Result = GetLastError();
+    Result = ::GetLastError();
   return Result;
 }
 
-int FindNext(TSearchRec & Rec)
+DWORD FindNext(TSearchRec & Rec)
 {
-  int Result = 0;
+  DWORD Result = 0;
   if (FindNextFileW(Rec.FindHandle, &Rec.FindData))
     Result = FindMatchingFile(Rec);
   else
@@ -1005,9 +1005,9 @@ int FindNext(TSearchRec & Rec)
   return Result;
 }
 
-int FindClose(TSearchRec & Rec)
+DWORD FindClose(TSearchRec & Rec)
 {
-  int Result = 0;
+  DWORD Result = 0;
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)
   {
     ::FindClose(Rec.FindHandle);
