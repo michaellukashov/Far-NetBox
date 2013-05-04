@@ -424,10 +424,14 @@ static int send_request_body(ne_request *req, int retry)
             return RETRY_RET(retry, ret, aret);
         }
 
+#if 0
 	NE_DEBUG(NE_DBG_HTTPBODY, 
 		 "Body block (%" NE_FMT_SSIZE_T " bytes):\n[%.*s]\n",
 		 bytes, (int)bytes, buffer);
-
+#endif
+	NE_DEBUG(NE_DBG_HTTPBODY, 
+		 "Body block (%" NE_FMT_SSIZE_T " bytes)\n",
+		 (int)bytes);
         /* invoke progress callback */
         notify_status(sess, ne_status_sending);
     }
