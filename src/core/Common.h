@@ -113,7 +113,7 @@ DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);
 bool FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec);
 int FindCheck(int Result);
-int FindFirstChecked(const UnicodeString & Path, int Attr, TSearchRec & F);
+int FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRec & F);
 int FindNextChecked(TSearchRec & F);
 void ProcessLocalDirectory(const UnicodeString & DirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = NULL, int FindAttrs = -1);

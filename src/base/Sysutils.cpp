@@ -462,9 +462,9 @@ bool DirectoryExists(const UnicodeString & Filename)
     return true;
   }
 
-  int attr = GetFileAttributes(Filename.c_str());
+  DWORD LocalFileAttrs = GetFileAttributes(Filename.c_str());
 
-  if ((attr != 0xFFFFFFFF) && FLAGSET(attr, FILE_ATTRIBUTE_DIRECTORY))
+  if ((LocalFileAttrs != 0xFFFFFFFF) && FLAGSET(LocalFileAttrs, FILE_ATTRIBUTE_DIRECTORY))
   {
     return true;
   }
@@ -507,17 +507,16 @@ UnicodeString FileSearch(const UnicodeString & FileName, const UnicodeString & D
   return Result;
 }
 
-
-int FileGetAttr(const UnicodeString & Filename)
+DWORD FileGetAttr(const UnicodeString & Filename)
 {
-  int attr = GetFileAttributes(Filename.c_str());
-  return attr;
+  DWORD LocalFileAttrs = GetFileAttributes(Filename.c_str());
+  return LocalFileAttrs;
 }
 
-int FileSetAttr(const UnicodeString & Filename, int Attrs)
+DWORD FileSetAttr(const UnicodeString & FileName, DWORD LocalFileAttrs)
 {
-  int res = SetFileAttributes(Filename.c_str(), Attrs);
-  return res;
+  DWORD Result = SetFileAttributes(FileName.c_str(), LocalFileAttrs);
+  return Result;
 }
 
 bool CreateDir(const UnicodeString & Dir)
@@ -981,14 +980,14 @@ static int FindMatchingFile(TSearchRec & Rec)
 }
 
 //---------------------------------------------------------------------------
-int FindFirst(const UnicodeString & FileName, int Attr, TSearchRec & Rec)
+int FindFirst(const UnicodeString & FileName, DWORD LocalFileAttrs, TSearchRec & Rec)
 {
   const int faSpecial = faHidden | faSysFile | faDirectory;
   // HANDLE hFind = FindFirstFileW(FileName.c_str(), &Rec);
   // bool Result = (hFind != INVALID_HANDLE_VALUE);
   // if (Result) Classes::FindClose(Rec);
   // return Result;
-  Rec.ExcludeAttr = (~Attr) & faSpecial;
+  Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
   Rec.FindHandle = FindFirstFileW(FileName.c_str(), &Rec.FindData);
   int Result = 0;
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)

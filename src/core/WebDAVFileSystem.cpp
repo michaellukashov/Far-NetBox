@@ -13333,8 +13333,8 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       if (!File->GetIsSymLink())
       {
         FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
-          int Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
-          if (FLAGCLEAR(Attrs, faDirectory)) { EXCEPTION; }
+          DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
+          if (FLAGCLEAR(LocalFileAttrs, faDirectory)) { EXCEPTION; }
         );
 
         FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),

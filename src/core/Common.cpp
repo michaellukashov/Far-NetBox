@@ -785,9 +785,9 @@ int FindCheck(int Result)
   return Result;
 }
 //---------------------------------------------------------------------------
-int FindFirstChecked(const UnicodeString & Path, int Attr, TSearchRec & F)
+int FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRec & F)
 {
-  return FindCheck(FindFirst(Path, Attr, F));
+  return FindCheck(FindFirst(Path, LocalFileAttrs, F));
 }
 //---------------------------------------------------------------------------
 // It can make sense to use FindNextChecked, even if unchecked FindFirst is used.

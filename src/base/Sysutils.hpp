@@ -223,8 +223,8 @@ bool RenameFile(const UnicodeString & From, const UnicodeString & To);
 bool DirectoryExists(const UnicodeString & Dir);
 UnicodeString FileSearch(const UnicodeString & FileName, const UnicodeString & DirectoryList);
 
-int FileGetAttr(const UnicodeString & Filename);
-int FileSetAttr(const UnicodeString & Filename, int Attrs);
+DWORD FileGetAttr(const UnicodeString & FileName);
+DWORD FileSetAttr(const UnicodeString & FileName, DWORD LocalFileAttrs);
 
 bool ForceDirectories(const UnicodeString & Dir);
 bool DeleteFile(const UnicodeString & File);
@@ -305,7 +305,7 @@ struct TSearchRec
 
 //---------------------------------------------------------------------------
 
-int FindFirst(const UnicodeString & FileName, int FindAttrs, TSearchRec & Rec);
+int FindFirst(const UnicodeString & FileName, DWORD LocalFileAttrs, TSearchRec & Rec);
 int FindNext(TSearchRec & Rec);
 int FindClose(TSearchRec & Rec);
 

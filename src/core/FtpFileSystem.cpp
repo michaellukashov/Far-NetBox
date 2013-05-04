@@ -1171,8 +1171,8 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
     if (!File->GetIsSymLink())
     {
       FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
-        int Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
-        if (FLAGCLEAR(Attrs, faDirectory))
+        DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
+        if (FLAGCLEAR(LocalFileAttrs, faDirectory))
         {
           EXCEPTION;
         }
@@ -1453,7 +1453,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
 
   __int64 MTime = 0, ATime = 0;
   __int64 Size = 0;
-  // int Attrs = 0;
+  // DWORD LocalFileAttrs = 0;
 
   FTerminal->OpenLocalFile(FileName, GENERIC_READ, &OpenParams->LocalFileAttrs,
     NULL, NULL, &MTime, &ATime, &Size);
@@ -1579,7 +1579,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
 
   OperationProgress->SetFile(DirectoryName);
 
-  int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+  DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   TSearchRec SearchRec;
   bool FindOK = false;
 
