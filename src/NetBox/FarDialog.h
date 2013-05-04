@@ -53,10 +53,10 @@ public:
   TPoint GetSize();
   void SetSize(TPoint Value);
   TPoint GetClientSize();
-  int GetWidth();
-  void SetWidth(int Value);
-  int GetHeight();
-  void SetHeight(int Value);
+  intptr_t GetWidth();
+  void SetWidth(intptr_t Value);
+  intptr_t GetHeight();
+  void SetHeight(intptr_t Value);
   UnicodeString GetCaption();
   void SetCaption(const UnicodeString &  Value);
   HANDLE GetHandle() { return FHandle; }

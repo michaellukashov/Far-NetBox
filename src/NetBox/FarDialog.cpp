@@ -225,22 +225,22 @@ void TFarDialog::SetSize(TPoint Value)
   SetBounds(B);
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetWidth(int Value)
+void TFarDialog::SetWidth(intptr_t Value)
 {
   SetSize(TPoint(Value, GetHeight()));
 }
 //---------------------------------------------------------------------------
-int TFarDialog::GetWidth()
+intptr_t TFarDialog::GetWidth()
 {
   return GetSize().x;
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetHeight(int Value)
+void TFarDialog::SetHeight(intptr_t Value)
 {
   SetSize(TPoint(GetWidth(), Value));
 }
 //---------------------------------------------------------------------------
-int TFarDialog::GetHeight()
+intptr_t TFarDialog::GetHeight()
 {
   return GetSize().y;
 }
@@ -329,25 +329,25 @@ void TFarDialog::GetNextItemPosition(intptr_t & Left, intptr_t & Top)
   Left = R.Left;
   Top = R.Top;
 
-  TFarDialogItem * LastI = GetItem(GetItemCount() - 1);
-  LastI = LastI == FBorderBox ? NULL : LastI;
+  TFarDialogItem * LastItem = GetItem(GetItemCount() - 1);
+  LastItem = LastItem == FBorderBox ? NULL : LastItem;
 
-  if (LastI)
+  if (LastItem)
   {
     switch (GetNextItemPosition())
     {
       case ipNewLine:
-        Top = LastI->GetBottom() + 1;
+        Top = LastItem->GetBottom() + 1;
         break;
 
       case ipBelow:
-        Top = LastI->GetBottom() + 1;
-        Left = LastI->GetLeft();
+        Top = LastItem->GetBottom() + 1;
+        Left = LastItem->GetLeft();
         break;
 
       case ipRight:
-        Top = LastI->GetTop();
-        Left = LastI->GetRight() + 3;
+        Top = LastItem->GetTop();
+        Left = LastItem->GetRight() + 3;
         break;
     }
   }
