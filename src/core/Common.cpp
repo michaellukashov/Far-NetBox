@@ -774,7 +774,7 @@ unsigned char HexToByte(const UnicodeString & Hex)
     static_cast<unsigned char>(((P1 <= 0) || (P2 <= 0)) ? 0 : (((P1 - 1) << 4) + (P2 - 1)));
 }
 //---------------------------------------------------------------------------
-int FindCheck(int Result)
+DWORD FindCheck(DWORD Result)
 {
   if ((Result != ERROR_SUCCESS) &&
       (Result != ERROR_FILE_NOT_FOUND) &&
@@ -785,7 +785,7 @@ int FindCheck(int Result)
   return Result;
 }
 //---------------------------------------------------------------------------
-int FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRec & F)
+DWORD FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRec & F)
 {
   return FindCheck(FindFirst(Path, LocalFileAttrs, F));
 }
@@ -793,14 +793,14 @@ int FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRe
 // It can make sense to use FindNextChecked, even if unchecked FindFirst is used.
 // I.e. even if we do not care that FindFirst failed, if FindNext
 // fails after successful FindFirst, it mean some terrible problem
-int FindNextChecked(TSearchRec & F)
+DWORD FindNextChecked(TSearchRec & F)
 {
   return FindCheck(FindNext(F));
 }
 //---------------------------------------------------------------------------
 bool FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec)
 {
-  int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+  DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   bool Result = (FindFirst(FileName, FindAttrs, Rec) == 0);
   if (Result)
   {
@@ -811,7 +811,7 @@ bool FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec)
 //---------------------------------------------------------------------------
 void ProcessLocalDirectory(const UnicodeString & DirName,
   TProcessLocalFileEvent CallBackFunc, void * Param,
-  int FindAttrs)
+  DWORD FindAttrs)
 {
   assert(CallBackFunc);
   if (FindAttrs < 0)

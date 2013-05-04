@@ -112,11 +112,11 @@ bool IsDirectoryWriteable(const UnicodeString & Path);
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);
 bool FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec);
-int FindCheck(int Result);
-int FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRec & F);
-int FindNextChecked(TSearchRec & F);
+DWORD FindCheck(DWORD Result);
+DWORD FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRec & F);
+DWORD FindNextChecked(TSearchRec & F);
 void ProcessLocalDirectory(const UnicodeString & DirName,
-  TProcessLocalFileEvent CallBackFunc, void * Param = NULL, int FindAttrs = -1);
+  TProcessLocalFileEvent CallBackFunc, void * Param = NULL, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
 //---------------------------------------------------------------------------
 enum TDSTMode
 {
