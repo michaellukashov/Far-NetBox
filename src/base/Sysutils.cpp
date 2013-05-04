@@ -909,24 +909,19 @@ UnicodeString ExtractFileExt(const UnicodeString & FileName)
   return Result;
 }
 
-UnicodeString get_full_path_name(const UnicodeString & Path)
-{
-  UnicodeString Buf(MAX_PATH, 0);
-  intptr_t Size = GetFullPathNameW(Path.c_str(), static_cast<DWORD>(Buf.Length() - 1),
-                                 reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), NULL);
-  if (Size > Buf.Length())
-  {
-    Buf.SetLength(Size);
-    Size = GetFullPathNameW(Path.c_str(), static_cast<DWORD>(Buf.Length() - 1), reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), NULL);
-  }
-  return UnicodeString(Buf.c_str(), Size);
-}
-
 UnicodeString ExpandFileName(const UnicodeString & FileName)
 {
   UnicodeString Result;
-  Result = get_full_path_name(FileName);
-  return Result;
+  UnicodeString Buf(MAX_PATH, 0);
+  intptr_t Size = GetFullPathNameW(FileName.c_str(), static_cast<DWORD>(Buf.Length() - 1),
+    reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), NULL);
+  if (Size > Buf.Length())
+  {
+    Buf.SetLength(Size);
+    Size = ::GetFullPathNameW(FileName.c_str(), static_cast<DWORD>(Buf.Length() - 1),
+      reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), NULL);
+  }
+  return UnicodeString(Buf.c_str(), Size);
 }
 
 UnicodeString GetUniversalName(UnicodeString & FileName)
