@@ -1608,6 +1608,7 @@ XMLError XMLDocument::LoadFile( FILE* fp )
     fseek( fp, 0, SEEK_SET );
 
     if ( size == 0 ) {
+        SetError( XML_ERROR_EMPTY_DOCUMENT, 0, 0 );
         return _errorID;
     }
 
@@ -1662,6 +1663,7 @@ XMLError XMLDocument::SaveFile( FILE* fp, bool compact )
 
 XMLError XMLDocument::Parse( const char* p, size_t len )
 {
+	const char* start = p;
     Clear();
 
     if ( !p || !*p ) {
@@ -1682,7 +1684,8 @@ XMLError XMLDocument::Parse( const char* p, size_t len )
         return _errorID;
     }
 
-    ParseDeep( _charBuffer, 0 );
+	int delta = p - start;	// skip initial whitespace, BOM, etc.
+    ParseDeep( _charBuffer+delta, 0 );
     return _errorID;
 }
 
