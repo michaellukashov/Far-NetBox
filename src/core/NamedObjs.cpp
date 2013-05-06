@@ -89,13 +89,13 @@ TNamedObjectList::TNamedObjectList():
 //---------------------------------------------------------------------------
 TNamedObject * TNamedObjectList::AtObject(intptr_t Index)
 {
-  return static_cast<TNamedObject *>(Items[Index + GetHiddenCount()]);
+  return static_cast<TNamedObject *>(GetItem(Index + GetHiddenCount()));
 }
 //---------------------------------------------------------------------------
 void TNamedObjectList::Recount()
 {
   intptr_t I = 0;
-  while ((I < TObjectList::GetCount()) && (static_cast<TNamedObject *>(Items[I])->GetHidden()))
+  while ((I < TObjectList::GetCount()) && (static_cast<TNamedObject *>(GetItem(I))->GetHidden()))
   {
     ++I;
   }
@@ -122,9 +122,9 @@ TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name,
 {
   for (Integer Index = 0; Index < TObjectList::GetCount(); ++Index)
   {
-    if (!(static_cast<TNamedObject *>(Items[Index]))->CompareName(Name, CaseSensitive))
+    if (!(static_cast<TNamedObject *>(GetItem(Index)))->CompareName(Name, CaseSensitive))
     {
-      return static_cast<TNamedObject *>(Items[Index]);
+      return static_cast<TNamedObject *>(GetItem(Index));
     }
   }
   return NULL;

@@ -4134,7 +4134,7 @@ void TSessionDialog::SelectTab(intptr_t Tab)
   intptr_t Index;
   /*for (Index = 0; Index < FTabs->Count; ++Index)
   {
-    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[Index]);
+    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(Index));
     // Button->SetBrackets(Button->GetTab() == Tab ? brTight : brNone);
     if (TabBtn == SelectedTabBtn)
       TabBtn->SetColor(0, static_cast<char>((GetSystemColor(COL_DIALOGTEXT) & 0xF0) | 0x09));
@@ -4143,7 +4143,7 @@ void TSessionDialog::SelectTab(intptr_t Tab)
   }*/
   for (Index = 0; Index < FTabs->GetCount(); ++Index)
   {
-    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[Index]);
+    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(Index));
     if (TabBtn == SelectedTabBtn)
     {
       break;
@@ -4179,13 +4179,13 @@ void TSessionDialog::ChangeTabs(intptr_t FirstVisibleTabIndex)
   // Change visibility
   for (intptr_t I = 0; I < FirstVisibleTabIndex; I++)
   {
-    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I]);
+    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(I));
     TabBtn->SetVisible(false);
   }
   intptr_t LeftPos = GetBorderBox()->GetLeft() + 2;
   for (intptr_t I = FirstVisibleTabIndex; I <= LastVisibleTabIndex; I++)
   {
-    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I]);
+    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(I));
     intptr_t Width = TabBtn->GetWidth();
     TabBtn->SetLeft(LeftPos);
     TabBtn->SetWidth(Width);
@@ -4194,7 +4194,7 @@ void TSessionDialog::ChangeTabs(intptr_t FirstVisibleTabIndex)
   }
   for (intptr_t I = LastVisibleTabIndex + 1; I < FTabs->GetCount(); I++)
   {
-    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I]);
+    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(I));
     TabBtn->SetVisible(false);
   }
 }
@@ -4210,9 +4210,9 @@ intptr_t TSessionDialog::GetVisibleTabsCount(intptr_t TabIndex, bool Forward)
   {
     for (intptr_t I = TabIndex; I < FTabs->GetCount() - 1; I++)
     {
-      TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I]);
+      TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(I));
       TabsWidth += TabBtn->GetWidth() + 1;
-      TTabButton * NextTabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I + 1]);
+      TTabButton * NextTabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(I + 1));
       intptr_t NextTabWidth = NextTabBtn->GetWidth() + 1;
       if (TabsWidth + NextTabWidth >= DialogWidth)
         break;
@@ -4223,9 +4223,9 @@ intptr_t TSessionDialog::GetVisibleTabsCount(intptr_t TabIndex, bool Forward)
   {
     for (intptr_t I = TabIndex; I >= 1; I--)
     {
-      TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I]);
+      TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(I));
       TabsWidth += TabBtn->GetWidth() + 1;
-      TTabButton * PrevTabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I - 1]);
+      TTabButton * PrevTabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(I - 1));
       intptr_t PrevTabWidth = PrevTabBtn->GetWidth() + 1;
       if (TabsWidth + PrevTabWidth >= DialogWidth)
         break;

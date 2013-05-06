@@ -174,7 +174,7 @@ public:
   TList();
   virtual ~TList();
   void * operator [](intptr_t Index) const;
-  void *& GetItem(intptr_t Index);
+  void * GetItem(intptr_t Index);
   void SetItem(intptr_t Index, void * Item);
   intptr_t Add(void * Value);
   void * Extract(void * Item);
@@ -192,20 +192,6 @@ public:
   void SetCount(intptr_t Value);
 
 private:
-  void PropertySetCount(intptr_t Value) { SetCount(Value); }
-  void *& PropertyGetItem(intptr_t Index)
-  {
-    return GetItem(Index);
-  }
-  void PropertySetItem(intptr_t Index, void * Value)
-  {
-    SetItem(Index, Value);
-  }
-
-public:
-  IndexedPropertyVoid<intptr_t, TList, &TList::PropertyGetItem, &TList::PropertySetItem> Items;
-
-private:
   rde::vector<void *> FList;
 };
 
@@ -216,7 +202,7 @@ public:
   virtual ~TObjectList();
 
   TObject * operator [](intptr_t Index) const;
-  TObject *& GetItem(intptr_t Index);
+  TObject * GetItem(intptr_t Index);
   void SetItem(intptr_t Index, TObject * Value);
   intptr_t Add(TObject * Value);
   intptr_t Remove(TObject * Value);
@@ -230,19 +216,6 @@ public:
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
   virtual void Sort(CompareFunc func);
   virtual void Notify(void * Ptr, TListNotification Action);
-
-private:
-  TObject *& PropertyGetItem(intptr_t Index)
-  {
-    return GetItem(Index);
-  }
-  void PropertySetItem(intptr_t Index, TObject * Value)
-  {
-    Insert(Index, Value);
-  }
-
-public:
-  IndexedProperty2<intptr_t, TObject *, TObjectList, &TObjectList::PropertyGetItem, &TObjectList::PropertySetItem > Items;
 
 private:
   bool FOwnsObjects;

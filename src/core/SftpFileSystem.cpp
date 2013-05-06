@@ -1036,11 +1036,11 @@ public:
     assert(FResponses->GetCount() == FRequests->GetCount());
     for (intptr_t Index = 0; Index < FRequests->GetCount(); ++Index)
     {
-      Request = static_cast<TSFTPQueuePacket*>(FRequests->Items[Index]);
+      Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(Index));
       assert(Request);
       delete Request;
 
-      Response = static_cast<TSFTPPacket*>(FResponses->Items[Index]);
+      Response = static_cast<TSFTPPacket*>(FResponses->GetItem(Index));
       assert(Response);
       delete Response;
     }
@@ -1064,10 +1064,10 @@ public:
     {
       assert(FResponses->GetCount());
 
-      Request = static_cast<TSFTPQueuePacket*>(FRequests->Items[0]);
+      Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(0));
       assert(Request);
 
-      Response = static_cast<TSFTPPacket*>(FResponses->Items[0]);
+      Response = static_cast<TSFTPPacket*>(FResponses->GetItem(0));
       assert(Response);
 
       try
@@ -1112,7 +1112,7 @@ public:
     TSFTPPacket * Response = NULL;
     TRY_FINALLY (
     {
-      Request = static_cast<TSFTPQueuePacket*>(FRequests->Items[0]);
+      Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(0));
       FRequests->Delete(0);
       assert(Request);
       if (Token != NULL)
@@ -1120,7 +1120,7 @@ public:
         *Token = Request->Token;
       }
 
-      Response = static_cast<TSFTPPacket*>(FResponses->Items[0]);
+      Response = static_cast<TSFTPPacket*>(FResponses->GetItem(0));
       FResponses->Delete(0);
       assert(Response);
 
@@ -1865,8 +1865,8 @@ void TSFTPFileSystem::ResetConnection()
   // there must be no valid packet reservation at the end
   for (intptr_t I = 0; I < FPacketReservations->GetCount(); I++)
   {
-    assert(FPacketReservations->Items[I] == NULL);
-    delete static_cast<TSFTPPacket *>(FPacketReservations->Items[I]);
+    assert(FPacketReservations->GetItem(I) == NULL);
+    delete static_cast<TSFTPPacket *>(FPacketReservations->GetItem(I));
   }
   FPacketReservations->Clear();
   FPacketNumbers.clear();
@@ -2208,7 +2208,7 @@ void TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
   {
     FPacketNumbers[Index-1] = FPacketNumbers[Index];
   }
-  TSFTPPacket * Packet = static_cast<TSFTPPacket *>(FPacketReservations->Items[Reservation]);
+  TSFTPPacket * Packet = static_cast<TSFTPPacket *>(FPacketReservations->GetItem(Reservation));
   if (Packet)
   {
     assert(Packet->GetReservedBy() == this);
@@ -2307,7 +2307,7 @@ uintptr_t TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
           MessageNumber = (unsigned int)FPacketNumbers[Index];
           if (MessageNumber == Packet->GetMessageNumber())
           {
-            ReservedPacket = static_cast<TSFTPPacket *>(FPacketReservations->Items[Index]);
+            ReservedPacket = static_cast<TSFTPPacket *>(FPacketReservations->GetItem(Index));
             IsReserved = true;
             if (ReservedPacket)
             {
@@ -2397,7 +2397,7 @@ void TSFTPFileSystem::UnreserveResponse(TSFTPPacket * Response)
       // we probably do not remove the item at all, because
       // we must remember that the response was expected, so we skip it
       // in receivepacket()
-      FPacketReservations->Items(Reservation, NULL);
+      FPacketReservations->SetItem(Reservation, NULL);
     }
   }
 }

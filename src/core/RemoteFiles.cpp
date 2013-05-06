@@ -1530,7 +1530,7 @@ UnicodeString TRemoteFileList::GetFullDirectory()
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFileList::GetFiles(Integer Index)
 {
-  return static_cast<TRemoteFile *>(Items[Index]);
+  return static_cast<TRemoteFile *>(GetItem(Index));
 }
 //---------------------------------------------------------------------------
 Boolean TRemoteFileList::GetIsRoot()

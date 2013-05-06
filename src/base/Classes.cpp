@@ -104,7 +104,6 @@ void TPersistent::AssignError(TPersistent * Source)
 //---------------------------------------------------------------------------
 TList::TList()
 {
-  Items(this);
 }
 
 TList::~TList()
@@ -139,7 +138,7 @@ void * TList::operator [](intptr_t Index) const
   return FList[Index];
 }
 
-void *& TList::GetItem(intptr_t Index)
+void * TList::GetItem(intptr_t Index)
 {
   return FList[Index];
 }
@@ -306,7 +305,6 @@ void TList::Sort()
 TObjectList::TObjectList() :
   FOwnsObjects(true)
 {
-  Items(this);
 }
 
 TObjectList::~TObjectList()
@@ -319,9 +317,9 @@ TObject * TObjectList::operator [](intptr_t Index) const
   return static_cast<TObject *>(TList::operator[](Index));
 }
 
-TObject *& TObjectList::GetItem(intptr_t Index)
+TObject * TObjectList::GetItem(intptr_t Index)
 {
-  return reinterpret_cast<TObject *&>(TList::GetItem(Index));
+  return reinterpret_cast<TObject *>(TList::GetItem(Index));
 }
 
 void TObjectList::SetItem(intptr_t Index, TObject * Value)

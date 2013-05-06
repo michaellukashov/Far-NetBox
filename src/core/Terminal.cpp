@@ -166,7 +166,7 @@ TSynchronizeChecklist::~TSynchronizeChecklist()
 {
   for (intptr_t Index = 0; Index < FList->GetCount(); ++Index)
   {
-    delete static_cast<TItem *>(static_cast<void *>(FList->Items[Index]));
+    delete static_cast<TItem *>(static_cast<void *>(FList->GetItem(Index)));
   }
   delete FList;
 }
@@ -212,7 +212,7 @@ intptr_t TSynchronizeChecklist::GetCount() const
 //------------------------------------------------------------------------------
 const TSynchronizeChecklist::TItem * TSynchronizeChecklist::GetItem(intptr_t Index) const
 {
-  return static_cast<TItem *>(FList->Items[Index]);
+  return static_cast<TItem *>(FList->GetItem(Index));
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -5471,7 +5471,7 @@ void TTerminalList::FreeAndNullTerminal(TTerminal * & Terminal)
 //------------------------------------------------------------------------------
 TTerminal * TTerminalList::GetTerminal(intptr_t Index)
 {
-  return dynamic_cast<TTerminal *>(Items[Index]);
+  return dynamic_cast<TTerminal *>(GetItem(Index));
 }
 //------------------------------------------------------------------------------
 void TTerminalList::Idle()
