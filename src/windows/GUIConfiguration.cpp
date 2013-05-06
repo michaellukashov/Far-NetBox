@@ -547,8 +547,8 @@ TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
   FLocale = 0;
   FLocales = new TStringList();
   FLastLocalesExts = L"*";
-  dynamic_cast<TStringList *>(FLocales)->Sorted = true;
-  dynamic_cast<TStringList *>(FLocales)->CaseSensitive = false;
+  dynamic_cast<TStringList *>(FLocales)->SetSorted(true);
+  dynamic_cast<TStringList *>(FLocales)->SetCaseSensitive(false);
   FCopyParamList = new TCopyParamList();
   CoreSetResourceModule(0);
 }
@@ -974,8 +974,8 @@ TStrings * TGUIConfiguration::GetLocales()
   TStringList * Exts = new TStringList();
   TRY_FINALLY (
   {
-    Exts->Sorted = true;
-    Exts->CaseSensitive = false;
+    Exts->SetSorted(true);
+    Exts->SetCaseSensitive(false);
 
     int FindAttrs = faReadOnly | faArchive;
     TSearchRec SearchRec;

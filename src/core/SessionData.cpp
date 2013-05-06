@@ -3458,9 +3458,9 @@ TStrings * TStoredSessionList::GetFolderOrWorkspaceList(
 TStrings * TStoredSessionList::GetWorkspaces()
 {
   std::auto_ptr<TStringList> Result(new TStringList());
-  Result->Sorted = true;
-  Result->Duplicates = dupIgnore;
-  Result->CaseSensitive = false;
+  Result->SetSorted(true);
+  Result->SetDuplicates(dupIgnore);
+  Result->SetCaseSensitive(false);
 
   for (intptr_t Index = 0; Index < GetCount(); Index++)
   {

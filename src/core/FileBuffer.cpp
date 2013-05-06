@@ -29,20 +29,20 @@ TFileBuffer::~TFileBuffer()
 //---------------------------------------------------------------------------
 void TFileBuffer::SetSize(__int64 Value)
 {
-  if (FMemory->Size != Value)
+  if (FMemory->GetSize() != Value)
   {
-    FMemory->Size = Value;
+    FMemory->SetSize(Value);
   }
 }
 //---------------------------------------------------------------------------
 void TFileBuffer::SetPosition(__int64 Value)
 {
-  FMemory->Position = Value;
+  FMemory->SetPosition(Value);
 }
 //---------------------------------------------------------------------------
 __int64 TFileBuffer::GetPosition() const
 {
-  return FMemory->Position;
+  return FMemory->GetPosition();
 }
 //---------------------------------------------------------------------------
 void TFileBuffer::SetMemory(TMemoryStream * Value)

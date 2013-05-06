@@ -1876,10 +1876,10 @@ UnicodeString WindowsProductName()
 {
   UnicodeString Result;
   TRegistry * Registry = new TRegistry();
-  Registry->Access = KEY_READ;
+  Registry->SetAccess(KEY_READ);
   try
   {
-    Registry->RootKey = HKEY_LOCAL_MACHINE;
+    Registry->SetRootKey(HKEY_LOCAL_MACHINE);
     if (Registry->OpenKey("SOFTWARE", false) &&
         Registry->OpenKey("Microsoft", false) &&
         Registry->OpenKey("Windows NT", false) &&

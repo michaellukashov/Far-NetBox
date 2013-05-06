@@ -30,7 +30,7 @@ public:
   TMemoryStream * GetMemory() { return FMemory; }
   void SetMemory(TMemoryStream * Value);
   char * GetData() const { return static_cast<char *>(FMemory->GetMemory()); }
-  __int64 GetSize() const { return FMemory->Size; }
+  __int64 GetSize() const { return FMemory->GetSize(); }
   void SetSize(__int64 Value);
   void SetPosition(__int64 Value);
   __int64 GetPosition() const;

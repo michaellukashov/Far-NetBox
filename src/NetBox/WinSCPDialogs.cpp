@@ -4705,15 +4705,15 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     if ((GroupList == NULL) || (GroupList->GetCount() == 0))
     {
       UsedGroupList = new TStringList();
-      UsedGroupList->Duplicates = dupIgnore;
-      UsedGroupList->Sorted = true;
+      UsedGroupList->SetDuplicates(dupIgnore);
+      UsedGroupList->SetSorted(true);
       UsedGroupListPtr.reset(UsedGroupList);
     }
     if ((UserList == NULL) || (UserList->GetCount() == 0))
     {
       UsedUserList = new TStringList();
-      UsedUserList->Duplicates = dupIgnore;
-      UsedUserList->Sorted = true;
+      UsedUserList->SetDuplicates(dupIgnore);
+      UsedUserList->SetSorted(true);
       UsedUserListPtr.reset(UsedUserList);
     }
 
@@ -6498,7 +6498,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     TStringList * BookmarkDirectories = new TStringList();
     std::auto_ptr<TStringList> BookmarkDirectoriesPtr;
     BookmarkDirectoriesPtr.reset(BookmarkDirectories);
-    BookmarkDirectories->Sorted = true;
+    BookmarkDirectories->SetSorted(true);
     for (intptr_t I = 0; I < BookmarkList->GetCount(); I++)
     {
       TBookmark * Bookmark = BookmarkList->GetBookmarks(I);

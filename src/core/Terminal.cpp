@@ -4277,8 +4277,8 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
     bool Found = false;
     TSearchRec SearchRec;
     Data.LocalFileList = new TStringList();
-    Data.LocalFileList->Sorted = true;
-    Data.LocalFileList->CaseSensitive = false;
+    Data.LocalFileList->SetSorted(true);
+    Data.LocalFileList->SetCaseSensitive(false);
 
     FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
       int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;

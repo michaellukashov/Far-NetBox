@@ -409,9 +409,6 @@ TStrings::TStrings() :
   FQuoteChar(L'"'),
   FUpdateCount(0)
 {
-  CaseSensitive(this);
-  Sorted(this);
-  Duplicates(this);
 }
 
 TStrings::~TStrings()
@@ -1054,7 +1051,7 @@ void TStringList::SetCaseSensitive(bool Value)
   if (Value != FCaseSensitive)
   {
     FCaseSensitive = Value;
-    if (Sorted)
+    if (GetSorted())
     {
       Sort();
     }
@@ -1446,8 +1443,6 @@ public:
 //---------------------------------------------------------------------------
 TStream::TStream()
 {
-  Position(this);
-  Size(this);
 }
 
 TStream::~TStream()
@@ -1761,10 +1756,6 @@ TRegistry::TRegistry() :
   FAccess(KEY_ALL_ACCESS)
 {
   // LazyWrite = True;
-  Access(this);
-  CurrentKey(this);
-  RootKey(this);
-
   SetRootKey(HKEY_CURRENT_USER);
   SetAccess(KEY_ALL_ACCESS);
 }

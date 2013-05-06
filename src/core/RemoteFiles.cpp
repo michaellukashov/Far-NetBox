@@ -1706,9 +1706,9 @@ void TRemoteDirectory::SetIncludeThisDirectory(Boolean Value)
 TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
 {
   FSection = new TCriticalSection();
-  Sorted = true;
-  Duplicates = dupError;
-  CaseSensitive = true;
+  SetSorted(true);
+  SetDuplicates(dupError);
+  SetCaseSensitive(true);
 }
 //---------------------------------------------------------------------------
 TRemoteDirectoryCache::~TRemoteDirectoryCache()
