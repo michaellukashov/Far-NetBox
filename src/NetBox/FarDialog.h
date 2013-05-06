@@ -100,8 +100,8 @@ protected:
   virtual void Change();
   void Init();
   virtual bool CloseQuery();
-  UnicodeString GetMsg(int MsgId);
-  void GetNextItemPosition(int & Left, int & Top);
+  UnicodeString GetMsg(intptr_t MsgId);
+  void GetNextItemPosition(intptr_t & Left, intptr_t & Top);
   void RefreshBounds();
   virtual void Idle();
   void BreakSynchronize();
@@ -148,13 +148,13 @@ class TFarDialogContainer : public TObject
 friend TFarDialog;
 friend TFarDialogItem;
 public:
-  int GetLeft() { return FLeft; }
-  void SetLeft(int Value) { SetPosition(0, Value); }
-  int GetTop() { return FTop; }
-  void SetTop(int Value) { SetPosition(1, Value); }
+  intptr_t GetLeft() { return FLeft; }
+  void SetLeft(intptr_t Value) { SetPosition(0, Value); }
+  intptr_t GetTop() { return FTop; }
+  void SetTop(intptr_t Value) { SetPosition(1, Value); }
   bool GetEnabled() { return FEnabled; }
   void SetEnabled(bool Value);
-  void SetPosition(int Index, int Value);
+  void SetPosition(intptr_t Index, intptr_t Value);
   intptr_t GetItemCount() const;
 
 protected:
@@ -169,8 +169,8 @@ protected:
   UnicodeString GetMsg(int MsgId);
 
 private:
-  int FLeft;
-  int FTop;
+  intptr_t FLeft;
+  intptr_t FTop;
   TObjectList * FItems;
   TFarDialog * FDialog;
   bool FEnabled;
@@ -225,8 +225,8 @@ public:
   bool GetFocused();
   void SetFocused(bool Value);
 
-  void Move(int DeltaX, int DeltaY);
-  void MoveAt(int X, int Y);
+  void Move(intptr_t DeltaX, intptr_t DeltaY);
+  void MoveAt(intptr_t X, intptr_t Y);
   virtual bool CanFocus();
   bool Focused();
   void SetFocus();
@@ -450,7 +450,7 @@ public:
   void SetDouble(bool Value);
   virtual UnicodeString GetCaption() { return GetData(); }
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
-  void SetPosition(int Value);
+  void SetPosition(intptr_t Value);
   int GetPosition();
 
 protected:

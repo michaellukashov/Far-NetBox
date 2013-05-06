@@ -602,7 +602,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
   TFarRadioButton * ResumeSmartButton = new TFarRadioButton(Dialog);
   ResumeSmartButton->SetCaption(GetMsg(TRANSFER_RESUME_SMART));
-  int ResumeThresholdLeft = ResumeSmartButton->GetRight();
+  intptr_t ResumeThresholdLeft = ResumeSmartButton->GetRight();
 
   TFarRadioButton * ResumeOffButton = new TFarRadioButton(Dialog);
   ResumeOffButton->SetCaption(GetMsg(TRANSFER_RESUME_OFF));
@@ -1743,8 +1743,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   // TTabButton * Tab;
   TFarSeparator * Separator;
   TFarText * Text;
-  int GroupTop;
-  int Pos;
+  intptr_t GroupTop;
+  intptr_t Pos;
   intptr_t Index;
 
   Index = AddTab(tabSession, GetMsg(LOGIN_TAB_SESSION).c_str());
@@ -5049,9 +5049,9 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   TFarSeparator * Separator;
   TFarText * Text;
 
-  int TMWidth = 37;
-  int TMTop;
-  int TMBottom;
+  intptr_t TMWidth = 37;
+  intptr_t TMTop;
+  intptr_t TMBottom;
 
   SetLeft(GetLeft() - 1);
 
@@ -5990,7 +5990,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   TFarSeparator * Separator;
   TFarButton * Button;
   TTabButton * Tab;
-  int GroupTop;
+  intptr_t GroupTop;
 
   SetSize(TPoint(73, 22));
   SetCaption(GetMsg(SERVER_PROTOCOL_INFORMATION));
@@ -8387,8 +8387,8 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
 
   SetSize(TPoint(80, 23));
   // TRect CRect = GetClientRect();
-  int ListTop;
-  int ListHeight = GetClientSize().y - 4;
+  intptr_t ListTop;
+  intptr_t ListHeight = GetClientSize().y - 4;
 
   SetCaption(GetMsg(QUEUE_TITLE));
 
