@@ -1526,7 +1526,7 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
     {
-      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->Objects[FIndex]);
+      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->GetObject(FIndex));
       ++FIndex;
 
       bool MissingRights =
@@ -1613,7 +1613,7 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
     {
-      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->Objects[FIndex]);
+      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->GetObject(FIndex));
       assert(File != NULL);
       ++FIndex;
 
@@ -3533,7 +3533,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
   {
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = static_cast<TRemoteFile *>(FileList->Objects[Index]);
+      TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObject(Index));
       assert(File != NULL);
       if (File->GetIsDirectory() && !File->GetIsSymLink() &&
           !File->GetIsParentDirectory() && !File->GetIsThisDirectory())
@@ -3722,7 +3722,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   {
     bool Success = false;
     FileName = FilesToCopy->GetString(Index);
-    TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index]);
+    TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->GetObject(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ExtractFileName(RealFileName, false);
     assert(!FAvoidBusy);
@@ -4848,7 +4848,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   {
     Success = false;
     FileName = FilesToCopy->GetString(Index);
-    File = static_cast<TRemoteFile *>(FilesToCopy->Objects[Index]);
+    File = static_cast<TRemoteFile *>(FilesToCopy->GetObject(Index));
 
     assert(!FAvoidBusy);
     FAvoidBusy = true;

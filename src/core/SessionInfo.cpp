@@ -653,7 +653,7 @@ UnicodeString TSessionLog::GetLine(intptr_t Index)
 //---------------------------------------------------------------------------
 TLogLineType TSessionLog::GetType(intptr_t Index)
 {
-  return static_cast<TLogLineType>(reinterpret_cast<size_t>(Objects[Index - FTopIndex]));
+  return static_cast<TLogLineType>(reinterpret_cast<size_t>(GetObject(Index - FTopIndex)));
 }
 //---------------------------------------------------------------------------
 void TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString & Line)

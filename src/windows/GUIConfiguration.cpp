@@ -1035,7 +1035,7 @@ TStrings * TGUIConfiguration::GetLocales()
 
           if (Ext >= 0)
           {
-            Exts->Objects[Ext] = reinterpret_cast<TObject*>(Locale);
+            Exts->SetObject(Ext, reinterpret_cast<TObject*>(Locale));
           }
           else
           {
@@ -1065,7 +1065,7 @@ TStrings * TGUIConfiguration::GetLocales()
       */
       for (intptr_t Index = 0; Index < Exts->GetCount(); ++Index)
       {
-        if ((Exts->Objects[Index] == NULL) &&
+        if ((Exts->GetObject(Index) == NULL) &&
             (Exts->GetString(Index).Length() == 3) &&
             SameText(Exts->GetString(Index).SubString(1, 2), AdditionaLanguagePrefix))
         {

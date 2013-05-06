@@ -706,7 +706,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
         } \
         if (NeverAskAgainPending && CANNEVERASK) \
         { \
-          ButtonLabels->Objects(ButtonLabels->GetCount() - 1, reinterpret_cast<TObject *>((size_t)true)); \
+          ButtonLabels->SetObject(ButtonLabels->GetCount() - 1, reinterpret_cast<TObject *>((size_t)true)); \
           NeverAskAgainPending = false; \
         } \
       }

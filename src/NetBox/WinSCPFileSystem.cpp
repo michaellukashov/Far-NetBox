@@ -1987,7 +1987,7 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
     {
       for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
       {
-        TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->Objects[Index]);
+        TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->GetObject(Index));
         if (File != NULL)
         {
           FileNames->Add(File->GetFullFileName());
@@ -4041,7 +4041,7 @@ void TWinSCPFileSystem::MultipleEdit()
       if (FileList->GetCount() == 1)
       {
         MultipleEdit(FTerminal->GetCurrentDirectory(), FileList->GetString(0),
-          static_cast<TRemoteFile *>(FileList->Objects[0]));
+          static_cast<TRemoteFile *>(FileList->GetObject(0)));
       }
     }
   }

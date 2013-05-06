@@ -277,10 +277,10 @@ protected:
   virtual bool GetSorted() const = 0;
   virtual void SetSorted(bool Value) = 0;
   void SetDuplicates(TDuplicatesEnum Value);
-  virtual TObject *& GetObjects(intptr_t Index) = 0;
-  virtual void PutObject(intptr_t Index, TObject * AObject) = 0;
 
 public:
+  virtual TObject * GetObject(intptr_t Index) = 0;
+  virtual void SetObject(intptr_t Index, TObject * AObject) = 0;
   UnicodeString GetCommaText();
   void SetCommaText(const UnicodeString & Value);
   virtual UnicodeString GetText();
@@ -298,20 +298,11 @@ private:
   bool PropertyGetSorted() { return GetSorted(); }
   void PropertySetSorted(bool Value) { SetSorted(Value); }
   void PropertySetDuplicates(TDuplicatesEnum Value) { SetDuplicates(Value); }
-  TObject *& PropertyGetObject(intptr_t Index)
-  {
-    return GetObjects(Index);
-  }
-  void PropertySetObject(intptr_t Index, TObject * Value)
-  {
-    PutObject(Index, Value);
-  }
 
 public:
   RWProperty<bool, TStrings, &TStrings::PropertyGetCaseSensitive, &TStrings::PropertySetCaseSensitive> CaseSensitive;
   RWProperty<bool, TStrings, &TStrings::PropertyGetSorted, &TStrings::PropertySetSorted> Sorted;
   WOProperty<TDuplicatesEnum, TStrings, &TStrings::PropertySetDuplicates> Duplicates;
-  IndexedProperty2<intptr_t, TObject *, TStrings, &TStrings::PropertyGetObject, &TStrings::PropertySetObject> Objects;
 
 protected:
   TDuplicatesEnum FDuplicates;
@@ -365,10 +356,10 @@ protected:
   virtual void SetCaseSensitive(bool Value);
   virtual bool GetSorted() const;
   virtual void SetSorted(bool Value);
-  virtual TObject *& GetObjects(intptr_t Index);
-  virtual void PutObject(intptr_t Index, TObject * AObject);
 
 public:
+  virtual TObject * GetObject(intptr_t Index);
+  virtual void SetObject(intptr_t Index, TObject * AObject);
   virtual UnicodeString & GetString(intptr_t Index);
   virtual void SetString(intptr_t Index, const UnicodeString & S);
 

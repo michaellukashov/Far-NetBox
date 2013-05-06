@@ -412,7 +412,6 @@ TStrings::TStrings() :
   CaseSensitive(this);
   Sorted(this);
   Duplicates(this);
-  Objects(this);
 }
 
 TStrings::~TStrings()
@@ -661,14 +660,14 @@ void TStrings::SetUpdateState(bool Updating)
 intptr_t TStrings::AddObject(const UnicodeString & S, TObject * AObject)
 {
   intptr_t Result = Add(S);
-  PutObject(Result, AObject);
+  SetObject(Result, AObject);
   return Result;
 }
 
 void TStrings::InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject)
 {
   Insert(Index, Key);
-  PutObject(Index, AObject);
+  SetObject(Index, AObject);
 }
 
 bool TStrings::Equals(TStrings * Strings)
@@ -691,7 +690,7 @@ bool TStrings::Equals(TStrings * Strings)
 
 void TStrings::SetString(intptr_t Index, const UnicodeString & S)
 {
-  TObject * TempObject = GetObjects(Index);
+  TObject * TempObject = GetObject(Index);
   Delete(Index);
   InsertObject(Index, S, TempObject);
 }
@@ -710,7 +709,7 @@ void TStrings::Move(intptr_t CurIndex, intptr_t NewIndex)
       TRY_FINALLY (
       {
         UnicodeString TempString = GetString(CurIndex);
-        TObject * TempObject = GetObjects(CurIndex);
+        TObject * TempObject = GetObject(CurIndex);
         Delete(CurIndex);
         InsertObject(NewIndex, TempString, TempObject);
       }
@@ -819,7 +818,7 @@ void TStrings::AddStrings(TStrings * Strings)
     {
       for (intptr_t I = 0; I < Strings->GetCount(); I++)
       {
-        AddObject(Strings->GetString(I), Strings->GetObjects(I));
+        AddObject(Strings->GetString(I), Strings->GetObject(I));
       }
     }
     ,
@@ -969,7 +968,7 @@ void TStringList::SetString(intptr_t Index, const UnicodeString & S)
   // DEBUG_PRINTF(L"Index = %d, size = %d", Index, FList.size());
   if (Index < static_cast<intptr_t>(FList.size()))
   {
-    TObject * Temp = GetObjects(Index);
+    TObject * Temp = GetObject(Index);
     TStringItem Item;
     Item.first = S;
     Item.second = Temp;
@@ -994,7 +993,7 @@ void TStringList::Delete(intptr_t Index)
   Changed();
 }
 
-TObject *& TStringList::GetObjects(intptr_t Index)
+TObject * TStringList::GetObject(intptr_t Index)
 {
   if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FList.size())))
   {
@@ -1115,7 +1114,7 @@ void TStringList::LoadFromFile(const UnicodeString & FileName)
   nb_free(content);*/
 }
 
-void TStringList::PutObject(intptr_t Index, TObject * AObject)
+void TStringList::SetObject(intptr_t Index, TObject * AObject)
 {
   if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FList.size())))
   {
