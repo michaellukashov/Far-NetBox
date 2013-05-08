@@ -1042,10 +1042,9 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       {
         FTerminal->LogEvent(FORMAT(L"Listing directory \"%s\".",
           FileList->GetDirectory().c_str()));
-        ExecCommand2(fsListDirectory, 0,
+        ExecCommand2(fsListDirectory, Params,
           FTerminal->GetSessionData()->GetListingCommand().c_str(), Options,
-            DelimitStr(FileList->GetDirectory().c_str()).c_str(),
-          Params);
+            DelimitStr(FileList->GetDirectory().c_str()).c_str());
       }
 
       // If output is not empty, we have successfully got file listing,
