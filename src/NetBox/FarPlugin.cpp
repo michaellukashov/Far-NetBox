@@ -81,7 +81,7 @@ TCustomFarPlugin::~TCustomFarPlugin()
   assert(FOpenedPlugins->GetCount() == 0);
   delete FOpenedPlugins;
   for (intptr_t I = 0; I < FSavedTitles->GetCount(); I++)
-    delete FSavedTitles->Objects[I];
+    delete FSavedTitles->GetObject(I);
   delete FSavedTitles;
   delete FCriticalSection;
 }
@@ -157,7 +157,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
           for (intptr_t Index = 0; Index < NAME.GetCount(); Index++) \
           { \
             StringArray[Index] = DuplicateStr(NAME.GetString(Index)); \
-            Guids[Index] = *reinterpret_cast<const GUID *>(NAME.Objects[Index]); \
+            Guids[Index] = *reinterpret_cast<const GUID *>(NAME.GetObject(Index)); \
           } \
         }
 
@@ -859,7 +859,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
       Button->SetBottom(Button->GetTop());
       Button->SetResult(Index + 1);
       Button->SetCenterGroup(true);
-      Button->SetTag(reinterpret_cast<intptr_t>(Buttons->Objects[Index]));
+      Button->SetTag(reinterpret_cast<intptr_t>(Buttons->GetObject(Index)));
       if (PrevButton != NULL)
       {
         Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
@@ -1183,7 +1183,7 @@ intptr_t TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString & Title,
     intptr_t Count = 0;
     for (intptr_t I = 0; I < Items->GetCount(); ++I)
     {
-      uintptr_t Flags = reinterpret_cast<uintptr_t>(Items->Objects[I]);
+      uintptr_t Flags = reinterpret_cast<uintptr_t>(Items->GetObject(I));
       if (FLAGCLEAR(Flags, MIF_HIDDEN))
       {
         memset(&MenuItems[Count], 0, sizeof(FarMenuItem));
@@ -1207,9 +1207,9 @@ intptr_t TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString & Title,
       Result = MenuItems[ResultItem].UserData;
       if (Selected >= 0)
       {
-        Items->Objects(Selected, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->Objects[Selected]) & ~MIF_SELECTED));
+        Items->SetObject(Selected, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObject(Selected)) & ~MIF_SELECTED));
       }
-      Items->Objects(Result, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->Objects[Result]) | MIF_SELECTED));
+      Items->SetObject(Result, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObject(Result)) | MIF_SELECTED));
     }
     else
     {
@@ -1502,7 +1502,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
 {
   assert(FSavedTitles->GetCount() > 0);
   UnicodeString Title = FSavedTitles->GetString(FSavedTitles->GetCount() - 1);
-  TObject * Object = FSavedTitles->Objects[FSavedTitles->GetCount()-1];
+  TObject * Object = FSavedTitles->GetObject(FSavedTitles->GetCount()-1);
   TConsoleTitleParam * Param = dynamic_cast<TConsoleTitleParam *>(Object);
   if (Param->Own)
   {
@@ -1517,7 +1517,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
     SetConsoleTitle(Title.c_str());
     UpdateProgress(TBPS_NOPROGRESS, 0);
   }
-  delete FSavedTitles->Objects(FSavedTitles->GetCount() - 1);
+  delete FSavedTitles->GetObject(FSavedTitles->GetCount() - 1);
   FSavedTitles->Delete(FSavedTitles->GetCount() - 1);
 }
 //---------------------------------------------------------------------------
@@ -2853,9 +2853,9 @@ void TFarMenuItems::Delete(intptr_t Index)
   TStringList::Delete(Index);
 }
 //---------------------------------------------------------------------------
-void TFarMenuItems::PutObject(intptr_t Index, TObject * AObject)
+void TFarMenuItems::SetObject(intptr_t Index, TObject * AObject)
 {
-  TStringList::PutObject(Index, AObject);
+  TStringList::SetObject(Index, AObject);
   bool Focused = (reinterpret_cast<uintptr_t>(AObject) & MIF_SEPARATOR) != 0;
   if ((Index == GetItemFocused()) && !Focused)
   {
@@ -2908,7 +2908,7 @@ void TFarMenuItems::SetFlag(intptr_t Index, uintptr_t Flag, bool Value)
 {
   if (GetFlag(Index, Flag) != Value)
   {
-    uintptr_t F = reinterpret_cast<uintptr_t>(Objects[Index]);
+    uintptr_t F = reinterpret_cast<uintptr_t>(GetObject(Index));
     if (Value)
     {
       F |= Flag;
@@ -2917,13 +2917,13 @@ void TFarMenuItems::SetFlag(intptr_t Index, uintptr_t Flag, bool Value)
     {
       F &= ~Flag;
     }
-    PutObject(Index, reinterpret_cast<TObject *>(F));
+    SetObject(Index, reinterpret_cast<TObject *>(F));
   }
 }
 //---------------------------------------------------------------------------
 bool TFarMenuItems::GetFlag(intptr_t Index, uintptr_t Flag)
 {
-  return (reinterpret_cast<uintptr_t>(Objects[Index]) & Flag) > 0;
+  return (reinterpret_cast<uintptr_t>(GetObject(Index)) & Flag) > 0;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

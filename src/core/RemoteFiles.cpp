@@ -1530,7 +1530,7 @@ UnicodeString TRemoteFileList::GetFullDirectory()
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFileList::GetFiles(Integer Index)
 {
-  return static_cast<TRemoteFile *>(Items[Index]);
+  return static_cast<TRemoteFile *>(GetItem(Index));
 }
 //---------------------------------------------------------------------------
 Boolean TRemoteFileList::GetIsRoot()
@@ -1706,9 +1706,9 @@ void TRemoteDirectory::SetIncludeThisDirectory(Boolean Value)
 TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
 {
   FSection = new TCriticalSection();
-  Sorted = true;
-  Duplicates = dupError;
-  CaseSensitive = true;
+  SetSorted(true);
+  SetDuplicates(dupError);
+  SetCaseSensitive(true);
 }
 //---------------------------------------------------------------------------
 TRemoteDirectoryCache::~TRemoteDirectoryCache()
@@ -1726,8 +1726,8 @@ void TRemoteDirectoryCache::Clear()
   {
     for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
-      delete dynamic_cast<TRemoteFileList *>(Objects[Index]);
-      Objects(Index, NULL);
+      delete dynamic_cast<TRemoteFileList *>(GetObject(Index));
+      SetObject(Index, NULL);
     }
   }
   ,
@@ -1760,7 +1760,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
   intptr_t Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
   {
-    TRemoteFileList * FileList = dynamic_cast<TRemoteFileList *>(Objects[Index]);
+    TRemoteFileList * FileList = dynamic_cast<TRemoteFileList *>(GetObject(Index));
     if (FileList->GetTimestamp() <= Timestamp)
     {
       Index = -1;
@@ -1778,8 +1778,8 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   bool Result = (Index >= 0);
   if (Result)
   {
-    assert(Objects[Index] != NULL);
-    dynamic_cast<TRemoteFileList *>(Objects[Index])->DuplicateTo(FileList);
+    assert(GetObject(Index) != NULL);
+    dynamic_cast<TRemoteFileList *>(GetObject(Index))->DuplicateTo(FileList);
   }
   return Result;
 }
@@ -1831,7 +1831,7 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & Directory, boo
 //---------------------------------------------------------------------------
 void TRemoteDirectoryCache::Delete(intptr_t Index)
 {
-  delete static_cast<TRemoteFileList *>(Objects[Index]);
+  delete static_cast<TRemoteFileList *>(GetObject(Index));
   TStringList::Delete(Index);
 }
 //---------------------------------------------------------------------------
@@ -2621,7 +2621,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * FileList)
   TRemoteProperties CommonProperties;
   for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
   {
-    TRemoteFile * File = static_cast<TRemoteFile *>(FileList->Objects[Index]);
+    TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObject(Index));
     assert(File);
     if (!Index)
     {

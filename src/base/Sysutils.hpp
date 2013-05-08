@@ -70,7 +70,7 @@ public:
   DWORD ErrorCode;
 };
 
-void RaiseLastOSError(int Result = 0);
+void RaiseLastOSError(DWORD Result = 0);
 //---------------------------------------------------------------------------
 
 struct TFormatSettings : public TObject
@@ -114,10 +114,10 @@ void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings);
 //---------------------------------------------------------------------------
 
 UnicodeString ExtractShortPathName(const UnicodeString & Path1);
-UnicodeString ExtractDirectory(const UnicodeString & Path, wchar_t delimiter = '/');
-UnicodeString ExtractFilename(const UnicodeString & Path, wchar_t delimiter = '/');
-UnicodeString ExtractFileExtension(const UnicodeString & Path, wchar_t delimiter = '/');
-UnicodeString ChangeFileExtension(const UnicodeString & Path, const UnicodeString & Ext, wchar_t delimiter = '/');
+UnicodeString ExtractDirectory(const UnicodeString & Path, wchar_t Delimiter = '/');
+UnicodeString ExtractFilename(const UnicodeString & Path, wchar_t Delimiter = '/');
+UnicodeString ExtractFileExtension(const UnicodeString & Path, wchar_t Delimiter = '/');
+UnicodeString ChangeFileExtension(const UnicodeString & Path, const UnicodeString & Ext, wchar_t Delimiter = '/');
 
 UnicodeString IncludeTrailingBackslash(const UnicodeString & Str);
 UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str);
@@ -165,7 +165,7 @@ UnicodeString AnsiReplaceStr(const UnicodeString & Str, const UnicodeString & Fr
 intptr_t AnsiPos(const UnicodeString & Str2, wchar_t c);
 intptr_t Pos(const UnicodeString & Str2, const UnicodeString & Substr);
 UnicodeString StringReplace(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To, const TReplaceFlags & Flags);
-bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, intptr_t index);
+bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, intptr_t Index);
 intptr_t FirstDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
 intptr_t LastDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
 //---------------------------------------------------------------------------
@@ -179,8 +179,8 @@ int AnsiCompareText(const UnicodeString & Str1, const UnicodeString & Str2);
 int AnsiCompareIC(const UnicodeString & Str1, const UnicodeString & Str2);
 bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2);
 
-int StringCmp(const wchar_t * s1, const wchar_t * s2);
-int StringCmpI(const wchar_t * s1, const wchar_t * s2);
+int StringCmp(const wchar_t * S1, const wchar_t * S2);
+int StringCmpI(const wchar_t * S1, const wchar_t * S2);
 
 //---------------------------------------------------------------------------
 UnicodeString IntToStr(intptr_t Value);
@@ -203,6 +203,7 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime);
 
 __int64 FileRead(HANDLE Handle, void * Buffer, __int64 Count);
 __int64 FileWrite(HANDLE Handle, const void * Buffer, __int64 Count);
+__int64 FileSeek(HANDLE Handle, __int64 Offset, DWORD Origin);
 
 //---------------------------------------------------------------------------
 
@@ -223,8 +224,8 @@ bool RenameFile(const UnicodeString & From, const UnicodeString & To);
 bool DirectoryExists(const UnicodeString & Dir);
 UnicodeString FileSearch(const UnicodeString & FileName, const UnicodeString & DirectoryList);
 
-int FileGetAttr(const UnicodeString & Filename);
-int FileSetAttr(const UnicodeString & Filename, int Attrs);
+DWORD FileGetAttr(const UnicodeString & FileName);
+DWORD FileSetAttr(const UnicodeString & FileName, DWORD LocalFileAttrs);
 
 bool ForceDirectories(const UnicodeString & Dir);
 bool DeleteFile(const UnicodeString & File);
@@ -239,10 +240,10 @@ bool InheritsFrom(const Base * t)
 }
 
 //---------------------------------------------------------------------------
-UnicodeString Format(const wchar_t * format, ...);
-UnicodeString Format(const wchar_t * format, va_list args);
-AnsiString Format(const char * format, ...);
-AnsiString Format(const char * format, va_list args);
+UnicodeString Format(const wchar_t * Format, ...);
+UnicodeString Format(const wchar_t * Format, va_list Args);
+AnsiString Format(const char * Format, ...);
+AnsiString Format(const char * Format, va_list Args);
 UnicodeString FmtLoadStr(intptr_t Id, ...);
 //---------------------------------------------------------------------------
 UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth = 40);
@@ -250,8 +251,8 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth = 40);
 UnicodeString TranslateExceptionMessage(std::exception * E);
 //---------------------------------------------------------------------------
 
-void AppendWChar(UnicodeString & Str2, const wchar_t ch);
-void AppendChar(std::string & Str2, const char ch);
+void AppendWChar(UnicodeString & Str2, const wchar_t Ch);
+void AppendChar(std::string & Str2, const char Ch);
 
 void AppendPathDelimiterW(UnicodeString & Str2);
 void AppendPathDelimiterA(std::string & Str2);
@@ -260,15 +261,13 @@ UnicodeString ExpandEnvVars(const UnicodeString & Str2);
 
 //---------------------------------------------------------------------------
 
-UnicodeString StringOfChar(const wchar_t c, intptr_t len);
+UnicodeString StringOfChar(const wchar_t c, intptr_t Len);
 
 char * StrNew(const char * Str2);
 
 UnicodeString ChangeFileExt(const UnicodeString & FileName, const UnicodeString & Ext);
 UnicodeString ExtractFileExt(const UnicodeString & FileName);
 UnicodeString ExpandUNCFileName(const UnicodeString & FileName);
-
-__int64 FileSeek(HANDLE Handle, __int64 Offset, int Origin);
 
 //---------------------------------------------------------------------------
 typedef WIN32_FIND_DATA TWin32FindData;
@@ -305,9 +304,9 @@ struct TSearchRec
 
 //---------------------------------------------------------------------------
 
-int FindFirst(const UnicodeString & FileName, int FindAttrs, TSearchRec & Rec);
-int FindNext(TSearchRec & Rec);
-int FindClose(TSearchRec & Rec);
+DWORD FindFirst(const UnicodeString & FileName, DWORD LocalFileAttrs, TSearchRec & Rec);
+DWORD FindNext(TSearchRec & Rec);
+DWORD FindClose(TSearchRec & Rec);
 
 //---------------------------------------------------------------------------
 void InitPlatformId();

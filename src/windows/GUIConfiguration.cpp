@@ -350,9 +350,9 @@ void TCopyParamList::Change(intptr_t Index, const UnicodeString & Name,
   {
     FNames->SetString(Index, Name);
     delete GetCopyParam(Index);
-    FCopyParams->Items(Index, reinterpret_cast<TObject *>(CopyParam));
+    FCopyParams->SetItem(Index, reinterpret_cast<TObject *>(CopyParam));
     delete GetRule(Index);
-    FRules->Items(Index, reinterpret_cast<TObject *>(Rule));
+    FRules->SetItem(Index, reinterpret_cast<TObject *>(Rule));
     Modify();
   }
   else
@@ -390,7 +390,7 @@ intptr_t TCopyParamList::Find(const TCopyParamRuleData & Value) const
   intptr_t I = 0;
   while ((I < FRules->GetCount()) && (Result < 0))
   {
-    if (FRules->Items[I] != NULL)
+    if (FRules->GetItem(I) != NULL)
     {
       if (GetRule(I)->Matches(Value))
       {
@@ -481,12 +481,12 @@ intptr_t TCopyParamList::GetCount() const
 //---------------------------------------------------------------------------
 const TCopyParamRule * TCopyParamList::GetRule(intptr_t Index) const
 {
-  return reinterpret_cast<TCopyParamRule *>(FRules->Items[Index]);
+  return reinterpret_cast<TCopyParamRule *>(FRules->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 const TCopyParamType * TCopyParamList::GetCopyParam(intptr_t Index) const
 {
-  return reinterpret_cast<TCopyParamType *>(FCopyParams->Items[Index]);
+  return reinterpret_cast<TCopyParamType *>(FCopyParams->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 UnicodeString TCopyParamList::GetName(intptr_t Index) const
@@ -547,8 +547,8 @@ TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
   FLocale = 0;
   FLocales = new TStringList();
   FLastLocalesExts = L"*";
-  dynamic_cast<TStringList *>(FLocales)->Sorted = true;
-  dynamic_cast<TStringList *>(FLocales)->CaseSensitive = false;
+  dynamic_cast<TStringList *>(FLocales)->SetSorted(true);
+  dynamic_cast<TStringList *>(FLocales)->SetCaseSensitive(false);
   FCopyParamList = new TCopyParamList();
   CoreSetResourceModule(0);
 }
@@ -974,8 +974,8 @@ TStrings * TGUIConfiguration::GetLocales()
   TStringList * Exts = new TStringList();
   TRY_FINALLY (
   {
-    Exts->Sorted = true;
-    Exts->CaseSensitive = false;
+    Exts->SetSorted(true);
+    Exts->SetCaseSensitive(false);
 
     int FindAttrs = faReadOnly | faArchive;
     TSearchRec SearchRec;
@@ -1035,7 +1035,7 @@ TStrings * TGUIConfiguration::GetLocales()
 
           if (Ext >= 0)
           {
-            Exts->Objects[Ext] = reinterpret_cast<TObject*>(Locale);
+            Exts->SetObject(Ext, reinterpret_cast<TObject*>(Locale));
           }
           else
           {
@@ -1065,7 +1065,7 @@ TStrings * TGUIConfiguration::GetLocales()
       */
       for (intptr_t Index = 0; Index < Exts->GetCount(); ++Index)
       {
-        if ((Exts->Objects[Index] == NULL) &&
+        if ((Exts->GetObject(Index) == NULL) &&
             (Exts->GetString(Index).Length() == 3) &&
             SameText(Exts->GetString(Index).SubString(1, 2), AdditionaLanguagePrefix))
         {

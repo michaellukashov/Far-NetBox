@@ -12773,7 +12773,7 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
   {
     bool Success = false;
     FileName = FilesToCopy->GetString(Index);
-    TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index]);
+    TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->GetObject(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ExtractFileName(RealFileName, false);
 
@@ -13190,7 +13190,7 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     UnicodeString FileName = FilesToCopy->GetString(Index);
-    const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->Objects[Index]);
+    const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->GetObject(Index));
     bool Success = false;
     FTerminal->SetExceptionOnFail(true);
     TRY_FINALLY (
@@ -13333,8 +13333,8 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       if (!File->GetIsSymLink())
       {
         FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
-          int Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
-          if (FLAGCLEAR(Attrs, faDirectory)) { EXCEPTION; }
+          DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
+          if (FLAGCLEAR(LocalFileAttrs, faDirectory)) { EXCEPTION; }
         );
 
         FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),

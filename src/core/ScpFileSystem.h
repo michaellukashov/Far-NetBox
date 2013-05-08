@@ -104,7 +104,7 @@ private:
   void ExecCommand(TFSCommand Cmd, const TVarRec * args = NULL,
     int size = 0, intptr_t Params = -1);
 #else
-  void ExecCommand2(TFSCommand Cmd, ...);
+  void ExecCommand2(TFSCommand Cmd, intptr_t Params, ...);
 #endif
   void ReadCommandOutput(intptr_t Params, const UnicodeString * Cmd = NULL);
   void SCPResponse(bool * GotLastLine = NULL);

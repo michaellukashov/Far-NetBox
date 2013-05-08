@@ -225,22 +225,22 @@ void TFarDialog::SetSize(TPoint Value)
   SetBounds(B);
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetWidth(int Value)
+void TFarDialog::SetWidth(intptr_t Value)
 {
   SetSize(TPoint(Value, GetHeight()));
 }
 //---------------------------------------------------------------------------
-int TFarDialog::GetWidth()
+intptr_t TFarDialog::GetWidth()
 {
   return GetSize().x;
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetHeight(int Value)
+void TFarDialog::SetHeight(intptr_t Value)
 {
   SetSize(TPoint(GetWidth(), Value));
 }
 //---------------------------------------------------------------------------
-int TFarDialog::GetHeight()
+intptr_t TFarDialog::GetHeight()
 {
   return GetSize().y;
 }
@@ -288,10 +288,10 @@ TFarDialogItem * TFarDialog::GetItem(intptr_t Index)
 void TFarDialog::Add(TFarDialogItem * DialogItem)
 {
   TRect R = GetClientRect();
-  int Left, Top;
+  intptr_t Left, Top;
   GetNextItemPosition(Left, Top);
-  R.Left = Left;
-  R.Top = Top;
+  R.Left = static_cast<int>(Left);
+  R.Top = static_cast<int>(Top);
 
   if (FDialogItemsCapacity == GetItems()->GetCount())
   {
@@ -323,31 +323,31 @@ void TFarDialog::Add(TFarDialogContainer * Container)
   FContainers->Add(Container);
 }
 //---------------------------------------------------------------------------
-void TFarDialog::GetNextItemPosition(int & Left, int & Top)
+void TFarDialog::GetNextItemPosition(intptr_t & Left, intptr_t & Top)
 {
   TRect R = GetClientRect();
   Left = R.Left;
   Top = R.Top;
 
-  TFarDialogItem * LastI = GetItem(GetItemCount() - 1);
-  LastI = LastI == FBorderBox ? NULL : LastI;
+  TFarDialogItem * LastItem = GetItem(GetItemCount() - 1);
+  LastItem = LastItem == FBorderBox ? NULL : LastItem;
 
-  if (LastI)
+  if (LastItem)
   {
     switch (GetNextItemPosition())
     {
       case ipNewLine:
-        Top = LastI->GetBottom() + 1;
+        Top = LastItem->GetBottom() + 1;
         break;
 
       case ipBelow:
-        Top = LastI->GetBottom() + 1;
-        Left = LastI->GetLeft();
+        Top = LastItem->GetBottom() + 1;
+        Left = LastItem->GetLeft();
         break;
 
       case ipRight:
-        Top = LastI->GetTop();
-        Left = LastI->GetRight() + 3;
+        Top = LastItem->GetTop();
+        Left = LastItem->GetRight() + 3;
         break;
     }
   }
@@ -899,7 +899,7 @@ void TFarDialog::SetItemFocused(TFarDialogItem * Value)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TFarDialog::GetMsg(int MsgId)
+UnicodeString TFarDialog::GetMsg(intptr_t MsgId)
 {
   return FFarPlugin->GetMsg(MsgId);
 }
@@ -997,9 +997,9 @@ void TFarDialogContainer::Remove(TFarDialogItem * Item)
   }
 }
 //---------------------------------------------------------------------------
-void TFarDialogContainer::SetPosition(int Index, int Value)
+void TFarDialogContainer::SetPosition(intptr_t Index, intptr_t Value)
 {
-  int & Position = Index ? FTop : FLeft;
+  intptr_t & Position = Index ? FTop : FLeft;
   if (Position != Value)
   {
     Position = Value;
@@ -1502,19 +1502,19 @@ void TFarDialogItem::SetChecked(bool Value)
   SetSelected(Value ? BSTATE_CHECKED : BSTATE_UNCHECKED);
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::Move(int DeltaX, int DeltaY)
+void TFarDialogItem::Move(intptr_t DeltaX, intptr_t DeltaY)
 {
   TRect R = GetBounds();
 
-  R.Left += DeltaX;
-  R.Right += DeltaX;
-  R.Top += DeltaY;
-  R.Bottom += DeltaY;
+  R.Left += static_cast<int>(DeltaX);
+  R.Right += static_cast<int>(DeltaX);
+  R.Top += static_cast<int>(DeltaY);
+  R.Bottom += static_cast<int>(DeltaY);
 
   SetBounds(R);
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::MoveAt(int X, int Y)
+void TFarDialogItem::MoveAt(intptr_t X, intptr_t Y)
 {
   Move(X - GetLeft(), Y - GetTop());
 }
@@ -1655,8 +1655,8 @@ TPoint TFarDialogItem::MouseClientPosition(MOUSE_EVENT_RECORD * Event)
   else
   {
     Result = TPoint(
-      Event->dwMousePosition.X - GetDialog()->GetBounds().Left - GetLeft(),
-      Event->dwMousePosition.Y - GetDialog()->GetBounds().Top - GetTop());
+      static_cast<int>(Event->dwMousePosition.X - GetDialog()->GetBounds().Left - GetLeft()),
+      static_cast<int>(Event->dwMousePosition.Y - GetDialog()->GetBounds().Top - GetTop()));
   }
   return Result;
 }
@@ -1686,7 +1686,8 @@ void TFarDialogItem::Text(int X, int Y, const FarColor & Color, const UnicodeStr
 {
   TFarEnvGuard Guard;
   GetDialog()->GetFarPlugin()->GetStartupInfo()->Text(
-    GetDialog()->GetBounds().Left + GetLeft() + X, GetDialog()->GetBounds().Top + GetTop() + Y,
+    static_cast<int>(GetDialog()->GetBounds().Left + GetLeft() + X),
+    static_cast<int>(GetDialog()->GetBounds().Top + GetTop() + Y),
     &Color, Str.c_str());
 }
 //---------------------------------------------------------------------------
@@ -2086,11 +2087,11 @@ bool TFarSeparator::GetDouble()
   return GetFlag(DIF_SEPARATOR2);
 }
 //---------------------------------------------------------------------------
-void TFarSeparator::SetPosition(int Value)
+void TFarSeparator::SetPosition(intptr_t Value)
 {
   TRect R = GetBounds();
-  R.Top = Value;
-  R.Bottom = Value;
+  R.Top = static_cast<int>(Value);
+  R.Bottom = static_cast<int>(Value);
   SetBounds(R);
 }
 //---------------------------------------------------------------------------

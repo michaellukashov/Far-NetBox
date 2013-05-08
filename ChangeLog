@@ -1,5 +1,7 @@
 NetBox 2.1.29 ??.05.2013
 --------------------
+  * Bugfix: Issue #58: SCP session to FreeBSD server doesn't work
+    (https://github.com/michaellukashov/Far-NetBox/issues/58)
   * Improvement: Store directory change if option "Remember last used directory" is set.
     (http://forum.farmanager.com/viewtopic.php?p=108861#p108861)
   * Bugfix: WebDAV: Do not remove local file if file moving was canceled.

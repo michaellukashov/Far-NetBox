@@ -174,7 +174,7 @@ public:
   TList();
   virtual ~TList();
   void * operator [](intptr_t Index) const;
-  void *& GetItem(intptr_t Index);
+  void * GetItem(intptr_t Index);
   void SetItem(intptr_t Index, void * Item);
   intptr_t Add(void * Value);
   void * Extract(void * Item);
@@ -192,20 +192,6 @@ public:
   void SetCount(intptr_t Value);
 
 private:
-  void PropertySetCount(intptr_t Value) { SetCount(Value); }
-  void *& PropertyGetItem(intptr_t Index)
-  {
-    return GetItem(Index);
-  }
-  void PropertySetItem(intptr_t Index, void * Value)
-  {
-    SetItem(Index, Value);
-  }
-
-public:
-  IndexedPropertyVoid<intptr_t, TList, &TList::PropertyGetItem, &TList::PropertySetItem> Items;
-
-private:
   rde::vector<void *> FList;
 };
 
@@ -216,7 +202,7 @@ public:
   virtual ~TObjectList();
 
   TObject * operator [](intptr_t Index) const;
-  TObject *& GetItem(intptr_t Index);
+  TObject * GetItem(intptr_t Index);
   void SetItem(intptr_t Index, TObject * Value);
   intptr_t Add(TObject * Value);
   intptr_t Remove(TObject * Value);
@@ -230,19 +216,6 @@ public:
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
   virtual void Sort(CompareFunc func);
   virtual void Notify(void * Ptr, TListNotification Action);
-
-private:
-  TObject *& PropertyGetItem(intptr_t Index)
-  {
-    return GetItem(Index);
-  }
-  void PropertySetItem(intptr_t Index, TObject * Value)
-  {
-    Insert(Index, Value);
-  }
-
-public:
-  IndexedProperty2<intptr_t, TObject *, TObjectList, &TObjectList::PropertyGetItem, &TObjectList::PropertySetItem > Items;
 
 private:
   bool FOwnsObjects;
@@ -298,16 +271,14 @@ public:
   virtual void Assign(TPersistent * Source);
   virtual intptr_t GetCount() const = 0;
 
-protected:
-  virtual bool GetCaseSensitive() const = 0;
-  virtual void SetCaseSensitive(bool Value) = 0;
+public:
+  virtual TObject * GetObject(intptr_t Index) = 0;
+  virtual void SetObject(intptr_t Index, TObject * AObject) = 0;
   virtual bool GetSorted() const = 0;
   virtual void SetSorted(bool Value) = 0;
+  virtual bool GetCaseSensitive() const = 0;
+  virtual void SetCaseSensitive(bool Value) = 0;
   void SetDuplicates(TDuplicatesEnum Value);
-  virtual TObject *& GetObjects(intptr_t Index) = 0;
-  virtual void PutObject(intptr_t Index, TObject * AObject) = 0;
-
-public:
   UnicodeString GetCommaText();
   void SetCommaText(const UnicodeString & Value);
   virtual UnicodeString GetText();
@@ -318,27 +289,6 @@ public:
   void SetName(intptr_t Index, const UnicodeString & Value);
   const UnicodeString GetValue(const UnicodeString & Name);
   void SetValue(const UnicodeString & Name, const UnicodeString & Value);
-
-private:
-  bool PropertyGetCaseSensitive() { return GetCaseSensitive(); }
-  void PropertySetCaseSensitive(bool Value) { SetCaseSensitive(Value); }
-  bool PropertyGetSorted() { return GetSorted(); }
-  void PropertySetSorted(bool Value) { SetSorted(Value); }
-  void PropertySetDuplicates(TDuplicatesEnum Value) { SetDuplicates(Value); }
-  TObject *& PropertyGetObject(intptr_t Index)
-  {
-    return GetObjects(Index);
-  }
-  void PropertySetObject(intptr_t Index, TObject * Value)
-  {
-    PutObject(Index, Value);
-  }
-
-public:
-  RWProperty<bool, TStrings, &TStrings::PropertyGetCaseSensitive, &TStrings::PropertySetCaseSensitive> CaseSensitive;
-  RWProperty<bool, TStrings, &TStrings::PropertyGetSorted, &TStrings::PropertySetSorted> Sorted;
-  WOProperty<TDuplicatesEnum, TStrings, &TStrings::PropertySetDuplicates> Duplicates;
-  IndexedProperty2<intptr_t, TObject *, TStrings, &TStrings::PropertyGetObject, &TStrings::PropertySetObject> Objects;
 
 protected:
   TDuplicatesEnum FDuplicates;
@@ -387,15 +337,13 @@ public:
   virtual intptr_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2);
   virtual intptr_t GetCount() const;
 
-protected:
-  virtual bool GetCaseSensitive() const;
-  virtual void SetCaseSensitive(bool Value);
+public:
+  virtual TObject * GetObject(intptr_t Index);
+  virtual void SetObject(intptr_t Index, TObject * AObject);
   virtual bool GetSorted() const;
   virtual void SetSorted(bool Value);
-  virtual TObject *& GetObjects(intptr_t Index);
-  virtual void PutObject(intptr_t Index, TObject * AObject);
-
-public:
+  virtual bool GetCaseSensitive() const;
+  virtual void SetCaseSensitive(bool Value);
   virtual UnicodeString & GetString(intptr_t Index);
   virtual void SetString(intptr_t Index, const UnicodeString & S);
 
@@ -545,22 +493,12 @@ public:
     return Result;
   }
 
-protected:
+public:
   virtual void SetSize(const __int64 NewSize) = 0;
   void SetPosition(const __int64 Pos)
   {
     Seek(Pos, soFromBeginning);
   }
-
-private:
-  __int64 PropertyGetPosition() { return GetPosition(); }
-  void PropertySetPosition(__int64 Value) { SetPosition(Value); }
-  __int64 PropertyGetSize() { return GetSize(); }
-  void PropertySetSize(__int64 Value) { SetSize(Value); }
-
-public:
-  RWProperty<__int64, TStream, &TStream::PropertyGetPosition, &TStream::PropertySetPosition> Position;
-  RWProperty<__int64, TStream, &TStream::PropertyGetSize, &TStream::PropertySetSize> Size;
 };
 
 //---------------------------------------------------------------------------
@@ -706,22 +644,12 @@ private:
     intptr_t BufSize, TRegDataType & RegData) const;
   void PutData(const UnicodeString & Name, const void * Buffer,
     intptr_t BufSize, TRegDataType RegData);
-protected:
+
+public:
   void SetAccess(int Value);
   HKEY GetCurrentKey() const;
   HKEY GetRootKey() const;
   void SetRootKey(HKEY ARootKey);
-
-private:
-  void PropertySetAccess(int Value) { SetAccess(Value); }
-  HKEY PropertyGetCurrentKey() { return GetCurrentKey(); }
-  HKEY PropertyGetRootKey() { return GetRootKey(); }
-  void PropertySetRootKey(HKEY Value) { SetRootKey(Value); }
-
-public:
-  WOProperty<int, TRegistry, &TRegistry::PropertySetAccess> Access;
-  ROProperty<HKEY, TRegistry, &TRegistry::PropertyGetCurrentKey> CurrentKey;
-  RWProperty<HKEY, TRegistry, &TRegistry::PropertyGetRootKey, &TRegistry::PropertySetRootKey> RootKey;
 
 private:
   HKEY FCurrentKey;

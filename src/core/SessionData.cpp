@@ -1281,7 +1281,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     for (Integer Index = 0; Index < StoredSessions->GetCount() + StoredSessions->GetHiddenCount(); ++Index)
     {
 
-      TSessionData * AData = static_cast<TSessionData *>(StoredSessions->Items[Index]);
+      TSessionData * AData = static_cast<TSessionData *>(StoredSessions->GetItem(Index));
       if (// !AData->GetIsWorkspace() &&
           AnsiSameText(AData->GetName(), DecodedUrl) ||
           AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
@@ -2996,7 +2996,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
     DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults);
     for (intptr_t Index = 0; Index < GetCount() + GetHiddenCount(); ++Index)
     {
-      TSessionData * SessionData = static_cast<TSessionData *>(Items[Index]);
+      TSessionData * SessionData = static_cast<TSessionData *>(GetItem(Index));
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults);
     }
   }
@@ -3048,7 +3048,7 @@ void TStoredSessionList::Saved()
   FDefaultSettings->SetModified(false);
   for (intptr_t Index = 0; Index < GetCount() + GetHiddenCount(); ++Index)
   {
-    (static_cast<TSessionData *>(Items[Index])->SetModified(false));
+    (static_cast<TSessionData *>(GetItem(Index))->SetModified(false));
   }
 }
 //---------------------------------------------------------------------
@@ -3458,9 +3458,9 @@ TStrings * TStoredSessionList::GetFolderOrWorkspaceList(
 TStrings * TStoredSessionList::GetWorkspaces()
 {
   std::auto_ptr<TStringList> Result(new TStringList());
-  Result->Sorted = true;
-  Result->Duplicates = dupIgnore;
-  Result->CaseSensitive = false;
+  Result->SetSorted(true);
+  Result->SetDuplicates(dupIgnore);
+  Result->SetCaseSensitive(false);
 
   for (intptr_t Index = 0; Index < GetCount(); Index++)
   {
@@ -3490,7 +3490,7 @@ void TStoredSessionList::NewWorkspace(
 
   for (intptr_t Index = 0; Index < DataList->GetCount(); Index++)
   {
-    TSessionData * Data = static_cast<TSessionData *>(DataList->Items[Index]);
+    TSessionData * Data = static_cast<TSessionData *>(DataList->GetItem(Index));
 
     TSessionData * Data2 = new TSessionData(L"");
     Data2->Assign(Data);

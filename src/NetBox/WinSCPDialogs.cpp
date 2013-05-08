@@ -604,7 +604,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
   TFarRadioButton * ResumeSmartButton = new TFarRadioButton(Dialog);
   ResumeSmartButton->SetCaption(GetMsg(TRANSFER_RESUME_SMART));
-  int ResumeThresholdLeft = ResumeSmartButton->GetRight();
+  intptr_t ResumeThresholdLeft = ResumeSmartButton->GetRight();
 
   TFarRadioButton * ResumeOffButton = new TFarRadioButton(Dialog);
   ResumeOffButton->SetCaption(GetMsg(TRANSFER_RESUME_OFF));
@@ -1263,7 +1263,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   FSessionData = NULL;
   if (((Kind == pkPassword) || (Kind == pkTIS) || (Kind == pkCryptoCard) ||
        (Kind == pkKeybInteractive)) &&
-      (Prompts->GetCount() == 1) && !(Prompts->Objects[0] != NULL) &&
+      (Prompts->GetCount() == 1) && !(Prompts->GetObject(0) != NULL) &&
       !SessionName.IsEmpty() &&
       StoredCredentialsTried)
   {
@@ -1387,7 +1387,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
   {
     GenerateLabel(Prompts->GetString(Index), Truncated);
 
-    FEdits->Add(GenerateEdit((Prompts->Objects[Index]) != NULL));
+    FEdits->Add(GenerateEdit((Prompts->GetObject(Index)) != NULL));
   }
 }
 //------------------------------------------------------------------------------
@@ -1745,8 +1745,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   // TTabButton * Tab;
   TFarSeparator * Separator;
   TFarText * Text;
-  int GroupTop;
-  int Pos;
+  intptr_t GroupTop;
+  intptr_t Pos;
   intptr_t Index;
 
   Index = AddTab(tabSession, GetMsg(LOGIN_TAB_SESSION).c_str());
@@ -3758,7 +3758,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
     {
-      TObject * Obj = static_cast<TObject *>(CipherListBox->GetItems()->Objects[Index]);
+      TObject * Obj = static_cast<TObject *>(CipherListBox->GetItems()->GetObject(Index));
       SessionData->SetCipher(Index, static_cast<TCipher>(reinterpret_cast<size_t>(Obj)));
     }
 
@@ -3769,7 +3769,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
     {
-      SessionData->SetKex(Index, static_cast<TKex>(reinterpret_cast<intptr_t>(KexListBox->GetItems()->Objects[Index])));
+      SessionData->SetKex(Index, static_cast<TKex>(reinterpret_cast<intptr_t>(KexListBox->GetItems()->GetObject(Index))));
     }
 
     // Authentication tab
@@ -3896,7 +3896,7 @@ intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList *
 {
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TObject * Obj = static_cast<TObject *>(Items->Objects[Index]);
+    TObject * Obj = static_cast<TObject *>(Items->GetObject(Index));
     TProxyMethod Method = static_cast<TProxyMethod>(reinterpret_cast<size_t>(Obj));
     if (Method == ProxyMethod)
       return Index;
@@ -3909,7 +3909,7 @@ TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList * Items
   TProxyMethod Result = pmNone;
   if (Index >= 0 && Index < Items->GetCount())
   {
-    TObject * Obj = static_cast<TObject *>(Items->Objects[Index]);
+    TObject * Obj = static_cast<TObject *>(Items->GetObject(Index));
     Result = static_cast<TProxyMethod>(reinterpret_cast<size_t>(Obj));
   }
   return Result;
@@ -4136,7 +4136,7 @@ void TSessionDialog::SelectTab(intptr_t Tab)
   intptr_t Index;
   /*for (Index = 0; Index < FTabs->Count; ++Index)
   {
-    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[Index]);
+    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(Index));
     // Button->SetBrackets(Button->GetTab() == Tab ? brTight : brNone);
     if (TabBtn == SelectedTabBtn)
       TabBtn->SetColor(0, static_cast<char>((GetSystemColor(COL_DIALOGTEXT) & 0xF0) | 0x09));
@@ -4145,7 +4145,7 @@ void TSessionDialog::SelectTab(intptr_t Tab)
   }*/
   for (Index = 0; Index < FTabs->GetCount(); ++Index)
   {
-    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[Index]);
+    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(Index));
     if (TabBtn == SelectedTabBtn)
     {
       break;
@@ -4181,13 +4181,13 @@ void TSessionDialog::ChangeTabs(intptr_t FirstVisibleTabIndex)
   // Change visibility
   for (intptr_t I = 0; I < FirstVisibleTabIndex; I++)
   {
-    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I]);
+    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(I));
     TabBtn->SetVisible(false);
   }
   intptr_t LeftPos = GetBorderBox()->GetLeft() + 2;
   for (intptr_t I = FirstVisibleTabIndex; I <= LastVisibleTabIndex; I++)
   {
-    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I]);
+    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(I));
     intptr_t Width = TabBtn->GetWidth();
     TabBtn->SetLeft(LeftPos);
     TabBtn->SetWidth(Width);
@@ -4196,7 +4196,7 @@ void TSessionDialog::ChangeTabs(intptr_t FirstVisibleTabIndex)
   }
   for (intptr_t I = LastVisibleTabIndex + 1; I < FTabs->GetCount(); I++)
   {
-    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I]);
+    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(I));
     TabBtn->SetVisible(false);
   }
 }
@@ -4212,9 +4212,9 @@ intptr_t TSessionDialog::GetVisibleTabsCount(intptr_t TabIndex, bool Forward)
   {
     for (intptr_t I = TabIndex; I < FTabs->GetCount() - 1; I++)
     {
-      TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I]);
+      TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(I));
       TabsWidth += TabBtn->GetWidth() + 1;
-      TTabButton * NextTabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I + 1]);
+      TTabButton * NextTabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(I + 1));
       intptr_t NextTabWidth = NextTabBtn->GetWidth() + 1;
       if (TabsWidth + NextTabWidth >= DialogWidth)
         break;
@@ -4225,9 +4225,9 @@ intptr_t TSessionDialog::GetVisibleTabsCount(intptr_t TabIndex, bool Forward)
   {
     for (intptr_t I = TabIndex; I >= 1; I--)
     {
-      TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I]);
+      TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(I));
       TabsWidth += TabBtn->GetWidth() + 1;
-      TTabButton * PrevTabBtn = dynamic_cast<TTabButton *>(FTabs->Items[I - 1]);
+      TTabButton * PrevTabBtn = dynamic_cast<TTabButton *>(FTabs->GetItem(I - 1));
       intptr_t PrevTabWidth = PrevTabBtn->GetWidth() + 1;
       if (TabsWidth + PrevTabWidth >= DialogWidth)
         break;
@@ -4694,7 +4694,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   FAllowedChanges = AAllowedChanges;
 
   assert(FileList->GetCount() > 0);
-  TRemoteFile * OnlyFile = reinterpret_cast<TRemoteFile *>(FileList->Objects[0]);
+  TRemoteFile * OnlyFile = reinterpret_cast<TRemoteFile *>(FileList->GetObject(0));
   USEDPARAM(OnlyFile);
   assert(OnlyFile);
   FMultiple = (FileList->GetCount() > 1);
@@ -4707,22 +4707,22 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     if ((GroupList == NULL) || (GroupList->GetCount() == 0))
     {
       UsedGroupList = new TStringList();
-      UsedGroupList->Duplicates = dupIgnore;
-      UsedGroupList->Sorted = true;
+      UsedGroupList->SetDuplicates(dupIgnore);
+      UsedGroupList->SetSorted(true);
       UsedGroupListPtr.reset(UsedGroupList);
     }
     if ((UserList == NULL) || (UserList->GetCount() == 0))
     {
       UsedUserList = new TStringList();
-      UsedUserList->Duplicates = dupIgnore;
-      UsedUserList->Sorted = true;
+      UsedUserList->SetDuplicates(dupIgnore);
+      UsedUserList->SetSorted(true);
       UsedUserListPtr.reset(UsedUserList);
     }
 
     intptr_t Directories = 0;
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->Objects[Index]);
+      TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->GetObject(Index));
       assert(File);
       if (UsedGroupList && !File->GetFileGroup().GetName().IsEmpty())
       {
@@ -5051,9 +5051,9 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   TFarSeparator * Separator;
   TFarText * Text;
 
-  int TMWidth = 37;
-  int TMTop;
-  int TMBottom;
+  intptr_t TMWidth = 37;
+  intptr_t TMTop;
+  intptr_t TMBottom;
 
   SetLeft(GetLeft() - 1);
 
@@ -5992,7 +5992,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   TFarSeparator * Separator;
   TFarButton * Button;
   TTabButton * Tab;
-  int GroupTop;
+  intptr_t GroupTop;
 
   SetSize(TPoint(73, 22));
   SetCaption(GetMsg(SERVER_PROTOCOL_INFORMATION));
@@ -6502,7 +6502,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     TStringList * BookmarkDirectories = new TStringList();
     std::auto_ptr<TStringList> BookmarkDirectoriesPtr;
     BookmarkDirectoriesPtr.reset(BookmarkDirectories);
-    BookmarkDirectories->Sorted = true;
+    BookmarkDirectories->SetSorted(true);
     for (intptr_t I = 0; I < BookmarkList->GetCount(); I++)
     {
       TBookmark * Bookmark = BookmarkList->GetBookmarks(I);
@@ -7656,7 +7656,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
       if (!Scroll || (List->GetString(Index).LastDelimiter(L"{}") > 0))
       {
         const TSynchronizeChecklist::TItem * ChecklistItem =
-          reinterpret_cast<TSynchronizeChecklist::TItem *>(List->Objects[Index]);
+          reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObject(Index));
 
         List->SetString(Index, ItemLine(ChecklistItem));
       }
@@ -7831,7 +7831,7 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist * Checklist)
     for (intptr_t Index = 0; Index < Count; ++Index)
     {
       TSynchronizeChecklist::TItem * ChecklistItem =
-        reinterpret_cast<TSynchronizeChecklist::TItem *>(List->Objects[Index]);
+        reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObject(Index));
       ChecklistItem->Checked = List->GetChecked(Index);
     }
   }
@@ -8403,8 +8403,8 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
 
   SetSize(TPoint(80, 23));
   // TRect CRect = GetClientRect();
-  int ListTop;
-  int ListHeight = GetClientSize().y - 4;
+  intptr_t ListTop;
+  intptr_t ListHeight = GetClientSize().y - 4;
 
   SetCaption(GetMsg(QUEUE_TITLE));
 
@@ -8460,7 +8460,7 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
   if (QueueListBox->GetItems()->GetSelected() != NPOS)
   {
     TQueueItemProxy * QueueItem = reinterpret_cast<TQueueItemProxy *>(
-      QueueListBox->GetItems()->Objects[QueueListBox->GetItems()->GetSelected()]);
+      QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->GetSelected()));
 
     if (Sender == ExecuteButton)
     {
@@ -8552,7 +8552,7 @@ void TQueueDialog::UpdateControls()
   if (QueueListBox->GetItems()->GetSelected() >= 0)
   {
     QueueItem = reinterpret_cast<TQueueItemProxy *>(
-      QueueListBox->GetItems()->Objects[QueueListBox->GetItems()->GetSelected()]);
+      QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->GetSelected()));
   }
 
   if ((QueueItem != NULL) && (QueueItem->GetStatus() == TQueueItem::qsProcessing))
@@ -8646,8 +8646,8 @@ void TQueueDialog::RefreshQueue()
 
     intptr_t ILine = 0;
     while ((Index > ILine) &&
-           (QueueListBox->GetItems()->Objects[Index] ==
-            QueueListBox->GetItems()->Objects[Index - ILine - 1]))
+           (QueueListBox->GetItems()->GetObject(Index) ==
+            QueueListBox->GetItems()->GetObject(Index - ILine - 1)))
     {
       ILine++;
     }
@@ -8659,7 +8659,7 @@ void TQueueDialog::RefreshQueue()
            (Index < TopIndex + QueueListBox->GetHeight()))
     {
       QueueItem = reinterpret_cast<TQueueItemProxy *>(
-        QueueListBox->GetItems()->Objects[Index]);
+        QueueListBox->GetItems()->GetObject(Index));
       assert(QueueItem != NULL);
       if ((PrevQueueItem != NULL) && (QueueItem != PrevQueueItem))
       {

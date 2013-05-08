@@ -166,7 +166,7 @@ TSynchronizeChecklist::~TSynchronizeChecklist()
 {
   for (intptr_t Index = 0; Index < FList->GetCount(); ++Index)
   {
-    delete static_cast<TItem *>(static_cast<void *>(FList->Items[Index]));
+    delete static_cast<TItem *>(static_cast<void *>(FList->GetItem(Index)));
   }
   delete FList;
 }
@@ -212,7 +212,7 @@ intptr_t TSynchronizeChecklist::GetCount() const
 //------------------------------------------------------------------------------
 const TSynchronizeChecklist::TItem * TSynchronizeChecklist::GetItem(intptr_t Index) const
 {
-  return static_cast<TItem *>(FList->Items[Index]);
+  return static_cast<TItem *>(FList->GetItem(Index));
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -1135,7 +1135,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   }
 
   if (AResult && (FConfiguration->GetRememberPassword()) &&
-      (Prompts->GetCount() == 1) && !(Prompts->Objects[0]) &&
+      (Prompts->GetCount() == 1) && !(Prompts->GetObject(0)) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
@@ -2829,14 +2829,14 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
               Success = false;
               if (!Ex)
               {
-                TRemoteFile * RemoteFile = static_cast<TRemoteFile *>(FileList->Objects[Index]);
+                TRemoteFile * RemoteFile = static_cast<TRemoteFile *>(FileList->GetObject(Index));
                 ProcessFile(FileName, RemoteFile, Param);
               }
               else
               {
                 // not used anymore
                 // TProcessFileEventEx ProcessFileEx = (TProcessFileEventEx)ProcessFile;
-                // ProcessFileEx(FileName, (TRemoteFile *)FileList->Objects[Index], Param, Index);
+                // ProcessFileEx(FileName, (TRemoteFile *)FileList->GetObject(Index), Param, Index);
               }
               Success = true;
             }
@@ -3144,7 +3144,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
     UnicodeString FileList;
     for (intptr_t I = 0; I < Files->GetCount(); ++I)
     {
-      TRemoteFile * File = static_cast<TRemoteFile *>(Files->Objects[I]);
+      TRemoteFile * File = static_cast<TRemoteFile *>(Files->GetObject(I));
       bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
 
       if (!Dir || FLAGSET(Params, ccApplyToDirectories))
@@ -3261,7 +3261,7 @@ bool TTerminal::LoadFilesProperties(TStrings * FileList)
     FFileSystem->LoadFilesProperties(FileList);
   if (Result && GetSessionData()->GetCacheDirectories() &&
       (FileList->GetCount() > 0) &&
-      (dynamic_cast<TRemoteFile *>(FileList->Objects[0])->GetDirectory() == FFiles))
+      (dynamic_cast<TRemoteFile *>(FileList->GetObject(0))->GetDirectory() == FFiles))
   {
     AddCachedFileList(FFiles);
   }
@@ -3494,7 +3494,7 @@ bool TTerminal::MoveFiles(TStrings * FileList, const UnicodeString & Target,
       for (intptr_t Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); ++Index)
       {
         const TRemoteFile * File =
-          dynamic_cast<const TRemoteFile *>(FileList->Objects[Index]);
+          dynamic_cast<const TRemoteFile *>(FileList->GetObject(Index));
         // File can be NULL, and filename may not be full path,
         // but currently this is the only way we can move (at least in GUI)
         // current directory
@@ -4277,8 +4277,8 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
     bool Found = false;
     TSearchRec SearchRec;
     Data.LocalFileList = new TStringList();
-    Data.LocalFileList->Sorted = true;
-    Data.LocalFileList->CaseSensitive = false;
+    Data.LocalFileList->SetSorted(true);
+    Data.LocalFileList->SetCaseSensitive(false);
 
     FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
       int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
@@ -4366,7 +4366,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
       for (intptr_t Index = 0; Index < Data.LocalFileList->GetCount(); ++Index)
       {
         FileData = reinterpret_cast<TSynchronizeFileData *>
-          (Data.LocalFileList->Objects[Index]);
+          (Data.LocalFileList->GetObject(Index));
         // add local file either if we are going to upload it
         // (i.e. if it is updated or we want to upload even new files)
         // or if we are going to delete it (i.e. all "new"=obsolete files)
@@ -4452,7 +4452,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
       for (intptr_t Index = 0; Index < Data.LocalFileList->GetCount(); ++Index)
       {
         TSynchronizeFileData * FileData = reinterpret_cast<TSynchronizeFileData *>
-          (Data.LocalFileList->Objects[Index]);
+          (Data.LocalFileList->GetObject(Index));
         delete FileData;
       }
       delete Data.LocalFileList;
@@ -4500,7 +4500,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
       if (!New)
       {
         TSynchronizeFileData * LocalData =
-          reinterpret_cast<TSynchronizeFileData *>(Data->LocalFileList->Objects[LocalIndex]);
+          reinterpret_cast<TSynchronizeFileData *>(Data->LocalFileList->GetObject(LocalIndex));
 
         LocalData->New = false;
 
@@ -5391,7 +5391,7 @@ bool TSecondaryTerminal::DoPromptUser(TSessionData * Data,
 {
   bool AResult = false;
 
-  if ((Prompts->GetCount() == 1) && !(Prompts->Objects[0]) &&
+  if ((Prompts->GetCount() == 1) && !(Prompts->GetObject(0)) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
@@ -5471,7 +5471,7 @@ void TTerminalList::FreeAndNullTerminal(TTerminal * & Terminal)
 //------------------------------------------------------------------------------
 TTerminal * TTerminalList::GetTerminal(intptr_t Index)
 {
-  return dynamic_cast<TTerminal *>(Items[Index]);
+  return dynamic_cast<TTerminal *>(GetItem(Index));
 }
 //------------------------------------------------------------------------------
 void TTerminalList::Idle()

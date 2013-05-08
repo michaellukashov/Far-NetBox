@@ -653,7 +653,7 @@ UnicodeString TSessionLog::GetLine(intptr_t Index)
 //---------------------------------------------------------------------------
 TLogLineType TSessionLog::GetType(intptr_t Index)
 {
-  return static_cast<TLogLineType>(reinterpret_cast<size_t>(Objects[Index - FTopIndex]));
+  return static_cast<TLogLineType>(reinterpret_cast<size_t>(GetObject(Index - FTopIndex)));
 }
 //---------------------------------------------------------------------------
 void TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString & Line)
@@ -1377,7 +1377,7 @@ void TActionLog::AddPendingAction(TSessionActionRecord * Action)
 void TActionLog::RecordPendingActions()
 {
   while ((FPendingActions->GetCount() > 0) &&
-         static_cast<TSessionActionRecord *>(FPendingActions->Items[0])->Record())
+         static_cast<TSessionActionRecord *>(FPendingActions->GetItem(0))->Record())
   {
     FPendingActions->Delete(0);
   }

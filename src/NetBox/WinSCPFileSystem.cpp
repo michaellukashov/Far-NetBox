@@ -515,7 +515,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     TSessionData * Data = NULL;
     std::auto_ptr<TStringList> ChildPaths(new TStringList());
     {
-      ChildPaths->CaseSensitive = false;
+      ChildPaths->SetCaseSensitive(false);
       for (intptr_t Index = 0; Index < StoredSessions->GetCount(); ++Index)
       {
         Data = StoredSessions->GetSession(Index);
@@ -1449,8 +1449,8 @@ void TWinSCPFileSystem::GetSynchronizeOptions(
   if (FLAGSET(Params, spSelectedOnly) && SynchronizeAllowSelectedOnly())
   {
     Options.Filter = new TStringList();
-    Options.Filter->CaseSensitive = false;
-    Options.Filter->Duplicates = dupAccept;
+    Options.Filter->SetCaseSensitive(false);
+    Options.Filter->SetDuplicates(dupAccept);
 
     if (GetPanelInfo()->GetSelectedCount() > 0)
     {
@@ -1996,7 +1996,7 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
     {
       for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
       {
-        TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->Objects[Index]);
+        TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->GetObject(Index));
         if (File != NULL)
         {
           FileNames->Add(File->GetFileName());
@@ -3404,7 +3404,7 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
   {
     assert(Instructions.IsEmpty());
     assert(Prompts->GetCount() == 1);
-    assert((Prompts->Objects[0]) != NULL);
+    assert((Prompts->GetObject(0)) != NULL);
     UnicodeString AResult = Results->GetString(0);
 
     Result = WinSCPPlugin()->InputBox(Name, StripHotkey(Prompts->GetString(0)), AResult, FIB_NOUSELASTHISTORY);
@@ -4106,7 +4106,7 @@ void TWinSCPFileSystem::MultipleEdit()
       if (FileList->GetCount() == 1)
       {
         MultipleEdit(FTerminal->GetCurrentDirectory(), FileList->GetString(0),
-          static_cast<TRemoteFile *>(FileList->Objects[0]));
+          static_cast<TRemoteFile *>(FileList->GetObject(0)));
       }
     }
   }

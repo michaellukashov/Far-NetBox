@@ -430,14 +430,14 @@ TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey
   FRegistry(NULL)
 {
   Init();
-  FRegistry->RootKey = ARootKey;
+  FRegistry->SetRootKey(ARootKey);
 }
 //------------------------------------------------------------------------------
 void TRegistryStorage::Init()
 {
   FFailed = 0;
   FRegistry = new TRegistry();
-  FRegistry->Access = KEY_READ;
+  FRegistry->SetAccess(KEY_READ);
 }
 //------------------------------------------------------------------------------
 TRegistryStorage::~TRegistryStorage()
@@ -463,7 +463,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
       int RegResult = 0;
       do
       {
-        RegResult = RegQueryValueEx(Registry->CurrentKey.get(), Name.c_str(), NULL,
+        RegResult = RegQueryValueEx(Registry->GetCurrentKey(), Name.c_str(), NULL,
           &Type, &Buffer[0], &Size);
         if (RegResult == ERROR_MORE_DATA)
         {
@@ -474,7 +474,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
       Result = (RegResult == ERROR_SUCCESS);
       if (Result)
       {
-        RegResult = RegSetValueEx(FRegistry->CurrentKey.get(), Name.c_str(), NULL, Type,
+        RegResult = RegSetValueEx(FRegistry->GetCurrentKey(), Name.c_str(), NULL, Type,
           &Buffer[0], Size);
         Result = (RegResult == ERROR_SUCCESS);
       }
@@ -492,7 +492,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
 //------------------------------------------------------------------------------
 UnicodeString TRegistryStorage::GetSource()
 {
-  return RootKeyToStr(FRegistry->RootKey.get()) + L"\\" + GetStorage();
+  return RootKeyToStr(FRegistry->GetRootKey()) + L"\\" + GetStorage();
 }
 //------------------------------------------------------------------------------
 void TRegistryStorage::SetAccessMode(TStorageAccessMode Value)
@@ -503,12 +503,12 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode Value)
     switch (GetAccessMode())
     {
       case smRead:
-        FRegistry->Access = KEY_READ;
+        FRegistry->SetAccess(KEY_READ);
         break;
 
       case smReadWrite:
       default:
-        FRegistry->Access = KEY_READ | KEY_WRITE;
+        FRegistry->SetAccess(KEY_READ | KEY_WRITE);
         break;
     }
   }

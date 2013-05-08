@@ -511,7 +511,7 @@ TTerminalQueue::~TTerminalQueue()
 
     while (FTerminals->GetCount() > 0)
     {
-      TTerminalItem * TerminalItem = reinterpret_cast<TTerminalItem *>(FTerminals->Items[0]);
+      TTerminalItem * TerminalItem = reinterpret_cast<TTerminalItem *>(FTerminals->GetItem(0));
       FTerminals->Delete(0);
       TerminalItem->Terminate();
       TerminalItem->WaitFor();
@@ -692,12 +692,12 @@ bool TTerminalQueue::EmptyButMonitoredItems(TList * List)
 //---------------------------------------------------------------------------
 TQueueItem * TTerminalQueue::GetItem(TList * List, intptr_t Index)
 {
-  return reinterpret_cast<TQueueItem*>(List->Items[Index]);
+  return reinterpret_cast<TQueueItem*>(List->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 TQueueItem * TTerminalQueue::GetItem(intptr_t Index)
 {
-  return reinterpret_cast<TQueueItem *>(FItems->Items[Index]);
+  return reinterpret_cast<TQueueItem *>(FItems->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::UpdateStatusForList(
@@ -998,7 +998,7 @@ void TTerminalQueue::Idle()
       {
         // take the last free terminal, because TerminalFree() puts it to the
         // front, this ensures we cycle thru all free terminals
-        TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->Items[FFreeTerminals - 1]);
+        TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->GetItem(FFreeTerminals - 1));
         FTerminals->Move(FFreeTerminals - 1, FTerminals->GetCount() - 1);
         FFreeTerminals--;
       }
@@ -1069,7 +1069,7 @@ void TTerminalQueue::ProcessEvent()
           }
           else if (FFreeTerminals > 0)
           {
-            TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->Items[0]);
+            TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->GetItem(0));
             FTerminals->Move(0, FTerminals->GetCount() - 1);
             FFreeTerminals--;
           }
@@ -1921,7 +1921,7 @@ intptr_t TTerminalQueueStatus::GetCount() const
 //---------------------------------------------------------------------------
 TQueueItemProxy * TTerminalQueueStatus::GetItem(intptr_t Index)
 {
-  return reinterpret_cast<TQueueItemProxy *>(FList->Items[Index]);
+  return reinterpret_cast<TQueueItemProxy *>(FList->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
@@ -1975,8 +1975,8 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
   for (intptr_t Index = 0; Index < FilesToCopy->GetCount(); ++Index)
   {
     FFilesToCopy->AddObject(FilesToCopy->GetString(Index),
-      ((FilesToCopy->Objects[Index] == NULL) || (Side == osLocal)) ? NULL :
-        dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index])->Duplicate());
+      ((FilesToCopy->GetObject(Index) == NULL) || (Side == osLocal)) ? NULL :
+        dynamic_cast<TRemoteFile *>(FilesToCopy->GetObject(Index))->Duplicate());
   }
 
   FTargetDir = TargetDir;
@@ -1991,7 +1991,7 @@ TTransferQueueItem::~TTransferQueueItem()
 {
   for (intptr_t Index = 0; Index < FFilesToCopy->GetCount(); ++Index)
   {
-    delete FFilesToCopy->Objects[Index];
+    delete FFilesToCopy->GetObject(Index);
   }
   delete FFilesToCopy;
   delete FCopyParam;

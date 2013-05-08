@@ -1055,7 +1055,7 @@ void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     UnicodeString FileName = FilesToCopy->GetString(Index);
-    const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->Objects[Index]);
+    const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->GetObject(Index));
     bool Success = false;
 
     TRY_FINALLY (
@@ -1171,8 +1171,8 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
     if (!File->GetIsSymLink())
     {
       FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
-        int Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
-        if (FLAGCLEAR(Attrs, faDirectory))
+        DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
+        if (FLAGCLEAR(LocalFileAttrs, faDirectory))
         {
           EXCEPTION;
         }
@@ -1345,7 +1345,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   {
     bool Success = false;
     FileName = FilesToCopy->GetString(Index);
-    TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index]);
+    TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->GetObject(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
 
     FileNameOnly = ExtractFileName(RealFileName, false);
@@ -1453,7 +1453,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
 
   __int64 MTime = 0, ATime = 0;
   __int64 Size = 0;
-  // int Attrs = 0;
+  // DWORD LocalFileAttrs = 0;
 
   FTerminal->OpenLocalFile(FileName, GENERIC_READ, &OpenParams->LocalFileAttrs,
     NULL, NULL, &MTime, &ATime, &Size);
@@ -1579,7 +1579,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
 
   OperationProgress->SetFile(DirectoryName);
 
-  int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+  DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   TSearchRec SearchRec;
   bool FindOK = false;
 
