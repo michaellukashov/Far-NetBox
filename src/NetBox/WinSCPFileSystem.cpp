@@ -3342,7 +3342,7 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
   {
     assert(Instructions.IsEmpty());
     assert(Prompts->GetCount() == 1);
-    assert((Prompts->Objects[0]) != NULL);
+    assert((Prompts->GetObject(0)) != NULL);
     UnicodeString AResult = Results->GetString(0);
 
     Result = WinSCPPlugin()->InputBox(Name, StripHotkey(Prompts->GetString(0)), AResult, FIB_NOUSELASTHISTORY);
