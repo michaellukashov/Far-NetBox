@@ -253,10 +253,10 @@ BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
 BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
 {
   TStringList Lines;
-  Lines.Sorted = true;
+  Lines.SetSorted(true);
   if (1)
   {
-    Lines.Duplicates = dupAccept;
+    Lines.SetDuplicates(dupAccept);
     Lines.Add(L"aaa");
     Lines.Add(L"aaa");
     Lines.Add(L"bbb");
@@ -267,7 +267,7 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
   Lines.Clear();
   if (1)
   {
-    Lines.Duplicates = dupIgnore;
+    Lines.SetDuplicates(dupIgnore);
     Lines.Add(L"aaa");
     Lines.Add(L"aaa");
     Lines.Add(L"bbb");
@@ -277,7 +277,7 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
   Lines.Clear();
   if (1)
   {
-    Lines.Duplicates = dupError;
+    Lines.SetDuplicates(dupError);
     Lines.Add(L"aaa");
     Lines.Add(L"bbb");
     BOOST_CHECK_THROW(Lines.Add(L"aaa"), std::exception);
