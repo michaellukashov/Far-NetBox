@@ -155,7 +155,7 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
     BOOST_CHECK_EQUAL(3, strings.GetCount());
     str = strings.GetText();
     BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 0\r\nline 1\r\nline 2\r\n");
-    strings.Objects(0, NULL);
+    strings.SetObject(0, NULL);
     UnicodeString str = strings.GetString(0);
     BOOST_CHECK_EQUAL(W2MB(str.c_str()), "line 0");
   }
@@ -194,7 +194,7 @@ BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)
   TStringList Lines;
   TObject obj1;
   Lines.InsertObject(0, L"line 1", &obj1);
-  BOOST_CHECK(&obj1 == Lines.Objects[0]);
+  BOOST_CHECK(&obj1 == Lines.GetObject(0));
 }
 
 BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
@@ -204,16 +204,16 @@ BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
   Lines.Add(L"aaa");
   // BOOST_TEST_MESSAGE("Lines = " << W2MB(Lines.GetText().c_str()).c_str());
   {
-    Lines.Sorted = true;
+    Lines.SetSorted(true);
     // BOOST_TEST_MESSAGE("Lines = " << W2MB(Lines.GetText().c_str()).c_str());
     BOOST_CHECK_EQUAL("aaa", W2MB(Lines.GetString(0).c_str()).c_str());
     BOOST_CHECK_EQUAL(2, Lines.GetCount());
   }
   {
-    Lines.Sorted = false;
+    Lines.SetSorted(false);
     Lines.Add(L"Aaa");
-    Lines.CaseSensitive = true;
-    Lines.Sorted = true;
+    Lines.SetCaseSensitive(true);
+    Lines.SetSorted(true);
     BOOST_CHECK_EQUAL(3, Lines.GetCount());
     // BOOST_TEST_MESSAGE("Lines = " << W2MB(Lines.GetText().c_str()).c_str());
     BOOST_CHECK_EQUAL("aaa", W2MB(Lines.GetString(0).c_str()).c_str());
