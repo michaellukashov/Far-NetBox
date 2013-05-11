@@ -657,7 +657,7 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
     {
       UnicodeString Line;
       bool IsLast = true;
-      unsigned int Total = 0;
+      uintptr_t Total = 0;
       // #55: fixed so, even when last line of command output does not
       // contain CR/LF, we can recognize last line
       do
@@ -1863,7 +1863,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
               {
                 uintptr_t BlockSize = OperationProgress->TransferBlockSize();
                 FSecureShell->Send(
-                  reinterpret_cast<unsigned char *>(AsciiBuf.GetData() + (unsigned int)OperationProgress->TransferedSize),
+                  reinterpret_cast<unsigned char *>(AsciiBuf.GetData() + (intptr_t)OperationProgress->TransferedSize),
                   BlockSize);
                 OperationProgress->AddTransfered(BlockSize);
                 if (OperationProgress->Cancel == csCancelTransfer)

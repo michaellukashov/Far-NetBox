@@ -1608,7 +1608,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
     { FD_CLOSE_BIT, FD_CLOSE, L"close" },
   };
 
-  for (unsigned int Event = 0; Event < LENOF(EventTypes); Event++)
+  for (uintptr_t Event = 0; Event < LENOF(EventTypes); Event++)
   {
     if (FLAGSET(Events.lNetworkEvents, EventTypes[Event].Mask))
     {
@@ -1657,7 +1657,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     {
       // LogEvent(L"Looking for network events");
     }
-    unsigned int TicksBefore = GetTickCount();
+    uintptr_t TicksBefore = GetTickCount();
     int HandleCount;
     // note that this returns all handles, not only the session-related handles
     HANDLE * Handles = handle_get_events(&HandleCount);
@@ -1666,7 +1666,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
 
       Handles = sresize(Handles, static_cast<size_t>(HandleCount + 1), HANDLE);
       Handles[HandleCount] = FSocketEvent;
-      unsigned int WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, (DWORD)MSec);
+      uintptr_t WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, (DWORD)MSec);
       if (WaitResult < WAIT_OBJECT_0 + HandleCount)
       {
         if (handle_got_event(Handles[WaitResult - WAIT_OBJECT_0]))
@@ -1733,11 +1733,11 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     }
     );
 
-    unsigned int TicksAfter = GetTickCount();
+    uintptr_t TicksAfter = GetTickCount();
     // ticks wraps once in 49.7 days
     if (TicksBefore < TicksAfter)
     {
-      unsigned int Ticks = TicksAfter - TicksBefore;
+      uintptr_t Ticks = TicksAfter - TicksBefore;
       if (Ticks > MSec)
       {
         MSec = 0;
@@ -1753,7 +1753,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
   return Result;
 }
 //---------------------------------------------------------------------------
-void TSecureShell::Idle(unsigned int MSec)
+void TSecureShell::Idle(uintptr_t MSec)
 {
   noise_regular();
 
@@ -1776,7 +1776,7 @@ void TSecureShell::KeepAlive()
   }
 }
 //---------------------------------------------------------------------------
-static unsigned int minPacketSize = 0;
+static uintptr_t minPacketSize = 0;
 
 unsigned long TSecureShell::MinPacketSize()
 {
@@ -1862,7 +1862,7 @@ TCipher TSecureShell::FuncToSsh2Cipher(const void * Cipher)
   assert(LENOF(CipherFuncs) == LENOF(TCiphers));
   TCipher Result = cipWarn;
 
-  for (unsigned int C = 0; C < LENOF(TCiphers); C++)
+  for (uintptr_t C = 0; C < LENOF(TCiphers); C++)
   {
     for (int F = 0; F < CipherFuncs[C]->nciphers; F++)
     {

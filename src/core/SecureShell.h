@@ -34,8 +34,8 @@ private:
   TDateTime FLastDataSent;
   Backend * FBackend;
   void * FBackendHandle;
-  const unsigned int * FMinPacketSize;
-  const unsigned int * FMaxPacketSize;
+  const uintptr_t * FMinPacketSize;
+  const uintptr_t * FMaxPacketSize;
   Config * FConfig;
   TNotifyEvent FOnReceive;
   bool FFrozen;
@@ -120,7 +120,7 @@ public:
   void Send(const unsigned char * Buf, intptr_t Len);
   void SendStr(const UnicodeString & Str);
   void SendSpecial(int Code);
-  void Idle(unsigned int MSec = 0);
+  void Idle(uintptr_t MSec = 0);
   void SendEOF();
   void SendLine(const UnicodeString & Line);
   void SendNull();

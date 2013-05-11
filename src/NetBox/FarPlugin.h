@@ -143,7 +143,7 @@ public:
   UnicodeString GetModuleName();
   TFarDialog * GetTopDialog() const { return FTopDialog; }
   HINSTANCE GetHandle() const { return FHandle; };
-  unsigned int GetFarThread() const { return FFarThread; };
+  uintptr_t GetFarThread() const { return FFarThread; };
   FarStandardFunctions & GetFarStandardFunctions() { return FFarStandardFunctions; }
 
 protected:
@@ -157,7 +157,7 @@ protected:
   intptr_t FFarVersion;
   bool FTerminalScreenShowing;
   TCriticalSection * FCriticalSection;
-  unsigned int FFarThread;
+  uintptr_t FFarThread;
   bool FValidFarSystemSettings;
   intptr_t FFarSystemSettings;
   TPoint FNormalConsoleSize;
