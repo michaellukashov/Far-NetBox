@@ -1910,6 +1910,18 @@ bool IsDirectoryWriteable(const UnicodeString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
+UnicodeString FormatNumber(__int64 Number)
+{
+//  return FormatFloat(L"#,##0", Number);
+  return FORMAT(L"%.0f", static_cast<double>(Number));
+}
+//---------------------------------------------------------------------------
+// simple alternative to FormatBytes
+UnicodeString FormatSize(__int64 Size)
+{
+  return FormatNumber(Size);
+}
+//---------------------------------------------------------------------------
 uintptr_t StrToVersionNumber(const UnicodeString & VersionMumberStr)
 {
   uintptr_t Result = 0;

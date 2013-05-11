@@ -108,6 +108,8 @@ LCID GetDefaultLCID();
 UnicodeString DefaultEncodingName();
 UnicodeString WindowsProductName();
 bool IsDirectoryWriteable(const UnicodeString & Path);
+UnicodeString FormatNumber(__int64 Size);
+UnicodeString FormatSize(__int64 Size);
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);
@@ -209,6 +211,7 @@ private:
 #define FAIL assert(false)
 #define ALWAYS_TRUE(p) p
 #define ALWAYS_FALSE(p) p
+#define NOT_NULL(P) P
 #define CLEAN_INLINE
 #endif
 #ifndef USEDPARAM

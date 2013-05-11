@@ -764,7 +764,8 @@ char * CFtpListResult::GetLine()
 
 void CFtpListResult::AddLine(t_directory::t_direntry &direntry)
 {
-	if (m_server.nTimeZoneOffset && direntry.date.hasdate && direntry.date.hastime)
+	if (m_server.nTimeZoneOffset &&
+		direntry.date.hasdate && direntry.date.hastime && !direntry.date.utc)
 	{
 		SYSTEMTIME st = {0};
 		st.wYear = direntry.date.year;
@@ -894,13 +895,15 @@ bool CFtpListResult::ParseShortDate(const char *str, int len, t_directory::t_dir
 
 	if (!numeric)
 	{
+        rde::map<CString, int>::const_iterator iter = m_MonthNamesMap.begin();
+
 		char *tmpstr = new char[i + 1];
 		strncpy(tmpstr, str, i);
 		tmpstr[i] = 0;
 		strlwr(tmpstr);
 
 		USES_CONVERSION;
-		rde::map<CString, int>::const_iterator iter = const_cast<CFtpListResult *>(this)->m_MonthNamesMap.find(A2T(tmpstr));
+		iter = const_cast<CFtpListResult *>(this)->m_MonthNamesMap.find(A2T(tmpstr));
 		delete [] tmpstr;
 		if (iter == m_MonthNamesMap.end())
 			return false;

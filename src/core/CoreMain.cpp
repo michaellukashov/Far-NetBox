@@ -54,6 +54,7 @@ TQueryButtonAlias::TQueryButtonAlias() :
   Button(0)
 {
   OnClick = NULL;
+  GroupWith = -1;
 }
 //---------------------------------------------------------------------------
 TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString & AHelpKeyword)

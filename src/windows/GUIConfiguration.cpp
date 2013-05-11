@@ -581,7 +581,7 @@ void TGUIConfiguration::Default()
   FQueueKeepDoneItems = true;
   FQueueKeepDoneItemsFor = 15;
   FQueueAutoPopup = true;
-  FQueueRememberPassword = false;
+  FSessionRememberPassword = false;
   UnicodeString ProgramsFolder;
   SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
   FDefaultPuttyPathOnly = IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
@@ -663,7 +663,7 @@ UnicodeString TGUIConfiguration::PropertyToKey(const UnicodeString & Property)
     KEY(Integer,  QueueKeepDoneItems); \
     KEY(Integer,  QueueKeepDoneItemsFor); \
     KEY(Bool,     QueueAutoPopup); \
-    KEY(Bool,     QueueRememberPassword); \
+    KEYEX(Bool,   SessionRememberPassword, L"QueueRememberPassword"); \
     KEY(String,   PuttySession); \
     KEY(String,   PuttyPath); \
     KEY(Bool,     PuttyPassword); \
@@ -1097,7 +1097,7 @@ void TGUIConfiguration::SetDefaultCopyParam(const TGUICopyParamType & Value)
 //---------------------------------------------------------------------------
 bool TGUIConfiguration::GetRememberPassword()
 {
-  return GetQueueRememberPassword() || GetPuttyPassword();
+  return GetSessionRememberPassword() || PuttyPassword;
 }
 //---------------------------------------------------------------------------
 const TCopyParamList * TGUIConfiguration::GetCopyParamList()

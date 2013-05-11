@@ -47,6 +47,7 @@ private:
   int FWaiting;
   bool FSimple;
   bool FNoConnectionResponse;
+  bool FCollectPrivateKeyUsage;
 
   intptr_t PendLen;
   intptr_t PendSize;
@@ -97,7 +98,7 @@ protected:
   void GotHostKey();
   int TranslatePuttyMessage(const TPuttyTranslation * Translation,
     intptr_t Count, UnicodeString & Message) const;
-  int TranslateAuthenticationMessage(UnicodeString & Message) const;
+  int TranslateAuthenticationMessage(UnicodeString & Message);
   int TranslateErrorMessage(UnicodeString & Message);
   void AddStdError(const UnicodeString & Str);
   void AddStdErrorLine(const UnicodeString & Str);
@@ -131,6 +132,7 @@ public:
   unsigned long MaxPacketSize();
   void ClearStdError();
   bool GetStoredCredentialsTried() const;
+  void __fastcall EnableUsage();
 
   void RegisterReceiveHandler(TNotifyEvent Handler);
   void UnregisterReceiveHandler(TNotifyEvent Handler);

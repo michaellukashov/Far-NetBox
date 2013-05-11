@@ -165,6 +165,13 @@ THierarchicalStorage * TConfiguration::CreateStorage(bool /*SessionList*/)
   return NULL;
 }
 //---------------------------------------------------------------------------
+UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
+{
+  // no longer useful
+  int P = Property.LastDelimiter(L".>");
+  return Property.SubString(P + 1, Property.Length() - P);
+}
+//---------------------------------------------------------------------------
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \

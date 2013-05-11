@@ -61,6 +61,7 @@ TSecureShell::TSecureShell(TSessionUI* UI,
   FSocketEvent = CreateEvent(NULL, false, false, NULL);
   FFrozen = false;
   FSimple = false;
+  FCollectPrivateKeyUsage = false;
 }
 //---------------------------------------------------------------------------
 TSecureShell::~TSecureShell()
@@ -677,7 +678,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   {
     if (FSessionData->GetAuthKIPassword() && !FSessionData->GetPassword().IsEmpty() &&
         !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
-        !(Prompts->GetObject(0)))
+        FLAGCLEAR(int(Prompts->GetObject(0)), pupEcho))
     {
       LogEvent(L"Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
@@ -1160,7 +1161,7 @@ int TSecureShell::TranslatePuttyMessage(
   return Result;
 }
 //---------------------------------------------------------------------------
-int TSecureShell::TranslateAuthenticationMessage(UnicodeString & Message) const
+int TSecureShell::TranslateAuthenticationMessage(UnicodeString & Message)
 {
   static const TPuttyTranslation Translation[] = {
     { L"Using username \"%\".", AUTH_TRANSL_USERNAME },
@@ -1178,9 +1179,12 @@ int TSecureShell::TranslateAuthenticationMessage(UnicodeString & Message) const
 
   int Result = TranslatePuttyMessage(Translation, LENOF(Translation), Message);
 
-  if ((Result == 2) || (Result == 3) || (Result == 4))
+  if (FCollectPrivateKeyUsage &&
+      (Result == 2) || (Result == 3) || (Result == 4))
   {
     // GetConfiguration()->GetUsage()->Inc(L"OpenedSessionsPrivateKey");
+    // once only
+    FCollectPrivateKeyUsage = false;
   }
 
   return Result;
@@ -2101,4 +2105,9 @@ bool TSecureShell::GetStoredCredentialsTried() const
 bool TSecureShell::GetReady() const
 {
   return FOpened && (FWaiting == 0);
+}
+//---------------------------------------------------------------------------
+void TSecureShell::EnableUsage()
+{
+  FCollectPrivateKeyUsage = true;
 }
