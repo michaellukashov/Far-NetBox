@@ -205,7 +205,7 @@ protected:
   virtual bool HandleAsynchRequestNeedPass(
     struct TNeedPassRequestData & Data, int & RequestResult) = 0;
   virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
-    unsigned int Count) = 0;
+    uintptr_t Count) = 0;
   virtual bool HandleTransferStatus(bool Valid, __int64 TransferSize,
     __int64 Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
     bool FileTransfer) = 0;

@@ -510,7 +510,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TFileZillaIntf::CheckError(int /*ReturnCode*/, const wchar_t * /*Context*/)
+bool TFileZillaIntf::CheckError(intptr_t /*ReturnCode*/, const wchar_t * /*Context*/)
 {
   return false;
 }
