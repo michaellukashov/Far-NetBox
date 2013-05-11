@@ -2,7 +2,6 @@
 #ifndef ConfigurationH
 #define ConfigurationH
 
-#include <vector.h>
 #include "RemoteFiles.h"
 #include "FileBuffer.h"
 #include "HierarchicalStorage.h"
