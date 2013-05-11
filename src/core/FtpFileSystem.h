@@ -101,7 +101,7 @@ protected:
     REPLY_3XX_CODE =     0x08
   };
 
-  bool PostMessage(unsigned int Type, WPARAM wParam, LPARAM lParam);
+  bool PostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam);
   bool ProcessMessage();
   void DiscardMessages();
   void WaitForMessages();
