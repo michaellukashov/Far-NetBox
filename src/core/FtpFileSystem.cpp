@@ -57,11 +57,11 @@ protected:
   virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     uintptr_t Count);
   virtual bool HandleTransferStatus(bool Valid, __int64 TransferSize,
-    __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
+    __int64 Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
     bool FileTransfer);
-  virtual bool HandleReply(int Command, uintptr_t Reply);
+  virtual bool HandleReply(intptr_t Command, uintptr_t Reply);
   virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
-  virtual bool CheckError(int ReturnCode, const wchar_t * Context);
+  virtual bool CheckError(intptr_t ReturnCode, const wchar_t * Context);
 
   virtual void PreserveDownloadFileTime(HANDLE Handle, void * UserData);
   virtual bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time);
@@ -126,14 +126,14 @@ bool TFileZillaImpl::HandleListData(const wchar_t * Path,
 }
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::HandleTransferStatus(bool Valid, __int64 TransferSize,
-  __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
+  __int64 Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
   bool FileTransfer)
 {
   return FFileSystem->HandleTransferStatus(Valid, TransferSize, Bytes, Percent,
     TimeElapsed, TimeLeft, TransferRate, FileTransfer);
 }
 //---------------------------------------------------------------------------
-bool TFileZillaImpl::HandleReply(int Command, uintptr_t Reply)
+bool TFileZillaImpl::HandleReply(intptr_t Command, uintptr_t Reply)
 {
   return FFileSystem->HandleReply(Command, Reply);
 }
@@ -143,7 +143,7 @@ bool TFileZillaImpl::HandleCapabilities(TFTPServerCapabilities * ServerCapabilit
   return FFileSystem->HandleCapabilities(ServerCapabilities);
 }
 //---------------------------------------------------------------------------
-bool TFileZillaImpl::CheckError(int ReturnCode, const wchar_t * Context)
+bool TFileZillaImpl::CheckError(intptr_t ReturnCode, const wchar_t * Context)
 {
   return FFileSystem->CheckError(ReturnCode, Context);
 }
@@ -3576,7 +3576,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
 }
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::HandleTransferStatus(bool Valid, __int64 TransferSize,
-  __int64 Bytes, int /*Percent*/, int /*TimeElapsed*/, int /*TimeLeft*/, int /*TransferRate*/,
+  __int64 Bytes, intptr_t /*Percent*/, intptr_t /*TimeElapsed*/, intptr_t /*TimeLeft*/, intptr_t /*TransferRate*/,
   bool FileTransfer)
 {
   if (!FActive)
@@ -3597,7 +3597,7 @@ bool TFTPFileSystem::HandleTransferStatus(bool Valid, __int64 TransferSize,
   return true;
 }
 //---------------------------------------------------------------------------
-bool TFTPFileSystem::HandleReply(int Command, uintptr_t Reply)
+bool TFTPFileSystem::HandleReply(intptr_t Command, uintptr_t Reply)
 {
   if (!FActive)
   {
@@ -3635,7 +3635,7 @@ bool TFTPFileSystem::HandleCapabilities(
   return true;
 }
 //---------------------------------------------------------------------------
-bool TFTPFileSystem::CheckError(int ReturnCode, const wchar_t * Context)
+bool TFTPFileSystem::CheckError(intptr_t ReturnCode, const wchar_t * Context)
 {
   // we do not expect any FZAPI call to fail as it generally can fail only due to:
   // - invalid parameters

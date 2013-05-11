@@ -132,11 +132,11 @@ protected:
   bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     uintptr_t Count);
   bool HandleTransferStatus(bool Valid, __int64 TransferSize,
-    __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
+    __int64 Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
     bool FileTransfer);
-  bool HandleReply(int Command, uintptr_t Reply);
+  bool HandleReply(intptr_t Command, uintptr_t Reply);
   bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
-  bool CheckError(int ReturnCode, const wchar_t * Context);
+  bool CheckError(intptr_t ReturnCode, const wchar_t * Context);
   void PreserveDownloadFileTime(HANDLE Handle, void * UserData);
   bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time);
   void EnsureLocation();

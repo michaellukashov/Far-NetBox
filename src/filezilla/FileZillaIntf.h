@@ -207,13 +207,13 @@ protected:
   virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     unsigned int Count) = 0;
   virtual bool HandleTransferStatus(bool Valid, __int64 TransferSize,
-    __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
+    __int64 Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
     bool FileTransfer) = 0;
-  virtual bool HandleReply(int Command, unsigned int Reply) = 0;
+  virtual bool HandleReply(intptr_t Command, uintptr_t Reply) = 0;
   virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities) = 0;
-  virtual bool CheckError(int ReturnCode, const wchar_t * Context);
+  virtual bool CheckError(intptr_t ReturnCode, const wchar_t * Context);
 
-  inline bool Check(int ReturnCode, const wchar_t * Context, int Expected = -1);
+  inline bool Check(intptr_t ReturnCode, const wchar_t * Context, intptr_t Expected = -1);
 
 private:
   CFileZillaApi * FFileZillaApi;

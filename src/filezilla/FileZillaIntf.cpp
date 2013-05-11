@@ -515,8 +515,8 @@ bool TFileZillaIntf::CheckError(int /*ReturnCode*/, const wchar_t * /*Context*/)
   return false;
 }
 //---------------------------------------------------------------------------
-inline bool TFileZillaIntf::Check(int ReturnCode,
-  const wchar_t * Context, int Expected)
+inline bool TFileZillaIntf::Check(intptr_t ReturnCode,
+  const wchar_t * Context, intptr_t Expected)
 {
   if ((ReturnCode & (Expected == -1 ? FZ_REPLY_OK : Expected)) == ReturnCode)
   {
