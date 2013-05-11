@@ -455,7 +455,7 @@ uintptr_t TFileOperationProgressType::CPS()
     else
     {
       __int64 Transferred = (TotalTransfered - FTotalTransferredThen.front());
-      Result = static_cast<unsigned int>(Transferred * MSecsPerSec / TimeSpan);
+      Result = static_cast<uintptr_t>(Transferred * MSecsPerSec / TimeSpan);
     }
   }
   return Result;

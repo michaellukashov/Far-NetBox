@@ -72,7 +72,7 @@ public:
     int ItemsNumber);
   virtual intptr_t ProcessHostFile(HANDLE Plugin,
     struct PluginPanelItem * PanelItem, int ItemsNumber, int OpMode);
-  virtual intptr_t ProcessKey(HANDLE Plugin, int Key, unsigned int ControlState);
+  virtual intptr_t ProcessKey(HANDLE Plugin, int Key, DWORD ControlState);
   virtual intptr_t ProcessEvent(HANDLE Plugin, int Event, void * Param);
   virtual intptr_t SetDirectory(HANDLE Plugin, const wchar_t * Dir, int OpMode);
   virtual intptr_t MakeDirectory(HANDLE Plugin, const wchar_t ** Name, int OpMode);
@@ -134,7 +134,7 @@ public:
   void SaveTerminalScreen();
   void ScrollTerminalScreen(int Rows);
   TPoint TerminalInfo(TPoint * Size = NULL, TPoint * Cursor = NULL);
-  unsigned int ConsoleWindowState();
+  uintptr_t ConsoleWindowState();
   void ToggleVideoMode();
 
   TCustomFarFileSystem * GetPanelFileSystem(bool Another = false,
@@ -291,7 +291,7 @@ private:
   OpenPluginInfo FOpenPluginInfo;
   bool FOpenPluginInfoValid;
   TFarPanelInfo * FPanelInfo[2];
-  static unsigned int FInstances;
+  static uintptr_t FInstances;
 
   void ClearOpenPluginInfo(OpenPluginInfo & Info);
   TObjectList * CreatePanelItemList(struct PluginPanelItem * PanelItem,

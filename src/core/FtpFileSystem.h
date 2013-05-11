@@ -105,18 +105,18 @@ protected:
   bool ProcessMessage();
   void DiscardMessages();
   void WaitForMessages();
-  unsigned int WaitForReply(bool Command, bool WantLastCode);
-  unsigned int WaitForCommandReply(bool WantLastCode = true);
+  uintptr_t WaitForReply(bool Command, bool WantLastCode);
+  uintptr_t WaitForCommandReply(bool WantLastCode = true);
   void WaitForFatalNonCommandReply();
   void PoolForFatalNonCommandReply();
-  void GotNonCommandReply(unsigned int Reply);
-  void GotReply(unsigned int Reply, uintptr_t Flags = 0,
-    const UnicodeString & Error = L"", unsigned int * Code = NULL,
+  void GotNonCommandReply(uintptr_t Reply);
+  void GotReply(uintptr_t Reply, uintptr_t Flags = 0,
+    const UnicodeString & Error = L"", uintptr_t *Code = NULL,
     TStrings ** Response = NULL);
   void ResetReply();
   void HandleReplyStatus(const UnicodeString & Response);
-  void DoWaitForReply(unsigned int & ReplyToAwait, bool WantLastCode);
-  bool KeepWaitingForReply(unsigned int & ReplyToAwait, bool WantLastCode) const;
+  void DoWaitForReply(uintptr_t &ReplyToAwait, bool WantLastCode);
+  bool KeepWaitingForReply(uintptr_t &ReplyToAwait, bool WantLastCode) const;
   inline bool NoFinalLastCode() const;
 
   bool HandleStatus(const wchar_t * Status, int Type);
@@ -130,11 +130,11 @@ protected:
   bool HandleAsynchRequestNeedPass(
     struct TNeedPassRequestData & Data, int & RequestResult) const;
   bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
-    unsigned int Count);
+    uintptr_t Count);
   bool HandleTransferStatus(bool Valid, __int64 TransferSize,
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer);
-  bool HandleReply(int Command, unsigned int Reply);
+  bool HandleReply(int Command, uintptr_t Reply);
   bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
   bool CheckError(int ReturnCode, const wchar_t * Context);
   void PreserveDownloadFileTime(HANDLE Handle, void * UserData);
@@ -210,8 +210,8 @@ private:
   TSessionInfo FSessionInfo;
   TFileSystemInfo FFileSystemInfo;
   bool FFileSystemInfoValid;
-  unsigned int FReply;
-  unsigned int FCommandReply;
+  uintptr_t FReply;
+  uintptr_t FCommandReply;
   TCommand FLastCommand;
   bool FPasswordFailed;
   bool FMultineResponse;

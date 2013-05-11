@@ -55,11 +55,11 @@ protected:
   virtual bool HandleAsynchRequestNeedPass(
     struct TNeedPassRequestData & Data, int & RequestResult);
   virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
-    unsigned int Count);
+    uintptr_t Count);
   virtual bool HandleTransferStatus(bool Valid, __int64 TransferSize,
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer);
-  virtual bool HandleReply(int Command, unsigned int Reply);
+  virtual bool HandleReply(int Command, uintptr_t Reply);
   virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
   virtual bool CheckError(int ReturnCode, const wchar_t * Context);
 
@@ -120,7 +120,7 @@ bool TFileZillaImpl::HandleAsynchRequestNeedPass(
 }
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::HandleListData(const wchar_t * Path,
-  const TListDataEntry * Entries, unsigned int Count)
+  const TListDataEntry * Entries, uintptr_t Count)
 {
   return FFileSystem->HandleListData(Path, Entries, Count);
 }
@@ -133,7 +133,7 @@ bool TFileZillaImpl::HandleTransferStatus(bool Valid, __int64 TransferSize,
     TimeElapsed, TimeLeft, TransferRate, FileTransfer);
 }
 //---------------------------------------------------------------------------
-bool TFileZillaImpl::HandleReply(int Command, unsigned int Reply)
+bool TFileZillaImpl::HandleReply(int Command, uintptr_t Reply)
 {
   return FFileSystem->HandleReply(Command, Reply);
 }
@@ -1020,7 +1020,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & FileName,
       RemotePath.c_str(), Get, Size, Type, &UserData);
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
-    unsigned int Reply = WaitForCommandReply();
+    uintptr_t Reply = WaitForCommandReply();
     GotReply(Reply, FLAGMASK(FFileTransferCancelled, REPLY_ALLOW_CANCEL));
   );
 
@@ -1243,7 +1243,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
     {
       FilePath = L"/";
     }
-    unsigned int TransferType = (OperationProgress->AsciiTransfer ? 1 : 2);
+    uintptr_t TransferType = (OperationProgress->AsciiTransfer ? 1 : 2);
 
     {
       // ignore file list
@@ -1508,7 +1508,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
 
     TFileTransferData UserData;
 
-    unsigned int TransferType = (OperationProgress->AsciiTransfer ? 1 : 2);
+    uintptr_t TransferType = (OperationProgress->AsciiTransfer ? 1 : 2);
 
     // should we check for interrupted transfer?
     bool ResumeAllowed = !OperationProgress->AsciiTransfer &&
@@ -1862,7 +1862,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
   {
     FFileZillaIntf->CustomCommand(L"PWD");
 
-    unsigned int Code = 0;
+    uintptr_t Code = 0;
     TStrings * Response = NULL;
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE, L"", &Code, &Response);
 
@@ -2392,7 +2392,7 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TFTPFileSystem::PostMessage(unsigned int Type, WPARAM wParam, LPARAM lParam)
+bool TFTPFileSystem::PostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam)
 {
   if (Type == TFileZillaIntf::MSG_TRANSFERSTATUS)
   {
@@ -2463,7 +2463,7 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
 
   FWaitingForReply = true;
 
-  unsigned int Reply = 0;
+  uintptr_t Reply = 0;
 
   TRY_FINALLY (
   {
@@ -2494,7 +2494,7 @@ bool TFTPFileSystem::NoFinalLastCode() const
   return (FLastCodeClass == 0) || (FLastCodeClass == 1);
 }
 //---------------------------------------------------------------------------
-bool TFTPFileSystem::KeepWaitingForReply(unsigned int & ReplyToAwait, bool WantLastCode) const
+bool TFTPFileSystem::KeepWaitingForReply(uintptr_t & ReplyToAwait, bool WantLastCode) const
 {
     // to keep waiting,
   // non-command reply must be unset,
@@ -2506,7 +2506,7 @@ bool TFTPFileSystem::KeepWaitingForReply(unsigned int & ReplyToAwait, bool WantL
       (WantLastCode && NoFinalLastCode()));
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::DoWaitForReply(unsigned int & ReplyToAwait, bool WantLastCode)
+void TFTPFileSystem::DoWaitForReply(uintptr_t & ReplyToAwait, bool WantLastCode)
 {
   try
   {
@@ -2541,7 +2541,7 @@ void TFTPFileSystem::DoWaitForReply(unsigned int & ReplyToAwait, bool WantLastCo
   }
 }
 //---------------------------------------------------------------------------
-unsigned int TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
+uintptr_t TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
 {
   assert(FReply == 0);
   assert(FCommandReply == 0);
@@ -2551,11 +2551,11 @@ unsigned int TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
   ResetReply();
   FWaitingForReply = true;
 
-  unsigned int Reply = 0;
+  uintptr_t Reply = 0;
 
   TRY_FINALLY (
   {
-    unsigned int & ReplyToAwait = (Command ? FCommandReply : FReply);
+    uintptr_t & ReplyToAwait = (Command ? FCommandReply : FReply);
     DoWaitForReply(ReplyToAwait, WantLastCode);
 
     Reply = ReplyToAwait;
@@ -2572,7 +2572,7 @@ unsigned int TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
   return Reply;
 }
 //---------------------------------------------------------------------------
-unsigned int TFTPFileSystem::WaitForCommandReply(bool WantLastCode)
+uintptr_t TFTPFileSystem::WaitForCommandReply(bool WantLastCode)
 {
   return WaitForReply(true, WantLastCode);
 }
@@ -2593,7 +2593,7 @@ void TFTPFileSystem::ResetReply()
   FLastError->Clear();
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::GotNonCommandReply(unsigned int Reply)
+void TFTPFileSystem::GotNonCommandReply(uintptr_t Reply)
 {
   assert(FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED));
   GotReply(Reply);
@@ -2601,8 +2601,8 @@ void TFTPFileSystem::GotNonCommandReply(unsigned int Reply)
   assert(false);
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::GotReply(unsigned int Reply, uintptr_t Flags,
-  const UnicodeString & Error, unsigned int * Code, TStrings ** Response)
+void TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
+  const UnicodeString & Error, uintptr_t * Code, TStrings ** Response)
 {
   TRY_FINALLY (
   {
@@ -3474,7 +3474,7 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
 }
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::HandleListData(const wchar_t * Path,
-  const TListDataEntry * Entries, unsigned int Count)
+  const TListDataEntry * Entries, uintptr_t Count)
 {
   if (!FActive)
   {
@@ -3494,7 +3494,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
     assert(UnixComparePaths(AbsolutePath(FFileList->GetDirectory(), false), Path));
     USEDPARAM(Path);
 
-    for (unsigned int Index = 0; Index < Count; ++Index)
+    for (uintptr_t Index = 0; Index < Count; ++Index)
     {
       const TListDataEntry * Entry = &Entries[Index];
       TRemoteFile * File = new TRemoteFile();
@@ -3597,7 +3597,7 @@ bool TFTPFileSystem::HandleTransferStatus(bool Valid, __int64 TransferSize,
   return true;
 }
 //---------------------------------------------------------------------------
-bool TFTPFileSystem::HandleReply(int Command, unsigned int Reply)
+bool TFTPFileSystem::HandleReply(int Command, uintptr_t Reply)
 {
   if (!FActive)
   {

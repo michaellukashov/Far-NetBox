@@ -23,7 +23,7 @@ class TFileOperationProgressType : public TObject
 {
 private:
   // when it was last time suspended (to calculate suspend time in Resume())
-  unsigned int FSuspendTime;
+  uintptr_t FSuspendTime;
   // when current file was started being transfered
   TDateTime FFileStartTime;
   intptr_t FFilesFinished;
