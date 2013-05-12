@@ -533,7 +533,7 @@ TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
   FSynchronizeMode(0),
   FMaxWatchDirectories(0),
   FQueueAutoPopup(false),
-  FQueueRememberPassword(false),
+  FSessionRememberPassword(false),
   FQueueTransfersLimit(0),
   FQueueKeepDoneItems(false),
   FQueueKeepDoneItemsFor(0),
@@ -663,7 +663,7 @@ UnicodeString TGUIConfiguration::PropertyToKey(const UnicodeString & Property)
     KEY(Integer,  QueueKeepDoneItems); \
     KEY(Integer,  QueueKeepDoneItemsFor); \
     KEY(Bool,     QueueAutoPopup); \
-    KEYEX(Bool,   SessionRememberPassword, L"QueueRememberPassword"); \
+    KEYEX(Bool,   QueueRememberPassword, SessionRememberPassword); \
     KEY(String,   PuttySession); \
     KEY(String,   PuttyPath); \
     KEY(Bool,     PuttyPassword); \
@@ -675,16 +675,20 @@ UnicodeString TGUIConfiguration::PropertyToKey(const UnicodeString & Property)
     KEY(String,   ChecksumAlg); \
     KEY(Integer,  SessionReopenAutoIdle); \
   ); \
+
 //---------------------------------------------------------------------------
 void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 {
   TConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
+  #undef KEYEX
+  #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR())
   #undef KEY
   #define KEY(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(TEXT(#NAME)), Get ## NAME())
   REGCONFIG(true);
   #undef KEY
+  #undef KEYEX
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", true, true))
   {
@@ -729,12 +733,15 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   TConfiguration::LoadData(Storage);
 
   // duplicated from core\configuration.cpp
+  #undef KEYEX
+  #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR()))
   #undef KEY
   #define KEY(TYPE, NAME) Set ## NAME(Storage->Read ## TYPE(PropertyToKey(TEXT(#NAME)), Get ## NAME()))
   #pragma warn -eas
   REGCONFIG(false);
   #pragma warn +eas
   #undef KEY
+  #undef KEYEX
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", false, true))
   TRY_FINALLY (
@@ -1097,7 +1104,7 @@ void TGUIConfiguration::SetDefaultCopyParam(const TGUICopyParamType & Value)
 //---------------------------------------------------------------------------
 bool TGUIConfiguration::GetRememberPassword()
 {
-  return GetSessionRememberPassword() || PuttyPassword;
+  return GetSessionRememberPassword() || GetPuttyPassword();
 }
 //---------------------------------------------------------------------------
 const TCopyParamList * TGUIConfiguration::GetCopyParamList()

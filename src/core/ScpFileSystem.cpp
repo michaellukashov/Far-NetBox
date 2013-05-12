@@ -1598,10 +1598,8 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
               FTerminal->GetSessionData()->GetDSTMode());
             FileParams.DestSize = File->GetSize();
             FileParams.DestTimestamp = File->GetModification();
-
-            Answer = FTerminal->ConfirmFileOverwrite(
-              FileNameOnly,
-              &FileParams, osRemote, CopyParam, Params, OperationProgress);
+            Answer = ConfirmOverwrite(FileNameOnly, osRemote,
+              &FileParams, CopyParam, Params, OperationProgress);
           }
 
           switch (Answer)
@@ -1658,7 +1656,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
           TQueryParams QueryParams(qpAllowContinueOnError);
           SUSPEND_OPERATION (
             if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()), &E,
-              qaOK | qaAbort, &Params, qtError) == qaAbort)
+              qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
             {
               OperationProgress->Cancel = csCancel;
             }
@@ -2078,7 +2076,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
           TQueryParams QueryParams(qpAllowContinueOnError);
           SUSPEND_OPERATION (
             if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()), &E,
-                  qaOK | qaAbort, &Params, qtError) == qaAbort)
+                  qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
             {
               OperationProgress->Cancel = csCancel;
             }
@@ -2531,11 +2529,10 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                   FileParams.DestTimestamp = UnixToDateTime(MTime,
                     FTerminal->GetSessionData()->GetDSTMode());
 
-                  uintptr_t Answers = 0;
                   uintptr_t Answer =
-                    FTerminal->ConfirmFileOverwrite(
-                      OperationProgress->FileName, &FileParams,
-                      Answers, QueryParams, osLocal, CopyParam, Params, OperationProgress);
+                    ConfirmOverwrite(
+                      OperationProgress->FileName, osLocal,
+                      &FileParams, CopyParam, Params, OperationProgress);
 
                   switch (Answer)
                   {
