@@ -1,5 +1,6 @@
 NetBox 2.1.29 ??.05.2013
 --------------------
+  * Upgrade WinSCP sources to 5.2.1
   * Bugfix: Issue #58: SCP session to FreeBSD server doesn't work
     (https://github.com/michaellukashov/Far-NetBox/issues/58)
   * Improvement: Store directory change if option "Remember last used directory" is set.
@@ -9,7 +10,6 @@ NetBox 2.1.29 ??.05.2013
   * zlib core upgraded to 1.2.8
   * Bugfix: SFTP: Folder is created in root directory, not in current directory
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=108627#p108585)
-  * Upgrade WinSCP core to 5.2.0
   * Bugfix: AV if transferring file in background mode
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=1065#p108302)
   * Far3: Adapt to Far 3.0 build 3331
