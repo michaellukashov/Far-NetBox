@@ -1780,7 +1780,7 @@ void TSecureShell::KeepAlive()
   }
 }
 //---------------------------------------------------------------------------
-static uintptr_t minPacketSize = 0;
+static unsigned int minPacketSize = 0;
 
 unsigned long TSecureShell::MinPacketSize()
 {
