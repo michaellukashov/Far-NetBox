@@ -4283,7 +4283,7 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & Loca
   return Checklist;
 }
 //---------------------------------------------------------------------------
-static void AddFlagName(UnicodeString & ParamsStr, int & Params, int Param, const UnicodeString & Name)
+static void AddFlagName(UnicodeString & ParamsStr, intptr_t & Params, intptr_t Param, const UnicodeString & Name)
 {
   if (FLAGSET(Params, Param))
   {
@@ -4313,7 +4313,7 @@ UnicodeString TTerminal::SynchronizeModeStr(TSynchronizeMode Mode)
   return ModeStr;
 }
 //---------------------------------------------------------------------------
-UnicodeString TTerminal::SynchronizeParamsStr(int Params)
+UnicodeString TTerminal::SynchronizeParamsStr(intptr_t Params)
 {
   UnicodeString ParamsStr;
   AddFlagName(ParamsStr, Params, spDelete, L"Delete");
