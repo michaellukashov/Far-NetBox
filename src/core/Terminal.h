@@ -157,7 +157,7 @@ public:
   static const int spTimestamp = 0x100;
   static const int spNotByTime = 0x200; // cannot be combined with spTimestamp and smBoth
   static const int spBySize = 0x400; // cannot be combined with smBoth, has opposite meaning for spTimestamp
-  // 0x800 is reserved for GUI (spSelectedOnly)
+  static const int spSelectedOnly = 0x800; // not used by core
   static const int spMirror = 0x1000;
 
 // for TranslateLockedPath()
@@ -231,13 +231,11 @@ private:
   TCheckForEscEvent FOnCheckForEsc;
   TCallbackGuard * FCallbackGuard;
   TFindingFileEvent FOnFindingFile;
-
-  void CommandError(Exception * E, const UnicodeString & Msg);
-  uintptr_t CommandError(Exception * E, const UnicodeString & Msg, uintptr_t Answers);
-  void ReactOnCommand(int /*TFSCommand*/ Cmd);
-  inline bool InTransaction();
+  bool FEnableSecureShellUsage;
 
 public:
+  void CommandError(Exception * E, const UnicodeString & Msg);
+  uintptr_t CommandError(Exception * E, const UnicodeString & Msg, uintptr_t Answers);
   void SetMasks(const UnicodeString & Value);
   UnicodeString GetCurrentDirectory();
   bool GetExceptionOnFail() const;
@@ -246,6 +244,7 @@ public:
   const TRemoteTokenList * GetMembership();
   void SetCurrentDirectory(const UnicodeString & Value);
   void SetExceptionOnFail(bool Value);
+  void ReactOnCommand(int /*TFSCommand*/ Cmd);
   UnicodeString GetUserName() const;
   bool GetAreCachesEmpty() const;
   bool GetIsCapable(TFSCapability Capability) const;
@@ -259,6 +258,9 @@ public:
   UnicodeString GetTunnelPassword();
   bool GetStoredCredentialsTried();
   TCustomFileSystem * GetFileSystem() { return FFileSystem; }
+  inline bool InTransaction();
+  static UnicodeString SynchronizeModeStr(TSynchronizeMode Mode);
+  static UnicodeString SynchronizeParamsStr(intptr_t Params);
 
 protected:
   bool FReadCurrentDirectoryPending;
@@ -321,7 +323,7 @@ protected:
   bool CheckRemoteFile(
     const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress);
   uintptr_t ConfirmFileOverwrite(const UnicodeString & FileName,
-    const TOverwriteFileParams * FileParams, uintptr_t Answers, const TQueryParams * QueryParams,
+    const TOverwriteFileParams * FileParams, uintptr_t Answers, TQueryParams * QueryParams,
     TOperationSide Side, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, const UnicodeString & Message = L"");
   void DoSynchronizeCollectDirectory(const UnicodeString & LocalDirectory,
@@ -491,6 +493,7 @@ public:
   UnicodeString PeekCurrentDirectory();
   void FatalAbort();
   void ReflectSettings();
+  void EnableUsage();
   bool CheckForEsc();
 
   const TSessionInfo & GetSessionInfo() const;

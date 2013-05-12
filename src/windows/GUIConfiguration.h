@@ -157,7 +157,7 @@ private:
   intptr_t FMaxWatchDirectories;
   TDateTime FIgnoreCancelBeforeFinish;
   bool FQueueAutoPopup;
-  bool FQueueRememberPassword;
+  bool FSessionRememberPassword;
   intptr_t FQueueTransfersLimit;
   bool FQueueKeepDoneItems;
   intptr_t FQueueKeepDoneItemsFor;
@@ -240,8 +240,8 @@ public:
   intptr_t GetQueueKeepDoneItemsFor() { return FQueueKeepDoneItemsFor; }
   bool GetQueueAutoPopup() { return FQueueAutoPopup; }
   void SetQueueAutoPopup(bool Value) { FQueueAutoPopup = Value; }
-  bool GetQueueRememberPassword() { return FQueueRememberPassword; }
-  void SetQueueRememberPassword(bool Value) { FQueueRememberPassword = Value; }
+  bool GetSessionRememberPassword() { return FSessionRememberPassword; }
+  void SetSessionRememberPassword(bool Value) { FSessionRememberPassword = Value; }
   UnicodeString GetPuttyPath();
   void SetPuttyPath(const UnicodeString & Value);
   UnicodeString GetDefaultPuttyPath();

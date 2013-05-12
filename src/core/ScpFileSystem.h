@@ -3,6 +3,7 @@
 #define ScpFileSystemH
 
 #include <FileSystems.h>
+#include <CopyParam.h>
 //---------------------------------------------------------------------------
 class TCommandSet;
 class TSecureShell;
@@ -131,6 +132,10 @@ private:
   void CaptureOutput(const UnicodeString & AddedLine, bool StdError);
   void ChangeFileToken(const UnicodeString & DelimitedName,
     const TRemoteToken & Token, TFSCommand Cmd, const UnicodeString & RecursiveStr);
+  uintptr_t __fastcall ConfirmOverwrite(
+    UnicodeString & FileName, TOperationSide Side,
+    const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
+    intptr_t Params, TFileOperationProgressType * OperationProgress);
 
   static bool RemoveLastLine(UnicodeString & Line,
     intptr_t & ReturnCode, const UnicodeString & ALastLine);

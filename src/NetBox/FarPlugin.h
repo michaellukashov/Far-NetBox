@@ -147,7 +147,7 @@ public:
   void SaveTerminalScreen();
   void ScrollTerminalScreen(int Rows);
   TPoint TerminalInfo(TPoint * Size = NULL, TPoint * Cursor = NULL);
-  unsigned int ConsoleWindowState();
+  uintptr_t ConsoleWindowState();
   void ToggleVideoMode();
 
   TCustomFarFileSystem * GetPanelFileSystem(bool Another = false,
@@ -156,7 +156,7 @@ public:
   UnicodeString GetModuleName();
   TFarDialog * GetTopDialog() const { return FTopDialog; }
   HINSTANCE GetHandle() const { return FHandle; };
-  unsigned int GetFarThread() const { return FFarThread; };
+  uintptr_t GetFarThread() const { return FFarThread; };
   FarStandardFunctions & GetFarStandardFunctions() { return FFarStandardFunctions; }
   const struct PluginStartupInfo * GetStartupInfo() const { return &FStartupInfo; }
 
@@ -171,7 +171,7 @@ protected:
   intptr_t FFarVersion;
   bool FTerminalScreenShowing;
   TCriticalSection * FCriticalSection;
-  unsigned int FFarThread;
+  uintptr_t FFarThread;
   bool FValidFarSystemSettings;
   intptr_t FFarSystemSettings;
   TPoint FNormalConsoleSize;
@@ -301,7 +301,7 @@ private:
   OpenPanelInfo FOpenPanelInfo;
   bool FOpenPanelInfoValid;
   TFarPanelInfo * FPanelInfo[2];
-  static unsigned int FInstances;
+  static uintptr_t FInstances;
 
   void ClearOpenPanelInfo(OpenPanelInfo & Info);
   TObjectList * CreatePanelItemList(struct PluginPanelItem * PanelItem,

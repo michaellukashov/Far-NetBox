@@ -2,7 +2,6 @@
 #ifndef ConfigurationH
 #define ConfigurationH
 
-#include <vector.h>
 #include "RemoteFiles.h"
 #include "FileBuffer.h"
 #include "HierarchicalStorage.h"
@@ -137,6 +136,7 @@ public:
   virtual void Saved();
   void CleanupRegistry(const UnicodeString & CleanupSubKey);
   UnicodeString BannerHash(const UnicodeString & Banner);
+  static UnicodeString PropertyToKey(const UnicodeString & Property);
 
   virtual bool GetConfirmOverwriting();
   virtual void SetConfirmOverwriting(bool Value);

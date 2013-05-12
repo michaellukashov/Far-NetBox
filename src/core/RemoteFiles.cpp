@@ -659,7 +659,7 @@ bool TRemoteTokenList::Exists(const UnicodeString & Name) const
   return (FNameMap.find(Name) != FNameMap.end());
 }
 //---------------------------------------------------------------------------
-const TRemoteToken * TRemoteTokenList::Find(unsigned int ID) const
+const TRemoteToken * TRemoteTokenList::Find(uintptr_t ID) const
 {
   TIDMap::const_iterator I = FIDMap.find(ID);
   const TRemoteToken * Result;

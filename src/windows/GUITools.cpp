@@ -94,15 +94,15 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
           {
             if (GUIConfiguration->GetTelnetForFtpInPutty())
             {
-              ExportData->SetProtocol(ptTelnet);
-              ExportData->SetPortNumber(23);
+              ExportData->SetPuttyProtocol(PuttyTelnetProtocol);
+              ExportData->SetPortNumber(TelnetPortNumber);
               // PuTTY  does not allow -pw for telnet
               Psw = L"";
             }
             else
             {
-              ExportData->SetProtocol(ptSSH);
-              ExportData->SetPortNumber(22);
+              ExportData->SetPuttyProtocol(PuttySshProtocol);
+              ExportData->SetPortNumber(SshPortNumber);
             }
           }
 

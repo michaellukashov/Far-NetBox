@@ -63,15 +63,15 @@ HANDLE BeginThread(void * SecurityAttributes, DWORD StackSize,
   return Result;
 }
 
-void EndThread(int ExitCode)
+void EndThread(DWORD ExitCode)
 {
   ::ExitThread(ExitCode);
 }
 
 //---------------------------------------------------------------------------
-HANDLE StartThread(void * SecurityAttributes, unsigned int StackSize,
-  void * Parameter, unsigned int CreationFlags,
-  DWORD & ThreadId)
+HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
+  void * Parameter, DWORD CreationFlags,
+  TThreadID & ThreadId)
 {
   return BeginThread(SecurityAttributes, StackSize, Parameter,
     CreationFlags, ThreadId);

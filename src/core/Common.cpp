@@ -1678,7 +1678,7 @@ UnicodeString EncodeUrlChars(const UnicodeString & S, const UnicodeString & Igno
 UnicodeString NonUrlChars()
 {
   UnicodeString S;
-  for (unsigned int I = 0; I <= 127; I++)
+  for (uintptr_t I = 0; I <= 127; I++)
   {
     wchar_t C = static_cast<wchar_t>(I);
     if (((C >= L'a') && (C <= L'z')) ||
@@ -1908,6 +1908,18 @@ bool IsDirectoryWriteable(const UnicodeString & Path)
     CloseHandle(Handle);
   }
   return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString FormatNumber(__int64 Number)
+{
+//  return FormatFloat(L"#,##0", Number);
+  return FORMAT(L"%.0f", static_cast<double>(Number));
+}
+//---------------------------------------------------------------------------
+// simple alternative to FormatBytes
+UnicodeString FormatSize(__int64 Size)
+{
+  return FormatNumber(Size);
 }
 //---------------------------------------------------------------------------
 uintptr_t StrToVersionNumber(const UnicodeString & VersionMumberStr)

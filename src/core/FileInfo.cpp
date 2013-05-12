@@ -20,9 +20,9 @@ struct VS_VERSION_INFO_STRUCT32
   WCHAR szKey[1];
 };
 //---------------------------------------------------------------------------
-unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned int DataSize, void * Data)
+static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr_t DataSize, void * Data)
 {
-  unsigned int Len = 0;
+  uintptr_t Len = 0;
 
   bool NeedFree = false;
   HMODULE Module = GetModuleHandle(FileName);
@@ -99,9 +99,9 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
   return Len;
 }
 //---------------------------------------------------------------------------
-unsigned int GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long * Handle)
+uintptr_t GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long * Handle)
 {
-  unsigned int Len;
+  uintptr_t Len;
   if (IsWin7())
   {
     *Handle = 0;
@@ -121,7 +121,7 @@ unsigned int GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long *
 }
 //---------------------------------------------------------------------------
 bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
-  unsigned int DataSize, void * Data)
+  uintptr_t DataSize, void * Data)
 {
   bool Result;
 
@@ -129,13 +129,13 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
   {
     VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(Data);
 
-    unsigned int Len = VERSION_GetFileVersionInfo_PE(FileName, DataSize, Data);
+    uintptr_t Len = VERSION_GetFileVersionInfo_PE(FileName, DataSize, Data);
 
     Result = (Len != 0);
     if (Result)
     {
       static const char Signature[] = "FE2X";
-      unsigned int BufSize = (unsigned int)(VersionInfo->wLength + strlen(Signature));
+      uintptr_t BufSize = (uintptr_t)(VersionInfo->wLength + strlen(Signature));
 
       if (DataSize >= BufSize)
       {
@@ -156,7 +156,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
 void * CreateFileInfo(const UnicodeString & FileName)
 {
   unsigned long Handle;
-  unsigned int Size;
+  uintptr_t Size;
   void * Result = NULL;
 
 

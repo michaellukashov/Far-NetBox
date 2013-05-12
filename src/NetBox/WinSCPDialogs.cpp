@@ -758,7 +758,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
   QueueTransferLimitEdit->SetAsInteger(FarConfiguration->GetQueueTransfersLimit());
   QueueCheck->SetChecked(FarConfiguration->GetDefaultCopyParam().GetQueue());
   QueueAutoPopupCheck->SetChecked(FarConfiguration->GetQueueAutoPopup());
-  RememberPasswordCheck->SetChecked(GUIConfiguration->GetQueueRememberPassword());
+  RememberPasswordCheck->SetChecked(GUIConfiguration->GetSessionRememberPassword());
   QueueBeepCheck->SetChecked(FarConfiguration->GetQueueBeep());
 
   Result = (Dialog->ShowModal() == brOK);
@@ -773,7 +773,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
       FarConfiguration->SetQueueTransfersLimit(QueueTransferLimitEdit->GetAsInteger());
       CopyParam.SetQueue(QueueCheck->GetChecked());
       FarConfiguration->SetQueueAutoPopup(QueueAutoPopupCheck->GetChecked());
-      GUIConfiguration->SetQueueRememberPassword(RememberPasswordCheck->GetChecked());
+      GUIConfiguration->SetSessionRememberPassword(RememberPasswordCheck->GetChecked());
       FarConfiguration->SetQueueBeep(QueueBeepCheck->GetChecked());
 
       GUIConfiguration->SetDefaultCopyParam(CopyParam);

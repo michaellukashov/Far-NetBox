@@ -2187,8 +2187,8 @@ uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
     {
       LanguageTag = FORMAT(L" (%s)", LanguageTag.c_str());
     }
-    UnicodeString Error = FMTLOAD(SFTP_ERROR_FORMAT2, MessageStr.c_str(),
-      int(Code), LanguageTag.c_str(), ServerMessage.c_str(), int(Packet->GetRequestType()));
+    UnicodeString Error = FMTLOAD(SFTP_ERROR_FORMAT3, MessageStr.c_str(),
+      int(Code), LanguageTag.c_str(), ServerMessage.c_str());
     FTerminal->TerminalError(NULL, Error);
     return 0;
   }
@@ -3787,17 +3787,27 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(UnicodeString & FileName,
     // possibly we can allow alternate resume at least in some cases
     if (CanAppend)
     {
-      Answers |= qaAbort | qaRetry;
+      Answers |= qaRetry;
     }
-    TQueryButtonAlias Aliases[4];
-    Aliases[0].Button = qaAbort;
+    TQueryButtonAlias Aliases[5];
+    Aliases[0].Button = qaRetry;
     Aliases[0].Alias = LoadStr(APPEND_BUTTON);
-    Aliases[1].Button = qaRetry;
-    Aliases[1].Alias = LoadStr(RESUME_BUTTON);
-    Aliases[2].Button = qaAll;
-    Aliases[2].Alias = LoadStr(YES_TO_NEWER_BUTTON);
-    Aliases[3].Button = qaIgnore;
-    Aliases[3].Alias = LoadStr(RENAME_BUTTON);
+    Aliases[0].GroupWith = qaNo;
+    Aliases[0].GrouppedShiftState = TShiftState() << ssAlt;
+    Aliases[1].Button = qaAll;
+    Aliases[1].Alias = LoadStr(YES_TO_NEWER_BUTTON);
+    Aliases[1].GroupWith = qaYes;
+    Aliases[1].GrouppedShiftState = TShiftState() << ssCtrl;
+    Aliases[2].Button = qaIgnore;
+    Aliases[2].Alias = LoadStr(RENAME_BUTTON);
+    Aliases[2].GroupWith = qaNo;
+    Aliases[2].GrouppedShiftState = TShiftState() << ssCtrl;
+    Aliases[3].Button = qaYesToAll;
+    Aliases[3].GroupWith = qaYes;
+    Aliases[3].GrouppedShiftState = TShiftState() << ssShift;
+    Aliases[4].Button = qaNoToAll;
+    Aliases[4].GroupWith = qaNo;
+    Aliases[4].GrouppedShiftState = TShiftState() << ssShift;
     TQueryParams QueryParams(qpNeverAskAgainCheck);
     QueryParams.NoBatchAnswers = qaIgnore | qaAbort | qaRetry | qaAll;
     QueryParams.Aliases = Aliases;
@@ -3809,19 +3819,8 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(UnicodeString & FileName,
   );
 
   if (CanAppend &&
-      ((Answer == qaAbort) || (Answer == qaRetry) || (Answer == qaSkip)))
+      ((Answer == qaRetry) || (Answer == qaSkip)))
   {
-    switch (Answer)
-    {
-      // append
-      case qaAbort:
-        Params |= cpAppend;
-        break;
-        // resume
-      case qaRetry:
-        Params |= cpResume;
-        break;
-    }
     // duplicated in TTerminal::ConfirmFileOverwrite
     bool CanAlternateResume =
       FileParams ? (FileParams->DestSize < FileParams->SourceSize) && !OperationProgress->AsciiTransfer : false;
@@ -4575,6 +4574,8 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
     {
       if (!OpenParams->Confirmed && (OpenType & SSH_FXF_EXCL) && FTerminal->GetActive())
       {
+        FTerminal->LogEvent(FORMAT(L"Cannot create new file \"%s\", checking if it exists already", OpenParams->RemoteFileName.c_str()));
+
         bool ThrowOriginal = false;
 
         // When exclusive opening of file fails, try to detect if file exists.

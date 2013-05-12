@@ -17,8 +17,8 @@ void Busy(bool Start);
 UnicodeString AppNameString();
 UnicodeString SshVersionString();
 void CopyToClipboard(const UnicodeString & Text);
-HANDLE StartThread(void * SecurityAttributes, unsigned StackSize,
-  /* TThreadFunc ThreadFunc, */ void * Parameter, unsigned CreationFlags,
+HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
+  /* TThreadFunc ThreadFunc, */ void * Parameter, DWORD CreationFlags,
   TThreadID & ThreadId);
 
 const unsigned int qaYes =      0x00000001;
@@ -48,6 +48,8 @@ struct TQueryButtonAlias : public TObject
   uintptr_t Button;
   UnicodeString Alias;
   TNotifyEvent OnClick;
+  int GroupWith;
+  TShiftState GrouppedShiftState;
 };
 
 DEFINE_CALLBACK_TYPE1(TQueryParamsTimerEvent, void,
@@ -84,6 +86,8 @@ enum TPromptKind
   pkPassword,
   pkNewPassword
 };
+
+enum TPromptUserParam { pupEcho = 0x01, pupRemember = 0x02 };
 
 bool IsAuthenticationPrompt(TPromptKind Kind);
 //---------------------------------------------------------------------------

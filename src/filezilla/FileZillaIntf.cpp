@@ -414,7 +414,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
             Data.Password = AData->Password.GetBuffer(AData->Password.GetLength());
             Result = HandleAsynchRequestNeedPass(Data, RequestResult);
             AData->Password.ReleaseBuffer(AData->Password.GetLength());
-            if (Result)
+            if (Result && (RequestResult == TFileZillaIntf::REPLY_OK))
             {
               AData->Password = Data.Password;
               free(Data.Password);
@@ -510,13 +510,13 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TFileZillaIntf::CheckError(int /*ReturnCode*/, const wchar_t * /*Context*/)
+bool TFileZillaIntf::CheckError(intptr_t /*ReturnCode*/, const wchar_t * /*Context*/)
 {
   return false;
 }
 //---------------------------------------------------------------------------
-inline bool TFileZillaIntf::Check(int ReturnCode,
-  const wchar_t * Context, int Expected)
+inline bool TFileZillaIntf::Check(intptr_t ReturnCode,
+  const wchar_t * Context, intptr_t Expected)
 {
   if ((ReturnCode & (Expected == -1 ? FZ_REPLY_OK : Expected)) == ReturnCode)
   {

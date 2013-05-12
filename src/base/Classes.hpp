@@ -891,6 +891,9 @@ public:
 enum TReplaceFlag { rfReplaceAll, rfIgnoreCase };
 typedef DelphiSet<TReplaceFlag> TReplaceFlags;
 
+enum TShiftStateFlag { ssShift, ssAlt, ssCtrl, ssLeft, ssRight, ssMiddle, ssDouble, ssTouch, ssPen };
+typedef DelphiSet<TShiftStateFlag> TShiftState;
+
 //---------------------------------------------------------------------------
 typedef HANDLE THandle;
 typedef DWORD TThreadID;

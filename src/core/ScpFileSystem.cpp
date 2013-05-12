@@ -657,7 +657,7 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
     {
       UnicodeString Line;
       bool IsLast = true;
-      unsigned int Total = 0;
+      uintptr_t Total = 0;
       // #55: fixed so, even when last line of command output does not
       // contain CR/LF, we can recognize last line
       do
@@ -1403,6 +1403,36 @@ void TSCPFileSystem::SpaceAvailable(const UnicodeString & Path,
 //---------------------------------------------------------------------------
 // transfer protocol
 //---------------------------------------------------------------------------
+uintptr_t TSCPFileSystem::ConfirmOverwrite(
+  UnicodeString & FileName, TOperationSide Side,
+  const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
+  intptr_t Params, TFileOperationProgressType * OperationProgress)
+{
+  TQueryButtonAlias Aliases[3];
+  Aliases[0].Button = qaAll;
+  Aliases[0].Alias = LoadStr(YES_TO_NEWER_BUTTON);
+  Aliases[0].GroupWith = qaYes;
+  Aliases[0].GrouppedShiftState = TShiftState() << ssCtrl;
+  Aliases[1].Button = qaYesToAll;
+  Aliases[1].GroupWith = qaYes;
+  Aliases[1].GrouppedShiftState = TShiftState() << ssShift;
+  Aliases[2].Button = qaNoToAll;
+  Aliases[2].GroupWith = qaNo;
+  Aliases[2].GrouppedShiftState = TShiftState() << ssShift;
+  TQueryParams QueryParams(qpNeverAskAgainCheck);
+  QueryParams.Aliases = Aliases;
+  QueryParams.AliasesCount = LENOF(Aliases);
+  unsigned int Answer;
+  SUSPEND_OPERATION
+  (
+    Answer = FTerminal->ConfirmFileOverwrite(
+      FileName, FileParams,
+      qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll,
+      &QueryParams, Side, CopyParam, Params, OperationProgress);
+  );
+  return Answer;
+}
+//---------------------------------------------------------------------------
 void TSCPFileSystem::SCPResponse(bool * GotLastLine)
 {
   // Taken from scp.c response() and modified
@@ -1568,20 +1598,8 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
               FTerminal->GetSessionData()->GetDSTMode());
             FileParams.DestSize = File->GetSize();
             FileParams.DestTimestamp = File->GetModification();
-
-            TQueryButtonAlias Aliases[1];
-            Aliases[0].Button = qaAll;
-            Aliases[0].Alias = LoadStr(YES_TO_NEWER_BUTTON);
-            TQueryParams QueryParams(qpNeverAskAgainCheck);
-            QueryParams.Aliases = Aliases;
-            QueryParams.AliasesCount = LENOF(Aliases);
-            SUSPEND_OPERATION
-            (
-              Answer = FTerminal->ConfirmFileOverwrite(
-                FileNameOnly, &FileParams,
-                qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll,
-                &QueryParams, osRemote, CopyParam, Params, OperationProgress);
-            );
+            Answer = ConfirmOverwrite(FileNameOnly, osRemote,
+              &FileParams, CopyParam, Params, OperationProgress);
           }
 
           switch (Answer)
@@ -1635,10 +1653,10 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         }
         catch (EScpFileSkipped &E)
         {
-          TQueryParams Params(qpAllowContinueOnError);
+          TQueryParams QueryParams(qpAllowContinueOnError);
           SUSPEND_OPERATION (
             if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()), &E,
-              qaOK | qaAbort, &Params, qtError) == qaAbort)
+              qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
             {
               OperationProgress->Cancel = csCancel;
             }
@@ -1863,7 +1881,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
               {
                 uintptr_t BlockSize = OperationProgress->TransferBlockSize();
                 FSecureShell->Send(
-                  reinterpret_cast<unsigned char *>(AsciiBuf.GetData() + (unsigned int)OperationProgress->TransferedSize),
+                  reinterpret_cast<unsigned char *>(AsciiBuf.GetData() + (intptr_t)OperationProgress->TransferedSize),
                   BlockSize);
                 OperationProgress->AddTransfered(BlockSize);
                 if (OperationProgress->Cancel == csCancelTransfer)
@@ -2055,10 +2073,10 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
         // case without error message.
         catch (EScpFileSkipped &E)
         {
-          TQueryParams Params(qpAllowContinueOnError);
+          TQueryParams QueryParams(qpAllowContinueOnError);
           SUSPEND_OPERATION (
             if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()), &E,
-                  qaOK | qaAbort, &Params, qtError) == qaAbort)
+                  qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
             {
               OperationProgress->Cancel = csCancel;
             }
@@ -2511,20 +2529,10 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                   FileParams.DestTimestamp = UnixToDateTime(MTime,
                     FTerminal->GetSessionData()->GetDSTMode());
 
-                  TQueryButtonAlias Aliases[1];
-                  Aliases[0].Button = qaAll;
-                  Aliases[0].Alias = LoadStr(YES_TO_NEWER_BUTTON);
-                  TQueryParams QueryParams(qpNeverAskAgainCheck);
-                  QueryParams.Aliases = Aliases;
-                  QueryParams.AliasesCount = LENOF(Aliases);
-
-                  uintptr_t Answer;
-                  SUSPEND_OPERATION (
-                    Answer = FTerminal->ConfirmFileOverwrite(
-                      OperationProgress->FileName, &FileParams,
-                      qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll,
-                      &QueryParams, osLocal, CopyParam, Params, OperationProgress);
-                  );
+                  uintptr_t Answer =
+                    ConfirmOverwrite(
+                      OperationProgress->FileName, osLocal,
+                      &FileParams, CopyParam, Params, OperationProgress);
 
                   switch (Answer)
                   {
@@ -2686,9 +2694,9 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
       if (!SkipConfirmed)
       {
         SUSPEND_OPERATION (
-          TQueryParams Params(qpAllowContinueOnError);
+          TQueryParams QueryParams(qpAllowContinueOnError);
           if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, AbsoluteFileName.c_str()),
-                &E, qaOK | qaAbort, &Params, qtError) == qaAbort)
+                &E, qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
           {
             OperationProgress->Cancel = csCancel;
           }

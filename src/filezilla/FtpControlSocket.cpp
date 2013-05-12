@@ -6259,8 +6259,8 @@ bool CFtpControlSocket::IsRoutableAddress(const CString & host)
 	else if (host.Left(3) == _T("172"))
 	{
 		CString middle = host.Mid(4);
-		int pos = host.Find(_T("."));
-		long part = atol(T2CA(host.Left(pos)));
+		int pos = middle.Find(_T("."));
+		long part = atol(T2CA(middle.Left(pos)));
 		if ((part >= 16) && (part <= 31))
 		{
 			return false;

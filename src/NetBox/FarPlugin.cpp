@@ -740,7 +740,7 @@ class TFarMessageDialog : public TFarDialog
 public:
   TFarMessageDialog(TCustomFarPlugin * Plugin,
     TFarMessageParams * Params);
-  void Init(unsigned int AFlags,
+  void Init(uintptr_t AFlags,
     const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons);
 
   intptr_t Execute(bool & ACheckBox);
@@ -773,7 +773,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin * Plugin,
   assert(Params != NULL);
 }
 //---------------------------------------------------------------------------
-void TFarMessageDialog::Init(unsigned int AFlags,
+void TFarMessageDialog::Init(uintptr_t AFlags,
   const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons)
 {
   assert(FLAGCLEAR(AFlags, FMSG_ERRORTYPE));
@@ -1357,9 +1357,9 @@ HWND TCustomFarPlugin::GetConsoleWindow()
   return Result;
 }
 //---------------------------------------------------------------------------
-unsigned int TCustomFarPlugin::ConsoleWindowState()
+uintptr_t TCustomFarPlugin::ConsoleWindowState()
 {
-  unsigned int Result;
+  uintptr_t Result;
   HWND Window = GetConsoleWindow();
   if (Window != NULL)
   {
@@ -1821,7 +1821,7 @@ void TCustomFarPlugin::RunTests()
 }
 #endif
 //---------------------------------------------------------------------------
-unsigned int TCustomFarFileSystem::FInstances = 0;
+uintptr_t TCustomFarFileSystem::FInstances = 0;
 //---------------------------------------------------------------------------
 TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
   TObject(),
@@ -2166,7 +2166,7 @@ intptr_t TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, intptr_
 //---------------------------------------------------------------------------
 bool TCustomFarFileSystem::UpdatePanel(bool ClearSelection, bool Another)
 {
-  unsigned int PrevInstances = FInstances;
+  uintptr_t PrevInstances = FInstances;
   InvalidateOpenPanelInfo();
   FPlugin->FarControl(FCTL_UPDATEPANEL, !ClearSelection, NULL, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
   return (FInstances >= PrevInstances);

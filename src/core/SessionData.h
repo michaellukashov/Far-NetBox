@@ -37,7 +37,7 @@ enum TSessionSource { ssNone, ssStored, ssStoredModified };
 //---------------------------------------------------------------------------
 extern const wchar_t CipherNames[CIPHER_COUNT][10];
 extern const wchar_t KexNames[KEX_COUNT][20];
-extern const wchar_t ProtocolNames[PROTOCOL_COUNT][10];
+// extern const wchar_t ProtocolNames[PROTOCOL_COUNT][10];
 extern const wchar_t SshProtList[][10];
 extern const wchar_t ProxyMethodList[][10];
 extern const TCipher DefaultCipherList[CIPHER_COUNT];
@@ -50,6 +50,9 @@ extern const intptr_t FtpPortNumber;
 extern const intptr_t FtpsImplicitPortNumber;
 extern const intptr_t HTTPPortNumber;
 extern const intptr_t HTTPSPortNumber;
+extern const intptr_t TelnetPortNumber;
+extern const UnicodeString PuttySshProtocol;
+extern const UnicodeString PuttyTelnetProtocol;
 //---------------------------------------------------------------------------
 struct TIEProxyConfig : public TObject
 {
@@ -100,6 +103,7 @@ private:
   TEOLType FEOLType;
   UnicodeString FPublicKeyFile;
   TProtocol FProtocol;
+  UnicodeString FPuttyProtocol;
   TFSProtocol FFSProtocol;
   bool FModified;
   UnicodeString FLocalDirectory;
@@ -217,6 +221,7 @@ public:
   void SetKex(intptr_t Index, TKex Value);
   TKex GetKex(intptr_t Index) const;
   void SetPublicKeyFile(const UnicodeString & Value);
+  void SetPuttyProtocol(const UnicodeString & Value);
 
   void SetProtocolStr(const UnicodeString & Value);
   UnicodeString GetProtocolStr() const;
@@ -230,7 +235,7 @@ public:
   bool HasSessionName();
   UnicodeString GetDefaultSessionName();
   UnicodeString GetSessionUrl();
-  void SetProtocol(TProtocol Value);
+  // void SetProtocol(TProtocol Value);
   void SetFSProtocol(TFSProtocol Value);
   UnicodeString GetFSProtocolStr() const;
   void SetLocalDirectory(const UnicodeString & Value);
@@ -348,7 +353,7 @@ public:
   void Default();
   void NonPersistant();
   void Load(THierarchicalStorage * Storage);
-  // void ImportFromFilezilla(_di_IXMLNode Node);
+  // void __fastcall ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path);
   void Save(THierarchicalStorage * Storage, bool PuttyExport,
     const TSessionData * Default = NULL);
   void SaveRecryptedPasswords(THierarchicalStorage * Storage);
@@ -389,6 +394,7 @@ public:
   bool GetSshNoUserAuth() const { return FSshNoUserAuth; }
   const UnicodeString GetPublicKeyFile() const { return FPublicKeyFile; }
   TProtocol GetProtocol() const { return FProtocol; }
+  UnicodeString GetPuttyProtocol() const { return FPuttyProtocol; }
   TFSProtocol GetFSProtocol() const { return FFSProtocol; }
   bool GetModified() const { return FModified; }
   void SetModified(bool Value) { FModified = Value; }
@@ -555,6 +561,7 @@ private:
   bool IsFolderOrWorkspace(const UnicodeString & Name, bool Workspace);
   TSessionData * CheckIsInFolderOrWorkspaceAndResolve(
     TSessionData * Data, const UnicodeString & Name);
+  // void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path);
 };
 //---------------------------------------------------------------------------
 bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);

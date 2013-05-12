@@ -57,7 +57,7 @@ public:
   void Add(const TRemoteToken & Token);
   void AddUnique(const TRemoteToken & Token);
   bool Exists(const UnicodeString & Name) const;
-  const TRemoteToken * Find(unsigned int ID) const;
+  const TRemoteToken * Find(uintptr_t ID) const;
   const TRemoteToken * Find(const UnicodeString & Name) const;
   void Log(TTerminal * Terminal, const wchar_t * Title);
 
