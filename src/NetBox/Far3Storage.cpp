@@ -124,7 +124,7 @@ void TFar3Storage::GetSubKeyNames(TStrings * Strings)
   settings.Root = FRoot;
   if (FPluginSettings.GetSubKeyNames(settings))
   {
-    for (intptr_t Index = 0; Index < settings.Count; ++Index)
+    for (size_t Index = 0; Index < settings.Count; ++Index)
     {
       // DEBUG_PRINTF(L"settings.Items[%d].Type = %d", Index, settings.Items[Index].Type);
       if (settings.Items[Index].Type == FST_SUBKEY)
@@ -144,7 +144,7 @@ void TFar3Storage::GetValueNames(TStrings * Strings)
   settings.Root = FRoot;
   if (FPluginSettings.GetSubKeyNames(settings))
   {
-    for (intptr_t Index = 0; Index < settings.Count; ++Index)
+    for (size_t Index = 0; Index < settings.Count; ++Index)
     {
       const struct FarSettingsName * Item = &settings.Items[Index];
       Strings->Add(Item->Name);
