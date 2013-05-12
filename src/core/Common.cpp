@@ -814,7 +814,7 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
   DWORD FindAttrs)
 {
   assert(CallBackFunc);
-  if (FindAttrs < 0)
+  if (FindAttrs == INVALID_FILE_ATTRIBUTES)
   {
     FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   }
