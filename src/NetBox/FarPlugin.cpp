@@ -396,11 +396,8 @@ void TCustomFarPlugin::GetOpenPluginInfo(HANDLE Plugin,
   {
     ResetCachedInfo();
     assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
-
-    {
-      TGuard Guard(FileSystem->GetCriticalSection());
-      FileSystem->GetOpenPluginInfo(Info);
-    }
+    TGuard Guard(FileSystem->GetCriticalSection());
+    FileSystem->GetOpenPluginInfo(Info);
   }
   catch(Exception & E)
   {
