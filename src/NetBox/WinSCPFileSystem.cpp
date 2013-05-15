@@ -1456,11 +1456,11 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
 
   TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
   TUsableCopyParamAttrs CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0);
-  int Options =
+  intptr_t Options =
     FLAGMASK(!FTerminal->GetIsCapable(fcTimestampChanging), fsoDisableTimestamp) |
     FLAGMASK(SynchronizeAllowSelectedOnly(), fsoAllowSelectedOnly);
   if (FullSynchronizeDialog(Mode, Params, LocalDirectory, RemoteDirectory,
-        &CopyParam, SaveSettings, SaveMode, Options, CopyParamAttrs))
+      &CopyParam, SaveSettings, SaveMode, Options, CopyParamAttrs))
   {
     TSynchronizeOptions SynchronizeOptions;
     GetSynchronizeOptions(Params, SynchronizeOptions);
