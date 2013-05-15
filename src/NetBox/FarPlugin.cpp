@@ -525,9 +525,13 @@ intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * Param)
         Buf = static_cast<wchar_t *>(Param);
         Param = const_cast<void *>(reinterpret_cast<const void *>(Buf.c_str()));
       }
+      else if ((Event == FE_GOTFOCUS) || (Event == FE_KILLFOCUS))
+      {
+        DEBUG_PRINTF(L"Event = %d, Plugin = %p, Param = %p", Event, Plugin, Param);
+      }
 
       TGuard Guard(FileSystem->GetCriticalSection());
-      return FileSystem->ProcessEvent(Event, Param);
+      return static_cast<int>(FileSystem->ProcessEvent(Event, Param));
     }
     else
     {
