@@ -474,11 +474,6 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCopyParamList::GetCount() const
-{
-  return FCopyParams->GetCount();
-}
-//---------------------------------------------------------------------------
 const TCopyParamRule * TCopyParamList::GetRule(intptr_t Index) const
 {
   return reinterpret_cast<TCopyParamRule *>(FRules->GetItem(Index));
