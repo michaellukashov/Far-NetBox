@@ -574,7 +574,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::DuplicateOrRenameSession(TSessionData * Data,
- bool Duplicate)
+  bool Duplicate)
 {
   assert(Data);
   UnicodeString Name = Data->GetName();
