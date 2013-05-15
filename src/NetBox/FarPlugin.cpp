@@ -776,160 +776,157 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
   assert(FLAGCLEAR(AFlags, FMSG_ALLINONE));
 
   TStrings * MessageLines = new TStringList();
+  std::auto_ptr<TStrings> MessageLinesPtr(MessageLines);
+  FarWrapText(Message, MessageLines, MaxMessageWidth);
+  intptr_t MaxLen = GetFarPlugin()->MaxLength(MessageLines);
+  // DEBUG_PRINTF(L"MaxLen = %d, FParams->MoreMessages = %x", MaxLen, FParams->MoreMessages);
+  TStrings * MoreMessageLines = NULL;
+  std::auto_ptr<TStrings> MoreMessageLinesPtr(NULL);
+  if (FParams->MoreMessages != NULL)
   {
-    std::auto_ptr<TStrings> MessageLinesPtr;
-    MessageLinesPtr.reset(MessageLines);
-    FarWrapText(Message, MessageLines, MaxMessageWidth);
-    intptr_t MaxLen = GetFarPlugin()->MaxLength(MessageLines);
-    // DEBUG_PRINTF(L"MaxLen = %d, FParams->MoreMessages = %x", MaxLen, FParams->MoreMessages);
-    TStrings * MoreMessageLines = NULL;
-    std::auto_ptr<TStrings> MoreMessageLinesPtr(NULL);
-    if (FParams->MoreMessages != NULL)
+    MoreMessageLines = new TStringList();
+    MoreMessageLinesPtr.reset(MoreMessageLines);
+    UnicodeString MoreMessages = FParams->MoreMessages->GetText();
+    while (MoreMessages[MoreMessages.Length()] == L'\n' ||
+           MoreMessages[MoreMessages.Length()] == L'\r')
     {
-      MoreMessageLines = new TStringList();
-      MoreMessageLinesPtr.reset(MoreMessageLines);
-      UnicodeString MoreMessages = FParams->MoreMessages->GetText();
-      while (MoreMessages[MoreMessages.Length()] == L'\n' ||
-             MoreMessages[MoreMessages.Length()] == L'\r')
-      {
-        MoreMessages.SetLength(MoreMessages.Length() - 1);
-      }
-      FarWrapText(MoreMessages, MoreMessageLines, MaxMessageWidth);
-      intptr_t MoreMaxLen = GetFarPlugin()->MaxLength(MoreMessageLines);
-      if (MaxLen < MoreMaxLen)
-      {
-        MaxLen = MoreMaxLen;
-      }
+      MoreMessages.SetLength(MoreMessages.Length() - 1);
     }
-
-    // temporary
-    // DEBUG_PRINTF(L"MaxMessageWidth = %d, Title = %s", MaxMessageWidth, Title.c_str());
-    SetSize(TPoint(MaxMessageWidth, 10));
-    SetCaption(Title);
-    SetFlags(GetFlags() |
-             FLAGMASK(FLAGSET(AFlags, FMSG_WARNING), FDLG_WARNING));
-
-    for (intptr_t Index = 0; Index < MessageLines->GetCount(); ++Index)
+    FarWrapText(MoreMessages, MoreMessageLines, MaxMessageWidth);
+    intptr_t MoreMaxLen = GetFarPlugin()->MaxLength(MoreMessageLines);
+    if (MaxLen < MoreMaxLen)
     {
-      TFarText * Text = new TFarText(this);
-      Text->SetCaption(MessageLines->GetString(Index));
+      MaxLen = MoreMaxLen;
     }
-
-    TFarLister * MoreMessagesLister = NULL;
-    TFarSeparator * MoreMessagesSeparator = NULL;
-
-    if (FParams->MoreMessages != NULL)
-    {
-      new TFarSeparator(this);
-
-      MoreMessagesLister = new TFarLister(this);
-      MoreMessagesLister->GetItems()->Assign(MoreMessageLines);
-      MoreMessagesLister->SetLeft(GetBorderBox()->GetLeft() + 1);
-
-      MoreMessagesSeparator = new TFarSeparator(this);
-    }
-
-    int ButtonOffset = (FParams->CheckBoxLabel.IsEmpty() ? -1 : -2);
-    int ButtonLines = 1;
-    TFarButton * Button = NULL;
-    FTimeoutButton = NULL;
-    for (intptr_t Index = 0; Index < Buttons->GetCount(); ++Index)
-    {
-      TFarButton * PrevButton = Button;
-      Button = new TFarButton(this);
-      Button->SetDefault(Index == 0);
-      Button->SetBrackets(brNone);
-      Button->SetOnClick(MAKE_CALLBACK(TFarMessageDialog::ButtonClick, this));
-      UnicodeString Caption = Buttons->GetString(Index);
-      if ((FParams->Timeout > 0) &&
-          (FParams->TimeoutButton == static_cast<size_t>(Index)))
-      {
-        FTimeoutButtonCaption = Caption;
-        Caption = FORMAT(FParams->TimeoutStr.c_str(), Caption.c_str(), static_cast<int>(FParams->Timeout / 1000));
-        FTimeoutButton = Button;
-      }
-      Button->SetCaption(FORMAT(L" %s ", Caption.c_str()));
-      Button->SetTop(GetBorderBox()->GetBottom() + ButtonOffset);
-      Button->SetBottom(Button->GetTop());
-      Button->SetResult(Index + 1);
-      Button->SetCenterGroup(true);
-      Button->SetTag(reinterpret_cast<intptr_t>(Buttons->GetObject(Index)));
-      if (PrevButton != NULL)
-      {
-        Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
-      }
-
-      if (MaxMessageWidth < Button->GetRight() - GetBorderBox()->GetLeft())
-      {
-        for (intptr_t PIndex = 0; PIndex < GetItemCount(); ++PIndex)
-        {
-          TFarButton * PrevButton = dynamic_cast<TFarButton *>(GetItem(PIndex));
-          if ((PrevButton != NULL) && (PrevButton != Button))
-          {
-            PrevButton->Move(0, -1);
-          }
-        }
-        Button->Move(-(Button->GetLeft() - GetBorderBox()->GetLeft()), 0);
-        ButtonLines++;
-      }
-
-      // DEBUG_PRINTF(L"Button->GetLeft = %d, Button->GetRight = %d, GetBorderBox()->GetLeft = %d", Button->GetLeft(), Button->GetRight(), GetBorderBox()->GetLeft());
-      if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft())
-      {
-        MaxLen = static_cast<intptr_t>(Button->GetRight() - GetBorderBox()->GetLeft() + 2);
-      }
-      // DEBUG_PRINTF(L"MaxLen = %d", MaxLen);
-
-      SetNextItemPosition(ipRight);
-    }
-
-    // DEBUG_PRINTF(L"FParams->CheckBoxLabel = %s", FParams->CheckBoxLabel.c_str());
-    if (!FParams->CheckBoxLabel.IsEmpty())
-    {
-      SetNextItemPosition(ipNewLine);
-      FCheckBox = new TFarCheckBox(this);
-      FCheckBox->SetCaption(FParams->CheckBoxLabel);
-
-      if (MaxLen < FCheckBox->GetRight() - GetBorderBox()->GetLeft())
-      {
-        MaxLen = static_cast<intptr_t>(FCheckBox->GetRight() - GetBorderBox()->GetLeft());
-      }
-    }
-    else
-    {
-      FCheckBox = NULL;
-    }
-
-    TRect rect = GetClientRect();
-    // DEBUG_PRINTF(L"rect.Left = %d, MaxLen = %d, rect.Right = %d", rect.Left, MaxLen, rect.Right);
-    TPoint S(
-      // rect.Left + MaxLen + (-(rect.Right + 1)),
-      static_cast<int>(rect.Left + MaxLen - rect.Right),
-      static_cast<int>(rect.Top + MessageLines->GetCount() +
-      (FParams->MoreMessages != NULL ? 1 : 0) + ButtonLines +
-      (!FParams->CheckBoxLabel.IsEmpty() ? 1 : 0) +
-      (-(rect.Bottom + 1))));
-
-    if (FParams->MoreMessages != NULL)
-    {
-      intptr_t MoreMessageHeight = static_cast<intptr_t>(GetFarPlugin()->TerminalInfo().y - S.y - 1);
-      assert(MoreMessagesLister != NULL);
-      if (MoreMessageHeight > MoreMessagesLister->GetItems()->GetCount())
-      {
-        MoreMessageHeight = MoreMessagesLister->GetItems()->GetCount();
-      }
-      MoreMessagesLister->SetHeight(MoreMessageHeight);
-      MoreMessagesLister->SetRight(
-        GetBorderBox()->GetRight() - (MoreMessagesLister->GetScrollBar() ? 0 : 1));
-      MoreMessagesLister->SetTabStop(MoreMessagesLister->GetScrollBar());
-      assert(MoreMessagesSeparator != NULL);
-      MoreMessagesSeparator->SetPosition(
-        static_cast<int>(MoreMessagesLister->GetTop() + MoreMessagesLister->GetHeight()));
-      S.y += static_cast<int>(MoreMessagesLister->GetHeight()) + 1;
-    }
-    // DEBUG_PRINTF(L"S.x = %d, S.y = %d", S.x, S.y);
-    SetSize(S);
   }
+
+  // temporary
+  // DEBUG_PRINTF(L"MaxMessageWidth = %d, Title = %s", MaxMessageWidth, Title.c_str());
+  SetSize(TPoint(MaxMessageWidth, 10));
+  SetCaption(Title);
+  SetFlags(GetFlags() |
+           FLAGMASK(FLAGSET(AFlags, FMSG_WARNING), FDLG_WARNING));
+
+  for (intptr_t Index = 0; Index < MessageLines->GetCount(); ++Index)
+  {
+    TFarText * Text = new TFarText(this);
+    Text->SetCaption(MessageLines->GetString(Index));
+  }
+
+  TFarLister * MoreMessagesLister = NULL;
+  TFarSeparator * MoreMessagesSeparator = NULL;
+
+  if (FParams->MoreMessages != NULL)
+  {
+    new TFarSeparator(this);
+
+    MoreMessagesLister = new TFarLister(this);
+    MoreMessagesLister->GetItems()->Assign(MoreMessageLines);
+    MoreMessagesLister->SetLeft(GetBorderBox()->GetLeft() + 1);
+
+    MoreMessagesSeparator = new TFarSeparator(this);
+  }
+
+  int ButtonOffset = (FParams->CheckBoxLabel.IsEmpty() ? -1 : -2);
+  int ButtonLines = 1;
+  TFarButton * Button = NULL;
+  FTimeoutButton = NULL;
+  for (intptr_t Index = 0; Index < Buttons->GetCount(); ++Index)
+  {
+    TFarButton * PrevButton = Button;
+    Button = new TFarButton(this);
+    Button->SetDefault(Index == 0);
+    Button->SetBrackets(brNone);
+    Button->SetOnClick(MAKE_CALLBACK(TFarMessageDialog::ButtonClick, this));
+    UnicodeString Caption = Buttons->GetString(Index);
+    if ((FParams->Timeout > 0) &&
+        (FParams->TimeoutButton == static_cast<size_t>(Index)))
+    {
+      FTimeoutButtonCaption = Caption;
+      Caption = FORMAT(FParams->TimeoutStr.c_str(), Caption.c_str(), static_cast<int>(FParams->Timeout / 1000));
+      FTimeoutButton = Button;
+    }
+    Button->SetCaption(FORMAT(L" %s ", Caption.c_str()));
+    Button->SetTop(GetBorderBox()->GetBottom() + ButtonOffset);
+    Button->SetBottom(Button->GetTop());
+    Button->SetResult(Index + 1);
+    Button->SetCenterGroup(true);
+    Button->SetTag(reinterpret_cast<intptr_t>(Buttons->GetObject(Index)));
+    if (PrevButton != NULL)
+    {
+      Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
+    }
+
+    if (MaxMessageWidth < Button->GetRight() - GetBorderBox()->GetLeft())
+    {
+      for (intptr_t PIndex = 0; PIndex < GetItemCount(); ++PIndex)
+      {
+        TFarButton * PrevButton = dynamic_cast<TFarButton *>(GetItem(PIndex));
+        if ((PrevButton != NULL) && (PrevButton != Button))
+        {
+          PrevButton->Move(0, -1);
+        }
+      }
+      Button->Move(-(Button->GetLeft() - GetBorderBox()->GetLeft()), 0);
+      ButtonLines++;
+    }
+
+    // DEBUG_PRINTF(L"Button->GetLeft = %d, Button->GetRight = %d, GetBorderBox()->GetLeft = %d", Button->GetLeft(), Button->GetRight(), GetBorderBox()->GetLeft());
+    if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft())
+    {
+      MaxLen = static_cast<intptr_t>(Button->GetRight() - GetBorderBox()->GetLeft() + 2);
+    }
+    // DEBUG_PRINTF(L"MaxLen = %d", MaxLen);
+
+    SetNextItemPosition(ipRight);
+  }
+
+  // DEBUG_PRINTF(L"FParams->CheckBoxLabel = %s", FParams->CheckBoxLabel.c_str());
+  if (!FParams->CheckBoxLabel.IsEmpty())
+  {
+    SetNextItemPosition(ipNewLine);
+    FCheckBox = new TFarCheckBox(this);
+    FCheckBox->SetCaption(FParams->CheckBoxLabel);
+
+    if (MaxLen < FCheckBox->GetRight() - GetBorderBox()->GetLeft())
+    {
+      MaxLen = static_cast<intptr_t>(FCheckBox->GetRight() - GetBorderBox()->GetLeft());
+    }
+  }
+  else
+  {
+    FCheckBox = NULL;
+  }
+
+  TRect rect = GetClientRect();
+  // DEBUG_PRINTF(L"rect.Left = %d, MaxLen = %d, rect.Right = %d", rect.Left, MaxLen, rect.Right);
+  TPoint S(
+    // rect.Left + MaxLen + (-(rect.Right + 1)),
+    static_cast<int>(rect.Left + MaxLen - rect.Right),
+    static_cast<int>(rect.Top + MessageLines->GetCount() +
+    (FParams->MoreMessages != NULL ? 1 : 0) + ButtonLines +
+    (!FParams->CheckBoxLabel.IsEmpty() ? 1 : 0) +
+    (-(rect.Bottom + 1))));
+
+  if (FParams->MoreMessages != NULL)
+  {
+    intptr_t MoreMessageHeight = static_cast<intptr_t>(GetFarPlugin()->TerminalInfo().y - S.y - 1);
+    assert(MoreMessagesLister != NULL);
+    if (MoreMessageHeight > MoreMessagesLister->GetItems()->GetCount())
+    {
+      MoreMessageHeight = MoreMessagesLister->GetItems()->GetCount();
+    }
+    MoreMessagesLister->SetHeight(MoreMessageHeight);
+    MoreMessagesLister->SetRight(
+      GetBorderBox()->GetRight() - (MoreMessagesLister->GetScrollBar() ? 0 : 1));
+    MoreMessagesLister->SetTabStop(MoreMessagesLister->GetScrollBar());
+    assert(MoreMessagesSeparator != NULL);
+    MoreMessagesSeparator->SetPosition(
+      static_cast<int>(MoreMessagesLister->GetTop() + MoreMessagesLister->GetHeight()));
+    S.y += static_cast<int>(MoreMessagesLister->GetHeight()) + 1;
+  }
+  // DEBUG_PRINTF(L"S.x = %d, S.y = %d", S.x, S.y);
+  SetSize(S);
 }
 
 //---------------------------------------------------------------------------
@@ -1033,14 +1030,10 @@ intptr_t TCustomFarPlugin::DialogMessage(DWORD Flags,
   TFarMessageParams * Params)
 {
   intptr_t Result;
-  TFarMessageDialog * Dialog =
-    new TFarMessageDialog(this, Params);
-  {
-    std::auto_ptr<TFarMessageDialog> DialogPtr;
-    DialogPtr.reset(Dialog);
-    Dialog->Init(Flags, Title, Message, Buttons);
-    Result = Dialog->Execute(Params->CheckBox);
-  }
+  TFarMessageDialog * Dialog = new TFarMessageDialog(this, Params);
+  std::auto_ptr<TFarMessageDialog> DialogPtr(Dialog);
+  Dialog->Init(Flags, Title, Message, Buttons);
+  Result = Dialog->Execute(Params->CheckBox);
   return Result;
 }
 //---------------------------------------------------------------------------
