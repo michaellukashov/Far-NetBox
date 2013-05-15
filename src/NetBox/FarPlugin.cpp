@@ -526,21 +526,19 @@ intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * Param)
         Param = const_cast<void *>(reinterpret_cast<const void *>(Buf.c_str()));
       }
 
-      {
-        TGuard Guard(FileSystem->GetCriticalSection());
-        return FileSystem->ProcessEvent(Event, Param);
-      }
+      TGuard Guard(FileSystem->GetCriticalSection());
+      return FileSystem->ProcessEvent(Event, Param);
     }
     else
     {
-      return static_cast<int>(false);
+      return 0;
     }
   }
   catch(Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FileSystem, &E);
-    return Event == FE_COMMAND ? true : false;
+    return Event == FE_COMMAND ? 1 : 0;
   }
 }
 //---------------------------------------------------------------------------
