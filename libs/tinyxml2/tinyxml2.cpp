@@ -425,13 +425,13 @@ void XMLUtil::ToStr( bool v, char* buffer, int bufferSize )
 
 void XMLUtil::ToStr( float v, char* buffer, int bufferSize )
 {
-    TIXML_SNPRINTF( buffer, bufferSize, "%g", v );
+    TIXML_SNPRINTF( buffer, bufferSize, "%f", v );
 }
 
 
 void XMLUtil::ToStr( double v, char* buffer, int bufferSize )
 {
-    TIXML_SNPRINTF( buffer, bufferSize, "%g", v );
+    TIXML_SNPRINTF( buffer, bufferSize, "%f", v );
 }
 
 
@@ -581,7 +581,8 @@ XMLNode::XMLNode( XMLDocument* doc ) :
     _document( doc ),
     _parent( 0 ),
     _firstChild( 0 ), _lastChild( 0 ),
-    _prev( 0 ), _next( 0 )
+    _prev( 0 ), _next( 0 ),
+    _memPool( 0 )
 {
 }
 
@@ -1684,7 +1685,7 @@ XMLError XMLDocument::Parse( const char* p, size_t len )
         return _errorID;
     }
 
-	int delta = p - start;	// skip initial whitespace, BOM, etc.
+    ptrdiff_t delta = p - start;	// skip initial whitespace, BOM, etc.
     ParseDeep( _charBuffer+delta, 0 );
     return _errorID;
 }
