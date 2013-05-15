@@ -1975,7 +1975,7 @@ intptr_t TCustomFarFileSystem::SetDirectory(const wchar_t * Dir, int OpMode)
 {
   ResetCachedInfo();
   InvalidateOpenPluginInfo();
-  int Result = SetDirectoryEx(Dir, OpMode);
+  intptr_t Result = SetDirectoryEx(Dir, OpMode);
   InvalidateOpenPluginInfo();
   return Result;
 }
