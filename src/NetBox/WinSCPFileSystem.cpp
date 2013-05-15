@@ -333,10 +333,8 @@ void TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
 TWinSCPFileSystem::~TWinSCPFileSystem()
 {
   Disconnect();
-  delete FQueueStatusSection;
-  FQueueStatusSection = NULL;
-  delete FPathHistory;
-  FPathHistory = NULL;
+  SAFE_DESTROY(FQueueStatusSection);
+  SAFE_DESTROY(FPathHistory);
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::HandleException(Exception * E, int OpMode)
@@ -3066,10 +3064,8 @@ void TWinSCPFileSystem::Disconnect()
   assert(!FSynchronizationSaveScreenHandle);
   assert(!FFileList);
   assert(!FPanelItems);
-  delete FQueue;
-  FQueue = NULL;
-  delete FQueueStatus;
-  FQueueStatus = NULL;
+  SAFE_DESTROY(FQueue);
+  SAFE_DESTROY(FQueueStatus);
   if (FTerminal != NULL)
   {
     FTerminal->GetSessionData()->SetSynchronizeBrowsing(FSynchronisingBrowse);
