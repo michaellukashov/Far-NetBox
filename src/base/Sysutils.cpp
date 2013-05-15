@@ -35,7 +35,7 @@ Exception::Exception(const UnicodeString & Msg) :
 }
 
 //---------------------------------------------------------------------------
-Exception::Exception(const wchar_t *Msg) :
+Exception::Exception(const wchar_t * Msg) :
   std::runtime_error(""),
   Message(Msg)
 {
@@ -214,19 +214,20 @@ UnicodeString LowerCase(const UnicodeString & Str)
 
 //---------------------------------------------------------------------------
 
-inline wchar_t UpCase(const wchar_t c)
+inline wchar_t UpCase(const wchar_t Ch)
 {
-  return static_cast<wchar_t>(::toupper(c));
+  return static_cast<wchar_t>(::toupper(Ch));
 }
 
-inline wchar_t LowCase(const wchar_t c)
+inline wchar_t LowCase(const wchar_t Ch)
 {
-  return static_cast<wchar_t>(::tolower(c));
+  return static_cast<wchar_t>(::tolower(Ch));
 }
 
 //---------------------------------------------------------------------------
 
-UnicodeString AnsiReplaceStr(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To)
+UnicodeString AnsiReplaceStr(const UnicodeString & Str, const UnicodeString & From,
+  const UnicodeString & To)
 {
   UnicodeString Result = Str;
   intptr_t Pos = 0;
@@ -237,9 +238,9 @@ UnicodeString AnsiReplaceStr(const UnicodeString & Str, const UnicodeString & Fr
   return Result;
 }
 
-intptr_t AnsiPos(const UnicodeString & Str, wchar_t c)
+intptr_t AnsiPos(const UnicodeString & Str, wchar_t Ch)
 {
-  intptr_t Result = Str.Pos(c);
+  intptr_t Result = Str.Pos(Ch);
   return Result;
 }
 
@@ -653,9 +654,7 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
 }
 
 //---------------------------------------------------------------------------
-/*
- * return the next available word, ignoring whitespace
- */
+// Returns the next available word, ignoring whitespace
 static const wchar_t *
 NextWord(const wchar_t * Input)
 {
@@ -884,12 +883,12 @@ UnicodeString ExpandEnvVars(const UnicodeString & Str)
   return Result;
 }
 
-UnicodeString StringOfChar(const wchar_t c, intptr_t Len)
+UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len)
 {
   UnicodeString Result;
   if (Len < 0) Len = 0;
   Result.SetLength(Len);
-  for (intptr_t i = 1; i <= Len; i++) Result[i] = c;
+  for (intptr_t i = 1; i <= Len; i++) Result[i] = Ch;
   return Result;
 }
 
@@ -988,10 +987,15 @@ DWORD FindFirst(const UnicodeString & FileName, DWORD LocalFileAttrs, TSearchRec
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)
   {
     Result = FindMatchingFile(Rec);
-    if (Result != 0) FindClose(Rec);
+    if (Result != 0)
+    {
+      FindClose(Rec);
+    }
   }
   else
+  {
     Result = ::GetLastError();
+  }
   return Result;
 }
 
@@ -1302,7 +1306,8 @@ static void DivMod(const int Dividend, const unsigned int Divisor,
 
 //---------------------------------------------------------------------------
 static bool DecodeDateFully(const TDateTime & DateTime,
-  unsigned short & Year, unsigned short & Month, unsigned short & Day, unsigned short & DOW)
+  unsigned short & Year, unsigned short & Month, unsigned short & Day,
+  unsigned short & DOW)
 {
   static const int D1 = 365;
   static const int D4 = D1 * 4 + 1;
@@ -1367,15 +1372,15 @@ static bool DecodeDateFully(const TDateTime & DateTime,
 }
 
 //---------------------------------------------------------------------------
-void DecodeDate(const TDateTime &DateTime, unsigned short &Year,
-  unsigned short &Month, unsigned short &Day)
+void DecodeDate(const TDateTime & DateTime, unsigned short & Year,
+  unsigned short & Month, unsigned short & Day)
 {
   unsigned short Dummy = 0;
   DecodeDateFully(DateTime, Year, Month, Day, Dummy);
 }
 
-void DecodeTime(const TDateTime &DateTime, unsigned short &Hour,
-  unsigned short &Min, unsigned short &Sec, unsigned short &MSec)
+void DecodeTime(const TDateTime & DateTime, unsigned short & Hour,
+  unsigned short & Min, unsigned short & Sec, unsigned short & MSec)
 {
   unsigned int MinCount, MSecCount;
   DivMod(DateTimeToTimeStamp(DateTime).Time, 60000, MinCount, MSecCount);
@@ -1417,7 +1422,8 @@ TDateTime EncodeDate(int Year, int Month, int Day)
 }
 
 //---------------------------------------------------------------------------
-bool TryEncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec, TDateTime & Time)
+bool TryEncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec,
+  TDateTime & Time)
 {
   bool Result = false;
   if ((Hour < 24) && (Min < 60) && (Sec < 60) && (MSec < 1000))
@@ -1445,7 +1451,8 @@ TDateTime StrToDateTime(const UnicodeString & Value)
   return TDateTime();
 }
 
-bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, TFormatSettings & FormatSettings)
+bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value,
+  TFormatSettings & FormatSettings)
 {
   (void)StrValue;
   (void)Value;
@@ -1665,9 +1672,9 @@ void TCriticalSection::Leave()
 }
 
 //---------------------------------------------------------------------------
-UnicodeString StripHotkey(const UnicodeString & Text)
+UnicodeString StripHotkey(const UnicodeString & AText)
 {
-  UnicodeString Result = Text;
+  UnicodeString Result = AText;
   intptr_t Len = Result.Length();
   intptr_t Pos = 1;
   while (Pos <= Len)

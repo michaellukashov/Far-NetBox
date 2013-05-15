@@ -75,14 +75,6 @@ void RaiseLastOSError(DWORD Result = 0);
 
 struct TFormatSettings : public TObject
 {
-private:
-  // typedef StaticArray<UnicodeString, 12> _TFormatSettings__1;
-
-  // typedef StaticArray<UnicodeString, 12> _TFormatSettings__2;
-
-  // typedef StaticArray<UnicodeString, 7> _TFormatSettings__3;
-
-  // typedef StaticArray<UnicodeString, 7> _TFormatSettings__4;
 public:
   TFormatSettings(int /* LCID */) {}
   static TFormatSettings Create(int LCID ) { return TFormatSettings(LCID); }
@@ -101,10 +93,6 @@ public:
   UnicodeString TimePMString;
   UnicodeString ShortTimeFormat;
   UnicodeString LongTimeFormat;
-  // _TFormatSettings__1 ShortMonthNames;
-  // _TFormatSettings__2 LongMonthNames;
-  // _TFormatSettings__3 ShortDayNames;
-  // _TFormatSettings__4 LongDayNames;
   unsigned short TwoDigitYearCenturyWindow;
 };
 
@@ -144,9 +132,9 @@ unsigned int DayOfWeek(const TDateTime & DateTime);
 
 TDateTime Date();
 void DecodeDate(const TDateTime & DateTime, unsigned short & Y,
-                unsigned short & M, unsigned short & D);
+  unsigned short & M, unsigned short & D);
 void DecodeTime(const TDateTime & DateTime, unsigned short & H,
-                unsigned short & N, unsigned short & S, unsigned short & MS);
+  unsigned short & N, unsigned short & S, unsigned short & MS);
 
 UnicodeString FormatDateTime(const UnicodeString & Fmt, TDateTime DateTime);
 TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
@@ -159,10 +147,10 @@ UnicodeString TrimLeft(const UnicodeString & Str);
 UnicodeString TrimRight(const UnicodeString & Str);
 UnicodeString UpperCase(const UnicodeString & Str);
 UnicodeString LowerCase(const UnicodeString & Str);
-inline wchar_t UpCase(const wchar_t c);
-inline wchar_t LowCase(const wchar_t c);
+inline wchar_t UpCase(const wchar_t Ch);
+inline wchar_t LowCase(const wchar_t Ch);
 UnicodeString AnsiReplaceStr(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To);
-intptr_t AnsiPos(const UnicodeString & Str2, wchar_t c);
+intptr_t AnsiPos(const UnicodeString & Str2, wchar_t Ch);
 intptr_t Pos(const UnicodeString & Str2, const UnicodeString & Substr);
 UnicodeString StringReplace(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To, const TReplaceFlags & Flags);
 bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, intptr_t Index);
@@ -261,7 +249,7 @@ UnicodeString ExpandEnvVars(const UnicodeString & Str2);
 
 //---------------------------------------------------------------------------
 
-UnicodeString StringOfChar(const wchar_t c, intptr_t Len);
+UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len);
 
 char * StrNew(const char * Str2);
 
@@ -349,14 +337,14 @@ public:
   void Enter();
   void Leave();
 
-  int GetAcquired() { return FAcquired; }
+  int GetAcquired() const { return FAcquired; }
 
 private:
   CRITICAL_SECTION FSection;
   int FAcquired;
 };
 //---------------------------------------------------------------------------
-UnicodeString StripHotkey(const UnicodeString & Text);
+UnicodeString StripHotkey(const UnicodeString & AText);
 bool StartsText(const UnicodeString & ASubText, const UnicodeString & AText);
 //---------------------------------------------------------------------------
 } // namespace Sysutils
