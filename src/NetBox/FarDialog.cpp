@@ -796,23 +796,20 @@ void TFarDialog::Change()
   else
   {
     TList * NotifiedContainers = new TList();
+    std::auto_ptr<TList> NotifiedContainersPtr(NotifiedContainers);
+    for (intptr_t I = 0; I < GetItemCount(); I++)
     {
-      std::auto_ptr<TList> NotifiedContainersPtr;
-      NotifiedContainersPtr.reset(NotifiedContainers);
-      for (intptr_t I = 0; I < GetItemCount(); I++)
+      TFarDialogItem * DItem = GetItem(I);
+      DItem->Change();
+      if (DItem->GetContainer() && NotifiedContainers->IndexOf(DItem->GetContainer()) == NPOS)
       {
-        TFarDialogItem * DItem = GetItem(I);
-        DItem->Change();
-        if (DItem->GetContainer() && NotifiedContainers->IndexOf(DItem->GetContainer()) == NPOS)
-        {
-          NotifiedContainers->Add(DItem->GetContainer());
-        }
+        NotifiedContainers->Add(DItem->GetContainer());
       }
+    }
 
-      for (intptr_t Index = 0; Index < NotifiedContainers->GetCount(); ++Index)
-      {
-        (static_cast<TFarDialogContainer *>((*NotifiedContainers)[Index]))->Change();
-      }
+    for (intptr_t Index = 0; Index < NotifiedContainers->GetCount(); ++Index)
+    {
+      (static_cast<TFarDialogContainer *>((*NotifiedContainers)[Index]))->Change();
     }
   }
 }
