@@ -1869,28 +1869,24 @@ void TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo * Info)
     {
       ClearOpenPluginInfo(FOpenPluginInfo);
       UnicodeString HostFile, CurDir, Format, PanelTitle, ShortcutData;
-      {
-        std::auto_ptr<TFarPanelModes> PanelModesPtr(NULL);
-        std::auto_ptr<TFarKeyBarTitles> KeyBarTitlesPtr(NULL);
-        TFarPanelModes * PanelModes = new TFarPanelModes();
-        PanelModesPtr.reset(PanelModes);
-        TFarKeyBarTitles * KeyBarTitles = new TFarKeyBarTitles();
-        KeyBarTitlesPtr.reset(KeyBarTitles);
-        bool StartSortOrder = false;
+      TFarPanelModes * PanelModes = new TFarPanelModes();
+      std::auto_ptr<TFarPanelModes> PanelModesPtr(PanelModes);
+      TFarKeyBarTitles * KeyBarTitles = new TFarKeyBarTitles();
+      std::auto_ptr<TFarKeyBarTitles> KeyBarTitlesPtr(KeyBarTitles);
+      bool StartSortOrder = false;
 
-        GetOpenPluginInfoEx(FOpenPluginInfo.Flags, HostFile, CurDir, Format,
-          PanelTitle, PanelModes, FOpenPluginInfo.StartPanelMode,
-          FOpenPluginInfo.StartSortMode, StartSortOrder, KeyBarTitles, ShortcutData);
+      GetOpenPluginInfoEx(FOpenPluginInfo.Flags, HostFile, CurDir, Format,
+        PanelTitle, PanelModes, FOpenPluginInfo.StartPanelMode,
+        FOpenPluginInfo.StartSortMode, StartSortOrder, KeyBarTitles, ShortcutData);
 
-        FOpenPluginInfo.HostFile = TCustomFarPlugin::DuplicateStr(HostFile);
-        FOpenPluginInfo.CurDir = TCustomFarPlugin::DuplicateStr(::StringReplace(CurDir, L"\\", L"/", TReplaceFlags() << rfReplaceAll));
-        FOpenPluginInfo.Format = TCustomFarPlugin::DuplicateStr(Format);
-        FOpenPluginInfo.PanelTitle = TCustomFarPlugin::DuplicateStr(PanelTitle);
-        PanelModes->FillOpenPluginInfo(&FOpenPluginInfo);
-        FOpenPluginInfo.StartSortOrder = StartSortOrder;
-        KeyBarTitles->FillOpenPluginInfo(&FOpenPluginInfo);
-        FOpenPluginInfo.ShortcutData = TCustomFarPlugin::DuplicateStr(ShortcutData);
-      }
+      FOpenPluginInfo.HostFile = TCustomFarPlugin::DuplicateStr(HostFile);
+      FOpenPluginInfo.CurDir = TCustomFarPlugin::DuplicateStr(::StringReplace(CurDir, L"\\", L"/", TReplaceFlags() << rfReplaceAll));
+      FOpenPluginInfo.Format = TCustomFarPlugin::DuplicateStr(Format);
+      FOpenPluginInfo.PanelTitle = TCustomFarPlugin::DuplicateStr(PanelTitle);
+      PanelModes->FillOpenPluginInfo(&FOpenPluginInfo);
+      FOpenPluginInfo.StartSortOrder = StartSortOrder;
+      KeyBarTitles->FillOpenPluginInfo(&FOpenPluginInfo);
+      FOpenPluginInfo.ShortcutData = TCustomFarPlugin::DuplicateStr(ShortcutData);
 
       FOpenPluginInfoValid = true;
     }
@@ -1906,29 +1902,26 @@ intptr_t TCustomFarFileSystem::GetFindData(
   ResetCachedInfo();
   bool Result = false;
   TObjectList * PanelItems = new TObjectList();
+  std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
+  Result = !FClosed && GetFindDataEx(PanelItems, OpMode);
+  // DEBUG_PRINTF(L"Result = %d, PanelItems->GetCount() = %d", Result, PanelItems->Count);
+  if (Result && PanelItems->GetCount())
   {
-    std::auto_ptr<TObjectList> PanelItemsPtr;
-    PanelItemsPtr.reset(PanelItems);
-    Result = !FClosed && GetFindDataEx(PanelItems, OpMode);
-    // DEBUG_PRINTF(L"Result = %d, PanelItems->GetCount() = %d", Result, PanelItems->Count);
-    if (Result && PanelItems->GetCount())
+    *PanelItem = static_cast<PluginPanelItem *>(
+      nb_calloc(1, sizeof(PluginPanelItem) * PanelItems->GetCount()));
+    *ItemsNumber = static_cast<int>(PanelItems->GetCount());
+    for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
     {
-      *PanelItem = static_cast<PluginPanelItem *>(
-        nb_malloc(sizeof(PluginPanelItem) * PanelItems->GetCount()));
-      memset(*PanelItem, 0, PanelItems->GetCount() * sizeof(PluginPanelItem));
-      *ItemsNumber = static_cast<int>(PanelItems->GetCount());
-      for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
-      {
-        static_cast<TCustomFarPanelItem *>(PanelItems->GetItem(Index))->FillPanelItem(
-          &((*PanelItem)[Index]));
-      }
-    }
-    else
-    {
-      *PanelItem = NULL;
-      *ItemsNumber = 0;
+      static_cast<TCustomFarPanelItem *>(PanelItems->GetItem(Index))->FillPanelItem(
+        &((*PanelItem)[Index]));
     }
   }
+  else
+  {
+    *PanelItem = NULL;
+    *ItemsNumber = 0;
+  }
+
   // DEBUG_PRINTF(L"end: Result = %d", Result);
   return Result;
 }
@@ -1961,12 +1954,8 @@ intptr_t TCustomFarFileSystem::ProcessHostFile(struct PluginPanelItem * PanelIte
   ResetCachedInfo();
   bool Result = false;
   TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
-  {
-    std::auto_ptr<TObjectList> PanelItemsPtr;
-    PanelItemsPtr.reset(PanelItems);
-    Result = ProcessHostFileEx(PanelItems, OpMode);
-  }
-
+  std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
+  Result = ProcessHostFileEx(PanelItems, OpMode);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2017,12 +2006,8 @@ intptr_t TCustomFarFileSystem::DeleteFiles(struct PluginPanelItem * PanelItem,
   ResetCachedInfo();
   bool Result = false;
   TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
-  {
-    std::auto_ptr<TObjectList> PanelItemsPtr;
-    PanelItemsPtr.reset(PanelItems);
-    Result = DeleteFilesEx(PanelItems, OpMode);
-  }
-
+  std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
+  Result = DeleteFilesEx(PanelItems, OpMode);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2057,12 +2042,8 @@ intptr_t TCustomFarFileSystem::PutFiles(struct PluginPanelItem * PanelItem,
   ResetCachedInfo();
   intptr_t Result = 0;
   TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
-  {
-    std::auto_ptr<TObjectList> PanelItemsPtr;
-    PanelItemsPtr.reset(PanelItems);
-    Result = PutFilesEx(PanelItems, Move > 0, OpMode);
-  }
-
+  std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
+  Result = PutFilesEx(PanelItems, Move > 0, OpMode);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2085,7 +2066,7 @@ TFarPanelInfo * TCustomFarFileSystem::GetPanelInfo(int Another)
   if (FPanelInfo[bAnother] == NULL)
   {
     PanelInfo * Info = static_cast<PanelInfo *>(
-      nb_malloc(sizeof(PanelInfo)));
+      nb_calloc(1, sizeof(PanelInfo)));
     bool Res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<intptr_t>(Info),
       !bAnother ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
     if (!Res)
@@ -2599,8 +2580,7 @@ intptr_t TFarPanelInfo::GetSelectedCount()
   {
     intptr_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, NULL);
     // DEBUG_PRINTF(L"size1 = %d, sizeof(PluginPanelItem) = %d", size, sizeof(PluginPanelItem));
-    PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_malloc(size));
-    memset(ppi, 0, size);
+    PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_calloc(1, size));
     FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, reinterpret_cast<intptr_t>(ppi));
     if ((ppi->Flags & PPIF_SELECTED) == 0)
     {
@@ -2627,8 +2607,7 @@ TObjectList * TFarPanelInfo::GetItems()
       // DEBUG_PRINTF(L"Index = %d", Index);
       // TODO: move to common function
       intptr_t size = FOwner->FarControl(FCTL_GETPANELITEM, Index, NULL);
-      PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_malloc(size));
-      memset(ppi, 0, size);
+      PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_calloc(1, size));
       FOwner->FarControl(FCTL_GETPANELITEM, Index, reinterpret_cast<intptr_t>(ppi));
       // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FindData.lpwszFileName);
       FItems->Add(new TFarPanelItem(ppi, true));
