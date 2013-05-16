@@ -123,7 +123,8 @@
 
 /* Limit the time spent walking through the heap, processes, threads and modules to
    a maximum of 1000 miliseconds each, unless CryptoGenRandom failed */
-#define MAXDELAY 1000
+// #define MAXDELAY 1000
+#define MAXDELAY 10
 
 /* Intel hardware RNG CSP -- available from
  * http://developer.intel.com/design/security/rng/redist_license.htm
@@ -522,7 +523,7 @@ int RAND_poll(void)
 						hlist.th32ProcessID,
 						hlist.th32HeapID))
 						{
-						int entrycnt = 80;
+						int entrycnt = 10; // 80;
 						do
 							RAND_add(&hentry,
 								hentry.dwSize, 5);

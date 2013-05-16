@@ -11462,7 +11462,7 @@ ra_neon_neonprogress(
   if (ras->progress_func)
   {
     apr_time_t now = apr_time_now();
-    if (now - pb->last_progress_time > 200000) // 0.2 sec
+    if (now - pb->last_progress_time > 1000000) // 1.0 sec
     {
       if (total < 0)
       {

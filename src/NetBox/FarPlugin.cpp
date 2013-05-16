@@ -402,11 +402,8 @@ void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo *Info)
   {
     ResetCachedInfo();
     assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
-
-    {
-      TGuard Guard(FileSystem->GetCriticalSection());
-      FileSystem->GetOpenPanelInfo(Info);
-    }
+    TGuard Guard(FileSystem->GetCriticalSection());
+    FileSystem->GetOpenPanelInfo(Info);
   }
   catch(Exception & E)
   {
@@ -528,19 +525,16 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
       void *Param = Info->Param;
       if ((Info->Event == FE_CHANGEVIEWMODE) || (Info->Event == FE_COMMAND))
       {
-
         Buf = static_cast<wchar_t *>(Info->Param);
         Param = const_cast<void *>(reinterpret_cast<const void *>(Buf.c_str()));
       }
 
-      {
-        TGuard Guard(FileSystem->GetCriticalSection());
-        return FileSystem->ProcessPanelEvent(Info->Event, Param);
-      }
+      TGuard Guard(FileSystem->GetCriticalSection());
+      return static_cast<int>(FileSystem->ProcessPanelEvent(Info->Event, Param));
     }
     else
     {
-      return static_cast<int>(false);
+      return 0;
     }
   }
   catch(Exception & E)
@@ -782,160 +776,157 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
   assert(FLAGCLEAR(AFlags, FMSG_ALLINONE));
 
   TStrings * MessageLines = new TStringList();
+  std::auto_ptr<TStrings> MessageLinesPtr(MessageLines);
+  FarWrapText(Message, MessageLines, MaxMessageWidth);
+  intptr_t MaxLen = GetFarPlugin()->MaxLength(MessageLines);
+  // DEBUG_PRINTF(L"MaxLen = %d, FParams->MoreMessages = %x", MaxLen, FParams->MoreMessages);
+  TStrings * MoreMessageLines = NULL;
+  std::auto_ptr<TStrings> MoreMessageLinesPtr(NULL);
+  if (FParams->MoreMessages != NULL)
   {
-    std::auto_ptr<TStrings> MessageLinesPtr;
-    MessageLinesPtr.reset(MessageLines);
-    FarWrapText(Message, MessageLines, MaxMessageWidth);
-    intptr_t MaxLen = GetFarPlugin()->MaxLength(MessageLines);
-    // DEBUG_PRINTF(L"MaxLen = %d, FParams->MoreMessages = %x", MaxLen, FParams->MoreMessages);
-    TStrings * MoreMessageLines = NULL;
-    std::auto_ptr<TStrings> MoreMessageLinesPtr(NULL);
-    if (FParams->MoreMessages != NULL)
+    MoreMessageLines = new TStringList();
+    MoreMessageLinesPtr.reset(MoreMessageLines);
+    UnicodeString MoreMessages = FParams->MoreMessages->GetText();
+    while (MoreMessages[MoreMessages.Length()] == L'\n' ||
+           MoreMessages[MoreMessages.Length()] == L'\r')
     {
-      MoreMessageLines = new TStringList();
-      MoreMessageLinesPtr.reset(MoreMessageLines);
-      UnicodeString MoreMessages = FParams->MoreMessages->GetText();
-      while (MoreMessages[MoreMessages.Length()] == L'\n' ||
-             MoreMessages[MoreMessages.Length()] == L'\r')
-      {
-        MoreMessages.SetLength(MoreMessages.Length() - 1);
-      }
-      FarWrapText(MoreMessages, MoreMessageLines, MaxMessageWidth);
-      intptr_t MoreMaxLen = GetFarPlugin()->MaxLength(MoreMessageLines);
-      if (MaxLen < MoreMaxLen)
-      {
-        MaxLen = MoreMaxLen;
-      }
+      MoreMessages.SetLength(MoreMessages.Length() - 1);
     }
-
-    // temporary
-    // DEBUG_PRINTF(L"MaxMessageWidth = %d, Title = %s", MaxMessageWidth, Title.c_str());
-    SetSize(TPoint(MaxMessageWidth, 10));
-    SetCaption(Title);
-    SetFlags(GetFlags() |
-             FLAGMASK(FLAGSET(AFlags, FMSG_WARNING), FDLG_WARNING));
-
-    for (intptr_t Index = 0; Index < MessageLines->GetCount(); ++Index)
+    FarWrapText(MoreMessages, MoreMessageLines, MaxMessageWidth);
+    intptr_t MoreMaxLen = GetFarPlugin()->MaxLength(MoreMessageLines);
+    if (MaxLen < MoreMaxLen)
     {
-      TFarText * Text = new TFarText(this);
-      Text->SetCaption(MessageLines->GetString(Index));
+      MaxLen = MoreMaxLen;
     }
-
-    TFarLister * MoreMessagesLister = NULL;
-    TFarSeparator * MoreMessagesSeparator = NULL;
-
-    if (FParams->MoreMessages != NULL)
-    {
-      new TFarSeparator(this);
-
-      MoreMessagesLister = new TFarLister(this);
-      MoreMessagesLister->GetItems()->Assign(MoreMessageLines);
-      MoreMessagesLister->SetLeft(GetBorderBox()->GetLeft() + 1);
-
-      MoreMessagesSeparator = new TFarSeparator(this);
-    }
-
-    int ButtonOffset = (FParams->CheckBoxLabel.IsEmpty() ? -1 : -2);
-    int ButtonLines = 1;
-    TFarButton * Button = NULL;
-    FTimeoutButton = NULL;
-    for (intptr_t Index = 0; Index < Buttons->GetCount(); ++Index)
-    {
-      TFarButton * PrevButton = Button;
-      Button = new TFarButton(this);
-      Button->SetDefault(Index == 0);
-      Button->SetBrackets(brNone);
-      Button->SetOnClick(MAKE_CALLBACK(TFarMessageDialog::ButtonClick, this));
-      UnicodeString Caption = Buttons->GetString(Index);
-      if ((FParams->Timeout > 0) &&
-          (FParams->TimeoutButton == static_cast<size_t>(Index)))
-      {
-        FTimeoutButtonCaption = Caption;
-        Caption = FORMAT(FParams->TimeoutStr.c_str(), Caption.c_str(), static_cast<int>(FParams->Timeout / 1000));
-        FTimeoutButton = Button;
-      }
-      Button->SetCaption(FORMAT(L" %s ", Caption.c_str()));
-      Button->SetTop(GetBorderBox()->GetBottom() + ButtonOffset);
-      Button->SetBottom(Button->GetTop());
-      Button->SetResult(Index + 1);
-      Button->SetCenterGroup(true);
-      Button->SetTag(reinterpret_cast<intptr_t>(Buttons->GetObject(Index)));
-      if (PrevButton != NULL)
-      {
-        Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
-      }
-
-      if (MaxMessageWidth < Button->GetRight() - GetBorderBox()->GetLeft())
-      {
-        for (intptr_t PIndex = 0; PIndex < GetItemCount(); ++PIndex)
-        {
-          TFarButton * PrevButton = dynamic_cast<TFarButton *>(GetItem(PIndex));
-          if ((PrevButton != NULL) && (PrevButton != Button))
-          {
-            PrevButton->Move(0, -1);
-          }
-        }
-        Button->Move(-(Button->GetLeft() - GetBorderBox()->GetLeft()), 0);
-        ButtonLines++;
-      }
-
-      // DEBUG_PRINTF(L"Button->GetLeft = %d, Button->GetRight = %d, GetBorderBox()->GetLeft = %d", Button->GetLeft(), Button->GetRight(), GetBorderBox()->GetLeft());
-      if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft())
-      {
-        MaxLen = static_cast<intptr_t>(Button->GetRight() - GetBorderBox()->GetLeft() + 2);
-      }
-      // DEBUG_PRINTF(L"MaxLen = %d", MaxLen);
-
-      SetNextItemPosition(ipRight);
-    }
-
-    // DEBUG_PRINTF(L"FParams->CheckBoxLabel = %s", FParams->CheckBoxLabel.c_str());
-    if (!FParams->CheckBoxLabel.IsEmpty())
-    {
-      SetNextItemPosition(ipNewLine);
-      FCheckBox = new TFarCheckBox(this);
-      FCheckBox->SetCaption(FParams->CheckBoxLabel);
-
-      if (MaxLen < FCheckBox->GetRight() - GetBorderBox()->GetLeft())
-      {
-        MaxLen = static_cast<intptr_t>(FCheckBox->GetRight() - GetBorderBox()->GetLeft());
-      }
-    }
-    else
-    {
-      FCheckBox = NULL;
-    }
-
-    TRect rect = GetClientRect();
-    // DEBUG_PRINTF(L"rect.Left = %d, MaxLen = %d, rect.Right = %d", rect.Left, MaxLen, rect.Right);
-    TPoint S(
-      // rect.Left + MaxLen + (-(rect.Right + 1)),
-      static_cast<int>(rect.Left + MaxLen - rect.Right),
-      static_cast<int>(rect.Top + MessageLines->GetCount() +
-      (FParams->MoreMessages != NULL ? 1 : 0) + ButtonLines +
-      (!FParams->CheckBoxLabel.IsEmpty() ? 1 : 0) +
-      (-(rect.Bottom + 1))));
-
-    if (FParams->MoreMessages != NULL)
-    {
-      intptr_t MoreMessageHeight = static_cast<intptr_t>(GetFarPlugin()->TerminalInfo().y - S.y - 1);
-      assert(MoreMessagesLister != NULL);
-      if (MoreMessageHeight > MoreMessagesLister->GetItems()->GetCount())
-      {
-        MoreMessageHeight = MoreMessagesLister->GetItems()->GetCount();
-      }
-      MoreMessagesLister->SetHeight(MoreMessageHeight);
-      MoreMessagesLister->SetRight(
-        GetBorderBox()->GetRight() - (MoreMessagesLister->GetScrollBar() ? 0 : 1));
-      MoreMessagesLister->SetTabStop(MoreMessagesLister->GetScrollBar());
-      assert(MoreMessagesSeparator != NULL);
-      MoreMessagesSeparator->SetPosition(
-        static_cast<int>(MoreMessagesLister->GetTop() + MoreMessagesLister->GetHeight()));
-      S.y += static_cast<int>(MoreMessagesLister->GetHeight()) + 1;
-    }
-    // DEBUG_PRINTF(L"S.x = %d, S.y = %d", S.x, S.y);
-    SetSize(S);
   }
+
+  // temporary
+  // DEBUG_PRINTF(L"MaxMessageWidth = %d, Title = %s", MaxMessageWidth, Title.c_str());
+  SetSize(TPoint(MaxMessageWidth, 10));
+  SetCaption(Title);
+  SetFlags(GetFlags() |
+           FLAGMASK(FLAGSET(AFlags, FMSG_WARNING), FDLG_WARNING));
+
+  for (intptr_t Index = 0; Index < MessageLines->GetCount(); ++Index)
+  {
+    TFarText * Text = new TFarText(this);
+    Text->SetCaption(MessageLines->GetString(Index));
+  }
+
+  TFarLister * MoreMessagesLister = NULL;
+  TFarSeparator * MoreMessagesSeparator = NULL;
+
+  if (FParams->MoreMessages != NULL)
+  {
+    new TFarSeparator(this);
+
+    MoreMessagesLister = new TFarLister(this);
+    MoreMessagesLister->GetItems()->Assign(MoreMessageLines);
+    MoreMessagesLister->SetLeft(GetBorderBox()->GetLeft() + 1);
+
+    MoreMessagesSeparator = new TFarSeparator(this);
+  }
+
+  int ButtonOffset = (FParams->CheckBoxLabel.IsEmpty() ? -1 : -2);
+  int ButtonLines = 1;
+  TFarButton * Button = NULL;
+  FTimeoutButton = NULL;
+  for (intptr_t Index = 0; Index < Buttons->GetCount(); ++Index)
+  {
+    TFarButton * PrevButton = Button;
+    Button = new TFarButton(this);
+    Button->SetDefault(Index == 0);
+    Button->SetBrackets(brNone);
+    Button->SetOnClick(MAKE_CALLBACK(TFarMessageDialog::ButtonClick, this));
+    UnicodeString Caption = Buttons->GetString(Index);
+    if ((FParams->Timeout > 0) &&
+        (FParams->TimeoutButton == static_cast<size_t>(Index)))
+    {
+      FTimeoutButtonCaption = Caption;
+      Caption = FORMAT(FParams->TimeoutStr.c_str(), Caption.c_str(), static_cast<int>(FParams->Timeout / 1000));
+      FTimeoutButton = Button;
+    }
+    Button->SetCaption(FORMAT(L" %s ", Caption.c_str()));
+    Button->SetTop(GetBorderBox()->GetBottom() + ButtonOffset);
+    Button->SetBottom(Button->GetTop());
+    Button->SetResult(Index + 1);
+    Button->SetCenterGroup(true);
+    Button->SetTag(reinterpret_cast<intptr_t>(Buttons->GetObject(Index)));
+    if (PrevButton != NULL)
+    {
+      Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
+    }
+
+    if (MaxMessageWidth < Button->GetRight() - GetBorderBox()->GetLeft())
+    {
+      for (intptr_t PIndex = 0; PIndex < GetItemCount(); ++PIndex)
+      {
+        TFarButton * PrevButton = dynamic_cast<TFarButton *>(GetItem(PIndex));
+        if ((PrevButton != NULL) && (PrevButton != Button))
+        {
+          PrevButton->Move(0, -1);
+        }
+      }
+      Button->Move(-(Button->GetLeft() - GetBorderBox()->GetLeft()), 0);
+      ButtonLines++;
+    }
+
+    // DEBUG_PRINTF(L"Button->GetLeft = %d, Button->GetRight = %d, GetBorderBox()->GetLeft = %d", Button->GetLeft(), Button->GetRight(), GetBorderBox()->GetLeft());
+    if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft())
+    {
+      MaxLen = static_cast<intptr_t>(Button->GetRight() - GetBorderBox()->GetLeft() + 2);
+    }
+    // DEBUG_PRINTF(L"MaxLen = %d", MaxLen);
+
+    SetNextItemPosition(ipRight);
+  }
+
+  // DEBUG_PRINTF(L"FParams->CheckBoxLabel = %s", FParams->CheckBoxLabel.c_str());
+  if (!FParams->CheckBoxLabel.IsEmpty())
+  {
+    SetNextItemPosition(ipNewLine);
+    FCheckBox = new TFarCheckBox(this);
+    FCheckBox->SetCaption(FParams->CheckBoxLabel);
+
+    if (MaxLen < FCheckBox->GetRight() - GetBorderBox()->GetLeft())
+    {
+      MaxLen = static_cast<intptr_t>(FCheckBox->GetRight() - GetBorderBox()->GetLeft());
+    }
+  }
+  else
+  {
+    FCheckBox = NULL;
+  }
+
+  TRect rect = GetClientRect();
+  // DEBUG_PRINTF(L"rect.Left = %d, MaxLen = %d, rect.Right = %d", rect.Left, MaxLen, rect.Right);
+  TPoint S(
+    // rect.Left + MaxLen + (-(rect.Right + 1)),
+    static_cast<int>(rect.Left + MaxLen - rect.Right),
+    static_cast<int>(rect.Top + MessageLines->GetCount() +
+    (FParams->MoreMessages != NULL ? 1 : 0) + ButtonLines +
+    (!FParams->CheckBoxLabel.IsEmpty() ? 1 : 0) +
+    (-(rect.Bottom + 1))));
+
+  if (FParams->MoreMessages != NULL)
+  {
+    intptr_t MoreMessageHeight = static_cast<intptr_t>(GetFarPlugin()->TerminalInfo().y - S.y - 1);
+    assert(MoreMessagesLister != NULL);
+    if (MoreMessageHeight > MoreMessagesLister->GetItems()->GetCount())
+    {
+      MoreMessageHeight = MoreMessagesLister->GetItems()->GetCount();
+    }
+    MoreMessagesLister->SetHeight(MoreMessageHeight);
+    MoreMessagesLister->SetRight(
+      GetBorderBox()->GetRight() - (MoreMessagesLister->GetScrollBar() ? 0 : 1));
+    MoreMessagesLister->SetTabStop(MoreMessagesLister->GetScrollBar());
+    assert(MoreMessagesSeparator != NULL);
+    MoreMessagesSeparator->SetPosition(
+      static_cast<int>(MoreMessagesLister->GetTop() + MoreMessagesLister->GetHeight()));
+    S.y += static_cast<int>(MoreMessagesLister->GetHeight()) + 1;
+  }
+  // DEBUG_PRINTF(L"S.x = %d, S.y = %d", S.x, S.y);
+  SetSize(S);
 }
 
 //---------------------------------------------------------------------------
@@ -1039,14 +1030,10 @@ intptr_t TCustomFarPlugin::DialogMessage(unsigned int Flags,
   TFarMessageParams * Params)
 {
   intptr_t Result;
-  TFarMessageDialog * Dialog =
-    new TFarMessageDialog(this, Params);
-  {
-    std::auto_ptr<TFarMessageDialog> DialogPtr;
-    DialogPtr.reset(Dialog);
-    Dialog->Init(Flags, Title, Message, Buttons);
-    Result = Dialog->Execute(Params->CheckBox);
-  }
+  TFarMessageDialog * Dialog = new TFarMessageDialog(this, Params);
+  std::auto_ptr<TFarMessageDialog> DialogPtr(Dialog);
+  Dialog->Init(Flags, Title, Message, Buttons);
+  Result = Dialog->Execute(Params->CheckBox);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1890,6 +1877,7 @@ void TCustomFarFileSystem::ClearOpenPanelInfo(OpenPanelInfo & Info)
       TFarPanelModes::ClearPanelMode(
         const_cast<PanelMode &>(Info.PanelModesArray[Index]));
     }
+    nb_free((void *)Info.PanelModesArray);
     if (Info.KeyBar)
     {
       TFarKeyBarTitles::ClearKeyBarTitles(const_cast<KeyBarTitles &>(*Info.KeyBar));
@@ -1918,14 +1906,11 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo * Info)
     {
       ClearOpenPanelInfo(FOpenPanelInfo);
       UnicodeString HostFile, CurDir, Format, PanelTitle, ShortcutData;
-      {
-        std::auto_ptr<TFarPanelModes> PanelModesPtr(NULL);
-        std::auto_ptr<TFarKeyBarTitles> KeyBarTitlesPtr(NULL);
-        TFarPanelModes * PanelModes = new TFarPanelModes();
-        PanelModesPtr.reset(PanelModes);
-        TFarKeyBarTitles * KeyBarTitles = new TFarKeyBarTitles();
-        KeyBarTitlesPtr.reset(KeyBarTitles);
-        bool StartSortOrder = false;
+      TFarPanelModes * PanelModes = new TFarPanelModes();
+      std::auto_ptr<TFarPanelModes> PanelModesPtr(PanelModes);
+      TFarKeyBarTitles * KeyBarTitles = new TFarKeyBarTitles();
+      std::auto_ptr<TFarKeyBarTitles> KeyBarTitlesPtr(KeyBarTitles);
+      bool StartSortOrder = false;
 
         GetOpenPanelInfoEx(FOpenPanelInfo.Flags, HostFile, CurDir, Format,
           PanelTitle, PanelModes, FOpenPanelInfo.StartPanelMode,
@@ -1945,7 +1930,6 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo * Info)
         FOpenPanelInfo.StartSortOrder = StartSortOrder;
         KeyBarTitles->FillOpenPanelInfo(&FOpenPanelInfo);
         FOpenPanelInfo.ShortcutData = TCustomFarPlugin::DuplicateStr(ShortcutData);
-      }
 
       FOpenPanelInfoValid = true;
     }
@@ -1960,29 +1944,26 @@ intptr_t TCustomFarFileSystem::GetFindData(struct GetFindDataInfo *Info)
   ResetCachedInfo();
   bool Result = false;
   TObjectList * PanelItems = new TObjectList();
+  std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
+  Result = !FClosed && GetFindDataEx(PanelItems, Info->OpMode);
+  if (Result && PanelItems->GetCount())
   {
-    std::auto_ptr<TObjectList> PanelItemsPtr;
-    PanelItemsPtr.reset(PanelItems);
-    Result = !FClosed && GetFindDataEx(PanelItems, Info->OpMode);
-    // DEBUG_PRINTF(L"Result = %d, PanelItems->GetCount() = %d", Result, PanelItems->Count);
-    if (Result && PanelItems->GetCount())
+    Info->PanelItem = static_cast<PluginPanelItem *>(
+    nb_calloc(1, sizeof(PluginPanelItem) * PanelItems->GetCount()));
+    memset(Info->PanelItem, 0, sizeof(PluginPanelItem) * PanelItems->GetCount());
+    Info->ItemsNumber = PanelItems->GetCount();
+    for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
     {
-      Info->PanelItem = static_cast<PluginPanelItem *>(
-        nb_malloc(sizeof(PluginPanelItem) * PanelItems->GetCount()));
-      memset(Info->PanelItem, 0, sizeof(PluginPanelItem) * PanelItems->GetCount());
-      Info->ItemsNumber = PanelItems->GetCount();
-      for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
-      {
-        static_cast<TCustomFarPanelItem *>(PanelItems->GetItem(Index))->FillPanelItem(
-          &(Info->PanelItem[Index]));
-      }
-    }
-    else
-    {
-      Info->PanelItem = NULL;
-      Info->ItemsNumber = 0;
+      static_cast<TCustomFarPanelItem *>(PanelItems->GetItem(Index))->FillPanelItem(
+        &(Info->PanelItem[Index]));
     }
   }
+  else
+  {
+    Info->PanelItem = NULL;
+    Info->ItemsNumber = 0;
+  }
+
   // DEBUG_PRINTF(L"end: Result = %d", Result);
   return Result;
 }
@@ -2013,12 +1994,8 @@ intptr_t TCustomFarFileSystem::ProcessHostFile(const struct ProcessHostFileInfo 
   ResetCachedInfo();
   bool Result = false;
   TObjectList * PanelItems = CreatePanelItemList(Info->PanelItem, Info->ItemsNumber);
-  {
-    std::auto_ptr<TObjectList> PanelItemsPtr;
-    PanelItemsPtr.reset(PanelItems);
-    Result = ProcessHostFileEx(PanelItems, Info->OpMode);
-  }
-
+  std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
+  Result = ProcessHostFileEx(PanelItems, Info->OpMode);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2044,7 +2021,7 @@ intptr_t TCustomFarFileSystem::SetDirectory(const struct SetDirectoryInfo * Info
 {
   ResetCachedInfo();
   InvalidateOpenPanelInfo();
-  int Result = SetDirectoryEx(Info->Dir, Info->OpMode);
+  intptr_t Result = SetDirectoryEx(Info->Dir, Info->OpMode);
   InvalidateOpenPanelInfo();
   return Result;
 }
@@ -2074,12 +2051,8 @@ intptr_t TCustomFarFileSystem::DeleteFiles(const struct DeleteFilesInfo *Info)
   ResetCachedInfo();
   bool Result = false;
   TObjectList * PanelItems = CreatePanelItemList(Info->PanelItem, Info->ItemsNumber);
-  {
-    std::auto_ptr<TObjectList> PanelItemsPtr;
-    PanelItemsPtr.reset(PanelItems);
-    Result = DeleteFilesEx(PanelItems, Info->OpMode);
-  }
-
+  std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
+  Result = DeleteFilesEx(PanelItems, Info->OpMode);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2111,12 +2084,8 @@ intptr_t TCustomFarFileSystem::PutFiles(const struct PutFilesInfo *Info)
   ResetCachedInfo();
   intptr_t Result = 0;
   TObjectList * PanelItems = CreatePanelItemList(Info->PanelItem, Info->ItemsNumber);
-  {
-    std::auto_ptr<TObjectList> PanelItemsPtr;
-    PanelItemsPtr.reset(PanelItems);
-    Result = PutFilesEx(PanelItems, Info->Move > 0, Info->OpMode);
-  }
-
+  std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
+  Result = PutFilesEx(PanelItems, Info->Move > 0, Info->OpMode);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2139,7 +2108,7 @@ TFarPanelInfo * TCustomFarFileSystem::GetPanelInfo(int Another)
   if (FPanelInfo[bAnother] == NULL)
   {
     PanelInfo * Info = static_cast<PanelInfo *>(
-      nb_malloc(sizeof(PanelInfo)));
+      nb_calloc(1, sizeof(PanelInfo)));
     Info->StructSize = sizeof(PanelInfo);
     bool Res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<void *>(Info),
       !bAnother ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
@@ -2364,7 +2333,7 @@ void TFarPanelModes::FillOpenPanelInfo(struct OpenPanelInfo * Info)
 {
   assert(Info);
   Info->PanelModesNumber = LENOF(FPanelModes);
-  static PanelMode PanelModesArray[LENOF(FPanelModes)];
+  PanelMode * PanelModesArray = static_cast<PanelMode *>(nb_calloc(1, sizeof(PanelMode) * LENOF(FPanelModes)));
   memmove(PanelModesArray, &FPanelModes, sizeof(FPanelModes));
   Info->PanelModesArray = PanelModesArray;
   FReferenced = true;
@@ -2659,8 +2628,7 @@ intptr_t TFarPanelInfo::GetSelectedCount()
   {
     intptr_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, NULL);
     // DEBUG_PRINTF(L"size1 = %d, sizeof(PluginPanelItem) = %d", size, sizeof(PluginPanelItem));
-    PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_malloc(size));
-    memset(ppi, 0, size);
+    PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_calloc(1, size));
     FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, reinterpret_cast<void *>(ppi));
     if ((ppi->Flags & PPIF_SELECTED) == 0)
     {
@@ -2687,8 +2655,7 @@ TObjectList * TFarPanelInfo::GetItems()
       // DEBUG_PRINTF(L"Index = %d", Index);
       // TODO: move to common function
       intptr_t Size = FOwner->FarControl(FCTL_GETPANELITEM, Index, NULL);
-      PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_malloc(Size));
-      memset(ppi, 0, Size);
+      PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_calloc(1, Size));
       FarGetPluginPanelItem gppi;
       gppi.StructSize = sizeof(FarGetPluginPanelItem);
       gppi.Size = Size;

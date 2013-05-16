@@ -115,7 +115,7 @@ public:
   void Delete(intptr_t Index);
   intptr_t IndexOfName(const UnicodeString & Name) const;
 
-  intptr_t GetCount() const;
+  intptr_t GetCount() const { return FCopyParams ? FCopyParams->GetCount() : 0; }
   UnicodeString GetName(intptr_t Index) const;
   const TCopyParamRule * GetRule(intptr_t Index) const;
   const TCopyParamType * GetCopyParam(intptr_t Index) const;

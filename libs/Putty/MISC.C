@@ -333,7 +333,7 @@ void base64_encode_atom(unsigned char *data, int n, char *out)
  *  - return the current size of the buffer chain in bytes
  */
 
-#define BUFFER_GRANULE  512
+#define BUFFER_GRANULE  512*2*32
 
 struct bufchain_granule {
     struct bufchain_granule *next;
