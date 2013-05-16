@@ -1,5 +1,7 @@
 NetBox 2.1.30 ??.05.2013
 --------------------
+  * Bugfix: Two instances of plugin share the same panel modes.
+    (http://forum.farmanager.com/viewtopic.php?p=109737#p109737)
   * SFTP, SCP: Performance improvement.
 
 NetBox 2.1.29 12.05.2013
