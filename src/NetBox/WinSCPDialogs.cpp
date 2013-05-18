@@ -5973,7 +5973,7 @@ private:
 class TLabelList : public TList
 {
 public:
-  TLabelList() :
+  explicit TLabelList() :
     TList(), MaxLen(0)
   {
   }
@@ -6623,7 +6623,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
 class TApplyCommandDialog : public TWinSCPDialog
 {
 public:
-  TApplyCommandDialog(TCustomFarPlugin * AFarPlugin);
+  explicit TApplyCommandDialog(TCustomFarPlugin * AFarPlugin);
 
   bool Execute(UnicodeString & Command, intptr_t & Params);
 
@@ -6795,7 +6795,7 @@ bool TWinSCPFileSystem::ApplyCommandDialog(UnicodeString & Command,
 class TFullSynchronizeDialog : public TWinSCPDialog
 {
 public:
-  TFullSynchronizeDialog(TCustomFarPlugin * AFarPlugin, intptr_t Options,
+  explicit TFullSynchronizeDialog(TCustomFarPlugin * AFarPlugin, intptr_t Options,
     const TUsableCopyParamAttrs & CopyParamAttrs);
 
   bool Execute(TTerminal::TSynchronizeMode & Mode,
@@ -7843,7 +7843,7 @@ class TSynchronizeDialog : TFarDialog
 {
   CUSTOM_MEM_ALLOCATION_IMPL;
 public:
-  TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
+  explicit TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
     TSynchronizeStartStopEvent OnStartStop,
     intptr_t Options, intptr_t CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions);
   virtual ~TSynchronizeDialog();
