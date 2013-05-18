@@ -1,7 +1,7 @@
 /*
-vc10wrapper.cpp
+vc10.cpp
 
-Wrapper for vc10.cpp
+Workaround for VC2010 and old Windows
 */
 /*
 Copyright © 2011 Far Group
@@ -30,7 +30,24 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "headers.hpp"
-#pragma hdrstop
+#include <windows.h>
 
-#include "vc10.cpp"
+static PVOID WINAPI ReturnSamePointer(PVOID Ptr) {return Ptr;}
+
+static const char* ProcNames[] = {"EncodePointer", "DecodePointer"};
+static enum {EncodePointerIndex, DecodePointerIndex};
+
+template<int Index>
+static PVOID WINAPI Wrapper(PVOID Ptr)
+{
+	typedef PVOID (WINAPI *PointerFunction)(PVOID);
+	static PVOID FunctionAddress = GetProcAddress(GetModuleHandleW(L"kernel32"), ProcNames[Index]);
+	static PointerFunction ProcessPointer = FunctionAddress? reinterpret_cast<PointerFunction>(FunctionAddress) : ReturnSamePointer;
+	return ProcessPointer(Ptr);
+}
+
+extern "C"
+{
+	PVOID WINAPI EncodePointerWrapper(PVOID Ptr) {return Wrapper<EncodePointerIndex>(Ptr);}
+	PVOID WINAPI DecodePointerWrapper(PVOID Ptr) {return Wrapper<DecodePointerIndex>(Ptr);}
+}
