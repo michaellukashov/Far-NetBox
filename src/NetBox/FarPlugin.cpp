@@ -729,7 +729,7 @@ intptr_t TCustomFarPlugin::MaxLength(TStrings * Strings)
 class TFarMessageDialog : public TFarDialog
 {
 public:
-  TFarMessageDialog(TCustomFarPlugin * Plugin,
+  explicit TFarMessageDialog(TCustomFarPlugin * Plugin,
     TFarMessageParams * Params);
   void Init(uintptr_t AFlags,
     const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons);
@@ -1441,7 +1441,7 @@ void TCustomFarPlugin::SaveTerminalScreen()
 class TConsoleTitleParam : public TObject
 {
 public:
-  TConsoleTitleParam() :
+  explicit TConsoleTitleParam() :
     Progress(0),
     Own(0)
   {}
