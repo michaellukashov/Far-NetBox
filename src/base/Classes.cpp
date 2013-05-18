@@ -570,10 +570,10 @@ void TStrings::Assign(TPersistent * Source)
   TPersistent::Assign(Source);
 }
 
-intptr_t TStrings::Add(const UnicodeString & S)
+intptr_t TStrings::Add(const UnicodeString & S, TObject * AObject)
 {
   intptr_t Result = GetCount();
-  Insert(Result, S);
+  Insert(Result, S, AObject);
   return Result;
 }
 
@@ -656,15 +656,13 @@ void TStrings::SetUpdateState(bool Updating)
 
 intptr_t TStrings::AddObject(const UnicodeString & S, TObject * AObject)
 {
-  intptr_t Result = Add(S);
-  SetObject(Result, AObject);
+  intptr_t Result = Add(S, AObject);
   return Result;
 }
 
 void TStrings::InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject)
 {
-  Insert(Index, Key);
-  SetObject(Index, AObject);
+  Insert(Index, Key, AObject);
 }
 
 bool TStrings::Equals(TStrings * Strings)
@@ -1151,9 +1149,9 @@ void TStringList::Changed()
   }
 }
 
-void TStringList::Insert(intptr_t Index, const UnicodeString & S)
+void TStringList::Insert(intptr_t Index, const UnicodeString & S, TObject* AObject)
 {
-  InsertItem(Index, S, NULL);
+  InsertItem(Index, S, AObject);
 }
 
 void TStringList::Sort()

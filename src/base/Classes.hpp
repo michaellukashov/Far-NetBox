@@ -235,7 +235,7 @@ class TStrings : public TPersistent
 public:
   TStrings();
   virtual ~TStrings();
-  intptr_t Add(const UnicodeString & S);
+  intptr_t Add(const UnicodeString & S, Classes::TObject * AObject = NULL);
   virtual void Delete(intptr_t Index) = 0;
   virtual UnicodeString GetTextStr();
   virtual void SetTextStr(const UnicodeString & Text);
@@ -252,7 +252,7 @@ public:
   UnicodeString ExtractName(const UnicodeString & S) const;
   void AddStrings(TStrings * Strings);
   void Append(const UnicodeString & Value);
-  virtual void Insert(intptr_t Index, const UnicodeString & AString) = 0;
+  virtual void Insert(intptr_t Index, const UnicodeString & AString, TObject * AObject = NULL) = 0;
   void SaveToStream(TStream * Stream) const;
   wchar_t GetDelimiter() const { return FDelimiter; }
   void SetDelimiter(wchar_t Value)
@@ -333,7 +333,7 @@ public:
   virtual void SetUpdateState(bool Updating);
   virtual void Changing();
   virtual void Changed();
-  virtual void Insert(intptr_t Index, const UnicodeString & S);
+  virtual void Insert(intptr_t Index, const UnicodeString & S, TObject * AObject = NULL);
   virtual intptr_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2);
   virtual intptr_t GetCount() const;
 
