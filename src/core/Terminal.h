@@ -354,7 +354,7 @@ protected:
   UnicodeString FileUrl(const UnicodeString & Protocol, const UnicodeString & FileName);
   bool PromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions, const UnicodeString & Prompt, bool Echo,
-    int MaxLen, UnicodeString & Result);
+    int MaxLen, UnicodeString & AResult);
   void FileFind(const UnicodeString & FileName, const TRemoteFile * File, void * Param);
   void DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params);
   bool DoCreateLocalFile(const UnicodeString & FileName,

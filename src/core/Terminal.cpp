@@ -1100,19 +1100,21 @@ void TTerminal::Reopen(intptr_t Params)
 }
 //------------------------------------------------------------------------------
 bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
-  const UnicodeString & Name, const UnicodeString & Instructions, const UnicodeString & Prompt, bool Echo, int MaxLen, UnicodeString & Result)
+  const UnicodeString & Name, const UnicodeString & Instructions,
+  const UnicodeString & Prompt,
+  bool Echo, int MaxLen, UnicodeString & AResult)
 {
-  bool AResult;
+  bool Result;
   TStrings * Prompts = new TStringList();
   TStrings * Results = new TStringList();
   TRY_FINALLY (
   {
     Prompts->AddObject(Prompt, reinterpret_cast<TObject *>(static_cast<size_t>(FLAGMASK(Echo, pupEcho))));
-    Results->AddObject(Result, reinterpret_cast<TObject *>(MaxLen));
+    Results->AddObject(AResult, reinterpret_cast<TObject *>(MaxLen));
 
-    AResult = PromptUser(Data, Kind, Name, Instructions, Prompts, Results);
+    Result = PromptUser(Data, Kind, Name, Instructions, Prompts, Results);
 
-    Result = Results->GetString(0);
+    AResult = Results->GetString(0);
   }
   ,
   {
