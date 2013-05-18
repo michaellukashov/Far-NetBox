@@ -1241,7 +1241,7 @@ private:
   TFarCheckBox * SavePasswordCheck;
 
   void ShowPromptClick(TFarButton * Sender, bool & Close);
-  void GenerateLabel(const UnicodeString & Caption, bool & Truncated);
+  void GenerateLabel(const UnicodeString & ACaption, bool & Truncated);
   TFarEdit * GenerateEdit(bool Echo);
   void GeneratePrompt(bool ShowSavePassword,
     const UnicodeString & Instructions, TStrings * Prompts, bool & Truncated);
@@ -1313,26 +1313,26 @@ TPasswordDialog::~TPasswordDialog()
   delete FEdits;
 }
 //------------------------------------------------------------------------------
-void TPasswordDialog::GenerateLabel(const UnicodeString & Caption,
+void TPasswordDialog::GenerateLabel(const UnicodeString & ACaption,
   bool & Truncated)
 {
-  UnicodeString caption = Caption;
+  UnicodeString Caption = ACaption;
   TFarText * Result = new TFarText(this);
 
   if (!FPrompt.IsEmpty())
   {
     FPrompt += L"\n\n";
   }
-  FPrompt += caption;
+  FPrompt += Caption;
 
-  if (GetSize().x - 10 < static_cast<int>(caption.Length()))
+  if (GetSize().x - 10 < static_cast<int>(Caption.Length()))
   {
-    caption.SetLength(GetSize().x - 10 - 4);
-    caption += L" ...";
+    Caption.SetLength(GetSize().x - 10 - 4);
+    Caption += L" ...";
     Truncated = true;
   }
 
-  Result->SetCaption(caption);
+  Result->SetCaption(Caption);
 }
 //------------------------------------------------------------------------------
 TFarEdit * TPasswordDialog::GenerateEdit(bool Echo)
