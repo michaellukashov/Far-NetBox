@@ -527,7 +527,6 @@ intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * Param)
       }
       else if ((Event == FE_GOTFOCUS) || (Event == FE_KILLFOCUS))
       {
-        DEBUG_PRINTF(L"Event = %d, Plugin = %p, Param = %p", Event, Plugin, Param);
       }
 
       TGuard Guard(FileSystem->GetCriticalSection());
@@ -550,7 +549,6 @@ intptr_t TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t * Dir, int 
 {
   TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
   UnicodeString PrevCurrentDirectory = FileSystem->GetCurrentDirectory();
-  // DEBUG_PRINTF(L"PrevCurrentDirectory = %s", PrevCurrentDirectory.c_str());
   try
   {
     ResetCachedInfo();
