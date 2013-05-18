@@ -1345,6 +1345,7 @@ TFarEdit * TPasswordDialog::GenerateEdit(bool Echo)
 void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
   const UnicodeString & Instructions, TStrings * Prompts, bool & Truncated)
 {
+  FEdits->Clear();
   TPoint S = TPoint(40, ShowSavePassword ? 1 : 0);
 
   int x = static_cast<int>(Instructions.Length());
@@ -1359,10 +1360,10 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
 
   for (intptr_t Index = 0; Index < Prompts->GetCount(); ++Index)
   {
-    int x = static_cast<int>(Prompts->GetString(Index).Length());
-    if (S.x < x)
+    int l = static_cast<int>(Prompts->GetString(Index).Length());
+    if (S.x < l)
     {
-      S.x = x;
+      S.x = l;
     }
     S.y += 2;
   }
