@@ -1105,24 +1105,12 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   bool Echo, int MaxLen, UnicodeString & AResult)
 {
   bool Result;
-  TStrings * Prompts = new TStringList();
-  TStrings * Results = new TStringList();
-  TRY_FINALLY (
-  {
-    Prompts->AddObject(Prompt, reinterpret_cast<TObject *>(static_cast<size_t>(FLAGMASK(Echo, pupEcho))));
-    Results->AddObject(AResult, reinterpret_cast<TObject *>(MaxLen));
-
-    Result = PromptUser(Data, Kind, Name, Instructions, Prompts, Results);
-
-    AResult = Results->GetString(0);
-  }
-  ,
-  {
-    delete Prompts;
-    delete Results;
-  }
-  );
-
+  std::auto_ptr<TStrings> Prompts(new TStringList());
+  std::auto_ptr<TStrings> Results(new TStringList());
+  Prompts->AddObject(Prompt, reinterpret_cast<TObject *>(static_cast<size_t>(FLAGMASK(Echo, pupEcho))));
+  Results->AddObject(AResult, reinterpret_cast<TObject *>(MaxLen));
+  Result = PromptUser(Data, Kind, Name, Instructions, Prompts.get(), Results.get());
+  AResult = Results->GetString(0);
   return AResult;
 }
 //------------------------------------------------------------------------------
