@@ -442,7 +442,7 @@ void TStrings::SetTextStr(const UnicodeString & Text)
   );
 }
 
-UnicodeString TStrings::GetCommaText()
+UnicodeString TStrings::GetCommaText() const
 {
   wchar_t LOldDelimiter = GetDelimiter();
   wchar_t LOldQuoteChar = GetQuoteChar();
@@ -462,7 +462,7 @@ UnicodeString TStrings::GetCommaText()
   return Result;
 }
 
-UnicodeString TStrings::GetDelimitedText()
+UnicodeString TStrings::GetDelimitedText() const
 {
   UnicodeString Result;
   intptr_t Count = GetCount();
@@ -535,7 +535,7 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
   );
 }
 
-intptr_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString & S2)
+intptr_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const
 {
   return static_cast<intptr_t>(::AnsiCompareText(S1, S2));
 }
@@ -572,12 +572,12 @@ intptr_t TStrings::Add(const UnicodeString & S, TObject * AObject)
   return Result;
 }
 
-UnicodeString TStrings::GetText()
+UnicodeString TStrings::GetText() const
 {
   return GetTextStr();
 }
 
-UnicodeString TStrings::GetTextStr()
+UnicodeString TStrings::GetTextStr() const
 {
   UnicodeString Result;
   UnicodeString S, LB;
@@ -724,7 +724,7 @@ intptr_t TStrings::IndexOf(const UnicodeString & S)
   return NPOS;
 }
 
-intptr_t TStrings::IndexOfName(const UnicodeString & Name)
+intptr_t TStrings::IndexOfName(const UnicodeString & Name) const
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
@@ -738,7 +738,7 @@ intptr_t TStrings::IndexOfName(const UnicodeString & Name)
   return NPOS;
 }
 
-const UnicodeString TStrings::GetName(intptr_t Index)
+const UnicodeString TStrings::GetName(intptr_t Index) const
 {
   return ExtractName(GetString(Index));
 }
@@ -765,7 +765,7 @@ UnicodeString TStrings::ExtractName(const UnicodeString & S) const
   return Result;
 }
 
-const UnicodeString TStrings::GetValue(const UnicodeString & Name)
+const UnicodeString TStrings::GetValue(const UnicodeString & Name) const
 {
   UnicodeString Result;
   intptr_t I = IndexOfName(Name);

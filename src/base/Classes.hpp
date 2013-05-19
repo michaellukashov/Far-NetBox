@@ -238,7 +238,7 @@ public:
   virtual ~TStrings();
   intptr_t Add(const UnicodeString & S, Classes::TObject * AObject = NULL);
   virtual void Delete(intptr_t Index) = 0;
-  virtual UnicodeString GetTextStr();
+  virtual UnicodeString GetTextStr() const;
   virtual void SetTextStr(const UnicodeString & Text);
   virtual void BeginUpdate();
   virtual void EndUpdate();
@@ -249,7 +249,7 @@ public:
   virtual void Clear() = 0;
   void Move(intptr_t CurIndex, intptr_t NewIndex);
   intptr_t IndexOf(const UnicodeString & S);
-  virtual intptr_t IndexOfName(const UnicodeString & Name);
+  virtual intptr_t IndexOfName(const UnicodeString & Name) const;
   UnicodeString ExtractName(const UnicodeString & S) const;
   void AddStrings(TStrings * Strings);
   void Append(const UnicodeString & Value);
@@ -265,9 +265,9 @@ public:
   {
     FQuoteChar = Value;
   }
-  UnicodeString GetDelimitedText();
+  UnicodeString GetDelimitedText() const;
   void SetDelimitedText(const UnicodeString & Value);
-  virtual intptr_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2);
+  virtual intptr_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const;
   intptr_t GetUpdateCount() const { return FUpdateCount; }
   virtual void Assign(TPersistent * Source);
   virtual intptr_t GetCount() const = 0;
@@ -280,21 +280,21 @@ public:
   virtual bool GetCaseSensitive() const = 0;
   virtual void SetCaseSensitive(bool Value) = 0;
   void SetDuplicates(TDuplicatesEnum Value);
-  UnicodeString GetCommaText();
+  UnicodeString GetCommaText() const;
   void SetCommaText(const UnicodeString & Value);
-  virtual UnicodeString GetText();
+  virtual UnicodeString GetText() const;
   virtual void SetText(const UnicodeString & Text);
   virtual const UnicodeString & GetString(intptr_t Index) const = 0;
   virtual void SetString(intptr_t Index, const UnicodeString & S) = 0;
-  const UnicodeString GetName(intptr_t Index);
+  const UnicodeString GetName(intptr_t Index) const;
   void SetName(intptr_t Index, const UnicodeString & Value);
-  const UnicodeString GetValue(const UnicodeString & Name);
+  const UnicodeString GetValue(const UnicodeString & Name) const;
   void SetValue(const UnicodeString & Name, const UnicodeString & Value);
 
 protected:
   TDuplicatesEnum FDuplicates;
-  wchar_t FDelimiter;
-  wchar_t FQuoteChar;
+  mutable wchar_t FDelimiter;
+  mutable wchar_t FQuoteChar;
   intptr_t FUpdateCount;
 };
 
