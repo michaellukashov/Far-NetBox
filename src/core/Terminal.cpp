@@ -1108,7 +1108,7 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   bool Result;
   std::auto_ptr<TStrings> Prompts(new TStringList());
   std::auto_ptr<TStrings> Results(new TStringList());
-  Prompts->AddObject(Prompt, reinterpret_cast<TObject *>(static_cast<size_t>(FLAGMASK(Echo, pupEcho))));
+  Prompts->AddObject(Prompt, reinterpret_cast<TObject *>(!!Echo));
   Results->AddObject(AResult, reinterpret_cast<TObject *>(MaxLen));
   Result = PromptUser(Data, Kind, Name, Instructions, Prompts.get(), Results.get());
   AResult = Results->GetString(0);
@@ -1131,15 +1131,6 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
 {
   bool AResult = false;
 
-  bool PasswordPrompt =
-    (Prompts->GetCount() == 1) && FLAGCLEAR(int(Prompts->GetObject(0)), pupEcho) &&
-    ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
-     (Kind == pkTIS) || (Kind == pkCryptoCard));
-  if (PasswordPrompt && !GetConfiguration()->GetRememberPassword())
-  {
-    Prompts->SetObject(0, (TObject*)(int(Prompts->GetObject(0)) | pupRemember));
-  }
-
   if (GetOnPromptUser() != NULL)
   {
     TCallbackGuard Guard(this);
@@ -1147,8 +1138,10 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
     Guard.Verify();
   }
 
-  if (AResult && PasswordPrompt &&
-      (GetConfiguration()->GetRememberPassword() || FLAGSET(int(Prompts->GetObject(0)), pupRemember)))
+  if (AResult && GetConfiguration()->GetRememberPassword() &&
+    (Prompts->GetCount() == 1) && (Prompts->GetObject(0) == NULL) &&
+    ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
+     (Kind == pkTIS) || (Kind == pkCryptoCard)));
   {
     RawByteString EncryptedPassword = EncryptPassword(Results->GetString(0));
     if (FTunnelOpening)
