@@ -1,5 +1,7 @@
 NetBox 2.1.30 ??.05.2013
 --------------------
+  * Bugfix: Password prompt dialog is showing password.
+    (http://forum.farmanager.com/viewtopic.php?p=109881#p109881)
   * Bugfix: Two instances of plugin share the same panel modes.
     (http://forum.farmanager.com/viewtopic.php?p=109737#p109737)
   * SFTP, SCP: Performance improvement.
