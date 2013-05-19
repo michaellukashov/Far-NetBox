@@ -192,16 +192,12 @@ public:
   virtual bool TemporaryTransferFile(const UnicodeString & FileName) = 0;
   virtual bool GetStoredCredentialsTried() = 0;
   virtual UnicodeString GetUserName() = 0;
-
   virtual UnicodeString GetCurrentDirectory() = 0;
 
 protected:
   TTerminal * FTerminal;
 
   explicit TCustomFileSystem(TTerminal * ATerminal);
-
-  static void FindCustomCommandPattern(
-    const UnicodeString & Command, int Index, int & Len, char & PatternCmd);
 };
 //---------------------------------------------------------------------------
 #endif

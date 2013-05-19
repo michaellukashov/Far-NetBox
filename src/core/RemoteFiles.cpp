@@ -491,9 +491,9 @@ TRemoteToken & TRemoteToken::operator =(const TRemoteToken & rht)
   return *this;
 }
 //---------------------------------------------------------------------------
-int TRemoteToken::Compare(const TRemoteToken & rht) const
+intptr_t TRemoteToken::Compare(const TRemoteToken & rht) const
 {
-  int Result;
+  intptr_t Result;
   if (!FName.IsEmpty())
   {
     if (!rht.FName.IsEmpty())
@@ -1520,15 +1520,15 @@ void TRemoteFileList::Clear()
 //---------------------------------------------------------------------------
 void TRemoteFileList::SetDirectory(const UnicodeString & Value)
 {
-  FDirectory = UnixExcludeTrailingBackslash(Value);
+  FDirectory = ::UnixExcludeTrailingBackslash(Value);
 }
 //---------------------------------------------------------------------------
 UnicodeString TRemoteFileList::GetFullDirectory()
 {
-  return UnixIncludeTrailingBackslash(GetDirectory());
+  return ::UnixIncludeTrailingBackslash(GetDirectory());
 }
 //---------------------------------------------------------------------------
-TRemoteFile * TRemoteFileList::GetFiles(Integer Index)
+TRemoteFile * TRemoteFileList::GetFiles(Integer Index) const
 {
   return static_cast<TRemoteFile *>(GetItem(Index));
 }
@@ -1640,12 +1640,12 @@ void TRemoteDirectory::DuplicateTo(TRemoteFileList * Copy)
   }
 }
 //---------------------------------------------------------------------------
-bool TRemoteDirectory::GetLoaded()
+bool TRemoteDirectory::GetLoaded() const
 {
   return ((GetTerminal() != NULL) && GetTerminal()->GetActive() && !GetDirectory().IsEmpty());
 }
 //---------------------------------------------------------------------------
-TStrings * TRemoteDirectory::GetSelectedFiles()
+TStrings * TRemoteDirectory::GetSelectedFiles() const
 {
   if (!FSelectedFiles)
   {
@@ -1748,7 +1748,7 @@ bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory)
 {
   TGuard Guard(FSection);
 
-  intptr_t Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
+  intptr_t Index = IndexOf(::UnixExcludeTrailingBackslash(Directory));
   return (Index >= 0);
 }
 //---------------------------------------------------------------------------
@@ -1757,7 +1757,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
 {
   TGuard Guard(FSection);
 
-  intptr_t Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
+  intptr_t Index = IndexOf(::UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
   {
     TRemoteFileList * FileList = dynamic_cast<TRemoteFileList *>(GetObject(Index));
@@ -1774,7 +1774,7 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
 {
   TGuard Guard(FSection);
 
-  intptr_t Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
+  intptr_t Index = IndexOf(::UnixExcludeTrailingBackslash(Directory));
   bool Result = (Index >= 0);
   if (Result)
   {
@@ -1808,7 +1808,7 @@ void TRemoteDirectoryCache::ClearFileList(const UnicodeString & Directory, bool 
 //---------------------------------------------------------------------------
 void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & Directory, bool SubDirs)
 {
-  UnicodeString Directory2 = UnixExcludeTrailingBackslash(Directory);
+  UnicodeString Directory2 = ::UnixExcludeTrailingBackslash(Directory);
   intptr_t Index = IndexOf(Directory2);
   if (Index >= 0)
   {
@@ -1816,7 +1816,7 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & Directory, boo
   }
   if (SubDirs)
   {
-    Directory2 = UnixIncludeTrailingBackslash(Directory2);
+    Directory2 = ::UnixIncludeTrailingBackslash(Directory2);
     Index = GetCount() - 1;
     while (Index >= 0)
     {
@@ -1904,8 +1904,8 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
 {
   UnicodeString Key;
   // hack to clear at least local sym-link change in case symlink is deleted
-  DirectoryChangeKey(UnixExcludeTrailingBackslash(UnixExtractFilePath(TargetDir)),
-    UnixExtractFileName(TargetDir), Key);
+  DirectoryChangeKey(::UnixExcludeTrailingBackslash(::UnixExtractFilePath(TargetDir)),
+    ::UnixExtractFileName(TargetDir), Key);
 
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {

@@ -31,7 +31,7 @@ public:
   bool operator !=(const TRemoteToken & rht) const;
   TRemoteToken & operator =(const TRemoteToken & rht);
 
-  int Compare(const TRemoteToken & rht) const;
+  intptr_t Compare(const TRemoteToken & rht) const;
 
   UnicodeString GetName() const { return FName; }
   void SetName(const UnicodeString & Value) { FName = Value; }
@@ -202,7 +202,7 @@ public:
   virtual void AddFile(TRemoteFile * File);
   UnicodeString GetDirectory() const { return FDirectory; }
   virtual void SetDirectory(const UnicodeString & Value);
-  TRemoteFile * GetFiles(Integer Index);
+  TRemoteFile * GetFiles(Integer Index) const;
   UnicodeString GetFullDirectory();
   Boolean GetIsRoot();
   UnicodeString GetParentPath();
@@ -219,7 +219,7 @@ private:
   Boolean FIncludeParentDirectory;
   Boolean FIncludeThisDirectory;
   TTerminal * FTerminal;
-  TStrings * FSelectedFiles;
+  mutable TStrings * FSelectedFiles;
   TRemoteFile * FParentDirectory;
   TRemoteFile * FThisDirectory;
 protected:
@@ -229,16 +229,16 @@ public:
   virtual ~TRemoteDirectory() { Clear(); }
   virtual void AddFile(TRemoteFile * File);
   virtual void DuplicateTo(TRemoteFileList * Copy);
-  TTerminal * GetTerminal() { return FTerminal; }
+  TTerminal * GetTerminal() const { return FTerminal; }
   void SetTerminal(TTerminal * Value) { FTerminal = Value; }
-  TStrings * GetSelectedFiles();
-  Boolean GetIncludeParentDirectory() { return FIncludeParentDirectory; }
+  TStrings * GetSelectedFiles() const;
+  Boolean GetIncludeParentDirectory() const { return FIncludeParentDirectory; }
   void SetIncludeParentDirectory(Boolean Value);
-  Boolean GetIncludeThisDirectory() { return FIncludeThisDirectory; }
+  Boolean GetIncludeThisDirectory() const { return FIncludeThisDirectory; }
   void SetIncludeThisDirectory(Boolean Value);
-  Boolean GetLoaded();
-  TRemoteFile * GetParentDirectory() { return FParentDirectory; }
-  TRemoteFile * GetThisDirectory() { return FThisDirectory; }
+  Boolean GetLoaded() const;
+  TRemoteFile * GetParentDirectory() const { return FParentDirectory; }
+  TRemoteFile * GetThisDirectory() const { return FThisDirectory; }
   virtual void SetDirectory(const UnicodeString & Value);
 };
 //---------------------------------------------------------------------------
