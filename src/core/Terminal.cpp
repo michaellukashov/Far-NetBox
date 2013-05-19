@@ -893,15 +893,11 @@ void TTerminal::Open()
       Reopen = DoQueryReopen(&E);
       if (Reopen)
       {
-        delete FFileSystem;
-        FFileSystem = NULL;
-        delete FSecureShell;
-        FSecureShell = NULL;
-        delete FTunnelData;
-        FTunnelData = NULL;
+        SAFE_DESTROY(FFileSystem);
+        SAFE_DESTROY(FSecureShell);
+        SAFE_DESTROY(FTunnelData);
         FStatus = ssClosed;
-        delete FTunnel;
-        FTunnel = NULL;
+        SAFE_DESTROY(FTunnel);
       }
       else
       {
@@ -1178,30 +1174,23 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
 {
   intptr_t Result = 0;
   TStrings * MoreMessages = new TStringList();
-  TRY_FINALLY (
+  std::auto_ptr<TStrings> MoreMessagesPtr(MoreMessages);
+  if (E != NULL)
   {
-    if (E != NULL)
+    if (!E->Message.IsEmpty() && !Query.IsEmpty())
     {
-      if (!E->Message.IsEmpty() && !Query.IsEmpty())
-      {
-        MoreMessages->Add(E->Message);
-      }
-
-      ExtException * EE = dynamic_cast<ExtException*>(E);
-      if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
-      {
-        MoreMessages->AddStrings(EE->GetMoreMessages());
-      }
+      MoreMessages->Add(E->Message);
     }
-    Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(E ? E->Message : L""),
-      MoreMessages->GetCount() ? MoreMessages : NULL,
-      Answers, Params, QueryType);
+
+    ExtException * EE = dynamic_cast<ExtException*>(E);
+    if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
+    {
+      MoreMessages->AddStrings(EE->GetMoreMessages());
+    }
   }
-  ,
-  {
-    delete MoreMessages;
-  }
-  );
+  Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(E ? E->Message : L""),
+    MoreMessages->GetCount() ? MoreMessages : NULL,
+    Answers, Params, QueryType);
   return Result;
 }
 //------------------------------------------------------------------------------
@@ -1944,16 +1933,8 @@ uintptr_t TTerminal::CommandError(Exception * E, const UnicodeString & Msg,
   }
   else if (!Answers)
   {
-    ECommand * ECmd = new ECommand(E, Msg);
-    TRY_FINALLY (
-    {
-      HandleExtendedException(ECmd);
-    }
-    ,
-    {
-      delete ECmd;
-    }
-    );
+    ECommand ECmd(E, Msg);
+    HandleExtendedException(&ECmd);
   }
   else
   {
