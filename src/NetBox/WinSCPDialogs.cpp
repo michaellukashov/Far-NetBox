@@ -1230,7 +1230,8 @@ class TPasswordDialog : public TFarDialog
 public:
   explicit TPasswordDialog(TCustomFarPlugin * AFarPlugin,
     const UnicodeString & SessionName, TPromptKind Kind, const UnicodeString & Name,
-    const UnicodeString & Instructions, TStrings * Prompts, bool StoredCredentialsTried);
+    const UnicodeString & Instructions, const TStrings * Prompts,
+    bool StoredCredentialsTried);
   virtual ~TPasswordDialog();
   bool Execute(TStrings * Results);
 
@@ -1244,12 +1245,13 @@ private:
   void GenerateLabel(const UnicodeString & ACaption, bool & Truncated);
   TFarEdit * GenerateEdit(bool Echo);
   void GeneratePrompt(bool ShowSavePassword,
-    const UnicodeString & Instructions, TStrings * Prompts, bool & Truncated);
+    const UnicodeString & Instructions, const TStrings * Prompts, bool & Truncated);
 };
 //------------------------------------------------------------------------------
 TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   const UnicodeString & SessionName, TPromptKind Kind, const UnicodeString & Name,
-  const UnicodeString & Instructions, TStrings * Prompts, bool StoredCredentialsTried) :
+  const UnicodeString & Instructions, const TStrings * Prompts,
+  bool StoredCredentialsTried) :
   TFarDialog(AFarPlugin),
   FSessionData(NULL),
   FEdits(new TList()),
@@ -1343,7 +1345,7 @@ TFarEdit * TPasswordDialog::GenerateEdit(bool Echo)
 }
 //------------------------------------------------------------------------------
 void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
-  const UnicodeString & Instructions, TStrings * Prompts, bool & Truncated)
+  const UnicodeString & Instructions, const TStrings * Prompts, bool & Truncated)
 {
   FEdits->Clear();
   TPoint S = TPoint(40, ShowSavePassword ? 1 : 0);
