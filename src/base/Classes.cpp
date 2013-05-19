@@ -138,11 +138,6 @@ void * TList::operator [](intptr_t Index) const
   return FList[Index];
 }
 
-void * TList::GetItem(intptr_t Index)
-{
-  return FList[Index];
-}
-
 void TList::SetItem(intptr_t Index, void * Item)
 {
   if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FList.size())))
@@ -317,7 +312,7 @@ TObject * TObjectList::operator [](intptr_t Index) const
   return static_cast<TObject *>(TList::operator[](Index));
 }
 
-TObject * TObjectList::GetItem(intptr_t Index)
+TObject * TObjectList::GetItem(intptr_t Index) const
 {
   return reinterpret_cast<TObject *>(TList::GetItem(Index));
 }

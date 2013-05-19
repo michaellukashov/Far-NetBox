@@ -174,7 +174,8 @@ public:
   TList();
   virtual ~TList();
   void * operator [](intptr_t Index) const;
-  void * GetItem(intptr_t Index);
+  void * GetItem(intptr_t Index) const { return FList[Index]; }
+  void * GetItem(intptr_t Index) { return FList[Index]; }
   void SetItem(intptr_t Index, void * Item);
   intptr_t Add(void * Value);
   void * Extract(void * Item);
@@ -202,7 +203,7 @@ public:
   virtual ~TObjectList();
 
   TObject * operator [](intptr_t Index) const;
-  TObject * GetItem(intptr_t Index);
+  TObject * GetItem(intptr_t Index) const;
   void SetItem(intptr_t Index, TObject * Value);
   intptr_t Add(TObject * Value);
   intptr_t Remove(TObject * Value);
