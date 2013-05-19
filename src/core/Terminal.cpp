@@ -1112,7 +1112,7 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   Results->AddObject(AResult, reinterpret_cast<TObject *>(MaxLen));
   Result = PromptUser(Data, Kind, Name, Instructions, Prompts.get(), Results.get());
   AResult = Results->GetString(0);
-  return AResult;
+  return Result;
 }
 //------------------------------------------------------------------------------
 bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
