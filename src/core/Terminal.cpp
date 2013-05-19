@@ -1129,16 +1129,16 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
   TStrings * Results)
 {
-  bool AResult = false;
+  bool Result = false;
 
   if (GetOnPromptUser() != NULL)
   {
     TCallbackGuard Guard(this);
-    GetOnPromptUser()(this, Kind, Name, Instructions, Prompts, Results, AResult, NULL);
+    GetOnPromptUser()(this, Kind, Name, Instructions, Prompts, Results, Result, NULL);
     Guard.Verify();
   }
 
-  if (AResult && GetConfiguration()->GetRememberPassword() &&
+  if (Result && GetConfiguration()->GetRememberPassword() &&
     (Prompts->GetCount() == 1) && (Prompts->GetObject(0) == NULL) &&
     ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
      (Kind == pkTIS) || (Kind == pkCryptoCard)));
@@ -1154,7 +1154,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
     }
   }
 
-  return AResult;
+  return Result;
 }
 //------------------------------------------------------------------------------
 uintptr_t TTerminal::QueryUser(const UnicodeString & Query,
