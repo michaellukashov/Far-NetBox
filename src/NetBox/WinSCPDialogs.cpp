@@ -5397,6 +5397,7 @@ TCopyParamType TCopyParamsContainer::GetParams()
     Result.GetAsciiFileMask().SetMasks(AsciiFileMaskEdit->GetText());
     intptr_t Start, Length;
     assert(Result.GetAsciiFileMask().GetIsValid(Start, Length));
+    (void)Start; (void)Length;
   }
 
   if (CCLowerCaseButton->GetChecked())
