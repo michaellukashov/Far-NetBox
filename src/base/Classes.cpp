@@ -585,21 +585,19 @@ UnicodeString TStrings::GetText()
 UnicodeString TStrings::GetTextStr()
 {
   UnicodeString Result;
-  intptr_t I, Size, Count;
-  wchar_t * P = NULL;
   UnicodeString S, LB;
 
-  Count = GetCount();
+  intptr_t Count = GetCount();
   // DEBUG_PRINTF(L"Count = %d", Count);
-  Size = 0;
+  intptr_t Size = 0;
   LB = sLineBreak;
-  for (I = 0; I < Count; I++)
+  for (intptr_t I = 0; I < Count; I++)
   {
     Size += GetString(I).Length() + LB.Length();
   }
   Result.SetLength(Size);
-  P = const_cast<wchar_t *>(Result.c_str());
-  for (I = 0; I < Count; I++)
+  wchar_t * P = const_cast<wchar_t *>(Result.c_str());
+  for (intptr_t I = 0; I < Count; I++)
   {
     S = GetString(I);
     // DEBUG_PRINTF(L"  S = %s", S.c_str());
@@ -988,7 +986,7 @@ void TStringList::Delete(intptr_t Index)
   Changed();
 }
 
-TObject * TStringList::GetObject(intptr_t Index)
+TObject * TStringList::GetObject(intptr_t Index) const
 {
   if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FList.size())))
   {
@@ -1021,11 +1019,11 @@ void TStringList::InsertItem(intptr_t Index, const UnicodeString & S, TObject * 
   if (Index == GetCount())
     FList.push_back(Item);
   else
-    FList.insert(Index, 1, Item);
+    FList.insert(FList.begin() + Index, Item);
   Changed();
 }
 
-UnicodeString & TStringList::GetString(intptr_t Index)
+const UnicodeString & TStringList::GetString(intptr_t Index) const
 {
   // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
   if ((Index == NPOS) || (Index > static_cast<intptr_t>(FList.size())))
@@ -1034,7 +1032,7 @@ UnicodeString & TStringList::GetString(intptr_t Index)
   }
   if (Index == static_cast<intptr_t>(FList.size()))
   {
-    InsertItem(Index, UnicodeString(), NULL);
+    const_cast<TStringList*>(this)->InsertItem(Index, UnicodeString(), NULL);
   }
   return FList[Index].first;
 }

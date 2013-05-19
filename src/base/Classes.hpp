@@ -272,7 +272,7 @@ public:
   virtual intptr_t GetCount() const = 0;
 
 public:
-  virtual TObject * GetObject(intptr_t Index) = 0;
+  virtual TObject * GetObject(intptr_t Index) const = 0;
   virtual void SetObject(intptr_t Index, TObject * AObject) = 0;
   virtual bool GetSorted() const = 0;
   virtual void SetSorted(bool Value) = 0;
@@ -283,7 +283,7 @@ public:
   void SetCommaText(const UnicodeString & Value);
   virtual UnicodeString GetText();
   virtual void SetText(const UnicodeString & Text);
-  virtual UnicodeString & GetString(intptr_t Index) = 0;
+  virtual const UnicodeString & GetString(intptr_t Index) const = 0;
   virtual void SetString(intptr_t Index, const UnicodeString & S) = 0;
   const UnicodeString GetName(intptr_t Index);
   void SetName(intptr_t Index, const UnicodeString & Value);
@@ -338,13 +338,13 @@ public:
   virtual intptr_t GetCount() const;
 
 public:
-  virtual TObject * GetObject(intptr_t Index);
+  virtual TObject * GetObject(intptr_t Index) const;
   virtual void SetObject(intptr_t Index, TObject * AObject);
   virtual bool GetSorted() const;
   virtual void SetSorted(bool Value);
   virtual bool GetCaseSensitive() const;
   virtual void SetCaseSensitive(bool Value);
-  virtual UnicodeString & GetString(intptr_t Index);
+  virtual const UnicodeString & GetString(intptr_t Index) const;
   virtual void SetString(intptr_t Index, const UnicodeString & S);
 
 private:
