@@ -351,7 +351,8 @@ uintptr_t TTunnelUI::QueryUserException(const UnicodeString & Query,
 }
 //------------------------------------------------------------------------------
 bool TTunnelUI::PromptUser(TSessionData * Data, TPromptKind Kind,
-  const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts, TStrings * Results)
+  const UnicodeString & Name, const UnicodeString & Instructions, TStrings* Prompts,
+  TStrings * Results)
 {
   bool Result;
   if (GetCurrentThreadId() == FTerminalThread)
@@ -1115,7 +1116,8 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
 }
 //------------------------------------------------------------------------------
 bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
-  const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts, TStrings * Results)
+  const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
+  TStrings * Results)
 {
   // If PromptUser is overridden in descendant class, the overridden version
   // is not called when accessed via TSessionIU interface.
@@ -1124,7 +1126,8 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
 }
 //------------------------------------------------------------------------------
 bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
-  const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts, TStrings * Results)
+  const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
+  TStrings * Results)
 {
   bool AResult = false;
 

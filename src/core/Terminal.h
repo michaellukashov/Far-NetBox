@@ -346,7 +346,7 @@ protected:
   virtual void FatalError(Exception * E, const UnicodeString & Msg);
   void ResetConnection();
   virtual bool DoPromptUser(TSessionData * Data, TPromptKind Kind,
-    const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
+    const UnicodeString & Name, const UnicodeString & Instructions, TStrings* Prompts,
     TStrings * Response);
   void OpenTunnel();
   void CloseTunnel();
@@ -369,7 +369,8 @@ protected:
     Exception * E, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation);
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts, TStrings * Results);
+    const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
+    TStrings * Results);
   virtual void DisplayBanner(const UnicodeString & Banner);
   virtual void Closed();
   virtual void HandleExtendedException(Exception * E);
