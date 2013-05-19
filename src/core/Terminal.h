@@ -274,7 +274,8 @@ protected:
   void DoDeleteFile(const UnicodeString & FileName, const TRemoteFile * File,
     intptr_t Params);
   void DoCustomCommandOnFile(const UnicodeString & FileName,
-    const TRemoteFile * File, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
+    const TRemoteFile * File, const UnicodeString & Command, intptr_t Params,
+    TCaptureOutputEvent OutputEvent);
   void DoRenameFile(const UnicodeString & FileName,
     const UnicodeString & NewName, bool Move);
   void DoCopyFile(const UnicodeString & FileName, const UnicodeString & NewName);
@@ -301,7 +302,8 @@ protected:
   UnicodeString TranslateLockedPath(const UnicodeString & Path, bool Lock);
   void ReadDirectory(TRemoteFileList * FileList);
   void CustomReadDirectory(TRemoteFileList * FileList);
-  void DoCreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic);
+  void DoCreateLink(const UnicodeString & FileName, const UnicodeString & PointTo,
+    bool Symbolic);
   bool CreateLocalFile(const UnicodeString & FileName,
     TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
@@ -319,7 +321,8 @@ protected:
   void CalculateLocalFilesSize(TStrings * FileList, __int64 & Size,
     const TCopyParamType * CopyParam = NULL);
   TBatchOverwrite EffectiveBatchOverwrite(
-    const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress, bool Special);
+    const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
+    bool Special);
   bool CheckRemoteFile(
     const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress);
   uintptr_t ConfirmFileOverwrite(const UnicodeString & FileName,
@@ -353,7 +356,8 @@ protected:
   void DoInformation(const UnicodeString & Str, bool Status, intptr_t Phase = -1);
   UnicodeString FileUrl(const UnicodeString & Protocol, const UnicodeString & FileName);
   bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    const UnicodeString & Name, const UnicodeString & Instructions, const UnicodeString & Prompt, bool Echo,
+    const UnicodeString & Name, const UnicodeString & Instructions, const UnicodeString & Prompt,
+    bool Echo,
     intptr_t MaxLen, UnicodeString & AResult);
   void FileFind(const UnicodeString & FileName, const TRemoteFile * File, void * Param);
   void DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params);
@@ -382,7 +386,8 @@ protected:
     TFileOperationProgressType * OperationProgress, Exception * E = NULL);
   void DoAnyCommand(const UnicodeString & Command, TCaptureOutputEvent OutputEvent,
     TCallSessionAction * Action);
-  TRemoteFileList * DoReadDirectoryListing(const UnicodeString & Directory, bool UseCache);
+  TRemoteFileList * DoReadDirectoryListing(const UnicodeString & Directory,
+    bool UseCache);
   RawByteString EncryptPassword(const UnicodeString & Password);
   UnicodeString DecryptPassword(const RawByteString & Password);
   void LogFile(TRemoteFile * File);
@@ -486,7 +491,8 @@ public:
     const TSearchRec & Rec, void * Param);
   UnicodeString FileUrl(const UnicodeString & FileName);
   bool FileOperationLoopQuery(Exception & E,
-    TFileOperationProgressType * OperationProgress, const UnicodeString & Message,
+    TFileOperationProgressType * OperationProgress,
+    const UnicodeString & Message,
     bool AllowSkip, const UnicodeString & SpecialRetry = UnicodeString());
   TUsableCopyParamAttrs UsableCopyParamAttrs(intptr_t Params);
   bool QueryReopen(Exception * E, intptr_t Params,
@@ -686,7 +692,7 @@ public:
     bool Checked;
     TRemoteFile * RemoteFile;
 
-    const UnicodeString& GetFileName() const;
+    const UnicodeString & GetFileName() const;
 
     ~TItem();
 

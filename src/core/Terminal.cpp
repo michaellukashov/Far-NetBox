@@ -143,7 +143,7 @@ TSynchronizeChecklist::TItem::~TItem()
   delete RemoteFile;
 }
 //------------------------------------------------------------------------------
-const UnicodeString& TSynchronizeChecklist::TItem::GetFileName() const
+const UnicodeString & TSynchronizeChecklist::TItem::GetFileName() const
 {
   if (!Remote.FileName.IsEmpty())
   {
