@@ -54,9 +54,8 @@ void Abort()
 //---------------------------------------------------------------------------
 void Error(int ErrorID, intptr_t data)
 {
-  DEBUG_PRINTF(L"begin: ErrorID = %d, data = %d", ErrorID, data);
+  // DEBUG_PRINTF(L"begin: ErrorID = %d, data = %d", ErrorID, data);
   UnicodeString Msg = FMTLOAD(ErrorID, data);
-  // DEBUG_PRINTF(L"Msg = %s", Msg.c_str());
   throw ExtException((Exception *)NULL, Msg);
 }
 
@@ -583,7 +582,6 @@ UnicodeString TStrings::GetTextStr() const
   UnicodeString S, LB;
 
   intptr_t Count = GetCount();
-  // DEBUG_PRINTF(L"Count = %d", Count);
   intptr_t Size = 0;
   LB = sLineBreak;
   for (intptr_t I = 0; I < Count; I++)
@@ -595,7 +593,6 @@ UnicodeString TStrings::GetTextStr() const
   for (intptr_t I = 0; I < Count; I++)
   {
     S = GetString(I);
-    // DEBUG_PRINTF(L"  S = %s", S.c_str());
     intptr_t L = S.Length() * sizeof(wchar_t);
     if (L != 0)
     {
@@ -712,7 +709,6 @@ void TStrings::Move(intptr_t CurIndex, intptr_t NewIndex)
 
 intptr_t TStrings::IndexOf(const UnicodeString & S)
 {
-  // DEBUG_PRINTF(L"begin");
   for (intptr_t Result = 0; Result < GetCount(); Result++)
   {
     if (CompareStrings(GetString(Result), S) == 0)
@@ -720,7 +716,6 @@ intptr_t TStrings::IndexOf(const UnicodeString & S)
       return Result;
     }
   }
-  // DEBUG_PRINTF(L"end");
   return NPOS;
 }
 
@@ -769,12 +764,10 @@ const UnicodeString TStrings::GetValue(const UnicodeString & Name) const
 {
   UnicodeString Result;
   intptr_t I = IndexOfName(Name);
-  // DEBUG_PRINTF(L"Name = %s, I = %d", Name.c_str(), I);
   if (I >= 0)
   {
     Result = GetString(I).SubStr(Name.Length() + 2, -1);
   }
-  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 }
 
@@ -868,7 +861,6 @@ intptr_t TStringList::Add(const UnicodeString & S)
 
 intptr_t TStringList::AddObject(const UnicodeString & S, TObject * AObject)
 {
-  // DEBUG_PRINTF(L"S = %s, Duplicates = %d", S.c_str(), FDuplicates);
   intptr_t Result = 0;
   if (!GetSorted())
   {
@@ -925,7 +917,6 @@ bool TStringList::Find(const UnicodeString & S, intptr_t & Index)
 
 intptr_t TStringList::IndexOf(const UnicodeString & S)
 {
-  // DEBUG_PRINTF(L"begin");
   intptr_t Result = NPOS;
   if (!GetSorted())
   {
@@ -938,7 +929,6 @@ intptr_t TStringList::IndexOf(const UnicodeString & S)
       Result = NPOS;
     }
   }
-  // DEBUG_PRINTF(L"end");
   return Result;
 }
 
@@ -953,7 +943,6 @@ void TStringList::SetString(intptr_t Index, const UnicodeString & S)
     Classes::Error(SListIndexError, Index);
   }
   Changing();
-  // DEBUG_PRINTF(L"Index = %d, size = %d", Index, FList.size());
   if (Index < static_cast<intptr_t>(FList.size()))
   {
     TObject * Temp = GetObject(Index);
@@ -976,7 +965,6 @@ void TStringList::Delete(intptr_t Index)
     Classes::Error(SListIndexError, Index);
   }
   Changing();
-  // DEBUG_PRINTF(L"Index = %d, Count = %d, Value = %s", Index, GetCount(), FList[Index].FString.c_str());
   FList.erase(FList.begin() + Index);
   Changed();
 }
@@ -1020,7 +1008,6 @@ void TStringList::InsertItem(intptr_t Index, const UnicodeString & S, TObject * 
 
 const UnicodeString & TStringList::GetString(intptr_t Index) const
 {
-  // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
   if ((Index == NPOS) || (Index > static_cast<intptr_t>(FList.size())))
   {
     Classes::Error(SListIndexError, Index);
@@ -1079,7 +1066,6 @@ void TStringList::LoadFromFile(const UnicodeString & FileName)
     FileBuffer.Convert(eolCRLF, eolCRLF, cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
     ::CloseHandle(FileHandle);
     UnicodeString Str(FileBuffer.GetData(), static_cast<intptr_t>(FileBuffer.GetSize()));
-    // DEBUG_PRINTF(L"Str = %s", Str.c_str());
     SetTextStr(Str);
   }
   /* FILE * f = NULL;
@@ -1088,11 +1074,9 @@ void TStringList::LoadFromFile(const UnicodeString & FileName)
     return;
   fseek(f, 0, SEEK_END);
   size_t sz = ftell(f);
-  DEBUG_PRINTF(L"sz = %lu", sz);
   void * content = calloc(sz, 1);
   fseek(f, 0, SEEK_SET);
   size_t read = fread(content, 1, sz, f);
-  DEBUG_PRINTF(L"read = %lu", read);
   fclose(f);
   if (read == sz)
   {
@@ -1170,12 +1154,10 @@ void TStringList::QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SComp
     I = L;
     intptr_t J = R;
     intptr_t P = (L + R) >> 1;
-    // DEBUG_PRINTF(L"L = %d, R = %d, P = %d", L, R, P);
     do
     {
       while (SCompare(this, I, P) < 0) { I++; }
       while (SCompare(this, J, P) > 0) { J--; }
-      // DEBUG_PRINTF(L"I = %d, J = %d, P = %d", I, J, P);
       if (I <= J)
       {
         ExchangeItems(I, J);
@@ -1450,7 +1432,6 @@ void TStream::ReadBuffer(void * Buffer, __int64 Count)
 
 void TStream::WriteBuffer(const void * Buffer, __int64 Count)
 {
-  // DEBUG_PRINTF(L"Count = %d", Count);
   if ((Count != 0) && (Write(Buffer, Count) != Count))
   {
     throw Exception(FMTLOAD(SWriteError));
@@ -1478,7 +1459,6 @@ THandleStream::~THandleStream()
 __int64 THandleStream::Read(void * Buffer, __int64 Count)
 {
   __int64 Result = ::FileRead(FHandle, Buffer, Count);
-  // DEBUG_PRINTF(L"Result = %d, FHandle = %d, Count = %d", Result, FHandle, Count);
   if (Result == -1) { Result = 0; }
   return Result;
 }
@@ -1825,7 +1805,6 @@ void TRegistry::CloseKey()
 
 bool TRegistry::OpenKey(const UnicodeString & Key, bool CanCreate)
 {
-  // DEBUG_PRINTF(L"key = %s, CanCreate = %d", Key.c_str(), CanCreate);
   bool Result = false;
   UnicodeString S = Key;
   bool Relative = Classes::IsRelative(S);
@@ -1834,14 +1813,12 @@ bool TRegistry::OpenKey(const UnicodeString & Key, bool CanCreate)
   HKEY TempKey = 0;
   if (!CanCreate || S.IsEmpty())
   {
-    // DEBUG_PRINTF(L"RegOpenKeyEx");
     Result = RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0,
                           FAccess, &TempKey) == ERROR_SUCCESS;
   }
   else
   {
     // int Disposition = 0;
-    // DEBUG_PRINTF(L"RegCreateKeyEx: Relative = %d", Relative);
     Result = RegCreateKeyEx(GetBaseKey(Relative), S.c_str(), 0, NULL,
                             REG_OPTION_NON_VOLATILE, FAccess, NULL, &TempKey, NULL) == ERROR_SUCCESS;
   }
@@ -1853,7 +1830,6 @@ bool TRegistry::OpenKey(const UnicodeString & Key, bool CanCreate)
     }
     ChangeKey(TempKey, S);
   }
-  // DEBUG_PRINTF(L"CurrentKey = %d, Result = %d", GetCurrentKey(), Result);
   return Result;
 }
 
@@ -1906,7 +1882,6 @@ bool TRegistry::DeleteValue(const UnicodeString & Name) const
 bool TRegistry::KeyExists(const UnicodeString & Key)
 {
   bool Result = false;
-  // DEBUG_PRINTF(L"Key = %s", Key.c_str());
   unsigned OldAccess = FAccess;
   TRY_FINALLY (
   {
@@ -1920,7 +1895,6 @@ bool TRegistry::KeyExists(const UnicodeString & Key)
     FAccess = OldAccess;
   }
   );
-  // DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
 
@@ -1928,7 +1902,6 @@ bool TRegistry::ValueExists(const UnicodeString & Name) const
 {
   TRegDataInfo Info;
   bool Result = GetDataInfo(Name, Info);
-  // DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
 
@@ -1938,7 +1911,6 @@ bool TRegistry::GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Valu
   memset(&Value, 0, sizeof(Value));
   bool Result = (RegQueryValueEx(GetCurrentKey(), ValueName.c_str(), NULL, &DataType, NULL,
                                  &Value.DataSize) == ERROR_SUCCESS);
-  // DEBUG_PRINTF(L"Result = %d", Result);
   Value.RegData = DataTypeToRegData(DataType);
   return Result;
 }
@@ -2001,9 +1973,7 @@ intptr_t TRegistry::ReadInteger(const UnicodeString & Name) const
 {
   DWORD Result = 0;
   TRegDataType RegData = rdUnknown;
-  // DEBUG_PRINTF(L"Name = %s", Name.c_str());
   GetData(Name, &Result, sizeof(Result), RegData);
-  // DEBUG_PRINTF(L"Result = %d, RegData = %d, rdInteger = %d", Result, RegData, rdInteger);
   if (RegData != rdInteger)
   {
     Classes::ReadError(Name);
@@ -2076,7 +2046,6 @@ int TRegistry::GetData(const UnicodeString & Name, void * Buffer,
 {
   DWORD DataType = REG_NONE;
   DWORD bufSize = static_cast<DWORD>(BufSize);
-  // DEBUG_PRINTF(L"GetCurrentKey = %d", GetCurrentKey());
   if (RegQueryValueEx(GetCurrentKey(), Name.c_str(), NULL, &DataType,
     reinterpret_cast<BYTE *>(Buffer), &bufSize) != ERROR_SUCCESS)
   {
@@ -2091,7 +2060,6 @@ void TRegistry::PutData(const UnicodeString & Name, const void * Buffer,
   intptr_t BufSize, TRegDataType RegData)
 {
   int DataType = Classes::RegDataToDataType(RegData);
-  // DEBUG_PRINTF(L"GetCurrentKey = %d, Name = %s, REG_DWORD = %d, DataType = %d, BufSize = %d", GetCurrentKey(), Name.c_str(), REG_DWORD, DataType, BufSize);
   if (RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType,
                     reinterpret_cast<const BYTE *>(Buffer), static_cast<DWORD>(BufSize)) != ERROR_SUCCESS)
   {
@@ -2117,7 +2085,6 @@ void TRegistry::WriteFloat(const UnicodeString & Name, double Value)
 
 void TRegistry::WriteString(const UnicodeString & Name, const UnicodeString & Value)
 {
-  // DEBUG_PRINTF(L"Value = %s, Value.size = %d", Value.c_str(), Value.size());
   PutData(Name, static_cast<const void *>(Value.c_str()), Value.Length() * sizeof(wchar_t) + 1, rdString);
 }
 
