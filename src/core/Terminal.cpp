@@ -351,7 +351,8 @@ uintptr_t TTunnelUI::QueryUserException(const UnicodeString & Query,
 }
 //------------------------------------------------------------------------------
 bool TTunnelUI::PromptUser(TSessionData * Data, TPromptKind Kind,
-  const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts, TStrings * Results)
+  const UnicodeString & Name, const UnicodeString & Instructions, TStrings* Prompts,
+  TStrings * Results)
 {
   bool Result;
   if (GetCurrentThreadId() == FTerminalThread)
@@ -892,15 +893,11 @@ void TTerminal::Open()
       Reopen = DoQueryReopen(&E);
       if (Reopen)
       {
-        delete FFileSystem;
-        FFileSystem = NULL;
-        delete FSecureShell;
-        FSecureShell = NULL;
-        delete FTunnelData;
-        FTunnelData = NULL;
+        SAFE_DESTROY(FFileSystem);
+        SAFE_DESTROY(FSecureShell);
+        SAFE_DESTROY(FTunnelData);
         FStatus = ssClosed;
-        delete FTunnel;
-        FTunnel = NULL;
+        SAFE_DESTROY(FTunnel);
       }
       else
       {
@@ -1100,32 +1097,23 @@ void TTerminal::Reopen(intptr_t Params)
 }
 //------------------------------------------------------------------------------
 bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
-  const UnicodeString & Name, const UnicodeString & Instructions, const UnicodeString & Prompt, bool Echo, int MaxLen, UnicodeString & Result)
+  const UnicodeString & Name, const UnicodeString & Instructions,
+  const UnicodeString & Prompt,
+  bool Echo, int MaxLen, UnicodeString & AResult)
 {
-  bool AResult;
-  TStrings * Prompts = new TStringList();
-  TStrings * Results = new TStringList();
-  TRY_FINALLY (
-  {
-    Prompts->AddObject(Prompt, reinterpret_cast<TObject *>(static_cast<size_t>(FLAGMASK(Echo, pupEcho))));
-    Results->AddObject(Result, reinterpret_cast<TObject *>(MaxLen));
-
-    AResult = PromptUser(Data, Kind, Name, Instructions, Prompts, Results);
-
-    Result = Results->GetString(0);
-  }
-  ,
-  {
-    delete Prompts;
-    delete Results;
-  }
-  );
-
-  return AResult;
+  bool Result;
+  std::auto_ptr<TStrings> Prompts(new TStringList());
+  std::auto_ptr<TStrings> Results(new TStringList());
+  Prompts->AddObject(Prompt, reinterpret_cast<TObject *>(!!Echo));
+  Results->AddObject(AResult, reinterpret_cast<TObject *>(MaxLen));
+  Result = PromptUser(Data, Kind, Name, Instructions, Prompts.get(), Results.get());
+  AResult = Results->GetString(0);
+  return Result;
 }
 //------------------------------------------------------------------------------
 bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
-  const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts, TStrings * Results)
+  const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
+  TStrings * Results)
 {
   // If PromptUser is overridden in descendant class, the overridden version
   // is not called when accessed via TSessionIU interface.
@@ -1134,28 +1122,22 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
 }
 //------------------------------------------------------------------------------
 bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
-  const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts, TStrings * Results)
+  const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
+  TStrings * Results)
 {
-  bool AResult = false;
-
-  bool PasswordPrompt =
-    (Prompts->GetCount() == 1) && FLAGCLEAR(int(Prompts->GetObject(0)), pupEcho) &&
-    ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
-     (Kind == pkTIS) || (Kind == pkCryptoCard));
-  if (PasswordPrompt && !GetConfiguration()->GetRememberPassword())
-  {
-    Prompts->SetObject(0, (TObject*)(int(Prompts->GetObject(0)) | pupRemember));
-  }
+  bool Result = false;
 
   if (GetOnPromptUser() != NULL)
   {
     TCallbackGuard Guard(this);
-    GetOnPromptUser()(this, Kind, Name, Instructions, Prompts, Results, AResult, NULL);
+    GetOnPromptUser()(this, Kind, Name, Instructions, Prompts, Results, Result, NULL);
     Guard.Verify();
   }
 
-  if (AResult && PasswordPrompt &&
-      (GetConfiguration()->GetRememberPassword() || FLAGSET(int(Prompts->GetObject(0)), pupRemember)))
+  if (Result && GetConfiguration()->GetRememberPassword() &&
+    (Prompts->GetCount() == 1) && (Prompts->GetObject(0) == NULL) &&
+    ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
+     (Kind == pkTIS) || (Kind == pkCryptoCard)));
   {
     RawByteString EncryptedPassword = EncryptPassword(Results->GetString(0));
     if (FTunnelOpening)
@@ -1168,7 +1150,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
     }
   }
 
-  return AResult;
+  return Result;
 }
 //------------------------------------------------------------------------------
 uintptr_t TTerminal::QueryUser(const UnicodeString & Query,
@@ -1192,30 +1174,23 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
 {
   intptr_t Result = 0;
   TStrings * MoreMessages = new TStringList();
-  TRY_FINALLY (
+  std::auto_ptr<TStrings> MoreMessagesPtr(MoreMessages);
+  if (E != NULL)
   {
-    if (E != NULL)
+    if (!E->Message.IsEmpty() && !Query.IsEmpty())
     {
-      if (!E->Message.IsEmpty() && !Query.IsEmpty())
-      {
-        MoreMessages->Add(E->Message);
-      }
-
-      ExtException * EE = dynamic_cast<ExtException*>(E);
-      if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
-      {
-        MoreMessages->AddStrings(EE->GetMoreMessages());
-      }
+      MoreMessages->Add(E->Message);
     }
-    Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(E ? E->Message : L""),
-      MoreMessages->GetCount() ? MoreMessages : NULL,
-      Answers, Params, QueryType);
+
+    ExtException * EE = dynamic_cast<ExtException*>(E);
+    if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
+    {
+      MoreMessages->AddStrings(EE->GetMoreMessages());
+    }
   }
-  ,
-  {
-    delete MoreMessages;
-  }
-  );
+  Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(E ? E->Message : L""),
+    MoreMessages->GetCount() ? MoreMessages : NULL,
+    Answers, Params, QueryType);
   return Result;
 }
 //------------------------------------------------------------------------------
@@ -1958,16 +1933,8 @@ uintptr_t TTerminal::CommandError(Exception * E, const UnicodeString & Msg,
   }
   else if (!Answers)
   {
-    ECommand * ECmd = new ECommand(E, Msg);
-    TRY_FINALLY (
-    {
-      HandleExtendedException(ECmd);
-    }
-    ,
-    {
-      delete ECmd;
-    }
-    );
+    ECommand ECmd(E, Msg);
+    HandleExtendedException(&ECmd);
   }
   else
   {
