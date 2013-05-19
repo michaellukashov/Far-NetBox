@@ -1099,7 +1099,7 @@ void TTerminal::Reopen(intptr_t Params)
 bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   const UnicodeString & Name, const UnicodeString & Instructions,
   const UnicodeString & Prompt,
-  bool Echo, int MaxLen, UnicodeString & AResult)
+  bool Echo, intptr_t MaxLen, UnicodeString & AResult)
 {
   bool Result;
   std::auto_ptr<TStrings> Prompts(new TStringList());
@@ -1239,7 +1239,7 @@ void TTerminal::ShowExtendedException(Exception * E)
 }
 //------------------------------------------------------------------------------
 void TTerminal::DoInformation(const UnicodeString & Str, bool Status,
-  int Phase)
+  intptr_t Phase)
 {
   if (GetOnInformation())
   {
@@ -1287,7 +1287,7 @@ UnicodeString TTerminal::AbsolutePath(const UnicodeString & Path, bool Local)
   return FFileSystem->AbsolutePath(Path, Local);
 }
 //------------------------------------------------------------------------------
-void TTerminal::ReactOnCommand(int /*TFSCommand*/ Cmd)
+void TTerminal::ReactOnCommand(intptr_t Cmd)
 {
   bool ChangesDirectory = false;
   bool ModifiesFiles = false;
@@ -1518,7 +1518,7 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
   return Result;
 }
 //------------------------------------------------------------------------------
-int TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
+intptr_t TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
   TFileOperationProgressType * OperationProgress, bool AllowSkip,
   const UnicodeString & Message, void * Param1, void * Param2)
 {
@@ -1768,7 +1768,7 @@ void TTerminal::DoStartReadDirectory()
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::DoReadDirectoryProgress(int Progress, bool & Cancel)
+void TTerminal::DoReadDirectoryProgress(intptr_t Progress, bool & Cancel)
 {
   if (FReadingCurrentDirectory && (FOnReadDirectoryProgress != NULL))
   {
@@ -4306,7 +4306,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
   const UnicodeString & RemoteDirectory, TSynchronizeMode Mode,
   const TCopyParamType * CopyParam, intptr_t Params,
   TSynchronizeDirectoryEvent OnSynchronizeDirectory, TSynchronizeOptions * Options,
-  int Flags, TSynchronizeChecklist * Checklist)
+  intptr_t Flags, TSynchronizeChecklist * Checklist)
 {
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
   TSynchronizeData Data;

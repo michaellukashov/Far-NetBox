@@ -43,11 +43,11 @@ DEFINE_CALLBACK_TYPE3(TExtendedExceptionEvent, void,
   TTerminal * /* Terminal */, Exception * /* E */, void * /* Arg */);
 DEFINE_CALLBACK_TYPE2(TReadDirectoryEvent, void, TObject * /* Sender */, Boolean /* ReloadOnly */);
 DEFINE_CALLBACK_TYPE3(TReadDirectoryProgressEvent, void,
-  TObject * /* Sender */, int /* Progress */, bool & /* Cancel */);
+  TObject * /* Sender */, intptr_t /* Progress */, bool & /* Cancel */);
 DEFINE_CALLBACK_TYPE3(TProcessFileEvent, void,
   const UnicodeString & /* FileName */, const TRemoteFile * /* File */, void * /* Param */);
 DEFINE_CALLBACK_TYPE4(TProcessFileEventEx, void,
-  const UnicodeString & /* FileName */, const TRemoteFile * /* File */, void * /* Param */, int /* Index */);
+  const UnicodeString & /* FileName */, const TRemoteFile * /* File */, void * /* Param */, intptr_t /* Index */);
 DEFINE_CALLBACK_TYPE2(TFileOperationEvent, int,
   void * /* Param1 */, void * /* Param2 */);
 DEFINE_CALLBACK_TYPE4(TSynchronizeDirectoryEvent, void,
@@ -58,7 +58,7 @@ DEFINE_CALLBACK_TYPE2(TDeleteLocalFileEvent, void,
 DEFINE_CALLBACK_TYPE3(TDirectoryModifiedEvent, int,
   TTerminal * /* Terminal */, const UnicodeString & /* Directory */, bool /* SubDirs */);
 DEFINE_CALLBACK_TYPE4(TInformationEvent, void,
-  TTerminal * /* Terminal */, const UnicodeString & /* Str */, bool /* Status */, int /* Phase */);
+  TTerminal * /* Terminal */, const UnicodeString & /* Str */, bool /* Status */, intptr_t /* Phase */);
 DEFINE_CALLBACK_TYPE5(TCreateLocalFileEvent, HANDLE,
   const UnicodeString & /* FileName */, DWORD /* DesiredAccess */,
   DWORD /* ShareMode */, DWORD /* CreationDisposition */, DWORD /* FlagsAndAttributes */);
@@ -180,7 +180,7 @@ private:
   UnicodeString FLockDirectory;
   Integer FExceptionOnFail;
   TRemoteDirectory * FFiles;
-  int FInTransaction;
+  intptr_t FInTransaction;
   bool FSuspendTransaction;
   TNotifyEvent FOnChangeDirectory;
   TReadDirectoryEvent FOnReadDirectory;
@@ -244,7 +244,7 @@ public:
   const TRemoteTokenList * GetMembership();
   void SetCurrentDirectory(const UnicodeString & Value);
   void SetExceptionOnFail(bool Value);
-  void ReactOnCommand(int /*TFSCommand*/ Cmd);
+  void ReactOnCommand(intptr_t /*TFSCommand*/ Cmd);
   UnicodeString GetUserName() const;
   bool GetAreCachesEmpty() const;
   bool GetIsCapable(TFSCapability Capability) const;
@@ -268,7 +268,7 @@ protected:
   bool FTunnelOpening;
 
   void DoStartReadDirectory();
-  void DoReadDirectoryProgress(int Progress, bool & Cancel);
+  void DoReadDirectoryProgress(intptr_t Progress, bool & Cancel);
   void DoReadDirectory(bool ReloadOnly);
   void DoCreateDirectory(const UnicodeString & DirName);
   void DoDeleteFile(const UnicodeString & FileName, const TRemoteFile * File,
@@ -286,7 +286,7 @@ protected:
   void LookupUsersGroups();
   void FileModified(const TRemoteFile * File,
     const UnicodeString & FileName, bool ClearDirectoryChange = false);
-  int FileOperationLoop(TFileOperationEvent CallBackFunc,
+  intptr_t FileOperationLoop(TFileOperationEvent CallBackFunc,
     TFileOperationProgressType * OperationProgress, bool AllowSkip,
     const UnicodeString & Message, void * Param1 = NULL, void * Param2 = NULL);
   bool ProcessFiles(TStrings * FileList, TFileOperation Operation,
@@ -330,7 +330,7 @@ protected:
     const UnicodeString & RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, intptr_t Params,
     TSynchronizeDirectoryEvent OnSynchronizeDirectory,
-    TSynchronizeOptions * Options, int Level, TSynchronizeChecklist * Checklist);
+    TSynchronizeOptions * Options, intptr_t Level, TSynchronizeChecklist * Checklist);
   void SynchronizeCollectFile(const UnicodeString & FileName,
     const TRemoteFile * File, /*TSynchronizeData*/ void * Param);
   void SynchronizeRemoteTimestamp(const UnicodeString & FileName,
@@ -350,11 +350,11 @@ protected:
     TStrings * Response);
   void OpenTunnel();
   void CloseTunnel();
-  void DoInformation(const UnicodeString & Str, bool Status, int Phase = -1);
+  void DoInformation(const UnicodeString & Str, bool Status, intptr_t Phase = -1);
   UnicodeString FileUrl(const UnicodeString & Protocol, const UnicodeString & FileName);
   bool PromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions, const UnicodeString & Prompt, bool Echo,
-    int MaxLen, UnicodeString & AResult);
+    intptr_t MaxLen, UnicodeString & AResult);
   void FileFind(const UnicodeString & FileName, const TRemoteFile * File, void * Param);
   void DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params);
   bool DoCreateLocalFile(const UnicodeString & FileName,
@@ -624,9 +624,9 @@ struct TCalculateSizeStats : public TObject
 {
   TCalculateSizeStats();
 
-  int Files;
-  int Directories;
-  int SymLinks;
+  intptr_t Files;
+  intptr_t Directories;
+  intptr_t SymLinks;
 };
 //------------------------------------------------------------------------------
 struct TCalculateSizeParams : public TObject
@@ -662,7 +662,7 @@ friend class TTerminal;
 public:
   enum TAction { saNone, saUploadNew, saDownloadNew, saUploadUpdate,
     saDownloadUpdate, saDeleteRemote, saDeleteLocal };
-  static const int ActionCount = saDeleteLocal;
+  static const intptr_t ActionCount = saDeleteLocal;
 
   class TItem : public TObject
   {
