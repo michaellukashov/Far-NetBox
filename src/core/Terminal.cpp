@@ -3497,7 +3497,7 @@ bool TTerminal::MoveFiles(TStrings * FileList, const UnicodeString & Target,
       // check if we was moving current directory.
       // this is just optimization to avoid checking existence of current
       // directory after each move operation.
-      UnicodeString curDirectory = GetCurrentDirectory();
+      UnicodeString CurrentDirectory = GetCurrentDirectory();
       for (intptr_t Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); ++Index)
       {
         const TRemoteFile * File =
@@ -3508,17 +3508,17 @@ bool TTerminal::MoveFiles(TStrings * FileList, const UnicodeString & Target,
         const UnicodeString & Str = FileList->GetString(Index);
         if ((File != NULL) &&
             File->GetIsDirectory() &&
-            ((curDirectory.SubString(1, Str.Length()) == Str) &&
-             ((Str.Length() == curDirectory.Length()) ||
-              (curDirectory[Str.Length() + 1] == '/'))))
+            ((CurrentDirectory.SubString(1, Str.Length()) == Str) &&
+             ((Str.Length() == CurrentDirectory.Length()) ||
+              (CurrentDirectory[Str.Length() + 1] == '/'))))
         {
           PossiblyMoved = true;
         }
       }
 
-      if (PossiblyMoved && !FileExists(curDirectory))
+      if (PossiblyMoved && !FileExists(CurrentDirectory))
       {
-        UnicodeString NearestExisting = curDirectory;
+        UnicodeString NearestExisting = CurrentDirectory;
         do
         {
           NearestExisting = UnixExtractFileDir(NearestExisting);
