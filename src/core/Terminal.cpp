@@ -3505,11 +3505,12 @@ bool TTerminal::MoveFiles(TStrings * FileList, const UnicodeString & Target,
         // File can be NULL, and filename may not be full path,
         // but currently this is the only way we can move (at least in GUI)
         // current directory
+        const UnicodeString & Str = FileList->GetString(Index);
         if ((File != NULL) &&
             File->GetIsDirectory() &&
-            ((curDirectory.SubString(1, FileList->GetString(Index).Length()) == FileList->GetString(Index)) &&
-             ((FileList->GetString(Index).Length() == curDirectory.Length()) ||
-              (curDirectory[FileList->GetString(Index).Length() + 1] == '/'))))
+            ((curDirectory.SubString(1, Str.Length()) == Str) &&
+             ((Str.Length() == curDirectory.Length()) ||
+              (curDirectory[Str.Length() + 1] == '/'))))
         {
           PossiblyMoved = true;
         }
