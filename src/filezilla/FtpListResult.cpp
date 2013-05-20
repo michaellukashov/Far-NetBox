@@ -1424,15 +1424,23 @@ bool CFtpListResult::parseMlsdDateTime(const CString value, t_directory::t_diren
 	}
 	if (result)
 	{
-		direntry.date.year = Year;
-		direntry.date.month = Month;
-		direntry.date.day = Day;
-		direntry.date.hour = Hours;
-		direntry.date.minute = Minutes;
-		direntry.date.second = Seconds;
-		direntry.date.utc = FALSE;
-		CTime dateTime(Year, Month, Day, Hours, Minutes, Seconds);
-		direntry.EntryTime = dateTime;
+    try
+    {
+      CTime dateTime(Year, Month, Day, Hours, Minutes, Seconds);
+      direntry.date.year = Year;
+      direntry.date.month = Month;
+      direntry.date.day = Day;
+      direntry.date.hour = Hours;
+      direntry.date.minute = Minutes;
+      direntry.date.second = Seconds;
+      direntry.date.utc = FALSE;
+      direntry.EntryTime = dateTime;
+    }
+    catch (CAtlException&)
+    {
+      direntry.date.hasdate = FALSE;
+      direntry.date.hastime = FALSE;
+    }
 	}
 	return result;
 }
