@@ -466,10 +466,11 @@ UnicodeString TSCPFileSystem::GetUserName()
 void TSCPFileSystem::Idle()
 {
   // Keep session alive
-  if ((FTerminal->GetSessionData()->GetPingType() != ptOff) &&
-      (Now() - FSecureShell->GetLastDataSent() > FTerminal->GetSessionData()->GetPingIntervalDT()))
+  const TSessionData * Data = FTerminal->GetSessionData();
+  if ((Data->GetPingType() != ptOff) &&
+      (Now() - FSecureShell->GetLastDataSent() > Data->GetPingIntervalDT()))
   {
-    if ((FTerminal->GetSessionData()->GetPingType() == ptDummyCommand) &&
+    if ((Data->GetPingType() == ptDummyCommand) &&
         FSecureShell->GetReady())
     {
       if (!FProcessingCommand)
