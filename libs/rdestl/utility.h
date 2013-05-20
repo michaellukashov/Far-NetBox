@@ -95,7 +95,7 @@ namespace internal
 	void destruct_n(T* first, size_t n, int_to_type<false>)
 	{
 		// For unknown reason MSVC cant see reference to first here...
-		sizeof(first);
+    (void)first;
 		for (size_t i = 0; i < n; ++i)
 			(first + i)->~T();
 	}
@@ -108,7 +108,7 @@ namespace internal
 	template<typename T>
 	void destruct(T* mem, int_to_type<false>)
 	{
-		sizeof(mem);
+    (void)mem;
 		mem->~T();
 	}
 	template<typename T> RDE_FORCEINLINE
@@ -142,7 +142,7 @@ namespace internal
 	template<typename T>
 	void construct_n(T* to, size_t count, int_to_type<false>)
 	{
-		sizeof(to);
+    (void)to;
 		for (size_t i = 0; i < count; ++i)
 			new (to + i) T();
 	}
@@ -167,7 +167,7 @@ namespace internal
 			}
 		}
 #else
-		sizeof(first); sizeof(last); sizeof(pred);
+    (void)first; (void)last; (void)pred;
 #endif
 	}
 
