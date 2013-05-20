@@ -181,7 +181,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TCustomFarPlugin::GetModuleName()
+UnicodeString TCustomFarPlugin::GetModuleName() const
 {
   return FStartupInfo.ModuleName;
 }
@@ -1650,7 +1650,7 @@ intptr_t TCustomFarPlugin::FarControl(uintptr_t Command, intptr_t Param1, intptr
   return FStartupInfo.Control(Plugin, static_cast<int>(Command), static_cast<int>(Param1), Param2);
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::FarAdvControl(uintptr_t Command, void * Param)
+intptr_t TCustomFarPlugin::FarAdvControl(uintptr_t Command, void * Param) const
 {
   TFarEnvGuard Guard;
   return FStartupInfo.AdvControl(FStartupInfo.ModuleNumber, static_cast<int>(Command), Param);

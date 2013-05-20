@@ -112,7 +112,7 @@ public:
   bool Editor(const UnicodeString & FileName, const UnicodeString & Title, DWORD Flags);
 
   intptr_t FarControl(uintptr_t Command, intptr_t Param1, intptr_t Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
-  intptr_t FarAdvControl(uintptr_t Command, void * Param = NULL);
+  intptr_t FarAdvControl(uintptr_t Command, void * Param = NULL) const;
   intptr_t FarEditorControl(uintptr_t Command, void * Param);
   intptr_t FarSystemSettings();
   void Text(int X, int Y, int Color, const UnicodeString & Str);
@@ -140,7 +140,7 @@ public:
   TCustomFarFileSystem * GetPanelFileSystem(bool Another = false,
     HANDLE Plugin = INVALID_HANDLE_VALUE);
 
-  UnicodeString GetModuleName();
+  UnicodeString GetModuleName() const;
   TFarDialog * GetTopDialog() const { return FTopDialog; }
   HINSTANCE GetHandle() const { return FHandle; };
   uintptr_t GetFarThread() const { return FFarThread; };
