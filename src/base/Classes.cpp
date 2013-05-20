@@ -1224,7 +1224,7 @@ UnicodeString MB2W(const char * src, const UINT cp)
   if (reqLength)
   {
     Result.SetLength(reqLength);
-    MultiByteToWideChar(cp, 0, src, -1, (LPWSTR)Result.c_str(), static_cast<int>(reqLength));
+    MultiByteToWideChar(cp, 0, src, -1, const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
     Result.SetLength(Result.Length() - 1);  //remove NULL character
   }
   return Result; // .c_str();
@@ -1249,7 +1249,8 @@ AnsiString W2MB(const wchar_t * src, const UINT cp)
   if (reqLength)
   {
     Result.SetLength(reqLength);
-    WideCharToMultiByte(cp, 0, src, -1, (LPSTR)Result.c_str(), static_cast<int>(reqLength), NULL, NULL);
+    WideCharToMultiByte(cp, 0, src, -1, const_cast<LPSTR>(Result.c_str()),
+      static_cast<int>(reqLength), NULL, NULL);
     Result.SetLength(Result.Length() - 1);  //remove NULL character
   }
   return Result; //.c_str();
