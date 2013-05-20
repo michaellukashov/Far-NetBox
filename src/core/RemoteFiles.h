@@ -146,11 +146,11 @@ public:
   void SetSize(__int64 Value) { FSize = Value; }
   const TRemoteToken & GetFileOwner() const;
   TRemoteToken & GetFileOwner();
-  void SetFileOwner(TRemoteToken Value);
+  void SetFileOwner(const TRemoteToken & Value);
   const TRemoteToken & GetFileGroup() const;
   TRemoteToken & GetFileGroup();
-  void SetFileGroup(TRemoteToken Value);
-  UnicodeString GetFileName() const;
+  void SetFileGroup(const TRemoteToken & Value);
+  UnicodeString GetFileName() const { return FFileName; }
   void SetFileName(const UnicodeString & Value);
   TDateTime GetModification() const { return FModification; }
   TModificationFmt GetModificationFmt() const { return FModificationFmt; }

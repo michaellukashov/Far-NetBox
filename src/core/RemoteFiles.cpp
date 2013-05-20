@@ -1428,7 +1428,7 @@ TRemoteToken & TRemoteFile::GetFileOwner()
   return FOwner;
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::SetFileOwner(TRemoteToken Value)
+void TRemoteFile::SetFileOwner(const TRemoteToken & Value)
 {
   FOwner = Value;
 }
@@ -1443,12 +1443,10 @@ TRemoteToken & TRemoteFile::GetFileGroup()
   return FGroup;
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::SetFileGroup(TRemoteToken Value)
+void TRemoteFile::SetFileGroup(const TRemoteToken & Value)
 {
   FGroup = Value;
 }
-//---------------------------------------------------------------------------
-UnicodeString TRemoteFile::GetFileName() const { return FFileName; }
 //---------------------------------------------------------------------------
 void TRemoteFile::SetFileName(const UnicodeString & Value)
 {
