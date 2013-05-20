@@ -2306,7 +2306,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
     FILETIME AcTime;
     FILETIME WrTime;
     TRights RemoteRights;
-    uintptr_t LocalFileAttrs;
+    DWORD LocalFileAttrs;
     bool Exists;
   } FileData;
   TDateTime SourceTimestamp;
@@ -2400,12 +2400,13 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
             unsigned long MTime, ATime;
             if (swscanf(Line.c_str(), L"%ld %*d %ld %*d",  &MTime, &ATime) == 2)
             {
+              const TSessionData * Data = FTerminal->GetSessionData();
               FileData.AcTime = DateTimeToFileTime(UnixToDateTime(ATime,
-                FTerminal->GetSessionData()->GetDSTMode()), FTerminal->GetSessionData()->GetDSTMode());
+                Data->GetDSTMode()), Data->GetDSTMode());
               FileData.WrTime = DateTimeToFileTime(UnixToDateTime(MTime,
-                FTerminal->GetSessionData()->GetDSTMode()), FTerminal->GetSessionData()->GetDSTMode());
+                Data->GetDSTMode()), Data->GetDSTMode());
               SourceTimestamp = UnixToDateTime(MTime,
-                FTerminal->GetSessionData()->GetDSTMode());
+                Data->GetDSTMode());
               FSecureShell->SendNull();
               // File time is only valid until next pass
               FileData.SetTime = 2;
@@ -2478,7 +2479,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
 
         FileData.LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFileName);
         // If getting attrs fails, we suppose, that file/folder doesn't exists
-        FileData.Exists = ((DWORD)FileData.LocalFileAttrs != -1);
+        FileData.Exists = (FileData.LocalFileAttrs != INVALID_FILE_ATTRIBUTES);
         if (Dir)
         {
           if (FileData.Exists && !(FileData.LocalFileAttrs & faDirectory))
