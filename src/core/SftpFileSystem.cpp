@@ -2826,11 +2826,12 @@ void TSFTPFileSystem::DoStartup()
 
     if (SupportsExtension(SFTP_EXT_VENDOR_ID))
     {
+      const TConfiguration * Configuration = FTerminal->GetConfiguration();
       TSFTPPacket Packet((unsigned char)SSH_FXP_EXTENDED, GetSessionData()->GetCodePageAsNumber());
       Packet.AddString(RawByteString(SFTP_EXT_VENDOR_ID));
-      Packet.AddString(FTerminal->GetConfiguration()->GetCompanyName());
-      Packet.AddString(FTerminal->GetConfiguration()->GetProductName());
-      Packet.AddString(FTerminal->GetConfiguration()->GetProductVersion());
+      Packet.AddString(Configuration->GetCompanyName());
+      Packet.AddString(Configuration->GetProductName());
+      Packet.AddString(Configuration->GetProductVersion());
       Packet.AddInt64(LOWORD(FTerminal->GetConfiguration()->GetFixedApplicationInfo()->dwFileVersionLS));
       SendPacket(&Packet);
       // we are not interested in the response, do not wait for it

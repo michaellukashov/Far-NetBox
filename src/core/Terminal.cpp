@@ -143,7 +143,7 @@ TSynchronizeChecklist::TItem::~TItem()
   delete RemoteFile;
 }
 //------------------------------------------------------------------------------
-const UnicodeString& TSynchronizeChecklist::TItem::GetFileName() const
+const UnicodeString & TSynchronizeChecklist::TItem::GetFileName() const
 {
   if (!Remote.FileName.IsEmpty())
   {
@@ -1099,7 +1099,7 @@ void TTerminal::Reopen(intptr_t Params)
 bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   const UnicodeString & Name, const UnicodeString & Instructions,
   const UnicodeString & Prompt,
-  bool Echo, int MaxLen, UnicodeString & AResult)
+  bool Echo, intptr_t MaxLen, UnicodeString & AResult)
 {
   bool Result;
   std::auto_ptr<TStrings> Prompts(new TStringList());
@@ -1135,9 +1135,9 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   }
 
   if (Result && GetConfiguration()->GetRememberPassword() &&
-    (Prompts->GetCount() == 1) && (Prompts->GetObject(0) == NULL) &&
-    ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
-     (Kind == pkTIS) || (Kind == pkCryptoCard)));
+      (Prompts->GetCount() == 1) && (Prompts->GetObject(0) == NULL) &&
+      ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
+       (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
     RawByteString EncryptedPassword = EncryptPassword(Results->GetString(0));
     if (FTunnelOpening)
@@ -1239,7 +1239,7 @@ void TTerminal::ShowExtendedException(Exception * E)
 }
 //------------------------------------------------------------------------------
 void TTerminal::DoInformation(const UnicodeString & Str, bool Status,
-  int Phase)
+  intptr_t Phase)
 {
   if (GetOnInformation())
   {
@@ -1287,7 +1287,7 @@ UnicodeString TTerminal::AbsolutePath(const UnicodeString & Path, bool Local)
   return FFileSystem->AbsolutePath(Path, Local);
 }
 //------------------------------------------------------------------------------
-void TTerminal::ReactOnCommand(int /*TFSCommand*/ Cmd)
+void TTerminal::ReactOnCommand(intptr_t Cmd)
 {
   bool ChangesDirectory = false;
   bool ModifiesFiles = false;
@@ -1518,7 +1518,7 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
   return Result;
 }
 //------------------------------------------------------------------------------
-int TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
+intptr_t TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
   TFileOperationProgressType * OperationProgress, bool AllowSkip,
   const UnicodeString & Message, void * Param1, void * Param2)
 {
@@ -1768,7 +1768,7 @@ void TTerminal::DoStartReadDirectory()
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::DoReadDirectoryProgress(int Progress, bool & Cancel)
+void TTerminal::DoReadDirectoryProgress(intptr_t Progress, bool & Cancel)
 {
   if (FReadingCurrentDirectory && (FOnReadDirectoryProgress != NULL))
   {
@@ -3497,7 +3497,7 @@ bool TTerminal::MoveFiles(TStrings * FileList, const UnicodeString & Target,
       // check if we was moving current directory.
       // this is just optimization to avoid checking existence of current
       // directory after each move operation.
-      UnicodeString curDirectory = GetCurrentDirectory();
+      UnicodeString CurrentDirectory = GetCurrentDirectory();
       for (intptr_t Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); ++Index)
       {
         const TRemoteFile * File =
@@ -3505,19 +3505,20 @@ bool TTerminal::MoveFiles(TStrings * FileList, const UnicodeString & Target,
         // File can be NULL, and filename may not be full path,
         // but currently this is the only way we can move (at least in GUI)
         // current directory
+        const UnicodeString & Str = FileList->GetString(Index);
         if ((File != NULL) &&
             File->GetIsDirectory() &&
-            ((curDirectory.SubString(1, FileList->GetString(Index).Length()) == FileList->GetString(Index)) &&
-             ((FileList->GetString(Index).Length() == curDirectory.Length()) ||
-              (curDirectory[FileList->GetString(Index).Length() + 1] == '/'))))
+            ((CurrentDirectory.SubString(1, Str.Length()) == Str) &&
+             ((Str.Length() == CurrentDirectory.Length()) ||
+              (CurrentDirectory[Str.Length() + 1] == '/'))))
         {
           PossiblyMoved = true;
         }
       }
 
-      if (PossiblyMoved && !FileExists(curDirectory))
+      if (PossiblyMoved && !FileExists(CurrentDirectory))
       {
-        UnicodeString NearestExisting = curDirectory;
+        UnicodeString NearestExisting = CurrentDirectory;
         do
         {
           NearestExisting = UnixExtractFileDir(NearestExisting);
@@ -4306,7 +4307,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
   const UnicodeString & RemoteDirectory, TSynchronizeMode Mode,
   const TCopyParamType * CopyParam, intptr_t Params,
   TSynchronizeDirectoryEvent OnSynchronizeDirectory, TSynchronizeOptions * Options,
-  int Flags, TSynchronizeChecklist * Checklist)
+  intptr_t Flags, TSynchronizeChecklist * Checklist)
 {
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
   TSynchronizeData Data;

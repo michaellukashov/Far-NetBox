@@ -25,7 +25,7 @@ private:
   intptr_t FUpdating;
   TNotifyEvent FOnChange;
 
-  void * FApplicationInfo;
+  mutable void * FApplicationInfo;
   // TUsage * FUsage;
   bool FLogging;
   bool FPermanentLogging;
@@ -66,15 +66,15 @@ private:
   intptr_t FSessionReopenAutoMaximumNumberOfRetries;
 
 public:
-  UnicodeString GetOSVersionStr();
-  TVSFixedFileInfo *GetFixedApplicationInfo();
-  void * GetApplicationInfo();
-  virtual UnicodeString GetVersionStr();
-  virtual UnicodeString GetVersion();
-  UnicodeString GetProductVersion();
-  UnicodeString GetProductName();
-  UnicodeString GetCompanyName();
-  UnicodeString TrimVersion(const UnicodeString & Version);
+  UnicodeString GetOSVersionStr() const;
+  TVSFixedFileInfo *GetFixedApplicationInfo() const;
+  void * GetApplicationInfo() const;
+  virtual UnicodeString GetVersionStr() const;
+  virtual UnicodeString GetVersion() const;
+  UnicodeString GetProductVersion() const;
+  UnicodeString GetProductName() const;
+  UnicodeString GetCompanyName() const;
+  UnicodeString TrimVersion(const UnicodeString & Version) const;
   UnicodeString GetStoredSessionsSubKey();
   UnicodeString GetPuttySessionsKey();
   void SetRandomSeedFile(const UnicodeString & Value);
@@ -97,14 +97,14 @@ public:
   UnicodeString GetDefaultLogFileName();
   UnicodeString GetTimeFormat();
   void SetStorage(TStorage Value);
-  UnicodeString GetRegistryStorageKey();
+  UnicodeString GetRegistryStorageKey() const;
   UnicodeString GetIniFileStorageNameForReadingWritting();
   UnicodeString GetIniFileStorageNameForReading();
   UnicodeString GetIniFileStorageName(bool ReadingOnly);
   void SetIniFileStorageName(const UnicodeString & Value);
   UnicodeString GetPartialExt() const;
-  UnicodeString GetFileInfoString(const UnicodeString & Key);
-  bool GetGSSAPIInstalled();
+  UnicodeString GetFileInfoString(const UnicodeString & Key) const;
+  bool GetGSSAPIInstalled() const;
   void SetSessionReopenAuto(intptr_t Value);
   void SetSessionReopenBackground(intptr_t Value);
   void SetSessionReopenTimeout(intptr_t Value);
@@ -113,11 +113,11 @@ public:
   void SetTunnelLocalPortNumberHigh(intptr_t Value);
   void SetCacheDirectoryChangesMaxSize(intptr_t Value);
   void SetShowFtpWelcomeMessage(bool Value);
-  intptr_t GetCompoundVersion();
+  intptr_t GetCompoundVersion() const;
   void UpdateActualLogProtocol();
   void SetExternalIpAddress(const UnicodeString & Value);
   void SetTryFtpWhenSshFails(bool Value);
-  bool GetCollectUsage();
+  bool GetCollectUsage() const;
   void SetCollectUsage(bool Value);
 
 protected:
@@ -138,7 +138,7 @@ public:
   UnicodeString BannerHash(const UnicodeString & Banner);
   static UnicodeString PropertyToKey(const UnicodeString & Property);
 
-  virtual bool GetConfirmOverwriting();
+  virtual bool GetConfirmOverwriting() const;
   virtual void SetConfirmOverwriting(bool Value);
   bool GetConfirmResume();
   void SetConfirmResume(bool Value);
@@ -146,14 +146,14 @@ public:
   void SetAutoReadDirectoryAfterOp(bool Value);
   virtual bool GetRememberPassword();
 
-  virtual UnicodeString ModuleFileName();
+  virtual UnicodeString ModuleFileName() const;
 
-  UnicodeString GetFileFileInfoString(const UnicodeString & Key,
-    const UnicodeString & FileName);
-  void * GetFileApplicationInfo(const UnicodeString & FileName);
-  UnicodeString GetFileProductVersion(const UnicodeString & FileName);
-  UnicodeString GetFileProductName(const UnicodeString & FileName);
-  UnicodeString GetFileCompanyName(const UnicodeString & FileName);
+  UnicodeString GetFileInfoString(const UnicodeString & Key,
+    const UnicodeString & FileName) const;
+  void * GetFileApplicationInfo(const UnicodeString & FileName) const;
+  UnicodeString GetFileProductVersion(const UnicodeString & FileName) const;
+  UnicodeString GetFileProductName(const UnicodeString & FileName) const;
+  UnicodeString GetFileCompanyName(const UnicodeString & FileName) const;
 
   bool GetPermanentLogging() { return FPermanentLogging; }
   void SetPermanentLogging(bool Value) { FPermanentLogging = Value; }

@@ -3065,7 +3065,7 @@ void TStoredSessionList::Saved()
   }
 }
 //---------------------------------------------------------------------
-/*void __fastcall TStoredSessionList::ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path)
+/*void TStoredSessionList::ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path)
 {
   for (int Index = 0; Index < Node->ChildNodes->Count; Index++)
   {

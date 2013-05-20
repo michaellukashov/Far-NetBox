@@ -1235,10 +1235,10 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
     OperationProgress->SetTransferSize(File->GetSize());
     OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
-    uintptr_t LocalFileAttrs = 0;
+    DWORD LocalFileAttrs = 0;
     FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
-      if (((DWORD)LocalFileAttrs != -1) && FLAGSET(LocalFileAttrs, faDirectory))
+      if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, faDirectory))
       {
         EXCEPTION;
       }
@@ -1288,15 +1288,15 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
 
     Action.Destination(ExpandUNCFileName(DestFullName));
 
-    if ((DWORD)LocalFileAttrs == -1)
+    if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
     {
       LocalFileAttrs = faArchive;
     }
-    uintptr_t NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
+    DWORD NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
     if ((NewAttrs & LocalFileAttrs) != NewAttrs)
     {
       FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, (DWORD)(LocalFileAttrs | NewAttrs)) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, (LocalFileAttrs | NewAttrs)) == 0);
       );
     }
   }
@@ -3454,13 +3454,11 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
   if (Source.HasDate)
   {
     DateTime =
-      EncodeDateVerbose((unsigned short)Source.Year, (unsigned short)Source.Month,
-        (unsigned short)Source.Day);
+      EncodeDateVerbose(Source.Year, Source.Month, Source.Day);
     if (Source.HasTime)
     {
       DateTime = DateTime +
-        EncodeTimeVerbose((unsigned short)Source.Hour, (unsigned short)Source.Minute,
-          (unsigned short)Source.Second, 0);
+        EncodeTimeVerbose(Source.Hour, Source.Minute, Source.Second, 0);
       // not exact as we got year as well, but it is most probably
       // guessed by FZAPI anyway
       ModificationFmt = Source.HasSeconds ? mfFull : mfMDHM;
@@ -3480,7 +3478,7 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
   {
     // With SCP we estimate date to be today, if we have at least time
 
-    DateTime = double(0);
+    DateTime = double(0.0);
     ModificationFmt = mfNone;
   }
 }

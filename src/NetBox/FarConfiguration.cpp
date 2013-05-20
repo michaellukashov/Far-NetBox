@@ -201,7 +201,7 @@ void TFarConfiguration::SetPlugin(TCustomFarPlugin * Value)
   }
 }
 //---------------------------------------------------------------------------
-__int64 TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t *Name)
+__int64 TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t * Name) const
 {
     __int64 result = 0;
     FarSettingsCreate settings = {sizeof(FarSettingsCreate), FarGuid, INVALID_HANDLE_VALUE};
@@ -218,7 +218,7 @@ __int64 TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t
     return result;
 }
 //---------------------------------------------------------------------------
-__int64 TFarConfiguration::GetConfirmationsSetting(HANDLE &Settings, const wchar_t *Name)
+__int64 TFarConfiguration::GetConfirmationsSetting(HANDLE & Settings, const wchar_t * Name) const
 {
     FarSettingsItem item = {sizeof(FarSettingsItem), FSSF_CONFIRMATIONS, Name, FST_UNKNOWN, {0} };
     if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
@@ -229,7 +229,7 @@ __int64 TFarConfiguration::GetConfirmationsSetting(HANDLE &Settings, const wchar
 }
 
 //---------------------------------------------------------------------------
-__int64 TFarConfiguration::GetConfirmationsSettings()
+__int64 TFarConfiguration::GetConfirmationsSettings() const
 {
     __int64 result = 0;
     FarSettingsCreate settings = {sizeof(FarSettingsCreate), FarGuid, INVALID_HANDLE_VALUE};
@@ -266,7 +266,7 @@ void TFarConfiguration::CacheFarSettings()
   FFarConfirmations = GetConfirmationsSettings();
 }
 //---------------------------------------------------------------------------
-intptr_t TFarConfiguration::FarConfirmations()
+intptr_t TFarConfiguration::FarConfirmations() const
 {
   if (GetCurrentThreadId() == GetPlugin()->GetFarThread())
   {
@@ -279,7 +279,7 @@ intptr_t TFarConfiguration::FarConfirmations()
   }
 }
 //---------------------------------------------------------------------------
-bool TFarConfiguration::GetConfirmOverwriting()
+bool TFarConfiguration::GetConfirmOverwriting() const
 {
   if (FForceInheritance || FConfirmOverwritingOverride)
   {
@@ -314,7 +314,7 @@ bool TFarConfiguration::GetConfirmDeleting()
   return (FarConfirmations() & NBCS_DELETE) != 0;
 }
 //---------------------------------------------------------------------------
-UnicodeString TFarConfiguration::ModuleFileName()
+UnicodeString TFarConfiguration::ModuleFileName() const
 {
   assert(GetPlugin());
   return GetPlugin()->GetModuleName();

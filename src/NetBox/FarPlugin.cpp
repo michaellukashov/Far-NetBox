@@ -184,7 +184,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TCustomFarPlugin::GetModuleName()
+UnicodeString TCustomFarPlugin::GetModuleName() const
 {
   return FStartupInfo.ModuleName;
 }
@@ -196,10 +196,10 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
     #define FREESTRINGARRAY(NAME) \
       for (intptr_t Index = 0; Index < Info.NAME.Count; ++Index) \
       { \
-        nb_free((void *)Info.NAME.Strings[Index]); \
+        nb_free(Info.NAME.Strings[Index]); \
       } \
-      nb_free((void *)Info.NAME.Strings); \
-      nb_free((void *)Info.NAME.Guids); \
+      nb_free(Info.NAME.Strings); \
+      nb_free(Info.NAME.Guids); \
       Info.NAME.Strings = NULL;
 
       FREESTRINGARRAY(DiskMenu);
@@ -209,7 +209,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
       #undef FREESTRINGARRAY
 
       // FIXME delete[] Info.DiskMenuNumbers;
-      nb_free((void *)Info.CommandPrefix);
+      nb_free(Info.CommandPrefix);
   }
   memset(&Info, 0, sizeof(Info));
   Info.StructSize = sizeof(Info);
@@ -1095,7 +1095,7 @@ intptr_t TCustomFarPlugin::FarMessage(unsigned int Flags,
   }
   ,
   {
-    nb_free((void *)Items);
+    nb_free(Items);
   }
   );
 
@@ -1685,13 +1685,13 @@ intptr_t TCustomFarPlugin::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Pa
   return FStartupInfo.PanelControl(Plugin, Command, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-__int64 TCustomFarPlugin::FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2)
+__int64 TCustomFarPlugin::FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2) const
 {
   TFarEnvGuard Guard;
   return FStartupInfo.AdvControl(&MainGuid, Command, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::FarEditorControl(EDITOR_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2)
+intptr_t TCustomFarPlugin::FarEditorControl(EDITOR_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2) const
 {
   switch (Command)
   {
@@ -1861,10 +1861,10 @@ void TCustomFarFileSystem::ClearOpenPanelInfo(OpenPanelInfo & Info)
 {
   if (Info.StructSize)
   {
-    nb_free((void *)Info.HostFile);
-    nb_free((void *)Info.CurDir);
-    nb_free((void *)Info.Format);
-    nb_free((void *)Info.PanelTitle);
+    nb_free(Info.HostFile);
+    nb_free(Info.CurDir);
+    nb_free(Info.Format);
+    nb_free(Info.PanelTitle);
     assert(!Info.InfoLines);
     assert(!Info.InfoLinesNumber);
     assert(!Info.DescrFiles);
@@ -1876,13 +1876,13 @@ void TCustomFarFileSystem::ClearOpenPanelInfo(OpenPanelInfo & Info)
       TFarPanelModes::ClearPanelMode(
         const_cast<PanelMode &>(Info.PanelModesArray[Index]));
     }
-    nb_free((void *)Info.PanelModesArray);
+    nb_free(Info.PanelModesArray);
     if (Info.KeyBar)
     {
       TFarKeyBarTitles::ClearKeyBarTitles(const_cast<KeyBarTitles &>(*Info.KeyBar));
-      nb_free((void *)Info.KeyBar);
+      nb_free(Info.KeyBar);
     }
-    nb_free((void *)Info.ShortcutData);
+    nb_free(Info.ShortcutData);
   }
   memset(&Info, 0, sizeof(Info));
   Info.StructSize = sizeof(Info);
@@ -1975,16 +1975,16 @@ void TCustomFarFileSystem::FreeFindData(const struct FreeFindDataInfo *Info)
     assert(Info->ItemsNumber > 0);
     for (intptr_t Index = 0; Index < Info->ItemsNumber; ++Index)
     {
-      nb_free((void *)Info->PanelItem[Index].FileName);
-      nb_free((void *)Info->PanelItem[Index].Description);
-      nb_free((void *)Info->PanelItem[Index].Owner);
+      nb_free(Info->PanelItem[Index].FileName);
+      nb_free(Info->PanelItem[Index].Description);
+      nb_free(Info->PanelItem[Index].Owner);
       for (intptr_t CustomIndex = 0; CustomIndex < Info->PanelItem[Index].CustomColumnNumber; ++CustomIndex)
       {
-        nb_free((void *)Info->PanelItem[Index].CustomColumnData[CustomIndex]);
+        nb_free(Info->PanelItem[Index].CustomColumnData[CustomIndex]);
       }
-      nb_free((void *)Info->PanelItem[Index].CustomColumnData);
+      nb_free(Info->PanelItem[Index].CustomColumnData);
     }
-    nb_free((void *)Info->PanelItem);
+    nb_free(Info->PanelItem);
   }
 }
 //---------------------------------------------------------------------------
@@ -2312,18 +2312,18 @@ void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
     intptr_t ColumnTypesCount = Mode.ColumnTypes ?
       CommaCount(UnicodeString(Mode.ColumnTypes)) + 1 : 0;
 
-    nb_free((void *)Mode.ColumnTypes);
-    nb_free((void *)Mode.ColumnWidths);
+    nb_free(Mode.ColumnTypes);
+    nb_free(Mode.ColumnWidths);
     if (Mode.ColumnTitles)
     {
       for (intptr_t Index = 0; Index < ColumnTypesCount; ++Index)
       {
-        nb_free((void *)Mode.ColumnTitles[Index]);
+        nb_free(Mode.ColumnTitles[Index]);
       }
-      nb_free((void *)Mode.ColumnTitles);
+      nb_free(Mode.ColumnTitles);
     }
-    nb_free((void *)Mode.StatusColumnTypes);
-    nb_free((void *)Mode.StatusColumnWidths);
+    nb_free(Mode.StatusColumnTypes);
+    nb_free(Mode.StatusColumnWidths);
     memset(&Mode, 0, sizeof(Mode));
   }
 }

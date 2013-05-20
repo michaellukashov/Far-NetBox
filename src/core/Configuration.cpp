@@ -713,7 +713,7 @@ RawByteString TConfiguration::StronglyRecryptPassword(const RawByteString & Pass
   return Password;
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetOSVersionStr()
+UnicodeString TConfiguration::GetOSVersionStr() const
 {
   UnicodeString Result;
   OSVERSIONINFO OSVersionInfo;
@@ -727,12 +727,12 @@ UnicodeString TConfiguration::GetOSVersionStr()
   return Result;
 }
 //---------------------------------------------------------------------------
-TVSFixedFileInfo *TConfiguration::GetFixedApplicationInfo()
+TVSFixedFileInfo * TConfiguration::GetFixedApplicationInfo() const
 {
   return GetFixedFileInfo(GetApplicationInfo());
 }
 //---------------------------------------------------------------------------
-intptr_t  TConfiguration::GetCompoundVersion()
+intptr_t TConfiguration::GetCompoundVersion() const
 {
   TVSFixedFileInfo * FileInfo = GetFixedApplicationInfo();
   if (FileInfo)
@@ -743,7 +743,7 @@ intptr_t  TConfiguration::GetCompoundVersion()
     return 0;
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::ModuleFileName()
+UnicodeString TConfiguration::ModuleFileName() const
 {
 #if defined(__BORLANDC__)
   return ParamStr(0);
@@ -752,7 +752,7 @@ UnicodeString TConfiguration::ModuleFileName()
   return L"";
 }
 //---------------------------------------------------------------------------
-void * TConfiguration::GetFileApplicationInfo(const UnicodeString & FileName)
+void * TConfiguration::GetFileApplicationInfo(const UnicodeString & FileName) const
 {
   void * Result;
   if (FileName.IsEmpty())
@@ -770,47 +770,47 @@ void * TConfiguration::GetFileApplicationInfo(const UnicodeString & FileName)
   return Result;
 }
 //---------------------------------------------------------------------------
-void * TConfiguration::GetApplicationInfo()
+void * TConfiguration::GetApplicationInfo() const
 {
   return GetFileApplicationInfo("");
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetFileProductName(const UnicodeString & FileName)
+UnicodeString TConfiguration::GetFileProductName(const UnicodeString & FileName) const
 {
-  return GetFileFileInfoString(L"ProductName", FileName);
+  return GetFileInfoString(L"ProductName", FileName);
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetFileCompanyName(const UnicodeString & FileName)
+UnicodeString TConfiguration::GetFileCompanyName(const UnicodeString & FileName) const
 {
-  return GetFileFileInfoString(L"CompanyName", FileName);
+  return GetFileInfoString(L"CompanyName", FileName);
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetProductName()
+UnicodeString TConfiguration::GetProductName() const
 {
   return GetFileProductName(L"");
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetCompanyName()
+UnicodeString TConfiguration::GetCompanyName() const
 {
   return GetFileCompanyName(L"");
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetFileProductVersion(const UnicodeString & FileName)
+UnicodeString TConfiguration::GetFileProductVersion(const UnicodeString & FileName) const
 {
-  return TrimVersion(GetFileFileInfoString(L"ProductVersion", FileName));
+  return TrimVersion(GetFileInfoString(L"ProductVersion", FileName));
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileDescription(const UnicodeString & FileName)
 {
-  return GetFileFileInfoString(L"FileDescription", FileName);
+  return GetFileInfoString(L"FileDescription", FileName);
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetProductVersion()
+UnicodeString TConfiguration::GetProductVersion() const
 {
   return GetFileProductVersion(L"");
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::TrimVersion(const UnicodeString & Version)
+UnicodeString TConfiguration::TrimVersion(const UnicodeString & Version) const
 {
   UnicodeString Result = Version;
   while ((Result.Pos(L".") != Result.LastDelimiter(L".")) &&
@@ -821,7 +821,7 @@ UnicodeString TConfiguration::TrimVersion(const UnicodeString & Version)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetVersionStr()
+UnicodeString TConfiguration::GetVersionStr() const
 {
   TGuard Guard(FCriticalSection);
   try
@@ -840,7 +840,7 @@ UnicodeString TConfiguration::GetVersionStr()
   return UnicodeString();
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetVersion()
+UnicodeString TConfiguration::GetVersion() const
 {
   TGuard Guard(FCriticalSection);
   UnicodeString Result;
@@ -862,8 +862,8 @@ UnicodeString TConfiguration::GetVersion()
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & Key,
-  const UnicodeString & FileName)
+UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key,
+  const UnicodeString & FileName) const
 {
   TGuard Guard(FCriticalSection);
 
@@ -897,12 +897,12 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & Key,
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key)
+UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key) const
 {
-  return GetFileFileInfoString(Key, L"");
+  return GetFileInfoString(Key, L"");
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetRegistryStorageKey()
+UnicodeString TConfiguration::GetRegistryStorageKey() const
 {
   return GetRegistryKey();
 }
@@ -1027,7 +1027,7 @@ UnicodeString TConfiguration::GetRootKeyStr()
   return RootKeyToStr(HKEY_CURRENT_USER);
 }
 //---------------------------------------------------------------------------
-bool TConfiguration::GetGSSAPIInstalled()
+bool TConfiguration::GetGSSAPIInstalled() const
 {
   return HasGSSAPI();
 }
@@ -1136,7 +1136,7 @@ TEOLType TConfiguration::GetLocalEOLType()
   return eolCRLF;
 }
 //---------------------------------------------------------------------
-bool TConfiguration::GetCollectUsage()
+bool TConfiguration::GetCollectUsage() const
 {
   return false; // FUsage->Collect;
 }
@@ -1268,7 +1268,7 @@ void TConfiguration::SetConfirmOverwriting(bool Value)
   SET_CONFIG_PROPERTY(ConfirmOverwriting);
 }
 //---------------------------------------------------------------------------
-bool TConfiguration::GetConfirmOverwriting()
+bool TConfiguration::GetConfirmOverwriting() const
 {
   TGuard Guard(FCriticalSection);
   return FConfirmOverwriting;

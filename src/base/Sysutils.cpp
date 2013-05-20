@@ -1504,7 +1504,7 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, TDateTime DateTime)
 TDateTime ComposeDateTime(TDateTime Date, TDateTime Time)
 {
   TDateTime Result = TDateTime((double)Date);
-  Result += (double)Time;
+  Result += Time;
   return Result;
 }
 
@@ -1545,7 +1545,7 @@ static void IncAMonth(Word & Year, Word & Month, Word & Day, Int64 NumberOfMonth
   Year = Year + (NumberOfMonths % 12);
   NumberOfMonths = NumberOfMonths / 12;
   Month += static_cast<Word>(NumberOfMonths);
-  if (Word(Month-1) > 11) // if Month <= 0, word(Month-1) > 11)
+  if (static_cast<Word>(Month-1) > 11) // if Month <= 0, word(Month-1) > 11)
   {
     Year += static_cast<Word>(Sign);
     Month += -12 * static_cast<Word>(Sign);

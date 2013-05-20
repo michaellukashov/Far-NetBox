@@ -125,8 +125,8 @@ public:
   bool Viewer(const UnicodeString & FileName, const UnicodeString & Title, unsigned int Flags);
   bool Editor(const UnicodeString & FileName, const UnicodeString & Title, unsigned int Flags);
   intptr_t FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
-  __int64 FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, intptr_t Param1, void *Param2 = NULL);
-  intptr_t FarEditorControl(EDITOR_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2);
+  __int64 FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, intptr_t Param1, void *Param2 = NULL) const;
+  intptr_t FarEditorControl(EDITOR_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2) const;
   __int64 FarSystemSettings();
   void Text(int X, int Y, int Color, const UnicodeString & Str);
   void FlushText();
@@ -153,7 +153,7 @@ public:
   TCustomFarFileSystem * GetPanelFileSystem(bool Another = false,
     HANDLE Plugin = INVALID_HANDLE_VALUE);
 
-  UnicodeString GetModuleName();
+  UnicodeString GetModuleName() const;
   TFarDialog * GetTopDialog() const { return FTopDialog; }
   HINSTANCE GetHandle() const { return FHandle; };
   uintptr_t GetFarThread() const { return FFarThread; };

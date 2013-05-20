@@ -50,7 +50,8 @@ UnicodeString BooleanToStr(bool B);
 UnicodeString BooleanToEngStr(bool B);
 UnicodeString DefaultStr(const UnicodeString & Str, const UnicodeString & Default);
 UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim);
-UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From, const UnicodeString & Chs, bool Trim,
+UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
+  const UnicodeString & Chs, bool Trim,
   wchar_t * Delimiter = NULL, bool DoubleDelimiterEscapes = false);
 UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars);
 UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote);
@@ -130,10 +131,10 @@ bool UsesDaylightHack();
 TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day);
 TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec);
 TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode);
-TDateTime ConvertTimestampToUTC(TDateTime DateTime);
-TDateTime ConvertTimestampFromUTC(TDateTime DateTime);
-FILETIME DateTimeToFileTime(const TDateTime DateTime, TDSTMode DSTMode);
-TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode);
+TDateTime ConvertTimestampToUTC(const TDateTime & DateTime);
+TDateTime ConvertTimestampFromUTC(const TDateTime & DateTime);
+FILETIME DateTimeToFileTime(const TDateTime & DateTime, TDSTMode DSTMode);
+TDateTime AdjustDateTimeFromUnix(const TDateTime & DateTime, TDSTMode DSTMode);
 void UnifyDateTimePrecision(TDateTime & DateTime1, TDateTime & DateTime2);
 TDateTime FileTimeToDateTime(const FILETIME & FileTime);
 __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
@@ -144,9 +145,9 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format);
 UnicodeString StandardTimestamp(const TDateTime & DateTime);
 UnicodeString StandardTimestamp();
 UnicodeString GetTimeZoneLogString();
-intptr_t CompareFileTime(TDateTime T1, TDateTime T2);
-intptr_t TimeToMSec(TDateTime T);
-intptr_t TimeToMinutes(TDateTime T);
+intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2);
+intptr_t TimeToMSec(const TDateTime & T);
+intptr_t TimeToMinutes(const TDateTime & T);
 //---------------------------------------------------------------------------
 #if defined(__BORLANDC__)
 template<class MethodT>

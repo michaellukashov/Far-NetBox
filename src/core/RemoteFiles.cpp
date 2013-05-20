@@ -792,7 +792,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
   return Result;
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::LoadTypeInfo()
+void TRemoteFile::LoadTypeInfo() const
 {
   /* TODO : If file is link: Should be attributes taken from linked file? */
   /* unsigned long Attrs = 0;
@@ -819,7 +819,7 @@ intptr_t TRemoteFile::GetIconIndex() const
   return FIconIndex;
 }
 //---------------------------------------------------------------------------
-UnicodeString TRemoteFile::GetTypeName()
+UnicodeString TRemoteFile::GetTypeName() const
 {
   // check availability of type info by icon index, because type name can be empty
   if (FIconIndex < 0)
@@ -829,7 +829,7 @@ UnicodeString TRemoteFile::GetTypeName()
   return FTypeName;
 }
 //---------------------------------------------------------------------------
-Boolean TRemoteFile::GetIsHidden()
+Boolean TRemoteFile::GetIsHidden() const
 {
   bool Result;
   switch (FIsHidden)
@@ -849,6 +849,7 @@ Boolean TRemoteFile::GetIsHidden()
 
   return Result;
 }
+
 //---------------------------------------------------------------------------
 void TRemoteFile::SetIsHidden(bool Value)
 {
@@ -908,7 +909,7 @@ void TRemoteFile::SetType(wchar_t AType)
   FIsSymLink = (static_cast<wchar_t>(towupper(FType)) == FILETYPE_SYMLINK);
 }
 //---------------------------------------------------------------------------
-TRemoteFile * TRemoteFile::GetLinkedFile()
+TRemoteFile * TRemoteFile::GetLinkedFile() const
 {
   // do not call FindLinkedFile as it would be called repeatedly for broken symlinks
   return FLinkedFile;
@@ -926,7 +927,7 @@ void TRemoteFile::SetLinkedFile(TRemoteFile * Value)
   }
 }
 //---------------------------------------------------------------------------
-bool TRemoteFile::GetBrokenLink()
+bool TRemoteFile::GetBrokenLink() const
 {
   assert(GetTerminal());
   // If file is symlink but we couldn't find linked file we assume broken link
@@ -961,7 +962,7 @@ UnicodeString TRemoteFile::GetUserModificationStr()
   return ::UserModificationStr(GetModification(), FModificationFmt);
 }
 //---------------------------------------------------------------------------
-UnicodeString TRemoteFile::GetModificationStr()
+UnicodeString TRemoteFile::GetModificationStr() const
 {
   Word Year, Month, Day, Hour, Min, Sec, MSec;
   GetModification().DecodeDate(Year, Month, Day);
@@ -998,7 +999,7 @@ void TRemoteFile::SetRights(TRights * Value)
   FRights->Assign(Value);
 }
 //---------------------------------------------------------------------------
-UnicodeString TRemoteFile::GetRightsStr()
+UnicodeString TRemoteFile::GetRightsStr() const
 {
   return FRights->GetUnknown() ? UnicodeString() : FRights->GetText();
 }
@@ -1347,7 +1348,7 @@ void TRemoteFile::FindLinkedFile()
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TRemoteFile::GetListingStr()
+UnicodeString TRemoteFile::GetListingStr() const
 {
   // note that ModificationStr is longer than 12 for mfFull
   UnicodeString LinkPart;
@@ -1394,7 +1395,7 @@ bool TRemoteFile::GetHaveFullFileName() const
   return !FFullFileName.IsEmpty() || (GetDirectory() != NULL);
 }
 //---------------------------------------------------------------------------
-intptr_t TRemoteFile::GetAttr()
+intptr_t TRemoteFile::GetAttr() const
 {
   intptr_t Result = 0;
   if (GetRights()->GetReadOnly())
@@ -1427,7 +1428,7 @@ TRemoteToken & TRemoteFile::GetFileOwner()
   return FOwner;
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::SetFileOwner(TRemoteToken Value)
+void TRemoteFile::SetFileOwner(const TRemoteToken & Value)
 {
   FOwner = Value;
 }
@@ -1442,12 +1443,10 @@ TRemoteToken & TRemoteFile::GetFileGroup()
   return FGroup;
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::SetFileGroup(TRemoteToken Value)
+void TRemoteFile::SetFileGroup(const TRemoteToken & Value)
 {
   FGroup = Value;
 }
-//---------------------------------------------------------------------------
-UnicodeString TRemoteFile::GetFileName() const { return FFileName; }
 //---------------------------------------------------------------------------
 void TRemoteFile::SetFileName(const UnicodeString & Value)
 {
@@ -1500,7 +1499,7 @@ void TRemoteFileList::AddFile(TRemoteFile * File)
   File->SetDirectory(this);
 }
 //---------------------------------------------------------------------------
-void TRemoteFileList::DuplicateTo(TRemoteFileList * Copy)
+void TRemoteFileList::DuplicateTo(TRemoteFileList * Copy) const
 {
   Copy->Clear();
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
@@ -1556,7 +1555,7 @@ __int64 TRemoteFileList::GetTotalSize()
   return Result;
 }
 //---------------------------------------------------------------------------
-TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & FileName)
+TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & FileName) const
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {

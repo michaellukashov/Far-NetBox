@@ -100,16 +100,16 @@ private:
   UnicodeString FTypeName;
 
 public:
-  intptr_t GetAttr();
-  bool GetBrokenLink();
+  intptr_t GetAttr() const;
+  bool GetBrokenLink() const;
   bool GetIsDirectory() const;
-  TRemoteFile * GetLinkedFile();
+  TRemoteFile * GetLinkedFile() const;
   void SetLinkedFile(TRemoteFile * Value);
-  UnicodeString GetModificationStr();
+  UnicodeString GetModificationStr() const;
   void SetModification(const TDateTime & Value);
   void SetListingStr(const UnicodeString & Value);
-  UnicodeString GetListingStr();
-  UnicodeString GetRightsStr();
+  UnicodeString GetListingStr() const;
+  UnicodeString GetRightsStr() const;
   wchar_t GetType() const;
   void SetType(wchar_t AType);
   void SetTerminal(TTerminal * Value);
@@ -117,8 +117,8 @@ public:
   UnicodeString GetFullFileName() const;
   bool GetHaveFullFileName() const;
   intptr_t GetIconIndex() const;
-  UnicodeString GetTypeName();
-  bool GetIsHidden();
+  UnicodeString GetTypeName() const;
+  bool GetIsHidden() const;
   void SetIsHidden(bool Value);
   bool GetIsParentDirectory() const;
   bool GetIsThisDirectory() const;
@@ -127,7 +127,7 @@ public:
   UnicodeString GetUserModificationStr();
 
 private:
-  void LoadTypeInfo();
+  void LoadTypeInfo() const;
 
 protected:
   void FindLinkedFile();
@@ -146,13 +146,12 @@ public:
   void SetSize(__int64 Value) { FSize = Value; }
   const TRemoteToken & GetFileOwner() const;
   TRemoteToken & GetFileOwner();
-  void SetFileOwner(TRemoteToken Value);
+  void SetFileOwner(const TRemoteToken & Value);
   const TRemoteToken & GetFileGroup() const;
   TRemoteToken & GetFileGroup();
-  void SetFileGroup(TRemoteToken Value);
-  UnicodeString GetFileName() const;
+  void SetFileGroup(const TRemoteToken & Value);
+  UnicodeString GetFileName() const { return FFileName; }
   void SetFileName(const UnicodeString & Value);
-  int GetINodeBlocks();
   TDateTime GetModification() const { return FModification; }
   TModificationFmt GetModificationFmt() const { return FModificationFmt; }
   void SetModificationFmt(TModificationFmt Value) { FModificationFmt = Value; }
@@ -197,8 +196,8 @@ protected:
 public:
   TRemoteFileList();
   virtual ~TRemoteFileList() { Clear(); }
-  TRemoteFile * FindFile(const UnicodeString & FileName);
-  virtual void DuplicateTo(TRemoteFileList * Copy);
+  TRemoteFile * FindFile(const UnicodeString & FileName) const;
+  virtual void DuplicateTo(TRemoteFileList * Copy) const;
   virtual void AddFile(TRemoteFile * File);
   UnicodeString GetDirectory() const { return FDirectory; }
   virtual void SetDirectory(const UnicodeString & Value);

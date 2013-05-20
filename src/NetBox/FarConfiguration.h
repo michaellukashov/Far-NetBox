@@ -14,6 +14,7 @@ public:
   explicit TFarConfiguration(TCustomFarPlugin * APlugin);
   virtual ~TFarConfiguration();
 
+  const TCustomFarPlugin * GetPlugin() const { return FFarPlugin; }
   TCustomFarPlugin * GetPlugin() { return FFarPlugin; }
   void SetPlugin(TCustomFarPlugin * Value);
   bool GetConfirmOverwritingOverride() { return FConfirmOverwritingOverride; }
@@ -76,19 +77,19 @@ public:
   void CacheFarSettings();
 
 protected:
-  virtual bool GetConfirmOverwriting();
+  virtual bool GetConfirmOverwriting() const;
   virtual void SetConfirmOverwriting(bool Value);
 
   virtual void SaveData(THierarchicalStorage * Storage, bool All);
   virtual void LoadData(THierarchicalStorage * Storage);
 
-  virtual UnicodeString ModuleFileName();
+  virtual UnicodeString ModuleFileName() const;
   virtual void Saved();
 
 private:
-    __int64 GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t *Name);
-    __int64 GetConfirmationsSetting(HANDLE &Settings, const wchar_t *Name);
-    __int64 GetConfirmationsSettings();
+    __int64 GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t * Name) const;
+    __int64 GetConfirmationsSetting(HANDLE & Settings, const wchar_t * Name) const;
+    __int64 GetConfirmationsSettings() const;
 
 private:
   TCustomFarPlugin * FFarPlugin;
@@ -121,7 +122,7 @@ private:
 
   TBookmarks * FBookmarks;
 
-  intptr_t FarConfirmations();
+  intptr_t FarConfirmations() const;
 };
 //---------------------------------------------------------------------------
 #define FarConfiguration (dynamic_cast<TFarConfiguration *>(GetConfiguration()))

@@ -877,10 +877,10 @@ public:
   UnicodeString ToString(void)
   {
     UnicodeString Result(FSet.size());
-    typename std::set<T>::const_iterator itr;
-    for(itr = FSet.begin(); itr != FSet.end(); itr++)
+    typename std::set<T>::const_iterator it;
+    for(it = FSet.begin(); it != FSet.end(); ++it)
     {
-      Result += (wchar_t)*itr;
+      Result += (wchar_t)*it;
     }
 
     return Result;
