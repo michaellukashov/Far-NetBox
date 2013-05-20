@@ -132,7 +132,7 @@ public:
   unsigned long MaxPacketSize();
   void ClearStdError();
   bool GetStoredCredentialsTried() const;
-  void __fastcall EnableUsage();
+  void EnableUsage();
 
   void RegisterReceiveHandler(TNotifyEvent Handler);
   void UnregisterReceiveHandler(TNotifyEvent Handler);

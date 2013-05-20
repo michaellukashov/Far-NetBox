@@ -353,7 +353,7 @@ public:
   void Default();
   void NonPersistant();
   void Load(THierarchicalStorage * Storage);
-  // void __fastcall ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path);
+  // void ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path);
   void Save(THierarchicalStorage * Storage, bool PuttyExport,
     const TSessionData * Default = NULL);
   void SaveRecryptedPasswords(THierarchicalStorage * Storage);

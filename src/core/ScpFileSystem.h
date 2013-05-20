@@ -132,7 +132,7 @@ private:
   void CaptureOutput(const UnicodeString & AddedLine, bool StdError);
   void ChangeFileToken(const UnicodeString & DelimitedName,
     const TRemoteToken & Token, TFSCommand Cmd, const UnicodeString & RecursiveStr);
-  uintptr_t __fastcall ConfirmOverwrite(
+  uintptr_t ConfirmOverwrite(
     UnicodeString & FileName, TOperationSide Side,
     const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress);
