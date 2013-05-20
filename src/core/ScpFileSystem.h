@@ -111,18 +111,18 @@ private:
   void SCPResponse(bool * GotLastLine = NULL);
   void SCPDirectorySource(const UnicodeString & DirectoryName,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
-    TFileOperationProgressType * OperationProgress, int Level);
+    TFileOperationProgressType * OperationProgress, intptr_t Level);
   void SCPError(const UnicodeString & Message, bool Fatal);
   void SCPSendError(const UnicodeString & Message, bool Fatal);
   void SCPSink(const UnicodeString & FileName,
     const TRemoteFile * File, const UnicodeString & TargetDir,
     const UnicodeString & SourceDir,
     const TCopyParamType * CopyParam, bool & Success,
-    TFileOperationProgressType * OperationProgress, intptr_t Params, int Level);
+    TFileOperationProgressType * OperationProgress, intptr_t Params, intptr_t Level);
   void SCPSource(const UnicodeString & FileName,
     const TRemoteFile * File,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
-    TFileOperationProgressType * OperationProgress, int Level);
+    TFileOperationProgressType * OperationProgress, intptr_t Level);
   void SendCommand(const UnicodeString & Cmd);
   void SkipFirstLine();
   void SkipStartupMessage();

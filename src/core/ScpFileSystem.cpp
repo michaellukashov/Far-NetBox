@@ -1718,7 +1718,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
   const TRemoteFile * File,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
-  TFileOperationProgressType * OperationProgress, int Level)
+  TFileOperationProgressType * OperationProgress, intptr_t Level)
 {
   UnicodeString RealFileName = File ? File->GetFileName() : FileName;
   UnicodeString DestFileName = CopyParam->ChangeFileName(
@@ -2013,7 +2013,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
-  TFileOperationProgressType * OperationProgress, int Level)
+  TFileOperationProgressType * OperationProgress, intptr_t Level)
 {
   uintptr_t LocalFileAttrs = 0;
 
@@ -2298,7 +2298,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
   const UnicodeString & SourceDir,
   const TCopyParamType * CopyParam, bool & Success,
   TFileOperationProgressType * OperationProgress, intptr_t Params,
-  int Level)
+  intptr_t Level)
 {
   struct
   {
