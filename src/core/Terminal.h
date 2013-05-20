@@ -515,7 +515,8 @@ public:
   TSessionData * GetSessionData() const { return FSessionData; }
   TSessionLog * GetLog() { return FLog; }
   TActionLog * GetActionLog() { return FActionLog; };
-  TConfiguration *GetConfiguration() { return FConfiguration; }
+  const TConfiguration * GetConfiguration() const { return FConfiguration; }
+  TConfiguration * GetConfiguration() { return FConfiguration; }
   TSessionStatus GetStatus() { return FStatus; }
   TRemoteDirectory * GetFiles() { return FFiles; }
   TNotifyEvent & GetOnChangeDirectory() { return FOnChangeDirectory; }

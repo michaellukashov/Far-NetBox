@@ -25,7 +25,7 @@ private:
   intptr_t FUpdating;
   TNotifyEvent FOnChange;
 
-  void * FApplicationInfo;
+  mutable void * FApplicationInfo;
   // TUsage * FUsage;
   bool FLogging;
   bool FPermanentLogging;
@@ -66,15 +66,15 @@ private:
   intptr_t FSessionReopenAutoMaximumNumberOfRetries;
 
 public:
-  UnicodeString GetOSVersionStr();
-  TVSFixedFileInfo *GetFixedApplicationInfo();
-  void * GetApplicationInfo();
-  virtual UnicodeString GetVersionStr();
-  virtual UnicodeString GetVersion();
-  UnicodeString GetProductVersion();
-  UnicodeString GetProductName();
-  UnicodeString GetCompanyName();
-  UnicodeString TrimVersion(const UnicodeString & Version);
+  UnicodeString GetOSVersionStr() const;
+  TVSFixedFileInfo *GetFixedApplicationInfo() const;
+  void * GetApplicationInfo() const;
+  virtual UnicodeString GetVersionStr() const;
+  virtual UnicodeString GetVersion() const;
+  UnicodeString GetProductVersion() const;
+  UnicodeString GetProductName() const;
+  UnicodeString GetCompanyName() const;
+  UnicodeString TrimVersion(const UnicodeString & Version) const;
   UnicodeString GetStoredSessionsSubKey();
   UnicodeString GetPuttySessionsKey();
   void SetRandomSeedFile(const UnicodeString & Value);
@@ -146,14 +146,14 @@ public:
   void SetAutoReadDirectoryAfterOp(bool Value);
   virtual bool GetRememberPassword();
 
-  virtual UnicodeString ModuleFileName();
+  virtual UnicodeString ModuleFileName() const;
 
   UnicodeString GetFileFileInfoString(const UnicodeString & Key,
-    const UnicodeString & FileName);
-  void * GetFileApplicationInfo(const UnicodeString & FileName);
-  UnicodeString GetFileProductVersion(const UnicodeString & FileName);
-  UnicodeString GetFileProductName(const UnicodeString & FileName);
-  UnicodeString GetFileCompanyName(const UnicodeString & FileName);
+    const UnicodeString & FileName) const;
+  void * GetFileApplicationInfo(const UnicodeString & FileName) const;
+  UnicodeString GetFileProductVersion(const UnicodeString & FileName) const;
+  UnicodeString GetFileProductName(const UnicodeString & FileName) const;
+  UnicodeString GetFileCompanyName(const UnicodeString & FileName) const;
 
   bool GetPermanentLogging() { return FPermanentLogging; }
   void SetPermanentLogging(bool Value) { FPermanentLogging = Value; }
