@@ -3454,13 +3454,11 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
   if (Source.HasDate)
   {
     DateTime =
-      EncodeDateVerbose((unsigned short)Source.Year, (unsigned short)Source.Month,
-        (unsigned short)Source.Day);
+      EncodeDateVerbose(Source.Year, Source.Month, Source.Day);
     if (Source.HasTime)
     {
       DateTime = DateTime +
-        EncodeTimeVerbose((unsigned short)Source.Hour, (unsigned short)Source.Minute,
-          (unsigned short)Source.Second, 0);
+        EncodeTimeVerbose(Source.Hour, Source.Minute, Source.Second, 0);
       // not exact as we got year as well, but it is most probably
       // guessed by FZAPI anyway
       ModificationFmt = Source.HasSeconds ? mfFull : mfMDHM;
@@ -3480,7 +3478,7 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
   {
     // With SCP we estimate date to be today, if we have at least time
 
-    DateTime = double(0);
+    DateTime = double(0.0);
     ModificationFmt = mfNone;
   }
 }
