@@ -97,14 +97,14 @@ public:
   UnicodeString GetDefaultLogFileName();
   UnicodeString GetTimeFormat();
   void SetStorage(TStorage Value);
-  UnicodeString GetRegistryStorageKey();
+  UnicodeString GetRegistryStorageKey() const;
   UnicodeString GetIniFileStorageNameForReadingWritting();
   UnicodeString GetIniFileStorageNameForReading();
   UnicodeString GetIniFileStorageName(bool ReadingOnly);
   void SetIniFileStorageName(const UnicodeString & Value);
   UnicodeString GetPartialExt() const;
-  UnicodeString GetFileInfoString(const UnicodeString & Key);
-  bool GetGSSAPIInstalled();
+  UnicodeString GetFileInfoString(const UnicodeString & Key) const;
+  bool GetGSSAPIInstalled() const;
   void SetSessionReopenAuto(intptr_t Value);
   void SetSessionReopenBackground(intptr_t Value);
   void SetSessionReopenTimeout(intptr_t Value);
@@ -113,11 +113,11 @@ public:
   void SetTunnelLocalPortNumberHigh(intptr_t Value);
   void SetCacheDirectoryChangesMaxSize(intptr_t Value);
   void SetShowFtpWelcomeMessage(bool Value);
-  intptr_t GetCompoundVersion();
+  intptr_t GetCompoundVersion() const;
   void UpdateActualLogProtocol();
   void SetExternalIpAddress(const UnicodeString & Value);
   void SetTryFtpWhenSshFails(bool Value);
-  bool GetCollectUsage();
+  bool GetCollectUsage() const;
   void SetCollectUsage(bool Value);
 
 protected:
@@ -138,7 +138,7 @@ public:
   UnicodeString BannerHash(const UnicodeString & Banner);
   static UnicodeString PropertyToKey(const UnicodeString & Property);
 
-  virtual bool GetConfirmOverwriting();
+  virtual bool GetConfirmOverwriting() const;
   virtual void SetConfirmOverwriting(bool Value);
   bool GetConfirmResume();
   void SetConfirmResume(bool Value);

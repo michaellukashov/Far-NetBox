@@ -729,7 +729,7 @@ TVSFixedFileInfo * TConfiguration::GetFixedApplicationInfo() const
   return GetFixedFileInfo(GetApplicationInfo());
 }
 //---------------------------------------------------------------------------
-intptr_t  TConfiguration::GetCompoundVersion()
+intptr_t TConfiguration::GetCompoundVersion() const
 {
   TVSFixedFileInfo * FileInfo = GetFixedApplicationInfo();
   if (FileInfo)
@@ -894,12 +894,12 @@ UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key,
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key)
+UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key) const
 {
   return GetFileInfoString(Key, L"");
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetRegistryStorageKey()
+UnicodeString TConfiguration::GetRegistryStorageKey() const
 {
   return GetRegistryKey();
 }
@@ -1024,7 +1024,7 @@ UnicodeString TConfiguration::GetRootKeyStr()
   return RootKeyToStr(HKEY_CURRENT_USER);
 }
 //---------------------------------------------------------------------------
-bool TConfiguration::GetGSSAPIInstalled()
+bool TConfiguration::GetGSSAPIInstalled() const
 {
   return HasGSSAPI();
 }
@@ -1133,7 +1133,7 @@ TEOLType TConfiguration::GetLocalEOLType()
   return eolCRLF;
 }
 //---------------------------------------------------------------------
-bool TConfiguration::GetCollectUsage()
+bool TConfiguration::GetCollectUsage() const
 {
   return false; // FUsage->Collect;
 }
@@ -1265,7 +1265,7 @@ void TConfiguration::SetConfirmOverwriting(bool Value)
   SET_CONFIG_PROPERTY(ConfirmOverwriting);
 }
 //---------------------------------------------------------------------------
-bool TConfiguration::GetConfirmOverwriting()
+bool TConfiguration::GetConfirmOverwriting() const
 {
   TGuard Guard(FCriticalSection);
   return FConfirmOverwriting;

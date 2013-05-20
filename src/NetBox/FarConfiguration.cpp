@@ -189,7 +189,7 @@ void TFarConfiguration::CacheFarSettings()
   FFarConfirmations = GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
 }
 //---------------------------------------------------------------------------
-intptr_t TFarConfiguration::FarConfirmations()
+intptr_t TFarConfiguration::FarConfirmations() const
 {
   if (GetCurrentThreadId() == GetPlugin()->GetFarThread())
   {
@@ -202,7 +202,7 @@ intptr_t TFarConfiguration::FarConfirmations()
   }
 }
 //---------------------------------------------------------------------------
-bool TFarConfiguration::GetConfirmOverwriting()
+bool TFarConfiguration::GetConfirmOverwriting() const
 {
   if (FForceInheritance || FConfirmOverwritingOverride)
   {
@@ -237,7 +237,7 @@ bool TFarConfiguration::GetConfirmDeleting()
   return (FarConfirmations() & FCS_DELETE) != 0;
 }
 //---------------------------------------------------------------------------
-UnicodeString TFarConfiguration::ModuleFileName()
+UnicodeString TFarConfiguration::ModuleFileName() const
 {
   assert(GetPlugin());
   return GetPlugin()->GetModuleName();
