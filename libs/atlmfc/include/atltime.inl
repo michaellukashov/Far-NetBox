@@ -202,7 +202,8 @@ ATLTIME_INLINE CTime::CTime(
 	atm.tm_year = nYear - 1900;     // tm_year is 1900 based
 	atm.tm_isdst = nDST;
 
-	m_time = _mktime64(&atm);
+	// m_time = _mktime64(&atm);
+  m_time = _mkgmtime64(&atm);
 	ATLASSUME(m_time != -1);       // indicates an illegal input time
 	if(m_time == -1)
 	{
