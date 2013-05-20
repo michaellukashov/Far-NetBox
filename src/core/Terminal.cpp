@@ -1135,9 +1135,9 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   }
 
   if (Result && GetConfiguration()->GetRememberPassword() &&
-    (Prompts->GetCount() == 1) && (Prompts->GetObject(0) == NULL) &&
-    ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
-     (Kind == pkTIS) || (Kind == pkCryptoCard)))
+      (Prompts->GetCount() == 1) && (Prompts->GetObject(0) == NULL) &&
+      ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
+       (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
     RawByteString EncryptedPassword = EncryptPassword(Results->GetString(0));
     if (FTunnelOpening)
