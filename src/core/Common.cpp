@@ -201,7 +201,8 @@ UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From, const UnicodeString & Chs, bool Trim,
+UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
+  const UnicodeString & Chs, bool Trim,
   wchar_t * Delimiter, bool DoubleDelimiterEscapes)
 {
   UnicodeString Result;
@@ -1163,7 +1164,7 @@ static __int64 DateTimeToUnix(const TDateTime DateTime)
     CurrentParams->CurrentDifferenceSec;
 }
 //---------------------------------------------------------------------------
-FILETIME DateTimeToFileTime(const TDateTime DateTime,
+FILETIME DateTimeToFileTime(const TDateTime & DateTime,
   TDSTMode /*DSTMode*/)
 {
   __int64 UnixTimeStamp = ::DateTimeToUnix(DateTime);
@@ -1245,40 +1246,40 @@ __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime ConvertTimestampToUTC(TDateTime DateTime)
+TDateTime ConvertTimestampToUTC(const TDateTime & DateTime)
 {
-
-  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
-  DateTime +=
-    (IsDateInDST(DateTime) ?
+  TDateTime Result = DateTime;
+  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
+  Result +=
+    (IsDateInDST(Result) ?
       Params->DaylightDifference : Params->StandardDifference);
-  DateTime += Params->BaseDifference;
+  Result += Params->BaseDifference;
 
   if (Params->DaylightHack)
   {
     const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
-    DateTime += CurrentParams->CurrentDaylightDifference;
+    Result += CurrentParams->CurrentDaylightDifference;
   }
 
-  return DateTime;
+  return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime ConvertTimestampFromUTC(TDateTime DateTime)
+TDateTime ConvertTimestampFromUTC(const TDateTime & DateTime)
 {
-
-  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
-  DateTime -=
-    (IsDateInDST(DateTime) ?
+  TDateTime Result = DateTime;
+  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
+  Result -=
+    (IsDateInDST(Result) ?
       Params->DaylightDifference : Params->StandardDifference);
-  DateTime -= Params->BaseDifference;
+  Result -= Params->BaseDifference;
 
   if (Params->DaylightHack)
   {
     const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
-    DateTime -= CurrentParams->CurrentDaylightDifference;
+    Result -= CurrentParams->CurrentDaylightDifference;
   }
 
-  return DateTime;
+  return Result;
 }
 //---------------------------------------------------------------------------
 __int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
@@ -1297,46 +1298,47 @@ __int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode)
+TDateTime AdjustDateTimeFromUnix(const TDateTime & DateTime, TDSTMode DSTMode)
 {
-  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
+  TDateTime Result = DateTime;
+  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
 
   if (Params->DaylightHack)
   {
     if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
     {
       const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
-      DateTime = DateTime - CurrentParams->CurrentDaylightDifference;
+      Result = Result - CurrentParams->CurrentDaylightDifference;
     }
 
-    if (!IsDateInDST(DateTime))
+    if (!IsDateInDST(Result))
     {
       if (DSTMode == dstmWin)
       {
-        DateTime = DateTime - Params->DaylightDifference;
+        Result = Result - Params->DaylightDifference;
       }
     }
     else
     {
-      DateTime = DateTime - Params->StandardDifference;
+      Result = Result - Params->StandardDifference;
     }
   }
   else
   {
     if (DSTMode == dstmWin)
     {
-      if (IsDateInDST(DateTime))
+      if (IsDateInDST(Result))
       {
-        DateTime = DateTime + Params->DaylightDifference;
+        Result = Result + Params->DaylightDifference;
       }
       else
       {
-        DateTime = DateTime + Params->StandardDifference;
+        Result = Result + Params->StandardDifference;
       }
     }
   }
 
-  return DateTime;
+  return Result;
 }
 //---------------------------------------------------------------------------
 UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
@@ -1446,7 +1448,7 @@ UnicodeString StandardTimestamp()
 //---------------------------------------------------------------------------
 static TDateTime TwoSeconds(0, 0, 2, 0);
 
-intptr_t CompareFileTime(TDateTime T1, TDateTime T2)
+intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2)
 {
   // "FAT" time precision
   // (when one time is seconds-precision and other is millisecond-precision,
@@ -1473,12 +1475,12 @@ intptr_t CompareFileTime(TDateTime T1, TDateTime T2)
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TimeToMSec(TDateTime T)
+intptr_t TimeToMSec(const TDateTime & T)
 {
   return int(Round(double(T) * double(MSecsPerDay)));
 }
 //---------------------------------------------------------------------------
-intptr_t TimeToMinutes(TDateTime T)
+intptr_t TimeToMinutes(const TDateTime & T)
 {
   return TimeToMSec(T) / MSecsPerSec / SecsPerMin;
 }
