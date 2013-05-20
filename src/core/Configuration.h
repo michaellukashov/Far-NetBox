@@ -148,7 +148,7 @@ public:
 
   virtual UnicodeString ModuleFileName() const;
 
-  UnicodeString GetFileFileInfoString(const UnicodeString & Key,
+  UnicodeString GetFileInfoString(const UnicodeString & Key,
     const UnicodeString & FileName) const;
   void * GetFileApplicationInfo(const UnicodeString & FileName) const;
   UnicodeString GetFileProductVersion(const UnicodeString & FileName) const;

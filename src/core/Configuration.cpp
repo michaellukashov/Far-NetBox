@@ -774,12 +774,12 @@ void * TConfiguration::GetApplicationInfo() const
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileProductName(const UnicodeString & FileName) const
 {
-  return GetFileFileInfoString(L"ProductName", FileName);
+  return GetFileInfoString(L"ProductName", FileName);
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileCompanyName(const UnicodeString & FileName) const
 {
-  return GetFileFileInfoString(L"CompanyName", FileName);
+  return GetFileInfoString(L"CompanyName", FileName);
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetProductName() const
@@ -794,12 +794,12 @@ UnicodeString TConfiguration::GetCompanyName() const
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileProductVersion(const UnicodeString & FileName) const
 {
-  return TrimVersion(GetFileFileInfoString(L"ProductVersion", FileName));
+  return TrimVersion(GetFileInfoString(L"ProductVersion", FileName));
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileDescription(const UnicodeString & FileName)
 {
-  return GetFileFileInfoString(L"FileDescription", FileName);
+  return GetFileInfoString(L"FileDescription", FileName);
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetProductVersion() const
@@ -859,7 +859,7 @@ UnicodeString TConfiguration::GetVersion() const
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & Key,
+UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key,
   const UnicodeString & FileName) const
 {
   TGuard Guard(FCriticalSection);
@@ -896,7 +896,7 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & Key,
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key)
 {
-  return GetFileFileInfoString(Key, L"");
+  return GetFileInfoString(Key, L"");
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetRegistryStorageKey()

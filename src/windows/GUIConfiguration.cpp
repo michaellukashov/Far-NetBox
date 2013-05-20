@@ -1071,7 +1071,7 @@ TStrings * TGUIConfiguration::GetLocales()
             (Exts->GetString(Index).Length() == 3) &&
             SameText(Exts->GetString(Index).SubString(1, 2), AdditionaLanguagePrefix))
         {
-          UnicodeString LangName = GetFileFileInfoString(L"LangName",
+          UnicodeString LangName = GetFileInfoString(L"LangName",
             ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetString(Index)));
           if (!LangName.IsEmpty())
           {
