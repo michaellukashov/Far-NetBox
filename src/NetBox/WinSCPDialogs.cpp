@@ -660,11 +660,12 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
   Dialog->AddStandardButtons();
 
-  ResumeOnButton->SetChecked(GUIConfiguration->GetDefaultCopyParam().GetResumeSupport() == rsOn);
-  ResumeSmartButton->SetChecked(GUIConfiguration->GetDefaultCopyParam().GetResumeSupport() == rsSmart);
-  ResumeOffButton->SetChecked(GUIConfiguration->GetDefaultCopyParam().GetResumeSupport() == rsOff);
+  TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+  ResumeOnButton->SetChecked(CopyParam.GetResumeSupport() == rsOn);
+  ResumeSmartButton->SetChecked(CopyParam.GetResumeSupport() == rsSmart);
+  ResumeOffButton->SetChecked(CopyParam.GetResumeSupport() == rsOff);
   ResumeThresholdEdit->SetAsInteger(
-    static_cast<int>(GUIConfiguration->GetDefaultCopyParam().GetResumeThreshold() / 1024));
+    static_cast<int>(CopyParam.GetResumeThreshold() / 1024));
 
   SessionReopenAutoCheck->SetChecked((GetConfiguration()->GetSessionReopenAuto() > 0));
   SessionReopenAutoEdit->SetAsInteger((GetConfiguration()->GetSessionReopenAuto() > 0 ?
@@ -679,8 +680,6 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
     GetConfiguration()->BeginUpdate();
     TRY_FINALLY (
     {
-      TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
-
       if (ResumeOnButton->GetChecked())
       {
         CopyParam.SetResumeSupport(rsOn);
