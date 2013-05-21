@@ -291,10 +291,10 @@ private:
   void TerminalChangeDirectory(TObject * Sender);
   void TerminalReadDirectory(TObject * Sender, bool ReloadOnly);
   void TerminalStartReadDirectory(TObject * Sender);
-  void TerminalReadDirectoryProgress(TObject * Sender, int Progress,
+  void TerminalReadDirectoryProgress(TObject * Sender, intptr_t Progress,
     bool & Cancel);
   void TerminalInformation(TTerminal * Terminal,
-    const UnicodeString & Str, bool Status, int Phase);
+    const UnicodeString & Str, bool Status, intptr_t Phase);
   void TerminalQueryUser(TObject * Sender,
     const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
     const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg);
