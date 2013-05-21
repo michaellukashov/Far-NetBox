@@ -12,7 +12,6 @@ TFar3Storage::TFar3Storage(const UnicodeString & AStorage,
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FPluginSettings(guid, SettingsControl)
 {
-  // DEBUG_PRINTF(L"AStorage = %s", AStorage.c_str());
   Init();
 }
 //---------------------------------------------------------------------------
@@ -48,7 +47,6 @@ intptr_t TFar3Storage::OpenSubKeyInternal(intptr_t Root, const UnicodeString & S
   UnicodeString UnmungedSubKey = PuttyUnMungeStr(SubKey);
   if (CanCreate)
   {
-    // DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
     NewRoot = FPluginSettings.CreateSubKey(Root, UnmungedSubKey.c_str());
   }
   else
@@ -60,7 +58,6 @@ intptr_t TFar3Storage::OpenSubKeyInternal(intptr_t Root, const UnicodeString & S
 //---------------------------------------------------------------------------
 bool TFar3Storage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate)
 {
-  // DEBUG_PRINTF(L"SubKey = %s, CanCreate = %d, Path = %d", SubKey.c_str(), CanCreate, Path);
   intptr_t OldRoot = FRoot;
   intptr_t Root = FRoot;
   bool Result = true;
@@ -72,7 +69,6 @@ bool TFar3Storage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCrea
     {
       Root = OpenSubKeyInternal(Root, CutToChar(subKey, L'\\', false), CanCreate);
       Result &= Root != 0;
-      // DEBUG_PRINTF(L"SubKey = %s, Result = %d", SubKey.c_str(), Result);
     }
     if (Result)
     {
@@ -80,13 +76,11 @@ bool TFar3Storage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCrea
       FRoot = Root;
     }
   }
-  // DEBUG_PRINTF(L"end, Result = %d", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
 void TFar3Storage::CloseSubKey()
 {
-  // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   THierarchicalStorage::CloseSubKey();
   // assert(FKeyHistory->GetCount() == FSubKeyIds.size() - 1);
   if (FKeyHistory->GetCount() && FSubKeyIds.size())
@@ -98,7 +92,6 @@ void TFar3Storage::CloseSubKey()
   {
     FRoot = 0;
   }
-  // DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
 }
 //---------------------------------------------------------------------------
 bool TFar3Storage::DeleteSubKey(const UnicodeString & SubKey)
@@ -119,26 +112,22 @@ bool TFar3Storage::DeleteSubKey(const UnicodeString & SubKey)
 //---------------------------------------------------------------------------
 void TFar3Storage::GetSubKeyNames(TStrings * Strings)
 {
-  // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   FarSettingsEnum settings = {sizeof(FarSettingsEnum),0,0,0};
   settings.Root = FRoot;
   if (FPluginSettings.GetSubKeyNames(settings))
   {
     for (size_t Index = 0; Index < settings.Count; ++Index)
     {
-      // DEBUG_PRINTF(L"settings.Items[%d].Type = %d", Index, settings.Items[Index].Type);
       if (settings.Items[Index].Type == FST_SUBKEY)
       {
         Strings->Add(PuttyUnMungeStr(settings.Items[Index].Name));
       }
     }
   }
-  // DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
 }
 //---------------------------------------------------------------------------
 void TFar3Storage::GetValueNames(TStrings * Strings) const
 {
-  // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   Strings->Clear();
   FarSettingsEnum Settings = {sizeof(FarSettingsEnum),0,0,0};
   Settings.Root = FRoot;
@@ -150,7 +139,6 @@ void TFar3Storage::GetValueNames(TStrings * Strings) const
       Strings->Add(Item->Name);
     }
   }
-  // DEBUG_PRINTF(L"end, Strings->GetCount() = %d", Strings->Count);
 }
 //---------------------------------------------------------------------------
 bool TFar3Storage::DeleteValue(const UnicodeString & Name)
@@ -161,16 +149,13 @@ bool TFar3Storage::DeleteValue(const UnicodeString & Name)
 bool TFar3Storage::DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi)
 {
   Error(SNotImplemented, 3011);
-  // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   UnicodeString K = PuttyMungeStr(SubKey);
   bool Result = true; // FPluginSettings.KeyExists(K);
-  // DEBUG_PRINTF(L"end, FRoot = %d, K = %s, Result = %d", FRoot, K.c_str(), Result);
   return Result;
 }
 //---------------------------------------------------------------------------
 bool TFar3Storage::ValueExists(const UnicodeString & Value) const
 {
-  // DEBUG_PRINTF(L"begin, FRoot = %d, Value = %s", FRoot, Value.c_str());
   bool Result = FPluginSettings.ValueExists(FRoot, Value.c_str());
   return Result;
 }
@@ -236,7 +221,6 @@ size_t TFar3Storage::ReadBinaryData(const UnicodeString & Name,
 //---------------------------------------------------------------------------
 void TFar3Storage::WriteBool(const UnicodeString & Name, bool Value)
 {
-  // DEBUG_PRINTF(L"begin, FRoot = %d, Name = %s", FRoot, Name.c_str());
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
 //---------------------------------------------------------------------------
@@ -269,13 +253,11 @@ void TFar3Storage::WriteStringRaw(const UnicodeString & Name, const UnicodeStrin
 //---------------------------------------------------------------------------
 void TFar3Storage::WriteInteger(const UnicodeString & Name, intptr_t Value)
 {
-  // DEBUG_PRINTF(L"begin, FRoot = %d, Name = %s", FRoot, Name.c_str());
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
 //---------------------------------------------------------------------------
 void TFar3Storage::WriteInt64(const UnicodeString & Name, __int64 Value)
 {
-  // DEBUG_PRINTF(L"begin, FRoot = %d, Name = %s", FRoot, Name.c_str());
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
 //---------------------------------------------------------------------------

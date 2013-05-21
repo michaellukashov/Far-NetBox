@@ -54,7 +54,6 @@ void Abort()
 //---------------------------------------------------------------------------
 void Error(int ErrorID, intptr_t data)
 {
-  // DEBUG_PRINTF(L"begin: ErrorID = %d, data = %d", ErrorID, data);
   UnicodeString Msg = FMTLOAD(ErrorID, data);
   throw ExtException((Exception *)NULL, Msg);
 }

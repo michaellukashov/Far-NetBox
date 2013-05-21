@@ -2841,7 +2841,6 @@ TFSProtocol TSessionData::TranslateFSProtocolNumber(intptr_t FSProtocol)
 TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID)
 {
   // Find protocol by string id
-  // DEBUG_PRINTF(L"ProtocolID = %s", ProtocolID.c_str());
   TFSProtocol Result = static_cast<TFSProtocol>(-1);
   for (intptr_t Index = 0; Index < FSPROTOCOL_COUNT; ++Index)
   {
@@ -2854,7 +2853,6 @@ TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID)
   if (Result == -1)
     Result = CONST_DEFAULT_PROTOCOL;
   assert(Result != -1);
-  // DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
 //---------------------------------------------------------------------
