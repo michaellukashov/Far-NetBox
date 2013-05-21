@@ -83,20 +83,12 @@ void TConfiguration::Default()
   FForceBanners = false;
   FDisableAcceptingHostKeys = false;
 
-  TRegistryStorage * AdminStorage = new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE);
-  TRY_FINALLY (
+  std::auto_ptr<TRegistryStorage> AdminStorage(new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE));
+  if (AdminStorage->OpenRootKey(false))
   {
-    if (AdminStorage->OpenRootKey(false))
-    {
-      LoadAdmin(AdminStorage);
-      AdminStorage->CloseSubKey();
-    }
+    LoadAdmin(AdminStorage.get());
+    AdminStorage->CloseSubKey();
   }
-  ,
-  {
-    delete AdminStorage;
-  }
-  );
 
   SetRandomSeedFile(FDefaultRandomSeedFile);
   SetPuttyRegistryStorageKey(L"Software\\SimonTatham\\PuTTY");
@@ -228,21 +220,13 @@ void TConfiguration::Save(bool All, bool Explicit)
     return;
   }
 
-  THierarchicalStorage * AStorage = CreateStorage(false);
-  TRY_FINALLY (
+  std::auto_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  Storage->SetAccessMode(smReadWrite);
+  Storage->SetExplicit(Explicit);
+  if (Storage->OpenSubKey(GetConfigurationSubKey(), true))
   {
-    AStorage->SetAccessMode(smReadWrite);
-    AStorage->SetExplicit(Explicit);
-    if (AStorage->OpenSubKey(GetConfigurationSubKey(), true))
-    {
-      SaveData(AStorage, All);
-    }
+    SaveData(Storage.get(), All);
   }
-  ,
-  {
-    delete AStorage;
-  }
-  );
 
   Saved();
 
@@ -372,94 +356,77 @@ void TConfiguration::LoadFrom(THierarchicalStorage * Storage)
 void TConfiguration::Load()
 {
   TGuard Guard(FCriticalSection);
-
-  THierarchicalStorage * Storage = CreateStorage(false);
-  TRY_FINALLY (
-  {
-    Storage->SetAccessMode(smRead);
-    LoadFrom(Storage);
-  }
-  ,
-  {
-    delete Storage;
-  }
-  );
+  std::auto_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  Storage->SetAccessMode(smRead);
+  LoadFrom(Storage.get());
 }
 //---------------------------------------------------------------------------
 void TConfiguration::CopyData(THierarchicalStorage * Source,
   THierarchicalStorage * Target)
 {
-  TStrings * Names = new TStringList();
-  TRY_FINALLY (
+  std::auto_ptr<TStrings > Names(new TStringList());
+  if (Source->OpenSubKey(GetConfigurationSubKey(), false))
   {
-    if (Source->OpenSubKey(GetConfigurationSubKey(), false))
+    if (Target->OpenSubKey(GetConfigurationSubKey(), true))
     {
-      if (Target->OpenSubKey(GetConfigurationSubKey(), true))
+      if (Source->OpenSubKey(L"CDCache", false))
       {
-        if (Source->OpenSubKey(L"CDCache", false))
+        if (Target->OpenSubKey(L"CDCache", true))
         {
-          if (Target->OpenSubKey(L"CDCache", true))
+          Names->Clear();
+          Source->GetValueNames(Names.get());
+
+          for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
           {
-            Names->Clear();
-            Source->GetValueNames(Names);
-
-            for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
-            {
-              Target->WriteBinaryData(Names->GetString(Index),
-                Source->ReadBinaryData(Names->GetString(Index)));
-            }
-
-            Target->CloseSubKey();
+            Target->WriteBinaryData(Names->GetString(Index),
+              Source->ReadBinaryData(Names->GetString(Index)));
           }
-          Source->CloseSubKey();
+
+          Target->CloseSubKey();
         }
-
-        if (Source->OpenSubKey(L"Banners", false))
-        {
-          if (Target->OpenSubKey(L"Banners", true))
-          {
-            Names->Clear();
-            Source->GetValueNames(Names);
-
-            for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
-            {
-              Target->WriteString(Names->GetString(Index),
-                Source->ReadString(Names->GetString(Index), L""));
-            }
-
-            Target->CloseSubKey();
-          }
-          Source->CloseSubKey();
-        }
-
-        Target->CloseSubKey();
+        Source->CloseSubKey();
       }
-      Source->CloseSubKey();
-    }
 
-    if (Source->OpenSubKey(GetSshHostKeysSubKey(), false))
-    {
-      if (Target->OpenSubKey(GetSshHostKeysSubKey(), true))
+      if (Source->OpenSubKey(L"Banners", false))
       {
-        Names->Clear();
-        Source->GetValueNames(Names);
-
-        for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
+        if (Target->OpenSubKey(L"Banners", true))
         {
-          Target->WriteStringRaw(Names->GetString(Index),
-            Source->ReadStringRaw(Names->GetString(Index), L""));
-        }
+          Names->Clear();
+          Source->GetValueNames(Names.get());
 
-        Target->CloseSubKey();
+          for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
+          {
+            Target->WriteString(Names->GetString(Index),
+              Source->ReadString(Names->GetString(Index), L""));
+          }
+
+          Target->CloseSubKey();
+        }
+        Source->CloseSubKey();
       }
-      Source->CloseSubKey();
+
+      Target->CloseSubKey();
     }
+    Source->CloseSubKey();
   }
-  ,
+
+  if (Source->OpenSubKey(GetSshHostKeysSubKey(), false))
   {
-    delete Names;
+    if (Target->OpenSubKey(GetSshHostKeysSubKey(), true))
+    {
+      Names->Clear();
+      Source->GetValueNames(Names.get());
+
+      for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
+      {
+        Target->WriteStringRaw(Names->GetString(Index),
+          Source->ReadStringRaw(Names->GetString(Index), L""));
+      }
+
+      Target->CloseSubKey();
+    }
+    Source->CloseSubKey();
   }
-  );
 }
 //---------------------------------------------------------------------------
 void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
@@ -486,23 +453,15 @@ void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
 void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
-  THierarchicalStorage * Storage = CreateStorage(false);
-  TRY_FINALLY (
+  std::auto_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  Storage->SetAccessMode(smReadWrite);
+  if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
+      Storage->OpenSubKey(L"CDCache", true))
   {
-    Storage->SetAccessMode(smReadWrite);
-    if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
-        Storage->OpenSubKey(L"CDCache", true))
-    {
-      UnicodeString Data;
-      DirectoryChangesCache->Serialize(Data);
-      Storage->WriteBinaryData(SessionKey, Data);
-    }
+    UnicodeString Data;
+    DirectoryChangesCache->Serialize(Data);
+    Storage->WriteBinaryData(SessionKey, Data);
   }
-  ,
-  {
-    delete Storage;
-  }
-  );
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::BannerHash(const UnicodeString & Banner)
@@ -519,21 +478,13 @@ bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
   const UnicodeString & Banner)
 {
   bool Result;
-  THierarchicalStorage * Storage = CreateStorage(false);
-  TRY_FINALLY (
-  {
-    Storage->SetAccessMode(smRead);
-    Result =
-      !Storage->OpenSubKey(GetConfigurationSubKey(), false) ||
-      !Storage->OpenSubKey(L"Banners", false) ||
-      !Storage->ValueExists(SessionKey) ||
-      (Storage->ReadString(SessionKey, L"") != BannerHash(Banner));
-  }
-  ,
-  {
-    delete Storage;
-  }
-  );
+  std::auto_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  Storage->SetAccessMode(smRead);
+  Result =
+    !Storage->OpenSubKey(GetConfigurationSubKey(), false) ||
+    !Storage->OpenSubKey(L"Banners", false) ||
+    !Storage->ValueExists(SessionKey) ||
+    (Storage->ReadString(SessionKey, L"") != BannerHash(Banner));
 
   return Result;
 }
