@@ -537,7 +537,7 @@ bool TRegistryStorage::DeleteSubKey(const UnicodeString & SubKey)
   return FRegistry->DeleteKey(K);
 }
 //------------------------------------------------------------------------------
-void TRegistryStorage::GetSubKeyNames(Classes::TStrings* Strings)
+void TRegistryStorage::GetSubKeyNames(Classes::TStrings * Strings)
 {
   FRegistry->GetKeyNames(Strings);
   for (intptr_t Index = 0; Index < Strings->GetCount(); ++Index)
