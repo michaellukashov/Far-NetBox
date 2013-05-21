@@ -8,9 +8,9 @@
 
 //---------------------------------------------------------------------------
 TFar3Storage::TFar3Storage(const UnicodeString & AStorage,
-  const GUID & guid, FARAPISETTINGSCONTROL SettingsControl) :
+  const GUID & Guid, FARAPISETTINGSCONTROL SettingsControl) :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
-  FPluginSettings(guid, SettingsControl)
+  FPluginSettings(Guid, SettingsControl)
 {
   Init();
 }
@@ -112,15 +112,15 @@ bool TFar3Storage::DeleteSubKey(const UnicodeString & SubKey)
 //---------------------------------------------------------------------------
 void TFar3Storage::GetSubKeyNames(TStrings * Strings)
 {
-  FarSettingsEnum settings = {sizeof(FarSettingsEnum),0,0,0};
-  settings.Root = FRoot;
-  if (FPluginSettings.GetSubKeyNames(settings))
+  FarSettingsEnum Settings = {sizeof(FarSettingsEnum),0,0,0};
+  Settings.Root = FRoot;
+  if (FPluginSettings.GetSubKeyNames(Settings))
   {
-    for (size_t Index = 0; Index < settings.Count; ++Index)
+    for (size_t Index = 0; Index < Settings.Count; ++Index)
     {
-      if (settings.Items[Index].Type == FST_SUBKEY)
+      if (Settings.Items[Index].Type == FST_SUBKEY)
       {
-        Strings->Add(PuttyUnMungeStr(settings.Items[Index].Name));
+        Strings->Add(PuttyUnMungeStr(Settings.Items[Index].Name));
       }
     }
   }

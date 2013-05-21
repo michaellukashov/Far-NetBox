@@ -11,7 +11,7 @@ class TFar3Storage : public THierarchicalStorage
 {
 public:
   explicit TFar3Storage(const UnicodeString & AStorage,
-    const GUID & guid, FARAPISETTINGSCONTROL SettingsControl);
+    const GUID & Guid, FARAPISETTINGSCONTROL SettingsControl);
   virtual ~TFar3Storage();
 
   bool Copy(TFar3Storage * Storage);
