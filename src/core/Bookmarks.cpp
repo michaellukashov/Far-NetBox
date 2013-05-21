@@ -42,38 +42,30 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
   {
     if (Storage->OpenSubKey(Keys[I], false))
     {
-      TStrings * BookmarkKeys = new TStringList();
-      TRY_FINALLY (
+      std::auto_ptr<TStrings> BookmarkKeys(new TStringList());
+      Storage->GetSubKeyNames(BookmarkKeys.get());
+      for (intptr_t Index = 0; Index < BookmarkKeys->GetCount(); ++Index)
       {
-        Storage->GetSubKeyNames(BookmarkKeys);
-        for (intptr_t Index = 0; Index < BookmarkKeys->GetCount(); ++Index)
+        UnicodeString Key = BookmarkKeys->GetString(Index);
+        if (Storage->OpenSubKey(Key, false))
         {
-          UnicodeString Key = BookmarkKeys->GetString(Index);
-          if (Storage->OpenSubKey(Key, false))
+          TBookmarkList * BookmarkList = GetBookmarks(Key);
+          if (BookmarkList == NULL)
           {
-            TBookmarkList * BookmarkList = GetBookmarks(Key);
-            if (BookmarkList == NULL)
-            {
-              BookmarkList = new TBookmarkList();
-              FBookmarkLists->AddObject(Key, BookmarkList);
-            }
-            if (I < 3)
-            {
-              LoadLevel(Storage, L"", I, BookmarkList);
-            }
-            else
-            {
-              BookmarkList->LoadOptions(Storage);
-            }
-            Storage->CloseSubKey();
+            BookmarkList = new TBookmarkList();
+            FBookmarkLists->AddObject(Key, BookmarkList);
           }
+          if (I < 3)
+          {
+            LoadLevel(Storage, L"", I, BookmarkList);
+          }
+          else
+          {
+            BookmarkList->LoadOptions(Storage);
+          }
+          Storage->CloseSubKey();
         }
       }
-      ,
-      {
-        delete BookmarkKeys;
-      }
-      );
       Storage->CloseSubKey();
     }
   }
@@ -84,78 +76,70 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
 void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
   intptr_t Index, TBookmarkList * BookmarkList)
 {
-  TStrings * Names = new TStringList();
-  TRY_FINALLY (
+  std::auto_ptr<TStrings> Names(new TStringList());
+  Storage->GetValueNames(Names.get());
+  UnicodeString Name;
+  UnicodeString Directory;
+  TShortCut ShortCut(0);
+  for (intptr_t I = 0; I < Names->GetCount(); ++I)
   {
-    Storage->GetValueNames(Names);
-    UnicodeString Name;
-    UnicodeString Directory;
-    TShortCut ShortCut(0);
-    for (intptr_t I = 0; I < Names->GetCount(); ++I)
+    Name = Names->GetString(I);
+    bool IsDirectory = (Index == 0) || (Index == 1);
+    if (IsDirectory)
     {
-      Name = Names->GetString(I);
-      bool IsDirectory = (Index == 0) || (Index == 1);
-      if (IsDirectory)
-      {
-        Directory = Storage->ReadString(Name, L"");
-      }
-      else
-      {
-        Directory = L""; // use only in case of malformed config
-        ShortCut = static_cast<TShortCut>(Storage->ReadInteger(Name, 0));
-      }
-      if (Name.ToInt() > 0)
-      {
-        assert(IsDirectory); // unless malformed
-        Name = Directory;
-      }
-      if (!Name.IsEmpty())
-      {
-        TBookmark * Bookmark = BookmarkList->FindByName(Key, Name);
-        bool New = (Bookmark == NULL);
-        if (New)
-        {
-          Bookmark = new TBookmark();
-          Bookmark->SetNode(Key);
-          Bookmark->SetName(Name);
-        }
-        switch (Index)
-        {
-          case 0:
-            Bookmark->SetLocal(Directory);
-            break;
-
-          case 1:
-            Bookmark->SetRemote(Directory);
-            break;
-
-          case 2:
-            Bookmark->SetShortCut(ShortCut);
-            break;
-        }
-        if (New)
-        {
-          BookmarkList->Add(Bookmark);
-        }
-      }
+      Directory = Storage->ReadString(Name, L"");
     }
-
-    Storage->GetSubKeyNames(Names);
-    for (intptr_t I = 0; I < Names->GetCount(); ++I)
+    else
     {
-      Name = Names->GetString(I);
-      if (Storage->OpenSubKey(Name, false))
+      Directory = L""; // use only in case of malformed config
+      ShortCut = static_cast<TShortCut>(Storage->ReadInteger(Name, 0));
+    }
+    if (Name.ToInt() > 0)
+    {
+      assert(IsDirectory); // unless malformed
+      Name = Directory;
+    }
+    if (!Name.IsEmpty())
+    {
+      TBookmark * Bookmark = BookmarkList->FindByName(Key, Name);
+      bool New = (Bookmark == NULL);
+      if (New)
       {
-        LoadLevel(Storage, Key + (Key.IsEmpty() ? L"" : L"/") + Name, Index, BookmarkList);
-        Storage->CloseSubKey();
+        Bookmark = new TBookmark();
+        Bookmark->SetNode(Key);
+        Bookmark->SetName(Name);
+      }
+      switch (Index)
+      {
+        case 0:
+          Bookmark->SetLocal(Directory);
+          break;
+
+        case 1:
+          Bookmark->SetRemote(Directory);
+          break;
+
+        case 2:
+          Bookmark->SetShortCut(ShortCut);
+          break;
+      }
+      if (New)
+      {
+        BookmarkList->Add(Bookmark);
       }
     }
   }
-  ,
+
+  Storage->GetSubKeyNames(Names.get());
+  for (intptr_t I = 0; I < Names->GetCount(); ++I)
   {
-   delete Names;
+    Name = Names->GetString(I);
+    if (Storage->OpenSubKey(Name, false))
+    {
+      LoadLevel(Storage, Key + (Key.IsEmpty() ? L"" : L"/") + Name, Index, BookmarkList);
+      Storage->CloseSubKey();
+    }
   }
-  );
 }
 //---------------------------------------------------------------------------
 void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
