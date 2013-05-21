@@ -481,7 +481,7 @@ error_createf(
   va_end(args);
 
   AnsiString Message2 = Format("Error, code: %d, message: %s", apr_err, Message.c_str());
-  throw ExtException(UnicodeString(Message2.c_str()), NULL);
+  throw ExtException(UnicodeString(Message2.c_str()), (Exception *)NULL);
 
   return err;
 }
@@ -3321,7 +3321,7 @@ auth_simple_first_creds_helper(
   if (err)
   {
     error_clear(&err);
-    err = NULL;
+    err = 0;
   }
   else if (creds_hash)
   {
@@ -7937,7 +7937,7 @@ end_err_element(
         if (b->marshalled_error)
           *(b->marshalled_error) = TRUE;
       }
-      b->tmp_err = NULL;
+      b->tmp_err = 0;
       break;
     }
 
@@ -7984,7 +7984,7 @@ error_parser_create(
 
   b->dst_err = &(req->err);
   b->marshalled_error = &(req->marshalled_error);
-  b->tmp_err = NULL;
+  b->tmp_err = 0;
 
   b->want_cdata = NULL;
   b->cdata = stringbuf_create("", req->pool);

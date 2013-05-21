@@ -474,7 +474,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
       Result = (RegResult == ERROR_SUCCESS);
       if (Result)
       {
-        RegResult = RegSetValueEx(FRegistry->GetCurrentKey(), Name.c_str(), NULL, Type,
+        RegResult = RegSetValueEx(FRegistry->GetCurrentKey(), Name.c_str(), 0, Type,
           &Buffer[0], Size);
         Result = (RegResult == ERROR_SUCCESS);
       }
