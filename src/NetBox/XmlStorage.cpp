@@ -102,7 +102,7 @@ bool TXmlStorage::Copy(TXmlStorage * Storage)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TXmlStorage::GetSource()
+UnicodeString TXmlStorage::GetSource() const
 {
   return GetStorage();
 }
@@ -203,7 +203,7 @@ void TXmlStorage::GetSubKeyNames(TStrings * Strings)
   }
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::GetValueNames(TStrings * Strings)
+void TXmlStorage::GetValueNames(TStrings * Strings) const
 {
   Classes::Error(SNotImplemented, 3022);
   // FRegistry->GetValueNames(Strings);
@@ -239,7 +239,7 @@ void TXmlStorage::AddNewElement(const UnicodeString & Name, const UnicodeString 
   FCurrentElement->LinkEndChild(Element);
 }
 //---------------------------------------------------------------------------
-UnicodeString TXmlStorage::GetSubKeyText(const UnicodeString & Name)
+UnicodeString TXmlStorage::GetSubKeyText(const UnicodeString & Name) const
 {
   tinyxml2::XMLElement * Element = FindElement(Name);
   if (!Element)
@@ -256,7 +256,7 @@ UnicodeString TXmlStorage::GetSubKeyText(const UnicodeString & Name)
   }
 }
 //---------------------------------------------------------------------------
-tinyxml2::XMLElement * TXmlStorage::FindElement(const UnicodeString & Name)
+tinyxml2::XMLElement * TXmlStorage::FindElement(const UnicodeString & Name) const
 {
   for (const tinyxml2::XMLElement * Element = FCurrentElement->FirstChildElement();
        Element != NULL; Element = Element->NextSiblingElement())
@@ -270,7 +270,7 @@ tinyxml2::XMLElement * TXmlStorage::FindElement(const UnicodeString & Name)
   return NULL;
 }
 //---------------------------------------------------------------------------
-tinyxml2::XMLElement * TXmlStorage::FindChildElement(const std::string & subKey)
+tinyxml2::XMLElement * TXmlStorage::FindChildElement(const std::string & subKey) const
 {
   tinyxml2::XMLElement * Result = NULL;
   // assert(FCurrentElement);
@@ -289,7 +289,7 @@ tinyxml2::XMLElement * TXmlStorage::FindChildElement(const std::string & subKey)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TXmlStorage::GetValue(tinyxml2::XMLElement * Element)
+UnicodeString TXmlStorage::GetValue(tinyxml2::XMLElement * Element) const
 {
   assert(Element);
   UnicodeString Result;
@@ -304,7 +304,7 @@ UnicodeString TXmlStorage::GetValue(tinyxml2::XMLElement * Element)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TXmlStorage::ValueExists(const UnicodeString & Value)
+bool TXmlStorage::ValueExists(const UnicodeString & Value) const
 {
   bool Result = false;
   tinyxml2::XMLElement * Element = FindElement(Value);
@@ -410,6 +410,7 @@ void TXmlStorage::WriteBinaryData(const UnicodeString & Name,
   RemoveIfExists(Name);
   AddNewElement(Name, ::StrToHex(UnicodeString(reinterpret_cast<const wchar_t *>(Buffer), Size), true));
 }
+
 //---------------------------------------------------------------------------
 intptr_t TXmlStorage::GetFailed()
 {

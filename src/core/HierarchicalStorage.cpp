@@ -450,7 +450,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
   return Result;
 }
 //------------------------------------------------------------------------------
-UnicodeString TRegistryStorage::GetSource()
+UnicodeString TRegistryStorage::GetSource() const
 {
   return RootKeyToStr(FRegistry->GetRootKey()) + L"\\" + GetStorage();
 }
@@ -514,7 +514,7 @@ void TRegistryStorage::GetSubKeyNames(Classes::TStrings * Strings)
   }
 }
 //------------------------------------------------------------------------------
-void TRegistryStorage::GetValueNames(Classes::TStrings* Strings)
+void TRegistryStorage::GetValueNames(Classes::TStrings * Strings) const
 {
   FRegistry->GetValueNames(Strings);
 }
@@ -531,7 +531,7 @@ bool TRegistryStorage::DoKeyExists(const UnicodeString & SubKey, bool AForceAnsi
   return Result;
 }
 //------------------------------------------------------------------------------
-bool TRegistryStorage::ValueExists(const UnicodeString & Value)
+bool TRegistryStorage::ValueExists(const UnicodeString & Value) const
 {
   bool Result = FRegistry->ValueExists(Value);
   return Result;
@@ -694,8 +694,8 @@ bool TCustomIniFileStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanC
   if (!Result)
   {
     std::auto_ptr<TStringList> Sections(new TStringList());
-    Sections->Sorted = true;
-    FIniFile->ReadSections(Sections);
+    Sections->SetSorted(true);
+    FIniFile->ReadSections(Sections.get());
     UnicodeString NewKey = ExcludeTrailingBackslash(GetCurrentSubKey()+SubKey);
     if (Sections->GetCount())
     {
