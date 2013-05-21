@@ -1044,7 +1044,7 @@ void TIniFileStorage::ApplyOverrides()
 class TOptionsIniFile : public TCustomIniFile
 {
 public:
-  TOptionsIniFile(TStrings * Options);
+  explicit TOptionsIniFile(TStrings * Options);
 
   virtual UnicodeString ReadString(const UnicodeString & Section, const UnicodeString & Ident, const UnicodeString & Default);
   virtual void WriteString(const UnicodeString & Section, const UnicodeString & Ident, const UnicodeString & Value);
