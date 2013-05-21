@@ -3130,7 +3130,7 @@ void TWinSCPFileSystem::LogAuthentication(
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalInformation(
-  TTerminal * Terminal, const UnicodeString & Str, bool /*Status*/, int Phase)
+  TTerminal * Terminal, const UnicodeString & Str, bool /*Status*/, intptr_t Phase)
 {
   if (Phase != 0)
   {
@@ -3188,7 +3188,7 @@ void TWinSCPFileSystem::TerminalStartReadDirectory(TObject * /*Sender*/)
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalReadDirectoryProgress(
-  TObject * /*Sender*/, int Progress, bool & Cancel)
+  TObject * /*Sender*/, intptr_t Progress, bool & Cancel)
 {
   if (Progress < 0)
   {

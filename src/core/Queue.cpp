@@ -2451,7 +2451,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalInformation(
-  TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase)
+  TTerminal * Terminal, const UnicodeString & Str, bool Status, intptr_t Phase)
 {
   TInformationUserAction Action(FOnInformation);
   Action.Terminal = Terminal;
@@ -2582,7 +2582,7 @@ void TTerminalThread::TerminalStartReadDirectory(TObject * Sender)
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalReadDirectoryProgress(
-  TObject * Sender, int Progress, bool & Cancel)
+  TObject * Sender, intptr_t Progress, bool & Cancel)
 {
   TReadDirectoryProgressAction Action(FOnReadDirectoryProgress);
   Action.Sender = Sender;

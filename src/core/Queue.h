@@ -410,8 +410,7 @@ private:
   void TerminalOpenEvent(TObject * Sender);
   void TerminalReopenEvent(TObject * Sender);
 
-  void TerminalInformation(
-    TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase);
+  void TerminalInformation(TTerminal * Terminal, const UnicodeString & Str, bool Status, intptr_t Phase);
   void TerminalQueryUser(TObject * Sender,
     const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
     const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg);
@@ -426,7 +425,7 @@ private:
   void TerminalChangeDirectory(TObject * Sender);
   void TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly);
   void TerminalStartReadDirectory(TObject * Sender);
-  void TerminalReadDirectoryProgress(TObject * Sender, int Progress, bool & Cancel);
+  void TerminalReadDirectoryProgress(TObject * Sender, intptr_t Progress, bool & Cancel);
   void TerminalInitializeLog(TObject * Sender);
 
 private:
