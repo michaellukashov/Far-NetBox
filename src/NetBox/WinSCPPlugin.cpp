@@ -374,7 +374,6 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
   UnicodeString CommandLineParams;
   if (Pos > 0)
     CommandLineParams = CmdLine.SubString(Pos, -1);
-  // DEBUG_PRINTF(L"CommandLineParams = %s", CommandLineParams.c_str());
   if (!CommandLineParams.IsEmpty())
   {
     Options->ParseParams(CommandLineParams);

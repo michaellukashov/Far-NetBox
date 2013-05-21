@@ -641,7 +641,6 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
       // AfxThrowMemoryException();
         DEBUG_PRINTF(L"FormatMessage error");
     }
-    // DEBUG_PRINTF(L"lpszTemp = %s", lpszTemp);
     Result = lpszTemp;
     ::LocalFree(lpszTemp);
     */
