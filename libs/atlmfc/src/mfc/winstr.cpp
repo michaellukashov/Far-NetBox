@@ -39,6 +39,9 @@ int AFXAPI AfxLoadString(_In_ UINT nID, _Out_z_cap_post_count_(nMaxBuf, return +
 	return nBytes;
 }
 
+#ifndef min
+#define min(a,b) (a) < (b) ? (a) : (b)
+#endif
 int AFXAPI AfxLoadString(_In_ UINT nID, _Out_z_cap_post_count_(nMaxBuf, return + 1) LPWSTR lpszBuf, _In_ UINT nMaxBuf)
 {
 	ASSERT(AfxIsValidAddress(lpszBuf, nMaxBuf*sizeof(WCHAR)));
@@ -55,7 +58,7 @@ int AFXAPI AfxLoadString(_In_ UINT nID, _Out_z_cap_post_count_(nMaxBuf, return +
 		return 0;
 	}
 	ASSERT(pImage->nLength != 0);
-	nCharsToCopy = min(nMaxBuf-1, pImage->nLength);
+  nCharsToCopy = min(nMaxBuf-1, pImage->nLength);
 	Checked::memcpy_s(lpszBuf, (nMaxBuf-1)*sizeof(WCHAR), pImage->achString, nCharsToCopy*sizeof(WCHAR));
 	lpszBuf[nCharsToCopy] = L'\0';
 

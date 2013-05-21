@@ -124,21 +124,6 @@ _AFX_RICHEDIT_STATE* AFX_CDECL AfxGetRichEditState();
 // _AFX_HTMLHELP_STATE
 
 // for dll builds we just delay load it
-#ifndef _AFXDLL
-typedef HWND (WINAPI HTMLHELPPROC)(HWND hwndCaller, LPCTSTR pszFile, UINT uCommand, DWORD_PTR dwData);
-
-class _AFX_HTMLHELP_STATE : public CNoTrackObject
-{
-public:
-	virtual ~_AFX_HTMLHELP_STATE();
-
-	HINSTANCE m_hInstHtmlHelp;
-	HTMLHELPPROC *m_pfnHtmlHelp;
-};
-EXTERN_PROCESS_LOCAL(_AFX_HTMLHELP_STATE, _afxHtmlHelpState)
-#endif
-
-HWND WINAPI AfxHtmlHelp(HWND hWnd, LPCTSTR szHelpFilePath, UINT nCmd, DWORD_PTR dwData);
 
 #undef AFX_DATA
 #define AFX_DATA

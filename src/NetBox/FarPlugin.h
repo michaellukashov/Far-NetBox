@@ -328,7 +328,7 @@ private:
   bool FReferenced;
 
   void FillOpenPanelInfo(struct OpenPanelInfo *Info);
-  void SetFlag(PANELMODE_FLAGS & Flags, bool value, PANELMODE_FLAGS Flag);
+  void SetFlag(PANELMODE_FLAGS & Flags, bool Value, PANELMODE_FLAGS Flag);
   static void ClearPanelMode(PanelMode & Mode);
   static intptr_t CommaCount(const UnicodeString & ColumnTypes);
 };

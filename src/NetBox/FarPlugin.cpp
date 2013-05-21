@@ -2293,9 +2293,9 @@ void TFarPanelModes::SetPanelMode(size_t Mode, const UnicodeString & ColumnTypes
   FPanelModes[Mode].StatusColumnWidths = TCustomFarPlugin::DuplicateStr(StatusColumnWidths);
 }
 //---------------------------------------------------------------------------
-void TFarPanelModes::SetFlag(PANELMODE_FLAGS & Flags, bool value, PANELMODE_FLAGS Flag)
+void TFarPanelModes::SetFlag(PANELMODE_FLAGS & Flags, bool Value, PANELMODE_FLAGS Flag)
 {
-  if (value)
+  if (Value)
   {
     Flags |= Flag;
   }

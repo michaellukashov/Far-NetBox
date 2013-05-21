@@ -313,67 +313,47 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         }
         assert(StoredSessions);
         bool DefaultsOnly = false;
-        TOptions * Options = new TProgramParams();
-        ParseCommandLine(CommandLine, Options);
-        TSessionData * Session = StoredSessions->ParseUrl(CommandLine, Options, DefaultsOnly);
-        TRY_FINALLY (
+        std::auto_ptr<TOptions> Options(new TProgramParams());
+        ParseCommandLine(CommandLine, Options.get());
+        std::auto_ptr<TSessionData> Session(StoredSessions->ParseUrl(CommandLine, Options.get(), DefaultsOnly));
+        if (DefaultsOnly)
         {
-          if (DefaultsOnly)
-          {
-            Abort();
-          }
-          if (!Session->GetCanLogin())
-          {
-            assert(false);
-            Abort();
-          }
-          FileSystem->Connect(Session);
-          if (!Directory.IsEmpty())
-          {
-            FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
-          }
+          Abort();
         }
-        ,
+        if (!Session->GetCanLogin())
         {
-          delete Options;
-          delete Session;
+          assert(false);
+          Abort();
         }
-        );
+        FileSystem->Connect(Session.get());
+        if (!Directory.IsEmpty())
+        {
+          FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
+        }
       }
       else if (OpenFrom == OPEN_ANALYSE)
       {
         OpenAnalyseInfo *Info = reinterpret_cast<OpenAnalyseInfo *>(Item);
         const wchar_t * XmlFileName = Info->Info->FileName;
-        TSessionData * Session = NULL;
-        THierarchicalStorage * ImportStorage = NULL;
-        TRY_FINALLY (
+        std::auto_ptr<THierarchicalStorage> ImportStorage(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
+        ImportStorage->Init();
+        ImportStorage->SetAccessMode(smRead);
+        if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
+              ImportStorage->HasSubKeys()))
         {
-          ImportStorage = new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey());
-          ImportStorage->Init();
-          ImportStorage->SetAccessMode(smRead);
-          if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
-                ImportStorage->HasSubKeys()))
-          {
-            assert(false);
-            Abort();
-          }
-          UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw(L"Session", L""));
-          Session = new TSessionData(SessionName);
-          Session->Load(ImportStorage);
-          Session->SetModified(true);
-          if (!Session->GetCanLogin())
-          {
-            assert(false);
-            Abort();
-          }
-          FileSystem->Connect(Session);
+          assert(false);
+          Abort();
         }
-        ,
+        UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw(L"Session", L""));
+        std::auto_ptr<TSessionData> Session(new TSessionData(SessionName));
+        Session->Load(ImportStorage.get());
+        Session->SetModified(true);
+        if (!Session->GetCanLogin())
         {
-          delete ImportStorage;
-          delete Session;
+          assert(false);
+          Abort();
         }
-        );
+        FileSystem->Connect(Session.get());
       }
       else
       {
@@ -867,32 +847,24 @@ BOOL TWinSCPPlugin::CreateLocalDirectory(const UnicodeString & LocalDirName, LPS
 void TWinSCPPlugin::CleanupConfiguration()
 {
   // Check if key Configuration\Version exists
-  THierarchicalStorage * Storage = FarConfiguration->CreateStorage(false);
-  TRY_FINALLY (
+  std::auto_ptr<THierarchicalStorage> Storage(FarConfiguration->CreateStorage(false));
+  Storage->SetAccessMode(smReadWrite);
+  if (Storage->OpenSubKey(FarConfiguration->GetConfigurationSubKey(), false))
   {
-    Storage->SetAccessMode(smReadWrite);
-    if (Storage->OpenSubKey(FarConfiguration->GetConfigurationSubKey(), false))
+    if (!Storage->ValueExists(L"Version"))
     {
-      if (!Storage->ValueExists(L"Version"))
+      Storage->DeleteSubKey(L"CDCache");
+    }
+    else
+    {
+      UnicodeString Version = Storage->ReadString(L"Version", L"");
+      if (::StrToVersionNumber(Version) < MAKEVERSIONNUMBER(2,1,19))
       {
         Storage->DeleteSubKey(L"CDCache");
       }
-      else
-      {
-        UnicodeString Version = Storage->ReadString(L"Version", L"");
-        if (::StrToVersionNumber(Version) < MAKEVERSIONNUMBER(2,1,19))
-        {
-          Storage->DeleteSubKey(L"CDCache");
-        }
-      }
-      Storage->WriteStringRaw(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
-      Storage->CloseSubKey();
     }
+    Storage->WriteStringRaw(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
+    Storage->CloseSubKey();
   }
-  ,
-  {
-    delete Storage;
-  }
-  );
 }
 //---------------------------------------------------------------------------

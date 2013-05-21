@@ -136,7 +136,6 @@ public:
 	_AFX_OLE_STATE();
 	virtual ~_AFX_OLE_STATE();
 
-	CView* m_pActivateView;         // activation view
 	COleDataSource* m_pClipboardSource;
 
 	DWORD m_dwReserved;             // was "parking space" window

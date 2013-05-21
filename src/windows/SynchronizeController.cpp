@@ -144,42 +144,35 @@ void TSynchronizeController::SynchronizeChange(
         FSynchronizeParams, &Checklist, Options, false);
       if (Checklist != NULL)
       {
-        TRY_FINALLY (
+        std::auto_ptr<TSynchronizeChecklist> ChecklistPtr(Checklist);
+        if (FLAGSET(FSynchronizeParams.Options, soRecurse))
         {
-          if (FLAGSET(FSynchronizeParams.Options, soRecurse))
+          SubdirsChanged = false;
+          assert(Checklist != NULL);
+          for (intptr_t Index = 0; Index < Checklist->GetCount(); ++Index)
           {
-            SubdirsChanged = false;
-            assert(Checklist != NULL);
-            for (intptr_t Index = 0; Index < Checklist->GetCount(); ++Index)
+            const TSynchronizeChecklist::TItem * Item = Checklist->GetItem(Index);
+            // note that there may be action saDeleteRemote even if nothing has changed
+            // so this is sub-optimal
+            if (Item->IsDirectory)
             {
-              const TSynchronizeChecklist::TItem * Item = Checklist->GetItem(Index);
-              // note that there may be action saDeleteRemote even if nothing has changed
-              // so this is sub-optimal
-              if (Item->IsDirectory)
+              if ((Item->Action == TSynchronizeChecklist::saUploadNew) ||
+                  (Item->Action == TSynchronizeChecklist::saDeleteRemote))
               {
-                if ((Item->Action == TSynchronizeChecklist::saUploadNew) ||
-                    (Item->Action == TSynchronizeChecklist::saDeleteRemote))
-                {
-                  SubdirsChanged = true;
-                  break;
-                }
-                else
-                {
-                  assert(false);
-                }
+                SubdirsChanged = true;
+                break;
+              }
+              else
+              {
+                assert(false);
               }
             }
           }
-          else
-          {
-            SubdirsChanged = false;
-          }
         }
-        ,
+        else
         {
-          delete Checklist;
+          SubdirsChanged = false;
         }
-        );
       }
     }
   }

@@ -18,11 +18,6 @@
 
 // #include "afxctrlcontainer.h"
 
-// for dll builds we just delay load it
-#ifndef _AFXDLL
-PROCESS_LOCAL(_AFX_HTMLHELP_STATE, _afxHtmlHelpState)
-#endif
-
 #define new DEBUG_NEW
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1047,18 +1042,6 @@ BOOL CWnd::IsTouchWindow() const
 	// return (*pfIsTouchWindow)(GetSafeHwnd());
 	return false;
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// CWnd extensions for help support
-
-// for dll builds we just delay load it
-#ifndef _AFXDLL
-_AFX_HTMLHELP_STATE::~_AFX_HTMLHELP_STATE()
-{
-	if (m_hInstHtmlHelp)
-		FreeLibrary(m_hInstHtmlHelp);
-}
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // Message table implementation

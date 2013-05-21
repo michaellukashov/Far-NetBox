@@ -32,14 +32,14 @@ bool TFar3Storage::Copy(TFar3Storage * Storage)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TFar3Storage::GetSource()
+UnicodeString TFar3Storage::GetSource() const
 {
   return GetStorage();
 }
 //---------------------------------------------------------------------------
-void TFar3Storage::SetAccessMode(TStorageAccessMode value)
+void TFar3Storage::SetAccessMode(TStorageAccessMode Value)
 {
-  THierarchicalStorage::SetAccessMode(value);
+  THierarchicalStorage::SetAccessMode(Value);
 }
 //---------------------------------------------------------------------------
 intptr_t TFar3Storage::OpenSubKeyInternal(intptr_t Root, const UnicodeString & SubKey, bool CanCreate)
@@ -136,17 +136,17 @@ void TFar3Storage::GetSubKeyNames(TStrings * Strings)
   // DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
 }
 //---------------------------------------------------------------------------
-void TFar3Storage::GetValueNames(TStrings * Strings)
+void TFar3Storage::GetValueNames(TStrings * Strings) const
 {
   // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   Strings->Clear();
-  FarSettingsEnum settings = {sizeof(FarSettingsEnum),0,0,0};
-  settings.Root = FRoot;
-  if (FPluginSettings.GetSubKeyNames(settings))
+  FarSettingsEnum Settings = {sizeof(FarSettingsEnum),0,0,0};
+  Settings.Root = FRoot;
+  if (FPluginSettings.GetSubKeyNames(Settings))
   {
-    for (size_t Index = 0; Index < settings.Count; ++Index)
+    for (size_t Index = 0; Index < Settings.Count; ++Index)
     {
-      const struct FarSettingsName * Item = &settings.Items[Index];
+      const struct FarSettingsName * Item = &Settings.Items[Index];
       Strings->Add(Item->Name);
     }
   }
@@ -168,7 +168,7 @@ bool TFar3Storage::DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TFar3Storage::ValueExists(const UnicodeString & Value)
+bool TFar3Storage::ValueExists(const UnicodeString & Value) const
 {
   // DEBUG_PRINTF(L"begin, FRoot = %d, Value = %s", FRoot, Value.c_str());
   bool Result = FPluginSettings.ValueExists(FRoot, Value.c_str());
@@ -189,12 +189,12 @@ bool TFar3Storage::ReadBool(const UnicodeString & Name, bool Default)
 TDateTime TFar3Storage::ReadDateTime(const UnicodeString & Name, TDateTime Default)
 {
   TDateTime Result;
-  double val = 0.0;
-  void * value = reinterpret_cast<void *>(&val);
-  size_t sz = sizeof(val);
-  if (FPluginSettings.Get(FRoot, Name.c_str(), value, sz) == sz)
+  double Val = 0.0;
+  void * Value = reinterpret_cast<void *>(&Val);
+  size_t Sz = sizeof(Val);
+  if (FPluginSettings.Get(FRoot, Name.c_str(), Value, Sz) == Sz)
   {
-    Result = val;
+    Result = Val;
   }
   return Result;
 }
@@ -202,12 +202,12 @@ TDateTime TFar3Storage::ReadDateTime(const UnicodeString & Name, TDateTime Defau
 double TFar3Storage::ReadFloat(const UnicodeString & Name, double Default)
 {
   double Result = 0.0;
-  double val = 0.0;
-  void * value = reinterpret_cast<void *>(&val);
-  size_t sz = sizeof(val);
-  if (FPluginSettings.Get(FRoot, Name.c_str(), value, sz) == sz)
+  double Val = 0.0;
+  void * Value = reinterpret_cast<void *>(&Val);
+  size_t Sz = sizeof(Val);
+  if (FPluginSettings.Get(FRoot, Name.c_str(), Value, Sz) == Sz)
   {
-    Result = val;
+    Result = Val;
   }
   return Result;
 }
@@ -229,7 +229,7 @@ UnicodeString TFar3Storage::ReadStringRaw(const UnicodeString & Name, const Unic
 }
 //---------------------------------------------------------------------------
 size_t TFar3Storage::ReadBinaryData(const UnicodeString & Name,
-    void * Buffer, size_t Size)
+  void * Buffer, size_t Size)
 {
   return FPluginSettings.Get(FRoot, Name.c_str(), Buffer, Size);
 }
@@ -240,23 +240,23 @@ void TFar3Storage::WriteBool(const UnicodeString & Name, bool Value)
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
 //---------------------------------------------------------------------------
-void TFar3Storage::WriteDateTime(const UnicodeString & Name, TDateTime Value)
+void TFar3Storage::WriteDateTime(const UnicodeString & Name, TDateTime AValue)
 {
-  double val = Value.operator double();
-  void * value = reinterpret_cast<void *>(&val);
-  size_t sz = sizeof(val);
-  if (!FPluginSettings.Set(FRoot, Name.c_str(), value, sz))
+  double Val = AValue.operator double();
+  void * Value = reinterpret_cast<void *>(&Val);
+  size_t Sz = sizeof(Val);
+  if (!FPluginSettings.Set(FRoot, Name.c_str(), Value, Sz))
   {
     // TODO: report error
   }
 }
 //---------------------------------------------------------------------------
-void TFar3Storage::WriteFloat(const UnicodeString & Name, double Value)
+void TFar3Storage::WriteFloat(const UnicodeString & Name, double AValue)
 {
-  double val = Value;
-  void * vval = reinterpret_cast<void *>(&val);
-  size_t sz = sizeof(val);
-  if (!FPluginSettings.Set(FRoot, Name.c_str(), vval, sz))
+  double Val = AValue;
+  void * Value = reinterpret_cast<void *>(&Val);
+  size_t sz = sizeof(Val);
+  if (!FPluginSettings.Set(FRoot, Name.c_str(), Value, sz))
   {
     // TODO: report error
   }

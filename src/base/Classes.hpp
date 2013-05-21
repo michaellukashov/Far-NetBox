@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdexcept>
+#include <limits>
 #include <stdarg.h>
 #include <vector.h>
 #include <rdestl/pair.h>
@@ -877,7 +878,7 @@ public:
   UnicodeString ToString(void)
   {
     UnicodeString Result(FSet.size());
-    typename std::set<T>::const_iterator it;
+    typename rde::vector<T>::const_iterator it;
     for(it = FSet.begin(); it != FSet.end(); ++it)
     {
       Result += (wchar_t)*it;

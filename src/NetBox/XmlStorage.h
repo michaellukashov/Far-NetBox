@@ -17,7 +17,7 @@ public:
   virtual void CloseSubKey();
   virtual bool DeleteSubKey(const UnicodeString & SubKey);
   virtual void GetSubKeyNames(TStrings * Strings);
-  virtual bool ValueExists(const UnicodeString & Value);
+  virtual bool ValueExists(const UnicodeString & Value) const;
   virtual bool DeleteValue(const UnicodeString & Name);
 
   virtual size_t BinaryDataSize(const UnicodeString & Name);
@@ -38,27 +38,27 @@ public:
   virtual void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
   virtual void WriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size);
 
-  virtual void GetValueNames(TStrings * Strings);
+  virtual void GetValueNames(TStrings * Strings) const;
 
   virtual void SetAccessMode(TStorageAccessMode Value);
   virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi);
   virtual bool DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate);
 
 protected:
-  virtual UnicodeString GetSource();
+  virtual UnicodeString GetSource() const;
 
   intptr_t GetFailed();
   void SetFailed(intptr_t Value) { FFailed = Value; }
 
 private:
-  UnicodeString GetSubKeyText(const UnicodeString & Name);
-  tinyxml2::XMLElement * FindElement(const UnicodeString & Value);
-  std::string ToStdString(const UnicodeString & String) { return std::string(W2MB(String.c_str()).c_str()); }
-  UnicodeString ToUnicodeString(const char * String) { return MB2W(String ? String : ""); }
+  UnicodeString GetSubKeyText(const UnicodeString & Name) const;
+  tinyxml2::XMLElement * FindElement(const UnicodeString & Value) const;
+  std::string ToStdString(const UnicodeString & String) const { return std::string(W2MB(String.c_str()).c_str()); }
+  UnicodeString ToUnicodeString(const char * String) const { return MB2W(String ? String : ""); }
   void RemoveIfExists(const UnicodeString & Name);
   void AddNewElement(const UnicodeString & Name, const UnicodeString & Value);
-  tinyxml2::XMLElement * FindChildElement(const std::string & subKey);
-  UnicodeString GetValue(tinyxml2::XMLElement * Element);
+  tinyxml2::XMLElement * FindChildElement(const std::string & subKey) const;
+  UnicodeString GetValue(tinyxml2::XMLElement * Element) const;
 
   bool ReadXml();
   bool WriteXml();

@@ -277,7 +277,7 @@ HINSTANCE AFXAPI AfxGetInstanceHandleHelper();
 
 AFX_MODULE_THREAD_STATE* AFXAPI AfxGetModuleThreadState();
 
-#ifdef _AFXDLL
+#if defined(_AFXDLL) && !defined(__MINGW32__)
 #define _AFX_CMDTARGET_GETSTATE() (m_pModuleState)
 #else
 #define _AFX_CMDTARGET_GETSTATE() (AfxGetModuleState())

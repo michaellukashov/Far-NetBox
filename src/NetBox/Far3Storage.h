@@ -20,7 +20,7 @@ public:
   virtual bool DeleteSubKey(const UnicodeString & SubKey);
   virtual bool DeleteValue(const UnicodeString & Name);
   virtual void GetSubKeyNames(TStrings * Strings);
-  virtual bool ValueExists(const UnicodeString & Value);
+  virtual bool ValueExists(const UnicodeString & Value) const;
 
   virtual size_t BinaryDataSize(const UnicodeString & Name);
 
@@ -36,15 +36,15 @@ public:
   virtual void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
   virtual void WriteInteger(const UnicodeString & Name, intptr_t Value);
   virtual void WriteInt64(const UnicodeString & Name, __int64 Value);
-  virtual void WriteDateTime(const UnicodeString & Name, TDateTime Value);
-  virtual void WriteFloat(const UnicodeString & Name, double Value);
+  virtual void WriteDateTime(const UnicodeString & Name, TDateTime AValue);
+  virtual void WriteFloat(const UnicodeString & Name, double AValue);
   virtual void WriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size);
 
-  virtual void GetValueNames(TStrings * Strings);
-  virtual void SetAccessMode(TStorageAccessMode value);
+  virtual void GetValueNames(TStrings * Strings) const;
+  virtual void SetAccessMode(TStorageAccessMode Value);
   virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi);
   virtual bool DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate);
-  virtual UnicodeString GetSource();
+  virtual UnicodeString GetSource() const;
 
 private:
   UnicodeString GetFullCurrentSubKey() { return /* GetStorage() + */ GetCurrentSubKey(); }
@@ -52,7 +52,7 @@ private:
 
 private:
   intptr_t FRoot;
-  PluginSettings FPluginSettings;
+  mutable PluginSettings FPluginSettings;
   std::vector<intptr_t> FSubKeyIds;
 
   void Init();

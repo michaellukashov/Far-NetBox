@@ -49,3 +49,6 @@ README.html
 CMakeLists.txt.user
 
 src/NetBox-build/
+src/build-NetBox-*/
+*.cbp
+

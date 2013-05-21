@@ -19,11 +19,11 @@ public:
   virtual void CloseSubKey();
   virtual bool DeleteSubKey(const UnicodeString & SubKey) = 0;
   virtual void GetSubKeyNames(Classes::TStrings * Strings) = 0;
-  virtual void GetValueNames(Classes::TStrings * Strings) = 0;
+  virtual void GetValueNames(Classes::TStrings * Strings) const = 0;
   bool HasSubKeys();
   bool HasSubKey(const UnicodeString & SubKey);
   bool KeyExists(const UnicodeString & SubKey);
-  virtual bool ValueExists(const UnicodeString & Value) = 0;
+  virtual bool ValueExists(const UnicodeString & Value) const = 0;
   virtual void RecursiveDeleteSubKey(const UnicodeString & Key);
   virtual void ClearSubKeys();
   virtual void ReadValues(Classes::TStrings * Strings, bool MaintainKeys = false);
@@ -69,7 +69,7 @@ public:
   void SetMungeStringValues(bool Value) { FMungeStringValues = Value; }
 
   virtual void SetAccessMode(TStorageAccessMode Value);
-  virtual UnicodeString GetSource() = 0;
+  virtual UnicodeString GetSource() const = 0;
 
 protected:
   UnicodeString FStorage;
@@ -105,7 +105,7 @@ public:
   virtual bool DeleteSubKey(const UnicodeString & SubKey);
   virtual bool DeleteValue(const UnicodeString & Name);
   virtual void GetSubKeyNames(Classes::TStrings * Strings);
-  virtual bool ValueExists(const UnicodeString & Value);
+  virtual bool ValueExists(const UnicodeString & Value) const;
 
   virtual size_t BinaryDataSize(const UnicodeString & Name);
 
@@ -125,7 +125,7 @@ public:
   virtual void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
   virtual void WriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size);
 
-  virtual void GetValueNames(Classes::TStrings * Strings);
+  virtual void GetValueNames(Classes::TStrings * Strings) const;
 
   intptr_t GetFailed();
   void SetFailed(intptr_t Value) { FFailed = Value; }
@@ -134,7 +134,7 @@ public:
 protected:
   virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi);
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate);
-  virtual UnicodeString GetSource();
+  virtual UnicodeString GetSource() const;
 
 private:
   TRegistry * FRegistry;
@@ -152,7 +152,7 @@ public:
   virtual bool DeleteSubKey(const UnicodeString & SubKey);
   virtual bool DeleteValue(const UnicodeString & Name);
   virtual void GetSubKeyNames(Classes::TStrings * Strings);
-  virtual bool ValueExists(const UnicodeString & Value);
+  virtual bool ValueExists(const UnicodeString & Value) const;
 
   virtual size_t BinaryDataSize(const UnicodeString & Name);
 

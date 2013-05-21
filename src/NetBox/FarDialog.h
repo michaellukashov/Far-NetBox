@@ -47,7 +47,7 @@ public:
   UnicodeString GetHelpTopic() const { return FHelpTopic; }
   void SetHelpTopic(const UnicodeString & Value);
   FARDIALOGITEMFLAGS GetFlags() const { return FFlags; }
-  void SetFlags(const FARDIALOGITEMFLAGS value);
+  void SetFlags(const FARDIALOGITEMFLAGS Value);
   bool GetCentered();
   void SetCentered(bool Value);
   TPoint GetSize();
@@ -258,8 +258,8 @@ protected:
   void SetChecked(bool Value);
   void SetBounds(TRect Value);
   FARDIALOGITEMFLAGS GetFlags();
-  void SetFlags(FARDIALOGITEMFLAGS value);
-  void UpdateFlags(FARDIALOGITEMFLAGS value);
+  void SetFlags(FARDIALOGITEMFLAGS Value);
+  void UpdateFlags(FARDIALOGITEMFLAGS Value);
   intptr_t GetCoordinate(intptr_t Index);
   void SetCoordinate(intptr_t Index, intptr_t Value);
   TFarDialogItem * GetPrevItem();

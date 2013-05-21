@@ -572,29 +572,21 @@ void TFTPFileSystem::Idle()
     {
       FLastDataSent = Now();
 
-      TRemoteDirectory * Files = new TRemoteDirectory(FTerminal);
-      TRY_FINALLY (
+      std::auto_ptr<TRemoteDirectory> Files(new TRemoteDirectory(FTerminal));
+      try
       {
-        try
+        Files->SetDirectory(GetCurrentDirectory());
+        DoReadDirectory(Files.get());
+      }
+      catch(...)
+      {
+        // ignore non-fatal errors
+        // (i.e. current directory may not exist anymore)
+        if (!FTerminal->GetActive())
         {
-          Files->SetDirectory(GetCurrentDirectory());
-          DoReadDirectory(Files);
-        }
-        catch(...)
-        {
-          // ignore non-fatal errors
-          // (i.e. current directory may not exist anymore)
-          if (!FTerminal->GetActive())
-          {
-            throw;
-          }
+          throw;
         }
       }
-      ,
-      {
-        delete Files;
-      }
-      );
     }
   }
 }
@@ -2754,16 +2746,8 @@ void TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       {
         // for fatal error, it is essential that there is some message
         assert(!ErrorStr.IsEmpty());
-        ExtException * E = new ExtException(ErrorStr, MoreMessages, true);
-        TRY_FINALLY (
-        {
-          FTerminal->FatalError(E, L"");
-        }
-        ,
-        {
-          delete E;
-        }
-        );
+        std::auto_ptr<ExtException> E(new ExtException(ErrorStr, MoreMessages, true));
+        FTerminal->FatalError(E.get(), L"");
       }
       else
       {

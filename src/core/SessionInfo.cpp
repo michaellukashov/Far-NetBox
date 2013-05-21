@@ -3,6 +3,7 @@
 #pragma hdrstop
 
 #include <stdio.h>
+#include <share.h>
 #include <lmcons.h>
 #define SECURITY_WIN32
 #include <sspi.h>

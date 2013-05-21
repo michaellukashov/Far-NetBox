@@ -481,7 +481,7 @@ error_createf(
   va_end(args);
 
   AnsiString Message2 = Format("Error, code: %d, message: %s", apr_err, Message.c_str());
-  throw ExtException(UnicodeString(Message2.c_str()), NULL);
+  throw ExtException(UnicodeString(Message2.c_str()), (Exception *)NULL);
 
   return err;
 }
@@ -3138,26 +3138,18 @@ config_read_auth_data(
     return WEBDAV_ERR_BAD_PARAM;
 
   *hash = apr_hash_make(pool);
-  TStrings * Keys = new TStringList();
-  TRY_FINALLY (
+  std::auto_ptr<TStrings> Keys(new TStringList());
+  Storage->GetValueNames(Keys.get());
+  for (intptr_t Index = 0; Index < Keys->GetCount(); ++Index)
   {
-    Storage->GetValueNames(Keys);
-    for (intptr_t Index = 0; Index < Keys->GetCount(); ++Index)
-    {
-      UnicodeString Key = Keys->GetString(Index);
-      UnicodeString Value = Storage->ReadStringRaw(Key, L"");
-      apr_hash_set(*hash, AUTHN_ASCII_CERT_KEY, APR_HASH_KEY_STRING,
-        string_create(AnsiString(Key).c_str(), pool));
-      apr_hash_set(*hash, AUTHN_FAILURES_KEY, APR_HASH_KEY_STRING,
-        string_createf(pool, "%lu", (unsigned long)
-          StrToIntDef(Value, 0)));
-    }
+    UnicodeString Key = Keys->GetString(Index);
+    UnicodeString Value = Storage->ReadStringRaw(Key, L"");
+    apr_hash_set(*hash, AUTHN_ASCII_CERT_KEY, APR_HASH_KEY_STRING,
+      string_create(AnsiString(Key).c_str(), pool));
+    apr_hash_set(*hash, AUTHN_FAILURES_KEY, APR_HASH_KEY_STRING,
+      string_createf(pool, "%lu", (unsigned long)
+        StrToIntDef(Value, 0)));
   }
-  ,
-  {
-    delete Keys;
-  }
-  );
   return WEBDAV_NO_ERROR;
 }
 
@@ -3321,7 +3313,7 @@ auth_simple_first_creds_helper(
   if (err)
   {
     error_clear(&err);
-    err = NULL;
+    err = 0;
   }
   else if (creds_hash)
   {
@@ -7937,7 +7929,7 @@ end_err_element(
         if (b->marshalled_error)
           *(b->marshalled_error) = TRUE;
       }
-      b->tmp_err = NULL;
+      b->tmp_err = 0;
       break;
     }
 
@@ -7984,7 +7976,7 @@ error_parser_create(
 
   b->dst_err = &(req->err);
   b->marshalled_error = &(req->marshalled_error);
-  b->tmp_err = NULL;
+  b->tmp_err = 0;
 
   b->want_cdata = NULL;
   b->cdata = stringbuf_create("", req->pool);
@@ -14206,20 +14198,12 @@ webdav::error_t TWebDAVFileSystem::SimplePrompt(
   uintptr_t & RequestResult)
 {
   RequestResult = 0;
-  TStrings * MoreMessages = new TStringList();
-  TRY_FINALLY (
-  {
-    MoreMessages->Add(UnicodeString(prompt_string));
-    uintptr_t Answer = FTerminal->QueryUser(
-      UnicodeString(prompt_text),
-      MoreMessages, qaYes | qaNo | qaCancel, NULL, qtConfirmation);
-    RequestResult = Answer;
-  }
-  ,
-  {
-    delete MoreMessages;
-  }
-  );
+  std::auto_ptr<TStrings> MoreMessages(new TStringList());
+  MoreMessages->Add(UnicodeString(prompt_string));
+  uintptr_t Answer = FTerminal->QueryUser(
+    UnicodeString(prompt_text),
+    MoreMessages.get(), qaYes | qaNo | qaCancel, NULL, qtConfirmation);
+  RequestResult = Answer;
   return RequestResult == qaCancel ? WEBDAV_ERR_CANCELLED : WEBDAV_NO_ERROR;
 }
 //------------------------------------------------------------------------------
