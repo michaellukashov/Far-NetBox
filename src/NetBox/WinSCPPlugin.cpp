@@ -291,32 +291,23 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
         }
         assert(StoredSessions);
         bool DefaultsOnly = false;
-        TOptions * Options = new TProgramParams();
-        ParseCommandLine(CommandLine, Options);
-        TSessionData * Session = StoredSessions->ParseUrl(CommandLine, Options, DefaultsOnly);
-        TRY_FINALLY (
+        std::auto_ptr<TOptions> Options(new TProgramParams());
+        ParseCommandLine(CommandLine, Options.get());
+        std::auto_ptr<TSessionData> Session(StoredSessions->ParseUrl(CommandLine, Options.get(), DefaultsOnly));
+        if (DefaultsOnly)
         {
-          if (DefaultsOnly)
-          {
-            Abort();
-          }
-          if (!Session->GetCanLogin())
-          {
-            assert(false);
-            Abort();
-          }
-          FileSystem->Connect(Session);
-          if (!Directory.IsEmpty())
-          {
-            FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
-          }
+          Abort();
         }
-        ,
+        if (!Session->GetCanLogin())
         {
-          delete Options;
-          delete Session;
+          assert(false);
+          Abort();
         }
-        );
+        FileSystem->Connect(Session.get());
+        if (!Directory.IsEmpty())
+        {
+          FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
+        }
       }
       else if (OpenFrom == OPEN_ANALYSE)
       {
@@ -806,32 +797,24 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
 void TWinSCPPlugin::CleanupConfiguration()
 {
   // Check if key Configuration\Version exists
-  THierarchicalStorage * Storage = FarConfiguration->CreateStorage(false);
-  TRY_FINALLY (
+  std::auto_ptr<THierarchicalStorage> Storage(FarConfiguration->CreateStorage(false));
+  Storage->SetAccessMode(smReadWrite);
+  if (Storage->OpenSubKey(FarConfiguration->GetConfigurationSubKey(), false))
   {
-    Storage->SetAccessMode(smReadWrite);
-    if (Storage->OpenSubKey(FarConfiguration->GetConfigurationSubKey(), false))
+    if (!Storage->ValueExists(L"Version"))
     {
-      if (!Storage->ValueExists(L"Version"))
+      Storage->DeleteSubKey(L"CDCache");
+    }
+    else
+    {
+      UnicodeString Version = Storage->ReadString(L"Version", L"");
+      if (::StrToVersionNumber(Version) < MAKEVERSIONNUMBER(2,1,19))
       {
         Storage->DeleteSubKey(L"CDCache");
       }
-      else
-      {
-        UnicodeString Version = Storage->ReadString(L"Version", L"");
-        if (::StrToVersionNumber(Version) < MAKEVERSIONNUMBER(2,1,19))
-        {
-          Storage->DeleteSubKey(L"CDCache");
-        }
-      }
-      Storage->WriteStringRaw(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
-      Storage->CloseSubKey();
     }
+    Storage->WriteStringRaw(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
+    Storage->CloseSubKey();
   }
-  ,
-  {
-    delete Storage;
-  }
-  );
 }
 //---------------------------------------------------------------------------
