@@ -973,120 +973,112 @@ TStrings * TGUIConfiguration::GetLocales()
 {
   Classes::Error(SNotImplemented, 93);
   UnicodeString LocalesExts;
-  TStringList * Exts = new TStringList();
+  std::auto_ptr<TStringList> Exts(new TStringList());
+  Exts->SetSorted(true);
+  Exts->SetCaseSensitive(false);
+
+  int FindAttrs = faReadOnly | faArchive;
+  TSearchRec SearchRec;
+  bool Found;
+
+  Found = (bool)(FindFirst(ChangeFileExt(ModuleFileName(), L".*"),
+    FindAttrs, SearchRec) == 0);
   TRY_FINALLY (
   {
-    Exts->SetSorted(true);
-    Exts->SetCaseSensitive(false);
-
-    int FindAttrs = faReadOnly | faArchive;
-    TSearchRec SearchRec;
-    bool Found;
-
-    Found = (bool)(FindFirst(ChangeFileExt(ModuleFileName(), L".*"),
-      FindAttrs, SearchRec) == 0);
-    TRY_FINALLY (
+    UnicodeString Ext;
+    while (Found)
     {
-      UnicodeString Ext;
-      while (Found)
+      Ext = ExtractFileExt(SearchRec.Name).UpperCase();
+      if ((Ext.Length() >= 3) && (Ext != L".EXE") && (Ext != L".COM") &&
+          (Ext != L".DLL") && (Ext != L".INI"))
       {
-        Ext = ExtractFileExt(SearchRec.Name).UpperCase();
-        if ((Ext.Length() >= 3) && (Ext != L".EXE") && (Ext != L".COM") &&
-            (Ext != L".DLL") && (Ext != L".INI"))
-        {
-          Ext = Ext.SubString(2, Ext.Length() - 1);
-          LocalesExts += Ext;
-          Exts->Add(Ext);
-        }
-        Found = (FindNextChecked(SearchRec) == 0);
+        Ext = Ext.SubString(2, Ext.Length() - 1);
+        LocalesExts += Ext;
+        Exts->Add(Ext);
       }
-    }
-    ,
-    {
-      FindClose(SearchRec);
-    }
-    );
-
-    if (FLastLocalesExts != LocalesExts)
-    {
-      FLastLocalesExts = LocalesExts;
-      FLocales->Clear();
-
-      /* // FIXME
-      TLanguages * Langs = NULL; // FIXME LanguagesDEPF();
-      int Ext, Index, Count;
-      wchar_t LocaleStr[255];
-      LCID Locale;
-
-      Count = Langs->GetCount();
-      Index = -1;
-      while (Index < Count)
-      {
-        if (Index >= 0)
-        {
-          Locale = Langs->LocaleID[Index];
-          Ext = Exts->IndexOf(Langs->Ext[Index]);
-          if (Ext < 0)
-          {
-            Ext = Exts->IndexOf(Langs->Ext[Index].SubString(1, 2));
-            if (Ext >= 0)
-            {
-              Locale = MAKELANGID(PRIMARYLANGID(Locale), SUBLANG_DEFAULT);
-            }
-          }
-
-          if (Ext >= 0)
-          {
-            Exts->SetObject(Ext, reinterpret_cast<TObject*>(Locale));
-          }
-          else
-          {
-            Locale = 0;
-          }
-        }
-        else
-        {
-          Locale = InternalLocale();
-        }
-
-        if (Locale)
-        {
-          UnicodeString Name;
-          GetLocaleInfo(Locale, LOCALE_SENGLANGUAGE,
-            LocaleStr, sizeof(LocaleStr));
-          Name = LocaleStr;
-          Name += " - ";
-          // LOCALE_SNATIVELANGNAME
-          GetLocaleInfo(Locale, LOCALE_SLANGUAGE,
-            LocaleStr, sizeof(LocaleStr));
-          Name += LocaleStr;
-          FLocales->AddObject(Name, reinterpret_cast<TObject*>(Locale));
-        }
-        ++Index;
-      }
-      */
-      for (intptr_t Index = 0; Index < Exts->GetCount(); ++Index)
-      {
-        if ((Exts->GetObject(Index) == NULL) &&
-            (Exts->GetString(Index).Length() == 3) &&
-            SameText(Exts->GetString(Index).SubString(1, 2), AdditionaLanguagePrefix))
-        {
-          UnicodeString LangName = GetFileInfoString(L"LangName",
-            ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetString(Index)));
-          if (!LangName.IsEmpty())
-          {
-            FLocales->AddObject(LangName, reinterpret_cast<TObject *>(static_cast<size_t>(
-              AdditionaLanguageMask + Exts->GetString(Index)[3])));
-          }
-        }
-      }
+      Found = (FindNextChecked(SearchRec) == 0);
     }
   }
   ,
   {
-    delete Exts;
+    FindClose(SearchRec);
   }
   );
+
+  if (FLastLocalesExts != LocalesExts)
+  {
+    FLastLocalesExts = LocalesExts;
+    FLocales->Clear();
+
+    /* // FIXME
+    TLanguages * Langs = NULL; // FIXME LanguagesDEPF();
+    int Ext, Index, Count;
+    wchar_t LocaleStr[255];
+    LCID Locale;
+
+    Count = Langs->GetCount();
+    Index = -1;
+    while (Index < Count)
+    {
+      if (Index >= 0)
+      {
+        Locale = Langs->LocaleID[Index];
+        Ext = Exts->IndexOf(Langs->Ext[Index]);
+        if (Ext < 0)
+        {
+          Ext = Exts->IndexOf(Langs->Ext[Index].SubString(1, 2));
+          if (Ext >= 0)
+          {
+            Locale = MAKELANGID(PRIMARYLANGID(Locale), SUBLANG_DEFAULT);
+          }
+        }
+
+        if (Ext >= 0)
+        {
+          Exts->SetObject(Ext, reinterpret_cast<TObject*>(Locale));
+        }
+        else
+        {
+          Locale = 0;
+        }
+      }
+      else
+      {
+        Locale = InternalLocale();
+      }
+
+      if (Locale)
+      {
+        UnicodeString Name;
+        GetLocaleInfo(Locale, LOCALE_SENGLANGUAGE,
+          LocaleStr, sizeof(LocaleStr));
+        Name = LocaleStr;
+        Name += " - ";
+        // LOCALE_SNATIVELANGNAME
+        GetLocaleInfo(Locale, LOCALE_SLANGUAGE,
+          LocaleStr, sizeof(LocaleStr));
+        Name += LocaleStr;
+        FLocales->AddObject(Name, reinterpret_cast<TObject*>(Locale));
+      }
+      ++Index;
+    }
+    */
+    for (intptr_t Index = 0; Index < Exts->GetCount(); ++Index)
+    {
+      if ((Exts->GetObject(Index) == NULL) &&
+          (Exts->GetString(Index).Length() == 3) &&
+          SameText(Exts->GetString(Index).SubString(1, 2), AdditionaLanguagePrefix))
+      {
+        UnicodeString LangName = GetFileInfoString(L"LangName",
+          ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetString(Index)));
+        if (!LangName.IsEmpty())
+        {
+          FLocales->AddObject(LangName, reinterpret_cast<TObject *>(static_cast<size_t>(
+            AdditionaLanguageMask + Exts->GetString(Index)[3])));
+        }
+      }
+    }
+  }
 
   return FLocales;
 }
