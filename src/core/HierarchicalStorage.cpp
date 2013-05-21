@@ -449,44 +449,36 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
 {
   TRegistry * Registry = Storage->FRegistry;
   bool Result = true;
-  TStrings * Names = new TStringList();
+  std::auto_ptr<TStrings> Names(new TStringList());
   rde::vector<unsigned char> Buffer(1024);
-  TRY_FINALLY (
+  Registry->GetValueNames(Names.get());
+  intptr_t Index = 0;
+  while ((Index < Names->GetCount()) && Result)
   {
-    Registry->GetValueNames(Names);
-    intptr_t Index = 0;
-    while ((Index < Names->GetCount()) && Result)
+    UnicodeString Name = MungeStr(Names->GetString(Index), GetForceAnsi());
+    DWORD Size = static_cast<DWORD>(Buffer.size());
+    DWORD Type;
+    int RegResult = 0;
+    do
     {
-      UnicodeString Name = MungeStr(Names->GetString(Index), GetForceAnsi());
-      DWORD Size = static_cast<DWORD>(Buffer.size());
-      DWORD Type;
-      int RegResult = 0;
-      do
+      RegResult = RegQueryValueEx(Registry->GetCurrentKey(), Name.c_str(), NULL,
+        &Type, &Buffer[0], &Size);
+      if (RegResult == ERROR_MORE_DATA)
       {
-        RegResult = RegQueryValueEx(Registry->GetCurrentKey(), Name.c_str(), NULL,
-          &Type, &Buffer[0], &Size);
-        if (RegResult == ERROR_MORE_DATA)
-        {
-          Buffer.resize(Size);
-        }
-      } while (RegResult == ERROR_MORE_DATA);
-
-      Result = (RegResult == ERROR_SUCCESS);
-      if (Result)
-      {
-        RegResult = RegSetValueEx(FRegistry->GetCurrentKey(), Name.c_str(), 0, Type,
-          &Buffer[0], Size);
-        Result = (RegResult == ERROR_SUCCESS);
+        Buffer.resize(Size);
       }
+    } while (RegResult == ERROR_MORE_DATA);
 
-      ++Index;
+    Result = (RegResult == ERROR_SUCCESS);
+    if (Result)
+    {
+      RegResult = RegSetValueEx(FRegistry->GetCurrentKey(), Name.c_str(), 0, Type,
+        &Buffer[0], Size);
+      Result = (RegResult == ERROR_SUCCESS);
     }
+
+    ++Index;
   }
-  ,
-  {
-    delete Names;
-  }
-  );
   return Result;
 }
 //------------------------------------------------------------------------------
