@@ -1890,24 +1890,24 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo * Info)
       std::auto_ptr<TFarKeyBarTitles> KeyBarTitlesPtr(KeyBarTitles);
       bool StartSortOrder = false;
 
-        GetOpenPanelInfoEx(FOpenPanelInfo.Flags, HostFile, CurDir, Format,
-          PanelTitle, PanelModes, FOpenPanelInfo.StartPanelMode,
-          FOpenPanelInfo.StartSortMode, StartSortOrder, KeyBarTitles, ShortcutData);
- 
-        FOpenPanelInfo.HostFile = TCustomFarPlugin::DuplicateStr(HostFile);
-        FOpenPanelInfo.CurDir = TCustomFarPlugin::DuplicateStr(::StringReplace(CurDir, L"\\", L"/", TReplaceFlags() << rfReplaceAll));
+      GetOpenPanelInfoEx(FOpenPanelInfo.Flags, HostFile, CurDir, Format,
+        PanelTitle, PanelModes, FOpenPanelInfo.StartPanelMode,
+        FOpenPanelInfo.StartSortMode, StartSortOrder, KeyBarTitles, ShortcutData);
 
-        FOpenPanelInfo.Format = TCustomFarPlugin::DuplicateStr(Format);
-        FOpenPanelInfo.PanelTitle = TCustomFarPlugin::DuplicateStr(PanelTitle);
-        // FOpenPanelInfo.StartPanelMode=L'4';
-        PanelModes->FillOpenPanelInfo(&FOpenPanelInfo);
-        // Info->StartSortMode = SM_NAME;
-        // Info->StartSortOrder = 0;
- 
-        PanelModes->FillOpenPanelInfo(&FOpenPanelInfo);
-        FOpenPanelInfo.StartSortOrder = StartSortOrder;
-        KeyBarTitles->FillOpenPanelInfo(&FOpenPanelInfo);
-        FOpenPanelInfo.ShortcutData = TCustomFarPlugin::DuplicateStr(ShortcutData);
+      FOpenPanelInfo.HostFile = TCustomFarPlugin::DuplicateStr(HostFile);
+      FOpenPanelInfo.CurDir = TCustomFarPlugin::DuplicateStr(::StringReplace(CurDir, L"\\", L"/", TReplaceFlags() << rfReplaceAll));
+
+      FOpenPanelInfo.Format = TCustomFarPlugin::DuplicateStr(Format);
+      FOpenPanelInfo.PanelTitle = TCustomFarPlugin::DuplicateStr(PanelTitle);
+      // FOpenPanelInfo.StartPanelMode=L'4';
+      PanelModes->FillOpenPanelInfo(&FOpenPanelInfo);
+      // Info->StartSortMode = SM_NAME;
+      // Info->StartSortOrder = 0;
+
+      PanelModes->FillOpenPanelInfo(&FOpenPanelInfo);
+      FOpenPanelInfo.StartSortOrder = StartSortOrder;
+      KeyBarTitles->FillOpenPanelInfo(&FOpenPanelInfo);
+      FOpenPanelInfo.ShortcutData = TCustomFarPlugin::DuplicateStr(ShortcutData);
 
       FOpenPanelInfoValid = true;
     }
@@ -2375,8 +2375,8 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   KeyBarLabel *Labels = &FKeyBarTitles.Labels[shift * 12];
   if (Labels[FunctionKey-1].Key.VirtualKeyCode)
   {
-    nb_free((void *)Labels[FunctionKey-1].Text);
-    nb_free((void *)Labels[FunctionKey-1].LongText);
+    nb_free(Labels[FunctionKey-1].Text);
+    nb_free(Labels[FunctionKey-1].LongText);
   }
   static WORD FKeys[] =
   {
@@ -2398,10 +2398,10 @@ void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
 {
   for (intptr_t Index = 0; Index < Titles.CountLabels; ++Index)
   {
-    nb_free((void *)Titles.Labels[Index].Text);
-    nb_free((void *)Titles.Labels[Index].LongText);
+    nb_free(Titles.Labels[Index].Text);
+    nb_free(Titles.Labels[Index].LongText);
   }
-  nb_free((void *)Titles.Labels);
+  nb_free(Titles.Labels);
   Titles.Labels = NULL;
   Titles.CountLabels = 0;
 }
