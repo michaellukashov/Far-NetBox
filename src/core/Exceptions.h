@@ -16,14 +16,14 @@ enum TOnceDoneOperation { odoIdle, odoDisconnect, odoShutDown };
 class ExtException : public Sysutils::Exception
 {
 public:
-  explicit ExtException(Exception* E);
-  explicit ExtException(Exception* E, const UnicodeString & Msg);
-  explicit ExtException(ExtException* E, const UnicodeString & Msg);
+  explicit ExtException(Exception * E);
+  explicit ExtException(Exception * E, const UnicodeString & Msg);
+  explicit ExtException(ExtException * E, const UnicodeString & Msg);
   explicit ExtException(Exception * E, int Ident);
   // "copy the exception", just append message to the end
-  explicit ExtException(const UnicodeString & Msg, Exception* E);
+  explicit ExtException(const UnicodeString & Msg, Exception * E);
   explicit ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = UnicodeString());
-  explicit ExtException(const UnicodeString & Msg, TStrings* MoreMessages, bool Own, const UnicodeString & HelpKeyword = UnicodeString());
+  explicit ExtException(const UnicodeString & Msg, TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = UnicodeString());
   virtual ~ExtException(void) throw();
   TStrings * GetMoreMessages() const { return FMoreMessages; }
   UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
@@ -40,7 +40,7 @@ public:
   virtual ExtException * Clone();
 
 protected:
-  void AddMoreMessages(const Exception* E);
+  void AddMoreMessages(const Exception * E);
 
 private:
   Classes::TStrings* FMoreMessages;
