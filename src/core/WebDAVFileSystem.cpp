@@ -3138,26 +3138,18 @@ config_read_auth_data(
     return WEBDAV_ERR_BAD_PARAM;
 
   *hash = apr_hash_make(pool);
-  TStrings * Keys = new TStringList();
-  TRY_FINALLY (
+  std::auto_ptr<TStrings> Keys(new TStringList());
+  Storage->GetValueNames(Keys.get());
+  for (intptr_t Index = 0; Index < Keys->GetCount(); ++Index)
   {
-    Storage->GetValueNames(Keys);
-    for (intptr_t Index = 0; Index < Keys->GetCount(); ++Index)
-    {
-      UnicodeString Key = Keys->GetString(Index);
-      UnicodeString Value = Storage->ReadStringRaw(Key, L"");
-      apr_hash_set(*hash, AUTHN_ASCII_CERT_KEY, APR_HASH_KEY_STRING,
-        string_create(AnsiString(Key).c_str(), pool));
-      apr_hash_set(*hash, AUTHN_FAILURES_KEY, APR_HASH_KEY_STRING,
-        string_createf(pool, "%lu", (unsigned long)
-          StrToIntDef(Value, 0)));
-    }
+    UnicodeString Key = Keys->GetString(Index);
+    UnicodeString Value = Storage->ReadStringRaw(Key, L"");
+    apr_hash_set(*hash, AUTHN_ASCII_CERT_KEY, APR_HASH_KEY_STRING,
+      string_create(AnsiString(Key).c_str(), pool));
+    apr_hash_set(*hash, AUTHN_FAILURES_KEY, APR_HASH_KEY_STRING,
+      string_createf(pool, "%lu", (unsigned long)
+        StrToIntDef(Value, 0)));
   }
-  ,
-  {
-    delete Keys;
-  }
-  );
   return WEBDAV_NO_ERROR;
 }
 
@@ -14206,20 +14198,12 @@ webdav::error_t TWebDAVFileSystem::SimplePrompt(
   uintptr_t & RequestResult)
 {
   RequestResult = 0;
-  TStrings * MoreMessages = new TStringList();
-  TRY_FINALLY (
-  {
-    MoreMessages->Add(UnicodeString(prompt_string));
-    uintptr_t Answer = FTerminal->QueryUser(
-      UnicodeString(prompt_text),
-      MoreMessages, qaYes | qaNo | qaCancel, NULL, qtConfirmation);
-    RequestResult = Answer;
-  }
-  ,
-  {
-    delete MoreMessages;
-  }
-  );
+  std::auto_ptr<TStrings> MoreMessages(new TStringList());
+  MoreMessages->Add(UnicodeString(prompt_string));
+  uintptr_t Answer = FTerminal->QueryUser(
+    UnicodeString(prompt_text),
+    MoreMessages.get(), qaYes | qaNo | qaCancel, NULL, qtConfirmation);
+  RequestResult = Answer;
   return RequestResult == qaCancel ? WEBDAV_ERR_CANCELLED : WEBDAV_NO_ERROR;
 }
 //------------------------------------------------------------------------------

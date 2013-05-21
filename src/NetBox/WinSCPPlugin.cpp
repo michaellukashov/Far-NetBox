@@ -312,36 +312,25 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
       else if (OpenFrom == OPEN_ANALYSE)
       {
         const wchar_t * XmlFileName = reinterpret_cast<const wchar_t *>(Item);
-        TSessionData * Session = NULL;
-        THierarchicalStorage * ImportStorage = NULL;
-        TRY_FINALLY (
+        std::auto_ptr<THierarchicalStorage> ImportStorage(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
+        ImportStorage->Init();
+        ImportStorage->SetAccessMode(smRead);
+        if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
+              ImportStorage->HasSubKeys()))
         {
-          ImportStorage = new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey());
-          ImportStorage->Init();
-          ImportStorage->SetAccessMode(smRead);
-          if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
-                ImportStorage->HasSubKeys()))
-          {
-            assert(false);
-            Abort();
-          }
-          UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw(L"Session", L""));
-          Session = new TSessionData(SessionName);
-          Session->Load(ImportStorage);
-          Session->SetModified(true);
-          if (!Session->GetCanLogin())
-          {
-            assert(false);
-            Abort();
-          }
-          FileSystem->Connect(Session);
+          assert(false);
+          Abort();
         }
-        ,
+        UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw(L"Session", L""));
+        std::auto_ptr<TSessionData> Session(new TSessionData(SessionName));
+        Session->Load(ImportStorage.get());
+        Session->SetModified(true);
+        if (!Session->GetCanLogin())
         {
-          delete ImportStorage;
-          delete Session;
+          assert(false);
+          Abort();
         }
-        );
+        FileSystem->Connect(Session.get());
       }
       else
       {

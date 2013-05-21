@@ -432,22 +432,14 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
 void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
-  THierarchicalStorage * Storage = CreateStorage(false);
-  TRY_FINALLY (
+  std::auto_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  Storage->SetAccessMode(smRead);
+  if (Storage->OpenSubKey(GetConfigurationSubKey(), false) &&
+      Storage->OpenSubKey(L"CDCache", false) &&
+      Storage->ValueExists(SessionKey))
   {
-    Storage->SetAccessMode(smRead);
-    if (Storage->OpenSubKey(GetConfigurationSubKey(), false) &&
-        Storage->OpenSubKey(L"CDCache", false) &&
-        Storage->ValueExists(SessionKey))
-    {
-      DirectoryChangesCache->Deserialize(Storage->ReadBinaryData(SessionKey));
-    }
+    DirectoryChangesCache->Deserialize(Storage->ReadBinaryData(SessionKey));
   }
-  ,
-  {
-    delete Storage;
-  }
-  );
 }
 //---------------------------------------------------------------------------
 void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
@@ -492,22 +484,14 @@ bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
 void TConfiguration::NeverShowBanner(const UnicodeString & SessionKey,
   const UnicodeString & Banner)
 {
-  THierarchicalStorage * Storage = CreateStorage(false);
-  TRY_FINALLY (
-  {
-    Storage->SetAccessMode(smReadWrite);
+  std::auto_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  Storage->SetAccessMode(smReadWrite);
 
-    if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
-        Storage->OpenSubKey(L"Banners", true))
-    {
-      Storage->WriteString(SessionKey, BannerHash(Banner));
-    }
-  }
-  ,
+  if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
+      Storage->OpenSubKey(L"Banners", true))
   {
-    delete Storage;
+    Storage->WriteString(SessionKey, BannerHash(Banner));
   }
-  );
 }
 //---------------------------------------------------------------------------
 void TConfiguration::Changed()
@@ -984,31 +968,16 @@ void TConfiguration::SetStorage(TStorage Value)
 {
   if (FStorage != Value)
   {
-    THierarchicalStorage * SourceStorage = NULL;
-    THierarchicalStorage * TargetStorage = NULL;
+    std::auto_ptr<THierarchicalStorage> SourceStorage(CreateStorage(false));
+    std::auto_ptr<THierarchicalStorage> TargetStorage(CreateStorage(false));
+    SourceStorage->SetAccessMode(smRead);
+    FStorage = Value;
+    TargetStorage->SetAccessMode(smReadWrite);
+    TargetStorage->SetExplicit(true);
 
-    TRY_FINALLY (
-    {
-      SourceStorage = CreateStorage(false);
-      SourceStorage->SetAccessMode(smRead);
-
-      FStorage = Value;
-
-      TargetStorage = CreateStorage(false);
-      TargetStorage->SetAccessMode(smReadWrite);
-      TargetStorage->SetExplicit(true);
-
-      // copy before save as it removes the ini file,
-      // when switching from ini to registry
-      CopyData(SourceStorage, TargetStorage);
-    }
-    ,
-    {
-      delete SourceStorage;
-      delete TargetStorage;
-    }
-    );
-
+    // copy before save as it removes the ini file,
+    // when switching from ini to registry
+    CopyData(SourceStorage.get(), TargetStorage.get());
     // save all and explicit
     Save(true, true);
   }

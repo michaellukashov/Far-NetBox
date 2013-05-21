@@ -1479,7 +1479,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
       }
     }
 
-    TSynchronizeChecklist * Checklist = NULL;
+    std::auto_ptr<TSynchronizeChecklist> Checklist(NULL);
     TRY_FINALLY (
     {
       WinSCPPlugin()->SaveScreen(FSynchronizationSaveScreenHandle);
@@ -1488,9 +1488,9 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
       FSynchronizationCompare = true;
       TRY_FINALLY (
       {
-        Checklist = FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
+        Checklist.reset(FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
           Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
-          MAKE_CALLBACK(TWinSCPFileSystem::TerminalSynchronizeDirectory, this), &SynchronizeOptions);
+          MAKE_CALLBACK(TWinSCPFileSystem::TerminalSynchronizeDirectory, this), &SynchronizeOptions));
       }
       ,
       {
@@ -1499,13 +1499,13 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
       }
       );
 
-      if (Checklist && Checklist->GetCount() == 0)
+      if (Checklist.get() && Checklist->GetCount() == 0)
       {
         MoreMessageDialog(GetMsg(COMPARE_NO_DIFFERENCES), NULL,
            qtInformation, qaOK);
       }
       else if (FLAGCLEAR(Params, TTerminal::spPreviewChanges) ||
-               SynchronizeChecklistDialog(Checklist, Mode, Params,
+               SynchronizeChecklistDialog(Checklist.get(), Mode, Params,
                  LocalDirectory, RemoteDirectory))
       {
         if (FLAGSET(Params, TTerminal::spPreviewChanges))
@@ -1518,7 +1518,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
         FSynchronizationCompare = false;
         TRY_FINALLY (
         {
-          FTerminal->SynchronizeApply(Checklist, LocalDirectory, RemoteDirectory,
+          FTerminal->SynchronizeApply(Checklist.get(), LocalDirectory, RemoteDirectory,
             &CopyParam, Params | TTerminal::spNoConfirmation,
             MAKE_CALLBACK(TWinSCPFileSystem::TerminalSynchronizeDirectory, this));
         }
@@ -1532,7 +1532,6 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
     }
     ,
     {
-      delete Checklist;
       if (UpdatePanel())
       {
         RedrawPanel();
@@ -4035,7 +4034,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
 
   UnicodeString FullFileName = ::UnixIncludeTrailingBackslash(Directory) + FileName;
 
-  TRemoteFile * FileDuplicate = File->Duplicate();
+  std::auto_ptr<TRemoteFile> FileDuplicate(File->Duplicate());
   UnicodeString NewFileName = FullFileName; // ::UnixIncludeTrailingBackslash(GetFileNameHash(FullFileName)) + FileName;
   FileDuplicate->SetFileName(NewFileName);
 
@@ -4092,19 +4091,17 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
     EditViewCopyParam(CopyParam);
 
-    TStrings * FileList = new TStringList();
+    std::auto_ptr<TStrings> FileList(new TStringList());
     assert(!FNoProgressFinish);
     FNoProgressFinish = true;
     TRY_FINALLY (
     {
-      FileList->AddObject(FullFileName, FileDuplicate);
-      TemporarilyDownloadFiles(FileList, CopyParam, TempDir);
+      FileList->AddObject(FullFileName, FileDuplicate.get());
+      TemporarilyDownloadFiles(FileList.get(), CopyParam, TempDir);
     }
     ,
     {
       FNoProgressFinish = false;
-      delete FileList;
-      delete FileDuplicate;
     }
     );
 

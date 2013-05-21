@@ -56,68 +56,55 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
   {
     UnicodeString Psw = Password;
     UnicodeString SessionName;
-    TRegistryStorage * Storage = NULL;
-    TSessionData * ExportData = NULL;
-    TRegistryStorage * SourceStorage = NULL;
-    TRY_FINALLY (
+    std::auto_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetConfiguration()->GetPuttySessionsKey()));
+    Storage->SetAccessMode(smReadWrite);
+    // make it compatible with putty
+    Storage->SetMungeStringValues(false);
+    Storage->SetForceAnsi(true);
+    if (Storage->OpenRootKey(true))
     {
-      Storage = new TRegistryStorage(GetConfiguration()->GetPuttySessionsKey());
-      Storage->SetAccessMode(smReadWrite);
-      // make it compatible with putty
-      Storage->SetMungeStringValues(false);
-      Storage->SetForceAnsi(true);
-      if (Storage->OpenRootKey(true))
+      if (Storage->KeyExists(SessionData->GetStorageKey()))
       {
-        if (Storage->KeyExists(SessionData->GetStorageKey()))
+        SessionName = SessionData->GetSessionName();
+      }
+      else
+      {
+        std::auto_ptr<TRegistryStorage> SourceStorage(new TRegistryStorage(GetConfiguration()->GetPuttySessionsKey()));
+        SourceStorage->SetMungeStringValues(false);
+        SourceStorage->SetForceAnsi(true);
+        if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
+            Storage->OpenSubKey(GUIConfiguration->GetPuttySession(), true))
         {
-          SessionName = SessionData->GetSessionName();
+          Storage->Copy(SourceStorage.get());
+          Storage->CloseSubKey();
         }
-        else
+
+        std::auto_ptr<TSessionData> ExportData(new TSessionData(L""));
+        ExportData->Assign(SessionData);
+        ExportData->SetModified(true);
+        ExportData->SetName(GUIConfiguration->GetPuttySession());
+        ExportData->SetPassword(L"");
+
+        if (SessionData->GetFSProtocol() == fsFTP)
         {
-          SourceStorage = new TRegistryStorage(GetConfiguration()->GetPuttySessionsKey());
-          SourceStorage->SetMungeStringValues(false);
-          SourceStorage->SetForceAnsi(true);
-          if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
-              Storage->OpenSubKey(GUIConfiguration->GetPuttySession(), true))
+          if (GUIConfiguration->GetTelnetForFtpInPutty())
           {
-            Storage->Copy(SourceStorage);
-            Storage->CloseSubKey();
+            ExportData->SetPuttyProtocol(PuttyTelnetProtocol);
+            ExportData->SetPortNumber(TelnetPortNumber);
+            // PuTTY  does not allow -pw for telnet
+            Psw = L"";
           }
-
-          ExportData = new TSessionData(L"");
-          ExportData->Assign(SessionData);
-          ExportData->SetModified(true);
-          ExportData->SetName(GUIConfiguration->GetPuttySession());
-          ExportData->SetPassword(L"");
-
-          if (SessionData->GetFSProtocol() == fsFTP)
+          else
           {
-            if (GUIConfiguration->GetTelnetForFtpInPutty())
-            {
-              ExportData->SetPuttyProtocol(PuttyTelnetProtocol);
-              ExportData->SetPortNumber(TelnetPortNumber);
-              // PuTTY  does not allow -pw for telnet
-              Psw = L"";
-            }
-            else
-            {
-              ExportData->SetPuttyProtocol(PuttySshProtocol);
-              ExportData->SetPortNumber(SshPortNumber);
-            }
+            ExportData->SetPuttyProtocol(PuttySshProtocol);
+            ExportData->SetPortNumber(SshPortNumber);
           }
-
-          ExportData->Save(Storage, true);
-          SessionName = GUIConfiguration->GetPuttySession();
         }
+
+        ExportData->Save(Storage.get(), true);
+        SessionName = GUIConfiguration->GetPuttySession();
       }
     }
-    ,
-    {
-      delete Storage;
-      delete ExportData;
-      delete SourceStorage;
-    }
-    );
 
     if (!Params.IsEmpty())
     {

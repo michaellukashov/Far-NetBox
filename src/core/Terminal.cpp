@@ -2450,21 +2450,13 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
       {
         DoReadDirectoryProgress(-1, Cancel);
         FReadingCurrentDirectory = false;
-        TRemoteDirectory * OldFiles = FFiles;
+        std::auto_ptr<TRemoteDirectory> OldFiles(FFiles);
         FFiles = Files;
-        TRY_FINALLY (
-        {
-          DoReadDirectory(ReloadOnly);
-        }
-        ,
-        {
-          // delete only after loading new files to dir view,
-          // not to destroy the file objects that the view holds
-          // (can be issue in multi threaded environment, such as when the
-          // terminal is reconnecting in the terminal thread)
-          delete OldFiles;
-        }
-        );
+        DoReadDirectory(ReloadOnly);
+        // delete only after loading new files to dir view,
+        // not to destroy the file objects that the view holds
+        // (can be issue in multi threaded environment, such as when the
+        // terminal is reconnecting in the terminal thread)
         if (GetActive())
         {
           if (GetSessionData()->GetCacheDirectories())
@@ -2633,7 +2625,7 @@ TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & Direct
 void TTerminal::ProcessDirectory(const UnicodeString & DirName,
   TProcessFileEvent CallBackFunc, void * Param, bool UseCache, bool IgnoreErrors)
 {
-  TRemoteFileList * FileList = NULL;
+  std::auto_ptr<TRemoteFileList> FileList(NULL);
   if (IgnoreErrors)
   {
     SetExceptionOnFail(true);
@@ -2641,7 +2633,7 @@ void TTerminal::ProcessDirectory(const UnicodeString & DirName,
     {
       try
       {
-        FileList = CustomReadDirectoryListing(DirName, UseCache);
+        FileList.reset(CustomReadDirectoryListing(DirName, UseCache));
       }
       catch(...)
       {
@@ -2659,30 +2651,22 @@ void TTerminal::ProcessDirectory(const UnicodeString & DirName,
   }
   else
   {
-    FileList = CustomReadDirectoryListing(DirName, UseCache);
+    FileList.reset(CustomReadDirectoryListing(DirName, UseCache));
   }
 
   // skip if directory listing fails and user selects "skip"
-  if (FileList)
+  if (FileList.get())
   {
-    TRY_FINALLY (
-    {
-      UnicodeString Directory = UnixIncludeTrailingBackslash(DirName);
+    UnicodeString Directory = UnixIncludeTrailingBackslash(DirName);
 
-      for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
+    for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
+    {
+      TRemoteFile * File = FileList->GetFiles(Index);
+      if (!File->GetIsParentDirectory() && !File->GetIsThisDirectory())
       {
-        TRemoteFile * File = FileList->GetFiles(Index);
-        if (!File->GetIsParentDirectory() && !File->GetIsThisDirectory())
-        {
-          CallBackFunc(Directory + File->GetFileName(), File, Param);
-        }
+        CallBackFunc(Directory + File->GetFileName(), File, Param);
       }
     }
-    ,
-    {
-      delete FileList;
-    }
-    );
   }
 }
 //------------------------------------------------------------------------------
@@ -4445,55 +4429,47 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
 
         if (Modified || New)
         {
-          TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
-          TRY_FINALLY (
+          std::auto_ptr<TSynchronizeChecklist::TItem> ChecklistItem(new TSynchronizeChecklist::TItem());
+          ChecklistItem->IsDirectory = FileData->IsDirectory;
+
+          ChecklistItem->Local = FileData->Info;
+          ChecklistItem->FLocalLastWriteTime = FileData->LocalLastWriteTime;
+
+          if (Modified)
           {
-            ChecklistItem->IsDirectory = FileData->IsDirectory;
-
-            ChecklistItem->Local = FileData->Info;
-            ChecklistItem->FLocalLastWriteTime = FileData->LocalLastWriteTime;
-
-            if (Modified)
-            {
-              assert(!FileData->MatchingRemoteFile.Directory.IsEmpty());
-              ChecklistItem->Remote = FileData->MatchingRemoteFile;
-              ChecklistItem->ImageIndex = FileData->MatchingRemoteFileImageIndex;
-              ChecklistItem->RemoteFile = FileData->MatchingRemoteFileFile;
-            }
-            else
-            {
-              ChecklistItem->Remote.Directory = Data.RemoteDirectory;
-            }
-
-            if ((Mode == smBoth) || (Mode == smRemote))
-            {
-              ChecklistItem->Action =
-                (Modified ? TSynchronizeChecklist::saUploadUpdate : TSynchronizeChecklist::saUploadNew);
-              ChecklistItem->Checked =
-                (Modified || FLAGCLEAR(Params, spExistingOnly)) &&
-                (!ChecklistItem->IsDirectory || FLAGCLEAR(Params, spNoRecurse) ||
-                 FLAGSET(Params, spSubDirs));
-            }
-            else if ((Mode == smLocal) && FLAGCLEAR(Params, spTimestamp))
-            {
-              ChecklistItem->Action = TSynchronizeChecklist::saDeleteLocal;
-              ChecklistItem->Checked =
-                FLAGSET(Params, spDelete) &&
-                (!ChecklistItem->IsDirectory || FLAGCLEAR(Params, spNoRecurse) ||
-                 FLAGSET(Params, spSubDirs));
-            }
-
-            if (ChecklistItem->Action != TSynchronizeChecklist::saNone)
-            {
-              Data.Checklist->Add(ChecklistItem);
-              ChecklistItem = NULL;
-            }
+            assert(!FileData->MatchingRemoteFile.Directory.IsEmpty());
+            ChecklistItem->Remote = FileData->MatchingRemoteFile;
+            ChecklistItem->ImageIndex = FileData->MatchingRemoteFileImageIndex;
+            ChecklistItem->RemoteFile = FileData->MatchingRemoteFileFile;
           }
-          ,
+          else
           {
-            delete ChecklistItem;
+            ChecklistItem->Remote.Directory = Data.RemoteDirectory;
           }
-          );
+
+          if ((Mode == smBoth) || (Mode == smRemote))
+          {
+            ChecklistItem->Action =
+              (Modified ? TSynchronizeChecklist::saUploadUpdate : TSynchronizeChecklist::saUploadNew);
+            ChecklistItem->Checked =
+              (Modified || FLAGCLEAR(Params, spExistingOnly)) &&
+              (!ChecklistItem->IsDirectory || FLAGCLEAR(Params, spNoRecurse) ||
+               FLAGSET(Params, spSubDirs));
+          }
+          else if ((Mode == smLocal) && FLAGCLEAR(Params, spTimestamp))
+          {
+            ChecklistItem->Action = TSynchronizeChecklist::saDeleteLocal;
+            ChecklistItem->Checked =
+              FLAGSET(Params, spDelete) &&
+              (!ChecklistItem->IsDirectory || FLAGCLEAR(Params, spNoRecurse) ||
+               FLAGSET(Params, spSubDirs));
+          }
+
+          if (ChecklistItem->Action != TSynchronizeChecklist::saNone)
+          {
+            Data.Checklist->Add(ChecklistItem.get());
+            ChecklistItem.reset();
+          }
         }
         else
         {
@@ -4542,175 +4518,167 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
         Data->Options->MatchesFilter(File->GetFileName()) ||
         Data->Options->MatchesFilter(LocalFileName)))
   {
-    TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
-    TRY_FINALLY (
+    std::auto_ptr<TSynchronizeChecklist::TItem> ChecklistItem(new TSynchronizeChecklist::TItem());
+    ChecklistItem->IsDirectory = File->GetIsDirectory();
+    ChecklistItem->ImageIndex = File->GetIconIndex();
+
+    ChecklistItem->Remote.FileName = File->GetFileName();
+    ChecklistItem->Remote.Directory = Data->RemoteDirectory;
+    ChecklistItem->Remote.Modification = File->GetModification();
+    ChecklistItem->Remote.ModificationFmt = File->GetModificationFmt();
+    ChecklistItem->Remote.Size = File->GetSize();
+
+    bool Modified = false;
+    intptr_t LocalIndex = Data->LocalFileList->IndexOf(LocalFileName.c_str());
+    bool New = (LocalIndex < 0);
+    if (!New)
     {
-      ChecklistItem->IsDirectory = File->GetIsDirectory();
-      ChecklistItem->ImageIndex = File->GetIconIndex();
+      TSynchronizeFileData * LocalData =
+        reinterpret_cast<TSynchronizeFileData *>(Data->LocalFileList->GetObject(LocalIndex));
 
-      ChecklistItem->Remote.FileName = File->GetFileName();
-      ChecklistItem->Remote.Directory = Data->RemoteDirectory;
-      ChecklistItem->Remote.Modification = File->GetModification();
-      ChecklistItem->Remote.ModificationFmt = File->GetModificationFmt();
-      ChecklistItem->Remote.Size = File->GetSize();
+      LocalData->New = false;
 
-      bool Modified = false;
-      intptr_t LocalIndex = Data->LocalFileList->IndexOf(LocalFileName.c_str());
-      bool New = (LocalIndex < 0);
-      if (!New)
+      if (File->GetIsDirectory() != LocalData->IsDirectory)
       {
-        TSynchronizeFileData * LocalData =
-          reinterpret_cast<TSynchronizeFileData *>(Data->LocalFileList->GetObject(LocalIndex));
+        LogEvent(FORMAT(L"%s is directory on one side, but file on the another",
+          File->GetFileName().c_str()));
+      }
+      else if (!File->GetIsDirectory())
+      {
+        ChecklistItem->Local = LocalData->Info;
 
-        LocalData->New = false;
+        ChecklistItem->Local.Modification =
+          ReduceDateTimePrecision(ChecklistItem->Local.Modification, File->GetModificationFmt());
 
-        if (File->GetIsDirectory() != LocalData->IsDirectory)
+        bool LocalModified = false;
+        // for spTimestamp+spBySize require that the file sizes are the same
+        // before comparing file time
+        intptr_t TimeCompare;
+        if (FLAGCLEAR(Data->Params, spNotByTime) &&
+            (FLAGCLEAR(Data->Params, spTimestamp) ||
+             FLAGCLEAR(Data->Params, spBySize) ||
+             (ChecklistItem->Local.Size == ChecklistItem->Remote.Size)))
         {
-          LogEvent(FORMAT(L"%s is directory on one side, but file on the another",
-            File->GetFileName().c_str()));
+          TimeCompare = CompareFileTime(ChecklistItem->Local.Modification,
+               ChecklistItem->Remote.Modification);
         }
-        else if (!File->GetIsDirectory())
+        else
         {
-          ChecklistItem->Local = LocalData->Info;
-
-          ChecklistItem->Local.Modification =
-            ReduceDateTimePrecision(ChecklistItem->Local.Modification, File->GetModificationFmt());
-
-          bool LocalModified = false;
-          // for spTimestamp+spBySize require that the file sizes are the same
-          // before comparing file time
-          intptr_t TimeCompare;
-          if (FLAGCLEAR(Data->Params, spNotByTime) &&
-              (FLAGCLEAR(Data->Params, spTimestamp) ||
-               FLAGCLEAR(Data->Params, spBySize) ||
-               (ChecklistItem->Local.Size == ChecklistItem->Remote.Size)))
+          TimeCompare = 0;
+        }
+        if (TimeCompare < 0)
+        {
+          if ((FLAGCLEAR(Data->Params, spTimestamp) && FLAGCLEAR(Data->Params, spMirror)) ||
+              (Data->Mode == smBoth) || (Data->Mode == smLocal))
           {
-            TimeCompare = CompareFileTime(ChecklistItem->Local.Modification,
-                 ChecklistItem->Remote.Modification);
+            Modified = true;
           }
           else
           {
-            TimeCompare = 0;
-          }
-          if (TimeCompare < 0)
-          {
-            if ((FLAGCLEAR(Data->Params, spTimestamp) && FLAGCLEAR(Data->Params, spMirror)) ||
-                (Data->Mode == smBoth) || (Data->Mode == smLocal))
-            {
-              Modified = true;
-            }
-            else
-            {
-              LocalModified = true;
-            }
-          }
-          else if (TimeCompare > 0)
-          {
-            if ((FLAGCLEAR(Data->Params, spTimestamp) && FLAGCLEAR(Data->Params, spMirror)) ||
-                (Data->Mode == smBoth) || (Data->Mode == smRemote))
-            {
-              LocalModified = true;
-            }
-            else
-            {
-              Modified = true;
-            }
-          }
-          else if (FLAGSET(Data->Params, spBySize) &&
-                   (ChecklistItem->Local.Size != ChecklistItem->Remote.Size) &&
-                   FLAGCLEAR(Data->Params, spTimestamp))
-          {
-            Modified = true;
             LocalModified = true;
           }
-
-          if (LocalModified)
+        }
+        else if (TimeCompare > 0)
+        {
+          if ((FLAGCLEAR(Data->Params, spTimestamp) && FLAGCLEAR(Data->Params, spMirror)) ||
+              (Data->Mode == smBoth) || (Data->Mode == smRemote))
           {
-            LocalData->Modified = true;
-            LocalData->MatchingRemoteFile = ChecklistItem->Remote;
-            LocalData->MatchingRemoteFileImageIndex = ChecklistItem->ImageIndex;
-            // we need this for custom commands over checklist only,
-            // not for sync itself
-            LocalData->MatchingRemoteFileFile = File->Duplicate();
-            LogEvent(FORMAT(L"Local file '%s' [%s] [%s] is modified comparing to remote file '%s' [%s] [%s]",
-              UnicodeString(LocalData->Info.Directory + LocalData->Info.FileName).c_str(),
-               StandardTimestamp(LocalData->Info.Modification).c_str(),
-               Int64ToStr(LocalData->Info.Size).c_str(),
-               FullRemoteFileName.c_str(),
-               StandardTimestamp(File->GetModification()).c_str(),
-               Int64ToStr(File->GetSize()).c_str()));
+            LocalModified = true;
           }
-
-          if (Modified)
+          else
           {
-            LogEvent(FORMAT(L"Remote file '%s' [%s] [%s] is modified comparing to local file '%s' [%s] [%s]",
-              FullRemoteFileName.c_str(),
-               StandardTimestamp(File->GetModification()).c_str(),
-               Int64ToStr(File->GetSize()).c_str(),
-               UnicodeString(LocalData->Info.Directory + LocalData->Info.FileName).c_str(),
-               StandardTimestamp(LocalData->Info.Modification).c_str(),
-               Int64ToStr(LocalData->Info.Size).c_str()));
+            Modified = true;
           }
         }
-        else if (FLAGCLEAR(Data->Params, spNoRecurse))
+        else if (FLAGSET(Data->Params, spBySize) &&
+                 (ChecklistItem->Local.Size != ChecklistItem->Remote.Size) &&
+                 FLAGCLEAR(Data->Params, spTimestamp))
         {
-          DoSynchronizeCollectDirectory(
-            Data->LocalDirectory + LocalData->Info.FileName,
-            Data->RemoteDirectory + File->GetFileName(),
-            Data->Mode, Data->CopyParam, Data->Params, Data->OnSynchronizeDirectory,
-            Data->Options, (Data->Flags & ~sfFirstLevel),
-            Data->Checklist);
+          Modified = true;
+          LocalModified = true;
+        }
+
+        if (LocalModified)
+        {
+          LocalData->Modified = true;
+          LocalData->MatchingRemoteFile = ChecklistItem->Remote;
+          LocalData->MatchingRemoteFileImageIndex = ChecklistItem->ImageIndex;
+          // we need this for custom commands over checklist only,
+          // not for sync itself
+          LocalData->MatchingRemoteFileFile = File->Duplicate();
+          LogEvent(FORMAT(L"Local file '%s' [%s] [%s] is modified comparing to remote file '%s' [%s] [%s]",
+            UnicodeString(LocalData->Info.Directory + LocalData->Info.FileName).c_str(),
+             StandardTimestamp(LocalData->Info.Modification).c_str(),
+             Int64ToStr(LocalData->Info.Size).c_str(),
+             FullRemoteFileName.c_str(),
+             StandardTimestamp(File->GetModification()).c_str(),
+             Int64ToStr(File->GetSize()).c_str()));
+        }
+
+        if (Modified)
+        {
+          LogEvent(FORMAT(L"Remote file '%s' [%s] [%s] is modified comparing to local file '%s' [%s] [%s]",
+            FullRemoteFileName.c_str(),
+             StandardTimestamp(File->GetModification()).c_str(),
+             Int64ToStr(File->GetSize()).c_str(),
+             UnicodeString(LocalData->Info.Directory + LocalData->Info.FileName).c_str(),
+             StandardTimestamp(LocalData->Info.Modification).c_str(),
+             Int64ToStr(LocalData->Info.Size).c_str()));
         }
       }
-      else
+      else if (FLAGCLEAR(Data->Params, spNoRecurse))
       {
-        ChecklistItem->Local.Directory = Data->LocalDirectory;
-        LogEvent(FORMAT(L"Remote file '%s' [%s] [%s] is new",
-          FullRemoteFileName.c_str(), StandardTimestamp(File->GetModification()).c_str(), Int64ToStr(File->GetSize()).c_str()));
-      }
-
-      if (New || Modified)
-      {
-        assert(!New || !Modified);
-
-        // download the file if it changed or is new and we want to have it locally
-        if ((Data->Mode == smBoth) || (Data->Mode == smLocal))
-        {
-          if (FLAGCLEAR(Data->Params, spTimestamp) || Modified)
-          {
-            ChecklistItem->Action =
-              (Modified ? TSynchronizeChecklist::saDownloadUpdate : TSynchronizeChecklist::saDownloadNew);
-            ChecklistItem->Checked =
-              (Modified || FLAGCLEAR(Data->Params, spExistingOnly)) &&
-              (!ChecklistItem->IsDirectory || FLAGCLEAR(Data->Params, spNoRecurse) ||
-               FLAGSET(Data->Params, spSubDirs));
-          }
-        }
-        else if ((Data->Mode == smRemote) && New)
-        {
-          if (FLAGCLEAR(Data->Params, spTimestamp))
-          {
-            ChecklistItem->Action = TSynchronizeChecklist::saDeleteRemote;
-            ChecklistItem->Checked =
-              FLAGSET(Data->Params, spDelete) &&
-              (!ChecklistItem->IsDirectory || FLAGCLEAR(Data->Params, spNoRecurse) ||
-               FLAGSET(Data->Params, spSubDirs));
-          }
-        }
-
-        if (ChecklistItem->Action != TSynchronizeChecklist::saNone)
-        {
-          ChecklistItem->RemoteFile = File->Duplicate();
-          Data->Checklist->Add(ChecklistItem);
-          ChecklistItem = NULL;
-        }
+        DoSynchronizeCollectDirectory(
+          Data->LocalDirectory + LocalData->Info.FileName,
+          Data->RemoteDirectory + File->GetFileName(),
+          Data->Mode, Data->CopyParam, Data->Params, Data->OnSynchronizeDirectory,
+          Data->Options, (Data->Flags & ~sfFirstLevel),
+          Data->Checklist);
       }
     }
-    ,
+    else
     {
-      delete ChecklistItem;
+      ChecklistItem->Local.Directory = Data->LocalDirectory;
+      LogEvent(FORMAT(L"Remote file '%s' [%s] [%s] is new",
+        FullRemoteFileName.c_str(), StandardTimestamp(File->GetModification()).c_str(), Int64ToStr(File->GetSize()).c_str()));
     }
-    );
+
+    if (New || Modified)
+    {
+      assert(!New || !Modified);
+
+      // download the file if it changed or is new and we want to have it locally
+      if ((Data->Mode == smBoth) || (Data->Mode == smLocal))
+      {
+        if (FLAGCLEAR(Data->Params, spTimestamp) || Modified)
+        {
+          ChecklistItem->Action =
+            (Modified ? TSynchronizeChecklist::saDownloadUpdate : TSynchronizeChecklist::saDownloadNew);
+          ChecklistItem->Checked =
+            (Modified || FLAGCLEAR(Data->Params, spExistingOnly)) &&
+            (!ChecklistItem->IsDirectory || FLAGCLEAR(Data->Params, spNoRecurse) ||
+             FLAGSET(Data->Params, spSubDirs));
+        }
+      }
+      else if ((Data->Mode == smRemote) && New)
+      {
+        if (FLAGCLEAR(Data->Params, spTimestamp))
+        {
+          ChecklistItem->Action = TSynchronizeChecklist::saDeleteRemote;
+          ChecklistItem->Checked =
+            FLAGSET(Data->Params, spDelete) &&
+            (!ChecklistItem->IsDirectory || FLAGCLEAR(Data->Params, spNoRecurse) ||
+             FLAGSET(Data->Params, spSubDirs));
+        }
+      }
+
+      if (ChecklistItem->Action != TSynchronizeChecklist::saNone)
+      {
+        ChecklistItem->RemoteFile = File->Duplicate();
+        Data->Checklist->Add(ChecklistItem.get());
+        ChecklistItem.reset();
+      }
+    }
   }
   else
   {
@@ -4739,10 +4707,10 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
     SyncCopyParam.SetPreserveTime(true);
   }
 
-  TStringList * DownloadList = new TStringList();
-  TStringList * DeleteRemoteList = new TStringList();
-  TStringList * UploadList = new TStringList();
-  TStringList * DeleteLocalList = new TStringList();
+  std::auto_ptr<TStringList> DownloadList(new TStringList());
+  std::auto_ptr<TStringList> DeleteRemoteList(new TStringList());
+  std::auto_ptr<TStringList> UploadList(new TStringList());
+  std::auto_ptr<TStringList> DeleteLocalList(new TStringList());
 
   BeginTransaction();
 
@@ -4853,38 +4821,38 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
         {
           if (DownloadList->GetCount() > 0)
           {
-            ProcessFiles(DownloadList, foSetProperties,
+            ProcessFiles(DownloadList.get(), foSetProperties,
               MAKE_CALLBACK(TTerminal::SynchronizeLocalTimestamp, this), NULL, osLocal);
           }
 
           if (UploadList->GetCount() > 0)
           {
-            ProcessFiles(UploadList, foSetProperties,
+            ProcessFiles(UploadList.get(), foSetProperties,
               MAKE_CALLBACK(TTerminal::SynchronizeRemoteTimestamp, this));
           }
         }
         else
         {
           if ((DownloadList->GetCount() > 0) &&
-              !CopyToLocal(DownloadList, Data.LocalDirectory, &SyncCopyParam, CopyParams))
+              !CopyToLocal(DownloadList.get(), Data.LocalDirectory, &SyncCopyParam, CopyParams))
           {
             Abort();
           }
 
           if ((DeleteRemoteList->GetCount() > 0) &&
-              !DeleteFiles(DeleteRemoteList))
+              !DeleteFiles(DeleteRemoteList.get()))
           {
             Abort();
           }
 
           if ((UploadList->GetCount() > 0) &&
-              !CopyToRemote(UploadList, Data.RemoteDirectory, &SyncCopyParam, CopyParams))
+              !CopyToRemote(UploadList.get(), Data.RemoteDirectory, &SyncCopyParam, CopyParams))
           {
             Abort();
           }
 
           if ((DeleteLocalList->GetCount() > 0) &&
-              !DeleteLocalFiles(DeleteLocalList))
+              !DeleteLocalFiles(DeleteLocalList.get()))
           {
             Abort();
           }
@@ -4894,11 +4862,6 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
   }
   ,
   {
-    delete DownloadList;
-    delete DeleteRemoteList;
-    delete UploadList;
-    delete DeleteLocalList;
-
     EndTransaction();
   }
   );
