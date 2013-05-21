@@ -3097,7 +3097,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & FileName,
         // until transaction ends. But we need to know CurrentDirectory to
         // expand !/ pattern.
         // Doing this only, when current directory of the main and secondary shell differs,
-        // what would be the case before the first file in transation.
+        // what would be the case before the first file in transaction.
         // Otherwise we would be reading pwd before every time as the
         // CustomCommandOnFile on its own sets FReadCurrentDirectoryPending
         if (FCommandSession->FReadCurrentDirectoryPending)
@@ -4394,7 +4394,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
       );
 
       // can we expect that ProcessDirectory would take so little time
-      // that we can pospone showing progress window until anything actually happens?
+      // that we can postpone showing progress window until anything actually happens?
       bool Cached = FLAGSET(Params, spUseCache) && GetSessionData()->GetCacheDirectories() &&
         FDirectoryCache->HasFileList(RemoteDirectory);
 
