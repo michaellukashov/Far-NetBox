@@ -205,20 +205,12 @@ void THierarchicalStorage::CloseSubKey()
 //------------------------------------------------------------------------------
 void THierarchicalStorage::ClearSubKeys()
 {
-  TStringList * SubKeys = new TStringList();
-  TRY_FINALLY (
+  std::auto_ptr<TStringList> SubKeys(new TStringList());
+  GetSubKeyNames(SubKeys.get());
+  for (intptr_t Index = 0; Index < SubKeys->GetCount(); ++Index)
   {
-    GetSubKeyNames(SubKeys);
-    for (intptr_t Index = 0; Index < SubKeys->GetCount(); ++Index)
-    {
-      RecursiveDeleteSubKey(SubKeys->GetString(Index));
-    }
+    RecursiveDeleteSubKey(SubKeys->GetString(Index));
   }
-  ,
-  {
-    delete SubKeys;
-  }
-  );
 }
 //------------------------------------------------------------------------------
 void THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString & Key)
@@ -234,17 +226,9 @@ void THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString & Key)
 bool THierarchicalStorage::HasSubKeys()
 {
   bool Result;
-  TStrings * SubKeys = new TStringList();
-  TRY_FINALLY (
-  {
-    GetSubKeyNames(SubKeys);
-    Result = (SubKeys->GetCount() > 0);
-  }
-  ,
-  {
-    delete SubKeys;
-  }
-  );
+  std::auto_ptr<TStrings> SubKeys(new TStringList());
+  GetSubKeyNames(SubKeys.get());
+  Result = (SubKeys->GetCount() > 0);
   return Result;
 }
 //------------------------------------------------------------------------------
@@ -266,46 +250,30 @@ bool THierarchicalStorage::KeyExists(const UnicodeString & SubKey)
 void THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
   bool MaintainKeys)
 {
-  TStrings * Names = new TStringList();
-  TRY_FINALLY (
+  std::auto_ptr<TStrings> Names(new TStringList());
+  GetValueNames(Names.get());
+  for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
   {
-    GetValueNames(Names);
-    for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
+    if (MaintainKeys)
     {
-      if (MaintainKeys)
-      {
-        Strings->Add(FORMAT(L"%s=%s", Names->GetString(Index).c_str(),
-          ReadString(Names->GetString(Index), L"").c_str()));
-      }
-      else
-      {
-        Strings->Add(ReadString(Names->GetString(Index), L""));
-      }
+      Strings->Add(FORMAT(L"%s=%s", Names->GetString(Index).c_str(),
+        ReadString(Names->GetString(Index), L"").c_str()));
+    }
+    else
+    {
+      Strings->Add(ReadString(Names->GetString(Index), L""));
     }
   }
-  ,
-  {
-    delete Names;
-  }
-  );
 }
 //------------------------------------------------------------------------------
 void THierarchicalStorage::ClearValues()
 {
-  TStrings * Names = new TStringList();
-  TRY_FINALLY (
+  std::auto_ptr<TStrings> Names(new TStringList());
+  GetValueNames(Names.get());
+  for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
   {
-    GetValueNames(Names);
-    for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
-    {
-      DeleteValue(Names->GetString(Index));
-    }
+    DeleteValue(Names->GetString(Index));
   }
-  ,
-  {
-    delete Names;
-  }
-  );
 }
 //------------------------------------------------------------------------------
 void THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
@@ -725,28 +693,20 @@ bool TCustomIniFileStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanC
 
   if (!Result)
   {
-    TStringList * Sections = new TStringList();
-    TRY_FINALLY (
+    std::auto_ptr<TStringList> Sections(new TStringList());
+    Sections->Sorted = true;
+    FIniFile->ReadSections(Sections);
+    UnicodeString NewKey = ExcludeTrailingBackslash(GetCurrentSubKey()+SubKey);
+    if (Sections->GetCount())
     {
-      Sections->Sorted = true;
-      FIniFile->ReadSections(Sections);
-      UnicodeString NewKey = ExcludeTrailingBackslash(GetCurrentSubKey()+SubKey);
-      if (Sections->GetCount())
+      int Index = -1;
+      Result = Sections->Find(NewKey, Index);
+      if (!Result && Index < Sections->GetCount() &&
+          Sections->GetString(Index).SubString(1, NewKey.Length()+1) == NewKey + L"\\")
       {
-        int Index = -1;
-        Result = Sections->Find(NewKey, Index);
-        if (!Result && Index < Sections->GetCount() &&
-            Sections->GetString(Index).SubString(1, NewKey.Length()+1) == NewKey + L"\\")
-        {
-          Result = true;
-        }
+        Result = true;
       }
     }
-    ,
-    {
-      delete Sections;
-    }
-    );
   }
 
   return Result;
@@ -769,36 +729,28 @@ bool TCustomIniFileStorage::DeleteSubKey(const UnicodeString & SubKey)
 //------------------------------------------------------------------------------
 void TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings)
 {
-  TStrings * Sections = new TStringList();
-  TRY_FINALLY (
+  std::auto_ptr<TStrings> Sections(new TStringList());
+  Strings->Clear();
+  FIniFile->ReadSections(Sections.get());
+  for (intptr_t I = 0; I < Sections->GetCount(); I++)
   {
-    Strings->Clear();
-    FIniFile->ReadSections(Sections);
-    for (intptr_t I = 0; I < Sections->GetCount(); I++)
+    UnicodeString Section = Sections->GetString(I);
+    if (AnsiCompareText(GetCurrentSubKey(),
+        Section.SubString(1, GetCurrentSubKey().Length())) == 0)
     {
-      UnicodeString Section = Sections->GetString(I);
-      if (AnsiCompareText(GetCurrentSubKey(),
-          Section.SubString(1, GetCurrentSubKey().Length())) == 0)
+      UnicodeString SubSection = Section.SubString(GetCurrentSubKey().Length() + 1,
+        Section.Length() - GetCurrentSubKey().Length());
+      intptr_t P = SubSection.Pos(L"\\");
+      if (P)
       {
-        UnicodeString SubSection = Section.SubString(GetCurrentSubKey().Length() + 1,
-          Section.Length() - GetCurrentSubKey().Length());
-        intptr_t P = SubSection.Pos(L"\\");
-        if (P)
-        {
-          SubSection.SetLength(P - 1);
-        }
-        if (Strings->IndexOf(SubSection) < 0)
-        {
-          Strings->Add(UnMungeStr(SubSection));
-        }
+        SubSection.SetLength(P - 1);
+      }
+      if (Strings->IndexOf(SubSection) < 0)
+      {
+        Strings->Add(UnMungeStr(SubSection));
       }
     }
   }
-  ,
-  {
-    delete Sections;
-  }
-  );
 }
 //------------------------------------------------------------------------------
 void TCustomIniFileStorage::GetValueNames(Classes::TStrings* Strings)
@@ -989,10 +941,10 @@ void TIniFileStorage::Flush()
 {
   if (FOriginal != NULL)
   {
-    TStrings * Strings = new TStringList;
+    std::auto_ptr<TStrings> Strings(new TStringList);
     TRY_FINALLY (
     {
-      dynamic_cast<TMemIniFile *>(FIniFile)->GetString(Strings);
+      dynamic_cast<TMemIniFile *>(FIniFile)->GetString(Strings.get());
       if (!Strings->Equals(FOriginal))
       {
         DWORD LocalFileAttr;
@@ -1027,7 +979,7 @@ void TIniFileStorage::Flush()
         }
         else
         {
-          TStream * Stream = new THandleStream(Handle);
+          std::auto_ptr<TStream> Stream(new THandleStream(Handle));
           TRY_FINALLY (
           {
             Strings->SaveToStream(Stream);
@@ -1035,7 +987,6 @@ void TIniFileStorage::Flush()
           ,
           {
             ::CloseHandle(Handle);
-            delete Stream;
           }
           );
         }
@@ -1045,7 +996,6 @@ void TIniFileStorage::Flush()
     {
       delete FOriginal;
       FOriginal = NULL;
-      delete Strings;
     }
     );
   }
@@ -1060,49 +1010,33 @@ void TIniFileStorage::ApplyOverrides()
 {
   UnicodeString OverridesKey = IncludeTrailingBackslash(L"Override");
 
-  TStrings * Sections = new TStringList();
-  TRY_FINALLY (
+  std::auto_ptr<TStrings> Sections(new TStringList());
+  Sections->Clear();
+  FIniFile->ReadSections(Sections.get());
+  for (intptr_t I = 0; I < Sections->GetCount(); I++)
   {
-    Sections->Clear();
-    FIniFile->ReadSections(Sections);
-    for (intptr_t I = 0; I < Sections->GetCount(); I++)
+    UnicodeString Section = Sections->GetString(I);
+
+    if (AnsiSameText(OverridesKey,
+          Section.SubString(1, OverridesKey.Length())))
     {
-      UnicodeString Section = Sections->GetString(I);
+      UnicodeString SubKey = Section.SubString(OverridesKey.Length() + 1,
+        Section.Length() - OverridesKey.Length());
 
-      if (AnsiSameText(OverridesKey,
-            Section.SubString(1, OverridesKey.Length())))
+      // this all uses raw names (munged)
+      std::auto_ptr<TStrings> Names(new TStringList);
+      FIniFile->ReadSection(Section, Names.get());
+
+      for (intptr_t II = 0; II < Names->GetCount(); II++)
       {
-        UnicodeString SubKey = Section.SubString(OverridesKey.Length() + 1,
-          Section.Length() - OverridesKey.Length());
-
-        // this all uses raw names (munged)
-        TStrings * Names = new TStringList;
-        TRY_FINALLY (
-        {
-          FIniFile->ReadSection(Section, Names);
-
-          for (intptr_t II = 0; II < Names->GetCount(); II++)
-          {
-            UnicodeString Name = Names->GetString(II);
-            UnicodeString Value = FIniFile->ReadString(Section, Name, L"");
-            FIniFile->WriteString(SubKey, Name, Value);
-          }
-        }
-        ,
-        {
-          delete Names;
-        }
-        );
-
-        FIniFile->EraseSection(Section);
+        UnicodeString Name = Names->GetString(II);
+        UnicodeString Value = FIniFile->ReadString(Section, Name, L"");
+        FIniFile->WriteString(SubKey, Name, Value);
       }
+
+      FIniFile->EraseSection(Section);
     }
   }
-  ,
-  {
-    delete Sections;
-  }
-  );
 }
 //===========================================================================
 #define NOT_IMPLEMENTED throw Exception("Not implemented")
