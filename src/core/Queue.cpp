@@ -76,7 +76,7 @@ public:
   TTerminal * Terminal;
   UnicodeString Str;
   bool Status;
-  int Phase;
+  intptr_t Phase;
 private:
   NB_DISABLE_COPY(TInformationUserAction)
 };
@@ -258,7 +258,7 @@ public:
 
   TReadDirectoryProgressEvent OnReadDirectoryProgress;
   TObject * Sender;
-  int Progress;
+  intptr_t Progress;
   bool Cancel;
 
 private:
