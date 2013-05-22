@@ -1813,60 +1813,58 @@ void TWinSCPFileSystem::FileProperties()
   if (FileList.get())
   {
     assert(!FPanelItems);
-    {
-      TRemoteProperties CurrentProperties;
+    TRemoteProperties CurrentProperties;
 
-      bool Cont = true;
-      if (!GetTerminal()->LoadFilesProperties(FileList.get()))
+    bool Cont = true;
+    if (!GetTerminal()->LoadFilesProperties(FileList.get()))
+    {
+      if (UpdatePanel())
       {
-        if (UpdatePanel())
-        {
-          RedrawPanel();
-        }
-        else
-        {
-          Cont = false;
-        }
+        RedrawPanel();
+      }
+      else
+      {
+        Cont = false;
+      }
+    }
+
+    if (Cont)
+    {
+      CurrentProperties = TRemoteProperties::CommonProperties(FileList.get());
+
+      int Flags = 0;
+      if (FTerminal->GetIsCapable(fcModeChanging))
+      {
+        Flags |= cpMode;
+      }
+      if (FTerminal->GetIsCapable(fcOwnerChanging))
+      {
+        Flags |= cpOwner;
+      }
+      if (FTerminal->GetIsCapable(fcGroupChanging))
+      {
+        Flags |= cpGroup;
       }
 
-      if (Cont)
+      TRemoteProperties NewProperties = CurrentProperties;
+      if (PropertiesDialog(FileList.get(), FTerminal->GetCurrentDirectory(),
+          FTerminal->GetGroups(), FTerminal->GetUsers(), &NewProperties, Flags))
       {
-        CurrentProperties = TRemoteProperties::CommonProperties(FileList.get());
-
-        int Flags = 0;
-        if (FTerminal->GetIsCapable(fcModeChanging))
+        NewProperties = TRemoteProperties::ChangedProperties(CurrentProperties,
+          NewProperties);
+        TRY_FINALLY (
         {
-          Flags |= cpMode;
+          FTerminal->ChangeFilesProperties(FileList.get(), &NewProperties);
         }
-        if (FTerminal->GetIsCapable(fcOwnerChanging))
+        ,
         {
-          Flags |= cpOwner;
-        }
-        if (FTerminal->GetIsCapable(fcGroupChanging))
-        {
-          Flags |= cpGroup;
-        }
-
-        TRemoteProperties NewProperties = CurrentProperties;
-        if (PropertiesDialog(FileList.get(), FTerminal->GetCurrentDirectory(),
-            FTerminal->GetGroups(), FTerminal->GetUsers(), &NewProperties, Flags))
-        {
-          NewProperties = TRemoteProperties::ChangedProperties(CurrentProperties,
-            NewProperties);
-          TRY_FINALLY (
+          GetPanelInfo()->ApplySelection();
+          if (UpdatePanel())
           {
-            FTerminal->ChangeFilesProperties(FileList.get(), &NewProperties);
+            RedrawPanel();
           }
-          ,
-          {
-            GetPanelInfo()->ApplySelection();
-            if (UpdatePanel())
-            {
-              RedrawPanel();
-            }
-          }
-          );
         }
+        );
       }
     }
   }
