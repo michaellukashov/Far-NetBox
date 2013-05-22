@@ -3925,10 +3925,9 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
   }
   else if (Event == EE_SAVE)
   {
-    TFarEditorInfo * Info = WinSCPPlugin()->EditorInfo();
-    if (Info != NULL)
+    std::auto_ptr<TFarEditorInfo> Info(WinSCPPlugin()->EditorInfo());
+    if (Info.get() != NULL)
     {
-      std::auto_ptr<TFarEditorInfo> InfoPtr(Info);
       if ((FLastEditorID >= 0) && (FLastEditorID == Info->GetEditorID()))
       {
         // if the file is saved under different name ("save as"), we upload
