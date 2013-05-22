@@ -4136,9 +4136,8 @@ bool TWinSCPFileSystem::IsEditHistoryEmpty()
 //---------------------------------------------------------------------------------
 void TWinSCPFileSystem::EditHistory()
 {
-  TFarMenuItems * MenuItems = new TFarMenuItems();
+  std::auto_ptr<TFarMenuItems> MenuItems(new TFarMenuItems());
   {
-    std::auto_ptr<TFarMenuItems> MenuItemsPtr(MenuItems);
     TEditHistories::const_iterator i = FEditHistories.begin();
     while (i != FEditHistories.end())
     {
@@ -4154,7 +4153,7 @@ void TWinSCPFileSystem::EditHistory()
 
     int BreakCode = 0;
     intptr_t Result = WinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
-      GetMsg(MENU_EDIT_HISTORY), L"", MenuItems, BreakKeys, BreakCode);
+      GetMsg(MENU_EDIT_HISTORY), L"", MenuItems.get(), BreakKeys, BreakCode);
 
     if ((Result >= 0) && (Result < static_cast<intptr_t>(FEditHistories.size())))
     {
