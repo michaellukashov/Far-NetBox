@@ -198,8 +198,8 @@ public:
   static UnicodeString PropertyToKey(const UnicodeString & Property);
   virtual void DefaultLocalized();
   intptr_t GetCopyParamIndex() const;
-  const TGUICopyParamType & GetCurrentCopyParam() const;
-  const TGUICopyParamType & GetCopyParamPreset(const UnicodeString & Name) const;
+  const TGUICopyParamType GetCurrentCopyParam() const;
+  const TGUICopyParamType GetCopyParamPreset(const UnicodeString & Name) const;
   bool GetHasCopyParamPreset(const UnicodeString & Name) const;
   void SetCopyParamIndex(intptr_t Value);
   void SetCopyParamCurrent(const UnicodeString & Value);
