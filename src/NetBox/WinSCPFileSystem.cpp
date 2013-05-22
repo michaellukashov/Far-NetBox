@@ -3893,32 +3893,30 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
     std::auto_ptr<TFarEditorInfo> Info(WinSCPPlugin()->EditorInfo());
     if (Info.get() != NULL)
     {
+      if (FLastEditorID == Info->GetEditorID())
       {
-        if (FLastEditorID == Info->GetEditorID())
+        FLastEditorID = -1;
+      }
+
+      TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
+      if (I != FMultipleEdits.end())
+      {
+        if (I->second.PendingSave)
         {
-          FLastEditorID = -1;
+          UploadFromEditor(true, Info->GetFileName(), I->second.FileTitle, I->second.Directory);
+          // reload panel content (if uploaded to current directory.
+          // no need for RefreshPanel as panel is not visible yet.
+          UpdatePanel();
         }
 
-        TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
-        if (I != FMultipleEdits.end())
+        if (Sysutils::DeleteFile(Info->GetFileName()))
         {
-          if (I->second.PendingSave)
-          {
-            UploadFromEditor(true, Info->GetFileName(), I->second.FileTitle, I->second.Directory);
-            // reload panel content (if uploaded to current directory.
-            // no need for RefreshPanel as panel is not visible yet.
-            UpdatePanel();
-          }
-
-          if (Sysutils::DeleteFile(Info->GetFileName()))
-          {
-            // remove directory only if it is empty
-            // (to avoid deleting another directory if user uses "save as")
-            ::RemoveDir(ExcludeTrailingBackslash(ExtractFilePath(Info->GetFileName())));
-          }
-
-          FMultipleEdits.erase(I->first);
+          // remove directory only if it is empty
+          // (to avoid deleting another directory if user uses "save as")
+          ::RemoveDir(ExcludeTrailingBackslash(ExtractFilePath(Info->GetFileName())));
         }
+
+        FMultipleEdits.erase(I->first);
       }
     }
   }
