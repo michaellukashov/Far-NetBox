@@ -8793,30 +8793,29 @@ bool TWinSCPFileSystem::QueueDialog(
 bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
     TRemoteProperties * Properties, bool & SaveSettings)
 {
-  TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
-  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  std::auto_ptr<TWinSCPDialog> Dialog(new TWinSCPDialog(FPlugin));
   TFarText * Text;
   TFarSeparator * Separator;
 
   Dialog->SetCaption(GetMsg(CREATE_FOLDER_TITLE));
   Dialog->SetSize(TPoint(66, 15));
 
-  Text = new TFarText(Dialog);
+  Text = new TFarText(Dialog.get());
   Text->SetCaption(GetMsg(CREATE_FOLDER_PROMPT));
 
-  TFarEdit * DirectoryEdit = new TFarEdit(Dialog);
+  TFarEdit * DirectoryEdit = new TFarEdit(Dialog.get());
   DirectoryEdit->SetHistory(L"NewFolder");
 
-  Separator = new TFarSeparator(Dialog);
+  Separator = new TFarSeparator(Dialog.get());
   Separator->SetCaption(GetMsg(CREATE_FOLDER_ATTRIBUTES));
 
-  TFarCheckBox * SetRightsCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * SetRightsCheck = new TFarCheckBox(Dialog.get());
   SetRightsCheck->SetCaption(GetMsg(CREATE_FOLDER_SET_RIGHTS));
 
-  TRightsContainer * RightsContainer = new TRightsContainer(Dialog, false, true,
+  TRightsContainer * RightsContainer = new TRightsContainer(Dialog.get(), false, true,
       true, SetRightsCheck);
 
-  TFarCheckBox * SaveSettingsCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * SaveSettingsCheck = new TFarCheckBox(Dialog.get());
   SaveSettingsCheck->SetCaption(GetMsg(CREATE_FOLDER_REUSE_SETTINGS));
   SaveSettingsCheck->Move(0, 6);
 
