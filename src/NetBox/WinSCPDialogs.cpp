@@ -8195,9 +8195,8 @@ void TSynchronizeDialog::Change()
     UpdateControls();
 
     UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", ActualCopyParamAttrs());
-    TStringList * InfoStrLines = new TStringList();
-    std::auto_ptr<TStrings> InfoStrLinesPtr(InfoStrLines);
-    FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
+    std::auto_ptr<TStrings> InfoStrLines(new TStringList());
+    FarWrapText(InfoStr, InfoStrLines.get(), GetBorderBox()->GetWidth() - 4);
     CopyParamLister->SetItems(InfoStrLines);
     CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
   }
@@ -8242,9 +8241,8 @@ bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
   const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
   bool & SaveSettings, intptr_t Options, intptr_t CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions)
 {
-  TSynchronizeDialog * Dialog = new TSynchronizeDialog(FPlugin, OnStartStop,
-      Options, CopyParamAttrs, OnGetOptions);
-  std::auto_ptr<TSynchronizeDialog> DialogPtr(Dialog);
+  std::auto_ptr<TSynchronizeDialog> Dialog(new TSynchronizeDialog(FPlugin, OnStartStop,
+    Options, CopyParamAttrs, OnGetOptions));
   bool Result = Dialog->Execute(Params, CopyParams, SaveSettings);
   return Result;
 }
