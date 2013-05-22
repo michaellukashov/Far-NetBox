@@ -348,10 +348,12 @@ void __cdecl operator delete(void* p)
 #endif
 }
 
+#if !defined(__MINGW32__)
 void* __cdecl operator new[](size_t nSize) throw(std::bad_alloc)
 {
 	return ::operator new(nSize);
 }
+#endif // #if !defined(__MINGW32__)
 
 void __cdecl operator delete[](void* p) throw()
 {
@@ -360,6 +362,7 @@ void __cdecl operator delete[](void* p) throw()
 
 #ifdef _DEBUG
 
+//#if !defined(__MINGW32__)
 void* __cdecl operator new(size_t nSize, int nType, LPCSTR lpszFileName, int nLine) throw(std::bad_alloc)
 {
 #ifdef _AFX_NO_DEBUG_CRT
@@ -413,6 +416,7 @@ void __cdecl operator delete[](void* p, int nType, LPCSTR lpszFileName, int nLin
 {
 	::operator delete(p, nType, lpszFileName, nLine);
 }
+//#endif // #if !defined(__MINGW32__)
 
 #endif //_DEBUG
 
