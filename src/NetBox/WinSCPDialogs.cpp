@@ -3568,8 +3568,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetFtpUseMlsd(static_cast<TAutoSwitch>(2 - FtpUseMlsdCombo->GetItemIndex()));
     SessionData->SetFtpAllowEmptyPassword(FtpAllowEmptyPasswordCheck->GetChecked());
     SessionData->SetSslSessionReuse(SslSessionReuseCheck->GetChecked());
-    TStrings * PostLoginCommands = new TStringList();
-    std::auto_ptr<TStrings> PostLoginCommandsPtr(PostLoginCommands);
+    std::auto_ptr<TStrings> PostLoginCommands(new TStringList());
     for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(PostLoginCommandsEdits)); ++Index)
     {
       UnicodeString Text = PostLoginCommandsEdits[Index]->GetText();
@@ -4307,8 +4306,7 @@ intptr_t TSessionDialog::AddTab(intptr_t TabID, const wchar_t * TabCaption)
 bool TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
   TSessionActionEnum & Action)
 {
-  TSessionDialog * Dialog = new TSessionDialog(FPlugin, Action);
-  std::auto_ptr<TSessionDialog> DialogPtr(Dialog);
+  std::auto_ptr<TSessionDialog> Dialog(new TSessionDialog(FPlugin, Action));
   bool Result = Dialog->Execute(SessionData, Action);
   return Result;
 }
@@ -4940,9 +4938,8 @@ bool TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
   const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
   TRemoteProperties * Properties, intptr_t AllowedChanges)
 {
-  TPropertiesDialog * Dialog = new TPropertiesDialog(FPlugin, FileList,
-    Directory, GroupList, UserList, AllowedChanges);
-  std::auto_ptr<TPropertiesDialog> DialogPtr(Dialog);
+  std::auto_ptr<TPropertiesDialog> Dialog(new TPropertiesDialog(FPlugin, FileList,
+    Directory, GroupList, UserList, AllowedChanges));
   bool Result = Dialog->Execute(Properties);
   return Result;
 }
