@@ -4676,23 +4676,19 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   FMultiple = (FileList->GetCount() > 1);
 
   {
-    TStringList * UsedGroupList = NULL;
-    TStringList * UsedUserList = NULL;
-    std::auto_ptr<TStrings> UsedGroupListPtr(NULL);
-    std::auto_ptr<TStrings> UsedUserListPtr(NULL);
+    std::auto_ptr<TStrings> UsedGroupList(NULL);
+    std::auto_ptr<TStrings> UsedUserList(NULL);
     if ((GroupList == NULL) || (GroupList->GetCount() == 0))
     {
-      UsedGroupList = new TStringList();
+      UsedGroupList.reset(new TStringList());
       UsedGroupList->SetDuplicates(dupIgnore);
       UsedGroupList->SetSorted(true);
-      UsedGroupListPtr.reset(UsedGroupList);
     }
     if ((UserList == NULL) || (UserList->GetCount() == 0))
     {
-      UsedUserList = new TStringList();
+      UsedUserList.reset(new TStringList());
       UsedUserList->SetDuplicates(dupIgnore);
       UsedUserList->SetSorted(true);
-      UsedUserListPtr.reset(UsedUserList);
     }
 
     intptr_t Directories = 0;
@@ -4700,11 +4696,11 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     {
       TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->GetObject(Index));
       assert(File);
-      if (UsedGroupList && !File->GetFileGroup().GetName().IsEmpty())
+      if (UsedGroupList.get() && !File->GetFileGroup().GetName().IsEmpty())
       {
         UsedGroupList->Add(File->GetFileGroup().GetName());
       }
-      if (UsedUserList && !File->GetFileOwner().GetName().IsEmpty())
+      if (UsedUserList.get() && !File->GetFileOwner().GetName().IsEmpty())
       {
         UsedUserList->Add(File->GetFileOwner().GetName());
       }
@@ -4752,9 +4748,9 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     OwnerComboBox = new TFarComboBox(this);
     OwnerComboBox->SetWidth(20);
     OwnerComboBox->SetEnabled((FAllowedChanges & cpOwner) != 0);
-    if (UsedUserList)
+    if (UsedUserList.get())
     {
-      OwnerComboBox->GetItems()->Assign(UsedUserList);
+      OwnerComboBox->GetItems()->Assign(UsedUserList.get());
     }
     else if (UserList)
     {
@@ -4775,9 +4771,9 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     GroupComboBox = new TFarComboBox(this);
     GroupComboBox->SetWidth(OwnerComboBox->GetWidth());
     GroupComboBox->SetEnabled((FAllowedChanges & cpGroup) != 0);
-    if (UsedGroupList)
+    if (UsedGroupList.get())
     {
-      GroupComboBox->GetItems()->Assign(UsedGroupList);
+      GroupComboBox->GetItems()->Assign(UsedGroupList.get());
     }
     else if (GroupList)
     {

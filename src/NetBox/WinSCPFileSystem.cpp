@@ -32,12 +32,11 @@ TSessionPanelItem::TSessionPanelItem(TSessionData * ASessionData):
 void TSessionPanelItem::SetPanelModes(TFarPanelModes * PanelModes)
 {
   assert(FarPlugin);
-  TStrings * ColumnTitles = new TStringList();
-  std::auto_ptr<TStrings> ColumnTitlesPtr(ColumnTitles);
+  std::auto_ptr<TStrings> ColumnTitles(new TStringList());
   ColumnTitles->Add(FarPlugin->GetMsg(SESSION_NAME_COL_TITLE));
   for (intptr_t Index = 0; Index < PANEL_MODES_COUNT; ++Index)
   {
-    PanelModes->SetPanelMode(Index, L"N", L"0", ColumnTitles, false, false, false);
+    PanelModes->SetPanelMode(Index, L"N", L"0", ColumnTitles.get(), false, false, false);
   }
 }
 //------------------------------------------------------------------------------
@@ -167,19 +166,18 @@ void TRemoteFilePanelItem::TranslateColumnTypes(UnicodeString & ColumnTypes,
 void TRemoteFilePanelItem::SetPanelModes(TFarPanelModes * PanelModes)
 {
   assert(FarPlugin);
-  TStrings * ColumnTitles = new TStringList();
-  std::auto_ptr<TStrings> ColumnTitlesPtr(ColumnTitles);
+  std::auto_ptr<TStrings> ColumnTitles(new TStringList());
   if (FarConfiguration->GetCustomPanelModeDetailed())
   {
     UnicodeString ColumnTypes = FarConfiguration->GetColumnTypesDetailed();
     UnicodeString StatusColumnTypes = FarConfiguration->GetStatusColumnTypesDetailed();
 
-    TranslateColumnTypes(ColumnTypes, ColumnTitles);
+    TranslateColumnTypes(ColumnTypes, ColumnTitles.get());
     TranslateColumnTypes(StatusColumnTypes, NULL);
 
     PanelModes->SetPanelMode(5 /*detailed */,
       ColumnTypes, FarConfiguration->GetColumnWidthsDetailed(),
-      ColumnTitles, FarConfiguration->GetFullScreenDetailed(), false, true, false,
+      ColumnTitles.get(), FarConfiguration->GetFullScreenDetailed(), false, true, false,
       StatusColumnTypes, FarConfiguration->GetStatusColumnWidthsDetailed());
   }
 }
