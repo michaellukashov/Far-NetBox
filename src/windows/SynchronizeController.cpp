@@ -135,7 +135,7 @@ void TSynchronizeController::SynchronizeChange(
 
     if (FOnSynchronize != NULL)
     {
-      // this is completelly wrong as the options structure
+      // this is completely wrong as the options structure
       // can contain non-root specific options in future
       TSynchronizeOptions * Options =
         ((LocalDirectory == RootLocalDirectory) ? FOptions : NULL);

@@ -1016,8 +1016,7 @@ intptr_t TCustomFarPlugin::DialogMessage(unsigned int Flags,
   TFarMessageParams * Params)
 {
   intptr_t Result;
-  TFarMessageDialog * Dialog = new TFarMessageDialog(this, Params);
-  std::auto_ptr<TFarMessageDialog> DialogPtr(Dialog);
+  std::auto_ptr<TFarMessageDialog> Dialog(new TFarMessageDialog(this, Params));
   Dialog->Init(Flags, Title, Message, Buttons);
   Result = Dialog->Execute(Params->CheckBox);
   return Result;
@@ -1884,15 +1883,13 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo * Info)
     {
       ClearOpenPanelInfo(FOpenPanelInfo);
       UnicodeString HostFile, CurDir, Format, PanelTitle, ShortcutData;
-      TFarPanelModes * PanelModes = new TFarPanelModes();
-      std::auto_ptr<TFarPanelModes> PanelModesPtr(PanelModes);
-      TFarKeyBarTitles * KeyBarTitles = new TFarKeyBarTitles();
-      std::auto_ptr<TFarKeyBarTitles> KeyBarTitlesPtr(KeyBarTitles);
+      std::auto_ptr<TFarPanelModes> PanelModes(new TFarPanelModes());
+      std::auto_ptr<TFarKeyBarTitles> KeyBarTitles(new TFarKeyBarTitles());
       bool StartSortOrder = false;
 
       GetOpenPanelInfoEx(FOpenPanelInfo.Flags, HostFile, CurDir, Format,
-        PanelTitle, PanelModes, FOpenPanelInfo.StartPanelMode,
-        FOpenPanelInfo.StartSortMode, StartSortOrder, KeyBarTitles, ShortcutData);
+        PanelTitle, PanelModes.get(), FOpenPanelInfo.StartPanelMode,
+        FOpenPanelInfo.StartSortMode, StartSortOrder, KeyBarTitles.get(), ShortcutData);
 
       FOpenPanelInfo.HostFile = TCustomFarPlugin::DuplicateStr(HostFile);
       FOpenPanelInfo.CurDir = TCustomFarPlugin::DuplicateStr(::StringReplace(CurDir, L"\\", L"/", TReplaceFlags() << rfReplaceAll));
@@ -1920,9 +1917,8 @@ intptr_t TCustomFarFileSystem::GetFindData(struct GetFindDataInfo *Info)
 {
   ResetCachedInfo();
   bool Result = false;
-  TObjectList * PanelItems = new TObjectList();
-  std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
-  Result = !FClosed && GetFindDataEx(PanelItems, Info->OpMode);
+  std::auto_ptr<TObjectList> PanelItems(new TObjectList());
+  Result = !FClosed && GetFindDataEx(PanelItems.get(), Info->OpMode);
   if (Result && PanelItems->GetCount())
   {
     Info->PanelItem = static_cast<PluginPanelItem *>(
@@ -1969,9 +1965,8 @@ intptr_t TCustomFarFileSystem::ProcessHostFile(const struct ProcessHostFileInfo 
 {
   ResetCachedInfo();
   bool Result = false;
-  TObjectList * PanelItems = CreatePanelItemList(Info->PanelItem, Info->ItemsNumber);
-  std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
-  Result = ProcessHostFileEx(PanelItems, Info->OpMode);
+  std::auto_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
+  Result = ProcessHostFileEx(PanelItems.get(), Info->OpMode);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2026,9 +2021,8 @@ intptr_t TCustomFarFileSystem::DeleteFiles(const struct DeleteFilesInfo *Info)
 {
   ResetCachedInfo();
   bool Result = false;
-  TObjectList * PanelItems = CreatePanelItemList(Info->PanelItem, Info->ItemsNumber);
-  std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
-  Result = DeleteFilesEx(PanelItems, Info->OpMode);
+  std::auto_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
+  Result = DeleteFilesEx(PanelItems.get(), Info->OpMode);
   return Result;
 }
 //---------------------------------------------------------------------------
