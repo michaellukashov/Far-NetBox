@@ -6436,8 +6436,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     std::auto_ptr<TStrings> BookmarkPathsPtr(BookmarkPaths);
     TFarMenuItems * BookmarkItems = new TFarMenuItems();
     std::auto_ptr<TStrings> BookmarkItemsPtr(BookmarkItems);
-    TList * Bookmarks = new TList();
-    std::auto_ptr<TList> BookmarksPtr(Bookmarks);
+    std::auto_ptr<TList> Bookmarks(new TList());
     intptr_t BookmarksOffset = -1;
 
     intptr_t MaxLength = FPlugin->MaxMenuItemLength();
@@ -6457,8 +6456,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     }
 
     intptr_t FirstItemFocused = -1;
-    TStringList * BookmarkDirectories = new TStringList();
-    std::auto_ptr<TStringList> BookmarkDirectoriesPtr(BookmarkDirectories);
+    std::auto_ptr<TStringList> BookmarkDirectories(new TStringList());
     BookmarkDirectories->SetSorted(true);
     for (intptr_t I = 0; I < BookmarkList->GetCount(); I++)
     {
@@ -6744,8 +6742,7 @@ bool TApplyCommandDialog::Execute(UnicodeString & Command, intptr_t & Params)
 bool TWinSCPFileSystem::ApplyCommandDialog(UnicodeString & Command,
   intptr_t & Params)
 {
-  TApplyCommandDialog * Dialog = new TApplyCommandDialog(FPlugin);
-  std::auto_ptr<TApplyCommandDialog> DialogPtr(Dialog);
+  std::auto_ptr<TApplyCommandDialog> Dialog(new TApplyCommandDialog(FPlugin));
   bool Result = Dialog->Execute(Command, Params);
   return Result;
 }
@@ -7035,10 +7032,9 @@ void TFullSynchronizeDialog::Change()
     }
 
     UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", ActualCopyParamAttrs());
-    TStringList * InfoStrLines = new TStringList();
-    std::auto_ptr<TStrings> InfoStrLinesPtr(InfoStrLines);
-    FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
-    CopyParamLister->SetItems(InfoStrLines);
+    std::auto_ptr<TStrings> InfoStrLines(new TStringList());
+    FarWrapText(InfoStr, InfoStrLines.get(), GetBorderBox()->GetWidth() - 4);
+    CopyParamLister->SetItems(InfoStrLines.get());
     CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
   }
 }
@@ -7177,9 +7173,8 @@ bool TWinSCPFileSystem::FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode
   TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode, intptr_t Options,
   const TUsableCopyParamAttrs & CopyParamAttrs)
 {
-  TFullSynchronizeDialog * Dialog = new TFullSynchronizeDialog(
-    FPlugin, Options, CopyParamAttrs);
-  std::auto_ptr<TFullSynchronizeDialog> DialogPtr(Dialog);
+  std::auto_ptr<TFullSynchronizeDialog> Dialog(new TFullSynchronizeDialog(
+    FPlugin, Options, CopyParamAttrs));
   bool Result = Dialog->Execute(Mode, Params, LocalDirectory, RemoteDirectory,
     CopyParams, SaveSettings, SaveMode);
   return Result;
@@ -7783,9 +7778,8 @@ bool TWinSCPFileSystem::SynchronizeChecklistDialog(
   TSynchronizeChecklist * Checklist, TTerminal::TSynchronizeMode Mode, intptr_t Params,
   const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory)
 {
-  TSynchronizeChecklistDialog * Dialog = new TSynchronizeChecklistDialog(
-    FPlugin, Mode, Params, LocalDirectory, RemoteDirectory);
-  std::auto_ptr<TSynchronizeChecklistDialog> DialogPtr(Dialog);
+  std::auto_ptr<TSynchronizeChecklistDialog> Dialog(new TSynchronizeChecklistDialog(
+    FPlugin, Mode, Params, LocalDirectory, RemoteDirectory));
   bool Result = Dialog->Execute(Checklist);
   return Result;
 }
@@ -8197,7 +8191,7 @@ void TSynchronizeDialog::Change()
     UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", ActualCopyParamAttrs());
     std::auto_ptr<TStrings> InfoStrLines(new TStringList());
     FarWrapText(InfoStr, InfoStrLines.get(), GetBorderBox()->GetWidth() - 4);
-    CopyParamLister->SetItems(InfoStrLines);
+    CopyParamLister->SetItems(InfoStrLines.get());
     CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
   }
 }
