@@ -17,14 +17,14 @@ public:
   const TCustomFarPlugin * GetPlugin() const { return FFarPlugin; }
   TCustomFarPlugin * GetPlugin() { return FFarPlugin; }
   void SetPlugin(TCustomFarPlugin * Value);
-  bool GetConfirmOverwritingOverride() { return FConfirmOverwritingOverride; }
+  bool GetConfirmOverwritingOverride() const { return FConfirmOverwritingOverride; }
   void SetConfirmOverwritingOverride(bool Value) { FConfirmOverwritingOverride = Value; }
-  bool GetConfirmDeleting();
+  bool GetConfirmDeleting() const;
   bool GetConfirmSynchronizedBrowsing() { return FConfirmSynchronizedBrowsing; }
   void SetConfirmSynchronizedBrowsing(bool Value) { FConfirmSynchronizedBrowsing = Value; }
-  bool GetDisksMenu() { return FDisksMenu; }
+  bool GetDisksMenu() const { return FDisksMenu; }
   void SetDisksMenu(bool Value) { FDisksMenu = Value; }
-  intptr_t GetDisksMenuHotKey() { return FDisksMenuHotKey; }
+  intptr_t GetDisksMenuHotKey() const { return FDisksMenuHotKey; }
   void SetDisksMenuHotKey(intptr_t Value) { FDisksMenuHotKey = Value; }
   bool GetPluginsMenu() { return FPluginsMenu; }
   void SetPluginsMenu(bool Value) { FPluginsMenu = Value; }

@@ -456,7 +456,7 @@ void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::BannerHash(const UnicodeString & Banner)
+UnicodeString TConfiguration::BannerHash(const UnicodeString & Banner) const
 {
   RawByteString Result;
   Result.SetLength(16);
@@ -934,27 +934,27 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
 }
 */
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetPuttySessionsKey()
+UnicodeString TConfiguration::GetPuttySessionsKey() const
 {
   return GetPuttyRegistryStorageKey() + L"\\Sessions";
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetStoredSessionsSubKey()
+UnicodeString TConfiguration::GetStoredSessionsSubKey() const
 {
   return L"Sessions";
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetSshHostKeysSubKey()
+UnicodeString TConfiguration::GetSshHostKeysSubKey() const
 {
   return L"SshHostKeys";
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetConfigurationSubKey()
+UnicodeString TConfiguration::GetConfigurationSubKey() const
 {
   return L"Configuration";
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetRootKeyStr()
+UnicodeString TConfiguration::GetRootKeyStr() const
 {
   return RootKeyToStr(HKEY_CURRENT_USER);
 }
@@ -1028,7 +1028,7 @@ void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
   }
 }
 //---------------------------------------------------------------------
-UnicodeString TConfiguration::GetRandomSeedFileName()
+UnicodeString TConfiguration::GetRandomSeedFileName() const
 {
   return StripPathQuotes(ExpandEnvironmentVariables(FRandomSeedFile)).Trim();
 }
@@ -1048,7 +1048,7 @@ void TConfiguration::SetPuttyRegistryStorageKey(const UnicodeString & Value)
   SET_CONFIG_PROPERTY(PuttyRegistryStorageKey);
 }
 //---------------------------------------------------------------------------
-TEOLType TConfiguration::GetLocalEOLType()
+TEOLType TConfiguration::GetLocalEOLType() const
 {
   return eolCRLF;
 }
@@ -1123,7 +1123,7 @@ void TConfiguration::SetLogToFile(bool Value)
   }
 }
 //---------------------------------------------------------------------
-bool TConfiguration::GetLogToFile()
+bool TConfiguration::GetLogToFile() const
 {
   return !GetLogFileName().IsEmpty();
 }
@@ -1168,12 +1168,12 @@ void TConfiguration::SetLogWindowComplete(bool Value)
   }
 }
 //---------------------------------------------------------------------
-bool TConfiguration::GetLogWindowComplete()
+bool TConfiguration::GetLogWindowComplete() const
 {
   return static_cast<bool>(GetLogWindowLines() == 0);
 }
 //---------------------------------------------------------------------
-UnicodeString TConfiguration::GetDefaultLogFileName()
+UnicodeString TConfiguration::GetDefaultLogFileName() const
 {
   // return IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"winscp.log";
   return L"%TEMP%\\&S.log";
@@ -1197,7 +1197,7 @@ void TConfiguration::SetConfirmResume(bool Value)
   SET_CONFIG_PROPERTY(ConfirmResume);
 }
 //---------------------------------------------------------------------------
-bool TConfiguration::GetConfirmResume()
+bool TConfiguration::GetConfirmResume() const
 {
   TGuard Guard(FCriticalSection);
   return FConfirmResume;
@@ -1209,13 +1209,13 @@ void TConfiguration::SetAutoReadDirectoryAfterOp(bool Value)
   SET_CONFIG_PROPERTY(AutoReadDirectoryAfterOp);
 }
 //---------------------------------------------------------------------------
-bool TConfiguration::GetAutoReadDirectoryAfterOp()
+bool TConfiguration::GetAutoReadDirectoryAfterOp() const
 {
   TGuard Guard(FCriticalSection);
   return FAutoReadDirectoryAfterOp;
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetTimeFormat()
+UnicodeString TConfiguration::GetTimeFormat() const
 {
   return L"h:nn:ss";
 }
@@ -1225,12 +1225,12 @@ UnicodeString TConfiguration::GetPartialExt() const
   return PARTIAL_EXT;
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetDefaultKeyFile()
+UnicodeString TConfiguration::GetDefaultKeyFile() const
 {
   return L"";
 }
 //---------------------------------------------------------------------------
-bool TConfiguration::GetRememberPassword()
+bool TConfiguration::GetRememberPassword() const
 {
   return false;
 }
@@ -1280,7 +1280,7 @@ void TConfiguration::SetShowFtpWelcomeMessage(bool Value)
   SET_CONFIG_PROPERTY(ShowFtpWelcomeMessage);
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetPermanentLogFileName()
+UnicodeString TConfiguration::GetPermanentLogFileName() const
 {
   return FPermanentLogFileName;
 }
@@ -1290,7 +1290,7 @@ void TConfiguration::SetPermanentLogFileName(const UnicodeString & Value)
   FPermanentLogFileName = Value;
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetPermanentActionsLogFileName()
+UnicodeString TConfiguration::GetPermanentActionsLogFileName() const
 {
   return FPermanentActionsLogFileName;
 }

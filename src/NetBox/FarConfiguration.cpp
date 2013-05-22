@@ -308,7 +308,7 @@ void TFarConfiguration::SetConfirmOverwriting(bool Value)
   }
 }
 //---------------------------------------------------------------------------
-bool TFarConfiguration::GetConfirmDeleting()
+bool TFarConfiguration::GetConfirmDeleting() const
 {
   assert(GetPlugin());
   return (FarConfirmations() & NBCS_DELETE) != 0;

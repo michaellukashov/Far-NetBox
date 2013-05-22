@@ -3439,7 +3439,7 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & FileName,
     }
 
     // SFTP can change owner and group at the same time only, not individually.
-    // Fortunatelly we know current owner/group, so if only one is present,
+    // Fortunately we know current owner/group, so if only one is present,
     // we can supplement the other.
     TRemoteProperties Properties(*AProperties);
     if (Properties.Valid.Contains(vpGroup) &&
@@ -4643,7 +4643,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
       }
       else if (FTerminal->GetActive())
       {
-        // if file overwritting was confirmed, it means that the file already exists,
+        // if file overwriting was confirmed, it means that the file already exists,
         // if not, check now
         if (!OpenParams->Confirmed)
         {
@@ -4801,7 +4801,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
         SUSPEND_OPERATION (
           // here a message to user was displayed, which was not appropriate
           // when user refused to overwrite the file in subdirectory.
-          // hopefuly it won't be missing in other situations.
+          // hopefully it won't be missing in other situations.
           if (!FTerminal->HandleException(&E)) throw;
         );
       }
@@ -5190,7 +5190,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
         if (OverwriteMode == omOverwrite)
         {
-          // is NULL when overwritting read-only file
+          // is NULL when overwriting read-only file
           if (LocalFileHandle)
           {
             CloseHandle(LocalFileHandle);
@@ -5298,7 +5298,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
               if ((Missing == 0) && PrevIncomplete)
               {
                 // This can happen only if last request returned less bytes
-                // than expected, but exacly number of bytes missing to last
+                // than expected, but exactly number of bytes missing to last
                 // known file size, but actually EOF was not reached.
                 // Can happen only when filesize has changed since directory
                 // listing and server returns less bytes than requested and

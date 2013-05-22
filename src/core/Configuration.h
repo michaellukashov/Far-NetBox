@@ -75,32 +75,32 @@ public:
   UnicodeString GetProductName() const;
   UnicodeString GetCompanyName() const;
   UnicodeString TrimVersion(const UnicodeString & Version) const;
-  UnicodeString GetStoredSessionsSubKey();
-  UnicodeString GetPuttySessionsKey();
+  UnicodeString GetStoredSessionsSubKey() const;
+  UnicodeString GetPuttySessionsKey() const;
   void SetRandomSeedFile(const UnicodeString & Value);
-  UnicodeString GetRandomSeedFileName();
+  UnicodeString GetRandomSeedFileName() const;
   void SetPuttyRegistryStorageKey(const UnicodeString & Value);
-  UnicodeString GetSshHostKeysSubKey();
-  UnicodeString GetRootKeyStr();
-  UnicodeString GetConfigurationSubKey();
-  TEOLType GetLocalEOLType();
+  UnicodeString GetSshHostKeysSubKey() const;
+  UnicodeString GetRootKeyStr() const;
+  UnicodeString GetConfigurationSubKey() const;
+  TEOLType GetLocalEOLType() const;
   void SetLogging(bool Value);
   void SetLogFileName(const UnicodeString & Value);
-  bool GetLogToFile();
+  bool GetLogToFile() const;
   void SetLogWindowLines(intptr_t Value);
   void SetLogWindowComplete(bool Value);
-  bool GetLogWindowComplete();
+  bool GetLogWindowComplete() const;
   void SetLogFileAppend(bool Value);
   void SetLogProtocol(intptr_t Value);
   void SetLogActions(bool Value);
   void SetActionsLogFileName(const UnicodeString & Value);
-  UnicodeString GetDefaultLogFileName();
-  UnicodeString GetTimeFormat();
+  UnicodeString GetDefaultLogFileName() const;
+  UnicodeString GetTimeFormat() const;
   void SetStorage(TStorage Value);
   UnicodeString GetRegistryStorageKey() const;
-  UnicodeString GetIniFileStorageNameForReadingWritting();
-  UnicodeString GetIniFileStorageNameForReading();
-  UnicodeString GetIniFileStorageName(bool ReadingOnly);
+//  UnicodeString GetIniFileStorageNameForReadingWriting() const;
+//  UnicodeString GetIniFileStorageNameForReading();
+//  UnicodeString GetIniFileStorageName(bool ReadingOnly);
   void SetIniFileStorageName(const UnicodeString & Value);
   UnicodeString GetPartialExt() const;
   UnicodeString GetFileInfoString(const UnicodeString & Key) const;
@@ -132,19 +132,19 @@ public:
   virtual void LoadFrom(THierarchicalStorage * Storage);
   virtual void CopyData(THierarchicalStorage * Source, THierarchicalStorage * Target);
   virtual void LoadAdmin(THierarchicalStorage * Storage);
-  virtual UnicodeString GetDefaultKeyFile();
+  virtual UnicodeString GetDefaultKeyFile() const;
   virtual void Saved();
   void CleanupRegistry(const UnicodeString & CleanupSubKey);
-  UnicodeString BannerHash(const UnicodeString & Banner);
+  UnicodeString BannerHash(const UnicodeString & Banner) const;
   static UnicodeString PropertyToKey(const UnicodeString & Property);
 
   virtual bool GetConfirmOverwriting() const;
   virtual void SetConfirmOverwriting(bool Value);
-  bool GetConfirmResume();
+  bool GetConfirmResume() const;
   void SetConfirmResume(bool Value);
-  bool GetAutoReadDirectoryAfterOp();
+  bool GetAutoReadDirectoryAfterOp() const;
   void SetAutoReadDirectoryAfterOp(bool Value);
-  virtual bool GetRememberPassword();
+  virtual bool GetRememberPassword() const;
 
   virtual UnicodeString ModuleFileName() const;
 
@@ -155,13 +155,13 @@ public:
   UnicodeString GetFileProductName(const UnicodeString & FileName) const;
   UnicodeString GetFileCompanyName(const UnicodeString & FileName) const;
 
-  bool GetPermanentLogging() { return FPermanentLogging; }
+  bool GetPermanentLogging() const { return FPermanentLogging; }
   void SetPermanentLogging(bool Value) { FPermanentLogging = Value; }
-  UnicodeString GetPermanentLogFileName();
+  UnicodeString GetPermanentLogFileName() const;
   void SetPermanentLogFileName(const UnicodeString & Value);
-  bool GetPermanentLogActions() { return FPermanentLogActions; }
+  bool GetPermanentLogActions() const { return FPermanentLogActions; }
   void SetPermanentLogActions(bool Value) { FPermanentLogActions = Value; }
-  UnicodeString GetPermanentActionsLogFileName();
+  UnicodeString GetPermanentActionsLogFileName() const;
   void SetPermanentActionsLogFileName(const UnicodeString & Value);
 
 public:
@@ -196,31 +196,31 @@ public:
   UnicodeString GetFileDescription(const UnicodeString & FileName);
 
   // TUsage * GetUsage() { return FUsage; };
-  UnicodeString GetPuttyRegistryStorageKey() { return FPuttyRegistryStorageKey; }
+  UnicodeString GetPuttyRegistryStorageKey() const { return FPuttyRegistryStorageKey; }
   UnicodeString GetRandomSeedFile() const { return FRandomSeedFile; }
-  bool GetLogging() { return FLogging; }
-  UnicodeString GetLogFileName() { return FLogFileName; }
-  bool GetLogFileAppend() { return FLogFileAppend; }
-  intptr_t GetLogProtocol() { return FLogProtocol; }
-  intptr_t GetActualLogProtocol() { return FActualLogProtocol; }
-  bool GetLogActions() { return FLogActions; }
+  bool GetLogging() const { return FLogging; }
+  UnicodeString GetLogFileName() const { return FLogFileName; }
+  bool GetLogFileAppend() const { return FLogFileAppend; }
+  intptr_t GetLogProtocol() const { return FLogProtocol; }
+  intptr_t GetActualLogProtocol() const { return FActualLogProtocol; }
+  bool GetLogActions() const { return FLogActions; }
   UnicodeString GetActionsLogFileName() const { return FActionsLogFileName; }
-  intptr_t GetLogWindowLines() { return FLogWindowLines; }
+  intptr_t GetLogWindowLines() const { return FLogWindowLines; }
   TNotifyEvent & GetOnChange() { return FOnChange; }
   void SetOnChange(TNotifyEvent Value) { FOnChange = Value; }
-  intptr_t GetSessionReopenAuto() { return FSessionReopenAuto; }
-  intptr_t GetSessionReopenBackground() { return FSessionReopenBackground; }
-  intptr_t GetSessionReopenTimeout() { return FSessionReopenTimeout; }
-  intptr_t GetSessionReopenAutoStall() { return FSessionReopenAutoStall; }
-  intptr_t GetTunnelLocalPortNumberLow() { return FTunnelLocalPortNumberLow; }
-  intptr_t GetTunnelLocalPortNumberHigh() { return FTunnelLocalPortNumberHigh; }
-  intptr_t GetCacheDirectoryChangesMaxSize() { return FCacheDirectoryChangesMaxSize; }
-  bool GetShowFtpWelcomeMessage() { return FShowFtpWelcomeMessage; }
+  intptr_t GetSessionReopenAuto() const { return FSessionReopenAuto; }
+  intptr_t GetSessionReopenBackground() const { return FSessionReopenBackground; }
+  intptr_t GetSessionReopenTimeout() const { return FSessionReopenTimeout; }
+  intptr_t GetSessionReopenAutoStall() const { return FSessionReopenAutoStall; }
+  intptr_t GetTunnelLocalPortNumberLow() const { return FTunnelLocalPortNumberLow; }
+  intptr_t GetTunnelLocalPortNumberHigh() const { return FTunnelLocalPortNumberHigh; }
+  intptr_t GetCacheDirectoryChangesMaxSize() const { return FCacheDirectoryChangesMaxSize; }
+  bool GetShowFtpWelcomeMessage() const { return FShowFtpWelcomeMessage; }
   UnicodeString GetExternalIpAddress() const { return FExternalIpAddress; }
-  bool GetTryFtpWhenSshFails() { return FTryFtpWhenSshFails; }
-  bool GetDisablePasswordStoring() { return FDisablePasswordStoring; }
-  bool GetForceBanners() { return FForceBanners; }
-  bool GetDisableAcceptingHostKeys() { return FDisableAcceptingHostKeys; }
+  bool GetTryFtpWhenSshFails() const { return FTryFtpWhenSshFails; }
+  bool GetDisablePasswordStoring() const { return FDisablePasswordStoring; }
+  bool GetForceBanners() const { return FForceBanners; }
+  bool GetDisableAcceptingHostKeys() const { return FDisableAcceptingHostKeys; }
   void SetLogToFile(bool Value);
   intptr_t GetSessionReopenAutoMaximumNumberOfRetries() const { return FSessionReopenAutoMaximumNumberOfRetries; }
   void SetSessionReopenAutoMaximumNumberOfRetries(intptr_t Value);

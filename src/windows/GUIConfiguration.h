@@ -192,15 +192,15 @@ public:
   LCID InternalLocale();
   void FreeResourceModule(HANDLE Instance);
   void SetDefaultCopyParam(const TGUICopyParamType & Value);
-  virtual bool GetRememberPassword();
+  virtual bool GetRememberPassword() const;
   const TCopyParamList * GetCopyParamList();
   void SetCopyParamList(const TCopyParamList * Value);
   static UnicodeString PropertyToKey(const UnicodeString & Property);
   virtual void DefaultLocalized();
-  intptr_t GetCopyParamIndex();
-  TGUICopyParamType GetCurrentCopyParam();
-  TGUICopyParamType GetCopyParamPreset(const UnicodeString & Name);
-  bool GetHasCopyParamPreset(const UnicodeString & Name);
+  intptr_t GetCopyParamIndex() const;
+  const TGUICopyParamType & GetCurrentCopyParam() const;
+  const TGUICopyParamType & GetCopyParamPreset(const UnicodeString & Name) const;
+  bool GetHasCopyParamPreset(const UnicodeString & Name) const;
   void SetCopyParamIndex(intptr_t Value);
   void SetCopyParamCurrent(const UnicodeString & Value);
   void SetNewDirectoryProperties(const TRemoteProperties & Value);
@@ -221,52 +221,52 @@ public:
   TStoredSessionList * SelectFilezillaSessionsForImport(TStoredSessionList * Sessions);
   bool AnyFilezillaSessionForImport(TStoredSessionList * Sessions);
 
-  bool GetContinueOnError() { return FContinueOnError; }
+  bool GetContinueOnError() const { return FContinueOnError; }
   void SetContinueOnError(bool Value) { FContinueOnError = Value; }
-  bool GetConfirmCommandSession() { return FConfirmCommandSession; }
+  bool GetConfirmCommandSession() const { return FConfirmCommandSession; }
   void SetConfirmCommandSession(bool Value) { FConfirmCommandSession = Value; }
-  intptr_t GetSynchronizeParams() { return FSynchronizeParams; }
+  intptr_t GetSynchronizeParams() const { return FSynchronizeParams; }
   void SetSynchronizeParams(intptr_t Value) { FSynchronizeParams = Value; }
-  intptr_t GetSynchronizeOptions() { return FSynchronizeOptions; }
+  intptr_t GetSynchronizeOptions() const { return FSynchronizeOptions; }
   void SetSynchronizeOptions(intptr_t Value) { FSynchronizeOptions = Value; }
-  intptr_t GetSynchronizeModeAuto() { return FSynchronizeModeAuto; }
+  intptr_t GetSynchronizeModeAuto() const { return FSynchronizeModeAuto; }
   void SetSynchronizeModeAuto(intptr_t Value) { FSynchronizeModeAuto = Value; }
-  intptr_t GetSynchronizeMode() { return FSynchronizeMode; }
+  intptr_t GetSynchronizeMode() const { return FSynchronizeMode; }
   void SetSynchronizeMode(intptr_t Value) { FSynchronizeMode = Value; }
-  intptr_t GetMaxWatchDirectories() { return FMaxWatchDirectories; }
+  intptr_t GetMaxWatchDirectories() const { return FMaxWatchDirectories; }
   void SetMaxWatchDirectories(intptr_t Value) { FMaxWatchDirectories = Value; }
-  intptr_t GetQueueTransfersLimit() { return FQueueTransfersLimit; }
-  bool GetQueueKeepDoneItems() { return FQueueKeepDoneItems; }
-  intptr_t GetQueueKeepDoneItemsFor() { return FQueueKeepDoneItemsFor; }
-  bool GetQueueAutoPopup() { return FQueueAutoPopup; }
+  intptr_t GetQueueTransfersLimit() const { return FQueueTransfersLimit; }
+  bool GetQueueKeepDoneItems() const { return FQueueKeepDoneItems; }
+  intptr_t GetQueueKeepDoneItemsFor() const { return FQueueKeepDoneItemsFor; }
+  bool GetQueueAutoPopup() const { return FQueueAutoPopup; }
   void SetQueueAutoPopup(bool Value) { FQueueAutoPopup = Value; }
-  bool GetSessionRememberPassword() { return FSessionRememberPassword; }
+  bool GetSessionRememberPassword() const { return FSessionRememberPassword; }
   void SetSessionRememberPassword(bool Value) { FSessionRememberPassword = Value; }
-  UnicodeString GetPuttyPath();
+  UnicodeString GetPuttyPath() const;
   void SetPuttyPath(const UnicodeString & Value);
-  UnicodeString GetDefaultPuttyPath();
-  UnicodeString GetPSftpPath();
+  UnicodeString GetDefaultPuttyPath() const;
+  UnicodeString GetPSftpPath() const;
   void SetPSftpPath(const UnicodeString & Value);
-  bool GetPuttyPassword() { return FPuttyPassword; }
+  bool GetPuttyPassword() const { return FPuttyPassword; }
   void SetPuttyPassword(bool Value) { FPuttyPassword = Value; }
-  bool GetTelnetForFtpInPutty() { return FTelnetForFtpInPutty; }
+  bool GetTelnetForFtpInPutty() const { return FTelnetForFtpInPutty; }
   void SetTelnetForFtpInPutty(bool Value) { FTelnetForFtpInPutty = Value; }
-  UnicodeString GetPuttySession();
+  UnicodeString GetPuttySession() const;
   void SetPuttySession(const UnicodeString & Value);
-  TDateTime GetIgnoreCancelBeforeFinish() { return FIgnoreCancelBeforeFinish; }
+  TDateTime GetIgnoreCancelBeforeFinish() const { return FIgnoreCancelBeforeFinish; }
   void SetIgnoreCancelBeforeFinish(TDateTime Value) { FIgnoreCancelBeforeFinish = Value; }
   TGUICopyParamType & GetDefaultCopyParam() { return FDefaultCopyParam; }
-  bool GetBeepOnFinish() { return FBeepOnFinish; }
+  bool GetBeepOnFinish() const { return FBeepOnFinish; }
   void SetBeepOnFinish(bool Value) { FBeepOnFinish = Value; }
-  TDateTime GetBeepOnFinishAfter() { return FBeepOnFinishAfter; }
+  TDateTime GetBeepOnFinishAfter() const { return FBeepOnFinishAfter; }
   void SetBeepOnFinishAfter(TDateTime Value) { FBeepOnFinishAfter = Value; }
-  UnicodeString GetCopyParamCurrent();
-  TRemoteProperties GetNewDirectoryProperties() { return FNewDirectoryProperties; }
-  intptr_t GetKeepUpToDateChangeDelay() { return FKeepUpToDateChangeDelay; }
+  UnicodeString GetCopyParamCurrent() const;
+  const TRemoteProperties & GetNewDirectoryProperties() const { return FNewDirectoryProperties; }
+  intptr_t GetKeepUpToDateChangeDelay() const { return FKeepUpToDateChangeDelay; }
   void SetKeepUpToDateChangeDelay(intptr_t Value) { FKeepUpToDateChangeDelay = Value; }
-  UnicodeString GetChecksumAlg();
+  UnicodeString GetChecksumAlg() const;
   void SetChecksumAlg(const UnicodeString & Value);
-  intptr_t GetSessionReopenAutoIdle() { return FSessionReopenAutoIdle; }
+  intptr_t GetSessionReopenAutoIdle() const { return FSessionReopenAutoIdle; }
   void SetSessionReopenAutoIdle(intptr_t Value) { FSessionReopenAutoIdle = Value; }
 };
 //---------------------------------------------------------------------------
