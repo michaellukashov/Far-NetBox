@@ -3080,12 +3080,11 @@ void TWinSCPFileSystem::LogAuthentication(
 {
   assert(FAuthenticationLog != NULL);
   FAuthenticationLog->Add(Msg);
-  TStringList * AuthenticationLogLines = new TStringList();
+  std::auto_ptr<TStringList> AuthenticationLogLines(new TStringList());
   {
-    std::auto_ptr<TStringList> AuthenticationLogLinesPtr(AuthenticationLogLines);
     intptr_t Width = 42;
     intptr_t Height = 11;
-    FarWrapText(::TrimRight(FAuthenticationLog->GetText()), AuthenticationLogLines, Width);
+    FarWrapText(::TrimRight(FAuthenticationLog->GetText()), AuthenticationLogLines.get(), Width);
     intptr_t Count;
     UnicodeString Message;
     if (AuthenticationLogLines->GetCount() == 0)
