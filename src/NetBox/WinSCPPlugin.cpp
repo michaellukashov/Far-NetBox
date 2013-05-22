@@ -101,8 +101,7 @@ bool TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
 {
   bool Change = false;
 
-  TFarMenuItems * MenuItems = new TFarMenuItems();
-  std::auto_ptr<TFarMenuItems> MenuItemsPtr(MenuItems);
+  std::auto_ptr<TFarMenuItems> MenuItems(new TFarMenuItems());
   intptr_t MInterface = MenuItems->Add(GetMsg(CONFIG_INTERFACE));
   intptr_t MConfirmations = MenuItems->Add(GetMsg(CONFIG_CONFIRMATIONS));
   intptr_t MPanel = MenuItems->Add(GetMsg(CONFIG_PANEL));
@@ -119,7 +118,7 @@ bool TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
 
   do
   {
-    Result = Menu(FMENU_WRAPMODE, GetMsg(PLUGIN_TITLE), L"", MenuItems);
+    Result = Menu(FMENU_WRAPMODE, GetMsg(PLUGIN_TITLE), L"", MenuItems.get());
 
     if (Result >= 0)
     {
@@ -383,8 +382,7 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
-  TFarMenuItems * MenuItems = new TFarMenuItems();
-  std::auto_ptr<TFarMenuItems> MenuItemsPtr(MenuItems);
+  std::auto_ptr<TFarMenuItems> MenuItems(new TFarMenuItems());
   TWinSCPFileSystem * FileSystem;
   TWinSCPFileSystem * AnotherFileSystem;
   FileSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
@@ -425,7 +423,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   MenuItems->SetDisabled(MPageant, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPageantPath()))));
   MenuItems->SetDisabled(MPuttygen, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttygenPath()))));
 
-  intptr_t Result = Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), L"", MenuItems);
+  intptr_t Result = Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), L"", MenuItems.get());
 
   if (Result >= 0)
   {
@@ -614,8 +612,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
 {
   uintptr_t Result = 0;
   UnicodeString DialogStr = Str;
-  TStrings * ButtonLabels = new TStringList();
-  std::auto_ptr<TStrings> ButtonLabelsPtr(ButtonLabels);
+  std::auto_ptr<TStrings> ButtonLabels(new TStringList());
   uintptr_t Flags = 0;
 
   if (Params != NULL)
@@ -758,7 +755,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
     FarParams.MoreMessages = NULL;
   }
 
-  Result = Message(static_cast<DWORD>(Flags), GetMsg(TitleId), DialogStr, ButtonLabels, &FarParams);
+  Result = Message(static_cast<DWORD>(Flags), GetMsg(TitleId), DialogStr, ButtonLabels.get(), &FarParams);
   if (FarParams.TimerAnswer > 0)
   {
     Result = FarParams.TimerAnswer;
