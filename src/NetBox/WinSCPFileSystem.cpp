@@ -1956,12 +1956,10 @@ void TWinSCPFileSystem::InsertPathOnCommandLine()
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
 {
-  TStrings * FileList = CreateSelectedFileList(osRemote);
-  TStrings * FileNames = new TStringList();
+  std::auto_ptr<TStrings> FileList(CreateSelectedFileList(osRemote));
+  std::auto_ptr<TStrings> FileNames(new TStringList());
   {
-    std::auto_ptr<TStrings> FileListPtr(FileList);
-    std::auto_ptr<TStrings> FileNamesPtr(FileNames);
-    if (FileList != NULL)
+    if (FileList.get() != NULL)
     {
       for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
       {
@@ -1985,7 +1983,7 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
       }
     }
 
-    WinSCPPlugin()->FarCopyToClipboard(FileNames);
+    WinSCPPlugin()->FarCopyToClipboard(FileNames.get());
   }
 }
 //------------------------------------------------------------------------------
