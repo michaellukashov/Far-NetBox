@@ -430,13 +430,12 @@ bool TWinSCPPlugin::ConfigurationDialog()
 //------------------------------------------------------------------------------
 bool TWinSCPPlugin::PanelConfigurationDialog()
 {
-  TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  std::auto_ptr<TWinSCPDialog> Dialog(new TWinSCPDialog(this));
   Dialog->SetSize(TPoint(65, 7));
   Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_PANEL)).c_str()));
 
-  TFarCheckBox * AutoReadDirectoryAfterOpCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * AutoReadDirectoryAfterOpCheck = new TFarCheckBox(Dialog.get());
   AutoReadDirectoryAfterOpCheck->SetCaption(GetMsg(CONFIG_AUTO_READ_DIRECTORY_AFTER_OP));
 
   Dialog->AddStandardButtons();
@@ -895,8 +894,7 @@ void TTransferEditorConfigurationDialog::UpdateControls()
 //------------------------------------------------------------------------------
 bool TWinSCPPlugin::TransferEditorConfigurationDialog()
 {
-  TTransferEditorConfigurationDialog * Dialog = new TTransferEditorConfigurationDialog(this);
-  std::auto_ptr<TTransferEditorConfigurationDialog> DialogPtr(Dialog);
+  std::auto_ptr<TTransferEditorConfigurationDialog> Dialog(new TTransferEditorConfigurationDialog(this));
   bool Result = Dialog->Execute();
   return Result;
 }
@@ -1201,8 +1199,7 @@ void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
 //------------------------------------------------------------------------------
 void TWinSCPPlugin::AboutDialog()
 {
-  TFarDialog * Dialog = new TAboutDialog(this);
-  std::auto_ptr<TFarDialog> DialogPtr(Dialog);
+  std::auto_ptr<TFarDialog> Dialog(new TAboutDialog(this));
   Dialog->ShowModal();
 }
 //------------------------------------------------------------------------------
@@ -1414,9 +1411,8 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
   TStrings * Prompts,
   TStrings * Results, bool StoredCredentialsTried)
 {
-  TPasswordDialog * Dialog = new TPasswordDialog(FPlugin, SessionData->GetName(),
-    Kind, Name, Instructions, Prompts, StoredCredentialsTried);
-  std::auto_ptr<TPasswordDialog> DialogPtr(Dialog);
+  std::auto_ptr<TPasswordDialog> Dialog(new TPasswordDialog(FPlugin, SessionData->GetName(),
+    Kind, Name, Instructions, Prompts, StoredCredentialsTried));
   bool Result = Dialog->Execute(Results);
   return Result;
 }
@@ -3257,8 +3253,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   // FTP tab
   FtpUseMlsdCombo->SetItemIndex(static_cast<intptr_t>(2 - SessionData->GetFtpUseMlsd()));
   FtpAllowEmptyPasswordCheck->SetChecked(SessionData->GetFtpAllowEmptyPassword());
-  TStrings * PostLoginCommands = new TStringList();
-  std::auto_ptr<TStrings> PostLoginCommandsPtr(PostLoginCommands);
+  std::auto_ptr<TStrings> PostLoginCommands(new TStringList());
   PostLoginCommands->SetText(SessionData->GetPostLoginCommands());
   for (intptr_t Index = 0; (Index < PostLoginCommands->GetCount()) &&
        (Index < static_cast<intptr_t>(LENOF(PostLoginCommandsEdits))); ++Index)
