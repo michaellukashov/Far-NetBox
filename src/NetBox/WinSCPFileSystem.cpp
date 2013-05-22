@@ -2621,11 +2621,9 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   std::auto_ptr<THierarchicalStorage> ExportStorage(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
   ExportStorage->Init();
   ExportStorage->SetAccessMode(smReadWrite);
+  if (ExportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
   {
-    if (ExportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
-    {
-      ExportData->Save(ExportStorage.get(), false, FactoryDefaults.get());
-    }
+    ExportData->Save(ExportStorage.get(), false, FactoryDefaults.get());
   }
 }
 //------------------------------------------------------------------------------
