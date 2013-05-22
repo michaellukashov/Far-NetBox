@@ -3890,11 +3890,10 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
       UploadOnSave(false);
     }
 
-    TFarEditorInfo * Info = WinSCPPlugin()->EditorInfo();
-    if (Info != NULL)
+    std::auto_ptr<TFarEditorInfo> Info(WinSCPPlugin()->EditorInfo());
+    if (Info.get() != NULL)
     {
       {
-        std::auto_ptr<TFarEditorInfo> InfoPtr(Info);
         if (FLastEditorID == Info->GetEditorID())
         {
           FLastEditorID = -1;
