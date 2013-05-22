@@ -8790,7 +8790,7 @@ bool TWinSCPFileSystem::QueueDialog(
 }
 //------------------------------------------------------------------------------
 bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
-    TRemoteProperties * Properties, bool & SaveSettings)
+  TRemoteProperties * Properties, bool & SaveSettings)
 {
   std::auto_ptr<TWinSCPDialog> Dialog(new TWinSCPDialog(FPlugin));
   TFarText * Text;
