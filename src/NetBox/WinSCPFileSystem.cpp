@@ -1809,16 +1809,15 @@ void TWinSCPFileSystem::RenameFile()
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::FileProperties()
 {
-  TStrings * FileList = CreateSelectedFileList(osRemote);
-  if (FileList)
+  std::auto_ptr<TStrings> FileList(CreateSelectedFileList(osRemote));
+  if (FileList.get())
   {
     assert(!FPanelItems);
     {
-      std::auto_ptr<TStrings> FileListPtr(FileList);
       TRemoteProperties CurrentProperties;
 
       bool Cont = true;
-      if (!GetTerminal()->LoadFilesProperties(FileList))
+      if (!GetTerminal()->LoadFilesProperties(FileList.get()))
       {
         if (UpdatePanel())
         {
@@ -1832,7 +1831,7 @@ void TWinSCPFileSystem::FileProperties()
 
       if (Cont)
       {
-        CurrentProperties = TRemoteProperties::CommonProperties(FileList);
+        CurrentProperties = TRemoteProperties::CommonProperties(FileList.get());
 
         int Flags = 0;
         if (FTerminal->GetIsCapable(fcModeChanging))
@@ -1849,14 +1848,14 @@ void TWinSCPFileSystem::FileProperties()
         }
 
         TRemoteProperties NewProperties = CurrentProperties;
-        if (PropertiesDialog(FileList, FTerminal->GetCurrentDirectory(),
+        if (PropertiesDialog(FileList.get(), FTerminal->GetCurrentDirectory(),
             FTerminal->GetGroups(), FTerminal->GetUsers(), &NewProperties, Flags))
         {
           NewProperties = TRemoteProperties::ChangedProperties(CurrentProperties,
             NewProperties);
           TRY_FINALLY (
           {
-            FTerminal->ChangeFilesProperties(FileList, &NewProperties);
+            FTerminal->ChangeFilesProperties(FileList.get(), &NewProperties);
           }
           ,
           {
