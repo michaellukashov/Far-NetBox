@@ -3819,10 +3819,9 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
     if ((LastTicks == 0) || (Ticks - LastTicks > 500))
     {
       LastTicks = Ticks;
-      TFarEditorInfo * Info = WinSCPPlugin()->EditorInfo();
-      if (Info != NULL)
+      std::auto_ptr<TFarEditorInfo> Info(WinSCPPlugin()->EditorInfo());
+      if (Info.get() != NULL)
       {
-        std::auto_ptr<TFarEditorInfo> InfoPtr(Info);
         TMultipleEdits::iterator it = FMultipleEdits.find(Info->GetEditorID());
         if (it != FMultipleEdits.end())
         {
