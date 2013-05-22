@@ -7550,8 +7550,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(
 void TSynchronizeChecklistDialog::LoadChecklist()
 {
   FChecked = 0;
-  TFarList * List = new TFarList();
-  std::auto_ptr<TFarList> ListPtr(List);
+  std::auto_ptr<TFarList> List(new TFarList());
   List->BeginUpdate();
   for (intptr_t Index = 0; Index < FChecklist->GetCount(); ++Index)
   {
@@ -7574,7 +7573,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
     }
   }
 
-  ListBox->SetItems(List);
+  ListBox->SetItems(List.get());
 
   UpdateControls();
 }
@@ -8623,8 +8622,7 @@ void TQueueDialog::RefreshQueue()
 //------------------------------------------------------------------------------
 void TQueueDialog::LoadQueue()
 {
-  TFarList * List = new TFarList();
-  std::auto_ptr<TFarList> ListPtr(List);
+  std::auto_ptr<TFarList> List(new TFarList());
   UnicodeString Line;
   for (intptr_t Index = 0; Index < FStatus->GetCount(); ++Index)
   {
@@ -8637,7 +8635,7 @@ void TQueueDialog::LoadQueue()
       ILine++;
     }
   }
-  QueueListBox->SetItems(List);
+  QueueListBox->SetItems(List.get());
 }
 //------------------------------------------------------------------------------
 bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,

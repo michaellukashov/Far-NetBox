@@ -1123,10 +1123,9 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::ApplyCommand()
 {
-  TStrings * FileList = CreateSelectedFileList(osRemote);
-  if (FileList != NULL)
+  std::auto_ptr<TStrings> FileList(CreateSelectedFileList(osRemote));
+  if (FileList.get() != NULL)
   {
-    std::auto_ptr<TStrings> FileListPtr(FileList);
     intptr_t Params = FarConfiguration->GetApplyCommandParams();
     UnicodeString Command = FarConfiguration->GetApplyCommandCommand();
     if (ApplyCommandDialog(Command, Params))
@@ -1169,7 +1168,7 @@ void TWinSCPFileSystem::ApplyCommand()
                 WinSCPPlugin()->ShowTerminalScreen();
               }
 
-              FTerminal->CustomCommandOnFiles(Command, Params, FileList, OutputEvent);
+              FTerminal->CustomCommandOnFiles(Command, Params, FileList.get(), OutputEvent);
             }
             ,
             {
@@ -1208,8 +1207,8 @@ void TWinSCPFileSystem::ApplyCommand()
 
         Command = InteractiveCustomCommand.Complete(Command, false);
 
-        TStrings * LocalFileList = NULL;
-        TStrings * RemoteFileList = NULL;
+        std::auto_ptr<TStrings> LocalFileList(NULL);
+        std::auto_ptr<TStrings> RemoteFileList(NULL);
         {
           bool FileListCommand = LocalCustomCommand.IsFileListCommand(Command);
           bool LocalFileCommand = LocalCustomCommand.HasLocalFileName(Command);
@@ -1219,19 +1218,18 @@ void TWinSCPFileSystem::ApplyCommand()
             TFarPanelInfo * AnotherPanel = GetAnotherPanelInfo();
             RequireLocalPanel(AnotherPanel, GetMsg(APPLY_COMMAND_LOCAL_PATH_REQUIRED));
 
-            LocalFileList = CreateSelectedFileList(osLocal, AnotherPanel);
-            std::auto_ptr<TStrings> LocalFileListPtr(LocalFileList);
+            LocalFileList.reset(CreateSelectedFileList(osLocal, AnotherPanel));
 
             if (FileListCommand)
             {
-              if ((LocalFileList == NULL) || (LocalFileList->GetCount() != 1))
+              if ((LocalFileList.get() == NULL) || (LocalFileList->GetCount() != 1))
               {
                 throw Exception(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH1));
               }
             }
             else
             {
-              if ((LocalFileList == NULL) ||
+              if ((LocalFileList.get() == NULL) ||
                   ((LocalFileList->GetCount() != 1) &&
                    (FileList->GetCount() != 1) &&
                    (LocalFileList->GetCount() != FileList->GetCount())))
@@ -1243,15 +1241,14 @@ void TWinSCPFileSystem::ApplyCommand()
 
           UnicodeString TempDir;
 
-          TemporarilyDownloadFiles(FileList, GUIConfiguration->GetDefaultCopyParam(), TempDir);
+          TemporarilyDownloadFiles(FileList.get(), GUIConfiguration->GetDefaultCopyParam(), TempDir);
 
           TRY_FINALLY (
           {
-            RemoteFileList = new TStringList();
-            std::auto_ptr<TStrings> RemoteFileListPtr(RemoteFileList);
+            RemoteFileList.reset(new TStringList());
 
             TMakeLocalFileListParams MakeFileListParam;
-            MakeFileListParam.FileList = RemoteFileList;
+            MakeFileListParam.FileList = RemoteFileList.get();
             MakeFileListParam.IncludeDirs = FLAGSET(Params, ccApplyToDirectories);
             MakeFileListParam.Recursive =
               FLAGSET(Params, ccRecursive) && !FileListCommand;
@@ -1266,7 +1263,7 @@ void TWinSCPFileSystem::ApplyCommand()
               if (FileListCommand)
               {
                 UnicodeString LocalFile;
-                UnicodeString FileList = MakeFileList(RemoteFileList);
+                UnicodeString FileList = MakeFileList(RemoteFileList.get());
 
                 if (LocalFileCommand)
                 {
@@ -1746,25 +1743,24 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
 
   if (Move || EnsureCommandSessionFallback(fcRemoteCopy))
   {
-    TStrings * FileList = CreateSelectedFileList(osRemote);
-    if (FileList)
+    std::auto_ptr<TStrings> FileList(CreateSelectedFileList(osRemote));
+    if (FileList.get())
     {
       assert(!FPanelItems);
       {
-        std::auto_ptr<TStrings> FileListPtr(FileList);
         UnicodeString Target = FTerminal->GetCurrentDirectory();
         UnicodeString FileMask = L"*.*";
-        if (RemoteTransferDialog(FileList, Target, FileMask, Move))
+        if (RemoteTransferDialog(FileList.get(), Target, FileMask, Move))
         {
           TRY_FINALLY (
           {
             if (Move)
             {
-              GetTerminal()->MoveFiles(FileList, Target, FileMask);
+              GetTerminal()->MoveFiles(FileList.get(), Target, FileMask);
             }
             else
             {
-              GetTerminal()->CopyFiles(FileList, Target, FileMask);
+              GetTerminal()->CopyFiles(FileList.get(), Target, FileMask);
             }
           }
           ,
