@@ -3841,11 +3841,10 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
     // file with the same name is read from both filesystems recently
     if (IsActiveFileSystem())
     {
-      TFarEditorInfo * Info = WinSCPPlugin()->EditorInfo();
-      if (Info != NULL)
+      std::auto_ptr<TFarEditorInfo> Info(WinSCPPlugin()->EditorInfo());
+      if (Info.get() != NULL)
       {
         {
-          std::auto_ptr<TFarEditorInfo> InfoPtr(Info);
           if (!FLastEditFile.IsEmpty() &&
               AnsiSameText(FLastEditFile, Info->GetFileName()))
           {
