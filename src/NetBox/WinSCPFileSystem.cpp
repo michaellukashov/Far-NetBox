@@ -4137,39 +4137,37 @@ bool TWinSCPFileSystem::IsEditHistoryEmpty()
 void TWinSCPFileSystem::EditHistory()
 {
   std::auto_ptr<TFarMenuItems> MenuItems(new TFarMenuItems());
+  TEditHistories::const_iterator i = FEditHistories.begin();
+  while (i != FEditHistories.end())
   {
-    TEditHistories::const_iterator i = FEditHistories.begin();
-    while (i != FEditHistories.end())
+    MenuItems->Add(MinimizeName(::UnixIncludeTrailingBackslash((*i).Directory) + (*i).FileName,
+      WinSCPPlugin()->MaxMenuItemLength(), true));
+    ++i;
+  }
+
+  MenuItems->Add(L"");
+  MenuItems->SetItemFocused(MenuItems->GetCount() - 1);
+
+  const int BreakKeys[] = { VK_F4, 0 };
+
+  int BreakCode = 0;
+  intptr_t Result = WinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
+    GetMsg(MENU_EDIT_HISTORY), L"", MenuItems.get(), BreakKeys, BreakCode);
+
+  if ((Result >= 0) && (Result < static_cast<intptr_t>(FEditHistories.size())))
+  {
+    TRemoteFile * File;
+    UnicodeString FullFileName =
+      ::UnixIncludeTrailingBackslash(FEditHistories[Result].Directory) + FEditHistories[Result].FileName;
+    FTerminal->ReadFile(FullFileName, File);
     {
-      MenuItems->Add(MinimizeName(::UnixIncludeTrailingBackslash((*i).Directory) + (*i).FileName,
-        WinSCPPlugin()->MaxMenuItemLength(), true));
-      ++i;
-    }
-
-    MenuItems->Add(L"");
-    MenuItems->SetItemFocused(MenuItems->GetCount() - 1);
-
-    const int BreakKeys[] = { VK_F4, 0 };
-
-    int BreakCode = 0;
-    intptr_t Result = WinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
-      GetMsg(MENU_EDIT_HISTORY), L"", MenuItems.get(), BreakKeys, BreakCode);
-
-    if ((Result >= 0) && (Result < static_cast<intptr_t>(FEditHistories.size())))
-    {
-      TRemoteFile * File;
-      UnicodeString FullFileName =
-        ::UnixIncludeTrailingBackslash(FEditHistories[Result].Directory) + FEditHistories[Result].FileName;
-      FTerminal->ReadFile(FullFileName, File);
+      std::auto_ptr<TRemoteFile> FilePtr(File);
+      if (!File->GetHaveFullFileName())
       {
-        std::auto_ptr<TRemoteFile> FilePtr(File);
-        if (!File->GetHaveFullFileName())
-        {
-          File->SetFullFileName(FullFileName);
-        }
-        MultipleEdit(FEditHistories[Result].Directory,
-          FEditHistories[Result].FileName, File);
+        File->SetFullFileName(FullFileName);
       }
+      MultipleEdit(FEditHistories[Result].Directory,
+        FEditHistories[Result].FileName, File);
     }
   }
 }
