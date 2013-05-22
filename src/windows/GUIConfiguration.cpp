@@ -1089,7 +1089,7 @@ void TGUIConfiguration::SetDefaultCopyParam(const TGUICopyParamType & Value)
   Changed();
 }
 //---------------------------------------------------------------------------
-bool TGUIConfiguration::GetRememberPassword()
+bool TGUIConfiguration::GetRememberPassword() const
 {
   return GetSessionRememberPassword() || GetPuttyPassword();
 }
@@ -1109,7 +1109,7 @@ void TGUIConfiguration::SetCopyParamList(const TCopyParamList * Value)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TGUIConfiguration::GetCopyParamIndex()
+intptr_t TGUIConfiguration::GetCopyParamIndex() const
 {
   intptr_t Result;
   if (FCopyParamCurrent.IsEmpty())
@@ -1142,12 +1142,12 @@ void TGUIConfiguration::SetCopyParamCurrent(const UnicodeString & Value)
   SET_CONFIG_PROPERTY(CopyParamCurrent);
 }
 //---------------------------------------------------------------------------
-TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam()
+const TGUICopyParamType & TGUIConfiguration::GetCurrentCopyParam() const
 {
   return GetCopyParamPreset(GetCopyParamCurrent());
 }
 //---------------------------------------------------------------------------
-TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const UnicodeString & Name)
+const TGUICopyParamType & TGUIConfiguration::GetCopyParamPreset(const UnicodeString & Name) const
 {
   TGUICopyParamType Result = FDefaultCopyParam;
   if (!Name.IsEmpty())
@@ -1169,7 +1169,7 @@ TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const UnicodeString & Na
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TGUIConfiguration::GetHasCopyParamPreset(const UnicodeString & Name)
+bool TGUIConfiguration::GetHasCopyParamPreset(const UnicodeString & Name) const
 {
   return Name.IsEmpty() || (FCopyParamList->IndexOfName(Name) >= 0);
 }
@@ -1268,7 +1268,7 @@ bool TGUIConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessio
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TGUIConfiguration::GetPuttyPath()
+UnicodeString TGUIConfiguration::GetPuttyPath() const
 {
   return FPuttyPath;
 }
@@ -1278,12 +1278,12 @@ void TGUIConfiguration::SetPuttyPath(const UnicodeString & Value)
   FPuttyPath = Value;
 }
 //---------------------------------------------------------------------------
-UnicodeString TGUIConfiguration::GetDefaultPuttyPath()
+UnicodeString TGUIConfiguration::GetDefaultPuttyPath() const
 {
   return FDefaultPuttyPath;
 }
 //---------------------------------------------------------------------------
-UnicodeString TGUIConfiguration::GetPSftpPath()
+UnicodeString TGUIConfiguration::GetPSftpPath() const
 {
   return FPSftpPath;
 }
@@ -1293,7 +1293,7 @@ void TGUIConfiguration::SetPSftpPath(const UnicodeString & Value)
   FPSftpPath = Value;
 }
 //---------------------------------------------------------------------------
-UnicodeString TGUIConfiguration::GetPuttySession()
+UnicodeString TGUIConfiguration::GetPuttySession() const
 {
   return FPuttySession;
 }
@@ -1303,12 +1303,12 @@ void TGUIConfiguration::SetPuttySession(const UnicodeString & Value)
   FPuttySession = Value;
 }
 //---------------------------------------------------------------------------
-UnicodeString TGUIConfiguration::GetCopyParamCurrent()
+UnicodeString TGUIConfiguration::GetCopyParamCurrent() const
 {
   return FCopyParamCurrent;
 }
 //---------------------------------------------------------------------------
-UnicodeString TGUIConfiguration::GetChecksumAlg()
+UnicodeString TGUIConfiguration::GetChecksumAlg() const
 {
   return FChecksumAlg;
 }
