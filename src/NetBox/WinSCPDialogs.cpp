@@ -8784,8 +8784,7 @@ bool TQueueDialog::Execute(TTerminalQueueStatus * Status)
 bool TWinSCPFileSystem::QueueDialog(
   TTerminalQueueStatus * Status, bool ClosingPlugin)
 {
-  TQueueDialog * Dialog = new TQueueDialog(FPlugin, this, ClosingPlugin);
-  std::auto_ptr<TQueueDialog> DialogPtr(Dialog);
+  std::auto_ptr<TQueueDialog> Dialog(new TQueueDialog(FPlugin, this, ClosingPlugin));
   bool Result = Dialog->Execute(Status);
   return Result;
 }
