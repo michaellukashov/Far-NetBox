@@ -1014,8 +1014,7 @@ intptr_t TCustomFarPlugin::DialogMessage(DWORD Flags,
   TFarMessageParams * Params)
 {
   intptr_t Result;
-  TFarMessageDialog * Dialog = new TFarMessageDialog(this, Params);
-  std::auto_ptr<TFarMessageDialog> DialogPtr(Dialog);
+  std::auto_ptr<TFarMessageDialog> Dialog(new TFarMessageDialog(this, Params));
   Dialog->Init(Flags, Title, Message, Buttons);
   Result = Dialog->Execute(Params->CheckBox);
   return Result;
