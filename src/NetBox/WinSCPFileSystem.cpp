@@ -3081,33 +3081,31 @@ void TWinSCPFileSystem::LogAuthentication(
   assert(FAuthenticationLog != NULL);
   FAuthenticationLog->Add(Msg);
   std::auto_ptr<TStringList> AuthenticationLogLines(new TStringList());
+  intptr_t Width = 42;
+  intptr_t Height = 11;
+  FarWrapText(::TrimRight(FAuthenticationLog->GetText()), AuthenticationLogLines.get(), Width);
+  intptr_t Count;
+  UnicodeString Message;
+  if (AuthenticationLogLines->GetCount() == 0)
   {
-    intptr_t Width = 42;
-    intptr_t Height = 11;
-    FarWrapText(::TrimRight(FAuthenticationLog->GetText()), AuthenticationLogLines.get(), Width);
-    intptr_t Count;
-    UnicodeString Message;
-    if (AuthenticationLogLines->GetCount() == 0)
-    {
-      Message = ::StringOfChar(' ', Width) + L"\n";
-      Count = 1;
-    }
-    else
-    {
-      while (AuthenticationLogLines->GetCount() > Height)
-      {
-        AuthenticationLogLines->Delete(0);
-      }
-      AuthenticationLogLines->SetString(0, AuthenticationLogLines->GetString(0) +
-        ::StringOfChar(' ', Width - AuthenticationLogLines->GetString(0).Length()));
-      Message = AnsiReplaceStr(AuthenticationLogLines->GetText(), L"\r", L"");
-      Count = AuthenticationLogLines->GetCount();
-    }
-
-    Message += ::StringOfChar(L'\n', Height - Count);
-
-    WinSCPPlugin()->Message(0, Terminal->GetSessionData()->GetSessionName(), Message);
+    Message = ::StringOfChar(' ', Width) + L"\n";
+    Count = 1;
   }
+  else
+  {
+    while (AuthenticationLogLines->GetCount() > Height)
+    {
+      AuthenticationLogLines->Delete(0);
+    }
+    AuthenticationLogLines->SetString(0, AuthenticationLogLines->GetString(0) +
+      ::StringOfChar(' ', Width - AuthenticationLogLines->GetString(0).Length()));
+    Message = AnsiReplaceStr(AuthenticationLogLines->GetText(), L"\r", L"");
+    Count = AuthenticationLogLines->GetCount();
+  }
+
+  Message += ::StringOfChar(L'\n', Height - Count);
+
+  WinSCPPlugin()->Message(0, Terminal->GetSessionData()->GetSessionName(), Message);
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalInformation(
