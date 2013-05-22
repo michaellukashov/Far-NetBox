@@ -3765,10 +3765,9 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::UploadOnSave(bool NoReload)
 {
-  TFarEditorInfo * Info = WinSCPPlugin()->EditorInfo();
-  if (Info != NULL)
+  std::auto_ptr<TFarEditorInfo> Info(WinSCPPlugin()->EditorInfo());
+  if (Info.get() != NULL)
   {
-    std::auto_ptr<TFarEditorInfo> InfoPtr(Info);
     bool NativeEdit =
       (FLastEditorID >= 0) &&
       (FLastEditorID == Info->GetEditorID()) &&
