@@ -2620,14 +2620,13 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   // TCopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
   UnicodeString XmlFileName = IncludeTrailingBackslash(Param.DestPath) +
     ::ValidLocalFileName(::ExtractFilename(ExportData->GetName())) + L".netbox";
-  THierarchicalStorage * ExportStorage = new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey());
+  std::auto_ptr<THierarchicalStorage> ExportStorage(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
   ExportStorage->Init();
-  std::auto_ptr<THierarchicalStorage> ExportStoragePtr(ExportStorage);
   ExportStorage->SetAccessMode(smReadWrite);
   {
     if (ExportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
     {
-      ExportData->Save(ExportStorage, false, FactoryDefaults);
+      ExportData->Save(ExportStorage.get(), false, FactoryDefaults);
     }
   }
 }
@@ -2803,14 +2802,14 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
       if (PanelItem->GetIsFile())
       {
         UnicodeString XmlFileName = ::IncludeTrailingBackslash(GetCurrentDir()) + FileName;
-        std::auto_ptr<THierarchicalStorage> ImportStoragePtr(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
-        ImportStoragePtr->Init();
-        ImportStoragePtr->SetAccessMode(smRead);
-        if (ImportStoragePtr->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
-            ImportStoragePtr->HasSubKeys())
+        std::auto_ptr<THierarchicalStorage> ImportStorage(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
+        ImportStorage->Init();
+        ImportStorage->SetAccessMode(smRead);
+        if (ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
+            ImportStorage->HasSubKeys())
         {
           AnyData = true;
-          StoredSessions->Load(ImportStoragePtr.get(), /* AsModified */ true, /* UseDefaults */ true);
+          StoredSessions->Load(ImportStorage.get(), /* AsModified */ true, /* UseDefaults */ true);
           // modified only, explicit
           StoredSessions->Save(false, true);
         }
