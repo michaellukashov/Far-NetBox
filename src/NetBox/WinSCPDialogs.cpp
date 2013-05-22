@@ -6432,10 +6432,8 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
 
   do
   {
-    TStrings * BookmarkPaths = new TStringList();
-    std::auto_ptr<TStrings> BookmarkPathsPtr(BookmarkPaths);
-    TFarMenuItems * BookmarkItems = new TFarMenuItems();
-    std::auto_ptr<TStrings> BookmarkItemsPtr(BookmarkItems);
+    std::auto_ptr<TStrings> BookmarkPaths(new TStringList());
+    std::auto_ptr<TFarMenuItems> BookmarkItems(new TFarMenuItems());
     std::auto_ptr<TList> Bookmarks(new TList());
     intptr_t BookmarksOffset = -1;
 
@@ -6532,7 +6530,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       'C' + (PKF_CONTROL << 16), VK_INSERT + (PKF_CONTROL << 16), 0 };
 
     ItemFocused = FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
-      Caption, GetMsg(OPEN_DIRECTORY_HELP), BookmarkItems, BreakKeys, BreakCode);
+      Caption, GetMsg(OPEN_DIRECTORY_HELP), BookmarkItems.get(), BreakKeys, BreakCode);
     if (BreakCode >= 0)
     {
       assert(BreakCode >= 0 && BreakCode <= 4);
