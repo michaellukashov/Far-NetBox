@@ -2611,10 +2611,8 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
 {
   TExportSessionParam & Param = *static_cast<TExportSessionParam *>(AParam);
 
-  TSessionData * ExportData = new TSessionData(Data->GetName());
-  std::auto_ptr<TSessionData> ExportDataPtr(ExportData);
-  TSessionData * FactoryDefaults = new TSessionData(L"");
-  std::auto_ptr<TSessionData> FactoryDefaultsPtr(FactoryDefaults);
+  std::auto_ptr<TSessionData> ExportData(new TSessionData(Data->GetName()));
+  std::auto_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
   ExportData->Assign(Data);
   ExportData->SetModified(true);
   // TCopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
@@ -2626,7 +2624,7 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   {
     if (ExportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
     {
-      ExportData->Save(ExportStorage.get(), false, FactoryDefaults);
+      ExportData->Save(ExportStorage.get(), false, FactoryDefaults.get());
     }
   }
 }
