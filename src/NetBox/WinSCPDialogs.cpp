@@ -5684,10 +5684,9 @@ void TCopyDialog::Change()
   if (GetHandle())
   {
     UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", FCopyParamAttrs);
-    TStringList * InfoStrLines = new TStringList();
-    std::auto_ptr<TStrings> InfoStrLinesPtr(InfoStrLines);
-    FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
-    CopyParamLister->SetItems(InfoStrLines);
+    std::auto_ptr<TStrings> InfoStrLines(new TStringList());
+    FarWrapText(InfoStr, InfoStrLines.get(), GetBorderBox()->GetWidth() - 4);
+    CopyParamLister->SetItems(InfoStrLines.get());
     CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
   }
 }
@@ -5724,9 +5723,8 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   intptr_t Options,
   intptr_t CopyParamAttrs)
 {
-  TCopyDialog * Dialog = new TCopyDialog(FPlugin, ToRemote,
-    Move, FileList, Options, CopyParamAttrs);
-  std::auto_ptr<TCopyDialog> DialogPtr(Dialog);
+  std::auto_ptr<TCopyDialog> Dialog(new TCopyDialog(FPlugin, ToRemote,
+    Move, FileList, Options, CopyParamAttrs));
   bool Result = Dialog->Execute(TargetDirectory, Params);
   return Result;
 }
@@ -5869,8 +5867,7 @@ bool TLinkDialog::Execute(UnicodeString & FileName, UnicodeString & PointTo,
 bool TWinSCPFileSystem::LinkDialog(UnicodeString & FileName,
   UnicodeString & PointTo, bool & Symbolic, bool Edit, bool AllowSymbolic)
 {
-  TLinkDialog * Dialog = new TLinkDialog(FPlugin, Edit, AllowSymbolic);
-  std::auto_ptr<TLinkDialog> DialogPtr(Dialog);
+  std::auto_ptr<TLinkDialog> Dialog(new TLinkDialog(FPlugin, Edit, AllowSymbolic));
   bool Result = Dialog->Execute(FileName, PointTo, Symbolic);
   return Result;
 }
@@ -6416,8 +6413,7 @@ void TWinSCPFileSystem::FileSystemInfoDialog(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
   const UnicodeString & SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable)
 {
-  TFileSystemInfoDialog * Dialog = new TFileSystemInfoDialog(FPlugin, OnGetSpaceAvailable);
-  std::auto_ptr<TFileSystemInfoDialog> DialogPtr(Dialog);
+  std::auto_ptr<TFileSystemInfoDialog> Dialog(new TFileSystemInfoDialog(FPlugin, OnGetSpaceAvailable));
   Dialog->Execute(SessionInfo, FileSystemInfo, SpaceAvailablePath);
 }
 //------------------------------------------------------------------------------
