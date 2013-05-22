@@ -1958,33 +1958,31 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
 {
   std::auto_ptr<TStrings> FileList(CreateSelectedFileList(osRemote));
   std::auto_ptr<TStrings> FileNames(new TStringList());
+  if (FileList.get() != NULL)
   {
-    if (FileList.get() != NULL)
+    for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
+      TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->GetObject(Index));
+      if (File != NULL)
       {
-        TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->GetObject(Index));
-        if (File != NULL)
-        {
-          FileNames->Add(File->GetFullFileName());
-        }
-        else
-        {
-          assert(false);
-        }
+        FileNames->Add(File->GetFullFileName());
+      }
+      else
+      {
+        assert(false);
       }
     }
-    else
-    {
-      if ((GetPanelInfo()->GetSelectedCount() == 0) &&
-          GetPanelInfo()->GetFocusedItem()->GetIsParentDirectory())
-      {
-        FileNames->Add(::UnixIncludeTrailingBackslash(FTerminal->GetCurrentDirectory()));
-      }
-    }
-
-    WinSCPPlugin()->FarCopyToClipboard(FileNames.get());
   }
+  else
+  {
+    if ((GetPanelInfo()->GetSelectedCount() == 0) &&
+        GetPanelInfo()->GetFocusedItem()->GetIsParentDirectory())
+    {
+      FileNames->Add(::UnixIncludeTrailingBackslash(FTerminal->GetCurrentDirectory()));
+    }
+  }
+
+  WinSCPPlugin()->FarCopyToClipboard(FileNames.get());
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & Path,
