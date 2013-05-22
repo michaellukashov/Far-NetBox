@@ -3844,37 +3844,35 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
       std::auto_ptr<TFarEditorInfo> Info(WinSCPPlugin()->EditorInfo());
       if (Info.get() != NULL)
       {
+        if (!FLastEditFile.IsEmpty() &&
+            AnsiSameText(FLastEditFile, Info->GetFileName()))
         {
-          if (!FLastEditFile.IsEmpty() &&
-              AnsiSameText(FLastEditFile, Info->GetFileName()))
-          {
-            FLastEditorID = Info->GetEditorID();
-            FEditorPendingSave = false;
-          }
+          FLastEditorID = Info->GetEditorID();
+          FEditorPendingSave = false;
+        }
 
-          if (!FLastMultipleEditFile.IsEmpty())
+        if (!FLastMultipleEditFile.IsEmpty())
+        {
+          bool IsLastMultipleEditFile = AnsiSameText(::FromUnixPath(FLastMultipleEditFile), ::FromUnixPath(Info->GetFileName()));
+          assert(IsLastMultipleEditFile);
+          if (IsLastMultipleEditFile)
           {
-            bool IsLastMultipleEditFile = AnsiSameText(::FromUnixPath(FLastMultipleEditFile), ::FromUnixPath(Info->GetFileName()));
-            assert(IsLastMultipleEditFile);
-            if (IsLastMultipleEditFile)
+            FLastMultipleEditFile = L"";
+
+            TMultipleEdit MultipleEdit;
+            MultipleEdit.FileName = ExtractFileName(Info->GetFileName(), false);
+            MultipleEdit.FileTitle = FLastMultipleEditFileTitle;
+            MultipleEdit.Directory = FLastMultipleEditDirectory;
+            MultipleEdit.LocalFileName = Info->GetFileName();
+            MultipleEdit.PendingSave = false;
+            FMultipleEdits[Info->GetEditorID()] = MultipleEdit;
+            if (FLastMultipleEditReadOnly)
             {
-              FLastMultipleEditFile = L"";
-
-              TMultipleEdit MultipleEdit;
-              MultipleEdit.FileName = ExtractFileName(Info->GetFileName(), false);
-              MultipleEdit.FileTitle = FLastMultipleEditFileTitle;
-              MultipleEdit.Directory = FLastMultipleEditDirectory;
-              MultipleEdit.LocalFileName = Info->GetFileName();
-              MultipleEdit.PendingSave = false;
-              FMultipleEdits[Info->GetEditorID()] = MultipleEdit;
-              if (FLastMultipleEditReadOnly)
-              {
-                EditorSetParameter Parameter;
-                memset(&Parameter, 0, sizeof(Parameter));
-                Parameter.Type = ESPT_LOCKMODE;
-                Parameter.Param.iParam = TRUE;
-                WinSCPPlugin()->FarEditorControl(ECTL_SETPARAM, &Parameter);
-              }
+              EditorSetParameter Parameter;
+              memset(&Parameter, 0, sizeof(Parameter));
+              Parameter.Type = ESPT_LOCKMODE;
+              Parameter.Param.iParam = TRUE;
+              WinSCPPlugin()->FarEditorControl(ECTL_SETPARAM, &Parameter);
             }
           }
         }
