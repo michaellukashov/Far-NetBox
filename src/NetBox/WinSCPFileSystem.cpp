@@ -2053,39 +2053,36 @@ void TWinSCPFileSystem::QueueShow(bool ClosingPlugin)
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::OpenDirectory(bool Add)
 {
-  TBookmarkList * BookmarkList = new TBookmarkList();
+  std::auto_ptr<TBookmarkList> BookmarkList(new TBookmarkList());
+  UnicodeString Directory = FTerminal->GetCurrentDirectory();
+  UnicodeString SessionKey = FTerminal->GetSessionData()->GetSessionKey();
+  TBookmarkList * CurrentBookmarkList;
+
+  CurrentBookmarkList = FarConfiguration->GetBookmarks(SessionKey);
+  if (CurrentBookmarkList != NULL)
   {
-    std::auto_ptr<TBookmarkList> BookmarkListPtr(BookmarkList);
-    UnicodeString Directory = FTerminal->GetCurrentDirectory();
-    UnicodeString SessionKey = FTerminal->GetSessionData()->GetSessionKey();
-    TBookmarkList * CurrentBookmarkList;
+    BookmarkList->Assign(CurrentBookmarkList);
+  }
 
-    CurrentBookmarkList = FarConfiguration->GetBookmarks(SessionKey);
-    if (CurrentBookmarkList != NULL)
+  if (Add)
+  {
+    TBookmark * Bookmark = new TBookmark;
+    Bookmark->SetRemote(Directory);
+    Bookmark->SetName(Directory);
+    BookmarkList->Add(Bookmark);
+    FarConfiguration->SetBookmarks(SessionKey, BookmarkList.get());
+  }
+
+  bool Result = OpenDirectoryDialog(Add, Directory, BookmarkList.get());
+
+  FarConfiguration->SetBookmarks(SessionKey, BookmarkList.get());
+
+  if (Result)
+  {
+    FTerminal->ChangeDirectory(Directory);
+    if (UpdatePanel(true))
     {
-      BookmarkList->Assign(CurrentBookmarkList);
-    }
-
-    if (Add)
-    {
-      TBookmark * Bookmark = new TBookmark;
-      Bookmark->SetRemote(Directory);
-      Bookmark->SetName(Directory);
-      BookmarkList->Add(Bookmark);
-      FarConfiguration->SetBookmarks(SessionKey, BookmarkList);
-    }
-
-    bool Result = OpenDirectoryDialog(Add, Directory, BookmarkList);
-
-    FarConfiguration->SetBookmarks(SessionKey, BookmarkList);
-
-    if (Result)
-    {
-      FTerminal->ChangeDirectory(Directory);
-      if (UpdatePanel(true))
-      {
-        RedrawPanel();
-      }
+      RedrawPanel();
     }
   }
 }
@@ -3997,12 +3994,11 @@ void TWinSCPFileSystem::MultipleEdit()
       GetPanelInfo()->GetFocusedItem()->GetIsFile() &&
       (GetPanelInfo()->GetFocusedItem()->GetUserData() != NULL))
   {
-    TStrings * FileList = CreateFocusedFileList(osRemote);
-    assert((FileList == NULL) || (FileList->GetCount() == 1));
+    std::auto_ptr<TStrings> FileList(CreateFocusedFileList(osRemote));
+    assert((FileList.get() == NULL) || (FileList->GetCount() == 1));
 
-    if (FileList != NULL)
+    if (FileList.get() != NULL)
     {
-      std::auto_ptr<TStrings> FileListPtr(FileList);
       if (FileList->GetCount() == 1)
       {
         MultipleEdit(FTerminal->GetCurrentDirectory(), FileList->GetString(0),
