@@ -5155,7 +5155,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       }
       );
 
-      if ((LocalFileAttrs != (DWORD)-1) && !ResumeTransfer)
+      if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && !ResumeTransfer)
       {
         __int64 DestFileSize = 0;
         __int64 MTime = 0;
@@ -5414,7 +5414,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
       DeleteLocalFile = false;
 
-      if (LocalFileAttrs == -1)
+      if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
       {
         LocalFileAttrs = faArchive;
       }

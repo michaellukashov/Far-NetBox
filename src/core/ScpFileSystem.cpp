@@ -2017,7 +2017,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
   TFileOperationProgressType * OperationProgress, intptr_t Level)
 {
-  uintptr_t LocalFileAttrs = 0;
+  DWORD LocalFileAttrs = 0;
 
   FTerminal->LogEvent(FORMAT(L"Entering directory \"%s\".", DirectoryName.c_str()));
 
@@ -2028,7 +2028,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   // Get directory attributes
   FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, DirectoryName.c_str()),
     LocalFileAttrs = FTerminal->GetLocalFileAttributes(DirectoryName);
-    if ((DWORD)LocalFileAttrs == -1)
+    if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
     {
       RaiseLastOSError();
     }
@@ -2679,7 +2679,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
             throw;
           }
 
-          if (FileData.LocalFileAttrs == -1)
+          if (FileData.LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
           {
             FileData.LocalFileAttrs = faArchive;
           }

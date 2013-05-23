@@ -3971,13 +3971,13 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
   __int64 * AMTime, __int64 * AATime, __int64 * ASize,
   bool TryWriteReadOnly)
 {
-  uintptr_t LocalFileAttrs = 0;
+  DWORD LocalFileAttrs = 0;
   HANDLE LocalFileHandle = 0;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
 
   FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
     LocalFileAttrs = GetLocalFileAttributes(FileName);
-    if (LocalFileAttrs == -1)
+    if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
     {
       RaiseLastOSError();
     }
