@@ -257,6 +257,7 @@ public:
   UnicodeString GetPassword();
   UnicodeString GetTunnelPassword();
   bool GetStoredCredentialsTried();
+  TCustomFileSystem * GetFileSystem() const { return FFileSystem; }
   TCustomFileSystem * GetFileSystem() { return FFileSystem; }
   inline bool InTransaction();
   static UnicodeString SynchronizeModeStr(TSynchronizeMode Mode);
@@ -378,7 +379,7 @@ protected:
   virtual void DisplayBanner(const UnicodeString & Banner);
   virtual void Closed();
   virtual void HandleExtendedException(Exception * E);
-  bool IsListenerFree(uintptr_t PortNumber);
+  bool IsListenerFree(uintptr_t PortNumber) const;
   void DoProgress(TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
     const UnicodeString & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
@@ -392,7 +393,7 @@ protected:
   UnicodeString DecryptPassword(const RawByteString & Password);
   void LogFile(TRemoteFile * File);
 
-  TFileOperationProgressType * GetOperationProgress() { return FOperationProgress; }
+  TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
 
   void SetLocalFileTime(const UnicodeString & LocalFileName,
     const TDateTime & Modification);
@@ -511,14 +512,15 @@ public:
   static UnicodeString ExpandFileName(const UnicodeString & Path,
     const UnicodeString & BasePath);
 
-  TSessionData * GetSessionData() { return FSessionData; }
   TSessionData * GetSessionData() const { return FSessionData; }
+  TSessionData * GetSessionData() { return FSessionData; }
+  TSessionLog * GetLog() const { return FLog; }
   TSessionLog * GetLog() { return FLog; }
-  TActionLog * GetActionLog() { return FActionLog; };
+  TActionLog * GetActionLog() const { return FActionLog; };
   const TConfiguration * GetConfiguration() const { return FConfiguration; }
   TConfiguration * GetConfiguration() { return FConfiguration; }
-  TSessionStatus GetStatus() { return FStatus; }
-  TRemoteDirectory * GetFiles() { return FFiles; }
+  TSessionStatus GetStatus() const { return FStatus; }
+  TRemoteDirectory * GetFiles() const { return FFiles; }
   TNotifyEvent & GetOnChangeDirectory() { return FOnChangeDirectory; }
   void SetOnChangeDirectory(TNotifyEvent Value) { FOnChangeDirectory = Value; }
   TReadDirectoryEvent & GetOnReadDirectory() { return FOnReadDirectory; }
@@ -547,10 +549,10 @@ public:
   void SetOnProgress(TFileOperationProgressEvent Value) { FOnProgress = Value; }
   TFileOperationFinishedEvent &  GetOnFinished() { return FOnFinished; }
   void SetOnFinished(TFileOperationFinishedEvent Value) { FOnFinished = Value; }
-  TCurrentFSProtocol  GetFSProtocol() { return FFSProtocol; }
-  bool GetUseBusyCursor() { return FUseBusyCursor; }
+  TCurrentFSProtocol GetFSProtocol() const { return FFSProtocol; }
+  bool GetUseBusyCursor() const { return FUseBusyCursor; }
   void SetUseBusyCursor(bool Value) { FUseBusyCursor = Value; }
-  bool GetAutoReadDirectory() { return FAutoReadDirectory; }
+  bool GetAutoReadDirectory() const { return FAutoReadDirectory; }
   void SetAutoReadDirectory(bool Value) { FAutoReadDirectory = Value; }
   TStrings * GetFixedPaths();
   TQueryUserEvent & GetOnQueryUser() { return FOnQueryUser; }
@@ -567,7 +569,7 @@ public:
   void SetOnCheckForEsc(TCheckForEscEvent Value) { FOnCheckForEsc = Value; }
   TNotifyEvent & GetOnClose() { return FOnClose; }
   void SetOnClose(TNotifyEvent Value) { FOnClose = Value; }
-  intptr_t GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
+  intptr_t GetTunnelLocalPortNumber() const { return FTunnelLocalPortNumber; }
 
 private:
   NB_DISABLE_COPY(TTerminal)
@@ -581,7 +583,7 @@ public:
   void Init(TSessionData * SessionData, TConfiguration * Configuration,
     const UnicodeString & Name);
 
-  TTerminal * GetMainTerminal() { return FMainTerminal; }
+  TTerminal * GetMainTerminal() const { return FMainTerminal; }
 
 protected:
   virtual void DirectoryLoaded(TRemoteFileList * FileList);

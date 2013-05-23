@@ -326,12 +326,18 @@ bool DeleteDirectory(const UnicodeString & DirName)
           retval = DeleteFile(DirName + L"\\" + sr.Name);
         }
 
-        if (!retval) { break; }
+        if (!retval)
+        {
+          break;
+        }
       }
     }
   }
   FindClose(sr);
-  if (retval) { retval = RemoveDir(DirName); } // VCL function
+  if (retval)
+  {
+    retval = RemoveDir(DirName); // VCL function
+  }
   return retval;
 }
 //---------------------------------------------------------------------------

@@ -919,7 +919,7 @@ void TTerminal::Open()
   FSessionData->SetNumberOfRetries(0);
 }
 //------------------------------------------------------------------------------
-bool TTerminal::IsListenerFree(uintptr_t PortNumber)
+bool TTerminal::IsListenerFree(uintptr_t PortNumber) const
 {
   SOCKET Socket = socket(AF_INET, SOCK_STREAM, 0);
   bool Result = (Socket != INVALID_SOCKET);
@@ -1292,7 +1292,8 @@ void TTerminal::ReactOnCommand(intptr_t Cmd)
   bool ChangesDirectory = false;
   bool ModifiesFiles = false;
 
-  switch (static_cast<TFSCommand>(Cmd)) {
+  switch (static_cast<TFSCommand>(Cmd))
+  {
     case fsChangeDirectory:
     case fsHomeDirectory:
       ChangesDirectory = true;
@@ -3169,7 +3170,10 @@ void TTerminal::ChangeFileProperties(const UnicodeString & FileName,
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foSetProperties)
   {
-    if (GetOperationProgress()->Cancel != csContinue) { Abort(); }
+    if (GetOperationProgress()->Cancel != csContinue)
+    {
+      Abort();
+    }
     GetOperationProgress()->SetFile(LocalFileName);
   }
   if (GetLog()->GetLogging())
@@ -3321,7 +3325,10 @@ void TTerminal::CalculateFileSize(const UnicodeString & FileName,
 
   if (GetOperationProgress() && GetOperationProgress()->Operation == foCalculateSize)
   {
-    if (GetOperationProgress()->Cancel != csContinue) { Abort(); }
+    if (GetOperationProgress()->Cancel != csContinue)
+    {
+      Abort();
+    }
     GetOperationProgress()->SetFile(LocalFileName);
   }
 }
@@ -3445,7 +3452,10 @@ void TTerminal::MoveFile(const UnicodeString & FileName,
       ((GetOperationProgress()->Operation == foRemoteMove) ||
        (GetOperationProgress()->Operation == foDelete)))
   {
-    if (GetOperationProgress()->Cancel != csContinue) { Abort(); }
+    if (GetOperationProgress()->Cancel != csContinue)
+    {
+      Abort();
+    }
     GetOperationProgress()->SetFile(FileName);
   }
 
@@ -3552,7 +3562,10 @@ void TTerminal::CopyFile(const UnicodeString & FileName,
 {
   if (GetOperationProgress() && (GetOperationProgress()->Operation == foRemoteCopy))
   {
-    if (GetOperationProgress()->Cancel != csContinue) { Abort(); }
+    if (GetOperationProgress()->Cancel != csContinue)
+    {
+      Abort();
+    }
     GetOperationProgress()->SetFile(FileName);
   }
 
@@ -3852,8 +3865,14 @@ void TTerminal::DoAnyCommand(const UnicodeString & Command,
     {
       RollbackAction(*Action, NULL, &E);
     }
-    if (GetExceptionOnFail() || (dynamic_cast<EFatal *>(&E) != NULL)) { throw; }
-    else { HandleExtendedException(&E); }
+    if (GetExceptionOnFail() || (dynamic_cast<EFatal *>(&E) != NULL))
+    {
+      throw;
+    }
+    else
+    {
+      HandleExtendedException(&E);
+    }
   }
 }
 //------------------------------------------------------------------------------
@@ -3890,7 +3909,8 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
                 FMTLOAD(READ_ONLY_OVERWRITE, FileName.c_str()), NULL,
                 qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll, 0);
             );
-            switch (Answer) {
+            switch (Answer)
+            {
               case qaYesToAll: OperationProgress->BatchOverwrite = boAll; break;
               case qaCancel: OperationProgress->Cancel = csCancel; // continue on next case
               case qaNoToAll: OperationProgress->BatchOverwrite = boNone;
@@ -3951,13 +3971,13 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
   __int64 * AMTime, __int64 * AATime, __int64 * ASize,
   bool TryWriteReadOnly)
 {
-  uintptr_t LocalFileAttrs = 0;
+  DWORD LocalFileAttrs = 0;
   HANDLE LocalFileHandle = 0;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
 
   FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
     LocalFileAttrs = GetLocalFileAttributes(FileName);
-    if (LocalFileAttrs == -1)
+    if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
     {
       RaiseLastOSError();
     }
@@ -4040,8 +4060,14 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
     }
   }
 
-  if (AAttrs) { *AAttrs = LocalFileAttrs; }
-  if (AHandle) { *AHandle = LocalFileHandle; }
+  if (AAttrs)
+  {
+    *AAttrs = LocalFileAttrs;
+  }
+  if (AHandle)
+  {
+    *AHandle = LocalFileHandle;
+  }
 }
 //------------------------------------------------------------------------------
 bool TTerminal::AllowLocalFileTransfer(const UnicodeString & FileName,
@@ -4140,7 +4166,10 @@ void TTerminal::CalculateLocalFileSize(const UnicodeString & FileName,
 
   if (GetOperationProgress() && GetOperationProgress()->Operation == foCalculateSize)
   {
-    if (GetOperationProgress()->Cancel != csContinue) { Abort(); }
+    if (GetOperationProgress()->Cancel != csContinue)
+    {
+      Abort();
+    }
     GetOperationProgress()->SetFile(FileName);
   }
 }

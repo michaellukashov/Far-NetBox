@@ -20,47 +20,47 @@ public:
   bool GetConfirmOverwritingOverride() const { return FConfirmOverwritingOverride; }
   void SetConfirmOverwritingOverride(bool Value) { FConfirmOverwritingOverride = Value; }
   bool GetConfirmDeleting() const;
-  bool GetConfirmSynchronizedBrowsing() { return FConfirmSynchronizedBrowsing; }
+  bool GetConfirmSynchronizedBrowsing() const { return FConfirmSynchronizedBrowsing; }
   void SetConfirmSynchronizedBrowsing(bool Value) { FConfirmSynchronizedBrowsing = Value; }
   bool GetDisksMenu() const { return FDisksMenu; }
   void SetDisksMenu(bool Value) { FDisksMenu = Value; }
   intptr_t GetDisksMenuHotKey() const { return FDisksMenuHotKey; }
   void SetDisksMenuHotKey(intptr_t Value) { FDisksMenuHotKey = Value; }
-  bool GetPluginsMenu() { return FPluginsMenu; }
+  bool GetPluginsMenu() const { return FPluginsMenu; }
   void SetPluginsMenu(bool Value) { FPluginsMenu = Value; }
-  bool GetPluginsMenuCommands() { return FPluginsMenuCommands; }
+  bool GetPluginsMenuCommands() const { return FPluginsMenuCommands; }
   void SetPluginsMenuCommands(bool Value) { FPluginsMenuCommands = Value; }
-  UnicodeString GetCommandPrefixes() { return FCommandPrefixes; }
+  UnicodeString GetCommandPrefixes() const { return FCommandPrefixes; }
   void SetCommandPrefixes(const UnicodeString & Value) { FCommandPrefixes = Value; }
-  bool GetHostNameInTitle() { return FHostNameInTitle; }
+  bool GetHostNameInTitle() const { return FHostNameInTitle; }
   void SetHostNameInTitle(bool Value) { FHostNameInTitle = Value; }
 
-  bool GetCustomPanelModeDetailed() { return FCustomPanelModeDetailed; }
+  bool GetCustomPanelModeDetailed() const { return FCustomPanelModeDetailed; }
   void SetCustomPanelModeDetailed(bool Value) { FCustomPanelModeDetailed = Value; }
-  bool GetFullScreenDetailed() { return FFullScreenDetailed; }
+  bool GetFullScreenDetailed() const { return FFullScreenDetailed; }
   void SetFullScreenDetailed(bool Value) { FFullScreenDetailed = Value; }
-  UnicodeString GetColumnTypesDetailed() { return FColumnTypesDetailed; }
+  UnicodeString GetColumnTypesDetailed() const { return FColumnTypesDetailed; }
   void SetColumnTypesDetailed(const UnicodeString & Value) { FColumnTypesDetailed = Value; }
-  UnicodeString GetColumnWidthsDetailed() { return FColumnWidthsDetailed; }
+  UnicodeString GetColumnWidthsDetailed() const { return FColumnWidthsDetailed; }
   void SetColumnWidthsDetailed(const UnicodeString & Value) { FColumnWidthsDetailed = Value; }
-  UnicodeString GetStatusColumnTypesDetailed() { return FStatusColumnTypesDetailed; }
+  UnicodeString GetStatusColumnTypesDetailed() const { return FStatusColumnTypesDetailed; }
   void SetStatusColumnTypesDetailed(const UnicodeString & Value) { FStatusColumnTypesDetailed = Value; }
-  UnicodeString GetStatusColumnWidthsDetailed() { return FStatusColumnWidthsDetailed; }
+  UnicodeString GetStatusColumnWidthsDetailed() const { return FStatusColumnWidthsDetailed; }
   void SetStatusColumnWidthsDetailed(const UnicodeString & Value) { FStatusColumnWidthsDetailed = Value; }
-  bool GetEditorDownloadDefaultMode() { return FEditorDownloadDefaultMode; }
+  bool GetEditorDownloadDefaultMode() const { return FEditorDownloadDefaultMode; }
   void SetEditorDownloadDefaultMode(bool Value) { FEditorDownloadDefaultMode = Value; }
-  bool GetEditorUploadSameOptions() { return FEditorUploadSameOptions; }
+  bool GetEditorUploadSameOptions() const { return FEditorUploadSameOptions; }
   void SetEditorUploadSameOptions(bool Value) { FEditorUploadSameOptions = Value; }
-  bool GetEditorUploadOnSave() { return FEditorUploadOnSave; }
+  bool GetEditorUploadOnSave() const { return FEditorUploadOnSave; }
   void SetEditorUploadOnSave(bool Value) { FEditorUploadOnSave = Value; }
-  bool GetEditorMultiple() { return FEditorMultiple; }
+  bool GetEditorMultiple() const { return FEditorMultiple; }
   void SetEditorMultiple(bool Value) { FEditorMultiple = Value; }
-  bool GetQueueBeep() { return FQueueBeep; }
+  bool GetQueueBeep() const { return FQueueBeep; }
   void SetQueueBeep(bool Value) { FQueueBeep = Value; }
 
-  UnicodeString GetApplyCommandCommand() { return FApplyCommandCommand; }
+  UnicodeString GetApplyCommandCommand() const { return FApplyCommandCommand; }
   void SetApplyCommandCommand(const UnicodeString & Value) { FApplyCommandCommand = Value; }
-  intptr_t GetApplyCommandParams() { return FApplyCommandParams; }
+  intptr_t GetApplyCommandParams() const { return FApplyCommandParams; }
   void SetApplyCommandParams(intptr_t Value) { FApplyCommandParams = Value; }
 
   UnicodeString GetPageantPath() const { return FPageantPath; }

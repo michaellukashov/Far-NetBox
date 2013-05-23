@@ -27,7 +27,7 @@ class TNamedObjectList : public TObjectList
 private:
   intptr_t FHiddenCount;
 public:
-  intptr_t GetCount();
+  intptr_t GetCount() const;
   void SetCount(intptr_t Value);
 protected:
   void Recount();
@@ -42,8 +42,9 @@ public:
   virtual void Notify(void *Ptr, TListNotification Action);
   void AlphaSort();
   virtual TNamedObject * AtObject(intptr_t Index);
+  virtual const TNamedObject * AtObject(intptr_t Index) const;
   TNamedObject * FindByName(const UnicodeString & Name, Boolean CaseSensitive = False);
-  intptr_t GetHiddenCount() { return FHiddenCount; }
+  intptr_t GetHiddenCount() const { return FHiddenCount; }
   void SetHiddenCount(intptr_t Value) { FHiddenCount = Value; }
 };
 //---------------------------------------------------------------------------

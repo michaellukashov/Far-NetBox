@@ -101,7 +101,7 @@ public:
   explicit TTabbedDialog(TCustomFarPlugin * AFarPlugin, int TabCount);
   virtual ~TTabbedDialog() {}
 
-  intptr_t GetTab() { return FTab; }
+  intptr_t GetTab() const { return FTab; }
 
 protected:
   void HideTabs();
@@ -123,7 +123,7 @@ class TTabButton : public TFarButton
 public:
   explicit TTabButton(TTabbedDialog * Dialog);
 
-  intptr_t GetTab() { return FTab; }
+  intptr_t GetTab() const { return FTab; }
   void SetTab(intptr_t Value) { FTab = Value; }
   UnicodeString GetTabName() const { return FTabName; }
 

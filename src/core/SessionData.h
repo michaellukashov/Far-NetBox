@@ -360,7 +360,7 @@ public:
   void RecryptPasswords();
   bool HasAnyPassword();
   void Remove();
-  virtual void Assign(TPersistent * Source);
+  virtual void Assign(const TPersistent * Source);
   bool ParseUrl(const UnicodeString & Url, TOptions * Options,
     TStoredSessionList * StoredSessions, bool & DefaultsOnly,
     UnicodeString * FileName, bool * AProtocolDefined, UnicodeString * MaskedUrl);
@@ -490,7 +490,7 @@ public:
   void RemoveProtocolPrefix(UnicodeString & HostName);
 
 private:
-  uintptr_t GetDefaultVersion() { return ::GetCurrentVersionNumber(); }
+  uintptr_t GetDefaultVersion() const { return ::GetCurrentVersionNumber(); }
   TFSProtocol TranslateFSProtocolNumber(intptr_t FSProtocol);
   TFSProtocol TranslateFSProtocol(const UnicodeString & ProtocolID);
   TFtps TranslateFtpEncryptionNumber(intptr_t FtpEncryption);
@@ -540,10 +540,11 @@ public:
   TStrings * GetFolderOrWorkspaceList(const UnicodeString & Name);
   TStrings * GetWorkspaces();
   bool HasAnyWorkspace();
-  TSessionData * GetSession(intptr_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
-  TSessionData * GetDefaultSettings() const { return FDefaultSettings; }
-  TSessionData * GetSessionByName(const UnicodeString & SessionName);
-  void SetDefaultSettings(TSessionData * Value);
+  const TSessionData * GetSession(intptr_t Index) const { return dynamic_cast<const TSessionData *>(AtObject(Index)); }
+  TSessionData * GetSession(intptr_t Index) { return dynamic_cast<TSessionData *>(AtObject(Index)); }
+  const TSessionData * GetDefaultSettings() const { return FDefaultSettings; }
+  const TSessionData * GetSessionByName(const UnicodeString & SessionName) const;
+  void SetDefaultSettings(const TSessionData * Value);
 
   static void ImportHostKeys(const UnicodeString & TargetKey,
     const UnicodeString & SourceKey, TStoredSessionList * Sessions,

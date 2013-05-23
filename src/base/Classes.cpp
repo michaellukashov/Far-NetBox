@@ -65,7 +65,7 @@ TPersistent::TPersistent()
 TPersistent::~TPersistent()
 {}
 
-void TPersistent::Assign(TPersistent * Source)
+void TPersistent::Assign(const TPersistent * Source)
 {
   if (Source != NULL)
   {
@@ -77,7 +77,7 @@ void TPersistent::Assign(TPersistent * Source)
   }
 }
 
-void TPersistent::AssignTo(TPersistent * Dest)
+void TPersistent::AssignTo(TPersistent * Dest) const
 {
   Dest->AssignError(this);
 }
@@ -87,7 +87,7 @@ TPersistent * TPersistent::GetOwner()
   return NULL;
 }
 
-void TPersistent::AssignError(TPersistent * Source)
+void TPersistent::AssignError(const TPersistent * Source)
 {
   (void)Source;
   UnicodeString SourceName = L"nil";
@@ -220,7 +220,7 @@ void TList::Insert(intptr_t Index, void * Item)
   }
 }
 
-intptr_t TList::IndexOf(void * Value) const
+intptr_t TList::IndexOf(const void * Value) const
 {
   intptr_t Result = 0;
   while ((Result < static_cast<intptr_t>(FList.size())) && (FList[Result] != Value))
@@ -350,7 +350,7 @@ void TObjectList::Insert(intptr_t Index, TObject * Value)
   TList::Insert(Index, Value);
 }
 
-intptr_t TObjectList::IndexOf(TObject * Value) const
+intptr_t TObjectList::IndexOf(const TObject * Value) const
 {
   return TList::IndexOf(Value);
 }
@@ -538,7 +538,7 @@ intptr_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString 
   return static_cast<intptr_t>(::AnsiCompareText(S1, S2));
 }
 
-void TStrings::Assign(TPersistent * Source)
+void TStrings::Assign(const TPersistent * Source)
 {
   if (::InheritsFrom<TPersistent, TStrings>(Source))
   {
@@ -548,9 +548,10 @@ void TStrings::Assign(TPersistent * Source)
       {
         Clear();
         // FDefined = TStrings(Source).FDefined;
-        FQuoteChar = static_cast<TStrings *>(Source)->FQuoteChar;
-        FDelimiter = static_cast<TStrings *>(Source)->FDelimiter;
-        AddStrings(static_cast<TStrings *>(Source));
+        const TStrings * Strings = static_cast<const TStrings *>(Source);
+        FQuoteChar = Strings->FQuoteChar;
+        FDelimiter = Strings->FDelimiter;
+        AddStrings(Strings);
       }
       ,
       {
@@ -654,9 +655,8 @@ void TStrings::InsertObject(intptr_t Index, const UnicodeString & Key, TObject *
   Insert(Index, Key, AObject);
 }
 
-bool TStrings::Equals(TStrings * Strings)
+bool TStrings::Equals(const TStrings * Strings) const
 {
-  bool Result = false;
   if (GetCount() != Strings->GetCount())
   {
     return false;
@@ -668,8 +668,7 @@ bool TStrings::Equals(TStrings * Strings)
       return false;
     }
   }
-  Result = true;
-  return Result;
+  return true;
 }
 
 void TStrings::SetString(intptr_t Index, const UnicodeString & S)
@@ -790,7 +789,7 @@ void TStrings::SetValue(const UnicodeString & Name, const UnicodeString & Value)
   }
 }
 
-void TStrings::AddStrings(TStrings * Strings)
+void TStrings::AddStrings(const TStrings * Strings)
 {
   BeginUpdate();
   {
@@ -836,7 +835,7 @@ TStringList::TStringList() :
 TStringList::~TStringList()
 {}
 
-void TStringList::Assign(TPersistent * Source)
+void TStringList::Assign(const TPersistent * Source)
 {
   TStrings::Assign(Source);
 }
@@ -1173,7 +1172,10 @@ void TStringList::QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SComp
       }
     }
     while (I <= J);
-    if (L < J) { QuickSort(L, J, SCompare); }
+    if (L < J)
+    {
+      QuickSort(L, J, SCompare);
+    }
     L = I;
   }
   while (I < R);
@@ -1459,14 +1461,20 @@ THandleStream::~THandleStream()
 __int64 THandleStream::Read(void * Buffer, __int64 Count)
 {
   __int64 Result = ::FileRead(FHandle, Buffer, Count);
-  if (Result == -1) { Result = 0; }
+  if (Result == -1)
+  {
+    Result = 0;
+  }
   return Result;
 }
 
 __int64 THandleStream::Write(const void * Buffer, __int64 Count)
 {
   __int64 Result = ::FileWrite(FHandle, Buffer, Count);
-  if (Result == -1) { Result = 0; }
+  if (Result == -1)
+  {
+    Result = 0;
+  }
   return Result;
 }
 
@@ -1526,7 +1534,10 @@ __int64 TMemoryStream::Read(void * Buffer, __int64 Count)
     Result = FSize - FPosition;
     if (Result > 0)
     {
-      if (Result > Count) { Result = Count; }
+      if (Result > Count)
+      {
+        Result = Count;
+      }
       memmove(Buffer, reinterpret_cast<char *>(FMemory) + FPosition, static_cast<size_t>(Result));
       FPosition += Result;
       return Result;
@@ -1561,7 +1572,10 @@ __int64 TMemoryStream::Seek(const __int64 Offset, TSeekOrigin Origin)
 
 void TMemoryStream::SaveToStream(TStream * Stream)
 {
-  if (FSize != 0) { Stream->WriteBuffer(FMemory, FSize); }
+  if (FSize != 0)
+  {
+    Stream->WriteBuffer(FMemory, FSize);
+  }
 }
 
 void TMemoryStream::SaveToFile(const UnicodeString & FileName)
@@ -1583,7 +1597,10 @@ void TMemoryStream::SetSize(const __int64 NewSize)
   __int64 OldPosition = FPosition;
   SetCapacity(NewSize);
   FSize = NewSize;
-  if (OldPosition > NewSize) { Seek(0, Classes::soFromEnd); }
+  if (OldPosition > NewSize)
+  {
+    Seek(0, Classes::soFromEnd);
+  }
 }
 
 void TMemoryStream::SetCapacity(__int64 NewCapacity)
@@ -1887,7 +1904,10 @@ bool TRegistry::KeyExists(const UnicodeString & Key)
   {
     FAccess = STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS;
     HKEY TempKey = GetKey(Key);
-    if (TempKey != 0) { RegCloseKey(TempKey); }
+    if (TempKey != 0)
+    {
+      RegCloseKey(TempKey);
+    }
     Result = TempKey != 0;
   }
   ,

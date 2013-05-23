@@ -953,7 +953,8 @@ public:
   UnicodeString GetTypeName() const
   {
     #define TYPE_CASE(TYPE) case TYPE: return TEXT(#TYPE)
-    switch (GetType()) {
+    switch (GetType())
+    {
       TYPE_CASE(SSH_FXP_INIT);
       TYPE_CASE(SSH_FXP_VERSION);
       TYPE_CASE(SSH_FXP_OPEN);
@@ -1875,7 +1876,8 @@ void TSFTPFileSystem::ResetConnection()
 bool TSFTPFileSystem::IsCapable(intptr_t Capability) const
 {
   assert(FTerminal);
-  switch (Capability) {
+  switch (Capability)
+  {
     case fcAnyCommand:
     case fcShellAnyCommand:
     case fcHardLink:
@@ -3950,7 +3952,8 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString & DestFileName,
         &Params);
     );
 
-    switch (Answer) {
+    switch (Answer)
+    {
       case qaNeverAskAgain:
         FTerminal->GetConfiguration()->SetConfirmResume(false);
       case qaYes:
@@ -4976,8 +4979,8 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
     if (!File->GetIsSymLink())
     {
       FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
-        uintptr_t LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
-        if (((DWORD)LocalFileAttrs != -1) && (LocalFileAttrs & faDirectory) == 0)
+        DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
+        if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && (LocalFileAttrs & faDirectory) == 0)
         {
           EXCEPTION;
         }
@@ -5040,10 +5043,10 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       CopyParam->AllowResume(OperationProgress->TransferSize);
     OperationProgress->SetResumeStatus(ResumeAllowed ? rsEnabled : rsDisabled);
 
-    uintptr_t LocalFileAttrs = 0;
+    DWORD LocalFileAttrs = 0;
     FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
-      if (((DWORD)LocalFileAttrs != -1) && (LocalFileAttrs & faDirectory))
+      if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && (LocalFileAttrs & faDirectory))
       {
         EXCEPTION;
       }
@@ -5152,7 +5155,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       }
       );
 
-      if ((LocalFileAttrs != (DWORD)-1) && !ResumeTransfer)
+      if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && !ResumeTransfer)
       {
         __int64 DestFileSize = 0;
         __int64 MTime = 0;
@@ -5411,7 +5414,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
       DeleteLocalFile = false;
 
-      if (LocalFileAttrs == -1)
+      if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
       {
         LocalFileAttrs = faArchive;
       }

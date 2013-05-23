@@ -251,7 +251,7 @@ public:
   virtual void Close();
 
 protected:
-  virtual UnicodeString GetCurrentDirectory() = 0;
+  virtual UnicodeString GetCurrentDirectory() const = 0;
 
 protected:
   TCustomFarPlugin * FPlugin;
@@ -287,8 +287,11 @@ protected:
 
   virtual void HandleException(Exception * E, int OpMode = 0);
 
+  const TFarPanelInfo * GetPanelInfo() const { return GetPanelInfo(0); };
   TFarPanelInfo * GetPanelInfo() { return GetPanelInfo(0); };
+  const TFarPanelInfo * GetAnotherPanelInfo() const { return GetPanelInfo(1); };
   TFarPanelInfo * GetAnotherPanelInfo() { return GetPanelInfo(1); };
+  TCriticalSection * GetCriticalSection() const { return FCriticalSection; };
   TCriticalSection * GetCriticalSection() { return FCriticalSection; };
 
 protected:
@@ -306,6 +309,7 @@ private:
   void ClearOpenPanelInfo(OpenPanelInfo & Info);
   TObjectList * CreatePanelItemList(struct PluginPanelItem * PanelItem,
     int ItemsNumber);
+  const TFarPanelInfo * GetPanelInfo(int Another) const;
   TFarPanelInfo * GetPanelInfo(int Another);
 };
 //---------------------------------------------------------------------------
@@ -430,7 +434,7 @@ public:
   TObjectList * GetItems();
   intptr_t GetItemCount();
   TFarPanelItem * GetFocusedItem();
-  void SetFocusedItem(TFarPanelItem * Value);
+  void SetFocusedItem(const TFarPanelItem * Value);
   intptr_t GetFocusedIndex();
   void SetFocusedIndex(intptr_t Value);
   intptr_t GetSelectedCount();
@@ -441,7 +445,8 @@ public:
 
   void ApplySelection();
   TFarPanelItem * FindFileName(const UnicodeString & FileName);
-  TFarPanelItem * FindUserData(void * UserData);
+  const TFarPanelItem * FindUserData(const void * UserData) const;
+  TFarPanelItem * FindUserData(const void * UserData);
 
 private:
   PanelInfo * FPanelInfo;
@@ -460,15 +465,15 @@ public:
   virtual void Clear();
   virtual void Delete(intptr_t Index);
 
-  intptr_t GetItemFocused() { return FItemFocused; }
+  intptr_t GetItemFocused() const { return FItemFocused; }
   void SetItemFocused(intptr_t Value);
-  bool GetDisabled(intptr_t Index) { return GetFlag(Index, MIF_DISABLE); }
+  bool GetDisabled(intptr_t Index) const { return GetFlag(Index, MIF_DISABLE); }
   void SetDisabled(intptr_t Index, bool Value) { SetFlag(Index, MIF_DISABLE, Value); }
-  bool GetChecked(intptr_t Index) { return GetFlag(Index, MIF_CHECKED); }
+  bool GetChecked(intptr_t Index) const { return GetFlag(Index, MIF_CHECKED); }
   void SetChecked(intptr_t Index, bool Value) { SetFlag(Index, MIF_CHECKED, Value); }
 
   void SetFlag(intptr_t Index, uintptr_t Flag, bool Value);
-  bool GetFlag(intptr_t Index, uintptr_t Flag);
+  bool GetFlag(intptr_t Index, uintptr_t Flag) const;
 
 protected:
   virtual void SetObject(intptr_t Index, TObject * AObject);

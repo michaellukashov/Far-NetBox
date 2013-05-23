@@ -340,11 +340,12 @@ void TSessionData::NonPersistant()
   //PROPERTY(IsWorkspace); \
   //PROPERTY(Link); \
 //---------------------------------------------------------------------
-void TSessionData::Assign(TPersistent * Source)
+void TSessionData::Assign(const TPersistent * Source)
 {
-  if (Source && (dynamic_cast<TSessionData *>(Source) != NULL))
+  if (Source && (dynamic_cast<const TSessionData *>(Source) != NULL))
   {
-    #define PROPERTY(P) Set ## P((static_cast<TSessionData *>(Source))->Get ## P())
+    TSessionData * Data = dynamic_cast<TSessionData *>(const_cast<TPersistent *>(Source));
+    #define PROPERTY(P) Set ## P(Data->Get ## P())
     PROPERTY(Name);
     BASE_PROPERTIES;
     ADVANCED_PROPERTIES;
@@ -353,20 +354,20 @@ void TSessionData::Assign(TPersistent * Source)
     for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FBugs)); ++Index)
     {
       // PROPERTY(Bug[(TSshBug)Index]);
-      (static_cast<TSessionData *>(Source))->SetBug(static_cast<TSshBug>(Index),
-          GetBug(static_cast<TSshBug>(Index)));
+      SetBug(static_cast<TSshBug>(Index),
+          Data->GetBug(static_cast<TSshBug>(Index)));
     }
     for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FSFTPBugs)); ++Index)
     {
       // PROPERTY(SFTPBug[(TSftpBug)Index]);
-      (static_cast<TSessionData *>(Source))->SetSFTPBug(static_cast<TSftpBug>(Index),
-          GetSFTPBug(static_cast<TSftpBug>(Index)));
+      SetSFTPBug(static_cast<TSftpBug>(Index),
+          Data->GetSFTPBug(static_cast<TSftpBug>(Index)));
     }
 
-    FModified = static_cast<TSessionData *>(Source)->GetModified();
-    FSource = static_cast<TSessionData *>(Source)->FSource;
+    FModified = Data->GetModified();
+    FSource = Data->FSource;
 
-    FNumberOfRetries = static_cast<TSessionData *>(Source)->FNumberOfRetries;
+    FNumberOfRetries = Data->FNumberOfRetries;
   }
   else
   {
@@ -526,7 +527,8 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   {
     intptr_t ProxyType = Storage->ReadInteger(L"ProxyType", pxNone);
     intptr_t ProxySOCKSVersion = 0;
-    switch (ProxyType) {
+    switch (ProxyType)
+    {
       case pxHTTP:
         SetProxyMethod(pmHTTP);
         break;
@@ -832,7 +834,8 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       // support for Putty 0.53b and older
       int ProxyType;
       int ProxySOCKSVersion = 5;
-      switch (GetProxyMethod()) {
+      switch (GetProxyMethod())
+      {
         case pmHTTP:
           ProxyType = pxHTTP;
           break;
@@ -3340,7 +3343,7 @@ TSessionData * TStoredSessionList::NewSession(
   return DuplicateSession;
 }
 //---------------------------------------------------------------------------
-void TStoredSessionList::SetDefaultSettings(TSessionData * Value)
+void TStoredSessionList::SetDefaultSettings(const TSessionData * Value)
 {
   assert(FDefaultSettings);
   if (FDefaultSettings != Value)
@@ -3408,11 +3411,11 @@ void TStoredSessionList::ImportHostKeys(const UnicodeString & TargetKey,
   );
 }
 //---------------------------------------------------------------------------
-TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString & SessionName)
+const TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString & SessionName) const
 {
   for (intptr_t I = 0; I < GetCount(); ++I)
   {
-    TSessionData * SessionData = GetSession(I);
+    const TSessionData * SessionData = GetSession(I);
     if (SessionData->GetName() == SessionName)
     {
       return SessionData;

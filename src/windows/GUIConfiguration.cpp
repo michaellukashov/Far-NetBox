@@ -865,7 +865,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   return NewInstance;
 }
 //---------------------------------------------------------------------------
-LCID TGUIConfiguration::InternalLocale()
+LCID TGUIConfiguration::InternalLocale() const
 {
   LCID Result;
   if (GetTranslationCount(GetApplicationInfo()) > 0)
@@ -882,7 +882,7 @@ LCID TGUIConfiguration::InternalLocale()
   return Result;
 }
 //---------------------------------------------------------------------------
-LCID TGUIConfiguration::GetLocale()
+LCID TGUIConfiguration::GetLocale() const
 {
   if (!FLocale)
   {

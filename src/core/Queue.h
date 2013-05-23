@@ -84,8 +84,8 @@ public:
   void Idle();
 
   bool GetIsEmpty();
-  intptr_t GetTransfersLimit() { return FTransfersLimit; }
-  intptr_t GetKeepDoneItemsFor() { return FKeepDoneItemsFor; }
+  intptr_t GetTransfersLimit() const { return FTransfersLimit; }
+  intptr_t GetKeepDoneItemsFor() const { return FKeepDoneItemsFor; }
   bool GetEnabled() const { return FEnabled; }
   TQueryUserEvent & GetOnQueryUser() { return FOnQueryUser; }
   void SetOnQueryUser(TQueryUserEvent Value) { FOnQueryUser = Value; }
@@ -191,7 +191,7 @@ public:
   static bool IsUserActionStatus(TStatus Status);
 
   TStatus GetStatus();
-  HANDLE GetCompleteEvent() { return FCompleteEvent; }
+  HANDLE GetCompleteEvent() const { return FCompleteEvent; }
   void SetCompleteEvent(HANDLE Value) { FCompleteEvent = Value; }
 
 protected:
@@ -238,9 +238,10 @@ public:
   bool Resume();
   bool SetCPSLimit(unsigned long CPSLimit);
 
-  TQueueItem::TInfo * GetInfo() { return FInfo; }
+  TQueueItem::TInfo * GetInfo() const { return FInfo; }
   TQueueItem::TStatus GetStatus() const { return FStatus; }
   bool GetProcessingUserAction() const { return FProcessingUserAction; }
+  void * GetUserData() const { return FUserData; }
   void * GetUserData() { return FUserData; }
   void SetUserData(void * Value) { FUserData = Value; }
 

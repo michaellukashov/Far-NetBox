@@ -175,13 +175,13 @@ private:
   intptr_t FSessionReopenAutoIdle;
 
 protected:
-  LCID FLocale;
+  mutable LCID FLocale;
 
 public:
   virtual void SaveData(THierarchicalStorage * Storage, bool All);
   virtual void LoadData(THierarchicalStorage * Storage);
-  virtual LCID GetLocale();
-  LCID GetLocaleSafe() { return GetLocale(); }
+  virtual LCID GetLocale() const;
+  LCID GetLocaleSafe() const { return GetLocale(); }
   void SetLocale(LCID Value);
   void SetLocaleSafe(LCID Value);
   virtual HINSTANCE LoadNewResourceModule(LCID Locale,
@@ -189,7 +189,7 @@ public:
   HANDLE GetResourceModule();
   // virtual void SetResourceModule(HINSTANCE Instance);
   TStrings * GetLocales();
-  LCID InternalLocale();
+  LCID InternalLocale() const;
   void FreeResourceModule(HANDLE Instance);
   void SetDefaultCopyParam(const TGUICopyParamType & Value);
   virtual bool GetRememberPassword() const;

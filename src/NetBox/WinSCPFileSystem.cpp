@@ -23,7 +23,7 @@
 //------------------------------------------------------------------------------
 #pragma package(smart_init)
 //------------------------------------------------------------------------------
-TSessionPanelItem::TSessionPanelItem(TSessionData * ASessionData):
+TSessionPanelItem::TSessionPanelItem(const TSessionData * ASessionData):
   TCustomFarPanelItem()
 {
   assert(ASessionData);
@@ -62,7 +62,7 @@ void TSessionPanelItem::GetData(
   UnicodeString & /*Owner*/, void *& UserData, size_t & /*CustomColumnNumber*/)
 {
   FileName = ::UnixExtractFileName(FSessionData->GetName());
-  UserData = FSessionData;
+  UserData = (void *)FSessionData;
 }
 //------------------------------------------------------------------------------
 TSessionFolderPanelItem::TSessionFolderPanelItem(const UnicodeString & Folder):
@@ -113,7 +113,8 @@ void TRemoteFilePanelItem::GetData(
 //------------------------------------------------------------------------------
 UnicodeString TRemoteFilePanelItem::GetCustomColumnData(size_t Column)
 {
-  switch (Column) {
+  switch (Column)
+  {
     case 0: return FRemoteFile->GetFileGroup().GetName();
     case 1: return FRemoteFile->GetRightsStr();
     case 2: return FRemoteFile->GetRights()->GetOctal();
@@ -501,7 +502,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     {
       Folder = ::UnixIncludeTrailingBackslash(FSessionsFolder);
     }
-    TSessionData * Data = NULL;
+    const TSessionData * Data = NULL;
     std::auto_ptr<TStringList> ChildPaths(new TStringList());
     ChildPaths->SetCaseSensitive(false);
     for (intptr_t Index = 0; Index < StoredSessions->GetCount(); ++Index)
@@ -556,7 +557,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     }
     if (!FPrevSessionName.IsEmpty())
     {
-      TSessionData * PrevSession = StoredSessions->GetSessionByName(FPrevSessionName);
+      const TSessionData * PrevSession = StoredSessions->GetSessionByName(FPrevSessionName);
       FPrevSessionName.Clear();
       if (UpdatePanel())
       {
@@ -616,9 +617,9 @@ void TWinSCPFileSystem::DuplicateOrRenameSession(TSessionData * Data,
   }
 }
 //------------------------------------------------------------------------------
-void TWinSCPFileSystem::FocusSession(TSessionData * Data)
+void TWinSCPFileSystem::FocusSession(const TSessionData * Data)
 {
-  TFarPanelItem * SessionItem = GetPanelInfo()->FindUserData(Data);
+  const TFarPanelItem * SessionItem = GetPanelInfo()->FindUserData(Data);
   if (SessionItem != NULL)
   {
     GetPanelInfo()->SetFocusedItem(SessionItem);
