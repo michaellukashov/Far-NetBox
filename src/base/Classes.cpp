@@ -655,9 +655,8 @@ void TStrings::InsertObject(intptr_t Index, const UnicodeString & Key, TObject *
   Insert(Index, Key, AObject);
 }
 
-bool TStrings::Equals(TStrings * Strings)
+bool TStrings::Equals(const TStrings * Strings) const
 {
-  bool Result = false;
   if (GetCount() != Strings->GetCount())
   {
     return false;
@@ -669,8 +668,7 @@ bool TStrings::Equals(TStrings * Strings)
       return false;
     }
   }
-  Result = true;
-  return Result;
+  return true;
 }
 
 void TStrings::SetString(intptr_t Index, const UnicodeString & S)

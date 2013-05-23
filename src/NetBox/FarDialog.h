@@ -609,8 +609,8 @@ public:
   explicit TFarLister(TFarDialog * ADialog);
   virtual ~TFarLister();
 
-  TStrings * GetItems();
-  void SetItems(TStrings * Value);
+  TStrings * GetItems() const;
+  void SetItems(const TStrings * Value);
   intptr_t GetTopIndex() const { return FTopIndex; }
   void SetTopIndex(intptr_t Value);
   bool GetScrollBar();

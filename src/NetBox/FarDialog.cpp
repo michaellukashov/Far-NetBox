@@ -2572,12 +2572,12 @@ void TFarLister::SetTopIndex(intptr_t Value)
   }
 }
 //---------------------------------------------------------------------------
-TStrings * TFarLister::GetItems()
+TStrings * TFarLister::GetItems() const
 {
   return FItems;
 }
 //---------------------------------------------------------------------------
-void TFarLister::SetItems(TStrings * Value)
+void TFarLister::SetItems(const TStrings * Value)
 {
   if (!FItems->Equals(Value))
   {

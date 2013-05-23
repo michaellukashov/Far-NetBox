@@ -246,7 +246,7 @@ public:
   virtual void SetUpdateState(bool Updating);
   intptr_t AddObject(const UnicodeString & S, TObject * AObject);
   virtual void InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
-  bool Equals(TStrings * Value);
+  bool Equals(const Classes::TStrings * Value) const;
   virtual void Clear() = 0;
   void Move(intptr_t CurIndex, intptr_t NewIndex);
   intptr_t IndexOf(const UnicodeString & S);
