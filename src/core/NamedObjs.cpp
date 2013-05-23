@@ -87,6 +87,11 @@ TNamedObjectList::TNamedObjectList():
   AutoSort = True;
 }
 //---------------------------------------------------------------------------
+const TNamedObject * TNamedObjectList::AtObject(intptr_t Index) const
+{
+  return const_cast<TNamedObjectList *>(this)->AtObject(Index);
+}
+//---------------------------------------------------------------------------
 TNamedObject * TNamedObjectList::AtObject(intptr_t Index)
 {
   return static_cast<TNamedObject *>(GetItem(Index + GetHiddenCount()));
@@ -135,7 +140,7 @@ void TNamedObjectList::SetCount(intptr_t Value)
   TObjectList::SetCount(Value/*+HiddenCount*/);
 }
 //---------------------------------------------------------------------------
-intptr_t TNamedObjectList::GetCount()
+intptr_t TNamedObjectList::GetCount() const
 {
   return TObjectList::GetCount() - GetHiddenCount();
 }

@@ -73,7 +73,7 @@ public:
   virtual UnicodeString GetUserName();
 
 protected:
-  TStrings * GetOutput() { return FOutput; };
+  TStrings * GetOutput() const { return FOutput; };
   intptr_t GetReturnCode() const { return FReturnCode; }
 
   virtual UnicodeString GetCurrentDirectory();

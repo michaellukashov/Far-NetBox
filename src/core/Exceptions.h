@@ -77,7 +77,7 @@ public:
   // fatal errors are always copied, new message is only appended
   explicit EFatal(Exception* E, const UnicodeString & Msg);
 
-  bool GetReopenQueried() { return FReopenQueried; }
+  bool GetReopenQueried() const { return FReopenQueried; }
   void SetReopenQueried(bool Value) { FReopenQueried = Value; }
 
   virtual ExtException * Clone();

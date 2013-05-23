@@ -290,10 +290,9 @@ void TBookmarkList::Clear()
   FOpenedNodes->Clear();
 }
 //---------------------------------------------------------------------------
-void TBookmarkList::Assign(TPersistent * Source)
+void TBookmarkList::Assign(const TPersistent * Source)
 {
-  TBookmarkList * SourceList;
-  SourceList = dynamic_cast<TBookmarkList *>(Source);
+  const TBookmarkList * SourceList = dynamic_cast<const TBookmarkList *>(Source);
   if (SourceList)
   {
     Clear();
@@ -471,10 +470,9 @@ TBookmark::TBookmark()
   FOwner = NULL;
 }
 //---------------------------------------------------------------------------
-void TBookmark::Assign(TPersistent * Source)
+void TBookmark::Assign(const TPersistent * Source)
 {
-  TBookmark * SourceBookmark;
-  SourceBookmark = dynamic_cast<TBookmark *>(Source);
+  const TBookmark * SourceBookmark = dynamic_cast<const TBookmark *>(Source);
   if (SourceBookmark)
   {
     SetName(SourceBookmark->GetName());

@@ -27,7 +27,7 @@ private:
   TMemoryStream * FMemory;
 
 public:
-  TMemoryStream * GetMemory() { return FMemory; }
+  TMemoryStream * GetMemory() const { return FMemory; }
   void SetMemory(TMemoryStream * Value);
   char * GetData() const { return static_cast<char *>(FMemory->GetMemory()); }
   __int64 GetSize() const { return FMemory->GetSize(); }

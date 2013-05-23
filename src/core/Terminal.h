@@ -257,6 +257,7 @@ public:
   UnicodeString GetPassword();
   UnicodeString GetTunnelPassword();
   bool GetStoredCredentialsTried();
+  TCustomFileSystem * GetFileSystem() const { return FFileSystem; }
   TCustomFileSystem * GetFileSystem() { return FFileSystem; }
   inline bool InTransaction();
   static UnicodeString SynchronizeModeStr(TSynchronizeMode Mode);
@@ -392,7 +393,7 @@ protected:
   UnicodeString DecryptPassword(const RawByteString & Password);
   void LogFile(TRemoteFile * File);
 
-  TFileOperationProgressType * GetOperationProgress() { return FOperationProgress; }
+  TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
 
   void SetLocalFileTime(const UnicodeString & LocalFileName,
     const TDateTime & Modification);
@@ -511,8 +512,9 @@ public:
   static UnicodeString ExpandFileName(const UnicodeString & Path,
     const UnicodeString & BasePath);
 
-  TSessionData * GetSessionData() { return FSessionData; }
   TSessionData * GetSessionData() const { return FSessionData; }
+  TSessionData * GetSessionData() { return FSessionData; }
+  TSessionLog * GetLog() const { return FLog; }
   TSessionLog * GetLog() { return FLog; }
   TActionLog * GetActionLog() const { return FActionLog; };
   const TConfiguration * GetConfiguration() const { return FConfiguration; }
@@ -550,7 +552,7 @@ public:
   TCurrentFSProtocol GetFSProtocol() const { return FFSProtocol; }
   bool GetUseBusyCursor() const { return FUseBusyCursor; }
   void SetUseBusyCursor(bool Value) { FUseBusyCursor = Value; }
-  bool GetAutoReadDirectory() { return FAutoReadDirectory; }
+  bool GetAutoReadDirectory() const { return FAutoReadDirectory; }
   void SetAutoReadDirectory(bool Value) { FAutoReadDirectory = Value; }
   TStrings * GetFixedPaths();
   TQueryUserEvent & GetOnQueryUser() { return FOnQueryUser; }
@@ -581,7 +583,7 @@ public:
   void Init(TSessionData * SessionData, TConfiguration * Configuration,
     const UnicodeString & Name);
 
-  TTerminal * GetMainTerminal() { return FMainTerminal; }
+  TTerminal * GetMainTerminal() const { return FMainTerminal; }
 
 protected:
   virtual void DirectoryLoaded(TRemoteFileList * FileList);

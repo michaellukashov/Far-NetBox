@@ -162,7 +162,7 @@ public:
   void SetLinkTo(const UnicodeString & Value);
   TRights * GetRights() const { return FRights; }
   TTerminal * GetTerminal() const { return FTerminal; }
-  bool GetSelected() { return FSelected; }
+  bool GetSelected() const { return FSelected; }
   void SetSelected(bool Value) { FSelected = Value; }
   void SetFullFileName(const UnicodeString & Value);
 };

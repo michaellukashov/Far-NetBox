@@ -49,7 +49,7 @@ public:
   void Delete(TBookmark * Bookmark);
   TBookmark * FindByName(const UnicodeString & Node, const UnicodeString & Name);
   TBookmark * FindByShortCut(TShortCut ShortCut);
-  virtual void Assign(TPersistent * Source);
+  virtual void Assign(const TPersistent * Source);
   void LoadOptions(THierarchicalStorage * Storage);
   void SaveOptions(THierarchicalStorage * Storage);
   void ShortCuts(TShortCuts & ShortCuts);
@@ -63,7 +63,7 @@ protected:
   intptr_t IndexOf(TBookmark * Bookmark);
   void KeyChanged(intptr_t Index);
 
-  bool GetModified() { return FModified; }
+  bool GetModified() const { return FModified; }
   void SetModified(bool Value) { FModified = Value; }
 
 private:
@@ -78,17 +78,17 @@ friend class TBookmarkList;
 public:
   TBookmark();
 
-  virtual void Assign(TPersistent * Source);
+  virtual void Assign(const TPersistent * Source);
 
-  UnicodeString GetName() { return FName; }
+  UnicodeString GetName() const { return FName; }
   void SetName(const UnicodeString & Value);
-  UnicodeString GetLocal() { return FLocal; }
+  UnicodeString GetLocal() const { return FLocal; }
   void SetLocal(const UnicodeString & Value);
-  UnicodeString GetRemote() { return FRemote; }
+  UnicodeString GetRemote() const { return FRemote; }
   void SetRemote(const UnicodeString & Value);
-  UnicodeString GetNode() { return FNode; }
+  UnicodeString GetNode() const { return FNode; }
   void SetNode(const UnicodeString & Value);
-  TShortCut GetShortCut() { return FShortCut; }
+  TShortCut GetShortCut() const { return FShortCut; }
   void SetShortCut(TShortCut Value);
 
 protected:
