@@ -1202,7 +1202,7 @@ void TFarDialogItem::SetType(intptr_t Value)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TFarDialogItem::GetType()
+intptr_t TFarDialogItem::GetType() const
 {
   return static_cast<intptr_t>(GetDialogItem()->Type);
 }
@@ -1319,7 +1319,7 @@ void TFarDialogItem::SetEnabledDependencyNegative(TFarDialogItem * Value)
   }
 }
 //---------------------------------------------------------------------------
-bool TFarDialogItem::GetIsEmpty()
+bool TFarDialogItem::GetIsEmpty() const
 {
   return GetData().IsEmpty();
 }
@@ -1550,7 +1550,7 @@ void TFarDialogItem::SetWidth(intptr_t Value)
   SetBounds(R);
 }
 //---------------------------------------------------------------------------
-intptr_t TFarDialogItem::GetWidth()
+intptr_t TFarDialogItem::GetWidth() const
 {
   return static_cast<intptr_t>(GetActualBounds().Width() + 1);
 }
@@ -1570,12 +1570,12 @@ void TFarDialogItem::SetHeight(intptr_t Value)
   SetBounds(R);
 }
 //---------------------------------------------------------------------------
-intptr_t TFarDialogItem::GetHeight()
+intptr_t TFarDialogItem::GetHeight() const
 {
   return static_cast<intptr_t>(GetActualBounds().Height() + 1);
 }
 //---------------------------------------------------------------------------
-bool TFarDialogItem::CanFocus()
+bool TFarDialogItem::CanFocus() const
 {
   intptr_t Type = GetType();
   return GetVisible() && GetEnabled() && GetTabStop() &&
@@ -1899,7 +1899,7 @@ LONG_PTR TFarCheckBox::ItemProc(int Msg, LONG_PTR Param)
   }
 }
 //---------------------------------------------------------------------------
-bool TFarCheckBox::GetIsEmpty()
+bool TFarCheckBox::GetIsEmpty() const
 {
   return GetChecked() != BSTATE_CHECKED;
 }
@@ -1944,7 +1944,7 @@ LONG_PTR TFarRadioButton::ItemProc(int Msg, LONG_PTR Param)
   }
 }
 //---------------------------------------------------------------------------
-bool TFarRadioButton::GetIsEmpty()
+bool TFarRadioButton::GetIsEmpty() const
 {
   return !GetChecked();
 }
@@ -2558,7 +2558,7 @@ void TFarLister::ItemsChange(TObject * /*Sender*/)
   }
 }
 //---------------------------------------------------------------------------
-bool TFarLister::GetScrollBar()
+bool TFarLister::GetScrollBar() const
 {
   return (GetItems()->GetCount() > GetHeight());
 }

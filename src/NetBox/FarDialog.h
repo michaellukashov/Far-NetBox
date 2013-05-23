@@ -197,9 +197,9 @@ public:
   void SetRight(intptr_t Value) { SetCoordinate(2, Value); }
   intptr_t GetBottom() const { return GetCoordinate(3); }
   void SetBottom(intptr_t Value) { SetCoordinate(3, Value); }
-  intptr_t GetWidth();
+  intptr_t GetWidth() const;
   void SetWidth(intptr_t Value);
-  intptr_t GetHeight();
+  intptr_t GetHeight() const;
   void SetHeight(intptr_t Value);
   bool GetEnabled() const { return FEnabled; }
   void SetEnabled(bool Value);
@@ -210,7 +210,7 @@ public:
   void SetEnabledDependency(TFarDialogItem * Value);
   TFarDialogItem * GetEnabledDependencyNegative() const { return FEnabledDependencyNegative; }
   void SetEnabledDependencyNegative(TFarDialogItem * Value);
-  virtual bool GetIsEmpty();
+  virtual bool GetIsEmpty() const;
   intptr_t GetGroup() const { return FGroup; }
   void SetGroup(intptr_t Value) { FGroup = Value; }
   bool GetVisible() const { return GetFlag(DIF_HIDDEN | DIF_INVERSE); }
@@ -231,7 +231,7 @@ public:
 
   void Move(intptr_t DeltaX, intptr_t DeltaY);
   void MoveAt(intptr_t X, intptr_t Y);
-  virtual bool CanFocus();
+  virtual bool CanFocus() const;
   bool Focused() const;
   void SetFocus();
   void SetItem(intptr_t Value) { FItem = Value; }
@@ -253,12 +253,12 @@ protected:
   virtual UnicodeString GetData() const;
   virtual UnicodeString GetData();
   virtual void SetData(const UnicodeString & Value);
-  intptr_t GetType();
+  intptr_t GetType() const;
   void SetType(intptr_t Value);
   intptr_t  GetItem() const { return FItem; }
   intptr_t GetSelected() const;
   void SetSelected(intptr_t Value);
-  TFarDialogContainer * GetContainer() { return FContainer; }
+  TFarDialogContainer * GetContainer() const { return FContainer; }
   void SetContainer(TFarDialogContainer * Value);
   bool GetChecked() const;
   void SetChecked(bool Value);
@@ -268,7 +268,7 @@ protected:
   void UpdateFlags(DWORD Value);
   intptr_t GetCoordinate(intptr_t Index) const;
   void SetCoordinate(intptr_t Index, intptr_t Value);
-  TFarDialogItem * GetPrevItem();
+  TFarDialogItem * GetPrevItem() const;
   void UpdateFocused(bool Value);
   void UpdateEnabled();
 
@@ -394,7 +394,7 @@ public:
 protected:
   TFarAllowChangeEvent FOnAllowChange;
   virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
-  virtual bool GetIsEmpty();
+  virtual bool GetIsEmpty() const;
   virtual void SetData(const UnicodeString & Value);
 };
 //---------------------------------------------------------------------------
@@ -413,7 +413,7 @@ public:
 protected:
   TFarAllowChangeEvent FOnAllowChange;
   virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
-  virtual bool GetIsEmpty();
+  virtual bool GetIsEmpty() const;
   virtual void SetData(const UnicodeString & Value);
 };
 //---------------------------------------------------------------------------
@@ -613,7 +613,7 @@ public:
   void SetItems(const TStrings * Value);
   intptr_t GetTopIndex() const { return FTopIndex; }
   void SetTopIndex(intptr_t Value);
-  bool GetScrollBar();
+  bool GetScrollBar() const;
 
 protected:
   virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
