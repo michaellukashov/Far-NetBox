@@ -919,7 +919,7 @@ void TTerminal::Open()
   FSessionData->SetNumberOfRetries(0);
 }
 //------------------------------------------------------------------------------
-bool TTerminal::IsListenerFree(uintptr_t PortNumber)
+bool TTerminal::IsListenerFree(uintptr_t PortNumber) const
 {
   SOCKET Socket = socket(AF_INET, SOCK_STREAM, 0);
   bool Result = (Socket != INVALID_SOCKET);

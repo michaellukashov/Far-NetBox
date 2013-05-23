@@ -378,7 +378,7 @@ protected:
   virtual void DisplayBanner(const UnicodeString & Banner);
   virtual void Closed();
   virtual void HandleExtendedException(Exception * E);
-  bool IsListenerFree(uintptr_t PortNumber);
+  bool IsListenerFree(uintptr_t PortNumber) const;
   void DoProgress(TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
     const UnicodeString & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
@@ -514,11 +514,11 @@ public:
   TSessionData * GetSessionData() { return FSessionData; }
   TSessionData * GetSessionData() const { return FSessionData; }
   TSessionLog * GetLog() { return FLog; }
-  TActionLog * GetActionLog() { return FActionLog; };
+  TActionLog * GetActionLog() const { return FActionLog; };
   const TConfiguration * GetConfiguration() const { return FConfiguration; }
   TConfiguration * GetConfiguration() { return FConfiguration; }
-  TSessionStatus GetStatus() { return FStatus; }
-  TRemoteDirectory * GetFiles() { return FFiles; }
+  TSessionStatus GetStatus() const { return FStatus; }
+  TRemoteDirectory * GetFiles() const { return FFiles; }
   TNotifyEvent & GetOnChangeDirectory() { return FOnChangeDirectory; }
   void SetOnChangeDirectory(TNotifyEvent Value) { FOnChangeDirectory = Value; }
   TReadDirectoryEvent & GetOnReadDirectory() { return FOnReadDirectory; }
@@ -547,8 +547,8 @@ public:
   void SetOnProgress(TFileOperationProgressEvent Value) { FOnProgress = Value; }
   TFileOperationFinishedEvent &  GetOnFinished() { return FOnFinished; }
   void SetOnFinished(TFileOperationFinishedEvent Value) { FOnFinished = Value; }
-  TCurrentFSProtocol  GetFSProtocol() { return FFSProtocol; }
-  bool GetUseBusyCursor() { return FUseBusyCursor; }
+  TCurrentFSProtocol GetFSProtocol() const { return FFSProtocol; }
+  bool GetUseBusyCursor() const { return FUseBusyCursor; }
   void SetUseBusyCursor(bool Value) { FUseBusyCursor = Value; }
   bool GetAutoReadDirectory() { return FAutoReadDirectory; }
   void SetAutoReadDirectory(bool Value) { FAutoReadDirectory = Value; }
@@ -567,7 +567,7 @@ public:
   void SetOnCheckForEsc(TCheckForEscEvent Value) { FOnCheckForEsc = Value; }
   TNotifyEvent & GetOnClose() { return FOnClose; }
   void SetOnClose(TNotifyEvent Value) { FOnClose = Value; }
-  intptr_t GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
+  intptr_t GetTunnelLocalPortNumber() const { return FTunnelLocalPortNumber; }
 
 private:
   NB_DISABLE_COPY(TTerminal)
