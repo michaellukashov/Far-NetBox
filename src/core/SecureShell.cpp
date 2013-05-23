@@ -167,7 +167,8 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   for (int c = 0; c < CIPHER_COUNT; c++)
   {
     int pcipher = 0;
-    switch (Data->GetCipher(c)) {
+    switch (Data->GetCipher(c))
+    {
       case cipWarn: pcipher = CIPHER_WARN; break;
       case cip3DES: pcipher = CIPHER_3DES; break;
       case cipBlowfish: pcipher = CIPHER_BLOWFISH; break;
@@ -182,7 +183,8 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   for (int k = 0; k < KEX_COUNT; k++)
   {
     int pkex = 0;
-    switch (Data->GetKex(k)) {
+    switch (Data->GetKex(k))
+    {
       case kexWarn: pkex = KEX_WARN; break;
       case kexDHGroup1: pkex = KEX_DHGROUP1; break;
       case kexDHGroup14: pkex = KEX_DHGROUP14; break;

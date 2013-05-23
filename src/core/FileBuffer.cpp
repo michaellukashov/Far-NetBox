@@ -9,7 +9,8 @@
 //---------------------------------------------------------------------------
 char * EOLToStr(TEOLType EOLType)
 {
-  switch (EOLType) {
+  switch (EOLType)
+  {
     case eolLF: return "\n";
     case eolCRLF: return "\r\n";
     case eolCR: return "\r";
@@ -49,7 +50,10 @@ void TFileBuffer::SetMemory(TMemoryStream * Value)
 {
   if (FMemory != Value)
   {
-    if (FMemory) { delete FMemory; }
+    if (FMemory)
+    {
+      delete FMemory;
+    }
     FMemory = Value;
   }
 }

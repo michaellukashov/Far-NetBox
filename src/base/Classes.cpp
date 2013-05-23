@@ -1173,7 +1173,10 @@ void TStringList::QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SComp
       }
     }
     while (I <= J);
-    if (L < J) { QuickSort(L, J, SCompare); }
+    if (L < J)
+    {
+      QuickSort(L, J, SCompare);
+    }
     L = I;
   }
   while (I < R);
@@ -1459,14 +1462,20 @@ THandleStream::~THandleStream()
 __int64 THandleStream::Read(void * Buffer, __int64 Count)
 {
   __int64 Result = ::FileRead(FHandle, Buffer, Count);
-  if (Result == -1) { Result = 0; }
+  if (Result == -1)
+  {
+    Result = 0;
+  }
   return Result;
 }
 
 __int64 THandleStream::Write(const void * Buffer, __int64 Count)
 {
   __int64 Result = ::FileWrite(FHandle, Buffer, Count);
-  if (Result == -1) { Result = 0; }
+  if (Result == -1)
+  {
+    Result = 0;
+  }
   return Result;
 }
 
@@ -1526,7 +1535,10 @@ __int64 TMemoryStream::Read(void * Buffer, __int64 Count)
     Result = FSize - FPosition;
     if (Result > 0)
     {
-      if (Result > Count) { Result = Count; }
+      if (Result > Count)
+      {
+        Result = Count;
+      }
       memmove(Buffer, reinterpret_cast<char *>(FMemory) + FPosition, static_cast<size_t>(Result));
       FPosition += Result;
       return Result;
@@ -1561,7 +1573,10 @@ __int64 TMemoryStream::Seek(const __int64 Offset, TSeekOrigin Origin)
 
 void TMemoryStream::SaveToStream(TStream * Stream)
 {
-  if (FSize != 0) { Stream->WriteBuffer(FMemory, FSize); }
+  if (FSize != 0)
+  {
+    Stream->WriteBuffer(FMemory, FSize);
+  }
 }
 
 void TMemoryStream::SaveToFile(const UnicodeString & FileName)
@@ -1583,7 +1598,10 @@ void TMemoryStream::SetSize(const __int64 NewSize)
   __int64 OldPosition = FPosition;
   SetCapacity(NewSize);
   FSize = NewSize;
-  if (OldPosition > NewSize) { Seek(0, Classes::soFromEnd); }
+  if (OldPosition > NewSize)
+  {
+    Seek(0, Classes::soFromEnd);
+  }
 }
 
 void TMemoryStream::SetCapacity(__int64 NewCapacity)
@@ -1887,7 +1905,10 @@ bool TRegistry::KeyExists(const UnicodeString & Key)
   {
     FAccess = STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS;
     HKEY TempKey = GetKey(Key);
-    if (TempKey != 0) { RegCloseKey(TempKey); }
+    if (TempKey != 0)
+    {
+      RegCloseKey(TempKey);
+    }
     Result = TempKey != 0;
   }
   ,

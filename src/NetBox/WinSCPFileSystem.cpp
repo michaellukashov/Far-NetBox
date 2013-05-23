@@ -112,7 +112,8 @@ void TRemoteFilePanelItem::GetData(
 //------------------------------------------------------------------------------
 UnicodeString TRemoteFilePanelItem::GetCustomColumnData(size_t Column)
 {
-  switch (Column) {
+  switch (Column)
+  {
     case 0: return FRemoteFile->GetFileGroup().GetName();
     case 1: return FRemoteFile->GetRightsStr();
     case 2: return FRemoteFile->GetRights()->GetOctal();

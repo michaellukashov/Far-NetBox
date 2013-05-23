@@ -526,7 +526,8 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   {
     intptr_t ProxyType = Storage->ReadInteger(L"ProxyType", pxNone);
     intptr_t ProxySOCKSVersion = 0;
-    switch (ProxyType) {
+    switch (ProxyType)
+    {
       case pxHTTP:
         SetProxyMethod(pmHTTP);
         break;
@@ -832,7 +833,8 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       // support for Putty 0.53b and older
       int ProxyType;
       int ProxySOCKSVersion = 5;
-      switch (GetProxyMethod()) {
+      switch (GetProxyMethod())
+      {
         case pmHTTP:
           ProxyType = pxHTTP;
           break;

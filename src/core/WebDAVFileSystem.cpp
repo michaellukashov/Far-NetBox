@@ -13324,7 +13324,10 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       {
         FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
           DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
-          if (FLAGCLEAR(LocalFileAttrs, faDirectory)) { EXCEPTION; }
+          if (FLAGCLEAR(LocalFileAttrs, faDirectory))
+          {
+            EXCEPTION;
+          }
         );
 
         FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
@@ -13399,7 +13402,10 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       uintptr_t LocalFileAttrs = 0;
       FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
         LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
-        if (((DWORD)LocalFileAttrs != -1) && FLAGSET(LocalFileAttrs, faDirectory)) { EXCEPTION; }
+        if (((DWORD)LocalFileAttrs != -1) && FLAGSET(LocalFileAttrs, faDirectory))
+        {
+          EXCEPTION;
+        }
       );
 
       OperationProgress->TransferingFile = false; // not set with FTP protocol

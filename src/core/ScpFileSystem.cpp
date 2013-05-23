@@ -502,7 +502,8 @@ UnicodeString TSCPFileSystem::AbsolutePath(const UnicodeString & Path, bool /*Lo
 bool TSCPFileSystem::IsCapable(intptr_t Capability) const
 {
   assert(FTerminal);
-  switch (Capability) {
+  switch (Capability)
+  {
     case fcUserGroupListing:
     case fcModeChanging:
     case fcModeChangingUpload:
@@ -2383,7 +2384,8 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
         wchar_t Ctrl = Line[1];
         Line.Delete(1, 1);
 
-        switch (Ctrl) {
+        switch (Ctrl)
+        {
           case 1:
             // Error (already logged by ReceiveLine())
             THROW_FILE_SKIPPED(NULL, FMTLOAD(REMOTE_ERROR, Line.c_str()));
@@ -2413,7 +2415,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
               FileData.SetTime = 2;
               continue;
             }
-              else
+            else
             {
               SCPError(LoadStr(SCP_ILLEGAL_TIME_FORMAT), False);
             }

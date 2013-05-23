@@ -953,7 +953,8 @@ public:
   UnicodeString GetTypeName() const
   {
     #define TYPE_CASE(TYPE) case TYPE: return TEXT(#TYPE)
-    switch (GetType()) {
+    switch (GetType())
+    {
       TYPE_CASE(SSH_FXP_INIT);
       TYPE_CASE(SSH_FXP_VERSION);
       TYPE_CASE(SSH_FXP_OPEN);
@@ -1875,7 +1876,8 @@ void TSFTPFileSystem::ResetConnection()
 bool TSFTPFileSystem::IsCapable(intptr_t Capability) const
 {
   assert(FTerminal);
-  switch (Capability) {
+  switch (Capability)
+  {
     case fcAnyCommand:
     case fcShellAnyCommand:
     case fcHardLink:
@@ -3950,7 +3952,8 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString & DestFileName,
         &Params);
     );
 
-    switch (Answer) {
+    switch (Answer)
+    {
       case qaNeverAskAgain:
         FTerminal->GetConfiguration()->SetConfirmResume(false);
       case qaYes:
