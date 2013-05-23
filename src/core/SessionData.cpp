@@ -354,14 +354,14 @@ void TSessionData::Assign(const TPersistent * Source)
     for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FBugs)); ++Index)
     {
       // PROPERTY(Bug[(TSshBug)Index]);
-      (static_cast<TSessionData *>(Source))->SetBug(static_cast<TSshBug>(Index),
-          GetBug(static_cast<TSshBug>(Index)));
+      SetBug(static_cast<TSshBug>(Index),
+          Data->GetBug(static_cast<TSshBug>(Index)));
     }
     for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FSFTPBugs)); ++Index)
     {
       // PROPERTY(SFTPBug[(TSftpBug)Index]);
-      (static_cast<TSessionData *>(Source))->SetSFTPBug(static_cast<TSftpBug>(Index),
-          GetSFTPBug(static_cast<TSftpBug>(Index)));
+      SetSFTPBug(static_cast<TSftpBug>(Index),
+          Data->GetSFTPBug(static_cast<TSftpBug>(Index)));
     }
 
     FModified = Data->GetModified();
