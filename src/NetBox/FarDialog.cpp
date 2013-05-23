@@ -1047,6 +1047,11 @@ TFarDialogItem::~TFarDialogItem()
     nb_free(GetDialogItem()->PtrData);
   }
 }
+
+const FarDialogItem * TFarDialogItem::GetDialogItem() const
+{
+  return const_cast<TFarDialogItem *>(this)->GetDialogItem();
+}
 //---------------------------------------------------------------------------
 FarDialogItem * TFarDialogItem::GetDialogItem()
 {
@@ -1103,9 +1108,9 @@ void TFarDialogItem::UpdateBounds()
   }
 }
 //---------------------------------------------------------------------------
-char TFarDialogItem::GetColor(int Index)
+char TFarDialogItem::GetColor(int Index) const
 {
-  return *((reinterpret_cast<char *>(&FColors)) + Index);
+  return *((reinterpret_cast<const char *>(&FColors)) + Index);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetColor(int Index, char Value)
@@ -1135,13 +1140,13 @@ void TFarDialogItem::UpdateFlags(DWORD Value)
   }
 }
 //---------------------------------------------------------------------------
-TRect TFarDialogItem::GetActualBounds()
+TRect TFarDialogItem::GetActualBounds() const
 {
   return TRect(GetDialogItem()->X1, GetDialogItem()->Y1,
                GetDialogItem()->X2, GetDialogItem()->Y2);
 }
 //---------------------------------------------------------------------------
-DWORD TFarDialogItem::GetFlags()
+DWORD TFarDialogItem::GetFlags() const
 {
   return GetDialogItem()->Flags;
 }
@@ -1171,6 +1176,11 @@ void TFarDialogItem::UpdateData(const UnicodeString & Value)
   UnicodeString FarData = Value.c_str();
   nb_free(GetDialogItem()->PtrData);
   GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
+}
+//---------------------------------------------------------------------------
+UnicodeString TFarDialogItem::GetData() const
+{
+  return const_cast<TFarDialogItem *>(this)->GetData();
 }
 //---------------------------------------------------------------------------
 UnicodeString TFarDialogItem::GetData()
@@ -1205,9 +1215,19 @@ void TFarDialogItem::SetAlterType(intptr_t Index, bool Value)
   }
 }
 //---------------------------------------------------------------------------
+bool TFarDialogItem::GetAlterType(intptr_t Index) const
+{
+  return const_cast<TFarDialogItem *>(this)->GetAlterType(Index);
+}
+//---------------------------------------------------------------------------
 bool TFarDialogItem::GetAlterType(intptr_t Index)
 {
   return (GetType() == Index);
+}
+//---------------------------------------------------------------------------
+bool TFarDialogItem::GetFlag(int Index) const
+{
+  return const_cast<TFarDialogItem *>(this)->GetFlag(Index);
 }
 //---------------------------------------------------------------------------
 bool TFarDialogItem::GetFlag(int Index)
@@ -1454,12 +1474,12 @@ void TFarDialogItem::UpdateSelected(intptr_t Value)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TFarDialogItem::GetSelected()
+intptr_t TFarDialogItem::GetSelected() const
 {
   return static_cast<intptr_t>(GetDialogItem()->Selected);
 }
 //---------------------------------------------------------------------------
-bool TFarDialogItem::GetFocused()
+bool TFarDialogItem::GetFocused() const
 {
   return GetDialogItem()->Focus != 0;
 }
@@ -1469,7 +1489,7 @@ void TFarDialogItem::SetFocused(bool Value)
   GetDialogItem()->Focus = Value;
 }
 //---------------------------------------------------------------------------
-bool TFarDialogItem::GetChecked()
+bool TFarDialogItem::GetChecked() const
 {
   return GetSelected() == BSTATE_CHECKED;
 }
@@ -1506,7 +1526,7 @@ void TFarDialogItem::SetCoordinate(intptr_t Index, intptr_t Value)
   SetBounds(R);
 }
 //---------------------------------------------------------------------------
-intptr_t TFarDialogItem::GetCoordinate(intptr_t Index)
+intptr_t TFarDialogItem::GetCoordinate(intptr_t Index) const
 {
   assert(sizeof(TRect) == sizeof(int) * 4);
   TRect R = GetBounds();
@@ -1564,7 +1584,7 @@ bool TFarDialogItem::CanFocus()
      Type == DI_COMBOBOX || Type == DI_LISTBOX || Type == DI_USERCONTROL);
 }
 //---------------------------------------------------------------------------
-bool TFarDialogItem::Focused()
+bool TFarDialogItem::Focused() const
 {
   return GetFocused();
 }
@@ -1788,7 +1808,7 @@ void TFarButton::SetDefault(bool Value)
   }
 }
 //---------------------------------------------------------------------------
-bool TFarButton::GetDefault()
+bool TFarButton::GetDefault() const
 {
   return GetDialogItem()->DefaultButton != 0;
 }
@@ -1964,7 +1984,7 @@ LONG_PTR TFarEdit::ItemProc(int Msg, LONG_PTR Param)
   return TFarDialogItem::ItemProc(Msg, Param);
 }
 //---------------------------------------------------------------------------
-UnicodeString TFarEdit::GetHistoryMask(size_t Index)
+UnicodeString TFarEdit::GetHistoryMask(size_t Index) const
 {
   UnicodeString Result =
     ((Index == 0) && (GetFlags() & DIF_HISTORY)) ||
@@ -2099,11 +2119,11 @@ TFarList::~TFarList()
   nb_free(FListItems);
 }
 //---------------------------------------------------------------------------
-void TFarList::Assign(TPersistent * Source)
+void TFarList::Assign(const TPersistent * Source)
 {
   TStringList::Assign(Source);
 
-  TFarList * FarList = dynamic_cast<TFarList *>(Source);
+  const TFarList * FarList = dynamic_cast<const TFarList *>(Source);
   if (FarList != NULL)
   {
     for (intptr_t Index = 0; Index < FarList->GetCount(); ++Index)
@@ -2346,7 +2366,7 @@ intptr_t TFarList::GetSelected()
   return Result;
 }
 //---------------------------------------------------------------------------
-DWORD TFarList::GetFlags(intptr_t Index)
+DWORD TFarList::GetFlags(intptr_t Index) const
 {
   return FListItems->Items[Index].Flags;
 }
@@ -2363,7 +2383,7 @@ void TFarList::SetFlags(intptr_t Index, DWORD Value)
   }
 }
 //---------------------------------------------------------------------------
-bool TFarList::GetFlag(intptr_t Index, DWORD Flag)
+bool TFarList::GetFlag(intptr_t Index, DWORD Flag) const
 {
   return FLAGSET(GetFlags(Index), Flag);
 }

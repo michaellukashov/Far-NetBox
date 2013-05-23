@@ -2027,6 +2027,11 @@ void TCustomFarFileSystem::ResetCachedInfo()
   }
 }
 //---------------------------------------------------------------------------
+const TFarPanelInfo * TCustomFarFileSystem::GetPanelInfo(int Another) const
+{
+  return const_cast<TCustomFarFileSystem *>(this)->GetPanelInfo(Another);
+}
+//---------------------------------------------------------------------------
 TFarPanelInfo * TCustomFarFileSystem::GetPanelInfo(int Another)
 {
   bool bAnother = Another != 0;
@@ -2585,7 +2590,12 @@ TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & FileName)
   return NULL;
 }
 //---------------------------------------------------------------------------
-TFarPanelItem * TFarPanelInfo::FindUserData(void * UserData)
+const TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData) const
+{
+  return const_cast<TFarPanelInfo *>(this)->FindUserData(UserData);
+}
+//---------------------------------------------------------------------------
+TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData)
 {
   TObjectList * AItems = GetItems();
   for (intptr_t Index = 0; Index < AItems->GetCount(); ++Index)
@@ -2621,10 +2631,10 @@ TFarPanelItem * TFarPanelInfo::GetFocusedItem()
   }
 }
 //---------------------------------------------------------------------------
-void TFarPanelInfo::SetFocusedItem(TFarPanelItem * Value)
+void TFarPanelInfo::SetFocusedItem(const TFarPanelItem * Value)
 {
   TObjectList * Items = GetItems();
-  intptr_t Index = Items->IndexOf(static_cast<TObject *>(Value));
+  intptr_t Index = Items->IndexOf(static_cast<const TObject *>(Value));
   assert(Index != NPOS);
   SetFocusedIndex(Index);
   // delete Items;
@@ -2785,7 +2795,7 @@ void TFarMenuItems::SetFlag(intptr_t Index, uintptr_t Flag, bool Value)
   }
 }
 //---------------------------------------------------------------------------
-bool TFarMenuItems::GetFlag(intptr_t Index, uintptr_t Flag)
+bool TFarMenuItems::GetFlag(intptr_t Index, uintptr_t Flag) const
 {
   return (reinterpret_cast<uintptr_t>(GetObject(Index)) & Flag) > 0;
 }

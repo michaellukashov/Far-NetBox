@@ -125,7 +125,7 @@ protected:
   void EditConnectSession(TSessionData * Data, bool Edit, bool NewData, bool FillInConnect);
   void DuplicateOrRenameSession(TSessionData * Data,
     bool Duplicate);
-  void FocusSession(TSessionData * Data);
+  void FocusSession(const TSessionData * Data);
   void DeleteSession(TSessionData * Data, void * Param);
   void ProcessSessions(TObjectList * PanelItems,
     TProcessSessionEvent ProcessSession, void * Param);
@@ -232,10 +232,10 @@ protected:
   bool IsLogging();
   void ShowLog();
 
-  TTerminal * GetTerminal() { return FTerminal; }
+  TTerminal * GetTerminal() const { return FTerminal; }
 
 protected:
-  virtual UnicodeString GetCurrentDirectory() { return FTerminal ? FTerminal->GetCurrentDirectory() : UnicodeString(); }
+  virtual UnicodeString GetCurrentDirectory() const { return FTerminal ? FTerminal->GetCurrentDirectory() : UnicodeString(); }
 
 private:
   TTerminal * FTerminal;
@@ -347,13 +347,13 @@ class TSessionPanelItem : public TCustomFarPanelItem
 {
 public:
   explicit TSessionPanelItem(const UnicodeString & Path);
-  explicit TSessionPanelItem(TSessionData * ASessionData);
+  explicit TSessionPanelItem(const TSessionData * ASessionData);
   static void SetPanelModes(TFarPanelModes * PanelModes);
   static void SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles);
 
 protected:
   UnicodeString FPath;
-  TSessionData * FSessionData;
+  const TSessionData * FSessionData;
 
   virtual void GetData(
     DWORD & Flags, UnicodeString & FileName, __int64 & Size,
