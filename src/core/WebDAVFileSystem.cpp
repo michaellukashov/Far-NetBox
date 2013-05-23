@@ -13399,10 +13399,10 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       OperationProgress->SetTransferSize(File->GetSize());
       OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
-      uintptr_t LocalFileAttrs = 0;
+      DWORD LocalFileAttrs = 0;
       FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
         LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
-        if (((DWORD)LocalFileAttrs != -1) && FLAGSET(LocalFileAttrs, faDirectory))
+        if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, faDirectory))
         {
           EXCEPTION;
         }
@@ -13444,7 +13444,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
 
       Action.Destination(ExpandUNCFileName(DestFullName));
 
-      if ((DWORD)LocalFileAttrs == -1)
+      if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
       {
         LocalFileAttrs = faArchive;
       }
