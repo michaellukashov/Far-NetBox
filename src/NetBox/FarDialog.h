@@ -301,15 +301,15 @@ public:
   void UpdateData(const UnicodeString & Value);
   void UpdateSelected(intptr_t Value);
 
-  bool GetFlag(int Index) const;
-  bool GetFlag(int Index);
-  void SetFlag(int Index, bool Value);
+  bool GetFlag(intptr_t Index) const;
+  bool GetFlag(intptr_t Index);
+  void SetFlag(intptr_t Index, bool Value);
 
   virtual void DoFocus();
   virtual void DoExit();
 
-  char GetColor(int Index) const;
-  void SetColor(int Index, char Value);
+  char GetColor(intptr_t Index) const;
+  void SetColor(intptr_t Index, char Value);
 
 private:
   TFarDialog * FDialog;

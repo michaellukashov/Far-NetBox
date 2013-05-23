@@ -1108,12 +1108,12 @@ void TFarDialogItem::UpdateBounds()
   }
 }
 //---------------------------------------------------------------------------
-char TFarDialogItem::GetColor(int Index) const
+char TFarDialogItem::GetColor(intptr_t Index) const
 {
   return *((reinterpret_cast<const char *>(&FColors)) + Index);
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetColor(int Index, char Value)
+void TFarDialogItem::SetColor(intptr_t Index, char Value)
 {
   if (GetColor(Index) != Value)
   {
@@ -1225,12 +1225,12 @@ bool TFarDialogItem::GetAlterType(intptr_t Index)
   return (GetType() == Index);
 }
 //---------------------------------------------------------------------------
-bool TFarDialogItem::GetFlag(int Index) const
+bool TFarDialogItem::GetFlag(intptr_t Index) const
 {
   return const_cast<TFarDialogItem *>(this)->GetFlag(Index);
 }
 //---------------------------------------------------------------------------
-bool TFarDialogItem::GetFlag(int Index)
+bool TFarDialogItem::GetFlag(intptr_t Index)
 {
   bool Result = (GetFlags() & (Index & 0xFFFFFFFFFFFFFF00ULL)) != 0;
   if (Index & 0x000000FFUL)
@@ -1240,7 +1240,7 @@ bool TFarDialogItem::GetFlag(int Index)
   return Result;
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetFlag(int Index, bool Value)
+void TFarDialogItem::SetFlag(intptr_t Index, bool Value)
 {
   if (GetFlag(Index) != Value)
   {
