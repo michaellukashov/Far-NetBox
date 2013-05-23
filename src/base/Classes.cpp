@@ -65,7 +65,7 @@ TPersistent::TPersistent()
 TPersistent::~TPersistent()
 {}
 
-void TPersistent::Assign(TPersistent * Source)
+void TPersistent::Assign(const TPersistent * Source)
 {
   if (Source != NULL)
   {
@@ -77,7 +77,7 @@ void TPersistent::Assign(TPersistent * Source)
   }
 }
 
-void TPersistent::AssignTo(TPersistent * Dest)
+void TPersistent::AssignTo(TPersistent * Dest) const
 {
   Dest->AssignError(this);
 }
@@ -87,7 +87,7 @@ TPersistent * TPersistent::GetOwner()
   return NULL;
 }
 
-void TPersistent::AssignError(TPersistent * Source)
+void TPersistent::AssignError(const TPersistent * Source)
 {
   (void)Source;
   UnicodeString SourceName = L"nil";
@@ -220,7 +220,7 @@ void TList::Insert(intptr_t Index, void * Item)
   }
 }
 
-intptr_t TList::IndexOf(void * Value) const
+intptr_t TList::IndexOf(const void * Value) const
 {
   intptr_t Result = 0;
   while ((Result < static_cast<intptr_t>(FList.size())) && (FList[Result] != Value))
@@ -350,7 +350,7 @@ void TObjectList::Insert(intptr_t Index, TObject * Value)
   TList::Insert(Index, Value);
 }
 
-intptr_t TObjectList::IndexOf(TObject * Value) const
+intptr_t TObjectList::IndexOf(const TObject * Value) const
 {
   return TList::IndexOf(Value);
 }
@@ -538,7 +538,7 @@ intptr_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString 
   return static_cast<intptr_t>(::AnsiCompareText(S1, S2));
 }
 
-void TStrings::Assign(TPersistent * Source)
+void TStrings::Assign(const TPersistent * Source)
 {
   if (::InheritsFrom<TPersistent, TStrings>(Source))
   {
@@ -548,9 +548,10 @@ void TStrings::Assign(TPersistent * Source)
       {
         Clear();
         // FDefined = TStrings(Source).FDefined;
-        FQuoteChar = static_cast<TStrings *>(Source)->FQuoteChar;
-        FDelimiter = static_cast<TStrings *>(Source)->FDelimiter;
-        AddStrings(static_cast<TStrings *>(Source));
+        const TStrings * Strings = static_cast<const TStrings *>(Source);
+        FQuoteChar = Strings->FQuoteChar;
+        FDelimiter = Strings->FDelimiter;
+        AddStrings(Strings);
       }
       ,
       {
@@ -790,7 +791,7 @@ void TStrings::SetValue(const UnicodeString & Name, const UnicodeString & Value)
   }
 }
 
-void TStrings::AddStrings(TStrings * Strings)
+void TStrings::AddStrings(const TStrings * Strings)
 {
   BeginUpdate();
   {
@@ -836,7 +837,7 @@ TStringList::TStringList() :
 TStringList::~TStringList()
 {}
 
-void TStringList::Assign(TPersistent * Source)
+void TStringList::Assign(const TPersistent * Source)
 {
   TStrings::Assign(Source);
 }

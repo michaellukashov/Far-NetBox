@@ -150,12 +150,12 @@ class TPersistent : public TObject
 public:
   TPersistent();
   virtual ~TPersistent();
-  virtual void Assign(TPersistent * Source);
+  virtual void Assign(const Classes::TPersistent * Source);
 protected:
-  virtual void AssignTo(TPersistent * Dest);
+  virtual void AssignTo(Classes::TPersistent * Dest) const;
   virtual TPersistent * GetOwner();
 private:
-  void AssignError(TPersistent * Source);
+  void AssignError(const Classes::TPersistent * Source);
 };
 
 //---------------------------------------------------------------------------
@@ -184,7 +184,7 @@ public:
   void Move(intptr_t CurIndex, intptr_t NewIndex);
   void Delete(intptr_t Index);
   void Insert(intptr_t Index, void * Item);
-  intptr_t IndexOf(void * Value) const;
+  intptr_t IndexOf(const void * Value) const;
   virtual void Clear();
   virtual void Sort(CompareFunc Func);
   virtual void Notify(void * Ptr, TListNotification Action);
@@ -212,7 +212,7 @@ public:
   void Move(intptr_t Index, intptr_t To);
   void Delete(intptr_t Index);
   void Insert(intptr_t Index, TObject * Value);
-  intptr_t IndexOf(TObject * Value) const;
+  intptr_t IndexOf(const Classes::TObject * Value) const;
   virtual void Clear();
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
@@ -252,7 +252,7 @@ public:
   intptr_t IndexOf(const UnicodeString & S);
   virtual intptr_t IndexOfName(const UnicodeString & Name) const;
   UnicodeString ExtractName(const UnicodeString & S) const;
-  void AddStrings(TStrings * Strings);
+  void AddStrings(const Classes::TStrings * Strings);
   void Append(const UnicodeString & Value);
   virtual void Insert(intptr_t Index, const UnicodeString & AString, TObject * AObject = NULL) = 0;
   void SaveToStream(TStream * Stream) const;
@@ -270,7 +270,7 @@ public:
   void SetDelimitedText(const UnicodeString & Value);
   virtual intptr_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const;
   intptr_t GetUpdateCount() const { return FUpdateCount; }
-  virtual void Assign(TPersistent * Source);
+  virtual void Assign(const TPersistent * Source);
   virtual intptr_t GetCount() const = 0;
 
 public:
@@ -323,7 +323,7 @@ public:
   void InsertItem(intptr_t Index, const UnicodeString & S, TObject * AObject);
   void QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
 
-  virtual void Assign(TPersistent * Source);
+  virtual void Assign(const TPersistent * Source);
   virtual void Clear();
   virtual bool Find(const UnicodeString & S, intptr_t & Index);
   virtual intptr_t IndexOf(const UnicodeString & S);
