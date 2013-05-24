@@ -453,9 +453,9 @@ UnicodeString TCopyParamType::GetLogStr() const
     GetAsciiFileMask().GetMasks().c_str());
 }
 //---------------------------------------------------------------------------
-uintptr_t TCopyParamType::LocalFileAttrs(const TRights & Rights) const
+DWORD TCopyParamType::LocalFileAttrs(const TRights & Rights) const
 {
-  uintptr_t Result = 0;
+  DWORD Result = 0;
   if (GetPreserveReadOnly() && !Rights.GetRight(TRights::rrUserWrite))
   {
     Result |= faReadOnly;

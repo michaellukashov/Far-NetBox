@@ -79,7 +79,7 @@ public:
   virtual void Default();
   UnicodeString ChangeFileName(const UnicodeString & FileName,
     TOperationSide Side, bool FirstLevel) const;
-  uintptr_t LocalFileAttrs(const TRights & Rights) const;
+  DWORD LocalFileAttrs(const TRights & Rights) const;
   TRights RemoteFileRights(uintptr_t Attrs) const;
   bool UseAsciiTransfer(const UnicodeString & FileName, TOperationSide Side,
     const TFileMasks::TParams & Params) const;

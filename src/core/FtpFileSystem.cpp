@@ -1016,7 +1016,7 @@ void TFTPFileSystem::FileTransferProgress(__int64 TransferSize,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::FileTransfer(const UnicodeString & FileName,
   const UnicodeString & LocalFile, HANDLE Handle, const UnicodeString & RemoteFile,
-  const UnicodeString & RemotePath, bool Get, __int64 Size, int Type,
+  const UnicodeString & RemotePath, bool Get, __int64 Size, intptr_t Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
   FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
