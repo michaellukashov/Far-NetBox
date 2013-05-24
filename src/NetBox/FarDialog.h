@@ -302,7 +302,6 @@ public:
   void UpdateSelected(intptr_t Value);
 
   bool GetFlag(intptr_t Index) const;
-  bool GetFlag(intptr_t Index);
   void SetFlag(intptr_t Index, bool Value);
 
   virtual void DoFocus();
