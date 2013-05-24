@@ -71,7 +71,8 @@ class CAsyncGssSocketLayer;
 class CTransferSocket;
 class CFileZillaTools;
 
-#define BUFSIZE                             16384
+// #define BUFSIZE                             16384
+#define BUFSIZE 64 * 1024
 
 class CControlSocket : public CAsyncSocketEx, public CApiLog
 {

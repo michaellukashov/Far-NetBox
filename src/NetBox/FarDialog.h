@@ -303,7 +303,6 @@ public:
   void UpdateSelected(intptr_t Value);
 
   bool GetFlag(FARDIALOGITEMFLAGS Index) const;
-  bool GetFlag(FARDIALOGITEMFLAGS Index);
   void SetFlag(FARDIALOGITEMFLAGS Index, bool Value);
 
   virtual void DoFocus();

@@ -1244,11 +1244,6 @@ bool TFarDialogItem::GetAlterType(FARDIALOGITEMTYPES Index)
 //---------------------------------------------------------------------------
 bool TFarDialogItem::GetFlag(FARDIALOGITEMFLAGS Index) const
 {
-  return const_cast<TFarDialogItem *>(this)->GetFlag(Index);
-}
-//---------------------------------------------------------------------------
-bool TFarDialogItem::GetFlag(FARDIALOGITEMFLAGS Index)
-{
   bool Result = (GetFlags() & (Index & 0xFFFFFFFFFFFFFF00ULL)) != 0;
   if (Index & 0x000000FFUL)
   {

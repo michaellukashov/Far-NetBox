@@ -1,5 +1,6 @@
 NetBox 2.1.30 ??.05.2013
 --------------------
+  * Performance improvements.
   * Bugfix: Password prompt dialog is showing password.
     (http://forum.farmanager.com/viewtopic.php?p=109881#p109881)
   * Bugfix: Two instances of plugin share the same panel modes.
