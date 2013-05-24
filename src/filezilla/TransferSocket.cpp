@@ -41,7 +41,8 @@ static char THIS_FILE[] = __FILE__;
 #endif
 #endif
 
-#define BUFSIZE 16384
+// #define BUFSIZE 16384
+#define BUFSIZE 64 * 1024
 
 #define STATE_WAITING		0
 #define STATE_STARTING		1
