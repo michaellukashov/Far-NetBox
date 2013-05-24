@@ -160,7 +160,7 @@ THierarchicalStorage * TConfiguration::CreateStorage(bool /*SessionList*/)
 UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
 {
   // no longer useful
-  int P = Property.LastDelimiter(L".>");
+  intptr_t P = Property.LastDelimiter(L".>");
   return Property.SubString(P + 1, Property.Length() - P);
 }
 //---------------------------------------------------------------------------

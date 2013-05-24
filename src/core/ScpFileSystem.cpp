@@ -1424,7 +1424,7 @@ uintptr_t TSCPFileSystem::ConfirmOverwrite(
   TQueryParams QueryParams(qpNeverAskAgainCheck);
   QueryParams.Aliases = Aliases;
   QueryParams.AliasesCount = LENOF(Aliases);
-  unsigned int Answer;
+  uintptr_t Answer;
   SUSPEND_OPERATION
   (
     Answer = FTerminal->ConfirmFileOverwrite(
