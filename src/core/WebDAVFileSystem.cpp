@@ -798,10 +798,6 @@ typedef struct vtable_t
   // string.
   const char * (*get_description)(void);
 
-  // Return a list of actual URI schemes supported by this implementation.
-  // The returned array is NULL-terminated.
-  const char * const * (*get_schemes)(apr_pool_t * pool);
-
   // Implementations of the public API functions.
 
   // See session_open().
@@ -11501,15 +11497,6 @@ ensure_neon_initialized()
   return atomic_init_once(&neon_initialized, initialize_neon, NULL, NULL);
 }
 
-static const char * const *
-ra_neon_get_schemes(apr_pool_t * pool)
-{
-  static const char * schemes_no_ssl[] = { "http", NULL };
-  static const char * schemes_ssl[] = { "http", "https", NULL };
-
-  return ne_has_support(NE_FEATURE_SSL) ? schemes_ssl : schemes_no_ssl;
-}
-
 static error_t
 neon_open(
   session_t * session,
@@ -12083,7 +12070,6 @@ neon_get_webdav_resource_root(
 static const vtable_t neon_vtable =
 {
   NULL, // get_description
-  ra_neon_get_schemes, // get_schemes
   neon_open, // open_session
   neon_reparent, // reparent
   neon_get_session_url, // get_session_url
