@@ -10,6 +10,7 @@
 #include "FileMasks.h"
 #include "RemoteFiles.h"
 #include "puttyexp.h"
+#include "plugin_version.hpp"
 
 //---------------------------------------------------------------------------
 TCustomFarPlugin * FarPlugin = NULL;
@@ -2943,5 +2944,10 @@ UnicodeString TGlobalFunctions::GetCurrentDirectory() const
   }
   Result = Path;
   return Result;
+}
+
+UnicodeString TGlobalFunctions::GetStrVersionNumber() const
+{
+  return NETBOX_VERSION_NUMBER;
 }
 //------------------------------------------------------------------------------

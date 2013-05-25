@@ -923,6 +923,7 @@ public:
 
   virtual HINSTANCE GetHandle() const = 0;
   virtual UnicodeString GetCurrentDirectory() const = 0;
+  virtual UnicodeString GetStrVersionNumber() const = 0;
 };
 //---------------------------------------------------------------------------
 extern TGlobalFunctionsIntf * GlobalFunctions;

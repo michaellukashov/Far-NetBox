@@ -1920,29 +1920,6 @@ UnicodeString FormatSize(__int64 Size)
 {
   return FormatNumber(Size);
 }
-//---------------------------------------------------------------------------
-uintptr_t StrToVersionNumber(const UnicodeString & VersionMumberStr)
-{
-  uintptr_t Result = 0;
-  UnicodeString Version = VersionMumberStr;
-  int Shift = 16;
-  while (!Version.IsEmpty())
-  {
-    UnicodeString Num = CutToChar(Version, L'.', true);
-    Result += static_cast<uintptr_t>(Num.ToInt()) << Shift;
-    if (Shift >= 8) Shift -= 8;
-  }
-  return Result;
-}
-//---------------------------------------------------------------------------
-UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
-{
-  DWORD Major = (VersionNumber>>16) & 0xFF;
-  DWORD Minor = (VersionNumber>>8) & 0xFF; 
-  DWORD Revision = (VersionNumber & 0xFF);
-  UnicodeString Result = FORMAT(L"%d.%d.%d", Major, Minor, Revision);
-  return Result;
-}
 //---------------------------------------------------------------------
 UnicodeString FormatBytes(__int64 Bytes, bool UseOrders)
 {

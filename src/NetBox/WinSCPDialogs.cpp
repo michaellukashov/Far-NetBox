@@ -20,7 +20,7 @@
 #include <Queue.h>
 #include <farkeys.hpp>
 #include <farcolor.hpp>
-#include "plugin_version.hpp"
+
 //------------------------------------------------------------------------------
 #pragma package(smart_init)
 //------------------------------------------------------------------------------

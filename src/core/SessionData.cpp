@@ -14,7 +14,7 @@
 #include "TextsCore.h"
 #include "PuttyIntf.h"
 #include "RemoteFiles.h"
-#include "plugin_version.hpp"
+
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -213,7 +213,7 @@ void TSessionData::Default()
   SetFtpAllowEmptyPassword(false);
 
   FNumberOfRetries = 0;
-  FSessionVersion = ::StrToVersionNumber(NETBOX_VERSION_NUMBER);
+  FSessionVersion = ::StrToVersionNumber(GlobalFunctions->GetStrVersionNumber());
   // add also to TSessionLog::AddStartupInfo()
 }
 //---------------------------------------------------------------------

@@ -510,5 +510,6 @@ public:
 
   virtual HINSTANCE GetHandle() const;
   virtual UnicodeString GetCurrentDirectory() const;
+  virtual UnicodeString GetStrVersionNumber() const;
 };
 //------------------------------------------------------------------------------
