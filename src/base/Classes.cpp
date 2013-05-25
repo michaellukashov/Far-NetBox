@@ -549,6 +549,7 @@ void TStrings::Assign(const TPersistent * Source)
         Clear();
         // FDefined = TStrings(Source).FDefined;
         const TStrings * Strings = static_cast<const TStrings *>(Source);
+        assert(Strings);
         FQuoteChar = Strings->FQuoteChar;
         FDelimiter = Strings->FDelimiter;
         AddStrings(Strings);
@@ -559,9 +560,11 @@ void TStrings::Assign(const TPersistent * Source)
       }
       );
     }
-    return;
   }
-  TPersistent::Assign(Source);
+  else
+  {
+    TPersistent::Assign(Source);
+  }
 }
 
 intptr_t TStrings::Add(const UnicodeString & S, TObject * AObject)
