@@ -3995,7 +3995,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   TEditHistories::iterator ih = rde::find(FEditHistories.begin(), FEditHistories.end(), EditHistory);
   if (ih != FEditHistories.end())
   {
-    FEditHistories.erase(ih);
+    FEditHistories.erase_unordered(ih);
   }
   FEditHistories.push_back(EditHistory);
 
