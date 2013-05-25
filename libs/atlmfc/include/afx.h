@@ -1269,7 +1269,12 @@ void* __cdecl operator new[](size_t nSize) throw(std::bad_alloc);
 #endif // #if !defined(__MINGW32__)
 void* __cdecl operator new[](size_t nSize, LPCSTR lpszFileName, int nLine) throw(std::bad_alloc);
 void __cdecl operator delete[](void* p, LPCSTR lpszFileName, int nLine) throw();
+#if defined(__MINGW32__)
+void operator delete(void*) _GLIBCXX_USE_NOEXCEPT
+  __attribute__((__externally_visible__));
+#else
 void __cdecl operator delete[](void * p) throw();
+#endif
 
 void* AFXAPI AfxAllocMemoryDebug(size_t nSize, BOOL bIsObject,
 	LPCSTR lpszFileName, int nLine);
