@@ -10,6 +10,7 @@
 #include "FileMasks.h"
 #include "RemoteFiles.h"
 #include "puttyexp.h"
+#include "plugin_version.hpp"
 
 //---------------------------------------------------------------------------
 TCustomFarPlugin * FarPlugin = NULL;
@@ -63,6 +64,7 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
   {
     FNormalConsoleSize = TPoint(-1, -1);
   }
+  GlobalFunctions = new TGlobalFunctions();
 }
 //---------------------------------------------------------------------------
 TCustomFarPlugin::~TCustomFarPlugin()
@@ -82,6 +84,7 @@ TCustomFarPlugin::~TCustomFarPlugin()
     delete FSavedTitles->GetObject(I);
   delete FSavedTitles;
   delete FCriticalSection;
+  delete GlobalFunctions;
 }
 //---------------------------------------------------------------------------
 bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/)
@@ -2967,3 +2970,43 @@ void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidt
     }
   }
 }
+//------------------------------------------------------------------------------
+TGlobalFunctions::TGlobalFunctions()
+{
+}
+//------------------------------------------------------------------------------
+TGlobalFunctions::~TGlobalFunctions()
+{
+}
+//------------------------------------------------------------------------------
+HINSTANCE TGlobalFunctions::GetHandle() const
+{
+  HINSTANCE Result = NULL;
+  if (FarPlugin)
+  {
+    Result = FarPlugin->GetHandle();
+  }
+  return Result;
+}
+//------------------------------------------------------------------------------
+UnicodeString TGlobalFunctions::GetCurrentDirectory() const
+{
+  UnicodeString Result;
+  wchar_t Path[MAX_PATH + 1];
+  if (FarPlugin)
+  {
+    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(sizeof(Path), Path);
+  }
+  else
+  {
+    ::GetCurrentDirectory(sizeof(Path), Path);
+  }
+  Result = Path;
+  return Result;
+}
+
+UnicodeString TGlobalFunctions::GetStrVersionNumber() const
+{
+  return NETBOX_VERSION_NUMBER;
+}
+//------------------------------------------------------------------------------

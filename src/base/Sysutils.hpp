@@ -347,6 +347,21 @@ private:
 UnicodeString StripHotkey(const UnicodeString & AText);
 bool StartsText(const UnicodeString & ASubText, const UnicodeString & AText);
 //---------------------------------------------------------------------------
+struct TVersionInfo
+{
+  DWORD Major;
+  DWORD Minor;
+  DWORD Revision;
+  DWORD Build;
+};
+#define MAKEVERSIONNUMBER(major,minor,revision) ( ((major)<<16) | ((minor)<<8) | (revision))
+uintptr_t StrToVersionNumber(const UnicodeString & VersionMumberStr);
+UnicodeString VersionNumberToStr(uintptr_t VersionNumber);
+uintptr_t inline GetVersionNumber219() { return MAKEVERSIONNUMBER(2,1,9); }
+uintptr_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
+uintptr_t inline GetVersionNumber2121() { return MAKEVERSIONNUMBER(2,1,21); }
+uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GlobalFunctions->GetStrVersionNumber()); }
+//---------------------------------------------------------------------------
 } // namespace Sysutils
 
 using namespace Sysutils;

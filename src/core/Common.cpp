@@ -15,9 +15,6 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-#ifdef _MSC_VER
-#include "FarPlugin.h"
-#endif
 
 #if defined(__MINGW32__)
 typedef struct _TIME_DYNAMIC_ZONE_INFORMATION {
@@ -1596,7 +1593,7 @@ UnicodeString LoadStr(int Ident, intptr_t MaxLength)
 {
   UnicodeString Result;
   Result.SetLength(MaxLength > 0 ? MaxLength : 1024);
-  HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
+  HINSTANCE hInstance =  GlobalFunctions ? GlobalFunctions->GetHandle() : ::GetModuleHandle(0);
   assert(hInstance != 0);
   intptr_t Length = static_cast<intptr_t>(::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), (int)Result.Length()));
   Result.SetLength(Length);
@@ -1922,29 +1919,6 @@ UnicodeString FormatNumber(__int64 Number)
 UnicodeString FormatSize(__int64 Size)
 {
   return FormatNumber(Size);
-}
-//---------------------------------------------------------------------------
-uintptr_t StrToVersionNumber(const UnicodeString & VersionMumberStr)
-{
-  uintptr_t Result = 0;
-  UnicodeString Version = VersionMumberStr;
-  int Shift = 16;
-  while (!Version.IsEmpty())
-  {
-    UnicodeString Num = CutToChar(Version, L'.', true);
-    Result += static_cast<uintptr_t>(Num.ToInt()) << Shift;
-    if (Shift >= 8) Shift -= 8;
-  }
-  return Result;
-}
-//---------------------------------------------------------------------------
-UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
-{
-  DWORD Major = (VersionNumber>>16) & 0xFF;
-  DWORD Minor = (VersionNumber>>8) & 0xFF; 
-  DWORD Revision = (VersionNumber & 0xFF);
-  UnicodeString Result = FORMAT(L"%d.%d.%d", Major, Minor, Revision);
-  return Result;
 }
 //---------------------------------------------------------------------
 UnicodeString FormatBytes(__int64 Bytes, bool UseOrders)

@@ -32,7 +32,6 @@
 #include "TextsCore.h"
 #include "SecureShell.h"
 #include "HelpCore.h"
-#include "plugin_version.hpp"
 
 //------------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -11648,7 +11647,7 @@ neon_open(
   }
 
   {
-    static AnsiString useragent = "NetBox/" + W2MB(NETBOX_VERSION_NUMBER.c_str());
+    static AnsiString useragent = "NetBox/" + GlobalFunctions->GetStrVersionNumber();
     ne_set_useragent(sess, useragent.c_str());
   }
 

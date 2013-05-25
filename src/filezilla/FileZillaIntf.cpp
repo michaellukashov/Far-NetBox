@@ -46,7 +46,6 @@ TFileZillaIntf::TFileZillaIntf() :
 //---------------------------------------------------------------------------
 TFileZillaIntf::~TFileZillaIntf()
 {
-  TRACE("1");
   ASSERT(FFileZillaApi == NULL);
 
   delete FIntern;
@@ -74,7 +73,6 @@ bool TFileZillaIntf::Init()
 //---------------------------------------------------------------------------
 void TFileZillaIntf::Destroying()
 {
-  TRACE("1");
   // need to close FZAPI before calling destructor as it in turn post messages
   // back while being destroyed, what may result in calling virtual methods
   // of already destroyed descendants

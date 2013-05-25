@@ -5,7 +5,6 @@
 #include <headers.hpp>
 #include <Classes.hpp>
 #include <Sysutils.hpp>
-#include "FarPlugin.h"
 #include "RemoteFiles.h"
 
 //---------------------------------------------------------------------------
@@ -621,7 +620,7 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
 {
   UnicodeString Result(64, 0);
   wchar_t Format[1024];
-  HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
+  HINSTANCE hInstance = GlobalFunctions ? GlobalFunctions->GetHandle() : ::GetModuleHandle(0);
   intptr_t Length = ::LoadString(hInstance, static_cast<UINT>(Id),
     Format, static_cast<int>(sizeof(Format)));
   if (!Length)
@@ -1186,17 +1185,7 @@ UnicodeString ExtractFilePath(const UnicodeString & Str)
 
 UnicodeString GetCurrentDir()
 {
-  UnicodeString Result;
-  wchar_t Path[MAX_PATH + 1];
-  if (FarPlugin)
-  {
-    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(sizeof(Path), Path);
-  }
-  else
-  {
-    ::GetCurrentDirectory(sizeof(Path), Path);
-  }
-  Result = Path;
+  UnicodeString Result = GlobalFunctions ? GlobalFunctions->GetCurrentDirectory() : L"";
   return Result;
 }
 
@@ -1694,6 +1683,29 @@ UnicodeString StripHotkey(const UnicodeString & AText)
 bool StartsText(const UnicodeString & ASubText, const UnicodeString & AText)
 {
   return AText.Pos(ASubText) == 1;
+}
+//---------------------------------------------------------------------------
+uintptr_t StrToVersionNumber(const UnicodeString & VersionMumberStr)
+{
+  uintptr_t Result = 0;
+  UnicodeString Version = VersionMumberStr;
+  int Shift = 16;
+  while (!Version.IsEmpty())
+  {
+    UnicodeString Num = CutToChar(Version, L'.', true);
+    Result += static_cast<uintptr_t>(Num.ToInt()) << Shift;
+    if (Shift >= 8) Shift -= 8;
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
+{
+  DWORD Major = (VersionNumber>>16) & 0xFF;
+  DWORD Minor = (VersionNumber>>8) & 0xFF;
+  DWORD Revision = (VersionNumber & 0xFF);
+  UnicodeString Result = FORMAT(L"%d.%d.%d", Major, Minor, Revision);
+  return Result;
 }
 //---------------------------------------------------------------------------
 } // namespace Sysutils

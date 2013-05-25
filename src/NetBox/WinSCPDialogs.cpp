@@ -19,7 +19,7 @@
 #include <Bookmarks.h>
 #include <Queue.h>
 #include <farcolor.hpp>
-#include "plugin_version.hpp"
+
 //------------------------------------------------------------------------------
 #pragma package(smart_init)
 //------------------------------------------------------------------------------
