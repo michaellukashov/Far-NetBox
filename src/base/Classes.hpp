@@ -914,3 +914,16 @@ public:
 } // namespace Classes
 
 using namespace Classes;
+
+//---------------------------------------------------------------------------
+class TGlobalFunctionsIntf
+{
+public:
+  virtual ~TGlobalFunctionsIntf() {};
+
+  virtual HINSTANCE GetHandle() const = 0;
+  virtual UnicodeString GetCurrentDirectory() const = 0;
+};
+//---------------------------------------------------------------------------
+extern TGlobalFunctionsIntf * GlobalFunctions;
+//---------------------------------------------------------------------------

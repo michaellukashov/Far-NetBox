@@ -15,9 +15,6 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-#ifdef _MSC_VER
-#include "FarPlugin.h"
-#endif
 
 #if defined(__MINGW32__)
 typedef struct _TIME_DYNAMIC_ZONE_INFORMATION {
@@ -1596,7 +1593,7 @@ UnicodeString LoadStr(int Ident, intptr_t MaxLength)
 {
   UnicodeString Result;
   Result.SetLength(MaxLength > 0 ? MaxLength : 1024);
-  HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
+  HINSTANCE hInstance =  GlobalFunctions ? GlobalFunctions->GetHandle() : ::GetModuleHandle(0);
   assert(hInstance != 0);
   intptr_t Length = static_cast<intptr_t>(::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), (int)Result.Length()));
   Result.SetLength(Length);

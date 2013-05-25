@@ -11,6 +11,10 @@
 #include <Sysutils.hpp>
 #include <rtlconsts.h>
 
+//---------------------------------------------------------------------------
+TGlobalFunctionsIntf * GlobalFunctions = NULL;
+//---------------------------------------------------------------------------
+
 namespace Classes {
 
 intptr_t __cdecl debug_printf(const wchar_t * format, ...)
