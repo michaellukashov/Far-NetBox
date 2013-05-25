@@ -545,7 +545,7 @@ class TMemoryStream : public TStream
 {
 public:
   TMemoryStream();
-  virtual  ~TMemoryStream();
+  virtual ~TMemoryStream();
   virtual __int64 Read(void * Buffer, __int64 Count);
   virtual __int64 Seek(__int64 Offset, int Origin);
   virtual __int64 Seek(const __int64 Offset, TSeekOrigin Origin);
@@ -883,7 +883,6 @@ public:
     {
       Result += (wchar_t)*it;
     }
-
     return Result;
   }
 };
@@ -911,7 +910,6 @@ public:
   TCustomIniFile() {}
   virtual ~TCustomIniFile() {}
 };
-
 //---------------------------------------------------------------------------
 } // namespace Classes
 
