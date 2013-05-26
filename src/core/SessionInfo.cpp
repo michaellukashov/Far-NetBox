@@ -580,7 +580,7 @@ TSessionInfo::TSessionInfo()
 //---------------------------------------------------------------------------
 TFileSystemInfo::TFileSystemInfo()
 {
-  memset(&IsCapable, (int)false, sizeof(IsCapable));
+  memset(&IsCapable, 0, sizeof(IsCapable));
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

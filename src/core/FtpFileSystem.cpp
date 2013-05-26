@@ -214,6 +214,7 @@ struct TSinkFileParams
 //---------------------------------------------------------------------------
 class TFTPFileListHelper : public TObject
 {
+NB_DISABLE_COPY(TFTPFileListHelper)
 public:
   explicit TFTPFileListHelper(TFTPFileSystem * FileSystem, TRemoteFileList * FileList,
       bool IgnoreFileList) :

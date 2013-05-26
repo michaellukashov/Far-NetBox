@@ -18,9 +18,9 @@ char * EOLToStr(TEOLType EOLType)
   }
 }
 //---------------------------------------------------------------------------
-TFileBuffer::TFileBuffer()
+TFileBuffer::TFileBuffer() :
+  FMemory(new TMemoryStream())
 {
-  FMemory = new TMemoryStream();
 }
 //---------------------------------------------------------------------------
 TFileBuffer::~TFileBuffer()

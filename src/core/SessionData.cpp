@@ -2526,12 +2526,12 @@ void TSessionData::SetSFTPMaxVersion(intptr_t Value)
   SET_SESSION_PROPERTY(SFTPMaxVersion);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetSFTPMinPacketSize(uintptr_t Value)
+void TSessionData::SetSFTPMinPacketSize(intptr_t Value)
 {
   SET_SESSION_PROPERTY(SFTPMinPacketSize);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetSFTPMaxPacketSize(uintptr_t Value)
+void TSessionData::SetSFTPMaxPacketSize(intptr_t Value)
 {
   SET_SESSION_PROPERTY(SFTPMaxPacketSize);
 }

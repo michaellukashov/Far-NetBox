@@ -13406,7 +13406,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       }
 
       {
-        unsigned int TransferType = 2; // OperationProgress->AsciiTransfer = false
+        int TransferType = 2; // OperationProgress->AsciiTransfer = false
         // ignore file list
         TWebDAVFileListHelper Helper(this, NULL, true);
 
@@ -13995,7 +13995,7 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
   // If we find nothing, default to nulls.
   *proxy_method = 0;
   *proxy_host = NULL;
-  *proxy_port = (unsigned int)-1;
+  *proxy_port = static_cast<unsigned int>(-1);
   *proxy_username = NULL;
   *proxy_password = NULL;
   *pk11_provider = NULL;
@@ -14005,8 +14005,8 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
   TConfiguration * Configuration = FTerminal->GetConfiguration();
   {
     TProxyMethod ProxyMethod = Data->GetProxyMethod();
-    *proxy_method = (int)ProxyMethod;
-    if (ProxyMethod != (TProxyMethod)::pmNone)
+    *proxy_method = static_cast<int>(ProxyMethod);
+    if (ProxyMethod != ::pmNone)
     {
       WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_host, AnsiString(Data->GetProxyHost()).c_str(), pool));
       WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_username, AnsiString(Data->GetProxyUsername()).c_str(), pool));
@@ -14036,7 +14036,7 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
         "Invalid URL: proxy port number greater "
         "than maximum TCP port number 65535");
     }
-    *proxy_port = static_cast<int>(l_proxy_port);
+    *proxy_port = static_cast<unsigned int>(l_proxy_port);
   }
 
   {
