@@ -614,7 +614,7 @@ void mspace_inspect_all(mspace msp,
 #endif  /* MSPACES */
 
 #ifdef __cplusplus
-};  /* end of extern "C" */
+}  /* end of extern "C" */
 #endif
 
 #endif /* MALLOC_280_H */

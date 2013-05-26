@@ -74,7 +74,7 @@ public:
 ATL_NOINLINE __declspec(noreturn) inline void WINAPI AtlThrowImpl(_In_ HRESULT hr)
 {
 	throw CAtlException( hr );
-};
+}
 #endif
 
 // Throw a CAtlException corresponding to the result of ::GetLastError
@@ -114,7 +114,7 @@ ATL_NOINLINE inline void WINAPI AtlThrowLastWin32()
 
 #endif  // no exception handling
 
-};  // namespace ATL
+}  // namespace ATL
 #pragma pack(pop)
 
 #endif  // __ATLEXCEPT_H__
