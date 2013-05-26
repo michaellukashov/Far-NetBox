@@ -22,5 +22,5 @@ namespace rde
     {
         // TODO
     };
-};
+}
 #endif
