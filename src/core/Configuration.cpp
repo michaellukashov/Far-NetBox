@@ -242,7 +242,7 @@ void TConfiguration::Save(bool All, bool Explicit)
   }
 }
 //---------------------------------------------------------------------------
-void TConfiguration::Export(const UnicodeString & FileName)
+void TConfiguration::Export(const UnicodeString & /*FileName*/)
 {
   Classes::Error(SNotImplemented, 3004);
   /*
@@ -1058,7 +1058,7 @@ bool TConfiguration::GetCollectUsage() const
   return false; // FUsage->Collect;
 }
 //---------------------------------------------------------------------
-void TConfiguration::SetCollectUsage(bool Value)
+void TConfiguration::SetCollectUsage(bool /*Value*/)
 {
   // FUsage->Collect = Value;
 }

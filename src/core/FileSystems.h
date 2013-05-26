@@ -46,6 +46,7 @@ struct TSinkFileParams : public TObject
 //---------------------------------------------------------------------------
 struct TFileTransferData : public TObject
 {
+NB_DISABLE_COPY(TFileTransferData)
   TFileTransferData() :
     CopyParam(NULL),
     Modification(0.0),
@@ -116,6 +117,8 @@ struct TOpenRemoteFileParams : public TObject
   RawByteString RemoteFileHandle; // output
   TOverwriteFileParams *FileParams;
   bool Confirmed;
+private:
+  NB_DISABLE_COPY(TOpenRemoteFileParams)
 };
 //---------------------------------------------------------------------------
 
@@ -134,6 +137,7 @@ public:
 //---------------------------------------------------------------------------
 class TCustomFileSystem : public TObject, public TFileSystemIntf
 {
+NB_DISABLE_COPY(TCustomFileSystem)
 public:
   virtual ~TCustomFileSystem();
 

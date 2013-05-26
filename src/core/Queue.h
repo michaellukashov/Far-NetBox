@@ -36,6 +36,7 @@ private:
 //---------------------------------------------------------------------------
 class TSignalThread : public TSimpleThread
 {
+NB_DISABLE_COPY(TSignalThread)
 public:
   void Init(bool LowPriority);
   virtual void Start();
@@ -170,6 +171,7 @@ private:
 //---------------------------------------------------------------------------
 class TQueueItem : public TObject
 {
+NB_DISABLE_COPY(TQueueItem)
 friend class TTerminalQueue;
 friend class TTerminalItem;
 
@@ -223,6 +225,7 @@ private:
 //---------------------------------------------------------------------------
 class TQueueItemProxy : public TObject
 {
+NB_DISABLE_COPY(TQueueItemProxy)
 friend class TQueueItem;
 friend class TTerminalQueueStatus;
 friend class TTerminalQueue;
@@ -314,6 +317,7 @@ private:
 //---------------------------------------------------------------------------
 class TTransferQueueItem : public TLocatedQueueItem
 {
+NB_DISABLE_COPY(TTransferQueueItem)
 public:
   explicit TTransferQueueItem(TTerminal * Terminal,
     TStrings * FilesToCopy, const UnicodeString & TargetDir,

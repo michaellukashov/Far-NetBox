@@ -16,6 +16,7 @@ enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
 //---------------------------------------------------------------------------
 class TSFTPFileSystem : public TCustomFileSystem
 {
+NB_DISABLE_COPY(TSFTPFileSystem)
 friend class TSFTPPacket;
 friend class TSFTPQueue;
 friend class TSFTPAsynchronousQueue;

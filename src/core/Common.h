@@ -161,6 +161,7 @@ MethodT MakeMethod(void * Data, void * Code)
 //---------------------------------------------------------------------------
 class TGuard : public TObject
 {
+  NB_DISABLE_COPY(TGuard)
 public:
   explicit TGuard(TCriticalSection * ACriticalSection);
   ~TGuard();
@@ -171,6 +172,7 @@ private:
 //---------------------------------------------------------------------------
 class TUnguard : public TObject
 {
+NB_DISABLE_COPY(TUnguard)
 public:
   explicit TUnguard(TCriticalSection * ACriticalSection);
   ~TUnguard();
@@ -180,7 +182,7 @@ private:
 };
 //---------------------------------------------------------------------------
 #undef TEXT
-#define TEXT(x) (wchar_t *)MB2W(x).c_str()
+#define TEXT(x) const_cast<wchar_t *>(MB2W(x).c_str())
 #define CALLSTACK 
 #define CCALLSTACK(TRACING) 
 #define TRACING 

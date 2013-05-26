@@ -74,6 +74,7 @@ class TStoredSessionList;
 //---------------------------------------------------------------------------
 class TSessionData : public TNamedObject
 {
+NB_DISABLE_COPY(TSessionData)
 friend class TStoredSessionList;
 
 private:
@@ -509,6 +510,7 @@ private:
 //---------------------------------------------------------------------------
 class TStoredSessionList : public TNamedObjectList
 {
+NB_DISABLE_COPY(TStoredSessionList)
 public:
   explicit TStoredSessionList(bool aReadOnly = false);
   virtual ~TStoredSessionList();
@@ -567,7 +569,7 @@ private:
 //---------------------------------------------------------------------------
 bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
 uintptr_t GetCodePageAsNumber(const UnicodeString & CodePage);
-UnicodeString GetCodePageAsString(uintptr_t cp);
+UnicodeString GetCodePageAsString(uintptr_t CodePage);
 //---------------------------------------------------------------------------
 UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSessionData * SessionData);
 //---------------------------------------------------------------------------

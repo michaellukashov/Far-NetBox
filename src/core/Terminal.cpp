@@ -218,6 +218,7 @@ const TSynchronizeChecklist::TItem * TSynchronizeChecklist::GetItem(intptr_t Ind
 //------------------------------------------------------------------------------
 class TTunnelThread : public TSimpleThread
 {
+NB_DISABLE_COPY(TTunnelThread)
 public:
   explicit TTunnelThread(TSecureShell * SecureShell);
   virtual ~TTunnelThread();
@@ -329,7 +330,7 @@ uintptr_t TTunnelUI::QueryUser(const UnicodeString & Query,
   }
   else
   {
-    Result = AbortAnswer(static_cast<intptr_t>(Answers));
+    Result = AbortAnswer(Answers);
   }
   return Result;
 }
@@ -403,6 +404,7 @@ void TTunnelUI::Closed()
 //------------------------------------------------------------------------------
 class TCallbackGuard : public TObject
 {
+NB_DISABLE_COPY(TCallbackGuard)
 public:
   inline TCallbackGuard(TTerminal * FTerminal);
   inline ~TCallbackGuard();
@@ -513,7 +515,7 @@ TTerminal::~TTerminal()
   SAFE_DESTROY_EX(TCustomFileSystem, FFileSystem);
   SAFE_DESTROY_EX(TSessionLog, FLog);
   SAFE_DESTROY_EX(TActionLog, FActionLog);
-  delete FFiles;
+  SAFE_DESTROY(FFiles);
   delete FDirectoryCache;
   delete FDirectoryChangesCache;
   SAFE_DESTROY(FSessionData);
@@ -1172,7 +1174,7 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
   Exception * E, uintptr_t Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
-  intptr_t Result = 0;
+  uintptr_t Result = 0;
   TStrings * MoreMessages = new TStringList();
   std::auto_ptr<TStrings> MoreMessagesPtr(MoreMessages);
   if (E != NULL)
