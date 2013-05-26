@@ -1678,7 +1678,9 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   FSessionData(NULL),
   FTransferProtocolIndex(0),
   FLoginTypeIndex(0),
-  FFtpEncryptionComboIndex(0)
+  FFtpEncryptionComboIndex(0),
+  FTabs(new TObjectList()),
+  FFirstVisibleTabIndex(0)
 {
   TPoint S = TPoint(67, 23);
   bool Limited = (S.y > GetMaxSize().y);
@@ -1689,7 +1691,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetSize(S);
 
 
-  FTabs = new TObjectList();
   FTabs->SetOwnsObjects(false);
   FFirstVisibleTabIndex = 0;
 
@@ -4213,8 +4214,8 @@ void TSessionDialog::CipherButtonClick(TFarButton * Sender, bool & Close)
 {
   if (Sender->GetEnabled())
   {
-    size_t Source = CipherListBox->GetItems()->GetSelected();
-    size_t Dest = Source + Sender->GetResult();
+    intptr_t Source = CipherListBox->GetItems()->GetSelected();
+    intptr_t Dest = Source + Sender->GetResult();
 
     CipherListBox->GetItems()->Move(Source, Dest);
     CipherListBox->GetItems()->SetSelected(Dest);
@@ -4309,6 +4310,7 @@ bool TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
 //------------------------------------------------------------------------------
 class TRightsContainer : public TFarDialogContainer
 {
+NB_DISABLE_COPY(TRightsContainer)
 public:
   explicit TRightsContainer(TFarDialog * ADialog, bool AAnyDirectories,
     bool ShowButtons, bool ShowSpecials,
@@ -4340,12 +4342,11 @@ public:
 TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   bool AAnyDirectories, bool ShowButtons,
   bool ShowSpecials, TFarDialogItem * EnabledDependency) :
+  FAnyDirectories(AAnyDirectories),
   TFarDialogContainer(ADialog),
   FOctalEdit(NULL),
   FDirectoriesXCheck(NULL)
 {
-  FAnyDirectories = AAnyDirectories;
-
   GetDialog()->SetNextItemPosition(ipNewLine);
 
   static int RowLabels[] = { PROPERTIES_OWNER_RIGHTS, PROPERTIES_GROUP_RIGHTS,
@@ -4623,6 +4624,7 @@ void TRightsContainer::SetAllowUndef(bool Value)
 //------------------------------------------------------------------------------
 class TPropertiesDialog : public TFarDialog
 {
+NB_DISABLE_COPY(TPropertiesDialog)
 public:
   explicit TPropertiesDialog(TCustomFarPlugin * AFarPlugin, TStrings * FileList,
     const UnicodeString & Directory,
@@ -4654,14 +4656,14 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
   intptr_t AAllowedChanges) :
   TFarDialog(AFarPlugin),
+  FAnyDirectories(false),
+  FAllowedChanges(AAllowedChanges),
   RightsContainer(NULL),
   OwnerComboBox(NULL),
   GroupComboBox(NULL),
   RecursiveCheck(NULL),
   OkButton(NULL)
 {
-  FAllowedChanges = AAllowedChanges;
-
   assert(FileList->GetCount() > 0);
   TRemoteFile * OnlyFile = reinterpret_cast<TRemoteFile *>(FileList->GetObject(0));
   USEDPARAM(OnlyFile);

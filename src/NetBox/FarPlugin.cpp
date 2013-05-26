@@ -193,9 +193,9 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
     #define FREESTRINGARRAY(NAME) \
       for (intptr_t Index = 0; Index < Info.NAME ## Number; ++Index) \
       { \
-        nb_free(Info.NAME[Index]); \
+        nb_free((void*)Info.NAME[Index]); \
       } \
-      nb_free(Info.NAME); \
+      nb_free((void*)Info.NAME); \
       Info.NAME = NULL;
 
     FREESTRINGARRAY(DiskMenuStrings);
@@ -205,7 +205,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
     #undef FREESTRINGARRAY
 
     // FIXME delete[] Info.DiskMenuNumbers;
-    nb_free(Info.CommandPrefix);
+    nb_free((void*)Info.CommandPrefix);
   }
   memset(&Info, 0, sizeof(Info));
   Info.StructSize = sizeof(Info);
@@ -1804,10 +1804,10 @@ void TCustomFarFileSystem::ClearOpenPluginInfo(OpenPluginInfo & Info)
 {
   if (Info.StructSize)
   {
-    nb_free(Info.HostFile);
-    nb_free(Info.CurDir);
-    nb_free(Info.Format);
-    nb_free(Info.PanelTitle);
+    nb_free((void*)Info.HostFile);
+    nb_free((void*)Info.CurDir);
+    nb_free((void*)Info.Format);
+    nb_free((void*)Info.PanelTitle);
     assert(!Info.InfoLines);
     assert(!Info.InfoLinesNumber);
     assert(!Info.DescrFiles);
@@ -1819,13 +1819,13 @@ void TCustomFarFileSystem::ClearOpenPluginInfo(OpenPluginInfo & Info)
       TFarPanelModes::ClearPanelMode(
         const_cast<PanelMode &>(Info.PanelModesArray[Index]));
     }
-    nb_free(Info.PanelModesArray);
+    nb_free((void*)Info.PanelModesArray);
     if (Info.KeyBar)
     {
       TFarKeyBarTitles::ClearKeyBarTitles(const_cast<KeyBarTitles &>(*Info.KeyBar));
-      nb_free(Info.KeyBar);
+      nb_free((void*)Info.KeyBar);
     }
-    nb_free(Info.ShortcutData);
+    nb_free((void*)Info.ShortcutData);
   }
   memset(&Info, 0, sizeof(Info));
   Info.StructSize = sizeof(Info);
@@ -1908,14 +1908,14 @@ void TCustomFarFileSystem::FreeFindData(
     assert(ItemsNumber > 0);
     for (intptr_t Index = 0; Index < ItemsNumber; ++Index)
     {
-      nb_free(PanelItem[Index].FindData.lpwszFileName);
-      nb_free(PanelItem[Index].Description);
-      nb_free(PanelItem[Index].Owner);
+      nb_free((void*)PanelItem[Index].FindData.lpwszFileName);
+      nb_free((void*)PanelItem[Index].Description);
+      nb_free((void*)PanelItem[Index].Owner);
       for (intptr_t CustomIndex = 0; CustomIndex < PanelItem[Index].CustomColumnNumber; ++CustomIndex)
       {
-        nb_free(PanelItem[Index].CustomColumnData[CustomIndex]);
+        nb_free((void*)PanelItem[Index].CustomColumnData[CustomIndex]);
       }
-      nb_free(PanelItem[Index].CustomColumnData);
+      nb_free((void*)PanelItem[Index].CustomColumnData);
     }
     nb_free(PanelItem);
   }
@@ -2231,18 +2231,18 @@ void TFarPanelModes::ClearPanelMode(PanelMode & Mode)
     intptr_t ColumnTypesCount = Mode.ColumnTypes ?
       CommaCount(UnicodeString(Mode.ColumnTypes)) + 1 : 0;
 
-    nb_free(Mode.ColumnTypes);
-    nb_free(Mode.ColumnWidths);
+    nb_free((void*)Mode.ColumnTypes);
+    nb_free((void*)Mode.ColumnWidths);
     if (Mode.ColumnTitles)
     {
       for (intptr_t Index = 0; Index < ColumnTypesCount; ++Index)
       {
-        nb_free(Mode.ColumnTitles[Index]);
+        nb_free((void*)Mode.ColumnTitles[Index]);
       }
-      nb_free(Mode.ColumnTitles);
+      nb_free((void*)Mode.ColumnTitles);
     }
-    nb_free(Mode.StatusColumnTypes);
-    nb_free(Mode.StatusColumnWidths);
+    nb_free((void*)Mode.StatusColumnTypes);
+    nb_free((void*)Mode.StatusColumnWidths);
     memset(&Mode, 0, sizeof(Mode));
   }
 }
