@@ -118,7 +118,7 @@ public:
   void SetExternalIpAddress(const UnicodeString & Value);
   void SetTryFtpWhenSshFails(bool Value);
   bool GetCollectUsage() const;
-  void SetCollectUsage(bool Value);
+  void SetCollectUsage(bool);
 
 protected:
   TStorage FStorage;

@@ -57,12 +57,12 @@ private:
     virtual ExtException * Clone() { return new NAME(this, L""); } \
   };
 //---------------------------------------------------------------------------
-DERIVE_EXT_EXCEPTION(ESsh, ExtException);
-DERIVE_EXT_EXCEPTION(ETerminal, ExtException);
-DERIVE_EXT_EXCEPTION(ECommand, ExtException);
-DERIVE_EXT_EXCEPTION(EScp, ExtException); // SCP protocol fatal error (non-fatal in application context)
-DERIVE_EXT_EXCEPTION(EScpSkipFile, ExtException);
-DERIVE_EXT_EXCEPTION(EScpFileSkipped, EScpSkipFile);
+DERIVE_EXT_EXCEPTION(ESsh, ExtException)
+DERIVE_EXT_EXCEPTION(ETerminal, ExtException)
+DERIVE_EXT_EXCEPTION(ECommand, ExtException)
+DERIVE_EXT_EXCEPTION(EScp, ExtException) // SCP protocol fatal error (non-fatal in application context)
+DERIVE_EXT_EXCEPTION(EScpSkipFile, ExtException)
+DERIVE_EXT_EXCEPTION(EScpFileSkipped, EScpSkipFile)
 //---------------------------------------------------------------------------
 class EOSExtException : public ExtException
 {
@@ -94,7 +94,7 @@ private:
     virtual ExtException * Clone() { return new NAME(this, L""); } \
   };
 //---------------------------------------------------------------------------
-DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal);
+DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal)
 //---------------------------------------------------------------------------
 // exception that closes application, but displays info message (not error message)
 // = close on completion

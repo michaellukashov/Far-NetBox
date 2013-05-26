@@ -9,7 +9,7 @@
 //---------------------------------------------------------------------------
 enum TSessionStatus { ssClosed, ssOpening, ssOpened };
 //---------------------------------------------------------------------------
-struct TSessionInfo
+struct TSessionInfo : public TObject
 {
   TSessionInfo();
 

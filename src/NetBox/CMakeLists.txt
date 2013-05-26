@@ -59,9 +59,9 @@ SET(FLAGS_DEBUG "${FLAGS_DEBUG} /Gm- /MTd /GS")
 
 ELSEIF(CMAKE_COMPILER_IS_MINGW)
 
-SET(NETBOX_CFLAGS "${NETBOX_CFLAGS} -static -s -O2")
-SET(NETBOX_WARNING_FLAGS "-Wno-attributes -Wno-write-strings")
-SET(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -D_UNICODE -DUNICODE -std=c++11")
+SET(NETBOX_CFLAGS "${NETBOX_CFLAGS} -static -s -O2 -Wall -Wextra -pedantic -Wold-style-cast -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code")
+SET(NETBOX_WARNING_FLAGS "-Wno-attributes -Wno-write-strings -Wno-unknown-pragmas")
+SET(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -D_UNICODE -DUNICODE -D_AFXDLL -std=c++11 -Weffc++ -Woverloaded-virtual -Wnon-virtual-dtor")
 SET(FLAGS_RELEASE "${FLAGS_RELEASE} ${NETBOX_CFLAGS}")
 SET(FLAGS_DEBUG "${FLAGS_DEBUG} ${NETBOX_CFLAGS}")
 

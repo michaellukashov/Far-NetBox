@@ -279,7 +279,7 @@ void TOptions::ParamsProcessed(intptr_t ParamsStart, intptr_t ParamsCount)
           {
             assert(Index < FOptions.size());
             assert(FOptions[Index].Type == otParam);
-            FOptions.erase(FOptions.begin() + Index);
+            FOptions.erase_unordered(FOptions.begin() + Index);
             --FParamCount;
             --ParamsCount;
           }

@@ -798,10 +798,6 @@ typedef struct vtable_t
   // string.
   const char * (*get_description)(void);
 
-  // Return a list of actual URI schemes supported by this implementation.
-  // The returned array is NULL-terminated.
-  const char * const * (*get_schemes)(apr_pool_t * pool);
-
   // Implementations of the public API functions.
 
   // See session_open().
@@ -11501,15 +11497,6 @@ ensure_neon_initialized()
   return atomic_init_once(&neon_initialized, initialize_neon, NULL, NULL);
 }
 
-static const char * const *
-ra_neon_get_schemes(apr_pool_t * pool)
-{
-  static const char * schemes_no_ssl[] = { "http", NULL };
-  static const char * schemes_ssl[] = { "http", "https", NULL };
-
-  return ne_has_support(NE_FEATURE_SSL) ? schemes_ssl : schemes_no_ssl;
-}
-
 static error_t
 neon_open(
   session_t * session,
@@ -12083,7 +12070,6 @@ neon_get_webdav_resource_root(
 static const vtable_t neon_vtable =
 {
   NULL, // get_description
-  ra_neon_get_schemes, // get_schemes
   neon_open, // open_session
   neon_reparent, // reparent
   neon_get_session_url, // get_session_url
@@ -13420,7 +13406,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       }
 
       {
-        unsigned int TransferType = 2; // OperationProgress->AsciiTransfer = false
+        int TransferType = 2; // OperationProgress->AsciiTransfer = false
         // ignore file list
         TWebDAVFileListHelper Helper(this, NULL, true);
 
@@ -14009,7 +13995,7 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
   // If we find nothing, default to nulls.
   *proxy_method = 0;
   *proxy_host = NULL;
-  *proxy_port = (unsigned int)-1;
+  *proxy_port = static_cast<unsigned int>(-1);
   *proxy_username = NULL;
   *proxy_password = NULL;
   *pk11_provider = NULL;
@@ -14019,8 +14005,8 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
   TConfiguration * Configuration = FTerminal->GetConfiguration();
   {
     TProxyMethod ProxyMethod = Data->GetProxyMethod();
-    *proxy_method = (int)ProxyMethod;
-    if (ProxyMethod != (TProxyMethod)::pmNone)
+    *proxy_method = static_cast<int>(ProxyMethod);
+    if (ProxyMethod != ::pmNone)
     {
       WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_host, AnsiString(Data->GetProxyHost()).c_str(), pool));
       WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_username, AnsiString(Data->GetProxyUsername()).c_str(), pool));
@@ -14050,7 +14036,7 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
         "Invalid URL: proxy port number greater "
         "than maximum TCP port number 65535");
     }
-    *proxy_port = static_cast<int>(l_proxy_port);
+    *proxy_port = static_cast<unsigned int>(l_proxy_port);
   }
 
   {

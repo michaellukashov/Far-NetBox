@@ -1626,7 +1626,7 @@ void TRemoteDirectory::AddFile(TRemoteFile * File)
   File->SetTerminal(GetTerminal());
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectory::DuplicateTo(TRemoteFileList * Copy)
+void TRemoteDirectory::DuplicateTo(TRemoteFileList * Copy) const
 {
   TRemoteFileList::DuplicateTo(Copy);
   if (GetThisDirectory() && !GetIncludeThisDirectory())

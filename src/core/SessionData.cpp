@@ -1534,7 +1534,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     }
     if (Options->FindSwitch(L"codepage", Value))
     {
-      uintptr_t CodePage = StrToIntDef(Value, 0);
+      intptr_t CodePage = StrToIntDef(Value, 0);
       if (CodePage != 0)
       {
         SetCodePage(GetCodePageAsString(CodePage));
@@ -1571,7 +1571,7 @@ void TSessionData::ExpandEnvironmentVariables()
   SetPublicKeyFile(::ExpandEnvironmentVariables(GetPublicKeyFile()));
 }
 //---------------------------------------------------------------------
-void TSessionData::ValidatePath(const UnicodeString & Path)
+void TSessionData::ValidatePath(const UnicodeString & /*Path*/)
 {
   // noop
 }
@@ -2322,7 +2322,7 @@ void TSessionData::PrepareProxyData() const
   if ((GetProxyMethod() == pmSystem) && (NULL == FIEProxyConfig))
   {
     FIEProxyConfig = new TIEProxyConfig;
-    WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyConfig = {0};
+    WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyConfig;
     if (!WinHttpGetIEProxyConfigForCurrentUser(&IEProxyConfig))
     {
       DWORD Err = GetLastError();
@@ -2526,12 +2526,12 @@ void TSessionData::SetSFTPMaxVersion(intptr_t Value)
   SET_SESSION_PROPERTY(SFTPMaxVersion);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetSFTPMinPacketSize(uintptr_t Value)
+void TSessionData::SetSFTPMinPacketSize(intptr_t Value)
 {
   SET_SESSION_PROPERTY(SFTPMinPacketSize);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetSFTPMaxPacketSize(uintptr_t Value)
+void TSessionData::SetSFTPMaxPacketSize(intptr_t Value)
 {
   SET_SESSION_PROPERTY(SFTPMaxPacketSize);
 }
@@ -3097,7 +3097,7 @@ void TStoredSessionList::Saved()
   }
 }*/
 //---------------------------------------------------------------------
-void TStoredSessionList::ImportFromFilezilla(const UnicodeString & FileName)
+void TStoredSessionList::ImportFromFilezilla(const UnicodeString & /*FileName*/)
 {
   Classes::Error(SNotImplemented, 3004);
 /*
@@ -3638,10 +3638,10 @@ uintptr_t GetCodePageAsNumber(const UnicodeString & CodePage)
   return static_cast<uintptr_t >(codePage == 0 ? CONST_DEFAULT_CODEPAGE : codePage);
 }
 //---------------------------------------------------------------------
-UnicodeString GetCodePageAsString(uintptr_t cp)
+UnicodeString GetCodePageAsString(uintptr_t CodePage)
 {
   CPINFOEX cpInfoEx;
-  if (::GetCodePageInfo((UINT)cp, cpInfoEx))
+  if (::GetCodePageInfo(static_cast<UINT>(CodePage), cpInfoEx))
   {
     return UnicodeString(cpInfoEx.CodePageName);
   }

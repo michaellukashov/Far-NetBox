@@ -74,6 +74,7 @@ class TStoredSessionList;
 //---------------------------------------------------------------------------
 class TSessionData : public TNamedObject
 {
+NB_DISABLE_COPY(TSessionData)
 friend class TStoredSessionList;
 
 private:
@@ -147,8 +148,8 @@ private:
   intptr_t FSFTPListingQueue;
   intptr_t FSFTPMaxVersion;
   intptr_t FSecToDateTime;
-  uintptr_t FSFTPMinPacketSize;
-  uintptr_t FSFTPMaxPacketSize;
+  intptr_t FSFTPMinPacketSize;
+  intptr_t FSFTPMaxPacketSize;
   TDSTMode FDSTMode;
   TAutoSwitch FSFTPBugs[SFTP_BUG_COUNT];
   bool FDeleteToRecycleBin;
@@ -160,7 +161,7 @@ private:
   bool FSslSessionReuse;
   TAddressFamily FAddressFamily;
   UnicodeString FRekeyData;
-  uintptr_t FRekeyTime;
+  intptr_t FRekeyTime;
   intptr_t FColor;
   bool FTunnel;
   UnicodeString FTunnelHostName;
@@ -293,8 +294,8 @@ public:
   void SetSFTPUploadQueue(intptr_t Value);
   void SetSFTPListingQueue(intptr_t Value);
   void SetSFTPMaxVersion(intptr_t Value);
-  void SetSFTPMinPacketSize(uintptr_t Value);
-  void SetSFTPMaxPacketSize(uintptr_t Value);
+  void SetSFTPMinPacketSize(intptr_t Value);
+  void SetSFTPMaxPacketSize(intptr_t Value);
   void SetSFTPBug(TSftpBug Bug, TAutoSwitch Value);
   TAutoSwitch GetSFTPBug(TSftpBug Bug) const;
   void SetSCPLsFullTime(TAutoSwitch Value);
@@ -444,8 +445,8 @@ public:
   intptr_t GetSFTPUploadQueue() const { return FSFTPUploadQueue; }
   intptr_t GetSFTPListingQueue() const { return FSFTPListingQueue; }
   intptr_t GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
-  uintptr_t GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
-  uintptr_t GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
+  intptr_t GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
+  intptr_t GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
   TAutoSwitch GetSCPLsFullTime() const { return FSCPLsFullTime; }
   TAutoSwitch GetFtpListAll() const { return FFtpListAll; }
   bool GetSslSessionReuse() const { return FSslSessionReuse; }
@@ -459,7 +460,7 @@ public:
   void SetCodePage(const UnicodeString & Value);
   uintptr_t GetCodePageAsNumber() const;
   UnicodeString GetRekeyData() const { return FRekeyData; }
-  uintptr_t GetRekeyTime() const { return FRekeyTime; }
+  intptr_t GetRekeyTime() const { return FRekeyTime; }
   intptr_t GetColor() const { return FColor; }
   bool GetTunnel() const { return FTunnel; }
   UnicodeString GetTunnelHostName() const { return FTunnelHostName; }
@@ -509,6 +510,7 @@ private:
 //---------------------------------------------------------------------------
 class TStoredSessionList : public TNamedObjectList
 {
+NB_DISABLE_COPY(TStoredSessionList)
 public:
   explicit TStoredSessionList(bool aReadOnly = false);
   virtual ~TStoredSessionList();
@@ -567,7 +569,7 @@ private:
 //---------------------------------------------------------------------------
 bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
 uintptr_t GetCodePageAsNumber(const UnicodeString & CodePage);
-UnicodeString GetCodePageAsString(uintptr_t cp);
+UnicodeString GetCodePageAsString(uintptr_t CodePage);
 //---------------------------------------------------------------------------
 UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSessionData * SessionData);
 //---------------------------------------------------------------------------

@@ -196,10 +196,10 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
     #define FREESTRINGARRAY(NAME) \
       for (intptr_t Index = 0; Index < Info.NAME.Count; ++Index) \
       { \
-        nb_free(Info.NAME.Strings[Index]); \
+        nb_free((void*)Info.NAME.Strings[Index]); \
       } \
-      nb_free(Info.NAME.Strings); \
-      nb_free(Info.NAME.Guids); \
+      nb_free((void*)Info.NAME.Strings); \
+      nb_free((void*)Info.NAME.Guids); \
       Info.NAME.Strings = NULL;
 
       FREESTRINGARRAY(DiskMenu);
@@ -209,7 +209,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
       #undef FREESTRINGARRAY
 
       // FIXME delete[] Info.DiskMenuNumbers;
-      nb_free(Info.CommandPrefix);
+      nb_free((void*)Info.CommandPrefix);
   }
   memset(&Info, 0, sizeof(Info));
   Info.StructSize = sizeof(Info);
@@ -1842,10 +1842,10 @@ void TCustomFarFileSystem::ClearOpenPanelInfo(OpenPanelInfo & Info)
 {
   if (Info.StructSize)
   {
-    nb_free(Info.HostFile);
-    nb_free(Info.CurDir);
-    nb_free(Info.Format);
-    nb_free(Info.PanelTitle);
+    nb_free((void*)Info.HostFile);
+    nb_free((void*)Info.CurDir);
+    nb_free((void*)Info.Format);
+    nb_free((void*)Info.PanelTitle);
     assert(!Info.InfoLines);
     assert(!Info.InfoLinesNumber);
     assert(!Info.DescrFiles);
@@ -1857,13 +1857,13 @@ void TCustomFarFileSystem::ClearOpenPanelInfo(OpenPanelInfo & Info)
       TFarPanelModes::ClearPanelMode(
         const_cast<PanelMode &>(Info.PanelModesArray[Index]));
     }
-    nb_free(Info.PanelModesArray);
+    nb_free((void*)Info.PanelModesArray);
     if (Info.KeyBar)
     {
       TFarKeyBarTitles::ClearKeyBarTitles(const_cast<KeyBarTitles &>(*Info.KeyBar));
-      nb_free(Info.KeyBar);
+      nb_free((void*)Info.KeyBar);
     }
-    nb_free(Info.ShortcutData);
+    nb_free((void*)Info.ShortcutData);
   }
   memset(&Info, 0, sizeof(Info));
   Info.StructSize = sizeof(Info);
@@ -1951,14 +1951,14 @@ void TCustomFarFileSystem::FreeFindData(const struct FreeFindDataInfo *Info)
     assert(Info->ItemsNumber > 0);
     for (intptr_t Index = 0; Index < Info->ItemsNumber; ++Index)
     {
-      nb_free(Info->PanelItem[Index].FileName);
-      nb_free(Info->PanelItem[Index].Description);
-      nb_free(Info->PanelItem[Index].Owner);
+      nb_free((void*)Info->PanelItem[Index].FileName);
+      nb_free((void*)Info->PanelItem[Index].Description);
+      nb_free((void*)Info->PanelItem[Index].Owner);
       for (intptr_t CustomIndex = 0; CustomIndex < Info->PanelItem[Index].CustomColumnNumber; ++CustomIndex)
       {
-        nb_free(Info->PanelItem[Index].CustomColumnData[CustomIndex]);
+        nb_free((void*)Info->PanelItem[Index].CustomColumnData[CustomIndex]);
       }
-      nb_free(Info->PanelItem[Index].CustomColumnData);
+      nb_free((void*)Info->PanelItem[Index].CustomColumnData);
     }
     nb_free(Info->PanelItem);
   }
@@ -2287,18 +2287,18 @@ void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
     intptr_t ColumnTypesCount = Mode.ColumnTypes ?
       CommaCount(UnicodeString(Mode.ColumnTypes)) + 1 : 0;
 
-    nb_free(Mode.ColumnTypes);
-    nb_free(Mode.ColumnWidths);
+    nb_free((void*)Mode.ColumnTypes);
+    nb_free((void*)Mode.ColumnWidths);
     if (Mode.ColumnTitles)
     {
       for (intptr_t Index = 0; Index < ColumnTypesCount; ++Index)
       {
-        nb_free(Mode.ColumnTitles[Index]);
+        nb_free((void*)Mode.ColumnTitles[Index]);
       }
-      nb_free(Mode.ColumnTitles);
+      nb_free((void*)Mode.ColumnTitles);
     }
-    nb_free(Mode.StatusColumnTypes);
-    nb_free(Mode.StatusColumnWidths);
+    nb_free((void*)Mode.StatusColumnTypes);
+    nb_free((void*)Mode.StatusColumnWidths);
     memset(&Mode, 0, sizeof(Mode));
   }
 }
@@ -2377,8 +2377,8 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   KeyBarLabel *Labels = &FKeyBarTitles.Labels[shift * 12];
   if (Labels[FunctionKey-1].Key.VirtualKeyCode)
   {
-    nb_free(Labels[FunctionKey-1].Text);
-    nb_free(Labels[FunctionKey-1].LongText);
+    nb_free((void*)Labels[FunctionKey-1].Text);
+    nb_free((void*)Labels[FunctionKey-1].LongText);
   }
   static WORD FKeys[] =
   {
@@ -2400,8 +2400,8 @@ void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
 {
   for (intptr_t Index = 0; Index < Titles.CountLabels; ++Index)
   {
-    nb_free(Titles.Labels[Index].Text);
-    nb_free(Titles.Labels[Index].LongText);
+    nb_free((void*)Titles.Labels[Index].Text);
+    nb_free((void*)Titles.Labels[Index].LongText);
   }
   nb_free(Titles.Labels);
   Titles.Labels = NULL;

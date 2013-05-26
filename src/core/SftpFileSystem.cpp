@@ -178,6 +178,8 @@ const int tfNewDirectory = 0x02;
 //---------------------------------------------------------------------------
 struct TSFTPSupport : public TObject
 {
+NB_DISABLE_COPY(TSFTPSupport)
+
   TSFTPSupport() :
     AttribExtensions(new TStringList()),
     Extensions(new TStringList())
@@ -879,7 +881,7 @@ private:
     FLength = 0;
     FPosition = 0;
     FMessageNumber = SFTPNoMessageNumber;
-    FType = (unsigned char)-1;
+    FType = static_cast<unsigned char>(-1);
     FReservedBy = NULL;
     FCodePage = codePage;
   }

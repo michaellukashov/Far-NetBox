@@ -1382,7 +1382,7 @@ void TSecureShell::UpdatePortFwdSocket(SOCKET Value, bool Startup)
   {
     rde::vector<SOCKET>::iterator it = FPortFwdSockets.find(Value);
     if (it != FPortFwdSockets.end())
-      FPortFwdSockets.erase(it);
+      FPortFwdSockets.erase_unordered(it);
   }
 }
 //---------------------------------------------------------------------------
@@ -1944,8 +1944,14 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   {
     AnsiString AnsiStoredKeys;
     AnsiStoredKeys.SetLength(10240);
-    if (retrieve_host_key(W2MB(Host2.c_str(), (UINT)FSessionData->GetCodePageAsNumber()).c_str(), Port, W2MB(KeyType.c_str(), (UINT)FSessionData->GetCodePageAsNumber()).c_str(),
-          const_cast<char *>(AnsiStoredKeys.c_str()), static_cast<int>(AnsiStoredKeys.Length())) == 0)
+    if (retrieve_host_key(
+          W2MB(Host2.c_str(),
+               static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
+          Port,
+          W2MB(KeyType.c_str(),
+               static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
+          const_cast<char *>(AnsiStoredKeys.c_str()),
+          static_cast<int>(AnsiStoredKeys.Length())) == 0)
     {
       StoredKeys = AnsiStoredKeys.c_str();
       UnicodeString Buf2 = StoredKeys;

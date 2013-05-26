@@ -75,6 +75,7 @@ private:
 //---------------------------------------------------------------------------
 class TRemoteFile : public TPersistent
 {
+NB_DISABLE_COPY(TRemoteFile)
 private:
   TRemoteFileList * FDirectory;
   TRemoteToken FOwner;
@@ -211,6 +212,7 @@ public:
 //---------------------------------------------------------------------------
 class TRemoteDirectory : public TRemoteFileList
 {
+NB_DISABLE_COPY(TRemoteDirectory)
 friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
 friend class TWebDAVFileSystem;
@@ -227,7 +229,7 @@ public:
   explicit TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = NULL);
   virtual ~TRemoteDirectory() { Clear(); }
   virtual void AddFile(TRemoteFile * File);
-  virtual void DuplicateTo(TRemoteFileList * Copy);
+  virtual void DuplicateTo(TRemoteFileList * Copy) const;
   TTerminal * GetTerminal() const { return FTerminal; }
   void SetTerminal(TTerminal * Value) { FTerminal = Value; }
   TStrings * GetSelectedFiles() const;
@@ -261,6 +263,8 @@ protected:
 private:
   TCriticalSection * FSection;
   void DoClearFileList(const UnicodeString & Directory, bool SubDirs);
+private:
+  NB_DISABLE_COPY(TRemoteDirectoryCache)
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryChangesCache : private TStringList

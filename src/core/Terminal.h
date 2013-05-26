@@ -577,6 +577,7 @@ private:
 //------------------------------------------------------------------------------
 class TSecondaryTerminal : public TTerminal
 {
+NB_DISABLE_COPY(TSecondaryTerminal)
 public:
   explicit TSecondaryTerminal(TTerminal * MainTerminal);
   virtual ~TSecondaryTerminal() {}
@@ -600,6 +601,7 @@ private:
 //------------------------------------------------------------------------------
 class TTerminalList : public TObjectList
 {
+NB_DISABLE_COPY(TTerminalList)
 public:
   explicit TTerminalList(TConfiguration * AConfiguration);
   virtual ~TTerminalList();
@@ -662,6 +664,8 @@ struct TSynchronizeOptions : public TObject
 
   bool FilterFind(const UnicodeString & FileName);
   bool MatchesFilter(const UnicodeString & FileName);
+private:
+  NB_DISABLE_COPY(TSynchronizeOptions)
 };
 //------------------------------------------------------------------------------
 class TSynchronizeChecklist : public TObject
@@ -723,6 +727,8 @@ private:
   TList * FList;
 
   static intptr_t Compare(const void * Item1, const void * Item2);
+private:
+  NB_DISABLE_COPY(TSynchronizeChecklist)
 };
 //------------------------------------------------------------------------------
 struct TSpaceAvailable : public TObject

@@ -64,7 +64,7 @@ public:
     const UnicodeString & NewName);
   virtual UnicodeString FileUrl(const UnicodeString & FileName);
   virtual TStrings * GetFixedPaths();
-  virtual void SpaceAvailable(const UnicodeString & Path,
+  virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo();
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);

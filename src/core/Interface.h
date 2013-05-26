@@ -70,6 +70,8 @@ struct TQueryParams : public TObject
   uintptr_t TimeoutAnswer;
   uintptr_t NoBatchAnswers;
   UnicodeString HelpKeyword;
+private:
+  NB_DISABLE_COPY(TQueryParams)
 };
 
 enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };

@@ -123,6 +123,7 @@ public:
 //---------------------------------------------------------------------------
 class TSuspendFileOperationProgress : public TObject
 {
+NB_DISABLE_COPY(TSuspendFileOperationProgress)
 public:
   explicit TSuspendFileOperationProgress(TFileOperationProgressType * OperationProgress)
   {

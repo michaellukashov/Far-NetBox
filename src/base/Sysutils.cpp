@@ -1053,7 +1053,7 @@ UnicodeString SysErrorMessage(int ErrorCode)
     static_cast<LPTSTR>(Buffer),
     sizeof(Buffer), NULL);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
-    (Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == '.')))
+    ((Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == '.'))))
   {
     Len--;
   }
@@ -1209,13 +1209,13 @@ UnicodeString HexToStr(const UnicodeString & Hex)
 {
   static std::wstring Digits = L"0123456789ABCDEF";
   std::wstring Result;
-  size_t L = Hex.Length() - 1;
+  intptr_t L = Hex.Length() - 1;
   if (L % 2 == 0)
   {
     for (intptr_t I = 1; I <= Hex.Length(); I += 2)
     {
-      size_t P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[I])));
-      size_t P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[I + 1])));
+      intptr_t P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[I])));
+      intptr_t P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[I + 1])));
       if ((P1 == std::wstring::npos) || (P2 == std::wstring::npos))
       {
         Result = L"";

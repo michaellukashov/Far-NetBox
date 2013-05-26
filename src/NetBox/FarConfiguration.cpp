@@ -51,7 +51,7 @@ void TFarConfiguration::Default()
   SetDisksMenuHotKey(0);
   SetPluginsMenu(true);
   SetPluginsMenuCommands(true);
-  SetCommandPrefixes(L"netbox,scp,sftp,ftps,http,https,webdav");
+  SetCommandPrefixes(L"netbox,ftp,scp,sftp,ftps,http,https,webdav");
   SetHostNameInTitle(true);
   SetEditorDownloadDefaultMode(true);
   SetEditorUploadSameOptions(true);

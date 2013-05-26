@@ -65,6 +65,7 @@ class TSessionData;
 //---------------------------------------------------------------------------
 class TCommandSet : public TObject
 {
+NB_DISABLE_COPY(TCommandSet)
 private:
   TCommandType CommandSet[ShellCommandCount];
   TSessionData * FSessionData;
@@ -659,7 +660,7 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
     {
       UnicodeString Line;
       bool IsLast = true;
-      uintptr_t Total = 0;
+      intptr_t Total = 0;
       // #55: fixed so, even when last line of command output does not
       // contain CR/LF, we can recognize last line
       do
@@ -1397,7 +1398,7 @@ TStrings * TSCPFileSystem::GetFixedPaths()
   return NULL;
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::SpaceAvailable(const UnicodeString & Path,
+void TSCPFileSystem::SpaceAvailable(const UnicodeString & /*APath*/,
   TSpaceAvailable & /*ASpaceAvailable*/)
 {
   assert(false);

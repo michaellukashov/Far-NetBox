@@ -226,6 +226,8 @@ private:
       lhs.right == rhs.right &&
       lhs.bottom == rhs.bottom;
   }
+private:
+  NB_DISABLE_COPY(TCustomFarPlugin)
 };
 //---------------------------------------------------------------------------
 class TCustomFarFileSystem : public TObject
@@ -311,6 +313,8 @@ private:
     int ItemsNumber);
   const TFarPanelInfo * GetPanelInfo(int Another) const;
   TFarPanelInfo * GetPanelInfo(int Another);
+private:
+  NB_DISABLE_COPY(TCustomFarFileSystem)
 };
 //---------------------------------------------------------------------------
 #define PANEL_MODES_COUNT 10
@@ -403,6 +407,8 @@ protected:
     uintptr_t & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
   virtual UnicodeString GetCustomColumnData(size_t Column);
+private:
+  NB_DISABLE_COPY(TFarPanelItem)
 };
 //---------------------------------------------------------------------------
 class THintPanelItem : public TCustomFarPanelItem

@@ -173,6 +173,7 @@ protected:
 //---------------------------------------------------------------------------
 class TInteractiveCustomCommand : public TCustomCommand
 {
+NB_DISABLE_COPY(TInteractiveCustomCommand)
 public:
   explicit TInteractiveCustomCommand(TCustomCommand * ChildCustomCommand);
 

@@ -10,6 +10,7 @@ class TBookmarkList;
 //---------------------------------------------------------------------------
 class TFarConfiguration : public TGUIConfiguration
 {
+NB_DISABLE_COPY(TFarConfiguration)
 public:
   explicit TFarConfiguration(TCustomFarPlugin * APlugin);
   virtual ~TFarConfiguration();

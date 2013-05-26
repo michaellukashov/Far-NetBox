@@ -47,6 +47,7 @@ enum TSynchronizeOperation { soUpload, soDelete };
 //---------------------------------------------------------------------------
 class TSynchronizeController : public TObject
 {
+NB_DISABLE_COPY(TSynchronizeController)
 public:
   explicit TSynchronizeController(TSynchronizeEvent AOnSynchronize,
     TSynchronizeInvalidEvent AOnSynchronizeInvalid,

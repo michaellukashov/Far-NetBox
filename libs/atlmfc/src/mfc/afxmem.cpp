@@ -339,7 +339,11 @@ void* __cdecl operator new(size_t nSize)
 	return pResult;
 }
 
+#if defined(__MINGW32__)
+void operator delete(void* p) _GLIBCXX_USE_NOEXCEPT
+#else
 void __cdecl operator delete(void* p)
+#endif
 {
 #if !defined(_AFX_NO_DEBUG_CRT) && defined(_DEBUG)
 		_free_dbg(p, _NORMAL_BLOCK);

@@ -201,7 +201,7 @@ void TList::Delete(intptr_t Index)
     Classes::Error(SListIndexError, Index);
   }
   void * Temp = GetItem(Index);
-  FList.erase(FList.begin() + Index);
+  FList.erase_unordered(FList.begin() + Index);
   if (Temp != NULL)
   {
     Notify(Temp, lnDeleted);
@@ -970,7 +970,7 @@ void TStringList::Delete(intptr_t Index)
     Classes::Error(SListIndexError, Index);
   }
   Changing();
-  FList.erase(FList.begin() + Index);
+  FList.erase_unordered(FList.begin() + Index);
   Changed();
 }
 
@@ -1200,7 +1200,7 @@ void TStringList::ExchangeItems(intptr_t Index1, intptr_t Index2)
   Item2->second = Temp2;
 }
 
-intptr_t TStringList::CompareStrings(const UnicodeString & S1, const UnicodeString & S2)
+intptr_t TStringList::CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const
 {
   if (GetCaseSensitive())
   {

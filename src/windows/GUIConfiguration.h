@@ -140,6 +140,7 @@ private:
 //---------------------------------------------------------------------------
 class TGUIConfiguration : public TConfiguration
 {
+NB_DISABLE_COPY(TGUIConfiguration)
 private:
   TStrings * FLocales;
   UnicodeString FLastLocalesExts;
