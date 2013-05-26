@@ -336,7 +336,7 @@ public:
   virtual void Changing();
   virtual void Changed();
   virtual void Insert(intptr_t Index, const UnicodeString & S, TObject * AObject = NULL);
-  virtual intptr_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2);
+  virtual intptr_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const;
   virtual intptr_t GetCount() const;
 
 public:
@@ -371,9 +371,9 @@ public:
   TDateTime() :
     FValue(0.0)
   {}
-  explicit TDateTime(double Value)
+  explicit TDateTime(double Value) :
+    FValue(Value)
   {
-    FValue = Value;
   }
   explicit TDateTime(unsigned short Hour,
                      unsigned short Min, unsigned short Sec, unsigned short MSec);
@@ -507,6 +507,7 @@ public:
 
 class THandleStream : public TStream
 {
+NB_DISABLE_COPY(THandleStream)
 public:
   explicit THandleStream(HANDLE AHandle);
   virtual ~THandleStream();
@@ -543,6 +544,7 @@ public:
 
 class TMemoryStream : public TStream
 {
+NB_DISABLE_COPY(TMemoryStream)
 public:
   TMemoryStream();
   virtual ~TMemoryStream();
@@ -603,6 +605,7 @@ struct TRegDataInfo
 
 class TRegistry : public TObject
 {
+NB_DISABLE_COPY(TRegistry)
 public:
   TRegistry();
   ~TRegistry();

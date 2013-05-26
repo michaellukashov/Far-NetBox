@@ -1200,7 +1200,7 @@ void TStringList::ExchangeItems(intptr_t Index1, intptr_t Index2)
   Item2->second = Temp2;
 }
 
-intptr_t TStringList::CompareStrings(const UnicodeString & S1, const UnicodeString & S2)
+intptr_t TStringList::CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const
 {
   if (GetCaseSensitive())
   {
