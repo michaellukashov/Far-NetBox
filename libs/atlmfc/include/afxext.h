@@ -55,7 +55,7 @@
 				class CEditView;        // simple text editor view
 
 	//CDC
-		class CMetaFileDC;              // a metafile with proxy
+//		class CMetaFileDC;              // a metafile with proxy
 
 class CRectTracker;                     // tracker for rectangle objects
 
@@ -89,101 +89,6 @@ struct CCreateContext;      // Creation context
 #define SBPS_OWNERDRAW  SBT_OWNERDRAW
 #define SBPS_DISABLED   0x04000000
 #define SBPS_STRETCH    0x08000000  // stretch to fill status bar
-
-/////////////////////////////////////////////////////////////////////////////
-// CMetaFileDC
-
-class CMetaFileDC : public CDC
-{
-	DECLARE_DYNAMIC(CMetaFileDC)
-
-// Constructors
-public:
-	CMetaFileDC();
-	BOOL Create(LPCTSTR lpszFilename = NULL);
-	BOOL CreateEnhanced(CDC* pDCRef, LPCTSTR lpszFileName,
-		LPCRECT lpBounds, LPCTSTR lpszDescription);
-
-// Operations
-	HMETAFILE Close();
-	HENHMETAFILE CloseEnhanced();
-
-// Implementation
-public:
-	virtual void SetAttribDC(HDC hDC);  // Set the Attribute DC
-
-protected:
-	virtual void SetOutputDC(HDC hDC);  // Set the Output DC -- Not allowed
-	virtual void ReleaseOutputDC();     // Release the Output DC -- Not allowed
-
-public:
-	virtual ~CMetaFileDC();
-
-// Clipping Functions (use the Attribute DC's clip region)
-	virtual int GetClipBox(LPRECT lpRect) const;
-	virtual BOOL PtVisible(int x, int y) const;
-			BOOL PtVisible(POINT point) const;
-	virtual BOOL RectVisible(LPCRECT lpRect) const;
-
-// Text Functions
-	virtual BOOL TextOut(int x, int y, LPCTSTR lpszString, int nCount);
-			BOOL TextOut(int x, int y, const CString& str);
-	virtual BOOL ExtTextOut(int x, int y, UINT nOptions, LPCRECT lpRect,
-				LPCTSTR lpszString, UINT nCount, LPINT lpDxWidths);
-			BOOL ExtTextOut(int x, int y, UINT nOptions, LPCRECT lpRect,
-				const CString& str, LPINT lpDxWidths);
-	virtual CSize TabbedTextOut(int x, int y, LPCTSTR lpszString, int nCount,
-				int nTabPositions, LPINT lpnTabStopPositions, int nTabOrigin);
-			CSize TabbedTextOut(int x, int y, const CString& str,
-				int nTabPositions, LPINT lpnTabStopPositions, int nTabOrigin);
-#pragma push_macro("DrawText")
-#pragma push_macro("DrawTextEx")
-#undef DrawText
-#undef DrawTextEx
-	virtual int _AFX_FUNCNAME(DrawText)(LPCTSTR lpszString, int nCount, LPRECT lpRect,
-				UINT nFormat);
-			int _AFX_FUNCNAME(DrawText)(const CString& str, LPRECT lpRect, UINT nFormat);
-
-	virtual int _AFX_FUNCNAME(DrawTextEx)(_In_count_(nCount) LPTSTR lpszString, int nCount, LPRECT lpRect,
-				UINT nFormat, LPDRAWTEXTPARAMS lpDTParams);
-			int _AFX_FUNCNAME(DrawTextEx)(const CString& str, LPRECT lpRect, UINT nFormat, LPDRAWTEXTPARAMS lpDTParams);
-
-
-			int DrawText(LPCTSTR lpszString, int nCount, LPRECT lpRect,
-				UINT nFormat);
-			int DrawText(const CString& str, LPRECT lpRect, UINT nFormat);
-
-			int DrawTextEx(_In_count_(nCount) LPTSTR lpszString, int nCount, LPRECT lpRect,
-				UINT nFormat, LPDRAWTEXTPARAMS lpDTParams);
-			int DrawTextEx(const CString& str, LPRECT lpRect, UINT nFormat, LPDRAWTEXTPARAMS lpDTParams);
-#pragma pop_macro("DrawText")
-#pragma pop_macro("DrawTextEx")
-
-// Printer Escape Functions
-	virtual int Escape(int nEscape, int nCount, LPCSTR lpszInData, LPVOID lpOutData);
-
-	virtual CSize SetViewportExt(int x, int y);
-			CSize SetViewportExt(SIZE size);
-	virtual CSize ScaleViewportExt(int xNum, int xDenom, int yNum, int yDenom);
-
-protected:
-	void AdjustCP(int cx);
-};
-
-struct CCreateContext   // Creation information structure
-	// All fields are optional and may be NULL
-{
-	// for creating new views
-	CRuntimeClass* m_pNewViewClass; // runtime class of view to create or NULL
-
-	// for creating MDI children (CMDIChildWnd::LoadFrame)
-	CDocTemplate* m_pNewDocTemplate;
-
-	// for sharing view/frame state from the original view/frame
-
-// Implementation
-	CCreateContext();
-};
 
 /////////////////////////////////////////////////////////////////////////////
 // Inline function declarations

@@ -503,15 +503,15 @@ union MessageMapFunctions
 {
 	AFX_PMSG pfn;   // generic member function pointer
 
-	BOOL (AFX_MSG_CALL CCmdTarget::*pfn_b_D)(CDC*);
+//	BOOL (AFX_MSG_CALL CCmdTarget::*pfn_b_D)(CDC*);
 	BOOL (AFX_MSG_CALL CCmdTarget::*pfn_b_b)(BOOL);
 	BOOL (AFX_MSG_CALL CCmdTarget::*pfn_b_u)(UINT);
 	BOOL (AFX_MSG_CALL CCmdTarget::*pfn_b_h)(HANDLE);
 	BOOL (AFX_MSG_CALL CCmdTarget::*pfn_b_W_u_u)(CWnd*, UINT, UINT);
 	BOOL (AFX_MSG_CALL CCmdTarget::*pfn_b_W_COPYDATASTRUCT)(CWnd*, COPYDATASTRUCT*);
 	BOOL (AFX_MSG_CALL CCmdTarget::*pfn_b_HELPINFO)(LPHELPINFO);
-	HBRUSH (AFX_MSG_CALL CCmdTarget::*pfn_B_D_W_u)(CDC*, CWnd*, UINT);
-	HBRUSH (AFX_MSG_CALL CCmdTarget::*pfn_B_D_u)(CDC*, UINT);
+//	HBRUSH (AFX_MSG_CALL CCmdTarget::*pfn_B_D_W_u)(CDC*, CWnd*, UINT);
+//	HBRUSH (AFX_MSG_CALL CCmdTarget::*pfn_B_D_u)(CDC*, UINT);
 	int (AFX_MSG_CALL CCmdTarget::*pfn_i_u_W_u)(UINT, CWnd*, UINT);
 	int (AFX_MSG_CALL CCmdTarget::*pfn_i_u_u)(UINT, UINT);
 	int (AFX_MSG_CALL CCmdTarget::*pfn_i_W_u_u)(CWnd*, UINT, UINT);
@@ -532,7 +532,7 @@ union MessageMapFunctions
 	void (AFX_MSG_CALL CWnd::*pfn_v_u_i_i)(UINT, int, int);
 	void (AFX_MSG_CALL CWnd::*pfn_v_w_l)(WPARAM, LPARAM);
 	void (AFX_MSG_CALL CWnd::*pfn_v_b_W_W)(BOOL, CWnd*, CWnd*);
-	void (AFX_MSG_CALL CWnd::*pfn_v_D)(CDC*);
+//	void (AFX_MSG_CALL CWnd::*pfn_v_D)(CDC*);
 	void (AFX_MSG_CALL CWnd::*pfn_v_W)(CWnd*);
 	void (AFX_MSG_CALL CWnd::*pfn_v_W_u_u)(CWnd*, UINT, UINT);
 	void (AFX_MSG_CALL CWnd::*pfn_v_W_h)(CWnd*, HANDLE);
