@@ -14,20 +14,4 @@
 
 #ifdef _AFXWIN_INLINE
 
-_AFXWIN_INLINE BOOL CDC::AlphaBlend(int xDest, int yDest, int nDestWidth, int nDestHeight,
-   CDC* pSrcDC, int xSrc, int ySrc, int nSrcWidth, int nSrcHeight, BLENDFUNCTION blend)
-   { ASSERT(m_hDC != NULL); return ::AlphaBlend(m_hDC, xDest, yDest, 
-	  nDestWidth, nDestHeight, pSrcDC->GetSafeHdc(), xSrc, ySrc, nSrcWidth, 
-	  nSrcHeight, blend); }
-_AFXWIN_INLINE BOOL CDC::TransparentBlt(int xDest, int yDest, int nDestWidth, 
-   int nDestHeight, CDC* pSrcDC, int xSrc, int ySrc, int nSrcWidth, 
-   int nSrcHeight, UINT crTransparent)
-   { ASSERT(m_hDC != NULL); return ::TransparentBlt(m_hDC, xDest, yDest, 
-	  nDestWidth, nDestHeight, pSrcDC->GetSafeHdc(), xSrc, ySrc, nSrcWidth, 
-	  nSrcHeight, crTransparent); }
-_AFXWIN_INLINE BOOL CDC::GradientFill(TRIVERTEX* pVertices, ULONG nVertices,
-   void* pMesh, ULONG nMeshElements, DWORD dwMode)
-   { ASSERT(m_hDC != NULL); return ::GradientFill(m_hDC, pVertices, nVertices,
-	  pMesh, nMeshElements, dwMode); }
-
 #endif //_AFXWIN_INLINE

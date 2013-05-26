@@ -111,8 +111,8 @@ _AFXWIN_INLINE void CWnd::ScreenToClient(LPPOINT lpPoint) const
 	// { ASSERT(::IsWindow(m_hWnd)); return CDC::FromHandle(::GetDC(m_hWnd)); }
 // _AFXWIN_INLINE CDC* CWnd::GetWindowDC()
 	// { ASSERT(::IsWindow(m_hWnd)); return CDC::FromHandle(::GetWindowDC(m_hWnd)); }
-_AFXWIN_INLINE int CWnd::ReleaseDC(CDC* pDC)
-	{ ASSERT(::IsWindow(m_hWnd)); return ::ReleaseDC(m_hWnd, pDC->m_hDC); }
+//_AFXWIN_INLINE int CWnd::ReleaseDC(CDC* pDC)
+//	{ ASSERT(::IsWindow(m_hWnd)); return ::ReleaseDC(m_hWnd, pDC->m_hDC); }
 _AFXWIN_INLINE void CWnd::UpdateWindow()
 	{ ASSERT(::IsWindow(m_hWnd)); ::UpdateWindow(m_hWnd); }
 _AFXWIN_INLINE void CWnd::SetRedraw(BOOL bRedraw)
@@ -149,8 +149,8 @@ _AFXWIN_INLINE BOOL CWnd::EnableScrollBar(int nSBFlags, UINT nArrowFlags)
 	{ ASSERT(::IsWindow(m_hWnd)); return (BOOL)::EnableScrollBar(m_hWnd, nSBFlags, nArrowFlags); }
 _AFXWIN_INLINE BOOL CWnd::DrawAnimatedRects(int idAni, CONST RECT *lprcFrom, CONST RECT *lprcTo)
 	{ ASSERT(::IsWindow(m_hWnd)); return (BOOL)::DrawAnimatedRects(m_hWnd, idAni, lprcFrom, lprcTo); }
-_AFXWIN_INLINE BOOL CWnd::DrawCaption(CDC* pDC, LPCRECT lprc, UINT uFlags)
-	{ ASSERT(::IsWindow(m_hWnd)); return (BOOL)::DrawCaption(m_hWnd, pDC->GetSafeHdc(), lprc, uFlags); }
+//_AFXWIN_INLINE BOOL CWnd::DrawCaption(CDC* pDC, LPCRECT lprc, UINT uFlags)
+//	{ ASSERT(::IsWindow(m_hWnd)); return (BOOL)::DrawCaption(m_hWnd, pDC->GetSafeHdc(), lprc, uFlags); }
 
 _AFXWIN_INLINE UINT_PTR CWnd::SetTimer(UINT_PTR nIDEvent, UINT nElapse,
 		void (CALLBACK* lpfnTimer)(HWND, UINT, UINT_PTR, DWORD))
@@ -240,10 +240,10 @@ _AFXWIN_INLINE HICON CWnd::SetIcon(HICON hIcon, BOOL bBigIcon)
 	{ ASSERT(::IsWindow(m_hWnd)); return (HICON)::SendMessage(m_hWnd, WM_SETICON, bBigIcon, (LPARAM)hIcon); }
 _AFXWIN_INLINE HICON CWnd::GetIcon(BOOL bBigIcon) const
 	{ ASSERT(::IsWindow(m_hWnd)); return (HICON)::SendMessage(m_hWnd, WM_GETICON, bBigIcon, 0); }
-_AFXWIN_INLINE void CWnd::Print(CDC* pDC, DWORD dwFlags) const
-	{ ASSERT(::IsWindow(m_hWnd)); ::SendMessage(m_hWnd, WM_PRINT, (WPARAM)pDC->GetSafeHdc(), dwFlags); }
-_AFXWIN_INLINE void CWnd::PrintClient(CDC* pDC, DWORD dwFlags) const
-	{ ASSERT(::IsWindow(m_hWnd)); ::SendMessage(m_hWnd, WM_PRINTCLIENT, (WPARAM)pDC->GetSafeHdc(), dwFlags); }
+//_AFXWIN_INLINE void CWnd::Print(CDC* pDC, DWORD dwFlags) const
+//	{ ASSERT(::IsWindow(m_hWnd)); ::SendMessage(m_hWnd, WM_PRINT, (WPARAM)pDC->GetSafeHdc(), dwFlags); }
+//_AFXWIN_INLINE void CWnd::PrintClient(CDC* pDC, DWORD dwFlags) const
+//	{ ASSERT(::IsWindow(m_hWnd)); ::SendMessage(m_hWnd, WM_PRINTCLIENT, (WPARAM)pDC->GetSafeHdc(), dwFlags); }
 _AFXWIN_INLINE BOOL CWnd::SetWindowContextHelpId(DWORD dwContextHelpId)
 	{ ASSERT(::IsWindow(m_hWnd)); return ::SetWindowContextHelpId(m_hWnd, dwContextHelpId); }
 _AFXWIN_INLINE DWORD CWnd::GetWindowContextHelpId() const
@@ -274,12 +274,12 @@ _AFXWIN_INLINE void CWnd::OnEnable(BOOL)
 	{ Default(); }
 _AFXWIN_INLINE void CWnd::OnEndSession(BOOL)
 	{ Default(); }
-_AFXWIN_INLINE BOOL CWnd::OnEraseBkgnd(CDC*)
-	{ return (BOOL)Default(); }
-_AFXWIN_INLINE void CWnd::OnGetMinMaxInfo(MINMAXINFO*)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnIconEraseBkgnd(CDC*)
-	{ Default(); }
+//_AFXWIN_INLINE BOOL CWnd::OnEraseBkgnd(CDC*)
+//	{ return (BOOL)Default(); }
+//_AFXWIN_INLINE void CWnd::OnGetMinMaxInfo(MINMAXINFO*)
+//	{ Default(); }
+//_AFXWIN_INLINE void CWnd::OnIconEraseBkgnd(CDC*)
+//	{ Default(); }
 _AFXWIN_INLINE void CWnd::OnKillFocus(CWnd*)
 	{ Default(); }
 _AFXWIN_INLINE void CWnd::OnMove(int, int)

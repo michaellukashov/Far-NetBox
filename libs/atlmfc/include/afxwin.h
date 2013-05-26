@@ -137,11 +137,11 @@
 			class CResourceException;// Win resource failure exception
 			// class CUserException;    // Message Box alert and stop operation
 
-	class CDC;                   // a Display Context / HDC wrapper
-		class CClientDC;         // CDC for client of window
-		class CWindowDC;         // CDC for entire window
+//	class CDC;                   // a Display Context / HDC wrapper
+//		class CClientDC;         // CDC for client of window
+//		class CWindowDC;         // CDC for entire window
 
-	class CImageList;            // an image list / HIMAGELIST wrapper
+//	class CImageList;            // an image list / HIMAGELIST wrapper
 
 	class CCmdTarget;            // a target for user commands
 		class CWnd;                 // a window / HWND wrapper
@@ -242,486 +242,6 @@ public:
 
 void AFXAPI AfxThrowResourceException();
 void AFXAPI AfxThrowUserException();
-
-/////////////////////////////////////////////////////////////////////////////
-// The device context
-
-class CDC : public CObject
-{
-	DECLARE_DYNCREATE(CDC)
-public:
-
-// Attributes
-	HDC m_hDC;          // The output DC (must be first data member)
-	HDC m_hAttribDC;    // The Attribute DC
-	operator HDC() const;
-	HDC GetSafeHdc() const; // Always returns the Output DC
-	CWnd* GetWindow() const;
-
-	static CDC* PASCAL FromHandle(HDC hDC);
-	static void PASCAL DeleteTempMap();
-	BOOL Attach(HDC hDC);   // Attach/Detach affects only the Output DC
-	HDC Detach();
-
-	virtual void SetAttribDC(HDC hDC);  // Set the Attribute DC
-	virtual void SetOutputDC(HDC hDC);  // Set the Output DC
-	virtual void ReleaseAttribDC();     // Release the Attribute DC
-	virtual void ReleaseOutputDC();     // Release the Output DC
-
-	BOOL IsPrinting() const;            // TRUE if being used for printing
-
-	// for bidi and mirrored localization
-	DWORD GetLayout() const;
-	DWORD SetLayout(DWORD dwLayout);
-
-// Constructors
-	CDC();
-	BOOL CreateDC(LPCTSTR lpszDriverName, LPCTSTR lpszDeviceName,
-		LPCTSTR lpszOutput, const void* lpInitData);
-	BOOL CreateIC(LPCTSTR lpszDriverName, LPCTSTR lpszDeviceName,
-		LPCTSTR lpszOutput, const void* lpInitData);
-	BOOL CreateCompatibleDC(CDC* pDC);
-
-	BOOL DeleteDC();
-
-// Device-Context Functions
-	virtual int SaveDC();
-	virtual BOOL RestoreDC(int nSavedDC);
-	int GetDeviceCaps(int nIndex) const;
-	UINT SetBoundsRect(LPCRECT lpRectBounds, UINT flags);
-	UINT GetBoundsRect(LPRECT lpRectBounds, UINT flags);
-	BOOL ResetDC(const DEVMODE* lpDevMode);
-
-// Drawing-Tool Functions
-	int EnumObjects(int nObjectType,
-			int (CALLBACK* lpfn)(LPVOID, LPARAM), LPARAM lpData);
-
-// Type-safe selection helpers
-public:
-	// int SelectObject(CRgn* pRgn);       // special return for regions
-	// CGdiObject* SelectObject(CGdiObject* pObject);
-		// CGdiObject* provided so compiler doesn't use SelectObject(HGDIOBJ)
-
-// Color and Color Palette Functions
-	COLORREF GetNearestColor(COLORREF crColor) const;
-	// CPalette* SelectPalette(CPalette* pPalette, BOOL bForceBackground);
-	UINT RealizePalette();
-	void UpdateColors();
-
-// Drawing-Attribute Functions
-	COLORREF GetBkColor() const;
-	int GetBkMode() const;
-	int GetPolyFillMode() const;
-	int GetROP2() const;
-	int GetStretchBltMode() const;
-	COLORREF GetTextColor() const;
-
-	virtual COLORREF SetBkColor(COLORREF crColor);
-	int SetBkMode(int nBkMode);
-	int SetPolyFillMode(int nPolyFillMode);
-	int SetROP2(int nDrawMode);
-	int SetStretchBltMode(int nStretchMode);
-	virtual COLORREF SetTextColor(COLORREF crColor);
-
-	BOOL GetColorAdjustment(LPCOLORADJUSTMENT lpColorAdjust) const;
-	BOOL SetColorAdjustment(const COLORADJUSTMENT* lpColorAdjust);
-
-#if (_WIN32_WINNT >= 0x0500)
-
-	COLORREF GetDCBrushColor() const;
-	COLORREF SetDCBrushColor(COLORREF crColor);
-
-	COLORREF GetDCPenColor() const;
-	COLORREF SetDCPenColor(COLORREF crColor);
-
-#endif
-
-	// Graphics mode
-	int SetGraphicsMode(int iMode);
-	int GetGraphicsMode() const;
-
-	// World transform
-	BOOL SetWorldTransform(const XFORM* pXform);
-	BOOL ModifyWorldTransform(const XFORM* pXform,DWORD iMode);
-	BOOL GetWorldTransform(XFORM* pXform) const;
-
-	// Mapping Functions
-	int GetMapMode() const;
-	virtual int SetMapMode(int nMapMode);
-
-	// Viewport Extent
-	CSize GetViewportExt() const;
-	virtual CSize SetViewportExt(int cx, int cy);
-			CSize SetViewportExt(SIZE size);
-	virtual CSize ScaleViewportExt(int xNum, int xDenom, int yNum, int yDenom);
-
-	// Window extent
-	CSize GetWindowExt() const;
-	virtual CSize SetWindowExt(int cx, int cy);
-			CSize SetWindowExt(SIZE size);
-	virtual CSize ScaleWindowExt(int xNum, int xDenom, int yNum, int yDenom);
-
-// Coordinate Functions
-	void DPtoLP(LPPOINT lpPoints, int nCount = 1) const;
-	void DPtoLP(LPRECT lpRect) const;
-	void DPtoLP(LPSIZE lpSize) const;
-	void LPtoDP(LPPOINT lpPoints, int nCount = 1) const;
-	void LPtoDP(LPRECT lpRect) const;
-	void LPtoDP(LPSIZE lpSize) const;
-
-// Special Coordinate Functions (useful for dealing with metafiles and OLE)
-	void DPtoHIMETRIC(LPSIZE lpSize) const;
-	void LPtoHIMETRIC(LPSIZE lpSize) const;
-	void HIMETRICtoDP(LPSIZE lpSize) const;
-	void HIMETRICtoLP(LPSIZE lpSize) const;
-
-// Region Functions
-	// BOOL FillRgn(CRgn* pRgn, CBrush* pBrush);
-	// BOOL FrameRgn(CRgn* pRgn, CBrush* pBrush, int nWidth, int nHeight);
-	// BOOL InvertRgn(CRgn* pRgn);
-	// BOOL PaintRgn(CRgn* pRgn);
-
-// Clipping Functions
-	virtual int GetClipBox(LPRECT lpRect) const;
-	virtual BOOL PtVisible(int x, int y) const;
-			BOOL PtVisible(POINT point) const;
-	virtual BOOL RectVisible(LPCRECT lpRect) const;
-			// int SelectClipRgn(CRgn* pRgn);
-			int ExcludeClipRect(int x1, int y1, int x2, int y2);
-			int ExcludeClipRect(LPCRECT lpRect);
-			int ExcludeUpdateRgn(CWnd* pWnd);
-			int IntersectClipRect(int x1, int y1, int x2, int y2);
-			int IntersectClipRect(LPCRECT lpRect);
-			int OffsetClipRgn(int x, int y);
-			int OffsetClipRgn(SIZE size);
-	// int SelectClipRgn(CRgn* pRgn, int nMode);
-
-// Line-Output Functions
-	BOOL LineTo(int x, int y);
-	BOOL LineTo(POINT point);
-	BOOL Arc(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4);
-	BOOL Arc(LPCRECT lpRect, POINT ptStart, POINT ptEnd);
-	BOOL Polyline(const POINT* lpPoints, int nCount);
-
-	BOOL AngleArc(int x, int y, int nRadius, float fStartAngle, float fSweepAngle);
-	// BOOL ArcTo(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4);
-	// BOOL ArcTo(LPCRECT lpRect, POINT ptStart, POINT ptEnd);
-	int GetArcDirection() const;
-	int SetArcDirection(int nArcDirection);
-
-	BOOL PolyDraw(const POINT* lpPoints, const BYTE* lpTypes, int nCount);
-	BOOL PolylineTo(const POINT* lpPoints, int nCount);
-	BOOL PolyPolyline(const POINT* lpPoints,
-		const DWORD* lpPolyPoints, int nCount);
-
-	BOOL PolyBezier(const POINT* lpPoints, int nCount);
-	BOOL PolyBezierTo(const POINT* lpPoints, int nCount);
-
-// Simple Drawing Functions
-	// void FillRect(LPCRECT lpRect, CBrush* pBrush);
-	// void FrameRect(LPCRECT lpRect, CBrush* pBrush);
-	void InvertRect(LPCRECT lpRect);
-	BOOL DrawIcon(int x, int y, HICON hIcon);
-	BOOL DrawIcon(POINT point, HICON hIcon);
-
-// Ellipse and Polygon Functions
-	BOOL Chord(int x1, int y1, int x2, int y2, int x3, int y3,
-		int x4, int y4);
-	BOOL Chord(LPCRECT lpRect, POINT ptStart, POINT ptEnd);
-	void DrawFocusRect(LPCRECT lpRect);
-	BOOL Ellipse(int x1, int y1, int x2, int y2);
-	BOOL Ellipse(LPCRECT lpRect);
-	BOOL Pie(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4);
-	BOOL Pie(LPCRECT lpRect, POINT ptStart, POINT ptEnd);
-	BOOL Polygon(const POINT* lpPoints, int nCount);	
-	BOOL PolyPolygon(const POINT* lpPoints, const INT* lpPolyCounts, int nCount);
-	BOOL Rectangle(int x1, int y1, int x2, int y2);
-	BOOL Rectangle(LPCRECT lpRect);
-	BOOL RoundRect(int x1, int y1, int x2, int y2, int x3, int y3);
-	BOOL RoundRect(LPCRECT lpRect, POINT point);
-
-// Bitmap Functions
-	BOOL PatBlt(int x, int y, int nWidth, int nHeight, DWORD dwRop);
-	BOOL BitBlt(int x, int y, int nWidth, int nHeight, CDC* pSrcDC,
-		int xSrc, int ySrc, DWORD dwRop);
-	BOOL StretchBlt(int x, int y, int nWidth, int nHeight, CDC* pSrcDC,
-		int xSrc, int ySrc, int nSrcWidth, int nSrcHeight, DWORD dwRop);
-	COLORREF GetPixel(int x, int y) const;
-	COLORREF GetPixel(POINT point) const;
-	COLORREF SetPixel(int x, int y, COLORREF crColor);
-	COLORREF SetPixel(POINT point, COLORREF crColor);
-	BOOL FloodFill(int x, int y, COLORREF crColor);
-	BOOL ExtFloodFill(int x, int y, COLORREF crColor, UINT nFillType);
-	BOOL SetPixelV(int x, int y, COLORREF crColor);
-	BOOL SetPixelV(POINT point, COLORREF crColor);
-   BOOL GradientFill(TRIVERTEX* pVertices, ULONG nVertices, 
-	  void* pMesh, ULONG nMeshElements, DWORD dwMode);
-   BOOL TransparentBlt(int xDest, int yDest, int nDestWidth, int nDestHeight,
-	  CDC* pSrcDC, int xSrc, int ySrc, int nSrcWidth, int nSrcHeight, 
-	  UINT clrTransparent);
-   BOOL AlphaBlend(int xDest, int yDest, int nDestWidth, int nDestHeight,
-	  CDC* pSrcDC, int xSrc, int ySrc, int nSrcWidth, int nSrcHeight, 
-	  BLENDFUNCTION blend);
-
-// Text Functions
-	virtual BOOL TextOut(int x, int y, LPCTSTR lpszString, int nCount);
-			BOOL TextOut(int x, int y, const CString& str);
-	virtual BOOL ExtTextOut(int x, int y, UINT nOptions, LPCRECT lpRect,
-				LPCTSTR lpszString, UINT nCount, LPINT lpDxWidths);
-			BOOL ExtTextOut(int x, int y, UINT nOptions, LPCRECT lpRect,
-				const CString& str, LPINT lpDxWidths);
-	virtual CSize TabbedTextOut(int x, int y, LPCTSTR lpszString, int nCount,
-				int nTabPositions, LPINT lpnTabStopPositions, int nTabOrigin);
-			CSize TabbedTextOut(int x, int y, const CString& str,
-				int nTabPositions, LPINT lpnTabStopPositions, int nTabOrigin);
-
-#pragma push_macro("DrawText")
-#pragma push_macro("DrawTextEx")
-#undef DrawText
-#undef DrawTextEx
-	virtual int _AFX_FUNCNAME(DrawText)(LPCTSTR lpszString, int nCount, LPRECT lpRect,
-				UINT nFormat);
-			int _AFX_FUNCNAME(DrawText)(const CString& str, LPRECT lpRect, UINT nFormat);
-
-	virtual int _AFX_FUNCNAME(DrawTextEx)(LPTSTR lpszString, int nCount, LPRECT lpRect,
-				UINT nFormat, LPDRAWTEXTPARAMS lpDTParams);
-			int _AFX_FUNCNAME(DrawTextEx)(const CString& str, LPRECT lpRect, UINT nFormat, LPDRAWTEXTPARAMS lpDTParams);
-
-			int DrawText(LPCTSTR lpszString, int nCount, LPRECT lpRect,
-				UINT nFormat);
-			int DrawText(const CString& str, LPRECT lpRect, UINT nFormat);
-
-			int DrawTextEx(LPTSTR lpszString, int nCount, LPRECT lpRect,
-				UINT nFormat, LPDRAWTEXTPARAMS lpDTParams);
-			int DrawTextEx(const CString& str, LPRECT lpRect, UINT nFormat, LPDRAWTEXTPARAMS lpDTParams);
-#pragma pop_macro("DrawText")
-#pragma pop_macro("DrawTextEx")
-
-	CSize GetTextExtent(LPCTSTR lpszString, int nCount) const;
-	CSize GetTextExtent(const CString& str) const;
-	CSize GetOutputTextExtent(LPCTSTR lpszString, int nCount) const;
-	CSize GetOutputTextExtent(const CString& str) const;
-	CSize GetTabbedTextExtent(LPCTSTR lpszString, int nCount,
-		int nTabPositions, LPINT lpnTabStopPositions) const;
-	CSize GetTabbedTextExtent(const CString& str,
-		int nTabPositions, LPINT lpnTabStopPositions) const;
-	CSize GetOutputTabbedTextExtent(LPCTSTR lpszString, int nCount,
-		int nTabPositions, LPINT lpnTabStopPositions) const;
-	CSize GetOutputTabbedTextExtent(const CString& str,
-		int nTabPositions, LPINT lpnTabStopPositions) const;
-	UINT GetTextAlign() const;
-	UINT SetTextAlign(UINT nFlags);
-	int GetTextFace(_In_ int nCount, _Out_z_cap_post_count_(nCount, return) LPTSTR lpszFacename) const;
-	int GetTextFace(CString& rString) const;
-#pragma push_macro("GetTextMetrics")
-#undef GetTextMetrics
-	BOOL _AFX_FUNCNAME(GetTextMetrics)(LPTEXTMETRIC lpMetrics) const;
-	BOOL GetTextMetrics(LPTEXTMETRIC lpMetrics) const;
-#pragma pop_macro("GetTextMetrics")
-	BOOL GetOutputTextMetrics(LPTEXTMETRIC lpMetrics) const;
-	int SetTextJustification(int nBreakExtra, int nBreakCount);
-	int GetTextCharacterExtra() const;
-	int SetTextCharacterExtra(int nCharExtra);
-
-	DWORD GetCharacterPlacement(LPCTSTR lpString, int nCount, int nMaxExtent, LPGCP_RESULTS lpResults, DWORD dwFlags) const;
-	DWORD GetCharacterPlacement(CString& str, int nMaxExtent, LPGCP_RESULTS lpResults, DWORD dwFlags) const;
-
-#if (_WIN32_WINNT >= 0x0500)
-
-	BOOL GetTextExtentExPointI(LPWORD pgiIn, int cgi, int nMaxExtent, LPINT lpnFit, LPINT alpDx, _Out_opt_ LPSIZE lpSize) const;
-	BOOL GetTextExtentPointI(LPWORD pgiIn, int cgi, _Out_opt_ LPSIZE lpSize) const;
-
-#endif
-
-
-
-// Advanced Drawing
-	BOOL DrawEdge(LPRECT lpRect, UINT nEdge, UINT nFlags);
-	BOOL DrawFrameControl(LPRECT lpRect, UINT nType, UINT nState);
-
-// Scrolling Functions
-	// BOOL ScrollDC(int dx, int dy, LPCRECT lpRectScroll, LPCRECT lpRectClip,
-		// CRgn* pRgnUpdate, LPRECT lpRectUpdate);
-
-// Font Functions
-	BOOL GetCharWidth(UINT nFirstChar, UINT nLastChar, LPINT lpBuffer) const;
-	BOOL GetOutputCharWidth(UINT nFirstChar, UINT nLastChar, LPINT lpBuffer) const;
-	DWORD SetMapperFlags(DWORD dwFlag);
-	CSize GetAspectRatioFilter() const;
-
-	BOOL GetCharABCWidths(UINT nFirstChar, UINT nLastChar, LPABC lpabc) const;
-	DWORD GetFontData(DWORD dwTable, DWORD dwOffset, LPVOID lpData, DWORD cbData) const;
-	int GetKerningPairs(int nPairs, LPKERNINGPAIR lpkrnpair) const;
-	UINT GetOutlineTextMetrics(UINT cbData, LPOUTLINETEXTMETRIC lpotm) const;
-	DWORD GetGlyphOutline(UINT nChar, UINT nFormat, LPGLYPHMETRICS lpgm,
-		DWORD cbBuffer, LPVOID lpBuffer, const MAT2* lpmat2) const;
-
-	BOOL GetCharABCWidths(UINT nFirstChar, UINT nLastChar,
-		LPABCFLOAT lpABCF) const;
-	BOOL GetCharWidth(UINT nFirstChar, UINT nLastChar,
-		float* lpFloatBuffer) const;
-
-	DWORD GetFontLanguageInfo() const;
-
-#if (_WIN32_WINNT >= 0x0500)
-
-	BOOL GetCharABCWidthsI(UINT giFirst, UINT cgi, LPWORD pgi, LPABC lpabc) const;
-	BOOL GetCharWidthI(UINT giFirst, UINT cgi, LPWORD pgi, LPINT lpBuffer) const;
-
-#endif
-
-// Printer/Device Escape Functions
-	virtual int Escape(_In_ int nEscape, _In_ int nCount,
-		_In_bytecount_(nCount) LPCSTR lpszInData, _In_ LPVOID lpOutData);
-	int Escape(_In_ int nEscape, _In_ int nInputSize, _In_bytecount_(nInputSize) LPCSTR lpszInputData,
-		_In_ int nOutputSize, _Out_bytecap_(nOutputSize) LPSTR lpszOutputData);
-	int DrawEscape(int nEscape, int nInputSize, LPCSTR lpszInputData);
-
-	// Escape helpers
-	int StartDoc(LPCTSTR lpszDocName);  // old Win3.0 version
-	int StartDoc(LPDOCINFO lpDocInfo);
-	int StartPage();
-	int EndPage();
-	int SetAbortProc(BOOL (CALLBACK* lpfn)(HDC, int));
-	int AbortDoc();
-	int EndDoc();
-
-// MetaFile Functions
-	BOOL PlayMetaFile(HMETAFILE hMF);
-	BOOL PlayMetaFile(HENHMETAFILE hEnhMetaFile, LPCRECT lpBounds);
-	BOOL AddMetaFileComment(UINT nDataSize, const BYTE* pCommentData);
-		// can be used for enhanced metafiles only
-
-// Path Functions
-	BOOL AbortPath();
-	BOOL BeginPath();
-	BOOL CloseFigure();
-	BOOL EndPath();
-	BOOL FillPath();
-	BOOL FlattenPath();
-	BOOL StrokeAndFillPath();
-	BOOL StrokePath();
-	BOOL WidenPath();
-	float GetMiterLimit() const;
-	BOOL SetMiterLimit(float fMiterLimit);
-	int GetPath(LPPOINT lpPoints, LPBYTE lpTypes, int nCount) const;
-	BOOL SelectClipPath(int nMode);
-
-// Misc Helper Functions
-	void FillSolidRect(LPCRECT lpRect, COLORREF clr);
-	void FillSolidRect(int x, int y, int cx, int cy, COLORREF clr);
-	void Draw3dRect(LPCRECT lpRect, COLORREF clrTopLeft, COLORREF clrBottomRight);
-	void Draw3dRect(int x, int y, int cx, int cy,
-		COLORREF clrTopLeft, COLORREF clrBottomRight);
-
-// Implementation
-public:
-	virtual ~CDC();
-
-	// advanced use and implementation
-	BOOL m_bPrinting;
-	HGDIOBJ SelectObject(HGDIOBJ);      // do not use for regions
-
-protected:
-	// used for implementation of non-virtual SelectObject calls
-	// static CGdiObject* PASCAL SelectGdiObject(HDC hDC, HGDIOBJ h);
-};
-
-/////////////////////////////////////////////////////////////////////////////
-class CClientDC : public CDC
-{
-	DECLARE_DYNAMIC(CClientDC)
-
-// Constructors
-public:
-	explicit CClientDC(CWnd* pWnd);
-
-// Attributes
-protected:
-	HWND m_hWnd;
-
-// Implementation
-public:
-	virtual ~CClientDC();
-};
-
-class CWindowDC : public CDC
-{
-	DECLARE_DYNAMIC(CWindowDC)
-
-// Constructors
-public:
-	explicit CWindowDC(CWnd* pWnd);
-
-// Attributes
-protected:
-	HWND m_hWnd;
-
-// Implementation
-public:
-	virtual ~CWindowDC();
-};
-
-/////////////////////////////////////////////////////////////////////////////
-// CImageList
-
-class CImageList : public CObject
-{
-	DECLARE_DYNCREATE(CImageList)
-
-// Constructors
-public:
-	CImageList();
-	BOOL Create(int cx, int cy, UINT nFlags, int nInitial, int nGrow);
-	BOOL Create(UINT nBitmapID, int cx, int nGrow, COLORREF crMask);
-	BOOL Create(LPCTSTR lpszBitmapID, int cx, int nGrow, COLORREF crMask);
-	BOOL Create(CImageList& imagelist1, int nImage1, CImageList& imagelist2,
-		int nImage2, int dx, int dy);
-	BOOL Create(CImageList* pImageList);
-
-// Attributes
-	HIMAGELIST m_hImageList;            // must be first data member
-	operator HIMAGELIST() const;
-	HIMAGELIST GetSafeHandle() const;
-
-	static CImageList* PASCAL FromHandle(HIMAGELIST hImageList);
-	static CImageList* PASCAL FromHandlePermanent(HIMAGELIST hImageList);
-	static void PASCAL DeleteTempMap();
-	BOOL Attach(HIMAGELIST hImageList);
-	HIMAGELIST Detach();
-
-	int GetImageCount() const;
-	COLORREF SetBkColor(COLORREF cr);
-	COLORREF GetBkColor() const;
-	BOOL GetImageInfo(int nImage, IMAGEINFO* pImageInfo) const;
-
-// Operations
-	BOOL DeleteImageList();
-	BOOL SetImageCount(UINT uNewCount);
-
-	BOOL Remove(int nImage);
-	int Add(HICON hIcon);
-	int Replace(int nImage, HICON hIcon);
-	HICON ExtractIcon(int nImage);
-	BOOL Draw(CDC* pDC, int nImage, POINT pt, UINT nStyle);
-	BOOL DrawEx(CDC* pDC, int nImage, POINT pt, SIZE sz, COLORREF clrBk, COLORREF clrFg, UINT nStyle);
-	BOOL SetOverlayImage(int nImage, int nOverlay);
-	BOOL Copy(int iDst, int iSrc, UINT uFlags = ILCF_MOVE);
-	BOOL Copy(int iDst, CImageList* pSrc, int iSrc, UINT uFlags = ILCF_MOVE);
-	BOOL DrawIndirect(IMAGELISTDRAWPARAMS* pimldp);
-	BOOL DrawIndirect(CDC* pDC, int nImage, POINT pt, SIZE sz, POINT ptOrigin,
-			UINT fStyle = ILD_NORMAL, DWORD dwRop = SRCCOPY,
-			COLORREF rgbBack = CLR_DEFAULT, COLORREF rgbFore = CLR_DEFAULT,
-			DWORD fState = ILS_NORMAL, DWORD Frame = 0, COLORREF crEffect = CLR_DEFAULT);
-
-// Drag APIs
-	static CImageList* PASCAL GetDragImage(LPPOINT lpPoint, LPPOINT lpPointHotSpot);
-	static BOOL PASCAL DragLeave(CWnd* pWndLock);
-
-// Implementation
-public:
-	virtual ~CImageList();
-};
 
 /////////////////////////////////////////////////////////////////////////////
 // Window message map handling
@@ -1659,7 +1179,7 @@ public:
 	const POINT* ppt, const SIZE* psize, CWnd* pParentWnd, UINT nID);
 
 	LPUNKNOWN GetControlUnknown();
-	BOOL PaintWindowlessControls(CDC *pDC);
+//	BOOL PaintWindowlessControls(CDC *pDC);
 #endif
 
 	virtual BOOL DestroyWindow();
@@ -1752,11 +1272,11 @@ public:
 	void MapWindowPoints(CWnd* pwndTo, LPRECT lpRect) const;
 
 // Update/Painting Functions
-	CDC* GetDC();
-	CDC* GetWindowDC();
-	int ReleaseDC(CDC* pDC);
-	void Print(CDC* pDC, DWORD dwFlags) const;
-	void PrintClient(CDC* pDC, DWORD dwFlags) const;
+//	CDC* GetDC();
+//	CDC* GetWindowDC();
+//	int ReleaseDC(CDC* pDC);
+//	void Print(CDC* pDC, DWORD dwFlags) const;
+//	void PrintClient(CDC* pDC, DWORD dwFlags) const;
 
 	void UpdateWindow();
 	void SetRedraw(BOOL bRedraw = TRUE);
@@ -1780,7 +1300,7 @@ public:
 	BOOL EnableScrollBar(int nSBFlags, UINT nArrowFlags = ESB_ENABLE_BOTH);
 
 	BOOL DrawAnimatedRects(int idAni, CONST RECT *lprcFrom, CONST RECT *lprcTo);
-	BOOL DrawCaption(CDC* pDC, LPCRECT lprc, UINT uFlags);
+//	BOOL DrawCaption(CDC* pDC, LPCRECT lprc, UINT uFlags);
 
 #if(WINVER >= 0x0500)
 
@@ -1790,7 +1310,7 @@ public:
 
 #if(_WIN32_WINNT >= 0x0501)
 
-	BOOL PrintWindow(CDC* pDC, UINT nFlags) const;
+//	BOOL PrintWindow(CDC* pDC, UINT nFlags) const;
 
 #endif	// _WIN32_WINNT >= 0x0501
 
@@ -1799,8 +1319,8 @@ public:
 #if(_WIN32_WINNT >= 0x0500)
 
 	BOOL SetLayeredWindowAttributes(COLORREF crKey, BYTE bAlpha, DWORD dwFlags);
-	BOOL UpdateLayeredWindow(CDC* pDCDst, POINT *pptDst, SIZE *psize, 
-		CDC* pDCSrc, POINT *pptSrc, COLORREF crKey, BLENDFUNCTION *pblend, DWORD dwFlags);
+//	BOOL UpdateLayeredWindow(CDC* pDCDst, POINT *pptDst, SIZE *psize,
+//		CDC* pDCSrc, POINT *pptSrc, COLORREF crKey, BLENDFUNCTION *pblend, DWORD dwFlags);
 
 #endif	// _WIN32_WINNT >= 0x0500
 
@@ -2004,10 +1524,10 @@ protected:
 	afx_msg void OnEnable(BOOL bEnable);
 	afx_msg void OnEndSession(BOOL bEnding);
 	afx_msg void OnEnterIdle(UINT nWhy, CWnd* pWho);
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+//	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO* lpMMI);
 	afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
-	afx_msg void OnIconEraseBkgnd(CDC* pDC);
+//	afx_msg void OnIconEraseBkgnd(CDC* pDC);
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnMove(int x, int y);
 	afx_msg void OnPaint();
@@ -2726,7 +2246,7 @@ public:
 		BOOL bFreeOld = TRUE);
 
 	// Create a DC for the system default printer.
-	BOOL CreatePrinterDC(CDC& dc);
+//	BOOL CreatePrinterDC(CDC& dc);
 
 
 	BOOL GetPrinterDeviceDefaults(PRINTDLG* pPrintDlg);

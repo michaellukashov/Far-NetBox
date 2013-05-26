@@ -267,15 +267,3 @@ void PASCAL CWnd::DeleteTempMap()
 	// pMap->DeleteTemp();
 }
 
-void PASCAL CImageList::DeleteTempMap()
-{
-	// CHandleMap* pMap = AfxGetModuleThreadState()->m_pmapHIMAGELIST;
-	// pMap->DeleteTemp();
-}
-
-void PASCAL CDC::DeleteTempMap()
-{
-	// CHandleMap* pMap = AfxGetModuleThreadState()->m_pmapHDC;
-	// pMap->DeleteTemp();
-}
-

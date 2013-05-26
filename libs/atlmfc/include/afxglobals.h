@@ -209,7 +209,7 @@ struct AFX_GLOBAL_DATA
 		return bHorz ? m_nTextWidthHorz : m_nTextWidthVert;
 	}
 
-	BOOL DrawParentBackground(CWnd* pWnd, CDC* pDC, LPRECT lpRect = NULL);
+//	BOOL DrawParentBackground(CWnd* pWnd, CDC* pDC, LPRECT lpRect = NULL);
 	void CleanUp();
 
 	// COLORREF GetColor(int nColor);

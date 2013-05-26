@@ -14,34 +14,6 @@
 
 #if (_WIN32_WINNT >= 0x0500)
 
-AFX_INLINE COLORREF CDC::GetDCBrushColor() const
-	{ ENSURE(m_hDC != NULL); return ::GetDCBrushColor(m_hDC); }
-AFX_INLINE COLORREF CDC::SetDCBrushColor(COLORREF crColor)
-	{ ENSURE(m_hDC != NULL); return ::SetDCBrushColor(m_hDC, crColor); }
-
-AFX_INLINE COLORREF CDC::GetDCPenColor() const
-	{ ENSURE(m_hDC != NULL); return ::GetDCPenColor(m_hDC); }
-AFX_INLINE COLORREF CDC::SetDCPenColor(COLORREF crColor)
-	{ ENSURE(m_hDC != NULL); return ::SetDCPenColor(m_hDC, crColor); }
-
-AFX_INLINE BOOL CDC::GetCharABCWidthsI(UINT giFirst, UINT cgi, LPWORD pgi, LPABC lpabc) const
-	{ ENSURE(m_hDC != NULL); return ::GetCharABCWidthsI(m_hDC, giFirst, cgi, pgi, lpabc); }
-AFX_INLINE BOOL CDC::GetCharWidthI(UINT giFirst, UINT cgi, LPWORD pgi, LPINT lpBuffer) const
-	{ ENSURE(m_hDC != NULL); return ::GetCharWidthI(m_hDC, giFirst, cgi, pgi, lpBuffer); }
-
-AFX_INLINE BOOL CDC::GetTextExtentExPointI(LPWORD pgiIn, int cgi, int nMaxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize) const
-{
-	ENSURE(lpSize != NULL);
-	ENSURE(m_hDC != NULL);
-	return ::GetTextExtentExPointI(m_hDC, pgiIn, cgi, nMaxExtent, lpnFit, alpDx, lpSize);
-}
-AFX_INLINE BOOL CDC::GetTextExtentPointI(LPWORD pgiIn, int cgi, LPSIZE lpSize) const
-{
-	ENSURE(lpSize != NULL);
-	ENSURE(m_hDC != NULL);
-	return ::GetTextExtentPointI(m_hDC, pgiIn, cgi, lpSize);
-}
-
 #endif
 
 #if(WINVER >= 0x0500)
@@ -60,12 +32,6 @@ AFX_INLINE BOOL CWnd::GetLayeredWindowAttributes(COLORREF *pcrKey, BYTE *pbAlpha
 {
 	ASSERT(::IsWindow(m_hWnd));
 	return ::GetLayeredWindowAttributes(m_hWnd, pcrKey, pbAlpha, pdwFlags);
-}
-
-AFX_INLINE BOOL CWnd::PrintWindow(CDC* pDC, UINT nFlags) const
-{
-	ASSERT(::IsWindow(m_hWnd));
-	return ::PrintWindow(m_hWnd, pDC->GetSafeHdc(), nFlags);
 }
 
 
