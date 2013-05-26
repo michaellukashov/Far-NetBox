@@ -179,7 +179,7 @@ protected:
     UnicodeString & FileMask, bool Move);
   bool RenameFileDialog(TRemoteFile * File, UnicodeString & NewName);
   uintptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
-    TQueryType Type, uintptr_t Answers, const TMessageParams * Params = NULL);
+    TQueryType Type, uintptr_t Answers, const TMessageParams * AParams = NULL);
   bool PasswordDialog(TSessionData * SessionData,
     TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
     TStrings * Results, bool StoredCredentialsTried);
@@ -297,7 +297,7 @@ private:
     const UnicodeString & Str, bool Status, intptr_t Phase);
   void TerminalQueryUser(TObject * Sender,
     const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
-    const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg);
+    const TQueryParams * AParams, uintptr_t & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal,
     TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result,
@@ -341,10 +341,13 @@ private:
 
 private:
   UnicodeString GetFileNameHash(const UnicodeString & FileName);
+private:
+  NB_DISABLE_COPY(TWinSCPFileSystem)
 };
 //------------------------------------------------------------------------------
 class TSessionPanelItem : public TCustomFarPanelItem
 {
+NB_DISABLE_COPY(TSessionPanelItem)
 public:
   explicit TSessionPanelItem(const UnicodeString & Path);
   explicit TSessionPanelItem(const TSessionData * ASessionData);
@@ -381,6 +384,7 @@ protected:
 //------------------------------------------------------------------------------
 class TRemoteFilePanelItem : public TCustomFarPanelItem
 {
+NB_DISABLE_COPY(TRemoteFilePanelItem)
 public:
   explicit TRemoteFilePanelItem(TRemoteFile * ARemoteFile);
   static void SetPanelModes(TFarPanelModes * PanelModes);

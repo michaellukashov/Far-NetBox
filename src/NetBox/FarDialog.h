@@ -143,6 +143,8 @@ private:
   bool FNeedsSynchronize;
   HANDLE FSynchronizeObjects[2];
   TThreadMethod FSynchronizeMethod;
+private:
+  NB_DISABLE_COPY(TFarDialog)
 };
 //---------------------------------------------------------------------------
 class TFarDialogContainer : public TObject
@@ -177,6 +179,8 @@ private:
   TObjectList * FItems;
   TFarDialog * FDialog;
   bool FEnabled;
+private:
+  NB_DISABLE_COPY(TFarDialogContainer)
 };
 //---------------------------------------------------------------------------
 #define DIF_INVERSE 0x00000001UL
@@ -322,6 +326,8 @@ private:
   bool FIsEnabled;
   unsigned long FColors;
   unsigned long FColorMask;
+private:
+  NB_DISABLE_COPY(TFarDialogItem)
 };
 //---------------------------------------------------------------------------
 class TFarBox : public TFarDialogItem
@@ -531,12 +537,15 @@ private:
   FarList * FListItems;
   TFarDialogItem * FDialogItem;
   bool FNoDialogUpdate;
+private:
+  NB_DISABLE_COPY(TFarList)
 };
 //---------------------------------------------------------------------------
 enum TFarListBoxAutoSelect { asOnlyFocus, asAlways, asNever };
 //---------------------------------------------------------------------------
 class TFarListBox : public TFarDialogItem
 {
+NB_DISABLE_COPY(TFarListBox)
 public:
   explicit TFarListBox(TFarDialog * ADialog);
   virtual ~TFarListBox();
@@ -572,6 +581,7 @@ private:
 //---------------------------------------------------------------------------
 class TFarComboBox : public TFarDialogItem
 {
+NB_DISABLE_COPY(TFarComboBox)
 public:
   explicit TFarComboBox(TFarDialog * ADialog);
   virtual ~TFarComboBox();
@@ -604,6 +614,7 @@ private:
 //---------------------------------------------------------------------------
 class TFarLister : public TFarDialogItem
 {
+NB_DISABLE_COPY(TFarLister)
 public:
   explicit TFarLister(TFarDialog * ADialog);
   virtual ~TFarLister();

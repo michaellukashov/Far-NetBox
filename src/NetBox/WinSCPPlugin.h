@@ -12,6 +12,19 @@ class TCopyParamType;
 struct TMessageParams : public TObject
 {
   TMessageParams();
+  void Assign(const TMessageParams * AParams)
+  {
+    Aliases = AParams->Aliases;
+    AliasesCount = AParams->AliasesCount;
+    Flags = AParams->Flags;
+    Params = AParams->Params;
+    Timer = AParams->Timer;
+    TimerEvent = AParams->TimerEvent;
+    TimerMessage = AParams->TimerMessage;
+    TimerAnswers = AParams->TimerAnswers;
+    Timeout = AParams->Timeout;
+    TimeoutAnswer = AParams->TimeoutAnswer;
+  }
 
   const TQueryButtonAlias * Aliases;
   uintptr_t AliasesCount;
@@ -23,6 +36,8 @@ struct TMessageParams : public TObject
   uintptr_t TimerAnswers;
   uintptr_t Timeout;
   uintptr_t TimeoutAnswer;
+private:
+  NB_DISABLE_COPY(TMessageParams)
 };
 //---------------------------------------------------------------------------
 class TWinSCPPlugin : public TCustomFarPlugin

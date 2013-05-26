@@ -3240,51 +3240,50 @@ BOOL TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & Local
 }
 //------------------------------------------------------------------------------
 uintptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString & Str,
-  TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams * Params)
+  TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams * AParams)
 {
-  TMessageParams AParams;
+  TMessageParams Params;
 
   if ((FProgressSaveScreenHandle != 0) ||
       (FSynchronizationSaveScreenHandle != 0))
   {
-    if (Params != NULL)
+    if (AParams != NULL)
     {
-      AParams = *Params;
+      Params.Assign(AParams);
     }
-    Params = &AParams;
-    AParams.Flags |= FMSG_WARNING;
+    Params.Flags |= FMSG_WARNING;
   }
 
   return WinSCPPlugin()->MoreMessageDialog(Str, MoreMessages, Type,
-         Answers, Params);
+         Answers, &Params);
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
   const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
-  const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * /*Arg*/)
+  const TQueryParams * AParams, uintptr_t & Answer, TQueryType Type, void * /*Arg*/)
 {
-  TMessageParams AParams;
+  TMessageParams Params;
   UnicodeString AQuery = Query;
 
-  if (Params != NULL)
+  if (AParams != NULL)
   {
-    if (Params->Params & qpFatalAbort)
+    if (AParams->Params & qpFatalAbort)
     {
       AQuery = FORMAT(GetMsg(WARN_FATAL_ERROR).c_str(), AQuery.c_str());
     }
 
-    AParams.Aliases = Params->Aliases;
-    AParams.AliasesCount = Params->AliasesCount;
-    AParams.Params = Params->Params & (qpNeverAskAgainCheck | qpAllowContinueOnError);
-    AParams.Timer = Params->Timer;
-    AParams.TimerEvent = Params->TimerEvent;
-    AParams.TimerMessage = Params->TimerMessage;
-    AParams.TimerAnswers = Params->TimerAnswers;
-    AParams.Timeout = Params->Timeout;
-    AParams.TimeoutAnswer = Params->TimeoutAnswer;
+    Params.Aliases = AParams->Aliases;
+    Params.AliasesCount = AParams->AliasesCount;
+    Params.Params = AParams->Params & (qpNeverAskAgainCheck | qpAllowContinueOnError);
+    Params.Timer = AParams->Timer;
+    Params.TimerEvent = AParams->TimerEvent;
+    Params.TimerMessage = AParams->TimerMessage;
+    Params.TimerAnswers = AParams->TimerAnswers;
+    Params.Timeout = AParams->Timeout;
+    Params.TimeoutAnswer = AParams->TimeoutAnswer;
   }
 
-  Answer = MoreMessageDialog(AQuery, MoreMessages, Type, Answers, &AParams);
+  Answer = MoreMessageDialog(AQuery, MoreMessages, Type, Answers, &Params);
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
