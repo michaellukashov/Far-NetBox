@@ -619,7 +619,7 @@ public:
   bool ValueExists(const UnicodeString & Value) const;
   bool GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Value) const;
   TRegDataType GetDataType(const UnicodeString & ValueName) const;
-  int GetDataSize(const UnicodeString & Name) const;
+  DWORD GetDataSize(const UnicodeString & Name) const;
   bool ReadBool(const UnicodeString & Name);
   TDateTime ReadDateTime(const UnicodeString & Name);
   double ReadFloat(const UnicodeString & Name) const;

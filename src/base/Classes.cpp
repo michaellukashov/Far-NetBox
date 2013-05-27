@@ -1957,9 +1957,9 @@ TRegDataType TRegistry::GetDataType(const UnicodeString & ValueName) const
   return Result;
 }
 
-int TRegistry::GetDataSize(const UnicodeString & ValueName) const
+DWORD TRegistry::GetDataSize(const UnicodeString & ValueName) const
 {
-  int Result = 0;
+  DWORD Result = 0;
   TRegDataInfo Info;
   if (GetDataInfo(ValueName, Info))
   {
@@ -1967,7 +1967,7 @@ int TRegistry::GetDataSize(const UnicodeString & ValueName) const
   }
   else
   {
-    Result = -1;
+    Result = (DWORD)-1;
   }
   return Result;
 }
