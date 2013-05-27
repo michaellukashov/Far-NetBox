@@ -2086,7 +2086,9 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
           FNotLoggedPackets = 0;
         }
         FTerminal->GetLog()->Add(llInput, FORMAT(L"Type: %s, Size: %d, Number: %d",
-          Packet->GetTypeName().c_str(), (int)Packet->GetLength(), (int)Packet->GetMessageNumber()));
+          Packet->GetTypeName().c_str(),
+          static_cast<int>(Packet->GetLength()),
+          static_cast<int>(Packet->GetMessageNumber())));
         /*if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2)
         {
           FTerminal->GetLog()->Add(llInput, Packet->Dump());
@@ -2193,7 +2195,10 @@ uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
     if (FTerminal->GetLog()->GetLogging())
     {
       FTerminal->GetLog()->Add(llOutput, FORMAT(L"Status code: %d, Message: %d, Server: %s, Language: %s ",
-        int(Code), (int)Packet->GetMessageNumber(), ServerMessage.c_str(), LanguageTag.c_str()));
+        static_cast<int>(Code),
+        static_cast<int>(Packet->GetMessageNumber()),
+        ServerMessage.c_str(),
+        LanguageTag.c_str()));
     }
     if (!LanguageTag.IsEmpty())
     {
@@ -2297,7 +2302,9 @@ uintptr_t TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
             FNotLoggedPackets = 0;
           }
           FTerminal->GetLog()->Add(llOutput, FORMAT(L"Type: %s, Size: %d, Number: %d",
-            Packet->GetTypeName().c_str(), (int)Packet->GetLength(), (int)Packet->GetMessageNumber()));
+            Packet->GetTypeName().c_str(),
+            static_cast<int>(Packet->GetLength()),
+            static_cast<int>(Packet->GetMessageNumber())));
           /*if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2)
           {
             FTerminal->GetLog()->Add(llOutput, Packet->Dump());
@@ -2427,7 +2434,8 @@ uintptr_t TSFTPFileSystem::ReceiveResponse(
     if (MessageNumber != AResponse->GetMessageNumber())
     {
       FTerminal->FatalError(NULL, FMTLOAD(SFTP_MESSAGE_NUMBER,
-        (int)AResponse->GetMessageNumber(), (int)MessageNumber));
+        static_cast<int>(AResponse->GetMessageNumber()),
+        static_cast<int>(MessageNumber)));
     }
   }
   ,
