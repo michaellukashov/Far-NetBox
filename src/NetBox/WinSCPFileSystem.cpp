@@ -579,7 +579,7 @@ void TWinSCPFileSystem::DuplicateOrRenameSession(TSessionData * Data,
   UnicodeString Name = Data->GetName();
   if (WinSCPPlugin()->InputBox(GetMsg(Duplicate ? DUPLICATE_SESSION_TITLE : RENAME_SESSION_TITLE),
         GetMsg(Duplicate ? DUPLICATE_SESSION_PROMPT : RENAME_SESSION_PROMPT),
-        Name, NULL) &&
+        Name, 0) &&
       !Name.IsEmpty() && (Name != Data->GetName()))
   {
     TNamedObject * EData = StoredSessions->FindByName(Name);
