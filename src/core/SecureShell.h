@@ -115,10 +115,10 @@ public:
   void Open();
   void Close();
   void KeepAlive();
-  intptr_t Receive(unsigned char * Buf, intptr_t Len);
-  bool Peek(unsigned char *& Buf, intptr_t Len) const;
+  intptr_t Receive(unsigned char * Buf, uintptr_t Len);
+  bool Peek(unsigned char *& Buf, uintptr_t Len) const;
   UnicodeString ReceiveLine();
-  void Send(const unsigned char * Buf, intptr_t Len);
+  void Send(const unsigned char * Buf, uintptr_t Len);
   void SendStr(const UnicodeString & Str);
   void SendSpecial(int Code);
   void Idle(uintptr_t MSec = 0);
