@@ -411,7 +411,7 @@ void TRegistryStorage::Init()
 TRegistryStorage::~TRegistryStorage()
 {
   delete FRegistry;
-};
+}
 //------------------------------------------------------------------------------
 bool TRegistryStorage::Copy(TRegistryStorage * Storage)
 {
