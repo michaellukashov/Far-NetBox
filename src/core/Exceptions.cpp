@@ -193,7 +193,7 @@ ExtException * ExtException::Clone()
 //---------------------------------------------------------------------------
 UnicodeString LastSysErrorMessage()
 {
-  int LastError = GetLastError();
+  DWORD LastError = GetLastError();
   UnicodeString Result;
   if (LastError != 0)
   {
