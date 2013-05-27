@@ -52,7 +52,7 @@ public:
   explicit TSynchronizeController(TSynchronizeEvent AOnSynchronize,
     TSynchronizeInvalidEvent AOnSynchronizeInvalid,
     TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories);
-  ~TSynchronizeController();
+  virtual ~TSynchronizeController();
 
   void StartStop(TObject * Sender, bool Start,
     const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,

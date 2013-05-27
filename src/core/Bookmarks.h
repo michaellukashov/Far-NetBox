@@ -8,6 +8,7 @@ class TShortCuts;
 //---------------------------------------------------------------------------
 class TBookmarks : public TObject
 {
+NB_DISABLE_COPY(TBookmarks)
 public:
   TBookmarks();
   virtual ~TBookmarks();
@@ -35,6 +36,7 @@ private:
 class TBookmark;
 class TBookmarkList : public TPersistent
 {
+NB_DISABLE_COPY(TBookmarkList)
 friend class TBookmarks;
 friend class TBookmark;
 public:
@@ -74,6 +76,7 @@ private:
 //---------------------------------------------------------------------------
 class TBookmark : public TPersistent
 {
+NB_DISABLE_COPY(TBookmark)
 friend class TBookmarkList;
 public:
   TBookmark();
