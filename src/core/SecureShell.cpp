@@ -1990,8 +1990,8 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
 
       bool Unknown = StoredKeys.IsEmpty();
 
-      int Answers;
-      int AliasesCount;
+      uintptr_t Answers;
+      uintptr_t AliasesCount;
       TQueryButtonAlias Aliases[3];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
