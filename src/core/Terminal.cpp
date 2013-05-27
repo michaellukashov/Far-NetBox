@@ -5452,7 +5452,7 @@ bool TSecondaryTerminal::DoPromptUser(TSessionData * Data,
 {
   bool AResult = false;
 
-  if ((Prompts->GetCount() == 1) && FLAGCLEAR(static_cast<intptr_t>(Prompts->GetObject(0)), pupEcho) &&
+  if ((Prompts->GetCount() == 1) && FLAGCLEAR(reinterpret_cast<intptr_t>(Prompts->GetObject(0)), pupEcho) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
