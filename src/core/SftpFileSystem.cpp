@@ -309,8 +309,8 @@ public:
 
   void AddInt64(__int64 Value)
   {
-    AddCardinal((uintptr_t)(Value >> 32));
-    AddCardinal((uintptr_t)(Value & 0xFFFFFFFF));
+    AddCardinal((uint32_t)(Value >> 32));
+    AddCardinal((uint32_t)(Value & 0xFFFFFFFF));
   }
 
   void AddData(const void * Data, int32_t ALength)
@@ -909,7 +909,7 @@ public:
     }
   }
 
-  void Add(const void * AData, intptr_t ALength)
+  void Add(const void * AData, uintptr_t ALength)
   {
     if (GetLength() + ALength > GetCapacity())
     {
