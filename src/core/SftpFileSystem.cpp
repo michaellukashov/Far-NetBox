@@ -1021,14 +1021,15 @@ int TSFTPPacket::FMessageCounter = 0;
 //---------------------------------------------------------------------------
 class TSFTPQueue : public TObject
 {
+NB_DISABLE_COPY(TSFTPQueue)
 public:
-  explicit TSFTPQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage)
+  explicit TSFTPQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
+    FFileSystem(AFileSystem),
+    FRequests(new TList()),
+    FResponses(new TList()),
+    FCodePage(CodePage)
   {
-    FFileSystem = AFileSystem;
     assert(FFileSystem);
-    FRequests = new TList();
-    FResponses = new TList();
-    FCodePage = CodePage;
   }
 
   virtual ~TSFTPQueue()
@@ -1164,11 +1165,12 @@ protected:
 
   class TSFTPQueuePacket : public TSFTPPacket
   {
+  NB_DISABLE_COPY(TSFTPQueuePacket)
   public:
     explicit TSFTPQueuePacket(uintptr_t CodePage) :
-      TSFTPPacket(CodePage)
+      TSFTPPacket(CodePage),
+      Token(NULL)
     {
-      Token = NULL;
     }
 
     void * Token;
@@ -1223,9 +1225,10 @@ protected:
 class TSFTPFixedLenQueue : public TSFTPQueue
 {
 public:
-  explicit TSFTPFixedLenQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) : TSFTPQueue(AFileSystem, CodePage)
+  explicit TSFTPFixedLenQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
+    TSFTPQueue(AFileSystem, CodePage),
+    FMissedRequests(0)
   {
-    FMissedRequests = 0;
   }
   virtual ~TSFTPFixedLenQueue() {}
 
@@ -1314,6 +1317,7 @@ private:
 //---------------------------------------------------------------------------
 class TSFTPDownloadQueue : public TSFTPFixedLenQueue
 {
+NB_DISABLE_COPY(TSFTPDownloadQueue)
 public:
   explicit TSFTPDownloadQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
     TSFTPFixedLenQueue(AFileSystem, CodePage)
@@ -1377,15 +1381,16 @@ private:
 //---------------------------------------------------------------------------
 class TSFTPUploadQueue : public TSFTPAsynchronousQueue
 {
+NB_DISABLE_COPY(TSFTPUploadQueue)
 public:
   explicit TSFTPUploadQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
-    TSFTPAsynchronousQueue(AFileSystem, CodePage)
+    TSFTPAsynchronousQueue(AFileSystem, CodePage),
+    FStream(NULL),
+    OperationProgress(NULL),
+    FLastBlockSize(0),
+    FEnd(false),
+    FConvertToken(false)
   {
-    FStream = NULL;
-    OperationProgress = NULL;
-    FLastBlockSize = 0;
-    FEnd = false;
-    FConvertToken = false;
   }
 
   virtual ~TSFTPUploadQueue()
@@ -1500,11 +1505,12 @@ private:
 //---------------------------------------------------------------------------
 class TSFTPLoadFilesPropertiesQueue : public TSFTPFixedLenQueue
 {
+NB_DISABLE_COPY(TSFTPLoadFilesPropertiesQueue)
 public:
   explicit TSFTPLoadFilesPropertiesQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
-    TSFTPFixedLenQueue(AFileSystem, CodePage)
+    TSFTPFixedLenQueue(AFileSystem, CodePage),
+    FIndex(0)
   {
-    FIndex = 0;
   }
   virtual ~TSFTPLoadFilesPropertiesQueue() {}
 
@@ -1578,11 +1584,12 @@ private:
 //---------------------------------------------------------------------------
 class TSFTPCalculateFilesChecksumQueue : public TSFTPFixedLenQueue
 {
+NB_DISABLE_COPY(TSFTPCalculateFilesChecksumQueue)
 public:
   explicit TSFTPCalculateFilesChecksumQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
-    TSFTPFixedLenQueue(AFileSystem, CodePage)
+    TSFTPFixedLenQueue(AFileSystem, CodePage),
+    FIndex(0)
   {
-    FIndex = 0;
   }
   virtual ~TSFTPCalculateFilesChecksumQueue() {}
 
@@ -1664,10 +1671,11 @@ private:
 //---------------------------------------------------------------------------
 class TSFTPBusy : public TObject
 {
+NB_DISABLE_COPY(TSFTPBusy)
 public:
-  explicit TSFTPBusy(TSFTPFileSystem * FileSystem)
+  explicit TSFTPBusy(TSFTPFileSystem * FileSystem) :
+    FFileSystem(FileSystem)
   {
-    FFileSystem = FileSystem;
     assert(FFileSystem != NULL);
     FFileSystem->BusyStart();
   }
