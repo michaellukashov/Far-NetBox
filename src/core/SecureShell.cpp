@@ -852,7 +852,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
   }
 }
 //---------------------------------------------------------------------------
-bool TSecureShell::Peek(unsigned char *& Buf, intptr_t Len) const
+bool TSecureShell::Peek(unsigned char *& Buf, uintptr_t Len) const
 {
   bool Result = (PendLen >= Len);
 
@@ -864,7 +864,7 @@ bool TSecureShell::Peek(unsigned char *& Buf, intptr_t Len) const
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TSecureShell::Receive(unsigned char * Buf, intptr_t Len)
+intptr_t TSecureShell::Receive(unsigned char * Buf, uintptr_t Len)
 {
   CheckConnection();
 
@@ -1086,7 +1086,7 @@ void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
   while (BufSize > MAX_BUFSIZE);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::Send(const unsigned char * Buf, intptr_t Len)
+void TSecureShell::Send(const unsigned char * Buf, uintptr_t Len)
 {
   CheckConnection();
   int BufSize = FBackend->send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), static_cast<int>(Len));
@@ -1382,7 +1382,7 @@ void TSecureShell::UpdatePortFwdSocket(SOCKET Value, bool Startup)
   {
     rde::vector<SOCKET>::iterator it = FPortFwdSockets.find(Value);
     if (it != FPortFwdSockets.end())
-      FPortFwdSockets.erase_unordered(it);
+      FPortFwdSockets.erase(it);
   }
 }
 //---------------------------------------------------------------------------
@@ -1490,6 +1490,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, intptr_t & Result)
 //---------------------------------------------------------------------------
 class TPoolForDataEvent : public TObject
 {
+NB_DISABLE_COPY(TPoolForDataEvent)
 public:
   TPoolForDataEvent(TSecureShell * SecureShell, WSANETWORKEVENTS & Events) :
     FSecureShell(SecureShell),
@@ -1989,8 +1990,8 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
 
       bool Unknown = StoredKeys.IsEmpty();
 
-      int Answers;
-      int AliasesCount;
+      uintptr_t Answers;
+      uintptr_t AliasesCount;
       TQueryButtonAlias Aliases[3];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);

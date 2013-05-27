@@ -373,8 +373,8 @@ void TFileOperationProgressType::AddTransfered(__int64 ASize,
 
     if (FTicks.size() > 10)
     {
-      FTicks.erase_unordered(FTicks.begin());
-      FTotalTransferredThen.erase_unordered(FTotalTransferredThen.begin());
+      FTicks.erase(FTicks.begin());
+      FTotalTransferredThen.erase(FTotalTransferredThen.begin());
     }
   }
   DoProgress();

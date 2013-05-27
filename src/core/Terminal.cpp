@@ -4238,7 +4238,7 @@ struct TSynchronizeData : public TObject
   intptr_t Params;
   TSynchronizeDirectoryEvent OnSynchronizeDirectory;
   TSynchronizeOptions * Options;
-  int Flags;
+  intptr_t Flags;
   TStringList * LocalFileList;
   const TCopyParamType * CopyParam;
   TSynchronizeChecklist * Checklist;
@@ -4356,7 +4356,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
     Data.LocalFileList->SetCaseSensitive(false);
 
     FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
-      int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+      DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
       Found = (FindFirstChecked(Data.LocalDirectory + L"*.*", FindAttrs, SearchRec) == 0);
     );
 
@@ -4719,7 +4719,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
-  const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
+  const UnicodeString & /*LocalDirectory*/, const UnicodeString & RemoteDirectory,
   const TCopyParamType * CopyParam, intptr_t Params,
   TSynchronizeDirectoryEvent OnSynchronizeDirectory)
 {
@@ -5452,7 +5452,7 @@ bool TSecondaryTerminal::DoPromptUser(TSessionData * Data,
 {
   bool AResult = false;
 
-  if ((Prompts->GetCount() == 1) && FLAGCLEAR((intptr_t)Prompts->GetObject(0), pupEcho) &&
+  if ((Prompts->GetCount() == 1) && FLAGCLEAR(reinterpret_cast<intptr_t>(Prompts->GetObject(0)), pupEcho) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {

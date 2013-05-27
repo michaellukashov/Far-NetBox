@@ -98,7 +98,7 @@ protected:
   AnsiString FEOL;
   TList * FPacketReservations;
   rde::vector<uintptr_t> FPacketNumbers;
-  char FPreviousLoggedPacket;
+  unsigned char FPreviousLoggedPacket;
   int FNotLoggedPackets;
   int FBusy;
   bool FAvoidBusy;

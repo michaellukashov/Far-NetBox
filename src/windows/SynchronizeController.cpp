@@ -35,7 +35,7 @@ TSynchronizeController::~TSynchronizeController()
   assert(FSynchronizeMonitor == NULL);
 }
 //---------------------------------------------------------------------------
-void TSynchronizeController::StartStop(TObject * Sender,
+void TSynchronizeController::StartStop(TObject * /*Sender*/,
   bool Start, const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
   TSynchronizeOptions * Options,
   TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,

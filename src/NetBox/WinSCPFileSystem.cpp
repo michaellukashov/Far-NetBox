@@ -580,7 +580,7 @@ void TWinSCPFileSystem::DuplicateOrRenameSession(TSessionData * Data,
   UnicodeString Name = Data->GetName();
   if (WinSCPPlugin()->InputBox(GetMsg(Duplicate ? DUPLICATE_SESSION_TITLE : RENAME_SESSION_TITLE),
         GetMsg(Duplicate ? DUPLICATE_SESSION_PROMPT : RENAME_SESSION_PROMPT),
-        Name, NULL) &&
+        Name, 0) &&
       !Name.IsEmpty() && (Name != Data->GetName()))
   {
     Name = ReplaceChar(Name, L'\\', L'/');
@@ -1842,7 +1842,7 @@ void TWinSCPFileSystem::FileProperties()
     {
       CurrentProperties = TRemoteProperties::CommonProperties(FileList.get());
 
-      int Flags = 0;
+      intptr_t Flags = 0;
       if (FTerminal->GetIsCapable(fcModeChanging))
       {
         Flags |= cpMode;
@@ -4059,7 +4059,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   TEditHistories::iterator ih = rde::find(FEditHistories.begin(), FEditHistories.end(), EditHistory);
   if (ih != FEditHistories.end())
   {
-    FEditHistories.erase_unordered(ih);
+    FEditHistories.erase(ih);
   }
   FEditHistories.push_back(EditHistory);
 

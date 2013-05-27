@@ -2197,7 +2197,7 @@ void TRights::SetText(const UnicodeString & Value)
 
     FSet = 0;
     FUnset = 0;
-    int Flag = 00001;
+    intptr_t Flag = 00001;
     int ExtendedFlag = 01000; //-V536
     bool KeepText = false;
     for (intptr_t I = TextLen; I >= 1; I--)
@@ -2254,7 +2254,7 @@ UnicodeString TRights::GetText() const
   {
     UnicodeString Result(TextLen, 0);
 
-    int Flag = 00001;
+    intptr_t Flag = 00001;
     int ExtendedFlag = 01000; //-V536
     bool ExtendedPos = true;
     wchar_t Symbol;

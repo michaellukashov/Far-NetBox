@@ -98,10 +98,10 @@ UnicodeString UnMungeIniName(const UnicodeString & Str)
   }
 }
 //===========================================================================
-THierarchicalStorage::THierarchicalStorage(const UnicodeString & AStorage)
+THierarchicalStorage::THierarchicalStorage(const UnicodeString & AStorage) :
+  FStorage(AStorage),
+  FKeyHistory(new TStringList())
 {
-  FStorage = AStorage;
-  FKeyHistory = new TStringList();
   SetAccessMode(smRead);
   SetExplicit(false);
   SetForceAnsi(true);
@@ -395,7 +395,8 @@ TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage) :
 //------------------------------------------------------------------------------
 TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey):
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
-  FRegistry(NULL)
+  FRegistry(NULL),
+  FFailed(0)
 {
   Init();
   FRegistry->SetRootKey(ARootKey);
@@ -411,7 +412,7 @@ void TRegistryStorage::Init()
 TRegistryStorage::~TRegistryStorage()
 {
   delete FRegistry;
-};
+}
 //------------------------------------------------------------------------------
 bool TRegistryStorage::Copy(TRegistryStorage * Storage)
 {

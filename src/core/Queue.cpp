@@ -31,7 +31,7 @@ public:
   {
   }
 
-  virtual void Execute(void * Arg)
+  virtual void Execute(void * /*Arg*/)
   {
     if (OnNotify != NULL)
     {
@@ -192,7 +192,7 @@ public:
   {
   }
 
-  virtual void Execute(void * Arg)
+  virtual void Execute(void * /*Arg*/)
   {
     if (OnDisplayBanner != NULL)
     {
@@ -221,7 +221,7 @@ public:
   {
   }
 
-  virtual void Execute(void * Arg)
+  virtual void Execute(void * /*Arg*/)
   {
     if (OnReadDirectory != NULL)
     {

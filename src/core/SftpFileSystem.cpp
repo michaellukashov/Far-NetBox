@@ -309,8 +309,8 @@ public:
 
   void AddInt64(__int64 Value)
   {
-    AddCardinal((uintptr_t)(Value >> 32));
-    AddCardinal((uintptr_t)(Value & 0xFFFFFFFF));
+    AddCardinal((uint32_t)(Value >> 32));
+    AddCardinal((uint32_t)(Value & 0xFFFFFFFF));
   }
 
   void AddData(const void * Data, int32_t ALength)
@@ -909,7 +909,7 @@ public:
     }
   }
 
-  void Add(const void * AData, intptr_t ALength)
+  void Add(const void * AData, uintptr_t ALength)
   {
     if (GetLength() + ALength > GetCapacity())
     {
@@ -1021,14 +1021,15 @@ int TSFTPPacket::FMessageCounter = 0;
 //---------------------------------------------------------------------------
 class TSFTPQueue : public TObject
 {
+NB_DISABLE_COPY(TSFTPQueue)
 public:
-  explicit TSFTPQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage)
+  explicit TSFTPQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
+    FFileSystem(AFileSystem),
+    FRequests(new TList()),
+    FResponses(new TList()),
+    FCodePage(CodePage)
   {
-    FFileSystem = AFileSystem;
     assert(FFileSystem);
-    FRequests = new TList();
-    FResponses = new TList();
-    FCodePage = CodePage;
   }
 
   virtual ~TSFTPQueue()
@@ -1164,11 +1165,12 @@ protected:
 
   class TSFTPQueuePacket : public TSFTPPacket
   {
+  NB_DISABLE_COPY(TSFTPQueuePacket)
   public:
     explicit TSFTPQueuePacket(uintptr_t CodePage) :
-      TSFTPPacket(CodePage)
+      TSFTPPacket(CodePage),
+      Token(NULL)
     {
-      Token = NULL;
     }
 
     void * Token;
@@ -1223,9 +1225,10 @@ protected:
 class TSFTPFixedLenQueue : public TSFTPQueue
 {
 public:
-  explicit TSFTPFixedLenQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) : TSFTPQueue(AFileSystem, CodePage)
+  explicit TSFTPFixedLenQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
+    TSFTPQueue(AFileSystem, CodePage),
+    FMissedRequests(0)
   {
-    FMissedRequests = 0;
   }
   virtual ~TSFTPFixedLenQueue() {}
 
@@ -1314,6 +1317,7 @@ private:
 //---------------------------------------------------------------------------
 class TSFTPDownloadQueue : public TSFTPFixedLenQueue
 {
+NB_DISABLE_COPY(TSFTPDownloadQueue)
 public:
   explicit TSFTPDownloadQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
     TSFTPFixedLenQueue(AFileSystem, CodePage)
@@ -1377,15 +1381,16 @@ private:
 //---------------------------------------------------------------------------
 class TSFTPUploadQueue : public TSFTPAsynchronousQueue
 {
+NB_DISABLE_COPY(TSFTPUploadQueue)
 public:
   explicit TSFTPUploadQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
-    TSFTPAsynchronousQueue(AFileSystem, CodePage)
+    TSFTPAsynchronousQueue(AFileSystem, CodePage),
+    FStream(NULL),
+    OperationProgress(NULL),
+    FLastBlockSize(0),
+    FEnd(false),
+    FConvertToken(false)
   {
-    FStream = NULL;
-    OperationProgress = NULL;
-    FLastBlockSize = 0;
-    FEnd = false;
-    FConvertToken = false;
   }
 
   virtual ~TSFTPUploadQueue()
@@ -1500,11 +1505,12 @@ private:
 //---------------------------------------------------------------------------
 class TSFTPLoadFilesPropertiesQueue : public TSFTPFixedLenQueue
 {
+NB_DISABLE_COPY(TSFTPLoadFilesPropertiesQueue)
 public:
   explicit TSFTPLoadFilesPropertiesQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
-    TSFTPFixedLenQueue(AFileSystem, CodePage)
+    TSFTPFixedLenQueue(AFileSystem, CodePage),
+    FIndex(0)
   {
-    FIndex = 0;
   }
   virtual ~TSFTPLoadFilesPropertiesQueue() {}
 
@@ -1578,11 +1584,12 @@ private:
 //---------------------------------------------------------------------------
 class TSFTPCalculateFilesChecksumQueue : public TSFTPFixedLenQueue
 {
+NB_DISABLE_COPY(TSFTPCalculateFilesChecksumQueue)
 public:
   explicit TSFTPCalculateFilesChecksumQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
-    TSFTPFixedLenQueue(AFileSystem, CodePage)
+    TSFTPFixedLenQueue(AFileSystem, CodePage),
+    FIndex(0)
   {
-    FIndex = 0;
   }
   virtual ~TSFTPCalculateFilesChecksumQueue() {}
 
@@ -1664,10 +1671,11 @@ private:
 //---------------------------------------------------------------------------
 class TSFTPBusy : public TObject
 {
+NB_DISABLE_COPY(TSFTPBusy)
 public:
-  explicit TSFTPBusy(TSFTPFileSystem * FileSystem)
+  explicit TSFTPBusy(TSFTPFileSystem * FileSystem) :
+    FFileSystem(FileSystem)
   {
-    FFileSystem = FileSystem;
     assert(FFileSystem != NULL);
     FFileSystem->BusyStart();
   }
@@ -2078,7 +2086,9 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
           FNotLoggedPackets = 0;
         }
         FTerminal->GetLog()->Add(llInput, FORMAT(L"Type: %s, Size: %d, Number: %d",
-          Packet->GetTypeName().c_str(), (int)Packet->GetLength(), (int)Packet->GetMessageNumber()));
+          Packet->GetTypeName().c_str(),
+          static_cast<int>(Packet->GetLength()),
+          static_cast<int>(Packet->GetMessageNumber())));
         /*if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2)
         {
           FTerminal->GetLog()->Add(llInput, Packet->Dump());
@@ -2185,7 +2195,10 @@ uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
     if (FTerminal->GetLog()->GetLogging())
     {
       FTerminal->GetLog()->Add(llOutput, FORMAT(L"Status code: %d, Message: %d, Server: %s, Language: %s ",
-        int(Code), (int)Packet->GetMessageNumber(), ServerMessage.c_str(), LanguageTag.c_str()));
+        static_cast<int>(Code),
+        static_cast<int>(Packet->GetMessageNumber()),
+        ServerMessage.c_str(),
+        LanguageTag.c_str()));
     }
     if (!LanguageTag.IsEmpty())
     {
@@ -2289,7 +2302,9 @@ uintptr_t TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
             FNotLoggedPackets = 0;
           }
           FTerminal->GetLog()->Add(llOutput, FORMAT(L"Type: %s, Size: %d, Number: %d",
-            Packet->GetTypeName().c_str(), (int)Packet->GetLength(), (int)Packet->GetMessageNumber()));
+            Packet->GetTypeName().c_str(),
+            static_cast<int>(Packet->GetLength()),
+            static_cast<int>(Packet->GetMessageNumber())));
           /*if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2)
           {
             FTerminal->GetLog()->Add(llOutput, Packet->Dump());
@@ -2419,7 +2434,8 @@ uintptr_t TSFTPFileSystem::ReceiveResponse(
     if (MessageNumber != AResponse->GetMessageNumber())
     {
       FTerminal->FatalError(NULL, FMTLOAD(SFTP_MESSAGE_NUMBER,
-        (int)AResponse->GetMessageNumber(), (int)MessageNumber));
+        static_cast<int>(AResponse->GetMessageNumber()),
+        static_cast<int>(MessageNumber)));
     }
   }
   ,
