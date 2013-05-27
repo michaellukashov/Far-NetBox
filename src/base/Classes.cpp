@@ -201,7 +201,7 @@ void TList::Delete(intptr_t Index)
     Classes::Error(SListIndexError, Index);
   }
   void * Temp = GetItem(Index);
-  FList.erase_unordered(FList.begin() + Index);
+  FList.erase(FList.begin() + Index);
   if (Temp != NULL)
   {
     Notify(Temp, lnDeleted);
@@ -970,7 +970,7 @@ void TStringList::Delete(intptr_t Index)
     Classes::Error(SListIndexError, Index);
   }
   Changing();
-  FList.erase_unordered(FList.begin() + Index);
+  FList.erase(FList.begin() + Index);
   Changed();
 }
 
