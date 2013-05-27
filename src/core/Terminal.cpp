@@ -4356,7 +4356,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
     Data.LocalFileList->SetCaseSensitive(false);
 
     FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
-      int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+      DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
       Found = (FindFirstChecked(Data.LocalDirectory + L"*.*", FindAttrs, SearchRec) == 0);
     );
 
