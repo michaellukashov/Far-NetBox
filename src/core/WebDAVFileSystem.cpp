@@ -47,7 +47,7 @@ struct TSinkFileParams
   intptr_t Params;
   TFileOperationProgressType * OperationProgress;
   bool Skipped;
-  unsigned int Flags;
+  intptr_t Flags;
 };
 //------------------------------------------------------------------------------
 struct TFileTransferData

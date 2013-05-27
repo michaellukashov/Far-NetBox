@@ -4238,7 +4238,7 @@ struct TSynchronizeData : public TObject
   intptr_t Params;
   TSynchronizeDirectoryEvent OnSynchronizeDirectory;
   TSynchronizeOptions * Options;
-  int Flags;
+  intptr_t Flags;
   TStringList * LocalFileList;
   const TCopyParamType * CopyParam;
   TSynchronizeChecklist * Checklist;

@@ -1833,7 +1833,7 @@ void TWinSCPFileSystem::FileProperties()
     {
       CurrentProperties = TRemoteProperties::CommonProperties(FileList.get());
 
-      int Flags = 0;
+      intptr_t Flags = 0;
       if (FTerminal->GetIsCapable(fcModeChanging))
       {
         Flags |= cpMode;
