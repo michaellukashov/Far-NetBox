@@ -12097,6 +12097,7 @@ class TSessionData;
 //------------------------------------------------------------------------------
 class TWebDAVFileListHelper : public TObject
 {
+NB_DISABLE_COPY(TWebDAVFileListHelper)
 public:
   explicit TWebDAVFileListHelper(TWebDAVFileSystem * FileSystem, TRemoteFileList * FileList,
     bool IgnoreFileList) :
