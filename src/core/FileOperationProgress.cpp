@@ -5,7 +5,7 @@
 #include "Common.h"
 #include "FileOperationProgress.h"
 //---------------------------------------------------------------------------
-#define TRANSFER_BUF_SIZE 4096
+#define TRANSFER_BUF_SIZE 64 * 1024
 //---------------------------------------------------------------------------
 TFileOperationProgressType::TFileOperationProgressType()
 {
