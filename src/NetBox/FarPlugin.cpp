@@ -527,7 +527,7 @@ intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * Param)
       }
 
       TGuard Guard(FileSystem->GetCriticalSection());
-      return static_cast<int>(FileSystem->ProcessEvent(Event, Param));
+      return FileSystem->ProcessEvent(Event, Param);
     }
     else
     {
@@ -910,7 +910,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
     MoreMessagesLister->SetTabStop(MoreMessagesLister->GetScrollBar());
     assert(MoreMessagesSeparator != NULL);
     MoreMessagesSeparator->SetPosition(
-      static_cast<int>(MoreMessagesLister->GetTop() + MoreMessagesLister->GetHeight()));
+      MoreMessagesLister->GetTop() + MoreMessagesLister->GetHeight());
     S.y += static_cast<int>(MoreMessagesLister->GetHeight()) + 1;
   }
   SetSize(S);

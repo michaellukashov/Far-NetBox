@@ -1451,7 +1451,7 @@ bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
   Button->SetResult(brOK);
   if (NeverShowAgainCheck != NULL)
   {
-    Button->SetLeft(static_cast<int>(Dialog->GetBorderBox()->GetRight() - Button->GetWidth() - 1));
+    Button->SetLeft(Dialog->GetBorderBox()->GetRight() - Button->GetWidth() - 1);
   }
   else
   {
@@ -6925,7 +6925,7 @@ void TFullSynchronizeDialog::AdaptSize()
   if (ShowCopyParam != CopyParamLister->GetVisible())
   {
     ShowGroup(1, ShowCopyParam);
-    SetHeight((int)(FFullHeight - (ShowCopyParam ? 0 : CopyParamLister->GetHeight() + 1)));
+    SetHeight(FFullHeight - (ShowCopyParam ? 0 : CopyParamLister->GetHeight() + 1));
   }
 }
 //------------------------------------------------------------------------------
