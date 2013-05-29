@@ -1579,7 +1579,7 @@ protected:
 
 private:
   TStrings * FFileList;
-  int FIndex;
+  intptr_t FIndex;
 };
 //---------------------------------------------------------------------------
 class TSFTPCalculateFilesChecksumQueue : public TSFTPFixedLenQueue
@@ -5436,11 +5436,11 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       {
         LocalFileAttrs = faArchive;
       }
-      uintptr_t NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
+      DWORD NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
       if ((NewAttrs & LocalFileAttrs) != NewAttrs)
       {
         FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, (DWORD)(LocalFileAttrs | NewAttrs)) == 0);
+          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, LocalFileAttrs | NewAttrs) == 0);
         );
       }
 
