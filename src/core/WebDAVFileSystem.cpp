@@ -12,16 +12,16 @@
 #include <apr_portable.h>
 #include <apr_atomic.h>
 
-#include <ne_basic.h>
-#include <ne_auth.h>
-#include <ne_compress.h>
-#include <ne_props.h>
-#include <ne_defs.h>
-#include <ne_uri.h>
-#include <ne_session.h>
-#include <ne_request.h>
-#include <ne_xml.h>
-#include <ne_pkcs11.h>
+#include <neon/src/ne_basic.h>
+#include <neon/src/ne_auth.h>
+#include <neon/src/ne_compress.h>
+#include <neon/src/ne_props.h>
+#include <neon/src/ne_defs.h>
+#include <neon/src/ne_uri.h>
+#include <neon/src/ne_session.h>
+#include <neon/src/ne_request.h>
+#include <neon/src/ne_xml.h>
+#include <neon/src/ne_pkcs11.h>
 
 #include "WebDAVFileSystem.h"
 
