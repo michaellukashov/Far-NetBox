@@ -204,7 +204,6 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
 
     #undef FREESTRINGARRAY
 
-    // FIXME delete[] Info.DiskMenuNumbers;
     nb_free((void*)Info.CommandPrefix);
   }
   memset(&Info, 0, sizeof(Info));
@@ -888,7 +887,6 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
 
   TRect rect = GetClientRect();
   TPoint S(
-    // rect.Left + MaxLen + (-(rect.Right + 1)),
     static_cast<int>(rect.Left + MaxLen - rect.Right),
     static_cast<int>(rect.Top + MessageLines->GetCount() +
     (FParams->MoreMessages != NULL ? 1 : 0) + ButtonLines +
@@ -1403,7 +1401,6 @@ void TCustomFarPlugin::ShowTerminalScreen()
   TerminalInfo(&Size, &Cursor);
 
   UnicodeString Blank = ::StringOfChar(L' ', static_cast<intptr_t>(Size.x));
-  // Blank.SetLength(static_cast<size_t>(Size.x));
   for (int Y = 0; Y < Size.y; Y++)
   {
     Text(0, Y, 7/* LIGHTGRAY */, Blank);
@@ -2395,7 +2392,6 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   PanelItem->FindData.ftLastAccessTime = FileTimeA;
   PanelItem->FindData.ftLastWriteTime = FileTime;
   PanelItem->FindData.nFileSize = Size;
-  // PanelItem->PackSize = (long int)Size;
 
   PanelItem->FindData.lpwszFileName = TCustomFarPlugin::DuplicateStr(FileName);
   PanelItem->Description = TCustomFarPlugin::DuplicateStr(Description);
@@ -2638,7 +2634,6 @@ void TFarPanelInfo::SetFocusedItem(const TFarPanelItem * Value)
   intptr_t Index = Items->IndexOf(static_cast<const TObject *>(Value));
   assert(Index != NPOS);
   SetFocusedIndex(Index);
-  // delete Items;
 }
 //---------------------------------------------------------------------------
 intptr_t TFarPanelInfo::GetFocusedIndex()
