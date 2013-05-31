@@ -309,6 +309,8 @@ protected:
     TOnceDoneOperation & OnceDoneOperation);
   void OperationProgress(TFileOperationProgressType & ProgressData,
     TCancelStatus & Cancel);
+private:
+  NB_DISABLE_COPY(TTerminalItem)
 };
 //---------------------------------------------------------------------------
 // TSignalThread
