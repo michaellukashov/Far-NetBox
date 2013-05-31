@@ -4017,7 +4017,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   }
 
   FLastMultipleEditReadOnly = false;
-  bool Edit = true;
+  bool EditCurrent = false;
   if (it != FMultipleEdits.end())
   {
     TMessageParams Params;
@@ -4034,7 +4034,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
           NULL, qtConfirmation, qaYes | qaNo | qaOK | qaCancel, &Params))
     {
       case qaYes:
-        Edit = false;
+        EditCurrent = true;
         break;
 
       case qaNo:
@@ -4052,7 +4052,35 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     }
   }
 
-  if (Edit)
+  if (EditCurrent)
+  {
+    assert(it != FMultipleEdits.end());
+
+    intptr_t WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT);
+    int Pos = 0;
+    while (Pos < WindowCount)
+    {
+      WindowInfo Window = {0};
+      Window.Pos = Pos;
+      UnicodeString EditedFileName(1024, 0);
+      Window.Name = const_cast<wchar_t *>(EditedFileName.c_str());
+      Window.NameSize = (int)EditedFileName.GetLength();
+      if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, &Window) != 0)
+      {
+        if ((Window.Type == WTYPE_EDITOR) &&
+            Window.Name && AnsiSameText(Window.Name, it->second.LocalFileName))
+        {
+          if (FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW, reinterpret_cast<void *>(Pos)) != 0)
+            FarPlugin->FarAdvControl(ACTL_COMMIT, 0);
+          break;
+        }
+      }
+      Pos++;
+    }
+
+    assert(Pos < WindowCount);
+  }
+  else
   {
     UnicodeString TempDir;
     TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
@@ -4083,34 +4111,6 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     }
     FLastMultipleEditFile = L"";
     FLastMultipleEditFileTitle = L"";
-  }
-  else
-  {
-    assert(it != FMultipleEdits.end());
-
-    intptr_t WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT);
-    int Pos = 0;
-    while (Pos < WindowCount)
-    {
-      WindowInfo Window = {0};
-      Window.Pos = Pos;
-      UnicodeString EditedFileName(1024, 0);
-      Window.Name = const_cast<wchar_t *>(EditedFileName.c_str());
-      Window.NameSize = (int)EditedFileName.GetLength();
-      if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, &Window) != 0)
-      {
-        if ((Window.Type == WTYPE_EDITOR) &&
-            Window.Name && AnsiSameText(Window.Name, it->second.LocalFileName))
-        {
-          if (FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW, reinterpret_cast<void *>(Pos)) != 0)
-            FarPlugin->FarAdvControl(ACTL_COMMIT, 0);
-          break;
-        }
-      }
-      Pos++;
-    }
-
-    assert(Pos < WindowCount);
   }
 }
 //---------------------------------------------------------------------------------
