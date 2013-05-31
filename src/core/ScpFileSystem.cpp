@@ -2684,11 +2684,11 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
           {
             FileData.LocalFileAttrs = faArchive;
           }
-          uintptr_t NewAttrs = CopyParam->LocalFileAttrs(FileData.RemoteRights);
+          DWORD NewAttrs = CopyParam->LocalFileAttrs(FileData.RemoteRights);
           if ((NewAttrs & FileData.LocalFileAttrs) != NewAttrs)
           {
             FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFileName.c_str()),
-              THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFileName, (DWORD)(FileData.LocalFileAttrs | NewAttrs)) == 0);
+              THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFileName, FileData.LocalFileAttrs | NewAttrs) == 0);
             );
           }
         }

@@ -146,7 +146,6 @@ INCLUDE_DIRECTORIES(
   ${LIBS_ROOT}/openssl/${CONF}/inc32
   ${LIBS_ROOT}/zlib/src
   ${LIBS_ROOT}/expat/lib
-  ${LIBS_ROOT}/neon/src
   ${LIBS_ROOT}/apr/include
   ${LIBS_ROOT}/apr/include/arch/win32
   ${LIBS_ROOT}/apr/include/arch/unix

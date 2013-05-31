@@ -99,6 +99,7 @@ void TRemoteFilePanelItem::GetData(
   FileName = FRemoteFile->GetFileName();
   Size = FRemoteFile->GetSize();
   if (Size < 0) Size = 0;
+  if (FRemoteFile->GetIsDirectory()) Size = 0;
   FileAttributes =
     FLAGMASK(FRemoteFile->GetIsDirectory(), FILE_ATTRIBUTE_DIRECTORY) |
     FLAGMASK(FRemoteFile->GetIsHidden(), FILE_ATTRIBUTE_HIDDEN) |
@@ -3305,14 +3306,14 @@ uintptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString & Str,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams * AParams)
 {
   TMessageParams Params;
+  if (AParams != NULL)
+  {
+    Params.Assign(AParams);
+  }
 
   if ((FProgressSaveScreenHandle != 0) ||
       (FSynchronizationSaveScreenHandle != 0))
   {
-    if (AParams != NULL)
-    {
-      Params.Assign(AParams);
-    }
     Params.Flags |= FMSG_WARNING;
   }
 
@@ -4066,7 +4067,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   UnicodeString FullFileName = ::UnixIncludeTrailingBackslash(Directory) + FileName;
 
   std::auto_ptr<TRemoteFile> FileDuplicate(File->Duplicate());
-  UnicodeString NewFileName = FullFileName; // ::UnixIncludeTrailingBackslash(GetFileNameHash(FullFileName)) + FileName;
+  UnicodeString NewFileName = FileName; // FullFileName;
   FileDuplicate->SetFileName(NewFileName);
 
   TMultipleEdits::iterator it = FMultipleEdits.begin();
@@ -4081,7 +4082,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   }
 
   FLastMultipleEditReadOnly = false;
-  bool Edit = true;
+  bool EditCurrent = false;
   if (it != FMultipleEdits.end())
   {
     TMessageParams Params;
@@ -4098,7 +4099,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
           NULL, qtConfirmation, qaYes | qaNo | qaOK | qaCancel, &Params))
     {
       case qaYes:
-        Edit = false;
+        EditCurrent = true;
         break;
 
       case qaNo:
@@ -4116,7 +4117,40 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     }
   }
 
-  if (Edit)
+  if (EditCurrent)
+  {
+    assert(it != FMultipleEdits.end());
+
+    intptr_t WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT, 0);
+    int Pos = 0;
+    while (Pos < WindowCount)
+    {
+      WindowInfo Window;
+      ClearStruct(Window);
+      Window.StructSize = sizeof(WindowInfo);
+      Window.Pos = Pos;
+      UnicodeString EditedFileName(1024, 0);
+      Window.Name = const_cast<wchar_t *>(EditedFileName.c_str());
+      Window.NameSize = static_cast<int>(EditedFileName.GetLength());
+      if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, 0, &Window) != 0)
+      {
+        if ((Window.Type == WTYPE_EDITOR) &&
+            Window.Name && AnsiSameText(Window.Name, it->second.LocalFileName))
+        {
+          // Switch to current editor.
+          if (FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW, Pos, NULL) != 0)
+          {
+            FarPlugin->FarAdvControl(ACTL_COMMIT, 0);
+          }
+          break;
+        }
+      }
+      Pos++;
+    }
+
+    assert(Pos < WindowCount);
+  }
+  else
   {
     UnicodeString TempDir;
     TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
@@ -4147,35 +4181,6 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     }
     FLastMultipleEditFile = L"";
     FLastMultipleEditFileTitle = L"";
-  }
-  else
-  {
-    assert(it != FMultipleEdits.end());
-
-    intptr_t WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT, 0);
-    int Pos = 0;
-    while (Pos < WindowCount)
-    {
-      WindowInfo Window = {0};
-      Window.StructSize = sizeof(WindowInfo);
-      Window.Pos = Pos;
-      UnicodeString EditedFileName(1024, 0);
-      Window.Name = const_cast<wchar_t *>(EditedFileName.c_str());
-      Window.NameSize = (int)EditedFileName.GetLength();
-      if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, 0, &Window) != 0)
-      {
-        if ((Window.Type == WTYPE_EDITOR) &&
-            Window.Name && AnsiSameText(Window.Name, it->second.LocalFileName))
-        {
-          if (FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW, Pos, NULL) != 0)
-            FarPlugin->FarAdvControl(ACTL_COMMIT, 0);
-          break;
-        }
-      }
-      Pos++;
-    }
-
-    assert(Pos < WindowCount);
   }
 }
 //---------------------------------------------------------------------------------
@@ -4210,15 +4215,13 @@ void TWinSCPFileSystem::EditHistory()
     UnicodeString FullFileName =
       ::UnixIncludeTrailingBackslash(FEditHistories[Result].Directory) + FEditHistories[Result].FileName;
     FTerminal->ReadFile(FullFileName, File);
+    std::auto_ptr<TRemoteFile> FilePtr(File);
+    if (!File->GetHaveFullFileName())
     {
-      std::auto_ptr<TRemoteFile> FilePtr(File);
-      if (!File->GetHaveFullFileName())
-      {
-        File->SetFullFileName(FullFileName);
-      }
-      MultipleEdit(FEditHistories[Result].Directory,
-        FEditHistories[Result].FileName, File);
+      File->SetFullFileName(FullFileName);
     }
+    MultipleEdit(FEditHistories[Result].Directory,
+      FEditHistories[Result].FileName, File);
   }
 }
 //---------------------------------------------------------------------------------

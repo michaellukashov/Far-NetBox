@@ -1175,8 +1175,7 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
   TQueryType QueryType)
 {
   uintptr_t Result = 0;
-  TStrings * MoreMessages = new TStringList();
-  std::auto_ptr<TStrings> MoreMessagesPtr(MoreMessages);
+  std::auto_ptr<TStrings> MoreMessages(new TStringList());
   if (E != NULL)
   {
     if (!E->Message.IsEmpty() && !Query.IsEmpty())
@@ -1191,7 +1190,7 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
     }
   }
   Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(E ? E->Message : L""),
-    MoreMessages->GetCount() ? MoreMessages : NULL,
+    MoreMessages->GetCount() ? MoreMessages.get() : NULL,
     Answers, Params, QueryType);
   return Result;
 }
@@ -4499,7 +4498,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
           if (ChecklistItem->Action != TSynchronizeChecklist::saNone)
           {
             Data.Checklist->Add(ChecklistItem.get());
-            ChecklistItem.reset();
+            ChecklistItem.release();
           }
         }
         else
@@ -4707,7 +4706,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
       {
         ChecklistItem->RemoteFile = File->Duplicate();
         Data->Checklist->Add(ChecklistItem.get());
-        ChecklistItem.reset();
+        ChecklistItem.release();
       }
     }
   }

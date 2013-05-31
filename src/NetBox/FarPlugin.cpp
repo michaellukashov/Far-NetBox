@@ -208,7 +208,6 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
 
       #undef FREESTRINGARRAY
 
-      // FIXME delete[] Info.DiskMenuNumbers;
       nb_free((void*)Info.CommandPrefix);
   }
   memset(&Info, 0, sizeof(Info));
@@ -233,7 +232,8 @@ wchar_t * TCustomFarPlugin::DuplicateStr(const UnicodeString & Str, bool AllowEm
 //---------------------------------------------------------------------------
 RECT TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
 {
-  PanelInfo Info = {0};
+  PanelInfo Info;
+  ClearStruct(Info);
   Info.StructSize = sizeof(PanelInfo);
   FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<void *>(&Info), PanelHandle);
 
@@ -527,7 +527,7 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
       }
 
       TGuard Guard(FileSystem->GetCriticalSection());
-      return static_cast<int>(FileSystem->ProcessPanelEvent(Info->Event, Param));
+      return FileSystem->ProcessPanelEvent(Info->Event, Param);
     }
     else
     {
@@ -771,10 +771,9 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
   // FIXME assert(FLAGCLEAR(AFlags, FMSG_DOWN));
   assert(FLAGCLEAR(AFlags, FMSG_ALLINONE));
 
-  TStrings * MessageLines = new TStringList();
-  std::auto_ptr<TStrings> MessageLinesPtr(MessageLines);
-  FarWrapText(Message, MessageLines, MaxMessageWidth);
-  intptr_t MaxLen = GetFarPlugin()->MaxLength(MessageLines);
+  std::auto_ptr<TStrings> MessageLines(new TStringList());
+  FarWrapText(Message, MessageLines.get(), MaxMessageWidth);
+  intptr_t MaxLen = GetFarPlugin()->MaxLength(MessageLines.get());
   TStrings * MoreMessageLines = NULL;
   std::auto_ptr<TStrings> MoreMessageLinesPtr(NULL);
   if (FParams->MoreMessages != NULL)
@@ -891,7 +890,6 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
 
   TRect rect = GetClientRect();
   TPoint S(
-    // rect.Left + MaxLen + (-(rect.Right + 1)),
     static_cast<int>(rect.Left + MaxLen - rect.Right),
     static_cast<int>(rect.Top + MessageLines->GetCount() +
     (FParams->MoreMessages != NULL ? 1 : 0) + ButtonLines +
@@ -912,7 +910,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
     MoreMessagesLister->SetTabStop(MoreMessagesLister->GetScrollBar());
     assert(MoreMessagesSeparator != NULL);
     MoreMessagesSeparator->SetPosition(
-      static_cast<int>(MoreMessagesLister->GetTop() + MoreMessagesLister->GetHeight()));
+      MoreMessagesLister->GetTop() + MoreMessagesLister->GetHeight());
     S.y += static_cast<int>(MoreMessagesLister->GetHeight()) + 1;
   }
   SetSize(S);
@@ -1419,7 +1417,6 @@ void TCustomFarPlugin::ShowTerminalScreen()
   TerminalInfo(&Size, &Cursor);
 
   UnicodeString Blank = ::StringOfChar(L' ', static_cast<intptr_t>(Size.x));
-  // Blank.SetLength(static_cast<size_t>(Size.x));
   for (int Y = 0; Y < Size.y; Y++)
   {
     Text(0, Y, 7/* LIGHTGRAY */, Blank);
@@ -2056,9 +2053,8 @@ intptr_t TCustomFarFileSystem::PutFiles(const struct PutFilesInfo *Info)
 {
   ResetCachedInfo();
   intptr_t Result = 0;
-  TObjectList * PanelItems = CreatePanelItemList(Info->PanelItem, Info->ItemsNumber);
-  std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
-  Result = PutFilesEx(PanelItems, Info->Move > 0, Info->OpMode);
+  std::auto_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
+  Result = PutFilesEx(PanelItems.get(), Info->Move > 0, Info->OpMode);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2447,7 +2443,6 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   PanelItem->LastAccessTime = FileTimeA;
   PanelItem->LastWriteTime = FileTime;
   PanelItem->FileSize = Size;
-  // PanelItem->PackSize = (long int)Size;
 
   PanelItem->FileName = TCustomFarPlugin::DuplicateStr(FileName);
   PanelItem->Description = TCustomFarPlugin::DuplicateStr(Description);
@@ -2695,7 +2690,6 @@ void TFarPanelInfo::SetFocusedItem(const TFarPanelItem * Value)
   intptr_t Index = Items->IndexOf(static_cast<const TObject *>(Value));
   assert(Index != NPOS);
   SetFocusedIndex(Index);
-  // delete Items;
 }
 //---------------------------------------------------------------------------
 intptr_t TFarPanelInfo::GetFocusedIndex()

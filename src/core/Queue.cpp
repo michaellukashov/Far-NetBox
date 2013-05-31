@@ -309,6 +309,8 @@ protected:
     TOnceDoneOperation & OnceDoneOperation);
   void OperationProgress(TFileOperationProgressType & ProgressData,
     TCancelStatus & Cancel);
+private:
+  NB_DISABLE_COPY(TTerminalItem)
 };
 //---------------------------------------------------------------------------
 // TSignalThread
@@ -681,7 +683,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
 bool TTerminalQueue::EmptyButMonitoredItems(TList * List)
 {
   bool Empty = true;
-  int Index = 0;
+  intptr_t Index = 0;
   while (Empty && (Index < List->GetCount()))
   {
     Empty = (GetItem(List, Index)->GetCompleteEvent() != INVALID_HANDLE_VALUE);

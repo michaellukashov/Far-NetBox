@@ -1635,7 +1635,8 @@ void TFarDialogItem::Init()
 {
   if (GetFlag(DIF_CENTERGROUP))
   {
-    SMALL_RECT Rect = {0};
+    SMALL_RECT Rect;
+    ClearStruct(Rect);
 
     // at least for "text" item, returned item size is not correct (on 1.70 final)
     SendMessage(DM_GETITEMPOSITION, reinterpret_cast<void *>(&Rect));
@@ -2330,8 +2331,9 @@ intptr_t TFarList::GetTopIndex()
   }
   else
   {
-      FarListPos ListPos = {0};
-        ListPos.StructSize = sizeof(FarListPos);
+    FarListPos ListPos;
+    ClearStruct(ListPos);
+    ListPos.StructSize = sizeof(FarListPos);
     assert(GetDialogItem() != NULL);
     GetDialogItem()->SendMessage(DM_LISTGETCURPOS, reinterpret_cast<void *>(&ListPos));
     Result = static_cast<intptr_t>(ListPos.TopPos);
