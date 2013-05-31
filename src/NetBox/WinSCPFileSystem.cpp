@@ -4060,7 +4060,8 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     int Pos = 0;
     while (Pos < WindowCount)
     {
-      WindowInfo Window = {0};
+      WindowInfo Window;
+      ClearStruct(Window);
       Window.Pos = Pos;
       UnicodeString EditedFileName(1024, 0);
       Window.Name = const_cast<wchar_t *>(EditedFileName.c_str());

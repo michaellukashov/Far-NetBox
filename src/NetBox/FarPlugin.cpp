@@ -228,7 +228,8 @@ wchar_t * TCustomFarPlugin::DuplicateStr(const UnicodeString & Str, bool AllowEm
 //---------------------------------------------------------------------------
 RECT TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
 {
-  PanelInfo Info = {0};
+  PanelInfo Info;
+  ClearStruct(Info);
   FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<intptr_t>(&Info), PanelHandle);
   RECT Bounds;
   memset(&Bounds, -1, sizeof(Bounds));
