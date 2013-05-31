@@ -4498,7 +4498,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
           if (ChecklistItem->Action != TSynchronizeChecklist::saNone)
           {
             Data.Checklist->Add(ChecklistItem.get());
-            ChecklistItem.reset();
+            ChecklistItem.release();
           }
         }
         else
@@ -4706,7 +4706,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
       {
         ChecklistItem->RemoteFile = File->Duplicate();
         Data->Checklist->Add(ChecklistItem.get());
-        ChecklistItem.reset();
+        ChecklistItem.release();
       }
     }
   }
