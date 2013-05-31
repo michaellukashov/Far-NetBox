@@ -3244,14 +3244,14 @@ uintptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString & Str,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams * AParams)
 {
   TMessageParams Params;
+  if (AParams != NULL)
+  {
+    Params.Assign(AParams);
+  }
 
   if ((FProgressSaveScreenHandle != 0) ||
       (FSynchronizationSaveScreenHandle != 0))
   {
-    if (AParams != NULL)
-    {
-      Params.Assign(AParams);
-    }
     Params.Flags |= FMSG_WARNING;
   }
 
@@ -4002,7 +4002,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   UnicodeString FullFileName = ::UnixIncludeTrailingBackslash(Directory) + FileName;
 
   std::auto_ptr<TRemoteFile> FileDuplicate(File->Duplicate());
-  UnicodeString NewFileName = FullFileName;
+  UnicodeString NewFileName = FileName; // FullFileName;
   FileDuplicate->SetFileName(NewFileName);
 
   TMultipleEdits::iterator it = FMultipleEdits.begin();
