@@ -4002,7 +4002,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   UnicodeString FullFileName = ::UnixIncludeTrailingBackslash(Directory) + FileName;
 
   std::auto_ptr<TRemoteFile> FileDuplicate(File->Duplicate());
-  UnicodeString NewFileName = FullFileName; // ::UnixIncludeTrailingBackslash(GetFileNameHash(FullFileName)) + FileName;
+  UnicodeString NewFileName = FullFileName;
   FileDuplicate->SetFileName(NewFileName);
 
   TMultipleEdits::iterator it = FMultipleEdits.begin();
