@@ -4071,8 +4071,12 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
         if ((Window.Type == WTYPE_EDITOR) &&
             Window.Name && AnsiSameText(Window.Name, it->second.LocalFileName))
         {
-          if (FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW, reinterpret_cast<void *>(Pos)) != 0)
+          // Switch to current editor.
+          if (FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW,
+            reinterpret_cast<void *>(Pos)) != 0)
+          {
             FarPlugin->FarAdvControl(ACTL_COMMIT, 0);
+          }
           break;
         }
       }
