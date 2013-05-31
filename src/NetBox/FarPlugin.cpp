@@ -769,10 +769,9 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
   // FIXME assert(FLAGCLEAR(AFlags, FMSG_DOWN));
   assert(FLAGCLEAR(AFlags, FMSG_ALLINONE));
 
-  TStrings * MessageLines = new TStringList();
-  std::auto_ptr<TStrings> MessageLinesPtr(MessageLines);
-  FarWrapText(Message, MessageLines, MaxMessageWidth);
-  intptr_t MaxLen = GetFarPlugin()->MaxLength(MessageLines);
+  std::auto_ptr<TStrings> MessageLines(new TStringList());
+  FarWrapText(Message, MessageLines.get(), MaxMessageWidth);
+  intptr_t MaxLen = GetFarPlugin()->MaxLength(MessageLines.get());
   TStrings * MoreMessageLines = NULL;
   std::auto_ptr<TStrings> MoreMessageLinesPtr(NULL);
   if (FParams->MoreMessages != NULL)
@@ -2012,9 +2011,8 @@ intptr_t TCustomFarFileSystem::PutFiles(struct PluginPanelItem * PanelItem,
   (void)srcPath;
   ResetCachedInfo();
   intptr_t Result = 0;
-  TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
-  std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
-  Result = PutFilesEx(PanelItems, Move > 0, OpMode);
+  std::auto_ptr<TObjectList> PanelItems(CreatePanelItemList(PanelItem, ItemsNumber));
+  Result = PutFilesEx(PanelItems.get(), Move > 0, OpMode);
   return Result;
 }
 //---------------------------------------------------------------------------

@@ -4144,15 +4144,13 @@ void TWinSCPFileSystem::EditHistory()
     UnicodeString FullFileName =
       ::UnixIncludeTrailingBackslash(FEditHistories[Result].Directory) + FEditHistories[Result].FileName;
     FTerminal->ReadFile(FullFileName, File);
+    std::auto_ptr<TRemoteFile> FilePtr(File);
+    if (!File->GetHaveFullFileName())
     {
-      std::auto_ptr<TRemoteFile> FilePtr(File);
-      if (!File->GetHaveFullFileName())
-      {
-        File->SetFullFileName(FullFileName);
-      }
-      MultipleEdit(FEditHistories[Result].Directory,
-        FEditHistories[Result].FileName, File);
+      File->SetFullFileName(FullFileName);
     }
+    MultipleEdit(FEditHistories[Result].Directory,
+      FEditHistories[Result].FileName, File);
   }
 }
 //---------------------------------------------------------------------------------
