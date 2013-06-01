@@ -544,7 +544,8 @@ intptr_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString 
 
 void TStrings::Assign(const TPersistent * Source)
 {
-  if (::InheritsFrom<TPersistent, TStrings>(Source))
+  const TStrings * Strings = dynamic_cast<const TStrings *>(Source);
+  if (Strings != NULL)
   {
     BeginUpdate();
     {
@@ -552,7 +553,6 @@ void TStrings::Assign(const TPersistent * Source)
       {
         Clear();
         // FDefined = TStrings(Source).FDefined;
-        const TStrings * Strings = static_cast<const TStrings *>(Source);
         assert(Strings);
         FQuoteChar = Strings->FQuoteChar;
         FDelimiter = Strings->FDelimiter;
