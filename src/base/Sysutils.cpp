@@ -896,7 +896,7 @@ UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len)
 
 char * StrNew(const char * Str)
 {
-  size_t sz = strlen(Str) + 1;
+  rsize_t sz = strlen(Str) + 1;
   char * Result = static_cast<char *>(nb_malloc(sizeof(char) * sz));
   strncpy_s(Result, sz, Str, sz);
   return Result;
