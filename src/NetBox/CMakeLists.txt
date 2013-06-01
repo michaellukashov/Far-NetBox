@@ -1,6 +1,13 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
+IF(NOT DEFINED PROJECT_ROOT OR PROJECT_ROOT STREQUAL "")
+SET(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+ENDIF()
 STRING(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
+
+IF(NOT DEFINED BUILD_DIR OR BUILD_DIR STREQUAL "")
+STRING(REPLACE "/" "\\" BUILD_DIR ${PROJECT_ROOT}/build/vc10/${CMAKE_BUILD_TYPE}/${CONF})
+ENDIF()
 
 #-------------------------------------------------------------------------------
 
@@ -8,7 +15,7 @@ PROJECT(NetBox)
 
 INCLUDE(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
 INCLUDE(CMakeDetermineCXXCompiler)
-MESSAGE("System: ${CMAKE_SYSTEM_NAME}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
+MESSAGE("System: ${CMAKE_SYSTEM_NAME}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
 
 IF(NOT DEFINED CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Debug)
@@ -27,13 +34,6 @@ SET(OUTPUT_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${CONF}/Plugins/NetBox)
 SET(LIBS_ROOT ${PROJECT_ROOT}/libs)
 SET(SRC_ROOT ${PROJECT_ROOT}/src)
 SET(TESTS_ROOT ${SRC_ROOT}/tests)
-
-#-------------------------------------------------------------------------------
-
-IF(NOT DEFINED BUILD_DIR OR BUILD_DIR STREQUAL "")
-STRING(REPLACE "/" "\\" BUILD_DIR ${PROJECT_ROOT}/build/vc10/${CMAKE_BUILD_TYPE}/${CONF})
-ENDIF()
-MESSAGE("BUILD_DIR: ${BUILD_DIR}")
 
 #-------------------------------------------------------------------------------
 
