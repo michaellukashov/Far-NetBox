@@ -1,3 +1,4 @@
+PROJECT(NetBox)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 IF(NOT DEFINED PROJECT_ROOT OR PROJECT_ROOT STREQUAL "")
@@ -10,8 +11,6 @@ STRING(REPLACE "/" "\\" BUILD_DIR ${PROJECT_ROOT}/build/vc10/${CMAKE_BUILD_TYPE}
 ENDIF()
 
 #-------------------------------------------------------------------------------
-
-PROJECT(NetBox)
 
 INCLUDE(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
 INCLUDE(CMakeDetermineCXXCompiler)
