@@ -339,7 +339,7 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::HandleException(Exception * E, int OpMode)
 {
-  if ((GetTerminal() != NULL) && ::InheritsFrom<std::exception, EFatal>(E))
+  if ((GetTerminal() != NULL) && (dynamic_cast<EFatal *>(E) != NULL))
   {
     if (!FClosed)
     {

@@ -565,7 +565,7 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::HandleException(Exception * E, int OpMode)
 {
-  if (((OpMode & OPM_FIND) == 0) || ::InheritsFrom<std::exception, EFatal>(E))
+  if (((OpMode & OPM_FIND) == 0) || (dynamic_cast<EFatal *>(E) != NULL))
   {
     ShowExtendedException(E);
   }
