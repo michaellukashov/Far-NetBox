@@ -49,8 +49,8 @@ AnsiString::operator UnicodeString() const
 
 intptr_t AnsiString::Pos(wchar_t Ch) const
 {
-  AnsiString s(&Ch, 1);
-  return static_cast<intptr_t>(Data.find(s.c_str(), 0, 1)) + 1;
+  AnsiString Str(&Ch, 1);
+  return static_cast<intptr_t>(Data.find(Str.c_str(), 0, 1)) + 1;
 }
 
 AnsiString & AnsiString::Insert(const char * Str, intptr_t Pos)
@@ -465,9 +465,9 @@ UnicodeString & UnicodeString::Insert(intptr_t Pos, const wchar_t * Str, intptr_
 
 bool UnicodeString::RPos(intptr_t & nPos, wchar_t Ch, intptr_t nStartPos) const
 {
-  size_t pos = Data.find_last_of(Ch, Data.size() - nStartPos);
-  nPos = pos + 1;
-  return pos != std::wstring::npos;
+  size_t Pos = Data.find_last_of(Ch, Data.size() - nStartPos);
+  nPos = Pos + 1;
+  return Pos != std::wstring::npos;
 }
 
 UnicodeString UnicodeString::SubStr(intptr_t Pos, intptr_t Len) const
