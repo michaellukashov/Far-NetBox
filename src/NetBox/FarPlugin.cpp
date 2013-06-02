@@ -1873,9 +1873,8 @@ intptr_t TCustomFarFileSystem::GetFindData(
   struct PluginPanelItem ** PanelItem, int * ItemsNumber, int OpMode)
 {
   ResetCachedInfo();
-  bool Result = false;
   std::auto_ptr<TObjectList> PanelItems(new TObjectList());
-  Result = !FClosed && GetFindDataEx(PanelItems.get(), OpMode);
+  bool Result = !FClosed && GetFindDataEx(PanelItems.get(), OpMode);
   if (Result && PanelItems->GetCount())
   {
     *PanelItem = static_cast<PluginPanelItem *>(
@@ -1922,9 +1921,8 @@ intptr_t TCustomFarFileSystem::ProcessHostFile(struct PluginPanelItem * PanelIte
   int ItemsNumber, int OpMode)
 {
   ResetCachedInfo();
-  bool Result = false;
   std::auto_ptr<TObjectList> PanelItems(CreatePanelItemList(PanelItem, ItemsNumber));
-  Result = ProcessHostFileEx(PanelItems.get(), OpMode);
+  bool Result = ProcessHostFileEx(PanelItems.get(), OpMode);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1973,9 +1971,8 @@ intptr_t TCustomFarFileSystem::DeleteFiles(struct PluginPanelItem * PanelItem,
     int ItemsNumber, int OpMode)
 {
   ResetCachedInfo();
-  bool Result = false;
   std::auto_ptr<TObjectList> PanelItems(CreatePanelItemList(PanelItem, ItemsNumber));
-  Result = DeleteFilesEx(PanelItems.get(), OpMode);
+  bool Result = DeleteFilesEx(PanelItems.get(), OpMode);
   return Result;
 }
 //---------------------------------------------------------------------------
