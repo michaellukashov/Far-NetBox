@@ -6789,11 +6789,10 @@ private:
 TFullSynchronizeDialog::TFullSynchronizeDialog(
   TCustomFarPlugin * AFarPlugin, intptr_t Options,
   const TUsableCopyParamAttrs & CopyParamAttrs) :
-  TWinSCPDialog(AFarPlugin)
+  TWinSCPDialog(AFarPlugin),
+  FOptions(Options),
+  FCopyParamAttrs(CopyParamAttrs)
 {
-  FOptions = Options;
-  FCopyParamAttrs = CopyParamAttrs;
-
   TFarText * Text;
   TFarSeparator * Separator;
 
