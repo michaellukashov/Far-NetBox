@@ -294,7 +294,7 @@ void TCopyParamType::SetReplaceInvalidChars(bool Value)
 {
   if (GetReplaceInvalidChars() != Value)
   {
-    SetInvalidCharsReplacement((Value ? TokenReplacement : NoReplacement));
+    SetInvalidCharsReplacement(Value ? TokenReplacement : NoReplacement);
   }
 }
 //---------------------------------------------------------------------------
@@ -587,34 +587,33 @@ bool TCopyParamType::operator==(const TCopyParamType & rhp) const
 //---------------------------------------------------------------------------
 uintptr_t GetSpeedLimit(const UnicodeString & Text)
 {
-  uintptr_t Speed = 0;
+  uintptr_t Result = 0;
   if (AnsiSameText(Text, LoadStr(SPEED_UNLIMITED)))
   {
-    Speed = 0;
+    Result = 0;
   }
   else
   {
     intptr_t SSpeed = 0;
-    if (!TryStrToInt(Text, SSpeed) ||
-        (SSpeed < 0))
+    if (!TryStrToInt(Text, SSpeed) || (SSpeed < 0))
     {
       throw Exception(FMTLOAD(SPEED_INVALID, Text.c_str()));
     }
-    Speed = SSpeed;
+    Result = SSpeed;
   }
-  return Speed * 1024;
+  return Result * 1024;
 }
 //---------------------------------------------------------------------------
 UnicodeString SetSpeedLimit(uintptr_t Limit)
 {
-  UnicodeString Text;
+  UnicodeString Result;
   if (Limit == 0)
   {
-    Text = LoadStr(SPEED_UNLIMITED);
+    Result = LoadStr(SPEED_UNLIMITED);
   }
   else
   {
-    Text = IntToStr(Limit / 1024);
+    Result = IntToStr(Limit / 1024);
   }
-  return Text;
+  return Result;
 }

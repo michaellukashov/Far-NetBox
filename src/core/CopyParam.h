@@ -84,7 +84,7 @@ public:
   bool UseAsciiTransfer(const UnicodeString & FileName, TOperationSide Side,
     const TFileMasks::TParams & Params) const;
   bool AllowResume(__int64 Size) const;
-  UnicodeString ValidLocalFileName(const UnicodeString & FileName) const;
+  inline UnicodeString ValidLocalFileName(const UnicodeString & FileName) const;
   UnicodeString ValidLocalPath(const UnicodeString & Path) const;
   bool AllowAnyTransfer() const;
   bool AllowTransfer(const UnicodeString & FileName, TOperationSide Side,
