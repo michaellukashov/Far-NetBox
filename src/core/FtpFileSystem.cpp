@@ -1147,12 +1147,12 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TDownloadSessionAction & Action)
 {
+  assert(File);
   UnicodeString OnlyFileName = UnixExtractFileName(FileName);
 
   Action.FileName(FileName);
 
   TFileMasks::TParams MaskParams;
-  assert(File);
   MaskParams.Size = File->GetSize();
   MaskParams.Modification = File->GetModification();
 
