@@ -138,7 +138,7 @@ UnicodeString TFileMasks::TParams::ToString() const
 //---------------------------------------------------------------------------
 bool TFileMasks::IsMask(const UnicodeString & Mask)
 {
-  return (Mask.LastDelimiter(L"?*[") > 0);
+  return (Mask.LastDelimiter(L"?*[/") > 0);
 }
 //---------------------------------------------------------------------------
 bool TFileMasks::IsAnyMask(const UnicodeString & Mask)
