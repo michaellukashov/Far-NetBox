@@ -575,7 +575,6 @@ void TTerminal::Init(TSessionData * SessionData, TConfiguration * Configuration)
   FSuspendTransaction = false;
   FOperationProgress = NULL;
   FClosedOnCompletion = NULL;
-  FTunnel = NULL;
 }
 //------------------------------------------------------------------------------
 void TTerminal::Idle()
