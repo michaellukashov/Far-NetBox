@@ -376,14 +376,14 @@ public:
   explicit TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem);
   virtual ~TFarPanelItem();
 
-  uintptr_t GetFlags();
-  uintptr_t GetFileAttributes();
-  UnicodeString GetFileName();
+  uintptr_t GetFlags() const;
+  uintptr_t GetFileAttributes() const;
+  UnicodeString GetFileName() const;
   void * GetUserData();
-  bool GetSelected();
+  bool GetSelected() const;
   void SetSelected(bool Value);
-  bool GetIsParentDirectory();
-  bool GetIsFile();
+  bool GetIsParentDirectory() const;
+  bool GetIsFile() const;
 
 protected:
   PluginPanelItem * FPanelItem;
@@ -426,20 +426,21 @@ public:
   explicit TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner);
   virtual ~TFarPanelInfo();
 
+  const TObjectList * GetItems() const { return const_cast<TFarPanelInfo *>(this)->GetItems(); }
   TObjectList * GetItems();
-  intptr_t GetItemCount();
+  intptr_t GetItemCount() const;
   TFarPanelItem * GetFocusedItem();
   void SetFocusedItem(const TFarPanelItem * Value);
-  intptr_t GetFocusedIndex();
+  intptr_t GetFocusedIndex() const;
   void SetFocusedIndex(intptr_t Value);
-  intptr_t GetSelectedCount();
-  TRect GetBounds();
-  TFarPanelType GetType();
-  bool GetIsPlugin();
-  UnicodeString GetCurrentDirectory();
+  intptr_t GetSelectedCount() const;
+  TRect GetBounds() const;
+  TFarPanelType GetType() const;
+  bool GetIsPlugin() const;
+  UnicodeString GetCurrentDirectory() const;
 
   void ApplySelection();
-  TFarPanelItem * FindFileName(const UnicodeString & FileName);
+  TFarPanelItem * FindFileName(const UnicodeString & FileName) const;
   const TFarPanelItem * FindUserData(const void * UserData) const;
   TFarPanelItem * FindUserData(const void * UserData);
 
