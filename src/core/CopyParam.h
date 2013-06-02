@@ -97,10 +97,10 @@ public:
 
   bool operator==(const TCopyParamType & rhp) const;
 
-  const TFileMasks & GetAsciiFileMask() const;
-  TFileMasks & GetAsciiFileMask();
-  void SetAsciiFileMask(TFileMasks Value);
-  const TFileNameCase & GetFileNameCase() const;
+  const TFileMasks & GetAsciiFileMask() const { return FAsciiFileMask; }
+  TFileMasks & GetAsciiFileMask() { return FAsciiFileMask; }
+  void SetAsciiFileMask(TFileMasks Value) { FAsciiFileMask = Value; }
+  const TFileNameCase & GetFileNameCase() const { return FFileNameCase; }
   void SetFileNameCase(TFileNameCase Value) { FFileNameCase = Value; }
   bool GetPreserveReadOnly() const { return FPreserveReadOnly; }
   void SetPreserveReadOnly(bool Value) { FPreserveReadOnly = Value; }
@@ -124,14 +124,14 @@ public:
   void SetResumeThreshold(__int64 Value) { FResumeThreshold = Value; }
   wchar_t GetInvalidCharsReplacement() const { return FInvalidCharsReplacement; }
   void SetInvalidCharsReplacement(wchar_t Value) { FInvalidCharsReplacement = Value; }
-  UnicodeString GetLocalInvalidChars() const;
+  UnicodeString GetLocalInvalidChars() const { return FLocalInvalidChars; }
   bool GetCalculateSize() const { return FCalculateSize; }
   void SetCalculateSize(bool Value) { FCalculateSize = Value; }
-  UnicodeString GetFileMask() const;
-  void SetFileMask(const UnicodeString & Value);
-  const TFileMasks & GetIncludeFileMask() const;
-  TFileMasks & GetIncludeFileMask();
-  void SetIncludeFileMask(TFileMasks Value);
+  UnicodeString GetFileMask() const { return FFileMask; }
+  void SetFileMask(const UnicodeString & Value) { FFileMask = Value; }
+  const TFileMasks & GetIncludeFileMask() const { return FIncludeFileMask; }
+  TFileMasks & GetIncludeFileMask() { return FIncludeFileMask; }
+  void SetIncludeFileMask(TFileMasks Value) { FIncludeFileMask = Value; }
   const TFileMasks & GetExcludeFileMask() const { return FExcludeFileMask; }
   TFileMasks & GetExcludeFileMask() { return FExcludeFileMask; }
   void SetExcludeFileMask(TFileMasks Value) { FExcludeFileMask = Value; }

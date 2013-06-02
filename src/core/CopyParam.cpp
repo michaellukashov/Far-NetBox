@@ -585,56 +585,6 @@ bool TCopyParamType::operator==(const TCopyParamType & rhp) const
 }
 #undef C
 //---------------------------------------------------------------------------
-const TFileMasks & TCopyParamType::GetAsciiFileMask() const
-{
-  return FAsciiFileMask;
-}
-//---------------------------------------------------------------------------
-TFileMasks & TCopyParamType::GetAsciiFileMask()
-{
-  return FAsciiFileMask;
-}
-//---------------------------------------------------------------------------
-void TCopyParamType::SetAsciiFileMask(TFileMasks Value)
-{
-  FAsciiFileMask = Value;
-}
-//---------------------------------------------------------------------------
-const TFileNameCase & TCopyParamType::GetFileNameCase() const
-{
-  return FFileNameCase;
-}
-//---------------------------------------------------------------------------
-UnicodeString TCopyParamType::GetLocalInvalidChars() const
-{
-  return FLocalInvalidChars;
-}
-//---------------------------------------------------------------------------
-UnicodeString TCopyParamType::GetFileMask() const
-{
-  return FFileMask;
-}
-//---------------------------------------------------------------------------
-void TCopyParamType::SetFileMask(const UnicodeString & Value)
-{
-  FFileMask = Value;
-}
-//---------------------------------------------------------------------------
-const TFileMasks & TCopyParamType::GetIncludeFileMask() const
-{
-  return FIncludeFileMask;
-}
-//---------------------------------------------------------------------------
-TFileMasks & TCopyParamType::GetIncludeFileMask()
-{
-  return FIncludeFileMask;
-}
-//---------------------------------------------------------------------------
-void TCopyParamType::SetIncludeFileMask(TFileMasks Value)
-{
-  FIncludeFileMask = Value;
-}
-//---------------------------------------------------------------------------
 uintptr_t GetSpeedLimit(const UnicodeString & Text)
 {
   uintptr_t Speed = 0;
