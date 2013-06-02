@@ -258,10 +258,10 @@ bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, in
 {
   if (Index <= Str.Length())
   {
-    wchar_t c = Str[Index];
+    wchar_t Ch = Str[Index];
     for (intptr_t I = 1; I <= Delimiters.Length(); I++)
     {
-      if (Delimiters[I] == c)
+      if (Delimiters[I] == Ch)
       {
         return true;
       }
@@ -886,7 +886,10 @@ UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len)
   UnicodeString Result;
   if (Len < 0) Len = 0;
   Result.SetLength(Len);
-  for (intptr_t i = 1; i <= Len; i++) Result[i] = Ch;
+  for (intptr_t I = 1; I <= Len; I++)
+  {
+    Result[I] = Ch;
+  }
   return Result;
 }
 
