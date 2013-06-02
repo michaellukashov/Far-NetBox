@@ -2212,45 +2212,6 @@ void CWnd::OnEnterIdle(UINT /*nWhy*/, CWnd* /*pWho*/)
 	Default();
 }
 
-// implementation of OnCtlColor for default gray backgrounds
-//   (works for any window containing controls)
-//  return value of FALSE means caller must call DefWindowProc's default
-//  TRUE means that 'hbrGray' will be used and the appropriate text
-//    ('clrText') and background colors are set.
-BOOL PASCAL CWnd::GrayCtlColor(HDC hDC, HWND hWnd, UINT nCtlColor,
-	HBRUSH hbrGray, COLORREF clrText)
-{
-	if (hDC == NULL)
-	{
-		// sometimes Win32 passes a NULL hDC in the WM_CTLCOLOR message.
-		return FALSE;
-	}
-
-	if (hbrGray == NULL ||
-		nCtlColor == CTLCOLOR_EDIT || nCtlColor == CTLCOLOR_MSGBOX ||
-		nCtlColor == CTLCOLOR_SCROLLBAR)
-	{
-		return FALSE;
-	}
-
-	if (nCtlColor == CTLCOLOR_LISTBOX)
-	{
-		// only handle requests to draw the space between edit and drop button
-		//  in a drop-down combo (not a drop-down list)
-//		if (!_AfxIsComboBoxControl(hWnd, (UINT)CBS_DROPDOWN))
-//			return FALSE;
-	}
-
-	// set background color and return handle to brush
-	LOGBRUSH logbrush;
-	VERIFY(::GetObject(hbrGray, sizeof(LOGBRUSH), (LPVOID)&logbrush));
-	::SetBkColor(hDC, logbrush.lbColor);
-	if (clrText == (COLORREF)-1)
-		clrText = ::GetSysColor(COLOR_WINDOWTEXT);  // normal text
-	::SetTextColor(hDC, clrText);
-	return TRUE;
-}
-
 /////////////////////////////////////////////////////////////////////////////
 // 'dialog data' support
 
