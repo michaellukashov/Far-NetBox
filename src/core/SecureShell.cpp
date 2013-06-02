@@ -638,9 +638,9 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   Name = Name.Trim();
 
   UnicodeString Instructions2 = ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
-  Instructions2 = ReplaceStrAll(Instructions, L"\x0A\x0D", L"\x01");
-  Instructions2 = ReplaceStrAll(Instructions, L"\x0A", L"\x01");
-  Instructions2 = ReplaceStrAll(Instructions, L"\x0D", L"\x01");
+  Instructions2 = ReplaceStrAll(Instructions2, L"\x0A\x0D", L"\x01");
+  Instructions2 = ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
+  Instructions2 = ReplaceStrAll(Instructions2, L"\x0D", L"\x01");
   Instructions2 = ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
   if (InstructionTranslation != NULL)
   {
