@@ -192,7 +192,6 @@ ENDIF(MSVC)
 
 ADD_LIBRARY(libeay32 STATIC IMPORTED)
 SET_PROPERTY(TARGET libeay32
-  # PROPERTY IMPORTED_IMPLIB ${LIBS_ROOT}/openssl/${CONF}/libeay32.lib)
   PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${CONF}/libeay32.lib
 )
 
@@ -276,8 +275,6 @@ ADD_DEPENDENCIES(NetBox
   rdestl
 )
 
-# USE_PRECOMPILED_HEADER(NETBOX_SOURCES stdafx.h stdafx.cpp netbox)
-
 STRING(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
 
 ADD_CUSTOM_COMMAND(TARGET NetBox
@@ -308,8 +305,6 @@ ADD_LIBRARY(atlmfc STATIC
   ${LIBS_ROOT}/atlmfc/mfc4.cpp
   ${LIBS_ROOT}/atlmfc/mfc5.cpp
   ${LIBS_ROOT}/atlmfc/src/mfc/thrdcore.cpp
-  # ${LIBS_ROOT}/atlmfc/include/afxres.rc
-  # ${LIBS_ROOT}/atlmfc/include/mfcdll.rc
 )
 
 #-------------------------------------------------------------------------------
