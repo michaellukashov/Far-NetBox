@@ -924,7 +924,7 @@ intptr_t TSecureShell::Receive(unsigned char * Buf, intptr_t Length)
   }
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    LogEvent(FORMAT(L"Read %u bytes (%d pending)",
+    LogEvent(FORMAT(L"Read %d bytes (%d pending)",
       static_cast<int>(Length), static_cast<int>(PendLen)));
   }
   return Length;
