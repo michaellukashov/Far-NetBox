@@ -638,9 +638,9 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   Name = Name.Trim();
 
   UnicodeString Instructions2 = ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
-  Instructions2 = ReplaceStrAll(Instructions, L"\x0A\x0D", L"\x01");
-  Instructions2 = ReplaceStrAll(Instructions, L"\x0A", L"\x01");
-  Instructions2 = ReplaceStrAll(Instructions, L"\x0D", L"\x01");
+  Instructions2 = ReplaceStrAll(Instructions2, L"\x0A\x0D", L"\x01");
+  Instructions2 = ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
+  Instructions2 = ReplaceStrAll(Instructions2, L"\x0D", L"\x01");
   Instructions2 = ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
   if (InstructionTranslation != NULL)
   {
@@ -852,9 +852,9 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
   }
 }
 //---------------------------------------------------------------------------
-bool TSecureShell::Peek(unsigned char *& Buf, uintptr_t Len) const
+bool TSecureShell::Peek(unsigned char *& Buf, intptr_t Length) const
 {
-  bool Result = (PendLen >= Len);
+  bool Result = (PendLen >= Length);
 
   if (Result)
   {
@@ -864,16 +864,16 @@ bool TSecureShell::Peek(unsigned char *& Buf, uintptr_t Len) const
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TSecureShell::Receive(unsigned char * Buf, uintptr_t Len)
+intptr_t TSecureShell::Receive(unsigned char * Buf, intptr_t Length)
 {
   CheckConnection();
 
-  if (Len > 0)
+  if (Length > 0)
   {
     // Following is taken from scp.c ssh_scp_recv() and modified
 
     OutPtr = Buf;
-    OutLen = Len;
+    OutLen = Length;
 
     TRY_FINALLY (
     {
@@ -911,7 +911,7 @@ intptr_t TSecureShell::Receive(unsigned char * Buf, uintptr_t Len)
       }
 
       // This seems ambiguous
-      if (Len <= 0)
+      if (Length <= 0)
       {
         FatalError(LoadStr(LOST_CONNECTION));
       }
@@ -924,10 +924,10 @@ intptr_t TSecureShell::Receive(unsigned char * Buf, uintptr_t Len)
   }
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    LogEvent(FORMAT(L"Read %u bytes (%d pending)",
-      static_cast<int>(Len), static_cast<int>(PendLen)));
+    LogEvent(FORMAT(L"Read %d bytes (%d pending)",
+      static_cast<int>(Length), static_cast<int>(PendLen)));
   }
-  return Len;
+  return Length;
 }
 //---------------------------------------------------------------------------
 UnicodeString TSecureShell::ReceiveLine()
@@ -1086,13 +1086,13 @@ void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
   while (BufSize > MAX_BUFSIZE);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::Send(const unsigned char * Buf, uintptr_t Len)
+void TSecureShell::Send(const unsigned char * Buf, intptr_t Length)
 {
   CheckConnection();
-  int BufSize = FBackend->send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), static_cast<int>(Len));
+  int BufSize = FBackend->send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), static_cast<int>(Length));
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    LogEvent(FORMAT(L"Sent %u bytes", (static_cast<int>(Len))));
+    LogEvent(FORMAT(L"Sent %u bytes", (static_cast<int>(Length))));
     LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
   }
   FLastDataSent = Now();

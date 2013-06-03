@@ -294,7 +294,7 @@ void TCopyParamType::SetReplaceInvalidChars(bool Value)
 {
   if (GetReplaceInvalidChars() != Value)
   {
-    SetInvalidCharsReplacement((Value ? TokenReplacement : NoReplacement));
+    SetInvalidCharsReplacement(Value ? TokenReplacement : NoReplacement);
   }
 }
 //---------------------------------------------------------------------------
@@ -585,86 +585,35 @@ bool TCopyParamType::operator==(const TCopyParamType & rhp) const
 }
 #undef C
 //---------------------------------------------------------------------------
-const TFileMasks & TCopyParamType::GetAsciiFileMask() const
-{
-  return FAsciiFileMask;
-}
-//---------------------------------------------------------------------------
-TFileMasks & TCopyParamType::GetAsciiFileMask()
-{
-  return FAsciiFileMask;
-}
-//---------------------------------------------------------------------------
-void TCopyParamType::SetAsciiFileMask(TFileMasks Value)
-{
-  FAsciiFileMask = Value;
-}
-//---------------------------------------------------------------------------
-const TFileNameCase & TCopyParamType::GetFileNameCase() const
-{
-  return FFileNameCase;
-}
-//---------------------------------------------------------------------------
-UnicodeString TCopyParamType::GetLocalInvalidChars() const
-{
-  return FLocalInvalidChars;
-}
-//---------------------------------------------------------------------------
-UnicodeString TCopyParamType::GetFileMask() const
-{
-  return FFileMask;
-}
-//---------------------------------------------------------------------------
-void TCopyParamType::SetFileMask(const UnicodeString & Value)
-{
-  FFileMask = Value;
-}
-//---------------------------------------------------------------------------
-const TFileMasks & TCopyParamType::GetIncludeFileMask() const
-{
-  return FIncludeFileMask;
-}
-//---------------------------------------------------------------------------
-TFileMasks & TCopyParamType::GetIncludeFileMask()
-{
-  return FIncludeFileMask;
-}
-//---------------------------------------------------------------------------
-void TCopyParamType::SetIncludeFileMask(TFileMasks Value)
-{
-  FIncludeFileMask = Value;
-}
-//---------------------------------------------------------------------------
 uintptr_t GetSpeedLimit(const UnicodeString & Text)
 {
-  uintptr_t Speed = 0;
+  uintptr_t Result = 0;
   if (AnsiSameText(Text, LoadStr(SPEED_UNLIMITED)))
   {
-    Speed = 0;
+    Result = 0;
   }
   else
   {
     intptr_t SSpeed = 0;
-    if (!TryStrToInt(Text, SSpeed) ||
-        (SSpeed < 0))
+    if (!TryStrToInt(Text, SSpeed) || (SSpeed < 0))
     {
       throw Exception(FMTLOAD(SPEED_INVALID, Text.c_str()));
     }
-    Speed = SSpeed;
+    Result = SSpeed;
   }
-  return Speed * 1024;
+  return Result * 1024;
 }
 //---------------------------------------------------------------------------
 UnicodeString SetSpeedLimit(uintptr_t Limit)
 {
-  UnicodeString Text;
+  UnicodeString Result;
   if (Limit == 0)
   {
-    Text = LoadStr(SPEED_UNLIMITED);
+    Result = LoadStr(SPEED_UNLIMITED);
   }
   else
   {
-    Text = IntToStr(Limit / 1024);
+    Result = IntToStr(Limit / 1024);
   }
-  return Text;
+  return Result;
 }

@@ -180,42 +180,6 @@ BOOL CDC::RestoreDC(int nSavedDC)
 	return bRetVal;
 }
 
-COLORREF CDC::SetBkColor(COLORREF crColor)
-{
-	ASSERT(m_hDC != NULL);
-	COLORREF crRetVal = CLR_INVALID;
-
-	if (m_hDC != m_hAttribDC)
-		crRetVal = ::SetBkColor(m_hDC, crColor);
-	if (m_hAttribDC != NULL)
-		crRetVal = ::SetBkColor(m_hAttribDC, crColor);
-	return crRetVal;
-}
-
-int CDC::SetBkMode(int nBkMode)
-{
-	ASSERT(m_hDC != NULL);
-	int nRetVal = 0;
-
-	if (m_hDC != m_hAttribDC)
-		nRetVal = ::SetBkMode(m_hDC, nBkMode);
-	if (m_hAttribDC != NULL)
-		nRetVal = ::SetBkMode(m_hAttribDC, nBkMode);
-	return nRetVal;
-}
-
-int CDC::SetPolyFillMode(int nPolyFillMode)
-{
-	ASSERT(m_hDC != NULL);
-	int nRetVal = 0;
-
-	if (m_hDC != m_hAttribDC)
-		nRetVal = ::SetPolyFillMode(m_hDC, nPolyFillMode);
-	if (m_hAttribDC != NULL)
-		nRetVal = ::SetPolyFillMode(m_hAttribDC, nPolyFillMode);
-	return nRetVal;
-}
-
 int CDC::SetROP2(int nDrawMode)
 {
 	ASSERT(m_hDC != NULL);
@@ -238,18 +202,6 @@ int CDC::SetStretchBltMode(int nStretchMode)
 	if (m_hAttribDC != NULL)
 		nRetVal = ::SetStretchBltMode(m_hAttribDC, nStretchMode);
 	return nRetVal;
-}
-
-COLORREF CDC::SetTextColor(COLORREF crColor)
-{
-	ASSERT(m_hDC != NULL);
-	COLORREF crRetVal = CLR_INVALID;
-
-	if (m_hDC != m_hAttribDC)
-		crRetVal = ::SetTextColor(m_hDC, crColor);
-	if (m_hAttribDC != NULL)
-		crRetVal = ::SetTextColor(m_hAttribDC, crColor);
-	return crRetVal;
 }
 
 int CDC::SetGraphicsMode(int iMode)
@@ -639,9 +591,6 @@ int CALLBACK AfxEnumMetaFileProc(HDC hDC,
 		break;
 	case META_RESTOREDC:
 		pDC->RestoreDC((int)(short)pMetaRec->rdParm[0]);
-		break;
-	case META_SETBKCOLOR:
-		pDC->SetBkColor(*(UNALIGNED COLORREF*)&pMetaRec->rdParm[0]);
 		break;
 	case META_SETTEXTCOLOR:
 		pDC->SetTextColor(*(UNALIGNED COLORREF*)&pMetaRec->rdParm[0]);

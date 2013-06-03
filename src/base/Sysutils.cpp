@@ -258,10 +258,10 @@ bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, in
 {
   if (Index <= Str.Length())
   {
-    wchar_t c = Str[Index];
+    wchar_t Ch = Str[Index];
     for (intptr_t I = 1; I <= Delimiters.Length(); I++)
     {
-      if (Delimiters[I] == c)
+      if (Delimiters[I] == Ch)
       {
         return true;
       }
@@ -886,7 +886,10 @@ UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len)
   UnicodeString Result;
   if (Len < 0) Len = 0;
   Result.SetLength(Len);
-  for (intptr_t i = 1; i <= Len; i++) Result[i] = Ch;
+  for (intptr_t I = 1; I <= Len; I++)
+  {
+    Result[I] = Ch;
+  }
   return Result;
 }
 
@@ -896,7 +899,7 @@ UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len)
 
 char * StrNew(const char * Str)
 {
-  size_t sz = strlen(Str) + 1;
+  rsize_t sz = strlen(Str) + 1;
   char * Result = static_cast<char *>(nb_malloc(sizeof(char) * sz));
   strncpy_s(Result, sz, Str, sz);
   return Result;
@@ -1285,11 +1288,11 @@ static void ConvertError(intptr_t ErrorID)
 }
 
 //---------------------------------------------------------------------------
-static void DivMod(const int Dividend, const unsigned int Divisor,
-  unsigned int & Result, unsigned int & Remainder)
+static void DivMod(const uintptr_t Dividend, uintptr_t Divisor,
+  uintptr_t & Result, uintptr_t & Remainder)
 {
-    Result = Dividend / Divisor;
-    Remainder = Dividend % Divisor;
+  Result = Dividend / Divisor;
+  Remainder = Dividend % Divisor;
 }
 
 //---------------------------------------------------------------------------
@@ -1302,7 +1305,7 @@ static bool DecodeDateFully(const TDateTime & DateTime,
   static const int D100 = D4 * 25 - 1;
   static const int D400 = D100 * 4 + 1;
   bool Result = false;
-  unsigned int T = DateTimeToTimeStamp(DateTime).Date;
+  uintptr_t T = DateTimeToTimeStamp(DateTime).Date;
   if (static_cast<int>(T) <= 0)
   {
     Year = 0;
@@ -1315,14 +1318,14 @@ static bool DecodeDateFully(const TDateTime & DateTime,
   {
     DOW = T % 7 + 1;
     T--;
-    unsigned int Y = 1;
+    uintptr_t Y = 1;
     while (T >= D400)
     {
       T -= D400;
       Y += 400;
     }
-    unsigned int D = 0;
-    unsigned int I = 0;
+    uintptr_t D = 0;
+    uintptr_t I = 0;
     DivMod(T, D100, I, D);
     if (I == 4)
     {
@@ -1341,7 +1344,7 @@ static bool DecodeDateFully(const TDateTime & DateTime,
     Y += I;
     Result = IsLeapYear(static_cast<Word>(Y));
     const TDayTable * DayTable = &MonthDays[Result];
-    unsigned int M = 1;
+    uintptr_t M = 1;
     while (true)
     {
       I = (*DayTable)[M - 1];
@@ -1370,9 +1373,9 @@ void DecodeDate(const TDateTime & DateTime, unsigned short & Year,
 void DecodeTime(const TDateTime & DateTime, unsigned short & Hour,
   unsigned short & Min, unsigned short & Sec, unsigned short & MSec)
 {
-  unsigned int MinCount, MSecCount;
+  uintptr_t MinCount, MSecCount;
   DivMod(DateTimeToTimeStamp(DateTime).Time, 60000, MinCount, MSecCount);
-  unsigned int H, M, S, MS;
+  uintptr_t H, M, S, MS;
   DivMod(MinCount, 60, H, M);
   DivMod(MSecCount, 1000, S, MS);
   Hour = static_cast<unsigned short>(H);

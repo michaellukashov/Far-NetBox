@@ -103,7 +103,7 @@ ExtException::ExtException(const UnicodeString & Msg, Exception* E) :
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages,
-    const UnicodeString & HelpKeyword) :
+  const UnicodeString & HelpKeyword) :
   Exception(Msg),
   FMoreMessages(NULL),
   FHelpKeyword(HelpKeyword)
@@ -115,7 +115,7 @@ ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & More
   }
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(const UnicodeString & Msg, TStrings* MoreMessages,
+ExtException::ExtException(const UnicodeString & Msg, TStrings * MoreMessages,
   bool Own, const UnicodeString & HelpKeyword) :
   Exception(Msg),
   FMoreMessages(NULL),

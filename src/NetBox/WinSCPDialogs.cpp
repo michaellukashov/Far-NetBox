@@ -6800,11 +6800,10 @@ private:
 TFullSynchronizeDialog::TFullSynchronizeDialog(
   TCustomFarPlugin * AFarPlugin, intptr_t Options,
   const TUsableCopyParamAttrs & CopyParamAttrs) :
-  TWinSCPDialog(AFarPlugin)
+  TWinSCPDialog(AFarPlugin),
+  FOptions(Options),
+  FCopyParamAttrs(CopyParamAttrs)
 {
-  FOptions = Options;
-  FCopyParamAttrs = CopyParamAttrs;
-
   TFarText * Text;
   TFarSeparator * Separator;
 
@@ -7812,7 +7811,7 @@ protected:
   void DoAbort(TObject * Sender, bool Close);
   void DoLog(TSynchronizeController * Controller,
     TSynchronizeLogEntry Entry, const UnicodeString & Message);
-  void DoSynchronizeThreads(TObject * Sender, TThreadMethod slot);
+  void DoSynchronizeThreads(TObject * Sender, TThreadMethod Slot);
   virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   virtual bool CloseQuery();
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
@@ -8060,11 +8059,11 @@ void TSynchronizeDialog::DoStartStop(bool Start, bool Synchronize)
 }
 //------------------------------------------------------------------------------
 void TSynchronizeDialog::DoSynchronizeThreads(TObject * /*Sender*/,
-    TThreadMethod slot)
+  TThreadMethod Slot)
 {
   if (FStarted)
   {
-    Synchronize(slot);
+    Synchronize(Slot);
   }
 }
 //------------------------------------------------------------------------------

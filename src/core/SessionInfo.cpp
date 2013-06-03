@@ -164,7 +164,7 @@ public:
           FLog->AddIndented(L"  <files>");
           for (intptr_t Index = 0; Index < FFileList->GetCount(); ++Index)
           {
-            TRemoteFile * File = FFileList->GetFiles(Index);
+            TRemoteFile * File = FFileList->GetFile(Index);
 
             FLog->AddIndented(L"    <file>");
             FLog->AddIndented(FORMAT(L"      <filename value=\"%s\" />", XmlAttributeEscape(File->GetFileName()).c_str()));

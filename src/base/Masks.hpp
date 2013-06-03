@@ -2,8 +2,7 @@
 
 #include <Classes.hpp>
 
-namespace Masks
-{
+namespace Masks {
 
 class TMask : public TObject
 {

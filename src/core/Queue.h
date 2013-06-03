@@ -10,12 +10,12 @@ class TSimpleThread : public TObject
 {
 public:
   explicit TSimpleThread();
-  void Init();
   virtual ~TSimpleThread();
+  void Init();
 
   virtual void Start();
   void WaitFor(unsigned int Milliseconds = INFINITE);
-  virtual void Terminate() = 0;
+  virtual void Terminate() {}
   void Close();
   bool IsFinished();
 

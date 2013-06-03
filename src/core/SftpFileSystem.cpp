@@ -3573,7 +3573,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
 
             for (intptr_t Index = 0; Index < SubFiles->GetCount(); ++Index)
             {
-              TRemoteFile * SubFile = SubFiles->GetFiles(Index);
+              TRemoteFile * SubFile = SubFiles->GetFile(Index);
               SubFileList->AddObject(SubFile->GetFullFileName(), SubFile);
             }
 

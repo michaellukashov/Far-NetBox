@@ -1916,9 +1916,8 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo * Info)
 intptr_t TCustomFarFileSystem::GetFindData(struct GetFindDataInfo *Info)
 {
   ResetCachedInfo();
-  bool Result = false;
   std::auto_ptr<TObjectList> PanelItems(new TObjectList());
-  Result = !FClosed && GetFindDataEx(PanelItems.get(), Info->OpMode);
+  bool Result = !FClosed && GetFindDataEx(PanelItems.get(), Info->OpMode);
   if (Result && PanelItems->GetCount())
   {
     Info->PanelItem = static_cast<PluginPanelItem *>(
@@ -1964,9 +1963,8 @@ void TCustomFarFileSystem::FreeFindData(const struct FreeFindDataInfo *Info)
 intptr_t TCustomFarFileSystem::ProcessHostFile(const struct ProcessHostFileInfo *Info)
 {
   ResetCachedInfo();
-  bool Result = false;
   std::auto_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
-  Result = ProcessHostFileEx(PanelItems.get(), Info->OpMode);
+  bool Result = ProcessHostFileEx(PanelItems.get(), Info->OpMode);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2020,9 +2018,8 @@ intptr_t TCustomFarFileSystem::MakeDirectory(struct MakeDirectoryInfo *Info)
 intptr_t TCustomFarFileSystem::DeleteFiles(const struct DeleteFilesInfo *Info)
 {
   ResetCachedInfo();
-  bool Result = false;
   std::auto_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
-  Result = DeleteFilesEx(PanelItems.get(), Info->OpMode);
+  bool Result = DeleteFilesEx(PanelItems.get(), Info->OpMode);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2492,12 +2489,12 @@ UnicodeString TFarPanelItem::GetCustomColumnData(size_t /*Column*/)
   return L"";
 }
 //---------------------------------------------------------------------------
-PLUGINPANELITEMFLAGS TFarPanelItem::GetFlags()
+PLUGINPANELITEMFLAGS TFarPanelItem::GetFlags() const
 {
   return static_cast<uintptr_t>(FPanelItem->Flags);
 }
 //---------------------------------------------------------------------------
-UnicodeString TFarPanelItem::GetFileName()
+UnicodeString TFarPanelItem::GetFileName() const
 {
   UnicodeString Result = FPanelItem->FileName;
   return Result;
@@ -2508,7 +2505,7 @@ void * TFarPanelItem::GetUserData()
   return FPanelItem->UserData.Data;
 }
 //---------------------------------------------------------------------------
-bool TFarPanelItem::GetSelected()
+bool TFarPanelItem::GetSelected() const
 {
   return (FPanelItem->Flags & PPIF_SELECTED) != 0;
 }
@@ -2525,17 +2522,17 @@ void TFarPanelItem::SetSelected(bool Value)
   }
 }
 //---------------------------------------------------------------------------
-uintptr_t TFarPanelItem::GetFileAttributes()
+uintptr_t TFarPanelItem::GetFileAttributes() const
 {
   return static_cast<uintptr_t>(FPanelItem->FileAttributes);
 }
 //---------------------------------------------------------------------------
-bool TFarPanelItem::GetIsParentDirectory()
+bool TFarPanelItem::GetIsParentDirectory() const
 {
   return (GetFileName() == PARENTDIRECTORY);
 }
 //---------------------------------------------------------------------------
-bool TFarPanelItem::GetIsFile()
+bool TFarPanelItem::GetIsFile() const
 {
   return (GetFileAttributes() & FILE_ATTRIBUTE_DIRECTORY) == 0;
 }
@@ -2574,18 +2571,18 @@ TFarPanelInfo::~TFarPanelInfo()
   delete FItems;
 }
 //---------------------------------------------------------------------------
-intptr_t TFarPanelInfo::GetItemCount()
+intptr_t TFarPanelInfo::GetItemCount() const
 {
   return static_cast<intptr_t>(FPanelInfo->ItemsNumber);
 }
 //---------------------------------------------------------------------------
-TRect TFarPanelInfo::GetBounds()
+TRect TFarPanelInfo::GetBounds() const
 {
   RECT rect = FPanelInfo->PanelRect;
   return TRect(rect.left, rect.top, rect.right, rect.bottom);
 }
 //---------------------------------------------------------------------------
-intptr_t TFarPanelInfo::GetSelectedCount()
+intptr_t TFarPanelInfo::GetSelectedCount() const
 {
   intptr_t Count = static_cast<intptr_t>(FPanelInfo->SelectedItemsNumber);
 
@@ -2629,9 +2626,9 @@ TObjectList * TFarPanelInfo::GetItems()
   return FItems;
 }
 //---------------------------------------------------------------------------
-TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & FileName)
+TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & FileName) const
 {
-  TObjectList * AItems = GetItems();
+  const TObjectList * AItems = GetItems();
   for (intptr_t Index = 0; Index < AItems->GetCount(); ++Index)
   {
     TFarPanelItem * PanelItem = static_cast<TFarPanelItem *>(AItems->GetItem(Index));
@@ -2692,7 +2689,7 @@ void TFarPanelInfo::SetFocusedItem(const TFarPanelItem * Value)
   SetFocusedIndex(Index);
 }
 //---------------------------------------------------------------------------
-intptr_t TFarPanelInfo::GetFocusedIndex()
+intptr_t TFarPanelInfo::GetFocusedIndex() const
 {
   return static_cast<intptr_t>(FPanelInfo->CurrentItem);
 }
@@ -2713,7 +2710,7 @@ void TFarPanelInfo::SetFocusedIndex(intptr_t Value)
   }
 }
 //---------------------------------------------------------------------------
-TFarPanelType TFarPanelInfo::GetType()
+TFarPanelType TFarPanelInfo::GetType() const
 {
   switch (FPanelInfo->PanelType)
   {
@@ -2735,12 +2732,12 @@ TFarPanelType TFarPanelInfo::GetType()
   }
 }
 //---------------------------------------------------------------------------
-bool TFarPanelInfo::GetIsPlugin()
+bool TFarPanelInfo::GetIsPlugin() const
 {
   return ((FPanelInfo->PluginHandle != INVALID_HANDLE_VALUE) && (FPanelInfo->PluginHandle != 0));
 }
 //---------------------------------------------------------------------------
-UnicodeString TFarPanelInfo::GetCurrentDirectory()
+UnicodeString TFarPanelInfo::GetCurrentDirectory() const
 {
   UnicodeString Result = L"";
   intptr_t Size = FarPlugin->FarControl(FCTL_GETPANELDIRECTORY,
@@ -2875,11 +2872,11 @@ intptr_t TFarEditorInfo::GetEditorID() const
 UnicodeString TFarEditorInfo::GetFileName()
 {
   UnicodeString Result = L"";
-  intptr_t buffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, 0, NULL);
-  if (buffLen)
+  intptr_t BuffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, 0, NULL);
+  if (BuffLen)
   {
-    Result.SetLength(buffLen + 1);
-    FarPlugin->FarEditorControl(ECTL_GETFILENAME, buffLen, const_cast<wchar_t *>(Result.c_str()));
+    Result.SetLength(BuffLen + 1);
+    FarPlugin->FarEditorControl(ECTL_GETFILENAME, BuffLen, const_cast<wchar_t *>(Result.c_str()));
   }
   return Result.c_str();
 }

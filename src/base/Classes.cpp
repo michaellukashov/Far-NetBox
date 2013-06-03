@@ -490,29 +490,28 @@ void tokenize(const std::wstring & str, ContainerT & tokens,
   const std::wstring & delimiters = L" ", const bool trimEmpty = false)
 {
   std::string::size_type pos, lastPos = 0;
-  while(true)
+  while (true)
   {
     pos = str.find_first_of(delimiters, lastPos);
-    if(pos == std::string::npos)
+    if (pos == std::string::npos)
     {
        pos = str.length();
 
-       if(pos != lastPos || !trimEmpty)
-          tokens.push_back(typename ContainerT::value_type(str.data()+lastPos,
-                (typename ContainerT::value_type::size_type)pos-lastPos ));
-
+       if (pos != lastPos || !trimEmpty)
+         tokens.push_back(typename ContainerT::value_type(str.data()+lastPos,
+            (typename ContainerT::value_type::size_type)pos-lastPos ));
        break;
     }
     else
     {
-       if(pos != lastPos || !trimEmpty)
-          tokens.push_back(typename ContainerT::value_type(str.data()+lastPos,
-                (typename ContainerT::value_type::size_type)pos-lastPos ));
+      if (pos != lastPos || !trimEmpty)
+        tokens.push_back(typename ContainerT::value_type(str.data() + lastPos,
+          (typename ContainerT::value_type::size_type)pos-lastPos ));
     }
 
     lastPos = pos + 1;
   }
-  };
+};
 
 void TStrings::SetDelimitedText(const UnicodeString & Value)
 {
@@ -544,26 +543,24 @@ intptr_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString 
 
 void TStrings::Assign(const TPersistent * Source)
 {
-  if (::InheritsFrom<TPersistent, TStrings>(Source))
+  const TStrings * Strings = dynamic_cast<const TStrings *>(Source);
+  if (Strings != NULL)
   {
     BeginUpdate();
+    TRY_FINALLY (
     {
-      TRY_FINALLY (
-      {
-        Clear();
-        // FDefined = TStrings(Source).FDefined;
-        const TStrings * Strings = static_cast<const TStrings *>(Source);
-        assert(Strings);
-        FQuoteChar = Strings->FQuoteChar;
-        FDelimiter = Strings->FDelimiter;
-        AddStrings(Strings);
-      }
-      ,
-      {
-        EndUpdate();
-      }
-      );
+      Clear();
+      // FDefined = TStrings(Source).FDefined;
+      assert(Strings);
+      FQuoteChar = Strings->FQuoteChar;
+      FDelimiter = Strings->FDelimiter;
+      AddStrings(Strings);
     }
+    ,
+    {
+      EndUpdate();
+    }
+    );
   }
   else
   {
@@ -586,11 +583,9 @@ UnicodeString TStrings::GetText() const
 UnicodeString TStrings::GetTextStr() const
 {
   UnicodeString Result;
-  UnicodeString S, LB;
-
   intptr_t Count = GetCount();
   intptr_t Size = 0;
-  LB = sLineBreak;
+  UnicodeString LB = sLineBreak;
   for (intptr_t I = 0; I < Count; I++)
   {
     Size += GetString(I).Length() + LB.Length();
@@ -599,7 +594,7 @@ UnicodeString TStrings::GetTextStr() const
   wchar_t * P = const_cast<wchar_t *>(Result.c_str());
   for (intptr_t I = 0; I < Count; I++)
   {
-    S = GetString(I);
+    UnicodeString S = GetString(I);
     intptr_t L = S.Length() * sizeof(wchar_t);
     if (L != 0)
     {
@@ -695,20 +690,18 @@ void TStrings::Move(intptr_t CurIndex, intptr_t NewIndex)
   if (CurIndex != NewIndex)
   {
     BeginUpdate();
+    TRY_FINALLY (
     {
-      TRY_FINALLY (
-      {
-        UnicodeString TempString = GetString(CurIndex);
-        TObject * TempObject = GetObject(CurIndex);
-        Delete(CurIndex);
-        InsertObject(NewIndex, TempString, TempObject);
-      }
-      ,
-      {
-        EndUpdate();
-      }
-      );
+      UnicodeString TempString = GetString(CurIndex);
+      TObject * TempObject = GetObject(CurIndex);
+      Delete(CurIndex);
+      InsertObject(NewIndex, TempString, TempObject);
     }
+    ,
+    {
+      EndUpdate();
+    }
+    );
   }
 }
 
@@ -799,20 +792,18 @@ void TStrings::SetValue(const UnicodeString & Name, const UnicodeString & Value)
 void TStrings::AddStrings(const TStrings * Strings)
 {
   BeginUpdate();
+  TRY_FINALLY (
   {
-    TRY_FINALLY (
+    for (intptr_t I = 0; I < Strings->GetCount(); I++)
     {
-      for (intptr_t I = 0; I < Strings->GetCount(); I++)
-      {
-        AddObject(Strings->GetString(I), Strings->GetObject(I));
-      }
+      AddObject(Strings->GetString(I), Strings->GetObject(I));
     }
-    ,
-    {
-      EndUpdate();
-    }
-    );
   }
+  ,
+  {
+    EndUpdate();
+  }
+  );
 }
 
 void TStrings::Append(const UnicodeString & Value)

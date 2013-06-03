@@ -1147,12 +1147,12 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TDownloadSessionAction & Action)
 {
+  assert(File);
   UnicodeString OnlyFileName = UnixExtractFileName(FileName);
 
   Action.FileName(FileName);
 
   TFileMasks::TParams MaskParams;
-  assert(File);
   MaskParams.Size = File->GetSize();
   MaskParams.Modification = File->GetModification();
 
@@ -1977,7 +1977,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           // (note that it's actually never empty here, there's always at least parent directory,
           // added explicitly by DoReadDirectory)
           if ((FileList->GetCount() == 0) ||
-              ((FileList->GetCount() == 1) && FileList->GetFiles(0)->GetIsParentDirectory()))
+              ((FileList->GetCount() == 1) && FileList->GetFile(0)->GetIsParentDirectory()))
           {
             Repeat = true;
             FListAll = asOff;
@@ -2657,86 +2657,77 @@ void TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
         FLAGSET(Reply, TFileZillaIntf::REPLY_NOTCONNECTED);
 
       AnsiString HelpKeyword;
-      TStrings * MoreMessages = new TStringList();
-      try
+      std::auto_ptr<TStrings> MoreMessages(new TStringList());
+      if (Disconnected)
       {
-        if (Disconnected)
+        if (FLAGCLEAR(Flags, REPLY_CONNECT))
         {
-          if (FLAGCLEAR(Flags, REPLY_CONNECT))
-          {
-            MoreMessages->Add(LoadStr(LOST_CONNECTION));
-            Discard();
-            FTerminal->Closed();
-          }
-          else
-          {
-            // For connection failure, do not report that connection was lost,
-            // its obvious.
-            // Also do not report to terminal that we are closed as
-            // that turns terminal into closed mode, but we want to
-            // pretend (at least with failed authentication) to retry
-            // with the same connection (as with SSH), so we explicitly
-            // close terminal in Open() only after we give up
-            Discard();
-          }
+          MoreMessages->Add(LoadStr(LOST_CONNECTION));
+          Discard();
+          FTerminal->Closed();
         }
-
-        if (FLAGSET(Reply, TFileZillaIntf::REPLY_ABORTED))
+        else
         {
-          MoreMessages->Add(LoadStr(USER_TERMINATED));
-        }
-
-        if (FLAGSET(Reply, TFileZillaIntf::REPLY_NOTSUPPORTED))
-        {
-          MoreMessages->Add(LoadStr(FZ_NOTSUPPORTED));
-        }
-
-        if (FLastCode == 530)
-        {
-          MoreMessages->Add(LoadStr(AUTHENTICATION_FAILED));
-        }
-
-        if (FLastCode == 425)
-        {
-          if (!FTerminal->GetSessionData()->GetFtpPasvMode())
-          {
-            MoreMessages->Add(LoadStr(FTP_CANNOT_OPEN_ACTIVE_CONNECTION2));
-            HelpKeyword = HELP_FTP_CANNOT_OPEN_ACTIVE_CONNECTION;
-          }
-        }
-        if (FLastCode == 421)
-        {
-          Disconnected = true;
-        }
-        if (FLastCode == DummyTimeoutCode)
-        {
-          HelpKeyword = HELP_ERRORMSG_TIMEOUT;
-        }
-
-        MoreMessages->AddStrings(FLastError);
-        // already cleared from WaitForReply, but GotReply can be also called
-        // from Closed. then make sure that error from previous command not
-        // associated with session closure is not reused
-        FLastError->Clear();
-
-        MoreMessages->AddStrings(FLastResponse);
-        // see comment for FLastError
-        FLastResponse->Clear();
-
-        if (MoreMessages->GetCount() == 0)
-        {
-          delete MoreMessages;
-          MoreMessages = NULL;
+          // For connection failure, do not report that connection was lost,
+          // its obvious.
+          // Also do not report to terminal that we are closed as
+          // that turns terminal into closed mode, but we want to
+          // pretend (at least with failed authentication) to retry
+          // with the same connection (as with SSH), so we explicitly
+          // close terminal in Open() only after we give up
+          Discard();
         }
       }
-      catch(...)
+
+      if (FLAGSET(Reply, TFileZillaIntf::REPLY_ABORTED))
       {
-        delete MoreMessages;
-        throw;
+        MoreMessages->Add(LoadStr(USER_TERMINATED));
+      }
+
+      if (FLAGSET(Reply, TFileZillaIntf::REPLY_NOTSUPPORTED))
+      {
+        MoreMessages->Add(LoadStr(FZ_NOTSUPPORTED));
+      }
+
+      if (FLastCode == 530)
+      {
+        MoreMessages->Add(LoadStr(AUTHENTICATION_FAILED));
+      }
+
+      if (FLastCode == 425)
+      {
+        if (!FTerminal->GetSessionData()->GetFtpPasvMode())
+        {
+          MoreMessages->Add(LoadStr(FTP_CANNOT_OPEN_ACTIVE_CONNECTION2));
+          HelpKeyword = HELP_FTP_CANNOT_OPEN_ACTIVE_CONNECTION;
+        }
+      }
+      if (FLastCode == 421)
+      {
+        Disconnected = true;
+      }
+      if (FLastCode == DummyTimeoutCode)
+      {
+        HelpKeyword = HELP_ERRORMSG_TIMEOUT;
+      }
+
+      MoreMessages->AddStrings(FLastError);
+      // already cleared from WaitForReply, but GotReply can be also called
+      // from Closed. then make sure that error from previous command not
+      // associated with session closure is not reused
+      FLastError->Clear();
+
+      MoreMessages->AddStrings(FLastResponse);
+      // see comment for FLastError
+      FLastResponse->Clear();
+
+      if (MoreMessages->GetCount() == 0)
+      {
+        MoreMessages.reset();
       }
 
       UnicodeString ErrorStr = Error;
-      if (ErrorStr.IsEmpty() && (MoreMessages != NULL))
+      if (ErrorStr.IsEmpty() && (MoreMessages.get() != NULL))
       {
         assert(MoreMessages->GetCount() > 0);
         ErrorStr = MoreMessages->GetString(0);
@@ -2747,12 +2738,12 @@ void TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       {
         // for fatal error, it is essential that there is some message
         assert(!ErrorStr.IsEmpty());
-        std::auto_ptr<ExtException> E(new ExtException(ErrorStr, MoreMessages, true));
+        std::auto_ptr<ExtException> E(new ExtException(ErrorStr, MoreMessages.release(), true));
         FTerminal->FatalError(E.get(), L"");
       }
       else
       {
-        throw ExtException(ErrorStr, MoreMessages, true, HelpKeyword);
+        throw ExtException(ErrorStr, MoreMessages.release(), true, HelpKeyword);
       }
     }
 

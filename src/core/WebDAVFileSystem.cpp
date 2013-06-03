@@ -6442,7 +6442,7 @@ io_file_name_get(
   return WEBDAV_NO_ERROR;
 }
 
-static APR_INLINE error_t
+static error_t
 do_io_file_wrapper_cleanup(
   apr_file_t * file,
   apr_status_t status,
@@ -6450,13 +6450,11 @@ do_io_file_wrapper_cleanup(
   const char * msg_no_name,
   apr_pool_t * pool)
 {
-  const char * name = NULL;
-  error_t err = 0;
-
   if (!status)
     return WEBDAV_NO_ERROR;
 
-  err = io_file_name_get(&name, file, pool);
+  const char * name = NULL;
+  error_t err = io_file_name_get(&name, file, pool);
   if (err)
     name = NULL;
   error_clear(&err);
@@ -6507,7 +6505,7 @@ io_file_write_full(
   // for larger values of NBYTES. In that case, we have to emulate the
   // "_full" part here. Thus, always call apr_file_write directly on
   // Win32 as this minimizes overhead for small data buffers.
-#define MAXBUFSIZE 64*1024
+#define MAXBUFSIZE 256*1024
   apr_size_t bw = nbytes;
   apr_size_t to_write = nbytes;
 
@@ -6541,7 +6539,7 @@ io_file_write_full(
     pool));
 }
 
-static error_t
+static APR_INLINE error_t
 io_file_seek(
   apr_file_t * file,
   apr_seek_where_t where,
@@ -6554,7 +6552,7 @@ io_file_seek(
     pool);
 }
 
-static error_t
+static APR_INLINE error_t
 io_file_putc(
   char ch,
   apr_file_t * file,
@@ -6566,7 +6564,7 @@ io_file_putc(
     pool);
 }
 
-static error_t
+static APR_INLINE error_t
 io_file_read(
   apr_file_t * file,
   void * buf,

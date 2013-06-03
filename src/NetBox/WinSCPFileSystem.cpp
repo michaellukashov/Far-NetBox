@@ -340,7 +340,7 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::HandleException(Exception * E, int OpMode)
 {
-  if ((GetTerminal() != NULL) && ::InheritsFrom<std::exception, EFatal>(E))
+  if ((GetTerminal() != NULL) && (dynamic_cast<EFatal *>(E) != NULL))
   {
     if (!FClosed)
     {
@@ -470,7 +470,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
       // TCustomFileSystem * FileSystem = GetTerminal()->GetFileSystem();
       for (intptr_t Index = 0; Index < FTerminal->GetFiles()->GetCount(); ++Index)
       {
-        TRemoteFile * File = FTerminal->GetFiles()->GetFiles(Index);
+        TRemoteFile * File = FTerminal->GetFiles()->GetFile(Index);
         /*if (File->GetIsSymLink())
         {
           // Check what kind of symlink this is
@@ -483,7 +483,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
           }
           delete LinkFile;
         }*/
-        PanelItems->Add(static_cast<TObject *>(new TRemoteFilePanelItem(File)));
+        PanelItems->Add(new TRemoteFilePanelItem(File));
       }
     }
     ,
@@ -519,24 +519,24 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
           Name.SetLength(Slash - 1);
           if (ChildPaths->IndexOf(Name.c_str()) < 0)
           {
-            PanelItems->Add(static_cast<TObject *>(new TSessionFolderPanelItem(Name)));
+            PanelItems->Add(new TSessionFolderPanelItem(Name));
             ChildPaths->Add(Name);
           }
         }
         else
         {
-          PanelItems->Add(static_cast<TObject *>(new TSessionPanelItem(Data)));
+          PanelItems->Add(new TSessionPanelItem(Data));
         }
       }
     }
 
     if (!FNewSessionsFolder.IsEmpty())
     {
-      PanelItems->Add(static_cast<TObject *>(new TSessionFolderPanelItem(FNewSessionsFolder)));
+      PanelItems->Add(new TSessionFolderPanelItem(FNewSessionsFolder));
     }
     if (PanelItems->GetCount() == 0)
     {
-      PanelItems->Add(static_cast<TObject *>(new THintPanelItem(GetMsg(NEW_SESSION_HINT))));
+      PanelItems->Add(new THintPanelItem(GetMsg(NEW_SESSION_HINT)));
     }
 
     TWinSCPFileSystem * OppositeFileSystem =
@@ -1637,7 +1637,7 @@ void TWinSCPFileSystem::Synchronize()
   ,
   {
     FSynchronizeController = NULL;
-    // plugin might have been closed during some synchronisation already
+    // plugin might have been closed during some synchronization already
     if (!FClosed)
     {
       if (UpdatePanel())

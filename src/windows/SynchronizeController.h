@@ -38,8 +38,7 @@ DEFINE_CALLBACK_TYPE3(TSynchronizeInvalidEvent, void,
 DEFINE_CALLBACK_TYPE2(TSynchronizeTooManyDirectoriesEvent, void,
   TSynchronizeController * /* Sender */, intptr_t & /* MaxDirectories */);
 //---------------------------------------------------------------------------
-namespace Discmon
-{
+namespace Discmon {
 class TDiscMonitor;
 }
 //---------------------------------------------------------------------------

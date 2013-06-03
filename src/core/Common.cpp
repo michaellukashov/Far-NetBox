@@ -1151,7 +1151,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
   return Result;
 }
 //---------------------------------------------------------------------------
-static __int64 DateTimeToUnix(const TDateTime DateTime)
+static __int64 DateTimeToUnix(const TDateTime & DateTime)
 {
   const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
 
