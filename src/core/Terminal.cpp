@@ -2496,7 +2496,7 @@ void TTerminal::CustomReadDirectory(TRemoteFileList * FileList)
   {
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      LogFile(FileList->GetFiles(Index));
+      LogFile(FileList->GetFile(Index));
     }
   }
 
@@ -2515,7 +2515,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & Director
       intptr_t Index = 0;
       while (Index < FileList->GetCount())
       {
-        TRemoteFile * File = FileList->GetFiles(Index);
+        TRemoteFile * File = FileList->GetFile(Index);
         if (!Mask.Matches(File->GetFileName()))
         {
           FileList->Delete(Index);
@@ -2662,7 +2662,7 @@ void TTerminal::ProcessDirectory(const UnicodeString & DirName,
 
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = FileList->GetFiles(Index);
+      TRemoteFile * File = FileList->GetFile(Index);
       if (!File->GetIsParentDirectory() && !File->GetIsThisDirectory())
       {
         CallBackFunc(Directory + File->GetFileName(), File, Param);

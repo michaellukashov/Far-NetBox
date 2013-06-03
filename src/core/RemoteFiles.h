@@ -202,7 +202,7 @@ public:
   virtual void AddFile(TRemoteFile * File);
   UnicodeString GetDirectory() const { return FDirectory; }
   virtual void SetDirectory(const UnicodeString & Value);
-  TRemoteFile * GetFiles(Integer Index) const;
+  TRemoteFile * GetFile(Integer Index) const;
   UnicodeString GetFullDirectory();
   Boolean GetIsRoot();
   UnicodeString GetParentPath();

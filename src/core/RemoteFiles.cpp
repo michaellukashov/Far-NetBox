@@ -1504,7 +1504,7 @@ void TRemoteFileList::DuplicateTo(TRemoteFileList * Copy) const
   Copy->Clear();
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    TRemoteFile * File = GetFiles(Index);
+    TRemoteFile * File = GetFile(Index);
     Copy->AddFile(File->Duplicate(false));
   }
   Copy->FDirectory = GetDirectory();
@@ -1527,7 +1527,7 @@ UnicodeString TRemoteFileList::GetFullDirectory()
   return ::UnixIncludeTrailingBackslash(GetDirectory());
 }
 //---------------------------------------------------------------------------
-TRemoteFile * TRemoteFileList::GetFiles(Integer Index) const
+TRemoteFile * TRemoteFileList::GetFile(Integer Index) const
 {
   return static_cast<TRemoteFile *>(GetItem(Index));
 }
@@ -1547,9 +1547,9 @@ __int64 TRemoteFileList::GetTotalSize()
   __int64 Result = 0;
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (!GetFiles(Index)->GetIsDirectory())
+    if (!GetFile(Index)->GetIsDirectory())
     {
-      Result += GetFiles(Index)->GetSize();
+      Result += GetFile(Index)->GetSize();
     }
   }
   return Result;
@@ -1559,9 +1559,9 @@ TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & FileName) const
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (GetFiles(Index)->GetFileName() == FileName)
+    if (GetFile(Index)->GetFileName() == FileName)
     {
-      return GetFiles(Index);
+      return GetFile(Index);
     }
   }
   return NULL;
@@ -1657,9 +1657,9 @@ TStrings * TRemoteDirectory::GetSelectedFiles() const
 
   for (intptr_t Index = 0; Index < GetCount(); Index ++)
   {
-    if (GetFiles(Index)->GetSelected())
+    if (GetFile(Index)->GetSelected())
     {
-      FSelectedFiles->Add(GetFiles(Index)->GetFullFileName());
+      FSelectedFiles->Add(GetFile(Index)->GetFullFileName());
     }
   }
 

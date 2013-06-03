@@ -1977,7 +1977,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           // (note that it's actually never empty here, there's always at least parent directory,
           // added explicitly by DoReadDirectory)
           if ((FileList->GetCount() == 0) ||
-              ((FileList->GetCount() == 1) && FileList->GetFiles(0)->GetIsParentDirectory()))
+              ((FileList->GetCount() == 1) && FileList->GetFile(0)->GetIsParentDirectory()))
           {
             Repeat = true;
             FListAll = asOff;

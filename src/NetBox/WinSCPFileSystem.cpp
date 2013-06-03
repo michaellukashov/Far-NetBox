@@ -469,7 +469,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
       // TCustomFileSystem * FileSystem = GetTerminal()->GetFileSystem();
       for (intptr_t Index = 0; Index < FTerminal->GetFiles()->GetCount(); ++Index)
       {
-        TRemoteFile * File = FTerminal->GetFiles()->GetFiles(Index);
+        TRemoteFile * File = FTerminal->GetFiles()->GetFile(Index);
         /*if (File->GetIsSymLink())
         {
           // Check what kind of symlink this is
