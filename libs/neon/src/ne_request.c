@@ -420,25 +420,25 @@ static void add_fixed_headers(ne_request *req)
      * servers to try harder to get a persistent connection, except if
      * using a proxy as per 2068§19.7.1.  Always add TE: trailers. */
     if (!sess->flags[NE_SESSFLAG_PERSIST]) {
-       ne_buffer_czappend(req->headers, "Connection: TE, close" EOL);
+       ne_buffer_czappend(req->headers, "Connection: close" EOL);
     } 
     else if (!sess->is_http11 && !sess->any_proxy_http) {
         ne_buffer_czappend(req->headers, 
                            "Keep-Alive: " EOL
-                          "Connection: TE, Keep-Alive" EOL);
+                          "Connection: Keep-Alive" EOL);
     } 
     else if (!req->session->is_http11 && !sess->any_proxy_http) {
         ne_buffer_czappend(req->headers, 
                            "Keep-Alive: " EOL
                            "Proxy-Connection: Keep-Alive" EOL
-                           "Connection: TE" EOL);
+                           "Connection: Keep-Alive" EOL);
     } 
     else {
-        ne_buffer_czappend(req->headers, "Connection: TE" EOL);
+        ne_buffer_czappend(req->headers, "Connection: Keep-Alive" EOL);
     }
 
-    ne_buffer_concat(req->headers, "TE: trailers" EOL "Host: ", 
-                     req->session->server.hostport, EOL, NULL);
+    // ne_buffer_concat(req->headers, "TE: trailers" EOL "Host: ", 
+    //                 req->session->server.hostport, EOL, NULL);
 }
 
 int ne_accept_always(void *userdata, ne_request *req, const ne_status *st)
