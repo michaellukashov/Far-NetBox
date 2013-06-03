@@ -215,7 +215,7 @@ struct ne_socket_s {
     char *bufpos;
     size_t bufavail;
 // #define RDBUFSIZ 4096
-#define RDBUFSIZ 64*1024
+#define RDBUFSIZ 256*1024
     char buffer[RDBUFSIZ];
     /* Error string. */
     char error[192];
@@ -1321,7 +1321,7 @@ static int do_bind(int fd, int peer_family,
 #if defined(HAVE_SETSOCKOPT) && defined(SO_REUSEADDR) && defined(SOL_SOCKET)
     {
         int flag = 1;
-        int value = 254 * 1024;
+        int value = 256 * 1024;
 
         (void) setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (void *)&flag, sizeof flag);
         /* An error here is not fatal, so ignore it. */
