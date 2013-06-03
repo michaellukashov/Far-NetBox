@@ -319,7 +319,7 @@ public:
   TNotifyEvent & GetOnChange() { return FOnChange; }
   void SetOnChange(TNotifyEvent OnChange) { FOnChange = OnChange; }
   TNotifyEvent & GetOnChanging() { return FOnChanging; }
-  void SetOnChanging(TNotifyEvent onChanging) { FOnChanging = onChanging; }
+  void SetOnChanging(TNotifyEvent OnChanging) { FOnChanging = OnChanging; }
   void InsertItem(intptr_t Index, const UnicodeString & S, TObject * AObject);
   void QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
 
