@@ -1059,7 +1059,7 @@ FarDialogItem * TFarDialogItem::GetDialogItem()
   return &GetDialog()->FDialogItems[GetItem()];
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetBounds(TRect Value)
+void TFarDialogItem::SetBounds(const TRect & Value)
 {
   if (FBounds != Value)
   {

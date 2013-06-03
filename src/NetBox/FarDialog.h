@@ -266,7 +266,7 @@ protected:
   void SetContainer(TFarDialogContainer * Value);
   bool GetChecked() const;
   void SetChecked(bool Value);
-  void SetBounds(TRect Value);
+  void SetBounds(const TRect & Value);
   DWORD GetFlags() const;
   void SetFlags(DWORD Value);
   void UpdateFlags(DWORD Value);
