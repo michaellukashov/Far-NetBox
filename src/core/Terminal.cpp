@@ -2959,12 +2959,12 @@ void TTerminal::RecycleFile(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 void TTerminal::DeleteFile(const UnicodeString & FileName,
-  const TRemoteFile * File, void * AParams)
+  const TRemoteFile * AFile, void * AParams)
 {
   UnicodeString LocalFileName = FileName;
-  if (FileName.IsEmpty() && File)
+  if (FileName.IsEmpty() && AFile)
   {
-    LocalFileName = File->GetFileName();
+    LocalFileName = AFile->GetFileName();
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foDelete)
   {
@@ -2981,16 +2981,16 @@ void TTerminal::DeleteFile(const UnicodeString & FileName,
     !GetSessionData()->GetRecycleBinPath().IsEmpty();
   if (Recycle && !IsRecycledFile(LocalFileName))
   {
-    RecycleFile(LocalFileName, File);
+    RecycleFile(LocalFileName, AFile);
   }
   else
   {
     LogEvent(FORMAT(L"Deleting file \"%s\".", LocalFileName.c_str()));
-    if (File)
+    if (AFile)
     {
-      FileModified(File, LocalFileName, true);
+      FileModified(AFile, LocalFileName, true);
     }
-    DoDeleteFile(LocalFileName, File, Params);
+    DoDeleteFile(LocalFileName, AFile, Params);
     ReactOnCommand(fsDeleteFile);
   }
 }

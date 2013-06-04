@@ -440,7 +440,7 @@ public:
     const TRemoteProperties * Properties = NULL);
   void CreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic);
   void DeleteFile(const UnicodeString & FileName,
-    const TRemoteFile * File = NULL, void * Params = NULL);
+    const TRemoteFile * AFile = NULL, void * Params = NULL);
   bool DeleteFiles(TStrings * FilesToDelete, intptr_t Params = 0);
   bool DeleteLocalFiles(TStrings * FileList, intptr_t Params = 0);
   bool IsRecycledFile(const UnicodeString & FileName);
