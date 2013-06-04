@@ -275,7 +275,7 @@ protected:
   void DoDeleteFile(const UnicodeString & FileName, const TRemoteFile * File,
     intptr_t Params);
   void DoCustomCommandOnFile(const UnicodeString & FileName,
-    const TRemoteFile * File, const UnicodeString & Command, intptr_t Params,
+    const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params,
     TCaptureOutputEvent OutputEvent);
   void DoRenameFile(const UnicodeString & FileName,
     const UnicodeString & NewName, bool Move);

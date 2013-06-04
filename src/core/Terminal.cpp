@@ -3074,7 +3074,7 @@ void TTerminal::CustomCommandOnFile(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 void TTerminal::DoCustomCommandOnFile(const UnicodeString & FileName,
-  const TRemoteFile * File, const UnicodeString & Command, intptr_t Params,
+  const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params,
   TCaptureOutputEvent OutputEvent)
 {
   try
@@ -3083,7 +3083,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & FileName,
     {
       assert(FFileSystem);
       assert(fcShellAnyCommand);
-      FFileSystem->CustomCommandOnFile(FileName, File, Command, Params, OutputEvent);
+      FFileSystem->CustomCommandOnFile(FileName, AFile, Command, Params, OutputEvent);
     }
     else
     {
@@ -3106,7 +3106,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & FileName,
           FCommandSession->ReadCurrentDirectory();
         }
       }
-      FCommandSession->FFileSystem->CustomCommandOnFile(FileName, File, Command,
+      FCommandSession->FFileSystem->CustomCommandOnFile(FileName, AFile, Command,
         Params, OutputEvent);
     }
   }
@@ -3115,7 +3115,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & FileName,
     COMMAND_ERROR_ARI
     (
       FMTLOAD(CUSTOM_COMMAND_ERROR, Command.c_str(), FileName.c_str()),
-      DoCustomCommandOnFile(FileName, File, Command, Params, OutputEvent)
+      DoCustomCommandOnFile(FileName, AFile, Command, Params, OutputEvent)
     );
   }
 }
