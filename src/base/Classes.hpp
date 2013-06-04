@@ -249,7 +249,7 @@ public:
   bool Equals(const Classes::TStrings * Value) const;
   virtual void Clear() = 0;
   void Move(intptr_t CurIndex, intptr_t NewIndex);
-  intptr_t IndexOf(const UnicodeString & S);
+  intptr_t IndexOf(const UnicodeString & S) const;
   virtual intptr_t IndexOfName(const UnicodeString & Name) const;
   UnicodeString ExtractName(const UnicodeString & S) const;
   void AddStrings(const Classes::TStrings * Strings);
@@ -325,8 +325,8 @@ public:
 
   virtual void Assign(const TPersistent * Source);
   virtual void Clear();
-  virtual bool Find(const UnicodeString & S, intptr_t & Index);
-  virtual intptr_t IndexOf(const UnicodeString & S);
+  virtual bool Find(const UnicodeString & S, intptr_t & Index) const;
+  virtual intptr_t IndexOf(const UnicodeString & S) const;
   virtual void Delete(intptr_t Index);
   virtual void InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
   virtual void Sort();
@@ -342,9 +342,9 @@ public:
 public:
   virtual TObject * GetObject(intptr_t Index) const;
   virtual void SetObject(intptr_t Index, TObject * AObject);
-  virtual bool GetSorted() const;
+  virtual bool GetSorted() const { return FSorted; }
   virtual void SetSorted(bool Value);
-  virtual bool GetCaseSensitive() const;
+  virtual bool GetCaseSensitive() const { return FCaseSensitive; }
   virtual void SetCaseSensitive(bool Value);
   virtual const UnicodeString & GetString(intptr_t Index) const;
   virtual void SetString(intptr_t Index, const UnicodeString & S);

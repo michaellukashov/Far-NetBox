@@ -2475,14 +2475,14 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::LogFile(TRemoteFile * File)
+void TTerminal::LogFile(TRemoteFile * AFile)
 {
-  if (File)
+  if (AFile)
   {
     LogEvent(FORMAT(L"%s;%c;%lld;%s;%s;%s;%s;%d",
-      File->GetFileName().c_str(), File->GetType(), File->GetSize(), StandardTimestamp(File->GetModification()).c_str(),
-      File->GetFileOwner().GetLogText().c_str(), File->GetFileGroup().GetLogText().c_str(), File->GetRights()->GetText().c_str(),
-      File->GetAttr()));
+      AFile->GetFileName().c_str(), AFile->GetType(), AFile->GetSize(), StandardTimestamp(AFile->GetModification()).c_str(),
+      AFile->GetFileOwner().GetLogText().c_str(), AFile->GetFileGroup().GetLogText().c_str(), AFile->GetRights()->GetText().c_str(),
+      AFile->GetAttr()));
   }
 }
 //------------------------------------------------------------------------------
@@ -2700,24 +2700,24 @@ void TTerminal::ReadSymlink(TRemoteFile * SymlinkFile,
 }
 //------------------------------------------------------------------------------
 void TTerminal::ReadFile(const UnicodeString & FileName,
-  TRemoteFile *& File)
+  TRemoteFile *& AFile)
 {
   assert(FFileSystem);
-  File = NULL;
+  AFile = NULL;
   try
   {
     LogEvent(FORMAT(L"Listing file \"%s\".", FileName.c_str()));
-    FFileSystem->ReadFile(FileName, File);
+    FFileSystem->ReadFile(FileName, AFile);
     ReactOnCommand(fsListFile);
-    LogFile(File);
+    LogFile(AFile);
   }
   catch (Exception &E)
   {
-    if (File)
+    if (AFile)
     {
-      delete File;
+      delete AFile;
     }
-    File = NULL;
+    AFile = NULL;
     CommandError(&E, FMTLOAD(CANT_GET_ATTRS, FileName.c_str()));
   }
 }
@@ -2959,12 +2959,12 @@ void TTerminal::RecycleFile(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 void TTerminal::DeleteFile(const UnicodeString & FileName,
-  const TRemoteFile * File, void * AParams)
+  const TRemoteFile * AFile, void * AParams)
 {
   UnicodeString LocalFileName = FileName;
-  if (FileName.IsEmpty() && File)
+  if (FileName.IsEmpty() && AFile)
   {
-    LocalFileName = File->GetFileName();
+    LocalFileName = AFile->GetFileName();
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foDelete)
   {
@@ -2981,16 +2981,16 @@ void TTerminal::DeleteFile(const UnicodeString & FileName,
     !GetSessionData()->GetRecycleBinPath().IsEmpty();
   if (Recycle && !IsRecycledFile(LocalFileName))
   {
-    RecycleFile(LocalFileName, File);
+    RecycleFile(LocalFileName, AFile);
   }
   else
   {
     LogEvent(FORMAT(L"Deleting file \"%s\".", LocalFileName.c_str()));
-    if (File)
+    if (AFile)
     {
-      FileModified(File, LocalFileName, true);
+      FileModified(AFile, LocalFileName, true);
     }
-    DoDeleteFile(LocalFileName, File, Params);
+    DoDeleteFile(LocalFileName, AFile, Params);
     ReactOnCommand(fsDeleteFile);
   }
 }
@@ -3046,13 +3046,13 @@ bool TTerminal::DeleteLocalFiles(TStrings * FileList, intptr_t Params)
 }
 //------------------------------------------------------------------------------
 void TTerminal::CustomCommandOnFile(const UnicodeString & FileName,
-  const TRemoteFile * File, void * AParams)
+  const TRemoteFile * AFile, void * AParams)
 {
   TCustomCommandParams * Params = (static_cast<TCustomCommandParams *>(AParams));
   UnicodeString LocalFileName = FileName;
-  if (FileName.IsEmpty() && File)
+  if (FileName.IsEmpty() && AFile)
   {
-    LocalFileName = File->GetFileName();
+    LocalFileName = AFile->GetFileName();
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foCustomCommand)
   {
@@ -3064,17 +3064,17 @@ void TTerminal::CustomCommandOnFile(const UnicodeString & FileName,
   }
   LogEvent(FORMAT(L"Executing custom command \"%s\" (%d) on file \"%s\".",
     Params->Command.c_str(), Params->Params, LocalFileName.c_str()));
-  if (File)
+  if (AFile)
   {
-    FileModified(File, LocalFileName);
+    FileModified(AFile, LocalFileName);
   }
-  DoCustomCommandOnFile(LocalFileName, File, Params->Command, Params->Params,
+  DoCustomCommandOnFile(LocalFileName, AFile, Params->Command, Params->Params,
     Params->OutputEvent);
   ReactOnCommand(fsAnyCommand);
 }
 //------------------------------------------------------------------------------
 void TTerminal::DoCustomCommandOnFile(const UnicodeString & FileName,
-  const TRemoteFile * File, const UnicodeString & Command, intptr_t Params,
+  const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params,
   TCaptureOutputEvent OutputEvent)
 {
   try
@@ -3083,7 +3083,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & FileName,
     {
       assert(FFileSystem);
       assert(fcShellAnyCommand);
-      FFileSystem->CustomCommandOnFile(FileName, File, Command, Params, OutputEvent);
+      FFileSystem->CustomCommandOnFile(FileName, AFile, Command, Params, OutputEvent);
     }
     else
     {
@@ -3106,7 +3106,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & FileName,
           FCommandSession->ReadCurrentDirectory();
         }
       }
-      FCommandSession->FFileSystem->CustomCommandOnFile(FileName, File, Command,
+      FCommandSession->FFileSystem->CustomCommandOnFile(FileName, AFile, Command,
         Params, OutputEvent);
     }
   }
@@ -3115,7 +3115,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & FileName,
     COMMAND_ERROR_ARI
     (
       FMTLOAD(CUSTOM_COMMAND_ERROR, Command.c_str(), FileName.c_str()),
-      DoCustomCommandOnFile(FileName, File, Command, Params, OutputEvent)
+      DoCustomCommandOnFile(FileName, AFile, Command, Params, OutputEvent)
     );
   }
 }

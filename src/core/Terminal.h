@@ -275,7 +275,7 @@ protected:
   void DoDeleteFile(const UnicodeString & FileName, const TRemoteFile * File,
     intptr_t Params);
   void DoCustomCommandOnFile(const UnicodeString & FileName,
-    const TRemoteFile * File, const UnicodeString & Command, intptr_t Params,
+    const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params,
     TCaptureOutputEvent OutputEvent);
   void DoRenameFile(const UnicodeString & FileName,
     const UnicodeString & NewName, bool Move);
@@ -391,7 +391,7 @@ protected:
     bool UseCache);
   RawByteString EncryptPassword(const UnicodeString & Password);
   UnicodeString DecryptPassword(const RawByteString & Password);
-  void LogFile(TRemoteFile * File);
+  void LogFile(TRemoteFile * AFile);
 
   TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
 
@@ -429,7 +429,7 @@ public:
   TRemoteFileList * ReadDirectoryListing(const UnicodeString & Directory, const TFileMasks & Mask);
   TRemoteFileList * CustomReadDirectoryListing(const UnicodeString & Directory, bool UseCache);
   TRemoteFile * ReadFileListing(const UnicodeString & Path);
-  void ReadFile(const UnicodeString & FileName, TRemoteFile *& File);
+  void ReadFile(const UnicodeString & FileName, TRemoteFile *& AFile);
   bool FileExists(const UnicodeString & FileName, TRemoteFile ** File = NULL);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& File);
   bool CopyToLocal(TStrings * FilesToCopy,
@@ -440,12 +440,12 @@ public:
     const TRemoteProperties * Properties = NULL);
   void CreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic);
   void DeleteFile(const UnicodeString & FileName,
-    const TRemoteFile * File = NULL, void * Params = NULL);
+    const TRemoteFile * AFile = NULL, void * Params = NULL);
   bool DeleteFiles(TStrings * FilesToDelete, intptr_t Params = 0);
   bool DeleteLocalFiles(TStrings * FileList, intptr_t Params = 0);
   bool IsRecycledFile(const UnicodeString & FileName);
   void CustomCommandOnFile(const UnicodeString & FileName,
-    const TRemoteFile * File, void * AParams);
+    const TRemoteFile * AFile, void * AParams);
   void CustomCommandOnFiles(const UnicodeString & Command, intptr_t Params,
     TStrings * Files, TCaptureOutputEvent OutputEvent);
   void ChangeDirectory(const UnicodeString & Directory);

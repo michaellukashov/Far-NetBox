@@ -120,7 +120,7 @@ protected:
   UnicodeString GetHomeDirectory();
   uintptr_t GotStatusPacket(TSFTPPacket * Packet, int AllowStatus);
   bool IsAbsolutePath(const UnicodeString & Path);
-  bool RemoteFileExists(const UnicodeString & FullPath, TRemoteFile ** File = NULL);
+  bool RemoteFileExists(const UnicodeString & FullPath, TRemoteFile ** AFile = NULL);
   TRemoteFile * LoadFile(TSFTPPacket * Packet,
     TRemoteFile * ALinkedByFile, const UnicodeString & FileName,
     TRemoteFileList * TempFileList = NULL, bool Complete = true);

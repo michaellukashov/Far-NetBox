@@ -7,7 +7,7 @@ ENDIF()
 STRING(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
 
 IF(NOT DEFINED BUILD_DIR OR BUILD_DIR STREQUAL "")
-STRING(REPLACE "/" "\\" BUILD_DIR ${CMAKE_CURRENT_BUILD_DIR})
+STRING(REPLACE "/" "\\" BUILD_DIR ${PROJECT_ROOT}/build/${CMAKE_BUILD_TYPE}/${CONF}/${CMAKE_BUILD_TYPE})
 ENDIF()
 
 #-------------------------------------------------------------------------------
@@ -172,6 +172,7 @@ ENDFOREACH(src)
 
 SET(NETBOX_SOURCES ${NETBOX_SOURCES}
   ${SRC_ROOT}/NetBox/vc10wrapper.cpp
+  ${SRC_ROOT}/NetBox/vc10u.cpp
   ${ASM_OBJECTS}
 )
 

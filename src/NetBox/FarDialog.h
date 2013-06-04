@@ -503,17 +503,17 @@ public:
 
   virtual void Assign(const TPersistent * Source);
 
-  intptr_t GetSelected();
+  intptr_t GetSelected() const;
   void SetSelected(intptr_t Value);
-  intptr_t GetTopIndex();
+  intptr_t GetTopIndex() const;
   void SetTopIndex(intptr_t Value);
-  inline intptr_t GetSelectedInt(bool Init);
+  inline intptr_t GetSelectedInt(bool Init) const;
   bool GetFlag(intptr_t Index, LISTITEMFLAGS Flag) const;
   void SetFlag(intptr_t Index, LISTITEMFLAGS Flag, bool Value);
   LISTITEMFLAGS GetFlags(intptr_t Index) const;
   void SetFlags(intptr_t Index, LISTITEMFLAGS Value);
-  intptr_t GetMaxLength();
-  intptr_t GetVisibleCount();
+  intptr_t GetMaxLength() const;
+  intptr_t GetVisibleCount() const;
   bool GetDisabled(intptr_t Index) const { return GetFlag(Index, LIF_DISABLE); }
   void SetDisabled(intptr_t Index, bool Value) { SetFlag(Index, LIF_DISABLE, Value); }
   bool GetChecked(intptr_t Index) const { return GetFlag(Index, LIF_CHECKED); }
@@ -524,7 +524,7 @@ protected:
   virtual intptr_t ItemProc(intptr_t Msg, void * Param);
   virtual void Init();
   void UpdatePosition(intptr_t Position);
-  intptr_t GetPosition();
+  intptr_t GetPosition() const;
   virtual void Put(intptr_t Index, const UnicodeString & S);
   void SetCurPos(intptr_t Position, intptr_t TopIndex);
   void UpdateItem(intptr_t Index);

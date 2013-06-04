@@ -1,5 +1,7 @@
 NetBox 2.1.31 ??.06.2013
 --------------------
+  * Bugfix: List items have incorrect values.
+    (http://forum.farmanager.com/viewtopic.php?p=110634#p110634)
 
 NetBox 2.1.30 31.05.2013
 --------------------

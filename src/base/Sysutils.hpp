@@ -158,13 +158,13 @@ intptr_t FirstDelimiter(const UnicodeString & Delimiters, const UnicodeString & 
 intptr_t LastDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
 //---------------------------------------------------------------------------
 
-int CompareText(const UnicodeString & Str1, const UnicodeString & Str2);
-int AnsiCompare(const UnicodeString & Str1, const UnicodeString & Str2);
-int AnsiCompareStr(const UnicodeString & Str1, const UnicodeString & Str2);
+intptr_t CompareText(const UnicodeString & Str1, const UnicodeString & Str2);
+intptr_t AnsiCompare(const UnicodeString & Str1, const UnicodeString & Str2);
+intptr_t AnsiCompareStr(const UnicodeString & Str1, const UnicodeString & Str2);
 bool AnsiSameText(const UnicodeString & Str1, const UnicodeString & Str2);
 bool SameText(const UnicodeString & Str1, const UnicodeString & Str2);
-int AnsiCompareText(const UnicodeString & Str1, const UnicodeString & Str2);
-int AnsiCompareIC(const UnicodeString & Str1, const UnicodeString & Str2);
+intptr_t AnsiCompareText(const UnicodeString & Str1, const UnicodeString & Str2);
+intptr_t AnsiCompareIC(const UnicodeString & Str1, const UnicodeString & Str2);
 bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2);
 
 int StringCmp(const wchar_t * S1, const wchar_t * S2);

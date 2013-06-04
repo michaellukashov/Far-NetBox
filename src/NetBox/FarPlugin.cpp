@@ -48,7 +48,7 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
   FTopDialog = NULL;
   FValidFarSystemSettings = false;
 
-  memset(&FPluginInfo, 0, sizeof(FPluginInfo));
+  ClearStruct(FPluginInfo);
   ClearPluginInfo(FPluginInfo);
 
   // far\Examples\Compare\compare.cpp
@@ -102,7 +102,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
   try
   {
     ResetCachedInfo();
-    memset(&FStartupInfo, 0, sizeof(FStartupInfo));
+    ClearStruct(FStartupInfo);
     memmove(&FStartupInfo, Info,
             Info->StructSize >= static_cast<intptr_t>(sizeof(FStartupInfo)) ?
             sizeof(FStartupInfo) : static_cast<size_t>(Info->StructSize));
@@ -110,7 +110,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
     assert(FStartupInfo.GetMsg != NULL);
     assert(FStartupInfo.Message != NULL);
 
-    memset(&FFarStandardFunctions, 0, sizeof(FFarStandardFunctions));
+    ClearStruct(FFarStandardFunctions);
     size_t FSFOffset = (static_cast<const char *>(reinterpret_cast<const void *>(&Info->FSF)) -
                         static_cast<const char *>(reinterpret_cast<const void *>(Info)));
     if (static_cast<size_t>(Info->StructSize) > FSFOffset)
@@ -210,7 +210,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
 
       nb_free((void*)Info.CommandPrefix);
   }
-  memset(&Info, 0, sizeof(Info));
+  ClearStruct(Info);
   Info.StructSize = sizeof(Info);
 }
 //---------------------------------------------------------------------------
@@ -238,7 +238,7 @@ RECT TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
   FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<void *>(&Info), PanelHandle);
 
   RECT Bounds;
-  memset(&Bounds, -1, sizeof(Bounds));
+  ClearStruct(Bounds);
   if (Info.PluginHandle)
   {
     Bounds = Info.PanelRect;
@@ -1158,7 +1158,7 @@ intptr_t TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString & Title,
       uintptr_t Flags = reinterpret_cast<uintptr_t>(Items->GetObject(I));
       if (FLAGCLEAR(Flags, MIF_HIDDEN))
       {
-        memset(&MenuItems[Count], 0, sizeof(FarMenuItem));
+        ClearStruct(MenuItems[Count]);
         MenuItems[Count].Flags = static_cast<DWORD>(Flags);
         if (MenuItems[Count].Flags & MIF_SELECTED)
         {
@@ -1298,10 +1298,10 @@ void TCustomFarPlugin::FarCopyToClipboard(TStrings * Strings)
   }
 }
 //---------------------------------------------------------------------------
-TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor)
+TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor) const
 {
   CONSOLE_SCREEN_BUFFER_INFO BufferInfo;
-  memset(&BufferInfo, 0, sizeof(BufferInfo));
+  ClearStruct(BufferInfo);
   GetConsoleScreenBufferInfo(FConsoleOutput, &BufferInfo);
 
   TPoint Result(BufferInfo.dwSize.X, BufferInfo.dwSize.Y);
@@ -1319,23 +1319,24 @@ TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor)
   return Result;
 }
 //---------------------------------------------------------------------------
-HWND TCustomFarPlugin::GetConsoleWindow()
+HWND TCustomFarPlugin::GetConsoleWindow() const
 {
   wchar_t Title[1024];
-  GetConsoleTitle(Title, sizeof(Title) - 1);
-  HWND Result = FindWindow(NULL, Title);
+  ::GetConsoleTitle(Title, sizeof(Title) - 1);
+  HWND Result = ::FindWindow(NULL, Title);
   return Result;
 }
 //---------------------------------------------------------------------------
-uintptr_t TCustomFarPlugin::ConsoleWindowState()
+uintptr_t TCustomFarPlugin::ConsoleWindowState() const
 {
   uintptr_t Result;
   HWND Window = GetConsoleWindow();
   if (Window != NULL)
   {
     WINDOWPLACEMENT WindowPlacement;
+    ClearStruct(WindowPlacement);
     WindowPlacement.length = sizeof(WindowPlacement);
-    Win32Check(GetWindowPlacement(Window, &WindowPlacement) > 0);
+    Win32Check(::GetWindowPlacement(Window, &WindowPlacement) > 0);
     Result = WindowPlacement.showCmd;
   }
   else
@@ -1370,24 +1371,24 @@ void TCustomFarPlugin::ToggleVideoMode()
     }
     else
     {
-      COORD Size = GetLargestConsoleWindowSize(FConsoleOutput);
+      COORD Size = ::GetLargestConsoleWindowSize(FConsoleOutput);
       Win32Check((Size.X != 0) || (Size.Y != 0));
 
       FNormalConsoleSize = TerminalInfo();
 
-      Win32Check(ShowWindow(Window, SW_MAXIMIZE) > 0);
+      Win32Check(::ShowWindow(Window, SW_MAXIMIZE) > 0);
 
-      Win32Check(SetConsoleScreenBufferSize(FConsoleOutput, Size) > 0);
+      Win32Check(::SetConsoleScreenBufferSize(FConsoleOutput, Size) > 0);
 
       CONSOLE_SCREEN_BUFFER_INFO BufferInfo;
-      Win32Check(GetConsoleScreenBufferInfo(FConsoleOutput, &BufferInfo) > 0);
+      Win32Check(::GetConsoleScreenBufferInfo(FConsoleOutput, &BufferInfo) > 0);
 
       SMALL_RECT WindowSize;
       WindowSize.Left = 0;
       WindowSize.Top = 0;
       WindowSize.Right = static_cast<short>(BufferInfo.dwMaximumWindowSize.X - 1);
       WindowSize.Bottom = static_cast<short>(BufferInfo.dwMaximumWindowSize.Y - 1);
-      Win32Check(SetConsoleWindowInfo(FConsoleOutput, true, &WindowSize) > 0);
+      Win32Check(::SetConsoleWindowInfo(FConsoleOutput, true, &WindowSize) > 0);
     }
   }
 }
@@ -1407,7 +1408,7 @@ void TCustomFarPlugin::ScrollTerminalScreen(int Rows)
   Dest.Y = 0;
   Fill.Char.UnicodeChar = L' ';
   Fill.Attributes = 7;
-  ScrollConsoleScreenBuffer(FConsoleOutput, &Source, NULL, Dest, &Fill);
+  ::ScrollConsoleScreenBuffer(FConsoleOutput, &Source, NULL, Dest, &Fill);
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::ShowTerminalScreen()
@@ -1450,7 +1451,7 @@ public:
 void TCustomFarPlugin::ShowConsoleTitle(const UnicodeString & Title)
 {
   wchar_t SaveTitle[1024];
-  GetConsoleTitle(SaveTitle, sizeof(SaveTitle));
+  ::GetConsoleTitle(SaveTitle, sizeof(SaveTitle));
   TConsoleTitleParam * Param = new TConsoleTitleParam();
   Param->Progress = FCurrentProgress;
   Param->Own = !FCurrentTitle.IsEmpty() && (FormatConsoleTitle() == SaveTitle);
@@ -1483,7 +1484,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
   {
     FCurrentTitle = L"";
     FCurrentProgress = -1;
-    SetConsoleTitle(Title.c_str());
+    ::SetConsoleTitle(Title.c_str());
     UpdateProgress(TBPS_NOPROGRESS, 0);
   }
   delete FSavedTitles->GetObject(FSavedTitles->GetCount() - 1);
@@ -1733,12 +1734,12 @@ intptr_t TCustomFarPlugin::FarVersion()
   return FFarVersion;
 }
 //---------------------------------------------------------------------------
-UnicodeString TCustomFarPlugin::FormatFarVersion(VersionInfo &Info)
+UnicodeString TCustomFarPlugin::FormatFarVersion(VersionInfo &Info) const
 {
   return FORMAT(L"%d.%d.%d", Info.Major, Info.Minor, Info.Build);
 }
 //---------------------------------------------------------------------------
-UnicodeString TCustomFarPlugin::TemporaryDir()
+UnicodeString TCustomFarPlugin::TemporaryDir() const
 {
   UnicodeString Result;
   if (FTemporaryDir.IsEmpty())
@@ -1805,7 +1806,7 @@ void TCustomFarFileSystem::Init()
   FPanelInfo[1] = NULL;
   FClosed = false;
 
-  memset(&FOpenPanelInfo, 0, sizeof(FOpenPanelInfo));
+  ClearStruct(FOpenPanelInfo);
   ClearOpenPanelInfo(FOpenPanelInfo);
   FInstances++;
 }
@@ -1862,7 +1863,7 @@ void TCustomFarFileSystem::ClearOpenPanelInfo(OpenPanelInfo & Info)
     }
     nb_free((void*)Info.ShortcutData);
   }
-  memset(&Info, 0, sizeof(Info));
+  ClearStruct(Info);
   Info.StructSize = sizeof(Info);
   InvalidateOpenPanelInfo();
 }
@@ -2292,7 +2293,7 @@ void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
     }
     nb_free((void*)Mode.StatusColumnTypes);
     nb_free((void*)Mode.StatusColumnWidths);
-    memset(&Mode, 0, sizeof(Mode));
+    ClearStruct(Mode);
   }
 }
 //---------------------------------------------------------------------------

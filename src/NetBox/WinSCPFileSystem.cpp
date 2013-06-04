@@ -3924,7 +3924,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
             if (FLastMultipleEditReadOnly)
             {
               EditorSetParameter Parameter;
-              memset(&Parameter, 0, sizeof(Parameter));
+              ClearStruct(Parameter);
                 Parameter.StructSize = sizeof(EditorSetParameter);
               Parameter.Type = ESPT_LOCKMODE;
               Parameter.iParam = TRUE;

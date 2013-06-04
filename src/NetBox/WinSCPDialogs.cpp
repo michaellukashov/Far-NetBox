@@ -6794,7 +6794,7 @@ private:
   TUsableCopyParamAttrs FCopyParamAttrs;
   TCopyParamType FCopyParams;
 
-  TTerminal::TSynchronizeMode GetMode();
+  TTerminal::TSynchronizeMode GetMode() const;
 };
 //------------------------------------------------------------------------------
 TFullSynchronizeDialog::TFullSynchronizeDialog(
@@ -6939,7 +6939,7 @@ void TFullSynchronizeDialog::AdaptSize()
   }
 }
 //------------------------------------------------------------------------------
-TTerminal::TSynchronizeMode TFullSynchronizeDialog::GetMode()
+TTerminal::TSynchronizeMode TFullSynchronizeDialog::GetMode() const
 {
   TTerminal::TSynchronizeMode Mode;
 
@@ -7609,8 +7609,8 @@ void TSynchronizeChecklistDialog::UpdateControls()
 {
   ButtonSeparator->SetCaption(
     FORMAT(GetMsg(CHECKLIST_CHECKED).c_str(), FChecked, ListBox->GetItems()->GetCount()));
-  CheckAllButton->SetEnabled((FChecked < ListBox->GetItems()->GetCount()));
-  UncheckAllButton->SetEnabled((FChecked > 0));
+  CheckAllButton->SetEnabled(FChecked < ListBox->GetItems()->GetCount());
+  UncheckAllButton->SetEnabled(FChecked > 0);
 }
 //------------------------------------------------------------------------------
 intptr_t TSynchronizeChecklistDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
@@ -7722,6 +7722,10 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
             (Index < ListBox->GetItems()->GetCount() - 1))
         {
           ListBox->GetItems()->SetSelected(Index + 1);
+        }
+        else
+        {
+          ListBox->GetItems()->SetSelected(Index);
         }
       }
       Result = true;

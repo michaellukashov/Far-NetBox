@@ -2000,7 +2000,6 @@ intptr_t TFarEdit::ItemProc(intptr_t Msg, void * Param)
     UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->Data;
     nb_free((void*)GetDialogItem()->Data);
     GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(Data, true);
-    // GetDialogItem()->MaxLen = Data.Length();
   }
   return TFarDialogItem::ItemProc(Msg, Param);
 }
@@ -2141,6 +2140,10 @@ TFarList::TFarList(TFarDialogItem * ADialogItem) :
 //---------------------------------------------------------------------------
 TFarList::~TFarList()
 {
+  for (intptr_t Index = 0; Index < FListItems->ItemsNumber; ++Index)
+  {
+    nb_free((void*)FListItems->Items[Index].Text);
+  }
   nb_free(FListItems->Items);
   nb_free(FListItems);
 }
@@ -2162,12 +2165,11 @@ void TFarList::Assign(const TPersistent * Source)
 void TFarList::UpdateItem(intptr_t Index)
 {
   FarListItem * ListItem = &FListItems->Items[Index];
-  UnicodeString Value = GetString(Index).c_str();
   nb_free((void*)ListItem->Text);
-  ListItem->Text = TCustomFarPlugin::DuplicateStr(Value, true);
+  ListItem->Text = TCustomFarPlugin::DuplicateStr(GetString(Index), true);
 
   FarListUpdate ListUpdate;
-  memset(&ListUpdate, 0, sizeof(ListUpdate));
+  ClearStruct(ListUpdate);
     ListUpdate.StructSize = sizeof(FarListUpdate);
   ListUpdate.Index = static_cast<int>(Index);
   ListUpdate.Item = *ListItem;
@@ -2216,13 +2218,13 @@ void TFarList::Changed()
     if (FListItems->ItemsNumber != Count)
     {
       FarListItem * Items = FListItems->Items;
+      intptr_t ItemsNumber = FListItems->ItemsNumber;
       if (Count)
       {
         FListItems->Items = static_cast<FarListItem *>(
-          nb_malloc(sizeof(FarListItem) * Count));
+          nb_calloc(1, sizeof(FarListItem) * Count));
         for (intptr_t Index = 0; Index < Count; ++Index)
         {
-          memset(&FListItems->Items[Index], 0, sizeof(FListItems->Items[Index]));
           if (Index < FListItems->ItemsNumber)
           {
             FListItems->Items[Index].Flags = Items[Index].Flags;
@@ -2233,13 +2235,16 @@ void TFarList::Changed()
       {
         FListItems->Items = NULL;
       }
+      for (intptr_t Index = 0; Index < ItemsNumber; ++Index)
+      {
+        nb_free((void*)Items[Index].Text);
+      }
       nb_free(Items);
       FListItems->ItemsNumber = static_cast<int>(GetCount());
     }
     for (intptr_t I = 0; I < GetCount(); I++)
     {
-      // UnicodeString Value = Strings[I];
-      FListItems->Items[I].Text = GetString(I).c_str();
+      FListItems->Items[I].Text = TCustomFarPlugin::DuplicateStr(GetString(I), true);
     }
     if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
     {
@@ -2316,13 +2321,13 @@ void TFarList::SetTopIndex(intptr_t Value)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TFarList::GetPosition()
+intptr_t TFarList::GetPosition() const
 {
   assert(GetDialogItem() != NULL);
   return GetDialogItem()->SendMessage(DM_LISTGETCURPOS, NULL);
 }
 //---------------------------------------------------------------------------
-intptr_t TFarList::GetTopIndex()
+intptr_t TFarList::GetTopIndex() const
 {
   intptr_t Result;
   if (GetCount() == 0)
@@ -2341,7 +2346,7 @@ intptr_t TFarList::GetTopIndex()
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TFarList::GetMaxLength()
+intptr_t TFarList::GetMaxLength() const
 {
   intptr_t Result = 0;
   for (intptr_t I = 0; I < GetCount(); I++)
@@ -2354,13 +2359,13 @@ intptr_t TFarList::GetMaxLength()
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TFarList::GetVisibleCount()
+intptr_t TFarList::GetVisibleCount() const
 {
   assert(GetDialogItem() != NULL);
   return GetDialogItem()->GetHeight() - (GetDialogItem()->GetFlag(DIF_LISTNOBOX) ? 0 : 2);
 }
 //---------------------------------------------------------------------------
-intptr_t TFarList::GetSelectedInt(bool Init)
+intptr_t TFarList::GetSelectedInt(bool Init) const
 {
   intptr_t Result = NPOS;
   assert(GetDialogItem() != NULL);
@@ -2384,7 +2389,7 @@ intptr_t TFarList::GetSelectedInt(bool Init)
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TFarList::GetSelected()
+intptr_t TFarList::GetSelected() const
 {
   intptr_t Result = GetSelectedInt(false);
 
@@ -2550,7 +2555,6 @@ intptr_t TFarComboBox::ItemProc(intptr_t Msg, void * Param)
     UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->Data;
     nb_free((void*)GetDialogItem()->Data);
     GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(Data, true);
-    // GetDialogItem()->MaxLen = Data.Length();
   }
 
   if (FList->ItemProc(Msg, Param))
