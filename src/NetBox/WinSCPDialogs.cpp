@@ -7598,8 +7598,8 @@ void TSynchronizeChecklistDialog::UpdateControls()
 {
   ButtonSeparator->SetCaption(
     FORMAT(GetMsg(CHECKLIST_CHECKED).c_str(), FChecked, ListBox->GetItems()->GetCount()));
-  CheckAllButton->SetEnabled((FChecked < ListBox->GetItems()->GetCount()));
-  UncheckAllButton->SetEnabled((FChecked > 0));
+  CheckAllButton->SetEnabled(FChecked < ListBox->GetItems()->GetCount());
+  UncheckAllButton->SetEnabled(FChecked > 0);
 }
 //------------------------------------------------------------------------------
 LONG_PTR TSynchronizeChecklistDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
