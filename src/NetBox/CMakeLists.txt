@@ -172,6 +172,7 @@ ENDFOREACH(src)
 
 SET(NETBOX_SOURCES ${NETBOX_SOURCES}
   ${SRC_ROOT}/NetBox/vc10wrapper.cpp
+  ${SRC_ROOT}/NetBox/vc10u.cpp
   ${ASM_OBJECTS}
 )
 
