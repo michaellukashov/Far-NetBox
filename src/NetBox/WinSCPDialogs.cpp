@@ -7709,6 +7709,10 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
         {
           ListBox->GetItems()->SetSelected(Index + 1);
         }
+        else
+        {
+          ListBox->GetItems()->SetSelected(Index);
+        }
       }
       Result = true;
     }
