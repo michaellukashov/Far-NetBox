@@ -2700,24 +2700,24 @@ void TTerminal::ReadSymlink(TRemoteFile * SymlinkFile,
 }
 //------------------------------------------------------------------------------
 void TTerminal::ReadFile(const UnicodeString & FileName,
-  TRemoteFile *& File)
+  TRemoteFile *& AFile)
 {
   assert(FFileSystem);
-  File = NULL;
+  AFile = NULL;
   try
   {
     LogEvent(FORMAT(L"Listing file \"%s\".", FileName.c_str()));
-    FFileSystem->ReadFile(FileName, File);
+    FFileSystem->ReadFile(FileName, AFile);
     ReactOnCommand(fsListFile);
-    LogFile(File);
+    LogFile(AFile);
   }
   catch (Exception &E)
   {
-    if (File)
+    if (AFile)
     {
-      delete File;
+      delete AFile;
     }
-    File = NULL;
+    AFile = NULL;
     CommandError(&E, FMTLOAD(CANT_GET_ATTRS, FileName.c_str()));
   }
 }

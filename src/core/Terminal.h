@@ -429,7 +429,7 @@ public:
   TRemoteFileList * ReadDirectoryListing(const UnicodeString & Directory, const TFileMasks & Mask);
   TRemoteFileList * CustomReadDirectoryListing(const UnicodeString & Directory, bool UseCache);
   TRemoteFile * ReadFileListing(const UnicodeString & Path);
-  void ReadFile(const UnicodeString & FileName, TRemoteFile *& File);
+  void ReadFile(const UnicodeString & FileName, TRemoteFile *& AFile);
   bool FileExists(const UnicodeString & FileName, TRemoteFile ** File = NULL);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& File);
   bool CopyToLocal(TStrings * FilesToCopy,
