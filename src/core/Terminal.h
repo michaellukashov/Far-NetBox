@@ -445,7 +445,7 @@ public:
   bool DeleteLocalFiles(TStrings * FileList, intptr_t Params = 0);
   bool IsRecycledFile(const UnicodeString & FileName);
   void CustomCommandOnFile(const UnicodeString & FileName,
-    const TRemoteFile * File, void * AParams);
+    const TRemoteFile * AFile, void * AParams);
   void CustomCommandOnFiles(const UnicodeString & Command, intptr_t Params,
     TStrings * Files, TCaptureOutputEvent OutputEvent);
   void ChangeDirectory(const UnicodeString & Directory);

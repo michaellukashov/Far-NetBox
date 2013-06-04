@@ -3046,13 +3046,13 @@ bool TTerminal::DeleteLocalFiles(TStrings * FileList, intptr_t Params)
 }
 //------------------------------------------------------------------------------
 void TTerminal::CustomCommandOnFile(const UnicodeString & FileName,
-  const TRemoteFile * File, void * AParams)
+  const TRemoteFile * AFile, void * AParams)
 {
   TCustomCommandParams * Params = (static_cast<TCustomCommandParams *>(AParams));
   UnicodeString LocalFileName = FileName;
-  if (FileName.IsEmpty() && File)
+  if (FileName.IsEmpty() && AFile)
   {
-    LocalFileName = File->GetFileName();
+    LocalFileName = AFile->GetFileName();
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foCustomCommand)
   {
@@ -3064,11 +3064,11 @@ void TTerminal::CustomCommandOnFile(const UnicodeString & FileName,
   }
   LogEvent(FORMAT(L"Executing custom command \"%s\" (%d) on file \"%s\".",
     Params->Command.c_str(), Params->Params, LocalFileName.c_str()));
-  if (File)
+  if (AFile)
   {
-    FileModified(File, LocalFileName);
+    FileModified(AFile, LocalFileName);
   }
-  DoCustomCommandOnFile(LocalFileName, File, Params->Command, Params->Params,
+  DoCustomCommandOnFile(LocalFileName, AFile, Params->Command, Params->Params,
     Params->OutputEvent);
   ReactOnCommand(fsAnyCommand);
 }
