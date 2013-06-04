@@ -675,8 +675,8 @@
 " %d of %d "
 "Check &all"
 "Uncheck a&ll"
-"&Maximize"
-"&Restore"
+"&maximize"
+"&restore"
 
 "&Current"
 "&New instance"
