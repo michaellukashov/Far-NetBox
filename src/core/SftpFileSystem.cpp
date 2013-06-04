@@ -3266,23 +3266,23 @@ void TSFTPFileSystem::ReadFile(const UnicodeString & FileName,
 }
 //---------------------------------------------------------------------------
 bool TSFTPFileSystem::RemoteFileExists(const UnicodeString & FullPath,
-  TRemoteFile ** File)
+  TRemoteFile ** AFile)
 {
   bool Result;
   try
   {
-    TRemoteFile * AFile;
-    CustomReadFile(FullPath, AFile, SSH_FXP_LSTAT, NULL, asNoSuchFile);
-    Result = (AFile != NULL);
+    TRemoteFile * File;
+    CustomReadFile(FullPath, File, SSH_FXP_LSTAT, NULL, asNoSuchFile);
+    Result = (File != NULL);
     if (Result)
     {
-      if (File)
+      if (AFile)
       {
-        *File = AFile;
+        *AFile = File;
       }
       else
       {
-        delete AFile;
+        delete File;
       }
     }
   }
