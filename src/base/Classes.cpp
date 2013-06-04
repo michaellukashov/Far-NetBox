@@ -1916,7 +1916,7 @@ bool TRegistry::ValueExists(const UnicodeString & Name) const
 bool TRegistry::GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Value) const
 {
   DWORD DataType;
-  memset(&Value, 0, sizeof(Value));
+  ClearStruct(Value);
   bool Result = (RegQueryValueEx(GetCurrentKey(), ValueName.c_str(), NULL, &DataType, NULL,
                                  &Value.DataSize) == ERROR_SUCCESS);
   Value.RegData = DataTypeToRegData(DataType);
@@ -2152,7 +2152,7 @@ HKEY TRegistry::GetKey(const UnicodeString & Key)
 
 bool TRegistry::GetKeyInfo(TRegKeyInfo & Value) const
 {
-  memset(&Value, 0, sizeof(Value));
+  ClearStruct(Value);
   bool Result = RegQueryInfoKey(GetCurrentKey(), NULL, NULL, NULL, &Value.NumSubKeys,
     &Value.MaxSubKeyLen, NULL, &Value.NumValues, &Value.MaxValueLen,
     &Value.MaxDataLen, NULL, &Value.FileTime) == ERROR_SUCCESS;

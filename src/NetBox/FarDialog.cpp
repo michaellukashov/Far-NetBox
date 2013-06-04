@@ -2137,7 +2137,7 @@ void TFarList::UpdateItem(intptr_t Index)
   ListItem->Text = TCustomFarPlugin::DuplicateStr(Value, true);
 
   FarListUpdate ListUpdate;
-  memset(&ListUpdate, 0, sizeof(ListUpdate));
+  ClearStruct(ListUpdate);
   ListUpdate.Index = static_cast<int>(Index);
   ListUpdate.Item = *ListItem;
   GetDialogItem()->SendMessage(DM_LISTUPDATE, reinterpret_cast<LONG_PTR>(&ListUpdate));

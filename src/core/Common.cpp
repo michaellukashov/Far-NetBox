@@ -1486,7 +1486,7 @@ bool RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin)
 {
   SHFILEOPSTRUCT Data;
 
-  memset(&Data, 0, sizeof(Data));
+  ClearStruct(Data);
   Data.hwnd = NULL;
   Data.wFunc = FO_DELETE;
   UnicodeString FileList(FileName);

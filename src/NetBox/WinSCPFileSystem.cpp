@@ -3861,7 +3861,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
             if (FLastMultipleEditReadOnly)
             {
               EditorSetParameter Parameter;
-              memset(&Parameter, 0, sizeof(Parameter));
+              ClearStruct(Parameter);
               Parameter.Type = ESPT_LOCKMODE;
               Parameter.Param.iParam = TRUE;
               WinSCPPlugin()->FarEditorControl(ECTL_SETPARAM, &Parameter);
