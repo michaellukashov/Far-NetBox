@@ -6783,7 +6783,7 @@ private:
   TUsableCopyParamAttrs FCopyParamAttrs;
   TCopyParamType FCopyParams;
 
-  TTerminal::TSynchronizeMode GetMode();
+  TTerminal::TSynchronizeMode GetMode() const;
 };
 //------------------------------------------------------------------------------
 TFullSynchronizeDialog::TFullSynchronizeDialog(
@@ -6928,7 +6928,7 @@ void TFullSynchronizeDialog::AdaptSize()
   }
 }
 //------------------------------------------------------------------------------
-TTerminal::TSynchronizeMode TFullSynchronizeDialog::GetMode()
+TTerminal::TSynchronizeMode TFullSynchronizeDialog::GetMode() const
 {
   TTerminal::TSynchronizeMode Mode;
 
