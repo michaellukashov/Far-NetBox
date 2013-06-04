@@ -391,7 +391,7 @@ protected:
     bool UseCache);
   RawByteString EncryptPassword(const UnicodeString & Password);
   UnicodeString DecryptPassword(const RawByteString & Password);
-  void LogFile(TRemoteFile * File);
+  void LogFile(TRemoteFile * AFile);
 
   TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
 

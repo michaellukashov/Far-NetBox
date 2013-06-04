@@ -2475,14 +2475,14 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::LogFile(TRemoteFile * File)
+void TTerminal::LogFile(TRemoteFile * AFile)
 {
-  if (File)
+  if (AFile)
   {
     LogEvent(FORMAT(L"%s;%c;%lld;%s;%s;%s;%s;%d",
-      File->GetFileName().c_str(), File->GetType(), File->GetSize(), StandardTimestamp(File->GetModification()).c_str(),
-      File->GetFileOwner().GetLogText().c_str(), File->GetFileGroup().GetLogText().c_str(), File->GetRights()->GetText().c_str(),
-      File->GetAttr()));
+      AFile->GetFileName().c_str(), AFile->GetType(), AFile->GetSize(), StandardTimestamp(AFile->GetModification()).c_str(),
+      AFile->GetFileOwner().GetLogText().c_str(), AFile->GetFileGroup().GetLogText().c_str(), AFile->GetRights()->GetText().c_str(),
+      AFile->GetAttr()));
   }
 }
 //------------------------------------------------------------------------------
