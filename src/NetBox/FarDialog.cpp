@@ -1964,7 +1964,7 @@ TFarEdit::TFarEdit(TFarDialog * ADialog) :
 void TFarEdit::Detach()
 {
   nb_free((void*)GetDialogItem()->Mask);
-  // delete[] GetDialogItem()->History;
+  // nb_free((void*)GetDialogItem()->History);
   TFarDialogItem::Detach();
 }
 //---------------------------------------------------------------------------
@@ -1975,7 +1975,6 @@ LONG_PTR TFarEdit::ItemProc(int Msg, LONG_PTR Param)
     UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->PtrData;
     nb_free((void*)GetDialogItem()->PtrData);
     GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
-    // GetDialogItem()->MaxLen = Data.Length();
   }
   return TFarDialogItem::ItemProc(Msg, Param);
 }
@@ -2513,7 +2512,6 @@ LONG_PTR TFarComboBox::ItemProc(int Msg, LONG_PTR Param)
     UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->PtrData;
     nb_free((void*)GetDialogItem()->PtrData);
     GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
-    // GetDialogItem()->MaxLen = Data.Length();
   }
 
   if (FList->ItemProc(Msg, Param))
