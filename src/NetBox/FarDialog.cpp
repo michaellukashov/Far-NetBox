@@ -2284,13 +2284,13 @@ void TFarList::SetTopIndex(intptr_t Value)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TFarList::GetPosition()
+intptr_t TFarList::GetPosition() const
 {
   assert(GetDialogItem() != NULL);
   return GetDialogItem()->SendMessage(DM_LISTGETCURPOS, NULL);
 }
 //---------------------------------------------------------------------------
-intptr_t TFarList::GetTopIndex()
+intptr_t TFarList::GetTopIndex() const
 {
   intptr_t Result;
   if (GetCount() == 0)
@@ -2308,7 +2308,7 @@ intptr_t TFarList::GetTopIndex()
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TFarList::GetMaxLength()
+intptr_t TFarList::GetMaxLength() const
 {
   intptr_t Result = 0;
   for (intptr_t I = 0; I < GetCount(); I++)
@@ -2321,13 +2321,13 @@ intptr_t TFarList::GetMaxLength()
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TFarList::GetVisibleCount()
+intptr_t TFarList::GetVisibleCount() const
 {
   assert(GetDialogItem() != NULL);
   return GetDialogItem()->GetHeight() - (GetDialogItem()->GetFlag(DIF_LISTNOBOX) ? 0 : 2);
 }
 //---------------------------------------------------------------------------
-intptr_t TFarList::GetSelectedInt(bool Init)
+intptr_t TFarList::GetSelectedInt(bool Init) const
 {
   intptr_t Result = NPOS;
   assert(GetDialogItem() != NULL);
@@ -2351,7 +2351,7 @@ intptr_t TFarList::GetSelectedInt(bool Init)
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TFarList::GetSelected()
+intptr_t TFarList::GetSelected() const
 {
   intptr_t Result = GetSelectedInt(false);
 
