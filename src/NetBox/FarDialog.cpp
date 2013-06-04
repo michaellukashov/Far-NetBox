@@ -2110,6 +2110,10 @@ TFarList::TFarList(TFarDialogItem * ADialogItem) :
 //---------------------------------------------------------------------------
 TFarList::~TFarList()
 {
+  for (intptr_t Index = 0; Index < FListItems->ItemsNumber; ++Index)
+  {
+    nb_free((void*)FListItems->Items[Index].Text);
+  }
   nb_free(FListItems->Items);
   nb_free(FListItems);
 }
@@ -2131,9 +2135,8 @@ void TFarList::Assign(const TPersistent * Source)
 void TFarList::UpdateItem(intptr_t Index)
 {
   FarListItem * ListItem = &FListItems->Items[Index];
-  UnicodeString Value = GetString(Index).c_str();
   nb_free((void*)ListItem->Text);
-  ListItem->Text = TCustomFarPlugin::DuplicateStr(Value, true);
+  ListItem->Text = TCustomFarPlugin::DuplicateStr(GetString(Index), true);
 
   FarListUpdate ListUpdate;
   ClearStruct(ListUpdate);
@@ -2184,13 +2187,13 @@ void TFarList::Changed()
     if (FListItems->ItemsNumber != Count)
     {
       FarListItem * Items = FListItems->Items;
+      intptr_t ItemsNumber = FListItems->ItemsNumber;
       if (Count)
       {
         FListItems->Items = static_cast<FarListItem *>(
-          nb_malloc(sizeof(FarListItem) * Count));
+          nb_calloc(1, sizeof(FarListItem) * Count));
         for (intptr_t Index = 0; Index < Count; ++Index)
         {
-          memset(&FListItems->Items[Index], 0, sizeof(FListItems->Items[Index]));
           if (Index < FListItems->ItemsNumber)
           {
             FListItems->Items[Index].Flags = Items[Index].Flags;
@@ -2201,13 +2204,16 @@ void TFarList::Changed()
       {
         FListItems->Items = NULL;
       }
+      for (intptr_t Index = 0; Index < ItemsNumber; ++Index)
+      {
+        nb_free((void*)Items[Index].Text);
+      }
       nb_free(Items);
       FListItems->ItemsNumber = static_cast<int>(GetCount());
     }
     for (intptr_t I = 0; I < GetCount(); I++)
     {
-      // UnicodeString Value = Strings[I];
-      FListItems->Items[I].Text = GetString(I).c_str();
+      FListItems->Items[I].Text = TCustomFarPlugin::DuplicateStr(GetString(I), true);
     }
     if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
     {
