@@ -121,8 +121,8 @@ public:
   void FarCopyToClipboard(const UnicodeString & Str);
   void FarCopyToClipboard(TStrings * Strings);
   intptr_t FarVersion();
-  UnicodeString FormatFarVersion(intptr_t Version);
-  UnicodeString TemporaryDir();
+  UnicodeString FormatFarVersion(intptr_t Version) const;
+  UnicodeString TemporaryDir() const;
   intptr_t InputRecordToKey(const INPUT_RECORD * Rec);
   TFarEditorInfo * EditorInfo();
 
@@ -133,8 +133,8 @@ public:
   void ShowTerminalScreen();
   void SaveTerminalScreen();
   void ScrollTerminalScreen(int Rows);
-  TPoint TerminalInfo(TPoint * Size = NULL, TPoint * Cursor = NULL);
-  uintptr_t ConsoleWindowState();
+  TPoint TerminalInfo(TPoint * Size = NULL, TPoint * Cursor = NULL) const;
+  uintptr_t ConsoleWindowState() const;
   void ToggleVideoMode();
 
   TCustomFarFileSystem * GetPanelFileSystem(bool Another = false,
@@ -195,13 +195,13 @@ private:
   PluginInfo FPluginInfo;
   TStringList * FSavedTitles;
   UnicodeString FCurrentTitle;
-  UnicodeString FTemporaryDir;
+  mutable UnicodeString FTemporaryDir;
   short FCurrentProgress;
 
   void ClearPluginInfo(PluginInfo & Info);
   void UpdateConsoleTitle();
   UnicodeString FormatConsoleTitle();
-  HWND GetConsoleWindow();
+  HWND GetConsoleWindow() const;
   RECT GetPanelBounds(HANDLE PanelHandle);
   bool CompareRects(const RECT & lhs, const RECT & rhs) const
   {

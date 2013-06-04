@@ -1283,7 +1283,7 @@ void TCustomFarPlugin::FarCopyToClipboard(TStrings * Strings)
   }
 }
 //---------------------------------------------------------------------------
-TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor)
+TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor) const
 {
   CONSOLE_SCREEN_BUFFER_INFO BufferInfo;
   ClearStruct(BufferInfo);
@@ -1304,23 +1304,24 @@ TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor)
   return Result;
 }
 //---------------------------------------------------------------------------
-HWND TCustomFarPlugin::GetConsoleWindow()
+HWND TCustomFarPlugin::GetConsoleWindow() const
 {
   wchar_t Title[1024];
-  GetConsoleTitle(Title, sizeof(Title) - 1);
-  HWND Result = FindWindow(NULL, Title);
+  ::GetConsoleTitle(Title, sizeof(Title) - 1);
+  HWND Result = ::FindWindow(NULL, Title);
   return Result;
 }
 //---------------------------------------------------------------------------
-uintptr_t TCustomFarPlugin::ConsoleWindowState()
+uintptr_t TCustomFarPlugin::ConsoleWindowState() const
 {
   uintptr_t Result;
   HWND Window = GetConsoleWindow();
   if (Window != NULL)
   {
     WINDOWPLACEMENT WindowPlacement;
+    ClearStruct(WindowPlacement);
     WindowPlacement.length = sizeof(WindowPlacement);
-    Win32Check(GetWindowPlacement(Window, &WindowPlacement) > 0);
+    Win32Check(::GetWindowPlacement(Window, &WindowPlacement) > 0);
     Result = WindowPlacement.showCmd;
   }
   else
@@ -1696,12 +1697,12 @@ intptr_t TCustomFarPlugin::FarVersion()
   return FFarVersion;
 }
 //---------------------------------------------------------------------------
-UnicodeString TCustomFarPlugin::FormatFarVersion(intptr_t Version)
+UnicodeString TCustomFarPlugin::FormatFarVersion(intptr_t Version) const
 {
   return FORMAT(L"%d.%d.%d", (Version >> 8) & 0xFF, Version & 0xFF, Version >> 16);
 }
 //---------------------------------------------------------------------------
-UnicodeString TCustomFarPlugin::TemporaryDir()
+UnicodeString TCustomFarPlugin::TemporaryDir() const
 {
   UnicodeString Result;
   if (FTemporaryDir.IsEmpty())
