@@ -6900,7 +6900,7 @@ TFullSynchronizeDialog::TFullSynchronizeDialog(
   CopyParamLister->SetGroup(1);
   // Right edge is adjusted in Change
 
-  // align buttons with bottom of the window
+  // Align buttons with bottom of the window
   Separator = new TFarSeparator(this);
   Separator->SetPosition(-4);
 
