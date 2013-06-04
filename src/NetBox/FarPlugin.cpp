@@ -1356,24 +1356,24 @@ void TCustomFarPlugin::ToggleVideoMode()
     }
     else
     {
-      COORD Size = GetLargestConsoleWindowSize(FConsoleOutput);
+      COORD Size = ::GetLargestConsoleWindowSize(FConsoleOutput);
       Win32Check((Size.X != 0) || (Size.Y != 0));
 
       FNormalConsoleSize = TerminalInfo();
 
-      Win32Check(ShowWindow(Window, SW_MAXIMIZE) > 0);
+      Win32Check(::ShowWindow(Window, SW_MAXIMIZE) > 0);
 
-      Win32Check(SetConsoleScreenBufferSize(FConsoleOutput, Size) > 0);
+      Win32Check(::SetConsoleScreenBufferSize(FConsoleOutput, Size) > 0);
 
       CONSOLE_SCREEN_BUFFER_INFO BufferInfo;
-      Win32Check(GetConsoleScreenBufferInfo(FConsoleOutput, &BufferInfo) > 0);
+      Win32Check(::GetConsoleScreenBufferInfo(FConsoleOutput, &BufferInfo) > 0);
 
       SMALL_RECT WindowSize;
       WindowSize.Left = 0;
       WindowSize.Top = 0;
       WindowSize.Right = static_cast<short>(BufferInfo.dwMaximumWindowSize.X - 1);
       WindowSize.Bottom = static_cast<short>(BufferInfo.dwMaximumWindowSize.Y - 1);
-      Win32Check(SetConsoleWindowInfo(FConsoleOutput, true, &WindowSize) > 0);
+      Win32Check(::SetConsoleWindowInfo(FConsoleOutput, true, &WindowSize) > 0);
     }
   }
 }
@@ -1393,7 +1393,7 @@ void TCustomFarPlugin::ScrollTerminalScreen(int Rows)
   Dest.Y = 0;
   Fill.Char.UnicodeChar = L' ';
   Fill.Attributes = 7;
-  ScrollConsoleScreenBuffer(FConsoleOutput, &Source, NULL, Dest, &Fill);
+  ::ScrollConsoleScreenBuffer(FConsoleOutput, &Source, NULL, Dest, &Fill);
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::ShowTerminalScreen()
@@ -1436,7 +1436,7 @@ public:
 void TCustomFarPlugin::ShowConsoleTitle(const UnicodeString & Title)
 {
   wchar_t SaveTitle[1024];
-  GetConsoleTitle(SaveTitle, sizeof(SaveTitle));
+  ::GetConsoleTitle(SaveTitle, sizeof(SaveTitle));
   TConsoleTitleParam * Param = new TConsoleTitleParam();
   Param->Progress = FCurrentProgress;
   Param->Own = !FCurrentTitle.IsEmpty() && (FormatConsoleTitle() == SaveTitle);
@@ -1469,7 +1469,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
   {
     FCurrentTitle = L"";
     FCurrentProgress = -1;
-    SetConsoleTitle(Title.c_str());
+    ::SetConsoleTitle(Title.c_str());
     UpdateProgress(PS_NOPROGRESS, 0);
   }
   delete FSavedTitles->GetObject(FSavedTitles->GetCount() - 1);
