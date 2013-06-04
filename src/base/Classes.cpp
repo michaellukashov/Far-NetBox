@@ -705,7 +705,7 @@ void TStrings::Move(intptr_t CurIndex, intptr_t NewIndex)
   }
 }
 
-intptr_t TStrings::IndexOf(const UnicodeString & S)
+intptr_t TStrings::IndexOf(const UnicodeString & S) const
 {
   for (intptr_t Result = 0; Result < GetCount(); Result++)
   {
@@ -881,7 +881,7 @@ intptr_t TStringList::AddObject(const UnicodeString & S, TObject * AObject)
   return Result;
 }
 
-bool TStringList::Find(const UnicodeString & S, intptr_t & Index)
+bool TStringList::Find(const UnicodeString & S, intptr_t & Index) const
 {
   bool Result = false;
   intptr_t L = 0;
@@ -911,7 +911,7 @@ bool TStringList::Find(const UnicodeString & S, intptr_t & Index)
   return Result;
 }
 
-intptr_t TStringList::IndexOf(const UnicodeString & S)
+intptr_t TStringList::IndexOf(const UnicodeString & S) const
 {
   intptr_t Result = NPOS;
   if (!GetSorted())
@@ -1015,11 +1015,6 @@ const UnicodeString & TStringList::GetString(intptr_t Index) const
   return FList[Index].first;
 }
 
-bool TStringList::GetCaseSensitive() const
-{
-  return FCaseSensitive;
-}
-
 void TStringList::SetCaseSensitive(bool Value)
 {
   if (Value != FCaseSensitive)
@@ -1030,11 +1025,6 @@ void TStringList::SetCaseSensitive(bool Value)
       Sort();
     }
   }
-}
-
-bool TStringList::GetSorted() const
-{
-  return FSorted;
 }
 
 void TStringList::SetSorted(bool Value)
@@ -1195,11 +1185,11 @@ intptr_t TStringList::CompareStrings(const UnicodeString & S1, const UnicodeStri
 {
   if (GetCaseSensitive())
   {
-    return static_cast<intptr_t>(::AnsiCompareStr(S1, S2));
+    return ::AnsiCompareStr(S1, S2);
   }
   else
   {
-    return static_cast<intptr_t>(::AnsiCompareText(S1, S2));
+    return ::AnsiCompareText(S1, S2);
   }
 }
 
