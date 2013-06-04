@@ -3560,12 +3560,12 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
           !File->GetIsParentDirectory() && !File->GetIsThisDirectory())
       {
         OperationProgress->SetFile(File->GetFileName());
-        TRemoteFileList * SubFiles =
-          FTerminal->CustomReadDirectoryListing(File->GetFullFileName(), false);
+        std::auto_ptr<TRemoteFileList> SubFiles(
+          FTerminal->CustomReadDirectoryListing(File->GetFullFileName(), false));
 
-        if (SubFiles != NULL)
+        if (SubFiles.get() != NULL)
         {
-          TStrings * SubFileList = new TStringList();
+          std::auto_ptr<TStrings> SubFileList(new TStringList());
           bool Success = false;
           TRY_FINALLY (
           {
@@ -3579,16 +3579,13 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
 
             // do not collect checksums for files in subdirectories,
             // only send back checksums via callback
-            DoCalculateFilesChecksum(Alg, SubFileList, NULL,
-              OnCalculatedChecksum, OperationProgress, false);
+            DoCalculateFilesChecksum(Alg, SubFileList.get(), NULL,
+            OnCalculatedChecksum, OperationProgress, false);
 
             Success = true;
           }
           ,
           {
-            delete SubFiles;
-            delete SubFileList;
-
             if (FirstLevel)
             {
               OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
