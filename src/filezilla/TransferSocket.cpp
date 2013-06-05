@@ -439,6 +439,7 @@ void CTransferSocket::OnAccept(int nErrorCode)
 	}
 	value = 1;
 	SetSockOpt(SO_KEEPALIVE, &value, sizeof(value));
+	SetSockOpt(TCP_NODELAY, &value, sizeof(value), IPPROTO_TCP);
 
 	if (m_nTransferState == STATE_STARTING)
 	{
