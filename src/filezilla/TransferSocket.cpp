@@ -437,6 +437,13 @@ void CTransferSocket::OnAccept(int nErrorCode)
 		value = sndbuf;
 		SetSockOpt(SO_SNDBUF, &value, sizeof(value));
 	}
+	value = 1;
+	// From Filezillaa 3 sources:
+	// Enable TCP_NODELAY, speeds things up a bit.
+	// Enable SO_KEEPALIVE, lots of clueless users have broken routers and
+	// firewalls which terminate the control connection on long transfers.
+	SetSockOpt(TCP_NODELAY, &value, sizeof(value), IPPROTO_TCP);
+	SetSockOpt(SO_KEEPALIVE, &value, sizeof(value));
 
 	if (m_nTransferState == STATE_STARTING)
 	{
