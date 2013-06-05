@@ -437,6 +437,8 @@ void CTransferSocket::OnAccept(int nErrorCode)
 		value = sndbuf;
 		SetSockOpt(SO_SNDBUF, &value, sizeof(value));
 	}
+	value = 1;
+	SetSockOpt(SO_KEEPALIVE, &value, sizeof(value));
 
 	if (m_nTransferState == STATE_STARTING)
 	{
