@@ -321,7 +321,6 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
 {
   bool Result;
 
-  CString a;
   unsigned int MessageID = FZ_MSG_ID(wParam);
 
   switch (MessageID)
