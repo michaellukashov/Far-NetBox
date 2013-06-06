@@ -118,8 +118,7 @@ void CoreFinalize()
   #endif
   PuttyFinalize();
 
-  delete StoredSessions;
-  StoredSessions = NULL;
+  SAFE_DESTROY(StoredSessions);
   DeleteConfiguration();
 
   CryptographyFinalize();
