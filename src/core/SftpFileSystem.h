@@ -177,7 +177,7 @@ protected:
   bool SFTPConfirmResume(const UnicodeString & DestFileName, bool PartialBiggerThanSource,
     TFileOperationProgressType * OperationProgress);
   void SFTPSinkRobust(const UnicodeString & FileName,
-    const TRemoteFile * File, const UnicodeString & TargetDir,
+    const TRemoteFile * AFile, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   void SFTPSink(const UnicodeString & FileName,

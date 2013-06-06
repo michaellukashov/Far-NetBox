@@ -4890,7 +4890,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::SFTPSinkRobust(const UnicodeString & FileName,
-  const TRemoteFile * File, const UnicodeString & TargetDir,
+  const TRemoteFile * AFile, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
@@ -4905,7 +4905,7 @@ void TSFTPFileSystem::SFTPSinkRobust(const UnicodeString & FileName,
     bool ChildError = false;
     try
     {
-      SFTPSink(FileName, File, TargetDir, CopyParam, Params, OperationProgress,
+      SFTPSink(FileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action, ChildError);
     }
     catch(Exception & E)
@@ -4926,8 +4926,8 @@ void TSFTPFileSystem::SFTPSinkRobust(const UnicodeString & FileName,
     {
       OperationProgress->RollbackTransfer();
       Action.Restart();
-      assert(File != NULL);
-      if (!File->GetIsDirectory())
+      assert(AFile != NULL);
+      if (!AFile->GetIsDirectory())
       {
         // prevent overwrite and resume confirmations
         Params |= cpNoConfirmation;
