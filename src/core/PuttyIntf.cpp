@@ -371,16 +371,15 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
     // we expect this to be called only from verify_host_key() or store_host_key()
     assert(RegKey == L"SshHostKeys");
 
-    THierarchicalStorage * Storage = GetConfiguration()->CreateStorage(false);
+    std::auto_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(false));
     Storage->SetAccessMode((CanCreate ? smReadWrite : smRead));
     if (Storage->OpenSubKey(RegKey, CanCreate))
     {
-      *Result = reinterpret_cast<HKEY>(Storage);
+      *Result = reinterpret_cast<HKEY>(Storage.release());
       R = ERROR_SUCCESS;
     }
     else
     {
-      delete Storage;
       R = ERROR_CANTOPEN;
     }
   }

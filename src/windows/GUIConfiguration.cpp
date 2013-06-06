@@ -407,39 +407,30 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
   for (intptr_t Index = 0; Index < ACount; ++Index)
   {
     UnicodeString Name = IntToStr(Index);
-    TCopyParamRule * Rule = NULL;
-    TCopyParamType * CopyParam = new TCopyParamType();
-    try
+    std::auto_ptr<TCopyParamRule> Rule(NULL);
+    std::auto_ptr<TCopyParamType> CopyParam(new TCopyParamType());
+    if (Storage->OpenSubKey(Name, false))
     {
-      if (Storage->OpenSubKey(Name, false))
+      TRY_FINALLY (
       {
-        TRY_FINALLY (
-        {
-          Name = Storage->ReadString(L"Name", Name);
-          CopyParam->Load(Storage);
+        Name = Storage->ReadString(L"Name", Name);
+        CopyParam->Load(Storage);
 
-          if (Storage->ReadBool(L"HasRule", false))
-          {
-            Rule = new TCopyParamRule();
-            Rule->Load(Storage);
-          }
-        }
-        ,
+        if (Storage->ReadBool(L"HasRule", false))
         {
-          Storage->CloseSubKey();
+          Rule.reset(new TCopyParamRule());
+          Rule->Load(Storage);
         }
-        );
       }
-    }
-    catch(...)
-    {
-      delete CopyParam;
-      delete Rule;
-      throw;
+      ,
+      {
+        Storage->CloseSubKey();
+      }
+      );
     }
 
-    FCopyParams->Add(reinterpret_cast<TObject *>(CopyParam));
-    FRules->Add(reinterpret_cast<TObject *>(Rule));
+    FCopyParams->Add(reinterpret_cast<TObject *>(CopyParam.release()));
+    FRules->Add(reinterpret_cast<TObject *>(Rule.release()));
     FNames->Add(Name);
   }
   Reset();

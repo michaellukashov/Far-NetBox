@@ -580,22 +580,14 @@ UnicodeString TRemoteToken::GetLogText() const
 //---------------------------------------------------------------------------
 TRemoteTokenList * TRemoteTokenList::Duplicate() const
 {
-  TRemoteTokenList * Result = new TRemoteTokenList();
-  try
+  std::auto_ptr<TRemoteTokenList> Result(new TRemoteTokenList());
+  TTokens::const_iterator I = FTokens.begin();
+  while (I != FTokens.end())
   {
-    TTokens::const_iterator I = FTokens.begin();
-    while (I != FTokens.end())
-    {
-      Result->Add(*I);
-      ++I;
-    }
+    Result->Add(*I);
+    ++I;
   }
-  catch(...)
-  {
-    delete Result;
-    throw;
-  }
-  return Result;
+  return Result.release();
 }
 //---------------------------------------------------------------------------
 void TRemoteTokenList::Clear()
@@ -751,45 +743,36 @@ TRemoteFile::~TRemoteFile()
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 {
-  TRemoteFile * Result;
-  Result = new TRemoteFile();
-  try
+  std::auto_ptr<TRemoteFile> Result(new TRemoteFile());
+  if (FLinkedFile)
   {
-    if (FLinkedFile)
-    {
-      Result->FLinkedFile = FLinkedFile->Duplicate(true);
-      Result->FLinkedFile->FLinkedByFile = Result;
-    }
-    Result->SetRights(FRights);
-    #define COPY_FP(PROP) Result->F ## PROP = F ## PROP;
-    COPY_FP(Terminal);
-    COPY_FP(Owner);
-    COPY_FP(ModificationFmt);
-    COPY_FP(Size);
-    COPY_FP(FileName);
-    COPY_FP(INodeBlocks);
-    COPY_FP(Modification);
-    COPY_FP(LastAccess);
-    COPY_FP(Group);
-    COPY_FP(IconIndex);
-    COPY_FP(TypeName);
-    COPY_FP(IsSymLink);
-    COPY_FP(LinkTo);
-    COPY_FP(Type);
-    COPY_FP(Selected);
-    COPY_FP(CyclicLink);
-    #undef COPY_FP
-    if (Standalone && (!FFullFileName.IsEmpty() || (GetDirectory() != NULL)))
-    {
-      Result->FFullFileName = GetFullFileName();
-    }
+    Result->FLinkedFile = FLinkedFile->Duplicate(true);
+    Result->FLinkedFile->FLinkedByFile = Result.get();
   }
-  catch(...)
+  Result->SetRights(FRights);
+  #define COPY_FP(PROP) Result->F ## PROP = F ## PROP;
+  COPY_FP(Terminal);
+  COPY_FP(Owner);
+  COPY_FP(ModificationFmt);
+  COPY_FP(Size);
+  COPY_FP(FileName);
+  COPY_FP(INodeBlocks);
+  COPY_FP(Modification);
+  COPY_FP(LastAccess);
+  COPY_FP(Group);
+  COPY_FP(IconIndex);
+  COPY_FP(TypeName);
+  COPY_FP(IsSymLink);
+  COPY_FP(LinkTo);
+  COPY_FP(Type);
+  COPY_FP(Selected);
+  COPY_FP(CyclicLink);
+  #undef COPY_FP
+  if (Standalone && (!FFullFileName.IsEmpty() || (GetDirectory() != NULL)))
   {
-    delete Result;
-    throw;
+    Result->FFullFileName = GetFullFileName();
   }
-  return Result;
+  return Result.release();
 }
 //---------------------------------------------------------------------------
 void TRemoteFile::LoadTypeInfo() const

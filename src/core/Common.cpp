@@ -1870,7 +1870,7 @@ UnicodeString DefaultEncodingName()
 UnicodeString WindowsProductName()
 {
   UnicodeString Result;
-  TRegistry * Registry = new TRegistry();
+  std::auto_ptr<TRegistry> Registry(new TRegistry());
   Registry->SetAccess(KEY_READ);
   try
   {
@@ -1882,7 +1882,6 @@ UnicodeString WindowsProductName()
     {
       Result = Registry->ReadString("ProductName");
     }
-    delete Registry;
   }
   catch(...)
   {
