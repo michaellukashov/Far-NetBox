@@ -138,7 +138,7 @@ protected:
   void RemoveReservation(intptr_t Reservation);
   void SendPacket(const TSFTPPacket * Packet);
   uintptr_t ReceiveResponse(const TSFTPPacket * Packet,
-    TSFTPPacket * Response, int ExpectedType = -1, int AllowStatus = -1);
+    TSFTPPacket * AResponse, int ExpectedType = -1, int AllowStatus = -1);
   uintptr_t SendPacketAndReceiveResponse(const TSFTPPacket * Packet,
     TSFTPPacket * Response, int ExpectedType = -1, int AllowStatus = -1);
   void UnreserveResponse(TSFTPPacket * Response);

@@ -2401,27 +2401,27 @@ void TSFTPFileSystem::UnreserveResponse(TSFTPPacket * Response)
 }
 //---------------------------------------------------------------------------
 uintptr_t TSFTPFileSystem::ReceiveResponse(
-  const TSFTPPacket * Packet, TSFTPPacket * Response, int ExpectedType,
+  const TSFTPPacket * Packet, TSFTPPacket * AResponse, int ExpectedType,
   int AllowStatus)
 {
   uintptr_t Result;
   uintptr_t MessageNumber = Packet->GetMessageNumber();
-  TSFTPPacket * AResponse = (Response ? Response : new TSFTPPacket(GetSessionData()->GetCodePageAsNumber()));
+  TSFTPPacket * Response = (AResponse ? AResponse : new TSFTPPacket(GetSessionData()->GetCodePageAsNumber()));
   TRY_FINALLY (
   {
-    Result = ReceivePacket(AResponse, ExpectedType, AllowStatus);
-    if (MessageNumber != AResponse->GetMessageNumber())
+    Result = ReceivePacket(Response, ExpectedType, AllowStatus);
+    if (MessageNumber != Response->GetMessageNumber())
     {
       FTerminal->FatalError(NULL, FMTLOAD(SFTP_MESSAGE_NUMBER,
-        static_cast<int>(AResponse->GetMessageNumber()),
+        static_cast<int>(Response->GetMessageNumber()),
         static_cast<int>(MessageNumber)));
     }
   }
   ,
   {
-    if (!Response)
+    if (!AResponse)
     {
-      delete AResponse;
+      delete Response;
     }
   }
   );
