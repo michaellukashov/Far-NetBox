@@ -5168,7 +5168,7 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
   return Result;
 }
 //------------------------------------------------------------------------------
-bool TTerminal::CopyToLocal(TStrings * FilesToCopy,
+bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params)
 {
   assert(FFileSystem);
@@ -5176,101 +5176,94 @@ bool TTerminal::CopyToLocal(TStrings * FilesToCopy,
   // see scp.c: sink(), tolocal()
 
   bool Result = false;
-  bool OwnsFileList = (FilesToCopy == NULL);
+  bool OwnsFileList = (AFilesToCopy == NULL);
+  std::auto_ptr<TStrings> FilesToCopy(NULL);
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  TRY_FINALLY ( //-V506
+  if (OwnsFileList)
   {
-    if (OwnsFileList)
+    FilesToCopy.reset(new TStringList());
+    FilesToCopy->Assign(GetFiles()->GetSelectedFiles());
+    AFilesToCopy = FilesToCopy.get();
+  }
+
+  BeginTransaction();
+  TRY_FINALLY (
+  {
+    __int64 TotalSize = 0;
+    bool TotalSizeKnown = false;
+    TFileOperationProgressType OperationProgress(MAKE_CALLBACK(TTerminal::DoProgress, this), MAKE_CALLBACK(TTerminal::DoFinished, this));
+
+    if (CopyParam->GetCalculateSize())
     {
-      FilesToCopy = new TStringList();
-      FilesToCopy->Assign(GetFiles()->GetSelectedFiles());
-    }
-
-    BeginTransaction();
-    TRY_FINALLY (
-    {
-      __int64 TotalSize = 0;
-      bool TotalSizeKnown = false;
-      TFileOperationProgressType OperationProgress(MAKE_CALLBACK(TTerminal::DoProgress, this), MAKE_CALLBACK(TTerminal::DoFinished, this));
-
-      if (CopyParam->GetCalculateSize())
-      {
-        SetExceptionOnFail(true);
-        TRY_FINALLY (
-        {
-          // dirty trick: when moving, do not pass copy param to avoid exclude mask
-          CalculateFilesSize(FilesToCopy, TotalSize, csIgnoreErrors,
-            (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL));
-          TotalSizeKnown = true;
-        }
-        ,
-        {
-          SetExceptionOnFail(false);
-        }
-        );
-      }
-
-      OperationProgress.Start(((Params & cpDelete) != 0 ? foMove : foCopy), osRemote,
-        FilesToCopy->GetCount(), (Params & cpTemporary) != 0, TargetDir, CopyParam->GetCPSLimit());
-
-      FOperationProgress = &OperationProgress;
+      SetExceptionOnFail(true);
       TRY_FINALLY (
       {
-        if (TotalSizeKnown)
-        {
-          OperationProgress.SetTotalSize(TotalSize);
-        }
-
-        try
-        {
-          TRY_FINALLY (
-          {
-            FFileSystem->CopyToLocal(FilesToCopy, TargetDir, CopyParam, Params,
-              &OperationProgress, OnceDoneOperation);
-          }
-          ,
-          {
-            if (GetActive())
-            {
-              ReactOnCommand(fsCopyToLocal);
-            }
-          }
-          );
-        }
-        catch (Exception &E)
-        {
-          if (OperationProgress.Cancel != csCancel)
-          {
-            CommandError(&E, LoadStr(TOLOCAL_COPY_ERROR));
-          }
-          OnceDoneOperation = odoIdle;
-        }
-
-        if (OperationProgress.Cancel == csContinue)
-        {
-          Result = true;
-        }
+        // dirty trick: when moving, do not pass copy param to avoid exclude mask
+        CalculateFilesSize(AFilesToCopy, TotalSize, csIgnoreErrors,
+          (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL));
+        TotalSizeKnown = true;
       }
       ,
       {
-        FOperationProgress = NULL;
-        OperationProgress.Stop();
+        SetExceptionOnFail(false);
       }
       );
     }
+
+    OperationProgress.Start(((Params & cpDelete) != 0 ? foMove : foCopy), osRemote,
+      AFilesToCopy->GetCount(), (Params & cpTemporary) != 0, TargetDir, CopyParam->GetCPSLimit());
+
+    FOperationProgress = &OperationProgress;
+    TRY_FINALLY (
+    {
+      if (TotalSizeKnown)
+      {
+        OperationProgress.SetTotalSize(TotalSize);
+      }
+
+      try
+      {
+        TRY_FINALLY (
+        {
+          FFileSystem->CopyToLocal(AFilesToCopy, TargetDir, CopyParam, Params,
+            &OperationProgress, OnceDoneOperation);
+        }
+        ,
+        {
+          if (GetActive())
+          {
+            ReactOnCommand(fsCopyToLocal);
+          }
+        }
+        );
+      }
+      catch (Exception &E)
+      {
+        if (OperationProgress.Cancel != csCancel)
+        {
+          CommandError(&E, LoadStr(TOLOCAL_COPY_ERROR));
+        }
+        OnceDoneOperation = odoIdle;
+      }
+
+      if (OperationProgress.Cancel == csContinue)
+      {
+        Result = true;
+      }
+    }
     ,
     {
-      // If session is still active (no fatal error) we reload directory
-      // by calling EndTransaction
-      EndTransaction();
+      FOperationProgress = NULL;
+      OperationProgress.Stop();
     }
     );
-
   }
   ,
   {
-    if (OwnsFileList) delete FilesToCopy;
+    // If session is still active (no fatal error) we reload directory
+    // by calling EndTransaction
+    EndTransaction();
   }
   );
 
