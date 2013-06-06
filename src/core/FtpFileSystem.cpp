@@ -743,58 +743,51 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
 
   if (Properties && Properties->Valid.Contains(vpRights))
   {
-    TRemoteFile * OwnedFile = NULL;
+    std::auto_ptr<TRemoteFile> OwnedFile(NULL);
+    UnicodeString FileName = AbsolutePath(AFileName, false);
 
-    TRY_FINALLY (
+    if (AFile == NULL)
     {
-      UnicodeString FileName = AbsolutePath(AFileName, false);
-
-      if (AFile == NULL)
-      {
-        ReadFile(FileName, OwnedFile);
-        AFile = OwnedFile;
-      }
-
-      if ((AFile != NULL) && AFile->GetIsDirectory() && !AFile->GetIsSymLink() && Properties->Recursive)
-      {
-        try
-        {
-          FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TTerminal::ChangeFileProperties, FTerminal),
-            static_cast<void *>(const_cast<TRemoteProperties *>(Properties)));
-        }
-        catch(...)
-        {
-          Action.Cancel();
-          throw;
-        }
-      }
-
-      TRights Rights;
-      if (AFile != NULL)
-      {
-        Rights = *AFile->GetRights();
-      }
-      Rights |= Properties->Rights.GetNumberSet();
-      Rights &= static_cast<unsigned short>(~Properties->Rights.GetNumberUnset());
-      if ((AFile != NULL) && AFile->GetIsDirectory() && Properties->AddXToDirectories)
-      {
-        Rights.AddExecute();
-      }
-
-      Action.Rights(Rights);
-
-      UnicodeString FileNameOnly = UnixExtractFileName(FileName);
-      UnicodeString FilePath = UnixExtractFilePath(FileName);
-      // FZAPI wants octal number represented as decadic
-      FFileZillaIntf->Chmod(Rights.GetNumberDecadic(), FileNameOnly.c_str(), FilePath.c_str());
-
-      GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
+      TRemoteFile * File = NULL;
+      ReadFile(FileName, File);
+      OwnedFile.reset(File);
+      AFile = File;
     }
-    ,
+
+    if ((AFile != NULL) && AFile->GetIsDirectory() && !AFile->GetIsSymLink() && Properties->Recursive)
     {
-      delete OwnedFile;
+      try
+      {
+        FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TTerminal::ChangeFileProperties, FTerminal),
+          static_cast<void *>(const_cast<TRemoteProperties *>(Properties)));
+      }
+      catch(...)
+      {
+        Action.Cancel();
+        throw;
+      }
     }
-    );
+
+    TRights Rights;
+    if (AFile != NULL)
+    {
+      Rights = *AFile->GetRights();
+    }
+    Rights |= Properties->Rights.GetNumberSet();
+    Rights &= static_cast<unsigned short>(~Properties->Rights.GetNumberUnset());
+    if ((AFile != NULL) && AFile->GetIsDirectory() && Properties->AddXToDirectories)
+    {
+      Rights.AddExecute();
+    }
+
+    Action.Rights(Rights);
+
+    UnicodeString FileNameOnly = UnixExtractFileName(FileName);
+    UnicodeString FilePath = UnixExtractFilePath(FileName);
+    // FZAPI wants octal number represented as decadic
+    FFileZillaIntf->Chmod(Rights.GetNumberDecadic(), FileNameOnly.c_str(), FilePath.c_str());
+
+    GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
   }
   else
   {
