@@ -2950,19 +2950,11 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
 //---------------------------------------------------------------------
 void TStoredSessionList::Load()
 {
-  THierarchicalStorage * Storage = GetConfiguration()->CreateStorage(true);
-  TRY_FINALLY (
+  std::auto_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(true));
+  if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), False))
   {
-    if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), False))
-    {
-      Load(Storage);
-    }
+    Load(Storage.get());
   }
-  ,
-  {
-    delete Storage;
-  }
-  );
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
@@ -3092,20 +3084,12 @@ void TStoredSessionList::Export(const UnicodeString & FileName)
 {
   Classes::Error(SNotImplemented, 3003);
 /*
-  THierarchicalStorage * Storage = new TIniFileStorage(FileName);
-  TRY_FINALLY (
+  std::auto_ptr<THierarchicalStorage> Storage(new TIniFileStorage(FileName));
+  Storage->SetAccessMode(smReadWrite);
+  if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
   {
-    Storage->SetAccessMode(smReadWrite);
-    if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
-    {
-      Save(Storage, true);
-    }
+    Save(Storage, true);
   }
-  ,
-  {
-    delete Storage;
-  }
-  );
 */
 }
 //---------------------------------------------------------------------
@@ -3153,20 +3137,12 @@ void TStoredSessionList::Cleanup()
     {
       Clear();
     }
-    TRegistryStorage * Storage = new TRegistryStorage(GetConfiguration()->GetRegistryStorageKey());
-    TRY_FINALLY (
+    std::auto_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetConfiguration()->GetRegistryStorageKey()));
+    Storage->SetAccessMode(smReadWrite);
+    if (Storage->OpenRootKey(False))
     {
-      Storage->SetAccessMode(smReadWrite);
-      if (Storage->OpenRootKey(False))
-      {
-        Storage->RecursiveDeleteSubKey(GetConfiguration()->GetStoredSessionsSubKey());
-      }
+      Storage->RecursiveDeleteSubKey(GetConfiguration()->GetStoredSessionsSubKey());
     }
-    ,
-    {
-      delete Storage;
-    }
-    );
   }
   catch (Exception &E)
   {

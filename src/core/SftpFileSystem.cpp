@@ -5111,31 +5111,21 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       ReceiveResponse(&RemoteFilePacket, &RemoteFilePacket);
 
       const TRemoteFile * File = AFile;
-      TRY_FINALLY (
+      std::auto_ptr<const TRemoteFile> FilePtr(NULL);
+      // ignore errors
+      if (RemoteFilePacket.GetType() == SSH_FXP_ATTRS)
       {
-        // ignore errors
-        if (RemoteFilePacket.GetType() == SSH_FXP_ATTRS)
-        {
-          // load file, avoid completion (resolving symlinks) as we do not need that
-          File = LoadFile(&RemoteFilePacket, NULL, ::UnixExtractFileName(FileName),
-            NULL, false);
-        }
+        // load file, avoid completion (resolving symlinks) as we do not need that
+        File = LoadFile(&RemoteFilePacket, NULL, ::UnixExtractFileName(FileName),
+          NULL, false);
+        FilePtr.reset(File);
+      }
 
-        Modification = File->GetModification();
-        AcTime = DateTimeToFileTime(File->GetLastAccess(),
-          FTerminal->GetSessionData()->GetDSTMode());
-        WrTime = DateTimeToFileTime(File->GetModification(),
-          FTerminal->GetSessionData()->GetDSTMode());
-      }
-      ,
-      {
-        if (AFile != File)
-        {
-          delete File;
-          File = NULL;
-        }
-      }
-      );
+      Modification = File->GetModification();
+      AcTime = DateTimeToFileTime(File->GetLastAccess(),
+        FTerminal->GetSessionData()->GetDSTMode());
+      WrTime = DateTimeToFileTime(File->GetModification(),
+        FTerminal->GetSessionData()->GetDSTMode());
 
       if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && !ResumeTransfer)
       {
