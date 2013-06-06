@@ -1923,13 +1923,12 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   const UnicodeString & SourceDir, const UnicodeString & Change, UnicodeString & TargetDir)
 {
   UnicodeString Key;
-  bool Result;
   Key = TTerminal::ExpandFileName(Change, SourceDir);
   if (Key.IsEmpty())
   {
     Key = L"/";
   }
-  Result = (IndexOfName(Key.c_str()) >= 0);
+  bool Result = (IndexOfName(Key.c_str()) >= 0);
   if (Result)
   {
     TargetDir = GetValue(Key);

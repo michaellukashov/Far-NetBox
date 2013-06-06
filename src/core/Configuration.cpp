@@ -469,10 +469,9 @@ UnicodeString TConfiguration::BannerHash(const UnicodeString & Banner) const
 bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
   const UnicodeString & Banner)
 {
-  bool Result;
   std::auto_ptr<THierarchicalStorage> Storage(CreateStorage(false));
   Storage->SetAccessMode(smRead);
-  Result =
+  bool Result =
     !Storage->OpenSubKey(GetConfigurationSubKey(), false) ||
     !Storage->OpenSubKey(L"Banners", false) ||
     !Storage->ValueExists(SessionKey) ||

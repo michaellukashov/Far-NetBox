@@ -355,7 +355,7 @@ bool TTunnelUI::PromptUser(TSessionData * Data, TPromptKind Kind,
   const UnicodeString & Name, const UnicodeString & Instructions, TStrings* Prompts,
   TStrings * Results)
 {
-  bool Result;
+  bool Result = false;
   if (GetCurrentThreadId() == FTerminalThread)
   {
     UnicodeString Instructions2 = Instructions;
@@ -367,10 +367,6 @@ bool TTunnelUI::PromptUser(TSessionData * Data, TPromptKind Kind,
     }
 
     Result = FTerminal->PromptUser(Data, Kind, Name, Instructions2, Prompts, Results);
-  }
-  else
-  {
-    Result = false;
   }
   return Result;
 }
@@ -1102,12 +1098,11 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   const UnicodeString & Prompt,
   bool Echo, intptr_t MaxLen, UnicodeString & AResult)
 {
-  bool Result;
   std::auto_ptr<TStrings> Prompts(new TStringList());
   std::auto_ptr<TStrings> Results(new TStringList());
   Prompts->AddObject(Prompt, reinterpret_cast<TObject *>(!!Echo));
   Results->AddObject(AResult, reinterpret_cast<TObject *>(MaxLen));
-  Result = PromptUser(Data, Kind, Name, Instructions, Prompts.get(), Results.get());
+  bool Result = PromptUser(Data, Kind, Name, Instructions, Prompts.get(), Results.get());
   AResult = Results->GetString(0);
   return Result;
 }

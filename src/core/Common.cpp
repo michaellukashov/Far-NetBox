@@ -1804,12 +1804,8 @@ bool IsExactly2008R2()
   typedef BOOL (WINAPI * TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
   TGetProductInfo GetProductInfo =
       (TGetProductInfo)GetProcAddress(Kernel32, "GetProductInfo");
-  bool Result;
-  if (GetProductInfo == NULL)
-  {
-    Result = false;
-  }
-  else
+  bool Result = false;
+  if (GetProductInfo != NULL)
   {
     DWORD Type;
     GetProductInfo(Win32MajorVersion, Win32MinorVersion, 0, 0, &Type);

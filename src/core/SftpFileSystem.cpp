@@ -1111,7 +1111,6 @@ public:
     int ExpectedType = -1, int AllowStatus = -1, void ** Token = NULL)
   {
     assert(FRequests->GetCount());
-    bool Result;
     std::auto_ptr<TSFTPQueuePacket> Request(static_cast<TSFTPQueuePacket*>(FRequests->GetItem(0)));
     FRequests->Delete(0);
     assert(Request.get());
@@ -1132,7 +1131,7 @@ public:
       *Packet = *Response.get();
     }
 
-    Result = !End(Response.get());
+    bool Result = !End(Response.get());
     if (Result)
     {
       SendRequests();
@@ -1593,7 +1592,7 @@ public:
   bool ReceivePacket(TSFTPPacket * Packet, TRemoteFile *& File)
   {
     void * Token;
-    bool Result;
+    bool Result = false;
     TRY_FINALLY (
     {
       Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_EXTENDED_REPLY, asNo, &Token);
@@ -2243,9 +2242,8 @@ intptr_t TSFTPFileSystem::PacketLength(unsigned char * LenBuf, intptr_t Expected
 //---------------------------------------------------------------------------
 bool TSFTPFileSystem::PeekPacket()
 {
-  bool Result;
   unsigned char * Buf = NULL;
-  Result = FSecureShell->Peek(Buf, 4);
+  bool Result = FSecureShell->Peek(Buf, 4);
   if (Result)
   {
     intptr_t Length = PacketLength(Buf, -1);
