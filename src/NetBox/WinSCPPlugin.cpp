@@ -235,115 +235,107 @@ intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 //---------------------------------------------------------------------------
 TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t Item)
 {
-  TWinSCPFileSystem * FileSystem = NULL;
-  try
+  std::auto_ptr<TWinSCPFileSystem> FileSystem(NULL);
+  if (!FInitialized)
   {
-    if (!FInitialized)
-    {
-      CoreInitialize();
-      CleanupConfiguration();
-      FInitialized = true;
-    }
+    CoreInitialize();
+    CleanupConfiguration();
+    FInitialized = true;
+  }
 
-    if ((OpenFrom == OPEN_PLUGINSMENU) &&
-        (!FarConfiguration->GetPluginsMenu() || (Item == 1)))
+  if ((OpenFrom == OPEN_PLUGINSMENU) &&
+      (!FarConfiguration->GetPluginsMenu() || (Item == 1)))
+  {
+    CommandsMenu(true);
+  }
+  else
+  {
+    FileSystem.reset(new TWinSCPFileSystem(this));
+    FileSystem->Init(NULL);
+
+    if (OpenFrom == OPEN_DISKMENU || OpenFrom == OPEN_PLUGINSMENU ||
+        OpenFrom == OPEN_FINDLIST)
     {
-      CommandsMenu(true);
+      // nothing
+    }
+    else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
+    {
+      UnicodeString Directory;
+      UnicodeString CommandLine = reinterpret_cast<wchar_t *>(Item);
+      if (OpenFrom == OPEN_SHORTCUT)
+      {
+        intptr_t P = CommandLine.Pos(L"\1");
+        if (P > 0)
+        {
+          Directory = CommandLine.SubString(P + 1, CommandLine.Length() - P);
+          CommandLine.SetLength(P - 1);
+        }
+
+        TWinSCPFileSystem * PanelSystem;
+        PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
+        if (PanelSystem && PanelSystem->Connected() &&
+            PanelSystem->GetTerminal()->GetSessionData()->GetSessionUrl() == CommandLine)
+        {
+          PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
+          if (PanelSystem->UpdatePanel())
+          {
+            PanelSystem->RedrawPanel();
+          }
+          Abort();
+        }
+        // directory will be set by FAR itself
+        Directory = L"";
+      }
+      assert(StoredSessions);
+      bool DefaultsOnly = false;
+      std::auto_ptr<TOptions> Options(new TProgramParams());
+      ParseCommandLine(CommandLine, Options.get());
+      std::auto_ptr<TSessionData> Session(StoredSessions->ParseUrl(CommandLine, Options.get(), DefaultsOnly));
+      if (DefaultsOnly)
+      {
+        Abort();
+      }
+      if (!Session->GetCanLogin())
+      {
+        assert(false);
+        Abort();
+      }
+      FileSystem->Connect(Session.get());
+      if (!Directory.IsEmpty())
+      {
+        FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
+      }
+    }
+    else if (OpenFrom == OPEN_ANALYSE)
+    {
+      const wchar_t * XmlFileName = reinterpret_cast<const wchar_t *>(Item);
+      std::auto_ptr<THierarchicalStorage> ImportStorage(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
+      ImportStorage->Init();
+      ImportStorage->SetAccessMode(smRead);
+      if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
+            ImportStorage->HasSubKeys()))
+      {
+        assert(false);
+        Abort();
+      }
+      UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw(L"Session", L""));
+      std::auto_ptr<TSessionData> Session(new TSessionData(SessionName));
+      Session->Load(ImportStorage.get());
+      Session->SetModified(true);
+      if (!Session->GetCanLogin())
+      {
+        assert(false);
+        Abort();
+      }
+      FileSystem->Connect(Session.get());
     }
     else
     {
-      FileSystem = new TWinSCPFileSystem(this);
-      FileSystem->Init(NULL);
-
-      if (OpenFrom == OPEN_DISKMENU || OpenFrom == OPEN_PLUGINSMENU ||
-          OpenFrom == OPEN_FINDLIST)
-      {
-        // nothing
-      }
-      else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
-      {
-        UnicodeString Directory;
-        UnicodeString CommandLine = reinterpret_cast<wchar_t *>(Item);
-        if (OpenFrom == OPEN_SHORTCUT)
-        {
-          intptr_t P = CommandLine.Pos(L"\1");
-          if (P > 0)
-          {
-            Directory = CommandLine.SubString(P + 1, CommandLine.Length() - P);
-            CommandLine.SetLength(P - 1);
-          }
-
-          TWinSCPFileSystem * PanelSystem;
-          PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
-          if (PanelSystem && PanelSystem->Connected() &&
-              PanelSystem->GetTerminal()->GetSessionData()->GetSessionUrl() == CommandLine)
-          {
-            PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
-            if (PanelSystem->UpdatePanel())
-            {
-              PanelSystem->RedrawPanel();
-            }
-            Abort();
-          }
-          // directory will be set by FAR itself
-          Directory = L"";
-        }
-        assert(StoredSessions);
-        bool DefaultsOnly = false;
-        std::auto_ptr<TOptions> Options(new TProgramParams());
-        ParseCommandLine(CommandLine, Options.get());
-        std::auto_ptr<TSessionData> Session(StoredSessions->ParseUrl(CommandLine, Options.get(), DefaultsOnly));
-        if (DefaultsOnly)
-        {
-          Abort();
-        }
-        if (!Session->GetCanLogin())
-        {
-          assert(false);
-          Abort();
-        }
-        FileSystem->Connect(Session.get());
-        if (!Directory.IsEmpty())
-        {
-          FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
-        }
-      }
-      else if (OpenFrom == OPEN_ANALYSE)
-      {
-        const wchar_t * XmlFileName = reinterpret_cast<const wchar_t *>(Item);
-        std::auto_ptr<THierarchicalStorage> ImportStorage(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
-        ImportStorage->Init();
-        ImportStorage->SetAccessMode(smRead);
-        if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
-              ImportStorage->HasSubKeys()))
-        {
-          assert(false);
-          Abort();
-        }
-        UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw(L"Session", L""));
-        std::auto_ptr<TSessionData> Session(new TSessionData(SessionName));
-        Session->Load(ImportStorage.get());
-        Session->SetModified(true);
-        if (!Session->GetCanLogin())
-        {
-          assert(false);
-          Abort();
-        }
-        FileSystem->Connect(Session.get());
-      }
-      else
-      {
-        assert(false);
-      }
+      assert(false);
     }
   }
-  catch(...)
-  {
-    delete FileSystem;
-    throw;
-  }
 
-  return FileSystem;
+  return FileSystem.release();
 }
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,

@@ -2147,21 +2147,13 @@ intptr_t TCustomFarFileSystem::PutFilesEx(TObjectList * /*PanelItems*/,
 TObjectList * TCustomFarFileSystem::CreatePanelItemList(
   struct PluginPanelItem * PanelItem, int ItemsNumber)
 {
-  TObjectList * PanelItems = new TObjectList();
+  std::auto_ptr<TObjectList> PanelItems(new TObjectList());
   PanelItems->SetOwnsObjects(true);
-  try
+  for (intptr_t Index = 0; Index < ItemsNumber; ++Index)
   {
-    for (intptr_t Index = 0; Index < ItemsNumber; ++Index)
-    {
-      PanelItems->Add(new TFarPanelItem(&PanelItem[Index], false));
-    }
+    PanelItems->Add(new TFarPanelItem(&PanelItem[Index], false));
   }
-  catch(...)
-  {
-    delete PanelItems;
-    throw;
-  }
-  return PanelItems;
+  return PanelItems.release();
 }
 //---------------------------------------------------------------------------
 TFarPanelModes::TFarPanelModes() : TObject()
