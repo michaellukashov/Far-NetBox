@@ -1864,52 +1864,45 @@ void TFTPFileSystem::ReadCurrentDirectory()
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE, L"", &Code, &Response);
 
     assert(Response != NULL);
-    TRY_FINALLY (
+    std::auto_ptr<TStrings> ResponsePtr(Response);
+    bool Result = false;
+
+    // the only allowed 2XX code to "PWD"
+    if ((Code == 257) &&
+        (Response->GetCount() == 1))
     {
-      bool Result = false;
+      UnicodeString Path = Response->GetText();
 
-      // the only allowed 2XX code to "PWD"
-      if ((Code == 257) &&
-          (Response->GetCount() == 1))
+      intptr_t P = Path.Pos(L"\"");
+      if (P == 0)
       {
-        UnicodeString Path = Response->GetText();
+        // some systems use single quotes, be tolerant
+        P = Path.Pos(L"'");
+      }
+      if (P != 0)
+      {
+        Path.Delete(1, P - 1);
 
-        intptr_t P = Path.Pos(L"\"");
-        if (P == 0)
+        if (Unquote(Path))
         {
-          // some systems use single quotes, be tolerant
-          P = Path.Pos(L"'");
-        }
-        if (P != 0)
-        {
-          Path.Delete(1, P - 1);
-
-          if (Unquote(Path))
+          FCurrentDirectory = UnixExcludeTrailingBackslash(Path);
+          if (FCurrentDirectory.IsEmpty())
           {
-            FCurrentDirectory = UnixExcludeTrailingBackslash(Path);
-            if (FCurrentDirectory.IsEmpty())
-            {
-              FCurrentDirectory = L"/";
-            }
-            Result = true;
+            FCurrentDirectory = L"/";
           }
+          Result = true;
         }
       }
+    }
 
-      if (Result)
-      {
-        FFileZillaIntf->SetCurrentPath(FCurrentDirectory.c_str());
-      }
-      else
-      {
-        throw Exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, Response->GetText().c_str()));
-      }
-    }
-    ,
+    if (Result)
     {
-      delete Response;
+      FFileZillaIntf->SetCurrentPath(FCurrentDirectory.c_str());
     }
-    );
+    else
+    {
+      throw Exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, Response->GetText().c_str()));
+    }
   }
 }
 //---------------------------------------------------------------------------
