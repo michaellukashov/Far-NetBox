@@ -2026,15 +2026,15 @@ void TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::ReadFile(const UnicodeString & FileName,
-  TRemoteFile *& File)
+  TRemoteFile *& AFile)
 {
   UnicodeString Path = UnixExtractFilePath(FileName);
   UnicodeString NameOnly = UnixExtractFileName(FileName);
-  TRemoteFile * AFile = NULL;
+  TRemoteFile * File = NULL;
   bool Own = false;
   if (FServerCapabilities->GetCapability(mlsd_command) == yes)
   {
-    DoReadFile(FileName, AFile);
+    DoReadFile(FileName, File);
     Own = true;
   }
   else
@@ -2047,10 +2047,10 @@ void TFTPFileSystem::ReadFile(const UnicodeString & FileName,
         (TTerminal::IsAbsolutePath(FFileListCache->GetDirectory()) ||
         (FFileListCachePath == GetCurrentDirectory())))
     {
-      AFile = FFileListCache->FindFile(NameOnly);
+      File = FFileListCache->FindFile(NameOnly);
     }
     // if cache is invalid or file is not in cache, (re)read the directory
-    if (AFile == NULL)
+    if (File == NULL)
     {
       TRemoteFileList * FileListCache = new TRemoteFileList();
       FileListCache->SetDirectory(Path);
@@ -2070,20 +2070,20 @@ void TFTPFileSystem::ReadFile(const UnicodeString & FileName,
       FFileListCache = FileListCache;
       FFileListCachePath = GetCurrentDirectory();
 
-      AFile = FFileListCache->FindFile(NameOnly);
+      File = FFileListCache->FindFile(NameOnly);
     }
 
     Own = false;
   }
 
-  if (AFile == NULL)
+  if (File == NULL)
   {
-    File = NULL;
+    AFile = NULL;
     throw Exception(FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()));
   }
 
-  assert(AFile != NULL);
-  File = Own ? AFile : AFile->Duplicate();
+  assert(File != NULL);
+  AFile = Own ? File : File->Duplicate();
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,

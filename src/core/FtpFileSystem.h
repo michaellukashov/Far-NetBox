@@ -68,7 +68,7 @@ public:
   virtual void ReadCurrentDirectory();
   virtual void ReadDirectory(TRemoteFileList * FileList);
   virtual void ReadFile(const UnicodeString & FileName,
-    TRemoteFile *& File);
+    TRemoteFile *& AFile);
   virtual void ReadSymlink(TRemoteFile * SymlinkFile,
     TRemoteFile *& File);
   virtual void RenameFile(const UnicodeString & FileName,
