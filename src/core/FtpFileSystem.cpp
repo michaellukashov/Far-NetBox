@@ -1775,26 +1775,18 @@ void TFTPFileSystem::CustomCommandOnFile(const UnicodeString & /*FileName*/,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DoStartup()
 {
-  TStrings * PostLoginCommands = new TStringList();
-  TRY_FINALLY (
+  std::auto_ptr<TStrings> PostLoginCommands(new TStringList());
+  PostLoginCommands->SetText(FTerminal->GetSessionData()->GetPostLoginCommands());
+  for (intptr_t Index = 0; Index < PostLoginCommands->GetCount(); ++Index)
   {
-    PostLoginCommands->SetText(FTerminal->GetSessionData()->GetPostLoginCommands());
-    for (intptr_t Index = 0; Index < PostLoginCommands->GetCount(); ++Index)
+    UnicodeString Command = PostLoginCommands->GetString(Index);
+    if (!Command.IsEmpty())
     {
-      UnicodeString Command = PostLoginCommands->GetString(Index);
-      if (!Command.IsEmpty())
-      {
-        FFileZillaIntf->CustomCommand(Command.c_str());
+      FFileZillaIntf->CustomCommand(Command.c_str());
 
-        GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_3XX_CODE);
-      }
+      GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_3XX_CODE);
     }
   }
-  ,
-  {
-    delete PostLoginCommands;
-  }
-  );
 
   // retrieve initialize working directory to save it as home directory
   ReadCurrentDirectory();
@@ -2026,26 +2018,18 @@ void TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
   // current directory for the server
   EnsureLocation();
 
-  TRemoteFileList * FileList = new TRemoteFileList();
-  TRY_FINALLY (
-  {
-    TFTPFileListHelper Helper(this, FileList, false);
-    FFileZillaIntf->ListFile(FileName.c_str());
+  std::auto_ptr<TRemoteFileList> FileList(new TRemoteFileList());
+  TFTPFileListHelper Helper(this, FileList.get(), false);
+  FFileZillaIntf->ListFile(FileName.c_str());
 
-    GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
-    TRemoteFile * File = FileList->FindFile(UnixExtractFileName(FileName));
-    if (File != NULL)
-    {
-      AFile = File->Duplicate();
-    }
-
-    FLastDataSent = Now();
-  }
-  ,
+  GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
+  TRemoteFile * File = FileList->FindFile(UnixExtractFileName(FileName));
+  if (File != NULL)
   {
-    delete FileList;
+    AFile = File->Duplicate();
   }
-  );
+
+  FLastDataSent = Now();
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::ReadFile(const UnicodeString & FileName,

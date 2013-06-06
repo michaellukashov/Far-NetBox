@@ -2044,16 +2044,8 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
 
     if (!Verified)
     {
-      Exception * E = new Exception(LoadStr(KEY_NOT_VERIFIED));
-      TRY_FINALLY (
-      {
-        FUI->FatalError(E, FMTLOAD(HOSTKEY, Fingerprint.c_str()));
-      }
-      ,
-      {
-        delete E;
-      }
-      );
+      std::auto_ptr<Exception> E(new Exception(LoadStr(KEY_NOT_VERIFIED)));
+      FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, Fingerprint.c_str()));
     }
   }
 }

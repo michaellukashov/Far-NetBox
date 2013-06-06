@@ -915,17 +915,9 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     {
       AddSeparator();
       ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
-      THierarchicalStorage * Storage = FConfiguration->CreateStorage(false);
-      assert(Storage);
-      TRY_FINALLY (
-      {
-        ADF(L"Configuration: %s", Storage->GetSource().c_str());
-      }
-      ,
-      {
-        delete Storage;
-      }
-      );
+      std::auto_ptr<THierarchicalStorage> Storage(FConfiguration->CreateStorage(false));
+      assert(Storage.get());
+      ADF(L"Configuration: %s", Storage->GetSource().c_str());
 
       if (0)
       {
@@ -1281,18 +1273,10 @@ void TActionLog::AddFailure(TStrings * Messages)
 //---------------------------------------------------------------------------
 void TActionLog::AddFailure(Exception * E)
 {
-  TStrings * Messages = ExceptionToMessages(E);
-  if (Messages != NULL)
+  std::auto_ptr<TStrings> Messages(ExceptionToMessages(E));
+  if (Messages.get() != NULL)
   {
-    TRY_FINALLY (
-    {
-      AddFailure(Messages);
-    }
-    ,
-    {
-      delete Messages;
-    }
-    );
+    AddFailure(Messages.get());
   }
 }
 //---------------------------------------------------------------------------

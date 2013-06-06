@@ -788,18 +788,10 @@ public:
 
   void LoadFromFile(const UnicodeString & FileName)
   {
-    TStringList * DumpLines = new TStringList();
+    std::auto_ptr<TStringList> DumpLines(new TStringList());
     RawByteString Dump;
-    TRY_FINALLY (
-    {
-      DumpLines->LoadFromFile(FileName);
-      Dump = AnsiString(DumpLines->GetText());
-    }
-    ,
-    {
-      delete DumpLines;
-    }
-    );
+    DumpLines->LoadFromFile(FileName);
+    Dump = AnsiString(DumpLines->GetText());
 
     SetCapacity(1 * 1024 * 1024); // 20480);
     unsigned char Byte[3];

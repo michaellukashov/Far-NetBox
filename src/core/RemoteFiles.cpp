@@ -1960,22 +1960,14 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
   intptr_t ACount = GetCount();
   if (ACount > FMaxSize)
   {
-    TStrings * Limited = new TStringList();
-    TRY_FINALLY (
+    std::auto_ptr<TStrings> Limited(new TStringList());
+    intptr_t Index = ACount - FMaxSize;
+    while (Index < ACount)
     {
-      intptr_t Index = ACount - FMaxSize;
-      while (Index < ACount)
-      {
-        Limited->Add(GetString(Index));
-        ++Index;
-      }
-      Data += Limited->GetText();
+      Limited->Add(GetString(Index));
+      ++Index;
     }
-    ,
-    {
-      delete Limited;
-    }
-    );
+    Data += Limited->GetText();
   }
   else
   {

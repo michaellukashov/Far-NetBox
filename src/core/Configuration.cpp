@@ -548,16 +548,8 @@ void TConfiguration::CleanupConfiguration()
 //---------------------------------------------------------------------------
 void TConfiguration::CleanupRegistry(const UnicodeString & CleanupSubKey)
 {
-  TRegistryStorage *Registry = new TRegistryStorage(GetRegistryStorageKey());
-  TRY_FINALLY (
-  {
-    Registry->RecursiveDeleteSubKey(CleanupSubKey);
-  }
-  ,
-  {
-    delete Registry;
-  }
-  );
+  std::auto_ptr<TRegistryStorage> Registry(new TRegistryStorage(GetRegistryStorageKey()));
+  Registry->RecursiveDeleteSubKey(CleanupSubKey);
 }
 //---------------------------------------------------------------------------
 void TConfiguration::CleanupHostKeys()

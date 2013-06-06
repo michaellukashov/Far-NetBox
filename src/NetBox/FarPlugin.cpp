@@ -1981,12 +1981,12 @@ intptr_t TCustomFarFileSystem::GetFiles(struct PluginPanelItem * PanelItem,
   int ItemsNumber, int Move, const wchar_t ** DestPath, int OpMode)
 {
   ResetCachedInfo();
-  TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
+  std::auto_ptr<TObjectList> PanelItems(CreatePanelItemList(PanelItem, ItemsNumber));
   intptr_t Result = 0;
   FDestPathStr = *DestPath;
   TRY_FINALLY (
   {
-    Result = GetFilesEx(PanelItems, Move > 0, FDestPathStr, OpMode);
+    Result = GetFilesEx(PanelItems.get(), Move > 0, FDestPathStr, OpMode);
   }
   ,
   {
@@ -1994,7 +1994,6 @@ intptr_t TCustomFarFileSystem::GetFiles(struct PluginPanelItem * PanelItem,
     {
       *DestPath = FDestPathStr.c_str();
     }
-    delete PanelItems;
   }
   );
 

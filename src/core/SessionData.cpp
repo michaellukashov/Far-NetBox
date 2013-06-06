@@ -1179,20 +1179,12 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
 //---------------------------------------------------------------------
 void TSessionData::Remove()
 {
-  THierarchicalStorage * Storage = GetConfiguration()->CreateStorage(true);
-  TRY_FINALLY (
+  std::auto_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(true));
+  Storage->SetExplicit(true);
+  if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false))
   {
-    Storage->SetExplicit(true);
-    if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false))
-    {
-      Storage->RecursiveDeleteSubKey(GetInternalStorageKey());
-    }
+    Storage->RecursiveDeleteSubKey(GetInternalStorageKey());
   }
-  ,
-  {
-    delete Storage;
-  }
-  );
 }
 //---------------------------------------------------------------------
 inline void MoveStr(UnicodeString & Source, UnicodeString * Dest, intptr_t Count)
@@ -1487,26 +1479,15 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     }
     if (Options->FindSwitch(L"rawsettings"))
     {
-      TStrings * RawSettings = NULL;
-      TRegistryStorage * OptionsStorage = NULL;
-      TRY_FINALLY (
+      std::auto_ptr<TStrings> RawSettings(new TStringList());
+      std::auto_ptr<TRegistryStorage> OptionsStorage(NULL);
+      if (Options->FindSwitch(L"rawsettings", RawSettings.get()))
       {
-        RawSettings = new TStringList();
+        OptionsStorage.reset(new TRegistryStorage(GetConfiguration()->GetRegistryStorageKey()));
 
-        if (Options->FindSwitch(L"rawsettings", RawSettings))
-        {
-          OptionsStorage = new TRegistryStorage(GetConfiguration()->GetRegistryStorageKey());
-
-          bool Dummy;
-          DoLoad(OptionsStorage, Dummy);
-        }
+        bool Dummy;
+        DoLoad(OptionsStorage.get(), Dummy);
       }
-      ,
-      {
-        delete RawSettings;
-        delete OptionsStorage;
-      }
-      );
     }
     if (Options->FindSwitch(L"allowemptypassword", Value))
     {
@@ -3028,21 +3009,13 @@ void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
 //---------------------------------------------------------------------
 void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnly)
 {
-  THierarchicalStorage * Storage = GetConfiguration()->CreateStorage(true);
-  TRY_FINALLY (
+  std::auto_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(true));
+  Storage->SetAccessMode(smReadWrite);
+  Storage->SetExplicit(Explicit);
+  if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
   {
-    Storage->SetAccessMode(smReadWrite);
-    Storage->SetExplicit(Explicit);
-    if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
-    {
-      DoSave(Storage, All, RecryptPasswordOnly);
-    }
+    DoSave(Storage.get(), All, RecryptPasswordOnly);
   }
-  ,
-  {
-    delete Storage;
-  }
-  );
 
   Saved();
 }
@@ -3364,51 +3337,38 @@ void TStoredSessionList::ImportHostKeys(const UnicodeString & TargetKey,
   const UnicodeString & SourceKey, TStoredSessionList * Sessions,
   bool OnlySelected)
 {
-  TRegistryStorage * SourceStorage = NULL;
-  TRegistryStorage * TargetStorage = NULL;
-  TStringList * KeyList = NULL;
-  TRY_FINALLY (
+  std::auto_ptr<TRegistryStorage> SourceStorage(new TRegistryStorage(SourceKey));
+  std::auto_ptr<TRegistryStorage> TargetStorage(new TRegistryStorage(TargetKey));
+  std::auto_ptr<TStringList> KeyList(new TStringList());
+  TargetStorage->SetAccessMode(smReadWrite);
+
+  if (SourceStorage->OpenRootKey(false) &&
+      TargetStorage->OpenRootKey(true))
   {
-    SourceStorage = new TRegistryStorage(SourceKey);
-    TargetStorage = new TRegistryStorage(TargetKey);
-    TargetStorage->SetAccessMode(smReadWrite);
-    KeyList = new TStringList();
+    SourceStorage->GetValueNames(KeyList.get());
 
-    if (SourceStorage->OpenRootKey(false) &&
-        TargetStorage->OpenRootKey(true))
+    UnicodeString HostKeyName;
+    assert(Sessions != NULL);
+    for (intptr_t Index = 0; Index < Sessions->GetCount(); ++Index)
     {
-      SourceStorage->GetValueNames(KeyList);
-
-      UnicodeString HostKeyName;
-      assert(Sessions != NULL);
-      for (intptr_t Index = 0; Index < Sessions->GetCount(); ++Index)
+      TSessionData * Session = Sessions->GetSession(Index);
+      if (!OnlySelected || Session->GetSelected())
       {
-        TSessionData * Session = Sessions->GetSession(Index);
-        if (!OnlySelected || Session->GetSelected())
+        HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostName().c_str()));
+        UnicodeString KeyName;
+        for (intptr_t KeyIndex = 0; KeyIndex < KeyList->GetCount(); ++KeyIndex)
         {
-          HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostName().c_str()));
-          UnicodeString KeyName;
-          for (intptr_t KeyIndex = 0; KeyIndex < KeyList->GetCount(); ++KeyIndex)
+          KeyName = KeyList->GetString(KeyIndex);
+          intptr_t P = KeyName.Pos(HostKeyName);
+          if ((P > 0) && (P == KeyName.Length() - HostKeyName.Length() + 1))
           {
-            KeyName = KeyList->GetString(KeyIndex);
-            intptr_t P = KeyName.Pos(HostKeyName);
-            if ((P > 0) && (P == KeyName.Length() - HostKeyName.Length() + 1))
-            {
-              TargetStorage->WriteStringRaw(KeyName,
-                SourceStorage->ReadStringRaw(KeyName, L""));
-            }
+            TargetStorage->WriteStringRaw(KeyName,
+              SourceStorage->ReadStringRaw(KeyName, L""));
           }
         }
       }
     }
   }
-  ,
-  {
-    delete SourceStorage;
-    delete TargetStorage;
-    delete KeyList;
-  }
-  );
 }
 //---------------------------------------------------------------------------
 const TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString & SessionName) const
