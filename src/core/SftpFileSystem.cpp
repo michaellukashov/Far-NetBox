@@ -3410,54 +3410,46 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & FileName,
 {
   assert(AProperties != NULL);
 
-  TRemoteFile * File;
-
   UnicodeString RealFileName = LocalCanonify(FileName);
+  TRemoteFile * File;
   ReadFile(RealFileName, File);
   assert(File);
-  TRY_FINALLY (
+  std::auto_ptr<TRemoteFile> FilePtr(File);
+  if (File->GetIsDirectory() && !File->GetIsSymLink() && AProperties->Recursive)
   {
-    if (File->GetIsDirectory() && !File->GetIsSymLink() && AProperties->Recursive)
+    try
     {
-      try
-      {
-        FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK(TTerminal::ChangeFileProperties, FTerminal),
-          static_cast<void *>(const_cast<TRemoteProperties *>(AProperties)));
-      }
-      catch(...)
-      {
-        Action.Cancel();
-        throw;
-      }
+      FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK(TTerminal::ChangeFileProperties, FTerminal),
+        static_cast<void *>(const_cast<TRemoteProperties *>(AProperties)));
     }
-
-    // SFTP can change owner and group at the same time only, not individually.
-    // Fortunately we know current owner/group, so if only one is present,
-    // we can supplement the other.
-    TRemoteProperties Properties(*AProperties);
-    if (Properties.Valid.Contains(vpGroup) &&
-        !Properties.Valid.Contains(vpOwner))
+    catch(...)
     {
-      Properties.Owner = File->GetFileOwner();
-      Properties.Valid << vpOwner;
+      Action.Cancel();
+      throw;
     }
-    else if (Properties.Valid.Contains(vpOwner) &&
-             !Properties.Valid.Contains(vpGroup))
-    {
-      Properties.Group = File->GetFileGroup();
-      Properties.Valid << vpGroup;
-    }
-
-    TSFTPPacket Packet(SSH_FXP_SETSTAT, GetSessionData()->GetCodePageAsNumber());
-    Packet.AddPathString(RealFileName, FUtfStrings);
-    Packet.AddProperties(&Properties, *File->GetRights(), File->GetIsDirectory(), FVersion, FUtfStrings, &Action);
-    SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
   }
-  ,
+
+  // SFTP can change owner and group at the same time only, not individually.
+  // Fortunately we know current owner/group, so if only one is present,
+  // we can supplement the other.
+  TRemoteProperties Properties(*AProperties);
+  if (Properties.Valid.Contains(vpGroup) &&
+      !Properties.Valid.Contains(vpOwner))
   {
-    delete File;
+    Properties.Owner = File->GetFileOwner();
+    Properties.Valid << vpOwner;
   }
-  );
+  else if (Properties.Valid.Contains(vpOwner) &&
+           !Properties.Valid.Contains(vpGroup))
+  {
+    Properties.Group = File->GetFileGroup();
+    Properties.Valid << vpGroup;
+  }
+
+  TSFTPPacket Packet(SSH_FXP_SETSTAT, GetSessionData()->GetCodePageAsNumber());
+  Packet.AddPathString(RealFileName, FUtfStrings);
+  Packet.AddProperties(&Properties, *File->GetRights(), File->GetIsDirectory(), FVersion, FUtfStrings, &Action);
+  SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
 bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
@@ -4575,10 +4567,11 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
         // or similar error. In this case throw original exception.
         try
         {
-          TRemoteFile * File = NULL;
           UnicodeString RealFileName = LocalCanonify(OpenParams->RemoteFileName);
+          TRemoteFile * File = NULL;
           ReadFile(RealFileName, File);
           assert(File);
+          std::auto_ptr<TRemoteFile> FilePtr(File);
           OpenParams->DestFileSize = File->GetSize();
           if (OpenParams->FileParams != NULL)
           {
@@ -4586,7 +4579,6 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
             OpenParams->FileParams->DestSize = OpenParams->DestFileSize;
           }
           // file exists (otherwise exception was thrown)
-          SAFE_DESTROY(File);
         }
         catch(...)
         {
