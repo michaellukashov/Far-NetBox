@@ -181,7 +181,7 @@ protected:
     const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   void SFTPSink(const UnicodeString & FileName,
-    const TRemoteFile * File, const UnicodeString & TargetDir,
+    const TRemoteFile * AFile, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TDownloadSessionAction & Action, bool & ChildError);

@@ -4938,7 +4938,7 @@ void TSFTPFileSystem::SFTPSinkRobust(const UnicodeString & FileName,
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
-  const TRemoteFile * File, const UnicodeString & TargetDir,
+  const TRemoteFile * AFile, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TDownloadSessionAction & Action, bool & ChildError)
@@ -4949,11 +4949,11 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
   UnicodeString OnlyFileName = ::UnixExtractFileName(FileName);
 
   TFileMasks::TParams MaskParams;
-  assert(File);
-  MaskParams.Size = File->GetSize();
-  MaskParams.Modification = File->GetModification();
+  assert(AFile);
+  MaskParams.Size = AFile->GetSize();
+  MaskParams.Modification = AFile->GetModification();
 
-  if (!CopyParam->AllowTransfer(FileName, osRemote, File->GetIsDirectory(), MaskParams))
+  if (!CopyParam->AllowTransfer(FileName, osRemote, AFile->GetIsDirectory(), MaskParams))
   {
     FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", FileName.c_str()));
     THROW_SKIP_FILE_NULL;
@@ -4963,14 +4963,14 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
   OperationProgress->SetFile(OnlyFileName);
 
-  UnicodeString DestFileName = CopyParam->ChangeFileName(UnixExtractFileName(File->GetFileName()),
+  UnicodeString DestFileName = CopyParam->ChangeFileName(UnixExtractFileName(AFile->GetFileName()),
     osRemote, FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = TargetDir + DestFileName;
 
-  if (File->GetIsDirectory())
+  if (AFile->GetIsDirectory())
   {
     Action.Cancel();
-    if (!File->GetIsSymLink())
+    if (!AFile->GetIsSymLink())
     {
       FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
         DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
@@ -5028,7 +5028,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
     // Suppose same data size to transfer as to write
     // (not true with ASCII transfer)
-    OperationProgress->SetTransferSize(File->GetSize());
+    OperationProgress->SetTransferSize(AFile->GetSize());
     OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
     // resume has no sense for temporary downloads
@@ -5124,29 +5124,29 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         SSH_FILEXFER_ATTR_MODIFYTIME);
       ReceiveResponse(&RemoteFilePacket, &RemoteFilePacket);
 
-      const TRemoteFile * AFile = File;
+      const TRemoteFile * File = AFile;
       TRY_FINALLY (
       {
         // ignore errors
         if (RemoteFilePacket.GetType() == SSH_FXP_ATTRS)
         {
           // load file, avoid completion (resolving symlinks) as we do not need that
-          AFile = LoadFile(&RemoteFilePacket, NULL, ::UnixExtractFileName(FileName),
+          File = LoadFile(&RemoteFilePacket, NULL, ::UnixExtractFileName(FileName),
             NULL, false);
         }
 
-        Modification = AFile->GetModification();
-        AcTime = DateTimeToFileTime(AFile->GetLastAccess(),
+        Modification = File->GetModification();
+        AcTime = DateTimeToFileTime(File->GetLastAccess(),
           FTerminal->GetSessionData()->GetDSTMode());
-        WrTime = DateTimeToFileTime(AFile->GetModification(),
+        WrTime = DateTimeToFileTime(File->GetModification(),
           FTerminal->GetSessionData()->GetDSTMode());
       }
       ,
       {
         if (AFile != File)
         {
-          delete AFile;
-          AFile = NULL;
+          delete File;
+          File = NULL;
         }
       }
       );
@@ -5161,7 +5161,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         FTerminal->LogEvent(L"Confirming overwriting of file.");
         TOverwriteFileParams FileParams;
         FileParams.SourceSize = OperationProgress->TransferSize;
-        FileParams.SourceTimestamp = File->GetModification();
+        FileParams.SourceTimestamp = AFile->GetModification();
         FileParams.DestTimestamp = ::UnixToDateTime(MTime,
           GetSessionData()->GetDSTMode());
         FileParams.DestSize = DestFileSize;
@@ -5245,7 +5245,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           TSFTPPacket DataPacket(GetSessionData()->GetCodePageAsNumber());
 
           uintptr_t BlSize = DownloadBlockSize(OperationProgress);
-          intptr_t QueueLen = intptr_t(File->GetSize() / (BlSize != 0 ? BlSize : 1)) + 1;
+          intptr_t QueueLen = intptr_t(AFile->GetSize() / (BlSize != 0 ? BlSize : 1)) + 1;
           if ((QueueLen > GetSessionData()->GetSFTPDownloadQueue()) ||
               (QueueLen < 0))
           {
@@ -5414,7 +5414,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       {
         LocalFileAttrs = faArchive;
       }
-      DWORD NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
+      DWORD NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
       if ((NewAttrs & LocalFileAttrs) != NewAttrs)
       {
         FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
@@ -5459,7 +5459,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
     // empty already. If not, it should not be deleted (some files were
     // skipped or some new files were copied to it, while we were downloading)
     intptr_t Params2 = dfNoRecursive;
-    FTerminal->DeleteFile(FileName, File, &Params2);
+    FTerminal->DeleteFile(FileName, AFile, &Params2);
     ChildError = false;
   }
 }
