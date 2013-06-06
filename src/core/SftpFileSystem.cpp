@@ -2406,25 +2406,19 @@ uintptr_t TSFTPFileSystem::ReceiveResponse(
 {
   uintptr_t Result;
   uintptr_t MessageNumber = Packet->GetMessageNumber();
-  TSFTPPacket * Response = (AResponse ? AResponse : new TSFTPPacket(GetSessionData()->GetCodePageAsNumber()));
-  TRY_FINALLY (
+  std::auto_ptr<TSFTPPacket> Response(NULL);
+  if (!AResponse)
   {
-    Result = ReceivePacket(Response, ExpectedType, AllowStatus);
-    if (MessageNumber != Response->GetMessageNumber())
-    {
-      FTerminal->FatalError(NULL, FMTLOAD(SFTP_MESSAGE_NUMBER,
-        static_cast<int>(Response->GetMessageNumber()),
-        static_cast<int>(MessageNumber)));
-    }
+    Response.reset(new TSFTPPacket(GetSessionData()->GetCodePageAsNumber()));
+    AResponse = Response.get();
   }
-  ,
+  Result = ReceivePacket(AResponse, ExpectedType, AllowStatus);
+  if (MessageNumber != AResponse->GetMessageNumber())
   {
-    if (!AResponse)
-    {
-      delete Response;
-    }
+    FTerminal->FatalError(NULL, FMTLOAD(SFTP_MESSAGE_NUMBER,
+      static_cast<int>(AResponse->GetMessageNumber()),
+      static_cast<int>(MessageNumber)));
   }
-  );
   return Result;
 }
 //---------------------------------------------------------------------------
