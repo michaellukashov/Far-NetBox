@@ -1112,42 +1112,31 @@ public:
   {
     assert(FRequests->GetCount());
     bool Result;
-    TSFTPQueuePacket * Request = NULL;
-    TSFTPPacket * Response = NULL;
-    TRY_FINALLY (
+    std::auto_ptr<TSFTPQueuePacket> Request(static_cast<TSFTPQueuePacket*>(FRequests->GetItem(0)));
+    FRequests->Delete(0);
+    assert(Request.get());
+    if (Token != NULL)
     {
-      Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(0));
-      FRequests->Delete(0);
-      assert(Request);
-      if (Token != NULL)
-      {
-        *Token = Request->Token;
-      }
-
-      Response = static_cast<TSFTPPacket*>(FResponses->GetItem(0));
-      FResponses->Delete(0);
-      assert(Response);
-
-      FFileSystem->ReceiveResponse(Request, Response,
-        ExpectedType, AllowStatus);
-
-      if (Packet)
-      {
-        *Packet = *Response;
-      }
-
-      Result = !End(Response);
-      if (Result)
-      {
-        SendRequests();
-      }
+      *Token = Request->Token;
     }
-    ,
+
+    std::auto_ptr<TSFTPPacket> Response(static_cast<TSFTPPacket*>(FResponses->GetItem(0)));
+    FResponses->Delete(0);
+    assert(Response.get());
+
+    FFileSystem->ReceiveResponse(Request.get(), Response.get(),
+      ExpectedType, AllowStatus);
+
+    if (Packet)
     {
-      delete Request;
-      delete Response;
+      *Packet = *Response.get();
     }
-    );
+
+    Result = !End(Response.get());
+    if (Result)
+    {
+      SendRequests();
+    }
 
     return Result;
   }
