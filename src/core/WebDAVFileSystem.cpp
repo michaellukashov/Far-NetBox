@@ -12590,7 +12590,6 @@ bool TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & FileName,
   bool AutoResume,
   uintptr_t & Answer)
 {
-  bool Result;
   bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
   bool CanResume = false; // disable resume
 
@@ -12627,7 +12626,7 @@ bool TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & FileName,
     )
   }
 
-  Result = true;
+  bool Result = true;
 
   switch (Answer)
   {

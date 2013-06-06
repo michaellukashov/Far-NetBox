@@ -257,15 +257,9 @@ public:
   virtual void Insert(intptr_t Index, const UnicodeString & AString, TObject * AObject = NULL) = 0;
   void SaveToStream(TStream * Stream) const;
   wchar_t GetDelimiter() const { return FDelimiter; }
-  void SetDelimiter(wchar_t Value)
-  {
-    FDelimiter = Value;
-  }
+  void SetDelimiter(wchar_t Value) { FDelimiter = Value; }
   wchar_t GetQuoteChar() const { return FQuoteChar; }
-  void SetQuoteChar(wchar_t Value)
-  {
-    FQuoteChar = Value;
-  }
+  void SetQuoteChar(wchar_t Value) { FQuoteChar = Value; }
   UnicodeString GetDelimitedText() const;
   void SetDelimitedText(const UnicodeString & Value);
   virtual intptr_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const;

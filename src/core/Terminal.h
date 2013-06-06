@@ -432,9 +432,9 @@ public:
   void ReadFile(const UnicodeString & FileName, TRemoteFile *& AFile);
   bool FileExists(const UnicodeString & FileName, TRemoteFile ** File = NULL);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& File);
-  bool CopyToLocal(TStrings * FilesToCopy,
+  bool CopyToLocal(TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params);
-  bool CopyToRemote(TStrings * FilesToCopy,
+  bool CopyToRemote(TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params);
   void CreateDirectory(const UnicodeString & DirName,
     const TRemoteProperties * Properties = NULL);

@@ -6062,20 +6062,12 @@ TFileSystemInfoDialog::~TFileSystemInfoDialog()
 //------------------------------------------------------------------------------
 TLabelList * TFileSystemInfoDialog::CreateLabelArray(intptr_t Count)
 {
-  TLabelList * List = new TLabelList();
-  try
+  std::auto_ptr<TLabelList> List(new TLabelList());
+  for (intptr_t Index = 0; Index < Count; ++Index)
   {
-    for (intptr_t Index = 0; Index < Count; ++Index)
-    {
-      List->Add(new TFarText(this));
-    }
+    List->Add(new TFarText(this));
   }
-  catch(...)
-  {
-    delete List;
-    throw;
-  }
-  return List;
+  return List.release();
 }
 //---------------------------------------------------------------------
 UnicodeString TFileSystemInfoDialog::CapabilityStr(TFSCapability Capability)

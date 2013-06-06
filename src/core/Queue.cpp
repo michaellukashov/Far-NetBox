@@ -733,33 +733,25 @@ void TTerminalQueue::UpdateStatusForList(
 //---------------------------------------------------------------------------
 TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Current)
 {
-  TTerminalQueueStatus * Status = new TTerminalQueueStatus();
-  try
+  std::auto_ptr<TTerminalQueueStatus> Status(new TTerminalQueueStatus());
+  TRY_FINALLY (
   {
-    TRY_FINALLY (
-    {
-      TGuard Guard(FItemsSection);
+    TGuard Guard(FItemsSection);
 
-      UpdateStatusForList(Status, FDoneItems, Current);
-      Status->SetDoneCount(Status->GetCount());
-      UpdateStatusForList(Status, FItems, Current);
-    }
-    ,
-    {
-      if (Current != NULL)
-      {
-        delete Current;
-      }
-    }
-    );
+    UpdateStatusForList(Status.get(), FDoneItems, Current);
+    Status->SetDoneCount(Status->GetCount());
+    UpdateStatusForList(Status.get(), FItems, Current);
   }
-  catch(...)
+  ,
   {
-    delete Status;
-    throw;
+    if (Current != NULL)
+    {
+      delete Current;
+    }
   }
+  );
 
-  return Status;
+  return Status.release();
 }
 //---------------------------------------------------------------------------
 bool TTerminalQueue::ItemGetData(TQueueItem * Item,

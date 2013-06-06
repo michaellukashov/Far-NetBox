@@ -138,7 +138,7 @@ protected:
   void RemoveReservation(intptr_t Reservation);
   void SendPacket(const TSFTPPacket * Packet);
   uintptr_t ReceiveResponse(const TSFTPPacket * Packet,
-    TSFTPPacket * Response, int ExpectedType = -1, int AllowStatus = -1);
+    TSFTPPacket * AResponse, int ExpectedType = -1, int AllowStatus = -1);
   uintptr_t SendPacketAndReceiveResponse(const TSFTPPacket * Packet,
     TSFTPPacket * Response, int ExpectedType = -1, int AllowStatus = -1);
   void UnreserveResponse(TSFTPPacket * Response);
@@ -177,11 +177,11 @@ protected:
   bool SFTPConfirmResume(const UnicodeString & DestFileName, bool PartialBiggerThanSource,
     TFileOperationProgressType * OperationProgress);
   void SFTPSinkRobust(const UnicodeString & FileName,
-    const TRemoteFile * File, const UnicodeString & TargetDir,
+    const TRemoteFile * AFile, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   void SFTPSink(const UnicodeString & FileName,
-    const TRemoteFile * File, const UnicodeString & TargetDir,
+    const TRemoteFile * AFile, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TDownloadSessionAction & Action, bool & ChildError);

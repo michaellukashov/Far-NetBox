@@ -120,45 +120,36 @@ int GetUserpassInput(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
   assert(SecureShell != NULL);
 
   int Result;
-  TStrings * Prompts = new TStringList();
-  TStrings * Results = new TStringList();
-  TRY_FINALLY (
+  std::auto_ptr<TStrings> Prompts(new TStringList());
+  std::auto_ptr<TStrings> Results(new TStringList());
+  for (size_t Index = 0; Index < p->n_prompts; ++Index)
+  {
+    prompt_t * Prompt = p->prompts[Index];
+    Prompts->AddObject(Prompt->prompt, reinterpret_cast<TObject *>(static_cast<size_t>(FLAGMASK(Prompt->echo, pupEcho))));
+    Results->AddObject(L"", reinterpret_cast<TObject *>(Prompt->result_len));
+  }
+
+  if (SecureShell->PromptUser(p->to_server != 0, p->name, p->name_reqd != 0,
+        UnicodeString(p->instruction), p->instr_reqd != 0, Prompts.get(), Results.get()))
   {
     for (size_t Index = 0; Index < p->n_prompts; ++Index)
     {
       prompt_t * Prompt = p->prompts[Index];
-      Prompts->AddObject(Prompt->prompt, reinterpret_cast<TObject *>(static_cast<size_t>(FLAGMASK(Prompt->echo, pupEcho))));
-      Results->AddObject(L"", reinterpret_cast<TObject *>(Prompt->result_len));
-    }
-
-    if (SecureShell->PromptUser(p->to_server != 0, p->name, p->name_reqd != 0,
-          UnicodeString(p->instruction), p->instr_reqd != 0, Prompts, Results))
-    {
-      for (size_t Index = 0; Index < p->n_prompts; ++Index)
+      AnsiString Str = Results->GetString(Index).c_str();
+      if ((size_t)Str.Length() >= Prompt->result_len)
       {
-        prompt_t * Prompt = p->prompts[Index];
-        AnsiString Str = Results->GetString(Index).c_str();
-        if ((size_t)Str.Length() >= Prompt->result_len)
-        {
-          Prompt->result = (char *)srealloc(Prompt->result, Str.Length() + 1);
-          Prompt->result_len = Str.Length() + 1;
-        }
-        strncpy(Prompt->result, AnsiString(Results->GetString(Index)).c_str(), Prompt->result_len);
-        Prompt->result[Prompt->result_len - 1] = '\0';
+        Prompt->result = (char *)srealloc(Prompt->result, Str.Length() + 1);
+        Prompt->result_len = Str.Length() + 1;
       }
-      Result = 1;
+      strncpy(Prompt->result, AnsiString(Results->GetString(Index)).c_str(), Prompt->result_len);
+      Prompt->result[Prompt->result_len - 1] = '\0';
     }
-    else
-    {
-      Result = 0;
-    }
+    Result = 1;
   }
-  ,
+  else
   {
-    delete Prompts;
-    delete Results;
+    Result = 0;
   }
-  );
 
   return Result;
 }
@@ -380,16 +371,15 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
     // we expect this to be called only from verify_host_key() or store_host_key()
     assert(RegKey == L"SshHostKeys");
 
-    THierarchicalStorage * Storage = GetConfiguration()->CreateStorage(false);
+    std::auto_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(false));
     Storage->SetAccessMode((CanCreate ? smReadWrite : smRead));
     if (Storage->OpenSubKey(RegKey, CanCreate))
     {
-      *Result = reinterpret_cast<HKEY>(Storage);
+      *Result = reinterpret_cast<HKEY>(Storage.release());
       R = ERROR_SUCCESS;
     }
     else
     {
-      delete Storage;
       R = ERROR_CANTOPEN;
     }
   }

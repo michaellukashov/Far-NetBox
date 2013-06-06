@@ -246,30 +246,20 @@ void TConfiguration::Export(const UnicodeString & /*FileName*/)
 {
   Classes::Error(SNotImplemented, 3004);
   /*
-  THierarchicalStorage * Storage = NULL;
-  THierarchicalStorage * ExportStorage = NULL;
-  TRY_FINALLY (
+  std::auto_ptr<THierarchicalStorage> Storage(CreateScpStorage(false));
+  std::auto_ptr<THierarchicalStorage> ExportStorage(NULL);
+  ExportStorage = NULL; // new TIniFileStorage(FileName);
+  ExportStorage->SetAccessMode(smReadWrite);
+  ExportStorage->SetExplicit(true);
+
+  Storage->SetAccessMode(smRead);
+
+  CopyData(Storage, ExportStorage);
+
+  if (ExportStorage->OpenSubKey(GetConfigurationSubKey(), true))
   {
-    ExportStorage = NULL; // new TIniFileStorage(FileName);
-    ExportStorage->SetAccessMode(smReadWrite);
-    ExportStorage->SetExplicit(true);
-
-    Storage = CreateScpStorage(false);
-    Storage->SetAccessMode(smRead);
-
-    CopyData(Storage, ExportStorage);
-
-    if (ExportStorage->OpenSubKey(GetConfigurationSubKey(), true))
-    {
-      SaveData(ExportStorage, true);
-    }
+    SaveData(ExportStorage, true);
   }
-  ,
-  {
-    delete ExportStorage;
-    delete Storage;
-  }
-  );
 
   StoredSessions->Export(FileName);
   */
@@ -279,33 +269,22 @@ void TConfiguration::Import(const UnicodeString & FileName)
 {
   Classes::Error(SNotImplemented, 3005);
 /*
-  THierarchicalStorage * Storage = NULL;
-  THierarchicalStorage * ImportStorage = NULL;
-  try
+  std::auto_ptr<THierarchicalStorage> Storage(CreateScpStorage(false));
+  std::auto_ptr<THierarchicalStorage> ImportStorage(new TIniFileStorage(FileName));
+  ImportStorage->AccessMode = smRead;
+  Storage->AccessMode = smReadWrite;
+  Storage->Explicit = true;
+
+  CopyData(ImportStorage, Storage);
+
+  Default();
+  LoadFrom(ImportStorage);
+
+  if (ImportStorage->OpenSubKey(Configuration->StoredSessionsSubKey, false))
   {
-    ImportStorage = new TIniFileStorage(FileName);
-    ImportStorage->AccessMode = smRead;
-
-    Storage = CreateScpStorage(false);
-    Storage->AccessMode = smReadWrite;
-    Storage->Explicit = true;
-
-    CopyData(ImportStorage, Storage);
-
-    Default();
-    LoadFrom(ImportStorage);
-
-    if (ImportStorage->OpenSubKey(Configuration->StoredSessionsSubKey, false))
-    {
-      StoredSessions->Clear();
-      StoredSessions->DefaultSettings->Default();
-      StoredSessions->Load(ImportStorage);
-    }
-  }
-  __finally
-  {
-    delete ImportStorage;
-    delete Storage;
+    StoredSessions->Clear();
+    StoredSessions->DefaultSettings->Default();
+    StoredSessions->Load(ImportStorage);
   }
 
   // save all and explicit
@@ -469,10 +448,9 @@ UnicodeString TConfiguration::BannerHash(const UnicodeString & Banner) const
 bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
   const UnicodeString & Banner)
 {
-  bool Result;
   std::auto_ptr<THierarchicalStorage> Storage(CreateStorage(false));
   Storage->SetAccessMode(smRead);
-  Result =
+  bool Result =
     !Storage->OpenSubKey(GetConfigurationSubKey(), false) ||
     !Storage->OpenSubKey(L"Banners", false) ||
     !Storage->ValueExists(SessionKey) ||
@@ -549,16 +527,8 @@ void TConfiguration::CleanupConfiguration()
 //---------------------------------------------------------------------------
 void TConfiguration::CleanupRegistry(const UnicodeString & CleanupSubKey)
 {
-  TRegistryStorage *Registry = new TRegistryStorage(GetRegistryStorageKey());
-  TRY_FINALLY (
-  {
-    Registry->RecursiveDeleteSubKey(CleanupSubKey);
-  }
-  ,
-  {
-    delete Registry;
-  }
-  );
+  std::auto_ptr<TRegistryStorage> Registry(new TRegistryStorage(GetRegistryStorageKey()));
+  Registry->RecursiveDeleteSubKey(CleanupSubKey);
 }
 //---------------------------------------------------------------------------
 void TConfiguration::CleanupHostKeys()

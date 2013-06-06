@@ -3803,18 +3803,17 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
     }
   }
 
-  TRemoteFile * File = new TRemoteFile();
+  std::auto_ptr<TRemoteFile> File(new TRemoteFile());
   File->SetFileName(RealFileName);
   TRY_FINALLY (
   {
-    FFileList->AddObject(FileName, File);
+    FFileList->AddObject(FileName, File.get());
     UploadFiles(false, 0, true, DestPath);
   }
   ,
   {
     FTerminal->SetAutoReadDirectory(PrevAutoReadDirectory);
     SAFE_DESTROY(FFileList);
-    SAFE_DESTROY(File);
   }
   );
 }

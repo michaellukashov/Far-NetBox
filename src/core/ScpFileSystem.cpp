@@ -937,19 +937,11 @@ void TSCPFileSystem::ClearAliases()
   {
     FTerminal->LogEvent(L"Clearing all aliases.");
     ClearAlias(TCommandSet::ExtractCommand(FTerminal->GetSessionData()->GetListingCommand()));
-    TStrings * CommandList = FCommandSet->CreateCommandList();
-    TRY_FINALLY (
+    std::auto_ptr<TStrings> CommandList(FCommandSet->CreateCommandList());
+    for (intptr_t Index = 0; Index < CommandList->GetCount(); ++Index)
     {
-      for (intptr_t Index = 0; Index < CommandList->GetCount(); ++Index)
-      {
-        ClearAlias(CommandList->GetString(Index));
-      }
+      ClearAlias(CommandList->GetString(Index));
     }
-    ,
-    {
-      delete CommandList;
-    }
-    );
   }
   catch (Exception &E)
   {
@@ -1057,31 +1049,23 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       {
         // Copy LS command output, because eventual symlink analysis would
         // modify FTerminal->Output
-        TStringList * OutputCopy = new TStringList();
-        TRY_FINALLY (
-        {
-          OutputCopy->Assign(FOutput);
+        std::auto_ptr<TStringList> OutputCopy(new TStringList());
+        OutputCopy->Assign(FOutput);
 
-          // delete leading "total xxx" line
-          // On some hosts there is not "total" but "totalt". What's the reason??
-          // see mail from "Jan Wiklund (SysOp)" <jan@park.se>
-          if (IsTotalListingLine(OutputCopy->GetString(0)))
-          {
-            OutputCopy->Delete(0);
-          }
-
-          for (intptr_t Index = 0; Index < OutputCopy->GetCount(); ++Index)
-          {
-            TRemoteFile * File = NULL;
-            File = CreateRemoteFile(OutputCopy->GetString(Index));
-            FileList->AddFile(File);
-          }
-        }
-        ,
+        // delete leading "total xxx" line
+        // On some hosts there is not "total" but "totalt". What's the reason??
+        // see mail from "Jan Wiklund (SysOp)" <jan@park.se>
+        if (IsTotalListingLine(OutputCopy->GetString(0)))
         {
-          delete OutputCopy;
+          OutputCopy->Delete(0);
         }
-        );
+
+        for (intptr_t Index = 0; Index < OutputCopy->GetCount(); ++Index)
+        {
+          TRemoteFile * File = NULL;
+          File = CreateRemoteFile(OutputCopy->GetString(Index));
+          FileList->AddFile(File);
+        }
       }
       else
       {
@@ -1746,7 +1730,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
     &LocalFileAttrs, &LocalFileHandle, NULL, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
-  TSafeHandleStream * Stream = new TSafeHandleStream(LocalFileHandle);
+  std::auto_ptr<TSafeHandleStream> Stream(new TSafeHandleStream(LocalFileHandle));
   TRY_FINALLY (
   {
     OperationProgress->SetFileInProgress();
@@ -1803,7 +1787,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
           // This is crucial, if it fails during file transfer, it's fatal error
           FILE_OPERATION_LOOP_EX (!OperationProgress->TransferingFile,
               FMTLOAD(READ_ERROR, FileName.c_str()),
-            BlockBuf.LoadStream(Stream, OperationProgress->LocalBlockSize(), true);
+            BlockBuf.LoadStream(Stream.get(), OperationProgress->LocalBlockSize(), true);
           );
 
           OperationProgress->AddLocallyUsed(BlockBuf.GetSize());
@@ -1990,7 +1974,6 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
     {
       ::CloseHandle(LocalFileHandle);
     }
-    delete Stream;
   }
   );
 
@@ -2514,7 +2497,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
           try
           {
             HANDLE LocalFileHandle = NULL;
-            TStream * FileStream = NULL;
+            std::auto_ptr<TStream> FileStream;
 
             /* TODO 1 : Turn off read-only attr */
 
@@ -2559,7 +2542,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                   EXCEPTION;
                 }
 
-                FileStream = new TSafeHandleStream(LocalFileHandle);
+                FileStream.reset(new TSafeHandleStream(LocalFileHandle));
               }
               catch (Exception &E)
               {
@@ -2608,7 +2591,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
 
                   // This is crucial, if it fails during file transfer, it's fatal error
                   FILE_OPERATION_LOOP_EX (false, FMTLOAD(WRITE_ERROR, DestFileName.c_str()),
-                    BlockBuf.WriteToStream(FileStream, static_cast<unsigned int>(BlockBuf.GetSize()));
+                    BlockBuf.WriteToStream(FileStream.get(), static_cast<unsigned int>(BlockBuf.GetSize()));
                   );
 
                   OperationProgress->AddLocallyUsed(BlockBuf.GetSize());
@@ -2660,10 +2643,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
               {
                 ::CloseHandle(LocalFileHandle);
               }
-              if (FileStream)
-              {
-                delete FileStream;
-              }
+              FileStream.reset();
             }
             );
           }

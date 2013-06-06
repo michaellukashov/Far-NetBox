@@ -225,10 +225,9 @@ void THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString & Key)
 //------------------------------------------------------------------------------
 bool THierarchicalStorage::HasSubKeys()
 {
-  bool Result;
   std::auto_ptr<TStrings> SubKeys(new TStringList());
   GetSubKeyNames(SubKeys.get());
-  Result = (SubKeys->GetCount() > 0);
+  bool Result = SubKeys->GetCount() > 0;
   return Result;
 }
 //------------------------------------------------------------------------------

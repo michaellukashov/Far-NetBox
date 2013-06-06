@@ -703,6 +703,7 @@ TStrings * TFileMasks::GetMasksStr(intptr_t Index) const
 void TFileMasks::ReleaseMaskMask(TMaskMask & MaskMask)
 {
   delete MaskMask.Mask;
+  MaskMask.Mask = NULL;
 }
 //---------------------------------------------------------------------------
 void TFileMasks::TrimEx(UnicodeString & Str, intptr_t & Start, intptr_t & End)

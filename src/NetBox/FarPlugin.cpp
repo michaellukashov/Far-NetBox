@@ -2027,12 +2027,12 @@ intptr_t TCustomFarFileSystem::DeleteFiles(const struct DeleteFilesInfo *Info)
 intptr_t TCustomFarFileSystem::GetFiles(struct GetFilesInfo * Info)
 {
   ResetCachedInfo();
-  TObjectList * PanelItems = CreatePanelItemList(Info->PanelItem, Info->ItemsNumber);
+  std::auto_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
   intptr_t Result = 0;
   FDestPathStr = Info->DestPath;
   TRY_FINALLY (
   {
-    Result = GetFilesEx(PanelItems, Info->Move > 0, FDestPathStr, Info->OpMode);
+    Result = GetFilesEx(PanelItems.get(), Info->Move > 0, FDestPathStr, Info->OpMode);
   }
   ,
   {
@@ -2040,7 +2040,6 @@ intptr_t TCustomFarFileSystem::GetFiles(struct GetFilesInfo * Info)
     {
       Info->DestPath = FDestPathStr.c_str();
     }
-    delete PanelItems;
   }
   );
 
@@ -2192,21 +2191,13 @@ intptr_t TCustomFarFileSystem::PutFilesEx(TObjectList * /* PanelItems */, bool /
 TObjectList * TCustomFarFileSystem::CreatePanelItemList(
   struct PluginPanelItem * PanelItem, int ItemsNumber)
 {
-  TObjectList * PanelItems = new TObjectList();
+  std::auto_ptr<TObjectList> PanelItems(new TObjectList());
   PanelItems->SetOwnsObjects(true);
-  try
+  for (intptr_t Index = 0; Index < ItemsNumber; ++Index)
   {
-    for (intptr_t Index = 0; Index < ItemsNumber; ++Index)
-    {
-      PanelItems->Add(new TFarPanelItem(&PanelItem[Index], false));
-    }
+    PanelItems->Add(new TFarPanelItem(&PanelItem[Index], false));
   }
-  catch(...)
-  {
-    delete PanelItems;
-    throw;
-  }
-  return PanelItems;
+  return PanelItems.release();
 }
 //---------------------------------------------------------------------------
 TFarPanelModes::TFarPanelModes() : TObject()
