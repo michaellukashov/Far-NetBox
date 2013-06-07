@@ -84,7 +84,7 @@ TFarDialog::~TFarDialog()
   }
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetBounds(TRect Value)
+void TFarDialog::SetBounds(const TRect & Value)
 {
   if (GetBounds() != Value)
   {

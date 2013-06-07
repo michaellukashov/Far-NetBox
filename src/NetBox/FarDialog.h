@@ -117,7 +117,7 @@ protected:
 
   static LONG_PTR WINAPI DialogProcGeneral(HANDLE Handle, int Msg, int Param1, LONG_PTR Param2);
 
-  virtual void SetBounds(TRect Value);
+  virtual void SetBounds(const TRect & Value);
 
 private:
   TCustomFarPlugin * FFarPlugin;
