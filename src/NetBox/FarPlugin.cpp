@@ -1124,11 +1124,9 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString & Title,
 {
   assert(Items);
 
-  UnicodeString ATitle = Title;
-  UnicodeString ABottom = Bottom;
   TFarEnvGuard Guard;
   return static_cast<intptr_t>(FStartupInfo.Menu(FStartupInfo.ModuleNumber, -1, -1, 0,
-    Flags, ATitle.c_str(), ABottom.c_str(), NULL, BreakKeys,
+    Flags, Title.c_str(), Bottom.c_str(), NULL, BreakKeys,
     &BreakCode, Items, static_cast<int>(Count)));
 }
 //---------------------------------------------------------------------------
@@ -1162,7 +1160,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString & Title,
       }
     }
 
-    intptr_t ResultItem = Menu((DWORD)(Flags | FMENU_USEEXT), Title, Bottom,
+    intptr_t ResultItem = Menu(Flags | FMENU_USEEXT, Title, Bottom,
       reinterpret_cast<const FarMenuItem *>(MenuItems), Count, BreakKeys, BreakCode);
 
     if (ResultItem >= 0)
