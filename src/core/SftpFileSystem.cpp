@@ -1171,35 +1171,26 @@ protected:
 
   virtual bool SendRequest()
   {
-    TSFTPQueuePacket * Request = NULL;
-    try
+    std::auto_ptr<TSFTPQueuePacket> Request(new TSFTPQueuePacket(FCodePage));
+    if (!InitRequest(Request.get()))
     {
-      Request = new TSFTPQueuePacket(FCodePage);
-      if (!InitRequest(Request))
-      {
-        delete Request;
-        Request = NULL;
-      }
-    }
-    catch(...)
-    {
-      delete Request;
-      throw;
+      Request.reset();
     }
 
-    if (Request != NULL)
+    if (Request.get() != NULL)
     {
       TSFTPPacket * Response = new TSFTPPacket(FCodePage);
-      FRequests->Add(Request);
+      FRequests->Add(Request.get());
       FResponses->Add(Response);
 
       // make sure the response is reserved before actually ending the message
       // as we may receive response asynchronously before SendPacket finishes
-      FFileSystem->ReserveResponse(Request, Response);
-      SendPacket(Request);
+      FFileSystem->ReserveResponse(Request.get(), Response);
+      SendPacket(Request.release());
+      return true;
     }
 
-    return (Request != NULL);
+    return false;
   }
 };
 //---------------------------------------------------------------------------
