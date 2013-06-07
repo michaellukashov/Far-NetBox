@@ -4306,7 +4306,7 @@ UnicodeString TTerminal::SynchronizeParamsStr(intptr_t Params)
   AddFlagName(ParamsStr, Params, spMirror, L"Mirror");
   if (Params > 0)
   {
-    AddToList(ParamsStr, FORMAT(L"0x%x", (int(Params))), L", ");
+    AddToList(ParamsStr, FORMAT(L"0x%x", int(Params)), L", ");
   }
   return ParamsStr;
 }
