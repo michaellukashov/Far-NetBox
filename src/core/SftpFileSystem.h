@@ -110,6 +110,7 @@ protected:
   bool FOpenSSH;
   TStrings * FFixedPaths;
   uint32_t FMaxPacketSize;
+  uintptr_t FCodePage;
 
   void SendCustomReadFile(TSFTPPacket * Packet, TSFTPPacket * Response,
     uint32_t Flags);
