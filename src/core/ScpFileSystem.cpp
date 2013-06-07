@@ -817,13 +817,14 @@ void TSCPFileSystem::DoStartup()
   // otherwise session is to be closed.
   FTerminal->SetExceptionOnFail(true);
   SkipStartupMessage();
-  if (FTerminal->GetSessionData()->GetDetectReturnVar())
+  const TSessionData * Data = FTerminal->GetSessionData();
+  if (Data->GetDetectReturnVar())
   {
     DetectReturnVar();
   }
   FTerminal->SetExceptionOnFail(false);
 
-  #define COND_OPER(OPER) if (FTerminal->GetSessionData()->Get##OPER()) OPER()
+  #define COND_OPER(OPER) if (Data->Get##OPER()) OPER()
   COND_OPER(ClearAliases);
   COND_OPER(UnsetNationalVars);
   #undef COND_OPER
