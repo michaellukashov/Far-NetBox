@@ -546,7 +546,7 @@ void TFTPFileSystem::Close()
   }
 }
 //---------------------------------------------------------------------------
-bool TFTPFileSystem::GetActive()
+bool TFTPFileSystem::GetActive() const
 {
   return FActive;
 }

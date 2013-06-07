@@ -399,7 +399,7 @@ void TSCPFileSystem::Close()
   FSecureShell->Close();
 }
 //---------------------------------------------------------------------------
-bool TSCPFileSystem::GetActive()
+bool TSCPFileSystem::GetActive() const
 {
   return FSecureShell->GetActive();
 }

@@ -659,7 +659,7 @@ UnicodeString TTerminal::ExpandFileName(const UnicodeString & Path,
   return Result;
 }
 //------------------------------------------------------------------------------
-bool TTerminal::GetActive()
+bool TTerminal::GetActive() const
 {
   return (FFileSystem != NULL) && FFileSystem->GetActive();
 }

@@ -19,7 +19,7 @@ public:
 
   virtual void Open();
   virtual void Close();
-  virtual bool GetActive();
+  virtual bool GetActive() const;
   virtual void Idle();
   virtual UnicodeString AbsolutePath(const UnicodeString & Path, bool Local);
   virtual void AnyCommand(const UnicodeString & Command,

@@ -253,7 +253,7 @@ public:
   bool GetCommandSessionOpened();
   TTerminal * GetCommandSession();
   bool GetResolvingSymlinks();
-  bool GetActive();
+  bool GetActive() const;
   UnicodeString GetPassword();
   UnicodeString GetTunnelPassword();
   bool GetStoredCredentialsTried();

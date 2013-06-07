@@ -1748,11 +1748,6 @@ void TSFTPFileSystem::Close()
   FSecureShell->Close();
 }
 //---------------------------------------------------------------------------
-bool TSFTPFileSystem::GetActive()
-{
-  return FSecureShell->GetActive();
-}
-//---------------------------------------------------------------------------
 const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 {
   if (!FFileSystemInfoValid)
