@@ -2884,7 +2884,7 @@ TStrings * TTerminal::GetFixedPaths()
   return FFileSystem->GetFixedPaths();
 }
 //------------------------------------------------------------------------------
-bool TTerminal::GetResolvingSymlinks()
+bool TTerminal::GetResolvingSymlinks() const
 {
   return GetSessionData()->GetResolveSymlinks() && GetIsCapable(fcResolveSymlink);
 }
@@ -3738,7 +3738,7 @@ bool TTerminal::AllowedAnyCommand(const UnicodeString & Command)
   return !Command.Trim().IsEmpty();
 }
 //------------------------------------------------------------------------------
-bool TTerminal::GetCommandSessionOpened()
+bool TTerminal::GetCommandSessionOpened() const
 {
   // consider secondary terminal open in "ready" state only
   // so we never do keepalives on it until it is completely initialized
