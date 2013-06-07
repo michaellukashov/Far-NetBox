@@ -510,7 +510,7 @@ public:
       NULL, IsDirectory, Version, Utf);
   }
 
-  unsigned char GetByte()
+  unsigned char GetByte() const
   {
     Need(sizeof(unsigned char));
     unsigned char Result = FData[FPosition];
@@ -518,7 +518,7 @@ public:
     return Result;
   }
 
-  uint32_t GetCardinal()
+  uint32_t GetCardinal() const
   {
     uint32_t Result;
     Need(sizeof(Result));
@@ -527,7 +527,7 @@ public:
     return Result;
   }
 
-  uint32_t GetSmallCardinal()
+  uint32_t GetSmallCardinal() const
   {
     uint32_t Result;
     Need(2);
@@ -536,14 +536,14 @@ public:
     return Result;
   }
 
-  __int64 GetInt64()
+  __int64 GetInt64() const
   {
     __int64 Hi = GetCardinal();
     __int64 Lo = GetCardinal();
     return (Hi << 32) + Lo;
   }
 
-  RawByteString GetRawByteString()
+  RawByteString GetRawByteString() const
   {
     RawByteString Result;
     uintptr_t Len = GetCardinal();
@@ -556,7 +556,7 @@ public:
     return Result;
   }
 
-  inline UnicodeString GetUtfString()
+  inline UnicodeString GetUtfString() const
   {
     return UnicodeString(UTF8String(GetRawByteString().c_str()));
   }
@@ -570,17 +570,17 @@ public:
     return UnicodeString(AnsiString(GetRawByteString().c_str()).c_str());
   }
 
-  inline RawByteString GetFileHandle()
+  inline RawByteString GetFileHandle() const
   {
     return GetRawByteString();
   }
 
-  inline UnicodeString GetStringW()
+  inline UnicodeString GetStringW() const
   {
     return MB2W(GetRawByteString().c_str(), (UINT)FCodePage);
   }
 
-  inline UnicodeString GetString(bool Utf)
+  inline UnicodeString GetString(bool Utf) const
   {
     (void)Utf;
     return GetStringW();
@@ -857,7 +857,7 @@ private:
   unsigned char * FData;
   uintptr_t FLength;
   uintptr_t FCapacity;
-  uintptr_t FPosition;
+  mutable uintptr_t FPosition;
   unsigned char FType;
   uint32_t FMessageNumber;
   TSFTPFileSystem * FReservedBy;
@@ -888,7 +888,7 @@ private:
   }
 
 public:
-  unsigned char GetRequestType()
+  unsigned char GetRequestType() const
   {
     if (FMessageNumber != SFTPNoMessageNumber)
     {
@@ -1000,7 +1000,7 @@ public:
   }
 
 private:
-  inline void Need(uintptr_t Size)
+  inline void Need(uintptr_t Size) const
   {
     if (FPosition + Size > FLength)
     {
