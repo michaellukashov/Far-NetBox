@@ -12229,11 +12229,6 @@ void TWebDAVFileSystem::Close()
   FActive = false;
 }
 //------------------------------------------------------------------------------
-bool TWebDAVFileSystem::GetActive()
-{
-  return FActive;
-}
-//------------------------------------------------------------------------------
 const TSessionInfo & TWebDAVFileSystem::GetSessionInfo()
 {
   return FSessionInfo;

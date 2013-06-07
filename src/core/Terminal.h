@@ -250,10 +250,10 @@ public:
   bool GetIsCapable(TFSCapability Capability) const;
   void ClearCachedFileList(const UnicodeString & Path, bool SubDirs);
   void AddCachedFileList(TRemoteFileList * FileList);
-  bool GetCommandSessionOpened();
+  bool GetCommandSessionOpened() const;
   TTerminal * GetCommandSession();
-  bool GetResolvingSymlinks();
-  bool GetActive();
+  bool GetResolvingSymlinks() const;
+  bool GetActive() const;
   UnicodeString GetPassword();
   UnicodeString GetTunnelPassword();
   bool GetStoredCredentialsTried();

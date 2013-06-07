@@ -2762,13 +2762,16 @@ void TSessionData::SetLoginType(TLoginType Value)
 //---------------------------------------------------------------------
 uintptr_t TSessionData::GetCodePageAsNumber() const
 {
-  return ::GetCodePageAsNumber(GetCodePage());
+  if (FCodePageAsNumber == 0)
+    FCodePageAsNumber = ::GetCodePageAsNumber(GetCodePage());
+  return FCodePageAsNumber;
 }
 
 //---------------------------------------------------------------------------
 void TSessionData::SetCodePage(const UnicodeString & Value)
 {
   SET_SESSION_PROPERTY(CodePage);
+  FCodePageAsNumber = 0;
 }
 //---------------------------------------------------------------------
 void TSessionData::AdjustHostName(UnicodeString & HostName, const UnicodeString & Prefix)

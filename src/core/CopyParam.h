@@ -99,7 +99,7 @@ public:
 
   const TFileMasks & GetAsciiFileMask() const { return FAsciiFileMask; }
   TFileMasks & GetAsciiFileMask() { return FAsciiFileMask; }
-  void SetAsciiFileMask(TFileMasks Value) { FAsciiFileMask = Value; }
+  void SetAsciiFileMask(const TFileMasks & Value) { FAsciiFileMask = Value; }
   const TFileNameCase & GetFileNameCase() const { return FFileNameCase; }
   void SetFileNameCase(TFileNameCase Value) { FFileNameCase = Value; }
   bool GetPreserveReadOnly() const { return FPreserveReadOnly; }
@@ -131,10 +131,10 @@ public:
   void SetFileMask(const UnicodeString & Value) { FFileMask = Value; }
   const TFileMasks & GetIncludeFileMask() const { return FIncludeFileMask; }
   TFileMasks & GetIncludeFileMask() { return FIncludeFileMask; }
-  void SetIncludeFileMask(TFileMasks Value) { FIncludeFileMask = Value; }
+  void SetIncludeFileMask(const TFileMasks & Value) { FIncludeFileMask = Value; }
   const TFileMasks & GetExcludeFileMask() const { return FExcludeFileMask; }
   TFileMasks & GetExcludeFileMask() { return FExcludeFileMask; }
-  void SetExcludeFileMask(TFileMasks Value) { FExcludeFileMask = Value; }
+  void SetExcludeFileMask(const TFileMasks & Value) { FExcludeFileMask = Value; }
   bool GetNegativeExclude() const { return FNegativeExclude; }
   void SetNegativeExclude(bool Value) { FNegativeExclude = Value; }
   bool GetClearArchive() const { return FClearArchive; }

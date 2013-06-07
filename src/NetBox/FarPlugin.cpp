@@ -1126,14 +1126,12 @@ intptr_t TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString & Title,
 {
   assert(Items);
 
-  UnicodeString ATitle = Title;
-  UnicodeString ABottom = Bottom;
   TFarEnvGuard Guard;
     return FStartupInfo.Menu(&MainGuid, &MainGuid,
       -1, -1, 0,
       Flags,
-      ATitle.c_str(),
-      ABottom.c_str(),
+      Title.c_str(),
+      Bottom.c_str(),
       NULL,
       BreakKeys,
       &BreakCode,

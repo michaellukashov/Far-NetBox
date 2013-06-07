@@ -189,6 +189,7 @@ private:
   TProxyMethod FOrigProxyMethod;
   TSessionSource FSource;
   UnicodeString FCodePage;
+  mutable uintptr_t FCodePageAsNumber;
   bool FFtpAllowEmptyPassword;
   TLoginType FLoginType;
   intptr_t FNumberOfRetries;

@@ -659,7 +659,7 @@ UnicodeString TTerminal::ExpandFileName(const UnicodeString & Path,
   return Result;
 }
 //------------------------------------------------------------------------------
-bool TTerminal::GetActive()
+bool TTerminal::GetActive() const
 {
   return (FFileSystem != NULL) && FFileSystem->GetActive();
 }
@@ -2884,7 +2884,7 @@ TStrings * TTerminal::GetFixedPaths()
   return FFileSystem->GetFixedPaths();
 }
 //------------------------------------------------------------------------------
-bool TTerminal::GetResolvingSymlinks()
+bool TTerminal::GetResolvingSymlinks() const
 {
   return GetSessionData()->GetResolveSymlinks() && GetIsCapable(fcResolveSymlink);
 }
@@ -3738,7 +3738,7 @@ bool TTerminal::AllowedAnyCommand(const UnicodeString & Command)
   return !Command.Trim().IsEmpty();
 }
 //------------------------------------------------------------------------------
-bool TTerminal::GetCommandSessionOpened()
+bool TTerminal::GetCommandSessionOpened() const
 {
   // consider secondary terminal open in "ready" state only
   // so we never do keepalives on it until it is completely initialized
@@ -4235,6 +4235,20 @@ struct TSynchronizeData : public TObject
   TStringList * LocalFileList;
   const TCopyParamType * CopyParam;
   TSynchronizeChecklist * Checklist;
+
+  void DeleteLocalFileList()
+  {
+    if (LocalFileList != NULL)
+    {
+      for (intptr_t Index = 0; Index < LocalFileList->GetCount(); ++Index)
+      {
+        TSynchronizeFileData * FileData = reinterpret_cast<TSynchronizeFileData *>
+          (LocalFileList->GetObject(Index));
+        delete FileData;
+      }
+      SAFE_DESTROY(LocalFileList);
+    }
+  }
 };
 //------------------------------------------------------------------------------
 TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & LocalDirectory,
@@ -4306,7 +4320,7 @@ UnicodeString TTerminal::SynchronizeParamsStr(intptr_t Params)
   AddFlagName(ParamsStr, Params, spMirror, L"Mirror");
   if (Params > 0)
   {
-    AddToList(ParamsStr, FORMAT(L"0x%x", (int(Params))), L", ");
+    AddToList(ParamsStr, FORMAT(L"0x%x", int(Params)), L", ");
   }
   return ParamsStr;
 }
@@ -4507,16 +4521,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
   }
   ,
   {
-    if (Data.LocalFileList != NULL)
-    {
-      for (intptr_t Index = 0; Index < Data.LocalFileList->GetCount(); ++Index)
-      {
-        TSynchronizeFileData * FileData = reinterpret_cast<TSynchronizeFileData *>
-          (Data.LocalFileList->GetObject(Index));
-        delete FileData;
-      }
-      delete Data.LocalFileList;
-    }
+    Data.DeleteLocalFileList();
   }
   );
 }

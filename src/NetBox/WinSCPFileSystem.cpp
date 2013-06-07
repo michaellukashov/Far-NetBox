@@ -2953,8 +2953,7 @@ void TWinSCPFileSystem::SaveSession()
   {
     FTerminal->GetSessionData()->SetRemoteDirectory(FTerminal->GetCurrentDirectory());
 
-    TSessionData * Data;
-    Data = static_cast<TSessionData *>(StoredSessions->FindByName(FTerminal->GetSessionData()->GetName()));
+    TSessionData * Data = static_cast<TSessionData *>(StoredSessions->FindByName(FTerminal->GetSessionData()->GetName()));
     if (Data)
     {
       bool Changed = false;
@@ -3031,11 +3030,8 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
   {
     FTerminal->ShowExtendedException(&E);
     SAFE_DESTROY(FTerminal);
-    FTerminal = NULL;
     SAFE_DESTROY(FQueue);
-    FQueue = NULL;
     SAFE_DESTROY(FQueueStatus);
-    FQueueStatus = NULL;
   }
 
   if (FTerminal != NULL)
