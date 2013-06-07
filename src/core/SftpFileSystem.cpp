@@ -178,8 +178,6 @@ const int tfNewDirectory = 0x02;
 //---------------------------------------------------------------------------
 struct TSFTPSupport : public TObject
 {
-NB_DISABLE_COPY(TSFTPSupport)
-
   TSFTPSupport() :
     AttribExtensions(new TStringList()),
     Extensions(new TStringList())
@@ -217,6 +215,9 @@ NB_DISABLE_COPY(TSFTPSupport)
   TStrings * AttribExtensions;
   TStrings * Extensions;
   bool Loaded;
+
+private:
+  NB_DISABLE_COPY(TSFTPSupport)
 };
 //---------------------------------------------------------------------------
 class TSFTPPacket : public TObject
@@ -243,7 +244,7 @@ public:
   {
     Init(codePage);
     FLength = Len;
-    SetCapacity (FLength);
+    SetCapacity(FLength);
     memmove(GetData(), Source, Len);
   }
 
@@ -271,7 +272,7 @@ public:
   {
     FPosition = 0;
     FLength = 0;
-    SetCapacity (0);
+    SetCapacity(0);
     FType = AType;
     AddByte(FType);
     if (FType != SSH_FXP_INIT) // && (FType != 1)
@@ -342,7 +343,7 @@ public:
 
   inline void AddString(const UnicodeString & Value, bool Utf)
   {
-	(void)Utf;
+    (void)Utf;
     AddStringW(Value);
   }
 
@@ -1583,7 +1584,7 @@ public:
 
   bool ReceivePacket(TSFTPPacket * Packet, TRemoteFile *& File)
   {
-    void * Token;
+    void * Token = NULL;
     bool Result = false;
     TRY_FINALLY (
     {
