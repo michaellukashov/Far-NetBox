@@ -1753,16 +1753,6 @@ bool TSFTPFileSystem::GetActive()
   return FSecureShell->GetActive();
 }
 //---------------------------------------------------------------------------
-const TSessionInfo & TSFTPFileSystem::GetSessionInfo()
-{
-  return FSecureShell->GetSessionInfo();
-}
-//---------------------------------------------------------------------------
-const TSessionData * TSFTPFileSystem::GetSessionData() const
-{
-  return FTerminal->GetSessionData();
-}
-//---------------------------------------------------------------------------
 const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 {
   if (!FFileSystemInfoValid)
@@ -2849,7 +2839,8 @@ void TSFTPFileSystem::DoStartup()
 
   // use UTF when forced or ...
   // when "auto" and version is at least 4 and the server is not know not to use UTF
-  FUtfNever = (GetSessionInfo().SshImplementation.Pos(L"Foxit-WAC-Server") == 1) ||
+  const TSessionInfo & Info = GetSessionInfo();
+  FUtfNever = (Info.SshImplementation.Pos(L"Foxit-WAC-Server") == 1) ||
     (GetSessionData()->GetNotUtf() == asOn);
   FUtfStrings =
     (GetSessionData()->GetNotUtf() == asOff) ||
@@ -2871,8 +2862,8 @@ void TSFTPFileSystem::DoStartup()
 
   FOpenSSH =
     // Sun SSH is based on OpenSSH (suffers the same bugs)
-    (GetSessionInfo().SshImplementation.Pos(L"OpenSSH") == 1) ||
-    (GetSessionInfo().SshImplementation.Pos(L"Sun_SSH") == 1);
+    (Info.SshImplementation.Pos(L"OpenSSH") == 1) ||
+    (Info.SshImplementation.Pos(L"Sun_SSH") == 1);
 
   FMaxPacketSize = static_cast<uint32_t>(GetSessionData()->GetSFTPMaxPacketSize());
   if (FMaxPacketSize == 0)
@@ -2885,7 +2876,7 @@ void TSFTPFileSystem::DoStartup()
     }
     // full string is "1.77 sshlib: Momentum SSH Server",
     // possibly it is sshlib-related
-    else if (GetSessionInfo().SshImplementation.Pos(L"Momentum SSH Server") != 0)
+    else if (Info.SshImplementation.Pos(L"Momentum SSH Server") != 0)
     {
       FMaxPacketSize = 4 + (32 * 1024);
       FTerminal->LogEvent(FORMAT(L"Limiting packet size to Momentum sftp-server limit of %d bytes",

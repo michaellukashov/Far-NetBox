@@ -81,7 +81,7 @@ public:
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable);
-  virtual const TSessionInfo & GetSessionInfo();
+  virtual const TSessionInfo & GetSessionInfo() { return FSecureShell->GetSessionInfo(); }
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
   virtual bool TemporaryTransferFile(const UnicodeString & FileName);
   virtual bool GetStoredCredentialsTried();
@@ -201,7 +201,7 @@ protected:
   intptr_t PacketLength(unsigned char * LenBuf, intptr_t ExpectedType);
 
 private:
-  const TSessionData * GetSessionData() const;
+  inline const TSessionData * GetSessionData() const { return FTerminal->GetSessionData(); }
 };
 //---------------------------------------------------------------------------
 #endif // SftpFileSystemH
