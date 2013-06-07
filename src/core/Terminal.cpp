@@ -4235,6 +4235,20 @@ struct TSynchronizeData : public TObject
   TStringList * LocalFileList;
   const TCopyParamType * CopyParam;
   TSynchronizeChecklist * Checklist;
+
+  void DeleteLocalFileList()
+  {
+    if (LocalFileList != NULL)
+    {
+      for (intptr_t Index = 0; Index < LocalFileList->GetCount(); ++Index)
+      {
+        TSynchronizeFileData * FileData = reinterpret_cast<TSynchronizeFileData *>
+          (LocalFileList->GetObject(Index));
+        delete FileData;
+      }
+      SAFE_DESTROY(LocalFileList);
+    }
+  }
 };
 //------------------------------------------------------------------------------
 TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & LocalDirectory,
@@ -4507,16 +4521,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
   }
   ,
   {
-    if (Data.LocalFileList != NULL)
-    {
-      for (intptr_t Index = 0; Index < Data.LocalFileList->GetCount(); ++Index)
-      {
-        TSynchronizeFileData * FileData = reinterpret_cast<TSynchronizeFileData *>
-          (Data.LocalFileList->GetObject(Index));
-        delete FileData;
-      }
-      delete Data.LocalFileList;
-    }
+    Data.DeleteLocalFileList();
   }
   );
 }
