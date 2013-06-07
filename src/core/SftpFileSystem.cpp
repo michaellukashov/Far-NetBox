@@ -2569,10 +2569,10 @@ UnicodeString TSFTPFileSystem::GetHomeDirectory()
   return FHomeDirectory;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::LoadFile(TRemoteFile * File, TSFTPPacket * Packet,
+void TSFTPFileSystem::LoadFile(TRemoteFile * AFile, TSFTPPacket * Packet,
   bool Complete)
 {
-  Packet->GetFile(File, FVersion, GetSessionData()->GetDSTMode(),
+  Packet->GetFile(AFile, FVersion, GetSessionData()->GetDSTMode(),
     FUtfStrings, FSignedTS, Complete);
 }
 //---------------------------------------------------------------------------
@@ -3172,7 +3172,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
-  TRemoteFile *& File)
+  TRemoteFile *& AFile)
 {
   assert(SymlinkFile && SymlinkFile->GetIsSymLink());
   assert(FVersion >= 3); // symlinks are supported with SFTP version 3 and later
@@ -3207,14 +3207,14 @@ void TSFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
 
   ReceiveResponse(&AttrsPacket, &AttrsPacket, SSH_FXP_ATTRS);
   // SymlinkFile->FileName was used instead SymlinkFile->LinkTo before, why?
-  File = LoadFile(&AttrsPacket, SymlinkFile,
+  AFile = LoadFile(&AttrsPacket, SymlinkFile,
     ::UnixExtractFileName(SymlinkFile->GetLinkTo()));
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::ReadFile(const UnicodeString & FileName,
-  TRemoteFile *& File)
+  TRemoteFile *& AFile)
 {
-  CustomReadFile(FileName, File, SSH_FXP_LSTAT);
+  CustomReadFile(FileName, AFile, SSH_FXP_LSTAT);
 }
 //---------------------------------------------------------------------------
 bool TSFTPFileSystem::RemoteFileExists(const UnicodeString & FullPath,
@@ -3292,10 +3292,10 @@ void TSFTPFileSystem::DoDeleteFile(const UnicodeString & FileName, unsigned char
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::DeleteFile(const UnicodeString & FileName,
-  const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action)
+  const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action)
 {
   unsigned char Type;
-  if (File && File->GetIsDirectory() && !File->GetIsSymLink())
+  if (AFile && AFile->GetIsDirectory() && !AFile->GetIsSymLink())
   {
     if (FLAGCLEAR(Params, dfNoRecursive))
     {
@@ -3384,7 +3384,7 @@ void TSFTPFileSystem::CreateLink(const UnicodeString & FileName,
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & FileName,
-  const TRemoteFile * /*File*/, const TRemoteProperties * AProperties,
+  const TRemoteFile * /*AFile*/, const TRemoteProperties * AProperties,
   TChmodSessionAction & Action)
 {
   assert(AProperties != NULL);
@@ -3632,7 +3632,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::CustomCommandOnFile(const UnicodeString & /* FileName */,
-  const TRemoteFile * /* File */, const UnicodeString & /* Command */, intptr_t /* Params */,
+  const TRemoteFile * /* AFile */, const UnicodeString & /* Command */, intptr_t /* Params */,
   TCaptureOutputEvent /* OutputEvent */)
 {
   assert(false);
@@ -3670,21 +3670,21 @@ void TSFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
 //---------------------------------------------------------------------------
 // transfer protocol
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
+void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
-  assert(FilesToCopy && OperationProgress);
+  assert(AFilesToCopy && OperationProgress);
 
   UnicodeString FileName, FileNameOnly;
   UnicodeString FullTargetDir = ::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
-  while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
+  while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     bool Success = false;
-    FileName = FilesToCopy->GetString(Index);
-    TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->GetObject(Index));
+    FileName = AFilesToCopy->GetString(Index);
+    TRemoteFile * File = dynamic_cast<TRemoteFile *>(AFilesToCopy->GetObject(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ExtractFileName(RealFileName, false);
     assert(!FAvoidBusy);
@@ -3940,7 +3940,7 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString & DestFileName,
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::SFTPSourceRobust(const UnicodeString & FileName,
-  const TRemoteFile * File,
+  const TRemoteFile * AFile,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
@@ -3958,7 +3958,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const UnicodeString & FileName,
     bool ChildError = false;
     try
     {
-      SFTPSource(FileName, File, TargetDir, CopyParam, Params,
+      SFTPSource(FileName, AFile, TargetDir, CopyParam, Params,
         OpenParams, FileParams,
         OperationProgress,
         Flags, Action, ChildError);
@@ -3992,14 +3992,14 @@ void TSFTPFileSystem::SFTPSourceRobust(const UnicodeString & FileName,
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
-  const TRemoteFile * File,
+  const TRemoteFile * AFile,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
   TOpenRemoteFileParams & OpenParams,
   TOverwriteFileParams & FileParams,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TUploadSessionAction & Action, bool & ChildError)
 {
-  UnicodeString RealFileName = File ? File->GetFileName() : FileName;
+  UnicodeString RealFileName = AFile ? AFile->GetFileName() : FileName;
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", RealFileName.c_str()));
 
   Action.FileName(ExpandUNCFileName(RealFileName));
@@ -4796,23 +4796,23 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
   }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
+void TSFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
-  assert(FilesToCopy && OperationProgress);
+  assert(AFilesToCopy && OperationProgress);
 
   UnicodeString FileName;
   UnicodeString FullTargetDir = IncludeTrailingBackslash(TargetDir);
   const TRemoteFile * File;
   bool Success;
   intptr_t Index = 0;
-  while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
+  while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     Success = false;
-    FileName = FilesToCopy->GetString(Index);
-    File = static_cast<TRemoteFile *>(FilesToCopy->GetObject(Index));
+    FileName = AFilesToCopy->GetString(Index);
+    File = static_cast<TRemoteFile *>(AFilesToCopy->GetObject(Index));
 
     assert(!FAvoidBusy);
     FAvoidBusy = true;
@@ -5420,13 +5420,13 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::SFTPSinkFile(const UnicodeString & FileName,
-  const TRemoteFile * File, void * Param)
+  const TRemoteFile * AFile, void * Param)
 {
   TSinkFileParams * Params = static_cast<TSinkFileParams *>(Param);
   assert(Params->OperationProgress);
   try
   {
-    SFTPSinkRobust(FileName, File, Params->TargetDir, Params->CopyParam,
+    SFTPSinkRobust(FileName, AFile, Params->TargetDir, Params->CopyParam,
       Params->Params, Params->OperationProgress, Params->Flags);
   }
   catch(EScpSkipFile & E)

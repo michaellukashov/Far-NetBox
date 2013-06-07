@@ -43,26 +43,26 @@ public:
   virtual void CachedChangeDirectory(const UnicodeString & Directory);
   virtual void AnnounceFileListOperation();
   virtual void ChangeFileProperties(const UnicodeString & FileName,
-    const TRemoteFile * File, const TRemoteProperties * Properties,
+    const TRemoteFile * AFile, const TRemoteProperties * Properties,
     TChmodSessionAction & Action);
   virtual bool LoadFilesProperties(TStrings * FileList);
   virtual void CalculateFilesChecksum(const UnicodeString & Alg,
     TStrings * FileList, TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum);
-  virtual void CopyToLocal(TStrings * FilesToCopy,
+  virtual void CopyToLocal(TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
-  virtual void CopyToRemote(TStrings * FilesToCopy,
+  virtual void CopyToRemote(TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CreateDirectory(const UnicodeString & DirName);
   virtual void CreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic);
   virtual void DeleteFile(const UnicodeString & FileName,
-    const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action);
+    const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action);
   virtual void CustomCommandOnFile(const UnicodeString & FileName,
-    const TRemoteFile * File, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
+    const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
   virtual void DoStartup();
   virtual void HomeDirectory();
   virtual bool IsCapable(intptr_t Capability) const;
@@ -70,9 +70,9 @@ public:
   virtual void ReadCurrentDirectory();
   virtual void ReadDirectory(TRemoteFileList * FileList);
   virtual void ReadFile(const UnicodeString & FileName,
-    TRemoteFile *& File);
+    TRemoteFile *& AFile);
   virtual void ReadSymlink(TRemoteFile * SymlinkFile,
-    TRemoteFile *& File);
+    TRemoteFile *& AFile);
   virtual void RenameFile(const UnicodeString & FileName,
     const UnicodeString & NewName);
   virtual void CopyFile(const UnicodeString & FileName,
@@ -125,7 +125,7 @@ protected:
   TRemoteFile * LoadFile(TSFTPPacket * Packet,
     TRemoteFile * ALinkedByFile, const UnicodeString & FileName,
     TRemoteFileList * TempFileList = NULL, bool Complete = true);
-  void LoadFile(TRemoteFile * File, TSFTPPacket * Packet,
+  void LoadFile(TRemoteFile * AFile, TSFTPPacket * Packet,
     bool Complete = true);
   UnicodeString LocalCanonify(const UnicodeString & Path);
   UnicodeString Canonify(const UnicodeString & Path);
@@ -153,11 +153,11 @@ protected:
   void DoDeleteFile(const UnicodeString & FileName, unsigned char Type);
 
   void SFTPSourceRobust(const UnicodeString & FileName,
-    const TRemoteFile * File,
+    const TRemoteFile * AFile,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   void SFTPSource(const UnicodeString & FileName,
-    const TRemoteFile * File,
+    const TRemoteFile * AFile,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
     TOpenRemoteFileParams & OpenParams,
     TOverwriteFileParams & FileParams,
@@ -187,7 +187,7 @@ protected:
     TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TDownloadSessionAction & Action, bool & ChildError);
   void SFTPSinkFile(const UnicodeString & FileName,
-    const TRemoteFile * File, void * Param);
+    const TRemoteFile * AFile, void * Param);
   char * GetEOL() const;
   inline void BusyStart();
   inline void BusyEnd();
