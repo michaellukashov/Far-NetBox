@@ -2580,25 +2580,17 @@ TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket * Packet,
   TRemoteFile * ALinkedByFile, const UnicodeString & FileName,
   TRemoteFileList * TempFileList, bool Complete)
 {
-  TRemoteFile * File = new TRemoteFile(ALinkedByFile);
-  try
+  std::auto_ptr<TRemoteFile> File(new TRemoteFile(ALinkedByFile));
+  File->SetTerminal(FTerminal);
+  if (!FileName.IsEmpty())
   {
-    File->SetTerminal(FTerminal);
-    if (!FileName.IsEmpty())
-    {
-      File->SetFileName(FileName);
-    }
-    // to get full path for symlink completion
-    File->SetDirectory(TempFileList);
-    LoadFile(File, Packet, Complete);
-    File->SetDirectory(NULL);
+    File->SetFileName(FileName);
   }
-  catch(...)
-  {
-    delete File;
-    throw;
-  }
-  return File;
+  // to get full path for symlink completion
+  File->SetDirectory(TempFileList);
+  LoadFile(File.get(), Packet, Complete);
+  File->SetDirectory(NULL);
+  return File.release();
 }
 //---------------------------------------------------------------------------
 UnicodeString TSFTPFileSystem::GetCurrentDirectory()
