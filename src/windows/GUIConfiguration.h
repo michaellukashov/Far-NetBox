@@ -140,44 +140,6 @@ private:
 //---------------------------------------------------------------------------
 class TGUIConfiguration : public TConfiguration
 {
-NB_DISABLE_COPY(TGUIConfiguration)
-private:
-  TStrings * FLocales;
-  UnicodeString FLastLocalesExts;
-  bool FContinueOnError;
-  bool FConfirmCommandSession;
-  UnicodeString FPuttyPath;
-  UnicodeString FPSftpPath;
-  bool FPuttyPassword;
-  bool FTelnetForFtpInPutty;
-  UnicodeString FPuttySession;
-  intptr_t FSynchronizeParams;
-  intptr_t FSynchronizeOptions;
-  intptr_t FSynchronizeModeAuto;
-  intptr_t FSynchronizeMode;
-  intptr_t FMaxWatchDirectories;
-  TDateTime FIgnoreCancelBeforeFinish;
-  bool FQueueAutoPopup;
-  bool FSessionRememberPassword;
-  intptr_t FQueueTransfersLimit;
-  bool FQueueKeepDoneItems;
-  intptr_t FQueueKeepDoneItemsFor;
-  TGUICopyParamType FDefaultCopyParam;
-  bool FBeepOnFinish;
-  TDateTime FBeepOnFinishAfter;
-  UnicodeString FDefaultPuttyPathOnly;
-  UnicodeString FDefaultPuttyPath;
-  TCopyParamList * FCopyParamList;
-  bool FCopyParamListDefaults;
-  UnicodeString FCopyParamCurrent;
-  TRemoteProperties FNewDirectoryProperties;
-  intptr_t FKeepUpToDateChangeDelay;
-  UnicodeString FChecksumAlg;
-  intptr_t FSessionReopenAutoIdle;
-
-protected:
-  mutable LCID FLocale;
-
 public:
   virtual void SaveData(THierarchicalStorage * Storage, bool All);
   virtual void LoadData(THierarchicalStorage * Storage);
@@ -269,6 +231,46 @@ public:
   void SetChecksumAlg(const UnicodeString & Value);
   intptr_t GetSessionReopenAutoIdle() const { return FSessionReopenAutoIdle; }
   void SetSessionReopenAutoIdle(intptr_t Value) { FSessionReopenAutoIdle = Value; }
+
+protected:
+  mutable LCID FLocale;
+
+private:
+  TStrings * FLocales;
+  UnicodeString FLastLocalesExts;
+  bool FContinueOnError;
+  bool FConfirmCommandSession;
+  UnicodeString FPuttyPath;
+  UnicodeString FPSftpPath;
+  bool FPuttyPassword;
+  bool FTelnetForFtpInPutty;
+  UnicodeString FPuttySession;
+  intptr_t FSynchronizeParams;
+  intptr_t FSynchronizeOptions;
+  intptr_t FSynchronizeModeAuto;
+  intptr_t FSynchronizeMode;
+  intptr_t FMaxWatchDirectories;
+  TDateTime FIgnoreCancelBeforeFinish;
+  bool FQueueAutoPopup;
+  bool FSessionRememberPassword;
+  intptr_t FQueueTransfersLimit;
+  bool FQueueKeepDoneItems;
+  intptr_t FQueueKeepDoneItemsFor;
+  TGUICopyParamType FDefaultCopyParam;
+  bool FBeepOnFinish;
+  TDateTime FBeepOnFinishAfter;
+  UnicodeString FDefaultPuttyPathOnly;
+  UnicodeString FDefaultPuttyPath;
+  TCopyParamList * FCopyParamList;
+  bool FCopyParamListDefaults;
+  UnicodeString FCopyParamCurrent;
+  TRemoteProperties FNewDirectoryProperties;
+  intptr_t FKeepUpToDateChangeDelay;
+  UnicodeString FChecksumAlg;
+  intptr_t FSessionReopenAutoIdle;
+
+private:
+  NB_DISABLE_COPY(TGUIConfiguration)
 };
 //---------------------------------------------------------------------------
 #define GUIConfiguration (dynamic_cast<TGUIConfiguration *>(GetConfiguration()))

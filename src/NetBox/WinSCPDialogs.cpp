@@ -126,13 +126,11 @@ public:
   intptr_t GetTab() const { return FTab; }
   void SetTab(intptr_t Value) { FTab = Value; }
   UnicodeString GetTabName() const { return FTabName; }
+  void SetTabName(const UnicodeString & Value);
 
 private:
   UnicodeString FTabName;
   intptr_t FTab;
-
-public:
-  void SetTabName(const UnicodeString & Value);
 };
 //------------------------------------------------------------------------------
 TTabbedDialog::TTabbedDialog(TCustomFarPlugin * AFarPlugin, int TabCount) :
@@ -787,14 +785,15 @@ protected:
   virtual void Change();
 
 private:
+  virtual void UpdateControls();
+
+private:
   TFarCheckBox * EditorMultipleCheck;
   TFarCheckBox * EditorUploadOnSaveCheck;
   TFarRadioButton * EditorDownloadDefaultButton;
   TFarRadioButton * EditorDownloadOptionsButton;
   TFarRadioButton * EditorUploadSameButton;
   TFarRadioButton * EditorUploadOptionsButton;
-
-  virtual void UpdateControls();
 };
 //------------------------------------------------------------------------------
 TTransferEditorConfigurationDialog::TTransferEditorConfigurationDialog(
@@ -1217,16 +1216,17 @@ public:
   bool Execute(TStrings * Results);
 
 private:
-  TSessionData * FSessionData;
-  UnicodeString FPrompt;
-  TList * FEdits;
-  TFarCheckBox * SavePasswordCheck;
-
   void ShowPromptClick(TFarButton * Sender, bool & Close);
   void GenerateLabel(const UnicodeString & ACaption, bool & Truncated);
   TFarEdit * GenerateEdit(bool Echo);
   void GeneratePrompt(bool ShowSavePassword,
     const UnicodeString & Instructions, const TStrings * Prompts, bool & Truncated);
+
+private:
+  TSessionData * FSessionData;
+  UnicodeString FPrompt;
+  TList * FEdits;
+  TFarCheckBox * SavePasswordCheck;
 };
 //------------------------------------------------------------------------------
 TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
@@ -1490,6 +1490,42 @@ protected:
   virtual void SelectTab(intptr_t Tab);
 
 private:
+  void LoadPing(TSessionData * SessionData);
+  void SavePing(TSessionData * SessionData);
+  intptr_t LoginTypeToIndex(TLoginType LoginType);
+  intptr_t ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items);
+  TProxyMethod IndexToProxyMethod(intptr_t Index, TFarList * Items);
+  TFarComboBox * GetProxyMethodCombo();
+  intptr_t FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback);
+  TFSProtocol IndexToFSProtocol(intptr_t Index, bool AllowScpFallback);
+  TFSProtocol GetFSProtocol();
+  intptr_t LastSupportedFtpProxyMethod();
+  bool SupportedFtpProxyMethod(intptr_t Method);
+  TProxyMethod GetProxyMethod();
+  intptr_t GetFtpProxyLogonType();
+  TFtps IndexToFtps(intptr_t Index);
+  TFtps GetFtps();
+  TLoginType IndexToLoginType(intptr_t Index);
+  TLoginType GetLoginType();
+  bool VerifyKey(const UnicodeString & FileName, bool TypeOnly);
+  void PrevTabClick(TFarButton * /* Sender */, bool & Close);
+  void NextTabClick(TFarButton * /* Sender */, bool & Close);
+  void CipherButtonClick(TFarButton * Sender, bool & Close);
+  void KexButtonClick(TFarButton * Sender, bool & Close);
+  void AuthGSSAPICheckAllowChange(TFarDialogItem * Sender, void * NewState, bool & Allow);
+  void UnixEnvironmentButtonClick(TFarButton * Sender, bool & Close);
+  void WindowsEnvironmentButtonClick(TFarButton * Sender, bool & Close);
+  void UpdateControls();
+  void TransferProtocolComboChange();
+  void LoginTypeComboChange();
+  void FillCodePageEdit();
+  void CodePageEditAdd(unsigned int Cp);
+
+  void ChangeTabs(intptr_t FirstVisibleTabIndex);
+  intptr_t GetVisibleTabsCount(intptr_t TabIndex, bool Forward);
+  intptr_t AddTab(intptr_t TabID, const wchar_t * TabCaption);
+
+private:
   TSessionActionEnum FAction;
   TSessionData * FSessionData;
   intptr_t FTransferProtocolIndex;
@@ -1619,42 +1655,6 @@ private:
   TFarCheckBox * WebDAVCompressionCheck;
   TObjectList * FTabs;
   intptr_t FFirstVisibleTabIndex;
-
-  void LoadPing(TSessionData * SessionData);
-  void SavePing(TSessionData * SessionData);
-  intptr_t LoginTypeToIndex(TLoginType LoginType);
-  intptr_t ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items);
-  TProxyMethod IndexToProxyMethod(intptr_t Index, TFarList * Items);
-  TFarComboBox * GetProxyMethodCombo();
-  intptr_t FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback);
-  TFSProtocol IndexToFSProtocol(intptr_t Index, bool AllowScpFallback);
-  TFSProtocol GetFSProtocol();
-  intptr_t LastSupportedFtpProxyMethod();
-  bool SupportedFtpProxyMethod(intptr_t Method);
-  TProxyMethod GetProxyMethod();
-  intptr_t GetFtpProxyLogonType();
-  TFtps IndexToFtps(intptr_t Index);
-  TFtps GetFtps();
-  TLoginType IndexToLoginType(intptr_t Index);
-  TLoginType GetLoginType();
-  bool VerifyKey(const UnicodeString & FileName, bool TypeOnly);
-  void PrevTabClick(TFarButton * /* Sender */, bool & Close);
-  void NextTabClick(TFarButton * /* Sender */, bool & Close);
-  void CipherButtonClick(TFarButton * Sender, bool & Close);
-  void KexButtonClick(TFarButton * Sender, bool & Close);
-  void AuthGSSAPICheckAllowChange(TFarDialogItem * Sender, void * NewState, bool & Allow);
-  void UnixEnvironmentButtonClick(TFarButton * Sender, bool & Close);
-  void WindowsEnvironmentButtonClick(TFarButton * Sender, bool & Close);
-  void UpdateControls();
-  void TransferProtocolComboChange();
-  void LoginTypeComboChange();
-  void FillCodePageEdit();
-  void CodePageEditAdd(unsigned int Cp);
-
-  void ChangeTabs(intptr_t FirstVisibleTabIndex);
-  intptr_t GetVisibleTabsCount(intptr_t TabIndex, bool Forward);
-
-  intptr_t AddTab(intptr_t TabID, const wchar_t * TabCaption);
 };
 //------------------------------------------------------------------------------
 #define BUG(BUGID, MSG, PREFIX) \
@@ -4950,6 +4950,10 @@ public:
   explicit TCopyParamsContainer(TFarDialog * ADialog,
     intptr_t Options, intptr_t CopyParamAttrs);
 
+  void SetParams(TCopyParamType Value);
+  TCopyParamType GetParams();
+  int GetHeight();
+
 protected:
   TFarRadioButton * TMTextButton;
   TFarRadioButton * TMBinaryButton;
@@ -4981,11 +4985,6 @@ private:
   intptr_t FOptions;
   intptr_t FCopyParamAttrs;
   TCopyParamType FParams;
-
-public:
-  void SetParams(TCopyParamType Value);
-  TCopyParamType GetParams();
-  int GetHeight();
 };
 //------------------------------------------------------------------------------
 TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
@@ -8293,6 +8292,9 @@ protected:
   virtual bool CloseQuery();
 
 private:
+  void OperationButtonClick(TFarButton * Sender, bool & Close);
+
+private:
   TTerminalQueueStatus * FStatus;
   TWinSCPFileSystem * FFileSystem;
   bool FClosingPlugin;
@@ -8304,8 +8306,6 @@ private:
   TFarButton * MoveUpButton;
   TFarButton * MoveDownButton;
   TFarButton * CloseButton;
-
-  void OperationButtonClick(TFarButton * Sender, bool & Close);
 };
 //------------------------------------------------------------------------------
 TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,

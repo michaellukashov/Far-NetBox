@@ -238,53 +238,6 @@ protected:
   virtual UnicodeString GetCurrentDirectory() const { return FTerminal ? FTerminal->GetCurrentDirectory() : UnicodeString(); }
 
 private:
-  TTerminal * FTerminal;
-  TTerminalQueue * FQueue;
-  TTerminalQueueStatus * FQueueStatus;
-  TCriticalSection * FQueueStatusSection;
-  bool FQueueStatusInvalidated;
-  bool FQueueItemInvalidated;
-  bool FRefreshLocalDirectory;
-  bool FRefreshRemoteDirectory;
-  bool FQueueEventPending;
-  TQueueEvent FQueueEvent;
-  bool FReloadDirectory;
-  HANDLE FProgressSaveScreenHandle;
-  HANDLE FSynchronizationSaveScreenHandle;
-  HANDLE FAuthenticationSaveScreenHandle;
-  TDateTime FSynchronizationStart;
-  bool FSynchronizationCompare;
-  TStrings * FFileList;
-  TList * FPanelItems;
-  UnicodeString FSavedFindFolder;
-  UnicodeString FOriginalEditFile;
-  UnicodeString FLastEditFile;
-  UnicodeString FLastMultipleEditFile;
-  UnicodeString FLastMultipleEditFileTitle;
-  UnicodeString FLastMultipleEditDirectory;
-  bool FLastMultipleEditReadOnly;
-  intptr_t FLastEditorID;
-  bool FEditorPendingSave;
-  TGUICopyParamType FLastEditCopyParam;
-  bool FNoProgress;
-  bool FNoProgressFinish;
-  TKeepaliveThread * FKeepaliveThread;
-  bool FSynchronisingBrowse;
-  TSynchronizeController * FSynchronizeController;
-  TStrings * FCapturedLog;
-  bool FOutputLog;
-  TStrings * FAuthenticationLog;
-  typedef rde::map<intptr_t, TMultipleEdit> TMultipleEdits;
-  TMultipleEdits FMultipleEdits;
-  bool FLoadingSessionList;
-  typedef rde::vector<TEditHistory> TEditHistories;
-  TEditHistories FEditHistories;
-  UnicodeString FLastPath;
-  TStrings * FPathHistory;
-  UnicodeString FSessionsFolder;
-  UnicodeString FNewSessionsFolder;
-  UnicodeString FPrevSessionName;
-
   bool TerminalCheckForEsc();
   void TerminalClose(TObject * Sender);
   void TerminalUpdateStatus(TTerminal * Terminal, bool Active);
@@ -338,9 +291,56 @@ private:
   void GetSpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable, bool & Close);
   void QueueAddItem(TQueueItem * Item);
+  UnicodeString GetFileNameHash(const UnicodeString & FileName);
 
 private:
-  UnicodeString GetFileNameHash(const UnicodeString & FileName);
+  TTerminal * FTerminal;
+  TTerminalQueue * FQueue;
+  TTerminalQueueStatus * FQueueStatus;
+  TCriticalSection * FQueueStatusSection;
+  bool FQueueStatusInvalidated;
+  bool FQueueItemInvalidated;
+  bool FRefreshLocalDirectory;
+  bool FRefreshRemoteDirectory;
+  bool FQueueEventPending;
+  TQueueEvent FQueueEvent;
+  bool FReloadDirectory;
+  HANDLE FProgressSaveScreenHandle;
+  HANDLE FSynchronizationSaveScreenHandle;
+  HANDLE FAuthenticationSaveScreenHandle;
+  TDateTime FSynchronizationStart;
+  bool FSynchronizationCompare;
+  TStrings * FFileList;
+  TList * FPanelItems;
+  UnicodeString FSavedFindFolder;
+  UnicodeString FOriginalEditFile;
+  UnicodeString FLastEditFile;
+  UnicodeString FLastMultipleEditFile;
+  UnicodeString FLastMultipleEditFileTitle;
+  UnicodeString FLastMultipleEditDirectory;
+  bool FLastMultipleEditReadOnly;
+  intptr_t FLastEditorID;
+  bool FEditorPendingSave;
+  TGUICopyParamType FLastEditCopyParam;
+  bool FNoProgress;
+  bool FNoProgressFinish;
+  TKeepaliveThread * FKeepaliveThread;
+  bool FSynchronisingBrowse;
+  TSynchronizeController * FSynchronizeController;
+  TStrings * FCapturedLog;
+  bool FOutputLog;
+  TStrings * FAuthenticationLog;
+  typedef rde::map<intptr_t, TMultipleEdit> TMultipleEdits;
+  TMultipleEdits FMultipleEdits;
+  bool FLoadingSessionList;
+  typedef rde::vector<TEditHistory> TEditHistories;
+  TEditHistories FEditHistories;
+  UnicodeString FLastPath;
+  TStrings * FPathHistory;
+  UnicodeString FSessionsFolder;
+  UnicodeString FNewSessionsFolder;
+  UnicodeString FPrevSessionName;
+
 private:
   NB_DISABLE_COPY(TWinSCPFileSystem)
 };

@@ -143,6 +143,7 @@ private:
   bool FNeedsSynchronize;
   HANDLE FSynchronizeObjects[2];
   TThreadMethod FSynchronizeMethod;
+
 private:
   NB_DISABLE_COPY(TFarDialog)
 };
@@ -179,6 +180,7 @@ private:
   TObjectList * FItems;
   TFarDialog * FDialog;
   bool FEnabled;
+
 private:
   NB_DISABLE_COPY(TFarDialogContainer)
 };
@@ -327,6 +329,7 @@ private:
   bool FIsEnabled;
   unsigned long FColors;
   unsigned long FColorMask;
+
 private:
   NB_DISABLE_COPY(TFarDialogItem)
 };
@@ -538,6 +541,7 @@ private:
   FarList * FListItems;
   TFarDialogItem * FDialogItem;
   bool FNoDialogUpdate;
+
 private:
   NB_DISABLE_COPY(TFarList)
 };
@@ -573,11 +577,12 @@ protected:
   virtual bool CloseQuery();
 
 private:
+  void UpdateMouseReaction();
+
+private:
   TFarList * FList;
   TFarListBoxAutoSelect FAutoSelect;
   bool FDenyClose;
-
-  void UpdateMouseReaction();
 };
 //---------------------------------------------------------------------------
 class TFarComboBox : public TFarDialogItem
@@ -631,10 +636,11 @@ protected:
   virtual void DoFocus();
 
 private:
+  void ItemsChange(TObject * Sender);
+
+private:
   TStringList * FItems;
   intptr_t FTopIndex;
-
-  void ItemsChange(TObject * Sender);
 };
 //---------------------------------------------------------------------------
 TRect Rect(int Left, int Top, int Right, int Bottom);

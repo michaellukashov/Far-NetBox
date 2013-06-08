@@ -216,6 +216,7 @@ public:
   void SetProgress(TFileOperationProgressType & ProgressData);
   void GetData(TQueueItemProxy * Proxy);
   void SetCPSLimit(unsigned long CPSLimit);
+
 private:
   void Execute(TTerminalItem * TerminalItem);
   virtual void DoExecute(TTerminal * Terminal) = 0;
@@ -248,6 +249,12 @@ public:
   void * GetUserData() { return FUserData; }
   void SetUserData(void * Value) { FUserData = Value; }
 
+public:
+  void SetMasks(const UnicodeString & Value);
+  intptr_t GetIndex();
+  TFileOperationProgressType * GetProgressData();
+  __int64 GetTotalTransferred();
+
 private:
   TFileOperationProgressType * FProgressData;
   TQueueItem::TStatus FStatus;
@@ -260,11 +267,6 @@ private:
 
   explicit TQueueItemProxy(TTerminalQueue * Queue, TQueueItem * QueueItem);
   virtual ~TQueueItemProxy();
-public:
-  void SetMasks(const UnicodeString & Value);
-  intptr_t GetIndex();
-  TFileOperationProgressType * GetProgressData();
-  __int64 GetTotalTransferred();
 };
 //---------------------------------------------------------------------------
 class TTerminalQueueStatus : public TObject
@@ -284,19 +286,20 @@ protected:
   void Delete(TQueueItemProxy * ItemProxy);
   void ResetStats();
 
-private:
-  TList * FList;
-  intptr_t FDoneCount;
-  intptr_t FActiveCount;
-
 public:
   void SetMasks(const UnicodeString & Value);
   intptr_t GetCount() const;
   intptr_t GetDoneCount() const { return FDoneCount; }
-  intptr_t GetActiveCount();
-  intptr_t GetDoneAndActiveCount();
+  intptr_t GetActiveCount() const;
+  intptr_t GetDoneAndActiveCount() const;
   void SetDoneCount(intptr_t Value);
+  TQueueItemProxy * GetItem(intptr_t Index) const;
   TQueueItemProxy * GetItem(intptr_t Index);
+
+private:
+  TList * FList;
+  intptr_t FDoneCount;
+  mutable intptr_t FActiveCount;
 
 private:
   NB_DISABLE_COPY(TTerminalQueueStatus)

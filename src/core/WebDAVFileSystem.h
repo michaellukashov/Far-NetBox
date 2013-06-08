@@ -85,6 +85,47 @@ public:
 public:
   virtual void ReadDirectoryProgress(__int64 Bytes);
 
+public:
+  webdav::error_t GetServerSettings(
+    int * proxy_method,
+    const char **proxy_host,
+    unsigned int *proxy_port,
+    const char **proxy_username,
+    const char **proxy_password,
+    int *timeout_seconds,
+    int *neon_debug,
+    const char **neon_debug_file_name,
+    bool *compression,
+    const char **pk11_provider,
+    const char **ssl_authority_file,
+    apr_pool_t *pool);
+  webdav::error_t VerifyCertificate(
+    const char * Prompt, const char *fingerprint,
+    uintptr_t & RequestResult);
+  webdav::error_t AskForClientCertificateFilename(
+    const char **cert_file, uintptr_t & RequestResult,
+    apr_pool_t *pool);
+  webdav::error_t AskForUsername(
+    const char **user_name,
+    uintptr_t & RequestResult,
+    apr_pool_t *pool);
+  webdav::error_t AskForUserPassword(
+    const char **password,
+    uintptr_t & RequestResult,
+    apr_pool_t *pool);
+  webdav::error_t AskForPassphrase(
+    const char **passphrase,
+    const char *realm,
+    uintptr_t & RequestResult,
+    apr_pool_t *pool);
+  webdav::error_t SimplePrompt(
+    const char *prompt_text,
+    const char *prompt_string,
+    uintptr_t & RequestResult);
+  webdav::error_t CreateStorage(THierarchicalStorage *& Storage);
+  uintptr_t AdjustToCPSLimit(uintptr_t Len);
+  bool GetIsCancelled();
+
 protected:
   virtual UnicodeString GetCurrentDirectory();
 
@@ -130,6 +171,21 @@ protected:
     TFileOperationProgressType * OperationProgress);
 
 private:
+  void CustomReadFile(const UnicodeString & FileName,
+    TRemoteFile *& File, TRemoteFile * ALinkedByFile);
+  bool SendPropFindRequest(const wchar_t * dir, int & responseCode);
+  webdav::error_t OpenURL(const UnicodeString & repos_URL,
+    apr_pool_t *pool);
+
+  bool WebDAVCheckExisting(const wchar_t * path, int & is_dir);
+  bool WebDAVMakeDirectory(const wchar_t * path);
+  bool WebDAVGetList(const UnicodeString & Directory);
+  bool WebDAVGetFile(const wchar_t * remotePath, HANDLE * LocalFileHandle);
+  bool WebDAVPutFile(const wchar_t * remotePath, const wchar_t * localPath, const unsigned __int64 fileSize);
+  bool WebDAVRenameFile(const wchar_t * srcPath, const wchar_t * dstPath);
+  bool WebDAVDeleteFile(const wchar_t * path);
+
+private:
   TFileSystemInfo FFileSystemInfo;
   UnicodeString FCurrentDirectory;
   TRemoteFileList * FFileList;
@@ -149,67 +205,6 @@ private:
   size_t FLastReadDirectoryProgress;
   TFileOperationProgressType * FCurrentOperationProgress;
   TCriticalSection * FTransferStatusCriticalSection;
-
-private:
-  void CustomReadFile(const UnicodeString & FileName,
-    TRemoteFile *& File, TRemoteFile * ALinkedByFile);
-  bool SendPropFindRequest(const wchar_t * dir, int & responseCode);
-
-private:
-  bool WebDAVCheckExisting(const wchar_t * path, int & is_dir);
-  bool WebDAVMakeDirectory(const wchar_t * path);
-  bool WebDAVGetList(const UnicodeString & Directory);
-  bool WebDAVGetFile(const wchar_t * remotePath, HANDLE * LocalFileHandle);
-  bool WebDAVPutFile(const wchar_t * remotePath, const wchar_t * localPath, const unsigned __int64 fileSize);
-  bool WebDAVRenameFile(const wchar_t * srcPath, const wchar_t * dstPath);
-  bool WebDAVDeleteFile(const wchar_t * path);
-
-public:
-  webdav::error_t GetServerSettings(
-    int * proxy_method,
-    const char **proxy_host,
-    unsigned int *proxy_port,
-    const char **proxy_username,
-    const char **proxy_password,
-    int *timeout_seconds,
-    int *neon_debug,
-    const char **neon_debug_file_name,
-    bool *compression,
-    const char **pk11_provider,
-    const char **ssl_authority_file,
-    apr_pool_t *pool);
-  webdav::error_t VerifyCertificate(
-    const char * Prompt, const char *fingerprint,
-    uintptr_t & RequestResult);
-  webdav::error_t AskForClientCertificateFilename(
-    const char **cert_file, uintptr_t & RequestResult,
-    apr_pool_t *pool);
-  webdav::error_t AskForUsername(
-    const char **user_name,
-    uintptr_t & RequestResult,
-    apr_pool_t *pool);
-  webdav::error_t AskForUserPassword(
-    const char **password, 
-    uintptr_t & RequestResult,
-    apr_pool_t *pool);
-  webdav::error_t AskForPassphrase(
-    const char **passphrase,
-    const char *realm,
-    uintptr_t & RequestResult,
-    apr_pool_t *pool);
-  webdav::error_t SimplePrompt(
-    const char *prompt_text,
-    const char *prompt_string,
-    uintptr_t & RequestResult);
-  webdav::error_t CreateStorage(THierarchicalStorage *& Storage);
-  uintptr_t AdjustToCPSLimit(uintptr_t Len);
-  bool GetIsCancelled();
-
-private:
-  webdav::error_t OpenURL(const UnicodeString & repos_URL,
-    apr_pool_t *pool);
-
-private:
   apr_pool_t *webdav_pool;
   webdav::session_t *FSession;
 

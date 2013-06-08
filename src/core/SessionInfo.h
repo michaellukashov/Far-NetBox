@@ -296,6 +296,9 @@ public:
   UnicodeString GetCurrentFileName() const { return FCurrentFileName; };
   bool GetEnabled() const { return FEnabled; }
 
+  UnicodeString GetLogFileName();
+  void SetEnabled(bool Value);
+
 protected:
   void CloseLogFile();
   inline void AddPendingAction(TSessionActionRecord * Action);
@@ -320,10 +323,6 @@ private:
   bool FEnabled;
 
   void OpenLogFile();
-
-public:
-  UnicodeString GetLogFileName();
-  void SetEnabled(bool Value);
 
 private:
   NB_DISABLE_COPY(TActionLog)

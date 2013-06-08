@@ -21,24 +21,6 @@ DEFINE_CALLBACK_TYPE6(TFileOperationFinishedEvent, void,
 //---------------------------------------------------------------------------
 class TFileOperationProgressType : public TObject
 {
-private:
-  // when it was last time suspended (to calculate suspend time in Resume())
-  uintptr_t FSuspendTime;
-  // when current file was started being transfered
-  TDateTime FFileStartTime;
-  intptr_t FFilesFinished;
-  TFileOperationProgressEvent FOnProgress;
-  TFileOperationFinishedEvent FOnFinished;
-  bool FReset;
-  uintptr_t FLastSecond;
-  uintptr_t FRemainingCPS;
-  rde::vector<unsigned long> FTicks;
-  rde::vector<__int64> FTotalTransferredThen;
-
-protected:
-  void ClearTransfer();
-  inline void DoProgress();
-
 public:
   // common data
   TFileOperation Operation;
@@ -119,6 +101,24 @@ public:
   intptr_t TransferProgress() const;
   intptr_t OverallProgress() const;
   intptr_t TotalTransferProgress() const;
+
+protected:
+  void ClearTransfer();
+  inline void DoProgress();
+
+private:
+  // when it was last time suspended (to calculate suspend time in Resume())
+  uintptr_t FSuspendTime;
+  // when current file was started being transfered
+  TDateTime FFileStartTime;
+  intptr_t FFilesFinished;
+  TFileOperationProgressEvent FOnProgress;
+  TFileOperationFinishedEvent FOnFinished;
+  bool FReset;
+  uintptr_t FLastSecond;
+  uintptr_t FRemainingCPS;
+  rde::vector<unsigned long> FTicks;
+  rde::vector<__int64> FTotalTransferredThen;
 };
 //---------------------------------------------------------------------------
 class TSuspendFileOperationProgress : public TObject

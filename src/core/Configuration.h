@@ -19,52 +19,6 @@ enum TFtpEncryptionSwitch_219 { fesPlainFTP, fesExplicitSSL, fesImplicit, fesExp
 //---------------------------------------------------------------------------
 class TConfiguration : public TObject
 {
-private:
-  bool FDontSave;
-  bool FChanged;
-  intptr_t FUpdating;
-  TNotifyEvent FOnChange;
-
-  mutable void * FApplicationInfo;
-  // TUsage * FUsage;
-  bool FLogging;
-  bool FPermanentLogging;
-  UnicodeString FLogFileName;
-  UnicodeString FPermanentLogFileName;
-  intptr_t FLogWindowLines;
-  bool FLogFileAppend;
-  intptr_t FLogProtocol;
-  intptr_t FActualLogProtocol;
-  bool FLogActions;
-  bool FPermanentLogActions;
-  UnicodeString FActionsLogFileName;
-  UnicodeString FPermanentActionsLogFileName;
-  bool FConfirmOverwriting;
-  bool FConfirmResume;
-  bool FAutoReadDirectoryAfterOp;
-  intptr_t FSessionReopenAuto;
-  intptr_t FSessionReopenBackground;
-  intptr_t FSessionReopenTimeout;
-  intptr_t FSessionReopenAutoStall;
-  UnicodeString FIniFileStorageName;
-  UnicodeString FVirtualIniFileStorageName;
-  intptr_t FProgramIniPathWrittable;
-  intptr_t FTunnelLocalPortNumberLow;
-  intptr_t FTunnelLocalPortNumberHigh;
-  intptr_t FCacheDirectoryChangesMaxSize;
-  bool FShowFtpWelcomeMessage;
-  UnicodeString FDefaultRandomSeedFile;
-  UnicodeString FRandomSeedFile;
-  UnicodeString FPuttyRegistryStorageKey;
-  UnicodeString FExternalIpAddress;
-  bool FTryFtpWhenSshFails;
-
-  bool FDisablePasswordStoring;
-  bool FForceBanners;
-  bool FDisableAcceptingHostKeys;
-  bool FDefaultCollectUsage;
-  intptr_t FSessionReopenAutoMaximumNumberOfRetries;
-
 public:
   UnicodeString GetOSVersionStr() const;
   TVSFixedFileInfo *GetFixedApplicationInfo() const;
@@ -119,10 +73,6 @@ public:
   void SetTryFtpWhenSshFails(bool Value);
   bool GetCollectUsage() const;
   void SetCollectUsage(bool);
-
-protected:
-  TStorage FStorage;
-  TCriticalSection * FCriticalSection;
 
 public:
   virtual TStorage GetStorage();
@@ -224,6 +174,56 @@ public:
   void SetLogToFile(bool Value);
   intptr_t GetSessionReopenAutoMaximumNumberOfRetries() const { return FSessionReopenAutoMaximumNumberOfRetries; }
   void SetSessionReopenAutoMaximumNumberOfRetries(intptr_t Value);
+
+protected:
+  TStorage FStorage;
+  TCriticalSection * FCriticalSection;
+
+private:
+  bool FDontSave;
+  bool FChanged;
+  intptr_t FUpdating;
+  TNotifyEvent FOnChange;
+
+  mutable void * FApplicationInfo;
+  // TUsage * FUsage;
+  bool FLogging;
+  bool FPermanentLogging;
+  UnicodeString FLogFileName;
+  UnicodeString FPermanentLogFileName;
+  intptr_t FLogWindowLines;
+  bool FLogFileAppend;
+  intptr_t FLogProtocol;
+  intptr_t FActualLogProtocol;
+  bool FLogActions;
+  bool FPermanentLogActions;
+  UnicodeString FActionsLogFileName;
+  UnicodeString FPermanentActionsLogFileName;
+  bool FConfirmOverwriting;
+  bool FConfirmResume;
+  bool FAutoReadDirectoryAfterOp;
+  intptr_t FSessionReopenAuto;
+  intptr_t FSessionReopenBackground;
+  intptr_t FSessionReopenTimeout;
+  intptr_t FSessionReopenAutoStall;
+  UnicodeString FIniFileStorageName;
+  UnicodeString FVirtualIniFileStorageName;
+  intptr_t FProgramIniPathWrittable;
+  intptr_t FTunnelLocalPortNumberLow;
+  intptr_t FTunnelLocalPortNumberHigh;
+  intptr_t FCacheDirectoryChangesMaxSize;
+  bool FShowFtpWelcomeMessage;
+  UnicodeString FDefaultRandomSeedFile;
+  UnicodeString FRandomSeedFile;
+  UnicodeString FPuttyRegistryStorageKey;
+  UnicodeString FExternalIpAddress;
+  bool FTryFtpWhenSshFails;
+
+  bool FDisablePasswordStoring;
+  bool FForceBanners;
+  bool FDisableAcceptingHostKeys;
+  bool FDefaultCollectUsage;
+  intptr_t FSessionReopenAutoMaximumNumberOfRetries;
 };
 //---------------------------------------------------------------------------
 class TShortCuts : public TObject

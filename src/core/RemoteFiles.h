@@ -75,31 +75,6 @@ private:
 //---------------------------------------------------------------------------
 class TRemoteFile : public TPersistent
 {
-NB_DISABLE_COPY(TRemoteFile)
-private:
-  TRemoteFileList * FDirectory;
-  TRemoteToken FOwner;
-  TModificationFmt FModificationFmt;
-  __int64 FSize;
-  UnicodeString FFileName;
-  Integer FINodeBlocks;
-  TDateTime FModification;
-  TDateTime FLastAccess;
-  TRemoteToken FGroup;
-  intptr_t FIconIndex;
-  Boolean FIsSymLink;
-  TRemoteFile * FLinkedFile;
-  TRemoteFile * FLinkedByFile;
-  UnicodeString FLinkTo;
-  TRights *FRights;
-  TTerminal *FTerminal;
-  wchar_t FType;
-  bool FSelected;
-  bool FCyclicLink;
-  UnicodeString FFullFileName;
-  int FIsHidden;
-  UnicodeString FTypeName;
-
 public:
   intptr_t GetAttr() const;
   bool GetBrokenLink() const;
@@ -126,12 +101,6 @@ public:
   bool GetIsInaccesibleDirectory() const;
   UnicodeString GetExtension();
   UnicodeString GetUserModificationStr();
-
-private:
-  void LoadTypeInfo() const;
-
-protected:
-  void FindLinkedFile();
 
 public:
   explicit TRemoteFile(TRemoteFile * ALinkedByFile = NULL);
@@ -166,6 +135,39 @@ public:
   bool GetSelected() const { return FSelected; }
   void SetSelected(bool Value) { FSelected = Value; }
   void SetFullFileName(const UnicodeString & Value);
+
+protected:
+  void FindLinkedFile();
+
+private:
+  TRemoteFileList * FDirectory;
+  TRemoteToken FOwner;
+  TModificationFmt FModificationFmt;
+  __int64 FSize;
+  UnicodeString FFileName;
+  Integer FINodeBlocks;
+  TDateTime FModification;
+  TDateTime FLastAccess;
+  TRemoteToken FGroup;
+  intptr_t FIconIndex;
+  Boolean FIsSymLink;
+  TRemoteFile * FLinkedFile;
+  TRemoteFile * FLinkedByFile;
+  UnicodeString FLinkTo;
+  TRights *FRights;
+  TTerminal *FTerminal;
+  wchar_t FType;
+  bool FSelected;
+  bool FCyclicLink;
+  UnicodeString FFullFileName;
+  int FIsHidden;
+  UnicodeString FTypeName;
+
+private:
+  void LoadTypeInfo() const;
+
+private:
+  NB_DISABLE_COPY(TRemoteFile)
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryFile : public TRemoteFile
@@ -212,19 +214,9 @@ public:
 //---------------------------------------------------------------------------
 class TRemoteDirectory : public TRemoteFileList
 {
-NB_DISABLE_COPY(TRemoteDirectory)
 friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
 friend class TWebDAVFileSystem;
-private:
-  Boolean FIncludeParentDirectory;
-  Boolean FIncludeThisDirectory;
-  TTerminal * FTerminal;
-  mutable TStrings * FSelectedFiles;
-  TRemoteFile * FParentDirectory;
-  TRemoteFile * FThisDirectory;
-protected:
-  virtual void Clear();
 public:
   explicit TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = NULL);
   virtual ~TRemoteDirectory() { Clear(); }
@@ -241,6 +233,20 @@ public:
   TRemoteFile * GetParentDirectory() const { return FParentDirectory; }
   TRemoteFile * GetThisDirectory() const { return FThisDirectory; }
   virtual void SetDirectory(const UnicodeString & Value);
+
+protected:
+  virtual void Clear();
+
+private:
+  Boolean FIncludeParentDirectory;
+  Boolean FIncludeThisDirectory;
+  TTerminal * FTerminal;
+  mutable TStrings * FSelectedFiles;
+  TRemoteFile * FParentDirectory;
+  TRemoteFile * FThisDirectory;
+
+private:
+  NB_DISABLE_COPY(TRemoteDirectory)
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryCache : private TStringList
@@ -256,10 +262,11 @@ public:
   void AddFileList(TRemoteFileList * FileList);
   void ClearFileList(const UnicodeString & Directory, bool SubDirs);
   void Clear();
-
   bool GetIsEmpty() const;
+
 protected:
   virtual void Delete(intptr_t Index);
+
 private:
   TCriticalSection * FSection;
   void DoClearFileList(const UnicodeString & Directory, bool SubDirs);
@@ -433,6 +440,7 @@ public:
   {
     return FValue == 0;
   }
+
 private:
   __int64 FValue;
 };

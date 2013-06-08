@@ -117,6 +117,7 @@ struct TOpenRemoteFileParams : public TObject
   RawByteString RemoteFileHandle; // output
   TOverwriteFileParams *FileParams;
   bool Confirmed;
+
 private:
   NB_DISABLE_COPY(TOpenRemoteFileParams)
 };

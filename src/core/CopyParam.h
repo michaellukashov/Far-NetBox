@@ -33,30 +33,6 @@ struct TUsableCopyParamAttrs
 //---------------------------------------------------------------------------
 class TCopyParamType : public TObject
 {
-private:
-  TFileMasks FAsciiFileMask;
-  TFileNameCase FFileNameCase;
-  bool FPreserveReadOnly;
-  bool FPreserveTime;
-  TRights FRights;
-  TTransferMode FTransferMode;
-  bool FAddXToDirectories;
-  bool FPreserveRights;
-  bool FIgnorePermErrors;
-  TResumeSupport FResumeSupport;
-  __int64 FResumeThreshold;
-  wchar_t FInvalidCharsReplacement;
-  UnicodeString FLocalInvalidChars;
-  UnicodeString FTokenizibleChars;
-  bool FCalculateSize;
-  UnicodeString FFileMask;
-  TFileMasks FExcludeFileMask;
-  bool FNegativeExclude;
-  TFileMasks FIncludeFileMask;
-  bool FClearArchive;
-  uintptr_t FCPSLimit;
-  bool FNewerOnly;
-
 public:
   static const wchar_t TokenPrefix = L'%';
   static const wchar_t NoReplacement = wchar_t(0);
@@ -143,6 +119,30 @@ public:
   void SetCPSLimit(uintptr_t Value) { FCPSLimit = Value; }
   bool GetNewerOnly() const { return FNewerOnly; }
   void SetNewerOnly(bool Value) { FNewerOnly = Value; }
+
+private:
+  TFileMasks FAsciiFileMask;
+  TFileNameCase FFileNameCase;
+  bool FPreserveReadOnly;
+  bool FPreserveTime;
+  TRights FRights;
+  TTransferMode FTransferMode;
+  bool FAddXToDirectories;
+  bool FPreserveRights;
+  bool FIgnorePermErrors;
+  TResumeSupport FResumeSupport;
+  __int64 FResumeThreshold;
+  wchar_t FInvalidCharsReplacement;
+  UnicodeString FLocalInvalidChars;
+  UnicodeString FTokenizibleChars;
+  bool FCalculateSize;
+  UnicodeString FFileMask;
+  TFileMasks FExcludeFileMask;
+  bool FNegativeExclude;
+  TFileMasks FIncludeFileMask;
+  bool FClearArchive;
+  uintptr_t FCPSLimit;
+  bool FNewerOnly;
 };
 //---------------------------------------------------------------------------
 uintptr_t  GetSpeedLimit(const UnicodeString & Text);
