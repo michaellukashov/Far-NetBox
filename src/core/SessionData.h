@@ -197,7 +197,7 @@ private:
 
 public:
   void SetHostName(const UnicodeString & Value);
-  UnicodeString GetHostNameExpanded();
+  UnicodeString GetHostNameExpanded() const;
   void SetPortNumber(intptr_t Value);
   void SetUserName(const UnicodeString & Value);
   UnicodeString GetUserNameExpanded();
@@ -227,16 +227,16 @@ public:
 
   void SetProtocolStr(const UnicodeString & Value);
   UnicodeString GetProtocolStr() const;
-  bool GetCanLogin();
+  bool GetCanLogin() const;
   void SetPingIntervalDT(TDateTime Value);
   TDateTime GetPingIntervalDT() const;
-  TDateTime GetFtpPingIntervalDT();
+  TDateTime GetFtpPingIntervalDT() const;
   void SetTimeDifference(TDateTime Value);
   void SetPingType(TPingType Value);
-  UnicodeString GetSessionName();
-  bool HasSessionName();
-  UnicodeString GetDefaultSessionName();
-  UnicodeString GetSessionUrl();
+  UnicodeString GetSessionName() const;
+  bool HasSessionName() const;
+  UnicodeString GetDefaultSessionName() const;
+  UnicodeString GetSessionUrl() const;
   // void SetProtocol(TProtocol Value);
   void SetFSProtocol(TFSProtocol Value);
   UnicodeString GetFSProtocolStr() const;
@@ -249,8 +249,8 @@ public:
   void SetPreserveDirectoryChanges(bool Value);
   void SetLockInHome(bool Value);
   void SetSpecial(bool Value);
-  UnicodeString GetInfoTip();
-  bool GetDefaultShell();
+  UnicodeString GetInfoTip() const;
+  bool GetDefaultShell() const;
   void SetDetectReturnVar(bool Value);
   bool GetDetectReturnVar() const;
   void SetListingCommand(const UnicodeString & Value);
@@ -268,8 +268,8 @@ public:
   void SetTcpNoDelay(bool Value);
   void SetSendBuf(intptr_t Value);
   void SetSshSimple(bool Value);
-  UnicodeString GetSshProtStr();
-  bool GetUsesSsh();
+  UnicodeString GetSshProtStr() const;
+  bool GetUsesSsh() const;
   void SetCipherList(const UnicodeString & Value);
   UnicodeString GetCipherList() const;
   void SetKexList(const UnicodeString & Value);
@@ -287,7 +287,7 @@ public:
   void SetFtpProxyLogonType(intptr_t Value);
   void SetBug(TSshBug Bug, TAutoSwitch Value);
   TAutoSwitch GetBug(TSshBug Bug) const;
-  UnicodeString GetSessionKey();
+  UnicodeString GetSessionKey() const;
   void SetCustomParam1(const UnicodeString & Value);
   void SetCustomParam2(const UnicodeString & Value);
   void SetResolveSymlinks(bool Value);
@@ -302,8 +302,8 @@ public:
   void SetSCPLsFullTime(TAutoSwitch Value);
   void SetFtpListAll(TAutoSwitch Value);
   void SetSslSessionReuse(bool Value);
-  UnicodeString GetStorageKey();
-  UnicodeString GetInternalStorageKey();
+  UnicodeString GetStorageKey() const;
+  UnicodeString GetInternalStorageKey() const;
   void SetDSTMode(TDSTMode Value);
   void SetDeleteToRecycleBin(bool Value);
   void SetOverwrittenToRecycleBin(bool Value);
@@ -341,7 +341,7 @@ public:
   UnicodeString GetLocalName();
   UnicodeString GetFolderName();
   void Modify();
-  UnicodeString GetSource();
+  UnicodeString GetSource() const;
   void DoLoad(THierarchicalStorage * Storage, bool & RewritePassword);
   //UnicodeString ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default);
   //int ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int Default);
@@ -360,7 +360,7 @@ public:
     const TSessionData * Default = NULL);
   void SaveRecryptedPasswords(THierarchicalStorage * Storage);
   void RecryptPasswords();
-  bool HasAnyPassword();
+  bool HasAnyPassword() const;
   void Remove();
   virtual void Assign(const TPersistent * Source);
   bool ParseUrl(const UnicodeString & Url, TOptions * Options,
@@ -370,8 +370,8 @@ public:
   void ConfigureTunnel(intptr_t PortNumber);
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
-  bool IsSame(const TSessionData * Default, bool AdvancedOnly);
-  bool IsInFolderOrWorkspace(const UnicodeString & Name);
+  bool IsSame(const TSessionData * Default, bool AdvancedOnly) const;
+  bool IsInFolderOrWorkspace(const UnicodeString & Name) const;
   static void ValidatePath(const UnicodeString & Path);
   static void ValidateName(const UnicodeString & Name);
   UnicodeString GetHostName() const { return FHostName; }
@@ -489,7 +489,7 @@ public:
   void SetNumberOfRetries(intptr_t Value) { FNumberOfRetries = Value; }
   uintptr_t GetSessionVersion() const { return FSessionVersion; }
   void SetSessionVersion(uintptr_t Value) { FSessionVersion = Value; }
-  void RemoveProtocolPrefix(UnicodeString & HostName);
+  void RemoveProtocolPrefix(UnicodeString & HostName) const;
 
 private:
   uintptr_t GetDefaultVersion() const { return ::GetCurrentVersionNumber(); }
@@ -506,7 +506,7 @@ private:
   void ParseIEProxyConfig() const;
   void FromURI(const UnicodeString & ProxyURI,
     UnicodeString & ProxyUrl, intptr_t & ProxyPort, TProxyMethod & ProxyMethod) const;
-  void AdjustHostName(UnicodeString & HostName, const UnicodeString & Prefix);
+  void AdjustHostName(UnicodeString & HostName, const UnicodeString & Prefix) const;
 };
 //---------------------------------------------------------------------------
 class TStoredSessionList : public TNamedObjectList
