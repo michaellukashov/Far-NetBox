@@ -287,15 +287,16 @@ protected:
 private:
   TList * FList;
   intptr_t FDoneCount;
-  intptr_t FActiveCount;
+  mutable intptr_t FActiveCount;
 
 public:
   void SetMasks(const UnicodeString & Value);
   intptr_t GetCount() const;
   intptr_t GetDoneCount() const { return FDoneCount; }
-  intptr_t GetActiveCount();
-  intptr_t GetDoneAndActiveCount();
+  intptr_t GetActiveCount() const;
+  intptr_t GetDoneAndActiveCount() const;
   void SetDoneCount(intptr_t Value);
+  TQueueItemProxy * GetItem(intptr_t Index) const;
   TQueueItemProxy * GetItem(intptr_t Index);
 
 private:

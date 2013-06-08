@@ -1871,7 +1871,7 @@ void TTerminalQueueStatus::SetDoneCount(intptr_t Value)
   ResetStats();
 }
 //---------------------------------------------------------------------------
-intptr_t TTerminalQueueStatus::GetActiveCount()
+intptr_t TTerminalQueueStatus::GetActiveCount() const
 {
   if (FActiveCount < 0)
   {
@@ -1889,7 +1889,7 @@ intptr_t TTerminalQueueStatus::GetActiveCount()
   return FActiveCount;
 }
 //---------------------------------------------------------------------------
-intptr_t TTerminalQueueStatus::GetDoneAndActiveCount()
+intptr_t TTerminalQueueStatus::GetDoneAndActiveCount() const
 {
   return GetDoneCount() + GetActiveCount();
 }
@@ -1911,6 +1911,11 @@ void TTerminalQueueStatus::Delete(TQueueItemProxy * ItemProxy)
 intptr_t TTerminalQueueStatus::GetCount() const
 {
   return FList->GetCount();
+}
+//---------------------------------------------------------------------------
+TQueueItemProxy * TTerminalQueueStatus::GetItem(intptr_t Index) const
+{
+  return const_cast<TTerminalQueueStatus *>(this)->GetItem(Index);
 }
 //---------------------------------------------------------------------------
 TQueueItemProxy * TTerminalQueueStatus::GetItem(intptr_t Index)
