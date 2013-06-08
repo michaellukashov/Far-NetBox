@@ -161,7 +161,7 @@ MethodT MakeMethod(void * Data, void * Code)
 //---------------------------------------------------------------------------
 class TGuard : public TObject
 {
-  NB_DISABLE_COPY(TGuard)
+NB_DISABLE_COPY(TGuard)
 public:
   explicit TGuard(TCriticalSection * ACriticalSection);
   ~TGuard();

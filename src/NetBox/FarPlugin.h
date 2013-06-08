@@ -211,6 +211,7 @@ private:
       lhs.right == rhs.right &&
       lhs.bottom == rhs.bottom;
   }
+
 private:
   NB_DISABLE_COPY(TCustomFarPlugin)
 };
@@ -303,6 +304,7 @@ private:
     int ItemsNumber);
   const TFarPanelInfo * GetPanelInfo(int Another) const;
   TFarPanelInfo * GetPanelInfo(int Another);
+
 private:
   NB_DISABLE_COPY(TCustomFarFileSystem)
 };
@@ -396,6 +398,7 @@ protected:
     DWORD & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
   virtual UnicodeString GetCustomColumnData(size_t Column);
+
 private:
   NB_DISABLE_COPY(TFarPanelItem)
 };

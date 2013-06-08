@@ -301,6 +301,7 @@ public:
 private:
   TTerminal * FTerminal;
   unsigned int FTerminalThread;
+
 private:
   NB_DISABLE_COPY(TTunnelUI)
 };

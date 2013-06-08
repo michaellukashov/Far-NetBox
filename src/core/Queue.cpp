@@ -18,6 +18,7 @@ public:
   virtual ~TUserAction() {}
   virtual void Execute(void * Arg) = 0;
   virtual bool Force() { return false; }
+
 private:
   NB_DISABLE_COPY(TUserAction)
 };
@@ -77,6 +78,7 @@ public:
   UnicodeString Str;
   bool Status;
   intptr_t Phase;
+
 private:
   NB_DISABLE_COPY(TInformationUserAction)
 };

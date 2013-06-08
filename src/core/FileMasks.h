@@ -110,16 +110,18 @@ private:
     UnicodeString UserStr;
   };
 
-  typedef rde::vector<TMask> TMasks;
-  TMasks FMasks[4];
-  mutable TStrings * FMasksStr[4];
-
   void SetStr(const UnicodeString & Value, bool SingleMask);
   void CreateMaskMask(const UnicodeString & Mask, intptr_t Start, intptr_t End,
     bool Ex, TMaskMask & MaskMask) const;
   void CreateMask(const UnicodeString & MaskStr, intptr_t MaskStart,
     intptr_t MaskEnd, bool Include);
   TStrings * GetMasksStr(intptr_t Index) const;
+
+private:
+  typedef rde::vector<TMask> TMasks;
+  TMasks FMasks[4];
+  mutable TStrings * FMasksStr[4];
+
 private:
   static UnicodeString MakeDirectoryMask(const UnicodeString & Str);
   static inline void ReleaseMaskMask(TMaskMask & MaskMask);

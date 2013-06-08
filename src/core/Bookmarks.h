@@ -24,13 +24,13 @@ public:
   void SetSharedBookmarks(TBookmarkList * Value);
 
 private:
+  void LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
+    intptr_t Index, TBookmarkList * BookmarkList);
+
+private:
   TStringList * FBookmarkLists;
   UnicodeString FSharedKey;
   static UnicodeString Keys[];
-
-private:
-  void LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
-    intptr_t Index, TBookmarkList * BookmarkList);
 };
 //---------------------------------------------------------------------------
 class TBookmark;
@@ -100,14 +100,15 @@ protected:
   static UnicodeString BookmarkKey(const UnicodeString & Node, const UnicodeString & Name);
 
 private:
+  UnicodeString GetKey();
+  void Modify(intptr_t OldIndex);
+
+private:
   UnicodeString FName;
   UnicodeString FLocal;
   UnicodeString FRemote;
   UnicodeString FNode;
   TShortCut FShortCut;
-
-  UnicodeString GetKey();
-  void Modify(intptr_t OldIndex);
 };
 //---------------------------------------------------------------------------
 #endif

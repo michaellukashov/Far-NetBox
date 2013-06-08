@@ -23,9 +23,6 @@ public:
   __int64 ReadStream(TStream * Stream, const __int64 Len, bool ForceLen);
   void WriteToStream(TStream * Stream, const __int64 Len);
 
-private:
-  TMemoryStream * FMemory;
-
 public:
   TMemoryStream * GetMemory() const { return FMemory; }
   void SetMemory(TMemoryStream * Value);
@@ -34,6 +31,9 @@ public:
   void SetSize(__int64 Value);
   void SetPosition(__int64 Value);
   __int64 GetPosition() const;
+
+private:
+  TMemoryStream * FMemory;
 
 private:
   NB_DISABLE_COPY(TFileBuffer)

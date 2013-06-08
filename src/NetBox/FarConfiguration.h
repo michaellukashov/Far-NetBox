@@ -89,6 +89,7 @@ protected:
 
 private:
   TCustomFarPlugin * FFarPlugin;
+  TBookmarks * FBookmarks;
   intptr_t FFarConfirmations;
   bool FConfirmOverwritingOverride;
   bool FConfirmSynchronizedBrowsing;
@@ -116,8 +117,7 @@ private:
   UnicodeString FStatusColumnTypesDetailed;
   UnicodeString FStatusColumnWidthsDetailed;
 
-  TBookmarks * FBookmarks;
-
+private:
   intptr_t FarConfirmations() const;
 };
 //---------------------------------------------------------------------------

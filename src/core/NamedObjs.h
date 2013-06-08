@@ -17,6 +17,7 @@ public:
   void SetName(const UnicodeString & Value);
   Integer CompareName(const UnicodeString & AName, Boolean CaseSensitive = False);
   void MakeUniqueIn(TNamedObjectList * List);
+
 private:
   UnicodeString FName;
   bool FHidden;
@@ -24,13 +25,9 @@ private:
 //---------------------------------------------------------------------------
 class TNamedObjectList : public TObjectList
 {
-private:
-  intptr_t FHiddenCount;
 public:
   intptr_t GetCount() const;
   void SetCount(intptr_t Value);
-protected:
-  void Recount();
 public:
   static const UnicodeString HiddenPrefix;
   static bool IsHidden(TNamedObject * Object);
@@ -46,6 +43,12 @@ public:
   TNamedObject * FindByName(const UnicodeString & Name, Boolean CaseSensitive = False);
   intptr_t GetHiddenCount() const { return FHiddenCount; }
   void SetHiddenCount(intptr_t Value) { FHiddenCount = Value; }
+
+protected:
+  void Recount();
+
+private:
+  intptr_t FHiddenCount;
 };
 //---------------------------------------------------------------------------
 int NamedObjectSortProc(void * Item1, void * Item2);

@@ -36,6 +36,7 @@ struct TMessageParams : public TObject
   uintptr_t TimerAnswers;
   uintptr_t Timeout;
   uintptr_t TimeoutAnswer;
+
 private:
   NB_DISABLE_COPY(TMessageParams)
 };

@@ -74,127 +74,7 @@ class TStoredSessionList;
 //---------------------------------------------------------------------------
 class TSessionData : public TNamedObject
 {
-NB_DISABLE_COPY(TSessionData)
 friend class TStoredSessionList;
-
-private:
-  UnicodeString FHostName;
-  intptr_t FPortNumber;
-  UnicodeString FUserName;
-  RawByteString FPassword;
-  intptr_t FPingInterval;
-  TPingType FPingType;
-  bool FTryAgent;
-  bool FAgentFwd;
-  UnicodeString FListingCommand;
-  bool FAuthTIS;
-  bool FAuthKI;
-  bool FAuthKIPassword;
-  bool FAuthGSSAPI;
-  bool FGSSAPIFwdTGT; // not supported anymore
-  UnicodeString FGSSAPIServerRealm; // not supported anymore
-  bool FChangeUsername;
-  bool FCompression;
-  TSshProt FSshProt;
-  bool FSsh2DES;
-  bool FSshNoUserAuth;
-  TCipher FCiphers[CIPHER_COUNT];
-  TKex FKex[KEX_COUNT];
-  bool FClearAliases;
-  TEOLType FEOLType;
-  UnicodeString FPublicKeyFile;
-  TProtocol FProtocol;
-  UnicodeString FPuttyProtocol;
-  TFSProtocol FFSProtocol;
-  bool FModified;
-  UnicodeString FLocalDirectory;
-  UnicodeString FRemoteDirectory;
-  bool FLockInHome;
-  bool FSpecial;
-  bool FSynchronizeBrowsing;
-  bool FUpdateDirectories;
-  bool FCacheDirectories;
-  bool FCacheDirectoryChanges;
-  bool FPreserveDirectoryChanges;
-  bool FSelected;
-  TAutoSwitch FLookupUserGroups;
-  UnicodeString FReturnVar;
-  bool FScp1Compatibility;
-  UnicodeString FShell;
-  UnicodeString FSftpServer;
-  intptr_t FTimeout;
-  bool FUnsetNationalVars;
-  bool FIgnoreLsWarnings;
-  bool FTcpNoDelay;
-  intptr_t FSendBuf;
-  bool FSshSimple;
-  TProxyMethod FProxyMethod;
-  UnicodeString FProxyHost;
-  intptr_t FProxyPort;
-  UnicodeString FProxyUsername;
-  RawByteString FProxyPassword;
-  UnicodeString FProxyTelnetCommand;
-  UnicodeString FProxyLocalCommand;
-  TAutoSwitch FProxyDNS;
-  bool FProxyLocalhost;
-  intptr_t FFtpProxyLogonType;
-  TAutoSwitch FBugs[BUG_COUNT];
-  UnicodeString FCustomParam1;
-  UnicodeString FCustomParam2;
-  bool FResolveSymlinks;
-  TDateTime FTimeDifference;
-  intptr_t FSFTPDownloadQueue;
-  intptr_t FSFTPUploadQueue;
-  intptr_t FSFTPListingQueue;
-  intptr_t FSFTPMaxVersion;
-  intptr_t FSecToDateTime;
-  intptr_t FSFTPMinPacketSize;
-  intptr_t FSFTPMaxPacketSize;
-  TDSTMode FDSTMode;
-  TAutoSwitch FSFTPBugs[SFTP_BUG_COUNT];
-  bool FDeleteToRecycleBin;
-  bool FOverwrittenToRecycleBin;
-  UnicodeString FRecycleBinPath;
-  UnicodeString FPostLoginCommands;
-  TAutoSwitch FSCPLsFullTime;
-  TAutoSwitch FFtpListAll;
-  bool FSslSessionReuse;
-  TAddressFamily FAddressFamily;
-  UnicodeString FRekeyData;
-  intptr_t FRekeyTime;
-  intptr_t FColor;
-  bool FTunnel;
-  UnicodeString FTunnelHostName;
-  intptr_t FTunnelPortNumber;
-  UnicodeString FTunnelUserName;
-  RawByteString FTunnelPassword;
-  UnicodeString FTunnelPublicKeyFile;
-  intptr_t FTunnelLocalPortNumber;
-  UnicodeString FTunnelPortFwd;
-  UnicodeString FTunnelHostKey;
-  bool FFtpPasvMode;
-  TAutoSwitch FFtpForcePasvIp;
-  TAutoSwitch FFtpUseMlsd;
-  UnicodeString FFtpAccount;
-  intptr_t FFtpPingInterval;
-  TPingType FFtpPingType;
-  TFtps FFtps;
-  TAutoSwitch FNotUtf;
-  // bool FIsWorkspace;
-  // UnicodeString FLink;
-  UnicodeString FHostKey;
-
-  UnicodeString FOrigHostName;
-  intptr_t FOrigPortNumber;
-  TProxyMethod FOrigProxyMethod;
-  TSessionSource FSource;
-  UnicodeString FCodePage;
-  mutable uintptr_t FCodePageAsNumber;
-  bool FFtpAllowEmptyPassword;
-  TLoginType FLoginType;
-  intptr_t FNumberOfRetries;
-  uintptr_t FSessionVersion;
-
 public:
   void SetHostName(const UnicodeString & Value);
   UnicodeString GetHostNameExpanded() const;
@@ -498,15 +378,135 @@ private:
   TFtps TranslateFtpEncryptionNumber(intptr_t FtpEncryption);
 
 private:
-  mutable TIEProxyConfig * FIEProxyConfig;
-
-private:
   TProxyMethod GetSystemProxyMethod() const;
   void PrepareProxyData() const;
   void ParseIEProxyConfig() const;
   void FromURI(const UnicodeString & ProxyURI,
     UnicodeString & ProxyUrl, intptr_t & ProxyPort, TProxyMethod & ProxyMethod) const;
   void AdjustHostName(UnicodeString & HostName, const UnicodeString & Prefix) const;
+
+private:
+  UnicodeString FHostName;
+  intptr_t FPortNumber;
+  UnicodeString FUserName;
+  RawByteString FPassword;
+  intptr_t FPingInterval;
+  TPingType FPingType;
+  bool FTryAgent;
+  bool FAgentFwd;
+  UnicodeString FListingCommand;
+  bool FAuthTIS;
+  bool FAuthKI;
+  bool FAuthKIPassword;
+  bool FAuthGSSAPI;
+  bool FGSSAPIFwdTGT; // not supported anymore
+  UnicodeString FGSSAPIServerRealm; // not supported anymore
+  bool FChangeUsername;
+  bool FCompression;
+  TSshProt FSshProt;
+  bool FSsh2DES;
+  bool FSshNoUserAuth;
+  TCipher FCiphers[CIPHER_COUNT];
+  TKex FKex[KEX_COUNT];
+  bool FClearAliases;
+  TEOLType FEOLType;
+  UnicodeString FPublicKeyFile;
+  TProtocol FProtocol;
+  UnicodeString FPuttyProtocol;
+  TFSProtocol FFSProtocol;
+  bool FModified;
+  UnicodeString FLocalDirectory;
+  UnicodeString FRemoteDirectory;
+  bool FLockInHome;
+  bool FSpecial;
+  bool FSynchronizeBrowsing;
+  bool FUpdateDirectories;
+  bool FCacheDirectories;
+  bool FCacheDirectoryChanges;
+  bool FPreserveDirectoryChanges;
+  bool FSelected;
+  TAutoSwitch FLookupUserGroups;
+  UnicodeString FReturnVar;
+  bool FScp1Compatibility;
+  UnicodeString FShell;
+  UnicodeString FSftpServer;
+  intptr_t FTimeout;
+  bool FUnsetNationalVars;
+  bool FIgnoreLsWarnings;
+  bool FTcpNoDelay;
+  intptr_t FSendBuf;
+  bool FSshSimple;
+  TProxyMethod FProxyMethod;
+  UnicodeString FProxyHost;
+  intptr_t FProxyPort;
+  UnicodeString FProxyUsername;
+  RawByteString FProxyPassword;
+  UnicodeString FProxyTelnetCommand;
+  UnicodeString FProxyLocalCommand;
+  TAutoSwitch FProxyDNS;
+  bool FProxyLocalhost;
+  intptr_t FFtpProxyLogonType;
+  TAutoSwitch FBugs[BUG_COUNT];
+  UnicodeString FCustomParam1;
+  UnicodeString FCustomParam2;
+  bool FResolveSymlinks;
+  TDateTime FTimeDifference;
+  intptr_t FSFTPDownloadQueue;
+  intptr_t FSFTPUploadQueue;
+  intptr_t FSFTPListingQueue;
+  intptr_t FSFTPMaxVersion;
+  intptr_t FSecToDateTime;
+  intptr_t FSFTPMinPacketSize;
+  intptr_t FSFTPMaxPacketSize;
+  TDSTMode FDSTMode;
+  TAutoSwitch FSFTPBugs[SFTP_BUG_COUNT];
+  bool FDeleteToRecycleBin;
+  bool FOverwrittenToRecycleBin;
+  UnicodeString FRecycleBinPath;
+  UnicodeString FPostLoginCommands;
+  TAutoSwitch FSCPLsFullTime;
+  TAutoSwitch FFtpListAll;
+  bool FSslSessionReuse;
+  TAddressFamily FAddressFamily;
+  UnicodeString FRekeyData;
+  intptr_t FRekeyTime;
+  intptr_t FColor;
+  bool FTunnel;
+  UnicodeString FTunnelHostName;
+  intptr_t FTunnelPortNumber;
+  UnicodeString FTunnelUserName;
+  RawByteString FTunnelPassword;
+  UnicodeString FTunnelPublicKeyFile;
+  intptr_t FTunnelLocalPortNumber;
+  UnicodeString FTunnelPortFwd;
+  UnicodeString FTunnelHostKey;
+  bool FFtpPasvMode;
+  TAutoSwitch FFtpForcePasvIp;
+  TAutoSwitch FFtpUseMlsd;
+  UnicodeString FFtpAccount;
+  intptr_t FFtpPingInterval;
+  TPingType FFtpPingType;
+  TFtps FFtps;
+  TAutoSwitch FNotUtf;
+  // bool FIsWorkspace;
+  // UnicodeString FLink;
+  UnicodeString FHostKey;
+
+  UnicodeString FOrigHostName;
+  intptr_t FOrigPortNumber;
+  TProxyMethod FOrigProxyMethod;
+  TSessionSource FSource;
+  UnicodeString FCodePage;
+  mutable uintptr_t FCodePageAsNumber;
+  bool FFtpAllowEmptyPassword;
+  TLoginType FLoginType;
+  intptr_t FNumberOfRetries;
+  uintptr_t FSessionVersion;
+
+  mutable TIEProxyConfig * FIEProxyConfig;
+
+private:
+  NB_DISABLE_COPY(TSessionData)
 };
 //---------------------------------------------------------------------------
 class TStoredSessionList : public TNamedObjectList
