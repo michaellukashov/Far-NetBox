@@ -34,19 +34,6 @@ struct TUsableCopyParamAttrs
 class TCopyParamType : public TObject
 {
 public:
-  static const wchar_t TokenPrefix = L'%';
-  static const wchar_t NoReplacement = wchar_t(0);
-  static const wchar_t TokenReplacement = wchar_t(1);
-
-public:
-  void SetLocalInvalidChars(const UnicodeString & Value);
-  bool GetReplaceInvalidChars() const;
-  void SetReplaceInvalidChars(bool Value);
-  UnicodeString RestoreChars(const UnicodeString & FileName) const;
-  void DoGetInfoStr(const UnicodeString & Separator, intptr_t Options,
-    UnicodeString & Result, bool & SomeAttrIncluded) const;
-
-public:
   TCopyParamType();
   TCopyParamType(const TCopyParamType & Source);
   virtual ~TCopyParamType();
@@ -119,6 +106,19 @@ public:
   void SetCPSLimit(uintptr_t Value) { FCPSLimit = Value; }
   bool GetNewerOnly() const { return FNewerOnly; }
   void SetNewerOnly(bool Value) { FNewerOnly = Value; }
+
+public:
+  static const wchar_t TokenPrefix = L'%';
+  static const wchar_t NoReplacement = wchar_t(0);
+  static const wchar_t TokenReplacement = wchar_t(1);
+
+public:
+  void SetLocalInvalidChars(const UnicodeString & Value);
+  bool GetReplaceInvalidChars() const;
+  void SetReplaceInvalidChars(bool Value);
+  UnicodeString RestoreChars(const UnicodeString & FileName) const;
+  void DoGetInfoStr(const UnicodeString & Separator, intptr_t Options,
+    UnicodeString & Result, bool & SomeAttrIncluded) const;
 
 private:
   TFileMasks FAsciiFileMask;
