@@ -1048,7 +1048,16 @@ void TTerminal::Reopen(intptr_t Params)
   // but it can happen, e.g. when we are downloading file to execute it.
   // however I'm not sure why we mind having exception-on-fail enabled here
   Integer PrevExceptionOnFail = FExceptionOnFail;
-  try
+  auto cleanup = finally([&]()
+  {
+    GetSessionData()->SetRemoteDirectory(PrevRemoteDirectory);
+    GetSessionData()->SetFSProtocol(OrigFSProtocol);
+    FAutoReadDirectory = PrevAutoReadDirectory;
+    FReadCurrentDirectoryPending = PrevReadCurrentDirectoryPending;
+    FReadDirectoryPending = PrevReadDirectoryPending;
+    FSuspendTransaction = false;
+    FExceptionOnFail = PrevExceptionOnFail;
+  });
   {
     FReadCurrentDirectoryPending = false;
     FReadDirectoryPending = false;
@@ -1081,34 +1090,6 @@ void TTerminal::Reopen(intptr_t Params)
 
     Open();
   }
-  catch(...)
-  {
-    ReopenHelper(PrevAutoReadDirectory, OrigFSProtocol,
-      PrevAutoReadDirectory, PrevReadCurrentDirectoryPending,
-      PrevReadDirectoryPending,
-      PrevExceptionOnFail);
-    throw;
-  }
-  ReopenHelper(PrevAutoReadDirectory, OrigFSProtocol,
-    PrevAutoReadDirectory, PrevReadCurrentDirectoryPending,
-    PrevReadDirectoryPending,
-    PrevExceptionOnFail);
-}
-//------------------------------------------------------------------------------
-void TTerminal::ReopenHelper(const UnicodeString & PrevRemoteDirectory,
-  TFSProtocol OrigFSProtocol,
-  bool PrevAutoReadDirectory,
-  bool PrevReadCurrentDirectoryPending,
-  bool PrevReadDirectoryPending,
-  Integer PrevExceptionOnFail)
-{
-  GetSessionData()->SetRemoteDirectory(PrevRemoteDirectory);
-  GetSessionData()->SetFSProtocol(OrigFSProtocol);
-  FAutoReadDirectory = PrevAutoReadDirectory;
-  FReadCurrentDirectoryPending = PrevReadCurrentDirectoryPending;
-  FReadDirectoryPending = PrevReadDirectoryPending;
-  FSuspendTransaction = false;
-  FExceptionOnFail = PrevExceptionOnFail;
 }
 //------------------------------------------------------------------------------
 bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
