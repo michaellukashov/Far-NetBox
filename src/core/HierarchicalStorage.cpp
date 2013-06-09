@@ -942,7 +942,11 @@ void TIniFileStorage::Flush()
   if (FOriginal != NULL)
   {
     std::auto_ptr<TStrings> Strings(new TStringList);
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      delete FOriginal;
+      FOriginal = NULL;
+    });
     {
       dynamic_cast<TMemIniFile *>(FIniFile)->GetString(Strings.get());
       if (!Strings->Equals(FOriginal))
@@ -980,24 +984,16 @@ void TIniFileStorage::Flush()
         else
         {
           std::auto_ptr<TStream> Stream(new THandleStream(Handle));
-          TRY_FINALLY (
+          auto cleanup = finally([&]()
+          {
+            ::CloseHandle(Handle);
+          });
           {
             Strings->SaveToStream(Stream);
           }
-          ,
-          {
-            ::CloseHandle(Handle);
-          }
-          );
         }
       }
     }
-    ,
-    {
-      delete FOriginal;
-      FOriginal = NULL;
-    }
-    );
   }
 }
 //------------------------------------------------------------------------------
@@ -1093,18 +1089,16 @@ void TOptionsIniFile::ReadSection(const UnicodeString & Section, TStrings * Stri
   assert(Section.IsEmpty());
   Strings->BeginUpdate();
 
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    Strings->EndUpdate();
+  });
   {
     for (intptr_t Index = 0; Index < FOptions->GetCount(); ++Index)
     {
       Strings->Add(FOptions->Names[Index]);
     }
   }
-  ,
-  {
-    Strings->EndUpdate();
-  }
-  );
 }
 //------------------------------------------------------------------------------
 void TOptionsIniFile::ReadSections(TStrings * /*Strings*/)

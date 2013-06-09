@@ -2981,7 +2981,10 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   bool All, bool RecryptPasswordOnly)
 {
   TSessionData * FactoryDefaults = new TSessionData(L"");
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    delete FactoryDefaults;
+  });
   {
     DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults);
     for (intptr_t Index = 0; Index < GetCount() + GetHiddenCount(); ++Index)
@@ -2990,11 +2993,6 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults);
     }
   }
-  ,
-  {
-    delete FactoryDefaults;
-  }
-  );
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)

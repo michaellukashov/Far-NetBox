@@ -348,18 +348,16 @@ void TCustomFarPlugin::ClosePanel(void * Plugin)
     ResetCachedInfo();
     TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
     assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      FOpenedPlugins->Remove(FileSystem);
+    });
     {
       {
         TGuard Guard(FileSystem->GetCriticalSection());
         FileSystem->Close();
       }
     }
-    ,
-    {
-      FOpenedPlugins->Remove(FileSystem);
-    }
-    );
     delete FileSystem;
 #ifdef USE_DLMALLOC
     // dlmalloc_trim(0); // 64 * 1024);
@@ -1033,7 +1031,10 @@ intptr_t TCustomFarPlugin::FarMessage(unsigned int Flags,
   TStringList * MessageLines = NULL;
   std::auto_ptr<TStrings> MessageLinesPtr(NULL);
   wchar_t ** Items = NULL;
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    nb_free(Items);
+  });
   {
     UnicodeString FullMessage = Message;
     if (Params->MoreMessages != NULL)
@@ -1080,11 +1081,6 @@ intptr_t TCustomFarPlugin::FarMessage(unsigned int Flags,
       Flags | FMSG_LEFTALIGN, NULL, Items, static_cast<int>(MessageLines->GetCount()),
       static_cast<int>(Buttons->GetCount())));
   }
-  ,
-  {
-    nb_free(Items);
-  }
-  );
 
   return Result;
 }
@@ -1147,7 +1143,10 @@ intptr_t TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString & Title,
   intptr_t Result = 0;
   FarMenuItem * MenuItems = static_cast<FarMenuItem *>(
     nb_malloc(sizeof(FarMenuItem) * Items->GetCount()));
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    nb_free(MenuItems);
+  });
   {
     intptr_t Selected = NPOS;
     intptr_t Count = 0;
@@ -1186,11 +1185,6 @@ intptr_t TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString & Title,
       Result = ResultItem;
     }
   }
-  ,
-  {
-    nb_free(MenuItems);
-  }
-  );
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1999,18 +1993,16 @@ intptr_t TCustomFarFileSystem::MakeDirectory(struct MakeDirectoryInfo *Info)
   ResetCachedInfo();
   FNameStr = Info->Name;
   intptr_t Result = 0;
-  TRY_FINALLY (
-  {
-    Result = MakeDirectoryEx(FNameStr, Info->OpMode);
-  }
-  ,
+  auto cleanup = finally([&]()
   {
     if (0 != wcscmp(FNameStr.c_str(), Info->Name))
     {
       Info->Name = FNameStr.c_str();
     }
+  });
+  {
+    Result = MakeDirectoryEx(FNameStr, Info->OpMode);
   }
-  );
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2028,18 +2020,16 @@ intptr_t TCustomFarFileSystem::GetFiles(struct GetFilesInfo * Info)
   std::auto_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
   intptr_t Result = 0;
   FDestPathStr = Info->DestPath;
-  TRY_FINALLY (
-  {
-    Result = GetFilesEx(PanelItems.get(), Info->Move > 0, FDestPathStr, Info->OpMode);
-  }
-  ,
+  auto cleanup = finally([&]()
   {
     if (FDestPathStr != Info->DestPath)
     {
       Info->DestPath = FDestPathStr.c_str();
     }
+  });
+  {
+    Result = GetFilesEx(PanelItems.get(), Info->Move > 0, FDestPathStr, Info->OpMode);
   }
-  );
 
   return Result;
 }

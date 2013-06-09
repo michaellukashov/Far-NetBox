@@ -414,7 +414,10 @@ TStrings::~TStrings()
 void TStrings::SetTextStr(const UnicodeString & Text)
 {
   BeginUpdate();
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    EndUpdate();
+  });
   {
     Clear();
     const wchar_t * P = Text.c_str();
@@ -436,11 +439,6 @@ void TStrings::SetTextStr(const UnicodeString & Text)
       }
     }
   }
-  ,
-  {
-    EndUpdate();
-  }
-  );
 }
 
 UnicodeString TStrings::GetCommaText() const
@@ -450,16 +448,14 @@ UnicodeString TStrings::GetCommaText() const
   FDelimiter = L',';
   FQuoteChar = L'"';
   UnicodeString Result;
-  TRY_FINALLY (
-  {
-    Result = GetDelimitedText();
-  }
-  ,
+  auto cleanup = finally([&]()
   {
     FDelimiter = LOldDelimiter;
     FQuoteChar = LOldQuoteChar;
+  });
+  {
+    Result = GetDelimitedText();
   }
-  );
   return Result;
 }
 
@@ -515,7 +511,10 @@ void tokenize(const std::wstring & str, ContainerT & tokens,
 void TStrings::SetDelimitedText(const UnicodeString & Value)
 {
   BeginUpdate();
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    EndUpdate();
+  });
   {
     Clear();
     rde::vector<std::wstring> Lines;
@@ -528,11 +527,6 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
       Add(Lines[I]);
     }
   }
-  ,
-  {
-    EndUpdate();
-  }
-  );
 }
 
 intptr_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const
@@ -546,7 +540,10 @@ void TStrings::Assign(const TPersistent * Source)
   if (Strings != NULL)
   {
     BeginUpdate();
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      EndUpdate();
+    });
     {
       Clear();
       assert(Strings);
@@ -554,11 +551,6 @@ void TStrings::Assign(const TPersistent * Source)
       FDelimiter = Strings->FDelimiter;
       AddStrings(Strings);
     }
-    ,
-    {
-      EndUpdate();
-    }
-    );
   }
   else
   {
@@ -688,18 +680,16 @@ void TStrings::Move(intptr_t CurIndex, intptr_t NewIndex)
   if (CurIndex != NewIndex)
   {
     BeginUpdate();
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      EndUpdate();
+    });
     {
       UnicodeString TempString = GetString(CurIndex);
       TObject * TempObject = GetObject(CurIndex);
       Delete(CurIndex);
       InsertObject(NewIndex, TempString, TempObject);
     }
-    ,
-    {
-      EndUpdate();
-    }
-    );
   }
 }
 
@@ -790,18 +780,16 @@ void TStrings::SetValue(const UnicodeString & Name, const UnicodeString & Value)
 void TStrings::AddStrings(const TStrings * Strings)
 {
   BeginUpdate();
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    EndUpdate();
+  });
   {
     for (intptr_t I = 0; I < Strings->GetCount(); I++)
     {
       AddObject(Strings->GetString(I), Strings->GetObject(I));
     }
   }
-  ,
-  {
-    EndUpdate();
-  }
-  );
 }
 
 void TStrings::Append(const UnicodeString & Value)
@@ -1828,7 +1816,11 @@ bool TRegistry::DeleteKey(const UnicodeString & Key)
   HKEY DeleteKey = GetKey(Key);
   if (DeleteKey != 0)
   {
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      SetCurrentKey(OldKey);
+      RegCloseKey(DeleteKey);
+    });
     {
       SetCurrentKey(DeleteKey);
       TRegKeyInfo Info;
@@ -1847,12 +1839,6 @@ bool TRegistry::DeleteKey(const UnicodeString & Key)
         }
       }
     }
-    ,
-    {
-      SetCurrentKey(OldKey);
-      RegCloseKey(DeleteKey);
-    }
-    );
   }
   Result = RegDeleteKey(GetBaseKey(Relative), S.c_str()) == ERROR_SUCCESS;
   return Result;
@@ -1868,7 +1854,10 @@ bool TRegistry::KeyExists(const UnicodeString & Key)
 {
   bool Result = false;
   unsigned OldAccess = FAccess;
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    FAccess = OldAccess;
+  });
   {
     FAccess = STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS;
     HKEY TempKey = GetKey(Key);
@@ -1878,11 +1867,6 @@ bool TRegistry::KeyExists(const UnicodeString & Key)
     }
     Result = TempKey != 0;
   }
-  ,
-  {
-    FAccess = OldAccess;
-  }
-  );
   return Result;
 }
 

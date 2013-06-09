@@ -829,7 +829,10 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
       if (!FFrozen)
       {
         FFrozen = true;
-        TRY_FINALLY (
+        auto cleanup = finally([&]()
+        {
+          FFrozen = false;
+        });
         {
           do
           {
@@ -838,11 +841,6 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
           }
           while (FDataWhileFrozen);
         }
-        ,
-        {
-          FFrozen = false;
-        }
-        );
       }
       else
       {
@@ -875,7 +873,10 @@ intptr_t TSecureShell::Receive(unsigned char * Buf, intptr_t Length)
     OutPtr = Buf;
     OutLen = Length;
 
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      OutPtr = NULL;
+    });
     {
       /*
        * See if the pending-input block contains some of what we
@@ -916,11 +917,6 @@ intptr_t TSecureShell::Receive(unsigned char * Buf, intptr_t Length)
         FatalError(LoadStr(LOST_CONNECTION));
       }
     }
-    ,
-    {
-      OutPtr = NULL;
-    }
-    );
   }
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
@@ -993,7 +989,10 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
   FWaiting++;
 
   uintptr_t Answer;
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    FWaiting--;
+  });
   {
     TQueryParams Params(qpFatalAbort | qpAllowContinueOnError | qpIgnoreAbort);
     Params.HelpKeyword = HELP_MESSAGE_HOST_IS_NOT_COMMUNICATING;
@@ -1009,11 +1008,6 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
     Answer = FUI->QueryUser(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout(), FSessionData->GetTimeout()),
       NULL, qaRetry | qaAbort, &Params);
   }
-  ,
-  {
-    FWaiting--;
-  }
-  );
   return Answer;
 }
 //---------------------------------------------------------------------------
@@ -1668,9 +1662,11 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     int HandleCount;
     // note that this returns all handles, not only the session-related handles
     HANDLE * Handles = handle_get_events(&HandleCount);
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
     {
-
+      sfree(Handles);
+    });
+    {
       Handles = sresize(Handles, static_cast<size_t>(HandleCount + 1), HANDLE);
       Handles[HandleCount] = FSocketEvent;
       uintptr_t WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, (DWORD)MSec);
@@ -1734,11 +1730,6 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
         MSec = 0;
       }
     }
-    ,
-    {
-      sfree(Handles);
-    }
-    );
 
     uintptr_t TicksAfter = GetTickCount();
     // ticks wraps once in 49.7 days

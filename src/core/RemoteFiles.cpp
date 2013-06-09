@@ -1310,15 +1310,13 @@ void TRemoteFile::FindLinkedFile()
     GetTerminal()->SetExceptionOnFail(true);
     try
     {
-      TRY_FINALLY (
+      auto cleanup = finally([&]()
+      {
+        GetTerminal()->SetExceptionOnFail(false);
+      });
       {
         GetTerminal()->ReadSymlink(this, FLinkedFile);
       }
-      ,
-      {
-        GetTerminal()->SetExceptionOnFail(false);
-      }
-      );
     }
     catch (Exception &E)
     {
@@ -1704,7 +1702,10 @@ void TRemoteDirectoryCache::Clear()
 {
   TGuard Guard(FSection);
 
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    TStringList::Clear();
+  });
   {
     for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
@@ -1712,11 +1713,6 @@ void TRemoteDirectoryCache::Clear()
       SetObject(Index, NULL);
     }
   }
-  ,
-  {
-    TStringList::Clear();
-  }
-  );
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::GetIsEmpty() const

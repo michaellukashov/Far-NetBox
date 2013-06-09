@@ -167,7 +167,8 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) TRY_FINALLY ( { BLOCK }, { Storage->CloseSubKey(); } );
+  if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
+    { auto cleanup = finally([&]() { Storage->CloseSubKey(); }); { BLOCK } ; }
 #define KEY(TYPE, NAME) KEYEX(TYPE, NAME, NAME)
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
@@ -771,7 +772,13 @@ UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key,
 
   UnicodeString Result;
   void * Info = GetFileApplicationInfo(FileName);
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    if (!FileName.IsEmpty() && Info)
+    {
+      FreeFileInfo(Info);
+    }
+  });
   {
     if ((Info != NULL) && (GetTranslationCount(Info) > 0))
     {
@@ -788,14 +795,6 @@ UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key,
       }
     }
   }
-  ,
-  {
-    if (!FileName.IsEmpty() && Info)
-    {
-      FreeFileInfo(Info);
-    }
-  }
-  );
   return Result;
 }
 //---------------------------------------------------------------------------

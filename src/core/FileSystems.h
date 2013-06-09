@@ -188,7 +188,7 @@ public:
     const UnicodeString & NewName) = 0;
   virtual void CopyFile(const UnicodeString & FileName,
     const UnicodeString & NewName) = 0;
-  virtual UnicodeString FileUrl(const UnicodeString & FileName) = 0;
+  virtual UnicodeString FileUrl(const UnicodeString & FileName) const = 0;
   virtual TStrings * GetFixedPaths() = 0;
   virtual void SpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable) = 0;

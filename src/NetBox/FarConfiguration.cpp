@@ -92,15 +92,10 @@ void TFarConfiguration::Saved()
   ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
-  TRY_FINALLY (\
   { \
+    auto cleanup = finally([&]() { Storage->CloseSubKey(); }); \
     BLOCK \
-  } \
-  , \
-  { \
-    Storage->CloseSubKey(); \
-  } \
-  );
+  }
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Far", CANCREATE, \
     KEY(Bool,     DisksMenu); \
@@ -167,29 +162,25 @@ void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
 void TFarConfiguration::Load()
 {
   FForceInheritance = true;
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    FForceInheritance = false;
+  });
   {
     TGUIConfiguration::Load();
   }
-  ,
-  {
-    FForceInheritance = false;
-  }
-  );
 }
 //---------------------------------------------------------------------------
 void TFarConfiguration::Save(bool All, bool Explicit)
 {
   FForceInheritance = true;
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    FForceInheritance = false;
+  });
   {
     TGUIConfiguration::Save(All, Explicit);
   }
-  ,
-  {
-    FForceInheritance = false;
-  }
-  );
 }
 //---------------------------------------------------------------------------
 void TFarConfiguration::SetPlugin(TCustomFarPlugin * Value)

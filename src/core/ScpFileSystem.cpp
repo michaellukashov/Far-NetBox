@@ -419,7 +419,10 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
   {
     UnicodeString UName;
     FTerminal->SetExceptionOnFail(true);
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      FTerminal->SetExceptionOnFail(false);
+    });
     {
       try
       {
@@ -441,11 +444,6 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
         }
       }
     }
-    ,
-    {
-      FTerminal->SetExceptionOnFail(false);
-    }
-    );
 
     FFileSystemInfo.RemoteSystem = UName;
   }
@@ -658,7 +656,10 @@ void TSCPFileSystem::SkipFirstLine()
 //---------------------------------------------------------------------------
 void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cmd)
 {
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    FProcessingCommand = false;
+  });
   {
     if (Params & coWaitForLastLine)
     {
@@ -720,11 +721,6 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
       }
     }
   }
-  ,
-  {
-    FProcessingCommand = false;
-  }
-  );
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, intptr_t Params,
@@ -738,7 +734,13 @@ void TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, intptr_t Params,
   {
     Busy(true);
   }
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    if (FTerminal->GetUseBusyCursor())
+    {
+      Busy(false);
+    }
+  });
   {
     SendCommand(Cmd);
 
@@ -757,14 +759,6 @@ void TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, intptr_t Params,
     }
     ReadCommandOutput(COParams, &CmdString);
   }
-  ,
-  {
-    if (FTerminal->GetUseBusyCursor())
-    {
-      Busy(false);
-    }
-  }
-  );
 }
 //---------------------------------------------------------------------------
 #if defined(__BORLANDC__)
@@ -1365,19 +1359,17 @@ void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
     FOnCaptureOutput = OutputEvent;
   }
 
-  TRY_FINALLY (
-  {
-    ExecCommand2(fsAnyCommand, ecDefault | ecIgnoreWarnings, Command.c_str());
-  }
-  ,
+  auto cleanup = finally([&]()
   {
     FOnCaptureOutput = NULL;
     FSecureShell->SetOnCaptureOutput(NULL);
+  });
+  {
+    ExecCommand2(fsAnyCommand, ecDefault | ecIgnoreWarnings, Command.c_str());
   }
-  );
 }
 //---------------------------------------------------------------------------
-UnicodeString TSCPFileSystem::FileUrl(const UnicodeString & FileName)
+UnicodeString TSCPFileSystem::FileUrl(const UnicodeString & FileName) const
 {
   return FTerminal->FileUrl(L"scp", FileName);
 }
@@ -1520,7 +1512,37 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     Options.c_str(), DelimitStr(UnixExcludeTrailingBackslash(TargetDir)).c_str()));
   SkipFirstLine();
 
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    // Tell remote side, that we're done.
+    if (FTerminal->GetActive())
+    {
+      try
+      {
+        if (!GotLastLine)
+        {
+          if (CopyBatchStarted)
+          {
+            // What about case, remote side sends fatal error ???
+            // (Not sure, if it causes remote side to terminate scp)
+            FSecureShell->SendLine(L"E");
+            SCPResponse();
+          }
+          /* TODO 1 : Show stderror to user? */
+          FSecureShell->ClearStdError();
+
+          ReadCommandOutput(coExpectNoOutput | coWaitForLastLine | coOnlyReturnCode |
+            (Failed ? 0 : coRaiseExcept));
+        }
+      }
+      catch (Exception &E)
+      {
+        // Only log error message (it should always succeed, but
+        // some pending error maybe in queue) }
+        FTerminal->GetLog()->AddException(&E);
+      }
+    }
+  });
   {
     try
     {
@@ -1673,38 +1695,6 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     }
     Failed = false;
   }
-  ,
-  {
-    // Tell remote side, that we're done.
-    if (FTerminal->GetActive())
-    {
-      try
-      {
-        if (!GotLastLine)
-        {
-          if (CopyBatchStarted)
-          {
-            // What about case, remote side sends fatal error ???
-            // (Not sure, if it causes remote side to terminate scp)
-            FSecureShell->SendLine(L"E");
-            SCPResponse();
-          }
-          /* TODO 1 : Show stderror to user? */
-          FSecureShell->ClearStdError();
-
-          ReadCommandOutput(coExpectNoOutput | coWaitForLastLine | coOnlyReturnCode |
-            (Failed ? 0 : coRaiseExcept));
-        }
-      }
-      catch (Exception &E)
-      {
-        // Only log error message (it should always succeed, but
-        // some pending error maybe in queue) }
-        FTerminal->GetLog()->AddException(&E);
-      }
-    }
-  }
-  );
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
@@ -1736,7 +1726,13 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
 
   bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
   std::auto_ptr<TSafeHandleStream> Stream(new TSafeHandleStream(LocalFileHandle));
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    if (LocalFileHandle != NULL)
+    {
+      ::CloseHandle(LocalFileHandle);
+    }
+  });
   {
     OperationProgress->SetFileInProgress();
 
@@ -1973,14 +1969,6 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
       }
     }
   }
-  ,
-  {
-    if (LocalFileHandle != NULL)
-    {
-      ::CloseHandle(LocalFileHandle);
-    }
-  }
-  );
 
   /* TODO : Delete also read-only files. */
   if (FLAGSET(Params, cpDelete))
@@ -2035,7 +2023,16 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   FSecureShell->SendLine(Buf);
   SCPResponse();
 
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    if (FTerminal->GetActive())
+    {
+      // Tell remote side, that we're done.
+      FTerminal->LogEvent(FORMAT(L"Leaving directory \"%s\".", DirectoryName.c_str()));
+      FSecureShell->SendLine(L"E");
+      SCPResponse();
+    }
+  });
   {
     int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     TSearchRec SearchRec;
@@ -2047,7 +2044,10 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
         FindAttrs, SearchRec) == 0;
     );
 
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      FindClose(SearchRec);
+    });
     {
       while (FindOK && !OperationProgress->Cancel)
       {
@@ -2086,11 +2086,6 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
         );
       }
     }
-    ,
-    {
-      FindClose(SearchRec);
-    }
-    );
 
     /* TODO : Delete also read-only directories. */
     /* TODO : Show error message on failure. */
@@ -2108,17 +2103,6 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
       }
     }
   }
-  ,
-  {
-    if (FTerminal->GetActive())
-    {
-      // Tell remote side, that we're done.
-      FTerminal->LogEvent(FORMAT(L"Leaving directory \"%s\".", DirectoryName.c_str()));
-      FSecureShell->SendLine(L"E");
-      SCPResponse();
-    }
-  }
-  );
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
@@ -2142,7 +2126,35 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
     L"\"%s\"", FilesToCopy->GetCount(), TargetDir.c_str()));
   FTerminal->LogEvent(CopyParam->GetLogStr());
 
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    // In case that copying doesn't cause fatal error (ie. connection is
+    // still active) but wasn't successful (exception or user termination)
+    // we need to ensure, that SCP on remote side is closed
+    if (FTerminal->GetActive() && (CloseSCP ||
+        (OperationProgress->Cancel == csCancel) ||
+        (OperationProgress->Cancel == csCancelTransfer)))
+    {
+      // If we get LastLine, it means that remote side 'scp' is already
+      // terminated, so we need not to terminate it. There is also
+      // possibility that remote side waits for confirmation, so it will hang.
+      // This should not happen (hope)
+      UnicodeString Line = FSecureShell->ReceiveLine();
+      bool LastLineRead = IsLastLine(Line);
+      if (!LastLineRead)
+      {
+        SCPSendError((OperationProgress->Cancel ? L"Terminated by user." : L"Exception"), true);
+      }
+      // Just in case, remote side already sent some more data (it's probable)
+      // but we don't want to raise exception (user asked to terminate, it's not error)
+      int ECParams = coOnlyReturnCode;
+      if (!LastLineRead)
+      {
+        ECParams |= coWaitForLastLine;
+      }
+      ReadCommandOutput(ECParams);
+    }
+  });
   {
     for (intptr_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; ++IFile)
@@ -2189,7 +2201,10 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
           try
           {
             FTerminal->SetExceptionOnFail(true);
-            TRY_FINALLY (
+            auto cleanup = finally([&]()
+            {
+              FTerminal->SetExceptionOnFail(false);
+            });
             {
               FILE_OPERATION_LOOP(FMTLOAD(DELETE_FILE_ERROR, FileName.c_str()),
                 // pass full file name in FileName, in case we are not moving
@@ -2197,11 +2212,6 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
                 FTerminal->DeleteFile(FileName, File, &Params)
               );
             }
-            ,
-            {
-              FTerminal->SetExceptionOnFail(false);
-            }
-            );
           }
           catch (EFatal &)
           {
@@ -2234,36 +2244,6 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
       }
     }
   }
-  ,
-  {
-    // In case that copying doesn't cause fatal error (ie. connection is
-    // still active) but wasn't successful (exception or user termination)
-    // we need to ensure, that SCP on remote side is closed
-    if (FTerminal->GetActive() && (CloseSCP ||
-        (OperationProgress->Cancel == csCancel) ||
-        (OperationProgress->Cancel == csCancelTransfer)))
-    {
-      // If we get LastLine, it means that remote side 'scp' is already
-      // terminated, so we need not to terminate it. There is also
-      // possibility that remote side waits for confirmation, so it will hang.
-      // This should not happen (hope)
-      UnicodeString Line = FSecureShell->ReceiveLine();
-      bool LastLineRead = IsLastLine(Line);
-      if (!LastLineRead)
-      {
-        SCPSendError((OperationProgress->Cancel ? L"Terminated by user." : L"Exception"), true);
-      }
-      // Just in case, remote side already sent some more data (it's probable)
-      // but we don't want to raise exception (user asked to terminate, it's not error)
-      int ECParams = coOnlyReturnCode;
-      if (!LastLineRead)
-      {
-        ECParams |= coWaitForLastLine;
-      }
-      ReadCommandOutput(ECParams);
-    }
-  }
-  );
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SCPError(const UnicodeString & Message, bool Fatal)
@@ -2506,7 +2486,14 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
 
             /* TODO 1 : Turn off read-only attr */
 
-            TRY_FINALLY (
+            auto cleanup = finally([&]()
+            {
+              if (LocalFileHandle)
+              {
+                ::CloseHandle(LocalFileHandle);
+              }
+              FileStream.reset();
+            });
             {
               try
               {
@@ -2642,15 +2629,6 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                 SetFileTime(LocalFileHandle, NULL, &FileData.AcTime, &FileData.WrTime);
               }
             }
-            ,
-            {
-              if (LocalFileHandle)
-              {
-                ::CloseHandle(LocalFileHandle);
-              }
-              FileStream.reset();
-            }
-            );
           }
           catch(Exception & E)
           {
