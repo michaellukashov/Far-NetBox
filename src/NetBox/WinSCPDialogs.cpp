@@ -4948,7 +4948,7 @@ public:
   explicit TCopyParamsContainer(TFarDialog * ADialog,
     intptr_t Options, intptr_t CopyParamAttrs);
 
-  void SetParams(TCopyParamType Value);
+  void SetParams(const TCopyParamType & Value);
   TCopyParamType GetParams();
   int GetHeight();
 
@@ -5278,7 +5278,7 @@ void TCopyParamsContainer::Change()
   }
 }
 //------------------------------------------------------------------------------
-void TCopyParamsContainer::SetParams(TCopyParamType Value)
+void TCopyParamsContainer::SetParams(const TCopyParamType & Value)
 {
   if (TMBinaryButton->GetEnabled())
   {
@@ -5475,19 +5475,20 @@ private:
   TFarCheckBox * QueueCheck;
   TFarCheckBox * QueueNoConfirmationCheck;
 
-  bool FToRemote;
   intptr_t FOptions;
   intptr_t FCopyParamAttrs;
   TGUICopyParamType FCopyParams;
+  bool FToRemote;
 };
 //------------------------------------------------------------------------------
 TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   bool ToRemote, bool Move, TStrings * FileList,
-  intptr_t Options, intptr_t CopyParamAttrs) : TFarDialog(AFarPlugin)
+  intptr_t Options, intptr_t CopyParamAttrs) :
+  TFarDialog(AFarPlugin)
 {
-  FToRemote = ToRemote;
   FOptions = Options;
   FCopyParamAttrs = CopyParamAttrs;
+  FToRemote = ToRemote;
 
   const intptr_t DlgLength = 78;
   SetSize(TPoint(DlgLength, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
@@ -5582,7 +5583,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
 bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
   TGUICopyParamType * Params)
 {
-  FCopyParams = *Params;
+  FCopyParams.Assign(Params);
 
   if (FLAGCLEAR(FOptions, coTempTransfer))
   {
@@ -5599,7 +5600,7 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
 
   if (Result)
   {
-    *Params = FCopyParams;
+    Params->Assign(&FCopyParams);
 
     if (FLAGCLEAR(FOptions, coTempTransfer))
     {
