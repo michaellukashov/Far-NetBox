@@ -2500,72 +2500,7 @@ intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
     FFileList = CreateFileList(PanelItems, osRemote);
     TRY_FINALLY (
     {
-      bool EditView = (OpMode & (OPM_EDIT | OPM_VIEW)) != 0;
-      bool Confirmed =
-        (OpMode & OPM_SILENT) &&
-        (!EditView || FarConfiguration->GetEditorDownloadDefaultMode());
-
-      TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
-      if (EditView)
-      {
-        EditViewCopyParam(CopyParam);
-      }
-
-      // these parameters are known in advance
-      intptr_t Params =
-        FLAGMASK(Move, cpDelete);
-
-      if (!Confirmed)
-      {
-        intptr_t CopyParamAttrs =
-          GetTerminal()->UsableCopyParamAttrs(Params).Download |
-          FLAGMASK(EditView, cpaNoExcludeMask);
-        uintptr_t Options =
-          FLAGMASK(EditView, coTempTransfer | coDisableNewerOnly);
-        Confirmed = CopyDialog(false, Move, FFileList, DestPath,
-          &CopyParam, Options, CopyParamAttrs);
-
-        if (Confirmed && !EditView && CopyParam.GetQueue())
-        {
-          // these parameters are known only after transfer dialog
-          Params |=
-            FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation) |
-            FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
-          QueueAddItem(new TDownloadQueueItem(FTerminal, FFileList,
-            DestPath, &CopyParam, Params, false));
-          Confirmed = false;
-        }
-      }
-
-      if (Confirmed)
-      {
-        if ((FFileList->GetCount() == 1) && (OpMode & OPM_EDIT))
-        {
-          FOriginalEditFile = IncludeTrailingBackslash(DestPath) +
-            ::UnixExtractFileName(FFileList->GetString(0));
-          FLastEditFile = FOriginalEditFile;
-          FLastEditCopyParam = CopyParam;
-          FLastEditorID = -1;
-        }
-        else
-        {
-          FOriginalEditFile = L"";
-          FLastEditFile = L"";
-          FLastEditorID = -1;
-        }
-
-        FPanelItems = PanelItems;
-        // these parameters are known only after transfer dialog
-        Params |=
-          FLAGMASK(EditView, cpTemporary) |
-          FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
-        FTerminal->CopyToLocal(FFileList, DestPath, &CopyParam, Params);
-        Result = 1;
-      }
-      else
-      {
-        Result = -1;
-      }
+      Result = GetFilesRemote(PanelItems, Move, DestPath, OpMode);
     }
     ,
     {
@@ -2601,6 +2536,78 @@ intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
     {
       Result = -1;
     }
+  }
+  else
+  {
+    Result = -1;
+  }
+  return Result;
+}
+//------------------------------------------------------------------------------
+intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
+  UnicodeString & DestPath, int OpMode)
+{
+  intptr_t Result;
+  bool EditView = (OpMode & (OPM_EDIT | OPM_VIEW)) != 0;
+  bool Confirmed =
+    (OpMode & OPM_SILENT) &&
+    (!EditView || FarConfiguration->GetEditorDownloadDefaultMode());
+
+  TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+  if (EditView)
+  {
+    EditViewCopyParam(CopyParam);
+  }
+
+  // these parameters are known in advance
+  intptr_t Params =
+    FLAGMASK(Move, cpDelete);
+
+  if (!Confirmed)
+  {
+    intptr_t CopyParamAttrs =
+      GetTerminal()->UsableCopyParamAttrs(Params).Download;
+    uintptr_t Options =
+      FLAGMASK(EditView, coTempTransfer | coDisableNewerOnly);
+    Confirmed = CopyDialog(false, Move, FFileList, DestPath,
+      &CopyParam, Options, CopyParamAttrs);
+
+    if (Confirmed && !EditView && CopyParam.GetQueue())
+    {
+      // these parameters are known only after transfer dialog
+      Params |=
+        FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation) |
+        FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
+      QueueAddItem(new TDownloadQueueItem(FTerminal, FFileList,
+        DestPath, &CopyParam, Params, false));
+      Confirmed = false;
+    }
+  }
+
+  if (Confirmed)
+  {
+    if ((FFileList->GetCount() == 1) && (OpMode & OPM_EDIT))
+    {
+      FOriginalEditFile = IncludeTrailingBackslash(DestPath) +
+        ::UnixExtractFileName(FFileList->GetString(0));
+      FLastEditFile = FOriginalEditFile;
+      FLastEditCopyParam = CopyParam;
+      FLastEditorID = -1;
+    }
+    else
+    {
+      FOriginalEditFile = L"";
+      FLastEditFile = L"";
+      FLastEditorID = -1;
+    }
+
+    FPanelItems = PanelItems;
+    // these parameters are known only after transfer dialog
+    Params |=
+      FLAGMASK(EditView, cpTemporary) |
+      FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
+    FTerminal->CopyToLocal(FFileList, DestPath, &CopyParam, Params);
+    Result = 1;
   }
   else
   {
