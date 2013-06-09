@@ -3976,13 +3976,10 @@ void TWinSCPFileSystem::MultipleEdit()
     std::auto_ptr<TStrings> FileList(CreateFocusedFileList(osRemote));
     assert((FileList.get() == NULL) || (FileList->GetCount() == 1));
 
-    if (FileList.get() != NULL)
+    if ((FileList.get() != NULL) && (FileList->GetCount() == 1))
     {
-      if (FileList->GetCount() == 1)
-      {
-        MultipleEdit(FTerminal->GetCurrentDirectory(), FileList->GetString(0),
-          static_cast<TRemoteFile *>(FileList->GetObject(0)));
-      }
+      MultipleEdit(FTerminal->GetCurrentDirectory(), FileList->GetString(0),
+        static_cast<TRemoteFile *>(FileList->GetObject(0)));
     }
   }
 }
