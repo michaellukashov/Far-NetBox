@@ -2567,6 +2567,7 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
   {
     intptr_t CopyParamAttrs =
       GetTerminal()->UsableCopyParamAttrs(Params).Download;
+
     uintptr_t Options =
       FLAGMASK(EditView, coTempTransfer | coDisableNewerOnly);
     Confirmed = CopyDialog(false, Move, FFileList, DestPath,
@@ -2664,7 +2665,7 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
   {
     intptr_t CopyParamAttrs =
       GetTerminal()->UsableCopyParamAttrs(Params).Upload |
-      FLAGMASK(Edit, (cpaNoExcludeMask | cpaNoClearArchive));
+        FLAGMASK(Edit, cpaNoClearArchive);
     // heuristics: do not ask for target directory when uploaded file
     // was downloaded in edit mode
     uintptr_t Options =
@@ -3964,7 +3965,6 @@ void TWinSCPFileSystem::EditViewCopyParam(TCopyParamType & CopyParam)
   CopyParam.SetResumeSupport(rsOff);
   CopyParam.SetReplaceInvalidChars(true);
   CopyParam.SetFileMask(L"");
-  CopyParam.SetExcludeFileMask(TFileMasks());
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::MultipleEdit()

@@ -34,7 +34,7 @@ struct TMessageParams;
 #define REMOTE_SYNC_HISTORY L"WinscpRemoteSync"
 #define LOCAL_SYNC_HISTORY L"WinscpLocalSync"
 #define MOVE_TO_HISTORY L"WinscpMoveTo"
-#define EXCLUDE_FILE_MASK_HISTORY L"WinscpExcludeFileMask"
+#define WINSCP_FILE_MASK_HISTORY L"WinscpFileMask"
 #define MAKE_SESSION_FOLDER_HISTORY L"WinscpSessionFolder"
 //------------------------------------------------------------------------------
 // for Properties dialog

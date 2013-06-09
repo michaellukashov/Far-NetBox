@@ -404,7 +404,7 @@ bool TLocalCustomCommand::PatternReplacement(intptr_t Index,
   }
   else
   {
-    Result = TFileCustomCommand::PatternReplacement(Index, Pattern, Replacement, Delimit);
+    Result = TFileCustomCommand::PatternReplacement(Pattern, Replacement, Delimit);
   }
   return Result;
 }
