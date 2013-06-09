@@ -510,6 +510,13 @@ protected:
   BOOL CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
 
 private:
+  void ReopenHelper(const UnicodeString & PrevRemoteDirectory, TFSProtocol OrigFSProtocol,
+    bool PrevAutoReadDirectory,
+    bool PrevReadCurrentDirectoryPending,
+    bool PrevReadDirectoryPending,
+    Integer PrevExceptionOnFail);
+
+private:
   TSessionData * FSessionData;
   TSessionLog * FLog;
   TActionLog * FActionLog;
