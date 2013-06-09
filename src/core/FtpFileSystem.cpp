@@ -2089,19 +2089,11 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   // it's hardly of any use as, if MLST is supported, we use MLSD to
   // retrieve directory listing and from MLSD we cannot atm detect that
   // the file is symlink anyway.
-  AFile = new TRemoteFile(SymlinkFile);
-  try
-  {
-    AFile->SetTerminal(FTerminal);
-    AFile->SetFileName(UnixExtractFileName(SymlinkFile->GetLinkTo()));
-    AFile->SetType(FILETYPE_SYMLINK);
-  }
-  catch(...)
-  {
-    delete AFile;
-    AFile = NULL;
-    throw;
-  }
+  std::auto_ptr<TRemoteFile> File(new TRemoteFile(SymlinkFile));
+  File->SetTerminal(FTerminal);
+  File->SetFileName(UnixExtractFileName(SymlinkFile->GetLinkTo()));
+  File->SetType(FILETYPE_SYMLINK);
+  AFile = File.release();
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::RenameFile(const UnicodeString & AFileName,
