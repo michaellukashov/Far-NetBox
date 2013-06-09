@@ -273,6 +273,6 @@ private:
   NB_DISABLE_COPY(TGUIConfiguration)
 };
 //---------------------------------------------------------------------------
-#define GUIConfiguration (dynamic_cast<TGUIConfiguration *>(GetConfiguration()))
+inline TGUIConfiguration * GetGUIConfiguration();
 //---------------------------------------------------------------------------
 #endif

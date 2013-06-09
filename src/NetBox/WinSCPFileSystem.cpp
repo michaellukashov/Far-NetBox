@@ -804,7 +804,7 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
 
   if (!Result)
   {
-    if (!GUIConfiguration->GetConfirmCommandSession())
+    if (!GetGUIConfiguration()->GetConfirmCommandSession())
     {
       Result = true;
     }
@@ -818,7 +818,7 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
         qtConfirmation, qaOK | qaCancel, &Params);
       if (Answer == qaNeverAskAgain)
       {
-        GUIConfiguration->SetConfirmCommandSession(false);
+        GetGUIConfiguration()->SetConfirmCommandSession(false);
         Result = true;
       }
       else
@@ -1243,7 +1243,7 @@ void TWinSCPFileSystem::ApplyCommand()
 
           UnicodeString TempDir;
 
-          TemporarilyDownloadFiles(FileList.get(), GUIConfiguration->GetDefaultCopyParam(), TempDir);
+          TemporarilyDownloadFiles(FileList.get(), GetGUIConfiguration()->GetDefaultCopyParam(), TempDir);
 
           TRY_FINALLY (
           {
@@ -1449,14 +1449,14 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
   UnicodeString LocalDirectory = AnotherPanel->GetCurrentDirectory();
   UnicodeString RemoteDirectory = FTerminal->GetCurrentDirectory();
 
-  bool SaveMode = !(GUIConfiguration->GetSynchronizeModeAuto() < 0);
+  bool SaveMode = !(GetGUIConfiguration()->GetSynchronizeModeAuto() < 0);
   TTerminal::TSynchronizeMode Mode =
-    (SaveMode ? (TTerminal::TSynchronizeMode)GUIConfiguration->GetSynchronizeModeAuto() :
+    (SaveMode ? (TTerminal::TSynchronizeMode)GetGUIConfiguration()->GetSynchronizeModeAuto() :
      (Source ? TTerminal::smLocal : TTerminal::smRemote));
-  intptr_t Params = GUIConfiguration->GetSynchronizeParams();
+  intptr_t Params = GetGUIConfiguration()->GetSynchronizeParams();
   bool SaveSettings = false;
 
-  TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+  TGUICopyParamType CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
   TUsableCopyParamAttrs CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0);
   intptr_t Options =
     FLAGMASK(!FTerminal->GetIsCapable(fcTimestampChanging), fsoDisableTimestamp) |
@@ -1469,10 +1469,10 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
 
     if (SaveSettings)
     {
-      GUIConfiguration->SetSynchronizeParams(Params);
+      GetGUIConfiguration()->SetSynchronizeParams(Params);
       if (SaveMode)
       {
-        GUIConfiguration->SetSynchronizeModeAuto(Mode);
+        GetGUIConfiguration()->SetSynchronizeModeAuto(Mode);
       }
     }
 
@@ -1596,11 +1596,11 @@ void TWinSCPFileSystem::Synchronize()
   TSynchronizeParamType Params;
   Params.LocalDirectory = AnotherPanel->GetCurrentDirectory();
   Params.RemoteDirectory = FTerminal->GetCurrentDirectory();
-  int UnusedParams = (GUIConfiguration->GetSynchronizeParams() &
+  int UnusedParams = (GetGUIConfiguration()->GetSynchronizeParams() &
     (TTerminal::spPreviewChanges | TTerminal::spTimestamp |
      TTerminal::spNotByTime | TTerminal::spBySize));
-  Params.Params = GUIConfiguration->GetSynchronizeParams() & ~UnusedParams;
-  Params.Options = GUIConfiguration->GetSynchronizeOptions();
+  Params.Params = GetGUIConfiguration()->GetSynchronizeParams() & ~UnusedParams;
+  Params.Options = GetGUIConfiguration()->GetSynchronizeOptions();
   TSynchronizeController Controller(
     MAKE_CALLBACK(TWinSCPFileSystem::DoSynchronize, this),
     MAKE_CALLBACK(TWinSCPFileSystem::DoSynchronizeInvalid, this),
@@ -1611,7 +1611,7 @@ void TWinSCPFileSystem::Synchronize()
   TRY_FINALLY (
   {
     bool SaveSettings = false;
-    TCopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+    TCopyParamType CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
     intptr_t CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
     uintptr_t Options =
       FLAGMASK(SynchronizeAllowSelectedOnly(), soAllowSelectedOnly);
@@ -1621,8 +1621,8 @@ void TWinSCPFileSystem::Synchronize()
         MAKE_CALLBACK(TWinSCPFileSystem::GetSynchronizeOptions, this)) &&
         SaveSettings)
     {
-      GUIConfiguration->SetSynchronizeParams(Params.Params | UnusedParams);
-      GUIConfiguration->SetSynchronizeOptions(Params.Options);
+      GetGUIConfiguration()->SetSynchronizeParams(Params.Params | UnusedParams);
+      GetGUIConfiguration()->SetSynchronizeOptions(Params.Options);
     }
   }
   ,
@@ -1694,9 +1694,9 @@ void TWinSCPFileSystem::DoSynchronizeInvalid(
 void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
   TSynchronizeController * /*Sender*/, intptr_t & MaxDirectories)
 {
-  if (MaxDirectories < GUIConfiguration->GetMaxWatchDirectories())
+  if (MaxDirectories < GetGUIConfiguration()->GetMaxWatchDirectories())
   {
-    MaxDirectories = GUIConfiguration->GetMaxWatchDirectories();
+    MaxDirectories = GetGUIConfiguration()->GetMaxWatchDirectories();
   }
   else
   {
@@ -1711,7 +1711,7 @@ void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
       MaxDirectories *= 2;
       if (Result == qaNeverAskAgain)
       {
-        GUIConfiguration->SetMaxWatchDirectories(MaxDirectories);
+        GetGUIConfiguration()->SetMaxWatchDirectories(MaxDirectories);
       }
     }
     else
@@ -2034,8 +2034,8 @@ void TWinSCPFileSystem::ClearCaches()
 void TWinSCPFileSystem::OpenSessionInPutty()
 {
   assert(Connected());
-  ::OpenSessionInPutty(GUIConfiguration->GetPuttyPath(), FTerminal->GetSessionData(),
-    GUIConfiguration->GetPuttyPassword() ? GetTerminal()->GetPassword() : UnicodeString());
+  ::OpenSessionInPutty(GetGUIConfiguration()->GetPuttyPath(), FTerminal->GetSessionData(),
+    GetGUIConfiguration()->GetPuttyPassword() ? GetTerminal()->GetPassword() : UnicodeString());
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::QueueShow(bool ClosingPlugin)
@@ -2324,7 +2324,7 @@ intptr_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int OpMode)
   {
     assert(!(OpMode & OPM_SILENT) || !Name.IsEmpty());
 
-    TRemoteProperties Properties = GUIConfiguration->GetNewDirectoryProperties();
+    TRemoteProperties Properties = GetGUIConfiguration()->GetNewDirectoryProperties();
     bool SaveSettings = false;
 
     if ((OpMode & OPM_SILENT) ||
@@ -2332,7 +2332,7 @@ intptr_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int OpMode)
     {
       if (SaveSettings)
       {
-        GUIConfiguration->SetNewDirectoryProperties(Properties);
+        GetGUIConfiguration()->SetNewDirectoryProperties(Properties);
       }
 
       WinSCPPlugin()->ShowConsoleTitle(GetMsg(CREATING_FOLDER));
@@ -2553,7 +2553,7 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
     (OpMode & OPM_SILENT) &&
     (!EditView || FarConfiguration->GetEditorDownloadDefaultMode());
 
-  TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+  TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
   if (EditView)
   {
     EditViewCopyParam(CopyParam);
@@ -2625,7 +2625,7 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   std::auto_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
   ExportData->Assign(Data);
   ExportData->SetModified(true);
-  // TCopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+  // TCopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
   UnicodeString XmlFileName = IncludeTrailingBackslash(Param.DestPath) +
     ::ValidLocalFileName(::ExtractFilename(ExportData->GetName())) + L".netbox";
   std::auto_ptr<THierarchicalStorage> ExportStorage(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
@@ -2654,7 +2654,7 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
   }
   else
   {
-    CopyParam = GUIConfiguration->GetDefaultCopyParam();
+    CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
   }
 
   // these parameters are known in advance
@@ -3002,7 +3002,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
     assert(FQueue == NULL);
     FQueue = new TTerminalQueue(FTerminal, GetConfiguration());
     FQueue->Init();
-    FQueue->SetTransfersLimit(GUIConfiguration->GetQueueTransfersLimit());
+    FQueue->SetTransfersLimit(GetGUIConfiguration()->GetQueueTransfersLimit());
     FQueue->SetOnQueryUser(MAKE_CALLBACK(TWinSCPFileSystem::TerminalQueryUser, this));
     FQueue->SetOnPromptUser(MAKE_CALLBACK(TWinSCPFileSystem::TerminalPromptUser, this));
     FQueue->SetOnShowExtendedException(MAKE_CALLBACK(TWinSCPFileSystem::TerminalShowExtendedException, this));
@@ -3573,7 +3573,7 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
         Result = FQueueStatus;
       }
 
-      if (GUIConfiguration->GetQueueAutoPopup() &&
+      if (GetGUIConfiguration()->GetQueueAutoPopup() &&
           TQueueItem::IsUserActionStatus(QueueItem->GetStatus()))
       {
         QueueItem->ProcessUserAction();
@@ -3625,7 +3625,7 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
       break;
 
     case qePendingUserAction:
-      if (Hidden && !GUIConfiguration->GetQueueAutoPopup() && FarConfiguration->GetQueueBeep())
+      if (Hidden && !GetGUIConfiguration()->GetQueueAutoPopup() && FarConfiguration->GetQueueBeep())
       {
         // MB_ICONQUESTION would be more appropriate, but in default Windows Sound
         // schema it has no sound associated
@@ -3694,7 +3694,7 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
       TCancelStatus ACancel;
       uintptr_t Result;
       if (ProgressData.TransferingFile &&
-          (ProgressData.TimeExpected() > GUIConfiguration->GetIgnoreCancelBeforeFinish()))
+          (ProgressData.TimeExpected() > GetGUIConfiguration()->GetIgnoreCancelBeforeFinish()))
       {
         Result = MoreMessageDialog(GetMsg(CANCEL_OPERATION_FATAL), NULL,
                                    qtWarning, qaYes | qaNo | qaCancel);
@@ -4087,7 +4087,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   else
   {
     UnicodeString TempDir;
-    TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+    TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
     EditViewCopyParam(CopyParam);
 
     std::auto_ptr<TStrings> FileList(new TStringList());

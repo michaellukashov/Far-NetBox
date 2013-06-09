@@ -73,7 +73,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
         SourceStorage->SetMungeStringValues(false);
         SourceStorage->SetForceAnsi(true);
         if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
-            Storage->OpenSubKey(GUIConfiguration->GetPuttySession(), true))
+            Storage->OpenSubKey(GetGUIConfiguration()->GetPuttySession(), true))
         {
           Storage->Copy(SourceStorage.get());
           Storage->CloseSubKey();
@@ -82,12 +82,12 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
         std::auto_ptr<TSessionData> ExportData(new TSessionData(L""));
         ExportData->Assign(SessionData);
         ExportData->SetModified(true);
-        ExportData->SetName(GUIConfiguration->GetPuttySession());
+        ExportData->SetName(GetGUIConfiguration()->GetPuttySession());
         ExportData->SetPassword(L"");
 
         if (SessionData->GetFSProtocol() == fsFTP)
         {
-          if (GUIConfiguration->GetTelnetForFtpInPutty())
+          if (GetGUIConfiguration()->GetTelnetForFtpInPutty())
           {
             ExportData->SetPuttyProtocol(PuttyTelnetProtocol);
             ExportData->SetPortNumber(TelnetPortNumber);
@@ -102,7 +102,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
         }
 
         ExportData->Save(Storage.get(), true);
-        SessionName = GUIConfiguration->GetPuttySession();
+        SessionName = GetGUIConfiguration()->GetPuttySession();
       }
     }
 

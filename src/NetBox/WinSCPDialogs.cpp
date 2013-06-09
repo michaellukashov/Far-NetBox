@@ -563,11 +563,11 @@ bool TWinSCPPlugin::TransferConfigurationDialog()
   UnicodeString Caption = FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_TRANSFER)).c_str());
 
-  TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+  TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
   bool Result = CopyParamDialog(Caption, CopyParam, 0);
   if (Result)
   {
-    GUIConfiguration->SetDefaultCopyParam(CopyParam);
+    GetGUIConfiguration()->SetDefaultCopyParam(CopyParam);
   }
 
   return Result;
@@ -654,7 +654,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
   Dialog->AddStandardButtons();
 
-  TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+  TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
   ResumeOnButton->SetChecked(CopyParam.GetResumeSupport() == rsOn);
   ResumeSmartButton->SetChecked(CopyParam.GetResumeSupport() == rsSmart);
   ResumeOffButton->SetChecked(CopyParam.GetResumeSupport() == rsOff);
@@ -688,7 +688,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
       }
       CopyParam.SetResumeThreshold(ResumeThresholdEdit->GetAsInteger() * 1024);
 
-      GUIConfiguration->SetDefaultCopyParam(CopyParam);
+      GetGUIConfiguration()->SetDefaultCopyParam(CopyParam);
 
       GetConfiguration()->SetSessionReopenAuto(
         (SessionReopenAutoCheck->GetChecked() ? (SessionReopenAutoEdit->GetAsInteger() * 1000) : 0));
@@ -743,7 +743,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
   QueueTransferLimitEdit->SetAsInteger(FarConfiguration->GetQueueTransfersLimit());
   QueueCheck->SetChecked(FarConfiguration->GetDefaultCopyParam().GetQueue());
   QueueAutoPopupCheck->SetChecked(FarConfiguration->GetQueueAutoPopup());
-  RememberPasswordCheck->SetChecked(GUIConfiguration->GetSessionRememberPassword());
+  RememberPasswordCheck->SetChecked(GetGUIConfiguration()->GetSessionRememberPassword());
   QueueBeepCheck->SetChecked(FarConfiguration->GetQueueBeep());
 
   bool Result = (Dialog->ShowModal() == brOK);
@@ -753,15 +753,15 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
     GetConfiguration()->BeginUpdate();
     TRY_FINALLY (
     {
-      TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+      TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
 
       FarConfiguration->SetQueueTransfersLimit(QueueTransferLimitEdit->GetAsInteger());
       CopyParam.SetQueue(QueueCheck->GetChecked());
       FarConfiguration->SetQueueAutoPopup(QueueAutoPopupCheck->GetChecked());
-      GUIConfiguration->SetSessionRememberPassword(RememberPasswordCheck->GetChecked());
+      GetGUIConfiguration()->SetSessionRememberPassword(RememberPasswordCheck->GetChecked());
       FarConfiguration->SetQueueBeep(QueueBeepCheck->GetChecked());
 
-      GUIConfiguration->SetDefaultCopyParam(CopyParam);
+      GetGUIConfiguration()->SetDefaultCopyParam(CopyParam);
     }
     ,
     {
@@ -925,8 +925,8 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
   ConfirmOverwritingCheck->SetSelected(!FarConfiguration->GetConfirmOverwritingOverride() ?
     BSTATE_3STATE : (GetConfiguration()->GetConfirmOverwriting() ? BSTATE_CHECKED :
                        BSTATE_UNCHECKED));
-  ConfirmCommandSessionCheck->SetChecked(GUIConfiguration->GetConfirmCommandSession());
-  ConfirmResumeCheck->SetChecked(GUIConfiguration->GetConfirmResume());
+  ConfirmCommandSessionCheck->SetChecked(GetGUIConfiguration()->GetConfirmCommandSession());
+  ConfirmResumeCheck->SetChecked(GetGUIConfiguration()->GetConfirmResume());
   ConfirmSynchronizedBrowsingCheck->SetChecked(FarConfiguration->GetConfirmSynchronizedBrowsing());
 
   bool Result = (Dialog->ShowModal() == brOK);
@@ -938,8 +938,8 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
     {
       FarConfiguration->SetConfirmOverwritingOverride(
         ConfirmOverwritingCheck->GetSelected() != BSTATE_3STATE);
-      GUIConfiguration->SetConfirmCommandSession(ConfirmCommandSessionCheck->GetChecked());
-      GUIConfiguration->SetConfirmResume(ConfirmResumeCheck->GetChecked());
+      GetGUIConfiguration()->SetConfirmCommandSession(ConfirmCommandSessionCheck->GetChecked());
+      GetGUIConfiguration()->SetConfirmResume(ConfirmResumeCheck->GetChecked());
       if (FarConfiguration->GetConfirmOverwritingOverride())
       {
         GetConfiguration()->SetConfirmOverwriting(ConfirmOverwritingCheck->GetChecked());
@@ -990,9 +990,9 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
 
   Dialog->AddStandardButtons();
 
-  PuttyPathEdit->SetText(GUIConfiguration->GetPuttyPath());
-  PuttyPasswordCheck->SetChecked(GUIConfiguration->GetPuttyPassword());
-  TelnetForFtpInPuttyCheck->SetChecked(GUIConfiguration->GetTelnetForFtpInPutty());
+  PuttyPathEdit->SetText(GetGUIConfiguration()->GetPuttyPath());
+  PuttyPasswordCheck->SetChecked(GetGUIConfiguration()->GetPuttyPassword());
+  TelnetForFtpInPuttyCheck->SetChecked(GetGUIConfiguration()->GetTelnetForFtpInPutty());
   PageantPathEdit->SetText(FarConfiguration->GetPageantPath());
   PuttygenPathEdit->SetText(FarConfiguration->GetPuttygenPath());
 
@@ -1003,9 +1003,9 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
     GetConfiguration()->BeginUpdate();
     TRY_FINALLY (
     {
-      GUIConfiguration->SetPuttyPath(PuttyPathEdit->GetText());
-      GUIConfiguration->SetPuttyPassword(PuttyPasswordCheck->GetChecked());
-      GUIConfiguration->SetTelnetForFtpInPutty(TelnetForFtpInPuttyCheck->GetChecked());
+      GetGUIConfiguration()->SetPuttyPath(PuttyPathEdit->GetText());
+      GetGUIConfiguration()->SetPuttyPassword(PuttyPasswordCheck->GetChecked());
+      GetGUIConfiguration()->SetTelnetForFtpInPutty(TelnetForFtpInPuttyCheck->GetChecked());
       FarConfiguration->SetPageantPath(PageantPathEdit->GetText());
       FarConfiguration->SetPuttygenPath(PuttygenPathEdit->GetText());
     }
@@ -5592,7 +5592,7 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     {
       if (SaveSettingsCheck->GetChecked())
       {
-        GUIConfiguration->SetDefaultCopyParam(*Params);
+        GetGUIConfiguration()->SetDefaultCopyParam(*Params);
       }
     }
     ,

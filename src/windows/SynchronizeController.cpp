@@ -83,7 +83,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
       }
       FSynchronizeMonitor->Filters = Filters;
       FSynchronizeMonitor->MaxDirectories = 0;
-      FSynchronizeMonitor->ChangeDelay = GUIConfiguration->GetKeepUpToDateChangeDelay();
+      FSynchronizeMonitor->ChangeDelay = GetGUIConfiguration()->GetKeepUpToDateChangeDelay();
       FSynchronizeMonitor->OnTooManyDirectories = SynchronizeTooManyDirectories;
       FSynchronizeMonitor->OnDirectoriesChange = SynchronizeDirectoriesChange;
       FSynchronizeMonitor->OnFilter = SynchronizeFilter;
