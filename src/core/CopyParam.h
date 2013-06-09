@@ -13,9 +13,7 @@ enum TTransferMode { tmBinary, tmAscii, tmAutomatic };
 enum TResumeSupport { rsOn, rsSmart, rsOff };
 class THierarchicalStorage;
 const int cpaIncludeMaskOnly = 0x01;
-const int cpaExcludeMaskOnly = 0x01;
 const int cpaNoTransferMode =  0x02;
-const int cpaNoExcludeMask =   0x04;
 const int cpaNoIncludeMask =   0x04;
 const int cpaNoClearArchive =  0x08;
 const int cpaNoPreserveTime =  0x10;
@@ -33,19 +31,6 @@ struct TUsableCopyParamAttrs
 //---------------------------------------------------------------------------
 class TCopyParamType : public TObject
 {
-public:
-  static const wchar_t TokenPrefix = L'%';
-  static const wchar_t NoReplacement = wchar_t(0);
-  static const wchar_t TokenReplacement = wchar_t(1);
-
-public:
-  void SetLocalInvalidChars(const UnicodeString & Value);
-  bool GetReplaceInvalidChars() const;
-  void SetReplaceInvalidChars(bool Value);
-  UnicodeString RestoreChars(const UnicodeString & FileName) const;
-  void DoGetInfoStr(const UnicodeString & Separator, intptr_t Options,
-    UnicodeString & Result, bool & SomeAttrIncluded) const;
-
 public:
   TCopyParamType();
   TCopyParamType(const TCopyParamType & Source);
@@ -108,17 +93,25 @@ public:
   const TFileMasks & GetIncludeFileMask() const { return FIncludeFileMask; }
   TFileMasks & GetIncludeFileMask() { return FIncludeFileMask; }
   void SetIncludeFileMask(const TFileMasks & Value) { FIncludeFileMask = Value; }
-  const TFileMasks & GetExcludeFileMask() const { return FExcludeFileMask; }
-  TFileMasks & GetExcludeFileMask() { return FExcludeFileMask; }
-  void SetExcludeFileMask(const TFileMasks & Value) { FExcludeFileMask = Value; }
-  bool GetNegativeExclude() const { return FNegativeExclude; }
-  void SetNegativeExclude(bool Value) { FNegativeExclude = Value; }
   bool GetClearArchive() const { return FClearArchive; }
   void SetClearArchive(bool Value) { FClearArchive = Value; }
   uintptr_t GetCPSLimit() const { return FCPSLimit; }
   void SetCPSLimit(uintptr_t Value) { FCPSLimit = Value; }
   bool GetNewerOnly() const { return FNewerOnly; }
   void SetNewerOnly(bool Value) { FNewerOnly = Value; }
+
+public:
+  static const wchar_t TokenPrefix = L'%';
+  static const wchar_t NoReplacement = wchar_t(0);
+  static const wchar_t TokenReplacement = wchar_t(1);
+
+public:
+  void SetLocalInvalidChars(const UnicodeString & Value);
+  bool GetReplaceInvalidChars() const;
+  void SetReplaceInvalidChars(bool Value);
+  UnicodeString RestoreChars(const UnicodeString & FileName) const;
+  void DoGetInfoStr(const UnicodeString & Separator, intptr_t Options,
+    UnicodeString & Result, bool & SomeAttrIncluded) const;
 
 private:
   TFileMasks FAsciiFileMask;
@@ -137,8 +130,6 @@ private:
   UnicodeString FTokenizibleChars;
   bool FCalculateSize;
   UnicodeString FFileMask;
-  TFileMasks FExcludeFileMask;
-  bool FNegativeExclude;
   TFileMasks FIncludeFileMask;
   bool FClearArchive;
   uintptr_t FCPSLimit;

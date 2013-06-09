@@ -37,8 +37,8 @@ const int tfNewDirectory = 0x04;
 struct TSinkFileParams : public TObject
 {
   UnicodeString TargetDir;
-  const TCopyParamType *CopyParam;
-  TFileOperationProgressType *OperationProgress;
+  const TCopyParamType * CopyParam;
+  TFileOperationProgressType * OperationProgress;
   intptr_t Params;
   uintptr_t Flags;
   bool Skipped;

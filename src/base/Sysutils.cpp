@@ -631,18 +631,6 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
   {
     va_list Args;
     va_start(Args, Id);
-    /*
-    LPTSTR lpszTemp;
-    if (::FormatMessage(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER,
-                        (LPCVOID)format.c_str(), 0, 0, (LPTSTR)&lpszTemp, 0, &args) == 0 ||
-        lpszTemp == NULL)
-    {
-      // AfxThrowMemoryException();
-        DEBUG_PRINTF(L"FormatMessage error");
-    }
-    Result = lpszTemp;
-    ::LocalFree(lpszTemp);
-    */
     intptr_t Len = _vscwprintf(Format, Args);
     Result.SetLength(Len + sizeof(wchar_t));
     vswprintf_s(&Result[1], Result.Length(), Format, Args);
@@ -1060,7 +1048,6 @@ UnicodeString SysErrorMessage(int ErrorCode)
   {
     Len--;
   }
-  // SetString(Result, Buffer, Len);
   Result = UnicodeString(Buffer, Len);
   return Result;
 }

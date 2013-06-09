@@ -34,7 +34,7 @@ struct TMessageParams;
 #define REMOTE_SYNC_HISTORY L"WinscpRemoteSync"
 #define LOCAL_SYNC_HISTORY L"WinscpLocalSync"
 #define MOVE_TO_HISTORY L"WinscpMoveTo"
-#define EXCLUDE_FILE_MASK_HISTORY L"WinscpExcludeFileMask"
+#define WINSCP_FILE_MASK_HISTORY L"WinscpFileMask"
 #define MAKE_SESSION_FOLDER_HISTORY L"WinscpSessionFolder"
 //------------------------------------------------------------------------------
 // for Properties dialog
@@ -150,7 +150,6 @@ protected:
   bool IsSynchronizedBrowsing();
   bool PropertiesDialog(TStrings * FileList,
     const UnicodeString & Directory,
-    // TStrings * GroupList, TStrings * UserList,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
     TRemoteProperties * Properties, intptr_t AllowedChanges);
   bool ExecuteCommand(const UnicodeString & Command);
@@ -292,6 +291,8 @@ private:
     TSpaceAvailable & ASpaceAvailable, bool & Close);
   void QueueAddItem(TQueueItem * Item);
   UnicodeString GetFileNameHash(const UnicodeString & FileName);
+  intptr_t GetFilesRemote(TObjectList * PanelItems, bool Move,
+    UnicodeString & DestPath, int OpMode);
 
 private:
   TTerminal * FTerminal;

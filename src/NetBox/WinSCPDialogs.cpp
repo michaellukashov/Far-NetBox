@@ -11,6 +11,7 @@
 #include <ShellAPI.h>
 #include <PuttyTools.h>
 #include <GUITools.h>
+#include <Tools.h>
 #include <CoreMain.h>
 #include <Common.h>
 #include <CopyParam.h>
@@ -564,11 +565,11 @@ bool TWinSCPPlugin::TransferConfigurationDialog()
   UnicodeString Caption = FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_TRANSFER)).c_str());
 
-  TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+  TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
   bool Result = CopyParamDialog(Caption, CopyParam, 0);
   if (Result)
   {
-    GUIConfiguration->SetDefaultCopyParam(CopyParam);
+    GetGUIConfiguration()->SetDefaultCopyParam(CopyParam);
   }
 
   return Result;
@@ -655,7 +656,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
   Dialog->AddStandardButtons();
 
-  TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+  TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
   ResumeOnButton->SetChecked(CopyParam.GetResumeSupport() == rsOn);
   ResumeSmartButton->SetChecked(CopyParam.GetResumeSupport() == rsSmart);
   ResumeOffButton->SetChecked(CopyParam.GetResumeSupport() == rsOff);
@@ -689,7 +690,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
       }
       CopyParam.SetResumeThreshold(ResumeThresholdEdit->GetAsInteger() * 1024);
 
-      GUIConfiguration->SetDefaultCopyParam(CopyParam);
+      GetGUIConfiguration()->SetDefaultCopyParam(CopyParam);
 
       GetConfiguration()->SetSessionReopenAuto(
         (SessionReopenAutoCheck->GetChecked() ? (SessionReopenAutoEdit->GetAsInteger() * 1000) : 0));
@@ -744,7 +745,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
   QueueTransferLimitEdit->SetAsInteger(FarConfiguration->GetQueueTransfersLimit());
   QueueCheck->SetChecked(FarConfiguration->GetDefaultCopyParam().GetQueue());
   QueueAutoPopupCheck->SetChecked(FarConfiguration->GetQueueAutoPopup());
-  RememberPasswordCheck->SetChecked(GUIConfiguration->GetSessionRememberPassword());
+  RememberPasswordCheck->SetChecked(GetGUIConfiguration()->GetSessionRememberPassword());
   QueueBeepCheck->SetChecked(FarConfiguration->GetQueueBeep());
 
   bool Result = (Dialog->ShowModal() == brOK);
@@ -754,15 +755,15 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
     GetConfiguration()->BeginUpdate();
     TRY_FINALLY (
     {
-      TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+      TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
 
       FarConfiguration->SetQueueTransfersLimit(QueueTransferLimitEdit->GetAsInteger());
       CopyParam.SetQueue(QueueCheck->GetChecked());
       FarConfiguration->SetQueueAutoPopup(QueueAutoPopupCheck->GetChecked());
-      GUIConfiguration->SetSessionRememberPassword(RememberPasswordCheck->GetChecked());
+      GetGUIConfiguration()->SetSessionRememberPassword(RememberPasswordCheck->GetChecked());
       FarConfiguration->SetQueueBeep(QueueBeepCheck->GetChecked());
 
-      GUIConfiguration->SetDefaultCopyParam(CopyParam);
+      GetGUIConfiguration()->SetDefaultCopyParam(CopyParam);
     }
     ,
     {
@@ -926,8 +927,8 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
   ConfirmOverwritingCheck->SetSelected(!FarConfiguration->GetConfirmOverwritingOverride() ?
     BSTATE_3STATE : (GetConfiguration()->GetConfirmOverwriting() ? BSTATE_CHECKED :
                        BSTATE_UNCHECKED));
-  ConfirmCommandSessionCheck->SetChecked(GUIConfiguration->GetConfirmCommandSession());
-  ConfirmResumeCheck->SetChecked(GUIConfiguration->GetConfirmResume());
+  ConfirmCommandSessionCheck->SetChecked(GetGUIConfiguration()->GetConfirmCommandSession());
+  ConfirmResumeCheck->SetChecked(GetGUIConfiguration()->GetConfirmResume());
   ConfirmSynchronizedBrowsingCheck->SetChecked(FarConfiguration->GetConfirmSynchronizedBrowsing());
 
   bool Result = (Dialog->ShowModal() == brOK);
@@ -939,8 +940,8 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
     {
       FarConfiguration->SetConfirmOverwritingOverride(
         ConfirmOverwritingCheck->GetSelected() != BSTATE_3STATE);
-      GUIConfiguration->SetConfirmCommandSession(ConfirmCommandSessionCheck->GetChecked());
-      GUIConfiguration->SetConfirmResume(ConfirmResumeCheck->GetChecked());
+      GetGUIConfiguration()->SetConfirmCommandSession(ConfirmCommandSessionCheck->GetChecked());
+      GetGUIConfiguration()->SetConfirmResume(ConfirmResumeCheck->GetChecked());
       if (FarConfiguration->GetConfirmOverwritingOverride())
       {
         GetConfiguration()->SetConfirmOverwriting(ConfirmOverwritingCheck->GetChecked());
@@ -991,9 +992,9 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
 
   Dialog->AddStandardButtons();
 
-  PuttyPathEdit->SetText(GUIConfiguration->GetPuttyPath());
-  PuttyPasswordCheck->SetChecked(GUIConfiguration->GetPuttyPassword());
-  TelnetForFtpInPuttyCheck->SetChecked(GUIConfiguration->GetTelnetForFtpInPutty());
+  PuttyPathEdit->SetText(GetGUIConfiguration()->GetPuttyPath());
+  PuttyPasswordCheck->SetChecked(GetGUIConfiguration()->GetPuttyPassword());
+  TelnetForFtpInPuttyCheck->SetChecked(GetGUIConfiguration()->GetTelnetForFtpInPutty());
   PageantPathEdit->SetText(FarConfiguration->GetPageantPath());
   PuttygenPathEdit->SetText(FarConfiguration->GetPuttygenPath());
 
@@ -1004,9 +1005,9 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
     GetConfiguration()->BeginUpdate();
     TRY_FINALLY (
     {
-      GUIConfiguration->SetPuttyPath(PuttyPathEdit->GetText());
-      GUIConfiguration->SetPuttyPassword(PuttyPasswordCheck->GetChecked());
-      GUIConfiguration->SetTelnetForFtpInPutty(TelnetForFtpInPuttyCheck->GetChecked());
+      GetGUIConfiguration()->SetPuttyPath(PuttyPathEdit->GetText());
+      GetGUIConfiguration()->SetPuttyPassword(PuttyPasswordCheck->GetChecked());
+      GetGUIConfiguration()->SetTelnetForFtpInPutty(TelnetForFtpInPuttyCheck->GetChecked());
       FarConfiguration->SetPageantPath(PageantPathEdit->GetText());
       FarConfiguration->SetPuttygenPath(PuttygenPathEdit->GetText());
     }
@@ -4950,7 +4951,7 @@ public:
   explicit TCopyParamsContainer(TFarDialog * ADialog,
     intptr_t Options, intptr_t CopyParamAttrs);
 
-  void SetParams(TCopyParamType Value);
+  void SetParams(const TCopyParamType & Value);
   TCopyParamType GetParams();
   int GetHeight();
 
@@ -4971,9 +4972,9 @@ protected:
   TFarCheckBox * PreserveReadOnlyCheck;
   TFarCheckBox * IgnorePermErrorsCheck;
   TFarCheckBox * ClearArchiveCheck;
-  TFarComboBox * NegativeExcludeCombo;
-  TFarEdit * ExcludeFileMaskCombo;
   TFarCheckBox * CalculateSizeCheck;
+  TFarText * FileMaskText;
+  TFarEdit * FileMaskEdit;
   TFarComboBox * SpeedCombo;
 
   void ValidateMaskComboExit(TObject * Sender);
@@ -5006,9 +5007,9 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   PreserveReadOnlyCheck(NULL),
   IgnorePermErrorsCheck(NULL),
   ClearArchiveCheck(NULL),
-  NegativeExcludeCombo(NULL),
-  ExcludeFileMaskCombo(NULL),
   CalculateSizeCheck(NULL),
+  FileMaskText(NULL),
+  FileMaskEdit(NULL),
   SpeedCombo(NULL),
   FOptions(Options), FCopyParamAttrs(CopyParamAttrs)
 {
@@ -5046,8 +5047,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   TMTop = TMTextButton->GetTop();
   TMTextButton->SetCaption(GetMsg(TRANSFER_MODE_TEXT));
   TMTextButton->SetEnabled(
-    FLAGCLEAR(CopyParamAttrs, cpaNoTransferMode) &&
-    FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly));
+    FLAGCLEAR(CopyParamAttrs, cpaNoTransferMode));
 
   TMBinaryButton = new TFarRadioButton(GetDialog());
   TMBinaryButton->SetLeft(1);
@@ -5085,7 +5085,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   CCNoChangeButton->SetLeft(1);
   Add(CCNoChangeButton);
   CCNoChangeButton->SetCaption(GetMsg(TRANSFER_FILENAME_NOCHANGE));
-  CCNoChangeButton->SetEnabled(FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly));
+  CCNoChangeButton->SetEnabled(true);
 
   GetDialog()->SetNextItemPosition(ipRight);
 
@@ -5137,7 +5137,6 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   PreserveReadOnlyCheck->SetLeft(1);
   PreserveReadOnlyCheck->SetCaption(GetMsg(TRANSFER_PRESERVE_READONLY));
   PreserveReadOnlyCheck->SetEnabled(
-    FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly) &&
     FLAGCLEAR(CopyParamAttrs, cpaNoPreserveReadOnly));
   TMBottom = PreserveReadOnlyCheck->GetTop();
 
@@ -5148,7 +5147,6 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   PreserveRightsCheck->SetBottom(TMTop);
   PreserveRightsCheck->SetCaption(GetMsg(TRANSFER_PRESERVE_RIGHTS));
   PreserveRightsCheck->SetEnabled(
-    FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly) &&
     FLAGCLEAR(CopyParamAttrs, cpaNoRights));
 
   GetDialog()->SetNextItemPosition(ipBelow);
@@ -5171,8 +5169,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   ClearArchiveCheck->SetCaption(GetMsg(TRANSFER_CLEAR_ARCHIVE));
   ClearArchiveCheck->SetEnabled(
     FLAGCLEAR(FOptions, coTempTransfer) &&
-    FLAGCLEAR(CopyParamAttrs, cpaNoClearArchive) &&
-    FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly));
+    FLAGCLEAR(CopyParamAttrs, cpaNoClearArchive));
 
   Box = new TFarBox(GetDialog());
   Box->SetTop(TMTop + 8);
@@ -5186,8 +5183,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   PreserveTimeCheck->SetLeft(TMWidth + 3);
   PreserveTimeCheck->SetCaption(GetMsg(TRANSFER_PRESERVE_TIMESTAMP));
   PreserveTimeCheck->SetEnabled(
-    FLAGCLEAR(CopyParamAttrs, cpaNoPreserveTime) &&
-    FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly));
+    FLAGCLEAR(CopyParamAttrs, cpaNoPreserveTime));
 
   CalculateSizeCheck = new TFarCheckBox(GetDialog());
   CalculateSizeCheck->SetCaption(GetMsg(TRANSFER_CALCULATE_SIZE));
@@ -5201,41 +5197,27 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Separator->SetPosition(TMBottom + 1);
   Separator->SetCaption(GetMsg(TRANSFER_OTHER));
 
-  NegativeExcludeCombo = new TFarComboBox(GetDialog());
-  NegativeExcludeCombo->SetLeft(1);
-  Add(NegativeExcludeCombo);
-  NegativeExcludeCombo->GetItems()->Add(GetMsg(TRANSFER_EXCLUDE));
-  NegativeExcludeCombo->GetItems()->Add(GetMsg(TRANSFER_INCLUDE));
-  NegativeExcludeCombo->SetDropDownList(true);
-  NegativeExcludeCombo->ResizeToFitContent();
-  NegativeExcludeCombo->SetEnabled(
-    FLAGCLEAR(FOptions, coTempTransfer) &&
-    (FLAGCLEAR(CopyParamAttrs, cpaNoExcludeMask) ||
-     FLAGSET(CopyParamAttrs, cpaExcludeMaskOnly)));
-
-  GetDialog()->SetNextItemPosition(ipRight);
-
-  Text = new TFarText(GetDialog());
-  Add(Text);
-  Text->SetCaption(GetMsg(TRANSFER_EXCLUDE_FILE_MASK));
-  Text->SetEnabled(NegativeExcludeCombo->GetEnabled());
+  FileMaskText = new TFarText(GetDialog());
+  FileMaskText->SetLeft(1);
+  Add(FileMaskText);
+  FileMaskText->SetCaption(GetMsg(TRANSFER_FILE_MASK));
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
-  ExcludeFileMaskCombo = new TFarEdit(GetDialog());
-  ExcludeFileMaskCombo->SetLeft(1);
-  Add(ExcludeFileMaskCombo);
-  ExcludeFileMaskCombo->SetWidth(TMWidth);
-  ExcludeFileMaskCombo->SetHistory(EXCLUDE_FILE_MASK_HISTORY);
-  ExcludeFileMaskCombo->SetOnExit(MAKE_CALLBACK(TCopyParamsContainer::ValidateMaskComboExit, this));
-  ExcludeFileMaskCombo->SetEnabled(NegativeExcludeCombo->GetEnabled());
+  FileMaskEdit = new TFarEdit(GetDialog());
+  FileMaskEdit->SetLeft(1);
+  Add(FileMaskEdit);
+  FileMaskEdit->SetWidth(TMWidth);
+  FileMaskEdit->SetHistory(WINSCP_FILE_MASK_HISTORY);
+  FileMaskEdit->SetOnExit(MAKE_CALLBACK(TCopyParamsContainer::ValidateMaskComboExit, this));
+  FileMaskEdit->SetEnabled(true);
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(GetDialog());
   Add(Text);
   Text->SetCaption(GetMsg(TRANSFER_SPEED));
-  Text->MoveAt(TMWidth + 3, NegativeExcludeCombo->GetTop());
+  Text->MoveAt(TMWidth + 3, FileMaskText->GetTop());
 
   GetDialog()->SetNextItemPosition(ipRight);
 
@@ -5253,7 +5235,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   GetDialog()->SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(GetDialog());
-  Separator->SetPosition(ExcludeFileMaskCombo->GetBottom() + 1);
+  Separator->SetPosition(FileMaskEdit->GetBottom() + 1);
   Separator->SetLeft(0);
   Add(Separator);
 }
@@ -5265,8 +5247,7 @@ void TCopyParamsContainer::UpdateControls()
     IgnorePermErrorsCheck->SetEnabled(
       ((PreserveRightsCheck->GetEnabled() && PreserveRightsCheck->GetChecked()) ||
        (PreserveTimeCheck->GetEnabled() && PreserveTimeCheck->GetChecked())) &&
-      FLAGCLEAR(FCopyParamAttrs, cpaNoIgnorePermErrors) &&
-      FLAGCLEAR(FCopyParamAttrs, cpaExcludeMaskOnly));
+      FLAGCLEAR(FCopyParamAttrs, cpaNoIgnorePermErrors));
   }
 }
 //------------------------------------------------------------------------------
@@ -5280,7 +5261,7 @@ void TCopyParamsContainer::Change()
   }
 }
 //------------------------------------------------------------------------------
-void TCopyParamsContainer::SetParams(TCopyParamType Value)
+void TCopyParamsContainer::SetParams(const TCopyParamType & Value)
 {
   if (TMBinaryButton->GetEnabled())
   {
@@ -5341,9 +5322,7 @@ void TCopyParamsContainer::SetParams(TCopyParamType Value)
 
   ClearArchiveCheck->SetChecked(Value.GetClearArchive());
 
-  NegativeExcludeCombo->SetItemIndex((Value.GetNegativeExclude() ? 1 : 0));
-  ExcludeFileMaskCombo->SetText(Value.GetExcludeFileMask().GetMasks());
-
+  FileMaskEdit->SetText(Value.GetIncludeFileMask().GetMasks());
   PreserveTimeCheck->SetChecked(Value.GetPreserveTime());
   CalculateSizeCheck->SetChecked(Value.GetCalculateSize());
 
@@ -5373,9 +5352,6 @@ TCopyParamType TCopyParamsContainer::GetParams()
   if (Result.GetTransferMode() == tmAutomatic)
   {
     Result.GetAsciiFileMask().SetMasks(AsciiFileMaskEdit->GetText());
-    intptr_t Start, Length;
-    assert(Result.GetAsciiFileMask().GetIsValid(Start, Length));
-    (void)Start; (void)Length;
   }
 
   if (CCLowerCaseButton->GetChecked())
@@ -5409,9 +5385,7 @@ TCopyParamType TCopyParamsContainer::GetParams()
 
   Result.SetClearArchive(ClearArchiveCheck->GetChecked());
 
-  Result.SetNegativeExclude((NegativeExcludeCombo->GetItemIndex() == 1));
-  Result.GetExcludeFileMask().SetMasks(ExcludeFileMaskCombo->GetText());
-
+  Result.GetIncludeFileMask().SetMasks(FileMaskEdit->GetText());
   Result.SetPreserveTime(PreserveTimeCheck->GetChecked());
   Result.SetCalculateSize(CalculateSizeCheck->GetChecked());
 
@@ -5422,15 +5396,7 @@ TCopyParamType TCopyParamsContainer::GetParams()
 //------------------------------------------------------------------------------
 void TCopyParamsContainer::ValidateMaskComboExit(TObject * Sender)
 {
-  TFarEdit * Edit = dynamic_cast<TFarEdit *>(Sender);
-  assert(Edit != NULL);
-  TFileMasks Masks(Edit->GetText());
-  intptr_t Start = 0, Length = 0;
-  if (!Masks.GetIsValid(Start, Length))
-  {
-    Edit->SetFocus();
-    throw ExtException(FORMAT(GetMsg(EDIT_MASK_ERROR).c_str(), Masks.GetMasks().c_str()));
-  }
+  ValidateMaskEdit(dynamic_cast<TFarEdit *>(Sender));
 }
 //------------------------------------------------------------------------------
 void TCopyParamsContainer::ValidateSpeedComboExit(TObject * /*Sender*/)
@@ -5477,19 +5443,20 @@ private:
   TFarCheckBox * QueueCheck;
   TFarCheckBox * QueueNoConfirmationCheck;
 
-  bool FToRemote;
   intptr_t FOptions;
   intptr_t FCopyParamAttrs;
   TGUICopyParamType FCopyParams;
+  bool FToRemote;
 };
 //------------------------------------------------------------------------------
 TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   bool ToRemote, bool Move, TStrings * FileList,
-  intptr_t Options, intptr_t CopyParamAttrs) : TFarDialog(AFarPlugin)
+  intptr_t Options, intptr_t CopyParamAttrs) :
+  TFarDialog(AFarPlugin)
 {
-  FToRemote = ToRemote;
   FOptions = Options;
   FCopyParamAttrs = CopyParamAttrs;
+  FToRemote = ToRemote;
 
   const intptr_t DlgLength = 78;
   SetSize(TPoint(DlgLength, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
@@ -5584,7 +5551,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
 bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
   TGUICopyParamType * Params)
 {
-  FCopyParams = *Params;
+  FCopyParams.Assign(Params);
 
   if (FLAGCLEAR(FOptions, coTempTransfer))
   {
@@ -5601,7 +5568,7 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
 
   if (Result)
   {
-    *Params = FCopyParams;
+    Params->Assign(&FCopyParams);
 
     if (FLAGCLEAR(FOptions, coTempTransfer))
     {
@@ -5627,7 +5594,7 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     {
       if (SaveSettingsCheck->GetChecked())
       {
-        GUIConfiguration->SetDefaultCopyParam(*Params);
+        GetGUIConfiguration()->SetDefaultCopyParam(*Params);
       }
     }
     ,
@@ -7033,7 +7000,7 @@ intptr_t TFullSynchronizeDialog::ActualCopyParamAttrs()
   intptr_t Result;
   if (SynchronizeTimestampsButton->GetChecked())
   {
-    Result = cpaExcludeMaskOnly;
+    Result = cpaIncludeMaskOnly;
   }
   else
   {

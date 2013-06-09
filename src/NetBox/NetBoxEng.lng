@@ -427,7 +427,7 @@
 "&New and updated file(s) only"
 "Clear 'Archi&ve' attribute"
 " Other "
-"mas&k:"
+"File mas&k (example: *|.svn/):"
 "Exclude"
 "Include"
 "Upload options"

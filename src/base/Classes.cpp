@@ -280,7 +280,6 @@ void TList::Sort(CompareFunc Func)
 {
   if (GetCount() > 1)
   {
-    // qsort(FList.front(), GetCount().get(), sizeof(void *), Func);
     QuickSort(FList, 0, GetCount() - 1, Func);
   }
 }
@@ -550,7 +549,6 @@ void TStrings::Assign(const TPersistent * Source)
     TRY_FINALLY (
     {
       Clear();
-      // FDefined = TStrings(Source).FDefined;
       assert(Strings);
       FQuoteChar = Strings->FQuoteChar;
       FDelimiter = Strings->FDelimiter;
@@ -1054,22 +1052,6 @@ void TStringList::LoadFromFile(const UnicodeString & FileName)
     UnicodeString Str(FileBuffer.GetData(), static_cast<intptr_t>(FileBuffer.GetSize()));
     SetTextStr(Str);
   }
-  /* FILE * f = NULL;
-  _wfopen_s(&f, FileName, L"rb");
-  if (!f)
-    return;
-  fseek(f, 0, SEEK_END);
-  size_t sz = ftell(f);
-  void * content = calloc(sz, 1);
-  fseek(f, 0, SEEK_SET);
-  size_t read = fread(content, 1, sz, f);
-  fclose(f);
-  if (read == sz)
-  {
-    // parse file content
-    // GDisk.Tab.Caption=&GDisk
-  }
-  nb_free(content);*/
 }
 
 void TStringList::SetObject(intptr_t Index, TObject * AObject)
@@ -1823,7 +1805,6 @@ bool TRegistry::OpenKey(const UnicodeString & Key, bool CanCreate)
   }
   else
   {
-    // int Disposition = 0;
     Result = RegCreateKeyEx(GetBaseKey(Relative), S.c_str(), 0, NULL,
                             REG_OPTION_NON_VOLATILE, FAccess, NULL, &TempKey, NULL) == ERROR_SUCCESS;
   }
@@ -1843,7 +1824,6 @@ bool TRegistry::DeleteKey(const UnicodeString & Key)
   bool Result = false;
   UnicodeString S = Key;
   bool Relative = Classes::IsRelative(S);
-  // if not Relative then Delete(S, 1, 1);
   HKEY OldKey = GetCurrentKey();
   HKEY DeleteKey = GetKey(Key);
   if (DeleteKey != 0)
@@ -2105,7 +2085,6 @@ void TRegistry::WriteInteger(const UnicodeString & Name, intptr_t Value)
 {
   DWORD Val = static_cast<DWORD>(Value);
   PutData(Name, &Val, sizeof(Val), rdInteger);
-  // WriteInt64(Name, Value);
 }
 
 void TRegistry::WriteInt64(const UnicodeString & Name, __int64 Value)
