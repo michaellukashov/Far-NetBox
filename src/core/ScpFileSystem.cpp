@@ -1377,7 +1377,7 @@ void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
   );
 }
 //---------------------------------------------------------------------------
-UnicodeString TSCPFileSystem::FileUrl(const UnicodeString & FileName)
+UnicodeString TSCPFileSystem::FileUrl(const UnicodeString & FileName) const
 {
   return FTerminal->FileUrl(L"scp", FileName);
 }

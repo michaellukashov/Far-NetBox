@@ -12708,7 +12708,7 @@ void TWebDAVFileSystem::AnyCommand(const UnicodeString & Command,
 }
 
 //------------------------------------------------------------------------------
-UnicodeString TWebDAVFileSystem::FileUrl(const UnicodeString & FileName)
+UnicodeString TWebDAVFileSystem::FileUrl(const UnicodeString & FileName) const
 {
   return FTerminal->FileUrl(FTerminal->GetSessionData()->GetFtps() == ftpsNone ?
     L"http" : L"https", FileName);

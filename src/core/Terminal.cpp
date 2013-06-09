@@ -3734,7 +3734,7 @@ void TTerminal::LookupUsersGroups()
   }
 }
 //------------------------------------------------------------------------------
-bool TTerminal::AllowedAnyCommand(const UnicodeString & Command)
+bool TTerminal::AllowedAnyCommand(const UnicodeString & Command) const
 {
   return !Command.Trim().IsEmpty();
 }
@@ -4097,14 +4097,14 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 UnicodeString TTerminal::FileUrl(const UnicodeString & Protocol,
-  const UnicodeString & FileName)
+  const UnicodeString & FileName) const
 {
   assert(FileName.Length() > 0);
   return Protocol + L"://" + EncodeUrlChars(GetSessionData()->GetSessionName()) +
     (FileName[1] == L'/' ? L"" : L"/") + EncodeUrlChars(FileName, L"/");
 }
 //------------------------------------------------------------------------------
-UnicodeString TTerminal::FileUrl(const UnicodeString & FileName)
+UnicodeString TTerminal::FileUrl(const UnicodeString & FileName) const
 {
   return FFileSystem->FileUrl(FileName);
 }

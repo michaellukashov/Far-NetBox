@@ -213,7 +213,7 @@ public:
   void ShowExtendedException(Exception * E);
   void Idle();
   void RecryptPasswords();
-  bool AllowedAnyCommand(const UnicodeString & Command);
+  bool AllowedAnyCommand(const UnicodeString & Command) const;
   void AnyCommand(const UnicodeString & Command, TCaptureOutputEvent OutputEvent);
   void CloseOnCompletion(TOnceDoneOperation Operation = odoDisconnect, const UnicodeString & Message = L"");
   UnicodeString AbsolutePath(const UnicodeString & Path, bool Local);
@@ -284,7 +284,7 @@ public:
     TRemoteFileList *& FileList, bool CanLoad);
   void MakeLocalFileList(const UnicodeString & FileName,
     const TSearchRec & Rec, void * Param);
-  UnicodeString FileUrl(const UnicodeString & FileName);
+  UnicodeString FileUrl(const UnicodeString & FileName) const;
   bool FileOperationLoopQuery(Exception & E,
     TFileOperationProgressType * OperationProgress,
     const UnicodeString & Message,
@@ -457,7 +457,7 @@ protected:
   void OpenTunnel();
   void CloseTunnel();
   void DoInformation(const UnicodeString & Str, bool Status, intptr_t Phase = -1);
-  UnicodeString FileUrl(const UnicodeString & Protocol, const UnicodeString & FileName);
+  UnicodeString FileUrl(const UnicodeString & Protocol, const UnicodeString & FileName) const;
   bool PromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions, const UnicodeString & Prompt,
     bool Echo,

@@ -2122,7 +2122,7 @@ void TFTPFileSystem::CopyFile(const UnicodeString & FileName,
   assert(false);
 }
 //---------------------------------------------------------------------------
-UnicodeString TFTPFileSystem::FileUrl(const UnicodeString & FileName)
+UnicodeString TFTPFileSystem::FileUrl(const UnicodeString & FileName) const
 {
   return FTerminal->FileUrl(L"ftp", FileName);
 }

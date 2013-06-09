@@ -3636,7 +3636,7 @@ void TSFTPFileSystem::AnyCommand(const UnicodeString & /*Command*/,
   assert(false);
 }
 //---------------------------------------------------------------------------
-UnicodeString TSFTPFileSystem::FileUrl(const UnicodeString & FileName)
+UnicodeString TSFTPFileSystem::FileUrl(const UnicodeString & FileName) const
 {
   return FTerminal->FileUrl(L"sftp", FileName);
 }

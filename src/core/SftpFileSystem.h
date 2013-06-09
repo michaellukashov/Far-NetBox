@@ -77,7 +77,7 @@ public:
     const UnicodeString & NewName);
   virtual void CopyFile(const UnicodeString & FileName,
     const UnicodeString & NewName);
-  virtual UnicodeString FileUrl(const UnicodeString & FileName);
+  virtual UnicodeString FileUrl(const UnicodeString & FileName) const;
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable);
