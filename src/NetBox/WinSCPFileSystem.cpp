@@ -1451,8 +1451,8 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
 
   bool SaveMode = !(GetGUIConfiguration()->GetSynchronizeModeAuto() < 0);
   TTerminal::TSynchronizeMode Mode =
-    (SaveMode ? (TTerminal::TSynchronizeMode)GetGUIConfiguration()->GetSynchronizeModeAuto() :
-     (Source ? TTerminal::smLocal : TTerminal::smRemote));
+    SaveMode ? static_cast<TTerminal::TSynchronizeMode>(GetGUIConfiguration()->GetSynchronizeModeAuto()) :
+     (Source ? TTerminal::smLocal : TTerminal::smRemote);
   intptr_t Params = GetGUIConfiguration()->GetSynchronizeParams();
   bool SaveSettings = false;
 
