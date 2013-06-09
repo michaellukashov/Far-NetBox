@@ -2107,15 +2107,13 @@ void TFTPFileSystem::RenameFile(const UnicodeString & AFileName,
   UnicodeString NewNameOnly = UnixExtractFileName(NewName);
   UnicodeString NewPathOnly = UnixExtractFilePath(NewName);
 
-  {
-    // ignore file list
-    TFTPFileListHelper Helper(this, NULL, true);
+  // ignore file list
+  TFTPFileListHelper Helper(this, NULL, true);
 
-    FFileZillaIntf->Rename(FileNameOnly.c_str(), NewNameOnly.c_str(),
-      FilePathOnly.c_str(), NewPathOnly.c_str());
+  FFileZillaIntf->Rename(FileNameOnly.c_str(), NewNameOnly.c_str(),
+    FilePathOnly.c_str(), NewPathOnly.c_str());
 
-    GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
-  }
+  GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CopyFile(const UnicodeString & FileName,
