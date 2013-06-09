@@ -89,7 +89,10 @@ void TFarDialog::SetBounds(const TRect & Value)
   if (GetBounds() != Value)
   {
     LockChanges();
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      UnlockChanges();
+    });
     {
       FBounds = Value;
       if (GetHandle())
@@ -107,11 +110,6 @@ void TFarDialog::SetBounds(const TRect & Value)
         GetItem(I)->DialogResized();
       }
     }
-    ,
-    {
-      UnlockChanges();
-    }
-    );
   }
 }
 //---------------------------------------------------------------------------
@@ -717,7 +715,12 @@ intptr_t TFarDialog::ShowModal()
   TFarDialog * PrevTopDialog = GetFarPlugin()->FTopDialog;
   GetFarPlugin()->FTopDialog = this;
   HANDLE Handle = INVALID_HANDLE_VALUE;
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    GetFarPlugin()->FTopDialog = PrevTopDialog;
+    if (Handle != INVALID_HANDLE_VALUE)
+      GetFarPlugin()->GetStartupInfo()->DialogFree(Handle);
+  });
   {
     assert(GetDefaultButton());
     assert(GetDefaultButton()->GetDefault());
@@ -752,13 +755,6 @@ intptr_t TFarDialog::ShowModal()
       FResult = -1;
     }
   }
-  ,
-  {
-    GetFarPlugin()->FTopDialog = PrevTopDialog;
-    if (Handle != INVALID_HANDLE_VALUE)
-      GetFarPlugin()->GetStartupInfo()->DialogFree(Handle);
-  }
-  );
 
   return FResult;
 }
@@ -845,7 +841,10 @@ void TFarDialog::ProcessGroup(intptr_t Group, TFarProcessGroupEvent Callback,
   void * Arg)
 {
   LockChanges();
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    UnlockChanges();
+  });
   {
     for (intptr_t I = 0; I < GetItemCount(); I++)
     {
@@ -856,11 +855,6 @@ void TFarDialog::ProcessGroup(intptr_t Group, TFarProcessGroupEvent Callback,
       }
     }
   }
-  ,
-  {
-    UnlockChanges();
-  }
-  );
 }
 //---------------------------------------------------------------------------
 void TFarDialog::ShowItem(TFarDialogItem * Item, void * Arg)
@@ -907,7 +901,13 @@ void TFarDialog::UnlockChanges()
   FChangesLocked--;
   if (FChangesLocked == 0)
   {
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      if (GetHandle())
+      {
+        this->SendMessage(DM_ENABLEREDRAW, TRUE, 0);
+      }
+    });
     {
       if (FChangesPending)
       {
@@ -915,14 +915,6 @@ void TFarDialog::UnlockChanges()
         Change();
       }
     }
-    ,
-    {
-      if (GetHandle())
-      {
-        SendMessage(DM_ENABLEREDRAW, TRUE, 0);
-      }
-    }
-    );
   }
 }
 //---------------------------------------------------------------------------
@@ -2150,7 +2142,10 @@ void TFarList::Put(intptr_t Index, const UnicodeString & S)
   if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
   {
     FNoDialogUpdate = true;
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      FNoDialogUpdate = false;
+    });
     {
       TStringList::SetString(Index, S);
       if (GetUpdateCount() == 0)
@@ -2158,11 +2153,6 @@ void TFarList::Put(intptr_t Index, const UnicodeString & S)
         UpdateItem(Index);
       }
     }
-    ,
-    {
-      FNoDialogUpdate = false;
-    }
-    );
   }
   else
   {
@@ -2218,7 +2208,10 @@ void TFarList::Changed()
     if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
     {
       GetDialogItem()->GetDialog()->LockChanges();
-      TRY_FINALLY (
+      auto cleanup = finally([&]()
+      {
+        GetDialogItem()->GetDialog()->UnlockChanges();
+      });
       {
         GetDialogItem()->SendMessage(DM_LISTSET, reinterpret_cast<LONG_PTR>(FListItems));
         if (PrevTopIndex + GetDialogItem()->GetHeight() > GetCount())
@@ -2228,11 +2221,6 @@ void TFarList::Changed()
         SetCurPos((PrevSelected >= GetCount()) ? (GetCount() - 1) : PrevSelected,
           PrevTopIndex);
       }
-      ,
-      {
-        GetDialogItem()->GetDialog()->UnlockChanges();
-      }
-      );
     }
   }
 }

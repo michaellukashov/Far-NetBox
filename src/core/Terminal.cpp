@@ -2313,7 +2313,10 @@ void TTerminal::DoStartup()
 {
   LogEvent(L"Doing startup conversation with host.");
   BeginTransaction();
-  auto cleanup = finally([&]() { EndTransaction(); });
+  auto cleanup = finally([&]()
+  {
+    EndTransaction();
+  });
   {
     DoInformation(LoadStr(STATUS_STARTUP), true);
 

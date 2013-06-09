@@ -736,7 +736,13 @@ void TTerminalQueue::UpdateStatusForList(
 TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Current)
 {
   std::auto_ptr<TTerminalQueueStatus> Status(new TTerminalQueueStatus());
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    if (Current != NULL)
+    {
+      delete Current;
+    }
+  });
   {
     TGuard Guard(FItemsSection);
 
@@ -744,14 +750,6 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
     Status->SetDoneCount(Status->GetCount());
     UpdateStatusForList(Status.get(), FItems, Current);
   }
-  ,
-  {
-    if (Current != NULL)
-    {
-      delete Current;
-    }
-  }
-  );
 
   return Status.release();
 }
@@ -1423,7 +1421,11 @@ bool TTerminalItem::WaitForUserAction(
 
   TQueueItem::TStatus PrevStatus = FItem->GetStatus();
 
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    FUserAction = NULL;
+    FItem->SetStatus(PrevStatus);
+  });
   {
     FUserAction = UserAction;
 
@@ -1432,12 +1434,6 @@ bool TTerminalItem::WaitForUserAction(
 
     Result = !FTerminated && WaitForEvent() && !FCancel;
   }
-  ,
-  {
-    FUserAction = NULL;
-    FItem->SetStatus(PrevStatus);
-  }
-  );
 
   return Result;
 }
@@ -1552,18 +1548,16 @@ void TTerminalItem::OperationProgress(
     FPause = false;
     ProgressData.Suspend();
 
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      FItem->SetStatus(PrevStatus);
+      ProgressData.Resume();
+    });
     {
       FItem->SetStatus(TQueueItem::qsPaused);
 
       WaitForEvent();
     }
-    ,
-    {
-      FItem->SetStatus(PrevStatus);
-      ProgressData.Resume();
-    }
-    );
   }
 
   if (FTerminated || FCancel)
@@ -1816,15 +1810,13 @@ bool TQueueItemProxy::ProcessUserAction()
 
   bool Result = false;
   FProcessingUserAction = true;
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    FProcessingUserAction = false;
+  });
   {
     Result = FQueue->ItemProcessUserAction(FQueueItem, NULL);
   }
-  ,
-  {
-    FProcessingUserAction = false;
-  }
-  );
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2223,7 +2215,11 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
   FAction = Action;
   try
   {
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      FAction = NULL;
+      SAFE_DESTROY(FException);
+    });
     {
       TriggerEvent();
 
@@ -2270,12 +2266,6 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
 
       Rethrow(FException);
     }
-    ,
-    {
-      FAction = NULL;
-      SAFE_DESTROY(FException);
-    }
-    );
   }
   catch(...)
   {
@@ -2324,15 +2314,13 @@ void TTerminalThread::Rethrow(Exception *& Exception)
 {
   if (Exception != NULL)
   {
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      SAFE_DESTROY(Exception);
+    });
     {
       RethrowException(Exception);
     }
-    ,
-    {
-      SAFE_DESTROY(Exception);
-    }
-    );
   }
 }
 //---------------------------------------------------------------------------
@@ -2385,7 +2373,11 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     // have to save it as we can go recursive via TQueryParams::TimerEvent,
     // see TTerminalThread::TerminalQueryUser
     TUserAction * PrevUserAction = FUserAction;
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      FUserAction = PrevUserAction;
+      SAFE_DESTROY(FException);
+    });
     {
       FUserAction = UserAction;
 
@@ -2437,12 +2429,6 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
         Rethrow(FIdleException);
       }
     }
-    ,
-    {
-      FUserAction = PrevUserAction;
-      SAFE_DESTROY(FException);
-    }
-    );
 
     if (DoCheckCancel)
     {

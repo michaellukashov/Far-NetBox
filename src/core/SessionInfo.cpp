@@ -735,18 +735,15 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         TGuard Guard(FCriticalSection);
 
         BeginUpdate();
-
-        TRY_FINALLY (
-        {
-          DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
-        }
-        ,
+        auto cleanup = finally([&]()
         {
           DeleteUnnecessary();
 
           EndUpdate();
+        });
+        {
+          DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
         }
-        );
       }
     }
     catch (Exception &E)
@@ -854,7 +851,10 @@ void TSessionLog::StateChange()
 void TSessionLog::DeleteUnnecessary()
 {
   BeginUpdate();
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    EndUpdate();
+  });
   {
     if (!GetLogging() || (FParent != NULL))
     {
@@ -869,11 +869,6 @@ void TSessionLog::DeleteUnnecessary()
       }
     }
   }
-  ,
-  {
-    EndUpdate();
-  }
-  );
 }
 //---------------------------------------------------------------------------
 void TSessionLog::AddSystemInfo()

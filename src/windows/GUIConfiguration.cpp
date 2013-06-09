@@ -411,7 +411,10 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
     std::auto_ptr<TCopyParamType> CopyParam(new TCopyParamType());
     if (Storage->OpenSubKey(Name, false))
     {
-      TRY_FINALLY (
+      auto cleanup = finally([&]()
+      {
+        Storage->CloseSubKey();
+      });
       {
         Name = Storage->ReadString(L"Name", Name);
         CopyParam->Load(Storage);
@@ -422,11 +425,6 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
           Rule->Load(Storage);
         }
       }
-      ,
-      {
-        Storage->CloseSubKey();
-      }
-      );
     }
 
     FCopyParams->Add(reinterpret_cast<TObject *>(CopyParam.release()));
@@ -443,7 +441,10 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
   {
     if (Storage->OpenSubKey(IntToStr(Index), true))
     {
-      TRY_FINALLY (
+      auto cleanup = finally([&]()
+      {
+        Storage->CloseSubKey();
+      });
       {
         const TCopyParamType * CopyParam = GetCopyParam(Index);
         const TCopyParamRule * Rule = GetRule(Index);
@@ -456,11 +457,6 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
           Rule->Save(Storage);
         }
       }
-      ,
-      {
-        Storage->CloseSubKey();
-      }
-      );
     }
   }
 }
@@ -634,7 +630,8 @@ UnicodeString TGUIConfiguration::PropertyToKey(const UnicodeString & Property)
 // duplicated from core\configuration.cpp
 #undef BLOCK
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) TRY_FINALLY ( { BLOCK  } , { Storage->CloseSubKey(); } );
+  if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
+    { auto cleanup = finally([&]() { Storage->CloseSubKey(); }); { BLOCK } }
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
@@ -678,7 +675,10 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", true, true))
   {
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      Storage->CloseSubKey();
+    });
     {
       FDefaultCopyParam.Save(Storage);
 
@@ -693,24 +693,17 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
         FCopyParamList->Save(Storage);
       }
     }
-    ,
-    {
-      Storage->CloseSubKey();
-    }
-    );
   }
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", true, true))
   {
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      Storage->CloseSubKey();
+    });
     {
       FNewDirectoryProperties.Save(Storage);
     }
-    ,
-    {
-      Storage->CloseSubKey();
-    }
-    );
   }
 }
 //---------------------------------------------------------------------------
@@ -730,7 +723,10 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   #undef KEYEX
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", false, true))
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    Storage->CloseSubKey();
+  });
   {
     // must be loaded before eventual setting defaults for CopyParamList
     FDefaultCopyParam.Load(Storage);
@@ -749,11 +745,6 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     }
     FCopyParamList->Reset();
   }
-  ,
-  {
-    Storage->CloseSubKey();
-  }
-  );
 
   // Make it compatible with versions prior to 3.7.1 that have not saved PuttyPath
   // with quotes. First check for absence of quotes.
@@ -771,15 +762,13 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", false, true))
   {
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      Storage->CloseSubKey();
+    });
     {
       FNewDirectoryProperties.Load(Storage);
     }
-    ,
-    {
-      Storage->CloseSubKey();
-    }
-    );
   }
 }
 //---------------------------------------------------------------------------
@@ -974,7 +963,10 @@ TStrings * TGUIConfiguration::GetLocales()
 
   Found = (bool)(FindFirst(ChangeFileExt(ModuleFileName(), L".*"),
     FindAttrs, SearchRec) == 0);
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    FindClose(SearchRec);
+  });
   {
     UnicodeString Ext;
     while (Found)
@@ -990,11 +982,6 @@ TStrings * TGUIConfiguration::GetLocales()
       Found = (FindNextChecked(SearchRec) == 0);
     }
   }
-  ,
-  {
-    FindClose(SearchRec);
-  }
-  );
 
   if (FLastLocalesExts != LocalesExts)
   {

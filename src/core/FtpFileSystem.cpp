@@ -658,17 +658,15 @@ void TFTPFileSystem::AnyCommand(const UnicodeString & Command,
 
   assert(FOnCaptureOutput == NULL);
   FOnCaptureOutput = OutputEvent;
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    FOnCaptureOutput = NULL;
+  });
   {
     FFileZillaIntf->CustomCommand(Command.c_str());
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_3XX_CODE);
   }
-  ,
-  {
-    FOnCaptureOutput = NULL;
-  }
-  );
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::ResetCaches()
@@ -1056,7 +1054,10 @@ void TFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
     const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(AFilesToCopy->GetObject(Index));
     bool Success = false;
 
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+    });
     {
       UnicodeString AbsoluteFilePath = AbsolutePath(FileName, false);
       UnicodeString TargetDirectory = FullTargetDir;
@@ -1080,11 +1081,6 @@ void TFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
         );
       }
     }
-    ,
-    {
-      OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-    }
-    );
     ++Index;
   }
 }
@@ -1348,7 +1344,10 @@ void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
 
     FileNameOnly = ExtractFileName(RealFileName, false);
 
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+    });
     {
       try
       {
@@ -1373,11 +1372,6 @@ void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
         );
       }
     }
-    ,
-    {
-      OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-    }
-    );
     ++Index;
   }
 }
@@ -1588,7 +1582,10 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
 
   bool CreateDir = true;
 
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    FindClose(SearchRec);
+  });
   {
     while (FindOK && !OperationProgress->Cancel)
     {
@@ -1622,11 +1619,6 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
       );
     }
   }
-  ,
-  {
-    FindClose(SearchRec);
-  }
-  );
 
   if (CreateDir)
   {
@@ -1640,15 +1632,13 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
     try
     {
       FTerminal->SetExceptionOnFail(true);
-      TRY_FINALLY (
+      auto cleanup = finally([&]()
+      {
+        FTerminal->SetExceptionOnFail(false);
+      });
       {
         FTerminal->CreateDirectory(DestFullName, &Properties);
       }
-      ,
-      {
-        FTerminal->SetExceptionOnFail(false);
-      }
-      );
     }
     catch(...)
     {
@@ -2430,22 +2420,20 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
 
   uintptr_t Reply = 0;
 
-  TRY_FINALLY (
-  {
-    // discard up to one reply
-    // (it should not happen here that two replies are posted anyway)
-    while (ProcessMessage() && (FReply == 0));
-    Reply = FReply;
-  }
-  ,
+  auto cleanup = finally([&]()
   {
     FReply = 0;
     assert(FCommandReply == 0);
     FCommandReply = 0;
     assert(FWaitingForReply);
     FWaitingForReply = false;
+  });
+  {
+    // discard up to one reply
+    // (it should not happen here that two replies are posted anyway)
+    while (ProcessMessage() && (FReply == 0));
+    Reply = FReply;
   }
-  );
 
   if (Reply != 0)
   {
@@ -2518,21 +2506,19 @@ uintptr_t TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
 
   uintptr_t Reply = 0;
 
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    FReply = 0;
+    FCommandReply = 0;
+    assert(FWaitingForReply);
+    FWaitingForReply = false;
+  });
   {
     uintptr_t & ReplyToAwait = (Command ? FCommandReply : FReply);
     DoWaitForReply(ReplyToAwait, WantLastCode);
 
     Reply = ReplyToAwait;
   }
-  ,
-  {
-    FReply = 0;
-    FCommandReply = 0;
-    assert(FWaitingForReply);
-    FWaitingForReply = false;
-  }
-  );
 
   return Reply;
 }
@@ -2569,7 +2555,10 @@ void TFTPFileSystem::GotNonCommandReply(uintptr_t Reply)
 void TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
   const UnicodeString & Error, uintptr_t * Code, TStrings ** Response)
 {
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    ResetReply();
+  });
   {
     if (FLAGSET(Reply, TFileZillaIntf::REPLY_OK))
     {
@@ -2718,11 +2707,6 @@ void TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       FLastResponse = new TStringList();
     }
   }
-  ,
-  {
-    ResetReply();
-  }
-  );
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::SetLastCode(intptr_t Code)

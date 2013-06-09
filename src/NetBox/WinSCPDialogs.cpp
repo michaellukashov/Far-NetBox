@@ -446,15 +446,13 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      GetConfiguration()->EndUpdate();
+    });
     {
       GetConfiguration()->SetAutoReadDirectoryAfterOp(AutoReadDirectoryAfterOpCheck->GetChecked());
     }
-    ,
-    {
-      GetConfiguration()->EndUpdate();
-    }
-    );
   }
   return Result;
 }
@@ -538,7 +536,10 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      GetConfiguration()->EndUpdate();
+    });
     {
       GetConfiguration()->SetLogging(LoggingCheck->GetChecked());
       GetConfiguration()->SetLogProtocol(LogProtocolCombo->GetItemIndex());
@@ -549,11 +550,6 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
       }
       GetConfiguration()->SetLogFileAppend(LogFileAppendButton->GetChecked());
     }
-    ,
-    {
-      GetConfiguration()->EndUpdate();
-    }
-    );
   }
   return Result;
 }
@@ -672,7 +668,10 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      GetConfiguration()->EndUpdate();
+    });
     {
       if (ResumeOnButton->GetChecked())
       {
@@ -695,11 +694,6 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
       GetConfiguration()->SetSessionReopenAutoMaximumNumberOfRetries(
         (SessionReopenAutoCheck->GetChecked() ? SessionReopenNumberOfRetriesEdit->GetAsInteger() : CONST_DEFAULT_NUMBER_OF_RETRIES));
     }
-    ,
-    {
-      GetConfiguration()->EndUpdate();
-    }
-    );
   }
   return Result;
 }
@@ -751,7 +745,10 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      GetConfiguration()->EndUpdate();
+    });
     {
       TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
 
@@ -763,11 +760,6 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
 
       GetGUIConfiguration()->SetDefaultCopyParam(CopyParam);
     }
-    ,
-    {
-      GetConfiguration()->EndUpdate();
-    }
-    );
   }
   return Result;
 }
@@ -846,18 +838,16 @@ bool TTransferEditorConfigurationDialog::Execute()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      GetConfiguration()->EndUpdate();
+    });
     {
       FarConfiguration->SetEditorDownloadDefaultMode(EditorDownloadDefaultButton->GetChecked());
       FarConfiguration->SetEditorUploadSameOptions(EditorUploadSameButton->GetChecked());
       FarConfiguration->SetEditorUploadOnSave(EditorUploadOnSaveCheck->GetChecked());
       FarConfiguration->SetEditorMultiple(EditorMultipleCheck->GetChecked());
     }
-    ,
-    {
-      GetConfiguration()->EndUpdate();
-    }
-    );
   }
 
   return Result;
@@ -870,15 +860,13 @@ void TTransferEditorConfigurationDialog::Change()
   if (GetHandle())
   {
     LockChanges();
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      UnlockChanges();
+    });
     {
       UpdateControls();
     }
-    ,
-    {
-      UnlockChanges();
-    }
-    );
   }
 }
 //------------------------------------------------------------------------------
@@ -934,7 +922,10 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      GetConfiguration()->EndUpdate();
+    });
     {
       FarConfiguration->SetConfirmOverwritingOverride(
         ConfirmOverwritingCheck->GetSelected() != BSTATE_3STATE);
@@ -946,11 +937,6 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
       }
       FarConfiguration->SetConfirmSynchronizedBrowsing(ConfirmSynchronizedBrowsingCheck->GetChecked());
     }
-    ,
-    {
-      GetConfiguration()->EndUpdate();
-    }
-    );
   }
   return Result;
 }
@@ -1001,7 +987,10 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      GetConfiguration()->EndUpdate();
+    });
     {
       GetGUIConfiguration()->SetPuttyPath(PuttyPathEdit->GetText());
       GetGUIConfiguration()->SetPuttyPassword(PuttyPasswordCheck->GetChecked());
@@ -1009,11 +998,6 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
       FarConfiguration->SetPageantPath(PageantPathEdit->GetText());
       FarConfiguration->SetPuttygenPath(PuttygenPathEdit->GetText());
     }
-    ,
-    {
-      GetConfiguration()->EndUpdate();
-    }
-    );
   }
   return Result;
 }
@@ -1703,17 +1687,17 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
     COMBO->SetDropDownList(true); \
     COMBO->SetWidth(7); \
     COMBO->GetItems()->BeginUpdate(); \
-    TRY_FINALLY ( \
     { \
-      COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_AUTO)); \
-      COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_OFF)); \
-      COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_ON)); \
+      auto cleanup = finally([&]() \
+      { \
+        COMBO->GetItems()->EndUpdate(); \
+      }); \
+      { \
+        COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_AUTO)); \
+        COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_OFF)); \
+        COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_ON)); \
+      } \
     } \
-    , \
-    { \
-      COMBO->GetItems()->EndUpdate(); \
-    } \
-    ); \
     Text->SetEnabledFollow(COMBO); \
     SetNextItemPosition(ipNewLine);
 
@@ -2562,7 +2546,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TunnelLocalPortNumberEdit->SetLeft(TunnelPortNumberEdit->GetLeft());
   TunnelLocalPortNumberEdit->SetEnabledDependency(TunnelCheck);
   TunnelLocalPortNumberEdit->GetItems()->BeginUpdate();
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
+  });
   {
     TunnelLocalPortNumberEdit->GetItems()->Add(GetMsg(LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN));
     for (intptr_t Index = GetConfiguration()->GetTunnelLocalPortNumberLow();
@@ -2571,11 +2558,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
       TunnelLocalPortNumberEdit->GetItems()->Add(IntToStr(Index));
     }
   }
-  ,
-  {
-    TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
-  }
-  );
 
   SetNextItemPosition(ipNewLine);
 
@@ -2842,15 +2824,13 @@ void TSessionDialog::Change()
     }
 
     LockChanges();
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      UnlockChanges();
+    });
     {
       UpdateControls();
     }
-    ,
-    {
-      UnlockChanges();
-    }
-    );
   }
 }
 //------------------------------------------------------------------------------
@@ -3384,7 +3364,10 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   }
 
   CipherListBox->GetItems()->BeginUpdate();
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    CipherListBox->GetItems()->EndUpdate();
+  });
   {
     CipherListBox->GetItems()->Clear();
     assert(CIPHER_NAME_WARN+CIPHER_COUNT-1 == CIPHER_NAME_ARCFOUR);
@@ -3396,11 +3379,6 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
         Obj);
     }
   }
-  ,
-  {
-    CipherListBox->GetItems()->EndUpdate();
-  }
-  );
 
   // KEX tab
 
@@ -3408,22 +3386,22 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   RekeyDataEdit->SetText(SessionData->GetRekeyData());
 
   KexListBox->GetItems()->BeginUpdate();
-  TRY_FINALLY (
   {
-    KexListBox->GetItems()->Clear();
-    assert(KEX_NAME_WARN+KEX_COUNT+1 == KEX_NAME_GSSGEX);
-    for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
+    auto cleanup = finally([&]()
     {
-      KexListBox->GetItems()->AddObject(
-        GetMsg(KEX_NAME_WARN + static_cast<intptr_t>(SessionData->GetKex(Index))),
-        static_cast<TObject *>(reinterpret_cast<void *>(SessionData->GetKex(Index))));
+      KexListBox->GetItems()->EndUpdate();
+    });
+    {
+      KexListBox->GetItems()->Clear();
+      assert(KEX_NAME_WARN+KEX_COUNT+1 == KEX_NAME_GSSGEX);
+      for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
+      {
+        KexListBox->GetItems()->AddObject(
+          GetMsg(KEX_NAME_WARN + static_cast<intptr_t>(SessionData->GetKex(Index))),
+          static_cast<TObject *>(reinterpret_cast<void *>(SessionData->GetKex(Index))));
+      }
     }
   }
-  ,
-  {
-    KexListBox->GetItems()->EndUpdate();
-  }
-  );
 
   // Authentication tab
   SshNoUserAuthCheck->SetChecked(SessionData->GetSshNoUserAuth());
@@ -4574,7 +4552,10 @@ void TRightsContainer::SetRights(const TRights & Value)
   if (GetRights() != Value)
   {
     GetDialog()->LockChanges();
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      GetDialog()->UnlockChanges();
+    });
     {
       SetAllowUndef(true); // temporarily
       for (size_t Right = 0; Right < LENOF(FCheckBoxes); Right++)
@@ -4584,11 +4565,6 @@ void TRightsContainer::SetRights(const TRights & Value)
       }
       SetAllowUndef(Value.GetAllowUndef());
     }
-    ,
-    {
-      GetDialog()->UnlockChanges();
-    }
-    );
   }
 }
 //------------------------------------------------------------------------------
@@ -5588,18 +5564,16 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     }
 
     GetConfiguration()->BeginUpdate();
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      GetConfiguration()->EndUpdate();
+    });
     {
       if (SaveSettingsCheck->GetChecked())
       {
         GetGUIConfiguration()->SetDefaultCopyParam(*Params);
       }
     }
-    ,
-    {
-      GetConfiguration()->EndUpdate();
-    }
-    );
   }
   return Result;
 }
@@ -7532,7 +7506,10 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
   FCanScrollRight = false;
   TFarList * List = ListBox->GetItems();
   List->BeginUpdate();
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    List->EndUpdate();
+  });
   {
     for (intptr_t Index = 0; Index < List->GetCount(); ++Index)
     {
@@ -7545,11 +7522,6 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
       }
     }
   }
-  ,
-  {
-    List->EndUpdate();
-  }
-  );
 }
 //------------------------------------------------------------------------------
 void TSynchronizeChecklistDialog::UpdateControls()
@@ -7574,7 +7546,10 @@ void TSynchronizeChecklistDialog::CheckAll(bool Check)
 {
   TFarList * List = ListBox->GetItems();
   List->BeginUpdate();
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    List->EndUpdate();
+  });
   {
     intptr_t Count = List->GetCount();
     for (intptr_t Index = 0; Index < Count; ++Index)
@@ -7584,11 +7559,6 @@ void TSynchronizeChecklistDialog::CheckAll(bool Check)
 
     FChecked = Check ? Count : 0;
   }
-  ,
-  {
-    List->EndUpdate();
-  }
-  );
 
   UpdateControls();
 }

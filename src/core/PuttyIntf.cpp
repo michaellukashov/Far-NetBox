@@ -503,7 +503,10 @@ bool HasGSSAPI()
     Config cfg;
     memset(&cfg, 0, sizeof(cfg));
     ssh_gss_liblist * List = ssh_gss_setup(&cfg);
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      ssh_gss_cleanup(List);
+    });
     {
       for (intptr_t Index = 0; (has <= 0) && (Index < List->nlibraries); ++Index)
       {
@@ -515,11 +518,6 @@ bool HasGSSAPI()
            (library->release_cred(library, &ctx) == SSH_GSS_OK)) ? 1 : 0;
       }
     }
-    ,
-    {
-      ssh_gss_cleanup(List);
-    }
-    );
 
     if (has < 0)
     {

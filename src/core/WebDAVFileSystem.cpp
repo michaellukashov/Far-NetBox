@@ -12745,7 +12745,10 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ExtractFileName(RealFileName, false);
 
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
+    });
     {
       try
       {
@@ -12772,11 +12775,6 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
         );
       }
     }
-    ,
-    {
-      OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
-    }
-    );
     ++Index;
   }
 }
@@ -13038,7 +13036,10 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
 
   bool CreateDir = true;
 
-  TRY_FINALLY (
+  auto cleanup = finally([&]()
+  {
+    ::FindClose(findHandle);
+  });
   {
     while (FindOK && !OperationProgress->Cancel)
     {
@@ -13079,12 +13080,6 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
       );
     }
   }
-  ,
-  {
-    ::FindClose(findHandle);
-  }
-  );
-
   if (CreateDir)
   {
     TRemoteProperties Properties;
@@ -13097,15 +13092,13 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
     try
     {
       FTerminal->SetExceptionOnFail(true);
-      TRY_FINALLY (
+      auto cleanup = finally([&]()
+      {
+        FTerminal->SetExceptionOnFail(false);
+      });
       {
         FTerminal->CreateDirectory(DestFullName, &Properties);
       }
-      ,
-      {
-        FTerminal->SetExceptionOnFail(false);
-      }
-      );
     }
     catch (...)
     {
@@ -13161,7 +13154,11 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
     const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->GetObject(Index));
     bool Success = false;
     FTerminal->SetExceptionOnFail(true);
-    TRY_FINALLY (
+    auto cleanup = finally([&]()
+    {
+      OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+      FTerminal->SetExceptionOnFail(false);
+    });
     {
       UnicodeString AbsoluteFilePath = AbsolutePath(FileName, false);
       UnicodeString TargetDirectory = FullTargetDir;
@@ -13187,12 +13184,6 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
         );
       }
     }
-    ,
-    {
-      OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-      FTerminal->SetExceptionOnFail(false);
-    }
-    );
     ++Index;
   }
 }
