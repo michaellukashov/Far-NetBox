@@ -1,5 +1,7 @@
 NetBox 2.1.31 ??.06.2013
 --------------------
+  * Bugfix: "Transfer settings" --> "File mask" not working.
+    (http://forum.farmanager.com/viewtopic.php?p=110620#p110620)
   * Bugfix: List items have incorrect values.
     (http://forum.farmanager.com/viewtopic.php?p=110634#p110634)
 
