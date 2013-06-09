@@ -362,6 +362,19 @@ uintptr_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
 uintptr_t inline GetVersionNumber2121() { return MAKEVERSIONNUMBER(2,1,21); }
 uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GlobalFunctions->GetStrVersionNumber()); }
 //---------------------------------------------------------------------------
+template<class F>
+class finally_type
+{
+public:
+    explicit finally_type(F f) : function(f) {}
+    ~finally_type() { try { function(); } catch (...) {} }
+private:
+    F function;
+};
+
+template<class F>
+finally_type<F> finally(F f) { return finally_type<F>(f); }
+//---------------------------------------------------------------------------
 } // namespace Sysutils
 
 using namespace Sysutils;
