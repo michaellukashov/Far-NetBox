@@ -174,7 +174,6 @@ void RawByteString::Init(const char * Str, intptr_t Length)
   if (Length > 0)
   {
     memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
-    // Data[Length-1] = 0;
   }
 }
 
@@ -184,7 +183,6 @@ void RawByteString::Init(const unsigned char * Str, intptr_t Length)
   if (Length > 0)
   {
     memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
-    // Data[Length-1] = 0;
   }
 }
 
