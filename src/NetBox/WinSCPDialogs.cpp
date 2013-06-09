@@ -4970,9 +4970,9 @@ protected:
   TFarCheckBox * PreserveReadOnlyCheck;
   TFarCheckBox * IgnorePermErrorsCheck;
   TFarCheckBox * ClearArchiveCheck;
-  TFarComboBox * NegativeExcludeCombo;
-  TFarEdit * ExcludeFileMaskCombo;
   TFarCheckBox * CalculateSizeCheck;
+  TFarText * FileMaskText;
+  TFarEdit * FileMaskEdit;
   TFarComboBox * SpeedCombo;
 
   void ValidateMaskComboExit(TObject * Sender);
@@ -5005,9 +5005,9 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   PreserveReadOnlyCheck(NULL),
   IgnorePermErrorsCheck(NULL),
   ClearArchiveCheck(NULL),
-  NegativeExcludeCombo(NULL),
-  ExcludeFileMaskCombo(NULL),
   CalculateSizeCheck(NULL),
+  FileMaskText(NULL),
+  FileMaskEdit(NULL),
   SpeedCombo(NULL),
   FOptions(Options), FCopyParamAttrs(CopyParamAttrs)
 {
@@ -5195,41 +5195,27 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Separator->SetPosition(TMBottom + 1);
   Separator->SetCaption(GetMsg(TRANSFER_OTHER));
 
-  NegativeExcludeCombo = new TFarComboBox(GetDialog());
-  NegativeExcludeCombo->SetLeft(1);
-  Add(NegativeExcludeCombo);
-  NegativeExcludeCombo->GetItems()->Add(GetMsg(TRANSFER_EXCLUDE));
-  NegativeExcludeCombo->GetItems()->Add(GetMsg(TRANSFER_INCLUDE));
-  NegativeExcludeCombo->SetDropDownList(true);
-  NegativeExcludeCombo->ResizeToFitContent();
-  NegativeExcludeCombo->SetEnabled(
-    FLAGCLEAR(FOptions, coTempTransfer) &&
-    (FLAGCLEAR(CopyParamAttrs, cpaNoExcludeMask) ||
-     FLAGSET(CopyParamAttrs, cpaExcludeMaskOnly)));
-
-  GetDialog()->SetNextItemPosition(ipRight);
-
-  Text = new TFarText(GetDialog());
-  Add(Text);
-  Text->SetCaption(GetMsg(TRANSFER_EXCLUDE_FILE_MASK));
-  Text->SetEnabled(NegativeExcludeCombo->GetEnabled());
+  FileMaskText = new TFarText(GetDialog());
+  FileMaskText->SetLeft(1);
+  Add(FileMaskText);
+  FileMaskText->SetCaption(GetMsg(TRANSFER_FILE_MASK));
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
-  ExcludeFileMaskCombo = new TFarEdit(GetDialog());
-  ExcludeFileMaskCombo->SetLeft(1);
-  Add(ExcludeFileMaskCombo);
-  ExcludeFileMaskCombo->SetWidth(TMWidth);
-  ExcludeFileMaskCombo->SetHistory(EXCLUDE_FILE_MASK_HISTORY);
-  ExcludeFileMaskCombo->SetOnExit(MAKE_CALLBACK(TCopyParamsContainer::ValidateMaskComboExit, this));
-  ExcludeFileMaskCombo->SetEnabled(NegativeExcludeCombo->GetEnabled());
+  FileMaskEdit = new TFarEdit(GetDialog());
+  FileMaskEdit->SetLeft(1);
+  Add(FileMaskEdit);
+  FileMaskEdit->SetWidth(TMWidth);
+  FileMaskEdit->SetHistory(WINSCP_FILE_MASK_HISTORY);
+  FileMaskEdit->SetOnExit(MAKE_CALLBACK(TCopyParamsContainer::ValidateMaskComboExit, this));
+  FileMaskEdit->SetEnabled(true);
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(GetDialog());
   Add(Text);
   Text->SetCaption(GetMsg(TRANSFER_SPEED));
-  Text->MoveAt(TMWidth + 3, NegativeExcludeCombo->GetTop());
+  Text->MoveAt(TMWidth + 3, FileMaskText->GetTop());
 
   GetDialog()->SetNextItemPosition(ipRight);
 
@@ -5247,7 +5233,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   GetDialog()->SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(GetDialog());
-  Separator->SetPosition(ExcludeFileMaskCombo->GetBottom() + 1);
+  Separator->SetPosition(FileMaskEdit->GetBottom() + 1);
   Separator->SetLeft(0);
   Add(Separator);
 }
@@ -5334,9 +5320,7 @@ void TCopyParamsContainer::SetParams(const TCopyParamType & Value)
 
   ClearArchiveCheck->SetChecked(Value.GetClearArchive());
 
-  NegativeExcludeCombo->SetItemIndex((Value.GetNegativeExclude() ? 1 : 0));
-  ExcludeFileMaskCombo->SetText(Value.GetExcludeFileMask().GetMasks());
-
+  FileMaskEdit->SetText(Value.GetIncludeFileMask().GetMasks());
   PreserveTimeCheck->SetChecked(Value.GetPreserveTime());
   CalculateSizeCheck->SetChecked(Value.GetCalculateSize());
 
@@ -5399,9 +5383,7 @@ TCopyParamType TCopyParamsContainer::GetParams()
 
   Result.SetClearArchive(ClearArchiveCheck->GetChecked());
 
-  Result.SetNegativeExclude((NegativeExcludeCombo->GetItemIndex() == 1));
-  Result.GetExcludeFileMask().SetMasks(ExcludeFileMaskCombo->GetText());
-
+  Result.GetIncludeFileMask().SetMasks(FileMaskEdit->GetText());
   Result.SetPreserveTime(PreserveTimeCheck->GetChecked());
   Result.SetCalculateSize(CalculateSizeCheck->GetChecked());
 
