@@ -57,8 +57,6 @@ public:
   bool Matches(const UnicodeString & FileName, bool Local, bool Directory,
     const TParams * Params, bool & ImplicitMatch) const;
 
-  bool GetIsValid() const;
-  bool GetIsValid(intptr_t & Start, intptr_t & Length) const;
   UnicodeString GetMasks() const { return FStr; }
   void SetMasks(const UnicodeString & Value);
 
@@ -110,17 +108,17 @@ private:
     UnicodeString UserStr;
   };
 
+  typedef rde::vector<TMask> TMasks;
+  TMasks FMasks[4];
+  mutable TStrings * FMasksStr[4];
+
+private:
   void SetStr(const UnicodeString & Value, bool SingleMask);
   void CreateMaskMask(const UnicodeString & Mask, intptr_t Start, intptr_t End,
     bool Ex, TMaskMask & MaskMask) const;
   void CreateMask(const UnicodeString & MaskStr, intptr_t MaskStart,
     intptr_t MaskEnd, bool Include);
   TStrings * GetMasksStr(intptr_t Index) const;
-
-private:
-  typedef rde::vector<TMask> TMasks;
-  TMasks FMasks[4];
-  mutable TStrings * FMasksStr[4];
 
 private:
   static UnicodeString MakeDirectoryMask(const UnicodeString & Str);
@@ -167,8 +165,8 @@ protected:
   virtual void ValidatePattern(const UnicodeString & Command,
     intptr_t Index, intptr_t Len, wchar_t PatternCmd, void * Arg);
 
-  virtual intptr_t PatternLen(intptr_t Index, wchar_t PatternCmd) = 0;
-  virtual bool PatternReplacement(intptr_t Index, const UnicodeString & Pattern,
+  virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index) = 0;
+  virtual bool PatternReplacement(const UnicodeString & Pattern,
     UnicodeString & Replacement, bool & Delimit) = 0;
   virtual void DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
 };
@@ -180,10 +178,12 @@ public:
   explicit TInteractiveCustomCommand(TCustomCommand * ChildCustomCommand);
 
 protected:
-  virtual void Prompt(intptr_t Index, const UnicodeString & Prompt,
+  virtual void Prompt(const UnicodeString & Prompt,
     UnicodeString & Value);
-  virtual intptr_t PatternLen(intptr_t Index, wchar_t PatternCmd);
-  virtual bool PatternReplacement(intptr_t Index, const UnicodeString & Pattern,
+  virtual void Execute(const UnicodeString & Command,
+    UnicodeString & Value);
+  virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index);
+  virtual bool PatternReplacement(const UnicodeString & Pattern,
     UnicodeString & Replacement, bool & Delimit);
 
 private:
@@ -191,14 +191,19 @@ private:
 };
 //---------------------------------------------------------------------------
 class TTerminal;
+class TSessionData;
 struct TCustomCommandData : public TObject
 {
   TCustomCommandData();
   explicit TCustomCommandData(TTerminal * Terminal);
+  explicit TCustomCommandData(TSessionData * SessionData, const UnicodeString & Password);
 
   UnicodeString HostName;
   UnicodeString UserName;
   UnicodeString Password;
+
+private:
+  void Init(TSessionData * SessionData, const UnicodeString & Password);
 };
 //---------------------------------------------------------------------------
 class TFileCustomCommand : public TCustomCommand
@@ -216,10 +221,12 @@ public:
 
   bool IsFileListCommand(const UnicodeString & Command);
   virtual bool IsFileCommand(const UnicodeString & Command);
+  // bool __fastcall IsSiteCommand(const UnicodeString & Command);
+  // bool __fastcall IsPasswordCommand(const UnicodeString & Command);
 
 protected:
-  virtual intptr_t PatternLen(intptr_t Index, wchar_t PatternCmd);
-  virtual bool PatternReplacement(intptr_t Index, const UnicodeString & Pattern,
+  virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index);
+  virtual bool PatternReplacement(const UnicodeString & Pattern,
     UnicodeString & Replacement, bool & Delimit);
 
 private:

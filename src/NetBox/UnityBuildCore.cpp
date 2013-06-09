@@ -39,8 +39,9 @@
 #include "../core/Bookmarks.cpp"
 #include "../core/WinSCPSecurity.cpp"
 #include "../windows/SynchronizeController.cpp"
-#include "../windows/GUIConfiguration.cpp"
 #include "../windows/GUITools.cpp"
+#include "../windows/GUIConfiguration.cpp"
+#include "../windows/Tools.cpp"
 #include "../windows/ProgParams.cpp"
 
 #pragma warning(pop)

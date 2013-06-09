@@ -41,7 +41,6 @@ void TCopyParamType::Default()
   SetLocalInvalidChars(::LocalInvalidChars);
   SetCalculateSize(true);
   SetFileMask(L"*.*");
-  FNegativeExclude = false;
   GetIncludeFileMask().SetMasks(L"");
   SetClearArchive(false);
   SetCPSLimit(0);
@@ -212,7 +211,7 @@ void TCopyParamType::DoGetInfoStr(
     }
   }
 
-  if (GetIncludeFileMask() == Defaults.GetIncludeFileMask())
+  if (!(GetIncludeFileMask() == Defaults.GetIncludeFileMask()))
   {
     ADD(FORMAT(LoadStr(COPY_INFO_FILE_MASK), GetIncludeFileMask().GetMasks().c_str()),
       cpaNoIncludeMask);

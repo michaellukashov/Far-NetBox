@@ -11,6 +11,7 @@
 #include <ShellAPI.h>
 #include <PuttyTools.h>
 #include <GUITools.h>
+#include <Tools.h>
 #include <CoreMain.h>
 #include <Common.h>
 #include <CopyParam.h>
@@ -5044,8 +5045,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   TMTop = TMTextButton->GetTop();
   TMTextButton->SetCaption(GetMsg(TRANSFER_MODE_TEXT));
   TMTextButton->SetEnabled(
-    FLAGCLEAR(CopyParamAttrs, cpaNoTransferMode) &&
-    FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly));
+    FLAGCLEAR(CopyParamAttrs, cpaNoTransferMode));
 
   TMBinaryButton = new TFarRadioButton(GetDialog());
   TMBinaryButton->SetLeft(1);
@@ -5083,7 +5083,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   CCNoChangeButton->SetLeft(1);
   Add(CCNoChangeButton);
   CCNoChangeButton->SetCaption(GetMsg(TRANSFER_FILENAME_NOCHANGE));
-  CCNoChangeButton->SetEnabled(FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly));
+  CCNoChangeButton->SetEnabled(true);
 
   GetDialog()->SetNextItemPosition(ipRight);
 
@@ -5135,7 +5135,6 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   PreserveReadOnlyCheck->SetLeft(1);
   PreserveReadOnlyCheck->SetCaption(GetMsg(TRANSFER_PRESERVE_READONLY));
   PreserveReadOnlyCheck->SetEnabled(
-    FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly) &&
     FLAGCLEAR(CopyParamAttrs, cpaNoPreserveReadOnly));
   TMBottom = PreserveReadOnlyCheck->GetTop();
 
@@ -5146,7 +5145,6 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   PreserveRightsCheck->SetBottom(TMTop);
   PreserveRightsCheck->SetCaption(GetMsg(TRANSFER_PRESERVE_RIGHTS));
   PreserveRightsCheck->SetEnabled(
-    FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly) &&
     FLAGCLEAR(CopyParamAttrs, cpaNoRights));
 
   GetDialog()->SetNextItemPosition(ipBelow);
@@ -5169,8 +5167,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   ClearArchiveCheck->SetCaption(GetMsg(TRANSFER_CLEAR_ARCHIVE));
   ClearArchiveCheck->SetEnabled(
     FLAGCLEAR(FOptions, coTempTransfer) &&
-    FLAGCLEAR(CopyParamAttrs, cpaNoClearArchive) &&
-    FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly));
+    FLAGCLEAR(CopyParamAttrs, cpaNoClearArchive));
 
   Box = new TFarBox(GetDialog());
   Box->SetTop(TMTop + 8);
@@ -5184,8 +5181,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   PreserveTimeCheck->SetLeft(TMWidth + 3);
   PreserveTimeCheck->SetCaption(GetMsg(TRANSFER_PRESERVE_TIMESTAMP));
   PreserveTimeCheck->SetEnabled(
-    FLAGCLEAR(CopyParamAttrs, cpaNoPreserveTime) &&
-    FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly));
+    FLAGCLEAR(CopyParamAttrs, cpaNoPreserveTime));
 
   CalculateSizeCheck = new TFarCheckBox(GetDialog());
   CalculateSizeCheck->SetCaption(GetMsg(TRANSFER_CALCULATE_SIZE));
@@ -5263,8 +5259,7 @@ void TCopyParamsContainer::UpdateControls()
     IgnorePermErrorsCheck->SetEnabled(
       ((PreserveRightsCheck->GetEnabled() && PreserveRightsCheck->GetChecked()) ||
        (PreserveTimeCheck->GetEnabled() && PreserveTimeCheck->GetChecked())) &&
-      FLAGCLEAR(FCopyParamAttrs, cpaNoIgnorePermErrors) &&
-      FLAGCLEAR(FCopyParamAttrs, cpaExcludeMaskOnly));
+      FLAGCLEAR(FCopyParamAttrs, cpaNoIgnorePermErrors));
   }
 }
 //------------------------------------------------------------------------------
@@ -5371,9 +5366,6 @@ TCopyParamType TCopyParamsContainer::GetParams()
   if (Result.GetTransferMode() == tmAutomatic)
   {
     Result.GetAsciiFileMask().SetMasks(AsciiFileMaskEdit->GetText());
-    intptr_t Start, Length;
-    assert(Result.GetAsciiFileMask().GetIsValid(Start, Length));
-    (void)Start; (void)Length;
   }
 
   if (CCLowerCaseButton->GetChecked())
@@ -5420,15 +5412,7 @@ TCopyParamType TCopyParamsContainer::GetParams()
 //------------------------------------------------------------------------------
 void TCopyParamsContainer::ValidateMaskComboExit(TObject * Sender)
 {
-  TFarEdit * Edit = dynamic_cast<TFarEdit *>(Sender);
-  assert(Edit != NULL);
-  TFileMasks Masks(Edit->GetText());
-  intptr_t Start = 0, Length = 0;
-  if (!Masks.GetIsValid(Start, Length))
-  {
-    Edit->SetFocus();
-    throw ExtException(FORMAT(GetMsg(EDIT_MASK_ERROR).c_str(), Masks.GetMasks().c_str()));
-  }
+  ValidateMaskEdit(dynamic_cast<TFarEdit *>(Sender));
 }
 //------------------------------------------------------------------------------
 void TCopyParamsContainer::ValidateSpeedComboExit(TObject * /*Sender*/)
@@ -7023,7 +7007,7 @@ intptr_t TFullSynchronizeDialog::ActualCopyParamAttrs()
   intptr_t Result;
   if (SynchronizeTimestampsButton->GetChecked())
   {
-    Result = cpaExcludeMaskOnly;
+    Result = cpaIncludeMaskOnly;
   }
   else
   {
