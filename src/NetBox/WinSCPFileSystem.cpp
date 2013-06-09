@@ -2553,7 +2553,7 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
     (OpMode & OPM_SILENT) &&
     (!EditView || FarConfiguration->GetEditorDownloadDefaultMode());
 
-  TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+  TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
   if (EditView)
   {
     EditViewCopyParam(CopyParam);
