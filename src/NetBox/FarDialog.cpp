@@ -719,7 +719,9 @@ intptr_t TFarDialog::ShowModal()
   {
     GetFarPlugin()->FTopDialog = PrevTopDialog;
     if (Handle != INVALID_HANDLE_VALUE)
+    {
       GetFarPlugin()->GetStartupInfo()->DialogFree(Handle);
+    }
   });
   {
     assert(GetDefaultButton());
