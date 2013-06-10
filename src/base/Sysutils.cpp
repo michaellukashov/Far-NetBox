@@ -966,10 +966,6 @@ static int FindMatchingFile(TSearchRec & Rec)
 DWORD FindFirst(const UnicodeString & FileName, DWORD LocalFileAttrs, TSearchRec & Rec)
 {
   const DWORD faSpecial = faHidden | faSysFile | faDirectory;
-  // HANDLE hFind = FindFirstFileW(FileName.c_str(), &Rec);
-  // bool Result = (hFind != INVALID_HANDLE_VALUE);
-  // if (Result) Classes::FindClose(Rec);
-  // return Result;
   Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
   Rec.FindHandle = FindFirstFileW(FileName.c_str(), &Rec.FindData);
   DWORD Result = 0;
