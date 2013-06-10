@@ -52,9 +52,9 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
   ClearPluginInfo(FPluginInfo);
 
   // far\Examples\Compare\compare.cpp
-  FConsoleInput = CreateFile(L"CONIN$", GENERIC_READ, FILE_SHARE_READ, NULL,
+  FConsoleInput = ::CreateFile(L"CONIN$", GENERIC_READ, FILE_SHARE_READ, NULL,
     OPEN_EXISTING, 0, NULL);
-  FConsoleOutput = CreateFile(L"CONOUT$", GENERIC_READ | GENERIC_WRITE,
+  FConsoleOutput = ::CreateFile(L"CONOUT$", GENERIC_READ | GENERIC_WRITE,
     FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
   if (ConsoleWindowState() == SW_SHOWNORMAL)
   {

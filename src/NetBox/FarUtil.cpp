@@ -11,7 +11,7 @@ bool CNBFile::OpenWrite(const wchar_t *fileName)
     assert(fileName);
     m_LastError = ERROR_SUCCESS;
 
-    m_File = CreateFile(fileName, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    m_File = ::CreateFile(fileName, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if (m_File == INVALID_HANDLE_VALUE)
     {
         m_LastError = GetLastError();
@@ -25,7 +25,7 @@ bool CNBFile::OpenRead(const wchar_t *fileName)
     assert(fileName);
     m_LastError = ERROR_SUCCESS;
 
-    m_File = CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    m_File = ::CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (m_File == INVALID_HANDLE_VALUE)
     {
         m_LastError = GetLastError();

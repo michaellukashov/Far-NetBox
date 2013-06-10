@@ -3655,7 +3655,7 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
   try
   {
     // error-handling-free and DST-mode-inaware copy of TTerminal::OpenLocalFile
-    HANDLE Handle = CreateFile(FileName, GENERIC_READ,
+    HANDLE Handle = ::CreateFile(FileName, GENERIC_READ,
       FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, 0);
     if (Handle == INVALID_HANDLE_VALUE)
     {

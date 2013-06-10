@@ -1892,7 +1892,7 @@ bool IsDirectoryWriteable(const UnicodeString & Path)
   UnicodeString FileName =
     ::IncludeTrailingPathDelimiter(Path) +
     FORMAT(L"wscp_%s_%d.tmp", FormatDateTime(L"nnzzz", Now()).c_str(), int(GetCurrentProcessId()));
-  HANDLE Handle = CreateFile(FileName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL,
+  HANDLE Handle = ::CreateFile(FileName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL,
     CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, 0);
   bool Result = (Handle != INVALID_HANDLE_VALUE);
   if (Result)
