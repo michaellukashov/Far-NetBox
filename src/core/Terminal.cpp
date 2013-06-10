@@ -789,8 +789,7 @@ void TTerminal::Open()
                 assert(FSecureShell == NULL);
                 auto cleanup = finally([&]()
                 {
-                  delete FSecureShell;
-                  FSecureShell = NULL;
+                  SAFE_DESTROY(FSecureShell);
                 });
                 {
                   FSecureShell = new TSecureShell(this, FSessionData, GetLog(), FConfiguration);
