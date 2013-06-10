@@ -359,33 +359,24 @@ void TFTPFileSystem::Open()
   // initialize FZAPI on the first connect only
   if (FFileZillaIntf == NULL)
   {
-    FFileZillaIntf = new TFileZillaImpl(this);
+    std::auto_ptr<TFileZillaIntf> FileZillaImpl(new TFileZillaImpl(this));
 
-    try
+    TFileZillaIntf::TLogLevel LogLevel;
+    switch (FTerminal->GetConfiguration()->GetActualLogProtocol())
     {
-      TFileZillaIntf::TLogLevel LogLevel;
-      switch (FTerminal->GetConfiguration()->GetActualLogProtocol())
-      {
-        default:
-        case 0:
-        case 1:
-          LogLevel = TFileZillaIntf::LOG_WARNING;
-          break;
+      default:
+      case 0:
+      case 1:
+        LogLevel = TFileZillaIntf::LOG_WARNING;
+        break;
 
-        case 2:
-          LogLevel = TFileZillaIntf::LOG_INFO;
-          break;
-      }
-      FFileZillaIntf->SetDebugLevel(LogLevel);
-
-      FFileZillaIntf->Init();
+      case 2:
+        LogLevel = TFileZillaIntf::LOG_INFO;
+        break;
     }
-    catch(...)
-    {
-      delete FFileZillaIntf;
-      FFileZillaIntf = NULL;
-      throw;
-    }
+    FileZillaImpl->SetDebugLevel(LogLevel);
+    FileZillaImpl->Init();
+    FFileZillaIntf = FileZillaImpl.release();
   }
 
   UnicodeString HostName = Data->GetHostNameExpanded();
