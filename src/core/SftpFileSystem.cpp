@@ -3245,7 +3245,7 @@ void TSFTPFileSystem::SendCustomReadFile(TSFTPPacket * Packet,
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::CustomReadFile(const UnicodeString & FileName,
-  TRemoteFile *& File, unsigned char Type, TRemoteFile * ALinkedByFile,
+  TRemoteFile *& AFile, unsigned char Type, TRemoteFile * ALinkedByFile,
   int AllowStatus)
 {
   uint32_t Flags = SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_PERMISSIONS |
@@ -3258,12 +3258,12 @@ void TSFTPFileSystem::CustomReadFile(const UnicodeString & FileName,
 
   if (Packet.GetType() == SSH_FXP_ATTRS)
   {
-    File = LoadFile(&Packet, ALinkedByFile, ::UnixExtractFileName(FileName));
+    AFile = LoadFile(&Packet, ALinkedByFile, ::UnixExtractFileName(FileName));
   }
   else
   {
     assert(AllowStatus > 0);
-    File = NULL;
+    AFile = NULL;
   }
 }
 //---------------------------------------------------------------------------

@@ -115,7 +115,7 @@ protected:
   void SendCustomReadFile(TSFTPPacket * Packet, TSFTPPacket * Response,
     uint32_t Flags);
   void CustomReadFile(const UnicodeString & FileName,
-    TRemoteFile *& File, unsigned char Type, TRemoteFile * ALinkedByFile = NULL,
+    TRemoteFile *& AFile, unsigned char Type, TRemoteFile * ALinkedByFile = NULL,
     int AllowStatus = -1);
   virtual UnicodeString GetCurrentDirectory();
   UnicodeString GetHomeDirectory();
