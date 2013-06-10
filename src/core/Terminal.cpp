@@ -2561,14 +2561,13 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(const UnicodeString & Di
 //------------------------------------------------------------------------------
 TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & Directory, bool UseCache)
 {
-  TRemoteFileList * FileList = new TRemoteFileList();
-  try
+  std::auto_ptr<TRemoteFileList> FileList(new TRemoteFileList());
   {
     bool Cache = UseCache && GetSessionData()->GetCacheDirectories();
     bool LoadedFromCache = Cache && FDirectoryCache->HasFileList(Directory);
     if (LoadedFromCache)
     {
-      LoadedFromCache = FDirectoryCache->GetFileList(Directory, FileList);
+      LoadedFromCache = FDirectoryCache->GetFileList(Directory, FileList.get());
     }
 
     if (!LoadedFromCache)
@@ -2581,21 +2580,16 @@ TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & Direct
         SetExceptionOnFail(false);
       });
       {
-        ReadDirectory(FileList);
+        ReadDirectory(FileList.get());
       }
 
       if (Cache)
       {
-        AddCachedFileList(FileList);
+        AddCachedFileList(FileList.get());
       }
     }
   }
-  catch(...)
-  {
-    delete FileList;
-    throw;
-  }
-  return FileList;
+  return FileList.release();
 }
 //------------------------------------------------------------------------------
 void TTerminal::ProcessDirectory(const UnicodeString & DirName,
