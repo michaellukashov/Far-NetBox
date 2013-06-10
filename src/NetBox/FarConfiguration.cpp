@@ -123,8 +123,7 @@ void TFarConfiguration::Saved()
     KEY(Bool,     ConfirmSynchronizedBrowsing); \
   );
 //---------------------------------------------------------------------------
-void TFarConfiguration::SaveData(THierarchicalStorage * Storage,
-  bool All)
+void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 {
   TGUIConfiguration::SaveData(Storage, All);
 
@@ -322,3 +321,9 @@ TBookmarkList * TFarConfiguration::GetBookmarks(const UnicodeString & Key)
 {
   return FBookmarks->GetBookmarks(Key);
 }
+//---------------------------------------------------------------------------
+inline TFarConfiguration * GetFarConfiguration()
+{
+  return dynamic_cast<TFarConfiguration *>(GetConfiguration());
+}
+//---------------------------------------------------------------------------

@@ -944,8 +944,7 @@ void TIniFileStorage::Flush()
     std::auto_ptr<TStrings> Strings(new TStringList);
     auto cleanup = finally([&]()
     {
-      delete FOriginal;
-      FOriginal = NULL;
+      SAFE_DESTROY(FOriginal);
     });
     {
       dynamic_cast<TMemIniFile *>(FIniFile)->GetString(Strings.get());

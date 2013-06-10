@@ -789,8 +789,7 @@ void TTerminal::Open()
                 assert(FSecureShell == NULL);
                 auto cleanup = finally([&]()
                 {
-                  delete FSecureShell;
-                  FSecureShell = NULL;
+                  SAFE_DESTROY(FSecureShell);
                 });
                 {
                   FSecureShell = new TSecureShell(this, FSessionData, GetLog(), FConfiguration);
@@ -2562,14 +2561,13 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(const UnicodeString & Di
 //------------------------------------------------------------------------------
 TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & Directory, bool UseCache)
 {
-  TRemoteFileList * FileList = new TRemoteFileList();
-  try
+  std::auto_ptr<TRemoteFileList> FileList(new TRemoteFileList());
   {
     bool Cache = UseCache && GetSessionData()->GetCacheDirectories();
     bool LoadedFromCache = Cache && FDirectoryCache->HasFileList(Directory);
     if (LoadedFromCache)
     {
-      LoadedFromCache = FDirectoryCache->GetFileList(Directory, FileList);
+      LoadedFromCache = FDirectoryCache->GetFileList(Directory, FileList.get());
     }
 
     if (!LoadedFromCache)
@@ -2582,21 +2580,16 @@ TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & Direct
         SetExceptionOnFail(false);
       });
       {
-        ReadDirectory(FileList);
+        ReadDirectory(FileList.get());
       }
 
       if (Cache)
       {
-        AddCachedFileList(FileList);
+        AddCachedFileList(FileList.get());
       }
     }
   }
-  catch(...)
-  {
-    delete FileList;
-    throw;
-  }
-  return FileList;
+  return FileList.release();
 }
 //------------------------------------------------------------------------------
 void TTerminal::ProcessDirectory(const UnicodeString & DirName,
@@ -3728,36 +3721,28 @@ TTerminal * TTerminal::GetCommandSession()
     // levels between main and command session
     assert(FInTransaction == 0);
 
-    try
-    {
-      FCommandSession = new TSecondaryTerminal(this);
-      (static_cast<TSecondaryTerminal *>(FCommandSession))->Init(GetSessionData(),
-        FConfiguration, L"Shell");
+    std::auto_ptr<TSecondaryTerminal> CommandSession(new TSecondaryTerminal(this));
+    CommandSession->Init(GetSessionData(), FConfiguration, L"Shell");
 
-      FCommandSession->SetAutoReadDirectory(false);
+    CommandSession->SetAutoReadDirectory(false);
 
-      TSessionData * CommandSessionData = FCommandSession->FSessionData;
-      CommandSessionData->SetRemoteDirectory(GetCurrentDirectory());
-      CommandSessionData->SetFSProtocol(fsSCPonly);
-      CommandSessionData->SetClearAliases(false);
-      CommandSessionData->SetUnsetNationalVars(false);
-      CommandSessionData->SetLookupUserGroups(asOn);
+    TSessionData * CommandSessionData = CommandSession->FSessionData;
+    CommandSessionData->SetRemoteDirectory(GetCurrentDirectory());
+    CommandSessionData->SetFSProtocol(fsSCPonly);
+    CommandSessionData->SetClearAliases(false);
+    CommandSessionData->SetUnsetNationalVars(false);
+    CommandSessionData->SetLookupUserGroups(asOn);
 
-      FCommandSession->FExceptionOnFail = FExceptionOnFail;
+    CommandSession->FExceptionOnFail = FExceptionOnFail;
 
-      FCommandSession->SetOnQueryUser(GetOnQueryUser());
-      FCommandSession->SetOnPromptUser(GetOnPromptUser());
-      FCommandSession->SetOnShowExtendedException(GetOnShowExtendedException());
-      FCommandSession->SetOnProgress(GetOnProgress());
-      FCommandSession->SetOnFinished(GetOnFinished());
-      FCommandSession->SetOnInformation(GetOnInformation());
-      // do not copy OnDisplayBanner to avoid it being displayed
-    }
-    catch(...)
-    {
-      SAFE_DESTROY(FCommandSession);
-      throw;
-    }
+    CommandSession->SetOnQueryUser(GetOnQueryUser());
+    CommandSession->SetOnPromptUser(GetOnPromptUser());
+    CommandSession->SetOnShowExtendedException(GetOnShowExtendedException());
+    CommandSession->SetOnProgress(GetOnProgress());
+    CommandSession->SetOnFinished(GetOnFinished());
+    CommandSession->SetOnInformation(GetOnInformation());
+    // do not copy OnDisplayBanner to avoid it being displayed
+    FCommandSession = CommandSession.release();
   }
 
   return FCommandSession;
@@ -4224,20 +4209,12 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & Loca
   TSynchronizeDirectoryEvent OnSynchronizeDirectory,
   TSynchronizeOptions * Options)
 {
-  TSynchronizeChecklist * Checklist = new TSynchronizeChecklist();
-  try
-  {
-    DoSynchronizeCollectDirectory(LocalDirectory, RemoteDirectory, Mode,
-      CopyParam, Params, OnSynchronizeDirectory, Options, sfFirstLevel,
-      Checklist);
-    Checklist->Sort();
-  }
-  catch(...)
-  {
-    delete Checklist;
-    throw;
-  }
-  return Checklist;
+  std::auto_ptr<TSynchronizeChecklist> Checklist(new TSynchronizeChecklist());
+  DoSynchronizeCollectDirectory(LocalDirectory, RemoteDirectory, Mode,
+    CopyParam, Params, OnSynchronizeDirectory, Options, sfFirstLevel,
+    Checklist.get());
+  Checklist->Sort();
+  return Checklist.release();
 }
 //---------------------------------------------------------------------------
 static void AddFlagName(UnicodeString & ParamsStr, intptr_t & Params, intptr_t Param, const UnicodeString & Name)

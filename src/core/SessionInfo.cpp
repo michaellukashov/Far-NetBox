@@ -903,7 +903,11 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
   TGuard Guard(FCriticalSection);
 
   BeginUpdate();
-  try
+  auto cleanup = finally([&]()
+  {
+    DeleteUnnecessary();
+    EndUpdate();
+  });
   {
     #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
     if (Data == NULL)
@@ -1096,14 +1100,6 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 
     #undef ADF
   }
-  catch (...)
-  {
-    DeleteUnnecessary();
-    EndUpdate();
-    throw;
-  }
-  DeleteUnnecessary();
-  EndUpdate();
 }
 //---------------------------------------------------------------------------
 void TSessionLog::AddSeparator()

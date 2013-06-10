@@ -359,33 +359,24 @@ void TFTPFileSystem::Open()
   // initialize FZAPI on the first connect only
   if (FFileZillaIntf == NULL)
   {
-    FFileZillaIntf = new TFileZillaImpl(this);
+    std::auto_ptr<TFileZillaIntf> FileZillaImpl(new TFileZillaImpl(this));
 
-    try
+    TFileZillaIntf::TLogLevel LogLevel;
+    switch (FTerminal->GetConfiguration()->GetActualLogProtocol())
     {
-      TFileZillaIntf::TLogLevel LogLevel;
-      switch (FTerminal->GetConfiguration()->GetActualLogProtocol())
-      {
-        default:
-        case 0:
-        case 1:
-          LogLevel = TFileZillaIntf::LOG_WARNING;
-          break;
+      default:
+      case 0:
+      case 1:
+        LogLevel = TFileZillaIntf::LOG_WARNING;
+        break;
 
-        case 2:
-          LogLevel = TFileZillaIntf::LOG_INFO;
-          break;
-      }
-      FFileZillaIntf->SetDebugLevel(LogLevel);
-
-      FFileZillaIntf->Init();
+      case 2:
+        LogLevel = TFileZillaIntf::LOG_INFO;
+        break;
     }
-    catch(...)
-    {
-      delete FFileZillaIntf;
-      FFileZillaIntf = NULL;
-      throw;
-    }
+    FileZillaImpl->SetDebugLevel(LogLevel);
+    FileZillaImpl->Init();
+    FFileZillaIntf = FileZillaImpl.release();
   }
 
   UnicodeString HostName = Data->GetHostNameExpanded();
@@ -2035,22 +2026,14 @@ void TFTPFileSystem::ReadFile(const UnicodeString & FileName,
     // if cache is invalid or file is not in cache, (re)read the directory
     if (File == NULL)
     {
-      TRemoteFileList * FileListCache = new TRemoteFileList();
+      std::auto_ptr<TRemoteFileList> FileListCache(new TRemoteFileList());
       FileListCache->SetDirectory(Path);
-      try
-      {
-        ReadDirectory(FileListCache);
-      }
-      catch(...)
-      {
-        delete FileListCache;
-        throw;
-      }
+      ReadDirectory(FileListCache.get());
       // set only after we successfully read the directory,
       // otherwise, when we reconnect from ReadDirectory,
       // the FFileListCache is reset from ResetCache.
       delete FFileListCache;
-      FFileListCache = FileListCache;
+      FFileListCache = FileListCache.release();
       FFileListCachePath = GetCurrentDirectory();
 
       File = FFileListCache->FindFile(NameOnly);

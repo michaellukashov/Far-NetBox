@@ -1146,21 +1146,13 @@ void TSCPFileSystem::ReadFile(const UnicodeString & FileName,
 TRemoteFile * TSCPFileSystem::CreateRemoteFile(
   const UnicodeString & ListingStr, TRemoteFile * LinkedByFile)
 {
-  TRemoteFile * File = new TRemoteFile(LinkedByFile);
-  try
-  {
-    File->SetTerminal(FTerminal);
-    File->SetListingStr(ListingStr);
-    File->ShiftTime(FTerminal->GetSessionData()->GetTimeDifference());
-    File->Complete();
-  }
-  catch(...)
-  {
-    delete File;
-    throw;
-  }
+  std::auto_ptr<TRemoteFile> File(new TRemoteFile(LinkedByFile));
+  File->SetTerminal(FTerminal);
+  File->SetListingStr(ListingStr);
+  File->ShiftTime(FTerminal->GetSessionData()->GetTimeDifference());
+  File->Complete();
 
-  return File;
+  return File.release();
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CustomReadFile(const UnicodeString & FileName,
@@ -1460,12 +1452,11 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
           throw;
         }
       }
-        else
-      if (Resp == 1)
+      else if (Resp == 1)
       {
         FTerminal->LogEvent(L"SCP remote side error (1):");
       }
-        else
+      else
       {
         FTerminal->LogEvent(L"SCP remote side fatal error (2):");
       }
