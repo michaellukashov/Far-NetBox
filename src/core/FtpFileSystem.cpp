@@ -2026,22 +2026,14 @@ void TFTPFileSystem::ReadFile(const UnicodeString & FileName,
     // if cache is invalid or file is not in cache, (re)read the directory
     if (File == NULL)
     {
-      TRemoteFileList * FileListCache = new TRemoteFileList();
+      std::auto_ptr<TRemoteFileList> FileListCache(new TRemoteFileList());
       FileListCache->SetDirectory(Path);
-      try
-      {
-        ReadDirectory(FileListCache);
-      }
-      catch(...)
-      {
-        delete FileListCache;
-        throw;
-      }
+      ReadDirectory(FileListCache.get());
       // set only after we successfully read the directory,
       // otherwise, when we reconnect from ReadDirectory,
       // the FFileListCache is reset from ResetCache.
       delete FFileListCache;
-      FFileListCache = FileListCache;
+      FFileListCache = FileListCache.release();
       FFileListCachePath = GetCurrentDirectory();
 
       File = FFileListCache->FindFile(NameOnly);
