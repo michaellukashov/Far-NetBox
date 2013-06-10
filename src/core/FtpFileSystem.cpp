@@ -1467,7 +1467,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
     TDateTime Modification;
     // Inspired by SysUtils::FileAge
     WIN32_FIND_DATA FindData;
-    HANDLE Handle = FindFirstFile(FileName.c_str(), &FindData);
+    HANDLE Handle = ::FindFirstFile(FileName.c_str(), &FindData);
     if (Handle != INVALID_HANDLE_VALUE)
     {
       Modification =

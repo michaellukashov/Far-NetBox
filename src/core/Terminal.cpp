@@ -4026,9 +4026,9 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & FileName,
   if (!CopyParam->AllowAnyTransfer())
   {
     WIN32_FIND_DATA FindData = {};
-    HANDLE Handle = 0;
+    HANDLE Handle = INVALID_HANDLE_VALUE;
     FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
-      Handle = FindFirstFile(FileName.c_str(), &FindData);
+      Handle = ::FindFirstFile(FileName.c_str(), &FindData);
       if (Handle == INVALID_HANDLE_VALUE)
       {
         RaiseLastOSError();
