@@ -1985,7 +1985,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
   TFileOperationProgressType * OperationProgress, intptr_t Level)
 {
-  DWORD LocalFileAttrs = 0;
+  DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
 
   FTerminal->LogEvent(FORMAT(L"Entering directory \"%s\".", DirectoryName.c_str()));
 
@@ -2025,7 +2025,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
     }
   });
   {
-    int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+    DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     TSearchRec SearchRec;
     memset(&SearchRec, 0, sizeof(SearchRec));
     bool FindOK = false;

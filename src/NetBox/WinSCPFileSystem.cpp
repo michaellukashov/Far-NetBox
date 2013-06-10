@@ -1589,7 +1589,7 @@ void TWinSCPFileSystem::Synchronize()
   {
     bool SaveSettings = false;
     TCopyParamType CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
-    intptr_t CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
+    DWORD CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
     uintptr_t Options =
       FLAGMASK(SynchronizeAllowSelectedOnly(), soAllowSelectedOnly);
     if (SynchronizeDialog(Params, &CopyParam,

@@ -1208,7 +1208,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
     OperationProgress->SetTransferSize(AFile->GetSize());
     OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
-    DWORD LocalFileAttrs = 0;
+    DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
     FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
       if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, faDirectory))
@@ -1436,7 +1436,6 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
 
   __int64 MTime = 0, ATime = 0;
   __int64 Size = 0;
-  // DWORD LocalFileAttrs = 0;
 
   FTerminal->OpenLocalFile(FileName, GENERIC_READ, &OpenParams->LocalFileAttrs,
     NULL, NULL, &MTime, &ATime, &Size);

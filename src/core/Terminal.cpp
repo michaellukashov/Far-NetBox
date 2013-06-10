@@ -3839,7 +3839,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
     Done = (*AHandle != INVALID_HANDLE_VALUE);
     if (!Done)
     {
-      DWORD LocalFileAttrs = 0;
+      DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
       if (::FileExists(FileName) &&
         (((LocalFileAttrs = GetLocalFileAttributes(FileName)) & (faReadOnly | faHidden)) != 0))
       {

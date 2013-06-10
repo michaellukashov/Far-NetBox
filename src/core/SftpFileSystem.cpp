@@ -4701,7 +4701,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
     Flags |= tfNewDirectory;
   }
 
-  int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+  DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   TSearchRec SearchRec;
   bool FindOK = false;
 
@@ -4964,7 +4964,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       CopyParam->AllowResume(OperationProgress->TransferSize);
     OperationProgress->SetResumeStatus(ResumeAllowed ? rsEnabled : rsDisabled);
 
-    DWORD LocalFileAttrs = 0;
+    DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
     FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
       if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && (LocalFileAttrs & faDirectory))
