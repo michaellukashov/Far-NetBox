@@ -82,7 +82,7 @@ CMainThread::CMainThread()
 CMainThread::~CMainThread()
 {
 	delete m_pWorkingDir;
-	CloseHandle(m_hThread);
+  ::CloseHandle(m_hThread);
 }
 
 BOOL CMainThread::InitInstance()

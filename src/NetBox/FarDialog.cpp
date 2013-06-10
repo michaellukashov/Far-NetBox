@@ -76,11 +76,11 @@ TFarDialog::~TFarDialog()
   delete FContainers;
   if (FSynchronizeObjects[0] != INVALID_HANDLE_VALUE)
   {
-    CloseHandle(FSynchronizeObjects[0]);
+    ::CloseHandle(FSynchronizeObjects[0]);
   }
   if (FSynchronizeObjects[1] != INVALID_HANDLE_VALUE)
   {
-    CloseHandle(FSynchronizeObjects[1]);
+    ::CloseHandle(FSynchronizeObjects[1]);
   }
 }
 //---------------------------------------------------------------------------

@@ -285,7 +285,7 @@ void TKeepaliveThread::Execute()
       FFileSystem->KeepaliveThreadCallback();
     }
   }
-  CloseHandle(FEvent);
+  ::CloseHandle(FEvent);
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

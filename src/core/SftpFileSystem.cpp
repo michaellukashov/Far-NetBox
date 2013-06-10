@@ -5037,7 +5037,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
           if (!ResumeTransfer)
           {
-            CloseHandle(LocalFileHandle);
+            ::CloseHandle(LocalFileHandle);
             LocalFileHandle = INVALID_HANDLE_VALUE;
             FILE_OPERATION_LOOP (FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestPartialFullName.c_str()),
               THROWOSIFFALSE(Sysutils::DeleteFile(DestPartialFullName));
@@ -5134,7 +5134,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           // is NULL when overwriting read-only file
           if (LocalFileHandle)
           {
-            CloseHandle(LocalFileHandle);
+            ::CloseHandle(LocalFileHandle);
             LocalFileHandle = INVALID_HANDLE_VALUE;
           }
         }
@@ -5329,7 +5329,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         SetFileTime(LocalFileHandle, NULL, &AcTime, &WrTime);
       }
 
-      CloseHandle(LocalFileHandle);
+      ::CloseHandle(LocalFileHandle);
       LocalFileHandle = INVALID_HANDLE_VALUE;
 
       if (ResumeAllowed)

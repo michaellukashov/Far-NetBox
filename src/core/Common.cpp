@@ -1897,7 +1897,7 @@ bool IsDirectoryWriteable(const UnicodeString & Path)
   bool Result = (Handle != INVALID_HANDLE_VALUE);
   if (Result)
   {
-    CloseHandle(Handle);
+    ::CloseHandle(Handle);
   }
   return Result;
 }

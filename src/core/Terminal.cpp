@@ -5218,7 +5218,7 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
     OpenLocalFile(LocalFileName, GENERIC_WRITE, NULL, &Handle,
       NULL, NULL, NULL, NULL);
     bool Result = ::SetFileTime(Handle, NULL, AcTime, WrTime) > 0;
-    CloseHandle(Handle);
+    ::CloseHandle(Handle);
     if (!Result)
     {
       Abort();

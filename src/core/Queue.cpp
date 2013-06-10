@@ -351,7 +351,7 @@ TSimpleThread::~TSimpleThread()
 
   if (FThread != NULL)
   {
-    CloseHandle(FThread);
+    ::CloseHandle(FThread);
   }
 }
 //---------------------------------------------------------------------------
@@ -415,7 +415,7 @@ TSignalThread::~TSignalThread()
 
   if (FEvent)
   {
-    CloseHandle(FEvent);
+    ::CloseHandle(FEvent);
   }
 }
 //---------------------------------------------------------------------------
@@ -2141,7 +2141,7 @@ TTerminalThread::~TTerminalThread()
 {
   Close();
 
-  CloseHandle(FActionEvent);
+  ::CloseHandle(FActionEvent);
 
   assert(FTerminal->GetOnInformation() == MAKE_CALLBACK(TTerminalThread::TerminalInformation, this));
   assert(FTerminal->GetOnQueryUser() == MAKE_CALLBACK(TTerminalThread::TerminalQueryUser, this));

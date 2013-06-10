@@ -80,11 +80,11 @@ __int64 CNBFile::GetFileSize()
 
 void CNBFile::Close()
 {
-    if (m_File != INVALID_HANDLE_VALUE)
-    {
-        CloseHandle(m_File);
-        m_File = INVALID_HANDLE_VALUE;
-    }
+  if (m_File != INVALID_HANDLE_VALUE)
+  {
+    ::CloseHandle(m_File);
+    m_File = INVALID_HANDLE_VALUE;
+  }
 }
 
 DWORD CNBFile::LastError() const

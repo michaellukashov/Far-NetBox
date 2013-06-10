@@ -69,7 +69,7 @@ TSecureShell::~TSecureShell()
   assert(FWaiting == 0);
   SetActive(false);
   ResetConnection();
-  CloseHandle(FSocketEvent);
+  ::CloseHandle(FSocketEvent);
   ClearConfig(FConfig);
   delete FConfig;
   FConfig = NULL;
@@ -432,7 +432,7 @@ bool TSecureShell::TryFtp()
               Result = (WaitForSingleObject(Event, 2000) == WAIT_OBJECT_0);
             }
           }
-          CloseHandle(Event);
+          ::CloseHandle(Event);
         }
         closesocket(Socket);
       }

@@ -303,7 +303,7 @@ TFTPFileSystem::~TFTPFileSystem()
   delete FQueue;
   FQueue = NULL;
 
-  CloseHandle(FQueueEvent);
+  ::CloseHandle(FQueueEvent);
 
   delete FQueueCriticalSection;
   FQueueCriticalSection = NULL;
@@ -3692,7 +3692,7 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
         Result = true;
       }
 
-      CloseHandle(Handle);
+      ::CloseHandle(Handle);
     }
   }
   catch (...)
