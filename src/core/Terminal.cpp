@@ -3721,36 +3721,28 @@ TTerminal * TTerminal::GetCommandSession()
     // levels between main and command session
     assert(FInTransaction == 0);
 
-    try
-    {
-      FCommandSession = new TSecondaryTerminal(this);
-      (static_cast<TSecondaryTerminal *>(FCommandSession))->Init(GetSessionData(),
-        FConfiguration, L"Shell");
+    std::auto_ptr<TSecondaryTerminal> CommandSession(new TSecondaryTerminal(this));
+    CommandSession->Init(GetSessionData(), FConfiguration, L"Shell");
 
-      FCommandSession->SetAutoReadDirectory(false);
+    CommandSession->SetAutoReadDirectory(false);
 
-      TSessionData * CommandSessionData = FCommandSession->FSessionData;
-      CommandSessionData->SetRemoteDirectory(GetCurrentDirectory());
-      CommandSessionData->SetFSProtocol(fsSCPonly);
-      CommandSessionData->SetClearAliases(false);
-      CommandSessionData->SetUnsetNationalVars(false);
-      CommandSessionData->SetLookupUserGroups(asOn);
+    TSessionData * CommandSessionData = CommandSession->FSessionData;
+    CommandSessionData->SetRemoteDirectory(GetCurrentDirectory());
+    CommandSessionData->SetFSProtocol(fsSCPonly);
+    CommandSessionData->SetClearAliases(false);
+    CommandSessionData->SetUnsetNationalVars(false);
+    CommandSessionData->SetLookupUserGroups(asOn);
 
-      FCommandSession->FExceptionOnFail = FExceptionOnFail;
+    CommandSession->FExceptionOnFail = FExceptionOnFail;
 
-      FCommandSession->SetOnQueryUser(GetOnQueryUser());
-      FCommandSession->SetOnPromptUser(GetOnPromptUser());
-      FCommandSession->SetOnShowExtendedException(GetOnShowExtendedException());
-      FCommandSession->SetOnProgress(GetOnProgress());
-      FCommandSession->SetOnFinished(GetOnFinished());
-      FCommandSession->SetOnInformation(GetOnInformation());
-      // do not copy OnDisplayBanner to avoid it being displayed
-    }
-    catch(...)
-    {
-      SAFE_DESTROY(FCommandSession);
-      throw;
-    }
+    CommandSession->SetOnQueryUser(GetOnQueryUser());
+    CommandSession->SetOnPromptUser(GetOnPromptUser());
+    CommandSession->SetOnShowExtendedException(GetOnShowExtendedException());
+    CommandSession->SetOnProgress(GetOnProgress());
+    CommandSession->SetOnFinished(GetOnFinished());
+    CommandSession->SetOnInformation(GetOnInformation());
+    // do not copy OnDisplayBanner to avoid it being displayed
+    FCommandSession = CommandSession.release();
   }
 
   return FCommandSession;
