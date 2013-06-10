@@ -220,7 +220,7 @@ intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
       (Rec->Event.KeyEvent.uChar.AsciiChar == 'W') &&
       (FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, LEFT_ALT_PRESSED) ||
        FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, RIGHT_ALT_PRESSED)) &&
-      FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, SHIFT_PRESSED))
+       FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, SHIFT_PRESSED))
   {
     CommandsMenu(false);
     Result = 1;
