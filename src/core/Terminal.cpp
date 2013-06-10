@@ -4209,20 +4209,12 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & Loca
   TSynchronizeDirectoryEvent OnSynchronizeDirectory,
   TSynchronizeOptions * Options)
 {
-  TSynchronizeChecklist * Checklist = new TSynchronizeChecklist();
-  try
-  {
-    DoSynchronizeCollectDirectory(LocalDirectory, RemoteDirectory, Mode,
-      CopyParam, Params, OnSynchronizeDirectory, Options, sfFirstLevel,
-      Checklist);
-    Checklist->Sort();
-  }
-  catch(...)
-  {
-    delete Checklist;
-    throw;
-  }
-  return Checklist;
+  std::auto_ptr<TSynchronizeChecklist> Checklist(new TSynchronizeChecklist());
+  DoSynchronizeCollectDirectory(LocalDirectory, RemoteDirectory, Mode,
+    CopyParam, Params, OnSynchronizeDirectory, Options, sfFirstLevel,
+    Checklist.get());
+  Checklist->Sort();
+  return Checklist.release();
 }
 //---------------------------------------------------------------------------
 static void AddFlagName(UnicodeString & ParamsStr, intptr_t & Params, intptr_t Param, const UnicodeString & Name)
