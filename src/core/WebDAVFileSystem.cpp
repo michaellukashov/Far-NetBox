@@ -13332,7 +13332,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
   {
     FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to local directory started.", FileName.c_str()));
     bool CanProceed = true;
-    if (FileExists(DestFullName))
+    if (::FileExists(DestFullName))
     {
       __int64 Size;
       __int64 MTime;

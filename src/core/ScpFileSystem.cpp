@@ -2488,7 +2488,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
             {
               try
               {
-                if (FileExists(DestFileName))
+                if (::FileExists(DestFileName))
                 {
                   __int64 MTime;
                   TOverwriteFileParams FileParams;

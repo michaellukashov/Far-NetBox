@@ -952,7 +952,7 @@ void TIniFileStorage::Flush()
       {
         DWORD LocalFileAttr;
         // preserve attributes (especially hidden)
-        bool Exists = FileExists(GetStorage());
+        bool Exists = ::FileExists(GetStorage());
         if (Exists)
         {
           LocalFileAttr = GetFileAttributes(UnicodeString(GetStorage()).c_str());

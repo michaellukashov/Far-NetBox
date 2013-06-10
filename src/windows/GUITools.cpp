@@ -19,7 +19,7 @@ extern const UnicodeString PuttygenTool = L"puttygen.exe";
 //---------------------------------------------------------------------------
 bool FindFile(UnicodeString & Path)
 {
-  bool Result = FileExists(Path);
+  bool Result = ::FileExists(Path);
   if (!Result)
   {
     intptr_t Len = GetEnvironmentVariable(L"PATH", NULL, 0);
@@ -132,10 +132,10 @@ bool FindTool(const UnicodeString & Name, UnicodeString & Path)
   UnicodeString AppPath = IncludeTrailingBackslash(ExtractFilePath(GetConfiguration()->ModuleFileName()));
   Path = AppPath + Name;
   bool Result = true;
-  if (!FileExists(Path))
+  if (!::FileExists(Path))
   {
     Path = AppPath + L"PuTTY\\" + Name;
-    if (!FileExists(Path))
+    if (!::FileExists(Path))
     {
       Path = Name;
       if (!FindFile(Path))

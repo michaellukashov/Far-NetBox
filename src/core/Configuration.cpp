@@ -549,7 +549,7 @@ void TConfiguration::CleanupRandomSeedFile()
   try
   {
     DontSaveRandomSeed();
-    if (FileExists(GetRandomSeedFileName()))
+    if (::FileExists(GetRandomSeedFileName()))
     {
       if (!DeleteFile(GetRandomSeedFileName()))
       {
@@ -568,7 +568,7 @@ void TConfiguration::CleanupIniFile()
   try
   {
 #if 0
-    if (FileExists(GetIniFileStorageNameForReading()))
+    if (::FileExists(GetIniFileStorageNameForReading()))
     {
       if (!DeleteFile(GetIniFileStorageNameForReading()))
       {
@@ -843,7 +843,7 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
     UnicodeString ProgramIniPath = ChangeFileExt(ProgramPath, L".ini");
 
     UnicodeString IniPath;
-    if (FileExists(ProgramIniPath))
+    if (::FileExists(ProgramIniPath))
     {
       IniPath = ProgramIniPath;
     }
@@ -852,7 +852,7 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
       UnicodeString AppDataIniPath =
         IncludeTrailingBackslash(GetShellFolderPath(CSIDL_APPDATA)) +
         ExtractFileName(ProgramIniPath);
-      if (FileExists(AppDataIniPath))
+      if (::FileExists(AppDataIniPath))
       {
         IniPath = AppDataIniPath;
       }
@@ -887,7 +887,7 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
     }
 
     if (!FVirtualIniFileStorageName.IsEmpty() &&
-        FileExists(FVirtualIniFileStorageName))
+        ::FileExists(FVirtualIniFileStorageName))
     {
       return FVirtualIniFileStorageName;
     }
@@ -961,7 +961,7 @@ TStorage TConfiguration::GetStorage()
 {
   if (FStorage == stDetect)
   {
-    /*if (FileExists(IniFileStorageNameForReading))
+    /*if (::FileExists(IniFileStorageNameForReading))
     {
       FStorage = stIniFile;
     }
@@ -989,7 +989,7 @@ void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
 
     if (!PrevRandomSeedFileName.IsEmpty() &&
         (PrevRandomSeedFileName != GetRandomSeedFileName()) &&
-        FileExists(PrevRandomSeedFileName))
+        ::FileExists(PrevRandomSeedFileName))
     {
       // ignore any error
       DeleteFile(PrevRandomSeedFileName);

@@ -755,7 +755,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   // can take care of it.
   if ((FPuttyPath.SubString(1, 1) != L"\"") &&
       (CompareFileName(ExpandEnvironmentVariables(FPuttyPath), FDefaultPuttyPathOnly) ||
-       FileExists(ExpandEnvironmentVariables(FPuttyPath))))
+       ::FileExists(ExpandEnvironmentVariables(FPuttyPath))))
   {
     FPuttyPath = FormatCommand(FPuttyPath, L"");
   }
@@ -1221,7 +1221,7 @@ TStoredSessionList * TGUIConfiguration::SelectFilezillaSessionsForImport(
   UnicodeString FilezillaSiteManagerFile =
     IncludeTrailingBackslash(AppDataPath) + L"FileZilla\\sitemanager.xml";
 
-  if (FileExists(FilezillaSiteManagerFile))
+  if (::FileExists(FilezillaSiteManagerFile))
   {
     ImportSessionList->ImportFromFilezilla(FilezillaSiteManagerFile);
 
