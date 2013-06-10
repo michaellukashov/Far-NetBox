@@ -1226,23 +1226,16 @@ void TTerminalItem::Init(intptr_t Index)
 
   FCriticalSection = new TCriticalSection();
 
-  FTerminal = new TBackgroundTerminal(FQueue->FTerminal);
-  FTerminal->Init(FQueue->FSessionData, FQueue->FConfiguration, this, FORMAT(L"Background %d", Index));
-  try
-  {
-    FTerminal->SetUseBusyCursor(false);
+  std::auto_ptr<TBackgroundTerminal> Terminal(new TBackgroundTerminal(FQueue->FTerminal));
+  Terminal->Init(FQueue->FSessionData, FQueue->FConfiguration, this, FORMAT(L"Background %d", Index));
+  Terminal->SetUseBusyCursor(false);
 
-    FTerminal->SetOnQueryUser(MAKE_CALLBACK(TTerminalItem::TerminalQueryUser, this));
-    FTerminal->SetOnPromptUser(MAKE_CALLBACK(TTerminalItem::TerminalPromptUser, this));
-    FTerminal->SetOnShowExtendedException(MAKE_CALLBACK(TTerminalItem::TerminalShowExtendedException, this));
-    FTerminal->SetOnProgress(MAKE_CALLBACK(TTerminalItem::OperationProgress, this));
-    FTerminal->SetOnFinished(MAKE_CALLBACK(TTerminalItem::OperationFinished, this));
-  }
-  catch(...)
-  {
-    delete FTerminal;
-    throw;
-  }
+  Terminal->SetOnQueryUser(MAKE_CALLBACK(TTerminalItem::TerminalQueryUser, this));
+  Terminal->SetOnPromptUser(MAKE_CALLBACK(TTerminalItem::TerminalPromptUser, this));
+  Terminal->SetOnShowExtendedException(MAKE_CALLBACK(TTerminalItem::TerminalShowExtendedException, this));
+  Terminal->SetOnProgress(MAKE_CALLBACK(TTerminalItem::OperationProgress, this));
+  Terminal->SetOnFinished(MAKE_CALLBACK(TTerminalItem::OperationFinished, this));
+  FTerminal = Terminal.release();
 
   Start();
 }
