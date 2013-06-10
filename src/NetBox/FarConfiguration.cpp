@@ -106,8 +106,7 @@ void TFarConfiguration::Saved()
     KEY(Bool,     ConfirmSynchronizedBrowsing); \
   );
 //---------------------------------------------------------------------------
-void TFarConfiguration::SaveData(THierarchicalStorage * Storage,
-  bool All)
+void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 {
   TGUIConfiguration::SaveData(Storage, All);
 
