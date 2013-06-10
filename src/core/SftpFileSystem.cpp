@@ -3987,20 +3987,20 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
   // TOpenRemoteFileParams OpenParams;
   // OpenParams.OverwriteMode = omOverwrite;
 
-  HANDLE FileHandle = 0;
+  HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
   __int64 MTime = 0, ATime = 0;
   __int64 Size = 0;
 
   FTerminal->OpenLocalFile(FileName, GENERIC_READ, &OpenParams.LocalFileAttrs,
-    &FileHandle, NULL, &MTime, &ATime, &Size);
+    &LocalFileHandle, NULL, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(OpenParams.LocalFileAttrs, faDirectory);
 
   auto cleanup = finally([&]()
   {
-    if (FileHandle != NULL)
+    if (LocalFileHandle != INVALID_HANDLE_VALUE)
     {
-      ::CloseHandle(FileHandle);
+      ::CloseHandle(LocalFileHandle);
     }
   });
   {
@@ -4015,7 +4015,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
     else
     {
       // File is regular file (not directory)
-      assert(FileHandle);
+      assert(LocalFileHandle);
 
       UnicodeString DestFileName = CopyParam->ChangeFileName(ExtractFileName(RealFileName, false),
         osLocal, FLAGSET(Flags, tfFirstLevel));
@@ -4244,7 +4244,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
             FTerminal->LogEvent(L"Resuming file transfer (append style).");
             ResumeOffset = OpenParams.DestFileSize;
           }
-          FileSeek(FileHandle, ResumeOffset, 0);
+          FileSeek(LocalFileHandle, ResumeOffset, 0);
           OperationProgress->AddResumed(ResumeOffset);
         }
 
@@ -4254,7 +4254,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
           Queue.DisposeSafe();
         });
         {
-          Queue.Init(FileName, FileHandle, OperationProgress,
+          Queue.Init(FileName, LocalFileHandle, OperationProgress,
             OpenParams.RemoteFileHandle,
             DestWriteOffset + OperationProgress->TransferedSize);
 
@@ -4975,7 +4975,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
     OperationProgress->TransferingFile = false; // not set with SFTP protocol
 
-    HANDLE LocalFileHandle = NULL;
+    HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
     TStream * FileStream = NULL;
     bool DeleteLocalFile = false;
     RawByteString RemoteHandle;
@@ -5038,7 +5038,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           if (!ResumeTransfer)
           {
             CloseHandle(LocalFileHandle);
-            LocalFileHandle = NULL;
+            LocalFileHandle = INVALID_HANDLE_VALUE;
             FILE_OPERATION_LOOP (FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestPartialFullName.c_str()),
               THROWOSIFFALSE(Sysutils::DeleteFile(DestPartialFullName));
             )
@@ -5135,7 +5135,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           if (LocalFileHandle)
           {
             CloseHandle(LocalFileHandle);
-            LocalFileHandle = NULL;
+            LocalFileHandle = INVALID_HANDLE_VALUE;
           }
         }
         else
@@ -5330,7 +5330,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       }
 
       CloseHandle(LocalFileHandle);
-      LocalFileHandle = NULL;
+      LocalFileHandle = INVALID_HANDLE_VALUE;
 
       if (ResumeAllowed)
       {

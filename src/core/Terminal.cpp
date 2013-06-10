@@ -3920,8 +3920,8 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
   __int64 * AMTime, __int64 * AATime, __int64 * ASize,
   bool TryWriteReadOnly)
 {
-  DWORD LocalFileAttrs = 0;
-  HANDLE LocalFileHandle = 0;
+  DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
+  HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
 
   FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
@@ -3948,7 +3948,6 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
         OPEN_EXISTING, 0);
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
       {
-        LocalFileHandle = 0;
         RaiseLastOSError();
       }
     );
@@ -3998,13 +3997,13 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
 
       if ((AHandle == NULL) || NoHandle)
       {
-        CloseHandle(LocalFileHandle);
-        LocalFileHandle = NULL;
+        ::CloseHandle(LocalFileHandle);
+        LocalFileHandle = INVALID_HANDLE_VALUE;
       }
     }
     catch(...)
     {
-      CloseHandle(LocalFileHandle);
+      ::CloseHandle(LocalFileHandle);
       throw;
     }
   }

@@ -13022,12 +13022,12 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
 
   WIN32_FIND_DATA SearchRec;
   bool FindOK = false;
-  HANDLE findHandle = 0;
+  HANDLE FindHandle = 0;
 
   FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
     UnicodeString path = DirectoryName + L"*.*";
-    findHandle = FindFirstFile(path.c_str(), &SearchRec);
-    FindOK = (findHandle != 0);
+    FindHandle = ::FindFirstFile(path.c_str(), &SearchRec);
+    FindOK = (FindHandle != INVALID_HANDLE_VALUE);
     if (!FindOK)
     {
       FindCheck(GetLastError());
@@ -13038,7 +13038,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
 
   auto cleanup = finally([&]()
   {
-    ::FindClose(findHandle);
+    ::FindClose(FindHandle);
   });
   {
     while (FindOK && !OperationProgress->Cancel)
@@ -13072,7 +13072,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
       }
 
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        FindOK = (::FindNextFile(findHandle, &SearchRec) != 0);
+        FindOK = (::FindNextFile(FindHandle, &SearchRec) != 0);
         if (!FindOK)
         {
           FindCheck(GetLastError());

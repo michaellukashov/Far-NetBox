@@ -1707,8 +1707,8 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
     THROW_SKIP_FILE_NULL;
   }
 
-  HANDLE LocalFileHandle;
-  uintptr_t LocalFileAttrs;
+  HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
+  uintptr_t LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
   __int64 MTime, ATime;
   __int64 Size;
 
@@ -1719,7 +1719,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
   std::auto_ptr<TSafeHandleStream> Stream(new TSafeHandleStream(LocalFileHandle));
   auto cleanup = finally([&]()
   {
-    if (LocalFileHandle != NULL)
+    if (LocalFileHandle != INVALID_HANDLE_VALUE)
     {
       ::CloseHandle(LocalFileHandle);
     }
@@ -2472,7 +2472,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
 
           try
           {
-            HANDLE LocalFileHandle = NULL;
+            HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
             std::auto_ptr<TStream> FileStream;
 
             /* TODO 1 : Turn off read-only attr */
