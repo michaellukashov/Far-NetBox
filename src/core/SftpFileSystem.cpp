@@ -3126,7 +3126,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         }
         catch(Exception &E)
         {
-          if ((dynamic_cast<EFatal *>(&E) != NULL))
+          if (dynamic_cast<EFatal *>(&E) != NULL)
           {
             throw;
           }
