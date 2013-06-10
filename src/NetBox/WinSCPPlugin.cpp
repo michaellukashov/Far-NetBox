@@ -48,7 +48,7 @@ TWinSCPPlugin::~TWinSCPPlugin()
 {
   if (FInitialized)
   {
-    FarConfiguration->SetPlugin(NULL);
+    GetFarConfiguration()->SetPlugin(NULL);
     CoreFinalize();
   }
 }
@@ -80,21 +80,21 @@ void TWinSCPPlugin::GetPluginInfoEx(DWORD & Flags,
   TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
 {
   Flags = PF_FULLCMDLINE;
-  if (FarConfiguration->GetDisksMenu())
+  if (GetFarConfiguration()->GetDisksMenu())
   {
     DiskMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
-      reinterpret_cast<TObject *>((size_t)FarConfiguration->GetDisksMenuHotKey()));
+      reinterpret_cast<TObject *>((size_t)GetFarConfiguration()->GetDisksMenuHotKey()));
   }
-  if (FarConfiguration->GetPluginsMenu())
+  if (GetFarConfiguration()->GetPluginsMenu())
   {
     PluginMenuStrings->Add(GetMsg(PLUGIN_NAME));
   }
-  if (FarConfiguration->GetPluginsMenuCommands())
+  if (GetFarConfiguration()->GetPluginsMenuCommands())
   {
     PluginMenuStrings->Add(GetMsg(MENU_COMMANDS));
   }
   PluginConfigStrings->Add(GetMsg(PLUGIN_NAME));
-  CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
+  CommandPrefixes->SetCommaText(GetFarConfiguration()->GetCommandPrefixes());
 }
 //---------------------------------------------------------------------------
 bool TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
@@ -199,8 +199,8 @@ bool TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
 intptr_t TWinSCPPlugin::ProcessEditorEventEx(intptr_t Event, void * Param)
 {
   // for performance reasons, do not pass the event to file systems on redraw
-  if ((Event != EE_REDRAW) || FarConfiguration->GetEditorUploadOnSave() ||
-      FarConfiguration->GetEditorMultiple())
+  if ((Event != EE_REDRAW) || GetFarConfiguration()->GetEditorUploadOnSave() ||
+      GetFarConfiguration()->GetEditorMultiple())
   {
     for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
     {
@@ -244,7 +244,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
   }
 
   if ((OpenFrom == OPEN_PLUGINSMENU) &&
-      (!FarConfiguration->GetPluginsMenu() || (Item == 1)))
+      (!GetFarConfiguration()->GetPluginsMenu() || (Item == 1)))
   {
     CommandsMenu(true);
   }
@@ -409,11 +409,11 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 
   MenuItems->SetDisabled(MLog, !FSVisible || (FileSystem && !FileSystem->IsLogging()));
   MenuItems->SetDisabled(MClearCaches, !FSVisible || (FileSystem && FileSystem->AreCachesEmpty()));
-  MenuItems->SetDisabled(MPutty, !FSVisible || !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttyPath()))));
+  MenuItems->SetDisabled(MPutty, !FSVisible || !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(GetFarConfiguration()->GetPuttyPath()))));
   MenuItems->SetDisabled(MEditHistory, !FSConnected || (FileSystem && FileSystem->IsEditHistoryEmpty()));
   MenuItems->SetChecked(MSynchronizeBrowsing, FSVisible && (FileSystem && FileSystem->IsSynchronizedBrowsing()));
-  MenuItems->SetDisabled(MPageant, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPageantPath()))));
-  MenuItems->SetDisabled(MPuttygen, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttygenPath()))));
+  MenuItems->SetDisabled(MPageant, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(GetFarConfiguration()->GetPageantPath()))));
+  MenuItems->SetDisabled(MPuttygen, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(GetFarConfiguration()->GetPuttygenPath()))));
 
   intptr_t Result = Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), L"", MenuItems.get());
 
@@ -498,7 +498,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     else if (Result == MPageant || Result == MPuttygen)
     {
       UnicodeString Path = (Result == MPageant) ?
-        FarConfiguration->GetPageantPath() : FarConfiguration->GetPuttygenPath();
+        GetFarConfiguration()->GetPageantPath() : GetFarConfiguration()->GetPuttygenPath();
       UnicodeString Program, Params, Dir;
       SplitCommand(ExpandEnvironmentVariables(Path), Program, Params, Dir);
       ExecuteShell(Program, Params);
@@ -774,9 +774,9 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
 void TWinSCPPlugin::CleanupConfiguration()
 {
   // Check if key Configuration\Version exists
-  std::auto_ptr<THierarchicalStorage> Storage(FarConfiguration->CreateStorage(false));
+  std::auto_ptr<THierarchicalStorage> Storage(GetFarConfiguration()->CreateStorage(false));
   Storage->SetAccessMode(smReadWrite);
-  if (Storage->OpenSubKey(FarConfiguration->GetConfigurationSubKey(), false))
+  if (Storage->OpenSubKey(GetFarConfiguration()->GetConfigurationSubKey(), false))
   {
     if (!Storage->ValueExists(L"Version"))
     {

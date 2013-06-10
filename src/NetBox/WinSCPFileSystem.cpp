@@ -169,18 +169,18 @@ void TRemoteFilePanelItem::SetPanelModes(TFarPanelModes * PanelModes)
 {
   assert(FarPlugin);
   std::auto_ptr<TStrings> ColumnTitles(new TStringList());
-  if (FarConfiguration->GetCustomPanelModeDetailed())
+  if (GetFarConfiguration()->GetCustomPanelModeDetailed())
   {
-    UnicodeString ColumnTypes = FarConfiguration->GetColumnTypesDetailed();
-    UnicodeString StatusColumnTypes = FarConfiguration->GetStatusColumnTypesDetailed();
+    UnicodeString ColumnTypes = GetFarConfiguration()->GetColumnTypesDetailed();
+    UnicodeString StatusColumnTypes = GetFarConfiguration()->GetStatusColumnTypesDetailed();
 
     TranslateColumnTypes(ColumnTypes, ColumnTitles.get());
     TranslateColumnTypes(StatusColumnTypes, NULL);
 
     PanelModes->SetPanelMode(5 /*detailed */,
-      ColumnTypes, FarConfiguration->GetColumnWidthsDetailed(),
-      ColumnTitles.get(), FarConfiguration->GetFullScreenDetailed(), false, true, false,
-      StatusColumnTypes, FarConfiguration->GetStatusColumnWidthsDetailed());
+      ColumnTypes, GetFarConfiguration()->GetColumnWidthsDetailed(),
+      ColumnTitles.get(), GetFarConfiguration()->GetFullScreenDetailed(), false, true, false,
+      StatusColumnTypes, GetFarConfiguration()->GetStatusColumnWidthsDetailed());
   }
 }
 //------------------------------------------------------------------------------
@@ -419,7 +419,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(DWORD & Flags,
     // leaved subdirectory is not focused, when entering parent directory.
     CurDir = FTerminal->GetCurrentDirectory();
     Format = FTerminal->GetSessionData()->GetSessionName();
-    if (FarConfiguration->GetHostNameInTitle())
+    if (GetFarConfiguration()->GetHostNameInTitle())
     {
       PanelTitle = FORMAT(L" %s:%s ", Format.c_str(), CurDir.c_str());
     }
@@ -1010,7 +1010,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
     }
 
     if ((Key == VK_F4) && (ControlState == 0) &&
-         FarConfiguration->GetEditorMultiple())
+         GetFarConfiguration()->GetEditorMultiple())
     {
       MultipleEdit();
       Handled = true;
@@ -1112,12 +1112,12 @@ void TWinSCPFileSystem::ApplyCommand()
   std::auto_ptr<TStrings> FileList(CreateSelectedFileList(osRemote));
   if (FileList.get() != NULL)
   {
-    intptr_t Params = FarConfiguration->GetApplyCommandParams();
-    UnicodeString Command = FarConfiguration->GetApplyCommandCommand();
+    intptr_t Params = GetFarConfiguration()->GetApplyCommandParams();
+    UnicodeString Command = GetFarConfiguration()->GetApplyCommandCommand();
     if (ApplyCommandDialog(Command, Params))
     {
-      FarConfiguration->SetApplyCommandParams(Params);
-      FarConfiguration->SetApplyCommandCommand(Command);
+      GetFarConfiguration()->SetApplyCommandParams(Params);
+      GetFarConfiguration()->SetApplyCommandCommand(Command);
       if (FLAGCLEAR(Params, ccLocal))
       {
         if (EnsureCommandSessionFallback(fcShellAnyCommand))
@@ -2011,7 +2011,7 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
   UnicodeString SessionKey = FTerminal->GetSessionData()->GetSessionKey();
   TBookmarkList * CurrentBookmarkList;
 
-  CurrentBookmarkList = FarConfiguration->GetBookmarks(SessionKey);
+  CurrentBookmarkList = GetFarConfiguration()->GetBookmarks(SessionKey);
   if (CurrentBookmarkList != NULL)
   {
     BookmarkList->Assign(CurrentBookmarkList);
@@ -2023,12 +2023,12 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
     Bookmark->SetRemote(Directory);
     Bookmark->SetName(Directory);
     BookmarkList->Add(Bookmark);
-    FarConfiguration->SetBookmarks(SessionKey, BookmarkList.get());
+    GetFarConfiguration()->SetBookmarks(SessionKey, BookmarkList.get());
   }
 
   bool Result = OpenDirectoryDialog(Add, Directory, BookmarkList.get());
 
-  FarConfiguration->SetBookmarks(SessionKey, BookmarkList.get());
+  GetFarConfiguration()->SetBookmarks(SessionKey, BookmarkList.get());
 
   if (Result)
   {
@@ -2058,7 +2058,7 @@ void TWinSCPFileSystem::ToggleSynchronizeBrowsing()
 {
   FSynchronisingBrowse = !FSynchronisingBrowse;
 
-  if (FarConfiguration->GetConfirmSynchronizedBrowsing())
+  if (GetFarConfiguration()->GetConfirmSynchronizedBrowsing())
   {
     UnicodeString Message = FSynchronisingBrowse ?
       GetMsg(SYNCHRONIZE_BROWSING_ON) : GetMsg(SYNCHRONIZE_BROWSING_OFF);
@@ -2067,7 +2067,7 @@ void TWinSCPFileSystem::ToggleSynchronizeBrowsing()
     if (MoreMessageDialog(Message, NULL, qtInformation, qaOK, &Params) ==
         qaNeverAskAgain)
     {
-      FarConfiguration->SetConfirmSynchronizedBrowsing(false);
+      GetFarConfiguration()->SetConfirmSynchronizedBrowsing(false);
     }
   }
 }
@@ -2407,7 +2407,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
           static_cast<TFarPanelItem *>(PanelItems->GetItem(0))->GetFileName().c_str());
       }
 
-      if ((OpMode & OPM_SILENT) || !FarConfiguration->GetConfirmDeleting() ||
+      if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
           (MoreMessageDialog(Query, NULL, qtConfirmation, qaOK | qaCancel) == qaOK))
       {
         FTerminal->DeleteFiles(FFileList);
@@ -2417,7 +2417,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
   }
   else if (SessionList())
   {
-    if ((OpMode & OPM_SILENT) || !FarConfiguration->GetConfirmDeleting() ||
+    if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
         (MoreMessageDialog(GetMsg(DELETE_SESSIONS_CONFIRM), NULL, qtConfirmation, qaOK | qaCancel) == qaOK))
     {
       ProcessSessions(PanelItems, MAKE_CALLBACK(TWinSCPFileSystem::DeleteSession, this), NULL);
@@ -2432,7 +2432,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::QueueAddItem(TQueueItem * Item)
 {
-  FarConfiguration->CacheFarSettings();
+  GetFarConfiguration()->CacheFarSettings();
   FQueue->AddItem(Item);
 }
 //------------------------------------------------------------------------------
@@ -2499,7 +2499,7 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
   bool EditView = (OpMode & (OPM_EDIT | OPM_VIEW)) != 0;
   bool Confirmed =
     (OpMode & OPM_SILENT) &&
-    (!EditView || FarConfiguration->GetEditorDownloadDefaultMode());
+    (!EditView || GetFarConfiguration()->GetEditorDownloadDefaultMode());
 
   TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
   if (EditView)
@@ -2596,7 +2596,7 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
   if (Edit)
   {
     CopyParam = FLastEditCopyParam;
-    Confirmed = FarConfiguration->GetEditorUploadSameOptions();
+    Confirmed = GetFarConfiguration()->GetEditorUploadSameOptions();
     Ask = false;
   }
   else
@@ -2688,7 +2688,7 @@ intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int 
         // editor should be closed already
         assert(FLastEditorID < 0);
 
-        if (FarConfiguration->GetEditorUploadOnSave())
+        if (GetFarConfiguration()->GetEditorUploadOnSave())
         {
           // already uploaded from EE_REDRAW
           Result = -1;
@@ -3561,14 +3561,14 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
     switch (Event)
     {
     case qeEmpty:
-      if (Hidden && FarConfiguration->GetQueueBeep())
+      if (Hidden && GetFarConfiguration()->GetQueueBeep())
       {
         MessageBeep(MB_OK);
       }
       break;
 
     case qePendingUserAction:
-      if (Hidden && !GetGUIConfiguration()->GetQueueAutoPopup() && FarConfiguration->GetQueueBeep())
+      if (Hidden && !GetGUIConfiguration()->GetQueueAutoPopup() && GetFarConfiguration()->GetQueueBeep())
       {
         // MB_ICONQUESTION would be more appropriate, but in default Windows Sound
         // schema it has no sound associated
@@ -3862,7 +3862,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
         // the file back under that name
         FLastEditFile = Info->GetFileName();
 
-        if (FarConfiguration->GetEditorUploadOnSave())
+        if (GetFarConfiguration()->GetEditorUploadOnSave())
         {
           FEditorPendingSave = true;
         }
@@ -3884,7 +3884,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
             static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
         }
 
-        if (FarConfiguration->GetEditorUploadOnSave())
+        if (GetFarConfiguration()->GetEditorUploadOnSave())
         {
           FEditorPendingSave = true;
         }
