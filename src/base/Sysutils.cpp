@@ -967,7 +967,7 @@ DWORD FindFirst(const UnicodeString & FileName, DWORD LocalFileAttrs, TSearchRec
 {
   const DWORD faSpecial = faHidden | faSysFile | faDirectory;
   Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
-  Rec.FindHandle = FindFirstFileW(FileName.c_str(), &Rec.FindData);
+  Rec.FindHandle = ::FindFirstFileW(FileName.c_str(), &Rec.FindData);
   DWORD Result = 0;
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)
   {
