@@ -3516,18 +3516,10 @@ TSessionData * TStoredSessionList::ParseUrl(const UnicodeString & Url,
   TOptions * Options, bool & DefaultsOnly, UnicodeString * FileName,
   bool * AProtocolDefined, UnicodeString * MaskedUrl)
 {
-  TSessionData * Data = new TSessionData(L"");
-  try
-  {
+  std::auto_ptr<TSessionData> Data(new TSessionData(L""));
     Data->ParseUrl(Url, Options, this, DefaultsOnly, FileName, AProtocolDefined, MaskedUrl);
-  }
-  catch(...)
-  {
-    delete Data;
-    throw;
-  }
 
-  return Data;
+  return Data.release();
 }
 //---------------------------------------------------------------------
 TSessionData * TStoredSessionList::ResolveSessionData(TSessionData * Data)
