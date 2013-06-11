@@ -64,7 +64,6 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
   {
     FNormalConsoleSize = TPoint(-1, -1);
   }
-  GlobalFunctions = new TGlobalFunctions();
 }
 //---------------------------------------------------------------------------
 TCustomFarPlugin::~TCustomFarPlugin()
@@ -84,7 +83,7 @@ TCustomFarPlugin::~TCustomFarPlugin()
     delete FSavedTitles->GetObject(I);
   delete FSavedTitles;
   delete FCriticalSection;
-  delete GlobalFunctions;
+  delete GetGlobalFunctions();
 }
 //---------------------------------------------------------------------------
 bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/)
@@ -2883,13 +2882,16 @@ void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidt
   }
 }
 //------------------------------------------------------------------------------
-TGlobalFunctions::TGlobalFunctions()
+TGlobalFunctionsIntf * GetGlobalFunctions()
 {
+  static TGlobalFunctions * GlobalFunctions = nullptr;
+  if (!GlobalFunctions)
+  {
+    GlobalFunctions = new TGlobalFunctions();
+  }
+  return GlobalFunctions;
 }
-//------------------------------------------------------------------------------
-TGlobalFunctions::~TGlobalFunctions()
-{
-}
+
 //------------------------------------------------------------------------------
 HINSTANCE TGlobalFunctions::GetHandle() const
 {

@@ -923,5 +923,5 @@ public:
   virtual UnicodeString GetStrVersionNumber() const = 0;
 };
 //---------------------------------------------------------------------------
-extern TGlobalFunctionsIntf * GlobalFunctions;
+TGlobalFunctionsIntf * GetGlobalFunctions();
 //---------------------------------------------------------------------------
