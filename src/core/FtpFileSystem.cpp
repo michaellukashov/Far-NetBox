@@ -1201,7 +1201,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
     // Will we use ASCII of BINARY file transfer?
     OperationProgress->SetAsciiTransfer(
       CopyParam->UseAsciiTransfer(FileName, osRemote, MaskParams));
-    FTerminal->LogEvent(UnicodeString((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
+    FTerminal->LogEvent(UnicodeString(OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary") +
       L" transfer mode selected.");
 
     // Suppose same data size to transfer as to write
