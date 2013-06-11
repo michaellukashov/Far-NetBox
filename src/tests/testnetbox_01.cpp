@@ -516,10 +516,10 @@ BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
   std::string str = "test string";
   {
     unsigned int CreateAttrs = FILE_ATTRIBUTE_NORMAL;
-    HANDLE File = ::CreateFile(FileName.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
+    HANDLE FileHandle = ::CreateFile(FileName.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
                                NULL, CREATE_ALWAYS, CreateAttrs, 0);
-    BOOST_CHECK(File != 0);
-    TStream * FileStream = new TSafeHandleStream(File);
+    BOOST_CHECK(FileHandle != 0);
+    TStream * FileStream = new TSafeHandleStream(FileHandle);
     TFileBuffer * BlockBuf = new TFileBuffer();
     // BlockBuf->SetSize(1024);
     BlockBuf->SetPosition(0);
@@ -529,7 +529,7 @@ BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
     BlockBuf->WriteToStream(FileStream, BlockBuf->GetSize());
     delete FileStream; FileStream = NULL;
     delete BlockBuf; BlockBuf = NULL;
-    ::CloseHandle(File);
+    ::CloseHandle(FileHandle);
     BOOST_TEST_MESSAGE("FileName1 = " << W2MB(FileName.c_str()));
     BOOST_REQUIRE(::FileExists(FileName));
   }
