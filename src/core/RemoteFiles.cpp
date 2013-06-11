@@ -778,7 +778,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 void TRemoteFile::LoadTypeInfo() const
 {
   /* TODO : If file is link: Should be attributes taken from linked file? */
-  /* unsigned long Attrs = 0;
+  /* unsigned long Attrs = INVALID_FILE_ATTRIBUTES;
   if (GetIsDirectory())
   {
     Attrs |= FILE_ATTRIBUTE_DIRECTORY;
