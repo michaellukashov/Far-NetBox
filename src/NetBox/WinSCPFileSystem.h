@@ -262,8 +262,8 @@ private:
   void TerminalDeleteLocalFile(const UnicodeString & FileName, bool Alternative);
   HANDLE TerminalCreateLocalFile(const UnicodeString & LocalFileName,
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
-  DWORD TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName);
-  BOOL TerminalSetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes);
+  inline DWORD TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName);
+  inline BOOL TerminalSetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes);
   BOOL TerminalMoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags);
   BOOL TerminalRemoveLocalDirectory(const UnicodeString & LocalDirName);
   BOOL TerminalCreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);

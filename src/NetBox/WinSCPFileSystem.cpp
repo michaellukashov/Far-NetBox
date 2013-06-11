@@ -3162,12 +3162,12 @@ HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString & LocalFil
   return ::CreateFile(LocalFileName.c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
 }
 //------------------------------------------------------------------------------
-DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName)
+inline DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName)
 {
   return ::GetFileAttributes(LocalFileName.c_str());
 }
 //------------------------------------------------------------------------------
-BOOL TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
+inline BOOL TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
 {
   return ::SetFileAttributes(LocalFileName.c_str(), FileAttributes);
 }

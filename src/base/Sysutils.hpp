@@ -212,8 +212,8 @@ bool RenameFile(const UnicodeString & From, const UnicodeString & To);
 bool DirectoryExists(const UnicodeString & Dir);
 UnicodeString FileSearch(const UnicodeString & FileName, const UnicodeString & DirectoryList);
 
-DWORD FileGetAttr(const UnicodeString & FileName);
-DWORD FileSetAttr(const UnicodeString & FileName, DWORD LocalFileAttrs);
+inline DWORD FileGetAttr(const UnicodeString & FileName);
+inline DWORD FileSetAttr(const UnicodeString & FileName, DWORD LocalFileAttrs);
 
 bool ForceDirectories(const UnicodeString & Dir);
 bool DeleteFile(const UnicodeString & File);

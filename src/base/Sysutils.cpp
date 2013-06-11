@@ -515,13 +515,13 @@ UnicodeString FileSearch(const UnicodeString & FileName, const UnicodeString & D
   return Result;
 }
 
-DWORD FileGetAttr(const UnicodeString & FileName)
+inline DWORD FileGetAttr(const UnicodeString & FileName)
 {
   DWORD LocalFileAttrs = ::GetFileAttributes(FileName.c_str());
   return LocalFileAttrs;
 }
 
-DWORD FileSetAttr(const UnicodeString & FileName, DWORD LocalFileAttrs)
+inline DWORD FileSetAttr(const UnicodeString & FileName, DWORD LocalFileAttrs)
 {
   DWORD Result = ::SetFileAttributes(FileName.c_str(), LocalFileAttrs);
   return Result;
