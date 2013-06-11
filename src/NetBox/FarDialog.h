@@ -642,6 +642,6 @@ private:
   intptr_t FTopIndex;
 };
 //---------------------------------------------------------------------------
-TRect Rect(int Left, int Top, int Right, int Bottom);
+inline TRect Rect(int Left, int Top, int Right, int Bottom);
 //---------------------------------------------------------------------------
 #endif
