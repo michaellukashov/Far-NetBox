@@ -7,9 +7,9 @@
 
 #include "Exceptions.h"
 //---------------------------------------------------------------------------
-#define EXCEPTION throw ExtException((Exception* )NULL, UnicodeString(L""))
+#define EXCEPTION throw ExtException((Exception* )nullptr, UnicodeString(L""))
 #define THROWOSIFFALSE(C) if (!(C)) { RaiseLastOSError(); }
-#define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = NULL; delete PObj; }
+#define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
 #define ASCOPY(dest, source) \
   { \
@@ -51,7 +51,7 @@ UnicodeString DefaultStr(const UnicodeString & Str, const UnicodeString & Defaul
 UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim);
 UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
   const UnicodeString & Chs, bool Trim,
-  wchar_t * Delimiter = NULL, bool DoubleDelimiterEscapes = false);
+  wchar_t * Delimiter = nullptr, bool DoubleDelimiterEscapes = false);
 UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars);
 UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote);
 UnicodeString ExceptionLogString(Exception *E);
@@ -94,7 +94,7 @@ UnicodeString LoadStr(int Ident, intptr_t MaxLength = 0);
 UnicodeString LoadStrPart(int Ident, int Part);
 UnicodeString EscapeHotkey(const UnicodeString & Caption);
 bool CutToken(UnicodeString & Str, UnicodeString & Token,
-  UnicodeString * RawToken = NULL);
+  UnicodeString * RawToken = nullptr);
 void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter);
 bool Is2000();
 bool IsWin7();
@@ -118,7 +118,7 @@ DWORD FindCheck(DWORD Result);
 DWORD FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRec & F);
 DWORD FindNextChecked(TSearchRec & F);
 void ProcessLocalDirectory(const UnicodeString & DirName,
-  TProcessLocalFileEvent CallBackFunc, void * Param = NULL, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
+  TProcessLocalFileEvent CallBackFunc, void * Param = nullptr, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
 //---------------------------------------------------------------------------
 enum TDSTMode
 {

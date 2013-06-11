@@ -20,7 +20,7 @@ TConfiguration::TConfiguration() :
   FDontSave(false),
   FChanged(false),
   FUpdating(0),
-  FApplicationInfo(NULL),
+  FApplicationInfo(nullptr),
   FLogging(false),
   FPermanentLogging(false),
   FLogWindowLines(0),
@@ -47,13 +47,13 @@ TConfiguration::TConfiguration() :
   FDisableAcceptingHostKeys(false),
   FDefaultCollectUsage(false),
   FSessionReopenAutoMaximumNumberOfRetries(0),
-  FCriticalSection(NULL)
+  FCriticalSection(nullptr)
 {
   FCriticalSection = new TCriticalSection();
   FUpdating = 0;
   FStorage = stRegistry;
   FDontSave = false;
-  FApplicationInfo = NULL;
+  FApplicationInfo = nullptr;
   // FUsage = new TUsage(this);
   // FDefaultCollectUsage = false;
 
@@ -154,7 +154,7 @@ THierarchicalStorage * TConfiguration::CreateStorage(bool /*SessionList*/)
     Classes::Error(SNotImplemented, 3005);
   }
   assert(false);
-  return NULL;
+  return nullptr;
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
@@ -248,8 +248,8 @@ void TConfiguration::Export(const UnicodeString & /*FileName*/)
   Classes::Error(SNotImplemented, 3004);
   /*
   std::auto_ptr<THierarchicalStorage> Storage(CreateScpStorage(false));
-  std::auto_ptr<THierarchicalStorage> ExportStorage(NULL);
-  ExportStorage = NULL; // new TIniFileStorage(FileName);
+  std::auto_ptr<THierarchicalStorage> ExportStorage(nullptr);
+  ExportStorage = nullptr; // new TIniFileStorage(FileName);
   ExportStorage->SetAccessMode(smReadWrite);
   ExportStorage->SetExplicit(true);
 
@@ -780,7 +780,7 @@ UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key,
     }
   });
   {
-    if ((Info != NULL) && (GetTranslationCount(Info) > 0))
+    if ((Info != nullptr) && (GetTranslationCount(Info) > 0))
     {
       TTranslation Translation = GetTranslation(Info, 0);
       try

@@ -115,7 +115,7 @@ UnicodeString DelimitFileNameMask(const UnicodeString & Mask)
   UnicodeString Result = Mask;
   for (intptr_t I = 1; I <= Result.Length(); I++)
   {
-    if (wcschr(L"\\*?", Result[I]) != NULL)
+    if (wcschr(L"\\*?", Result[I]) != nullptr)
     {
       Result.Insert(L"\\", I);
       I++;
@@ -262,7 +262,7 @@ void TFileMasks::Init()
   FForceDirectoryMasks = -1;
   for (intptr_t Index = 0; Index < 4; ++Index)
   {
-    FMasksStr[Index] = NULL;
+    FMasksStr[Index] = nullptr;
   }
 
   DoInit(false);
@@ -276,7 +276,7 @@ void TFileMasks::DoInit(bool Delete)
     {
       delete FMasksStr[Index];
     }
-    FMasksStr[Index] = NULL;
+    FMasksStr[Index] = nullptr;
   }
 }
 //---------------------------------------------------------------------------
@@ -317,7 +317,7 @@ bool TFileMasks::MatchesMasks(const UnicodeString & FileName, bool Directory,
 
     if (Result)
     {
-      bool HasSize = (Params != NULL);
+      bool HasSize = (Params != nullptr);
 
       switch (Mask.HighSizeMask)
       {
@@ -352,7 +352,7 @@ bool TFileMasks::MatchesMasks(const UnicodeString & FileName, bool Directory,
         }
       }
 
-      bool HasModification = (Params != NULL);
+      bool HasModification = (Params != nullptr);
 
       if (Result)
       {
@@ -495,11 +495,11 @@ void TFileMasks::CreateMaskMask(const UnicodeString & Mask, intptr_t Start, intp
 {
   try
   {
-    assert(MaskMask.Mask == NULL);
+    assert(MaskMask.Mask == nullptr);
     if (Ex && IsAnyMask(Mask))
     {
       MaskMask.Kind = TMaskMask::Any;
-      MaskMask.Mask = NULL;
+      MaskMask.Mask = nullptr;
     }
     else
     {
@@ -537,9 +537,9 @@ void TFileMasks::CreateMask(
   Mask.MaskStr = MaskStr;
   Mask.UserStr = MaskStr;
   Mask.FileNameMask.Kind = TMaskMask::Any;
-  Mask.FileNameMask.Mask = NULL;
+  Mask.FileNameMask.Mask = nullptr;
   Mask.DirectoryMask.Kind = TMaskMask::Any;
-  Mask.DirectoryMask.Mask = NULL;
+  Mask.DirectoryMask.Mask = nullptr;
   Mask.HighSizeMask = TMask::None;
   Mask.LowSizeMask = TMask::None;
   Mask.HighModificationMask = TMask::None;
@@ -664,7 +664,7 @@ void TFileMasks::CreateMask(
 //---------------------------------------------------------------------------
 TStrings * TFileMasks::GetMasksStr(intptr_t Index) const
 {
-  if (FMasksStr[Index] == NULL)
+  if (FMasksStr[Index] == nullptr)
   {
     FMasksStr[Index] = new TStringList();
     TMasks::const_iterator I = FMasks[Index].begin();
@@ -681,7 +681,7 @@ TStrings * TFileMasks::GetMasksStr(intptr_t Index) const
 void TFileMasks::ReleaseMaskMask(TMaskMask & MaskMask)
 {
   delete MaskMask.Mask;
-  MaskMask.Mask = NULL;
+  MaskMask.Mask = nullptr;
 }
 //---------------------------------------------------------------------------
 void TFileMasks::TrimEx(UnicodeString & Str, intptr_t & Start, intptr_t & End)
@@ -828,7 +828,7 @@ void TCustomCommand::GetToken(
   {
     PatternCmd = TEXT_TOKEN;
     const wchar_t * NextPattern = wcschr(Ptr, L'!');
-    if (NextPattern == NULL)
+    if (NextPattern == nullptr)
     {
       Len = Command.Length() - Index + 1;
     }
@@ -911,7 +911,7 @@ void TCustomCommand::DelimitReplacement(UnicodeString & Replacement, wchar_t Quo
 //---------------------------------------------------------------------------
 void TCustomCommand::Validate(const UnicodeString & Command)
 {
-  CustomValidate(Command, NULL);
+  CustomValidate(Command, nullptr);
 }
 //---------------------------------------------------------------------------
 void TCustomCommand::CustomValidate(const UnicodeString & Command,
@@ -986,7 +986,7 @@ intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, in
       {
         const wchar_t * Ptr = Command.c_str() + Index - 1;
         const wchar_t * PatternEnd = wcschr(Ptr + 1, L'!');
-        if (PatternEnd == NULL)
+        if (PatternEnd == nullptr)
         {
           throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
         }
@@ -998,7 +998,7 @@ intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, in
       {
         const wchar_t * Ptr = Command.c_str() + Index - 1;
         const wchar_t * PatternEnd = wcschr(Ptr + 2, L'`');
-        if (PatternEnd == NULL)
+        if (PatternEnd == nullptr)
         {
           throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
         }

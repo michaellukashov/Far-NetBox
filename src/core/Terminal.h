@@ -82,7 +82,7 @@ DEFINE_CALLBACK_TYPE0(TCheckForEscEvent, bool);
 
 #define THROW_SKIP_FILE(EXCEPTION, MESSAGE) \
   throw EScpSkipFile(EXCEPTION, MESSAGE)
-#define THROW_SKIP_FILE_NULL THROW_SKIP_FILE(NULL, L"")
+#define THROW_SKIP_FILE_NULL THROW_SKIP_FILE(nullptr, L"")
 
 /* TODO : Better user interface (query to user) */
 #define FILE_OPERATION_LOOP_CUSTOM(TERMINAL, ALLOW_SKIP, MESSAGE, OPERATION) { \
@@ -224,17 +224,17 @@ public:
   TRemoteFileList * CustomReadDirectoryListing(const UnicodeString & Directory, bool UseCache);
   TRemoteFile * ReadFileListing(const UnicodeString & Path);
   void ReadFile(const UnicodeString & FileName, TRemoteFile *& AFile);
-  bool FileExists(const UnicodeString & FileName, TRemoteFile ** File = NULL);
+  bool FileExists(const UnicodeString & FileName, TRemoteFile ** File = nullptr);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& File);
   bool CopyToLocal(TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params);
   bool CopyToRemote(TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params);
   void CreateDirectory(const UnicodeString & DirName,
-    const TRemoteProperties * Properties = NULL);
+    const TRemoteProperties * Properties = nullptr);
   void CreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic);
   void DeleteFile(const UnicodeString & FileName,
-    const TRemoteFile * AFile = NULL, void * Params = NULL);
+    const TRemoteFile * AFile = nullptr, void * Params = nullptr);
   bool DeleteFiles(TStrings * FilesToDelete, intptr_t Params = 0);
   bool DeleteLocalFiles(TStrings * FileList, intptr_t Params = 0);
   bool IsRecycledFile(const UnicodeString & FileName);
@@ -265,7 +265,7 @@ public:
   bool CopyFiles(TStrings * FileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
   void CalculateFilesSize(TStrings * FileList, __int64 & Size,
-    intptr_t Params, const TCopyParamType * CopyParam = NULL, TCalculateSizeStats * Stats = NULL);
+    intptr_t Params, const TCopyParamType * CopyParam = nullptr, TCalculateSizeStats * Stats = nullptr);
   void CalculateFilesChecksum(const UnicodeString & Alg, TStrings * FileList,
     TStrings * Checksums, TCalculatedChecksumEvent OnCalculatedChecksum);
   void ClearCaches();
@@ -392,14 +392,14 @@ protected:
     const UnicodeString & FileName, bool ClearDirectoryChange = false);
   intptr_t FileOperationLoop(TFileOperationEvent CallBackFunc,
     TFileOperationProgressType * OperationProgress, bool AllowSkip,
-    const UnicodeString & Message, void * Param1 = NULL, void * Param2 = NULL);
+    const UnicodeString & Message, void * Param1 = nullptr, void * Param2 = nullptr);
   bool ProcessFiles(TStrings * FileList, TFileOperation Operation,
-    TProcessFileEvent ProcessFile, void * Param = NULL, TOperationSide Side = osRemote,
+    TProcessFileEvent ProcessFile, void * Param = nullptr, TOperationSide Side = osRemote,
     bool Ex = false);
   bool ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
-    TProcessFileEventEx ProcessFile, void * Param = NULL, TOperationSide Side = osRemote);
+    TProcessFileEventEx ProcessFile, void * Param = nullptr, TOperationSide Side = osRemote);
   void ProcessDirectory(const UnicodeString & DirName,
-    TProcessFileEvent CallBackFunc, void * Param = NULL, bool UseCache = false,
+    TProcessFileEvent CallBackFunc, void * Param = nullptr, bool UseCache = false,
     bool IgnoreErrors = false);
   void AnnounceFileListOperation();
   UnicodeString TranslateLockedPath(const UnicodeString & Path, bool Lock);
@@ -422,7 +422,7 @@ protected:
   void CalculateLocalFileSize(const UnicodeString & FileName,
     const TSearchRec & Rec, /*__int64*/ void * Params);
   void CalculateLocalFilesSize(TStrings * FileList, __int64 & Size,
-    const TCopyParamType * CopyParam = NULL);
+    const TCopyParamType * CopyParam = nullptr);
   TBatchOverwrite EffectiveBatchOverwrite(
     const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
     bool Special);
@@ -486,7 +486,7 @@ protected:
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
     const UnicodeString & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
   void RollbackAction(TSessionAction & Action,
-    TFileOperationProgressType * OperationProgress, Exception * E = NULL);
+    TFileOperationProgressType * OperationProgress, Exception * E = nullptr);
   void DoAnyCommand(const UnicodeString & Command, TCaptureOutputEvent OutputEvent,
     TCallSessionAction * Action);
   TRemoteFileList * DoReadDirectoryListing(const UnicodeString & Directory,

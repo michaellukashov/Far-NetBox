@@ -26,12 +26,12 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
 
   bool NeedFree = false;
   HMODULE Module = GetModuleHandle(FileName);
-  if (Module == NULL)
+  if (Module == nullptr)
   {
     Module = LoadLibraryEx(FileName, 0, LOAD_LIBRARY_AS_DATAFILE);
     NeedFree = true;
   }
-  if (Module == NULL)
+  if (Module == nullptr)
   {
     Len = 0;
   }
@@ -47,14 +47,14 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
     {
       HRSRC Rsrc = FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO),
         MAKEINTRESOURCE(VS_FILE_INFO));
-      if (Rsrc == NULL)
+      if (Rsrc == nullptr)
       {
       }
       else
       {
         Len = SizeofResource(Module, static_cast<HRSRC>(Rsrc));
         HANDLE Mem = LoadResource(Module, static_cast<HRSRC>(Rsrc));
-        if (Mem == NULL)
+        if (Mem == nullptr)
         {
         }
         else
@@ -74,7 +74,7 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
             }
             else
             {
-              if (Data != NULL)
+              if (Data != nullptr)
               {
                 if (DataSize < Len)
                 {
@@ -101,7 +101,7 @@ uintptr_t GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long * Ha
   if (IsWin7())
   {
     *Handle = 0;
-    Len = VERSION_GetFileVersionInfo_PE(FileName, 0, NULL);
+    Len = VERSION_GetFileVersionInfo_PE(FileName, 0, nullptr);
 
     if (Len != 0)
     {
@@ -153,7 +153,7 @@ void * CreateFileInfo(const UnicodeString & FileName)
 {
   unsigned long Handle;
   uintptr_t Size;
-  void * Result = NULL;
+  void * Result = nullptr;
 
 
   // Get file version info block size
@@ -166,7 +166,7 @@ void * CreateFileInfo(const UnicodeString & FileName)
     if (!GetFileVersionInfoFix(FileName.c_str(), Handle, Size, Result))
     {
       nb_free(Result);
-      Result = NULL;
+      Result = nullptr;
     }
   }
   else
@@ -189,7 +189,7 @@ typedef TTranslation *PTranslations;
 PVSFixedFileInfo GetFixedFileInfo(void * FileInfo)
 {
   UINT Len;
-  PVSFixedFileInfo Result = NULL;
+  PVSFixedFileInfo Result = nullptr;
   if (FileInfo && !VerQueryValue(FileInfo, L"\\", reinterpret_cast<void **>(&Result), &Len))
   {
     throw Exception(L"Fixed file info not available");
@@ -210,7 +210,7 @@ unsigned GetTranslationCount(void * FileInfo)
 // Return i-th translation in the file version info translation list
 TTranslation GetTranslation(void * FileInfo, intptr_t I)
 {
-  PTranslations P = NULL;
+  PTranslations P = nullptr;
   UINT Len;
 
   if (!VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))

@@ -48,12 +48,12 @@ public:
   void SetMask(const UnicodeString & Mask);
 
   bool Matches(const UnicodeString & FileName, bool Directory = false,
-    const UnicodeString & Path = "", const TParams * Params = NULL) const;
+    const UnicodeString & Path = "", const TParams * Params = nullptr) const;
   bool Matches(const UnicodeString & FileName, bool Directory,
     const UnicodeString & Path, const TParams * Params,
     bool & ImplicitMatch) const;
   bool Matches(const UnicodeString & FileName, bool Local, bool Directory,
-    const TParams * Params = NULL) const;
+    const TParams * Params = nullptr) const;
   bool Matches(const UnicodeString & FileName, bool Local, bool Directory,
     const TParams * Params, bool & ImplicitMatch) const;
 
@@ -73,7 +73,7 @@ private:
   {
     TMaskMask() :
       Kind(Any),
-      Mask(NULL)
+      Mask(nullptr)
     {}
     enum { Any, NoExt, Regular } Kind;
     Masks::TMask * Mask;

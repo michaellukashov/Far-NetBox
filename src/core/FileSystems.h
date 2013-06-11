@@ -48,7 +48,7 @@ struct TFileTransferData : public TObject
 {
 NB_DISABLE_COPY(TFileTransferData)
   TFileTransferData() :
-    CopyParam(NULL),
+    CopyParam(nullptr),
     Modification(0.0),
     Params(0),
     OverwriteResult(-1),
@@ -95,14 +95,14 @@ struct TOpenRemoteFileParams : public TObject
 {
   TOpenRemoteFileParams() :
     LocalFileAttrs(0),
-    OperationProgress(NULL),
-    CopyParam(NULL),
+    OperationProgress(nullptr),
+    CopyParam(nullptr),
     Params(0),
     Resume(false),
     Resuming(false),
     OverwriteMode(omOverwrite),
     DestFileSize(0),
-    FileParams(NULL),
+    FileParams(nullptr),
     Confirmed(false)
   {}
   uintptr_t LocalFileAttrs;

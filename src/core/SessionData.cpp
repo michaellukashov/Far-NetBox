@@ -54,7 +54,7 @@ static TDateTime SecToDateTime(intptr_t Sec)
 //--- TSessionData ----------------------------------------------------
 TSessionData::TSessionData(const UnicodeString & AName) :
   TNamedObject(AName),
-  FIEProxyConfig(NULL)
+  FIEProxyConfig(nullptr)
 {
   Default();
   FModified = true;
@@ -62,10 +62,10 @@ TSessionData::TSessionData(const UnicodeString & AName) :
 //---------------------------------------------------------------------
 TSessionData::~TSessionData()
 {
-  if (NULL != FIEProxyConfig)
+  if (nullptr != FIEProxyConfig)
   {
     delete FIEProxyConfig;
-    FIEProxyConfig = NULL;
+    FIEProxyConfig = nullptr;
   }
 }
 //---------------------------------------------------------------------
@@ -342,7 +342,7 @@ void TSessionData::NonPersistant()
 //---------------------------------------------------------------------
 void TSessionData::Assign(const TPersistent * Source)
 {
-  if (Source && (dynamic_cast<const TSessionData *>(Source) != NULL))
+  if (Source && (dynamic_cast<const TSessionData *>(Source) != nullptr))
   {
     TSessionData * Data = dynamic_cast<TSessionData *>(const_cast<TPersistent *>(Source));
     #define PROPERTY(P) Set ## P(Data->Get ## P())
@@ -712,7 +712,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
   if (Storage->OpenSubKey(GetInternalStorageKey(), true))
   {
     #define WRITE_DATA_EX(TYPE, NAME, PROPERTY, CONV) \
-      if ((Default != NULL) && (CONV(Default->PROPERTY) == CONV(PROPERTY))) \
+      if ((Default != nullptr) && (CONV(Default->PROPERTY) == CONV(PROPERTY))) \
       { \
         Storage->DeleteValue(NAME); \
       } \
@@ -735,7 +735,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     Storage->DeleteValue(L"PingIntervalSec"); // obsolete
     // when PingInterval is stored always store PingType not to attempt to
     // deduce PingType from PingInterval (backward compatibility with pre 3.5)
-    if (((Default != NULL) && (GetPingType() != Default->GetPingType())) ||
+    if (((Default != nullptr) && (GetPingType() != Default->GetPingType())) ||
         Storage->ValueExists(L"PingInterval"))
     {
       Storage->WriteInteger(L"PingType", GetPingType());
@@ -960,7 +960,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 {
   _di_IXMLNode TheNode = Node->ChildNodes->FindNode(Name);
   UnicodeString Result;
-  if (TheNode != NULL)
+  if (TheNode != nullptr)
   {
     Result = TheNode->Text.Trim();
   }
@@ -977,7 +977,7 @@ int TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int
 {
   _di_IXMLNode TheNode = Node->ChildNodes->FindNode(Name);
   int Result;
-  if (TheNode != NULL)
+  if (TheNode != nullptr)
   {
     Result = StrToIntDef(TheNode->Text.Trim(), Default);
   }
@@ -1189,7 +1189,7 @@ void TSessionData::Remove()
 //---------------------------------------------------------------------
 inline void MoveStr(UnicodeString & Source, UnicodeString * Dest, intptr_t Count)
 {
-  if (Dest != NULL)
+  if (Dest != nullptr)
   {
     (*Dest) += Source.SubString(1, Count);
   }
@@ -1272,7 +1272,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     MoveStr(url, MaskedUrl, 2);
   }
 
-  if (AProtocolDefined != NULL)
+  if (AProtocolDefined != nullptr)
   {
     *AProtocolDefined = ProtocolDefined;
   }
@@ -1283,7 +1283,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     // lookup stored session even if protocol was defined
     // (this allows setting for example default username for host
     // by creating stored session named by host)
-    TSessionData * Data = NULL;
+    TSessionData * Data = nullptr;
     for (Integer Index = 0; Index < StoredSessions->GetCount() + StoredSessions->GetHiddenCount(); ++Index)
     {
 
@@ -1299,7 +1299,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
 
     UnicodeString ARemoteDirectory;
 
-    if (Data != NULL)
+    if (Data != nullptr)
     {
       Assign(Data);
       intptr_t P = 1;
@@ -1318,7 +1318,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
         StoredSessions->Save(false, false);
       }
 
-      if (MaskedUrl != NULL)
+      if (MaskedUrl != nullptr)
       {
         (*MaskedUrl) += Url;
       }
@@ -1389,7 +1389,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
 
       ARemoteDirectory = url.SubString(PSlash, Url.Length() - PSlash + 1);
 
-      if (MaskedUrl != NULL)
+      if (MaskedUrl != nullptr)
       {
         (*MaskedUrl) += RawUserName;
         if (!UserInfo.IsEmpty())
@@ -1408,7 +1408,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     if (!ARemoteDirectory.IsEmpty() && (ARemoteDirectory != L"/"))
     {
       if ((ARemoteDirectory[ARemoteDirectory.Length()] != L'/') &&
-          (FileName != NULL))
+          (FileName != nullptr))
       {
         *FileName = DecodeUrlChars(UnixExtractFileName(ARemoteDirectory));
         ARemoteDirectory = UnixExtractFilePath(ARemoteDirectory);
@@ -1430,7 +1430,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     SetFSProtocol(AFSProtocol);
   }
 
-  if (Options != NULL)
+  if (Options != nullptr)
   {
     // we deliberately do keep defaultonly to false, in presence of any option,
     // as the option should not make session "connectable"
@@ -1480,7 +1480,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     if (Options->FindSwitch(L"rawsettings"))
     {
       std::auto_ptr<TStrings> RawSettings(new TStringList());
-      std::auto_ptr<TRegistryStorage> OptionsStorage(NULL);
+      std::auto_ptr<TRegistryStorage> OptionsStorage(nullptr);
       if (Options->FindSwitch(L"rawsettings", RawSettings.get()))
       {
         OptionsStorage.reset(new TRegistryStorage(GetConfiguration()->GetRegistryStorageKey()));
@@ -1625,7 +1625,7 @@ void TSessionData::SetHostName(const UnicodeString & Value)
     // remove path
     {
       intptr_t Pos = 1;
-      Value2 = CopyToChars(Value2, Pos, L"/", true, NULL, false);
+      Value2 = CopyToChars(Value2, Pos, L"/", true, nullptr, false);
     }
     // HostName is key for password encryption
     UnicodeString XPassword = GetPassword();
@@ -2034,7 +2034,7 @@ UnicodeString TSessionData::GetDefaultSessionName() const
   // remove path
   {
     intptr_t Pos = 1;
-    HostName = CopyToChars(HostName, Pos, L"/", true, NULL, false);
+    HostName = CopyToChars(HostName, Pos, L"/", true, nullptr, false);
   }
   if (!HostName.IsEmpty() && !UserName.IsEmpty())
   {
@@ -2256,7 +2256,7 @@ void TSessionData::SetProxyPassword(const UnicodeString & AValue)
 TProxyMethod TSessionData::GetSystemProxyMethod() const
 {
   PrepareProxyData();
-  if ((GetProxyMethod() == pmSystem) && (NULL != FIEProxyConfig))
+  if ((GetProxyMethod() == pmSystem) && (nullptr != FIEProxyConfig))
     return FIEProxyConfig->ProxyMethod;
   return pmNone;
 }
@@ -2264,7 +2264,7 @@ TProxyMethod TSessionData::GetSystemProxyMethod() const
 UnicodeString TSessionData::GetProxyHost() const
 {
   PrepareProxyData();
-  if ((GetProxyMethod() == pmSystem) && (NULL != FIEProxyConfig))
+  if ((GetProxyMethod() == pmSystem) && (nullptr != FIEProxyConfig))
     return FIEProxyConfig->ProxyHost;
   return FProxyHost;
 }
@@ -2272,7 +2272,7 @@ UnicodeString TSessionData::GetProxyHost() const
 intptr_t TSessionData::GetProxyPort() const
 {
   PrepareProxyData();
-  if ((GetProxyMethod() == pmSystem) && (NULL != FIEProxyConfig))
+  if ((GetProxyMethod() == pmSystem) && (nullptr != FIEProxyConfig))
     return FIEProxyConfig->ProxyPort;
   return FProxyPort;
 }
@@ -2300,7 +2300,7 @@ static void FreeIEProxyConfig(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG * IEProxyConf
 //---------------------------------------------------------------------
 void TSessionData::PrepareProxyData() const
 {
-  if ((GetProxyMethod() == pmSystem) && (NULL == FIEProxyConfig))
+  if ((GetProxyMethod() == pmSystem) && (nullptr == FIEProxyConfig))
   {
     FIEProxyConfig = new TIEProxyConfig;
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyConfig;
@@ -2312,15 +2312,15 @@ void TSessionData::PrepareProxyData() const
     else
     {
       FIEProxyConfig->AutoDetect = !!IEProxyConfig.fAutoDetect;
-      if (NULL != IEProxyConfig.lpszAutoConfigUrl)
+      if (nullptr != IEProxyConfig.lpszAutoConfigUrl)
       {
         FIEProxyConfig->AutoConfigUrl = IEProxyConfig.lpszAutoConfigUrl;
       }
-      if (NULL != IEProxyConfig.lpszProxy)
+      if (nullptr != IEProxyConfig.lpszProxy)
       {
         FIEProxyConfig->Proxy = IEProxyConfig.lpszProxy;
       }
-      if (NULL != IEProxyConfig.lpszProxyBypass)
+      if (nullptr != IEProxyConfig.lpszProxyBypass)
       {
         FIEProxyConfig->ProxyBypass = IEProxyConfig.lpszProxyBypass;
       }
@@ -2906,7 +2906,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
     }
     if (ValidName)
     {
-      TSessionData * SessionData = NULL;
+      TSessionData * SessionData = nullptr;
       if (SessionName == FDefaultSettings->GetName())
       {
         SessionData = FDefaultSettings;
@@ -3067,13 +3067,13 @@ void TStoredSessionList::ImportFromFilezilla(const UnicodeString & /*FileName*/)
 {
   Classes::Error(SNotImplemented, 3004);
 /*
-  const _di_IXMLDocument Document = interface_cast<Xmlintf::IXMLDocument>(new TXMLDocument(NULL));
+  const _di_IXMLDocument Document = interface_cast<Xmlintf::IXMLDocument>(new TXMLDocument(nullptr));
   Document->LoadFromFile(FileName);
   _di_IXMLNode FileZilla3Node = Document->ChildNodes->FindNode(L"FileZilla3");
-  if (FileZilla3Node != NULL)
+  if (FileZilla3Node != nullptr)
   {
     _di_IXMLNode ServersNode = FileZilla3Node->ChildNodes->FindNode(L"Servers");
-    if (ServersNode != NULL)
+    if (ServersNode != nullptr)
     {
       ImportLevelFromFilezilla(ServersNode, L"");
     }
@@ -3248,7 +3248,7 @@ TSessionData * TStoredSessionList::FindSame(TSessionData * Data)
   TSessionData * Result;
   if (Data->GetHidden() || Data->GetName().IsEmpty()) // || Data->GetIsWorkspace())
   {
-    Result = NULL;
+    Result = nullptr;
   }
   else
   {
@@ -3325,7 +3325,7 @@ void TStoredSessionList::ImportHostKeys(const UnicodeString & TargetKey,
     SourceStorage->GetValueNames(KeyList.get());
 
     UnicodeString HostKeyName;
-    assert(Sessions != NULL);
+    assert(Sessions != nullptr);
     for (intptr_t Index = 0; Index < Sessions->GetCount(); ++Index)
     {
       TSessionData * Session = Sessions->GetSession(Index);
@@ -3358,7 +3358,7 @@ const TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString & 
       return SessionData;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 //---------------------------------------------------------------------
@@ -3375,7 +3375,7 @@ bool TStoredSessionList::IsFolderOrWorkspace(
   const UnicodeString & Name, bool Workspace)
 {
   bool Result = false;
-  TSessionData * FirstData = NULL;
+  TSessionData * FirstData = nullptr;
   if (!Name.IsEmpty())
   {
     for (intptr_t Index = 0; !Result && (Index < GetCount()); Index++)
@@ -3390,7 +3390,7 @@ bool TStoredSessionList::IsFolderOrWorkspace(
 
   return
     Result &&
-    ALWAYS_TRUE(FirstData != NULL) &&
+    ALWAYS_TRUE(FirstData != nullptr) &&
     (FirstData->IsWorkspace() == Workspace);
 }
 //---------------------------------------------------------------------------
@@ -3411,13 +3411,13 @@ TSessionData * TStoredSessionList::CheckIsInFolderOrWorkspaceAndResolve(
   {
     Data = ResolveSessionData(Data);
 
-    if ((Data != NULL) && Data->GetCanLogin()) // &&
+    if ((Data != nullptr) && Data->GetCanLogin()) // &&
         // ALWAYS_TRUE(Data->Link.IsEmpty()))
     {
       return Data;
     }
   }
-  return NULL;
+  return nullptr;
 }
 //---------------------------------------------------------------------------
 void TStoredSessionList::GetFolderOrWorkspace(const UnicodeString & Name, TList * List)
@@ -3427,7 +3427,7 @@ void TStoredSessionList::GetFolderOrWorkspace(const UnicodeString & Name, TList 
     TSessionData * Data =
       CheckIsInFolderOrWorkspaceAndResolve(GetSession(Index), Name);
 
-    if (Data != NULL)
+    if (Data != nullptr)
     {
       TSessionData * Data2 = new TSessionData(L"");
       Data2->Assign(Data);
@@ -3446,7 +3446,7 @@ TStrings * TStoredSessionList::GetFolderOrWorkspaceList(
     TSessionData * Data =
       CheckIsInFolderOrWorkspaceAndResolve(GetSession(Index), Name);
 
-    if (Data != NULL)
+    if (Data != nullptr)
     {
       Result->Add(Data->GetSessionName());
     }
@@ -3527,7 +3527,7 @@ TSessionData * TStoredSessionList::ResolveSessionData(TSessionData * Data)
   /*if (!Data->GetLink().IsEmpty())
   {
     Data = dynamic_cast<TSessionData *>(FindByName(Data->GetLink()));
-    if (Data != NULL)
+    if (Data != nullptr)
     {
       Data = ResolveSessionData(Data);
     }
@@ -3538,7 +3538,7 @@ TSessionData * TStoredSessionList::ResolveSessionData(TSessionData * Data)
 bool TStoredSessionList::CanLogin(TSessionData * Data)
 {
   Data = ResolveSessionData(Data);
-  return (Data != NULL) && Data->GetCanLogin();
+  return (Data != nullptr) && Data->GetCanLogin();
 }
 //---------------------------------------------------------------------
 //---------------------------------------------------------------------

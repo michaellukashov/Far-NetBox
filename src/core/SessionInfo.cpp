@@ -21,7 +21,7 @@ static UnicodeString DoXmlEscape(const UnicodeString & Str, bool NewLine)
   UnicodeString Result = Str;
   for (intptr_t I = 1; I <= Result.Length(); I++)
   {
-    const wchar_t * Repl = NULL;
+    const wchar_t * Repl = nullptr;
     switch (Result[I])
     {
       case L'&':
@@ -53,7 +53,7 @@ static UnicodeString DoXmlEscape(const UnicodeString & Str, bool NewLine)
         break;
     }
 
-    if (Repl != NULL)
+    if (Repl != nullptr)
     {
       Result[I] = L'&';
       Result.Insert(Repl, I + 1);
@@ -75,14 +75,14 @@ static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
 //---------------------------------------------------------------------------
 TStrings * ExceptionToMessages(Exception * E)
 {
-  TStrings * Result = NULL;
+  TStrings * Result = nullptr;
   UnicodeString Message;
   if (ExceptionMessage(E, Message))
   {
     Result = new TStringList();
     Result->Add(Message);
     ExtException * EE = dynamic_cast<ExtException *>(E);
-    if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
+    if ((EE != nullptr) && (EE->GetMoreMessages() != nullptr))
     {
       Result->AddStrings(EE->GetMoreMessages());
     }
@@ -100,11 +100,11 @@ public:
     FAction(Action),
     FState(Opened),
     FRecursive(false),
-    FErrorMessages(NULL),
+    FErrorMessages(nullptr),
     FNames(new TStringList()),
     FValues(new TStringList()),
-    FFileList(NULL),
-    FFile(NULL)
+    FFileList(nullptr),
+    FFile(nullptr)
   {
     FLog->AddPendingAction(this);
   }
@@ -123,11 +123,11 @@ public:
     FState = Opened;
     FRecursive = false;
     delete FErrorMessages;
-    FErrorMessages = NULL;
+    FErrorMessages = nullptr;
     delete FFileList;
-    FFileList = NULL;
+    FFileList = nullptr;
     delete FFile;
-    FFile = NULL;
+    FFile = nullptr;
     FNames->Clear();
     FValues->Clear();
   }
@@ -159,7 +159,7 @@ public:
               FNames->GetString(Index).c_str(), XmlAttributeEscape(Value).c_str()));
           }
         }
-        if (FFileList != NULL)
+        if (FFileList != nullptr)
         {
           FLog->AddIndented(L"  <files>");
           for (intptr_t Index = 0; Index < FFileList->GetCount(); ++Index)
@@ -179,7 +179,7 @@ public:
           }
           FLog->AddIndented(L"  </files>");
         }
-        if (FFile != NULL)
+        if (FFile != nullptr)
         {
           FLog->AddIndented(L"  <file>");
           FLog->AddIndented(FORMAT(L"    <type value=\"%s\" />", XmlAttributeEscape(FFile->GetType()).c_str()));
@@ -193,7 +193,7 @@ public:
         }
         if (FState == RolledBack)
         {
-          if (FErrorMessages != NULL)
+          if (FErrorMessages != nullptr)
           {
             FLog->AddIndented(L"  <result success=\"false\">");
             FLog->AddMessages(L"    ", FErrorMessages);
@@ -222,7 +222,7 @@ public:
 
   void Rollback(Exception * E)
   {
-    assert(FErrorMessages == NULL);
+    assert(FErrorMessages == nullptr);
     FErrorMessages = ExceptionToMessages(E);
     Close(RolledBack);
   }
@@ -278,7 +278,7 @@ public:
 
   void FileList(TRemoteFileList * FileList)
   {
-    if (FFileList == NULL)
+    if (FFileList == nullptr)
     {
       FFileList = new TRemoteFileList();
     }
@@ -287,7 +287,7 @@ public:
 
   void File(TRemoteFile * File)
   {
-    if (FFile != NULL)
+    if (FFile != nullptr)
     {
       delete FFile;
     }
@@ -350,13 +350,13 @@ TSessionAction::TSessionAction(TActionLog *Log, TLogAction Action)
   }
   else
   {
-    FRecord = NULL;
+    FRecord = nullptr;
   }
 }
 //---------------------------------------------------------------------------
 TSessionAction::~TSessionAction()
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     Commit();
   }
@@ -364,7 +364,7 @@ TSessionAction::~TSessionAction()
 //---------------------------------------------------------------------------
 void TSessionAction::Restart()
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Restart();
   }
@@ -372,30 +372,30 @@ void TSessionAction::Restart()
 //---------------------------------------------------------------------------
 void TSessionAction::Commit()
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     TSessionActionRecord * Record = FRecord;
-    FRecord = NULL;
+    FRecord = nullptr;
     Record->Commit();
   }
 }
 //---------------------------------------------------------------------------
 void TSessionAction::Rollback(Exception * E)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     TSessionActionRecord * Record = FRecord;
-    FRecord = NULL;
+    FRecord = nullptr;
     Record->Rollback(E);
   }
 }
 //---------------------------------------------------------------------------
 void TSessionAction::Cancel()
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     TSessionActionRecord * Record = FRecord;
-    FRecord = NULL;
+    FRecord = nullptr;
     Record->Cancel();
   }
 }
@@ -415,7 +415,7 @@ TFileSessionAction::TFileSessionAction(
 //---------------------------------------------------------------------------
 void TFileSessionAction::FileName(const UnicodeString & FileName)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->FileName(FileName);
   }
@@ -436,7 +436,7 @@ TFileLocationSessionAction::TFileLocationSessionAction(
 //---------------------------------------------------------------------------
 void TFileLocationSessionAction::Destination(const UnicodeString & Destination)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Destination(Destination);
   }
@@ -463,7 +463,7 @@ TChmodSessionAction::TChmodSessionAction(
 //---------------------------------------------------------------------------
 void TChmodSessionAction::Recursive()
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Recursive();
   }
@@ -478,7 +478,7 @@ TChmodSessionAction::TChmodSessionAction(
 //---------------------------------------------------------------------------
 void TChmodSessionAction::Rights(const TRights & Rights)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Rights(Rights);
   }
@@ -488,7 +488,7 @@ TTouchSessionAction::TTouchSessionAction(
     TActionLog * Log, const UnicodeString & FileName, const TDateTime & Modification) :
   TFileSessionAction(Log, laTouch, FileName)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Modification(Modification);
   }
@@ -508,7 +508,7 @@ TRmSessionAction::TRmSessionAction(
 //---------------------------------------------------------------------------
 void TRmSessionAction::Recursive()
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Recursive();
   }
@@ -525,7 +525,7 @@ TCallSessionAction::TCallSessionAction(TActionLog * Log,
     const UnicodeString & Command, const UnicodeString & Destination) :
   TSessionAction(Log, laCall)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Command(Command);
     FRecord->Destination(Destination);
@@ -534,7 +534,7 @@ TCallSessionAction::TCallSessionAction(TActionLog * Log,
 //---------------------------------------------------------------------------
 void TCallSessionAction::AddOutput(const UnicodeString & Output, bool StdError)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->AddOutput(Output, StdError);
   }
@@ -544,7 +544,7 @@ TLsSessionAction::TLsSessionAction(TActionLog * Log,
     const UnicodeString & Destination) :
   TSessionAction(Log, laLs)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Destination(Destination);
   }
@@ -552,7 +552,7 @@ TLsSessionAction::TLsSessionAction(TActionLog * Log,
 //---------------------------------------------------------------------------
 void TLsSessionAction::FileList(TRemoteFileList * FileList)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->FileList(FileList);
   }
@@ -566,7 +566,7 @@ TStatSessionAction::TStatSessionAction(TActionLog * Log, const UnicodeString & F
 //---------------------------------------------------------------------------
 void TStatSessionAction::File(TRemoteFile * File)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->File(File);
   }
@@ -591,9 +591,9 @@ FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * SessionData, b
   // Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
   Result = _fsopen(W2MB(ANewFileName.c_str()).c_str(),
     Append ? "a" : "w", SH_DENYWR); // _SH_DENYNO); // 
-  if (Result != NULL)
+  if (Result != nullptr)
   {
-    setvbuf(Result, NULL, _IONBF, BUFSIZ);
+    setvbuf(Result, nullptr, _IONBF, BUFSIZ);
     NewFileName = ANewFileName;
   }
   else
@@ -612,10 +612,10 @@ TSessionLog::TSessionLog(TSessionUI* UI, TSessionData * SessionData,
   FCriticalSection = new TCriticalSection();
   FLogging = false;
   FConfiguration = Configuration;
-  FParent = NULL;
+  FParent = nullptr;
   FUI = UI;
   FSessionData = SessionData;
-  FFile = NULL;
+  FFile = nullptr;
   FLoggedLines = 0;
   FTopIndex = -1;
   FCurrentLogFileName = L"";
@@ -627,7 +627,7 @@ TSessionLog::~TSessionLog()
 {
   FClosed = true;
   ReflectSettings();
-  assert(FFile == NULL);
+  assert(FFile == nullptr);
   delete FCriticalSection;
 }
 //---------------------------------------------------------------------------
@@ -643,7 +643,7 @@ void TSessionLog::Unlock()
 //---------------------------------------------------------------------------
 UnicodeString TSessionLog::GetSessionName()
 {
-  assert(FSessionData != NULL);
+  assert(FSessionData != nullptr);
   return FSessionData->GetSessionName();
 }
 //---------------------------------------------------------------------------
@@ -659,7 +659,7 @@ TLogLineType TSessionLog::GetType(intptr_t Index)
 //---------------------------------------------------------------------------
 void TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString & Line)
 {
-  assert(FParent != NULL);
+  assert(FParent != nullptr);
   FParent->Add(Type, Line);
 }
 //---------------------------------------------------------------------------
@@ -676,12 +676,12 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
 
   if (LogToFile())
   {
-    if (FFile == NULL)
+    if (FFile == nullptr)
     {
       OpenLogFile();
     }
 
-    if (FFile != NULL)
+    if (FFile != nullptr)
     {
 #if defined(__BORLANDC__)
       UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
@@ -726,7 +726,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
   {
     try
     {
-      if (FParent != NULL)
+      if (FParent != nullptr)
       {
         DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToParent, this));
       }
@@ -765,7 +765,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
 //---------------------------------------------------------------------------
 void TSessionLog::AddException(Exception * E)
 {
-  if (E != NULL)
+  if (E != nullptr)
   {
     Add(llException, ExceptionLogString(E));
   }
@@ -777,7 +777,7 @@ void TSessionLog::ReflectSettings()
 
   bool ALogging =
     !FClosed &&
-    ((FParent != NULL) || FConfiguration->GetLogging());
+    ((FParent != nullptr) || FConfiguration->GetLogging());
 
   if (FLogging != ALogging)
   {
@@ -786,7 +786,7 @@ void TSessionLog::ReflectSettings()
   }
 
   // if logging to file was turned off or log file was changed -> close current log file
-  if ((FFile != NULL) &&
+  if ((FFile != nullptr) &&
       (!LogToFile() || (FCurrentLogFileName != FConfiguration->GetLogFileName())))
   {
     CloseLogFile();
@@ -797,15 +797,15 @@ void TSessionLog::ReflectSettings()
 //---------------------------------------------------------------------------
 bool TSessionLog::LogToFile()
 {
-  return GetLogging() && FConfiguration->GetLogToFile() && (FParent == NULL);
+  return GetLogging() && FConfiguration->GetLogToFile() && (FParent == nullptr);
 }
 //---------------------------------------------------------------------------
 void TSessionLog::CloseLogFile()
 {
-  if (FFile != NULL)
+  if (FFile != nullptr)
   {
     fclose(static_cast<FILE *>(FFile));
-    FFile = NULL;
+    FFile = nullptr;
   }
   FCurrentLogFileName = L"";
   FCurrentFileName = L"";
@@ -816,8 +816,8 @@ void TSessionLog::OpenLogFile()
 {
   try
   {
-    assert(FFile == NULL);
-    assert(FConfiguration != NULL);
+    assert(FFile == nullptr);
+    assert(FConfiguration != nullptr);
     FCurrentLogFileName = FConfiguration->GetLogFileName();
     FFile = OpenFile(FCurrentLogFileName, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
   }
@@ -842,7 +842,7 @@ void TSessionLog::OpenLogFile()
 //---------------------------------------------------------------------------
 void TSessionLog::StateChange()
 {
-  if (FOnStateChange != NULL)
+  if (FOnStateChange != nullptr)
   {
     FOnStateChange(this);
   }
@@ -856,7 +856,7 @@ void TSessionLog::DeleteUnnecessary()
     EndUpdate();
   });
   {
-    if (!GetLogging() || (FParent != NULL))
+    if (!GetLogging() || (FParent != nullptr))
     {
       Clear();
     }
@@ -883,10 +883,10 @@ void TSessionLog::AddStartupInfo()
 //---------------------------------------------------------------------------
 void TSessionLog::AddStartupInfo(bool System)
 {
-  TSessionData * Data = (System ? NULL : FSessionData);
+  TSessionData * Data = (System ? nullptr : FSessionData);
   if (GetLogging())
   {
-    if (FParent != NULL)
+    if (FParent != nullptr)
     {
       // do not add session info for secondary session
       // (this should better be handled in the TSecondaryTerminal)
@@ -910,7 +910,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
   });
   {
     #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
-    if (Data == NULL)
+    if (Data == nullptr)
     {
       AddSeparator();
       ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
@@ -923,10 +923,10 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         typedef BOOL (WINAPI * TGetUserNameEx)(EXTENDED_NAME_FORMAT NameFormat, LPWSTR lpNameBuffer, PULONG nSize);
         HINSTANCE Secur32 = LoadLibrary(L"secur32.dll");
         TGetUserNameEx GetUserNameEx =
-          (Secur32 != NULL) ? reinterpret_cast<TGetUserNameEx>(GetProcAddress(Secur32, "GetUserNameExW")) : NULL;
+          (Secur32 != nullptr) ? reinterpret_cast<TGetUserNameEx>(GetProcAddress(Secur32, "GetUserNameExW")) : nullptr;
         wchar_t UserName[UNLEN + 1];
         unsigned long UserNameSize = LENOF(UserName);
-        if ((GetUserNameEx == NULL) || !GetUserNameEx(NameSamCompatible, (LPWSTR)UserName, &UserNameSize))
+        if ((GetUserNameEx == nullptr) || !GetUserNameEx(NameSamCompatible, (LPWSTR)UserName, &UserNameSize))
         {
           wcscpy(UserName, L"<Failed to retrieve username>");
         }
@@ -1113,8 +1113,8 @@ intptr_t TSessionLog::GetBottomIndex()
 //---------------------------------------------------------------------------
 bool TSessionLog::GetLoggingToFile()
 {
-  assert((FFile == NULL) || LogToFile());
-  return (FFile != NULL);
+  assert((FFile == nullptr) || LogToFile());
+  return (FFile != nullptr);
 }
 //---------------------------------------------------------------------------
 void TSessionLog::Clear()
@@ -1193,7 +1193,7 @@ TActionLog::TActionLog(TSessionUI* UI, TSessionData * SessionData,
   FConfiguration = Configuration;
   FUI = UI;
   FSessionData = SessionData;
-  FFile = NULL;
+  FFile = nullptr;
   FCurrentLogFileName = L"";
   FCurrentFileName = L"";
   FLogging = false;
@@ -1210,7 +1210,7 @@ TActionLog::~TActionLog()
   delete FPendingActions;
   FClosed = true;
   ReflectSettings();
-  assert(FFile == NULL);
+  assert(FFile == nullptr);
   delete FCriticalSection;
 }
 //---------------------------------------------------------------------------
@@ -1222,12 +1222,12 @@ void TActionLog::Add(const UnicodeString & Line)
     try
     {
       TGuard Guard(FCriticalSection);
-      if (FFile == NULL)
+      if (FFile == nullptr)
       {
         OpenLogFile();
       }
 
-      if (FFile != NULL)
+      if (FFile != nullptr)
       {
         UTF8String UtfLine = UTF8String(Line);
         fwrite(UtfLine.c_str(), 1, UtfLine.Length(), (FILE *)FFile);
@@ -1265,7 +1265,7 @@ void TActionLog::AddFailure(TStrings * Messages)
 void TActionLog::AddFailure(Exception * E)
 {
   std::auto_ptr<TStrings> Messages(ExceptionToMessages(E));
-  if (Messages.get() != NULL)
+  if (Messages.get() != nullptr)
   {
     AddFailure(Messages.get());
   }
@@ -1301,7 +1301,7 @@ void TActionLog::ReflectSettings()
       EndGroup();
     }
     // do not try to close the file, if it has not been opened, to avoid recursion
-    if (FFile != NULL)
+    if (FFile != nullptr)
     {
       Add(L"</session>");
     }
@@ -1313,10 +1313,10 @@ void TActionLog::ReflectSettings()
 //---------------------------------------------------------------------------
 void TActionLog::CloseLogFile()
 {
-  if (FFile != NULL)
+  if (FFile != nullptr)
   {
     fclose((FILE *)FFile);
-    FFile = NULL;
+    FFile = nullptr;
   }
   FCurrentLogFileName = L"";
   FCurrentFileName = L"";
@@ -1326,8 +1326,8 @@ void TActionLog::OpenLogFile()
 {
   try
   {
-    assert(FFile == NULL);
-    assert(FConfiguration != NULL);
+    assert(FFile == nullptr);
+    assert(FConfiguration != nullptr);
     FCurrentLogFileName = FConfiguration->GetActionsLogFileName();
     FFile = OpenFile(FCurrentLogFileName, FSessionData, false, FCurrentFileName);
   }
@@ -1380,7 +1380,7 @@ void TActionLog::EndGroup()
   FIndent = L"  ";
   // this is called from ReflectSettings that in turn is called when logging fails,
   // so do not try to close the group, if it has not been opened, to avoid recursion
-  if (FFile != NULL)
+  if (FFile != nullptr)
   {
     AddIndented("</group>");
   }

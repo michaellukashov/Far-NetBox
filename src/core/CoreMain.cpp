@@ -15,12 +15,12 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-TStoredSessionList * StoredSessions = NULL;
+TStoredSessionList * StoredSessions = nullptr;
 //---------------------------------------------------------------------------
 TConfiguration * GetConfiguration()
 {
-  static TConfiguration * Configuration = NULL;
-  if (Configuration == NULL)
+  static TConfiguration * Configuration = nullptr;
+  if (Configuration == nullptr)
   {
     // configuration needs to be created and loaded before putty is initialized,
     // so that random seed path is known
@@ -53,17 +53,17 @@ void DeleteConfiguration()
 TQueryButtonAlias::TQueryButtonAlias() :
   Button(0)
 {
-  OnClick = NULL;
+  OnClick = nullptr;
   GroupWith = -1;
 }
 //---------------------------------------------------------------------------
 TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString & AHelpKeyword)
 {
   Params = AParams;
-  Aliases = NULL;
+  Aliases = nullptr;
   AliasesCount = 0;
   Timer = 0;
-  TimerEvent = NULL;
+  TimerEvent = nullptr;
   TimerMessage = L"";
   TimerAnswers = 0;
   Timeout = 0;

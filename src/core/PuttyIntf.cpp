@@ -58,7 +58,7 @@ void DontSaveRandomSeed()
 //---------------------------------------------------------------------------
 extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
 {
-  void * frontend = NULL;
+  void * frontend = nullptr;
 
   if (!is_ssh(plug) && !is_pfwd(plug))
   {
@@ -87,7 +87,7 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
     SecureShell->UpdatePortFwdSocket(skt, startup != 0);
   }
 
-  return NULL;
+  return nullptr;
 }
 //---------------------------------------------------------------------------
 int from_backend(void * frontend, int is_stderr, const char * data, int datalen)
@@ -115,9 +115,9 @@ int from_backend_untrusted(void * /*frontend*/, const char * /*data*/, int /*len
 //---------------------------------------------------------------------------
 int GetUserpassInput(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
 {
-  assert(p != NULL);
+  assert(p != nullptr);
   TSecureShell * SecureShell = reinterpret_cast<TSecureShell *>(p->frontend);
-  assert(SecureShell != NULL);
+  assert(SecureShell != nullptr);
 
   int Result;
   std::auto_ptr<TStrings> Prompts(new TStringList());
@@ -163,13 +163,13 @@ char * get_ttymode(void * /*frontend*/, const char * /*mode*/)
 {
   // should never happen when Config.nopty == TRUE
   assert(false);
-  return NULL;
+  return nullptr;
 }
 //---------------------------------------------------------------------------
 void logevent(void * frontend, const char * string)
 {
-  // Frontend maybe NULL here
-  if (frontend != NULL)
+  // Frontend maybe nullptr here
+  if (frontend != nullptr)
   {
     (static_cast<TSecureShell *>(frontend))->PuttyLogEvent(string);
   }
@@ -184,7 +184,7 @@ void connection_fatal(void * frontend, char * fmt, ...)
   Buf[LENOF(Buf) - 1] = '\0'; \
   va_end(Param);
 
-  assert(frontend != NULL);
+  assert(frontend != nullptr);
   (static_cast<TSecureShell *>(frontend))->PuttyFatalError(UnicodeString(Buf));
 }
 //---------------------------------------------------------------------------
@@ -192,7 +192,7 @@ int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
   char * keystr, char * fingerprint, void (* /*callback*/)(void * ctx, int result),
   void * /*ctx*/)
 {
-  assert(frontend != NULL);
+  assert(frontend != nullptr);
   (static_cast<TSecureShell *>(frontend))->VerifyHostKey(UnicodeString(host), port, keytype, keystr, fingerprint);
 
   // We should return 0 when key was not confirmed, we throw exception instead.
@@ -202,7 +202,7 @@ int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
 int askalg(void * frontend, const char * algtype, const char * algname,
   void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
-  assert(frontend != NULL);
+  assert(frontend != nullptr);
   (static_cast<TSecureShell *>(frontend))->AskAlg(algtype, algname);
 
   // We should return 0 when alg was not confirmed, we throw exception instead.
@@ -230,7 +230,7 @@ static void SSHFatalError(const char * Format, va_list Param)
   // Only few calls from putty\winnet.c might be connected with specific
   // TSecureShell. Otherwise called only for really fatal errors
   // like 'out of memory' from putty\ssh.c.
-  throw ESshFatal(NULL, Buf);
+  throw ESshFatal(nullptr, Buf);
 }
 //---------------------------------------------------------------------------
 void fatalbox(char * fmt, ...)
@@ -251,7 +251,7 @@ void modalfatalbox(char * fmt, ...)
 //---------------------------------------------------------------------------
 void CleanupExit(int /*code*/)
 {
-  throw ESshFatal(NULL, "");
+  throw ESshFatal(nullptr, "");
 }
 //---------------------------------------------------------------------------
 void cleanup_exit(int code)
@@ -269,7 +269,7 @@ int askappend(void * /*frontend*/, Filename /*filename*/,
 //---------------------------------------------------------------------------
 void ldisc_send(void * /*handle*/, char * /*buf*/, int len, int /*interactive*/)
 {
-  // This is only here because of the calls to ldisc_send(NULL,
+  // This is only here because of the calls to ldisc_send(nullptr,
   // 0) in ssh.c. Nothing in PSCP actually needs to use the ldisc
   // as an ldisc. So if we get called with any real data, I want
   // to know about it.
@@ -306,7 +306,7 @@ void expire_timer_context(void * /*ctx*/)
 //---------------------------------------------------------------------------
 Pinger pinger_new(Config * /*cfg*/, Backend * /*back*/, void * /*backhandle*/)
 {
-  return NULL;
+  return nullptr;
 }
 //---------------------------------------------------------------------------
 void pinger_reconfig(Pinger /*pinger*/, Config * /*oldcfg*/, Config * /*newcfg*/)
@@ -346,7 +346,7 @@ int get_remote_username(Config * cfg, char *user, size_t len)
 static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool CanCreate)
 {
   long R;
-  assert(GetConfiguration() != NULL);
+  assert(GetConfiguration() != nullptr);
 
   assert(Key == HKEY_CURRENT_USER);
   USEDPARAM(Key);
@@ -363,7 +363,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
 
   if (RegKey.IsEmpty())
   {
-    *Result = static_cast<HKEY>(NULL);
+    *Result = static_cast<HKEY>(nullptr);
     R = ERROR_SUCCESS;
   }
   else
@@ -401,11 +401,11 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
   unsigned long * Type, unsigned char * Data, unsigned long * DataSize)
 {
   long R;
-  assert(GetConfiguration() != NULL);
+  assert(GetConfiguration() != nullptr);
 
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
   AnsiString Value;
-  if (Storage == NULL)
+  if (Storage == nullptr)
   {
     if (UnicodeString(ValueName) == L"RandSeedFile")
     {
@@ -433,7 +433,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
 
   if (R == ERROR_SUCCESS)
   {
-    assert(Type != NULL);
+    assert(Type != nullptr);
     *Type = REG_SZ;
     char * DataStr = reinterpret_cast<char *>(Data);
     strncpy(DataStr, Value.c_str(), static_cast<size_t>(*DataSize));
@@ -447,13 +447,13 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
 long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*Reserved*/,
   unsigned long Type, const unsigned char * Data, unsigned long DataSize)
 {
-  assert(GetConfiguration() != NULL);
+  assert(GetConfiguration() != nullptr);
 
   assert(Type == REG_SZ);
   USEDPARAM(Type);
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
-  assert(Storage != NULL);
-  if (Storage != NULL)
+  assert(Storage != nullptr);
+  if (Storage != nullptr)
   {
     UnicodeString Value(reinterpret_cast<const char*>(Data), DataSize - 1);
     Storage->WriteStringRaw(ValueName, Value);
@@ -464,10 +464,10 @@ long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*R
 //---------------------------------------------------------------------------
 long reg_close_winscp_key(HKEY Key)
 {
-  assert(GetConfiguration() != NULL);
+  assert(GetConfiguration() != nullptr);
 
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
-  if (Storage != NULL)
+  if (Storage != nullptr)
   {
     delete Storage;
   }

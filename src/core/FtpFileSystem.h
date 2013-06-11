@@ -111,8 +111,8 @@ protected:
   void PoolForFatalNonCommandReply();
   void GotNonCommandReply(uintptr_t Reply);
   void GotReply(uintptr_t Reply, uintptr_t Flags = 0,
-    const UnicodeString & Error = L"", uintptr_t *Code = NULL,
-    TStrings ** Response = NULL);
+    const UnicodeString & Error = L"", uintptr_t *Code = nullptr,
+    TStrings ** Response = nullptr);
   void ResetReply();
   void HandleReplyStatus(const UnicodeString & Response);
   void DoWaitForReply(uintptr_t &ReplyToAwait, bool WantLastCode);

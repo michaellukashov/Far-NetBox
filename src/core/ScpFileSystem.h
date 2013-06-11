@@ -102,13 +102,13 @@ private:
   void ExecCommand(const UnicodeString & Cmd, intptr_t Params,
     const UnicodeString & CmdString);
 #if defined(__BORLANDC__)
-  void ExecCommand(TFSCommand Cmd, const TVarRec * args = NULL,
+  void ExecCommand(TFSCommand Cmd, const TVarRec * args = nullptr,
     int size = 0, intptr_t Params = -1);
 #else
   void ExecCommand2(TFSCommand Cmd, intptr_t Params, ...);
 #endif
-  void ReadCommandOutput(intptr_t Params, const UnicodeString * Cmd = NULL);
-  void SCPResponse(bool * GotLastLine = NULL);
+  void ReadCommandOutput(intptr_t Params, const UnicodeString * Cmd = nullptr);
+  void SCPResponse(bool * GotLastLine = nullptr);
   void SCPDirectorySource(const UnicodeString & DirectoryName,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, intptr_t Level);
@@ -128,7 +128,7 @@ private:
   void SkipStartupMessage();
   void UnsetNationalVars();
   TRemoteFile * CreateRemoteFile(const UnicodeString & ListingStr,
-    TRemoteFile * LinkedByFile = NULL);
+    TRemoteFile * LinkedByFile = nullptr);
   void CaptureOutput(const UnicodeString & AddedLine, bool StdError);
   void ChangeFileToken(const UnicodeString & DelimitedName,
     const TRemoteToken & Token, TFSCommand Cmd, const UnicodeString & RecursiveStr);

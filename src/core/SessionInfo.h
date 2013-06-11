@@ -93,7 +93,7 @@ public:
   void Restart();
 
   void Commit();
-  void Rollback(Exception * E = NULL);
+  void Rollback(Exception * E = nullptr);
   void Cancel();
 
 protected:

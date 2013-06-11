@@ -128,7 +128,7 @@ public:
   explicit TSuspendFileOperationProgress(TFileOperationProgressType * OperationProgress)
   {
     FOperationProgress = OperationProgress;
-    if (FOperationProgress != NULL)
+    if (FOperationProgress != nullptr)
     {
       FOperationProgress->Suspend();
     }
@@ -136,7 +136,7 @@ public:
 
   virtual ~TSuspendFileOperationProgress()
   {
-    if (FOperationProgress != NULL)
+    if (FOperationProgress != nullptr)
     {
       FOperationProgress->Resume();
     }

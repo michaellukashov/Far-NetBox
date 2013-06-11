@@ -237,7 +237,7 @@ public:
   void Load(THierarchicalStorage * Storage);
   // void ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path);
   void Save(THierarchicalStorage * Storage, bool PuttyExport,
-    const TSessionData * Default = NULL);
+    const TSessionData * Default = nullptr);
   void SaveRecryptedPasswords(THierarchicalStorage * Storage);
   void RecryptPasswords();
   bool HasAnyPassword() const;
@@ -537,7 +537,7 @@ public:
   bool IsFolder(const UnicodeString & Name);
   bool IsWorkspace(const UnicodeString & Name);
   TSessionData * ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
-    UnicodeString * FileName = NULL, bool * ProtocolDefined = NULL, UnicodeString * MaskedUrl = NULL);
+    UnicodeString * FileName = nullptr, bool * ProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr);
   bool CanLogin(TSessionData * Data);
   void GetFolderOrWorkspace(const UnicodeString & Name, TList * List);
   TStrings * GetFolderOrWorkspaceList(const UnicodeString & Name);
