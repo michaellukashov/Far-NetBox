@@ -2665,9 +2665,9 @@ UnicodeString TFarPanelInfo::GetCurrentDirectory() const
 {
   UnicodeString Result = L"";
   intptr_t Size = FarPlugin->FarControl(FCTL_GETPANELDIR,
-                                      0,
-                                      NULL,
-                                      FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
+    0,
+    0,
+    FOwner != nullptr ? PANEL_ACTIVE : PANEL_PASSIVE);
   if (Size)
   {
     Result.SetLength(Size);
