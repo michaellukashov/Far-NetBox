@@ -515,9 +515,9 @@ BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
   ::DeleteFile(FileName);
   std::string str = "test string";
   {
-    unsigned int CreateAttr = FILE_ATTRIBUTE_NORMAL;
+    unsigned int CreateAttrs = FILE_ATTRIBUTE_NORMAL;
     HANDLE File = ::CreateFile(FileName.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
-                               NULL, CREATE_ALWAYS, CreateAttr, 0);
+                               NULL, CREATE_ALWAYS, CreateAttrs, 0);
     BOOST_CHECK(File != 0);
     TStream * FileStream = new TSafeHandleStream(File);
     TFileBuffer * BlockBuf = new TFileBuffer();

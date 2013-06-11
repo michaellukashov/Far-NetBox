@@ -67,9 +67,9 @@ bool TXmlStorage::ReadXml()
   const char * Value = xmlRoot->Value();
   if (!Value) return false;
   if (strcmp(Value, CONST_ROOT_NODE) != 0) return false;
-  const char * attr = xmlRoot->Attribute(CONST_VERSION_ATTR);
-  if (!attr) return false;
-  uintptr_t Version = StrToVersionNumber(UnicodeString(attr));
+  const char * Attr = xmlRoot->Attribute(CONST_VERSION_ATTR);
+  if (!Attr) return false;
+  uintptr_t Version = StrToVersionNumber(UnicodeString(Attr));
   if (Version < MAKEVERSIONNUMBER(2,0,0)) return false;
   tinyxml2::XMLElement * Element = xmlRoot->FirstChildElement(ToStdString(FStoredSessionsSubKey).c_str());
   if (Element != NULL)
