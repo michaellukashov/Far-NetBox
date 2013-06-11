@@ -13295,7 +13295,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
           DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
           if (FLAGCLEAR(LocalFileAttrs, faDirectory))
           {
-            EXCEPTION;
+            ThrowExtException();
           }
         );
 
@@ -13373,7 +13373,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
         LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
         if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, faDirectory))
         {
-          EXCEPTION;
+          ThrowExtException();
         }
       );
 

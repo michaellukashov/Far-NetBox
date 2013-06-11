@@ -372,7 +372,7 @@ static wchar_t * ReplaceChar(
     // currently we do not support unicode chars replacement
     if (FileName[Index] > 0xFF)
     {
-      EXCEPTION;
+      ThrowExtException();
     }
 
     FileName.Insert(ByteToHex(static_cast<unsigned char>(FileName[Index])), Index + 1);

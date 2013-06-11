@@ -2512,7 +2512,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                       // FALLTHROUGH
                     case qaNo:
                       SkipConfirmed = true;
-                      EXCEPTION;
+                      ThrowExtException();
                   }
                 }
 
@@ -2522,7 +2522,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                        &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
                 {
                   SkipConfirmed = true;
-                  EXCEPTION;
+                  ThrowExtException();
                 }
 
                 FileStream.reset(new TSafeHandleStream(LocalFileHandle));
