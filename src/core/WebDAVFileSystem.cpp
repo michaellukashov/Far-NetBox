@@ -13710,36 +13710,36 @@ void TWebDAVFileSystem::FileTransfer(const UnicodeString & FileName,
   }
 }
 //------------------------------------------------------------------------------
-bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t * path, int & responseCode)
+bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t * Path, int & ResponseCode)
 {
-  assert(path);
+  assert(Path);
 
   assert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = 0;
   const char * remote_path = nullptr;
-  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(path).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Path).c_str(), pool);
   if (err) return false;
   err = webdav::client_send_propfind_request(
     FSession,
     remote_path,
-    &responseCode,
+    &ResponseCode,
     pool);
 
   webdav_pool_destroy(pool);
   return err == WEBDAV_NO_ERROR;
 }
 //------------------------------------------------------------------------------
-bool TWebDAVFileSystem::WebDAVCheckExisting(const wchar_t * path, int & is_dir)
+bool TWebDAVFileSystem::WebDAVCheckExisting(const wchar_t * Path, int & IsDir)
 {
-  assert(path);
-  is_dir = 0;
+  assert(Path);
+  IsDir = 0;
   assert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = 0;
   webdav::node_kind_t kind = webdav::node_none;
   const char * remote_path = nullptr;
-  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(path).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Path).c_str(), pool);
   if (err) return false;
   err = webdav::client_check_path(
     FSession,
@@ -13748,20 +13748,20 @@ bool TWebDAVFileSystem::WebDAVCheckExisting(const wchar_t * path, int & is_dir)
     pool);
 
   if (kind != webdav::node_none)
-    is_dir = kind == webdav::node_dir;
+    IsDir = kind == webdav::node_dir;
   webdav_pool_destroy(pool);
   return (err == WEBDAV_NO_ERROR) && (kind != webdav::node_none);
 }
 //------------------------------------------------------------------------------
-bool TWebDAVFileSystem::WebDAVMakeDirectory(const wchar_t * path)
+bool TWebDAVFileSystem::WebDAVMakeDirectory(const wchar_t * Path)
 {
-  assert(path);
+  assert(Path);
 
   assert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = 0;
   const char * remote_path = nullptr;
-  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(path).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Path).c_str(), pool);
   if (err) return false;
   err = webdav::client_make_directory(
     FSession,
@@ -13802,17 +13802,17 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString & Directory)
 }
 //------------------------------------------------------------------------------
 bool TWebDAVFileSystem::WebDAVGetFile(
-  const wchar_t * remotePath,
+  const wchar_t * RemotePath,
   HANDLE * LocalFileHandle)
 {
-  assert(remotePath && *remotePath);
+  assert(RemotePath && *RemotePath);
   assert(LocalFileHandle);
 
   assert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = 0;
   const char * remote_path = nullptr;
-  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(remotePath).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(RemotePath).c_str(), pool);
   if (err) return false;
   err = webdav::client_get_file(
     FSession,
@@ -13824,19 +13824,20 @@ bool TWebDAVFileSystem::WebDAVGetFile(
   return err == WEBDAV_NO_ERROR;
 }
 //------------------------------------------------------------------------------
-bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t * remotePath, const wchar_t * localPath, const unsigned __int64 /*fileSize*/)
+bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t * RemotePath,
+  const wchar_t * LocalPath, const unsigned __int64 /*FileSize*/)
 {
-  assert(remotePath && *remotePath);
-  assert(localPath && *localPath);
+  assert(RemotePath && *RemotePath);
+  assert(LocalPath && *LocalPath);
 
   assert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = 0;
   const char * remote_path = nullptr;
   const char * local_path = nullptr;
-  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(remotePath).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(RemotePath).c_str(), pool);
   if (err) return false;
-  err = webdav::path_cstring_to_utf8(&local_path, AnsiString(localPath).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&local_path, AnsiString(LocalPath).c_str(), pool);
   if (err) return false;
   err = webdav::client_put_file(
     FSession,
@@ -13853,19 +13854,19 @@ bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t * remotePath, const wchar_t 
   return err == WEBDAV_NO_ERROR;
 }
 //------------------------------------------------------------------------------
-bool TWebDAVFileSystem::WebDAVRenameFile(const wchar_t * srcPath, const wchar_t * dstPath)
+bool TWebDAVFileSystem::WebDAVRenameFile(const wchar_t * SrcPath, const wchar_t * DstPath)
 {
-  assert(srcPath && *srcPath);
-  assert(dstPath && *dstPath);
+  assert(SrcPath && *SrcPath);
+  assert(DstPath && *DstPath);
 
   assert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = 0;
   const char * src_path = nullptr;
   const char * dst_path = nullptr;
-  err = webdav::path_cstring_to_utf8(&src_path, AnsiString(srcPath).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&src_path, AnsiString(SrcPath).c_str(), pool);
   if (err) return false;
-  err = webdav::path_cstring_to_utf8(&dst_path, AnsiString(dstPath).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&dst_path, AnsiString(DstPath).c_str(), pool);
   if (err) return false;
   err = webdav::client_move_file_or_directory(
     FSession,
@@ -13878,15 +13879,15 @@ bool TWebDAVFileSystem::WebDAVRenameFile(const wchar_t * srcPath, const wchar_t 
   return err == WEBDAV_NO_ERROR;
 }
 //------------------------------------------------------------------------------
-bool TWebDAVFileSystem::WebDAVDeleteFile(const wchar_t * path)
+bool TWebDAVFileSystem::WebDAVDeleteFile(const wchar_t * Path)
 {
-  assert(path);
+  assert(Path);
 
   assert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = 0;
   const char * remote_path = nullptr;
-  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(path).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Path).c_str(), pool);
   if (err) return false;
   err = webdav::client_delete_file(
     FSession,
@@ -13899,7 +13900,7 @@ bool TWebDAVFileSystem::WebDAVDeleteFile(const wchar_t * path)
 }
 //------------------------------------------------------------------------------
 webdav::error_t TWebDAVFileSystem::OpenURL(
-  const UnicodeString & session_URL,
+  const UnicodeString & SessionURL,
   apr_pool_t * pool)
 {
   webdav::client_ctx_t * ctx = nullptr;
@@ -13934,7 +13935,7 @@ webdav::error_t TWebDAVFileSystem::OpenURL(
 
   webdav::session_t * session_p = nullptr;
   const char * corrected_url = nullptr;
-  AnsiString base_url = AnsiString(session_URL).c_str();
+  AnsiString base_url = AnsiString(SessionURL).c_str();
   const char * base_url_encoded = webdav::path_uri_encode(base_url.c_str(), pool);
   WEBDAV_ERR(webdav::client_open_session_internal(
     &session_p,
