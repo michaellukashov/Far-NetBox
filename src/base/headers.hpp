@@ -65,12 +65,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _WIN32_IE 0x0501
 #endif  //_WIN32_IE
 
-#pragma warning(push, 1)
-#include <plugin.hpp>
-#include <farkeys.hpp>
-#include <farcolor.hpp>
-#pragma warning(pop)
-
 #include <FastDelegate.h>
 #include <FastDelegateBind.h>
 //---------------------------------------------------------------------------

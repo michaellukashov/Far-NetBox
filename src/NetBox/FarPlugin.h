@@ -3,9 +3,10 @@
 #pragma warning(push, 1)
 #include <vcl.h>
 #include <Sysutils.hpp>
+#include <plugin.hpp>
 #pragma warning(pop)
+
 #include "Common.h"
-#include "plugin.hpp"
 
 //---------------------------------------------------------------------------
 class TCustomFarFileSystem;

@@ -13,7 +13,6 @@
 #include "FarConfiguration.h"
 #include "FarTexts.h"
 #include "FarDialog.h"
-#include "plugin.hpp"
 #include "XmlStorage.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)

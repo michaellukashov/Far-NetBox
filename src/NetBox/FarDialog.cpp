@@ -3,6 +3,11 @@
 
 #include <map.h>
 
+#pragma warning(push, 1)
+#include <farkeys.hpp>
+#include <farcolor.hpp>
+#pragma warning(pop)
+
 #include "FarDialog.h"
 #include "Common.h"
 
