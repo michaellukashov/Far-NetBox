@@ -17,7 +17,7 @@
 template<class TEditControl>
 void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int ForceDirectoryMasks)
 {
-  assert(Edit != NULL);
+  assert(Edit != nullptr);
   TFileMasks Masks(ForceDirectoryMasks);
   try
   {
