@@ -463,14 +463,14 @@ bool RenameFile(const UnicodeString & From, const UnicodeString & To)
   return Result;
 }
 
-bool DirectoryExists(const UnicodeString & Filename)
+bool DirectoryExists(const UnicodeString & FileName)
 {
-  if ((Filename == THISDIRECTORY) || (Filename == PARENTDIRECTORY))
+  if ((FileName == THISDIRECTORY) || (FileName == PARENTDIRECTORY))
   {
     return true;
   }
 
-  DWORD LocalFileAttrs = FileGetAttr(Filename);
+  DWORD LocalFileAttrs = FileGetAttr(FileName);
 
   if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, FILE_ATTRIBUTE_DIRECTORY))
   {
@@ -515,9 +515,9 @@ UnicodeString FileSearch(const UnicodeString & FileName, const UnicodeString & D
   return Result;
 }
 
-DWORD FileGetAttr(const UnicodeString & Filename)
+DWORD FileGetAttr(const UnicodeString & FileName)
 {
-  DWORD LocalFileAttrs = ::GetFileAttributes(Filename.c_str());
+  DWORD LocalFileAttrs = ::GetFileAttributes(FileName.c_str());
   return LocalFileAttrs;
 }
 
@@ -1093,11 +1093,11 @@ UnicodeString ExtractFilename(const UnicodeString & Path, wchar_t Delimiter)
 // "/foo/bar/baz" --> ""
 UnicodeString ExtractFileExtension(const UnicodeString & Path, wchar_t Delimiter)
 {
-  UnicodeString Filename = ExtractFilename(Path, Delimiter);
-  intptr_t N = Filename.RPos(L'.');
+  UnicodeString FileName = ExtractFilename(Path, Delimiter);
+  intptr_t N = FileName.RPos(L'.');
   if (N > 0)
   {
-    return Filename.SubString(N);
+    return FileName.SubString(N);
   }
   return UnicodeString();
 }
@@ -1112,9 +1112,9 @@ UnicodeString ExtractFileExtension(const UnicodeString & Path, wchar_t Delimiter
 //
 UnicodeString ChangeFileExtension(const UnicodeString & Path, const UnicodeString & Ext, wchar_t Delimiter)
 {
-  UnicodeString Filename = ExtractFilename(Path, Delimiter);
+  UnicodeString FileName = ExtractFilename(Path, Delimiter);
   return ExtractDirectory(Path, Delimiter)
-         + Filename.SubString(1, Filename.RPos(L'.'))
+         + FileName.SubString(1, FileName.RPos(L'.'))
          + Ext;
 }
 

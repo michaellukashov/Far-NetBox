@@ -207,7 +207,7 @@ enum FileAttributesEnum
   faAnyFile = 0x0000003f,
 };
 
-bool FileExists(const UnicodeString & Filename);
+bool FileExists(const UnicodeString & FileName);
 bool RenameFile(const UnicodeString & From, const UnicodeString & To);
 bool DirectoryExists(const UnicodeString & Dir);
 UnicodeString FileSearch(const UnicodeString & FileName, const UnicodeString & DirectoryList);
