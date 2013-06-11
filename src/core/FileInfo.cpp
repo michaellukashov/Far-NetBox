@@ -95,12 +95,12 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
   return Len;
 }
 //---------------------------------------------------------------------------
-uintptr_t GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long * Handle)
+static uintptr_t GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long * AHandle)
 {
   uintptr_t Len;
   if (IsWin7())
   {
-    *Handle = 0;
+    *AHandle = 0;
     Len = VERSION_GetFileVersionInfo_PE(FileName, 0, nullptr);
 
     if (Len != 0)
@@ -110,7 +110,7 @@ uintptr_t GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long * Ha
   }
   else
   {
-    Len = GetFileVersionInfoSize(const_cast<wchar_t *>(FileName), Handle);
+    Len = GetFileVersionInfoSize(const_cast<wchar_t *>(FileName), AHandle);
   }
 
   return Len;

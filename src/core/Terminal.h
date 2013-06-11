@@ -411,8 +411,8 @@ protected:
     TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
   void OpenLocalFile(const UnicodeString & FileName, uintptr_t Access,
-    uintptr_t * Attrs, HANDLE * Handle, __int64 * ACTime, __int64 * MTime,
-    __int64 * ATime, __int64 * Size, bool TryWriteReadOnly = true);
+    uintptr_t * AAttrs, HANDLE * AHandle, __int64 * ACTime, __int64 * AMTime,
+    __int64 * AATime, __int64 * ASize, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(const UnicodeString & FileName, const TCopyParamType * CopyParam);
   bool HandleException(Exception * E);
   void CalculateFileSize(const UnicodeString & FileName,
