@@ -7,7 +7,7 @@
 
 #include "Exceptions.h"
 //---------------------------------------------------------------------------
-#define EXCEPTION throw ExtException((Exception* )nullptr, UnicodeString(L""))
+inline void ThrowExtException() { throw ExtException((Exception* )nullptr, UnicodeString(L"")); }
 #define THROWOSIFFALSE(C) if (!(C)) { RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)

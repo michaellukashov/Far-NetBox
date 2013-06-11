@@ -3,10 +3,11 @@
 #pragma warning(push, 1)
 #include <vcl.h>
 #include <Sysutils.hpp>
+#include <plugin.hpp>
 #pragma warning(pop)
+
 #include "Common.h"
 #include "guid.h"
-#include "plugin.hpp"
 
 //---------------------------------------------------------------------------
 #define RMASK (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED | RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED | SHIFT_PRESSED)
@@ -526,10 +527,7 @@ extern TCustomFarPlugin * FarPlugin;
 class TGlobalFunctions : public TGlobalFunctionsIntf, public TObject
 {
 public:
-  explicit TGlobalFunctions();
-  virtual ~TGlobalFunctions();
-
-  virtual HINSTANCE GetHandle() const;
+  virtual HINSTANCE GetInstanceHandle() const;
   virtual UnicodeString GetCurrentDirectory() const;
   virtual UnicodeString GetStrVersionNumber() const;
 };

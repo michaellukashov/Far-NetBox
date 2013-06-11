@@ -34,7 +34,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <nbglobals.h>
-#include "nbafx.h"
+#include "stdafx.h"
 
 #include <new>
 #include <cstdlib>
@@ -53,7 +53,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define WIN32_LEAN_AND_MEAN
 #define VC_EXTRALEAN
+#define SECURITY_WIN32
+#include <windows.h>
+#include <winsock2.h>
 
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501
+#endif  //_WIN32_WINNT
+
+#ifndef _WIN32_IE
+#define _WIN32_IE 0x0501
+#endif  //_WIN32_IE
+
+#include <FastDelegate.h>
+#include <FastDelegateBind.h>
 //---------------------------------------------------------------------------
 
 #if defined(__cplusplus)

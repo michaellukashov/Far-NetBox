@@ -918,10 +918,10 @@ class TGlobalFunctionsIntf
 public:
   virtual ~TGlobalFunctionsIntf() {};
 
-  virtual HINSTANCE GetHandle() const = 0;
+  virtual HINSTANCE GetInstanceHandle() const = 0;
   virtual UnicodeString GetCurrentDirectory() const = 0;
   virtual UnicodeString GetStrVersionNumber() const = 0;
 };
 //---------------------------------------------------------------------------
-extern TGlobalFunctionsIntf * GlobalFunctions;
+TGlobalFunctionsIntf * GetGlobalFunctions();
 //---------------------------------------------------------------------------

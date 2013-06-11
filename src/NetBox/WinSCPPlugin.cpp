@@ -13,7 +13,6 @@
 #include "FarConfiguration.h"
 #include "FarTexts.h"
 #include "FarDialog.h"
-#include "plugin.hpp"
 #include "XmlStorage.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -48,7 +47,7 @@ TWinSCPPlugin::~TWinSCPPlugin()
 {
   if (FInitialized)
   {
-    GetFarConfiguration()->SetPlugin(nullptr);
+    // GetFarConfiguration()->SetPlugin(nullptr);
     CoreFinalize();
   }
 }

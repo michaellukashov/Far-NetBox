@@ -4,6 +4,9 @@
 //---------------------------------------------------------------------------
 #pragma once
 
+#pragma warning(push, 1)
+#include <farcolor.hpp>
+#pragma warning(pop)
 #include "FarPlugin.h"
 
 #define MAX_SIZE -1
@@ -643,6 +646,6 @@ private:
   intptr_t FTopIndex;
 };
 //---------------------------------------------------------------------------
-TRect Rect(int Left, int Top, int Right, int Bottom);
+inline TRect Rect(int Left, int Top, int Right, int Bottom);
 //---------------------------------------------------------------------------
 #endif

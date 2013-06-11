@@ -9,10 +9,9 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-TRect Rect(int Left, int Top, int Right, int Bottom)
+inline TRect Rect(int Left, int Top, int Right, int Bottom)
 {
-  TRect Result = TRect(Left, Top, Right, Bottom);
-  return Result;
+  return TRect(Left, Top, Right, Bottom);
 }
 
 //---------------------------------------------------------------------------

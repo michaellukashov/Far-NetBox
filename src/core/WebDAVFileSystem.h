@@ -173,17 +173,17 @@ protected:
 private:
   void CustomReadFile(const UnicodeString & FileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);
-  bool SendPropFindRequest(const wchar_t * dir, int & responseCode);
-  webdav::error_t OpenURL(const UnicodeString & repos_URL,
-    apr_pool_t *pool);
+  bool SendPropFindRequest(const wchar_t * Path, int & ResponseCode);
+  webdav::error_t OpenURL(const UnicodeString & SessionURL,
+    apr_pool_t * pool);
 
-  bool WebDAVCheckExisting(const wchar_t * path, int & is_dir);
-  bool WebDAVMakeDirectory(const wchar_t * path);
+  bool WebDAVCheckExisting(const wchar_t * Path, int & IsDir);
+  bool WebDAVMakeDirectory(const wchar_t * Path);
   bool WebDAVGetList(const UnicodeString & Directory);
-  bool WebDAVGetFile(const wchar_t * remotePath, HANDLE * LocalFileHandle);
-  bool WebDAVPutFile(const wchar_t * remotePath, const wchar_t * localPath, const unsigned __int64 fileSize);
-  bool WebDAVRenameFile(const wchar_t * srcPath, const wchar_t * dstPath);
-  bool WebDAVDeleteFile(const wchar_t * path);
+  bool WebDAVGetFile(const wchar_t * RemotePath, HANDLE * LocalFileHandle);
+  bool WebDAVPutFile(const wchar_t * RemotePath, const wchar_t * LocalPath, const unsigned __int64);
+  bool WebDAVRenameFile(const wchar_t * SrcPath, const wchar_t * DstPath);
+  bool WebDAVDeleteFile(const wchar_t * Path);
 
 private:
   TFileSystemInfo FFileSystemInfo;
@@ -205,8 +205,8 @@ private:
   size_t FLastReadDirectoryProgress;
   TFileOperationProgressType * FCurrentOperationProgress;
   TCriticalSection * FTransferStatusCriticalSection;
-  apr_pool_t *webdav_pool;
-  webdav::session_t *FSession;
+  apr_pool_t * webdav_pool;
+  webdav::session_t * FSession;
 
 private:
   NB_DISABLE_COPY(TWebDAVFileSystem)

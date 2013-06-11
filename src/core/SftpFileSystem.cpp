@@ -4903,7 +4903,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
         if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && (LocalFileAttrs & faDirectory) == 0)
         {
-          EXCEPTION;
+          ThrowExtException();
         }
       );
 
@@ -4969,7 +4969,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
       if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && (LocalFileAttrs & faDirectory))
       {
-        EXCEPTION;
+        ThrowExtException();
       }
     );
 

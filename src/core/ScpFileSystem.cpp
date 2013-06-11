@@ -149,8 +149,8 @@ const TCommandType DefaultCommandSet[ShellCommandCount] = {
 #undef F
 #undef T
 //---------------------------------------------------------------------------
-TCommandSet::TCommandSet(TSessionData *aSessionData):
-  FSessionData(aSessionData), FReturnVar(L"")
+TCommandSet::TCommandSet(TSessionData * ASessionData):
+  FSessionData(ASessionData), FReturnVar(L"")
 {
   assert(FSessionData);
   Default();
@@ -2512,7 +2512,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                       // FALLTHROUGH
                     case qaNo:
                       SkipConfirmed = true;
-                      EXCEPTION;
+                      ThrowExtException();
                   }
                 }
 
@@ -2522,7 +2522,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                        &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
                 {
                   SkipConfirmed = true;
-                  EXCEPTION;
+                  ThrowExtException();
                 }
 
                 FileStream.reset(new TSafeHandleStream(LocalFileHandle));

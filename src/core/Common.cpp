@@ -372,7 +372,7 @@ static wchar_t * ReplaceChar(
     // currently we do not support unicode chars replacement
     if (FileName[Index] > 0xFF)
     {
-      EXCEPTION;
+      ThrowExtException();
     }
 
     FileName.Insert(ByteToHex(static_cast<unsigned char>(FileName[Index])), Index + 1);
@@ -1591,7 +1591,7 @@ UnicodeString LoadStr(int Ident, intptr_t MaxLength)
 {
   UnicodeString Result;
   Result.SetLength(MaxLength > 0 ? MaxLength : 1024);
-  HINSTANCE hInstance =  GlobalFunctions ? GlobalFunctions->GetHandle() : ::GetModuleHandle(0);
+  HINSTANCE hInstance =  GetGlobalFunctions()->GetInstanceHandle();
   assert(hInstance != 0);
   intptr_t Length = static_cast<intptr_t>(::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), (int)Result.Length()));
   Result.SetLength(Length);
