@@ -27,7 +27,7 @@ public:
   ~Exception() throw() {}
 
   template<typename T>
-  bool InheritsFrom() const { return dynamic_cast<const T *>(this) != NULL; }
+  bool InheritsFrom() const { return dynamic_cast<const T *>(this) != nullptr; }
 
 public:
   UnicodeString Message;
@@ -224,7 +224,7 @@ bool RemoveDir(const UnicodeString & Dir);
 template <class Base, class Derived>
 bool InheritsFrom(const Base * t)
 {
-  return dynamic_cast<const Derived *>(t) != NULL;
+  return dynamic_cast<const Derived *>(t) != nullptr;
 }
 
 //---------------------------------------------------------------------------

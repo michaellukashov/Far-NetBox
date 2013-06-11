@@ -416,7 +416,7 @@ __int64 FileRead(HANDLE Handle, void * Buffer, __int64 Count)
 {
   __int64 Result = -1;
   DWORD Res = 0;
-  if (::ReadFile(Handle, reinterpret_cast<LPVOID>(Buffer), static_cast<DWORD>(Count), &Res, NULL))
+  if (::ReadFile(Handle, reinterpret_cast<LPVOID>(Buffer), static_cast<DWORD>(Count), &Res, nullptr))
   {
     Result = Res;
   }
@@ -431,7 +431,7 @@ __int64 FileWrite(HANDLE Handle, const void * Buffer, __int64 Count)
 {
   __int64 Result = -1;
   DWORD Res = 0;
-  if (::WriteFile(Handle, Buffer, static_cast<DWORD>(Count), &Res, NULL))
+  if (::WriteFile(Handle, Buffer, static_cast<DWORD>(Count), &Res, nullptr))
   {
     Result = Res;
   }
@@ -529,7 +529,7 @@ DWORD FileSetAttr(const UnicodeString & FileName, DWORD LocalFileAttrs)
 
 bool CreateDir(const UnicodeString & Dir)
 {
-  return ::CreateDirectory(Dir.c_str(), NULL) != 0;
+  return ::CreateDirectory(Dir.c_str(), nullptr) != 0;
 }
 
 bool RemoveDir(const UnicodeString & Dir)
@@ -645,7 +645,7 @@ static const wchar_t *
 NextWord(const wchar_t * Input)
 {
   static wchar_t buffer[1024];
-  static const wchar_t * text = NULL;
+  static const wchar_t * text = nullptr;
 
   wchar_t * endOfBuffer = buffer + LENOF(buffer) - 1;
   wchar_t * pBuffer = buffer;
@@ -738,7 +738,7 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
       }
       if (!*s)
       {
-        s = NextWord(NULL);
+        s = NextWord(nullptr);
       }
 
       /* copy as many words as will fit onto the current line */
@@ -766,12 +766,12 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
         }
         if (!*s)
         {
-          s = NextWord(NULL);
+          s = NextWord(nullptr);
         }
       }
       if (!*s)
       {
-        s = NextWord(NULL);
+        s = NextWord(nullptr);
       }
 
       if (*s)
@@ -811,7 +811,7 @@ UnicodeString TranslateExceptionMessage(std::exception * E)
 {
   if (E)
   {
-    if (dynamic_cast<Exception *>(E) != NULL)
+    if (dynamic_cast<Exception *>(E) != nullptr)
     {
       return dynamic_cast<Exception *>(E)->Message;
     }
@@ -910,12 +910,12 @@ UnicodeString ExpandFileName(const UnicodeString & FileName)
   UnicodeString Result;
   UnicodeString Buf(MAX_PATH, 0);
   intptr_t Size = GetFullPathNameW(FileName.c_str(), static_cast<DWORD>(Buf.Length() - 1),
-    reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), NULL);
+    reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), nullptr);
   if (Size > Buf.Length())
   {
     Buf.SetLength(Size);
     Size = ::GetFullPathNameW(FileName.c_str(), static_cast<DWORD>(Buf.Length() - 1),
-      reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), NULL);
+      reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), nullptr);
   }
   return UnicodeString(Buf.c_str(), Size);
 }
@@ -1036,9 +1036,9 @@ UnicodeString SysErrorMessage(int ErrorCode)
   UnicodeString Result;
   wchar_t Buffer[255];
   intptr_t Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
-    FORMAT_MESSAGE_ARGUMENT_ARRAY, NULL, ErrorCode, 0,
+    FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, ErrorCode, 0,
     static_cast<LPTSTR>(Buffer),
-    sizeof(Buffer), NULL);
+    sizeof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
     ((Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == '.'))))
   {
@@ -1504,7 +1504,7 @@ UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & Path)
 //---------------------------------------------------------------------------
 void Randomize()
 {
-  srand(static_cast<unsigned int>(time(NULL)));
+  srand(static_cast<unsigned int>(time(nullptr)));
 }
 
 //---------------------------------------------------------------------------

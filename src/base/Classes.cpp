@@ -12,7 +12,7 @@
 #include <rtlconsts.h>
 
 //---------------------------------------------------------------------------
-TGlobalFunctionsIntf * GlobalFunctions = NULL;
+TGlobalFunctionsIntf * GlobalFunctions = nullptr;
 //---------------------------------------------------------------------------
 
 namespace Classes {
@@ -59,7 +59,7 @@ void Abort()
 void Error(int ErrorID, intptr_t data)
 {
   UnicodeString Msg = FMTLOAD(ErrorID, data);
-  throw ExtException((Exception *)NULL, Msg);
+  throw ExtException((Exception *)nullptr, Msg);
 }
 
 //---------------------------------------------------------------------------
@@ -71,13 +71,13 @@ TPersistent::~TPersistent()
 
 void TPersistent::Assign(const TPersistent * Source)
 {
-  if (Source != NULL)
+  if (Source != nullptr)
   {
     Source->AssignTo(this);
   }
   else
   {
-    AssignError(NULL);
+    AssignError(nullptr);
   }
 }
 
@@ -88,14 +88,14 @@ void TPersistent::AssignTo(TPersistent * Dest) const
 
 TPersistent * TPersistent::GetOwner()
 {
-  return NULL;
+  return nullptr;
 }
 
 void TPersistent::AssignError(const TPersistent * Source)
 {
   (void)Source;
   UnicodeString SourceName = L"nil";
-  // if (Source != NULL)
+  // if (Source != nullptr)
   // SourceName = Source.ClassName
   // else
   // SourceName = "nil";
@@ -164,7 +164,7 @@ void * TList::Extract(void * Item)
   }
   else
   {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -187,9 +187,9 @@ void TList::Move(intptr_t CurIndex, intptr_t NewIndex)
       Classes::Error(SListIndexError, NewIndex);
     }
     void * Item = GetItem(CurIndex);
-    FList[CurIndex] = NULL;
+    FList[CurIndex] = nullptr;
     Delete(CurIndex);
-    Insert(NewIndex, NULL);
+    Insert(NewIndex, nullptr);
     FList[NewIndex] = Item;
   }
 }
@@ -202,7 +202,7 @@ void TList::Delete(intptr_t Index)
   }
   void * Temp = GetItem(Index);
   FList.erase(FList.begin() + Index);
-  if (Temp != NULL)
+  if (Temp != nullptr)
   {
     Notify(Temp, lnDeleted);
   }
@@ -218,7 +218,7 @@ void TList::Insert(intptr_t Index, void * Item)
   {
     FList.insert(Index, 1, Item);
   }
-  if (Item != NULL)
+  if (Item != nullptr)
   {
     Notify(Item, lnAdded);
   }
@@ -421,7 +421,7 @@ void TStrings::SetTextStr(const UnicodeString & Text)
   {
     Clear();
     const wchar_t * P = Text.c_str();
-    if (P != NULL)
+    if (P != nullptr)
     {
       while (*P != 0x00)
       {
@@ -537,7 +537,7 @@ intptr_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString 
 void TStrings::Assign(const TPersistent * Source)
 {
   const TStrings * Strings = dynamic_cast<const TStrings *>(Source);
-  if (Strings != NULL)
+  if (Strings != nullptr)
   {
     BeginUpdate();
     auto cleanup = finally([&]()
@@ -838,7 +838,7 @@ void TStringList::Clear()
 
 intptr_t TStringList::Add(const UnicodeString & S)
 {
-  return AddObject(S, NULL);
+  return AddObject(S, nullptr);
 }
 
 intptr_t TStringList::AddObject(const UnicodeString & S, TObject * AObject)
@@ -996,7 +996,7 @@ const UnicodeString & TStringList::GetString(intptr_t Index) const
   }
   if (Index == static_cast<intptr_t>(FList.size()))
   {
-    const_cast<TStringList*>(this)->InsertItem(Index, UnicodeString(), NULL);
+    const_cast<TStringList*>(this)->InsertItem(Index, UnicodeString(), nullptr);
   }
   return FList[Index].first;
 }
@@ -1027,7 +1027,7 @@ void TStringList::SetSorted(bool Value)
 
 void TStringList::LoadFromFile(const UnicodeString & FileName)
 {
-  HANDLE FileHandle = ::CreateFile(FileName.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, 0);
+  HANDLE FileHandle = ::CreateFile(FileName.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, 0);
   if (FileHandle != INVALID_HANDLE_VALUE)
   {
     TSafeHandleStream Stream(FileHandle);
@@ -1178,7 +1178,7 @@ UnicodeString MB2W(const char * src, const UINT cp)
     return UnicodeString(L"");
   }
 
-  intptr_t reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
+  intptr_t reqLength = MultiByteToWideChar(cp, 0, src, -1, nullptr, 0);
   UnicodeString Result;
   if (reqLength)
   {
@@ -1203,13 +1203,13 @@ AnsiString W2MB(const wchar_t * src, const UINT cp)
     return AnsiString("");
   }
 
-  intptr_t reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, NULL, NULL);
+  intptr_t reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, nullptr, nullptr);
   AnsiString Result;
   if (reqLength)
   {
     Result.SetLength(reqLength);
     WideCharToMultiByte(cp, 0, src, -1, const_cast<LPSTR>(Result.c_str()),
-      static_cast<int>(reqLength), NULL, NULL);
+      static_cast<int>(reqLength), nullptr, nullptr);
     Result.SetLength(Result.Length() - 1);  //remove NULL character
   }
   return Result; //.c_str();
@@ -1352,7 +1352,7 @@ class EStreamError : public ExtException
 {
 public:
   EStreamError(const UnicodeString & Msg) :
-    ExtException((Exception * )NULL, Msg)
+    ExtException((Exception * )nullptr, Msg)
   {}
 };
 
@@ -1472,7 +1472,7 @@ void THandleStream::SetSize(const __int64 NewSize)
 
 //---------------------------------------------------------------------------
 TMemoryStream::TMemoryStream() :
-  FMemory(NULL),
+  FMemory(nullptr),
   FSize(0),
   FPosition(0),
   FCapacity(0)
@@ -1579,8 +1579,8 @@ void * TMemoryStream::Realloc(__int64 & NewCapacity)
     if (NewCapacity == 0)
     {
       nb_free(FMemory);
-      FMemory = NULL;
-      Result = NULL;
+      FMemory = nullptr;
+      Result = nullptr;
     }
     else
     {
@@ -1592,7 +1592,7 @@ void * TMemoryStream::Realloc(__int64 & NewCapacity)
       {
         Result = nb_realloc(FMemory, static_cast<size_t>(NewCapacity));
       }
-      if (Result == NULL)
+      if (Result == nullptr)
       {
         throw EStreamError(FMTLOAD(SMemoryStreamError));
       }
@@ -1741,7 +1741,7 @@ void TRegistry::GetValueNames(TStrings * Strings) const
     for (DWORD I = 0; I < Info.NumValues; I++)
     {
       DWORD Len = Info.MaxValueLen + 1;
-      RegEnumValue(GetCurrentKey(), I, &S[1], &Len, NULL, NULL, NULL, NULL);
+      RegEnumValue(GetCurrentKey(), I, &S[1], &Len, nullptr, nullptr, nullptr, nullptr);
       Strings->Add(S.c_str());
     }
   }
@@ -1758,7 +1758,7 @@ void TRegistry::GetKeyNames(TStrings * Strings) const
     for (DWORD I = 0; I < Info.NumSubKeys; I++)
     {
       DWORD Len = Info.MaxSubKeyLen + 1;
-      RegEnumKeyEx(GetCurrentKey(), static_cast<DWORD>(I), &S[1], &Len, NULL, NULL, NULL, NULL);
+      RegEnumKeyEx(GetCurrentKey(), static_cast<DWORD>(I), &S[1], &Len, nullptr, nullptr, nullptr, nullptr);
       Strings->Add(S.c_str());
     }
   }
@@ -1793,8 +1793,8 @@ bool TRegistry::OpenKey(const UnicodeString & Key, bool CanCreate)
   }
   else
   {
-    Result = RegCreateKeyEx(GetBaseKey(Relative), S.c_str(), 0, NULL,
-                            REG_OPTION_NON_VOLATILE, FAccess, NULL, &TempKey, NULL) == ERROR_SUCCESS;
+    Result = RegCreateKeyEx(GetBaseKey(Relative), S.c_str(), 0, nullptr,
+                            REG_OPTION_NON_VOLATILE, FAccess, nullptr, &TempKey, nullptr) == ERROR_SUCCESS;
   }
   if (Result)
   {
@@ -1832,7 +1832,7 @@ bool TRegistry::DeleteKey(const UnicodeString & Key)
         {
           DWORD Len = Info.MaxSubKeyLen + 1;
           if (RegEnumKeyEx(DeleteKey, static_cast<DWORD>(I), &KeyName[1], &Len,
-                           NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+                           nullptr, nullptr, nullptr, nullptr) == ERROR_SUCCESS)
           {
             this->DeleteKey(KeyName);
           }
@@ -1881,7 +1881,7 @@ bool TRegistry::GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Valu
 {
   DWORD DataType;
   ClearStruct(Value);
-  bool Result = (RegQueryValueEx(GetCurrentKey(), ValueName.c_str(), NULL, &DataType, NULL,
+  bool Result = (RegQueryValueEx(GetCurrentKey(), ValueName.c_str(), nullptr, &DataType, nullptr,
                                  &Value.DataSize) == ERROR_SUCCESS);
   Value.RegData = DataTypeToRegData(DataType);
   return Result;
@@ -2018,7 +2018,7 @@ int TRegistry::GetData(const UnicodeString & Name, void * Buffer,
 {
   DWORD DataType = REG_NONE;
   DWORD bufSize = static_cast<DWORD>(BufSize);
-  if (RegQueryValueEx(GetCurrentKey(), Name.c_str(), NULL, &DataType,
+  if (RegQueryValueEx(GetCurrentKey(), Name.c_str(), nullptr, &DataType,
     reinterpret_cast<BYTE *>(Buffer), &bufSize) != ERROR_SUCCESS)
   {
     throw Exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
@@ -2116,9 +2116,9 @@ HKEY TRegistry::GetKey(const UnicodeString & Key)
 bool TRegistry::GetKeyInfo(TRegKeyInfo & Value) const
 {
   ClearStruct(Value);
-  bool Result = RegQueryInfoKey(GetCurrentKey(), NULL, NULL, NULL, &Value.NumSubKeys,
-    &Value.MaxSubKeyLen, NULL, &Value.NumValues, &Value.MaxValueLen,
-    &Value.MaxDataLen, NULL, &Value.FileTime) == ERROR_SUCCESS;
+  bool Result = RegQueryInfoKey(GetCurrentKey(), nullptr, nullptr, nullptr, &Value.NumSubKeys,
+    &Value.MaxSubKeyLen, nullptr, &Value.NumValues, &Value.MaxValueLen,
+    &Value.MaxDataLen, nullptr, &Value.FileTime) == ERROR_SUCCESS;
   return Result;
 }
 

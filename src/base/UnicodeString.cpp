@@ -300,7 +300,7 @@ void UTF8String::Init(const wchar_t * Str, intptr_t Length)
 
 void UTF8String::Init(const char * Str, intptr_t Length)
 {
-  intptr_t Size = MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), NULL, 0);
+  intptr_t Size = MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0);
   Data.resize(Size + 1);
   if (Size > 0)
   {
@@ -406,7 +406,7 @@ void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
 
 void UnicodeString::Init(const char * Str, intptr_t Length)
 {
-  intptr_t Size = MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), NULL, 0);
+  intptr_t Size = MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0);
   Data.resize(Size + 1);
   if (Size > 0)
   {
