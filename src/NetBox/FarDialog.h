@@ -500,7 +500,7 @@ class TFarList : public TStringList
   friend TFarLister;
   friend TFarComboBox;
 public:
-  explicit TFarList(TFarDialogItem * ADialogItem = NULL);
+  explicit TFarList(TFarDialogItem * ADialogItem = nullptr);
   virtual ~TFarList();
 
   virtual void Assign(const TPersistent * Source);

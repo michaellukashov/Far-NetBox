@@ -11,7 +11,7 @@ bool CNBFile::OpenWrite(const wchar_t *fileName)
     assert(fileName);
     m_LastError = ERROR_SUCCESS;
 
-    m_File = ::CreateFile(fileName, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    m_File = ::CreateFile(fileName, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (m_File == INVALID_HANDLE_VALUE)
     {
         m_LastError = GetLastError();
@@ -25,7 +25,7 @@ bool CNBFile::OpenRead(const wchar_t *fileName)
     assert(fileName);
     m_LastError = ERROR_SUCCESS;
 
-    m_File = ::CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    m_File = ::CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (m_File == INVALID_HANDLE_VALUE)
     {
         m_LastError = GetLastError();
@@ -39,7 +39,7 @@ bool CNBFile::Read(void *buff, size_t &buffSize)
     m_LastError = ERROR_SUCCESS;
 
     DWORD bytesRead = static_cast<DWORD>(buffSize);
-    if (!ReadFile(m_File, buff, bytesRead, &bytesRead, NULL))
+    if (!ReadFile(m_File, buff, bytesRead, &bytesRead, nullptr))
     {
         m_LastError = GetLastError();
         buffSize = 0;
@@ -57,7 +57,7 @@ bool CNBFile::Write(const void *buff, const size_t buffSize)
     m_LastError = ERROR_SUCCESS;
 
     DWORD bytesWritten;
-    if (!WriteFile(m_File, buff, static_cast<DWORD>(buffSize), &bytesWritten, NULL))
+    if (!WriteFile(m_File, buff, static_cast<DWORD>(buffSize), &bytesWritten, nullptr))
     {
         m_LastError = GetLastError();
     }

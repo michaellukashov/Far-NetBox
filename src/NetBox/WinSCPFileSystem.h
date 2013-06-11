@@ -178,7 +178,7 @@ protected:
     UnicodeString & FileMask, bool Move);
   bool RenameFileDialog(TRemoteFile * File, UnicodeString & NewName);
   uintptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
-    TQueryType Type, uintptr_t Answers, const TMessageParams * AParams = NULL);
+    TQueryType Type, uintptr_t Answers, const TMessageParams * AParams = nullptr);
   bool PasswordDialog(TSessionData * SessionData,
     TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
     TStrings * Results, bool StoredCredentialsTried);
@@ -275,11 +275,11 @@ private:
   void CancelConfiguration(TFileOperationProgressType & ProgressData);
   TStrings * CreateFileList(TObjectList * PanelItems,
     TOperationSide Side, bool SelectedOnly = false, const UnicodeString & Directory = L"",
-    bool FileNameOnly = false, TStrings * AFileList = NULL);
+    bool FileNameOnly = false, TStrings * AFileList = nullptr);
   TStrings * CreateSelectedFileList(TOperationSide Side,
-    TFarPanelInfo * PanelInfo = NULL);
+    TFarPanelInfo * PanelInfo = nullptr);
   TStrings * CreateFocusedFileList(TOperationSide Side,
-    TFarPanelInfo * PanelInfo = NULL);
+    TFarPanelInfo * PanelInfo = nullptr);
   void CustomCommandGetParamValue(
     const UnicodeString & AName, UnicodeString & Value);
   void TerminalSynchronizeDirectory(const UnicodeString & LocalDirectory,

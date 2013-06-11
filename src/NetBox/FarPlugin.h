@@ -89,8 +89,8 @@ public:
 
   static wchar_t * DuplicateStr(const UnicodeString & Str, bool AllowEmpty = false);
   intptr_t Message(DWORD Flags, const UnicodeString & Title,
-    const UnicodeString & Message, TStrings * Buttons = NULL,
-    TFarMessageParams * Params = NULL);
+    const UnicodeString & Message, TStrings * Buttons = nullptr,
+    TFarMessageParams * Params = nullptr);
   intptr_t MaxMessageLines();
   intptr_t MaxMenuItemLength();
   intptr_t Menu(DWORD Flags, const UnicodeString & Title,
@@ -103,7 +103,7 @@ public:
     const int * BreakKeys, int & BreakCode);
   bool InputBox(const UnicodeString & Title, const UnicodeString & Prompt,
     UnicodeString & Text, DWORD Flags, const UnicodeString & HistoryName = UnicodeString(),
-    intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = NULL);
+    intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = nullptr);
   UnicodeString GetMsg(intptr_t MsgId);
   void SaveScreen(HANDLE & Screen);
   void RestoreScreen(HANDLE & Screen);
@@ -112,7 +112,7 @@ public:
   bool Editor(const UnicodeString & FileName, const UnicodeString & Title, DWORD Flags);
 
   intptr_t FarControl(uintptr_t Command, intptr_t Param1, intptr_t Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
-  intptr_t FarAdvControl(uintptr_t Command, void * Param = NULL) const;
+  intptr_t FarAdvControl(uintptr_t Command, void * Param = nullptr) const;
   intptr_t FarEditorControl(uintptr_t Command, void * Param);
   intptr_t FarSystemSettings();
   void Text(int X, int Y, int Color, const UnicodeString & Str);
@@ -133,7 +133,7 @@ public:
   void ShowTerminalScreen();
   void SaveTerminalScreen();
   void ScrollTerminalScreen(int Rows);
-  TPoint TerminalInfo(TPoint * Size = NULL, TPoint * Cursor = NULL) const;
+  TPoint TerminalInfo(TPoint * Size = nullptr, TPoint * Cursor = nullptr) const;
   uintptr_t ConsoleWindowState() const;
   void ToggleVideoMode();
 
@@ -318,7 +318,7 @@ public:
   virtual ~TFarPanelModes();
 
   void SetPanelMode(size_t Mode, const UnicodeString & ColumnTypes = UnicodeString(),
-    const UnicodeString & ColumnWidths = UnicodeString(), TStrings * ColumnTitles = NULL,
+    const UnicodeString & ColumnWidths = UnicodeString(), TStrings * ColumnTitles = nullptr,
     bool FullScreen = false, bool DetailedStatus = true, bool AlignExtensions = true,
     bool CaseConversion = true, const UnicodeString & StatusColumnTypes = UnicodeString(),
     const UnicodeString & StatusColumnWidths = UnicodeString());
