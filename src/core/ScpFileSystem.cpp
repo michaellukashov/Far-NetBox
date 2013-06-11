@@ -149,8 +149,8 @@ const TCommandType DefaultCommandSet[ShellCommandCount] = {
 #undef F
 #undef T
 //---------------------------------------------------------------------------
-TCommandSet::TCommandSet(TSessionData *aSessionData):
-  FSessionData(aSessionData), FReturnVar(L"")
+TCommandSet::TCommandSet(TSessionData * ASessionData):
+  FSessionData(ASessionData), FReturnVar(L"")
 {
   assert(FSessionData);
   Default();

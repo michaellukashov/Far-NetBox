@@ -1130,7 +1130,7 @@ TSessionLog * TSessionLog::GetParent()
   return FParent;
 }
 //---------------------------------------------------------------------------
-void TSessionLog::SetParent(TSessionLog *Value)
+void TSessionLog::SetParent(TSessionLog * Value)
 {
   FParent = Value;
 }

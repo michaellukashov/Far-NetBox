@@ -208,7 +208,7 @@ class TSessionLog : protected TStringList
 friend class TSessionAction;
 friend class TSessionActionRecord;
 public:
-  explicit TSessionLog(TSessionUI* UI, TSessionData * SessionData,
+  explicit TSessionLog(TSessionUI * UI, TSessionData * SessionData,
     TConfiguration * Configuration);
   virtual ~TSessionLog();
   HIDESBASE void Add(TLogLineType Type, const UnicodeString & Line);
@@ -223,7 +223,7 @@ public:
   void Unlock();
 
   TSessionLog * GetParent();
-  void SetParent(TSessionLog *Value);
+  void SetParent(TSessionLog * Value);
   bool GetLogging();
   TNotifyEvent & GetOnChange();
   void SetOnChange(TNotifyEvent Value);
