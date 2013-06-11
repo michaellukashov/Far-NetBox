@@ -23,16 +23,16 @@ TSynchronizeController::TSynchronizeController(
   FSynchronizeParams.Options = 0;
   FOnSynchronizeInvalid = AOnSynchronizeInvalid;
   FOnTooManyDirectories = AOnTooManyDirectories;
-  FSynchronizeMonitor = NULL;
-  FSynchronizeAbort = NULL;
-  FSynchronizeLog = NULL;
-  FOptions = NULL;
-  FOnSynchronizeThreads = NULL;
+  FSynchronizeMonitor = nullptr;
+  FSynchronizeAbort = nullptr;
+  FSynchronizeLog = nullptr;
+  FOptions = nullptr;
+  FOnSynchronizeThreads = nullptr;
 }
 //---------------------------------------------------------------------------
 TSynchronizeController::~TSynchronizeController()
 {
-  assert(FSynchronizeMonitor == NULL);
+  assert(FSynchronizeMonitor == nullptr);
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::StartStop(TObject * /*Sender*/,
@@ -47,16 +47,16 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
 
     try
     {
-      assert(OnSynchronizeLog != NULL);
+      assert(OnSynchronizeLog != nullptr);
       FSynchronizeLog = OnSynchronizeLog;
 
       FOptions = Options;
       if (FLAGSET(Params.Options, soSynchronize) &&
-          (FOnSynchronize != NULL))
+          (FOnSynchronize != nullptr))
       {
         FOnSynchronize(this, Params.LocalDirectory,
           Params.RemoteDirectory, CopyParam,
-          Params, NULL, FOptions, true);
+          Params, nullptr, FOptions, true);
       }
 
       FCopyParam = CopyParam;
@@ -107,7 +107,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
   }
   else
   {
-    FOptions = NULL;
+    FOptions = nullptr;
     // SAFE_DESTROY(FSynchronizeMonitor);
   }
 }
@@ -133,22 +133,22 @@ void TSynchronizeController::SynchronizeChange(
     SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,
       ExcludeTrailingBackslash(LocalDirectory).c_str()));
 
-    if (FOnSynchronize != NULL)
+    if (FOnSynchronize != nullptr)
     {
       // this is completely wrong as the options structure
       // can contain non-root specific options in future
       TSynchronizeOptions * Options =
-        ((LocalDirectory == RootLocalDirectory) ? FOptions : NULL);
-      TSynchronizeChecklist * Checklist = NULL;
+        ((LocalDirectory == RootLocalDirectory) ? FOptions : nullptr);
+      TSynchronizeChecklist * Checklist = nullptr;
       FOnSynchronize(this, LocalDirectory, RemoteDirectory, FCopyParam,
         FSynchronizeParams, &Checklist, Options, false);
-      if (Checklist != NULL)
+      if (Checklist != nullptr)
       {
         std::auto_ptr<TSynchronizeChecklist> ChecklistPtr(Checklist);
         if (FLAGSET(FSynchronizeParams.Options, soRecurse))
         {
           SubdirsChanged = false;
-          assert(Checklist != NULL);
+          assert(Checklist != nullptr);
           for (intptr_t Index = 0; Index < Checklist->GetCount(); ++Index)
           {
             const TSynchronizeChecklist::TItem * Item = Checklist->GetItem(Index);
@@ -178,19 +178,19 @@ void TSynchronizeController::SynchronizeChange(
   }
   catch(Exception & E)
   {
-    SynchronizeAbort(dynamic_cast<EFatal*>(&E) != NULL);
+    SynchronizeAbort(dynamic_cast<EFatal*>(&E) != nullptr);
   }
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeAbort(bool Close)
 {
-  if (FSynchronizeMonitor != NULL)
+  if (FSynchronizeMonitor != nullptr)
   {
     // FIXME FSynchronizeMonitor->Close();
     Classes::Error(SNotImplemented, 258);
   }
   assert(FSynchronizeAbort);
-  FSynchronizeAbort(NULL, Close);
+  FSynchronizeAbort(nullptr, Close);
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
@@ -220,7 +220,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
 void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
   const UnicodeString & Message)
 {
-  if (FSynchronizeLog != NULL)
+  if (FSynchronizeLog != nullptr)
   {
     FSynchronizeLog(this, Entry, Message);
   }
@@ -229,7 +229,7 @@ void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
 void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
   const UnicodeString & DirectoryName, bool & Add)
 {
-  if ((FOptions != NULL) && (FOptions->Filter != NULL))
+  if ((FOptions != nullptr) && (FOptions->Filter != nullptr))
   {
     if (IncludeTrailingBackslash(ExtractFilePath(DirectoryName)) ==
           IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory))
@@ -245,7 +245,7 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
 void TSynchronizeController::SynchronizeInvalid(
   TObject * /*Sender*/, const UnicodeString & Directory, const UnicodeString & ErrorStr)
 {
-  if (FOnSynchronizeInvalid != NULL)
+  if (FOnSynchronizeInvalid != nullptr)
   {
     FOnSynchronizeInvalid(this, Directory, ErrorStr);
   }
@@ -256,7 +256,7 @@ void TSynchronizeController::SynchronizeInvalid(
 void TSynchronizeController::SynchronizeTooManyDirectories(
   TObject * /*Sender*/, intptr_t & MaxDirectories)
 {
-  if (FOnTooManyDirectories != NULL)
+  if (FOnTooManyDirectories != nullptr)
   {
     FOnTooManyDirectories(this, MaxDirectories);
   }

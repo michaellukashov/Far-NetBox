@@ -13,22 +13,22 @@
 #include "plugin_version.hpp"
 
 //---------------------------------------------------------------------------
-TCustomFarPlugin * FarPlugin = NULL;
+TCustomFarPlugin * FarPlugin = nullptr;
 #define FAR_TITLE_SUFFIX L" - Far"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
 TFarMessageParams::TFarMessageParams()
 {
-  MoreMessages = NULL;
+  MoreMessages = nullptr;
   CheckBox = false;
   Timer = 0;
   TimerAnswer = 0;
-  TimerEvent = NULL;
+  TimerEvent = nullptr;
   Timeout = 0;
   TimeoutButton = 0;
-  ClickEvent = NULL;
-  Token = NULL;
+  ClickEvent = nullptr;
+  Token = nullptr;
 }
 //---------------------------------------------------------------------------
 TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
@@ -45,17 +45,17 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
   FOpenedPlugins->SetOwnsObjects(false);
   FSavedTitles = new TStringList();
   FCurrentProgress = -1;
-  FTopDialog = NULL;
+  FTopDialog = nullptr;
   FValidFarSystemSettings = false;
 
   ClearStruct(FPluginInfo);
   ClearPluginInfo(FPluginInfo);
 
   // far\Examples\Compare\compare.cpp
-  FConsoleInput = CreateFile(L"CONIN$", GENERIC_READ, FILE_SHARE_READ, NULL,
-    OPEN_EXISTING, 0, NULL);
-  FConsoleOutput = CreateFile(L"CONOUT$", GENERIC_READ | GENERIC_WRITE,
-    FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+  FConsoleInput = ::CreateFile(L"CONIN$", GENERIC_READ, FILE_SHARE_READ, nullptr,
+    OPEN_EXISTING, 0, nullptr);
+  FConsoleOutput = ::CreateFile(L"CONOUT$", GENERIC_READ | GENERIC_WRITE,
+    FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
   if (ConsoleWindowState() == SW_SHOWNORMAL)
   {
     FNormalConsoleSize = TerminalInfo();
@@ -69,12 +69,12 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
 //---------------------------------------------------------------------------
 TCustomFarPlugin::~TCustomFarPlugin()
 {
-  assert(FTopDialog == NULL);
+  assert(FTopDialog == nullptr);
 
   ResetCachedInfo();
-  CloseHandle(FConsoleInput);
+  ::CloseHandle(FConsoleInput);
   FConsoleInput = INVALID_HANDLE_VALUE;
-  CloseHandle(FConsoleOutput);
+  ::CloseHandle(FConsoleOutput);
   FConsoleOutput = INVALID_HANDLE_VALUE;
 
   ClearPluginInfo(FPluginInfo);
@@ -107,8 +107,8 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
             Info->StructSize >= static_cast<intptr_t>(sizeof(FStartupInfo)) ?
             sizeof(FStartupInfo) : static_cast<size_t>(Info->StructSize));
     // the minimum we really need
-    assert(FStartupInfo.GetMsg != NULL);
-    assert(FStartupInfo.Message != NULL);
+    assert(FStartupInfo.GetMsg != nullptr);
+    assert(FStartupInfo.Message != nullptr);
 
     ClearStruct(FFarStandardFunctions);
     size_t FSFOffset = (static_cast<const char *>(reinterpret_cast<const void *>(&Info->FSF)) -
@@ -200,7 +200,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
       } \
       nb_free((void*)Info.NAME.Strings); \
       nb_free((void*)Info.NAME.Guids); \
-      Info.NAME.Strings = NULL;
+      Info.NAME.Strings = nullptr;
 
       FREESTRINGARRAY(DiskMenu);
       FREESTRINGARRAY(PluginMenu);
@@ -218,7 +218,7 @@ wchar_t * TCustomFarPlugin::DuplicateStr(const UnicodeString & Str, bool AllowEm
 {
   if (Str.IsEmpty() && !AllowEmpty)
   {
-    return NULL;
+    return nullptr;
   }
   else
   {
@@ -250,11 +250,11 @@ RECT TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
 TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
     HANDLE /* Plugin */)
 {
-  TCustomFarFileSystem * Result = NULL;
+  TCustomFarFileSystem * Result = nullptr;
   RECT ActivePanelBounds = GetPanelBounds(PANEL_ACTIVE);
   RECT PassivePanelBounds = GetPanelBounds(PANEL_PASSIVE);
 
-  TCustomFarFileSystem * FileSystem = NULL;
+  TCustomFarFileSystem * FileSystem = nullptr;
   intptr_t Index = 0;
   while (!Result && (Index < FOpenedPlugins->GetCount()))
   {
@@ -755,10 +755,10 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin * Plugin,
   TFarDialog(Plugin),
   FCheckBoxChecked(false),
   FParams(Params),
-  FTimeoutButton(NULL),
-  FCheckBox(NULL)
+  FTimeoutButton(nullptr),
+  FCheckBox(nullptr)
 {
-  assert(Params != NULL);
+  assert(Params != nullptr);
 }
 //---------------------------------------------------------------------------
 void TFarMessageDialog::Init(uintptr_t AFlags,
@@ -772,9 +772,9 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
   std::auto_ptr<TStrings> MessageLines(new TStringList());
   FarWrapText(Message, MessageLines.get(), MaxMessageWidth);
   intptr_t MaxLen = GetFarPlugin()->MaxLength(MessageLines.get());
-  TStrings * MoreMessageLines = NULL;
-  std::auto_ptr<TStrings> MoreMessageLinesPtr(NULL);
-  if (FParams->MoreMessages != NULL)
+  TStrings * MoreMessageLines = nullptr;
+  std::auto_ptr<TStrings> MoreMessageLinesPtr(nullptr);
+  if (FParams->MoreMessages != nullptr)
   {
     MoreMessageLines = new TStringList();
     MoreMessageLinesPtr.reset(MoreMessageLines);
@@ -804,10 +804,10 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
     Text->SetCaption(MessageLines->GetString(Index));
   }
 
-  TFarLister * MoreMessagesLister = NULL;
-  TFarSeparator * MoreMessagesSeparator = NULL;
+  TFarLister * MoreMessagesLister = nullptr;
+  TFarSeparator * MoreMessagesSeparator = nullptr;
 
-  if (FParams->MoreMessages != NULL)
+  if (FParams->MoreMessages != nullptr)
   {
     new TFarSeparator(this);
 
@@ -820,8 +820,8 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
 
   int ButtonOffset = (FParams->CheckBoxLabel.IsEmpty() ? -1 : -2);
   int ButtonLines = 1;
-  TFarButton * Button = NULL;
-  FTimeoutButton = NULL;
+  TFarButton * Button = nullptr;
+  FTimeoutButton = nullptr;
   for (intptr_t Index = 0; Index < Buttons->GetCount(); ++Index)
   {
     TFarButton * PrevButton = Button;
@@ -843,7 +843,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
     Button->SetResult(Index + 1);
     Button->SetCenterGroup(true);
     Button->SetTag(reinterpret_cast<intptr_t>(Buttons->GetObject(Index)));
-    if (PrevButton != NULL)
+    if (PrevButton != nullptr)
     {
       Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
     }
@@ -853,7 +853,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
       for (intptr_t PIndex = 0; PIndex < GetItemCount(); ++PIndex)
       {
         TFarButton * PrevButton = dynamic_cast<TFarButton *>(GetItem(PIndex));
-        if ((PrevButton != NULL) && (PrevButton != Button))
+        if ((PrevButton != nullptr) && (PrevButton != Button))
         {
           PrevButton->Move(0, -1);
         }
@@ -883,21 +883,21 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
   }
   else
   {
-    FCheckBox = NULL;
+    FCheckBox = nullptr;
   }
 
   TRect rect = GetClientRect();
   TPoint S(
     static_cast<int>(rect.Left + MaxLen - rect.Right),
     static_cast<int>(rect.Top + MessageLines->GetCount() +
-    (FParams->MoreMessages != NULL ? 1 : 0) + ButtonLines +
+    (FParams->MoreMessages != nullptr ? 1 : 0) + ButtonLines +
     (!FParams->CheckBoxLabel.IsEmpty() ? 1 : 0) +
     (-(rect.Bottom + 1))));
 
-  if (FParams->MoreMessages != NULL)
+  if (FParams->MoreMessages != nullptr)
   {
     intptr_t MoreMessageHeight = static_cast<intptr_t>(GetFarPlugin()->TerminalInfo().y - S.y - 1);
-    assert(MoreMessagesLister != NULL);
+    assert(MoreMessagesLister != nullptr);
     if (MoreMessageHeight > MoreMessagesLister->GetItems()->GetCount())
     {
       MoreMessageHeight = MoreMessagesLister->GetItems()->GetCount();
@@ -906,7 +906,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
     MoreMessagesLister->SetRight(
       GetBorderBox()->GetRight() - (MoreMessagesLister->GetScrollBar() ? 0 : 1));
     MoreMessagesLister->SetTabStop(MoreMessagesLister->GetScrollBar());
-    assert(MoreMessagesSeparator != NULL);
+    assert(MoreMessagesSeparator != nullptr);
     MoreMessagesSeparator->SetPosition(
       MoreMessagesLister->GetTop() + MoreMessagesLister->GetHeight());
     S.y += static_cast<int>(MoreMessagesLister->GetHeight()) + 1;
@@ -943,7 +943,7 @@ void TFarMessageDialog::Idle()
     size_t Running = static_cast<size_t>((static_cast<double>(Now()) - static_cast<double>(FStartTime)) * 24*60*60*1000);
     if (Running >= FParams->Timeout)
     {
-      assert(FTimeoutButton != NULL);
+      assert(FTimeoutButton != nullptr);
       Close(FTimeoutButton);
     }
     else
@@ -962,14 +962,14 @@ void TFarMessageDialog::Change()
 {
   TFarDialog::Change();
 
-  if (GetHandle() != NULL)
+  if (GetHandle() != nullptr)
   {
-    if ((FCheckBox != NULL) && (FCheckBoxChecked != FCheckBox->GetChecked()))
+    if ((FCheckBox != nullptr) && (FCheckBoxChecked != FCheckBox->GetChecked()))
     {
       for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
       {
         TFarButton * Button = dynamic_cast<TFarButton *>(GetItem(Index));
-        if ((Button != NULL) && (Button->GetTag() == 0))
+        if ((Button != nullptr) && (Button->GetTag() == 0))
         {
           Button->SetEnabled(!FCheckBox->GetChecked());
         }
@@ -984,7 +984,7 @@ intptr_t TFarMessageDialog::Execute(bool & ACheckBox)
   FStartTime = Now();
   FLastTimerTime = FStartTime;
   FCheckBoxChecked = !ACheckBox;
-  if (FCheckBox != NULL)
+  if (FCheckBox != nullptr)
   {
     FCheckBox->SetChecked(ACheckBox);
   }
@@ -993,7 +993,7 @@ intptr_t TFarMessageDialog::Execute(bool & ACheckBox)
   assert(Result != 0);
   if (Result > 0)
   {
-    if (FCheckBox != NULL)
+    if (FCheckBox != nullptr)
     {
       ACheckBox = FCheckBox->GetChecked();
     }
@@ -1025,19 +1025,19 @@ intptr_t TCustomFarPlugin::FarMessage(unsigned int Flags,
   const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons,
   TFarMessageParams * Params)
 {
-  assert(Params != NULL);
+  assert(Params != nullptr);
 
   intptr_t Result;
-  TStringList * MessageLines = NULL;
-  std::auto_ptr<TStrings> MessageLinesPtr(NULL);
-  wchar_t ** Items = NULL;
+  TStringList * MessageLines = nullptr;
+  std::auto_ptr<TStrings> MessageLinesPtr(nullptr);
+  wchar_t ** Items = nullptr;
   auto cleanup = finally([&]()
   {
     nb_free(Items);
   });
   {
     UnicodeString FullMessage = Message;
-    if (Params->MoreMessages != NULL)
+    if (Params->MoreMessages != nullptr)
     {
       FullMessage += UnicodeString(L"\n\x01\n") + Params->MoreMessages->GetText();
       while (FullMessage[FullMessage.Length()] == L'\n' ||
@@ -1078,7 +1078,7 @@ intptr_t TCustomFarPlugin::FarMessage(unsigned int Flags,
 
     TFarEnvGuard Guard;
     Result = static_cast<intptr_t>(FStartupInfo.Message(&MainGuid, &MainGuid,
-      Flags | FMSG_LEFTALIGN, NULL, Items, static_cast<int>(MessageLines->GetCount()),
+      Flags | FMSG_LEFTALIGN, nullptr, Items, static_cast<int>(MessageLines->GetCount()),
       static_cast<int>(Buttons->GetCount())));
   }
 
@@ -1093,24 +1093,24 @@ intptr_t TCustomFarPlugin::Message(uintptr_t Flags,
   // make the output actually background of FAR screen
   if (FTerminalScreenShowing)
   {
-    FarControl(FCTL_SETUSERSCREEN, 0, NULL);
+    FarControl(FCTL_SETUSERSCREEN, 0, 0);
   }
 
   intptr_t Result;
-  if (Buttons != NULL)
+  if (Buttons != nullptr)
   {
     TFarMessageParams DefaultParams;
-    TFarMessageParams * AParams = (Params == NULL ? &DefaultParams : Params);
+    TFarMessageParams * AParams = (Params == nullptr ? &DefaultParams : Params);
     Result = DialogMessage(Flags, Title, Message, Buttons, AParams);
   }
   else
   {
-    assert(Params == NULL);
+    assert(Params == nullptr);
     UnicodeString Items = Title + L"\n" + Message;
     TFarEnvGuard Guard;
     Result = static_cast<intptr_t>(FStartupInfo.Message(&MainGuid, &MainGuid,
       Flags | FMSG_ALLINONE | FMSG_LEFTALIGN,
-      NULL,
+      nullptr,
       static_cast<const wchar_t * const *>(static_cast<const void *>(Items.c_str())), 0, 0));
   }
   return Result;
@@ -1128,7 +1128,7 @@ intptr_t TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString & Title,
       Flags,
       Title.c_str(),
       Bottom.c_str(),
-      NULL,
+      nullptr,
       BreakKeys,
       &BreakCode,
       Items,
@@ -1192,7 +1192,7 @@ intptr_t TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString & Title,
   const UnicodeString & Bottom, TStrings * Items)
 {
   intptr_t BreakCode;
-  return Menu(Flags, Title, Bottom, Items, NULL, BreakCode);
+  return Menu(Flags, Title, Bottom, Items, nullptr, BreakCode);
 }
 //---------------------------------------------------------------------------
 bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
@@ -1219,7 +1219,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
         AText.c_str(),
         const_cast<wchar_t *>(DestText.c_str()),
         static_cast<int>(MaxLen),
-        NULL,
+        nullptr,
         FIB_ENABLEEMPTY | FIB_BUTTONS | Flags);
     }
     RestoreScreen(ScreenHandle);
@@ -1260,13 +1260,13 @@ void TCustomFarPlugin::Text(int X, int Y, int Color, const UnicodeString & Str)
 void TCustomFarPlugin::FlushText()
 {
   TFarEnvGuard Guard;
-  FStartupInfo.Text(0, 0, 0, NULL);
+  FStartupInfo.Text(0, 0, 0, nullptr);
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::WriteConsole(const UnicodeString & Str)
 {
   unsigned long Written;
-  ::WriteConsole(FConsoleOutput, Str.c_str(), static_cast<DWORD>(Str.Length()), &Written, NULL);
+  ::WriteConsole(FConsoleOutput, Str.c_str(), static_cast<DWORD>(Str.Length()), &Written, nullptr);
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::FarCopyToClipboard(const UnicodeString & Str)
@@ -1298,12 +1298,12 @@ TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor) const
 
   TPoint Result(BufferInfo.dwSize.X, BufferInfo.dwSize.Y);
 
-  if (Size != NULL)
+  if (Size != nullptr)
   {
     *Size = Result;
   }
 
-  if (Cursor != NULL)
+  if (Cursor != nullptr)
   {
     Cursor->x = BufferInfo.dwCursorPosition.X;
     Cursor->y = BufferInfo.dwCursorPosition.Y;
@@ -1315,7 +1315,7 @@ HWND TCustomFarPlugin::GetConsoleWindow() const
 {
   wchar_t Title[1024];
   ::GetConsoleTitle(Title, sizeof(Title) - 1);
-  HWND Result = ::FindWindow(NULL, Title);
+  HWND Result = ::FindWindow(nullptr, Title);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1323,7 +1323,7 @@ uintptr_t TCustomFarPlugin::ConsoleWindowState() const
 {
   uintptr_t Result;
   HWND Window = GetConsoleWindow();
-  if (Window != NULL)
+  if (Window != nullptr)
   {
     WINDOWPLACEMENT WindowPlacement;
     ClearStruct(WindowPlacement);
@@ -1341,7 +1341,7 @@ uintptr_t TCustomFarPlugin::ConsoleWindowState() const
 void TCustomFarPlugin::ToggleVideoMode()
 {
   HWND Window = GetConsoleWindow();
-  if (Window != NULL)
+  if (Window != nullptr)
   {
     if (ConsoleWindowState() == SW_SHOWMAXIMIZED)
     {
@@ -1400,7 +1400,7 @@ void TCustomFarPlugin::ScrollTerminalScreen(int Rows)
   Dest.Y = 0;
   Fill.Char.UnicodeChar = L' ';
   Fill.Attributes = 7;
-  ::ScrollConsoleScreenBuffer(FConsoleOutput, &Source, NULL, Dest, &Fill);
+  ::ScrollConsoleScreenBuffer(FConsoleOutput, &Source, nullptr, Dest, &Fill);
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::ShowTerminalScreen()
@@ -1426,7 +1426,7 @@ void TCustomFarPlugin::ShowTerminalScreen()
 void TCustomFarPlugin::SaveTerminalScreen()
 {
   FTerminalScreenShowing = false;
-  FarControl(FCTL_SETUSERSCREEN, 0, NULL);
+  FarControl(FCTL_SETUSERSCREEN, 0, 0);
 }
 //---------------------------------------------------------------------------
 class TConsoleTitleParam : public TObject
@@ -1706,7 +1706,7 @@ TFarEditorInfo * TCustomFarPlugin::EditorInfo()
     else
     {
       nb_free(Info);
-      Result = NULL;
+      Result = nullptr;
     }
   }
   catch (...)
@@ -1738,7 +1738,7 @@ UnicodeString TCustomFarPlugin::TemporaryDir() const
   {
     Result.SetLength(MAX_PATH);
     TFarEnvGuard Guard;
-    FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), (DWORD)Result.Length(), NULL);
+    FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), (DWORD)Result.Length(), nullptr);
     PackStr(Result);
     FTemporaryDir = Result;
   }
@@ -1753,7 +1753,6 @@ int TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD * Rec)
 {
   int Result;
   /*
-  if (FFarStandardFunctions.FarInputRecordToKey != NULL)
   {
     TFarEnvGuard Guard;
     Result = FFarStandardFunctions.FarInputRecordToKey(Rec);
@@ -1786,7 +1785,7 @@ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
   TObject(),
   FPlugin(APlugin),
   FClosed(false),
-  FCriticalSection(NULL)
+  FCriticalSection(nullptr)
 {
   memset(FPanelInfo, 0, sizeof(FPanelInfo));
 }
@@ -1794,8 +1793,8 @@ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
 void TCustomFarFileSystem::Init()
 {
   FCriticalSection = new TCriticalSection();
-  FPanelInfo[0] = NULL;
-  FPanelInfo[1] = NULL;
+  FPanelInfo[0] = nullptr;
+  FPanelInfo[1] = nullptr;
   FClosed = false;
 
   ClearStruct(FOpenPanelInfo);
@@ -1925,7 +1924,7 @@ intptr_t TCustomFarFileSystem::GetFindData(struct GetFindDataInfo *Info)
   }
   else
   {
-    Info->PanelItem = NULL;
+    Info->PanelItem = nullptr;
     Info->ItemsNumber = 0;
   }
 
@@ -2063,7 +2062,7 @@ const TFarPanelInfo * TCustomFarFileSystem::GetPanelInfo(int Another) const
 TFarPanelInfo * TCustomFarFileSystem::GetPanelInfo(int Another)
 {
   bool bAnother = Another != 0;
-  if (FPanelInfo[bAnother] == NULL)
+  if (FPanelInfo[bAnother] == nullptr)
   {
     PanelInfo * Info = static_cast<PanelInfo *>(
       nb_calloc(1, sizeof(PanelInfo)));
@@ -2075,7 +2074,7 @@ TFarPanelInfo * TCustomFarFileSystem::GetPanelInfo(int Another)
       memset(Info, 0, sizeof(*Info));
       assert(false);
     }
-    FPanelInfo[bAnother] = new TFarPanelInfo(Info, !bAnother ? this : NULL);
+    FPanelInfo[bAnother] = new TFarPanelInfo(Info, !bAnother ? this : nullptr);
   }
   return FPanelInfo[bAnother];
 }
@@ -2094,7 +2093,7 @@ bool TCustomFarFileSystem::UpdatePanel(bool ClearSelection, bool Another)
 {
   uintptr_t PrevInstances = FInstances;
   InvalidateOpenPanelInfo();
-  FPlugin->FarControl(FCTL_UPDATEPANEL, !ClearSelection, NULL, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
+  FPlugin->FarControl(FCTL_UPDATEPANEL, !ClearSelection, 0, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
   return (FInstances >= PrevInstances);
 }
 //---------------------------------------------------------------------------
@@ -2106,7 +2105,7 @@ void TCustomFarFileSystem::RedrawPanel(bool Another)
 void TCustomFarFileSystem::ClosePanel()
 {
   FClosed = true;
-  FarControl(FCTL_CLOSEPANEL, 0, NULL);
+  FarControl(FCTL_CLOSEPANEL, 0, 0);
 }
 //---------------------------------------------------------------------------
 UnicodeString TCustomFarFileSystem::GetMsg(int MsgId)
@@ -2230,7 +2229,7 @@ void TFarPanelModes::SetPanelMode(size_t Mode, const UnicodeString & ColumnTypes
   }
   else
   {
-    FPanelModes[Mode].ColumnTitles = NULL;
+    FPanelModes[Mode].ColumnTitles = nullptr;
   }
   SetFlag(FPanelModes[Mode].Flags, FullScreen, PMFLAGS_FULLSCREEN);
   SetFlag(FPanelModes[Mode].Flags, DetailedStatus, PMFLAGS_DETAILEDSTATUS);
@@ -2437,7 +2436,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
 //---------------------------------------------------------------------------
 TFarPanelItem::TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem):
   TCustomFarPanelItem(),
-  FPanelItem(NULL),
+  FPanelItem(nullptr),
   FOwnsItem(false)
 {
   assert(APanelItem);
@@ -2449,7 +2448,7 @@ TFarPanelItem::~TFarPanelItem()
 {
   if (FOwnsItem)
     nb_free(FPanelItem);
-  FPanelItem = NULL;
+  FPanelItem = nullptr;
 }
 
 //---------------------------------------------------------------------------
@@ -2538,7 +2537,7 @@ void THintPanelItem::GetData(
 TFarPanelInfo::TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner):
   TObject(),
   FPanelInfo(APanelInfo),
-  FItems(NULL),
+  FItems(nullptr),
   FOwner(AOwner)
 {
   // if (!FPanelInfo) throw ExtException(L"");
@@ -2568,7 +2567,7 @@ intptr_t TFarPanelInfo::GetSelectedCount() const
 
   if ((Count == 1) && FOwner)
   {
-    intptr_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, NULL);
+    intptr_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, 0);
     PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_calloc(1, size));
     FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, reinterpret_cast<void *>(ppi));
     if ((ppi->Flags & PPIF_SELECTED) == 0)
@@ -2592,7 +2591,7 @@ TObjectList * TFarPanelInfo::GetItems()
     for (intptr_t Index = 0; Index < FPanelInfo->ItemsNumber; ++Index)
     {
       // TODO: move to common function
-      intptr_t Size = FOwner->FarControl(FCTL_GETPANELITEM, Index, NULL);
+      intptr_t Size = FOwner->FarControl(FCTL_GETPANELITEM, Index, 0);
       PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_calloc(1, Size));
       FarGetPluginPanelItem gppi;
       gppi.StructSize = sizeof(FarGetPluginPanelItem);
@@ -2617,7 +2616,7 @@ TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & FileName) cons
       return PanelItem;
     }
   }
-  return NULL;
+  return nullptr;
 }
 //---------------------------------------------------------------------------
 const TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData) const
@@ -2636,13 +2635,13 @@ TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData)
       return PanelItem;
     }
   }
-  return NULL;
+  return nullptr;
 }
 //---------------------------------------------------------------------------
 void TFarPanelInfo::ApplySelection()
 {
   // for "another panel info", there's no owner
-  assert(FOwner != NULL);
+  assert(FOwner != nullptr);
   FOwner->FarControl(FCTL_SETSELECTION, 0, reinterpret_cast<void *>(FPanelInfo));
 }
 //---------------------------------------------------------------------------
@@ -2657,7 +2656,7 @@ TFarPanelItem * TFarPanelInfo::GetFocusedItem()
   }
   else
   {
-    return NULL;
+    return nullptr;
   }
 }
 //---------------------------------------------------------------------------
@@ -2677,7 +2676,7 @@ intptr_t TFarPanelInfo::GetFocusedIndex() const
 void TFarPanelInfo::SetFocusedIndex(intptr_t Value)
 {
   // for "another panel info", there's no owner
-  assert(FOwner != NULL);
+  assert(FOwner != nullptr);
   if (GetFocusedIndex() != Value)
   {
     assert(Value != NPOS && Value < FPanelInfo->ItemsNumber);
@@ -2721,9 +2720,9 @@ UnicodeString TFarPanelInfo::GetCurrentDirectory() const
 {
   UnicodeString Result = L"";
   intptr_t Size = FarPlugin->FarControl(FCTL_GETPANELDIRECTORY,
-                                      0,
-                                      NULL,
-                                      FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
+    0,
+    0,
+    FOwner != nullptr ? PANEL_ACTIVE : PANEL_PASSIVE);
   if (Size)
   {
     FarPanelDirectory * pfpd = static_cast<FarPanelDirectory *>(nb_malloc(Size));
@@ -2731,7 +2730,7 @@ UnicodeString TFarPanelInfo::GetCurrentDirectory() const
     FarPlugin->FarControl(FCTL_GETPANELDIRECTORY,
       Size,
       pfpd,
-      FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
+      FOwner != nullptr ? PANEL_ACTIVE : PANEL_PASSIVE);
     Result = pfpd->Name;
     nb_free(pfpd);
   }
@@ -2852,7 +2851,7 @@ intptr_t TFarEditorInfo::GetEditorID() const
 UnicodeString TFarEditorInfo::GetFileName()
 {
   UnicodeString Result = L"";
-  intptr_t BuffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, 0, NULL);
+  intptr_t BuffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, 0, 0);
   if (BuffLen)
   {
     Result.SetLength(BuffLen + 1);
@@ -2864,12 +2863,12 @@ UnicodeString TFarEditorInfo::GetFileName()
 //---------------------------------------------------------------------------
 TFarEnvGuard::TFarEnvGuard()
 {
-  assert(FarPlugin != NULL);
+  assert(FarPlugin != nullptr);
 }
 //---------------------------------------------------------------------------
 TFarEnvGuard::~TFarEnvGuard()
 {
-  assert(FarPlugin != NULL);
+  assert(FarPlugin != nullptr);
   /*
   if (!FarPlugin->GetANSIApis())
   {
@@ -2886,12 +2885,12 @@ TFarEnvGuard::~TFarEnvGuard()
 //---------------------------------------------------------------------------
 TFarPluginEnvGuard::TFarPluginEnvGuard()
 {
-  assert(FarPlugin != NULL);
+  assert(FarPlugin != nullptr);
 }
 //---------------------------------------------------------------------------
 TFarPluginEnvGuard::~TFarPluginEnvGuard()
 {
-  assert(FarPlugin != NULL);
+  assert(FarPlugin != nullptr);
 }
 //---------------------------------------------------------------------------
 void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidth)
@@ -2952,7 +2951,7 @@ TGlobalFunctions::~TGlobalFunctions()
 //------------------------------------------------------------------------------
 HINSTANCE TGlobalFunctions::GetHandle() const
 {
-  HINSTANCE Result = NULL;
+  HINSTANCE Result = nullptr;
   if (FarPlugin)
   {
     Result = FarPlugin->GetHandle();

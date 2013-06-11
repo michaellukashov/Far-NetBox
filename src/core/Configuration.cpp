@@ -20,7 +20,7 @@ TConfiguration::TConfiguration() :
   FDontSave(false),
   FChanged(false),
   FUpdating(0),
-  FApplicationInfo(NULL),
+  FApplicationInfo(nullptr),
   FLogging(false),
   FPermanentLogging(false),
   FLogWindowLines(0),
@@ -47,13 +47,13 @@ TConfiguration::TConfiguration() :
   FDisableAcceptingHostKeys(false),
   FDefaultCollectUsage(false),
   FSessionReopenAutoMaximumNumberOfRetries(0),
-  FCriticalSection(NULL)
+  FCriticalSection(nullptr)
 {
   FCriticalSection = new TCriticalSection();
   FUpdating = 0;
   FStorage = stRegistry;
   FDontSave = false;
-  FApplicationInfo = NULL;
+  FApplicationInfo = nullptr;
   // FUsage = new TUsage(this);
   // FDefaultCollectUsage = false;
 
@@ -154,7 +154,7 @@ THierarchicalStorage * TConfiguration::CreateStorage(bool /*SessionList*/)
     Classes::Error(SNotImplemented, 3005);
   }
   assert(false);
-  return NULL;
+  return nullptr;
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
@@ -248,8 +248,8 @@ void TConfiguration::Export(const UnicodeString & /*FileName*/)
   Classes::Error(SNotImplemented, 3004);
   /*
   std::auto_ptr<THierarchicalStorage> Storage(CreateScpStorage(false));
-  std::auto_ptr<THierarchicalStorage> ExportStorage(NULL);
-  ExportStorage = NULL; // new TIniFileStorage(FileName);
+  std::auto_ptr<THierarchicalStorage> ExportStorage(nullptr);
+  ExportStorage = nullptr; // new TIniFileStorage(FileName);
   ExportStorage->SetAccessMode(smReadWrite);
   ExportStorage->SetExplicit(true);
 
@@ -549,7 +549,7 @@ void TConfiguration::CleanupRandomSeedFile()
   try
   {
     DontSaveRandomSeed();
-    if (FileExists(GetRandomSeedFileName()))
+    if (::FileExists(GetRandomSeedFileName()))
     {
       if (!DeleteFile(GetRandomSeedFileName()))
       {
@@ -568,7 +568,7 @@ void TConfiguration::CleanupIniFile()
   try
   {
 #if 0
-    if (FileExists(GetIniFileStorageNameForReading()))
+    if (::FileExists(GetIniFileStorageNameForReading()))
     {
       if (!DeleteFile(GetIniFileStorageNameForReading()))
       {
@@ -780,7 +780,7 @@ UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key,
     }
   });
   {
-    if ((Info != NULL) && (GetTranslationCount(Info) > 0))
+    if ((Info != nullptr) && (GetTranslationCount(Info) > 0))
     {
       TTranslation Translation = GetTranslation(Info, 0);
       try
@@ -843,7 +843,7 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
     UnicodeString ProgramIniPath = ChangeFileExt(ProgramPath, L".ini");
 
     UnicodeString IniPath;
-    if (FileExists(ProgramIniPath))
+    if (::FileExists(ProgramIniPath))
     {
       IniPath = ProgramIniPath;
     }
@@ -852,7 +852,7 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
       UnicodeString AppDataIniPath =
         IncludeTrailingBackslash(GetShellFolderPath(CSIDL_APPDATA)) +
         ExtractFileName(ProgramIniPath);
-      if (FileExists(AppDataIniPath))
+      if (::FileExists(AppDataIniPath))
       {
         IniPath = AppDataIniPath;
       }
@@ -887,7 +887,7 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
     }
 
     if (!FVirtualIniFileStorageName.IsEmpty() &&
-        FileExists(FVirtualIniFileStorageName))
+        ::FileExists(FVirtualIniFileStorageName))
     {
       return FVirtualIniFileStorageName;
     }
@@ -961,7 +961,7 @@ TStorage TConfiguration::GetStorage()
 {
   if (FStorage == stDetect)
   {
-    /*if (FileExists(IniFileStorageNameForReading))
+    /*if (::FileExists(IniFileStorageNameForReading))
     {
       FStorage = stIniFile;
     }
@@ -989,7 +989,7 @@ void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
 
     if (!PrevRandomSeedFileName.IsEmpty() &&
         (PrevRandomSeedFileName != GetRandomSeedFileName()) &&
-        FileExists(PrevRandomSeedFileName))
+        ::FileExists(PrevRandomSeedFileName))
     {
       // ignore any error
       DeleteFile(PrevRandomSeedFileName);

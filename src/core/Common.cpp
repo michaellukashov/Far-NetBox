@@ -36,7 +36,7 @@ typedef struct _TIME_DYNAMIC_ZONE_INFORMATION {
 TGuard::TGuard(TCriticalSection * ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
-  assert(ACriticalSection != NULL);
+  assert(ACriticalSection != nullptr);
   FCriticalSection->Enter();
 }
 //---------------------------------------------------------------------------
@@ -50,7 +50,7 @@ TGuard::~TGuard()
 TUnguard::TUnguard(TCriticalSection * ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
-  assert(ACriticalSection != NULL);
+  assert(ACriticalSection != nullptr);
   FCriticalSection->Leave();
 }
 //---------------------------------------------------------------------------
@@ -229,14 +229,14 @@ UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
 
   if (P <= Str.Length())
   {
-    if (Delimiter != NULL)
+    if (Delimiter != nullptr)
     {
       *Delimiter = Str[P];
     }
   }
   else
   {
-    if (Delimiter != NULL)
+    if (Delimiter != nullptr)
     {
       *Delimiter = L'\0';
     }
@@ -283,7 +283,7 @@ UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote)
 UnicodeString ExceptionLogString(Exception *E)
 {
   assert(E);
-  if (dynamic_cast<Exception *>(E) != NULL)
+  if (dynamic_cast<Exception *>(E) != nullptr)
   {
     UnicodeString Msg;
 #if defined(__BORLANDC__)
@@ -291,7 +291,7 @@ UnicodeString ExceptionLogString(Exception *E)
 #else
     Msg = FORMAT(L"%s", ::MB2W(E->what()).c_str());
 #endif
-    if (dynamic_cast<ExtException *>(E) != NULL)
+    if (dynamic_cast<ExtException *>(E) != nullptr)
     {
       TStrings * MoreMessages = dynamic_cast<ExtException *>(E)->GetMoreMessages();
       if (MoreMessages)
@@ -333,7 +333,7 @@ UnicodeString GetShellFolderPath(int CSIdl)
 {
   UnicodeString Result;
   wchar_t Path[2 * MAX_PATH + 10] = L"\0";
-  if (SUCCEEDED(SHGetFolderPath(NULL, CSIdl, NULL, SHGFP_TYPE_CURRENT, Path)))
+  if (SUCCEEDED(SHGetFolderPath(nullptr, CSIdl, nullptr, SHGFP_TYPE_CURRENT, Path)))
   {
     Result = Path;
   }
@@ -403,7 +403,7 @@ UnicodeString ValidLocalFileName(
     UnicodeString CharsStr = ATokenReplacement ? TokenizibleChars : LocalInvalidChars;
     const wchar_t * Chars = CharsStr.c_str();
     wchar_t * InvalidChar = const_cast<wchar_t *>(FileName2.c_str());
-    while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != NULL)
+    while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != nullptr)
     {
       intptr_t Pos = (InvalidChar - FileName2.c_str() + 1);
       wchar_t Char;
@@ -926,13 +926,13 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
     TGetTimeZoneInformationForYear GetTimeZoneInformationForYear =
       (TGetTimeZoneInformationForYear)GetProcAddress(Kernel32, "GetTimeZoneInformationForYear");
 
-    if ((Year == 0) || (GetTimeZoneInformationForYear == NULL))
+    if ((Year == 0) || (GetTimeZoneInformationForYear == nullptr))
     {
       GTZI = GetTimeZoneInformation(&TZI);
     }
     else
     {
-      GetTimeZoneInformationForYear(Year, NULL, &TZI);
+      GetTimeZoneInformationForYear(Year, nullptr, &TZI);
       GTZI = TIME_ZONE_ID_UNKNOWN;
     }
 
@@ -1187,7 +1187,7 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
   {
     SYSTEMTIME UniverzalSysTime;
     FileTimeToSystemTime(&FileTime, &UniverzalSysTime);
-    SystemTimeToTzSpecificLocalTime(NULL, &UniverzalSysTime, &SysTime);
+    SystemTimeToTzSpecificLocalTime(nullptr, &UniverzalSysTime, &SysTime);
   }
   else
   {
@@ -1371,7 +1371,7 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
     }
     else
     {
-      if (!AsIs && (wcschr(L"dDeEmMhHnNsS", F) != NULL) &&
+      if (!AsIs && (wcschr(L"dDeEmMhHnNsS", F) != nullptr) &&
           ((Index == Result.Length()) || (Result[Index + 1] != F)))
       {
         Result.Insert(F, Index);
@@ -1485,7 +1485,7 @@ bool RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin)
   SHFILEOPSTRUCT Data;
 
   ClearStruct(Data);
-  Data.hwnd = NULL;
+  Data.hwnd = nullptr;
   Data.wFunc = FO_DELETE;
   UnicodeString FileList(FileName);
   FileList.SetLength(FileList.Length() + 2);
@@ -1747,7 +1747,7 @@ bool CutToken(UnicodeString & Str, UnicodeString & Token,
       }
     }
 
-    if (RawToken != NULL)
+    if (RawToken != nullptr)
     {
       (*RawToken) = Str.SubString(1, Index - 1);
     }
@@ -1803,7 +1803,7 @@ bool IsExactly2008R2()
   TGetProductInfo GetProductInfo =
       (TGetProductInfo)GetProcAddress(Kernel32, "GetProductInfo");
   bool Result = false;
-  if (GetProductInfo != NULL)
+  if (GetProductInfo != nullptr)
   {
     DWORD Type;
     GetProductInfo(Win32MajorVersion, Win32MinorVersion, 0, 0, &Type);
@@ -1892,12 +1892,12 @@ bool IsDirectoryWriteable(const UnicodeString & Path)
   UnicodeString FileName =
     ::IncludeTrailingPathDelimiter(Path) +
     FORMAT(L"wscp_%s_%d.tmp", FormatDateTime(L"nnzzz", Now()).c_str(), int(GetCurrentProcessId()));
-  HANDLE Handle = CreateFile(FileName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL,
+  HANDLE Handle = ::CreateFile(FileName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
     CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, 0);
   bool Result = (Handle != INVALID_HANDLE_VALUE);
   if (Result)
   {
-    CloseHandle(Handle);
+    ::CloseHandle(Handle);
   }
   return Result;
 }

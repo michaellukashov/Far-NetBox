@@ -102,8 +102,8 @@ public:
 
   static wchar_t * DuplicateStr(const UnicodeString & Str, bool AllowEmpty = false);
   intptr_t Message(uintptr_t Flags, const UnicodeString & Title,
-    const UnicodeString & Message, TStrings * Buttons = NULL,
-    TFarMessageParams * Params = NULL);
+    const UnicodeString & Message, TStrings * Buttons = nullptr,
+    TFarMessageParams * Params = nullptr);
   intptr_t MaxMessageLines();
   intptr_t MaxMenuItemLength();
   intptr_t Menu(unsigned int Flags, const UnicodeString & Title,
@@ -117,7 +117,7 @@ public:
     const FarKey * BreakKeys, intptr_t & BreakCode);
   bool InputBox(const UnicodeString & Title, const UnicodeString & Prompt,
     UnicodeString & Text, PLUGINPANELITEMFLAGS Flags, const UnicodeString & HistoryName = L"",
-    intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = NULL);
+    intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = nullptr);
   UnicodeString GetMsg(intptr_t MsgId);
   void SaveScreen(HANDLE & Screen);
   void RestoreScreen(HANDLE & Screen);
@@ -146,7 +146,7 @@ public:
   void ShowTerminalScreen();
   void SaveTerminalScreen();
   void ScrollTerminalScreen(int Rows);
-  TPoint TerminalInfo(TPoint * Size = NULL, TPoint * Cursor = NULL) const;
+  TPoint TerminalInfo(TPoint * Size = nullptr, TPoint * Cursor = nullptr) const;
   uintptr_t ConsoleWindowState() const;
   void ToggleVideoMode();
 
@@ -328,7 +328,7 @@ public:
   virtual ~TFarPanelModes();
 
   void SetPanelMode(size_t Mode, const UnicodeString & ColumnTypes = UnicodeString(),
-    const UnicodeString & ColumnWidths = UnicodeString(), TStrings * ColumnTitles = NULL,
+    const UnicodeString & ColumnWidths = UnicodeString(), TStrings * ColumnTitles = nullptr,
     bool FullScreen = false, bool DetailedStatus = true, bool AlignExtensions = true,
     bool CaseConversion = true, const UnicodeString & StatusColumnTypes = UnicodeString(),
     const UnicodeString & StatusColumnWidths = UnicodeString());

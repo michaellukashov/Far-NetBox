@@ -11,11 +11,11 @@
 bool ExceptionMessage(const Exception * E, UnicodeString & Message)
 {
   bool Result = true;
-  if (dynamic_cast<const EAbort *>(E) != NULL)
+  if (dynamic_cast<const EAbort *>(E) != nullptr)
   {
     Result = false;
   }
-  else if (dynamic_cast<const EAccessViolation*>(E) != NULL)
+  else if (dynamic_cast<const EAccessViolation*>(E) != nullptr)
   {
     Message = LoadStr(ACCESS_VIOLATION_ERROR2);
   }
@@ -32,14 +32,14 @@ bool ExceptionMessage(const Exception * E, UnicodeString & Message)
 //---------------------------------------------------------------------------
 TStrings * ExceptionToMoreMessages(Exception * E)
 {
-  TStrings * Result = NULL;
+  TStrings * Result = nullptr;
   UnicodeString Message;
   if (ExceptionMessage(E, Message))
   {
     Result = new TStringList();
     Result->Add(Message);
     ExtException * ExtE = dynamic_cast<ExtException *>(E);
-    if (ExtE != NULL)
+    if (ExtE != nullptr)
     {
       Result->AddStrings(ExtE->GetMoreMessages());
     }
@@ -49,7 +49,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
 //---------------------------------------------------------------------------
 ExtException::ExtException(Exception * E) :
   Exception(L""),
-  FMoreMessages(NULL),
+  FMoreMessages(nullptr),
   FHelpKeyword()
 {
   AddMoreMessages(E);
@@ -57,14 +57,14 @@ ExtException::ExtException(Exception * E) :
 //---------------------------------------------------------------------------
 ExtException::ExtException(Exception* E, const UnicodeString & Msg):
   Exception(Msg),
-  FMoreMessages(NULL),
+  FMoreMessages(nullptr),
   FHelpKeyword()
 {
   AddMoreMessages(E);
 }
 ExtException::ExtException(ExtException* E, const UnicodeString & Msg):
   Exception(Msg),
-  FMoreMessages(NULL),
+  FMoreMessages(nullptr),
   FHelpKeyword()
 {
   AddMoreMessages(E);
@@ -72,14 +72,14 @@ ExtException::ExtException(ExtException* E, const UnicodeString & Msg):
 //---------------------------------------------------------------------------
 ExtException::ExtException(Exception * E, int Ident) :
   Exception(E, Ident),
-  FMoreMessages(NULL),
+  FMoreMessages(nullptr),
   FHelpKeyword()
 {
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const UnicodeString & Msg, Exception* E) :
   Exception(L""),
-  FMoreMessages(NULL),
+  FMoreMessages(nullptr),
   FHelpKeyword()
 {
   // "copy exception"
@@ -93,7 +93,7 @@ ExtException::ExtException(const UnicodeString & Msg, Exception* E) :
     }
     else
     {
-      if (FMoreMessages == NULL)
+      if (FMoreMessages == nullptr)
       {
         FMoreMessages = new TStringList();
       }
@@ -105,7 +105,7 @@ ExtException::ExtException(const UnicodeString & Msg, Exception* E) :
 ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages,
   const UnicodeString & HelpKeyword) :
   Exception(Msg),
-  FMoreMessages(NULL),
+  FMoreMessages(nullptr),
   FHelpKeyword(HelpKeyword)
 {
   if (!MoreMessages.IsEmpty())
@@ -118,7 +118,7 @@ ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & More
 ExtException::ExtException(const UnicodeString & Msg, TStrings * MoreMessages,
   bool Own, const UnicodeString & HelpKeyword) :
   Exception(Msg),
-  FMoreMessages(NULL),
+  FMoreMessages(nullptr),
   FHelpKeyword(HelpKeyword)
 {
   if (Own)
@@ -134,15 +134,15 @@ ExtException::ExtException(const UnicodeString & Msg, TStrings * MoreMessages,
 //---------------------------------------------------------------------------
 void ExtException::AddMoreMessages(const Exception * E)
 {
-  if (E != NULL)
+  if (E != nullptr)
   {
-    if (FMoreMessages == NULL)
+    if (FMoreMessages == nullptr)
     {
       FMoreMessages = new TStringList();
     }
 
     const ExtException * ExtE = dynamic_cast<const ExtException *>(E);
-    if (ExtE != NULL)
+    if (ExtE != nullptr)
     {
       if (!ExtE->GetHelpKeyword().IsEmpty())
       {
@@ -152,7 +152,7 @@ void ExtException::AddMoreMessages(const Exception * E)
         FHelpKeyword = ExtE->GetHelpKeyword();
       }
 
-      if (ExtE->GetMoreMessages() != NULL)
+      if (ExtE->GetMoreMessages() != nullptr)
       {
         FMoreMessages->Assign(ExtE->GetMoreMessages());
       }
@@ -175,7 +175,7 @@ void ExtException::AddMoreMessages(const Exception * E)
     if (FMoreMessages->GetCount() == 0)
     {
       delete FMoreMessages;
-      FMoreMessages = NULL;
+      FMoreMessages = nullptr;
     }
   }
 }
@@ -183,7 +183,7 @@ void ExtException::AddMoreMessages(const Exception * E)
 ExtException::~ExtException() throw()
 {
   delete FMoreMessages;
-  FMoreMessages = NULL;
+  FMoreMessages = nullptr;
 }
 //---------------------------------------------------------------------------
 ExtException * ExtException::Clone()
@@ -212,7 +212,7 @@ EFatal::EFatal(Exception * E, const UnicodeString & Msg) :
   FReopenQueried(false)
 {
   EFatal * F = dynamic_cast<EFatal *>(E);
-  if (F != NULL)
+  if (F != nullptr)
   {
     FReopenQueried = F->GetReopenQueried();
   }
@@ -235,15 +235,15 @@ ECallbackGuardAbort::ECallbackGuardAbort() : EAbort(L"callback abort")
 Exception * CloneException(Exception * E)
 {
   ExtException * Ext = dynamic_cast<ExtException *>(E);
-  if (Ext != NULL)
+  if (Ext != nullptr)
   {
     return Ext->Clone();
   }
-  else if (dynamic_cast<ECallbackGuardAbort *>(E) != NULL)
+  else if (dynamic_cast<ECallbackGuardAbort *>(E) != nullptr)
   {
     return new ECallbackGuardAbort();
   }
-  else if (dynamic_cast<EAbort *>(E) != NULL)
+  else if (dynamic_cast<EAbort *>(E) != nullptr)
   {
     return new EAbort(E->Message);
   }
@@ -255,15 +255,15 @@ Exception * CloneException(Exception * E)
 //---------------------------------------------------------------------------
 void RethrowException(Exception * E)
 {
-  if (dynamic_cast<EFatal *>(E) != NULL)
+  if (dynamic_cast<EFatal *>(E) != nullptr)
   {
     throw EFatal(E, L"");
   }
-  else if (dynamic_cast<ECallbackGuardAbort *>(E) != NULL)
+  else if (dynamic_cast<ECallbackGuardAbort *>(E) != nullptr)
   {
     throw ECallbackGuardAbort();
   }
-  else if (dynamic_cast<EAbort *>(E) != NULL)
+  else if (dynamic_cast<EAbort *>(E) != nullptr)
   {
     throw EAbort(E->Message);
   }

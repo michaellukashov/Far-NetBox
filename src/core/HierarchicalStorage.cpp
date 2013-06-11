@@ -387,14 +387,14 @@ UnicodeString THierarchicalStorage::ExcludeTrailingBackslash(const UnicodeString
 //===========================================================================
 TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage) :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
-  FRegistry(NULL)
+  FRegistry(nullptr)
 {
   Init();
 }
 //------------------------------------------------------------------------------
 TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey):
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
-  FRegistry(NULL),
+  FRegistry(nullptr),
   FFailed(0)
 {
   Init();
@@ -429,7 +429,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
     int RegResult = 0;
     do
     {
-      RegResult = RegQueryValueEx(Registry->GetCurrentKey(), Name.c_str(), NULL,
+      RegResult = RegQueryValueEx(Registry->GetCurrentKey(), Name.c_str(), nullptr,
         &Type, &Buffer[0], &Size);
       if (RegResult == ERROR_MORE_DATA)
       {
@@ -939,7 +939,7 @@ TIniFileStorage::TIniFileStorage(const UnicodeString & AStorage):
 //------------------------------------------------------------------------------
 void TIniFileStorage::Flush()
 {
-  if (FOriginal != NULL)
+  if (FOriginal != nullptr)
   {
     std::auto_ptr<TStrings> Strings(new TStringList);
     auto cleanup = finally([&]()
@@ -950,20 +950,20 @@ void TIniFileStorage::Flush()
       dynamic_cast<TMemIniFile *>(FIniFile)->GetString(Strings.get());
       if (!Strings->Equals(FOriginal))
       {
-        DWORD LocalFileAttr;
+        DWORD LocalFileAttrs;
         // preserve attributes (especially hidden)
-        bool Exists = FileExists(GetStorage());
+        bool Exists = ::FileExists(GetStorage());
         if (Exists)
         {
-          LocalFileAttr = GetFileAttributes(UnicodeString(GetStorage()).c_str());
+          LocalFileAttrs = ::GetFileAttributes(UnicodeString(GetStorage()).c_str());
         }
         else
         {
-          LocalFileAttr = FILE_ATTRIBUTE_NORMAL;
+          LocalFileAttrs = FILE_ATTRIBUTE_NORMAL;
         }
 
-        HANDLE Handle = CreateFile(UnicodeString(GetStorage()).c_str(), GENERIC_READ | GENERIC_WRITE,
-          0, NULL, CREATE_ALWAYS, LocalFileAttr, 0);
+        HANDLE Handle = ::CreateFile(UnicodeString(GetStorage()).c_str(), GENERIC_READ | GENERIC_WRITE,
+          0, nullptr, CREATE_ALWAYS, LocalFileAttrs, 0);
 
         if (Handle == INVALID_HANDLE_VALUE)
         {

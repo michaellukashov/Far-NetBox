@@ -132,7 +132,7 @@ TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name,
       return static_cast<TNamedObject *>(GetItem(Index));
     }
   }
-  return NULL;
+  return nullptr;
 }
 //---------------------------------------------------------------------------
 void TNamedObjectList::SetCount(intptr_t Value)

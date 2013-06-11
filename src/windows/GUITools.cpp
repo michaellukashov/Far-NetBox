@@ -19,10 +19,10 @@ extern const UnicodeString PuttygenTool = L"puttygen.exe";
 //---------------------------------------------------------------------------
 bool FindFile(UnicodeString & Path)
 {
-  bool Result = FileExists(Path);
+  bool Result = ::FileExists(Path);
   if (!Result)
   {
-    intptr_t Len = GetEnvironmentVariable(L"PATH", NULL, 0);
+    intptr_t Len = GetEnvironmentVariable(L"PATH", nullptr, 0);
     if (Len > 0)
     {
       UnicodeString Paths;
@@ -132,10 +132,10 @@ bool FindTool(const UnicodeString & Name, UnicodeString & Path)
   UnicodeString AppPath = IncludeTrailingBackslash(ExtractFilePath(GetConfiguration()->ModuleFileName()));
   Path = AppPath + Name;
   bool Result = true;
-  if (!FileExists(Path))
+  if (!::FileExists(Path))
   {
     Path = AppPath + L"PuTTY\\" + Name;
-    if (!FileExists(Path))
+    if (!::FileExists(Path))
     {
       Path = Name;
       if (!FindFile(Path))
@@ -149,8 +149,8 @@ bool FindTool(const UnicodeString & Name, UnicodeString & Path)
 //---------------------------------------------------------------------------
 bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params)
 {
-  return ((intptr_t)::ShellExecute(NULL, L"open", const_cast<wchar_t*>(Path.data()),
-    const_cast<wchar_t*>(Params.data()), NULL, SW_SHOWNORMAL) > 32);
+  return ((intptr_t)::ShellExecute(nullptr, L"open", const_cast<wchar_t*>(Path.data()),
+    const_cast<wchar_t*>(Params.data()), nullptr, SW_SHOWNORMAL) > 32);
 }
 //---------------------------------------------------------------------------
 bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params,
@@ -188,7 +188,7 @@ bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Path,
   bool Result = (ShellExecuteEx(&ExecuteInfo) != 0);
   if (Result)
   {
-    if (ProcessMessages != NULL)
+    if (ProcessMessages != nullptr)
     {
       unsigned long WaitResult;
       do
@@ -222,7 +222,7 @@ bool SpecialFolderLocation(int PathID, UnicodeString & Path)
 {
   LPITEMIDLIST Pidl;
   wchar_t Buf[MAX_PATH];
-  if (SHGetSpecialFolderLocation(NULL, PathID, &Pidl) == NO_ERROR &&
+  if (SHGetSpecialFolderLocation(nullptr, PathID, &Pidl) == NO_ERROR &&
       SHGetPathFromIDList(Pidl, Buf))
   {
     Path = UnicodeString(Buf);
@@ -256,7 +256,7 @@ UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
 UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
   const UnicodeString & MultiFilesFormat, TStrings * Files, bool Remote)
 {
-  assert(Files != NULL);
+  assert(Files != nullptr);
   UnicodeString Item;
   if (Files->GetCount() > 0)
   {

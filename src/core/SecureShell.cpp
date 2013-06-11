@@ -49,16 +49,16 @@ TSecureShell::TSecureShell(TSessionUI* UI,
   FActive = false;
   FWaiting = 0;
   FOpened = false;
-  OutPtr = NULL;
-  Pending = NULL;
-  FBackendHandle = NULL;
+  OutPtr = nullptr;
+  Pending = nullptr;
+  FBackendHandle = nullptr;
   ResetConnection();
-  FOnCaptureOutput = NULL;
-  FOnReceive = NULL;
+  FOnCaptureOutput = nullptr;
+  FOnReceive = nullptr;
   FConfig = new Config();
   memset(FConfig, 0, sizeof(*FConfig));
   FSocket = INVALID_SOCKET;
-  FSocketEvent = CreateEvent(NULL, false, false, NULL);
+  FSocketEvent = CreateEvent(nullptr, false, false, nullptr);
   FFrozen = false;
   FSimple = false;
   FCollectPrivateKeyUsage = false;
@@ -69,10 +69,10 @@ TSecureShell::~TSecureShell()
   assert(FWaiting == 0);
   SetActive(false);
   ResetConnection();
-  CloseHandle(FSocketEvent);
+  ::CloseHandle(FSocketEvent);
   ClearConfig(FConfig);
   delete FConfig;
-  FConfig = NULL;
+  FConfig = nullptr;
 }
 //---------------------------------------------------------------------------
 void TSecureShell::ResetConnection()
@@ -82,7 +82,7 @@ void TSecureShell::ResetConnection()
   PendLen = 0;
   PendSize = 0;
   sfree(Pending);
-  Pending = NULL;
+  Pending = nullptr;
   FCWriteTemp = L"";
   ResetSessionInfo();
   FAuthenticating = false;
@@ -94,8 +94,8 @@ void TSecureShell::ResetConnection()
 void TSecureShell::ResetSessionInfo()
 {
   FSessionInfoValid = false;
-  FMinPacketSize = NULL;
-  FMaxPacketSize = NULL;
+  FMinPacketSize = nullptr;
+  FMaxPacketSize = nullptr;
 }
 //---------------------------------------------------------------------------
 inline void TSecureShell::UpdateSessionInfo()
@@ -339,7 +339,7 @@ void TSecureShell::Open()
 
   try
   {
-    char * RealHost = NULL;
+    char * RealHost = nullptr;
     FreeBackend(); // in case we are reconnecting
     const char * InitError = FBackend->init(this, &FBackendHandle, FConfig,
       const_cast<char *>(W2MB(FSessionData->GetHostNameExpanded().c_str(),
@@ -408,7 +408,7 @@ bool TSecureShell::TryFtp()
       if (Result)
       {
         LPHOSTENT HostEntry = gethostbyname(AnsiString(FSessionData->GetHostNameExpanded()).c_str());
-        Result = (HostEntry != NULL);
+        Result = (HostEntry != nullptr);
         if (Result)
         {
           SOCKADDR_IN Address;
@@ -419,7 +419,7 @@ bool TSecureShell::TryFtp()
           Address.sin_port = htons(static_cast<short>(Port));
           Address.sin_addr.s_addr = *((unsigned long *)*HostEntry->h_addr_list);
 
-          HANDLE Event = CreateEvent(NULL, false, false, NULL);
+          HANDLE Event = CreateEvent(nullptr, false, false, nullptr);
           Result = (WSAEventSelect(Socket, (WSAEVENT)Event, FD_CONNECT | FD_CLOSE) != SOCKET_ERROR);
 
           if (Result)
@@ -432,7 +432,7 @@ bool TSecureShell::TryFtp()
               Result = (WaitForSingleObject(Event, 2000) == WAIT_OBJECT_0);
             }
           }
-          CloseHandle(Event);
+          ::CloseHandle(Event);
         }
         closesocket(Socket);
       }
@@ -507,11 +507,11 @@ void TSecureShell::PuttyLogEvent(const UnicodeString & Str)
       Str.Length() - wcslen(SERVER_VERSION_MSG));
 
     const wchar_t * Ptr = wcschr(FSessionInfo.SshVersionString.c_str(), L'-');
-    if (Ptr != NULL)
+    if (Ptr != nullptr)
     {
       Ptr = wcschr(Ptr + 1, L'-');
     }
-    FSessionInfo.SshImplementation = (Ptr != NULL) ? Ptr + 1 : L"";
+    FSessionInfo.SshImplementation = (Ptr != nullptr) ? Ptr + 1 : L"";
   }
   #define FORWARDING_FAILURE_MSG L"Forwarded connection refused by server: "
   else if (Str.Pos(FORWARDING_FAILURE_MSG) == 1)
@@ -553,8 +553,8 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   UnicodeString Name = AName;
   int Index = TranslatePuttyMessage(NameTranslation, LENOF(NameTranslation), Name);
 
-  const TPuttyTranslation * InstructionTranslation = NULL;
-  const TPuttyTranslation * PromptTranslation = NULL;
+  const TPuttyTranslation * InstructionTranslation = nullptr;
+  const TPuttyTranslation * PromptTranslation = nullptr;
   size_t PromptTranslationCount = 1;
 
   if (Index == 0) // username
@@ -642,7 +642,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   Instructions2 = ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
   Instructions2 = ReplaceStrAll(Instructions2, L"\x0D", L"\x01");
   Instructions2 = ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
-  if (InstructionTranslation != NULL)
+  if (InstructionTranslation != nullptr)
   {
     TranslatePuttyMessage(InstructionTranslation, 1, Instructions2);
   }
@@ -654,7 +654,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   for (intptr_t Index = 0; Index < Prompts->GetCount(); ++Index)
   {
     UnicodeString Prompt = Prompts->GetString(Index);
-    if (PromptTranslation != NULL)
+    if (PromptTranslation != nullptr)
     {
       TranslatePuttyMessage(PromptTranslation, PromptTranslationCount, Prompt);
     }
@@ -762,7 +762,7 @@ void TSecureShell::CWrite(const char * Data, intptr_t Length)
 //---------------------------------------------------------------------------
 void TSecureShell::RegisterReceiveHandler(TNotifyEvent Handler)
 {
-  assert(FOnReceive == NULL);
+  assert(FOnReceive == nullptr);
   FOnReceive = Handler;
 }
 //---------------------------------------------------------------------------
@@ -770,7 +770,7 @@ void TSecureShell::UnregisterReceiveHandler(TNotifyEvent Handler)
 {
   assert(FOnReceive == Handler);
   USEDPARAM(Handler);
-  FOnReceive = NULL;
+  FOnReceive = nullptr;
 }
 //---------------------------------------------------------------------------
 void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr_t Length)
@@ -794,9 +794,9 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
     intptr_t Len = Length;
 
     // with event-select mechanism we can now receive data even before we
-    // actually expect them (OutPtr can be NULL)
+    // actually expect them (OutPtr can be nullptr)
 
-    if ((OutPtr != NULL) && (OutLen > 0) && (Len > 0))
+    if ((OutPtr != nullptr) && (OutLen > 0) && (Len > 0))
     {
       intptr_t Used = OutLen;
       if (Used > Len)
@@ -824,7 +824,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
       PendLen += Len;
     }
 
-    if (FOnReceive != NULL)
+    if (FOnReceive != nullptr)
     {
       if (!FFrozen)
       {
@@ -837,7 +837,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
           do
           {
             FDataWhileFrozen = false;
-            FOnReceive(NULL);
+            FOnReceive(nullptr);
           }
           while (FDataWhileFrozen);
         }
@@ -875,7 +875,7 @@ intptr_t TSecureShell::Receive(unsigned char * Buf, intptr_t Length)
 
     auto cleanup = finally([&]()
     {
-      OutPtr = NULL;
+      OutPtr = nullptr;
     });
     {
       /*
@@ -898,7 +898,7 @@ intptr_t TSecureShell::Receive(unsigned char * Buf, intptr_t Length)
         {
           PendSize = 0;
           sfree(Pending);
-          Pending = NULL;
+          Pending = nullptr;
         }
       }
 
@@ -1006,7 +1006,7 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
       Params.TimeoutAnswer = qaAbort;
     }
     Answer = FUI->QueryUser(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout(), FSessionData->GetTimeout()),
-      NULL, qaRetry | qaAbort, &Params);
+      nullptr, qaRetry | qaAbort, &Params);
   }
   return Answer;
 }
@@ -1046,7 +1046,7 @@ void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
         L"need to send at least another %u bytes",
         BufSize, BufSize - MAX_BUFSIZE));
     }
-    EventSelectLoop(100, false, NULL);
+    EventSelectLoop(100, false, nullptr);
     BufSize = FBackend->sendbuffer(FBackendHandle);
     if (GetConfiguration()->GetActualLogProtocol() >= 1)
     {
@@ -1091,7 +1091,7 @@ void TSecureShell::Send(const unsigned char * Buf, intptr_t Length)
   }
   FLastDataSent = Now();
   // among other forces receive of pending data to free the servers's send buffer
-  EventSelectLoop(0, false, NULL);
+  EventSelectLoop(0, false, nullptr);
 
   if (BufSize > MAX_BUFSIZE)
   {
@@ -1102,7 +1102,7 @@ void TSecureShell::Send(const unsigned char * Buf, intptr_t Length)
 //---------------------------------------------------------------------------
 void TSecureShell::SendNull()
 {
-  LogEvent(L"Sending NULL.");
+  LogEvent(L"Sending nullptr.");
   unsigned char Null = 0;
   Send(&Null, 1);
 }
@@ -1129,7 +1129,7 @@ int TSecureShell::TranslatePuttyMessage(
   {
     const wchar_t * Original = Translation[Index].Original;
     const wchar_t * Div = wcschr(Original, L'%');
-    if (Div == NULL)
+    if (Div == nullptr)
     {
       if (wcscmp(Message.c_str(), Original) == 0)
       {
@@ -1241,7 +1241,7 @@ void TSecureShell::ClearStdError()
 void TSecureShell::CaptureOutput(TLogLineType Type,
   const UnicodeString & Line)
 {
-  if (FOnCaptureOutput != NULL)
+  if (FOnCaptureOutput != nullptr)
   {
     FOnCaptureOutput(Line, (Type == llStdError));
   }
@@ -1277,7 +1277,7 @@ void TSecureShell::PuttyFatalError(const UnicodeString & Error)
 //---------------------------------------------------------------------------
 void TSecureShell::FatalError(const UnicodeString & Error)
 {
-  FUI->FatalError(NULL, Error);
+  FUI->FatalError(nullptr, Error);
 }
 //---------------------------------------------------------------------------
 void TSecureShell::LogEvent(const UnicodeString & Str)
@@ -1397,10 +1397,10 @@ void TSecureShell::SetActive(bool Value)
 //---------------------------------------------------------------------------
 void TSecureShell::FreeBackend()
 {
-  if (FBackendHandle != NULL)
+  if (FBackendHandle != nullptr)
   {
     FBackend->bfree(FBackendHandle);
-    FBackendHandle = NULL;
+    FBackendHandle = nullptr;
   }
 }
 //---------------------------------------------------------------------------
@@ -1514,7 +1514,7 @@ void TSecureShell::WaitForData()
       LogEvent(L"Looking for incoming data");
     }
 
-    IncomingData = EventSelectLoop(FSessionData->GetTimeout() * MSecsPerSec, true, NULL);
+    IncomingData = EventSelectLoop(FSessionData->GetTimeout() * MSecsPerSec, true, nullptr);
     if (!IncomingData)
     {
       WSANETWORKEVENTS Events;
@@ -1564,7 +1564,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 
   // see winplink.c
   WSANETWORKEVENTS AEvents;
-  if (WSAEnumNetworkEvents(Socket, NULL, &AEvents) == 0)
+  if (WSAEnumNetworkEvents(Socket, nullptr, &AEvents) == 0)
   {
     noise_ultralight(static_cast<unsigned long>(Socket));
     noise_ultralight(AEvents.lNetworkEvents);
@@ -1685,7 +1685,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
           LogEvent(L"Detected network event");
         }
 
-        if (Events == NULL)
+        if (Events == nullptr)
         {
           if (ProcessNetworkEvents(FSocket))
           {
@@ -1757,7 +1757,7 @@ void TSecureShell::Idle(uintptr_t MSec)
 
   call_ssh_timer(FBackendHandle);
 
-  EventSelectLoop(MSec, false, NULL);
+  EventSelectLoop(MSec, false, nullptr);
 }
 //---------------------------------------------------------------------------
 void TSecureShell::KeepAlive()
@@ -1789,7 +1789,7 @@ unsigned long TSecureShell::MinPacketSize()
   }
   else
   {
-    if (FMinPacketSize == NULL)
+    if (FMinPacketSize == nullptr)
     {
       FMinPacketSize = &minPacketSize;
     }
@@ -1810,7 +1810,7 @@ unsigned long TSecureShell::MaxPacketSize()
   }
   else
   {
-    if (FMaxPacketSize == NULL)
+    if (FMaxPacketSize == nullptr)
     {
       FMaxPacketSize = ssh2_remmaxpkt(FBackendHandle);
     }
@@ -2010,7 +2010,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       Params.AliasesCount = AliasesCount;
       uintptr_t R = FUI->QueryUser(
         FMTLOAD((Unknown ? UNKNOWN_KEY2 : DIFFERENT_KEY3), KeyType.c_str(), Fingerprint.c_str()),
-        NULL, Answers, &Params, qtWarning);
+        nullptr, Answers, &Params, qtWarning);
 
       switch (R)
       {
@@ -2072,7 +2072,7 @@ void TSecureShell::AskAlg(const UnicodeString & AlgType,
     Msg = FMTLOAD(CIPHER_BELOW_TRESHOLD, LoadStr(CipherType).c_str(), AlgName.c_str());
   }
 
-  if (FUI->QueryUser(Msg, NULL, qaYes | qaNo, NULL, qtWarning) == qaNo)
+  if (FUI->QueryUser(Msg, nullptr, qaYes | qaNo, nullptr, qtWarning) == qaNo)
   {
     Abort();
   }
@@ -2086,7 +2086,7 @@ void TSecureShell::DisplayBanner(const UnicodeString & Banner)
 void TSecureShell::OldKeyfileWarning()
 {
   // actually never called, see Net.cpp
-  FUI->QueryUser(LoadStr(OLD_KEY), NULL, qaOK, NULL, qtWarning);
+  FUI->QueryUser(LoadStr(OLD_KEY), nullptr, qaOK, nullptr, qtWarning);
 }
 //---------------------------------------------------------------------------
 bool TSecureShell::GetStoredCredentialsTried() const

@@ -11,7 +11,7 @@ class TProgramParamsOwner : public TObject
 {
 public:
   TProgramParamsOwner() :
-    FProgramParams(NULL)
+    FProgramParams(nullptr)
   {
   }
 
@@ -22,7 +22,7 @@ public:
 
   TProgramParams * Get()
   {
-    if (FProgramParams == NULL)
+    if (FProgramParams == nullptr)
     {
       FProgramParams = new TProgramParams();
     }

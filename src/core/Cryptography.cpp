@@ -328,7 +328,7 @@ static void fcrypt_init(
     hmac_sha1_begin(&cx->auth_ctx);
     hmac_sha1_key(kbuf + KEY_LENGTH(mode), KEY_LENGTH(mode), &cx->auth_ctx);
 
-    if (pwd_ver != NULL)
+    if (pwd_ver != nullptr)
     {
       memmove(pwd_ver, kbuf + 2 * KEY_LENGTH(mode), PWD_VER_LENGTH);
     }
@@ -391,7 +391,7 @@ void AES256EncyptWithMAC(const RawByteString & Input, const UnicodeString & Pass
   UTF8String UtfPassword = Password;
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
     reinterpret_cast<const unsigned char *>(UtfPassword.c_str()), static_cast<unsigned int>(UtfPassword.Length()),
-    reinterpret_cast<const unsigned char *>(Salt.c_str()), NULL, &aes);
+    reinterpret_cast<const unsigned char *>(Salt.c_str()), nullptr, &aes);
   Output = Input;
   fcrypt_encrypt(reinterpret_cast<unsigned char *>(const_cast<char *>(Output.c_str())), static_cast<unsigned int>(Output.Length()), &aes);
   Mac.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
@@ -416,7 +416,7 @@ bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   UTF8String UtfPassword = Password;
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
     reinterpret_cast<const unsigned char *>(UtfPassword.c_str()), static_cast<unsigned int>(UtfPassword.Length()),
-    reinterpret_cast<const unsigned char *>(Salt.c_str()), NULL, &aes);
+    reinterpret_cast<const unsigned char *>(Salt.c_str()), nullptr, &aes);
   Output = Input;
   fcrypt_decrypt(reinterpret_cast<unsigned char *>(const_cast<char *>(Output.c_str())), static_cast<unsigned int>(Output.Length()), &aes);
   RawByteString Mac2;
@@ -582,14 +582,14 @@ void CryptographyInitialize()
   {
     UnscrambleTable[SScrambleTable[Index]] = (unsigned char)Index;
   }
-  srand((unsigned int)time(NULL) ^ (unsigned int)getpid());
+  srand((unsigned int)time(nullptr) ^ (unsigned int)getpid());
 }
 //---------------------------------------------------------------------------
 void CryptographyFinalize()
 {
   nb_free(UnscrambleTable);
-  UnscrambleTable = NULL;
-  ScrambleTable = NULL;
+  UnscrambleTable = nullptr;
+  ScrambleTable = nullptr;
 }
 //---------------------------------------------------------------------------
 int PasswordMaxLength()

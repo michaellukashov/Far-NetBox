@@ -428,7 +428,7 @@ int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs,
         SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != 0)
   {
 
-    if (TypeName != NULL)
+    if (TypeName != nullptr)
     {
       *TypeName = SHFileInfo.szTypeName;
     }
@@ -436,7 +436,7 @@ int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs,
   }
   else
   {
-    if (TypeName != NULL)
+    if (TypeName != nullptr)
     {
       *TypeName = L"";
     }
@@ -661,7 +661,7 @@ const TRemoteToken * TRemoteTokenList::Find(uintptr_t ID) const
   }
   else
   {
-    Result = NULL;
+    Result = nullptr;
   }
   return Result;
 }
@@ -676,7 +676,7 @@ const TRemoteToken * TRemoteTokenList::Find(const UnicodeString & Name) const
   }
   else
   {
-    Result = NULL;
+    Result = nullptr;
   }
   return Result;
 }
@@ -710,28 +710,28 @@ const TRemoteToken * TRemoteTokenList::Token(intptr_t Index) const
 //---------------------------------------------------------------------------
 TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile):
   TPersistent(),
-  FDirectory(NULL),
+  FDirectory(nullptr),
   FSize(0),
   FINodeBlocks(0),
   FIconIndex(0),
   FIsSymLink(false),
-  FLinkedFile(NULL),
-  FLinkedByFile(NULL),
-  FRights(NULL),
-  FTerminal(NULL),
+  FLinkedFile(nullptr),
+  FLinkedByFile(nullptr),
+  FRights(nullptr),
+  FTerminal(nullptr),
   FType(0),
   FSelected(false),
   FCyclicLink(false),
   FIsHidden(0)
 {
-  FLinkedFile = NULL;
+  FLinkedFile = nullptr;
   FRights = new TRights();
   FIconIndex = -1;
   FCyclicLink = false;
   FModificationFmt = mfFull;
   FLinkedByFile = ALinkedByFile;
-  FTerminal = NULL;
-  FDirectory = NULL;
+  FTerminal = nullptr;
+  FDirectory = nullptr;
   FIsHidden = -1;
 }
 //---------------------------------------------------------------------------
@@ -768,7 +768,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
   COPY_FP(Selected);
   COPY_FP(CyclicLink);
   #undef COPY_FP
-  if (Standalone && (!FFullFileName.IsEmpty() || (GetDirectory() != NULL)))
+  if (Standalone && (!FFullFileName.IsEmpty() || (GetDirectory() != nullptr)))
   {
     Result->FFullFileName = GetFullFileName();
   }
@@ -778,7 +778,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 void TRemoteFile::LoadTypeInfo() const
 {
   /* TODO : If file is link: Should be attributes taken from linked file? */
-  /* unsigned long Attrs = 0;
+  /* unsigned long Attrs = INVALID_FILE_ATTRIBUTES;
   if (GetIsDirectory())
   {
     Attrs |= FILE_ATTRIBUTE_DIRECTORY;
@@ -1216,7 +1216,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       // adjusting default "midnight" time makes no sense
       if ((FModificationFmt == mfMDHM) || (FModificationFmt == mfFull))
       {
-        assert(GetTerminal() != NULL);
+        assert(GetTerminal() != nullptr);
         FModification = AdjustDateTimeFromUnix(FModification,
           GetTerminal()->GetSessionData()->GetDSTMode());
       }
@@ -1259,7 +1259,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
 //---------------------------------------------------------------------------
 void TRemoteFile::Complete()
 {
-  assert(GetTerminal() != NULL);
+  assert(GetTerminal() != nullptr);
   if (GetIsSymLink() && GetTerminal()->GetResolvingSymlinks())
   {
     FindLinkedFile();
@@ -1274,7 +1274,7 @@ void TRemoteFile::FindLinkedFile()
   {
     delete FLinkedFile;
   }
-  FLinkedFile = NULL;
+  FLinkedFile = nullptr;
 
   FCyclicLink = false;
   if (!GetLinkTo().IsEmpty())
@@ -1287,7 +1287,7 @@ void TRemoteFile::FindLinkedFile()
       {
         // this is currenly redundant information, because it is used only to
         // detect broken symlink, which would be otherwise detected
-        // by FLinkedFile == NULL
+        // by FLinkedFile == nullptr
         FCyclicLink = true;
         break;
       }
@@ -1320,7 +1320,7 @@ void TRemoteFile::FindLinkedFile()
     }
     catch (Exception &E)
     {
-      if (dynamic_cast<EFatal *>(&E) != NULL) throw;
+      if (dynamic_cast<EFatal *>(&E) != nullptr) throw;
       else
       {
         GetTerminal()->GetLog()->AddException(&E);
@@ -1349,7 +1349,7 @@ UnicodeString TRemoteFile::GetFullFileName() const
   if (FFullFileName.IsEmpty())
   {
     assert(GetTerminal());
-    assert(GetDirectory() != NULL);
+    assert(GetDirectory() != nullptr);
     UnicodeString Path;
     if (GetIsParentDirectory())
     {
@@ -1373,7 +1373,7 @@ UnicodeString TRemoteFile::GetFullFileName() const
 //---------------------------------------------------------------------------
 bool TRemoteFile::GetHaveFullFileName() const
 {
-  return !FFullFileName.IsEmpty() || (GetDirectory() != NULL);
+  return !FFullFileName.IsEmpty() || (GetDirectory() != nullptr);
 }
 //---------------------------------------------------------------------------
 intptr_t TRemoteFile::GetAttr() const
@@ -1545,16 +1545,16 @@ TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & FileName) const
       return GetFile(Index);
     }
   }
-  return NULL;
+  return nullptr;
 }
 //=== TRemoteDirectory ------------------------------------------------------
 TRemoteDirectory::TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template) :
   TRemoteFileList(), FTerminal(aTerminal)
 {
-  FSelectedFiles = NULL;
-  FThisDirectory = NULL;
-  FParentDirectory = NULL;
-  if (Template == NULL)
+  FSelectedFiles = nullptr;
+  FThisDirectory = nullptr;
+  FParentDirectory = nullptr;
+  if (Template == nullptr)
   {
     FIncludeThisDirectory = false;
     FIncludeParentDirectory = true;
@@ -1571,12 +1571,12 @@ void TRemoteDirectory::Clear()
   if (GetThisDirectory() && !GetIncludeThisDirectory())
   {
     delete FThisDirectory;
-    FThisDirectory = NULL;
+    FThisDirectory = nullptr;
   }
   if (GetParentDirectory() && !GetIncludeParentDirectory())
   {
     delete FParentDirectory;
-    FParentDirectory = NULL;
+    FParentDirectory = nullptr;
   }
 
   TRemoteFileList::Clear();
@@ -1622,7 +1622,7 @@ void TRemoteDirectory::DuplicateTo(TRemoteFileList * Copy) const
 //---------------------------------------------------------------------------
 bool TRemoteDirectory::GetLoaded() const
 {
-  return ((GetTerminal() != NULL) && GetTerminal()->GetActive() && !GetDirectory().IsEmpty());
+  return ((GetTerminal() != nullptr) && GetTerminal()->GetActive() && !GetDirectory().IsEmpty());
 }
 //---------------------------------------------------------------------------
 TStrings * TRemoteDirectory::GetSelectedFiles() const
@@ -1695,7 +1695,7 @@ TRemoteDirectoryCache::~TRemoteDirectoryCache()
 {
   Clear();
   delete FSection;
-  FSection = NULL;
+  FSection = nullptr;
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryCache::Clear()
@@ -1710,7 +1710,7 @@ void TRemoteDirectoryCache::Clear()
     for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
       delete dynamic_cast<TRemoteFileList *>(GetObject(Index));
-      SetObject(Index, NULL);
+      SetObject(Index, nullptr);
     }
   }
 }
@@ -1756,7 +1756,7 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   bool Result = (Index >= 0);
   if (Result)
   {
-    assert(GetObject(Index) != NULL);
+    assert(GetObject(Index) != nullptr);
     dynamic_cast<TRemoteFileList *>(GetObject(Index))->DuplicateTo(FileList);
   }
   return Result;

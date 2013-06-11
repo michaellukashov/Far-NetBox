@@ -17,9 +17,9 @@ TConfiguration * CreateConfiguration()
 //---------------------------------------------------------------------------
 void ShowExtendedException(Exception * E)
 {
-  assert(FarPlugin != NULL);
+  assert(FarPlugin != nullptr);
   TWinSCPPlugin * WinSCPPlugin = dynamic_cast<TWinSCPPlugin *>(FarPlugin);
-  assert(WinSCPPlugin != NULL);
+  assert(WinSCPPlugin != nullptr);
   WinSCPPlugin->ShowExtendedException(E);
 }
 //---------------------------------------------------------------------------
@@ -79,6 +79,6 @@ HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
 //---------------------------------------------------------------------------
 void CopyToClipboard(const UnicodeString & Text)
 {
-  assert(FarPlugin != NULL);
+  assert(FarPlugin != nullptr);
   FarPlugin->FarCopyToClipboard(Text);
 }

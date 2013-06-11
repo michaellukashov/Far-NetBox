@@ -148,7 +148,7 @@ public:
   void SetLocale(LCID Value);
   void SetLocaleSafe(LCID Value);
   virtual HINSTANCE LoadNewResourceModule(LCID Locale,
-    UnicodeString * FileName = NULL);
+    UnicodeString * FileName = nullptr);
   HANDLE GetResourceModule();
   // virtual void SetResourceModule(HINSTANCE Instance);
   TStrings * GetLocales();

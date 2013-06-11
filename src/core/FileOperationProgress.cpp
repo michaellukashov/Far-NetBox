@@ -9,8 +9,8 @@
 //---------------------------------------------------------------------------
 TFileOperationProgressType::TFileOperationProgressType()
 {
-  FOnProgress = NULL;
-  FOnFinished = NULL;
+  FOnProgress = nullptr;
+  FOnFinished = nullptr;
   Clear();
 }
 //---------------------------------------------------------------------------

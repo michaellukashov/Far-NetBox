@@ -103,7 +103,7 @@ public:
   UnicodeString GetUserModificationStr();
 
 public:
-  explicit TRemoteFile(TRemoteFile * ALinkedByFile = NULL);
+  explicit TRemoteFile(TRemoteFile * ALinkedByFile = nullptr);
   virtual ~TRemoteFile();
   TRemoteFile * Duplicate(bool Standalone = true) const;
 
@@ -218,7 +218,7 @@ friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
 friend class TWebDAVFileSystem;
 public:
-  explicit TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = NULL);
+  explicit TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = nullptr);
   virtual ~TRemoteDirectory() { Clear(); }
   virtual void AddFile(TRemoteFile * File);
   virtual void DuplicateTo(TRemoteFileList * Copy) const;
@@ -495,7 +495,7 @@ TModificationFmt LessDateTimePrecision(
   TModificationFmt Precision1, TModificationFmt Precision2);
 UnicodeString UserModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision);
-int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs = 0,
-  UnicodeString * TypeName = NULL);
+int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs = INVALID_FILE_ATTRIBUTES,
+  UnicodeString * TypeName = nullptr);
 //---------------------------------------------------------------------------
 #endif

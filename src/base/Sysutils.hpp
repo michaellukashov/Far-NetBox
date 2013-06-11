@@ -27,7 +27,7 @@ public:
   ~Exception() throw() {}
 
   template<typename T>
-  bool InheritsFrom() const { return dynamic_cast<const T *>(this) != NULL; }
+  bool InheritsFrom() const { return dynamic_cast<const T *>(this) != nullptr; }
 
 public:
   UnicodeString Message;
@@ -207,13 +207,13 @@ enum FileAttributesEnum
   faAnyFile = 0x0000003f,
 };
 
-bool FileExists(const UnicodeString & Filename);
+bool FileExists(const UnicodeString & FileName);
 bool RenameFile(const UnicodeString & From, const UnicodeString & To);
 bool DirectoryExists(const UnicodeString & Dir);
 UnicodeString FileSearch(const UnicodeString & FileName, const UnicodeString & DirectoryList);
 
-DWORD FileGetAttr(const UnicodeString & FileName);
-DWORD FileSetAttr(const UnicodeString & FileName, DWORD LocalFileAttrs);
+inline DWORD FileGetAttr(const UnicodeString & FileName);
+inline DWORD FileSetAttr(const UnicodeString & FileName, DWORD LocalFileAttrs);
 
 bool ForceDirectories(const UnicodeString & Dir);
 bool DeleteFile(const UnicodeString & File);
@@ -224,7 +224,7 @@ bool RemoveDir(const UnicodeString & Dir);
 template <class Base, class Derived>
 bool InheritsFrom(const Base * t)
 {
-  return dynamic_cast<const Derived *>(t) != NULL;
+  return dynamic_cast<const Derived *>(t) != nullptr;
 }
 
 //---------------------------------------------------------------------------

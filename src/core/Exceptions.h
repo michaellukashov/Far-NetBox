@@ -28,11 +28,11 @@ public:
   TStrings * GetMoreMessages() const { return FMoreMessages; }
   UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
 
-  explicit ExtException(const UnicodeString & Msg) : Sysutils::Exception(Msg), FMoreMessages(NULL) {}
-  explicit ExtException(int Ident) : Sysutils::Exception(Ident), FMoreMessages(NULL) {}
-  explicit ExtException(const UnicodeString & Msg, int AHelpContext) : Sysutils::Exception(Msg, AHelpContext), FMoreMessages(NULL) {}
+  explicit ExtException(const UnicodeString & Msg) : Sysutils::Exception(Msg), FMoreMessages(nullptr) {}
+  explicit ExtException(int Ident) : Sysutils::Exception(Ident), FMoreMessages(nullptr) {}
+  explicit ExtException(const UnicodeString & Msg, int AHelpContext) : Sysutils::Exception(Msg, AHelpContext), FMoreMessages(nullptr) {}
 
-  ExtException(const ExtException & E) : Sysutils::Exception(L""), FMoreMessages(NULL)
+  ExtException(const ExtException & E) : Sysutils::Exception(L""), FMoreMessages(nullptr)
   { AddMoreMessages(&E); }
   ExtException & operator =(const ExtException &rhs)
   { Message = rhs.Message; AddMoreMessages(&rhs); return *this; }

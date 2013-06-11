@@ -415,10 +415,10 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 __int64 FileRead(HANDLE Handle, void * Buffer, __int64 Count)
 {
   __int64 Result = -1;
-  DWORD res = 0;
-  if (::ReadFile(Handle, reinterpret_cast<LPVOID>(Buffer), static_cast<DWORD>(Count), &res, NULL))
+  DWORD Res = 0;
+  if (::ReadFile(Handle, reinterpret_cast<LPVOID>(Buffer), static_cast<DWORD>(Count), &Res, nullptr))
   {
-    Result = res;
+    Result = Res;
   }
   else
   {
@@ -430,10 +430,10 @@ __int64 FileRead(HANDLE Handle, void * Buffer, __int64 Count)
 __int64 FileWrite(HANDLE Handle, const void * Buffer, __int64 Count)
 {
   __int64 Result = -1;
-  DWORD res = 0;
-  if (::WriteFile(Handle, Buffer, static_cast<DWORD>(Count), &res, NULL))
+  DWORD Res = 0;
+  if (::WriteFile(Handle, Buffer, static_cast<DWORD>(Count), &Res, nullptr))
   {
-    Result = res;
+    Result = Res;
   }
   else
   {
@@ -463,14 +463,14 @@ bool RenameFile(const UnicodeString & From, const UnicodeString & To)
   return Result;
 }
 
-bool DirectoryExists(const UnicodeString & Filename)
+bool DirectoryExists(const UnicodeString & FileName)
 {
-  if ((Filename == THISDIRECTORY) || (Filename == PARENTDIRECTORY))
+  if ((FileName == THISDIRECTORY) || (FileName == PARENTDIRECTORY))
   {
     return true;
   }
 
-  DWORD LocalFileAttrs = FileGetAttr(Filename);
+  DWORD LocalFileAttrs = FileGetAttr(FileName);
 
   if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, FILE_ATTRIBUTE_DIRECTORY))
   {
@@ -515,13 +515,13 @@ UnicodeString FileSearch(const UnicodeString & FileName, const UnicodeString & D
   return Result;
 }
 
-DWORD FileGetAttr(const UnicodeString & Filename)
+inline DWORD FileGetAttr(const UnicodeString & FileName)
 {
-  DWORD LocalFileAttrs = ::GetFileAttributes(Filename.c_str());
+  DWORD LocalFileAttrs = ::GetFileAttributes(FileName.c_str());
   return LocalFileAttrs;
 }
 
-DWORD FileSetAttr(const UnicodeString & FileName, DWORD LocalFileAttrs)
+inline DWORD FileSetAttr(const UnicodeString & FileName, DWORD LocalFileAttrs)
 {
   DWORD Result = ::SetFileAttributes(FileName.c_str(), LocalFileAttrs);
   return Result;
@@ -529,7 +529,7 @@ DWORD FileSetAttr(const UnicodeString & FileName, DWORD LocalFileAttrs)
 
 bool CreateDir(const UnicodeString & Dir)
 {
-  return ::CreateDirectory(Dir.c_str(), NULL) != 0;
+  return ::CreateDirectory(Dir.c_str(), nullptr) != 0;
 }
 
 bool RemoveDir(const UnicodeString & Dir)
@@ -645,7 +645,7 @@ static const wchar_t *
 NextWord(const wchar_t * Input)
 {
   static wchar_t buffer[1024];
-  static const wchar_t * text = NULL;
+  static const wchar_t * text = nullptr;
 
   wchar_t * endOfBuffer = buffer + LENOF(buffer) - 1;
   wchar_t * pBuffer = buffer;
@@ -738,7 +738,7 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
       }
       if (!*s)
       {
-        s = NextWord(NULL);
+        s = NextWord(nullptr);
       }
 
       /* copy as many words as will fit onto the current line */
@@ -766,12 +766,12 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
         }
         if (!*s)
         {
-          s = NextWord(NULL);
+          s = NextWord(nullptr);
         }
       }
       if (!*s)
       {
-        s = NextWord(NULL);
+        s = NextWord(nullptr);
       }
 
       if (*s)
@@ -811,7 +811,7 @@ UnicodeString TranslateExceptionMessage(std::exception * E)
 {
   if (E)
   {
-    if (dynamic_cast<Exception *>(E) != NULL)
+    if (dynamic_cast<Exception *>(E) != nullptr)
     {
       return dynamic_cast<Exception *>(E)->Message;
     }
@@ -910,12 +910,12 @@ UnicodeString ExpandFileName(const UnicodeString & FileName)
   UnicodeString Result;
   UnicodeString Buf(MAX_PATH, 0);
   intptr_t Size = GetFullPathNameW(FileName.c_str(), static_cast<DWORD>(Buf.Length() - 1),
-    reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), NULL);
+    reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), nullptr);
   if (Size > Buf.Length())
   {
     Buf.SetLength(Size);
     Size = ::GetFullPathNameW(FileName.c_str(), static_cast<DWORD>(Buf.Length() - 1),
-      reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), NULL);
+      reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), nullptr);
   }
   return UnicodeString(Buf.c_str(), Size);
 }
@@ -944,7 +944,7 @@ static int FindMatchingFile(TSearchRec & Rec)
   int Result = 0;
   while ((Rec.FindData.dwFileAttributes && Rec.ExcludeAttr) != 0)
   {
-    if (!FindNextFileW(Rec.FindHandle, &Rec.FindData))
+    if (!::FindNextFileW(Rec.FindHandle, &Rec.FindData))
     {
       Result = GetLastError();
       return Result;
@@ -966,12 +966,8 @@ static int FindMatchingFile(TSearchRec & Rec)
 DWORD FindFirst(const UnicodeString & FileName, DWORD LocalFileAttrs, TSearchRec & Rec)
 {
   const DWORD faSpecial = faHidden | faSysFile | faDirectory;
-  // HANDLE hFind = FindFirstFileW(FileName.c_str(), &Rec);
-  // bool Result = (hFind != INVALID_HANDLE_VALUE);
-  // if (Result) Classes::FindClose(Rec);
-  // return Result;
   Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
-  Rec.FindHandle = FindFirstFileW(FileName.c_str(), &Rec.FindData);
+  Rec.FindHandle = ::FindFirstFileW(FileName.c_str(), &Rec.FindData);
   DWORD Result = 0;
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)
   {
@@ -991,7 +987,7 @@ DWORD FindFirst(const UnicodeString & FileName, DWORD LocalFileAttrs, TSearchRec
 DWORD FindNext(TSearchRec & Rec)
 {
   DWORD Result = 0;
-  if (FindNextFileW(Rec.FindHandle, &Rec.FindData))
+  if (::FindNextFileW(Rec.FindHandle, &Rec.FindData))
     Result = FindMatchingFile(Rec);
   else
     Result = GetLastError();
@@ -1040,9 +1036,9 @@ UnicodeString SysErrorMessage(int ErrorCode)
   UnicodeString Result;
   wchar_t Buffer[255];
   intptr_t Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
-    FORMAT_MESSAGE_ARGUMENT_ARRAY, NULL, ErrorCode, 0,
+    FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, ErrorCode, 0,
     static_cast<LPTSTR>(Buffer),
-    sizeof(Buffer), NULL);
+    sizeof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
     ((Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == '.'))))
   {
@@ -1097,11 +1093,11 @@ UnicodeString ExtractFilename(const UnicodeString & Path, wchar_t Delimiter)
 // "/foo/bar/baz" --> ""
 UnicodeString ExtractFileExtension(const UnicodeString & Path, wchar_t Delimiter)
 {
-  UnicodeString Filename = ExtractFilename(Path, Delimiter);
-  intptr_t n = Filename.RPos(L'.');
-  if (n > 0)
+  UnicodeString FileName = ExtractFilename(Path, Delimiter);
+  intptr_t N = FileName.RPos(L'.');
+  if (N > 0)
   {
-    return Filename.SubString(n);
+    return FileName.SubString(N);
   }
   return UnicodeString();
 }
@@ -1116,9 +1112,9 @@ UnicodeString ExtractFileExtension(const UnicodeString & Path, wchar_t Delimiter
 //
 UnicodeString ChangeFileExtension(const UnicodeString & Path, const UnicodeString & Ext, wchar_t Delimiter)
 {
-  UnicodeString Filename = ExtractFilename(Path, Delimiter);
+  UnicodeString FileName = ExtractFilename(Path, Delimiter);
   return ExtractDirectory(Path, Delimiter)
-         + Filename.SubString(1, Filename.RPos(L'.'))
+         + FileName.SubString(1, FileName.RPos(L'.'))
          + Ext;
 }
 
@@ -1508,7 +1504,7 @@ UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & Path)
 //---------------------------------------------------------------------------
 void Randomize()
 {
-  srand(static_cast<unsigned int>(time(NULL)));
+  srand(static_cast<unsigned int>(time(nullptr)));
 }
 
 //---------------------------------------------------------------------------
@@ -1638,7 +1634,7 @@ TCriticalSection::~TCriticalSection()
 //---------------------------------------------------------------------------
 void TCriticalSection::Enter()
 {
-  EnterCriticalSection(&FSection);
+  ::EnterCriticalSection(&FSection);
   FAcquired++;
 }
 
@@ -1646,7 +1642,7 @@ void TCriticalSection::Enter()
 void TCriticalSection::Leave()
 {
   FAcquired--;
-  LeaveCriticalSection(&FSection);
+  ::LeaveCriticalSection(&FSection);
 }
 
 //---------------------------------------------------------------------------

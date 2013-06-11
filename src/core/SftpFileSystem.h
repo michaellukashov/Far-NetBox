@@ -115,16 +115,16 @@ protected:
   void SendCustomReadFile(TSFTPPacket * Packet, TSFTPPacket * Response,
     uint32_t Flags);
   void CustomReadFile(const UnicodeString & FileName,
-    TRemoteFile *& AFile, unsigned char Type, TRemoteFile * ALinkedByFile = NULL,
+    TRemoteFile *& AFile, unsigned char Type, TRemoteFile * ALinkedByFile = nullptr,
     int AllowStatus = -1);
   virtual UnicodeString GetCurrentDirectory();
   UnicodeString GetHomeDirectory();
   uintptr_t GotStatusPacket(TSFTPPacket * Packet, int AllowStatus);
   bool IsAbsolutePath(const UnicodeString & Path);
-  bool RemoteFileExists(const UnicodeString & FullPath, TRemoteFile ** AFile = NULL);
+  bool RemoteFileExists(const UnicodeString & FullPath, TRemoteFile ** AFile = nullptr);
   TRemoteFile * LoadFile(TSFTPPacket * Packet,
     TRemoteFile * ALinkedByFile, const UnicodeString & FileName,
-    TRemoteFileList * TempFileList = NULL, bool Complete = true);
+    TRemoteFileList * TempFileList = nullptr, bool Complete = true);
   void LoadFile(TRemoteFile * AFile, TSFTPPacket * Packet,
     bool Complete = true);
   UnicodeString LocalCanonify(const UnicodeString & Path);

@@ -14,8 +14,8 @@ static const char * CONST_NAME_ATTR = "name";
 TXmlStorage::TXmlStorage(const UnicodeString & AStorage,
                          const UnicodeString & StoredSessionsSubKey) :
   THierarchicalStorage(ExcludeTrailingBackslash(AStorage)),
-  FXmlDoc(NULL),
-  FCurrentElement(NULL),
+  FXmlDoc(nullptr),
+  FCurrentElement(nullptr),
   FStoredSessionsSubKey(StoredSessionsSubKey),
   FFailed(0),
   FStoredSessionsOpened(false)
@@ -67,12 +67,12 @@ bool TXmlStorage::ReadXml()
   const char * Value = xmlRoot->Value();
   if (!Value) return false;
   if (strcmp(Value, CONST_ROOT_NODE) != 0) return false;
-  const char * attr = xmlRoot->Attribute(CONST_VERSION_ATTR);
-  if (!attr) return false;
-  uintptr_t Version = StrToVersionNumber(UnicodeString(attr));
+  const char * Attr = xmlRoot->Attribute(CONST_VERSION_ATTR);
+  if (!Attr) return false;
+  uintptr_t Version = StrToVersionNumber(UnicodeString(Attr));
   if (Version < MAKEVERSIONNUMBER(2,0,0)) return false;
   tinyxml2::XMLElement * Element = xmlRoot->FirstChildElement(ToStdString(FStoredSessionsSubKey).c_str());
-  if (Element != NULL)
+  if (Element != nullptr)
   {
     FCurrentElement = FXmlDoc->RootElement();
     return true;
@@ -119,7 +119,7 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
     case smReadWrite:
     default:
       FXmlDoc->LinkEndChild(FXmlDoc->NewDeclaration());
-      assert(FCurrentElement == NULL);
+      assert(FCurrentElement == nullptr);
       FCurrentElement = FXmlDoc->NewElement(CONST_ROOT_NODE);
       FCurrentElement->SetAttribute(CONST_VERSION_ATTR, CONST_XML_VERSION21);
       FXmlDoc->LinkEndChild(FCurrentElement);
@@ -138,7 +138,7 @@ bool TXmlStorage::DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi)
 bool TXmlStorage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate)
 {
   tinyxml2::XMLElement * OldCurrentElement = FCurrentElement;
-  tinyxml2::XMLElement * Element = NULL;
+  tinyxml2::XMLElement * Element = nullptr;
   std::string subKey = ToStdString(MungedSubKey);
   if (CanCreate)
   {
@@ -157,7 +157,7 @@ bool TXmlStorage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreat
   {
     Element = FindChildElement(subKey);
   }
-  bool Result = Element != NULL;
+  bool Result = Element != nullptr;
   if (Result)
   {
     FSubElements.push_back(OldCurrentElement);
@@ -177,7 +177,7 @@ void TXmlStorage::CloseSubKey()
   }
   else
   {
-    FCurrentElement = NULL;
+    FCurrentElement = nullptr;
   }
 }
 //---------------------------------------------------------------------------
@@ -185,7 +185,7 @@ bool TXmlStorage::DeleteSubKey(const UnicodeString & SubKey)
 {
   bool Result = false;
   tinyxml2::XMLElement * Element = FindElement(SubKey);
-  if (Element != NULL)
+  if (Element != nullptr)
   {
     FCurrentElement->DeleteChild(Element);
     Result = true;
@@ -196,7 +196,7 @@ bool TXmlStorage::DeleteSubKey(const UnicodeString & SubKey)
 void TXmlStorage::GetSubKeyNames(TStrings * Strings)
 {
   for (tinyxml2::XMLElement * Element = FCurrentElement->FirstChildElement();
-       Element != NULL; Element = Element->NextSiblingElement())
+       Element != nullptr; Element = Element->NextSiblingElement())
   {
     UnicodeString val = GetValue(Element);
     Strings->Add(PuttyUnMungeStr(val));
@@ -213,7 +213,7 @@ bool TXmlStorage::DeleteValue(const UnicodeString & Name)
 {
   bool Result = false;
   tinyxml2::XMLElement * Element = FindElement(Name);
-  if (Element != NULL)
+  if (Element != nullptr)
   {
     FCurrentElement->DeleteChild(Element);
     Result = true;
@@ -224,7 +224,7 @@ bool TXmlStorage::DeleteValue(const UnicodeString & Name)
 void TXmlStorage::RemoveIfExists(const UnicodeString & Name)
 {
   tinyxml2::XMLElement * Element = FindElement(Name);
-  if (Element != NULL)
+  if (Element != nullptr)
   {
     FCurrentElement->DeleteChild(Element);
   }
@@ -259,7 +259,7 @@ UnicodeString TXmlStorage::GetSubKeyText(const UnicodeString & Name) const
 tinyxml2::XMLElement * TXmlStorage::FindElement(const UnicodeString & Name) const
 {
   for (const tinyxml2::XMLElement * Element = FCurrentElement->FirstChildElement();
-       Element != NULL; Element = Element->NextSiblingElement())
+       Element != nullptr; Element = Element->NextSiblingElement())
   {
     UnicodeString ElementName = ToUnicodeString(Element->Name());
     if (ElementName == Name)
@@ -267,12 +267,12 @@ tinyxml2::XMLElement * TXmlStorage::FindElement(const UnicodeString & Name) cons
       return const_cast<tinyxml2::XMLElement *>(Element);
     }
   }
-  return NULL;
+  return nullptr;
 }
 //---------------------------------------------------------------------------
 tinyxml2::XMLElement * TXmlStorage::FindChildElement(const std::string & subKey) const
 {
-  tinyxml2::XMLElement * Result = NULL;
+  tinyxml2::XMLElement * Result = nullptr;
   // assert(FCurrentElement);
   if (FStoredSessionsOpened)
   {
@@ -308,7 +308,7 @@ bool TXmlStorage::ValueExists(const UnicodeString & Value) const
 {
   bool Result = false;
   tinyxml2::XMLElement * Element = FindElement(Value);
-  if (Element != NULL)
+  if (Element != nullptr)
   {
     Result = true;
   }

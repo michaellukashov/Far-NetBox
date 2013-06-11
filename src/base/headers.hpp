@@ -188,9 +188,9 @@ struct custom_nballocator_t
   pointer allocate(size_type s, void const * = 0)
   {
     if (0 == s)
-      return NULL;
+      return nullptr;
     pointer temp = (pointer)nb_malloc(s * sizeof(T)); 
-    if (temp == NULL)
+    if (temp == nullptr)
       throw std::bad_alloc();
     return temp;
   }

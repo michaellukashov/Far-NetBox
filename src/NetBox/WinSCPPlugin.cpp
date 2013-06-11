@@ -28,11 +28,11 @@ TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
 TMessageParams::TMessageParams()
 {
   Flags = 0;
-  Aliases = NULL;
+  Aliases = nullptr;
   AliasesCount = 0;
   Params = 0;
   Timer = 0;
-  TimerEvent = NULL;
+  TimerEvent = nullptr;
   TimerAnswers = 0;
   Timeout = 0;
   TimeoutAnswer = 0;
@@ -48,7 +48,7 @@ TWinSCPPlugin::~TWinSCPPlugin()
 {
   if (FInitialized)
   {
-    GetFarConfiguration()->SetPlugin(NULL);
+    GetFarConfiguration()->SetPlugin(nullptr);
     CoreFinalize();
   }
 }
@@ -241,7 +241,7 @@ intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 //---------------------------------------------------------------------------
 TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t Item)
 {
-  std::auto_ptr<TWinSCPFileSystem> FileSystem(NULL);
+  std::auto_ptr<TWinSCPFileSystem> FileSystem(nullptr);
   if (!FInitialized)
   {
     CoreInitialize();
@@ -257,7 +257,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
   else
   {
     FileSystem.reset(new TWinSCPFileSystem(this));
-    FileSystem->Init(NULL);
+    FileSystem->Init(nullptr);
 
     if (OpenFrom == OPEN_LEFTDISKMENU || OpenFrom == OPEN_RIGHTDISKMENU ||
           OpenFrom == OPEN_PLUGINSMENU ||
@@ -401,8 +401,8 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   TWinSCPFileSystem * AnotherFileSystem;
   FileSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
   AnotherFileSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem(true));
-  bool FSConnected = (FileSystem != NULL) && FileSystem->Connected();
-  bool AnotherFSConnected = (AnotherFileSystem != NULL) && AnotherFileSystem->Connected();
+  bool FSConnected = (FileSystem != nullptr) && FileSystem->Connected();
+  bool AnotherFSConnected = (AnotherFileSystem != nullptr) && AnotherFileSystem->Connected();
   bool FSVisible = FSConnected && FromFileSystem;
   bool AnyFSVisible = (FSConnected || AnotherFSConnected) && FromFileSystem;
 
@@ -463,25 +463,25 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     }
     else if (Result == MFullSynchronize)
     {
-      if (FileSystem != NULL)
+      if (FileSystem != nullptr)
       {
         FileSystem->FullSynchronize(true);
       }
       else
       {
-        assert(AnotherFileSystem != NULL);
+        assert(AnotherFileSystem != nullptr);
         AnotherFileSystem->FullSynchronize(false);
       }
     }
     else if (Result == MSynchronize)
     {
-      if (FileSystem != NULL)
+      if (FileSystem != nullptr)
       {
         FileSystem->Synchronize();
       }
       else
       {
-        assert(AnotherFileSystem != NULL);
+        assert(AnotherFileSystem != nullptr);
         AnotherFileSystem->Synchronize();
       }
     }
@@ -532,7 +532,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     }
     else if ((Result == MSynchronizeBrowsing) && FileSystem)
     {
-      assert(FileSystem != NULL);
+      assert(FileSystem != nullptr);
       FileSystem->ToggleSynchronizeBrowsing();
     }
     else if (Result == MInformation && FileSystem)
@@ -559,7 +559,7 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
         Type = (E->InheritsFrom<ESshTerminate>()) ?
           qtInformation : qtError;
 
-        TStrings * MoreMessages = NULL;
+        TStrings * MoreMessages = nullptr;
         if (E->InheritsFrom<ExtException>())
         {
           MoreMessages = dynamic_cast<ExtException *>(E)->GetMoreMessages();
@@ -579,7 +579,7 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::HandleException(Exception * E, int OpMode)
 {
-  if (((OpMode & OPM_FIND) == 0) || (dynamic_cast<EFatal *>(E) != NULL))
+  if (((OpMode & OPM_FIND) == 0) || (dynamic_cast<EFatal *>(E) != nullptr))
   {
     ShowExtendedException(E);
   }
@@ -589,7 +589,7 @@ struct TFarMessageData : public TObject
 {
   TFarMessageData()
   {
-    Params = NULL;
+    Params = nullptr;
     memset(Buttons, 0, sizeof(Buttons));
     ButtonCount = 0;
   }
@@ -605,14 +605,14 @@ void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
 
   assert(Result != -1 && Result < Data.ButtonCount);
 
-  if ((Data.Params != NULL) && (Data.Params->Aliases != NULL))
+  if ((Data.Params != nullptr) && (Data.Params->Aliases != nullptr))
   {
     for (uintptr_t I = 0; I < Data.Params->AliasesCount; I++)
     {
       if ((Data.Params->Aliases[I].Button == Data.Buttons[Result]) &&
           (Data.Params->Aliases[I].OnClick))
       {
-        Data.Params->Aliases[I].OnClick(NULL);
+        Data.Params->Aliases[I].OnClick(nullptr);
         Close = false;
         break;
       }
@@ -629,7 +629,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   std::auto_ptr<TStrings> ButtonLabels(new TStringList());
   uintptr_t Flags = 0;
 
-  if (Params != NULL)
+  if (Params != nullptr)
   {
     Flags = Params->Flags;
   }
@@ -648,13 +648,13 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
 
   // make sure to do the check on full answers, not on reduced "timer answers"
   if (((Answers & qaAbort) && (Answers & qaRetry)) ||
-      (GetTopDialog() != NULL))
+      (GetTopDialog() != nullptr))
   {
     // use warning colors for abort/retry confirmation dialog
     Flags |= FMSG_WARNING;
   }
 
-  if (Params != NULL)
+  if (Params != nullptr)
   {
     if (Params->Timer > 0)
     {
@@ -670,7 +670,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   }
 
   uintptr_t AAnswers = Answers;
-  bool NeverAskAgainCheck = (Params != NULL) && FLAGSET(Params->Params, qpNeverAskAgainCheck);
+  bool NeverAskAgainCheck = (Params != nullptr) && FLAGSET(Params->Params, qpNeverAskAgainCheck);
   bool NeverAskAgainPending = NeverAskAgainCheck;
   uintptr_t TimeoutButton = 0;
 
@@ -681,7 +681,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
       Data.Buttons[Data.ButtonCount] = qa ## TYPE; \
       Data.ButtonCount++; \
       AAnswers -= qa ## TYPE; \
-      if ((Params != NULL) && (Params->Timeout != 0) && \
+      if ((Params != nullptr) && (Params->Timeout != 0) && \
           (Params->TimeoutAnswer == qa ## TYPE)) \
       { \
         TimeoutButton = ButtonLabels->GetCount() - 1; \
@@ -716,7 +716,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   USEDPARAM(NeverAskAgainPending);
   assert(!NeverAskAgainPending);
 
-  if ((Params != NULL) && (Params->Aliases != NULL))
+  if ((Params != nullptr) && (Params->Aliases != nullptr))
   {
     for (uintptr_t bi = 0; bi < Data.ButtonCount; bi++)
     {
@@ -741,7 +741,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
         GetMsg(MSG_CHECK_NEVER_ASK_AGAIN);
   }
 
-  if (Params != NULL)
+  if (Params != nullptr)
   {
     if (Params->Timer > 0)
     {
@@ -766,7 +766,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   }
   else
   {
-    FarParams.MoreMessages = NULL;
+    FarParams.MoreMessages = nullptr;
   }
 
   Result = Message(static_cast<DWORD>(Flags), GetMsg(TitleId), DialogStr, ButtonLabels.get(), &FarParams);

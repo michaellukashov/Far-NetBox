@@ -245,7 +245,7 @@ void TCopyParamType::DoGetInfoStr(
 //---------------------------------------------------------------------------
 void TCopyParamType::Assign(const TCopyParamType * Source)
 {
-  assert(Source != NULL);
+  assert(Source != nullptr);
   #define COPY(Prop) Set ## Prop(Source->Get ## Prop())
   COPY(FileNameCase);
   COPY(PreserveReadOnly);
@@ -308,7 +308,7 @@ UnicodeString TCopyParamType::RestoreChars(const UnicodeString & FileName) const
   if (GetInvalidCharsReplacement() == TokenReplacement)
   {
     wchar_t * InvalidChar = const_cast<wchar_t *>(Result.c_str());
-    while ((InvalidChar = wcschr(InvalidChar, TokenPrefix)) != NULL)
+    while ((InvalidChar = wcschr(InvalidChar, TokenPrefix)) != nullptr)
     {
       intptr_t Index = InvalidChar - Result.c_str() + 1;
       if (Result.Length() >= Index + 2)
