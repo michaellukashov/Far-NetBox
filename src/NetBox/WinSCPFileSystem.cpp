@@ -3164,7 +3164,7 @@ HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString & LocalFil
 //------------------------------------------------------------------------------
 inline DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName)
 {
-  return ::GetFileAttributes(LocalFileName.c_str());
+  return ::FileGetAttr(LocalFileName);
 }
 //------------------------------------------------------------------------------
 inline BOOL TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)

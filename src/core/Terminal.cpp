@@ -5247,7 +5247,7 @@ DWORD TTerminal::GetLocalFileAttributes(const UnicodeString & LocalFileName)
   }
   else
   {
-    return ::GetFileAttributes(LocalFileName.c_str());
+    return ::FileGetAttr(LocalFileName);
   }
 }
 //------------------------------------------------------------------------------
