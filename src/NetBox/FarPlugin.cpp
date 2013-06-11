@@ -2893,7 +2893,7 @@ TGlobalFunctionsIntf * GetGlobalFunctions()
 }
 
 //------------------------------------------------------------------------------
-HINSTANCE TGlobalFunctions::GetHandle() const
+HINSTANCE TGlobalFunctions::GetInstanceHandle() const
 {
   HINSTANCE Result = nullptr;
   if (FarPlugin)

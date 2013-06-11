@@ -620,7 +620,7 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
 {
   UnicodeString Result(64, 0);
   wchar_t Format[1024];
-  HINSTANCE hInstance = GetGlobalFunctions()->GetHandle();
+  HINSTANCE hInstance = GetGlobalFunctions()->GetInstanceHandle();
   intptr_t Length = ::LoadString(hInstance, static_cast<UINT>(Id),
     Format, static_cast<int>(sizeof(Format)));
   if (!Length)

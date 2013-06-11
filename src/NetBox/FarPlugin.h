@@ -515,7 +515,7 @@ extern TCustomFarPlugin * FarPlugin;
 class TGlobalFunctions : public TGlobalFunctionsIntf, public TObject
 {
 public:
-  virtual HINSTANCE GetHandle() const;
+  virtual HINSTANCE GetInstanceHandle() const;
   virtual UnicodeString GetCurrentDirectory() const;
   virtual UnicodeString GetStrVersionNumber() const;
 };
