@@ -415,10 +415,10 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 __int64 FileRead(HANDLE Handle, void * Buffer, __int64 Count)
 {
   __int64 Result = -1;
-  DWORD res = 0;
-  if (::ReadFile(Handle, reinterpret_cast<LPVOID>(Buffer), static_cast<DWORD>(Count), &res, NULL))
+  DWORD Res = 0;
+  if (::ReadFile(Handle, reinterpret_cast<LPVOID>(Buffer), static_cast<DWORD>(Count), &Res, NULL))
   {
-    Result = res;
+    Result = Res;
   }
   else
   {
@@ -430,10 +430,10 @@ __int64 FileRead(HANDLE Handle, void * Buffer, __int64 Count)
 __int64 FileWrite(HANDLE Handle, const void * Buffer, __int64 Count)
 {
   __int64 Result = -1;
-  DWORD res = 0;
-  if (::WriteFile(Handle, Buffer, static_cast<DWORD>(Count), &res, NULL))
+  DWORD Res = 0;
+  if (::WriteFile(Handle, Buffer, static_cast<DWORD>(Count), &Res, NULL))
   {
-    Result = res;
+    Result = Res;
   }
   else
   {
@@ -944,7 +944,7 @@ static int FindMatchingFile(TSearchRec & Rec)
   int Result = 0;
   while ((Rec.FindData.dwFileAttributes && Rec.ExcludeAttr) != 0)
   {
-    if (!FindNextFileW(Rec.FindHandle, &Rec.FindData))
+    if (!::FindNextFileW(Rec.FindHandle, &Rec.FindData))
     {
       Result = GetLastError();
       return Result;
@@ -987,7 +987,7 @@ DWORD FindFirst(const UnicodeString & FileName, DWORD LocalFileAttrs, TSearchRec
 DWORD FindNext(TSearchRec & Rec)
 {
   DWORD Result = 0;
-  if (FindNextFileW(Rec.FindHandle, &Rec.FindData))
+  if (::FindNextFileW(Rec.FindHandle, &Rec.FindData))
     Result = FindMatchingFile(Rec);
   else
     Result = GetLastError();
@@ -1094,10 +1094,10 @@ UnicodeString ExtractFilename(const UnicodeString & Path, wchar_t Delimiter)
 UnicodeString ExtractFileExtension(const UnicodeString & Path, wchar_t Delimiter)
 {
   UnicodeString Filename = ExtractFilename(Path, Delimiter);
-  intptr_t n = Filename.RPos(L'.');
-  if (n > 0)
+  intptr_t N = Filename.RPos(L'.');
+  if (N > 0)
   {
-    return Filename.SubString(n);
+    return Filename.SubString(N);
   }
   return UnicodeString();
 }
@@ -1634,7 +1634,7 @@ TCriticalSection::~TCriticalSection()
 //---------------------------------------------------------------------------
 void TCriticalSection::Enter()
 {
-  EnterCriticalSection(&FSection);
+  ::EnterCriticalSection(&FSection);
   FAcquired++;
 }
 
@@ -1642,7 +1642,7 @@ void TCriticalSection::Enter()
 void TCriticalSection::Leave()
 {
   FAcquired--;
-  LeaveCriticalSection(&FSection);
+  ::LeaveCriticalSection(&FSection);
 }
 
 //---------------------------------------------------------------------------
