@@ -7729,8 +7729,9 @@ generate_error(
   apr_pool_t * pool)
 {
   int errcode = WEBDAV_ERR_DAV_REQUEST_FAILED;
+  const char * url_decoded = path_uri_decode(req->url, pool);
   const char * context =
-    apr_psprintf(req->pool, "%s of '%s'", req->method, req->url);
+    apr_psprintf(req->pool, "%s of '%s'", req->method, url_decoded);
   const char * msg = nullptr;
   const char * hostport = nullptr;
 
@@ -7742,11 +7743,11 @@ generate_error(
       {
         case 404:
           return error_create(WEBDAV_ERR_FS_NOT_FOUND, nullptr,
-            apr_psprintf(pool, "'%s' path not found", req->url));
+            apr_psprintf(pool, "'%s' path not found", url_decoded));
         case 403:
           return error_create(WEBDAV_ERR_DAV_FORBIDDEN, nullptr,
             apr_psprintf(pool, "Access to '%s' forbidden",
-              req->url));
+              url_decoded));
 
         case 301:
         case 302:
@@ -7764,7 +7765,7 @@ generate_error(
              apr_psprintf(pool,
                "Server sent unexpected return value (%d %s) "
                "in response to %s request for '%s'", req->code,
-               req->code_desc, req->method, req->url));
+               req->code_desc, req->method, url_decoded));
       }
     case NE_AUTH:
     case NE_PROXYAUTH:
