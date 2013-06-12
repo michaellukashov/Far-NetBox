@@ -860,6 +860,10 @@ intptr_t TStringList::AddObject(const UnicodeString & S, TObject * AObject)
           break;
       }
     }
+    else
+    {
+      Result = GetCount();
+    }
   }
   InsertItem(Result, S, AObject);
   return Result;
