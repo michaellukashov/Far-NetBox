@@ -2150,9 +2150,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & FileName,
           TDateTime ReducedDestTimestamp =
             ReduceDateTimePrecision(FileParams->DestTimestamp, Precision);
 
-          Result =
-            (CompareFileTime(ReducedSourceTimestamp, ReducedDestTimestamp) > 0) ?
-            qaYes : qaNo;
+          Result = CompareFileTime(ReducedSourceTimestamp, ReducedDestTimestamp) > 0 ? qaYes : qaNo;
 
           LogEvent(FORMAT(L"Source file timestamp is [%s], destination timestamp is [%s], will%s overwrite",
             StandardTimestamp(ReducedSourceTimestamp).c_str(),
