@@ -690,7 +690,6 @@ void TTerminal::ResetConnection()
   // note that we cannot clear contained files
   // as they can still be referenced in the GUI atm
 }
-//------------------------------------------------------------------------------
 void TTerminal::Open()
 {
   ReflectSettings();
@@ -705,179 +704,7 @@ void TTerminal::Open()
       {
         DoInformation(L"", true, 0);
       });
-      {
-        try
-        {
-          ResetConnection();
-          FStatus = ssOpening;
-
-          auto cleanup = finally([&]()
-          {
-            if (FSessionData->GetTunnel())
-            {
-              FSessionData->RollbackTunnel();
-            }
-          });
-          {
-            if (FFileSystem == nullptr)
-            {
-              GetLog()->AddSystemInfo();
-              DoInitializeLog();
-              GetLog()->AddStartupInfo();
-            }
-
-            assert(FTunnel == nullptr);
-            if (FSessionData->GetTunnel())
-            {
-              DoInformation(LoadStr(OPEN_TUNNEL), true);
-              LogEvent(L"Opening tunnel.");
-              OpenTunnel();
-              GetLog()->AddSeparator();
-
-              FSessionData->ConfigureTunnel(FTunnelLocalPortNumber);
-
-              DoInformation(LoadStr(USING_TUNNEL), false);
-              LogEvent(FORMAT(L"Connecting via tunnel interface %s:%d.",
-                FSessionData->GetHostName().c_str(), FSessionData->GetPortNumber()));
-            }
-            else
-            {
-              assert(FTunnelLocalPortNumber == 0);
-            }
-
-            if (FFileSystem == nullptr)
-            {
-              if ((GetSessionData()->GetFSProtocol() == fsFTP) && (GetSessionData()->GetFtps() == ftpsNone))
-              {
-/*#ifdef NO_FILEZILLA
-                LogEvent(L"FTP protocol is not supported by this build.");
-                FatalError(nullptr, LoadStr(FTP_UNSUPPORTED));
-#else*/
-                FFSProtocol = cfsFTP;
-                FFileSystem = new TFTPFileSystem(this);
-                FFileSystem->Init(nullptr);
-                FFileSystem->Open();
-                GetLog()->AddSeparator();
-                LogEvent(L"Using FTP protocol.");
-// #endif
-              }
-              else if ((GetSessionData()->GetFSProtocol() == fsFTP) && (GetSessionData()->GetFtps() != ftpsNone))
-              {
-/*#if defined(NO_FILEZILLA) && defined(MPEXT_NO_SSLDLL)
-                LogEvent(L"FTPS protocol is not supported by this build.");
-                FatalError(nullptr, LoadStr(FTPS_UNSUPPORTED));
-#else*/
-                FFSProtocol = cfsFTPS;
-                FFileSystem = new TFTPFileSystem(this);
-                FFileSystem->Init(nullptr);
-                FFileSystem->Open();
-                GetLog()->AddSeparator();
-                LogEvent(L"Using FTPS protocol.");
-// #endif
-              }
-              else if (GetSessionData()->GetFSProtocol() == fsWebDAV)
-              {
-                FFSProtocol = cfsWebDAV;
-                FFileSystem = new TWebDAVFileSystem(this);
-                FFileSystem->Init(nullptr);
-                FFileSystem->Open();
-                GetLog()->AddSeparator();
-                LogEvent(L"Using WebDAV protocol.");
-              }
-              else
-              {
-                assert(FSecureShell == nullptr);
-                auto cleanup = finally([&]()
-                {
-                  SAFE_DESTROY(FSecureShell);
-                });
-                {
-                  FSecureShell = new TSecureShell(this, FSessionData, GetLog(), FConfiguration);
-                  try
-                  {
-                    if (FEnableSecureShellUsage)
-                    {
-                      // only on the first connect,
-                      // this is not ideal as it may prevent usage from being collected,
-                      // e.g. when connection fails on the first try
-                      FSecureShell->EnableUsage();
-                      FEnableSecureShellUsage = false;
-                    }
-                    // there will be only one channel in this session
-                    FSecureShell->SetSimple(true);
-                    FSecureShell->Open();
-                  }
-                  catch (Exception & E)
-                  {
-                    assert(!FSecureShell->GetActive());
-                    if (!FSecureShell->GetActive() && !FTunnelError.IsEmpty())
-                    {
-                      // the only case where we expect this to happen
-                      assert(E.Message == LoadStr(UNEXPECTED_CLOSE_ERROR));
-                      FatalError(&E, FMTLOAD(TUNNEL_ERROR, FTunnelError.c_str()));
-                    }
-                    else
-                    {
-                      throw;
-                    }
-                  }
-
-                  GetLog()->AddSeparator();
-
-                  if ((GetSessionData()->GetFSProtocol() == fsSCPonly) ||
-                      (GetSessionData()->GetFSProtocol() == fsSFTP && FSecureShell->SshFallbackCmd()))
-                  {
-                    FFSProtocol = cfsSCP;
-                    FFileSystem = new TSCPFileSystem(this);
-                    FFileSystem->Init(FSecureShell);
-                    FSecureShell = nullptr; // ownership passed
-                    LogEvent(L"Using SCP protocol.");
-                  }
-                  else
-                  {
-                    FFSProtocol = cfsSFTP;
-                    FFileSystem = new TSFTPFileSystem(this);
-                    FFileSystem->Init(FSecureShell);
-                    FSecureShell = nullptr; // ownership passed
-                    LogEvent(L"Using SFTP protocol.");
-                  }
-                }
-              }
-            }
-            else
-            {
-              FFileSystem->Open();
-            }
-          }
-
-          if (GetSessionData()->GetCacheDirectoryChanges())
-          {
-            assert(FDirectoryChangesCache == nullptr);
-            FDirectoryChangesCache = new TRemoteDirectoryChangesCache(
-              FConfiguration->GetCacheDirectoryChangesMaxSize());
-            if (GetSessionData()->GetPreserveDirectoryChanges())
-            {
-              FConfiguration->LoadDirectoryChangesCache(GetSessionData()->GetSessionKey(),
-                  FDirectoryChangesCache);
-            }
-          }
-
-          DoStartup();
-
-          DoInformation(LoadStr(STATUS_READY), true);
-          FStatus = ssOpened;
-        }
-        catch (...)
-        {
-          // rollback
-          if (FDirectoryChangesCache != nullptr)
-          {
-            delete FDirectoryChangesCache;
-            FDirectoryChangesCache = nullptr;
-          }
-          throw;
-        }
-      }
+      InternalTryOpen();
     }
     catch (EFatal & E)
     {
@@ -908,6 +735,181 @@ void TTerminal::Open()
   }
   while (Reopen);
   FSessionData->SetNumberOfRetries(0);
+}
+//------------------------------------------------------------------------------
+void TTerminal::InternalTryOpen()
+{
+  try
+  {
+    ResetConnection();
+    FStatus = ssOpening;
+
+    auto cleanup = finally([&]()
+    {
+      if (FSessionData->GetTunnel())
+      {
+        FSessionData->RollbackTunnel();
+      }
+    });
+    {
+      if (FFileSystem == nullptr)
+      {
+        GetLog()->AddSystemInfo();
+        DoInitializeLog();
+        GetLog()->AddStartupInfo();
+      }
+
+      assert(FTunnel == nullptr);
+      if (FSessionData->GetTunnel())
+      {
+        DoInformation(LoadStr(OPEN_TUNNEL), true);
+        LogEvent(L"Opening tunnel.");
+        OpenTunnel();
+        GetLog()->AddSeparator();
+
+        FSessionData->ConfigureTunnel(FTunnelLocalPortNumber);
+
+        DoInformation(LoadStr(USING_TUNNEL), false);
+        LogEvent(FORMAT(L"Connecting via tunnel interface %s:%d.",
+          FSessionData->GetHostName().c_str(), FSessionData->GetPortNumber()));
+      }
+      else
+      {
+        assert(FTunnelLocalPortNumber == 0);
+      }
+
+      if (FFileSystem == nullptr)
+      {
+        if ((GetSessionData()->GetFSProtocol() == fsFTP) && (GetSessionData()->GetFtps() == ftpsNone))
+        {
+/*#ifdef NO_FILEZILLA
+          LogEvent(L"FTP protocol is not supported by this build.");
+          FatalError(nullptr, LoadStr(FTP_UNSUPPORTED));
+#else*/
+          FFSProtocol = cfsFTP;
+          FFileSystem = new TFTPFileSystem(this);
+          FFileSystem->Init(nullptr);
+          FFileSystem->Open();
+          GetLog()->AddSeparator();
+          LogEvent(L"Using FTP protocol.");
+// #endif
+        }
+        else if ((GetSessionData()->GetFSProtocol() == fsFTP) && (GetSessionData()->GetFtps() != ftpsNone))
+        {
+/*#if defined(NO_FILEZILLA) && defined(MPEXT_NO_SSLDLL)
+          LogEvent(L"FTPS protocol is not supported by this build.");
+          FatalError(nullptr, LoadStr(FTPS_UNSUPPORTED));
+#else*/
+          FFSProtocol = cfsFTPS;
+          FFileSystem = new TFTPFileSystem(this);
+          FFileSystem->Init(nullptr);
+          FFileSystem->Open();
+          GetLog()->AddSeparator();
+          LogEvent(L"Using FTPS protocol.");
+// #endif
+        }
+        else if (GetSessionData()->GetFSProtocol() == fsWebDAV)
+        {
+          FFSProtocol = cfsWebDAV;
+          FFileSystem = new TWebDAVFileSystem(this);
+          FFileSystem->Init(nullptr);
+          FFileSystem->Open();
+          GetLog()->AddSeparator();
+          LogEvent(L"Using WebDAV protocol.");
+        }
+        else
+        {
+          assert(FSecureShell == nullptr);
+          auto cleanup = finally([&]()
+          {
+            SAFE_DESTROY(FSecureShell);
+          });
+          {
+            FSecureShell = new TSecureShell(this, FSessionData, GetLog(), FConfiguration);
+            try
+            {
+              if (FEnableSecureShellUsage)
+              {
+                // only on the first connect,
+                // this is not ideal as it may prevent usage from being collected,
+                // e.g. when connection fails on the first try
+                FSecureShell->EnableUsage();
+                FEnableSecureShellUsage = false;
+              }
+              // there will be only one channel in this session
+              FSecureShell->SetSimple(true);
+              FSecureShell->Open();
+            }
+            catch (Exception & E)
+            {
+              assert(!FSecureShell->GetActive());
+              if (!FSecureShell->GetActive() && !FTunnelError.IsEmpty())
+              {
+                // the only case where we expect this to happen
+                assert(E.Message == LoadStr(UNEXPECTED_CLOSE_ERROR));
+                FatalError(&E, FMTLOAD(TUNNEL_ERROR, FTunnelError.c_str()));
+              }
+              else
+              {
+                throw;
+              }
+            }
+
+            GetLog()->AddSeparator();
+
+            if ((GetSessionData()->GetFSProtocol() == fsSCPonly) ||
+                (GetSessionData()->GetFSProtocol() == fsSFTP && FSecureShell->SshFallbackCmd()))
+            {
+              FFSProtocol = cfsSCP;
+              FFileSystem = new TSCPFileSystem(this);
+              FFileSystem->Init(FSecureShell);
+              FSecureShell = nullptr; // ownership passed
+              LogEvent(L"Using SCP protocol.");
+            }
+            else
+            {
+              FFSProtocol = cfsSFTP;
+              FFileSystem = new TSFTPFileSystem(this);
+              FFileSystem->Init(FSecureShell);
+              FSecureShell = nullptr; // ownership passed
+              LogEvent(L"Using SFTP protocol.");
+            }
+          }
+        }
+      }
+      else
+      {
+        FFileSystem->Open();
+      }
+    }
+
+    if (GetSessionData()->GetCacheDirectoryChanges())
+    {
+      assert(FDirectoryChangesCache == nullptr);
+      FDirectoryChangesCache = new TRemoteDirectoryChangesCache(
+        FConfiguration->GetCacheDirectoryChangesMaxSize());
+      if (GetSessionData()->GetPreserveDirectoryChanges())
+      {
+        FConfiguration->LoadDirectoryChangesCache(GetSessionData()->GetSessionKey(),
+            FDirectoryChangesCache);
+      }
+    }
+
+    DoStartup();
+
+    DoInformation(LoadStr(STATUS_READY), true);
+    FStatus = ssOpened;
+  }
+  catch (...)
+  {
+    // rollback
+    if (FDirectoryChangesCache != nullptr)
+    {
+      delete FDirectoryChangesCache;
+      FDirectoryChangesCache = nullptr;
+    }
+    throw;
+  }
 }
 //------------------------------------------------------------------------------
 bool TTerminal::IsListenerFree(uintptr_t PortNumber) const
