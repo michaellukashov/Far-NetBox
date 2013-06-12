@@ -511,6 +511,7 @@ protected:
 
 private:
   void InternalTryOpen();
+  void InternalDoTryOpen();
 
 private:
   TSessionData * FSessionData;
