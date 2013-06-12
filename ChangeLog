@@ -1,5 +1,7 @@
 NetBox 2.1.31 ??.06.2013
 --------------------
+  * Bugfix: AV when option "New and updated file(s) only" is set.
+    (http://forum.farmanager.com/viewtopic.php?p=110798#p110798)
   * Bugfix: "Transfer settings" --> "File mask" not working.
     (http://forum.farmanager.com/viewtopic.php?p=110620#p110620)
   * Bugfix: List items have incorrect values.
