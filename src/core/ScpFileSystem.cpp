@@ -1704,7 +1704,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
   if (!FTerminal->AllowLocalFileTransfer(FileName, CopyParam))
   {
     FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", RealFileName.c_str()));
-    THROW_SKIP_FILE_NULL;
+    ThrowSkipFileNull();
   }
 
   HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
@@ -2422,7 +2422,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
         // last possibility to cancel transfer before it starts
         if (OperationProgress->Cancel)
         {
-          THROW_SKIP_FILE(nullptr, LoadStr(USER_TERMINATED));
+          ThrowSkipFile(nullptr, LoadStr(USER_TERMINATED));
         }
 
         bool Dir = (Ctrl == L'D');

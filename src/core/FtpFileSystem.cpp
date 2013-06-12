@@ -1014,7 +1014,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & FileName,
   switch (FFileTransferAbort)
   {
     case ftaSkip:
-      THROW_SKIP_FILE_NULL;
+      ThrowSkipFileNull();
 
     case ftaCancel:
       Abort();
@@ -1139,7 +1139,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
   if (!CopyParam->AllowTransfer(FileName, osRemote, AFile->GetIsDirectory(), MaskParams))
   {
     FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", FileName.c_str()));
-    THROW_SKIP_FILE_NULL;
+    ThrowSkipFileNull();
   }
 
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
@@ -1185,7 +1185,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
       // of any parent directory
       if (FLAGSET(Params, cpDelete) && SinkFileParams.Skipped)
       {
-        THROW_SKIP_FILE_NULL;
+        ThrowSkipFileNull();
       }
     }
     else
@@ -1246,7 +1246,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
       if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress,
         &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
       {
-        THROW_SKIP_FILE_NULL;
+        ThrowSkipFileNull();
       }
       FileTransfer(FileName, DestFullName, LocalFileHandle, OnlyFileName,
         FilePath, true, AFile->GetSize(), TransferType, UserData, OperationProgress);
@@ -1431,7 +1431,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
   if (!FTerminal->AllowLocalFileTransfer(FileName, CopyParam))
   {
     FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", RealFileName.c_str()));
-    THROW_SKIP_FILE_NULL;
+    ThrowSkipFileNull();
   }
 
   __int64 MTime = 0, ATime = 0;

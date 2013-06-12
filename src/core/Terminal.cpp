@@ -1514,7 +1514,7 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
 
     if (AllowSkip)
     {
-      THROW_SKIP_FILE(&E, Message);
+      ThrowSkipFile(&E, Message);
     }
     else
     {
@@ -4606,7 +4606,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
         if (Modified)
         {
           LogEvent(FORMAT(L"Remote file '%s' [%s] [%s] is modified comparing to local file '%s' [%s] [%s]",
-            FullRemoteFileName.c_str(),
+             FullRemoteFileName.c_str(),
              StandardTimestamp(File->GetModification()).c_str(),
              Int64ToStr(File->GetSize()).c_str(),
              UnicodeString(LocalData->Info.Directory + LocalData->Info.FileName).c_str(),
@@ -5090,8 +5090,8 @@ bool TTerminal::CopyToRemote(TStrings * AFilesToCopy,
       {
         if (GetLog()->GetLogging())
         {
-          LogEvent(FORMAT(L"Copying %d files/directories to remote directory "
-            L"\"%s\"", AFilesToCopy->GetCount(), TargetDir.c_str()));
+          LogEvent(FORMAT(L"Copying %d files/directories to remote directory \"%s\"",
+            AFilesToCopy->GetCount(), TargetDir.c_str()));
           LogEvent(CopyParam->GetLogStr());
         }
 

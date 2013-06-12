@@ -972,7 +972,7 @@ UnicodeString TSecureShell::ReceiveLine()
 //---------------------------------------------------------------------------
 void TSecureShell::SendSpecial(int Code)
 {
-  LogEvent(FORMAT(L"Sending special code: %d", (Code)));
+  LogEvent(FORMAT(L"Sending special code: %d", Code));
   CheckConnection();
   FBackend->special(FBackendHandle, static_cast<Telnet_Special>(Code));
   CheckConnection();
@@ -1086,7 +1086,7 @@ void TSecureShell::Send(const unsigned char * Buf, intptr_t Length)
   int BufSize = FBackend->send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), static_cast<int>(Length));
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    LogEvent(FORMAT(L"Sent %u bytes", (static_cast<int>(Length))));
+    LogEvent(FORMAT(L"Sent %d bytes", static_cast<int>(Length)));
     LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
   }
   FLastDataSent = Now();
