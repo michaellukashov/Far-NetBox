@@ -512,6 +512,7 @@ protected:
 private:
   void InternalTryOpen();
   void InternalDoTryOpen();
+  TCustomFileSystem * InitFileSystem();
 
 private:
   TSessionData * FSessionData;

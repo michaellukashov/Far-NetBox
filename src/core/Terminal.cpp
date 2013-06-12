@@ -813,40 +813,53 @@ void TTerminal::InternalDoTryOpen()
 
   if (FFileSystem == nullptr)
   {
+    FFileSystem = InitFileSystem();
+  }
+  else
+  {
+    FFileSystem->Open();
+  }
+}
+//------------------------------------------------------------------------------
+TCustomFileSystem * TTerminal::InitFileSystem()
+{
+  TCustomFileSystem * Result = NULL;
+  try
+  {
     if ((GetSessionData()->GetFSProtocol() == fsFTP) && (GetSessionData()->GetFtps() == ftpsNone))
     {
-/*#ifdef NO_FILEZILLA
+#ifdef NO_FILEZILLA
       LogEvent(L"FTP protocol is not supported by this build.");
       FatalError(nullptr, LoadStr(FTP_UNSUPPORTED));
-#else*/
+#else
       FFSProtocol = cfsFTP;
-      FFileSystem = new TFTPFileSystem(this);
-      FFileSystem->Init(nullptr);
-      FFileSystem->Open();
+      Result = new TFTPFileSystem(this);
+      Result->Init(nullptr);
+      Result->Open();
       GetLog()->AddSeparator();
       LogEvent(L"Using FTP protocol.");
-// #endif
+#endif
     }
     else if ((GetSessionData()->GetFSProtocol() == fsFTP) && (GetSessionData()->GetFtps() != ftpsNone))
     {
-/*#if defined(NO_FILEZILLA) && defined(MPEXT_NO_SSLDLL)
+#if defined(NO_FILEZILLA) && defined(MPEXT_NO_SSLDLL)
       LogEvent(L"FTPS protocol is not supported by this build.");
       FatalError(nullptr, LoadStr(FTPS_UNSUPPORTED));
-#else*/
+#else
       FFSProtocol = cfsFTPS;
-      FFileSystem = new TFTPFileSystem(this);
-      FFileSystem->Init(nullptr);
-      FFileSystem->Open();
+      Result = new TFTPFileSystem(this);
+      Result->Init(nullptr);
+      Result->Open();
       GetLog()->AddSeparator();
       LogEvent(L"Using FTPS protocol.");
-// #endif
+#endif
     }
     else if (GetSessionData()->GetFSProtocol() == fsWebDAV)
     {
       FFSProtocol = cfsWebDAV;
-      FFileSystem = new TWebDAVFileSystem(this);
-      FFileSystem->Init(nullptr);
-      FFileSystem->Open();
+      Result = new TWebDAVFileSystem(this);
+      Result->Init(nullptr);
+      Result->Open();
       GetLog()->AddSeparator();
       LogEvent(L"Using WebDAV protocol.");
     }
@@ -894,26 +907,28 @@ void TTerminal::InternalDoTryOpen()
             (GetSessionData()->GetFSProtocol() == fsSFTP && FSecureShell->SshFallbackCmd()))
         {
           FFSProtocol = cfsSCP;
-          FFileSystem = new TSCPFileSystem(this);
-          FFileSystem->Init(FSecureShell);
+          Result= new TSCPFileSystem(this);
+          Result->Init(FSecureShell);
           FSecureShell = nullptr; // ownership passed
           LogEvent(L"Using SCP protocol.");
         }
         else
         {
           FFSProtocol = cfsSFTP;
-          FFileSystem = new TSFTPFileSystem(this);
-          FFileSystem->Init(FSecureShell);
+          Result = new TSFTPFileSystem(this);
+          Result->Init(FSecureShell);
           FSecureShell = nullptr; // ownership passed
           LogEvent(L"Using SFTP protocol.");
         }
       }
     }
   }
-  else
+  catch (EFatal &)
   {
-    FFileSystem->Open();
+    SAFE_DESTROY(Result);
+    throw;
   }
+  return Result;
 }
 //------------------------------------------------------------------------------
 bool TTerminal::IsListenerFree(uintptr_t PortNumber) const
