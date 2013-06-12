@@ -993,14 +993,14 @@ string_compare(
 {
   // easy way out :)
   if (len1 != len2)
-    return FALSE;
+    return false;
 
   // now the strings must have identical lengths
 
   if ((memcmp(str1, str2, len1)) == 0)
     return TRUE;
   else
-    return FALSE;
+    return false;
 }
 
 // Our own realloc, since APR doesn't have one.  Note: this is a
@@ -1926,10 +1926,10 @@ fail:
 //------------------------------------------------------------------------------
 // from path.c
 
-// TRUE if s is the canonical empty path, FALSE otherwise
+// TRUE if s is the canonical empty path, false otherwise
 #define WEBDAV_PATH_IS_EMPTY(s) ((s)[0] == '\0')
 
-// TRUE if s,n is the platform's empty path ("."), FALSE otherwise. Can
+// TRUE if s,n is the platform's empty path ("."), false otherwise. Can
 // this be changed?  Well, the path library will work, not so sure about
 // the OS!
 #define WEBDAV_PATH_IS_PLATFORM_EMPTY(s,n) ((n) == 1 && (s)[0] == '.')
@@ -2036,7 +2036,7 @@ path_uri_decode(
 {
   stringbuf_t * retstr = nullptr;
   size_t i = 0;
-  bool query_start = FALSE;
+  bool query_start = false;
 
   // avoid repeated realloc
   retstr = stringbuf_create_ensure(strlen(path) + 1, pool);
@@ -2163,7 +2163,7 @@ path_cstring_to_utf8(
   const char * path_apr,
   apr_pool_t * pool)
 {
-  bool path_is_utf8 = FALSE;
+  bool path_is_utf8 = false;
   WEBDAV_ERR(get_path_encoding(&path_is_utf8, pool));
   if (path_is_utf8)
   {
@@ -2251,7 +2251,7 @@ path_cstring_from_utf8(
   const char * path_utf8,
   apr_pool_t * pool)
 {
-  bool path_is_utf8 = FALSE;
+  bool path_is_utf8 = false;
   WEBDAV_ERR(get_path_encoding(&path_is_utf8, pool));
   if (path_is_utf8)
   {
@@ -2270,7 +2270,7 @@ path_is_backpath_present(
 
   // 0 and 1-length paths do not have a backpath
   if ((path[0] == '\0') || (path[1] == '\0'))
-    return FALSE;
+    return false;
 
   // Handle ".." or a leading "../"
   if ((path[0] == '.') && (path[1] == '.') && ((path[2] == '\0') || (path[2] == '/')))
@@ -2278,7 +2278,7 @@ path_is_backpath_present(
 
   // Paths of length 2 (at this point) have no backpath present.
   if (path[2] == '\0')
-    return FALSE;
+    return false;
 
   // If any segment is "..", then a backpath is present.
   if (strstr(path, "/../") != nullptr)
@@ -3208,7 +3208,7 @@ auth_simple_password_get(
   bool non_interactive,
   apr_pool_t * pool)
 {
-  *done = FALSE;
+  *done = false;
 
   string_t * str = static_cast<string_t *>(apr_hash_get(creds, AUTHN_USERNAME_KEY, APR_HASH_KEY_STRING));
   if (str && username && strcmp(str->data, username) == 0)
@@ -3257,7 +3257,7 @@ simple_username_get(
     *username = str->data;
     return TRUE;
   }
-  return FALSE;
+  return false;
 }
 
 // Common implementation for simple_first_creds. Uses PARAMETERS, REALMSTRING
@@ -3290,7 +3290,7 @@ auth_simple_first_creds_helper(
 
   // This checks if we should save the CREDS, if saving the credentials is
   // allowed by the run-time configuration.
-  bool need_to_save = FALSE;
+  bool need_to_save = false;
   apr_hash_t * creds_hash = nullptr;
   error_t err = 0;
 
@@ -3313,7 +3313,7 @@ auth_simple_first_creds_helper(
   else if (creds_hash)
   {
     // We have something in the auth cache for this realm.
-    bool have_passtype = FALSE;
+    bool have_passtype = false;
 
     // The password type in the auth data must match the
     // mangler's type, otherwise the password must be
@@ -3335,7 +3335,7 @@ auth_simple_first_creds_helper(
       else
       {
         if (0 == strcmp(default_username, username))
-          need_to_save = FALSE;
+          need_to_save = false;
         else
           need_to_save = TRUE;
       }
@@ -3357,7 +3357,7 @@ auth_simple_first_creds_helper(
         else
         {
           if (0 == strcmp(default_password, password))
-            need_to_save = FALSE;
+            need_to_save = false;
           else
             need_to_save = TRUE;
         }
@@ -3461,7 +3461,7 @@ auth_simple_save_creds_helper(
   // Make sure we've been passed a passtype.
   WEBDAV_ERR_ASSERT(passtype != nullptr);
 
-  *saved = FALSE;
+  *saved = false;
 
   if (no_auth_cache)
     return WEBDAV_NO_ERROR;
@@ -3475,7 +3475,7 @@ auth_simple_save_creds_helper(
   // us not to do so.
   if (!dont_store_passwords)
   {
-    bool may_save_password = FALSE;
+    bool may_save_password = false;
 
     // If the password is going to be stored encrypted, go right
     // ahead and store it to disk. Else determine whether saving
@@ -3494,7 +3494,7 @@ auth_simple_save_creds_helper(
           // In non-interactive mode, the default behavior is
           // to not store the password, because it is usually
           // passed on the command line.
-          may_save_password = FALSE;
+          may_save_password = false;
         else if (b && b->plaintext_prompt_func)
         {
           // We're interactive, and the client provided a
@@ -3532,7 +3532,7 @@ auth_simple_save_creds_helper(
       else if (store_plaintext_passwords && cstring_casecmp(store_plaintext_passwords,
               WEBDAV_CONFIG_FALSE) == 0)
       {
-        may_save_password = FALSE;
+        may_save_password = false;
       }
       else if (store_plaintext_passwords && cstring_casecmp(store_plaintext_passwords,
               WEBDAV_CONFIG_TRUE) == 0)
@@ -3546,7 +3546,7 @@ auth_simple_save_creds_helper(
            "Config error: invalid value '%s' for option '%s'",
           store_plaintext_passwords,
           WEBDAV_AUTH_PARAM_STORE_PLAINTEXT_PASSWORDS);*/
-        may_save_password = FALSE;
+        may_save_password = false;
       }
     }
 
@@ -3798,7 +3798,7 @@ simple_prompt_next_creds(
   ib->retries++;
 
   return prompt_for_simple_creds((auth_cred_simple_t **) credentials_p,
-    pb, parameters, realmstring, FALSE,
+    pb, parameters, realmstring, false,
     !no_auth_cache, pool);
 }
 
@@ -3878,7 +3878,7 @@ auth_ssl_client_cert_pw_get(
     *done = TRUE;
     return WEBDAV_NO_ERROR;
   }
-  *done = FALSE;
+  *done = false;
   return WEBDAV_NO_ERROR;
 }
 
@@ -3945,7 +3945,7 @@ auth_ssl_client_cert_pw_file_first_creds_helper(
     auth_cred_ssl_client_cert_pw_t * cred =
       static_cast<auth_cred_ssl_client_cert_pw_t *>(apr_pcalloc(pool, sizeof(*cred)));
     cred->password = password;
-    cred->may_save = FALSE;
+    cred->may_save = false;
     *credentials_p = cred;
   }
   else *credentials_p = nullptr;
@@ -3987,7 +3987,7 @@ auth_ssl_client_cert_pw_file_save_creds_helper(
        WEBDAV_AUTH_PARAM_NO_AUTH_CACHE,
        APR_HASH_KEY_STRING) != nullptr);
 
-  *saved = FALSE;
+  *saved = false;
 
   if (no_auth_cache)
     return WEBDAV_NO_ERROR;
@@ -3998,7 +3998,7 @@ auth_ssl_client_cert_pw_file_save_creds_helper(
   // us not to do so.
   if (!dont_store_passphrase)
   {
-    bool may_save_passphrase = FALSE;
+    bool may_save_passphrase = false;
 
     // If the passphrase is going to be stored encrypted, go right
     // ahead and store it to disk. Else determine whether saving
@@ -4016,7 +4016,7 @@ auth_ssl_client_cert_pw_file_save_creds_helper(
         {
           // In non-interactive mode, the default behavior is
           // to not store the passphrase
-          may_save_passphrase = FALSE;
+          may_save_passphrase = false;
         }
         else if (b->plaintext_passphrase_prompt_func)
         {
@@ -4049,13 +4049,13 @@ auth_ssl_client_cert_pw_file_save_creds_helper(
         }
         else
         {
-          may_save_passphrase = FALSE;
+          may_save_passphrase = false;
         }
       }
       else if (cstring_casecmp(store_ssl_client_cert_pp_plaintext,
                  WEBDAV_CONFIG_FALSE) == 0)
       {
-        may_save_passphrase = FALSE;
+        may_save_passphrase = false;
       }
       else if (cstring_casecmp(store_ssl_client_cert_pp_plaintext,
                  WEBDAV_CONFIG_TRUE) == 0)
@@ -4624,7 +4624,7 @@ windows_validate_certificate(
   CERT_CHAIN_PARA chain_para;
   PCCERT_CHAIN_CONTEXT chain_context = nullptr;
 
-  *ok_p = FALSE;
+  *ok_p = false;
 
   // Parse the certificate into a context.
   cert_context = certcontext_from_base64(ascii_cert, pool);
@@ -4729,7 +4729,7 @@ windows_ssl_server_trust_first_credentials(
   {
     auth_cred_ssl_server_trust_t * creds =
       static_cast<auth_cred_ssl_server_trust_t *>(apr_pcalloc(pool, sizeof(*creds)));
-    creds->may_save = FALSE; // No need to save it.
+    creds->may_save = false; // No need to save it.
     *credentials = creds;
   }
 
@@ -4837,7 +4837,7 @@ username_save_creds(
   apr_hash_t * creds_hash = nullptr;
   error_t err;
 
-  *saved = FALSE;
+  *saved = false;
 
   if (!creds->may_save)
     return WEBDAV_NO_ERROR;
@@ -4998,7 +4998,7 @@ username_prompt_next_creds(
   ib->retries++;
 
   return prompt_for_username_creds((auth_cred_username_t **) credentials_p, pb,
-    parameters, realmstring, FALSE, !no_auth_cache, pool);
+    parameters, realmstring, false, !no_auth_cache, pool);
 }
 
 static const auth_provider_t username_prompt_provider =
@@ -5066,7 +5066,7 @@ auth_first_credentials(
   auth_provider_object_t * provider = nullptr;
   void * creds = nullptr;
   void * iter_baton = nullptr;
-  bool got_first = FALSE;
+  bool got_first = false;
   auth_iterstate_t * iterstate = nullptr;
   const char * cache_key = nullptr;
 
@@ -5177,7 +5177,7 @@ auth_next_credentials(
       break;
     }
 
-    state->got_first = FALSE;
+    state->got_first = false;
   }
 
   *credentials = creds;
@@ -5192,7 +5192,7 @@ auth_save_credentials(
 {
   int i = 0;
   auth_provider_object_t * provider = nullptr;
-  bool save_succeeded = FALSE;
+  bool save_succeeded = false;
   const char * no_auth_cache = nullptr;
   auth_baton_t * auth_baton = nullptr;
   void * creds = nullptr;
@@ -5338,7 +5338,7 @@ auth_get_platform_specific_client_providers(
 //------------------------------------------------------------------------------
 // from dirent_uri.c
 
-// TRUE if s is the canonical empty path, FALSE otherwise
+// TRUE if s is the canonical empty path, false otherwise
 #define PATH_IS_EMPTY(s) ((s)[0] == '\0')
 
 // Path separator for local filesystem
@@ -5386,7 +5386,7 @@ canonicalize(
   const char * src = nullptr;
   size_t seglen = 0;
   size_t canon_segments = 0;
-  bool url = FALSE;
+  bool url = false;
   char * schema_data = nullptr;
 
   // "" is already canonical, so just return it; note that later code
@@ -5802,7 +5802,7 @@ dirent_is_root(
       {
         segments++;
         if (segments > 1)
-          return FALSE;
+          return false;
       }
     }
     return (segments == 1); // //drive is invalid on plain Windows
@@ -5812,7 +5812,7 @@ dirent_is_root(
   if ((len == 1) && (dirent[0] == '/'))
     return TRUE;
 
-  return FALSE;
+  return false;
 }
 
 static bool
@@ -5830,7 +5830,7 @@ relpath_is_canonical(
     return TRUE;
 
   if (*ptr == '/')
-    return FALSE;
+    return false;
 
   // Now validate the rest of the path.
   while (1)
@@ -5838,13 +5838,13 @@ relpath_is_canonical(
     apr_size_t seglen = ptr - seg;
 
     if ((seglen == 1) && (*seg == '.'))
-      return FALSE;  //  /./
+      return false;  //  /./
 
     if ((*ptr == '/') && (*(ptr+1) == '/'))
-      return FALSE;  //  //
+      return false;  //  //
 
     if (!*ptr && (*(ptr - 1) == '/'))
-      return FALSE;  // foo/
+      return false;  // foo/
 
     if (!*ptr)
       break;
@@ -5956,7 +5956,7 @@ dirent_is_canonical(
   {
     // The only canonical drive names are "A:"..."Z:", no lower case
     if (*ptr < 'A' || *ptr > 'Z')
-      return FALSE;
+      return false;
 
     ptr += 2;
 
@@ -6032,7 +6032,7 @@ dirent_is_rooted(
   const char * dirent)
 {
   if (!dirent)
-    return FALSE;
+    return false;
 
   // Root on all systems
   if (dirent[0] == '/')
@@ -6047,7 +6047,7 @@ dirent_is_rooted(
     return TRUE;
   }
 
-  return FALSE;
+  return false;
 }
 
 static const char *
@@ -6157,7 +6157,7 @@ dirent_is_absolute(
   const char * dirent)
 {
   if (!dirent)
-    return FALSE;
+    return false;
 
   // dirent is absolute if it starts with '/' on non-Windows platforms
   // or with '//' on Windows platforms
@@ -6174,7 +6174,7 @@ dirent_is_absolute(
     return TRUE;
   }
 
-  return FALSE;
+  return false;
 }
 
 static error_t
@@ -6392,7 +6392,7 @@ io_file_open(
 
   WEBDAV_ERR(cstring_from_utf8(&fname_apr, fname, pool));
   status = file_open(new_file, fname_apr, flags | APR_BINARY, perms,
-    /* retry_on_failure */ FALSE,
+    /* retry_on_failure */ false,
     pool);
 
   if (status)
@@ -6607,7 +6607,7 @@ io_file_read_full2(
       return WEBDAV_NO_ERROR;
     }
     else
-      *hit_eof = FALSE;
+      *hit_eof = false;
   }
 
   return do_io_file_wrapper_cleanup(file, status,
@@ -6690,7 +6690,7 @@ read_handler_apr(
 {
   struct baton_apr_t * btn = static_cast<baton_apr_t *>(baton);
   error_t err = 0;
-  bool eof = FALSE;
+  bool eof = false;
 
   if (*len == 1)
   {
@@ -6903,7 +6903,7 @@ seek_handler_empty(
 static bool
 is_buffered_handler_empty(void * baton)
 {
-  return FALSE;
+  return false;
 }
 
 static stream_t *
@@ -6963,7 +6963,7 @@ stream_open_writable(
     | APR_CREATE,
     // | APR_EXCL,
     result_pool));
-  *stream = stream_from_aprfile2(file, FALSE, result_pool);
+  *stream = stream_from_aprfile2(file, false, result_pool);
 
   return WEBDAV_NO_ERROR;
 }
@@ -7170,7 +7170,7 @@ start_207_element(
   {
     case ELEM_propstat:
       b->in_propstat = TRUE;
-      b->propstat_has_error = FALSE;
+      b->propstat_has_error = false;
       break;
 
     default:
@@ -7249,7 +7249,7 @@ end_207_element(
     break;
 
     case ELEM_propstat:
-      b->in_propstat = FALSE;
+      b->in_propstat = false;
       b->contains_error = b->contains_error || b->propstat_has_error;
       stringbuf_appendcstr(b->description,
         apr_psprintf(b->req->pool,
@@ -8229,7 +8229,7 @@ neon_request_dispatch(
   // the credentials for future use.
   if ((req->sess->auth_used) && (statstruct->code < 400))
   {
-    req->sess->auth_used = FALSE;
+    req->sess->auth_used = false;
     WEBDAV_ERR(neon_maybe_store_auth_info(req->sess, pool));
   }
 
@@ -8689,13 +8689,13 @@ session_open(
     if (auth_baton_get_parameter(callbacks->auth_baton,
       WEBDAV_AUTH_PARAM_DONT_STORE_PASSWORDS) != nullptr)
     {
-      store_passwords = FALSE;
+      store_passwords = false;
     }
 
     if (auth_baton_get_parameter(callbacks->auth_baton,
       WEBDAV_AUTH_PARAM_NO_AUTH_CACHE) != nullptr)
     {
-      store_auth_creds = FALSE;
+      store_auth_creds = false;
     }
   }
   if (callbacks->auth_baton)
@@ -8973,7 +8973,7 @@ ssl_client_cert_file_first_credentials(
       static_cast<auth_cred_ssl_client_cert_t *>(apr_pcalloc(pool, sizeof(*cred)));
 
     cred->cert_file = cert_file;
-    cred->may_save = FALSE;
+    cred->may_save = false;
     *credentials_p = cred;
   }
   else
@@ -9190,7 +9190,7 @@ ssl_server_trust_file_first_credentials(
   {
     auth_cred_ssl_server_trust_t * creds =
       static_cast<auth_cred_ssl_server_trust_t *>(apr_pcalloc(pool, sizeof(*creds)));
-    creds->may_save = FALSE; // No need to save it again...
+    creds->may_save = false; // No need to save it again...
     *credentials = creds;
   }
 
@@ -9367,7 +9367,7 @@ plaintext_prompt_helper(
     if (err == WEBDAV_ERR_CANCELLED)
     {
       error_clear(&err);
-      *may_save_plaintext = FALSE;
+      *may_save_plaintext = false;
       return WEBDAV_NO_ERROR;
     }
     else
@@ -9379,7 +9379,7 @@ plaintext_prompt_helper(
   }
   else if (RequestResult == qaNo)
   {
-    *may_save_plaintext = FALSE;
+    *may_save_plaintext = false;
   }
 
   return WEBDAV_NO_ERROR;
@@ -9517,7 +9517,7 @@ cmdline_auth_ssl_server_trust_prompt(
   else if (RequestResult == qaNo)
   {
     *cred_p = static_cast<auth_cred_ssl_server_trust_t *>(apr_pcalloc(pool, sizeof(**cred_p)));
-    (*cred_p)->may_save = FALSE;
+    (*cred_p)->may_save = false;
     (*cred_p)->accepted_failures = failures;
   }
   else
@@ -9684,7 +9684,7 @@ ssl_trust_unknown_server_cert(
   if (failures == 0 || failures == WEBDAV_AUTH_SSL_UNKNOWNCA)
   {
     *cred_p = static_cast<auth_cred_ssl_server_trust_t *>(apr_pcalloc(pool, sizeof(**cred_p)));
-    (*cred_p)->may_save = FALSE;
+    (*cred_p)->may_save = false;
     (*cred_p)->accepted_failures = failures;
   }
 
@@ -9725,7 +9725,7 @@ auth_baton_init(
     pb->cancel_baton = cancel_baton;
   }
 
-  if (non_interactive == FALSE)
+  if (non_interactive == false)
   {
     // This provider doesn't prompt the user in order to get creds;
     // it prompts the user regarding the caching of creds.
@@ -9755,7 +9755,7 @@ auth_baton_init(
   auth_get_ssl_client_cert_file_provider(&provider, pool);
   APR_ARRAY_PUSH(providers, auth_provider_object_t *) = provider;
 
-  if (non_interactive == FALSE)
+  if (non_interactive == false)
   {
     // This provider doesn't prompt the user in order to get creds;
     // it prompts the user regarding the caching of creds.
@@ -9769,7 +9769,7 @@ auth_baton_init(
   }
   APR_ARRAY_PUSH(providers, auth_provider_object_t *) = provider;
 
-  if (non_interactive == FALSE)
+  if (non_interactive == false)
   {
     // Two basic prompt providers: username/password, and just username.
     auth_get_simple_prompt_provider(&provider,
@@ -9831,7 +9831,7 @@ auth_baton_init(
 // from main.c
 
 // A flag to see if we've been canceled by the client or not.
-static volatile atomic_t cancelled = FALSE;
+static volatile atomic_t cancelled = 0;
 
 // Our cancellation callback.
 static error_t
@@ -11525,7 +11525,7 @@ neon_open(
 
   ne_session * sess = ne_session_create(uri->scheme, uri->host, uri->port);
   apr_pool_cleanup_register(pool, sess, cleanup_session, apr_pool_cleanup_null);
-  bool compression = FALSE;
+  bool compression = false;
   unsigned int neon_auth_types = 0;
   const char * pkcs11_provider = nullptr;
   const char * ssl_authority_file = nullptr;
@@ -11943,7 +11943,7 @@ neon_check_path(
 
   const char * url = ras->url->data;
   error_t err = 0;
-  bool is_dir = FALSE;
+  bool is_dir = false;
 
   // If we were given a relative path to append, append it.
   if (path)
@@ -13600,7 +13600,7 @@ void TWebDAVFileSystem::ResetFileTransfer()
   FFileTransferAbort = ftaNone;
   FFileTransferCancelled = false;
   FFileTransferResumed = 0;
-  webdav::cancelled = FALSE;
+  webdav::cancelled = false;
 }
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::ReadDirectoryProgress(__int64 Bytes)
@@ -13916,10 +13916,10 @@ webdav::error_t TWebDAVFileSystem::OpenURL(
   webdav::auth_baton_create(&ab, pool);
   webdav::auth_baton_init(
     ab,
-    FALSE, // non_interactive
+    false, // non_interactive
     auth_username,
     auth_password,
-    FALSE, // no_auth_cache
+    false, // no_auth_cache
     TRUE, // trust_server_cert
     this,
     webdav::check_cancel, ab,
