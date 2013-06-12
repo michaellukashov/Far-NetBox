@@ -605,7 +605,7 @@ FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * SessionData, b
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 const wchar_t *LogLineMarks = L"<>!.*";
-TSessionLog::TSessionLog(TSessionUI* UI, TSessionData * SessionData,
+TSessionLog::TSessionLog(TSessionUI * UI, TSessionData * SessionData,
   TConfiguration * Configuration):
   TStringList()
 {
@@ -738,7 +738,6 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         auto cleanup = finally([&]()
         {
           DeleteUnnecessary();
-
           EndUpdate();
         });
         {
