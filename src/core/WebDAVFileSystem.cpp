@@ -13672,16 +13672,7 @@ void TWebDAVFileSystem::FileTransfer(const UnicodeString & FileName,
     bool Result;
     if (Get)
     {
-      HANDLE LocalFileHandle = FTerminal->CreateLocalFile(LocalFile,
-        GENERIC_WRITE, 0, CREATE_ALWAYS, 0);
-      Result = WebDAVGetFile(FullRemoteFileName.c_str(), &LocalFileHandle);
-      if (!Result)
-      {
-        ::CloseHandle(LocalFileHandle);
-        /*FILE_OPERATION_LOOP (FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, LocalFile.c_str()),
-          THROWOSIFFALSE(Sysutils::DeleteFile(LocalFile));
-        )*/
-      }
+      Result = WebDAVGetFile(FullRemoteFileName.c_str(), LocalFile.c_str());
     }
     else
     {
@@ -13802,26 +13793,48 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString & Directory)
 }
 //------------------------------------------------------------------------------
 bool TWebDAVFileSystem::WebDAVGetFile(
-  const wchar_t * RemotePath,
-  HANDLE * LocalFileHandle)
+  const wchar_t * RemotePath, const wchar_t * LocalPath)
 {
   assert(RemotePath && *RemotePath);
-  assert(LocalFileHandle);
-
   assert(FSession);
-  apr_pool_t * pool = webdav_pool_create(webdav_pool);
-  webdav::error_t err = 0;
-  const char * remote_path = nullptr;
-  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(RemotePath).c_str(), pool);
-  if (err) return false;
-  err = webdav::client_get_file(
-    FSession,
-    remote_path,
-    LocalFileHandle,
-    pool);
 
-  webdav_pool_destroy(pool);
-  return err == WEBDAV_NO_ERROR;
+  bool Result = false;
+  HANDLE LocalFileHandle = FTerminal->CreateLocalFile(LocalPath,
+    GENERIC_WRITE, 0, CREATE_ALWAYS, 0);
+  if (LocalFileHandle != INVALID_HANDLE_VALUE)
+  try
+  {
+    apr_pool_t * pool = webdav_pool_create(webdav_pool);
+    webdav::error_t err = 0;
+    const char * remote_path = nullptr;
+    err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(RemotePath).c_str(), pool);
+    if (err) return false;
+    err = webdav::client_get_file(
+      FSession,
+      remote_path,
+      &LocalFileHandle,
+      pool);
+
+    webdav_pool_destroy(pool);
+    Result = err == WEBDAV_NO_ERROR;
+    if (!Result)
+    {
+      ::CloseHandle(LocalFileHandle);
+      LocalFileHandle = INVALID_HANDLE_VALUE;
+    }
+  }
+  catch(...)
+  {
+    if (LocalFileHandle != INVALID_HANDLE_VALUE)
+    {
+      ::CloseHandle(LocalFileHandle);
+      LocalFileHandle = INVALID_HANDLE_VALUE;
+    }
+    Result = false;
+    throw;
+  }
+
+  return Result;
 }
 //------------------------------------------------------------------------------
 bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t * RemotePath,
