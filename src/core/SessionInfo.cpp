@@ -641,18 +641,18 @@ void TSessionLog::Unlock()
   FCriticalSection->Leave();
 }
 //---------------------------------------------------------------------------
-UnicodeString TSessionLog::GetSessionName()
+UnicodeString TSessionLog::GetSessionName() const
 {
   assert(FSessionData != nullptr);
   return FSessionData->GetSessionName();
 }
 //---------------------------------------------------------------------------
-UnicodeString TSessionLog::GetLine(intptr_t Index)
+UnicodeString TSessionLog::GetLine(intptr_t Index) const
 {
   return GetString(Index - FTopIndex);
 }
 //---------------------------------------------------------------------------
-TLogLineType TSessionLog::GetType(intptr_t Index)
+TLogLineType TSessionLog::GetType(intptr_t Index) const
 {
   return static_cast<TLogLineType>(reinterpret_cast<size_t>(GetObject(Index - FTopIndex)));
 }
@@ -794,7 +794,7 @@ void TSessionLog::ReflectSettings()
   DeleteUnnecessary();
 }
 //---------------------------------------------------------------------------
-bool TSessionLog::LogToFile()
+bool TSessionLog::LogToFile() const
 {
   return GetLogging() && FConfiguration->GetLogToFile() && (FParent == nullptr);
 }
@@ -1105,12 +1105,12 @@ void TSessionLog::AddSeparator()
   Add(llMessage, L"--------------------------------------------------------------------------");
 }
 //---------------------------------------------------------------------------
-intptr_t TSessionLog::GetBottomIndex()
+intptr_t TSessionLog::GetBottomIndex() const
 {
   return (GetCount() > 0 ? (GetTopIndex() + GetCount() - 1) : -1);
 }
 //---------------------------------------------------------------------------
-bool TSessionLog::GetLoggingToFile()
+bool TSessionLog::GetLoggingToFile() const
 {
   assert((FFile == nullptr) || LogToFile());
   return (FFile != nullptr);
@@ -1134,7 +1134,7 @@ void TSessionLog::SetParent(TSessionLog * Value)
   FParent = Value;
 }
 //---------------------------------------------------------------------------
-bool TSessionLog::GetLogging()
+bool TSessionLog::GetLogging() const
 {
   return FLogging;
 }
@@ -1159,17 +1159,17 @@ void TSessionLog::SetOnStateChange(TNotifyEvent Value)
   FOnStateChange = Value;
 }
 //---------------------------------------------------------------------------
-UnicodeString TSessionLog::GetCurrentFileName()
+UnicodeString TSessionLog::GetCurrentFileName() const
 {
   return FCurrentFileName;
 }
 //---------------------------------------------------------------------------
-intptr_t TSessionLog::GetTopIndex()
+intptr_t TSessionLog::GetTopIndex() const
 {
   return FTopIndex;
 }
 //---------------------------------------------------------------------------
-UnicodeString TSessionLog::GetName()
+UnicodeString TSessionLog::GetName() const
 {
   return FName;
 }

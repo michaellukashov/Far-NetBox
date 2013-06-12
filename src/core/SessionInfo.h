@@ -224,20 +224,20 @@ public:
 
   TSessionLog * GetParent();
   void SetParent(TSessionLog * Value);
-  bool GetLogging();
+  bool GetLogging() const;
   TNotifyEvent & GetOnChange();
   void SetOnChange(TNotifyEvent Value);
   TNotifyEvent & GetOnStateChange();
   void SetOnStateChange(TNotifyEvent Value);
-  UnicodeString GetCurrentFileName();
-  intptr_t GetTopIndex();
-  UnicodeString GetName();
+  UnicodeString GetCurrentFileName() const;
+  intptr_t GetTopIndex() const;
+  UnicodeString GetName() const;
   void SetName(const UnicodeString & Value);
   virtual intptr_t GetCount() const;
 
 protected:
   void CloseLogFile();
-  bool LogToFile();
+  bool LogToFile() const;
 
 private:
   TConfiguration * FConfiguration;
@@ -256,15 +256,15 @@ private:
   TNotifyEvent FOnStateChange;
 
 public:
-  UnicodeString GetLine(intptr_t Index);
-  TLogLineType GetType(intptr_t Index);
+  UnicodeString GetLine(intptr_t Index) const;
+  TLogLineType GetType(intptr_t Index) const;
   void DeleteUnnecessary();
   void StateChange();
   void OpenLogFile();
-  intptr_t GetBottomIndex();
-  UnicodeString GetLogFileName();
-  bool GetLoggingToFile();
-  UnicodeString GetSessionName();
+  intptr_t GetBottomIndex() const;
+  UnicodeString GetLogFileName() const;
+  bool GetLoggingToFile() const;
+  UnicodeString GetSessionName() const;
 
 private:
   void DoAdd(TLogLineType AType, const UnicodeString & Line,
