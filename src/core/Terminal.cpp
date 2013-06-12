@@ -826,7 +826,8 @@ TCustomFileSystem * TTerminal::InitFileSystem()
   TCustomFileSystem * Result = NULL;
   try
   {
-    if ((GetSessionData()->GetFSProtocol() == fsFTP) && (GetSessionData()->GetFtps() == ftpsNone))
+    TFSProtocol FSProtocol = GetSessionData()->GetFSProtocol();
+    if ((FSProtocol == fsFTP) && (GetSessionData()->GetFtps() == ftpsNone))
     {
 #ifdef NO_FILEZILLA
       LogEvent(L"FTP protocol is not supported by this build.");
@@ -840,7 +841,7 @@ TCustomFileSystem * TTerminal::InitFileSystem()
       LogEvent(L"Using FTP protocol.");
 #endif
     }
-    else if ((GetSessionData()->GetFSProtocol() == fsFTP) && (GetSessionData()->GetFtps() != ftpsNone))
+    else if ((FSProtocol == fsFTP) && (GetSessionData()->GetFtps() != ftpsNone))
     {
 #if defined(NO_FILEZILLA) && defined(MPEXT_NO_SSLDLL)
       LogEvent(L"FTPS protocol is not supported by this build.");
@@ -854,7 +855,7 @@ TCustomFileSystem * TTerminal::InitFileSystem()
       LogEvent(L"Using FTPS protocol.");
 #endif
     }
-    else if (GetSessionData()->GetFSProtocol() == fsWebDAV)
+    else if (FSProtocol == fsWebDAV)
     {
       FFSProtocol = cfsWebDAV;
       Result = new TWebDAVFileSystem(this);
@@ -903,8 +904,8 @@ TCustomFileSystem * TTerminal::InitFileSystem()
 
         GetLog()->AddSeparator();
 
-        if ((GetSessionData()->GetFSProtocol() == fsSCPonly) ||
-            (GetSessionData()->GetFSProtocol() == fsSFTP && FSecureShell->SshFallbackCmd()))
+        if ((FSProtocol == fsSCPonly) ||
+            (FSProtocol == fsSFTP && FSecureShell->SshFallbackCmd()))
         {
           FFSProtocol = cfsSCP;
           Result= new TSCPFileSystem(this);
@@ -2149,14 +2150,12 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & FileName,
           TDateTime ReducedDestTimestamp =
             ReduceDateTimePrecision(FileParams->DestTimestamp, Precision);
 
-          Result =
-            (CompareFileTime(ReducedSourceTimestamp, ReducedDestTimestamp) > 0) ?
-            qaYes : qaNo;
+          Result = CompareFileTime(ReducedSourceTimestamp, ReducedDestTimestamp) > 0 ? qaYes : qaNo;
 
           LogEvent(FORMAT(L"Source file timestamp is [%s], destination timestamp is [%s], will%s overwrite",
-            (StandardTimestamp(ReducedSourceTimestamp),
-             StandardTimestamp(ReducedDestTimestamp),
-             ((Result == qaYes) ? L"" : L" not"))));
+            StandardTimestamp(ReducedSourceTimestamp).c_str(),
+             StandardTimestamp(ReducedDestTimestamp).c_str(),
+             (Result == qaYes) ? L"" : L" not"));
         }
         break;
 
