@@ -657,20 +657,20 @@ TLogLineType TSessionLog::GetType(intptr_t Index)
   return static_cast<TLogLineType>(reinterpret_cast<size_t>(GetObject(Index - FTopIndex)));
 }
 //---------------------------------------------------------------------------
-void TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString & Line)
+void TSessionLog::DoAddToParent(TLogLineType AType, const UnicodeString & ALine)
 {
   assert(FParent != nullptr);
-  FParent->Add(Type, Line);
+  FParent->Add(AType, ALine);
 }
 //---------------------------------------------------------------------------
-void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
+void TSessionLog::DoAddToSelf(TLogLineType AType, const UnicodeString & ALine)
 {
   if (FTopIndex < 0)
   {
     FTopIndex = 0;
   }
 
-  TStringList::AddObject(Line, static_cast<TObject *>(reinterpret_cast<void *>(static_cast<size_t>(Type))));
+  TStringList::AddObject(ALine, static_cast<TObject *>(reinterpret_cast<void *>(static_cast<size_t>(AType))));
 
   FLoggedLines++;
 
@@ -694,14 +694,14 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
       DateTime.DecodeTime(H, N, S, MS);
       UnicodeString dt = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ", Y, M, D, H, N, S, MS);
       UnicodeString Timestamp = dt;
-      UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + Line + "\n");
+      UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[AType]) + Timestamp + ALine + "\n");
       fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(AnsiString(UtfLine).c_str()));
 #endif
     }
   }
 }
 //---------------------------------------------------------------------------
-void TSessionLog::DoAdd(TLogLineType Type, const UnicodeString & Line,
+void TSessionLog::DoAdd(TLogLineType AType, const UnicodeString & Line,
   TDoAddLogEvent Event)
 {
   UnicodeString Prefix;
@@ -715,7 +715,7 @@ void TSessionLog::DoAdd(TLogLineType Type, const UnicodeString & Line,
   while (!Ln.IsEmpty())
   {
     // UnicodeString Param = ;
-    Event(Type, Prefix + CutToChar(Ln, L'\n', false));
+    Event(AType, Prefix + CutToChar(Ln, L'\n', false));
   }
 }
 //---------------------------------------------------------------------------

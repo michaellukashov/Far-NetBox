@@ -267,10 +267,10 @@ public:
   UnicodeString GetSessionName();
 
 private:
-  void DoAdd(TLogLineType Type, const UnicodeString & Line,
+  void DoAdd(TLogLineType AType, const UnicodeString & Line,
     TDoAddLogEvent Event);
-  void DoAddToParent(TLogLineType aType, const UnicodeString & aLine);
-  void DoAddToSelf(TLogLineType aType, const UnicodeString & aLine);
+  void DoAddToParent(TLogLineType AType, const UnicodeString & ALine);
+  void DoAddToSelf(TLogLineType AType, const UnicodeString & ALine);
   void AddStartupInfo(bool System);
   void DoAddStartupInfo(TSessionData * Data);
 
