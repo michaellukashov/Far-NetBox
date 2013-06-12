@@ -1514,7 +1514,7 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
 
     if (AllowSkip)
     {
-      THROW_SKIP_FILE(&E, Message);
+      ThrowSkipFile(&E, Message);
     }
     else
     {

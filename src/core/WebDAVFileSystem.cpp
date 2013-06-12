@@ -12504,7 +12504,7 @@ void TWebDAVFileSystem::DeleteFile(const UnicodeString & FileName,
   bool res = WebDAVDeleteFile(FullFileName.c_str());
   if (!res)
   {
-    THROW_SKIP_FILE(nullptr, L"");
+    ThrowSkipFileNull();
   }
 }
 //------------------------------------------------------------------------------
@@ -12515,7 +12515,7 @@ void TWebDAVFileSystem::RenameFile(const UnicodeString & FileName,
   bool res = WebDAVRenameFile(FullFileName.c_str(), NewName.c_str());
   if (!res)
   {
-    THROW_SKIP_FILE(nullptr, L"");
+    ThrowSkipFileNull();
   }
 }
 //------------------------------------------------------------------------------
@@ -12546,7 +12546,7 @@ void TWebDAVFileSystem::CreateDirectory(const UnicodeString & DirName)
     }
     if (!res)
     {
-      THROW_SKIP_FILE(nullptr, L"");
+      ThrowSkipFile(nullptr, L"");
     }
   }
 }
@@ -12921,7 +12921,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
     if (!FTerminal->AllowLocalFileTransfer(FileName, CopyParam))
     {
       FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", RealFileName.c_str()));
-      THROW_SKIP_FILE_NULL;
+      ThrowSkipFileNull();
     }
 
     __int64 Size;
@@ -13250,7 +13250,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
   if (!CopyParam->AllowTransfer(FileName, osRemote, File->GetIsDirectory(), MaskParams))
   {
     FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", FileName.c_str()));
-    THROW_SKIP_FILE_NULL;
+    ThrowSkipFileNull();
   }
 
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
@@ -13318,7 +13318,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
         // of any parent directory
         if (FLAGSET(Params, cpDelete) && SinkFileParams.Skipped)
         {
-          THROW_SKIP_FILE_NULL;
+          ThrowSkipFileNull();
         }
       }
       else
@@ -13694,7 +13694,7 @@ void TWebDAVFileSystem::FileTransfer(const UnicodeString & FileName,
   switch (FFileTransferAbort)
   {
     case ftaSkip:
-      THROW_SKIP_FILE(nullptr, L"");
+      ThrowSkipFile(nullptr, L"");
 
     case ftaCancel:
       Abort();

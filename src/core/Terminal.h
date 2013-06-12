@@ -80,9 +80,11 @@ DEFINE_CALLBACK_TYPE0(TCheckForEscEvent, bool);
     Command                                                   \
   }
 
-#define THROW_SKIP_FILE(EXCEPTION, MESSAGE) \
-  throw EScpSkipFile(EXCEPTION, MESSAGE)
-#define THROW_SKIP_FILE_NULL THROW_SKIP_FILE(nullptr, L"")
+inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
+{
+  throw EScpSkipFile(Exception, Message);
+}
+inline void ThrowSkipFileNull() { ThrowSkipFile(nullptr, L""); }
 
 /* TODO : Better user interface (query to user) */
 #define FILE_OPERATION_LOOP_CUSTOM(TERMINAL, ALLOW_SKIP, MESSAGE, OPERATION) { \

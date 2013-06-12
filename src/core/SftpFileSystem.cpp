@@ -3840,7 +3840,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(UnicodeString & FileName,
         break;
 
       case qaNo:
-        THROW_SKIP_FILE_NULL;
+        ThrowSkipFileNull();
     }
   }
 }
@@ -3981,7 +3981,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
   if (!FTerminal->AllowLocalFileTransfer(FileName, CopyParam))
   {
     FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", RealFileName.c_str()));
-    THROW_SKIP_FILE_NULL;
+    ThrowSkipFileNull();
   }
 
   // TOpenRemoteFileParams OpenParams;
@@ -4883,7 +4883,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
   if (!CopyParam->AllowTransfer(FileName, osRemote, AFile->GetIsDirectory(), MaskParams))
   {
     FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", FileName.c_str()));
-    THROW_SKIP_FILE_NULL;
+    ThrowSkipFileNull();
   }
 
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
@@ -4929,7 +4929,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       // of any parent directory
       if ((Params & cpDelete) && SinkFileParams.Skipped)
       {
-        THROW_SKIP_FILE_NULL;
+        ThrowSkipFileNull();
       }
     }
     else
@@ -5170,7 +5170,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         if (!FTerminal->CreateLocalFile(LocalFileName, OperationProgress,
             &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
         {
-          THROW_SKIP_FILE_NULL;
+          ThrowSkipFileNull();
         }
       }
       assert(LocalFileHandle);
