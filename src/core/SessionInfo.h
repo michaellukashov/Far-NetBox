@@ -51,7 +51,7 @@ struct TFileSystemInfo : public TObject
   bool IsCapable[fcCount];
 };
 //---------------------------------------------------------------------------
-class TSessionUI : public TObject
+class TSessionUI
 {
 public:
   explicit TSessionUI() {}
