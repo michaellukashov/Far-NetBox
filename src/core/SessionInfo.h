@@ -106,8 +106,8 @@ private:
 class TFileSessionAction : public TSessionAction
 {
 public:
-    explicit TFileSessionAction(TActionLog * Log, TLogAction Action);
-    explicit TFileSessionAction(TActionLog * Log, TLogAction Action, const UnicodeString & FileName);
+  explicit TFileSessionAction(TActionLog * Log, TLogAction Action);
+  explicit TFileSessionAction(TActionLog * Log, TLogAction Action, const UnicodeString & FileName);
 
   void FileName(const UnicodeString & FileName);
 };
@@ -115,8 +115,8 @@ public:
 class TFileLocationSessionAction : public TFileSessionAction
 {
 public:
-    explicit TFileLocationSessionAction(TActionLog * Log, TLogAction Action);
-    explicit TFileLocationSessionAction(TActionLog * Log, TLogAction Action, const UnicodeString & FileName);
+  explicit TFileLocationSessionAction(TActionLog * Log, TLogAction Action);
+  explicit TFileLocationSessionAction(TActionLog * Log, TLogAction Action, const UnicodeString & FileName);
 
   void Destination(const UnicodeString & Destination);
 };
@@ -235,6 +235,25 @@ public:
   void SetName(const UnicodeString & Value);
   virtual intptr_t GetCount() const;
 
+public:
+  UnicodeString GetLine(intptr_t Index) const;
+  TLogLineType GetType(intptr_t Index) const;
+  void DeleteUnnecessary();
+  void StateChange();
+  void OpenLogFile();
+  intptr_t GetBottomIndex() const;
+  UnicodeString GetLogFileName() const;
+  bool GetLoggingToFile() const;
+  UnicodeString GetSessionName() const;
+
+private:
+  void DoAdd(TLogLineType AType, const UnicodeString & Line,
+    TDoAddLogEvent Event);
+  void DoAddToParent(TLogLineType AType, const UnicodeString & ALine);
+  void DoAddToSelf(TLogLineType AType, const UnicodeString & ALine);
+  void AddStartupInfo(bool System);
+  void DoAddStartupInfo(TSessionData * Data);
+
 protected:
   void CloseLogFile();
   bool LogToFile() const;
@@ -254,25 +273,6 @@ private:
   UnicodeString FName;
   bool FClosed;
   TNotifyEvent FOnStateChange;
-
-public:
-  UnicodeString GetLine(intptr_t Index) const;
-  TLogLineType GetType(intptr_t Index) const;
-  void DeleteUnnecessary();
-  void StateChange();
-  void OpenLogFile();
-  intptr_t GetBottomIndex() const;
-  UnicodeString GetLogFileName() const;
-  bool GetLoggingToFile() const;
-  UnicodeString GetSessionName() const;
-
-private:
-  void DoAdd(TLogLineType AType, const UnicodeString & Line,
-    TDoAddLogEvent Event);
-  void DoAddToParent(TLogLineType AType, const UnicodeString & ALine);
-  void DoAddToSelf(TLogLineType AType, const UnicodeString & ALine);
-  void AddStartupInfo(bool System);
-  void DoAddStartupInfo(TSessionData * Data);
 
 private:
   NB_DISABLE_COPY(TSessionLog)
