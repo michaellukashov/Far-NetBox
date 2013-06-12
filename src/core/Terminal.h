@@ -510,6 +510,11 @@ protected:
   BOOL CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
 
 private:
+  void InternalTryOpen();
+  void InternalDoTryOpen();
+  TCustomFileSystem * InitFileSystem();
+
+private:
   TSessionData * FSessionData;
   TSessionLog * FLog;
   TActionLog * FActionLog;
