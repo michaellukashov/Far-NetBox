@@ -1185,7 +1185,7 @@ intptr_t TSessionLog::GetCount() const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TActionLog::TActionLog(TSessionUI* UI, TSessionData * SessionData,
+TActionLog::TActionLog(TSessionUI * UI, TSessionData * SessionData,
   TConfiguration * Configuration)
 {
   FCriticalSection = new TCriticalSection;
