@@ -1470,7 +1470,7 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
       {
         ThrowFileSkipped(nullptr, Msg);
       }
-        else
+      else
       {
         ThrowScpEror(nullptr, Msg);
       }
