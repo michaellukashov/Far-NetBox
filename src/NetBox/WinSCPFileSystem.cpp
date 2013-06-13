@@ -754,7 +754,6 @@ bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void *Param)
     }
     else if ((Event == FE_GOTFOCUS) || (Event == FE_KILLFOCUS))
     {
-      DEBUG_PRINTF(L"Event = %d, Plugin = %p, Param = %p", Event, this, Param);
       Result = true;
     }
   }

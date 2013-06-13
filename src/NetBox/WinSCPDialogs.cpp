@@ -210,10 +210,6 @@ TTabButton * TTabbedDialog::TabButton(intptr_t Tab)
     }
   }
 
-  if (!Result)
-  {
-    DEBUG_PRINTF(L"Tab = %d", Tab);
-  }
   assert(Result != nullptr);
 
   return Result;

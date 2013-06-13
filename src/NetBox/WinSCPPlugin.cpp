@@ -279,7 +279,6 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         {
           OpenCommandLineInfo * Info = reinterpret_cast<OpenCommandLineInfo *>(Item);
           CommandLine = Info->CommandLine;
-          // DEBUG_PRINTF(L"Name = %s", Name.c_str());
         }
       if (OpenFrom == OPEN_SHORTCUT)
       {

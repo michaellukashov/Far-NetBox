@@ -1160,7 +1160,6 @@ FARDIALOGITEMFLAGS TFarDialogItem::GetFlags() const
 void TFarDialogItem::SetDataInternal(const UnicodeString & Value)
 {
   UnicodeString FarData = Value.c_str();
-  // DEBUG_PRINTF(L"GetDialogItem()->Data = %s", GetDialogItem()->Data);
   if (GetDialog()->GetHandle())
   {
     SendMessage(DM_SETTEXTPTR, static_cast<void *>(const_cast<wchar_t *>(FarData.c_str())));
@@ -1168,7 +1167,6 @@ void TFarDialogItem::SetDataInternal(const UnicodeString & Value)
   nb_free((void*)GetDialogItem()->Data);
   GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(FarData, true);
 
-  // DEBUG_PRINTF(L"GetDialogItem()->Data = %s", GetDialogItem()->Data);
   DialogChange();
 }
 //---------------------------------------------------------------------------
