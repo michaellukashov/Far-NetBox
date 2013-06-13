@@ -772,7 +772,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
     Action.Rights(Rights);
 
     UnicodeString FileNameOnly = UnixExtractFileName(FileName);
-    UnicodeString FilePath = UnixExtractFilePath(FileName);
+    UnicodeString FilePath = ::UnixExtractFilePath(FileName);
     // FZAPI wants octal number represented as decadic
     FFileZillaIntf->Chmod(Rights.GetNumberDecadic(), FileNameOnly.c_str(), FilePath.c_str());
 
@@ -1223,7 +1223,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
 
     TFileTransferData UserData;
 
-    UnicodeString FilePath = UnixExtractFilePath(FileName);
+    UnicodeString FilePath = ::UnixExtractFilePath(FileName);
     if (FilePath.IsEmpty())
     {
       FilePath = L"/";
@@ -1693,7 +1693,7 @@ void TFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
 {
   UnicodeString FileName = AbsolutePath(AFileName, false);
   UnicodeString FileNameOnly = UnixExtractFileName(FileName);
-  UnicodeString FilePath = UnixExtractFilePath(FileName);
+  UnicodeString FilePath = ::UnixExtractFilePath(FileName);
 
   bool Dir = (AFile != nullptr) && AFile->GetIsDirectory() && !AFile->GetIsSymLink();
 
@@ -2001,7 +2001,7 @@ void TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
 void TFTPFileSystem::ReadFile(const UnicodeString & FileName,
   TRemoteFile *& AFile)
 {
-  UnicodeString Path = UnixExtractFilePath(FileName);
+  UnicodeString Path = ::UnixExtractFilePath(FileName);
   UnicodeString NameOnly = UnixExtractFileName(FileName);
   TRemoteFile * File = nullptr;
   bool Own = false;
@@ -2075,9 +2075,9 @@ void TFTPFileSystem::RenameFile(const UnicodeString & AFileName,
   UnicodeString NewName = AbsolutePath(ANewName, false);
 
   UnicodeString FileNameOnly = UnixExtractFileName(FileName);
-  UnicodeString FilePathOnly = UnixExtractFilePath(FileName);
+  UnicodeString FilePathOnly = ::UnixExtractFilePath(FileName);
   UnicodeString NewNameOnly = UnixExtractFileName(NewName);
-  UnicodeString NewPathOnly = UnixExtractFilePath(NewName);
+  UnicodeString NewPathOnly = ::UnixExtractFilePath(NewName);
 
   // ignore file list
   TFTPFileListHelper Helper(this, nullptr, true);

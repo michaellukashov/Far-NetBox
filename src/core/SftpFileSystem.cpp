@@ -3303,7 +3303,7 @@ void TSFTPFileSystem::RenameFile(const UnicodeString & FileName,
   UnicodeString RealName = LocalCanonify(FileName);
   Packet.AddPathString(RealName, FUtfStrings);
   UnicodeString TargetName;
-  if (UnixExtractFilePath(NewName).IsEmpty())
+  if (::UnixExtractFilePath(NewName).IsEmpty())
   {
     // rename case (TTerminal::RenameFile)
     TargetName = ::UnixExtractFilePath(RealName) + NewName;
@@ -4160,7 +4160,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
       if (OpenParams.RemoteFileName != RemoteFileName)
       {
         assert(!DoResume);
-        assert(UnixExtractFilePath(OpenParams.RemoteFileName) == ::UnixExtractFilePath(RemoteFileName));
+        assert(::UnixExtractFilePath(OpenParams.RemoteFileName) == ::UnixExtractFilePath(RemoteFileName));
         DestFullName = OpenParams.RemoteFileName;
         UnicodeString NewFileName = ::UnixExtractFileName(DestFullName);
         assert(DestFileName != NewFileName);

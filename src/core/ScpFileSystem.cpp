@@ -2181,7 +2181,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         // Filename is used for error messaging and excluding files only
         // Send in full path to allow path-based excluding
         // UnicodeString FullFileName = UnixExcludeTrailingBackslash(File->FullFileName);
-        SCPSink(FullFileName, File, TargetDirectory, UnixExtractFilePath(FullFileName),
+        SCPSink(FullFileName, File, TargetDirectory, ::UnixExtractFilePath(FullFileName),
           CopyParam, Success, OperationProgress, Params, 0);
         // operation succeeded (no exception), so it's ok that
         // remote side closed SCP, but we continue with next file

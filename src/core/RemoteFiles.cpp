@@ -135,7 +135,7 @@ bool UnixExtractCommonPath(TStrings * Files, UnicodeString & Path)
 {
   assert(Files->GetCount() > 0);
 
-  Path = UnixExtractFilePath(Files->GetString(0));
+  Path = ::UnixExtractFilePath(Files->GetString(0));
   bool Result = !Path.IsEmpty();
   if (Result)
   {
@@ -145,7 +145,7 @@ bool UnixExtractCommonPath(TStrings * Files, UnicodeString & Path)
         (Files->GetString(Index).SubString(1, Path.Length()) != Path))
       {
         intptr_t PrevLen = Path.Length();
-        Path = UnixExtractFilePath(UnixExcludeTrailingBackslash(Path));
+        Path = ::UnixExtractFilePath(UnixExcludeTrailingBackslash(Path));
         if (Path.Length() == PrevLen)
         {
           Path = L"";
@@ -1520,7 +1520,7 @@ Boolean TRemoteFileList::GetIsRoot()
 //---------------------------------------------------------------------------
 UnicodeString TRemoteFileList::GetParentPath()
 {
-  return UnixExtractFilePath(GetDirectory());
+  return ::UnixExtractFilePath(GetDirectory());
 }
 //---------------------------------------------------------------------------
 __int64 TRemoteFileList::GetTotalSize()
