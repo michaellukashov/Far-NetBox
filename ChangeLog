@@ -1,5 +1,7 @@
 NetBox 2.1.31 ??.06.2013
 --------------------
+  * Bugfix: Crash on Access Violation in NetBox.dll, SetDirectoryW
+    (http://bugs.farmanager.com/view.php?id=2426)
   * Bugfix: WebDAV: Downloaded files are locked if session is interrupted.
     (http://forum.farmanager.com/viewtopic.php?p=110763#p110763)
   * Bugfix: AV when option "New and updated file(s) only" is set.

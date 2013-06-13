@@ -293,14 +293,11 @@ protected:
   intptr_t FUpdateCount;
 };
 
-typedef rde::pair<UnicodeString, TObject *> TStringItem;
-
 class TStringList;
 typedef intptr_t (TStringListSortCompare)(TStringList * List, intptr_t Index1, intptr_t Index2);
 
 class TStringList : public TStrings
 {
-  typedef rde::vector<TStringItem> TStringItemList;
   friend intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2);
 
 public:
@@ -346,7 +343,8 @@ public:
 private:
   TNotifyEvent FOnChange;
   TNotifyEvent FOnChanging;
-  TStringItemList FList;
+  rde::vector<UnicodeString> FStrings;
+  rde::vector<TObject *> FObjects;
   bool FSorted;
   bool FCaseSensitive;
 
