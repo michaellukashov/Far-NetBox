@@ -4974,7 +4974,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
     TOverwriteMode OverwriteMode = omOverwrite;
     auto cleanup = finally([&]()
     {
-      if (LocalFileHandle)
+      if (LocalFileHandle != INVALID_HANDLE_VALUE)
       {
         ::CloseHandle(LocalFileHandle);
       }
@@ -5123,7 +5123,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         if (OverwriteMode == omOverwrite)
         {
           // is nullptr when overwriting read-only file
-          if (LocalFileHandle)
+          if (LocalFileHandle != INVALID_HANDLE_VALUE)
           {
             ::CloseHandle(LocalFileHandle);
             LocalFileHandle = INVALID_HANDLE_VALUE;
@@ -5133,7 +5133,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         {
           // is nullptr when overwriting read-only file, so following will
           // probably fail anyway
-          if (LocalFileHandle == nullptr)
+          if (LocalFileHandle == INVALID_HANDLE_VALUE)
           {
             FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
               nullptr, &LocalFileHandle, nullptr, nullptr, nullptr, nullptr);
@@ -5156,7 +5156,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       Action.Destination(ExpandUNCFileName(DestFullName));
 
       // if not already opened (resume, append...), create new empty file
-      if (!LocalFileHandle)
+      if (LocalFileHandle == INVALID_HANDLE_VALUE)
       {
         if (!FTerminal->CreateLocalFile(LocalFileName, OperationProgress,
             &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
@@ -5164,11 +5164,11 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           ThrowSkipFileNull();
         }
       }
-      assert(LocalFileHandle);
+      assert(LocalFileHandle != INVALID_HANDLE_VALUE);
 
       DeleteLocalFile = true;
 
-      FileStream = new TSafeHandleStream((THandle)LocalFileHandle);
+      FileStream = new TSafeHandleStream(LocalFileHandle);
 
       // at end of this block queue is discarded
       {
@@ -5321,6 +5321,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       }
 
       ::CloseHandle(LocalFileHandle);
+      LocalFileHandle = INVALID_HANDLE_VALUE;
 
       if (ResumeAllowed)
       {
