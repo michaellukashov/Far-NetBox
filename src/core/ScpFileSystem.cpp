@@ -2242,7 +2242,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::SCPError(const UnicodeString & Message, bool Fatal)
+inline void TSCPFileSystem::SCPError(const UnicodeString & Message, bool Fatal)
 {
   SCPSendError(Message, Fatal);
   ThrowFileSkipped(nullptr, Message);

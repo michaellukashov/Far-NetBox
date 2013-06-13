@@ -112,7 +112,7 @@ private:
   void SCPDirectorySource(const UnicodeString & DirectoryName,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, intptr_t Level);
-  void SCPError(const UnicodeString & Message, bool Fatal);
+  inline void SCPError(const UnicodeString & Message, bool Fatal);
   void SCPSendError(const UnicodeString & Message, bool Fatal);
   void SCPSink(const UnicodeString & FileName,
     const TRemoteFile * File, const UnicodeString & TargetDir,
