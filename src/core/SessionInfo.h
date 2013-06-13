@@ -283,7 +283,7 @@ class TActionLog : public TObject
 friend class TSessionAction;
 friend class TSessionActionRecord;
 public:
-  explicit TActionLog(TSessionUI* UI, TSessionData * SessionData,
+  explicit TActionLog(TSessionUI * UI, TSessionData * SessionData,
     TConfiguration * Configuration);
   virtual ~TActionLog();
 

@@ -2056,7 +2056,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   {
     assert(FilesToCopy->GetCount() > 0);
     FInfo->Source = FilesToCopy->GetString(0);
-    if (UnixExtractFilePath(FInfo->Source).IsEmpty())
+    if (::UnixExtractFilePath(FInfo->Source).IsEmpty())
     {
       FInfo->Source = UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory()) +
         FInfo->Source;
@@ -2066,7 +2066,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
     else
     {
       FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
-        UnixExtractFilePath(FInfo->Source);
+        ::UnixExtractFilePath(FInfo->Source);
     }
   }
 

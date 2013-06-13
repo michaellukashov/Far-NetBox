@@ -165,7 +165,7 @@ const int tfNewDirectory = 0x02;
     ((uint32_t)(unsigned char)(cp)[3]))
 #endif
 #ifndef PUT_32BIT
-#define PUT_32BIT((cp), (value)) { \
+#define PUT_32BIT(cp, value) { \
     (cp)[0] = (unsigned char)((value) >> 24); \
     (cp)[1] = (unsigned char)((value) >> 16); \
     (cp)[2] = (unsigned char)((value) >> 8); \
@@ -1027,17 +1027,14 @@ public:
 
   virtual ~TSFTPQueue()
   {
-    TSFTPQueuePacket * Request;
-    TSFTPPacket * Response;
-
     assert(FResponses->GetCount() == FRequests->GetCount());
     for (intptr_t Index = 0; Index < FRequests->GetCount(); ++Index)
     {
-      Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(Index));
+      TSFTPQueuePacket * Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(Index));
       assert(Request);
       delete Request;
 
-      Response = static_cast<TSFTPPacket*>(FResponses->GetItem(Index));
+      TSFTPPacket * Response = static_cast<TSFTPPacket*>(FResponses->GetItem(Index));
       assert(Response);
       delete Response;
     }
@@ -1054,17 +1051,14 @@ public:
   {
     assert(FFileSystem->FTerminal->GetActive());
 
-    TSFTPQueuePacket * Request;
-    TSFTPPacket * Response;
-
     while (FRequests->GetCount())
     {
       assert(FResponses->GetCount());
 
-      Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(0));
+      TSFTPQueuePacket * Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(0));
       assert(Request);
 
-      Response = static_cast<TSFTPPacket*>(FResponses->GetItem(0));
+      TSFTPPacket * Response = static_cast<TSFTPPacket*>(FResponses->GetItem(0));
       assert(Response);
 
       try
@@ -2099,9 +2093,9 @@ uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
     SFTP_STATUS_DELETE_PENDING,
     SFTP_STATUS_FILE_CORRUPT
   };
-  int Message;
   if ((AllowStatus & (0x01 << Code)) == 0)
   {
+    int Message;
     if (Code >= LENOF(Messages))
     {
       Message = SFTP_STATUS_UNKNOWN;
@@ -2273,10 +2267,9 @@ uintptr_t TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
           Packet->GetMessageNumber() != FPacketNumbers[Reservation])
       {
         TSFTPPacket * ReservedPacket;
-        unsigned int MessageNumber;
         for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); ++Index)
         {
-          MessageNumber = (unsigned int)FPacketNumbers[Index];
+          unsigned int MessageNumber = (unsigned int)FPacketNumbers[Index];
           if (MessageNumber == Packet->GetMessageNumber())
           {
             ReservedPacket = static_cast<TSFTPPacket *>(FPacketReservations->GetItem(Index));
@@ -3310,7 +3303,7 @@ void TSFTPFileSystem::RenameFile(const UnicodeString & FileName,
   UnicodeString RealName = LocalCanonify(FileName);
   Packet.AddPathString(RealName, FUtfStrings);
   UnicodeString TargetName;
-  if (UnixExtractFilePath(NewName).IsEmpty())
+  if (::UnixExtractFilePath(NewName).IsEmpty())
   {
     // rename case (TTerminal::RenameFile)
     TargetName = ::UnixExtractFilePath(RealName) + NewName;
@@ -3426,7 +3419,6 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
 
     FTerminal->FOperationProgress = &Progress; //-V506
 
-    static int LoadFilesPropertiesQueueLen = 5;
     TSFTPLoadFilesPropertiesQueue Queue(this, FCodePage);
     auto cleanup = finally([&]()
     {
@@ -3435,6 +3427,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
       Progress.Stop();
     });
     {
+      static int LoadFilesPropertiesQueueLen = 5;
       if (Queue.Init(LoadFilesPropertiesQueueLen, FileList))
       {
         TRemoteFile * File;
@@ -3521,13 +3514,13 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
     }
   }
 
-  static int CalculateFilesChecksumQueueLen = 5;
   TSFTPCalculateFilesChecksumQueue Queue(this, FCodePage);
   auto cleanup = finally([&]()
   {
     Queue.DisposeSafe();
   });
   {
+    static int CalculateFilesChecksumQueueLen = 5;
     if (Queue.Init(CalculateFilesChecksumQueueLen, Alg, FileList))
     {
       TSFTPPacket Packet(FCodePage);
@@ -4167,7 +4160,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
       if (OpenParams.RemoteFileName != RemoteFileName)
       {
         assert(!DoResume);
-        assert(UnixExtractFilePath(OpenParams.RemoteFileName) == ::UnixExtractFilePath(RemoteFileName));
+        assert(::UnixExtractFilePath(OpenParams.RemoteFileName) == ::UnixExtractFilePath(RemoteFileName));
         DestFullName = OpenParams.RemoteFileName;
         UnicodeString NewFileName = ::UnixExtractFileName(DestFullName);
         assert(DestFileName != NewFileName);
@@ -4177,7 +4170,6 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
       Action.Destination(DestFullName);
 
       bool TransferFinished = false;
-      __int64 DestWriteOffset = 0;
       TSFTPPacket CloseRequest(FCodePage);
       bool SetRights = ((DoResume && DestFileExists) || CopyParam->GetPreserveRights());
       bool SetProperties = (CopyParam->GetPreserveTime() || SetRights);
@@ -4232,6 +4224,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
         }
       });
       {
+        __int64 DestWriteOffset = 0;
         if (OpenParams.OverwriteMode == omAppend)
         {
           FTerminal->LogEvent(L"Appending file.");
@@ -4337,8 +4330,8 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
           {
             SendPacket(&PropertiesRequest);
           }
-          bool Resend = false;
           FILE_OPERATION_LOOP(FMTLOAD(PRESERVE_TIME_PERM_ERROR, DestFileName.c_str()),
+            bool Resend = false;
             try
             {
               TSFTPPacket DummyResponse(FCodePage);
@@ -4769,14 +4762,12 @@ void TSFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
 
   UnicodeString FileName;
   UnicodeString FullTargetDir = IncludeTrailingBackslash(TargetDir);
-  const TRemoteFile * File;
-  bool Success;
   intptr_t Index = 0;
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
-    Success = false;
+    bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
-    File = static_cast<TRemoteFile *>(AFilesToCopy->GetObject(Index));
+    const TRemoteFile * File = static_cast<TRemoteFile *>(AFilesToCopy->GetObject(Index));
 
     assert(!FAvoidBusy);
     FAvoidBusy = true;
@@ -4983,7 +4974,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
     TOverwriteMode OverwriteMode = omOverwrite;
     auto cleanup = finally([&]()
     {
-      if (LocalFileHandle)
+      if (LocalFileHandle != INVALID_HANDLE_VALUE)
       {
         ::CloseHandle(LocalFileHandle);
       }
@@ -5132,7 +5123,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         if (OverwriteMode == omOverwrite)
         {
           // is nullptr when overwriting read-only file
-          if (LocalFileHandle)
+          if (LocalFileHandle != INVALID_HANDLE_VALUE)
           {
             ::CloseHandle(LocalFileHandle);
             LocalFileHandle = INVALID_HANDLE_VALUE;
@@ -5142,7 +5133,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         {
           // is nullptr when overwriting read-only file, so following will
           // probably fail anyway
-          if (LocalFileHandle == nullptr)
+          if (LocalFileHandle == INVALID_HANDLE_VALUE)
           {
             FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
               nullptr, &LocalFileHandle, nullptr, nullptr, nullptr, nullptr);
@@ -5165,7 +5156,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       Action.Destination(ExpandUNCFileName(DestFullName));
 
       // if not already opened (resume, append...), create new empty file
-      if (!LocalFileHandle)
+      if (LocalFileHandle == INVALID_HANDLE_VALUE)
       {
         if (!FTerminal->CreateLocalFile(LocalFileName, OperationProgress,
             &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
@@ -5173,11 +5164,11 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           ThrowSkipFileNull();
         }
       }
-      assert(LocalFileHandle);
+      assert(LocalFileHandle != INVALID_HANDLE_VALUE);
 
       DeleteLocalFile = true;
 
-      FileStream = new TSafeHandleStream((THandle)LocalFileHandle);
+      FileStream = new TSafeHandleStream(LocalFileHandle);
 
       // at end of this block queue is discarded
       {

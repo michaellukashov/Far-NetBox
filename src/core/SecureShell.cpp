@@ -38,7 +38,7 @@ void AnsiStrDispose(char * S)
   delete [] S;
 }
 //---------------------------------------------------------------------------
-TSecureShell::TSecureShell(TSessionUI* UI,
+TSecureShell::TSecureShell(TSessionUI * UI,
   TSessionData * SessionData, TSessionLog * Log, TConfiguration * Configuration) :
   PendLen(0)
 {

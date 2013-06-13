@@ -5547,7 +5547,7 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
       if (FToRemote)
       {
         Params->SetFileMask(UnixExtractFileName(DirectoryEdit->GetText()));
-        TargetDirectory = UnixExtractFilePath(DirectoryEdit->GetText());
+        TargetDirectory = ::UnixExtractFilePath(DirectoryEdit->GetText());
       }
       else
       {
@@ -8186,7 +8186,7 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * FileList,
     Value, 0, MOVE_TO_HISTORY) && !Value.IsEmpty();
   if (Result)
   {
-    Target = UnixExtractFilePath(Value);
+    Target = ::UnixExtractFilePath(Value);
     FileMask = UnixExtractFileName(Value);
   }
   return Result;

@@ -649,7 +649,7 @@ UnicodeString TTerminal::ExpandFileName(const UnicodeString & Path,
     // TODO: Handle more complicated cases like "../../xxx"
     if (Result == PARENTDIRECTORY)
     {
-      Result = UnixExcludeTrailingBackslash(UnixExtractFilePath(
+      Result = UnixExcludeTrailingBackslash(::UnixExtractFilePath(
         UnixExcludeTrailingBackslash(BasePath)));
     }
     else
@@ -2195,7 +2195,7 @@ void TTerminal::FileModified(const TRemoteFile * File,
     }
     else if (!FileName.IsEmpty())
     {
-      ParentDirectory = UnixExtractFilePath(FileName);
+      ParentDirectory = ::UnixExtractFilePath(FileName);
       if (ParentDirectory.IsEmpty())
       {
         ParentDirectory = GetCurrentDirectory();
@@ -2895,7 +2895,7 @@ bool TTerminal::IsRecycledFile(const UnicodeString & FileName)
   bool Result = !GetSessionData()->GetRecycleBinPath().IsEmpty();
   if (Result)
   {
-    UnicodeString Path = UnixExtractFilePath(FileName);
+    UnicodeString Path = ::UnixExtractFilePath(FileName);
     if (Path.IsEmpty())
     {
       Path = GetCurrentDirectory();
