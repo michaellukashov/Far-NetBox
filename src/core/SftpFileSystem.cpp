@@ -5330,7 +5330,6 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       }
 
       ::CloseHandle(LocalFileHandle);
-      LocalFileHandle = INVALID_HANDLE_VALUE;
 
       if (ResumeAllowed)
       {
