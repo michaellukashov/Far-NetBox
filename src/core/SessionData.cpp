@@ -2028,7 +2028,7 @@ void TSessionData::SetRekeyTime(uintptr_t Value)
 UnicodeString TSessionData::GetDefaultSessionName() const
 {
   UnicodeString Result;
-  UnicodeString HostName = GetHostName();
+  UnicodeString HostName = TrimLeft(GetHostName());
   UnicodeString UserName = GetUserName();
   RemoveProtocolPrefix(HostName);
   // remove path

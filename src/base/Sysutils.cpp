@@ -174,13 +174,14 @@ UnicodeString Trim(const UnicodeString & Str)
 
 UnicodeString TrimLeft(const UnicodeString & Str)
 {
-  intptr_t Len = Str.Length();
+  UnicodeString Result = Str;
+  intptr_t Len = Result.Length();
   intptr_t Pos = 1;
-  while ((Pos <= Len) && (Str[Pos] == L' ')) Pos++;
+  while ((Pos <= Len) && (Result[Pos] == L' ')) Pos++;
   if (Pos > 1)
-    return Str.SubString(Pos, Len - Pos + 1);
+    return Result.SubString(Pos, Len - Pos + 1);
   else
-    return Str;
+    return Result;
 }
 
 UnicodeString TrimRight(const UnicodeString & Str)
