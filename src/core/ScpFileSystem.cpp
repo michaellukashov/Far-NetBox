@@ -31,11 +31,16 @@ const int ecIgnoreWarnings = 2;
 const int ecReadProgress = 4;
 const int ecDefault = ecRaiseExcept;
 //---------------------------------------------------------------------------
-#define THROW_FILE_SKIPPED(EXCEPTION, MESSAGE) \
-  throw EScpFileSkipped(EXCEPTION, MESSAGE)
+inline void ThrowFileSkipped(Exception * Exception, const UnicodeString & Message)
+{
+  throw EScpFileSkipped(Exception, Message);
+}
 
-#define THROW_SCP_ERROR(EXCEPTION, MESSAGE) \
-  throw EScp(EXCEPTION, MESSAGE)
+inline void ThrowScpEror(Exception * Exception, const UnicodeString & Message)
+{
+  throw EScp(Exception, Message);
+}
+
 //===========================================================================
 #define MaxShellCommand fsAnyCommand
 #define ShellCommandCount MaxShellCommand + 1
@@ -1463,11 +1468,11 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
 
       if (Resp == 1)
       {
-        THROW_FILE_SKIPPED(nullptr, Msg);
+        ThrowFileSkipped(nullptr, Msg);
       }
         else
       {
-        THROW_SCP_ERROR(nullptr, Msg);
+        ThrowScpEror(nullptr, Msg);
       }
   }
 }
@@ -2240,7 +2245,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 void TSCPFileSystem::SCPError(const UnicodeString & Message, bool Fatal)
 {
   SCPSendError(Message, Fatal);
-  THROW_FILE_SKIPPED(nullptr, Message);
+  ThrowFileSkipped(nullptr, Message);
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SCPSendError(const UnicodeString & Message, bool Fatal)
@@ -2348,7 +2353,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
         {
           case 1:
             // Error (already logged by ReceiveLine())
-            THROW_FILE_SKIPPED(nullptr, FMTLOAD(REMOTE_ERROR, Line.c_str()));
+            ThrowFileSkipped(nullptr, FMTLOAD(REMOTE_ERROR, Line.c_str()));
 
           case 2:
             // Fatal error, terminate copying
