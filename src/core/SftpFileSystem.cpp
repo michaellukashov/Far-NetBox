@@ -165,7 +165,7 @@ const int tfNewDirectory = 0x02;
     ((uint32_t)(unsigned char)(cp)[3]))
 #endif
 #ifndef PUT_32BIT
-#define PUT_32BIT((cp), (value)) { \
+#define PUT_32BIT(cp, value) { \
     (cp)[0] = (unsigned char)((value) >> 24); \
     (cp)[1] = (unsigned char)((value) >> 16); \
     (cp)[2] = (unsigned char)((value) >> 8); \
