@@ -2484,7 +2484,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
 
             auto cleanup = finally([&]()
             {
-              if (LocalFileHandle)
+              if (LocalFileHandle != INVALID_HANDLE_VALUE)
               {
                 ::CloseHandle(LocalFileHandle);
               }
