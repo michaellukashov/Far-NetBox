@@ -1148,14 +1148,6 @@ void TStringList::ExchangeItems(intptr_t Index1, intptr_t Index2)
 {
   UnicodeString SItem1 = FStrings[Index1];
   TObject * OItem1 = FObjects[Index1];
-//  UnicodeString SItem2 = FStringList[Index2];
-//  TObject * OItem2 = FObjectList[Index2];
-//  UnicodeString Temp1 = SItem1;
-//  Item1->first = Item2->first;
-//  Item2->first = Temp1;
-//  TObject * Temp2 = Item1->second;
-//  Item1->second = Item2->second;
-//  Item2->second = Temp2;
   FStrings[Index1] = FStrings[Index2];
   FObjects[Index1] = FObjects[Index2];
   FStrings[Index2] = SItem1;
