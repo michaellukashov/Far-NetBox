@@ -343,8 +343,8 @@ public:
 private:
   TNotifyEvent FOnChange;
   TNotifyEvent FOnChanging;
-  rde::vector<UnicodeString> FStringList;
-  rde::vector<TObject *> FObjectList;
+  rde::vector<UnicodeString> FStrings;
+  rde::vector<TObject *> FObjects;
   bool FSorted;
   bool FCaseSensitive;
 

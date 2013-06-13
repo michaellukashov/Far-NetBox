@@ -803,8 +803,8 @@ void TStrings::SaveToStream(TStream * /*Stream*/) const
 //---------------------------------------------------------------------------
 intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2)
 {
-  intptr_t Result = List->CompareStrings(List->FStringList[Index1],
-    List->FStringList[Index2]);
+  intptr_t Result = List->CompareStrings(List->FStrings[Index1],
+    List->FStrings[Index2]);
   return Result;
 }
 
@@ -824,14 +824,14 @@ void TStringList::Assign(const TPersistent * Source)
 
 intptr_t TStringList::GetCount() const
 {
-  assert(FStringList.size() == FObjectList.size());
-  return static_cast<intptr_t>(FStringList.size());
+  assert(FStrings.size() == FObjects.size());
+  return static_cast<intptr_t>(FStrings.size());
 }
 
 void TStringList::Clear()
 {
-  FStringList.clear();
-  FObjectList.clear();
+  FStrings.clear();
+  FObjects.clear();
   // SetCount(0);
   // SetCapacity(0);
 }
@@ -879,7 +879,7 @@ bool TStringList::Find(const UnicodeString & S, intptr_t & Index) const
   while ((H != NPOS) && (L <= H))
   {
     intptr_t I = (L + H) >> 1;
-    intptr_t C = CompareStrings(FStringList[I], S);
+    intptr_t C = CompareStrings(FStrings[I], S);
     if (C < 0)
     {
       L = I + 1;
@@ -924,14 +924,14 @@ void TStringList::SetString(intptr_t Index, const UnicodeString & S)
   {
     Classes::Error(SSortedListError, 0);
   }
-  if ((Index == NPOS) || (Index > static_cast<intptr_t>(FStringList.size())))
+  if ((Index == NPOS) || (Index > static_cast<intptr_t>(FStrings.size())))
   {
     Classes::Error(SListIndexError, Index);
   }
   Changing();
-  if (Index < static_cast<intptr_t>(FStringList.size()))
+  if (Index < static_cast<intptr_t>(FStrings.size()))
   {
-    FStringList[Index] = S;
+    FStrings[Index] = S;
   }
   else
   {
@@ -942,23 +942,23 @@ void TStringList::SetString(intptr_t Index, const UnicodeString & S)
 
 void TStringList::Delete(intptr_t Index)
 {
-  if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FStringList.size())))
+  if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FStrings.size())))
   {
     Classes::Error(SListIndexError, Index);
   }
   Changing();
-  FStringList.erase(FStringList.begin() + Index);
-  FObjectList.erase(FObjectList.begin() + Index);
+  FStrings.erase(FStrings.begin() + Index);
+  FObjects.erase(FObjects.begin() + Index);
   Changed();
 }
 
 TObject * TStringList::GetObject(intptr_t Index) const
 {
-  if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FObjectList.size())))
+  if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FObjects.size())))
   {
     Classes::Error(SListIndexError, Index);
   }
-  return FObjectList[Index];
+  return FObjects[Index];
 }
 
 void TStringList::InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject)
@@ -983,28 +983,28 @@ void TStringList::InsertItem(intptr_t Index, const UnicodeString & S, TObject * 
   Changing();
   if (Index == GetCount())
   {
-    FStringList.push_back(S);
-    FObjectList.push_back(AObject);
+    FStrings.push_back(S);
+    FObjects.push_back(AObject);
   }
   else
   {
-    FStringList.insert(FStringList.begin() + Index, S);
-    FObjectList.insert(FObjectList.begin() + Index, AObject);
+    FStrings.insert(FStrings.begin() + Index, S);
+    FObjects.insert(FObjects.begin() + Index, AObject);
   }
   Changed();
 }
 
 const UnicodeString & TStringList::GetString(intptr_t Index) const
 {
-  if ((Index == NPOS) || (Index > static_cast<intptr_t>(FStringList.size())))
+  if ((Index == NPOS) || (Index > static_cast<intptr_t>(FStrings.size())))
   {
     Classes::Error(SListIndexError, Index);
   }
-  if (Index == static_cast<intptr_t>(FStringList.size()))
+  if (Index == static_cast<intptr_t>(FStrings.size()))
   {
     const_cast<TStringList*>(this)->InsertItem(Index, UnicodeString(), nullptr);
   }
-  return FStringList[Index];
+  return FStrings[Index];
 }
 
 void TStringList::SetCaseSensitive(bool Value)
@@ -1050,12 +1050,12 @@ void TStringList::LoadFromFile(const UnicodeString & FileName)
 
 void TStringList::SetObject(intptr_t Index, TObject * AObject)
 {
-  if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FObjectList.size())))
+  if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FObjects.size())))
   {
     Classes::Error(SListIndexError, Index);
   }
   Changing();
-  FObjectList[Index] = AObject;
+  FObjects[Index] = AObject;
   Changed();
 }
 
@@ -1146,8 +1146,8 @@ void TStringList::QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SComp
 
 void TStringList::ExchangeItems(intptr_t Index1, intptr_t Index2)
 {
-  UnicodeString SItem1 = FStringList[Index1];
-  TObject * OItem1 = FObjectList[Index1];
+  UnicodeString SItem1 = FStrings[Index1];
+  TObject * OItem1 = FObjects[Index1];
 //  UnicodeString SItem2 = FStringList[Index2];
 //  TObject * OItem2 = FObjectList[Index2];
 //  UnicodeString Temp1 = SItem1;
@@ -1156,10 +1156,10 @@ void TStringList::ExchangeItems(intptr_t Index1, intptr_t Index2)
 //  TObject * Temp2 = Item1->second;
 //  Item1->second = Item2->second;
 //  Item2->second = Temp2;
-  FStringList[Index1] = FStringList[Index2];
-  FObjectList[Index1] = FObjectList[Index2];
-  FStringList[Index2] = SItem1;
-  FObjectList[Index2] = OItem1;
+  FStrings[Index1] = FStrings[Index2];
+  FObjects[Index1] = FObjects[Index2];
+  FStrings[Index2] = SItem1;
+  FObjects[Index2] = OItem1;
 }
 
 intptr_t TStringList::CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const
