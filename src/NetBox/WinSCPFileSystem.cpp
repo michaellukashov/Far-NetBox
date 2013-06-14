@@ -203,7 +203,7 @@ public:
     TCustomCommand * ChildCustomCommand);
 
 protected:
-  virtual void Prompt(intptr_t Index, const UnicodeString & Prompt,
+  virtual void Prompt(const UnicodeString & Prompt,
     UnicodeString & Value);
 
 private:
@@ -217,8 +217,7 @@ TFarInteractiveCustomCommand::TFarInteractiveCustomCommand(
   FPlugin = Plugin;
 }
 //------------------------------------------------------------------------------
-void TFarInteractiveCustomCommand::Prompt(intptr_t /*Index*/,
-  const UnicodeString & Prompt, UnicodeString & Value)
+void TFarInteractiveCustomCommand::Prompt(const UnicodeString & Prompt, UnicodeString & Value)
 {
   UnicodeString APrompt = Prompt;
   if (APrompt.IsEmpty())
