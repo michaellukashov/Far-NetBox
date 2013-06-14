@@ -504,7 +504,8 @@ bool TCopyParamList::GetAnyRule() const
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
-  FLocales(nullptr),
+  FLocale(0),
+  FLocales(new TStringList()),
   FContinueOnError(false),
   FConfirmCommandSession(false),
   FPuttyPassword(false),
@@ -523,11 +524,8 @@ TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
   FCopyParamList(nullptr),
   FCopyParamListDefaults(false),
   FKeepUpToDateChangeDelay(0),
-  FSessionReopenAutoIdle(0),
-  FLocale(0)
+  FSessionReopenAutoIdle(0)
 {
-  FLocale = 0;
-  FLocales = new TStringList();
   FLastLocalesExts = L"*";
   dynamic_cast<TStringList *>(FLocales)->SetSorted(true);
   dynamic_cast<TStringList *>(FLocales)->SetCaseSensitive(false);

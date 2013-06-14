@@ -4321,8 +4321,8 @@ public:
 TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   bool AAnyDirectories, bool ShowButtons,
   bool ShowSpecials, TFarDialogItem * EnabledDependency) :
-  FAnyDirectories(AAnyDirectories),
   TFarDialogContainer(ADialog),
+  FAnyDirectories(AAnyDirectories),
   FOctalEdit(nullptr),
   FDirectoriesXCheck(nullptr)
 {

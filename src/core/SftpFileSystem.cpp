@@ -1017,9 +1017,9 @@ class TSFTPQueue : public TObject
 NB_DISABLE_COPY(TSFTPQueue)
 public:
   explicit TSFTPQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
-    FFileSystem(AFileSystem),
     FRequests(new TList()),
     FResponses(new TList()),
+    FFileSystem(AFileSystem),
     FCodePage(CodePage)
   {
     assert(FFileSystem);
