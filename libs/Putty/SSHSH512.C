@@ -164,7 +164,7 @@ static void SHA512_Block(SHA512_State *s, uint64 *block) {
 /* ----------------------------------------------------------------------
  * Outer SHA512 algorithm: take an arbitrary length byte string,
  * convert it into 16-doubleword blocks with the prescribed padding
- * at the end, _and pass those blocks to the core SHA512 algorithm.
+ * at the end, and pass those blocks to the core SHA512 algorithm.
  */
 
 void putty_SHA512_Init(SHA512_State *s) {
@@ -197,7 +197,7 @@ void SHA512_Bytes(SHA512_State *s, const void *p, int len) {
         s->blkused += len;
     } else {
         /*
-         * We must complete _and process at least one block.
+         * We must complete and process at least one block.
          */
         while (s->blkused + len >= BLKSIZE) {
             memcpy(s->block + s->blkused, q, BLKSIZE - s->blkused);

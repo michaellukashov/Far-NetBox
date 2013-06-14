@@ -218,7 +218,7 @@ int agent_query(void *in, int inlen, void **out, int *outlen,
     p = MapViewOfFile(filemap, FILE_MAP_WRITE, 0, 0, 0);
     memcpy(p, in, inlen);
     cds.dwData = AGENT_COPYDATA_ID;
-    cds.cbData = strlen(mapname) + 1;
+    cds.cbData = 1 + strlen(mapname);
     cds.lpData = mapname;
 #ifdef WINDOWS_ASYNC_AGENT
     if (callback != NULL && !(flags & FLAG_SYNCAGENT)) {
