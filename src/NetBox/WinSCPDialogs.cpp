@@ -3558,6 +3558,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     // FTP tab
     SessionData->SetFtpUseMlsd(static_cast<TAutoSwitch>(2 - FtpUseMlsdCombo->GetItemIndex()));
     SessionData->SetFtpAllowEmptyPassword(FtpAllowEmptyPasswordCheck->GetChecked());
+    SessionData->SetFtpDupFF(FtpDupFFCheck->GetChecked());
+    SessionData->SetFtpUndupFF(FtpUndupFFCheck->GetChecked());
     SessionData->SetSslSessionReuse(SslSessionReuseCheck->GetChecked());
     std::auto_ptr<TStrings> PostLoginCommands(new TStringList());
     for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(PostLoginCommandsEdits)); ++Index)
