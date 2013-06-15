@@ -1394,7 +1394,7 @@ BOOL CFtpControlSocket::Send(CString str)
 
 		int sendLen = strlen(lpszAsciiSend);
 		if (!m_awaitsReply && !m_sendBuffer)
-			res = CAsyncSocketEx::Send(lpszAsciiSend, strlen(lpszAsciiSend));
+			res = CAsyncSocketEx::Send(lpszAsciiSend, strlen(lpszAsciiSend), m_CurrentServer.iDupFF);
 		else
 			res = -2;
 		if ((res == SOCKET_ERROR && GetLastError() != WSAEWOULDBLOCK) || !res)
