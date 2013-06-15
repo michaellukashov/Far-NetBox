@@ -1632,8 +1632,10 @@ private:
   TFarRadioButton * IPv6Button;
   TFarCheckBox * FtpPasvModeCheck;
   TFarCheckBox * SshBufferSizeCheck;
-  TFarCheckBox * FtpAllowEmptyPasswordCheck;
   TFarComboBox * FtpUseMlsdCombo;
+  TFarCheckBox * FtpAllowEmptyPasswordCheck;
+  TFarCheckBox * FtpDupFFCheck;
+  TFarCheckBox * FtpUndupFFCheck;
   TFarCheckBox * SslSessionReuseCheck;
   TFarCheckBox * WebDAVCompressionCheck;
   TObjectList * FTabs;
@@ -2204,6 +2206,18 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   FtpAllowEmptyPasswordCheck = new TFarCheckBox(this);
   FtpAllowEmptyPasswordCheck->SetCaption(GetMsg(LOGIN_FTP_ALLOW_EMPTY_PASSWORD));
+
+  SetNextItemPosition(ipNewLine);
+
+  FtpDupFFCheck = new TFarCheckBox(this);
+  FtpDupFFCheck->SetCaption(GetMsg(LOGIN_FTP_DUPFF));
+
+  SetNextItemPosition(ipNewLine);
+
+  FtpUndupFFCheck = new TFarCheckBox(this);
+  FtpUndupFFCheck->SetCaption(GetMsg(LOGIN_FTP_UNDUPFF));
+
+  SetNextItemPosition(ipNewLine);
 
   SslSessionReuseCheck = new TFarCheckBox(this);
   SslSessionReuseCheck->SetCaption(GetMsg(LOGIN_FTP_SSLSESSIONREUSE));

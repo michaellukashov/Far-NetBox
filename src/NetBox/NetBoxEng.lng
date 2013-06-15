@@ -374,6 +374,8 @@
 "&Allow empty password"
 "Use &MLSD command for directory listing"
 " Protocol options "
+"Du&p FF in commands"
+"&UnDup FF from PWD"
 "&Session ID re-use"
 "&Encryption:"
 "No encryption"
