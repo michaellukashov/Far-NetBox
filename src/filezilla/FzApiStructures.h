@@ -42,8 +42,8 @@ public:
 #ifdef MPEXT
 	int iForcePasvIp;
 	int iUseMlsd;
-  int iDupFF;
-  int iUndupFF;
+	int iDupFF;
+	int iUndupFF;
 #endif
 	bool operator<(const t_server &op) const; //Needed by STL map
 };

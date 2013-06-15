@@ -1126,7 +1126,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 		m_pOwner->SetConnected(TRUE);
 	}
 	char *buffer = new char[BUFFERSIZE];
-  int numread = Receive(buffer, BUFFERSIZE, 0, m_bUTF8 ? 0 : m_CurrentServer.iUndupFF);
+	int numread = Receive(buffer, BUFFERSIZE, 0, m_bUTF8 ? 0 : m_CurrentServer.iUndupFF);
 
 	if (numread == SOCKET_ERROR)
 	{
@@ -1394,7 +1394,7 @@ BOOL CFtpControlSocket::Send(CString str)
 
 		int sendLen = strlen(lpszAsciiSend);
 		if (!m_awaitsReply && !m_sendBuffer)
-      res = CAsyncSocketEx::Send(lpszAsciiSend, strlen(lpszAsciiSend), 0, m_CurrentServer.iDupFF);
+			res = CAsyncSocketEx::Send(lpszAsciiSend, strlen(lpszAsciiSend), 0, m_CurrentServer.iDupFF);
 		else
 			res = -2;
 		if ((res == SOCKET_ERROR && GetLastError() != WSAEWOULDBLOCK) || !res)
@@ -6189,7 +6189,7 @@ void CFtpControlSocket::OnSend(int nErrorCode)
 	if (!m_sendBufferLen || !m_sendBuffer || m_awaitsReply)
 		return;
 
-  int res = CAsyncSocketEx::Send(m_sendBuffer, m_sendBufferLen, 0, m_bUTF8 ? 0 : m_CurrentServer.iDupFF);
+	int res = CAsyncSocketEx::Send(m_sendBuffer, m_sendBufferLen, 0, m_bUTF8 ? 0 : m_CurrentServer.iDupFF);
 	if (res == -1)
 	{
 		if (GetLastError() != WSAEWOULDBLOCK)

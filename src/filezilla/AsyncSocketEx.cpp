@@ -1219,61 +1219,61 @@ void CAsyncSocketEx::FreeAsyncSocketExInstance()
 
 int CAsyncSocketEx::Receive(void* lpBuf, int nBufLen, int nFlags /*=0*/, int nUndupFF /*=0*/)
 {
-  void* vBuf = lpBuf;
-  int vBufLen = nBufLen;
-  CStringA Buf;
-  if (nUndupFF)
-  {
-    LPSTR strBuf = (LPSTR)lpBuf;
-    for (int n = 0; n < nBufLen; n++, strBuf++)
-    {
-      if ((*strBuf == (char)0xFF) && (*(strBuf + 1) == (char)0xFF))
-      {
-        Buf.AppendChar((char)0xFF);
-        strBuf++;
-      }
-      else
-        Buf.AppendChar(*strBuf);
-    }
-    vBuf = Buf.GetBuffer();
-    vBufLen = Buf.GetLength();
-  }
+	void* vBuf = lpBuf;
+	int vBufLen = nBufLen;
+	CStringA Buf;
+	if (nUndupFF)
+	{
+		LPSTR strBuf = (LPSTR)lpBuf;
+		for (int n = 0; n < nBufLen; n++, strBuf++)
+		{
+			if ((*strBuf == (char)0xFF) && (*(strBuf + 1) == (char)0xFF))
+			{
+				Buf.AppendChar((char)0xFF);
+				strBuf++;
+			}
+			else
+				Buf.AppendChar(*strBuf);
+		}
+		vBuf = Buf.GetBuffer();
+		vBufLen = Buf.GetLength();
+	}
 #ifndef NOLAYERS
 	if (m_pFirstLayer)
-    return m_pFirstLayer->Receive(vBuf, vBufLen, nFlags);
+		return m_pFirstLayer->Receive(vBuf, vBufLen, nFlags);
 	else
 #endif //NOLAYERS
-    return recv(m_SocketData.hSocket, (LPSTR)vBuf, vBufLen, nFlags);
+		return recv(m_SocketData.hSocket, (LPSTR)vBuf, vBufLen, nFlags);
 }
 
 
 int CAsyncSocketEx::Send(const void* lpBuf, int nBufLen, int nFlags /*=0*/, int nDupFF /*=0*/)
 {
-  const void* vBuf = lpBuf;
-  int vBufLen = nBufLen;
-  CStringA Buf;
-  if (nDupFF)
-  {
-    LPSTR strBuf = (LPSTR)lpBuf;
-    for (int n = 0; n < nBufLen; n++)
-    {
-      if(strBuf[n] == '\xFF')
-      {
-        Buf.AppendChar('\xFF');
-        Buf.AppendChar('\xFF');
-      }
-      else
-        Buf.AppendChar(strBuf[n]);
-    }
-    vBuf = Buf.GetBuffer();
-    vBufLen = Buf.GetLength();
-  }
+	const void* vBuf = lpBuf;
+	int vBufLen = nBufLen;
+	CStringA Buf;
+	if (nDupFF)
+	{
+		LPSTR strBuf = (LPSTR)lpBuf;
+		for (int n = 0; n < nBufLen; n++)
+		{
+			if(strBuf[n] == '\xFF')
+			{
+				Buf.AppendChar('\xFF');
+				Buf.AppendChar('\xFF');
+			}
+			else
+				Buf.AppendChar(strBuf[n]);
+		}
+		vBuf = Buf.GetBuffer();
+		vBufLen = Buf.GetLength();
+	}
 #ifndef NOLAYERS
 	if (m_pFirstLayer)
-    return m_pFirstLayer->Send(vBuf, vBufLen, nFlags);
+		return m_pFirstLayer->Send(vBuf, vBufLen, nFlags);
 	else
 #endif //NOLAYERS
-    return send(m_SocketData.hSocket, (LPSTR)vBuf, vBufLen, nFlags);
+		return send(m_SocketData.hSocket, (LPSTR)vBuf, vBufLen, nFlags);
 }
 
 BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
