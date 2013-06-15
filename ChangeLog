@@ -1,5 +1,7 @@
 NetBox 2.1.31 ??.06.2013
 --------------------
+  * Bugfix: Fix button caption in "Confirm overwrite" dialog.
+    (http://forum.farmanager.com/viewtopic.php?p=110769#p110769)
   * Bugfix: Crash on Access Violation in NetBox.dll, SetDirectoryW
     (http://bugs.farmanager.com/view.php?id=2426)
   * Bugfix: WebDAV: Downloaded files are locked if session is interrupted.
