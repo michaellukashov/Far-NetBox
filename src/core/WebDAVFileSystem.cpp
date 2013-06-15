@@ -12599,7 +12599,7 @@ bool TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & FileName,
     // retry = "resume"
     // all = "yes to newer"
     // ignore = "rename"
-    intptr_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
+    uintptr_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
     if (CanResume)
     {
       Answers |= qaRetry;
