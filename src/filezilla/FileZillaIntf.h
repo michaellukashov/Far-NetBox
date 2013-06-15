@@ -163,7 +163,7 @@ public:
   bool Connect(const wchar_t * Host, int Port, const wchar_t * User,
     const wchar_t * Pass, const wchar_t * Account, bool FwByPass,
     const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8,
-    int iForcePasvIp, int iUseMlsd);
+    int iForcePasvIp, int iUseMlsd, int iDupFF, int iUndupFF);
   bool Close(bool AllowBusy);
 
   bool List();

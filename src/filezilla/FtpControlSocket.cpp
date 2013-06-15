@@ -1147,6 +1147,27 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 		DoClose();
 	}
 
+	if (!m_bUTF8 && m_CurrentServer.iUndupFF)
+	{
+		CStringA Buf;
+		LPSTR strBuf = (LPSTR)buffer;
+		for (int n = 0; n < numread; n++, strBuf++)
+		{
+			if ((strBuf[0] == (char)0xFF) && (strBuf[1] == (char)0xFF))
+			{
+				Buf.AppendChar((char)0xFF);
+				strBuf++;
+			}
+			else
+				Buf.AppendChar(*strBuf);
+		}
+		delete [] buffer;
+		buffer = NULL;
+		numread = Buf.GetLength();
+		buffer = new char[numread];
+		memcpy(buffer, Buf.GetBuffer(), numread);
+	}
+
 	for (int i=0; i < numread; i++)
 	{
 		if ((buffer[i] == '\r') || (buffer[i] == '\n') || (buffer[i] == 0))
@@ -1394,7 +1415,7 @@ BOOL CFtpControlSocket::Send(CString str)
 
 		int sendLen = strlen(lpszAsciiSend);
 		if (!m_awaitsReply && !m_sendBuffer)
-			res = CAsyncSocketEx::Send(lpszAsciiSend, strlen(lpszAsciiSend));
+			res = CAsyncSocketEx::Send(lpszAsciiSend, strlen(lpszAsciiSend), 0, m_CurrentServer.iDupFF);
 		else
 			res = -2;
 		if ((res == SOCKET_ERROR && GetLastError() != WSAEWOULDBLOCK) || !res)
@@ -6189,7 +6210,7 @@ void CFtpControlSocket::OnSend(int nErrorCode)
 	if (!m_sendBufferLen || !m_sendBuffer || m_awaitsReply)
 		return;
 
-	int res = CAsyncSocketEx::Send(m_sendBuffer, m_sendBufferLen);
+	int res = CAsyncSocketEx::Send(m_sendBuffer, m_sendBufferLen, 0, m_bUTF8 ? 0 : m_CurrentServer.iDupFF);
 	if (res == -1)
 	{
 		if (GetLastError() != WSAEWOULDBLOCK)

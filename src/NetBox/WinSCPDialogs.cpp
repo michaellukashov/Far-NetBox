@@ -1632,8 +1632,10 @@ private:
   TFarRadioButton * IPv6Button;
   TFarCheckBox * FtpPasvModeCheck;
   TFarCheckBox * SshBufferSizeCheck;
-  TFarCheckBox * FtpAllowEmptyPasswordCheck;
   TFarComboBox * FtpUseMlsdCombo;
+  TFarCheckBox * FtpAllowEmptyPasswordCheck;
+  TFarCheckBox * FtpDupFFCheck;
+  TFarCheckBox * FtpUndupFFCheck;
   TFarCheckBox * SslSessionReuseCheck;
   TFarCheckBox * WebDAVCompressionCheck;
   TObjectList * FTabs;
@@ -2204,6 +2206,18 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   FtpAllowEmptyPasswordCheck = new TFarCheckBox(this);
   FtpAllowEmptyPasswordCheck->SetCaption(GetMsg(LOGIN_FTP_ALLOW_EMPTY_PASSWORD));
+
+  SetNextItemPosition(ipNewLine);
+
+  FtpDupFFCheck = new TFarCheckBox(this);
+  FtpDupFFCheck->SetCaption(GetMsg(LOGIN_FTP_DUPFF));
+
+  SetNextItemPosition(ipNewLine);
+
+  FtpUndupFFCheck = new TFarCheckBox(this);
+  FtpUndupFFCheck->SetCaption(GetMsg(LOGIN_FTP_UNDUPFF));
+
+  SetNextItemPosition(ipNewLine);
 
   SslSessionReuseCheck = new TFarCheckBox(this);
   SslSessionReuseCheck->SetCaption(GetMsg(LOGIN_FTP_SSLSESSIONREUSE));
@@ -3243,6 +3257,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     PostLoginCommandsEdits[Index]->SetText(PostLoginCommands->GetString(Index));
   }
 
+  FtpDupFFCheck->SetChecked(SessionData->GetFtpDupFF());
+  FtpUndupFFCheck->SetChecked(SessionData->GetFtpUndupFF());
   SslSessionReuseCheck->SetChecked(SessionData->GetSslSessionReuse());
 
   TFtps Ftps = SessionData->GetFtps();
@@ -3542,6 +3558,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     // FTP tab
     SessionData->SetFtpUseMlsd(static_cast<TAutoSwitch>(2 - FtpUseMlsdCombo->GetItemIndex()));
     SessionData->SetFtpAllowEmptyPassword(FtpAllowEmptyPasswordCheck->GetChecked());
+    SessionData->SetFtpDupFF(FtpDupFFCheck->GetChecked());
+    SessionData->SetFtpUndupFF(FtpUndupFFCheck->GetChecked());
     SessionData->SetSslSessionReuse(SslSessionReuseCheck->GetChecked());
     std::auto_ptr<TStrings> PostLoginCommands(new TStringList());
     for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(PostLoginCommandsEdits)); ++Index)

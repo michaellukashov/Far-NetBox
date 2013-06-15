@@ -182,7 +182,7 @@ public:
 	virtual int Receive(void* lpBuf, int nBufLen, int nFlags = 0);
 
 	//Sends data to a connected socket.
-	virtual int Send(const void* lpBuf, int nBufLen, int nFlags = 0);
+	virtual int Send(const void* lpBuf, int nBufLen, int nFlags = 0, int nDupFF = 0);
 
 	//Disables Send and/or Receive calls on the socket.
 	BOOL ShutDown( int nHow = sends );

@@ -1228,14 +1228,33 @@ int CAsyncSocketEx::Receive(void* lpBuf, int nBufLen, int nFlags /*=0*/)
 }
 
 
-int CAsyncSocketEx::Send(const void* lpBuf, int nBufLen, int nFlags /*=0*/)
+int CAsyncSocketEx::Send(const void* lpBuf, int nBufLen, int nFlags /*=0*/, int nDupFF /*=0*/)
 {
+	const void* vBuf = lpBuf;
+	int vBufLen = nBufLen;
+	CStringA Buf;
+	if (nDupFF)
+	{
+		LPSTR strBuf = (LPSTR)lpBuf;
+		for (int n = 0; n < nBufLen; n++)
+		{
+			if(strBuf[n] == '\xFF')
+			{
+				Buf.AppendChar('\xFF');
+				Buf.AppendChar('\xFF');
+			}
+			else
+				Buf.AppendChar(strBuf[n]);
+		}
+		vBuf = Buf.GetBuffer();
+		vBufLen = Buf.GetLength();
+	}
 #ifndef NOLAYERS
 	if (m_pFirstLayer)
-		return m_pFirstLayer->Send(lpBuf, nBufLen, nFlags);
+		return m_pFirstLayer->Send(vBuf, vBufLen, nFlags);
 	else
 #endif //NOLAYERS
-		return send(m_SocketData.hSocket, (LPSTR)lpBuf, nBufLen, nFlags);
+		return send(m_SocketData.hSocket, (LPSTR)vBuf, vBufLen, nFlags);
 }
 
 BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
