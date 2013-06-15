@@ -181,6 +181,8 @@ public:
   TAutoSwitch GetSFTPBug(TSftpBug Bug) const;
   void SetSCPLsFullTime(TAutoSwitch Value);
   void SetFtpListAll(TAutoSwitch Value);
+  void SetFtpDupFF(bool Value);
+  void SetFtpUndupFF(bool Value);
   void SetSslSessionReuse(bool Value);
   UnicodeString GetStorageKey() const;
   UnicodeString GetInternalStorageKey() const;
@@ -330,6 +332,8 @@ public:
   intptr_t GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
   TAutoSwitch GetSCPLsFullTime() const { return FSCPLsFullTime; }
   TAutoSwitch GetFtpListAll() const { return FFtpListAll; }
+  bool GetFtpDupFF() const { return FFtpDupFF; }
+  bool GetFtpUndupFF() const { return FFtpUndupFF; }
   bool GetSslSessionReuse() const { return FSslSessionReuse; }
   TDSTMode GetDSTMode() const { return FDSTMode; }
   bool GetDeleteToRecycleBin() const { return FDeleteToRecycleBin; }
@@ -466,6 +470,8 @@ private:
   UnicodeString FPostLoginCommands;
   TAutoSwitch FSCPLsFullTime;
   TAutoSwitch FFtpListAll;
+  bool FFtpDupFF;
+  bool FFtpUndupFF;
   bool FSslSessionReuse;
   TAddressFamily FAddressFamily;
   UnicodeString FRekeyData;

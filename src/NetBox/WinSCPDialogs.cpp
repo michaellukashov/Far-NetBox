@@ -3257,6 +3257,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     PostLoginCommandsEdits[Index]->SetText(PostLoginCommands->GetString(Index));
   }
 
+  FtpDupFFCheck->SetChecked(SessionData->GetFtpDupFF());
+  FtpUndupFFCheck->SetChecked(SessionData->GetFtpUndupFF());
   SslSessionReuseCheck->SetChecked(SessionData->GetSslSessionReuse());
 
   TFtps Ftps = SessionData->GetFtps();
