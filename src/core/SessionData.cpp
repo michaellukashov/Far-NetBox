@@ -194,6 +194,8 @@ void TSessionData::Default()
   SetFtpPingType(ptDummyCommand);
   SetFtps(ftpsNone);
   SetFtpListAll(asAuto);
+  SetFtpDupFF(false);
+  SetFtpUndupFF(false);
   SetSslSessionReuse(true);
 
   SetFtpProxyLogonType(0); // none
@@ -326,6 +328,8 @@ void TSessionData::NonPersistant()
   PROPERTY(FtpPingInterval); \
   PROPERTY(FtpPingType); \
   PROPERTY(FtpListAll); \
+  PROPERTY(FtpDupFF); \
+  PROPERTY(FtpUndupFF); \
   PROPERTY(SslSessionReuse); \
   \
   PROPERTY(FtpProxyLogonType); \
@@ -642,6 +646,8 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger(L"FtpPingType", GetFtpPingType())));
   SetFtps(static_cast<TFtps>(Storage->ReadInteger(L"Ftps", GetFtps())));
   SetFtpListAll(static_cast<TAutoSwitch>(Storage->ReadInteger(L"FtpListAll", GetFtpListAll())));
+  SetFtpDupFF(Storage->ReadBool(L"FtpDupFF", GetFtpDupFF()));
+  SetFtpUndupFF(Storage->ReadBool(L"FtpUndupFF", GetFtpUndupFF()));
   SetSslSessionReuse(Storage->ReadBool(L"SslSessionReuse", GetSslSessionReuse()));
 
   SetFtpProxyLogonType(Storage->ReadInteger(L"FtpProxyLogonType", GetFtpProxyLogonType()));
@@ -935,6 +941,8 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA(Integer, FtpPingType);
       WRITE_DATA(Integer, Ftps);
       WRITE_DATA(Integer, FtpListAll);
+      WRITE_DATA(Bool, FtpDupFF);
+      WRITE_DATA(Bool, FtpUndupFF);
       WRITE_DATA(Bool, SslSessionReuse);
 
       WRITE_DATA(Integer, FtpProxyLogonType);
@@ -2668,6 +2676,16 @@ void TSessionData::SetFtps(TFtps Value)
 void TSessionData::SetFtpListAll(TAutoSwitch Value)
 {
   SET_SESSION_PROPERTY(FtpListAll);
+}
+//---------------------------------------------------------------------
+void TSessionData::SetFtpDupFF(bool Value)
+{
+  SET_SESSION_PROPERTY(FtpDupFF);
+}
+//---------------------------------------------------------------------
+void TSessionData::SetFtpUndupFF(bool Value)
+{
+  SET_SESSION_PROPERTY(FtpUndupFF);
 }
 //---------------------------------------------------------------------
 void TSessionData::SetSslSessionReuse(bool Value)

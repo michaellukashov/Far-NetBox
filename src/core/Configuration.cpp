@@ -17,6 +17,7 @@
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
 TConfiguration::TConfiguration() :
+  FCriticalSection(nullptr),
   FDontSave(false),
   FChanged(false),
   FUpdating(0),
@@ -46,8 +47,7 @@ TConfiguration::TConfiguration() :
   FForceBanners(false),
   FDisableAcceptingHostKeys(false),
   FDefaultCollectUsage(false),
-  FSessionReopenAutoMaximumNumberOfRetries(0),
-  FCriticalSection(nullptr)
+  FSessionReopenAutoMaximumNumberOfRetries(0)
 {
   FCriticalSection = new TCriticalSection();
   FUpdating = 0;

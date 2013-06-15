@@ -379,22 +379,22 @@ TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
   FLocalFileName = LocalFileName;
 }
 //---------------------------------------------------------------------------
-intptr_t TLocalCustomCommand::PatternLen(intptr_t Index, wchar_t PatternCmd)
+intptr_t TLocalCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index)
 {
   intptr_t Len = 0;
-  if (PatternCmd == L'^')
+  if (Command[Index + 1] == L'^')
   {
     Len = 3;
   }
   else
   {
-    Len = TFileCustomCommand::PatternLen(Index, PatternCmd);
+    Len = TFileCustomCommand::PatternLen(Command, Index);
   }
   return Len;
 }
 //---------------------------------------------------------------------------
-bool TLocalCustomCommand::PatternReplacement(intptr_t Index,
-  const UnicodeString & Pattern, UnicodeString & Replacement, bool & Delimit)
+bool TLocalCustomCommand::PatternReplacement(const UnicodeString & Pattern,
+  UnicodeString & Replacement, bool & Delimit)
 {
   bool Result = false;
   if (Pattern == L"!^!")

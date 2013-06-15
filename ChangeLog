@@ -1,5 +1,11 @@
 NetBox 2.1.31 ??.06.2013
 --------------------
+  * Mantis #2379: 
+      - Ftp: Add options "Dup FF in commands", "UnDup FF from PWD"
+      - Alt-Shift-Ins copies full paths.
+    (http://bugs.farmanager.com/view.php?id=2379)
+  * Bugfix: Fix button caption in "Confirm overwrite" dialog.
+    (http://forum.farmanager.com/viewtopic.php?p=110769#p110769)
   * Bugfix: Crash on Access Violation in NetBox.dll, SetDirectoryW
     (http://bugs.farmanager.com/view.php?id=2426)
   * Bugfix: WebDAV: Downloaded files are locked if session is interrupted.

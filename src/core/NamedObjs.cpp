@@ -81,10 +81,9 @@ const UnicodeString TNamedObjectList::HiddenPrefix = L"_!_";
 //---------------------------------------------------------------------------
 TNamedObjectList::TNamedObjectList():
   TObjectList(),
-  FHiddenCount(0),
-  AutoSort(true)
+  AutoSort(true),
+  FHiddenCount(0)
 {
-  AutoSort = True;
 }
 //---------------------------------------------------------------------------
 const TNamedObject * TNamedObjectList::AtObject(intptr_t Index) const

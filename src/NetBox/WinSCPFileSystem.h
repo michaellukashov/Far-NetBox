@@ -140,6 +140,7 @@ protected:
   void InsertTokenOnCommandLine(const UnicodeString & Token, bool Separate);
   void InsertSessionNameOnCommandLine();
   void InsertFileNameOnCommandLine(bool Full);
+  UnicodeString GetFullFilePath(const TRemoteFile * File) const;
   void InsertPathOnCommandLine();
   void CopyFullFileNamesToClipboard();
   void FullSynchronize(bool Source);

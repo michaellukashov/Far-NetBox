@@ -413,28 +413,6 @@ static void internal_mul(const BignumInt *a, const BignumInt *b,
 #endif
 
     } else {
-        #ifdef __CODEGUARD__
-        int i, j;
-        BignumDblInt t;
-
-        /*
-         * Multiply in the ordinary O(N^2) way.
-         */
-
-        for (j = 0; j < 2 * len; j++)
-            c[j] = 0;
-
-        for (i = len - 1; i >= 0; i--) {
-            t = 0;
-            for (j = len - 1; j >= 0; j--) {
-                t += MUL_WORD(a[i], (BignumDblInt) b[j]);
-                t += (BignumDblInt) c[i + j + 1];
-                c[i + j + 1] = (BignumInt) t;
-                t = t >> BIGNUM_INT_BITS;
-            }
-            c[i] = (BignumInt) t;
-        }
-        #else
         int i;
         BignumInt carry;
         BignumDblInt t;
@@ -457,7 +435,6 @@ static void internal_mul(const BignumInt *a, const BignumInt *b,
             }
             *cp = carry;
         }
-        #endif
     }
 }
 
@@ -538,23 +515,6 @@ static void internal_mul_low(const BignumInt *a, const BignumInt *b,
                      c, toplen);
 
     } else {
-        #ifdef __CODEGUARD__
-        int i, j;
-        BignumDblInt t;
-
-        for (j = 0; j < len; j++)
-            c[j] = 0;
-
-        for (i = len - 1; i >= 0; i--) {
-            t = 0;
-            for (j = len - 1; j >= len - i - 1; j--) {
-                t += MUL_WORD(a[i], (BignumDblInt) b[j]);
-                t += (BignumDblInt) c[i + j + 1 - len];
-                c[i + j + 1 - len] = (BignumInt) t;
-                t = t >> BIGNUM_INT_BITS;
-            }
-        }
-        #else
         int i;
         BignumInt carry;
         BignumDblInt t;
@@ -576,7 +536,6 @@ static void internal_mul_low(const BignumInt *a, const BignumInt *b,
                 carry = (BignumInt)(t >> BIGNUM_INT_BITS);
             }
         }
-        #endif
     }
 }
 

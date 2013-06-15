@@ -478,8 +478,11 @@ void TFTPFileSystem::Open()
     FActive = FFileZillaIntf->Connect(
       HostName.c_str(), static_cast<int>(Data->GetPortNumber()), UserName.c_str(),
       Password.c_str(), Account.c_str(), false, Path.c_str(),
-      ServerType, Pasv, static_cast<int>(TimeZoneOffset), UTF8, static_cast<int>(Data->GetFtpForcePasvIp()),
-      Data->GetFtpUseMlsd());
+      ServerType, Pasv, static_cast<int>(TimeZoneOffset), UTF8,
+      static_cast<int>(Data->GetFtpForcePasvIp()),
+      static_cast<int>(Data->GetFtpUseMlsd()),
+      static_cast<int>(Data->GetFtpDupFF()),
+      static_cast<int>(Data->GetFtpUndupFF()));
 
     assert(FActive);
 
@@ -834,7 +837,7 @@ bool TFTPFileSystem::ConfirmOverwrite(UnicodeString & FileName,
     // retry = "resume"
     // all = "yes to newer"
     // ignore = "rename"
-    int Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
+    uintptr_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
     if (CanResume)
     {
       Answers |= qaRetry;
