@@ -1126,7 +1126,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 		m_pOwner->SetConnected(TRUE);
 	}
 	char *buffer = new char[BUFFERSIZE];
-	int numread = Receive(buffer, BUFFERSIZE, 0, m_bUTF8 ? 0 : m_CurrentServer.iUndupFF);
+	int numread = Receive(buffer, BUFFERSIZE);
 
 	if (numread == SOCKET_ERROR)
 	{
@@ -1145,6 +1145,27 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 		buffer = NULL;
 		ShowStatus(IDS_STATUSMSG_DISCONNECTED, 1);
 		DoClose();
+	}
+
+	if (!m_bUTF8 && m_CurrentServer.iUndupFF)
+	{
+		CStringA Buf;
+		LPSTR strBuf = (LPSTR)buffer;
+		for (int n = 0; n < numread; n++, strBuf++)
+		{
+			if ((strBuf[0] == (char)0xFF) && (strBuf[1] == (char)0xFF))
+			{
+				Buf.AppendChar((char)0xFF);
+				strBuf++;
+			}
+			else
+				Buf.AppendChar(*strBuf);
+		}
+		delete [] buffer;
+		buffer = NULL;
+		numread = Buf.GetLength();
+		buffer = new char[numread];
+		memcpy(buffer, Buf.GetBuffer(), numread);
 	}
 
 	for (int i=0; i < numread; i++)

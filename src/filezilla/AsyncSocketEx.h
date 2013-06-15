@@ -179,7 +179,7 @@ public:
 	BOOL Listen( int nConnectionBacklog = 5 );
 
 	//Receives data from the socket.
-	virtual int Receive(void* lpBuf, int nBufLen, int nFlags = 0, int nUndupFF = 0);
+	virtual int Receive(void* lpBuf, int nBufLen, int nFlags = 0);
 
 	//Sends data to a connected socket.
 	virtual int Send(const void* lpBuf, int nBufLen, int nFlags = 0, int nDupFF = 0);
