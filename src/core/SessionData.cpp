@@ -194,8 +194,8 @@ void TSessionData::Default()
   SetFtpPingType(ptDummyCommand);
   SetFtps(ftpsNone);
   SetFtpListAll(asAuto);
-  SetFtpDupFF(true);
-  SetFtpUndupFF(true);
+  SetFtpDupFF(false);
+  SetFtpUndupFF(false);
   SetSslSessionReuse(true);
 
   SetFtpProxyLogonType(0); // none
