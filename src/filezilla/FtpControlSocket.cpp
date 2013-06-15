@@ -6189,7 +6189,7 @@ void CFtpControlSocket::OnSend(int nErrorCode)
 	if (!m_sendBufferLen || !m_sendBuffer || m_awaitsReply)
 		return;
 
-	int res = CAsyncSocketEx::Send(m_sendBuffer, m_sendBufferLen);
+  int res = CAsyncSocketEx::Send(m_sendBuffer, m_sendBufferLen, m_bUTF8 ? 0 : m_CurrentServer.iDupFF);
 	if (res == -1)
 	{
 		if (GetLastError() != WSAEWOULDBLOCK)
