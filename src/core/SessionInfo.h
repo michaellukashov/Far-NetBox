@@ -319,8 +319,8 @@ private:
   TList * FPendingActions;
   bool FClosed;
   bool FInGroup;
-  UnicodeString FIndent;
   bool FEnabled;
+  UnicodeString FIndent;
 
   void OpenLogFile();
 

@@ -1186,21 +1186,19 @@ intptr_t TSessionLog::GetCount() const
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TActionLog::TActionLog(TSessionUI * UI, TSessionData * SessionData,
-  TConfiguration * Configuration)
+  TConfiguration * Configuration) :
+  FConfiguration(Configuration),
+  FCriticalSection(new TCriticalSection),
+  FLogging(false),
+  FFile(nullptr),
+  FUI(UI),
+  FSessionData(SessionData),
+  FPendingActions(new TList()),
+  FClosed(false),
+  FInGroup(false),
+  FEnabled(true),
+  FIndent(L"  ")
 {
-  FCriticalSection = new TCriticalSection;
-  FConfiguration = Configuration;
-  FUI = UI;
-  FSessionData = SessionData;
-  FFile = nullptr;
-  FCurrentLogFileName = L"";
-  FCurrentFileName = L"";
-  FLogging = false;
-  FClosed = false;
-  FPendingActions = new TList();
-  FIndent = L"  ";
-  FInGroup = false;
-  FEnabled = true;
 }
 //---------------------------------------------------------------------------
 TActionLog::~TActionLog()
