@@ -1887,8 +1887,7 @@ void TWinSCPFileSystem::InsertFileNameOnCommandLine(bool Full)
         if (Full)
         {
           // Get full address (with server address)
-          UnicodeString SessionUrl = GetSessionUrl(FTerminal);
-          Path = FORMAT(L"%s%s", SessionUrl.c_str(), File->GetFullFileName().c_str());
+          Path = GetFullFilePath(File);
         }
         else
         {
@@ -1902,6 +1901,13 @@ void TWinSCPFileSystem::InsertFileNameOnCommandLine(bool Full)
       InsertTokenOnCommandLine(::UnixIncludeTrailingBackslash(FTerminal->GetCurrentDirectory()), true);
     }
   }
+}
+//------------------------------------------------------------------------------
+UnicodeString TWinSCPFileSystem::GetFullFilePath(const TRemoteFile * File) const
+{
+  UnicodeString SessionUrl = GetSessionUrl(FTerminal);
+  UnicodeString Result = FORMAT(L"%s%s", SessionUrl.c_str(), File->GetFullFileName().c_str());
+  return Result;
 }
 //------------------------------------------------------------------------------
 // not used
