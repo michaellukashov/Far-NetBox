@@ -1227,7 +1227,7 @@ int CAsyncSocketEx::Receive(void* lpBuf, int nBufLen, int nFlags /*=0*/, int nUn
 		LPSTR strBuf = (LPSTR)lpBuf;
 		for (int n = 0; n < nBufLen; n++, strBuf++)
 		{
-			if ((*strBuf == (char)0xFF) && (*(strBuf + 1) == (char)0xFF))
+			if ((strBuf[0] == (char)0xFF) && (strBuf[1] == (char)0xFF))
 			{
 				Buf.AppendChar((char)0xFF);
 				strBuf++;
