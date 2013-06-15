@@ -1880,7 +1880,7 @@ void TWinSCPFileSystem::InsertFileNameOnCommandLine(bool Full)
   {
     if (!Focused->GetIsParentDirectory())
     {
-      TRemoteFile * File = reinterpret_cast<TRemoteFile *>(Focused->GetUserData());
+      const TRemoteFile * File = reinterpret_cast<const TRemoteFile *>(Focused->GetUserData());
       if (File != nullptr)
       {
         UnicodeString Path;
@@ -1924,10 +1924,10 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
   {
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->GetObject(Index));
+      const TRemoteFile * File = reinterpret_cast<const TRemoteFile *>(FileList->GetObject(Index));
       if (File != nullptr)
       {
-        FileNames->Add(File->GetFullFileName());
+        FileNames->Add(GetFullFilePath(File));
       }
       else
       {
