@@ -3884,8 +3884,8 @@ TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList * Items
 TFarComboBox * TSessionDialog::GetProxyMethodCombo()
 {
   TFSProtocol FSProtocol = GetFSProtocol();
-  bool SshProtocol =
-    (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
+  bool SshProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) ||
+    (FSProtocol == fsSCPonly);
   bool WebDAVProtocol = FSProtocol == fsWebDAV;
   return SshProtocol || WebDAVProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo;
 }
