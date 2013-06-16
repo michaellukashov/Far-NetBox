@@ -1480,16 +1480,16 @@ private:
   TProxyMethod IndexToProxyMethod(intptr_t Index, TFarList * Items);
   TFarComboBox * GetProxyMethodCombo();
   intptr_t FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback);
-  TFSProtocol IndexToFSProtocol(intptr_t Index, bool AllowScpFallback);
-  TFSProtocol GetFSProtocol();
-  intptr_t LastSupportedFtpProxyMethod();
-  bool SupportedFtpProxyMethod(intptr_t Method);
-  TProxyMethod GetProxyMethod();
-  intptr_t GetFtpProxyLogonType();
-  TFtps IndexToFtps(intptr_t Index);
-  TFtps GetFtps();
-  TLoginType IndexToLoginType(intptr_t Index);
-  TLoginType GetLoginType();
+  TFSProtocol IndexToFSProtocol(intptr_t Index, bool AllowScpFallback) const;
+  TFSProtocol GetFSProtocol() const;
+  inline intptr_t LastSupportedFtpProxyMethod() const;
+  bool SupportedFtpProxyMethod(intptr_t Method) const;
+  TProxyMethod GetProxyMethod() const;
+  intptr_t GetFtpProxyLogonType() const;
+  TFtps IndexToFtps(intptr_t Index) const;
+  TFtps GetFtps() const;
+  TLoginType IndexToLoginType(intptr_t Index) const;
+  TLoginType GetLoginType() const;
   bool VerifyKey(const UnicodeString & FileName, bool TypeOnly);
   void PrevTabClick(TFarButton * /* Sender */, bool & Close);
   void NextTabClick(TFarButton * /* Sender */, bool & Close);
@@ -3894,23 +3894,23 @@ TFarComboBox * TSessionDialog::GetProxyMethodCombo()
   return SshProtocol || WebDAVProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo;
 }
 //------------------------------------------------------------------------------
-TFSProtocol TSessionDialog::GetFSProtocol()
+TFSProtocol TSessionDialog::GetFSProtocol() const
 {
   return IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(),
     AllowScpFallbackCheck->GetChecked());
 }
 //------------------------------------------------------------------------------
-intptr_t TSessionDialog::LastSupportedFtpProxyMethod()
+inline intptr_t TSessionDialog::LastSupportedFtpProxyMethod() const
 {
   return pmSystem; // pmWebDAV;
 }
 //------------------------------------------------------------------------------
-bool TSessionDialog::SupportedFtpProxyMethod(intptr_t Method)
+bool TSessionDialog::SupportedFtpProxyMethod(intptr_t Method) const
 {
   return (Method >= 0) && (Method <= LastSupportedFtpProxyMethod());
 }
 //------------------------------------------------------------------------------
-TProxyMethod TSessionDialog::GetProxyMethod()
+TProxyMethod TSessionDialog::GetProxyMethod() const
 {
   TProxyMethod Result;
   if (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), AllowScpFallbackCheck->GetChecked()) != fsFTP)
@@ -3931,7 +3931,7 @@ TProxyMethod TSessionDialog::GetProxyMethod()
   return Result;
 }
 //------------------------------------------------------------------------------
-intptr_t TSessionDialog::GetFtpProxyLogonType()
+intptr_t TSessionDialog::GetFtpProxyLogonType() const
 {
   intptr_t Result;
   if (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), AllowScpFallbackCheck->GetChecked()) != fsFTP)
@@ -3952,7 +3952,7 @@ intptr_t TSessionDialog::GetFtpProxyLogonType()
   return Result;
 }
 //------------------------------------------------------------------------------
-TFtps TSessionDialog::IndexToFtps(intptr_t Index)
+TFtps TSessionDialog::IndexToFtps(intptr_t Index) const
 {
   bool InBounds = (Index != NPOS) && (Index < FtpEncryptionCombo->GetItems()->GetCount());
   assert(InBounds);
@@ -3984,17 +3984,17 @@ TFtps TSessionDialog::IndexToFtps(intptr_t Index)
   return Result;
 }
 //------------------------------------------------------------------------------
-TFtps TSessionDialog::GetFtps()
+TFtps TSessionDialog::GetFtps() const
 {
   return static_cast<TFtps>(IndexToFtps(FtpEncryptionCombo->GetItemIndex()));
 }
 //------------------------------------------------------------------------------
-TLoginType TSessionDialog::GetLoginType()
+TLoginType TSessionDialog::GetLoginType() const
 {
   return IndexToLoginType(LoginTypeCombo->GetItemIndex());
 }
 //------------------------------------------------------------------------------
-TFSProtocol TSessionDialog::IndexToFSProtocol(intptr_t Index, bool AllowScpFallback)
+TFSProtocol TSessionDialog::IndexToFSProtocol(intptr_t Index, bool AllowScpFallback) const
 {
   bool InBounds = (Index >= 0) && (Index < static_cast<intptr_t>(LENOF(FSOrder)));
   assert(InBounds || (Index == -1));
@@ -4010,7 +4010,7 @@ TFSProtocol TSessionDialog::IndexToFSProtocol(intptr_t Index, bool AllowScpFallb
   return Result;
 }
 //------------------------------------------------------------------------------
-TLoginType TSessionDialog::IndexToLoginType(intptr_t Index)
+TLoginType TSessionDialog::IndexToLoginType(intptr_t Index) const
 {
   bool InBounds = (Index != NPOS) && (Index <= ltNormal);
   assert(InBounds);
