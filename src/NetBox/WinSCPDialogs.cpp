@@ -1503,6 +1503,7 @@ private:
   void LoginTypeComboChange();
   void FillCodePageEdit();
   void CodePageEditAdd(unsigned int Cp);
+  void FtpProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType);
 
   void ChangeTabs(intptr_t FirstVisibleTabIndex);
   intptr_t GetVisibleTabsCount(intptr_t TabIndex, bool Forward);
@@ -2331,32 +2332,20 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   FtpProxyMethodCombo = new TFarComboBox(this);
   FtpProxyMethodCombo->SetDropDownList(true);
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_NONE),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmNone)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SOCKS4),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmSocks4)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SOCKS5),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmSocks5)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_HTTP),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmHTTP)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SYSTEM),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmSystem)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_FTP_SITE),
-    static_cast<TObject *>(reinterpret_cast<void *>(LastSupportedFtpProxyMethod() + 1)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_FTP_PROXYUSER_USERHOST),
-    static_cast<TObject *>(reinterpret_cast<void *>(LastSupportedFtpProxyMethod() + 2)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_FTP_OPEN_HOST),
-    static_cast<TObject *>(reinterpret_cast<void *>(LastSupportedFtpProxyMethod() + 3)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_FTP_PROXYUSER_USERUSER),
-    static_cast<TObject *>(reinterpret_cast<void *>(LastSupportedFtpProxyMethod() + 4)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_FTP_USER_USERHOST),
-    static_cast<TObject *>(reinterpret_cast<void *>(LastSupportedFtpProxyMethod() + 5)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_FTP_PROXYUSER_HOST),
-    static_cast<TObject *>(reinterpret_cast<void *>(LastSupportedFtpProxyMethod() + 6)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_FTP_USERHOST_PROXYUSER),
-    static_cast<TObject *>(reinterpret_cast<void *>(LastSupportedFtpProxyMethod() + 7)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_FTP_USER_USERPROXYUSERHOST),
-    static_cast<TObject *>(reinterpret_cast<void *>(LastSupportedFtpProxyMethod() + 8)));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_NONE, pmNone);
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_SOCKS4, pmSocks4);
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_SOCKS5, pmSocks5);
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_HTTP, pmHTTP);
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_SYSTEM, pmSystem);
+  TProxyMethod FtpProxyMethod = (TProxyMethod)(LastSupportedFtpProxyMethod());
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_SITE, (TProxyMethod)(FtpProxyMethod + 1));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_PROXYUSER_USERHOST, (TProxyMethod)(FtpProxyMethod + 2));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_OPEN_HOST, (TProxyMethod)(FtpProxyMethod + 3));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_PROXYUSER_USERUSER, (TProxyMethod)(FtpProxyMethod + 4));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_USER_USERHOST, (TProxyMethod)(FtpProxyMethod + 5));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_PROXYUSER_HOST, (TProxyMethod)(FtpProxyMethod + 6));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_USERHOST_PROXYUSER, (TProxyMethod)(FtpProxyMethod + 7));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_USER_USERPROXYUSERHOST, (TProxyMethod)(FtpProxyMethod + 8));
   FtpProxyMethodCombo->SetWidth(40);
 
   SshProxyMethodCombo = new TFarComboBox(this);
@@ -2814,6 +2803,12 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Button->SetCaption(GetMsg(MSG_BUTTON_Cancel));
   Button->SetResult(brCancel);
   Button->SetCenterGroup(true);
+}
+//------------------------------------------------------------------------------
+void TSessionDialog::FtpProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType)
+{
+  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
+    static_cast<TObject *>(reinterpret_cast<void *>(ProxyType)));
 }
 //------------------------------------------------------------------------------
 TSessionDialog::~TSessionDialog()
