@@ -3324,7 +3324,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   }
   if (SessionData->GetFtpProxyLogonType() != 0)
   {
-    FtpProxyMethodCombo->SetItemIndex(GetLastSupportedFtpProxyMethod() + SessionData->GetFtpProxyLogonType());
+    intptr_t ItemIndex = GetLastSupportedFtpProxyMethod() + SessionData->GetFtpProxyLogonType();
+    FtpProxyMethodCombo->SetItemIndex(ItemIndex >= FtpProxyMethodCombo->GetItems()->GetCount() ? 0 : ItemIndex);
   }
   if (SessionData->GetProxyMethod() != pmSystem)
   {
