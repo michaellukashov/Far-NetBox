@@ -1478,7 +1478,7 @@ private:
   intptr_t LoginTypeToIndex(TLoginType LoginType) const;
   intptr_t ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items) const;
   TProxyMethod IndexToProxyMethod(intptr_t Index, TFarList * Items) const;
-  TFarComboBox * GetProxyMethodCombo();
+  TFarComboBox * GetProxyMethodCombo() const;
   intptr_t FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback) const;
   TFSProtocol IndexToFSProtocol(intptr_t Index, bool AllowScpFallback) const;
   TFSProtocol GetFSProtocol() const;
@@ -3060,7 +3060,7 @@ void TSessionDialog::UpdateControls()
   // Connection/Proxy tab
   TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
   TProxyMethod ProxyMethod = IndexToProxyMethod(ProxyMethodCombo->GetItemIndex(), ProxyMethodCombo->GetItems());
-  ProxyMethodCombo->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()));
+  ProxyMethodCombo->SetVisible(GetTab() == ProxyMethodCombo->GetGroup());
   TFarComboBox * OtherProxyMethodCombo = !(SshProtocol || InternalWebDAVProtocol) ? SshProxyMethodCombo : FtpProxyMethodCombo;
   OtherProxyMethodCombo->SetVisible(false);
   if (ProxyMethod >= OtherProxyMethodCombo->GetItems()->GetCount())
@@ -3881,7 +3881,7 @@ TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList * Items
   return Result;
 }
 //------------------------------------------------------------------------------
-TFarComboBox * TSessionDialog::GetProxyMethodCombo()
+TFarComboBox * TSessionDialog::GetProxyMethodCombo() const
 {
   TFSProtocol FSProtocol = GetFSProtocol();
   bool SshProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) ||
