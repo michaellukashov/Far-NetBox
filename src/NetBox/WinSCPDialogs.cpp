@@ -1505,6 +1505,9 @@ private:
   void CodePageEditAdd(unsigned int Cp);
   void FtpProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType);
   void SshProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType);
+  bool IsSshProtocol(TFSProtocol FSProtocol) const;
+  bool IsWebDAVProtocol(TFSProtocol FSProtocol) const;
+  bool IsSshOrWebDAVProtocol(TFSProtocol FSProtocol) const;
 
   void ChangeTabs(intptr_t FirstVisibleTabIndex);
   intptr_t GetVisibleTabsCount(intptr_t TabIndex, bool Forward) const;
@@ -2938,13 +2941,30 @@ void TSessionDialog::LoginTypeComboChange()
   }
 }
 //------------------------------------------------------------------------------
+bool TSessionDialog::IsSshProtocol(TFSProtocol FSProtocol) const
+{
+  bool Result =
+    (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
+
+  return Result;
+}
+//------------------------------------------------------------------------------
+bool TSessionDialog::IsWebDAVProtocol(TFSProtocol FSProtocol) const
+{
+  return FSProtocol == fsWebDAV;
+}
+//------------------------------------------------------------------------------
+bool TSessionDialog::IsSshOrWebDAVProtocol(TFSProtocol FSProtocol) const
+{
+  return IsSshProtocol(FSProtocol) || IsWebDAVProtocol(FSProtocol);
+}
+//------------------------------------------------------------------------------
 void TSessionDialog::UpdateControls()
 {
   TFSProtocol FSProtocol = GetFSProtocol();
   TFtps Ftps = GetFtps();
-  bool InternalSshProtocol =
-    (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
-  bool InternalWebDAVProtocol = FSProtocol == fsWebDAV;
+  bool InternalSshProtocol = IsSshProtocol(FSProtocol);
+  bool InternalWebDAVProtocol = IsWebDAVProtocol(FSProtocol);
   bool HTTPSProtocol = (FSProtocol == fsWebDAV) && (Ftps != ftpsNone);
   bool SshProtocol = InternalSshProtocol;
   bool SftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
@@ -3061,7 +3081,7 @@ void TSessionDialog::UpdateControls()
   TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
   TProxyMethod ProxyMethod = IndexToProxyMethod(ProxyMethodCombo->GetItemIndex(), ProxyMethodCombo->GetItems());
   ProxyMethodCombo->SetVisible(GetTab() == ProxyMethodCombo->GetGroup());
-  TFarComboBox * OtherProxyMethodCombo = SshProtocol || InternalWebDAVProtocol ? FtpProxyMethodCombo : SshProxyMethodCombo;
+  TFarComboBox * OtherProxyMethodCombo = IsSshOrWebDAVProtocol(FSProtocol) ? FtpProxyMethodCombo : SshProxyMethodCombo;
   OtherProxyMethodCombo->SetVisible(false);
   if (ProxyMethod >= OtherProxyMethodCombo->GetItems()->GetCount())
   {
@@ -3883,11 +3903,7 @@ TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList * Items
 //------------------------------------------------------------------------------
 TFarComboBox * TSessionDialog::GetProxyMethodCombo() const
 {
-  TFSProtocol FSProtocol = GetFSProtocol();
-  bool SshProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) ||
-    (FSProtocol == fsSCPonly);
-  bool WebDAVProtocol = FSProtocol == fsWebDAV;
-  return SshProtocol || WebDAVProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo;
+  return IsSshOrWebDAVProtocol(GetFSProtocol()) ? SshProxyMethodCombo : FtpProxyMethodCombo;
 }
 //------------------------------------------------------------------------------
 TFSProtocol TSessionDialog::GetFSProtocol() const
