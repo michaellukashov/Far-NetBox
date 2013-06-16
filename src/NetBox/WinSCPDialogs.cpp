@@ -1483,7 +1483,7 @@ private:
   TFSProtocol IndexToFSProtocol(intptr_t Index, bool AllowScpFallback) const;
   TFSProtocol GetFSProtocol() const;
   inline intptr_t GetLastSupportedFtpProxyMethod() const;
-  bool SupportedFtpProxyMethod(intptr_t Method) const;
+  bool GetSupportedFtpProxyMethod(intptr_t Method) const;
   TProxyMethod GetProxyMethod() const;
   intptr_t GetFtpProxyLogonType() const;
   TFtps IndexToFtps(intptr_t Index) const;
@@ -3314,7 +3314,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   // Proxy tab
   intptr_t Index = ProxyMethodToIndex(SessionData->GetProxyMethod(), SshProxyMethodCombo->GetItems());
   SshProxyMethodCombo->SetItemIndex(Index);
-  if (SupportedFtpProxyMethod(static_cast<intptr_t>(SessionData->GetProxyMethod())))
+  if (GetSupportedFtpProxyMethod(static_cast<intptr_t>(SessionData->GetProxyMethod())))
   {
     FtpProxyMethodCombo->SetItemIndex(static_cast<intptr_t>(SessionData->GetProxyMethod()));
   }
@@ -3900,7 +3900,7 @@ inline intptr_t TSessionDialog::GetLastSupportedFtpProxyMethod() const
   return pmSystem; // pmWebDAV;
 }
 //------------------------------------------------------------------------------
-bool TSessionDialog::SupportedFtpProxyMethod(intptr_t Method) const
+bool TSessionDialog::GetSupportedFtpProxyMethod(intptr_t Method) const
 {
   return (Method >= 0) && (Method <= GetLastSupportedFtpProxyMethod());
 }
@@ -3914,7 +3914,7 @@ TProxyMethod TSessionDialog::GetProxyMethod() const
   }
   else
   {
-    if (SupportedFtpProxyMethod(FtpProxyMethodCombo->GetItemIndex()))
+    if (GetSupportedFtpProxyMethod(FtpProxyMethodCombo->GetItemIndex()))
     {
       Result = static_cast<TProxyMethod>(FtpProxyMethodCombo->GetItemIndex());
     }
@@ -3935,7 +3935,7 @@ intptr_t TSessionDialog::GetFtpProxyLogonType() const
   }
   else
   {
-    if (SupportedFtpProxyMethod(FtpProxyMethodCombo->GetItemIndex()))
+    if (GetSupportedFtpProxyMethod(FtpProxyMethodCombo->GetItemIndex()))
     {
       Result = 0;
     }
