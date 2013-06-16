@@ -3061,7 +3061,7 @@ void TSessionDialog::UpdateControls()
   TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
   TProxyMethod ProxyMethod = IndexToProxyMethod(ProxyMethodCombo->GetItemIndex(), ProxyMethodCombo->GetItems());
   ProxyMethodCombo->SetVisible(GetTab() == ProxyMethodCombo->GetGroup());
-  TFarComboBox * OtherProxyMethodCombo = !(SshProtocol || InternalWebDAVProtocol) ? SshProxyMethodCombo : FtpProxyMethodCombo;
+  TFarComboBox * OtherProxyMethodCombo = SshProtocol || InternalWebDAVProtocol ? FtpProxyMethodCombo : SshProxyMethodCombo;
   OtherProxyMethodCombo->SetVisible(false);
   if (ProxyMethod >= OtherProxyMethodCombo->GetItems()->GetCount())
   {
