@@ -1504,6 +1504,7 @@ private:
   void FillCodePageEdit();
   void CodePageEditAdd(unsigned int Cp);
   void FtpProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType);
+  void SshProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType);
 
   void ChangeTabs(intptr_t FirstVisibleTabIndex);
   intptr_t GetVisibleTabsCount(intptr_t TabIndex, bool Forward);
@@ -2353,21 +2354,14 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SshProxyMethodCombo->SetWidth(FtpProxyMethodCombo->GetWidth());
   SshProxyMethodCombo->SetRight(FtpProxyMethodCombo->GetRight());
   SshProxyMethodCombo->SetDropDownList(true);
-  // SshProxyMethodCombo->GetItems()->AddStrings(FtpProxyMethodCombo->GetItems());
-  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_NONE),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmNone)));
-  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SOCKS4),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmSocks4)));
-  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SOCKS5),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmSocks5)));
-  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_HTTP),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmHTTP)));
-  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_TELNET),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmTelnet)));
-  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_LOCAL),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmCmd)));
-  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SYSTEM),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmSystem)));
+
+  SshProxyMethodComboAddNewItem(LOGIN_PROXY_NONE, pmNone);
+  SshProxyMethodComboAddNewItem(LOGIN_PROXY_SOCKS4, pmSocks4);
+  SshProxyMethodComboAddNewItem(LOGIN_PROXY_SOCKS5, pmSocks5);
+  SshProxyMethodComboAddNewItem(LOGIN_PROXY_HTTP, pmHTTP);
+  SshProxyMethodComboAddNewItem(LOGIN_PROXY_TELNET, pmTelnet);
+  SshProxyMethodComboAddNewItem(LOGIN_PROXY_LOCAL, pmCmd);
+  SshProxyMethodComboAddNewItem(LOGIN_PROXY_SYSTEM, pmSystem);
 
   SetNextItemPosition(ipNewLine);
 
@@ -2808,6 +2802,12 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 void TSessionDialog::FtpProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType)
 {
   FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
+    static_cast<TObject *>(reinterpret_cast<void *>(ProxyType)));
+}
+//------------------------------------------------------------------------------
+void TSessionDialog::SshProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType)
+{
+  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
     static_cast<TObject *>(reinterpret_cast<void *>(ProxyType)));
 }
 //------------------------------------------------------------------------------
