@@ -3977,27 +3977,27 @@ TFtps TSessionDialog::IndexToFtps(intptr_t Index) const
   TFtps Result = ftpsNone;
   if (InBounds)
   {
-  switch (Index)
-  {
-    case 0:
-      Result = ftpsNone;
-      break;
+    switch (Index)
+    {
+      case 0:
+        Result = ftpsNone;
+        break;
 
-    case 1:
-      Result = ftpsImplicit;
-      break;
+      case 1:
+        Result = ftpsImplicit;
+        break;
 
-    case 2:
-      Result = ftpsExplicitSsl;
-      break;
+      case 2:
+        Result = ftpsExplicitSsl;
+        break;
 
-    case 3:
-      Result = ftpsExplicitTls;
-      break;
+      case 3:
+        Result = ftpsExplicitTls;
+        break;
 
-    default:
-      break;
-  }
+      default:
+        break;
+    }
   }
   return Result;
 }
