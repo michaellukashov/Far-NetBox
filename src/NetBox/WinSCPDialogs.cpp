@@ -1475,11 +1475,11 @@ protected:
 private:
   void LoadPing(TSessionData * SessionData);
   void SavePing(TSessionData * SessionData);
-  intptr_t LoginTypeToIndex(TLoginType LoginType);
-  intptr_t ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items);
-  TProxyMethod IndexToProxyMethod(intptr_t Index, TFarList * Items);
+  intptr_t LoginTypeToIndex(TLoginType LoginType) const;
+  intptr_t ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items) const;
+  TProxyMethod IndexToProxyMethod(intptr_t Index, TFarList * Items) const;
   TFarComboBox * GetProxyMethodCombo();
-  intptr_t FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback);
+  intptr_t FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback) const;
   TFSProtocol IndexToFSProtocol(intptr_t Index, bool AllowScpFallback) const;
   TFSProtocol GetFSProtocol() const;
   inline intptr_t GetLastSupportedFtpProxyMethod() const;
@@ -1507,7 +1507,7 @@ private:
   void SshProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType);
 
   void ChangeTabs(intptr_t FirstVisibleTabIndex);
-  intptr_t GetVisibleTabsCount(intptr_t TabIndex, bool Forward);
+  intptr_t GetVisibleTabsCount(intptr_t TabIndex, bool Forward) const;
   intptr_t AddTab(intptr_t TabID, const wchar_t * TabCaption);
 
 private:
@@ -3829,13 +3829,13 @@ void TSessionDialog::SavePing(TSessionData * SessionData)
   }
 }
 //------------------------------------------------------------------------------
-intptr_t TSessionDialog::LoginTypeToIndex(TLoginType LoginType)
+intptr_t TSessionDialog::LoginTypeToIndex(TLoginType LoginType) const
 {
   return static_cast<intptr_t>(LoginType);
 }
 //------------------------------------------------------------------------------
 intptr_t TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
-  bool & AllowScpFallback)
+  bool & AllowScpFallback) const
 {
   if (FSProtocol == fsSFTP)
   {
@@ -3858,7 +3858,7 @@ intptr_t TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
   }
 }
 //------------------------------------------------------------------------------
-intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items)
+intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items) const
 {
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
@@ -3870,7 +3870,7 @@ intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList *
   return -1;
 }
 //------------------------------------------------------------------------------
-TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList * Items)
+TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList * Items) const
 {
   TProxyMethod Result = pmNone;
   if (Index >= 0 && Index < Items->GetCount())
@@ -4167,7 +4167,7 @@ void TSessionDialog::ChangeTabs(intptr_t FirstVisibleTabIndex)
   }
 }
 //------------------------------------------------------------------------------
-intptr_t TSessionDialog::GetVisibleTabsCount(intptr_t TabIndex, bool Forward)
+intptr_t TSessionDialog::GetVisibleTabsCount(intptr_t TabIndex, bool Forward) const
 {
   intptr_t Result = 0;
   intptr_t PWidth = PrevTab->GetWidth();
