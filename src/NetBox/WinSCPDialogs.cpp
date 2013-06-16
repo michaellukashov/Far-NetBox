@@ -1482,7 +1482,7 @@ private:
   intptr_t FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback);
   TFSProtocol IndexToFSProtocol(intptr_t Index, bool AllowScpFallback) const;
   TFSProtocol GetFSProtocol() const;
-  inline intptr_t LastSupportedFtpProxyMethod() const;
+  inline intptr_t GetLastSupportedFtpProxyMethod() const;
   bool SupportedFtpProxyMethod(intptr_t Method) const;
   TProxyMethod GetProxyMethod() const;
   intptr_t GetFtpProxyLogonType() const;
@@ -2337,7 +2337,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   FtpProxyMethodComboAddNewItem(LOGIN_PROXY_SOCKS5, pmSocks5);
   FtpProxyMethodComboAddNewItem(LOGIN_PROXY_HTTP, pmHTTP);
   FtpProxyMethodComboAddNewItem(LOGIN_PROXY_SYSTEM, pmSystem);
-  TProxyMethod FtpProxyMethod = (TProxyMethod)(LastSupportedFtpProxyMethod());
+  TProxyMethod FtpProxyMethod = (TProxyMethod)(GetLastSupportedFtpProxyMethod());
   FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_SITE, (TProxyMethod)(FtpProxyMethod + 1));
   FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_PROXYUSER_USERHOST, (TProxyMethod)(FtpProxyMethod + 2));
   FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_OPEN_HOST, (TProxyMethod)(FtpProxyMethod + 3));
@@ -3324,7 +3324,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   }
   if (SessionData->GetFtpProxyLogonType() != 0)
   {
-    FtpProxyMethodCombo->SetItemIndex(LastSupportedFtpProxyMethod() + SessionData->GetFtpProxyLogonType());
+    FtpProxyMethodCombo->SetItemIndex(GetLastSupportedFtpProxyMethod() + SessionData->GetFtpProxyLogonType());
   }
   if (SessionData->GetProxyMethod() != pmSystem)
   {
@@ -3895,14 +3895,14 @@ TFSProtocol TSessionDialog::GetFSProtocol() const
     AllowScpFallbackCheck->GetChecked());
 }
 //------------------------------------------------------------------------------
-inline intptr_t TSessionDialog::LastSupportedFtpProxyMethod() const
+inline intptr_t TSessionDialog::GetLastSupportedFtpProxyMethod() const
 {
   return pmSystem; // pmWebDAV;
 }
 //------------------------------------------------------------------------------
 bool TSessionDialog::SupportedFtpProxyMethod(intptr_t Method) const
 {
-  return (Method >= 0) && (Method <= LastSupportedFtpProxyMethod());
+  return (Method >= 0) && (Method <= GetLastSupportedFtpProxyMethod());
 }
 //------------------------------------------------------------------------------
 TProxyMethod TSessionDialog::GetProxyMethod() const
@@ -3941,7 +3941,7 @@ intptr_t TSessionDialog::GetFtpProxyLogonType() const
     }
     else
     {
-      Result = FtpProxyMethodCombo->GetItemIndex() - LastSupportedFtpProxyMethod();
+      Result = FtpProxyMethodCombo->GetItemIndex() - GetLastSupportedFtpProxyMethod();
     }
   }
   return Result;
