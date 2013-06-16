@@ -3061,7 +3061,7 @@ void TSessionDialog::UpdateControls()
   TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
   TProxyMethod ProxyMethod = IndexToProxyMethod(ProxyMethodCombo->GetItemIndex(), ProxyMethodCombo->GetItems());
   ProxyMethodCombo->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()));
-  TFarComboBox * OtherProxyMethodCombo = (!(SshProtocol || InternalWebDAVProtocol) ? SshProxyMethodCombo : FtpProxyMethodCombo);
+  TFarComboBox * OtherProxyMethodCombo = !(SshProtocol || InternalWebDAVProtocol) ? SshProxyMethodCombo : FtpProxyMethodCombo;
   OtherProxyMethodCombo->SetVisible(false);
   if (ProxyMethod >= OtherProxyMethodCombo->GetItems()->GetCount())
   {
@@ -3074,8 +3074,8 @@ void TSessionDialog::UpdateControls()
 
   bool Proxy = (ProxyMethod != pmNone);
   UnicodeString ProxyCommand =
-    ((ProxyMethod == pmCmd) ?
-     ProxyLocalCommandEdit->GetText() : ProxyTelnetCommandEdit->GetText());
+    (ProxyMethod == pmCmd) ?
+     ProxyLocalCommandEdit->GetText() : ProxyTelnetCommandEdit->GetText();
   ProxyHostEdit->SetEnabled(Proxy && (ProxyMethod != pmSystem) &&
     ((ProxyMethod != pmCmd) ||
      AnsiContainsText(ProxyCommand, L"%proxyhost")));
@@ -3898,7 +3898,7 @@ TFSProtocol TSessionDialog::GetFSProtocol() const
 //------------------------------------------------------------------------------
 inline intptr_t TSessionDialog::GetLastSupportedFtpProxyMethod() const
 {
-  return pmSystem; // pmWebDAV;
+  return pmSystem;
 }
 //------------------------------------------------------------------------------
 bool TSessionDialog::GetSupportedFtpProxyMethod(intptr_t Method) const
