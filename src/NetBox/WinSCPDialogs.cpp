@@ -3084,14 +3084,14 @@ void TSessionDialog::UpdateControls()
   ProxyMethodCombo->SetVisible(GetTab() == ProxyMethodCombo->GetGroup());
   TFarComboBox * OtherProxyMethodCombo = GetOtherProxyMethodCombo();
   OtherProxyMethodCombo->SetVisible(false);
-  if (ProxyMethod >= OtherProxyMethodCombo->GetItems()->GetCount())
+  /*if (ProxyMethod >= OtherProxyMethodCombo->GetItems()->GetCount())
   {
     OtherProxyMethodCombo->SetItemIndex(pmNone);
   }
   else
   {
     OtherProxyMethodCombo->SetItemIndex(ProxyMethodCombo->GetItemIndex());
-  }
+  }*/
 
   bool Proxy = (ProxyMethod != pmNone);
   UnicodeString ProxyCommand =
@@ -3333,21 +3333,24 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   }
 
   // Proxy tab
-  intptr_t Index = ProxyMethodToIndex(SessionData->GetProxyMethod(), SshProxyMethodCombo->GetItems());
-  SshProxyMethodCombo->SetItemIndex(Index);
-  if (GetSupportedFtpProxyMethod(static_cast<intptr_t>(SessionData->GetProxyMethod())))
-  {
-    FtpProxyMethodCombo->SetItemIndex(static_cast<intptr_t>(SessionData->GetProxyMethod()));
-  }
-  else
-  {
-    FtpProxyMethodCombo->SetItemIndex(::pmNone);
-  }
-  if (SessionData->GetFtpProxyLogonType() != 0)
-  {
-    intptr_t ItemIndex = GetLastSupportedFtpProxyMethod() + SessionData->GetFtpProxyLogonType();
-    FtpProxyMethodCombo->SetItemIndex(ItemIndex >= FtpProxyMethodCombo->GetItems()->GetCount() ? 0 : ItemIndex);
-  }
+  TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
+//  intptr_t Index = ProxyMethodToIndex(SessionData->GetProxyMethod(), SshProxyMethodCombo->GetItems());
+  intptr_t Index = ProxyMethodToIndex(SessionData->GetProxyMethod(), ProxyMethodCombo->GetItems());
+//  SshProxyMethodCombo->SetItemIndex(Index);
+//  if (GetSupportedFtpProxyMethod(static_cast<intptr_t>(SessionData->GetProxyMethod())))
+//  {
+//    FtpProxyMethodCombo->SetItemIndex(static_cast<intptr_t>(SessionData->GetProxyMethod()));
+//  }
+//  else
+//  {
+//    FtpProxyMethodCombo->SetItemIndex(::pmNone);
+//  }
+  ProxyMethodCombo->SetItemIndex(Index);
+//  if (SessionData->GetFtpProxyLogonType() != 0)
+//  {
+//    intptr_t ItemIndex = GetLastSupportedFtpProxyMethod() + SessionData->GetFtpProxyLogonType();
+//    FtpProxyMethodCombo->SetItemIndex(ItemIndex >= FtpProxyMethodCombo->GetItems()->GetCount() ? 0 : ItemIndex);
+//  }
   if (SessionData->GetProxyMethod() != pmSystem)
   {
     ProxyHostEdit->SetText(SessionData->GetProxyHost());
@@ -3930,22 +3933,24 @@ bool TSessionDialog::GetSupportedFtpProxyMethod(intptr_t Method) const
 //------------------------------------------------------------------------------
 TProxyMethod TSessionDialog::GetProxyMethod() const
 {
-  TProxyMethod Result;
-  if (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), AllowScpFallbackCheck->GetChecked()) != fsFTP)
-  {
-    Result = static_cast<TProxyMethod>(SshProxyMethodCombo->GetItemIndex());
-  }
-  else
-  {
-    if (GetSupportedFtpProxyMethod(FtpProxyMethodCombo->GetItemIndex()))
-    {
-      Result = static_cast<TProxyMethod>(FtpProxyMethodCombo->GetItemIndex());
-    }
-    else
-    {
-      Result = ::pmNone;
-    }
-  }
+  TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
+  TProxyMethod Result = IndexToProxyMethod(ProxyMethodCombo->GetItemIndex(), ProxyMethodCombo->GetItems());
+//  TProxyMethod Result;
+//  if (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), AllowScpFallbackCheck->GetChecked()) != fsFTP)
+//  {
+//    Result = static_cast<TProxyMethod>(SshProxyMethodCombo->GetItemIndex());
+//  }
+//  else
+//  {
+//    if (GetSupportedFtpProxyMethod(FtpProxyMethodCombo->GetItemIndex()))
+//    {
+//      Result = static_cast<TProxyMethod>(FtpProxyMethodCombo->GetItemIndex());
+//    }
+//    else
+//    {
+//      Result = ::pmNone;
+//    }
+//  }
   return Result;
 }
 //------------------------------------------------------------------------------
