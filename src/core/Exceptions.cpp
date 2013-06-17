@@ -180,7 +180,7 @@ void ExtException::AddMoreMessages(const Exception * E)
   }
 }
 //---------------------------------------------------------------------------
-ExtException::~ExtException() throw()
+ExtException::~ExtException() noexcept
 {
   delete FMoreMessages;
   FMoreMessages = nullptr;
