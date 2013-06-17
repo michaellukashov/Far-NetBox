@@ -52,8 +52,8 @@ private:
   { \
   public: \
     explicit inline NAME(Exception* E, const UnicodeString & Msg) : BASE(E, Msg) {} \
-    virtual inline ~NAME(void) throw() { } \
-    explicit inline  NAME(const UnicodeString & Msg, int AHelpContext) : BASE(Msg, AHelpContext) { } \
+    virtual inline ~NAME(void) throw() {} \
+    explicit inline  NAME(const UnicodeString & Msg, int AHelpContext) : BASE(Msg, AHelpContext) {} \
     virtual ExtException * Clone() { return new NAME(this, L""); } \
   };
 //---------------------------------------------------------------------------
@@ -104,7 +104,7 @@ public:
   explicit inline ESshTerminate(Exception* E, const UnicodeString & Msg, TOnceDoneOperation AOperation) :
     EFatal(E, Msg),
     Operation(AOperation)
-  { }
+  {}
 
   virtual ExtException * Clone();
 
