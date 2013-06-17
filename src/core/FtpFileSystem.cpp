@@ -2235,7 +2235,7 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
         case pmTelnet:
         case pmCmd:
         default:
-          assert(false);
+          // assert(false);
           Result = 0; // PROXYTYPE_NOPROXY;
           break;
       }
