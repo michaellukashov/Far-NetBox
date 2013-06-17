@@ -69,6 +69,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <FastDelegateBind.h>
 //---------------------------------------------------------------------------
 
+#if defined(_MSC_VER)
+
+#ifndef noexcept
+#define noexcept throw()
+#endif
+
+#endif
+
 #if defined(__cplusplus)
 
 inline void * operator_new(size_t size)
