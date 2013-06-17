@@ -177,17 +177,17 @@ struct custom_nballocator_t
 {
   typedef size_t size_type;
   typedef ptrdiff_t difference_type;
-  typedef T* pointer;
-  typedef const T* const_pointer;
-  typedef T& reference;
-  typedef const T& const_reference;
+  typedef T * pointer;
+  typedef const T * const_pointer;
+  typedef T & reference;
+  typedef const T & const_reference;
   typedef T value_type;
 
   template <class U> struct rebind { typedef custom_nballocator_t<U> other; };
   inline custom_nballocator_t() throw() {}
   inline custom_nballocator_t(const custom_nballocator_t&) throw() {}
 
-  template <class U> custom_nballocator_t(const custom_nballocator_t<U>&) throw(){}
+  template <class U> custom_nballocator_t(const custom_nballocator_t<U>&) throw() {}
 
   ~custom_nballocator_t() throw() {}
 
@@ -271,21 +271,21 @@ typedef WORD Word;
 #define NullToEmpty(s) (s?s:L"")
 
 template <class T>
-inline const T&Min(const T &a, const T &b) { return a<b?a:b; }
+inline const T & Min(const T & a, const T & b) { return a<b?a:b; }
 
 template <class T>
-inline const T&Max(const T &a, const T &b) { return a>b?a:b; }
+inline const T & Max(const T & a, const T & b) { return a>b?a:b; }
 
 template <class T>
-inline const T Round(const T &a, const T &b) { return a/b+(a%b*2>b?1:0); }
+inline const T Round(const T & a, const T & b) { return a/b+(a%b*2>b?1:0); }
 
 inline void* ToPtr(intptr_t T){ return reinterpret_cast<void*>(T); }
 
 template<typename T>
-inline void ClearStruct(T& s) { memset(&s, 0, sizeof(s)); }
+inline void ClearStruct(T & s) { memset(&s, 0, sizeof(s)); }
 
 template<typename T>
-inline void ClearStruct(T* s) { T dont_instantiate_this_template_with_pointers = s; }
+inline void ClearStruct(T * s) { T dont_instantiate_this_template_with_pointers = s; }
 
 template<typename T, size_t N>
 inline void ClearArray(T (&a)[N]) { memset(a, 0, sizeof(a[0])*N); }
