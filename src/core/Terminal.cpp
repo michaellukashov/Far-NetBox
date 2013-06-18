@@ -5500,11 +5500,11 @@ UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName)
   intptr_t Port = Terminal->GetSessionData()->GetPortNumber();
   if (WithUserName && !UserName.IsEmpty())
   {
-    Result = FORMAT(L"%s://%s:@%s:%d", UserName.c_str(), Protocol.Lower().c_str(), HostName.c_str(), Port);
+    Result = FORMAT(L"%s://%s:@%s:%d", Protocol.Lower().c_str(), UserName.c_str(), HostName.c_str(), Port);
   }
   else
   {
-    SessionUrl = FORMAT(L"%s://%s:%d", Protocol.Lower().c_str(), HostName.c_str(), Port);
+    Result = FORMAT(L"%s://%s:%d", Protocol.Lower().c_str(), HostName.c_str(), Port);
   }
   return Result;
 }
