@@ -3089,14 +3089,6 @@ void TSessionDialog::UpdateControls()
   ProxyMethodCombo->SetVisible(GetTab() == ProxyMethodCombo->GetGroup());
   TFarComboBox * OtherProxyMethodCombo = GetOtherProxyMethodCombo();
   OtherProxyMethodCombo->SetVisible(false);
-  /*if (ProxyMethod >= OtherProxyMethodCombo->GetItems()->GetCount())
-  {
-    OtherProxyMethodCombo->SetItemIndex(pmNone);
-  }
-  else
-  {
-    OtherProxyMethodCombo->SetItemIndex(ProxyMethodCombo->GetItemIndex());
-  }*/
 
   bool Proxy = (ProxyMethod != pmNone);
   UnicodeString ProxyCommand =

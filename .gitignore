@@ -10,8 +10,6 @@ Far3_x86/
 Far3_x64/
 res.txt
 svn.log
-libs/zlib/
-libs/boost/
 libs/
 dlls/
 ipch/
@@ -32,7 +30,6 @@ ipch/
 *.7z
 *.orig
 tags
-src/NetBox/NetBox/
 
 *.vsp
 *.psess
@@ -48,7 +45,5 @@ src/NetBox/NetBox/
 README.html
 CMakeLists.txt.user
 
-src/NetBox-build/
-src/build-NetBox-*/
 *.cbp
 
