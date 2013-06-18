@@ -4330,8 +4330,8 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
           {
             SendPacket(&PropertiesRequest);
           }
+          bool Resend = false;
           FILE_OPERATION_LOOP(FMTLOAD(PRESERVE_TIME_PERM_ERROR, DestFileName.c_str()),
-            bool Resend = false;
             try
             {
               TSFTPPacket DummyResponse(FCodePage);
