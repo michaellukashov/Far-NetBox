@@ -983,8 +983,8 @@ bool TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
       Handled = true;
     }
 
-    if ((Key == VK_INSERT) &&
-        (FLAGSET(ControlState, ALTMASK | SHIFTMASK) || FLAGSET(ControlState, CTRLMASK | ALTMASK)))
+    if ((Key == VK_INSERT) && (((ControlState & ALTMASK) && (ControlState & SHIFTMASK)) ||
+        (((ControlState & CTRLMASK) && (ControlState & ALTMASK)))))
     {
       CopyFullFileNamesToClipboard();
       Handled = true;
