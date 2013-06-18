@@ -3,7 +3,7 @@ NetBox 2.1.31 ??.06.2013
   * Bugfix: Fix FTP proxy settings.
   * Mantis #2379: 
       - Ftp: Add options "Dup FF in commands", "UnDup FF from PWD"
-      - Alt-Shift-Ins copies full paths.
+      - Alt-Shift-Ins copies full paths, in format: protocol://username:@host:port/path
     (http://bugs.farmanager.com/view.php?id=2379)
   * Bugfix: Fix button caption in "Confirm overwrite" dialog.
     (http://forum.farmanager.com/viewtopic.php?p=110769#p110769)
