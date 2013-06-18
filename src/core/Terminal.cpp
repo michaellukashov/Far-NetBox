@@ -5489,13 +5489,23 @@ void TTerminalList::RecryptPasswords()
   }
 }
 //------------------------------------------------------------------------------
-UnicodeString GetSessionUrl(const TTerminal * Terminal)
+UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName)
 {
-  const TSessionInfo & SessionInfo = Terminal->GetSessionInfo() ;
+  UnicodeString Result;
+  const TSessionInfo & SessionInfo = Terminal->GetSessionInfo();
+  const TSessionData * SessionData = Terminal->GetSessionData();
   UnicodeString Protocol = SessionInfo.ProtocolBaseName;
-  UnicodeString HostName = Terminal->GetSessionData()->GetHostNameExpanded();
+  UnicodeString HostName = SessionData->GetHostNameExpanded();
+  UnicodeString UserName = SessionData->GetUserNameExpanded();
   intptr_t Port = Terminal->GetSessionData()->GetPortNumber();
-  UnicodeString SessionUrl = FORMAT(L"%s://%s:%d", Protocol.Lower().c_str(), HostName.c_str(), Port);
-  return SessionUrl;
+  if (WithUserName && !UserName.IsEmpty())
+  {
+    Result = FORMAT(L"%s://%s:@%s:%d", UserName.c_str(), Protocol.Lower().c_str(), HostName.c_str(), Port);
+  }
+  else
+  {
+    SessionUrl = FORMAT(L"%s://%s:%d", Protocol.Lower().c_str(), HostName.c_str(), Port);
+  }
+  return Result;
 }
 //------------------------------------------------------------------------------
