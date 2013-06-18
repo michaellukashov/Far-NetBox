@@ -2895,13 +2895,11 @@ TStoredSessionList::TStoredSessionList(bool AReadOnly) :
   FDefaultSettings(new TSessionData(DefaultName)),
   FReadOnly(AReadOnly)
 {
-  assert(GetConfiguration());
   SetOwnsObjects(true);
 }
 //---------------------------------------------------------------------
 TStoredSessionList::~TStoredSessionList()
 {
-  assert(GetConfiguration());
   delete FDefaultSettings;
 }
 //---------------------------------------------------------------------

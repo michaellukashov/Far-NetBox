@@ -893,7 +893,8 @@ TCustomFileSystem * TTerminal::InitFileSystem()
           if (!FSecureShell->GetActive() && !FTunnelError.IsEmpty())
           {
             // the only case where we expect this to happen
-            assert(E.Message == LoadStr(UNEXPECTED_CLOSE_ERROR));
+            UnicodeString ErrorMessage = LoadStr(UNEXPECTED_CLOSE_ERROR);
+            assert(E.Message == ErrorMessage);
             FatalError(&E, FMTLOAD(TUNNEL_ERROR, FTunnelError.c_str()));
           }
           else
