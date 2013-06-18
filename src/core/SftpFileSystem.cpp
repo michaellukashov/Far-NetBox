@@ -1291,7 +1291,7 @@ public:
   }
   virtual ~TSFTPDownloadQueue() {}
 
-  bool Init(intptr_t QueueLen, const RawByteString & AHandle,__int64 ATransfered,
+  bool Init(intptr_t QueueLen, const RawByteString & AHandle, __int64 ATransfered,
     TFileOperationProgressType * AOperationProgress)
   {
     FHandle = AHandle;
@@ -3369,8 +3369,8 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & FileName,
   UnicodeString RealFileName = LocalCanonify(FileName);
   TRemoteFile * File;
   ReadFile(RealFileName, File);
-  assert(File);
   std::auto_ptr<TRemoteFile> FilePtr(File);
+  assert(FilePtr.get());
   if (File->GetIsDirectory() && !File->GetIsSymLink() && AProperties->Recursive)
   {
     try
@@ -4330,8 +4330,8 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
           {
             SendPacket(&PropertiesRequest);
           }
+          bool Resend = false;
           FILE_OPERATION_LOOP(FMTLOAD(PRESERVE_TIME_PERM_ERROR, DestFileName.c_str()),
-            bool Resend = false;
             try
             {
               TSFTPPacket DummyResponse(FCodePage);
@@ -4508,8 +4508,8 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
           UnicodeString RealFileName = LocalCanonify(OpenParams->RemoteFileName);
           TRemoteFile * File = nullptr;
           ReadFile(RealFileName, File);
-          assert(File);
           std::auto_ptr<TRemoteFile> FilePtr(File);
+          assert(FilePtr.get());
           OpenParams->DestFileSize = File->GetSize();
           if (OpenParams->FileParams != nullptr)
           {

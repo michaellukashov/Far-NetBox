@@ -145,6 +145,7 @@ void TSynchronizeController::SynchronizeChange(
       if (Checklist != nullptr)
       {
         std::auto_ptr<TSynchronizeChecklist> ChecklistPtr(Checklist);
+        (void)ChecklistPtr;
         if (FLAGSET(FSynchronizeParams.Options, soRecurse))
         {
           SubdirsChanged = false;

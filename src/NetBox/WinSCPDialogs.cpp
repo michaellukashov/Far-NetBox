@@ -293,6 +293,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
 {
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  assert(DialogPtr.get());
   TFarText * Text;
 
   Dialog->SetSize(TPoint(67, 22));
@@ -459,6 +460,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 {
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  assert(DialogPtr.get());
   TFarSeparator * Separator;
   TFarText * Text;
 
@@ -571,6 +573,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 {
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  assert(DialogPtr.get());
   TFarSeparator * Separator;
   TFarText * Text;
 
@@ -700,6 +703,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
 {
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  assert(DialogPtr.get());
   TFarText * Text;
 
   Dialog->SetSize(TPoint(76, 11));
@@ -889,6 +893,7 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
 {
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  assert(DialogPtr.get());
   Dialog->SetSize(TPoint(65, 10));
   Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_CONFIRMATIONS)).c_str()));
@@ -943,6 +948,7 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
 {
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  assert(DialogPtr.get());
   TFarText * Text;
 
   Dialog->SetSize(TPoint(65, 14));
@@ -1406,6 +1412,7 @@ bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
 {
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  assert(DialogPtr.get());
   Dialog->SetSize(TPoint(70, 21));
   Dialog->SetCaption(FORMAT(GetMsg(BANNER_TITLE).c_str(), SessionName.c_str()));
 
@@ -1473,21 +1480,22 @@ protected:
 private:
   void LoadPing(TSessionData * SessionData);
   void SavePing(TSessionData * SessionData);
-  intptr_t LoginTypeToIndex(TLoginType LoginType);
-  intptr_t ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items);
-  TProxyMethod IndexToProxyMethod(intptr_t Index, TFarList * Items);
-  TFarComboBox * GetProxyMethodCombo();
-  intptr_t FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback);
-  TFSProtocol IndexToFSProtocol(intptr_t Index, bool AllowScpFallback);
-  TFSProtocol GetFSProtocol();
-  intptr_t LastSupportedFtpProxyMethod();
-  bool SupportedFtpProxyMethod(intptr_t Method);
-  TProxyMethod GetProxyMethod();
-  intptr_t GetFtpProxyLogonType();
-  TFtps IndexToFtps(intptr_t Index);
-  TFtps GetFtps();
-  TLoginType IndexToLoginType(intptr_t Index);
-  TLoginType GetLoginType();
+  intptr_t LoginTypeToIndex(TLoginType LoginType) const;
+  intptr_t ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items) const;
+  TProxyMethod IndexToProxyMethod(intptr_t Index, TFarList * Items) const;
+  TFarComboBox * GetProxyMethodCombo() const;
+  TFarComboBox * GetOtherProxyMethodCombo() const;
+  intptr_t FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback) const;
+  TFSProtocol IndexToFSProtocol(intptr_t Index, bool AllowScpFallback) const;
+  TFSProtocol GetFSProtocol() const;
+  inline intptr_t GetLastSupportedFtpProxyMethod() const;
+  bool GetSupportedFtpProxyMethod(intptr_t Method) const;
+  TProxyMethod GetProxyMethod() const;
+  intptr_t GetFtpProxyLogonType() const;
+  TFtps IndexToFtps(intptr_t Index) const;
+  TFtps GetFtps() const;
+  TLoginType IndexToLoginType(intptr_t Index) const;
+  TLoginType GetLoginType() const;
   bool VerifyKey(const UnicodeString & FileName, bool TypeOnly);
   void PrevTabClick(TFarButton * /* Sender */, bool & Close);
   void NextTabClick(TFarButton * /* Sender */, bool & Close);
@@ -1501,9 +1509,14 @@ private:
   void LoginTypeComboChange();
   void FillCodePageEdit();
   void CodePageEditAdd(unsigned int Cp);
+  void FtpProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType);
+  void SshProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType);
+  bool IsSshProtocol(TFSProtocol FSProtocol) const;
+  bool IsWebDAVProtocol(TFSProtocol FSProtocol) const;
+  bool IsSshOrWebDAVProtocol(TFSProtocol FSProtocol) const;
 
   void ChangeTabs(intptr_t FirstVisibleTabIndex);
-  intptr_t GetVisibleTabsCount(intptr_t TabIndex, bool Forward);
+  intptr_t GetVisibleTabsCount(intptr_t TabIndex, bool Forward) const;
   intptr_t AddTab(intptr_t TabID, const wchar_t * TabCaption);
 
 private:
@@ -2329,32 +2342,20 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   FtpProxyMethodCombo = new TFarComboBox(this);
   FtpProxyMethodCombo->SetDropDownList(true);
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_NONE),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmNone)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SOCKS4),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmSocks4)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SOCKS5),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmSocks5)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_HTTP),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmHTTP)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SYSTEM),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmSystem)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_FTP_SITE),
-    static_cast<TObject *>(reinterpret_cast<void *>(LastSupportedFtpProxyMethod() + 1)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_FTP_PROXYUSER_USERHOST),
-    static_cast<TObject *>(reinterpret_cast<void *>(LastSupportedFtpProxyMethod() + 2)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_FTP_OPEN_HOST),
-    static_cast<TObject *>(reinterpret_cast<void *>(LastSupportedFtpProxyMethod() + 3)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_FTP_PROXYUSER_USERUSER),
-    static_cast<TObject *>(reinterpret_cast<void *>(LastSupportedFtpProxyMethod() + 4)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_FTP_USER_USERHOST),
-    static_cast<TObject *>(reinterpret_cast<void *>(LastSupportedFtpProxyMethod() + 5)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_FTP_PROXYUSER_HOST),
-    static_cast<TObject *>(reinterpret_cast<void *>(LastSupportedFtpProxyMethod() + 6)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_FTP_USERHOST_PROXYUSER),
-    static_cast<TObject *>(reinterpret_cast<void *>(LastSupportedFtpProxyMethod() + 7)));
-  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_FTP_USER_USERPROXYUSERHOST),
-    static_cast<TObject *>(reinterpret_cast<void *>(LastSupportedFtpProxyMethod() + 8)));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_NONE, pmNone);
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_SOCKS4, pmSocks4);
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_SOCKS5, pmSocks5);
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_HTTP, pmHTTP);
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_SYSTEM, pmSystem);
+  TProxyMethod FtpProxyMethod = (TProxyMethod)(GetLastSupportedFtpProxyMethod());
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_SITE, (TProxyMethod)(FtpProxyMethod + 1));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_PROXYUSER_USERHOST, (TProxyMethod)(FtpProxyMethod + 2));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_OPEN_HOST, (TProxyMethod)(FtpProxyMethod + 3));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_PROXYUSER_USERUSER, (TProxyMethod)(FtpProxyMethod + 4));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_USER_USERHOST, (TProxyMethod)(FtpProxyMethod + 5));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_PROXYUSER_HOST, (TProxyMethod)(FtpProxyMethod + 6));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_USERHOST_PROXYUSER, (TProxyMethod)(FtpProxyMethod + 7));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_USER_USERPROXYUSERHOST, (TProxyMethod)(FtpProxyMethod + 8));
   FtpProxyMethodCombo->SetWidth(40);
 
   SshProxyMethodCombo = new TFarComboBox(this);
@@ -2362,21 +2363,14 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SshProxyMethodCombo->SetWidth(FtpProxyMethodCombo->GetWidth());
   SshProxyMethodCombo->SetRight(FtpProxyMethodCombo->GetRight());
   SshProxyMethodCombo->SetDropDownList(true);
-  // SshProxyMethodCombo->GetItems()->AddStrings(FtpProxyMethodCombo->GetItems());
-  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_NONE),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmNone)));
-  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SOCKS4),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmSocks4)));
-  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SOCKS5),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmSocks5)));
-  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_HTTP),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmHTTP)));
-  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_TELNET),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmTelnet)));
-  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_LOCAL),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmCmd)));
-  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SYSTEM),
-    static_cast<TObject *>(reinterpret_cast<void *>(pmSystem)));
+
+  SshProxyMethodComboAddNewItem(LOGIN_PROXY_NONE, pmNone);
+  SshProxyMethodComboAddNewItem(LOGIN_PROXY_SOCKS4, pmSocks4);
+  SshProxyMethodComboAddNewItem(LOGIN_PROXY_SOCKS5, pmSocks5);
+  SshProxyMethodComboAddNewItem(LOGIN_PROXY_HTTP, pmHTTP);
+  SshProxyMethodComboAddNewItem(LOGIN_PROXY_TELNET, pmTelnet);
+  SshProxyMethodComboAddNewItem(LOGIN_PROXY_LOCAL, pmCmd);
+  SshProxyMethodComboAddNewItem(LOGIN_PROXY_SYSTEM, pmSystem);
 
   SetNextItemPosition(ipNewLine);
 
@@ -2814,6 +2808,18 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Button->SetCenterGroup(true);
 }
 //------------------------------------------------------------------------------
+void TSessionDialog::FtpProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType)
+{
+  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
+    static_cast<TObject *>(reinterpret_cast<void *>(ProxyType)));
+}
+//------------------------------------------------------------------------------
+void TSessionDialog::SshProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType)
+{
+  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
+    static_cast<TObject *>(reinterpret_cast<void *>(ProxyType)));
+}
+//------------------------------------------------------------------------------
 TSessionDialog::~TSessionDialog()
 {
   delete FTabs;
@@ -2941,13 +2947,30 @@ void TSessionDialog::LoginTypeComboChange()
   }
 }
 //------------------------------------------------------------------------------
+bool TSessionDialog::IsSshProtocol(TFSProtocol FSProtocol) const
+{
+  bool Result =
+    (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
+
+  return Result;
+}
+//------------------------------------------------------------------------------
+bool TSessionDialog::IsWebDAVProtocol(TFSProtocol FSProtocol) const
+{
+  return FSProtocol == fsWebDAV;
+}
+//------------------------------------------------------------------------------
+bool TSessionDialog::IsSshOrWebDAVProtocol(TFSProtocol FSProtocol) const
+{
+  return IsSshProtocol(FSProtocol) || IsWebDAVProtocol(FSProtocol);
+}
+//------------------------------------------------------------------------------
 void TSessionDialog::UpdateControls()
 {
   TFSProtocol FSProtocol = GetFSProtocol();
   TFtps Ftps = GetFtps();
-  bool InternalSshProtocol =
-    (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
-  bool InternalWebDAVProtocol = FSProtocol == fsWebDAV;
+  bool InternalSshProtocol = IsSshProtocol(FSProtocol);
+  bool InternalWebDAVProtocol = IsWebDAVProtocol(FSProtocol);
   bool HTTPSProtocol = (FSProtocol == fsWebDAV) && (Ftps != ftpsNone);
   bool SshProtocol = InternalSshProtocol;
   bool SftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
@@ -3063,22 +3086,22 @@ void TSessionDialog::UpdateControls()
   // Connection/Proxy tab
   TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
   TProxyMethod ProxyMethod = IndexToProxyMethod(ProxyMethodCombo->GetItemIndex(), ProxyMethodCombo->GetItems());
-  ProxyMethodCombo->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()));
-  TFarComboBox * OtherProxyMethodCombo = (!(SshProtocol || InternalWebDAVProtocol) ? SshProxyMethodCombo : FtpProxyMethodCombo);
+  ProxyMethodCombo->SetVisible(GetTab() == ProxyMethodCombo->GetGroup());
+  TFarComboBox * OtherProxyMethodCombo = GetOtherProxyMethodCombo();
   OtherProxyMethodCombo->SetVisible(false);
-  if (ProxyMethod >= OtherProxyMethodCombo->GetItems()->GetCount())
+  /*if (ProxyMethod >= OtherProxyMethodCombo->GetItems()->GetCount())
   {
     OtherProxyMethodCombo->SetItemIndex(pmNone);
   }
   else
   {
     OtherProxyMethodCombo->SetItemIndex(ProxyMethodCombo->GetItemIndex());
-  }
+  }*/
 
   bool Proxy = (ProxyMethod != pmNone);
   UnicodeString ProxyCommand =
-    ((ProxyMethod == pmCmd) ?
-     ProxyLocalCommandEdit->GetText() : ProxyTelnetCommandEdit->GetText());
+    (ProxyMethod == pmCmd) ?
+     ProxyLocalCommandEdit->GetText() : ProxyTelnetCommandEdit->GetText();
   ProxyHostEdit->SetEnabled(Proxy && (ProxyMethod != pmSystem) &&
     ((ProxyMethod != pmCmd) ||
      AnsiContainsText(ProxyCommand, L"%proxyhost")));
@@ -3315,20 +3338,9 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   }
 
   // Proxy tab
-  intptr_t Index = ProxyMethodToIndex(SessionData->GetProxyMethod(), SshProxyMethodCombo->GetItems());
-  SshProxyMethodCombo->SetItemIndex(Index);
-  if (SupportedFtpProxyMethod(static_cast<intptr_t>(SessionData->GetProxyMethod())))
-  {
-    FtpProxyMethodCombo->SetItemIndex(static_cast<intptr_t>(SessionData->GetProxyMethod()));
-  }
-  else
-  {
-    FtpProxyMethodCombo->SetItemIndex(::pmNone);
-  }
-  if (SessionData->GetFtpProxyLogonType() != 0)
-  {
-    FtpProxyMethodCombo->SetItemIndex(LastSupportedFtpProxyMethod() + SessionData->GetFtpProxyLogonType());
-  }
+  TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
+  intptr_t Index = ProxyMethodToIndex(SessionData->GetProxyMethod(), ProxyMethodCombo->GetItems());
+  ProxyMethodCombo->SetItemIndex(Index);
   if (SessionData->GetProxyMethod() != pmSystem)
   {
     ProxyHostEdit->SetText(SessionData->GetProxyHost());
@@ -3831,13 +3843,13 @@ void TSessionDialog::SavePing(TSessionData * SessionData)
   }
 }
 //------------------------------------------------------------------------------
-intptr_t TSessionDialog::LoginTypeToIndex(TLoginType LoginType)
+intptr_t TSessionDialog::LoginTypeToIndex(TLoginType LoginType) const
 {
   return static_cast<intptr_t>(LoginType);
 }
 //------------------------------------------------------------------------------
 intptr_t TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
-  bool & AllowScpFallback)
+  bool & AllowScpFallback) const
 {
   if (FSProtocol == fsSFTP)
   {
@@ -3860,7 +3872,7 @@ intptr_t TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
   }
 }
 //------------------------------------------------------------------------------
-intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items)
+intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items) const
 {
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
@@ -3872,7 +3884,7 @@ intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList *
   return -1;
 }
 //------------------------------------------------------------------------------
-TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList * Items)
+TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList * Items) const
 {
   TProxyMethod Result = pmNone;
   if (Index >= 0 && Index < Items->GetCount())
@@ -3883,116 +3895,90 @@ TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList * Items
   return Result;
 }
 //------------------------------------------------------------------------------
-TFarComboBox * TSessionDialog::GetProxyMethodCombo()
+TFarComboBox * TSessionDialog::GetProxyMethodCombo() const
 {
-  TFSProtocol FSProtocol = GetFSProtocol();
-  bool SshProtocol =
-    (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
-  bool WebDAVProtocol = FSProtocol == fsWebDAV;
-  return SshProtocol || WebDAVProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo;
+  return IsSshOrWebDAVProtocol(GetFSProtocol()) ? SshProxyMethodCombo : FtpProxyMethodCombo;
 }
 //------------------------------------------------------------------------------
-TFSProtocol TSessionDialog::GetFSProtocol()
+TFarComboBox * TSessionDialog::GetOtherProxyMethodCombo() const
+{
+  return IsSshOrWebDAVProtocol(GetFSProtocol()) ? FtpProxyMethodCombo : SshProxyMethodCombo;
+}
+//------------------------------------------------------------------------------
+TFSProtocol TSessionDialog::GetFSProtocol() const
 {
   return IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(),
     AllowScpFallbackCheck->GetChecked());
 }
 //------------------------------------------------------------------------------
-intptr_t TSessionDialog::LastSupportedFtpProxyMethod()
+inline intptr_t TSessionDialog::GetLastSupportedFtpProxyMethod() const
 {
-  return pmSystem; // pmWebDAV;
+  return pmSystem;
 }
 //------------------------------------------------------------------------------
-bool TSessionDialog::SupportedFtpProxyMethod(intptr_t Method)
+bool TSessionDialog::GetSupportedFtpProxyMethod(intptr_t Method) const
 {
-  return (Method >= 0) && (Method <= LastSupportedFtpProxyMethod());
+  return (Method >= 0) && (Method <= GetLastSupportedFtpProxyMethod());
 }
 //------------------------------------------------------------------------------
-TProxyMethod TSessionDialog::GetProxyMethod()
+TProxyMethod TSessionDialog::GetProxyMethod() const
 {
-  TProxyMethod Result;
-  if (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), AllowScpFallbackCheck->GetChecked()) != fsFTP)
-  {
-    Result = static_cast<TProxyMethod>(SshProxyMethodCombo->GetItemIndex());
-  }
-  else
-  {
-    if (SupportedFtpProxyMethod(FtpProxyMethodCombo->GetItemIndex()))
-    {
-      Result = static_cast<TProxyMethod>(FtpProxyMethodCombo->GetItemIndex());
-    }
-    else
-    {
-      Result = ::pmNone;
-    }
-  }
+  TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
+  TProxyMethod Result = IndexToProxyMethod(ProxyMethodCombo->GetItemIndex(), ProxyMethodCombo->GetItems());
   return Result;
 }
 //------------------------------------------------------------------------------
-intptr_t TSessionDialog::GetFtpProxyLogonType()
+intptr_t TSessionDialog::GetFtpProxyLogonType() const
 {
-  intptr_t Result;
-  if (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), AllowScpFallbackCheck->GetChecked()) != fsFTP)
-  {
-    Result = 0;
-  }
-  else
-  {
-    if (SupportedFtpProxyMethod(FtpProxyMethodCombo->GetItemIndex()))
-    {
-      Result = 0;
-    }
-    else
-    {
-      Result = FtpProxyMethodCombo->GetItemIndex() - LastSupportedFtpProxyMethod();
-    }
-  }
+  intptr_t Result = GetProxyMethod();
+  if (Result > GetLastSupportedFtpProxyMethod())
+    Result -= GetLastSupportedFtpProxyMethod();
   return Result;
 }
 //------------------------------------------------------------------------------
-TFtps TSessionDialog::IndexToFtps(intptr_t Index)
+TFtps TSessionDialog::IndexToFtps(intptr_t Index) const
 {
   bool InBounds = (Index != NPOS) && (Index < FtpEncryptionCombo->GetItems()->GetCount());
   assert(InBounds);
   TFtps Result = ftpsNone;
   if (InBounds)
   {
-  switch (Index)
-  {
-    case 0:
-      Result = ftpsNone;
-      break;
+    switch (Index)
+    {
+      case 0:
+        Result = ftpsNone;
+        break;
 
-    case 1:
-      Result = ftpsImplicit;
-      break;
+      case 1:
+        Result = ftpsImplicit;
+        break;
 
-    case 2:
-      Result = ftpsExplicitSsl;
-      break;
+      case 2:
+        Result = ftpsExplicitSsl;
+        break;
 
-    case 3:
-      Result = ftpsExplicitTls;
-      break;
+      case 3:
+        Result = ftpsExplicitTls;
+        break;
 
-    default:
-      break;
-  }
+      default:
+        break;
+    }
   }
   return Result;
 }
 //------------------------------------------------------------------------------
-TFtps TSessionDialog::GetFtps()
+TFtps TSessionDialog::GetFtps() const
 {
   return static_cast<TFtps>(IndexToFtps(FtpEncryptionCombo->GetItemIndex()));
 }
 //------------------------------------------------------------------------------
-TLoginType TSessionDialog::GetLoginType()
+TLoginType TSessionDialog::GetLoginType() const
 {
   return IndexToLoginType(LoginTypeCombo->GetItemIndex());
 }
 //------------------------------------------------------------------------------
-TFSProtocol TSessionDialog::IndexToFSProtocol(intptr_t Index, bool AllowScpFallback)
+TFSProtocol TSessionDialog::IndexToFSProtocol(intptr_t Index, bool AllowScpFallback) const
 {
   bool InBounds = (Index >= 0) && (Index < static_cast<intptr_t>(LENOF(FSOrder)));
   assert(InBounds || (Index == -1));
@@ -4008,7 +3994,7 @@ TFSProtocol TSessionDialog::IndexToFSProtocol(intptr_t Index, bool AllowScpFallb
   return Result;
 }
 //------------------------------------------------------------------------------
-TLoginType TSessionDialog::IndexToLoginType(intptr_t Index)
+TLoginType TSessionDialog::IndexToLoginType(intptr_t Index) const
 {
   bool InBounds = (Index != NPOS) && (Index <= ltNormal);
   assert(InBounds);
@@ -4169,7 +4155,7 @@ void TSessionDialog::ChangeTabs(intptr_t FirstVisibleTabIndex)
   }
 }
 //------------------------------------------------------------------------------
-intptr_t TSessionDialog::GetVisibleTabsCount(intptr_t TabIndex, bool Forward)
+intptr_t TSessionDialog::GetVisibleTabsCount(intptr_t TabIndex, bool Forward) const
 {
   intptr_t Result = 0;
   intptr_t PWidth = PrevTab->GetWidth();
@@ -5684,6 +5670,7 @@ bool TWinSCPPlugin::CopyParamDialog(const UnicodeString & Caption,
 {
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  assert(DialogPtr.get());
   Dialog->SetCaption(Caption);
 
   // temporary

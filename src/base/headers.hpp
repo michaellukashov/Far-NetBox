@@ -69,98 +69,102 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <FastDelegateBind.h>
 //---------------------------------------------------------------------------
 
+#if defined(_MSC_VER)
+
+#ifndef noexcept
+#define noexcept throw()
+#endif
+
+#endif
+
 #if defined(__cplusplus)
+
 inline void * operator_new(size_t size)
 {
-	void * p = nb_malloc(size);
-	/*if (!p)
-	{
-		static std::bad_alloc badalloc;
-		throw badalloc;
-	}*/
-	return p;
+  void * p = nb_malloc(size);
+  /*if (!p)
+  {
+    static std::bad_alloc badalloc;
+    throw badalloc;
+  }*/
+  return p;
 }
 
 inline void operator_delete(void * p)
 {
-	nb_free(p);
+  nb_free(p);
 }
-#endif // #if defined(__cplusplus)
+
+#endif // if defined(__cplusplus)
 
 #ifdef USE_DLMALLOC
 /// custom memory allocation
 #define DEF_CUSTOM_MEM_ALLOCATION_IMPL            \
-	public:                                         \
- 	void * operator new(size_t size)                \
-	{                                               \
-		return operator_new(size);                    \
-	}                                               \
-	void operator delete(void * p, size_t size)     \
-	{                                               \
-		(void)(size);                                 \
-		operator_delete(p);                           \
-	}                                               \
- 	void * operator new[](size_t size)              \
-	{                                               \
-		return operator_new(size);                    \
-	}                                               \
-	void operator delete[](void * p, size_t size)   \
-	{                                               \
-		(void)(size);                                 \
-		operator_delete(p);                           \
-	}                                               \
- 	void * operator new(size_t size, void * p)      \
-	{                                               \
-		(void)(size);                                 \
-		return p;                                     \
-	}                                               \
-	void operator delete(void * p, void *)          \
-	{                                               \
-		(void)(p);                                    \
-	}                                               \
- 	void * operator new[](size_t size, void * p)    \
-	{                                               \
-		(void)(size);                                 \
-		return p;                                     \
-	}                                               \
-	void operator delete[](void * p, void *)        \
-	{                                               \
-		(void)(p);                                    \
-	}
+  public:                                         \
+   void * operator new(size_t size)                \
+  {                                               \
+    return operator_new(size);                    \
+  }                                               \
+  void operator delete(void * p, size_t)          \
+  {                                               \
+    operator_delete(p);                           \
+  }                                               \
+   void * operator new[](size_t size)             \
+  {                                               \
+    return operator_new(size);                    \
+  }                                               \
+  void operator delete[](void * p, size_t)        \
+  {                                               \
+    operator_delete(p);                           \
+  }                                               \
+   void * operator new(size_t, void * p)          \
+  {                                               \
+    return p;                                     \
+  }                                               \
+  void operator delete(void *, void *)            \
+  {                                               \
+  }                                               \
+   void * operator new[](size_t, void * p)        \
+  {                                               \
+    return p;                                     \
+  }                                               \
+  void operator delete[](void *, void *)          \
+  {                                               \
+  }
 
 #ifdef _DEBUG
 #define CUSTOM_MEM_ALLOCATION_IMPL DEF_CUSTOM_MEM_ALLOCATION_IMPL \
- 	void * operator new(size_t size, const char * /*lpszFileName*/, int /*nLine*/) \
-	{ \
-		return operator_new(size); \
-	} \
- 	void * operator new[](size_t size, const char * /*lpszFileName*/, int /*nLine*/) \
-	{ \
-		return operator_new(size); \
-	} \
-	void operator delete(void* p, const char * /*lpszFileName*/, int /*nLine*/) \
-	{ \
-		operator_delete(p); \
-	} \
-	void operator delete[](void* p, const char * /*lpszFileName*/, int /*nLine*/) \
-	{ \
-		operator_delete(p); \
-	}
+   void * operator new(size_t size, const char * /*lpszFileName*/, int /*nLine*/) \
+  { \
+    return operator_new(size); \
+  } \
+   void * operator new[](size_t size, const char * /*lpszFileName*/, int /*nLine*/) \
+  { \
+    return operator_new(size); \
+  } \
+  void operator delete(void* p, const char * /*lpszFileName*/, int /*nLine*/) \
+  { \
+    operator_delete(p); \
+  } \
+  void operator delete[](void* p, const char * /*lpszFileName*/, int /*nLine*/) \
+  { \
+    operator_delete(p); \
+  }
 #else
 #define CUSTOM_MEM_ALLOCATION_IMPL DEF_CUSTOM_MEM_ALLOCATION_IMPL
-#endif // #ifdef _DEBUG
+#endif // ifdef _DEBUG
 
 #else
 #define CUSTOM_MEM_ALLOCATION_IMPL 
-#endif // #ifdef USE_DLMALLOC
+#endif // ifdef USE_DLMALLOC
 
 //---------------------------------------------------------------------------
 
 namespace nballoc {
-  inline void destruct(char *){}
-  inline void destruct(wchar_t*){}
+  inline void destruct(char *) {}
+  inline void destruct(wchar_t*) {}
   template <typename T> 
-  inline void destruct(T * t){t->~T();}
+  inline void destruct(T * t){ t->~T(); }
 } // namespace nballoc
 
 template <typename T> struct custom_nballocator_t;
@@ -174,24 +178,24 @@ public:
     typedef void value_type;
     template <class U> 
         struct rebind { typedef custom_nballocator_t<U> other; };
-};    
+};
 
 template <typename T> 
 struct custom_nballocator_t
 {
   typedef size_t size_type;
   typedef ptrdiff_t difference_type;
-  typedef T* pointer;
-  typedef const T* const_pointer;
-  typedef T& reference;
-  typedef const T& const_reference;
+  typedef T * pointer;
+  typedef const T * const_pointer;
+  typedef T & reference;
+  typedef const T & const_reference;
   typedef T value_type;
 
   template <class U> struct rebind { typedef custom_nballocator_t<U> other; };
   inline custom_nballocator_t() throw() {}
   inline custom_nballocator_t(const custom_nballocator_t&) throw() {}
 
-  template <class U> custom_nballocator_t(const custom_nballocator_t<U>&) throw(){}
+  template <class U> custom_nballocator_t(const custom_nballocator_t<U>&) throw() {}
 
   ~custom_nballocator_t() throw() {}
 
@@ -275,21 +279,21 @@ typedef WORD Word;
 #define NullToEmpty(s) (s?s:L"")
 
 template <class T>
-inline const T&Min(const T &a, const T &b) { return a<b?a:b; }
+inline const T & Min(const T & a, const T & b) { return a<b?a:b; }
 
 template <class T>
-inline const T&Max(const T &a, const T &b) { return a>b?a:b; }
+inline const T & Max(const T & a, const T & b) { return a>b?a:b; }
 
 template <class T>
-inline const T Round(const T &a, const T &b) { return a/b+(a%b*2>b?1:0); }
+inline const T Round(const T & a, const T & b) { return a/b+(a%b*2>b?1:0); }
 
 inline void* ToPtr(intptr_t T){ return reinterpret_cast<void*>(T); }
 
 template<typename T>
-inline void ClearStruct(T& s) { memset(&s, 0, sizeof(s)); }
+inline void ClearStruct(T & s) { memset(&s, 0, sizeof(s)); }
 
 template<typename T>
-inline void ClearStruct(T* s) { T dont_instantiate_this_template_with_pointers = s; }
+inline void ClearStruct(T * s) { T dont_instantiate_this_template_with_pointers = s; }
 
 template<typename T, size_t N>
 inline void ClearArray(T (&a)[N]) { memset(a, 0, sizeof(a[0])*N); }
@@ -311,13 +315,13 @@ bool CheckStructSize(const T* s) {return s && (s->StructSize >= sizeof(T));}
 
 #ifdef _DEBUG
 #define SELF_TEST(code) \
-	namespace { \
-		struct SelfTest { \
-			SelfTest() { \
-				code; \
-			} \
-		} _SelfTest; \
-	}
+  namespace { \
+    struct SelfTest { \
+      SelfTest() { \
+        code; \
+      } \
+    } _SelfTest; \
+  }
 #else
 #define SELF_TEST(code)
 #endif

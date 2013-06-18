@@ -346,8 +346,6 @@ int get_remote_username(Config * cfg, char *user, size_t len)
 static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool CanCreate)
 {
   long R;
-  assert(GetConfiguration() != nullptr);
-
   assert(Key == HKEY_CURRENT_USER);
   USEDPARAM(Key);
 
@@ -401,8 +399,6 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
   unsigned long * Type, unsigned char * Data, unsigned long * DataSize)
 {
   long R;
-  assert(GetConfiguration() != nullptr);
-
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
   AnsiString Value;
   if (Storage == nullptr)
@@ -447,8 +443,6 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
 long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*Reserved*/,
   unsigned long Type, const unsigned char * Data, unsigned long DataSize)
 {
-  assert(GetConfiguration() != nullptr);
-
   assert(Type == REG_SZ);
   USEDPARAM(Type);
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
@@ -464,8 +458,6 @@ long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*R
 //---------------------------------------------------------------------------
 long reg_close_winscp_key(HKEY Key)
 {
-  assert(GetConfiguration() != nullptr);
-
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
   if (Storage != nullptr)
   {

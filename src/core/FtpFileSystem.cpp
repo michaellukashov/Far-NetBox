@@ -1839,8 +1839,8 @@ void TFTPFileSystem::ReadCurrentDirectory()
     TStrings * Response = nullptr;
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE, L"", &Code, &Response);
 
-    assert(Response != nullptr);
     std::auto_ptr<TStrings> ResponsePtr(Response);
+    assert(ResponsePtr.get() != nullptr);
     bool Result = false;
 
     // the only allowed 2XX code to "PWD"
@@ -2235,7 +2235,7 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
         case pmTelnet:
         case pmCmd:
         default:
-          assert(false);
+          // assert(false);
           Result = 0; // PROXYTYPE_NOPROXY;
           break;
       }

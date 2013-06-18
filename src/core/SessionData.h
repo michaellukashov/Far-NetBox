@@ -519,7 +519,7 @@ class TStoredSessionList : public TNamedObjectList
 {
 NB_DISABLE_COPY(TStoredSessionList)
 public:
-  explicit TStoredSessionList(bool aReadOnly = false);
+  explicit TStoredSessionList(bool AReadOnly = false);
   virtual ~TStoredSessionList();
   void Load(const UnicodeString & AKey, bool UseDefaults);
   void Load();
