@@ -2890,11 +2890,12 @@ TFtps TSessionData::TranslateFtpEncryptionNumber(intptr_t FtpEncryption)
 }
 //---------------------------------------------------------------------
 //=== TStoredSessionList ----------------------------------------------
-TStoredSessionList::TStoredSessionList(bool aReadOnly):
-  TNamedObjectList(), FReadOnly(aReadOnly)
+TStoredSessionList::TStoredSessionList(bool AReadOnly) :
+  TNamedObjectList(),
+  FDefaultSettings(new TSessionData(DefaultName)),
+  FReadOnly(AReadOnly)
 {
   assert(GetConfiguration());
-  FDefaultSettings = new TSessionData(DefaultName);
   SetOwnsObjects(true);
 }
 //---------------------------------------------------------------------
