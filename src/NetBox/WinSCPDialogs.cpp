@@ -3932,22 +3932,9 @@ TProxyMethod TSessionDialog::GetProxyMethod() const
 //------------------------------------------------------------------------------
 intptr_t TSessionDialog::GetFtpProxyLogonType() const
 {
-  intptr_t Result;
-  if (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), AllowScpFallbackCheck->GetChecked()) != fsFTP)
-  {
-    Result = 0;
-  }
-  else
-  {
-    if (GetSupportedFtpProxyMethod(FtpProxyMethodCombo->GetItemIndex()))
-    {
-      Result = 0;
-    }
-    else
-    {
-      Result = FtpProxyMethodCombo->GetItemIndex() - GetLastSupportedFtpProxyMethod();
-    }
-  }
+  intptr_t Result = GetProxyMethod();
+  if (Result > GetLastSupportedFtpProxyMethod())
+    Result -= GetLastSupportedFtpProxyMethod();
   return Result;
 }
 //------------------------------------------------------------------------------
