@@ -1291,7 +1291,7 @@ public:
   }
   virtual ~TSFTPDownloadQueue() {}
 
-  bool Init(intptr_t QueueLen, const RawByteString & AHandle,__int64 ATransfered,
+  bool Init(intptr_t QueueLen, const RawByteString & AHandle, __int64 ATransfered,
     TFileOperationProgressType * AOperationProgress)
   {
     FHandle = AHandle;
