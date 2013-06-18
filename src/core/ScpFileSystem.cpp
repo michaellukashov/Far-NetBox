@@ -368,7 +368,13 @@ TStrings * TCommandSet::CreateCommandList()
 }
 //===========================================================================
 TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal) :
-  TCustomFileSystem(ATerminal)
+  TCustomFileSystem(ATerminal),
+  FSecureShell(nullptr),
+  FCommandSet(nullptr),
+  FOutput(nullptr),
+  FReturnCode(0),
+  FProcessingCommand(false),
+  FLsFullTime(asAuto)
 {
 }
 
@@ -1066,8 +1072,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
         for (intptr_t Index = 0; Index < OutputCopy->GetCount(); ++Index)
         {
-          TRemoteFile * File = nullptr;
-          File = CreateRemoteFile(OutputCopy->GetString(Index));
+          TRemoteFile * File = CreateRemoteFile(OutputCopy->GetString(Index));
           FileList->AddFile(File);
         }
       }
