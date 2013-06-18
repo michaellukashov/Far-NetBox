@@ -2997,18 +2997,12 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
 void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   bool All, bool RecryptPasswordOnly)
 {
-  TSessionData * FactoryDefaults = new TSessionData(L"");
-  auto cleanup = finally([&]()
+  std::auto_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
+  DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults.get());
+  for (intptr_t Index = 0; Index < GetCount() + GetHiddenCount(); ++Index)
   {
-    delete FactoryDefaults;
-  });
-  {
-    DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults);
-    for (intptr_t Index = 0; Index < GetCount() + GetHiddenCount(); ++Index)
-    {
-      TSessionData * SessionData = static_cast<TSessionData *>(GetItem(Index));
-      DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults);
-    }
+    TSessionData * SessionData = static_cast<TSessionData *>(GetItem(Index));
+    DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults.get());
   }
 }
 //---------------------------------------------------------------------
