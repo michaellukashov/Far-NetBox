@@ -295,6 +295,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
 {
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  assert(DialogPtr.get());
   TFarText * Text;
 
   Dialog->SetSize(TPoint(67, 22));
@@ -461,6 +462,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 {
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  assert(DialogPtr.get());
   TFarSeparator * Separator;
   TFarText * Text;
 
@@ -573,6 +575,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 {
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  assert(DialogPtr.get());
   TFarSeparator * Separator;
   TFarText * Text;
 
@@ -702,6 +705,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
 {
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  assert(DialogPtr.get());
   TFarText * Text;
 
   Dialog->SetSize(TPoint(76, 11));
@@ -891,6 +895,7 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
 {
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  assert(DialogPtr.get());
   Dialog->SetSize(TPoint(65, 10));
   Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_CONFIRMATIONS)).c_str()));
@@ -945,6 +950,7 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
 {
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  assert(DialogPtr.get());
   TFarText * Text;
 
   Dialog->SetSize(TPoint(65, 14));
@@ -1408,6 +1414,7 @@ bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
 {
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  assert(DialogPtr.get());
   Dialog->SetSize(TPoint(70, 21));
   Dialog->SetCaption(FORMAT(GetMsg(BANNER_TITLE).c_str(), SessionName.c_str()));
 
@@ -5709,6 +5716,7 @@ bool TWinSCPPlugin::CopyParamDialog(const UnicodeString & Caption,
 {
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  assert(DialogPtr.get());
   Dialog->SetCaption(Caption);
 
   // temporary

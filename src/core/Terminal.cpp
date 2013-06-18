@@ -2447,6 +2447,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
         DoReadDirectoryProgress(-1, Cancel);
         FReadingCurrentDirectory = false;
         std::auto_ptr<TRemoteDirectory> OldFiles(FFiles);
+        (void)OldFiles;
         FFiles = Files;
         DoReadDirectory(ReloadOnly);
         // delete only after loading new files to dir view,

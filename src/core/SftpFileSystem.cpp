@@ -3369,8 +3369,8 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & FileName,
   UnicodeString RealFileName = LocalCanonify(FileName);
   TRemoteFile * File;
   ReadFile(RealFileName, File);
-  assert(File);
   std::auto_ptr<TRemoteFile> FilePtr(File);
+  assert(FilePtr.get());
   if (File->GetIsDirectory() && !File->GetIsSymLink() && AProperties->Recursive)
   {
     try
@@ -4508,8 +4508,8 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
           UnicodeString RealFileName = LocalCanonify(OpenParams->RemoteFileName);
           TRemoteFile * File = nullptr;
           ReadFile(RealFileName, File);
-          assert(File);
           std::auto_ptr<TRemoteFile> FilePtr(File);
+          assert(FilePtr.get());
           OpenParams->DestFileSize = File->GetSize();
           if (OpenParams->FileParams != nullptr)
           {
