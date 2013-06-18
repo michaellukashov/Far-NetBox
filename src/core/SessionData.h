@@ -80,7 +80,7 @@ public:
   UnicodeString GetHostNameExpanded() const;
   void SetPortNumber(intptr_t Value);
   void SetUserName(const UnicodeString & Value);
-  UnicodeString GetUserNameExpanded();
+  UnicodeString GetUserNameExpanded() const;
   void SetPassword(const UnicodeString & Value);
   UnicodeString GetPassword() const;
   void SetPasswordless(bool Value);

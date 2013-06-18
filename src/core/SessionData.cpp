@@ -1701,7 +1701,7 @@ void TSessionData::SetUserName(const UnicodeString & Value)
   Shred(XPassword);
 }
 //---------------------------------------------------------------------
-UnicodeString TSessionData::GetUserNameExpanded()
+UnicodeString TSessionData::GetUserNameExpanded() const
 {
   return ::ExpandEnvironmentVariables(GetUserName());
 }

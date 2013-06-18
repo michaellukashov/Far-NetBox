@@ -748,6 +748,6 @@ struct TSpaceAvailable : public TObject
   uintptr_t BytesPerAllocationUnit;
 };
 //------------------------------------------------------------------------------
-UnicodeString GetSessionUrl(const TTerminal * Terminal);
+UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName = false);
 //------------------------------------------------------------------------------
 #endif

@@ -1914,7 +1914,7 @@ void TWinSCPFileSystem::InsertFileNameOnCommandLine(bool Full)
 //------------------------------------------------------------------------------
 UnicodeString TWinSCPFileSystem::GetFullFilePath(const TRemoteFile * File) const
 {
-  UnicodeString SessionUrl = GetSessionUrl(FTerminal);
+  UnicodeString SessionUrl = GetSessionUrl(FTerminal, true);
   UnicodeString Result = FORMAT(L"%s%s", SessionUrl.c_str(), File->GetFullFileName().c_str());
   return Result;
 }
