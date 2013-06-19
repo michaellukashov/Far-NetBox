@@ -60,7 +60,7 @@ bool TWinSCPPlugin::HandlesFunction(THandlesFunction Function)
 VersionInfo TWinSCPPlugin::GetMinFarVersion()
 {
   return MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
-}  
+}
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
 {
@@ -96,6 +96,7 @@ void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS & Flags,
   }
   PluginConfigStrings->AddObject(GetMsg(PLUGIN_NAME),
       reinterpret_cast<TObject *>(const_cast<GUID *>(&PluginConfigGuid)));
+  CommandPrefixes->SetCommaText(GetFarConfiguration()->GetCommandPrefixes());
 }
 //---------------------------------------------------------------------------
 bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
