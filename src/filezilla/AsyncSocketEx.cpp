@@ -149,7 +149,7 @@ public:
 	CAsyncSocketExHelperWindow(CAsyncSocketEx::t_AsyncSocketExThreadData* pThreadData)
 	{
 		//Initialize data
-		m_pAsyncSocketExWindowData = new t_AsyncSocketExWindowData[512]; //Reserve space for 512 active sockets
+		m_pAsyncSocketExWindowData = static_cast<t_AsyncSocketExWindowData *>(nb_calloc(512, sizeof(t_AsyncSocketExWindowData))); //Reserve space for 512 active sockets
 		memset(m_pAsyncSocketExWindowData, 0, 512*sizeof(t_AsyncSocketExWindowData));
 		m_nWindowDataSize=512;
 		m_nSocketCount=0;
@@ -181,7 +181,7 @@ public:
 	virtual ~CAsyncSocketExHelperWindow()
 	{
 		//Clean up socket storage
-		delete [] m_pAsyncSocketExWindowData;
+		nb_free(m_pAsyncSocketExWindowData);
 		m_pAsyncSocketExWindowData=0;
 		m_nWindowDataSize=0;
 		m_nSocketCount=0;
@@ -202,7 +202,7 @@ public:
 		{
 			ASSERT(!m_nSocketCount);
 			m_nWindowDataSize=512;
-			m_pAsyncSocketExWindowData=new t_AsyncSocketExWindowData[512]; //Reserve space for 512 active sockets
+			m_pAsyncSocketExWindowData=static_cast<t_AsyncSocketExWindowData *>(nb_calloc(512, sizeof(t_AsyncSocketExWindowData))); //Reserve space for 512 active sockets
 			memset(m_pAsyncSocketExWindowData, 0, 512*sizeof(t_AsyncSocketExWindowData));
 		}
 
@@ -224,10 +224,10 @@ public:
 			if (m_nWindowDataSize>MAX_SOCKETS)
 				m_nWindowDataSize=MAX_SOCKETS;
 			t_AsyncSocketExWindowData *tmp=m_pAsyncSocketExWindowData;
-			m_pAsyncSocketExWindowData = new t_AsyncSocketExWindowData[m_nWindowDataSize];
+			m_pAsyncSocketExWindowData = static_cast<t_AsyncSocketExWindowData *>(nb_calloc(m_nWindowDataSize, sizeof(t_AsyncSocketExWindowData)));
 			memcpy(m_pAsyncSocketExWindowData, tmp, nOldWindowDataSize * sizeof(t_AsyncSocketExWindowData));
 			memset(m_pAsyncSocketExWindowData+nOldWindowDataSize, 0, (m_nWindowDataSize-nOldWindowDataSize)*sizeof(t_AsyncSocketExWindowData));
-			delete [] tmp;
+			nb_free(tmp);
 		}
 
 		//Search for free slot
@@ -682,7 +682,7 @@ public:
 			sockAddr.sin_port = htons(pSocket->m_nAsyncGetHostByNamePort);
 
 			BOOL res = pSocket->Connect((SOCKADDR*)&sockAddr, sizeof(sockAddr));
-			delete [] pSocket->m_pAsyncGetHostByNameBuffer;
+			nb_free(pSocket->m_pAsyncGetHostByNameBuffer);
 			pSocket->m_pAsyncGetHostByNameBuffer=0;
 			pSocket->m_hAsyncGetHostByNameHandle=0;
 
@@ -838,10 +838,10 @@ BOOL CAsyncSocketEx::Create(UINT nSocketPort /*=0*/, int nSocketType /*=SOCK_STR
 
 			m_nSocketPort = nSocketPort;
 		
-			delete [] m_lpszSocketAddress;
+			nb_free(m_lpszSocketAddress);
 			if (lpszSocketAddress && *lpszSocketAddress)
 			{
-				m_lpszSocketAddress = new TCHAR[_tcslen(lpszSocketAddress) + 1];
+				m_lpszSocketAddress = static_cast<TCHAR *>(nb_calloc(_tcslen(lpszSocketAddress) + 1, sizeof(TCHAR)));
 				_tcscpy(m_lpszSocketAddress, lpszSocketAddress);
 			}
 			else
@@ -914,10 +914,10 @@ void CAsyncSocketEx::OnClose(int nErrorCode)
 
 BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
 {
-	delete [] m_lpszSocketAddress;
+	nb_free(m_lpszSocketAddress);
 	if (lpszSocketAddress && *lpszSocketAddress)
 	{
-		m_lpszSocketAddress = new TCHAR[_tcslen(lpszSocketAddress) + 1];
+		m_lpszSocketAddress = static_cast<TCHAR *>(nb_calloc(_tcslen(lpszSocketAddress) + 1, sizeof(TCHAR)));
 		_tcscpy(m_lpszSocketAddress, lpszSocketAddress);
 	}
 	else
@@ -1062,13 +1062,13 @@ void CAsyncSocketEx::Close()
 		m_SocketData.nextAddr = 0;
 	}
 	m_SocketData.nFamily = AF_UNSPEC;
-	delete [] m_lpszSocketAddress;
+	nb_free(m_lpszSocketAddress);
 	m_lpszSocketAddress = 0;
 	m_nSocketPort = 0;
 #ifndef NOLAYERS
 	RemoveAllLayers();
 #endif //NOLAYERS
-	delete [] m_pAsyncGetHostByNameBuffer;
+	nb_free(m_pAsyncGetHostByNameBuffer);
 	m_pAsyncGetHostByNameBuffer = NULL;
 	if (m_hAsyncGetHostByNameHandle)
 		WSACancelAsyncRequest(m_hAsyncGetHostByNameHandle);
@@ -1286,8 +1286,8 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
 		if (sockAddr.sin_addr.s_addr == INADDR_NONE)
 		{
 			if (m_pAsyncGetHostByNameBuffer)
-				delete [] m_pAsyncGetHostByNameBuffer;
-			m_pAsyncGetHostByNameBuffer=new char[MAXGETHOSTSTRUCT];
+				nb_free(m_pAsyncGetHostByNameBuffer);
+			m_pAsyncGetHostByNameBuffer=static_cast<char *>(nb_calloc(1, MAXGETHOSTSTRUCT));
 
 			m_nAsyncGetHostByNamePort=nHostPort;
 
@@ -1477,7 +1477,7 @@ BOOL CAsyncSocketEx::GetPeerName( CString& rPeerAddress, UINT& rPeerPort )
 			rPeerPort = ntohs(((SOCKADDR_IN6*)sockAddr)->sin6_port);
 			LPTSTR buf = Inet6AddrToString(((SOCKADDR_IN6*)sockAddr)->sin6_addr);
 			rPeerAddress = buf;
-			delete [] buf;
+			nb_free(buf);
 		}
 		else if (m_SocketData.nFamily == AF_INET)
 		{
@@ -1541,7 +1541,7 @@ BOOL CAsyncSocketEx::GetSockName(CString& rSocketAddress, UINT& rSocketPort)
 			rSocketPort = ntohs(((SOCKADDR_IN6*)sockAddr)->sin6_port);
 			LPTSTR buf = Inet6AddrToString(((SOCKADDR_IN6*)sockAddr)->sin6_addr);
 			rSocketAddress = buf;
-			delete [] buf;
+			nb_free(buf);
 		}
 		else if (m_SocketData.nFamily == AF_INET)
 		{
@@ -1760,7 +1760,7 @@ BOOL CAsyncSocketEx::AddLayer(CAsyncSocketExLayer *pLayer)
 void CAsyncSocketEx::RemoveAllLayers()
 {
 	for (rde::list<t_callbackMsg>::iterator iter = m_pendingCallbacks.begin(); iter != m_pendingCallbacks.end(); iter++)
-		delete [] iter->str;
+		nb_free(iter->str);
 	m_pendingCallbacks.clear();
 
 	m_pFirstLayer = 0;
@@ -1777,7 +1777,7 @@ int CAsyncSocketEx::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 {
 	for (rde::list<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); iter++)
 	{
-		delete [] iter->str;
+		nb_free(iter->str);
 	}
 	return 0;
 }

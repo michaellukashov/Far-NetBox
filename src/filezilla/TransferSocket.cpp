@@ -111,9 +111,9 @@ CTransferSocket::CTransferSocket(CFtpControlSocket *pOwner, int nMode)
 CTransferSocket::~CTransferSocket()
 {
 	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("~CTransferSocket()"));
-	delete [] m_pBuffer;
+	nb_free(m_pBuffer);
 #ifndef MPEXT_NO_ZLIB
-	delete [] m_pBuffer2;
+	nb_free(m_pBuffer2);
 #endif
 	PostMessage(m_pOwner->m_pOwner->m_hOwnerWnd, m_pOwner->m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_TRANSFERSTATUS, 0), 0);
 	Close();
@@ -162,7 +162,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 		if (m_nTransferState == STATE_STARTING)
 			OnConnect(0);
 		
-		char *buffer = new char[BUFSIZE];
+		char *buffer = static_cast<char *>(nb_calloc(1, BUFSIZE));
 		int numread = CAsyncSocketEx::Receive(buffer, BUFSIZE);
 		if (numread != SOCKET_ERROR && numread)
 		{
@@ -174,24 +174,24 @@ void CTransferSocket::OnReceive(int nErrorCode)
 			{
 				m_zlibStream.next_in = (Bytef *)buffer;
 				m_zlibStream.avail_in = numread;
-				char *out = new char[BUFSIZE];
+				char *out = static_cast<char *>(nb_calloc(1, BUFSIZE));
 				m_zlibStream.next_out = (Bytef *)out;
 				m_zlibStream.avail_out = BUFSIZE;
 				int res = inflate(&m_zlibStream, 0);
 				while (res == Z_OK)
 				{
 					m_pListResult->AddData(out, BUFSIZE - m_zlibStream.avail_out);
-					out = new char[BUFSIZE];
+					out = static_cast<char *>(nb_calloc(1, BUFSIZE));
 					m_zlibStream.next_out = (Bytef *)out;
 					m_zlibStream.avail_out = BUFSIZE;
 					res = inflate(&m_zlibStream, 0);
 				}
-				delete [] buffer;
+				nb_free(buffer);
 				if (res == Z_STREAM_END)
 					m_pListResult->AddData(out, BUFSIZE - m_zlibStream.avail_out);
 				else if (res != Z_OK && res != Z_BUF_ERROR)
 				{
-					delete [] out;
+					nb_free(out);
 					Close();
 					if (!m_bSentClose)
 					{
@@ -202,7 +202,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 					return;
 				}
 				else
-					delete [] out;
+					nb_free(out);
 			}
 			else
 #endif
@@ -235,7 +235,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 			PostMessage(m_pOwner->m_pOwner->m_hOwnerWnd, m_pOwner->m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_TRANSFERSTATUS, 0), (LPARAM)status);
 		}
 		else
-			delete [] buffer;
+			nb_free(buffer);
 		if (!numread)
 		{
 			Close();
@@ -293,7 +293,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 		}
 
 		if (!m_pBuffer)
-			m_pBuffer = new char[BUFSIZE];
+			m_pBuffer = static_cast<char *>(nb_calloc(1, BUFSIZE));
 
 		int numread = CAsyncSocketEx::Receive(m_pBuffer, static_cast<int>(ableToRead));
 		if (numread!=SOCKET_ERROR)
@@ -352,7 +352,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 			if (m_useZlib)
 			{
 				if (!m_pBuffer2)
-					m_pBuffer2 = new char[BUFSIZE];
+					m_pBuffer2 = static_cast<char *>(nb_calloc(1, BUFSIZE));
 					
 				m_zlibStream.next_in = (Bytef *)m_pBuffer;
 				m_zlibStream.avail_in = numread;
@@ -393,10 +393,10 @@ void CTransferSocket::OnReceive(int nErrorCode)
 		}
 		CATCH(CFileException,e)
 		{
-			LPTSTR msg = new TCHAR[BUFSIZE];
+			LPTSTR msg = static_cast<TCHAR *>(nb_calloc(BUFSIZE, sizeof(TCHAR)));
 			if (e->GetErrorMessage(msg, BUFSIZE))
 				m_pOwner->ShowStatus(msg, 1);
-			delete [] msg;
+			nb_free(msg);
 			Close();
 			if (!m_bSentClose)
 			{
@@ -665,7 +665,7 @@ void CTransferSocket::OnSend(int nErrorCode)
 	{
 		if (!m_pBuffer)
 		{
-			m_pBuffer = new char[BUFSIZE];
+			m_pBuffer = static_cast<char *>(nb_calloc(1, BUFSIZE));
 			m_bufferpos = 0;
 
 			m_zlibStream.next_out = (Bytef *)m_pBuffer;
@@ -673,7 +673,7 @@ void CTransferSocket::OnSend(int nErrorCode)
 		}
 		if (!m_pBuffer2)
 		{
-			m_pBuffer2 = new char[BUFSIZE];
+			m_pBuffer2 = static_cast<char *>(nb_calloc(1, BUFSIZE));
 
 			m_zlibStream.next_in = (Bytef *)m_pBuffer2;
 		}
@@ -823,7 +823,7 @@ void CTransferSocket::OnSend(int nErrorCode)
 			return;
 		}
 		if (!m_pBuffer)
-			m_pBuffer = new char[BUFSIZE];
+			m_pBuffer = static_cast<char *>(nb_calloc(1, BUFSIZE));
 		
 		int numread;
 		
@@ -1356,7 +1356,7 @@ int CTransferSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 			}
 #endif
 		}
-		delete [] iter->str;
+		nb_free(iter->str);
 	}
 	return 0;
 }

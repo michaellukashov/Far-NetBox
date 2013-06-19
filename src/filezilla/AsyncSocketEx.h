@@ -358,7 +358,7 @@ enum SocketState
 
 inline TCHAR* Inet6AddrToString(in6_addr& addr)
 {
-	LPTSTR buf = new TCHAR[512];
+	LPTSTR buf = static_cast<TCHAR *>(nb_calloc(512, sizeof(TCHAR)));
 
 	_sntprintf(buf, 512, _T("%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x"),
 			 addr.s6_bytes[0], addr.s6_bytes[1], addr.s6_bytes[2], addr.s6_bytes[3],
