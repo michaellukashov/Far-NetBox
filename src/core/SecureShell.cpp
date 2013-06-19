@@ -25,7 +25,7 @@ struct TPuttyTranslation
   int Translation;
 };
 //---------------------------------------------------------------------------
-char * AnsiStrNew(const wchar_t * S)
+static char * AnsiStrNew(const wchar_t * S)
 {
   AnsiString Buf = S;
   char * Result = static_cast<char *>(nb_malloc(Buf.Length() + 1));
@@ -33,7 +33,7 @@ char * AnsiStrNew(const wchar_t * S)
   return Result;
 }
 //---------------------------------------------------------------------------
-void AnsiStrDispose(char * S)
+static void AnsiStrDispose(char * S)
 {
   nb_free(S);
 }
