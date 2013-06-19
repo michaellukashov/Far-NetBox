@@ -1637,14 +1637,14 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
     {
       TRemoteFile * File = nullptr;
       // ignore non-fatal error when the directory already exists
-      UnicodeString fn = UnixExcludeTrailingBackslash(DestFullName);
-      if (fn.IsEmpty())
+      UnicodeString Fn = UnixExcludeTrailingBackslash(DestFullName);
+      if (Fn.IsEmpty())
       {
-        fn = L"/";
+        Fn = L"/";
       }
       bool Rethrow =
         !FTerminal->GetActive() ||
-        !FTerminal->FileExists(fn, &File) ||
+        !FTerminal->FileExists(Fn, &File) ||
         !File->GetIsDirectory();
       delete File;
       if (Rethrow)
