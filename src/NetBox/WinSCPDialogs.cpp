@@ -1623,8 +1623,10 @@ private:
   TFarCheckBox * TryAgentCheck;
   TFarCheckBox * AuthKICheck;
   TFarCheckBox * AuthKIPasswordCheck;
-  TFarCheckBox * AgentFwdCheck;
   TFarCheckBox * AuthGSSAPICheck2;
+  TFarCheckBox * AgentFwdCheck;
+  TFarCheckBox * AuthGSSAPICheck3;
+  TFarCheckBox * GSSAPIFwdTGTCheck;
   TFarCheckBox * DeleteToRecycleBinCheck;
   TFarCheckBox * OverwrittenToRecycleBinCheck;
   TFarEdit * RecycleBinPathEdit;
@@ -2738,6 +2740,16 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   AgentFwdCheck = new TFarCheckBox(this);
   AgentFwdCheck->SetCaption(GetMsg(LOGIN_AUTH_AGENT_FWD));
+
+  // GSSAPI
+  Separator = new TFarSeparator(this);
+  Separator->SetCaption(GetMsg(LOGIN_AUTH_GSSAPI_PARAMS_GROUP));
+
+  AuthGSSAPICheck3 = new TFarCheckBox(this);
+  AuthGSSAPICheck3->SetCaption(GetMsg(LOGIN_AUTH_ATTEMPT_GSSAPI_AUTHENTICATION));
+
+  GSSAPIFwdTGTCheck = new TFarCheckBox(this);
+  GSSAPIFwdTGTCheck->SetCaption(GetMsg(LOGIN_AUTH_ALLOW_GSSAPI_CREDENTIAL_DELEGATION));
 
   new TFarSeparator(this);
 
