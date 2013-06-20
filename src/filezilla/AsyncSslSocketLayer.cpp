@@ -324,9 +324,9 @@ CAsyncSslSocketLayer::CAsyncSslSocketLayer()
 CAsyncSslSocketLayer::~CAsyncSslSocketLayer()
 {
 	UnloadSSL();
-	delete [] m_pNetworkSendBuffer;
-	delete [] m_pRetrySendBuffer;
-	delete [] m_pKeyPassword;
+	nb_free(m_pNetworkSendBuffer);
+	nb_free(m_pRetrySendBuffer);
+	nb_free(m_pKeyPassword);
 }
 
 int CAsyncSslSocketLayer::InitSSL()
@@ -570,14 +570,14 @@ void CAsyncSslSocketLayer::OnReceive(int nErrorCode)
 			if (numwrite >= 0)
 			{
 				pBIO_ctrl(m_sslbio, BIO_CTRL_FLUSH, 0, NULL);
-				delete [] m_pRetrySendBuffer;
+				nb_free(m_pRetrySendBuffer);
 				m_pRetrySendBuffer = 0;
 			}
 			else if (numwrite == -1)
 			{
 				if (!BIO_should_retry(m_sslbio))
 				{
-					delete [] m_pRetrySendBuffer;
+					nb_free(m_pRetrySendBuffer);
 					m_pRetrySendBuffer = 0;
 
 					SetLastError(WSAECONNABORTED);
@@ -687,11 +687,11 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
 				{
 					char * tmp = m_pNetworkSendBuffer;
 					m_nNetworkSendBufferMaxLen = static_cast<int>((m_nNetworkSendBufferLen + numread - numsent) * 1.5);
-					m_pNetworkSendBuffer = new char[m_nNetworkSendBufferMaxLen];					
+					m_pNetworkSendBuffer = static_cast<char *>(nb_calloc(1, m_nNetworkSendBufferMaxLen));
 					if (tmp)
 					{
 						memcpy(m_pNetworkSendBuffer, tmp, m_nNetworkSendBufferLen);
-						delete [] tmp;
+						nb_free(tmp);
 					}
 				}
 				ASSERT(m_pNetworkSendBuffer);
@@ -717,14 +717,14 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
 			if (numwrite >= 0)
 			{
 				pBIO_ctrl(m_sslbio, BIO_CTRL_FLUSH, 0, NULL);
-				delete [] m_pRetrySendBuffer;
+				nb_free(m_pRetrySendBuffer);
 				m_pRetrySendBuffer = 0;
 			}
 			else if (numwrite == -1)
 			{
 				if (!BIO_should_retry(m_sslbio))
 				{
-					delete [] m_pRetrySendBuffer;
+					nb_free(m_pRetrySendBuffer);
 					m_pRetrySendBuffer = 0;
 
 					SetLastError(WSAECONNABORTED);
@@ -798,7 +798,7 @@ int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
 			SetLastError(WSAEWOULDBLOCK);
 		}
 
-		m_pRetrySendBuffer = new char[nBufLen];
+		m_pRetrySendBuffer = static_cast<char *>(nb_calloc(1, nBufLen));
 		m_nRetrySendBufferLen = nBufLen;
 		memcpy(m_pRetrySendBuffer, lpBuf, nBufLen);
 
@@ -806,7 +806,7 @@ int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
 		if (numwrite >= 0)
 		{
 			pBIO_ctrl(m_sslbio, BIO_CTRL_FLUSH, 0, NULL);
-			delete [] m_pRetrySendBuffer;
+			nb_free(m_pRetrySendBuffer);
 			m_pRetrySendBuffer = 0;
 		}
 		else if (numwrite == -1)
@@ -829,7 +829,7 @@ int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
 			}
 			else
 			{
-				delete [] m_pRetrySendBuffer;
+				nb_free(m_pRetrySendBuffer);
 				m_pRetrySendBuffer = 0;
 
 				SetLastError(WSAECONNABORTED);
@@ -1167,7 +1167,7 @@ void CAsyncSslSocketLayer::ResetSslSession()
 {
 	if (m_pRetrySendBuffer)
 	{
-		delete [] m_pRetrySendBuffer;
+		nb_free(m_pRetrySendBuffer);
 		m_pRetrySendBuffer = 0;
 	}
 
@@ -1230,7 +1230,7 @@ void CAsyncSslSocketLayer::ResetSslSession()
 		m_ssl_ctx = 0;
 	}
 
-	delete [] m_pKeyPassword;
+	nb_free(m_pKeyPassword);
 	m_pKeyPassword = 0;
 
 	m_ssl = 0;
@@ -1461,7 +1461,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
 
 	if (where & SSL_CB_LOOP)
 	{
-		char *buffer = new char[4096];
+		char *buffer = static_cast<char *>(nb_calloc(1, 4096));
 		sprintf(buffer, "%s: %s",
 				str,
 				pSSL_state_string_long(s));
@@ -1475,7 +1475,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
 		// Don't send close notify warning
 		if (desc && strcmp(desc, "close notify"))
 		{
-			char *buffer = new char[4096];
+			char *buffer = static_cast<char *>(nb_calloc(1, 4096));
 			sprintf(buffer, "SSL3 alert %s: %s: %s",
 					str,
 					pSSL_alert_type_string_long(ret),
@@ -1488,7 +1488,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
 	{
 		if (ret == 0)
 		{
-			char *buffer = new char[4096];
+			char *buffer = static_cast<char *>(nb_calloc(1, 4096));
 			sprintf(buffer, "%s: failed in %s",
 					str,
 					pSSL_state_string_long(s));
@@ -1504,7 +1504,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
 			int error = pSSL_get_error(s,ret);
 			if (error != SSL_ERROR_WANT_READ && error != SSL_ERROR_WANT_WRITE)
 			{
-				char *buffer = new char[4096];
+				char *buffer = static_cast<char *>(nb_calloc(1, 4096));
 				sprintf(buffer, "%s: error in %s",
 						str,
 						pSSL_state_string_long(s));
@@ -1592,7 +1592,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData)
 			if (len > 0)
 			{
 				// Keep it huge
-				LPWSTR unicode = new WCHAR[len * 10];
+				LPWSTR unicode = static_cast<WCHAR *>(nb_calloc(len * 10, sizeof(WCHAR)));
 				memset(unicode, 0, sizeof(WCHAR) * len * 10);
 				int unicodeLen = MultiByteToWideChar(CP_UTF8, 0, (const char *)out, len, unicode, len * 10);
 				if (unicodeLen > 0)
@@ -1600,16 +1600,16 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData)
 #ifdef _UNICODE
 					str = unicode;
 #else
-					LPSTR ansi = new CHAR[len * 10];
+					LPSTR ansi = static_cast<CHAR *>(nb_calloc(len * 10, sizeof(CHAR)));
 					memset(ansi, 0, sizeof(CHAR) * len * 10);
 					int ansiLen = WideCharToMultiByte(CP_ACP, 0, unicode, unicodeLen, ansi, len * 10, 0, 0);
 					if (ansiLen > 0)
 						str = ansi;
 
-					delete [] ansi;
+					nb_free(ansi);
 #endif
 				}
-				delete [] unicode;
+				nb_free(unicode);
 				pCRYPTO_free(out);
 			}
 
@@ -1701,7 +1701,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData)
 			if (len > 0)
 			{
 				// Keep it huge
-				LPWSTR unicode = new WCHAR[len * 10];
+				LPWSTR unicode = static_cast<WCHAR *>(nb_calloc(len * 10, sizeof(WCHAR)));
 				memset(unicode, 0, sizeof(WCHAR) * len * 10);
 				int unicodeLen = MultiByteToWideChar(CP_UTF8, 0, (const char *)out, len, unicode, len * 10);
 				if (unicodeLen > 0)
@@ -1709,16 +1709,16 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData)
 #ifdef _UNICODE
 					str = unicode;
 #else
-					LPSTR ansi = new CHAR[len * 10];
+					LPSTR ansi = static_cast<CHAR *>(nb_calloc(len * 10, sizeof(CHAR)));
 					memset(ansi, 0, sizeof(CHAR) * len * 10);
 					int ansiLen = WideCharToMultiByte(CP_ACP, 0, unicode, unicodeLen, ansi, len * 10, 0, 0);
 					if (ansiLen > 0)
 						str = ansi;
 
-					delete [] ansi;
+					nb_free(ansi);
 #endif
 				}
-				delete [] unicode;
+				nb_free(unicode);
 				pCRYPTO_free(out);
 			}
 
@@ -1976,7 +1976,7 @@ void CAsyncSslSocketLayer::PrintSessionInfo()
 		 * otherwise we should print their lengths too */
 	}
 
-	char *buffer = new char[4096];
+	char *buffer = static_cast<char *>(nb_calloc(1, 4096));
 	sprintf(buffer, "Using %s, cipher %s: %s, %s",
 			pSSL_get_version(m_ssl),
 			pSSL_CIPHER_get_version(ciph),
@@ -2080,7 +2080,7 @@ void CAsyncSslSocketLayer::PrintLastErrorMsg()
 	int err = pERR_get_error();
 	while (err)
 	{
-		char *buffer = new char[512];
+		char *buffer = static_cast<char *>(nb_calloc(1, 512));
 		pERR_error_string(err, buffer);
 		err = pERR_get_error();
 		DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, SSL_VERBOSE_WARNING, 0, buffer);
@@ -2236,12 +2236,12 @@ int CAsyncSslSocketLayer::SetCertKeyFile(const char* cert, const char* key, cons
 	if (pass)
 	{
 		size_t len = strlen(pass);
-		m_pKeyPassword = new char[len + 1];
+		m_pKeyPassword = static_cast<char *>(nb_calloc(1, len + 1));
 		strcpy(m_pKeyPassword, pass);
 	}
 	else
 	{
-		delete [] m_pKeyPassword;
+		nb_free(m_pKeyPassword);
 		m_pKeyPassword = 0;
 	}
 
@@ -2306,8 +2306,8 @@ int CAsyncSslSocketLayer::SendRaw(const void* lpBuf, int nBufLen, int nFlags)
 
 	if (m_nNetworkSendBufferMaxLen < nBufLen)
 		m_nNetworkSendBufferMaxLen = nBufLen;
-	delete [] m_pNetworkSendBuffer;
-	m_pNetworkSendBuffer = new char[m_nNetworkSendBufferMaxLen];
+	nb_free(m_pNetworkSendBuffer);
+	m_pNetworkSendBuffer = static_cast<char *>(nb_calloc(1, m_nNetworkSendBufferMaxLen));
 	memcpy(m_pNetworkSendBuffer, lpBuf, nBufLen);
 	m_nNetworkSendBufferLen = nBufLen;
 	TriggerEvent(FD_WRITE, 0);

@@ -400,7 +400,7 @@ CFtpListResult::CFtpListResult(t_server server, bool *bUTF8)
 	int i=-1;
 	while (*data[++i])
 	{
-		char *pData=new char[strlen(data[i])+3];
+		char *pData=static_cast<char *>(nb_calloc(1, strlen(data[i])+3));
 		sprintf(pData, "%s\r\n", data[i]);
 		AddData(pData, strlen(pData));
 	}
@@ -415,15 +415,15 @@ CFtpListResult::~CFtpListResult()
 	t_list *ptr2;
 	while (ptr)
 	{
-		delete [] ptr->buffer;
+		nb_free(ptr->buffer);
 		ptr2=ptr;
 		ptr=ptr->next;
 		delete ptr2;
 	}
 	if (m_prevline)
-		delete [] m_prevline;
+		nb_free(m_prevline);
 	if (m_curline)
-		delete [] m_curline;
+		nb_free(m_curline);
 }
 
 t_directory::t_direntry *CFtpListResult::getList(int &num, CTime EntryTime)
@@ -434,11 +434,11 @@ t_directory::t_direntry *CFtpListResult::getList(int &num, CTime EntryTime)
 	while (line)
 	{
 		int tmp;
-		char *tmpline = new char[strlen(line) + 1];
+		char *tmpline = static_cast<char *>(nb_calloc(1, strlen(line) + 1));
 		strcpy(tmpline, line);
 		if (parseLine(tmpline, (int)strlen(tmpline), direntry, tmp))
 		{
-			delete [] tmpline;
+			nb_free(tmpline);
 			if (tmp)
 				m_server.nServerType |= tmp;
 			if (direntry.name!=_MPT(".") && direntry.name!=_MPT(".."))
@@ -447,31 +447,31 @@ t_directory::t_direntry *CFtpListResult::getList(int &num, CTime EntryTime)
 			}
 			if (m_prevline)
 			{
-				delete [] m_prevline;
+				nb_free(m_prevline);
 				m_prevline=0;
 			}
 			if (m_curline!=line)
-				delete [] m_curline;
-			delete [] line;
+				nb_free(m_curline);
+			nb_free(line);
 			line=GetLine();
 			m_curline=line;
 		}
 		else
 		{
-			delete [] tmpline;
+			nb_free(tmpline);
 			if (m_prevline)
 			{
 				if (m_curline!=line)
 				{
-					delete [] m_prevline;
+					nb_free(m_prevline);
 					m_prevline=m_curline;
-					delete [] line;
+					nb_free(line);
 					line=GetLine();
 					m_curline=line;
 				}
 				else
 				{
-					line=new char[strlen(m_prevline)+strlen(m_curline)+2];
+					line=static_cast<char *>(nb_calloc(1, strlen(m_prevline)+strlen(m_curline)+2));
 					sprintf(line, "%s %s", m_prevline, m_curline);
 				}
 			}
@@ -485,12 +485,12 @@ t_directory::t_direntry *CFtpListResult::getList(int &num, CTime EntryTime)
 	}
 	if (m_prevline)
 	{
-		delete [] m_prevline;
+		nb_free(m_prevline);
 		m_prevline=0;
 	}
 	if (m_curline!=line)
-		delete [] m_curline;
-	delete [] line;
+		nb_free(m_curline);
+	nb_free(line);
 	m_curline=0;
 
 	num=(int)m_EntryList.size();
@@ -597,18 +597,18 @@ void CFtpListResult::AddData(char *data, int size)
 		}
 		else
 		{
-			delete [] line;
+			nb_free(line);
 			if (m_curline != line)
-				delete [] m_curline;
+				nb_free(m_curline);
 			m_curline = 0;
 			break;
 		}
 		int tmp;
-		char *tmpline = new char[strlen(line) + 1];
+		char *tmpline = static_cast<char *>(nb_calloc(1, strlen(line) + 1));
 		strcpy(tmpline, line);
 		if (parseLine(tmpline, (const int)strlen(tmpline), direntry, tmp))
 		{
-			delete [] tmpline;
+			nb_free(tmpline);
 			if (tmp)
 				m_server.nServerType |= tmp;
 			if (direntry.name!=_MPT(".") && direntry.name!=_MPT(".."))
@@ -617,31 +617,31 @@ void CFtpListResult::AddData(char *data, int size)
 			}
 			if (m_prevline)
 			{
-				delete [] m_prevline;
+				nb_free(m_prevline);
 				m_prevline=0;
 			}
 			if (m_curline!=line)
-				delete [] m_curline;
-			delete [] line;
+				nb_free(m_curline);
+			nb_free(line);
 			line = GetLine();
 			m_curline = line;
 		}
 		else
 		{
-			delete [] tmpline;
+			nb_free(tmpline);
 			if (m_prevline)
 			{
 				if (m_curline != line)
 				{
-					delete [] m_prevline;
+					nb_free(m_prevline);
 					m_prevline = m_curline;
-					delete [] line;
+					nb_free(line);
 					line = GetLine();
 					m_curline = line;
 				}
 				else
 				{
-					line=new char[strlen(m_prevline)+strlen(m_curline)+2];
+					line=static_cast<char *>(nb_calloc(1, strlen(m_prevline)+strlen(m_curline)+2));
 					sprintf(line, "%s %s", m_prevline, m_curline);
 				}
 			}
@@ -677,7 +677,7 @@ void CFtpListResult::SendToMessageLog(HWND hWnd, UINT nMsg)
 	while (line)
 	{
 		CString status = line;
-		delete [] line;
+		nb_free(line);
 
 		//Displays a message in the message log
 		t_ffam_statusmessage *pStatus = new t_ffam_statusmessage;
@@ -737,7 +737,7 @@ char * CFtpListResult::GetLine()
 		}
 	}
 
-	char *res = new char[reslen+1];
+	char *res = static_cast<char *>(nb_calloc(1, reslen+1));
 	res[reslen]=0;
 	int respos=0;
 	while (startptr!=curpos && reslen)
@@ -897,14 +897,14 @@ bool CFtpListResult::ParseShortDate(const char *str, int len, t_directory::t_dir
 	{
         rde::map<CString, int>::const_iterator iter = m_MonthNamesMap.begin();
 
-		char *tmpstr = new char[i + 1];
+		char *tmpstr = static_cast<char *>(nb_calloc(1, i + 1));
 		strncpy(tmpstr, str, i);
 		tmpstr[i] = 0;
 		strlwr(tmpstr);
 
 		USES_CONVERSION;
 		iter = const_cast<CFtpListResult *>(this)->m_MonthNamesMap.find(A2T(tmpstr));
-		delete [] tmpstr;
+		nb_free(tmpstr);
 		if (iter == m_MonthNamesMap.end())
 			return false;
 
@@ -1552,14 +1552,14 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 	{
 		//Maybe the server has left no space between the group and the size
 		//because of stupid alignment
-		char *tmpstr = new char[tokenlen + 1];
+		char *tmpstr = static_cast<char *>(nb_calloc(1, tokenlen + 1));
 		strncpy(tmpstr, str, tokenlen);
 		tmpstr[tokenlen] = 0;
 		strlwr(tmpstr);
 
 		USES_CONVERSION;
 		rde::map<CString, int>::const_iterator iter = m_MonthNamesMap.find(A2T(tmpstr));
-		delete [] tmpstr;
+		nb_free(tmpstr);
 		if (iter != m_MonthNamesMap.end())
 		{
 			BOOL bRightNumeric = true;
@@ -1874,7 +1874,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 	if (!smonthlen)
 		return FALSE;
 
-	char *lwr = new char[smonthlen + 1];
+	char *lwr = static_cast<char *>(nb_calloc(1, smonthlen + 1));
 	memcpy(lwr, smonth, smonthlen);
 	lwr[smonthlen] = 0;
 	_strlwr(lwr);
@@ -1891,7 +1891,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 		//Try if we can recognize the month name
 		USES_CONVERSION;
 		rde::map<CString, int>::const_iterator iter = m_MonthNamesMap.find(A2T(lwr));
-		delete [] lwr;
+		nb_free(lwr);
 		if (iter == m_MonthNamesMap.end())
 		{
 			int i;
@@ -2094,7 +2094,7 @@ BOOL CFtpListResult::parseAsDos(const char *line, const int linelen, t_directory
 	}
 	else
 	{
-		char * buffer = new char[tokenlen];
+		char * buffer = static_cast<char *>(nb_calloc(1, tokenlen));
 		int i, j;
 		for (i = 0, j = 0; i < tokenlen; i++)
 		{
@@ -2103,7 +2103,7 @@ BOOL CFtpListResult::parseAsDos(const char *line, const int linelen, t_directory
 		}
 		direntry.dir = FALSE;
 		direntry.size = strntoi64(buffer, j);
-		delete [] buffer;
+		nb_free(buffer);
 	}
 		
 	str = GetNextToken(line, linelen, tokenlen, pos, 1);
@@ -2452,7 +2452,7 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
 {
 	USES_CONVERSION;
 
-	char *p = new char[len + 1];
+	char *p = static_cast<char *>(nb_calloc(1, len + 1));
 	memcpy(p, source, len);
 	p[len] = '\0';
 	if (m_bUTF8 && *m_bUTF8)
@@ -2473,10 +2473,10 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
 			int len = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)p, -1, NULL, 0);
 			if (len != 0)
 			{
-				LPWSTR p1 = new WCHAR[len + 1];
+				LPWSTR p1 = static_cast<WCHAR *>(nb_calloc(len + 1, sizeof(WCHAR)));
 				MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)p, -1 , (LPWSTR)p1, len + 1);
 				target = target.Left(pos) + W2CT(p1);
-				delete [] p1;
+				nb_free(p1);
 			}
 			else
 				target = target.Left(pos) + A2CT(p);
@@ -2484,7 +2484,7 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
 	}
 	else
 		target = target.Left(pos) + A2CT(p);
-	delete [] p;
+	nb_free(p);
 }
 
 BOOL CFtpListResult::parseAsIBM(const char *line, const int linelen, t_directory::t_direntry &direntry)

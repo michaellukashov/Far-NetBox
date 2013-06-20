@@ -907,10 +907,10 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
 
   TDateTimeParams * Result;
 
-  TYearlyDateTimeParams::iterator i = YearlyDateTimeParams.find(Year);
-  if (i != YearlyDateTimeParams.end())
+  TYearlyDateTimeParams::iterator it = YearlyDateTimeParams.find(Year);
+  if (it != YearlyDateTimeParams.end())
   {
-    Result = &(*i).second;
+    Result = &(*it).second;
   }
   else
   {

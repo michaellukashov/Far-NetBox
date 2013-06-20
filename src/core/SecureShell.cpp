@@ -25,17 +25,17 @@ struct TPuttyTranslation
   int Translation;
 };
 //---------------------------------------------------------------------------
-char * AnsiStrNew(const wchar_t * S)
+static char * AnsiStrNew(const wchar_t * S)
 {
   AnsiString Buf = S;
-  char * Result = new char[Buf.Length() + 1];
+  char * Result = static_cast<char *>(nb_malloc(Buf.Length() + 1));
   memcpy(Result, Buf.c_str(), Buf.Length() + 1);
   return Result;
 }
 //---------------------------------------------------------------------------
-void AnsiStrDispose(char * S)
+static void AnsiStrDispose(char * S)
 {
-  delete [] S;
+  nb_free(S);
 }
 //---------------------------------------------------------------------------
 TSecureShell::TSecureShell(TSessionUI * UI,

@@ -581,11 +581,11 @@ UnicodeString TRemoteToken::GetLogText() const
 TRemoteTokenList * TRemoteTokenList::Duplicate() const
 {
   std::auto_ptr<TRemoteTokenList> Result(new TRemoteTokenList());
-  TTokens::const_iterator I = FTokens.begin();
-  while (I != FTokens.end())
+  TTokens::const_iterator it = FTokens.begin();
+  while (it != FTokens.end())
   {
-    Result->Add(*I);
-    ++I;
+    Result->Add(*it);
+    ++it;
   }
   return Result.release();
 }
@@ -616,8 +616,8 @@ void TRemoteTokenList::AddUnique(const TRemoteToken & Token)
 {
   if (Token.GetIDValid())
   {
-    TIDMap::const_iterator I = FIDMap.find(Token.GetID());
-    if (I != FIDMap.end())
+    TIDMap::const_iterator it = FIDMap.find(Token.GetID());
+    if (it != FIDMap.end())
     {
       // is present already.
       // may have different name (should not),
@@ -630,8 +630,8 @@ void TRemoteTokenList::AddUnique(const TRemoteToken & Token)
   }
   else if (Token.GetNameValid())
   {
-    TNameMap::const_iterator I = FNameMap.find(Token.GetName());
-    if (I != FNameMap.end())
+    TNameMap::const_iterator it = FNameMap.find(Token.GetName());
+    if (it != FNameMap.end())
     {
       // is present already.
     }
@@ -653,11 +653,11 @@ bool TRemoteTokenList::Exists(const UnicodeString & Name) const
 //---------------------------------------------------------------------------
 const TRemoteToken * TRemoteTokenList::Find(uintptr_t ID) const
 {
-  TIDMap::const_iterator I = FIDMap.find(ID);
+  TIDMap::const_iterator it = FIDMap.find(ID);
   const TRemoteToken * Result;
-  if (I != FIDMap.end())
+  if (it != FIDMap.end())
   {
-    Result = &FTokens[(*I).second];
+    Result = &FTokens[(*it).second];
   }
   else
   {
@@ -668,11 +668,11 @@ const TRemoteToken * TRemoteTokenList::Find(uintptr_t ID) const
 //---------------------------------------------------------------------------
 const TRemoteToken * TRemoteTokenList::Find(const UnicodeString & Name) const
 {
-  TNameMap::const_iterator I = FNameMap.find(Name);
+  TNameMap::const_iterator it = FNameMap.find(Name);
   const TRemoteToken * Result;
-  if (I != FNameMap.end())
+  if (it != FNameMap.end())
   {
-    Result = &FTokens[(*I).second];
+    Result = &FTokens[(*it).second];
   }
   else
   {

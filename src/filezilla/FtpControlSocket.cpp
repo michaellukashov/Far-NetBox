@@ -84,7 +84,7 @@ public:
 		if (pDirectoryListing)
 			delete pDirectoryListing;
 		pDirectoryListing=0;
-		delete pFileSize;
+		nb_free(pFileSize);
 	};
 	CString rawpwd;
 	t_transferfile transferfile;
@@ -1125,12 +1125,12 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 		ShowStatus(str, 0);
 		m_pOwner->SetConnected(TRUE);
 	}
-	char *buffer = new char[BUFFERSIZE];
+	char *buffer = static_cast<char *>(nb_calloc(1, BUFFERSIZE));
 	int numread = Receive(buffer, BUFFERSIZE);
 
 	if (numread == SOCKET_ERROR)
 	{
-		delete [] buffer;
+		nb_free(buffer);
 		buffer = NULL;
 		if (GetLastError() != WSAEWOULDBLOCK)
 		{
@@ -1141,7 +1141,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 	}
 	if (!numread)
 	{
-		delete [] buffer;
+		nb_free(buffer);
 		buffer = NULL;
 		ShowStatus(IDS_STATUSMSG_DISCONNECTED, 1);
 		DoClose();
@@ -1161,10 +1161,10 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 			else
 				Buf.AppendChar(*strBuf);
 		}
-		delete [] buffer;
+		nb_free(buffer);
 		buffer = NULL;
 		numread = Buf.GetLength();
-		buffer = new char[numread];
+		buffer = static_cast<char *>(nb_calloc(1, numread));
 		memcpy(buffer, Buf.GetBuffer(), numread);
 	}
 
@@ -1195,10 +1195,10 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 							m_RecvBuffer.back() = "";
 						else
 						{
-							LPWSTR p1 = new WCHAR[len + 1];
+							LPWSTR p1 = static_cast<WCHAR *>(nb_calloc(len + 1, sizeof(WCHAR)));
 							MultiByteToWideChar(CP_UTF8, 0, utf8, -1 , (LPWSTR)p1, len + 1);
 							ShowStatus(W2CT(p1), 3);
-							delete [] p1;
+							nb_free(p1);
 						}
 					}
 				}
@@ -1246,7 +1246,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 		}
 	}
 
-	delete [] buffer;
+	nb_free(buffer);
 }
 
 void CFtpControlSocket::ProcessReply()
@@ -1372,7 +1372,7 @@ BOOL CFtpControlSocket::Send(CString str)
 			DoClose();
 			return FALSE;
 		}
-		char* utf8 = new char[len + 1];
+		char* utf8 = static_cast<char *>(nb_calloc(1, len + 1));
 		WideCharToMultiByte(CP_UTF8, 0, unicode, -1, utf8, len + 1, 0, 0);
 
 		int sendLen = strlen(utf8);
@@ -1382,7 +1382,7 @@ BOOL CFtpControlSocket::Send(CString str)
 			res = -2;
 		if ((res == SOCKET_ERROR && GetLastError() != WSAEWOULDBLOCK) || !res)
 		{
-			delete [] utf8;
+			nb_free(utf8);
 			ShowStatus(IDS_ERRORMSG_CANTSENDCOMMAND, 1);
 			DoClose();
 			return FALSE;
@@ -1393,21 +1393,21 @@ BOOL CFtpControlSocket::Send(CString str)
 				res = 0;
 			if (!m_sendBuffer)
 			{
-				m_sendBuffer = new char[sendLen - res];
+				m_sendBuffer = static_cast<char *>(nb_calloc(1, sendLen - res));
 				memcpy(m_sendBuffer, utf8 + res, sendLen - res);
 				m_sendBufferLen = sendLen - res;
 			}
 			else
 			{
-				char* tmp = new char[m_sendBufferLen + sendLen - res];
+				char* tmp = static_cast<char *>(nb_calloc(1, m_sendBufferLen + sendLen - res));
 				memcpy(tmp, m_sendBuffer, m_sendBufferLen);
 				memcpy(tmp + m_sendBufferLen, utf8 + res, sendLen - res);
-				delete [] m_sendBuffer;
+				nb_free(m_sendBuffer);
 				m_sendBuffer = tmp;
 				m_sendBufferLen += sendLen - res;
 			}
 		}
-		delete [] utf8;
+		nb_free(utf8);
 	}
 	else
 	{
@@ -1430,16 +1430,16 @@ BOOL CFtpControlSocket::Send(CString str)
 				res = 0;
 			if (!m_sendBuffer)
 			{
-				m_sendBuffer = new char[sendLen - res];
+				m_sendBuffer = static_cast<char *>(nb_calloc(1, sendLen - res));
 				memcpy(m_sendBuffer, lpszAsciiSend, sendLen - res);
 				m_sendBufferLen = sendLen - res;
 			}
 			else
 			{
-				char* tmp = new char[m_sendBufferLen + sendLen - res];
+				char* tmp = static_cast<char *>(nb_calloc(1, m_sendBufferLen + sendLen - res));
 				memcpy(tmp, m_sendBuffer, m_sendBufferLen);
 				memcpy(tmp + m_sendBufferLen, lpszAsciiSend + res, sendLen - res);
-				delete [] m_sendBuffer;
+				nb_free(m_sendBuffer);
 				m_sendBuffer = tmp;
 				m_sendBufferLen += sendLen - res;
 			}
@@ -1502,7 +1502,7 @@ void CFtpControlSocket::DoClose(int nError /*=0*/)
 	m_awaitsReply = false;
 	m_skipReply = false;
 
-	delete [] m_sendBuffer;
+	nb_free(m_sendBuffer);
 	m_sendBuffer = 0;
 	m_sendBufferLen = 0;
 
@@ -2453,7 +2453,7 @@ void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fi
 		{
 			USES_CONVERSION;
 			int size = m_ListFile.GetLength();
-			char *buffer = new char[size + 1];
+			char *buffer = static_cast<char *>(nb_calloc(1, size + 1));
 			memmove(buffer, (LPCSTR)m_ListFile, m_ListFile.GetLength());
 			CFtpListResult * pListResult = new CFtpListResult(m_CurrentServer, &m_bUTF8);
 			pListResult->InitLog(this);
@@ -3541,7 +3541,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 				{
 					__int64 size=_ttoi64(line.Mid(4));
 					ASSERT(!pData->pFileSize);
-					pData->pFileSize=new _int64;
+					pData->pFileSize=static_cast<_int64 *>(nb_calloc(1, sizeof(_int64)));
 					*pData->pFileSize=size;
 				}
 			}
@@ -5070,7 +5070,7 @@ public:
 						direntry[j] = dir.direntry[i];
 						j++;
 					}
-					delete [] dir.direntry;
+					nb_free(dir.direntry);
 					dir.direntry = direntry;
 					dir.num--;
 #ifndef MPEXT_NO_CACHE
@@ -5930,7 +5930,7 @@ int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 			if (iter->pLayer == m_pSslLayer)
 			{
 				LogMessage(__FILE__, __LINE__, this, FZ_LOG_INFO, _T("m_pSslLayer changed state from %d to %d"), iter->nParam2, iter->nParam1);
-				delete [] iter->str;
+				nb_free(iter->str);
 				continue;
 			}
 #endif
@@ -6009,19 +6009,19 @@ int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 						{
 							m_bCheckForTimeout = FALSE;
 						}
-						delete [] iter->str;
+						nb_free(iter->str);
 						continue;
 					}
 					else
 					{
 						delete pData;
-						delete [] iter->str;
+						nb_free(iter->str);
 						ResetOperation(FZ_REPLY_ERROR);
 						continue;
 					}
 					break;
 				}
-				delete [] iter->str;
+				nb_free(iter->str);
 				continue;
 			}
 #ifndef MPEXT_NO_GSS
@@ -6035,7 +6035,7 @@ int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 					iter->nParam1 == GSS_AUTHFAILED)
 				{
 					LogOnToServer(TRUE);
-					delete [] iter->str;
+					nb_free(iter->str);
 					continue;
 				}
 			}
@@ -6194,10 +6194,10 @@ CString CFtpControlSocket::GetReply()
 		}
 		else
 		{
-			LPWSTR p1 = new WCHAR[len + 1];
+			LPWSTR p1 = static_cast<WCHAR *>(nb_calloc(len + 1, sizeof(WCHAR)));
 			MultiByteToWideChar(CP_UTF8, 0, line, -1 , (LPWSTR)p1, len + 1);
 			CString reply = W2CT(p1);
-			delete [] p1;
+			nb_free(p1);
 			return reply;
 		}
 	}
@@ -6232,15 +6232,15 @@ void CFtpControlSocket::OnSend(int nErrorCode)
 
 	if (res == m_sendBufferLen)
 	{
-		delete [] m_sendBuffer;
+		nb_free(m_sendBuffer);
 		m_sendBuffer = 0;
 		m_sendBufferLen = 0;
 	}
 	else
 	{
-		char* tmp = new char[m_sendBufferLen - res];
+		char* tmp = static_cast<char *>(nb_calloc(1, m_sendBufferLen - res));
 		memcpy(tmp, m_sendBuffer + res, m_sendBufferLen - res);
-		delete [] m_sendBuffer;
+		nb_free(m_sendBuffer);
 		m_sendBuffer = tmp;
 		m_sendBufferLen -= res;
 	}

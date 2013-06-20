@@ -3925,6 +3925,8 @@ intptr_t TSessionDialog::GetFtpProxyLogonType() const
   intptr_t Result = GetProxyMethod();
   if (Result > GetLastSupportedFtpProxyMethod())
     Result -= GetLastSupportedFtpProxyMethod();
+  else
+    Result = 0;
   return Result;
 }
 //------------------------------------------------------------------------------

@@ -283,7 +283,7 @@ int CControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 #endif
 		}
 
-		delete [] iter->str;
+		nb_free(iter->str);
 	}
 
 	return 1;
@@ -497,10 +497,10 @@ CString CControlSocket::ConvertDomainName(CString domain)
 
 	LPCWSTR buffer = T2CW(domain);
 
-	char *utf8 = new char[wcslen(buffer) * 2 + 2];
+	char *utf8 = static_cast<char *>(nb_calloc(1, wcslen(buffer) * 2 + 2));
 	if (!WideCharToMultiByte(CP_UTF8, 0, buffer, -1, utf8, wcslen(buffer) * 2 + 2, 0, 0))
 	{
-		delete [] utf8;
+		nb_free(utf8);
 		LogMessage(FZ_LOG_WARNING, _T("Could not convert domain name"));
 		return domain;
 	}
@@ -511,12 +511,12 @@ CString CControlSocket::ConvertDomainName(CString domain)
 #else
 	if (idna_to_ascii_8z(utf8, &output, IDNA_ALLOW_UNASSIGNED))
 	{
-		delete [] utf8;
+		nb_free(utf8);
 		LogMessage(FZ_LOG_WARNING, _T("Could not convert domain name"));
 		return domain;
 	}
 #endif
-	delete [] utf8;
+	nb_free(utf8);
 
 	CString result = A2T(output);
 	free(output);

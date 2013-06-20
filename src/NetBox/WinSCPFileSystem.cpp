@@ -438,7 +438,8 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
     Format = L"netbox";
     Flags = !OPIF_DISABLESORTGROUPS | !OPIF_DISABLEHIGHLIGHTING | OPIF_USEATTRHIGHLIGHTING |
       OPIF_ADDDOTS | OPIF_SHOWPRESERVECASE | OPIF_SHORTCUT;
-    PanelTitle = FORMAT(L" %s ", GetMsg(NB_STORED_SESSION_TITLE).c_str());
+
+    PanelTitle = FORMAT(L" %s [/%s]", GetMsg(NB_STORED_SESSION_TITLE).c_str(), FSessionsFolder.c_str());
 
     TSessionPanelItem::SetPanelModes(PanelModes);
     TSessionPanelItem::SetKeyBarTitles(KeyBarTitles);
@@ -3776,8 +3777,8 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
       (FLastEditorID == Info->GetEditorID()) &&
       !FLastEditFile.IsEmpty();
 
-    TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
-    bool MultipleEdit = (I != FMultipleEdits.end());
+    TMultipleEdits::iterator it = FMultipleEdits.find(Info->GetEditorID());
+    bool MultipleEdit = (it != FMultipleEdits.end());
 
     if (NativeEdit || MultipleEdit)
     {
@@ -3795,7 +3796,7 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
 
       if (MultipleEdit)
       {
-        UploadFromEditor(NoReload, Info->GetFileName(), I->second.FileTitle, I->second.Directory);
+        UploadFromEditor(NoReload, Info->GetFileName(), it->second.FileTitle, it->second.Directory);
         // note that panel gets not refreshed upon switch to
         // panel view. but that's intentional
       }
@@ -3898,12 +3899,12 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
         FLastEditorID = -1;
       }
 
-      TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
-      if (I != FMultipleEdits.end())
+      TMultipleEdits::iterator it = FMultipleEdits.find(Info->GetEditorID());
+      if (it != FMultipleEdits.end())
       {
-        if (I->second.PendingSave)
+        if (it->second.PendingSave)
         {
-          UploadFromEditor(true, Info->GetFileName(), I->second.FileTitle, I->second.Directory);
+          UploadFromEditor(true, Info->GetFileName(), it->second.FileTitle, it->second.Directory);
           // reload panel content (if uploaded to current directory.
           // no need for RefreshPanel as panel is not visible yet.
           UpdatePanel();
@@ -3916,7 +3917,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
           ::RemoveDir(ExcludeTrailingBackslash(ExtractFilePath(Info->GetFileName())));
         }
 
-        FMultipleEdits.erase(I->first);
+        FMultipleEdits.erase(it->first);
       }
     }
   }
@@ -3937,17 +3938,17 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
         }
       }
 
-      TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
-      if (I != FMultipleEdits.end())
+      TMultipleEdits::iterator it = FMultipleEdits.find(Info->GetEditorID());
+      if (it != FMultipleEdits.end())
       {
-        if (I->second.LocalFileName != Info->GetFileName())
+        if (it->second.LocalFileName != Info->GetFileName())
         {
           // update file name (after "save as")
-          I->second.LocalFileName = Info->GetFileName();
-          I->second.FileName = ::ExtractFileName(Info->GetFileName(), true);
+          it->second.LocalFileName = Info->GetFileName();
+          it->second.FileName = ::ExtractFileName(Info->GetFileName(), true);
           // update editor title
-          UnicodeString FullFileName = ::UnixIncludeTrailingBackslash(I->second.Directory) +
-              I->second.FileTitle;
+          UnicodeString FullFileName = ::UnixIncludeTrailingBackslash(it->second.Directory) +
+              it->second.FileTitle;
           // note that we need to reset the title periodically (see EE_REDRAW)
           WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
               FullFileName.Length(),
@@ -3960,7 +3961,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
         }
         else
         {
-          I->second.PendingSave = true;
+          it->second.PendingSave = true;
         }
       }
     }
@@ -4000,10 +4001,10 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   EditHistory.Directory = Directory;
   EditHistory.FileName = FileName;
 
-  TEditHistories::iterator ih = rde::find(FEditHistories.begin(), FEditHistories.end(), EditHistory);
-  if (ih != FEditHistories.end())
+  TEditHistories::iterator it_h = rde::find(FEditHistories.begin(), FEditHistories.end(), EditHistory);
+  if (it_h != FEditHistories.end())
   {
-    FEditHistories.erase(ih);
+    FEditHistories.erase(it_h);
   }
   FEditHistories.push_back(EditHistory);
 
@@ -4013,20 +4014,20 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   UnicodeString NewFileName = FileName; // FullFileName;
   FileDuplicate->SetFileName(NewFileName);
 
-  TMultipleEdits::iterator it = FMultipleEdits.begin();
-  while (it != FMultipleEdits.end())
+  TMultipleEdits::iterator it_e = FMultipleEdits.begin();
+  while (it_e != FMultipleEdits.end())
   {
-    if (::UnixComparePaths(Directory, it->second.Directory) &&
-        (NewFileName == it->second.FileName))
+    if (::UnixComparePaths(Directory, it_e->second.Directory) &&
+        (NewFileName == it_e->second.FileName))
     {
       break;
     }
-    ++it;
+    ++it_e;
   }
 
   FLastMultipleEditReadOnly = false;
   bool EditCurrent = false;
-  if (it != FMultipleEdits.end())
+  if (it_e != FMultipleEdits.end())
   {
     TMessageParams Params;
     TQueryButtonAlias Aliases[3];
@@ -4062,7 +4063,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
 
   if (EditCurrent)
   {
-    assert(it != FMultipleEdits.end());
+    assert(it_e != FMultipleEdits.end());
 
     intptr_t WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT, 0);
     int Pos = 0;
@@ -4078,7 +4079,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
       if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, 0, &Window) != 0)
       {
         if ((Window.Type == WTYPE_EDITOR) &&
-            Window.Name && AnsiSameText(Window.Name, it->second.LocalFileName))
+            Window.Name && AnsiSameText(Window.Name, it_e->second.LocalFileName))
         {
           // Switch to current editor.
           if (FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW, Pos, NULL) != 0)
@@ -4133,12 +4134,12 @@ bool TWinSCPFileSystem::IsEditHistoryEmpty()
 void TWinSCPFileSystem::EditHistory()
 {
   std::auto_ptr<TFarMenuItems> MenuItems(new TFarMenuItems());
-  TEditHistories::const_iterator i = FEditHistories.begin();
-  while (i != FEditHistories.end())
+  TEditHistories::const_iterator it = FEditHistories.begin();
+  while (it != FEditHistories.end())
   {
-    MenuItems->Add(MinimizeName(::UnixIncludeTrailingBackslash((*i).Directory) + (*i).FileName,
+    MenuItems->Add(MinimizeName(::UnixIncludeTrailingBackslash((*it).Directory) + (*it).FileName,
       WinSCPPlugin()->MaxMenuItemLength(), true));
-    ++i;
+    ++it;
   }
 
   MenuItems->Add(L"");

@@ -105,7 +105,7 @@ CAsyncSocketExLayer::CAsyncSocketExLayer()
 
 CAsyncSocketExLayer::~CAsyncSocketExLayer()
 {
-	delete [] m_lpszSocketAddress;
+	nb_free(m_lpszSocketAddress);
 }
 
 CAsyncSocketExLayer *CAsyncSocketExLayer::AddLayer(CAsyncSocketExLayer *pLayer, CAsyncSocketEx *pOwnerSocket)
@@ -514,7 +514,7 @@ BOOL CAsyncSocketExLayer::GetPeerNameNext( CString& rPeerAddress, UINT& rPeerPor
 				rPeerPort = ntohs(((SOCKADDR_IN6*)sockAddr)->sin6_port);
 				LPTSTR buf = Inet6AddrToString(((SOCKADDR_IN6*)sockAddr)->sin6_addr);
 				rPeerAddress = buf;
-				delete [] buf;
+				nb_free(buf);
 			} 
 			else if (m_nFamily == AF_INET)
 			{
@@ -593,7 +593,7 @@ BOOL CAsyncSocketExLayer::GetSockNameNext( CString& rSockAddress, UINT& rSockPor
 				rSockPort = ntohs(((SOCKADDR_IN6*)sockAddr)->sin6_port);
 				LPTSTR buf = Inet6AddrToString(((SOCKADDR_IN6*)sockAddr)->sin6_addr);
 				rSockAddress = buf;
-				delete [] buf;
+				nb_free(buf);
 			} 
 			else if (m_nFamily == AF_INET)
 			{
@@ -773,10 +773,10 @@ BOOL CAsyncSocketExLayer::CreateNext(UINT nSocketPort, int nSocketType, long lEv
 	else if (m_nFamily == AF_UNSPEC)
 	{
 		m_lEvent = lEvent;
-		delete [] m_lpszSocketAddress;
+		nb_free(m_lpszSocketAddress);
 		if (lpszSocketAddress && *lpszSocketAddress)
 		{
-			m_lpszSocketAddress = new TCHAR[_tcslen(lpszSocketAddress) + 1];
+			m_lpszSocketAddress = static_cast<TCHAR *>(nb_calloc(_tcslen(lpszSocketAddress) + 1, sizeof(TCHAR)));
 			_tcscpy(m_lpszSocketAddress, lpszSocketAddress);
 		}
 		else
