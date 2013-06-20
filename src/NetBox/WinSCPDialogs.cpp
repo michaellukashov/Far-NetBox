@@ -1623,7 +1623,6 @@ private:
   TFarCheckBox * TryAgentCheck;
   TFarCheckBox * AuthKICheck;
   TFarCheckBox * AuthKIPasswordCheck;
-  TFarCheckBox * AuthGSSAPICheck2;
   TFarCheckBox * AgentFwdCheck;
   TFarCheckBox * AuthGSSAPICheck3;
   TFarCheckBox * GSSAPIFwdTGTCheck;
@@ -2731,10 +2730,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   AuthKIPasswordCheck->SetCaption(GetMsg(LOGIN_AUTH_KI_PASSWORD));
   AuthKIPasswordCheck->Move(4, 0);
 
-  AuthGSSAPICheck2 = new TFarCheckBox(this);
-  AuthGSSAPICheck2->SetCaption(GetMsg(LOGIN_AUTH_GSSAPI));
-  AuthGSSAPICheck2->SetOnAllowChange(MAKE_CALLBACK(TSessionDialog::AuthGSSAPICheckAllowChange, this));
-
   Separator = new TFarSeparator(this);
   Separator->SetCaption(GetMsg(LOGIN_AUTH_PARAMS_GROUP));
 
@@ -2747,6 +2742,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   AuthGSSAPICheck3 = new TFarCheckBox(this);
   AuthGSSAPICheck3->SetCaption(GetMsg(LOGIN_AUTH_ATTEMPT_GSSAPI_AUTHENTICATION));
+  AuthGSSAPICheck3->SetOnAllowChange(MAKE_CALLBACK(TSessionDialog::AuthGSSAPICheckAllowChange, this));
 
   GSSAPIFwdTGTCheck = new TFarCheckBox(this);
   GSSAPIFwdTGTCheck->SetCaption(GetMsg(LOGIN_AUTH_ALLOW_GSSAPI_CREDENTIAL_DELEGATION));
@@ -3042,7 +3038,9 @@ void TSessionDialog::UpdateControls()
     Authentication &&
     ((AuthTISCheck->GetEnabled() && AuthTISCheck->GetChecked()) ||
      (AuthKICheck->GetEnabled() && AuthKICheck->GetChecked())));
-  AuthGSSAPICheck2->SetEnabled(
+  AuthGSSAPICheck3->SetEnabled(
+    Authentication && !SshProt1onlyButton->GetChecked());
+  GSSAPIFwdTGTCheck->SetEnabled(
     Authentication && !SshProt1onlyButton->GetChecked());
 
   // Directories tab
@@ -3433,8 +3431,9 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   AuthTISCheck->SetChecked(SessionData->GetAuthTIS());
   AuthKICheck->SetChecked(SessionData->GetAuthKI());
   AuthKIPasswordCheck->SetChecked(SessionData->GetAuthKIPassword());
-  AuthGSSAPICheck2->SetChecked(SessionData->GetAuthGSSAPI());
   AgentFwdCheck->SetChecked(SessionData->GetAgentFwd());
+  AuthGSSAPICheck3->SetChecked(SessionData->GetAuthGSSAPI());
+  GSSAPIFwdTGTCheck->SetChecked(SessionData->GetGSSAPIFwdTGT());
 
   // Bugs tab
 
@@ -3755,8 +3754,9 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetAuthTIS(AuthTISCheck->GetChecked());
     SessionData->SetAuthKI(AuthKICheck->GetChecked());
     SessionData->SetAuthKIPassword(AuthKIPasswordCheck->GetChecked());
-    SessionData->SetAuthGSSAPI(AuthGSSAPICheck2->GetChecked());
     SessionData->SetAgentFwd(AgentFwdCheck->GetChecked());
+    SessionData->SetAuthGSSAPI(AuthGSSAPICheck3->GetChecked());
+    SessionData->SetGSSAPIFwdTGT(GSSAPIFwdTGTCheck->GetChecked());
 
     // Bugs tab
     // BUGS();
