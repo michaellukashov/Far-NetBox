@@ -1415,7 +1415,7 @@ THandleStream::THandleStream(HANDLE AHandle) :
 
 THandleStream::~THandleStream()
 {
-  // if (FHandle > 0)
+  // if (FHandle != INVALID_HANDLE_VALUE)
   //   ::CloseHandle(FHandle);
 }
 
