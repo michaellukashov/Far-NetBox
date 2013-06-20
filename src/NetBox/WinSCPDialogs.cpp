@@ -1625,7 +1625,6 @@ private:
   TFarCheckBox * AuthKIPasswordCheck;
   TFarCheckBox * AgentFwdCheck;
   TFarCheckBox * AuthGSSAPICheck2;
-  TFarEdit * GSSAPIServerRealmEdit;
   TFarCheckBox * DeleteToRecycleBinCheck;
   TFarCheckBox * OverwrittenToRecycleBinCheck;
   TFarEdit * RecycleBinPathEdit;
@@ -2740,11 +2739,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   AgentFwdCheck = new TFarCheckBox(this);
   AgentFwdCheck->SetCaption(GetMsg(LOGIN_AUTH_AGENT_FWD));
 
-  Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_AUTH_GSSAPI_SERVER_REALM));
-  GSSAPIServerRealmEdit = new TFarEdit(this);
-  Text->SetEnabledFollow(GSSAPIServerRealmEdit);
-
   new TFarSeparator(this);
 
   // Bugs tab
@@ -3038,8 +3032,6 @@ void TSessionDialog::UpdateControls()
      (AuthKICheck->GetEnabled() && AuthKICheck->GetChecked())));
   AuthGSSAPICheck2->SetEnabled(
     Authentication && !SshProt1onlyButton->GetChecked());
-  GSSAPIServerRealmEdit->SetEnabled(
-    AuthGSSAPICheck2->GetEnabled() && AuthGSSAPICheck2->GetChecked());
 
   // Directories tab
   CacheDirectoryChangesCheck->SetEnabled(
@@ -3431,7 +3423,6 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   AuthKIPasswordCheck->SetChecked(SessionData->GetAuthKIPassword());
   AuthGSSAPICheck2->SetChecked(SessionData->GetAuthGSSAPI());
   AgentFwdCheck->SetChecked(SessionData->GetAgentFwd());
-  GSSAPIServerRealmEdit->SetText(SessionData->GetGSSAPIServerRealm());
 
   // Bugs tab
 
@@ -3754,7 +3745,6 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetAuthKIPassword(AuthKIPasswordCheck->GetChecked());
     SessionData->SetAuthGSSAPI(AuthGSSAPICheck2->GetChecked());
     SessionData->SetAgentFwd(AgentFwdCheck->GetChecked());
-    SessionData->SetGSSAPIServerRealm(GSSAPIServerRealmEdit->GetText());
 
     // Bugs tab
     // BUGS();
