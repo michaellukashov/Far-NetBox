@@ -292,12 +292,12 @@ void TFileMasks::Clear()
 //---------------------------------------------------------------------------
 void TFileMasks::Clear(TMasks & Masks)
 {
-  TMasks::iterator I = Masks.begin();
-  while (I != Masks.end())
+  TMasks::iterator it = Masks.begin();
+  while (it != Masks.end())
   {
-    ReleaseMaskMask((*I).FileNameMask);
-    ReleaseMaskMask((*I).DirectoryMask);
-    ++I;
+    ReleaseMaskMask((*it).FileNameMask);
+    ReleaseMaskMask((*it).DirectoryMask);
+    ++it;
   }
   Masks.clear();
 }
@@ -307,10 +307,10 @@ bool TFileMasks::MatchesMasks(const UnicodeString & FileName, bool Directory,
 {
   bool Result = false;
 
-  TMasks::const_iterator I = Masks.begin();
-  while (!Result && (I != Masks.end()))
+  TMasks::const_iterator it = Masks.begin();
+  while (!Result && (it != Masks.end()))
   {
-    const TMask & Mask = *I;
+    const TMask & Mask = *it;
     Result =
       MatchesMaskMask(Mask.DirectoryMask, Path) &&
       MatchesMaskMask(Mask.FileNameMask, FileName);
@@ -391,7 +391,7 @@ bool TFileMasks::MatchesMasks(const UnicodeString & FileName, bool Directory,
       }
     }
 
-    ++I;
+    ++it;
   }
 
   if (!Result && Directory && !IsUnixRootPath(Path) && Recurse)
@@ -667,11 +667,11 @@ TStrings * TFileMasks::GetMasksStr(intptr_t Index) const
   if (FMasksStr[Index] == nullptr)
   {
     FMasksStr[Index] = new TStringList();
-    TMasks::const_iterator I = FMasks[Index].begin();
-    while (I != FMasks[Index].end())
+    TMasks::const_iterator it = FMasks[Index].begin();
+    while (it != FMasks[Index].end())
     {
-      FMasksStr[Index]->Add((*I).UserStr);
-      ++I;
+      FMasksStr[Index]->Add((*it).UserStr);
+      ++it;
     }
   }
 
