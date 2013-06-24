@@ -291,7 +291,7 @@ intptr_t TCustomFarPlugin::Configure(intptr_t Item)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
-    return static_cast<int>(false);
+    return 0;
   }
 }
 //---------------------------------------------------------------------------

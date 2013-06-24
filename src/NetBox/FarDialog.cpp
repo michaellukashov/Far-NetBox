@@ -463,7 +463,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
           Handled = true;
           if (!Close)
           {
-            Result = static_cast<int>(true);
+            Result = 1;
           }
         }
         break;
@@ -479,7 +479,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
       {
         case DN_INITDIALOG:
           Init();
-          Result = static_cast<int>(true);
+          Result = 1;
           break;
 
         case DN_DRAGGED:
@@ -496,7 +496,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
           break;
 
         case DN_CLOSE:
-          Result = static_cast<int>(true);
+          Result = 1;
           if (Param1 >= 0)
           {
             TFarButton * Button = dynamic_cast<TFarButton *>(GetItem(Param1));
@@ -570,7 +570,7 @@ LONG_PTR TFarDialog::FailDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
   switch (Msg)
   {
     case DN_CLOSE:
-      Result = static_cast<int>(false);
+      Result = 0;
       break;
 
     default:
@@ -2619,7 +2619,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
   }
   else if (Msg == DN_KEY)
   {
-    Result = static_cast<int>(true);
+    Result = 1;
 
     intptr_t NewTopIndex = GetTopIndex();
     if ((Param == KEY_UP) || (Param == KEY_LEFT))
@@ -2725,7 +2725,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
         NewTopIndex = static_cast<intptr_t>(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1)));
       }
 
-      Result = static_cast<int>(true);
+      Result = 1;
 
       SetTopIndex(NewTopIndex);
     }
