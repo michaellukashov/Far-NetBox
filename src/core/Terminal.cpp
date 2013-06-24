@@ -5426,10 +5426,9 @@ bool TSecondaryTerminal::DoPromptUser(TSessionData * Data,
 //------------------------------------------------------------------------------
 TTerminalList::TTerminalList(TConfiguration * AConfiguration) :
   TObjectList(),
-  FConfiguration(nullptr)
+  FConfiguration(AConfiguration)
 {
-  assert(AConfiguration);
-  FConfiguration = AConfiguration;
+  assert(FConfiguration);
 }
 //------------------------------------------------------------------------------
 TTerminalList::~TTerminalList()
