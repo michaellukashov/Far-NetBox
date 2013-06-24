@@ -41,22 +41,11 @@ TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
   FDialogItemsCapacity(0),
   FChangesLocked(0),
   FChangesPending(false),
-  FResult(0),
+  FResult(-1),
   FNeedsSynchronize(false),
   FSynchronizeMethod(nullptr)
 {
   assert(AFarPlugin);
-  FFlags = 0;
-  FHandle = 0;
-  FDefaultGroup = 0;
-  FDefaultButton = nullptr;
-  FNextItemPosition = ipNewLine;
-  FDialogItems = nullptr;
-  FDialogItemsCapacity = 0;
-  FChangesPending = false;
-  FChangesLocked = 0;
-  FResult = -1;
-  FNeedsSynchronize = false;
   FSynchronizeObjects[0] = INVALID_HANDLE_VALUE;
   FSynchronizeObjects[1] = INVALID_HANDLE_VALUE;
 
