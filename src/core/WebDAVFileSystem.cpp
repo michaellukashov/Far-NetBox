@@ -12486,12 +12486,12 @@ void TWebDAVFileSystem::CustomReadFile(const UnicodeString & FileName,
   TRemoteFile *& File, TRemoteFile * ALinkedByFile)
 {
   File = nullptr;
-  int is_dir = 0;
-  bool isExist = WebDAVCheckExisting(FileName.c_str(), is_dir);
+  int IsDir = 0;
+  bool isExist = WebDAVCheckExisting(FileName.c_str(), IsDir);
   if (isExist)
   {
     File = new TRemoteFile();
-    if (is_dir)
+    if (IsDir)
       File->SetType(FILETYPE_DIRECTORY);
   }
 }
