@@ -13511,11 +13511,11 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
           }
         }
         // FIXME
-        UnicodeString own = Entry->OwnerGroup;
-        const wchar_t * Space = wcschr(own.c_str(), ' ');
+        UnicodeString Own = Entry->OwnerGroup;
+        const wchar_t * Space = wcschr(Own.c_str(), ' ');
         if (Space != nullptr)
         {
-          File->GetFileOwner().SetName(UnicodeString(own.c_str(), (intptr_t)(Space - own.c_str())));
+          File->GetFileOwner().SetName(UnicodeString(Own.c_str(), (intptr_t)(Space - Own.c_str())));
           File->GetFileGroup().SetName(Space + 1);
         }
         else
