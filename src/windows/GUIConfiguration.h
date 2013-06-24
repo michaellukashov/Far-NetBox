@@ -131,7 +131,6 @@ private:
   mutable TStrings * FNameList;
   bool FModified;
 
-  void Init();
   void Reset();
   void Modify();
   bool CompareItem(intptr_t Index, const TCopyParamType * CopyParam,
