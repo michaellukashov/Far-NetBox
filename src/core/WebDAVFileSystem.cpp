@@ -13493,7 +13493,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
     for (intptr_t Index = 0; Index < Count; ++Index)
     {
       const TListDataEntry * Entry = &Entries[Index];
-      TRemoteFile * File = new TRemoteFile();
+      std::auto_ptr<TRemoteFile> File(new TRemoteFile());
       try
       {
         File->SetTerminal(FTerminal);
@@ -13578,7 +13578,6 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
       }
       catch (Exception & E)
       {
-        delete File;
         UnicodeString EntryData =
           FORMAT(L"%s/%s/%s/%lld/%d/%d/%d/%d/%d/%d/%d/%d/%d",
                  Entry->Name,
@@ -13590,7 +13589,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
         throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()));
       }
 
-      FFileList->AddFile(File);
+      FFileList->AddFile(File.release());
     }
     return true;
   }
