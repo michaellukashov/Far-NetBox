@@ -5446,9 +5446,9 @@ TTerminal * TTerminalList::CreateTerminal(TSessionData * Data)
 //------------------------------------------------------------------------------
 TTerminal * TTerminalList::NewTerminal(TSessionData * Data)
 {
-  TTerminal * Terminal = CreateTerminal(Data);
-  Add(Terminal);
-  return Terminal;
+  TTerminal * Result = CreateTerminal(Data);
+  Add(Result);
+  return Result;
 }
 //------------------------------------------------------------------------------
 void TTerminalList::FreeTerminal(TTerminal * Terminal)
