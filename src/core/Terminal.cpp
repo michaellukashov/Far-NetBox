@@ -5456,7 +5456,7 @@ void TTerminalList::FreeTerminal(TTerminal * Terminal)
   Remove(Terminal);
 }
 //------------------------------------------------------------------------------
-void TTerminalList::FreeAndNullTerminal(TTerminal * & Terminal)
+void TTerminalList::FreeAndNullTerminal(TTerminal *& Terminal)
 {
   TTerminal * T = Terminal;
   Terminal = nullptr;

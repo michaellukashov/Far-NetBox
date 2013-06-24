@@ -615,7 +615,7 @@ public:
 
   virtual TTerminal * NewTerminal(TSessionData * Data);
   virtual void FreeTerminal(TTerminal * Terminal);
-  void FreeAndNullTerminal(TTerminal * & Terminal);
+  void FreeAndNullTerminal(TTerminal *& Terminal);
   virtual void Idle();
   void RecryptPasswords();
 
