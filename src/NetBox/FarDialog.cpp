@@ -22,13 +22,13 @@ inline TRect Rect(int Left, int Top, int Right, int Bottom)
 //---------------------------------------------------------------------------
 TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
   TObject(),
-  FFarPlugin(nullptr),
+  FFarPlugin(AFarPlugin),
   FBounds(-1, -1, 40, 10),
   FFlags(0),
   FHelpTopic(),
   FVisible(false),
-  FItems(nullptr),
-  FContainers(nullptr),
+  FItems(new TObjectList()),
+  FContainers(new TObjectList()),
   FHandle(0),
   FDefaultButton(nullptr),
   FBorderBox(nullptr),
@@ -46,9 +46,6 @@ TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
   FSynchronizeMethod(nullptr)
 {
   assert(AFarPlugin);
-  FItems = new TObjectList();
-  FContainers = new TObjectList();
-  FFarPlugin = AFarPlugin;
   FFlags = 0;
   FHandle = 0;
   FDefaultGroup = 0;
@@ -934,17 +931,12 @@ TFarDialogContainer::TFarDialogContainer(TFarDialog * ADialog) :
   TObject(),
   FLeft(0),
   FTop(0),
-  FItems(nullptr),
-  FDialog(nullptr),
-  FEnabled(false)
+  FItems(new TObjectList()),
+  FDialog(ADialog),
+  FEnabled(true)
 {
   assert(ADialog);
-
-  FItems = new TObjectList();
   FItems->SetOwnsObjects(false);
-  FDialog = ADialog;
-  FEnabled = true;
-
   GetDialog()->Add(this);
   GetDialog()->GetNextItemPosition(FLeft, FTop);
 }
