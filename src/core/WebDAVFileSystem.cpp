@@ -6501,7 +6501,7 @@ io_file_write_full(
   // for larger values of NBYTES. In that case, we have to emulate the
   // "_full" part here. Thus, always call apr_file_write directly on
   // Win32 as this minimizes overhead for small data buffers.
-#define MAXBUFSIZE 256*1024
+#define MAXBUFSIZE 64*1024
   apr_size_t bw = nbytes;
   apr_size_t to_write = nbytes;
 
