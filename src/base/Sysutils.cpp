@@ -712,12 +712,12 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
     wchar_t * w = const_cast<wchar_t *>(Result.c_str());
 
     /* for each Word in Text
-     *   if Width(Word) > SpaceLeft
-     *     insert line break before Word in Text
-     *     SpaceLeft := LineWidth - Width(Word)
-     *   else
-     *     SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
-     */
+         if Width(Word) > SpaceLeft
+           insert line break before Word in Text
+           SpaceLeft := LineWidth - Width(Word)
+         else
+           SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
+    */
     const wchar_t * s = NextWord(Line.c_str());
     while (*s)
     {
