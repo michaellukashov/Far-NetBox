@@ -2471,7 +2471,7 @@ convert_to_stringbuf(// xlate_handle_node_t *node,
 // utf_cstring_to_utf8_ex, utf_cstring_from_utf8 and
 // utf_cstring_from_utf8_ex. Convert SRC to DEST using NODE->handle as
 // the translator and allocating from POOL.
-static error_t
+static APR_INLINE error_t
 convert_cstring(
   const char ** dest,
   const char * src,
@@ -2486,7 +2486,7 @@ convert_cstring(
 
 // Verify that the nullptr terminated sequence DATA is valid UTF-8.
 // If it is not, return an error with code APR_EINVAL.
-static error_t
+static APR_INLINE error_t
 check_cstring_utf8(
   const char * data,
   apr_pool_t * pool)
@@ -2510,7 +2510,7 @@ utf_cstring_to_utf8(
   return check_cstring_utf8(*dest, pool);
 }
 
-static error_t
+static APR_INLINE error_t
 utf_cstring_from_utf8(
   const char ** dest,
   const char * src,
@@ -2713,7 +2713,7 @@ apr_base64_decode(
 // from user.c
 
 // Get the current user's name from the OS
-static const char *
+static APR_INLINE const char *
 get_os_username(
   apr_pool_t * pool)
 {
