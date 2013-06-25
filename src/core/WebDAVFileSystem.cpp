@@ -1239,7 +1239,7 @@ string_createf(
   return str;
 }
 
-static bool
+static APR_INLINE bool
 string_compare(
   const string_t * str1,
   const string_t * str2)
@@ -1273,7 +1273,7 @@ stringbuf_appendbytes(
                                // to null-terminate.
 }
 
-static void
+static APR_INLINE void
 stringbuf_appendstr(
   stringbuf_t * targetstr,
   const stringbuf_t * appendstr)
@@ -1281,7 +1281,7 @@ stringbuf_appendstr(
   stringbuf_appendbytes(targetstr, appendstr->data, appendstr->len);
 }
 
-static void
+static APR_INLINE void
 stringbuf_appendcstr(
   stringbuf_t * targetstr,
   const char * cstr)
@@ -1319,7 +1319,7 @@ cstring_strtoi64(
   return WEBDAV_NO_ERROR;
 }
 
-static error_t
+static APR_INLINE error_t
 cstring_atoi64(
   apr_int64_t * n,
   const char * str)
@@ -1727,7 +1727,7 @@ static const unsigned char casefold_table[256] =
   240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255
 };
 
-static int
+static APR_INLINE int
 ctype_casecmp(int a, int b)
 {
   const int A = casefold_table[(unsigned char)a];
@@ -2121,7 +2121,7 @@ path_join(
   return path;
 }
 
-static const char *
+static APR_INLINE const char *
 path_url_add_component2(
   const char * url,
   const char * component,
