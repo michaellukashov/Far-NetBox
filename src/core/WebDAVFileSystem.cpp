@@ -997,10 +997,7 @@ string_compare(
 
   // now the strings must have identical lengths
 
-  if ((memcmp(str1, str2, len1)) == 0)
-    return true;
-  else
-    return false;
+  return memcmp(str1, str2, len1) == 0;
 }
 
 // Our own realloc, since APR doesn't have one.  Note: this is a
