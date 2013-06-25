@@ -6103,27 +6103,29 @@ is_child(
         ((type == type_dirent) && path1[i - 1] == ':'))
     {
       if (path2[i] == '/')
-        /* .../
-         * ..../
-         *     i */
+        // .../
+        // ..../
+        //     i
         return nullptr;
       else
-        /* .../
-         * .../foo
-         *     i */
+        // .../
+        // .../foo
+        //     i
         return pool ? apr_pstrdup(pool, path2 + i) : path2 + i;
     }
     else if (path2[i] == '/')
     {
       if (path2[i + 1])
-        /* ...
-         * .../foo
-         *    i   */
+        // ...
+        //.../foo
+        //   i
+        //
         return pool ? apr_pstrdup(pool, path2 + i + 1) : path2 + i + 1;
       else
-        /* ...
-         * .../
-         *    i   */
+        // ...
+        // .../
+        //    i
+        //
         return nullptr;
     }
   }
