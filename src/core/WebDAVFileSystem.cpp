@@ -1244,8 +1244,7 @@ string_compare(
   const string_t * str1,
   const string_t * str2)
 {
-  return
-    string_compare(str1->data, str2->data, str1->len, str2->len);
+  return string_compare(str1->data, str2->data, str1->len, str2->len);
 }
 
 static void
