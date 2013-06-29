@@ -1784,7 +1784,8 @@ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
   TObject(),
   FPlugin(APlugin),
   FClosed(false),
-  FCriticalSection(nullptr)
+  FCriticalSection(nullptr),
+  FOpenPanelInfoValid(false)
 {
   memset(FPanelInfo, 0, sizeof(FPanelInfo));
 }
