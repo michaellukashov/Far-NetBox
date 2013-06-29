@@ -32,18 +32,18 @@ TFarMessageParams::TFarMessageParams()
 }
 //---------------------------------------------------------------------------
 TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
-  TObject()
+  TObject(),
+  FCriticalSection(new TCriticalSection()),
+  FOpenedPlugins(new TObjectList()),
+  FSavedTitles(new TStringList())
 {
   InitPlatformId();
   FFarThread = GetCurrentThreadId();
-  FCriticalSection = new TCriticalSection();
   FHandle = HInst;
   FFarVersion = 0;
   FTerminalScreenShowing = false;
 
-  FOpenedPlugins = new TObjectList();
   FOpenedPlugins->SetOwnsObjects(false);
-  FSavedTitles = new TStringList();
   FCurrentProgress = -1;
   FTopDialog = nullptr;
   FValidFarSystemSettings = false;
@@ -297,7 +297,7 @@ intptr_t TCustomFarPlugin::Configure(const struct ConfigureInfo *Info)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
-    return static_cast<int>(false);
+    return 0;
   }
 }
 //---------------------------------------------------------------------------

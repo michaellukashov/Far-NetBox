@@ -852,20 +852,6 @@ public:
     return *this;
   }
 
-  static DelphiSet<T>& InitRange(T FirstItem, T LastItem)
-  {
-    DelphiSet<T> *NewOne = new DelphiSet<T>();
-    NewOne->Add(FirstItem, LastItem);
-    return *NewOne;
-  }
-
-  static DelphiSet<T>& InitRange(T FirstItem, T LastItem, const int Count)
-  {
-    DelphiSet<T> *NewOne = new DelphiSet<T>();
-    NewOne->AddRange(FirstItem, Count);
-    return *NewOne;
-  }
-
   bool IsEmpty() const
   {
     return (FSet.size() == 0);

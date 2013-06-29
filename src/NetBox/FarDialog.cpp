@@ -17,13 +17,13 @@ inline TRect Rect(int Left, int Top, int Right, int Bottom)
 //---------------------------------------------------------------------------
 TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
   TObject(),
-  FFarPlugin(nullptr),
+  FFarPlugin(AFarPlugin),
   FBounds(-1, -1, 40, 10),
   FFlags(0),
   FHelpTopic(),
   FVisible(false),
-  FItems(nullptr),
-  FContainers(nullptr),
+  FItems(new TObjectList()),
+  FContainers(new TObjectList()),
   FHandle(0),
   FDefaultButton(nullptr),
   FBorderBox(nullptr),
@@ -36,25 +36,11 @@ TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
   FDialogItemsCapacity(0),
   FChangesLocked(0),
   FChangesPending(false),
-  FResult(0),
+  FResult(-1),
   FNeedsSynchronize(false),
   FSynchronizeMethod(nullptr)
 {
   assert(AFarPlugin);
-  FItems = new TObjectList();
-  FContainers = new TObjectList();
-  FFarPlugin = AFarPlugin;
-  FFlags = 0;
-  FHandle = 0;
-  FDefaultGroup = 0;
-  FDefaultButton = nullptr;
-  FNextItemPosition = ipNewLine;
-  FDialogItems = nullptr;
-  FDialogItemsCapacity = 0;
-  FChangesPending = false;
-  FChangesLocked = 0;
-  FResult = -1;
-  FNeedsSynchronize = false;
   FSynchronizeObjects[0] = INVALID_HANDLE_VALUE;
   FSynchronizeObjects[1] = INVALID_HANDLE_VALUE;
 
@@ -476,7 +462,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
           Handled = true;
           if (!Close)
           {
-            Result = static_cast<int>(true);
+            Result = 1;
           }
         }
         break;
@@ -492,7 +478,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
       {
         case DN_INITDIALOG:
           Init();
-          Result = static_cast<int>(true);
+          Result = 1;
           break;
 
         case DN_DRAGGED:
@@ -509,7 +495,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
           break;
 
         case DN_CLOSE:
-          Result = static_cast<int>(true);
+          Result = 1;
           if (Param1 >= 0)
           {
             TFarButton * Button = dynamic_cast<TFarButton *>(GetItem(Param1));
@@ -583,7 +569,7 @@ intptr_t TFarDialog::FailDialogProc(intptr_t Msg, intptr_t Param1, void * Param2
   switch (Msg)
   {
     case DN_CLOSE:
-      Result = static_cast<int>(false);
+      Result = 0;
       break;
 
     default:
@@ -942,17 +928,12 @@ TFarDialogContainer::TFarDialogContainer(TFarDialog * ADialog) :
   TObject(),
   FLeft(0),
   FTop(0),
-  FItems(nullptr),
-  FDialog(nullptr),
-  FEnabled(false)
+  FItems(new TObjectList()),
+  FDialog(ADialog),
+  FEnabled(true)
 {
   assert(ADialog);
-
-  FItems = new TObjectList();
   FItems->SetOwnsObjects(false);
-  FDialog = ADialog;
-  FEnabled = true;
-
   GetDialog()->Add(this);
   GetDialog()->GetNextItemPosition(FLeft, FTop);
 }
@@ -2668,7 +2649,7 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
   }
   else if (Msg == DN_CONTROLINPUT)
   {
-    Result = static_cast<int>(true);
+    Result = 1;
     INPUT_RECORD *Rec = reinterpret_cast<INPUT_RECORD *>(Param);
     if (Rec->EventType == KEY_EVENT)
     {
@@ -2786,7 +2767,7 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
           NewTopIndex = static_cast<intptr_t>(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1)));
         }
 
-        Result = static_cast<int>(true);
+        Result = 1;
 
         SetTopIndex(NewTopIndex);
       }

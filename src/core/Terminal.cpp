@@ -5426,10 +5426,9 @@ bool TSecondaryTerminal::DoPromptUser(TSessionData * Data,
 //------------------------------------------------------------------------------
 TTerminalList::TTerminalList(TConfiguration * AConfiguration) :
   TObjectList(),
-  FConfiguration(nullptr)
+  FConfiguration(AConfiguration)
 {
-  assert(AConfiguration);
-  FConfiguration = AConfiguration;
+  assert(FConfiguration);
 }
 //------------------------------------------------------------------------------
 TTerminalList::~TTerminalList()
@@ -5446,9 +5445,9 @@ TTerminal * TTerminalList::CreateTerminal(TSessionData * Data)
 //------------------------------------------------------------------------------
 TTerminal * TTerminalList::NewTerminal(TSessionData * Data)
 {
-  TTerminal * Terminal = CreateTerminal(Data);
-  Add(Terminal);
-  return Terminal;
+  TTerminal * Result = CreateTerminal(Data);
+  Add(Result);
+  return Result;
 }
 //------------------------------------------------------------------------------
 void TTerminalList::FreeTerminal(TTerminal * Terminal)
@@ -5457,7 +5456,7 @@ void TTerminalList::FreeTerminal(TTerminal * Terminal)
   Remove(Terminal);
 }
 //------------------------------------------------------------------------------
-void TTerminalList::FreeAndNullTerminal(TTerminal * & Terminal)
+void TTerminalList::FreeAndNullTerminal(TTerminal *& Terminal)
 {
   TTerminal * T = Terminal;
   Terminal = nullptr;

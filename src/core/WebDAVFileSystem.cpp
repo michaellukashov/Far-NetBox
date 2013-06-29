@@ -997,10 +997,7 @@ string_compare(
 
   // now the strings must have identical lengths
 
-  if ((memcmp(str1, str2, len1)) == 0)
-    return true;
-  else
-    return false;
+  return memcmp(str1, str2, len1) == 0;
 }
 
 // Our own realloc, since APR doesn't have one.  Note: this is a
@@ -1242,13 +1239,12 @@ string_createf(
   return str;
 }
 
-static bool
+static APR_INLINE bool
 string_compare(
   const string_t * str1,
   const string_t * str2)
 {
-  return
-    string_compare(str1->data, str2->data, str1->len, str2->len);
+  return string_compare(str1->data, str2->data, str1->len, str2->len);
 }
 
 static void
@@ -1276,7 +1272,7 @@ stringbuf_appendbytes(
                                // to null-terminate.
 }
 
-static void
+static APR_INLINE void
 stringbuf_appendstr(
   stringbuf_t * targetstr,
   const stringbuf_t * appendstr)
@@ -1284,7 +1280,7 @@ stringbuf_appendstr(
   stringbuf_appendbytes(targetstr, appendstr->data, appendstr->len);
 }
 
-static void
+static APR_INLINE void
 stringbuf_appendcstr(
   stringbuf_t * targetstr,
   const char * cstr)
@@ -1322,7 +1318,7 @@ cstring_strtoi64(
   return WEBDAV_NO_ERROR;
 }
 
-static error_t
+static APR_INLINE error_t
 cstring_atoi64(
   apr_int64_t * n,
   const char * str)
@@ -1730,7 +1726,7 @@ static const unsigned char casefold_table[256] =
   240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255
 };
 
-static int
+static APR_INLINE int
 ctype_casecmp(int a, int b)
 {
   const int A = casefold_table[(unsigned char)a];
@@ -2124,7 +2120,7 @@ path_join(
   return path;
 }
 
-static const char *
+static APR_INLINE const char *
 path_url_add_component2(
   const char * url,
   const char * component,
@@ -2475,7 +2471,7 @@ convert_to_stringbuf(// xlate_handle_node_t *node,
 // utf_cstring_to_utf8_ex, utf_cstring_from_utf8 and
 // utf_cstring_from_utf8_ex. Convert SRC to DEST using NODE->handle as
 // the translator and allocating from POOL.
-static error_t
+static APR_INLINE error_t
 convert_cstring(
   const char ** dest,
   const char * src,
@@ -2490,7 +2486,7 @@ convert_cstring(
 
 // Verify that the nullptr terminated sequence DATA is valid UTF-8.
 // If it is not, return an error with code APR_EINVAL.
-static error_t
+static APR_INLINE error_t
 check_cstring_utf8(
   const char * data,
   apr_pool_t * pool)
@@ -2514,7 +2510,7 @@ utf_cstring_to_utf8(
   return check_cstring_utf8(*dest, pool);
 }
 
-static error_t
+static APR_INLINE error_t
 utf_cstring_from_utf8(
   const char ** dest,
   const char * src,
@@ -2717,7 +2713,7 @@ apr_base64_decode(
 // from user.c
 
 // Get the current user's name from the OS
-static const char *
+static APR_INLINE const char *
 get_os_username(
   apr_pool_t * pool)
 {
@@ -6107,27 +6103,29 @@ is_child(
         ((type == type_dirent) && path1[i - 1] == ':'))
     {
       if (path2[i] == '/')
-        /* .../
-         * ..../
-         *     i */
+        // .../
+        // ..../
+        //     i
         return nullptr;
       else
-        /* .../
-         * .../foo
-         *     i */
+        // .../
+        // .../foo
+        //     i
         return pool ? apr_pstrdup(pool, path2 + i) : path2 + i;
     }
     else if (path2[i] == '/')
     {
       if (path2[i + 1])
-        /* ...
-         * .../foo
-         *    i   */
+        // ...
+        //.../foo
+        //   i
+        //
         return pool ? apr_pstrdup(pool, path2 + i + 1) : path2 + i + 1;
       else
-        /* ...
-         * .../
-         *    i   */
+        // ...
+        // .../
+        //    i
+        //
         return nullptr;
     }
   }
@@ -6505,7 +6503,7 @@ io_file_write_full(
   // for larger values of NBYTES. In that case, we have to emulate the
   // "_full" part here. Thus, always call apr_file_write directly on
   // Win32 as this minimizes overhead for small data buffers.
-#define MAXBUFSIZE 256*1024
+#define MAXBUFSIZE 64*1024
   apr_size_t bw = nbytes;
   apr_size_t to_write = nbytes;
 
@@ -12486,12 +12484,12 @@ void TWebDAVFileSystem::CustomReadFile(const UnicodeString & FileName,
   TRemoteFile *& File, TRemoteFile * ALinkedByFile)
 {
   File = nullptr;
-  int is_dir = 0;
-  bool isExist = WebDAVCheckExisting(FileName.c_str(), is_dir);
+  int IsDir = 0;
+  bool isExist = WebDAVCheckExisting(FileName.c_str(), IsDir);
   if (isExist)
   {
     File = new TRemoteFile();
-    if (is_dir)
+    if (IsDir)
       File->SetType(FILETYPE_DIRECTORY);
   }
 }
@@ -13493,7 +13491,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
     for (intptr_t Index = 0; Index < Count; ++Index)
     {
       const TListDataEntry * Entry = &Entries[Index];
-      TRemoteFile * File = new TRemoteFile();
+      std::auto_ptr<TRemoteFile> File(new TRemoteFile());
       try
       {
         File->SetTerminal(FTerminal);
@@ -13511,11 +13509,11 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
           }
         }
         // FIXME
-        UnicodeString own = Entry->OwnerGroup;
-        const wchar_t * Space = wcschr(own.c_str(), ' ');
+        UnicodeString Own = Entry->OwnerGroup;
+        const wchar_t * Space = wcschr(Own.c_str(), ' ');
         if (Space != nullptr)
         {
-          File->GetFileOwner().SetName(UnicodeString(own.c_str(), (intptr_t)(Space - own.c_str())));
+          File->GetFileOwner().SetName(UnicodeString(Own.c_str(), (intptr_t)(Space - Own.c_str())));
           File->GetFileGroup().SetName(Space + 1);
         }
         else
@@ -13578,7 +13576,6 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
       }
       catch (Exception & E)
       {
-        delete File;
         UnicodeString EntryData =
           FORMAT(L"%s/%s/%s/%lld/%d/%d/%d/%d/%d/%d/%d/%d/%d",
                  Entry->Name,
@@ -13590,7 +13587,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
         throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()));
       }
 
-      FFileList->AddFile(File);
+      FFileList->AddFile(File.release());
     }
     return true;
   }

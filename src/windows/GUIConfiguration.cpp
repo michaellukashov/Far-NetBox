@@ -220,18 +220,13 @@ void TCopyParamRule::SetData(const TCopyParamRuleData & Value)
 //---------------------------------------------------------------------------
 UnicodeString TCopyParamList::FInvalidChars(L"/\\[]");
 //---------------------------------------------------------------------------
-TCopyParamList::TCopyParamList()
+TCopyParamList::TCopyParamList() :
+  FCopyParams(new TList()),
+  FRules(new TList()),
+  FNames(new TStringList()),
+  FNameList(nullptr),
+  FModified(false)
 {
-  Init();
-}
-//---------------------------------------------------------------------------
-void TCopyParamList::Init()
-{
-  FCopyParams = new TList();
-  FRules = new TList();
-  FNames = new TStringList();
-  FNameList = nullptr;
-  FModified = false;
 }
 //---------------------------------------------------------------------------
 TCopyParamList::~TCopyParamList()

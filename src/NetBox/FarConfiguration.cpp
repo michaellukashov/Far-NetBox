@@ -26,11 +26,11 @@ enum NetBoxConfirmationsSettings
 };
 //---------------------------------------------------------------------------
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
-  TGUIConfiguration()
+  TGUIConfiguration(),
+  FFarConfirmations(-1),
+  FFarPlugin(APlugin),
+  FBookmarks(new TBookmarks())
 {
-  FFarConfirmations = -1;
-  FFarPlugin = APlugin;
-  FBookmarks = new TBookmarks();
   Default();
 }
 //---------------------------------------------------------------------------
