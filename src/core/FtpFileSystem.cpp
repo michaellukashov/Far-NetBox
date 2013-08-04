@@ -1845,9 +1845,9 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
     // the only allowed 2XX code to "PWD"
     if ((Code == 257) &&
-        (Response->GetCount() == 1))
+        (ResponsePtr->GetCount() == 1))
     {
-      UnicodeString Path = Response->GetText();
+      UnicodeString Path = ResponsePtr->GetText();
 
       intptr_t P = Path.Pos(L"\"");
       if (P == 0)
@@ -1877,7 +1877,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
     }
     else
     {
-      throw Exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, Response->GetText().c_str()));
+      throw Exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, ResponsePtr->GetText().c_str()));
     }
   }
 }

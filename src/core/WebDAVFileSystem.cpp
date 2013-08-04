@@ -3124,17 +3124,17 @@ config_read_auth_data(
   WEBDAV_ERR(fs->CreateStorage(Storage));
   std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
   assert(StoragePtr.get());
-  Storage->SetAccessMode(smRead);
-  if (!Storage->OpenSubKey(UnicodeString(subkey), false))
+  StoragePtr->SetAccessMode(smRead);
+  if (!StoragePtr->OpenSubKey(UnicodeString(subkey), false))
     return WEBDAV_ERR_BAD_PARAM;
 
   *hash = apr_hash_make(pool);
   std::auto_ptr<TStrings> Keys(new TStringList());
-  Storage->GetValueNames(Keys.get());
+  StoragePtr->GetValueNames(Keys.get());
   for (intptr_t Index = 0; Index < Keys->GetCount(); ++Index)
   {
     UnicodeString Key = Keys->GetString(Index);
-    UnicodeString Value = Storage->ReadStringRaw(Key, L"");
+    UnicodeString Value = StoragePtr->ReadStringRaw(Key, L"");
     apr_hash_set(*hash, AUTHN_ASCII_CERT_KEY, APR_HASH_KEY_STRING,
       string_create(AnsiString(Key).c_str(), pool));
     apr_hash_set(*hash, AUTHN_FAILURES_KEY, APR_HASH_KEY_STRING,
@@ -3158,16 +3158,16 @@ config_write_auth_data(
   WEBDAV_ERR(fs->CreateStorage(Storage));
   std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
   assert(StoragePtr.get());
-  Storage->SetAccessMode(smReadWrite);
+  StoragePtr->SetAccessMode(smReadWrite);
 
-  if (!Storage->OpenSubKey(UnicodeString(subkey), true))
+  if (!StoragePtr->OpenSubKey(UnicodeString(subkey), true))
     return WEBDAV_ERR_BAD_PARAM;
   string_t * trusted_cert = static_cast<string_t *>(apr_hash_get(hash, AUTHN_ASCII_CERT_KEY,
     APR_HASH_KEY_STRING));
   string_t * failstr = static_cast<string_t *>(apr_hash_get(hash, AUTHN_FAILURES_KEY,
     APR_HASH_KEY_STRING));
   if (trusted_cert && failstr)
-    Storage->WriteString(UnicodeString(trusted_cert->data), UnicodeString(failstr->data));
+    StoragePtr->WriteString(UnicodeString(trusted_cert->data), UnicodeString(failstr->data));
   return WEBDAV_NO_ERROR;
 }
 
