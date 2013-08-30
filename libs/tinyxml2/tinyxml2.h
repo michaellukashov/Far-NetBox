@@ -14,6 +14,7 @@ not claim that you wrote the original software. If you use this
 software in a product, an acknowledgment in the product documentation
 would be appreciated but is not required.
 
+
 2. Altered source versions must be plainly marked as such, and
 must not be misrepresented as being the original software.
 
@@ -55,6 +56,23 @@ distribution.
 #   ifndef DEBUG
 #       define DEBUG
 #   endif
+#endif
+
+#ifdef _MSC_VER
+#   pragma warning(push)
+#   pragma warning(disable: 4251)
+#endif
+
+#ifdef _WIN32
+#   ifdef TINYXML2_EXPORT
+#       define TINYXML2_LIB __declspec(dllexport)
+#   elif defined(TINYXML2_IMPORT)
+#       define TINYXML2_LIB __declspec(dllimport)
+#   else
+#       define TINYXML2_LIB
+#   endif
+#else
+#   define TINYXML2_LIB
 #endif
 
 
@@ -408,7 +426,7 @@ private:
 
 	@sa XMLNode::Accept()
 */
-class XMLVisitor
+class TINYXML2_LIB XMLVisitor
 {
 public:
     virtual ~XMLVisitor() {}
@@ -554,7 +572,7 @@ public:
 
 	@endverbatim
 */
-class XMLNode
+class TINYXML2_LIB XMLNode
 {
     friend class XMLDocument;
     friend class XMLElement;
@@ -820,7 +838,7 @@ private:
 	you generally want to leave it alone, but you can change the output mode with
 	SetCData() and query it with CData().
 */
-class XMLText : public XMLNode
+class TINYXML2_LIB XMLText : public XMLNode
 {
     friend class XMLBase;
     friend class XMLDocument;
@@ -859,7 +877,7 @@ private:
 
 
 /** An XML Comment. */
-class XMLComment : public XMLNode
+class TINYXML2_LIB XMLComment : public XMLNode
 {
     friend class XMLDocument;
 public:
@@ -897,7 +915,7 @@ private:
 	The text of the declaration isn't interpreted. It is parsed
 	and written as a string.
 */
-class XMLDeclaration : public XMLNode
+class TINYXML2_LIB XMLDeclaration : public XMLNode
 {
     friend class XMLDocument;
 public:
@@ -929,7 +947,7 @@ protected:
 
 	DTD tags get thrown into XMLUnknowns.
 */
-class XMLUnknown : public XMLNode
+class TINYXML2_LIB XMLUnknown : public XMLNode
 {
     friend class XMLDocument;
 public:
@@ -988,7 +1006,7 @@ enum XMLError {
 	@note The attributes are not XMLNodes. You may only query the
 	Next() attribute in a list.
 */
-class XMLAttribute
+class TINYXML2_LIB XMLAttribute
 {
     friend class XMLElement;
 public:
@@ -1089,7 +1107,7 @@ private:
 	and can contain other elements, text, comments, and unknowns.
 	Elements also contain an arbitrary number of attributes.
 */
-class XMLElement : public XMLNode
+class TINYXML2_LIB XMLElement : public XMLNode
 {
     friend class XMLBase;
     friend class XMLDocument;
@@ -1409,7 +1427,7 @@ enum Whitespace {
 	All Nodes are connected and allocated to a Document.
 	If the Document is deleted, all its Nodes are also deleted.
 */
-class XMLDocument : public XMLNode
+class TINYXML2_LIB XMLDocument : public XMLNode
 {
     friend class XMLElement;
 public:
@@ -1667,7 +1685,7 @@ private:
 
 	See also XMLConstHandle, which is the same as XMLHandle, but operates on const objects.
 */
-class XMLHandle
+class TINYXML2_LIB XMLHandle
 {
 public:
     /// Create a handle from any node (at any depth of the tree.) This can be a null pointer.
@@ -1751,7 +1769,7 @@ private:
 	A variant of the XMLHandle class for working with const XMLNodes and Documents. It is the
 	same in all regards, except for the 'const' qualifiers. See XMLHandle for API.
 */
-class XMLConstHandle
+class TINYXML2_LIB XMLConstHandle
 {
 public:
     XMLConstHandle( const XMLNode* node )											{
@@ -1858,7 +1876,7 @@ private:
 	printer.CloseElement();
 	@endverbatim
 */
-class XMLPrinter : public XMLVisitor
+class TINYXML2_LIB XMLPrinter : public XMLVisitor
 {
 public:
     /** Construct the printer. If the FILE* is specified,
@@ -1867,7 +1885,7 @@ public:
     	If 'compact' is set to true, then output is created
     	with only required whitespace and newlines.
     */
-    XMLPrinter( std::FILE* file=0, bool compact = false );
+    XMLPrinter( std::FILE* file=0, bool compact = false, int depth = 0 );
     ~XMLPrinter()	{}
 
     /** If streaming, write the BOM and declaration. */
@@ -1964,5 +1982,8 @@ private:
 
 }	// tinyxml2
 
+#if defined(_MSC_VER)
+#   pragma warning(pop)
+#endif
 
 #endif // TINYXML2_INCLUDED
