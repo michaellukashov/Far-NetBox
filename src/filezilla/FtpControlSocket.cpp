@@ -1395,7 +1395,7 @@ BOOL CFtpControlSocket::Send(CString str)
 		}
 		if (res != sendLen)
 		{
-			if (res == -2)
+			if (res < 0)
 				res = 0;
 			if (!m_sendBuffer)
 			{
@@ -1432,7 +1432,7 @@ BOOL CFtpControlSocket::Send(CString str)
 		}
 		if (res != sendLen)
 		{
-			if (res == -2)
+			if (res < 0)
 				res = 0;
 			if (!m_sendBuffer)
 			{
