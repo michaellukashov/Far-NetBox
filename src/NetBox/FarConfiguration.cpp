@@ -185,7 +185,7 @@ void TFarConfiguration::CacheFarSettings()
 //---------------------------------------------------------------------------
 intptr_t TFarConfiguration::FarConfirmations() const
 {
-  if (GetCurrentThreadId() == GetPlugin()->GetFarThread())
+  if (GetPlugin() && (GetCurrentThreadId() == GetPlugin()->GetFarThread()))
   {
     return GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
   }
@@ -204,7 +204,7 @@ bool TFarConfiguration::GetConfirmOverwriting() const
   }
   else
   {
-    assert(GetPlugin());
+    // assert(GetPlugin());
     return (FarConfirmations() & FCS_COPYOVERWRITE) != 0;
   }
 }
