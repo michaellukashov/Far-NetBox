@@ -971,14 +971,7 @@ void TIniFileStorage::Flush()
           // "access denied" errors upon implicit saves to existing file are ignored
           if (GetExplicit() || !Exists || (GetLastError() != ERROR_ACCESS_DENIED))
           {
-            try
-            {
-              RaiseLastOSError();
-            }
-            catch(Exception & E)
-            {
-              throw ExtException(&E, FMTLOAD(CREATE_FILE_ERROR, (GetStorage())));
-            }
+            throw EOSExtException(FMTLOAD((Exists ? WRITE_ERROR : CREATE_FILE_ERROR), GetStorage().c_str()));
           }
         }
         else
