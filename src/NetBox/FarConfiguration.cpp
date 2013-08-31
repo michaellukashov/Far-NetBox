@@ -16,6 +16,7 @@ TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   FBookmarks(new TBookmarks())
 {
   Default();
+  CacheFarSettings();
 }
 //---------------------------------------------------------------------------
 TFarConfiguration::~TFarConfiguration()
@@ -176,7 +177,10 @@ void TFarConfiguration::SetPlugin(TCustomFarPlugin * Value)
 //---------------------------------------------------------------------------
 void TFarConfiguration::CacheFarSettings()
 {
-  FFarConfirmations = GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
+  if (GetPlugin())
+  {
+    FFarConfirmations = GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
+  }
 }
 //---------------------------------------------------------------------------
 intptr_t TFarConfiguration::FarConfirmations() const
