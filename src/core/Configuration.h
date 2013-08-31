@@ -120,8 +120,8 @@ public:
   virtual ~TConfiguration();
 
   virtual void Default();
-  virtual void Load();
-  virtual void Save();
+  void Load();
+  void Save();
   void SetNulStorage();
   void SetDefaultStorage();
   void Export(const UnicodeString & FileName);
