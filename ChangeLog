@@ -1,5 +1,6 @@
 NetBox 2.1.31 ??.06.2013
 --------------------
+  * Update neon sources to 0.30.0
   * Update WinSCP sources to 5.2.3
   * Update apr sources to version 1.4.8
   * Bugfix: Fix FTP proxy settings.
