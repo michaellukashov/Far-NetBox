@@ -357,6 +357,14 @@ static ssize_t body_fd_send(void *userdata, char *buffer, size_t count)
 ((((code) == NE_SOCK_CLOSED || (code) == NE_SOCK_RESET || \
  (code) == NE_SOCK_TRUNC) && retry) ? NE_RETRY : (acode))
 
+/* For sending chunks, an 8-byte prefix is reserved at the beginning
+ * of the buffer.  This is large enough for a trailing \r\n for the
+ * previous chunk, the chunk size, and the \r\n following the
+ * chunk-size. */
+#define CHUNK_OFFSET (8)
+#define CHUNK_TERM "\r\n0\r\n\r\n"
+#define CHUNK_NULL_TERM "0\r\n\r\n"
+
 /* Sends the request body; returns 0 on success or an NE_* error code.
  * If retry is non-zero; will return NE_RETRY on persistent connection
  * timeout.  On error, the session error string is set and the
@@ -364,13 +372,28 @@ static ssize_t body_fd_send(void *userdata, char *buffer, size_t count)
 static int send_request_body(ne_request *req, int retry)
 {
     ne_session *const sess = req->session;
-    char buffer[NE_BUFSIZ];
+    char buffer[NE_BUFSIZ], *start;
     ssize_t bytes;
+    size_t buflen;
+    int chunked = req->body_length < 0, chunknum = 0;
+    int ret;
 
     NE_DEBUG(NE_DBG_HTTP, "Sending request body:\n");
 
+    /* Set up status union and (start, buflen) as the buffer to be
+     * passed the supplied callback. */
+    if (chunked) {
+        start = buffer + CHUNK_OFFSET;
+        buflen = sizeof(buffer) - CHUNK_OFFSET;
+        req->session->status.sr.total = -1;
+    }
+    else {
+        start = buffer;
+        buflen = sizeof buffer;
+        req->session->status.sr.total = req->body_length;
+    }
+
     req->session->status.sr.progress = 0;
-    req->session->status.sr.total = req->body_length;
     notify_status(sess, ne_status_sending);
     
     /* tell the source to start again from the beginning. */
@@ -379,8 +402,23 @@ static int send_request_body(ne_request *req, int retry)
         return NE_ERROR;
     }
     
-    while ((bytes = req->body_cb(req->body_ud, buffer, sizeof buffer)) > 0) {
-	int ret = ne_sock_fullwrite(sess->socket, buffer, bytes);
+    while ((bytes = req->body_cb(req->body_ud, start, buflen)) > 0) {
+        req->session->status.sr.progress += bytes;
+        if (chunked) {
+            /* Overwrite the buffer prefix with the appropriate chunk
+             * size; since ne_snprintf always NUL-terminates, the \n
+             * is omitted and placed over the NUL afterwards. */
+            if (chunknum++ == 0)
+                ne_snprintf(buffer, CHUNK_OFFSET, 
+                            "%06x\r", (unsigned)bytes);
+            else
+                ne_snprintf(buffer, CHUNK_OFFSET, 
+                            "\r\n%04x\r", (unsigned)bytes);
+            buffer[CHUNK_OFFSET - 1] = '\n';
+            bytes += CHUNK_OFFSET;
+        }
+        ret = ne_sock_fullwrite(sess->socket, buffer, bytes);
+
         if (ret < 0) {
             int aret = aborted(req, _("Could not send request body"), ret);
             return RETRY_RET(retry, ret, aret);
@@ -391,18 +429,31 @@ static int send_request_body(ne_request *req, int retry)
 		 bytes, (int)bytes, buffer);
 
         /* invoke progress callback */
-        req->session->status.sr.progress += bytes;
         notify_status(sess, ne_status_sending);
     }
 
-    if (bytes == 0) {
-        return NE_OK;
-    } else {
+    if (bytes) {
         NE_DEBUG(NE_DBG_HTTP, "Request body provider failed with "
                  "%" NE_FMT_SSIZE_T "\n", bytes);
         ne_close_connection(sess);
         return NE_ERROR;
     }
+
+    if (chunked) {
+        if (chunknum == 0)
+            ret = ne_sock_fullwrite(sess->socket, CHUNK_NULL_TERM, 
+                                    sizeof(CHUNK_NULL_TERM) - 1);
+        else
+            ret = ne_sock_fullwrite(sess->socket, CHUNK_TERM, 
+                                    sizeof(CHUNK_TERM) - 1);
+        if (ret < 0) {
+            int aret = aborted(req, _("Could not send chunked "
+                                      "request terminator"), ret);
+            return RETRY_RET(retry, ret, aret);
+        }
+    }
+    
+    return NE_OK;
 }
 
 /* Lob the User-Agent, connection and host headers in to the request
@@ -495,7 +546,12 @@ ne_request *ne_request_create(ne_session *sess,
 static void set_body_length(ne_request *req, ne_off_t length)
 {
     req->body_length = length;
-    ne_print_request_header(req, "Content-Length", "%" FMT_NE_OFF_T, length);
+
+    if (length >= 0)
+        ne_print_request_header(req, "Content-Length", "%" FMT_NE_OFF_T, length);
+    else /* length < 0 => chunked body */
+        ne_add_request_header(req, "Transfer-Encoding", "chunked");
+
 }
 
 void ne_set_request_body_buffer(ne_request *req, const char *buffer,
@@ -529,14 +585,14 @@ void ne_set_request_body_fd(ne_request *req, int fd,
 
 void ne_set_request_flag(ne_request *req, ne_request_flag flag, int value)
 {
-    if (flag < NE_SESSFLAG_LAST) {
+    if (flag < (ne_request_flag)NE_SESSFLAG_LAST) {
         req->flags[flag] = value;
     }
 }
 
 int ne_get_request_flag(ne_request *req, ne_request_flag flag)
 {
-    if (flag < NE_REQFLAG_LAST) {
+    if (flag < (ne_request_flag)NE_REQFLAG_LAST) {
         return req->flags[flag];
     }
     return -1;
@@ -965,7 +1021,7 @@ static int send_request(ne_request *req, const ne_buffer *request)
 	return RETRY_RET(retry, sret, aret);
     }
     
-    if (!req->flags[NE_REQFLAG_EXPECT100] && req->body_length > 0) {
+    if (!req->flags[NE_REQFLAG_EXPECT100] && req->body_length) {
 	/* Send request body, if not using 100-continue. */
 	ret = send_request_body(req, retry);
 	if (ret) {
@@ -985,7 +1041,7 @@ static int send_request(ne_request *req, const ne_buffer *request)
 	if ((ret = discard_headers(req)) != NE_OK) break;
 
 	if (req->flags[NE_REQFLAG_EXPECT100] && (status->code == 100)
-            && req->body_length > 0 && !sentbody) {
+            && req->body_length && !sentbody) {
 	    /* Send the body after receiving the first 100 Continue */
 	    if ((ret = send_request_body(req, 0)) != NE_OK) break;	    
 	    sentbody = 1;

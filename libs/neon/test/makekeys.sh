@@ -28,10 +28,10 @@ for i in ca ca1 ca2 ca3; do
     mkdir $i
     touch $i/index.txt
     echo 01 > $i/serial
-    ${OPENSSL} genrsa -rand ${srcdir}/../configure > $i/key.pem
+    ${OPENSSL} genrsa -rand ${srcdir}/../configure 1024 > $i/key.pem
 done
 
-${OPENSSL} genrsa -rand ${srcdir}/../configure > client.key
+${OPENSSL} genrsa -rand ${srcdir}/../configure 1024 > client.key
 
 ${OPENSSL} dsaparam -genkey -rand ${srcdir}/../configure 1024 > client.dsap
 ${OPENSSL} gendsa client.dsap > clientdsa.key

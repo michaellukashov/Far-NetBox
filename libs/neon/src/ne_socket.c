@@ -1,6 +1,6 @@
 /* 
    Socket handling routines
-   Copyright (C) 1998-2009, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1998-2011, Joe Orton <joe@manyfish.co.uk>
    Copyright (C) 2004 Aleix Conchillo Flaque <aleix@member.fsf.org>
 
    This library is free software; you can redistribute it and/or
@@ -27,6 +27,9 @@
 #include "config.h"
 
 #include <sys/types.h>
+#ifdef HAVE_SYS_UIO_h
+#include <sys/uio.h> /* writev(2) */
+#endif
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
@@ -215,7 +218,7 @@ struct ne_socket_s {
     char *bufpos;
     size_t bufavail;
 // #define RDBUFSIZ 4096
-#define RDBUFSIZ 256*1024
+#define RDBUFSIZ 64*1024
     char buffer[RDBUFSIZ];
     /* Error string. */
     char error[192];
@@ -228,6 +231,7 @@ struct ne_sock_addr_s {
 #else
     struct in_addr *addrs;
     size_t cursor, count;
+    char *name;
 #endif
     int errnum;
 };
@@ -393,12 +397,13 @@ static int raw_poll(int fdno, int rdwr, int secs)
         ret = poll(&fds, 1, timeout);
     } while (ret < 0 && NE_ISINTR(ne_errno));
 #else
-    fd_set rdfds, wrfds;
+    fd_set rdfds, wrfds, exfds;
     struct timeval timeout, *tvp = (secs >= 0 ? &timeout : NULL);
 
     /* Init the fd set */
     FD_ZERO(&rdfds);
     FD_ZERO(&wrfds);
+    FD_ZERO(&exfds);
 
     /* Note that (amazingly) the FD_SET macro does not expand
      * correctly on Netware if not inside a compound statement
@@ -408,13 +413,14 @@ static int raw_poll(int fdno, int rdwr, int secs)
     } else {
         FD_SET(fdno, &wrfds);
     }
+    FD_SET(fdno, &exfds);
 
     if (tvp) {
         tvp->tv_sec = secs;
         tvp->tv_usec = 0;
     }
     do {
-	ret = select(fdno + 1, &rdfds, &wrfds, NULL, tvp);
+	ret = select(fdno + 1, &rdfds, &wrfds, &exfds, tvp);
     } while (ret < 0 && NE_ISINTR(ne_errno));
 #endif
     return ret;
@@ -722,9 +728,11 @@ static ssize_t error_gnutls(ne_socket *sock, ssize_t sret)
                     _("SSL alert received: %s"),
                     gnutls_alert_get_name(gnutls_alert_get(sock->ssl)));
         break;
+#if GNUTLS_VERSION_MAJOR > 2 || (GNUTLS_VERSION_MAJOR == 2 && GNUTLS_VERSION_MINOR >= 99)
+    case GNUTLS_E_PREMATURE_TERMINATION:
+#else
     case GNUTLS_E_UNEXPECTED_PACKET_LENGTH:
-        /* It's not exactly an API guarantee but this error will
-         * always mean a premature EOF. */
+#endif
         ret = NE_SOCK_TRUNC;
         set_error(sock, _("Secure connection truncated"));
         break;
@@ -911,12 +919,16 @@ ne_sock_addr *ne_addr_resolve(const char *hostname, int flags)
 
     hints.ai_socktype = SOCK_STREAM;
 
+    if (flags & NE_ADDR_CANON) {
+        hints.ai_flags = AI_CANONNAME;
+    }
+
 #ifdef AF_INET6
     if (hostname[0] == '[' && ((pnt = strchr(hostname, ']')) != NULL)) {
 	char *hn = ne_strdup(hostname + 1);
 	hn[pnt - hostname - 1] = '\0';
 #ifdef AI_NUMERICHOST /* added in the RFC2553 API */
-	hints.ai_flags = AI_NUMERICHOST;
+	hints.ai_flags |= AI_NUMERICHOST;
 #endif
         hints.ai_family = AF_INET6;
 	addr->errnum = getaddrinfo(hn, NULL, &hints, &addr->result);
@@ -925,7 +937,7 @@ ne_sock_addr *ne_addr_resolve(const char *hostname, int flags)
 #endif /* AF_INET6 */
     {
 #ifdef USE_GAI_ADDRCONFIG /* added in the RFC3493 API */
-        hints.ai_flags = AI_ADDRCONFIG;
+        hints.ai_flags |= AI_ADDRCONFIG;
         hints.ai_family = AF_UNSPEC;
         addr->errnum = getaddrinfo(hostname, NULL, &hints, &addr->result);
 #else
@@ -960,6 +972,9 @@ ne_sock_addr *ne_addr_resolve(const char *hostname, int flags)
 
 	    for (n = 0; n < addr->count; n++)
 		memcpy(&addr->addrs[n], hp->h_addr_list[n], hp->h_length);
+            
+            if (hp->h_name && hp->h_name[0]) 
+                addr->name = ne_strdup(hp->h_name);
 	}
     } else {
 	addr->addrs = ne_malloc(sizeof *addr->addrs);
@@ -973,6 +988,15 @@ ne_sock_addr *ne_addr_resolve(const char *hostname, int flags)
 int ne_addr_result(const ne_sock_addr *addr)
 {
     return addr->errnum;
+}
+
+const char *ne_addr_canonical(const ne_sock_addr *addr)
+{
+#ifdef USE_GETADDRINFO
+    return addr->result ? addr->result->ai_canonname : NULL;
+#else
+    return addr->name;
+#endif
 }
 
 const ne_inet_addr *ne_addr_first(ne_sock_addr *addr)
@@ -1136,7 +1160,9 @@ int ne_iaddr_reverse(const ne_inet_addr *ia, char *buf, size_t bufsiz)
 #else
     struct hostent *hp;
     
-    hp = gethostbyaddr(ia, sizeof *ia, AF_INET);
+    /* Cast to const void *; some old libc headers apparently expect
+     * const char * here. */
+    hp = gethostbyaddr((const void *)ia, sizeof *ia, AF_INET);
     if (hp && hp->h_name) {
         ne_strnzcpy(buf, hp->h_name, bufsiz);
         return 0;
@@ -1153,6 +1179,8 @@ void ne_addr_destroy(ne_sock_addr *addr)
 #else
     if (addr->addrs)
 	ne_free(addr->addrs);
+    if (addr->name)
+        ne_free(addr->name);
 #endif
     ne_free(addr);
 }
@@ -1231,18 +1259,18 @@ static int timed_connect(ne_socket *sock, int fd,
             }
         }
         
-        /* Reset to old flags: */
-        if (fcntl(fd, F_SETFL, flags) == -1) {
+        /* Reset to old flags; fail on error if no previous error. */
+        if (fcntl(fd, F_SETFL, flags) == -1 && !ret) {
             set_strerror(sock, errno);
             ret = NE_SOCK_ERROR;
-        }       
+        }
     } else 
 #endif /* USE_NONBLOCKING_CONNECT */
     {
         ret = raw_connect(fd, sa, salen);
         
         if (ret < 0) {
-            set_strerror(sock, errno);
+            set_strerror(sock, ne_errno);
             ret = NE_SOCK_ERROR;
         }
     }
@@ -1321,12 +1349,9 @@ static int do_bind(int fd, int peer_family,
 #if defined(HAVE_SETSOCKOPT) && defined(SO_REUSEADDR) && defined(SOL_SOCKET)
     {
         int flag = 1;
-        int value = 256 * 1024;
 
-        (void) setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (void *)&flag, sizeof(flag));
+        (void) setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof flag);
         /* An error here is not fatal, so ignore it. */
-        (void) setsockopt(fd, SOL_SOCKET, SO_SNDBUF, (void *)&value, sizeof(value));
-        (void) setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (void *)&flag, sizeof(flag));
     }
 #endif        
     
@@ -1370,7 +1395,9 @@ static int do_bind(int fd, int peer_family,
 
 #ifdef SOCK_CLOEXEC
 /* sock_cloexec is initialized to SOCK_CLOEXEC and cleared to zero if
- * a socket() call ever fails with EINVAL. */
+ * a socket() call ever fails with EINVAL; not strictly thread-safe
+ * but in practice it will not matter if two threads race accessing
+ * the variable. */
 static int sock_cloexec = SOCK_CLOEXEC;
 #define RETRY_ON_EINVAL
 #else
@@ -1432,7 +1459,7 @@ int ne_sock_connect(ne_socket *sock,
                         ia_family(sock->laddr) == ia_family(addr))) {
         ret = do_bind(fd, ia_family(addr), sock->laddr, sock->lport);
         if (ret < 0) {
-            int errnum = errno;
+            int errnum = ne_errno;
             ne_close(fd);
             set_strerror(sock, errnum);
             return NE_SOCK_ERROR;
@@ -1442,7 +1469,7 @@ int ne_sock_connect(ne_socket *sock,
 #if defined(HAVE_SETSOCKOPT) && (defined(TCP_NODELAY) || defined(WIN32))
     { /* Disable the Nagle algorithm. */
         int flag = 1;
-        setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (void *)&flag, sizeof flag);
+        setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof flag);
     }
 #endif
     
@@ -1583,8 +1610,10 @@ int ne_sock_accept(ne_socket *sock, int listener)
 {
     int fd = accept(listener, NULL, NULL);
 
-    if (fd < 0)
+    if (fd < 0) {
+        set_strerror(sock, ne_errno);
         return -1;
+    }
 
     sock->fd = fd;
     return 0;
@@ -1612,14 +1641,14 @@ void ne_sock_connect_timeout(ne_socket *sock, int timeout)
  * session. */
 
 /* Copy datum 'src' to 'dest'. */
-static void copy_datum(gnutls_datum *dest, gnutls_datum *src)
+static void copy_datum(gnutls_datum_t *dest, gnutls_datum_t *src)
 {
     dest->size = src->size;
     dest->data = memcpy(gnutls_malloc(src->size), src->data, src->size);
 }
 
 /* Callback to store a session 'data' with id 'key'. */
-static int store_sess(void *userdata, gnutls_datum key, gnutls_datum data)
+static int store_sess(void *userdata, gnutls_datum_t key, gnutls_datum_t data)
 {
     ne_ssl_context *ctx = userdata;
 
@@ -1635,17 +1664,17 @@ static int store_sess(void *userdata, gnutls_datum key, gnutls_datum data)
 }
 
 /* Returns non-zero if d1 and d2 are the same datum. */
-static int match_datum(gnutls_datum *d1, gnutls_datum *d2)
+static int match_datum(gnutls_datum_t *d1, gnutls_datum_t *d2)
 {
     return d1->size == d2->size
         && memcmp(d1->data, d2->data, d1->size) == 0;
 }
 
 /* Callback to retrieve a session of id 'key'. */
-static gnutls_datum retrieve_sess(void *userdata, gnutls_datum key)
+static gnutls_datum_t retrieve_sess(void *userdata, gnutls_datum_t key)
 {
     ne_ssl_context *ctx = userdata;
-    gnutls_datum ret = { NULL, 0 };
+    gnutls_datum_t ret = { NULL, 0 };
 
     if (match_datum(&ctx->cache.server.key, &key)) {
         copy_datum(&ret, &ctx->cache.server.data);
@@ -1656,7 +1685,7 @@ static gnutls_datum retrieve_sess(void *userdata, gnutls_datum key)
 
 /* Callback to remove a session of id 'key'; stub needed but
  * implementation seems unnecessary. */
-static int remove_sess(void *userdata, gnutls_datum key)
+static int remove_sess(void *userdata, gnutls_datum_t key)
 {
     return -1;
 }
@@ -1682,6 +1711,8 @@ int ne_sock_accept_ssl(ne_socket *sock, ne_ssl_context *ctx)
         NE_DEBUG(NE_DBG_SSL, "ssl: Server reused session.\n");
     }
 #elif defined(HAVE_GNUTLS)
+    unsigned int verify_status;
+
     gnutls_init(&ssl, GNUTLS_SERVER);
     gnutls_credentials_set(ssl, GNUTLS_CRD_CERTIFICATE, ctx->cred);
     gnutls_set_default_priority(ssl);
@@ -1693,15 +1724,15 @@ int ne_sock_accept_ssl(ne_socket *sock, ne_ssl_context *ctx)
     gnutls_db_set_ptr(ssl, ctx);
 
     if (ctx->verify)
-        gnutls_certificate_server_set_request(ssl, GNUTLS_CERT_REQUEST);
+        gnutls_certificate_server_set_request(ssl, GNUTLS_CERT_REQUIRE);
 
     sock->ssl = ssl;
-    gnutls_transport_set_ptr(sock->ssl, (gnutls_transport_ptr)(long)sock->fd);
+    gnutls_transport_set_ptr(sock->ssl, (gnutls_transport_ptr_t)(long)sock->fd);
     ret = gnutls_handshake(ssl);
     if (ret < 0) {
         return error_gnutls(sock, ret);
     }
-    if (ctx->verify && gnutls_certificate_verify_peers(ssl)) {
+    if (ctx->verify && (gnutls_certificate_verify_peers2(ssl, &verify_status) || verify_status)) {
         set_error(sock, _("Client certificate verification failed"));
         return NE_SOCK_ERROR;
     }
@@ -1720,13 +1751,6 @@ int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx, void *userdata)
     if (seed_ssl_prng()) {
 	set_error(sock, _("SSL disabled due to lack of entropy"));
 	return NE_SOCK_ERROR;
-    }
-
-    /* If runtime library version differs from compile-time version
-     * number in major/minor/fix level, abort soon. */
-    if ((SSLeay() ^ OPENSSL_VERSION_NUMBER) & 0xFFFFF000) {
-        set_error(sock, _("SSL disabled due to library version mismatch"));
-        return NE_SOCK_ERROR;
     }
 
     sock->ssl = ssl = SSL_new(ctx->ctx);
@@ -1778,7 +1802,7 @@ int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx, void *userdata)
                                strlen(ctx->hostname));
     }                               
 
-    gnutls_transport_set_ptr(sock->ssl, (gnutls_transport_ptr)(long)sock->fd);
+    gnutls_transport_set_ptr(sock->ssl, (gnutls_transport_ptr_t)(long)sock->fd);
 
     if (ctx->cache.client.data) {
 #if defined(HAVE_GNUTLS_SESSION_GET_DATA2)

@@ -35,13 +35,16 @@
 #include <sys/types.h>
 
 #ifdef NE_LFS
+# ifdef _MSC_VER
+typedef __int64 off64_t;
+# endif
 typedef off64_t ne_off_t;
 #else
-typedef __int64 ne_off_t;
+typedef off_t ne_off_t;
 #endif
 
 /* define ssize_t for Win32 */
-#if (defined(WIN32) || defined(WIN64)) && !defined(ssize_t)
+#if defined(WIN32) && !defined(ssize_t)
 #define ssize_t int
 #endif
 
@@ -75,8 +78,7 @@ typedef __int64 ne_off_t;
 #endif
 
 #ifndef NE_BUFSIZ
-// #define NE_BUFSIZ 8192
-#define NE_BUFSIZ 256*1024
+#define NE_BUFSIZ 8192
 #endif
 
 #endif /* NE_DEFS_H */
