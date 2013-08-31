@@ -162,7 +162,7 @@ void TFarConfiguration::Save(bool All, bool Explicit)
     FForceInheritance = false;
   });
   {
-    TGUIConfiguration::Save(All, Explicit);
+    TGUIConfiguration::DoSave(All, Explicit);
   }
 }
 //---------------------------------------------------------------------------
