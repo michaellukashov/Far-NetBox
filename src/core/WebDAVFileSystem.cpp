@@ -11519,7 +11519,7 @@ neon_open(
   {
     if (ne_has_support(NE_FEATURE_SSL) == 0)
       return error_create(WEBDAV_ERR_DAV_SOCK_INIT, nullptr,
-        "SSL is not supported");
+        "TLS is not supported");
   }
 
   ne_session * sess = ne_session_create(uri->scheme, uri->host, uri->port);
@@ -12121,7 +12121,7 @@ private:
 //------------------------------------------------------------------------------
 #undef FILE_OPERATION_LOOP_EX
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
+  FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION, L"")
 //------------------------------------------------------------------------------
 static const UnicodeString CONST_WEBDAV_PROTOCOL_BASE_NAME = L"WebDAV";
 
@@ -12422,7 +12422,7 @@ void TWebDAVFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
 
 void TWebDAVFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 {
-  FileList->Clear();
+  FileList->Reset();
   // add parent directory
   FileList->AddFile(new TRemoteParentDirectory(FTerminal));
 
@@ -13584,7 +13584,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
                  Entry->Size,
                  int(Entry->Dir), int(Entry->Link), Entry->Time.Year, Entry->Time.Month, Entry->Time.Day,
                  Entry->Time.Hour, Entry->Time.Minute, int(Entry->Time.HasTime), int(Entry->Time.HasDate));
-        throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()));
+        throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()), HELP_LIST_LINE_ERROR);
       }
 
       FFileList->AddFile(File.release());

@@ -25,7 +25,7 @@
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
+  FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION, L"")
 //---------------------------------------------------------------------------
 const int DummyCodeClass = 8;
 const int DummyTimeoutCode = 801;
@@ -339,6 +339,10 @@ void TFTPFileSystem::Open()
 
   switch (Data->GetFtps())
   {
+    case ftpsNone:
+      // noop;
+      break;
+
     case ftpsImplicit:
       FSessionInfo.SecurityProtocolName = LoadStr(FTPS_IMPLICIT);
       break;
@@ -349,6 +353,10 @@ void TFTPFileSystem::Open()
 
     case ftpsExplicitTls:
       FSessionInfo.SecurityProtocolName = LoadStr(FTPS_EXPLICIT_TLS);
+      break;
+
+    default:
+      FAIL;
       break;
   }
 
@@ -515,6 +523,11 @@ void TFTPFileSystem::Open()
     }
   }
   while (FPasswordFailed);
+
+  FSessionInfo.CSCipher = FFileZillaIntf->GetCipherName().c_str();
+  FSessionInfo.SCCipher = FSessionInfo.CSCipher;
+  UnicodeString TlsVersionStr = FFileZillaIntf->GetTlsVersionStr().c_str();
+  AddToList(FSessionInfo.SecurityProtocolName, TlsVersionStr, L", ");
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::Close()
@@ -973,8 +986,7 @@ void TFTPFileSystem::DoFileTransferProgress(__int64 TransferSize,
   }
 
   __int64 Diff = Bytes - OperationProgress->TransferedSize;
-  assert(Diff >= 0);
-  if (Diff >= 0)
+  if (ALWAYS_TRUE(Diff >= 0))
   {
     OperationProgress->AddTransfered(Diff);
   }
@@ -1884,7 +1896,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 {
-  FileList->Clear();
+  FileList->Reset();
   // FZAPI does not list parent directory, add it
   FileList->AddFile(new TRemoteParentDirectory(FTerminal));
 
@@ -1907,8 +1919,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   // whole below "-a" logic is for LIST,
   // if we know we are going to use MLSD, skip it
-  if (FTerminal->GetSessionData()->GetFtpUseMlsd() &&
-      (FServerCapabilities->GetCapability(mlsd_command) == yes))
+  if (FTerminal->GetSessionData()->GetFtpUseMlsd())
   {
     DoReadDirectory(FileList);
   }
@@ -2317,6 +2328,14 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
 
     case OPTION_MPEXT_SSLSESSIONREUSE:
       Result = (Data->GetSslSessionReuse() ? TRUE : FALSE);
+      break;
+
+    case OPTION_MPEXT_MIN_TLS_VERSION:
+      Result = Data->GetMinTlsVersion();
+      break;
+
+    case OPTION_MPEXT_MAX_TLS_VERSION:
+      Result = Data->GetMaxTlsVersion();
       break;
 
     case OPTION_MPEXT_SNDBUF:
@@ -3480,7 +3499,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
              int(Entry->Dir), int(Entry->Link), Entry->Time.Year, Entry->Time.Month, Entry->Time.Day,
              Entry->Time.Hour, Entry->Time.Minute, int(Entry->Time.HasTime),
              int(Entry->Time.HasSeconds), int(Entry->Time.HasDate));
-        throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()));
+        throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()), HELP_LIST_LINE_ERROR);
       }
 
       FFileList->AddFile(File.release());

@@ -1881,6 +1881,11 @@ intptr_t TTerminalQueueStatus::GetDoneAndActiveCount() const
   return GetDoneCount() + GetActiveCount();
 }
 //---------------------------------------------------------------------------
+intptr_t TTerminalQueueStatus::GetActiveAndPendingCount() const
+{
+  return GetCount() - GetDoneCount();
+}
+//---------------------------------------------------------------------------
 void TTerminalQueueStatus::Add(TQueueItemProxy * ItemProxy)
 {
   ItemProxy->FQueueStatus = this;

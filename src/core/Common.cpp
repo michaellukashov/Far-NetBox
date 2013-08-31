@@ -296,7 +296,7 @@ UnicodeString ExceptionLogString(Exception *E)
       if (MoreMessages)
       {
         Msg += L"\n" +
-          StringReplace(MoreMessages->GetText(), L"\r", L"", TReplaceFlags() << rfReplaceAll);
+          ReplaceStr(MoreMessages->GetText(), L"\r", L"");
       }
     }
     return Msg;
@@ -771,6 +771,19 @@ unsigned char HexToByte(const UnicodeString & Hex)
     static_cast<unsigned char>(((P1 <= 0) || (P2 <= 0)) ? 0 : (((P1 - 1) << 4) + (P2 - 1)));
 }
 //---------------------------------------------------------------------------
+bool IsDigit(wchar_t Ch)
+{
+  return (Ch >= '0') && (Ch <= '9');
+}
+//---------------------------------------------------------------------------
+bool IsHex(wchar_t Ch)
+{
+  return
+    IsDigit(Ch) ||
+    ((Ch >= 'A') && (Ch <= 'F')) ||
+    ((Ch >= 'a') && (Ch <= 'f'));
+}
+//---------------------------------------------------------------------------
 DWORD FindCheck(DWORD Result)
 {
   if ((Result != ERROR_SUCCESS) &&
@@ -1107,7 +1120,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
 {
   UnicodeString S = Str.Trim();
   intptr_t Index = 1;
-  while ((Index <= S.Length()) && (S[Index] >= '0') && (S[Index] <= '9'))
+  while ((Index <= S.Length()) && IsDigit(S[Index]))
   {
     ++Index;
   }
@@ -1699,7 +1712,7 @@ UnicodeString EncodeUrlString(const UnicodeString & S)
 //---------------------------------------------------------------------------
 UnicodeString EscapeHotkey(const UnicodeString & Caption)
 {
-  return StringReplace(Caption, L"&", L"&&", TReplaceFlags() << rfReplaceAll);
+  return ReplaceStr(Caption, L"&", L"&&");
 }
 //---------------------------------------------------------------------------
 // duplicated in console's Main.cpp
@@ -1783,13 +1796,9 @@ void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeS
   }
 }
 //---------------------------------------------------------------------------
-bool Is2000()
-{
-  return (Win32MajorVersion >= 5);
-}
-//---------------------------------------------------------------------------
 bool IsWin7()
 {
+//  return CheckWin32Version(6, 1);
   return
     (Win32MajorVersion > 6) ||
     ((Win32MajorVersion == 6) && (Win32MinorVersion >= 1));
@@ -1849,7 +1858,7 @@ bool IsExactly2008R2()
 //---------------------------------------------------------------------------
 LCID GetDefaultLCID()
 {
-  return Is2000() ? GetUserDefaultLCID() : GetThreadLocale();
+  return GetUserDefaultLCID();
 }
 //---------------------------------------------------------------------------
 static UnicodeString ADefaultEncodingName;
@@ -1911,6 +1920,11 @@ UnicodeString FormatNumber(__int64 Number)
 UnicodeString FormatSize(__int64 Size)
 {
   return FormatNumber(Size);
+}
+//---------------------------------------------------------------------------
+UnicodeString ExtractFileBaseName(const UnicodeString & Path)
+{
+  return ChangeFileExt(ExtractFileName(Path, false), L"");
 }
 //---------------------------------------------------------------------
 UnicodeString FormatBytes(__int64 Bytes, bool UseOrders)

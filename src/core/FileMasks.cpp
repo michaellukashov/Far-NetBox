@@ -9,6 +9,7 @@
 #include "RemoteFiles.h"
 #include "PuttyTools.h"
 #include "Terminal.h"
+#include <StrUtils.hpp>
 //---------------------------------------------------------------------------
 extern const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
 static UnicodeString FileMasksDelimiters = L";,";
@@ -883,8 +884,7 @@ UnicodeString TCustomCommand::Complete(const UnicodeString & Command,
       {
         if (!LastPass)
         {
-          Replacement = StringReplace(Replacement, L"!", L"!!",
-            TReplaceFlags() << rfReplaceAll);
+          Replacement = ReplaceStr(Replacement, L"!", L"!!");
         }
         if (Delimit)
         {
@@ -1196,12 +1196,12 @@ bool TFileCustomCommand::IsFileCommand(const UnicodeString & Command)
   return FindPattern(Command, L'!') || FindPattern(Command, L'&');
 }
 /*//---------------------------------------------------------------------------
-bool __fastcall TFileCustomCommand::IsSiteCommand(const UnicodeString & Command)
+bool TFileCustomCommand::IsSiteCommand(const UnicodeString & Command)
 {
   return FindPattern(Command, L'@');
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileCustomCommand::IsPasswordCommand(const UnicodeString & Command)
+bool TFileCustomCommand::IsPasswordCommand(const UnicodeString & Command)
 {
   return FindPattern(Command, L'p');
 }

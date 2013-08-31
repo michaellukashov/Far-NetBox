@@ -7,6 +7,7 @@
 #include "PuttyIntf.h"
 #include "HierarchicalStorage.h"
 #include <TextsCore.h>
+#include <StrUtils.hpp>
 //------------------------------------------------------------------------------
 #pragma package(smart_init)
 //------------------------------------------------------------------------------
@@ -76,7 +77,7 @@ UnicodeString MungeIniName(const UnicodeString & Str)
   // make this fast for now
   if (P > 0)
   {
-    return StringReplace(Str, L"=", L"%3D", TReplaceFlags() << rfReplaceAll);
+    return ReplaceStr(Str, L"=", L"%3D");
   }
   else
   {
@@ -90,7 +91,7 @@ UnicodeString UnMungeIniName(const UnicodeString & Str)
   // make this fast for now
   if (P > 0)
   {
-    return StringReplace(Str, L"%3D", L"=", TReplaceFlags() << rfReplaceAll);
+    return ReplaceStr(Str, L"%3D", L"=");
   }
   else
   {

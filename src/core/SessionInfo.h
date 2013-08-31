@@ -67,7 +67,7 @@ public:
     const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
     TStrings * Results) = 0;
   virtual void DisplayBanner(const UnicodeString & Banner) = 0;
-  virtual void FatalError(Exception * E, const UnicodeString & Msg) = 0;
+  virtual void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") = 0;
   virtual void HandleExtendedException(Exception * E) = 0;
   virtual void Closed() = 0;
 };
@@ -253,6 +253,7 @@ private:
   void DoAddToSelf(TLogLineType AType, const UnicodeString & ALine);
   void AddStartupInfo(bool System);
   void DoAddStartupInfo(TSessionData * Data);
+  UnicodeString GetTlsVersionName(TTlsVersion TlsVersion);
 
 protected:
   void CloseLogFile();

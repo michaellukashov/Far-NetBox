@@ -5,19 +5,108 @@
 #include "Common.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
+#include "HelpCore.h"
+#include "Configuration.h"
+#include "CoreMain.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-bool ExceptionMessage(const Exception * E, UnicodeString & Message)
+static bool WellKnownException(
+  const Exception * E, UnicodeString * AMessage, const wchar_t ** ACounterName, Exception ** AClone, bool Rethrow)
+{
+  UnicodeString Message;
+  const wchar_t * CounterName;
+  std::auto_ptr<Exception> Clone;
+
+  bool Result = true;
+
+  // EAccessViolation is EExternal
+  if (dynamic_cast<const EAccessViolation*>(E) != nullptr)
+  {
+    if (Rethrow)
+    {
+      throw EAccessViolation(E->Message);
+    }
+    Message = LoadStr(ACCESS_VIOLATION_ERROR3);
+    CounterName = L"AccessViolations";
+    Clone.reset(new EAccessViolation(E->Message));
+  }
+  /*
+  // EIntError and EMathError are EExternal
+  else if ((dynamic_cast<EListError*>(E) != nullptr) ||
+           (dynamic_cast<EStringListError*>(E) != nullptr) ||
+           (dynamic_cast<EIntError*>(E) != nullptr) ||
+           (dynamic_cast<EMathError*>(E) != nullptr) ||
+           (dynamic_cast<EVariantError*>(E) != nullptr))
+  {
+    if (Rethrow)
+    {
+      throw EIntError(E->Message);
+    }
+    Message = E->Message;
+    CounterName = L"InternalExceptions";
+    Clone.reset(new EIntError(E->Message));
+  }
+  else if (dynamic_cast<EExternal*>(E) != nullptr)
+  {
+    if (Rethrow)
+    {
+      throw EExternal(E->Message);
+    }
+    Message = E->Message;
+    CounterName = L"ExternalExceptions";
+    Clone.reset(new EExternal(E->Message));
+  }
+  else if (dynamic_cast<EHeapException*>(E) != nullptr)
+  {
+    if (Rethrow)
+    {
+      throw EHeapException(E->Message);
+    }
+    Message = E->Message;
+    CounterName = L"HeapExceptions";
+    Clone.reset(new EHeapException(E->Message));
+  }
+  */
+  else
+  {
+    Result = false;
+  }
+
+  if (Result)
+  {
+    if (AMessage != nullptr)
+    {
+      (*AMessage) = Message;
+    }
+    if (ACounterName != nullptr)
+    {
+      (*ACounterName) = CounterName;
+    }
+    if (AClone != nullptr)
+    {
+      (*AClone) = NOT_NULL(Clone.release());
+    }
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------------
+static bool ExceptionMessage(const Exception * E, bool Count,
+  UnicodeString & Message, bool & InternalError)
 {
   bool Result = true;
+  const wchar_t * CounterName = nullptr;
+  InternalError = false;
+
+  // this list has to be in sync with CloneException
   if (dynamic_cast<const EAbort *>(E) != nullptr)
   {
     Result = false;
   }
-  else if (dynamic_cast<const EAccessViolation*>(E) != nullptr)
+  else if (WellKnownException(E, &Message, &CounterName, nullptr, false))
   {
-    Message = LoadStr(ACCESS_VIOLATION_ERROR2);
+    InternalError = true;
   }
   else if (E && E->Message.IsEmpty())
   {
@@ -27,7 +116,24 @@ bool ExceptionMessage(const Exception * E, UnicodeString & Message)
   {
     Message = E->Message;
   }
+
+  if (InternalError)
+  {
+    Message = FMTLOAD(REPORT_ERROR, (Message));
+  }
+/*
+  if (Count && (CounterName != nullptr) && (Configuration->Usage != nullptr))
+  {
+    Configuration->Usage->Inc(CounterName);
+  }
+*/
   return Result;
+}
+//---------------------------------------------------------------------------
+bool ExceptionMessage(const Exception * E, UnicodeString & Message)
+{
+  bool InternalError;
+  return ExceptionMessage(E, true, Message, InternalError);
 }
 //---------------------------------------------------------------------------
 TStrings * ExceptionToMoreMessages(Exception * E)
@@ -39,7 +145,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
     Result = new TStringList();
     Result->Add(Message);
     ExtException * ExtE = dynamic_cast<ExtException *>(E);
-    if (ExtE != nullptr)
+    if ((ExtE != nullptr) && (ExtE->GetMoreMessages() != nullptr))
     {
       Result->AddStrings(ExtE->GetMoreMessages());
     }
@@ -47,28 +153,67 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   return Result;
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(Exception * E) :
-  Exception(L""),
-  FMoreMessages(nullptr),
-  FHelpKeyword()
+UnicodeString GetExceptionHelpKeyword(Exception * E)
 {
-  AddMoreMessages(E);
+  UnicodeString HelpKeyword;
+  ExtException * ExtE = dynamic_cast<ExtException *>(E);
+  UnicodeString Message; // not used
+  bool InternalError = false;
+  if (ExtE != nullptr)
+  {
+    HelpKeyword = ExtE->GetHelpKeyword();
+  }
+  else if ((E != nullptr) && ExceptionMessage(E, false, Message, InternalError) &&
+           InternalError)
+  {
+    HelpKeyword = HELP_INTERNAL_ERROR;
+  }
+  return HelpKeyword;
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(Exception* E, const UnicodeString & Msg):
+UnicodeString MergeHelpKeyword(const UnicodeString & PrimaryHelpKeyword, const UnicodeString & SecondaryHelpKeyword)
+{
+  if (!PrimaryHelpKeyword.IsEmpty() &&
+      !IsInternalErrorHelpKeyword(SecondaryHelpKeyword))
+  {
+    // we have to yet decide what we have both
+    // PrimaryHelpKeyword and SecondaryHelpKeyword
+    return PrimaryHelpKeyword;
+  }
+  else
+  {
+    return SecondaryHelpKeyword;
+  }
+}
+//---------------------------------------------------------------------------
+bool IsInternalErrorHelpKeyword(const UnicodeString & HelpKeyword)
+{
+  return
+    (HelpKeyword == HELP_INTERNAL_ERROR);
+}
+//---------------------------------------------------------------------------
+ExtException::ExtException(Exception * E) :
+  Exception(L""),
+  FMoreMessages(nullptr)
+{
+  AddMoreMessages(E);
+  FHelpKeyword = GetExceptionHelpKeyword(E);
+}
+//---------------------------------------------------------------------------
+ExtException::ExtException(Exception* E, const UnicodeString & Msg, const UnicodeString & HelpKeyword):
+  Exception(Msg),
+  FMoreMessages(nullptr)
+{
+  AddMoreMessages(E);
+  FHelpKeyword = MergeHelpKeyword(HelpKeyword, GetExceptionHelpKeyword(E));
+}
+/*ExtException::ExtException(ExtException * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword):
   Exception(Msg),
   FMoreMessages(nullptr),
   FHelpKeyword()
 {
   AddMoreMessages(E);
-}
-ExtException::ExtException(ExtException* E, const UnicodeString & Msg):
-  Exception(Msg),
-  FMoreMessages(nullptr),
-  FHelpKeyword()
-{
-  AddMoreMessages(E);
-}
+}*/
 //---------------------------------------------------------------------------
 ExtException::ExtException(Exception * E, int Ident) :
   Exception(E, Ident),
@@ -77,10 +222,9 @@ ExtException::ExtException(Exception * E, int Ident) :
 {
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(const UnicodeString & Msg, Exception* E) :
+ExtException::ExtException(const UnicodeString & Msg, Exception* E, const UnicodeString & HelpKeyword) :
   Exception(L""),
-  FMoreMessages(nullptr),
-  FHelpKeyword()
+  FMoreMessages(nullptr)
 {
   // "copy exception"
   AddMoreMessages(E);
@@ -100,6 +244,7 @@ ExtException::ExtException(const UnicodeString & Msg, Exception* E) :
       FMoreMessages->Append(Msg);
     }
   }
+  FHelpKeyword = MergeHelpKeyword(GetExceptionHelpKeyword(E), HelpKeyword);
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages,
@@ -144,14 +289,6 @@ void ExtException::AddMoreMessages(const Exception * E)
     const ExtException * ExtE = dynamic_cast<const ExtException *>(E);
     if (ExtE != nullptr)
     {
-      if (!ExtE->GetHelpKeyword().IsEmpty())
-      {
-        // we have to yet decide what to do now
-        assert(GetHelpKeyword().IsEmpty());
-
-        FHelpKeyword = ExtE->GetHelpKeyword();
-      }
-
       if (ExtE->GetMoreMessages() != nullptr)
       {
         FMoreMessages->Assign(ExtE->GetMoreMessages());
@@ -207,8 +344,8 @@ EOSExtException::EOSExtException(const UnicodeString & Msg) :
 {
 }
 //---------------------------------------------------------------------------
-EFatal::EFatal(Exception * E, const UnicodeString & Msg) :
-  ExtException(Msg, E),
+EFatal::EFatal(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
+  ExtException(Msg, E, HelpKeyword),
   FReopenQueried(false)
 {
   EFatal * F = dynamic_cast<EFatal *>(E);
@@ -234,27 +371,35 @@ ECallbackGuardAbort::ECallbackGuardAbort() : EAbort(L"callback abort")
 //---------------------------------------------------------------------------
 Exception * CloneException(Exception * E)
 {
+  Exception * Result;
+  // this list has to be in sync with ExceptionMessage
   ExtException * Ext = dynamic_cast<ExtException *>(E);
-  if (Ext != nullptr)
+  if (Ext != NULL)
   {
-    return Ext->Clone();
+    Result = Ext->Clone();
   }
-  else if (dynamic_cast<ECallbackGuardAbort *>(E) != nullptr)
+  else if (dynamic_cast<ECallbackGuardAbort *>(E) != NULL)
   {
-    return new ECallbackGuardAbort();
+    Result = new ECallbackGuardAbort();
   }
-  else if (dynamic_cast<EAbort *>(E) != nullptr)
+  else if (dynamic_cast<EAbort *>(E) != NULL)
   {
-    return new EAbort(E->Message);
+    Result = new EAbort(E->Message);
+  }
+  else if (WellKnownException(E, NULL, NULL, &Result, false))
+  {
+    // noop
   }
   else
   {
-    return new Exception(E->Message);
+    Result = new Exception(E->Message);
   }
+  return Result;
 }
 //---------------------------------------------------------------------------
 void RethrowException(Exception * E)
 {
+  // this list has to be in sync with ExceptionMessage
   if (dynamic_cast<EFatal *>(E) != nullptr)
   {
     throw EFatal(E, L"");
@@ -266,6 +411,10 @@ void RethrowException(Exception * E)
   else if (dynamic_cast<EAbort *>(E) != nullptr)
   {
     throw EAbort(E->Message);
+  }
+  else if (WellKnownException(E, NULL, NULL, NULL, true))
+  {
+    // noop, should never get here
   }
   else
   {

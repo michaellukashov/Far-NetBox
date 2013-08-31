@@ -21,18 +21,25 @@ HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
   /* TThreadFunc ThreadFunc, */ void * Parameter, DWORD CreationFlags,
   TThreadID & ThreadId);
 
+// Order of the values also define order of the buttons/answers on the prompts
+// MessageDlg relies on these to be <= 0x0000FFFF
 const unsigned int qaYes =      0x00000001;
-const unsigned int qaNo =       0x00000002;
-const unsigned int qaOK =       0x00000004;
-const unsigned int qaCancel =   0x00000008;
-const unsigned int qaAbort =    0x00000010;
-const unsigned int qaRetry =    0x00000020;
-const unsigned int qaIgnore =   0x00000040;
-const unsigned int qaAll =      0x00000080;
-const unsigned int qaNoToAll =  0x00000100;
-const unsigned int qaYesToAll = 0x00000200;
-const unsigned int qaHelp =     0x00000400;
-const unsigned int qaSkip =     0x00000800;
+// MessageDlg relies that answer do not conflict with mrCancel (=0x2)
+const unsigned int qaNo =       0x00000004;
+const unsigned int qaOK =       0x00000008;
+const unsigned int qaCancel =   0x00000010;
+const unsigned int qaYesToAll = 0x00000020;
+const unsigned int qaNoToAll =  0x00000040;
+const unsigned int qaAbort =    0x00000080;
+const unsigned int qaRetry =    0x00000100;
+const unsigned int qaIgnore =   0x00000200;
+const unsigned int qaSkip =     0x00000400;
+const unsigned int qaAll =      0x00000800;
+const unsigned int qaHelp =     0x00001000;
+const unsigned int qaReport =   0x00002000;
+
+const unsigned int qaFirst = qaYes;
+const unsigned int qaLast = qaReport;
 
 const unsigned int qaNeverAskAgain = 0x00010000;
 
@@ -58,6 +65,9 @@ DEFINE_CALLBACK_TYPE1(TQueryParamsTimerEvent, void,
 struct TQueryParams : public TObject
 {
   explicit TQueryParams(uintptr_t AParams = 0, const UnicodeString & AHelpKeyword = HELP_NONE);
+  explicit TQueryParams(const TQueryParams & Source);
+
+  void Assign(const TQueryParams & Source);
 
   const TQueryButtonAlias * Aliases;
   uintptr_t AliasesCount;
@@ -72,7 +82,7 @@ struct TQueryParams : public TObject
   UnicodeString HelpKeyword;
 
 private:
-  NB_DISABLE_COPY(TQueryParams)
+  // NB_DISABLE_COPY(TQueryParams)
 };
 
 enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };

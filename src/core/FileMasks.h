@@ -221,8 +221,8 @@ public:
 
   bool IsFileListCommand(const UnicodeString & Command);
   virtual bool IsFileCommand(const UnicodeString & Command);
-  // bool __fastcall IsSiteCommand(const UnicodeString & Command);
-  // bool __fastcall IsPasswordCommand(const UnicodeString & Command);
+  // bool IsSiteCommand(const UnicodeString & Command);
+  // bool IsPasswordCommand(const UnicodeString & Command);
 
 protected:
   virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index);

@@ -91,7 +91,7 @@ void TConfiguration::Default()
   }
 
   SetRandomSeedFile(FDefaultRandomSeedFile);
-  SetPuttyRegistryStorageKey(L"Software\\SimonTatham\\PuTTY");
+  SetPuttyRegistryStorageKey(OriginalPuttyRegistryStorageKey);
   FConfirmOverwriting = true;
   FConfirmResume = true;
   FAutoReadDirectoryAfterOp = true;
@@ -214,7 +214,13 @@ void TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
   }
 }
 //---------------------------------------------------------------------------
-void TConfiguration::Save(bool All, bool Explicit)
+void TConfiguration::Save()
+{
+  // only modified, implicit
+  DoSave(false, false);
+}
+//---------------------------------------------------------------------------
+void TConfiguration::DoSave(bool All, bool Explicit)
 {
   if (FDontSave)
   {
@@ -289,7 +295,7 @@ void TConfiguration::Import(const UnicodeString & FileName)
   }
 
   // save all and explicit
-  Save(true, true);
+  DoSave(true, true);
 */
 }
 //---------------------------------------------------------------------------
@@ -948,7 +954,7 @@ void TConfiguration::SetStorage(TStorage Value)
     // when switching from ini to registry
     CopyData(SourceStorage.get(), TargetStorage.get());
     // save all and explicit
-    Save(true, true);
+    DoSave(true, true);
   }
 }
 //---------------------------------------------------------------------------
