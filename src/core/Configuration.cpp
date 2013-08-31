@@ -528,7 +528,7 @@ void TConfiguration::CleanupConfiguration()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, CLEANUP_CONFIG_ERROR);
+    throw ExtException(&E, LoadStr(CLEANUP_CONFIG_ERROR));
   }
 }
 //---------------------------------------------------------------------------
@@ -546,7 +546,7 @@ void TConfiguration::CleanupHostKeys()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, CLEANUP_HOSTKEYS_ERROR);
+    throw ExtException(&E, LoadStr(CLEANUP_HOSTKEYS_ERROR));
   }
 }
 //---------------------------------------------------------------------------
@@ -562,7 +562,7 @@ void TConfiguration::CleanupRandomSeedFile()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, CLEANUP_SEEDFILE_ERROR);
+    throw ExtException(&E, LoadStr(CLEANUP_SEEDFILE_ERROR));
   }
 }
 //---------------------------------------------------------------------------
@@ -583,7 +583,7 @@ void TConfiguration::CleanupIniFile()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, CLEANUP_INIFILE_ERROR);
+    throw ExtException(&E, LoadStr(CLEANUP_INIFILE_ERROR));
   }
 }
 //---------------------------------------------------------------------------

@@ -3224,7 +3224,7 @@ void TStoredSessionList::Cleanup()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, CLEANUP_SESSIONS_ERROR);
+    throw ExtException(&E, LoadStr(CLEANUP_SESSIONS_ERROR));
   }
 }
 //---------------------------------------------------------------------------
