@@ -3876,6 +3876,8 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
     Done = (*AHandle != INVALID_HANDLE_VALUE);
     if (!Done)
     {
+      // save the error, otherwise it gets overwritten by call to FileExists
+      int LastError = GetLastError();
       DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
       if (::FileExists(FileName) &&
         (((LocalFileAttrs = GetLocalFileAttributes(FileName)) & (faReadOnly | faHidden)) != 0))
@@ -3930,7 +3932,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
       }
       else
       {
-        RaiseLastOSError();
+        RaiseLastOSError(LastError);
       }
     }
   }
