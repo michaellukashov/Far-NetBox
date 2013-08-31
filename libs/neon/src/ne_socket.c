@@ -1349,8 +1349,11 @@ static int do_bind(int fd, int peer_family,
 #if defined(HAVE_SETSOCKOPT) && defined(SO_REUSEADDR) && defined(SOL_SOCKET)
     {
         int flag = 1;
+        int value = NE_BUFSIZ;
 
         (void) setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char *)&flag, sizeof(flag));
+        (void) setsockopt(fd, SOL_SOCKET, SO_SNDBUF, (const char *)&value, sizeof(value));
+        (void) setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (void *)&flag, sizeof(flag));
         /* An error here is not fatal, so ignore it. */
     }
 #endif        
