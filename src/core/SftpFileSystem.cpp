@@ -5345,7 +5345,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
           if (FileExists(DestFullName))
           {
-            THROWOSIFFALSE(Sysutils::DeleteFile(DestFullName));
+            DeleteFileChecked(DestFullName);
           }
           THROWOSIFFALSE(Sysutils::RenameFile(DestPartialFullName, DestFullName));
         );

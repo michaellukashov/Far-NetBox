@@ -557,7 +557,7 @@ void TConfiguration::CleanupRandomSeedFile()
     DontSaveRandomSeed();
     if (::FileExists(GetRandomSeedFileName()))
     {
-      THROWOSIFFALSE(Sysutils::DeleteFile(GetRandomSeedFileName()));
+      DeleteFileChecked(GetRandomSeedFileName());
     }
   }
   catch (Exception &E)

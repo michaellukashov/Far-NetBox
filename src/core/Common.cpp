@@ -1528,6 +1528,14 @@ bool RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin)
   return Result;
 }
 //---------------------------------------------------------------------------
+void DeleteFileChecked(const UnicodeString & FileName)
+{
+  if (!DeleteFile(FileName))
+  {  
+    throw EOSExtException(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, FileName.c_str()));
+  }
+}
+//---------------------------------------------------------------------------
 uintptr_t CancelAnswer(uintptr_t Answers)
 {
   uintptr_t Result;

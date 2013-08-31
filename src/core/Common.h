@@ -90,6 +90,7 @@ UnicodeString DecodeUrlChars(const UnicodeString & S);
 UnicodeString EncodeUrlChars(const UnicodeString & S, const UnicodeString & Ignore = UnicodeString());
 UnicodeString EncodeUrlString(const UnicodeString & S);
 bool RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin);
+void DeleteFileChecked(const UnicodeString & FileName);
 uintptr_t CancelAnswer(uintptr_t Answers);
 uintptr_t AbortAnswer(uintptr_t Answers);
 uintptr_t ContinueAnswer(uintptr_t Answers);
