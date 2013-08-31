@@ -114,6 +114,12 @@ public:
 	void ShowStatus(UINT nID, int type) const;
 	void ShowStatus(CString status,int type) const;
 
+#ifdef MPEXT
+	virtual bool UsingMlsd() = 0;
+	virtual std::string GetTlsVersionStr() = 0;
+	virtual std::string GetCipherName() = 0;
+#endif
+
 	virtual int OnLayerCallback(rde::list<t_callbackMsg>& callbacks);
 protected:
 

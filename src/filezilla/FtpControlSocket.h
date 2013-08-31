@@ -86,7 +86,12 @@ public:
 	// Other servers return "550 No files found."
 	bool IsMisleadingListResponse();
 
-	
+#ifdef MPEXT
+	virtual bool UsingMlsd();
+	virtual std::string GetTlsVersionStr();
+	virtual std::string GetCipherName();
+#endif
+
 	// Vom Klassen-Assistenten generierte virtuelle Funktionsüberschreibungen
 	//{{AFX_VIRTUAL(CFtpControlSocket)
 	public:

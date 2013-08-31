@@ -158,6 +158,10 @@ public:
   bool SetCurrentPath(const wchar_t * Path);
   bool GetCurrentPath(wchar_t * Path, size_t MaxLen);
 
+  bool UsingMlsd();
+  std::string GetTlsVersionStr();
+  std::string GetCipherName();
+
   bool Cancel();
 
   bool Connect(const wchar_t * Host, int Port, const wchar_t * User,
