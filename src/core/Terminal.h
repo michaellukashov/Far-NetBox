@@ -514,7 +514,7 @@ protected:
 private:
   void InternalTryOpen();
   void InternalDoTryOpen();
-  TCustomFileSystem * InitFileSystem();
+  void InitFileSystem();
 
 private:
   TSessionData * FSessionData;
