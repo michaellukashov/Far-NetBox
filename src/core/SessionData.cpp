@@ -193,6 +193,8 @@ void TSessionData::Default()
   SetFtpPingInterval(30);
   SetFtpPingType(ptDummyCommand);
   SetFtps(ftpsNone);
+  SetMinTlsVersion(ssl2);
+  SetMaxTlsVersion(tls12);
   SetFtpListAll(asAuto);
   SetFtpDupFF(false);
   SetFtpUndupFF(false);
@@ -333,6 +335,9 @@ void TSessionData::NonPersistant()
   PROPERTY(SslSessionReuse); \
   \
   PROPERTY(FtpProxyLogonType); \
+  \
+  PROPERTY(MinTlsVersion); \
+  PROPERTY(MaxTlsVersion); \
   \
   PROPERTY(CustomParam1); \
   PROPERTY(CustomParam2); \
@@ -652,6 +657,9 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
 
   SetFtpProxyLogonType(Storage->ReadInteger(L"FtpProxyLogonType", GetFtpProxyLogonType()));
 
+  SetMinTlsVersion(static_cast<TTlsVersion>(Storage->ReadInteger(L"MinTlsVersion", GetMinTlsVersion())));
+  SetMaxTlsVersion(static_cast<TTlsVersion>(Storage->ReadInteger(L"MaxTlsVersion", GetMaxTlsVersion())));
+
   // SetIsWorkspace(Storage->ReadBool(L"IsWorkspace", GetIsWorkspace()));
   // SetLink(Storage->ReadString(L"Link", GetLink()));
 
@@ -947,6 +955,9 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 
       WRITE_DATA(Integer, FtpProxyLogonType);
 
+      WRITE_DATA(Integer, MinTlsVersion);
+      WRITE_DATA(Integer, MaxTlsVersion);
+
       // WRITE_DATA(Bool, IsWorkspace);
       // WRITE_DATA(String, Link);
 
@@ -1140,9 +1151,14 @@ void TSessionData::RecryptPasswords()
   SetTunnelPassword(GetTunnelPassword());
 }
 //---------------------------------------------------------------------
+bool TSessionData::HasPassword() const
+{
+  return !FPassword.IsEmpty();
+}
+//---------------------------------------------------------------------
 bool TSessionData::HasAnyPassword() const
 {
-  return !FPassword.IsEmpty() || !FProxyPassword.IsEmpty() || !FTunnelPassword.IsEmpty();
+  return HasPassword() || !FProxyPassword.IsEmpty() || !FTunnelPassword.IsEmpty();
 }
 //---------------------------------------------------------------------
 void TSessionData::Modify()
@@ -1177,11 +1193,15 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
 {
   if (Storage->OpenSubKey(GetInternalStorageKey(), true))
   {
-    RecryptPasswords();
+    auto cleanup = finally([&]()
+    {
+      Storage->CloseSubKey();
+    });
+    {
+      RecryptPasswords();
 
-    SavePasswords(Storage, false);
-
-    Storage->CloseSubKey();
+      SavePasswords(Storage, false);
+    }
   }
 }
 //---------------------------------------------------------------------
@@ -1794,7 +1814,7 @@ UnicodeString TSessionData::GetSshProtStr() const
 //---------------------------------------------------------------------
 bool TSessionData::GetUsesSsh() const
 {
-  return (FFSProtocol == fsSCPonly) || (FFSProtocol == fsSFTP) || (FFSProtocol == fsSFTPonly);
+  return IsSshProtocol(GetFSProtocol());
 }
 //---------------------------------------------------------------------
 void TSessionData::SetCipher(intptr_t Index, TCipher Value)
@@ -2672,6 +2692,16 @@ void TSessionData::SetFtps(TFtps Value)
 {
   SET_SESSION_PROPERTY(Ftps);
 }
+//---------------------------------------------------------------------------
+void TSessionData::SetMinTlsVersion(TTlsVersion Value)
+{
+  SET_SESSION_PROPERTY(MinTlsVersion);
+}
+//---------------------------------------------------------------------------
+void TSessionData::SetMaxTlsVersion(TTlsVersion Value)
+{
+  SET_SESSION_PROPERTY(MaxTlsVersion);
+}
 //---------------------------------------------------------------------
 void TSessionData::SetFtpListAll(TAutoSwitch Value)
 {
@@ -2729,17 +2759,23 @@ UnicodeString TSessionData::GetInfoTip() const
   }
 }
 //---------------------------------------------------------------------
-UnicodeString TSessionData::GetLocalName()
+UnicodeString TSessionData::ExtractLocalName(const UnicodeString & Name)
+{
+  UnicodeString Result = Name;
+  int P = Result.LastDelimiter(L"/");
+  if (P > 0)
+  {
+    Result.Delete(1, P);
+  }
+  return Result;
+}
+//---------------------------------------------------------------------
+UnicodeString TSessionData::GetLocalName() const
 {
   UnicodeString Result;
   if (HasSessionName())
   {
-    Result = GetName();
-    intptr_t P = Result.LastDelimiter(L"/");
-    if (P > 0)
-    {
-      Result.Delete(1, P);
-    }
+    Result = ExtractLocalName(GetName());
   }
   else
   {
@@ -2748,18 +2784,31 @@ UnicodeString TSessionData::GetLocalName()
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString TSessionData::GetFolderName()
+UnicodeString TSessionData::ExtractFolderName(const UnicodeString & Name)
+{
+  UnicodeString Result;
+  int P = Name.LastDelimiter(L"/");
+  if (P > 0)
+  {
+    Result = Name.SubString(1, P - 1);
+  }
+  return Result;
+}
+//---------------------------------------------------------------------
+UnicodeString TSessionData::GetFolderName() const
 {
   UnicodeString Result;
   if (HasSessionName()) // || GetIsWorkspace())
   {
-    intptr_t P = GetName().LastDelimiter(L"/");
-    if (P > 0)
-    {
-      Result = GetName().SubString(1, P - 1);
-    }
+    Result = ExtractFolderName(GetName());
   }
   return Result;
+}
+//---------------------------------------------------------------------
+UnicodeString TSessionData::ComposePath(
+  const UnicodeString & Path, const UnicodeString & Name)
+{
+  return UnixIncludeTrailingBackslash(Path) + Name;
 }
 //---------------------------------------------------------------------
 TLoginType TSessionData::GetLoginType() const
@@ -2995,30 +3044,47 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
-  bool All, bool RecryptPasswordOnly)
+  bool All, bool RecryptPasswordOnly, TStrings * RecryptPasswordErrors)
 {
   std::auto_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
   DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults.get());
   for (intptr_t Index = 0; Index < GetCount() + GetHiddenCount(); ++Index)
   {
     TSessionData * SessionData = static_cast<TSessionData *>(GetItem(Index));
-    DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults.get());
+    try
+    {
+      DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults.get());
+    }
+    catch (Exception & E)
+    {
+      UnicodeString Message;
+      if (RecryptPasswordOnly && ALWAYS_TRUE(RecryptPasswordErrors != NULL) &&
+          ExceptionMessage(&E, Message))
+      {
+        RecryptPasswordErrors->Add(FORMAT("%s: %s", SessionData->GetSessionName().c_str(), Message.c_str()));
+      }
+      else
+      {
+        throw;
+      }
+    }
   }
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
 {
-  DoSave(Storage, All, false);
+  DoSave(Storage, All, false, NULL);
 }
 //---------------------------------------------------------------------
-void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnly)
+void TStoredSessionList::DoSave(bool All, bool Explicit,
+  bool RecryptPasswordOnly, TStrings * RecryptPasswordErrors)
 {
   std::auto_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(true));
   Storage->SetAccessMode(smReadWrite);
   Storage->SetExplicit(Explicit);
   if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
   {
-    DoSave(Storage.get(), All, RecryptPasswordOnly);
+    DoSave(Storage.get(), All, RecryptPasswordOnly, RecryptPasswordErrors);
   }
 
   Saved();
@@ -3026,12 +3092,12 @@ void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnl
 //---------------------------------------------------------------------
 void TStoredSessionList::Save(bool All, bool Explicit)
 {
-  DoSave(All, Explicit, false);
+  DoSave(All, Explicit, false, nullptr);
 }
 //---------------------------------------------------------------------
-void TStoredSessionList::RecryptPasswords()
+void TStoredSessionList::RecryptPasswords(TStrings * RecryptPasswordErrors)
 {
-  DoSave(true, true, true);
+  DoSave(true, true, true, RecryptPasswordErrors);
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::Saved()
@@ -3233,7 +3299,7 @@ void TStoredSessionList::UpdateStaticUsage()
     {
       Workspaces = true;
     }
-    else if (Data->GetName().Pos(L"/") > 0)
+    else if (!Data->GetFolderName().IsEmpty())
     {
       Folders = true;
     }
@@ -3245,12 +3311,27 @@ void TStoredSessionList::UpdateStaticUsage()
   GetConfiguration()->GetUsage()->Set(L"StoredSessionsCountFTPS", FTPS);
   GetConfiguration()->GetUsage()->Set(L"StoredSessionsCountWebDAV", WebDAV);
   GetConfiguration()->GetUsage()->Set(L"StoredSessionsCountWebDAVS", WebDAVS);
+  Configuration->Usage->Set(L"StoredSessionsCountPassword", Password);
+  Configuration->Usage->Set(L"StoredSessionsCountColor", Color);
   GetConfiguration()->GetUsage()->Set(L"StoredSessionsCountAdvanced", Advanced);
 
-  bool CustomDefaultStoredSession = !FDefaultSettings->IsSame(FactoryDefaults.get(), false);
-  GetConfiguration()->GetUsage()->Set(L"UsingDefaultStoredSession", CustomDefaultStoredSession);
-  GetConfiguration()->GetUsage()->Set(L"UsingStoredSessionsFolders", Folders);
-  GetConfiguration()->GetUsage()->Set(L"UsingWorkspaces", Workspaces);
+  // actually default might be true, see below for when the default is actually used
+  bool CustomDefaultStoredSession = false;
+  try
+  {
+    // this can throw, when the default session settings have password set
+    // (and no other basic property, like hostname/username),
+    // and master password is enabled as we are called before master password
+    // handler is set
+    CustomDefaultStoredSession = !FDefaultSettings->IsSame(FactoryDefaults.get(), false);
+  }
+  catch (...)
+  {
+  }
+  Configuration->Usage->Set(L"UsingDefaultStoredSession", CustomDefaultStoredSession);
+
+  Configuration->Usage->Set(L"UsingStoredSessionsFolders", Folders);
+  Configuration->Usage->Set(L"UsingWorkspaces", Workspaces);
 */
 }
 //---------------------------------------------------------------------------
@@ -3505,7 +3586,7 @@ void TStoredSessionList::NewWorkspace(
 
     TSessionData * Data2 = new TSessionData(L"");
     Data2->Assign(Data);
-    Data2->SetName(Name + L"/" + Data->GetName());
+    Data2->SetName(TSessionData::ComposePath(Name, Data->GetName()));
     // make sure, that new stored session is saved to registry
     Data2->SetModified(true);
     Add(Data2);
@@ -3647,5 +3728,12 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
     }
   }
   return ANewFileName;
+}
+//---------------------------------------------------------------------
+bool IsSshProtocol(TFSProtocol FSProtocol)
+{
+  return
+    (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) ||
+    (FSProtocol == fsSCPonly);
 }
 //---------------------------------------------------------------------

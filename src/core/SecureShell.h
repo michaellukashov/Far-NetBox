@@ -83,14 +83,15 @@ protected:
 
   void GotHostKey();
   int TranslatePuttyMessage(const TPuttyTranslation * Translation,
-    intptr_t Count, UnicodeString & Message) const;
-  int TranslateAuthenticationMessage(UnicodeString & Message);
-  int TranslateErrorMessage(UnicodeString & Message);
+    intptr_t Count, UnicodeString & Message, UnicodeString * HelpKeyword = nullptr) const;
+  int TranslateAuthenticationMessage(UnicodeString & Message, UnicodeString * HelpKeyword = nullptr);
+  int TranslateErrorMessage(UnicodeString & Message, UnicodeString * HelpKeyword = nullptr);
   void AddStdError(const UnicodeString & Str);
   void AddStdErrorLine(const UnicodeString & Str);
   void LogEvent(const UnicodeString & Str);
   // void FatalError(Exception * E, const UnicodeString & Msg);
-  void FatalError(const UnicodeString & Error);
+  void FatalError(const UnicodeString & Error, const UnicodeString & HelpKeyword = L"");
+  UnicodeString FormatKeyStr(const UnicodeString & KeyStr) const;
   static void ClearConfig(Config * cfg);
   static void StoreToConfig(TSessionData * Data, Config * cfg, bool Simple);
 
@@ -148,6 +149,7 @@ private:
   bool FSimple;
   bool FNoConnectionResponse;
   bool FCollectPrivateKeyUsage;
+  int FWaitingForData;
 
   intptr_t PendLen;
   intptr_t PendSize;

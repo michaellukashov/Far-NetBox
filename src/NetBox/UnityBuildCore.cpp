@@ -6,9 +6,10 @@
 #pragma warning(disable: 4068) // unknown pragma
 #pragma warning(disable: 4100) // unreferenced formal parameter
 
+#include "../base/UnicodeString.cpp"
 #include "../base/Classes.cpp"
 #include "../base/SysUtils.cpp"
-#include "../base/UnicodeString.cpp"
+#include "../base/StrUtils.cpp"
 #include "../base/local.cpp"
 
 #include "../core/Common.cpp"

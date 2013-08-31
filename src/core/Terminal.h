@@ -87,7 +87,7 @@ inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
 inline void ThrowSkipFileNull() { ThrowSkipFile(nullptr, L""); }
 
 /* TODO : Better user interface (query to user) */
-#define FILE_OPERATION_LOOP_CUSTOM(TERMINAL, ALLOW_SKIP, MESSAGE, OPERATION) { \
+#define FILE_OPERATION_LOOP_CUSTOM(TERMINAL, ALLOW_SKIP, MESSAGE, OPERATION, HELPKEYWORD) { \
   bool DoRepeat;                                                            \
   do {                                                                      \
     DoRepeat = false;                                                       \
@@ -116,7 +116,8 @@ inline void ThrowSkipFileNull() { ThrowSkipFile(nullptr, L""); }
     }                                                                       \
     catch (Exception & E)                                                   \
     {                                                                       \
-      TERMINAL->FileOperationLoopQuery(E, OperationProgress, MESSAGE, ALLOW_SKIP); \
+      TERMINAL->FileOperationLoopQuery(                                     \
+        E, OperationProgress, MESSAGE, ALLOW_SKIP, L"", HELPKEYWORD);       \
       DoRepeat = true;                                                      \
     } \
   } while (DoRepeat); }
@@ -175,7 +176,8 @@ friend class TCallbackGuard;
 
 public:
   void CommandError(Exception * E, const UnicodeString & Msg);
-  uintptr_t CommandError(Exception * E, const UnicodeString & Msg, uintptr_t Answers);
+  uintptr_t CommandError(Exception * E, const UnicodeString & Msg,
+    uintptr_t Answers, const UnicodeString & HelpKeyword = L"");
   void SetMasks(const UnicodeString & Value);
   UnicodeString GetCurrentDirectory();
   bool GetExceptionOnFail() const;
@@ -252,8 +254,8 @@ public:
   void ChangeFilesProperties(TStrings * FileList,
     const TRemoteProperties * Properties);
   bool LoadFilesProperties(TStrings * FileList);
-  void TerminalError(const UnicodeString & Msg);
-  void TerminalError(Exception * E, const UnicodeString & Msg);
+  void TerminalError(const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  void TerminalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   void ReloadDirectory();
   void RefreshDirectory();
   void RenameFile(const UnicodeString & FileName, const UnicodeString & NewName);
@@ -290,7 +292,8 @@ public:
   bool FileOperationLoopQuery(Exception & E,
     TFileOperationProgressType * OperationProgress,
     const UnicodeString & Message,
-    bool AllowSkip, const UnicodeString & SpecialRetry = UnicodeString());
+    bool AllowSkip, const UnicodeString & SpecialRetry = UnicodeString(),
+    const UnicodeString & HelpKeyword = L"");
   TUsableCopyParamAttrs UsableCopyParamAttrs(intptr_t Params);
   bool QueryReopen(Exception * E, intptr_t Params,
     TFileOperationProgressType * OperationProgress);
@@ -451,7 +454,7 @@ protected:
   void RecycleFile(const UnicodeString & FileName, const TRemoteFile * File);
   void DoStartup();
   virtual bool DoQueryReopen(Exception * E);
-  virtual void FatalError(Exception * E, const UnicodeString & Msg);
+  virtual void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   void ResetConnection();
   virtual bool DoPromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions, TStrings* Prompts,

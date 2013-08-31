@@ -9,6 +9,7 @@
 #include "Exceptions.h"
 #include "Interface.h"
 #include "TextsCore.h"
+#include "HelpCore.h"
 #include "SecureShell.h"
 
 #include <stdio.h>
@@ -17,7 +18,7 @@
 //---------------------------------------------------------------------------
 #undef FILE_OPERATION_LOOP_EX
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
+  FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION, L"")
 //---------------------------------------------------------------------------
 const int coRaiseExcept = 1;
 const int coExpectNoOutput = 2;
@@ -822,16 +823,23 @@ UnicodeString TSCPFileSystem::GetCurrentDirectory()
 //---------------------------------------------------------------------------
 void TSCPFileSystem::DoStartup()
 {
+  const TSessionData * Data = FTerminal->GetSessionData();
   // SkipStartupMessage and DetectReturnVar must succeed,
   // otherwise session is to be closed.
-  FTerminal->SetExceptionOnFail(true);
-  SkipStartupMessage();
-  const TSessionData * Data = FTerminal->GetSessionData();
-  if (Data->GetDetectReturnVar())
+  try
   {
-    DetectReturnVar();
+    FTerminal->SetExceptionOnFail(true);
+    SkipStartupMessage();
+    if (Data->GetDetectReturnVar())
+    {
+      DetectReturnVar();
+    }
+    FTerminal->SetExceptionOnFail(false);
   }
-  FTerminal->SetExceptionOnFail(false);
+  catch (Exception & E)
+  {
+    FTerminal->FatalError(&E, L"");
+  }
 
   #define COND_OPER(OPER) if (Data->Get##OPER()) OPER()
   COND_OPER(ClearAliases);
@@ -848,7 +856,7 @@ void TSCPFileSystem::SkipStartupMessage()
   }
   catch (Exception & E)
   {
-    FTerminal->CommandError(&E, LoadStr(SKIP_STARTUP_MESSAGE_ERROR));
+    FTerminal->CommandError(&E, LoadStr(SKIP_STARTUP_MESSAGE_ERROR), 0, HELP_SKIP_STARTUP_MESSAGE_ERROR);
   }
 }
 //---------------------------------------------------------------------------
@@ -893,7 +901,7 @@ void TSCPFileSystem::DetectReturnVar()
         if ((GetOutput()->GetCount() != 1) || Str.IsEmpty() || (Val > 255))
         {
           FTerminal->LogEvent(L"The response is not numerical exit code");
-          Abort();
+          EXCEPTION;
         }
       }
       catch (EFatal &)
@@ -916,7 +924,7 @@ void TSCPFileSystem::DetectReturnVar()
 
     if (NewReturnVar.IsEmpty())
     {
-      Abort();
+      EXCEPTION;
     }
     else
     {
@@ -1023,7 +1031,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   assert(FileList);
   // emptying file list moved before command execution
-  FileList->Clear();
+  FileList->Reset();
 
   bool Again;
 
@@ -1101,7 +1109,9 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
         if (Empty)
         {
-          throw Exception(FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()));
+          throw ExtException(
+            nullptr, FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()),
+            HELP_EMPTY_DIRECTORY);
         }
       }
 

@@ -72,6 +72,16 @@ TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString & AHelpKeyword
   HelpKeyword = AHelpKeyword;
 }
 //---------------------------------------------------------------------------
+TQueryParams::TQueryParams(const TQueryParams & Source)
+{
+  Assign(Source);
+}
+//---------------------------------------------------------------------------
+void TQueryParams::Assign(const TQueryParams & Source)
+{
+  *this = Source;
+}
+//---------------------------------------------------------------------------
 bool IsAuthenticationPrompt(TPromptKind Kind)
 {
   return
@@ -105,8 +115,7 @@ void CoreFinalize()
 {
   try
   {
-    // only modified, implicit
-    GetConfiguration()->Save(false, false);
+    GetConfiguration()->Save();
   }
   catch(Exception & E)
   {

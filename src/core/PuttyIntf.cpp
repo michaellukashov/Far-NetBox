@@ -16,6 +16,15 @@ bool SaveRandomSeed;
 char appname_[50];
 const char *const appname = appname_;
 //---------------------------------------------------------------------------
+extern "C"
+{
+#include <winstuff.h>
+}
+const UnicodeString OriginalPuttyRegistryStorageKey(_T(PUTTY_REG_POS));
+const UnicodeString KittyRegistryStorageKey(L"Software\\9bis.com\\KiTTY");
+const UnicodeString OriginalPuttyExecutable("putty.exe");
+const UnicodeString KittyExecutable("kitty.exe");
+//---------------------------------------------------------------------------
 void PuttyInitialize()
 {
   SaveRandomSeed = true;
@@ -346,12 +355,14 @@ int get_remote_username(Config * cfg, char *user, size_t len)
 static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool CanCreate)
 {
   long R;
+//  assert(Configuration != nullptr);
+
   assert(Key == HKEY_CURRENT_USER);
   USEDPARAM(Key);
 
   UnicodeString RegKey = SubKey;
-  intptr_t PuttyKeyLen = GetConfiguration()->GetPuttyRegistryStorageKey().Length();
-  assert(RegKey.SubString(1, PuttyKeyLen) == GetConfiguration()->GetPuttyRegistryStorageKey());
+  intptr_t PuttyKeyLen = OriginalPuttyRegistryStorageKey.Length();
+  assert(RegKey.SubString(1, PuttyKeyLen) == OriginalPuttyRegistryStorageKey);
   RegKey = RegKey.SubString(PuttyKeyLen + 1, RegKey.Length() - PuttyKeyLen);
   if (!RegKey.IsEmpty())
   {
