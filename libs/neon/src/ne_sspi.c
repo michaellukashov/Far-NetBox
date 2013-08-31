@@ -337,7 +337,7 @@ static int freeBuffer(SecBufferDesc * secBufferDesc)
  */
 static char *canonical_hostname(const char *serverName)
 {
-    const char *hostname;
+    char *hostname;
     ne_sock_addr *addr;
     
     addr = ne_addr_resolve(serverName, NE_ADDR_CANON);
