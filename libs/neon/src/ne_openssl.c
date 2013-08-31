@@ -1,6 +1,6 @@
 /* 
    neon SSL/TLS support using OpenSSL
-   Copyright (C) 2002-2009, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2002-2011, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -38,7 +38,9 @@
 
 #ifdef NE_HAVE_TS_SSL
 #include <stdlib.h> /* for abort() */
+#ifndef _WIN32
 #include <pthread.h>
+#endif
 #endif
 
 #include "ne_ssl.h"
@@ -568,9 +570,19 @@ ne_ssl_context *ne_ssl_context_create(int mode)
     } else if (mode == NE_SSL_CTX_SERVER) {
         ctx->ctx = SSL_CTX_new(SSLv23_server_method());
         SSL_CTX_set_session_cache_mode(ctx->ctx, SSL_SESS_CACHE_CLIENT);
+#ifdef SSL_OP_NO_TICKET
+        /* disable ticket support since it inhibits testing of session
+         * caching. */
+        SSL_CTX_set_options(ctx->ctx, SSL_OP_NO_TICKET);
+#endif
     } else {
+#ifdef OPENSSL_NO_SSL2
+        ne_free(ctx);
+        return NULL;
+#else
         ctx->ctx = SSL_CTX_new(SSLv2_server_method());
         SSL_CTX_set_session_cache_mode(ctx->ctx, SSL_SESS_CACHE_CLIENT);
+#endif
     }
     return ctx;
 }
@@ -592,6 +604,22 @@ void ne_ssl_context_set_flag(ne_ssl_context *ctx, int flag, int value)
     }
 
     SSL_CTX_set_options(ctx->ctx, opts);
+}
+
+int ne_ssl_context_get_flag(ne_ssl_context *ctx, int flag)
+{
+    switch (flag) {
+    case NE_SSL_CTX_SSLv2:
+#ifdef OPENSSL_NO_SSL2
+        return 0;
+#else
+        return ! (SSL_CTX_get_options(ctx->ctx) & SSL_OP_NO_SSLv2);
+#endif
+    default:
+        break;
+    }
+
+    return 0;
 }
 
 int ne_ssl_context_keypair(ne_ssl_context *ctx, const char *cert,
@@ -814,22 +842,12 @@ static char *find_friendly_name(PKCS12 *p12)
     return name;
 }
 
-ne_ssl_client_cert *ne_ssl_clicert_read(const char *filename)
+static ne_ssl_client_cert *parse_client_cert(PKCS12 *p12)
 {
-    PKCS12 *p12;
-    FILE *fp;
     X509 *cert;
     EVP_PKEY *pkey;
     ne_ssl_client_cert *cc;
 
-    fp = fopen(filename, "rb");
-    if (fp == NULL)
-        return NULL;
-
-    p12 = d2i_PKCS12_fp(fp, NULL);
-
-    fclose(fp);
-    
     if (p12 == NULL) {
         ERR_clear_error();
         return NULL;
@@ -873,6 +891,34 @@ ne_ssl_client_cert *ne_ssl_clicert_read(const char *filename)
             return NULL;
         }
     }
+}
+
+ne_ssl_client_cert *ne_ssl_clicert_import(const unsigned char *buffer, 
+                                          size_t buflen)
+{
+    ne_d2i_uchar *p;
+    PKCS12 *p12;
+
+    p = buffer;
+    p12 = d2i_PKCS12(NULL, &p, buflen);
+    
+    return parse_client_cert(p12);
+}
+    
+ne_ssl_client_cert *ne_ssl_clicert_read(const char *filename)
+{
+    PKCS12 *p12;
+    FILE *fp;
+
+    fp = fopen(filename, "rb");
+    if (fp == NULL)
+        return NULL;
+
+    p12 = d2i_PKCS12_fp(fp, NULL);
+
+    fclose(fp);
+
+    return parse_client_cert(p12);
 }
 
 #ifdef HAVE_PAKCHOIS
@@ -1087,17 +1133,25 @@ int ne_ssl_cert_digest(const ne_ssl_certificate *cert, char *digest)
  * it's necessary to cast from a pthread_t to an unsigned long at some
  * point.  */
 
+#ifndef _WIN32
 static pthread_mutex_t *locks;
+#else
+static HANDLE *locks;
+#endif
 static size_t num_locks;
 
 #ifndef HAVE_CRYPTO_SET_IDPTR_CALLBACK
 /* Named to be obvious when it shows up in a backtrace. */
 static unsigned long thread_id_neon(void)
 {
+#ifndef _WIN32
     /* This will break if pthread_t is a structure; upgrading OpenSSL
      * >= 0.9.9 (which does not require this callback) is the only
      * solution.  */
     return (unsigned long) pthread_self();
+#else
+    return (unsigned long) GetCurrentThreadId();
+#endif
 }
 #endif
 
@@ -1106,12 +1160,20 @@ static unsigned long thread_id_neon(void)
 static void thread_lock_neon(int mode, int n, const char *file, int line)
 {
     if (mode & CRYPTO_LOCK) {
+#ifndef _WIN32
         if (pthread_mutex_lock(&locks[n])) {
+#else
+        if (WaitForSingleObject(locks[n], INFINITE)) {
+#endif
             abort();
         }
     }
     else {
+#ifndef _WIN32
         if (pthread_mutex_unlock(&locks[n])) {
+#else
+        if (!ReleaseMutex(locks[n])) {
+#endif
             abort();
         }
     }
@@ -1160,7 +1222,11 @@ int ne__ssl_init(void)
 
         locks = malloc(num_locks * sizeof *locks);
         for (n = 0; n < num_locks; n++) {
+#ifndef _WIN32
             if (pthread_mutex_init(&locks[n], NULL)) {
+#else
+            if ((locks[n] = CreateMutex(NULL, FALSE, NULL)) == NULL) {
+#endif
                 NE_DEBUG(NE_DBG_SOCKET, "ssl: Failed to initialize pthread mutex.\n");
                 return -1;
             }
@@ -1193,7 +1259,11 @@ void ne__ssl_exit(void)
         CRYPTO_set_locking_callback(NULL);
 
         for (n = 0; n < num_locks; n++) {
+#ifndef _WIN32
             pthread_mutex_destroy(&locks[n]);
+#else
+            CloseHandle(locks[n]);
+#endif
         }
 
         free(locks);
