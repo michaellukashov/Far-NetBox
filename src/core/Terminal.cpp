@@ -63,7 +63,7 @@
   }
 
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FILE_OPERATION_LOOP_CUSTOM(this, ALLOW_SKIP, MESSAGE, OPERATION)
+  FILE_OPERATION_LOOP_CUSTOM(this, ALLOW_SKIP, MESSAGE, OPERATION, L"")
 //------------------------------------------------------------------------------
 struct TMoveFileParams : public TObject
 {
@@ -294,7 +294,7 @@ public:
     const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
     TStrings * Results);
   virtual void DisplayBanner(const UnicodeString & Banner);
-  virtual void FatalError(Exception * E, const UnicodeString & Msg);
+  virtual void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpContext);
   virtual void HandleExtendedException(Exception * E);
   virtual void Closed();
 
@@ -380,9 +380,9 @@ void TTunnelUI::DisplayBanner(const UnicodeString & Banner)
   }
 }
 //------------------------------------------------------------------------------
-void TTunnelUI::FatalError(Exception * E, const UnicodeString & Msg)
+void TTunnelUI::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
 {
-  throw ESshFatal(E, Msg);
+  throw ESshFatal(E, Msg, HelpKeyword);
 }
 //------------------------------------------------------------------------------
 void TTunnelUI::HandleExtendedException(Exception * E)
@@ -406,7 +406,7 @@ public:
   inline TCallbackGuard(TTerminal * FTerminal);
   inline ~TCallbackGuard();
 
-  void FatalError(Exception * E, const UnicodeString & Msg);
+  void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword);
   inline void Verify();
   void Dismiss();
 
@@ -438,7 +438,7 @@ TCallbackGuard::~TCallbackGuard()
   delete FFatalError;
 }
 //------------------------------------------------------------------------------
-void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg)
+void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
 {
   assert(FGuarding);
 
@@ -448,7 +448,7 @@ void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg)
   if (dynamic_cast<ECallbackGuardAbort *>(E) == nullptr)
   {
     delete FFatalError;
-    FFatalError = new ExtException(E, Msg);
+    FFatalError = new ExtException(E, Msg, HelpKeyword);
   }
 
   // silently abort what we are doing.
@@ -813,7 +813,7 @@ void TTerminal::InternalDoTryOpen()
 
   if (FFileSystem == nullptr)
   {
-    FFileSystem = InitFileSystem();
+    InitFileSystem();
   }
   else
   {
@@ -821,9 +821,9 @@ void TTerminal::InternalDoTryOpen()
   }
 }
 //------------------------------------------------------------------------------
-TCustomFileSystem * TTerminal::InitFileSystem()
+void TTerminal::InitFileSystem()
 {
-  TCustomFileSystem * Result = NULL;
+  assert(FFileSystem == nullptr);
   try
   {
     TFSProtocol FSProtocol = GetSessionData()->GetFSProtocol();
@@ -834,9 +834,9 @@ TCustomFileSystem * TTerminal::InitFileSystem()
       FatalError(nullptr, LoadStr(FTP_UNSUPPORTED));
 #else
       FFSProtocol = cfsFTP;
-      Result = new TFTPFileSystem(this);
-      Result->Init(nullptr);
-      Result->Open();
+      FFileSystem = new TFTPFileSystem(this);
+      FFileSystem->Init(nullptr);
+      FFileSystem->Open();
       GetLog()->AddSeparator();
       LogEvent(L"Using FTP protocol.");
 #endif
@@ -848,9 +848,9 @@ TCustomFileSystem * TTerminal::InitFileSystem()
       FatalError(nullptr, LoadStr(FTPS_UNSUPPORTED));
 #else
       FFSProtocol = cfsFTPS;
-      Result = new TFTPFileSystem(this);
-      Result->Init(nullptr);
-      Result->Open();
+      FFileSystem = new TFTPFileSystem(this);
+      FFileSystem->Init(nullptr);
+      FFileSystem->Open();
       GetLog()->AddSeparator();
       LogEvent(L"Using FTPS protocol.");
 #endif
@@ -858,9 +858,9 @@ TCustomFileSystem * TTerminal::InitFileSystem()
     else if (FSProtocol == fsWebDAV)
     {
       FFSProtocol = cfsWebDAV;
-      Result = new TWebDAVFileSystem(this);
-      Result->Init(nullptr);
-      Result->Open();
+      FFileSystem = new TWebDAVFileSystem(this);
+      FFileSystem->Init(nullptr);
+      FFileSystem->Open();
       GetLog()->AddSeparator();
       LogEvent(L"Using WebDAV protocol.");
     }
@@ -909,16 +909,16 @@ TCustomFileSystem * TTerminal::InitFileSystem()
             (FSProtocol == fsSFTP && FSecureShell->SshFallbackCmd()))
         {
           FFSProtocol = cfsSCP;
-          Result= new TSCPFileSystem(this);
-          Result->Init(FSecureShell);
+          FFileSystem= new TSCPFileSystem(this);
+          FFileSystem->Init(FSecureShell);
           FSecureShell = nullptr; // ownership passed
           LogEvent(L"Using SCP protocol.");
         }
         else
         {
           FFSProtocol = cfsSFTP;
-          Result = new TSFTPFileSystem(this);
-          Result->Init(FSecureShell);
+          FFileSystem = new TSFTPFileSystem(this);
+          FFileSystem->Init(FSecureShell);
           FSecureShell = nullptr; // ownership passed
           LogEvent(L"Using SFTP protocol.");
         }
@@ -927,10 +927,9 @@ TCustomFileSystem * TTerminal::InitFileSystem()
   }
   catch (EFatal &)
   {
-    SAFE_DESTROY(Result);
+    SAFE_DESTROY(FFileSystem);
     throw;
   }
-  return Result;
 }
 //------------------------------------------------------------------------------
 bool TTerminal::IsListenerFree(uintptr_t PortNumber) const
@@ -1182,12 +1181,14 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
   TQueryType QueryType)
 {
   uintptr_t Result = 0;
+  UnicodeString ExMessage;
   std::auto_ptr<TStrings> MoreMessages(new TStringList());
-  if (E != nullptr)
+  // if (E != nullptr)
+  if (ALWAYS_TRUE(ExceptionMessage(E, ExMessage) || !Query.IsEmpty()))
   {
-    if (!E->Message.IsEmpty() && !Query.IsEmpty())
+    if (!ExMessage.IsEmpty() && !Query.IsEmpty())
     {
-      MoreMessages->Add(E->Message);
+      MoreMessages->Add(ExMessage);
     }
 
     ExtException * EE = dynamic_cast<ExtException*>(E);
@@ -1195,10 +1196,19 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
     {
       MoreMessages->AddStrings(EE->GetMoreMessages());
     }
+
+    TQueryParams HelpKeywordOverrideParams;
+    if (Params != NULL)
+    {
+      HelpKeywordOverrideParams.Assign(*Params);
+    }
+    HelpKeywordOverrideParams.HelpKeyword =
+      MergeHelpKeyword(HelpKeywordOverrideParams.HelpKeyword, GetExceptionHelpKeyword(E));
+
+    Result = QueryUser(!Query.IsEmpty() ? Query : ExMessage,
+      MoreMessages->GetCount() ? MoreMessages.get() : nullptr,
+      Answers, &HelpKeywordOverrideParams, QueryType);
   }
-  Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(E ? E->Message : L""),
-    MoreMessages->GetCount() ? MoreMessages.get() : nullptr,
-    Answers, Params, QueryType);
   return Result;
 }
 //------------------------------------------------------------------------------
@@ -1358,14 +1368,15 @@ void TTerminal::ReactOnCommand(intptr_t Cmd)
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::TerminalError(const UnicodeString & Msg)
+void TTerminal::TerminalError(const UnicodeString & Msg, const UnicodeString & HelpKeyword)
 {
-  TerminalError(nullptr, Msg);
+  TerminalError(nullptr, Msg, HelpKeyword);
 }
 //------------------------------------------------------------------------------
-void TTerminal::TerminalError(Exception * E, const UnicodeString & Msg)
+void TTerminal::TerminalError(
+  Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
 {
-  throw ETerminal(E, Msg);
+  throw ETerminal(E, Msg, HelpKeyword);
 }
 //------------------------------------------------------------------------------
 bool TTerminal::DoQueryReopen(Exception * E)
@@ -1450,7 +1461,7 @@ bool TTerminal::QueryReopen(Exception * E, intptr_t Params,
 //------------------------------------------------------------------------------
 bool TTerminal::FileOperationLoopQuery(Exception & E,
   TFileOperationProgressType * OperationProgress, const UnicodeString & Message,
-  bool AllowSkip, const UnicodeString & SpecialRetry)
+  bool AllowSkip, const UnicodeString & SpecialRetry, const UnicodeString & HelpKeyword)
 {
   bool Result = false;
   GetLog()->AddException(&E);
@@ -1467,6 +1478,7 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
       FLAGMASK(SkipPossible, (qaSkip | qaAll)) |
       FLAGMASK(!SpecialRetry.IsEmpty(), qaYes);
     TQueryParams Params(qpAllowContinueOnError | FLAGMASK(!AllowSkip, qpFatalAbort));
+    Params.HelpKeyword = HelpKeyword;
     TQueryButtonAlias Aliases[2];
     int AliasCount = 0;
 
@@ -1878,7 +1890,7 @@ void TTerminal::FatalAbort()
   FatalError(nullptr, "");
 }
 //------------------------------------------------------------------------------
-void TTerminal::FatalError(Exception * E, const UnicodeString & Msg)
+void TTerminal::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
 {
   bool SecureShellActive = (FSecureShell != nullptr) && FSecureShell->GetActive();
   if (GetActive() || SecureShellActive)
@@ -1905,11 +1917,11 @@ void TTerminal::FatalError(Exception * E, const UnicodeString & Msg)
 
   if (FCallbackGuard != nullptr)
   {
-    FCallbackGuard->FatalError(E, Msg);
+    FCallbackGuard->FatalError(E, Msg, HelpKeyword);
   }
   else
   {
-    throw ESshFatal(E, Msg);
+    throw ESshFatal(E, Msg, HelpKeyword);
   }
 }
 //------------------------------------------------------------------------------
@@ -1919,7 +1931,7 @@ void TTerminal::CommandError(Exception * E, const UnicodeString & Msg)
 }
 //------------------------------------------------------------------------------
 uintptr_t TTerminal::CommandError(Exception * E, const UnicodeString & Msg,
-  uintptr_t Answers)
+  uintptr_t Answers, const UnicodeString & HelpKeyword)
 {
   // may not be, particularly when TTerminal::Reopen is being called
   // from within OnShowExtendedException handler
@@ -1927,7 +1939,7 @@ uintptr_t TTerminal::CommandError(Exception * E, const UnicodeString & Msg,
   uintptr_t Result = 0;
   if (E && (dynamic_cast<EFatal *>(E) != nullptr))
   {
-    FatalError(E, Msg);
+    FatalError(E, Msg, HelpKeyword);
   }
   else if (E && (dynamic_cast<EAbort*>(E) != nullptr))
   {
@@ -1936,11 +1948,11 @@ uintptr_t TTerminal::CommandError(Exception * E, const UnicodeString & Msg,
   }
   else if (GetExceptionOnFail())
   {
-    throw ECommand(E, Msg);
+    throw ECommand(E, Msg, HelpKeyword);
   }
   else if (!Answers)
   {
-    ECommand ECmd(E, Msg);
+    ECommand ECmd(E, Msg, HelpKeyword);
     HandleExtendedException(&ECmd);
   }
   else
@@ -1953,7 +1965,7 @@ uintptr_t TTerminal::CommandError(Exception * E, const UnicodeString & Msg,
     }
     else
     {
-      TQueryParams Params(qpAllowContinueOnError);
+      TQueryParams Params(qpAllowContinueOnError, HelpKeyword);
       TQueryButtonAlias Aliases[1];
       if (CanSkip)
       {
@@ -2093,7 +2105,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & FileName,
     }
     if (ALWAYS_TRUE(QueryParams->HelpKeyword.IsEmpty()))
     {
-      QueryParams->HelpKeyword = L"ui_overwrite";
+      QueryParams->HelpKeyword = HELP_OVERWRITE;
     }
     Result = QueryUser(Msg, nullptr, Answers, QueryParams);
     switch (Result)
@@ -2270,8 +2282,11 @@ void TTerminal::ReloadDirectory()
 //------------------------------------------------------------------------------
 void TTerminal::RefreshDirectory()
 {
-  if (GetSessionData()->GetCacheDirectories() &&
-      FDirectoryCache->HasNewerFileList(GetCurrentDirectory(), FFiles->GetTimestamp()))
+  if (GetSessionData()->GetCacheDirectories())
+  {
+    LogEvent(L"Not refreshing directory, caching is off.");
+  }
+  else if (FDirectoryCache->HasNewerFileList(GetCurrentDirectory(), FFiles->GetTimestamp()))
   {
     // Second parameter was added to allow (rather force) using the cache.
     // Before, the directory was reloaded always, it seems useless,
@@ -3861,6 +3876,8 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
     Done = (*AHandle != INVALID_HANDLE_VALUE);
     if (!Done)
     {
+      // save the error, otherwise it gets overwritten by call to FileExists
+      int LastError = GetLastError();
       DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
       if (::FileExists(FileName) &&
         (((LocalFileAttrs = GetLocalFileAttributes(FileName)) & (faReadOnly | faHidden)) != 0))
@@ -3915,7 +3932,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
       }
       else
       {
-        RaiseLastOSError();
+        RaiseLastOSError(LastError);
       }
     }
   }
@@ -3983,10 +4000,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
         FILETIME CTime;
         // Get last file access and modification time
         FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, FileName.c_str()),
-          if (!GetFileTime(LocalFileHandle, &CTime, &ATime, &MTime))
-          {
-            RaiseLastOSError();
-          }
+          THROWOSIFFALSE(GetFileTime(LocalFileHandle, &CTime, &ATime, &MTime));
         );
         if (ACTime)
         {
@@ -4278,6 +4292,7 @@ UnicodeString TTerminal::SynchronizeParamsStr(intptr_t Params)
   AddFlagName(ParamsStr, Params, spUseCache, L"UseCache");
   AddFlagName(ParamsStr, Params, spDelayProgress, L"DelayProgress");
   AddFlagName(ParamsStr, Params, spPreviewChanges, L"*PreviewChanges"); // GUI only
+  AddFlagName(ParamsStr, Params, spSubDirs, L"SubDirs");
   AddFlagName(ParamsStr, Params, spTimestamp, L"Timestamp");
   AddFlagName(ParamsStr, Params, spNotByTime, L"NotByTime");
   AddFlagName(ParamsStr, Params, spBySize, L"BySize");

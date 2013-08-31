@@ -71,7 +71,7 @@
     && SIZEOF_OFF_T == SIZEOF_LONG_LONG
 #define NE_OFFT_MAX LONG_LONG_MAX
 #else
-#define NE_OFFT_MAX LLONG_MAX
+#define NE_OFFT_MAX LONG_MAX
 #endif
 
 #if SIZEOF_OFF_T > SIZEOF_LONG && defined(HAVE_STRTOLL)
@@ -79,7 +79,7 @@
 #elif SIZEOF_OFF_T > SIZEOF_LONG && defined(HAVE_STRTOQ)
 #define ne_strtoff strtoq
 #else
-#define ne_strtoff _strtoi64
+#define ne_strtoff strtol
 #endif
 #endif /* NE_LFS */
 

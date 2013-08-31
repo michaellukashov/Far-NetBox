@@ -17,11 +17,11 @@ class ExtException : public Sysutils::Exception
 {
 public:
   explicit ExtException(Exception * E);
-  explicit ExtException(Exception * E, const UnicodeString & Msg);
-  explicit ExtException(ExtException * E, const UnicodeString & Msg);
+  explicit ExtException(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  // explicit ExtException(ExtException * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(Exception * E, int Ident);
   // "copy the exception", just append message to the end
-  explicit ExtException(const UnicodeString & Msg, Exception * E);
+  explicit ExtException(const UnicodeString & Msg, Exception * E, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = UnicodeString());
   explicit ExtException(const UnicodeString & Msg, TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = UnicodeString());
   virtual ~ExtException(void) noexcept;
@@ -51,7 +51,7 @@ private:
   class NAME : public BASE \
   { \
   public: \
-    explicit inline NAME(Exception* E, const UnicodeString & Msg) : BASE(E, Msg) {} \
+    explicit inline NAME(Exception* E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(E, Msg, HelpKeyword) {} \
     virtual inline ~NAME(void) noexcept {} \
     explicit inline  NAME(const UnicodeString & Msg, int AHelpContext) : BASE(Msg, AHelpContext) {} \
     virtual ExtException * Clone() { return new NAME(this, L""); } \
@@ -75,7 +75,7 @@ class EFatal : public ExtException
 {
 public:
   // fatal errors are always copied, new message is only appended
-  explicit EFatal(Exception* E, const UnicodeString & Msg);
+  explicit EFatal(Exception* E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
 
   bool GetReopenQueried() const { return FReopenQueried; }
   void SetReopenQueried(bool Value) { FReopenQueried = Value; }
@@ -90,7 +90,7 @@ private:
   class NAME : public BASE \
   { \
   public: \
-    explicit inline NAME(Exception* E, const UnicodeString & Msg) : BASE(E, Msg) {} \
+    explicit inline NAME(Exception* E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(E, Msg, HelpKeyword) {} \
     virtual ExtException * Clone() { return new NAME(this, L""); } \
   };
 //---------------------------------------------------------------------------
@@ -119,5 +119,8 @@ public:
 //---------------------------------------------------------------------------
 Exception * CloneException(Exception * Exception);
 void RethrowException(Exception * E);
+UnicodeString GetExceptionHelpKeyword(Exception * E);
+UnicodeString MergeHelpKeyword(const UnicodeString & PrimaryHelpKeyword, const UnicodeString & SecondaryHelpKeyword);
+bool IsInternalErrorHelpKeyword(const UnicodeString & HelpKeyword);
 //---------------------------------------------------------------------------
 #endif  // Exceptions

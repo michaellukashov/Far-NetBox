@@ -8,7 +8,8 @@
 #include "Exceptions.h"
 //---------------------------------------------------------------------------
 inline void ThrowExtException() { throw ExtException((Exception* )nullptr, UnicodeString(L"")); }
-#define THROWOSIFFALSE(C) if (!(C)) { RaiseLastOSError(); }
+#define EXCEPTION throw ExtException(NULL, L"")
+#define THROWOSIFFALSE(C) { if (!(C)) RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
 #define ASCOPY(dest, source) \
@@ -83,10 +84,13 @@ UnicodeString BytesToHex(const RawByteString & Str, bool UpperCase = true, wchar
 UnicodeString CharToHex(wchar_t Ch, bool UpperCase = true);
 RawByteString HexToBytes(const UnicodeString & Hex);
 unsigned char HexToByte(const UnicodeString & Hex);
+bool IsDigit(wchar_t Ch);
+bool IsHex(wchar_t Ch);
 UnicodeString DecodeUrlChars(const UnicodeString & S);
 UnicodeString EncodeUrlChars(const UnicodeString & S, const UnicodeString & Ignore = UnicodeString());
 UnicodeString EncodeUrlString(const UnicodeString & S);
 bool RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin);
+void DeleteFileChecked(const UnicodeString & FileName);
 uintptr_t CancelAnswer(uintptr_t Answers);
 uintptr_t AbortAnswer(uintptr_t Answers);
 uintptr_t ContinueAnswer(uintptr_t Answers);
@@ -96,7 +100,6 @@ UnicodeString EscapeHotkey(const UnicodeString & Caption);
 bool CutToken(UnicodeString & Str, UnicodeString & Token,
   UnicodeString * RawToken = nullptr);
 void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter);
-bool Is2000();
 bool IsWin7();
 bool IsExactly2008R2();
 #if defined(__BORLANDC__)
@@ -110,6 +113,7 @@ UnicodeString WindowsProductName();
 bool IsDirectoryWriteable(const UnicodeString & Path);
 UnicodeString FormatNumber(__int64 Size);
 UnicodeString FormatSize(__int64 Size);
+UnicodeString ExtractFileBaseName(const UnicodeString & Path);
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);

@@ -32,6 +32,7 @@ TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   FBookmarks(new TBookmarks())
 {
   Default();
+  CacheFarSettings();
 }
 //---------------------------------------------------------------------------
 TFarConfiguration::~TFarConfiguration()
@@ -178,7 +179,7 @@ void TFarConfiguration::Save(bool All, bool Explicit)
     FForceInheritance = false;
   });
   {
-    TGUIConfiguration::Save(All, Explicit);
+    TGUIConfiguration::DoSave(All, Explicit);
   }
 }
 //---------------------------------------------------------------------------
@@ -258,7 +259,7 @@ void TFarConfiguration::CacheFarSettings()
 //---------------------------------------------------------------------------
 intptr_t TFarConfiguration::FarConfirmations() const
 {
-  if (GetCurrentThreadId() == GetPlugin()->GetFarThread())
+  if (GetPlugin() && (GetCurrentThreadId() == GetPlugin()->GetFarThread()))
   {
     return GetConfirmationsSettings();
   }
@@ -277,7 +278,7 @@ bool TFarConfiguration::GetConfirmOverwriting() const
   }
   else
   {
-    assert(GetPlugin());
+    // assert(GetPlugin());
     return (FarConfirmations() & NBCS_COPYOVERWRITE) != 0;
   }
 }

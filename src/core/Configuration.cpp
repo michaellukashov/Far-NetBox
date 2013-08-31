@@ -91,7 +91,7 @@ void TConfiguration::Default()
   }
 
   SetRandomSeedFile(FDefaultRandomSeedFile);
-  SetPuttyRegistryStorageKey(L"Software\\SimonTatham\\PuTTY");
+  SetPuttyRegistryStorageKey(OriginalPuttyRegistryStorageKey);
   FConfirmOverwriting = true;
   FConfirmResume = true;
   FAutoReadDirectoryAfterOp = true;
@@ -214,7 +214,13 @@ void TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
   }
 }
 //---------------------------------------------------------------------------
-void TConfiguration::Save(bool All, bool Explicit)
+void TConfiguration::Save()
+{
+  // only modified, implicit
+  DoSave(false, false);
+}
+//---------------------------------------------------------------------------
+void TConfiguration::DoSave(bool All, bool Explicit)
 {
   if (FDontSave)
   {
@@ -289,7 +295,7 @@ void TConfiguration::Import(const UnicodeString & FileName)
   }
 
   // save all and explicit
-  Save(true, true);
+  DoSave(true, true);
 */
 }
 //---------------------------------------------------------------------------
@@ -522,7 +528,7 @@ void TConfiguration::CleanupConfiguration()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, CLEANUP_CONFIG_ERROR);
+    throw ExtException(&E, LoadStr(CLEANUP_CONFIG_ERROR));
   }
 }
 //---------------------------------------------------------------------------
@@ -540,7 +546,7 @@ void TConfiguration::CleanupHostKeys()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, CLEANUP_HOSTKEYS_ERROR);
+    throw ExtException(&E, LoadStr(CLEANUP_HOSTKEYS_ERROR));
   }
 }
 //---------------------------------------------------------------------------
@@ -551,15 +557,12 @@ void TConfiguration::CleanupRandomSeedFile()
     DontSaveRandomSeed();
     if (::FileExists(GetRandomSeedFileName()))
     {
-      if (!DeleteFile(GetRandomSeedFileName()))
-      {
-        RaiseLastOSError();
-      }
+      DeleteFileChecked(GetRandomSeedFileName());
     }
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, CLEANUP_SEEDFILE_ERROR);
+    throw ExtException(&E, LoadStr(CLEANUP_SEEDFILE_ERROR));
   }
 }
 //---------------------------------------------------------------------------
@@ -570,10 +573,7 @@ void TConfiguration::CleanupIniFile()
 #if 0
     if (::FileExists(GetIniFileStorageNameForReading()))
     {
-      if (!DeleteFile(GetIniFileStorageNameForReading()))
-      {
-        RaiseLastOSError();
-      }
+      THROWOSIFFALSE(Sysutils::DeleteFile(GetIniFileStorageNameForReading());
     }
     if (GetStorage() == stIniFile)
     {
@@ -583,7 +583,7 @@ void TConfiguration::CleanupIniFile()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, CLEANUP_INIFILE_ERROR);
+    throw ExtException(&E, LoadStr(CLEANUP_INIFILE_ERROR));
   }
 }
 //---------------------------------------------------------------------------
@@ -948,7 +948,7 @@ void TConfiguration::SetStorage(TStorage Value)
     // when switching from ini to registry
     CopyData(SourceStorage.get(), TargetStorage.get());
     // save all and explicit
-    Save(true, true);
+    DoSave(true, true);
   }
 }
 //---------------------------------------------------------------------------

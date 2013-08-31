@@ -2,16 +2,17 @@
 #include <vcl.h>
 #pragma hdrstop
 
-
+#include "Common.h"
 #include "RemoteFiles.h"
 
 #include <SysUtils.hpp>
+#include <StrUtils.hpp>
 
-#include "Common.h"
 #include "Exceptions.h"
 #include "Interface.h"
 #include "Terminal.h"
 #include "TextsCore.h"
+#include "HelpCore.h"
 /* TODO 1 : Path class instead of UnicodeString (handle relativity...) */
 //---------------------------------------------------------------------------
 UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & Path)
@@ -204,12 +205,12 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Pat
 //---------------------------------------------------------------------------
 UnicodeString FromUnixPath(const UnicodeString & Path)
 {
-  return StringReplace(Path, L"/", L"\\", TReplaceFlags() << rfReplaceAll);
+  return ReplaceStr(Path, L"/", L"\\");
 }
 //---------------------------------------------------------------------------
 UnicodeString ToUnixPath(const UnicodeString & Path)
 {
-  return StringReplace(Path, L"\\", L"/", TReplaceFlags() << rfReplaceAll);
+  return ReplaceStr(Path, L"\\", L"/");
 }
 //---------------------------------------------------------------------------
 static void CutFirstDirectory(UnicodeString & S, bool Unix)
@@ -380,23 +381,52 @@ TModificationFmt LessDateTimePrecision(
 UnicodeString UserModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision)
 {
-  unsigned short Y, M, D, H, N, S, MS;
-  DateTime.DecodeDate(Y, M, D);
-  DateTime.DecodeTime(H, N, S, MS);
+  Word Year, Month, Day, Hour, Min, Sec, MSec;
+  DateTime.DecodeDate(Year, Month, Day);
+  DateTime.DecodeTime(Hour, Min, Sec, MSec);
   switch (Precision)
   {
     case mfNone:
       return L"";
     case mfMDY:
-      // return FormatDateTime(L"ddddd", DateTime);
-      return FORMAT(L"%02d.%02d.%04d", D, M, Y);
+      return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
     case mfMDHM:
-      // return FormatDateTime(L"ddddd t", DateTime);
-      return FORMAT(L"%02d.%02d.%04d %02d:%02d", D, M, Y, H, N);
+      return FORMAT(L"%3s %2d %2d:%2.2d",
+        EngShortMonthNames[Month-1], Day, Hour, Min);
     case mfFull:
+      return FORMAT(L"%3s %2d %2d:%2.2d:%2.2d %4d",
+        EngShortMonthNames[Month-1], Day, Hour, Min, Sec, Year);
     default:
-      // return FormatDateTime(L"ddddd tt", DateTime);
-      return FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d", D, M, Y, H, N, S);
+      assert(false);
+  }
+  return UnicodeString();
+}
+//---------------------------------------------------------------------------
+UnicodeString ModificationStr(TDateTime DateTime,
+  TModificationFmt Precision)
+{
+  unsigned short Year, Month, Day, Hour, Min, Sec, MSec;
+  DateTime.DecodeDate(Year, Month, Day);
+  DateTime.DecodeTime(Hour, Min, Sec, MSec);
+  switch (Precision)
+  {
+    case mfNone:
+      return L"";
+
+    case mfMDY:
+      return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
+
+    case mfMDHM:
+      return FORMAT(L"%3s %2d %2d:%2.2d",
+        EngShortMonthNames[Month-1], Day, Hour, Min);
+
+    default:
+      assert(false);
+      // fall thru
+
+    case mfFull:
+      return FORMAT(L"%3s %2d %2d:%2.2d:%2.2d %4d",
+        EngShortMonthNames[Month-1], Day, Hour, Min, Sec, Year);
   }
 }
 //---------------------------------------------------------------------------
@@ -947,29 +977,7 @@ UnicodeString TRemoteFile::GetUserModificationStr()
 //---------------------------------------------------------------------------
 UnicodeString TRemoteFile::GetModificationStr() const
 {
-  Word Year, Month, Day, Hour, Min, Sec, MSec;
-  GetModification().DecodeDate(Year, Month, Day);
-  GetModification().DecodeTime(Hour, Min, Sec, MSec);
-  switch (FModificationFmt)
-  {
-    case mfNone:
-      return L"";
-
-    case mfMDY:
-      return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
-
-    case mfMDHM:
-      return FORMAT(L"%3s %2d %2d:%2.2d",
-        EngShortMonthNames[Month-1], Day, Hour, Min);
-
-    default:
-      assert(false);
-      // fall thru
-
-    case mfFull:
-      return FORMAT(L"%3s %2d %2d:%2.2d:%2.2d %4d",
-        EngShortMonthNames[Month-1], Day, Hour, Min, Sec, Year);
-  }
+  return ::ModificationStr(GetModification(), FModificationFmt);
 }
 //---------------------------------------------------------------------------
 UnicodeString TRemoteFile::GetExtension()
@@ -1253,7 +1261,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
   }
   catch (Exception &E)
   {
-    throw ETerminal(&E, FmtLoadStr(LIST_LINE_ERROR, Value.c_str()));
+    throw ETerminal(&E, FmtLoadStr(LIST_LINE_ERROR, Value.c_str()), HELP_LIST_LINE_ERROR);
   }
 }
 //---------------------------------------------------------------------------
@@ -1482,7 +1490,7 @@ void TRemoteFileList::AddFile(TRemoteFile * File)
 //---------------------------------------------------------------------------
 void TRemoteFileList::DuplicateTo(TRemoteFileList * Copy) const
 {
-  Copy->Clear();
+  Copy->Reset();
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     TRemoteFile * File = GetFile(Index);
@@ -1492,7 +1500,7 @@ void TRemoteFileList::DuplicateTo(TRemoteFileList * Copy) const
   Copy->FTimestamp = FTimestamp;
 }
 //---------------------------------------------------------------------------
-void TRemoteFileList::Clear()
+void TRemoteFileList::Reset()
 {
   FTimestamp = Now();
   TObjectList::Clear();
@@ -1566,26 +1574,34 @@ TRemoteDirectory::TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Tem
   }
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectory::Clear()
+TRemoteDirectory::~TRemoteDirectory()
 {
-  if (GetThisDirectory() && !GetIncludeThisDirectory())
+  ReleaseRelativeDirectories();
+}
+//---------------------------------------------------------------------------
+void TRemoteDirectory::ReleaseRelativeDirectories()
+{
+  if ((GetThisDirectory() != nullptr) && !GetIncludeThisDirectory())
   {
     delete FThisDirectory;
     FThisDirectory = nullptr;
   }
-  if (GetParentDirectory() && !GetIncludeParentDirectory())
+  if ((GetParentDirectory() != nullptr) && !GetIncludeParentDirectory())
   {
     delete FParentDirectory;
     FParentDirectory = nullptr;
   }
-
-  TRemoteFileList::Clear();
+}
+//---------------------------------------------------------------------------
+void TRemoteDirectory::Reset()
+{
+  ReleaseRelativeDirectories();
+  TRemoteFileList::Reset();
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectory::SetDirectory(const UnicodeString & Value)
 {
   TRemoteFileList::SetDirectory(Value);
-  //Load();
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectory::AddFile(TRemoteFile * File)
@@ -1809,7 +1825,7 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & Directory, boo
 //---------------------------------------------------------------------------
 void TRemoteDirectoryCache::Delete(intptr_t Index)
 {
-  delete static_cast<TRemoteFileList *>(GetObject(Index));
+  delete dynamic_cast<TRemoteFileList *>(GetObject(Index));
   TStringList::Delete(Index);
 }
 //---------------------------------------------------------------------------
@@ -2016,6 +2032,7 @@ TRights::TRights(const TRights & Source)
 {
   Assign(&Source);
 }
+//---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 void TRights::Assign(const TRights * Source)
 {

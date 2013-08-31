@@ -78,9 +78,11 @@ typedef ssize_t (*ne_provide_body)(void *userdata,
 /* Install a callback which is invoked as needed to provide the
  * request body, a block at a time.  The total size of the request
  * body is 'length'; the callback must ensure that it returns no more
- * than 'length' bytes in total. */
+ * than 'length' bytes in total.  If 'length' is set to -1, then the
+ * total size of the request is unknown by the caller and chunked 
+ * tranfer will be used. */
 void ne_set_request_body_provider(ne_request *req, ne_off_t length,
-				  ne_provide_body provider, void *userdata);
+                                  ne_provide_body provider, void *userdata);
 
 /* Handling response bodies; two callbacks must be provided:
  *

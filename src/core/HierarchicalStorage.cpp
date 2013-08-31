@@ -7,6 +7,7 @@
 #include "PuttyIntf.h"
 #include "HierarchicalStorage.h"
 #include <TextsCore.h>
+#include <StrUtils.hpp>
 //------------------------------------------------------------------------------
 #pragma package(smart_init)
 //------------------------------------------------------------------------------
@@ -76,7 +77,7 @@ UnicodeString MungeIniName(const UnicodeString & Str)
   // make this fast for now
   if (P > 0)
   {
-    return StringReplace(Str, L"=", L"%3D", TReplaceFlags() << rfReplaceAll);
+    return ReplaceStr(Str, L"=", L"%3D");
   }
   else
   {
@@ -90,7 +91,7 @@ UnicodeString UnMungeIniName(const UnicodeString & Str)
   // make this fast for now
   if (P > 0)
   {
-    return StringReplace(Str, L"%3D", L"=", TReplaceFlags() << rfReplaceAll);
+    return ReplaceStr(Str, L"%3D", L"=");
   }
   else
   {
@@ -970,14 +971,7 @@ void TIniFileStorage::Flush()
           // "access denied" errors upon implicit saves to existing file are ignored
           if (GetExplicit() || !Exists || (GetLastError() != ERROR_ACCESS_DENIED))
           {
-            try
-            {
-              RaiseLastOSError();
-            }
-            catch(Exception & E)
-            {
-              throw ExtException(&E, FMTLOAD(CREATE_FILE_ERROR, (GetStorage())));
-            }
+            throw EOSExtException(FMTLOAD((Exists ? WRITE_ERROR : CREATE_FILE_ERROR), GetStorage().c_str()));
           }
         }
         else

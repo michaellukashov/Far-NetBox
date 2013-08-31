@@ -87,6 +87,7 @@ public:
   void CleanupRegistry(const UnicodeString & CleanupSubKey);
   UnicodeString BannerHash(const UnicodeString & Banner) const;
   static UnicodeString PropertyToKey(const UnicodeString & Property);
+  virtual void DoSave(bool All, bool Explicit);
 
   virtual bool GetConfirmOverwriting() const;
   virtual void SetConfirmOverwriting(bool Value);
@@ -119,8 +120,8 @@ public:
   virtual ~TConfiguration();
 
   virtual void Default();
-  virtual void Load();
-  virtual void Save(bool All, bool Explicit);
+  void Load();
+  void Save();
   void SetNulStorage();
   void SetDefaultStorage();
   void Export(const UnicodeString & FileName);
@@ -235,5 +236,10 @@ public:
 private:
   rde::vector<TShortCut> FShortCuts;
 };
+//---------------------------------------------------------------------------
+extern const UnicodeString OriginalPuttyRegistryStorageKey;
+extern const UnicodeString KittyRegistryStorageKey;
+extern const UnicodeString OriginalPuttyExecutable;
+extern const UnicodeString KittyExecutable;
 //---------------------------------------------------------------------------
 #endif

@@ -194,11 +194,10 @@ protected:
   UnicodeString FDirectory;
   TDateTime FTimestamp;
   TRemoteFile * GetParentDirectory();
-
-  virtual void Clear();
 public:
   TRemoteFileList();
-  virtual ~TRemoteFileList() { Clear(); }
+  virtual ~TRemoteFileList() { Reset(); }
+  virtual void Reset();
   TRemoteFile * FindFile(const UnicodeString & FileName) const;
   virtual void DuplicateTo(TRemoteFileList * Copy) const;
   virtual void AddFile(TRemoteFile * File);
@@ -219,9 +218,10 @@ friend class TSFTPFileSystem;
 friend class TWebDAVFileSystem;
 public:
   explicit TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = nullptr);
-  virtual ~TRemoteDirectory() { Clear(); }
+  virtual ~TRemoteDirectory();
   virtual void AddFile(TRemoteFile * File);
   virtual void DuplicateTo(TRemoteFileList * Copy) const;
+  virtual void Reset();
   TTerminal * GetTerminal() const { return FTerminal; }
   void SetTerminal(TTerminal * Value) { FTerminal = Value; }
   TStrings * GetSelectedFiles() const;
@@ -229,13 +229,11 @@ public:
   void SetIncludeParentDirectory(Boolean Value);
   Boolean GetIncludeThisDirectory() const { return FIncludeThisDirectory; }
   void SetIncludeThisDirectory(Boolean Value);
+  void ReleaseRelativeDirectories();
   Boolean GetLoaded() const;
   TRemoteFile * GetParentDirectory() const { return FParentDirectory; }
   TRemoteFile * GetThisDirectory() const { return FThisDirectory; }
   virtual void SetDirectory(const UnicodeString & Value);
-
-protected:
-  virtual void Clear();
 
 private:
   Boolean FIncludeParentDirectory;
@@ -337,7 +335,6 @@ public:
   TRights();
   TRights(const TRights & Source);
   explicit TRights(unsigned short Number);
-
   void Assign(const TRights * Source);
   void AddExecute();
   void AllUndef();
@@ -494,6 +491,8 @@ TDateTime ReduceDateTimePrecision(const TDateTime & DateTime,
 TModificationFmt LessDateTimePrecision(
   TModificationFmt Precision1, TModificationFmt Precision2);
 UnicodeString UserModificationStr(const TDateTime & DateTime,
+  TModificationFmt Precision);
+UnicodeString ModificationStr(TDateTime DateTime,
   TModificationFmt Precision);
 int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs = INVALID_FILE_ATTRIBUTES,
   UnicodeString * TypeName = nullptr);

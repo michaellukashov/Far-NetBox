@@ -895,7 +895,7 @@ bool CFtpListResult::ParseShortDate(const char *str, int len, t_directory::t_dir
 
 	if (!numeric)
 	{
-        rde::map<CString, int>::const_iterator iter = m_MonthNamesMap.begin();
+//		rde::map<CString, int>::const_iterator iter;
 
 		char *tmpstr = static_cast<char *>(nb_calloc(1, i + 1));
 		strncpy(tmpstr, str, i);
@@ -903,7 +903,7 @@ bool CFtpListResult::ParseShortDate(const char *str, int len, t_directory::t_dir
 		strlwr(tmpstr);
 
 		USES_CONVERSION;
-		iter = const_cast<CFtpListResult *>(this)->m_MonthNamesMap.find(A2T(tmpstr));
+		rde::map<CString, int>::const_iterator iter = const_cast<CFtpListResult *>(this)->m_MonthNamesMap.find(A2T(tmpstr));
 		nb_free(tmpstr);
 		if (iter == m_MonthNamesMap.end())
 			return false;
@@ -1029,7 +1029,10 @@ BOOL CFtpListResult::parseAsVMS(const char *line, const int linelen, t_directory
 	int pos = 0;
 	USES_CONVERSION;
 	
+//	rde::map<CString, int>::const_iterator iter;
 	t_directory::t_direntry dir;
+	
+	dir.bUnsure = FALSE;
 	
 	const char *str = GetNextToken(line, linelen, tokenlen, pos, 0);
 	if (!str)
@@ -1301,6 +1304,7 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 	CString facts(str, tokenlen);
 	if (facts.IsEmpty())
 		return FALSE;
+	direntry.bUnsure = FALSE;
 	direntry.dir = FALSE;
 	direntry.bLink = FALSE;
 	direntry.size = -1;
@@ -1322,7 +1326,9 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 
 		int pos = facts.Find('=');
 		if (pos < 1 || pos > delim)
+		{
 			return FALSE;
+		}
 
 		CString factname = facts.Left(pos);
 		factname.MakeLower();
@@ -1365,13 +1371,21 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 			direntry.permissionstr = value;
 		}
 		else if (factname == _T("unix.owner") || factname == _T("unix.user"))
+		{
 			owner = value;
+		}
 		else if (factname == _T("unix.group"))
+		{
 			group = value;
+		}
 		else if (factname == _T("unix.uid"))
+		{
 			uid = value;
+		}
 		else if (factname == _T("unix.gid"))
+		{
 			gid = value;
+		}
 
 		facts = facts.Mid(delim + 1);
 	}
@@ -1424,23 +1438,23 @@ bool CFtpListResult::parseMlsdDateTime(const CString value, t_directory::t_diren
 	}
 	if (result)
 	{
-    try
-    {
-      CTime dateTime(Year, Month, Day, Hours, Minutes, Seconds);
-      direntry.date.year = Year;
-      direntry.date.month = Month;
-      direntry.date.day = Day;
-      direntry.date.hour = Hours;
-      direntry.date.minute = Minutes;
-      direntry.date.second = Seconds;
-      direntry.date.utc = FALSE;
-      direntry.EntryTime = dateTime;
-    }
-    catch (CAtlException&)
-    {
-      direntry.date.hasdate = FALSE;
-      direntry.date.hastime = FALSE;
-    }
+		try
+		{
+			CTime dateTime(Year, Month, Day, Hours, Minutes, Seconds);
+			direntry.date.year = Year;
+			direntry.date.month = Month;
+			direntry.date.day = Day;
+			direntry.date.hour = Hours;
+			direntry.date.minute = Minutes;
+			direntry.date.second = Seconds;
+			direntry.date.utc = TRUE;
+			direntry.EntryTime = dateTime;
+		}
+		catch (CAtlException &)
+		{
+			direntry.date.hasdate = FALSE;
+			direntry.date.hastime = FALSE;
+		}
 	}
 	return result;
 }
@@ -1548,6 +1562,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 	int prevstrlen = 0;
 
 	__int64 tmp = 0;
+//	rde::map<CString, int>::const_iterator iter;
 	while (str && !ParseSize(str, tokenlen, tmp) && !IsNumeric(skipped, skippedlen))
 	{
 		//Maybe the server has left no space between the group and the size
@@ -2191,6 +2206,8 @@ BOOL CFtpListResult::parseAsOther(const char *line, const int linelen, t_directo
 	}
 	else
 	{
+//		rde::map<CString, int>::const_iterator iter;
+
 		//Get size
 		direntry.size = strntoi64(skipped, skippedtokenlen);
 		
@@ -2542,6 +2559,8 @@ BOOL CFtpListResult::parseAsIBM(const char *line, const int linelen, t_directory
 
 	copyStr(direntry.name, 0, str, tokenlen, true);
 
+	direntry.bUnsure = FALSE;
+
 	return true;
 }
 
@@ -2646,6 +2665,9 @@ BOOL CFtpListResult::parseAsIBMMVS(const char *line, const int linelen, t_direct
 	if (!str)
 		return FALSE;
 	copyStr(direntry.name, 0, str, tokenlen, true);
+
+	direntry.bUnsure = FALSE;
+
 	return true;
 }
 
@@ -2712,6 +2734,7 @@ BOOL CFtpListResult::parseAsIBMMVSPDS(const char *line, const int linelen, t_dir
 		return FALSE;
 	
 	direntry.dir = FALSE;
+	direntry.bUnsure = FALSE;
 	
 	return true;
 }
@@ -2728,6 +2751,7 @@ BOOL CFtpListResult::parseAsIBMMVSPDS2(const char *line, const int linelen, t_di
 	int pos = 0;
 	int tokenlen = 0;
 
+	direntry.bUnsure = FALSE;
 	direntry.dir = FALSE;
 	direntry.bLink = FALSE;
 	direntry.ownergroup = _MPT("");
@@ -2955,6 +2979,7 @@ BOOL CFtpListResult::parseAsWfFtp(const char *line, const int linelen, t_directo
 	if (!parseTime(str, tokenlen, direntry.date))
 		return FALSE;
 
+	direntry.bUnsure = FALSE;
 	direntry.dir = false;
 	direntry.bLink = false;
 	direntry.permissionstr = _T("");

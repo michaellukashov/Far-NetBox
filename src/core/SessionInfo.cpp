@@ -73,23 +73,6 @@ static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
   return DoXmlEscape(Str, true);
 }
 //---------------------------------------------------------------------------
-TStrings * ExceptionToMessages(Exception * E)
-{
-  TStrings * Result = nullptr;
-  UnicodeString Message;
-  if (ExceptionMessage(E, Message))
-  {
-    Result = new TStringList();
-    Result->Add(Message);
-    ExtException * EE = dynamic_cast<ExtException *>(E);
-    if ((EE != nullptr) && (EE->GetMoreMessages() != nullptr))
-    {
-      Result->AddStrings(EE->GetMoreMessages());
-    }
-  }
-  return Result;
-}
-//---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 #pragma warn -inl
 class TSessionActionRecord : public TObject
@@ -223,7 +206,7 @@ public:
   void Rollback(Exception * E)
   {
     assert(FErrorMessages == nullptr);
-    FErrorMessages = ExceptionToMessages(E);
+    FErrorMessages = ExceptionToMoreMessages(E);
     Close(RolledBack);
   }
 
@@ -828,7 +811,7 @@ void TSessionLog::OpenLogFile()
     FConfiguration->SetLogFileName(UnicodeString());
     try
     {
-      throw ExtException(&E, LOG_GEN_ERROR);
+      throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
     }
     catch (Exception & E)
     {
@@ -894,6 +877,25 @@ void TSessionLog::AddStartupInfo(bool System)
     {
       DoAddStartupInfo(Data);
     }
+  }
+}
+//---------------------------------------------------------------------------
+UnicodeString TSessionLog::GetTlsVersionName(TTlsVersion TlsVersion)
+{
+  switch (TlsVersion)
+  {
+    default:
+      FAIL;
+    case ssl2:
+      return "SSLv2";
+    case ssl3:
+      return "SSLv3";
+    case tls10:
+      return "TLSv1.0";
+    case tls11:
+      return "TLSv1.1";
+    case tls12:
+      return "TLSv1.2";
   }
 }
 //---------------------------------------------------------------------------
@@ -1056,7 +1058,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         switch (Data->GetFtps())
         {
           case ftpsImplicit:
-            Ftps = L"Implicit SSL/TLS";
+            Ftps = L"Implicit TLS/SSL";
             break;
 
           case ftpsExplicitSsl:
@@ -1072,10 +1074,16 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
             Ftps = L"None";
             break;
         }
-        ADF(L"FTP: FTPS: %s; Passive: %s [Force IP: %c]; MLSD: %c",
+        ADF(L"FTP: FTPS: %s; Passive: %s [Force IP: %c]; MLSD: %c  [List all: %c]",
            Ftps.c_str(), BooleanToEngStr(Data->GetFtpPasvMode()).c_str(),
            BugFlags[Data->GetFtpForcePasvIp()],
-           BugFlags[Data->GetFtpUseMlsd()]);
+           BugFlags[Data->GetFtpUseMlsd()],
+           BugFlags[Data->GetFtpListAll()]);
+        if (Data->GetFtps() != ftpsNone)
+        {
+          ADF(L"Session reuse: %s", BooleanToEngStr(Data->GetSslSessionReuse()).c_str());
+          ADF(L"TLS/SSL versions: %s-%s", GetTlsVersionName(Data->GetMinTlsVersion()).c_str(), GetTlsVersionName(Data->GetMaxTlsVersion()).c_str());
+        }
       }
       ADF(L"Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
         (Data->GetLocalDirectory().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetLocalDirectory().c_str()),
@@ -1238,7 +1246,7 @@ void TActionLog::Add(const UnicodeString & Line)
       FConfiguration->SetLogActions(false);
       try
       {
-        throw ExtException(&E, LOG_GEN_ERROR);
+        throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
       }
       catch (Exception &E)
       {
@@ -1262,7 +1270,7 @@ void TActionLog::AddFailure(TStrings * Messages)
 //---------------------------------------------------------------------------
 void TActionLog::AddFailure(Exception * E)
 {
-  std::auto_ptr<TStrings> Messages(ExceptionToMessages(E));
+  std::auto_ptr<TStrings> Messages(ExceptionToMoreMessages(E));
   if (Messages.get() != nullptr)
   {
     AddFailure(Messages.get());

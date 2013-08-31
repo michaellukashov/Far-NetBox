@@ -526,3 +526,19 @@ inline bool TFileZillaIntf::Check(intptr_t ReturnCode,
     return CheckError(ReturnCode, Context);
   }
 }
+//---------------------------------------------------------------------------
+bool TFileZillaIntf::UsingMlsd()
+{
+  return FFileZillaApi->UsingMlsd();
+}
+//---------------------------------------------------------------------------
+std::string TFileZillaIntf::GetTlsVersionStr()
+{
+  return FFileZillaApi->GetTlsVersionStr();
+}
+//---------------------------------------------------------------------------
+std::string TFileZillaIntf::GetCipherName()
+{
+  return FFileZillaApi->GetCipherName();
+}
+

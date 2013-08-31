@@ -424,6 +424,27 @@ void CMainThread::SetOption(int nOption, int nValue)
 	m_Options[nOption]=nValue;
 	LCS;
 }
+#else
+bool CMainThread::UsingMlsd()
+{
+	if (!IsConnected())
+		return false;
+	return m_pControlSocket->UsingMlsd();
+}
+
+std::string CMainThread::GetTlsVersionStr()
+{
+	if (!IsConnected())
+		return std::string();
+	return m_pControlSocket->GetTlsVersionStr();
+}
+
+std::string CMainThread::GetCipherName()
+{
+	if (!IsConnected())
+		return std::string();
+	return m_pControlSocket->GetCipherName();
+}
 #endif
 
 BOOL CMainThread::GetWorkingDir(t_directory *pWorkingDir)

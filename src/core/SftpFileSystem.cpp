@@ -20,12 +20,13 @@
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
+  FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION, L"")
 //---------------------------------------------------------------------------
 #define SSH_FX_OK                                 0
 #define SSH_FX_EOF                                1
 #define SSH_FX_NO_SUCH_FILE                       2
 #define SSH_FX_PERMISSION_DENIED                  3
+#define SSH_FX_FAILURE                            4
 #define SSH_FX_OP_UNSUPPORTED                     8
 
 #define SSH_FXP_INIT               1
@@ -802,7 +803,7 @@ public:
     while (Index < Dump.Length())
     {
       char C = Dump[Index];
-      if (((C >= '0') && (C <= '9')) || ((C >= 'A') && (C <= 'Z')))
+      if (IsHex(C))
       {
         if (Byte[0] == '\0')
         {
@@ -2152,9 +2153,20 @@ uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
     {
       LanguageTag = FORMAT(L" (%s)", LanguageTag.c_str());
     }
+    UnicodeString HelpKeyword;
+    switch (Code)
+    {
+      case SSH_FX_FAILURE:
+        HelpKeyword = HELP_SFTP_STATUS_FAILURE;
+        break;
+
+      case SSH_FX_PERMISSION_DENIED:
+        HelpKeyword = HELP_SFTP_STATUS_PERMISSION_DENIED;
+        break;
+    }
     UnicodeString Error = FMTLOAD(SFTP_ERROR_FORMAT3, MessageStr.c_str(),
       int(Code), LanguageTag.c_str(), ServerMessage.c_str());
-    FTerminal->TerminalError(nullptr, Error);
+    FTerminal->TerminalError(nullptr, Error, HelpKeyword);
     return 0;
   }
   else
@@ -2195,7 +2207,7 @@ intptr_t TSFTPFileSystem::PacketLength(unsigned char * LenBuf, intptr_t Expected
       Message = FMTLOAD(SFTP_PACKET_TOO_BIG_INIT_EXPLAIN,
         Message.c_str(), DisplayableStr(LenString).c_str());
     }
-    FTerminal->FatalError(nullptr, Message);
+    FTerminal->FatalError(nullptr, Message, HELP_SFTP_PACKET_TOO_BIG);
   }
   return Length;
 }
@@ -2995,7 +3007,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
   // moved before SSH_FXP_OPENDIR, so directory listing does not retain
   // old data (e.g. parent directory) when reading fails
-  FileList->Clear();
+  FileList->Reset();
 
   TSFTPPacket Packet(SSH_FXP_OPENDIR, FCodePage);
   RawByteString Handle;
@@ -3142,7 +3154,9 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
       if (Failure)
       {
-        throw Exception(FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()));
+        throw ExtException(
+          nullptr, FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()),
+          HELP_EMPTY_DIRECTORY);
       }
     }
   }
@@ -4298,9 +4312,11 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
 
         // originally this was before CLOSE (last __finally statement),
         // on VShell it failed
-        FILE_OPERATION_LOOP(FMTLOAD(RENAME_AFTER_RESUME_ERROR,
+        FILE_OPERATION_LOOP_CUSTOM(FTerminal, true,
+          FMTLOAD(RENAME_AFTER_RESUME_ERROR,
             ::UnixExtractFileName(OpenParams.RemoteFileName.c_str()).c_str(), DestFileName.c_str()),
-          RenameFile(OpenParams.RemoteFileName, DestFileName);
+          RenameFile(OpenParams.RemoteFileName, DestFileName),
+          HELP_RENAME_AFTER_RESUME_ERROR
         );
       }
 
@@ -4331,7 +4347,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
             SendPacket(&PropertiesRequest);
           }
           bool Resend = false;
-          FILE_OPERATION_LOOP(FMTLOAD(PRESERVE_TIME_PERM_ERROR, DestFileName.c_str()),
+          FILE_OPERATION_LOOP_CUSTOM(FTerminal, true, FMTLOAD(PRESERVE_TIME_PERM_ERROR2, DestFileName.c_str()),
             try
             {
               TSFTPPacket DummyResponse(FCodePage);
@@ -4361,6 +4377,8 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
                 throw;
               }
             }
+            ,
+            HELP_PRESERVE_TIME_PERM_ERROR
           );
         }
         catch(Exception & E)
@@ -4510,7 +4528,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
           ReadFile(RealFileName, File);
           std::auto_ptr<TRemoteFile> FilePtr(File);
           assert(FilePtr.get());
-          OpenParams->DestFileSize = File->GetSize();
+          OpenParams->DestFileSize = FilePtr->GetSize();
           if (OpenParams->FileParams != nullptr)
           {
             OpenParams->FileParams->DestTimestamp = File->GetModification();
@@ -4899,10 +4917,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       );
 
       FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
-        if (!ForceDirectories(DestFullName))
-        {
-          RaiseLastOSError();
-        }
+        THROWOSIFFALSE(ForceDirectories(DestFullName));
       );
 
       TSinkFileParams SinkFileParams;
@@ -5330,12 +5345,9 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
           if (FileExists(DestFullName))
           {
-            THROWOSIFFALSE(Sysutils::DeleteFile(DestFullName));
+            DeleteFileChecked(DestFullName);
           }
-          if (!Sysutils::RenameFile(DestPartialFullName, DestFullName))
-          {
-            RaiseLastOSError();
-          }
+          THROWOSIFFALSE(Sysutils::RenameFile(DestPartialFullName, DestFullName));
         );
       }
 
