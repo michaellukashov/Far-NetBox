@@ -198,7 +198,7 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
   if (Change)
   {
     // only modified, implicit
-    GetConfiguration()->Save(false, false);
+    GetConfiguration()->DoSave(false, false);
   }
   return Change;
 }
