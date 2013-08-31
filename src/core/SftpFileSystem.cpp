@@ -4917,10 +4917,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       );
 
       FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
-        if (!ForceDirectories(DestFullName))
-        {
-          RaiseLastOSError();
-        }
+        THROWOSIFFALSE(ForceDirectories(DestFullName));
       );
 
       TSinkFileParams SinkFileParams;
@@ -5350,10 +5347,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           {
             THROWOSIFFALSE(Sysutils::DeleteFile(DestFullName));
           }
-          if (!Sysutils::RenameFile(DestPartialFullName, DestFullName))
-          {
-            RaiseLastOSError();
-          }
+          THROWOSIFFALSE(Sysutils::RenameFile(DestPartialFullName, DestFullName));
         );
       }
 

@@ -1179,10 +1179,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
       );
 
       FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
-        if (!ForceDirectories(DestFullName))
-        {
-          RaiseLastOSError();
-        }
+        THROWOSIFFALSE(ForceDirectories(DestFullName));
       );
 
       TSinkFileParams SinkFileParams;

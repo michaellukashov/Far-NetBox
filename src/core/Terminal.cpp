@@ -3998,10 +3998,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
         FILETIME CTime;
         // Get last file access and modification time
         FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, FileName.c_str()),
-          if (!GetFileTime(LocalFileHandle, &CTime, &ATime, &MTime))
-          {
-            RaiseLastOSError();
-          }
+          THROWOSIFFALSE(GetFileTime(LocalFileHandle, &CTime, &ATime, &MTime));
         );
         if (ACTime)
         {

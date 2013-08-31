@@ -557,10 +557,7 @@ void TConfiguration::CleanupRandomSeedFile()
     DontSaveRandomSeed();
     if (::FileExists(GetRandomSeedFileName()))
     {
-      if (!DeleteFile(GetRandomSeedFileName()))
-      {
-        RaiseLastOSError();
-      }
+      THROWOSIFFALSE(Sysutils::DeleteFile(GetRandomSeedFileName()));
     }
   }
   catch (Exception &E)
@@ -576,10 +573,7 @@ void TConfiguration::CleanupIniFile()
 #if 0
     if (::FileExists(GetIniFileStorageNameForReading()))
     {
-      if (!DeleteFile(GetIniFileStorageNameForReading()))
-      {
-        RaiseLastOSError();
-      }
+      THROWOSIFFALSE(Sysutils::DeleteFile(GetIniFileStorageNameForReading());
     }
     if (GetStorage() == stIniFile)
     {
