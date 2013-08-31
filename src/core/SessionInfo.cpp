@@ -811,7 +811,7 @@ void TSessionLog::OpenLogFile()
     FConfiguration->SetLogFileName(UnicodeString());
     try
     {
-      throw ExtException(&E, LOG_GEN_ERROR);
+      throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
     }
     catch (Exception & E)
     {
@@ -1245,7 +1245,7 @@ void TActionLog::Add(const UnicodeString & Line)
       FConfiguration->SetLogActions(false);
       try
       {
-        throw ExtException(&E, LOG_GEN_ERROR);
+        throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
       }
       catch (Exception &E)
       {
