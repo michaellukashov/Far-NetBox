@@ -7903,7 +7903,7 @@ void TSynchronizeDialog::CustomCopyParam()
 {
   TWinSCPPlugin * WinSCPPlugin = dynamic_cast<TWinSCPPlugin *>(FarPlugin);
   // PreserveTime is forced for some settings, but avoid hard-setting it until
-  // user really confirms it on cutom dialog
+  // user really confirms it on custom dialog
   TCopyParamType ACopyParams = GetCopyParams();
   if (WinSCPPlugin->CopyParamCustomDialog(ACopyParams, ActualCopyParamAttrs()))
   {

@@ -3,7 +3,7 @@
 //------------------------------------------------------------------------------
 // Some utility templates for emulating properties --
 // preferring a library solution to a new language feature
-// Each property has three sets of redundant acccessors:
+// Each property has three sets of redundant accessors:
 // 1. function call syntax
 // 2. get() and set() functions
 // 3. overloaded operator =
