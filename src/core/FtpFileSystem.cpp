@@ -1611,7 +1611,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
         SUSPEND_OPERATION (
           // here a message to user was displayed, which was not appropriate
           // when user refused to overwrite the file in subdirectory.
-          // hopefuly it won't be missing in other situations.
+          // hopefully it won't be missing in other situations.
           if (!FTerminal->HandleException(&E)) throw;
         );
       }
@@ -2804,7 +2804,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
     else if (FLastCommand == SYST)
     {
       assert(FSystem.IsEmpty());
-      // Possitive reply to "SYST" must be 215, see RFC 959
+      // Positive reply to "SYST" must be 215, see RFC 959
       if (FLastCode == 215)
       {
         FSystem = FLastResponse->GetText().TrimRight();

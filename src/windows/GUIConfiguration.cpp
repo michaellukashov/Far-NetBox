@@ -583,7 +583,7 @@ void TGUIConfiguration::DefaultLocalized()
   {
     FCopyParamList->Clear();
 
-    // guard against "empty resource string" from obsolete traslations
+    // guard against "empty resource string" from obsolete translations
     // (DefaultLocalized is called for the first time before detection of
     // obsolete translations)
     if (!LoadStr(COPY_PARAM_PRESET_ASCII).IsEmpty())
