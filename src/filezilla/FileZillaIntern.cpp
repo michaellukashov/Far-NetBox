@@ -9,7 +9,7 @@
 TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) :
   FOwner(AOwner)
 {
-  // not being initialied by CApiLog
+  // not being initialized by CApiLog
   m_nLogMessage = 0;
 }
 //---------------------------------------------------------------------------
@@ -33,7 +33,7 @@ BOOL TFileZillaIntern::PostMessage(HWND hWnd, UINT Msg, WPARAM wParam,
       Result = FOwner->PostMessage(wParam, lParam);
       break;
 
-    // ignored for performace
+    // ignored for performance
     case FZ_MSG_SOCKETSTATUS:
       Result = false;
       break;

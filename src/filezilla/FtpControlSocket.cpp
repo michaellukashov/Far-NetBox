@@ -1456,7 +1456,7 @@ BOOL CFtpControlSocket::Send(CString str)
 		m_awaitsReply = true;
 		m_LastSendTime = CTime::GetCurrentTime();
 		// Count timeout since the last request, not only since the last received data
-		// otherwise we may happen to timeout immediatelly after sending request if
+		// otherwise we may happen to timeout immediately after sending request if
 		// CheckForTimeout occurs in between and we haven't received any data for a while
 		m_LastRecvTime = m_LastSendTime;
 		PostMessage(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_SOCKETSTATUS, FZ_SOCKETSTATUS_SEND), 0);
@@ -2367,7 +2367,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 
 					if (!bError)
 					{
-						// assamble EPRT command
+						// assemble EPRT command
 						cmd.Format(_T("EPRT |2|") +	host + _MPT("|%d|"), nPort);
 					}
 				}

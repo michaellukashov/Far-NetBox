@@ -53,7 +53,7 @@ When the listen socket is created successfully, the PROXYSTATUS_LISTENSOCKETCREA
 notification is sent. The parameters  will tell you the ip and the port of the listen socket.
 After it you have to handle the OnAccept message and accept the
 connection.
-Be carful when calling Accept: rConnected socket will NOT be filled! Instead use the instance which created the
+Be careful when calling Accept: rConnected socket will NOT be filled! Instead use the instance which created the
 listen socket, it will handle the data connection.
 If you want to accept more than one connection, you have to create a listing socket for each of them!
 
@@ -65,7 +65,7 @@ void SetProxy(int nProxyType, const char * pProxyHost, int nProxyPort);
 void SetProxy(int nProxyType, const char * pProxyHost, int nProxyPort, const char *pProxyUser, const char * pProxyPass);
 
 Call one of this functions to set the proxy type.
-Parametes:
+Parameters:
 - nProxyType specifies the Proxy Type.
 - ProxyHost and nProxyPort specify the address of the proxy
 - ProxyUser and ProxyPass are only available for SOCKS5 proxies.

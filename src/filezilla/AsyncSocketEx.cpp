@@ -27,7 +27,7 @@ First have a look at the way CAsyncSocket works. For each thread that uses
 CAsyncSocket, a window is created. CAsyncSocket calls WSAAsyncSelect with
 the handle of that window. Until here, CAsyncSocketEx works the same way.
 But CAsyncSocket uses only one window message (WM_SOCKET_NOTIFY) for all
-sockets within one thread. When the window recieve WM_SOCKET_NOTIFY, wParam
+sockets within one thread. When the window receive WM_SOCKET_NOTIFY, wParam
 contains the socket handle and the window looks up an CAsyncSocket instance
 using a map. CAsyncSocketEx works differently. It's helper window uses a
 wide range of different window messages (WM_USER through 0xBFFF) and passes
