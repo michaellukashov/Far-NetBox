@@ -1531,7 +1531,7 @@ bool RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin)
 void DeleteFileChecked(const UnicodeString & FileName)
 {
   if (!DeleteFile(FileName))
-  {  
+  {
     throw EOSExtException(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, FileName.c_str()));
   }
 }
@@ -1897,7 +1897,7 @@ UnicodeString WindowsProductName()
       Result = Registry->ReadString("ProductName");
     }
   }
-  catch(...)
+  catch (...)
   {
   }
   return Result;

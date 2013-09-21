@@ -506,7 +506,7 @@ void TFTPFileSystem::Open()
       assert(!FPasswordFailed);
       FPasswordFailed = false;
     }
-    catch(...)
+    catch (...)
     {
       if (FPasswordFailed)
       {
@@ -586,7 +586,7 @@ void TFTPFileSystem::Idle()
         Files->SetDirectory(GetCurrentDirectory());
         DoReadDirectory(Files.get());
       }
-      catch(...)
+      catch (...)
       {
         // ignore non-fatal errors
         // (i.e. current directory may not exist anymore)
@@ -709,7 +709,7 @@ void TFTPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
     // user chance to leave the non-existing directory.
     EnsureLocation();
   }
-  catch(...)
+  catch (...)
   {
     if (FTerminal->GetActive())
     {
@@ -766,7 +766,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
         FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TTerminal::ChangeFileProperties, FTerminal),
           static_cast<void *>(const_cast<TRemoteProperties *>(Properties)));
       }
-      catch(...)
+      catch (...)
       {
         Action.Cancel();
         throw;
@@ -1642,7 +1642,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
         FTerminal->CreateDirectory(DestFullName, &Properties);
       }
     }
-    catch(...)
+    catch (...)
     {
       TRemoteFile * File = nullptr;
       // ignore non-fatal error when the directory already exists
@@ -1715,7 +1715,7 @@ void TFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
     {
       FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK(TTerminal::DeleteFile, FTerminal), &Params);
     }
-    catch(...)
+    catch (...)
     {
       Action.Cancel();
       throw;
@@ -2482,7 +2482,7 @@ void TFTPFileSystem::DoWaitForReply(uintptr_t & ReplyToAwait, bool WantLastCode)
       GotNonCommandReply(FReply);
     }
   }
-  catch(...)
+  catch (...)
   {
     // even if non-fatal error happens, we must process pending message,
     // so that we "eat" the reply message, so that it gets not mistakenly
@@ -3446,7 +3446,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
             File->GetRights()->SetOctal(Entry->Permissions);
           }
         }
-        catch(...)
+        catch (...)
         {
           // ignore permissions errors with FTP
         }

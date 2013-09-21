@@ -722,7 +722,7 @@ public:
         // modification time and filename is ignored
         File->SetListingStr(ListingStr);
       }
-      catch(...)
+      catch (...)
       {
         // ignore any error while parsing listing line,
         // SFTP specification do not recommend to parse it
@@ -2502,7 +2502,7 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & Path)
   {
     Result = RealPath(Result);
   }
-  catch(...)
+  catch (...)
   {
     if (FTerminal->GetActive())
     {
@@ -2530,7 +2530,7 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & Path)
         Result = RealPath(FPath);
         Result = ::UnixIncludeTrailingBackslash(Result) + Name;
       }
-      catch(...)
+      catch (...)
       {
         if (FTerminal->GetActive())
         {
@@ -2773,7 +2773,7 @@ void TSFTPFileSystem::DoStartup()
           FTerminal->LogEvent(FORMAT(L"SFTP versions supported by the server (VShell format): %s",
             Versions.c_str()));
         }
-        catch(...)
+        catch (...)
         {
           // if that fails, fallback to proper decoding
           FTerminal->LogEvent(FORMAT(L"SFTP versions supported by the server: %s",
@@ -3020,7 +3020,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
     Handle = Packet.GetFileHandle();
   }
-  catch(...)
+  catch (...)
   {
     if (FTerminal->GetActive())
     {
@@ -3229,7 +3229,7 @@ bool TSFTPFileSystem::RemoteFileExists(const UnicodeString & FullPath,
       }
     }
   }
-  catch(...)
+  catch (...)
   {
     if (!FTerminal->GetActive())
     {
@@ -3294,7 +3294,7 @@ void TSFTPFileSystem::DeleteFile(const UnicodeString & FileName,
       {
         FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK(TTerminal::DeleteFile, FTerminal), &Params);
       }
-      catch(...)
+      catch (...)
       {
         Action.Cancel();
         throw;
@@ -3392,7 +3392,7 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & FileName,
       FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK(TTerminal::ChangeFileProperties, FTerminal),
         static_cast<void *>(const_cast<TRemoteProperties *>(AProperties)));
     }
-    catch(...)
+    catch (...)
     {
       Action.Cancel();
       throw;
@@ -4536,7 +4536,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
           }
           // file exists (otherwise exception was thrown)
         }
-        catch(...)
+        catch (...)
         {
           if (!FTerminal->GetActive())
           {
@@ -4597,7 +4597,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
             ReadFile(RealFileName, File);
             SAFE_DESTROY(File);
           }
-          catch(...)
+          catch (...)
           {
             if (!FTerminal->GetActive())
             {
@@ -4660,7 +4660,7 @@ void TSFTPFileSystem::SFTPCloseRemote(const RawByteString & Handle,
         ReceiveResponse(P, Packet, SSH_FXP_STATUS);
       }
     }
-    catch(...)
+    catch (...)
     {
       if (!FTerminal->GetActive() || TransferFinished)
       {
@@ -4686,7 +4686,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
   {
     TryOpenDirectory(DestFullName);
   }
-  catch(...)
+  catch (...)
   {
     if (FTerminal->GetActive())
     {
@@ -4815,7 +4815,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
           if (!FTerminal->HandleException(&E)) throw;
         );
       }
-      catch(...)
+      catch (...)
       {
         // TODO: remove the block?
         throw;

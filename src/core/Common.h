@@ -204,7 +204,7 @@ private:
 #define FAIL
 #define TRACE_EXCEPT_BEGIN
 #define TRACE_EXCEPT_END
-#define TRACE_CATCH_ALL catch(...)
+#define TRACE_CATCH_ALL catch (...)
 #define CLEAN_INLINE
 #define TRACEE_(E)
 #define TRACEE

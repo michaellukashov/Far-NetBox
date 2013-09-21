@@ -325,7 +325,7 @@ int TSimpleThread::ThreadProc(void * Thread)
   {
     SimpleThread->Execute();
   }
-  catch(...)
+  catch (...)
   {
     // we do not expect thread to be terminated with exception
     assert(false);
@@ -1340,7 +1340,7 @@ void TTerminalItem::Idle()
   {
     FTerminal->Idle();
   }
-  catch(...)
+  catch (...)
   {
   }
 
@@ -2265,7 +2265,7 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
       Rethrow(FException);
     }
   }
-  catch(...)
+  catch (...)
   {
     if (FCancelled)
     {

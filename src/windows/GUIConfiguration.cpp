@@ -891,7 +891,7 @@ void TGUIConfiguration::SetLocaleSafe(LCID Value)
     {
       Module = LoadNewResourceModule(Value);
     }
-    catch(...)
+    catch (...)
     {
       // ignore any exception while loading locale
       Module = nullptr;

@@ -498,7 +498,7 @@ void TBookmark::SetName(const UnicodeString & Value)
     {
       Modify(OldIndex);
     }
-    catch(...)
+    catch (...)
     {
       FName = OldName;
       throw;

@@ -13,10 +13,10 @@
 //------------------------------------------------------------------------------
 #define READ_REGISTRY(Method) \
   if (FRegistry->ValueExists(Name)) \
-  try { return FRegistry->Method(Name); } catch(...) { FFailed++; return Default; } \
+  try { return FRegistry->Method(Name); } catch (...) { FFailed++; return Default; } \
   else return Default;
 #define WRITE_REGISTRY(Method) \
-  try { FRegistry->Method(Name, Value); } catch(...) { FFailed++; }
+  try { FRegistry->Method(Name, Value); } catch (...) { FFailed++; }
 //------------------------------------------------------------------------------
 UnicodeString MungeStr(const UnicodeString & Str, bool ForceAnsi)
 {
@@ -573,7 +573,7 @@ __int64 TRegistryStorage::ReadInt64(const UnicodeString & Name, __int64 Default)
     {
       FRegistry->ReadBinaryData(Name, &Result, sizeof(Result));
     }
-    catch(...)
+    catch (...)
     {
       FFailed++;
     }
@@ -596,7 +596,7 @@ size_t TRegistryStorage::ReadBinaryData(const UnicodeString & Name,
     {
       Result = FRegistry->ReadBinaryData(Name, Buffer, Size);
     }
-    catch(...)
+    catch (...)
     {
       Result = 0;
       FFailed++;
@@ -640,7 +640,7 @@ void TRegistryStorage::WriteInt64(const UnicodeString & Name, __int64 Value)
   {
     FRegistry->WriteBinaryData(Name, &Value, sizeof(Value));
   }
-  catch(...)
+  catch (...)
   {
     FFailed++;
   }
@@ -653,7 +653,7 @@ void TRegistryStorage::WriteBinaryData(const UnicodeString & Name,
   {
     FRegistry->WriteBinaryData(Name, const_cast<void *>(Buffer), Size);
   }
-  catch(...)
+  catch (...)
   {
     FFailed++;
   }
@@ -833,7 +833,7 @@ TDateTime TCustomIniFileStorage::ReadDateTime(const UnicodeString & Name, TDateT
         Result = StrToDateTime(Value);
       }
     }
-    catch(...)
+    catch (...)
     {
       Result = Default;
     }
@@ -865,7 +865,7 @@ double TCustomIniFileStorage::ReadFloat(const UnicodeString & Name, double Defau
         Result = static_cast<double>(StrToFloat(Value));
       }
     }
-    catch(...)
+    catch (...)
     {
       Result = Default;
     }

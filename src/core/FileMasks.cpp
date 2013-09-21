@@ -508,7 +508,7 @@ void TFileMasks::CreateMaskMask(const UnicodeString & Mask, intptr_t Start, intp
       MaskMask.Mask = new Masks::TMask(Mask);
     }
   }
-  catch(...)
+  catch (...)
   {
     ThrowError(Start, End);
   }
@@ -771,7 +771,7 @@ void TFileMasks::SetStr(const UnicodeString & Str, bool SingleMask)
       }
     }
   }
-  catch(...)
+  catch (...)
   {
     // this does not work correctly if previous mask was set using SetMask.
     // this should not fail (the mask was validated before),
