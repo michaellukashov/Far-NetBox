@@ -117,31 +117,45 @@ CAsyncSocketExLayer *CAsyncSocketExLayer::AddLayer(CAsyncSocketExLayer *pLayer, 
 
 int CAsyncSocketExLayer::Receive(void* lpBuf, int nBufLen, int nFlags /*=0*/)
 {
-	return ReceiveNext(lpBuf, nBufLen, nFlags);
+	int Result = ReceiveNext(lpBuf, nBufLen, nFlags);
+	return Result;
 }
 
 int CAsyncSocketExLayer::Send(const void* lpBuf, int nBufLen, int nFlags /*=0*/)
 {
-	return SendNext(lpBuf, nBufLen, nFlags);
+	int Result = SendNext(lpBuf, nBufLen, nFlags);
+	return Result;
 }
 
 
 void CAsyncSocketExLayer::OnReceive(int nErrorCode)
 {
 	if (m_pPrevLayer)
+	{
 		m_pPrevLayer->OnReceive(nErrorCode);
+	}	
 	else
+	{
 		if (m_pOwnerSocket->m_lEvent&FD_READ)
+		{
 			m_pOwnerSocket->OnReceive(nErrorCode);
+		}
+	}
 }
 
 void CAsyncSocketExLayer::OnSend(int nErrorCode)
 {
 	if (m_pPrevLayer)
+	{
 		m_pPrevLayer->OnSend(nErrorCode);
+	}
 	else
+	{
 		if (m_pOwnerSocket->m_lEvent&FD_WRITE)
+		{
 			m_pOwnerSocket->OnSend(nErrorCode);
+		}
+	}
 }
 
 void CAsyncSocketExLayer::OnConnect(int nErrorCode)
@@ -223,7 +237,7 @@ void CAsyncSocketExLayer::Close()
 void CAsyncSocketExLayer::CloseNext()
 {
 	if (m_addrInfo)
-		m_pOwnerSocket->p_freeaddrinfo(m_addrInfo);
+		freeaddrinfo(m_addrInfo);
 	m_nextAddr = 0;
 	m_addrInfo = 0;
 
@@ -268,7 +282,9 @@ int CAsyncSocketExLayer::SendNext(const void *lpBuf, int nBufLen, int nFlags /*=
 		return send(m_pOwnerSocket->GetSocketHandle(), (LPSTR)lpBuf, nBufLen, nFlags);
 	}
 	else
+	{
 		return m_pNextLayer->Send(lpBuf, nBufLen, nFlags);
+	}
 }
 
 int CAsyncSocketExLayer::ReceiveNext(void *lpBuf, int nBufLen, int nFlags /*=0*/)
@@ -295,7 +311,9 @@ int CAsyncSocketExLayer::ReceiveNext(void *lpBuf, int nBufLen, int nFlags /*=0*/
 		return recv(m_pOwnerSocket->GetSocketHandle(), (LPSTR)lpBuf, nBufLen, nFlags);
 	}
 	else
+	{
 		return m_pNextLayer->Receive(lpBuf, nBufLen, nFlags);
+	}
 }
 
 BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
@@ -337,11 +355,6 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
 	}
 	else if (m_nFamily == AF_INET6 || m_nFamily == AF_UNSPEC)
 	{
-		if (!m_pOwnerSocket->p_getaddrinfo)
-		{
-			WSASetLastError(WSAEPROTONOSUPPORT);
-			return FALSE;
-		}
 		USES_CONVERSION;
 
 		ASSERT(lpszHostAddress != NULL);
@@ -351,7 +364,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
 		int error;
 		char port[10];
 
-		m_pOwnerSocket->p_freeaddrinfo(m_addrInfo);
+		freeaddrinfo(m_addrInfo);
 		m_nextAddr = 0;
 		m_addrInfo = 0;
 
@@ -360,7 +373,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
 		hints.ai_socktype = SOCK_STREAM;
 		hints.ai_flags = 0;
 		_snprintf(port, 9, "%lu", nHostPort);
-		error = m_pOwnerSocket->p_getaddrinfo(T2CA(lpszHostAddress), port, &hints, &res0);
+		error = getaddrinfo(T2CA(lpszHostAddress), port, &hints, &res0);
 		if (error)
 			return FALSE;
 
@@ -437,7 +450,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
 			m_nextAddr = res1;
 		}
 		else
-			m_pOwnerSocket->p_freeaddrinfo(res0);
+			freeaddrinfo(res0);
 
 		if (INVALID_SOCKET == m_pOwnerSocket->GetSocketHandle())
 			res = FALSE ;
@@ -651,7 +664,9 @@ void CAsyncSocketExLayer::SetLayerState(int nLayerState)
 void CAsyncSocketExLayer::CallEvent(int nEvent, int nErrorCode)
 {
 	if (m_nCriticalError)
+	{
 		return;
+	}
 	m_nCriticalError = nErrorCode;
 	switch (nEvent)
 	{
@@ -989,7 +1004,7 @@ bool CAsyncSocketExLayer::TryNextProtocol()
 
 	if (!m_nextAddr)
 	{
-		m_pOwnerSocket->p_freeaddrinfo(m_addrInfo);
+		freeaddrinfo(m_addrInfo);
 		m_nextAddr = 0;
 		m_addrInfo = 0;
 	}

@@ -414,7 +414,7 @@ void CFtpControlSocket::Connect(t_server &server)
 	m_CurrentServer = server;
 	if (!InitConnect())
 		return;
-	
+
 	if (!Create())
 	{
 		DoClose();
@@ -657,7 +657,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 					size_t delim = facts.find_first_of(';');
 					if (delim == -1)
 						break;
-						
+
 					if (!delim)
 					{
 						facts = facts.substr(1, std::string::npos);
@@ -1210,7 +1210,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 						if (m_RecvBuffer.back().Left(4) != m_MultiLine)
 						{
 							DiscardLine(m_RecvBuffer.back());
- 							m_RecvBuffer.pop_back();
+							m_RecvBuffer.pop_back();
 						}
 						else // end of multi-line found
 						{
@@ -1508,7 +1508,7 @@ void CFtpControlSocket::DoClose(int nError /*=0*/)
 
 	m_mayBeMvsFilesystem = false;
 	m_mayBeBS2000Filesystem = false;
- 
+
 	CControlSocket::Close();
 }
 
@@ -2341,10 +2341,10 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 						memset(&hints, 0, sizeof(addrinfo));
 						hints.ai_family = AF_INET6;
 						hints.ai_socktype = SOCK_STREAM;
-						if (!p_getaddrinfo(T2CA(host), "1024", &hints, &res))
+						if (!getaddrinfo(T2CA(host), "1024", &hints, &res))
 						{
 							host = Inet6AddrToString(((SOCKADDR_IN6 *)res->ai_addr)->sin6_addr);
-							p_freeaddrinfo(res);
+							freeaddrinfo(res);
 						}
 						else
 							host = _T("");
@@ -3610,17 +3610,17 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 							}
 							if (M>0 && M<=12 && d>0 && d<=31 && h>=0 && h<24 && m>=0 && m<60)
 							{
-							    pData->hasRemoteDate = true;
-							    pData->remoteDate.year = y;
-							    pData->remoteDate.month = M;
-							    pData->remoteDate.day = d;
-							    pData->remoteDate.hour = h;
-							    pData->remoteDate.minute = m;
-							    pData->remoteDate.second = 0;
-							    pData->remoteDate.hastime = true;
-							    pData->remoteDate.hasseconds = false;
-							    pData->remoteDate.hasdate = true;
-							    pData->remoteDate.utc = true;
+									pData->hasRemoteDate = true;
+									pData->remoteDate.year = y;
+									pData->remoteDate.month = M;
+									pData->remoteDate.day = d;
+									pData->remoteDate.hour = h;
+									pData->remoteDate.minute = m;
+									pData->remoteDate.second = 0;
+									pData->remoteDate.hastime = true;
+									pData->remoteDate.hasseconds = false;
+									pData->remoteDate.hasdate = true;
+									pData->remoteDate.utc = true;
 							}
 						}
 					}
@@ -3877,8 +3877,8 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 						{
 							if (m_pDirectoryListing->direntry[i].name==remotefile)
 							{
-							    pData->hasRemoteDate = true;
-							    pData->remoteDate = m_pDirectoryListing->direntry[i].date;
+									pData->hasRemoteDate = true;
+									pData->remoteDate = m_pDirectoryListing->direntry[i].date;
 								pData->transferdata.transfersize=m_pDirectoryListing->direntry[i].size;
 							}
 						}
@@ -4014,11 +4014,14 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 						}
 					}
 					if (!nReplyError)
+					{
 						m_pTransferSocket->SetActive();
+					}
 				}
 				else if (pData->bPasv)
+				{
 					m_pTransferSocket->SetActive();
-
+				}
 			}
 			break;
 		case FILETRANSFER_WAITFINISH:
@@ -4249,10 +4252,10 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 						memset(&hints, 0, sizeof(addrinfo));
 						hints.ai_family = AF_INET6;
 						hints.ai_socktype = SOCK_STREAM;
-						if (!p_getaddrinfo(T2CA(host), "1024", &hints, &res))
+						if (!getaddrinfo(T2CA(host), "1024", &hints, &res))
 						{
 							host = Inet6AddrToString(((SOCKADDR_IN6 *)res->ai_addr)->sin6_addr);
-							p_freeaddrinfo(res);
+							freeaddrinfo(res);
 						}
 						else
 							host = _T("");
@@ -4489,10 +4492,10 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 						memset(&hints, 0, sizeof(addrinfo));
 						hints.ai_family = AF_INET6;
 						hints.ai_socktype = SOCK_STREAM;
-						if (!p_getaddrinfo(T2CA(host), "1024", &hints, &res))
+						if (!getaddrinfo(T2CA(host), "1024", &hints, &res))
 						{
 							host = Inet6AddrToString(((SOCKADDR_IN6 *)res->ai_addr)->sin6_addr);
-							p_freeaddrinfo(res);
+							freeaddrinfo(res);
 						}
 						else
 							host = _T("");
@@ -4696,7 +4699,7 @@ BOOL CFtpControlSocket::Create()
 			}
 
 			if (!InitConnect())
-				return FALSE; 
+				return FALSE;
 		}
 	}
 	return TRUE;
@@ -5558,7 +5561,7 @@ void CFtpControlSocket::MakeDir(const CServerPath &path)
 void CFtpControlSocket::Rename(CString oldName, CString newName, const CServerPath &path, const CServerPath &newPath)
 {
 	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("Rename(\"%s\", \"%s\", \"%s\")  OpMode=%d OpState=%d"), (LPCTSTR)oldName, (LPCTSTR)newName, (LPCTSTR)path.GetPath(),
-			   m_Operation.nOpMode, m_Operation.nOpState);
+				 m_Operation.nOpMode, m_Operation.nOpState);
 	class CRenameData : public CFtpControlSocket::t_operation::COpData
 	{
 	public:
@@ -5956,8 +5959,8 @@ int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 	{
 		if (iter->nType == LAYERCALLBACK_STATECHANGE)
 		{
-		    if (CAsyncSocketEx::LogStateChange(iter->nParam1, iter->nParam2))
-		    {
+				if (CAsyncSocketEx::LogStateChange(iter->nParam1, iter->nParam2))
+				{
 #ifndef MPEXT_NO_SSL
 				if (iter->pLayer == m_pSslLayer)
 				{
@@ -6025,7 +6028,8 @@ int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 					break;
 				case SSL_VERIFY_CERT:
 					t_SslCertData *pData = new t_SslCertData;
-					if (m_pSslLayer->GetPeerCertificateData(*pData))
+					LPCTSTR CertError = NULL;
+					if (m_pSslLayer->GetPeerCertificateData(*pData, CertError))
 					{
 						CVerifyCertRequestData *pRequestData = new CVerifyCertRequestData;
 						pRequestData->nRequestID=m_pOwner->GetNextAsyncRequestID();
@@ -6049,6 +6053,9 @@ int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 					{
 						delete pData;
 						nb_free(iter->str);
+						CString str;
+						str.Format(TLS_CERT_DECODE_ERROR, CertError);
+						ShowStatus(str, FZ_LOG_ERROR);
 						ResetOperation(FZ_REPLY_ERROR);
 						continue;
 					}
@@ -6304,9 +6311,9 @@ bool CFtpControlSocket::IsRoutableAddress(const CString & host)
 	USES_CONVERSION;
 
 	if (host.Left(3) == _T("127") ||
-	    host.Left(3) == _T("10.") ||
-	    host.Left(7) == _T("192.168") ||
-	    host.Left(7) == _T("169.254"))
+			host.Left(3) == _T("10.") ||
+			host.Left(7) == _T("192.168") ||
+			host.Left(7) == _T("169.254"))
 	{
 		return false;
 	}
@@ -6350,7 +6357,7 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
 		default: // auto
 			if (!GetPeerName(ahost, tmpPort))
 			{
-			    // this is not failure in "auto" mode
+					// this is not failure in "auto" mode
 				LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Error retrieving server address, cannot test if address is routable"));
 			}
 			else if (!IsRoutableAddress(host) && IsRoutableAddress(ahost))
