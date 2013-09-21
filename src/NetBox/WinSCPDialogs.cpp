@@ -1150,11 +1150,11 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
 
   #ifndef NO_FILEZILLA
   Text = new TFarText(this);
-  Text->SetCaption(FMTLOAD(FILEZILLA_BASED_ON, LoadStr(FILEZILLA_VERSION).c_str()));
+  Text->SetCaption(LoadStr(FILEZILLA_BASED_ON2));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  Text->SetCaption(LoadStr(FILEZILLA_COPYRIGHT));
+  Text->SetCaption(LoadStr(FILEZILLA_COPYRIGHT2));
   Text->SetCenterGroup(true);
   #endif
 
