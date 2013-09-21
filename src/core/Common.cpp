@@ -1804,6 +1804,21 @@ void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeS
   }
 }
 //---------------------------------------------------------------------------
+bool CheckWin32Version(int Major, int Minor)
+{
+  return (Win32MajorVersion >= Major) && (Win32MinorVersion >= Minor);
+}
+
+//---------------------------------------------------------------------------
+bool IsWinXPOrOlder()
+{
+  // Win XP is 5.1
+  // Vista is 6.0
+  // There also 5.2, what is Windows 2003 or Windows XP 64bit
+  // (we consider it WinXP for now)
+  return !CheckWin32Version(6, 0);
+}
+//---------------------------------------------------------------------------
 bool IsWin7()
 {
 //  return CheckWin32Version(6, 1);
@@ -1814,15 +1829,10 @@ bool IsWin7()
 //---------------------------------------------------------------------------
 bool IsExactly2008R2()
 {
-  HINSTANCE Kernel32 = GetModuleHandle(kernel32);
-  typedef BOOL (WINAPI * TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
-  TGetProductInfo GetProductInfo =
-      (TGetProductInfo)GetProcAddress(Kernel32, "GetProductInfo");
-  bool Result = false;
-  if (GetProductInfo != nullptr)
+  bool Result = (Win32MajorVersion == 6) && (Win32MinorVersion == 1);
+  DWORD Type;
+  if (Result && GetWindowsProductType(Type))
   {
-    DWORD Type;
-    GetProductInfo(Win32MajorVersion, Win32MinorVersion, 0, 0, &Type);
     switch (Type)
     {
       case 0x0008 /*PRODUCT_DATACENTER_SERVER*/:
@@ -1879,6 +1889,25 @@ UnicodeString DefaultEncodingName()
     ADefaultEncodingName = Info.CodePageName;
   }
   return ADefaultEncodingName;
+}
+//---------------------------------------------------------------------------
+bool GetWindowsProductType(DWORD & Type)
+{
+  bool Result;
+  HINSTANCE Kernel32 = GetModuleHandle(kernel32);
+  typedef BOOL (WINAPI * TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
+  TGetProductInfo GetProductInfo =
+      (TGetProductInfo)GetProcAddress(Kernel32, "GetProductInfo");
+  if (GetProductInfo == NULL)
+  {
+    Result = false;
+  }
+  else
+  {
+    GetProductInfo(Win32MajorVersion, Win32MinorVersion, 0, 0, &Type);
+    Result = true;
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
 UnicodeString WindowsProductName()

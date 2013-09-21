@@ -255,6 +255,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   FLastCodeClass(0),
   FLastReadDirectoryProgress(0),
   FLastResponse(new TStringList()),
+  FLastErrorResponse(new TStringList()),
   FLastError(new TStringList()),
   FFeatures(new TStringList()),
   FFileList(nullptr),
@@ -312,6 +313,8 @@ TFTPFileSystem::~TFTPFileSystem()
 
   delete FLastResponse;
   FLastResponse = nullptr;
+  delete FLastErrorResponse;
+  FLastErrorResponse = nullptr;
   delete FLastError;
   FLastError = nullptr;
   delete FFeatures;
@@ -480,8 +483,8 @@ void TFTPFileSystem::Open()
     }
 
     FPasswordFailed = false;
+    TValueRestorer<bool> OpeningRestorer(FOpening);
     FOpening = true;
-    TBoolRestorer OpeningRestorer(FOpening);
 
     FActive = FFileZillaIntf->Connect(
       HostName.c_str(), static_cast<int>(Data->GetPortNumber()), UserName.c_str(),
@@ -2542,6 +2545,9 @@ void TFTPFileSystem::ResetReply()
   assert(FLastResponse != nullptr);
   FLastResponse->Clear();
   assert(FLastError != nullptr);
+  assert(FLastErrorResponse != nullptr);
+  FLastErrorResponse->Clear();
+  assert(FLastError != nullptr);
   FLastError->Clear();
 }
 //---------------------------------------------------------------------------
@@ -2667,9 +2673,10 @@ void TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       // associated with session closure is not reused
       FLastError->Clear();
 
-      MoreMessages->AddStrings(FLastResponse);
+      MoreMessages->AddStrings(FLastErrorResponse);
       // see comment for FLastError
       FLastResponse->Clear();
+      FLastErrorResponse->Clear();
 
       if (MoreMessages->GetCount() == 0)
       {
@@ -2706,6 +2713,9 @@ void TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
     {
       *Response = FLastResponse;
       FLastResponse = new TStringList();
+      // just to be consistent
+      delete FLastErrorResponse;
+      FLastErrorResponse = new TStringList();
     }
   }
 }
@@ -2714,6 +2724,15 @@ void TFTPFileSystem::SetLastCode(intptr_t Code)
 {
   FLastCode = Code;
   FLastCodeClass = (Code / 100);
+}
+//---------------------------------------------------------------------------
+void TFTPFileSystem::StoreLastResponse(const UnicodeString & Text)
+{
+  FLastResponse->Add(Text);
+  if (FLastCodeClass >= 4)
+  {
+    FLastErrorResponse->Add(Text);
+  }
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
@@ -2753,11 +2772,12 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
   {
     FMultineResponse = (Response.Length() >= 4) && (Response[4] == L'-');
     FLastResponse->Clear();
+    FLastErrorResponse->Clear();
+    SetLastCode(Code);
     if (Response.Length() >= 5)
     {
-      FLastResponse->Add(Response.SubString(5, Response.Length() - 4));
+      StoreLastResponse(Response.SubString(5, Response.Length() - 4));
     }
-    SetLastCode(Code);
   }
   else
   {
@@ -2780,7 +2800,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
     // Intermediate empty lines are being added
     if (FMultineResponse || (Response.Length() >= Start))
     {
-      FLastResponse->Add(Response.SubString(Start, Response.Length() - Start + 1));
+      StoreLastResponse(Response.SubString(Start, Response.Length() - Start + 1));
     }
   }
 

@@ -124,9 +124,6 @@ protected:
 
 CCriticalSectionWrapper CAsyncSocketEx::m_sGlobalCriticalSection;
 CAsyncSocketEx::t_AsyncSocketExThreadDataList *CAsyncSocketEx::m_spAsyncSocketExThreadDataList = 0;
-HMODULE CAsyncSocketEx::m_hDll = 0;
-t_getaddrinfo CAsyncSocketEx::p_getaddrinfo = 0;
-t_freeaddrinfo CAsyncSocketEx::p_freeaddrinfo = 0;
 
 
 #ifndef _AFX
@@ -499,7 +496,9 @@ public:
 						pSocket->m_pLastLayer->CallEvent(nEvent, nErrorCode);
 					}
 					else
+					{
 						pSocket->m_pLastLayer->CallEvent(nEvent, nErrorCode);
+					}
 				}
 			}
 #endif //NOLAYERS
@@ -531,7 +530,9 @@ public:
 			
 			//Dispatch to layer
 			if (pMsg->pLayer)
+			{
 				pMsg->pLayer->CallEvent(nEvent, nErrorCode);
+			}
 			else
 			{
 				//Dispatch to CAsyncSocketEx instance
@@ -933,30 +934,6 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
 	
 	if ((m_SocketData.nFamily == AF_INET6 || m_SocketData.nFamily == AF_INET) && lpszAscii)
 	{
-		if (!p_getaddrinfo)
-		{
-			if (m_SocketData.nFamily != AF_INET)
-			{
-				WSASetLastError(WSAEPROTONOSUPPORT);
-				return FALSE;
-			}
-			else
-			{
-				unsigned long ip = inet_addr(lpszAscii);
-				if (!ip)
-				{
-					WSASetLastError(WSAEINVAL);
-					return FALSE;
-				}
-
-				SOCKADDR_IN sockAddr;
-				memset(&sockAddr, 0, sizeof(sockAddr));
-				sockAddr.sin_family = m_SocketData.nFamily;
-				sockAddr.sin_addr.s_addr = ip;
-				sockAddr.sin_port = htons((u_short)nSocketPort);
-				return Bind((SOCKADDR*)&sockAddr, sizeof(sockAddr));
-			}
-		}
 		addrinfo hints, *res0, *res;
 		int error;
 		char port[10];
@@ -966,7 +943,7 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
 		hints.ai_family = m_SocketData.nFamily;
 		hints.ai_socktype = SOCK_STREAM;
 		_snprintf(port, 9, "%lu", nSocketPort);
-		error = p_getaddrinfo(lpszAscii, port, &hints, &res0);
+		error = getaddrinfo(lpszAscii, port, &hints, &res0);
 		if (error)
 			return FALSE;
 
@@ -979,7 +956,7 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
 			else
 				continue ;
 
-			p_freeaddrinfo(res0);
+			freeaddrinfo(res0);
 
 			return ret ;
 	}
@@ -1057,7 +1034,7 @@ void CAsyncSocketEx::Close()
 	}
 	if (m_SocketData.addrInfo)
 	{
-		p_freeaddrinfo(m_SocketData.addrInfo);
+		freeaddrinfo(m_SocketData.addrInfo);
 		m_SocketData.addrInfo = 0;
 		m_SocketData.nextAddr = 0;
 	}
@@ -1126,21 +1103,6 @@ BOOL CAsyncSocketEx::InitAsyncSocketExInstance()
 		m_pLocalAsyncSocketExThreadData->nThreadId=id;
 		m_pLocalAsyncSocketExThreadData->m_pHelperWindow=new CAsyncSocketExHelperWindow(m_pLocalAsyncSocketExThreadData);
 		m_spAsyncSocketExThreadDataList->pThreadData=m_pLocalAsyncSocketExThreadData;
-
-		m_hDll = LoadLibrary(_T("WS2_32.dll"));
-		if (m_hDll)
-		{
-			p_getaddrinfo = (t_getaddrinfo)GetProcAddress(m_hDll, "getaddrinfo");
-			p_freeaddrinfo = (t_freeaddrinfo)GetProcAddress(m_hDll, "freeaddrinfo");
-
-			if (!p_getaddrinfo || !p_freeaddrinfo)
-			{
-				p_getaddrinfo = 0;
-				p_freeaddrinfo = 0;
-				FreeLibrary(m_hDll);
-				m_hDll = 0;
-			}
-		}
 	}
 	m_sGlobalCriticalSection.Unlock();
 	return TRUE;
@@ -1192,18 +1154,6 @@ void CAsyncSocketEx::FreeAsyncSocketExInstance()
 				else
 					m_spAsyncSocketExThreadDataList=pList->pNext;
 				delete pList;
-
-				// Last thread closed, free dll
-				if (!m_spAsyncSocketExThreadDataList)
-				{
-					if (m_hDll)
-					{
-						p_getaddrinfo = 0;
-						p_freeaddrinfo = 0;
-						FreeLibrary(m_hDll);
-						m_hDll = 0;
-					}
-				}
 				break;
 			}
 
@@ -1308,19 +1258,13 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
 	}
 	else
 	{
-		if (!p_getaddrinfo)
-		{
-			WSASetLastError(WSAEPROTONOSUPPORT);
-			return FALSE;
-		}
-
 		USES_CONVERSION;
 
 		ASSERT( lpszHostAddress != NULL );
 
 		if (m_SocketData.addrInfo)
 		{
-			p_freeaddrinfo(m_SocketData.addrInfo);
+			freeaddrinfo(m_SocketData.addrInfo);
 			m_SocketData.addrInfo = 0;
 			m_SocketData.nextAddr = 0;
 		}
@@ -1334,7 +1278,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
 		hints.ai_family = m_SocketData.nFamily;
 		hints.ai_socktype = SOCK_STREAM;
 		_snprintf(port, 9, "%lu", nHostPort);
-		error = p_getaddrinfo(T2CA(lpszHostAddress), port, &hints, &m_SocketData.addrInfo);
+		error = getaddrinfo(T2CA(lpszHostAddress), port, &hints, &m_SocketData.addrInfo);
 		if (error)
 			return FALSE;
 
@@ -1415,7 +1359,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
 
 		if (!m_SocketData.nextAddr)
 		{
-			p_freeaddrinfo(m_SocketData.addrInfo);
+			freeaddrinfo(m_SocketData.addrInfo);
 			m_SocketData.nextAddr = 0;
 			m_SocketData.addrInfo = 0;
 		}
@@ -1450,7 +1394,7 @@ BOOL CAsyncSocketEx::GetPeerName( CString& rPeerAddress, UINT& rPeerPort )
 #ifndef NOLAYERS
 	if (m_pFirstLayer)
 		return m_pFirstLayer->GetPeerName(rPeerAddress, rPeerPort);
-#endif // NOLAYERS
+#endif NOLAYERS
 
 	SOCKADDR* sockAddr = NULL;
 	int nSockAddrLen = 0;
@@ -1919,7 +1863,7 @@ bool CAsyncSocketEx::TryNextProtocol()
 
 	if (!m_SocketData.nextAddr)
 	{
-		p_freeaddrinfo(m_SocketData.addrInfo);
+		freeaddrinfo(m_SocketData.addrInfo);
 		m_SocketData.nextAddr = 0;
 		m_SocketData.addrInfo = 0;
 	}

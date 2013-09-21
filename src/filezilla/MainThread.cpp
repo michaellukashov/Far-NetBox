@@ -549,7 +549,9 @@ DWORD CMainThread::Run()
 	{
 		TranslateMessage(&msg);
 		if (!msg.hwnd)
+		{
 			OnThreadMessage(msg.message, msg.wParam, msg.lParam);
+		}
 		DispatchMessage(&msg);
 	}
 	DWORD res = ExitInstance();
