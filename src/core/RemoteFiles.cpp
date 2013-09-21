@@ -1293,7 +1293,7 @@ void TRemoteFile::FindLinkedFile()
     {
       if (LinkedBy->GetLinkTo() == GetLinkTo())
       {
-        // this is currenly redundant information, because it is used only to
+        // this is currently redundant information, because it is used only to
         // detect broken symlink, which would be otherwise detected
         // by FLinkedFile == nullptr
         FCyclicLink = true;

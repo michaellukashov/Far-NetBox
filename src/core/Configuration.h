@@ -122,6 +122,7 @@ public:
   virtual void Default();
   void Load();
   void Save();
+  void SaveExplicit();
   void SetNulStorage();
   void SetDefaultStorage();
   void Export(const UnicodeString & FileName);

@@ -53,7 +53,7 @@ When the listen socket is created successfully, the PROXYSTATUS_LISTENSOCKETCREA
 notification is sent. The parameters  will tell you the ip and the port of the listen socket.
 After it you have to handle the OnAccept message and accept the
 connection.
-Be carful when calling Accept: rConnected socket will NOT be filled! Instead use the instance which created the
+Be careful when calling Accept: rConnected socket will NOT be filled! Instead use the instance which created the
 listen socket, it will handle the data connection.
 If you want to accept more than one connection, you have to create a listing socket for each of them!
 
@@ -65,7 +65,7 @@ void SetProxy(int nProxyType, const char * pProxyHost, int nProxyPort);
 void SetProxy(int nProxyType, const char * pProxyHost, int nProxyPort, const char *pProxyUser, const char * pProxyPass);
 
 Call one of this functions to set the proxy type.
-Parametes:
+Parameters:
 - nProxyType specifies the Proxy Type.
 - ProxyHost and nProxyPort specify the address of the proxy
 - ProxyUser and ProxyPass are only available for SOCKS5 proxies.
@@ -119,14 +119,6 @@ Version history
 #include "atlconv.h" //Unicode<->Ascii conversion macros declared here
 #include "CBase64coding.hpp"
 
-#ifdef _DEBUG
-#if defined(__BORLANDC__)
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#endif
-#define new DEBUG_NEW
-#endif
-
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
 //////////////////////////////////////////////////////////////////////
@@ -170,6 +162,7 @@ void CAsyncProxySocketLayer::SetProxy(int nProxyType)
 
 void CAsyncProxySocketLayer::SetProxy(int nProxyType, const char * pProxyHost, int ProxyPort)
 {
+	USES_CONVERSION;
 	//Validate the parameters
 	ASSERT(nProxyType==PROXYTYPE_SOCKS4  ||
 		   nProxyType==PROXYTYPE_SOCKS4A ||
@@ -195,6 +188,7 @@ void CAsyncProxySocketLayer::SetProxy(int nProxyType, const char * pProxyHost, i
 
 void CAsyncProxySocketLayer::SetProxy(int nProxyType, const char * pProxyHost, int ProxyPort, const char * pProxyUser, const char * pProxyPass)
 {
+	USES_CONVERSION;
 	//Validate the parameters
 	ASSERT(nProxyType==PROXYTYPE_SOCKS5 || nProxyType==PROXYTYPE_HTTP11);
 	ASSERT(!m_nProxyOpID);
@@ -238,7 +232,8 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
 		TriggerEvent(FD_READ, nErrorCode, TRUE);
 	}
 	if (!m_nProxyOpState) //We should not receive a response yet!
-	{ //Ignore it
+	{
+		//Ignore it
 		return;
 	}
 	if (m_ProxyData.nProxyType==PROXYTYPE_SOCKS4 || m_ProxyData.nProxyType==PROXYTYPE_SOCKS4A)
@@ -294,7 +289,8 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
 					int port = 0;
 					memcpy(&ip,&m_pRecvBuffer[4],4);
 					if (!ip)
-					{ //No IP return, use the IP of the proxy server
+					{ 
+						//No IP return, use the IP of the proxy server
 						SOCKADDR SockAddr;
 						memset(&SockAddr,0,sizeof(SockAddr));
 						int SockAddrLen=sizeof(SockAddr);
@@ -388,7 +384,6 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
 			m_nRecvBufferPos+=numread;
 			if (m_nRecvBufferPos==2)
 			{
-
 				if (m_pRecvBuffer[0]!=5)
 				{
 					DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, PROXYERROR_REQUESTFAILED, 0);
@@ -401,9 +396,11 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
 					return;
 				}
 				if (m_pRecvBuffer[1])
-				{ //Auth needed
+				{ 
+					//Auth needed
 					if (m_pRecvBuffer[1]!=2)
-					{ //Unknown auth type
+					{ 
+						//Unknown auth type
 						DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, PROXYERROR_AUTHTYPEUNKNOWN, 0);
 						if (m_nProxyOpID==PROXYOP_CONNECT)
 							TriggerEvent(FD_CONNECT, WSAECONNABORTED, TRUE);
@@ -502,7 +499,8 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
 			return;
 		}
 		else if (m_nProxyOpState==2)
-		{//Response to the auth request
+		{
+			//Response to the auth request
 			if (!m_pRecvBuffer)
 				m_pRecvBuffer=static_cast<char *>(nb_calloc(1, 2));
 			int numread=ReceiveNext(m_pRecvBuffer+m_nRecvBufferPos, 2-m_nRecvBufferPos);
@@ -578,7 +576,8 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
 			}
 		}
 		else if (m_nProxyOpState==3)
-		{//Response to the connection request
+		{
+			//Response to the connection request
 			if (!m_pRecvBuffer)
 			{
 				m_pRecvBuffer=static_cast<char *>(nb_calloc(1, 10));
@@ -614,7 +613,8 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
 					return;
 				}
 				if (m_nRecvBufferLen==5)
-				{ //Check which kind of address the response contains
+				{ 
+					//Check which kind of address the response contains
 					if (m_pRecvBuffer[3]==1)
 						m_nRecvBufferLen=10;
 					else
@@ -1040,6 +1040,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
 			}
 			nb_free(pHost);
 
+			USES_CONVERSION;
 			int numsent=SendNext(str, strlen(str) );
 			int nErrorCode=WSAGetLastError();
 			if (numsent==SOCKET_ERROR)//nErrorCode!=WSAEWOULDBLOCK)

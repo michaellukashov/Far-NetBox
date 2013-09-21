@@ -220,6 +220,12 @@ void TConfiguration::Save()
   DoSave(false, false);
 }
 //---------------------------------------------------------------------------
+void TConfiguration::SaveExplicit()
+{
+  // only modified, explicit
+  DoSave(false, true);
+}
+//---------------------------------------------------------------------------
 void TConfiguration::DoSave(bool All, bool Explicit)
 {
   if (FDontSave)
@@ -573,7 +579,7 @@ void TConfiguration::CleanupIniFile()
 #if 0
     if (::FileExists(GetIniFileStorageNameForReading()))
     {
-      THROWOSIFFALSE(Sysutils::DeleteFile(GetIniFileStorageNameForReading());
+      DeleteFileChecked(GetIniFileStorageNameForReading());
     }
     if (GetStorage() == stIniFile)
     {
@@ -623,9 +629,18 @@ UnicodeString TConfiguration::GetOSVersionStr() const
   OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
   if (GetVersionEx(&OSVersionInfo) != 0)
   {
-    Result = FORMAT(L"%d.%d.%d %s", int(OSVersionInfo.dwMajorVersion),
-      int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber),
-      OSVersionInfo.szCSDVersion).Trim();
+    Result = FORMAT(L"%d.%d.%d", int(OSVersionInfo.dwMajorVersion),
+      int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber));
+    UnicodeString CSDVersion = OSVersionInfo.szCSDVersion;
+    if (!CSDVersion.IsEmpty())
+    {
+      Result += L" " + CSDVersion;
+    }
+    UnicodeString ProductName = WindowsProductName();
+    if (!ProductName.IsEmpty())
+    {
+      Result += L" - " + ProductName;
+    }
   }
   return Result;
 }
@@ -937,18 +952,34 @@ void TConfiguration::SetStorage(TStorage Value)
 {
   if (FStorage != Value)
   {
-    std::auto_ptr<THierarchicalStorage> SourceStorage(CreateStorage(false));
-    std::auto_ptr<THierarchicalStorage> TargetStorage(CreateStorage(false));
-    SourceStorage->SetAccessMode(smRead);
-    FStorage = Value;
-    TargetStorage->SetAccessMode(smReadWrite);
-    TargetStorage->SetExplicit(true);
+    TStorage StorageBak = FStorage;
+    try
+    {
+      std::auto_ptr<THierarchicalStorage> SourceStorage(CreateStorage(false));
+      std::auto_ptr<THierarchicalStorage> TargetStorage(CreateStorage(false));
+      SourceStorage->SetAccessMode(smRead);
 
-    // copy before save as it removes the ini file,
-    // when switching from ini to registry
-    CopyData(SourceStorage.get(), TargetStorage.get());
-    // save all and explicit
-    DoSave(true, true);
+      FStorage = Value;
+
+      TargetStorage->SetAccessMode(smReadWrite);
+      TargetStorage->SetExplicit(true);
+
+      // copy before save as it removes the ini file,
+      // when switching from ini to registry
+      CopyData(SourceStorage.get(), TargetStorage.get());
+      // save all and explicit
+      DoSave(true, true);
+    }
+    catch (...)
+    {
+      // If this fails, do not pretend that storage was switched.
+      // For instance:
+      // - When writing to an IFI file fails (unlikely, as we fallback to user profile)
+      // - When removing INI file fails, when switching to registry
+      //   (possible, when the INI file is in Program files folder)
+      FStorage = StorageBak;
+      throw;
+    }
   }
 }
 //---------------------------------------------------------------------------

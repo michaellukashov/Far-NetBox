@@ -33,14 +33,6 @@
 #include "AsyncGssSocketLayer.h"
 #endif
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#if defined(__BORLANDC__)
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 // #define BUFSIZE 16384
 #define BUFSIZE 64 * 1024
 
@@ -78,7 +70,7 @@ CTransferSocket::CTransferSocket(CFtpControlSocket *pOwner, int nMode)
 	m_bShutDown = FALSE;
 
 	UpdateStatusBar(true);
-	
+
 	for (int i = 0; i < SPEED_SECONDS; i++)
 	{
 		m_Transfered[i] = 0;
@@ -141,8 +133,8 @@ CTransferSocket::~CTransferSocket()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// Member-Funktion CTransferSocket 
-void CTransferSocket::OnReceive(int nErrorCode) 
+// Member-Funktion CTransferSocket
+void CTransferSocket::OnReceive(int nErrorCode)
 {
 	if (GetState() != connected && GetState() != attached && GetState() != closed)
 		return;
@@ -161,7 +153,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 	{
 		if (m_nTransferState == STATE_STARTING)
 			OnConnect(0);
-		
+
 		char *buffer = static_cast<char *>(nb_calloc(1, BUFSIZE));
 		int numread = CAsyncSocketEx::Receive(buffer, BUFSIZE);
 		if (numread != SOCKET_ERROR && numread)
@@ -192,13 +184,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 				else if (res != Z_OK && res != Z_BUF_ERROR)
 				{
 					nb_free(out);
-					Close();
-					if (!m_bSentClose)
-					{
-						m_nMode |= CSMODE_TRANSFERERROR;
-						m_bSentClose = TRUE;
-						m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-					}
+					CloseAndEnsureSendClose(CSMODE_TRANSFERERROR);
 					return;
 				}
 				else
@@ -238,12 +224,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 			nb_free(buffer);
 		if (!numread)
 		{
-			Close();
-			if (!m_bSentClose)
-			{
-				m_bSentClose = TRUE;
-				m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-			}
+			CloseAndEnsureSendClose(0);
 		}
 		if (numread == SOCKET_ERROR)
 		{
@@ -262,13 +243,8 @@ void CTransferSocket::OnReceive(int nErrorCode)
 #endif
 			else if (nError != WSAEWOULDBLOCK)
 			{
-				Close();
-				if (!m_bSentClose)
-				{
-					m_nMode |= CSMODE_TRANSFERERROR;
-					m_bSentClose = TRUE;
-					m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-				}
+				LogError(nError);
+				CloseAndEnsureSendClose(CSMODE_TRANSFERERROR);
 			}
 		}
 	}
@@ -276,7 +252,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 	{
 		if (m_nTransferState == STATE_STARTING)
 			OnConnect(0);
-		
+
 		bool beenWaiting = false;
 		_int64 ableToRead;
 		if (GetState() != closed)
@@ -304,15 +280,10 @@ void CTransferSocket::OnReceive(int nErrorCode)
 
 		if (!numread)
 		{
-			Close();
-			if (!m_bSentClose)
-			{
-				m_bSentClose = TRUE;
-				m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-			}
+			CloseAndEnsureSendClose(0);
 			return;
 		}
-		
+
 		if (numread == SOCKET_ERROR)
 		{
 			int nError = GetLastError();
@@ -330,13 +301,8 @@ void CTransferSocket::OnReceive(int nErrorCode)
 #endif
 			else if (nError != WSAEWOULDBLOCK)
 			{
-				Close();
-				if (!m_bSentClose)
-				{
-					m_nMode |= CSMODE_TRANSFERERROR;
-					m_bSentClose = TRUE;
-					m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-				}
+				LogError(nError);
+				CloseAndEnsureSendClose(CSMODE_TRANSFERERROR);
 			}
 
 			UpdateStatusBar(false);
@@ -353,7 +319,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 			{
 				if (!m_pBuffer2)
 					m_pBuffer2 = static_cast<char *>(nb_calloc(1, BUFSIZE));
-					
+
 				m_zlibStream.next_in = (Bytef *)m_pBuffer;
 				m_zlibStream.avail_in = numread;
 				m_zlibStream.next_out = (Bytef *)m_pBuffer2;
@@ -374,13 +340,8 @@ void CTransferSocket::OnReceive(int nErrorCode)
 				}
 				else if (res != Z_OK && res != Z_BUF_ERROR)
 				{
-					Close();
-					if (!m_bSentClose)
-					{
-						m_nMode |= CSMODE_TRANSFERERROR;
-						m_bSentClose = TRUE;
-						m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-					}
+					m_pOwner->ShowStatus(L"Compression error", FZ_LOG_ERROR);
+					CloseAndEnsureSendClose(CSMODE_TRANSFERERROR);
 					return;
 				}
 			}
@@ -397,13 +358,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 			if (e->GetErrorMessage(msg, BUFSIZE))
 				m_pOwner->ShowStatus(msg, FZ_LOG_ERROR);
 			nb_free(msg);
-			Close();
-			if (!m_bSentClose)
-			{
-				m_nMode |= CSMODE_TRANSFERERROR;
-				m_bSentClose = TRUE;
-				m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-			}
+			CloseAndEnsureSendClose(CSMODE_TRANSFERERROR);
 			return;
 		}
 		END_CATCH;
@@ -421,7 +376,7 @@ void CTransferSocket::OnAccept(int nErrorCode)
 	Accept(tmp);
 	SOCKET socket=tmp.Detach();
 	CAsyncSocketEx::Close();
-	
+
 	Attach(socket);
 
 	/* Set internal socket send buffer
@@ -447,8 +402,8 @@ void CTransferSocket::OnAccept(int nErrorCode)
 
 	if (m_nTransferState == STATE_STARTING)
 	{
-		m_nTransferState = STATE_STARTED;	
-		
+		m_nTransferState = STATE_STARTED;
+
 #ifndef MPEXT_NO_SSL
 		if (m_pSslLayer)
 		{
@@ -467,25 +422,19 @@ void CTransferSocket::OnAccept(int nErrorCode)
 
 			if (res)
 			{
-				Close();
-				if (!m_bSentClose)
-				{
-					m_nMode |= CSMODE_TRANSFERERROR;
-					m_bSentClose = TRUE;
-					m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-				}
+				CloseAndEnsureSendClose(CSMODE_TRANSFERERROR);
 				return;
 			}
 		}
 #endif
-		
+
 #ifndef MPEXT_NO_GSS
 		if (m_pGssLayer)
 		{
 			AddLayer(m_pGssLayer);
 		}
 #endif
-		
+
 		m_TransferedFirst = m_StartTime = CTime::GetCurrentTime();
 		m_LastActiveTime = CTime::GetCurrentTime();
 	}
@@ -504,13 +453,7 @@ void CTransferSocket::OnConnect(int nErrorCode)
 		str.Replace( _T("\n"), _T("\0") );
 		str.Replace( _T("\r"), _T("\0") );
 		m_pOwner->ShowStatus(str, FZ_LOG_ERROR);
-		Close();
-		if (!m_bSentClose)
-		{
-			m_nMode|=CSMODE_TRANSFERERROR;
-			m_bSentClose=TRUE;
-			m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-		}	
+		CloseAndEnsureSendClose(CSMODE_TRANSFERERROR);
 	}
 	else
 	{
@@ -534,10 +477,10 @@ void CTransferSocket::OnConnect(int nErrorCode)
 	if (m_nTransferState == STATE_STARTING)
 	{
 		m_nTransferState = STATE_STARTED;
-		
+
 		m_TransferedFirst = m_StartTime = CTime::GetCurrentTime();
 		m_LastActiveTime=CTime::GetCurrentTime();
-		
+
 #ifndef MPEXT_NO_SSL
 		if (m_pSslLayer)
 		{
@@ -553,21 +496,15 @@ void CTransferSocket::OnConnect(int nErrorCode)
 #endif
 			if (res == SSL_FAILURE_INITSSL)
 				m_pOwner->ShowStatus(IDS_ERRORMSG_CANTINITSSL, FZ_LOG_ERROR);
-					
+
 			if (res)
 			{
-				Close();
-				if (!m_bSentClose)
-				{
-					m_nMode |= CSMODE_TRANSFERERROR;
-					m_bSentClose = TRUE;
-					m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-				}
+				CloseAndEnsureSendClose(CSMODE_TRANSFERERROR);
 				return;
 			}
 		}
 #endif
-		
+
 #ifndef MPEXT_NO_GSS
 		if (m_pGssLayer)
 		{
@@ -575,10 +512,10 @@ void CTransferSocket::OnConnect(int nErrorCode)
 		}
 #endif
 	}
-}	
+}
 
 
-void CTransferSocket::OnClose(int nErrorCode) 
+void CTransferSocket::OnClose(int nErrorCode)
 {
 	LogMessage(__FILE__, __LINE__, this, FZ_LOG_DEBUG, _T("OnClose(%d)"), nErrorCode);
 
@@ -589,12 +526,7 @@ void CTransferSocket::OnClose(int nErrorCode)
 	}
 
 	OnReceive(0);
-	Close();
-	if (!m_bSentClose)
-	{
-		m_bSentClose=TRUE;
-		m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-	}
+	CloseAndEnsureSendClose(0);
 }
 
 int CTransferSocket::CheckForTimeout(int delay)
@@ -610,13 +542,7 @@ int CTransferSocket::CheckForTimeout(int delay)
 	if ((delay > 0) && (span.GetTotalSeconds()>=delay))
 	{
 		m_pOwner->ShowStatus(IDS_ERRORMSG_TIMEOUT, FZ_LOG_ERROR);
-		Close();
-		if (!m_bSentClose)
-		{
-			m_nMode |= CSMODE_TRANSFERTIMEOUT;
-			m_bSentClose = TRUE;
-			VERIFY(m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode));
-		}
+		CloseAndEnsureSendClose(CSMODE_TRANSFERTIMEOUT);
 		return 2;
 	}
 	return 1;
@@ -655,7 +581,7 @@ void CTransferSocket::OnSend(int nErrorCode)
 	{
 		return;
 	}
-	
+
 	if (!(m_nMode&CSMODE_UPLOAD))
 	{
 		return;
@@ -723,14 +649,8 @@ void CTransferSocket::OnSend(int nErrorCode)
 				res = deflate(&m_zlibStream, m_pFile ? 0 : Z_FINISH);
 				if (res != Z_OK && (!m_pFile && res != Z_STREAM_END))
 				{
-					m_pOwner->ShowStatus("ZLib error", FZ_LOG_ERROR);
-					Close();
-					if (!m_bSentClose)
-					{
-						m_nMode |= CSMODE_TRANSFERERROR;
-						m_bSentClose = TRUE;
-						m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-					}
+					m_pOwner->ShowStatus("Decompression error", FZ_LOG_ERROR);
+					CloseAndEnsureSendClose(CSMODE_TRANSFERERROR);
 					return;
 				}
 			}
@@ -773,16 +693,7 @@ void CTransferSocket::OnSend(int nErrorCode)
 #endif
 				else if (nError != WSAEWOULDBLOCK)
 				{
-					if (ShutDown() || GetLastError() != WSAEWOULDBLOCK)
-					{
-						Close();
-						if (!m_bSentClose)
-						{
-							m_nMode |= CSMODE_TRANSFERERROR;
-							m_bSentClose = TRUE;
-							m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-						}
-					}
+					CloseOnShutDownOrError(CSMODE_TRANSFERERROR);
 				}
 				UpdateStatusBar(false);
 				return;
@@ -800,15 +711,7 @@ void CTransferSocket::OnSend(int nErrorCode)
 			if (!m_zlibStream.avail_in && !m_pFile && m_zlibStream.avail_out &&
 				m_zlibStream.avail_out + m_bufferpos == BUFSIZE && res == Z_STREAM_END)
 			{
-				if (ShutDown() || GetLastError() != WSAEWOULDBLOCK)
-				{
-					Close();
-					if (!m_bSentClose)
-					{
-						m_bSentClose = TRUE;
-						m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-					}
-				}
+				CloseOnShutDownOrError(0);
 				return;
 			}
 
@@ -830,9 +733,9 @@ void CTransferSocket::OnSend(int nErrorCode)
 		}
 		if (!m_pBuffer)
 			m_pBuffer = static_cast<char *>(nb_calloc(1, BUFSIZE));
-		
+
 		int numread;
-		
+
 		bool beenWaiting = false;
 		_int64 currentBufferSize;
 		if (GetState() != closed)
@@ -855,41 +758,25 @@ void CTransferSocket::OnSend(int nErrorCode)
 			}
 			else if (!numread && !m_bufferpos)
 			{
-				if (ShutDown() || GetLastError() != WSAEWOULDBLOCK)
-				{
-					Close();
-					if (!m_bSentClose)
-					{
-						m_bSentClose = TRUE;
-						m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-					}
-				}
+				CloseOnShutDownOrError(0);
 				return;
 			}
 		}
 		else
 			numread = 0;
-			
+
 		ASSERT((numread+m_bufferpos) <= BUFSIZE);
 		ASSERT(numread>=0);
 		ASSERT(m_bufferpos>=0);
 
 		if (numread+m_bufferpos <= 0)
 		{
-			if (ShutDown() || GetLastError()!=WSAEWOULDBLOCK)
-			{
-				Close();
-				if (!m_bSentClose)
-				{
-					m_bSentClose=TRUE;
-					m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-				}
-			}
+			CloseOnShutDownOrError(0);
 			return;
 		}
-			
+
 		int numsent = Send(m_pBuffer, numread + m_bufferpos);
-			
+
 		while (TRUE)
 		{
 			if (numsent != SOCKET_ERROR)
@@ -900,7 +787,7 @@ void CTransferSocket::OnSend(int nErrorCode)
 				UpdateSendLed();
 				m_transferdata.transferleft -= numsent;
 			}
-			
+
 			if (numsent==SOCKET_ERROR || !numsent)
 			{
 				int nError = GetLastError();
@@ -922,16 +809,7 @@ void CTransferSocket::OnSend(int nErrorCode)
 #endif
 				else
 				{
-					if (ShutDown() || GetLastError() != WSAEWOULDBLOCK)
-					{
-						Close();
-						if (!m_bSentClose)
-						{
-							m_nMode |= CSMODE_TRANSFERERROR;
-							m_bSentClose = TRUE;
-							m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-						}
-					}
+					CloseOnShutDownOrError(CSMODE_TRANSFERERROR);
 				}
 				UpdateStatusBar(false);
 				return;
@@ -943,29 +821,12 @@ void CTransferSocket::OnSend(int nErrorCode)
 				if (pos < 0 || (numsent + pos) > BUFSIZE)
 				{
 					LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Index out of range"));
-					if (ShutDown() || GetLastError() != WSAEWOULDBLOCK)
-					{
-						Close();
-						if (!m_bSentClose)
-						{
-							m_nMode |= CSMODE_TRANSFERERROR;
-							m_bSentClose = TRUE;
-							m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-						}
-					}
+					CloseOnShutDownOrError(CSMODE_TRANSFERERROR);
 					return;
 				}
 				else if (!pos && numread < (currentBufferSize-m_bufferpos) && m_bufferpos != currentBufferSize)
 				{
-					if (ShutDown() || GetLastError() != WSAEWOULDBLOCK)
-					{
-						Close();
-						if (!m_bSentClose)
-						{
-							m_bSentClose = TRUE;
-							m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-						}
-					}
+					CloseOnShutDownOrError(0);
 					return;
 				}
 				else if (!pos)
@@ -987,7 +848,7 @@ void CTransferSocket::OnSend(int nErrorCode)
 				return;
 			}
 			UpdateStatusBar(false);
-				
+
 			if (GetState() != closed)
 				currentBufferSize = m_pOwner->GetAbleToTransferSize(CControlSocket::upload, beenWaiting);
 			else
@@ -1002,19 +863,11 @@ void CTransferSocket::OnSend(int nErrorCode)
 				}
 				else if (!numread && !m_bufferpos)
 				{
-					if (ShutDown() || GetLastError() != WSAEWOULDBLOCK)
-					{
-						Close();
-						if (!m_bSentClose)
-						{
-							m_bSentClose = TRUE;
-							m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-						}
-					}
+					CloseOnShutDownOrError(0);
 					return;
 				}
 			}
-			else 
+			else
 				numread = 0;
 
 			if (!currentBufferSize && !m_bufferpos)
@@ -1023,10 +876,10 @@ void CTransferSocket::OnSend(int nErrorCode)
 				TriggerEvent(FD_WRITE);
 				return;
 			}
-	
+
 			ASSERT(numread>=0);
 			ASSERT(m_bufferpos>=0);
-			numsent = Send(m_pBuffer, numread+m_bufferpos);	
+			numsent = Send(m_pBuffer, numread+m_bufferpos);
 		}
 	}
 }
@@ -1048,7 +901,7 @@ void CTransferSocket::UpdateStatusBar(bool forceUpdate)
 			return;
 		m_LastUpdateTime = curtime;
 	}
-	
+
 	//Update the statusbar
 	CTimeSpan timespan=CTime::GetCurrentTime()-m_StartTime;
 	int elapsed=(int)timespan.GetTotalSeconds();
@@ -1077,10 +930,10 @@ void CTransferSocket::UpdateStatusBar(bool forceUpdate)
 		status->percent=static_cast<int>(percent);
 		if (status->percent>100)
 			status->percent=100;
-		
+
 		if (left < 0)
 			left = -1;
-		status->timeleft=left;		
+		status->timeleft=left;
 	}
 	else
 	{
@@ -1107,7 +960,7 @@ void CTransferSocket::UpdateStatusBar(bool forceUpdate)
 		status->transferrate = m_Transfered[0];
 	else
 		status->timeleft=-1;
-		
+
 	PostMessage(m_pOwner->m_pOwner->m_hOwnerWnd, m_pOwner->m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_TRANSFERSTATUS, 0), (LPARAM)status);
 }
 
@@ -1123,7 +976,7 @@ void CTransferSocket::UpdateSendLed()
 	if ( ( (curtime.QuadPart-oldtime.QuadPart) < (freq.QuadPart/15) ) )
 		return;
 	oldtime=curtime;
-	
+
 	PostMessage(m_pOwner->m_pOwner->m_hOwnerWnd, m_pOwner->m_pOwner->m_nReplyMessageID,	FZ_MSG_MAKEMSG(FZ_MSG_SOCKETSTATUS, FZ_SOCKETSTATUS_SEND), 0);
 }
 
@@ -1139,13 +992,13 @@ void CTransferSocket::UpdateRecvLed()
 	if ( ( (curtime.QuadPart-oldtime.QuadPart) < (freq.QuadPart/15) ) )
 		return;
 	oldtime=curtime;
-	
+
 	PostMessage(m_pOwner->m_pOwner->m_hOwnerWnd, m_pOwner->m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_SOCKETSTATUS, FZ_SOCKETSTATUS_RECV), 0);
 }
 
 BOOL CTransferSocket::Create(
 #ifndef MPEXT_NO_SSL
-  BOOL bUseSsl
+	BOOL bUseSsl
 #endif
 	)
 {
@@ -1160,7 +1013,7 @@ BOOL CTransferSocket::Create(
 		if (nProxyType != PROXYTYPE_NOPROXY)
 		{
 			USES_CONVERSION;
-			
+
 			m_pProxyLayer = new CAsyncProxySocketLayer;
 			if (nProxyType == PROXYTYPE_SOCKS4)
 				m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS4, T2CA(COptions::GetOption(OPTION_PROXYHOST)), COptions::GetOptionVal(OPTION_PROXYPORT));
@@ -1218,7 +1071,7 @@ BOOL CTransferSocket::Create(
 			}
 		}
 	}
-	
+
 	return TRUE;
 }
 
@@ -1235,10 +1088,10 @@ int CTransferSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 	{
 		if (iter->nType == LAYERCALLBACK_STATECHANGE)
 		{
-		    if (CAsyncSocketEx::LogStateChange(iter->nParam1, iter->nParam2))
-		    {
-			    const TCHAR * state2Desc = CAsyncSocketEx::GetStateDesc(iter->nParam2);
-			    const TCHAR * state1Desc = CAsyncSocketEx::GetStateDesc(iter->nParam1);
+				if (CAsyncSocketEx::LogStateChange(iter->nParam1, iter->nParam2))
+				{
+					const TCHAR * state2Desc = CAsyncSocketEx::GetStateDesc(iter->nParam2);
+					const TCHAR * state1Desc = CAsyncSocketEx::GetStateDesc(iter->nParam1);
 				if (iter->pLayer == m_pProxyLayer)
 					LogMessage(__FILE__, __LINE__, this, FZ_LOG_INFO, _T("Proxy layer changed state from %s to %s"), state2Desc, state1Desc);
 #ifndef MPEXT_NO_SSL
@@ -1318,26 +1171,19 @@ int CTransferSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 						m_pOwner->ShowStatus(IDS_ERRORMSG_CANTINITSSL, FZ_LOG_ERROR);
 						break;
 					}
-					if (!m_bSentClose)
-					{
-						m_nMode |= CSMODE_TRANSFERERROR;
-						m_bSentClose = TRUE;
-						m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-					}
+					EnsureSendClose(CSMODE_TRANSFERERROR);
 					break;
 				case SSL_VERIFY_CERT:
 					t_SslCertData data;
-					if (m_pSslLayer->GetPeerCertificateData(data))
+					LPCTSTR CertError = NULL;
+					if (m_pSslLayer->GetPeerCertificateData(data, CertError))
 						m_pSslLayer->SetNotifyReply(data.priv_data, SSL_VERIFY_CERT, 1);
 					else
 					{
-						Close();
-						if (!m_bSentClose)
-						{
-							m_nMode |= CSMODE_TRANSFERERROR;
-							m_bSentClose = TRUE;
-							m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-						}
+						CString str;
+						str.Format(TLS_CERT_DECODE_ERROR, CertError);
+						m_pOwner->ShowStatus(str, FZ_LOG_ERROR);
+						CloseAndEnsureSendClose(CSMODE_TRANSFERERROR);
 					}
 					break;
 				}
@@ -1356,12 +1202,7 @@ int CTransferSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 					LogMessageRaw(FZ_LOG_APIERROR, A2CT(iter->str));
 					break;
 				case GSS_SHUTDOWN_COMPLETE:
-					Close();
-					if (!m_bSentClose)
-					{
-						m_bSentClose = TRUE;
-						m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-					}
+					CloseAndEnsureSendClose(0);
 					break;
 				}
 			}
@@ -1378,7 +1219,7 @@ void CTransferSocket::Transfered(int count, CTime time)
 	int diff = (int)ts.GetTotalSeconds();
 	if (diff < 0)
 		diff = 0;
-	
+
 	if ( diff >= SPEED_SECONDS)
 	{
 		int move = diff - SPEED_SECONDS + 1;
@@ -1469,16 +1310,7 @@ int CTransferSocket::ReadDataFromFile(char *buffer, int len)
 		TCHAR error[BUFSIZE];
 		if (e->GetErrorMessage(error, BUFSIZE))
 			m_pOwner->ShowStatus(error, FZ_LOG_ERROR);
-		if (ShutDown() || GetLastError() != WSAEWOULDBLOCK)
-		{
-			Close();
-			if (!m_bSentClose)
-			{
-				m_nMode |= CSMODE_TRANSFERERROR;
-				m_bSentClose = TRUE;
-				m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-			}
-		}
+		CloseOnShutDownOrError(CSMODE_TRANSFERERROR);
 		return -1;
 	}
 	END_CATCH_ALL;
@@ -1488,3 +1320,57 @@ void CTransferSocket::LogSocketMessage(int nMessageType, LPCTSTR pMsgFormat)
 {
 	LogMessage(nMessageType, pMsgFormat);
 }
+
+void CTransferSocket::EnsureSendClose(int Mode)
+{
+  if (!m_bSentClose)
+  {
+    if (Mode != 0)
+    {
+      m_nMode |= Mode;
+    }
+    m_bSentClose = TRUE;
+    VERIFY(m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode));
+  }
+}
+
+void CTransferSocket::CloseAndEnsureSendClose(int Mode)
+{
+  Close();
+  EnsureSendClose(Mode);
+}
+
+void CTransferSocket::CloseOnShutDownOrError(int Mode)
+{
+  if (ShutDown())
+  {
+    CloseAndEnsureSendClose(Mode);
+  }
+  else
+  {
+    int Error = GetLastError();
+    if (Error != WSAEWOULDBLOCK)
+    {
+      // Log always or only when (Mode & CSMODE_TRANSFERERROR)?
+      // Does it anyway make sense at all to call this with Mode == 0?
+      LogError(Error);
+      CloseAndEnsureSendClose(Mode);
+    }
+  }
+}
+
+void CTransferSocket::LogError(int Error)
+{
+  wchar_t * Buffer;
+  int Len = FormatMessage(
+    FORMAT_MESSAGE_FROM_SYSTEM |
+    FORMAT_MESSAGE_IGNORE_INSERTS |
+    FORMAT_MESSAGE_ARGUMENT_ARRAY |
+    FORMAT_MESSAGE_ALLOCATE_BUFFER, NULL, Error, 0, (LPTSTR)&Buffer, 0, NULL);
+  if (Len > 0)
+  {
+    m_pOwner->ShowStatus(Buffer, FZ_LOG_ERROR);
+    LocalFree(Buffer);
+  }
+}
+

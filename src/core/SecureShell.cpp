@@ -1029,7 +1029,7 @@ void TSecureShell::SendBuffer(intptr_t & Result)
         Result = qaOK;
       }
     }
-    catch(...)
+    catch (...)
     {
       Result = qaRetry;
     }
@@ -1497,7 +1497,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, intptr_t & Result)
         Result = qaOK;
       }
     }
-    catch(...)
+    catch (...)
     {
       // if we let the exception out, it may popup another message dialog
       // in whole event loop, another call to PoolForData from original dialog

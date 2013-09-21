@@ -255,6 +255,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   FLastCodeClass(0),
   FLastReadDirectoryProgress(0),
   FLastResponse(new TStringList()),
+  FLastErrorResponse(new TStringList()),
   FLastError(new TStringList()),
   FFeatures(new TStringList()),
   FFileList(nullptr),
@@ -312,6 +313,8 @@ TFTPFileSystem::~TFTPFileSystem()
 
   delete FLastResponse;
   FLastResponse = nullptr;
+  delete FLastErrorResponse;
+  FLastErrorResponse = nullptr;
   delete FLastError;
   FLastError = nullptr;
   delete FFeatures;
@@ -480,8 +483,8 @@ void TFTPFileSystem::Open()
     }
 
     FPasswordFailed = false;
+    TValueRestorer<bool> OpeningRestorer(FOpening);
     FOpening = true;
-    TBoolRestorer OpeningRestorer(FOpening);
 
     FActive = FFileZillaIntf->Connect(
       HostName.c_str(), static_cast<int>(Data->GetPortNumber()), UserName.c_str(),
@@ -506,7 +509,7 @@ void TFTPFileSystem::Open()
       assert(!FPasswordFailed);
       FPasswordFailed = false;
     }
-    catch(...)
+    catch (...)
     {
       if (FPasswordFailed)
       {
@@ -586,7 +589,7 @@ void TFTPFileSystem::Idle()
         Files->SetDirectory(GetCurrentDirectory());
         DoReadDirectory(Files.get());
       }
-      catch(...)
+      catch (...)
       {
         // ignore non-fatal errors
         // (i.e. current directory may not exist anymore)
@@ -709,7 +712,7 @@ void TFTPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
     // user chance to leave the non-existing directory.
     EnsureLocation();
   }
-  catch(...)
+  catch (...)
   {
     if (FTerminal->GetActive())
     {
@@ -766,7 +769,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
         FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TTerminal::ChangeFileProperties, FTerminal),
           static_cast<void *>(const_cast<TRemoteProperties *>(Properties)));
       }
-      catch(...)
+      catch (...)
       {
         Action.Cancel();
         throw;
@@ -1611,7 +1614,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
         SUSPEND_OPERATION (
           // here a message to user was displayed, which was not appropriate
           // when user refused to overwrite the file in subdirectory.
-          // hopefuly it won't be missing in other situations.
+          // hopefully it won't be missing in other situations.
           if (!FTerminal->HandleException(&E)) throw;
         );
       }
@@ -1642,7 +1645,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
         FTerminal->CreateDirectory(DestFullName, &Properties);
       }
     }
-    catch(...)
+    catch (...)
     {
       TRemoteFile * File = nullptr;
       // ignore non-fatal error when the directory already exists
@@ -1715,7 +1718,7 @@ void TFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
     {
       FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK(TTerminal::DeleteFile, FTerminal), &Params);
     }
-    catch(...)
+    catch (...)
     {
       Action.Cancel();
       throw;
@@ -2482,7 +2485,7 @@ void TFTPFileSystem::DoWaitForReply(uintptr_t & ReplyToAwait, bool WantLastCode)
       GotNonCommandReply(FReply);
     }
   }
-  catch(...)
+  catch (...)
   {
     // even if non-fatal error happens, we must process pending message,
     // so that we "eat" the reply message, so that it gets not mistakenly
@@ -2541,6 +2544,9 @@ void TFTPFileSystem::ResetReply()
   FLastCodeClass = 0;
   assert(FLastResponse != nullptr);
   FLastResponse->Clear();
+  assert(FLastError != nullptr);
+  assert(FLastErrorResponse != nullptr);
+  FLastErrorResponse->Clear();
   assert(FLastError != nullptr);
   FLastError->Clear();
 }
@@ -2667,9 +2673,10 @@ void TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       // associated with session closure is not reused
       FLastError->Clear();
 
-      MoreMessages->AddStrings(FLastResponse);
+      MoreMessages->AddStrings(FLastErrorResponse);
       // see comment for FLastError
       FLastResponse->Clear();
+      FLastErrorResponse->Clear();
 
       if (MoreMessages->GetCount() == 0)
       {
@@ -2706,6 +2713,9 @@ void TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
     {
       *Response = FLastResponse;
       FLastResponse = new TStringList();
+      // just to be consistent
+      delete FLastErrorResponse;
+      FLastErrorResponse = new TStringList();
     }
   }
 }
@@ -2714,6 +2724,15 @@ void TFTPFileSystem::SetLastCode(intptr_t Code)
 {
   FLastCode = Code;
   FLastCodeClass = (Code / 100);
+}
+//---------------------------------------------------------------------------
+void TFTPFileSystem::StoreLastResponse(const UnicodeString & Text)
+{
+  FLastResponse->Add(Text);
+  if (FLastCodeClass >= 4)
+  {
+    FLastErrorResponse->Add(Text);
+  }
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
@@ -2753,11 +2772,12 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
   {
     FMultineResponse = (Response.Length() >= 4) && (Response[4] == L'-');
     FLastResponse->Clear();
+    FLastErrorResponse->Clear();
+    SetLastCode(Code);
     if (Response.Length() >= 5)
     {
-      FLastResponse->Add(Response.SubString(5, Response.Length() - 4));
+      StoreLastResponse(Response.SubString(5, Response.Length() - 4));
     }
-    SetLastCode(Code);
   }
   else
   {
@@ -2780,7 +2800,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
     // Intermediate empty lines are being added
     if (FMultineResponse || (Response.Length() >= Start))
     {
-      FLastResponse->Add(Response.SubString(Start, Response.Length() - Start + 1));
+      StoreLastResponse(Response.SubString(Start, Response.Length() - Start + 1));
     }
   }
 
@@ -2804,7 +2824,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
     else if (FLastCommand == SYST)
     {
       assert(FSystem.IsEmpty());
-      // Possitive reply to "SYST" must be 215, see RFC 959
+      // Positive reply to "SYST" must be 215, see RFC 959
       if (FLastCode == 215)
       {
         FSystem = FLastResponse->GetText().TrimRight();
@@ -3446,7 +3466,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
             File->GetRights()->SetOctal(Entry->Permissions);
           }
         }
-        catch(...)
+        catch (...)
         {
           // ignore permissions errors with FTP
         }

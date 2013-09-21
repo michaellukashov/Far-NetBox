@@ -325,7 +325,7 @@ int TSimpleThread::ThreadProc(void * Thread)
   {
     SimpleThread->Execute();
   }
-  catch(...)
+  catch (...)
   {
     // we do not expect thread to be terminated with exception
     assert(false);
@@ -667,9 +667,13 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
         delete Item;
       }
 
-      Empty =
-        EmptyButMonitoredItems(FDoneItems) &&
-        EmptyButMonitoredItems(FItems);
+      Empty = true;
+      Index = 0;
+      while (Empty && (Index < FItems->GetCount()))
+      {
+        Empty = (GetItem(FItems, Index)->GetCompleteEvent() != INVALID_HANDLE_VALUE);
+        Index++;
+      }
     }
 
     DoListUpdate();
@@ -680,18 +684,6 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
       DoEvent(qeEmpty);
     }
   }
-}
-//---------------------------------------------------------------------------
-bool TTerminalQueue::EmptyButMonitoredItems(TList * List)
-{
-  bool Empty = true;
-  intptr_t Index = 0;
-  while (Empty && (Index < List->GetCount()))
-  {
-    Empty = (GetItem(List, Index)->GetCompleteEvent() != INVALID_HANDLE_VALUE);
-    Index++;
-  }
-  return !Empty;
 }
 //---------------------------------------------------------------------------
 TQueueItem * TTerminalQueue::GetItem(TList * List, intptr_t Index)
@@ -1340,7 +1332,7 @@ void TTerminalItem::Idle()
   {
     FTerminal->Idle();
   }
-  catch(...)
+  catch (...)
   {
   }
 
@@ -2265,7 +2257,7 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
       Rethrow(FException);
     }
   }
-  catch(...)
+  catch (...)
   {
     if (FCancelled)
     {

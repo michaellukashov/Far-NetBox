@@ -30,14 +30,6 @@
 #include "directorycache.h"
 #endif
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#if defined(__BORLANDC__)
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 #define ECS m_CriticalSection.Lock()
 #define LCS m_CriticalSection.Unlock()
 
@@ -557,7 +549,9 @@ DWORD CMainThread::Run()
 	{
 		TranslateMessage(&msg);
 		if (!msg.hwnd)
+		{
 			OnThreadMessage(msg.message, msg.wParam, msg.lParam);
+		}
 		DispatchMessage(&msg);
 	}
 	DWORD res = ExitInstance();

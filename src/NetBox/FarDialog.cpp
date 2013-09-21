@@ -354,7 +354,7 @@ intptr_t WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, intptr_t Msg, intpt
   {
     if (Dialogs.find(Handle) == Dialogs.end())
     {
-      // DM_CLOSE is sent after DN_CLOSE, if the dialog was closed programatically
+      // DM_CLOSE is sent after DN_CLOSE, if the dialog was closed programmatically
       // by SendMessage(DM_CLOSE, ...)
       assert(Msg == DM_CLOSE);
       Result = static_cast<LONG_PTR>(0);

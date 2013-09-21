@@ -448,7 +448,7 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
           UName += GetOutput()->GetString(Index);
         }
       }
-      catch(...)
+      catch (...)
       {
         if (!FTerminal->GetActive())
         {
@@ -578,7 +578,7 @@ void TSCPFileSystem::EnsureLocation()
     {
       ChangeDirectory(Directory);
     }
-    catch(...)
+    catch (...)
     {
       // when location to cached directory fails, pretend again
       // location in cached directory
@@ -1462,7 +1462,7 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
         {
           ReadCommandOutput(coExpectNoOutput | coRaiseExcept | coOnlyReturnCode);
         }
-        catch(...)
+        catch (...)
         {
           // when ReadCommandOutput() fails than remote SCP is terminated already
           if (GotLastLine != nullptr)

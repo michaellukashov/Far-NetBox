@@ -1102,7 +1102,7 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(
     {
       FTerminal->CopyToLocal(FileList, TempDir, &CopyParam, cpTemporary);
     }
-    catch(...)
+    catch (...)
     {
       try
       {

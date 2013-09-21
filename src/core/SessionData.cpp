@@ -707,7 +707,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
         Storage->CloseSubKey();
       }
     }
-    catch(...)
+    catch (...)
     {
       // ignore errors (like read-only INI file)
     }
@@ -2966,7 +2966,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
     {
       TSessionData::ValidatePath(SessionName);
     }
-    catch(...)
+    catch (...)
     {
       ValidName = false;
     }

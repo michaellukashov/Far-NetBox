@@ -98,7 +98,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
       SynchronizeLog(slStart, FMTLOAD(SYNCHRONIZE_START, Directories));
       */
     }
-    catch(...)
+    catch (...)
     {
       // FIXME SAFE_DESTROY(FSynchronizeMonitor);
       Classes::Error(SNotImplemented, 257);

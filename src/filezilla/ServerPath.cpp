@@ -24,14 +24,6 @@
 #include "ServerPath.h"
 #include "structures.h"
 
-#ifdef _DEBUG
-#if defined(__BORLANDC__)
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#endif
-#define new DEBUG_NEW
-#endif
-
 #define FTP_MVS_DOUBLE_QUOTA (TCHAR)0xDC
 
 //////////////////////////////////////////////////////////////////////

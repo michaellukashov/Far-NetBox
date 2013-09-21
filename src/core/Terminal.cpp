@@ -267,7 +267,7 @@ void TTunnelThread::Execute()
       FSecureShell->Idle(250);
     }
   }
-  catch(...)
+  catch (...)
   {
     if (FSecureShell->GetActive())
     {
@@ -1013,7 +1013,7 @@ void TTerminal::OpenTunnel()
     FTunnelThread = new TTunnelThread(FTunnel);
     FTunnelThread->Init();
   }
-  catch(...)
+  catch (...)
   {
     CloseTunnel();
     throw;
@@ -1652,7 +1652,7 @@ bool TTerminal::DirectoryFileList(const UnicodeString & Path,
         ReadDirectory(FileList);
         Result = true;
       }
-      catch(...)
+      catch (...)
       {
         if (Created)
         {
@@ -2645,7 +2645,7 @@ void TTerminal::ProcessDirectory(const UnicodeString & DirName,
       {
         FileList.reset(CustomReadDirectoryListing(DirName, UseCache));
       }
-      catch(...)
+      catch (...)
       {
         if (!GetActive())
         {
@@ -2751,7 +2751,7 @@ bool TTerminal::FileExists(const UnicodeString & FileName, TRemoteFile ** AFile)
     }
     Result = true;
   }
-  catch(...)
+  catch (...)
   {
     if (GetActive())
     {
@@ -4037,7 +4037,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
         LocalFileHandle = INVALID_HANDLE_VALUE;
       }
     }
-    catch(...)
+    catch (...)
     {
       ::CloseHandle(LocalFileHandle);
       throw;

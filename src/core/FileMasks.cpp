@@ -198,9 +198,9 @@ UnicodeString TFileMasks::ComposeMaskStr(
     }
   }
 
-  // For directories, the above will add slash ay the end of masks,
-  // breaking size and time masks and thus circumverting their validation.
-  // This performes as hoc validation to cover the scenario.
+  // For directories, the above will add slash by the end of masks,
+  // breaking size and time masks and thus circumventing their validation.
+  // This performs as hoc validation to cover the scenario.
   // For files this makes no difference, but no harm either
   TFileMasks Temp(Directory ? 1 : 0);
   Temp = ResultNoDirMask;
@@ -508,7 +508,7 @@ void TFileMasks::CreateMaskMask(const UnicodeString & Mask, intptr_t Start, intp
       MaskMask.Mask = new Masks::TMask(Mask);
     }
   }
-  catch(...)
+  catch (...)
   {
     ThrowError(Start, End);
   }
@@ -771,7 +771,7 @@ void TFileMasks::SetStr(const UnicodeString & Str, bool SingleMask)
       }
     }
   }
-  catch(...)
+  catch (...)
   {
     // this does not work correctly if previous mask was set using SetMask.
     // this should not fail (the mask was validated before),

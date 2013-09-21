@@ -187,6 +187,7 @@ BEGIN
   NET_TRANSL_HOST_NOT_EXIST, "Host does not exist."
   NET_TRANSL_PACKET_GARBLED, "Incoming packet was garbled on decryption"
   REPORT_ERROR, "%s\n\nPlease report the error on WinSCP support forum."
+  TLS_CERT_DECODE_ERROR, "Error decoding TLS/SSL certificate (%s)."
 
   CORE_CONFIRMATION_STRINGS, "CORE_CONFIRMATION"
   CONFIRM_PROLONG_TIMEOUT3, "Host is not communicating for %d seconds.\n\nWait for another %d seconds?"
@@ -365,9 +366,9 @@ BEGIN
   PUTTY_VERSION, "0.63"
   PUTTY_COPYRIGHT, "Copyright © 1997-2013 Simon Tatham"
   PUTTY_URL, "http://www.chiark.greenend.org.uk/~sgtatham/putty/"
-  FILEZILLA_BASED_ON, "FTP code based on FileZilla %s"
+  FILEZILLA_BASED_ON2, "FTP code based on FileZilla"
   FILEZILLA_VERSION, "2.2.32"
-  FILEZILLA_COPYRIGHT, "Copyright © 2001-2007 Tim Kosse"
+  FILEZILLA_COPYRIGHT2, "Copyright © Tim Kosse"
   FILEZILLA_URL, "http://filezilla-project.org/"
   OPENSSL_BASED_ON, "This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit %s."
   OPENSSL_COPYRIGHT, "Copyright © 1998-2013 The OpenSSL Project"
@@ -376,7 +377,7 @@ BEGIN
   PUTTY_LICENSE_URL, "http://www.chiark.greenend.org.uk/~sgtatham/putty/licence.html"
 
   WINSCPFAR_NAME, "WinSCP"
-  WINSCP_VERSION, "5.2.3"
+  WINSCP_VERSION, "5.2.4"
   WINSCPFAR_VERSION, "1.6.2"
   WINSCPFAR_BASED_ON, "Based on WinSCP: SFTP/FTP/SCP client for FAR"
   WINSCPFAR_BASED_VERSION, " Version %s"

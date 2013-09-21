@@ -79,7 +79,7 @@ public:
 
 private:
     HANDLE  m_File;          ///< File handle
-    DWORD   m_LastError;     ///< Laset errno
+    DWORD   m_LastError;     ///< Last errno
 };
 
 //---------------------------------------------------------------------------

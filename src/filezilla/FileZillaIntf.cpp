@@ -359,7 +359,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
             RemoteTime,
             reinterpret_cast<void *>(Data->pTransferFile->UserData), RequestResult);
         }
-        catch(...)
+        catch (...)
         {
           FFileZillaApi->SetAsyncRequestResult(FILEEXISTS_SKIP, Data);
           throw;
@@ -390,7 +390,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
 
           Result = HandleAsynchRequestVerifyCertificate(Data, RequestResult);
         }
-        catch(...)
+        catch (...)
         {
           FFileZillaApi->SetAsyncRequestResult(0, AData);
           throw;
@@ -420,7 +420,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
               Data.Password = NULL;
             }
         }
-        catch(...)
+        catch (...)
         {
           FFileZillaApi->SetAsyncRequestResult(0, AData);
           throw;

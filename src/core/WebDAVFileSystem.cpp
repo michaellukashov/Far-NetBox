@@ -13821,7 +13821,7 @@ bool TWebDAVFileSystem::WebDAVGetFile(
       LocalFileHandle = INVALID_HANDLE_VALUE;
     }
   }
-  catch(...)
+  catch (...)
   {
     if (LocalFileHandle != INVALID_HANDLE_VALUE)
     {
