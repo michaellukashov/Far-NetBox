@@ -33,14 +33,6 @@
 #include "AsyncGssSocketLayer.h"
 #endif
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#if defined(__BORLANDC__)
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 // #define BUFSIZE 16384
 #define BUFSIZE 64 * 1024
 

@@ -119,14 +119,6 @@ Version history
 #include "atlconv.h" //Unicode<->Ascii conversion macros declared here
 #include "CBase64coding.hpp"
 
-#ifdef _DEBUG
-#if defined(__BORLANDC__)
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#endif
-#define new DEBUG_NEW
-#endif
-
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
 //////////////////////////////////////////////////////////////////////

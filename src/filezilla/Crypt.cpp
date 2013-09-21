@@ -23,14 +23,6 @@
 #include "stdafx.h"
 #include "Crypt.h"
 
-#ifdef _DEBUG
-#if defined(__BORLANDC__)
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#endif
-#define new DEBUG_NEW
-#endif
-
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
 //////////////////////////////////////////////////////////////////////

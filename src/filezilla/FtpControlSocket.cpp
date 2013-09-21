@@ -50,14 +50,6 @@
 #define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 #endif
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#if defined(__BORLANDC__)
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 #ifdef _MSC_VER
 #define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
 #define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
