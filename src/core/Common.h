@@ -187,14 +187,14 @@ private:
 //---------------------------------------------------------------------------
 #undef TEXT
 #define TEXT(x) const_cast<wchar_t *>(MB2W(x).c_str())
-#define CALLSTACK 
-#define CCALLSTACK(TRACING) 
-#define TRACING 
+#define CALLSTACK
+#define CCALLSTACK(TRACING)
+#define TRACING
 #undef TRACE
-#define TRACE(MESSAGE) 
-#define TRACEFMT(MESSAGE, ...) 
-#define CTRACE(TRACING, MESSAGE) 
-#define CTRACEFMT(TRACING, MESSAGE, ...) 
+#define TRACE(MESSAGE)
+#define TRACEFMT(MESSAGE, ...)
+#define CTRACE(TRACING, MESSAGE)
+#define CTRACEFMT(TRACING, MESSAGE, ...)
 //---------------------------------------------------------------------------
 #include <assert.h>
 #ifndef _DEBUG
