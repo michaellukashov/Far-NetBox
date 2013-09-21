@@ -3195,6 +3195,7 @@ void TSFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
     FTerminal->FatalError(nullptr, LoadStr(SFTP_NON_ONE_FXP_NAME_PACKET));
   }
   SymlinkFile->SetLinkTo(ReadLinkPacket.GetPathString(FUtfStrings));
+  FTerminal->LogEvent(FORMAT(L"Link resolved to \"%s\".", SymlinkFile->GetLinkTo().c_str()));
 
   ReceiveResponse(&AttrsPacket, &AttrsPacket, SSH_FXP_ATTRS);
   // SymlinkFile->FileName was used instead SymlinkFile->LinkTo before, why?

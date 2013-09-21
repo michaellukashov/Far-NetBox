@@ -135,7 +135,6 @@ public:
   inline static TQueueItem * GetItem(TList * List, intptr_t Index);
   inline TQueueItem * GetItem(intptr_t Index);
   void FreeItemsList(TList * List);
-  static bool EmptyButMonitoredItems(TList * List);
   void UpdateStatusForList(
     TTerminalQueueStatus * Status, TList * List, TTerminalQueueStatus * Current);
   bool ItemGetData(TQueueItem * Item, TQueueItemProxy * Proxy);

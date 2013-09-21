@@ -100,6 +100,7 @@ UnicodeString EscapeHotkey(const UnicodeString & Caption);
 bool CutToken(UnicodeString & Str, UnicodeString & Token,
   UnicodeString * RawToken = nullptr);
 void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter);
+bool IsWinXPOrOlder();
 bool IsWin7();
 bool IsExactly2008R2();
 #if defined(__BORLANDC__)
@@ -110,6 +111,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & S, TDateTime & DateTime);
 LCID GetDefaultLCID();
 UnicodeString DefaultEncodingName();
 UnicodeString WindowsProductName();
+bool GetWindowsProductType(DWORD & Type);
 bool IsDirectoryWriteable(const UnicodeString & Path);
 UnicodeString FormatNumber(__int64 Size);
 UnicodeString FormatSize(__int64 Size);
@@ -234,6 +236,12 @@ public:
   {
   }
 
+  inline explicit TValueRestorer(T & Target) :
+    FTarget(Target),
+    FValue(Target)
+  {
+  }
+
   inline ~TValueRestorer()
   {
     FTarget = FValue;
@@ -244,20 +252,11 @@ protected:
   T FValue;
 };
 //---------------------------------------------------------------------------
-class TBoolRestorer : TValueRestorer<bool>
-{
-public:
-  inline explicit TBoolRestorer(bool & Target) :
-    TValueRestorer<bool>(Target, !Target)
-  {
-  }
-};
-//---------------------------------------------------------------------------
 class TAutoNestingCounter : TValueRestorer<int>
 {
 public:
   inline explicit TAutoNestingCounter(int & Target) :
-    TValueRestorer<int>(Target, Target)
+    TValueRestorer<int>(Target)
   {
     assert(Target >= 0);
     ++Target;

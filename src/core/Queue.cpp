@@ -667,9 +667,13 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
         delete Item;
       }
 
-      Empty =
-        EmptyButMonitoredItems(FDoneItems) &&
-        EmptyButMonitoredItems(FItems);
+      Empty = true;
+      Index = 0;
+      while (Empty && (Index < FItems->GetCount()))
+      {
+        Empty = (GetItem(FItems, Index)->GetCompleteEvent() != INVALID_HANDLE_VALUE);
+        Index++;
+      }
     }
 
     DoListUpdate();
@@ -680,18 +684,6 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
       DoEvent(qeEmpty);
     }
   }
-}
-//---------------------------------------------------------------------------
-bool TTerminalQueue::EmptyButMonitoredItems(TList * List)
-{
-  bool Empty = true;
-  intptr_t Index = 0;
-  while (Empty && (Index < List->GetCount()))
-  {
-    Empty = (GetItem(List, Index)->GetCompleteEvent() != INVALID_HANDLE_VALUE);
-    Index++;
-  }
-  return !Empty;
 }
 //---------------------------------------------------------------------------
 TQueueItem * TTerminalQueue::GetItem(TList * List, intptr_t Index)

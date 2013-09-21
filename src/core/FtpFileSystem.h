@@ -189,6 +189,7 @@ protected:
   void RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime & Source,
     TDateTime & DateTime, TModificationFmt & ModificationFmt);
   void SetLastCode(intptr_t Code);
+  void StoreLastResponse(const UnicodeString & Text);
 
   static bool Unquote(UnicodeString & Str);
   static UnicodeString ExtractStatusMessage(const UnicodeString & Status);
@@ -221,6 +222,7 @@ private:
   UnicodeString FTimeoutStatus;
   UnicodeString FDisconnectStatus;
   TStrings * FLastResponse;
+  TStrings * FLastErrorResponse;
   TStrings * FLastError;
   UnicodeString FSystem;
   TStrings * FFeatures;
