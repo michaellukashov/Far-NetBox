@@ -12,7 +12,7 @@ class AnsiString;
 
 class UTF8String
 {
-  CUSTOM_MEM_ALLOCATION_IMPL;
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UTF8String() {}
   UTF8String(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
@@ -71,7 +71,7 @@ private:
 
 class UnicodeString
 {
-  CUSTOM_MEM_ALLOCATION_IMPL;
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UnicodeString() {}
   UnicodeString(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
@@ -211,7 +211,7 @@ class RawByteString;
 
 class AnsiString
 {
-  CUSTOM_MEM_ALLOCATION_IMPL;
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   AnsiString() {}
   AnsiString(intptr_t Size, char Ch) : Data(Size, Ch) {}
@@ -315,7 +315,7 @@ private:
 
 class RawByteString
 {
-  CUSTOM_MEM_ALLOCATION_IMPL;
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   RawByteString() {}
   RawByteString(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }

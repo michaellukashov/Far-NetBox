@@ -72,7 +72,7 @@ void Error(int ErrorID, intptr_t data);
 //---------------------------------------------------------------------------
 class TObject
 {
-  CUSTOM_MEM_ALLOCATION_IMPL;
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   TObject() {}
   virtual ~TObject() {}

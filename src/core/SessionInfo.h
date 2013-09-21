@@ -204,7 +204,7 @@ DEFINE_CALLBACK_TYPE2(TDoAddLogEvent, void,
 //---------------------------------------------------------------------------
 class TSessionLog : protected TStringList
 {
-  CUSTOM_MEM_ALLOCATION_IMPL;
+  CUSTOM_MEM_ALLOCATION_IMPL
 friend class TSessionAction;
 friend class TSessionActionRecord;
 public:

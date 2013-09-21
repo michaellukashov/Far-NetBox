@@ -4266,7 +4266,7 @@ void TSessionDialog::CodePageEditAdd(unsigned int Cp)
 //------------------------------------------------------------------------------
 intptr_t TSessionDialog::AddTab(intptr_t TabID, const wchar_t * TabCaption)
 {
-  TFarButtonBrackets TabBrackets = brNone; // brSpace; // 
+  TFarButtonBrackets TabBrackets = brNone; // brSpace; //
   TTabButton * Tab = new TTabButton(this);
   Tab->SetTabName(UnicodeString(TabCaption));
   Tab->SetTab(TabID);
@@ -5394,7 +5394,7 @@ int TCopyParamsContainer::GetHeight()
 //------------------------------------------------------------------------------
 class TCopyDialog : TFarDialog
 {
-  CUSTOM_MEM_ALLOCATION_IMPL;
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   explicit TCopyDialog(TCustomFarPlugin * AFarPlugin,
     bool ToRemote, bool Move, TStrings * FileList, intptr_t Options, intptr_t CopyParamAttrs);
@@ -5703,7 +5703,7 @@ bool TWinSCPPlugin::CopyParamCustomDialog(TCopyParamType & CopyParam,
 //------------------------------------------------------------------------------
 class TLinkDialog : TFarDialog
 {
-  CUSTOM_MEM_ALLOCATION_IMPL;
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   explicit TLinkDialog(TCustomFarPlugin * AFarPlugin,
     bool Edit, bool AllowSymbolic);
@@ -5814,7 +5814,7 @@ DEFINE_CALLBACK_TYPE3(TFeedFileSystemDataEvent, void,
 class TLabelList;
 class TFileSystemInfoDialog : TTabbedDialog
 {
-  CUSTOM_MEM_ALLOCATION_IMPL;
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   enum { tabProtocol = 1, tabCapabilities, tabSpaceAvailable, tabCount };
 
@@ -7707,7 +7707,7 @@ bool TWinSCPFileSystem::SynchronizeChecklistDialog(
 //------------------------------------------------------------------------------
 class TSynchronizeDialog : TFarDialog
 {
-  CUSTOM_MEM_ALLOCATION_IMPL;
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   explicit TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
     TSynchronizeStartStopEvent OnStartStop,
@@ -8193,7 +8193,7 @@ bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * File,
 //------------------------------------------------------------------------------
 class TQueueDialog : TFarDialog
 {
-  CUSTOM_MEM_ALLOCATION_IMPL;
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   explicit TQueueDialog(TCustomFarPlugin * AFarPlugin,
     TWinSCPFileSystem * AFileSystem, bool ClosingPlugin);
