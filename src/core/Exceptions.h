@@ -51,9 +51,9 @@ private:
   class NAME : public BASE \
   { \
   public: \
-    explicit inline NAME(Exception* E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(E, Msg, HelpKeyword) {} \
+    explicit inline NAME(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(E, Msg, HelpKeyword) {} \
     virtual inline ~NAME(void) noexcept {} \
-    explicit inline  NAME(const UnicodeString & Msg, int AHelpContext) : BASE(Msg, AHelpContext) {} \
+    explicit inline NAME(const UnicodeString & Msg, int AHelpContext) : BASE(Msg, AHelpContext) {} \
     virtual ExtException * Clone() { return new NAME(this, L""); } \
   };
 //---------------------------------------------------------------------------
@@ -90,7 +90,7 @@ private:
   class NAME : public BASE \
   { \
   public: \
-    explicit inline NAME(Exception* E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(E, Msg, HelpKeyword) {} \
+    explicit inline NAME(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(E, Msg, HelpKeyword) {} \
     virtual ExtException * Clone() { return new NAME(this, L""); } \
   };
 //---------------------------------------------------------------------------
