@@ -374,6 +374,25 @@ add_library(putty STATIC
 
 set(PUTTY_COMPILE_FLAGS "-D_CRTIMP= -DLibrary -DSECURITY_WIN32 -D_MT -DNET_SETUP_DIAGNOSTICS -DNO_SECURITY -U_UNICODE -UUNICODE")
 
+FUNCTION(disable_cxx_options)
+  FOREACH(flag_var
+         CMAKE_CXX_FLAGS CMAKE_C_FLAGS
+         CMAKE_CXX_FLAGS_DEBUG CMAKE_C_FLAGS_DEBUG
+         CMAKE_CXX_FLAGS_RELEASE CMAKE_C_FLAGS_RELEASE
+         CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+     STRING(REPLACE "-TP" "-TC" ${flag_var} "${${flag_var}}")
+     STRING(REPLACE "/DUNICODE" "/UUNICODE" ${flag_var} "${${flag_var}}")
+  ENDFOREACH(flag_var)
+ENDFUNCTION(disable_cxx_options)
+
+FUNCTION(enable_cxx_options)
+  FOREACH(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+         CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+     STRING(REPLACE "/TC" "/TP" ${flag_var} "${${flag_var}}")
+     STRING(REPLACE "-UUNICODE" "-DUNICODE" ${flag_var} "${${flag_var}}")
+  ENDFOREACH(flag_var)
+ENDFUNCTION(enable_cxx_options)
+
 if(MSVC)
 set_target_properties(putty
   PROPERTIES
