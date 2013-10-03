@@ -4728,7 +4728,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     {
       for (intptr_t Index = 0; Index < UserList->GetCount(); ++Index)
       {
-        GroupComboBox->GetItems()->Add(UserList->Token(Index)->GetName());
+        OwnerComboBox->GetItems()->Add(UserList->Token(Index)->GetName());
       }
     }
 
