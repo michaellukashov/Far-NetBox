@@ -2648,7 +2648,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * FileList)
 }
 //---------------------------------------------------------------------------
 TRemoteProperties TRemoteProperties::ChangedProperties(
-  const TRemoteProperties & OriginalProperties, TRemoteProperties NewProperties)
+  const TRemoteProperties & OriginalProperties, TRemoteProperties & NewProperties)
 {
   // TODO: Modification and LastAccess
   if (!NewProperties.Recursive)
