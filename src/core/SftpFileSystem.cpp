@@ -1556,7 +1556,8 @@ NB_DISABLE_COPY(TSFTPCalculateFilesChecksumQueue)
 public:
   explicit TSFTPCalculateFilesChecksumQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
     TSFTPFixedLenQueue(AFileSystem, CodePage),
-    FIndex(0)
+    FIndex(0),
+    FFileList(nullptr)
   {
   }
   virtual ~TSFTPCalculateFilesChecksumQueue() {}
