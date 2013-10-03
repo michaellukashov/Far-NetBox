@@ -336,7 +336,9 @@ int TSimpleThread::ThreadProc(void * Thread)
 }
 //---------------------------------------------------------------------------
 TSimpleThread::TSimpleThread() :
-  FThread(nullptr), FFinished(true)
+  FThread(nullptr),
+  FThreadId(0),
+  FFinished(true)
 {
 }
 //---------------------------------------------------------------------------
