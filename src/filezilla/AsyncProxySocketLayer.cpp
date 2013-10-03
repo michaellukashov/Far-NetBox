@@ -701,7 +701,8 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
 	if (m_ProxyData.nProxyType==PROXYTYPE_HTTP11)
 	{
 		ASSERT (m_nProxyOpID==PROXYOP_CONNECT);
-		char buffer[9]={0};
+		char buffer[9];
+		memset(buffer, 0, sizeof(buffer));
 		for(;;)
 		{
 			int numread = ReceiveNext(buffer, m_pStrBuffer?1:8);
