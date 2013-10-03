@@ -13806,7 +13806,11 @@ bool TWebDAVFileSystem::WebDAVGetFile(
     webdav::error_t err = 0;
     const char * remote_path = nullptr;
     err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(RemotePath).c_str(), pool);
-    if (err) return false;
+    if (err)
+    {
+      ::CloseHandle(LocalFileHandle);
+      return false;
+    }
     err = webdav::client_get_file(
       FSession,
       remote_path,
