@@ -1298,7 +1298,7 @@ TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor) const
 HWND TCustomFarPlugin::GetConsoleWindow() const
 {
   wchar_t Title[1024];
-  ::GetConsoleTitle(Title, sizeof(Title) / sizeof(wchar_t));
+  ::GetConsoleTitle(Title, LENOF(Title));
   HWND Result = ::FindWindow(nullptr, Title);
   return Result;
 }
@@ -1427,7 +1427,7 @@ public:
 void TCustomFarPlugin::ShowConsoleTitle(const UnicodeString & Title)
 {
   wchar_t SaveTitle[1024];
-  ::GetConsoleTitle(SaveTitle, sizeof(SaveTitle) / sizeof(wchar_t));
+  ::GetConsoleTitle(SaveTitle, LENOF(SaveTitle));
   TConsoleTitleParam * Param = new TConsoleTitleParam();
   Param->Progress = FCurrentProgress;
   Param->Own = !FCurrentTitle.IsEmpty() && (FormatConsoleTitle() == SaveTitle);
@@ -2913,7 +2913,7 @@ UnicodeString TGlobalFunctions::GetCurrentDirectory() const
   }
   else
   {
-    ::GetCurrentDirectory(MAX_PATH, Path);
+    ::GetCurrentDirectory(LENOF(Path), Path);
   }
   Result = Path;
   return Result;
