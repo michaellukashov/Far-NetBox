@@ -1298,7 +1298,7 @@ TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor) const
 HWND TCustomFarPlugin::GetConsoleWindow() const
 {
   wchar_t Title[1024];
-  ::GetConsoleTitle(Title, sizeof(Title) - 1);
+  ::GetConsoleTitle(Title, sizeof(Title) / sizeof(wchar_t));
   HWND Result = ::FindWindow(nullptr, Title);
   return Result;
 }
