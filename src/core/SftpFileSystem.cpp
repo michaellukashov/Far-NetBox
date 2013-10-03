@@ -1356,7 +1356,9 @@ public:
     OperationProgress(nullptr),
     FLastBlockSize(0),
     FEnd(false),
-    FConvertToken(false)
+    FTransfered(0),
+    FConvertToken(false),
+    FTerminal(nullptr)
   {
   }
 
