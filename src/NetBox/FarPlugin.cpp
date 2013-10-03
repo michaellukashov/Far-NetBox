@@ -2913,7 +2913,7 @@ UnicodeString TGlobalFunctions::GetCurrentDirectory() const
   }
   else
   {
-    ::GetCurrentDirectory(sizeof(Path), Path);
+    ::GetCurrentDirectory(MAX_PATH, Path);
   }
   Result = Path;
   return Result;
