@@ -913,12 +913,11 @@ intptr_t TSecureShell::Receive(unsigned char * Buf, intptr_t Length)
         WaitForData();
       }
 
-      // This seems ambiguous
-      if (Length <= 0)
-      {
-        FatalError(LoadStr(LOST_CONNECTION));
-      }
     }
+  }
+  else
+  {
+    FatalError(LoadStr(LOST_CONNECTION));
   }
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
