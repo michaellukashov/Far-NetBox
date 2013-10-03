@@ -192,12 +192,14 @@ CFtpControlSocket::CFtpControlSocket(CMainThread *pMainThread, CFileZillaTools *
 #endif
 
 	m_bUTF8 = true;
+	m_bAnnouncesUTF8 = false;
 	m_hasClntCmd = false;
 #ifdef MPEXT
 	m_serverCapabilities.Clear();
 	m_ListFile = "";
 #endif
 
+	m_isFileZilla = false;
 	m_awaitsReply = false;
 	m_skipReply = false;
 
