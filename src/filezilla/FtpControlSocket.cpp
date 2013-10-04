@@ -5344,6 +5344,7 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
 		break;
 	case FILEEXISTS_RESUME_ASKONFAIL:
 		pTransferData->askOnResumeFail = true;
+		break;
 	case FILEEXISTS_RESUME:
 		if (pData->size1 >= 0)
 		{
