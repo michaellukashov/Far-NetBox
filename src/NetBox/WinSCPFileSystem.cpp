@@ -1080,7 +1080,7 @@ void TWinSCPFileSystem::CreateLink()
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::TemporarilyDownloadFiles(
-  TStrings * FileList, TCopyParamType CopyParam, UnicodeString & TempDir)
+  TStrings * FileList, TCopyParamType & CopyParam, UnicodeString & TempDir)
 {
   CopyParam.SetFileNameCase(ncNoChange);
   CopyParam.SetPreserveReadOnly(false);

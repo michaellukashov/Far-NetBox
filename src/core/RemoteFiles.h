@@ -464,8 +464,7 @@ public:
   void Save(THierarchicalStorage * Storage) const;
 
   static TRemoteProperties CommonProperties(TStrings * FileList);
-  static TRemoteProperties ChangedProperties(
-    const TRemoteProperties & OriginalProperties, TRemoteProperties NewProperties);
+  static TRemoteProperties ChangedProperties(const TRemoteProperties & OriginalProperties, TRemoteProperties & NewProperties);
 };
 //---------------------------------------------------------------------------
 UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & Path);

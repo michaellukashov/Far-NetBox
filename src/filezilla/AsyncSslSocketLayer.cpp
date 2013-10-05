@@ -489,9 +489,8 @@ int CAsyncSslSocketLayer::InitSSL()
 			m_hSslDll1=0;
 			FreeLibrary(m_hSslDll2);
 			m_hSslDll2=0;
-
-			m_sCriticalSection.Unlock();
 #endif
+			m_sCriticalSection.Unlock();
 			return SSL_FAILURE_INITSSL;
 		}
 	}

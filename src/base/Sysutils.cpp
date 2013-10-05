@@ -865,7 +865,7 @@ void AppendPathDelimiterA(std::string & Str)
 UnicodeString ExpandEnvVars(const UnicodeString & Str)
 {
   wchar_t buf[MAX_PATH];
-  intptr_t size = ExpandEnvironmentStringsW(Str.c_str(), buf, static_cast<DWORD>(sizeof(buf) - 1));
+  intptr_t size = ExpandEnvironmentStringsW(Str.c_str(), buf, static_cast<DWORD>(MAX_PATH - 1));
   UnicodeString Result = UnicodeString(buf, size - 1);
   return Result;
 }

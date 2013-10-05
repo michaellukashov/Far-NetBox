@@ -216,7 +216,7 @@ protected:
   bool EnsureCommandSessionFallback(TFSCapability Capability);
   void ConnectTerminal(TTerminal * Terminal);
   void TemporarilyDownloadFiles(TStrings * FileList,
-    TCopyParamType CopyParam, UnicodeString & TempDir);
+    TCopyParamType & CopyParam, UnicodeString & TempDir);
   intptr_t UploadFiles(bool Move, int OpMode, bool Edit, UnicodeString & DestPath);
   void UploadOnSave(bool NoReload);
   void UploadFromEditor(bool NoReload, const UnicodeString & FileName,

@@ -1,82 +1,82 @@
-PROJECT(NetBox)
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+project(NetBox)
+cmake_minimum_required(VERSION 2.8)
 
-IF(NOT DEFINED PROJECT_ROOT OR PROJECT_ROOT STREQUAL "")
-SET(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
-ENDIF()
-STRING(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
+if(NOT DEFINED PROJECT_ROOT OR PROJECT_ROOT STREQUAL "")
+set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+endif()
+string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
 
-IF(NOT DEFINED BUILD_DIR OR BUILD_DIR STREQUAL "")
-STRING(REPLACE "/" "\\" BUILD_DIR ${PROJECT_ROOT}/build/${CMAKE_BUILD_TYPE}/${CONF})
-ENDIF()
-
-#-------------------------------------------------------------------------------
-
-INCLUDE(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
-INCLUDE(CMakeDetermineCXXCompiler)
-MESSAGE("System: ${CMAKE_SYSTEM_NAME}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
-
-IF(NOT DEFINED CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE Debug)
-ENDIF()
-
-IF(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
-  SET(FAR_VERSION Far3)
-ENDIF()
-
-IF(NOT DEFINED CONF)
-  SET(CONF "x86")
-ENDIF()
-
-SET(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${CONF}/Plugins/NetBox)
-
-SET(LIBS_ROOT ${PROJECT_ROOT}/libs)
-SET(SRC_ROOT ${PROJECT_ROOT}/src)
-SET(TESTS_ROOT ${SRC_ROOT}/tests)
+if(NOT DEFINED BUILD_DIR OR BUILD_DIR STREQUAL "")
+string(REPLACE "/" "\\" BUILD_DIR ${PROJECT_ROOT}/build/${CMAKE_BUILD_TYPE}/${CONF}/${CMAKE_BUILD_TYPE})
+endif()
 
 #-------------------------------------------------------------------------------
 
-SET(LIBNEON_DEFS "-DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB -DUSE_GETADDRINFO")
-SET(LIBEXPAT_DEFS "-DCOMPILED_FROM_DSP -DXML_STATIC")
-SET(DLMALLOC_DEFS "-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1")
-SET(CMAKE_C_FLAGS "-D_WINDOWS -DWIN32 -D_WINDLL -D_USRDLL -D_SCL_SECURE_NO_WARNINGS -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES ${LIBEXPAT_DEFS} ${LIBNEON_DEFS} -DMPEXT -DNO_STRICT -DNOCRYPT ${DLMALLOC_DEFS}")
+include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
+include(CMakeDetermineCXXCompiler)
+message("System: ${CMAKE_SYSTEM_NAME}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
 
-IF(CONF STREQUAL "x64")
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN64")
-ELSE()
-ENDIF()
+if(NOT DEFINED CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Debug)
+endif()
 
-SET(NETBOX_CFLAGS "-DCOM_NO_WINDOWS_H")
-SET(NETBOX_FLAGS_RELEASE "-U_DEBUG -UNETBOX_DEBUG -DNDEBUG")
-SET(NETBOX_FLAGS_DEBUG "-D_DEBUG -DDEBUG -DNETBOX_DEBUG")
+if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
+  set(FAR_VERSION Far3)
+endif()
 
-IF(MSVC)
+if(NOT DEFINED CONF)
+  set(CONF "x86")
+endif()
 
-SET(NETBOX_WARNING_FLAGS "")
-SET(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /EHsc /MP2 /Zi -D_UNICODE -DUNICODE ")
-SET(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE} /GL /Gm- /MT -Ox -Ob1 -Oi -Os -GF -GS- -Gy")
-SET(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} /Gm- /MTd /GS")
+set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${CONF}/Plugins/NetBox)
 
-ELSEIF(CMAKE_COMPILER_IS_MINGW)
+set(LIBS_ROOT ${PROJECT_ROOT}/libs)
+set(SRC_ROOT ${PROJECT_ROOT}/src)
+set(TESTS_ROOT ${SRC_ROOT}/tests)
 
-SET(NETBOX_CFLAGS "${NETBOX_CFLAGS} -static -s -O2 -Wall -Wextra -pedantic -Wold-style-cast -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code")
-SET(NETBOX_WARNING_FLAGS "-Wno-attributes -Wno-write-strings -Wno-unknown-pragmas")
-SET(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -D_UNICODE -DUNICODE -D_AFXDLL -std=c++11 -Weffc++ -Woverloaded-virtual -Wnon-virtual-dtor")
-SET(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE} ${NETBOX_CFLAGS}")
-SET(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} ${NETBOX_CFLAGS}")
+#-------------------------------------------------------------------------------
 
-ENDIF()
+set(LIBNEON_DEFS "-DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB -DUSE_GETADDRINFO")
+set(LIBEXPAT_DEFS "-DCOMPILED_FROM_DSP -DXML_STATIC")
+set(DLMALLOC_DEFS "-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1")
+set(CMAKE_C_FLAGS "-D_WINDOWS -DWIN32 -D_WINDLL -D_USRDLL -D_SCL_SECURE_NO_WARNINGS -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES ${LIBEXPAT_DEFS} ${LIBNEON_DEFS} -DMPEXT -DNO_STRICT -DNOCRYPT ${DLMALLOC_DEFS}")
 
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${NETBOX_WARNING_FLAGS}")
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${NETBOX_WARNING_FLAGS}")
+if(CONF STREQUAL "x64")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN64")
+else()
+endif()
 
-SET(CMAKE_CXX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE}")
-SET(CMAKE_C_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE}")
-SET(CMAKE_CXX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG}")
-SET(CMAKE_C_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG}")
+set(NETBOX_CFLAGS "-DCOM_NO_WINDOWS_H")
+set(NETBOX_FLAGS_RELEASE "-U_DEBUG -UNETBOX_DEBUG -DNDEBUG")
+set(NETBOX_FLAGS_DEBUG "-D_DEBUG -DDEBUG -DNETBOX_DEBUG")
 
-IF(MSVC)
-SET(CMAKE_LINK_FLAGS
+if(MSVC)
+
+set(NETBOX_WARNING_FLAGS "")
+set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /EHsc /MP2 /Zi -D_UNICODE -DUNICODE ")
+set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE} /GL /Gm- /MT -Ox -Ob1 -Oi -Os -GF -GS- -Gy")
+set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} /Gm- /MTd /GS")
+
+elseif(CMAKE_COMPILER_IS_MINGW)
+
+set(NETBOX_CFLAGS "${NETBOX_CFLAGS} -static -s -O2 -Wall -Wextra -pedantic -Wold-style-cast -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code")
+set(NETBOX_WARNING_FLAGS "-Wno-attributes -Wno-write-strings -Wno-unknown-pragmas")
+set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -D_UNICODE -DUNICODE -D_AFXDLL -std=c++11 -Weffc++ -Woverloaded-virtual -Wnon-virtual-dtor")
+set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE} ${NETBOX_CFLAGS}")
+set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} ${NETBOX_CFLAGS}")
+
+endif()
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${NETBOX_WARNING_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${NETBOX_WARNING_FLAGS}")
+
+set(CMAKE_CXX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE}")
+set(CMAKE_C_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE}")
+set(CMAKE_CXX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG}")
+set(CMAKE_C_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG}")
+
+if(MSVC)
+set(CMAKE_LINK_FLAGS
   "/NODEFAULTLIB:MSVCURT.LIB
   /NODEFAULTLIB:MSVCURTD.LIB
   /NODEFAULTLIB:MSVCPRT.LIB
@@ -118,13 +118,13 @@ SET(CMAKE_LINK_FLAGS
 "
 )
 
-ELSEIF(CMAKE_COMPILER_IS_MINGW)
-SET(CMAKE_LINK_FLAGS "")
-ENDIF()
+elseif(CMAKE_COMPILER_IS_MINGW)
+set(CMAKE_LINK_FLAGS "")
+endif()
 
 #-------------------------------------------------------
 
-INCLUDE_DIRECTORIES(
+include_directories(
   ${SRC_ROOT}/NetBox
   ${SRC_ROOT}/PluginSDK/${FAR_VERSION}
   ${SRC_ROOT}/include
@@ -153,7 +153,7 @@ INCLUDE_DIRECTORIES(
 #-------------------------------------------------------------------------------
 # target NetBox
 
-SET(NETBOX_SOURCES
+set(NETBOX_SOURCES
   ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
   ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
   ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
@@ -165,46 +165,46 @@ SET(NETBOX_SOURCES
   ${SRC_ROOT}/NetBox/NetBox.def
 )
 
-IF(MSVC)
-IF(CONF STREQUAL "x86")
+if(MSVC)
+if(CONF STREQUAL "x86")
 
-FIND_PROGRAM (MASM_EXECUTABLE ml)
+find_program(MASM_EXECUTABLE ml)
 # message("masm: ${MASM_EXECUTABLE}")
-SET(ASM_OBJECTS)
-FOREACH(src vc10)
-  SET(ASM_SOURCE ${SRC_ROOT}/NetBox/${src}.asm)
-  SET(ASM_OBJECT ${CMAKE_CURRENT_BINARY_DIR}/${src}.obj)
-  SET(ASM_OBJECTS ${ASM_OBJECTS} ${ASM_OBJECT})
-  ADD_CUSTOM_COMMAND(
+set(ASM_OBJECTS)
+foreach(src vc10)
+  set(ASM_SOURCE ${SRC_ROOT}/NetBox/${src}.asm)
+  set(ASM_OBJECT ${CMAKE_CURRENT_BINARY_DIR}/${src}.obj)
+  set(ASM_OBJECTS ${ASM_OBJECTS} ${ASM_OBJECT})
+  add_custom_command(
     OUTPUT ${ASM_OBJECT}
     COMMAND ${MASM_EXECUTABLE}
     ARGS   /c /Fo ${ASM_OBJECT} ${ASM_SOURCE}
     DEPENDS ${ASM_SOURCE}
   )
-ENDFOREACH(src)
+endforeach(src)
 
-SET(NETBOX_SOURCES ${NETBOX_SOURCES}
+set(NETBOX_SOURCES ${NETBOX_SOURCES}
   ${SRC_ROOT}/NetBox/vc10wrapper.cpp
   ${SRC_ROOT}/NetBox/vc10u.cpp
   ${ASM_OBJECTS}
 )
 
-ENDIF(CONF STREQUAL "x86")
-ENDIF(MSVC)
+endif(CONF STREQUAL "x86")
+endif(MSVC)
 
-ADD_LIBRARY(libeay32 STATIC IMPORTED)
-SET_PROPERTY(TARGET libeay32
+add_library(libeay32 STATIC IMPORTED)
+set_property(TARGET libeay32
   PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${CONF}/libeay32.lib
 )
 
-ADD_LIBRARY(ssleay32 STATIC IMPORTED)
-SET_PROPERTY(TARGET ssleay32
+add_library(ssleay32 STATIC IMPORTED)
+set_property(TARGET ssleay32
   PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${CONF}/ssleay32.lib
 )
 
 #-------------------------------------------------------------------------------
 
-SET(NETBOX_LIBRARIES
+set(NETBOX_LIBRARIES
   atlmfc
   putty
   zlib
@@ -229,43 +229,43 @@ SET(NETBOX_LIBRARIES
   delayimp.lib
 )
 
-IF(MSVC)
-IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
-SET(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
+if(MSVC)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
   libcmtd.lib
   libcpmtd.lib
 )
-ELSE()
-SET(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
+else()
+set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
   libcmt.lib
   libcpmt.lib
 )
-ENDIF(CMAKE_BUILD_TYPE STREQUAL "Debug")
-ENDIF(MSVC)
+endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+endif(MSVC)
 
-ADD_LIBRARY(NetBox SHARED ${NETBOX_SOURCES})
+add_library(NetBox SHARED ${NETBOX_SOURCES})
 
-IF(MSVC)
-SET_TARGET_PROPERTIES(NetBox
+if(MSVC)
+set_target_properties(NetBox
   PROPERTIES
   COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
-ELSEIF(CMAKE_COMPILER_IS_MINGW)
-SET_TARGET_PROPERTIES(NetBox
+elseif(CMAKE_COMPILER_IS_MINGW)
+set_target_properties(NetBox
   PROPERTIES
   COMPILE_FLAGS "-fpermissive ${CMAKE_CXX_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
-ENDIF(MSVC)
+endif(MSVC)
 
 #-------------------------------------------------------------------------------
 
 #TODO: COMMAND create_ver.py
 
-TARGET_LINK_LIBRARIES(NetBox ${NETBOX_LIBRARIES})
+target_link_libraries(NetBox ${NETBOX_LIBRARIES})
 
-ADD_DEPENDENCIES(NetBox
+add_dependencies(NetBox
   atlmfc
   putty
   zlib
@@ -277,30 +277,31 @@ ADD_DEPENDENCIES(NetBox
   rdestl
 )
 
-STRING(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
+string(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
 
-ADD_CUSTOM_COMMAND(TARGET NetBox
+add_custom_command(TARGET NetBox
   POST_BUILD
   COMMAND if not exist "${NETBOX_PLUGIN_DIR}" ( mkdir "${NETBOX_PLUGIN_DIR}" )
   COMMAND cp -f NetBox.dll ${NETBOX_PLUGIN_DIR}
   COMMAND if exist NetBox.pdb ( cp -f NetBox.pdb ${NETBOX_PLUGIN_DIR} )
+  COMMAND if exist NetBox.map ( cp -f NetBox.map ${NETBOX_PLUGIN_DIR} )
   WORKING_DIRECTORY ${BUILD_DIR}
   VERBATIM
 )
 
-IF(CMAKE_BUILD_TYPE STREQUAL "Release")
-ADD_CUSTOM_COMMAND(TARGET NetBox
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+add_custom_command(TARGET NetBox
   POST_BUILD
   DEPENDS ${BUILD_DIR}\\NetBox.dll
   COMMAND scripts\\make_dist.cmd ${FAR_VERSION} ${CONF}
   WORKING_DIRECTORY ${SRC_ROOT}/NetBox
   VERBATIM
 )
-ENDIF()
+endif()
 
 #-------------------------------------------------------------------------------
 
-ADD_LIBRARY(atlmfc STATIC
+add_library(atlmfc STATIC
   ${LIBS_ROOT}/atlmfc/mfc1.cpp
   ${LIBS_ROOT}/atlmfc/mfc2.cpp
   ${LIBS_ROOT}/atlmfc/mfc3.cpp
@@ -310,25 +311,25 @@ ADD_LIBRARY(atlmfc STATIC
 )
 
 #-------------------------------------------------------------------------------
-SET(ATLMFC_COMPILE_FLAGS "-D_WIN32_WINNT=0x0501 -D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_ -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE -D_AFX_NO_OLE_SUPPORT")
+set(ATLMFC_COMPILE_FLAGS "-D_WIN32_WINNT=0x0501 -D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_ -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE -D_AFX_NO_OLE_SUPPORT")
 
-IF(MSVC)
-SET_TARGET_PROPERTIES(atlmfc
+if(MSVC)
+set_target_properties(atlmfc
   PROPERTIES
   COMPILE_FLAGS "${ATLMFC_COMPILE_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
-ELSEIF(CMAKE_COMPILER_IS_MINGW)
-SET_TARGET_PROPERTIES(atlmfc
+elseif(CMAKE_COMPILER_IS_MINGW)
+set_target_properties(atlmfc
   PROPERTIES
   COMPILE_FLAGS "-Wno-int-to-pointer-cast -Wno-pragmas -fpermissive ${ATLMFC_COMPILE_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
-ENDIF()
+endif()
 
 #-------------------------------------------------------------------------------
 
-ADD_LIBRARY(putty STATIC
+add_library(putty STATIC
   ${LIBS_ROOT}/Putty/CPROXY.C
   ${LIBS_ROOT}/Putty/INT64.C
   ${LIBS_ROOT}/Putty/LOGGING.C
@@ -371,29 +372,48 @@ ADD_LIBRARY(putty STATIC
   ${LIBS_ROOT}/Putty/X11FWD.C
 )
 
-SET(PUTTY_COMPILE_FLAGS "-D_CRTIMP= -DLibrary -DSECURITY_WIN32 -D_MT -DNET_SETUP_DIAGNOSTICS -DNO_SECURITY -U_UNICODE -UUNICODE")
+set(PUTTY_COMPILE_FLAGS "-D_CRTIMP= -DLibrary -DSECURITY_WIN32 -D_MT -DNET_SETUP_DIAGNOSTICS -DNO_SECURITY -U_UNICODE -UUNICODE")
 
-IF(MSVC)
-SET_TARGET_PROPERTIES(putty
+FUNCTION(disable_cxx_options)
+  FOREACH(flag_var
+         CMAKE_CXX_FLAGS CMAKE_C_FLAGS
+         CMAKE_CXX_FLAGS_DEBUG CMAKE_C_FLAGS_DEBUG
+         CMAKE_CXX_FLAGS_RELEASE CMAKE_C_FLAGS_RELEASE
+         CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+     STRING(REPLACE "-TP" "-TC" ${flag_var} "${${flag_var}}")
+     STRING(REPLACE "/DUNICODE" "/UUNICODE" ${flag_var} "${${flag_var}}")
+  ENDFOREACH(flag_var)
+ENDFUNCTION(disable_cxx_options)
+
+FUNCTION(enable_cxx_options)
+  FOREACH(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+         CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+     STRING(REPLACE "/TC" "/TP" ${flag_var} "${${flag_var}}")
+     STRING(REPLACE "-UUNICODE" "-DUNICODE" ${flag_var} "${${flag_var}}")
+  ENDFOREACH(flag_var)
+ENDFUNCTION(enable_cxx_options)
+
+if(MSVC)
+set_target_properties(putty
   PROPERTIES
   COMPILE_FLAGS "/TC ${PUTTY_COMPILE_FLAGS}"
 )
-ELSEIF(CMAKE_COMPILER_IS_MINGW)
-SET_TARGET_PROPERTIES(putty
+elseif(CMAKE_COMPILER_IS_MINGW)
+set_target_properties(putty
   PROPERTIES
   COMPILE_FLAGS "-x c --std=c99 ${PUTTY_COMPILE_FLAGS}"
 )
-ENDIF()
+endif()
 
 #-------------------------------------------------------------------------------
 
-ADD_LIBRARY(tinyxml2 STATIC
+add_library(tinyxml2 STATIC
   ${LIBS_ROOT}/tinyxml2/tinyxml2.cpp
 )
 
 #-------------------------------------------------------------------------------
 
-ADD_LIBRARY(neon STATIC
+add_library(neon STATIC
   ${LIBS_ROOT}/neon/src/ne_alloc.c
   ${LIBS_ROOT}/neon/src/ne_auth.c
   ${LIBS_ROOT}/neon/src/ne_basic.c
@@ -421,25 +441,25 @@ ADD_LIBRARY(neon STATIC
   ${LIBS_ROOT}/neon/src/ne_openssl.c
 )
 
-SET(NEON_COMPILE_FLAGS "-D_CRTIMP= -D_LIB -DNOCRYPT ${LIBNEON_DEFS} ${LIBEXPAT_DEFS}")
+set(NEON_COMPILE_FLAGS "-D_CRTIMP= -D_LIB -DNOCRYPT ${LIBNEON_DEFS} ${LIBEXPAT_DEFS}")
 
-IF(MSVC)
-SET_TARGET_PROPERTIES(neon
+if(MSVC)
+set_target_properties(neon
   PROPERTIES
   COMPILE_FLAGS "/TC ${NEON_COMPILE_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
-ELSEIF(CMAKE_COMPILER_IS_MINGW)
-SET_TARGET_PROPERTIES(neon
+elseif(CMAKE_COMPILER_IS_MINGW)
+set_target_properties(neon
   PROPERTIES
   COMPILE_FLAGS "-x c --std=c99 ${NEON_COMPILE_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
-ENDIF()
+endif()
 
 #-------------------------------------------------------------------------------
 
-ADD_LIBRARY(apr STATIC
+add_library(apr STATIC
   ${LIBS_ROOT}/apr/atomic/win32/apr_atomic.c
   ${LIBS_ROOT}/apr/dso/win32/dso.c
   ${LIBS_ROOT}/apr/file_io/win32/buffer.c
@@ -513,7 +533,7 @@ ADD_LIBRARY(apr STATIC
   ${LIBS_ROOT}/apr/user/win32/userinfo.c
 )
 
-SET_TARGET_PROPERTIES(apr
+set_target_properties(apr
   PROPERTIES
   COMPILE_FLAGS "-D_CRTIMP= -D_LIB -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES -U_UNICODE -UUNICODE"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
@@ -521,7 +541,7 @@ SET_TARGET_PROPERTIES(apr
 
 #-------------------------------------------------------------------------------
 
-ADD_LIBRARY(expat STATIC
+add_library(expat STATIC
   ${LIBS_ROOT}/expat/lib/xmlparse.c
   ${LIBS_ROOT}/expat/lib/xmlrole.c
   ${LIBS_ROOT}/expat/lib/xmltok.c
@@ -529,25 +549,25 @@ ADD_LIBRARY(expat STATIC
   ${LIBS_ROOT}/expat/lib/xmltok_ns.c
 )
 
-SET(EXPAT_COMPILE_FLAGS "-D_CRTIMP= -D_LIB ${LIBEXPAT_DEFS}")
+set(EXPAT_COMPILE_FLAGS "-D_CRTIMP= -D_LIB ${LIBEXPAT_DEFS}")
 
-IF(MSVC)
-SET_TARGET_PROPERTIES(expat
+if(MSVC)
+set_target_properties(expat
   PROPERTIES
   COMPILE_FLAGS "/TC ${EXPAT_COMPILE_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
-ELSEIF(CMAKE_COMPILER_IS_MINGW)
-SET_TARGET_PROPERTIES(expat
+elseif(CMAKE_COMPILER_IS_MINGW)
+set_target_properties(expat
   PROPERTIES
   COMPILE_FLAGS "-x c --std=c99 ${EXPAT_COMPILE_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
-ENDIF()
+endif()
 
 #-------------------------------------------------------------------------------
 
-ADD_LIBRARY(zlib STATIC
+add_library(zlib STATIC
   ${LIBS_ROOT}/zlib/src/adler32.c
   ${LIBS_ROOT}/zlib/src/compress.c
   ${LIBS_ROOT}/zlib/src/crc32.c
@@ -565,7 +585,7 @@ ADD_LIBRARY(zlib STATIC
   ${LIBS_ROOT}/zlib/src/zutil.c
 )
 
-SET_TARGET_PROPERTIES(zlib
+set_target_properties(zlib
   PROPERTIES
   COMPILE_FLAGS "-D_CRTIMP= -D_LIB"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
@@ -573,12 +593,12 @@ SET_TARGET_PROPERTIES(zlib
 
 #-------------------------------------------------------------------------------
 
-ADD_LIBRARY(dlmalloc STATIC
+add_library(dlmalloc STATIC
   ${LIBS_ROOT}/dlmalloc/malloc.c
   ${LIBS_ROOT}/dlmalloc/malloc-2.8.6.h
 )
 
-SET_TARGET_PROPERTIES(dlmalloc
+set_target_properties(dlmalloc
   PROPERTIES
   COMPILE_FLAGS "-D_CRTIMP= -D_LIB ${DLMALLOC_DEFS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
@@ -586,7 +606,7 @@ SET_TARGET_PROPERTIES(dlmalloc
 
 #-------------------------------------------------------------------------------
 
-ADD_LIBRARY(rdestl STATIC
+add_library(rdestl STATIC
   ${LIBS_ROOT}/rdestl/allocator.cpp
   ${LIBS_ROOT}/rdestl/intrusive_list.cpp
   ${LIBS_ROOT}/rdestl/list.cpp
@@ -632,7 +652,7 @@ ADD_LIBRARY(rdestl STATIC
   ${LIBS_ROOT}/rdestl/iterator.h
 )
 
-SET_TARGET_PROPERTIES(rdestl
+set_target_properties(rdestl
   PROPERTIES
   COMPILE_FLAGS ""
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
@@ -640,28 +660,28 @@ SET_TARGET_PROPERTIES(rdestl
 
 #-------------------------------------------------------------------------------
 
-IF(DEFINED OPT_COMPILE_TESTS)
-IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(DEFINED OPT_COMPILE_TESTS)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_DISABLE_ASSERTS")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_DISABLE_ASSERTS")
 
-INCLUDE_DIRECTORIES(
+include_directories(
   ${LIBS_ROOT}/boost
 )
 
-IF(CONF STREQUAL "x64")
-SET(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage/x64)
-ELSE()
-SET(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage)
-ENDIF()
-LINK_DIRECTORIES(${BOOST_LINK_DIR})
+if(CONF STREQUAL "x64")
+set(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage/x64)
+else()
+set(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage)
+endif()
+link_directories(${BOOST_LINK_DIR})
 
 #-------------------------------------------------------
 # target testnetbox_01
 
-SET(TESTNETBOX_01_DIR ${TESTS_ROOT})
+set(TESTNETBOX_01_DIR ${TESTS_ROOT})
 
-SET(TESTNETBOX_01_SOURCES
+set(TESTNETBOX_01_SOURCES
   ${SRC_ROOT}/base/Classes.cpp
   ${SRC_ROOT}/base/Sysutils.cpp
   ${SRC_ROOT}/base/UnicodeString.cpp
@@ -674,28 +694,28 @@ SET(TESTNETBOX_01_SOURCES
   ${SRC_ROOT}/resource/rtlconsts.rc
 )
 
-ADD_EXECUTABLE(testnetbox_01 ${TESTNETBOX_01_SOURCES})
+add_executable(testnetbox_01 ${TESTNETBOX_01_SOURCES})
 
-SET_TARGET_PROPERTIES(testnetbox_01
+set_target_properties(testnetbox_01
   PROPERTIES
   COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
 
-ADD_DEPENDENCIES(testnetbox_01
+add_dependencies(testnetbox_01
   atlmfc
   putty
   tinyxml2
 )
 
-TARGET_LINK_LIBRARIES(testnetbox_01 ${NETBOX_LIBRARIES})
+target_link_libraries(testnetbox_01 ${NETBOX_LIBRARIES})
 
 #-------------------------------------------------------
 # target testnetbox_02
 
-SET(TESTNETBOX_02_DIR ${TESTS_ROOT})
+set(TESTNETBOX_02_DIR ${TESTS_ROOT})
 
-SET(TESTNETBOX_02_SOURCES
+set(TESTNETBOX_02_SOURCES
   ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
   ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
   ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
@@ -705,15 +725,15 @@ SET(TESTNETBOX_02_SOURCES
   ${SRC_ROOT}/resource/rtlconsts.rc
 )
 
-ADD_EXECUTABLE(testnetbox_02 ${TESTNETBOX_02_SOURCES})
+add_executable(testnetbox_02 ${TESTNETBOX_02_SOURCES})
 
-SET_TARGET_PROPERTIES(testnetbox_02
+set_target_properties(testnetbox_02
   PROPERTIES
   COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib"
 )
 
-ADD_DEPENDENCIES(testnetbox_02
+add_dependencies(testnetbox_02
   atlmfc
   putty
   tinyxml2
@@ -723,14 +743,14 @@ ADD_DEPENDENCIES(testnetbox_02
   zlib
 )
 
-TARGET_LINK_LIBRARIES(testnetbox_02 ${NETBOX_LIBRARIES})
+target_link_libraries(testnetbox_02 ${NETBOX_LIBRARIES})
 
 #-------------------------------------------------------
 # target testnetbox_03
 
-SET(TESTNETBOX_03_DIR ${TESTS_ROOT})
+set(TESTNETBOX_03_DIR ${TESTS_ROOT})
 
-SET(TESTNETBOX_03_SOURCES
+set(TESTNETBOX_03_SOURCES
   ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
   ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
   ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
@@ -739,15 +759,15 @@ SET(TESTNETBOX_03_SOURCES
   ${SRC_ROOT}/resource/rtlconsts.rc
 )
 
-ADD_EXECUTABLE(testnetbox_03 ${TESTNETBOX_03_SOURCES})
+add_executable(testnetbox_03 ${TESTNETBOX_03_SOURCES})
 
-SET_TARGET_PROPERTIES(testnetbox_03
+set_target_properties(testnetbox_03
   PROPERTIES
   COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
 
-ADD_DEPENDENCIES(testnetbox_03
+add_dependencies(testnetbox_03
   putty
   tinyxml2
   neon
@@ -756,14 +776,14 @@ ADD_DEPENDENCIES(testnetbox_03
   zlib
 )
 
-TARGET_LINK_LIBRARIES(testnetbox_03 ${NETBOX_LIBRARIES})
+target_link_libraries(testnetbox_03 ${NETBOX_LIBRARIES})
 
 #-------------------------------------------------------
 # target testnetbox_04
 
-SET(TESTNETBOX_04_DIR ${TESTS_ROOT})
+set(TESTNETBOX_04_DIR ${TESTS_ROOT})
 
-SET(TESTNETBOX_04_SOURCES
+set(TESTNETBOX_04_SOURCES
   ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
   ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
   ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
@@ -772,20 +792,20 @@ SET(TESTNETBOX_04_SOURCES
   ${SRC_ROOT}/resource/rtlconsts.rc
 )
 
-ADD_EXECUTABLE(testnetbox_04 ${TESTNETBOX_04_SOURCES})
+add_executable(testnetbox_04 ${TESTNETBOX_04_SOURCES})
 
-SET_TARGET_PROPERTIES(testnetbox_04
+set_target_properties(testnetbox_04
   PROPERTIES
   COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib"
 )
 
-ADD_DEPENDENCIES(testnetbox_04 ${NETBOX_LIBRARIES}
+add_dependencies(testnetbox_04 ${NETBOX_LIBRARIES}
   calculator_dll
 )
 
-TARGET_LINK_LIBRARIES(testnetbox_04 ${NETBOX_LIBRARIES}
+target_link_libraries(testnetbox_04 ${NETBOX_LIBRARIES}
 )
 
-ENDIF(CMAKE_BUILD_TYPE STREQUAL "Debug")
-ENDIF(DEFINED OPT_COMPILE_TESTS)
+endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+endif(DEFINED OPT_COMPILE_TESTS)

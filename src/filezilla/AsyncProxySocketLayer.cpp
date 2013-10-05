@@ -131,6 +131,7 @@ CAsyncProxySocketLayer::CAsyncProxySocketLayer()
 	m_nRecvBufferLen=0;
 	m_nRecvBufferPos=0;
 	m_ProxyData.nProxyType=0;
+	m_ProxyData.nProxyPort=0;
 	m_nProxyPeerIp=0;
 	m_nProxyPeerPort=0;
 	m_pProxyPeerHost = NULL;
@@ -138,6 +139,7 @@ CAsyncProxySocketLayer::CAsyncProxySocketLayer()
 	m_ProxyData.pProxyHost = NULL;
 	m_ProxyData.pProxyUser = NULL;
 	m_ProxyData.pProxyPass = NULL;
+	m_ProxyData.bUseLogon = FALSE;
 	m_pProxyPeerHost = NULL;
 }
 
@@ -701,7 +703,8 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
 	if (m_ProxyData.nProxyType==PROXYTYPE_HTTP11)
 	{
 		ASSERT (m_nProxyOpID==PROXYOP_CONNECT);
-		char buffer[9]={0};
+		char buffer[9];
+		memset(buffer, 0, sizeof(buffer));
 		for(;;)
 		{
 			int numread = ReceiveNext(buffer, m_pStrBuffer?1:8);
