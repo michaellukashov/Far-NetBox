@@ -3390,7 +3390,7 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & FileName,
   ReadFile(RealFileName, File);
   std::auto_ptr<TRemoteFile> FilePtr(File);
   assert(FilePtr.get());
-  if (File->GetIsDirectory() && !File->GetIsSymLink() && AProperties->Recursive)
+  if (FilePtr->GetIsDirectory() && !FilePtr->GetIsSymLink() && AProperties->Recursive)
   {
     try
     {
