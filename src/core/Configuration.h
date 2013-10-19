@@ -147,7 +147,7 @@ public:
   virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   UnicodeString GetFileDescription(const UnicodeString & FileName);
 
-  // TUsage * GetUsage() { return FUsage; };
+  // TUsage * GetUsage() { return FUsage; }
   UnicodeString GetPuttyRegistryStorageKey() const { return FPuttyRegistryStorageKey; }
   UnicodeString GetRandomSeedFile() const { return FRandomSeedFile; }
   bool GetLogging() const { return FLogging; }

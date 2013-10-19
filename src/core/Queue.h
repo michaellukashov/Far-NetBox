@@ -373,7 +373,7 @@ public:
 
   TNotifyEvent & GetOnIdle() { return FOnIdle; }
   void SetOnIdle(TNotifyEvent Value) { FOnIdle = Value; }
-  bool GetCancelling() const { return FCancel; };
+  bool GetCancelling() const { return FCancel; }
 
 protected:
   virtual void ProcessEvent();

@@ -136,7 +136,7 @@ UnicodeString RootKeyToStr(HKEY RootKey)
     else
   if (RootKey == HKEY_DYN_DATA) return L"HKEY_DYN_DATA";
     else
-  {  Abort(); return L""; };
+  {  Abort(); return L""; }
 }
 //---------------------------------------------------------------------------
 UnicodeString BooleanToEngStr(bool B)

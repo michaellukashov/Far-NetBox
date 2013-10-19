@@ -143,8 +143,8 @@ public:
 
   UnicodeString GetModuleName() const;
   TFarDialog * GetTopDialog() const { return FTopDialog; }
-  HINSTANCE GetHandle() const { return FHandle; };
-  uintptr_t GetFarThread() const { return FFarThread; };
+  HINSTANCE GetHandle() const { return FHandle; }
+  uintptr_t GetFarThread() const { return FFarThread; }
   FarStandardFunctions & GetFarStandardFunctions() { return FFarStandardFunctions; }
 
 protected:
@@ -281,12 +281,12 @@ protected:
 
   virtual void HandleException(Exception * E, int OpMode = 0);
 
-  const TFarPanelInfo * GetPanelInfo() const { return GetPanelInfo(0); };
-  TFarPanelInfo * GetPanelInfo() { return GetPanelInfo(0); };
-  const TFarPanelInfo * GetAnotherPanelInfo() const { return GetPanelInfo(1); };
-  TFarPanelInfo * GetAnotherPanelInfo() { return GetPanelInfo(1); };
-  TCriticalSection * GetCriticalSection() const { return FCriticalSection; };
-  TCriticalSection * GetCriticalSection() { return FCriticalSection; };
+  const TFarPanelInfo * GetPanelInfo() const { return GetPanelInfo(0); }
+  TFarPanelInfo * GetPanelInfo() { return GetPanelInfo(0); }
+  const TFarPanelInfo * GetAnotherPanelInfo() const { return GetPanelInfo(1); }
+  TFarPanelInfo * GetAnotherPanelInfo() { return GetPanelInfo(1); }
+  TCriticalSection * GetCriticalSection() const { return FCriticalSection; }
+  TCriticalSection * GetCriticalSection() { return FCriticalSection; }
 
 protected:
   TCriticalSection * FCriticalSection;

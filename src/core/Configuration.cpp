@@ -168,7 +168,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
   ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
-    { SCOPE_EXIT { Storage->CloseSubKey(); }; { BLOCK } ; }
+    { SCOPE_EXIT { Storage->CloseSubKey(); }; { BLOCK } }
 #define KEY(TYPE, NAME) KEYEX(TYPE, NAME, NAME)
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
