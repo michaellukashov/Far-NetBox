@@ -37,13 +37,13 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
   }
   else
   {
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       if (NeedFree)
       {
         FreeLibrary(Module);
       }
-    });
+    };
     {
       HRSRC Rsrc = FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO),
         MAKEINTRESOURCE(VS_FILE_INFO));
@@ -59,10 +59,10 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
         }
         else
         {
-          auto cleanup = finally([&]()
+          SCOPE_EXIT
           {
             FreeResource(Mem);
-          });
+          };
           {
             VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(LockResource(Mem));
             const VS_FIXEDFILEINFO * FixedInfo =

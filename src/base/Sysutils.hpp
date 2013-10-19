@@ -3,6 +3,7 @@
 #define SysutilsH
 
 #include <WinBase.h>
+#include <functional>
 
 #include <Classes.hpp>
 #include <headers.hpp>
@@ -362,18 +363,21 @@ uintptr_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
 uintptr_t inline GetVersionNumber2121() { return MAKEVERSIONNUMBER(2,1,21); }
 uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobalFunctions()->GetStrVersionNumber()); }
 //---------------------------------------------------------------------------
-template<class F>
-class finally_type
+class ScopeExit
 {
 public:
-    explicit finally_type(F f) : function(f) {}
-    ~finally_type() { try { function(); } catch (...) {} }
+    ScopeExit(const std::function<void()>& f) : m_f(f) {}
+    ~ScopeExit() { m_f(); }
+
 private:
-    F function;
+    std::function<void()> m_f;
 };
 
-template<class F>
-finally_type<F> finally(F f) { return finally_type<F>(f); }
+#define _SCOPE_EXIT_NAME(name, suffix) name ## suffix
+#define SCOPE_EXIT_NAME(name, suffix) _SCOPE_EXIT_NAME(name, suffix)
+#define SCOPE_EXIT \
+    std::function<void()> SCOPE_EXIT_NAME(scope_exit_func_, __LINE__); \
+    ScopeExit SCOPE_EXIT_NAME(scope_exit_, __LINE__) = SCOPE_EXIT_NAME(scope_exit_func_, __LINE__) = [&]() /* lambda body here */
 //---------------------------------------------------------------------------
 } // namespace Sysutils
 

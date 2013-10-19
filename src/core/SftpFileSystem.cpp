@@ -1576,10 +1576,10 @@ public:
   {
     void * Token = nullptr;
     bool Result = false;
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       File = static_cast<TRemoteFile *>(Token);
-    });
+    };
     {
       Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_EXTENDED_REPLY, asNo, &Token);
     }
@@ -2025,10 +2025,10 @@ uint32_t TSFTPFileSystem::DownloadBlockSize(
 void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
 {
   BusyStart();
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     BusyEnd();
-  });
+  };
   {
     if (FTerminal->GetLog()->GetLogging())
     {
@@ -3034,7 +3034,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
   }
 
   TSFTPPacket Response(FCodePage);
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     if (FTerminal->GetActive())
     {
@@ -3044,7 +3044,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       // we are not interested in the response, do not wait for it
       ReserveResponse(&Packet, nullptr);
     }
-  });
+  };
   {
     bool isEOF = false;
     int Total = 0;
@@ -3123,10 +3123,10 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         try
         {
           FTerminal->SetExceptionOnFail(true);
-          auto cleanup = finally([&]()
+          SCOPE_EXIT
           {
             FTerminal->SetExceptionOnFail(false);
-          });
+          };
           {
             File = nullptr;
             FTerminal->ReadFile(
@@ -3439,12 +3439,12 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
     FTerminal->FOperationProgress = &Progress; //-V506
 
     TSFTPLoadFilesPropertiesQueue Queue(this, FCodePage);
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       Queue.DisposeSafe();
       FTerminal->FOperationProgress = nullptr;
       Progress.Stop();
-    });
+    };
     {
       static int LoadFilesPropertiesQueueLen = 5;
       if (Queue.Init(LoadFilesPropertiesQueueLen, FileList))
@@ -3505,13 +3505,13 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
         {
           std::auto_ptr<TStrings> SubFileList(new TStringList());
           bool Success = false;
-          auto cleanup = finally([&]()
+          SCOPE_EXIT
           {
             if (FirstLevel)
             {
               OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
             }
-          });
+          };
           {
             OperationProgress->SetFile(File->GetFileName());
 
@@ -3534,10 +3534,10 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
   }
 
   TSFTPCalculateFilesChecksumQueue Queue(this, FCodePage);
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     Queue.DisposeSafe();
-  });
+  };
   {
     static int CalculateFilesChecksumQueueLen = 5;
     if (Queue.Init(CalculateFilesChecksumQueueLen, Alg, FileList))
@@ -3551,13 +3551,13 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
         UnicodeString Checksum;
         TRemoteFile * File = nullptr;
 
-        auto cleanup = finally([&]()
+        SCOPE_EXIT
         {
           if (FirstLevel)
           {
             OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
           }
-        });
+        };
         {
           try
           {
@@ -3606,11 +3606,11 @@ void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
 
   FTerminal->FOperationProgress = &Progress; //-V506
 
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FTerminal->FOperationProgress = nullptr;
     Progress.Stop();
-  });
+  };
   {
     DoCalculateFilesChecksum(Alg, FileList, Checksums, OnCalculatedChecksum,
       &Progress, true);
@@ -3676,11 +3676,11 @@ void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
     assert(!FAvoidBusy);
     FAvoidBusy = true;
 
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FAvoidBusy = false;
       OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
-    });
+    };
     {
       try
       {
@@ -4008,13 +4008,13 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
 
   bool Dir = FLAGSET(OpenParams.LocalFileAttrs, faDirectory);
 
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     if (LocalFileHandle != INVALID_HANDLE_VALUE)
     {
       ::CloseHandle(LocalFileHandle);
     }
-  });
+  };
   {
     OperationProgress->SetFileInProgress();
 
@@ -4219,7 +4219,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
           nullptr, false, FVersion, FUtfStrings);
       }
 
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         if (FTerminal->GetActive())
         {
@@ -4241,7 +4241,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
             DoDeleteFile(OpenParams.RemoteFileName, SSH_FXP_REMOVE);
           }
         }
-      });
+      };
       {
         __int64 DestWriteOffset = 0;
         if (OpenParams.OverwriteMode == omAppend)
@@ -4261,10 +4261,10 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
         }
 
         TSFTPUploadQueue Queue(this, FCodePage);
-        auto cleanup = finally([&]()
+        SCOPE_EXIT
         {
           Queue.DisposeSafe();
-        });
+        };
         {
           Queue.Init(FileName, LocalFileHandle, OperationProgress,
             OpenParams.RemoteFileHandle,
@@ -4726,10 +4726,10 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
       FindAttrs, SearchRec) == 0);
   );
 
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FindClose(SearchRec);
-  });
+  };
   {
     while (FindOK && !OperationProgress->Cancel)
     {
@@ -4795,11 +4795,11 @@ void TSFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
     assert(!FAvoidBusy);
     FAvoidBusy = true;
 
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FAvoidBusy = false;
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-    });
+    };
     {
       UnicodeString TargetDirectory = FullTargetDir;
       UnicodeString FileNamePath = ::ExtractFilePath(File->GetFileName());
@@ -4992,7 +4992,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
     RawByteString RemoteHandle;
     UnicodeString LocalFileName = DestFullName;
     TOverwriteMode OverwriteMode = omOverwrite;
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       if (LocalFileHandle != INVALID_HANDLE_VALUE)
       {
@@ -5017,7 +5017,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         SFTPCloseRemote(RemoteHandle, DestFileName, OperationProgress,
           true, true, nullptr);
       }
-    });
+    };
     {
       if (ResumeAllowed)
       {
@@ -5193,10 +5193,10 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       // at end of this block queue is discarded
       {
         TSFTPDownloadQueue Queue(this, FCodePage);
-        auto cleanup = finally([&]()
+        SCOPE_EXIT
         {
           Queue.DisposeSafe();
-        });
+        };
         {
           TSFTPPacket DataPacket(FCodePage);
 

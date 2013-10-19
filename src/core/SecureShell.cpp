@@ -831,10 +831,10 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
       if (!FFrozen)
       {
         FFrozen = true;
-        auto cleanup = finally([&]()
+        SCOPE_EXIT
         {
           FFrozen = false;
-        });
+        };
         {
           do
           {
@@ -875,10 +875,10 @@ intptr_t TSecureShell::Receive(unsigned char * Buf, intptr_t Length)
     OutPtr = Buf;
     OutLen = Length;
 
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       OutPtr = nullptr;
-    });
+    };
     {
       /*
        * See if the pending-input block contains some of what we
@@ -990,10 +990,10 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
   FWaiting++;
 
   uintptr_t Answer;
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FWaiting--;
-  });
+  };
   {
     TQueryParams Params(qpFatalAbort | qpAllowContinueOnError | qpIgnoreAbort);
     Params.HelpKeyword = HELP_MESSAGE_HOST_IS_NOT_COMMUNICATING;
@@ -1692,10 +1692,10 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     int HandleCount;
     // note that this returns all handles, not only the session-related handles
     HANDLE * Handles = handle_get_events(&HandleCount);
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       sfree(Handles);
-    });
+    };
     {
       Handles = sresize(Handles, static_cast<size_t>(HandleCount + 1), HANDLE);
       Handles[HandleCount] = FSocketEvent;

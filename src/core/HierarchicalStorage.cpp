@@ -943,10 +943,10 @@ void TIniFileStorage::Flush()
   if (FOriginal != nullptr)
   {
     std::auto_ptr<TStrings> Strings(new TStringList);
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       SAFE_DESTROY(FOriginal);
-    });
+    };
     {
       dynamic_cast<TMemIniFile *>(FIniFile)->GetString(Strings.get());
       if (!Strings->Equals(FOriginal))
@@ -977,10 +977,10 @@ void TIniFileStorage::Flush()
         else
         {
           std::auto_ptr<TStream> Stream(new THandleStream(Handle));
-          auto cleanup = finally([&]()
+          SCOPE_EXIT
           {
             ::CloseHandle(Handle);
-          });
+          };
           {
             Strings->SaveToStream(Stream);
           }
@@ -1082,10 +1082,10 @@ void TOptionsIniFile::ReadSection(const UnicodeString & Section, TStrings * Stri
   assert(Section.IsEmpty());
   Strings->BeginUpdate();
 
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     Strings->EndUpdate();
-  });
+  };
   {
     for (intptr_t Index = 0; Index < FOptions->GetCount(); ++Index)
     {

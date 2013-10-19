@@ -668,10 +668,10 @@ void TFTPFileSystem::AnyCommand(const UnicodeString & Command,
 
   assert(FOnCaptureOutput == nullptr);
   FOnCaptureOutput = OutputEvent;
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FOnCaptureOutput = nullptr;
-  });
+  };
   {
     FFileZillaIntf->CustomCommand(Command.c_str());
 
@@ -1063,10 +1063,10 @@ void TFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
     const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(AFilesToCopy->GetObject(Index));
     bool Success = false;
 
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-    });
+    };
     {
       UnicodeString AbsoluteFilePath = AbsolutePath(FileName, false);
       UnicodeString TargetDirectory = FullTargetDir;
@@ -1350,10 +1350,10 @@ void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
 
     FileNameOnly = ExtractFileName(RealFileName, false);
 
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-    });
+    };
     {
       try
       {
@@ -1587,10 +1587,10 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
 
   bool CreateDir = true;
 
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FindClose(SearchRec);
-  });
+  };
   {
     while (FindOK && !OperationProgress->Cancel)
     {
@@ -1637,10 +1637,10 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
     try
     {
       FTerminal->SetExceptionOnFail(true);
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         FTerminal->SetExceptionOnFail(false);
-      });
+      };
       {
         FTerminal->CreateDirectory(DestFullName, &Properties);
       }
@@ -2424,14 +2424,14 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
 
   uintptr_t Reply = 0;
 
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FReply = 0;
     assert(FCommandReply == 0);
     FCommandReply = 0;
     assert(FWaitingForReply);
     FWaitingForReply = false;
-  });
+  };
   {
     // discard up to one reply
     // (it should not happen here that two replies are posted anyway)
@@ -2510,13 +2510,13 @@ uintptr_t TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
 
   uintptr_t Reply = 0;
 
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FReply = 0;
     FCommandReply = 0;
     assert(FWaitingForReply);
     FWaitingForReply = false;
-  });
+  };
   {
     uintptr_t & ReplyToAwait = (Command ? FCommandReply : FReply);
     DoWaitForReply(ReplyToAwait, WantLastCode);
@@ -2562,10 +2562,10 @@ void TFTPFileSystem::GotNonCommandReply(uintptr_t Reply)
 void TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
   const UnicodeString & Error, uintptr_t * Code, TStrings ** Response)
 {
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     ResetReply();
-  });
+  };
   {
     if (FLAGSET(Reply, TFileZillaIntf::REPLY_OK))
     {

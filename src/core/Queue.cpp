@@ -730,13 +730,13 @@ void TTerminalQueue::UpdateStatusForList(
 TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Current)
 {
   std::auto_ptr<TTerminalQueueStatus> Status(new TTerminalQueueStatus());
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     if (Current != nullptr)
     {
       delete Current;
     }
-  });
+  };
   {
     TGuard Guard(FItemsSection);
 
@@ -1408,11 +1408,11 @@ bool TTerminalItem::WaitForUserAction(
 
   TQueueItem::TStatus PrevStatus = FItem->GetStatus();
 
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FUserAction = nullptr;
     FItem->SetStatus(PrevStatus);
-  });
+  };
   {
     FUserAction = UserAction;
 
@@ -1535,11 +1535,11 @@ void TTerminalItem::OperationProgress(
     FPause = false;
     ProgressData.Suspend();
 
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FItem->SetStatus(PrevStatus);
       ProgressData.Resume();
-    });
+    };
     {
       FItem->SetStatus(TQueueItem::qsPaused);
 
@@ -1797,10 +1797,10 @@ bool TQueueItemProxy::ProcessUserAction()
 
   bool Result = false;
   FProcessingUserAction = true;
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FProcessingUserAction = false;
-  });
+  };
   {
     Result = FQueue->ItemProcessUserAction(FQueueItem, nullptr);
   }
@@ -2207,11 +2207,11 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
   FAction = Action;
   try
   {
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FAction = nullptr;
       SAFE_DESTROY(FException);
-    });
+    };
     {
       TriggerEvent();
 
@@ -2306,10 +2306,10 @@ void TTerminalThread::Rethrow(Exception *& Exception)
 {
   if (Exception != nullptr)
   {
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       SAFE_DESTROY(Exception);
-    });
+    };
     {
       RethrowException(Exception);
     }
@@ -2365,11 +2365,11 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     // have to save it as we can go recursive via TQueryParams::TimerEvent,
     // see TTerminalThread::TerminalQueryUser
     TUserAction * PrevUserAction = FUserAction;
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FUserAction = PrevUserAction;
       SAFE_DESTROY(FException);
-    });
+    };
     {
       FUserAction = UserAction;
 

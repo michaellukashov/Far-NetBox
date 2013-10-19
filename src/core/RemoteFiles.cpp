@@ -1318,10 +1318,10 @@ void TRemoteFile::FindLinkedFile()
     GetTerminal()->SetExceptionOnFail(true);
     try
     {
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         GetTerminal()->SetExceptionOnFail(false);
-      });
+      };
       {
         GetTerminal()->ReadSymlink(this, FLinkedFile);
       }
@@ -1718,10 +1718,10 @@ void TRemoteDirectoryCache::Clear()
 {
   TGuard Guard(FSection);
 
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     TStringList::Clear();
-  });
+  };
   {
     for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {

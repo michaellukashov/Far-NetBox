@@ -833,10 +833,10 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
   UnicodeString DirName2 = IncludeTrailingBackslash(DirName);
   if (FindFirstChecked(DirName2 + L"*.*", FindAttrs, SearchRec) == 0)
   {
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FindClose(SearchRec);
-    });
+    };
     {
       do
       {

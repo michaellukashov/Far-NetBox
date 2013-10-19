@@ -79,10 +79,10 @@ void TFarDialog::SetBounds(const TRect & Value)
   if (GetBounds() != Value)
   {
     LockChanges();
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       UnlockChanges();
-    });
+    };
     {
       FBounds = Value;
       if (GetHandle())
@@ -705,14 +705,14 @@ intptr_t TFarDialog::ShowModal()
   TFarDialog * PrevTopDialog = GetFarPlugin()->FTopDialog;
   GetFarPlugin()->FTopDialog = this;
   HANDLE Handle = INVALID_HANDLE_VALUE;
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     GetFarPlugin()->FTopDialog = PrevTopDialog;
     if (Handle != INVALID_HANDLE_VALUE)
     {
       GetFarPlugin()->GetStartupInfo()->DialogFree(Handle);
     }
-  });
+  };
   {
     assert(GetDefaultButton());
     assert(GetDefaultButton()->GetDefault());
@@ -833,10 +833,10 @@ void TFarDialog::ProcessGroup(intptr_t Group, TFarProcessGroupEvent Callback,
   void * Arg)
 {
   LockChanges();
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     UnlockChanges();
-  });
+  };
   {
     for (intptr_t I = 0; I < GetItemCount(); I++)
     {
@@ -893,13 +893,13 @@ void TFarDialog::UnlockChanges()
   FChangesLocked--;
   if (FChangesLocked == 0)
   {
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       if (GetHandle())
       {
         this->SendMessage(DM_ENABLEREDRAW, TRUE, 0);
       }
-    });
+    };
     {
       if (FChangesPending)
       {
@@ -2129,10 +2129,10 @@ void TFarList::Put(intptr_t Index, const UnicodeString & S)
   if ((GetDialogItem() != nullptr) && GetDialogItem()->GetDialog()->GetHandle())
   {
     FNoDialogUpdate = true;
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FNoDialogUpdate = false;
-    });
+    };
     {
       TStringList::SetString(Index, S);
       if (GetUpdateCount() == 0)
@@ -2195,10 +2195,10 @@ void TFarList::Changed()
     if ((GetDialogItem() != nullptr) && GetDialogItem()->GetDialog()->GetHandle())
     {
       GetDialogItem()->GetDialog()->LockChanges();
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         GetDialogItem()->GetDialog()->UnlockChanges();
-      });
+      };
       {
         GetDialogItem()->SendMessage(DM_LISTSET, reinterpret_cast<LONG_PTR>(FListItems));
         if (PrevTopIndex + GetDialogItem()->GetHeight() > GetCount())
