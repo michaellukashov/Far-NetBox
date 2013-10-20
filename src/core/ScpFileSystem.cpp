@@ -2220,7 +2220,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
               FILE_OPERATION_LOOP(FMTLOAD(DELETE_FILE_ERROR, FileName.c_str()),
                 // pass full file name in FileName, in case we are not moving
                 // from current directory
-                FTerminal->DeleteFile(FileName, File, &Params)
+                FTerminal->DeleteFile(FileName, File)
               );
             }
           }
