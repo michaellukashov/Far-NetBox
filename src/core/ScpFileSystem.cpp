@@ -1737,14 +1737,14 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
 
   bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
   std::auto_ptr<TSafeHandleStream> Stream(new TSafeHandleStream(LocalFileHandle));
-  SCOPE_EXIT
   {
-    if (LocalFileHandle != INVALID_HANDLE_VALUE)
+    SCOPE_EXIT
     {
-      ::CloseHandle(LocalFileHandle);
-    }
-  };
-  {
+      if (LocalFileHandle != INVALID_HANDLE_VALUE)
+      {
+        ::CloseHandle(LocalFileHandle);
+      }
+    };
     OperationProgress->SetFileInProgress();
 
     if (Dir)
@@ -2494,15 +2494,15 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
 
             /* TODO 1 : Turn off read-only attr */
 
-            SCOPE_EXIT
             {
-              if (LocalFileHandle != INVALID_HANDLE_VALUE)
+              SCOPE_EXIT
               {
-                ::CloseHandle(LocalFileHandle);
-              }
-              FileStream.reset();
-            };
-            {
+                if (LocalFileHandle != INVALID_HANDLE_VALUE)
+                {
+                  ::CloseHandle(LocalFileHandle);
+                }
+                FileStream.reset();
+              };
               try
               {
                 if (::FileExists(DestFileName))

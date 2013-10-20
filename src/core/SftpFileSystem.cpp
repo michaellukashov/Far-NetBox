@@ -4992,33 +4992,33 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
     RawByteString RemoteHandle;
     UnicodeString LocalFileName = DestFullName;
     TOverwriteMode OverwriteMode = omOverwrite;
-    SCOPE_EXIT
     {
-      if (LocalFileHandle != INVALID_HANDLE_VALUE)
+      SCOPE_EXIT
       {
-        ::CloseHandle(LocalFileHandle);
-      }
-      if (FileStream)
-      {
-        delete FileStream;
-      }
-      if (DeleteLocalFile && (!ResumeAllowed || OperationProgress->LocallyUsed == 0) &&
-          (OverwriteMode == omOverwrite))
-      {
-        FILE_OPERATION_LOOP (FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, LocalFileName.c_str()),
-          THROWOSIFFALSE(Sysutils::DeleteFile(LocalFileName));
-        )
-      }
+        if (LocalFileHandle != INVALID_HANDLE_VALUE)
+        {
+          ::CloseHandle(LocalFileHandle);
+        }
+        if (FileStream)
+        {
+          delete FileStream;
+        }
+        if (DeleteLocalFile && (!ResumeAllowed || OperationProgress->LocallyUsed == 0) &&
+            (OverwriteMode == omOverwrite))
+        {
+          FILE_OPERATION_LOOP (FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, LocalFileName.c_str()),
+            THROWOSIFFALSE(Sysutils::DeleteFile(LocalFileName));
+          )
+        }
 
-      // if the transfer was finished, the file is closed already
-      if (FTerminal->GetActive() && !RemoteHandle.IsEmpty())
-      {
-        // do not wait for response
-        SFTPCloseRemote(RemoteHandle, DestFileName, OperationProgress,
-          true, true, nullptr);
-      }
-    };
-    {
+        // if the transfer was finished, the file is closed already
+        if (FTerminal->GetActive() && !RemoteHandle.IsEmpty())
+        {
+          // do not wait for response
+          SFTPCloseRemote(RemoteHandle, DestFileName, OperationProgress,
+            true, true, nullptr);
+        }
+      };
       if (ResumeAllowed)
       {
         DestPartialFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
