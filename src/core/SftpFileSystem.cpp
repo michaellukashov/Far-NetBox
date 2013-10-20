@@ -4008,14 +4008,14 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
 
   bool Dir = FLAGSET(OpenParams.LocalFileAttrs, faDirectory);
 
-  SCOPE_EXIT
   {
-    if (LocalFileHandle != INVALID_HANDLE_VALUE)
+    SCOPE_EXIT
     {
-      ::CloseHandle(LocalFileHandle);
-    }
-  };
-  {
+      if (LocalFileHandle != INVALID_HANDLE_VALUE)
+      {
+        ::CloseHandle(LocalFileHandle);
+      }
+    };
     OperationProgress->SetFileInProgress();
 
     if (Dir)
