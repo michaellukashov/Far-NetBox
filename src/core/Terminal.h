@@ -315,7 +315,7 @@ public:
   TSessionData * GetSessionData() { return FSessionData; }
   TSessionLog * GetLog() const { return FLog; }
   TSessionLog * GetLog() { return FLog; }
-  TActionLog * GetActionLog() const { return FActionLog; };
+  TActionLog * GetActionLog() const { return FActionLog; }
   const TConfiguration * GetConfiguration() const { return FConfiguration; }
   TConfiguration * GetConfiguration() { return FConfiguration; }
   TSessionStatus GetStatus() const { return FStatus; }

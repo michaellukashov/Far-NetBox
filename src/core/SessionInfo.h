@@ -294,7 +294,7 @@ public:
   void BeginGroup(const UnicodeString & Name);
   void EndGroup();
 
-  UnicodeString GetCurrentFileName() const { return FCurrentFileName; };
+  UnicodeString GetCurrentFileName() const { return FCurrentFileName; }
   bool GetEnabled() const { return FEnabled; }
 
   UnicodeString GetLogFileName();

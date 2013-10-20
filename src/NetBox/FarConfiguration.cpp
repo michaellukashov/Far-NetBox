@@ -94,7 +94,7 @@ void TFarConfiguration::Saved()
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
   { \
-    auto cleanup = finally([&]() { Storage->CloseSubKey(); }); \
+    SCOPE_EXIT { Storage->CloseSubKey(); }; \
     BLOCK \
   }
 #define REGCONFIG(CANCREATE) \
@@ -162,10 +162,10 @@ void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
 void TFarConfiguration::Load()
 {
   FForceInheritance = true;
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FForceInheritance = false;
-  });
+  };
   {
     TGUIConfiguration::Load();
   }
@@ -174,10 +174,10 @@ void TFarConfiguration::Load()
 void TFarConfiguration::Save(bool All, bool Explicit)
 {
   FForceInheritance = true;
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FForceInheritance = false;
-  });
+  };
   {
     TGUIConfiguration::DoSave(All, Explicit);
   }

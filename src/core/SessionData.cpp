@@ -1193,10 +1193,10 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
 {
   if (Storage->OpenSubKey(GetInternalStorageKey(), true))
   {
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       Storage->CloseSubKey();
-    });
+    };
     {
       RecryptPasswords();
 

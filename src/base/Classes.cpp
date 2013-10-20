@@ -412,10 +412,10 @@ TStrings::~TStrings()
 void TStrings::SetTextStr(const UnicodeString & Text)
 {
   BeginUpdate();
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     EndUpdate();
-  });
+  };
   {
     Clear();
     const wchar_t * P = Text.c_str();
@@ -446,11 +446,11 @@ UnicodeString TStrings::GetCommaText() const
   FDelimiter = L',';
   FQuoteChar = L'"';
   UnicodeString Result;
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FDelimiter = LOldDelimiter;
     FQuoteChar = LOldQuoteChar;
-  });
+  };
   {
     Result = GetDelimitedText();
   }
@@ -509,10 +509,10 @@ void tokenize(const std::wstring & str, ContainerT & tokens,
 void TStrings::SetDelimitedText(const UnicodeString & Value)
 {
   BeginUpdate();
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     EndUpdate();
-  });
+  };
   {
     Clear();
     rde::vector<std::wstring> Lines;
@@ -538,10 +538,10 @@ void TStrings::Assign(const TPersistent * Source)
   if (Strings != nullptr)
   {
     BeginUpdate();
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       EndUpdate();
-    });
+    };
     {
       Clear();
       assert(Strings);
@@ -678,10 +678,10 @@ void TStrings::Move(intptr_t CurIndex, intptr_t NewIndex)
   if (CurIndex != NewIndex)
   {
     BeginUpdate();
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       EndUpdate();
-    });
+    };
     {
       UnicodeString TempString = GetString(CurIndex);
       TObject * TempObject = GetObject(CurIndex);
@@ -778,10 +778,10 @@ void TStrings::SetValue(const UnicodeString & Name, const UnicodeString & Value)
 void TStrings::AddStrings(const TStrings * Strings)
 {
   BeginUpdate();
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     EndUpdate();
-  });
+  };
   {
     for (intptr_t I = 0; I < Strings->GetCount(); I++)
     {
@@ -1819,11 +1819,11 @@ bool TRegistry::DeleteKey(const UnicodeString & Key)
   HKEY DeleteKey = GetKey(Key);
   if (DeleteKey != 0)
   {
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       SetCurrentKey(OldKey);
       RegCloseKey(DeleteKey);
-    });
+    };
     {
       SetCurrentKey(DeleteKey);
       TRegKeyInfo Info;
@@ -1857,10 +1857,10 @@ bool TRegistry::KeyExists(const UnicodeString & Key)
 {
   bool Result = false;
   unsigned OldAccess = FAccess;
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FAccess = OldAccess;
-  });
+  };
   {
     FAccess = STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS;
     HKEY TempKey = GetKey(Key);

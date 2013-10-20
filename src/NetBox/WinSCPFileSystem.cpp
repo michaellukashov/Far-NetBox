@@ -382,10 +382,10 @@ TWinSCPPlugin * TWinSCPFileSystem::WinSCPPlugin()
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::Close()
 {
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     TCustomFarFileSystem::Close();
-  });
+  };
   {
     SAFE_DESTROY(FKeepaliveThread);
 
@@ -457,10 +457,10 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     // seems to have no effect here.
     // Do not know if OPM_SILENT is even used.
     FNoProgress = FLAGSET(OpMode, OPM_FIND) || FLAGSET(OpMode, OPM_SILENT);
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FNoProgress = false;
-    });
+    };
     {
       if (FReloadDirectory && FTerminal->GetActive())
       {
@@ -541,10 +541,10 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
         !OppositeFileSystem->FLoadingSessionList)
     {
       FLoadingSessionList = true;
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         FLoadingSessionList = false;
-      });
+      };
       {
         UpdatePanel(false, true);
         RedrawPanel(true);
@@ -630,13 +630,13 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
     Data = new TSessionData(L"");
   }
 
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     if (NewData || FillInConnect)
     {
       delete Data;
     }
-  });
+  };
   {
     EditConnectSession(Data, Edit, NewData, FillInConnect);
   }
@@ -842,7 +842,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString & Command)
       EnsureCommandSessionFallback(fcAnyCommand))
   {
     FTerminal->BeginTransaction();
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       if (FTerminal->GetActive())
       {
@@ -854,17 +854,17 @@ bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString & Command)
         RedrawPanel();
         RedrawPanel(true);
       }
-    });
+    };
     {
       FarControl(FCTL_SETCMDLINE, 0, reinterpret_cast<void *>(L""));
       WinSCPPlugin()->ShowConsoleTitle(Command);
 
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         WinSCPPlugin()->ScrollTerminalScreen(1);
         WinSCPPlugin()->SaveTerminalScreen();
         WinSCPPlugin()->ClearConsoleTitle();
-      });
+      };
       {
         WinSCPPlugin()->ShowTerminalScreen();
 
@@ -1063,10 +1063,10 @@ void TWinSCPFileSystem::CreateLink()
       assert(File->GetFileName() == FileName);
       intptr_t Params = dfNoRecursive;
       GetTerminal()->SetExceptionOnFail(true);
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         GetTerminal()->SetExceptionOnFail(false);
-      });
+      };
       {
         GetTerminal()->DeleteFile(L"", File, &Params);
       }
@@ -1093,10 +1093,10 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(
   }
 
   FTerminal->SetExceptionOnFail(true);
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FTerminal->SetExceptionOnFail(false);
-  });
+  };
   {
     try
     {
@@ -1138,14 +1138,14 @@ void TWinSCPFileSystem::ApplyCommand()
 
           Command = InteractiveCustomCommand.Complete(Command, false);
 
-          auto cleanup = finally([&]()
+          SCOPE_EXIT
           {
             GetPanelInfo()->ApplySelection();
             if (UpdatePanel())
             {
               RedrawPanel();
             }
-          });
+          };
           {
             TCaptureOutputEvent OutputEvent = nullptr;
             FOutputLog = false;
@@ -1163,7 +1163,7 @@ void TWinSCPFileSystem::ApplyCommand()
               FCapturedLog = new TStringList();
               OutputEvent = MAKE_CALLBACK(TWinSCPFileSystem::TerminalCaptureLog, this);
             }
-            auto cleanup = finally([&]()
+            SCOPE_EXIT
             {
               if (FLAGSET(Params, ccShowResults))
               {
@@ -1177,7 +1177,7 @@ void TWinSCPFileSystem::ApplyCommand()
                 WinSCPPlugin()->FarCopyToClipboard(FCapturedLog);
                 SAFE_DESTROY(FCapturedLog);
               }
-            });
+            };
             {
               if (FLAGSET(Params, ccShowResults))
               {
@@ -1234,10 +1234,10 @@ void TWinSCPFileSystem::ApplyCommand()
 
           TemporarilyDownloadFiles(FileList.get(), GetGUIConfiguration()->GetDefaultCopyParam(), TempDir);
 
-          auto cleanup = finally([&]()
+          SCOPE_EXIT
           {
             RecursiveDeleteFile(ExcludeTrailingBackslash(TempDir), false);
-          });
+          };
           {
             RemoteFileList.reset(new TStringList());
 
@@ -1252,10 +1252,10 @@ void TWinSCPFileSystem::ApplyCommand()
             TFileOperationProgressType Progress(MAKE_CALLBACK(TWinSCPFileSystem::OperationProgress, this), MAKE_CALLBACK(TWinSCPFileSystem::OperationFinished, this));
 
             Progress.Start(foCustomCommand, osRemote, static_cast<intptr_t>(FileListCommand ? 1 : FileList->GetCount()));
-            auto cleanup = finally([&]()
+            SCOPE_EXIT
             {
               Progress.Stop();
-            });
+            };
             {
               if (FileListCommand)
               {
@@ -1348,7 +1348,7 @@ void TWinSCPFileSystem::Synchronize(const UnicodeString & LocalDirectory,
   TSynchronizeOptions * Options)
 {
   TSynchronizeChecklist * AChecklist = nullptr;
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     if (Checklist == nullptr)
     {
@@ -1358,17 +1358,17 @@ void TWinSCPFileSystem::Synchronize(const UnicodeString & LocalDirectory,
     {
       *Checklist = AChecklist;
     }
-  });
+  };
   {
     WinSCPPlugin()->SaveScreen(FSynchronizationSaveScreenHandle);
     WinSCPPlugin()->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_COMPARE_TITLE));
     FSynchronizationStart = Now();
     FSynchronizationCompare = true;
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       WinSCPPlugin()->ClearConsoleTitle();
       WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
-    });
+    };
     {
       AChecklist = FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
         Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
@@ -1380,11 +1380,11 @@ void TWinSCPFileSystem::Synchronize(const UnicodeString & LocalDirectory,
     FSynchronizationStart = Now();
     FSynchronizationCompare = false;
     {
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         WinSCPPlugin()->ClearConsoleTitle();
         WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
-      });
+      };
       {
         FTerminal->SynchronizeApply(AChecklist, LocalDirectory, RemoteDirectory,
           &CopyParam, Params | TTerminal::spNoConfirmation,
@@ -1458,23 +1458,23 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
     }
 
     std::auto_ptr<TSynchronizeChecklist> Checklist(nullptr);
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       if (UpdatePanel())
       {
         RedrawPanel();
       }
-    });
+    };
     {
       WinSCPPlugin()->SaveScreen(FSynchronizationSaveScreenHandle);
       WinSCPPlugin()->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_COMPARE_TITLE));
       FSynchronizationStart = Now();
       FSynchronizationCompare = true;
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         WinSCPPlugin()->ClearConsoleTitle();
         WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
-      });
+      };
       {
         Checklist.reset(FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
           Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
@@ -1498,11 +1498,11 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
         WinSCPPlugin()->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_TITLE));
         FSynchronizationStart = Now();
         FSynchronizationCompare = false;
-        auto cleanup = finally([&]()
+        SCOPE_EXIT
         {
           WinSCPPlugin()->ClearConsoleTitle();
           WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
-        });
+        };
         {
           FTerminal->SynchronizeApply(Checklist.get(), LocalDirectory, RemoteDirectory,
             &CopyParam, Params | TTerminal::spNoConfirmation,
@@ -1583,7 +1583,7 @@ void TWinSCPFileSystem::Synchronize()
   assert(FSynchronizeController == nullptr);
   FSynchronizeController = &Controller;
 
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FSynchronizeController = nullptr;
     // plugin might have been closed during some synchronization already
@@ -1594,7 +1594,7 @@ void TWinSCPFileSystem::Synchronize()
         RedrawPanel();
       }
     }
-  });
+  };
   {
     bool SaveSettings = false;
     TCopyParamType CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
@@ -1727,14 +1727,14 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
         UnicodeString FileMask = L"*.*";
         if (RemoteTransferDialog(FileList.get(), Target, FileMask, Move))
         {
-          auto cleanup = finally([&]()
+          SCOPE_EXIT
           {
             GetPanelInfo()->ApplySelection();
             if (UpdatePanel())
             {
               RedrawPanel();
             }
-          });
+          };
           {
             if (Move)
             {
@@ -1764,13 +1764,13 @@ void TWinSCPFileSystem::RenameFile()
     UnicodeString NewName = File->GetFileName();
     if (RenameFileDialog(File, NewName))
     {
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         if (UpdatePanel())
         {
           RedrawPanel();
         }
-      });
+      };
       {
         GetTerminal()->RenameFile(File, NewName, true);
       }
@@ -1823,14 +1823,14 @@ void TWinSCPFileSystem::FileProperties()
       {
         NewProperties = TRemoteProperties::ChangedProperties(CurrentProperties,
           NewProperties);
-        auto cleanup = finally([&]()
+        SCOPE_EXIT
         {
           GetPanelInfo()->ApplySelection();
           if (UpdatePanel())
           {
             RedrawPanel();
           }
-        });
+        };
         {
           FTerminal->ChangeFilesProperties(FileList.get(), &NewProperties);
         }
@@ -2148,11 +2148,11 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
     else
     {
       bool Result = false;
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         // Result = SetDirectoryEx(Dir, OpMode);
         FSavedFindFolder = "";
-      });
+      };
       {
         Result = SetDirectoryEx(FSavedFindFolder, OpMode);
       }
@@ -2184,7 +2184,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
         WinSCPPlugin()->ShowConsoleTitle(GetMsg(CHANGING_DIRECTORY_TITLE));
       }
       FTerminal->SetExceptionOnFail(true);
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         if (FTerminal)
         {
@@ -2195,7 +2195,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
           WinSCPPlugin()->ClearConsoleTitle();
         }
         FNoProgress = false;
-      });
+      };
       {
         if (Dir == L"\\")
         {
@@ -2308,10 +2308,10 @@ intptr_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int OpMode)
       }
 
       WinSCPPlugin()->ShowConsoleTitle(GetMsg(CREATING_FOLDER));
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         WinSCPPlugin()->ClearConsoleTitle();
-      });
+      };
       {
         FTerminal->CreateDirectory(Name, &Properties);
       }
@@ -2405,11 +2405,11 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
   {
     FFileList = CreateFileList(PanelItems, osRemote);
     FPanelItems = PanelItems;
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FPanelItems = nullptr;
       SAFE_DESTROY(FFileList);
-    });
+    };
     {
       UnicodeString Query;
       bool Recycle = FTerminal->GetSessionData()->GetDeleteToRecycleBin() &&
@@ -2466,11 +2466,11 @@ intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
   if (Connected())
   {
     FFileList = CreateFileList(PanelItems, osRemote);
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FPanelItems = nullptr;
       SAFE_DESTROY(FFileList);
-    });
+    };
     {
       Result = GetFilesRemote(PanelItems, Move, DestPath, OpMode);
     }
@@ -2658,10 +2658,10 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
     // moreover we may upload the file under name that does not exist in
     // remote panel
     FNoProgressFinish = Edit;
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FNoProgressFinish = false;
-    });
+    };
     {
       // these parameters are known only after transfer dialog
       Params |=
@@ -2685,11 +2685,11 @@ intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int 
   if (Connected())
   {
     FFileList = CreateFileList(PanelItems, osLocal);
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FPanelItems = nullptr;
       SAFE_DESTROY(FFileList);
-    });
+    };
     {
       FPanelItems = PanelItems;
 
@@ -3700,10 +3700,10 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
   if (!ProgressData.Suspended)
   {
     ProgressData.Suspend();
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       ProgressData.Resume();
-    });
+    };
     {
       TCancelStatus ACancel;
       uintptr_t Result;
@@ -3756,11 +3756,11 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
 
   std::auto_ptr<TRemoteFile> File(new TRemoteFile());
   File->SetFileName(RealFileName);
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FTerminal->SetAutoReadDirectory(PrevAutoReadDirectory);
     SAFE_DESTROY(FFileList);
-  });
+  };
   {
     FFileList->AddObject(FileName, File.get());
     UploadFiles(false, 0, true, DestPath);
@@ -4103,10 +4103,10 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     std::auto_ptr<TStrings> FileList(new TStringList());
     assert(!FNoProgressFinish);
     FNoProgressFinish = true;
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FNoProgressFinish = false;
-    });
+    };
     {
       FileList->AddObject(FullFileName, FileDuplicate.get());
       TemporarilyDownloadFiles(FileList.get(), CopyParam, TempDir);

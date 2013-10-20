@@ -136,7 +136,7 @@ UnicodeString RootKeyToStr(HKEY RootKey)
     else
   if (RootKey == HKEY_DYN_DATA) return L"HKEY_DYN_DATA";
     else
-  {  Abort(); return L""; };
+  {  Abort(); return L""; }
 }
 //---------------------------------------------------------------------------
 UnicodeString BooleanToEngStr(bool B)
@@ -833,10 +833,10 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
   UnicodeString DirName2 = IncludeTrailingBackslash(DirName);
   if (FindFirstChecked(DirName2 + L"*.*", FindAttrs, SearchRec) == 0)
   {
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FindClose(SearchRec);
-    });
+    };
     {
       do
       {

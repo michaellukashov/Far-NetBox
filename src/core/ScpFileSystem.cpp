@@ -431,10 +431,10 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
   {
     UnicodeString UName;
     FTerminal->SetExceptionOnFail(true);
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FTerminal->SetExceptionOnFail(false);
-    });
+    };
     {
       try
       {
@@ -668,10 +668,10 @@ void TSCPFileSystem::SkipFirstLine()
 //---------------------------------------------------------------------------
 void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cmd)
 {
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FProcessingCommand = false;
-  });
+  };
   {
     if (Params & coWaitForLastLine)
     {
@@ -746,13 +746,13 @@ void TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, intptr_t Params,
   {
     Busy(true);
   }
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     if (FTerminal->GetUseBusyCursor())
     {
       Busy(false);
     }
-  });
+  };
   {
     SendCommand(Cmd);
 
@@ -1371,11 +1371,11 @@ void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
     FOnCaptureOutput = OutputEvent;
   }
 
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FOnCaptureOutput = nullptr;
     FSecureShell->SetOnCaptureOutput(nullptr);
-  });
+  };
   {
     ExecCommand2(fsAnyCommand, ecDefault | ecIgnoreWarnings, Command.c_str());
   }
@@ -1523,7 +1523,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     Options.c_str(), DelimitStr(UnixExcludeTrailingBackslash(TargetDir)).c_str()));
   SkipFirstLine();
 
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     // Tell remote side, that we're done.
     if (FTerminal->GetActive())
@@ -1553,7 +1553,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         FTerminal->GetLog()->AddException(&E);
       }
     }
-  });
+  };
   {
     try
     {
@@ -1737,14 +1737,14 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
 
   bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
   std::auto_ptr<TSafeHandleStream> Stream(new TSafeHandleStream(LocalFileHandle));
-  auto cleanup = finally([&]()
   {
-    if (LocalFileHandle != INVALID_HANDLE_VALUE)
+    SCOPE_EXIT
     {
-      ::CloseHandle(LocalFileHandle);
-    }
-  });
-  {
+      if (LocalFileHandle != INVALID_HANDLE_VALUE)
+      {
+        ::CloseHandle(LocalFileHandle);
+      }
+    };
     OperationProgress->SetFileInProgress();
 
     if (Dir)
@@ -2034,7 +2034,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   FSecureShell->SendLine(Buf);
   SCPResponse();
 
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     if (FTerminal->GetActive())
     {
@@ -2043,7 +2043,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
       FSecureShell->SendLine(L"E");
       SCPResponse();
     }
-  });
+  };
   {
     DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     TSearchRec SearchRec;
@@ -2055,10 +2055,10 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
         FindAttrs, SearchRec) == 0;
     );
 
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FindClose(SearchRec);
-    });
+    };
     {
       while (FindOK && !OperationProgress->Cancel)
       {
@@ -2137,7 +2137,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
     L"\"%s\"", FilesToCopy->GetCount(), TargetDir.c_str()));
   FTerminal->LogEvent(CopyParam->GetLogStr());
 
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     // In case that copying doesn't cause fatal error (ie. connection is
     // still active) but wasn't successful (exception or user termination)
@@ -2165,7 +2165,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
       }
       ReadCommandOutput(ECParams);
     }
-  });
+  };
   {
     for (intptr_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; ++IFile)
@@ -2212,15 +2212,15 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
           try
           {
             FTerminal->SetExceptionOnFail(true);
-            auto cleanup = finally([&]()
+            SCOPE_EXIT
             {
               FTerminal->SetExceptionOnFail(false);
-            });
+            };
             {
               FILE_OPERATION_LOOP(FMTLOAD(DELETE_FILE_ERROR, FileName.c_str()),
                 // pass full file name in FileName, in case we are not moving
                 // from current directory
-                FTerminal->DeleteFile(FileName, File, &Params)
+                FTerminal->DeleteFile(FileName, File)
               );
             }
           }
@@ -2494,15 +2494,15 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
 
             /* TODO 1 : Turn off read-only attr */
 
-            auto cleanup = finally([&]()
             {
-              if (LocalFileHandle != INVALID_HANDLE_VALUE)
+              SCOPE_EXIT
               {
-                ::CloseHandle(LocalFileHandle);
-              }
-              FileStream.reset();
-            });
-            {
+                if (LocalFileHandle != INVALID_HANDLE_VALUE)
+                {
+                  ::CloseHandle(LocalFileHandle);
+                }
+                FileStream.reset();
+              };
               try
               {
                 if (::FileExists(DestFileName))

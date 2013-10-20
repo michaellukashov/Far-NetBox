@@ -506,10 +506,10 @@ bool HasGSSAPI()
     Config cfg;
     memset(&cfg, 0, sizeof(cfg));
     ssh_gss_liblist * List = ssh_gss_setup(&cfg);
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       ssh_gss_cleanup(List);
-    });
+    };
     {
       for (intptr_t Index = 0; (has <= 0) && (Index < List->nlibraries); ++Index)
       {

@@ -701,10 +701,10 @@ void TTerminal::Open()
     DoInformation(L"", true, 1);
     try
     {
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         DoInformation(L"", true, 0);
-      });
+      };
       InternalTryOpen();
     }
     catch (EFatal & E)
@@ -745,13 +745,13 @@ void TTerminal::InternalTryOpen()
     ResetConnection();
     FStatus = ssOpening;
 
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       if (FSessionData->GetTunnel())
       {
         FSessionData->RollbackTunnel();
       }
-    });
+    };
     InternalDoTryOpen();
 
     if (GetSessionData()->GetCacheDirectoryChanges())
@@ -867,10 +867,10 @@ void TTerminal::InitFileSystem()
     else
     {
       assert(FSecureShell == nullptr);
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         SAFE_DESTROY(FSecureShell);
-      });
+      };
       {
         FSecureShell = new TSecureShell(this, FSessionData, GetLog(), FConfiguration);
         try
@@ -1003,10 +1003,10 @@ void TTerminal::OpenTunnel()
     FTunnel = new TSecureShell(FTunnelUI, FTunnelData, FTunnelLog, FConfiguration);
 
     FTunnelOpening = true;
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FTunnelOpening = false;
-    });
+    };
     {
       FTunnel->Open();
     }
@@ -1061,7 +1061,7 @@ void TTerminal::Reopen(intptr_t Params)
   // but it can happen, e.g. when we are downloading file to execute it.
   // however I'm not sure why we mind having exception-on-fail enabled here
   Integer PrevExceptionOnFail = FExceptionOnFail;
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     GetSessionData()->SetRemoteDirectory(PrevRemoteDirectory);
     GetSessionData()->SetFSProtocol(OrigFSProtocol);
@@ -1070,7 +1070,7 @@ void TTerminal::Reopen(intptr_t Params)
     FReadDirectoryPending = PrevReadDirectoryPending;
     FSuspendTransaction = false;
     FExceptionOnFail = PrevExceptionOnFail;
-  });
+  };
   {
     FReadCurrentDirectoryPending = false;
     FReadDirectoryPending = false;
@@ -1837,11 +1837,11 @@ void TTerminal::EndTransaction()
   {
     if (FInTransaction == 0)
     {
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         FReadCurrentDirectoryPending = false;
         FReadDirectoryPending = false;
-      });
+      };
       {
         if (FReadCurrentDirectoryPending)
         {
@@ -2348,10 +2348,10 @@ void TTerminal::DoStartup()
 {
   LogEvent(L"Doing startup conversation with host.");
   BeginTransaction();
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     EndTransaction();
-  });
+  };
   {
     DoInformation(LoadStr(STATUS_STARTUP), true);
 
@@ -2428,10 +2428,10 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     else
     {
       DoStartReadDirectory();
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         DoReadDirectory(ReloadOnly);
-      });
+      };
       {
         LoadedFromCache = FDirectoryCache->GetFileList(GetCurrentDirectory(), FFiles);
       }
@@ -2457,7 +2457,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     try
     {
       TRemoteDirectory * Files = new TRemoteDirectory(this, FFiles);
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         DoReadDirectoryProgress(-1, Cancel);
         FReadingCurrentDirectory = false;
@@ -2476,7 +2476,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
             DirectoryLoaded(FFiles);
           }
         }
-      });
+      };
       {
         Files->SetDirectory(GetCurrentDirectory());
         CustomReadDirectory(Files);
@@ -2612,10 +2612,10 @@ TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & Direct
       FileList->SetDirectory(Directory);
 
       SetExceptionOnFail(true);
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         SetExceptionOnFail(false);
-      });
+      };
       {
         ReadDirectory(FileList.get());
       }
@@ -2636,10 +2636,10 @@ void TTerminal::ProcessDirectory(const UnicodeString & DirName,
   if (IgnoreErrors)
   {
     SetExceptionOnFail(true);
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       SetExceptionOnFail(false);
-    });
+    };
     {
       try
       {
@@ -2733,10 +2733,10 @@ bool TTerminal::FileExists(const UnicodeString & FileName, TRemoteFile ** AFile)
   try
   {
     SetExceptionOnFail(true);
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       SetExceptionOnFail(false);
-    });
+    };
     {
       ReadFile(FileName, File);
     }
@@ -2787,24 +2787,24 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
 
     FOperationProgress = &Progress; //-V506
     TFileOperationProgressType * OperationProgress(&Progress);
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FOperationProgress = nullptr;
       Progress.Stop();
-    });
+    };
     {
       if (Side == osRemote)
       {
         BeginTransaction();
       }
 
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         if (Side == osRemote)
         {
           EndTransaction();
         }
-      });
+      };
       {
         intptr_t Index = 0;
         UnicodeString FileName;
@@ -2814,10 +2814,10 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
           FileName = FileList->GetString(Index);
           try
           {
-            auto cleanup = finally([&]()
+            SCOPE_EXIT
             {
               Progress.Finish(FileName, Success, OnceDoneOperation);
-            });
+            };
             {
               Success = false;
               if (!Ex)
@@ -3474,7 +3474,7 @@ bool TTerminal::MoveFiles(TStrings * FileList, const UnicodeString & Target,
   DirectoryModified(Target, true);
   bool Result = false;
   BeginTransaction();
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     if (GetActive())
     {
@@ -3515,7 +3515,7 @@ bool TTerminal::MoveFiles(TStrings * FileList, const UnicodeString & Target,
       }
     }
     EndTransaction();
-  });
+  };
   {
     Result = ProcessFiles(FileList, foRemoteMove, MAKE_CALLBACK(TTerminal::MoveFile, this), &Params);
   }
@@ -4164,11 +4164,11 @@ void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   TFileOperationProgressType OperationProgress(MAKE_CALLBACK(TTerminal::DoProgress, this), MAKE_CALLBACK(TTerminal::DoFinished, this));
   TOnceDoneOperation OnceDoneOperation = odoIdle;
   OperationProgress.Start(foCalculateSize, osLocal, FileList->GetCount());
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FOperationProgress = nullptr;
     OperationProgress.Stop();
-  });
+  };
   {
     TCalculateSizeParams Params;
     Params.Size = 0;
@@ -4334,10 +4334,10 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
     DoSynchronizeProgress(Data, true);
   }
 
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     Data.DeleteLocalFileList();
-  });
+  };
   {
     bool Found = false;
     TSearchRec SearchRec;
@@ -4352,10 +4352,10 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
 
     if (Found)
     {
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         FindClose(SearchRec);
-      });
+      };
       {
         UnicodeString FileName;
         while (Found)
@@ -4719,10 +4719,10 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
 
   BeginTransaction();
 
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     EndTransaction();
-  });
+  };
   {
     intptr_t IIndex = 0;
     while (IIndex < Checklist->GetCount())
@@ -4964,10 +4964,10 @@ void TTerminal::DoFilesFind(const UnicodeString & Directory, TFilesFindParams & 
     // of the directory listing, so we at least reset the handler in
     // FileFind
     FOnFindingFile = Params.OnFindingFile;
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FOnFindingFile = nullptr;
-    });
+    };
     ProcessDirectory(Directory, MAKE_CALLBACK(TTerminal::FileFind, this), &Params, false, true);
   }
 }
@@ -5083,11 +5083,11 @@ bool TTerminal::CopyToRemote(TStrings * AFilesToCopy,
       AFilesToCopy->GetCount(), (Params & cpTemporary) > 0, TargetDir, CopyParam->GetCPSLimit());
 
     FOperationProgress = &OperationProgress; //-V506
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       OperationProgress.Stop();
       FOperationProgress = nullptr;
-    });
+    };
     {
       if (CopyParam->GetCalculateSize())
       {
@@ -5096,14 +5096,14 @@ bool TTerminal::CopyToRemote(TStrings * AFilesToCopy,
 
       UnicodeString UnlockedTargetDir = TranslateLockedPath(TargetDir, false);
       BeginTransaction();
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         if (GetActive())
         {
           ReactOnCommand(fsCopyToRemote);
         }
         EndTransaction();
-      });
+      };
       {
         if (GetLog()->GetLogging())
         {
@@ -5159,12 +5159,12 @@ bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
   }
 
   BeginTransaction();
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     // If session is still active (no fatal error) we reload directory
     // by calling EndTransaction
     EndTransaction();
-  });
+  };
   {
     __int64 TotalSize = 0;
     bool TotalSizeKnown = false;
@@ -5173,10 +5173,10 @@ bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
     if (CopyParam->GetCalculateSize())
     {
       SetExceptionOnFail(true);
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         SetExceptionOnFail(false);
-      });
+      };
       {
         // dirty trick: when moving, do not pass copy param to avoid exclude mask
         CalculateFilesSize(AFilesToCopy, TotalSize, csIgnoreErrors,
@@ -5189,11 +5189,11 @@ bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
       AFilesToCopy->GetCount(), (Params & cpTemporary) != 0, TargetDir, CopyParam->GetCPSLimit());
 
     FOperationProgress = &OperationProgress;
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       FOperationProgress = nullptr;
       OperationProgress.Stop();
-    });
+    };
     {
       if (TotalSizeKnown)
       {
@@ -5202,13 +5202,13 @@ bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
 
       try
       {
-        auto cleanup = finally([&]()
+        SCOPE_EXIT
         {
           if (GetActive())
           {
             ReactOnCommand(fsCopyToLocal);
           }
-        });
+        };
         {
           FFileSystem->CopyToLocal(AFilesToCopy, TargetDir, CopyParam, Params,
             &OperationProgress, OnceDoneOperation);

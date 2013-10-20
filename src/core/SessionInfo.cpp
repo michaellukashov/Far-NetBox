@@ -718,11 +718,11 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         TGuard Guard(FCriticalSection);
 
         BeginUpdate();
-        auto cleanup = finally([&]()
+        SCOPE_EXIT
         {
           DeleteUnnecessary();
           EndUpdate();
-        });
+        };
         {
           DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
         }
@@ -833,10 +833,10 @@ void TSessionLog::StateChange()
 void TSessionLog::DeleteUnnecessary()
 {
   BeginUpdate();
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     EndUpdate();
-  });
+  };
   {
     if (!GetLogging() || (FParent != nullptr))
     {
@@ -904,11 +904,11 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
   TGuard Guard(FCriticalSection);
 
   BeginUpdate();
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     DeleteUnnecessary();
     EndUpdate();
-  });
+  };
   {
     #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
     if (Data == nullptr)

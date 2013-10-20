@@ -27,7 +27,7 @@ class CBase64Coding
       // to be passed by value)
 
       CBase64Coding( const CBase64Coding& ) {};
-      CBase64Coding& operator=( const CBase64Coding& ) { return( *this ); };
+      CBase64Coding& operator=( const CBase64Coding& ) { return( *this ); }
 
    public:
 

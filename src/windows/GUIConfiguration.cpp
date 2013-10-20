@@ -406,10 +406,10 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
     std::auto_ptr<TCopyParamType> CopyParam(new TCopyParamType());
     if (Storage->OpenSubKey(Name, false))
     {
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         Storage->CloseSubKey();
-      });
+      };
       {
         Name = Storage->ReadString(L"Name", Name);
         CopyParam->Load(Storage);
@@ -436,10 +436,10 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
   {
     if (Storage->OpenSubKey(IntToStr(Index), true))
     {
-      auto cleanup = finally([&]()
+      SCOPE_EXIT
       {
         Storage->CloseSubKey();
-      });
+      };
       {
         const TCopyParamType * CopyParam = GetCopyParam(Index);
         const TCopyParamRule * Rule = GetRule(Index);
@@ -624,7 +624,7 @@ UnicodeString TGUIConfiguration::PropertyToKey(const UnicodeString & Property)
 #undef BLOCK
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
-    { auto cleanup = finally([&]() { Storage->CloseSubKey(); }); { BLOCK } }
+    { SCOPE_EXIT { Storage->CloseSubKey(); }; { BLOCK } }
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
@@ -668,10 +668,10 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", true, true))
   {
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       Storage->CloseSubKey();
-    });
+    };
     {
       FDefaultCopyParam.Save(Storage);
 
@@ -690,10 +690,10 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", true, true))
   {
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       Storage->CloseSubKey();
-    });
+    };
     {
       FNewDirectoryProperties.Save(Storage);
     }
@@ -716,27 +716,29 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   #undef KEYEX
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", false, true))
-  auto cleanup = finally([&]()
   {
-    Storage->CloseSubKey();
-  });
-  {
-    // must be loaded before eventual setting defaults for CopyParamList
-    FDefaultCopyParam.Load(Storage);
+    SCOPE_EXIT
+    {
+      Storage->CloseSubKey();
+    };
+    {
+      // must be loaded before eventual setting defaults for CopyParamList
+      FDefaultCopyParam.Load(Storage);
 
-    intptr_t CopyParamListCount = Storage->ReadInteger(L"CopyParamList", (DWORD)-1);
-    FCopyParamListDefaults = (CopyParamListCount == (DWORD)-1);
-    if (!FCopyParamListDefaults)
-    {
-      FCopyParamList->Clear();
-      FCopyParamList->Load(Storage, CopyParamListCount);
+      intptr_t CopyParamListCount = Storage->ReadInteger(L"CopyParamList", (DWORD)-1);
+      FCopyParamListDefaults = (CopyParamListCount == (DWORD)-1);
+      if (!FCopyParamListDefaults)
+      {
+        FCopyParamList->Clear();
+        FCopyParamList->Load(Storage, CopyParamListCount);
+      }
+      else if (FCopyParamList->GetModified())
+      {
+        FCopyParamList->Clear();
+        FCopyParamListDefaults = false;
+      }
+      FCopyParamList->Reset();
     }
-    else if (FCopyParamList->GetModified())
-    {
-      FCopyParamList->Clear();
-      FCopyParamListDefaults = false;
-    }
-    FCopyParamList->Reset();
   }
 
   // Make it compatible with versions prior to 3.7.1 that have not saved PuttyPath
@@ -755,10 +757,10 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", false, true))
   {
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       Storage->CloseSubKey();
-    });
+    };
     {
       FNewDirectoryProperties.Load(Storage);
     }
@@ -956,10 +958,10 @@ TStrings * TGUIConfiguration::GetLocales()
 
   Found = (bool)(FindFirst(ChangeFileExt(ModuleFileName(), L".*"),
     FindAttrs, SearchRec) == 0);
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     FindClose(SearchRec);
-  });
+  };
   {
     UnicodeString Ext;
     while (Found)

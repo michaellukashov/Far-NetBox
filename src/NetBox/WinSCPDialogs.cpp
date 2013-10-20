@@ -445,10 +445,10 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       GetConfiguration()->EndUpdate();
-    });
+    };
     {
       GetConfiguration()->SetAutoReadDirectoryAfterOp(AutoReadDirectoryAfterOpCheck->GetChecked());
     }
@@ -536,10 +536,10 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       GetConfiguration()->EndUpdate();
-    });
+    };
     {
       GetConfiguration()->SetLogging(LoggingCheck->GetChecked());
       GetConfiguration()->SetLogProtocol(LogProtocolCombo->GetItemIndex());
@@ -669,10 +669,10 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       GetConfiguration()->EndUpdate();
-    });
+    };
     {
       if (ResumeOnButton->GetChecked())
       {
@@ -747,10 +747,10 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       GetConfiguration()->EndUpdate();
-    });
+    };
     {
       TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
 
@@ -840,10 +840,10 @@ bool TTransferEditorConfigurationDialog::Execute()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       GetConfiguration()->EndUpdate();
-    });
+    };
     {
       GetFarConfiguration()->SetEditorDownloadDefaultMode(EditorDownloadDefaultButton->GetChecked());
       GetFarConfiguration()->SetEditorUploadSameOptions(EditorUploadSameButton->GetChecked());
@@ -862,10 +862,10 @@ void TTransferEditorConfigurationDialog::Change()
   if (GetHandle())
   {
     LockChanges();
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       UnlockChanges();
-    });
+    };
     {
       UpdateControls();
     }
@@ -925,10 +925,10 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       GetConfiguration()->EndUpdate();
-    });
+    };
     {
       GetFarConfiguration()->SetConfirmOverwritingOverride(
         ConfirmOverwritingCheck->GetSelected() != BSTATE_3STATE);
@@ -991,10 +991,10 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       GetConfiguration()->EndUpdate();
-    });
+    };
     {
       GetGUIConfiguration()->SetPuttyPath(PuttyPathEdit->GetText());
       GetGUIConfiguration()->SetPuttyPassword(PuttyPasswordCheck->GetChecked());
@@ -1701,10 +1701,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
     COMBO->SetWidth(7); \
     COMBO->GetItems()->BeginUpdate(); \
     { \
-      auto cleanup = finally([&]() \
+      SCOPE_EXIT \
       { \
         COMBO->GetItems()->EndUpdate(); \
-      }); \
+      }; \
       { \
         COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_AUTO)); \
         COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_OFF)); \
@@ -2552,10 +2552,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TunnelLocalPortNumberEdit->SetLeft(TunnelPortNumberEdit->GetLeft());
   TunnelLocalPortNumberEdit->SetEnabledDependency(TunnelCheck);
   TunnelLocalPortNumberEdit->GetItems()->BeginUpdate();
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
-  });
+  };
   {
     TunnelLocalPortNumberEdit->GetItems()->Add(GetMsg(LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN));
     for (intptr_t Index = GetConfiguration()->GetTunnelLocalPortNumberLow();
@@ -2844,10 +2844,10 @@ void TSessionDialog::Change()
     }
 
     LockChanges();
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       UnlockChanges();
-    });
+    };
     {
       UpdateControls();
     }
@@ -3384,10 +3384,10 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   }
 
   CipherListBox->GetItems()->BeginUpdate();
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     CipherListBox->GetItems()->EndUpdate();
-  });
+  };
   {
     CipherListBox->GetItems()->Clear();
     assert(CIPHER_NAME_WARN+CIPHER_COUNT-1 == CIPHER_NAME_ARCFOUR);
@@ -3407,10 +3407,10 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   KexListBox->GetItems()->BeginUpdate();
   {
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       KexListBox->GetItems()->EndUpdate();
-    });
+    };
     {
       KexListBox->GetItems()->Clear();
       assert(KEX_NAME_WARN+KEX_COUNT+1 == KEX_NAME_GSSGEX);
@@ -4550,10 +4550,10 @@ void TRightsContainer::SetRights(const TRights & Value)
   if (GetRights() != Value)
   {
     GetDialog()->LockChanges();
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       GetDialog()->UnlockChanges();
-    });
+    };
     {
       SetAllowUndef(true); // temporarily
       for (size_t Right = 0; Right < LENOF(FCheckBoxes); Right++)
@@ -5562,10 +5562,10 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     }
 
     GetConfiguration()->BeginUpdate();
-    auto cleanup = finally([&]()
+    SCOPE_EXIT
     {
       GetConfiguration()->EndUpdate();
-    });
+    };
     {
       if (SaveSettingsCheck->GetChecked())
       {
@@ -7514,10 +7514,10 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
   FCanScrollRight = false;
   TFarList * List = ListBox->GetItems();
   List->BeginUpdate();
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     List->EndUpdate();
-  });
+  };
   {
     for (intptr_t Index = 0; Index < List->GetCount(); ++Index)
     {
@@ -7554,10 +7554,10 @@ void TSynchronizeChecklistDialog::CheckAll(bool Check)
 {
   TFarList * List = ListBox->GetItems();
   List->BeginUpdate();
-  auto cleanup = finally([&]()
+  SCOPE_EXIT
   {
     List->EndUpdate();
-  });
+  };
   {
     intptr_t Count = List->GetCount();
     for (intptr_t Index = 0; Index < Count; ++Index)
