@@ -790,7 +790,7 @@ public:
 
   void LoadFromFile(const UnicodeString & FileName)
   {
-    std::auto_ptr<TStringList> DumpLines(new TStringList());
+    std::unique_ptr<TStringList> DumpLines(new TStringList());
     RawByteString Dump;
     DumpLines->LoadFromFile(FileName);
     Dump = AnsiString(DumpLines->GetText());
@@ -1099,7 +1099,7 @@ public:
     int ExpectedType = -1, int AllowStatus = -1, void ** Token = nullptr)
   {
     assert(FRequests->GetCount());
-    std::auto_ptr<TSFTPQueuePacket> Request(static_cast<TSFTPQueuePacket*>(FRequests->GetItem(0)));
+    std::unique_ptr<TSFTPQueuePacket> Request(static_cast<TSFTPQueuePacket*>(FRequests->GetItem(0)));
     FRequests->Delete(0);
     assert(Request.get());
     if (Token != nullptr)
@@ -1107,7 +1107,7 @@ public:
       *Token = Request->Token;
     }
 
-    std::auto_ptr<TSFTPPacket> Response(static_cast<TSFTPPacket*>(FResponses->GetItem(0)));
+    std::unique_ptr<TSFTPPacket> Response(static_cast<TSFTPPacket*>(FResponses->GetItem(0)));
     FResponses->Delete(0);
     assert(Response.get());
 
@@ -1166,7 +1166,7 @@ protected:
 
   virtual bool SendRequest()
   {
-    std::auto_ptr<TSFTPQueuePacket> Request(new TSFTPQueuePacket(FCodePage));
+    std::unique_ptr<TSFTPQueuePacket> Request(new TSFTPQueuePacket(FCodePage));
     if (!InitRequest(Request.get()))
     {
       Request.reset();
@@ -2389,7 +2389,7 @@ uintptr_t TSFTPFileSystem::ReceiveResponse(
 {
   uintptr_t Result;
   uintptr_t MessageNumber = Packet->GetMessageNumber();
-  std::auto_ptr<TSFTPPacket> Response(nullptr);
+  std::unique_ptr<TSFTPPacket> Response(nullptr);
   if (!AResponse)
   {
     Response.reset(new TSFTPPacket(FCodePage));
@@ -2585,7 +2585,7 @@ TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket * Packet,
   TRemoteFile * ALinkedByFile, const UnicodeString & FileName,
   TRemoteFileList * TempFileList, bool Complete)
 {
-  std::auto_ptr<TRemoteFile> File(new TRemoteFile(ALinkedByFile));
+  std::unique_ptr<TRemoteFile> File(new TRemoteFile(ALinkedByFile));
   File->SetTerminal(FTerminal);
   if (!FileName.IsEmpty())
   {
@@ -3388,7 +3388,7 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & FileName,
   UnicodeString RealFileName = LocalCanonify(FileName);
   TRemoteFile * File;
   ReadFile(RealFileName, File);
-  std::auto_ptr<TRemoteFile> FilePtr(File);
+  std::unique_ptr<TRemoteFile> FilePtr(File);
   assert(FilePtr.get());
   if (FilePtr->GetIsDirectory() && !FilePtr->GetIsSymLink() && AProperties->Recursive)
   {
@@ -3498,12 +3498,12 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
           !File->GetIsParentDirectory() && !File->GetIsThisDirectory())
       {
         OperationProgress->SetFile(File->GetFileName());
-        std::auto_ptr<TRemoteFileList> SubFiles(
+        std::unique_ptr<TRemoteFileList> SubFiles(
           FTerminal->CustomReadDirectoryListing(File->GetFullFileName(), false));
 
         if (SubFiles.get() != nullptr)
         {
-          std::auto_ptr<TStrings> SubFileList(new TStringList());
+          std::unique_ptr<TStrings> SubFileList(new TStringList());
           bool Success = false;
           SCOPE_EXIT
           {
@@ -4327,7 +4327,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
 
       if (SetProperties)
       {
-        std::auto_ptr<TTouchSessionAction> TouchAction;
+        std::unique_ptr<TTouchSessionAction> TouchAction;
         if (CopyParam->GetPreserveTime())
         {
           TDateTime MDateTime = ::UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
@@ -4336,7 +4336,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
           TouchAction.reset(new TTouchSessionAction(FTerminal->GetActionLog(), DestFullName,
             MDateTime));
         }
-        std::auto_ptr<TChmodSessionAction> ChmodAction;
+        std::unique_ptr<TChmodSessionAction> ChmodAction;
         // do record chmod only if it was explicitly requested,
         // not when it was implicitly performed to apply timestamp
         // of overwritten file to new file
@@ -4531,7 +4531,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
           UnicodeString RealFileName = LocalCanonify(OpenParams->RemoteFileName);
           TRemoteFile * File = nullptr;
           ReadFile(RealFileName, File);
-          std::auto_ptr<TRemoteFile> FilePtr(File);
+          std::unique_ptr<TRemoteFile> FilePtr(File);
           assert(FilePtr.get());
           OpenParams->DestFileSize = FilePtr->GetSize();
           if (OpenParams->FileParams != nullptr)
@@ -5088,7 +5088,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       ReceiveResponse(&RemoteFilePacket, &RemoteFilePacket);
 
       const TRemoteFile * File = AFile;
-      std::auto_ptr<const TRemoteFile> FilePtr(nullptr);
+      std::unique_ptr<const TRemoteFile> FilePtr(nullptr);
       // ignore errors
       if (RemoteFilePacket.GetType() == SSH_FXP_ATTRS)
       {

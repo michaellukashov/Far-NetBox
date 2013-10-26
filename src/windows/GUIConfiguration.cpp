@@ -402,8 +402,8 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
   for (intptr_t Index = 0; Index < ACount; ++Index)
   {
     UnicodeString Name = IntToStr(Index);
-    std::auto_ptr<TCopyParamRule> Rule(nullptr);
-    std::auto_ptr<TCopyParamType> CopyParam(new TCopyParamType());
+    std::unique_ptr<TCopyParamRule> Rule(nullptr);
+    std::unique_ptr<TCopyParamType> CopyParam(new TCopyParamType());
     if (Storage->OpenSubKey(Name, false))
     {
       SCOPE_EXIT
@@ -948,7 +948,7 @@ TStrings * TGUIConfiguration::GetLocales()
 {
   Classes::Error(SNotImplemented, 93);
   UnicodeString LocalesExts;
-  std::auto_ptr<TStringList> Exts(new TStringList());
+  std::unique_ptr<TStringList> Exts(new TStringList());
   Exts->SetSorted(true);
   Exts->SetCaseSensitive(false);
 
@@ -1171,10 +1171,10 @@ void TGUIConfiguration::SetQueueKeepDoneItemsFor(intptr_t Value)
 TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   TStoredSessionList * Sessions)
 {
-  std::auto_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
+  std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
-  std::auto_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetPuttySessionsKey()));
+  std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetPuttySessionsKey()));
   Storage->SetForceAnsi(true);
   if (Storage->OpenRootKey(false))
   {
@@ -1196,7 +1196,7 @@ bool TGUIConfiguration::AnyPuttySessionForImport(TStoredSessionList * Sessions)
 {
   try
   {
-    std::auto_ptr<TStoredSessionList> Sesssions(SelectPuttySessionsForImport(Sessions));
+    std::unique_ptr<TStoredSessionList> Sesssions(SelectPuttySessionsForImport(Sessions));
     return (Sesssions->GetCount() > 0);
   }
   catch (...)
@@ -1209,7 +1209,7 @@ TStoredSessionList * TGUIConfiguration::SelectFilezillaSessionsForImport(
   TStoredSessionList * Sessions)
 {
 /*
-  std::auto_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
+  std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
   UnicodeString AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
@@ -1232,7 +1232,7 @@ bool TGUIConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessio
 {
   try
   {
-    std::auto_ptr<TStoredSessionList> Sesssions(SelectFilezillaSessionsForImport(Sessions));
+    std::unique_ptr<TStoredSessionList> Sesssions(SelectFilezillaSessionsForImport(Sessions));
     return (Sesssions->GetCount() > 0);
   }
   catch (...)

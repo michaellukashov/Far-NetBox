@@ -2096,7 +2096,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
 
     if (!Verified)
     {
-      std::auto_ptr<Exception> E(new Exception(LoadStr(KEY_NOT_VERIFIED)));
+      std::unique_ptr<Exception> E(new Exception(LoadStr(KEY_NOT_VERIFIED)));
       FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, Fingerprint.c_str()));
     }
   }

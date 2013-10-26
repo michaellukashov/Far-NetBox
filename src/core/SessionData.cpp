@@ -1207,7 +1207,7 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
 //---------------------------------------------------------------------
 void TSessionData::Remove()
 {
-  std::auto_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(true));
+  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(true));
   Storage->SetExplicit(true);
   if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false))
   {
@@ -1507,8 +1507,8 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     }
     if (Options->FindSwitch(L"rawsettings"))
     {
-      std::auto_ptr<TStrings> RawSettings(new TStringList());
-      std::auto_ptr<TRegistryStorage> OptionsStorage(nullptr);
+      std::unique_ptr<TStrings> RawSettings(new TStringList());
+      std::unique_ptr<TRegistryStorage> OptionsStorage(nullptr);
       if (Options->FindSwitch(L"rawsettings", RawSettings.get()))
       {
         OptionsStorage.reset(new TRegistryStorage(GetConfiguration()->GetRegistryStorageKey()));
@@ -2955,8 +2955,8 @@ TStoredSessionList::~TStoredSessionList()
 void TStoredSessionList::Load(THierarchicalStorage * Storage,
   bool AsModified, bool UseDefaults)
 {
-  std::auto_ptr<TStringList> SubKeys(new TStringList());
-  std::auto_ptr<TList> Loaded(new TList());
+  std::unique_ptr<TStringList> SubKeys(new TStringList());
+  std::unique_ptr<TList> Loaded(new TList());
   Storage->GetSubKeyNames(SubKeys.get());
   for (intptr_t Index = 0; Index < SubKeys->GetCount(); ++Index)
   {
@@ -3019,7 +3019,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
 //---------------------------------------------------------------------
 void TStoredSessionList::Load()
 {
-  std::auto_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(true));
+  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(true));
   if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), False))
   {
     Load(Storage.get());
@@ -3046,7 +3046,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
 void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   bool All, bool RecryptPasswordOnly, TStrings * RecryptPasswordErrors)
 {
-  std::auto_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
+  std::unique_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
   DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults.get());
   for (intptr_t Index = 0; Index < GetCount() + GetHiddenCount(); ++Index)
   {
@@ -3079,7 +3079,7 @@ void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
 void TStoredSessionList::DoSave(bool All, bool Explicit,
   bool RecryptPasswordOnly, TStrings * RecryptPasswordErrors)
 {
-  std::auto_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(true));
+  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(true));
   Storage->SetAccessMode(smReadWrite);
   Storage->SetExplicit(Explicit);
   if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
@@ -3116,7 +3116,7 @@ void TStoredSessionList::Saved()
     _di_IXMLNode ChildNode = Node->ChildNodes->Get(Index);
     if (ChildNode->NodeName == L"Server")
     {
-      std::auto_ptr<TSessionData> SessionData(new TSessionData(L""));
+      std::unique_ptr<TSessionData> SessionData(new TSessionData(L""));
       SessionData->Assign(DefaultSettings);
       SessionData->ImportFromFilezilla(ChildNode, Path);
       Add(SessionData.release());
@@ -3162,7 +3162,7 @@ void TStoredSessionList::Export(const UnicodeString & FileName)
 {
   Classes::Error(SNotImplemented, 3003);
 /*
-  std::auto_ptr<THierarchicalStorage> Storage(new TIniFileStorage(FileName));
+  std::unique_ptr<THierarchicalStorage> Storage(new TIniFileStorage(FileName));
   Storage->SetAccessMode(smReadWrite);
   if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
   {
@@ -3215,7 +3215,7 @@ void TStoredSessionList::Cleanup()
     {
       Clear();
     }
-    std::auto_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetConfiguration()->GetRegistryStorageKey()));
+    std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetConfiguration()->GetRegistryStorageKey()));
     Storage->SetAccessMode(smReadWrite);
     if (Storage->OpenRootKey(False))
     {
@@ -3242,7 +3242,7 @@ void TStoredSessionList::UpdateStaticUsage()
   int Color = 0;
   bool Folders = false;
   bool Workspaces = false;
-  std::auto_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
+  std::unique_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
   for (intptr_t Index = 0; Index < Count; ++Index)
   {
     TSessionData * Data = GetSession(Index);
@@ -3406,9 +3406,9 @@ void TStoredSessionList::ImportHostKeys(const UnicodeString & TargetKey,
   const UnicodeString & SourceKey, TStoredSessionList * Sessions,
   bool OnlySelected)
 {
-  std::auto_ptr<TRegistryStorage> SourceStorage(new TRegistryStorage(SourceKey));
-  std::auto_ptr<TRegistryStorage> TargetStorage(new TRegistryStorage(TargetKey));
-  std::auto_ptr<TStringList> KeyList(new TStringList());
+  std::unique_ptr<TRegistryStorage> SourceStorage(new TRegistryStorage(SourceKey));
+  std::unique_ptr<TRegistryStorage> TargetStorage(new TRegistryStorage(TargetKey));
+  std::unique_ptr<TStringList> KeyList(new TStringList());
   TargetStorage->SetAccessMode(smReadWrite);
 
   if (SourceStorage->OpenRootKey(false) &&
@@ -3456,7 +3456,7 @@ const TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString & 
 //---------------------------------------------------------------------
 void TStoredSessionList::Load(const UnicodeString & AKey, bool UseDefaults)
 {
-  std::auto_ptr<TRegistryStorage> Storage(new TRegistryStorage(AKey));
+  std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(AKey));
   if (Storage->OpenRootKey(false))
   {
     Load(Storage.get(), false, UseDefaults);
@@ -3531,7 +3531,7 @@ void TStoredSessionList::GetFolderOrWorkspace(const UnicodeString & Name, TList 
 TStrings * TStoredSessionList::GetFolderOrWorkspaceList(
   const UnicodeString & Name)
 {
-  std::auto_ptr<TStringList> Result(new TStringList());
+  std::unique_ptr<TStringList> Result(new TStringList());
 
   for (intptr_t Index = 0; Index < GetCount(); Index++)
   {
@@ -3549,7 +3549,7 @@ TStrings * TStoredSessionList::GetFolderOrWorkspaceList(
 //---------------------------------------------------------------------------
 TStrings * TStoredSessionList::GetWorkspaces()
 {
-  std::auto_ptr<TStringList> Result(new TStringList());
+  std::unique_ptr<TStringList> Result(new TStringList());
   Result->SetSorted(true);
   Result->SetDuplicates(dupIgnore);
   Result->SetCaseSensitive(false);
@@ -3608,7 +3608,7 @@ TSessionData * TStoredSessionList::ParseUrl(const UnicodeString & Url,
   TOptions * Options, bool & DefaultsOnly, UnicodeString * FileName,
   bool * AProtocolDefined, UnicodeString * MaskedUrl)
 {
-  std::auto_ptr<TSessionData> Data(new TSessionData(L""));
+  std::unique_ptr<TSessionData> Data(new TSessionData(L""));
     Data->ParseUrl(Url, Options, this, DefaultsOnly, FileName, AProtocolDefined, MaskedUrl);
 
   return Data.release();

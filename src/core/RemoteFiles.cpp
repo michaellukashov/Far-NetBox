@@ -610,7 +610,7 @@ UnicodeString TRemoteToken::GetLogText() const
 //---------------------------------------------------------------------------
 TRemoteTokenList * TRemoteTokenList::Duplicate() const
 {
-  std::auto_ptr<TRemoteTokenList> Result(new TRemoteTokenList());
+  std::unique_ptr<TRemoteTokenList> Result(new TRemoteTokenList());
   TTokens::const_iterator it = FTokens.begin();
   while (it != FTokens.end())
   {
@@ -773,7 +773,7 @@ TRemoteFile::~TRemoteFile()
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 {
-  std::auto_ptr<TRemoteFile> Result(new TRemoteFile());
+  std::unique_ptr<TRemoteFile> Result(new TRemoteFile());
   if (FLinkedFile)
   {
     Result->FLinkedFile = FLinkedFile->Duplicate(true);
@@ -1955,7 +1955,7 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
   intptr_t ACount = GetCount();
   if (ACount > FMaxSize)
   {
-    std::auto_ptr<TStrings> Limited(new TStringList());
+    std::unique_ptr<TStrings> Limited(new TStringList());
     intptr_t Index = ACount - FMaxSize;
     while (Index < ACount)
     {

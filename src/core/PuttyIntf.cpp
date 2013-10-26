@@ -129,8 +129,8 @@ int GetUserpassInput(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
   assert(SecureShell != nullptr);
 
   int Result;
-  std::auto_ptr<TStrings> Prompts(new TStringList());
-  std::auto_ptr<TStrings> Results(new TStringList());
+  std::unique_ptr<TStrings> Prompts(new TStringList());
+  std::unique_ptr<TStrings> Results(new TStringList());
   for (size_t Index = 0; Index < p->n_prompts; ++Index)
   {
     prompt_t * Prompt = p->prompts[Index];
@@ -380,7 +380,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
     // we expect this to be called only from verify_host_key() or store_host_key()
     assert(RegKey == L"SshHostKeys");
 
-    std::auto_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(false));
+    std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(false));
     Storage->SetAccessMode((CanCreate ? smReadWrite : smRead));
     if (Storage->OpenSubKey(RegKey, CanCreate))
     {

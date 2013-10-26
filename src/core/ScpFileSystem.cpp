@@ -955,7 +955,7 @@ void TSCPFileSystem::ClearAliases()
   {
     FTerminal->LogEvent(L"Clearing all aliases.");
     ClearAlias(TCommandSet::ExtractCommand(FTerminal->GetSessionData()->GetListingCommand()));
-    std::auto_ptr<TStrings> CommandList(FCommandSet->CreateCommandList());
+    std::unique_ptr<TStrings> CommandList(FCommandSet->CreateCommandList());
     for (intptr_t Index = 0; Index < CommandList->GetCount(); ++Index)
     {
       ClearAlias(CommandList->GetString(Index));
@@ -1067,7 +1067,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       {
         // Copy LS command output, because eventual symlink analysis would
         // modify FTerminal->Output
-        std::auto_ptr<TStringList> OutputCopy(new TStringList());
+        std::unique_ptr<TStringList> OutputCopy(new TStringList());
         OutputCopy->Assign(FOutput);
 
         // delete leading "total xxx" line
@@ -1166,7 +1166,7 @@ void TSCPFileSystem::ReadFile(const UnicodeString & FileName,
 TRemoteFile * TSCPFileSystem::CreateRemoteFile(
   const UnicodeString & ListingStr, TRemoteFile * LinkedByFile)
 {
-  std::auto_ptr<TRemoteFile> File(new TRemoteFile(LinkedByFile));
+  std::unique_ptr<TRemoteFile> File(new TRemoteFile(LinkedByFile));
   File->SetTerminal(FTerminal);
   File->SetListingStr(ListingStr);
   File->ShiftTime(FTerminal->GetSessionData()->GetTimeDifference());
@@ -1736,7 +1736,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
     &LocalFileAttrs, &LocalFileHandle, nullptr, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
-  std::auto_ptr<TSafeHandleStream> Stream(new TSafeHandleStream(LocalFileHandle));
+  std::unique_ptr<TSafeHandleStream> Stream(new TSafeHandleStream(LocalFileHandle));
   {
     SCOPE_EXIT
     {
@@ -2490,7 +2490,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
           try
           {
             HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-            std::auto_ptr<TStream> FileStream;
+            std::unique_ptr<TStream> FileStream;
 
             /* TODO 1 : Turn off read-only attr */
 

@@ -16,7 +16,7 @@ static bool WellKnownException(
 {
   UnicodeString Message;
   const wchar_t * CounterName = nullptr;
-  std::auto_ptr<Exception> Clone;
+  std::unique_ptr<Exception> Clone;
 
   bool Result = true;
 

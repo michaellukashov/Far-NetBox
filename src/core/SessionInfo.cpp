@@ -915,7 +915,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     {
       AddSeparator();
       ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
-      std::auto_ptr<THierarchicalStorage> Storage(FConfiguration->CreateStorage(false));
+      std::unique_ptr<THierarchicalStorage> Storage(FConfiguration->CreateStorage(false));
       assert(Storage.get());
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
 
@@ -1269,7 +1269,7 @@ void TActionLog::AddFailure(TStrings * Messages)
 //---------------------------------------------------------------------------
 void TActionLog::AddFailure(Exception * E)
 {
-  std::auto_ptr<TStrings> Messages(ExceptionToMoreMessages(E));
+  std::unique_ptr<TStrings> Messages(ExceptionToMoreMessages(E));
   if (Messages.get() != nullptr)
   {
     AddFailure(Messages.get());

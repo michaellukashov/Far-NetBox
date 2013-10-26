@@ -42,7 +42,7 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
   {
     if (Storage->OpenSubKey(Keys[I], false))
     {
-      std::auto_ptr<TStrings> BookmarkKeys(new TStringList());
+      std::unique_ptr<TStrings> BookmarkKeys(new TStringList());
       Storage->GetSubKeyNames(BookmarkKeys.get());
       for (intptr_t Index = 0; Index < BookmarkKeys->GetCount(); ++Index)
       {
@@ -76,7 +76,7 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
 void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
   intptr_t Index, TBookmarkList * BookmarkList)
 {
-  std::auto_ptr<TStrings> Names(new TStringList());
+  std::unique_ptr<TStrings> Names(new TStringList());
   Storage->GetValueNames(Names.get());
   UnicodeString Name;
   UnicodeString Directory;

@@ -903,7 +903,7 @@ struct TDateTimeParams : public TObject
 };
 typedef rde::map<int, TDateTimeParams> TYearlyDateTimeParams;
 static TYearlyDateTimeParams YearlyDateTimeParams;
-static std::auto_ptr<TCriticalSection> DateTimeParamsSection(new TCriticalSection());
+static std::unique_ptr<TCriticalSection> DateTimeParamsSection(new TCriticalSection());
 static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
   TDateTime & Result);
 //---------------------------------------------------------------------------
@@ -1913,7 +1913,7 @@ bool GetWindowsProductType(DWORD & Type)
 UnicodeString WindowsProductName()
 {
   UnicodeString Result;
-  std::auto_ptr<TRegistry> Registry(new TRegistry());
+  std::unique_ptr<TRegistry> Registry(new TRegistry());
   Registry->SetAccess(KEY_READ);
   try
   {

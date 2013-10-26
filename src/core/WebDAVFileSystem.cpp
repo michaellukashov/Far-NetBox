@@ -3122,14 +3122,14 @@ config_read_auth_data(
   const char * subkey = CertificateStorageKey;
   THierarchicalStorage * Storage = nullptr;
   WEBDAV_ERR(fs->CreateStorage(Storage));
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  std::unique_ptr<THierarchicalStorage> StoragePtr(Storage);
   assert(StoragePtr.get());
   StoragePtr->SetAccessMode(smRead);
   if (!StoragePtr->OpenSubKey(UnicodeString(subkey), false))
     return WEBDAV_ERR_BAD_PARAM;
 
   *hash = apr_hash_make(pool);
-  std::auto_ptr<TStrings> Keys(new TStringList());
+  std::unique_ptr<TStrings> Keys(new TStringList());
   StoragePtr->GetValueNames(Keys.get());
   for (intptr_t Index = 0; Index < Keys->GetCount(); ++Index)
   {
@@ -3156,7 +3156,7 @@ config_write_auth_data(
   assert(fs);
   THierarchicalStorage * Storage = nullptr;
   WEBDAV_ERR(fs->CreateStorage(Storage));
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  std::unique_ptr<THierarchicalStorage> StoragePtr(Storage);
   assert(StoragePtr.get());
   StoragePtr->SetAccessMode(smReadWrite);
 
@@ -13491,7 +13491,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
     for (intptr_t Index = 0; Index < Count; ++Index)
     {
       const TListDataEntry * Entry = &Entries[Index];
-      std::auto_ptr<TRemoteFile> File(new TRemoteFile());
+      std::unique_ptr<TRemoteFile> File(new TRemoteFile());
       try
       {
         File->SetTerminal(FTerminal);
@@ -14189,7 +14189,7 @@ webdav::error_t TWebDAVFileSystem::SimplePrompt(
   uintptr_t & RequestResult)
 {
   RequestResult = 0;
-  std::auto_ptr<TStrings> MoreMessages(new TStringList());
+  std::unique_ptr<TStrings> MoreMessages(new TStringList());
   MoreMessages->Add(UnicodeString(prompt_string));
   uintptr_t Answer = FTerminal->QueryUser(
     UnicodeString(prompt_text),

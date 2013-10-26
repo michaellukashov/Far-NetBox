@@ -144,7 +144,7 @@ void TSynchronizeController::SynchronizeChange(
         FSynchronizeParams, &Checklist, Options, false);
       if (Checklist != nullptr)
       {
-        std::auto_ptr<TSynchronizeChecklist> ChecklistPtr(Checklist);
+        std::unique_ptr<TSynchronizeChecklist> ChecklistPtr(Checklist);
         (void)ChecklistPtr;
         if (FLAGSET(FSynchronizeParams.Options, soRecurse))
         {

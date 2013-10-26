@@ -729,7 +729,7 @@ void TTerminalQueue::UpdateStatusForList(
 //---------------------------------------------------------------------------
 TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Current)
 {
-  std::auto_ptr<TTerminalQueueStatus> Status(new TTerminalQueueStatus());
+  std::unique_ptr<TTerminalQueueStatus> Status(new TTerminalQueueStatus());
   SCOPE_EXIT
   {
     if (Current != nullptr)
@@ -1220,7 +1220,7 @@ void TTerminalItem::Init(intptr_t Index)
 
   FCriticalSection = new TCriticalSection();
 
-  std::auto_ptr<TBackgroundTerminal> Terminal(new TBackgroundTerminal(FQueue->FTerminal));
+  std::unique_ptr<TBackgroundTerminal> Terminal(new TBackgroundTerminal(FQueue->FTerminal));
   Terminal->Init(FQueue->FSessionData, FQueue->FConfiguration, this, FORMAT(L"Background %d", Index));
   Terminal->SetUseBusyCursor(false);
 

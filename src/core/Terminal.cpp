@@ -1110,8 +1110,8 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   const UnicodeString & Prompt,
   bool Echo, intptr_t MaxLen, UnicodeString & AResult)
 {
-  std::auto_ptr<TStrings> Prompts(new TStringList());
-  std::auto_ptr<TStrings> Results(new TStringList());
+  std::unique_ptr<TStrings> Prompts(new TStringList());
+  std::unique_ptr<TStrings> Results(new TStringList());
   Prompts->AddObject(Prompt, reinterpret_cast<TObject *>(!!Echo));
   Results->AddObject(AResult, reinterpret_cast<TObject *>(MaxLen));
   bool Result = PromptUser(Data, Kind, Name, Instructions, Prompts.get(), Results.get());
@@ -1182,7 +1182,7 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
 {
   uintptr_t Result = 0;
   UnicodeString ExMessage;
-  std::auto_ptr<TStrings> MoreMessages(new TStringList());
+  std::unique_ptr<TStrings> MoreMessages(new TStringList());
   // if (E != nullptr)
   if (ALWAYS_TRUE(ExceptionMessage(E, ExMessage) || !Query.IsEmpty()))
   {
@@ -2461,7 +2461,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
       {
         DoReadDirectoryProgress(-1, Cancel);
         FReadingCurrentDirectory = false;
-        std::auto_ptr<TRemoteDirectory> OldFiles(FFiles);
+        std::unique_ptr<TRemoteDirectory> OldFiles(FFiles);
         (void)OldFiles;
         FFiles = Files;
         DoReadDirectory(ReloadOnly);
@@ -2598,7 +2598,7 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(const UnicodeString & Di
 //------------------------------------------------------------------------------
 TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & Directory, bool UseCache)
 {
-  std::auto_ptr<TRemoteFileList> FileList(new TRemoteFileList());
+  std::unique_ptr<TRemoteFileList> FileList(new TRemoteFileList());
   {
     bool Cache = UseCache && GetSessionData()->GetCacheDirectories();
     bool LoadedFromCache = Cache && FDirectoryCache->HasFileList(Directory);
@@ -2632,7 +2632,7 @@ TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & Direct
 void TTerminal::ProcessDirectory(const UnicodeString & DirName,
   TProcessFileEvent CallBackFunc, void * Param, bool UseCache, bool IgnoreErrors)
 {
-  std::auto_ptr<TRemoteFileList> FileList(nullptr);
+  std::unique_ptr<TRemoteFileList> FileList(nullptr);
   if (IgnoreErrors)
   {
     SetExceptionOnFail(true);
@@ -3758,7 +3758,7 @@ TTerminal * TTerminal::GetCommandSession()
     // levels between main and command session
     assert(FInTransaction == 0);
 
-    std::auto_ptr<TSecondaryTerminal> CommandSession(new TSecondaryTerminal(this));
+    std::unique_ptr<TSecondaryTerminal> CommandSession(new TSecondaryTerminal(this));
     CommandSession->Init(GetSessionData(), FConfiguration, L"Shell");
 
     CommandSession->SetAutoReadDirectory(false);
@@ -4244,7 +4244,7 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & Loca
   TSynchronizeDirectoryEvent OnSynchronizeDirectory,
   TSynchronizeOptions * Options)
 {
-  std::auto_ptr<TSynchronizeChecklist> Checklist(new TSynchronizeChecklist());
+  std::unique_ptr<TSynchronizeChecklist> Checklist(new TSynchronizeChecklist());
   DoSynchronizeCollectDirectory(LocalDirectory, RemoteDirectory, Mode,
     CopyParam, Params, OnSynchronizeDirectory, Options, sfFirstLevel,
     Checklist.get());
@@ -4448,7 +4448,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
 
         if (Modified || New)
         {
-          std::auto_ptr<TSynchronizeChecklist::TItem> ChecklistItem(new TSynchronizeChecklist::TItem());
+          std::unique_ptr<TSynchronizeChecklist::TItem> ChecklistItem(new TSynchronizeChecklist::TItem());
           ChecklistItem->IsDirectory = FileData->IsDirectory;
 
           ChecklistItem->Local = FileData->Info;
@@ -4523,7 +4523,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
         Data->Options->MatchesFilter(File->GetFileName()) ||
         Data->Options->MatchesFilter(LocalFileName)))
   {
-    std::auto_ptr<TSynchronizeChecklist::TItem> ChecklistItem(new TSynchronizeChecklist::TItem());
+    std::unique_ptr<TSynchronizeChecklist::TItem> ChecklistItem(new TSynchronizeChecklist::TItem());
     ChecklistItem->IsDirectory = File->GetIsDirectory();
     ChecklistItem->ImageIndex = File->GetIconIndex();
 
@@ -4712,10 +4712,10 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
     SyncCopyParam.SetPreserveTime(true);
   }
 
-  std::auto_ptr<TStringList> DownloadList(new TStringList());
-  std::auto_ptr<TStringList> DeleteRemoteList(new TStringList());
-  std::auto_ptr<TStringList> UploadList(new TStringList());
-  std::auto_ptr<TStringList> DeleteLocalList(new TStringList());
+  std::unique_ptr<TStringList> DownloadList(new TStringList());
+  std::unique_ptr<TStringList> DeleteRemoteList(new TStringList());
+  std::unique_ptr<TStringList> UploadList(new TStringList());
+  std::unique_ptr<TStringList> DeleteLocalList(new TStringList());
 
   BeginTransaction();
 
@@ -5148,7 +5148,7 @@ bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
 
   bool Result = false;
   bool OwnsFileList = (AFilesToCopy == nullptr);
-  std::auto_ptr<TStrings> FilesToCopy(nullptr);
+  std::unique_ptr<TStrings> FilesToCopy(nullptr);
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
   if (OwnsFileList)
