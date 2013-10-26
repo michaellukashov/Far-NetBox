@@ -9,3 +9,8 @@ UnicodeString ReplaceStr(const UnicodeString & Str, const UnicodeString & What, 
 {
   return StringReplace(Str, What, ByWhat, TReplaceFlags() << rfReplaceAll);
 }
+
+bool StartsStr(const UnicodeString & SubStr, const UnicodeString & Str)
+{
+  return Str.Pos(SubStr) == 0;
+}

@@ -1289,7 +1289,7 @@ void TTerminalItem::ProcessEvent()
   catch(Exception & E)
   {
     UnicodeString Message;
-    if (ExceptionMessage(&E, Message))
+    if (ExceptionMessageFormatted(&E, Message))
     {
       // do not show error messages, if task was canceled anyway
       // (for example if transfer is canceled during reconnection attempts)
@@ -1503,9 +1503,8 @@ void TTerminalItem::TerminalShowExtendedException(
   USEDPARAM(Arg);
   assert(Arg == nullptr);
 
-  UnicodeString Message; // not used
   if ((FItem != nullptr) &&
-      ExceptionMessage(E, Message))
+      ShouldDisplayException(E))
   {
     TShowExtendedExceptionAction Action(FQueue->GetOnShowExtendedException());
     Action.Terminal = Terminal;

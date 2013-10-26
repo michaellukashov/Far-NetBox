@@ -407,6 +407,7 @@ TSCPFileSystem::~TSCPFileSystem()
 //---------------------------------------------------------------------------
 void TSCPFileSystem::Open()
 {
+  // this is used for reconnects only
   FSecureShell->Open();
 }
 //---------------------------------------------------------------------------
@@ -420,7 +421,12 @@ bool TSCPFileSystem::GetActive() const
   return FSecureShell->GetActive();
 }
 //---------------------------------------------------------------------------
-const TSessionInfo & TSCPFileSystem::GetSessionInfo()
+void TSCPFileSystem::CollectUsage()
+{
+  FSecureShell->CollectUsage();
+}
+//---------------------------------------------------------------------------
+const TSessionInfo & TSCPFileSystem::GetSessionInfo() const
 {
   return FSecureShell->GetSessionInfo();
 }
@@ -533,6 +539,8 @@ bool TSCPFileSystem::IsCapable(intptr_t Capability) const
     case fcRename:
     case fcRemoteMove:
     case fcRemoteCopy:
+    case fcRemoveCtrlZUpload:
+    case fcRemoveBOMUpload:
       return true;
 
     case fcTextMode:
@@ -1810,8 +1818,12 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
           // Than we add current block to file buffer
           if (OperationProgress->AsciiTransfer)
           {
+            int ConvertParams =
+              FLAGMASK(CopyParam->GetRemoveCtrlZ(), cpRemoveCtrlZ) |
+              FLAGMASK(CopyParam->GetRemoveBOM(), cpRemoveBOM);
             BlockBuf.Convert(FTerminal->GetConfiguration()->GetLocalEOLType(),
-              FTerminal->GetSessionData()->GetEOLType(), cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
+              FTerminal->GetSessionData()->GetEOLType(),
+              ConvertParams, ConvertToken);
             BlockBuf.GetMemory()->Seek(0, soFromBeginning);
             AsciiBuf.ReadStream(BlockBuf.GetMemory(), BlockBuf.GetSize(), true);
             // We don't need it any more

@@ -1,4 +1,5 @@
 //---------------------------------------------------------------------------
+#define NO_WIN32_LEAN_AND_MEAN
 #include <vcl.h>
 #pragma hdrstop
 
@@ -11,6 +12,7 @@
 #include <assert.h>
 #include <math.h>
 #include <shlobj.h>
+#include <limits>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -313,6 +315,45 @@ UnicodeString ExceptionLogString(Exception *E)
   }
 }
 //---------------------------------------------------------------------------
+UnicodeString MainInstructions(const UnicodeString & S)
+{
+  UnicodeString MainMsgTag = LoadStr(MAIN_MSG_TAG);
+  return MainMsgTag + S + MainMsgTag;
+}
+//---------------------------------------------------------------------------
+bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions)
+{
+  bool Result = false;
+  UnicodeString MainMsgTag = LoadStr(MAIN_MSG_TAG);
+  if (StartsStr(MainMsgTag, S))
+  {
+    int EndTagPos =
+      S.SubString(MainMsgTag.Length() + 1, S.Length() - MainMsgTag.Length()).Pos(MainMsgTag);
+    if (EndTagPos > 0)
+    {
+      MainInstructions = S.SubString(MainMsgTag.Length() + 1, EndTagPos - 1);
+      S.Delete(1, EndTagPos + (2 * MainMsgTag.Length()) - 1);
+      Result = true;
+    }
+  }
+
+  assert(MainInstructions.Pos(MainMsgTag) == 0);
+  assert(S.Pos(MainMsgTag) == 0);
+
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString UnformatMessage(const UnicodeString & S)
+{
+  UnicodeString Result = S;
+  UnicodeString MainInstruction;
+  if (ExtractMainInstructions(Result, MainInstruction))
+  {
+    Result = MainInstruction + Result;
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
 bool IsNumber(const UnicodeString & Str)
 {
   intptr_t Value = 0;
@@ -490,6 +531,17 @@ UnicodeString ExtractProgram(const UnicodeString & Command)
   SplitCommand(Command, Program, Params, Dir);
 
   return Program;
+}
+//---------------------------------------------------------------------------
+UnicodeString ExtractProgramName(const UnicodeString & Command)
+{
+  UnicodeString Name = ExtractFileName(ExtractProgram(Command), false);
+  int Dot = Name.LastDelimiter(L".");
+  if (Dot > 0)
+  {
+    Name = Name.SubString(1, Dot - 1);
+  }
+  return Name;
 }
 //---------------------------------------------------------------------------
 UnicodeString FormatCommand(const UnicodeString & Program, const UnicodeString & Params)
@@ -771,6 +823,21 @@ unsigned char HexToByte(const UnicodeString & Hex)
     static_cast<unsigned char>(((P1 <= 0) || (P2 <= 0)) ? 0 : (((P1 - 1) << 4) + (P2 - 1)));
 }
 //---------------------------------------------------------------------------
+bool IsLowerCaseLetter(wchar_t Ch)
+{
+  return (Ch >= 'a') && (Ch <= 'z');
+}
+//---------------------------------------------------------------------------
+bool IsUpperCaseLetter(wchar_t Ch)
+{
+  return (Ch >= 'A') && (Ch <= 'Z');
+}
+//---------------------------------------------------------------------------
+bool IsLetter(wchar_t Ch)
+{
+  return IsLowerCaseLetter(Ch) || IsUpperCaseLetter(Ch);
+}
+//---------------------------------------------------------------------------
 bool IsDigit(wchar_t Ch)
 {
   return (Ch >= '0') && (Ch <= '9');
@@ -877,6 +944,19 @@ TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
     throw EConvertError(FORMAT(L"%s [%02u:%02u:%02u.%04u]", E.Message.c_str(), int(Hour), int(Min), int(Sec), int(MSec)));
   }
   return TDateTime();
+}
+//---------------------------------------------------------------------------
+TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime)
+{
+  try
+  {
+    TDateTime DateTime = SystemTimeToDateTime(SystemTime);
+    return DateTime;
+  }
+  catch (EConvertError & E)
+  {
+    throw EConvertError(FORMAT(L"%s [%d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d.%3.3d]", (E.Message, int(SystemTime.wYear), int(SystemTime.wMonth), int(SystemTime.wDay), int(SystemTime.wHour), int(SystemTime.wMinute), int(SystemTime.wSecond), int(SystemTime.wMilliseconds))));
+  }
 }
 //---------------------------------------------------------------------------
 struct TDateTimeParams : public TObject
@@ -1000,7 +1080,7 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
     }
     Result->SummerDST = (Result->DaylightDate < Result->StandardDate);
 
-    Result->DaylightHack = !IsWin7() || IsExactly2008R2();
+    Result->DaylightHack = !IsWin7();
   }
 
   return Result;
@@ -1194,6 +1274,31 @@ FILETIME DateTimeToFileTime(const TDateTime & DateTime,
 TDateTime FileTimeToDateTime(const FILETIME & FileTime)
 {
   // duplicated in DirView.pas
+  TDateTime Result;
+  // The 0xFFF... is sometime seen for invalid timestamps,
+  // it would cause failure in SystemTimeToDateTime below
+  if (FileTime.dwLowDateTime == DWORD(-1) / sizeof(DWORD)) // std::numeric_limits<DWORD>::max())
+  {
+    Result = MinDateTime;
+  }
+  else
+  {
+    SYSTEMTIME SysTime;
+    if (!UsesDaylightHack())
+    {
+      SYSTEMTIME UniverzalSysTime;
+      FileTimeToSystemTime(&FileTime, &UniverzalSysTime);
+      SystemTimeToTzSpecificLocalTime(NULL, &UniverzalSysTime, &SysTime);
+    }
+    else
+    {
+      FILETIME LocalFileTime;
+      FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
+      FileTimeToSystemTime(&LocalFileTime, &SysTime);
+    }
+    Result = SystemTimeToDateTimeVerbose(SysTime);
+  }
+/*
   SYSTEMTIME SysTime;
   if (!UsesDaylightHack())
   {
@@ -1208,6 +1313,7 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
     FileTimeToSystemTime(&LocalFileTime, &SysTime);
   }
   TDateTime Result = SystemTimeToDateTime(SysTime);
+*/
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1223,7 +1329,7 @@ __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
       SYSTEMTIME SystemTime;
       FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
       FileTimeToSystemTime(&LocalFileTime, &SystemTime);
-      TDateTime DateTime = SystemTimeToDateTime(SystemTime);
+      TDateTime DateTime = SystemTimeToDateTimeVerbose(SystemTime);
       const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
       Result += (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
@@ -1243,7 +1349,7 @@ __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
       SYSTEMTIME SystemTime;
       FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
       FileTimeToSystemTime(&LocalFileTime, &SystemTime);
-      TDateTime DateTime = SystemTimeToDateTime(SystemTime);
+      TDateTime DateTime = SystemTimeToDateTimeVerbose(SystemTime);
       const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
       Result -= (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
@@ -1425,13 +1531,46 @@ UnicodeString GetTimeZoneLogString()
   const TDateTimeParams * Params = GetDateTimeParams(0);
 
   UnicodeString Result =
-    FORMAT("Current: GMT%s, Standard: GMT%s, DST: GMT%s, DST Start: %s, DST End: %s",
+    FORMAT(L"Current: GMT%s, Standard: GMT%s, DST: GMT%s, DST Start: %s, DST End: %s",
       FormatTimeZone(Params->CurrentDifferenceSec).c_str(),
        FormatTimeZone(Params->BaseDifferenceSec + Params->StandardDifferenceSec).c_str(),
        FormatTimeZone(Params->BaseDifferenceSec + Params->DaylightDifferenceSec).c_str(),
        Params->DaylightDate.DateString().c_str(),
        Params->StandardDate.DateString().c_str());
   return Result;
+}
+//---------------------------------------------------------------------------
+bool AdjustClockForDSTEnabled()
+{
+  // Windows XP deletes the DisableAutoDaylightTimeSet value when it is off
+  // (the later versions set it to DynamicDaylightTimeDisabled to 0)
+  bool DynamicDaylightTimeDisabled = false;
+  std::unique_ptr<TRegistry> Registry(new TRegistry());
+  Registry->SetAccess(KEY_READ);
+  try
+  {
+    Registry->SetRootKey(HKEY_LOCAL_MACHINE);
+    if (Registry->OpenKey(L"SYSTEM", false) &&
+        Registry->OpenKey(L"CurrentControlSet", false) &&
+        Registry->OpenKey(L"Control", false) &&
+        Registry->OpenKey(L"TimeZoneInformation", false))
+    {
+      if (Registry->ValueExists(L"DynamicDaylightTimeDisabled"))
+      {
+        DynamicDaylightTimeDisabled = Registry->ReadBool(L"DynamicDaylightTimeDisabled");
+      }
+      // WORKAROUND
+      // Windows XP equivalent
+      else if (Registry->ValueExists(L"DisableAutoDaylightTimeSet"))
+      {
+        DynamicDaylightTimeDisabled = Registry->ReadBool(L"DisableAutoDaylightTimeSet");
+      }
+    }
+  }
+  catch(...)
+  {
+  }
+  return !DynamicDaylightTimeDisabled;
 }
 //---------------------------------------------------------------------------
 UnicodeString StandardTimestamp(const TDateTime & DateTime)
@@ -1644,6 +1783,22 @@ UnicodeString DecodeUrlChars(const UnicodeString & S)
         break;
 
       case L'%':
+        UnicodeString Hex;
+        while ((I + 2 <= Result.Length()) && (Result[I] == L'%') &&
+               IsHex(Result[I + 1]) && IsHex(Result[I + 2]))
+        {
+          Hex += Result.SubString(I + 1, 2);
+          Result.Delete(I, 3);
+        }
+
+        if (!Hex.IsEmpty())
+        {
+          RawByteString Bytes = HexToBytes(Hex);
+          UTF8String UTF8(Bytes.c_str(), Bytes.Length());
+          UnicodeString Chars(UTF8);
+          Result.Insert(Chars, I);
+        }
+/*
         if (I <= Result.Length() - 2)
         {
           unsigned char B = HexToByte(Result.SubString(I + 1, 2));
@@ -1653,6 +1808,7 @@ UnicodeString DecodeUrlChars(const UnicodeString & S)
             Result.Delete(I + 1, 2);
           }
         }
+*/
         break;
     }
     I++;
@@ -1698,9 +1854,8 @@ UnicodeString NonUrlChars()
   for (uintptr_t I = 0; I <= 127; I++)
   {
     wchar_t C = static_cast<wchar_t>(I);
-    if (((C >= L'a') && (C <= L'z')) ||
-        ((C >= L'A') && (C <= L'Z')) ||
-        ((C >= L'0') && (C <= L'9')) ||
+    if (IsLetter(C) ||
+        IsDigit(C) ||
         (C == L'_') || (C == L'-') || (C == L'.'))
     {
       // noop
@@ -1827,53 +1982,6 @@ bool IsWin7()
     ((Win32MajorVersion == 6) && (Win32MinorVersion >= 1));
 }
 //---------------------------------------------------------------------------
-bool IsExactly2008R2()
-{
-  bool Result = (Win32MajorVersion == 6) && (Win32MinorVersion == 1);
-  DWORD Type;
-  if (Result && GetWindowsProductType(Type))
-  {
-    switch (Type)
-    {
-      case 0x0008 /*PRODUCT_DATACENTER_SERVER*/:
-      case 0x000C /*PRODUCT_DATACENTER_SERVER_CORE}*/:
-      case 0x0027 /*PRODUCT_DATACENTER_SERVER_CORE_V*/:
-      case 0x0025 /*PRODUCT_DATACENTER_SERVER_V*/:
-      case 0x000A /*PRODUCT_ENTERPRISE_SERVE*/:
-      case 0x000E /*PRODUCT_ENTERPRISE_SERVER_COR*/:
-      case 0x0029 /*PRODUCT_ENTERPRISE_SERVER_CORE_*/:
-      case 0x000F /*PRODUCT_ENTERPRISE_SERVER_IA6*/:
-      case 0x0026 /*PRODUCT_ENTERPRISE_SERVER_*/:
-      case 0x002A /*PRODUCT_HYPER*/:
-      case 0x001E /*PRODUCT_MEDIUMBUSINESS_SERVER_MANAGEMEN*/:
-      case 0x0020 /*PRODUCT_MEDIUMBUSINESS_SERVER_MESSAGIN*/:
-      case 0x001F /*PRODUCT_MEDIUMBUSINESS_SERVER_SECURIT*/:
-      case 0x0018 /*PRODUCT_SERVER_FOR_SMALLBUSINES*/:
-      case 0x0023 /*PRODUCT_SERVER_FOR_SMALLBUSINESS_*/:
-      case 0x0021 /*PRODUCT_SERVER_FOUNDATIO*/:
-      case 0x0009 /*PRODUCT_SMALLBUSINESS_SERVE*/:
-      case 0x0038 /*PRODUCT_SOLUTION_EMBEDDEDSERVE*/:
-      case 0x0007 /*PRODUCT_STANDARD_SERVE*/:
-      case 0x000D /*PRODUCT_STANDARD_SERVER_COR*/:
-      case 0x0028 /*PRODUCT_STANDARD_SERVER_CORE_*/:
-      case 0x0024 /*PRODUCT_STANDARD_SERVER_*/:
-      case 0x0017 /*PRODUCT_STORAGE_ENTERPRISE_SERVE*/:
-      case 0x0014 /*PRODUCT_STORAGE_EXPRESS_SERVE*/:
-      case 0x0015 /*PRODUCT_STORAGE_STANDARD_SERVE*/:
-      case 0x0016 /*PRODUCT_STORAGE_WORKGROUP_SERVE*/:
-      case 0x0011 /*PRODUCT_WEB_SERVE*/:
-      case 0x001D /*PRODUCT_WEB_SERVER_COR*/:
-        Result = true;
-        break;
-
-      default:
-        Result = false;
-        break;
-    }
-  }
-  return Result;
-}
-//---------------------------------------------------------------------------
 LCID GetDefaultLCID()
 {
   return GetUserDefaultLCID();
@@ -1918,12 +2026,12 @@ UnicodeString WindowsProductName()
   try
   {
     Registry->SetRootKey(HKEY_LOCAL_MACHINE);
-    if (Registry->OpenKey("SOFTWARE", false) &&
-        Registry->OpenKey("Microsoft", false) &&
-        Registry->OpenKey("Windows NT", false) &&
-        Registry->OpenKey("CurrentVersion", false))
+    if (Registry->OpenKey(L"SOFTWARE", false) &&
+        Registry->OpenKey(L"Microsoft", false) &&
+        Registry->OpenKey(L"Windows NT", false) &&
+        Registry->OpenKey(L"CurrentVersion", false))
     {
-      Result = Registry->ReadString("ProductName");
+      Result = Registry->ReadString(L"ProductName");
     }
   }
   catch (...)

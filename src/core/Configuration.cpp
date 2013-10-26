@@ -5,8 +5,8 @@
 #include <shlobj.h>
 #include <FileInfo.h>
 
-#include "Exceptions.h"
 #include "Common.h"
+#include "Exceptions.h"
 #include "Configuration.h"
 #include "PuttyIntf.h"
 #include "TextsCore.h"
@@ -941,11 +941,6 @@ UnicodeString TConfiguration::GetConfigurationSubKey() const
 UnicodeString TConfiguration::GetRootKeyStr() const
 {
   return RootKeyToStr(HKEY_CURRENT_USER);
-}
-//---------------------------------------------------------------------------
-bool TConfiguration::GetGSSAPIInstalled() const
-{
-  return HasGSSAPI();
 }
 //---------------------------------------------------------------------------
 void TConfiguration::SetStorage(TStorage Value)

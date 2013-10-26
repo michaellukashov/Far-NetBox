@@ -611,15 +611,15 @@ int IsValidPassword(const UnicodeString & Password)
     int D = 0;
     for (intptr_t Index = 1; Index <= Password.Length(); ++Index)
     {
-      if ((Password[Index] >= L'a') && (Password[Index] <= L'z'))
+      if (IsLowerCaseLetter(Password[Index]))
       {
         A = 1;
       }
-      else if ((Password[Index] >= L'A') && (Password[Index] <= L'Z'))
+      else if (IsUpperCaseLetter(Password[Index]))
       {
         B = 1;
       }
-      else if ((Password[Index] >= L'0') && (Password[Index] <= L'9'))
+      else if (IsDigit(Password[Index]))
       {
         C = 1;
       }

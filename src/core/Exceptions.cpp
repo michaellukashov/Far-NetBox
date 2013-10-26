@@ -93,7 +93,7 @@ static bool WellKnownException(
 }
 //---------------------------------------------------------------------------
 static bool ExceptionMessage(const Exception * E, bool Count,
-  UnicodeString & Message, bool & InternalError)
+  bool Formatted, UnicodeString & Message, bool & InternalError)
 {
   bool Result = true;
   const wchar_t * CounterName = nullptr;
@@ -117,6 +117,11 @@ static bool ExceptionMessage(const Exception * E, bool Count,
     Message = E->Message;
   }
 
+  if (!Formatted)
+  {
+    Message = UnformatMessage(Message);
+  }
+
   if (InternalError)
   {
     Message = FMTLOAD(REPORT_ERROR, (Message));
@@ -133,7 +138,19 @@ static bool ExceptionMessage(const Exception * E, bool Count,
 bool ExceptionMessage(const Exception * E, UnicodeString & Message)
 {
   bool InternalError;
-  return ExceptionMessage(E, true, Message, InternalError);
+  return ExceptionMessage(E, true, false, Message, InternalError);
+}
+//---------------------------------------------------------------------------
+bool ExceptionMessageFormatted(const Exception * E, UnicodeString & Message)
+{
+  bool InternalError;
+  return ExceptionMessage(E, true, true, Message, InternalError);
+}
+//---------------------------------------------------------------------------
+bool ShouldDisplayException(Exception * E)
+{
+  UnicodeString Message;
+  return ExceptionMessageFormatted(E, Message);
 }
 //---------------------------------------------------------------------------
 TStrings * ExceptionToMoreMessages(Exception * E)
@@ -163,7 +180,7 @@ UnicodeString GetExceptionHelpKeyword(Exception * E)
   {
     HelpKeyword = ExtE->GetHelpKeyword();
   }
-  else if ((E != nullptr) && ExceptionMessage(E, false, Message, InternalError) &&
+  else if ((E != nullptr) && ExceptionMessage(E, false, false, Message, InternalError) &&
            InternalError)
   {
     HelpKeyword = HELP_INTERNAL_ERROR;
@@ -296,7 +313,7 @@ void ExtException::AddMoreMessages(const Exception * E)
     }
 
     UnicodeString Msg;
-    ExceptionMessage(E, Msg);
+    ExceptionMessageFormatted(E, Msg);
 
     // new exception does not have own message, this is in fact duplication of
     // the exception data, but the exception class may being changed

@@ -561,6 +561,29 @@ bool TFTPFileSystem::GetActive() const
   return FActive;
 }
 //---------------------------------------------------------------------------
+void TFTPFileSystem::CollectUsage()
+{
+  if (FFileZillaIntf->UsingMlsd())
+  {
+//    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPMLSD");
+  }
+  if (FFileZillaIntf->UsingUtf8())
+  {
+//    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPUTF8");
+  }
+  if (!GetCurrentDirectory().IsEmpty() && (GetCurrentDirectory()[1] != L'/'))
+  {
+    if (::IsUnixStyleWindowsPath(GetCurrentDirectory()))
+    {
+//      FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPWindowsPath");
+    }
+    else
+    {
+//      FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPOtherPath");
+    }
+  }
+}
+//---------------------------------------------------------------------------
 void TFTPFileSystem::Idle()
 {
   if (FActive && !FWaitingForReply)
@@ -615,7 +638,7 @@ void TFTPFileSystem::Discard()
 UnicodeString TFTPFileSystem::AbsolutePath(const UnicodeString & Path, bool /*Local*/)
 {
   // TODO: improve (handle .. etc.)
-  if (TTerminal::IsAbsolutePath(Path))
+  if (::UnixIsAbsolutePath(Path))
   {
     return Path;
   }
@@ -1824,6 +1847,8 @@ bool TFTPFileSystem::IsCapable(intptr_t Capability) const
     case fcNativeTextMode:
     case fcTimestampChanging:
     case fcIgnorePermErrors:
+    case fcRemoveCtrlZUpload:
+    case fcRemoveBOMUpload:
       return false;
 
     default:
@@ -2031,7 +2056,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & FileName,
     // cache the file list for future
     if ((FFileListCache != nullptr) &&
         UnixComparePaths(Path, FFileListCache->GetDirectory()) &&
-        (TTerminal::IsAbsolutePath(FFileListCache->GetDirectory()) ||
+        (::UnixIsAbsolutePath(FFileListCache->GetDirectory()) ||
         (FFileListCachePath == GetCurrentDirectory())))
     {
       File = FFileListCache->FindFile(NameOnly);
@@ -2124,7 +2149,7 @@ void TFTPFileSystem::SpaceAvailable(const UnicodeString & /* Path */,
   assert(false);
 }
 //---------------------------------------------------------------------------
-const TSessionInfo & TFTPFileSystem::GetSessionInfo()
+const TSessionInfo & TFTPFileSystem::GetSessionInfo() const
 {
   return FSessionInfo;
 }
@@ -3322,7 +3347,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       Params.Aliases = Aliases;
       Params.AliasesCount = LENOF(Aliases);
       uintptr_t Answer = FTerminal->QueryUser(
-        FMTLOAD(VERIFY_CERT_PROMPT2, FSessionInfo.Certificate.c_str()),
+        FMTLOAD(VERIFY_CERT_PROMPT3, FSessionInfo.Certificate.c_str()),
         nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
 
       switch (Answer)
