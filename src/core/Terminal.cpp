@@ -5179,13 +5179,13 @@ bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
   }
 
   BeginTransaction();
-  SCOPE_EXIT
   {
-    // If session is still active (no fatal error) we reload directory
-    // by calling EndTransaction
-    EndTransaction();
-  };
-  {
+    SCOPE_EXIT
+    {
+      // If session is still active (no fatal error) we reload directory
+      // by calling EndTransaction
+      EndTransaction();
+    };
     __int64 TotalSize = 0;
     bool TotalSizeKnown = false;
     TFileOperationProgressType OperationProgress(MAKE_CALLBACK(TTerminal::DoProgress, this), MAKE_CALLBACK(TTerminal::DoFinished, this));
@@ -5198,7 +5198,7 @@ bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
       };
       // dirty trick: when moving, do not pass copy param to avoid exclude mask
       if (CalculateFilesSize(
-           FilesToCopy.get(), TotalSize, csIgnoreErrors,
+           AFilesToCopy, TotalSize, csIgnoreErrors,
            (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL),
            CopyParam->GetCalculateSize(), NULL))
       {
