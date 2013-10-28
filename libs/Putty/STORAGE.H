@@ -9,9 +9,9 @@
 /* ----------------------------------------------------------------------
  * Functions to save and restore PuTTY sessions. Note that this is
  * only the low-level code to do the reading and writing. The
- * higher-level code that translates a Config structure into a set
- * of (key,value) pairs is elsewhere, since it doesn't (mostly)
- * change between platforms.
+ * higher-level code that translates an internal Conf structure into
+ * a set of (key,value) pairs in their external storage format is
+ * elsewhere, since it doesn't (mostly) change between platforms.
  */
 
 /*
@@ -25,14 +25,14 @@
  * A given key will be written at most once while saving a session.
  * Keys may be up to 255 characters long.  String values have no length
  * limit.
- * 
+ *
  * Any returned error message must be freed after use.
  */
 void *open_settings_w(const char *sessionname, char **errmsg);
 void write_setting_s(void *handle, const char *key, const char *value);
 void write_setting_i(void *handle, const char *key, int value);
-void write_setting_filename(void *handle, const char *key, Filename value);
-void write_setting_fontspec(void *handle, const char *key, FontSpec font);
+void write_setting_filename(void *handle, const char *key, Filename *value);
+void write_setting_fontspec(void *handle, const char *key, FontSpec *font);
 void close_settings_w(void *handle);
 
 /*
@@ -40,23 +40,22 @@ void close_settings_w(void *handle);
  * open_setting_r() to get a `void *' handle, then pass that to a
  * number of calls to read_setting_s() and read_setting_i(), and
  * then close it using close_settings_r().
- * 
- * read_setting_s() writes into the provided buffer and returns a
- * pointer to the same buffer.
- * 
+ *
+ * read_setting_s() returns a dynamically allocated string which the
+ * caller must free. read_setting_filename() and
+ * read_setting_fontspec() likewise return dynamically allocated
+ * structures.
+ *
  * If a particular string setting is not present in the session,
  * read_setting_s() can return NULL, in which case the caller
  * should invent a sensible default. If an integer setting is not
  * present, read_setting_i() returns its provided default.
- * 
- * read_setting_filename() and read_setting_fontspec() each read into
- * the provided buffer, and return zero if they failed to.
  */
 void *open_settings_r(const char *sessionname);
-char *read_setting_s(void *handle, const char *key, char *buffer, int buflen);
+char *read_setting_s(void *handle, const char *key);
 int read_setting_i(void *handle, const char *key, int defvalue);
-int read_setting_filename(void *handle, const char *key, Filename *value);
-int read_setting_fontspec(void *handle, const char *key, FontSpec *font);
+Filename *read_setting_filename(void *handle, const char *key);
+FontSpec *read_setting_fontspec(void *handle, const char *key);
 void close_settings_r(void *handle);
 
 /*
@@ -77,7 +76,7 @@ void enum_settings_finish(void *handle);
 
 #ifdef MPEXT
 int retrieve_host_key(const char *hostname, int port,
-		    const char *keytype, char *key, int maxlen);
+        const char *keytype, char *key, int maxlen);
 #else
 /*
  * See if a host key matches the database entry. Return values can
@@ -85,7 +84,7 @@ int retrieve_host_key(const char *hostname, int port,
  * or 2 (entry exists in database and is different).
  */
 int verify_host_key(const char *hostname, int port,
-		    const char *keytype, const char *key);
+        const char *keytype, const char *key);
 #endif
 
 /*
@@ -93,7 +92,7 @@ int verify_host_key(const char *hostname, int port,
  * entry that might have been there.
  */
 void store_host_key(const char *hostname, int port,
-		    const char *keytype, const char *key);
+        const char *keytype, const char *key);
 
 /* ----------------------------------------------------------------------
  * Functions to access PuTTY's random number seed file.
