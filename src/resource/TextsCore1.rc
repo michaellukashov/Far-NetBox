@@ -378,4 +378,11 @@ BEGIN
   OPENSSL_URL, "http://www.openssl.org/"
   PUTTY_LICENSE_URL, "http://www.chiark.greenend.org.uk/~sgtatham/putty/licence.html"
   MAIN_MSG_TAG, "**"
+
+  WINSCPFAR_NAME, "WinSCP"
+  WINSCP_VERSION, "5.2.5"
+  WINSCPFAR_VERSION, "1.6.2"
+  WINSCPFAR_BASED_ON, "Based on WinSCP: SFTP/FTP/SCP client for FAR"
+  WINSCPFAR_BASED_VERSION, " Version %s"
+  WINSCPFAR_BASED_COPYRIGHT "Copyright © 2000-2013 Martin Prikryl"
 END
