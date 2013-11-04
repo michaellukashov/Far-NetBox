@@ -729,7 +729,7 @@ void TTerminalQueue::UpdateStatusForList(
 //---------------------------------------------------------------------------
 TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Current)
 {
-  std::auto_ptr<TTerminalQueueStatus> Status(new TTerminalQueueStatus());
+  std::unique_ptr<TTerminalQueueStatus> Status(new TTerminalQueueStatus());
   SCOPE_EXIT
   {
     if (Current != nullptr)
@@ -1220,7 +1220,7 @@ void TTerminalItem::Init(intptr_t Index)
 
   FCriticalSection = new TCriticalSection();
 
-  std::auto_ptr<TBackgroundTerminal> Terminal(new TBackgroundTerminal(FQueue->FTerminal));
+  std::unique_ptr<TBackgroundTerminal> Terminal(new TBackgroundTerminal(FQueue->FTerminal));
   Terminal->Init(FQueue->FSessionData, FQueue->FConfiguration, this, FORMAT(L"Background %d", Index));
   Terminal->SetUseBusyCursor(false);
 
@@ -1289,7 +1289,7 @@ void TTerminalItem::ProcessEvent()
   catch(Exception & E)
   {
     UnicodeString Message;
-    if (ExceptionMessage(&E, Message))
+    if (ExceptionMessageFormatted(&E, Message))
     {
       // do not show error messages, if task was canceled anyway
       // (for example if transfer is canceled during reconnection attempts)
@@ -1503,9 +1503,8 @@ void TTerminalItem::TerminalShowExtendedException(
   USEDPARAM(Arg);
   assert(Arg == nullptr);
 
-  UnicodeString Message; // not used
   if ((FItem != nullptr) &&
-      ExceptionMessage(E, Message))
+      ShouldDisplayException(E))
   {
     TShowExtendedExceptionAction Action(FQueue->GetOnShowExtendedException());
     Action.Terminal = Terminal;

@@ -2,13 +2,13 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include "Common.h"
 #include "PuttyIntf.h"
 #include "Exceptions.h"
 #include "Interface.h"
 #include "SecureShell.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
-#include "Common.h"
 #include "CoreMain.h"
 
 #ifndef AUTO_WINSOCK
@@ -56,8 +56,6 @@ TSecureShell::TSecureShell(TSessionUI * UI,
   ResetConnection();
   FOnCaptureOutput = nullptr;
   FOnReceive = nullptr;
-  FConfig = new Config();
-  memset(FConfig, 0, sizeof(*FConfig));
   FSocket = INVALID_SOCKET;
   FSocketEvent = CreateEvent(nullptr, false, false, nullptr);
   FFrozen = false;
@@ -72,9 +70,6 @@ TSecureShell::~TSecureShell()
   SetActive(false);
   ResetConnection();
   ::CloseHandle(FSocketEvent);
-  ClearConfig(FConfig);
-  delete FConfig;
-  FConfig = nullptr;
 }
 //---------------------------------------------------------------------------
 void TSecureShell::ResetConnection()
@@ -100,7 +95,7 @@ void TSecureShell::ResetSessionInfo()
   FMaxPacketSize = nullptr;
 }
 //---------------------------------------------------------------------------
-inline void TSecureShell::UpdateSessionInfo()
+void TSecureShell::UpdateSessionInfo() const
 {
   if (!FSessionInfoValid)
   {
@@ -130,7 +125,7 @@ inline void TSecureShell::UpdateSessionInfo()
   }
 }
 //---------------------------------------------------------------------------
-const TSessionInfo & TSecureShell::GetSessionInfo()
+const TSessionInfo & TSecureShell::GetSessionInfo() const
 {
   if (!FSessionInfoValid)
   {
@@ -139,20 +134,52 @@ const TSessionInfo & TSecureShell::GetSessionInfo()
   return FSessionInfo;
 }
 //---------------------------------------------------------------------
-void TSecureShell::ClearConfig(Config * cfg)
+Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
 {
-  AnsiStrDispose(cfg->remote_cmd_ptr);
-  AnsiStrDispose(cfg->remote_cmd_ptr2);
-  // clear all
-  memset(cfg, 0, sizeof(*cfg));
-}
-//---------------------------------------------------------------------
-void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
-{
-  ClearConfig(cfg);
+  Conf * conf = conf_new();
+
+  assert((asOn == FORCE_ON) && (asOff == FORCE_OFF) && (asAuto == AUTO));
+
+  #define CONF_ssh_cipherlist_MAX CIPHER_MAX
+  #define CONF_DEF_INT_NONE(KEY) conf_set_int(conf, KEY, 0);
+  #define CONF_DEF_STR_NONE(KEY) conf_set_str(conf, KEY, "");
+  // noop, used only for these and we set the first three explicitly below and latter two are not used in our code
+  #define CONF_DEF_INT_INT(KEY) assert((KEY == CONF_ssh_cipherlist) || (KEY == CONF_ssh_kexlist) || (KEY == CONF_ssh_gsslist) || (KEY == CONF_colours) || (KEY == CONF_wordness));
+  // noop, used only for these three and all thay all can handle undef value
+  #define CONF_DEF_STR_STR(KEY) assert((KEY == CONF_ttymodes) || (KEY == CONF_portfwd) || (KEY == CONF_environmt));
+  // noop, not used in our code
+  #define CONF_DEF_FONT_NONE(KEY) assert((KEY == CONF_font) || (KEY == CONF_boldfont) || (KEY == CONF_widefont) || (KEY == CONF_wideboldfont));
+  #define CONF_DEF_FILENAME_NONE(KEY) \
+    { \
+      Filename * filename = filename_from_str(""); \
+      conf_set_filename(conf, KEY, filename); \
+      filename_free(filename); \
+    }
+  #define CONF_SET_DEFAULT(VALTYPE, KEYTYPE, KEYWORD) CONF_DEF_ ## VALTYPE ## _ ## KEYTYPE(CONF_ ## KEYWORD);
+  CONFIG_OPTIONS(CONF_SET_DEFAULT);
+  #undef CONF_SET_DEFAULT
+  #undef CONF_DEF_FILENAME_NONE
+  #undef CONF_DEF_FONT_NONE
+  #undef CONF_DEF_STR_STR
+  #undef CONF_DEF_INT_INT
+  #undef CONF_DEF_STR_NONE
+  #undef CONF_DEF_INT_NONE
 
   // user-configurable settings
-  ASCOPY(cfg->host, Data->GetHostNameExpanded());
+  conf_set_str(conf, CONF_host, AnsiString(Data->GetHostNameExpanded()).c_str());
+  conf_set_str(conf, CONF_username, AnsiString(Data->GetUserNameExpanded()).c_str());
+  conf_set_int(conf, CONF_port, Data->GetPortNumber());
+  conf_set_int(conf, CONF_protocol, PROT_SSH);
+  // always set 0, as we will handle keepalives ourselves to avoid
+  // multi-threaded issues in putty timer list
+  conf_set_int(conf, CONF_ping_interval, 0);
+  conf_set_int(conf, CONF_compression, Data->GetCompression());
+  conf_set_int(conf, CONF_tryagent, Data->GetTryAgent());
+  conf_set_int(conf, CONF_agentfwd, Data->GetAgentFwd());
+  conf_set_int(conf, CONF_addressfamily, Data->GetAddressFamily());
+  conf_set_str(conf, CONF_ssh_rekey_data, AnsiString(Data->GetRekeyData()).c_str());
+  conf_set_int(conf, CONF_ssh_rekey_time, Data->GetRekeyTime());
+  /*ASCOPY(cfg->host, Data->GetHostNameExpanded());
   ASCOPY(cfg->username, Data->GetUserNameExpanded());
   cfg->port = static_cast<int>(Data->GetPortNumber());
   cfg->protocol = PROT_SSH;
@@ -165,6 +192,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   cfg->addressfamily = Data->GetAddressFamily();
   ASCOPY(cfg->ssh_rekey_data, Data->GetRekeyData());
   cfg->ssh_rekey_time = static_cast<int>(Data->GetRekeyTime());
+*/
 
   for (int c = 0; c < CIPHER_COUNT; c++)
   {
@@ -179,7 +207,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
       case cipArcfour: pcipher = CIPHER_ARCFOUR; break;
       default: assert(false);
     }
-    cfg->ssh_cipherlist[c] = pcipher;
+    conf_set_int_int(conf, CONF_ssh_cipherlist, c, pcipher);
   }
 
   for (int k = 0; k < KEX_COUNT; k++)
@@ -194,7 +222,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
       case kexRSA: pkex = KEX_RSA; break;
       default: assert(false);
     }
-    cfg->ssh_kexlist[k] = pkex;
+    conf_set_int_int(conf, CONF_ssh_kexlist, k, pkex);
   }
 
   UnicodeString SPublicKeyFile = Data->GetPublicKeyFile();
@@ -203,125 +231,129 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
     SPublicKeyFile = GetConfiguration()->GetDefaultKeyFile();
   }
   SPublicKeyFile = StripPathQuotes(ExpandEnvironmentVariables(SPublicKeyFile));
-  ASCOPY(cfg->keyfile.path, SPublicKeyFile);
-  cfg->sshprot = Data->GetSshProt();
-  cfg->ssh2_des_cbc = Data->GetSsh2DES();
-  cfg->ssh_no_userauth = Data->GetSshNoUserAuth();
-  cfg->try_tis_auth = Data->GetAuthTIS();
-  cfg->try_ki_auth = Data->GetAuthKI();
-  cfg->try_gssapi_auth = Data->GetAuthGSSAPI();
-  cfg->gssapifwd = Data->GetGSSAPIFwdTGT();
-  cfg->change_username = Data->GetChangeUsername();
+  Filename * KeyFileFileName = filename_from_str(AnsiString(SPublicKeyFile).c_str());
+  conf_set_filename(conf, CONF_keyfile, KeyFileFileName);
+  filename_free(KeyFileFileName);
 
-  cfg->proxy_type = Data->GetActualProxyMethod();
-  ASCOPY(cfg->proxy_host, Data->GetProxyHost());
-  cfg->proxy_port = static_cast<int>(Data->GetProxyPort());
-  ASCOPY(cfg->proxy_username, Data->GetProxyUsername());
-  ASCOPY(cfg->proxy_password, Data->GetProxyPassword());
+  conf_set_int(conf, CONF_sshprot, Data->GetSshProt());
+  conf_set_int(conf, CONF_ssh2_des_cbc, Data->GetSsh2DES());
+  conf_set_int(conf, CONF_ssh_no_userauth, Data->GetSshNoUserAuth());
+  conf_set_int(conf, CONF_try_tis_auth, Data->GetAuthTIS());
+  conf_set_int(conf, CONF_try_ki_auth, Data->GetAuthKI());
+  conf_set_int(conf, CONF_try_gssapi_auth, Data->GetAuthGSSAPI());
+  conf_set_int(conf, CONF_gssapifwd, Data->GetGSSAPIFwdTGT());
+  conf_set_int(conf, CONF_change_username, Data->GetChangeUsername());
+
+  conf_set_int(conf, CONF_proxy_type, Data->GetActualProxyMethod());
+  conf_set_str(conf, CONF_proxy_host, AnsiString(Data->GetProxyHost()).c_str());
+  conf_set_int(conf, CONF_proxy_port, static_cast<int>(Data->GetProxyPort()));
+  conf_set_str(conf, CONF_proxy_username, AnsiString(Data->GetProxyUsername()).c_str());
+  conf_set_str(conf, CONF_proxy_password, AnsiString(Data->GetProxyPassword()).c_str());
   if (Data->GetProxyMethod() == pmCmd)
   {
-    ASCOPY(cfg->proxy_telnet_command, Data->GetProxyLocalCommand());
+    conf_set_str(conf, CONF_proxy_telnet_command, AnsiString(Data->GetProxyLocalCommand()).c_str());
   }
   else
   {
-    ASCOPY(cfg->proxy_telnet_command, Data->GetProxyTelnetCommand());
+    conf_set_str(conf, CONF_proxy_telnet_command, AnsiString(Data->GetProxyTelnetCommand()).c_str());
   }
-  cfg->proxy_dns = Data->GetProxyDNS();
-  cfg->even_proxy_localhost = Data->GetProxyLocalhost();
+  conf_set_int(conf, CONF_proxy_dns, Data->GetProxyDNS());
+  conf_set_int(conf, CONF_even_proxy_localhost, Data->GetProxyLocalhost());
 
-  #pragma option push -w-eas
-  // after 0.53b values were reversed, however putty still stores
-  // settings to registry in same way as before
-  cfg->sshbug_ignore1 = Data->GetBug(sbIgnore1);
-  cfg->sshbug_plainpw1 = Data->GetBug(sbPlainPW1);
-  cfg->sshbug_rsa1 = Data->GetBug(sbRSA1);
-  cfg->sshbug_hmac2 = Data->GetBug(sbHMAC2);
-  cfg->sshbug_derivekey2 = Data->GetBug(sbDeriveKey2);
-  cfg->sshbug_rsapad2 = Data->GetBug(sbRSAPad2);
-  cfg->sshbug_rekey2 = Data->GetBug(sbRekey2);
-  // new after 0.53b
-  cfg->sshbug_pksessid2 = Data->GetBug(sbPKSessID2);
-  cfg->sshbug_maxpkt2 = Data->GetBug(sbMaxPkt2);
-  cfg->sshbug_ignore2 = Data->GetBug(sbIgnore2);
-  #pragma option pop
+  conf_set_int(conf, CONF_sshbug_ignore1, Data->GetBug(sbIgnore1));
+  conf_set_int(conf, CONF_sshbug_plainpw1, Data->GetBug(sbPlainPW1));
+  conf_set_int(conf, CONF_sshbug_rsa1, Data->GetBug(sbRSA1));
+  conf_set_int(conf, CONF_sshbug_hmac2, Data->GetBug(sbHMAC2));
+  conf_set_int(conf, CONF_sshbug_derivekey2, Data->GetBug(sbDeriveKey2));
+  conf_set_int(conf, CONF_sshbug_rsapad2, Data->GetBug(sbRSAPad2));
+  conf_set_int(conf, CONF_sshbug_rekey2, Data->GetBug(sbRekey2));
+  conf_set_int(conf, CONF_sshbug_pksessid2, Data->GetBug(sbPKSessID2));
+  conf_set_int(conf, CONF_sshbug_maxpkt2, Data->GetBug(sbMaxPkt2));
+  conf_set_int(conf, CONF_sshbug_ignore2, Data->GetBug(sbIgnore2));
+  conf_set_int(conf, CONF_sshbug_winadj, FORCE_OFF);
 
   if (!Data->GetTunnelPortFwd().IsEmpty())
   {
     assert(!Simple);
-    ASCOPY(cfg->portfwd, Data->GetTunnelPortFwd());
+    conf_set_str(conf, CONF_portfwd, AnsiString(Data->GetTunnelPortFwd()).c_str());
     // when setting up a tunnel, do not open shell/sftp
-    cfg->ssh_no_shell = TRUE;
+    conf_set_int(conf, CONF_ssh_no_shell, TRUE);
   }
   else
   {
     assert(Simple);
-    cfg->ssh_simple = Data->GetSshSimple() && Simple;
+    conf_set_int(conf, CONF_ssh_simple, Data->GetSshSimple() && Simple);
 
     if (Data->GetFSProtocol() == fsSCPonly)
     {
-      cfg->ssh_subsys = FALSE;
+      conf_set_int(conf, CONF_ssh_subsys, FALSE);
       if (Data->GetShell().IsEmpty())
       {
         // Following forces Putty to open default shell
         // see ssh.c: do_ssh2_authconn() and ssh1_protocol()
-        cfg->remote_cmd[0] = L'\0';
+        conf_set_str(conf, CONF_remote_cmd, "");
       }
       else
       {
-        cfg->remote_cmd_ptr = AnsiStrNew(Data->GetShell().c_str());
+        conf_set_str(conf, CONF_remote_cmd, AnsiString(Data->GetShell().c_str()));
       }
     }
     else
     {
       if (Data->GetSftpServer().IsEmpty())
       {
-        cfg->ssh_subsys = TRUE;
-        strcpy_s(cfg->remote_cmd, sizeof(cfg->remote_cmd), "sftp");
+        conf_set_int(conf, CONF_ssh_subsys, TRUE);
+        conf_set_str(conf, CONF_remote_cmd, "sftp");
       }
       else
       {
-        cfg->ssh_subsys = FALSE;
-        cfg->remote_cmd_ptr = AnsiStrNew(Data->GetSftpServer().c_str());
+        conf_set_int(conf, CONF_ssh_subsys, FALSE);
+        conf_set_str(conf, CONF_remote_cmd, AnsiString(Data->GetSftpServer().c_str()));
       }
 
       if (Data->GetFSProtocol() != fsSFTPonly)
       {
-        cfg->ssh_subsys2 = FALSE;
+        conf_set_int(conf, CONF_ssh_subsys2, FALSE);
         if (Data->GetShell().IsEmpty())
         {
           // Following forces Putty to open default shell
           // see ssh.c: do_ssh2_authconn() and ssh1_protocol()
-          cfg->remote_cmd_ptr2 = AnsiStrNew(L"\0");
+          conf_set_str(conf, CONF_remote_cmd2, "");
+          // PuTTY ignores CONF_remote_cmd2 set to "",
+          // so we have to enforce it
+          // (CONF_force_remote_cmd2 is our config option)
+          conf_set_int(conf, CONF_force_remote_cmd2, 1);
         }
         else
         {
-          cfg->remote_cmd_ptr2 = AnsiStrNew(Data->GetShell().c_str());
+          conf_set_str(conf, CONF_remote_cmd2, AnsiString(Data->GetShell().c_str()));
         }
       }
 
       if ((Data->GetFSProtocol() == fsSFTPonly) && Data->GetSftpServer().IsEmpty())
       {
         // see psftp_connect() from psftp.c
-        cfg->ssh_subsys2 = FALSE;
-        cfg->remote_cmd_ptr2 = AnsiStrNew(
+        conf_set_int(conf, CONF_ssh_subsys2, FALSE);
+        conf_set_str(conf, CONF_remote_cmd2, AnsiString(
           L"test -x /usr/lib/sftp-server && exec /usr/lib/sftp-server\n"
           L"test -x /usr/local/lib/sftp-server && exec /usr/local/lib/sftp-server\n"
-          L"exec sftp-server");
+          L"exec sftp-server").c_str());
       }
     }
   }
 
-  cfg->connect_timeout = static_cast<int>(Data->GetTimeout() * MSecsPerSec);
-  cfg->sndbuf = static_cast<int>(Data->GetSendBuf());
+  conf_set_int(conf, CONF_connect_timeout, static_cast<int>(Data->GetTimeout() * MSecsPerSec));
+  conf_set_int(conf, CONF_sndbuf, static_cast<int>(Data->GetSendBuf()));
 
   // permanent settings
-  cfg->nopty = TRUE;
-  cfg->tcp_keepalives = 0;
-  cfg->ssh_show_banner = TRUE;
+  conf_set_int(conf, CONF_nopty, TRUE);
+  conf_set_int(conf, CONF_tcp_keepalives, 0);
+  conf_set_int(conf, CONF_ssh_show_banner, TRUE);
   for (intptr_t Index = 0; Index < ngsslibs; ++Index)
   {
-    cfg->ssh_gsslist[Index] = gsslibkeywords[Index].v;
+    conf_set_int_int(conf, CONF_ssh_gsslist, Index, gsslibkeywords[Index].v);
   }
+  return conf;
 }
 //---------------------------------------------------------------------------
 void TSecureShell::Open()
@@ -337,18 +369,28 @@ void TSecureShell::Open()
   FAuthenticationLog = L"";
   FNoConnectionResponse = false;
   FUI->Information(LoadStr(STATUS_LOOKUPHOST), true);
-  StoreToConfig(FSessionData, FConfig, GetSimple());
 
   try
   {
     char * RealHost = nullptr;
     FreeBackend(); // in case we are reconnecting
-    const char * InitError = FBackend->init(this, &FBackendHandle, FConfig,
-      const_cast<char *>(W2MB(FSessionData->GetHostNameExpanded().c_str(),
-      (const UINT)FSessionData->GetCodePageAsNumber()).c_str()),
-      static_cast<int>(FSessionData->GetPortNumber()),
-      &RealHost, 0,
-      FConfig->tcp_keepalives);
+    const char * InitError = nullptr;
+    Conf * conf = StoreToConfig(FSessionData, GetSimple());
+    {
+      SCOPE_EXIT
+      {
+        conf_free(conf);
+      };
+      InitError = FBackend->init(this, &FBackendHandle, conf,
+        AnsiString(FSessionData->GetHostNameExpanded()).c_str(), FSessionData->GetPortNumber(), &RealHost, 0,
+        conf_get_int(conf, CONF_tcp_keepalives));
+    }
+
+      //const_cast<char *>(W2MB(FSessionData->GetHostNameExpanded().c_str(),
+      //(const UINT)FSessionData->GetCodePageAsNumber()).c_str()),
+      //static_cast<int>(FSessionData->GetPortNumber()),
+      //&RealHost, 0,
+      //FConfig->tcp_keepalives);
     sfree(RealHost);
     if (InitError)
     {
@@ -990,11 +1032,11 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
   FWaiting++;
 
   uintptr_t Answer;
-  SCOPE_EXIT
   {
-    FWaiting--;
-  };
-  {
+    SCOPE_EXIT
+    {
+      FWaiting--;
+    };
     TQueryParams Params(qpFatalAbort | qpAllowContinueOnError | qpIgnoreAbort);
     Params.HelpKeyword = HELP_MESSAGE_HOST_IS_NOT_COMMUNICATING;
     Params.Timer = 500;
@@ -1006,7 +1048,7 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
       Params.Timeout = FConfiguration->GetSessionReopenAutoStall();
       Params.TimeoutAnswer = qaAbort;
     }
-    Answer = FUI->QueryUser(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout(), FSessionData->GetTimeout()),
+    Answer = FUI->QueryUser(MainInstructions(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout(), FSessionData->GetTimeout())),
       nullptr, qaRetry | qaAbort, &Params);
   }
   return Answer;
@@ -1184,12 +1226,10 @@ int TSecureShell::TranslateAuthenticationMessage(
 
   int Result = TranslatePuttyMessage(Translation, LENOF(Translation), Message, HelpKeyword);
 
-  if (FCollectPrivateKeyUsage &&
-      (Result == 2) || (Result == 3) || (Result == 4))
+  if ((Result == 2) || (Result == 3) || (Result == 4))
   {
     // GetConfiguration()->GetUsage()->Inc(L"OpenedSessionsPrivateKey2");
-    // once only
-    FCollectPrivateKeyUsage = false;
+    FCollectPrivateKeyUsage = true;
   }
 
   return Result;
@@ -1462,6 +1502,8 @@ void inline TSecureShell::CheckConnection(int Message)
       HelpKeyword = HELP_NOT_CONNECTED;
     }
 
+    Str = MainInstructions(Str);
+
     int ExitCode = get_ssh_exitcode(FBackendHandle);
     if (ExitCode >= 0)
     {
@@ -1692,14 +1734,20 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     int HandleCount;
     // note that this returns all handles, not only the session-related handles
     HANDLE * Handles = handle_get_events(&HandleCount);
-    SCOPE_EXIT
     {
-      sfree(Handles);
-    };
-    {
+      SCOPE_EXIT
+      {
+        sfree(Handles);
+      };
       Handles = sresize(Handles, static_cast<size_t>(HandleCount + 1), HANDLE);
       Handles[HandleCount] = FSocketEvent;
-      uintptr_t WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, (DWORD)MSec);
+      //uintptr_t WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, (DWORD)MSec);
+      unsigned int Timeout = MSec;
+      if (toplevel_callback_pending())
+      {
+        Timeout = 0;
+      }
+      unsigned int WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, Timeout);
       if (WaitResult < WAIT_OBJECT_0 + HandleCount)
       {
         if (handle_got_event(Handles[WaitResult - WAIT_OBJECT_0]))
@@ -1760,6 +1808,8 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
         MSec = 0;
       }
     }
+
+    run_toplevel_callbacks();
 
     uintptr_t TicksAfter = GetTickCount();
     // ticks wraps once in 49.7 days
@@ -1967,9 +2017,42 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   }
 
   FSessionInfo.HostKeyFingerprint = Fingerprint;
+  UnicodeString NormalizedFingerprint = NormalizeFingerprint(Fingerprint);
 
   bool Result = false;
 
+  UnicodeString StoredKeys;
+  AnsiString AnsiStoredKeys;
+  AnsiStoredKeys.SetLength(10240);
+  if (retrieve_host_key(AnsiString(Host).c_str(), Port, AnsiString(KeyType).c_str(),
+        (char *)AnsiStoredKeys.c_str(), AnsiStoredKeys.Length()) == 0)
+  {
+    StoredKeys = AnsiStoredKeys.c_str();
+    UnicodeString Buf = StoredKeys;
+    while (!Result && !Buf.IsEmpty())
+    {
+      UnicodeString StoredKey = CutToChar(Buf, Delimiter, false);
+      bool Fingerprint = (StoredKey.SubString(1, 2) != L"0x");
+      // its probably a fingerprint (stored by TSessionData::CacheHostKey)
+      UnicodeString NormalizedExpectedKey;
+      if (Fingerprint)
+      {
+        NormalizedExpectedKey = NormalizeFingerprint(StoredKey);
+      }
+      if ((!Fingerprint && (StoredKey == KeyStr)) ||
+          (Fingerprint && (NormalizedExpectedKey == NormalizedFingerprint)))
+      {
+        LogEvent(L"Host key matches cached key");
+        Result = true;
+      }
+      else
+      {
+        UnicodeString FormattedKey = Fingerprint ? StoredKey : FormatKeyStr(StoredKey);
+        LogEvent(FORMAT(L"Host key does not match cached key %s", (FormattedKey)));
+      }
+    }
+  }
+/*
   UnicodeString Buf = FSessionData->GetHostKey();
   while (!Result && !Buf.IsEmpty())
   {
@@ -1991,10 +2074,33 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       LogEvent(FORMAT(L"Host key does not match configured key %s", ExpectedKey.c_str()));
     }
   }
-
   UnicodeString StoredKeys;
-  if (!Result)
+*/
+  if (!Result && (StoredKeys.IsEmpty() || FSessionData->GetOverrideCachedHostKey()))
   {
+    UnicodeString Buf = FSessionData->GetHostKey();
+    while (!Result && !Buf.IsEmpty())
+    {
+      UnicodeString ExpectedKey = CutToChar(Buf, Delimiter, false);
+      UnicodeString NormalizedExpectedKey = NormalizeFingerprint(ExpectedKey);
+      if (ExpectedKey == L"*")
+      {
+        UnicodeString Message = LoadStr(ANY_HOSTKEY);
+        FUI->Information(Message, true);
+        FLog->Add(llException, Message);
+        Result = true;
+      }
+      else if (NormalizedExpectedKey == NormalizedFingerprint)
+      {
+        LogEvent(L"Host key matches configured key");
+        Result = true;
+      }
+      else
+      {
+        LogEvent(FORMAT(L"Host key does not match configured key %s", ExpectedKey.c_str()));
+      }
+    }
+/*
     AnsiString AnsiStoredKeys;
     AnsiStoredKeys.SetLength(10240);
     if (retrieve_host_key(
@@ -2026,6 +2132,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
     {
       StoredKeys = L"";
     }
+*/
   }
 
   if (!Result)
@@ -2070,7 +2177,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       Params.Aliases = Aliases;
       Params.AliasesCount = AliasesCount;
       uintptr_t R = FUI->QueryUser(
-        FMTLOAD((Unknown ? UNKNOWN_KEY2 : DIFFERENT_KEY3), KeyType.c_str(), Fingerprint.c_str()),
+        FMTLOAD((Unknown ? UNKNOWN_KEY3 : DIFFERENT_KEY4), KeyType.c_str(), Fingerprint.c_str()),
         nullptr, Answers, &Params, qtWarning);
 
       switch (R)
@@ -2096,7 +2203,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
 
     if (!Verified)
     {
-      std::auto_ptr<Exception> E(new Exception(LoadStr(KEY_NOT_VERIFIED)));
+      std::unique_ptr<Exception> E(new Exception(LoadStr(KEY_NOT_VERIFIED)));
       FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, Fingerprint.c_str()));
     }
   }
@@ -2160,7 +2267,10 @@ bool TSecureShell::GetReady() const
   return FOpened && (FWaiting == 0);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::EnableUsage()
+void TSecureShell::CollectUsage()
 {
-  FCollectPrivateKeyUsage = true;
+  if (FCollectPrivateKeyUsage)
+  {
+//    Configuration->Usage->Inc(L"OpenedSessionsPrivateKey2");
+  }
 }

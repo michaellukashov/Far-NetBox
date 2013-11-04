@@ -216,6 +216,8 @@
     <ClCompile Include=".\windows\WINSTORE_.C" />
     <ClCompile Include=".\windows\WINTIME.C" />
     <ClCompile Include=".\X11FWD.C" />
+    <ClCompile Include=".\CONF.C" />
+    <ClCompile Include=".\CALLBACK.C" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

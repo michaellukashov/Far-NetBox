@@ -768,11 +768,11 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
   // FIXME assert(FLAGCLEAR(AFlags, FMSG_DOWN));
   assert(FLAGCLEAR(AFlags, FMSG_ALLINONE));
 
-  std::auto_ptr<TStrings> MessageLines(new TStringList());
+  std::unique_ptr<TStrings> MessageLines(new TStringList());
   FarWrapText(Message, MessageLines.get(), MaxMessageWidth);
   intptr_t MaxLen = GetFarPlugin()->MaxLength(MessageLines.get());
   TStrings * MoreMessageLines = nullptr;
-  std::auto_ptr<TStrings> MoreMessageLinesPtr(nullptr);
+  std::unique_ptr<TStrings> MoreMessageLinesPtr(nullptr);
   if (FParams->MoreMessages != nullptr)
   {
     MoreMessageLines = new TStringList();
@@ -1014,7 +1014,7 @@ intptr_t TCustomFarPlugin::DialogMessage(unsigned int Flags,
   TFarMessageParams * Params)
 {
   intptr_t Result;
-  std::auto_ptr<TFarMessageDialog> Dialog(new TFarMessageDialog(this, Params));
+  std::unique_ptr<TFarMessageDialog> Dialog(new TFarMessageDialog(this, Params));
   Dialog->Init(Flags, Title, Message, Buttons);
   Result = Dialog->Execute(Params->CheckBox);
   return Result;
@@ -1028,7 +1028,7 @@ intptr_t TCustomFarPlugin::FarMessage(unsigned int Flags,
 
   intptr_t Result;
   TStringList * MessageLines = nullptr;
-  std::auto_ptr<TStrings> MessageLinesPtr(nullptr);
+  std::unique_ptr<TStrings> MessageLinesPtr(nullptr);
   wchar_t ** Items = nullptr;
   SCOPE_EXIT
   {
@@ -1875,8 +1875,8 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo * Info)
     {
       ClearOpenPanelInfo(FOpenPanelInfo);
       UnicodeString HostFile, CurDir, Format, PanelTitle, ShortcutData;
-      std::auto_ptr<TFarPanelModes> PanelModes(new TFarPanelModes());
-      std::auto_ptr<TFarKeyBarTitles> KeyBarTitles(new TFarKeyBarTitles());
+      std::unique_ptr<TFarPanelModes> PanelModes(new TFarPanelModes());
+      std::unique_ptr<TFarKeyBarTitles> KeyBarTitles(new TFarKeyBarTitles());
       bool StartSortOrder = false;
 
       GetOpenPanelInfoEx(FOpenPanelInfo.Flags, HostFile, CurDir, Format,
@@ -1908,7 +1908,7 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo * Info)
 intptr_t TCustomFarFileSystem::GetFindData(struct GetFindDataInfo *Info)
 {
   ResetCachedInfo();
-  std::auto_ptr<TObjectList> PanelItems(new TObjectList());
+  std::unique_ptr<TObjectList> PanelItems(new TObjectList());
   bool Result = !FClosed && GetFindDataEx(PanelItems.get(), Info->OpMode);
   if (Result && PanelItems->GetCount())
   {
@@ -1955,7 +1955,7 @@ void TCustomFarFileSystem::FreeFindData(const struct FreeFindDataInfo *Info)
 intptr_t TCustomFarFileSystem::ProcessHostFile(const struct ProcessHostFileInfo *Info)
 {
   ResetCachedInfo();
-  std::auto_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
+  std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
   bool Result = ProcessHostFileEx(PanelItems.get(), Info->OpMode);
   return Result;
 }
@@ -2008,7 +2008,7 @@ intptr_t TCustomFarFileSystem::MakeDirectory(struct MakeDirectoryInfo *Info)
 intptr_t TCustomFarFileSystem::DeleteFiles(const struct DeleteFilesInfo *Info)
 {
   ResetCachedInfo();
-  std::auto_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
+  std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
   bool Result = DeleteFilesEx(PanelItems.get(), Info->OpMode);
   return Result;
 }
@@ -2016,7 +2016,7 @@ intptr_t TCustomFarFileSystem::DeleteFiles(const struct DeleteFilesInfo *Info)
 intptr_t TCustomFarFileSystem::GetFiles(struct GetFilesInfo * Info)
 {
   ResetCachedInfo();
-  std::auto_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
+  std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
   intptr_t Result = 0;
   FDestPathStr = Info->DestPath;
   SCOPE_EXIT
@@ -2037,7 +2037,7 @@ intptr_t TCustomFarFileSystem::PutFiles(const struct PutFilesInfo *Info)
 {
   ResetCachedInfo();
   intptr_t Result = 0;
-  std::auto_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
+  std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
   Result = PutFilesEx(PanelItems.get(), Info->Move > 0, Info->OpMode);
   return Result;
 }
@@ -2178,7 +2178,7 @@ intptr_t TCustomFarFileSystem::PutFilesEx(TObjectList * /* PanelItems */, bool /
 TObjectList * TCustomFarFileSystem::CreatePanelItemList(
   struct PluginPanelItem * PanelItem, int ItemsNumber)
 {
-  std::auto_ptr<TObjectList> PanelItems(new TObjectList());
+  std::unique_ptr<TObjectList> PanelItems(new TObjectList());
   PanelItems->SetOwnsObjects(true);
   for (intptr_t Index = 0; Index < ItemsNumber; ++Index)
   {

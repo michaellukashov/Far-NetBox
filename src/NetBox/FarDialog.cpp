@@ -786,7 +786,7 @@ void TFarDialog::Change()
   }
   else
   {
-    std::auto_ptr<TList> NotifiedContainers(new TList());
+    std::unique_ptr<TList> NotifiedContainers(new TList());
     for (intptr_t I = 0; I < GetItemCount(); I++)
     {
       TFarDialogItem * DItem = GetItem(I);

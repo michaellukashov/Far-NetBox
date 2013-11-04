@@ -15,6 +15,19 @@
 #include "HelpCore.h"
 /* TODO 1 : Path class instead of UnicodeString (handle relativity...) */
 //---------------------------------------------------------------------------
+bool IsUnixStyleWindowsPath(const UnicodeString & Path)
+{
+  return (Path.Length() >= 3) && IsLetter(Path[1]) && (Path[2] == L':') && (Path[3] == L'/');
+}
+//---------------------------------------------------------------------------
+bool UnixIsAbsolutePath(const UnicodeString & Path)
+{
+  return
+    ((Path.Length() >= 1) && (Path[1] == L'/')) ||
+    // we need this for FTP only, but this is unfortunately used in a static context
+    IsUnixStyleWindowsPath(Path);
+}
+//---------------------------------------------------------------------------
 UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & Path)
 {
   // it used to return "/" when input path was empty
@@ -29,12 +42,30 @@ UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & Path)
 }
 //---------------------------------------------------------------------------
 // Keeps "/" for root path
-UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & Path)
+UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & Path, bool Simple)
 {
+  if (Path.IsEmpty() ||
+      (Path == L"/") ||
+      !Path.IsDelimiter(L"/", Path.Length()) ||
+      (!Simple && ((Path.Length() == 3) && IsUnixStyleWindowsPath(Path))))
+  {
+    return Path;
+  }
+  else
+  {
+    return Path.SubString(1, Path.Length() - 1);
+  }
+/*
   if ((Path.Length() > 1) && Path.IsDelimiter(L"/", Path.Length()))
     return Path.SubString(1, Path.Length() - 1);
   else
     return Path;
+*/
+}
+//---------------------------------------------------------------------------
+UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & Path)
+{
+  return UnixExcludeTrailingBackslash(Path, true);
 }
 //---------------------------------------------------------------------------
 Boolean UnixComparePaths(const UnicodeString & Path1, const UnicodeString & Path2)
@@ -172,6 +203,7 @@ bool IsUnixHiddenFile(const UnicodeString & FileName)
 //---------------------------------------------------------------------------
 UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Path)
 {
+  // There's a duplicate implementation in TTerminal::ExpandFileName()
   UnicodeString Result;
   if (Path.IsEmpty())
   {
@@ -438,8 +470,7 @@ int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs,
   TSHFileInfoW SHFileInfo = {0};
   // On Win2k we get icon of "ZIP drive" for ".." (parent directory)
   if ((FileName == L"..") ||
-      ((FileName.Length() == 2) && (FileName[2] == L':') &&
-       (towlower(FileName[1]) >= L'a') && (towlower(FileName[1]) <= L'z')) ||
+      ((FileName.Length() == 2) && (FileName[2] == L':') && IsLetter(FileName[1])) ||
       IsReservedName(FileName))
   {
     FileName = L"dumb";
@@ -610,7 +641,7 @@ UnicodeString TRemoteToken::GetLogText() const
 //---------------------------------------------------------------------------
 TRemoteTokenList * TRemoteTokenList::Duplicate() const
 {
-  std::auto_ptr<TRemoteTokenList> Result(new TRemoteTokenList());
+  std::unique_ptr<TRemoteTokenList> Result(new TRemoteTokenList());
   TTokens::const_iterator it = FTokens.begin();
   while (it != FTokens.end())
   {
@@ -773,7 +804,7 @@ TRemoteFile::~TRemoteFile()
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 {
-  std::auto_ptr<TRemoteFile> Result(new TRemoteFile());
+  std::unique_ptr<TRemoteFile> Result(new TRemoteFile());
   if (FLinkedFile)
   {
     Result->FLinkedFile = FLinkedFile->Duplicate(true);
@@ -1955,7 +1986,7 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
   intptr_t ACount = GetCount();
   if (ACount > FMaxSize)
   {
-    std::auto_ptr<TStrings> Limited(new TStringList());
+    std::unique_ptr<TStrings> Limited(new TStringList());
     intptr_t Index = ACount - FMaxSize;
     while (Index < ACount)
     {
@@ -1988,7 +2019,7 @@ bool TRemoteDirectoryChangesCache::DirectoryChangeKey(
   bool Result = !Change.IsEmpty();
   if (Result)
   {
-    bool Absolute = TTerminal::IsAbsolutePath(Change);
+    bool Absolute = ::UnixIsAbsolutePath(Change);
     Result = !SourceDir.IsEmpty() || Absolute;
     if (Result)
     {

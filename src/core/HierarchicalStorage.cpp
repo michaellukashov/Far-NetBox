@@ -206,7 +206,7 @@ void THierarchicalStorage::CloseSubKey()
 //------------------------------------------------------------------------------
 void THierarchicalStorage::ClearSubKeys()
 {
-  std::auto_ptr<TStringList> SubKeys(new TStringList());
+  std::unique_ptr<TStringList> SubKeys(new TStringList());
   GetSubKeyNames(SubKeys.get());
   for (intptr_t Index = 0; Index < SubKeys->GetCount(); ++Index)
   {
@@ -226,7 +226,7 @@ void THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString & Key)
 //------------------------------------------------------------------------------
 bool THierarchicalStorage::HasSubKeys()
 {
-  std::auto_ptr<TStrings> SubKeys(new TStringList());
+  std::unique_ptr<TStrings> SubKeys(new TStringList());
   GetSubKeyNames(SubKeys.get());
   bool Result = SubKeys->GetCount() > 0;
   return Result;
@@ -250,7 +250,7 @@ bool THierarchicalStorage::KeyExists(const UnicodeString & SubKey)
 void THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
   bool MaintainKeys)
 {
-  std::auto_ptr<TStrings> Names(new TStringList());
+  std::unique_ptr<TStrings> Names(new TStringList());
   GetValueNames(Names.get());
   for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
   {
@@ -268,7 +268,7 @@ void THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
 //------------------------------------------------------------------------------
 void THierarchicalStorage::ClearValues()
 {
-  std::auto_ptr<TStrings> Names(new TStringList());
+  std::unique_ptr<TStrings> Names(new TStringList());
   GetValueNames(Names.get());
   for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
   {
@@ -418,7 +418,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
 {
   TRegistry * Registry = Storage->FRegistry;
   bool Result = true;
-  std::auto_ptr<TStrings> Names(new TStringList());
+  std::unique_ptr<TStrings> Names(new TStringList());
   rde::vector<unsigned char> Buffer(1024);
   Registry->GetValueNames(Names.get());
   intptr_t Index = 0;
@@ -694,7 +694,7 @@ bool TCustomIniFileStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanC
 
   if (!Result)
   {
-    std::auto_ptr<TStringList> Sections(new TStringList());
+    std::unique_ptr<TStringList> Sections(new TStringList());
     Sections->SetSorted(true);
     FIniFile->ReadSections(Sections.get());
     UnicodeString NewKey = ExcludeTrailingBackslash(GetCurrentSubKey()+SubKey);
@@ -730,7 +730,7 @@ bool TCustomIniFileStorage::DeleteSubKey(const UnicodeString & SubKey)
 //------------------------------------------------------------------------------
 void TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings)
 {
-  std::auto_ptr<TStrings> Sections(new TStringList());
+  std::unique_ptr<TStrings> Sections(new TStringList());
   Strings->Clear();
   FIniFile->ReadSections(Sections.get());
   for (intptr_t I = 0; I < Sections->GetCount(); I++)
@@ -942,7 +942,7 @@ void TIniFileStorage::Flush()
 {
   if (FOriginal != nullptr)
   {
-    std::auto_ptr<TStrings> Strings(new TStringList);
+    std::unique_ptr<TStrings> Strings(new TStringList);
     SCOPE_EXIT
     {
       SAFE_DESTROY(FOriginal);
@@ -976,7 +976,7 @@ void TIniFileStorage::Flush()
         }
         else
         {
-          std::auto_ptr<TStream> Stream(new THandleStream(Handle));
+          std::unique_ptr<TStream> Stream(new THandleStream(Handle));
           SCOPE_EXIT
           {
             ::CloseHandle(Handle);
@@ -999,7 +999,7 @@ void TIniFileStorage::ApplyOverrides()
 {
   UnicodeString OverridesKey = IncludeTrailingBackslash(L"Override");
 
-  std::auto_ptr<TStrings> Sections(new TStringList());
+  std::unique_ptr<TStrings> Sections(new TStringList());
   Sections->Clear();
   FIniFile->ReadSections(Sections.get());
   for (intptr_t I = 0; I < Sections->GetCount(); I++)
@@ -1013,7 +1013,7 @@ void TIniFileStorage::ApplyOverrides()
         Section.Length() - OverridesKey.Length());
 
       // this all uses raw names (munged)
-      std::auto_ptr<TStrings> Names(new TStringList);
+      std::unique_ptr<TStrings> Names(new TStringList);
       FIniFile->ReadSection(Section, Names.get());
 
       for (intptr_t II = 0; II < Names->GetCount(); II++)

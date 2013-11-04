@@ -3,7 +3,7 @@
  *
  * The way this works is: a back end can choose to open any number
  * of sockets - including zero, which might be necessary in some.
- * It can register a bunch of callbacks (most notably for when 
+ * It can register a bunch of callbacks (most notably for when
  * data is received) for each socket, and it can call the networking
  * abstraction to send data without having to worry about blocking.
  * The stuff behind the abstraction takes care of selects and
@@ -15,7 +15,7 @@
 
 #ifndef DONE_TYPEDEFS
 #define DONE_TYPEDEFS
-typedef struct config_tag Config;
+typedef struct conf_tag Conf;
 typedef struct backend_tag Backend;
 typedef struct terminal_tag Terminal;
 #endif
@@ -37,6 +37,7 @@ struct socket_function_table {
     void (*close) (Socket s);
     int (*write) (Socket s, const char *data, int len);
     int (*write_oob) (Socket s, const char *data, int len);
+    void (*write_eof) (Socket s);
     void (*flush) (Socket s);
     void (*set_private_ptr) (Socket s, void *ptr);
     void *(*get_private_ptr) (Socket s);
@@ -46,66 +47,66 @@ struct socket_function_table {
 };
 
 struct plug_function_table {
-    void (*log)(Plug p, int type, SockAddr addr, int port,
+		void (*log)(Plug p, int type, SockAddr addr, int port,
 		const char *error_msg, int error_code);
-    /*
-     * Passes the client progress reports on the process of setting
-     * up the connection.
-     * 
-     * 	- type==0 means we are about to try to connect to address
-     * 	  `addr' (error_msg and error_code are ignored)
-     * 	- type==1 means we have failed to connect to address `addr'
-     * 	  (error_msg and error_code are supplied). This is not a
-     * 	  fatal error - we may well have other candidate addresses
-     * 	  to fall back to. When it _is_ fatal, the closing()
-     * 	  function will be called.
-     */
-    int (*closing)
-     (Plug p, const char *error_msg, int error_code, int calling_back);
-    /* error_msg is NULL iff it is not an error (ie it closed normally) */
-    /* calling_back != 0 iff there is a Plug function */
-    /* currently running (would cure the fixme in try_send()) */
-    int (*receive) (Plug p, int urgent, char *data, int len);
-    /*
-     *  - urgent==0. `data' points to `len' bytes of perfectly
-     *    ordinary data.
-     * 
-     *  - urgent==1. `data' points to `len' bytes of data,
-     *    which were read from before an Urgent pointer.
-     * 
-     *  - urgent==2. `data' points to `len' bytes of data,
-     *    the first of which was the one at the Urgent mark.
-     */
-    void (*sent) (Plug p, int bufsize);
-    /*
-     * The `sent' function is called when the pending send backlog
-     * on a socket is cleared or partially cleared. The new backlog
-     * size is passed in the `bufsize' parameter.
-     */
-    int (*accepting)(Plug p, OSSocket sock);
-    /*
-     * returns 0 if the host at address addr is a valid host for connecting or error
-     */
+		/*
+		 * Passes the client progress reports on the process of setting
+		 * up the connection.
+		 *
+		 * 	- type==0 means we are about to try to connect to address
+		 * 	  `addr' (error_msg and error_code are ignored)
+		 * 	- type==1 means we have failed to connect to address `addr'
+		 * 	  (error_msg and error_code are supplied). This is not a
+		 * 	  fatal error - we may well have other candidate addresses
+		 * 	  to fall back to. When it _is_ fatal, the closing()
+		 * 	  function will be called.
+		 */
+		int (*closing)
+		 (Plug p, const char *error_msg, int error_code, int calling_back);
+		/* error_msg is NULL iff it is not an error (ie it closed normally) */
+		/* calling_back != 0 iff there is a Plug function */
+		/* currently running (would cure the fixme in try_send()) */
+		int (*receive) (Plug p, int urgent, char *data, int len);
+		/*
+		 *  - urgent==0. `data' points to `len' bytes of perfectly
+		 *    ordinary data.
+		 *
+		 *  - urgent==1. `data' points to `len' bytes of data,
+		 *    which were read from before an Urgent pointer.
+		 *
+		 *  - urgent==2. `data' points to `len' bytes of data,
+		 *    the first of which was the one at the Urgent mark.
+		 */
+		void (*sent) (Plug p, int bufsize);
+		/*
+		 * The `sent' function is called when the pending send backlog
+		 * on a socket is cleared or partially cleared. The new backlog
+		 * size is passed in the `bufsize' parameter.
+		 */
+		int (*accepting)(Plug p, OSSocket sock);
+		/*
+		 * returns 0 if the host at address addr is a valid host for connecting or error
+		 */
 };
 
 /* proxy indirection layer */
 /* NB, control of 'addr' is passed via new_connection, which takes
  * responsibility for freeing it */
 Socket new_connection(SockAddr addr, char *hostname,
-		      int port, int privport,
-		      int oobinline, int nodelay, int keepalive,
-		      Plug plug, const Config *cfg);
+					int port, int privport,
+					int oobinline, int nodelay, int keepalive,
+					Plug plug, Conf *conf);
 Socket new_listener(char *srcaddr, int port, Plug plug, int local_host_only,
-		    const Config *cfg, int addressfamily);
+				Conf *conf, int addressfamily);
 SockAddr name_lookup(char *host, int port, char **canonicalname,
-		     const Config *cfg, int addressfamily);
+				 Conf *conf, int addressfamily);
 
 /* platform-dependent callback from new_connection() */
 /* (same caveat about addr as new_connection()) */
 Socket platform_new_connection(SockAddr addr, char *hostname,
-			       int port, int privport,
-			       int oobinline, int nodelay, int keepalive,
-			       Plug plug, const Config *cfg);
+						 int port, int privport,
+						 int oobinline, int nodelay, int keepalive,
+						 Plug plug, Conf *conf);
 
 /* socket functions */
 
@@ -115,8 +116,9 @@ void sk_cleanup(void);		       /* called just before program exit */
 SockAddr sk_namelookup(const char *host, char **canonicalname, int address_family);
 SockAddr sk_nonamelookup(const char *host);
 void sk_getaddr(SockAddr addr, char *buf, int buflen);
-int sk_hostname_is_local(char *name);
+int sk_hostname_is_local(const char *name);
 int sk_address_is_local(SockAddr addr);
+int sk_address_is_special_local(SockAddr addr);
 int sk_addrtype(SockAddr addr);
 void sk_addrcopy(SockAddr addr, char *buf);
 void sk_addr_free(SockAddr addr);
@@ -129,19 +131,18 @@ SockAddr sk_addr_dup(SockAddr addr);
 
 #ifdef MPEXT
 // Resolve ambiguity with OpenSSL
-// #define sk_new putty_sk_new
+//#define sk_new putty_sk_new
 #endif
 
 /* NB, control of 'addr' is passed via sk_new, which takes responsibility
  * for freeing it, as for new_connection() */
 Socket putty_sk_new(SockAddr addr, int port, int privport, int oobinline,
-	      int nodelay, int keepalive, Plug p
+        int nodelay, int keepalive, Plug p,
 #ifdef MPEXT
-              ,
               int timeout,
               int sndbuf
 #endif
-	      );
+        );
 
 Socket sk_newlistener(char *srcaddr, int port, Plug plug, int local_host_only, int address_family);
 
@@ -151,6 +152,7 @@ Socket sk_register(OSSocket sock, Plug plug);
 #define sk_close(s) (((*s)->close) (s))
 #define sk_write(s,buf,len) (((*s)->write) (s, buf, len))
 #define sk_write_oob(s,buf,len) (((*s)->write_oob) (s, buf, len))
+#define sk_write_eof(s) (((*s)->write_eof) (s))
 #define sk_flush(s) (((*s)->flush) (s))
 
 #ifdef DEFINE_PLUG_METHOD_MACROS
@@ -184,25 +186,19 @@ const char *sk_addr_error(SockAddr addr);
  * which all READABLE notifications are ignored, so that data is
  * not accepted from the peer until the socket is unfrozen. This
  * exists for two purposes:
- * 
+ *
  *  - Port forwarding: when a local listening port receives a
  *    connection, we do not want to receive data from the new
  *    socket until we have somewhere to send it. Hence, we freeze
  *    the socket until its associated SSH channel is ready; then we
  *    unfreeze it and pending data is delivered.
- * 
+ *
  *  - Socket buffering: if an SSH channel (or the whole connection)
  *    backs up or presents a zero window, we must freeze the
  *    associated local socket in order to avoid unbounded buffer
  *    growth.
  */
 #define sk_set_frozen(s, is_frozen) (((*s)->set_frozen) (s, is_frozen))
-
-/*
- * Call this after an operation that might have tried to send on a
- * socket, to clean up any pending network errors.
- */
-void net_pending_errors(void);
 
 /*
  * Simple wrapper on getservbyname(), needed by ssh.c. Returns the
@@ -251,7 +247,7 @@ struct ssl_client_plug_function_table {
 };
 
 SSL_Client_Socket sk_ssl_client_over(Socket s,	/* pre-existing (tcp) connection */
-				     SSL_Client_Plug p);
+             SSL_Client_Plug p);
 
 #define sk_renegotiate(s) (((*s)->renegotiate) (s))
 

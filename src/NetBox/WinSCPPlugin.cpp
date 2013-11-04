@@ -103,7 +103,7 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
 {
   bool Change = false;
 
-  std::auto_ptr<TFarMenuItems> MenuItems(new TFarMenuItems());
+  std::unique_ptr<TFarMenuItems> MenuItems(new TFarMenuItems());
   intptr_t MInterface = MenuItems->Add(GetMsg(CONFIG_INTERFACE));
   intptr_t MConfirmations = MenuItems->Add(GetMsg(CONFIG_CONFIRMATIONS));
   intptr_t MPanel = MenuItems->Add(GetMsg(CONFIG_PANEL));
@@ -241,7 +241,7 @@ intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 //---------------------------------------------------------------------------
 TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t Item)
 {
-  std::auto_ptr<TWinSCPFileSystem> FileSystem(nullptr);
+  std::unique_ptr<TWinSCPFileSystem> FileSystem(nullptr);
   if (!FInitialized)
   {
     CoreInitialize();
@@ -308,9 +308,9 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
       }
       assert(StoredSessions);
       bool DefaultsOnly = false;
-      std::auto_ptr<TOptions> Options(new TProgramParams());
+      std::unique_ptr<TOptions> Options(new TProgramParams());
       ParseCommandLine(CommandLine, Options.get());
-      std::auto_ptr<TSessionData> Session(StoredSessions->ParseUrl(CommandLine, Options.get(), DefaultsOnly));
+      std::unique_ptr<TSessionData> Session(StoredSessions->ParseUrl(CommandLine, Options.get(), DefaultsOnly));
       if (DefaultsOnly)
       {
         Abort();
@@ -330,7 +330,8 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
     {
       OpenAnalyseInfo *Info = reinterpret_cast<OpenAnalyseInfo *>(Item);
       const wchar_t * XmlFileName = Info->Info->FileName;
-      std::auto_ptr<THierarchicalStorage> ImportStorage(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
+      std::unique_ptr<THierarchicalStorage> ImportStorage(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
+  
       ImportStorage->Init();
       ImportStorage->SetAccessMode(smRead);
       if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
@@ -340,7 +341,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         Abort();
       }
       UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw(L"Session", L""));
-      std::auto_ptr<TSessionData> Session(new TSessionData(SessionName));
+      std::unique_ptr<TSessionData> Session(new TSessionData(SessionName));
       Session->Load(ImportStorage.get());
       Session->SetModified(true);
       if (!Session->GetCanLogin())
@@ -395,7 +396,7 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
-  std::auto_ptr<TFarMenuItems> MenuItems(new TFarMenuItems());
+  std::unique_ptr<TFarMenuItems> MenuItems(new TFarMenuItems());
   TWinSCPFileSystem * FileSystem;
   TWinSCPFileSystem * AnotherFileSystem;
   FileSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
@@ -625,7 +626,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
 {
   uintptr_t Result = 0;
   UnicodeString DialogStr = Str;
-  std::auto_ptr<TStrings> ButtonLabels(new TStringList());
+  std::unique_ptr<TStrings> ButtonLabels(new TStringList());
   uintptr_t Flags = 0;
 
   if (Params != nullptr)
@@ -834,7 +835,7 @@ BOOL TWinSCPPlugin::CreateLocalDirectory(const UnicodeString & LocalDirName, LPS
 void TWinSCPPlugin::CleanupConfiguration()
 {
   // Check if key Configuration\Version exists
-  std::auto_ptr<THierarchicalStorage> Storage(GetFarConfiguration()->CreateStorage(false));
+  std::unique_ptr<THierarchicalStorage> Storage(GetFarConfiguration()->CreateStorage(false));
   Storage->SetAccessMode(smReadWrite);
   if (Storage->OpenSubKey(GetFarConfiguration()->GetConfigurationSubKey(), false))
   {

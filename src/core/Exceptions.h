@@ -7,7 +7,9 @@
 #include <SysInit.hpp>
 #include <System.hpp>
 //---------------------------------------------------------------------------
+bool ShouldDisplayException(Exception * E);
 bool ExceptionMessage(const Exception * E, UnicodeString & Message);
+bool ExceptionMessageFormatted(const Exception * E, UnicodeString & Message);
 UnicodeString LastSysErrorMessage();
 TStrings * ExceptionToMoreMessages(Exception * E);
 //---------------------------------------------------------------------------
@@ -104,7 +106,8 @@ public:
   explicit inline ESshTerminate(Exception* E, const UnicodeString & Msg, TOnceDoneOperation AOperation) :
     EFatal(E, Msg),
     Operation(AOperation)
-  {}
+  {
+  }
 
   virtual ExtException * Clone();
 

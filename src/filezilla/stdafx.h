@@ -28,6 +28,8 @@
 #define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
 #endif
 //---------------------------------------------------------------------------
+#define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
+//---------------------------------------------------------------------------
 #define _ATL_MIN_CRT
 #define _ATL_NO_DEFAULT_LIBS
 
@@ -35,13 +37,17 @@
 #include "afxole.h"
 #include "..\src\mfc\oleimpl2.h"
 #include "..\src\mfc\afximpl.h"
- 
+
 #include <afx.h>
 #include "wtypes.h"
 #include <afxmt.h>
 
 //STL includes
 #include <list.h>
+#include <map.h>
+#include <vector.h>
+//#include <deque>
+#include <set.h>
 #include <algorithm>
 //---------------------------------------------------------------------------
 class CFileFix;

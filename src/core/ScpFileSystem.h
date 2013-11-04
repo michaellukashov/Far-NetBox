@@ -20,6 +20,7 @@ public:
   virtual void Open();
   virtual void Close();
   virtual bool GetActive() const;
+  virtual void CollectUsage();
   virtual void Idle();
   virtual UnicodeString AbsolutePath(const UnicodeString & Path, bool Local);
   virtual void AnyCommand(const UnicodeString & Command,
@@ -66,7 +67,7 @@ public:
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
-  virtual const TSessionInfo & GetSessionInfo();
+  virtual const TSessionInfo & GetSessionInfo() const;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
   virtual bool TemporaryTransferFile(const UnicodeString & FileName);
   virtual bool GetStoredCredentialsTried();

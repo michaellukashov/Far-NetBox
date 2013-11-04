@@ -5,8 +5,8 @@
 #include <shlobj.h>
 #include <FileInfo.h>
 
-#include "Exceptions.h"
 #include "Common.h"
+#include "Exceptions.h"
 #include "Configuration.h"
 #include "PuttyIntf.h"
 #include "TextsCore.h"
@@ -83,7 +83,7 @@ void TConfiguration::Default()
   FForceBanners = false;
   FDisableAcceptingHostKeys = false;
 
-  std::auto_ptr<TRegistryStorage> AdminStorage(new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE));
+  std::unique_ptr<TRegistryStorage> AdminStorage(new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE));
   if (AdminStorage->OpenRootKey(false))
   {
     LoadAdmin(AdminStorage.get());
@@ -233,7 +233,7 @@ void TConfiguration::DoSave(bool All, bool Explicit)
     return;
   }
 
-  std::auto_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  std::unique_ptr<THierarchicalStorage> Storage(CreateStorage(false));
   Storage->SetAccessMode(smReadWrite);
   Storage->SetExplicit(Explicit);
   if (Storage->OpenSubKey(GetConfigurationSubKey(), true))
@@ -259,8 +259,8 @@ void TConfiguration::Export(const UnicodeString & /*FileName*/)
 {
   Classes::Error(SNotImplemented, 3004);
   /*
-  std::auto_ptr<THierarchicalStorage> Storage(CreateScpStorage(false));
-  std::auto_ptr<THierarchicalStorage> ExportStorage(nullptr);
+  std::unique_ptr<THierarchicalStorage> Storage(CreateScpStorage(false));
+  std::unique_ptr<THierarchicalStorage> ExportStorage(nullptr);
   ExportStorage = nullptr; // new TIniFileStorage(FileName);
   ExportStorage->SetAccessMode(smReadWrite);
   ExportStorage->SetExplicit(true);
@@ -282,8 +282,8 @@ void TConfiguration::Import(const UnicodeString & FileName)
 {
   Classes::Error(SNotImplemented, 3005);
 /*
-  std::auto_ptr<THierarchicalStorage> Storage(CreateScpStorage(false));
-  std::auto_ptr<THierarchicalStorage> ImportStorage(new TIniFileStorage(FileName));
+  std::unique_ptr<THierarchicalStorage> Storage(CreateScpStorage(false));
+  std::unique_ptr<THierarchicalStorage> ImportStorage(new TIniFileStorage(FileName));
   ImportStorage->AccessMode = smRead;
   Storage->AccessMode = smReadWrite;
   Storage->Explicit = true;
@@ -348,7 +348,7 @@ void TConfiguration::LoadFrom(THierarchicalStorage * Storage)
 void TConfiguration::Load()
 {
   TGuard Guard(FCriticalSection);
-  std::auto_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  std::unique_ptr<THierarchicalStorage> Storage(CreateStorage(false));
   Storage->SetAccessMode(smRead);
   LoadFrom(Storage.get());
 }
@@ -356,7 +356,7 @@ void TConfiguration::Load()
 void TConfiguration::CopyData(THierarchicalStorage * Source,
   THierarchicalStorage * Target)
 {
-  std::auto_ptr<TStrings > Names(new TStringList());
+  std::unique_ptr<TStrings > Names(new TStringList());
   if (Source->OpenSubKey(GetConfigurationSubKey(), false))
   {
     if (Target->OpenSubKey(GetConfigurationSubKey(), true))
@@ -424,7 +424,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
 void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
-  std::auto_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  std::unique_ptr<THierarchicalStorage> Storage(CreateStorage(false));
   Storage->SetAccessMode(smRead);
   if (Storage->OpenSubKey(GetConfigurationSubKey(), false) &&
       Storage->OpenSubKey(L"CDCache", false) &&
@@ -437,7 +437,7 @@ void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
 void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
-  std::auto_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  std::unique_ptr<THierarchicalStorage> Storage(CreateStorage(false));
   Storage->SetAccessMode(smReadWrite);
   if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
       Storage->OpenSubKey(L"CDCache", true))
@@ -461,7 +461,7 @@ UnicodeString TConfiguration::BannerHash(const UnicodeString & Banner) const
 bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
   const UnicodeString & Banner)
 {
-  std::auto_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  std::unique_ptr<THierarchicalStorage> Storage(CreateStorage(false));
   Storage->SetAccessMode(smRead);
   bool Result =
     !Storage->OpenSubKey(GetConfigurationSubKey(), false) ||
@@ -475,7 +475,7 @@ bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
 void TConfiguration::NeverShowBanner(const UnicodeString & SessionKey,
   const UnicodeString & Banner)
 {
-  std::auto_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  std::unique_ptr<THierarchicalStorage> Storage(CreateStorage(false));
   Storage->SetAccessMode(smReadWrite);
 
   if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
@@ -540,7 +540,7 @@ void TConfiguration::CleanupConfiguration()
 //---------------------------------------------------------------------------
 void TConfiguration::CleanupRegistry(const UnicodeString & CleanupSubKey)
 {
-  std::auto_ptr<TRegistryStorage> Registry(new TRegistryStorage(GetRegistryStorageKey()));
+  std::unique_ptr<TRegistryStorage> Registry(new TRegistryStorage(GetRegistryStorageKey()));
   Registry->RecursiveDeleteSubKey(CleanupSubKey);
 }
 //---------------------------------------------------------------------------
@@ -943,11 +943,6 @@ UnicodeString TConfiguration::GetRootKeyStr() const
   return RootKeyToStr(HKEY_CURRENT_USER);
 }
 //---------------------------------------------------------------------------
-bool TConfiguration::GetGSSAPIInstalled() const
-{
-  return HasGSSAPI();
-}
-//---------------------------------------------------------------------------
 void TConfiguration::SetStorage(TStorage Value)
 {
   if (FStorage != Value)
@@ -955,8 +950,8 @@ void TConfiguration::SetStorage(TStorage Value)
     TStorage StorageBak = FStorage;
     try
     {
-      std::auto_ptr<THierarchicalStorage> SourceStorage(CreateStorage(false));
-      std::auto_ptr<THierarchicalStorage> TargetStorage(CreateStorage(false));
+      std::unique_ptr<THierarchicalStorage> SourceStorage(CreateStorage(false));
+      std::unique_ptr<THierarchicalStorage> TargetStorage(CreateStorage(false));
       SourceStorage->SetAccessMode(smRead);
 
       FStorage = Value;

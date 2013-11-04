@@ -407,6 +407,7 @@ TSCPFileSystem::~TSCPFileSystem()
 //---------------------------------------------------------------------------
 void TSCPFileSystem::Open()
 {
+  // this is used for reconnects only
   FSecureShell->Open();
 }
 //---------------------------------------------------------------------------
@@ -420,7 +421,12 @@ bool TSCPFileSystem::GetActive() const
   return FSecureShell->GetActive();
 }
 //---------------------------------------------------------------------------
-const TSessionInfo & TSCPFileSystem::GetSessionInfo()
+void TSCPFileSystem::CollectUsage()
+{
+  FSecureShell->CollectUsage();
+}
+//---------------------------------------------------------------------------
+const TSessionInfo & TSCPFileSystem::GetSessionInfo() const
 {
   return FSecureShell->GetSessionInfo();
 }
@@ -533,6 +539,8 @@ bool TSCPFileSystem::IsCapable(intptr_t Capability) const
     case fcRename:
     case fcRemoteMove:
     case fcRemoteCopy:
+    case fcRemoveCtrlZUpload:
+    case fcRemoveBOMUpload:
       return true;
 
     case fcTextMode:
@@ -955,7 +963,7 @@ void TSCPFileSystem::ClearAliases()
   {
     FTerminal->LogEvent(L"Clearing all aliases.");
     ClearAlias(TCommandSet::ExtractCommand(FTerminal->GetSessionData()->GetListingCommand()));
-    std::auto_ptr<TStrings> CommandList(FCommandSet->CreateCommandList());
+    std::unique_ptr<TStrings> CommandList(FCommandSet->CreateCommandList());
     for (intptr_t Index = 0; Index < CommandList->GetCount(); ++Index)
     {
       ClearAlias(CommandList->GetString(Index));
@@ -1067,7 +1075,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       {
         // Copy LS command output, because eventual symlink analysis would
         // modify FTerminal->Output
-        std::auto_ptr<TStringList> OutputCopy(new TStringList());
+        std::unique_ptr<TStringList> OutputCopy(new TStringList());
         OutputCopy->Assign(FOutput);
 
         // delete leading "total xxx" line
@@ -1166,7 +1174,7 @@ void TSCPFileSystem::ReadFile(const UnicodeString & FileName,
 TRemoteFile * TSCPFileSystem::CreateRemoteFile(
   const UnicodeString & ListingStr, TRemoteFile * LinkedByFile)
 {
-  std::auto_ptr<TRemoteFile> File(new TRemoteFile(LinkedByFile));
+  std::unique_ptr<TRemoteFile> File(new TRemoteFile(LinkedByFile));
   File->SetTerminal(FTerminal);
   File->SetListingStr(ListingStr);
   File->ShiftTime(FTerminal->GetSessionData()->GetTimeDifference());
@@ -1736,7 +1744,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
     &LocalFileAttrs, &LocalFileHandle, nullptr, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
-  std::auto_ptr<TSafeHandleStream> Stream(new TSafeHandleStream(LocalFileHandle));
+  std::unique_ptr<TSafeHandleStream> Stream(new TSafeHandleStream(LocalFileHandle));
   {
     SCOPE_EXIT
     {
@@ -1810,8 +1818,12 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
           // Than we add current block to file buffer
           if (OperationProgress->AsciiTransfer)
           {
+            int ConvertParams =
+              FLAGMASK(CopyParam->GetRemoveCtrlZ(), cpRemoveCtrlZ) |
+              FLAGMASK(CopyParam->GetRemoveBOM(), cpRemoveBOM);
             BlockBuf.Convert(FTerminal->GetConfiguration()->GetLocalEOLType(),
-              FTerminal->GetSessionData()->GetEOLType(), cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
+              FTerminal->GetSessionData()->GetEOLType(),
+              ConvertParams, ConvertToken);
             BlockBuf.GetMemory()->Seek(0, soFromBeginning);
             AsciiBuf.ReadStream(BlockBuf.GetMemory(), BlockBuf.GetSize(), true);
             // We don't need it any more
@@ -2490,7 +2502,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
           try
           {
             HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-            std::auto_ptr<TStream> FileStream;
+            std::unique_ptr<TStream> FileStream;
 
             /* TODO 1 : Turn off read-only attr */
 

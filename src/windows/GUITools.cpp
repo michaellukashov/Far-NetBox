@@ -55,7 +55,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
   {
     UnicodeString Psw = Password;
     UnicodeString SessionName;
-    std::auto_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetConfiguration()->GetPuttySessionsKey()));
+    std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetConfiguration()->GetPuttySessionsKey()));
     Storage->SetAccessMode(smReadWrite);
     // make it compatible with putty
     Storage->SetMungeStringValues(false);
@@ -68,7 +68,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
       }
       else
       {
-        std::auto_ptr<TRegistryStorage> SourceStorage(new TRegistryStorage(GetConfiguration()->GetPuttySessionsKey()));
+        std::unique_ptr<TRegistryStorage> SourceStorage(new TRegistryStorage(GetConfiguration()->GetPuttySessionsKey()));
         SourceStorage->SetMungeStringValues(false);
         SourceStorage->SetForceAnsi(true);
         if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
@@ -78,7 +78,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
           Storage->CloseSubKey();
         }
 
-        std::auto_ptr<TSessionData> ExportData(new TSessionData(L""));
+        std::unique_ptr<TSessionData> ExportData(new TSessionData(L""));
         ExportData->Assign(SessionData);
         ExportData->SetModified(true);
         ExportData->SetName(GetGUIConfiguration()->GetPuttySession());

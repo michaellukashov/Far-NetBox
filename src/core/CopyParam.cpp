@@ -43,6 +43,8 @@ void TCopyParamType::Default()
   SetFileMask(L"*.*");
   GetIncludeFileMask().SetMasks(L"");
   SetClearArchive(false);
+  SetRemoveCtrlZ(false);
+  SetRemoveBOM(false);
   SetCPSLimit(0);
   SetNewerOnly(false);
 }
@@ -211,6 +213,27 @@ void TCopyParamType::DoGetInfoStr(
     }
   }
 
+  if ((GetTransferMode() == tmAscii) || (GetTransferMode() == tmAutomatic))
+  {
+    if (GetRemoveBOM() != Defaults.GetRemoveBOM())
+    {
+      if (ALWAYS_TRUE(GetRemoveBOM()))
+      {
+        ADD(LoadStr(COPY_INFO_REMOVE_BOM),
+          cpaIncludeMaskOnly | cpaNoRemoveBOM | cpaNoTransferMode);
+      }
+    }
+
+    if (GetRemoveCtrlZ() != Defaults.GetRemoveCtrlZ())
+    {
+      if (ALWAYS_TRUE(GetRemoveCtrlZ()))
+      {
+        ADD(LoadStr(COPY_INFO_REMOVE_CTRLZ),
+          cpaIncludeMaskOnly | cpaNoRemoveCtrlZ | cpaNoTransferMode);
+      }
+    }
+  }
+
   if (!(GetIncludeFileMask() == Defaults.GetIncludeFileMask()))
   {
     ADD(FORMAT(LoadStr(COPY_INFO_FILE_MASK), GetIncludeFileMask().GetMasks().c_str()),
@@ -264,6 +287,8 @@ void TCopyParamType::Assign(const TCopyParamType * Source)
   COPY(FileMask);
   COPY(IncludeFileMask);
   COPY(ClearArchive);
+  COPY(RemoveCtrlZ);
+  COPY(RemoveBOM);
   COPY(CPSLimit);
   COPY(NewerOnly);
   #undef COPY
@@ -304,7 +329,7 @@ UnicodeString TCopyParamType::ValidLocalFileName(const UnicodeString & FileName)
 //---------------------------------------------------------------------------
 UnicodeString TCopyParamType::RestoreChars(const UnicodeString & FileName) const
 {
-  UnicodeString Result = FileName; 
+  UnicodeString Result = FileName;
   if (GetInvalidCharsReplacement() == TokenReplacement)
   {
     wchar_t * InvalidChar = const_cast<wchar_t *>(Result.c_str());
@@ -431,7 +456,7 @@ UnicodeString TCopyParamType::GetLogStr() const
   return FORMAT(
     L"  PrTime: %s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %s; "
        L"Resume: %c (%d); CalcS: %s; Mask: %s\n"
-    L"  TM: %c; ClAr: %s; CPS: %u; NewerOnly: %s; InclM: %s\n"
+    L"  TM: %c; ClAr: %s; RemEOF: %s; RemBOM: %s; CPS: %u; NewerOnly: %s; InclM: %s\n"
     L"  AscM: %s\n",
     BooleanToEngStr(GetPreserveTime()).c_str(),
     BooleanToEngStr(GetPreserveReadOnly()).c_str(),
@@ -446,6 +471,8 @@ UnicodeString TCopyParamType::GetLogStr() const
     GetFileMask().c_str(),
     ModeC[GetTransferMode()],
     BooleanToEngStr(GetClearArchive()).c_str(),
+    BooleanToEngStr(GetRemoveCtrlZ()).c_str(),
+    BooleanToEngStr(GetRemoveBOM()).c_str(),
     int(GetCPSLimit()),
     BooleanToEngStr(GetNewerOnly()).c_str(),
     GetIncludeFileMask().GetMasks().c_str(),
@@ -529,6 +556,8 @@ void TCopyParamType::Load(THierarchicalStorage * Storage)
     }
   }
   SetClearArchive(Storage->ReadBool(L"ClearArchive", GetClearArchive()));
+  SetRemoveCtrlZ(Storage->ReadBool(L"RemoveCtrlZ", GetRemoveCtrlZ()));
+  SetRemoveBOM(Storage->ReadBool(L"RemoveBOM", GetRemoveBOM()));
   SetCPSLimit(Storage->ReadInteger(L"CPSLimit", GetCPSLimit()));
   SetNewerOnly(Storage->ReadBool(L"NewerOnly", GetNewerOnly()));
 }
@@ -554,6 +583,8 @@ void TCopyParamType::Save(THierarchicalStorage * Storage) const
   Storage->DeleteValue(L"ExcludeFileMask"); // obsolete
   Storage->DeleteValue(L"NegativeExclude"); // obsolete
   Storage->WriteBool(L"ClearArchive", GetClearArchive());
+  Storage->WriteBool(L"RemoveCtrlZ", GetRemoveCtrlZ());
+  Storage->WriteBool(L"RemoveBOM", GetRemoveBOM());
   Storage->WriteInteger(L"CPSLimit", GetCPSLimit());
   Storage->WriteBool(L"NewerOnly", GetNewerOnly());
 }
@@ -578,6 +609,8 @@ bool TCopyParamType::operator==(const TCopyParamType & rhp) const
     C(CalculateSize) &&
     C(IncludeFileMask) &&
     C(ClearArchive) &&
+    C(RemoveCtrlZ) &&
+    C(RemoveBOM) &&
     C(CPSLimit) &&
     C(NewerOnly) &&
     true;
@@ -594,7 +627,8 @@ uintptr_t GetSpeedLimit(const UnicodeString & Text)
   else
   {
     intptr_t SSpeed = 0;
-    if (!TryStrToInt(Text, SSpeed) || (SSpeed < 0))
+    if (!TryStrToInt(Text, SSpeed) ||
+         (SSpeed < 0))
     {
       throw Exception(FMTLOAD(SPEED_INVALID, Text.c_str()));
     }

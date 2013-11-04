@@ -437,6 +437,7 @@ private:
 };
 
 TDateTime Now();
+extern TDateTime MinDateTime;
 
 //---------------------------------------------------------------------------
 

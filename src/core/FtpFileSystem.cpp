@@ -370,7 +370,7 @@ void TFTPFileSystem::Open()
   // initialize FZAPI on the first connect only
   if (FFileZillaIntf == nullptr)
   {
-    std::auto_ptr<TFileZillaIntf> FileZillaImpl(new TFileZillaImpl(this));
+    std::unique_ptr<TFileZillaIntf> FileZillaImpl(new TFileZillaImpl(this));
 
     TFileZillaIntf::TLogLevel LogLevel;
     switch (FTerminal->GetConfiguration()->GetActualLogProtocol())
@@ -561,6 +561,29 @@ bool TFTPFileSystem::GetActive() const
   return FActive;
 }
 //---------------------------------------------------------------------------
+void TFTPFileSystem::CollectUsage()
+{
+  if (FFileZillaIntf->UsingMlsd())
+  {
+//    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPMLSD");
+  }
+  if (FFileZillaIntf->UsingUtf8())
+  {
+//    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPUTF8");
+  }
+  if (!GetCurrentDirectory().IsEmpty() && (GetCurrentDirectory()[1] != L'/'))
+  {
+    if (::IsUnixStyleWindowsPath(GetCurrentDirectory()))
+    {
+//      FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPWindowsPath");
+    }
+    else
+    {
+//      FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPOtherPath");
+    }
+  }
+}
+//---------------------------------------------------------------------------
 void TFTPFileSystem::Idle()
 {
   if (FActive && !FWaitingForReply)
@@ -583,7 +606,7 @@ void TFTPFileSystem::Idle()
     {
       FLastDataSent = Now();
 
-      std::auto_ptr<TRemoteDirectory> Files(new TRemoteDirectory(FTerminal));
+      std::unique_ptr<TRemoteDirectory> Files(new TRemoteDirectory(FTerminal));
       try
       {
         Files->SetDirectory(GetCurrentDirectory());
@@ -615,7 +638,7 @@ void TFTPFileSystem::Discard()
 UnicodeString TFTPFileSystem::AbsolutePath(const UnicodeString & Path, bool /*Local*/)
 {
   // TODO: improve (handle .. etc.)
-  if (TTerminal::IsAbsolutePath(Path))
+  if (::UnixIsAbsolutePath(Path))
   {
     return Path;
   }
@@ -751,7 +774,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
 
   if (Properties && Properties->Valid.Contains(vpRights))
   {
-    std::auto_ptr<TRemoteFile> OwnedFile(nullptr);
+    std::unique_ptr<TRemoteFile> OwnedFile(nullptr);
     UnicodeString FileName = AbsolutePath(AFileName, false);
 
     if (AFile == nullptr)
@@ -1763,7 +1786,7 @@ void TFTPFileSystem::CustomCommandOnFile(const UnicodeString & /*FileName*/,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DoStartup()
 {
-  std::auto_ptr<TStrings> PostLoginCommands(new TStringList());
+  std::unique_ptr<TStrings> PostLoginCommands(new TStringList());
   PostLoginCommands->SetText(FTerminal->GetSessionData()->GetPostLoginCommands());
   for (intptr_t Index = 0; Index < PostLoginCommands->GetCount(); ++Index)
   {
@@ -1824,6 +1847,8 @@ bool TFTPFileSystem::IsCapable(intptr_t Capability) const
     case fcNativeTextMode:
     case fcTimestampChanging:
     case fcIgnorePermErrors:
+    case fcRemoveCtrlZUpload:
+    case fcRemoveBOMUpload:
       return false;
 
     default:
@@ -1851,7 +1876,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
     TStrings * Response = nullptr;
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE, L"", &Code, &Response);
 
-    std::auto_ptr<TStrings> ResponsePtr(Response);
+    std::unique_ptr<TStrings> ResponsePtr(Response);
     assert(ResponsePtr.get() != nullptr);
     bool Result = false;
 
@@ -1998,7 +2023,7 @@ void TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
   // current directory for the server
   EnsureLocation();
 
-  std::auto_ptr<TRemoteFileList> FileList(new TRemoteFileList());
+  std::unique_ptr<TRemoteFileList> FileList(new TRemoteFileList());
   TFTPFileListHelper Helper(this, FileList.get(), false);
   FFileZillaIntf->ListFile(FileName.c_str());
 
@@ -2031,7 +2056,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & FileName,
     // cache the file list for future
     if ((FFileListCache != nullptr) &&
         UnixComparePaths(Path, FFileListCache->GetDirectory()) &&
-        (TTerminal::IsAbsolutePath(FFileListCache->GetDirectory()) ||
+        (::UnixIsAbsolutePath(FFileListCache->GetDirectory()) ||
         (FFileListCachePath == GetCurrentDirectory())))
     {
       File = FFileListCache->FindFile(NameOnly);
@@ -2039,7 +2064,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & FileName,
     // if cache is invalid or file is not in cache, (re)read the directory
     if (File == nullptr)
     {
-      std::auto_ptr<TRemoteFileList> FileListCache(new TRemoteFileList());
+      std::unique_ptr<TRemoteFileList> FileListCache(new TRemoteFileList());
       FileListCache->SetDirectory(Path);
       ReadDirectory(FileListCache.get());
       // set only after we successfully read the directory,
@@ -2075,7 +2100,7 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   // it's hardly of any use as, if MLST is supported, we use MLSD to
   // retrieve directory listing and from MLSD we cannot atm detect that
   // the file is symlink anyway.
-  std::auto_ptr<TRemoteFile> File(new TRemoteFile(SymlinkFile));
+  std::unique_ptr<TRemoteFile> File(new TRemoteFile(SymlinkFile));
   File->SetTerminal(FTerminal);
   File->SetFileName(UnixExtractFileName(SymlinkFile->GetLinkTo()));
   File->SetType(FILETYPE_SYMLINK);
@@ -2124,7 +2149,7 @@ void TFTPFileSystem::SpaceAvailable(const UnicodeString & /* Path */,
   assert(false);
 }
 //---------------------------------------------------------------------------
-const TSessionInfo & TFTPFileSystem::GetSessionInfo()
+const TSessionInfo & TFTPFileSystem::GetSessionInfo() const
 {
   return FSessionInfo;
 }
@@ -2613,7 +2638,7 @@ void TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
         FLAGSET(Reply, TFileZillaIntf::REPLY_NOTCONNECTED);
 
       AnsiString HelpKeyword;
-      std::auto_ptr<TStrings> MoreMessages(new TStringList());
+      std::unique_ptr<TStrings> MoreMessages(new TStringList());
       if (Disconnected)
       {
         if (FLAGCLEAR(Flags, REPLY_CONNECT))
@@ -2695,7 +2720,7 @@ void TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       {
         // for fatal error, it is essential that there is some message
         assert(!ErrorStr.IsEmpty());
-        std::auto_ptr<ExtException> E(new ExtException(ErrorStr, MoreMessages.release(), true));
+        std::unique_ptr<ExtException> E(new ExtException(ErrorStr, MoreMessages.release(), true));
         FTerminal->FatalError(E.get(), L"");
       }
       else
@@ -3275,7 +3300,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     RequestResult = 0;
 
     {
-      std::auto_ptr<THierarchicalStorage> Storage(
+      std::unique_ptr<THierarchicalStorage> Storage(
         FTerminal->GetConfiguration()->CreateStorage(false));
       Storage->SetAccessMode(smRead);
 
@@ -3322,7 +3347,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       Params.Aliases = Aliases;
       Params.AliasesCount = LENOF(Aliases);
       uintptr_t Answer = FTerminal->QueryUser(
-        FMTLOAD(VERIFY_CERT_PROMPT2, FSessionInfo.Certificate.c_str()),
+        FMTLOAD(VERIFY_CERT_PROMPT3, FSessionInfo.Certificate.c_str()),
         nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
 
       switch (Answer)
@@ -3349,7 +3374,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
       if (RequestResult == 2)
       {
-        std::auto_ptr<THierarchicalStorage> Storage(
+        std::unique_ptr<THierarchicalStorage> Storage(
           FTerminal->GetConfiguration()->CreateStorage(false));
         Storage->SetAccessMode(smReadWrite);
 
@@ -3448,7 +3473,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
     for (uintptr_t Index = 0; Index < Count; ++Index)
     {
       const TListDataEntry * Entry = &Entries[Index];
-      std::auto_ptr<TRemoteFile> File(new TRemoteFile());
+      std::unique_ptr<TRemoteFile> File(new TRemoteFile());
       try
       {
         File->SetTerminal(FTerminal);
