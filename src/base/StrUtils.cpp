@@ -12,5 +12,5 @@ UnicodeString ReplaceStr(const UnicodeString & Str, const UnicodeString & What, 
 
 bool StartsStr(const UnicodeString & SubStr, const UnicodeString & Str)
 {
-  return Str.Pos(SubStr) == 0;
+  return Str.Pos(SubStr) == 1;
 }
