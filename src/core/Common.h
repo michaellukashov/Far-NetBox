@@ -12,6 +12,7 @@ inline void ThrowExtException() { throw ExtException((Exception* )nullptr, Unico
 #define THROWOSIFFALSE(C) { if (!(C)) RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
+#define NULL_TERMINATE(S) S[LENOF(S) - 1] = L'\0'
 #define ASCOPY(dest, source) \
   { \
     AnsiString CopyBuf = ::W2MB(source).c_str(); \
@@ -56,6 +57,9 @@ UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
 UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars);
 UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote);
 UnicodeString ExceptionLogString(Exception *E);
+UnicodeString MainInstructions(const UnicodeString & S);
+bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions);
+UnicodeString UnformatMessage(const UnicodeString & S);
 bool IsNumber(const UnicodeString & Str);
 UnicodeString SystemTemporaryDirectory();
 UnicodeString GetShellFolderPath(int CSIdl);
@@ -68,6 +72,7 @@ UnicodeString ValidLocalFileName(
   const UnicodeString & FileName, wchar_t InvalidCharsReplacement,
   const UnicodeString & TokenizibleChars, const UnicodeString & LocalInvalidChars);
 UnicodeString ExtractProgram(const UnicodeString & Command);
+UnicodeString ExtractProgramName(const UnicodeString & Command);
 UnicodeString FormatCommand(const UnicodeString & Program, const UnicodeString & Params);
 UnicodeString ExpandFileNameCommand(const UnicodeString & Command,
   const UnicodeString & FileName);
@@ -84,6 +89,9 @@ UnicodeString BytesToHex(const RawByteString & Str, bool UpperCase = true, wchar
 UnicodeString CharToHex(wchar_t Ch, bool UpperCase = true);
 RawByteString HexToBytes(const UnicodeString & Hex);
 unsigned char HexToByte(const UnicodeString & Hex);
+bool IsLowerCaseLetter(wchar_t Ch);
+bool IsUpperCaseLetter(wchar_t Ch);
+bool IsLetter(wchar_t Ch);
 bool IsDigit(wchar_t Ch);
 bool IsHex(wchar_t Ch);
 UnicodeString DecodeUrlChars(const UnicodeString & S);
@@ -102,7 +110,6 @@ bool CutToken(UnicodeString & Str, UnicodeString & Token,
 void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter);
 bool IsWinXPOrOlder();
 bool IsWin7();
-bool IsExactly2008R2();
 #if defined(__BORLANDC__)
 TLibModule * FindModule(void * Instance);
 #endif
@@ -135,6 +142,7 @@ enum TDSTMode
 bool UsesDaylightHack();
 TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day);
 TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec);
+TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime);
 TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode);
 TDateTime ConvertTimestampToUTC(const TDateTime & DateTime);
 TDateTime ConvertTimestampFromUTC(const TDateTime & DateTime);
@@ -150,6 +158,7 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format);
 UnicodeString StandardTimestamp(const TDateTime & DateTime);
 UnicodeString StandardTimestamp();
 UnicodeString GetTimeZoneLogString();
+bool AdjustClockForDSTEnabled();
 intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2);
 intptr_t TimeToMSec(const TDateTime & T);
 intptr_t TimeToMinutes(const TDateTime & T);

@@ -268,8 +268,9 @@ public:
     /* const TMoveFileParams */ void * Param);
   bool CopyFiles(TStrings * FileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
-  void CalculateFilesSize(TStrings * FileList, __int64 & Size,
-    intptr_t Params, const TCopyParamType * CopyParam = nullptr, TCalculateSizeStats * Stats = nullptr);
+  bool CalculateFilesSize(TStrings * FileList, __int64 & Size,
+    intptr_t Params, const TCopyParamType * CopyParam,
+    bool AllowDirs, TCalculateSizeStats * Stats = nullptr);
   void CalculateFilesChecksum(const UnicodeString & Alg, TStrings * FileList,
     TStrings * Checksums, TCalculatedChecksumEvent OnCalculatedChecksum);
   void ClearCaches();
@@ -300,14 +301,13 @@ public:
   UnicodeString PeekCurrentDirectory();
   void FatalAbort();
   void ReflectSettings();
-  void EnableUsage();
+  void CollectUsage();
   bool CheckForEsc();
 
   const TSessionInfo & GetSessionInfo() const;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
   void LogEvent(const UnicodeString & Str);
 
-  static bool IsAbsolutePath(const UnicodeString & Path);
   static UnicodeString ExpandFileName(const UnicodeString & Path,
     const UnicodeString & BasePath);
 
@@ -426,8 +426,8 @@ protected:
     const TRemoteFile * File, TCalculateSizeParams * Params);
   void CalculateLocalFileSize(const UnicodeString & FileName,
     const TSearchRec & Rec, /*__int64*/ void * Params);
-  void CalculateLocalFilesSize(TStrings * FileList, __int64 & Size,
-    const TCopyParamType * CopyParam = nullptr);
+  bool CalculateLocalFilesSize(TStrings * FileList, __int64 & Size,
+    const TCopyParamType * CopyParam, bool AllowDirs);
   TBatchOverwrite EffectiveBatchOverwrite(
     const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
     bool Special);
@@ -580,6 +580,7 @@ private:
   TCallbackGuard * FCallbackGuard;
   TFindingFileEvent FOnFindingFile;
   bool FEnableSecureShellUsage;
+  bool FCollectFileSystemUsage;
 
 private:
   NB_DISABLE_COPY(TTerminal)
@@ -654,6 +655,8 @@ struct TCalculateSizeParams : public TObject
   intptr_t Params;
   const TCopyParamType * CopyParam;
   TCalculateSizeStats * Stats;
+  bool AllowDirs;
+  bool Result;
 };
 //------------------------------------------------------------------------------
 struct TMakeLocalFileListParams : public TObject

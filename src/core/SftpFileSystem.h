@@ -35,6 +35,7 @@ public:
   virtual void Open();
   virtual void Close();
   virtual bool GetActive() const { return FSecureShell->GetActive(); }
+  virtual void CollectUsage();
   virtual void Idle();
   virtual UnicodeString AbsolutePath(const UnicodeString & Path, bool Local);
   virtual void AnyCommand(const UnicodeString & Command,
@@ -81,7 +82,7 @@ public:
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable);
-  virtual const TSessionInfo & GetSessionInfo() { return FSecureShell->GetSessionInfo(); }
+  virtual const TSessionInfo & GetSessionInfo() const;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
   virtual bool TemporaryTransferFile(const UnicodeString & FileName);
   virtual bool GetStoredCredentialsTried();
@@ -105,7 +106,6 @@ protected:
   TStrings * FExtensions;
   TSFTPSupport * FSupport;
   bool FUtfStrings;
-  bool FUtfNever;
   bool FSignedTS;
   bool FOpenSSH;
   TStrings * FFixedPaths;
@@ -120,7 +120,6 @@ protected:
   virtual UnicodeString GetCurrentDirectory();
   UnicodeString GetHomeDirectory();
   uintptr_t GotStatusPacket(TSFTPPacket * Packet, int AllowStatus);
-  bool IsAbsolutePath(const UnicodeString & Path);
   bool RemoteFileExists(const UnicodeString & FullPath, TRemoteFile ** AFile = nullptr);
   TRemoteFile * LoadFile(TSFTPPacket * Packet,
     TRemoteFile * ALinkedByFile, const UnicodeString & FileName,

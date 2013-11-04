@@ -9,7 +9,7 @@
 //---------------------------------------------------------------------------
 #ifndef PuttyIntfH
 struct Backend;
-struct Config;
+struct Conf;
 #endif
 //---------------------------------------------------------------------------
 struct _WSANETWORKEVENTS;
@@ -39,13 +39,13 @@ public:
   void SendLine(const UnicodeString & Line);
   void SendNull();
 
-  const TSessionInfo & GetSessionInfo();
+  const TSessionInfo & GetSessionInfo() const;
   bool SshFallbackCmd() const;
   unsigned long MinPacketSize();
   unsigned long MaxPacketSize();
   void ClearStdError();
   bool GetStoredCredentialsTried() const;
-  void EnableUsage();
+  void CollectUsage();
 
   void RegisterReceiveHandler(TNotifyEvent Handler);
   void UnregisterReceiveHandler(TNotifyEvent Handler);
@@ -92,8 +92,7 @@ protected:
   // void FatalError(Exception * E, const UnicodeString & Msg);
   void FatalError(const UnicodeString & Error, const UnicodeString & HelpKeyword = L"");
   UnicodeString FormatKeyStr(const UnicodeString & KeyStr) const;
-  static void ClearConfig(Config * cfg);
-  static void StoreToConfig(TSessionData * Data, Config * cfg, bool Simple);
+  static Conf * StoreToConfig(TSessionData * Data, bool Simple);
 
 private:
   static TCipher FuncToSsh1Cipher(const void * Cipher);
@@ -116,7 +115,7 @@ private:
   bool ProcessNetworkEvents(SOCKET Socket);
   bool EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     WSANETWORKEVENTS * Events);
-  void UpdateSessionInfo();
+  void UpdateSessionInfo() const;
   // bool GetReady();
   void DispatchSendBuffer(intptr_t BufSize);
   void SendBuffer(intptr_t & Result);
@@ -130,20 +129,19 @@ private:
   TSessionUI * FUI;
   TSessionData * FSessionData;
   bool FActive;
-  TSessionInfo FSessionInfo;
-  bool FSessionInfoValid;
+  mutable TSessionInfo FSessionInfo;
+  mutable bool FSessionInfoValid;
   TDateTime FLastDataSent;
   Backend * FBackend;
   void * FBackendHandle;
   const unsigned int * FMinPacketSize;
   const unsigned int * FMaxPacketSize;
-  Config * FConfig;
   TNotifyEvent FOnReceive;
   bool FFrozen;
   bool FDataWhileFrozen;
   bool FStoredPasswordTried;
   bool FStoredPasswordTriedForKI;
-  int FSshVersion;
+  mutable int FSshVersion;
   bool FOpened;
   int FWaiting;
   bool FSimple;

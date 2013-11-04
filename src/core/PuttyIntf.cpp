@@ -1,4 +1,5 @@
 //---------------------------------------------------------------------------
+#include <vcl.h>
 #pragma hdrstop
 
 #define PUTTY_DO_GLOBALS
@@ -8,10 +9,11 @@
 #include "Exceptions.h"
 #include "CoreMain.h"
 #include "TextsCore.h"
+#include <StrUtils.hpp>
 //---------------------------------------------------------------------------
 char sshver[50];
 const int platform_uses_x11_unix_by_default = TRUE;
-CRITICAL_SECTION noise_section;
+CRITICAL_SECTION putty_section;
 bool SaveRandomSeed;
 char appname_[50];
 const char *const appname = appname_;
@@ -29,7 +31,7 @@ void PuttyInitialize()
 {
   SaveRandomSeed = true;
 
-  InitializeCriticalSection(&noise_section);
+  InitializeCriticalSection(&putty_section);
 
   // make sure random generator is initialised, so random_save_seed()
   // in destructor can proceed
@@ -57,7 +59,7 @@ void PuttyFinalize()
 
   sk_cleanup();
   win_misc_cleanup();
-  DeleteCriticalSection(&noise_section);
+  DeleteCriticalSection(&putty_section);
 }
 //---------------------------------------------------------------------------
 void DontSaveRandomSeed()
@@ -122,6 +124,11 @@ int from_backend_untrusted(void * /*frontend*/, const char * /*data*/, int /*len
   return 0;
 }
 //---------------------------------------------------------------------------
+int from_backend_eof(void * /*frontend*/)
+{
+  return FALSE;
+}
+//---------------------------------------------------------------------------
 int GetUserpassInput(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
 {
   assert(p != nullptr);
@@ -129,35 +136,42 @@ int GetUserpassInput(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
   assert(SecureShell != nullptr);
 
   int Result;
-  std::auto_ptr<TStrings> Prompts(new TStringList());
-  std::auto_ptr<TStrings> Results(new TStringList());
-  for (size_t Index = 0; Index < p->n_prompts; ++Index)
-  {
-    prompt_t * Prompt = p->prompts[Index];
-    Prompts->AddObject(Prompt->prompt, reinterpret_cast<TObject *>(static_cast<size_t>(FLAGMASK(Prompt->echo, pupEcho))));
-    Results->AddObject(L"", reinterpret_cast<TObject *>(Prompt->result_len));
-  }
-
-  if (SecureShell->PromptUser(p->to_server != 0, p->name, p->name_reqd != 0,
-        UnicodeString(p->instruction), p->instr_reqd != 0, Prompts.get(), Results.get()))
+  std::unique_ptr<TStrings> Prompts(new TStringList());
+  std::unique_ptr<TStrings> Results(new TStringList());
   {
     for (size_t Index = 0; Index < p->n_prompts; ++Index)
     {
       prompt_t * Prompt = p->prompts[Index];
-      AnsiString Str = Results->GetString(Index).c_str();
-      if ((size_t)Str.Length() >= Prompt->result_len)
-      {
-        Prompt->result = (char *)srealloc(Prompt->result, Str.Length() + 1);
-        Prompt->result_len = Str.Length() + 1;
-      }
-      strncpy(Prompt->result, AnsiString(Results->GetString(Index)).c_str(), Prompt->result_len);
-      Prompt->result[Prompt->result_len - 1] = '\0';
+      Prompts->AddObject(Prompt->prompt, reinterpret_cast<TObject *>(static_cast<size_t>(FLAGMASK(Prompt->echo, pupEcho))));
+      assert(Prompt->resultsize == 0);
+      Results->Add(L"");
+      //Results->AddObject(L"", reinterpret_cast<TObject *>(Prompt->result_len));
     }
-    Result = 1;
-  }
-  else
-  {
-    Result = 0;
+
+    if (SecureShell->PromptUser(p->to_server != 0, p->name, p->name_reqd != 0,
+          UnicodeString(p->instruction), p->instr_reqd != 0, Prompts.get(), Results.get()))
+    {
+      for (size_t Index = 0; Index < p->n_prompts; ++Index)
+      {
+        prompt_t * Prompt = p->prompts[Index];
+        prompt_set_result(Prompt, AnsiString(Results->GetString(Index).c_str()));
+/*
+        AnsiString Str = Results->GetString(Index).c_str();
+        if ((size_t)Str.Length() >= Prompt->result_len)
+        {
+          Prompt->result = (char *)srealloc(Prompt->result, Str.Length() + 1);
+          Prompt->result_len = Str.Length() + 1;
+        }
+        strncpy(Prompt->result, AnsiString(Results->GetString(Index)).c_str(), Prompt->result_len);
+        Prompt->result[Prompt->result_len - 1] = '\0';
+*/
+      }
+      Result = 1;
+    }
+    else
+    {
+      Result = 0;
+    }
   }
 
   return Result;
@@ -258,6 +272,14 @@ void modalfatalbox(char * fmt, ...)
   va_end(Param);
 }
 //---------------------------------------------------------------------------
+void nonfatal(char * fmt, ...)
+{
+  va_list Param;
+  va_start(Param, fmt);
+  SSHFatalError(fmt, Param);
+  va_end(Param);
+}
+//---------------------------------------------------------------------------
 void CleanupExit(int /*code*/)
 {
   throw ESshFatal(nullptr, "");
@@ -268,7 +290,7 @@ void cleanup_exit(int code)
   CleanupExit(code);
 }
 //---------------------------------------------------------------------------
-int askappend(void * /*frontend*/, Filename /*filename*/,
+int askappend(void * /*frontend*/, Filename * /*filename*/,
   void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
   // this is called from logging.c of putty, which is never used with WinSCP
@@ -302,8 +324,8 @@ void update_specials_menu(void * /*frontend*/)
   // nothing
 }
 //---------------------------------------------------------------------------
-typedef void (*timer_fn_t)(void *ctx, long now);
-long schedule_timer(int ticks, timer_fn_t /*fn*/, void * /*ctx*/)
+//typedef void (*timer_fn_t)(void *ctx, long now);
+unsigned long schedule_timer(int ticks, timer_fn_t /*fn*/, void * /*ctx*/)
 {
   return ticks + GetTickCount();
 }
@@ -313,12 +335,12 @@ void expire_timer_context(void * /*ctx*/)
   // nothing
 }
 //---------------------------------------------------------------------------
-Pinger pinger_new(Config * /*cfg*/, Backend * /*back*/, void * /*backhandle*/)
+Pinger pinger_new(Conf * /*conf*/, Backend * /*back*/, void * /*backhandle*/)
 {
   return nullptr;
 }
 //---------------------------------------------------------------------------
-void pinger_reconfig(Pinger /*pinger*/, Config * /*oldcfg*/, Config * /*newcfg*/)
+void pinger_reconfig(Pinger /*pinger*/, Conf * /*oldcfg*/, Conf * /*newcfg*/)
 {
   // nothing
 }
@@ -333,23 +355,25 @@ void set_busy_status(void * /*frontend*/, int /*status*/)
   // nothing
 }
 //---------------------------------------------------------------------------
-void platform_get_x11_auth(struct X11Display * /*display*/, const Config * /*cfg*/)
+void platform_get_x11_auth(struct X11Display * /*display*/, Conf * /*conf*/)
 {
   // nothing, therefore no auth.
 }
 //---------------------------------------------------------------------------
-int get_remote_username(Config * cfg, char *user, size_t len)
+// Based on PuTTY's settings.c
+char * get_remote_username(Conf * conf)
 {
-  if (*cfg->username)
+  char * username = conf_get_str(conf, CONF_username);
+  char * result;
+  if (*username)
   {
-    strncpy(user, cfg->username, len);
-    user[len-1] = '\0';
+    result = dupstr(username);
   }
   else
   {
-    *user = '\0';
+    result = nullptr;
   }
-  return (*user != '\0');
+  return result;
 }
 //---------------------------------------------------------------------------
 static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool CanCreate)
@@ -380,7 +404,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
     // we expect this to be called only from verify_host_key() or store_host_key()
     assert(RegKey == L"SshHostKeys");
 
-    std::auto_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(false));
+    std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(false));
     Storage->SetAccessMode((CanCreate ? smReadWrite : smRead));
     if (Storage->OpenSubKey(RegKey, CanCreate))
     {
@@ -482,9 +506,11 @@ TKeyType KeyType(const UnicodeString & FileName)
 {
   assert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   assert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
-  Filename KeyFile;
-  ASCOPY(KeyFile.path, FileName.c_str());
-  return static_cast<TKeyType>(key_type(&KeyFile));
+  Filename * KeyFile = filename_from_str(AnsiString(FileName).c_str());
+  //ASCOPY(KeyFile.path, FileName.c_str());
+  TKeyType Result = static_cast<TKeyType>(key_type(KeyFile));
+  filename_free(KeyFile);
+  return Result;
 }
 //---------------------------------------------------------------------------
 UnicodeString KeyTypeName(TKeyType KeyType)
@@ -498,19 +524,23 @@ __int64 ParseSize(const UnicodeString & SizeStr)
   return parse_blocksize(AnsiSizeStr.c_str());
 }
 //---------------------------------------------------------------------------
-bool HasGSSAPI()
+bool HasGSSAPI(const UnicodeString & CustomPath)
 {
   static int has = -1;
   if (has < 0)
   {
-    Config cfg;
-    memset(&cfg, 0, sizeof(cfg));
-    ssh_gss_liblist * List = ssh_gss_setup(&cfg);
+    Conf * conf = conf_new();
+    ssh_gss_liblist * List = NULL;
     SCOPE_EXIT
     {
       ssh_gss_cleanup(List);
+      conf_free(conf);
     };
     {
+      Filename * filename = filename_from_str(AnsiString(CustomPath).c_str());
+      conf_set_filename(conf, CONF_ssh_gss_custom, filename);
+      filename_free(filename);
+      List = ssh_gss_setup(conf);
       for (intptr_t Index = 0; (has <= 0) && (Index < List->nlibraries); ++Index)
       {
         ssh_gss_library * library = &List->libraries[Index];
@@ -530,6 +560,48 @@ bool HasGSSAPI()
   return (has > 0);
 }
 //---------------------------------------------------------------------------
+UnicodeString NormalizeFingerprint(const UnicodeString & Fingerprint)
+{
+  UnicodeString Fingerprint2 = Fingerprint;
+  UnicodeString DssName = UnicodeString(ssh_dss.name) + L" ";
+  UnicodeString RsaName = UnicodeString(ssh_rsa.name) + L" ";
 
+  bool IsFingerprint = false;
+  int LenStart;
+  if (StartsStr(DssName, Fingerprint2))
+  {
+    LenStart = DssName.Length() + 1;
+    IsFingerprint = true;
+  }
+  else if (StartsStr(RsaName, Fingerprint2))
+  {
+    LenStart = RsaName.Length() + 1;
+    IsFingerprint = true;
+  }
 
-
+  if (IsFingerprint)
+  {
+    Fingerprint2[LenStart - 1] = L'-';
+    int Space = Fingerprint2.Pos(L" ");
+    assert(IsNumber(Fingerprint2.SubString(LenStart, Space - LenStart)));
+    Fingerprint2.Delete(LenStart, Space - LenStart + 1);
+    Fingerprint2 = ReplaceChar(Fingerprint2, L':', L'-');
+  }
+  return Fingerprint2;
+}
+//---------------------------------------------------------------------------
+UnicodeString KeyTypeFromFingerprint(const UnicodeString & Fingerprint)
+{
+  UnicodeString Fingerprint2 = NormalizeFingerprint(Fingerprint);
+  UnicodeString Type;
+  if (StartsStr(UnicodeString(ssh_dss.name) + L"-", Fingerprint2))
+  {
+    Type = ssh_dss.keytype;
+  }
+  else if (StartsStr(UnicodeString(ssh_rsa.name) + L"-", Fingerprint2))
+  {
+    Type = ssh_rsa.keytype;
+  }
+  return Type;
+}
+//---------------------------------------------------------------------------

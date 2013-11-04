@@ -467,8 +467,11 @@ public:
   static TRemoteProperties ChangedProperties(const TRemoteProperties & OriginalProperties, TRemoteProperties & NewProperties);
 };
 //---------------------------------------------------------------------------
+bool IsUnixStyleWindowsPath(const UnicodeString & Path);
+bool UnixIsAbsolutePath(const UnicodeString & Path);
 UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & Path);
-UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & Path);
+UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & Path, bool Simple = false);
+UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & Path);
 UnicodeString UnixExtractFileDir(const UnicodeString & Path);
 UnicodeString UnixExtractFilePath(const UnicodeString & Path);
 UnicodeString UnixExtractFileName(const UnicodeString & Path);

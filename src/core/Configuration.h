@@ -58,7 +58,6 @@ public:
   void SetIniFileStorageName(const UnicodeString & Value);
   UnicodeString GetPartialExt() const;
   UnicodeString GetFileInfoString(const UnicodeString & Key) const;
-  bool GetGSSAPIInstalled() const;
   void SetSessionReopenAuto(intptr_t Value);
   void SetSessionReopenBackground(intptr_t Value);
   void SetSessionReopenTimeout(intptr_t Value);

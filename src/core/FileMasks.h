@@ -196,14 +196,18 @@ struct TCustomCommandData : public TObject
 {
   TCustomCommandData();
   explicit TCustomCommandData(TTerminal * Terminal);
-  explicit TCustomCommandData(TSessionData * SessionData, const UnicodeString & Password);
+  explicit TCustomCommandData(
+    TSessionData * SessionData, const UnicodeString & AUserName,
+    const UnicodeString & Password);
 
   UnicodeString HostName;
   UnicodeString UserName;
   UnicodeString Password;
 
 private:
-  void Init(TSessionData * SessionData, const UnicodeString & Password);
+  void Init(
+    TSessionData * SessionData, const UnicodeString & AUserName,
+    const UnicodeString & Password);
 };
 //---------------------------------------------------------------------------
 class TFileCustomCommand : public TCustomCommand

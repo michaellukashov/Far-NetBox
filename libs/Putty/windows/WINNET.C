@@ -16,9 +16,7 @@
 
 #ifdef MPEXT
 // ws2tcpip.h does not compile without _MSC_VER defined
-#ifndef _MSC_VER
 #define _MSC_VER 1000
-#endif
 #endif
 #include <ws2tcpip.h>
 
@@ -70,6 +68,7 @@ struct Socket_tag {
     char oobdata[1];
     int sending_oob;
     int oobinline, nodelay, keepalive, privport;
+    enum { EOF_NO, EOF_PENDING, EOF_SENT } outgoingeof;
     SockAddr addr;
     SockAddrStep step;
     int port;
@@ -177,6 +176,7 @@ DECL_WINDOWS_FUNCTION(static, int, setsockopt,
 DECL_WINDOWS_FUNCTION(static, SOCKET, socket, (int, int, int));
 DECL_WINDOWS_FUNCTION(static, int, listen, (SOCKET, int));
 DECL_WINDOWS_FUNCTION(static, int, send, (SOCKET, const char FAR *, int, int));
+DECL_WINDOWS_FUNCTION(static, int, shutdown, (SOCKET, int));
 DECL_WINDOWS_FUNCTION(static, int, ioctlsocket,
 		      (SOCKET, long, u_long FAR *));
 DECL_WINDOWS_FUNCTION(static, SOCKET, accept,
@@ -306,6 +306,7 @@ void sk_init(void)
     GET_WINDOWS_FUNCTION(winsock_module, socket);
     GET_WINDOWS_FUNCTION(winsock_module, listen);
     GET_WINDOWS_FUNCTION(winsock_module, send);
+    GET_WINDOWS_FUNCTION(winsock_module, shutdown);
     GET_WINDOWS_FUNCTION(winsock_module, ioctlsocket);
     GET_WINDOWS_FUNCTION(winsock_module, accept);
     GET_WINDOWS_FUNCTION(winsock_module, recv);
@@ -344,8 +345,38 @@ void sk_cleanup(void)
 #endif
 }
 
+struct errstring {
+    int error;
+    char *text;
+};
+
+static int errstring_find(void *av, void *bv)
+{
+    int *a = (int *)av;
+    struct errstring *b = (struct errstring *)bv;
+    if (*a < b->error)
+        return -1;
+    if (*a > b->error)
+        return +1;
+    return 0;
+}
+static int errstring_compare(void *av, void *bv)
+{
+    struct errstring *a = (struct errstring *)av;
+    return errstring_find(&a->error, bv);
+}
+
+static tree234 *errstrings = NULL;
+
 char *winsock_error_string(int error)
 {
+    const char prefix[] = "Network error: ";
+    struct errstring *es;
+
+    /*
+     * Error codes we know about and have historically had reasonably
+     * sensible error messages for.
+     */
     switch (error) {
       case WSAEACCES:
 	return "Network error: Permission denied";
@@ -418,9 +449,53 @@ char *winsock_error_string(int error)
 	return "Network error: Resource temporarily unavailable";
       case WSAEDISCON:
 	return "Network error: Graceful shutdown in progress";
-      default:
-	return "Unknown network error";
     }
+
+    /*
+     * Generic code to handle any other error.
+     *
+     * Slightly nasty hack here: we want to return a static string
+     * which the caller will never have to worry about freeing, but on
+     * the other hand if we call FormatMessage to get it then it will
+     * want to either allocate a buffer or write into one we own.
+     *
+     * So what we do is to maintain a tree234 of error strings we've
+     * already used. New ones are allocated from the heap, but then
+     * put in this tree and kept forever.
+     */
+
+    if (!errstrings)
+        errstrings = newtree234(errstring_compare);
+
+    es = find234(errstrings, &error, errstring_find);
+
+    if (!es) {
+        int bufsize, bufused;
+
+        es = snew(struct errstring);
+        es->error = error;
+        /* maximum size for FormatMessage is 64K */
+        bufsize = 65535 + sizeof(prefix);
+        es->text = snewn(bufsize, char);
+        strcpy(es->text, prefix);
+        bufused = strlen(es->text);
+        if (!FormatMessage((FORMAT_MESSAGE_FROM_SYSTEM |
+                            FORMAT_MESSAGE_IGNORE_INSERTS), NULL, error,
+                           MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                           es->text + bufused, bufsize - bufused, NULL)) {
+            sprintf(es->text + bufused,
+                    "Windows error code %d (and FormatMessage returned %d)", 
+                    error, GetLastError());
+        } else {
+            int len = strlen(es->text);
+            if (len > 0 && es->text[len-1] == '\n')
+                es->text[len-1] = '\0';
+        }
+        es->text = sresize(es->text, strlen(es->text) + 1, char);
+        add234(errstrings, es);
+    }
+
+    return es->text;
 }
 
 SockAddr sk_namelookup(const char *host, char **canonicalname,
@@ -466,7 +541,7 @@ SockAddr sk_namelookup(const char *host, char **canonicalname,
 	    if ((err = p_getaddrinfo(host, NULL, &hints, &ret->ais)) == 0)
 	    {
 		ret->resolved = TRUE;
-	    }
+	    }	
 	} else
 #endif
 	{
@@ -614,7 +689,7 @@ void sk_getaddr(SockAddr addr, char *buf, int buflen)
     }
 }
 
-int sk_hostname_is_local(char *name)
+int sk_hostname_is_local(const char *name)
 {
     return !strcmp(name, "localhost") ||
 	   !strcmp(name, "::1") ||
@@ -661,7 +736,7 @@ int sk_address_is_local(SockAddr addr)
 
 #ifndef NO_IPV6
     if (family == AF_INET6) {
-    	return IN6_IS_ADDR_LOOPBACK((const struct in6_addr *)step.ai->ai_addr);
+    	return IN6_IS_ADDR_LOOPBACK(&((const struct sockaddr_in6 *)step.ai->ai_addr)->sin6_addr);
     } else
 #endif
     if (family == AF_INET) {
@@ -681,6 +756,11 @@ int sk_address_is_local(SockAddr addr)
 	assert(family == AF_UNSPEC);
 	return 0;		       /* we don't know; assume not */
     }
+}
+
+int sk_address_is_special_local(SockAddr addr)
+{
+    return 0;                /* no Unix-domain socket analogue here */
 }
 
 int sk_addrtype(SockAddr addr)
@@ -764,6 +844,7 @@ static void sk_tcp_flush(Socket s)
 static void sk_tcp_close(Socket s);
 static int sk_tcp_write(Socket s, const char *data, int len);
 static int sk_tcp_write_oob(Socket s, const char *data, int len);
+static void sk_tcp_write_eof(Socket s);
 static void sk_tcp_set_private_ptr(Socket s, void *ptr);
 static void *sk_tcp_get_private_ptr(Socket s);
 static void sk_tcp_set_frozen(Socket s, int is_frozen);
@@ -772,7 +853,7 @@ static const char *sk_tcp_socket_error(Socket s);
 #ifdef MPEXT
 extern char *do_select(Plug plug, SOCKET skt, int startup);
 #else
-extern char *do_select(Plug plug, SOCKET skt, int startup);
+extern char *do_select(SOCKET skt, int startup);
 #endif
 
 Socket sk_register(void *sock, Plug plug)
@@ -782,6 +863,7 @@ Socket sk_register(void *sock, Plug plug)
 	sk_tcp_close,
 	sk_tcp_write,
 	sk_tcp_write_oob,
+	sk_tcp_write_eof,
 	sk_tcp_flush,
 	sk_tcp_set_private_ptr,
 	sk_tcp_get_private_ptr,
@@ -803,6 +885,7 @@ Socket sk_register(void *sock, Plug plug)
     bufchain_init(&ret->output_data);
     ret->writable = 1;		       /* to start with */
     ret->sending_oob = 0;
+    ret->outgoingeof = EOF_NO;
     ret->frozen = 1;
     ret->frozen_readable = 0;
     ret->localhost_only = 0;	       /* unused, but best init anyway */
@@ -825,7 +908,7 @@ Socket sk_register(void *sock, Plug plug)
 #ifdef MPEXT
     errstr = do_select(plug, ret->s, 1);
 #else
-    errstr = do_select(plug, ret->s, 1);
+    errstr = do_select(ret->s, 1);
 #endif
     if (errstr) {
 	ret->error = errstr;
@@ -837,9 +920,8 @@ Socket sk_register(void *sock, Plug plug)
     return (Socket) ret;
 }
 
-static DWORD try_connect(Actual_Socket sock
+static DWORD try_connect(Actual_Socket sock,
 #ifdef MPEXT
-						,
                          int timeout,
                          int sndbuf
 #endif
@@ -862,7 +944,7 @@ static DWORD try_connect(Actual_Socket sock
 #ifdef MPEXT
 	do_select(sock->plug, sock->s, 0);
 #else
-	do_select(sock->plug, sock->s, 0);
+	do_select(sock->s, 0);
 #endif
         p_closesocket(sock->s);
     }
@@ -906,12 +988,10 @@ static DWORD try_connect(Actual_Socket sock
 	p_setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (void *) &b, sizeof(b));
     }
 
-#ifdef MPEXT
+    if (sndbuf > 0)
     {
-	int bufsize = 262144;
-	p_setsockopt(s, SOL_SOCKET, SO_SNDBUF, (void *) &bufsize, sizeof(bufsize));
+	p_setsockopt(s, SOL_SOCKET, SO_SNDBUF, (void *) &sndbuf, sizeof(sndbuf));
     }
-#endif
 
     /*
      * Bind to local address.
@@ -997,7 +1077,7 @@ static DWORD try_connect(Actual_Socket sock
 #ifndef MPEXT
     /* Set up a select mechanism. This could be an AsyncSelect on a
      * window, or an EventSelect on an event object. */
-    errstr = do_select(sock->plug, s, 1);
+    errstr = do_select(s, 1);
     if (errstr) {
 	sock->error = errstr;
 	err = 1;
@@ -1008,7 +1088,7 @@ static DWORD try_connect(Actual_Socket sock
 #ifdef MPEXT
     if (timeout > 0)
     {
-        if (p_getsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&rcvtimeo, (int *)&rcvtimeo) < 0)
+        if (p_getsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&rcvtimeo, &rcvtimeo) < 0)
         {
             rcvtimeo.tv_sec = -1;
         }
@@ -1089,9 +1169,8 @@ static DWORD try_connect(Actual_Socket sock
 }
 
 Socket putty_sk_new(SockAddr addr, int port, int privport, int oobinline,
-	      int nodelay, int keepalive, Plug plug
+	      int nodelay, int keepalive, Plug plug,
 #ifdef MPEXT
-		  ,
 	      int timeout,
 	      int sndbuf
 #endif
@@ -1102,6 +1181,7 @@ Socket putty_sk_new(SockAddr addr, int port, int privport, int oobinline,
 	sk_tcp_close,
 	sk_tcp_write,
 	sk_tcp_write_oob,
+	sk_tcp_write_eof,
 	sk_tcp_flush,
 	sk_tcp_set_private_ptr,
 	sk_tcp_get_private_ptr,
@@ -1123,6 +1203,7 @@ Socket putty_sk_new(SockAddr addr, int port, int privport, int oobinline,
     ret->connected = 0;		       /* to start with */
     ret->writable = 0;		       /* to start with */
     ret->sending_oob = 0;
+    ret->outgoingeof = EOF_NO;
     ret->frozen = 0;
     ret->frozen_readable = 0;
     ret->localhost_only = 0;	       /* unused, but best init anyway */
@@ -1144,9 +1225,9 @@ Socket putty_sk_new(SockAddr addr, int port, int privport, int oobinline,
 #endif
         err = try_connect(ret
 #ifdef MPEXT
-			, timeout, sndbuf
+            , timeout, sndbuf
 #endif
-	   );
+        );
     } while (err && sk_nextaddr(ret->addr, &ret->step));
 
     return (Socket) ret;
@@ -1160,6 +1241,7 @@ Socket sk_newlistener(char *srcaddr, int port, Plug plug, int local_host_only,
 	sk_tcp_close,
 	sk_tcp_write,
 	sk_tcp_write_oob,
+	sk_tcp_write_eof,
 	sk_tcp_flush,
 	sk_tcp_set_private_ptr,
 	sk_tcp_get_private_ptr,
@@ -1191,6 +1273,7 @@ Socket sk_newlistener(char *srcaddr, int port, Plug plug, int local_host_only,
     bufchain_init(&ret->output_data);
     ret->writable = 0;		       /* to start with */
     ret->sending_oob = 0;
+    ret->outgoingeof = EOF_NO;
     ret->frozen = 0;
     ret->frozen_readable = 0;
     ret->localhost_only = local_host_only;
@@ -1311,7 +1394,7 @@ Socket sk_newlistener(char *srcaddr, int port, Plug plug, int local_host_only,
 #ifdef MPEXT
     errstr = do_select(plug, s, 1);
 #else
-    errstr = do_select(plug, s, 1);
+    errstr = do_select(s, 1);
 #endif
     if (errstr) {
 	p_closesocket(s);
@@ -1351,7 +1434,7 @@ static void sk_tcp_close(Socket sock)
 #ifdef MPEXT
     extern char *do_select(Plug plug, SOCKET skt, int startup);
 #else
-    extern char *do_select(Plug plug, SOCKET skt, int startup);
+    extern char *do_select(SOCKET skt, int startup);
 #endif
     Actual_Socket s = (Actual_Socket) sock;
 
@@ -1362,12 +1445,33 @@ static void sk_tcp_close(Socket sock)
 #ifdef MPEXT
     do_select(s->plug, s->s, 0);
 #else
-    do_select(s->plug, s->s, 0);
+    do_select(s->s, 0);
 #endif
     p_closesocket(s->s);
     if (s->addr)
 	sk_addr_free(s->addr);
     sfree(s);
+}
+
+/*
+ * Deal with socket errors detected in try_send().
+ */
+static void socket_error_callback(void *vs)
+{
+    Actual_Socket s = (Actual_Socket)vs;
+
+    /*
+     * Just in case other socket work has caused this socket to vanish
+     * or become somehow non-erroneous before this callback arrived...
+     */
+    if (!find234(sktree, s, NULL) || !s->pending_error)
+        return;
+
+    /*
+     * An error has occurred on this socket. Pass it to the plug.
+     */
+    plug_closing(s->plug, winsock_error_string(s->pending_error),
+                 s->pending_error, 0);
 }
 
 /*
@@ -1419,6 +1523,7 @@ void try_send(Actual_Socket s)
 		 * plug_closing()) at some suitable future moment.
 		 */
 		s->pending_error = err;
+                queue_toplevel_callback(socket_error_callback, s);
 		return;
 	    } else {
 		/* We're inside the Windows frontend here, so we know
@@ -1439,11 +1544,22 @@ void try_send(Actual_Socket s)
 	    }
 	}
     }
+
+    /*
+     * If we reach here, we've finished sending everything we might
+     * have needed to send. Send EOF, if we need to.
+     */
+    if (s->outgoingeof == EOF_PENDING) {
+        p_shutdown(s->s, SD_SEND);
+        s->outgoingeof = EOF_SENT;
+    }
 }
 
 static int sk_tcp_write(Socket sock, const char *buf, int len)
 {
     Actual_Socket s = (Actual_Socket) sock;
+
+    assert(s->outgoingeof == EOF_NO);
 
     /*
      * Add the data to the buffer list on the socket.
@@ -1463,6 +1579,8 @@ static int sk_tcp_write_oob(Socket sock, const char *buf, int len)
 {
     Actual_Socket s = (Actual_Socket) sock;
 
+    assert(s->outgoingeof == EOF_NO);
+
     /*
      * Replace the buffer list on the socket with the data.
      */
@@ -1478,6 +1596,24 @@ static int sk_tcp_write_oob(Socket sock, const char *buf, int len)
 	try_send(s);
 
     return s->sending_oob;
+}
+
+static void sk_tcp_write_eof(Socket sock)
+{
+    Actual_Socket s = (Actual_Socket) sock;
+
+    assert(s->outgoingeof == EOF_NO);
+
+    /*
+     * Mark the socket as pending outgoing EOF.
+     */
+    s->outgoingeof = EOF_PENDING;
+
+    /*
+     * Now try sending from the start of the buffer list.
+     */
+    if (s->writable)
+	try_send(s);
 }
 
 int select_result(WPARAM wParam, LPARAM lParam)
@@ -1506,7 +1642,11 @@ int select_result(WPARAM wParam, LPARAM lParam)
 	    plug_log(s->plug, 1, s->addr, s->port,
 		     winsock_error_string(err), err);
 	    while (s->addr && sk_nextaddr(s->addr, &s->step)) {
-		err = try_connect(s, 0, 0);
+		err = try_connect(s
+#ifdef MPEXT
+		    , 0, 0
+#endif
+		);
 	    }
 	}
 	if (err != 0)
@@ -1661,44 +1801,6 @@ int select_result(WPARAM wParam, LPARAM lParam)
 }
 
 /*
- * Deal with socket errors detected in try_send().
- */
-void net_pending_errors(void)
-{
-    int i;
-    Actual_Socket s;
-
-    /*
-     * This might be a fiddly business, because it's just possible
-     * that handling a pending error on one socket might cause
-     * others to be closed. (I can't think of any reason this might
-     * happen in current SSH implementation, but to maintain
-     * generality of this network layer I'll assume the worst.)
-     * 
-     * So what we'll do is search the socket list for _one_ socket
-     * with a pending error, and then handle it, and then search
-     * the list again _from the beginning_. Repeat until we make a
-     * pass with no socket errors present. That way we are
-     * protected against the socket list changing under our feet.
-     */
-
-    do {
-	for (i = 0; (s = index234(sktree, i)) != NULL; i++) {
-	    if (s->pending_error) {
-		/*
-		 * An error has occurred on this socket. Pass it to the
-		 * plug.
-		 */
-		plug_closing(s->plug,
-			     winsock_error_string(s->pending_error),
-			     s->pending_error, 0);
-		break;
-	    }
-	}
-    } while (s);
-}
-
-/*
  * Each socket abstraction contains a `void *' private field in
  * which the client can keep state.
  */
@@ -1739,7 +1841,7 @@ static void sk_tcp_set_frozen(Socket sock, int is_frozen)
 #ifdef MPEXT
 	do_select(s->plug, s->s, 1);
 #else
-	do_select(s->plug, s->s, 1);
+	do_select(s->s, 1);
 #endif
 	if (s->frozen_readable) {
 	    char c;
@@ -1759,7 +1861,7 @@ void socket_reselect_all(void)
 #ifdef MPEXT
 	    do_select(s->plug, s->s, 1);
 #else
-	    do_select(s->plug, s->s, 1);
+	    do_select(s->s, 1);
 #endif
     }
 }

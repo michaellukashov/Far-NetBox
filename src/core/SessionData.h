@@ -228,9 +228,11 @@ public:
   UnicodeString GetFolderName() const;
   void Modify();
   UnicodeString GetSource() const;
+  bool GetSaveOnly() const { return FSaveOnly; }
   void DoLoad(THierarchicalStorage * Storage, bool & RewritePassword);
   //UnicodeString ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default);
   //int ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int Default);
+  //bool IsSameSite(const TSessionData * Default);
   static RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
   static UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   static RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
@@ -249,6 +251,7 @@ public:
   bool HasPassword() const;
   bool HasAnyPassword() const;
   void Remove();
+  void CacheHostKeyIfNotCached();
   virtual void Assign(const TPersistent * Source);
   bool ParseUrl(const UnicodeString & Url, TOptions * Options,
     TStoredSessionList * StoredSessions, bool & DefaultsOnly,
@@ -257,6 +260,7 @@ public:
   void ConfigureTunnel(intptr_t PortNumber);
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
+  bool IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties) const;
   bool IsSame(const TSessionData * Default, bool AdvancedOnly) const;
   bool IsInFolderOrWorkspace(const UnicodeString & Name) const;
   static void ValidatePath(const UnicodeString & Path);
@@ -377,6 +381,7 @@ public:
   TTlsVersion GetMaxTlsVersion() const { return FMaxTlsVersion; }
   TAutoSwitch GetNotUtf() const { return FNotUtf; }
   UnicodeString GetHostKey() const { return FHostKey; }
+  bool GetOverrideCachedHostKey() const { return FOverrideCachedHostKey; }
   UnicodeString GetOrigHostName() const { return FOrigHostName; }
   intptr_t GetOrigPortNumber() const { return FOrigPortNumber; }
 
@@ -510,11 +515,13 @@ private:
   // bool FIsWorkspace;
   // UnicodeString FLink;
   UnicodeString FHostKey;
+  bool FOverrideCachedHostKey;
 
   UnicodeString FOrigHostName;
   intptr_t FOrigPortNumber;
   TProxyMethod FOrigProxyMethod;
   TSessionSource FSource;
+  bool FSaveOnly;
   UnicodeString FCodePage;
   mutable uintptr_t FCodePageAsNumber;
   bool FFtpAllowEmptyPassword;

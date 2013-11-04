@@ -3122,14 +3122,14 @@ config_read_auth_data(
   const char * subkey = CertificateStorageKey;
   THierarchicalStorage * Storage = nullptr;
   WEBDAV_ERR(fs->CreateStorage(Storage));
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  std::unique_ptr<THierarchicalStorage> StoragePtr(Storage);
   assert(StoragePtr.get());
   StoragePtr->SetAccessMode(smRead);
   if (!StoragePtr->OpenSubKey(UnicodeString(subkey), false))
     return WEBDAV_ERR_BAD_PARAM;
 
   *hash = apr_hash_make(pool);
-  std::auto_ptr<TStrings> Keys(new TStringList());
+  std::unique_ptr<TStrings> Keys(new TStringList());
   StoragePtr->GetValueNames(Keys.get());
   for (intptr_t Index = 0; Index < Keys->GetCount(); ++Index)
   {
@@ -3156,7 +3156,7 @@ config_write_auth_data(
   assert(fs);
   THierarchicalStorage * Storage = nullptr;
   WEBDAV_ERR(fs->CreateStorage(Storage));
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  std::unique_ptr<THierarchicalStorage> StoragePtr(Storage);
   assert(StoragePtr.get());
   StoragePtr->SetAccessMode(smReadWrite);
 
@@ -5353,7 +5353,7 @@ typedef enum path_type_t
 static char
 canonicalize_to_lower(char c)
 {
-  if (c < 'A' || c > 'Z')
+  if (!IsUpperCaseLetter(c))
     return c;
   else
     return c - 'A' + 'a';
@@ -5364,7 +5364,7 @@ canonicalize_to_lower(char c)
 static char
 canonicalize_to_upper(char c)
 {
-  if (c < 'a' || c > 'z')
+  if (!IsLowerCaseLetter(c))
     return c;
   else
     return c - 'a' + 'A';
@@ -5503,8 +5503,7 @@ canonicalize(
     // On Windows the first segment can be a drive letter, which we normalize
     // to upper case.
     else if ((type == type_dirent) &&
-            ((*src >= 'a' && *src <= 'z') ||
-             (*src >= 'A' && *src <= 'Z')) &&
+            IsLetter(*src) &&
             (src[1] == ':'))
     {
       *(dst++) = canonicalize_to_upper(*(src++));
@@ -5549,7 +5548,7 @@ canonicalize(
     // windows drive letter, convert the drive letter to upper case.
     else if (url && (canon_segments == 1) && (seglen == 2) &&
             (strncmp(canon, "file:", 5) == 0) &&
-            (src[0] >= 'a') && (src[0] <= 'z') && (src[1] == ':'))
+            IsLowerCaseLetter(src[0]) && (src[1] == ':'))
     {
       *(dst++) = canonicalize_to_upper(src[0]);
       *(dst++) = ':';
@@ -5782,8 +5781,7 @@ dirent_is_root(
   // are also root directories
   if ((len == 2 || ((len == 3) && (dirent[2] == '/'))) &&
       (dirent[1] == ':') &&
-      ((dirent[0] >= 'A' && dirent[0] <= 'Z') ||
-       (dirent[0] >= 'a' && dirent[0] <= 'z')))
+      IsLetter(dirent[0]))
     return TRUE;
 
   // On Windows and Cygwin //server/share is a root directory,
@@ -5912,8 +5910,7 @@ dirent_canonicalize(
 
   // Handle a specific case on Windows where path == "X:/". Here we have to
   // append the final '/', as path_canonicalize will chop this of.
-  if (((dirent[0] >= 'A' && dirent[0] <= 'Z') ||
-      (dirent[0] >= 'a' && dirent[0] <= 'z')) &&
+  if (IsLetter(dirent[0]) &&
       (dirent[1] == ':') && (dirent[2] == '/') &&
       (dst[3] == '\0'))
   {
@@ -5947,12 +5944,12 @@ dirent_is_canonical(
       return (strcmp(dirent, dirent_canonicalize(dirent, pool)) == 0);
     }
   }
-  else if (((*ptr >= 'a' && *ptr <= 'z') || (*ptr >= 'A' && *ptr <= 'Z')) &&
+  else if (IsLetter(*ptr) &&
           (ptr[1] == ':'))
   {
     // The only canonical drive names are "A:"..."Z:", no lower case
-    if (*ptr < 'A' || *ptr > 'Z')
-      return false;
+    if (!IsUpperCaseLetter(*ptr))
+      return FALSE;
 
     ptr += 2;
 
@@ -6036,8 +6033,7 @@ dirent_is_rooted(
 
   // On Windows, dirent is also absolute when it starts with 'H:' or 'H:/'
   // where 'H' is any letter.
-  if (((dirent[0] >= 'A' && dirent[0] <= 'Z') ||
-      (dirent[0] >= 'a' && dirent[0] <= 'z')) &&
+  if (IsLetter(dirent[0]) &&
       (dirent[1] == ':'))
   {
     return true;
@@ -6166,7 +6162,7 @@ dirent_is_absolute(
   }
   // On Windows, dirent is also absolute when it starts with 'H:/'
   // where 'H' is any letter.
-  if (((dirent[0] >= 'A' && dirent[0] <= 'Z')) &&
+  if (IsUpperCaseLetter(dirent[0]) &&
       (dirent[1] == ':') && (dirent[2] == '/'))
   {
     return true;
@@ -12227,8 +12223,12 @@ void TWebDAVFileSystem::Close()
   FTerminal->Closed();
   FActive = false;
 }
+//---------------------------------------------------------------------------
+void TWebDAVFileSystem::CollectUsage()
+{
+}
 //------------------------------------------------------------------------------
-const TSessionInfo & TWebDAVFileSystem::GetSessionInfo()
+const TSessionInfo & TWebDAVFileSystem::GetSessionInfo() const
 {
   return FSessionInfo;
 }
@@ -12296,6 +12296,8 @@ bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
     case fcCalculatingChecksum:
     case fcSecondaryShell: // has fcShellAnyCommand
     case fcGroupOwnerChangingByID: // by name
+    case fcRemoveCtrlZUpload:
+    case fcRemoveBOMUpload:
       return false;
 
     default:
@@ -13491,7 +13493,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
     for (intptr_t Index = 0; Index < Count; ++Index)
     {
       const TListDataEntry * Entry = &Entries[Index];
-      std::auto_ptr<TRemoteFile> File(new TRemoteFile());
+      std::unique_ptr<TRemoteFile> File(new TRemoteFile());
       try
       {
         File->SetTerminal(FTerminal);
@@ -14090,7 +14092,7 @@ webdav::error_t TWebDAVFileSystem::VerifyCertificate(
   Params.Aliases = Aliases;
   Params.AliasesCount = LENOF(Aliases);
   uintptr_t Answer = FTerminal->QueryUser(
-    FMTLOAD(VERIFY_CERT_PROMPT2, UnicodeString(Prompt).c_str()),
+    FMTLOAD(VERIFY_CERT_PROMPT3, UnicodeString(Prompt).c_str()),
     nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
   RequestResult = Answer;
   switch (RequestResult)
@@ -14189,7 +14191,7 @@ webdav::error_t TWebDAVFileSystem::SimplePrompt(
   uintptr_t & RequestResult)
 {
   RequestResult = 0;
-  std::auto_ptr<TStrings> MoreMessages(new TStringList());
+  std::unique_ptr<TStrings> MoreMessages(new TStringList());
   MoreMessages->Add(UnicodeString(prompt_string));
   uintptr_t Answer = FTerminal->QueryUser(
     UnicodeString(prompt_text),

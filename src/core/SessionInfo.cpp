@@ -904,18 +904,19 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
   TGuard Guard(FCriticalSection);
 
   BeginUpdate();
-  SCOPE_EXIT
   {
-    DeleteUnnecessary();
-    EndUpdate();
-  };
-  {
-    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
+    SCOPE_EXIT
+    {
+      DeleteUnnecessary();
+      EndUpdate();
+    };
+    #define ADSTR(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
+    #define ADF(S, ...) ADSTR(FORMAT(S, ##__VA_ARGS__));
     if (Data == nullptr)
     {
       AddSeparator();
       ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
-      std::auto_ptr<THierarchicalStorage> Storage(FConfiguration->CreateStorage(false));
+      std::unique_ptr<THierarchicalStorage> Storage(FConfiguration->CreateStorage(false));
       assert(Storage.get());
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
 
@@ -942,6 +943,10 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"Working directory: %s", GetCurrentDir().c_str());
       // ADF(L"Command-line: %s", CmdLine.c_str());
       // ADF(L"Time zone: %s", GetTimeZoneLogString().c_str());
+      if (!AdjustClockForDSTEnabled())
+      {
+        ADSTR(L"Warning: System option \"Automatically adjust clock for Daylight Saving Time\" is disabled, timestamps will not be represented correctly");
+      }
       ADF(L"Login time: %s", dt.c_str());
       AddSeparator();
     }
@@ -1005,6 +1010,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
           ADF(L"Local command: %s", Data->GetProxyLocalCommand().c_str());
         }
       }
+      ADF(L"Send buffer: %d", Data->GetSendBuf());
       wchar_t const * BugFlags = L"+-A";
       if (Data->GetUsesSsh())
       {
@@ -1028,6 +1034,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
           Bugs += UnicodeString(BugFlags[Data->GetBug(static_cast<TSshBug>(Index))])+(Index<BUG_COUNT-1?L",":L"");
         }
         ADF(L"SSH Bugs: %s", Bugs.c_str());
+        ADF(L"Simple channel: %s", BooleanToEngStr(Data->GetSshSimple()).c_str());
         ADF(L"Return code variable: %s; Lookup user groups: %c",
            Data->GetDetectReturnVar() ? UnicodeString(L"Autodetect").c_str() : Data->GetReturnVar().c_str(),
            BugFlags[Data->GetLookupUserGroups()]);
@@ -1105,7 +1112,14 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     }
 
     #undef ADF
+    #undef ADSTR
   }
+//  __finally
+//  {
+//    DeleteUnnecessary();
+
+//    EndUpdate();
+//  }
 }
 //---------------------------------------------------------------------------
 void TSessionLog::AddSeparator()
@@ -1269,7 +1283,7 @@ void TActionLog::AddFailure(TStrings * Messages)
 //---------------------------------------------------------------------------
 void TActionLog::AddFailure(Exception * E)
 {
-  std::auto_ptr<TStrings> Messages(ExceptionToMoreMessages(E));
+  std::unique_ptr<TStrings> Messages(ExceptionToMoreMessages(E));
   if (Messages.get() != nullptr)
   {
     AddFailure(Messages.get());

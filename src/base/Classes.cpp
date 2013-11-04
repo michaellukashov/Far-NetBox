@@ -2156,4 +2156,6 @@ void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
 
 //---------------------------------------------------------------------------
 
+TDateTime MinDateTime = TDateTime(-657434.0); // { 01/01/0100 12:00:00.000 AM });
+
 } // namespace Classes

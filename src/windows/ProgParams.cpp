@@ -6,7 +6,7 @@
 //------------------------------------------------------------------------------
 #pragma package(smart_init)
 //------------------------------------------------------------------------------
-// auto_ptr-like class
+// unique_ptr-like class
 class TProgramParamsOwner : public TObject
 {
 public:
