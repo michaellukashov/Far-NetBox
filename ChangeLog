@@ -1,8 +1,8 @@
-NetBox 2.1.32 ??.??.2013
+NetBox 2.1.32 04.11.2013
 --------------------
+  * Update WinSCP sources to 5.2.5
   * Bugfix: Whenever I try to move (F6) a file from the local HDD to a SFTP server, the file get copied, but the local copy is not deleted.
     (http://forum.farmanager.com/viewtopic.php?f=39&t=6638&p=113770#p113770)
-  * Update WinSCP sources to 5.2.4
 
 NetBox 2.1.31 31.08.2013
 --------------------
