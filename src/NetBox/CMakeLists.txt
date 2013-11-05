@@ -7,7 +7,7 @@ endif()
 string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
 
 if(NOT DEFINED BUILD_DIR OR BUILD_DIR STREQUAL "")
-string(REPLACE "/" "\\" BUILD_DIR ${PROJECT_ROOT}/build/${CMAKE_BUILD_TYPE}/${CONF}/${CMAKE_BUILD_TYPE})
+string(REPLACE "/" "\\" BUILD_DIR ${PROJECT_ROOT}/build/${CMAKE_BUILD_TYPE}/${CONF})
 endif()
 
 #-------------------------------------------------------------------------------
