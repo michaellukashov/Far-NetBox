@@ -1,3 +1,9 @@
+NetBox 2.1.33 ??.??.2013
+--------------------
+  * Bugfix: #79 (Stack Overflow), M0002526 (Crash on login to SSH runing on Debian 7.1 x64)
+    (https://github.com/michaellukashov/Far-NetBox/issues/79)
+    (http://bugs.farmanager.com/view.php?id=2526)
+
 NetBox 2.1.32 04.11.2013
 --------------------
   * Update WinSCP sources to 5.2.5
