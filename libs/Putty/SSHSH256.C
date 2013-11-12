@@ -279,10 +279,10 @@ static void hmacsha256_genresult(void *handle, unsigned char *hmac)
     unsigned char intermediate[32];
 
     s = keys[2];		       /* structure copy */
-    SHA256_Final(&s, intermediate);
+    putty_SHA256_Final(&s, intermediate);
     s = keys[1];		       /* structure copy */
     SHA256_Bytes(&s, intermediate, 32);
-    SHA256_Final(&s, hmac);
+    putty_SHA256_Final(&s, hmac);
 }
 
 static void sha256_do_hmac(void *handle, unsigned char *blk, int len,
