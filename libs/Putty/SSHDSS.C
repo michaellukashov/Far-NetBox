@@ -617,7 +617,7 @@ static unsigned char *dss_sign(void *key, char *data, int datalen, int *siglen)
 
     while (1) {
         SHA512_State ss2 = ss;         /* structure copy */
-        SHA512_Final(&ss2, digest512);
+        putty_SHA512_Final(&ss2, digest512);
 
         smemclr(&ss2, sizeof(ss2));
 
