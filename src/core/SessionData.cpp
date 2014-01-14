@@ -1485,7 +1485,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
 
       //ARemoteDirectory = url.SubString(PSlash, Url.Length() - PSlash + 1);
 
-      UnicodeString RemoteDirectoryWithSessionParams = Url.SubString(PSlash, Url.Length() - PSlash + 1);
+      UnicodeString RemoteDirectoryWithSessionParams = url.SubString(PSlash, url.Length() - PSlash + 1);
       ARemoteDirectory = CutToChar(RemoteDirectoryWithSessionParams, L';', false);
       UnicodeString SessionParams = RemoteDirectoryWithSessionParams;
 
