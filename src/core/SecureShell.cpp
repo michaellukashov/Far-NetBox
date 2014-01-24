@@ -275,7 +275,15 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   if (!Data->GetTunnelPortFwd().IsEmpty())
   {
     assert(!Simple);
-    conf_set_str(conf, CONF_portfwd, AnsiString(Data->GetTunnelPortFwd()).c_str());
+    UnicodeString TunnelPortFwd = Data->GetTunnelPortFwd();
+    while (!TunnelPortFwd.IsEmpty())
+    {
+      UnicodeString Buf = CutToChar(TunnelPortFwd, L',', true);
+      AnsiString Key = AnsiString(CutToChar(Buf, L'\t', true));
+      AnsiString Value = AnsiString(Buf);
+      conf_set_str_str(conf, CONF_portfwd, Key.c_str(), Value.c_str());
+    }
+
     // when setting up a tunnel, do not open shell/sftp
     conf_set_int(conf, CONF_ssh_no_shell, TRUE);
   }
