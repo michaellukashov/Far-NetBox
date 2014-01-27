@@ -1960,7 +1960,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   // whole below "-a" logic is for LIST,
   // if we know we are going to use MLSD, skip it
-  if (FTerminal->GetSessionData()->GetFtpUseMlsd())
+  if (FTerminal->GetSessionData()->GetFtpUseMlsd() == asOn)
   {
     DoReadDirectory(FileList);
   }
