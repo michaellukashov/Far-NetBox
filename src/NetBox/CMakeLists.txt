@@ -494,6 +494,7 @@ add_library(apr STATIC
   ${LIBS_ROOT}/apr/poll/unix/pollcb.c
   ${LIBS_ROOT}/apr/poll/unix/pollset.c
   ${LIBS_ROOT}/apr/poll/unix/select.c
+  ${LIBS_ROOT}/apr/poll/unix/z_asio.c
   ${LIBS_ROOT}/apr/random/unix/apr_random.c
   ${LIBS_ROOT}/apr/random/unix/sha2.c
   ${LIBS_ROOT}/apr/random/unix/sha2_glue.c
@@ -506,6 +507,7 @@ add_library(apr STATIC
   ${LIBS_ROOT}/apr/strings/apr_strtok.c
   ${LIBS_ROOT}/apr/tables/apr_hash.c
   ${LIBS_ROOT}/apr/tables/apr_tables.c
+  ${LIBS_ROOT}/apr/tables/apr_skiplist.c
   ${LIBS_ROOT}/apr/threadproc/win32/proc.c
   ${LIBS_ROOT}/apr/threadproc/win32/signals.c
   ${LIBS_ROOT}/apr/threadproc/win32/thread.c
