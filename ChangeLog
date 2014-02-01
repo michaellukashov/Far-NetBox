@@ -1,5 +1,7 @@
-NetBox 2.1.33 ??.??.2013
+NetBox 2.1.33 ??.??.2014
 --------------------
+  * Update apr sources to 1.5.0
+  * Update tinyxml2 sources to 1.0.14
   * Bugfix: #79 (Stack Overflow), M0002526 (Crash on login to SSH runing on Debian 7.1 x64)
     (https://github.com/michaellukashov/Far-NetBox/issues/79)
     (http://bugs.farmanager.com/view.php?id=2526)
