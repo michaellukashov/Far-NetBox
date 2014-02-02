@@ -58,6 +58,7 @@ UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars)
 UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote);
 UnicodeString ExceptionLogString(Exception *E);
 UnicodeString MainInstructions(const UnicodeString & S);
+UnicodeString MainInstructionsFirstParagraph(const UnicodeString & S);
 bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions);
 UnicodeString UnformatMessage(const UnicodeString & S);
 bool IsNumber(const UnicodeString & Str);
@@ -108,7 +109,7 @@ UnicodeString EscapeHotkey(const UnicodeString & Caption);
 bool CutToken(UnicodeString & Str, UnicodeString & Token,
   UnicodeString * RawToken = nullptr);
 void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter);
-bool IsWinXPOrOlder();
+bool IsWinVista();
 bool IsWin7();
 #if defined(__BORLANDC__)
 TLibModule * FindModule(void * Instance);
@@ -208,6 +209,7 @@ private:
 #define CTRACEFMT(TRACING, MESSAGE, ...)
 //---------------------------------------------------------------------------
 #include <assert.h>
+#define ACCESS_VIOLATION_TEST { (*((int*)NULL)) = 0; }
 #ifndef _DEBUG
 #undef assert
 #define assert(p)   ((void)0)

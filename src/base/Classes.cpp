@@ -1278,6 +1278,30 @@ TDateTime Now()
   return Result;
 }
 
+TDateTime SpanOfNowAndThen(const TDateTime  ANow, const TDateTime AThen)
+{
+  TDateTime Result;
+  if (ANow < AThen)
+    Result = AThen - ANow;
+  else
+    Result = ANow - AThen;
+  return Result;
+}
+
+double MilliSecondSpan(const TDateTime  ANow, const TDateTime AThen)
+{
+  TDateTime Result;
+  Result = MSecsPerDay * SpanOfNowAndThen(ANow, AThen);
+  return Result;
+}
+
+__int64 MilliSecondsBetween(const TDateTime ANow, const TDateTime AThen)
+{
+  TDateTime Result;
+  Result = floor(MilliSecondSpan(ANow, AThen));
+  return Result;
+}
+
 //---------------------------------------------------------------------------
 TSHFileInfo::TSHFileInfo()
 {

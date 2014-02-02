@@ -563,25 +563,40 @@ bool TFTPFileSystem::GetActive() const
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CollectUsage()
 {
+/*
   if (FFileZillaIntf->UsingMlsd())
   {
-//    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPMLSD");
+    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPMLSD");
   }
+  else
+  {
+     FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPLIST");
+  }
+
   if (FFileZillaIntf->UsingUtf8())
   {
-//    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPUTF8");
+    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPUTF8");
+  }
+  else
+  {
+     FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPNonUTF8");
   }
   if (!GetCurrentDirectory().IsEmpty() && (GetCurrentDirectory()[1] != L'/'))
   {
     if (::IsUnixStyleWindowsPath(GetCurrentDirectory()))
     {
-//      FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPWindowsPath");
+      FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPWindowsPath");
+    }
+    else if ((GetCurrentDirectory().Length() >= 3) && IsLetter(GetCurrentDirectory()[1]) && (GetCurrentDirectory()[2] == L':') && (CurrentDirectory[3] == L'/'))
+    {
+      // FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPRealWindowsPath");
     }
     else
     {
-//      FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPOtherPath");
+      FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPOtherPath");
     }
   }
+*/
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::Idle()
@@ -1183,7 +1198,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
     ThrowSkipFileNull();
   }
 
-  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
+  FTerminal->LogFileDetails(FileName, AFile->GetModification(), AFile->GetSize());
 
   OperationProgress->SetFile(OnlyFileName);
 
@@ -1274,6 +1289,8 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
 
       FFileTransferCPSLimit = OperationProgress->CPSLimit;
       FFileTransferPreserveTime = CopyParam->GetPreserveTime();
+      // not used for downloads anyway
+      FFileTransferRemoveBOM = CopyParam->GetRemoveBOM();
       UserData.FileName = DestFileName;
       UserData.Params = Params;
       UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
@@ -1460,8 +1477,6 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
   TUploadSessionAction & Action)
 {
   UnicodeString RealFileName = AFile ? AFile->GetFileName() : FileName;
-  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", RealFileName.c_str()));
-
   Action.FileName(ExpandUNCFileName(FileName));
 
   OperationProgress->SetFile(RealFileName, false);
@@ -1547,6 +1562,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
       FFileTransferCPSLimit = OperationProgress->CPSLimit;
       // not used for uploads anyway
       FFileTransferPreserveTime = CopyParam->GetPreserveTime();
+      FFileTransferRemoveBOM = CopyParam->GetRemoveBOM();
       // not used for uploads, but we get new name (if any) back in this field
       UserData.FileName = DestFileName;
       UserData.Params = Params;
@@ -1826,6 +1842,7 @@ bool TFTPFileSystem::IsCapable(intptr_t Capability) const
     case fcAnyCommand: // but not fcShellAnyCommand
     case fcRename:
     case fcRemoteMove:
+    case fcRemoveBOMUpload:
       return true;
 
     case fcPreservingTimestampUpload:
@@ -1848,7 +1865,6 @@ bool TFTPFileSystem::IsCapable(intptr_t Capability) const
     case fcTimestampChanging:
     case fcIgnorePermErrors:
     case fcRemoveCtrlZUpload:
-    case fcRemoveBOMUpload:
       return false;
 
     default:
@@ -1944,7 +1960,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   // whole below "-a" logic is for LIST,
   // if we know we are going to use MLSD, skip it
-  if (FTerminal->GetSessionData()->GetFtpUseMlsd())
+  if (FTerminal->GetSessionData()->GetFtpUseMlsd() == asOn)
   {
     DoReadDirectory(FileList);
   }
@@ -1979,6 +1995,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             Repeat = true;
             FListAll = asOff;
             GotNoFilesForAll = true;
+            FTerminal->LogEvent(L"LIST with -a switch returned empty directory listing, will try pure LIST");
           }
           else
           {
@@ -1998,6 +2015,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         // further try without "-a" only as the server may not support it
         if (FListAll == asAuto)
         {
+          FTerminal->LogEvent(L"LIST with -a failed, walling back to pure LIST");
           if (!FTerminal->GetActive())
           {
             FTerminal->Reopen(ropNoReadDirectory);
@@ -2135,7 +2153,8 @@ void TFTPFileSystem::CopyFile(const UnicodeString & FileName,
 //---------------------------------------------------------------------------
 UnicodeString TFTPFileSystem::FileUrl(const UnicodeString & FileName) const
 {
-  return FTerminal->FileUrl(L"ftp", FileName);
+  UnicodeString Protocol = (FTerminal->GetSessionData()->GetFtps() == ftpsImplicit) ? FtpsProtocol : FtpProtocol;
+  return FTerminal->FileUrl(Protocol, FileName);
 }
 //---------------------------------------------------------------------------
 TStrings * TFTPFileSystem::GetFixedPaths()
@@ -2365,6 +2384,14 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
 
     case OPTION_MPEXT_SNDBUF:
       Result = Data->GetSendBuf();
+      break;
+
+    case OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELLY:
+      Result = Data->GetFtpTransferActiveImmediatelly();
+      break;
+
+    case OPTION_MPEXT_REMOVE_BOM:
+      Result = FFileTransferRemoveBOM ? TRUE : FALSE;
       break;
 
     default:
@@ -2712,7 +2739,8 @@ void TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       if (ErrorStr.IsEmpty() && (MoreMessages.get() != nullptr))
       {
         assert(MoreMessages->GetCount() > 0);
-        ErrorStr = MoreMessages->GetString(0);
+        // bit too generic assigning of main instructions, let's see how it works
+        ErrorStr = MainInstructions(MoreMessages->GetString(0));
         MoreMessages->Delete(0);
       }
 
@@ -3135,6 +3163,7 @@ struct TClipboardHandler
 
   void Copy(TObject * /*Sender*/)
   {
+    TInstantOperationVisualizer Visualizer;
     CopyToClipboard(Text.c_str());
   }
 };

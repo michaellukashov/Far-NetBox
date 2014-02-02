@@ -436,8 +436,12 @@ private:
   double FValue;
 };
 
-TDateTime Now();
 extern TDateTime MinDateTime;
+
+TDateTime Now();
+TDateTime SpanOfNowAndThen(const TDateTime  ANow, const TDateTime AThen);
+double MilliSecondSpan(const TDateTime  ANow, const TDateTime AThen);
+__int64 MilliSecondsBetween(const TDateTime ANow, const TDateTime AThen);
 
 //---------------------------------------------------------------------------
 

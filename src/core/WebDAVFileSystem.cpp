@@ -73,6 +73,7 @@ struct TClipboardHandler
 
   void Copy(TObject * /*Sender*/)
   {
+    TInstantOperationVisualizer Visualizer;
     CopyToClipboard(Text.c_str());
   }
 };
@@ -12182,10 +12183,10 @@ void TWebDAVFileSystem::Open()
     FSessionInfo.SecurityProtocolName = LoadStr(FTPS_IMPLICIT);
   }
 
-  UnicodeString HostName = Data->GetHostName();
+  UnicodeString HostName = Data->GetHostNameExpanded();
   size_t Port = Data->GetPortNumber();
   UnicodeString ProtocolName = !Ssl ? L"http" : L"https";
-  UnicodeString UserName = Data->GetUserName();
+  UnicodeString UserName = Data->GetUserNameExpanded();
   UnicodeString Path = Data->GetRemoteDirectory();
   UnicodeString Url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, Path.c_str());
 
@@ -12831,7 +12832,6 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
   UnicodeString RealFileName = File ? File->GetFileName() : FileName;
   bool CheckExistence = UnixComparePaths(TargetDir, FTerminal->GetCurrentDirectory()) &&
     (FTerminal->FFiles != nullptr) && FTerminal->FFiles->GetLoaded();
-  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", RealFileName.c_str()));
   bool CanProceed = false;
   UnicodeString FileNameOnly =
     CopyParam->ChangeFileName(ExtractFileName(RealFileName, false), osLocal, true);
@@ -13254,7 +13254,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
     ThrowSkipFileNull();
   }
 
-  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
+  FTerminal->LogFileDetails(FileName, TDateTime(), File->GetSize());
 
   OperationProgress->SetFile(FileNameOnly);
 

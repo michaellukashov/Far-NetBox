@@ -14,7 +14,7 @@
 #include "network.h"
 #include "tree234.h"
 
-#ifdef MPEXT
+#if defined(MPEXT) && !defined(_MSC_VER)
 // ws2tcpip.h does not compile without _MSC_VER defined
 #define _MSC_VER 1000
 #endif

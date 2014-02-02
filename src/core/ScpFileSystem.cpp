@@ -750,35 +750,25 @@ void TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, intptr_t Params,
   {
     Params = ecDefault;
   }
-  if (FTerminal->GetUseBusyCursor())
-  {
-    Busy(true);
-  }
-  SCOPE_EXIT
-  {
-    if (FTerminal->GetUseBusyCursor())
-    {
-      Busy(false);
-    }
-  };
-  {
-    SendCommand(Cmd);
 
-    intptr_t COParams = coWaitForLastLine;
-    if (Params & ecRaiseExcept)
-    {
-      COParams |= coRaiseExcept;
-    }
-    if (Params & ecIgnoreWarnings)
-    {
-      COParams |= coIgnoreWarnings;
-    }
-    if (Params & ecReadProgress)
-    {
-      COParams |= coReadProgress;
-    }
-    ReadCommandOutput(COParams, &CmdString);
+  TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
+
+  SendCommand(Cmd);
+
+  intptr_t COParams = coWaitForLastLine;
+  if (Params & ecRaiseExcept)
+  {
+    COParams |= coRaiseExcept;
   }
+  if (Params & ecIgnoreWarnings)
+  {
+    COParams |= coIgnoreWarnings;
+  }
+  if (Params & ecReadProgress)
+  {
+    COParams |= coReadProgress;
+  }
+  ReadCommandOutput(COParams, &CmdString);
 }
 //---------------------------------------------------------------------------
 #if defined(__BORLANDC__)
@@ -909,7 +899,7 @@ void TSCPFileSystem::DetectReturnVar()
         if ((GetOutput()->GetCount() != 1) || Str.IsEmpty() || (Val > 255))
         {
           FTerminal->LogEvent(L"The response is not numerical exit code");
-          EXCEPTION;
+          Abort();
         }
       }
       catch (EFatal &)
@@ -1391,7 +1381,7 @@ void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
 //---------------------------------------------------------------------------
 UnicodeString TSCPFileSystem::FileUrl(const UnicodeString & FileName) const
 {
-  return FTerminal->FileUrl(L"scp", FileName);
+  return FTerminal->FileUrl(ScpProtocol, FileName);
 }
 //---------------------------------------------------------------------------
 TStrings * TSCPFileSystem::GetFixedPaths()
@@ -1897,7 +1887,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
                 OperationProgress->AddTransfered(BlockSize);
                 if (OperationProgress->Cancel == csCancelTransfer)
                 {
-                  throw Exception(FMTLOAD(USER_TERMINATED));
+                  throw Exception(MainInstructions(LoadStr(USER_TERMINATED)));
                 }
               }
             }
@@ -1923,7 +1913,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
           if ((OperationProgress->Cancel == csCancelTransfer) ||
               (OperationProgress->Cancel == csCancel && !OperationProgress->TransferingFile))
           {
-            throw Exception(FMTLOAD(USER_TERMINATED));
+            throw Exception(MainInstructions(LoadStr(USER_TERMINATED)));
           }
         }
         while (!OperationProgress->IsLocallyDone() || !OperationProgress->IsTransferDone());
@@ -2454,7 +2444,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
         // last possibility to cancel transfer before it starts
         if (OperationProgress->Cancel)
         {
-          ThrowSkipFile(nullptr, LoadStr(USER_TERMINATED));
+          ThrowSkipFile(nullptr, MainInstructions(LoadStr(USER_TERMINATED)));
         }
 
         bool Dir = (Ctrl == L'D');
@@ -2466,6 +2456,8 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
           SkipConfirmed = true;
           SCPError(L"", false);
         }
+
+        FTerminal->LogFileDetails(FileName, SourceTimestamp, MaskParams.Size);
 
         UnicodeString DestFileName =
           IncludeTrailingBackslash(TargetDir) +
@@ -2610,7 +2602,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
 
                   if (OperationProgress->Cancel == csCancelTransfer)
                   {
-                    throw Exception(FMTLOAD(USER_TERMINATED));
+                    throw Exception(MainInstructions(LoadStr(USER_TERMINATED)));
                   }
                 }
                 while (!OperationProgress->IsLocallyDone() || !

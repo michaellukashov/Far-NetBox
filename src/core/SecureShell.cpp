@@ -10,6 +10,7 @@
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "CoreMain.h"
+#include <StrUtils.hpp>
 
 #ifndef AUTO_WINSOCK
 #include <winsock2.h>
@@ -145,7 +146,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   #define CONF_DEF_STR_NONE(KEY) conf_set_str(conf, KEY, "");
   // noop, used only for these and we set the first three explicitly below and latter two are not used in our code
   #define CONF_DEF_INT_INT(KEY) assert((KEY == CONF_ssh_cipherlist) || (KEY == CONF_ssh_kexlist) || (KEY == CONF_ssh_gsslist) || (KEY == CONF_colours) || (KEY == CONF_wordness));
-  // noop, used only for these three and all thay all can handle undef value
+  // noop, used only for these three and they all can handle undef value
   #define CONF_DEF_STR_STR(KEY) assert((KEY == CONF_ttymodes) || (KEY == CONF_portfwd) || (KEY == CONF_environmt));
   // noop, not used in our code
   #define CONF_DEF_FONT_NONE(KEY) assert((KEY == CONF_font) || (KEY == CONF_boldfont) || (KEY == CONF_widefont) || (KEY == CONF_wideboldfont));
@@ -275,7 +276,15 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   if (!Data->GetTunnelPortFwd().IsEmpty())
   {
     assert(!Simple);
-    conf_set_str(conf, CONF_portfwd, AnsiString(Data->GetTunnelPortFwd()).c_str());
+    UnicodeString TunnelPortFwd = Data->GetTunnelPortFwd();
+    while (!TunnelPortFwd.IsEmpty())
+    {
+      UnicodeString Buf = CutToChar(TunnelPortFwd, L',', true);
+      AnsiString Key = AnsiString(CutToChar(Buf, L'\t', true));
+      AnsiString Value = AnsiString(Buf);
+      conf_set_str_str(conf, CONF_portfwd, Key.c_str(), Value.c_str());
+    }
+
     // when setting up a tunnel, do not open shell/sftp
     conf_set_int(conf, CONF_ssh_no_shell, TRUE);
   }
@@ -1041,8 +1050,9 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
     Params.HelpKeyword = HELP_MESSAGE_HOST_IS_NOT_COMMUNICATING;
     Params.Timer = 500;
     Params.TimerEvent = PoolEvent;
-    Params.TimerMessage = FMTLOAD(TIMEOUT_STILL_WAITING3, FSessionData->GetTimeout());
+    Params.TimerMessage = MainInstructions(FMTLOAD(TIMEOUT_STILL_WAITING3, FSessionData->GetTimeout()));
     Params.TimerAnswers = qaAbort;
+    Params.TimerQueryType = qtInformation;
     if (FConfiguration->GetSessionReopenAutoStall() > 0)
     {
       Params.Timeout = FConfiguration->GetSessionReopenAutoStall();
@@ -1115,7 +1125,7 @@ void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
           // fallthru
 
         case qaAbort:
-          FatalError(LoadStr(USER_TERMINATED));
+          FatalError(MainInstructions(LoadStr(USER_TERMINATED)));
           break;
       }
     }
@@ -1302,12 +1312,12 @@ int TSecureShell::TranslateErrorMessage(
 {
   static const TPuttyTranslation Translation[] = {
     { L"Server unexpectedly closed network connection", UNEXPECTED_CLOSE_ERROR, HELP_UNEXPECTED_CLOSE_ERROR },
-    { L"Network error: Connection refused", NET_TRANSL_REFUSED, HELP_NET_TRANSL_REFUSED },
+    { L"Network error: Connection refused", NET_TRANSL_REFUSED2, HELP_NET_TRANSL_REFUSED },
     { L"Network error: Connection reset by peer", NET_TRANSL_RESET, HELP_NET_TRANSL_RESET },
-    { L"Network error: Connection timed out", NET_TRANSL_TIMEOUT, HELP_NET_TRANSL_TIMEOUT },
-    { L"Network error: No route to host", NET_TRANSL_NO_ROUTE, HELP_NET_TRANSL_NO_ROUTE },
+    { L"Network error: Connection timed out", NET_TRANSL_TIMEOUT2, HELP_NET_TRANSL_TIMEOUT },
+    { L"Network error: No route to host", NET_TRANSL_NO_ROUTE2, HELP_NET_TRANSL_NO_ROUTE },
     { L"Network error: Software caused connection abort", NET_TRANSL_CONN_ABORTED, HELP_NET_TRANSL_CONN_ABORTED },
-    { L"Host does not exist", NET_TRANSL_HOST_NOT_EXIST, HELP_NET_TRANSL_HOST_NOT_EXIST },
+    { L"Host does not exist", NET_TRANSL_HOST_NOT_EXIST2, HELP_NET_TRANSL_HOST_NOT_EXIST },
     { L"Incoming packet was garbled on decryption", NET_TRANSL_PACKET_GARBLED, HELP_NET_TRANSL_PACKET_GARBLED },
   };
 
@@ -1317,6 +1327,8 @@ int TSecureShell::TranslateErrorMessage(
   {
     FNoConnectionResponse = true;
   }
+
+  Message = ReplaceStr(Message, L"%HOST%", FSessionData->GetHostNameExpanded());
 
   return Index;
 }
@@ -1614,7 +1626,7 @@ void TSecureShell::WaitForData()
           // fallthru
 
         case qaAbort:
-          FatalError(LoadStr(USER_TERMINATED));
+          FatalError(MainInstructions(LoadStr(USER_TERMINATED)));
           break;
       }
     }
@@ -1967,6 +1979,7 @@ struct TClipboardHandler
 
   void Copy(TObject * /*Sender*/)
   {
+    TInstantOperationVisualizer Visualizer;
     CopyToClipboard(Text.c_str());
   }
 };
@@ -2272,5 +2285,14 @@ void TSecureShell::CollectUsage()
   if (FCollectPrivateKeyUsage)
   {
 //    Configuration->Usage->Inc(L"OpenedSessionsPrivateKey2");
+  }
+
+  if (FSshVersion == 1)
+  {
+    // Configuration->Usage->Inc(L"OpenedSessionsSSH1");
+  }
+  else if (FSshVersion == 2)
+  {
+    // Configuration->Usage->Inc(L"OpenedSessionsSSH2");
   }
 }

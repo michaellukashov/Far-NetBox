@@ -1294,8 +1294,12 @@ TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor) const
   CONSOLE_SCREEN_BUFFER_INFO BufferInfo;
   ClearStruct(BufferInfo);
   GetConsoleScreenBufferInfo(FConsoleOutput, &BufferInfo);
+  if (FarPlugin)
+    FarAdvControl(ACTL_GETFARRECT, 0, &BufferInfo.srWindow);
 
-  TPoint Result(BufferInfo.dwSize.X, BufferInfo.dwSize.Y);
+  TPoint Result(
+    BufferInfo.srWindow.Right - BufferInfo.srWindow.Left + 1,
+    BufferInfo.srWindow.Bottom - BufferInfo.srWindow.Top + 1);
 
   if (Size != nullptr)
   {
@@ -1304,8 +1308,8 @@ TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor) const
 
   if (Cursor != nullptr)
   {
-    Cursor->x = BufferInfo.dwCursorPosition.X;
-    Cursor->y = BufferInfo.dwCursorPosition.Y;
+    Cursor->x = BufferInfo.dwCursorPosition.X - BufferInfo.srWindow.Left;
+    Cursor->y = BufferInfo.dwCursorPosition.Y - BufferInfo.srWindow.Top;
   }
   return Result;
 }

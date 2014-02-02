@@ -810,7 +810,9 @@ void CTransferSocket::OnSend(int nErrorCode)
 					return;
 				}
 				else if (nError == WSAEWOULDBLOCK)
+				{
 					m_bufferpos += numread;
+				}
 #ifndef MPEXT_NO_SSL
 				else if (m_pSslLayer && nError == WSAESHUTDOWN)
 				{
@@ -842,7 +844,9 @@ void CTransferSocket::OnSend(int nErrorCode)
 					return;
 				}
 				else if (!pos)
+				{
 					m_bufferpos = 0;
+				}
 				else
 				{
 					memmove(m_pBuffer, m_pBuffer+numsent, pos);
@@ -879,8 +883,10 @@ void CTransferSocket::OnSend(int nErrorCode)
 					return;
 				}
 			}
-			else
+			else 
+			{
 				numread = 0;
+			}
 
 			if (!currentBufferSize && !m_bufferpos)
 			{
@@ -1305,7 +1311,8 @@ int CTransferSocket::ReadDataFromFile(char *buffer, int len)
 		// leaving it onto the server (what Filezilla 3 seems to do too)
 		const char Bom[4] = "\xEF\xBB\xBF";
 		int read = m_pFile->Read(buffer, len);
-		if (m_transferdata.bType && (read >= 3) && (memcmp(buffer, Bom, 3) == 0))
+		if (COptions::GetOptionVal(OPTION_MPEXT_REMOVE_BOM) &&
+				m_transferdata.bType && (read >= sizeof(Bom)) && (memcmp(buffer, Bom, sizeof(Bom)) == 0))
 		{
 			memcpy(buffer, buffer + 3, read - 3);
 			read -= 3;

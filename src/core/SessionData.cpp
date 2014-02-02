@@ -41,6 +41,14 @@ const UnicodeString AnonymousUserName(L"anonymous");
 const UnicodeString AnonymousPassword(L"");
 const UnicodeString PuttySshProtocol(L"ssh");
 const UnicodeString PuttyTelnetProtocol(L"telnet");
+const UnicodeString SftpProtocol(L"sftp");
+const UnicodeString ScpProtocol(L"scp");
+const UnicodeString FtpProtocol(L"ftp");
+const UnicodeString FtpsProtocol(L"ftps");
+const UnicodeString WebDAVProtocol(L"http");
+const UnicodeString WebDAVSProtocol(L"https");
+const UnicodeString ProtocolSeparator(L"://");
+const UnicodeString WinSCPProtocolPrefix(L"winscp-");
 
 const uintptr_t CONST_DEFAULT_CODEPAGE = CP_ACP;
 const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
@@ -192,6 +200,7 @@ void TSessionData::Default()
   SetFtpAccount(L"");
   SetFtpPingInterval(30);
   SetFtpPingType(ptDummyCommand);
+  SetFtpTransferActiveImmediatelly(false);
   SetFtps(ftpsNone);
   SetMinTlsVersion(ssl2);
   SetMaxTlsVersion(tls12);
@@ -329,6 +338,7 @@ void TSessionData::NonPersistant()
   PROPERTY(FtpAccount); \
   PROPERTY(FtpPingInterval); \
   PROPERTY(FtpPingType); \
+  PROPERTY(FtpTransferActiveImmediatelly); \
   PROPERTY(FtpListAll); \
   PROPERTY(FtpDupFF); \
   PROPERTY(FtpUndupFF); \
@@ -441,14 +451,9 @@ bool TSessionData::IsInFolderOrWorkspace(const UnicodeString & AFolder) const
 void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword)
 {
   SetSessionVersion(::StrToVersionNumber(Storage->ReadString(L"Version", L"")));
-  // In case we are re-loading, reset passwords, to avoid pointless
-  // re-cryption, while loading username/hostname. And moreover, when
-  // the password is wrongly encrypted (using a different master password),
-  // this breaks sites reload and consequently an overal operation,
-  // such as opening Sites menu
-  SetPassword(L"");
-  SetProxyPassword(L"");
-  SetTunnelPassword(L"");
+  // Make sure we only ever use methods supported by TOptionsStorage
+  // (implemented by TOptionsIniFile)
+
   SetPortNumber(Storage->ReadInteger(L"PortNumber", GetPortNumber()));
   SetUserName(Storage->ReadString(L"UserName", GetUserName()));
   // must be loaded after UserName, because HostName may be in format user@host
@@ -682,6 +687,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetFtpAccount(Storage->ReadString(L"FtpAccount", GetFtpAccount()));
   SetFtpPingInterval(Storage->ReadInteger(L"FtpPingInterval", GetFtpPingInterval()));
   SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger(L"FtpPingType", GetFtpPingType())));
+  SetFtpTransferActiveImmediatelly(Storage->ReadBool(L"FtpTransferActiveImmediatelly", GetFtpTransferActiveImmediatelly()));
   SetFtps(static_cast<TFtps>(Storage->ReadInteger(L"Ftps", GetFtps())));
   SetFtpListAll(static_cast<TAutoSwitch>(Storage->ReadInteger(L"FtpListAll", GetFtpListAll())));
   SetFtpDupFF(Storage->ReadBool(L"FtpDupFF", GetFtpDupFF()));
@@ -713,6 +719,15 @@ void TSessionData::Load(THierarchicalStorage * Storage)
   bool RewritePassword = false;
   if (Storage->OpenSubKey(GetInternalStorageKey(), False))
   {
+    // In case we are re-loading, reset passwords, to avoid pointless
+    // re-cryption, while loading username/hostname. And moreover, when
+    // the password is wrongly encrypted (using a different master password),
+    // this breaks sites reload and consequently an overal operation,
+    // such as opening Sites menu
+    SetPassword(L"");
+    SetProxyPassword(L"");
+    SetTunnelPassword(L"");
+
     DoLoad(Storage, RewritePassword);
 
     Storage->CloseSubKey();
@@ -980,6 +995,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA(String, FtpAccount);
       WRITE_DATA(Integer, FtpPingInterval);
       WRITE_DATA(Integer, FtpPingType);
+      WRITE_DATA(Bool, FtpTransferActiveImmediatelly);
       WRITE_DATA(Integer, Ftps);
       WRITE_DATA(Integer, FtpListAll);
       WRITE_DATA(Bool, FtpDupFF);
@@ -1278,6 +1294,25 @@ inline void MoveStr(UnicodeString & Source, UnicodeString * Dest, intptr_t Count
   Source.Delete(1, Count);
 }
 //---------------------------------------------------------------------
+bool TSessionData::DoIsProtocolUrl(
+  const UnicodeString & Url, const UnicodeString & Protocol, int & ProtocolLen)
+{
+  bool Result = SameText(Url.SubString(1, Protocol.Length() + 1), Protocol + L":");
+  if (Result)
+  {
+    ProtocolLen = Protocol.Length() + 1;
+  }
+  return Result;
+}
+//---------------------------------------------------------------------
+bool TSessionData::IsProtocolUrl(
+  const UnicodeString & Url, const UnicodeString & Protocol, int & ProtocolLen)
+{
+  return
+    DoIsProtocolUrl(Url, Protocol, ProtocolLen) ||
+    DoIsProtocolUrl(Url, WinSCPProtocolPrefix + Protocol, ProtocolLen);
+}
+//---------------------------------------------------------------------
 bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
   TStoredSessionList * StoredSessions, bool & DefaultsOnly, UnicodeString * FileName,
   bool * AProtocolDefined, UnicodeString * MaskedUrl)
@@ -1288,6 +1323,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
   TFSProtocol AFSProtocol = fsSCPonly;
   intptr_t APortNumber = 0;
   TFtps AFtps = ftpsNone;
+  int ProtocolLen = 0;
   if (url.SubString(1, 7).LowerCase() == L"netbox:")
   {
     // Remove "netbox:" prefix
@@ -1301,50 +1337,50 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     url.Delete(1, 7);
     ProtocolDefined = true;
   }
-  if (url.SubString(1, 4).LowerCase() == L"scp:")
+  if (IsProtocolUrl(url, ScpProtocol, ProtocolLen))
   {
     AFSProtocol = fsSCPonly;
     APortNumber = SshPortNumber;
-    MoveStr(url, MaskedUrl, 4);
+    MoveStr(url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (url.SubString(1, 5).LowerCase() == L"sftp:")
+  else if (IsProtocolUrl(url, SftpProtocol, ProtocolLen))
   {
     AFSProtocol = fsSFTPonly;
     APortNumber = SshPortNumber;
-    MoveStr(url, MaskedUrl, 5);
+    MoveStr(url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (url.SubString(1, 4).LowerCase() == L"ftp:")
+  else if (IsProtocolUrl(url, FtpProtocol, ProtocolLen))
   {
     AFSProtocol = fsFTP;
     SetFtps(ftpsNone);
     APortNumber = FtpPortNumber;
-    MoveStr(url, MaskedUrl, 4);
+    MoveStr(url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (url.SubString(1, 5).LowerCase() == L"ftps:")
+  else if (IsProtocolUrl(url, FtpsProtocol, ProtocolLen))
   {
     AFSProtocol = fsFTP;
     AFtps = ftpsImplicit;
     APortNumber = FtpsImplicitPortNumber;
-    MoveStr(url, MaskedUrl, 5);
+    MoveStr(url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (url.SubString(1, 5).LowerCase() == L"http:")
+  else if (IsProtocolUrl(url, WebDAVProtocol, ProtocolLen))
   {
     AFSProtocol = fsWebDAV;
     AFtps = ftpsNone;
     APortNumber = HTTPPortNumber;
-    MoveStr(url, MaskedUrl, 5);
+    MoveStr(url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (url.SubString(1, 6).LowerCase() == L"https:")
+  else if (IsProtocolUrl(url, WebDAVSProtocol, ProtocolLen))
   {
     AFSProtocol = fsWebDAV;
     AFtps = ftpsImplicit;
     APortNumber = HTTPSPortNumber;
-    MoveStr(url, MaskedUrl, 6);
+    MoveStr(url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
 
@@ -1485,7 +1521,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
 
       //ARemoteDirectory = url.SubString(PSlash, Url.Length() - PSlash + 1);
 
-      UnicodeString RemoteDirectoryWithSessionParams = Url.SubString(PSlash, Url.Length() - PSlash + 1);
+      UnicodeString RemoteDirectoryWithSessionParams = url.SubString(PSlash, url.Length() - PSlash + 1);
       ARemoteDirectory = CutToChar(RemoteDirectoryWithSessionParams, L';', false);
       UnicodeString SessionParams = RemoteDirectoryWithSessionParams;
 
@@ -2201,7 +2237,7 @@ UnicodeString TSessionData::GetSessionUrl() const
     switch (GetFSProtocol())
     {
       case fsSCPonly:
-        Url = L"scp://";
+        Url = ScpProtocol;
         break;
 
       default:
@@ -2209,22 +2245,24 @@ UnicodeString TSessionData::GetSessionUrl() const
         // fallback
       case fsSFTP:
       case fsSFTPonly:
-        Url = L"sftp://";
+        Url = SftpProtocol;
         break;
 
       case fsFTP:
-        if (GetFtps() == ftpsNone)
-          Url = L"ftp://";
+        if (GetFtps() == ftpsImplicit)
+          Url = FtpsProtocol;
         else
-          Url = L"ftps://";
+          Url = FtpProtocol;
         break;
       case fsWebDAV:
-        if (GetFtps() == ftpsNone)
-          Url = L"http://";
+        if (GetFtps() == ftpsImplicit)
+          Url = WebDAVSProtocol;
         else
-          Url = L"https://";
+          Url = WebDAVProtocol;
         break;
     }
+
+    Url += ProtocolSeparator;
 
     if (!GetHostName().IsEmpty() && !GetUserName().IsEmpty())
     {
@@ -2776,6 +2814,11 @@ TDateTime TSessionData::GetFtpPingIntervalDT() const
 void TSessionData::SetFtpPingType(TPingType Value)
 {
   SET_SESSION_PROPERTY(FtpPingType);
+}
+//---------------------------------------------------------------------------
+void TSessionData::SetFtpTransferActiveImmediatelly(bool Value)
+{
+  SET_SESSION_PROPERTY(FtpTransferActiveImmediatelly);
 }
 //---------------------------------------------------------------------------
 void TSessionData::SetFtps(TFtps Value)
@@ -3339,7 +3382,7 @@ void TStoredSessionList::UpdateStaticUsage()
   for (intptr_t Index = 0; Index < Count; ++Index)
   {
     TSessionData * Data = GetSession(Index);
-    switch (Data->GetFSProtocol())
+    if (Data->GetIsWorkspace())
     {
       Workspaces = true;
     }
@@ -3389,6 +3432,8 @@ void TStoredSessionList::UpdateStaticUsage()
         Color++;
       }
 
+      // this effectively does not take passwords (proxy + tunnel) into account,
+      // when master password is set, as master password handler in not set up yet
       if (!Data->IsSame(FactoryDefaults.get(), true, DifferentAdvancedProperties.get()))
       {
         Advanced++;
@@ -3519,7 +3564,7 @@ void TStoredSessionList::ImportHostKeys(const UnicodeString & TargetKey,
       TSessionData * Session = Sessions->GetSession(Index);
       if (!OnlySelected || Session->GetSelected())
       {
-        HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostName().c_str()));
+        HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostNameExpanded().c_str()));
         UnicodeString KeyName;
         for (intptr_t KeyIndex = 0; KeyIndex < KeyList->GetCount(); ++KeyIndex)
         {

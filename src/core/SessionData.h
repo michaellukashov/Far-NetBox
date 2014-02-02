@@ -55,6 +55,14 @@ extern const intptr_t HTTPSPortNumber;
 extern const intptr_t TelnetPortNumber;
 extern const UnicodeString PuttySshProtocol;
 extern const UnicodeString PuttyTelnetProtocol;
+extern const UnicodeString SftpProtocol;
+extern const UnicodeString ScpProtocol;
+extern const UnicodeString FtpProtocol;
+extern const UnicodeString FtpsProtocol;
+extern const UnicodeString WebDAVProtocol;
+extern const UnicodeString WebDAVSProtocol;
+extern const UnicodeString ProtocolSeparator;
+extern const UnicodeString WinSCPProtocolPrefix;
 //---------------------------------------------------------------------------
 struct TIEProxyConfig : public TObject
 {
@@ -214,6 +222,7 @@ public:
   void SetFtpAccount(const UnicodeString & Value);
   void SetFtpPingInterval(intptr_t Value);
   void SetFtpPingType(TPingType Value);
+  void SetFtpTransferActiveImmediatelly(bool Value);
   void SetFtps(TFtps Value);
   void SetMinTlsVersion(TTlsVersion Value);
   void SetMaxTlsVersion(TTlsVersion Value);
@@ -236,6 +245,8 @@ public:
   static RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
   static UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   static RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
+  static bool DoIsProtocolUrl(const UnicodeString & Url, const UnicodeString & Protocol, int & ProtocolLen);
+  static bool IsProtocolUrl(const UnicodeString & Url, const UnicodeString & Protocol, int & ProtocolLen);
 
 public:
   explicit TSessionData(const UnicodeString & AName);
@@ -376,6 +387,7 @@ public:
   UnicodeString GetFtpAccount() const { return FFtpAccount; }
   intptr_t GetFtpPingInterval() const { return FFtpPingInterval; }
   TPingType GetFtpPingType() const { return FFtpPingType; }
+  bool GetFtpTransferActiveImmediatelly() const { return FFtpTransferActiveImmediatelly; }
   TFtps GetFtps() const { return FFtps; }
   TTlsVersion GetMinTlsVersion() const { return FMinTlsVersion; }
   TTlsVersion GetMaxTlsVersion() const { return FMaxTlsVersion; }
@@ -508,6 +520,7 @@ private:
   UnicodeString FFtpAccount;
   intptr_t FFtpPingInterval;
   TPingType FFtpPingType;
+  bool FFtpTransferActiveImmediatelly;
   TFtps FFtps;
   TTlsVersion FMinTlsVersion;
   TTlsVersion FMaxTlsVersion;

@@ -330,75 +330,56 @@ endif()
 #-------------------------------------------------------------------------------
 
 add_library(putty STATIC
-  ${LIBS_ROOT}/Putty/CPROXY.C
-  ${LIBS_ROOT}/Putty/INT64.C
-  ${LIBS_ROOT}/Putty/LOGGING.C
-  ${LIBS_ROOT}/Putty/MISC.C
-  ${LIBS_ROOT}/Putty/PGSSAPI.C
-  ${LIBS_ROOT}/Putty/PORTFWD_.C
-  ${LIBS_ROOT}/Putty/PROXY.C
-  ${LIBS_ROOT}/Putty/SSH_.C
-  ${LIBS_ROOT}/Putty/SSHAES_.C
-  ${LIBS_ROOT}/Putty/SSHARCF.C
-  ${LIBS_ROOT}/Putty/SSHBLOWF.C
-  ${LIBS_ROOT}/Putty/SSHBN.C
-  ${LIBS_ROOT}/Putty/SSHCRC.C
-  ${LIBS_ROOT}/Putty/SSHCRCDA.C
-  ${LIBS_ROOT}/Putty/SSHDES.C
-  ${LIBS_ROOT}/Putty/SSHDH.C
-  ${LIBS_ROOT}/Putty/SSHDSS.C
-  ${LIBS_ROOT}/Putty/SSHGSSC.C
-  ${LIBS_ROOT}/Putty/SSHMD5.C
-  ${LIBS_ROOT}/Putty/SSHPUBK.C
-  ${LIBS_ROOT}/Putty/SSHRAND.C
-  ${LIBS_ROOT}/Putty/SSHRSA.C
-  ${LIBS_ROOT}/Putty/SSHSH256.C
-  ${LIBS_ROOT}/Putty/SSHSH512.C
-  ${LIBS_ROOT}/Putty/SSHSHA_.C
-  ${LIBS_ROOT}/Putty/SSHZLIB.C
-  ${LIBS_ROOT}/Putty/TREE234.C
-  ${LIBS_ROOT}/Putty/CHARSET/UTF8.C
-  ${LIBS_ROOT}/Putty/WILDCARD.C
-  ${LIBS_ROOT}/Putty/WINDOWS/WINGSS.C
-  ${LIBS_ROOT}/Putty/WINDOWS/WINHANDL.C
-  ${LIBS_ROOT}/Putty/WINDOWS/WINMISC.C
-  ${LIBS_ROOT}/Putty/WINDOWS/WINNET.C
-  ${LIBS_ROOT}/Putty/WINDOWS/WINNOISE.C
-  ${LIBS_ROOT}/Putty/WINDOWS/WINNOJMP.C
-  ${LIBS_ROOT}/Putty/WINDOWS/WINPGNTC.C
-  ${LIBS_ROOT}/Putty/WINDOWS/WINPROXY.C
-  ${LIBS_ROOT}/Putty/WINDOWS/WINSTORE_.C
-  ${LIBS_ROOT}/Putty/WINDOWS/WINTIME.C
-  ${LIBS_ROOT}/Putty/X11FWD.C
-  ${LIBS_ROOT}/Putty/CONF.C
-  ${LIBS_ROOT}/Putty/CALLBACK.C
+  ${LIBS_ROOT}/Putty/CPROXY.c
+  ${LIBS_ROOT}/Putty/INT64.c
+  ${LIBS_ROOT}/Putty/LOGGING.c
+  ${LIBS_ROOT}/Putty/MISC.c
+  ${LIBS_ROOT}/Putty/PGSSAPI.c
+  ${LIBS_ROOT}/Putty/PORTFWD_.c
+  ${LIBS_ROOT}/Putty/PROXY.c
+  ${LIBS_ROOT}/Putty/SSH_.c
+  ${LIBS_ROOT}/Putty/SSHAES_.c
+  ${LIBS_ROOT}/Putty/SSHARCF.c
+  ${LIBS_ROOT}/Putty/SSHBLOWF.c
+  ${LIBS_ROOT}/Putty/SSHBN.c
+  ${LIBS_ROOT}/Putty/SSHCRC.c
+  ${LIBS_ROOT}/Putty/SSHCRCDA.c
+  ${LIBS_ROOT}/Putty/SSHDES.c
+  ${LIBS_ROOT}/Putty/SSHDH.c
+  ${LIBS_ROOT}/Putty/SSHDSS.c
+  ${LIBS_ROOT}/Putty/SSHGSSC.c
+  ${LIBS_ROOT}/Putty/SSHMD5.c
+  ${LIBS_ROOT}/Putty/SSHPUBK.c
+  ${LIBS_ROOT}/Putty/SSHRAND.c
+  ${LIBS_ROOT}/Putty/SSHRSA.c
+  ${LIBS_ROOT}/Putty/SSHSH256.c
+  ${LIBS_ROOT}/Putty/SSHSH512.c
+  ${LIBS_ROOT}/Putty/SSHSHA_.c
+  ${LIBS_ROOT}/Putty/SSHZLIB.c
+  ${LIBS_ROOT}/Putty/TREE234.c
+  ${LIBS_ROOT}/Putty/CHARSET/UTF8.c
+  ${LIBS_ROOT}/Putty/WILDCARD.c
+  ${LIBS_ROOT}/Putty/WINDOWS/WINGSS.c
+  ${LIBS_ROOT}/Putty/WINDOWS/WINHANDL.c
+  ${LIBS_ROOT}/Putty/WINDOWS/WINMISC.c
+  ${LIBS_ROOT}/Putty/WINDOWS/WINNET.c
+  ${LIBS_ROOT}/Putty/WINDOWS/WINNOISE.c
+  ${LIBS_ROOT}/Putty/WINDOWS/WINNOJMP.c
+  ${LIBS_ROOT}/Putty/WINDOWS/WINPGNTC.c
+  ${LIBS_ROOT}/Putty/WINDOWS/WINPROXY.c
+  ${LIBS_ROOT}/Putty/WINDOWS/WINSTORE_.c
+  ${LIBS_ROOT}/Putty/WINDOWS/WINTIME.c
+  ${LIBS_ROOT}/Putty/X11FWD.c
+  ${LIBS_ROOT}/Putty/CONF.c
+  ${LIBS_ROOT}/Putty/CALLBACK.c
 )
 
-set(PUTTY_COMPILE_FLAGS "-D_CRTIMP= -DLibrary -DSECURITY_WIN32 -D_MT -DNET_SETUP_DIAGNOSTICS -DNO_SECURITY -U_UNICODE -UUNICODE")
-
-FUNCTION(disable_cxx_options)
-  FOREACH(flag_var
-         CMAKE_CXX_FLAGS CMAKE_C_FLAGS
-         CMAKE_CXX_FLAGS_DEBUG CMAKE_C_FLAGS_DEBUG
-         CMAKE_CXX_FLAGS_RELEASE CMAKE_C_FLAGS_RELEASE
-         CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-     STRING(REPLACE "-TP" "-TC" ${flag_var} "${${flag_var}}")
-     STRING(REPLACE "/DUNICODE" "/UUNICODE" ${flag_var} "${${flag_var}}")
-  ENDFOREACH(flag_var)
-ENDFUNCTION(disable_cxx_options)
-
-FUNCTION(enable_cxx_options)
-  FOREACH(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
-         CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-     STRING(REPLACE "/TC" "/TP" ${flag_var} "${${flag_var}}")
-     STRING(REPLACE "-UUNICODE" "-DUNICODE" ${flag_var} "${${flag_var}}")
-  ENDFOREACH(flag_var)
-ENDFUNCTION(enable_cxx_options)
+set(PUTTY_COMPILE_FLAGS "-D_CRTIMP= -DLibrary -DSECURITY_WIN32 -D_MT -DNET_SETUP_DIAGNOSTICS -DNO_SECURITY")
 
 if(MSVC)
 set_target_properties(putty
   PROPERTIES
-  COMPILE_FLAGS "/TC ${PUTTY_COMPILE_FLAGS}"
+  COMPILE_FLAGS "${PUTTY_COMPILE_FLAGS}"
 )
 elseif(CMAKE_COMPILER_IS_MINGW)
 set_target_properties(putty
@@ -513,6 +494,7 @@ add_library(apr STATIC
   ${LIBS_ROOT}/apr/poll/unix/pollcb.c
   ${LIBS_ROOT}/apr/poll/unix/pollset.c
   ${LIBS_ROOT}/apr/poll/unix/select.c
+  ${LIBS_ROOT}/apr/poll/unix/z_asio.c
   ${LIBS_ROOT}/apr/random/unix/apr_random.c
   ${LIBS_ROOT}/apr/random/unix/sha2.c
   ${LIBS_ROOT}/apr/random/unix/sha2_glue.c
@@ -525,6 +507,7 @@ add_library(apr STATIC
   ${LIBS_ROOT}/apr/strings/apr_strtok.c
   ${LIBS_ROOT}/apr/tables/apr_hash.c
   ${LIBS_ROOT}/apr/tables/apr_tables.c
+  ${LIBS_ROOT}/apr/tables/apr_skiplist.c
   ${LIBS_ROOT}/apr/threadproc/win32/proc.c
   ${LIBS_ROOT}/apr/threadproc/win32/signals.c
   ${LIBS_ROOT}/apr/threadproc/win32/thread.c

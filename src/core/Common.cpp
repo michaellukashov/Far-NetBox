@@ -321,6 +321,26 @@ UnicodeString MainInstructions(const UnicodeString & S)
   return MainMsgTag + S + MainMsgTag;
 }
 //---------------------------------------------------------------------------
+UnicodeString MainInstructionsFirstParagraph(const UnicodeString & S)
+{
+  // WORKAROUND, we consider it bad practice, the highlighting should better
+  // be localized (but maybe we change our mind later)
+  UnicodeString Result;
+  int Pos = S.Pos(L"\n\n");
+  // we would not be calling this on single paragraph message
+  if (ALWAYS_TRUE(Pos > 0))
+  {
+    Result =
+      MainInstructions(S.SubString(1, Pos - 1)) +
+      S.SubString(Pos, S.Length() - Pos + 1);
+  }
+  else
+  {
+    Result = MainInstructions(S);
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
 bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions)
 {
   bool Result = false;
@@ -1797,18 +1817,8 @@ UnicodeString DecodeUrlChars(const UnicodeString & S)
           UTF8String UTF8(Bytes.c_str(), Bytes.Length());
           UnicodeString Chars(UTF8);
           Result.Insert(Chars, I);
+          I += Chars.Length() - 1;
         }
-/*
-        if (I <= Result.Length() - 2)
-        {
-          unsigned char B = HexToByte(Result.SubString(I + 1, 2));
-          if (B > 0)
-          {
-            Result[I] = (wchar_t)B;
-            Result.Delete(I + 1, 2);
-          }
-        }
-*/
         break;
     }
     I++;
@@ -1965,13 +1975,13 @@ bool CheckWin32Version(int Major, int Minor)
 }
 
 //---------------------------------------------------------------------------
-bool IsWinXPOrOlder()
+bool IsWinVista()
 {
-  // Win XP is 5.1
   // Vista is 6.0
+  // Win XP is 5.1
   // There also 5.2, what is Windows 2003 or Windows XP 64bit
   // (we consider it WinXP for now)
-  return !CheckWin32Version(6, 0);
+  return CheckWin32Version(6, 0);
 }
 //---------------------------------------------------------------------------
 bool IsWin7()

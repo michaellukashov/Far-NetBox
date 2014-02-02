@@ -119,6 +119,7 @@ public:
   virtual ~TConfiguration();
 
   virtual void Default();
+  virtual void UpdateStaticUsage();
   void Load();
   void Save();
   void SaveExplicit();

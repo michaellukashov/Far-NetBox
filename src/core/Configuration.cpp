@@ -137,24 +137,34 @@ TConfiguration::~TConfiguration()
   // delete FUsage;
 }
 //---------------------------------------------------------------------------
+void TConfiguration::UpdateStaticUsage()
+{
+//  Usage->Set(L"ConfigurationIniFile", (Storage == stIniFile));
+
+  // this is called from here, because we are guarded from calling into
+  // master password handler here, see TWinConfiguration::UpdateStaticUsage
+  StoredSessions->UpdateStaticUsage();
+}
+//---------------------------------------------------------------------------
 THierarchicalStorage * TConfiguration::CreateStorage(bool /*SessionList*/)
 {
+  THierarchicalStorage * Result;
   if (GetStorage() == stRegistry)
   {
-    return new TRegistryStorage(GetRegistryStorageKey());
+    Result = new TRegistryStorage(GetRegistryStorageKey());
   }
 #if defined(__BORLANDC__)
   else if (GetStorage() == stNul)
   {
-    return new TIniFileStorage(L"nul");
+    Result = new TIniFileStorage(L"nul");
   }
 #endif
   else
   {
     Classes::Error(SNotImplemented, 3005);
+    assert(false);
   }
-  assert(false);
-  return nullptr;
+  return Result;
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
@@ -885,6 +895,7 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
       }
     }
 
+    // BACKWARD COMPATIBILITY with 4.x
     if (FVirtualIniFileStorageName.IsEmpty() &&
         TPath::IsDriveRooted(IniPath))
     {
@@ -969,9 +980,9 @@ void TConfiguration::SetStorage(TStorage Value)
     {
       // If this fails, do not pretend that storage was switched.
       // For instance:
-      // - When writing to an IFI file fails (unlikely, as we fallback to user profile)
+      // - When writting to an INI file fails (unlikely, as we fallback to user profile)
       // - When removing INI file fails, when switching to registry
-      //   (possible, when the INI file is in Program files folder)
+      //   (possible, when the INI file is in Program Files folder)
       FStorage = StorageBak;
       throw;
     }
