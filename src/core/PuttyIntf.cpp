@@ -506,8 +506,8 @@ TKeyType KeyType(const UnicodeString & FileName)
 {
   assert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   assert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
-  Filename * KeyFile = filename_from_str(AnsiString(FileName).c_str());
-  //ASCOPY(KeyFile.path, FileName.c_str());
+  AnsiString AnsiFileName = AnsiString(FileName);
+  Filename * KeyFile = filename_from_str(AnsiFileName.c_str());
   TKeyType Result = static_cast<TKeyType>(key_type(KeyFile));
   filename_free(KeyFile);
   return Result;

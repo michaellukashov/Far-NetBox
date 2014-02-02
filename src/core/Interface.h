@@ -13,7 +13,8 @@ TConfiguration * CreateConfiguration();
 void ShowExtendedException(Exception * E);
 
 UnicodeString GetRegistryKey();
-void Busy(bool Start);
+void * BusyStart();
+void BusyEnd(void * Token);
 UnicodeString AppNameString();
 UnicodeString SshVersionString();
 void CopyToClipboard(const UnicodeString & Text);
@@ -61,6 +62,7 @@ struct TQueryButtonAlias : public TObject
 
 DEFINE_CALLBACK_TYPE1(TQueryParamsTimerEvent, void,
   intptr_t & /* Result */);
+enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };
 
 struct TQueryParams : public TObject
 {
@@ -76,6 +78,7 @@ struct TQueryParams : public TObject
   TQueryParamsTimerEvent TimerEvent;
   UnicodeString TimerMessage;
   uintptr_t TimerAnswers;
+  TQueryType TimerQueryType;
   uintptr_t Timeout;
   uintptr_t TimeoutAnswer;
   uintptr_t NoBatchAnswers;
@@ -84,8 +87,6 @@ struct TQueryParams : public TObject
 private:
   // NB_DISABLE_COPY(TQueryParams)
 };
-
-enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };
 
 enum TPromptKind
 {
@@ -109,5 +110,26 @@ DEFINE_CALLBACK_TYPE4(TFileFoundEvent, void,
   bool & /* Cancel */);
 DEFINE_CALLBACK_TYPE3(TFindingFileEvent, void,
   TTerminal * /* Terminal */, const UnicodeString & /* Directory */, bool & /* Cancel */);
+//---------------------------------------------------------------------------
+class TOperationVisualizer
+{
+public:
+  TOperationVisualizer(bool UseBusyCursor = true);
+  ~TOperationVisualizer();
+
+private:
+  bool FUseBusyCursor;
+  void * FToken;
+};
+//---------------------------------------------------------------------------
+class TInstantOperationVisualizer : public TOperationVisualizer
+{
+public:
+  TInstantOperationVisualizer();
+  ~TInstantOperationVisualizer();
+
+private:
+  TDateTime FStart;
+};
 //---------------------------------------------------------------------------
 #endif

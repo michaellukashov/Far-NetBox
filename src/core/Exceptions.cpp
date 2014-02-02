@@ -27,7 +27,7 @@ static bool WellKnownException(
     {
       throw EAccessViolation(E->Message);
     }
-    Message = LoadStr(ACCESS_VIOLATION_ERROR3);
+    Message = MainInstructions(LoadStr(ACCESS_VIOLATION_ERROR3));
     CounterName = L"AccessViolations";
     Clone.reset(new EAccessViolation(E->Message));
   }
@@ -53,7 +53,7 @@ static bool WellKnownException(
     {
       throw EExternal(E->Message);
     }
-    Message = E->Message;
+    Message = MainInstructions(E->Message);
     CounterName = L"ExternalExceptions";
     Clone.reset(new EExternal(E->Message));
   }
@@ -63,7 +63,7 @@ static bool WellKnownException(
     {
       throw EHeapException(E->Message);
     }
-    Message = E->Message;
+    Message = MainInstructions(E->Message);
     CounterName = L"HeapExceptions";
     Clone.reset(new EHeapException(E->Message));
   }
@@ -258,7 +258,7 @@ ExtException::ExtException(const UnicodeString & Msg, Exception* E, const Unicod
       {
         FMoreMessages = new TStringList();
       }
-      FMoreMessages->Append(Msg);
+      FMoreMessages->Append(UnformatMessage(Msg));
     }
   }
   FHelpKeyword = MergeHelpKeyword(GetExceptionHelpKeyword(E), HelpKeyword);
@@ -323,7 +323,7 @@ void ExtException::AddMoreMessages(const Exception * E)
     }
     else if (!Msg.IsEmpty())
     {
-      FMoreMessages->Insert(0, Msg);
+      FMoreMessages->Insert(0, UnformatMessage(Msg));
     }
 
     if (FMoreMessages->GetCount() == 0)

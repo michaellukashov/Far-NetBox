@@ -102,6 +102,7 @@ protected:
   unsigned char FPreviousLoggedPacket;
   int FNotLoggedPackets;
   int FBusy;
+  void * FBusyToken;
   bool FAvoidBusy;
   TStrings * FExtensions;
   TSFTPSupport * FSupport;
@@ -110,6 +111,7 @@ protected:
   bool FOpenSSH;
   TStrings * FFixedPaths;
   uint32_t FMaxPacketSize;
+  bool FSupportsStatVfsV2;
   uintptr_t FCodePage;
 
   void SendCustomReadFile(TSFTPPacket * Packet, TSFTPPacket * Response,

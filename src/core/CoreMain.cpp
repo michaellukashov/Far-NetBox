@@ -9,6 +9,7 @@
 #include "Configuration.h"
 #include "PuttyIntf.h"
 #include "Cryptography.h"
+#include <DateUtils.hpp>
 #ifndef NO_FILEZILLA
 #include "FileZillaIntf.h"
 #endif
@@ -66,6 +67,7 @@ TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString & AHelpKeyword
   TimerEvent = nullptr;
   TimerMessage = L"";
   TimerAnswers = 0;
+  TimerQueryType = static_cast<TQueryType>(-1);
   Timeout = 0;
   TimeoutAnswer = 0;
   NoBatchAnswers = 0;
@@ -147,3 +149,40 @@ void CoreMaintenanceTask()
   DontSaveRandomSeed();
 }
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
+  FUseBusyCursor(UseBusyCursor)
+{
+  if (FUseBusyCursor)
+  {
+    FToken = BusyStart();
+  }
+}
+//---------------------------------------------------------------------------
+TOperationVisualizer::~TOperationVisualizer()
+{
+  if (FUseBusyCursor)
+  {
+    BusyEnd(FToken);
+  }
+}
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+TInstantOperationVisualizer::TInstantOperationVisualizer() :
+  FStart(Now())
+{
+}
+//---------------------------------------------------------------------------
+TInstantOperationVisualizer::~TInstantOperationVisualizer()
+{
+  TDateTime Time = Now();
+  __int64 Duration = MilliSecondsBetween(Time, FStart);
+  const __int64 MinDuration = 250;
+  if (Duration < MinDuration)
+  {
+    Sleep(static_cast<unsigned int>(MinDuration - Duration));
+  }
+}
+//---------------------------------------------------------------------------
+// WORKAROUND, suppress warning about unused constants in DateUtils.hpp
+#pragma warn -8080

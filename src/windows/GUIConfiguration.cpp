@@ -610,6 +610,8 @@ void TGUIConfiguration::DefaultLocalized()
 //---------------------------------------------------------------------------
 void TGUIConfiguration::UpdateStaticUsage()
 {
+  // TConfiguration::UpdateStaticUsage();
+  // Usage->Set(L"CopyParamsCount", (FCopyParamListDefaults ? 0 : FCopyParamList->Count));
   // Usage->Set(L"CopyParamsCount", (FCopyParamListDefaults ? 0 : FCopyParamList->GetCount()));
 }
 //---------------------------------------------------------------------------

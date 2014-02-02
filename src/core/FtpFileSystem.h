@@ -240,6 +240,7 @@ private:
   bool FFileTransferCancelled;
   __int64 FFileTransferResumed;
   bool FFileTransferPreserveTime;
+  bool FFileTransferRemoveBOM;
   uintptr_t FFileTransferCPSLimit;
   bool FAwaitingProgress;
   TCaptureOutputEvent FOnCaptureOutput;

@@ -1335,7 +1335,11 @@ void CFtpControlSocket::OnConnect(int nErrorCode)
 	else
 	{
 		if (nErrorCode == WSAHOST_NOT_FOUND)
-			ShowStatus(IDS_ERRORMSG_CANTRESOLVEHOST, FZ_LOG_ERROR);
+		{
+			CString str;
+			str.Format(IDS_ERRORMSG_CANTRESOLVEHOST2, m_ServerName);
+			ShowStatus(str, FZ_LOG_ERROR);
+		}
 #ifdef MPEXT
 		else
 		{
@@ -4019,12 +4023,11 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 							}
 						}
 					}
-					if (!nReplyError)
+					if (!nReplyError && !COptions::GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELLY))
 					{
-						m_pTransferSocket->SetActive();
 					}
 				}
-				else if (pData->bPasv)
+				else if (pData->bPasv && !COptions::GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELLY))
 				{
 					m_pTransferSocket->SetActive();
 				}
@@ -4556,8 +4559,13 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 			return;
 		}
 		m_pTransferSocket->m_transferdata=pData->transferdata;
-		if ((pData->transferfile.get || !pData->transferdata.bResume) && !pData->bPasv)
+		// not sure what happens when we active transfer socket immediatelly while resuming
+		// it can possibly make transfer socket start reading from a file before a file pointer is advanced
+		if (COptions::GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELLY) ||
+				((pData->transferfile.get || !pData->transferdata.bResume) && !pData->bPasv))
+		{
 			m_pTransferSocket->SetActive();
+		}
 		CString filename;
 
 		filename = pData->transferfile.remotepath.FormatFilename(pData->transferfile.remotefile, !pData->bUseAbsolutePaths);
