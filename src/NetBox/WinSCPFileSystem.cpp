@@ -908,7 +908,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
       Handled = true;
     }
 
-    if (Key == VK_RETURN && (ControlState == 0) && Data)
+    if (Key == VK_RETURN && (ControlState == 0 || ControlState & ENHANCED_KEY) && Data)
     {
       EditConnectSession(Data, false);
       Handled = true;
