@@ -1028,7 +1028,7 @@ void TIniFileStorage::ApplyOverrides()
   }
 }
 //===========================================================================
-#define NOT_IMPLEMENTED throw Exception(Ä"Not implemented")
+#define NOT_IMPLEMENTED throw Exception(L"Not implemented")
 //===========================================================================
 class TOptionsIniFile : public TCustomIniFile
 {
