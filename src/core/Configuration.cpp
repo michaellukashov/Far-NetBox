@@ -148,7 +148,7 @@ void TConfiguration::UpdateStaticUsage()
 //---------------------------------------------------------------------------
 THierarchicalStorage * TConfiguration::CreateStorage(bool /*SessionList*/)
 {
-  THierarchicalStorage * Result;
+  THierarchicalStorage * Result = nullptr;
   if (GetStorage() == stRegistry)
   {
     Result = new TRegistryStorage(GetRegistryStorageKey());
