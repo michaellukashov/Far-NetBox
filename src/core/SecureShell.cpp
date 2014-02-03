@@ -1040,7 +1040,7 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
 {
   FWaiting++;
 
-  uintptr_t Answer;
+  uintptr_t Answer = 0;
   {
     SCOPE_EXIT
     {

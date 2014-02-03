@@ -313,7 +313,7 @@ void * TCustomFarPlugin::OpenPlugin(const struct OpenInfo *Info)
     intptr_t Item = 0;
     if (*Info->Guid == MenuCommandsGuid)
       Item = 1;
-    if ((Info->OpenFrom == OPEN_SHORTCUT) || 
+    if ((Info->OpenFrom == OPEN_SHORTCUT) ||
       (Info->OpenFrom == OPEN_COMMANDLINE) ||
       (Info->OpenFrom == OPEN_ANALYSE))
     {
@@ -556,7 +556,7 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FileSystem, &E, Info->OpMode);
-    if (!PrevCurrentDirectory.IsEmpty())
+    if (FileSystem->GetOpenPanelInfoValid() && !PrevCurrentDirectory.IsEmpty())
     {
       SetDirectoryInfo Info2;
       Info2.StructSize = sizeof(Info2);
@@ -569,9 +569,8 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
         TGuard Guard(FileSystem->GetCriticalSection());
         return FileSystem->SetDirectory(&Info2);
       }
-      catch(Exception & E)
+      catch(Exception &)
       {
-        (void)E;
         return 0;
       }
     }

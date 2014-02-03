@@ -1,3 +1,12 @@
+NetBox 2.1.34 ??.02.2014
+--------------------
+  * fix lock file after error
+    (https://github.com/michaellukashov/Far-NetBox/pull/92)
+  * fix crash in SetDirectory after 'lost connection'
+    (https://github.com/michaellukashov/Far-NetBox/pull/91)
+  * fix issue #46 : numenter
+    (https://github.com/michaellukashov/Far-NetBox/pull/90)
+
 NetBox 2.1.33 02.02.2014
 --------------------
   * Update WinSCP sources to 5.5.1
