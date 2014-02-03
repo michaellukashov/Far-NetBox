@@ -556,23 +556,25 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FileSystem, &E, Info->OpMode);
-    if (!PrevCurrentDirectory.IsEmpty())
-    {
-      SetDirectoryInfo Info2;
-      Info2.StructSize = sizeof(Info2);
-      Info2.hPanel = Info->hPanel;
-      Info2.Dir = PrevCurrentDirectory.c_str();
-      Info2.UserData = Info->UserData;
-      Info2.OpMode = Info->OpMode;
-      try
+    if (FileSystem->FOpenPanelInfoValid){
+      if (!PrevCurrentDirectory.IsEmpty())
       {
-        TGuard Guard(FileSystem->GetCriticalSection());
-        return FileSystem->SetDirectory(&Info2);
-      }
-      catch(Exception & E)
-      {
-        (void)E;
-        return 0;
+        SetDirectoryInfo Info2;
+        Info2.StructSize = sizeof(Info2);
+        Info2.hPanel = Info->hPanel;
+        Info2.Dir = PrevCurrentDirectory.c_str();
+        Info2.UserData = Info->UserData;
+        Info2.OpMode = Info->OpMode;
+        try
+        {
+          TGuard Guard(FileSystem->GetCriticalSection());
+          return FileSystem->SetDirectory(&Info2);
+        }
+        catch (Exception & E)
+        {
+          (void)E;
+          return 0;
+        }
       }
     }
     return 0;
