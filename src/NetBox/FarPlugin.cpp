@@ -556,16 +556,15 @@ intptr_t TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t * Dir, int 
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FileSystem, &E, OpMode);
-    if (!PrevCurrentDirectory.IsEmpty())
+    if (FileSystem->GetOpenPluginInfoValid() && !PrevCurrentDirectory.IsEmpty())
     {
       try
       {
         TGuard Guard(FileSystem->GetCriticalSection());
         return FileSystem->SetDirectory(PrevCurrentDirectory, OpMode);
       }
-      catch(Exception & E)
+      catch(Exception &)
       {
-        (void)E;
         return 0;
       }
     }

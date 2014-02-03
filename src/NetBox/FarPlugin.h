@@ -287,6 +287,7 @@ protected:
   TFarPanelInfo * GetAnotherPanelInfo() { return GetPanelInfo(1); }
   TCriticalSection * GetCriticalSection() const { return FCriticalSection; }
   TCriticalSection * GetCriticalSection() { return FCriticalSection; }
+  bool GetOpenPluginInfoValid() const { return FOpenPluginInfoValid; }
 
 protected:
   TCriticalSection * FCriticalSection;
