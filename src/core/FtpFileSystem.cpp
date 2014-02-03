@@ -1303,8 +1303,15 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
       {
         ThrowSkipFileNull();
       }
-      FileTransfer(FileName, DestFullName, LocalFileHandle, OnlyFileName,
-        FilePath, true, AFile->GetSize(), TransferType, UserData, OperationProgress);
+      try {
+        FileTransfer(FileName, DestFullName, LocalFileHandle, OnlyFileName,
+          FilePath, true, AFile->GetSize(), TransferType, UserData, OperationProgress);
+      }
+      catch (Exception & E)
+      {
+        ::CloseHandle(LocalFileHandle);
+        throw;
+      }
     }
 
     // in case dest filename is changed from overwrite dialog
