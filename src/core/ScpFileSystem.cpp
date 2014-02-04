@@ -227,7 +227,7 @@ UnicodeString TCommandSet::GetCommands(TFSCommand Cmd) const
 UnicodeString TCommandSet::Command(TFSCommand Cmd, const TVarRec * args, int size) const
 {
   if (args)
-    return Format(GetCommands(Cmd), args, size);
+    return Format(GetCommands(Cmd).c_str(), args, size);
   else
     return GetCommands(Cmd);
 }
@@ -265,9 +265,9 @@ UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, const TVarRec * args, int
 
   UnicodeString Result;
   if (!Line.IsEmpty())
-    Result = FORMAT(L"%s%s%s%s", (FirstLineCmd, Line, Separator, LastLineCmd));
+    Result = FORMAT(L"%s%s%s%s", FirstLineCmd.c_str(), Line.c_str(), Separator.c_str(), LastLineCmd.c_str());
   else
-    Result = FORMAT(L"%s%s", (FirstLineCmd, LastLineCmd));
+    Result = FORMAT(L"%s%s", FirstLineCmd.c_str(), LastLineCmd.c_str());
   return Result;
 }
 #endif

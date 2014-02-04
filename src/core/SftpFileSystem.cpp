@@ -3738,15 +3738,15 @@ void TSFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
     __int64 Flags = Packet.GetInt64(); // bit mask of f_flag values
     __int64 NameMax = Packet.GetInt64(); // maximum filename length
 
-    FTerminal->LogEvent(FORMAT(L"Block size: %s", (IntToStr(BlockSize))));
-    FTerminal->LogEvent(FORMAT(L"Fundamental block size: %s", (IntToStr(FundamentalBlockSize))));
-    FTerminal->LogEvent(FORMAT(L"Total blocks: %s", (IntToStr(Blocks))));
-    FTerminal->LogEvent(FORMAT(L"Free blocks: %s", (IntToStr(FreeBlocks))));
-    FTerminal->LogEvent(FORMAT(L"Free blocks for non-root: %s", (IntToStr(AvailableBlocks))));
-    FTerminal->LogEvent(FORMAT(L"Total file inodes: %s", (IntToStr(FileINodes))));
-    FTerminal->LogEvent(FORMAT(L"Free file inodes: %s", (IntToStr(FreeFileINodes))));
-    FTerminal->LogEvent(FORMAT(L"Free file inodes for non-root: %s", (IntToStr(AvailableFileINodes))));
-    FTerminal->LogEvent(FORMAT(L"File system ID: %s", (BytesToHex(reinterpret_cast<const unsigned char *>(&SID), sizeof(SID)))));
+    FTerminal->LogEvent(FORMAT(L"Block size: %s", IntToStr(BlockSize).c_str()));
+    FTerminal->LogEvent(FORMAT(L"Fundamental block size: %s", IntToStr(FundamentalBlockSize).c_str()));
+    FTerminal->LogEvent(FORMAT(L"Total blocks: %s", IntToStr(Blocks).c_str()));
+    FTerminal->LogEvent(FORMAT(L"Free blocks: %s", IntToStr(FreeBlocks).c_str()));
+    FTerminal->LogEvent(FORMAT(L"Free blocks for non-root: %s", IntToStr(AvailableBlocks).c_str()));
+    FTerminal->LogEvent(FORMAT(L"Total file inodes: %s", IntToStr(FileINodes).c_str()));
+    FTerminal->LogEvent(FORMAT(L"Free file inodes: %s", IntToStr(FreeFileINodes).c_str()));
+    FTerminal->LogEvent(FORMAT(L"Free file inodes for non-root: %s", IntToStr(AvailableFileINodes).c_str()));
+    FTerminal->LogEvent(FORMAT(L"File system ID: %s", BytesToHex(reinterpret_cast<const unsigned char *>(&SID), sizeof(SID)).c_str()));
     UnicodeString FlagStr;
     if (FLAGSET(Flags, SFTP_EXT_STATVFS_ST_RDONLY))
     {
@@ -3766,8 +3766,8 @@ void TSFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
     {
       FlagStr = L"none";
     }
-    FTerminal->LogEvent(FORMAT(L"Flags: %s", (FlagStr)));
-    FTerminal->LogEvent(FORMAT(L"Max name length: %s", (IntToStr(NameMax))));
+    FTerminal->LogEvent(FORMAT(L"Flags: %s", FlagStr.c_str()));
+    FTerminal->LogEvent(FORMAT(L"Max name length: %s", IntToStr(NameMax).c_str()));
 
     ASpaceAvailable.BytesOnDevice = BlockSize * Blocks;
     ASpaceAvailable.UnusedBytesOnDevice = BlockSize * FreeBlocks;
