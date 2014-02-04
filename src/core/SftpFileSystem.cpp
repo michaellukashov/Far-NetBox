@@ -1363,6 +1363,7 @@ public:
     FEnd(false),
     FTransfered(0),
     FConvertToken(false),
+    FConvertParams(0),
     FTerminal(nullptr)
   {
   }
