@@ -28,6 +28,7 @@ ipch/
 *.cache
 *.zip
 *.7z
+*.tgz
 *.orig
 tags
 
@@ -47,3 +48,4 @@ CMakeLists.txt.user
 
 *.cbp
 
+cov-int/

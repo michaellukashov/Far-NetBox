@@ -3532,7 +3532,7 @@ void TTerminal::RenameFile(const TRemoteFile * File,
         QuestionFmt = LoadStr(PROMPT_FILE_OVERWRITE);
       }
       TQueryParams Params(qpNeverAskAgainCheck);
-      UnicodeString Question = MainInstructions(FORMAT(QuestionFmt, NewName.c_str()));
+      UnicodeString Question = MainInstructions(FORMAT(QuestionFmt.c_str(), NewName.c_str()));
       intptr_t Result = QueryUser(Question, nullptr,
         qaYes | qaNo, &Params);
       if (Result == qaNeverAskAgain)

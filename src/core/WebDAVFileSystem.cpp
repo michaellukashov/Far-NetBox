@@ -14172,7 +14172,7 @@ webdav::error_t TWebDAVFileSystem::AskForPassphrase(
   RequestResult = 0;
   TSessionData * Data = FTerminal->GetSessionData();
   UnicodeString Passphrase = Data->GetUserNameExpanded();
-  UnicodeString Prompt = FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE), UnicodeString(realm).c_str());
+  UnicodeString Prompt = FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE).c_str(), UnicodeString(realm).c_str());
   if (!FTerminal->PromptUser(Data, pkPassphrase, LoadStr(PASSPHRASE_TITLE), L"",
     Prompt, false, 0, Passphrase))
   {

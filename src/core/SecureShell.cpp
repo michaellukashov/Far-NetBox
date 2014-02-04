@@ -2061,7 +2061,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       else
       {
         UnicodeString FormattedKey = Fingerprint ? StoredKey : FormatKeyStr(StoredKey);
-        LogEvent(FORMAT(L"Host key does not match cached key %s", (FormattedKey)));
+        LogEvent(FORMAT(L"Host key does not match cached key %s", FormattedKey.c_str()));
       }
     }
   }

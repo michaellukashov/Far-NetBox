@@ -110,11 +110,11 @@ void TCopyParamType::DoGetInfoStr(
         Ident = FormatMask ? 4 : 5;
         break;
     }
-    UnicodeString S = FORMAT(LoadStrPart(COPY_INFO_TRANSFER_TYPE2, 1),
+    UnicodeString S = FORMAT(LoadStrPart(COPY_INFO_TRANSFER_TYPE2, 1).c_str(),
       LoadStrPart(COPY_INFO_TRANSFER_TYPE2, Ident).c_str());
     if (FormatMask)
     {
-      S = FORMAT(S, GetAsciiFileMask().GetMasks().c_str());
+      S = FORMAT(S.c_str(), GetAsciiFileMask().GetMasks().c_str());
     }
     AddToList(Result, S, Separator);
 
@@ -236,7 +236,7 @@ void TCopyParamType::DoGetInfoStr(
 
   if (!(GetIncludeFileMask() == Defaults.GetIncludeFileMask()))
   {
-    ADD(FORMAT(LoadStr(COPY_INFO_FILE_MASK), GetIncludeFileMask().GetMasks().c_str()),
+    ADD(FORMAT(LoadStr(COPY_INFO_FILE_MASK).c_str(), GetIncludeFileMask().GetMasks().c_str()),
       cpaNoIncludeMask);
   }
 

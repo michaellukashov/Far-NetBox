@@ -2432,7 +2432,7 @@ int CAsyncSslSocketLayer::pem_passwd_cb(char *buf, int size, int rwflag, void *u
 // http://openssl.6102.n7.nabble.com/Get-root-certificates-from-System-Store-of-Windows-td40959.html
 void LoadSslWindowsSystemCertificateStore(SSL_CTX * Ctx)
 {
-  HCERTSTORE CertStore = CertStore = CertOpenSystemStore(0, L"ROOT");
+  HCERTSTORE CertStore = CertOpenSystemStore(0, L"ROOT");
   if (CertStore != NULL)
   {
     PCCERT_CONTEXT CertContext = NULL;
