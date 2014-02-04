@@ -827,6 +827,7 @@ struct ssh2_userkey *ssh2_load_userkey(const Filename *filename,
 	}
     }
     sfree(mac);
+    mac = NULL;
 
     /*
      * Create and return the key.
