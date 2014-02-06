@@ -1230,15 +1230,14 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   TFarButton * Button;
 
   bool ShowSavePassword = false;
-  FSessionData = nullptr;
   if (((Kind == pkPassword) || (Kind == pkTIS) || (Kind == pkCryptoCard) ||
        (Kind == pkKeybInteractive)) &&
-      (Prompts->GetCount() == 1) && !(Prompts->GetObject(0) != nullptr) &&
-      !SessionName.IsEmpty() &&
-      StoredCredentialsTried)
+       (Prompts->GetCount() == 1) && FLAGSET((intptr_t)Prompts->GetObject(0), pupRemember) &&
+      !SessionName.IsEmpty())
+      // StoredCredentialsTried)
   {
     FSessionData = dynamic_cast<TSessionData *>(StoredSessions->FindByName(SessionName));
-    ShowSavePassword = (FSessionData != nullptr) && !FSessionData->GetPassword().IsEmpty();
+    ShowSavePassword = (FSessionData != nullptr);
   }
 
   bool Truncated = false;
