@@ -74,7 +74,7 @@ public:
   bool IsUnvisitedDirectory(const TRemoteFile * File);
 
 private:
-  std::auto_ptr<TStringList> FVisitedDirectories;
+  std::unique_ptr<TStringList> FVisitedDirectories;
 };
 //---------------------------------------------------------------------------
 TLoopDetector::TLoopDetector()
