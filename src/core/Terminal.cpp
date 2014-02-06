@@ -1173,7 +1173,7 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   // If PromptUser is overridden in descendant class, the overridden version
   // is not called when accessed via TSessionIU interface.
   // So this is workaround.
-  // Actually no longer needed as we do not uverride DoPromptUser
+  // Actually no longer needed as we do not override DoPromptUser
   // anymore in TSecondaryTerminal.
   return DoPromptUser(Data, Kind, Name, Instructions, Prompts, Results);
 }
