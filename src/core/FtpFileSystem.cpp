@@ -609,7 +609,7 @@ void TFTPFileSystem::Idle()
     }
     catch (EFatal & E)
     {
-      if (!FTerminal->QueryReopen(&E, ropNoReadDirectory, nullptr))
+      //if (!FTerminal->QueryReopen(&E, ropNoReadDirectory, nullptr))
       {
         throw;
       }
