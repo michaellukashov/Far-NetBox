@@ -291,7 +291,7 @@ void TFTPFileSystem::Init(void *)
 //---------------------------------------------------------------------------
 TFTPFileSystem::~TFTPFileSystem()
 {
-    assert(FFileList == nullptr);
+  assert(FFileList == nullptr);
 
   FFileZillaIntf->Destroying();
 
