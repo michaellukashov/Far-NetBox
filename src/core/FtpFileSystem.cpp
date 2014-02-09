@@ -2604,7 +2604,6 @@ void TFTPFileSystem::ResetReply()
   FLastCodeClass = 0;
   assert(FLastResponse != nullptr);
   FLastResponse->Clear();
-  assert(FLastError != nullptr);
   assert(FLastErrorResponse != nullptr);
   FLastErrorResponse->Clear();
   assert(FLastError != nullptr);
