@@ -268,6 +268,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   FFileTransferCancelled(false),
   FFileTransferResumed(0),
   FFileTransferPreserveTime(false),
+  FFileTransferRemoveBOM(false),
   FFileTransferCPSLimit(0),
   FAwaitingProgress(false),
   FOnCaptureOutput(nullptr),
