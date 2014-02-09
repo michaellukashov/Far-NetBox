@@ -3194,7 +3194,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
       if (RecryptPasswordOnly && ALWAYS_TRUE(RecryptPasswordErrors != NULL) &&
           ExceptionMessage(&E, Message))
       {
-        RecryptPasswordErrors->Add(FORMAT("%s: %s", SessionData->GetSessionName().c_str(), Message.c_str()));
+        RecryptPasswordErrors->Add(FORMAT(L"%s: %s", SessionData->GetSessionName().c_str(), Message.c_str()));
       }
       else
       {
