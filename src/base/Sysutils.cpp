@@ -142,7 +142,7 @@ __int64 StrToInt64Def(const UnicodeString & Value, __int64 DefVal)
 
 bool TryStrToInt(const std::wstring & StrValue, __int64 & Value)
 {
-  bool Result = !StrValue.empty();
+  bool Result = !StrValue.empty() && (StrValue.find_first_not_of(L"+-0123456789") == std::string::npos);
   if (Result)
   {
     errno = 0;
@@ -154,7 +154,7 @@ bool TryStrToInt(const std::wstring & StrValue, __int64 & Value)
 
 bool TryStrToInt(const std::wstring & StrValue, int & Value)
 {
-  bool Result = !StrValue.empty();
+  bool Result = !StrValue.empty()&& (StrValue.find_first_not_of(L"+-0123456789") == std::string::npos);
   if (Result)
   {
     errno = 0;
