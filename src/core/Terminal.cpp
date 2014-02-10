@@ -2611,7 +2611,7 @@ void TTerminal::LogFileDetails(const UnicodeString & FileName, TDateTime Modific
   // optimization
   if (GetLog()->GetLogging())
   {
-    LogEvent(FORMAT("File: %s", FormatFileDetailsForLog(FileName, Modification, Size).c_str()));
+    LogEvent(FORMAT(L"File: %s", FormatFileDetailsForLog(FileName, Modification, Size).c_str()));
   }
 }
 //------------------------------------------------------------------------------

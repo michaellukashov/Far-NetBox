@@ -699,14 +699,14 @@ public:
   {
     int Value = EndValue - StartValue;
     if (StartValue > EndValue)
-      throw Sysutils::Exception(FORMAT("Start Value %d is greater than End Value %d", StartValue, EndValue));
+      throw Sysutils::Exception(FORMAT(L"Start Value %d is greater than End Value %d", StartValue, EndValue));
     this->AddRange(StartValue, Value);
   }
 
   DelphiSet(T StartValue, T EndValue , const int Count)
   {
     if (StartValue > EndValue)
-      throw Sysutils::Exception(FORMAT("Start Value %d is greater than End Value %d", StartValue, EndValue));
+      throw Sysutils::Exception(FORMAT(L"Start Value %d is greater than End Value %d", StartValue, EndValue));
     this->AddRange(StartValue,Count);
   }
 
@@ -779,7 +779,7 @@ public:
   DelphiSet<T>& Add(const T RangeStartValue, const T RangeEndValue)
   {
     if (RangeEndValue < RangeStartValue)
-      throw Sysutils::Exception(FORMAT("Start Value %d is greater than End Value %d", RangeStartValue, RangeEndValue));
+      throw Sysutils::Exception(FORMAT(L"Start Value %d is greater than End Value %d", RangeStartValue, RangeEndValue));
     int Range = RangeEndValue - RangeStartValue;
     T RangeStartForAdd = RangeStartValue;
     for (int I = 0; I < Range; ++I)
@@ -796,7 +796,7 @@ public:
   DelphiSet<T>& Remove(T RangeStartValue, T RangeEndValue)
   {
     if (RangeEndValue < RangeStartValue)
-      throw Sysutils::Exception(FORMAT("Start Value %d is greater than End Value %d", RangeStartValue, RangeEndValue));
+      throw Sysutils::Exception(FORMAT(L"Start Value %d is greater than End Value %d", RangeStartValue, RangeEndValue));
     for (T I = RangeStartValue ; I <= RangeEndValue; ++I)
       this->Remove(I);
     return *this;

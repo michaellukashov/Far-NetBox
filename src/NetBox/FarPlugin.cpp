@@ -375,7 +375,7 @@ void TCustomFarPlugin::HandleFileSystemException(
   // This method is called as last-resort exception handler before
   // leaving plugin API. Especially for API functions that must update
   // panel contents on themselves (like ProcessPanelInput), the instance of filesystem
-  // may not exists anymore.
+  // may not exist anymore.
   // Check against object pointer is stupid, but no other idea so far.
   if (FOpenedPlugins->IndexOf(FileSystem) != NPOS)
   {

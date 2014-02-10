@@ -268,6 +268,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   FFileTransferCancelled(false),
   FFileTransferResumed(0),
   FFileTransferPreserveTime(false),
+  FFileTransferRemoveBOM(false),
   FFileTransferCPSLimit(0),
   FAwaitingProgress(false),
   FOnCaptureOutput(nullptr),
@@ -291,7 +292,7 @@ void TFTPFileSystem::Init(void *)
 //---------------------------------------------------------------------------
 TFTPFileSystem::~TFTPFileSystem()
 {
-    assert(FFileList == nullptr);
+  assert(FFileList == nullptr);
 
   FFileZillaIntf->Destroying();
 
@@ -609,7 +610,7 @@ void TFTPFileSystem::Idle()
     }
     catch (EFatal & E)
     {
-      if (!FTerminal->QueryReopen(&E, ropNoReadDirectory, nullptr))
+      //if (!FTerminal->QueryReopen(&E, ropNoReadDirectory, nullptr))
       {
         throw;
       }
@@ -2604,7 +2605,6 @@ void TFTPFileSystem::ResetReply()
   FLastCodeClass = 0;
   assert(FLastResponse != nullptr);
   FLastResponse->Clear();
-  assert(FLastError != nullptr);
   assert(FLastErrorResponse != nullptr);
   FLastErrorResponse->Clear();
   assert(FLastError != nullptr);
