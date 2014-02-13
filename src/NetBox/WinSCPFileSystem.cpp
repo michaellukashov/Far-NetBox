@@ -340,11 +340,15 @@ void TWinSCPFileSystem::HandleException(Exception * E, int OpMode)
 {
   if ((GetTerminal() != nullptr) && (dynamic_cast<EFatal *>(E) != nullptr))
   {
-    if (!FClosed)
+    bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr);
+    if (!Reopen)
     {
-      ClosePlugin();
+      if (!FClosed)
+      {
+        ClosePlugin();
+      }
+      //GetTerminal()->ShowExtendedException(E);
     }
-    GetTerminal()->ShowExtendedException(E);
   }
   else
   {

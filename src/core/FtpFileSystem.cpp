@@ -604,17 +604,7 @@ void TFTPFileSystem::Idle()
 {
   if (FActive && !FWaitingForReply)
   {
-    try
-    {
-      PoolForFatalNonCommandReply();
-    }
-    catch (EFatal & E)
-    {
-      //if (!FTerminal->QueryReopen(&E, ropNoReadDirectory, nullptr))
-      {
-        throw;
-      }
-    }
+    PoolForFatalNonCommandReply();
 
     // Keep session alive
     if ((FTerminal->GetSessionData()->GetFtpPingType() != ptOff) &&
