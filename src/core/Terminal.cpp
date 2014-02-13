@@ -1275,10 +1275,9 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
 {
   uintptr_t Result = 0;
   UnicodeString ExMessage;
-  std::unique_ptr<TStrings> MoreMessages(new TStringList());
-  // if (E != nullptr)
   if (ALWAYS_TRUE(ExceptionMessage(E, ExMessage) || !Query.IsEmpty()))
   {
+    std::unique_ptr<TStrings> MoreMessages(new TStringList());
     if (!ExMessage.IsEmpty() && !Query.IsEmpty())
     {
       MoreMessages->Add(UnformatMessage(ExMessage));

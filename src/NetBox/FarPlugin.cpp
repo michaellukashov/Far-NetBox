@@ -1552,7 +1552,7 @@ void TCustomFarPlugin::RestoreScreen(HANDLE & Screen)
 void TCustomFarPlugin::HandleException(Exception * E, int /*OpMode*/)
 {
   assert(E);
-  Message(FMSG_WARNING | FMSG_MB_OK, L"", MB2W(E->what()));
+  Message(FMSG_WARNING | FMSG_MB_OK, L"", E ? E->Message : L"");
 }
 //---------------------------------------------------------------------------
 UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId)

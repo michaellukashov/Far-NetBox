@@ -41,14 +41,14 @@ protected:
 class EAbort : public Exception
 {
 public:
-  EAbort(const std::wstring & what) : Exception(what)
+  explicit EAbort(const std::wstring & what) : Exception(what)
   {}
 };
 
 class EAccessViolation : public Exception
 {
 public:
-  EAccessViolation(const std::wstring & what) : Exception(what)
+  explicit EAccessViolation(const std::wstring & what) : Exception(what)
   {}
 };
 
@@ -64,7 +64,7 @@ public:
 class EOSError : public Exception
 {
 public:
-  EOSError(const UnicodeString & Msg, DWORD code) : Exception(Msg),
+  explicit EOSError(const UnicodeString & Msg, DWORD code) : Exception(Msg),
     ErrorCode(code)
   {
   }
@@ -77,7 +77,7 @@ void RaiseLastOSError(DWORD Result = 0);
 struct TFormatSettings : public TObject
 {
 public:
-  TFormatSettings(int /* LCID */) {}
+  explicit TFormatSettings(int /* LCID */) {}
   static TFormatSettings Create(int LCID ) { return TFormatSettings(LCID); }
   unsigned char CurrencyFormat;
   unsigned char NegCurrFormat;

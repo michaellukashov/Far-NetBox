@@ -604,17 +604,7 @@ void TFTPFileSystem::Idle()
 {
   if (FActive && !FWaitingForReply)
   {
-    try
-    {
-      PoolForFatalNonCommandReply();
-    }
-    catch (EFatal & E)
-    {
-      //if (!FTerminal->QueryReopen(&E, ropNoReadDirectory, nullptr))
-      {
-        throw;
-      }
-    }
+    PoolForFatalNonCommandReply();
 
     // Keep session alive
     if ((FTerminal->GetSessionData()->GetFtpPingType() != ptOff) &&
@@ -1051,7 +1041,7 @@ void TFTPFileSystem::FileTransferProgress(__int64 TransferSize,
 {
   TGuard Guard(FTransferStatusCriticalSection);
 
-    DoFileTransferProgress(TransferSize, Bytes);
+  DoFileTransferProgress(TransferSize, Bytes);
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::FileTransfer(const UnicodeString & FileName,
@@ -1138,7 +1128,7 @@ void TFTPFileSystem::SinkRobust(const UnicodeString & FileName,
   const TCopyParamType * CopyParam, intptr_t Params,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
-    // the same in TSFTPFileSystem
+  // the same in TSFTPFileSystem
   bool Retry;
 
   TDownloadSessionAction Action(FTerminal->GetActionLog());
@@ -1507,7 +1497,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
   bool Dir = FLAGSET(OpenParams->LocalFileAttrs, faDirectory);
   if (Dir)
   {
-        Action.Cancel();
+    Action.Cancel();
     DirectorySource(IncludeTrailingBackslash(RealFileName), TargetDir,
       OpenParams->LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
   }
@@ -1831,7 +1821,7 @@ void TFTPFileSystem::DoStartup()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::HomeDirectory()
 {
-    // FHomeDirectory is an absolute path, so avoid unnecessary overhead
+  // FHomeDirectory is an absolute path, so avoid unnecessary overhead
   // of ChangeDirectory, such as EnsureLocation
   DoChangeDirectory(FHomeDirectory);
   FCurrentDirectory = FHomeDirectory;
@@ -2514,7 +2504,7 @@ bool TFTPFileSystem::NoFinalLastCode() const
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::KeepWaitingForReply(uintptr_t & ReplyToAwait, bool WantLastCode) const
 {
-    // to keep waiting,
+  // to keep waiting,
   // non-command reply must be unset,
   // the reply we wait for must be unset or
   // last code must be unset (if we wait for it)
@@ -2943,7 +2933,7 @@ UnicodeString TFTPFileSystem::ExtractStatusMessage(const UnicodeString & Status)
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
 {
-    TLogLineType LogType = static_cast<TLogLineType>(-1);
+  TLogLineType LogType = static_cast<TLogLineType>(-1);
   UnicodeString Status(AStatus);
 
   switch (Type)

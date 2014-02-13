@@ -549,30 +549,21 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
-  if (!E->Message.IsEmpty())
+  if (E && !E->Message.IsEmpty())
   {
-    if (E->InheritsFrom<Exception>())
+    if (!E->InheritsFrom<EAbort>())
     {
-      if (!E->InheritsFrom<EAbort>())
+      TQueryType Type;
+      Type = E->InheritsFrom<ESshTerminate>() ?
+        qtInformation : qtError;
+
+      TStrings * MoreMessages = nullptr;
+      if (E->InheritsFrom<ExtException>())
       {
-        TQueryType Type;
-        Type = (E->InheritsFrom<ESshTerminate>()) ?
-          qtInformation : qtError;
-
-        TStrings * MoreMessages = nullptr;
-        if (E->InheritsFrom<ExtException>())
-        {
-          MoreMessages = dynamic_cast<ExtException *>(E)->GetMoreMessages();
-        }
-
-        UnicodeString Message = TranslateExceptionMessage(E);
-        MoreMessageDialog(Message, MoreMessages, Type, qaOK);
+        MoreMessages = dynamic_cast<ExtException *>(E)->GetMoreMessages();
       }
-    }
-    else
-    {
-      // ShowException(ExceptObject(), ExceptAddr());
-      DEBUG_PRINTF(L"ShowException");
+      UnicodeString Message = TranslateExceptionMessage(E);
+      MoreMessageDialog(Message, MoreMessages, Type, qaOK);
     }
   }
 }
