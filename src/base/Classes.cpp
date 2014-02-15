@@ -61,6 +61,18 @@ void Error(int ErrorID, intptr_t data)
 }
 
 //---------------------------------------------------------------------------
+bool TObject::IsKindOf(TObjectClassId ClassId) const
+{
+  assert(this != nullptr);
+
+  TClassInfo * thisInfo = GetClassInfo();
+  assert(thisInfo != nullptr);
+
+  TClassInfo * classInfo = TClassInfo::FindClass(ClassId);
+  return thisInfo->IsKindOf(classInfo);
+}
+
+//---------------------------------------------------------------------------
 TPersistent::TPersistent()
 {}
 
@@ -534,7 +546,7 @@ intptr_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString 
 
 void TStrings::Assign(const TPersistent * Source)
 {
-  const TStrings * Strings = dynamic_cast<const TStrings *>(Source);
+  const TStrings * Strings = NB_STATIC_DOWNCAST_CONST(TStrings, Source);
   if (Strings != nullptr)
   {
     BeginUpdate();
@@ -2180,6 +2192,15 @@ void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
 
 //---------------------------------------------------------------------------
 
-TDateTime MinDateTime = TDateTime(-657434.0); // { 01/01/0100 12:00:00.000 AM });
+TDateTime MinDateTime = TDateTime(-657434.0);
 
 } // namespace Classes
+
+//---------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TObject, nullptr, nullptr)
+NB_IMPLEMENT_CLASS(TPersistent, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TList, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TObjectList, NB_GET_CLASS_INFO(TList), nullptr)
+NB_IMPLEMENT_CLASS(TStrings, NB_GET_CLASS_INFO(TPersistent), nullptr)
+NB_IMPLEMENT_CLASS(TStringList, NB_GET_CLASS_INFO(TStrings), nullptr)
+//---------------------------------------------------------------------------

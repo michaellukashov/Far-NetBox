@@ -192,6 +192,7 @@ class TFarDialogItem : public TObject
   friend TFarDialog;
   friend TFarDialogContainer;
   friend TFarList;
+  NB_DECLARE_CLASS(TFarDialogItem)
 public:
   TRect GetBounds() const { return FBounds; }
   TRect GetActualBounds() const;
@@ -350,6 +351,7 @@ enum TFarButtonBrackets { brNone, brTight, brSpace, brNormal };
 //---------------------------------------------------------------------------
 class TFarButton : public TFarDialogItem
 {
+NB_DECLARE_CLASS(TFarButton)
 public:
   explicit TFarButton(TFarDialog * ADialog);
   virtual ~TFarButton() {}
@@ -427,6 +429,7 @@ protected:
 //---------------------------------------------------------------------------
 class TFarEdit : public TFarDialogItem
 {
+NB_DECLARE_CLASS(TFarEdit)
 public:
   explicit TFarEdit(TFarDialog * ADialog);
 
@@ -499,6 +502,7 @@ class TFarList : public TStringList
   friend TFarListBox;
   friend TFarLister;
   friend TFarComboBox;
+  NB_DECLARE_CLASS(TFarList)
 public:
   explicit TFarList(TFarDialogItem * ADialogItem = nullptr);
   virtual ~TFarList();
@@ -550,6 +554,7 @@ enum TFarListBoxAutoSelect { asOnlyFocus, asAlways, asNever };
 class TFarListBox : public TFarDialogItem
 {
 NB_DISABLE_COPY(TFarListBox)
+NB_DECLARE_CLASS(TFarListBox)
 public:
   explicit TFarListBox(TFarDialog * ADialog);
   virtual ~TFarListBox();

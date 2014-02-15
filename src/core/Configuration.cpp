@@ -1317,4 +1317,7 @@ bool TShortCuts::Has(const TShortCut & ShortCut) const
   rde::vector<TShortCut>::iterator it = const_cast<TShortCuts *>(this)->FShortCuts.find(ShortCut);
   return (it != FShortCuts.end());
 }
+//------------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TConfiguration, NB_GET_CLASS_INFO(TObject), nullptr);
+//------------------------------------------------------------------------------
 

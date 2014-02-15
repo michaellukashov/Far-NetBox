@@ -21,6 +21,7 @@ const int soSynchronizeAsk = 0x04;
 //---------------------------------------------------------------------------
 class TGUICopyParamType : public TCopyParamType
 {
+NB_DECLARE_CLASS(TGUICopyParamType)
 public:
   TGUICopyParamType();
   TGUICopyParamType(const TCopyParamType & Source);
@@ -139,6 +140,7 @@ private:
 //---------------------------------------------------------------------------
 class TGUIConfiguration : public TConfiguration
 {
+NB_DECLARE_CLASS(TGUIConfiguration)
 public:
   virtual void SaveData(THierarchicalStorage * Storage, bool All);
   virtual void LoadData(THierarchicalStorage * Storage);

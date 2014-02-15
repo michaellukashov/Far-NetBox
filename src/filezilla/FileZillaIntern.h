@@ -8,6 +8,7 @@ class TFileZillaIntf;
 //---------------------------------------------------------------------------
 class TFileZillaIntern : public CApiLog
 {
+NB_DECLARE_CLASS(TFileZillaIntern)
 public:
   TFileZillaIntern(TFileZillaIntf * AOwner);
 

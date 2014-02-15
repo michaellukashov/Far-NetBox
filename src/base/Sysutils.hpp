@@ -17,6 +17,7 @@ extern const TDayTable MonthDays[];
 //---------------------------------------------------------------------------
 class Exception : public std::runtime_error, public TObject
 {
+NB_DECLARE_CLASS(Exception)
 public:
   explicit Exception(const wchar_t * Msg);
   explicit Exception(const UnicodeString & Msg);
@@ -37,6 +38,7 @@ protected:
 //---------------------------------------------------------------------------
 class EAbort : public Exception
 {
+NB_DECLARE_CLASS(EAbort)
 public:
   explicit EAbort(const std::wstring & what) : Exception(what)
   {}
@@ -44,6 +46,7 @@ public:
 
 class EAccessViolation : public Exception
 {
+NB_DECLARE_CLASS(EAccessViolation)
 public:
   explicit EAccessViolation(const std::wstring & what) : Exception(what)
   {}
@@ -227,7 +230,7 @@ UnicodeString FmtLoadStr(intptr_t Id, ...);
 //---------------------------------------------------------------------------
 UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth = 40);
 //---------------------------------------------------------------------------
-UnicodeString TranslateExceptionMessage(std::exception * E);
+UnicodeString TranslateExceptionMessage(Exception * E);
 //---------------------------------------------------------------------------
 
 void AppendWChar(UnicodeString & Str2, const wchar_t Ch);

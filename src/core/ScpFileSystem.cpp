@@ -1581,7 +1581,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       !OperationProgress->Cancel; ++IFile)
     {
       UnicodeString FileName = FilesToCopy->GetString(IFile);
-      TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->GetObject(IFile));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FilesToCopy->GetObject(IFile));
       UnicodeString RealFileName = File ? File->GetFileName() : FileName;
       bool CanProceed = false;
 
@@ -1947,7 +1947,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
       {
         // EScpFileSkipped is derived from EScpSkipFile,
         // but is does not indicate file skipped by user here
-        if (dynamic_cast<EScpFileSkipped *>(&E) != nullptr)
+        if (NB_STATIC_DOWNCAST(EScpFileSkipped, &E) != nullptr)
         {
           Action.Rollback(&E);
         }

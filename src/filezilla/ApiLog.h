@@ -27,8 +27,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class CApiLog  
+class CApiLog : public TObject
 {
+NB_DECLARE_CLASS(CApiLog)
 public:
 	CApiLog();
 	virtual ~CApiLog();

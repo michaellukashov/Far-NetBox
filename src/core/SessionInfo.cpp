@@ -1416,3 +1416,6 @@ void TActionLog::SetEnabled(bool Value)
   }
 }
 
+//------------------------------------------------------------------------------
+//NB_IMPLEMENT_CLASS(TSessionUI, NB_GET_CLASS_INFO(TObject), nullptr);
+//------------------------------------------------------------------------------

@@ -151,7 +151,7 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
     {
       for (intptr_t Index = 0; Index < FBookmarkLists->GetCount(); ++Index)
       {
-        TBookmarkList * BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->GetObject(Index));
+        TBookmarkList * BookmarkList = NB_STATIC_DOWNCAST(TBookmarkList, FBookmarkLists->GetObject(Index));
         if (All || BookmarkList->GetModified())
         {
           UnicodeString Key;
@@ -217,7 +217,7 @@ void TBookmarks::ModifyAll(bool Modify)
 {
   for (intptr_t I = 0; I < FBookmarkLists->GetCount(); I++)
   {
-    TBookmarkList * BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->GetObject(I));
+    TBookmarkList * BookmarkList = NB_STATIC_DOWNCAST(TBookmarkList, FBookmarkLists->GetObject(I));
     assert(BookmarkList);
     BookmarkList->SetModified(Modify);
   }
@@ -228,7 +228,7 @@ TBookmarkList * TBookmarks::GetBookmarks(const UnicodeString & Index)
   intptr_t I = FBookmarkLists->IndexOf(Index.c_str());
   if (I >= 0)
   {
-    return dynamic_cast<TBookmarkList *>(FBookmarkLists->GetObject(I));
+    return NB_STATIC_DOWNCAST(TBookmarkList, FBookmarkLists->GetObject(I));
   }
   else
   {
@@ -242,7 +242,7 @@ void TBookmarks::SetBookmarks(const UnicodeString & Index, TBookmarkList * Value
   if (I >= 0)
   {
     TBookmarkList * BookmarkList;
-    BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->GetObject(I));
+    BookmarkList = NB_STATIC_DOWNCAST(TBookmarkList, FBookmarkLists->GetObject(I));
     BookmarkList->Assign(Value);
   }
   else
@@ -294,14 +294,14 @@ void TBookmarkList::Clear()
 //---------------------------------------------------------------------------
 void TBookmarkList::Assign(const TPersistent * Source)
 {
-  const TBookmarkList * SourceList = dynamic_cast<const TBookmarkList *>(Source);
+  const TBookmarkList * SourceList = NB_STATIC_DOWNCAST_CONST(TBookmarkList, Source);
   if (SourceList)
   {
     Clear();
     for (intptr_t I = 0; I < SourceList->FBookmarks->GetCount(); I++)
     {
       TBookmark * Bookmark = new TBookmark();
-      Bookmark->Assign(dynamic_cast<TBookmark *>(SourceList->FBookmarks->GetObject(I)));
+      Bookmark->Assign(NB_STATIC_DOWNCAST(TBookmark, SourceList->FBookmarks->GetObject(I)));
       Add(Bookmark);
     }
     FOpenedNodes->Assign(SourceList->FOpenedNodes);
@@ -391,7 +391,7 @@ intptr_t TBookmarkList::IndexOf(TBookmark * Bookmark)
 void TBookmarkList::KeyChanged(intptr_t Index)
 {
   assert(Index < GetCount());
-  TBookmark * Bookmark = dynamic_cast<TBookmark *>(FBookmarks->GetObject(Index));
+  TBookmark * Bookmark = NB_STATIC_DOWNCAST(TBookmark, FBookmarks->GetObject(Index));
   assert(FBookmarks->GetString(Index) != Bookmark->GetKey());
   if (FBookmarks->IndexOf(Bookmark->GetKey().c_str()) >= 0)
   {
@@ -403,7 +403,7 @@ void TBookmarkList::KeyChanged(intptr_t Index)
 TBookmark * TBookmarkList::FindByName(const UnicodeString & Node, const UnicodeString & Name)
 {
   intptr_t I = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name).c_str());
-  TBookmark * Bookmark = ((I >= 0) ? dynamic_cast<TBookmark *>(FBookmarks->GetObject(I)) : nullptr);
+  TBookmark * Bookmark = ((I >= 0) ? NB_STATIC_DOWNCAST(TBookmark, FBookmarks->GetObject(I)) : nullptr);
   assert(!Bookmark || (Bookmark->GetNode() == Node && Bookmark->GetName() == Name));
   return Bookmark;
 }
@@ -427,7 +427,7 @@ intptr_t TBookmarkList::GetCount()
 //---------------------------------------------------------------------------
 TBookmark * TBookmarkList::GetBookmarks(intptr_t Index)
 {
-  TBookmark * Bookmark = dynamic_cast<TBookmark *>(FBookmarks->GetObject(Index));
+  TBookmark * Bookmark = NB_STATIC_DOWNCAST(TBookmark, FBookmarks->GetObject(Index));
   assert(Bookmark);
   return Bookmark;
 }
@@ -474,7 +474,7 @@ TBookmark::TBookmark()
 //---------------------------------------------------------------------------
 void TBookmark::Assign(const TPersistent * Source)
 {
-  const TBookmark * SourceBookmark = dynamic_cast<const TBookmark *>(Source);
+  const TBookmark * SourceBookmark = NB_STATIC_DOWNCAST_CONST(TBookmark, Source);
   if (SourceBookmark)
   {
     SetName(SourceBookmark->GetName());
@@ -567,4 +567,8 @@ UnicodeString TBookmark::GetKey()
   return BookmarkKey(GetNode(), GetName());
 }
 
+//------------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TBookmark, NB_GET_CLASS_INFO(TPersistent), nullptr);
+NB_IMPLEMENT_CLASS(TBookmarkList, NB_GET_CLASS_INFO(TPersistent), nullptr);
+//------------------------------------------------------------------------------
 

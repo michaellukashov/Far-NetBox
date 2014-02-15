@@ -57,4 +57,6 @@ BOOL TFileZillaIntern::PostMessage(HWND hWnd, UINT Msg, WPARAM wParam,
 
   return (Result ? TRUE : FALSE);
 }
+//------------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TFileZillaIntern, NB_GET_CLASS_INFO(CApiLog), nullptr);
 //---------------------------------------------------------------------------

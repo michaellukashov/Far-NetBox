@@ -146,6 +146,7 @@ const int boDisableNeverShowAgain = 0x01;
 //------------------------------------------------------------------------------
 class TTerminal : public TObject, public TSessionUI
 {
+NB_DECLARE_CLASS(TTerminal)
 public:
   // TScript::SynchronizeProc relies on the order
   enum TSynchronizeMode { smRemote, smLocal, smBoth };

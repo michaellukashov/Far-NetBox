@@ -934,7 +934,7 @@ TIniFileStorage::TIniFileStorage(const UnicodeString & AStorage):
   TCustomIniFileStorage(AStorage, new TMemIniFile(AStorage))
 {
   FOriginal = new TStringList();
-  dynamic_cast<TMemIniFile *>(FIniFile)->GetString(FOriginal);
+  NB_STATIC_DOWNCAST(TMemIniFile, FIniFile)->GetString(FOriginal);
   ApplyOverrides();
 }
 //------------------------------------------------------------------------------
@@ -948,7 +948,7 @@ void TIniFileStorage::Flush()
       SAFE_DESTROY(FOriginal);
     };
     {
-      dynamic_cast<TMemIniFile *>(FIniFile)->GetString(Strings.get());
+      NB_STATIC_DOWNCAST(TMemIniFile, FIniFile)->GetString(Strings.get());
       if (!Strings->Equals(FOriginal))
       {
         DWORD LocalFileAttrs;

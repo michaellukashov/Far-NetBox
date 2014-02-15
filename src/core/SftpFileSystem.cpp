@@ -3196,7 +3196,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         }
         catch(Exception &E)
         {
-          if (dynamic_cast<EFatal *>(&E) != nullptr)
+          if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
           {
             throw;
           }
@@ -3795,7 +3795,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
   {
     bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
-    TRemoteFile * File = dynamic_cast<TRemoteFile *>(AFilesToCopy->GetObject(Index));
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ExtractFileName(RealFileName, false);
     assert(!FAvoidBusy);

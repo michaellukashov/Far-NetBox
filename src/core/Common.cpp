@@ -284,7 +284,7 @@ UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote)
 UnicodeString ExceptionLogString(Exception *E)
 {
   assert(E);
-  if (dynamic_cast<Exception *>(E) != nullptr)
+  if (NB_STATIC_DOWNCAST(Exception, E) != nullptr)
   {
     UnicodeString Msg;
 #if defined(__BORLANDC__)
@@ -292,9 +292,9 @@ UnicodeString ExceptionLogString(Exception *E)
 #else
     Msg = FORMAT(L"%s", ::MB2W(E->what()).c_str());
 #endif
-    if (dynamic_cast<ExtException *>(E) != nullptr)
+    if (NB_STATIC_DOWNCAST(ExtException, E) != nullptr)
     {
-      TStrings * MoreMessages = dynamic_cast<ExtException *>(E)->GetMoreMessages();
+      TStrings * MoreMessages = NB_STATIC_DOWNCAST(ExtException, E)->GetMoreMessages();
       if (MoreMessages)
       {
         Msg += L"\n" +

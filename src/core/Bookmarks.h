@@ -36,9 +36,10 @@ private:
 class TBookmark;
 class TBookmarkList : public TPersistent
 {
-NB_DISABLE_COPY(TBookmarkList)
 friend class TBookmarks;
 friend class TBookmark;
+NB_DISABLE_COPY(TBookmarkList)
+NB_DECLARE_CLASS(TBookmarkList)
 public:
   TBookmarkList();
   virtual ~TBookmarkList();
@@ -76,8 +77,9 @@ private:
 //---------------------------------------------------------------------------
 class TBookmark : public TPersistent
 {
-NB_DISABLE_COPY(TBookmark)
 friend class TBookmarkList;
+NB_DISABLE_COPY(TBookmark)
+NB_DECLARE_CLASS(TBookmark)
 public:
   TBookmark();
 
