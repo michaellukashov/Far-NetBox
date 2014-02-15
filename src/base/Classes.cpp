@@ -104,12 +104,6 @@ TPersistent * TPersistent::GetOwner()
 void TPersistent::AssignError(const TPersistent * Source)
 {
   (void)Source;
-  UnicodeString SourceName = L"nil";
-  // if (Source != nullptr)
-  // SourceName = Source.ClassName
-  // else
-  // SourceName = "nil";
-  // throw EConvertError(FMTLOAD(SAssignError, SourceName.c_str(), "nil"));
   throw Exception("Cannot assign");
 }
 
@@ -384,7 +378,6 @@ void TObjectList::Notify(void * Ptr, TListNotification Action)
   {
     if (Action == lnDeleted)
     {
-      // ((TObject *)Ptr)->Free();
       delete static_cast<TObject *>(Ptr);
     }
   }
@@ -737,7 +730,6 @@ const UnicodeString TStrings::GetName(intptr_t Index) const
 void TStrings::SetName(intptr_t Index, const UnicodeString & Value)
 {
   (void)Index;
-  // SetName(Index, Value);
   Classes::Error(SNotImplemented, 2012);
 }
 
@@ -844,8 +836,6 @@ void TStringList::Clear()
 {
   FStrings.clear();
   FObjects.clear();
-  // SetCount(0);
-  // SetCapacity(0);
 }
 
 intptr_t TStringList::Add(const UnicodeString & S)
@@ -1201,7 +1191,7 @@ UnicodeString MB2W(const char * src, const UINT cp)
     MultiByteToWideChar(cp, 0, src, -1, const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
     Result.SetLength(Result.Length() - 1);  //remove NULL character
   }
-  return Result; // .c_str();
+  return Result;
 }
 
 /**
@@ -1227,7 +1217,7 @@ AnsiString W2MB(const wchar_t * src, const UINT cp)
       static_cast<int>(reqLength), nullptr, nullptr);
     Result.SetLength(Result.Length() - 1);  //remove NULL character
   }
-  return Result; //.c_str();
+  return Result;
 }
 
 //---------------------------------------------------------------------------
@@ -1740,7 +1730,6 @@ TRegistry::TRegistry() :
   FCloseRootKey(false),
   FAccess(KEY_ALL_ACCESS)
 {
-  // LazyWrite = True;
   SetRootKey(HKEY_CURRENT_USER);
   SetAccess(KEY_ALL_ACCESS);
 }
@@ -1810,8 +1799,7 @@ void TRegistry::CloseKey()
 {
   if (GetCurrentKey() != 0)
   {
-    // if LazyWrite then
-    RegCloseKey(GetCurrentKey()); //else RegFlushKey(CurrentKey);
+    RegCloseKey(GetCurrentKey());
     FCurrentKey = 0;
     FCurrentPath = L"";
   }
@@ -1823,7 +1811,6 @@ bool TRegistry::OpenKey(const UnicodeString & Key, bool CanCreate)
   UnicodeString S = Key;
   bool Relative = Classes::IsRelative(S);
 
-  // if (!Relative) S.erase(0, 1); // Delete(S, 1, 1);
   HKEY TempKey = 0;
   if (!CanCreate || S.IsEmpty())
   {
@@ -2146,7 +2133,6 @@ HKEY TRegistry::GetKey(const UnicodeString & Key)
 {
   UnicodeString S = Key;
   bool Relative = Classes::IsRelative(S);
-  // if not Relative then Delete(S, 1, 1);
   HKEY Result = 0;
   RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0, FAccess, &Result);
   return Result;

@@ -14,7 +14,6 @@
 
 #include <rtlconsts.h>
 #include <headers.hpp>
-//#include <CppProperties.h>
 #include <rtti.hpp>
 
 #pragma warning(pop)
