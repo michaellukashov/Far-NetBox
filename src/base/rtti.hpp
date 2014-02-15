@@ -21,7 +21,7 @@ public:
              const TClassInfo * baseInfo2) :
     m_classId(classId),
     m_baseInfo1(baseInfo1),
-//    m_baseInfo2(baseInfo2),
+    m_baseInfo2(baseInfo2),
     m_next(sm_first)
   {
     sm_first = this;
@@ -33,10 +33,10 @@ public:
   int GetClassId() const { return m_classId; }
   int GetBaseClassId1() const
   { return m_baseInfo1 ? m_baseInfo1->GetClassId() : 0; }
-//  int GetBaseClassName2() const
-//  { return m_baseInfo2 ? m_baseInfo2->GetClassId() : 0; }
+  int GetBaseClassName2() const
+  { return m_baseInfo2 ? m_baseInfo2->GetClassId() : 0; }
   const TClassInfo * GetBaseClass1() const { return m_baseInfo1; }
-//  const TClassInfo * GetBaseClass2() const { return m_baseInfo2; }
+  const TClassInfo * GetBaseClass2() const { return m_baseInfo2; }
 
   static const TClassInfo * GetFirst() { return sm_first; }
   const TClassInfo * GetNext() const { return m_next; }
@@ -47,15 +47,15 @@ public:
   {
     return info != nullptr &&
         (info == this ||
-          (m_baseInfo1 && m_baseInfo1->IsKindOf(info))); // ||
-//          (m_baseInfo2 && m_baseInfo2->IsKindOf(info)));
+          (m_baseInfo1 && m_baseInfo1->IsKindOf(info)) ||
+          (m_baseInfo2 && m_baseInfo2->IsKindOf(info)));
   }
 
 private:
   int m_classId;
 
   const TClassInfo * m_baseInfo1;
-//  const TClassInfo * m_baseInfo2;
+  const TClassInfo * m_baseInfo2;
 
   // class info object live in a linked list:
   // pointers to its head and the next element in it
