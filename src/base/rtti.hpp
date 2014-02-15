@@ -14,9 +14,8 @@ enum TObjectClassId;
 
 class TClassInfo
 {
-  friend class Classes::TObject;
 public:
-  TClassInfo(int classId, // const wchar_t * className,
+  TClassInfo(int classId,
              const TClassInfo * baseInfo1,
              const TClassInfo * baseInfo2) :
     m_classId(classId),
