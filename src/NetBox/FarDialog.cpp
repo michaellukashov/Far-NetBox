@@ -263,7 +263,7 @@ TFarDialogItem * TFarDialog::GetItem(intptr_t Index)
   if (GetItemCount())
   {
     assert(Index >= 0 && Index < FItems->GetCount());
-    DialogItem = dynamic_cast<TFarDialogItem *>((*GetItems())[Index]);
+    DialogItem = NB_STATIC_DOWNCAST(TFarDialogItem, (*GetItems())[Index]);
     assert(DialogItem);
   }
   else
@@ -454,7 +454,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
         if (!Result && (Msg == DN_KEY) &&
             (Param2 == KEY_ENTER) &&
             ((Param1 < 0) ||
-             ((Param1 >= 0) && (dynamic_cast<TFarButton *>(GetItem(Param1)) == nullptr))) &&
+             ((Param1 >= 0) && (NB_STATIC_DOWNCAST(TFarButton, GetItem(Param1)) == nullptr))) &&
             GetDefaultButton()->GetEnabled() &&
             (GetDefaultButton()->GetOnClick()))
         {
@@ -499,7 +499,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
           Result = 1;
           if (Param1 >= 0)
           {
-            TFarButton * Button = dynamic_cast<TFarButton *>(GetItem(Param1));
+            TFarButton * Button = NB_STATIC_DOWNCAST(TFarButton, GetItem(Param1));
             // FAR WORKAROUND
             // FAR 1.70 alpha 6 calls DN_CLOSE even for non-button dialog items
             // (list boxes in particular), while FAR 1.70 beta 5 used ID of
@@ -508,7 +508,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
             // flag DIF_LISTNOCLOSE.
             if (Button == nullptr)
             {
-              assert(dynamic_cast<TFarListBox *>(GetItem(Param1)) != nullptr);
+              assert(NB_STATIC_DOWNCAST(TFarListBox, GetItem(Param1)) != nullptr);
               Result = static_cast<intptr_t>(false);
             }
             else
@@ -735,7 +735,7 @@ intptr_t TFarDialog::ShowModal()
 
     if (BResult >= 0)
     {
-      TFarButton * Button = dynamic_cast<TFarButton *>(GetItem(BResult));
+      TFarButton * Button = NB_STATIC_DOWNCAST(TFarButton, GetItem(BResult));
       assert(Button);
       // correct result should be already set by TFarButton
       assert(FResult == Button->GetResult());
@@ -967,7 +967,7 @@ void TFarDialogContainer::SetPosition(intptr_t Index, intptr_t Value)
     Position = Value;
     for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
     {
-      dynamic_cast<TFarDialogItem *>((*FItems)[Index])->DialogResized();
+      NB_STATIC_DOWNCAST(TFarDialogItem, (*FItems)[Index])->DialogResized();
     }
   }
 }
@@ -983,7 +983,7 @@ void TFarDialogContainer::SetEnabled(bool Value)
     FEnabled = true;
     for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
     {
-      dynamic_cast<TFarDialogItem *>((*FItems)[Index])->UpdateEnabled();
+      NB_STATIC_DOWNCAST(TFarDialogItem, (*FItems)[Index])->UpdateEnabled();
     }
   }
 }
@@ -2101,7 +2101,7 @@ void TFarList::Assign(const TPersistent * Source)
 {
   TStringList::Assign(Source);
 
-  const TFarList * FarList = dynamic_cast<const TFarList *>(Source);
+  const TFarList * FarList = NB_STATIC_DOWNCAST_CONST(TFarList, Source);
   if (FarList != nullptr)
   {
     for (intptr_t Index = 0; Index < FarList->GetCount(); ++Index)
@@ -2737,3 +2737,10 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
 
   return Result;
 }
+//---------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TFarDialogItem, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TFarButton, NB_GET_CLASS_INFO(TFarDialogItem), nullptr)
+NB_IMPLEMENT_CLASS(TFarListBox, NB_GET_CLASS_INFO(TFarDialogItem), nullptr)
+NB_IMPLEMENT_CLASS(TFarEdit, NB_GET_CLASS_INFO(TFarDialogItem), nullptr)
+NB_IMPLEMENT_CLASS(TFarList, NB_GET_CLASS_INFO(TStringList), nullptr)
+//---------------------------------------------------------------------------

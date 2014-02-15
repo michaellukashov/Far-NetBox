@@ -808,13 +808,13 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
 }
 
 //---------------------------------------------------------------------------
-UnicodeString TranslateExceptionMessage(std::exception * E)
+UnicodeString TranslateExceptionMessage(Exception * E)
 {
   if (E)
   {
-    if (dynamic_cast<Exception *>(E) != nullptr)
+    if (NB_STATIC_DOWNCAST(Exception, E) != nullptr)
     {
-      return dynamic_cast<Exception *>(E)->Message;
+      return NB_STATIC_DOWNCAST(Exception, E)->Message;
     }
     else
     {
@@ -1696,3 +1696,9 @@ UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
 }
 //---------------------------------------------------------------------------
 } // namespace Sysutils
+
+//------------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(Exception, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(EAccessViolation, NB_GET_CLASS_INFO(Exception), nullptr);
+NB_IMPLEMENT_CLASS(EAbort, NB_GET_CLASS_INFO(Exception), nullptr);
+//------------------------------------------------------------------------------

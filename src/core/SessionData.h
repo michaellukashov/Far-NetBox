@@ -85,6 +85,7 @@ class TStoredSessionList;
 class TSessionData : public TNamedObject
 {
 friend class TStoredSessionList;
+NB_DECLARE_CLASS(TSessionData)
 public:
   void SetHostName(const UnicodeString & Value);
   UnicodeString GetHostNameExpanded() const;
@@ -547,6 +548,7 @@ private:
 private:
   NB_DISABLE_COPY(TSessionData)
 };
+
 //---------------------------------------------------------------------------
 class TStoredSessionList : public TNamedObjectList
 {
@@ -582,8 +584,8 @@ public:
   TStrings * GetFolderOrWorkspaceList(const UnicodeString & Name);
   TStrings * GetWorkspaces();
   bool HasAnyWorkspace();
-  const TSessionData * GetSession(intptr_t Index) const { return dynamic_cast<const TSessionData *>(AtObject(Index)); }
-  TSessionData * GetSession(intptr_t Index) { return dynamic_cast<TSessionData *>(AtObject(Index)); }
+  const TSessionData * GetSession(intptr_t Index) const { return NB_STATIC_DOWNCAST_CONST(TSessionData, AtObject(Index)); }
+  TSessionData * GetSession(intptr_t Index) { return NB_STATIC_DOWNCAST(TSessionData, AtObject(Index)); }
   const TSessionData * GetDefaultSettings() const { return FDefaultSettings; }
   const TSessionData * GetSessionByName(const UnicodeString & SessionName) const;
   void SetDefaultSettings(const TSessionData * Value);

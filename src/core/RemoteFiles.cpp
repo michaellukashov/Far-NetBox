@@ -1359,7 +1359,7 @@ void TRemoteFile::FindLinkedFile()
     }
     catch (Exception &E)
     {
-      if (dynamic_cast<EFatal *>(&E) != nullptr) throw;
+      if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr) throw;
       else
       {
         GetTerminal()->GetLog()->AddException(&E);
@@ -1756,7 +1756,7 @@ void TRemoteDirectoryCache::Clear()
   {
     for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
-      TRemoteFileList * List = dynamic_cast<TRemoteFileList *>(GetObject(Index));
+      TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index));
       SAFE_DESTROY(List);
       SetObject(Index, nullptr);
     }
@@ -1786,7 +1786,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
   intptr_t Index = IndexOf(::UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
   {
-    TRemoteFileList * FileList = dynamic_cast<TRemoteFileList *>(GetObject(Index));
+    TRemoteFileList * FileList = NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index));
     if (FileList->GetTimestamp() <= Timestamp)
     {
       Index = -1;
@@ -1805,7 +1805,7 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   if (Result)
   {
     assert(GetObject(Index) != nullptr);
-    dynamic_cast<TRemoteFileList *>(GetObject(Index))->DuplicateTo(FileList);
+    NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index))->DuplicateTo(FileList);
   }
   return Result;
 }
@@ -1857,7 +1857,7 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & Directory, boo
 //---------------------------------------------------------------------------
 void TRemoteDirectoryCache::Delete(intptr_t Index)
 {
-  TRemoteFileList * List = dynamic_cast<TRemoteFileList *>(GetObject(Index));
+  TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index));
   SAFE_DESTROY(List);
   TStringList::Delete(Index);
 }
@@ -2736,3 +2736,7 @@ void TRemoteProperties::Save(THierarchicalStorage * Storage) const
 
   // TODO
 }
+//------------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TRemoteFile, NB_GET_CLASS_INFO(TPersistent), nullptr);
+NB_IMPLEMENT_CLASS(TRemoteFileList, NB_GET_CLASS_INFO(TObjectList), nullptr);
+//------------------------------------------------------------------------------

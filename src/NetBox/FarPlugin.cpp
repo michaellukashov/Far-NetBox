@@ -255,7 +255,7 @@ TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
   intptr_t Index = 0;
   while (!Result && (Index < FOpenedPlugins->GetCount()))
   {
-    FileSystem = dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItem(Index));
+    FileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, FOpenedPlugins->GetItem(Index));
     assert(FileSystem);
     RECT Bounds = GetPanelBounds(FileSystem);
     if (Another && CompareRects(Bounds, PassivePanelBounds))
@@ -276,7 +276,7 @@ void TCustomFarPlugin::InvalidateOpenPluginInfo()
   for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
   {
     TCustomFarFileSystem * FileSystem =
-      dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItem(Index));
+      NB_STATIC_DOWNCAST(TCustomFarFileSystem, FOpenedPlugins->GetItem(Index));
     FileSystem->InvalidateOpenPluginInfo();
   }
 }
@@ -847,7 +847,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
     {
       for (intptr_t PIndex = 0; PIndex < GetItemCount(); ++PIndex)
       {
-        TFarButton * PrevButton = dynamic_cast<TFarButton *>(GetItem(PIndex));
+        TFarButton * PrevButton = NB_STATIC_DOWNCAST(TFarButton, GetItem(PIndex));
         if ((PrevButton != nullptr) && (PrevButton != Button))
         {
           PrevButton->Move(0, -1);
@@ -963,7 +963,7 @@ void TFarMessageDialog::Change()
     {
       for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
       {
-        TFarButton * Button = dynamic_cast<TFarButton *>(GetItem(Index));
+        TFarButton * Button = NB_STATIC_DOWNCAST(TFarButton, GetItem(Index));
         if ((Button != nullptr) && (Button->GetTag() == 0))
         {
           Button->SetEnabled(!FCheckBox->GetChecked());
@@ -1417,6 +1417,7 @@ void TCustomFarPlugin::SaveTerminalScreen()
 //---------------------------------------------------------------------------
 class TConsoleTitleParam : public TObject
 {
+NB_DECLARE_CLASS(TConsoleTitleParam)
 public:
   explicit TConsoleTitleParam() :
     Progress(0),
@@ -1451,7 +1452,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
   assert(FSavedTitles->GetCount() > 0);
   UnicodeString Title = FSavedTitles->GetString(FSavedTitles->GetCount() - 1);
   TObject * Object = FSavedTitles->GetObject(FSavedTitles->GetCount()-1);
-  TConsoleTitleParam * Param = dynamic_cast<TConsoleTitleParam *>(Object);
+  TConsoleTitleParam * Param = NB_STATIC_DOWNCAST(TConsoleTitleParam, Object);
   if (Param->Own)
   {
     FCurrentTitle = Title;
@@ -2928,4 +2929,8 @@ UnicodeString TGlobalFunctions::GetStrVersionNumber() const
 {
   return NETBOX_VERSION_NUMBER;
 }
+//------------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TCustomFarFileSystem, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TCustomFarPlugin, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TConsoleTitleParam, NB_GET_CLASS_INFO(TObject), nullptr);
 //------------------------------------------------------------------------------

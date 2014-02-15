@@ -17,6 +17,7 @@ enum TOnceDoneOperation { odoIdle, odoDisconnect, odoShutDown };
 //---------------------------------------------------------------------------
 class ExtException : public Sysutils::Exception
 {
+NB_DECLARE_CLASS(ExtException)
 public:
   explicit ExtException(Exception * E);
   explicit ExtException(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
@@ -52,6 +53,7 @@ private:
 #define DERIVE_EXT_EXCEPTION(NAME, BASE) \
   class NAME : public BASE \
   { \
+  NB_DECLARE_CLASS(NAME) \
   public: \
     explicit inline NAME(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(E, Msg, HelpKeyword) {} \
     virtual inline ~NAME(void) noexcept {} \
@@ -68,6 +70,7 @@ DERIVE_EXT_EXCEPTION(EScpFileSkipped, EScpSkipFile)
 //---------------------------------------------------------------------------
 class EOSExtException : public ExtException
 {
+NB_DECLARE_CLASS(EOSExtException)
 public:
   explicit EOSExtException();
   explicit EOSExtException(const UnicodeString & Msg);
@@ -75,6 +78,7 @@ public:
 //---------------------------------------------------------------------------
 class EFatal : public ExtException
 {
+NB_DECLARE_CLASS(EFatal)
 public:
   // fatal errors are always copied, new message is only appended
   explicit EFatal(Exception* E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
@@ -91,6 +95,7 @@ private:
 #define DERIVE_FATAL_EXCEPTION(NAME, BASE) \
   class NAME : public BASE \
   { \
+  NB_DECLARE_CLASS(NAME) \
   public: \
     explicit inline NAME(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(E, Msg, HelpKeyword) {} \
     virtual ExtException * Clone() { return new NAME(this, L""); } \
@@ -102,6 +107,7 @@ DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal)
 // = close on completion
 class ESshTerminate : public EFatal
 {
+NB_DECLARE_CLASS(ESshTerminate)
 public:
   explicit inline ESshTerminate(Exception* E, const UnicodeString & Msg, TOnceDoneOperation AOperation) :
     EFatal(E, Msg),
@@ -116,6 +122,7 @@ public:
 //---------------------------------------------------------------------------
 class ECallbackGuardAbort : public EAbort
 {
+NB_DECLARE_CLASS(ECallbackGuardAbort)
 public:
   ECallbackGuardAbort();
 };

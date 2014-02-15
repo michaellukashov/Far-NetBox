@@ -18,7 +18,7 @@ TConfiguration * CreateConfiguration()
 void ShowExtendedException(Exception * E)
 {
   assert(FarPlugin != nullptr);
-  TWinSCPPlugin * WinSCPPlugin = dynamic_cast<TWinSCPPlugin *>(FarPlugin);
+  TWinSCPPlugin * WinSCPPlugin = NB_STATIC_DOWNCAST(TWinSCPPlugin, FarPlugin);
   assert(WinSCPPlugin != nullptr);
   WinSCPPlugin->ShowExtendedException(E);
 }

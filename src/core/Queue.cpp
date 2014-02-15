@@ -1961,7 +1961,7 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
   {
     FFilesToCopy->AddObject(FilesToCopy->GetString(Index),
       ((FilesToCopy->GetObject(Index) == nullptr) || (Side == osLocal)) ? nullptr :
-        dynamic_cast<TRemoteFile *>(FilesToCopy->GetObject(Index))->Duplicate());
+        NB_STATIC_DOWNCAST(TRemoteFile, FilesToCopy->GetObject(Index))->Duplicate());
   }
 
   FTargetDir = TargetDir;

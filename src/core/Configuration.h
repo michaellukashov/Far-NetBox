@@ -19,6 +19,7 @@ enum TFtpEncryptionSwitch_219 { fesPlainFTP, fesExplicitSSL, fesImplicit, fesExp
 //---------------------------------------------------------------------------
 class TConfiguration : public TObject
 {
+NB_DECLARE_CLASS(TConfiguration)
 public:
   UnicodeString GetOSVersionStr() const;
   TVSFixedFileInfo *GetFixedApplicationInfo() const;

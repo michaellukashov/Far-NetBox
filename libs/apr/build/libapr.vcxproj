@@ -184,6 +184,7 @@
       <ObjectFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
       <ProgramDataBaseFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <XMLDocumentationFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</XMLDocumentationFileName>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -209,6 +210,7 @@
       <ObjectFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
       <ProgramDataBaseFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <XMLDocumentationFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</XMLDocumentationFileName>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -239,6 +241,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <CallingConvention>Cdecl</CallingConvention>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -271,6 +274,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <CallingConvention>Cdecl</CallingConvention>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

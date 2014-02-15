@@ -8,6 +8,7 @@
 class TNamedObjectList;
 class TNamedObject : public TPersistent
 {
+NB_DECLARE_CLASS(TNamedObject)
 public:
   explicit TNamedObject(const UnicodeString & AName);
   explicit TNamedObject() : TPersistent(), FHidden(false) {};

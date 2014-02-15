@@ -53,6 +53,7 @@ struct TFileSystemInfo : public TObject
 //---------------------------------------------------------------------------
 class TSessionUI
 {
+//NB_DECLARE_CLASS(TSessionUI)
 public:
   explicit TSessionUI() {}
   virtual ~TSessionUI() {}

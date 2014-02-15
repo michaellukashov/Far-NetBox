@@ -44,7 +44,7 @@ void TGUICopyParamType::Assign(const TCopyParamType * Source)
   TCopyParamType::Assign(Source);
 
   const TGUICopyParamType * GUISource;
-  GUISource = dynamic_cast<const TGUICopyParamType *>(Source);
+  GUISource = NB_STATIC_DOWNCAST_CONST(TGUICopyParamType, Source);
   if (GUISource != nullptr)
   {
     GUIAssign(GUISource);
@@ -522,8 +522,8 @@ TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
   FSessionReopenAutoIdle(0)
 {
   FLastLocalesExts = L"*";
-  dynamic_cast<TStringList *>(FLocales)->SetSorted(true);
-  dynamic_cast<TStringList *>(FLocales)->SetCaseSensitive(false);
+  NB_STATIC_DOWNCAST(TStringList, FLocales)->SetSorted(true);
+  NB_STATIC_DOWNCAST(TStringList, FLocales)->SetCaseSensitive(false);
   FCopyParamList = new TCopyParamList();
   CoreSetResourceModule(0);
 }
@@ -1295,6 +1295,9 @@ void TGUIConfiguration::SetChecksumAlg(const UnicodeString & Value)
 //---------------------------------------------------------------------------
 inline TGUIConfiguration * GetGUIConfiguration()
 {
-  return dynamic_cast<TGUIConfiguration *>(GetConfiguration());
+  return NB_STATIC_DOWNCAST(TGUIConfiguration, GetConfiguration());
 }
+//------------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TGUICopyParamType, NB_GET_CLASS_INFO(TCopyParamType), nullptr);
+NB_IMPLEMENT_CLASS(TGUIConfiguration, NB_GET_CLASS_INFO(TConfiguration), nullptr);
 //---------------------------------------------------------------------------

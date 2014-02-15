@@ -14,7 +14,8 @@
 
 #include <rtlconsts.h>
 #include <headers.hpp>
-#include <CppProperties.h>
+//#include <CppProperties.h>
+#include <rtti.hpp>
 
 #pragma warning(pop)
 
@@ -70,6 +71,7 @@ DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /* Sender */);
 void Abort();
 void Error(int ErrorID, intptr_t data);
 //---------------------------------------------------------------------------
+
 class TObject
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -77,6 +79,11 @@ public:
   TObject() {}
   virtual ~TObject() {}
   virtual void Change() {}
+
+  bool IsKindOf(TObjectClassId ClassId) const;
+
+private:
+  NB_DECLARE_CLASS(TObject)
 };
 
 //---------------------------------------------------------------------------
@@ -147,6 +154,7 @@ struct TRect
 
 class TPersistent : public TObject
 {
+  NB_DECLARE_CLASS(TPersistent)
 public:
   TPersistent();
   virtual ~TPersistent();
@@ -171,6 +179,7 @@ typedef intptr_t (CompareFunc)(const void * Item1, const void * Item2);
 
 class TList : public TObject
 {
+NB_DECLARE_CLASS(TList)
 public:
   TList();
   virtual ~TList();
@@ -199,6 +208,7 @@ private:
 
 class TObjectList : public TList
 {
+NB_DECLARE_CLASS(TObjectList)
 public:
   TObjectList();
   virtual ~TObjectList();
@@ -234,6 +244,7 @@ class TStream;
 
 class TStrings : public TPersistent
 {
+NB_DECLARE_CLASS(TStrings)
 public:
   TStrings();
   virtual ~TStrings();
@@ -300,6 +311,7 @@ class TStringList : public TStrings
 {
   friend intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2);
 
+  NB_DECLARE_CLASS(TStringList)
 public:
   TStringList();
   virtual ~TStringList();

@@ -251,6 +251,8 @@ TBookmarkList * TFarConfiguration::GetBookmarks(const UnicodeString & Key)
 //---------------------------------------------------------------------------
 inline TFarConfiguration * GetFarConfiguration()
 {
-  return dynamic_cast<TFarConfiguration *>(GetConfiguration());
+  return NB_STATIC_DOWNCAST(TFarConfiguration, GetConfiguration());
 }
+//---------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TFarConfiguration, NB_GET_CLASS_INFO(TGUIConfiguration), nullptr)
 //---------------------------------------------------------------------------

@@ -117,6 +117,7 @@
       <ObjectFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
       <ProgramDataBaseFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <ResourceCompile>
       <Culture>0x0409</Culture>
@@ -147,6 +148,7 @@
       <ObjectFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
       <ProgramDataBaseFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <ResourceCompile>
       <Culture>0x0409</Culture>
@@ -183,6 +185,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <CallingConvention>Cdecl</CallingConvention>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <ResourceCompile>
       <Culture>0x0409</Culture>
@@ -220,6 +223,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <CallingConvention>Cdecl</CallingConvention>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <ResourceCompile>
       <Culture>0x0409</Culture>

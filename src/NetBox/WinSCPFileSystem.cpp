@@ -338,7 +338,7 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::HandleException(Exception * E, int OpMode)
 {
-  if ((GetTerminal() != nullptr) && (dynamic_cast<EFatal *>(E) != nullptr))
+  if ((GetTerminal() != nullptr) && (NB_STATIC_DOWNCAST(EFatal, E) != nullptr))
   {
     bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr);
     if (!Reopen)
@@ -380,7 +380,7 @@ bool TWinSCPFileSystem::Connected()
 //------------------------------------------------------------------------------
 TWinSCPPlugin * TWinSCPFileSystem::WinSCPPlugin()
 {
-  return dynamic_cast<TWinSCPPlugin *>(FPlugin);
+  return NB_STATIC_DOWNCAST(TWinSCPPlugin, FPlugin);
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::Close()
@@ -539,7 +539,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     }
 
     TWinSCPFileSystem * OppositeFileSystem =
-      dynamic_cast<TWinSCPFileSystem *>(GetOppositeFileSystem());
+      NB_STATIC_DOWNCAST(TWinSCPFileSystem, GetOppositeFileSystem());
     if ((OppositeFileSystem != nullptr) && !OppositeFileSystem->Connected() &&
         !OppositeFileSystem->FLoadingSessionList)
     {
