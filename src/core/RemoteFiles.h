@@ -75,6 +75,7 @@ private:
 //---------------------------------------------------------------------------
 class TRemoteFile : public TPersistent
 {
+NB_DECLARE_CLASS(TRemoteFile)
 public:
   intptr_t GetAttr() const;
   bool GetBrokenLink() const;
@@ -190,6 +191,7 @@ friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
 friend class TFTPFileSystem;
 friend class TWebDAVFileSystem;
+NB_DECLARE_CLASS(TRemoteFileList)
 protected:
   UnicodeString FDirectory;
   TDateTime FTimestamp;

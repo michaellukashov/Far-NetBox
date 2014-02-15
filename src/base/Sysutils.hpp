@@ -17,6 +17,7 @@ extern const TDayTable MonthDays[];
 //---------------------------------------------------------------------------
 class Exception : public std::runtime_error, public TObject
 {
+NB_DECLARE_CLASS(Exception)
 public:
   explicit Exception(const wchar_t * Msg);
   explicit Exception(const UnicodeString & Msg);
@@ -26,9 +27,6 @@ public:
   explicit Exception(Exception * E, int Ident);
   explicit Exception(int Ident);
   ~Exception() throw() {}
-
-  template<typename T>
-  bool InheritsFrom() const { return dynamic_cast<const T *>(this) != nullptr; }
 
 public:
   UnicodeString Message;
@@ -40,6 +38,7 @@ protected:
 //---------------------------------------------------------------------------
 class EAbort : public Exception
 {
+NB_DECLARE_CLASS(EAbort)
 public:
   explicit EAbort(const std::wstring & what) : Exception(what)
   {}
@@ -47,6 +46,7 @@ public:
 
 class EAccessViolation : public Exception
 {
+NB_DECLARE_CLASS(EAccessViolation)
 public:
   explicit EAccessViolation(const std::wstring & what) : Exception(what)
   {}
@@ -79,11 +79,11 @@ struct TFormatSettings : public TObject
 public:
   explicit TFormatSettings(int /* LCID */) {}
   static TFormatSettings Create(int LCID ) { return TFormatSettings(LCID); }
-  unsigned char CurrencyFormat;
-  unsigned char NegCurrFormat;
+  uint8_t CurrencyFormat;
+  uint8_t NegCurrFormat;
   wchar_t ThousandSeparator;
   wchar_t DecimalSeparator;
-  unsigned char CurrencyDecimals;
+  uint8_t CurrencyDecimals;
   wchar_t DateSeparator;
   wchar_t TimeSeparator;
   wchar_t ListSeparator;
@@ -222,13 +222,6 @@ bool CreateDir(const UnicodeString & Dir);
 bool RemoveDir(const UnicodeString & Dir);
 
 //---------------------------------------------------------------------------
-template <class Base, class Derived>
-bool InheritsFrom(const Base * t)
-{
-  return dynamic_cast<const Derived *>(t) != nullptr;
-}
-
-//---------------------------------------------------------------------------
 UnicodeString Format(const wchar_t * Format, ...);
 UnicodeString Format(const wchar_t * Format, va_list Args);
 AnsiString Format(const char * Format, ...);
@@ -237,7 +230,7 @@ UnicodeString FmtLoadStr(intptr_t Id, ...);
 //---------------------------------------------------------------------------
 UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth = 40);
 //---------------------------------------------------------------------------
-UnicodeString TranslateExceptionMessage(std::exception * E);
+UnicodeString TranslateExceptionMessage(Exception * E);
 //---------------------------------------------------------------------------
 
 void AppendWChar(UnicodeString & Str2, const wchar_t Ch);

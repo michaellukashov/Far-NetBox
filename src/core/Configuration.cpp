@@ -133,8 +133,8 @@ TConfiguration::~TConfiguration()
   {
     FreeFileInfo(FApplicationInfo);
   }
-  delete FCriticalSection;
-  // delete FUsage;
+  SAFE_DESTROY(FCriticalSection);
+  // SAFE_DESTROY(FUsage);
 }
 //---------------------------------------------------------------------------
 void TConfiguration::UpdateStaticUsage()
@@ -464,7 +464,7 @@ UnicodeString TConfiguration::BannerHash(const UnicodeString & Banner) const
   Result.SetLength(16);
   md5checksum(
     reinterpret_cast<const char *>(Banner.c_str()), static_cast<int>(Banner.Length() * sizeof(wchar_t)),
-    reinterpret_cast<unsigned char *>(const_cast<char *>(Result.c_str())));
+    reinterpret_cast<uint8_t *>(const_cast<char *>(Result.c_str())));
   return BytesToHex(Result);
 }
 //---------------------------------------------------------------------------
@@ -1317,4 +1317,7 @@ bool TShortCuts::Has(const TShortCut & ShortCut) const
   rde::vector<TShortCut>::iterator it = const_cast<TShortCuts *>(this)->FShortCuts.find(ShortCut);
   return (it != FShortCuts.end());
 }
+//------------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TConfiguration, NB_GET_CLASS_INFO(TObject), nullptr);
+//------------------------------------------------------------------------------
 

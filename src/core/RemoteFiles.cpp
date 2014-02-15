@@ -798,8 +798,8 @@ TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile):
 //---------------------------------------------------------------------------
 TRemoteFile::~TRemoteFile()
 {
-  delete FRights;
-  delete FLinkedFile;
+  SAFE_DESTROY(FRights);
+  SAFE_DESTROY(FLinkedFile);
 }
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
@@ -965,7 +965,7 @@ void TRemoteFile::SetLinkedFile(TRemoteFile * Value)
   {
     if (FLinkedFile)
     {
-       delete FLinkedFile;
+       SAFE_DESTROY(FLinkedFile);
     }
     FLinkedFile = Value;
   }
@@ -1311,7 +1311,7 @@ void TRemoteFile::FindLinkedFile()
 
   if (FLinkedFile)
   {
-    delete FLinkedFile;
+    SAFE_DESTROY(FLinkedFile);
   }
   FLinkedFile = nullptr;
 
@@ -1359,7 +1359,7 @@ void TRemoteFile::FindLinkedFile()
     }
     catch (Exception &E)
     {
-      if (dynamic_cast<EFatal *>(&E) != nullptr) throw;
+      if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr) throw;
       else
       {
         GetTerminal()->GetLog()->AddException(&E);
@@ -1614,12 +1614,12 @@ void TRemoteDirectory::ReleaseRelativeDirectories()
 {
   if ((GetThisDirectory() != nullptr) && !GetIncludeThisDirectory())
   {
-    delete FThisDirectory;
+    SAFE_DESTROY(FThisDirectory);
     FThisDirectory = nullptr;
   }
   if ((GetParentDirectory() != nullptr) && !GetIncludeParentDirectory())
   {
-    delete FParentDirectory;
+    SAFE_DESTROY(FParentDirectory);
     FParentDirectory = nullptr;
   }
 }
@@ -1741,7 +1741,7 @@ TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
 TRemoteDirectoryCache::~TRemoteDirectoryCache()
 {
   Clear();
-  delete FSection;
+  SAFE_DESTROY(FSection);
   FSection = nullptr;
 }
 //---------------------------------------------------------------------------
@@ -1756,7 +1756,8 @@ void TRemoteDirectoryCache::Clear()
   {
     for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
-      delete dynamic_cast<TRemoteFileList *>(GetObject(Index));
+      TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index));
+      SAFE_DESTROY(List);
       SetObject(Index, nullptr);
     }
   }
@@ -1785,7 +1786,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
   intptr_t Index = IndexOf(::UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
   {
-    TRemoteFileList * FileList = dynamic_cast<TRemoteFileList *>(GetObject(Index));
+    TRemoteFileList * FileList = NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index));
     if (FileList->GetTimestamp() <= Timestamp)
     {
       Index = -1;
@@ -1804,7 +1805,7 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   if (Result)
   {
     assert(GetObject(Index) != nullptr);
-    dynamic_cast<TRemoteFileList *>(GetObject(Index))->DuplicateTo(FileList);
+    NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index))->DuplicateTo(FileList);
   }
   return Result;
 }
@@ -1856,7 +1857,8 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & Directory, boo
 //---------------------------------------------------------------------------
 void TRemoteDirectoryCache::Delete(intptr_t Index)
 {
-  delete dynamic_cast<TRemoteFileList *>(GetObject(Index));
+  TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index));
+  SAFE_DESTROY(List);
   TStringList::Delete(Index);
 }
 //---------------------------------------------------------------------------
@@ -2708,7 +2710,7 @@ TRemoteProperties TRemoteProperties::ChangedProperties(
 //---------------------------------------------------------------------------
 void TRemoteProperties::Load(THierarchicalStorage * Storage)
 {
-  unsigned char Buf[sizeof(Valid)];
+  uint8_t Buf[sizeof(Valid)];
   if (static_cast<size_t>(Storage->ReadBinaryData(L"Valid", &Buf, sizeof(Buf))) == sizeof(Buf))
   {
     memmove(&Valid, Buf, sizeof(Valid));
@@ -2734,3 +2736,7 @@ void TRemoteProperties::Save(THierarchicalStorage * Storage) const
 
   // TODO
 }
+//------------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TRemoteFile, NB_GET_CLASS_INFO(TPersistent), nullptr);
+NB_IMPLEMENT_CLASS(TRemoteFileList, NB_GET_CLASS_INFO(TObjectList), nullptr);
+//------------------------------------------------------------------------------

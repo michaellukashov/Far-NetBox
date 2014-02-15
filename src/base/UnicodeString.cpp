@@ -32,7 +32,7 @@ void AnsiString::Init(const char * Str, intptr_t Length)
   Data = Data.c_str();
 }
 
-void AnsiString::Init(const unsigned char * Str, intptr_t Length)
+void AnsiString::Init(const uint8_t * Str, intptr_t Length)
 {
   Data.resize(Length);
   if (Length > 0)
@@ -159,7 +159,7 @@ void RawByteString::Init(const wchar_t * Str, intptr_t Length)
   {
     Data.resize(Size + 1);
     WideCharToMultiByte(CP_ACP, 0, Str, static_cast<int>(Length > 0 ? Length : -1),
-      reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), static_cast<int>(Size), nullptr, nullptr);
+      reinterpret_cast<LPSTR>(const_cast<uint8_t *>(Data.c_str())), static_cast<int>(Size), nullptr, nullptr);
     Data[Size] = 0;
   }
   else
@@ -173,16 +173,16 @@ void RawByteString::Init(const char * Str, intptr_t Length)
   Data.resize(Length);
   if (Length > 0)
   {
-    memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
+    memmove(const_cast<uint8_t *>(Data.c_str()), Str, Length);
   }
 }
 
-void RawByteString::Init(const unsigned char * Str, intptr_t Length)
+void RawByteString::Init(const uint8_t * Str, intptr_t Length)
 {
   Data.resize(Length);
   if (Length > 0)
   {
-    memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
+    memmove(const_cast<uint8_t *>(Data.c_str()), Str, Length);
   }
 }
 
@@ -193,22 +193,22 @@ RawByteString::operator UnicodeString() const
 
 intptr_t RawByteString::Pos(wchar_t Ch) const
 {
-  return Data.find(static_cast<unsigned char>(Ch)) + 1;
+  return Data.find(static_cast<uint8_t>(Ch)) + 1;
 }
 
 intptr_t RawByteString::Pos(const char Ch) const
 {
-  return Data.find(static_cast<unsigned char>(Ch)) + 1;
+  return Data.find(static_cast<uint8_t>(Ch)) + 1;
 }
 
 intptr_t RawByteString::Pos(const char * Str) const
 {
-  return Data.find(reinterpret_cast<const unsigned char *>(Str)) + 1;
+  return Data.find(reinterpret_cast<const uint8_t *>(Str)) + 1;
 }
 
 RawByteString & RawByteString::Insert(const char * Str, intptr_t Pos)
 {
-  Data.insert(Pos - 1, reinterpret_cast<const unsigned char *>(Str));
+  Data.insert(Pos - 1, reinterpret_cast<const uint8_t *>(Str));
   return *this;
 }
 
@@ -269,19 +269,19 @@ RawByteString RawByteString::operator +(const RawByteString & rhs) const
 
 RawByteString & RawByteString::operator +=(const RawByteString & rhs)
 {
-  Data.append(reinterpret_cast<const unsigned char *>(rhs.c_str()), rhs.Length());
+  Data.append(reinterpret_cast<const uint8_t *>(rhs.c_str()), rhs.Length());
   return *this;
 }
 
 RawByteString & RawByteString::operator +=(const UTF8String & rhs)
 {
-  Data.append(reinterpret_cast<const unsigned char *>(rhs.c_str()), rhs.Length());
+  Data.append(reinterpret_cast<const uint8_t *>(rhs.c_str()), rhs.Length());
   return *this;
 }
 
 RawByteString & RawByteString::operator +=(const char Ch)
 {
-  unsigned char ch(static_cast<unsigned char>(Ch));
+  uint8_t ch(static_cast<uint8_t>(Ch));
   Data.append(1, ch);
   return *this;
 }
@@ -377,7 +377,7 @@ UTF8String & UTF8String::operator +=(const RawByteString & rhs)
 
 UTF8String & UTF8String::operator +=(const char Ch)
 {
-  unsigned char ch(static_cast<unsigned char>(Ch));
+  uint8_t ch(static_cast<uint8_t>(Ch));
   Data.append(1, ch);
   return *this;
 }

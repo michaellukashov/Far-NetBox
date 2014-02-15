@@ -165,17 +165,17 @@ const int tfNewDirectory = 0x02;
 //---------------------------------------------------------------------------
 #ifndef GET_32BIT
 #define GET_32BIT(cp) \
-    (((uint32_t)(unsigned char)(cp)[0] << 24) | \
-    ((uint32_t)(unsigned char)(cp)[1] << 16) | \
-    ((uint32_t)(unsigned char)(cp)[2] << 8) | \
-    ((uint32_t)(unsigned char)(cp)[3]))
+    (((uint32_t)(uint8_t)(cp)[0] << 24) | \
+    ((uint32_t)(uint8_t)(cp)[1] << 16) | \
+    ((uint32_t)(uint8_t)(cp)[2] << 8) | \
+    ((uint32_t)(uint8_t)(cp)[3]))
 #endif
 #ifndef PUT_32BIT
 #define PUT_32BIT(cp, value) { \
-    (cp)[0] = (unsigned char)((value) >> 24); \
-    (cp)[1] = (unsigned char)((value) >> 16); \
-    (cp)[2] = (unsigned char)((value) >> 8); \
-    (cp)[3] = (unsigned char)(value); }
+    (cp)[0] = (uint8_t)((value) >> 24); \
+    (cp)[1] = (uint8_t)((value) >> 16); \
+    (cp)[2] = (uint8_t)((value) >> 8); \
+    (cp)[3] = (uint8_t)(value); }
 #endif
 //---------------------------------------------------------------------------
 #define SFTP_PACKET_ALLOC_DELTA 256
@@ -193,8 +193,8 @@ struct TSFTPSupport : public TObject
 
   ~TSFTPSupport()
   {
-    delete AttribExtensions;
-    delete Extensions;
+    SAFE_DESTROY(AttribExtensions);
+    SAFE_DESTROY(Extensions);
   }
 
   void Reset()
@@ -240,13 +240,13 @@ public:
     *this = Source;
   }
 
-  explicit TSFTPPacket(unsigned char AType, uintptr_t codePage)
+  explicit TSFTPPacket(uint8_t AType, uintptr_t codePage)
   {
     Init(codePage);
     ChangeType(AType);
   }
 
-  explicit TSFTPPacket(const unsigned char * Source, uintptr_t Len, uintptr_t codePage)
+  explicit TSFTPPacket(const uint8_t * Source, uintptr_t Len, uintptr_t codePage)
   {
     Init(codePage);
     FLength = Len;
@@ -274,7 +274,7 @@ public:
     }
   }
 
-  void ChangeType(unsigned char AType)
+  void ChangeType(uint8_t AType)
   {
     FPosition = 0;
     FLength = 0;
@@ -295,7 +295,7 @@ public:
     assert(GetLength() >= 5);
 
     // duplicated in AddCardinal()
-    unsigned char Buf[4];
+    uint8_t Buf[4];
     PUT_32BIT(Buf, FMessageNumber);
 
     memmove(FData + 1, Buf, sizeof(Buf));
@@ -309,7 +309,7 @@ public:
   void AddCardinal(uint32_t Value)
   {
     // duplicated in Reuse()
-    unsigned char Buf[4];
+    uint8_t Buf[4];
     PUT_32BIT(Buf, Value);
     Add(&Buf, sizeof(Buf));
   }
@@ -403,7 +403,7 @@ public:
 
     if (Version >= 4)
     {
-      AddByte(static_cast<unsigned char>(IsDirectory ?
+      AddByte(static_cast<uint8_t>(IsDirectory ?
         SSH_FILEXFER_TYPE_DIRECTORY : SSH_FILEXFER_TYPE_REGULAR));
     }
 
@@ -517,10 +517,10 @@ public:
       nullptr, IsDirectory, Version, Utf);
   }
 
-  unsigned char GetByte() const
+  uint8_t GetByte() const
   {
-    Need(sizeof(unsigned char));
-    unsigned char Result = FData[FPosition];
+    Need(sizeof(uint8_t));
+    uint8_t Result = FData[FPosition];
     FPosition++;
     return Result;
   }
@@ -617,14 +617,14 @@ public:
     Flags = GetCardinal();
     if (Version >= 4)
     {
-      unsigned char FXType = GetByte();
+      uint8_t FXType = GetByte();
       // -:regular, D:directory, L:symlink, S:special, U:unknown
       // O:socket, C:char device, B:block device, F:fifo
 
       // SSH-2.0-cryptlib returns file type 0 in response to SSH_FXP_LSTAT,
       // handle this undefined value as "unknown"
       static wchar_t * Types = L"U-DLSUOCBF";
-      if (FXType > (unsigned char)wcslen(Types))
+      if (FXType > (uint8_t)wcslen(Types))
       {
         throw Exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, static_cast<int>(FXType)));
       }
@@ -769,7 +769,7 @@ public:
     }
   }
 
-  unsigned char * GetNextData(uintptr_t Size = 0)
+  uint8_t * GetNextData(uintptr_t Size = 0)
   {
     if (Size > 0)
     {
@@ -801,7 +801,7 @@ public:
     Dump = AnsiString(DumpLines->GetText());
 
     SetCapacity(1 * 1024 * 1024); // 20480);
-    unsigned char Byte[3];
+    uint8_t Byte[3];
     memset(Byte, '\0', sizeof(Byte));
     intptr_t Index = 1;
     uintptr_t Length = 0;
@@ -852,20 +852,20 @@ public:
   }
 
   uintptr_t GetLength() const { return FLength; }
-  unsigned char * GetData() const { return FData; }
+  uint8_t * GetData() const { return FData; }
   uintptr_t GetCapacity() const { return FCapacity; }
-  unsigned char GetType() const { return FType; }
+  uint8_t GetType() const { return FType; }
   uintptr_t GetMessageNumber() const { return static_cast<uintptr_t>(FMessageNumber); }
   void SetMessageNumber(uint32_t Value) { FMessageNumber = Value; }
   TSFTPFileSystem * GetReservedBy() const { return FReservedBy; }
   void SetReservedBy(TSFTPFileSystem * Value) { FReservedBy = Value; }
 
 private:
-  unsigned char * FData;
+  uint8_t * FData;
   uintptr_t FLength;
   uintptr_t FCapacity;
   mutable uintptr_t FPosition;
-  unsigned char FType;
+  uint8_t FType;
   uint32_t FMessageNumber;
   TSFTPFileSystem * FReservedBy;
 
@@ -880,7 +880,7 @@ private:
     FLength = 0;
     FPosition = 0;
     FMessageNumber = SFTPNoMessageNumber;
-    FType = static_cast<unsigned char>(-1);
+    FType = static_cast<uint8_t>(-1);
     FReservedBy = nullptr;
     FCodePage = codePage;
   }
@@ -895,11 +895,11 @@ private:
   }
 
 public:
-  unsigned char GetRequestType() const
+  uint8_t GetRequestType() const
   {
     if (FMessageNumber != SFTPNoMessageNumber)
     {
-      return static_cast<unsigned char>(FMessageNumber & 0xFF);
+      return static_cast<uint8_t>(FMessageNumber & 0xFF);
     }
     else
     {
@@ -925,7 +925,7 @@ public:
       FCapacity = ACapacity;
       if (FCapacity > 0)
       {
-        unsigned char * NData = static_cast<unsigned char *>(
+        uint8_t * NData = static_cast<uint8_t *>(
           nb_malloc(FCapacity + FSendPrefixLen));
         NData += FSendPrefixLen;
         if (FData)
@@ -988,9 +988,9 @@ public:
     }
   }
 
-  unsigned char * GetSendData() const
+  uint8_t * GetSendData() const
   {
-    unsigned char * Result = FData - FSendPrefixLen;
+    uint8_t * Result = FData - FSendPrefixLen;
     // this is not strictly const-object operation
     PUT_32BIT(Result, GetLength());
     return Result;
@@ -1038,14 +1038,14 @@ public:
     {
       TSFTPQueuePacket * Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(Index));
       assert(Request);
-      delete Request;
+      SAFE_DESTROY(Request);
 
       TSFTPPacket * Response = static_cast<TSFTPPacket*>(FResponses->GetItem(Index));
       assert(Response);
-      delete Response;
+      SAFE_DESTROY(Response);
     }
-    delete FRequests;
-    delete FResponses;
+    SAFE_DESTROY(FRequests);
+    SAFE_DESTROY(FResponses);
   }
 
   bool Init()
@@ -1086,9 +1086,9 @@ public:
       }
 
       FRequests->Delete(0);
-      delete Request;
+      SAFE_DESTROY(Request);
       FResponses->Delete(0);
-      delete Response;
+      SAFE_DESTROY(Response);
     }
   }
 
@@ -1370,7 +1370,7 @@ public:
 
   virtual ~TSFTPUploadQueue()
   {
-    delete FStream;
+    SAFE_DESTROY(FStream);
   }
 
   bool Init(const UnicodeString & AFileName,
@@ -1727,12 +1727,12 @@ void TSFTPFileSystem::Init(void * Data)
 //---------------------------------------------------------------------------
 TSFTPFileSystem::~TSFTPFileSystem()
 {
-  delete FSupport;
+  SAFE_DESTROY(FSupport);
   ResetConnection();
-  delete FPacketReservations;
-  delete FExtensions;
-  delete FFixedPaths;
-  delete FSecureShell;
+  SAFE_DESTROY(FPacketReservations);
+  SAFE_DESTROY(FExtensions);
+  SAFE_DESTROY(FFixedPaths);
+  SAFE_DESTROY(FSecureShell);
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::Open()
@@ -1875,7 +1875,8 @@ void TSFTPFileSystem::ResetConnection()
   for (intptr_t I = 0; I < FPacketReservations->GetCount(); I++)
   {
     assert(FPacketReservations->GetItem(I) == nullptr);
-    delete static_cast<TSFTPPacket *>(FPacketReservations->GetItem(I));
+    TSFTPPacket * Item = static_cast<TSFTPPacket *>(FPacketReservations->GetItem(I));
+    SAFE_DESTROY(Item);
   }
   FPacketReservations->Clear();
   FPacketNumbers.clear();
@@ -2250,7 +2251,7 @@ void TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
   FPacketReservations->Delete(Reservation);
 }
 //---------------------------------------------------------------------------
-intptr_t TSFTPFileSystem::PacketLength(unsigned char * LenBuf, intptr_t ExpectedType)
+intptr_t TSFTPFileSystem::PacketLength(uint8_t * LenBuf, intptr_t ExpectedType)
 {
   intptr_t Length = GET_32BIT(LenBuf);
   if (Length > SFTP_MAX_PACKET_LEN)
@@ -2270,7 +2271,7 @@ intptr_t TSFTPFileSystem::PacketLength(unsigned char * LenBuf, intptr_t Expected
 //---------------------------------------------------------------------------
 bool TSFTPFileSystem::PeekPacket()
 {
-  unsigned char * Buf = nullptr;
+  uint8_t * Buf = nullptr;
   bool Result = FSecureShell->Peek(Buf, 4);
   if (Result)
   {
@@ -2296,7 +2297,7 @@ uintptr_t TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
       IsReserved = false;
 
       assert(Packet);
-      unsigned char LenBuf[4];
+      uint8_t LenBuf[4];
       FSecureShell->Receive(LenBuf, sizeof(LenBuf));
       intptr_t Length = PacketLength(LenBuf, ExpectedType);
       Packet->SetCapacity(Length);
@@ -2799,8 +2800,8 @@ void TSFTPFileSystem::DoStartup()
             }
             else
             {
-              unsigned char Drive = RootsPacket.GetByte();
-              unsigned char MaybeType = RootsPacket.GetByte();
+              uint8_t Drive = RootsPacket.GetByte();
+              uint8_t MaybeType = RootsPacket.GetByte();
               FTerminal->LogEvent(FORMAT(L"  %c: (type %d)", static_cast<char>(Drive), static_cast<int>(MaybeType)));
               FFixedPaths->Add(FORMAT(L"%c:", static_cast<char>(Drive)));
             }
@@ -2861,7 +2862,7 @@ void TSFTPFileSystem::DoStartup()
     if (SupportsExtension(SFTP_EXT_VENDOR_ID))
     {
       const TConfiguration * Configuration = FTerminal->GetConfiguration();
-      TSFTPPacket Packet((unsigned char)SSH_FXP_EXTENDED, FCodePage);
+      TSFTPPacket Packet((uint8_t)SSH_FXP_EXTENDED, FCodePage);
       Packet.AddString(RawByteString(SFTP_EXT_VENDOR_ID));
       Packet.AddString(Configuration->GetCompanyName());
       Packet.AddString(Configuration->GetProductName());
@@ -2947,8 +2948,8 @@ void TSFTPFileSystem::LookupUsersGroups()
 {
   assert(SupportsExtension(SFTP_EXT_OWNER_GROUP));
 
-  TSFTPPacket PacketOwners((unsigned char)SSH_FXP_EXTENDED, FCodePage);
-  TSFTPPacket PacketGroups((unsigned char)SSH_FXP_EXTENDED, FCodePage);
+  TSFTPPacket PacketOwners((uint8_t)SSH_FXP_EXTENDED, FCodePage);
+  TSFTPPacket PacketGroups((uint8_t)SSH_FXP_EXTENDED, FCodePage);
 
   TSFTPPacket * Packets[] = { &PacketOwners, &PacketGroups };
   TRemoteTokenList * Lists[] = { &FTerminal->FUsers, &FTerminal->FGroups };
@@ -2958,7 +2959,7 @@ void TSFTPFileSystem::LookupUsersGroups()
   {
     TSFTPPacket * Packet = Packets[Index];
     Packet->AddString(RawByteString(SFTP_EXT_OWNER_GROUP));
-    Packet->AddByte((unsigned char)ListTypes[Index]);
+    Packet->AddByte((uint8_t)ListTypes[Index]);
     SendPacket(Packet);
     ReserveResponse(Packet, Packet);
   }
@@ -3033,7 +3034,7 @@ void TSFTPFileSystem::TryOpenDirectory(const UnicodeString & Directory)
   }
   else
   {
-    delete File;
+    SAFE_DESTROY(File);
   }
 }
 //---------------------------------------------------------------------------
@@ -3143,10 +3144,10 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           if (Total % 10 == 0)
           {
             FTerminal->DoReadDirectoryProgress(Total, isEOF);
-            if (isEOF)
-            {
-              FTerminal->DoReadDirectoryProgress(-2, isEOF);
-            }
+          }
+          if (isEOF)
+          {
+            FTerminal->DoReadDirectoryProgress(-2, isEOF);
           }
         }
 
@@ -3195,7 +3196,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         }
         catch(Exception &E)
         {
-          if (dynamic_cast<EFatal *>(&E) != nullptr)
+          if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
           {
             throw;
           }
@@ -3290,7 +3291,7 @@ bool TSFTPFileSystem::RemoteFileExists(const UnicodeString & FullPath,
       }
       else
       {
-        delete File;
+        SAFE_DESTROY(File);
       }
     }
   }
@@ -3317,7 +3318,7 @@ void TSFTPFileSystem::SendCustomReadFile(TSFTPPacket * Packet,
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::CustomReadFile(const UnicodeString & FileName,
-  TRemoteFile *& AFile, unsigned char Type, TRemoteFile * ALinkedByFile,
+  TRemoteFile *& AFile, uint8_t Type, TRemoteFile * ALinkedByFile,
   int AllowStatus)
 {
   uint32_t Flags = SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_PERMISSIONS |
@@ -3339,7 +3340,7 @@ void TSFTPFileSystem::CustomReadFile(const UnicodeString & FileName,
   }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::DoDeleteFile(const UnicodeString & FileName, unsigned char Type)
+void TSFTPFileSystem::DoDeleteFile(const UnicodeString & FileName, uint8_t Type)
 {
   TSFTPPacket Packet(Type, FCodePage);
   UnicodeString RealFileName = LocalCanonify(FileName);
@@ -3350,7 +3351,7 @@ void TSFTPFileSystem::DoDeleteFile(const UnicodeString & FileName, unsigned char
 void TSFTPFileSystem::DeleteFile(const UnicodeString & FileName,
   const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action)
 {
-  unsigned char Type;
+  uint8_t Type;
   if (AFile && AFile->GetIsDirectory() && !AFile->GetIsSymLink())
   {
     if (FLAGCLEAR(Params, dfNoRecursive))
@@ -3627,7 +3628,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
             OperationProgress->SetFile(File->GetFileName());
 
             Alg = Packet.GetAnsiString();
-            Checksum = BytesToHex(reinterpret_cast<const unsigned char*>(Packet.GetNextData(Packet.GetRemainingLength())), Packet.GetRemainingLength());
+            Checksum = BytesToHex(reinterpret_cast<const uint8_t*>(Packet.GetNextData(Packet.GetRemainingLength())), Packet.GetRemainingLength());
             OnCalculatedChecksum(File->GetFileName(), Alg, Checksum);
 
             Success = true;
@@ -3746,7 +3747,7 @@ void TSFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
     FTerminal->LogEvent(FORMAT(L"Total file inodes: %s", IntToStr(FileINodes).c_str()));
     FTerminal->LogEvent(FORMAT(L"Free file inodes: %s", IntToStr(FreeFileINodes).c_str()));
     FTerminal->LogEvent(FORMAT(L"Free file inodes for non-root: %s", IntToStr(AvailableFileINodes).c_str()));
-    FTerminal->LogEvent(FORMAT(L"File system ID: %s", BytesToHex(reinterpret_cast<const unsigned char *>(&SID), sizeof(SID)).c_str()));
+    FTerminal->LogEvent(FORMAT(L"File system ID: %s", BytesToHex(reinterpret_cast<const uint8_t *>(&SID), sizeof(SID)).c_str()));
     UnicodeString FlagStr;
     if (FLAGSET(Flags, SFTP_EXT_STATVFS_ST_RDONLY))
     {
@@ -3794,7 +3795,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
   {
     bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
-    TRemoteFile * File = dynamic_cast<TRemoteFile *>(AFilesToCopy->GetObject(Index));
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ExtractFileName(RealFileName, false);
     assert(!FAvoidBusy);
@@ -4226,8 +4227,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
               OperationProgress->SetResumeStatus(rsDisabled);
             }
 
-            delete File;
-            File = nullptr;
+            SAFE_DESTROY(File);
           }
 
           if (ResumeAllowed)
@@ -4236,8 +4236,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
             if (RemoteFileExists(DestPartialFullName, &File))
             {
               ResumeOffset = File->GetSize();
-              delete File;
-              File = nullptr;
+              SAFE_DESTROY(File);
 
               bool PartialBiggerThanSource = (ResumeOffset > OperationProgress->LocalSize);
               if (FLAGCLEAR(Params, cpNoConfirmation) &&
@@ -5129,7 +5128,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         }
         if (FileStream)
         {
-          delete FileStream;
+          SAFE_DESTROY(FileStream);
         }
         if (DeleteLocalFile && (!ResumeAllowed || OperationProgress->LocallyUsed == 0) &&
             (OverwriteMode == omOverwrite))

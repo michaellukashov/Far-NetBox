@@ -33,6 +33,7 @@ struct TUsableCopyParamAttrs
 //---------------------------------------------------------------------------
 class TCopyParamType : public TObject
 {
+NB_DECLARE_CLASS(TCopyParamType)
 public:
   TCopyParamType();
   TCopyParamType(const TCopyParamType & Source);

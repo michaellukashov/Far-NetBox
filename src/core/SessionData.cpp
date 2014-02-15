@@ -71,7 +71,7 @@ TSessionData::~TSessionData()
 {
   if (nullptr != FIEProxyConfig)
   {
-    delete FIEProxyConfig;
+    SAFE_DESTROY(FIEProxyConfig);
     FIEProxyConfig = nullptr;
   }
 }
@@ -366,9 +366,9 @@ void TSessionData::NonPersistant()
 //---------------------------------------------------------------------
 void TSessionData::Assign(const TPersistent * Source)
 {
-  if (Source && (dynamic_cast<const TSessionData *>(Source) != nullptr))
+  if (Source && (NB_STATIC_DOWNCAST_CONST(TSessionData, Source) != nullptr))
   {
-    TSessionData * SourceData = dynamic_cast<TSessionData *>(const_cast<TPersistent *>(Source));
+    TSessionData * SourceData = NB_STATIC_DOWNCAST(TSessionData, const_cast<TPersistent *>(Source));
 
     #define PROPERTY(P) Set ## P(SourceData->Get ## P())
     PROPERTY(Name);
@@ -3082,7 +3082,7 @@ TStoredSessionList::TStoredSessionList(bool AReadOnly) :
 //---------------------------------------------------------------------
 TStoredSessionList::~TStoredSessionList()
 {
-  delete FDefaultSettings;
+  SAFE_DESTROY(FDefaultSettings);
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::Load(THierarchicalStorage * Storage,
@@ -3485,7 +3485,7 @@ TSessionData * TStoredSessionList::FindSame(TSessionData * Data)
   }
   else
   {
-    Result = dynamic_cast<TSessionData *>(FindByName(Data->GetName()));
+    Result = NB_STATIC_DOWNCAST(TSessionData, FindByName(Data->GetName()));
   }
   return Result;
 }
@@ -3759,7 +3759,7 @@ TSessionData * TStoredSessionList::ResolveSessionData(TSessionData * Data)
 {
   /*if (!Data->GetLink().IsEmpty())
   {
-    Data = dynamic_cast<TSessionData *>(FindByName(Data->GetLink()));
+    Data = NB_STATIC_DOWNCAST(TSessionData, FindByName(Data->GetLink()));
     if (Data != nullptr)
     {
       Data = ResolveSessionData(Data);
@@ -3877,4 +3877,6 @@ bool IsSshProtocol(TFSProtocol FSProtocol)
     (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) ||
     (FSProtocol == fsSCPonly);
 }
+//---------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TSessionData, NB_GET_CLASS_INFO(TNamedObject), nullptr);
 //---------------------------------------------------------------------

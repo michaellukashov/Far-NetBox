@@ -826,7 +826,7 @@ void TSecureShell::UnregisterReceiveHandler(TNotifyEvent Handler)
   FOnReceive = nullptr;
 }
 //---------------------------------------------------------------------------
-void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr_t Length)
+void TSecureShell::FromBackend(bool IsStdErr, const uint8_t * Data, intptr_t Length)
 {
   CheckConnection();
 
@@ -843,7 +843,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
   }
   else
   {
-    const unsigned char *p = Data;
+    const uint8_t *p = Data;
     intptr_t Len = Length;
 
     // with event-select mechanism we can now receive data even before we
@@ -866,7 +866,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
       if (PendSize < PendLen + Len)
       {
         PendSize = PendLen + Len + 4096;
-        Pending = static_cast<unsigned char *>
+        Pending = static_cast<uint8_t *>
           (Pending ? srealloc(Pending, PendSize) : smalloc(PendSize));
         if (!Pending)
         {
@@ -903,7 +903,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr
   }
 }
 //---------------------------------------------------------------------------
-bool TSecureShell::Peek(unsigned char *& Buf, intptr_t Length) const
+bool TSecureShell::Peek(uint8_t *& Buf, intptr_t Length) const
 {
   bool Result = (PendLen >= Length);
 
@@ -915,7 +915,7 @@ bool TSecureShell::Peek(unsigned char *& Buf, intptr_t Length) const
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TSecureShell::Receive(unsigned char * Buf, intptr_t Length)
+intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
 {
   CheckConnection();
 
@@ -999,14 +999,14 @@ UnicodeString TSecureShell::ReceiveLine()
       EOL = static_cast<Boolean>(Index && (Pending[Index-1] == '\n'));
       intptr_t PrevLen = Line.Length();
       Line.SetLength(PrevLen + Index);
-      Receive(reinterpret_cast<unsigned char *>(const_cast<char *>(Line.c_str()) + PrevLen), Index);
+      Receive(reinterpret_cast<uint8_t *>(const_cast<char *>(Line.c_str()) + PrevLen), Index);
     }
 
     // If buffer don't contain end-of-line character
     // we read one more which causes receiving new buffer of chars
     if (!EOL)
     {
-      unsigned char Ch;
+      uint8_t Ch;
       Receive(&Ch, 1);
       Line += static_cast<char>(Ch);
       EOL = (static_cast<char>(Ch) == '\n');
@@ -1134,7 +1134,7 @@ void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
   while (BufSize > MAX_BUFSIZE);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::Send(const unsigned char * Buf, intptr_t Length)
+void TSecureShell::Send(const uint8_t * Buf, intptr_t Length)
 {
   CheckConnection();
   int BufSize = FBackend->send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), static_cast<int>(Length));
@@ -1157,7 +1157,7 @@ void TSecureShell::Send(const unsigned char * Buf, intptr_t Length)
 void TSecureShell::SendNull()
 {
   LogEvent(L"Sending nullptr.");
-  unsigned char Null = 0;
+  uint8_t Null = 0;
   Send(&Null, 1);
 }
 //---------------------------------------------------------------------------
@@ -1165,13 +1165,13 @@ void TSecureShell::SendStr(const UnicodeString & Str)
 {
   CheckConnection();
   AnsiString AnsiStr = W2MB(Str.c_str(), (UINT)FSessionData->GetCodePageAsNumber());
-  Send(reinterpret_cast<const unsigned char *>(AnsiStr.c_str()), AnsiStr.Length());
+  Send(reinterpret_cast<const uint8_t *>(AnsiStr.c_str()), AnsiStr.Length());
 }
 //---------------------------------------------------------------------------
 void TSecureShell::SendLine(const UnicodeString & Line)
 {
   SendStr(Line);
-  Send(reinterpret_cast<const unsigned char *>("\n"), 1);
+  Send(reinterpret_cast<const uint8_t *>("\n"), 1);
   FLog->Add(llInput, Line);
 }
 //---------------------------------------------------------------------------

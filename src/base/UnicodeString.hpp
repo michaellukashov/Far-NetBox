@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdint.h>
 #include <string>
 
 #include "local.hpp"
@@ -219,8 +220,8 @@ public:
   AnsiString(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
   AnsiString(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
   AnsiString(const char * Str, intptr_t Size) { Init(Str, Size); }
-  AnsiString(const unsigned char * Str) { Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0); }
-  AnsiString(const unsigned char * Str, intptr_t Size) { Init(Str, Size); }
+  AnsiString(const uint8_t * Str) { Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0); }
+  AnsiString(const uint8_t * Str, intptr_t Size) { Init(Str, Size); }
   AnsiString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
   AnsiString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
   ~AnsiString() {}
@@ -304,7 +305,7 @@ public:
 private:
   void Init(const wchar_t * Str, intptr_t Length);
   void Init(const char * Str, intptr_t Length);
-  void Init(const unsigned char * Str, intptr_t Length);
+  void Init(const uint8_t * Str, intptr_t Length);
   void ThrowIfOutOfRange(intptr_t Idx) const;
 
   typedef std::basic_string<char, std::char_traits<char>, custom_nballocator_t<char> > string_t;
@@ -322,8 +323,8 @@ public:
   RawByteString(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
   RawByteString(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
   RawByteString(const char * Str, intptr_t Size) { Init(Str, Size); }
-  RawByteString(const unsigned char * Str) { Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0); }
-  RawByteString(const unsigned char * Str, intptr_t Size) { Init(Str, Size); }
+  RawByteString(const uint8_t * Str) { Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0); }
+  RawByteString(const uint8_t * Str, intptr_t Size) { Init(Str, Size); }
   RawByteString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
   RawByteString(const RawByteString & Str) { Init(Str.c_str(), Str.GetLength()); }
   RawByteString(const AnsiString & Str) { Init(Str.c_str(), Str.GetLength()); }
@@ -384,10 +385,10 @@ public:
 private:
   void Init(const wchar_t * Str, intptr_t Length);
   void Init(const char * Str, intptr_t Length);
-  void Init(const unsigned char * Str, intptr_t Length);
+  void Init(const uint8_t * Str, intptr_t Length);
 
-  // typedef std::basic_string<unsigned char> rawstring_t;
-  typedef std::basic_string<unsigned char, std::char_traits<unsigned char>, custom_nballocator_t<unsigned char> > rawstring_t;
+  // typedef std::basic_string<uint8_t> rawstring_t;
+  typedef std::basic_string<uint8_t, std::char_traits<uint8_t>, custom_nballocator_t<uint8_t> > rawstring_t;
   rawstring_t Data;
 };
 

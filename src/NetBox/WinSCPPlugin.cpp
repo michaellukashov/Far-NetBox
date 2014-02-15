@@ -211,7 +211,7 @@ intptr_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo
   {
     for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
     {
-      TWinSCPFileSystem * FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->GetItem(Index));
+      TWinSCPFileSystem * FileSystem = NB_STATIC_DOWNCAST(TWinSCPFileSystem, FOpenedPlugins->GetItem(Index));
       FileSystem->ProcessEditorEvent(Info->Event, Info->Param);
     }
   }
@@ -292,7 +292,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
 
         TWinSCPFileSystem * PanelSystem;
         bool Another = !(Flags & FOSF_ACTIVE);
-          PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem(Another));
+        PanelSystem = NB_STATIC_DOWNCAST(TWinSCPFileSystem, GetPanelFileSystem(Another));
         if (PanelSystem && PanelSystem->Connected() &&
             PanelSystem->GetTerminal()->GetSessionData()->GetSessionUrl() == CommandLine)
         {
@@ -399,8 +399,8 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   std::unique_ptr<TFarMenuItems> MenuItems(new TFarMenuItems());
   TWinSCPFileSystem * FileSystem;
   TWinSCPFileSystem * AnotherFileSystem;
-  FileSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
-  AnotherFileSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem(true));
+  FileSystem = NB_STATIC_DOWNCAST(TWinSCPFileSystem, GetPanelFileSystem());
+  AnotherFileSystem = NB_STATIC_DOWNCAST(TWinSCPFileSystem, GetPanelFileSystem(true));
   bool FSConnected = (FileSystem != nullptr) && FileSystem->Connected();
   bool AnotherFSConnected = (AnotherFileSystem != nullptr) && AnotherFileSystem->Connected();
   bool FSVisible = FSConnected && FromFileSystem;
@@ -551,16 +551,16 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
   if (E && !E->Message.IsEmpty())
   {
-    if (!E->InheritsFrom<EAbort>())
+    if (NB_STATIC_DOWNCAST(EAbort, E) == nullptr)
     {
       TQueryType Type;
-      Type = E->InheritsFrom<ESshTerminate>() ?
+      Type = NB_STATIC_DOWNCAST(ESshTerminate, E) != nullptr ?
         qtInformation : qtError;
 
       TStrings * MoreMessages = nullptr;
-      if (E->InheritsFrom<ExtException>())
+      if (NB_STATIC_DOWNCAST(ExtException, E) != nullptr)
       {
-        MoreMessages = dynamic_cast<ExtException *>(E)->GetMoreMessages();
+        MoreMessages = NB_STATIC_DOWNCAST(ExtException, E)->GetMoreMessages();
       }
       UnicodeString Message = TranslateExceptionMessage(E);
       MoreMessageDialog(Message, MoreMessages, Type, qaOK);
@@ -570,7 +570,7 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::HandleException(Exception * E, int OpMode)
 {
-  if (((OpMode & OPM_FIND) == 0) || (dynamic_cast<EFatal *>(E) != nullptr))
+  if (((OpMode & OPM_FIND) == 0) || (NB_STATIC_DOWNCAST(EFatal, E) != nullptr))
   {
     ShowExtendedException(E);
   }
@@ -846,4 +846,6 @@ void TWinSCPPlugin::CleanupConfiguration()
     Storage->CloseSubKey();
   }
 }
+//---------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TWinSCPPlugin, NB_GET_CLASS_INFO(TCustomFarPlugin), nullptr);
 //---------------------------------------------------------------------------

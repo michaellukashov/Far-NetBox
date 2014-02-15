@@ -55,10 +55,10 @@ TFarDialog::~TFarDialog()
   {
     GetItem(I)->Detach();
   }
-  delete FItems;
+  SAFE_DESTROY(FItems);
   nb_free(FDialogItems);
   FDialogItemsCapacity = 0;
-  delete FContainers;
+  SAFE_DESTROY(FContainers);
   if (FSynchronizeObjects[0] != INVALID_HANDLE_VALUE)
   {
     ::CloseHandle(FSynchronizeObjects[0]);
@@ -258,7 +258,7 @@ TFarDialogItem * TFarDialog::GetItem(intptr_t Index)
   if (GetItemCount())
   {
     assert(Index >= 0 && Index < FItems->GetCount());
-    DialogItem = dynamic_cast<TFarDialogItem *>((*GetItems())[Index]);
+    DialogItem = NB_STATIC_DOWNCAST(TFarDialogItem, (*GetItems())[Index]);
     assert(DialogItem);
   }
   else
@@ -453,7 +453,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
         if (!Result && (Msg == DN_CONTROLINPUT) &&
             (reinterpret_cast<intptr_t>(Param2) == VK_RETURN) &&
             ((Param1 < 0) ||
-             ((Param1 >= 0) && (dynamic_cast<TFarButton *>(GetItem(Param1)) == nullptr))) &&
+             ((Param1 >= 0) && (NB_STATIC_DOWNCAST(TFarButton, GetItem(Param1)) == nullptr))) &&
             GetDefaultButton()->GetEnabled() &&
             (GetDefaultButton()->GetOnClick()))
         {
@@ -498,7 +498,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
           Result = 1;
           if (Param1 >= 0)
           {
-            TFarButton * Button = dynamic_cast<TFarButton *>(GetItem(Param1));
+            TFarButton * Button = NB_STATIC_DOWNCAST(TFarButton, GetItem(Param1));
             // FAR WORKAROUND
             // FAR 1.70 alpha 6 calls DN_CLOSE even for non-button dialog items
             // (list boxes in particular), while FAR 1.70 beta 5 used ID of
@@ -507,7 +507,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
             // flag DIF_LISTNOCLOSE.
             if (Button == nullptr)
             {
-              assert(dynamic_cast<TFarListBox *>(GetItem(Param1)) != nullptr);
+              assert(NB_STATIC_DOWNCAST(TFarListBox, GetItem(Param1)) != nullptr);
               Result = static_cast<intptr_t>(false);
             }
             else
@@ -738,7 +738,7 @@ intptr_t TFarDialog::ShowModal()
 
     if (BResult >= 0)
     {
-      TFarButton * Button = dynamic_cast<TFarButton *>(GetItem(BResult));
+      TFarButton * Button = NB_STATIC_DOWNCAST(TFarButton, GetItem(BResult));
       assert(Button);
       // correct result should be already set by TFarButton
       assert(FResult == Button->GetResult());
@@ -940,7 +940,7 @@ TFarDialogContainer::TFarDialogContainer(TFarDialog * ADialog) :
 //---------------------------------------------------------------------------
 TFarDialogContainer::~TFarDialogContainer()
 {
-  delete FItems;
+  SAFE_DESTROY(FItems);
 }
 //---------------------------------------------------------------------------
 UnicodeString TFarDialogContainer::GetMsg(int MsgId)
@@ -975,7 +975,7 @@ void TFarDialogContainer::SetPosition(intptr_t Index, intptr_t Value)
     Position = Value;
     for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
     {
-      dynamic_cast<TFarDialogItem *>((*FItems)[Index])->DialogResized();
+      NB_STATIC_DOWNCAST(TFarDialogItem, (*FItems)[Index])->DialogResized();
     }
   }
 }
@@ -991,7 +991,7 @@ void TFarDialogContainer::SetEnabled(bool Value)
     FEnabled = true;
     for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
     {
-      dynamic_cast<TFarDialogItem *>((*FItems)[Index])->UpdateEnabled();
+      NB_STATIC_DOWNCAST(TFarDialogItem, (*FItems)[Index])->UpdateEnabled();
     }
   }
 }
@@ -2124,7 +2124,7 @@ void TFarList::Assign(const TPersistent * Source)
 {
   TStringList::Assign(Source);
 
-  const TFarList * FarList = dynamic_cast<const TFarList *>(Source);
+  const TFarList * FarList = NB_STATIC_DOWNCAST_CONST(TFarList, Source);
   if (FarList != nullptr)
   {
     for (intptr_t Index = 0; Index < FarList->GetCount(); ++Index)
@@ -2552,7 +2552,7 @@ TFarLister::TFarLister(TFarDialog * ADialog) :
 //---------------------------------------------------------------------------
 TFarLister::~TFarLister()
 {
-  delete FItems;
+  SAFE_DESTROY(FItems);
 }
 //---------------------------------------------------------------------------
 void TFarLister::ItemsChange(TObject * /*Sender*/)
@@ -2780,3 +2780,10 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
 
   return Result;
 }
+//---------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TFarDialogItem, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TFarButton, NB_GET_CLASS_INFO(TFarDialogItem), nullptr)
+NB_IMPLEMENT_CLASS(TFarListBox, NB_GET_CLASS_INFO(TFarDialogItem), nullptr)
+NB_IMPLEMENT_CLASS(TFarEdit, NB_GET_CLASS_INFO(TFarDialogItem), nullptr)
+NB_IMPLEMENT_CLASS(TFarList, NB_GET_CLASS_INFO(TStringList), nullptr)
+//---------------------------------------------------------------------------

@@ -44,7 +44,7 @@ void TGUICopyParamType::Assign(const TCopyParamType * Source)
   TCopyParamType::Assign(Source);
 
   const TGUICopyParamType * GUISource;
-  GUISource = dynamic_cast<const TGUICopyParamType *>(Source);
+  GUISource = NB_STATIC_DOWNCAST_CONST(TGUICopyParamType, Source);
   if (GUISource != nullptr)
   {
     GUIAssign(GUISource);
@@ -232,10 +232,10 @@ TCopyParamList::TCopyParamList() :
 TCopyParamList::~TCopyParamList()
 {
   Clear();
-  delete FCopyParams;
-  delete FRules;
-  delete FNames;
-  delete FNameList;
+  SAFE_DESTROY(FCopyParams);
+  SAFE_DESTROY(FRules);
+  SAFE_DESTROY(FNames);
+  SAFE_DESTROY(FNameList);
 }
 //---------------------------------------------------------------------------
 void TCopyParamList::Reset()
@@ -352,8 +352,8 @@ void TCopyParamList::Change(intptr_t Index, const UnicodeString & Name,
   }
   else
   {
-    delete CopyParam;
-    delete Rule;
+    SAFE_DESTROY(CopyParam);
+    SAFE_DESTROY(Rule);
   }
 }
 //---------------------------------------------------------------------------
@@ -522,16 +522,16 @@ TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
   FSessionReopenAutoIdle(0)
 {
   FLastLocalesExts = L"*";
-  dynamic_cast<TStringList *>(FLocales)->SetSorted(true);
-  dynamic_cast<TStringList *>(FLocales)->SetCaseSensitive(false);
+  NB_STATIC_DOWNCAST(TStringList, FLocales)->SetSorted(true);
+  NB_STATIC_DOWNCAST(TStringList, FLocales)->SetCaseSensitive(false);
   FCopyParamList = new TCopyParamList();
   CoreSetResourceModule(0);
 }
 //---------------------------------------------------------------------------
 TGUIConfiguration::~TGUIConfiguration()
 {
-  delete FLocales;
-  delete FCopyParamList;
+  SAFE_DESTROY(FLocales);
+  SAFE_DESTROY(FCopyParamList);
 }
 //---------------------------------------------------------------------------
 void TGUIConfiguration::Default()
@@ -1295,6 +1295,9 @@ void TGUIConfiguration::SetChecksumAlg(const UnicodeString & Value)
 //---------------------------------------------------------------------------
 inline TGUIConfiguration * GetGUIConfiguration()
 {
-  return dynamic_cast<TGUIConfiguration *>(GetConfiguration());
+  return NB_STATIC_DOWNCAST(TGUIConfiguration, GetConfiguration());
 }
+//------------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TGUICopyParamType, NB_GET_CLASS_INFO(TCopyParamType), nullptr);
+NB_IMPLEMENT_CLASS(TGUIConfiguration, NB_GET_CLASS_INFO(TConfiguration), nullptr);
 //---------------------------------------------------------------------------

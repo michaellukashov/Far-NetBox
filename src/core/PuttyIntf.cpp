@@ -107,7 +107,7 @@ int from_backend(void * frontend, int is_stderr, const char * data, int datalen)
   if (is_stderr >= 0)
   {
     assert((is_stderr == 0) || (is_stderr == 1));
-    (static_cast<TSecureShell *>(frontend))->FromBackend((is_stderr == 1), reinterpret_cast<const unsigned char *>(data), datalen);
+    (static_cast<TSecureShell *>(frontend))->FromBackend((is_stderr == 1), reinterpret_cast<const uint8_t *>(data), datalen);
   }
   else
   {
@@ -129,7 +129,7 @@ int from_backend_eof(void * /*frontend*/)
   return FALSE;
 }
 //---------------------------------------------------------------------------
-int GetUserpassInput(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
+int GetUserpassInput(prompts_t * p, uint8_t * /*in*/, int /*inlen*/)
 {
   assert(p != nullptr);
   TSecureShell * SecureShell = reinterpret_cast<TSecureShell *>(p->frontend);
@@ -177,7 +177,7 @@ int GetUserpassInput(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
   return Result;
 }
 //---------------------------------------------------------------------------
-int get_userpass_input(prompts_t * p, unsigned char * in, int inlen)
+int get_userpass_input(prompts_t * p, uint8_t * in, int inlen)
 {
   return GetUserpassInput(p, in, inlen);
 }
@@ -431,7 +431,7 @@ long reg_create_winscp_key(HKEY Key, const char * SubKey, HKEY * Result)
 }
 //---------------------------------------------------------------------------
 long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long * /*Reserved*/,
-  unsigned long * Type, unsigned char * Data, unsigned long * DataSize)
+  unsigned long * Type, uint8_t * Data, unsigned long * DataSize)
 {
   long R;
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
@@ -476,7 +476,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
 }
 //---------------------------------------------------------------------------
 long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*Reserved*/,
-  unsigned long Type, const unsigned char * Data, unsigned long DataSize)
+  unsigned long Type, const uint8_t * Data, unsigned long DataSize)
 {
   assert(Type == REG_SZ);
   USEDPARAM(Type);
@@ -496,7 +496,7 @@ long reg_close_winscp_key(HKEY Key)
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
   if (Storage != nullptr)
   {
-    delete Storage;
+    SAFE_DESTROY(Storage);
   }
 
   return ERROR_SUCCESS;

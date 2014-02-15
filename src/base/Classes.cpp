@@ -61,6 +61,18 @@ void Error(int ErrorID, intptr_t data)
 }
 
 //---------------------------------------------------------------------------
+bool TObject::IsKindOf(TObjectClassId ClassId) const
+{
+  assert(this != nullptr);
+
+  TClassInfo * thisInfo = GetClassInfo();
+  assert(thisInfo != nullptr);
+
+  TClassInfo * classInfo = TClassInfo::FindClass(ClassId);
+  return thisInfo->IsKindOf(classInfo);
+}
+
+//---------------------------------------------------------------------------
 TPersistent::TPersistent()
 {}
 
@@ -92,12 +104,6 @@ TPersistent * TPersistent::GetOwner()
 void TPersistent::AssignError(const TPersistent * Source)
 {
   (void)Source;
-  UnicodeString SourceName = L"nil";
-  // if (Source != nullptr)
-  // SourceName = Source.ClassName
-  // else
-  // SourceName = "nil";
-  // throw EConvertError(FMTLOAD(SAssignError, SourceName.c_str(), "nil"));
   throw Exception("Cannot assign");
 }
 
@@ -144,7 +150,7 @@ void TList::SetItem(intptr_t Index, void * Item)
   {
     Classes::Error(SListIndexError, Index);
   }
-  FList.insert(Index, 1, Item);
+  FList[Index] = Item;
 }
 
 intptr_t TList::Add(void * Value)
@@ -372,7 +378,6 @@ void TObjectList::Notify(void * Ptr, TListNotification Action)
   {
     if (Action == lnDeleted)
     {
-      // ((TObject *)Ptr)->Free();
       delete static_cast<TObject *>(Ptr);
     }
   }
@@ -534,7 +539,7 @@ intptr_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString 
 
 void TStrings::Assign(const TPersistent * Source)
 {
-  const TStrings * Strings = dynamic_cast<const TStrings *>(Source);
+  const TStrings * Strings = NB_STATIC_DOWNCAST_CONST(TStrings, Source);
   if (Strings != nullptr)
   {
     BeginUpdate();
@@ -725,7 +730,6 @@ const UnicodeString TStrings::GetName(intptr_t Index) const
 void TStrings::SetName(intptr_t Index, const UnicodeString & Value)
 {
   (void)Index;
-  // SetName(Index, Value);
   Classes::Error(SNotImplemented, 2012);
 }
 
@@ -832,8 +836,6 @@ void TStringList::Clear()
 {
   FStrings.clear();
   FObjects.clear();
-  // SetCount(0);
-  // SetCapacity(0);
 }
 
 intptr_t TStringList::Add(const UnicodeString & S)
@@ -1189,7 +1191,7 @@ UnicodeString MB2W(const char * src, const UINT cp)
     MultiByteToWideChar(cp, 0, src, -1, const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
     Result.SetLength(Result.Length() - 1);  //remove NULL character
   }
-  return Result; // .c_str();
+  return Result;
 }
 
 /**
@@ -1215,7 +1217,7 @@ AnsiString W2MB(const wchar_t * src, const UINT cp)
       static_cast<int>(reqLength), nullptr, nullptr);
     Result.SetLength(Result.Length() - 1);  //remove NULL character
   }
-  return Result; //.c_str();
+  return Result;
 }
 
 //---------------------------------------------------------------------------
@@ -1728,7 +1730,6 @@ TRegistry::TRegistry() :
   FCloseRootKey(false),
   FAccess(KEY_ALL_ACCESS)
 {
-  // LazyWrite = True;
   SetRootKey(HKEY_CURRENT_USER);
   SetAccess(KEY_ALL_ACCESS);
 }
@@ -1798,8 +1799,7 @@ void TRegistry::CloseKey()
 {
   if (GetCurrentKey() != 0)
   {
-    // if LazyWrite then
-    RegCloseKey(GetCurrentKey()); //else RegFlushKey(CurrentKey);
+    RegCloseKey(GetCurrentKey());
     FCurrentKey = 0;
     FCurrentPath = L"";
   }
@@ -1811,7 +1811,6 @@ bool TRegistry::OpenKey(const UnicodeString & Key, bool CanCreate)
   UnicodeString S = Key;
   bool Relative = Classes::IsRelative(S);
 
-  // if (!Relative) S.erase(0, 1); // Delete(S, 1, 1);
   HKEY TempKey = 0;
   if (!CanCreate || S.IsEmpty())
   {
@@ -2134,7 +2133,6 @@ HKEY TRegistry::GetKey(const UnicodeString & Key)
 {
   UnicodeString S = Key;
   bool Relative = Classes::IsRelative(S);
-  // if not Relative then Delete(S, 1, 1);
   HKEY Result = 0;
   RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0, FAccess, &Result);
   return Result;
@@ -2180,6 +2178,15 @@ void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
 
 //---------------------------------------------------------------------------
 
-TDateTime MinDateTime = TDateTime(-657434.0); // { 01/01/0100 12:00:00.000 AM });
+TDateTime MinDateTime = TDateTime(-657434.0);
 
 } // namespace Classes
+
+//---------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TObject, nullptr, nullptr)
+NB_IMPLEMENT_CLASS(TPersistent, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TList, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TObjectList, NB_GET_CLASS_INFO(TList), nullptr)
+NB_IMPLEMENT_CLASS(TStrings, NB_GET_CLASS_INFO(TPersistent), nullptr)
+NB_IMPLEMENT_CLASS(TStringList, NB_GET_CLASS_INFO(TStrings), nullptr)
+//---------------------------------------------------------------------------

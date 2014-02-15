@@ -38,7 +38,7 @@ CString CCrypt::encrypt(CString str)
 	for (unsigned int i=0;i<strlen(lpszAscii);i++)
 	{
 		CString tmp=ret;
-		ret.Format(_T("%s%03d"),(LPCTSTR)tmp,(unsigned char)lpszAscii[i]^m_key[(i+pos)%strlen(m_key)]);
+		ret.Format(_T("%s%03d"),(LPCTSTR)tmp,(uint8_t)lpszAscii[i]^m_key[(i+pos)%strlen(m_key)]);
 	}
 	return ret;
 }

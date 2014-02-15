@@ -1178,7 +1178,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 				{
 					// convert from UTF-8 to ANSI
 					LPCSTR utf8 = (LPCSTR)m_RecvBuffer.back();
-					if (!utf8_valid((const unsigned char*)utf8, strlen(utf8)))
+					if (!utf8_valid((const uint8_t*)utf8, strlen(utf8)))
 					{
 						if (m_CurrentServer.nUTF8 != 1)
 						{
@@ -6228,7 +6228,7 @@ CString CFtpControlSocket::GetReply()
 			if (GetReplyCode() == 2)
 				line = (LPCSTR)m_ListFile;
 		}
-		if (!utf8_valid((const unsigned char*)line, (int)strlen(line)))
+		if (!utf8_valid((const uint8_t*)line, (int)strlen(line)))
 		{
 			if (m_CurrentServer.nUTF8 != 1)
 			{

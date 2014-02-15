@@ -21,7 +21,7 @@ static bool WellKnownException(
   bool Result = true;
 
   // EAccessViolation is EExternal
-  if (dynamic_cast<const EAccessViolation*>(E) != nullptr)
+  if (NB_STATIC_DOWNCAST_CONST(EAccessViolation, E) != nullptr)
   {
     if (Rethrow)
     {
@@ -33,11 +33,11 @@ static bool WellKnownException(
   }
   /*
   // EIntError and EMathError are EExternal
-  else if ((dynamic_cast<EListError*>(E) != nullptr) ||
-           (dynamic_cast<EStringListError*>(E) != nullptr) ||
-           (dynamic_cast<EIntError*>(E) != nullptr) ||
-           (dynamic_cast<EMathError*>(E) != nullptr) ||
-           (dynamic_cast<EVariantError*>(E) != nullptr))
+  else if ((NB_STATIC_DOWNCAST(EListError, E) != nullptr) ||
+           (NB_STATIC_DOWNCAST(EStringListError, E) != nullptr) ||
+           (NB_STATIC_DOWNCAST(EIntError, E) != nullptr) ||
+           (NB_STATIC_DOWNCAST(EMathError, E) != nullptr) ||
+           (NB_STATIC_DOWNCAST(EVariantError, E) != nullptr))
   {
     if (Rethrow)
     {
@@ -47,7 +47,7 @@ static bool WellKnownException(
     CounterName = L"InternalExceptions";
     Clone.reset(new EIntError(E->Message));
   }
-  else if (dynamic_cast<EExternal*>(E) != nullptr)
+  else if (NB_STATIC_DOWNCAST(EExternal, E) != nullptr)
   {
     if (Rethrow)
     {
@@ -57,7 +57,7 @@ static bool WellKnownException(
     CounterName = L"ExternalExceptions";
     Clone.reset(new EExternal(E->Message));
   }
-  else if (dynamic_cast<EHeapException*>(E) != nullptr)
+  else if (NB_STATIC_DOWNCAST(EHeapException, E) != nullptr)
   {
     if (Rethrow)
     {
@@ -100,7 +100,7 @@ static bool ExceptionMessage(const Exception * E, bool Count,
   InternalError = false;
 
   // this list has to be in sync with CloneException
-  if (dynamic_cast<const EAbort *>(E) != nullptr)
+  if (NB_STATIC_DOWNCAST_CONST(EAbort, E) != nullptr)
   {
     Result = false;
   }
@@ -161,7 +161,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   {
     Result = new TStringList();
     Result->Add(Message);
-    ExtException * ExtE = dynamic_cast<ExtException *>(E);
+    ExtException * ExtE = NB_STATIC_DOWNCAST(ExtException, E);
     if ((ExtE != nullptr) && (ExtE->GetMoreMessages() != nullptr))
     {
       Result->AddStrings(ExtE->GetMoreMessages());
@@ -173,7 +173,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
 UnicodeString GetExceptionHelpKeyword(Exception * E)
 {
   UnicodeString HelpKeyword;
-  ExtException * ExtE = dynamic_cast<ExtException *>(E);
+  ExtException * ExtE = NB_STATIC_DOWNCAST(ExtException, E);
   UnicodeString Message; // not used
   bool InternalError = false;
   if (ExtE != nullptr)
@@ -303,7 +303,7 @@ void ExtException::AddMoreMessages(const Exception * E)
       FMoreMessages = new TStringList();
     }
 
-    const ExtException * ExtE = dynamic_cast<const ExtException *>(E);
+    const ExtException * ExtE = NB_STATIC_DOWNCAST_CONST(ExtException, E);
     if (ExtE != nullptr)
     {
       if (ExtE->GetMoreMessages() != nullptr)
@@ -328,7 +328,7 @@ void ExtException::AddMoreMessages(const Exception * E)
 
     if (FMoreMessages->GetCount() == 0)
     {
-      delete FMoreMessages;
+      SAFE_DESTROY(FMoreMessages);
       FMoreMessages = nullptr;
     }
   }
@@ -336,7 +336,7 @@ void ExtException::AddMoreMessages(const Exception * E)
 //---------------------------------------------------------------------------
 ExtException::~ExtException() noexcept
 {
-  delete FMoreMessages;
+  SAFE_DESTROY(FMoreMessages);
   FMoreMessages = nullptr;
 }
 //---------------------------------------------------------------------------
@@ -365,7 +365,7 @@ EFatal::EFatal(Exception * E, const UnicodeString & Msg, const UnicodeString & H
   ExtException(Msg, E, HelpKeyword),
   FReopenQueried(false)
 {
-  EFatal * F = dynamic_cast<EFatal *>(E);
+  EFatal * F = NB_STATIC_DOWNCAST(EFatal, E);
   if (F != nullptr)
   {
     FReopenQueried = F->GetReopenQueried();
@@ -390,20 +390,20 @@ Exception * CloneException(Exception * E)
 {
   Exception * Result;
   // this list has to be in sync with ExceptionMessage
-  ExtException * Ext = dynamic_cast<ExtException *>(E);
+  ExtException * Ext = NB_STATIC_DOWNCAST(ExtException, E);
   if (Ext != NULL)
   {
     Result = Ext->Clone();
   }
-  else if (dynamic_cast<ECallbackGuardAbort *>(E) != NULL)
+  else if (NB_STATIC_DOWNCAST(ECallbackGuardAbort, E) != nullptr)
   {
     Result = new ECallbackGuardAbort();
   }
-  else if (dynamic_cast<EAbort *>(E) != NULL)
+  else if (NB_STATIC_DOWNCAST(EAbort, E) != nullptr)
   {
     Result = new EAbort(E->Message);
   }
-  else if (WellKnownException(E, NULL, NULL, &Result, false))
+  else if (WellKnownException(E, nullptr, nullptr, &Result, false))
   {
     // noop
   }
@@ -417,15 +417,15 @@ Exception * CloneException(Exception * E)
 void RethrowException(Exception * E)
 {
   // this list has to be in sync with ExceptionMessage
-  if (dynamic_cast<EFatal *>(E) != nullptr)
+  if (NB_STATIC_DOWNCAST(EFatal, E) != nullptr)
   {
     throw EFatal(E, L"");
   }
-  else if (dynamic_cast<ECallbackGuardAbort *>(E) != nullptr)
+  else if (NB_STATIC_DOWNCAST(ECallbackGuardAbort, E) != nullptr)
   {
     throw ECallbackGuardAbort();
   }
-  else if (dynamic_cast<EAbort *>(E) != nullptr)
+  else if (NB_STATIC_DOWNCAST(EAbort, E) != nullptr)
   {
     throw EAbort(E->Message);
   }
@@ -438,3 +438,17 @@ void RethrowException(Exception * E)
     throw ExtException(E, L"");
   }
 }
+//------------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(ExtException, NB_GET_CLASS_INFO(Exception), nullptr);
+NB_IMPLEMENT_CLASS(EFatal, NB_GET_CLASS_INFO(ExtException), nullptr);
+NB_IMPLEMENT_CLASS(ESshFatal, NB_GET_CLASS_INFO(EFatal), nullptr);
+NB_IMPLEMENT_CLASS(EOSExtException, NB_GET_CLASS_INFO(ExtException), nullptr);
+NB_IMPLEMENT_CLASS(ESshTerminate, NB_GET_CLASS_INFO(EFatal), nullptr);
+NB_IMPLEMENT_CLASS(ECallbackGuardAbort, NB_GET_CLASS_INFO(EAbort), nullptr);
+NB_IMPLEMENT_CLASS(ESsh, NB_GET_CLASS_INFO(ExtException), nullptr);
+NB_IMPLEMENT_CLASS(ETerminal, NB_GET_CLASS_INFO(ExtException), nullptr);
+NB_IMPLEMENT_CLASS(ECommand, NB_GET_CLASS_INFO(ExtException), nullptr);
+NB_IMPLEMENT_CLASS(EScp, NB_GET_CLASS_INFO(ExtException), nullptr);
+NB_IMPLEMENT_CLASS(EScpSkipFile, NB_GET_CLASS_INFO(ExtException), nullptr);
+NB_IMPLEMENT_CLASS(EScpFileSkipped, NB_GET_CLASS_INFO(EScpSkipFile), nullptr);
+//------------------------------------------------------------------------------

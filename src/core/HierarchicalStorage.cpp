@@ -111,7 +111,7 @@ THierarchicalStorage::THierarchicalStorage(const UnicodeString & AStorage) :
 //------------------------------------------------------------------------------
 THierarchicalStorage::~THierarchicalStorage()
 {
-  delete FKeyHistory;
+  SAFE_DESTROY(FKeyHistory);
 }
 //------------------------------------------------------------------------------
 void THierarchicalStorage::Flush()
@@ -411,7 +411,7 @@ void TRegistryStorage::Init()
 //------------------------------------------------------------------------------
 TRegistryStorage::~TRegistryStorage()
 {
-  delete FRegistry;
+  SAFE_DESTROY(FRegistry);
 }
 //------------------------------------------------------------------------------
 bool TRegistryStorage::Copy(TRegistryStorage * Storage)
@@ -419,7 +419,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
   TRegistry * Registry = Storage->FRegistry;
   bool Result = true;
   std::unique_ptr<TStrings> Names(new TStringList());
-  rde::vector<unsigned char> Buffer(1024);
+  rde::vector<uint8_t> Buffer(1024);
   Registry->GetValueNames(Names.get());
   intptr_t Index = 0;
   while ((Index < Names->GetCount()) && Result)
@@ -675,7 +675,7 @@ TCustomIniFileStorage::TCustomIniFileStorage(const UnicodeString & Storage, TCus
 //------------------------------------------------------------------------------
 TCustomIniFileStorage::~TCustomIniFileStorage()
 {
-  delete FIniFile;
+  SAFE_DESTROY(FIniFile);
 }
 //------------------------------------------------------------------------------
 UnicodeString TCustomIniFileStorage::GetSource()
@@ -934,7 +934,7 @@ TIniFileStorage::TIniFileStorage(const UnicodeString & AStorage):
   TCustomIniFileStorage(AStorage, new TMemIniFile(AStorage))
 {
   FOriginal = new TStringList();
-  dynamic_cast<TMemIniFile *>(FIniFile)->GetString(FOriginal);
+  NB_STATIC_DOWNCAST(TMemIniFile, FIniFile)->GetString(FOriginal);
   ApplyOverrides();
 }
 //------------------------------------------------------------------------------
@@ -948,7 +948,7 @@ void TIniFileStorage::Flush()
       SAFE_DESTROY(FOriginal);
     };
     {
-      dynamic_cast<TMemIniFile *>(FIniFile)->GetString(Strings.get());
+      NB_STATIC_DOWNCAST(TMemIniFile, FIniFile)->GetString(Strings.get());
       if (!Strings->Equals(FOriginal))
       {
         DWORD LocalFileAttrs;

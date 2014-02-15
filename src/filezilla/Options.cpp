@@ -8,7 +8,7 @@
 CString COptions::GetInstanceOption(CApiLog * Instance, int OptionID)
 {
   ASSERT(Instance);
-  ASSERT(dynamic_cast<TFileZillaIntern *>(Instance) != NULL);
+  ASSERT(NB_STATIC_DOWNCAST(TFileZillaIntern, Instance) != NULL);
 
   TFileZillaIntern * Intern = static_cast<TFileZillaIntern *>(Instance);
 
@@ -28,7 +28,7 @@ CString COptions::GetInstanceOption(CApiLog * Instance, int OptionID)
 int COptions::GetInstanceOptionVal(CApiLog * Instance, int OptionID)
 {
   ASSERT(Instance);
-  ASSERT(dynamic_cast<TFileZillaIntern *>(Instance) != NULL);
+  ASSERT(NB_STATIC_DOWNCAST(TFileZillaIntern, Instance) != NULL);
 
   TFileZillaIntern * Intern = static_cast<TFileZillaIntern *>(Instance);
 

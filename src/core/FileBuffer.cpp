@@ -25,7 +25,7 @@ TFileBuffer::TFileBuffer() :
 //---------------------------------------------------------------------------
 TFileBuffer::~TFileBuffer()
 {
-  delete FMemory;
+  SAFE_DESTROY(FMemory);
 }
 //---------------------------------------------------------------------------
 void TFileBuffer::SetSize(__int64 Value)
@@ -52,7 +52,7 @@ void TFileBuffer::SetMemory(TMemoryStream * Value)
   {
     if (FMemory)
     {
-      delete FMemory;
+      SAFE_DESTROY(FMemory);
     }
     FMemory = Value;
   }

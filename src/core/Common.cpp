@@ -284,7 +284,7 @@ UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote)
 UnicodeString ExceptionLogString(Exception *E)
 {
   assert(E);
-  if (dynamic_cast<Exception *>(E) != nullptr)
+  if (NB_STATIC_DOWNCAST(Exception, E) != nullptr)
   {
     UnicodeString Msg;
 #if defined(__BORLANDC__)
@@ -292,9 +292,9 @@ UnicodeString ExceptionLogString(Exception *E)
 #else
     Msg = FORMAT(L"%s", ::MB2W(E->what()).c_str());
 #endif
-    if (dynamic_cast<ExtException *>(E) != nullptr)
+    if (NB_STATIC_DOWNCAST(ExtException, E) != nullptr)
     {
-      TStrings * MoreMessages = dynamic_cast<ExtException *>(E)->GetMoreMessages();
+      TStrings * MoreMessages = NB_STATIC_DOWNCAST(ExtException, E)->GetMoreMessages();
       if (MoreMessages)
       {
         Msg += L"\n" +
@@ -435,7 +435,7 @@ static wchar_t * ReplaceChar(
       ThrowExtException();
     }
 
-    FileName.Insert(ByteToHex(static_cast<unsigned char>(FileName[Index])), Index + 1);
+    FileName.Insert(ByteToHex(static_cast<uint8_t>(FileName[Index])), Index + 1);
     FileName[Index] = TokenPrefix;
     InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index + 2);
   }
@@ -716,7 +716,7 @@ UnicodeString DisplayableStr(const RawByteString & Str)
   intptr_t Index = 1;
   while ((Index <= Str.Length()) && Displayable)
   {
-    if (((Str[Index] < '\x20') || (static_cast<unsigned char>(Str[Index]) >= static_cast<unsigned char>('\x80'))) &&
+    if (((Str[Index] < '\x20') || (static_cast<uint8_t>(Str[Index]) >= static_cast<uint8_t >('\x80'))) &&
         (Str[Index] != '\n') && (Str[Index] != '\r') && (Str[Index] != '\t') && (Str[Index] != '\b'))
     {
       Displayable = false;
@@ -770,7 +770,7 @@ UnicodeString DisplayableStr(const RawByteString & Str)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString ByteToHex(unsigned char B, bool UpperCase)
+UnicodeString ByteToHex(uint8_t B, bool UpperCase)
 {
   static wchar_t UpperDigits[] = L"0123456789ABCDEF";
   static wchar_t LowerDigits[] = L"0123456789abcdef";
@@ -783,7 +783,7 @@ UnicodeString ByteToHex(unsigned char B, bool UpperCase)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString BytesToHex(const unsigned char * B, uintptr_t Length, bool UpperCase, wchar_t Separator)
+UnicodeString BytesToHex(const uint8_t * B, uintptr_t Length, bool UpperCase, wchar_t Separator)
 {
   UnicodeString Result;
   for (uintptr_t i = 0; i < Length; i++)
@@ -799,12 +799,12 @@ UnicodeString BytesToHex(const unsigned char * B, uintptr_t Length, bool UpperCa
 //---------------------------------------------------------------------------
 UnicodeString BytesToHex(const RawByteString & Str, bool UpperCase, wchar_t Separator)
 {
-  return BytesToHex(reinterpret_cast<const unsigned char *>(Str.c_str()), Str.Length(), UpperCase, Separator);
+  return BytesToHex(reinterpret_cast<const uint8_t *>(Str.c_str()), Str.Length(), UpperCase, Separator);
 }
 //---------------------------------------------------------------------------
 UnicodeString CharToHex(wchar_t Ch, bool UpperCase)
 {
-  return BytesToHex(reinterpret_cast<const unsigned char *>(&Ch), sizeof(Ch), UpperCase);
+  return BytesToHex(reinterpret_cast<const uint8_t *>(&Ch), sizeof(Ch), UpperCase);
 }
 //---------------------------------------------------------------------------
 RawByteString HexToBytes(const UnicodeString & Hex)
@@ -832,7 +832,7 @@ RawByteString HexToBytes(const UnicodeString & Hex)
   return Result;
 }
 //---------------------------------------------------------------------------
-unsigned char HexToByte(const UnicodeString & Hex)
+uint8_t HexToByte(const UnicodeString & Hex)
 {
   static UnicodeString Digits = L"0123456789ABCDEF";
   assert(Hex.Length() == 2);
@@ -840,7 +840,7 @@ unsigned char HexToByte(const UnicodeString & Hex)
   intptr_t P2 = Digits.Pos(UpCase(Hex[2]));
 
   return
-    static_cast<unsigned char>(((P1 <= 0) || (P2 <= 0)) ? 0 : (((P1 - 1) << 4) + (P2 - 1)));
+    static_cast<uint8_t>(((P1 <= 0) || (P2 <= 0)) ? 0 : (((P1 - 1) << 4) + (P2 - 1)));
 }
 //---------------------------------------------------------------------------
 bool IsLowerCaseLetter(wchar_t Ch)

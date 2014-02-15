@@ -73,7 +73,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
       Classes::Error(SNotImplemented, 256);
       /*
       // FIXME
-      FSynchronizeMonitor = new TDiscMonitor(dynamic_cast<TComponent*>(Sender));
+      FSynchronizeMonitor = new TDiscMonitor(NB_STATIC_DOWNCAST(TComponent, Sender));
       FSynchronizeMonitor->SubTree = false;
       TMonitorFilters Filters;
       Filters << moFilename << moLastWrite;
@@ -179,7 +179,7 @@ void TSynchronizeController::SynchronizeChange(
   }
   catch(Exception & E)
   {
-    SynchronizeAbort(dynamic_cast<EFatal*>(&E) != nullptr);
+    SynchronizeAbort(NB_STATIC_DOWNCAST(EFatal, &E) != nullptr);
   }
 }
 //---------------------------------------------------------------------------

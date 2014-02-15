@@ -75,6 +75,7 @@ class TCustomFarPlugin : public TObject
   friend class TFarDialogItem;
   friend class TFarMessageDialog;
   friend class TFarPluginGuard;
+  NB_DECLARE_CLASS(TCustomFarPlugin)
 public:
   explicit TCustomFarPlugin(HINSTANCE HInst);
   virtual ~TCustomFarPlugin();
@@ -215,7 +216,7 @@ private:
   short FCurrentProgress;
 
   void ClearPluginInfo(PluginInfo & Info);
-  void UpdateConsoleTitle();
+  void UpdateCurrentConsoleTitle();
   UnicodeString FormatConsoleTitle();
   HWND GetConsoleWindow() const;
   RECT GetPanelBounds(HANDLE PanelHandle);
@@ -236,6 +237,7 @@ class TCustomFarFileSystem : public TObject
 {
 friend class TFarPanelInfo;
 friend class TCustomFarPlugin;
+NB_DECLARE_CLASS(TCustomFarFileSystem)
 public:
   TCustomFarFileSystem(TCustomFarPlugin * APlugin);
   void Init();

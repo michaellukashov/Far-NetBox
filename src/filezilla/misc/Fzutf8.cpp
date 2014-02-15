@@ -4,10 +4,10 @@
 
 // Check for valid UTF-8 string. Code taken from the examples in RFC 2640
 
-int utf8_valid(const unsigned char *buf, unsigned int len)
+int utf8_valid(const uint8_t *buf, unsigned int len)
 {
- const unsigned char *endbuf = buf + len;
- unsigned char byte2mask=0x00, c;
+ const uint8_t *endbuf = buf + len;
+ uint8_t byte2mask=0x00, c;
  int trailing = 0;  // trailing (continuation) bytes to follow
 
  while (buf != endbuf)

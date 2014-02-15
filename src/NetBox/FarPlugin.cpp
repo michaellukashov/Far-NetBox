@@ -78,12 +78,16 @@ TCustomFarPlugin::~TCustomFarPlugin()
 
   ClearPluginInfo(FPluginInfo);
   assert(FOpenedPlugins->GetCount() == 0);
-  delete FOpenedPlugins;
+  SAFE_DESTROY(FOpenedPlugins);
   for (intptr_t I = 0; I < FSavedTitles->GetCount(); I++)
-    delete FSavedTitles->GetObject(I);
-  delete FSavedTitles;
-  delete FCriticalSection;
-  delete GetGlobalFunctions();
+  {
+    TObject * Object = FSavedTitles->GetObject(I);
+    SAFE_DESTROY(Object);
+  }
+  SAFE_DESTROY(FSavedTitles);
+  SAFE_DESTROY(FCriticalSection);
+  TGlobalFunctionsIntf * Intf = GetGlobalFunctions();
+  SAFE_DESTROY_EX(TGlobalFunctionsIntf, Intf);
 }
 //---------------------------------------------------------------------------
 bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/)
@@ -257,7 +261,7 @@ TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
   intptr_t Index = 0;
   while (!Result && (Index < FOpenedPlugins->GetCount()))
   {
-    FileSystem = dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItem(Index));
+    FileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, FOpenedPlugins->GetItem(Index));
     assert(FileSystem);
     RECT Bounds = GetPanelBounds(FileSystem);
     if (Another && CompareRects(Bounds, PassivePanelBounds))
@@ -278,7 +282,7 @@ void TCustomFarPlugin::InvalidateOpenPanelInfo()
   for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
   {
     TCustomFarFileSystem * FileSystem =
-      dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItem(Index));
+      NB_STATIC_DOWNCAST(TCustomFarFileSystem, FOpenedPlugins->GetItem(Index));
     FileSystem->InvalidateOpenPanelInfo();
   }
 }
@@ -347,17 +351,12 @@ void TCustomFarPlugin::ClosePanel(void * Plugin)
     ResetCachedInfo();
     TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
     assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
-    SCOPE_EXIT
     {
-      FOpenedPlugins->Remove(FileSystem);
-    };
-    {
-      {
-        TGuard Guard(FileSystem->GetCriticalSection());
-        FileSystem->Close();
-      }
+      TGuard Guard(FileSystem->GetCriticalSection());
+      FileSystem->Close();
     }
-    delete FileSystem;
+    FOpenedPlugins->Remove(FileSystem);
+    SAFE_DESTROY(FileSystem);
 #ifdef USE_DLMALLOC
     // dlmalloc_trim(0); // 64 * 1024);
 #endif
@@ -850,7 +849,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
     {
       for (intptr_t PIndex = 0; PIndex < GetItemCount(); ++PIndex)
       {
-        TFarButton * PrevButton = dynamic_cast<TFarButton *>(GetItem(PIndex));
+        TFarButton * PrevButton = NB_STATIC_DOWNCAST(TFarButton, GetItem(PIndex));
         if ((PrevButton != nullptr) && (PrevButton != Button))
         {
           PrevButton->Move(0, -1);
@@ -966,7 +965,7 @@ void TFarMessageDialog::Change()
     {
       for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
       {
-        TFarButton * Button = dynamic_cast<TFarButton *>(GetItem(Index));
+        TFarButton * Button = NB_STATIC_DOWNCAST(TFarButton, GetItem(Index));
         if ((Button != nullptr) && (Button->GetTag() == 0))
         {
           Button->SetEnabled(!FCheckBox->GetChecked());
@@ -1433,6 +1432,7 @@ void TCustomFarPlugin::SaveTerminalScreen()
 //---------------------------------------------------------------------------
 class TConsoleTitleParam : public TObject
 {
+NB_DECLARE_CLASS(TConsoleTitleParam)
 public:
   explicit TConsoleTitleParam() :
     Progress(0),
@@ -1459,7 +1459,7 @@ void TCustomFarPlugin::ShowConsoleTitle(const UnicodeString & Title)
   }
   FCurrentTitle = Title;
   FCurrentProgress = -1;
-  UpdateConsoleTitle();
+  UpdateCurrentConsoleTitle();
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::ClearConsoleTitle()
@@ -1467,12 +1467,12 @@ void TCustomFarPlugin::ClearConsoleTitle()
   assert(FSavedTitles->GetCount() > 0);
   UnicodeString Title = FSavedTitles->GetString(FSavedTitles->GetCount() - 1);
   TObject * Object = FSavedTitles->GetObject(FSavedTitles->GetCount()-1);
-  TConsoleTitleParam * Param = dynamic_cast<TConsoleTitleParam *>(Object);
+  TConsoleTitleParam * Param = NB_STATIC_DOWNCAST(TConsoleTitleParam, Object);
   if (Param->Own)
   {
     FCurrentTitle = Title;
     FCurrentProgress = Param->Progress;
-    UpdateConsoleTitle();
+    UpdateCurrentConsoleTitle();
   }
   else
   {
@@ -1481,20 +1481,23 @@ void TCustomFarPlugin::ClearConsoleTitle()
     ::SetConsoleTitle(Title.c_str());
     UpdateProgress(TBPS_NOPROGRESS, 0);
   }
-  delete FSavedTitles->GetObject(FSavedTitles->GetCount() - 1);
+  {
+    TObject * Object = FSavedTitles->GetObject(FSavedTitles->GetCount() - 1);
+    SAFE_DESTROY(Object);
+  }
   FSavedTitles->Delete(FSavedTitles->GetCount() - 1);
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::UpdateConsoleTitle(const UnicodeString & Title)
 {
   FCurrentTitle = Title;
-  UpdateConsoleTitle();
+  UpdateCurrentConsoleTitle();
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::UpdateConsoleTitleProgress(short Progress)
 {
   FCurrentProgress = Progress;
-  UpdateConsoleTitle();
+  UpdateCurrentConsoleTitle();
 }
 //---------------------------------------------------------------------------
 UnicodeString TCustomFarPlugin::FormatConsoleTitle()
@@ -1525,7 +1528,7 @@ void TCustomFarPlugin::UpdateProgress(intptr_t State, intptr_t Progress)
   }
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::UpdateConsoleTitle()
+void TCustomFarPlugin::UpdateCurrentConsoleTitle()
 {
   UnicodeString Title = FormatConsoleTitle();
   SetConsoleTitle(Title.c_str());
@@ -1811,7 +1814,7 @@ TCustomFarFileSystem::~TCustomFarFileSystem()
   FInstances--;
   ResetCachedInfo();
   ClearOpenPanelInfo(FOpenPanelInfo);
-  delete FCriticalSection;
+  SAFE_DESTROY(FCriticalSection);
 }
 //---------------------------------------------------------------------------
 void TCustomFarFileSystem::HandleException(Exception * E, int OpMode)
@@ -2550,7 +2553,7 @@ TFarPanelInfo::TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwn
 TFarPanelInfo::~TFarPanelInfo()
 {
   nb_free(FPanelInfo);
-  delete FItems;
+  SAFE_DESTROY(FItems);
 }
 //---------------------------------------------------------------------------
 intptr_t TFarPanelInfo::GetItemCount() const
@@ -2984,4 +2987,8 @@ UnicodeString TGlobalFunctions::GetStrVersionNumber() const
 {
   return NETBOX_VERSION_NUMBER;
 }
+//------------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TCustomFarFileSystem, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TCustomFarPlugin, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TConsoleTitleParam, NB_GET_CLASS_INFO(TObject), nullptr);
 //------------------------------------------------------------------------------

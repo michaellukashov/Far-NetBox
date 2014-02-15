@@ -339,7 +339,7 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::HandleException(Exception * E, int OpMode)
 {
-  if ((GetTerminal() != nullptr) && (dynamic_cast<EFatal *>(E) != nullptr))
+  if ((GetTerminal() != nullptr) && (NB_STATIC_DOWNCAST(EFatal, E) != nullptr))
   {
     bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr);
     if (!Reopen)
@@ -381,7 +381,7 @@ bool TWinSCPFileSystem::Connected()
 //------------------------------------------------------------------------------
 TWinSCPPlugin * TWinSCPFileSystem::WinSCPPlugin()
 {
-  return dynamic_cast<TWinSCPPlugin *>(FPlugin);
+  return NB_STATIC_DOWNCAST(TWinSCPPlugin, FPlugin);
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::Close()
@@ -486,7 +486,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
           {
             File->SetType(FILETYPE_DIRECTORY);
           }
-          delete LinkFile;
+          SAFE_DESTROY(LinkFile);
         }*/
         PanelItems->Add(new TRemoteFilePanelItem(File));
       }
@@ -540,7 +540,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     }
 
     TWinSCPFileSystem * OppositeFileSystem =
-      dynamic_cast<TWinSCPFileSystem *>(GetOppositeFileSystem());
+      NB_STATIC_DOWNCAST(TWinSCPFileSystem, GetOppositeFileSystem());
     if ((OppositeFileSystem != nullptr) && !OppositeFileSystem->Connected() &&
         !OppositeFileSystem->FLoadingSessionList)
     {
@@ -638,7 +638,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
   {
     if (NewData || FillInConnect)
     {
-      delete Data;
+      SAFE_DESTROY(Data);
     }
   };
   {
@@ -1356,7 +1356,7 @@ void TWinSCPFileSystem::Synchronize(const UnicodeString & LocalDirectory,
   {
     if (Checklist == nullptr)
     {
-      delete AChecklist;
+      SAFE_DESTROY(AChecklist);
     }
     else
     {
@@ -2901,7 +2901,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
   {
     if (AFileList == nullptr)
     {
-      delete FileList;
+      SAFE_DESTROY(FileList);
     }
     throw;
   }
@@ -4190,7 +4190,7 @@ UnicodeString TWinSCPFileSystem::GetFileNameHash(const UnicodeString & FileName)
   Result.SetLength(16);
   md5checksum(
     reinterpret_cast<const char *>(FileName.c_str()), static_cast<int>(FileName.Length() * sizeof(wchar_t)),
-    reinterpret_cast<unsigned char *>(const_cast<char *>(Result.c_str())));
+    reinterpret_cast<uint8_t *>(const_cast<char *>(Result.c_str())));
   return BytesToHex(Result);
 }
 //---------------------------------------------------------------------------------

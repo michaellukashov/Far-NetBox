@@ -148,7 +148,7 @@ TSynchronizeOptions::TSynchronizeOptions() :
 //------------------------------------------------------------------------------
 TSynchronizeOptions::~TSynchronizeOptions()
 {
-  delete Filter;
+  SAFE_DESTROY(Filter);
 }
 //------------------------------------------------------------------------------
 bool TSynchronizeOptions::MatchesFilter(const UnicodeString & FileName)
@@ -189,7 +189,7 @@ TSynchronizeChecklist::TItem::TItem() :
 //------------------------------------------------------------------------------
 TSynchronizeChecklist::TItem::~TItem()
 {
-  delete RemoteFile;
+  SAFE_DESTROY(RemoteFile);
 }
 //------------------------------------------------------------------------------
 const UnicodeString & TSynchronizeChecklist::TItem::GetFileName() const
@@ -215,9 +215,10 @@ TSynchronizeChecklist::~TSynchronizeChecklist()
 {
   for (intptr_t Index = 0; Index < FList->GetCount(); ++Index)
   {
-    delete static_cast<TItem *>(static_cast<void *>(FList->GetItem(Index)));
+    TItem * Item = static_cast<TItem *>(static_cast<void *>(FList->GetItem(Index)));
+    SAFE_DESTROY(Item);
   }
-  delete FList;
+  SAFE_DESTROY(FList);
 }
 //------------------------------------------------------------------------------
 void TSynchronizeChecklist::Add(TItem * Item)
@@ -484,7 +485,7 @@ TCallbackGuard::~TCallbackGuard()
     FTerminal->FCallbackGuard = nullptr;
   }
 
-  delete FFatalError;
+  SAFE_DESTROY(FFatalError);
 }
 //------------------------------------------------------------------------------
 void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
@@ -494,9 +495,9 @@ void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg, const 
   // make sure we do not bother about getting back the silent abort exception
   // we issued ourselves. this may happen when there is an exception handler
   // that converts any exception to fatal one (such as in TTerminal::Open).
-  if (dynamic_cast<ECallbackGuardAbort *>(E) == nullptr)
+  if (NB_STATIC_DOWNCAST(ECallbackGuardAbort, E) == nullptr)
   {
-    delete FFatalError;
+    SAFE_DESTROY(FFatalError);
     FFatalError = new ExtException(E, Msg, HelpKeyword);
   }
 
@@ -562,8 +563,8 @@ TTerminal::~TTerminal()
   SAFE_DESTROY_EX(TSessionLog, FLog);
   SAFE_DESTROY_EX(TActionLog, FActionLog);
   SAFE_DESTROY(FFiles);
-  delete FDirectoryCache;
-  delete FDirectoryChangesCache;
+  SAFE_DESTROY_EX(TRemoteDirectoryCache, FDirectoryCache);
+  SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
   SAFE_DESTROY(FSessionData);
 }
 //------------------------------------------------------------------------------
@@ -731,8 +732,7 @@ void TTerminal::ResetConnection()
 
   if (FDirectoryChangesCache != nullptr)
   {
-    delete FDirectoryChangesCache;
-    FDirectoryChangesCache = nullptr;
+    SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
   }
 
   FFiles->SetDirectory(L"");
@@ -831,8 +831,7 @@ void TTerminal::InternalTryOpen()
     // rollback
     if (FDirectoryChangesCache != nullptr)
     {
-      delete FDirectoryChangesCache;
-      FDirectoryChangesCache = nullptr;
+      SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
     }
     throw;
   }
@@ -1283,7 +1282,7 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
       MoreMessages->Add(UnformatMessage(ExMessage));
     }
 
-    ExtException * EE = dynamic_cast<ExtException*>(E);
+    ExtException * EE = NB_STATIC_DOWNCAST(ExtException, E);
     if ((EE != nullptr) && (EE->GetMoreMessages() != nullptr))
     {
       MoreMessages->AddStrings(EE->GetMoreMessages());
@@ -1473,7 +1472,7 @@ void TTerminal::TerminalError(
 //------------------------------------------------------------------------------
 bool TTerminal::DoQueryReopen(Exception * E)
 {
-  EFatal * Fatal = dynamic_cast<EFatal *>(E);
+  EFatal * Fatal = NB_STATIC_DOWNCAST(EFatal, E);
   assert(Fatal != nullptr);
   bool Result = false;
   if ((Fatal != nullptr) && Fatal->GetReopenQueried())
@@ -2030,11 +2029,11 @@ uintptr_t TTerminal::CommandError(Exception * E, const UnicodeString & Msg,
   // from within OnShowExtendedException handler
   assert(FCallbackGuard == nullptr);
   uintptr_t Result = 0;
-  if (E && (dynamic_cast<EFatal *>(E) != nullptr))
+  if (E && (NB_STATIC_DOWNCAST(EFatal, E) != nullptr))
   {
     FatalError(E, Msg, HelpKeyword);
   }
-  else if (E && (dynamic_cast<EAbort*>(E) != nullptr))
+  else if (E && (NB_STATIC_DOWNCAST(EAbort, E) != nullptr))
   {
     // resent EAbort exception
     Abort();
@@ -2425,7 +2424,7 @@ void TTerminal::RollbackAction(TSessionAction & Action,
   // and we do not want to record skipped actions.
   // But EScpSkipFile with "cancel" is abort and we want to record that.
   // Note that TSCPFileSystem modifies the logic of RollbackAction little bit.
-  if ((dynamic_cast<EScpSkipFile *>(E) != nullptr) &&
+  if ((NB_STATIC_DOWNCAST(EScpSkipFile, E) != nullptr) &&
       ((OperationProgress == nullptr) ||
        (OperationProgress->Cancel == csContinue)))
   {
@@ -2833,7 +2832,7 @@ void TTerminal::ReadFile(const UnicodeString & FileName,
   {
     if (AFile)
     {
-      delete AFile;
+      SAFE_DESTROY(AFile);
     }
     AFile = nullptr;
     CommandError(&E, FMTLOAD(CANT_GET_ATTRS, FileName.c_str()));
@@ -2861,7 +2860,7 @@ bool TTerminal::FileExists(const UnicodeString & FileName, TRemoteFile ** AFile)
     }
     else
     {
-      delete File;
+      SAFE_DESTROY(File);
     }
     Result = true;
   }
@@ -3372,7 +3371,7 @@ bool TTerminal::LoadFilesProperties(TStrings * FileList)
     FFileSystem->LoadFilesProperties(FileList);
   if (Result && GetSessionData()->GetCacheDirectories() &&
       (FileList->GetCount() > 0) &&
-      (dynamic_cast<TRemoteFile *>(FileList->GetObject(0))->GetDirectory() == FFiles))
+      (NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObject(0))->GetDirectory() == FFiles))
   {
     AddCachedFileList(FFiles);
   }
@@ -3619,7 +3618,7 @@ bool TTerminal::MoveFiles(TStrings * FileList, const UnicodeString & Target,
       for (intptr_t Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); ++Index)
       {
         const TRemoteFile * File =
-          dynamic_cast<const TRemoteFile *>(FileList->GetObject(Index));
+          NB_STATIC_DOWNCAST_CONST(TRemoteFile, FileList->GetObject(Index));
         // File can be nullptr, and filename may not be full path,
         // but currently this is the only way we can move (at least in GUI)
         // current directory
@@ -3983,7 +3982,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & Command,
     {
       RollbackAction(*Action, nullptr, &E);
     }
-    if (GetExceptionOnFail() || (dynamic_cast<EFatal *>(&E) != nullptr))
+    if (GetExceptionOnFail() || (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr))
     {
       throw;
     }
@@ -4377,7 +4376,7 @@ struct TSynchronizeData : public TObject
       {
         TSynchronizeFileData * FileData = reinterpret_cast<TSynchronizeFileData *>
           (LocalFileList->GetObject(Index));
-        delete FileData;
+        SAFE_DESTROY(FileData);
       }
       SAFE_DESTROY(LocalFileList);
     }
@@ -4640,7 +4639,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
         {
           if (FileData->Modified)
           {
-            delete FileData->MatchingRemoteFileFile;
+            SAFE_DESTROY(FileData->MatchingRemoteFileFile);
           }
         }
       }
@@ -5661,7 +5660,7 @@ void TTerminalList::FreeAndNullTerminal(TTerminal *& Terminal)
 //------------------------------------------------------------------------------
 TTerminal * TTerminalList::GetTerminal(intptr_t Index)
 {
-  return dynamic_cast<TTerminal *>(GetItem(Index));
+  return NB_STATIC_DOWNCAST(TTerminal, GetItem(Index));
 }
 //------------------------------------------------------------------------------
 void TTerminalList::Idle()
@@ -5703,4 +5702,6 @@ UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName)
   }
   return Result;
 }
+//------------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TTerminal, NB_GET_CLASS_INFO(TObject), nullptr) // NB_GET_CLASS_INFO(TSessionUI));
 //------------------------------------------------------------------------------
