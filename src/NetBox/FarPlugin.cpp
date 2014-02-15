@@ -78,12 +78,16 @@ TCustomFarPlugin::~TCustomFarPlugin()
 
   ClearPluginInfo(FPluginInfo);
   assert(FOpenedPlugins->GetCount() == 0);
-  delete FOpenedPlugins;
+  SAFE_DESTROY(FOpenedPlugins);
   for (intptr_t I = 0; I < FSavedTitles->GetCount(); I++)
-    delete FSavedTitles->GetObject(I);
-  delete FSavedTitles;
-  delete FCriticalSection;
-  delete GetGlobalFunctions();
+  {
+    TObject * Object = FSavedTitles->GetObject(I);
+    SAFE_DESTROY(Object);
+  }
+  SAFE_DESTROY(FSavedTitles);
+  SAFE_DESTROY(FCriticalSection);
+  TGlobalFunctionsIntf * Intf = GetGlobalFunctions();
+  SAFE_DESTROY_EX(TGlobalFunctionsIntf, Intf);
 }
 //---------------------------------------------------------------------------
 bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/)
@@ -340,17 +344,12 @@ void TCustomFarPlugin::ClosePlugin(void * Plugin)
     ResetCachedInfo();
     TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
     assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
-    SCOPE_EXIT
     {
-      FOpenedPlugins->Remove(FileSystem);
-    };
-    {
-      {
-        TGuard Guard(FileSystem->GetCriticalSection());
-        FileSystem->Close();
-      }
+      TGuard Guard(FileSystem->GetCriticalSection());
+      FileSystem->Close();
     }
-    delete FileSystem;
+    FOpenedPlugins->Remove(FileSystem);
+    SAFE_DESTROY(FileSystem);
 #ifdef USE_DLMALLOC
     // dlmalloc_trim(0); // 64 * 1024);
 #endif
@@ -1466,7 +1465,10 @@ void TCustomFarPlugin::ClearConsoleTitle()
     ::SetConsoleTitle(Title.c_str());
     UpdateProgress(PS_NOPROGRESS, 0);
   }
-  delete FSavedTitles->GetObject(FSavedTitles->GetCount() - 1);
+  {
+    TObject * Object = FSavedTitles->GetObject(FSavedTitles->GetCount() - 1);
+    SAFE_DESTROY(Object);
+  }
   FSavedTitles->Delete(FSavedTitles->GetCount() - 1);
 }
 //---------------------------------------------------------------------------
@@ -1773,7 +1775,7 @@ TCustomFarFileSystem::~TCustomFarFileSystem()
   FInstances--;
   ResetCachedInfo();
   ClearOpenPluginInfo(FOpenPluginInfo);
-  delete FCriticalSection;
+  SAFE_DESTROY(FCriticalSection);
 }
 //---------------------------------------------------------------------------
 void TCustomFarFileSystem::HandleException(Exception * E, int OpMode)
@@ -2500,7 +2502,7 @@ TFarPanelInfo::TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwn
 TFarPanelInfo::~TFarPanelInfo()
 {
   nb_free(FPanelInfo);
-  delete FItems;
+  SAFE_DESTROY(FItems);
 }
 //---------------------------------------------------------------------------
 intptr_t TFarPanelInfo::GetItemCount() const

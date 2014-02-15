@@ -29,7 +29,8 @@ void TBookmarks::Clear()
 {
   for (intptr_t I = 0; I < FBookmarkLists->GetCount(); I++)
   {
-    delete FBookmarkLists->GetObject(I);
+    TObject * Object = FBookmarkLists->GetObject(I);
+    SAFE_DESTROY(Object);
   }
   FBookmarkLists->Clear();
 }
@@ -284,7 +285,8 @@ void TBookmarkList::Clear()
 {
   for (intptr_t I = 0; I < FBookmarks->GetCount(); I++)
   {
-    delete FBookmarks->GetObject(I);
+    TObject * Object = FBookmarks->GetObject(I);
+    SAFE_DESTROY(Object);
   }
   FBookmarks->Clear();
   FOpenedNodes->Clear();
@@ -378,7 +380,7 @@ void TBookmarkList::Delete(TBookmark * Bookmark)
   FModified = true;
   Bookmark->FOwner = nullptr;
   FBookmarks->Delete(I);
-  delete Bookmark;
+  SAFE_DESTROY(Bookmark);
 }
 //---------------------------------------------------------------------------
 intptr_t TBookmarkList::IndexOf(TBookmark * Bookmark)

@@ -21,7 +21,7 @@ TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
 //---------------------------------------------------------------------------
 TFarConfiguration::~TFarConfiguration()
 {
-  delete FBookmarks;
+  SAFE_DESTROY(FBookmarks);
 }
 //---------------------------------------------------------------------------
 void TFarConfiguration::Default()

@@ -1281,7 +1281,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
 //------------------------------------------------------------------------------
 TPasswordDialog::~TPasswordDialog()
 {
-  delete FEdits;
+  SAFE_DESTROY(FEdits);
 }
 //------------------------------------------------------------------------------
 void TPasswordDialog::GenerateLabel(const UnicodeString & ACaption,
@@ -2825,7 +2825,7 @@ void TSessionDialog::SshProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod
 //------------------------------------------------------------------------------
 TSessionDialog::~TSessionDialog()
 {
-  delete FTabs;
+  SAFE_DESTROY(FTabs);
 }
 //------------------------------------------------------------------------------
 void TSessionDialog::Change()
@@ -5993,9 +5993,9 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
 //------------------------------------------------------------------------------
 TFileSystemInfoDialog::~TFileSystemInfoDialog()
 {
-  delete ServerLabels;
-  delete ProtocolLabels;
-  delete SpaceAvailableLabels;
+  SAFE_DESTROY(ServerLabels);
+  SAFE_DESTROY(ProtocolLabels);
+  SAFE_DESTROY(SpaceAvailableLabels);
 }
 //------------------------------------------------------------------------------
 TLabelList * TFileSystemInfoDialog::CreateLabelArray(intptr_t Count)
@@ -7879,7 +7879,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
 //------------------------------------------------------------------------------
 TSynchronizeDialog::~TSynchronizeDialog()
 {
-  delete FSynchronizeOptions;
+  SAFE_DESTROY(FSynchronizeOptions);
 }
 //------------------------------------------------------------------------------
 void TSynchronizeDialog::TransferSettingsButtonClick(
@@ -7965,7 +7965,7 @@ void TSynchronizeDialog::DoStartStop(bool Start, bool Synchronize)
       FLAGMASK(Synchronize, soSynchronize);
     if (Start)
     {
-      delete FSynchronizeOptions;
+      SAFE_DESTROY(FSynchronizeOptions);
       FSynchronizeOptions = new TSynchronizeOptions;
       FOnGetOptions(SParams.Params, *FSynchronizeOptions);
     }

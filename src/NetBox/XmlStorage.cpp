@@ -34,7 +34,7 @@ TXmlStorage::~TXmlStorage()
   {
     WriteXml();
   }
-  delete FXmlDoc;
+  SAFE_DESTROY_EX(tinyxml2::XMLDocument, FXmlDoc);
 }
 //---------------------------------------------------------------------------
 bool TXmlStorage::ReadXml()

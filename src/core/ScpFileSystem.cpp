@@ -400,9 +400,9 @@ void TSCPFileSystem::Init(void * Data)
 //---------------------------------------------------------------------------
 TSCPFileSystem::~TSCPFileSystem()
 {
-  delete FCommandSet;
-  delete FOutput;
-  delete FSecureShell;
+  SAFE_DESTROY(FCommandSet);
+  SAFE_DESTROY(FOutput);
+  SAFE_DESTROY(FSecureShell);
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::Open()

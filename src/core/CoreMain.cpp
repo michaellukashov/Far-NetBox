@@ -45,7 +45,8 @@ void DeleteConfiguration()
   static bool ConfigurationDeleted = false;
   if (!ConfigurationDeleted)
   {
-    delete GetConfiguration();
+    TConfiguration * Conf = GetConfiguration();
+    SAFE_DESTROY(Conf);
     ConfigurationDeleted = true;
   }
 }

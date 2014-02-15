@@ -1038,14 +1038,14 @@ public:
     {
       TSFTPQueuePacket * Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(Index));
       assert(Request);
-      delete Request;
+      SAFE_DESTROY(Request);
 
       TSFTPPacket * Response = static_cast<TSFTPPacket*>(FResponses->GetItem(Index));
       assert(Response);
-      delete Response;
+      SAFE_DESTROY(Response);
     }
-    delete FRequests;
-    delete FResponses;
+    SAFE_DESTROY(FRequests);
+    SAFE_DESTROY(FResponses);
   }
 
   bool Init()
@@ -1086,9 +1086,9 @@ public:
       }
 
       FRequests->Delete(0);
-      delete Request;
+      SAFE_DESTROY(Request);
       FResponses->Delete(0);
-      delete Response;
+      SAFE_DESTROY(Response);
     }
   }
 
@@ -1370,7 +1370,7 @@ public:
 
   virtual ~TSFTPUploadQueue()
   {
-    delete FStream;
+    SAFE_DESTROY(FStream);
   }
 
   bool Init(const UnicodeString & AFileName,
@@ -1876,7 +1876,7 @@ void TSFTPFileSystem::ResetConnection()
   {
     assert(FPacketReservations->GetItem(I) == nullptr);
     TSFTPPacket * Item = static_cast<TSFTPPacket *>(FPacketReservations->GetItem(I));
-    delete Item;
+    SAFE_DESTROY(Item);
   }
   FPacketReservations->Clear();
   FPacketNumbers.clear();
@@ -3034,7 +3034,7 @@ void TSFTPFileSystem::TryOpenDirectory(const UnicodeString & Directory)
   }
   else
   {
-    delete File;
+    SAFE_DESTROY(File);
   }
 }
 //---------------------------------------------------------------------------
@@ -3291,7 +3291,7 @@ bool TSFTPFileSystem::RemoteFileExists(const UnicodeString & FullPath,
       }
       else
       {
-        delete File;
+        SAFE_DESTROY(File);
       }
     }
   }
@@ -4227,8 +4227,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
               OperationProgress->SetResumeStatus(rsDisabled);
             }
 
-            delete File;
-            File = nullptr;
+            SAFE_DESTROY(File);
           }
 
           if (ResumeAllowed)
@@ -4237,8 +4236,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
             if (RemoteFileExists(DestPartialFullName, &File))
             {
               ResumeOffset = File->GetSize();
-              delete File;
-              File = nullptr;
+              SAFE_DESTROY(File);
 
               bool PartialBiggerThanSource = (ResumeOffset > OperationProgress->LocalSize);
               if (FLAGCLEAR(Params, cpNoConfirmation) &&
@@ -5130,7 +5128,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         }
         if (FileStream)
         {
-          delete FileStream;
+          SAFE_DESTROY(FileStream);
         }
         if (DeleteLocalFile && (!ResumeAllowed || OperationProgress->LocallyUsed == 0) &&
             (OverwriteMode == omOverwrite))

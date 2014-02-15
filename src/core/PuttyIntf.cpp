@@ -496,7 +496,7 @@ long reg_close_winscp_key(HKEY Key)
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
   if (Storage != nullptr)
   {
-    delete Storage;
+    SAFE_DESTROY(Storage);
   }
 
   return ERROR_SUCCESS;

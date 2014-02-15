@@ -148,7 +148,7 @@ TSynchronizeOptions::TSynchronizeOptions() :
 //------------------------------------------------------------------------------
 TSynchronizeOptions::~TSynchronizeOptions()
 {
-  delete Filter;
+  SAFE_DESTROY(Filter);
 }
 //------------------------------------------------------------------------------
 bool TSynchronizeOptions::MatchesFilter(const UnicodeString & FileName)
@@ -189,7 +189,7 @@ TSynchronizeChecklist::TItem::TItem() :
 //------------------------------------------------------------------------------
 TSynchronizeChecklist::TItem::~TItem()
 {
-  delete RemoteFile;
+  SAFE_DESTROY(RemoteFile);
 }
 //------------------------------------------------------------------------------
 const UnicodeString & TSynchronizeChecklist::TItem::GetFileName() const
@@ -215,9 +215,10 @@ TSynchronizeChecklist::~TSynchronizeChecklist()
 {
   for (intptr_t Index = 0; Index < FList->GetCount(); ++Index)
   {
-    delete static_cast<TItem *>(static_cast<void *>(FList->GetItem(Index)));
+    TItem * Item = static_cast<TItem *>(static_cast<void *>(FList->GetItem(Index)));
+    SAFE_DESTROY(Item);
   }
-  delete FList;
+  SAFE_DESTROY(FList);
 }
 //------------------------------------------------------------------------------
 void TSynchronizeChecklist::Add(TItem * Item)
@@ -484,7 +485,7 @@ TCallbackGuard::~TCallbackGuard()
     FTerminal->FCallbackGuard = nullptr;
   }
 
-  delete FFatalError;
+  SAFE_DESTROY(FFatalError);
 }
 //------------------------------------------------------------------------------
 void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
@@ -496,7 +497,7 @@ void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg, const 
   // that converts any exception to fatal one (such as in TTerminal::Open).
   if (dynamic_cast<ECallbackGuardAbort *>(E) == nullptr)
   {
-    delete FFatalError;
+    SAFE_DESTROY(FFatalError);
     FFatalError = new ExtException(E, Msg, HelpKeyword);
   }
 
@@ -731,8 +732,7 @@ void TTerminal::ResetConnection()
 
   if (FDirectoryChangesCache != nullptr)
   {
-    delete FDirectoryChangesCache;
-    FDirectoryChangesCache = nullptr;
+    SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
   }
 
   FFiles->SetDirectory(L"");
@@ -831,8 +831,7 @@ void TTerminal::InternalTryOpen()
     // rollback
     if (FDirectoryChangesCache != nullptr)
     {
-      delete FDirectoryChangesCache;
-      FDirectoryChangesCache = nullptr;
+      SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
     }
     throw;
   }
@@ -2833,7 +2832,7 @@ void TTerminal::ReadFile(const UnicodeString & FileName,
   {
     if (AFile)
     {
-      delete AFile;
+      SAFE_DESTROY(AFile);
     }
     AFile = nullptr;
     CommandError(&E, FMTLOAD(CANT_GET_ATTRS, FileName.c_str()));
@@ -2861,7 +2860,7 @@ bool TTerminal::FileExists(const UnicodeString & FileName, TRemoteFile ** AFile)
     }
     else
     {
-      delete File;
+      SAFE_DESTROY(File);
     }
     Result = true;
   }
@@ -4377,7 +4376,7 @@ struct TSynchronizeData : public TObject
       {
         TSynchronizeFileData * FileData = reinterpret_cast<TSynchronizeFileData *>
           (LocalFileList->GetObject(Index));
-        delete FileData;
+        SAFE_DESTROY(FileData);
       }
       SAFE_DESTROY(LocalFileList);
     }
@@ -4640,7 +4639,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
         {
           if (FileData->Modified)
           {
-            delete FileData->MatchingRemoteFileFile;
+            SAFE_DESTROY(FileData->MatchingRemoteFileFile);
           }
         }
       }

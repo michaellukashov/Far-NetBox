@@ -71,7 +71,7 @@ TSessionData::~TSessionData()
 {
   if (nullptr != FIEProxyConfig)
   {
-    delete FIEProxyConfig;
+    SAFE_DESTROY(FIEProxyConfig);
     FIEProxyConfig = nullptr;
   }
 }
@@ -3082,7 +3082,7 @@ TStoredSessionList::TStoredSessionList(bool AReadOnly) :
 //---------------------------------------------------------------------
 TStoredSessionList::~TStoredSessionList()
 {
-  delete FDefaultSettings;
+  SAFE_DESTROY(FDefaultSettings);
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::Load(THierarchicalStorage * Storage,

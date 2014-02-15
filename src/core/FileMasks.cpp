@@ -275,7 +275,7 @@ void TFileMasks::DoInit(bool Delete)
   {
     if (Delete)
     {
-      delete FMasksStr[Index];
+      SAFE_DESTROY(FMasksStr[Index]);
     }
     FMasksStr[Index] = nullptr;
   }
@@ -681,7 +681,7 @@ TStrings * TFileMasks::GetMasksStr(intptr_t Index) const
 //---------------------------------------------------------------------------
 void TFileMasks::ReleaseMaskMask(TMaskMask & MaskMask)
 {
-  delete MaskMask.Mask;
+  SAFE_DESTROY(MaskMask.Mask);
   MaskMask.Mask = nullptr;
 }
 //---------------------------------------------------------------------------

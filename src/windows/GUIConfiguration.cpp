@@ -232,10 +232,10 @@ TCopyParamList::TCopyParamList() :
 TCopyParamList::~TCopyParamList()
 {
   Clear();
-  delete FCopyParams;
-  delete FRules;
-  delete FNames;
-  delete FNameList;
+  SAFE_DESTROY(FCopyParams);
+  SAFE_DESTROY(FRules);
+  SAFE_DESTROY(FNames);
+  SAFE_DESTROY(FNameList);
 }
 //---------------------------------------------------------------------------
 void TCopyParamList::Reset()
@@ -352,8 +352,8 @@ void TCopyParamList::Change(intptr_t Index, const UnicodeString & Name,
   }
   else
   {
-    delete CopyParam;
-    delete Rule;
+    SAFE_DESTROY(CopyParam);
+    SAFE_DESTROY(Rule);
   }
 }
 //---------------------------------------------------------------------------
@@ -530,8 +530,8 @@ TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
 //---------------------------------------------------------------------------
 TGUIConfiguration::~TGUIConfiguration()
 {
-  delete FLocales;
-  delete FCopyParamList;
+  SAFE_DESTROY(FLocales);
+  SAFE_DESTROY(FCopyParamList);
 }
 //---------------------------------------------------------------------------
 void TGUIConfiguration::Default()

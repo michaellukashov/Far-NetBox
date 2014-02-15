@@ -299,29 +299,20 @@ TFTPFileSystem::~TFTPFileSystem()
   // to release memory associated with the messages
   DiscardMessages();
 
-  delete FFileZillaIntf;
-  FFileZillaIntf = nullptr;
+  SAFE_DESTROY(FFileZillaIntf);
 
-  delete FQueue;
-  FQueue = nullptr;
+  SAFE_DESTROY(FQueue);
 
   ::CloseHandle(FQueueEvent);
 
-  delete FQueueCriticalSection;
-  FQueueCriticalSection = nullptr;
-  delete FTransferStatusCriticalSection;
-  FTransferStatusCriticalSection = nullptr;
+  SAFE_DESTROY(FQueueCriticalSection);
+  SAFE_DESTROY(FTransferStatusCriticalSection);
 
-  delete FLastResponse;
-  FLastResponse = nullptr;
-  delete FLastErrorResponse;
-  FLastErrorResponse = nullptr;
-  delete FLastError;
-  FLastError = nullptr;
-  delete FFeatures;
-  FFeatures = nullptr;
-  delete FServerCapabilities;
-  FServerCapabilities = nullptr;
+  SAFE_DESTROY(FLastResponse);
+  SAFE_DESTROY(FLastErrorResponse);
+  SAFE_DESTROY(FLastError);
+  SAFE_DESTROY(FFeatures);
+  SAFE_DESTROY(FServerCapabilities);
 
   ResetCaches();
 }
@@ -710,7 +701,7 @@ void TFTPFileSystem::AnyCommand(const UnicodeString & Command,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::ResetCaches()
 {
-  delete FFileListCache;
+  SAFE_DESTROY(FFileListCache);
   FFileListCache = nullptr;
 }
 //---------------------------------------------------------------------------
@@ -1696,7 +1687,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
         !FTerminal->GetActive() ||
         !FTerminal->FileExists(Fn, &File) ||
         !File->GetIsDirectory();
-      delete File;
+      SAFE_DESTROY(File);
       if (Rethrow)
       {
         throw;
@@ -2087,7 +2078,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & FileName,
       // set only after we successfully read the directory,
       // otherwise, when we reconnect from ReadDirectory,
       // the FFileListCache is reset from ResetCache.
-      delete FFileListCache;
+      SAFE_DESTROY(FFileListCache);
       FFileListCache = FileListCache.release();
       FFileListCachePath = GetCurrentDirectory();
 
@@ -2765,7 +2756,7 @@ void TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       *Response = FLastResponse;
       FLastResponse = new TStringList();
       // just to be consistent
-      delete FLastErrorResponse;
+      SAFE_DESTROY(FLastErrorResponse);
       FLastErrorResponse = new TStringList();
     }
   }

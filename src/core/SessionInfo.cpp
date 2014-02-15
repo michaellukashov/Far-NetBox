@@ -94,23 +94,20 @@ public:
 
   ~TSessionActionRecord()
   {
-    delete FErrorMessages;
-    delete FNames;
-    delete FValues;
-    delete FFileList;
-    delete FFile;
+    SAFE_DESTROY(FErrorMessages);
+    SAFE_DESTROY(FNames);
+    SAFE_DESTROY(FValues);
+    SAFE_DESTROY(FFileList);
+    SAFE_DESTROY(FFile);
   }
 
   void Restart()
   {
     FState = Opened;
     FRecursive = false;
-    delete FErrorMessages;
-    FErrorMessages = nullptr;
-    delete FFileList;
-    FFileList = nullptr;
-    delete FFile;
-    FFile = nullptr;
+    SAFE_DESTROY(FErrorMessages);
+    SAFE_DESTROY(FFileList);
+    SAFE_DESTROY(FFile);
     FNames->Clear();
     FValues->Clear();
   }
@@ -272,7 +269,7 @@ public:
   {
     if (FFile != nullptr)
     {
-      delete FFile;
+      SAFE_DESTROY(FFile);
     }
     FFile = File->Duplicate(true);
   }
@@ -611,7 +608,7 @@ TSessionLog::~TSessionLog()
   FClosed = true;
   ReflectSettings();
   assert(FFile == nullptr);
-  delete FCriticalSection;
+  SAFE_DESTROY(FCriticalSection);
 }
 //---------------------------------------------------------------------------
 void TSessionLog::Lock()
@@ -1231,11 +1228,11 @@ TActionLog::TActionLog(TSessionUI * UI, TSessionData * SessionData,
 TActionLog::~TActionLog()
 {
   assert(FPendingActions->GetCount() == 0);
-  delete FPendingActions;
+  SAFE_DESTROY(FPendingActions);
   FClosed = true;
   ReflectSettings();
   assert(FFile == nullptr);
-  delete FCriticalSection;
+  SAFE_DESTROY(FCriticalSection);
 }
 //---------------------------------------------------------------------------
 void TActionLog::Add(const UnicodeString & Line)

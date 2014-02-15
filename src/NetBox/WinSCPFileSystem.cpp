@@ -485,7 +485,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
           {
             File->SetType(FILETYPE_DIRECTORY);
           }
-          delete LinkFile;
+          SAFE_DESTROY(LinkFile);
         }*/
         PanelItems->Add(new TRemoteFilePanelItem(File));
       }
@@ -636,7 +636,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
   {
     if (NewData || FillInConnect)
     {
-      delete Data;
+      SAFE_DESTROY(Data);
     }
   };
   {
@@ -1347,7 +1347,7 @@ void TWinSCPFileSystem::Synchronize(const UnicodeString & LocalDirectory,
   {
     if (Checklist == nullptr)
     {
-      delete AChecklist;
+      SAFE_DESTROY(AChecklist);
     }
     else
     {
@@ -2889,7 +2889,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
   {
     if (AFileList == nullptr)
     {
-      delete FileList;
+      SAFE_DESTROY(FileList);
     }
     throw;
   }

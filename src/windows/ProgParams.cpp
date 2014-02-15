@@ -17,7 +17,7 @@ public:
 
   ~TProgramParamsOwner()
   {
-    delete FProgramParams;
+    SAFE_DESTROY(FProgramParams);
   }
 
   TProgramParams * Get()

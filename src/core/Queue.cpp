@@ -133,7 +133,7 @@ public:
 
   virtual ~TPromptUserAction()
   {
-    delete Results;
+    SAFE_DESTROY(Results);
   }
 
   virtual void Execute(void * Arg)
@@ -521,26 +521,27 @@ TTerminalQueue::~TTerminalQueue()
       FTerminals->Delete(0);
       TerminalItem->Terminate();
       TerminalItem->WaitFor();
-      delete TerminalItem;
+      SAFE_DESTROY(TerminalItem);
     }
-    delete FTerminals;
-    delete FForcedItems;
+    SAFE_DESTROY(FTerminals);
+    SAFE_DESTROY(FForcedItems);
 
     FreeItemsList(FItems);
     FreeItemsList(FDoneItems);
   }
 
-  delete FItemsSection;
-  delete FSessionData;
+  SAFE_DESTROY(FItemsSection);
+  SAFE_DESTROY(FSessionData);
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::FreeItemsList(TList * List)
 {
   for (intptr_t Index = 0; Index < List->GetCount(); ++Index)
   {
-    delete GetItem(List, Index);
+    TQueueItem * Item = GetItem(List, Index);
+    SAFE_DESTROY(Item);
   }
-  delete List;
+  SAFE_DESTROY(List);
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
@@ -568,7 +569,7 @@ void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
 
       FTerminals->Extract(TerminalItem);
 
-      delete TerminalItem;
+      SAFE_DESTROY(TerminalItem);
     }
 
     TriggerEvent();
@@ -666,7 +667,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
       }
       else
       {
-        delete Item;
+        SAFE_DESTROY(Item);
       }
 
       Empty = true;
@@ -734,7 +735,7 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
   {
     if (Current != nullptr)
     {
-      delete Current;
+      SAFE_DESTROY(Current);
     }
   };
   {
@@ -886,7 +887,7 @@ bool TTerminalQueue::ItemDelete(TQueueItem * Item)
         {
           FItems->Delete(Index);
           FForcedItems->Remove(Item);
-          delete Item;
+          SAFE_DESTROY(Item);
           UpdateList = true;
         }
         else
@@ -1032,7 +1033,7 @@ void TTerminalQueue::ProcessEvent()
           if (Item->FDoneAt <= RemoveDoneItemsBefore)
           {
             FDoneItems->Delete(Index);
-            delete Item;
+            SAFE_DESTROY(Item);
             Index--;
             DoListUpdate();
           }
@@ -1239,8 +1240,8 @@ TTerminalItem::~TTerminalItem()
   Close();
 
   assert(FItem == nullptr);
-  delete FTerminal;
-  delete FCriticalSection;
+  SAFE_DESTROY(FTerminal);
+  SAFE_DESTROY(FCriticalSection);
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::Process(TQueueItem * Item)
@@ -1589,12 +1590,12 @@ TQueueItem::TQueueItem() :
 TQueueItem::~TQueueItem()
 {
   // we need to keep the total transfer size even after transfer completes
-  delete FProgressData;
+  SAFE_DESTROY(FProgressData);
 
   Complete();
 
-  delete FSection;
-  delete FInfo;
+  SAFE_DESTROY(FSection);
+  SAFE_DESTROY(FInfo);
 }
 //---------------------------------------------------------------------------
 void TQueueItem::Complete()
@@ -1710,8 +1711,8 @@ TQueueItemProxy::TQueueItemProxy(TTerminalQueue * Queue,
 //---------------------------------------------------------------------------
 TQueueItemProxy::~TQueueItemProxy()
 {
-  delete FProgressData;
-  delete FInfo;
+  SAFE_DESTROY(FProgressData);
+  SAFE_DESTROY(FInfo);
 }
 //---------------------------------------------------------------------------
 TFileOperationProgressType * TQueueItemProxy::GetProgressData()
@@ -1834,10 +1835,10 @@ TTerminalQueueStatus::~TTerminalQueueStatus()
 {
   for (intptr_t Index = 0; Index < FList->GetCount(); ++Index)
   {
-    delete GetItem(Index);
+    TQueueItemProxy * Item = GetItem(Index);
+    SAFE_DESTROY(Item);
   }
-  delete FList;
-  FList = nullptr;
+  SAFE_DESTROY(FList);
 }
 //---------------------------------------------------------------------------
 void TTerminalQueueStatus::ResetStats()
@@ -1975,10 +1976,11 @@ TTransferQueueItem::~TTransferQueueItem()
 {
   for (intptr_t Index = 0; Index < FFilesToCopy->GetCount(); ++Index)
   {
-    delete FFilesToCopy->GetObject(Index);
+    TObject * Object = FFilesToCopy->GetObject(Index);
+    SAFE_DESTROY(Object);
   }
-  delete FFilesToCopy;
-  delete FCopyParam;
+  SAFE_DESTROY(FFilesToCopy);
+  SAFE_DESTROY(FCopyParam);
 }
 //---------------------------------------------------------------------------
 // TUploadQueueItem
@@ -2163,7 +2165,7 @@ TTerminalThread::~TTerminalThread()
   FTerminal->SetOnReadDirectoryProgress(FOnReadDirectoryProgress);
   FTerminal->SetOnInitializeLog(FOnInitializeLog);
 
-  delete FSection;
+  SAFE_DESTROY(FSection);
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::Cancel()

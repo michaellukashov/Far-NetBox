@@ -12157,8 +12157,7 @@ void TWebDAVFileSystem::Init(void *)
 //------------------------------------------------------------------------------
 TWebDAVFileSystem::~TWebDAVFileSystem()
 {
-  delete FTransferStatusCriticalSection;
-  FTransferStatusCriticalSection = nullptr;
+  SAFE_DESTROY(FTransferStatusCriticalSection);
 
   webdav_pool_destroy(webdav_pool);
   apr_terminate();
@@ -13114,7 +13113,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
         !FTerminal->GetActive() ||
         !FTerminal->FileExists(fn, &File) ||
         (File && !File->GetIsDirectory());
-      delete File;
+      SAFE_DESTROY(File);
       if (Rethrow)
       {
         throw;

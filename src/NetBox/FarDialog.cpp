@@ -60,10 +60,10 @@ TFarDialog::~TFarDialog()
   {
     GetItem(I)->Detach();
   }
-  delete FItems;
+  SAFE_DESTROY(FItems);
   nb_free(FDialogItems);
   FDialogItemsCapacity = 0;
-  delete FContainers;
+  SAFE_DESTROY(FContainers);
   if (FSynchronizeObjects[0] != INVALID_HANDLE_VALUE)
   {
     ::CloseHandle(FSynchronizeObjects[0]);
@@ -932,7 +932,7 @@ TFarDialogContainer::TFarDialogContainer(TFarDialog * ADialog) :
 //---------------------------------------------------------------------------
 TFarDialogContainer::~TFarDialogContainer()
 {
-  delete FItems;
+  SAFE_DESTROY(FItems);
 }
 //---------------------------------------------------------------------------
 UnicodeString TFarDialogContainer::GetMsg(int MsgId)
@@ -2522,7 +2522,7 @@ TFarLister::TFarLister(TFarDialog * ADialog) :
 //---------------------------------------------------------------------------
 TFarLister::~TFarLister()
 {
-  delete FItems;
+  SAFE_DESTROY(FItems);
 }
 //---------------------------------------------------------------------------
 void TFarLister::ItemsChange(TObject * /*Sender*/)

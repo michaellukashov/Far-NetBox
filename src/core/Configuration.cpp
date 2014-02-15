@@ -133,8 +133,8 @@ TConfiguration::~TConfiguration()
   {
     FreeFileInfo(FApplicationInfo);
   }
-  delete FCriticalSection;
-  // delete FUsage;
+  SAFE_DESTROY(FCriticalSection);
+  // SAFE_DESTROY(FUsage);
 }
 //---------------------------------------------------------------------------
 void TConfiguration::UpdateStaticUsage()

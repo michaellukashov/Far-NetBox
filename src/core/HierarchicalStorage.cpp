@@ -111,7 +111,7 @@ THierarchicalStorage::THierarchicalStorage(const UnicodeString & AStorage) :
 //------------------------------------------------------------------------------
 THierarchicalStorage::~THierarchicalStorage()
 {
-  delete FKeyHistory;
+  SAFE_DESTROY(FKeyHistory);
 }
 //------------------------------------------------------------------------------
 void THierarchicalStorage::Flush()
@@ -411,7 +411,7 @@ void TRegistryStorage::Init()
 //------------------------------------------------------------------------------
 TRegistryStorage::~TRegistryStorage()
 {
-  delete FRegistry;
+  SAFE_DESTROY(FRegistry);
 }
 //------------------------------------------------------------------------------
 bool TRegistryStorage::Copy(TRegistryStorage * Storage)
@@ -675,7 +675,7 @@ TCustomIniFileStorage::TCustomIniFileStorage(const UnicodeString & Storage, TCus
 //------------------------------------------------------------------------------
 TCustomIniFileStorage::~TCustomIniFileStorage()
 {
-  delete FIniFile;
+  SAFE_DESTROY(FIniFile);
 }
 //------------------------------------------------------------------------------
 UnicodeString TCustomIniFileStorage::GetSource()
