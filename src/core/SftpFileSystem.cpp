@@ -3143,10 +3143,10 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           if (Total % 10 == 0)
           {
             FTerminal->DoReadDirectoryProgress(Total, isEOF);
-            if (isEOF)
-            {
-              FTerminal->DoReadDirectoryProgress(-2, isEOF);
-            }
+          }
+          if (isEOF)
+          {
+            FTerminal->DoReadDirectoryProgress(-2, isEOF);
           }
         }
 
