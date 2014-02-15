@@ -28,10 +28,10 @@ public:
   void Open();
   void Close();
   void KeepAlive();
-  intptr_t Receive(unsigned char * Buf, intptr_t Length);
-  bool Peek(unsigned char *& Buf, intptr_t Length) const;
+  intptr_t Receive(uint8_t * Buf, intptr_t Length);
+  bool Peek(uint8_t *& Buf, intptr_t Length) const;
   UnicodeString ReceiveLine();
-  void Send(const unsigned char * Buf, intptr_t Length);
+  void Send(const uint8_t * Buf, intptr_t Length);
   void SendStr(const UnicodeString & Str);
   void SendSpecial(int Code);
   void Idle(uintptr_t MSec = 0);
@@ -58,7 +58,7 @@ public:
     const UnicodeString & AName, bool NameRequired,
     const UnicodeString & Instructions, bool InstructionsRequired,
     TStrings * Prompts, TStrings * Results);
-  void FromBackend(bool IsStdErr, const unsigned char * Data, intptr_t Length);
+  void FromBackend(bool IsStdErr, const uint8_t * Data, intptr_t Length);
   void CWrite(const char * Data, intptr_t Length);
   const UnicodeString & GetStdError() const;
   void VerifyHostKey(const UnicodeString & Host, int Port,
@@ -152,8 +152,8 @@ private:
   intptr_t PendLen;
   intptr_t PendSize;
   intptr_t OutLen;
-  unsigned char * OutPtr;
-  unsigned char * Pending;
+  uint8_t * OutPtr;
+  uint8_t * Pending;
   TSessionLog * FLog;
   TConfiguration * FConfiguration;
   bool FAuthenticating;

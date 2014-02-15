@@ -172,7 +172,7 @@ int WINAPI ProcessEditorInputW(const INPUT_RECORD * Rec)
   return static_cast<int>(FarPlugin->ProcessEditorInput(Rec));
 }
 
-HANDLE WINAPI OpenFilePluginW(const wchar_t * fileName, const unsigned char * fileHeader, int fileHeaderSize, int /*OpMode*/)
+HANDLE WINAPI OpenFilePluginW(const wchar_t * fileName, const uint8_t * fileHeader, int fileHeaderSize, int /*OpMode*/)
 {
   assert(FarPlugin);
   TFarPluginGuard Guard;

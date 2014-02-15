@@ -875,7 +875,7 @@ extern const apr_uint32_t * const ctype_table;
 // constants. Uses #ctype_table.
 
 #define ctype_test(c, flags) \
-  (0 != (ctype_table[(unsigned char)(c)] & (flags)))
+  (0 != (ctype_table[(uint8_t)(c)] & (flags)))
 
 // Basic character classes
 #define WEBDAV_CTYPE_CNTRL    0x0001 //< Control character
@@ -1706,7 +1706,7 @@ static const apr_uint32_t ctype_table_internal[256] =
 
 const apr_uint32_t * const ctype_table = ctype_table_internal;
 
-static const unsigned char casefold_table[256] =
+static const uint8_t casefold_table[256] =
 {
   // Identity, except {97:122} => {65:90}
   0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,
@@ -1730,8 +1730,8 @@ static const unsigned char casefold_table[256] =
 static APR_INLINE int
 ctype_casecmp(int a, int b)
 {
-  const int A = casefold_table[(unsigned char)a];
-  const int B = casefold_table[(unsigned char)b];
+  const int A = casefold_table[(uint8_t)a];
+  const int B = casefold_table[(uint8_t)b];
   return A - B;
 }
 
@@ -1985,7 +1985,7 @@ uri_escape(
   retstr = stringbuf_create_ensure(strlen(path), pool);
   for (i = 0; path[i]; i++)
   {
-    int c = (unsigned char)path[i];
+    int c = (uint8_t)path[i];
     if (table[c])
       continue;
 
@@ -2000,12 +2000,12 @@ uri_escape(
         i - copied);
 
     // Now, write in our escaped character, consisting of the
-    // '%' and two digits.  We cast the C to unsigned char here because
+    // '%' and two digits.  We cast the C to uint8_t here because
     // the 'X' format character will be tempted to treat it as an unsigned
     // int...which causes problem when messing with 0x80-0xFF chars.
     // We also need space for a null as apr_snprintf will write one.
     stringbuf_ensure(retstr, retstr->len + 4);
-    apr_snprintf(retstr->data + retstr->len, 4, "%%%02X", (unsigned char)c);
+    apr_snprintf(retstr->data + retstr->len, 4, "%%%02X", (uint8_t)c);
     retstr->len += 3;
 
     // Finally, update our copy counter.
@@ -2555,7 +2555,7 @@ static const char basis_64[] =
 static int
 apr_base64_encode_binary(
   char * encoded,
-  const unsigned char * string,
+  const uint8_t * string,
   int len)
 {
   int i;
@@ -2598,7 +2598,7 @@ apr_base64_encode(
   const char * string,
   int len)
 {
-  return apr_base64_encode_binary(encoded, (const unsigned char *) string, len);
+  return apr_base64_encode_binary(encoded, (const uint8_t *) string, len);
 }
 
 static int
@@ -2608,7 +2608,7 @@ apr_base64_encode_len(int len)
 }
 
 // aaaack but it's fast and const should make it shared text page.
-static const unsigned char pr2six[256] =
+static const uint8_t pr2six[256] =
 {
   // ASCII table
   64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
@@ -2634,13 +2634,13 @@ apr_base64_decode_len(
   const char * bufcoded)
 {
   int nbytesdecoded;
-  register const unsigned char * bufin;
+  register const uint8_t * bufin;
   register apr_size_t nprbytes;
 
-  bufin = (const unsigned char *) bufcoded;
+  bufin = (const uint8_t *) bufcoded;
   while (pr2six[*(bufin++)] <= 63);
 
-  nprbytes = (bufin - (const unsigned char *) bufcoded) - 1;
+  nprbytes = (bufin - (const uint8_t *) bufcoded) - 1;
   nbytesdecoded = (((int)nprbytes + 3) / 4) * 3;
 
   return nbytesdecoded + 1;
@@ -2651,30 +2651,30 @@ apr_base64_decode_len(
 
 static int
 apr_base64_decode_binary(
-  unsigned char * bufplain,
+  uint8_t * bufplain,
   const char * bufcoded)
 {
   int nbytesdecoded;
-  register const unsigned char * bufin;
-  register unsigned char * bufout;
+  register const uint8_t * bufin;
+  register uint8_t * bufout;
   register apr_size_t nprbytes;
 
-  bufin = (const unsigned char *) bufcoded;
+  bufin = (const uint8_t *) bufcoded;
   while (pr2six[*(bufin++)] <= 63);
-  nprbytes = (bufin - (const unsigned char *) bufcoded) - 1;
+  nprbytes = (bufin - (const uint8_t *) bufcoded) - 1;
   nbytesdecoded = (((int)nprbytes + 3) / 4) * 3;
 
-  bufout = (unsigned char *) bufplain;
-  bufin = (const unsigned char *) bufcoded;
+  bufout = (uint8_t *) bufplain;
+  bufin = (const uint8_t *) bufcoded;
 
   while (nprbytes > 4)
   {
     *(bufout++) =
-      (unsigned char)((pr2six[*bufin] << 2) | (pr2six[bufin[1]] >> 4));
+      (uint8_t)((pr2six[*bufin] << 2) | (pr2six[bufin[1]] >> 4));
     *(bufout++) =
-      (unsigned char)((pr2six[bufin[1]] << 4) | (pr2six[bufin[2]] >> 2));
+      (uint8_t)((pr2six[bufin[1]] << 4) | (pr2six[bufin[2]] >> 2));
     *(bufout++) =
-      (unsigned char)((pr2six[bufin[2]] << 6) | pr2six[bufin[3]]);
+      (uint8_t)((pr2six[bufin[2]] << 6) | pr2six[bufin[3]]);
     bufin += 4;
     nprbytes -= 4;
   }
@@ -2683,17 +2683,17 @@ apr_base64_decode_binary(
   if (nprbytes > 1)
   {
     *(bufout++) =
-      (unsigned char)((pr2six[*bufin] << 2) | (pr2six[bufin[1]] >> 4));
+      (uint8_t)((pr2six[*bufin] << 2) | (pr2six[bufin[1]] >> 4));
   }
   if (nprbytes > 2)
   {
     *(bufout++) =
-      (unsigned char)((pr2six[bufin[1]] << 4) | (pr2six[bufin[2]] >> 2));
+      (uint8_t)((pr2six[bufin[1]] << 4) | (pr2six[bufin[2]] >> 2));
   }
   if (nprbytes > 3)
   {
     *(bufout++) =
-      (unsigned char)((pr2six[bufin[2]] << 6) | pr2six[bufin[3]]);
+      (uint8_t)((pr2six[bufin[2]] << 6) | pr2six[bufin[3]]);
   }
 
   nbytesdecoded -= (4 - (int)nprbytes) & 3;
@@ -2705,7 +2705,7 @@ apr_base64_decode(
   char * bufplain,
   const char * bufcoded)
 {
-  int len = apr_base64_decode_binary((unsigned char *) bufplain, bufcoded);
+  int len = apr_base64_decode_binary((uint8_t *) bufplain, bufcoded);
   bufplain[len] = '\0';
   return len;
 }
@@ -5614,7 +5614,7 @@ canonicalize(
             src += 2;
           break;
         default:
-          if (!uri_char_validity[(unsigned char)*src])
+          if (!uri_char_validity[(uint8_t)*src])
             need_extra += 2;
           break;
       }
@@ -5662,7 +5662,7 @@ canonicalize(
 
             val = (int)strtol(digitz, nullptr, 16);
 
-            if (uri_char_validity[(unsigned char)val])
+            if (uri_char_validity[(uint8_t)val])
               *(dst++) = (char)val;
             else
             {
@@ -5673,9 +5673,9 @@ canonicalize(
           }
           break;
         default:
-          if (!uri_char_validity[(unsigned char)*src])
+          if (!uri_char_validity[(uint8_t)*src])
           {
-            apr_snprintf(dst, 4, "%%%02X", (unsigned char)*src);
+            apr_snprintf(dst, 4, "%%%02X", (uint8_t)*src);
             dst += 3;
           }
           else

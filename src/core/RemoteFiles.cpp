@@ -2708,7 +2708,7 @@ TRemoteProperties TRemoteProperties::ChangedProperties(
 //---------------------------------------------------------------------------
 void TRemoteProperties::Load(THierarchicalStorage * Storage)
 {
-  unsigned char Buf[sizeof(Valid)];
+  uint8_t Buf[sizeof(Valid)];
   if (static_cast<size_t>(Storage->ReadBinaryData(L"Valid", &Buf, sizeof(Buf))) == sizeof(Buf))
   {
     memmove(&Valid, Buf, sizeof(Valid));

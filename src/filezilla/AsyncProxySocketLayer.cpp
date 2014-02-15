@@ -429,11 +429,11 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
 					LPCSTR lpszAsciiPass = m_ProxyData.pProxyPass;
 					ASSERT(strlen(lpszAsciiUser)<=255);
 					ASSERT(strlen(lpszAsciiPass)<=255);
-					unsigned char *buffer = static_cast<unsigned char *>(nb_calloc(1, 3 + (lpszAsciiUser?strlen(lpszAsciiUser):0) + (lpszAsciiPass?strlen(lpszAsciiPass):0) + 1));
+					uint8_t *buffer = static_cast<uint8_t *>(nb_calloc(1, 3 + (lpszAsciiUser?strlen(lpszAsciiUser):0) + (lpszAsciiPass?strlen(lpszAsciiPass):0) + 1));
 					sprintf((char *)buffer, "  %s %s", lpszAsciiUser?lpszAsciiUser:"", lpszAsciiPass?lpszAsciiPass:"");
 					buffer[0]=1;
-					buffer[1]=static_cast<unsigned char>(strlen(lpszAsciiUser));
-					buffer[2+strlen(lpszAsciiUser)]=static_cast<unsigned char>(strlen(lpszAsciiPass));
+					buffer[1]=static_cast<uint8_t>(strlen(lpszAsciiUser));
+					buffer[2+strlen(lpszAsciiUser)]=static_cast<uint8_t>(strlen(lpszAsciiPass));
 					intptr_t len=3+strlen(lpszAsciiUser)+strlen(lpszAsciiPass);
 					int res=SendNext(buffer,len);
 					nb_free(buffer);
@@ -961,7 +961,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
 		else if (m_ProxyData.nProxyType==PROXYTYPE_SOCKS5)
 		{ //SOCKS5 proxy
 			//Send initialization request
-			unsigned char command[10];
+			uint8_t command[10];
 			memset(command,0,10);
 			command[0]=5;
 			//CAsyncProxySocketLayer supports to logon types: No logon and

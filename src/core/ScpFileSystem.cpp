@@ -1431,7 +1431,7 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
 {
   // Taken from scp.c response() and modified
 
-  unsigned char Resp;
+  uint8_t Resp;
   FSecureShell->Receive(&Resp, 1);
 
   switch (Resp)
@@ -1882,7 +1882,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
               {
                 uintptr_t BlockSize = OperationProgress->TransferBlockSize();
                 FSecureShell->Send(
-                  reinterpret_cast<unsigned char *>(AsciiBuf.GetData() + (intptr_t)OperationProgress->TransferedSize),
+                  reinterpret_cast<uint8_t *>(AsciiBuf.GetData() + (intptr_t)OperationProgress->TransferedSize),
                   BlockSize);
                 OperationProgress->AddTransfered(BlockSize);
                 if (OperationProgress->Cancel == csCancelTransfer)
@@ -1906,7 +1906,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
               FTerminal->LogEvent(FORMAT(L"Sending BINARY data (%u bytes)",
                 BlockBuf.GetSize()));
             }
-            FSecureShell->Send(reinterpret_cast<const unsigned char *>(BlockBuf.GetData()), static_cast<int>(BlockBuf.GetSize()));
+            FSecureShell->Send(reinterpret_cast<const uint8_t *>(BlockBuf.GetData()), static_cast<int>(BlockBuf.GetSize()));
             OperationProgress->AddTransfered(BlockBuf.GetSize());
           }
 
@@ -2267,7 +2267,7 @@ inline void TSCPFileSystem::SCPError(const UnicodeString & Message, bool Fatal)
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SCPSendError(const UnicodeString & Message, bool Fatal)
 {
-  unsigned char ErrorLevel = static_cast<char>(Fatal ? 2 : 1);
+  uint8_t ErrorLevel = static_cast<char>(Fatal ? 2 : 1);
   FTerminal->LogEvent(FORMAT(L"Sending SCP error (%d) to remote side:",
     static_cast<int>(ErrorLevel)));
   FSecureShell->Send(&ErrorLevel, 1);
@@ -2581,7 +2581,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                   BlockBuf.SetSize(OperationProgress->TransferBlockSize());
                   BlockBuf.SetPosition(0);
 
-                  FSecureShell->Receive(reinterpret_cast<unsigned char *>(BlockBuf.GetData()), BlockBuf.GetSize());
+                  FSecureShell->Receive(reinterpret_cast<uint8_t *>(BlockBuf.GetData()), BlockBuf.GetSize());
                   OperationProgress->AddTransfered(BlockBuf.GetSize());
 
                   if (OperationProgress->AsciiTransfer)

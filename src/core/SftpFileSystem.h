@@ -99,7 +99,7 @@ protected:
   AnsiString FEOL;
   TList * FPacketReservations;
   rde::vector<uintptr_t> FPacketNumbers;
-  unsigned char FPreviousLoggedPacket;
+  uint8_t FPreviousLoggedPacket;
   int FNotLoggedPackets;
   int FBusy;
   void * FBusyToken;
@@ -117,7 +117,7 @@ protected:
   void SendCustomReadFile(TSFTPPacket * Packet, TSFTPPacket * Response,
     uint32_t Flags);
   void CustomReadFile(const UnicodeString & FileName,
-    TRemoteFile *& AFile, unsigned char Type, TRemoteFile * ALinkedByFile = nullptr,
+    TRemoteFile *& AFile, uint8_t Type, TRemoteFile * ALinkedByFile = nullptr,
     int AllowStatus = -1);
   virtual UnicodeString GetCurrentDirectory();
   UnicodeString GetHomeDirectory();
@@ -151,7 +151,7 @@ protected:
     TStrings * FileList, TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel);
-  void DoDeleteFile(const UnicodeString & FileName, unsigned char Type);
+  void DoDeleteFile(const UnicodeString & FileName, uint8_t Type);
 
   void SFTPSourceRobust(const UnicodeString & FileName,
     const TRemoteFile * AFile,
@@ -200,7 +200,7 @@ protected:
     TFileOperationProgressType * OperationProgress);
   uint32_t DownloadBlockSize(
     TFileOperationProgressType * OperationProgress);
-  intptr_t PacketLength(unsigned char * LenBuf, intptr_t ExpectedType);
+  intptr_t PacketLength(uint8_t * LenBuf, intptr_t ExpectedType);
 
 private:
   inline const TSessionData * GetSessionData() const { return FTerminal->GetSessionData(); }

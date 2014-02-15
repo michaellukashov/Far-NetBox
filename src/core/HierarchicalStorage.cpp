@@ -419,7 +419,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
   TRegistry * Registry = Storage->FRegistry;
   bool Result = true;
   std::unique_ptr<TStrings> Names(new TStringList());
-  rde::vector<unsigned char> Buffer(1024);
+  rde::vector<uint8_t> Buffer(1024);
   Registry->GetValueNames(Names.get());
   intptr_t Index = 0;
   while ((Index < Names->GetCount()) && Result)

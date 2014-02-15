@@ -1849,7 +1849,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 				break;
 		if (i && i < sdaylen)
 		{
-			if ((unsigned char)sday[i] > 127)
+			if ((uint8_t)sday[i] > 127)
 				sdaylen = i;
 		}
 		
@@ -1907,7 +1907,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 					break;
 			if (!i || i == smonthlen)
 				return false;
-			if ((unsigned char)smonth[i] < 128)
+			if ((uint8_t)smonth[i] < 128)
 				return false;
 
 			smonthlen = i;
@@ -2467,7 +2467,7 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
 	if (m_bUTF8 && *m_bUTF8)
 	{
 		// convert from UTF-8 to ANSI
-		if (!utf8_valid((const unsigned char*)p, len))
+		if (!utf8_valid((const uint8_t*)p, len))
 		{
 			if (mayInvalidateUTF8 && m_server.nUTF8 != 1)
 			{

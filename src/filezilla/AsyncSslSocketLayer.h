@@ -129,7 +129,7 @@ struct t_SslCertData
 		int y,M,d,h,m,s;
 	} validFrom, validUntil;
 
-	unsigned char hash[20];
+	uint8_t hash[20];
 
 	int verificationResult;
 	int verificationDepth;
@@ -156,9 +156,9 @@ public:
 		bool sessionreuse, int minTlsVersion, int maxTlsVersion,
 		void* pContext = 0);
 
-	static bool CreateSslCertificate(LPCTSTR filename, int bits, unsigned char* country, unsigned char* state,
-			unsigned char* locality, unsigned char* organization, unsigned char* unit, unsigned char* cname,
-			unsigned char *email, CString& err);
+	static bool CreateSslCertificate(LPCTSTR filename, int bits, uint8_t* country, uint8_t* state,
+			uint8_t* locality, uint8_t* organization, uint8_t* unit, uint8_t* cname,
+			uint8_t *email, CString& err);
 
 	int SetCertKeyFile(const char* cert, const char* key, const char* pass, CString* error = 0);
 

@@ -79,11 +79,11 @@ struct TFormatSettings : public TObject
 public:
   explicit TFormatSettings(int /* LCID */) {}
   static TFormatSettings Create(int LCID ) { return TFormatSettings(LCID); }
-  unsigned char CurrencyFormat;
-  unsigned char NegCurrFormat;
+  uint8_t CurrencyFormat;
+  uint8_t NegCurrFormat;
   wchar_t ThousandSeparator;
   wchar_t DecimalSeparator;
-  unsigned char CurrencyDecimals;
+  uint8_t CurrencyDecimals;
   wchar_t DateSeparator;
   wchar_t TimeSeparator;
   wchar_t ListSeparator;

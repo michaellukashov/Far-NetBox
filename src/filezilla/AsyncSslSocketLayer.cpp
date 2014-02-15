@@ -29,9 +29,9 @@ This class only has a couple of public functions:
   You can call this function only after receiving a layerspecific callback with the SSL_VERIFY_CERT
   id. Set result to 1 if you trust the certificate and 0 if you don't trust it.
   nID has to be the priv_data element of the t_SslCertData structure and nCode has to be SSL_VERIFY_CERT.
-- CreateSslCertificate(LPCTSTR filename, int bits, unsigned char* country, unsigned char* state,
-			unsigned char* locality, unsigned char* organization, unsigned char* unit, unsigned char* cname,
-			unsigned char *email, CString& err);
+- CreateSslCertificate(LPCTSTR filename, int bits, uint8_t* country, uint8_t* state,
+			uint8_t* locality, uint8_t* organization, uint8_t* unit, uint8_t* cname,
+			uint8_t *email, CString& err);
 	Creates a new self-signed SSL certificate and stores it in the given file
 - SendRaw(const void* lpBuf, int nBufLen, int nFlags = 0)
   Sends a raw, unencrypted message. This may be useful after successful initialization to tell the other
@@ -192,7 +192,7 @@ def(X509_NAME*, X509_get_issuer_name, (X509 *a));
 def(const char*, OBJ_nid2sn, (int n));
 def(ASN1_STRING*, X509_NAME_ENTRY_get_data, (X509_NAME_ENTRY *ne));
 def(void, X509_STORE_CTX_set_error, (X509_STORE_CTX *ctx, int s));
-def(int, X509_digest, (const X509 *data, const EVP_MD *type, unsigned char *md, unsigned int *len));
+def(int, X509_digest, (const X509 *data, const EVP_MD *type, uint8_t *md, unsigned int *len));
 def(const EVP_MD*, EVP_sha1, (void));
 def(X509*, X509_STORE_CTX_get_current_cert, (X509_STORE_CTX *ctx));
 def(int, X509_STORE_CTX_get_error, (X509_STORE_CTX *ctx));
@@ -210,14 +210,14 @@ def(char*, ERR_error_string, (unsigned long e, char *buf));
 #else
 def(const char*, ERR_error_string, (unsigned long e, char *buf));
 #endif
-def(int, ASN1_STRING_to_UTF8, (unsigned char **out, ASN1_STRING *in));
+def(int, ASN1_STRING_to_UTF8, (uint8_t **out, ASN1_STRING *in));
 def(void, CRYPTO_free, (void *p));
 def(RSA*, RSA_generate_key, (int bits, unsigned long e, void (*callback)(int,int,void *), void *cb_arg));
 def(int, X509_set_version, (X509 *x,long version));
 def(ASN1_TIME*, X509_gmtime_adj, (ASN1_TIME *s, long adj));
 def(int, X509_set_pubkey, (X509 *x, EVP_PKEY *pkey));
-def(int, X509_NAME_add_entry_by_txt, (X509_NAME *name, const char *field, int type, const unsigned char *bytes, int len, int loc, int set));
-def(int, X509_NAME_add_entry_by_NID, (X509_NAME *name, int nid, int type, unsigned char *bytes, int len, int loc, int set));
+def(int, X509_NAME_add_entry_by_txt, (X509_NAME *name, const char *field, int type, const uint8_t *bytes, int len, int loc, int set));
+def(int, X509_NAME_add_entry_by_NID, (X509_NAME *name, int nid, int type, uint8_t *bytes, int len, int loc, int set));
 def(int, X509_set_issuer_name, (X509 *x, X509_NAME *name));
 def(int, X509_sign, (X509 *x, EVP_PKEY *pkey, const EVP_MD *md));
 def(EVP_PKEY*, EVP_PKEY_new, (void));
@@ -230,13 +230,13 @@ def(X509*, X509_new, (void));
 def(int, ASN1_INTEGER_set, (ASN1_INTEGER *a, long v));
 def(ASN1_INTEGER*, X509_get_serialNumber, (X509 *x));
 #ifdef MPEXT
-def(int, PEM_ASN1_write_bio, (i2d_of_void *i2d,const char *name,BIO *bp,void *x, const EVP_CIPHER *enc,unsigned char *kstr,int klen, pem_password_cb *callback, void *u));
+def(int, PEM_ASN1_write_bio, (i2d_of_void *i2d,const char *name,BIO *bp,void *x, const EVP_CIPHER *enc,uint8_t *kstr,int klen, pem_password_cb *callback, void *u));
 #else
-def(int, PEM_ASN1_write_bio, (int (*i2d)(),const char *name,BIO *bp,char *x, const EVP_CIPHER *enc,unsigned char *kstr,int klen, pem_password_cb *callback, void *u));
+def(int, PEM_ASN1_write_bio, (int (*i2d)(),const char *name,BIO *bp,char *x, const EVP_CIPHER *enc,uint8_t *kstr,int klen, pem_password_cb *callback, void *u));
 #endif
-def(int, i2d_X509, (X509 *x, unsigned char **out));
+def(int, i2d_X509, (X509 *x, uint8_t **out));
 def(BIO_METHOD *, BIO_s_mem, (void));
-def(int, i2d_PrivateKey, (EVP_PKEY *a, unsigned char **pp));
+def(int, i2d_PrivateKey, (EVP_PKEY *a, uint8_t **pp));
 
 // Critical section wrapper class
 #ifndef CCRITICALSECTIONWRAPPERINCLUDED
@@ -1692,7 +1692,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
 			ASN1_STRING *pString = pX509_NAME_ENTRY_get_data(pX509NameEntry);
 			CString str;
 
-			unsigned char *out;
+			uint8_t *out;
 			int len = pASN1_STRING_to_UTF8(&out, pString);
 			if (len > 0)
 			{
@@ -1801,7 +1801,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
 
 			CString str;
 
-			unsigned char *out;
+			uint8_t *out;
 			int len = pASN1_STRING_to_UTF8(&out, pString);
 			if (len > 0)
 			{
@@ -2134,9 +2134,9 @@ void CAsyncSslSocketLayer::PrintLastErrorMsg()
 	}
 }
 
-bool CAsyncSslSocketLayer::CreateSslCertificate(LPCTSTR filename, int bits, unsigned char* country, unsigned char* state,
-			unsigned char* locality, unsigned char* organization, unsigned char* unit, unsigned char* cname,
-			unsigned char *email, CString& err)
+bool CAsyncSslSocketLayer::CreateSslCertificate(LPCTSTR filename, int bits, uint8_t* country, uint8_t* state,
+			uint8_t* locality, uint8_t* organization, uint8_t* unit, uint8_t* cname,
+			uint8_t *email, CString& err)
 {
 	// Certificate valid for a year
 	int days = 365;
@@ -2445,7 +2445,7 @@ void LoadSslWindowsSystemCertificateStore(SSL_CTX * Ctx)
       CertNameToStr(X509_ASN_ENCODING, &CertContext->pCertInfo->Issuer, CERT_X500_NAME_STR, Buf, LENOF(Buf));
       Buf[LENOF(Buf) - 1] = L'\0';
       #endif
-      X509 * x509 = d2i_X509(NULL, const_cast<const unsigned char **>(&CertContext->pbCertEncoded), CertContext->cbCertEncoded);
+      X509 * x509 = d2i_X509(NULL, const_cast<const uint8_t **>(&CertContext->pbCertEncoded), CertContext->cbCertEncoded);
       if (x509 != NULL)
       {
         #ifdef _DEBUG
