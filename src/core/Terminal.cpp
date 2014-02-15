@@ -5703,5 +5703,5 @@ UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName)
   return Result;
 }
 //------------------------------------------------------------------------------
-NB_IMPLEMENT_CLASS(TTerminal, NB_GET_CLASS_INFO(TObject), nullptr) // NB_GET_CLASS_INFO(TSessionUI));
+NB_IMPLEMENT_CLASS(TTerminal, NB_GET_CLASS_INFO(TObject), nullptr)
 //------------------------------------------------------------------------------
