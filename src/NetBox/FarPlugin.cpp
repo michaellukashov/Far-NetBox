@@ -1444,7 +1444,7 @@ void TCustomFarPlugin::ShowConsoleTitle(const UnicodeString & Title)
   }
   FCurrentTitle = Title;
   FCurrentProgress = -1;
-  UpdateConsoleTitle();
+  UpdateCurrentConsoleTitle();
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::ClearConsoleTitle()
@@ -1457,7 +1457,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
   {
     FCurrentTitle = Title;
     FCurrentProgress = Param->Progress;
-    UpdateConsoleTitle();
+    UpdateCurrentConsoleTitle();
   }
   else
   {
@@ -1473,13 +1473,13 @@ void TCustomFarPlugin::ClearConsoleTitle()
 void TCustomFarPlugin::UpdateConsoleTitle(const UnicodeString & Title)
 {
   FCurrentTitle = Title;
-  UpdateConsoleTitle();
+  UpdateCurrentConsoleTitle();
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::UpdateConsoleTitleProgress(short Progress)
 {
   FCurrentProgress = Progress;
-  UpdateConsoleTitle();
+  UpdateCurrentConsoleTitle();
 }
 //---------------------------------------------------------------------------
 UnicodeString TCustomFarPlugin::FormatConsoleTitle()
@@ -1509,7 +1509,7 @@ void TCustomFarPlugin::UpdateProgress(intptr_t State, intptr_t Progress)
   }
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::UpdateConsoleTitle()
+void TCustomFarPlugin::UpdateCurrentConsoleTitle()
 {
   UnicodeString Title = FormatConsoleTitle();
   SetConsoleTitle(Title.c_str());

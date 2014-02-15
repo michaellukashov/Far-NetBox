@@ -200,7 +200,7 @@ private:
   short FCurrentProgress;
 
   void ClearPluginInfo(PluginInfo & Info);
-  void UpdateConsoleTitle();
+  void UpdateCurrentConsoleTitle();
   UnicodeString FormatConsoleTitle();
   HWND GetConsoleWindow() const;
   RECT GetPanelBounds(HANDLE PanelHandle);
