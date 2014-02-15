@@ -144,7 +144,7 @@ void TList::SetItem(intptr_t Index, void * Item)
   {
     Classes::Error(SListIndexError, Index);
   }
-  FList.insert(Index, 1, Item);
+  FList[Index] = Item;
 }
 
 intptr_t TList::Add(void * Value)
