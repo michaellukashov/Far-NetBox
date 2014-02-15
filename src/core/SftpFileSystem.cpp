@@ -1875,7 +1875,8 @@ void TSFTPFileSystem::ResetConnection()
   for (intptr_t I = 0; I < FPacketReservations->GetCount(); I++)
   {
     assert(FPacketReservations->GetItem(I) == nullptr);
-    delete static_cast<TSFTPPacket *>(FPacketReservations->GetItem(I));
+    TSFTPPacket * Item = static_cast<TSFTPPacket *>(FPacketReservations->GetItem(I));
+    delete Item;
   }
   FPacketReservations->Clear();
   FPacketNumbers.clear();
