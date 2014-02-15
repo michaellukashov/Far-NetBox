@@ -562,8 +562,8 @@ TTerminal::~TTerminal()
   SAFE_DESTROY_EX(TSessionLog, FLog);
   SAFE_DESTROY_EX(TActionLog, FActionLog);
   SAFE_DESTROY(FFiles);
-  delete FDirectoryCache;
-  delete FDirectoryChangesCache;
+  SAFE_DESTROY_EX(TRemoteDirectoryCache, FDirectoryCache);
+  SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
   SAFE_DESTROY(FSessionData);
 }
 //------------------------------------------------------------------------------

@@ -193,8 +193,8 @@ struct TSFTPSupport : public TObject
 
   ~TSFTPSupport()
   {
-    delete AttribExtensions;
-    delete Extensions;
+    SAFE_DESTROY(AttribExtensions);
+    SAFE_DESTROY(Extensions);
   }
 
   void Reset()
@@ -1727,12 +1727,12 @@ void TSFTPFileSystem::Init(void * Data)
 //---------------------------------------------------------------------------
 TSFTPFileSystem::~TSFTPFileSystem()
 {
-  delete FSupport;
+  SAFE_DESTROY(FSupport);
   ResetConnection();
-  delete FPacketReservations;
-  delete FExtensions;
-  delete FFixedPaths;
-  delete FSecureShell;
+  SAFE_DESTROY(FPacketReservations);
+  SAFE_DESTROY(FExtensions);
+  SAFE_DESTROY(FFixedPaths);
+  SAFE_DESTROY(FSecureShell);
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::Open()
