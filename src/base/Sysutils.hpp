@@ -27,9 +27,6 @@ public:
   explicit Exception(int Ident);
   ~Exception() throw() {}
 
-  template<typename T>
-  bool InheritsFrom() const { return dynamic_cast<const T *>(this) != nullptr; }
-
 public:
   UnicodeString Message;
 
@@ -220,13 +217,6 @@ bool ForceDirectories(const UnicodeString & Dir);
 bool DeleteFile(const UnicodeString & File);
 bool CreateDir(const UnicodeString & Dir);
 bool RemoveDir(const UnicodeString & Dir);
-
-//---------------------------------------------------------------------------
-template <class Base, class Derived>
-bool InheritsFrom(const Base * t)
-{
-  return dynamic_cast<const Derived *>(t) != nullptr;
-}
 
 //---------------------------------------------------------------------------
 UnicodeString Format(const wchar_t * Format, ...);

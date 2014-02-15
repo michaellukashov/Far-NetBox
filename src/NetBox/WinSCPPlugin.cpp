@@ -528,14 +528,14 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
   if (E && !E->Message.IsEmpty())
   {
-    if (!E->InheritsFrom<EAbort>())
+    if (dynamic_cast<EAbort *>(E) == nullptr)
     {
       TQueryType Type;
-      Type = E->InheritsFrom<ESshTerminate>() ?
+      Type = dynamic_cast<ESshTerminate *>(E) != nullptr ?
         qtInformation : qtError;
 
       TStrings * MoreMessages = nullptr;
-      if (E->InheritsFrom<ExtException>())
+      if (dynamic_cast<ExtException *>(E) != nullptr)
       {
         MoreMessages = dynamic_cast<ExtException *>(E)->GetMoreMessages();
       }
