@@ -24,16 +24,6 @@
 #define MAKE_CALLBACK(METHOD, OBJECT) \
   (OBJECT)->METHOD
 
-#define TRY_FINALLY(CODE, CLEANUP) \
-  try \
-  { \
-    CODE \
-  } \
-  __finally \
-  { \
-    CLEANUP \
-  }
-
 #else
 
 #define DEFINE_CALLBACK_TYPE0(EVENT,     R) \
@@ -57,18 +47,6 @@
 
 #define MAKE_CALLBACK(METHOD, OBJECT) \
   fastdelegate::bind(&METHOD, OBJECT)
-
-#define TRY_FINALLY(CODE, CLEANUP) \
-  try \
-  { \
-    CODE \
-  } \
-  catch (...) \
-  { \
-    CLEANUP \
-    throw; \
-  } \
-  CLEANUP
 
 #define TShellExecuteInfoW _SHELLEXECUTEINFOW
 #define TSHFileInfoW SHFILEINFOW
