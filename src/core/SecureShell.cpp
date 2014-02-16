@@ -51,6 +51,7 @@ TSecureShell::TSecureShell(TSessionUI * UI,
   FActive = false;
   FWaiting = 0;
   FOpened = false;
+  FOpenSSH = false;
   OutPtr = nullptr;
   Pending = nullptr;
   FBackendHandle = nullptr;
@@ -134,6 +135,11 @@ const TSessionInfo & TSecureShell::GetSessionInfo() const
   }
   return FSessionInfo;
 }
+//---------------------------------------------------------------------------
+bool TSecureShell::IsOpenSSH() const
+{
+  return FOpenSSH;
+}
 //---------------------------------------------------------------------
 Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
 {
@@ -180,20 +186,6 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_int(conf, CONF_addressfamily, Data->GetAddressFamily());
   conf_set_str(conf, CONF_ssh_rekey_data, AnsiString(Data->GetRekeyData()).c_str());
   conf_set_int(conf, CONF_ssh_rekey_time, Data->GetRekeyTime());
-  /*ASCOPY(cfg->host, Data->GetHostNameExpanded());
-  ASCOPY(cfg->username, Data->GetUserNameExpanded());
-  cfg->port = static_cast<int>(Data->GetPortNumber());
-  cfg->protocol = PROT_SSH;
-  // always set 0, as we will handle keepalives ourselves to avoid
-  // multi-threaded issues in putty timer list
-  cfg->ping_interval = 0;
-  cfg->compression = Data->GetCompression();
-  cfg->tryagent = Data->GetTryAgent();
-  cfg->agentfwd = Data->GetAgentFwd();
-  cfg->addressfamily = Data->GetAddressFamily();
-  ASCOPY(cfg->ssh_rekey_data, Data->GetRekeyData());
-  cfg->ssh_rekey_time = static_cast<int>(Data->GetRekeyTime());
-*/
 
   for (int c = 0; c < CIPHER_COUNT; c++)
   {
@@ -343,10 +335,10 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       {
         // see psftp_connect() from psftp.c
         conf_set_int(conf, CONF_ssh_subsys2, FALSE);
-        conf_set_str(conf, CONF_remote_cmd2, AnsiString(
-          L"test -x /usr/lib/sftp-server && exec /usr/lib/sftp-server\n"
-          L"test -x /usr/local/lib/sftp-server && exec /usr/local/lib/sftp-server\n"
-          L"exec sftp-server").c_str());
+        conf_set_str(conf, CONF_remote_cmd2,
+          "test -x /usr/lib/sftp-server && exec /usr/lib/sftp-server\n"
+          "test -x /usr/local/lib/sftp-server && exec /usr/local/lib/sftp-server\n"
+          "exec sftp-server");
       }
     }
   }
@@ -395,11 +387,6 @@ void TSecureShell::Open()
         conf_get_int(conf, CONF_tcp_keepalives));
     }
 
-      //const_cast<char *>(W2MB(FSessionData->GetHostNameExpanded().c_str(),
-      //(const UINT)FSessionData->GetCodePageAsNumber()).c_str()),
-      //static_cast<int>(FSessionData->GetPortNumber()),
-      //&RealHost, 0,
-      //FConfig->tcp_keepalives);
     sfree(RealHost);
     if (InitError)
     {
@@ -434,6 +421,11 @@ void TSecureShell::Open()
 
   assert(!FSessionInfo.SshImplementation.IsEmpty());
   FOpened = true;
+
+  FOpenSSH =
+    // Sun SSH is based on OpenSSH (suffers the same bugs)
+    (GetSessionInfo().SshImplementation.Pos(L"OpenSSH") == 1) ||
+    (GetSessionInfo().SshImplementation.Pos(L"Sun_SSH") == 1);
 }
 //---------------------------------------------------------------------------
 bool TSecureShell::TryFtp()
@@ -882,11 +874,11 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t * Data, intptr_t Len
       if (!FFrozen)
       {
         FFrozen = true;
-        SCOPE_EXIT
         {
-          FFrozen = false;
-        };
-        {
+          SCOPE_EXIT
+          {
+            FFrozen = false;
+          };
           do
           {
             FDataWhileFrozen = false;
@@ -926,11 +918,11 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
     OutPtr = Buf;
     OutLen = Length;
 
-    SCOPE_EXIT
     {
-      OutPtr = nullptr;
-    };
-    {
+      SCOPE_EXIT
+      {
+        OutPtr = nullptr;
+      };
       /*
        * See if the pending-input block contains some of what we
        * need.
@@ -1754,7 +1746,6 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       };
       Handles = sresize(Handles, static_cast<size_t>(HandleCount + 1), HANDLE);
       Handles[HandleCount] = FSocketEvent;
-      //uintptr_t WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, (DWORD)MSec);
       unsigned int Timeout = MSec;
       if (toplevel_callback_pending())
       {

@@ -47,6 +47,7 @@ public:
   void ClearStdError();
   bool GetStoredCredentialsTried() const;
   void CollectUsage();
+  bool IsOpenSSH() const;
 
   void RegisterReceiveHandler(TNotifyEvent Handler);
   void UnregisterReceiveHandler(TNotifyEvent Handler);
@@ -149,6 +150,7 @@ private:
   bool FNoConnectionResponse;
   bool FCollectPrivateKeyUsage;
   int FWaitingForData;
+  bool FOpenSSH;
 
   intptr_t PendLen;
   intptr_t PendSize;
