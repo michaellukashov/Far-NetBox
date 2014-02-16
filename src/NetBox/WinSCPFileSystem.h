@@ -82,8 +82,8 @@ friend class TWinSCPPlugin;
 friend class TNetBoxPlugin;
 friend class TKeepaliveThread;
 friend class TQueueDialog;
-NB_DECLARE_CLASS(TWinSCPFileSystem)
 NB_DISABLE_COPY(TWinSCPFileSystem)
+NB_DECLARE_CLASS(TWinSCPFileSystem)
 public:
   explicit TWinSCPFileSystem(TCustomFarPlugin * APlugin);
   void Init(TSecureShell * SecureShell);

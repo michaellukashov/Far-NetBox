@@ -188,8 +188,8 @@ class TFarDialogItem : public TObject
 friend TFarDialog;
 friend TFarDialogContainer;
 friend TFarList;
-NB_DECLARE_CLASS(TFarDialogItem)
 NB_DISABLE_COPY(TFarDialogItem)
+NB_DECLARE_CLASS(TFarDialogItem)
 public:
   TRect GetBounds() const { return FBounds; }
   TRect GetActualBounds() const;
@@ -496,8 +496,8 @@ class TFarList : public TStringList
 friend TFarListBox;
 friend TFarLister;
 friend TFarComboBox;
-NB_DECLARE_CLASS(TFarList)
 NB_DISABLE_COPY(TFarList)
+NB_DECLARE_CLASS(TFarList)
 public:
   explicit TFarList(TFarDialogItem * ADialogItem = nullptr);
   virtual ~TFarList();

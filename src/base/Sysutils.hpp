@@ -54,6 +54,7 @@ public:
 
 class EFileNotFoundError : public Exception
 {
+NB_DECLARE_CLASS(EFileNotFoundError)
 public:
   EFileNotFoundError() : Exception("")
   {}
@@ -63,6 +64,7 @@ public:
 
 class EOSError : public Exception
 {
+NB_DECLARE_CLASS(EOSError)
 public:
   explicit EOSError(const UnicodeString & Msg, DWORD code) : Exception(Msg),
     ErrorCode(code)

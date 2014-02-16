@@ -145,6 +145,8 @@ enum TObjectClassId
   OBJECT_CLASS_ESshFatal,
   OBJECT_CLASS_ESshTerminate,
   OBJECT_CLASS_ECallbackGuardAbort,
+  OBJECT_CLASS_EFileNotFoundError,
+  OBJECT_CLASS_EOSError,
   OBJECT_CLASS_TPersistent,
   OBJECT_CLASS_TStrings,
   OBJECT_CLASS_TNamedObject,

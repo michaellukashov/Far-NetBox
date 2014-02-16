@@ -75,8 +75,8 @@ private:
 //---------------------------------------------------------------------------
 class TRemoteFile : public TPersistent
 {
-NB_DECLARE_CLASS(TRemoteFile)
 NB_DISABLE_COPY(TRemoteFile)
+NB_DECLARE_CLASS(TRemoteFile)
 public:
   intptr_t GetAttr() const;
   bool GetBrokenLink() const;

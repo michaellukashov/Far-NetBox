@@ -55,8 +55,8 @@ friend class TWinSCPFileSystem;
 friend class TFarDialogItem;
 friend class TFarMessageDialog;
 friend class TFarPluginGuard;
-NB_DECLARE_CLASS(TCustomFarPlugin)
 NB_DISABLE_COPY(TCustomFarPlugin)
+NB_DECLARE_CLASS(TCustomFarPlugin)
 public:
   explicit TCustomFarPlugin(HINSTANCE HInst);
   virtual ~TCustomFarPlugin();
@@ -220,8 +220,8 @@ class TCustomFarFileSystem : public TObject
 {
 friend class TFarPanelInfo;
 friend class TCustomFarPlugin;
-NB_DECLARE_CLASS(TCustomFarFileSystem)
 NB_DISABLE_COPY(TCustomFarFileSystem)
+NB_DECLARE_CLASS(TCustomFarFileSystem)
 public:
   TCustomFarFileSystem(TCustomFarPlugin * APlugin);
   void Init();

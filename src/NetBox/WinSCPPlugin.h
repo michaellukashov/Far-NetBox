@@ -42,8 +42,8 @@ public:
 //---------------------------------------------------------------------------
 class TWinSCPPlugin : public TCustomFarPlugin
 {
-  friend TWinSCPFileSystem;
-  NB_DECLARE_CLASS(TWinSCPPlugin)
+friend TWinSCPFileSystem;
+NB_DECLARE_CLASS(TWinSCPPlugin)
 public:
   explicit TWinSCPPlugin(HINSTANCE HInst);
   virtual ~TWinSCPPlugin();
