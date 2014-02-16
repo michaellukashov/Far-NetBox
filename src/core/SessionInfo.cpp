@@ -989,20 +989,21 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       }
       ADF(L"Ping type: %s, Ping interval: %d sec; Timeout: %d sec",
         UnicodeString(PingTypes[PingType]).c_str(), PingInterval, Data->GetTimeout());
-      ADF(L"Proxy: %s%s", ProxyMethodList[Data->GetProxyMethod()],
-        Data->GetProxyMethod() == pmSystem ?
-          ::Format(L" (%s)", ProxyMethodList[Data->GetActualProxyMethod()]).c_str() :
-          L"")
-      if (Data->GetProxyMethod() != ::pmNone)
+      TProxyMethod ProxyMethod = Data->GetProxyMethod();
+      UnicodeString ProxyMethodStr;
+      if (ProxyMethod == pmSystem)
+        ProxyMethodStr = FORMAT(L" (%s)", ProxyMethodList[Data->GetActualProxyMethod()]);
+      ADF(L"Proxy: %s%s", ProxyMethodList[ProxyMethod], ProxyMethodStr.c_str());
+      if (ProxyMethod != ::pmNone)
       {
         ADF(L"HostName: %s (Port: %d); Username: %s; Passwd: %s",
           Data->GetProxyHost().c_str(), Data->GetProxyPort(),
-           Data->GetProxyUsername().c_str(), BooleanToEngStr(!Data->GetProxyPassword().IsEmpty()).c_str());
-        if (Data->GetProxyMethod() == pmTelnet)
+          Data->GetProxyUsername().c_str(), BooleanToEngStr(!Data->GetProxyPassword().IsEmpty()).c_str());
+        if (ProxyMethod == pmTelnet)
         {
           ADF(L"Telnet command: %s", Data->GetProxyTelnetCommand().c_str());
         }
-        if (Data->GetProxyMethod() == pmCmd)
+        if (ProxyMethod == pmCmd)
         {
           ADF(L"Local command: %s", Data->GetProxyLocalCommand().c_str());
         }
