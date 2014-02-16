@@ -535,6 +535,7 @@ private:
   UnicodeString FOrigHostName;
   intptr_t FOrigPortNumber;
   TProxyMethod FOrigProxyMethod;
+  bool FTunnelConfigured;
   TSessionSource FSource;
   bool FSaveOnly;
   UnicodeString FCodePage;

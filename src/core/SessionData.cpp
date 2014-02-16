@@ -115,6 +115,7 @@ void TSessionData::Default()
   SetSshSimple(true);
   SetHostKey(L"");
   FOverrideCachedHostKey = true;
+  FTunnelConfigured = false;
 
   SetProxyMethod(::pmNone);
   SetProxyHost(L"proxy");
@@ -1683,13 +1684,18 @@ void TSessionData::ConfigureTunnel(intptr_t APortNumber)
   SetPortNumber(APortNumber);
   // proxy settings is used for tunnel
   SetProxyMethod(::pmNone);
+  FTunnelConfigured = true;
 }
 //---------------------------------------------------------------------
 void TSessionData::RollbackTunnel()
 {
-  SetHostName(FOrigHostName);
-  SetPortNumber(FOrigPortNumber);
-  SetProxyMethod(FOrigProxyMethod);
+  if (FTunnelConfigured)
+  {
+    SetHostName(FOrigHostName);
+    SetPortNumber(FOrigPortNumber);
+    SetProxyMethod(FOrigProxyMethod);
+    FTunnelConfigured = false;
+  }
 }
 //---------------------------------------------------------------------
 void TSessionData::ExpandEnvironmentVariables()
