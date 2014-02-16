@@ -2034,7 +2034,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   UnicodeString NormalizedFingerprint = NormalizeFingerprint(Fingerprint);
 
   bool Result = false;
-
+/*
   UnicodeString StoredKeys;
   AnsiString AnsiStoredKeys;
   AnsiStoredKeys.SetLength(10240);
@@ -2066,7 +2066,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       }
     }
   }
-/*
+*/
   UnicodeString Buf = FSessionData->GetHostKey();
   while (!Result && !Buf.IsEmpty())
   {
@@ -2088,10 +2088,12 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       LogEvent(FORMAT(L"Host key does not match configured key %s", ExpectedKey.c_str()));
     }
   }
+
   UnicodeString StoredKeys;
-*/
+
   if (!Result && (StoredKeys.IsEmpty() || FSessionData->GetOverrideCachedHostKey()))
   {
+/*
     UnicodeString Buf = FSessionData->GetHostKey();
     while (!Result && !Buf.IsEmpty())
     {
@@ -2114,7 +2116,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
         LogEvent(FORMAT(L"Host key does not match configured key %s", ExpectedKey.c_str()));
       }
     }
-/*
+*/
     AnsiString AnsiStoredKeys;
     AnsiStoredKeys.SetLength(10240);
     if (retrieve_host_key(
@@ -2146,7 +2148,6 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
     {
       StoredKeys = L"";
     }
-*/
   }
 
   if (!Result)
