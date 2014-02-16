@@ -2034,12 +2034,17 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   UnicodeString NormalizedFingerprint = NormalizeFingerprint(Fingerprint);
 
   bool Result = false;
-/*
+
   UnicodeString StoredKeys;
-  AnsiString AnsiStoredKeys;
-  AnsiStoredKeys.SetLength(10240);
-  if (retrieve_host_key(AnsiString(Host).c_str(), Port, AnsiString(KeyType).c_str(),
-        (char *)AnsiStoredKeys.c_str(), AnsiStoredKeys.Length()) == 0)
+  AnsiString AnsiStoredKeys(10240, '\0');
+
+  if (retrieve_host_key(
+        W2MB(Host2.c_str(),
+             static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
+        Port,
+        W2MB(KeyType.c_str(),
+             static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
+        const_cast<char *>(AnsiStoredKeys.c_str()), AnsiStoredKeys.Length()) == 0)
   {
     StoredKeys = AnsiStoredKeys.c_str();
     UnicodeString Buf = StoredKeys;
@@ -2066,34 +2071,9 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       }
     }
   }
-*/
-  UnicodeString Buf = FSessionData->GetHostKey();
-  while (!Result && !Buf.IsEmpty())
-  {
-    UnicodeString ExpectedKey = CutToChar(Buf, Delimiter, false);
-    if (ExpectedKey == L"*")
-    {
-      UnicodeString Message = LoadStr(ANY_HOSTKEY);
-      FUI->Information(Message, true);
-      FLog->Add(llException, Message);
-      Result = true;
-    }
-    else if (ExpectedKey == Fingerprint)
-    {
-      LogEvent(L"Host key matches configured key");
-      Result = true;
-    }
-    else
-    {
-      LogEvent(FORMAT(L"Host key does not match configured key %s", ExpectedKey.c_str()));
-    }
-  }
-
-  UnicodeString StoredKeys;
 
   if (!Result && (StoredKeys.IsEmpty() || FSessionData->GetOverrideCachedHostKey()))
   {
-/*
     UnicodeString Buf = FSessionData->GetHostKey();
     while (!Result && !Buf.IsEmpty())
     {
@@ -2115,38 +2095,6 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       {
         LogEvent(FORMAT(L"Host key does not match configured key %s", ExpectedKey.c_str()));
       }
-    }
-*/
-    AnsiString AnsiStoredKeys;
-    AnsiStoredKeys.SetLength(10240);
-    if (retrieve_host_key(
-          W2MB(Host2.c_str(),
-               static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
-          Port,
-          W2MB(KeyType.c_str(),
-               static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
-          const_cast<char *>(AnsiStoredKeys.c_str()),
-          static_cast<int>(AnsiStoredKeys.Length())) == 0)
-    {
-      StoredKeys = AnsiStoredKeys.c_str();
-      UnicodeString Buf2 = StoredKeys;
-      while (!Result && !Buf2.IsEmpty())
-      {
-        UnicodeString StoredKey = CutToChar(Buf2, Delimiter, false);
-        if (StoredKey == KeyStr2)
-        {
-          LogEvent(L"Host key matches cached key");
-          Result = true;
-        }
-        else
-        {
-          LogEvent(FORMAT(L"Host key does not match cached key %s", FormatKeyStr(StoredKey).c_str()));
-        }
-      }
-    }
-    else
-    {
-      StoredKeys = L"";
     }
   }
 
