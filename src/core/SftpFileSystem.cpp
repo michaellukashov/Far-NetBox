@@ -2890,8 +2890,8 @@ void TSFTPFileSystem::DoStartup()
 
   // use UTF when forced or ...
   // when "auto" and the server is not known not to use UTF
-  bool BuggyUtf = (GetSessionInfo().SshImplementation.Pos(L"Foxit-WAC-Server") == 1);
   const TSessionInfo & Info = GetSessionInfo();
+  bool BuggyUtf = Info.SshImplementation.Pos(L"Foxit-WAC-Server") == 1;
   FUtfStrings =
     (GetSessionData()->GetNotUtf() == asOff) ||
     ((GetSessionData()->GetNotUtf() == asAuto) && !BuggyUtf);
@@ -2905,15 +2905,10 @@ void TSFTPFileSystem::DoStartup()
     FTerminal->LogEvent(L"We will never use UTF-8 strings");
   }
 
-  FOpenSSH =
-    // Sun SSH is based on OpenSSH (suffers the same bugs)
-    (Info.SshImplementation.Pos(L"OpenSSH") == 1) ||
-    (Info.SshImplementation.Pos(L"Sun_SSH") == 1);
-
   FMaxPacketSize = static_cast<uint32_t>(GetSessionData()->GetSFTPMaxPacketSize());
   if (FMaxPacketSize == 0)
   {
-    if (FOpenSSH && (FVersion == 3) && !FSupport->Loaded)
+    if (FSecureShell->IsOpenSSH() && (FVersion == 3) && !FSupport->Loaded)
     {
       FMaxPacketSize = 4 + (256 * 1024); // len + 256kB payload
       FTerminal->LogEvent(FORMAT(L"Limiting packet size to OpenSSH sftp-server limit of %d bytes",
@@ -3423,7 +3418,7 @@ void TSFTPFileSystem::CreateLink(const UnicodeString & FileName,
   TSFTPPacket Packet(SSH_FXP_SYMLINK, FCodePage);
 
   bool Buggy = (GetSessionData()->GetSFTPBug(sbSymlink) == asOn) ||
-    ((GetSessionData()->GetSFTPBug(sbSymlink) == asAuto) && FOpenSSH);
+    ((GetSessionData()->GetSFTPBug(sbSymlink) == asAuto) && FSecureShell->IsOpenSSH());
 
   if (!Buggy)
   {
