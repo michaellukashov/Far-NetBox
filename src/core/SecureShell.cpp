@@ -1442,7 +1442,7 @@ void TSecureShell::UpdatePortFwdSocket(SOCKET Value, bool Startup)
   }
   else
   {
-    rde::vector<SOCKET>::iterator it = FPortFwdSockets.find(Value);
+    TSockets::iterator it = FPortFwdSockets.find(Value);
     if (it != FPortFwdSockets.end())
       FPortFwdSockets.erase(it);
   }
