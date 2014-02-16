@@ -2015,14 +2015,14 @@ UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & KeyStr) const
 void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   const UnicodeString & KeyType, const UnicodeString & KeyStr, const UnicodeString & Fingerprint)
 {
-  LogEvent(FORMAT(L"Verifying host key %s %s with fingerprint %s", KeyType.c_str(), FormatKeyStr(KeyStr).c_str(), Fingerprint.c_str()));
-
   UnicodeString Host2 = Host;
   UnicodeString KeyStr2 = KeyStr;
+  LogEvent(FORMAT(L"Verifying host key %s %s with fingerprint %s", KeyType.c_str(), FormatKeyStr(KeyStr2).c_str(), Fingerprint.c_str()));
+
   GotHostKey();
 
   wchar_t Delimiter = L';';
-  assert(KeyStr.Pos(Delimiter) == 0);
+  assert(KeyStr2.Pos(Delimiter) == 0);
 
   if (FSessionData->GetTunnel())
   {
@@ -2053,7 +2053,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       {
         NormalizedExpectedKey = NormalizeFingerprint(StoredKey);
       }
-      if ((!Fingerprint && (StoredKey == KeyStr)) ||
+      if ((!Fingerprint && (StoredKey == KeyStr2)) ||
           (Fingerprint && (NormalizedExpectedKey == NormalizedFingerprint)))
       {
         LogEvent(L"Host key matches cached key");
@@ -2133,7 +2133,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       while (!Result && !Buf2.IsEmpty())
       {
         UnicodeString StoredKey = CutToChar(Buf2, Delimiter, false);
-        if (StoredKey == KeyStr)
+        if (StoredKey == KeyStr2)
         {
           LogEvent(L"Host key matches cached key");
           Result = true;
@@ -2199,7 +2199,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       {
         case qaOK:
           assert(!Unknown);
-          KeyStr2 = (StoredKeys + Delimiter + KeyStr);
+          KeyStr2 = (StoredKeys + Delimiter + KeyStr2);
           // fall thru
         case qaYes:
           store_host_key(AnsiString(Host2).c_str(), Port, AnsiString(KeyType).c_str(), AnsiString(KeyStr2).c_str());
