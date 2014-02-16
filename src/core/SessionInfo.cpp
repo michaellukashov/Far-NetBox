@@ -908,7 +908,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       EndUpdate();
     };
     #define ADSTR(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
-    #define ADF(S, ...) ADSTR(FORMAT(S, ##__VA_ARGS__));
+    #define ADF(S, ...) ADSTR(S, ##__VA_ARGS__);
     if (Data == nullptr)
     {
       AddSeparator();
