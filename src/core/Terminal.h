@@ -463,6 +463,7 @@ protected:
   virtual bool DoPromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions, TStrings* Prompts,
     TStrings * Response);
+  void SetupTunnelLocalPortNumber();
   void OpenTunnel();
   void CloseTunnel();
   void DoInformation(const UnicodeString & Str, bool Status, intptr_t Phase = -1);

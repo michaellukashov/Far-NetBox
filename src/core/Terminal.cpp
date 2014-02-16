@@ -994,10 +994,8 @@ bool TTerminal::IsListenerFree(uintptr_t PortNumber) const
   return Result;
 }
 //------------------------------------------------------------------------------
-void TTerminal::OpenTunnel()
+void TTerminal::SetupTunnelLocalPortNumber()
 {
-  assert(FTunnelData == nullptr);
-
   FTunnelLocalPortNumber = FSessionData->GetTunnelLocalPortNumber();
   if (FTunnelLocalPortNumber == 0)
   {
@@ -1014,6 +1012,12 @@ void TTerminal::OpenTunnel()
     }
     LogEvent(FORMAT(L"Autoselected tunnel local port number %d", FTunnelLocalPortNumber));
   }
+}
+//------------------------------------------------------------------------------
+void TTerminal::OpenTunnel()
+{
+  assert(FTunnelData == nullptr);
+  SetupTunnelLocalPortNumber();
 
   try
   {
