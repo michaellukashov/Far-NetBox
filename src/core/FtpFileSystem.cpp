@@ -1103,7 +1103,7 @@ void TFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
         Success = true;
         FLastDataSent = Now();
       }
-      catch(EScpSkipFile & E)
+      catch (EScpSkipFile & E)
       {
         SUSPEND_OPERATION (
           if (!FTerminal->HandleException(&E)) throw;
@@ -1132,7 +1132,7 @@ void TFTPFileSystem::SinkRobust(const UnicodeString & FileName,
       Sink(FileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch(Exception & E)
+    catch (Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -1339,7 +1339,7 @@ void TFTPFileSystem::SinkFile(const UnicodeString & FileName,
     SinkRobust(FileName, AFile, Params->TargetDir, Params->CopyParam,
       Params->Params, Params->OperationProgress, Params->Flags);
   }
-  catch(EScpSkipFile & E)
+  catch (EScpSkipFile & E)
   {
     TFileOperationProgressType * OperationProgress = Params->OperationProgress;
 
@@ -1401,7 +1401,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
         Success = true;
         FLastDataSent = Now();
       }
-      catch(EScpSkipFile & E)
+      catch (EScpSkipFile & E)
       {
         SUSPEND_OPERATION (
           if (!FTerminal->HandleException(&E)) throw;
@@ -1433,7 +1433,7 @@ void TFTPFileSystem::SourceRobust(const UnicodeString & FileName,
       Source(FileName, AFile, TargetDir, CopyParam, Params, &OpenParams, &FileParams, OperationProgress,
         Flags, Action);
     }
-    catch(Exception & E)
+    catch (Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -1998,7 +1998,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         // (e.g. before file transfer)
         FDoListAll = (FListAll == asOn);
       }
-      catch(Exception &)
+      catch (Exception &)
       {
         FDoListAll = false;
         // reading the first directory has failed,

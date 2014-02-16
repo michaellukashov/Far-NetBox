@@ -1634,7 +1634,7 @@ void TWinSCPFileSystem::DoSynchronize(
     Synchronize(LocalDirectory, RemoteDirectory, TTerminal::smRemote, CopyParam,
       PParams, Checklist, Options);
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -2268,7 +2268,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
               }
             }
           }
-          catch(Exception & E)
+          catch (Exception & E)
           {
             FSynchronisingBrowse = false;
             WinSCPPlugin()->ShowExtendedException(&E);
@@ -2975,7 +2975,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
       throw Exception(FORMAT(GetMsg(CANNOT_INIT_SESSION).c_str(), Data->GetSessionName().c_str()));
     }
   }
-  catch(Exception &E)
+  catch (Exception & E)
   {
     EFatal * Fatal = NB_STATIC_DOWNCAST(EFatal, static_cast<TObject *>(&E));
     if ((Fatal == nullptr) || !Fatal->GetReopenQueried())

@@ -8075,7 +8075,7 @@ void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
       StopButton->SetFocus();
       FStarted = true;
     }
-    catch(Exception & E)
+    catch (Exception & E)
     {
       FSynchronizing = false;
       UpdateControls();

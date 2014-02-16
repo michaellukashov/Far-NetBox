@@ -1120,7 +1120,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           FLsFullTime = asOn;
       }
     }
-    catch(Exception & E)
+    catch (Exception & E)
     {
       if (FTerminal->GetActive())
       {
@@ -1562,7 +1562,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         throw Exception(L"");
       }
     }
-    catch(Exception & E)
+    catch (Exception & E)
     {
       if (GotLastLine && FTerminal->GetActive())
       {
@@ -2343,7 +2343,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
             throw Exception(L"");
           }
         }
-        catch(Exception & E)
+        catch (Exception & E)
         {
           if (!Initialized && FTerminal->GetActive())
           {
@@ -2640,7 +2640,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
               }
             }
           }
-          catch(Exception & E)
+          catch (Exception & E)
           {
             if (SkipConfirmed)
             {

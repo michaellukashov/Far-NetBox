@@ -1267,7 +1267,7 @@ void TTerminalItem::ProcessEvent()
       FItem->Execute(this);
     }
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     UnicodeString Message;
     if (ExceptionMessageFormatted(&E, Message))
@@ -2275,7 +2275,7 @@ void TTerminalThread::ProcessEvent()
   {
     FAction(nullptr);
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     SaveException(E, FException);
   }

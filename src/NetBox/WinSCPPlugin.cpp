@@ -68,7 +68,7 @@ void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
   {
     TCustomFarPlugin::SetStartupInfo(Info);
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     HandleException(&E);
   }

@@ -1738,7 +1738,7 @@ UnicodeString TSessionData::DecryptPassword(const RawByteString & Password, cons
   {
     Result = GetConfiguration()->DecryptPassword(Password, Key);
   }
-  catch(EAbort &)
+  catch (EAbort &)
   {
     // silently ignore aborted prompts for master password and return empty password
   }

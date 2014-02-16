@@ -1070,7 +1070,7 @@ public:
       {
         FFileSystem->ReceiveResponse(Request, Response);
       }
-      catch(Exception & E)
+      catch (Exception & E)
       {
         if (FFileSystem->FTerminal->GetActive())
         {
@@ -2490,7 +2490,7 @@ UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & Path)
 
     return RealDir;
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     if (FTerminal->GetActive())
     {
@@ -2672,7 +2672,7 @@ void TSFTPFileSystem::DoStartup()
   {
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_VERSION);
   }
-  catch(Exception &E)
+  catch (Exception &E)
   {
     FTerminal->FatalError(&E, LoadStr(SFTP_INITIALIZE_ERROR));
   }
@@ -2806,7 +2806,7 @@ void TSFTPFileSystem::DoStartup()
             }
           }
         }
-        catch(Exception & E)
+        catch (Exception & E)
         {
           DEBUG_PRINTF(L"before FTerminal->HandleException");
           FFixedPaths->Clear();
@@ -3188,7 +3188,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
               ::UnixIncludeTrailingBackslash(FileList->GetDirectory()) + PARENTDIRECTORY, File);
           }
         }
-        catch(Exception &E)
+        catch (Exception &E)
         {
           if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
           {
@@ -3817,7 +3817,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
           tfFirstLevel);
         Success = true;
       }
-      catch(EScpSkipFile & E)
+      catch (EScpSkipFile & E)
       {
         DEBUG_PRINTF(L"before FTerminal->HandleException");
         SUSPEND_OPERATION (
@@ -4067,7 +4067,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const UnicodeString & FileName,
         OperationProgress,
         Flags, Action, ChildError);
     }
-    catch(Exception & E)
+    catch (Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -4507,7 +4507,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
             HELP_PRESERVE_TIME_PERM_ERROR
           );
         }
-        catch(Exception & E)
+        catch (Exception & E)
         {
           if (TouchAction.get() != nullptr)
           {
@@ -4636,7 +4636,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
 
       Success = true;
     }
-    catch(Exception & E)
+    catch (Exception & E)
     {
       if (!OpenParams->Confirmed && (OpenType & SSH_FXF_EXCL) && FTerminal->GetActive())
       {
@@ -4935,7 +4935,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
           Params, OperationProgress, tfFirstLevel);
         Success = true;
       }
-      catch(EScpSkipFile & E)
+      catch (EScpSkipFile & E)
       {
         SUSPEND_OPERATION (
           if (!FTerminal->HandleException(&E)) throw;
@@ -4970,7 +4970,7 @@ void TSFTPFileSystem::SFTPSinkRobust(const UnicodeString & FileName,
       SFTPSink(FileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action, ChildError);
     }
-    catch(Exception & E)
+    catch (Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -5515,7 +5515,7 @@ void TSFTPFileSystem::SFTPSinkFile(const UnicodeString & FileName,
     SFTPSinkRobust(FileName, AFile, Params->TargetDir, Params->CopyParam,
       Params->Params, Params->OperationProgress, Params->Flags);
   }
-  catch(EScpSkipFile & E)
+  catch (EScpSkipFile & E)
   {
     TFileOperationProgressType * OperationProgress = Params->OperationProgress;
 

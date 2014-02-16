@@ -517,7 +517,7 @@ void TSecureShell::Init()
       // unless this is tunnel session, it must be safe to send now
       assert(FBackend->sendok(FBackendHandle) || !FSessionData->GetTunnelPortFwd().IsEmpty());
     }
-    catch(Exception & E)
+    catch (Exception & E)
     {
       if (FAuthenticating && !FAuthenticationLog.IsEmpty())
       {
@@ -529,7 +529,7 @@ void TSecureShell::Init()
       }
     }
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     if (FAuthenticating)
     {
