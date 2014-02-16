@@ -1587,7 +1587,7 @@ bool AdjustClockForDSTEnabled()
       }
     }
   }
-  catch(...)
+  catch (...)
   {
   }
   return !DynamicDaylightTimeDisabled;

@@ -22,7 +22,7 @@ void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int Forc
   {
     Masks = Mask;
   }
-  catch(EFileMasksException & E)
+  catch (EFileMasksException & E)
   {
     ShowExtendedException(&E);
     Edit->SetFocus();

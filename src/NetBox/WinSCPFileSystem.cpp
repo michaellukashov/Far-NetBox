@@ -1552,7 +1552,7 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
     Message += ::StringOfChar(L' ', ProgressWidth - Message.Length()) + L"\n";
     Message += RemoteLabel + MinimizeName(RemoteDirectory,
       ProgressWidth - RemoteLabel.Length(), true) + L"\n";
-    Message += StartTimeLabel + FSynchronizationStart.TimeString() + L"\n";
+    Message += StartTimeLabel + FSynchronizationStart.TimeString(false) + L"\n";
     Message += TimeElapsedLabel +
       FormatDateTimeSpan(GetConfiguration()->GetTimeFormat(), TDateTime(Now() - FSynchronizationStart)) + L"\n";
 
@@ -1643,7 +1643,7 @@ void TWinSCPFileSystem::DoSynchronize(
     Synchronize(LocalDirectory, RemoteDirectory, TTerminal::smRemote, CopyParam,
       PParams, Checklist, Options);
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -2280,7 +2280,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
               }
             }
           }
-          catch(Exception & E)
+          catch (Exception & E)
           {
             FSynchronisingBrowse = false;
             WinSCPPlugin()->ShowExtendedException(&E);
@@ -2987,9 +2987,13 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
       throw Exception(FORMAT(GetMsg(CANNOT_INIT_SESSION).c_str(), Data->GetSessionName().c_str()));
     }
   }
-  catch(Exception &E)
+  catch (Exception & E)
   {
-    FTerminal->ShowExtendedException(&E);
+    EFatal * Fatal = NB_STATIC_DOWNCAST(EFatal, static_cast<TObject *>(&E));
+    if ((Fatal == nullptr) || !Fatal->GetReopenQueried())
+    {
+      FTerminal->ShowExtendedException(&E);
+    }
     SAFE_DESTROY(FTerminal);
     SAFE_DESTROY(FQueue);
     SAFE_DESTROY(FQueueStatus);
@@ -3507,7 +3511,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
       }
       else
       {
-        Value = ProgressData.StartTime.TimeString();
+        Value = ProgressData.StartTime.TimeString(true);
         LabelText = StartTimeLabel;
       }
       StatusLine = StatusLine + LabelText +

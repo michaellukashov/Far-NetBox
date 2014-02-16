@@ -96,8 +96,8 @@ public:                                       \
 const Classes::TObject * NbStaticDownCastConst(TObjectClassId ClassId, const Classes::TObject * Object);
 Classes::TObject * NbStaticDownCast(TObjectClassId ClassId, Classes::TObject * Object);
 
-#define NB_STATIC_DOWNCAST_CONST(class_name, object) (static_cast<const class_name *>(NbStaticDownCastConst(OBJECT_CLASS_##class_name, object)))
-#define NB_STATIC_DOWNCAST(class_name, object) (static_cast<class_name *>(NbStaticDownCast(OBJECT_CLASS_##class_name, object)))
+#define NB_STATIC_DOWNCAST_CONST(class_name, object) (static_cast<const class_name *>(NbStaticDownCastConst(OBJECT_CLASS_##class_name, static_cast<const TObject *>(object))))
+#define NB_STATIC_DOWNCAST(class_name, object) (static_cast<class_name *>(NbStaticDownCast(OBJECT_CLASS_##class_name, static_cast<TObject *>(object))))
 //---------------------------------------------------------------------------
 
 class THashTable : public rde::hash_map<int, const TClassInfo *>
@@ -145,6 +145,8 @@ enum TObjectClassId
   OBJECT_CLASS_ESshFatal,
   OBJECT_CLASS_ESshTerminate,
   OBJECT_CLASS_ECallbackGuardAbort,
+  OBJECT_CLASS_EFileNotFoundError,
+  OBJECT_CLASS_EOSError,
   OBJECT_CLASS_TPersistent,
   OBJECT_CLASS_TStrings,
   OBJECT_CLASS_TNamedObject,

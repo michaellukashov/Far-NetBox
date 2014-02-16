@@ -87,6 +87,7 @@ class TActionLog;
 //---------------------------------------------------------------------------
 class TSessionAction : public TObject
 {
+NB_DISABLE_COPY(TSessionAction)
 public:
   explicit TSessionAction(TActionLog * Log, TLogAction Action);
   virtual ~TSessionAction();
@@ -99,9 +100,6 @@ public:
 
 protected:
   TSessionActionRecord * FRecord;
-
-private:
-  NB_DISABLE_COPY(TSessionAction)
 };
 //---------------------------------------------------------------------------
 class TFileSessionAction : public TSessionAction
@@ -205,9 +203,10 @@ DEFINE_CALLBACK_TYPE2(TDoAddLogEvent, void,
 //---------------------------------------------------------------------------
 class TSessionLog : protected TStringList
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 friend class TSessionAction;
 friend class TSessionActionRecord;
+NB_DISABLE_COPY(TSessionLog)
 public:
   explicit TSessionLog(TSessionUI * UI, TSessionData * SessionData,
     TConfiguration * Configuration);
@@ -275,15 +274,13 @@ private:
   UnicodeString FName;
   bool FClosed;
   TNotifyEvent FOnStateChange;
-
-private:
-  NB_DISABLE_COPY(TSessionLog)
 };
 //---------------------------------------------------------------------------
 class TActionLog : public TObject
 {
 friend class TSessionAction;
 friend class TSessionActionRecord;
+NB_DISABLE_COPY(TActionLog)
 public:
   explicit TActionLog(TSessionUI * UI, TSessionData * SessionData,
     TConfiguration * Configuration);
@@ -325,9 +322,6 @@ private:
   UnicodeString FIndent;
 
   void OpenLogFile();
-
-private:
-  NB_DISABLE_COPY(TActionLog)
 };
 //---------------------------------------------------------------------------
 #endif

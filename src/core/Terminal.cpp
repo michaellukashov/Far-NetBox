@@ -48,7 +48,7 @@
     { \
       Result = CommandError(&E, MESSAGE, qaRetry | qaSkip | qaAbort); \
     } \
-    catch(Exception & E2) \
+    catch (Exception & E2) \
     { \
       RollbackAction(ACTION, nullptr, &E2); \
       throw; \
@@ -330,6 +330,7 @@ void TTunnelThread::Execute()
 //------------------------------------------------------------------------------
 class TTunnelUI : public TSessionUI
 {
+NB_DISABLE_COPY(TTunnelUI)
 public:
   explicit TTunnelUI(TTerminal * Terminal);
   virtual ~TTunnelUI() {}
@@ -351,9 +352,6 @@ public:
 private:
   TTerminal * FTerminal;
   unsigned int FTerminalThread;
-
-private:
-  NB_DISABLE_COPY(TTunnelUI)
 };
 //------------------------------------------------------------------------------
 TTunnelUI::TTunnelUI(TTerminal * Terminal)
@@ -645,7 +643,7 @@ void TTerminal::Idle()
       {
         FCommandSession->Idle();
       }
-      catch(Exception & E)
+      catch (Exception & E)
       {
         // If the secondary session is dropped, ignore the error and let
         // it be reconnected when needed.
@@ -672,7 +670,7 @@ UnicodeString TTerminal::DecryptPassword(const RawByteString & Password)
   {
     Result = FConfiguration->DecryptPassword(Password, GetSessionData()->GetSessionName());
   }
-  catch(EAbort &)
+  catch (EAbort &)
   {
     // silently ignore aborted prompts for master password and return empty password
   }
@@ -772,11 +770,11 @@ void TTerminal::Open()
         throw;
       }
     }
-    // catch(EFatal &)
+    // catch (EFatal &)
     // {
     //   throw;
     // }
-    catch(Exception & E)
+    catch (Exception & E)
     {
       LogEvent(FORMAT(L"Got error: \"%s\"", E.Message.c_str()));
       // any exception while opening session is fatal
@@ -996,10 +994,8 @@ bool TTerminal::IsListenerFree(uintptr_t PortNumber) const
   return Result;
 }
 //------------------------------------------------------------------------------
-void TTerminal::OpenTunnel()
+void TTerminal::SetupTunnelLocalPortNumber()
 {
-  assert(FTunnelData == nullptr);
-
   FTunnelLocalPortNumber = FSessionData->GetTunnelLocalPortNumber();
   if (FTunnelLocalPortNumber == 0)
   {
@@ -1016,6 +1012,12 @@ void TTerminal::OpenTunnel()
     }
     LogEvent(FORMAT(L"Autoselected tunnel local port number %d", FTunnelLocalPortNumber));
   }
+}
+//------------------------------------------------------------------------------
+void TTerminal::OpenTunnel()
+{
+  assert(FTunnelData == nullptr);
+  SetupTunnelLocalPortNumber();
 
   try
   {
@@ -1529,7 +1531,7 @@ bool TTerminal::QueryReopen(Exception * E, intptr_t Params,
         Reopen(Params);
         FSessionData->SetNumberOfRetries(0);
       }
-      catch(Exception & E)
+      catch (Exception & E)
       {
         if (!GetActive())
         {
@@ -2656,7 +2658,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & Director
       Action.FileList(FileList);
     }
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
@@ -2679,7 +2681,7 @@ TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & Path)
     ReadFile(Path, File);
     Action.File(File);
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
@@ -2698,7 +2700,7 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(const UnicodeString & Di
   {
     FileList = DoReadDirectoryListing(Directory, UseCache);
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI
     (
@@ -2947,7 +2949,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
               Success = true;
             }
           }
-          catch(EScpSkipFile & E)
+          catch (EScpSkipFile & E)
           {
             DEBUG_PRINTF(L"before HandleException");
             SUSPEND_OPERATION (
@@ -3116,7 +3118,7 @@ void TTerminal::DoDeleteFile(const UnicodeString & FileName,
     // 'File' parameter: SFTPFileSystem needs to know if file is file or directory
     FFileSystem->DeleteFile(FileName, File, Params, Action);
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
@@ -3225,7 +3227,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & FileName,
         Params, OutputEvent);
     }
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI
     (
@@ -3346,7 +3348,7 @@ void TTerminal::DoChangeFileProperties(const UnicodeString & FileName,
     assert(FFileSystem);
     FFileSystem->ChangeFileProperties(FileName, File, Properties, Action);
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
@@ -3463,7 +3465,7 @@ void TTerminal::DoCalculateDirectorySize(const UnicodeString & FileName,
   {
     ProcessDirectory(FileName, MAKE_CALLBACK(TTerminal::CalculateFileSize, this), Params);
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     if (!GetActive() || ((Params->Params & csIgnoreErrors) == 0))
     {
@@ -3561,7 +3563,7 @@ void TTerminal::DoRenameFile(const UnicodeString & FileName,
     assert(FFileSystem);
     FFileSystem->RenameFile(FileName, NewName);
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
@@ -3672,7 +3674,7 @@ void TTerminal::DoCopyFile(const UnicodeString & FileName,
       FCommandSession->FFileSystem->CopyFile(FileName, NewName);
     }
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI
     (
@@ -3739,7 +3741,7 @@ void TTerminal::DoCreateDirectory(const UnicodeString & DirName)
     assert(FFileSystem);
     FFileSystem->CreateDirectory(DirName);
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
@@ -3774,7 +3776,7 @@ void TTerminal::DoCreateLink(const UnicodeString & FileName,
     assert(FFileSystem);
     FFileSystem->CreateLink(FileName, PointTo, Symbolic);
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI
     (

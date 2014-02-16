@@ -120,7 +120,7 @@ void CoreFinalize()
   {
     GetConfiguration()->Save();
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     ShowExtendedException(&E);
   }

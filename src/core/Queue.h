@@ -8,6 +8,7 @@
 class TTerminalItem;
 class TSimpleThread : public TObject
 {
+NB_DISABLE_COPY(TSimpleThread)
 public:
   explicit TSimpleThread();
   virtual ~TSimpleThread();
@@ -29,9 +30,6 @@ protected:
 
 public:
   static int ThreadProc(void * Thread);
-
-private:
-  NB_DISABLE_COPY(TSimpleThread)
 };
 //---------------------------------------------------------------------------
 class TSignalThread : public TSimpleThread
@@ -74,7 +72,7 @@ class TTerminalQueue : public TSignalThread
 {
 friend class TQueueItem;
 friend class TQueueItemProxy;
-
+NB_DISABLE_COPY(TTerminalQueue)
 public:
   explicit TTerminalQueue(TTerminal * Terminal, TConfiguration * Configuration);
   virtual ~TTerminalQueue();
@@ -163,17 +161,13 @@ public:
   void SetKeepDoneItemsFor(intptr_t Value);
   void SetEnabled(bool Value);
   void SetIsEmpty(bool Value);
-
-private:
-  NB_DISABLE_COPY(TTerminalQueue)
 };
 //---------------------------------------------------------------------------
 class TQueueItem : public TObject
 {
-NB_DISABLE_COPY(TQueueItem)
 friend class TTerminalQueue;
 friend class TTerminalItem;
-
+NB_DISABLE_COPY(TQueueItem)
 public:
   enum TStatus {
     qsPending, qsConnecting, qsProcessing, qsPrompt, qsQuery, qsError,
@@ -225,11 +219,10 @@ private:
 //---------------------------------------------------------------------------
 class TQueueItemProxy : public TObject
 {
-NB_DISABLE_COPY(TQueueItemProxy)
 friend class TQueueItem;
 friend class TTerminalQueueStatus;
 friend class TTerminalQueue;
-
+NB_DISABLE_COPY(TQueueItemProxy)
 public:
   bool Update();
   bool ProcessUserAction();
@@ -272,7 +265,7 @@ class TTerminalQueueStatus : public TObject
 {
 friend class TTerminalQueue;
 friend class TQueueItemProxy;
-
+NB_DISABLE_COPY(TTerminalQueueStatus)
 public:
   virtual ~TTerminalQueueStatus();
 
@@ -300,9 +293,6 @@ private:
   TList * FList;
   intptr_t FDoneCount;
   mutable intptr_t FActiveCount;
-
-private:
-  NB_DISABLE_COPY(TTerminalQueueStatus)
 };
 //---------------------------------------------------------------------------
 class TLocatedQueueItem : public TQueueItem
@@ -360,6 +350,7 @@ protected:
 class TUserAction;
 class TTerminalThread : public TSignalThread
 {
+NB_DISABLE_COPY(TTerminalThread)
 public:
   explicit TTerminalThread(TTerminal * Terminal);
   void Init();
@@ -435,9 +426,6 @@ private:
   void TerminalStartReadDirectory(TObject * Sender);
   void TerminalReadDirectoryProgress(TObject * Sender, intptr_t Progress, bool & Cancel);
   void TerminalInitializeLog(TObject * Sender);
-
-private:
-  NB_DISABLE_COPY(TTerminalThread)
 };
 //---------------------------------------------------------------------------
 #endif

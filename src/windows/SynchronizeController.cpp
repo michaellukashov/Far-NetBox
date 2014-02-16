@@ -177,9 +177,9 @@ void TSynchronizeController::SynchronizeChange(
       }
     }
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
-    SynchronizeAbort(NB_STATIC_DOWNCAST(EFatal, &E) != nullptr);
+    SynchronizeAbort(NB_STATIC_DOWNCAST(EFatal, static_cast<TObject *>(&E)) != nullptr);
   }
 }
 //---------------------------------------------------------------------------

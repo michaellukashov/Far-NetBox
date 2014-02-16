@@ -73,16 +73,14 @@ void Error(int ErrorID, intptr_t data);
 
 class TObject
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
+NB_DECLARE_CLASS(TObject)
 public:
   TObject() {}
   virtual ~TObject() {}
   virtual void Change() {}
 
   bool IsKindOf(TObjectClassId ClassId) const;
-
-private:
-  NB_DECLARE_CLASS(TObject)
 };
 
 //---------------------------------------------------------------------------
@@ -153,7 +151,7 @@ struct TRect
 
 class TPersistent : public TObject
 {
-  NB_DECLARE_CLASS(TPersistent)
+NB_DECLARE_CLASS(TPersistent)
 public:
   TPersistent();
   virtual ~TPersistent();
@@ -308,9 +306,8 @@ typedef intptr_t (TStringListSortCompare)(TStringList * List, intptr_t Index1, i
 
 class TStringList : public TStrings
 {
-  friend intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2);
-
-  NB_DECLARE_CLASS(TStringList)
+friend intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2);
+NB_DECLARE_CLASS(TStringList)
 public:
   TStringList();
   virtual ~TStringList();
@@ -437,7 +434,7 @@ public:
     return !(operator == (rhs));
   }
   UnicodeString DateString() const;
-  UnicodeString TimeString() const;
+  UnicodeString TimeString(bool Short) const;
   UnicodeString FormatString(wchar_t * fmt) const;
   void DecodeDate(unsigned short & Y,
                   unsigned short & M, unsigned short & D) const;

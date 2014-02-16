@@ -18,8 +18,8 @@ namespace webdav {
 //------------------------------------------------------------------------------
 class TWebDAVFileSystem : public TCustomFileSystem
 {
-  friend class TWebDAVFileListHelper;
-
+friend class TWebDAVFileListHelper;
+NB_DISABLE_COPY(TWebDAVFileSystem)
 public:
   explicit TWebDAVFileSystem(TTerminal * ATerminal);
   virtual ~TWebDAVFileSystem();
@@ -208,9 +208,6 @@ private:
   TCriticalSection * FTransferStatusCriticalSection;
   apr_pool_t * webdav_pool;
   webdav::session_t * FSession;
-
-private:
-  NB_DISABLE_COPY(TWebDAVFileSystem)
 };
 
 #endif

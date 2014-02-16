@@ -13,18 +13,17 @@ class TBackgroundTerminal;
 //---------------------------------------------------------------------------
 class TUserAction : public TObject
 {
+NB_DISABLE_COPY(TUserAction)
 public:
   explicit TUserAction() {}
   virtual ~TUserAction() {}
   virtual void Execute(void * Arg) = 0;
   virtual bool Force() { return false; }
-
-private:
-  NB_DISABLE_COPY(TUserAction)
 };
 //---------------------------------------------------------------------------
 class TNotifyAction : public TUserAction
 {
+NB_DISABLE_COPY(TNotifyAction)
 public:
   explicit TNotifyAction(TNotifyEvent AOnNotify) :
     OnNotify(AOnNotify),
@@ -42,13 +41,11 @@ public:
 
   TNotifyEvent OnNotify;
   TObject * Sender;
-
-private:
-  NB_DISABLE_COPY(TNotifyAction)
 };
 //---------------------------------------------------------------------------
 class TInformationUserAction : public TUserAction
 {
+NB_DISABLE_COPY(TInformationUserAction)
 public:
   explicit TInformationUserAction(TInformationEvent AOnInformation) :
     OnInformation(AOnInformation),
@@ -78,13 +75,11 @@ public:
   UnicodeString Str;
   bool Status;
   intptr_t Phase;
-
-private:
-  NB_DISABLE_COPY(TInformationUserAction)
 };
 //---------------------------------------------------------------------------
 class TQueryUserAction : public TUserAction
 {
+NB_DISABLE_COPY(TQueryUserAction)
 public:
   explicit TQueryUserAction(TQueryUserEvent AOnQueryUser) :
     OnQueryUser(AOnQueryUser),
@@ -113,13 +108,11 @@ public:
   const TQueryParams * Params;
   uintptr_t Answer;
   TQueryType Type;
-
-private:
-  NB_DISABLE_COPY(TQueryUserAction)
 };
 //---------------------------------------------------------------------------
 class TPromptUserAction : public TUserAction
 {
+NB_DISABLE_COPY(TPromptUserAction)
 public:
   explicit TPromptUserAction(TPromptUserEvent AOnPromptUser) :
     OnPromptUser(AOnPromptUser),
@@ -152,13 +145,11 @@ public:
   TStrings * Prompts;
   TStrings * Results;
   bool Result;
-
-private:
-  NB_DISABLE_COPY(TPromptUserAction)
 };
 //---------------------------------------------------------------------------
 class TShowExtendedExceptionAction : public TUserAction
 {
+NB_DISABLE_COPY(TShowExtendedExceptionAction)
 public:
   explicit TShowExtendedExceptionAction(TExtendedExceptionEvent AOnShowExtendedException) :
     OnShowExtendedException(AOnShowExtendedException),
@@ -178,13 +169,11 @@ public:
   TExtendedExceptionEvent OnShowExtendedException;
   TTerminal * Terminal;
   Exception * E;
-
-private:
-  NB_DISABLE_COPY(TShowExtendedExceptionAction)
 };
 //---------------------------------------------------------------------------
 class TDisplayBannerAction : public TUserAction
 {
+NB_DISABLE_COPY(TDisplayBannerAction)
 public:
   explicit TDisplayBannerAction(TDisplayBannerEvent AOnDisplayBanner) :
     OnDisplayBanner(AOnDisplayBanner),
@@ -208,13 +197,11 @@ public:
   UnicodeString Banner;
   bool NeverShowAgain;
   intptr_t Options;
-
-private:
-  NB_DISABLE_COPY(TDisplayBannerAction)
 };
 //---------------------------------------------------------------------------
 class TReadDirectoryAction : public TUserAction
 {
+NB_DISABLE_COPY(TReadDirectoryAction)
 public:
   explicit TReadDirectoryAction(TReadDirectoryEvent AOnReadDirectory) :
     OnReadDirectory(AOnReadDirectory),
@@ -234,13 +221,11 @@ public:
   TReadDirectoryEvent OnReadDirectory;
   TObject * Sender;
   bool ReloadOnly;
-
-private:
-  NB_DISABLE_COPY(TReadDirectoryAction)
 };
 //---------------------------------------------------------------------------
 class TReadDirectoryProgressAction : public TUserAction
 {
+NB_DISABLE_COPY(TReadDirectoryProgressAction)
 public:
   explicit TReadDirectoryProgressAction(TReadDirectoryProgressEvent AOnReadDirectoryProgress) :
     OnReadDirectoryProgress(AOnReadDirectoryProgress),
@@ -262,16 +247,13 @@ public:
   TObject * Sender;
   intptr_t Progress;
   bool Cancel;
-
-private:
-  NB_DISABLE_COPY(TReadDirectoryProgressAction)
 };
 //---------------------------------------------------------------------------
 class TTerminalItem : public TSignalThread
 {
 friend class TQueueItem;
 friend class TBackgroundTerminal;
-
+NB_DISABLE_COPY(TTerminalItem)
 public:
   explicit TTerminalItem(TTerminalQueue * Queue);
   virtual ~TTerminalItem();
@@ -311,8 +293,6 @@ protected:
     TOnceDoneOperation & OnceDoneOperation);
   void OperationProgress(TFileOperationProgressType & ProgressData,
     TCancelStatus & Cancel);
-private:
-  NB_DISABLE_COPY(TTerminalItem)
 };
 //---------------------------------------------------------------------------
 // TSignalThread
@@ -1287,7 +1267,7 @@ void TTerminalItem::ProcessEvent()
       FItem->Execute(this);
     }
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     UnicodeString Message;
     if (ExceptionMessageFormatted(&E, Message))
@@ -2295,7 +2275,7 @@ void TTerminalThread::ProcessEvent()
   {
     FAction(nullptr);
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     SaveException(E, FException);
   }

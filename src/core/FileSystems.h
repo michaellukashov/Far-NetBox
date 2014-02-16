@@ -47,6 +47,7 @@ struct TSinkFileParams : public TObject
 struct TFileTransferData : public TObject
 {
 NB_DISABLE_COPY(TFileTransferData)
+public:
   TFileTransferData() :
     CopyParam(nullptr),
     Modification(0.0),
@@ -93,6 +94,8 @@ struct TOverwriteFileParams : public TObject
 //---------------------------------------------------------------------------
 struct TOpenRemoteFileParams : public TObject
 {
+NB_DISABLE_COPY(TOpenRemoteFileParams)
+public:
   TOpenRemoteFileParams() :
     LocalFileAttrs(0),
     OperationProgress(nullptr),
@@ -117,9 +120,6 @@ struct TOpenRemoteFileParams : public TObject
   RawByteString RemoteFileHandle; // output
   TOverwriteFileParams *FileParams;
   bool Confirmed;
-
-private:
-  NB_DISABLE_COPY(TOpenRemoteFileParams)
 };
 //---------------------------------------------------------------------------
 

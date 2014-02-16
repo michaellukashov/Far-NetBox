@@ -9,6 +9,7 @@ enum TStorageAccessMode { smRead, smReadWrite };
 //------------------------------------------------------------------------------
 class THierarchicalStorage : public TObject
 {
+NB_DISABLE_COPY(THierarchicalStorage)
 public:
   explicit THierarchicalStorage(const UnicodeString & AStorage);
   virtual ~THierarchicalStorage();
@@ -86,9 +87,6 @@ protected:
   static UnicodeString ExcludeTrailingBackslash(const UnicodeString & S);
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate) = 0;
   UnicodeString MungeKeyName(const UnicodeString & Key);
-
-private:
-  NB_DISABLE_COPY(THierarchicalStorage)
 };
 //------------------------------------------------------------------------------
 class TRegistryStorage : public THierarchicalStorage

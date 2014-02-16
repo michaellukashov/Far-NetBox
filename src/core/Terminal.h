@@ -146,6 +146,7 @@ const int boDisableNeverShowAgain = 0x01;
 //------------------------------------------------------------------------------
 class TTerminal : public TObject, public TSessionUI
 {
+NB_DISABLE_COPY(TTerminal)
 NB_DECLARE_CLASS(TTerminal)
 public:
   // TScript::SynchronizeProc relies on the order
@@ -462,6 +463,7 @@ protected:
   virtual bool DoPromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions, TStrings* Prompts,
     TStrings * Response);
+  void SetupTunnelLocalPortNumber();
   void OpenTunnel();
   void CloseTunnel();
   void DoInformation(const UnicodeString & Str, bool Status, intptr_t Phase = -1);
@@ -589,9 +591,6 @@ private:
   bool FCollectFileSystemUsage;
   bool FRememberedPasswordTried;
   bool FRememberedTunnelPasswordTried;
-
-private:
-  NB_DISABLE_COPY(TTerminal)
 };
 //------------------------------------------------------------------------------
 class TSecondaryTerminal : public TTerminal
@@ -673,6 +672,8 @@ struct TMakeLocalFileListParams : public TObject
 //------------------------------------------------------------------------------
 struct TSynchronizeOptions : public TObject
 {
+NB_DISABLE_COPY(TSynchronizeOptions)
+public:
   TSynchronizeOptions();
   ~TSynchronizeOptions();
 
@@ -680,14 +681,12 @@ struct TSynchronizeOptions : public TObject
 
   bool FilterFind(const UnicodeString & FileName);
   bool MatchesFilter(const UnicodeString & FileName);
-private:
-  NB_DISABLE_COPY(TSynchronizeOptions)
 };
 //------------------------------------------------------------------------------
 class TSynchronizeChecklist : public TObject
 {
 friend class TTerminal;
-
+NB_DISABLE_COPY(TSynchronizeChecklist)
 public:
   enum TAction { saNone, saUploadNew, saDownloadNew, saUploadUpdate,
     saDownloadUpdate, saDeleteRemote, saDeleteLocal };
@@ -743,9 +742,6 @@ private:
   TList * FList;
 
   static intptr_t Compare(const void * Item1, const void * Item2);
-
-private:
-  NB_DISABLE_COPY(TSynchronizeChecklist)
 };
 //------------------------------------------------------------------------------
 struct TSpaceAvailable : public TObject

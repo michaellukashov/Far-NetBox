@@ -108,7 +108,6 @@ protected:
   TSFTPSupport * FSupport;
   bool FUtfStrings;
   bool FSignedTS;
-  bool FOpenSSH;
   TStrings * FFixedPaths;
   uint32_t FMaxPacketSize;
   bool FSupportsStatVfsV2;

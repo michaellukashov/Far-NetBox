@@ -11,6 +11,8 @@ class TCopyParamType;
 //---------------------------------------------------------------------------
 struct TMessageParams : public TObject
 {
+NB_DISABLE_COPY(TMessageParams)
+public:
   TMessageParams();
   void Assign(const TMessageParams * AParams)
   {
@@ -36,15 +38,12 @@ struct TMessageParams : public TObject
   uintptr_t TimerAnswers;
   uintptr_t Timeout;
   uintptr_t TimeoutAnswer;
-
-private:
-  NB_DISABLE_COPY(TMessageParams)
 };
 //---------------------------------------------------------------------------
 class TWinSCPPlugin : public TCustomFarPlugin
 {
-  friend TWinSCPFileSystem;
-  NB_DECLARE_CLASS(TWinSCPPlugin)
+friend TWinSCPFileSystem;
+NB_DECLARE_CLASS(TWinSCPPlugin)
 public:
   explicit TWinSCPPlugin(HINSTANCE HInst);
   virtual ~TWinSCPPlugin();

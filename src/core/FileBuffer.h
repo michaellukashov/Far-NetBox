@@ -10,6 +10,7 @@ const int cpRemoveBOM =   0x02;
 //---------------------------------------------------------------------------
 class TFileBuffer : public TObject
 {
+NB_DISABLE_COPY(TFileBuffer)
 public:
   TFileBuffer();
   virtual ~TFileBuffer();
@@ -34,9 +35,6 @@ public:
 
 private:
   TMemoryStream * FMemory;
-
-private:
-  NB_DISABLE_COPY(TFileBuffer)
 };
 //---------------------------------------------------------------------------
 class TSafeHandleStream : public THandleStream

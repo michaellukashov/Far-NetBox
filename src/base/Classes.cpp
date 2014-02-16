@@ -1238,11 +1238,15 @@ UnicodeString TDateTime::DateString() const
 }
 
 //---------------------------------------------------------------------------
-UnicodeString TDateTime::TimeString() const
+UnicodeString TDateTime::TimeString(bool Short) const
 {
   unsigned short H, N, S, MS;
   DecodeTime(H, N, S, MS);
-  UnicodeString Result = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
+  UnicodeString Result;
+  if (Short)
+    Result = FORMAT(L"%02d.%02d.%02d", H, N, S);
+  else
+    Result = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
   return Result;
 }
 

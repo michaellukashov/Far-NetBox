@@ -21,6 +21,7 @@ struct TPuttyTranslation;
 class TSecureShell : public TObject
 {
 friend class TPoolForDataEvent;
+NB_DISABLE_COPY(TSecureShell)
 public:
   explicit TSecureShell(TSessionUI * UI, TSessionData * SessionData,
     TSessionLog * Log, TConfiguration * Configuration);
@@ -46,6 +47,7 @@ public:
   void ClearStdError();
   bool GetStoredCredentialsTried() const;
   void CollectUsage();
+  bool IsOpenSSH() const;
 
   void RegisterReceiveHandler(TNotifyEvent Handler);
   void UnregisterReceiveHandler(TNotifyEvent Handler);
@@ -148,6 +150,7 @@ private:
   bool FNoConnectionResponse;
   bool FCollectPrivateKeyUsage;
   int FWaitingForData;
+  bool FOpenSSH;
 
   intptr_t PendLen;
   intptr_t PendSize;
@@ -164,9 +167,6 @@ private:
   UnicodeString FAuthenticationLog;
   UnicodeString FLastTunnelError;
   UnicodeString FUserName;
-
-private:
-  NB_DISABLE_COPY(TSecureShell)
 };
 //---------------------------------------------------------------------------
 #endif

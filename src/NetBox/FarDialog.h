@@ -37,6 +37,7 @@ friend TFarDialogContainer;
 friend TFarButton;
 friend TFarList;
 friend class TFarListBox;
+NB_DISABLE_COPY(TFarDialog)
 public:
   explicit TFarDialog(TCustomFarPlugin * AFarPlugin);
   virtual ~TFarDialog();
@@ -146,15 +147,13 @@ private:
   bool FNeedsSynchronize;
   HANDLE FSynchronizeObjects[2];
   TThreadMethod FSynchronizeMethod;
-
-private:
-  NB_DISABLE_COPY(TFarDialog)
 };
 //---------------------------------------------------------------------------
 class TFarDialogContainer : public TObject
 {
 friend TFarDialog;
 friend TFarDialogItem;
+NB_DISABLE_COPY(TFarDialogContainer)
 public:
   intptr_t GetLeft() const { return FLeft; }
   void SetLeft(intptr_t Value) { SetPosition(0, Value); }
@@ -183,19 +182,17 @@ private:
   TObjectList * FItems;
   TFarDialog * FDialog;
   bool FEnabled;
-
-private:
-  NB_DISABLE_COPY(TFarDialogContainer)
 };
 //---------------------------------------------------------------------------
 #define DIF_INVERSE 0x00000001UL
 //---------------------------------------------------------------------------
 class TFarDialogItem : public TObject
 {
-  friend TFarDialog;
-  friend TFarDialogContainer;
-  friend TFarList;
-  NB_DECLARE_CLASS(TFarDialogItem)
+friend TFarDialog;
+friend TFarDialogContainer;
+friend TFarList;
+NB_DISABLE_COPY(TFarDialogItem)
+NB_DECLARE_CLASS(TFarDialogItem)
 public:
   TRect GetBounds() const { return FBounds; }
   TRect GetActualBounds() const;
@@ -333,9 +330,6 @@ private:
   bool FIsEnabled;
   unsigned long FColors;
   unsigned long FColorMask;
-
-private:
-  NB_DISABLE_COPY(TFarDialogItem)
 };
 //---------------------------------------------------------------------------
 class TFarBox : public TFarDialogItem
@@ -503,10 +497,11 @@ class TFarLister;
 //---------------------------------------------------------------------------
 class TFarList : public TStringList
 {
-  friend TFarListBox;
-  friend TFarLister;
-  friend TFarComboBox;
-  NB_DECLARE_CLASS(TFarList)
+friend TFarListBox;
+friend TFarLister;
+friend TFarComboBox;
+NB_DISABLE_COPY(TFarList)
+NB_DECLARE_CLASS(TFarList)
 public:
   explicit TFarList(TFarDialogItem * ADialogItem = nullptr);
   virtual ~TFarList();
@@ -548,9 +543,6 @@ private:
   FarList * FListItems;
   TFarDialogItem * FDialogItem;
   bool FNoDialogUpdate;
-
-private:
-  NB_DISABLE_COPY(TFarList)
 };
 //---------------------------------------------------------------------------
 enum TFarListBoxAutoSelect { asOnlyFocus, asAlways, asNever };

@@ -85,6 +85,7 @@ class TStoredSessionList;
 class TSessionData : public TNamedObject
 {
 friend class TStoredSessionList;
+NB_DISABLE_COPY(TSessionData)
 NB_DECLARE_CLASS(TSessionData)
 public:
   void SetHostName(const UnicodeString & Value);
@@ -534,6 +535,7 @@ private:
   UnicodeString FOrigHostName;
   intptr_t FOrigPortNumber;
   TProxyMethod FOrigProxyMethod;
+  bool FTunnelConfigured;
   TSessionSource FSource;
   bool FSaveOnly;
   UnicodeString FCodePage;
@@ -544,9 +546,6 @@ private:
   uintptr_t FSessionVersion;
 
   mutable TIEProxyConfig * FIEProxyConfig;
-
-private:
-  NB_DISABLE_COPY(TSessionData)
 };
 
 //---------------------------------------------------------------------------

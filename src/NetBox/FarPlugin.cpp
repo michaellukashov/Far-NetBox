@@ -336,7 +336,7 @@ void * TCustomFarPlugin::OpenPlugin(const struct OpenInfo *Info)
 
     return Result;
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -361,7 +361,7 @@ void TCustomFarPlugin::ClosePanel(void * Plugin)
     // dlmalloc_trim(0); // 64 * 1024);
 #endif
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -398,7 +398,7 @@ void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo *Info)
     TGuard Guard(FileSystem->GetCriticalSection());
     FileSystem->GetOpenPanelInfo(Info);
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FileSystem, &E);
@@ -439,7 +439,7 @@ void TCustomFarPlugin::FreeFindData(const struct FreeFindDataInfo *Info)
       FileSystem->FreeFindData(Info);
     }
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FileSystem, &E);
@@ -466,7 +466,7 @@ intptr_t TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo *Inf
       return 0;
     }
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FileSystem, &E, Info->OpMode);
@@ -494,7 +494,7 @@ intptr_t TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo 
       return 0;
     }
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FileSystem, &E);
@@ -530,7 +530,7 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
       return 0;
     }
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FileSystem, &E);
@@ -551,7 +551,7 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
       return FileSystem->SetDirectory(Info);
     }
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FileSystem, &E, Info->OpMode);
@@ -568,7 +568,7 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
         TGuard Guard(FileSystem->GetCriticalSection());
         return FileSystem->SetDirectory(&Info2);
       }
-      catch(Exception &)
+      catch (Exception &)
       {
         return 0;
       }
@@ -590,7 +590,7 @@ intptr_t TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo *Info)
       return FileSystem->MakeDirectory(Info);
     }
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FileSystem, &E, Info->OpMode);
@@ -632,7 +632,7 @@ intptr_t TCustomFarPlugin::GetFiles(struct GetFilesInfo *Info)
       return FileSystem->GetFiles(Info);
     }
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     // display error even for OPM_FIND
@@ -654,7 +654,7 @@ intptr_t TCustomFarPlugin::PutFiles(const struct PutFilesInfo *Info)
       return FileSystem->PutFiles(Info);
     }
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FileSystem, &E, Info->OpMode);
@@ -670,7 +670,7 @@ intptr_t TCustomFarPlugin::ProcessEditorEvent(const struct ProcessEditorEventInf
 
    return ProcessEditorEventEx(Info);
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -686,7 +686,7 @@ intptr_t TCustomFarPlugin::ProcessEditorInput(const struct ProcessEditorInputInf
 
     return ProcessEditorInputEx(&Info->Rec);
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);

@@ -115,6 +115,10 @@ void TSessionData::Default()
   SetSshSimple(true);
   SetHostKey(L"");
   FOverrideCachedHostKey = true;
+  FOrigHostName.Clear();
+  FOrigPortNumber = 0;
+  FOrigProxyMethod = pmNone;
+  FTunnelConfigured = false;
 
   SetProxyMethod(::pmNone);
   SetProxyHost(L"proxy");
@@ -1683,13 +1687,18 @@ void TSessionData::ConfigureTunnel(intptr_t APortNumber)
   SetPortNumber(APortNumber);
   // proxy settings is used for tunnel
   SetProxyMethod(::pmNone);
+  FTunnelConfigured = true;
 }
 //---------------------------------------------------------------------
 void TSessionData::RollbackTunnel()
 {
-  SetHostName(FOrigHostName);
-  SetPortNumber(FOrigPortNumber);
-  SetProxyMethod(FOrigProxyMethod);
+  if (FTunnelConfigured)
+  {
+    SetHostName(FOrigHostName);
+    SetPortNumber(FOrigPortNumber);
+    SetProxyMethod(FOrigProxyMethod);
+    FTunnelConfigured = false;
+  }
 }
 //---------------------------------------------------------------------
 void TSessionData::ExpandEnvironmentVariables()
@@ -1729,7 +1738,7 @@ UnicodeString TSessionData::DecryptPassword(const RawByteString & Password, cons
   {
     Result = GetConfiguration()->DecryptPassword(Password, Key);
   }
-  catch(EAbort &)
+  catch (EAbort &)
   {
     // silently ignore aborted prompts for master password and return empty password
   }

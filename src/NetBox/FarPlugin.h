@@ -69,13 +69,14 @@ enum NetBoxSystemSettings
 //---------------------------------------------------------------------------
 class TCustomFarPlugin : public TObject
 {
-  friend class TCustomFarFileSystem;
-  friend class TFarDialog;
-  friend class TWinSCPFileSystem;
-  friend class TFarDialogItem;
-  friend class TFarMessageDialog;
-  friend class TFarPluginGuard;
-  NB_DECLARE_CLASS(TCustomFarPlugin)
+friend class TCustomFarFileSystem;
+friend class TFarDialog;
+friend class TWinSCPFileSystem;
+friend class TFarDialogItem;
+friend class TFarMessageDialog;
+friend class TFarPluginGuard;
+NB_DISABLE_COPY(TCustomFarPlugin)
+NB_DECLARE_CLASS(TCustomFarPlugin)
 public:
   explicit TCustomFarPlugin(HINSTANCE HInst);
   virtual ~TCustomFarPlugin();
@@ -228,15 +229,13 @@ private:
       lhs.right == rhs.right &&
       lhs.bottom == rhs.bottom;
   }
-
-private:
-  NB_DISABLE_COPY(TCustomFarPlugin)
 };
 //---------------------------------------------------------------------------
 class TCustomFarFileSystem : public TObject
 {
 friend class TFarPanelInfo;
 friend class TCustomFarPlugin;
+NB_DISABLE_COPY(TCustomFarFileSystem)
 NB_DECLARE_CLASS(TCustomFarFileSystem)
 public:
   TCustomFarFileSystem(TCustomFarPlugin * APlugin);
@@ -318,9 +317,6 @@ private:
     int ItemsNumber);
   const TFarPanelInfo * GetPanelInfo(int Another) const;
   TFarPanelInfo * GetPanelInfo(int Another);
-
-private:
-  NB_DISABLE_COPY(TCustomFarFileSystem)
 };
 //---------------------------------------------------------------------------
 #define PANEL_MODES_COUNT 10
@@ -389,6 +385,7 @@ protected:
 //---------------------------------------------------------------------------
 class TFarPanelItem : public TCustomFarPanelItem
 {
+NB_DISABLE_COPY(TFarPanelItem)
 public:
   explicit TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem);
   virtual ~TFarPanelItem();
@@ -413,9 +410,6 @@ protected:
     uintptr_t & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
   virtual UnicodeString GetCustomColumnData(size_t Column);
-
-private:
-  NB_DISABLE_COPY(TFarPanelItem)
 };
 //---------------------------------------------------------------------------
 class THintPanelItem : public TCustomFarPanelItem

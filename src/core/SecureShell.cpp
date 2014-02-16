@@ -51,6 +51,7 @@ TSecureShell::TSecureShell(TSessionUI * UI,
   FActive = false;
   FWaiting = 0;
   FOpened = false;
+  FOpenSSH = false;
   OutPtr = nullptr;
   Pending = nullptr;
   FBackendHandle = nullptr;
@@ -134,6 +135,11 @@ const TSessionInfo & TSecureShell::GetSessionInfo() const
   }
   return FSessionInfo;
 }
+//---------------------------------------------------------------------------
+bool TSecureShell::IsOpenSSH() const
+{
+  return FOpenSSH;
+}
 //---------------------------------------------------------------------
 Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
 {
@@ -180,20 +186,6 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_int(conf, CONF_addressfamily, Data->GetAddressFamily());
   conf_set_str(conf, CONF_ssh_rekey_data, AnsiString(Data->GetRekeyData()).c_str());
   conf_set_int(conf, CONF_ssh_rekey_time, Data->GetRekeyTime());
-  /*ASCOPY(cfg->host, Data->GetHostNameExpanded());
-  ASCOPY(cfg->username, Data->GetUserNameExpanded());
-  cfg->port = static_cast<int>(Data->GetPortNumber());
-  cfg->protocol = PROT_SSH;
-  // always set 0, as we will handle keepalives ourselves to avoid
-  // multi-threaded issues in putty timer list
-  cfg->ping_interval = 0;
-  cfg->compression = Data->GetCompression();
-  cfg->tryagent = Data->GetTryAgent();
-  cfg->agentfwd = Data->GetAgentFwd();
-  cfg->addressfamily = Data->GetAddressFamily();
-  ASCOPY(cfg->ssh_rekey_data, Data->GetRekeyData());
-  cfg->ssh_rekey_time = static_cast<int>(Data->GetRekeyTime());
-*/
 
   for (int c = 0; c < CIPHER_COUNT; c++)
   {
@@ -343,10 +335,10 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       {
         // see psftp_connect() from psftp.c
         conf_set_int(conf, CONF_ssh_subsys2, FALSE);
-        conf_set_str(conf, CONF_remote_cmd2, AnsiString(
-          L"test -x /usr/lib/sftp-server && exec /usr/lib/sftp-server\n"
-          L"test -x /usr/local/lib/sftp-server && exec /usr/local/lib/sftp-server\n"
-          L"exec sftp-server").c_str());
+        conf_set_str(conf, CONF_remote_cmd2,
+          "test -x /usr/lib/sftp-server && exec /usr/lib/sftp-server\n"
+          "test -x /usr/local/lib/sftp-server && exec /usr/local/lib/sftp-server\n"
+          "exec sftp-server");
       }
     }
   }
@@ -395,11 +387,6 @@ void TSecureShell::Open()
         conf_get_int(conf, CONF_tcp_keepalives));
     }
 
-      //const_cast<char *>(W2MB(FSessionData->GetHostNameExpanded().c_str(),
-      //(const UINT)FSessionData->GetCodePageAsNumber()).c_str()),
-      //static_cast<int>(FSessionData->GetPortNumber()),
-      //&RealHost, 0,
-      //FConfig->tcp_keepalives);
     sfree(RealHost);
     if (InitError)
     {
@@ -434,6 +421,11 @@ void TSecureShell::Open()
 
   assert(!FSessionInfo.SshImplementation.IsEmpty());
   FOpened = true;
+
+  FOpenSSH =
+    // Sun SSH is based on OpenSSH (suffers the same bugs)
+    (GetSessionInfo().SshImplementation.Pos(L"OpenSSH") == 1) ||
+    (GetSessionInfo().SshImplementation.Pos(L"Sun_SSH") == 1);
 }
 //---------------------------------------------------------------------------
 bool TSecureShell::TryFtp()
@@ -525,7 +517,7 @@ void TSecureShell::Init()
       // unless this is tunnel session, it must be safe to send now
       assert(FBackend->sendok(FBackendHandle) || !FSessionData->GetTunnelPortFwd().IsEmpty());
     }
-    catch(Exception & E)
+    catch (Exception & E)
     {
       if (FAuthenticating && !FAuthenticationLog.IsEmpty())
       {
@@ -537,7 +529,7 @@ void TSecureShell::Init()
       }
     }
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     if (FAuthenticating)
     {
@@ -882,11 +874,11 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t * Data, intptr_t Len
       if (!FFrozen)
       {
         FFrozen = true;
-        SCOPE_EXIT
         {
-          FFrozen = false;
-        };
-        {
+          SCOPE_EXIT
+          {
+            FFrozen = false;
+          };
           do
           {
             FDataWhileFrozen = false;
@@ -926,11 +918,11 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
     OutPtr = Buf;
     OutLen = Length;
 
-    SCOPE_EXIT
     {
-      OutPtr = nullptr;
-    };
-    {
+      SCOPE_EXIT
+      {
+        OutPtr = nullptr;
+      };
       /*
        * See if the pending-input block contains some of what we
        * need.
@@ -1442,7 +1434,7 @@ void TSecureShell::UpdatePortFwdSocket(SOCKET Value, bool Startup)
   }
   else
   {
-    rde::vector<SOCKET>::iterator it = FPortFwdSockets.find(Value);
+    TSockets::iterator it = FPortFwdSockets.find(Value);
     if (it != FPortFwdSockets.end())
       FPortFwdSockets.erase(it);
   }
@@ -1754,7 +1746,6 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       };
       Handles = sresize(Handles, static_cast<size_t>(HandleCount + 1), HANDLE);
       Handles[HandleCount] = FSocketEvent;
-      //uintptr_t WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, (DWORD)MSec);
       unsigned int Timeout = MSec;
       if (toplevel_callback_pending())
       {
@@ -2015,14 +2006,14 @@ UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & KeyStr) const
 void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   const UnicodeString & KeyType, const UnicodeString & KeyStr, const UnicodeString & Fingerprint)
 {
-  LogEvent(FORMAT(L"Verifying host key %s %s with fingerprint %s", KeyType.c_str(), FormatKeyStr(KeyStr).c_str(), Fingerprint.c_str()));
-
   UnicodeString Host2 = Host;
   UnicodeString KeyStr2 = KeyStr;
+  LogEvent(FORMAT(L"Verifying host key %s %s with fingerprint %s", KeyType.c_str(), FormatKeyStr(KeyStr2).c_str(), Fingerprint.c_str()));
+
   GotHostKey();
 
   wchar_t Delimiter = L';';
-  assert(KeyStr.Pos(Delimiter) == 0);
+  assert(KeyStr2.Pos(Delimiter) == 0);
 
   if (FSessionData->GetTunnel())
   {
@@ -2036,10 +2027,15 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   bool Result = false;
 
   UnicodeString StoredKeys;
-  AnsiString AnsiStoredKeys;
-  AnsiStoredKeys.SetLength(10240);
-  if (retrieve_host_key(AnsiString(Host).c_str(), Port, AnsiString(KeyType).c_str(),
-        (char *)AnsiStoredKeys.c_str(), AnsiStoredKeys.Length()) == 0)
+  AnsiString AnsiStoredKeys(10240, '\0');
+
+  if (retrieve_host_key(
+        W2MB(Host2.c_str(),
+             static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
+        Port,
+        W2MB(KeyType.c_str(),
+             static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
+        const_cast<char *>(AnsiStoredKeys.c_str()), AnsiStoredKeys.Length()) == 0)
   {
     StoredKeys = AnsiStoredKeys.c_str();
     UnicodeString Buf = StoredKeys;
@@ -2053,7 +2049,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       {
         NormalizedExpectedKey = NormalizeFingerprint(StoredKey);
       }
-      if ((!Fingerprint && (StoredKey == KeyStr)) ||
+      if ((!Fingerprint && (StoredKey == KeyStr2)) ||
           (Fingerprint && (NormalizedExpectedKey == NormalizedFingerprint)))
       {
         LogEvent(L"Host key matches cached key");
@@ -2066,30 +2062,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       }
     }
   }
-/*
-  UnicodeString Buf = FSessionData->GetHostKey();
-  while (!Result && !Buf.IsEmpty())
-  {
-    UnicodeString ExpectedKey = CutToChar(Buf, Delimiter, false);
-    if (ExpectedKey == L"*")
-    {
-      UnicodeString Message = LoadStr(ANY_HOSTKEY);
-      FUI->Information(Message, true);
-      FLog->Add(llException, Message);
-      Result = true;
-    }
-    else if (ExpectedKey == Fingerprint)
-    {
-      LogEvent(L"Host key matches configured key");
-      Result = true;
-    }
-    else
-    {
-      LogEvent(FORMAT(L"Host key does not match configured key %s", ExpectedKey.c_str()));
-    }
-  }
-  UnicodeString StoredKeys;
-*/
+
   if (!Result && (StoredKeys.IsEmpty() || FSessionData->GetOverrideCachedHostKey()))
   {
     UnicodeString Buf = FSessionData->GetHostKey();
@@ -2114,39 +2087,6 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
         LogEvent(FORMAT(L"Host key does not match configured key %s", ExpectedKey.c_str()));
       }
     }
-/*
-    AnsiString AnsiStoredKeys;
-    AnsiStoredKeys.SetLength(10240);
-    if (retrieve_host_key(
-          W2MB(Host2.c_str(),
-               static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
-          Port,
-          W2MB(KeyType.c_str(),
-               static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
-          const_cast<char *>(AnsiStoredKeys.c_str()),
-          static_cast<int>(AnsiStoredKeys.Length())) == 0)
-    {
-      StoredKeys = AnsiStoredKeys.c_str();
-      UnicodeString Buf2 = StoredKeys;
-      while (!Result && !Buf2.IsEmpty())
-      {
-        UnicodeString StoredKey = CutToChar(Buf2, Delimiter, false);
-        if (StoredKey == KeyStr)
-        {
-          LogEvent(L"Host key matches cached key");
-          Result = true;
-        }
-        else
-        {
-          LogEvent(FORMAT(L"Host key does not match cached key %s", FormatKeyStr(StoredKey).c_str()));
-        }
-      }
-    }
-    else
-    {
-      StoredKeys = L"";
-    }
-*/
   }
 
   if (!Result)
@@ -2198,7 +2138,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       {
         case qaOK:
           assert(!Unknown);
-          KeyStr2 = (StoredKeys + Delimiter + KeyStr);
+          KeyStr2 = (StoredKeys + Delimiter + KeyStr2);
           // fall thru
         case qaYes:
           store_host_key(AnsiString(Host2).c_str(), Port, AnsiString(KeyType).c_str(), AnsiString(KeyStr2).c_str());
