@@ -2015,14 +2015,14 @@ UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & KeyStr) const
 void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   const UnicodeString & KeyType, const UnicodeString & KeyStr, const UnicodeString & Fingerprint)
 {
-  LogEvent(FORMAT(L"Verifying host key %s %s with fingerprint %s", KeyType.c_str(), FormatKeyStr(KeyStr).c_str(), Fingerprint.c_str()));
-
   UnicodeString Host2 = Host;
   UnicodeString KeyStr2 = KeyStr;
+  LogEvent(FORMAT(L"Verifying host key %s %s with fingerprint %s", KeyType.c_str(), FormatKeyStr(KeyStr2).c_str(), Fingerprint.c_str()));
+
   GotHostKey();
 
   wchar_t Delimiter = L';';
-  assert(KeyStr.Pos(Delimiter) == 0);
+  assert(KeyStr2.Pos(Delimiter) == 0);
 
   if (FSessionData->GetTunnel())
   {
@@ -2036,10 +2036,15 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   bool Result = false;
 
   UnicodeString StoredKeys;
-  AnsiString AnsiStoredKeys;
-  AnsiStoredKeys.SetLength(10240);
-  if (retrieve_host_key(AnsiString(Host).c_str(), Port, AnsiString(KeyType).c_str(),
-        (char *)AnsiStoredKeys.c_str(), AnsiStoredKeys.Length()) == 0)
+  AnsiString AnsiStoredKeys(10240, '\0');
+
+  if (retrieve_host_key(
+        W2MB(Host2.c_str(),
+             static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
+        Port,
+        W2MB(KeyType.c_str(),
+             static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
+        const_cast<char *>(AnsiStoredKeys.c_str()), AnsiStoredKeys.Length()) == 0)
   {
     StoredKeys = AnsiStoredKeys.c_str();
     UnicodeString Buf = StoredKeys;
@@ -2053,7 +2058,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       {
         NormalizedExpectedKey = NormalizeFingerprint(StoredKey);
       }
-      if ((!Fingerprint && (StoredKey == KeyStr)) ||
+      if ((!Fingerprint && (StoredKey == KeyStr2)) ||
           (Fingerprint && (NormalizedExpectedKey == NormalizedFingerprint)))
       {
         LogEvent(L"Host key matches cached key");
@@ -2066,30 +2071,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       }
     }
   }
-/*
-  UnicodeString Buf = FSessionData->GetHostKey();
-  while (!Result && !Buf.IsEmpty())
-  {
-    UnicodeString ExpectedKey = CutToChar(Buf, Delimiter, false);
-    if (ExpectedKey == L"*")
-    {
-      UnicodeString Message = LoadStr(ANY_HOSTKEY);
-      FUI->Information(Message, true);
-      FLog->Add(llException, Message);
-      Result = true;
-    }
-    else if (ExpectedKey == Fingerprint)
-    {
-      LogEvent(L"Host key matches configured key");
-      Result = true;
-    }
-    else
-    {
-      LogEvent(FORMAT(L"Host key does not match configured key %s", ExpectedKey.c_str()));
-    }
-  }
-  UnicodeString StoredKeys;
-*/
+
   if (!Result && (StoredKeys.IsEmpty() || FSessionData->GetOverrideCachedHostKey()))
   {
     UnicodeString Buf = FSessionData->GetHostKey();
@@ -2114,39 +2096,6 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
         LogEvent(FORMAT(L"Host key does not match configured key %s", ExpectedKey.c_str()));
       }
     }
-/*
-    AnsiString AnsiStoredKeys;
-    AnsiStoredKeys.SetLength(10240);
-    if (retrieve_host_key(
-          W2MB(Host2.c_str(),
-               static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
-          Port,
-          W2MB(KeyType.c_str(),
-               static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
-          const_cast<char *>(AnsiStoredKeys.c_str()),
-          static_cast<int>(AnsiStoredKeys.Length())) == 0)
-    {
-      StoredKeys = AnsiStoredKeys.c_str();
-      UnicodeString Buf2 = StoredKeys;
-      while (!Result && !Buf2.IsEmpty())
-      {
-        UnicodeString StoredKey = CutToChar(Buf2, Delimiter, false);
-        if (StoredKey == KeyStr)
-        {
-          LogEvent(L"Host key matches cached key");
-          Result = true;
-        }
-        else
-        {
-          LogEvent(FORMAT(L"Host key does not match cached key %s", FormatKeyStr(StoredKey).c_str()));
-        }
-      }
-    }
-    else
-    {
-      StoredKeys = L"";
-    }
-*/
   }
 
   if (!Result)
@@ -2198,7 +2147,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       {
         case qaOK:
           assert(!Unknown);
-          KeyStr2 = (StoredKeys + Delimiter + KeyStr);
+          KeyStr2 = (StoredKeys + Delimiter + KeyStr2);
           // fall thru
         case qaYes:
           store_host_key(AnsiString(Host2).c_str(), Port, AnsiString(KeyType).c_str(), AnsiString(KeyStr2).c_str());
