@@ -145,7 +145,6 @@ int GetUserpassInput(prompts_t * p, uint8_t * /*in*/, int /*inlen*/)
       Prompts->AddObject(Prompt->prompt, reinterpret_cast<TObject *>(static_cast<size_t>(FLAGMASK(Prompt->echo, pupEcho))));
       assert(Prompt->resultsize == 0);
       Results->Add(L"");
-      //Results->AddObject(L"", reinterpret_cast<TObject *>(Prompt->result_len));
     }
 
     if (SecureShell->PromptUser(p->to_server != 0, p->name, p->name_reqd != 0,
@@ -155,16 +154,6 @@ int GetUserpassInput(prompts_t * p, uint8_t * /*in*/, int /*inlen*/)
       {
         prompt_t * Prompt = p->prompts[Index];
         prompt_set_result(Prompt, AnsiString(Results->GetString(Index).c_str()));
-/*
-        AnsiString Str = Results->GetString(Index).c_str();
-        if ((size_t)Str.Length() >= Prompt->result_len)
-        {
-          Prompt->result = (char *)srealloc(Prompt->result, Str.Length() + 1);
-          Prompt->result_len = Str.Length() + 1;
-        }
-        strncpy(Prompt->result, AnsiString(Results->GetString(Index)).c_str(), Prompt->result_len);
-        Prompt->result[Prompt->result_len - 1] = '\0';
-*/
       }
       Result = 1;
     }
@@ -324,7 +313,6 @@ void update_specials_menu(void * /*frontend*/)
   // nothing
 }
 //---------------------------------------------------------------------------
-//typedef void (*timer_fn_t)(void *ctx, long now);
 unsigned long schedule_timer(int ticks, timer_fn_t /*fn*/, void * /*ctx*/)
 {
   return ticks + GetTickCount();
@@ -340,7 +328,7 @@ Pinger pinger_new(Conf * /*conf*/, Backend * /*back*/, void * /*backhandle*/)
   return nullptr;
 }
 //---------------------------------------------------------------------------
-void pinger_reconfig(Pinger /*pinger*/, Conf * /*oldcfg*/, Conf * /*newcfg*/)
+void pinger_reconfig(Pinger /*pinger*/, Conf * /*oldconf*/, Conf * /*newconf*/)
 {
   // nothing
 }
@@ -379,7 +367,7 @@ char * get_remote_username(Conf * conf)
 static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool CanCreate)
 {
   long R;
-//  assert(Configuration != nullptr);
+  assert(GetConfiguration() != nullptr);
 
   assert(Key == HKEY_CURRENT_USER);
   USEDPARAM(Key);
@@ -493,6 +481,8 @@ long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*R
 //---------------------------------------------------------------------------
 long reg_close_winscp_key(HKEY Key)
 {
+  assert(GetConfiguration() != nullptr);
+
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
   if (Storage != nullptr)
   {
