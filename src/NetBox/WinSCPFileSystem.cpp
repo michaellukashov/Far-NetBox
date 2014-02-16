@@ -2977,7 +2977,11 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
   }
   catch(Exception &E)
   {
-    FTerminal->ShowExtendedException(&E);
+    EFatal * Fatal = NB_STATIC_DOWNCAST(EFatal, static_cast<TObject *>(&E));
+    if ((Fatal == nullptr) || !Fatal->GetReopenQueried())
+    {
+      FTerminal->ShowExtendedException(&E);
+    }
     SAFE_DESTROY(FTerminal);
     SAFE_DESTROY(FQueue);
     SAFE_DESTROY(FQueueStatus);
