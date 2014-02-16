@@ -1094,8 +1094,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         }
       }
       ADF(L"Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
-        (Data->GetLocalDirectory().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetLocalDirectory().c_str()),
-         (Data->GetRemoteDirectory().IsEmpty() ? UnicodeString(L"home").c_str() : Data->GetRemoteDirectory().c_str()),
+         Data->GetLocalDirectory().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetLocalDirectory().c_str(),
+         Data->GetRemoteDirectory().IsEmpty() ? UnicodeString(L"home").c_str() : Data->GetRemoteDirectory().c_str(),
          BooleanToEngStr(Data->GetUpdateDirectories()).c_str(),
          BooleanToEngStr(Data->GetCacheDirectories()).c_str());
       ADF(L"Cache directory changes: %s, Permanent: %s",
