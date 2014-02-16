@@ -562,18 +562,18 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
 //---------------------------------------------------------------------------
 UnicodeString NormalizeFingerprint(const UnicodeString & Fingerprint)
 {
-  UnicodeString Fingerprint2 = Fingerprint;
+  UnicodeString Result = Fingerprint;
   UnicodeString DssName = UnicodeString(ssh_dss.name) + L" ";
   UnicodeString RsaName = UnicodeString(ssh_rsa.name) + L" ";
 
   bool IsFingerprint = false;
   int LenStart;
-  if (StartsStr(DssName, Fingerprint2))
+  if (StartsStr(DssName, Result))
   {
     LenStart = DssName.Length() + 1;
     IsFingerprint = true;
   }
-  else if (StartsStr(RsaName, Fingerprint2))
+  else if (StartsStr(RsaName, Result))
   {
     LenStart = RsaName.Length() + 1;
     IsFingerprint = true;
@@ -581,27 +581,27 @@ UnicodeString NormalizeFingerprint(const UnicodeString & Fingerprint)
 
   if (IsFingerprint)
   {
-    Fingerprint2[LenStart - 1] = L'-';
-    int Space = Fingerprint2.Pos(L" ");
-    assert(IsNumber(Fingerprint2.SubString(LenStart, Space - LenStart)));
-    Fingerprint2.Delete(LenStart, Space - LenStart + 1);
-    Fingerprint2 = ReplaceChar(Fingerprint2, L':', L'-');
+    Result[LenStart - 1] = L'-';
+    int Space = Result.Pos(L" ");
+    assert(IsNumber(Result.SubString(LenStart, Space - LenStart)));
+    Result.Delete(LenStart, Space - LenStart + 1);
+    Result = ReplaceChar(Result, L':', L'-');
   }
-  return Fingerprint2;
+  return Result;
 }
 //---------------------------------------------------------------------------
 UnicodeString KeyTypeFromFingerprint(const UnicodeString & Fingerprint)
 {
   UnicodeString Fingerprint2 = NormalizeFingerprint(Fingerprint);
-  UnicodeString Type;
+  UnicodeString Result;
   if (StartsStr(UnicodeString(ssh_dss.name) + L"-", Fingerprint2))
   {
-    Type = ssh_dss.keytype;
+    Result = ssh_dss.keytype;
   }
   else if (StartsStr(UnicodeString(ssh_rsa.name) + L"-", Fingerprint2))
   {
-    Type = ssh_rsa.keytype;
+    Result = ssh_rsa.keytype;
   }
-  return Type;
+  return Result;
 }
 //---------------------------------------------------------------------------
