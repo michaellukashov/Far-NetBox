@@ -115,6 +115,9 @@ void TSessionData::Default()
   SetSshSimple(true);
   SetHostKey(L"");
   FOverrideCachedHostKey = true;
+  FOrigHostName.Clear();
+  FOrigPortNumber = 0;
+  FOrigProxyMethod = pmNone;
   FTunnelConfigured = false;
 
   SetProxyMethod(::pmNone);
