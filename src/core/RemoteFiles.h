@@ -76,6 +76,7 @@ private:
 class TRemoteFile : public TPersistent
 {
 NB_DECLARE_CLASS(TRemoteFile)
+NB_DISABLE_COPY(TRemoteFile)
 public:
   intptr_t GetAttr() const;
   bool GetBrokenLink() const;
@@ -166,9 +167,6 @@ private:
 
 private:
   void LoadTypeInfo() const;
-
-private:
-  NB_DISABLE_COPY(TRemoteFile)
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryFile : public TRemoteFile
@@ -218,6 +216,7 @@ class TRemoteDirectory : public TRemoteFileList
 friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
 friend class TWebDAVFileSystem;
+NB_DISABLE_COPY(TRemoteDirectory)
 public:
   explicit TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = nullptr);
   virtual ~TRemoteDirectory();
@@ -244,14 +243,12 @@ private:
   mutable TStrings * FSelectedFiles;
   TRemoteFile * FParentDirectory;
   TRemoteFile * FThisDirectory;
-
-private:
-  NB_DISABLE_COPY(TRemoteDirectory)
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryCache : private TStringList
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
+NB_DISABLE_COPY(TRemoteDirectoryCache)
 public:
   TRemoteDirectoryCache();
   virtual ~TRemoteDirectoryCache();
@@ -270,8 +267,6 @@ protected:
 private:
   TCriticalSection * FSection;
   void DoClearFileList(const UnicodeString & Directory, bool SubDirs);
-private:
-  NB_DISABLE_COPY(TRemoteDirectoryCache)
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryChangesCache : private TStringList

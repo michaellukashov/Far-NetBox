@@ -71,6 +71,7 @@ class TSessionData;
 //---------------------------------------------------------------------------
 class TCommandSet : public TObject
 {
+NB_DISABLE_COPY(TCommandSet)
 public:
   void SetMasks(const UnicodeString & Value);
   int GetMaxLines(TFSCommand Cmd) const;
@@ -111,9 +112,6 @@ private:
   TCommandType CommandSet[ShellCommandCount];
   TSessionData * FSessionData;
   UnicodeString FReturnVar;
-
-private:
-  NB_DISABLE_COPY(TCommandSet)
 };
 //===========================================================================
 const wchar_t NationalVars[NationalVarCount][15] =

@@ -78,11 +78,12 @@ DEFINE_CALLBACK_TYPE2(TProcessSessionEvent, void, TSessionData * /* Data */, voi
 //------------------------------------------------------------------------------
 class TWinSCPFileSystem : public TCustomFarFileSystem
 {
-  friend class TWinSCPPlugin;
-  friend class TNetBoxPlugin;
-  friend class TKeepaliveThread;
-  friend class TQueueDialog;
-  NB_DECLARE_CLASS(TWinSCPFileSystem)
+friend class TWinSCPPlugin;
+friend class TNetBoxPlugin;
+friend class TKeepaliveThread;
+friend class TQueueDialog;
+NB_DECLARE_CLASS(TWinSCPFileSystem)
+NB_DISABLE_COPY(TWinSCPFileSystem)
 public:
   explicit TWinSCPFileSystem(TCustomFarPlugin * APlugin);
   void Init(TSecureShell * SecureShell);
@@ -342,9 +343,6 @@ private:
   UnicodeString FSessionsFolder;
   UnicodeString FNewSessionsFolder;
   UnicodeString FPrevSessionName;
-
-private:
-  NB_DISABLE_COPY(TWinSCPFileSystem)
 };
 //------------------------------------------------------------------------------
 class TSessionPanelItem : public TCustomFarPanelItem

@@ -184,6 +184,8 @@ const int tfNewDirectory = 0x02;
 //---------------------------------------------------------------------------
 struct TSFTPSupport : public TObject
 {
+NB_DISABLE_COPY(TSFTPSupport)
+public:
   TSFTPSupport() :
     AttribExtensions(new TStringList()),
     Extensions(new TStringList())
@@ -221,9 +223,6 @@ struct TSFTPSupport : public TObject
   TStrings * AttribExtensions;
   TStrings * Extensions;
   bool Loaded;
-
-private:
-  NB_DISABLE_COPY(TSFTPSupport)
 };
 //---------------------------------------------------------------------------
 class TSFTPPacket : public TObject

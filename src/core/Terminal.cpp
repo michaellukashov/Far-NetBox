@@ -330,6 +330,7 @@ void TTunnelThread::Execute()
 //------------------------------------------------------------------------------
 class TTunnelUI : public TSessionUI
 {
+NB_DISABLE_COPY(TTunnelUI)
 public:
   explicit TTunnelUI(TTerminal * Terminal);
   virtual ~TTunnelUI() {}
@@ -351,9 +352,6 @@ public:
 private:
   TTerminal * FTerminal;
   unsigned int FTerminalThread;
-
-private:
-  NB_DISABLE_COPY(TTunnelUI)
 };
 //------------------------------------------------------------------------------
 TTunnelUI::TTunnelUI(TTerminal * Terminal)

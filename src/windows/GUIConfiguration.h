@@ -140,6 +140,7 @@ private:
 //---------------------------------------------------------------------------
 class TGUIConfiguration : public TConfiguration
 {
+NB_DISABLE_COPY(TGUIConfiguration)
 NB_DECLARE_CLASS(TGUIConfiguration)
 public:
   virtual void SaveData(THierarchicalStorage * Storage, bool All);
@@ -269,9 +270,6 @@ private:
   intptr_t FKeepUpToDateChangeDelay;
   UnicodeString FChecksumAlg;
   intptr_t FSessionReopenAutoIdle;
-
-private:
-  NB_DISABLE_COPY(TGUIConfiguration)
 };
 //---------------------------------------------------------------------------
 inline TGUIConfiguration * GetGUIConfiguration();

@@ -10,6 +10,7 @@ class TSecureShell;
 //---------------------------------------------------------------------------
 class TSCPFileSystem : public TCustomFileSystem
 {
+NB_DISABLE_COPY(TSCPFileSystem)
 public:
   explicit TSCPFileSystem(TTerminal * ATerminal);
   virtual ~TSCPFileSystem();
@@ -140,9 +141,6 @@ private:
 
   static bool RemoveLastLine(UnicodeString & Line,
     intptr_t & ReturnCode, const UnicodeString & ALastLine);
-
-private:
-  NB_DISABLE_COPY(TSCPFileSystem)
 };
 //---------------------------------------------------------------------------
 #endif // ScpFileSystemH

@@ -21,7 +21,7 @@ class TFTPFileSystem : public TCustomFileSystem
 {
 friend class TFileZillaImpl;
 friend class TFTPFileListHelper;
-
+NB_DISABLE_COPY(TFTPFileSystem)
 public:
   explicit TFTPFileSystem(TTerminal * ATerminal);
   virtual ~TFTPFileSystem();
@@ -250,9 +250,6 @@ private:
   TFTPServerCapabilities * FServerCapabilities;
   TDateTime FLastDataSent;
   mutable UnicodeString FOptionScratch;
-
-private:
-  NB_DISABLE_COPY(TFTPFileSystem)
 };
 //---------------------------------------------------------------------------
 #endif // NO_FILEZILLA

@@ -330,6 +330,7 @@ bool CheckStructSize(const T * s) { return s && (s->StructSize >= sizeof(T)); }
 //---------------------------------------------------------------------------
 
 #define NB_DISABLE_COPY(Class) \
+private: \
     Class(const Class &); \
     Class &operator=(const Class &);
 

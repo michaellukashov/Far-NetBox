@@ -21,6 +21,7 @@ struct TPuttyTranslation;
 class TSecureShell : public TObject
 {
 friend class TPoolForDataEvent;
+NB_DISABLE_COPY(TSecureShell)
 public:
   explicit TSecureShell(TSessionUI * UI, TSessionData * SessionData,
     TSessionLog * Log, TConfiguration * Configuration);
@@ -164,9 +165,6 @@ private:
   UnicodeString FAuthenticationLog;
   UnicodeString FLastTunnelError;
   UnicodeString FUserName;
-
-private:
-  NB_DISABLE_COPY(TSecureShell)
 };
 //---------------------------------------------------------------------------
 #endif
