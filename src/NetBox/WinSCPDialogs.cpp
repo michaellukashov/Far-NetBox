@@ -240,12 +240,13 @@ void TTabbedDialog::TabButtonClick(TFarButton * Sender, bool & Close)
 bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
 {
   bool Result = false;
-  if (KeyCode == KEY_CTRLPGDN || KeyCode == KEY_CTRLPGUP)
+  if ((KeyCode == KEY_CTRLPGDN) || (KeyCode == KEY_CTRLPGUP) ||
+      (KeyCode == KEY_CTRLNUMPAD3) || (KeyCode == KEY_CTRLNUMPAD9))
   {
     intptr_t NewTab = FTab;
     do
     {
-      if (KeyCode == KEY_CTRLPGDN)
+      if ((KeyCode == KEY_CTRLPGDN) || (KeyCode == KEY_CTRLNUMPAD3))
       {
         NewTab = NewTab == FTabCount - 1 ? 1 : NewTab + 1;
       }
