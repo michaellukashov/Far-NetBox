@@ -237,13 +237,13 @@ bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
   bool Result = false;
   WORD Key = KeyCode & 0xFFFF;
   DWORD ControlState = KeyCode >> 16;
-  if (((Key == VK_NEXT) && (ControlState & CTRLMASK) != 0) ||
-      ((Key == VK_PRIOR) && (ControlState & CTRLMASK) != 0))
+  if ((((Key == VK_NEXT) || (Key == VK_NUMPAD3)) && (ControlState & CTRLMASK) != 0) ||
+       (((Key == VK_PRIOR) || (Key == VK_NUMPAD9)) && (ControlState & CTRLMASK) != 0))
   {
     intptr_t NewTab = FTab;
     do
     {
-      if (Key == VK_NEXT)
+      if ((Key == VK_NEXT) || (Key == VK_NUMPAD3))
       {
         NewTab = NewTab == FTabCount - 1 ? 1 : NewTab + 1;
       }
@@ -7617,7 +7617,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
     DWORD ControlState = KeyCode >> 16;
   if (ListBox->Focused())
   {
-    if (((Key == VK_ADD) && (ControlState & SHIFTMASK) != 0) || 
+    if (((Key == VK_ADD) && (ControlState & SHIFTMASK) != 0) ||
         ((Key == VK_SUBTRACT) && (ControlState & SHIFTMASK) != 0))
     {
       CheckAll((Key == VK_ADD) && (ControlState & SHIFTMASK) != 0);
