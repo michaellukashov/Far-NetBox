@@ -384,11 +384,11 @@ bool TWinSCPPlugin::ConfigurationDialog()
   CustomPanelFullScreenCheck->SetCaption(GetMsg(CONFIG_PANEL_MODE_FULL_SCREEN));
 
   Text = new TFarText(Dialog);
-  Text->SetLeft(Text->GetLeft() + 4);
+  Text->SetLeft(Text->GetLeft());
   Text->SetEnabledDependency(CustomPanelCheck);
   Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_HINT));
   Text = new TFarText(Dialog);
-  Text->SetLeft(Text->GetLeft() + 4);
+  Text->SetLeft(Text->GetLeft());
   Text->SetEnabledDependency(CustomPanelCheck);
   Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_HINT2));
 
@@ -796,7 +796,7 @@ TTransferEditorConfigurationDialog::TTransferEditorConfigurationDialog(
 {
   TFarSeparator * Separator;
 
-  SetSize(TPoint(55, 14));
+  SetSize(TPoint(65, 14));
   SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_TRANSFER_EDITOR)).c_str()));
 
@@ -895,7 +895,7 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::unique_ptr<TWinSCPDialog> DialogPtr(Dialog);
   assert(DialogPtr.get());
-  Dialog->SetSize(TPoint(65, 10));
+  Dialog->SetSize(TPoint(67, 10));
   Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_CONFIRMATIONS)).c_str()));
 
