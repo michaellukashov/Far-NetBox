@@ -2204,7 +2204,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
         }
       }
 
-      if (Normal && FSynchronisingBrowse &&
+      if (FTerminal && Normal && FSynchronisingBrowse &&
           (PrevPath != FTerminal->GetCurrentDirectory()))
       {
         TFarPanelInfo * AnotherPanel = GetAnotherPanelInfo();
