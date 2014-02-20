@@ -27,19 +27,6 @@ struct TPuttyTranslation
   UnicodeString HelpKeyword;
 };
 //---------------------------------------------------------------------------
-static char * AnsiStrNew(const wchar_t * S)
-{
-  AnsiString Buf = S;
-  char * Result = static_cast<char *>(nb_malloc(Buf.Length() + 1));
-  memcpy(Result, Buf.c_str(), Buf.Length() + 1);
-  return Result;
-}
-//---------------------------------------------------------------------------
-static void AnsiStrDispose(char * S)
-{
-  nb_free(S);
-}
-//---------------------------------------------------------------------------
 TSecureShell::TSecureShell(TSessionUI * UI,
   TSessionData * SessionData, TSessionLog * Log, TConfiguration * Configuration) :
   PendLen(0)
