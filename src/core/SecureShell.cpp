@@ -162,7 +162,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   // user-configurable settings
   conf_set_str(conf, CONF_host, AnsiString(Data->GetHostNameExpanded()).c_str());
   conf_set_str(conf, CONF_username, AnsiString(Data->GetUserNameExpanded()).c_str());
-  conf_set_int(conf, CONF_port, Data->GetPortNumber());
+  conf_set_int(conf, CONF_port, (int)Data->GetPortNumber());
   conf_set_int(conf, CONF_protocol, PROT_SSH);
   // always set 0, as we will handle keepalives ourselves to avoid
   // multi-threaded issues in putty timer list
