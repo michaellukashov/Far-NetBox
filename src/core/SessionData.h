@@ -247,8 +247,8 @@ public:
   static RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
   static UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   static RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
-  static bool DoIsProtocolUrl(const UnicodeString & Url, const UnicodeString & Protocol, int & ProtocolLen);
-  static bool IsProtocolUrl(const UnicodeString & Url, const UnicodeString & Protocol, int & ProtocolLen);
+  static bool DoIsProtocolUrl(const UnicodeString & Url, const UnicodeString & Protocol, intptr_t & ProtocolLen);
+  static bool IsProtocolUrl(const UnicodeString & Url, const UnicodeString & Protocol, intptr_t & ProtocolLen);
 
 public:
   explicit TSessionData(const UnicodeString & AName);

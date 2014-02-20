@@ -557,7 +557,7 @@ UnicodeString NormalizeFingerprint(const UnicodeString & Fingerprint)
   UnicodeString RsaName = UnicodeString(ssh_rsa.name) + L" ";
 
   bool IsFingerprint = false;
-  int LenStart = 0;
+  intptr_t LenStart = 0;
   if (StartsStr(DssName, Result))
   {
     LenStart = DssName.Length() + 1;

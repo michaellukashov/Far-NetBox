@@ -1299,7 +1299,7 @@ inline void MoveStr(UnicodeString & Source, UnicodeString * Dest, intptr_t Count
 }
 //---------------------------------------------------------------------
 bool TSessionData::DoIsProtocolUrl(
-  const UnicodeString & Url, const UnicodeString & Protocol, int & ProtocolLen)
+  const UnicodeString & Url, const UnicodeString & Protocol, intptr_t & ProtocolLen)
 {
   bool Result = SameText(Url.SubString(1, Protocol.Length() + 1), Protocol + L":");
   if (Result)
@@ -1310,7 +1310,7 @@ bool TSessionData::DoIsProtocolUrl(
 }
 //---------------------------------------------------------------------
 bool TSessionData::IsProtocolUrl(
-  const UnicodeString & Url, const UnicodeString & Protocol, int & ProtocolLen)
+  const UnicodeString & Url, const UnicodeString & Protocol, intptr_t & ProtocolLen)
 {
   return
     DoIsProtocolUrl(Url, Protocol, ProtocolLen) ||
@@ -1327,7 +1327,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
   TFSProtocol AFSProtocol = fsSCPonly;
   intptr_t APortNumber = 0;
   TFtps AFtps = ftpsNone;
-  int ProtocolLen = 0;
+  intptr_t ProtocolLen = 0;
   if (url.SubString(1, 7).LowerCase() == L"netbox:")
   {
     // Remove "netbox:" prefix
