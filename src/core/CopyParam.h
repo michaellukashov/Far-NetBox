@@ -141,11 +141,11 @@ private:
   bool FClearArchive;
   bool FRemoveCtrlZ;
   bool FRemoveBOM;
-  unsigned long FCPSLimit;
+  uintptr_t FCPSLimit;
   bool FNewerOnly;
 };
 //---------------------------------------------------------------------------
-uintptr_t  GetSpeedLimit(const UnicodeString & Text);
+uintptr_t GetSpeedLimit(const UnicodeString & Text);
 UnicodeString SetSpeedLimit(uintptr_t Limit);
 //---------------------------------------------------------------------------
 #endif

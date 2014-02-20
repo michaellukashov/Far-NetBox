@@ -231,7 +231,7 @@ intptr_t TSynchronizeChecklist::Compare(const void * AItem1, const void * AItem2
   const TItem * Item1 = static_cast<const TItem *>(AItem1);
   const TItem * Item2 = static_cast<const TItem *>(AItem2);
 
-  int Result;
+  intptr_t Result;
   if (!Item1->Local.Directory.IsEmpty())
   {
     Result = AnsiCompareText(Item1->Local.Directory, Item2->Local.Directory);

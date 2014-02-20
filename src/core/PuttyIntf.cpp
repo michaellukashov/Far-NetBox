@@ -572,7 +572,7 @@ UnicodeString NormalizeFingerprint(const UnicodeString & Fingerprint)
   if (IsFingerprint)
   {
     Result[LenStart - 1] = L'-';
-    int Space = Result.Pos(L" ");
+    intptr_t Space = Result.Pos(L" ");
     assert(IsNumber(Result.SubString(LenStart, Space - LenStart)));
     Result.Delete(LenStart, Space - LenStart + 1);
     Result = ReplaceChar(Result, L':', L'-');
