@@ -172,7 +172,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_int(conf, CONF_agentfwd, Data->GetAgentFwd());
   conf_set_int(conf, CONF_addressfamily, Data->GetAddressFamily());
   conf_set_str(conf, CONF_ssh_rekey_data, AnsiString(Data->GetRekeyData()).c_str());
-  conf_set_int(conf, CONF_ssh_rekey_time, Data->GetRekeyTime());
+  conf_set_int(conf, CONF_ssh_rekey_time, (int)Data->GetRekeyTime());
 
   for (int c = 0; c < CIPHER_COUNT; c++)
   {
@@ -337,7 +337,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_int(conf, CONF_nopty, TRUE);
   conf_set_int(conf, CONF_tcp_keepalives, 0);
   conf_set_int(conf, CONF_ssh_show_banner, TRUE);
-  for (intptr_t Index = 0; Index < ngsslibs; ++Index)
+  for (int Index = 0; Index < ngsslibs; ++Index)
   {
     conf_set_int_int(conf, CONF_ssh_gsslist, Index, gsslibkeywords[Index].v);
   }
@@ -370,7 +370,7 @@ void TSecureShell::Open()
         conf_free(conf);
       };
       InitError = FBackend->init(this, &FBackendHandle, conf,
-        AnsiString(FSessionData->GetHostNameExpanded()).c_str(), FSessionData->GetPortNumber(), &RealHost, 0,
+        AnsiString(FSessionData->GetHostNameExpanded()).c_str(), (int)FSessionData->GetPortNumber(), &RealHost, 0,
         conf_get_int(conf, CONF_tcp_keepalives));
     }
 
@@ -1733,7 +1733,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       };
       Handles = sresize(Handles, static_cast<size_t>(HandleCount + 1), HANDLE);
       Handles[HandleCount] = FSocketEvent;
-      DWORD Timeout = MSec;
+      DWORD Timeout = (DWORD)MSec;
       if (toplevel_callback_pending())
       {
         Timeout = 0;
@@ -2022,7 +2022,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
         Port,
         W2MB(KeyType.c_str(),
              static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
-        const_cast<char *>(AnsiStoredKeys.c_str()), AnsiStoredKeys.Length()) == 0)
+        const_cast<char *>(AnsiStoredKeys.c_str()), (int)AnsiStoredKeys.Length()) == 0)
   {
     StoredKeys = AnsiStoredKeys.c_str();
     UnicodeString Buf = StoredKeys;

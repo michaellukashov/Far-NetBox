@@ -326,7 +326,7 @@ UnicodeString MainInstructionsFirstParagraph(const UnicodeString & S)
   // WORKAROUND, we consider it bad practice, the highlighting should better
   // be localized (but maybe we change our mind later)
   UnicodeString Result;
-  int Pos = S.Pos(L"\n\n");
+  intptr_t Pos = S.Pos(L"\n\n");
   // we would not be calling this on single paragraph message
   if (ALWAYS_TRUE(Pos > 0))
   {
@@ -347,7 +347,7 @@ bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions
   UnicodeString MainMsgTag = LoadStr(MAIN_MSG_TAG);
   if (StartsStr(MainMsgTag, S))
   {
-    int EndTagPos =
+    intptr_t EndTagPos =
       S.SubString(MainMsgTag.Length() + 1, S.Length() - MainMsgTag.Length()).Pos(MainMsgTag);
     if (EndTagPos > 0)
     {
@@ -556,7 +556,7 @@ UnicodeString ExtractProgram(const UnicodeString & Command)
 UnicodeString ExtractProgramName(const UnicodeString & Command)
 {
   UnicodeString Name = ExtractFileName(ExtractProgram(Command), false);
-  int Dot = Name.LastDelimiter(L".");
+  intptr_t Dot = Name.LastDelimiter(L".");
   if (Dot > 0)
   {
     Name = Name.SubString(1, Dot - 1);

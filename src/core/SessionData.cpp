@@ -2904,7 +2904,7 @@ UnicodeString TSessionData::GetInfoTip() const
 UnicodeString TSessionData::ExtractLocalName(const UnicodeString & Name)
 {
   UnicodeString Result = Name;
-  int P = Result.LastDelimiter(L"/");
+  intptr_t P = Result.LastDelimiter(L"/");
   if (P > 0)
   {
     Result.Delete(1, P);
@@ -2929,7 +2929,7 @@ UnicodeString TSessionData::GetLocalName() const
 UnicodeString TSessionData::ExtractFolderName(const UnicodeString & Name)
 {
   UnicodeString Result;
-  int P = Name.LastDelimiter(L"/");
+  intptr_t P = Name.LastDelimiter(L"/");
   if (P > 0)
   {
     Result = Name.SubString(1, P - 1);

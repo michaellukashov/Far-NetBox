@@ -1042,7 +1042,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & FileName,
 {
   FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
     FFileZillaIntf->FileTransfer(LocalFile.c_str(), Handle, RemoteFile.c_str(),
-      RemotePath.c_str(), Get, Size, Type, &UserData);
+      RemotePath.c_str(), Get, Size, (int)Type, &UserData);
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
     uintptr_t Reply = WaitForCommandReply();
@@ -3438,11 +3438,11 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
   if (Source.HasDate)
   {
     DateTime =
-      EncodeDateVerbose(Source.Year, Source.Month, Source.Day);
+      EncodeDateVerbose((Word)Source.Year, (Word)Source.Month, (Word)Source.Day);
     if (Source.HasTime)
     {
       DateTime = DateTime +
-        EncodeTimeVerbose(Source.Hour, Source.Minute, Source.Second, 0);
+        EncodeTimeVerbose((Word)Source.Hour, (Word)Source.Minute, (Word)Source.Second, 0);
       // not exact as we got year as well, but it is most probably
       // guessed by FZAPI anyway
       ModificationFmt = Source.HasSeconds ? mfFull : mfMDHM;

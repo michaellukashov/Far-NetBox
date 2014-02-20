@@ -371,7 +371,7 @@ public:
   void SetCodePage(const UnicodeString & Value);
   uintptr_t GetCodePageAsNumber() const;
   UnicodeString GetRekeyData() const { return FRekeyData; }
-  intptr_t GetRekeyTime() const { return FRekeyTime; }
+  uintptr_t GetRekeyTime() const { return FRekeyTime; }
   intptr_t GetColor() const { return FColor; }
   bool GetTunnel() const { return FTunnel; }
   UnicodeString GetTunnelHostName() const { return FTunnelHostName; }
@@ -505,7 +505,7 @@ private:
   bool FSslSessionReuse;
   TAddressFamily FAddressFamily;
   UnicodeString FRekeyData;
-  intptr_t FRekeyTime;
+  uintptr_t FRekeyTime;
   intptr_t FColor;
   bool FTunnel;
   UnicodeString FTunnelHostName;
