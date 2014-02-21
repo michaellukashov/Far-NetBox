@@ -13022,7 +13022,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
 
   WIN32_FIND_DATA SearchRec;
   bool FindOK = false;
-  HANDLE FindHandle = 0;
+  HANDLE FindHandle = INVALID_HANDLE_VALUE;
 
   FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
     UnicodeString path = DirectoryName + L"*.*";
