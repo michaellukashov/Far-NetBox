@@ -34,7 +34,7 @@ __int64 GetLength64(CFile &file)
 BOOL GetLength64(CString filename, _int64 &size)
 {
 	WIN32_FIND_DATA findFileData;
-	HANDLE hFind = FindFirstFile(filename, &findFileData);
+	HANDLE hFind = ::FindFirstFile(filename, &findFileData);
 	if (hFind == INVALID_HANDLE_VALUE)
 		return FALSE;
 	VERIFY(FindClose(hFind));
@@ -56,10 +56,10 @@ BOOL PASCAL GetStatus64(LPCTSTR lpszFileName, CFileStatus64& rStatus)
 	}
 
 	WIN32_FIND_DATA findFileData;
-	HANDLE hFind = FindFirstFile((LPTSTR)lpszFileName, &findFileData);
+	HANDLE hFind = ::FindFirstFile((LPTSTR)lpszFileName, &findFileData);
 	if (hFind == INVALID_HANDLE_VALUE)
 		return FALSE;
-	VERIFY(FindClose(hFind));
+	VERIFY(::FindClose(hFind));
 
 	// strip attribute of NORMAL bit, our API doesn't have a "normal" bit.
 	rStatus.m_attribute = (BYTE)

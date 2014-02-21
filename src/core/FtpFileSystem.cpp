@@ -1516,7 +1516,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
         UnixToDateTime(
           ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
           dstmUnix);
-      FindClose(Handle);
+      ::FindClose(Handle);
     }
 
     // Will we use ASCII of BINARY file transfer?
