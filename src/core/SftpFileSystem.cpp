@@ -1291,7 +1291,9 @@ class TSFTPDownloadQueue : public TSFTPFixedLenQueue
 NB_DISABLE_COPY(TSFTPDownloadQueue)
 public:
   explicit TSFTPDownloadQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
-    TSFTPFixedLenQueue(AFileSystem, CodePage)
+    TSFTPFixedLenQueue(AFileSystem, CodePage),
+    OperationProgress(nullptr),
+    FTransfered(0)
   {
   }
   virtual ~TSFTPDownloadQueue() {}

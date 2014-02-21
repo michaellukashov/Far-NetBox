@@ -39,6 +39,7 @@ TSecureShell::TSecureShell(TSessionUI * UI,
   FWaiting = 0;
   FOpened = false;
   FOpenSSH = false;
+  OutLen = 0;
   OutPtr = nullptr;
   Pending = nullptr;
   FBackendHandle = nullptr;
