@@ -5424,11 +5424,11 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
 {
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
   FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, LocalFileName.c_str()),
-    HANDLE Handle;
-    OpenLocalFile(LocalFileName, GENERIC_WRITE, nullptr, &Handle,
+    HANDLE LocalFileHandle;
+    OpenLocalFile(LocalFileName, GENERIC_WRITE, nullptr, &LocalFileHandle,
       nullptr, nullptr, nullptr, nullptr);
-    bool Result = ::SetFileTime(Handle, nullptr, AcTime, WrTime) > 0;
-    ::CloseHandle(Handle);
+    bool Result = ::SetFileTime(LocalFileHandle, nullptr, AcTime, WrTime) > 0;
+    ::CloseHandle(LocalFileHandle);
     if (!Result)
     {
       Abort();
