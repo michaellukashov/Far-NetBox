@@ -452,7 +452,7 @@ bool TSecureShell::TryFtp()
           Address.sin_port = htons(static_cast<short>(Port));
           Address.sin_addr.s_addr = *((unsigned long *)*HostEntry->h_addr_list);
 
-          HANDLE Event = CreateEvent(nullptr, false, false, nullptr);
+          HANDLE Event = ::CreateEvent(nullptr, false, false, nullptr);
           Result = (WSAEventSelect(Socket, (WSAEVENT)Event, FD_CONNECT | FD_CLOSE) != SOCKET_ERROR);
 
           if (Result)

@@ -13015,7 +13015,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
   bool Exists = WebDAVCheckExisting(DestFullName.c_str(), IsDir);
   if (!Exists)
   {
-      CreateDirectory(DestFullName);
+    CreateDirectory(DestFullName);
   }
 
   OperationProgress->SetFile(DirectoryName);
