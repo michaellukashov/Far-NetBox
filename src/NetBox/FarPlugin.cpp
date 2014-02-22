@@ -1759,6 +1759,7 @@ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
   FOpenPluginInfoValid(false)
 {
   memset(FPanelInfo, 0, sizeof(FPanelInfo));
+  ClearStruct(FOpenPluginInfo);
 }
 
 void TCustomFarFileSystem::Init()
