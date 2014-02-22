@@ -2153,7 +2153,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
   }
   else
   {
-    if ((OpMode & OPM_FIND) && FSavedFindFolder.IsEmpty())
+    if ((OpMode & OPM_FIND) && FSavedFindFolder.IsEmpty() && FTerminal)
     {
       FSavedFindFolder = FTerminal->GetCurrentDirectory();
     }
