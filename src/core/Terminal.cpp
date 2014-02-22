@@ -532,6 +532,32 @@ TTerminal::TTerminal() :
   TObject(),
   TSessionUI()
 {
+  FInTransaction = 0;
+  FSuspendTransaction = false;
+  FUsersGroupsLookedup = false;
+  FOperationProgress = nullptr;
+  FUseBusyCursor = false;
+  FDirectoryCache = nullptr;
+  FDirectoryChangesCache = nullptr;
+  FFileSystem = nullptr;
+  FSecureShell = nullptr;
+  FFSProtocol = cfsUnknown;
+  FCommandSession = nullptr;
+  FAutoReadDirectory = false;
+  FReadingCurrentDirectory = false;
+  FClosedOnCompletion = nullptr;
+  FStatus = ssClosed;
+  FTunnelThread = nullptr;
+  FTunnel = nullptr;
+  FTunnelData = nullptr;
+  FTunnelLog = nullptr;
+  FTunnelUI = nullptr;
+  FTunnelLocalPortNumber = 0;
+  FCallbackGuard = nullptr;
+  FEnableSecureShellUsage = false;
+  FCollectFileSystemUsage = false;
+  FRememberedPasswordTried = false;
+  FRememberedTunnelPasswordTried = false;
 }
 //------------------------------------------------------------------------------
 TTerminal::~TTerminal()
