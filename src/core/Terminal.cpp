@@ -3074,7 +3074,8 @@ void TTerminal::RecycleFile(const UnicodeString & FileName,
   if (FileName2.IsEmpty())
   {
     assert(File != nullptr);
-    FileName2 = File->GetFileName();
+    if (File)
+      FileName2 = File->GetFileName();
   }
 
   if (!IsRecycledFile(FileName2))
