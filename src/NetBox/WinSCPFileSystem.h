@@ -234,6 +234,8 @@ protected:
   void ShowLog();
 
   TTerminal * GetTerminal() const { return FTerminal; }
+  TSessionData * GetSessionData() const { return FTerminal ? FTerminal->GetSessionData() : nullptr; }
+  TSessionData * GetSessionData() { return FTerminal ? FTerminal->GetSessionData() : nullptr; }
 
 protected:
   virtual UnicodeString GetCurrentDirectory() const { return FTerminal ? FTerminal->GetCurrentDirectory() : UnicodeString(); }

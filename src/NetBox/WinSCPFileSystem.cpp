@@ -421,7 +421,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(DWORD & Flags,
     // (vandyke: c:/windows/system) are displayed correctly on command-line, but
     // leaved subdirectory is not focused, when entering parent directory.
     CurDir = FTerminal->GetCurrentDirectory();
-    Format = FTerminal->GetSessionData()->GetSessionName();
+    Format = GetSessionData()->GetSessionName();
     if (GetFarConfiguration()->GetHostNameInTitle())
     {
       PanelTitle = FORMAT(L" %s:%s ", Format.c_str(), CurDir.c_str());
@@ -430,7 +430,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(DWORD & Flags,
     {
       PanelTitle = FORMAT(L" %s ", CurDir.c_str());
     }
-    ShortcutData = FORMAT(L"%s\1%s", FTerminal->GetSessionData()->GetSessionUrl().c_str(), CurDir.c_str());
+    ShortcutData = FORMAT(L"%s\1%s", GetSessionData()->GetSessionUrl().c_str(), CurDir.c_str());
 
     TRemoteFilePanelItem::SetPanelModes(PanelModes);
     TRemoteFilePanelItem::SetKeyBarTitles(KeyBarTitles);
@@ -2002,7 +2002,7 @@ void TWinSCPFileSystem::ClearCaches()
 void TWinSCPFileSystem::OpenSessionInPutty()
 {
   assert(Connected());
-  ::OpenSessionInPutty(GetGUIConfiguration()->GetPuttyPath(), FTerminal->GetSessionData(),
+  ::OpenSessionInPutty(GetGUIConfiguration()->GetPuttyPath(), GetSessionData(),
     GetGUIConfiguration()->GetPuttyPassword() ? GetTerminal()->GetPassword() : UnicodeString());
 }
 //------------------------------------------------------------------------------
@@ -2018,7 +2018,7 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
 {
   std::unique_ptr<TBookmarkList> BookmarkList(new TBookmarkList());
   UnicodeString Directory = FTerminal->GetCurrentDirectory();
-  UnicodeString SessionKey = FTerminal->GetSessionData()->GetSessionKey();
+  UnicodeString SessionKey = GetSessionData()->GetSessionKey();
   TBookmarkList * CurrentBookmarkList;
 
   CurrentBookmarkList = GetFarConfiguration()->GetBookmarks(SessionKey);
@@ -2404,7 +2404,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
     };
     {
       UnicodeString Query;
-      bool Recycle = FTerminal->GetSessionData()->GetDeleteToRecycleBin() &&
+      bool Recycle = GetSessionData()->GetDeleteToRecycleBin() &&
         !FTerminal->IsRecycledFile(FFileList->GetString(0));
       if (PanelItems->GetCount() > 1)
       {
@@ -2898,11 +2898,11 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::SaveSession()
 {
-  if (FTerminal->GetActive() && !FTerminal->GetSessionData()->GetName().IsEmpty())
+  if (FTerminal->GetActive() && !GetSessionData()->GetName().IsEmpty())
   {
-    FTerminal->GetSessionData()->SetRemoteDirectory(FTerminal->GetCurrentDirectory());
+    GetSessionData()->SetRemoteDirectory(FTerminal->GetCurrentDirectory());
 
-    TSessionData * Data = static_cast<TSessionData *>(StoredSessions->FindByName(FTerminal->GetSessionData()->GetName()));
+    TSessionData * Data = static_cast<TSessionData *>(StoredSessions->FindByName(GetSessionData()->GetName()));
     if (Data)
     {
       bool Changed = false;
@@ -2989,7 +2989,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
 
   if (FTerminal != nullptr)
   {
-    FSynchronisingBrowse = FTerminal->GetSessionData()->GetSynchronizeBrowsing();
+    FSynchronisingBrowse = GetSessionData()->GetSynchronizeBrowsing();
   }
   return Result;
 }
@@ -2998,9 +2998,9 @@ void TWinSCPFileSystem::Disconnect()
 {
   if (FTerminal && FTerminal->GetActive())
   {
-    if (!FTerminal->GetSessionData()->GetName().IsEmpty())
+    if (!GetSessionData()->GetName().IsEmpty())
     {
-      FPrevSessionName = FTerminal->GetSessionData()->GetName();
+      FPrevSessionName = GetSessionData()->GetName();
     }
     SaveSession();
   }
@@ -3014,7 +3014,7 @@ void TWinSCPFileSystem::Disconnect()
   SAFE_DESTROY(FQueueStatus);
   if (FTerminal != nullptr)
   {
-    FTerminal->GetSessionData()->SetSynchronizeBrowsing(FSynchronisingBrowse);
+    GetSessionData()->SetSynchronizeBrowsing(FSynchronisingBrowse);
   }
   SAFE_DESTROY(FTerminal);
 }
