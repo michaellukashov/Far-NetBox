@@ -185,6 +185,8 @@ TSynchronizeChecklist::TItem::TItem() :
   Remote.ModificationFmt = mfFull;
   Remote.Modification = 0;
   Remote.Size = 0;
+  FLocalLastWriteTime.dwHighDateTime = 0;
+  FLocalLastWriteTime.dwLowDateTime = 0;
 }
 //------------------------------------------------------------------------------
 TSynchronizeChecklist::TItem::~TItem()
