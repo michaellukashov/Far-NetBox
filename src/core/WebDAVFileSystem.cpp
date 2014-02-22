@@ -10138,7 +10138,7 @@ neon_exchange_capabilities(
       false,
       pool)) != WEBDAV_NO_ERROR)
     goto cleanup;
-  if (req->code == 301)
+  if (req->code == 301 && relocation_location)
   {
     *relocation_location = neon_request_get_location(req, pool);
     goto cleanup;
