@@ -3922,9 +3922,10 @@ void TWinSCPFileSystem::EditViewCopyParam(TCopyParamType & CopyParam)
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::MultipleEdit()
 {
-  if ((GetPanelInfo()->GetFocusedItem() != nullptr) &&
-      GetPanelInfo()->GetFocusedItem()->GetIsFile() &&
-      (GetPanelInfo()->GetFocusedItem()->GetUserData() != nullptr))
+  TFarPanelItem * Focused = GetPanelInfo()->GetFocusedItem();
+  if ((Focused != nullptr) &&
+      Focused->GetIsFile() &&
+      (Focused->GetUserData() != nullptr))
   {
     std::unique_ptr<TStrings> FileList(CreateFocusedFileList(osRemote));
     assert((FileList.get() == nullptr) || (FileList->GetCount() == 1));
