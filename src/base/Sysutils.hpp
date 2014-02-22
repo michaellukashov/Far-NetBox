@@ -79,7 +79,18 @@ void RaiseLastOSError(DWORD Result = 0);
 struct TFormatSettings : public TObject
 {
 public:
-  explicit TFormatSettings(int /* LCID */) {}
+  explicit TFormatSettings(int /* LCID */)
+  {
+    CurrencyFormat = 0;
+    NegCurrFormat = 0;
+    ThousandSeparator = 0;
+    DecimalSeparator = 0;
+    CurrencyDecimals = 0;
+    DateSeparator = 0;
+    TimeSeparator = 0;
+    ListSeparator = 0;
+    TwoDigitYearCenturyWindow = 0;
+  }
   static TFormatSettings Create(int LCID ) { return TFormatSettings(LCID); }
   uint8_t CurrencyFormat;
   uint8_t NegCurrFormat;

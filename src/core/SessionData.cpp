@@ -1299,7 +1299,7 @@ inline void MoveStr(UnicodeString & Source, UnicodeString * Dest, intptr_t Count
 }
 //---------------------------------------------------------------------
 bool TSessionData::DoIsProtocolUrl(
-  const UnicodeString & Url, const UnicodeString & Protocol, int & ProtocolLen)
+  const UnicodeString & Url, const UnicodeString & Protocol, intptr_t & ProtocolLen)
 {
   bool Result = SameText(Url.SubString(1, Protocol.Length() + 1), Protocol + L":");
   if (Result)
@@ -1310,7 +1310,7 @@ bool TSessionData::DoIsProtocolUrl(
 }
 //---------------------------------------------------------------------
 bool TSessionData::IsProtocolUrl(
-  const UnicodeString & Url, const UnicodeString & Protocol, int & ProtocolLen)
+  const UnicodeString & Url, const UnicodeString & Protocol, intptr_t & ProtocolLen)
 {
   return
     DoIsProtocolUrl(Url, Protocol, ProtocolLen) ||
@@ -1327,7 +1327,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
   TFSProtocol AFSProtocol = fsSCPonly;
   intptr_t APortNumber = 0;
   TFtps AFtps = ftpsNone;
-  int ProtocolLen = 0;
+  intptr_t ProtocolLen = 0;
   if (url.SubString(1, 7).LowerCase() == L"netbox:")
   {
     // Remove "netbox:" prefix
@@ -2904,7 +2904,7 @@ UnicodeString TSessionData::GetInfoTip() const
 UnicodeString TSessionData::ExtractLocalName(const UnicodeString & Name)
 {
   UnicodeString Result = Name;
-  int P = Result.LastDelimiter(L"/");
+  intptr_t P = Result.LastDelimiter(L"/");
   if (P > 0)
   {
     Result.Delete(1, P);
@@ -2929,7 +2929,7 @@ UnicodeString TSessionData::GetLocalName() const
 UnicodeString TSessionData::ExtractFolderName(const UnicodeString & Name)
 {
   UnicodeString Result;
-  int P = Name.LastDelimiter(L"/");
+  intptr_t P = Name.LastDelimiter(L"/");
   if (P > 0)
   {
     Result = Name.SubString(1, P - 1);
@@ -3092,6 +3092,11 @@ TStoredSessionList::TStoredSessionList(bool AReadOnly) :
 TStoredSessionList::~TStoredSessionList()
 {
   SAFE_DESTROY(FDefaultSettings);
+  for (intptr_t Index = 0; Index < GetCount(); Index++)
+  {
+    delete AtObject(Index);
+    SetItem(Index, nullptr);
+  }
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::Load(THierarchicalStorage * Storage,

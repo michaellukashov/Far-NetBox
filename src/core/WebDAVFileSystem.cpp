@@ -4000,7 +4000,7 @@ auth_ssl_client_cert_pw_file_save_creds_helper(
     // If the passphrase is going to be stored encrypted, go right
     // ahead and store it to disk. Else determine whether saving
     // in plaintext is OK.
-    if (strcmp(passtype, WEBDAV_AUTH_WINCRYPT_PASSWORD_TYPE) == 0)
+    if (passtype && strcmp(passtype, WEBDAV_AUTH_WINCRYPT_PASSWORD_TYPE) == 0)
     {
       may_save_passphrase = true;
     }
@@ -10138,7 +10138,7 @@ neon_exchange_capabilities(
       false,
       pool)) != WEBDAV_NO_ERROR)
     goto cleanup;
-  if (req->code == 301)
+  if (req->code == 301 && relocation_location)
   {
     *relocation_location = neon_request_get_location(req, pool);
     goto cleanup;
@@ -13015,14 +13015,14 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
   bool Exists = WebDAVCheckExisting(DestFullName.c_str(), IsDir);
   if (!Exists)
   {
-      CreateDirectory(DestFullName);
+    CreateDirectory(DestFullName);
   }
 
   OperationProgress->SetFile(DirectoryName);
 
   WIN32_FIND_DATA SearchRec;
   bool FindOK = false;
-  HANDLE FindHandle = 0;
+  HANDLE FindHandle = INVALID_HANDLE_VALUE;
 
   FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
     UnicodeString path = DirectoryName + L"*.*";

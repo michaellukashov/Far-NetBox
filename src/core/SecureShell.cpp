@@ -27,31 +27,20 @@ struct TPuttyTranslation
   UnicodeString HelpKeyword;
 };
 //---------------------------------------------------------------------------
-static char * AnsiStrNew(const wchar_t * S)
-{
-  AnsiString Buf = S;
-  char * Result = static_cast<char *>(nb_malloc(Buf.Length() + 1));
-  memcpy(Result, Buf.c_str(), Buf.Length() + 1);
-  return Result;
-}
-//---------------------------------------------------------------------------
-static void AnsiStrDispose(char * S)
-{
-  nb_free(S);
-}
-//---------------------------------------------------------------------------
 TSecureShell::TSecureShell(TSessionUI * UI,
-  TSessionData * SessionData, TSessionLog * Log, TConfiguration * Configuration) :
-  PendLen(0)
+  TSessionData * SessionData, TSessionLog * Log, TConfiguration * Configuration)
 {
   FUI = UI;
   FSessionData = SessionData;
   FLog = Log;
   FConfiguration = Configuration;
   FActive = false;
-  FWaiting = 0;
-  FOpened = false;
+  FSessionInfoValid = false;
+  FBackend = nullptr;
   FOpenSSH = false;
+  PendLen = 0;
+  PendSize = 0;
+  OutLen = 0;
   OutPtr = nullptr;
   Pending = nullptr;
   FBackendHandle = nullptr;
@@ -61,7 +50,12 @@ TSecureShell::TSecureShell(TSessionUI * UI,
   FSocket = INVALID_SOCKET;
   FSocketEvent = CreateEvent(nullptr, false, false, nullptr);
   FFrozen = false;
+  FDataWhileFrozen = false;
+  FSshVersion = 0;
+  FOpened = false;
+  FWaiting = 0;
   FSimple = false;
+  FNoConnectionResponse = false;
   FCollectPrivateKeyUsage = false;
   FWaitingForData = 0;
 }
@@ -175,7 +169,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   // user-configurable settings
   conf_set_str(conf, CONF_host, AnsiString(Data->GetHostNameExpanded()).c_str());
   conf_set_str(conf, CONF_username, AnsiString(Data->GetUserNameExpanded()).c_str());
-  conf_set_int(conf, CONF_port, Data->GetPortNumber());
+  conf_set_int(conf, CONF_port, (int)Data->GetPortNumber());
   conf_set_int(conf, CONF_protocol, PROT_SSH);
   // always set 0, as we will handle keepalives ourselves to avoid
   // multi-threaded issues in putty timer list
@@ -185,7 +179,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_int(conf, CONF_agentfwd, Data->GetAgentFwd());
   conf_set_int(conf, CONF_addressfamily, Data->GetAddressFamily());
   conf_set_str(conf, CONF_ssh_rekey_data, AnsiString(Data->GetRekeyData()).c_str());
-  conf_set_int(conf, CONF_ssh_rekey_time, Data->GetRekeyTime());
+  conf_set_int(conf, CONF_ssh_rekey_time, (int)Data->GetRekeyTime());
 
   for (int c = 0; c < CIPHER_COUNT; c++)
   {
@@ -350,7 +344,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_int(conf, CONF_nopty, TRUE);
   conf_set_int(conf, CONF_tcp_keepalives, 0);
   conf_set_int(conf, CONF_ssh_show_banner, TRUE);
-  for (intptr_t Index = 0; Index < ngsslibs; ++Index)
+  for (int Index = 0; Index < ngsslibs; ++Index)
   {
     conf_set_int_int(conf, CONF_ssh_gsslist, Index, gsslibkeywords[Index].v);
   }
@@ -383,7 +377,7 @@ void TSecureShell::Open()
         conf_free(conf);
       };
       InitError = FBackend->init(this, &FBackendHandle, conf,
-        AnsiString(FSessionData->GetHostNameExpanded()).c_str(), FSessionData->GetPortNumber(), &RealHost, 0,
+        AnsiString(FSessionData->GetHostNameExpanded()).c_str(), (int)FSessionData->GetPortNumber(), &RealHost, 0,
         conf_get_int(conf, CONF_tcp_keepalives));
     }
 
@@ -464,7 +458,7 @@ bool TSecureShell::TryFtp()
           Address.sin_port = htons(static_cast<short>(Port));
           Address.sin_addr.s_addr = *((unsigned long *)*HostEntry->h_addr_list);
 
-          HANDLE Event = CreateEvent(nullptr, false, false, nullptr);
+          HANDLE Event = ::CreateEvent(nullptr, false, false, nullptr);
           Result = (WSAEventSelect(Socket, (WSAEVENT)Event, FD_CONNECT | FD_CLOSE) != SOCKET_ERROR);
 
           if (Result)
@@ -1746,7 +1740,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       };
       Handles = sresize(Handles, static_cast<size_t>(HandleCount + 1), HANDLE);
       Handles[HandleCount] = FSocketEvent;
-      unsigned int Timeout = MSec;
+      DWORD Timeout = (DWORD)MSec;
       if (toplevel_callback_pending())
       {
         Timeout = 0;
@@ -2035,7 +2029,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
         Port,
         W2MB(KeyType.c_str(),
              static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
-        const_cast<char *>(AnsiStoredKeys.c_str()), AnsiStoredKeys.Length()) == 0)
+        const_cast<char *>(AnsiStoredKeys.c_str()), (int)AnsiStoredKeys.Length()) == 0)
   {
     StoredKeys = AnsiStoredKeys.c_str();
     UnicodeString Buf = StoredKeys;

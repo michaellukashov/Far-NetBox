@@ -152,7 +152,8 @@ void CoreMaintenanceTask()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
-  FUseBusyCursor(UseBusyCursor)
+  FUseBusyCursor(UseBusyCursor),
+  FToken(nullptr)
 {
   if (FUseBusyCursor)
   {

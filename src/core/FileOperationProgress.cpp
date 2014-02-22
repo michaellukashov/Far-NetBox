@@ -147,7 +147,7 @@ void TFileOperationProgressType::Resume()
 
   // shift timestamps for CPS calculation in advance
   // by the time the progress was suspended
-  unsigned long Stopped = (GetTickCount() - FSuspendTime);
+  unsigned long Stopped = (unsigned long)(GetTickCount() - FSuspendTime);
   size_t I = 0;
   while (I < FTicks.size())
   {
@@ -391,7 +391,7 @@ void TFileOperationProgressType::AddResumed(__int64 ASize)
 uintptr_t TFileOperationProgressType::TransferBlockSize()
 {
   uintptr_t Result = TRANSFER_BUF_SIZE;
-  if (TransferedSize + Result > TransferSize)
+  if (TransferedSize + (__int64)Result > TransferSize)
   {
     Result = static_cast<uintptr_t>(TransferSize - TransferedSize);
   }

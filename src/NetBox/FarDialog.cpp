@@ -210,7 +210,7 @@ void TFarDialog::SetSize(TPoint Value)
 //---------------------------------------------------------------------------
 void TFarDialog::SetWidth(intptr_t Value)
 {
-  SetSize(TPoint(Value, GetHeight()));
+  SetSize(TPoint((int)Value, (int)GetHeight()));
 }
 //---------------------------------------------------------------------------
 intptr_t TFarDialog::GetWidth()
@@ -220,7 +220,7 @@ intptr_t TFarDialog::GetWidth()
 //---------------------------------------------------------------------------
 void TFarDialog::SetHeight(intptr_t Value)
 {
-  SetSize(TPoint(GetWidth(), Value));
+  SetSize(TPoint((int)GetWidth(), (int)Value));
 }
 //---------------------------------------------------------------------------
 intptr_t TFarDialog::GetHeight()
@@ -1071,7 +1071,7 @@ void TFarDialogItem::ResetBounds()
   TRect B = FBounds;
   FarDialogItem * DItem = GetDialogItem();
   #define BOUND(DIB, BB, DB, CB) DItem->DIB = B.BB >= 0 ? \
-    (GetContainer() ? GetContainer()->CB : 0) + B.BB : GetDialog()->GetSize().DB + B.BB
+    (GetContainer() ? (int)GetContainer()->CB : 0) + B.BB : GetDialog()->GetSize().DB + B.BB
   BOUND(X1, Left, x, GetLeft());
   BOUND(Y1, Top, y, GetTop());
   BOUND(X2, Right, x, GetLeft());

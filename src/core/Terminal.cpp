@@ -185,6 +185,8 @@ TSynchronizeChecklist::TItem::TItem() :
   Remote.ModificationFmt = mfFull;
   Remote.Modification = 0;
   Remote.Size = 0;
+  FLocalLastWriteTime.dwHighDateTime = 0;
+  FLocalLastWriteTime.dwLowDateTime = 0;
 }
 //------------------------------------------------------------------------------
 TSynchronizeChecklist::TItem::~TItem()
@@ -231,7 +233,7 @@ intptr_t TSynchronizeChecklist::Compare(const void * AItem1, const void * AItem2
   const TItem * Item1 = static_cast<const TItem *>(AItem1);
   const TItem * Item2 = static_cast<const TItem *>(AItem2);
 
-  int Result;
+  intptr_t Result;
   if (!Item1->Local.Directory.IsEmpty())
   {
     Result = AnsiCompareText(Item1->Local.Directory, Item2->Local.Directory);
@@ -532,6 +534,32 @@ TTerminal::TTerminal() :
   TObject(),
   TSessionUI()
 {
+  FInTransaction = 0;
+  FSuspendTransaction = false;
+  FUsersGroupsLookedup = false;
+  FOperationProgress = nullptr;
+  FUseBusyCursor = false;
+  FDirectoryCache = nullptr;
+  FDirectoryChangesCache = nullptr;
+  FFileSystem = nullptr;
+  FSecureShell = nullptr;
+  FFSProtocol = cfsUnknown;
+  FCommandSession = nullptr;
+  FAutoReadDirectory = false;
+  FReadingCurrentDirectory = false;
+  FClosedOnCompletion = nullptr;
+  FStatus = ssClosed;
+  FTunnelThread = nullptr;
+  FTunnel = nullptr;
+  FTunnelData = nullptr;
+  FTunnelLog = nullptr;
+  FTunnelUI = nullptr;
+  FTunnelLocalPortNumber = 0;
+  FCallbackGuard = nullptr;
+  FEnableSecureShellUsage = false;
+  FCollectFileSystemUsage = false;
+  FRememberedPasswordTried = false;
+  FRememberedTunnelPasswordTried = false;
 }
 //------------------------------------------------------------------------------
 TTerminal::~TTerminal()
@@ -3046,7 +3074,8 @@ void TTerminal::RecycleFile(const UnicodeString & FileName,
   if (FileName2.IsEmpty())
   {
     assert(File != nullptr);
-    FileName2 = File->GetFileName();
+    if (File)
+      FileName2 = File->GetFileName();
   }
 
   if (!IsRecycledFile(FileName2))
@@ -5424,11 +5453,11 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
 {
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
   FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, LocalFileName.c_str()),
-    HANDLE Handle;
-    OpenLocalFile(LocalFileName, GENERIC_WRITE, nullptr, &Handle,
+    HANDLE LocalFileHandle;
+    OpenLocalFile(LocalFileName, GENERIC_WRITE, nullptr, &LocalFileHandle,
       nullptr, nullptr, nullptr, nullptr);
-    bool Result = ::SetFileTime(Handle, nullptr, AcTime, WrTime) > 0;
-    ::CloseHandle(Handle);
+    bool Result = ::SetFileTime(LocalFileHandle, nullptr, AcTime, WrTime) > 0;
+    ::CloseHandle(LocalFileHandle);
     if (!Result)
     {
       Abort();

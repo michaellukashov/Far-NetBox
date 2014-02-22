@@ -43,7 +43,7 @@ void PuttyInitialize()
 
   AnsiString VersionString = SshVersionString();
   assert(!VersionString.IsEmpty() && (static_cast<size_t>(VersionString.Length()) < LENOF(sshver)));
-  strcpy(sshver, VersionString.c_str());
+  strcpy_s(sshver, sizeof(sshver), VersionString.c_str());
   AnsiString AppName = AppNameString();
   assert(!AppName.IsEmpty() && (static_cast<size_t>(AppName.Length()) < LENOF(appname_)));
   strcpy(appname_, AppName.c_str());
@@ -557,7 +557,7 @@ UnicodeString NormalizeFingerprint(const UnicodeString & Fingerprint)
   UnicodeString RsaName = UnicodeString(ssh_rsa.name) + L" ";
 
   bool IsFingerprint = false;
-  int LenStart;
+  intptr_t LenStart = 0;
   if (StartsStr(DssName, Result))
   {
     LenStart = DssName.Length() + 1;
@@ -572,7 +572,7 @@ UnicodeString NormalizeFingerprint(const UnicodeString & Fingerprint)
   if (IsFingerprint)
   {
     Result[LenStart - 1] = L'-';
-    int Space = Result.Pos(L" ");
+    intptr_t Space = Result.Pos(L" ");
     assert(IsNumber(Result.SubString(LenStart, Space - LenStart)));
     Result.Delete(LenStart, Space - LenStart + 1);
     Result = ReplaceChar(Result, L':', L'-');

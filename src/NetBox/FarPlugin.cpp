@@ -47,9 +47,12 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
   FCurrentProgress = -1;
   FTopDialog = nullptr;
   FValidFarSystemSettings = false;
+  FFarSystemSettings = 0;
 
   ClearStruct(FPluginInfo);
   ClearPluginInfo(FPluginInfo);
+  ClearStruct(FStartupInfo);
+  ClearStruct(FFarStandardFunctions);
 
   // far\Examples\Compare\compare.cpp
   FConsoleInput = ::CreateFile(L"CONIN$", GENERIC_READ, FILE_SHARE_READ, nullptr,
@@ -541,6 +544,11 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
 intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
 {
   TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
+  assert(FileSystem);
+  if (!FileSystem)
+  {
+    return 0;
+  }
   UnicodeString PrevCurrentDirectory = FileSystem->GetCurrentDirectory();
   try
   {
@@ -1794,6 +1802,7 @@ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
   FOpenPanelInfoValid(false)
 {
   memset(FPanelInfo, 0, sizeof(FPanelInfo));
+  ClearStruct(FOpenPanelInfo);
 }
 
 void TCustomFarFileSystem::Init()

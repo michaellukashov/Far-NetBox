@@ -212,7 +212,7 @@ bool TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/) const
 void TCommandSet::SetCommands(TFSCommand Cmd, const UnicodeString & Value)
 {
   CHECK_CMD;
-  wcscpy(const_cast<wchar_t *>(CommandSet[Cmd].Command), Value.SubString(1, MaxCommandLen - 1).c_str());
+  wcscpy_s(const_cast<wchar_t *>(CommandSet[Cmd].Command), MaxCommandLen, Value.SubString(1, MaxCommandLen - 1).c_str());
 }
 //---------------------------------------------------------------------------
 UnicodeString TCommandSet::GetCommands(TFSCommand Cmd) const

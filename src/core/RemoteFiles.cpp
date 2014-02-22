@@ -2088,7 +2088,7 @@ bool TRights::operator ==(const TRights & rhr) const
     for (int Right = rrFirst; Right <= rrLast; Right++)
     {
       if (GetRightUndef(static_cast<TRight>(Right)) !=
-            rhr.GetRightUndef(static_cast<TRight>(Right)))
+          rhr.GetRightUndef(static_cast<TRight>(Right)))
       {
         return false;
       }

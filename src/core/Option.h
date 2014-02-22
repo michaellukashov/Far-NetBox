@@ -39,7 +39,7 @@ protected:
     UnicodeString & Value, intptr_t & ParamsStart, intptr_t & ParamsCount);
 
 private:
-  struct TOption
+  struct TOption : public TObject
   {
     TOptionType Type;
     UnicodeString Name;

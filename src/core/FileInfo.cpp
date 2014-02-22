@@ -142,7 +142,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
   }
   else
   {
-    Result = GetFileVersionInfo(FileName, Handle, DataSize, Data) != 0;
+    Result = GetFileVersionInfo(FileName, Handle, (DWORD)DataSize, Data) != 0;
   }
 
   return Result;

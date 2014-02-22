@@ -323,6 +323,7 @@ void TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
   FLastEditorID = -1;
   FLoadingSessionList = false;
   FPathHistory = new TStringList();
+  FCurrentDirectoryWasChanged = false;
 
   FLastMultipleEditReadOnly = false;
   FEditorPendingSave = false;
@@ -342,7 +343,11 @@ void TWinSCPFileSystem::HandleException(Exception * E, int OpMode)
   if ((GetTerminal() != nullptr) && (NB_STATIC_DOWNCAST(EFatal, E) != nullptr))
   {
     bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr);
-    if (!Reopen)
+    if (Reopen)
+    {
+      UpdatePanel();
+    }
+    else
     {
       if (!FClosed)
       {
@@ -422,7 +427,7 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
     // (vandyke: c:/windows/system) are displayed correctly on command-line, but
     // leaved subdirectory is not focused, when entering parent directory.
     CurDir = FTerminal->GetCurrentDirectory();
-    Format = FTerminal->GetSessionData()->GetSessionName();
+    Format = GetSessionData()->GetSessionName();
     if (GetFarConfiguration()->GetHostNameInTitle())
     {
       PanelTitle = FORMAT(L" %s:%s ", Format.c_str(), CurDir.c_str());
@@ -431,7 +436,7 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
     {
       PanelTitle = FORMAT(L" %s ", CurDir.c_str());
     }
-    ShortcutData = FORMAT(L"%s\1%s", FTerminal->GetSessionData()->GetSessionUrl().c_str(), CurDir.c_str());
+    ShortcutData = FORMAT(L"%s\1%s", GetSessionData()->GetSessionUrl().c_str(), CurDir.c_str());
 
     TRemoteFilePanelItem::SetPanelModes(PanelModes);
     TRemoteFilePanelItem::SetKeyBarTitles(KeyBarTitles);
@@ -628,7 +633,7 @@ void TWinSCPFileSystem::FocusSession(const TSessionData * Data)
 void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
 {
   bool NewData = !Data;
-  bool FillInConnect = !Edit && !Data->GetCanLogin();
+  bool FillInConnect = !Edit && Data && !Data->GetCanLogin();
   if (NewData || FillInConnect)
   {
     Data = new TSessionData(L"");
@@ -759,6 +764,14 @@ bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void *Param)
     else if ((Event == FE_GOTFOCUS) || (Event == FE_KILLFOCUS))
     {
       Result = true;
+    }
+    else if (Event == FE_REDRAW)
+    {
+      if (FCurrentDirectoryWasChanged)
+      {
+        UpdatePanel();
+        FCurrentDirectoryWasChanged = false;
+      }
     }
   }
   else
@@ -2011,7 +2024,7 @@ void TWinSCPFileSystem::ClearCaches()
 void TWinSCPFileSystem::OpenSessionInPutty()
 {
   assert(Connected());
-  ::OpenSessionInPutty(GetGUIConfiguration()->GetPuttyPath(), FTerminal->GetSessionData(),
+  ::OpenSessionInPutty(GetGUIConfiguration()->GetPuttyPath(), GetSessionData(),
     GetGUIConfiguration()->GetPuttyPassword() ? GetTerminal()->GetPassword() : UnicodeString());
 }
 //------------------------------------------------------------------------------
@@ -2027,7 +2040,7 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
 {
   std::unique_ptr<TBookmarkList> BookmarkList(new TBookmarkList());
   UnicodeString Directory = FTerminal->GetCurrentDirectory();
-  UnicodeString SessionKey = FTerminal->GetSessionData()->GetSessionKey();
+  UnicodeString SessionKey = GetSessionData()->GetSessionKey();
   TBookmarkList * CurrentBookmarkList;
 
   CurrentBookmarkList = GetFarConfiguration()->GetBookmarks(SessionKey);
@@ -2165,7 +2178,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
   }
   else
   {
-    if ((OpMode & OPM_FIND) && FSavedFindFolder.IsEmpty())
+    if ((OpMode & OPM_FIND) && FSavedFindFolder.IsEmpty() && FTerminal)
     {
       FSavedFindFolder = FTerminal->GetCurrentDirectory();
     }
@@ -2213,6 +2226,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
         else
         {
           FTerminal->ChangeDirectory(Dir);
+          FCurrentDirectoryWasChanged = true;
         }
       }
 
@@ -2416,7 +2430,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
     };
     {
       UnicodeString Query;
-      bool Recycle = FTerminal->GetSessionData()->GetDeleteToRecycleBin() &&
+      bool Recycle = GetSessionData()->GetDeleteToRecycleBin() &&
         !FTerminal->IsRecycledFile(FFileList->GetString(0));
       if (PanelItems->GetCount() > 1)
       {
@@ -2910,11 +2924,11 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::SaveSession()
 {
-  if (FTerminal->GetActive() && !FTerminal->GetSessionData()->GetName().IsEmpty())
+  if (FTerminal->GetActive() && !GetSessionData()->GetName().IsEmpty())
   {
-    FTerminal->GetSessionData()->SetRemoteDirectory(FTerminal->GetCurrentDirectory());
+    GetSessionData()->SetRemoteDirectory(FTerminal->GetCurrentDirectory());
 
-    TSessionData * Data = static_cast<TSessionData *>(StoredSessions->FindByName(FTerminal->GetSessionData()->GetName()));
+    TSessionData * Data = static_cast<TSessionData *>(StoredSessions->FindByName(GetSessionData()->GetName()));
     if (Data)
     {
       bool Changed = false;
@@ -3001,7 +3015,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
 
   if (FTerminal != nullptr)
   {
-    FSynchronisingBrowse = FTerminal->GetSessionData()->GetSynchronizeBrowsing();
+    FSynchronisingBrowse = GetSessionData()->GetSynchronizeBrowsing();
   }
   return Result;
 }
@@ -3010,9 +3024,9 @@ void TWinSCPFileSystem::Disconnect()
 {
   if (FTerminal && FTerminal->GetActive())
   {
-    if (!FTerminal->GetSessionData()->GetName().IsEmpty())
+    if (!GetSessionData()->GetName().IsEmpty())
     {
-      FPrevSessionName = FTerminal->GetSessionData()->GetName();
+      FPrevSessionName = GetSessionData()->GetName();
     }
     SaveSession();
   }
@@ -3026,7 +3040,7 @@ void TWinSCPFileSystem::Disconnect()
   SAFE_DESTROY(FQueueStatus);
   if (FTerminal != nullptr)
   {
-    FTerminal->GetSessionData()->SetSynchronizeBrowsing(FSynchronisingBrowse);
+    GetSessionData()->SetSynchronizeBrowsing(FSynchronisingBrowse);
   }
   SAFE_DESTROY(FTerminal);
 }
@@ -3410,9 +3424,9 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
       PanelItem = static_cast<TFarPanelItem *>(FPanelItems->GetItem(Index));
     }
 
-    assert(PanelItem->GetFileName() ==
+    assert(PanelItem && PanelItem->GetFileName() ==
       ((Side == osLocal) ? ExtractFileName(FileName, false) : FileName));
-    if (Success)
+    if (Success && PanelItem)
     {
       PanelItem->SetSelected(false);
     }
@@ -3577,7 +3591,8 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
       FQueueStatusInvalidated = false;
 
       assert(FQueue != nullptr);
-      FQueueStatus = FQueue->CreateStatus(FQueueStatus);
+      if (FQueue != nullptr)
+        FQueueStatus = FQueue->CreateStatus(FQueueStatus);
       Result = FQueueStatus;
     }
 
@@ -3987,9 +4002,10 @@ void TWinSCPFileSystem::EditViewCopyParam(TCopyParamType & CopyParam)
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::MultipleEdit()
 {
-  if ((GetPanelInfo()->GetFocusedItem() != nullptr) &&
-      GetPanelInfo()->GetFocusedItem()->GetIsFile() &&
-      (GetPanelInfo()->GetFocusedItem()->GetUserData() != nullptr))
+  TFarPanelItem * Focused = GetPanelInfo()->GetFocusedItem();
+  if ((Focused != nullptr) &&
+      Focused->GetIsFile() &&
+      (Focused->GetUserData() != nullptr))
   {
     std::unique_ptr<TStrings> FileList(CreateFocusedFileList(osRemote));
     assert((FileList.get() == nullptr) || (FileList->GetCount() == 1));

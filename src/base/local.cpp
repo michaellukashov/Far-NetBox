@@ -108,8 +108,8 @@ const wchar_t * __cdecl FarStrStr(const wchar_t *str1, const wchar_t *str2)
 
 const wchar_t * __cdecl RevStrStrI(const wchar_t *str1, const wchar_t *str2)
 {
-	int len1 = StrLength(str1);
-	int len2 = StrLength(str2);
+	intptr_t len1 = StrLength(str1);
+	intptr_t len2 = StrLength(str2);
 
 	if (len2 > len1)
 		return nullptr;
@@ -142,8 +142,8 @@ const wchar_t * __cdecl RevStrStrI(const wchar_t *str1, const wchar_t *str2)
 
 const wchar_t * __cdecl RevStrStr(const wchar_t *str1, const wchar_t *str2)
 {
-	int len1 = StrLength(str1);
-	int len2 = StrLength(str2);
+	intptr_t len1 = StrLength(str1);
+	intptr_t len2 = StrLength(str2);
 
 	if (len2 > len1)
 		return nullptr;

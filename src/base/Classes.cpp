@@ -1305,7 +1305,7 @@ __int64 MilliSecondsBetween(const TDateTime ANow, const TDateTime AThen)
 {
   TDateTime Result;
   Result = floor(MilliSecondSpan(ANow, AThen));
-  return Result;
+  return (__int64)Result;
 }
 
 //---------------------------------------------------------------------------
