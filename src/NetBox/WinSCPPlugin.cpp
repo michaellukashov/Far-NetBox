@@ -447,7 +447,8 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       else
       {
         assert(AnotherFileSystem != nullptr);
-        AnotherFileSystem->FullSynchronize(false);
+        if (AnotherFileSystem)
+          AnotherFileSystem->FullSynchronize(false);
       }
     }
     else if (Result == MSynchronize)
@@ -459,7 +460,8 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       else
       {
         assert(AnotherFileSystem != nullptr);
-        AnotherFileSystem->Synchronize();
+        if (AnotherFileSystem)
+          AnotherFileSystem->Synchronize();
       }
     }
     else if ((Result == MQueue) && FileSystem)
