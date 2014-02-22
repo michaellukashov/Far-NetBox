@@ -28,17 +28,18 @@ struct TPuttyTranslation
 };
 //---------------------------------------------------------------------------
 TSecureShell::TSecureShell(TSessionUI * UI,
-  TSessionData * SessionData, TSessionLog * Log, TConfiguration * Configuration) :
-  PendLen(0)
+  TSessionData * SessionData, TSessionLog * Log, TConfiguration * Configuration)
 {
   FUI = UI;
   FSessionData = SessionData;
   FLog = Log;
   FConfiguration = Configuration;
   FActive = false;
-  FWaiting = 0;
-  FOpened = false;
+  FSessionInfoValid = false;
+  FBackend = nullptr;
   FOpenSSH = false;
+  PendLen = 0;
+  PendSize = 0;
   OutLen = 0;
   OutPtr = nullptr;
   Pending = nullptr;
@@ -49,7 +50,12 @@ TSecureShell::TSecureShell(TSessionUI * UI,
   FSocket = INVALID_SOCKET;
   FSocketEvent = CreateEvent(nullptr, false, false, nullptr);
   FFrozen = false;
+  FDataWhileFrozen = false;
+  FSshVersion = 0;
+  FOpened = false;
+  FWaiting = 0;
   FSimple = false;
+  FNoConnectionResponse = false;
   FCollectPrivateKeyUsage = false;
   FWaitingForData = 0;
 }
