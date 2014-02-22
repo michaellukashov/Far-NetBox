@@ -619,11 +619,11 @@ AnsiString Format(const char * Format, va_list Args)
 //---------------------------------------------------------------------------
 UnicodeString FmtLoadStr(intptr_t Id, ...)
 {
-  UnicodeString Result(64, 0);
-  wchar_t Format[1024];
+  UnicodeString Result(256, 0);
+  UnicodeString Fmt(2048, 0);
   HINSTANCE hInstance = GetGlobalFunctions()->GetInstanceHandle();
   intptr_t Length = ::LoadString(hInstance, static_cast<UINT>(Id),
-    Format, static_cast<int>(sizeof(Format)));
+    const_cast<wchar_t *>(Fmt.c_str()), static_cast<int>(Fmt.GetLength()));
   if (!Length)
   {
     DEBUG_PRINTF(L"Unknown resource string id: %d\n", Id);
@@ -632,9 +632,9 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
   {
     va_list Args;
     va_start(Args, Id);
-    intptr_t Len = _vscwprintf(Format, Args);
+    intptr_t Len = _vscwprintf(Fmt.c_str(), Args);
     Result.SetLength(Len + sizeof(wchar_t));
-    vswprintf_s(&Result[1], Result.Length(), Format, Args);
+    vswprintf_s(&Result[1], Result.Length(), Fmt.c_str(), Args);
     va_end(Args);
   }
   return Result;
