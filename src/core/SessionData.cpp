@@ -3092,6 +3092,11 @@ TStoredSessionList::TStoredSessionList(bool AReadOnly) :
 TStoredSessionList::~TStoredSessionList()
 {
   SAFE_DESTROY(FDefaultSettings);
+  for (intptr_t Index = 0; Index < GetCount(); Index++)
+  {
+    delete AtObject(Index);
+    SetItem(Index, nullptr);
+  }
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::Load(THierarchicalStorage * Storage,
