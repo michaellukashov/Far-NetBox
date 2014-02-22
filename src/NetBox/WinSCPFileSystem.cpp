@@ -3519,7 +3519,8 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
       FQueueStatusInvalidated = false;
 
       assert(FQueue != nullptr);
-      FQueueStatus = FQueue->CreateStatus(FQueueStatus);
+      if (FQueue != nullptr)
+        FQueueStatus = FQueue->CreateStatus(FQueueStatus);
       Result = FQueueStatus;
     }
 
