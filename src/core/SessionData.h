@@ -489,7 +489,6 @@ private:
   intptr_t FSFTPUploadQueue;
   intptr_t FSFTPListingQueue;
   intptr_t FSFTPMaxVersion;
-  intptr_t FSecToDateTime;
   intptr_t FSFTPMinPacketSize;
   intptr_t FSFTPMaxPacketSize;
   TDSTMode FDSTMode;
