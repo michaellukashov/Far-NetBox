@@ -341,7 +341,11 @@ void TWinSCPFileSystem::HandleException(Exception * E, int OpMode)
   if ((GetTerminal() != nullptr) && (NB_STATIC_DOWNCAST(EFatal, E) != nullptr))
   {
     bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr);
-    if (!Reopen)
+    if (Reopen)
+    {
+      UpdatePanel();
+    }
+    else
     {
       if (!FClosed)
       {
