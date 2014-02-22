@@ -658,6 +658,7 @@ CServerPath::CServerPath(CString subdir, const CServerPath &parent)
 						{
 							m_Segments.push_back(subdir.Left(pos));
 							subdir = subdir.Mid(pos + 1);
+							pos = subdir.Find(_MPT('.'));
 						}
 						if (subdir != _T(""))
 						{
