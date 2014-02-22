@@ -1697,7 +1697,23 @@ struct TSinkFileParams : public TObject
 #endif
 //===========================================================================
 TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
-  TCustomFileSystem(ATerminal)
+  TCustomFileSystem(ATerminal),
+  FSecureShell(nullptr),
+  FFileSystemInfoValid(false),
+  FVersion(0),
+  FPacketReservations(nullptr),
+  FPreviousLoggedPacket(0),
+  FNotLoggedPackets(0),
+  FBusy(0),
+  FBusyToken(nullptr),
+  FAvoidBusy(false),
+  FExtensions(nullptr),
+  FSupport(nullptr),
+  FUtfStrings(false),
+  FSignedTS(false),
+  FFixedPaths(nullptr),
+  FMaxPacketSize(0),
+  FSupportsStatVfsV2(false)
 {
   FCodePage = GetSessionData()->GetCodePageAsNumber();
 }
