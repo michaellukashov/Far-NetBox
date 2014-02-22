@@ -3352,9 +3352,9 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
       PanelItem = static_cast<TFarPanelItem *>(FPanelItems->GetItem(Index));
     }
 
-    assert(PanelItem->GetFileName() ==
+    assert(PanelItem && PanelItem->GetFileName() ==
       ((Side == osLocal) ? ExtractFileName(FileName, false) : FileName));
-    if (Success)
+    if (Success && PanelItem)
     {
       PanelItem->SetSelected(false);
     }
