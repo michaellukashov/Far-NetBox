@@ -322,6 +322,7 @@ void TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
   FLastEditorID = -1;
   FLoadingSessionList = false;
   FPathHistory = new TStringList();
+  FCurrentDirectoryWasChanged = false;
 
   FLastMultipleEditReadOnly = false;
   FEditorPendingSave = false;
@@ -762,6 +763,14 @@ bool TWinSCPFileSystem::ProcessEventEx(intptr_t Event, void * Param)
     {
       DEBUG_PRINTF(L"Event = %d, Plugin = %p, Param = %p", Event, this, Param);
       Result = true;
+    }
+    else if (Event == FE_REDRAW)
+    {
+      if (FCurrentDirectoryWasChanged)
+      {
+        UpdatePanel();
+        FCurrentDirectoryWasChanged = false;
+      }
     }
   }
   return Result;
@@ -2205,6 +2214,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
         else
         {
           FTerminal->ChangeDirectory(Dir);
+          FCurrentDirectoryWasChanged = true;
         }
       }
 

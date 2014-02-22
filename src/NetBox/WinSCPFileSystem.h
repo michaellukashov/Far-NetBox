@@ -345,6 +345,7 @@ private:
   UnicodeString FSessionsFolder;
   UnicodeString FNewSessionsFolder;
   UnicodeString FPrevSessionName;
+  bool FCurrentDirectoryWasChanged;
 };
 //------------------------------------------------------------------------------
 class TSessionPanelItem : public TCustomFarPanelItem

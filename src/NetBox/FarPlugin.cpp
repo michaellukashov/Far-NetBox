@@ -544,6 +544,11 @@ intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * Param)
 intptr_t TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t * Dir, int OpMode)
 {
   TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
+  assert(FileSystem);
+  if (!FileSystem)
+  {
+    return 0;
+  }
   UnicodeString PrevCurrentDirectory = FileSystem->GetCurrentDirectory();
   try
   {
