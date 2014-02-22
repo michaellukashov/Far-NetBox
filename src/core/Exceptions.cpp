@@ -347,7 +347,7 @@ ExtException * ExtException::Clone()
 //---------------------------------------------------------------------------
 UnicodeString LastSysErrorMessage()
 {
-  DWORD LastError = GetLastError();
+  DWORD LastError = ::GetLastError();
   UnicodeString Result;
   if (LastError != 0)
   {

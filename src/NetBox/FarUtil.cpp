@@ -14,7 +14,7 @@ bool CNBFile::OpenWrite(const wchar_t *fileName)
   m_File = ::CreateFile(fileName, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
   if (m_File == INVALID_HANDLE_VALUE)
   {
-    m_LastError = GetLastError();
+    m_LastError = ::GetLastError();
   }
   return (m_LastError == ERROR_SUCCESS);
 }
@@ -28,7 +28,7 @@ bool CNBFile::OpenRead(const wchar_t *fileName)
   m_File = ::CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
   if (m_File == INVALID_HANDLE_VALUE)
   {
-    m_LastError = GetLastError();
+    m_LastError = ::GetLastError();
   }
   return (m_LastError == ERROR_SUCCESS);
 }
@@ -41,7 +41,7 @@ bool CNBFile::Read(void *buff, size_t &buffSize)
   DWORD bytesRead = static_cast<DWORD>(buffSize);
   if (!ReadFile(m_File, buff, bytesRead, &bytesRead, nullptr))
   {
-    m_LastError = GetLastError();
+    m_LastError = ::GetLastError();
     buffSize = 0;
   }
   else
@@ -59,7 +59,7 @@ bool CNBFile::Write(const void *buff, const size_t buffSize)
   DWORD bytesWritten;
   if (!WriteFile(m_File, buff, static_cast<DWORD>(buffSize), &bytesWritten, nullptr))
   {
-    m_LastError = GetLastError();
+    m_LastError = ::GetLastError();
   }
   return (m_LastError == ERROR_SUCCESS);
 }
@@ -72,7 +72,7 @@ __int64 CNBFile::GetFileSize()
   LARGE_INTEGER fileSize;
   if (!GetFileSizeEx(m_File, &fileSize))
   {
-    m_LastError = GetLastError();
+    m_LastError = ::GetLastError();
     return -1;
   }
   return fileSize.QuadPart;

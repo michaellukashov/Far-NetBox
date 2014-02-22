@@ -4039,7 +4039,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
     if (!Done)
     {
       // save the error, otherwise it gets overwritten by call to FileExists
-      int LastError = GetLastError();
+      int LastError = ::GetLastError();
       DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
       if (::FileExists(FileName) &&
         (((LocalFileAttrs = GetLocalFileAttributes(FileName)) & (faReadOnly | faHidden)) != 0))
@@ -4185,7 +4185,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
           unsigned long LSize;
           unsigned long HSize;
           LSize = GetFileSize(LocalFileHandle, &HSize);
-          if ((LSize == 0xFFFFFFFF) && (GetLastError() != NO_ERROR))
+          if ((LSize == 0xFFFFFFFF) && (::GetLastError() != NO_ERROR))
           {
             RaiseLastOSError();
           }

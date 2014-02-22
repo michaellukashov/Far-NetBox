@@ -13030,7 +13030,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
     FindOK = (FindHandle != INVALID_HANDLE_VALUE);
     if (!FindOK)
     {
-      FindCheck(GetLastError());
+      FindCheck(::GetLastError());
     }
   );
 
@@ -13075,7 +13075,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
         FindOK = (::FindNextFile(FindHandle, &SearchRec) != 0);
         if (!FindOK)
         {
-          FindCheck(GetLastError());
+          FindCheck(::GetLastError());
         }
       );
     }
