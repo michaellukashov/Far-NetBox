@@ -47,9 +47,12 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
   FCurrentProgress = -1;
   FTopDialog = nullptr;
   FValidFarSystemSettings = false;
+  FFarSystemSettings = 0;
 
   ClearStruct(FPluginInfo);
   ClearPluginInfo(FPluginInfo);
+  ClearStruct(FStartupInfo);
+  ClearStruct(FFarStandardFunctions);
 
   // far\Examples\Compare\compare.cpp
   FConsoleInput = ::CreateFile(L"CONIN$", GENERIC_READ, FILE_SHARE_READ, nullptr,
