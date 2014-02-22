@@ -630,7 +630,7 @@ void TWinSCPFileSystem::FocusSession(const TSessionData * Data)
 void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
 {
   bool NewData = !Data;
-  bool FillInConnect = !Edit && !Data->GetCanLogin();
+  bool FillInConnect = !Edit && Data && !Data->GetCanLogin();
   if (NewData || FillInConnect)
   {
     Data = new TSessionData(L"");
