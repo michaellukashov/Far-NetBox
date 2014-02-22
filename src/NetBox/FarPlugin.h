@@ -173,7 +173,7 @@ protected:
   virtual bool ConfigureEx(intptr_t Item) = 0;
   virtual intptr_t ProcessEditorEventEx(intptr_t Event, void * Param) = 0;
   virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD * Rec) = 0;
-  virtual void HandleFileSystemException(TCustomFarFileSystem * FileSystem,
+  virtual void HandleFileSystemException(TCustomFarFileSystem * FarFileSystem,
     Exception * E, int OpMode = 0);
   void ResetCachedInfo();
   intptr_t MaxLength(TStrings * Strings);
