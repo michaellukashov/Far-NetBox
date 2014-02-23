@@ -1813,10 +1813,12 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
 void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
 {
   assert(FileList);
-  TRemoteFileList * Copy = new TRemoteFileList();
-  FileList->DuplicateTo(Copy);
-
+  if (FileList)
   {
+    TRemoteFileList * Copy = new TRemoteFileList();
+
+    FileList->DuplicateTo(Copy);
+
     TGuard Guard(FSection);
 
     // file list cannot be cached already with only one thread, but it can be

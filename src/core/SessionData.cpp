@@ -2468,7 +2468,7 @@ void TSessionData::PrepareProxyData() const
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyConfig;
     if (!WinHttpGetIEProxyConfigForCurrentUser(&IEProxyConfig))
     {
-      DWORD Err = GetLastError();
+      DWORD Err = ::GetLastError();
       DEBUG_PRINTF(L"Error reading system proxy configuration, code: %x", Err);
     }
     else

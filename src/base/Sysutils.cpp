@@ -945,9 +945,9 @@ static int FindMatchingFile(TSearchRec & Rec)
   int Result = 0;
   while ((Rec.FindData.dwFileAttributes && Rec.ExcludeAttr) != 0)
   {
-    if (!::FindNextFileW(Rec.FindHandle, &Rec.FindData))
+    if (!::FindNextFile(Rec.FindHandle, &Rec.FindData))
     {
-      Result = GetLastError();
+      Result = ::GetLastError();
       return Result;
     }
   }
@@ -968,7 +968,7 @@ DWORD FindFirst(const UnicodeString & FileName, DWORD LocalFileAttrs, TSearchRec
 {
   const DWORD faSpecial = faHidden | faSysFile | faDirectory;
   Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
-  Rec.FindHandle = ::FindFirstFileW(FileName.c_str(), &Rec.FindData);
+  Rec.FindHandle = ::FindFirstFile(FileName.c_str(), &Rec.FindData);
   DWORD Result = 0;
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)
   {
@@ -988,10 +988,10 @@ DWORD FindFirst(const UnicodeString & FileName, DWORD LocalFileAttrs, TSearchRec
 DWORD FindNext(TSearchRec & Rec)
 {
   DWORD Result = 0;
-  if (::FindNextFileW(Rec.FindHandle, &Rec.FindData))
+  if (::FindNextFile(Rec.FindHandle, &Rec.FindData))
     Result = FindMatchingFile(Rec);
   else
-    Result = GetLastError();
+    Result = ::GetLastError();
   return Result;
 }
 

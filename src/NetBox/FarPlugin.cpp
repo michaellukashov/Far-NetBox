@@ -260,20 +260,20 @@ TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
   RECT ActivePanelBounds = GetPanelBounds(PANEL_ACTIVE);
   RECT PassivePanelBounds = GetPanelBounds(PANEL_PASSIVE);
 
-  TCustomFarFileSystem * FileSystem = nullptr;
+  TCustomFarFileSystem * FarFileSystem = nullptr;
   intptr_t Index = 0;
   while (!Result && (Index < FOpenedPlugins->GetCount()))
   {
-    FileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, FOpenedPlugins->GetItem(Index));
-    assert(FileSystem);
-    RECT Bounds = GetPanelBounds(FileSystem);
+    FarFileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, FOpenedPlugins->GetItem(Index));
+    assert(FarFileSystem);
+    RECT Bounds = GetPanelBounds(FarFileSystem);
     if (Another && CompareRects(Bounds, PassivePanelBounds))
     {
-      Result = FileSystem;
+      Result = FarFileSystem;
     }
     else if (!Another && CompareRects(Bounds, ActivePanelBounds))
     {
-      Result = FileSystem;
+      Result = FarFileSystem;
     }
     ++Index;
   }
@@ -284,9 +284,9 @@ void TCustomFarPlugin::InvalidateOpenPanelInfo()
 {
   for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
   {
-    TCustomFarFileSystem * FileSystem =
+    TCustomFarFileSystem * FarFileSystem =
       NB_STATIC_DOWNCAST(TCustomFarFileSystem, FOpenedPlugins->GetItem(Index));
-    FileSystem->InvalidateOpenPanelInfo();
+    FarFileSystem->InvalidateOpenPanelInfo();
   }
 }
 //---------------------------------------------------------------------------
@@ -352,14 +352,14 @@ void TCustomFarPlugin::ClosePanel(void * Plugin)
   try
   {
     ResetCachedInfo();
-    TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
-    assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
+    TCustomFarFileSystem * FarFileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
+    assert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
     {
-      TGuard Guard(FileSystem->GetCriticalSection());
-      FileSystem->Close();
+      TGuard Guard(FarFileSystem->GetCriticalSection());
+      FarFileSystem->Close();
     }
-    FOpenedPlugins->Remove(FileSystem);
-    SAFE_DESTROY(FileSystem);
+    FOpenedPlugins->Remove(FarFileSystem);
+    SAFE_DESTROY(FarFileSystem);
 #ifdef USE_DLMALLOC
     // dlmalloc_trim(0); // 64 * 1024);
 #endif
@@ -372,17 +372,17 @@ void TCustomFarPlugin::ClosePanel(void * Plugin)
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::HandleFileSystemException(
-  TCustomFarFileSystem * FileSystem, Exception * E, int OpMode)
+  TCustomFarFileSystem * FarFileSystem, Exception * E, int OpMode)
 {
   // This method is called as last-resort exception handler before
   // leaving plugin API. Especially for API functions that must update
   // panel contents on themselves (like ProcessPanelInput), the instance of filesystem
   // may not exist anymore.
   // Check against object pointer is stupid, but no other idea so far.
-  if (FOpenedPlugins->IndexOf(FileSystem) != NPOS)
+  if (FOpenedPlugins->IndexOf(FarFileSystem) != NPOS)
   {
     DEBUG_PRINTF(L"before FileSystem->HandleException");
-    FileSystem->HandleException(E, OpMode);
+    FarFileSystem->HandleException(E, OpMode);
   }
   else
   {
@@ -393,75 +393,75 @@ void TCustomFarPlugin::HandleFileSystemException(
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo *Info)
 {
-  TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
   {
     ResetCachedInfo();
-    assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
-    TGuard Guard(FileSystem->GetCriticalSection());
-    FileSystem->GetOpenPanelInfo(Info);
+    assert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
+    TGuard Guard(FarFileSystem->GetCriticalSection());
+    FarFileSystem->GetOpenPanelInfo(Info);
   }
   catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
-    HandleFileSystemException(FileSystem, &E);
+    HandleFileSystemException(FarFileSystem, &E);
   }
 }
 //---------------------------------------------------------------------------
 intptr_t TCustomFarPlugin::GetFindData(struct GetFindDataInfo *Info)
 {
-  TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
   {
     ResetCachedInfo();
-    assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
+    assert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
     {
-      TGuard Guard(FileSystem->GetCriticalSection());
-      return FileSystem->GetFindData(Info);
+      TGuard Guard(FarFileSystem->GetCriticalSection());
+      return FarFileSystem->GetFindData(Info);
     }
   }
   catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
-    HandleFileSystemException(FileSystem, &E, Info->OpMode);
+    HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
     return 0;
   }
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::FreeFindData(const struct FreeFindDataInfo *Info)
 {
-  TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
   {
     ResetCachedInfo();
-    assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
+    assert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
     {
-      TGuard Guard(FileSystem->GetCriticalSection());
-      FileSystem->FreeFindData(Info);
+      TGuard Guard(FarFileSystem->GetCriticalSection());
+      FarFileSystem->FreeFindData(Info);
     }
   }
   catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
-    HandleFileSystemException(FileSystem, &E);
+    HandleFileSystemException(FarFileSystem, &E);
   }
 }
 //---------------------------------------------------------------------------
 intptr_t TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo *Info)
 {
-  TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
   {
     ResetCachedInfo();
     if (HandlesFunction(hfProcessHostFile))
     {
-      assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
+      assert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
       {
-        TGuard Guard(FileSystem->GetCriticalSection());
-        return FileSystem->ProcessHostFile(Info);
+        TGuard Guard(FarFileSystem->GetCriticalSection());
+        return FarFileSystem->ProcessHostFile(Info);
       }
     }
     else
@@ -472,24 +472,24 @@ intptr_t TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo *Inf
   catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
-    HandleFileSystemException(FileSystem, &E, Info->OpMode);
+    HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
     return 0;
   }
 }
 //---------------------------------------------------------------------------
 intptr_t TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo *Info)
 {
-  TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
   {
     ResetCachedInfo();
     if (HandlesFunction(hfProcessKey))
     {
-      assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
+      assert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
       {
-        TGuard Guard(FileSystem->GetCriticalSection());
-        return FileSystem->ProcessPanelInput(Info);
+        TGuard Guard(FarFileSystem->GetCriticalSection());
+        return FarFileSystem->ProcessPanelInput(Info);
       }
     }
     else
@@ -500,7 +500,7 @@ intptr_t TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo 
   catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
-    HandleFileSystemException(FileSystem, &E);
+    HandleFileSystemException(FarFileSystem, &E);
     // when error occurs, assume that key can be handled by plugin and
     // should not be processed by FAR
     return 1;
@@ -509,13 +509,13 @@ intptr_t TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo 
 //---------------------------------------------------------------------------
 intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo *Info)
 {
-  TCustomFarFileSystem *FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
   {
     ResetCachedInfo();
     if (HandlesFunction(hfProcessPanelEvent))
     {
-      assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
+      assert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
       UnicodeString Buf;
       void *Param = Info->Param;
@@ -525,8 +525,8 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
         Param = const_cast<void *>(reinterpret_cast<const void *>(Buf.c_str()));
       }
 
-      TGuard Guard(FileSystem->GetCriticalSection());
-      return FileSystem->ProcessPanelEvent(Info->Event, Param);
+      TGuard Guard(FarFileSystem->GetCriticalSection());
+      return FarFileSystem->ProcessPanelEvent(Info->Event, Param);
     }
     else
     {
@@ -536,34 +536,34 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
   catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
-    HandleFileSystemException(FileSystem, &E);
+    HandleFileSystemException(FarFileSystem, &E);
     return Info->Event == FE_COMMAND ? true : false;
   }
 }
 //---------------------------------------------------------------------------
 intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
 {
-  TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
-  assert(FileSystem);
-  if (!FileSystem)
+  TCustomFarFileSystem * FarFileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
+  assert(FarFileSystem);
+  if (!FarFileSystem)
   {
     return 0;
   }
-  UnicodeString PrevCurrentDirectory = FileSystem->GetCurrentDirectory();
+  UnicodeString PrevCurrentDirectory = FarFileSystem->GetCurrentDirectory();
   try
   {
     ResetCachedInfo();
-    assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
+    assert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
     {
-      TGuard Guard(FileSystem->GetCriticalSection());
-      return FileSystem->SetDirectory(Info);
+      TGuard Guard(FarFileSystem->GetCriticalSection());
+      return FarFileSystem->SetDirectory(Info);
     }
   }
   catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
-    HandleFileSystemException(FileSystem, &E, Info->OpMode);
-    if (FileSystem->GetOpenPanelInfoValid() && !PrevCurrentDirectory.IsEmpty())
+    HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
+    if (FarFileSystem->GetOpenPanelInfoValid() && !PrevCurrentDirectory.IsEmpty())
     {
       SetDirectoryInfo Info2;
       Info2.StructSize = sizeof(Info2);
@@ -573,8 +573,8 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
       Info2.OpMode = Info->OpMode;
       try
       {
-        TGuard Guard(FileSystem->GetCriticalSection());
-        return FileSystem->SetDirectory(&Info2);
+        TGuard Guard(FarFileSystem->GetCriticalSection());
+        return FarFileSystem->SetDirectory(&Info2);
       }
       catch (Exception &)
       {
@@ -587,85 +587,85 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
 //---------------------------------------------------------------------------
 intptr_t TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo *Info)
 {
-  TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
   {
     ResetCachedInfo();
-    assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
+    assert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
     {
-      TGuard Guard(FileSystem->GetCriticalSection());
-      return FileSystem->MakeDirectory(Info);
+      TGuard Guard(FarFileSystem->GetCriticalSection());
+      return FarFileSystem->MakeDirectory(Info);
     }
   }
   catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
-    HandleFileSystemException(FileSystem, &E, Info->OpMode);
+    HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
     return 0;
   }
 }
 //---------------------------------------------------------------------------
 intptr_t TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo *Info)
 {
-  TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
   {
     ResetCachedInfo();
-    assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
+    assert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
     {
-      TGuard Guard(FileSystem->GetCriticalSection());
-      return FileSystem->DeleteFiles(Info);
+      TGuard Guard(FarFileSystem->GetCriticalSection());
+      return FarFileSystem->DeleteFiles(Info);
     }
   }
   catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
-    HandleFileSystemException(FileSystem, &E, Info->OpMode);
+    HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
     return 0;
   }
 }
 //---------------------------------------------------------------------------
 intptr_t TCustomFarPlugin::GetFiles(struct GetFilesInfo *Info)
 {
-  TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
   {
     ResetCachedInfo();
-    assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
+    assert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
     {
-      TGuard Guard(FileSystem->GetCriticalSection());
-      return FileSystem->GetFiles(Info);
+      TGuard Guard(FarFileSystem->GetCriticalSection());
+      return FarFileSystem->GetFiles(Info);
     }
   }
   catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     // display error even for OPM_FIND
-    HandleFileSystemException(FileSystem, &E, Info->OpMode & ~OPM_FIND);
+    HandleFileSystemException(FarFileSystem, &E, Info->OpMode & ~OPM_FIND);
     return 0;
   }
 }
 //---------------------------------------------------------------------------
 intptr_t TCustomFarPlugin::PutFiles(const struct PutFilesInfo *Info)
 {
-  TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
   {
     ResetCachedInfo();
-    assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
+    assert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
     {
-      TGuard Guard(FileSystem->GetCriticalSection());
-      return FileSystem->PutFiles(Info);
+      TGuard Guard(FarFileSystem->GetCriticalSection());
+      return FarFileSystem->PutFiles(Info);
     }
   }
   catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
-    HandleFileSystemException(FileSystem, &E, Info->OpMode);
+    HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
     return 0;
   }
 }
@@ -1556,7 +1556,7 @@ void TCustomFarPlugin::RestoreScreen(HANDLE & Screen)
 {
   assert(Screen);
   TFarEnvGuard Guard;
-  FStartupInfo.RestoreScreen(static_cast<HANDLE>(Screen));
+  FStartupInfo.RestoreScreen(Screen);
   Screen = 0;
 }
 //---------------------------------------------------------------------------

@@ -1381,15 +1381,17 @@ void TWinSCPFileSystem::Synchronize(const UnicodeString & LocalDirectory,
     WinSCPPlugin()->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_COMPARE_TITLE));
     FSynchronizationStart = Now();
     FSynchronizationCompare = true;
-    SCOPE_EXIT
     {
-      WinSCPPlugin()->ClearConsoleTitle();
-      WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
-    };
-    {
-      AChecklist = FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
-        Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
-        MAKE_CALLBACK(TWinSCPFileSystem::TerminalSynchronizeDirectory, this), Options);
+      SCOPE_EXIT
+      {
+        WinSCPPlugin()->ClearConsoleTitle();
+        WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
+      };
+      {
+        AChecklist = FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
+          Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
+          MAKE_CALLBACK(TWinSCPFileSystem::TerminalSynchronizeDirectory, this), Options);
+      }
     }
 
     WinSCPPlugin()->SaveScreen(FSynchronizationSaveScreenHandle);
@@ -1487,15 +1489,17 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
       WinSCPPlugin()->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_COMPARE_TITLE));
       FSynchronizationStart = Now();
       FSynchronizationCompare = true;
-      SCOPE_EXIT
       {
-        WinSCPPlugin()->ClearConsoleTitle();
-        WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
-      };
-      {
-        Checklist.reset(FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
-          Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
-          MAKE_CALLBACK(TWinSCPFileSystem::TerminalSynchronizeDirectory, this), &SynchronizeOptions));
+        SCOPE_EXIT
+        {
+          WinSCPPlugin()->ClearConsoleTitle();
+          WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
+        };
+        {
+          Checklist.reset(FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
+            Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
+            MAKE_CALLBACK(TWinSCPFileSystem::TerminalSynchronizeDirectory, this), &SynchronizeOptions));
+        }
       }
 
       if (Checklist.get() && Checklist->GetCount() == 0)
@@ -1515,15 +1519,17 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
         WinSCPPlugin()->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_TITLE));
         FSynchronizationStart = Now();
         FSynchronizationCompare = false;
-        SCOPE_EXIT
         {
-          WinSCPPlugin()->ClearConsoleTitle();
-          WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
-        };
-        {
-          FTerminal->SynchronizeApply(Checklist.get(), LocalDirectory, RemoteDirectory,
-            &CopyParam, Params | TTerminal::spNoConfirmation,
-            MAKE_CALLBACK(TWinSCPFileSystem::TerminalSynchronizeDirectory, this));
+          SCOPE_EXIT
+          {
+            WinSCPPlugin()->ClearConsoleTitle();
+            WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
+          };
+          {
+            FTerminal->SynchronizeApply(Checklist.get(), LocalDirectory, RemoteDirectory,
+              &CopyParam, Params | TTerminal::spNoConfirmation,
+              MAKE_CALLBACK(TWinSCPFileSystem::TerminalSynchronizeDirectory, this));
+          }
         }
       }
     }
@@ -3281,14 +3287,14 @@ uintptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString & Str,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams * AParams)
 {
   TMessageParams Params;
-  if (AParams != nullptr)
-  {
-    Params.Assign(AParams);
-  }
 
   if ((FProgressSaveScreenHandle != 0) ||
       (FSynchronizationSaveScreenHandle != 0))
   {
+    if (AParams != nullptr)
+    {
+      Params.Assign(AParams);
+    }
     Params.Flags |= FMSG_WARNING;
   }
 

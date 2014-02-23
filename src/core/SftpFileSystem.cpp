@@ -5164,7 +5164,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         LocalFileName = DestPartialFullName;
 
         FTerminal->LogEvent(L"Checking existence of partially transfered file.");
-        if (FileExists(DestPartialFullName))
+        if (::FileExists(DestPartialFullName))
         {
           FTerminal->LogEvent(L"Partially transfered file exists.");
           FTerminal->OpenLocalFile(DestPartialFullName, GENERIC_WRITE,
@@ -5265,7 +5265,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           DestPartialFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
           if (ResumeAllowed)
           {
-            if (FileExists(DestPartialFullName))
+            if (::FileExists(DestPartialFullName))
             {
               FILE_OPERATION_LOOP (FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestPartialFullName.c_str()),
                 THROWOSIFFALSE(Sysutils::DeleteFile(DestPartialFullName));
@@ -5487,7 +5487,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         FILE_OPERATION_LOOP (FMTLOAD(RENAME_AFTER_RESUME_ERROR,
             ExtractFileName(DestPartialFullName, true).c_str(), DestFileName.c_str()),
 
-          if (FileExists(DestFullName))
+          if (::FileExists(DestFullName))
           {
             DeleteFileChecked(DestFullName);
           }
