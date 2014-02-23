@@ -549,13 +549,15 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
         !OppositeFileSystem->FLoadingSessionList)
     {
       FLoadingSessionList = true;
-      SCOPE_EXIT
       {
-        FLoadingSessionList = false;
-      };
-      {
-        UpdatePanel(false, true);
-        RedrawPanel(true);
+        SCOPE_EXIT
+        {
+          FLoadingSessionList = false;
+        };
+        {
+          UpdatePanel(false, true);
+          RedrawPanel(true);
+        }
       }
     }
     if (!FPrevSessionName.IsEmpty())
@@ -2195,32 +2197,34 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
         WinSCPPlugin()->ShowConsoleTitle(GetMsg(CHANGING_DIRECTORY_TITLE));
       }
       FTerminal->SetExceptionOnFail(true);
-      SCOPE_EXIT
       {
-        if (FTerminal)
+        SCOPE_EXIT
         {
-          FTerminal->SetExceptionOnFail(false);
-        }
-        if (!FNoProgress)
+          if (FTerminal)
+          {
+            FTerminal->SetExceptionOnFail(false);
+          }
+          if (!FNoProgress)
+          {
+            WinSCPPlugin()->ClearConsoleTitle();
+          }
+          FNoProgress = false;
+        };
         {
-          WinSCPPlugin()->ClearConsoleTitle();
-        }
-        FNoProgress = false;
-      };
-      {
-        if (Dir == L"\\")
-        {
-          FTerminal->ChangeDirectory(ROOTDIRECTORY);
-        }
-        else if ((Dir == PARENTDIRECTORY) && (FTerminal->GetCurrentDirectory() == ROOTDIRECTORY))
-        {
-          // ClosePlugin();
-          Disconnect();
-        }
-        else
-        {
-          FTerminal->ChangeDirectory(Dir);
-          FCurrentDirectoryWasChanged = true;
+          if (Dir == L"\\")
+          {
+            FTerminal->ChangeDirectory(ROOTDIRECTORY);
+          }
+          else if ((Dir == PARENTDIRECTORY) && (FTerminal->GetCurrentDirectory() == ROOTDIRECTORY))
+          {
+            // ClosePlugin();
+            Disconnect();
+          }
+          else
+          {
+            FTerminal->ChangeDirectory(Dir);
+            FCurrentDirectoryWasChanged = true;
+          }
         }
       }
 
@@ -4068,13 +4072,15 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     std::unique_ptr<TStrings> FileList(new TStringList());
     assert(!FNoProgressFinish);
     FNoProgressFinish = true;
-    SCOPE_EXIT
     {
-      FNoProgressFinish = false;
-    };
-    {
-      FileList->AddObject(FullFileName, FileDuplicate.get());
-      TemporarilyDownloadFiles(FileList.get(), CopyParam, TempDir);
+      SCOPE_EXIT
+      {
+        FNoProgressFinish = false;
+      };
+      {
+        FileList->AddObject(FullFileName, FileDuplicate.get());
+        TemporarilyDownloadFiles(FileList.get(), CopyParam, TempDir);
+      }
     }
 
     FLastMultipleEditFile = ::IncludeTrailingBackslash(TempDir) + NewFileName;
