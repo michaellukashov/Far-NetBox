@@ -1372,15 +1372,17 @@ void TWinSCPFileSystem::Synchronize(const UnicodeString & LocalDirectory,
     WinSCPPlugin()->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_COMPARE_TITLE));
     FSynchronizationStart = Now();
     FSynchronizationCompare = true;
-    SCOPE_EXIT
     {
-      WinSCPPlugin()->ClearConsoleTitle();
-      WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
-    };
-    {
-      AChecklist = FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
-        Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
-        MAKE_CALLBACK(TWinSCPFileSystem::TerminalSynchronizeDirectory, this), Options);
+      SCOPE_EXIT
+      {
+        WinSCPPlugin()->ClearConsoleTitle();
+        WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
+      };
+      {
+        AChecklist = FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
+          Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
+          MAKE_CALLBACK(TWinSCPFileSystem::TerminalSynchronizeDirectory, this), Options);
+      }
     }
 
     WinSCPPlugin()->SaveScreen(FSynchronizationSaveScreenHandle);
