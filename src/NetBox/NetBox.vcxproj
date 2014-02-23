@@ -170,7 +170,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\mfc;..\..\libs\openssl\x86;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libputty;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libtinyxml2;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libneon;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libapr;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libexpat;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\dlmalloc;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\rdestl;</AdditionalLibraryDirectories>
