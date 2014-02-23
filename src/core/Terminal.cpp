@@ -1289,7 +1289,7 @@ uintptr_t TTerminal::QueryUser(const UnicodeString & Query,
   TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
-  LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), MoreMessages ? MoreMessages->GetCommaText().c_str() : L""));
+  LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), UnicodeString(MoreMessages ? MoreMessages->GetCommaText() : L"").c_str()));
   uintptr_t Answer = AbortAnswer(Answers);
   if (FOnQueryUser)
   {
@@ -2292,7 +2292,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & FileName,
           LogEvent(FORMAT(L"Source file timestamp is [%s], destination timestamp is [%s], will%s overwrite",
             StandardTimestamp(ReducedSourceTimestamp).c_str(),
              StandardTimestamp(ReducedDestTimestamp).c_str(),
-             (Result == qaYes) ? L"" : L" not"));
+             UnicodeString(Result == qaYes ? L"" : L" not").c_str()));
         }
         break;
 

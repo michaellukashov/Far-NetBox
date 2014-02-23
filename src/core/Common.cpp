@@ -290,7 +290,7 @@ UnicodeString ExceptionLogString(Exception *E)
 #if defined(__BORLANDC__)
     Msg = FORMAT(L"(%s) %s", (E->ClassName(), E->Message.c_str()));
 #else
-    Msg = FORMAT(L"%s", ::MB2W(E->what()).c_str());
+    Msg = FORMAT(L"%s", UnicodeString(E->what()).c_str());
 #endif
     if (NB_STATIC_DOWNCAST(ExtException, E) != nullptr)
     {

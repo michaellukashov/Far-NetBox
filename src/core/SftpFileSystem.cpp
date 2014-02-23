@@ -2854,7 +2854,7 @@ void TSFTPFileSystem::DoStartup()
         {
           // if that fails, fallback to proper decoding
           FTerminal->LogEvent(FORMAT(L"SFTP versions supported by the server: %s",
-            AnsiString(ExtensionData.c_str()).c_str()));
+            UnicodeString(ExtensionData.c_str()).c_str()));
         }
       }
       else if (ExtensionName == SFTP_EXT_STATVFS)
