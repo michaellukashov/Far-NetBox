@@ -2629,7 +2629,7 @@ UnicodeString TTerminal::FormatFileDetailsForLog(const UnicodeString & FileName,
     // optimization
   if (GetLog()->GetLogging())
   {
-    Result = FORMAT(L"'%s' [%s] [%s]", FileName.c_str(), (Modification != TDateTime() ? StandardTimestamp(Modification).c_str() : UnicodeString(L"n/a").c_str()), IntToStr(Size).c_str());
+    Result = FORMAT(L"'%s' [%s] [%s]", FileName.c_str(), UnicodeString(Modification != TDateTime() ? StandardTimestamp(Modification) : UnicodeString(L"n/a")).c_str(), IntToStr(Size).c_str());
   }
   return Result;
 }
@@ -4821,7 +4821,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
     {
       ChecklistItem->Local.Directory = Data->LocalDirectory;
       LogEvent(FORMAT(L"Remote file %s is new",
-        FormatFileDetailsForLog(FullRemoteFileName, File->GetModification(), File->GetSize())));
+        FormatFileDetailsForLog(FullRemoteFileName, File->GetModification(), File->GetSize()).c_str()));
     }
 
     if (New || Modified)
@@ -4864,7 +4864,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
   else
   {
     LogEvent(FORMAT(L"Remote file %s excluded from synchronization",
-      FormatFileDetailsForLog(FullRemoteFileName, File->GetModification(), File->GetSize())));
+      FormatFileDetailsForLog(FullRemoteFileName, File->GetModification(), File->GetSize()).c_str()));
   }
 }
 //------------------------------------------------------------------------------
