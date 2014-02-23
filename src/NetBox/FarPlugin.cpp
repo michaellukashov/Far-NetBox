@@ -1540,7 +1540,7 @@ void TCustomFarPlugin::RestoreScreen(HANDLE & Screen)
 {
   assert(Screen);
   TFarEnvGuard Guard;
-  FStartupInfo.RestoreScreen(static_cast<HANDLE>(Screen));
+  FStartupInfo.RestoreScreen(Screen);
   Screen = 0;
 }
 //---------------------------------------------------------------------------
