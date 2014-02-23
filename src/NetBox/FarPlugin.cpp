@@ -348,10 +348,13 @@ void TCustomFarPlugin::ClosePlugin(void * Plugin)
     TCustomFarFileSystem * FarFileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
     assert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
     {
+      SCOPE_EXIT
+      {
+        FOpenedPlugins->Remove(FarFileSystem);
+      };
       TGuard Guard(FarFileSystem->GetCriticalSection());
       FarFileSystem->Close();
     }
-    FOpenedPlugins->Remove(FarFileSystem);
     SAFE_DESTROY(FarFileSystem);
 #ifdef USE_DLMALLOC
     // dlmalloc_trim(0); // 64 * 1024);
