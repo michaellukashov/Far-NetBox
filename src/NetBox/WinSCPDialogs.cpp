@@ -8522,7 +8522,7 @@ void TQueueDialog::LoadQueue()
     size_t ILine = 0;
     while (FillQueueItemLine(Line, QueueItem, ILine))
     {
-      List->AddObject(Line, reinterpret_cast<TObject *>(QueueItem));
+      List->AddObject(Line, QueueItem);
       List->SetDisabled(List->GetCount() - 1, (ILine > 0));
       ILine++;
     }

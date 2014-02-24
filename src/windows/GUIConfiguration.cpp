@@ -333,8 +333,8 @@ void TCopyParamList::Insert(intptr_t Index, const UnicodeString & Name,
   assert(FNames->IndexOf(Name) < 0);
   FNames->Insert(Index, Name);
   assert(CopyParam != nullptr);
-  FCopyParams->Insert(Index, reinterpret_cast<TObject *>(CopyParam));
-  FRules->Insert(Index, reinterpret_cast<TObject *>(Rule));
+  FCopyParams->Insert(Index, CopyParam);
+  FRules->Insert(Index, Rule);
   Modify();
 }
 //---------------------------------------------------------------------------
@@ -345,9 +345,9 @@ void TCopyParamList::Change(intptr_t Index, const UnicodeString & Name,
   {
     FNames->SetString(Index, Name);
     delete GetCopyParam(Index);
-    FCopyParams->SetItem(Index, reinterpret_cast<TObject *>(CopyParam));
+    FCopyParams->SetItem(Index, CopyParam);
     delete GetRule(Index);
-    FRules->SetItem(Index, reinterpret_cast<TObject *>(Rule));
+    FRules->SetItem(Index, Rule);
     Modify();
   }
   else
@@ -420,8 +420,8 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
       }
     }
 
-    FCopyParams->Add(reinterpret_cast<TObject *>(CopyParam.release()));
-    FRules->Add(reinterpret_cast<TObject *>(Rule.release()));
+    FCopyParams->Add(CopyParam.release());
+    FRules->Add(Rule.release());
     FNames->Add(Name);
   }
   Reset();
@@ -1288,4 +1288,5 @@ inline TGUIConfiguration * GetGUIConfiguration()
 //------------------------------------------------------------------------------
 NB_IMPLEMENT_CLASS(TGUICopyParamType, NB_GET_CLASS_INFO(TCopyParamType), nullptr);
 NB_IMPLEMENT_CLASS(TGUIConfiguration, NB_GET_CLASS_INFO(TConfiguration), nullptr);
+NB_IMPLEMENT_CLASS(TCopyParamRule, NB_GET_CLASS_INFO(TObject), nullptr);
 //---------------------------------------------------------------------------

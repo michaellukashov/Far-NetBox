@@ -4952,14 +4952,14 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
                 DownloadList->AddObject(
                   UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) +
                     ChecklistItem->Remote.FileName,
-                  NB_STATIC_DOWNCAST(TObject, const_cast<TChecklistItem *>(ChecklistItem)));
+                  const_cast<TChecklistItem *>(ChecklistItem));
                 break;
 
               case saUploadUpdate:
                 UploadList->AddObject(
                   IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
                     ChecklistItem->Local.FileName,
-                  NB_STATIC_DOWNCAST(TObject, const_cast<TChecklistItem *>(ChecklistItem)));
+                  const_cast<TChecklistItem *>(ChecklistItem));
                 break;
 
               default:
