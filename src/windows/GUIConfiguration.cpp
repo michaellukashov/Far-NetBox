@@ -998,7 +998,7 @@ TStrings * TGUIConfiguration::GetLocales()
 
         if (Ext >= 0)
         {
-          Exts->SetObject(Ext, reinterpret_cast<TObject*>(Locale));
+          Exts->SetObject(Ext, reinterpret_cast<TObject *>(Locale));
         }
         else
         {
@@ -1021,7 +1021,7 @@ TStrings * TGUIConfiguration::GetLocales()
         GetLocaleInfo(Locale, LOCALE_SLANGUAGE,
           LocaleStr, sizeof(LocaleStr));
         Name += LocaleStr;
-        FLocales->AddObject(Name, reinterpret_cast<TObject*>(Locale));
+        FLocales->AddObject(Name, reinterpret_cast<TObject *>(Locale));
       }
       ++Index;
     }

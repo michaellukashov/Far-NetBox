@@ -1329,7 +1329,7 @@ protected:
   {
     uint32_t BlockSize = FFileSystem->DownloadBlockSize(OperationProgress);
     InitRequest(Request, FTransfered, BlockSize);
-    Request->Token = reinterpret_cast<void*>(BlockSize);
+    Request->Token = reinterpret_cast<void *>(BlockSize);
     FTransfered += BlockSize;
     return true;
   }
@@ -3642,7 +3642,9 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
             OperationProgress->SetFile(File->GetFileName());
 
             Alg = Packet.GetAnsiString();
-            Checksum = BytesToHex(reinterpret_cast<const uint8_t*>(Packet.GetNextData(Packet.GetRemainingLength())), Packet.GetRemainingLength());
+            Checksum = BytesToHex(
+              reinterpret_cast<const uint8_t *>(Packet.GetNextData(Packet.GetRemainingLength())),
+              Packet.GetRemainingLength());
             OnCalculatedChecksum(File->GetFileName(), Alg, Checksum);
 
             Success = true;

@@ -1766,7 +1766,7 @@ bool TRemoteDirectoryCache::GetIsEmpty() const
 {
   TGuard Guard(FSection);
 
-  return (const_cast<TRemoteDirectoryCache*>(this)->GetCount() == 0);
+  return (const_cast<TRemoteDirectoryCache *>(this)->GetCount() == 0);
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory)
@@ -1877,7 +1877,7 @@ void TRemoteDirectoryChangesCache::Clear()
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryChangesCache::GetIsEmpty() const
 {
-  return (const_cast<TRemoteDirectoryChangesCache*>(this)->GetCount() == 0);
+  return (const_cast<TRemoteDirectoryChangesCache *>(this)->GetCount() == 0);
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::SetValue(const UnicodeString & Name,

@@ -3230,7 +3230,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
   else
   {
     FSessionInfo.CertificateFingerprint =
-      BytesToHex(RawByteString(reinterpret_cast<const char*>(Data.Hash), Data.HashLen), false, L':');
+      BytesToHex(RawByteString(reinterpret_cast<const char *>(Data.Hash), Data.HashLen), false, L':');
 
     int VerificationResultStr;
     switch (Data.VerificationResult)

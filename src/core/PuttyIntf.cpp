@@ -472,7 +472,7 @@ long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*R
   assert(Storage != nullptr);
   if (Storage != nullptr)
   {
-    UnicodeString Value(reinterpret_cast<const char*>(Data), DataSize - 1);
+    UnicodeString Value(reinterpret_cast<const char *>(Data), DataSize - 1);
     Storage->WriteStringRaw(ValueName, Value);
   }
 

@@ -927,7 +927,7 @@ void TCustomIniFileStorage::WriteStringRaw(const UnicodeString & Name, const Uni
 void TCustomIniFileStorage::WriteBinaryData(const UnicodeString & Name,
   const void * Buffer, size_t Size)
 {
-  WriteStringRaw(Name, BytesToHex(RawByteString(static_cast<const char*>(Buffer), Size)));
+  WriteStringRaw(Name, BytesToHex(RawByteString(static_cast<const char *>(Buffer), Size)));
 }
 //===========================================================================
 TIniFileStorage::TIniFileStorage(const UnicodeString & AStorage):

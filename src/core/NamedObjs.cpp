@@ -20,7 +20,9 @@ static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
   }
   else
   {
-    return AnsiCompareStr((static_cast<const TNamedObject *>(Item1))->GetName(), (static_cast<const TNamedObject *>(Item2))->GetName());
+    return AnsiCompareStr(
+      NB_STATIC_DOWNCAST_CONST(TNamedObject, Item1)->GetName(),
+      NB_STATIC_DOWNCAST_CONST(TNamedObject, Item2)->GetName());
   }
 }
 //--- TNamedObject ----------------------------------------------------------

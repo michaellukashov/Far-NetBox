@@ -148,8 +148,8 @@ bool FindTool(const UnicodeString & Name, UnicodeString & Path)
 //---------------------------------------------------------------------------
 bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params)
 {
-  return ((intptr_t)::ShellExecute(nullptr, L"open", const_cast<wchar_t*>(Path.data()),
-    const_cast<wchar_t*>(Params.data()), nullptr, SW_SHOWNORMAL) > 32);
+  return ((intptr_t)::ShellExecute(nullptr, L"open", const_cast<wchar_t *>(Path.data()),
+    const_cast<wchar_t *>(Params.data()), nullptr, SW_SHOWNORMAL) > 32);
 }
 //---------------------------------------------------------------------------
 bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params,

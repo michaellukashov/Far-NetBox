@@ -3121,7 +3121,7 @@ void TTerminal::DeleteFile(const UnicodeString & FileName,
     }
     GetOperationProgress()->SetFile(LocalFileName);
   }
-  intptr_t Params = (AParams != nullptr) ? *(static_cast<int*>(AParams)) : 0;
+  intptr_t Params = (AParams != nullptr) ? *(static_cast<int *>(AParams)) : 0;
   bool Recycle =
     FLAGCLEAR(Params, dfForceDelete) &&
     (GetSessionData()->GetDeleteToRecycleBin() != FLAGSET(Params, dfAlternative)) &&
@@ -3623,7 +3623,7 @@ void TTerminal::MoveFile(const UnicodeString & FileName,
   }
 
   assert(Param != nullptr);
-  const TMoveFileParams & Params = *static_cast<const TMoveFileParams*>(Param);
+  const TMoveFileParams & Params = *static_cast<const TMoveFileParams *>(Param);
   UnicodeString NewName = UnixIncludeTrailingBackslash(Params.Target) +
     MaskFileName(UnixExtractFileName(FileName), Params.FileMask);
   LogEvent(FORMAT(L"Moving file \"%s\" to \"%s\".", FileName.c_str(), NewName.c_str()));
@@ -3731,7 +3731,7 @@ void TTerminal::CopyFile(const UnicodeString & FileName,
   }
 
   assert(Param != nullptr);
-  const TMoveFileParams & Params = *static_cast<const TMoveFileParams*>(Param);
+  const TMoveFileParams & Params = *static_cast<const TMoveFileParams *>(Param);
   UnicodeString NewName = UnixIncludeTrailingBackslash(Params.Target) +
     MaskFileName(UnixExtractFileName(FileName), Params.FileMask);
   LogEvent(FORMAT(L"Copying file \"%s\" to \"%s\".", FileName.c_str(), NewName.c_str()));
@@ -4579,7 +4579,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
             FileData->New = true;
             FileData->Modified = false;
             Data.LocalFileList->AddObject(FileName,
-              reinterpret_cast<TObject*>(FileData));
+              reinterpret_cast<TObject *>(FileData));
             LogEvent(FORMAT(L"Local file %s included to synchronization",
               FormatFileDetailsForLog(FullLocalFileName, Modification, Size).c_str()));
           }

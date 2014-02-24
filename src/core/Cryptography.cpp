@@ -168,7 +168,7 @@ void aes_encrypt_block(const uint8_t in_blk[], uint8_t out_blk[], void * cx)
     out_blk[Index * 4 + 1] = out_blk[Index * 4 + 2];
     out_blk[Index * 4 + 2] = t;
   }
-  call_aes_encrypt(cx, reinterpret_cast<unsigned int*>(out_blk));
+  call_aes_encrypt(cx, reinterpret_cast<unsigned int *>(out_blk));
   for (Index = 0; Index < 4; ++Index)
   {
     uint8_t t;

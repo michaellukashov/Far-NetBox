@@ -299,7 +299,7 @@ protected:
 //---------------------------------------------------------------------------
 int TSimpleThread::ThreadProc(void * Thread)
 {
-  TSimpleThread * SimpleThread = reinterpret_cast<TSimpleThread*>(Thread);
+  TSimpleThread * SimpleThread = reinterpret_cast<TSimpleThread *>(Thread);
   assert(SimpleThread != nullptr);
   try
   {
@@ -671,7 +671,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
 //---------------------------------------------------------------------------
 TQueueItem * TTerminalQueue::GetItem(TList * List, intptr_t Index)
 {
-  return reinterpret_cast<TQueueItem*>(List->GetItem(Index));
+  return reinterpret_cast<TQueueItem *>(List->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 TQueueItem * TTerminalQueue::GetItem(intptr_t Index)
@@ -965,7 +965,7 @@ void TTerminalQueue::Idle()
       {
         // take the last free terminal, because TerminalFree() puts it to the
         // front, this ensures we cycle thru all free terminals
-        TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->GetItem(FFreeTerminals - 1));
+        TerminalItem = reinterpret_cast<TTerminalItem *>(FTerminals->GetItem(FFreeTerminals - 1));
         FTerminals->Move(FFreeTerminals - 1, FTerminals->GetCount() - 1);
         FFreeTerminals--;
       }
@@ -1036,7 +1036,7 @@ void TTerminalQueue::ProcessEvent()
           }
           else if (FFreeTerminals > 0)
           {
-            TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->GetItem(0));
+            TerminalItem = reinterpret_cast<TTerminalItem *>(FTerminals->GetItem(0));
             FTerminals->Move(0, FTerminals->GetCount() - 1);
             FFreeTerminals--;
           }
