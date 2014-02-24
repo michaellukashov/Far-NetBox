@@ -22,6 +22,7 @@ class TSecureShell : public TObject
 {
 friend class TPoolForDataEvent;
 NB_DISABLE_COPY(TSecureShell)
+NB_DECLARE_CLASS(TSecureShell)
 public:
   explicit TSecureShell(TSessionUI * UI, TSessionData * SessionData,
     TSessionLog * Log, TConfiguration * Configuration);

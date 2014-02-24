@@ -20,6 +20,7 @@ class TWebDAVFileSystem : public TCustomFileSystem
 {
 friend class TWebDAVFileListHelper;
 NB_DISABLE_COPY(TWebDAVFileSystem)
+NB_DECLARE_CLASS(TWebDAVFileSystem)
 public:
   explicit TWebDAVFileSystem(TTerminal * ATerminal);
   virtual ~TWebDAVFileSystem();

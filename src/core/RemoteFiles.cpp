@@ -1550,7 +1550,7 @@ UnicodeString TRemoteFileList::GetFullDirectory()
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFileList::GetFile(Integer Index) const
 {
-  return static_cast<TRemoteFile *>(GetItem(Index));
+  return NB_STATIC_DOWNCAST(TRemoteFile, GetItem(Index));
 }
 //---------------------------------------------------------------------------
 Boolean TRemoteFileList::GetIsRoot()
@@ -2641,7 +2641,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * FileList)
   TRemoteProperties CommonProperties;
   for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
   {
-    TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObject(Index));
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObject(Index));
     assert(File);
     if (!Index)
     {
@@ -2740,4 +2740,5 @@ void TRemoteProperties::Save(THierarchicalStorage * Storage) const
 //------------------------------------------------------------------------------
 NB_IMPLEMENT_CLASS(TRemoteFile, NB_GET_CLASS_INFO(TPersistent), nullptr);
 NB_IMPLEMENT_CLASS(TRemoteFileList, NB_GET_CLASS_INFO(TObjectList), nullptr);
+NB_IMPLEMENT_CLASS(TRemoteProperties, NB_GET_CLASS_INFO(TObject), nullptr)
 //------------------------------------------------------------------------------

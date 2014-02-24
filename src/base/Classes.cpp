@@ -319,7 +319,7 @@ TObject * TObjectList::operator [](intptr_t Index) const
 
 TObject * TObjectList::GetItem(intptr_t Index) const
 {
-  return reinterpret_cast<TObject *>(TList::GetItem(Index));
+  return static_cast<TObject *>(TList::GetItem(Index));
 }
 
 void TObjectList::SetItem(intptr_t Index, TObject * Value)

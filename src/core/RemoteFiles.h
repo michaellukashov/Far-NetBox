@@ -442,6 +442,7 @@ private:
 
 class TRemoteProperties : public TObject
 {
+NB_DECLARE_CLASS(TRemoteProperties)
 public:
   TValidProperties Valid;
   bool Recursive;

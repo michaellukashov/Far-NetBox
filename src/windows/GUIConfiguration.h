@@ -65,6 +65,7 @@ struct TCopyParamRuleData : public TObject
 //---------------------------------------------------------------------------
 class TCopyParamRule : public TObject
 {
+NB_DECLARE_CLASS(TCopyParamRule)
 public:
   explicit TCopyParamRule();
   explicit TCopyParamRule(const TCopyParamRuleData & Data);

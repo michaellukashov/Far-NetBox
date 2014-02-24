@@ -1363,7 +1363,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
 {
   for (intptr_t Index = 0; Index < FEdits->GetCount(); ++Index)
   {
-    reinterpret_cast<TFarEdit *>(FEdits->GetItem(Index))->SetText(Results->GetString(Index));
+    NB_STATIC_DOWNCAST(TFarEdit, FEdits->GetItem(Index))->SetText(Results->GetString(Index));
   }
 
   bool Result = (ShowModal() != brCancel);
@@ -1371,7 +1371,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
   {
     for (intptr_t Index = 0; Index < FEdits->GetCount(); ++Index)
     {
-      UnicodeString Text = reinterpret_cast<TFarEdit *>(FEdits->GetItem(Index))->GetText();
+      UnicodeString Text = NB_STATIC_DOWNCAST(TFarEdit, FEdits->GetItem(Index))->GetText();
       Results->SetString(Index, Text);
     }
 
@@ -4623,7 +4623,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   OkButton(nullptr)
 {
   assert(FileList->GetCount() > 0);
-  TRemoteFile * OnlyFile = reinterpret_cast<TRemoteFile *>(FileList->GetObject(0));
+  TRemoteFile * OnlyFile = NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObject(0));
   USEDPARAM(OnlyFile);
   assert(OnlyFile);
   FMultiple = (FileList->GetCount() > 1);
@@ -4647,7 +4647,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     intptr_t Directories = 0;
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->GetObject(Index));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObject(Index));
       assert(File);
       if (UsedGroupList.get() && !File->GetFileGroup().GetName().IsEmpty())
       {
@@ -6113,7 +6113,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
     assert(List != nullptr);
     if (!Value.IsEmpty())
     {
-      TFarText * Text = reinterpret_cast<TFarText *>(List->GetItem(FLastListItem));
+      TFarText * Text = NB_STATIC_DOWNCAST(TFarText, List->GetItem(FLastListItem));
       FLastListItem++;
 
       Text->SetCaption(FORMAT(L"%d-%s  %s", List->MaxLen, GetMsg(Label).c_str(), Value.c_str()));
@@ -6442,7 +6442,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
         assert(ItemFocused >= 0);
         if (ItemFocused >= BookmarksOffset)
         {
-          TBookmark * Bookmark = static_cast<TBookmark *>(Bookmarks->GetItem(ItemFocused - BookmarksOffset));
+          TBookmark * Bookmark = NB_STATIC_DOWNCAST(TBookmark, Bookmarks->GetItem(ItemFocused - BookmarksOffset));
           BookmarkList->Delete(Bookmark);
         }
         else
@@ -7496,7 +7496,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
       if (!Scroll || (List->GetString(Index).LastDelimiter(L"{}") > 0))
       {
         const TChecklistItem * ChecklistItem =
-          reinterpret_cast<TChecklistItem *>(List->GetObject(Index));
+          NB_STATIC_DOWNCAST(TChecklistItem, List->GetObject(Index));
 
         List->SetString(Index, ItemLine(ChecklistItem));
       }
@@ -7665,7 +7665,7 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist * Checklist)
     for (intptr_t Index = 0; Index < Count; ++Index)
     {
       TChecklistItem * ChecklistItem =
-        reinterpret_cast<TChecklistItem *>(List->GetObject(Index));
+        NB_STATIC_DOWNCAST(TChecklistItem, List->GetObject(Index));
       ChecklistItem->Checked = List->GetChecked(Index);
     }
   }
@@ -8284,7 +8284,7 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
 {
   if (QueueListBox->GetItems()->GetSelected() != NPOS)
   {
-    TQueueItemProxy * QueueItem = reinterpret_cast<TQueueItemProxy *>(
+    TQueueItemProxy * QueueItem = NB_STATIC_DOWNCAST(TQueueItemProxy,
       QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->GetSelected()));
 
     if (Sender == ExecuteButton)
@@ -8374,7 +8374,7 @@ void TQueueDialog::UpdateControls()
   TQueueItemProxy * QueueItem = nullptr;
   if (QueueListBox->GetItems()->GetSelected() >= 0)
   {
-    QueueItem = reinterpret_cast<TQueueItemProxy *>(
+    QueueItem = NB_STATIC_DOWNCAST(TQueueItemProxy,
       QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->GetSelected()));
   }
 
@@ -8481,7 +8481,7 @@ void TQueueDialog::RefreshQueue()
     while ((Index < QueueListBox->GetItems()->GetCount()) &&
            (Index < TopIndex + QueueListBox->GetHeight()))
     {
-      QueueItem = reinterpret_cast<TQueueItemProxy *>(
+      QueueItem = NB_STATIC_DOWNCAST(TQueueItemProxy,
         QueueListBox->GetItems()->GetObject(Index));
       assert(QueueItem != nullptr);
       if ((PrevQueueItem != nullptr) && (QueueItem != PrevQueueItem))

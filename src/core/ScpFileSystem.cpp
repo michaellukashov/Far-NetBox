@@ -379,7 +379,7 @@ TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal) :
 
 void TSCPFileSystem::Init(void * Data)
 {
-  FSecureShell = reinterpret_cast<TSecureShell *>(Data);
+  FSecureShell = NB_STATIC_DOWNCAST(TSecureShell, Data);
   assert(FSecureShell);
   FCommandSet = new TCommandSet(FTerminal->GetSessionData());
   FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
@@ -2182,7 +2182,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
       !OperationProgress->Cancel; ++IFile)
     {
       UnicodeString FileName = FilesToCopy->GetString(IFile);
-      TRemoteFile * File = static_cast<TRemoteFile *>(FilesToCopy->GetObject(IFile));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FilesToCopy->GetObject(IFile));
       assert(File);
 
       // Filename is used for error messaging and excluding files only

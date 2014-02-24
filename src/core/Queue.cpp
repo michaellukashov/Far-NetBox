@@ -254,6 +254,7 @@ class TTerminalItem : public TSignalThread
 friend class TQueueItem;
 friend class TBackgroundTerminal;
 NB_DISABLE_COPY(TTerminalItem)
+NB_DECLARE_CLASS(TTerminalItem)
 public:
   explicit TTerminalItem(TTerminalQueue * Queue);
   virtual ~TTerminalItem();
@@ -299,7 +300,7 @@ protected:
 //---------------------------------------------------------------------------
 int TSimpleThread::ThreadProc(void * Thread)
 {
-  TSimpleThread * SimpleThread = reinterpret_cast<TSimpleThread *>(Thread);
+  TSimpleThread * SimpleThread = NB_STATIC_DOWNCAST(TSimpleThread, Thread);
   assert(SimpleThread != nullptr);
   try
   {
@@ -497,7 +498,7 @@ TTerminalQueue::~TTerminalQueue()
 
     while (FTerminals->GetCount() > 0)
     {
-      TTerminalItem * TerminalItem = reinterpret_cast<TTerminalItem *>(FTerminals->GetItem(0));
+      TTerminalItem * TerminalItem = NB_STATIC_DOWNCAST(TTerminalItem, FTerminals->GetItem(0));
       FTerminals->Delete(0);
       TerminalItem->Terminate();
       TerminalItem->WaitFor();
@@ -671,12 +672,12 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
 //---------------------------------------------------------------------------
 TQueueItem * TTerminalQueue::GetItem(TList * List, intptr_t Index)
 {
-  return reinterpret_cast<TQueueItem *>(List->GetItem(Index));
+  return NB_STATIC_DOWNCAST(TQueueItem, List->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 TQueueItem * TTerminalQueue::GetItem(intptr_t Index)
 {
-  return reinterpret_cast<TQueueItem *>(FItems->GetItem(Index));
+  return NB_STATIC_DOWNCAST(TQueueItem, FItems->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::UpdateStatusForList(
@@ -965,7 +966,7 @@ void TTerminalQueue::Idle()
       {
         // take the last free terminal, because TerminalFree() puts it to the
         // front, this ensures we cycle thru all free terminals
-        TerminalItem = reinterpret_cast<TTerminalItem *>(FTerminals->GetItem(FFreeTerminals - 1));
+        TerminalItem = NB_STATIC_DOWNCAST(TTerminalItem, FTerminals->GetItem(FFreeTerminals - 1));
         FTerminals->Move(FFreeTerminals - 1, FTerminals->GetCount() - 1);
         FFreeTerminals--;
       }
@@ -1036,7 +1037,7 @@ void TTerminalQueue::ProcessEvent()
           }
           else if (FFreeTerminals > 0)
           {
-            TerminalItem = reinterpret_cast<TTerminalItem *>(FTerminals->GetItem(0));
+            TerminalItem = NB_STATIC_DOWNCAST(TTerminalItem, FTerminals->GetItem(0));
             FTerminals->Move(0, FTerminals->GetCount() - 1);
             FFreeTerminals--;
           }
@@ -1880,7 +1881,7 @@ TQueueItemProxy * TTerminalQueueStatus::GetItem(intptr_t Index) const
 //---------------------------------------------------------------------------
 TQueueItemProxy * TTerminalQueueStatus::GetItem(intptr_t Index)
 {
-  return reinterpret_cast<TQueueItemProxy *>(FList->GetItem(Index));
+  return NB_STATIC_DOWNCAST(TQueueItemProxy, FList->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
@@ -2544,3 +2545,9 @@ void TTerminalThread::TerminalReadDirectoryProgress(
   Cancel = Action.Cancel;
 }
 //---------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TSimpleThread, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TQueueItem, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TQueueItemProxy, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TSignalThread, NB_GET_CLASS_INFO(TSimpleThread), nullptr);
+NB_IMPLEMENT_CLASS(TTerminalItem, NB_GET_CLASS_INFO(TSignalThread), nullptr);
+//------------------------------------------------------------------------------

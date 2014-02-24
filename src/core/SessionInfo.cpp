@@ -77,6 +77,7 @@ static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
 #pragma warn -inl
 class TSessionActionRecord : public TObject
 {
+NB_DECLARE_CLASS(TSessionActionRecord)
 public:
   explicit TSessionActionRecord(TActionLog * Log, TLogAction Action) :
     FLog(Log),
@@ -1369,7 +1370,7 @@ void TActionLog::AddPendingAction(TSessionActionRecord * Action)
 void TActionLog::RecordPendingActions()
 {
   while ((FPendingActions->GetCount() > 0) &&
-         static_cast<TSessionActionRecord *>(FPendingActions->GetItem(0))->Record())
+         NB_STATIC_DOWNCAST(TSessionActionRecord, FPendingActions->GetItem(0))->Record())
   {
     FPendingActions->Delete(0);
   }
@@ -1409,5 +1410,5 @@ void TActionLog::SetEnabled(bool Value)
 }
 
 //------------------------------------------------------------------------------
-//NB_IMPLEMENT_CLASS(TSessionUI, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TSessionActionRecord, NB_GET_CLASS_INFO(TObject), nullptr);
 //------------------------------------------------------------------------------

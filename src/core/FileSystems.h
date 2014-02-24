@@ -36,6 +36,8 @@ const int tfNewDirectory = 0x04;
 //---------------------------------------------------------------------------
 struct TSinkFileParams : public TObject
 {
+NB_DECLARE_CLASS(TSinkFileParams)
+public:
   UnicodeString TargetDir;
   const TCopyParamType * CopyParam;
   TFileOperationProgressType * OperationProgress;
@@ -47,6 +49,7 @@ struct TSinkFileParams : public TObject
 struct TFileTransferData : public TObject
 {
 NB_DISABLE_COPY(TFileTransferData)
+NB_DECLARE_CLASS(TFileTransferData)
 public:
   TFileTransferData() :
     CopyParam(nullptr),
@@ -67,6 +70,8 @@ public:
 //---------------------------------------------------------------------------
 struct TClipboardHandler : public TObject
 {
+NB_DECLARE_CLASS(TClipboardHandler)
+public:
   UnicodeString Text;
 
   void Copy(TObject * /*Sender*/)
@@ -77,6 +82,8 @@ struct TClipboardHandler : public TObject
 //---------------------------------------------------------------------------
 struct TOverwriteFileParams : public TObject
 {
+NB_DECLARE_CLASS(TOverwriteFileParams)
+public:
   TOverwriteFileParams() :
     SourceSize(0),
     DestSize(0),
@@ -95,6 +102,7 @@ struct TOverwriteFileParams : public TObject
 struct TOpenRemoteFileParams : public TObject
 {
 NB_DISABLE_COPY(TOpenRemoteFileParams)
+NB_DECLARE_CLASS(TOpenRemoteFileParams)
 public:
   TOpenRemoteFileParams() :
     LocalFileAttrs(0),
@@ -139,6 +147,7 @@ public:
 class TCustomFileSystem : public TObject, public TFileSystemIntf
 {
 NB_DISABLE_COPY(TCustomFileSystem)
+NB_DECLARE_CLASS(TCustomFileSystem)
 public:
   virtual ~TCustomFileSystem();
 

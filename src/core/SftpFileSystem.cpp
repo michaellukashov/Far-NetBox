@@ -227,6 +227,7 @@ public:
 //---------------------------------------------------------------------------
 class TSFTPPacket : public TObject
 {
+NB_DECLARE_CLASS(TSFTPPacket)
 public:
   explicit TSFTPPacket(uintptr_t codePage)
   {
@@ -1019,6 +1020,20 @@ private:
 //---------------------------------------------------------------------------
 int TSFTPPacket::FMessageCounter = 0;
 //---------------------------------------------------------------------------
+class TSFTPQueuePacket : public TSFTPPacket
+{
+NB_DISABLE_COPY(TSFTPQueuePacket)
+NB_DECLARE_CLASS(TSFTPQueuePacket)
+public:
+  explicit TSFTPQueuePacket(uintptr_t CodePage) :
+    TSFTPPacket(CodePage),
+    Token(nullptr)
+  {
+  }
+
+  void * Token;
+};
+//---------------------------------------------------------------------------
 class TSFTPQueue : public TObject
 {
 NB_DISABLE_COPY(TSFTPQueue)
@@ -1037,11 +1052,11 @@ public:
     assert(FResponses->GetCount() == FRequests->GetCount());
     for (intptr_t Index = 0; Index < FRequests->GetCount(); ++Index)
     {
-      TSFTPQueuePacket * Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(Index));
+      TSFTPQueuePacket * Request = NB_STATIC_DOWNCAST(TSFTPQueuePacket, FRequests->GetItem(Index));
       assert(Request);
       SAFE_DESTROY(Request);
 
-      TSFTPPacket * Response = static_cast<TSFTPPacket*>(FResponses->GetItem(Index));
+      TSFTPPacket * Response = NB_STATIC_DOWNCAST(TSFTPPacket, FResponses->GetItem(Index));
       assert(Response);
       SAFE_DESTROY(Response);
     }
@@ -1062,10 +1077,10 @@ public:
     {
       assert(FResponses->GetCount());
 
-      TSFTPQueuePacket * Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(0));
+      TSFTPQueuePacket * Request = NB_STATIC_DOWNCAST(TSFTPQueuePacket, FRequests->GetItem(0));
       assert(Request);
 
-      TSFTPPacket * Response = static_cast<TSFTPPacket*>(FResponses->GetItem(0));
+      TSFTPPacket * Response = NB_STATIC_DOWNCAST(TSFTPPacket, FResponses->GetItem(0));
       assert(Response);
 
       try
@@ -1105,7 +1120,7 @@ public:
     int ExpectedType = -1, int AllowStatus = -1, void ** Token = nullptr)
   {
     assert(FRequests->GetCount());
-    std::unique_ptr<TSFTPQueuePacket> Request(static_cast<TSFTPQueuePacket*>(FRequests->GetItem(0)));
+    std::unique_ptr<TSFTPQueuePacket> Request(NB_STATIC_DOWNCAST(TSFTPQueuePacket, FRequests->GetItem(0)));
     FRequests->Delete(0);
     assert(Request.get());
     if (Token != nullptr)
@@ -1113,7 +1128,7 @@ public:
       *Token = Request->Token;
     }
 
-    std::unique_ptr<TSFTPPacket> Response(static_cast<TSFTPPacket*>(FResponses->GetItem(0)));
+    std::unique_ptr<TSFTPPacket> Response(NB_STATIC_DOWNCAST(TSFTPPacket, FResponses->GetItem(0)));
     FResponses->Delete(0);
     assert(Response.get());
 
@@ -1144,19 +1159,6 @@ protected:
   TList * FResponses;
   TSFTPFileSystem * FFileSystem;
   uintptr_t FCodePage;
-
-  class TSFTPQueuePacket : public TSFTPPacket
-  {
-  NB_DISABLE_COPY(TSFTPQueuePacket)
-  public:
-    explicit TSFTPQueuePacket(uintptr_t CodePage) :
-      TSFTPPacket(CodePage),
-      Token(nullptr)
-    {
-    }
-
-    void * Token;
-  };
 
   virtual bool InitRequest(TSFTPQueuePacket * Request) = 0;
 
@@ -1507,7 +1509,7 @@ public:
   {
     void * Token;
     bool Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_ATTRS, asAll, &Token);
-    File = static_cast<TRemoteFile *>(Token);
+    File = NB_STATIC_DOWNCAST(TRemoteFile, Token);
     return Result;
   }
 
@@ -1517,7 +1519,7 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
     {
-      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->GetObject(FIndex));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FFileList->GetObject(FIndex));
       ++FIndex;
 
       bool MissingRights =
@@ -1591,7 +1593,7 @@ public:
     {
       SCOPE_EXIT
       {
-        File = static_cast<TRemoteFile *>(Token);
+        File = NB_STATIC_DOWNCAST(TRemoteFile, Token);
       };
       Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_EXTENDED_REPLY, asNo, &Token);
     }
@@ -1604,7 +1606,7 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
     {
-      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->GetObject(FIndex));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FFileList->GetObject(FIndex));
       assert(File != nullptr);
       ++FIndex;
 
@@ -1722,7 +1724,7 @@ TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
 
 void TSFTPFileSystem::Init(void * Data)
 {
-  FSecureShell = reinterpret_cast<TSecureShell *>(Data);
+  FSecureShell = NB_STATIC_DOWNCAST(TSecureShell, Data);
   assert(FSecureShell);
   FFileSystemInfoValid = false;
   FVersion = NPOS;
@@ -1894,7 +1896,7 @@ void TSFTPFileSystem::ResetConnection()
   for (intptr_t I = 0; I < FPacketReservations->GetCount(); I++)
   {
     assert(FPacketReservations->GetItem(I) == nullptr);
-    TSFTPPacket * Item = static_cast<TSFTPPacket *>(FPacketReservations->GetItem(I));
+    TSFTPPacket * Item = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(I));
     SAFE_DESTROY(Item);
   }
   FPacketReservations->Clear();
@@ -2261,7 +2263,7 @@ void TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
   {
     FPacketNumbers[Index-1] = FPacketNumbers[Index];
   }
-  TSFTPPacket * Packet = static_cast<TSFTPPacket *>(FPacketReservations->GetItem(Reservation));
+  TSFTPPacket * Packet = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Reservation));
   if (Packet)
   {
     assert(Packet->GetReservedBy() == this);
@@ -2360,7 +2362,7 @@ uintptr_t TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
           unsigned int MessageNumber = (unsigned int)FPacketNumbers[Index];
           if (MessageNumber == Packet->GetMessageNumber())
           {
-            ReservedPacket = static_cast<TSFTPPacket *>(FPacketReservations->GetItem(Index));
+            ReservedPacket = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Index));
             IsReserved = true;
             if (ReservedPacket)
             {
@@ -3567,7 +3569,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
   {
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObject(Index));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObject(Index));
       assert(File != nullptr);
       if (File->GetIsDirectory() && !File->GetIsSymLink() &&
           !File->GetIsParentDirectory() && !File->GetIsThisDirectory())
@@ -4621,7 +4623,7 @@ RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
 //---------------------------------------------------------------------------
 int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
 {
-  TOpenRemoteFileParams * OpenParams = static_cast<TOpenRemoteFileParams *>(AOpenParams);
+  TOpenRemoteFileParams * OpenParams = NB_STATIC_DOWNCAST(TOpenRemoteFileParams, AOpenParams);
   assert(OpenParams);
   TFileOperationProgressType * OperationProgress = OpenParams->OperationProgress;
 
@@ -4936,7 +4938,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
   {
     bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
-    const TRemoteFile * File = static_cast<TRemoteFile *>(AFilesToCopy->GetObject(Index));
+    const TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
 
     assert(!FAvoidBusy);
     FAvoidBusy = true;
@@ -5536,7 +5538,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 void TSFTPFileSystem::SFTPSinkFile(const UnicodeString & FileName,
   const TRemoteFile * AFile, void * Param)
 {
-  TSinkFileParams * Params = static_cast<TSinkFileParams *>(Param);
+  TSinkFileParams * Params = NB_STATIC_DOWNCAST(TSinkFileParams, Param);
   assert(Params->OperationProgress);
   try
   {
@@ -5563,3 +5565,8 @@ void TSFTPFileSystem::SFTPSinkFile(const UnicodeString & FileName,
     }
   }
 }
+
+//------------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TSFTPPacket, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TSFTPQueuePacket, NB_GET_CLASS_INFO(TSFTPPacket), nullptr);
+//------------------------------------------------------------------------------

@@ -2231,3 +2231,6 @@ void TSecureShell::CollectUsage()
     // Configuration->Usage->Inc(L"OpenedSessionsSSH2");
   }
 }
+//------------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TSecureShell, NB_GET_CLASS_INFO(TObject), nullptr);
+//------------------------------------------------------------------------------

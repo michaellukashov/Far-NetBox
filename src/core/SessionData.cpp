@@ -1406,7 +1406,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     for (Integer Index = 0; Index < StoredSessions->GetCount() + StoredSessions->GetHiddenCount(); ++Index)
     {
 
-      TSessionData * AData = static_cast<TSessionData *>(StoredSessions->GetItem(Index));
+      TSessionData * AData = NB_STATIC_DOWNCAST(TSessionData, StoredSessions->GetItem(Index));
       if (// !AData->GetIsWorkspace() &&
           AnsiSameText(AData->GetName(), DecodedUrl) ||
           AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
@@ -3124,7 +3124,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
       }
       else
       {
-        SessionData = static_cast<TSessionData *>(FindByName(SessionName));
+        SessionData = NB_STATIC_DOWNCAST(TSessionData, FindByName(SessionName));
       }
 
       if ((SessionData != FDefaultSettings) || !UseDefaults)
@@ -3195,7 +3195,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults.get());
   for (intptr_t Index = 0; Index < GetCount() + GetHiddenCount(); ++Index)
   {
-    TSessionData * SessionData = static_cast<TSessionData *>(GetItem(Index));
+    TSessionData * SessionData = NB_STATIC_DOWNCAST(TSessionData, GetItem(Index));
     try
     {
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults.get());
@@ -3250,7 +3250,7 @@ void TStoredSessionList::Saved()
   FDefaultSettings->SetModified(false);
   for (intptr_t Index = 0; Index < GetCount() + GetHiddenCount(); ++Index)
   {
-    (static_cast<TSessionData *>(GetItem(Index))->SetModified(false));
+    (NB_STATIC_DOWNCAST(TSessionData, GetItem(Index))->SetModified(false));
   }
 }
 //---------------------------------------------------------------------
@@ -3517,7 +3517,7 @@ intptr_t TStoredSessionList::IndexOf(TSessionData * Data)
 TSessionData * TStoredSessionList::NewSession(
   const UnicodeString & SessionName, TSessionData * Session)
 {
-  TSessionData * DuplicateSession = static_cast<TSessionData*>(FindByName(SessionName));
+  TSessionData * DuplicateSession = NB_STATIC_DOWNCAST(TSessionData, FindByName(SessionName));
   if (!DuplicateSession)
   {
     DuplicateSession = new TSessionData(L"");
@@ -3735,7 +3735,7 @@ void TStoredSessionList::NewWorkspace(
 
   for (intptr_t Index = 0; Index < DataList->GetCount(); Index++)
   {
-    TSessionData * Data = static_cast<TSessionData *>(DataList->GetItem(Index));
+    TSessionData * Data = NB_STATIC_DOWNCAST(TSessionData, DataList->GetItem(Index));
 
     TSessionData * Data2 = new TSessionData(L"");
     Data2->Assign(Data);

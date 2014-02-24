@@ -454,12 +454,12 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
 //---------------------------------------------------------------------------
 const TCopyParamRule * TCopyParamList::GetRule(intptr_t Index) const
 {
-  return reinterpret_cast<TCopyParamRule *>(FRules->GetItem(Index));
+  return NB_STATIC_DOWNCAST(TCopyParamRule, FRules->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 const TCopyParamType * TCopyParamList::GetCopyParam(intptr_t Index) const
 {
-  return reinterpret_cast<TCopyParamType *>(FCopyParams->GetItem(Index));
+  return NB_STATIC_DOWNCAST(TCopyParamType, FCopyParams->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 UnicodeString TCopyParamList::GetName(intptr_t Index) const
@@ -1172,7 +1172,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   }
 
   TSessionData * PuttySessionData =
-    static_cast<TSessionData *>(ImportSessionList->FindByName(GetPuttySession()));
+    NB_STATIC_DOWNCAST(TSessionData, ImportSessionList->FindByName(GetPuttySession()));
   if (PuttySessionData != nullptr)
   {
     ImportSessionList->Remove(PuttySessionData);

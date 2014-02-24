@@ -633,6 +633,8 @@ private:
 //------------------------------------------------------------------------------
 struct TCustomCommandParams : public TObject
 {
+NB_DECLARE_CLASS(TCustomCommandParams)
+public:
   UnicodeString Command;
   intptr_t Params;
   TCaptureOutputEvent OutputEvent;
@@ -649,6 +651,8 @@ struct TCalculateSizeStats : public TObject
 //------------------------------------------------------------------------------
 struct TCalculateSizeParams : public TObject
 {
+NB_DECLARE_CLASS(TCalculateSizeParams)
+public:
   __int64 Size;
   intptr_t Params;
   const TCopyParamType * CopyParam;
@@ -659,6 +663,8 @@ struct TCalculateSizeParams : public TObject
 //------------------------------------------------------------------------------
 struct TMakeLocalFileListParams : public TObject
 {
+NB_DECLARE_CLASS(TMakeLocalFileListParams)
+public:
   TStrings * FileList;
   bool IncludeDirs;
   bool Recursive;
