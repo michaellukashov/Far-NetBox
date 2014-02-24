@@ -1041,52 +1041,50 @@ intptr_t TCustomFarPlugin::FarMessage(DWORD Flags,
   {
     nb_free(Items);
   };
+  UnicodeString FullMessage = Message;
+  if (Params->MoreMessages != nullptr)
   {
-    UnicodeString FullMessage = Message;
-    if (Params->MoreMessages != nullptr)
+    FullMessage += UnicodeString(L"\n\x01\n") + Params->MoreMessages->GetText();
+    while (FullMessage[FullMessage.Length()] == L'\n' ||
+           FullMessage[FullMessage.Length()] == L'\r')
     {
-      FullMessage += UnicodeString(L"\n\x01\n") + Params->MoreMessages->GetText();
-      while (FullMessage[FullMessage.Length()] == L'\n' ||
-             FullMessage[FullMessage.Length()] == L'\r')
-      {
-        FullMessage.SetLength(FullMessage.Length() - 1);
-      }
-      FullMessage += L"\n\x01\n";
+      FullMessage.SetLength(FullMessage.Length() - 1);
     }
-
-    MessageLines = new TStringList();
-    MessageLinesPtr.reset(MessageLines);
-    MessageLines->Add(Title);
-    FarWrapText(FullMessage, MessageLines, MaxMessageWidth);
-
-    // FAR WORKAROUND
-    // When there is too many lines to fit on screen, far uses not-shown
-    // lines as button captions instead of real captions at the end of the list
-    intptr_t MaxLines = MaxMessageLines();
-    while (MessageLines->GetCount() > MaxLines)
-    {
-      MessageLines->Delete(MessageLines->GetCount() - 1);
-    }
-
-    for (intptr_t Index = 0; Index < Buttons->GetCount(); ++Index)
-    {
-      MessageLines->Add(Buttons->GetString(Index));
-    }
-
-    Items = static_cast<wchar_t **>(
-      nb_malloc(sizeof(wchar_t *) * MessageLines->GetCount()));
-    for (intptr_t Index = 0; Index < MessageLines->GetCount(); ++Index)
-    {
-      UnicodeString S = MessageLines->GetString(Index);
-      MessageLines->SetString(Index, UnicodeString(S));
-      Items[Index] = const_cast<wchar_t *>(MessageLines->GetString(Index).c_str());
-    }
-
-    TFarEnvGuard Guard;
-    Result = static_cast<intptr_t>(FStartupInfo.Message(FStartupInfo.ModuleNumber,
-      Flags | FMSG_LEFTALIGN, nullptr, Items, static_cast<int>(MessageLines->GetCount()),
-      static_cast<int>(Buttons->GetCount())));
+    FullMessage += L"\n\x01\n";
   }
+
+  MessageLines = new TStringList();
+  MessageLinesPtr.reset(MessageLines);
+  MessageLines->Add(Title);
+  FarWrapText(FullMessage, MessageLines, MaxMessageWidth);
+
+  // FAR WORKAROUND
+  // When there is too many lines to fit on screen, far uses not-shown
+  // lines as button captions instead of real captions at the end of the list
+  intptr_t MaxLines = MaxMessageLines();
+  while (MessageLines->GetCount() > MaxLines)
+  {
+    MessageLines->Delete(MessageLines->GetCount() - 1);
+  }
+
+  for (intptr_t Index = 0; Index < Buttons->GetCount(); ++Index)
+  {
+    MessageLines->Add(Buttons->GetString(Index));
+  }
+
+  Items = static_cast<wchar_t **>(
+    nb_malloc(sizeof(wchar_t *) * MessageLines->GetCount()));
+  for (intptr_t Index = 0; Index < MessageLines->GetCount(); ++Index)
+  {
+    UnicodeString S = MessageLines->GetString(Index);
+    MessageLines->SetString(Index, UnicodeString(S));
+    Items[Index] = const_cast<wchar_t *>(MessageLines->GetString(Index).c_str());
+  }
+
+  TFarEnvGuard Guard;
+  Result = static_cast<intptr_t>(FStartupInfo.Message(FStartupInfo.ModuleNumber,
+    Flags | FMSG_LEFTALIGN, nullptr, Items, static_cast<int>(MessageLines->GetCount()),
+    static_cast<int>(Buttons->GetCount())));
 
   return Result;
 }
@@ -1146,43 +1144,41 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString & Title,
   {
     nb_free(MenuItems);
   };
+  intptr_t Selected = NPOS;
+  intptr_t Count = 0;
+  for (intptr_t I = 0; I < Items->GetCount(); ++I)
   {
-    intptr_t Selected = NPOS;
-    intptr_t Count = 0;
-    for (intptr_t I = 0; I < Items->GetCount(); ++I)
+    uintptr_t Flags = reinterpret_cast<uintptr_t>(Items->GetObject(I));
+    if (FLAGCLEAR(Flags, MIF_HIDDEN))
     {
-      uintptr_t Flags = reinterpret_cast<uintptr_t>(Items->GetObject(I));
-      if (FLAGCLEAR(Flags, MIF_HIDDEN))
+      ClearStruct(MenuItems[Count]);
+      MenuItems[Count].Flags = static_cast<DWORD>(Flags);
+      if (MenuItems[Count].Flags & MIF_SELECTED)
       {
-        ClearStruct(MenuItems[Count]);
-        MenuItems[Count].Flags = static_cast<DWORD>(Flags);
-        if (MenuItems[Count].Flags & MIF_SELECTED)
-        {
-          assert(Selected == NPOS);
-          Selected = I;
-        }
-        MenuItems[Count].Text = Items->GetString(I).c_str();
-        MenuItems[Count].UserData = I;
-        Count++;
+        assert(Selected == NPOS);
+        Selected = I;
       }
+      MenuItems[Count].Text = Items->GetString(I).c_str();
+      MenuItems[Count].UserData = I;
+      Count++;
     }
+  }
 
-    intptr_t ResultItem = Menu(Flags | FMENU_USEEXT, Title, Bottom,
-      reinterpret_cast<const FarMenuItem *>(MenuItems), Count, BreakKeys, BreakCode);
+  intptr_t ResultItem = Menu(Flags | FMENU_USEEXT, Title, Bottom,
+    reinterpret_cast<const FarMenuItem *>(MenuItems), Count, BreakKeys, BreakCode);
 
-    if (ResultItem >= 0)
+  if (ResultItem >= 0)
+  {
+    Result = MenuItems[ResultItem].UserData;
+    if (Selected >= 0)
     {
-      Result = MenuItems[ResultItem].UserData;
-      if (Selected >= 0)
-      {
-        Items->SetObject(Selected, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObject(Selected)) & ~MIF_SELECTED));
-      }
-      Items->SetObject(Result, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObject(Result)) | MIF_SELECTED));
+      Items->SetObject(Selected, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObject(Selected)) & ~MIF_SELECTED));
     }
-    else
-    {
-      Result = ResultItem;
-    }
+    Items->SetObject(Result, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObject(Result)) | MIF_SELECTED));
+  }
+  else
+  {
+    Result = ResultItem;
   }
   return Result;
 }
@@ -1969,9 +1965,7 @@ intptr_t TCustomFarFileSystem::MakeDirectory(const wchar_t ** Name, int OpMode)
       *Name = FNameStr.c_str();
     }
   };
-  {
-    Result = MakeDirectoryEx(FNameStr, OpMode);
-  }
+  Result = MakeDirectoryEx(FNameStr, OpMode);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1991,14 +1985,14 @@ intptr_t TCustomFarFileSystem::GetFiles(struct PluginPanelItem * PanelItem,
   std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(PanelItem, ItemsNumber));
   intptr_t Result = 0;
   FDestPathStr = *DestPath;
-  SCOPE_EXIT
   {
-    if (FDestPathStr != *DestPath)
+    SCOPE_EXIT
     {
-      *DestPath = FDestPathStr.c_str();
-    }
-  };
-  {
+      if (FDestPathStr != *DestPath)
+      {
+        *DestPath = FDestPathStr.c_str();
+      }
+    };
     Result = GetFilesEx(PanelItems.get(), Move > 0, FDestPathStr, OpMode);
   }
 

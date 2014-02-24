@@ -924,17 +924,15 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
     {
       FindClose(SearchRec);
     };
+    do
     {
-      do
+      if ((SearchRec.Name != L".") && (SearchRec.Name != L".."))
       {
-        if ((SearchRec.Name != L".") && (SearchRec.Name != L".."))
-        {
-          UnicodeString FileName = DirName2 + SearchRec.Name;
-          CallBackFunc(FileName, SearchRec, Param);
-        }
+        UnicodeString FileName = DirName2 + SearchRec.Name;
+        CallBackFunc(FileName, SearchRec, Param);
+      }
 
-      } while (FindNextChecked(SearchRec) == 0);
-    }
+    } while (FindNextChecked(SearchRec) == 0);
   }
 }
 //---------------------------------------------------------------------------

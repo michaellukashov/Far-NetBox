@@ -12746,11 +12746,11 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ExtractFileName(RealFileName, false);
 
-    SCOPE_EXIT
     {
-      OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
-    };
-    {
+      SCOPE_EXIT
+      {
+        OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
+      };
       try
       {
         if (FTerminal->GetSessionData()->GetCacheDirectories())
@@ -13036,11 +13036,11 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
 
   bool CreateDir = true;
 
-  SCOPE_EXIT
   {
-    ::FindClose(FindHandle);
-  };
-  {
+    SCOPE_EXIT
+    {
+      ::FindClose(FindHandle);
+    };
     while (FindOK && !OperationProgress->Cancel)
     {
       UnicodeString FileName = DirectoryName + SearchRec.cFileName;
@@ -13092,11 +13092,11 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
     try
     {
       FTerminal->SetExceptionOnFail(true);
-      SCOPE_EXIT
       {
-        FTerminal->SetExceptionOnFail(false);
-      };
-      {
+        SCOPE_EXIT
+        {
+          FTerminal->SetExceptionOnFail(false);
+        };
         FTerminal->CreateDirectory(DestFullName, &Properties);
       }
     }
@@ -13154,12 +13154,12 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
     const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, FilesToCopy->GetObject(Index));
     bool Success = false;
     FTerminal->SetExceptionOnFail(true);
-    SCOPE_EXIT
     {
-      OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-      FTerminal->SetExceptionOnFail(false);
-    };
-    {
+      SCOPE_EXIT
+      {
+        OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+        FTerminal->SetExceptionOnFail(false);
+      };
       UnicodeString AbsoluteFilePath = AbsolutePath(FileName, false);
       UnicodeString TargetDirectory = FullTargetDir;
       UnicodeString FileNamePath = ::ExtractFilePath(File->GetFileName());

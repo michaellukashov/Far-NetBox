@@ -820,14 +820,16 @@ void TTerminal::InternalTryOpen()
     ResetConnection();
     FStatus = ssOpening;
 
-    SCOPE_EXIT
     {
-      if (FSessionData->GetTunnel())
+      SCOPE_EXIT
       {
-        FSessionData->RollbackTunnel();
-      }
-    };
-    InternalDoTryOpen();
+        if (FSessionData->GetTunnel())
+        {
+          FSessionData->RollbackTunnel();
+        }
+      };
+      InternalDoTryOpen();
+    }
 
     if (GetSessionData()->GetCacheDirectoryChanges())
     {
@@ -947,11 +949,11 @@ void TTerminal::InitFileSystem()
     else
     {
       assert(FSecureShell == nullptr);
-      SCOPE_EXIT
       {
-        SAFE_DESTROY(FSecureShell);
-      };
-      {
+        SCOPE_EXIT
+        {
+          SAFE_DESTROY(FSecureShell);
+        };
         FSecureShell = new TSecureShell(this, FSessionData, GetLog(), FConfiguration);
         try
         {
@@ -1079,11 +1081,11 @@ void TTerminal::OpenTunnel()
     FTunnel = new TSecureShell(FTunnelUI, FTunnelData, FTunnelLog, FConfiguration);
 
     FTunnelOpening = true;
-    SCOPE_EXIT
     {
-      FTunnelOpening = false;
-    };
-    {
+      SCOPE_EXIT
+      {
+        FTunnelOpening = false;
+      };
       FTunnel->Open();
     }
     FTunnelThread = new TTunnelThread(FTunnel);
@@ -1137,17 +1139,17 @@ void TTerminal::Reopen(intptr_t Params)
   // but it can happen, e.g. when we are downloading file to execute it.
   // however I'm not sure why we mind having exception-on-fail enabled here
   Integer PrevExceptionOnFail = FExceptionOnFail;
-  SCOPE_EXIT
   {
-    GetSessionData()->SetRemoteDirectory(PrevRemoteDirectory);
-    GetSessionData()->SetFSProtocol(OrigFSProtocol);
-    FAutoReadDirectory = PrevAutoReadDirectory;
-    FReadCurrentDirectoryPending = PrevReadCurrentDirectoryPending;
-    FReadDirectoryPending = PrevReadDirectoryPending;
-    FSuspendTransaction = false;
-    FExceptionOnFail = PrevExceptionOnFail;
-  };
-  {
+    SCOPE_EXIT
+    {
+      GetSessionData()->SetRemoteDirectory(PrevRemoteDirectory);
+      GetSessionData()->SetFSProtocol(OrigFSProtocol);
+      FAutoReadDirectory = PrevAutoReadDirectory;
+      FReadCurrentDirectoryPending = PrevReadCurrentDirectoryPending;
+      FReadDirectoryPending = PrevReadDirectoryPending;
+      FSuspendTransaction = false;
+      FExceptionOnFail = PrevExceptionOnFail;
+    };
     FReadCurrentDirectoryPending = false;
     FReadDirectoryPending = false;
     FSuspendTransaction = true;
@@ -1959,12 +1961,12 @@ void TTerminal::EndTransaction()
   {
     if (FInTransaction == 0)
     {
-      SCOPE_EXIT
       {
-        FReadCurrentDirectoryPending = false;
-        FReadDirectoryPending = false;
-      };
-      {
+        SCOPE_EXIT
+        {
+          FReadCurrentDirectoryPending = false;
+          FReadDirectoryPending = false;
+        };
         if (FReadCurrentDirectoryPending)
         {
           ReadCurrentDirectory();
@@ -2470,11 +2472,11 @@ void TTerminal::DoStartup()
 {
   LogEvent(L"Doing startup conversation with host.");
   BeginTransaction();
-  SCOPE_EXIT
   {
-    EndTransaction();
-  };
-  {
+    SCOPE_EXIT
+    {
+      EndTransaction();
+    };
     DoInformation(LoadStr(STATUS_STARTUP), true);
 
     // Make sure that directory would be loaded at last
@@ -2550,11 +2552,11 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     else
     {
       DoStartReadDirectory();
-      SCOPE_EXIT
       {
-        DoReadDirectory(ReloadOnly);
-      };
-      {
+        SCOPE_EXIT
+        {
+          DoReadDirectory(ReloadOnly);
+        };
         LoadedFromCache = FDirectoryCache->GetFileList(GetCurrentDirectory(), FFiles);
       }
 
@@ -2579,27 +2581,27 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     try
     {
       TRemoteDirectory * Files = new TRemoteDirectory(this, FFiles);
-      SCOPE_EXIT
       {
-        DoReadDirectoryProgress(-1, Cancel);
-        FReadingCurrentDirectory = false;
-        std::unique_ptr<TRemoteDirectory> OldFiles(FFiles);
-        (void)OldFiles;
-        FFiles = Files;
-        DoReadDirectory(ReloadOnly);
-        // delete only after loading new files to dir view,
-        // not to destroy the file objects that the view holds
-        // (can be issue in multi threaded environment, such as when the
-        // terminal is reconnecting in the terminal thread)
-        if (GetActive())
+        SCOPE_EXIT
         {
-          if (GetSessionData()->GetCacheDirectories())
+          DoReadDirectoryProgress(-1, Cancel);
+          FReadingCurrentDirectory = false;
+          std::unique_ptr<TRemoteDirectory> OldFiles(FFiles);
+          (void)OldFiles;
+          FFiles = Files;
+          DoReadDirectory(ReloadOnly);
+          // delete only after loading new files to dir view,
+          // not to destroy the file objects that the view holds
+          // (can be issue in multi threaded environment, such as when the
+          // terminal is reconnecting in the terminal thread)
+          if (GetActive())
           {
-            DirectoryLoaded(FFiles);
+            if (GetSessionData()->GetCacheDirectories())
+            {
+              DirectoryLoaded(FFiles);
+            }
           }
-        }
-      };
-      {
+        };
         Files->SetDirectory(GetCurrentDirectory());
         CustomReadDirectory(Files);
       }
@@ -2755,11 +2757,11 @@ TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & Direct
       FileList->SetDirectory(Directory);
 
       SetExceptionOnFail(true);
-      SCOPE_EXIT
       {
-        SetExceptionOnFail(false);
-      };
-      {
+        SCOPE_EXIT
+        {
+          SetExceptionOnFail(false);
+        };
         ReadDirectory(FileList.get());
       }
 
@@ -2779,11 +2781,11 @@ void TTerminal::ProcessDirectory(const UnicodeString & DirName,
   if (IgnoreErrors)
   {
     SetExceptionOnFail(true);
-    SCOPE_EXIT
     {
-      SetExceptionOnFail(false);
-    };
-    {
+      SCOPE_EXIT
+      {
+        SetExceptionOnFail(false);
+      };
       try
       {
         FileList.reset(CustomReadDirectoryListing(DirName, UseCache));
@@ -2876,11 +2878,11 @@ bool TTerminal::FileExists(const UnicodeString & FileName, TRemoteFile ** AFile)
   try
   {
     SetExceptionOnFail(true);
-    SCOPE_EXIT
     {
-      SetExceptionOnFail(false);
-    };
-    {
+      SCOPE_EXIT
+      {
+        SetExceptionOnFail(false);
+      };
       ReadFile(FileName, File);
     }
 
@@ -2930,25 +2932,25 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
 
     FOperationProgress = &Progress; //-V506
     TFileOperationProgressType * OperationProgress(&Progress);
-    SCOPE_EXIT
     {
-      FOperationProgress = nullptr;
-      Progress.Stop();
-    };
-    {
+      SCOPE_EXIT
+      {
+        FOperationProgress = nullptr;
+        Progress.Stop();
+      };
       if (Side == osRemote)
       {
         BeginTransaction();
       }
 
-      SCOPE_EXIT
       {
-        if (Side == osRemote)
+        SCOPE_EXIT
         {
-          EndTransaction();
-        }
-      };
-      {
+          if (Side == osRemote)
+          {
+            EndTransaction();
+          }
+        };
         intptr_t Index = 0;
         UnicodeString FileName;
         bool Success;
@@ -2957,11 +2959,11 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
           FileName = FileList->GetString(Index);
           try
           {
-            SCOPE_EXIT
             {
-              Progress.Finish(FileName, Success, OnceDoneOperation);
-            };
-            {
+              SCOPE_EXIT
+              {
+                Progress.Finish(FileName, Success, OnceDoneOperation);
+              };
               Success = false;
               if (!Ex)
               {
@@ -3636,49 +3638,49 @@ bool TTerminal::MoveFiles(TStrings * FileList, const UnicodeString & Target,
   DirectoryModified(Target, true);
   bool Result = false;
   BeginTransaction();
-  SCOPE_EXIT
   {
-    if (GetActive())
+    SCOPE_EXIT
     {
-      UnicodeString WithTrailing = UnixIncludeTrailingBackslash(this->GetCurrentDirectory());
-      bool PossiblyMoved = false;
-      // check if we was moving current directory.
-      // this is just optimization to avoid checking existence of current
-      // directory after each move operation.
-      UnicodeString CurrentDirectory = this->GetCurrentDirectory();
-      for (intptr_t Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); ++Index)
+      if (GetActive())
       {
-        const TRemoteFile * File =
-          NB_STATIC_DOWNCAST_CONST(TRemoteFile, FileList->GetObject(Index));
-        // File can be nullptr, and filename may not be full path,
-        // but currently this is the only way we can move (at least in GUI)
-        // current directory
-        const UnicodeString & Str = FileList->GetString(Index);
-        if ((File != nullptr) &&
-            File->GetIsDirectory() &&
-            ((CurrentDirectory.SubString(1, Str.Length()) == Str) &&
-             ((Str.Length() == CurrentDirectory.Length()) ||
-              (CurrentDirectory[Str.Length() + 1] == '/'))))
+        UnicodeString WithTrailing = UnixIncludeTrailingBackslash(this->GetCurrentDirectory());
+        bool PossiblyMoved = false;
+        // check if we was moving current directory.
+        // this is just optimization to avoid checking existence of current
+        // directory after each move operation.
+        UnicodeString CurrentDirectory = this->GetCurrentDirectory();
+        for (intptr_t Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); ++Index)
         {
-          PossiblyMoved = true;
+          const TRemoteFile * File =
+            NB_STATIC_DOWNCAST_CONST(TRemoteFile, FileList->GetObject(Index));
+          // File can be nullptr, and filename may not be full path,
+          // but currently this is the only way we can move (at least in GUI)
+          // current directory
+          const UnicodeString & Str = FileList->GetString(Index);
+          if ((File != nullptr) &&
+              File->GetIsDirectory() &&
+              ((CurrentDirectory.SubString(1, Str.Length()) == Str) &&
+               ((Str.Length() == CurrentDirectory.Length()) ||
+                (CurrentDirectory[Str.Length() + 1] == '/'))))
+          {
+            PossiblyMoved = true;
+          }
+        }
+
+        if (PossiblyMoved && !FileExists(CurrentDirectory))
+        {
+          UnicodeString NearestExisting = CurrentDirectory;
+          do
+          {
+            NearestExisting = UnixExtractFileDir(NearestExisting);
+          }
+          while (!IsUnixRootPath(NearestExisting) && !FileExists(NearestExisting));
+
+          ChangeDirectory(NearestExisting);
         }
       }
-
-      if (PossiblyMoved && !FileExists(CurrentDirectory))
-      {
-        UnicodeString NearestExisting = CurrentDirectory;
-        do
-        {
-          NearestExisting = UnixExtractFileDir(NearestExisting);
-        }
-        while (!IsUnixRootPath(NearestExisting) && !FileExists(NearestExisting));
-
-        ChangeDirectory(NearestExisting);
-      }
-    }
-    EndTransaction();
-  };
-  {
+      EndTransaction();
+    };
     Result = ProcessFiles(FileList, foRemoteMove, MAKE_CALLBACK(TTerminal::MoveFile, this), &Params);
   }
   return Result;
@@ -4332,12 +4334,12 @@ bool TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   TFileOperationProgressType OperationProgress(MAKE_CALLBACK(TTerminal::DoProgress, this), MAKE_CALLBACK(TTerminal::DoFinished, this));
   TOnceDoneOperation OnceDoneOperation = odoIdle;
   OperationProgress.Start(foCalculateSize, osLocal, FileList->GetCount());
-  SCOPE_EXIT
   {
-    FOperationProgress = nullptr;
-    OperationProgress.Stop();
-  };
-  {
+    SCOPE_EXIT
+    {
+      FOperationProgress = nullptr;
+      OperationProgress.Stop();
+    };
     TCalculateSizeParams Params;
     Params.Size = 0;
     Params.Params = 0;
@@ -4510,11 +4512,11 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
     DoSynchronizeProgress(Data, true);
   }
 
-  SCOPE_EXIT
   {
-    Data.DeleteLocalFileList();
-  };
-  {
+    SCOPE_EXIT
+    {
+      Data.DeleteLocalFileList();
+    };
     bool Found = false;
     TSearchRec SearchRec;
     Data.LocalFileList = new TStringList();
@@ -4528,11 +4530,11 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
 
     if (Found)
     {
-      SCOPE_EXIT
       {
-        FindClose(SearchRec);
-      };
-      {
+        SCOPE_EXIT
+        {
+          FindClose(SearchRec);
+        };
         UnicodeString FileName;
         while (Found)
         {
@@ -4895,11 +4897,11 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
 
   BeginTransaction();
 
-  SCOPE_EXIT
   {
-    EndTransaction();
-  };
-  {
+    SCOPE_EXIT
+    {
+      EndTransaction();
+    };
     intptr_t IIndex = 0;
     while (IIndex < Checklist->GetCount())
     {
@@ -5147,11 +5149,13 @@ void TTerminal::DoFilesFind(const UnicodeString & Directory, TFilesFindParams & 
     // of the directory listing, so we at least reset the handler in
     // FileFind
     FOnFindingFile = Params.OnFindingFile;
-    SCOPE_EXIT
     {
-      FOnFindingFile = nullptr;
-    };
-    ProcessDirectory(Directory, MAKE_CALLBACK(TTerminal::FileFind, this), &Params, false, true);
+      SCOPE_EXIT
+      {
+        FOnFindingFile = nullptr;
+      };
+      ProcessDirectory(Directory, MAKE_CALLBACK(TTerminal::FileFind, this), &Params, false, true);
+    }
   }
 }
 //------------------------------------------------------------------------------
@@ -5289,15 +5293,15 @@ bool TTerminal::CopyToRemote(TStrings * AFilesToCopy,
 
       UnicodeString UnlockedTargetDir = TranslateLockedPath(TargetDir, false);
       BeginTransaction();
-      SCOPE_EXIT
       {
-        if (GetActive())
+        SCOPE_EXIT
         {
-          ReactOnCommand(fsCopyToRemote);
-        }
-        EndTransaction();
-      };
-      {
+          if (GetActive())
+          {
+            ReactOnCommand(fsCopyToRemote);
+          }
+          EndTransaction();
+        };
         if (GetLog()->GetLogging())
         {
           LogEvent(FORMAT(L"Copying %d files/directories to remote directory \"%s\"",
@@ -5411,10 +5415,8 @@ bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
             ReactOnCommand(fsCopyToLocal);
           }
         };
-        {
-          FFileSystem->CopyToLocal(AFilesToCopy, TargetDir, CopyParam, Params,
-            &OperationProgress, OnceDoneOperation);
-        }
+        FFileSystem->CopyToLocal(AFilesToCopy, TargetDir, CopyParam, Params,
+          &OperationProgress, OnceDoneOperation);
       }
       catch (Exception &E)
       {

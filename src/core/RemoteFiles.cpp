@@ -1353,9 +1353,7 @@ void TRemoteFile::FindLinkedFile()
       {
         GetTerminal()->SetExceptionOnFail(false);
       };
-      {
-        GetTerminal()->ReadSymlink(this, FLinkedFile);
-      }
+      GetTerminal()->ReadSymlink(this, FLinkedFile);
     }
     catch (Exception &E)
     {
@@ -1753,13 +1751,11 @@ void TRemoteDirectoryCache::Clear()
   {
     TStringList::Clear();
   };
+  for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    for (intptr_t Index = 0; Index < GetCount(); ++Index)
-    {
-      TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index));
-      SAFE_DESTROY(List);
-      SetObject(Index, nullptr);
-    }
+    TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index));
+    SAFE_DESTROY(List);
+    SetObject(Index, nullptr);
   }
 }
 //---------------------------------------------------------------------------

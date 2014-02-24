@@ -1250,11 +1250,9 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
     {
       Storage->CloseSubKey();
     };
-    {
-      RecryptPasswords();
+    RecryptPasswords();
 
-      SavePasswords(Storage, false);
-    }
+    SavePasswords(Storage, false);
   }
 }
 //---------------------------------------------------------------------

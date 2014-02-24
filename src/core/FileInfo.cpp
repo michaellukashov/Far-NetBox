@@ -44,47 +44,43 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
         FreeLibrary(Module);
       }
     };
+    HRSRC Rsrc = FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO),
+      MAKEINTRESOURCE(VS_FILE_INFO));
+    if (Rsrc == nullptr)
     {
-      HRSRC Rsrc = FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO),
-        MAKEINTRESOURCE(VS_FILE_INFO));
-      if (Rsrc == nullptr)
+    }
+    else
+    {
+      Len = SizeofResource(Module, static_cast<HRSRC>(Rsrc));
+      HANDLE Mem = LoadResource(Module, static_cast<HRSRC>(Rsrc));
+      if (Mem == nullptr)
       {
       }
       else
       {
-        Len = SizeofResource(Module, static_cast<HRSRC>(Rsrc));
-        HANDLE Mem = LoadResource(Module, static_cast<HRSRC>(Rsrc));
-        if (Mem == nullptr)
+        SCOPE_EXIT
         {
+          FreeResource(Mem);
+        };
+        VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(LockResource(Mem));
+        const VS_FIXEDFILEINFO * FixedInfo =
+          (VS_FIXEDFILEINFO *)DWORD_ALIGN(VersionInfo, VersionInfo->szKey + wcslen(VersionInfo->szKey) + 1);
+
+        if (FixedInfo->dwSignature != VS_FFI_SIGNATURE)
+        {
+          Len = 0;
         }
         else
         {
-          SCOPE_EXIT
+          if (Data != nullptr)
           {
-            FreeResource(Mem);
-          };
-          {
-            VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(LockResource(Mem));
-            const VS_FIXEDFILEINFO * FixedInfo =
-              (VS_FIXEDFILEINFO *)DWORD_ALIGN(VersionInfo, VersionInfo->szKey + wcslen(VersionInfo->szKey) + 1);
-
-            if (FixedInfo->dwSignature != VS_FFI_SIGNATURE)
+            if (DataSize < Len)
             {
-              Len = 0;
+              Len = DataSize;
             }
-            else
+            if (Len > 0)
             {
-              if (Data != nullptr)
-              {
-                if (DataSize < Len)
-                {
-                  Len = DataSize;
-                }
-                if (Len > 0)
-                {
-                  memmove(Data, VersionInfo, Len);
-                }
-              }
+              memmove(Data, VersionInfo, Len);
             }
           }
         }

@@ -804,20 +804,18 @@ UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key,
       FreeFileInfo(Info);
     }
   };
+  if ((Info != nullptr) && (GetTranslationCount(Info) > 0))
   {
-    if ((Info != nullptr) && (GetTranslationCount(Info) > 0))
+    TTranslation Translation = GetTranslation(Info, 0);
+    try
     {
-      TTranslation Translation = GetTranslation(Info, 0);
-      try
-      {
-        Result = ::GetFileInfoString(Info, Translation, Key);
-      }
-      catch (const std::exception & e)
-      {
-        (void)e;
-        DEBUG_PRINTF(L"Error: %s", MB2W(e.what()).c_str());
-        Result = L"";
-      }
+      Result = ::GetFileInfoString(Info, Translation, Key);
+    }
+    catch (const std::exception & e)
+    {
+      (void)e;
+      DEBUG_PRINTF(L"Error: %s", MB2W(e.what()).c_str());
+      Result = L"";
     }
   }
   return Result;

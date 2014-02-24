@@ -794,10 +794,12 @@ public:
 
   void LoadFromFile(const UnicodeString & FileName)
   {
-    std::unique_ptr<TStringList> DumpLines(new TStringList());
     RawByteString Dump;
-    DumpLines->LoadFromFile(FileName);
-    Dump = AnsiString(DumpLines->GetText());
+    {
+      std::unique_ptr<TStringList> DumpLines(new TStringList());
+      DumpLines->LoadFromFile(FileName);
+      Dump = AnsiString(DumpLines->GetText());
+    }
 
     SetCapacity(1 * 1024 * 1024); // 20480);
     uint8_t Byte[3];
@@ -1586,11 +1588,11 @@ public:
   {
     void * Token = nullptr;
     bool Result = false;
-    SCOPE_EXIT
     {
-      File = static_cast<TRemoteFile *>(Token);
-    };
-    {
+      SCOPE_EXIT
+      {
+        File = static_cast<TRemoteFile *>(Token);
+      };
       Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_EXTENDED_REPLY, asNo, &Token);
     }
     return Result;
@@ -2095,11 +2097,11 @@ uint32_t TSFTPFileSystem::DownloadBlockSize(
 void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
 {
   BusyStart();
-  SCOPE_EXIT
   {
-    this->BusyEnd();
-  };
-  {
+    SCOPE_EXIT
+    {
+      this->BusyEnd();
+    };
     if (FTerminal->GetLog()->GetLogging())
     {
       if ((FPreviousLoggedPacket != SSH_FXP_READ &&
@@ -3107,18 +3109,18 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
   }
 
   TSFTPPacket Response(FCodePage);
-  SCOPE_EXIT
   {
-    if (FTerminal->GetActive())
+    SCOPE_EXIT
     {
-      Packet.ChangeType(SSH_FXP_CLOSE);
-      Packet.AddString(Handle);
-      SendPacket(&Packet);
-      // we are not interested in the response, do not wait for it
-      ReserveResponse(&Packet, nullptr);
-    }
-  };
-  {
+      if (FTerminal->GetActive())
+      {
+        Packet.ChangeType(SSH_FXP_CLOSE);
+        Packet.AddString(Handle);
+        SendPacket(&Packet);
+        // we are not interested in the response, do not wait for it
+        ReserveResponse(&Packet, nullptr);
+      }
+    };
     bool isEOF = false;
     int Total = 0;
     TRemoteFile * File;
@@ -3196,11 +3198,11 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         try
         {
           FTerminal->SetExceptionOnFail(true);
-          SCOPE_EXIT
           {
-            FTerminal->SetExceptionOnFail(false);
-          };
-          {
+            SCOPE_EXIT
+            {
+              FTerminal->SetExceptionOnFail(false);
+            };
             File = nullptr;
             FTerminal->ReadFile(
               ::UnixIncludeTrailingBackslash(FileList->GetDirectory()) + PARENTDIRECTORY, File);
@@ -3512,13 +3514,13 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
     FTerminal->FOperationProgress = &Progress; //-V506
 
     TSFTPLoadFilesPropertiesQueue Queue(this, FCodePage);
-    SCOPE_EXIT
     {
-      Queue.DisposeSafe();
-      FTerminal->FOperationProgress = nullptr;
-      Progress.Stop();
-    };
-    {
+      SCOPE_EXIT
+      {
+        Queue.DisposeSafe();
+        FTerminal->FOperationProgress = nullptr;
+        Progress.Stop();
+      };
       static int LoadFilesPropertiesQueueLen = 5;
       if (Queue.Init(LoadFilesPropertiesQueueLen, FileList))
       {
@@ -3578,14 +3580,14 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
         {
           std::unique_ptr<TStrings> SubFileList(new TStringList());
           bool Success = false;
-          SCOPE_EXIT
           {
-            if (FirstLevel)
+            SCOPE_EXIT
             {
-              OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
-            }
-          };
-          {
+              if (FirstLevel)
+              {
+                OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
+              }
+            };
             OperationProgress->SetFile(File->GetFileName());
 
             for (intptr_t Index = 0; Index < SubFiles->GetCount(); ++Index)
@@ -3607,11 +3609,11 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
   }
 
   TSFTPCalculateFilesChecksumQueue Queue(this, FCodePage);
-  SCOPE_EXIT
   {
-    Queue.DisposeSafe();
-  };
-  {
+    SCOPE_EXIT
+    {
+      Queue.DisposeSafe();
+    };
     static int CalculateFilesChecksumQueueLen = 5;
     if (Queue.Init(CalculateFilesChecksumQueueLen, Alg, FileList))
     {
@@ -3624,14 +3626,14 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
         UnicodeString Checksum;
         TRemoteFile * File = nullptr;
 
-        SCOPE_EXIT
         {
-          if (FirstLevel)
+          SCOPE_EXIT
           {
-            OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
-          }
-        };
-        {
+            if (FirstLevel)
+            {
+              OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
+            }
+          };
           try
           {
             Next = Queue.ReceivePacket(&Packet, File);
@@ -3679,12 +3681,12 @@ void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
 
   FTerminal->FOperationProgress = &Progress; //-V506
 
-  SCOPE_EXIT
   {
-    FTerminal->FOperationProgress = nullptr;
-    Progress.Stop();
-  };
-  {
+    SCOPE_EXIT
+    {
+      FTerminal->FOperationProgress = nullptr;
+      Progress.Stop();
+    };
     DoCalculateFilesChecksum(Alg, FileList, Checksums, OnCalculatedChecksum,
       &Progress, true);
   }
@@ -3813,12 +3815,12 @@ void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
     assert(!FAvoidBusy);
     FAvoidBusy = true;
 
-    SCOPE_EXIT
     {
-      FAvoidBusy = false;
-      OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
-    };
-    {
+      SCOPE_EXIT
+      {
+        FAvoidBusy = false;
+        OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
+      };
       try
       {
         if (GetSessionData()->GetCacheDirectories())
@@ -4354,30 +4356,30 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
           nullptr, false, FVersion, FUtfStrings);
       }
 
-      SCOPE_EXIT
       {
-        if (FTerminal->GetActive())
+        SCOPE_EXIT
         {
-          // if file transfer was finished, the close request was already sent
-          if (!OpenParams.RemoteFileHandle.IsEmpty())
+          if (FTerminal->GetActive())
           {
+            // if file transfer was finished, the close request was already sent
+            if (!OpenParams.RemoteFileHandle.IsEmpty())
+            {
+              SFTPCloseRemote(OpenParams.RemoteFileHandle, DestFileName,
+                OperationProgress, TransferFinished, true, &CloseRequest);
+            }
+            // wait for the response
             SFTPCloseRemote(OpenParams.RemoteFileHandle, DestFileName,
-              OperationProgress, TransferFinished, true, &CloseRequest);
-          }
-          // wait for the response
-          SFTPCloseRemote(OpenParams.RemoteFileHandle, DestFileName,
-            OperationProgress, TransferFinished, false, &CloseRequest);
+              OperationProgress, TransferFinished, false, &CloseRequest);
 
-          // delete file if transfer was not completed, resuming was not allowed and
-          // we were not appending (incl. alternate resume),
-          // shortly after plain transfer completes (eq. !ResumeAllowed)
-          if (!TransferFinished && !DoResume && (OpenParams.OverwriteMode == omOverwrite))
-          {
-            DoDeleteFile(OpenParams.RemoteFileName, SSH_FXP_REMOVE);
+            // delete file if transfer was not completed, resuming was not allowed and
+            // we were not appending (incl. alternate resume),
+            // shortly after plain transfer completes (eq. !ResumeAllowed)
+            if (!TransferFinished && !DoResume && (OpenParams.OverwriteMode == omOverwrite))
+            {
+              DoDeleteFile(OpenParams.RemoteFileName, SSH_FXP_REMOVE);
+            }
           }
-        }
-      };
-      {
+        };
         __int64 DestWriteOffset = 0;
         if (OpenParams.OverwriteMode == omAppend)
         {
@@ -4865,11 +4867,11 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
       FindAttrs, SearchRec) == 0);
   );
 
-  SCOPE_EXIT
   {
-    FindClose(SearchRec);
-  };
-  {
+    SCOPE_EXIT
+    {
+      FindClose(SearchRec);
+    };
     while (FindOK && !OperationProgress->Cancel)
     {
       UnicodeString FileName = DirectoryName + SearchRec.Name;
@@ -4934,12 +4936,12 @@ void TSFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
     assert(!FAvoidBusy);
     FAvoidBusy = true;
 
-    SCOPE_EXIT
     {
-      FAvoidBusy = false;
-      OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-    };
-    {
+      SCOPE_EXIT
+      {
+        FAvoidBusy = false;
+        OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+      };
       UnicodeString TargetDirectory = FullTargetDir;
       UnicodeString FileNamePath = ::ExtractFilePath(File->GetFileName());
       if (!FileNamePath.IsEmpty())
@@ -5131,6 +5133,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
     RawByteString RemoteHandle;
     UnicodeString LocalFileName = DestFullName;
     TOverwriteMode OverwriteMode = omOverwrite;
+
     {
       SCOPE_EXIT
       {
@@ -5332,11 +5335,11 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       // at end of this block queue is discarded
       {
         TSFTPDownloadQueue Queue(this, FCodePage);
-        SCOPE_EXIT
         {
-          Queue.DisposeSafe();
-        };
-        {
+          SCOPE_EXIT
+          {
+            Queue.DisposeSafe();
+          };
           TSFTPPacket DataPacket(FCodePage);
 
           uintptr_t BlSize = DownloadBlockSize(OperationProgress);

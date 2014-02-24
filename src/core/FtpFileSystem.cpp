@@ -692,11 +692,9 @@ void TFTPFileSystem::AnyCommand(const UnicodeString & Command,
   {
     FOnCaptureOutput = nullptr;
   };
-  {
-    FFileZillaIntf->CustomCommand(Command.c_str());
+  FFileZillaIntf->CustomCommand(Command.c_str());
 
-    GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_3XX_CODE);
-  }
+  GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_3XX_CODE);
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::ResetCaches()
@@ -1083,11 +1081,11 @@ void TFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
     const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFilesToCopy->GetObject(Index));
     bool Success = false;
 
-    SCOPE_EXIT
     {
-      OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-    };
-    {
+      SCOPE_EXIT
+      {
+        OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+      };
       UnicodeString AbsoluteFilePath = AbsolutePath(FileName, false);
       UnicodeString TargetDirectory = FullTargetDir;
       UnicodeString FileNamePath = ::ExtractFilePath(File->GetFileName());
@@ -1380,11 +1378,11 @@ void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
 
     FileNameOnly = ExtractFileName(RealFileName, false);
 
-    SCOPE_EXIT
     {
-      OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-    };
-    {
+      SCOPE_EXIT
+      {
+        OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+      };
       try
       {
         if (FTerminal->GetSessionData()->GetCacheDirectories())
@@ -1616,11 +1614,11 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
 
   bool CreateDir = true;
 
-  SCOPE_EXIT
   {
-    FindClose(SearchRec);
-  };
-  {
+    SCOPE_EXIT
+    {
+      FindClose(SearchRec);
+    };
     while (FindOK && !OperationProgress->Cancel)
     {
       UnicodeString FileName = DirectoryName + SearchRec.Name;
@@ -1670,9 +1668,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
       {
         FTerminal->SetExceptionOnFail(false);
       };
-      {
-        FTerminal->CreateDirectory(DestFullName, &Properties);
-      }
+      FTerminal->CreateDirectory(DestFullName, &Properties);
     }
     catch (...)
     {
@@ -2466,15 +2462,15 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
 
   uintptr_t Reply = 0;
 
-  SCOPE_EXIT
   {
-    FReply = 0;
-    assert(FCommandReply == 0);
-    FCommandReply = 0;
-    assert(FWaitingForReply);
-    FWaitingForReply = false;
-  };
-  {
+    SCOPE_EXIT
+    {
+      FReply = 0;
+      assert(FCommandReply == 0);
+      FCommandReply = 0;
+      assert(FWaitingForReply);
+      FWaitingForReply = false;
+    };
     // discard up to one reply
     // (it should not happen here that two replies are posted anyway)
     while (ProcessMessage() && (FReply == 0));
@@ -2559,12 +2555,10 @@ uintptr_t TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
     assert(FWaitingForReply);
     FWaitingForReply = false;
   };
-  {
-    uintptr_t & ReplyToAwait = (Command ? FCommandReply : FReply);
-    DoWaitForReply(ReplyToAwait, WantLastCode);
+  uintptr_t & ReplyToAwait = (Command ? FCommandReply : FReply);
+  DoWaitForReply(ReplyToAwait, WantLastCode);
 
-    Reply = ReplyToAwait;
-  }
+  Reply = ReplyToAwait;
 
   return Reply;
 }
@@ -2607,158 +2601,156 @@ void TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
   {
     ResetReply();
   };
+  if (FLAGSET(Reply, TFileZillaIntf::REPLY_OK))
   {
-    if (FLAGSET(Reply, TFileZillaIntf::REPLY_OK))
-    {
-      assert(Reply == TFileZillaIntf::REPLY_OK);
+    assert(Reply == TFileZillaIntf::REPLY_OK);
 
-      // With REPLY_2XX_CODE treat "OK" non-2xx code like an error.
-      // REPLY_3XX_CODE has to be always used along with REPLY_2XX_CODE.
-      if ((FLAGSET(Flags, REPLY_2XX_CODE) && (FLastCodeClass != 2)) &&
-          ((FLAGCLEAR(Flags, REPLY_3XX_CODE) || (FLastCodeClass != 3))))
-      {
-        GotReply(TFileZillaIntf::REPLY_ERROR, Flags, Error);
-      }
+    // With REPLY_2XX_CODE treat "OK" non-2xx code like an error.
+    // REPLY_3XX_CODE has to be always used along with REPLY_2XX_CODE.
+    if ((FLAGSET(Flags, REPLY_2XX_CODE) && (FLastCodeClass != 2)) &&
+        ((FLAGCLEAR(Flags, REPLY_3XX_CODE) || (FLastCodeClass != 3))))
+    {
+      GotReply(TFileZillaIntf::REPLY_ERROR, Flags, Error);
     }
-    else if (FLAGSET(Reply, TFileZillaIntf::REPLY_CANCEL) &&
-        FLAGSET(Flags, REPLY_ALLOW_CANCEL))
+  }
+  else if (FLAGSET(Reply, TFileZillaIntf::REPLY_CANCEL) &&
+      FLAGSET(Flags, REPLY_ALLOW_CANCEL))
+  {
+    assert(
+      (Reply == (TFileZillaIntf::REPLY_CANCEL | TFileZillaIntf::REPLY_ERROR)) ||
+      (Reply == (TFileZillaIntf::REPLY_ABORTED | TFileZillaIntf::REPLY_CANCEL | TFileZillaIntf::REPLY_ERROR)));
+    // noop
+  }
+  // we do not expect these with our usage of FZ
+  else if (Reply &
+        (TFileZillaIntf::REPLY_WOULDBLOCK | TFileZillaIntf::REPLY_OWNERNOTSET |
+         TFileZillaIntf::REPLY_INVALIDPARAM | TFileZillaIntf::REPLY_ALREADYCONNECTED |
+         TFileZillaIntf::REPLY_IDLE | TFileZillaIntf::REPLY_NOTINITIALIZED |
+         TFileZillaIntf::REPLY_ALREADYINIZIALIZED))
+  {
+    FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#2", FORMAT(L"0x%x", static_cast<int>(Reply)).c_str()));
+  }
+  else
+  {
+    // everything else must be an error or disconnect notification
+    assert(
+      FLAGSET(Reply, TFileZillaIntf::REPLY_ERROR) ||
+      FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED));
+
+    // TODO: REPLY_CRITICALERROR ignored
+
+    // REPLY_NOTCONNECTED happens if connection is closed between moment
+    // when FZAPI interface method dispatches the command to FZAPI thread
+    // and moment when FZAPI thread receives the command
+    bool Disconnected =
+      FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED) ||
+      FLAGSET(Reply, TFileZillaIntf::REPLY_NOTCONNECTED);
+
+    AnsiString HelpKeyword;
+    std::unique_ptr<TStrings> MoreMessages(new TStringList());
+    if (Disconnected)
     {
-      assert(
-        (Reply == (TFileZillaIntf::REPLY_CANCEL | TFileZillaIntf::REPLY_ERROR)) ||
-        (Reply == (TFileZillaIntf::REPLY_ABORTED | TFileZillaIntf::REPLY_CANCEL | TFileZillaIntf::REPLY_ERROR)));
-      // noop
-    }
-    // we do not expect these with our usage of FZ
-    else if (Reply &
-          (TFileZillaIntf::REPLY_WOULDBLOCK | TFileZillaIntf::REPLY_OWNERNOTSET |
-           TFileZillaIntf::REPLY_INVALIDPARAM | TFileZillaIntf::REPLY_ALREADYCONNECTED |
-           TFileZillaIntf::REPLY_IDLE | TFileZillaIntf::REPLY_NOTINITIALIZED |
-           TFileZillaIntf::REPLY_ALREADYINIZIALIZED))
-    {
-      FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#2", FORMAT(L"0x%x", static_cast<int>(Reply)).c_str()));
-    }
-    else
-    {
-      // everything else must be an error or disconnect notification
-      assert(
-        FLAGSET(Reply, TFileZillaIntf::REPLY_ERROR) ||
-        FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED));
-
-      // TODO: REPLY_CRITICALERROR ignored
-
-      // REPLY_NOTCONNECTED happens if connection is closed between moment
-      // when FZAPI interface method dispatches the command to FZAPI thread
-      // and moment when FZAPI thread receives the command
-      bool Disconnected =
-        FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED) ||
-        FLAGSET(Reply, TFileZillaIntf::REPLY_NOTCONNECTED);
-
-      AnsiString HelpKeyword;
-      std::unique_ptr<TStrings> MoreMessages(new TStringList());
-      if (Disconnected)
+      if (FLAGCLEAR(Flags, REPLY_CONNECT))
       {
-        if (FLAGCLEAR(Flags, REPLY_CONNECT))
-        {
-          MoreMessages->Add(LoadStr(LOST_CONNECTION));
-          Discard();
-          FTerminal->Closed();
-        }
-        else
-        {
-          // For connection failure, do not report that connection was lost,
-          // its obvious.
-          // Also do not report to terminal that we are closed as
-          // that turns terminal into closed mode, but we want to
-          // pretend (at least with failed authentication) to retry
-          // with the same connection (as with SSH), so we explicitly
-          // close terminal in Open() only after we give up
-          Discard();
-        }
-      }
-
-      if (FLAGSET(Reply, TFileZillaIntf::REPLY_ABORTED))
-      {
-        MoreMessages->Add(LoadStr(USER_TERMINATED));
-      }
-
-      if (FLAGSET(Reply, TFileZillaIntf::REPLY_NOTSUPPORTED))
-      {
-        MoreMessages->Add(LoadStr(FZ_NOTSUPPORTED));
-      }
-
-      if (FLastCode == 530)
-      {
-        MoreMessages->Add(LoadStr(AUTHENTICATION_FAILED));
-      }
-
-      if (FLastCode == 425)
-      {
-        if (!FTerminal->GetSessionData()->GetFtpPasvMode())
-        {
-          MoreMessages->Add(LoadStr(FTP_CANNOT_OPEN_ACTIVE_CONNECTION2));
-          HelpKeyword = HELP_FTP_CANNOT_OPEN_ACTIVE_CONNECTION;
-        }
-      }
-      if (FLastCode == 421)
-      {
-        Disconnected = true;
-      }
-      if (FLastCode == DummyTimeoutCode)
-      {
-        HelpKeyword = HELP_ERRORMSG_TIMEOUT;
-      }
-
-      MoreMessages->AddStrings(FLastError);
-      // already cleared from WaitForReply, but GotReply can be also called
-      // from Closed. then make sure that error from previous command not
-      // associated with session closure is not reused
-      FLastError->Clear();
-
-      MoreMessages->AddStrings(FLastErrorResponse);
-      // see comment for FLastError
-      FLastResponse->Clear();
-      FLastErrorResponse->Clear();
-
-      if (MoreMessages->GetCount() == 0)
-      {
-        MoreMessages.reset();
-      }
-
-      UnicodeString ErrorStr = Error;
-      if (ErrorStr.IsEmpty() && (MoreMessages.get() != nullptr))
-      {
-        assert(MoreMessages->GetCount() > 0);
-        // bit too generic assigning of main instructions, let's see how it works
-        ErrorStr = MainInstructions(MoreMessages->GetString(0));
-        MoreMessages->Delete(0);
-      }
-
-      if (Disconnected)
-      {
-        // for fatal error, it is essential that there is some message
-        assert(!ErrorStr.IsEmpty());
-        std::unique_ptr<ExtException> E(new ExtException(ErrorStr, MoreMessages.release(), true));
-        FTerminal->FatalError(E.get(), L"");
+        MoreMessages->Add(LoadStr(LOST_CONNECTION));
+        Discard();
+        FTerminal->Closed();
       }
       else
       {
-        throw ExtException(ErrorStr, MoreMessages.release(), true, HelpKeyword);
+        // For connection failure, do not report that connection was lost,
+        // its obvious.
+        // Also do not report to terminal that we are closed as
+        // that turns terminal into closed mode, but we want to
+        // pretend (at least with failed authentication) to retry
+        // with the same connection (as with SSH), so we explicitly
+        // close terminal in Open() only after we give up
+        Discard();
       }
     }
 
-    if ((Code != nullptr) && (FLastCodeClass != DummyCodeClass))
+    if (FLAGSET(Reply, TFileZillaIntf::REPLY_ABORTED))
     {
-      *Code = static_cast<int>(FLastCode);
+      MoreMessages->Add(LoadStr(USER_TERMINATED));
     }
 
-    if (Response != nullptr)
+    if (FLAGSET(Reply, TFileZillaIntf::REPLY_NOTSUPPORTED))
     {
-      *Response = FLastResponse;
-      FLastResponse = new TStringList();
-      // just to be consistent
-      SAFE_DESTROY(FLastErrorResponse);
-      FLastErrorResponse = new TStringList();
+      MoreMessages->Add(LoadStr(FZ_NOTSUPPORTED));
     }
+
+    if (FLastCode == 530)
+    {
+      MoreMessages->Add(LoadStr(AUTHENTICATION_FAILED));
+    }
+
+    if (FLastCode == 425)
+    {
+      if (!FTerminal->GetSessionData()->GetFtpPasvMode())
+      {
+        MoreMessages->Add(LoadStr(FTP_CANNOT_OPEN_ACTIVE_CONNECTION2));
+        HelpKeyword = HELP_FTP_CANNOT_OPEN_ACTIVE_CONNECTION;
+      }
+    }
+    if (FLastCode == 421)
+    {
+      Disconnected = true;
+    }
+    if (FLastCode == DummyTimeoutCode)
+    {
+      HelpKeyword = HELP_ERRORMSG_TIMEOUT;
+    }
+
+    MoreMessages->AddStrings(FLastError);
+    // already cleared from WaitForReply, but GotReply can be also called
+    // from Closed. then make sure that error from previous command not
+    // associated with session closure is not reused
+    FLastError->Clear();
+
+    MoreMessages->AddStrings(FLastErrorResponse);
+    // see comment for FLastError
+    FLastResponse->Clear();
+    FLastErrorResponse->Clear();
+
+    if (MoreMessages->GetCount() == 0)
+    {
+      MoreMessages.reset();
+    }
+
+    UnicodeString ErrorStr = Error;
+    if (ErrorStr.IsEmpty() && (MoreMessages.get() != nullptr))
+    {
+      assert(MoreMessages->GetCount() > 0);
+      // bit too generic assigning of main instructions, let's see how it works
+      ErrorStr = MainInstructions(MoreMessages->GetString(0));
+      MoreMessages->Delete(0);
+    }
+
+    if (Disconnected)
+    {
+      // for fatal error, it is essential that there is some message
+      assert(!ErrorStr.IsEmpty());
+      std::unique_ptr<ExtException> E(new ExtException(ErrorStr, MoreMessages.release(), true));
+      FTerminal->FatalError(E.get(), L"");
+    }
+    else
+    {
+      throw ExtException(ErrorStr, MoreMessages.release(), true, HelpKeyword);
+    }
+  }
+
+  if ((Code != nullptr) && (FLastCodeClass != DummyCodeClass))
+  {
+    *Code = static_cast<int>(FLastCode);
+  }
+
+  if (Response != nullptr)
+  {
+    *Response = FLastResponse;
+    FLastResponse = new TStringList();
+    // just to be consistent
+    SAFE_DESTROY(FLastErrorResponse);
+    FLastErrorResponse = new TStringList();
   }
 }
 //---------------------------------------------------------------------------

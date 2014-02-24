@@ -521,12 +521,12 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
   {
     Conf * conf = conf_new();
     ssh_gss_liblist * List = NULL;
-    SCOPE_EXIT
     {
-      ssh_gss_cleanup(List);
-      conf_free(conf);
-    };
-    {
+      SCOPE_EXIT
+      {
+        ssh_gss_cleanup(List);
+        conf_free(conf);
+      };
       Filename * filename = filename_from_str(AnsiString(CustomPath).c_str());
       conf_set_filename(conf, CONF_ssh_gss_custom, filename);
       filename_free(filename);

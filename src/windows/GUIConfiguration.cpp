@@ -410,15 +410,13 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
       {
         Storage->CloseSubKey();
       };
-      {
-        Name = Storage->ReadString(L"Name", Name);
-        CopyParam->Load(Storage);
+      Name = Storage->ReadString(L"Name", Name);
+      CopyParam->Load(Storage);
 
-        if (Storage->ReadBool(L"HasRule", false))
-        {
-          Rule.reset(new TCopyParamRule());
-          Rule->Load(Storage);
-        }
+      if (Storage->ReadBool(L"HasRule", false))
+      {
+        Rule.reset(new TCopyParamRule());
+        Rule->Load(Storage);
       }
     }
 
@@ -440,17 +438,15 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
       {
         Storage->CloseSubKey();
       };
-      {
-        const TCopyParamType * CopyParam = GetCopyParam(Index);
-        const TCopyParamRule * Rule = GetRule(Index);
+      const TCopyParamType * CopyParam = GetCopyParam(Index);
+      const TCopyParamRule * Rule = GetRule(Index);
 
-        Storage->WriteString(L"Name", GetName(Index));
-        CopyParam->Save(Storage);
-        Storage->WriteBool(L"HasRule", (Rule != nullptr));
-        if (Rule != nullptr)
-        {
-          Rule->Save(Storage);
-        }
+      Storage->WriteString(L"Name", GetName(Index));
+      CopyParam->Save(Storage);
+      Storage->WriteBool(L"HasRule", (Rule != nullptr));
+      if (Rule != nullptr)
+      {
+        Rule->Save(Storage);
       }
     }
   }
@@ -674,19 +670,17 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     {
       Storage->CloseSubKey();
     };
-    {
-      FDefaultCopyParam.Save(Storage);
+    FDefaultCopyParam.Save(Storage);
 
-      if (FCopyParamListDefaults)
-      {
-        assert(!FCopyParamList->GetModified());
-        Storage->WriteInteger(L"CopyParamList", -1);
-      }
-      else if (All || FCopyParamList->GetModified())
-      {
-        Storage->WriteInteger(L"CopyParamList", FCopyParamList->GetCount());
-        FCopyParamList->Save(Storage);
-      }
+    if (FCopyParamListDefaults)
+    {
+      assert(!FCopyParamList->GetModified());
+      Storage->WriteInteger(L"CopyParamList", -1);
+    }
+    else if (All || FCopyParamList->GetModified())
+    {
+      Storage->WriteInteger(L"CopyParamList", FCopyParamList->GetCount());
+      FCopyParamList->Save(Storage);
     }
   }
 
@@ -696,9 +690,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     {
       Storage->CloseSubKey();
     };
-    {
-      FNewDirectoryProperties.Save(Storage);
-    }
+    FNewDirectoryProperties.Save(Storage);
   }
 }
 //---------------------------------------------------------------------------
@@ -723,24 +715,22 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     {
       Storage->CloseSubKey();
     };
-    {
-      // must be loaded before eventual setting defaults for CopyParamList
-      FDefaultCopyParam.Load(Storage);
+    // must be loaded before eventual setting defaults for CopyParamList
+    FDefaultCopyParam.Load(Storage);
 
-      intptr_t CopyParamListCount = Storage->ReadInteger(L"CopyParamList", (DWORD)-1);
-      FCopyParamListDefaults = (CopyParamListCount == (DWORD)-1);
-      if (!FCopyParamListDefaults)
-      {
-        FCopyParamList->Clear();
-        FCopyParamList->Load(Storage, CopyParamListCount);
-      }
-      else if (FCopyParamList->GetModified())
-      {
-        FCopyParamList->Clear();
-        FCopyParamListDefaults = false;
-      }
-      FCopyParamList->Reset();
+    intptr_t CopyParamListCount = Storage->ReadInteger(L"CopyParamList", (DWORD)-1);
+    FCopyParamListDefaults = (CopyParamListCount == (DWORD)-1);
+    if (!FCopyParamListDefaults)
+    {
+      FCopyParamList->Clear();
+      FCopyParamList->Load(Storage, CopyParamListCount);
     }
+    else if (FCopyParamList->GetModified())
+    {
+      FCopyParamList->Clear();
+      FCopyParamListDefaults = false;
+    }
+    FCopyParamList->Reset();
   }
 
   // Make it compatible with versions prior to 3.7.1 that have not saved PuttyPath
@@ -763,9 +753,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     {
       Storage->CloseSubKey();
     };
-    {
-      FNewDirectoryProperties.Load(Storage);
-    }
+    FNewDirectoryProperties.Load(Storage);
   }
 }
 //---------------------------------------------------------------------------
@@ -960,11 +948,11 @@ TStrings * TGUIConfiguration::GetLocales()
 
   Found = (bool)(FindFirst(ChangeFileExt(ModuleFileName(), L".*"),
     FindAttrs, SearchRec) == 0);
-  SCOPE_EXIT
   {
-    FindClose(SearchRec);
-  };
-  {
+    SCOPE_EXIT
+    {
+      FindClose(SearchRec);
+    };
     UnicodeString Ext;
     while (Found)
     {

@@ -720,9 +720,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
           DeleteUnnecessary();
           EndUpdate();
         };
-        {
-          DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
-        }
+        DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
       }
     }
     catch (Exception &E)
@@ -834,18 +832,16 @@ void TSessionLog::DeleteUnnecessary()
   {
     EndUpdate();
   };
+  if (!GetLogging() || (FParent != nullptr))
   {
-    if (!GetLogging() || (FParent != nullptr))
+    Clear();
+  }
+  else
+  {
+    while (!FConfiguration->GetLogWindowComplete() && (GetCount() > FConfiguration->GetLogWindowLines()))
     {
-      Clear();
-    }
-    else
-    {
-      while (!FConfiguration->GetLogWindowComplete() && (GetCount() > FConfiguration->GetLogWindowLines()))
-      {
-        Delete(0);
-        ++FTopIndex;
-      }
+      Delete(0);
+      ++FTopIndex;
     }
   }
 }

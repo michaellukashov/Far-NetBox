@@ -453,9 +453,7 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
     {
       GetConfiguration()->EndUpdate();
     };
-    {
-      GetConfiguration()->SetAutoReadDirectoryAfterOp(AutoReadDirectoryAfterOpCheck->GetChecked());
-    }
+    GetConfiguration()->SetAutoReadDirectoryAfterOp(AutoReadDirectoryAfterOpCheck->GetChecked());
   }
   return Result;
 }
@@ -540,11 +538,11 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    SCOPE_EXIT
     {
-      GetConfiguration()->EndUpdate();
-    };
-    {
+      SCOPE_EXIT
+      {
+        GetConfiguration()->EndUpdate();
+      };
       GetConfiguration()->SetLogging(LoggingCheck->GetChecked());
       GetConfiguration()->SetLogProtocol(LogProtocolCombo->GetItemIndex());
       GetConfiguration()->SetLogToFile(LogToFileCheck->GetChecked());
@@ -673,11 +671,11 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    SCOPE_EXIT
     {
-      GetConfiguration()->EndUpdate();
-    };
-    {
+      SCOPE_EXIT
+      {
+        GetConfiguration()->EndUpdate();
+      };
       if (ResumeOnButton->GetChecked())
       {
         CopyParam.SetResumeSupport(rsOn);
@@ -755,17 +753,15 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
     {
       GetConfiguration()->EndUpdate();
     };
-    {
-      TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
+    TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
 
-      GetFarConfiguration()->SetQueueTransfersLimit(QueueTransferLimitEdit->GetAsInteger());
-      CopyParam.SetQueue(QueueCheck->GetChecked());
-      GetFarConfiguration()->SetQueueAutoPopup(QueueAutoPopupCheck->GetChecked());
-      GetGUIConfiguration()->SetSessionRememberPassword(RememberPasswordCheck->GetChecked());
-      GetFarConfiguration()->SetQueueBeep(QueueBeepCheck->GetChecked());
+    GetFarConfiguration()->SetQueueTransfersLimit(QueueTransferLimitEdit->GetAsInteger());
+    CopyParam.SetQueue(QueueCheck->GetChecked());
+    GetFarConfiguration()->SetQueueAutoPopup(QueueAutoPopupCheck->GetChecked());
+    GetGUIConfiguration()->SetSessionRememberPassword(RememberPasswordCheck->GetChecked());
+    GetFarConfiguration()->SetQueueBeep(QueueBeepCheck->GetChecked());
 
-      GetGUIConfiguration()->SetDefaultCopyParam(CopyParam);
-    }
+    GetGUIConfiguration()->SetDefaultCopyParam(CopyParam);
   }
   return Result;
 }
@@ -848,12 +844,10 @@ bool TTransferEditorConfigurationDialog::Execute()
     {
       GetConfiguration()->EndUpdate();
     };
-    {
-      GetFarConfiguration()->SetEditorDownloadDefaultMode(EditorDownloadDefaultButton->GetChecked());
-      GetFarConfiguration()->SetEditorUploadSameOptions(EditorUploadSameButton->GetChecked());
-      GetFarConfiguration()->SetEditorUploadOnSave(EditorUploadOnSaveCheck->GetChecked());
-      GetFarConfiguration()->SetEditorMultiple(EditorMultipleCheck->GetChecked());
-    }
+    GetFarConfiguration()->SetEditorDownloadDefaultMode(EditorDownloadDefaultButton->GetChecked());
+    GetFarConfiguration()->SetEditorUploadSameOptions(EditorUploadSameButton->GetChecked());
+    GetFarConfiguration()->SetEditorUploadOnSave(EditorUploadOnSaveCheck->GetChecked());
+    GetFarConfiguration()->SetEditorMultiple(EditorMultipleCheck->GetChecked());
   }
 
   return Result;
@@ -870,9 +864,7 @@ void TTransferEditorConfigurationDialog::Change()
     {
       UnlockChanges();
     };
-    {
-      UpdateControls();
-    }
+    UpdateControls();
   }
 }
 //------------------------------------------------------------------------------
@@ -933,17 +925,15 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
     {
       GetConfiguration()->EndUpdate();
     };
+    GetFarConfiguration()->SetConfirmOverwritingOverride(
+      ConfirmOverwritingCheck->GetSelected() != BSTATE_3STATE);
+    GetGUIConfiguration()->SetConfirmCommandSession(ConfirmCommandSessionCheck->GetChecked());
+    GetGUIConfiguration()->SetConfirmResume(ConfirmResumeCheck->GetChecked());
+    if (GetFarConfiguration()->GetConfirmOverwritingOverride())
     {
-      GetFarConfiguration()->SetConfirmOverwritingOverride(
-        ConfirmOverwritingCheck->GetSelected() != BSTATE_3STATE);
-      GetGUIConfiguration()->SetConfirmCommandSession(ConfirmCommandSessionCheck->GetChecked());
-      GetGUIConfiguration()->SetConfirmResume(ConfirmResumeCheck->GetChecked());
-      if (GetFarConfiguration()->GetConfirmOverwritingOverride())
-      {
-        GetConfiguration()->SetConfirmOverwriting(ConfirmOverwritingCheck->GetChecked());
-      }
-      GetFarConfiguration()->SetConfirmSynchronizedBrowsing(ConfirmSynchronizedBrowsingCheck->GetChecked());
+      GetConfiguration()->SetConfirmOverwriting(ConfirmOverwritingCheck->GetChecked());
     }
+    GetFarConfiguration()->SetConfirmSynchronizedBrowsing(ConfirmSynchronizedBrowsingCheck->GetChecked());
   }
   return Result;
 }
@@ -999,13 +989,11 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
     {
       GetConfiguration()->EndUpdate();
     };
-    {
-      GetGUIConfiguration()->SetPuttyPath(PuttyPathEdit->GetText());
-      GetGUIConfiguration()->SetPuttyPassword(PuttyPasswordCheck->GetChecked());
-      GetGUIConfiguration()->SetTelnetForFtpInPutty(TelnetForFtpInPuttyCheck->GetChecked());
-      GetFarConfiguration()->SetPageantPath(PageantPathEdit->GetText());
-      GetFarConfiguration()->SetPuttygenPath(PuttygenPathEdit->GetText());
-    }
+    GetGUIConfiguration()->SetPuttyPath(PuttyPathEdit->GetText());
+    GetGUIConfiguration()->SetPuttyPassword(PuttyPasswordCheck->GetChecked());
+    GetGUIConfiguration()->SetTelnetForFtpInPutty(TelnetForFtpInPuttyCheck->GetChecked());
+    GetFarConfiguration()->SetPageantPath(PageantPathEdit->GetText());
+    GetFarConfiguration()->SetPuttygenPath(PuttygenPathEdit->GetText());
   }
   return Result;
 }
@@ -1708,11 +1696,9 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
       { \
         COMBO->GetItems()->EndUpdate(); \
       }; \
-      { \
-        COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_AUTO)); \
-        COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_OFF)); \
-        COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_ON)); \
-      } \
+      COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_AUTO)); \
+      COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_OFF)); \
+      COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_ON)); \
     } \
     Text->SetEnabledFollow(COMBO); \
     SetNextItemPosition(ipNewLine);
@@ -2555,11 +2541,11 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TunnelLocalPortNumberEdit->SetLeft(TunnelPortNumberEdit->GetLeft());
   TunnelLocalPortNumberEdit->SetEnabledDependency(TunnelCheck);
   TunnelLocalPortNumberEdit->GetItems()->BeginUpdate();
-  SCOPE_EXIT
   {
-    TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
-  };
-  {
+    SCOPE_EXIT
+    {
+      TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
+    };
     TunnelLocalPortNumberEdit->GetItems()->Add(GetMsg(LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN));
     for (intptr_t Index = GetConfiguration()->GetTunnelLocalPortNumberLow();
          Index <= GetConfiguration()->GetTunnelLocalPortNumberHigh(); ++Index)
@@ -2851,9 +2837,7 @@ void TSessionDialog::Change()
     {
       UnlockChanges();
     };
-    {
-      UpdateControls();
-    }
+    UpdateControls();
   }
 }
 //------------------------------------------------------------------------------
@@ -3414,15 +3398,13 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     {
       KexListBox->GetItems()->EndUpdate();
     };
+    KexListBox->GetItems()->Clear();
+    assert(KEX_NAME_WARN+KEX_COUNT+1 == KEX_NAME_GSSGEX);
+    for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
     {
-      KexListBox->GetItems()->Clear();
-      assert(KEX_NAME_WARN+KEX_COUNT+1 == KEX_NAME_GSSGEX);
-      for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
-      {
-        KexListBox->GetItems()->AddObject(
-          GetMsg(KEX_NAME_WARN + static_cast<intptr_t>(SessionData->GetKex(Index))),
-          static_cast<TObject *>(reinterpret_cast<void *>(SessionData->GetKex(Index))));
-      }
+      KexListBox->GetItems()->AddObject(
+        GetMsg(KEX_NAME_WARN + static_cast<intptr_t>(SessionData->GetKex(Index))),
+        static_cast<TObject *>(reinterpret_cast<void *>(SessionData->GetKex(Index))));
     }
   }
 
@@ -4557,15 +4539,13 @@ void TRightsContainer::SetRights(const TRights & Value)
     {
       GetDialog()->UnlockChanges();
     };
+    SetAllowUndef(true); // temporarily
+    for (size_t Right = 0; Right < LENOF(FCheckBoxes); Right++)
     {
-      SetAllowUndef(true); // temporarily
-      for (size_t Right = 0; Right < LENOF(FCheckBoxes); Right++)
-      {
-        SetStates(static_cast<TRights::TRight>(Right),
-          Value.GetRightUndef(static_cast<TRights::TRight>(Right)));
-      }
-      SetAllowUndef(Value.GetAllowUndef());
+      SetStates(static_cast<TRights::TRight>(Right),
+        Value.GetRightUndef(static_cast<TRights::TRight>(Right)));
     }
+    SetAllowUndef(Value.GetAllowUndef());
   }
 }
 //------------------------------------------------------------------------------
@@ -5569,11 +5549,9 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     {
       GetConfiguration()->EndUpdate();
     };
+    if (SaveSettingsCheck->GetChecked())
     {
-      if (SaveSettingsCheck->GetChecked())
-      {
-        GetGUIConfiguration()->SetDefaultCopyParam(*Params);
-      }
+      GetGUIConfiguration()->SetDefaultCopyParam(*Params);
     }
   }
   return Result;

@@ -79,11 +79,11 @@ void TFarDialog::SetBounds(const TRect & Value)
   if (GetBounds() != Value)
   {
     LockChanges();
-    SCOPE_EXIT
     {
-      UnlockChanges();
-    };
-    {
+      SCOPE_EXIT
+      {
+        UnlockChanges();
+      };
       FBounds = Value;
       if (GetHandle())
       {
@@ -705,15 +705,15 @@ intptr_t TFarDialog::ShowModal()
   TFarDialog * PrevTopDialog = GetFarPlugin()->FTopDialog;
   GetFarPlugin()->FTopDialog = this;
   HANDLE Handle = INVALID_HANDLE_VALUE;
-  SCOPE_EXIT
   {
-    GetFarPlugin()->FTopDialog = PrevTopDialog;
-    if (Handle != INVALID_HANDLE_VALUE)
+    SCOPE_EXIT
     {
-      GetFarPlugin()->GetStartupInfo()->DialogFree(Handle);
-    }
-  };
-  {
+      GetFarPlugin()->FTopDialog = PrevTopDialog;
+      if (Handle != INVALID_HANDLE_VALUE)
+      {
+        GetFarPlugin()->GetStartupInfo()->DialogFree(Handle);
+      }
+    };
     assert(GetDefaultButton());
     assert(GetDefaultButton()->GetDefault());
 
@@ -833,11 +833,11 @@ void TFarDialog::ProcessGroup(intptr_t Group, TFarProcessGroupEvent Callback,
   void * Arg)
 {
   LockChanges();
-  SCOPE_EXIT
   {
-    UnlockChanges();
-  };
-  {
+    SCOPE_EXIT
+    {
+      UnlockChanges();
+    };
     for (intptr_t I = 0; I < GetItemCount(); I++)
     {
       TFarDialogItem * Item = GetItem(I);
@@ -900,12 +900,10 @@ void TFarDialog::UnlockChanges()
         this->SendMessage(DM_ENABLEREDRAW, TRUE, 0);
       }
     };
+    if (FChangesPending)
     {
-      if (FChangesPending)
-      {
-        FChangesPending = false;
-        Change();
-      }
+      FChangesPending = false;
+      Change();
     }
   }
 }
@@ -2133,12 +2131,10 @@ void TFarList::Put(intptr_t Index, const UnicodeString & S)
     {
       FNoDialogUpdate = false;
     };
+    TStringList::SetString(Index, S);
+    if (GetUpdateCount() == 0)
     {
-      TStringList::SetString(Index, S);
-      if (GetUpdateCount() == 0)
-      {
-        UpdateItem(Index);
-      }
+      UpdateItem(Index);
     }
   }
   else
@@ -2199,15 +2195,13 @@ void TFarList::Changed()
       {
         GetDialogItem()->GetDialog()->UnlockChanges();
       };
+      GetDialogItem()->SendMessage(DM_LISTSET, reinterpret_cast<LONG_PTR>(FListItems));
+      if (PrevTopIndex + GetDialogItem()->GetHeight() > GetCount())
       {
-        GetDialogItem()->SendMessage(DM_LISTSET, reinterpret_cast<LONG_PTR>(FListItems));
-        if (PrevTopIndex + GetDialogItem()->GetHeight() > GetCount())
-        {
-          PrevTopIndex = GetCount() > GetDialogItem()->GetHeight() ? GetCount() - GetDialogItem()->GetHeight() : 0;
-        }
-        SetCurPos((PrevSelected >= GetCount()) ? (GetCount() - 1) : PrevSelected,
-          PrevTopIndex);
+        PrevTopIndex = GetCount() > GetDialogItem()->GetHeight() ? GetCount() - GetDialogItem()->GetHeight() : 0;
       }
+      SetCurPos((PrevSelected >= GetCount()) ? (GetCount() - 1) : PrevSelected,
+        PrevTopIndex);
     }
   }
 }
