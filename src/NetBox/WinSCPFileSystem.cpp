@@ -3200,13 +3200,14 @@ uintptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString & Str,
 {
   TMessageParams Params;
 
-  if ((FProgressSaveScreenHandle != 0) ||
-      (FSynchronizationSaveScreenHandle != 0))
+  //if ((FProgressSaveScreenHandle != 0) ||
+  //    (FSynchronizationSaveScreenHandle != 0))
   {
     if (AParams != nullptr)
     {
       Params.Assign(AParams);
     }
+    AParams = &Params;
     Params.Flags |= FMSG_WARNING;
   }
 
