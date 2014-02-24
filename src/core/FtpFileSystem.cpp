@@ -1104,7 +1104,10 @@ void TFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
       catch (EScpSkipFile & E)
       {
         SUSPEND_OPERATION (
-          if (!FTerminal->HandleException(&E)) throw;
+          if (!FTerminal->HandleException(&E)) 
+          {
+            throw;
+          }
         );
       }
     }
@@ -1402,7 +1405,10 @@ void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
       catch (EScpSkipFile & E)
       {
         SUSPEND_OPERATION (
-          if (!FTerminal->HandleException(&E)) throw;
+          if (!FTerminal->HandleException(&E))
+          {
+            throw;
+          }
         );
       }
     }
@@ -1642,7 +1648,10 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
           // here a message to user was displayed, which was not appropriate
           // when user refused to overwrite the file in subdirectory.
           // hopefully it won't be missing in other situations.
-          if (!FTerminal->HandleException(&E)) throw;
+          if (!FTerminal->HandleException(&E))
+          {
+            throw;
+          }
         );
       }
 

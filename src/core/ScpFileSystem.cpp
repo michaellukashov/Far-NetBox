@@ -2076,7 +2076,10 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
             {
               OperationProgress->Cancel = csCancel;
             }
-            if (!FTerminal->HandleException(&E)) throw;
+            if (!FTerminal->HandleException(&E))
+            {
+              throw;
+            }
           );
         }
         catch (EScpSkipFile &E)

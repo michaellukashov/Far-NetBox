@@ -1037,7 +1037,7 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
     Params.HelpKeyword = HELP_MESSAGE_HOST_IS_NOT_COMMUNICATING;
     Params.Timer = 500;
     Params.TimerEvent = PoolEvent;
-    Params.TimerMessage = MainInstructions(FMTLOAD(TIMEOUT_STILL_WAITING3, FSessionData->GetTimeout()));
+    Params.TimerMessage = MainInstructionsFirstParagraph(FMTLOAD(TIMEOUT_STILL_WAITING3, FSessionData->GetTimeout()));
     Params.TimerAnswers = qaAbort;
     Params.TimerQueryType = qtInformation;
     if (FConfiguration->GetSessionReopenAutoStall() > 0)
