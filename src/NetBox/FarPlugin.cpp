@@ -2620,7 +2620,7 @@ TFarPanelItem * TFarPanelInfo::GetFocusedItem()
 void TFarPanelInfo::SetFocusedItem(const TFarPanelItem * Value)
 {
   TObjectList * Items = GetItems();
-  intptr_t Index = Items->IndexOf(static_cast<const TObject *>(Value));
+  intptr_t Index = Items->IndexOf(NB_STATIC_DOWNCAST_CONST(TObject, Value));
   assert(Index != NPOS);
   SetFocusedIndex(Index);
 }

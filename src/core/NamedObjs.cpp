@@ -8,8 +8,8 @@
 //---------------------------------------------------------------------------
 static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
 {
-  bool HasPrefix1 = (static_cast<const TNamedObject *>(Item1))->GetHidden();
-  bool HasPrefix2 = (static_cast<const TNamedObject *>(Item2))->GetHidden();
+  bool HasPrefix1 = NB_STATIC_DOWNCAST_CONST(TNamedObject, Item1)->GetHidden();
+  bool HasPrefix2 = NB_STATIC_DOWNCAST_CONST(TNamedObject, Item2)->GetHidden();
   if (HasPrefix1 && !HasPrefix2)
   {
     return -1;
