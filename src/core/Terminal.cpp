@@ -1625,9 +1625,10 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
       Params.AliasesCount = AliasCount;
     }
 
-    SUSPEND_OPERATION (
+    {
+      TSuspendFileOperationProgress Suspend(OperationProgress);
       Answer = QueryUserException(Message, &E, Answers, &Params, qtError);
-    );
+    }
 
     if (Answer == qaAll)
     {
@@ -2982,9 +2983,11 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
           catch (EScpSkipFile & E)
           {
             DEBUG_PRINTF(L"before HandleException");
-            SUSPEND_OPERATION (
-              if (!HandleException(&E)) throw;
-            );
+            TSuspendFileOperationProgress Suspend(OperationProgress);
+            if (!HandleException(&E))
+            {
+              throw;
+            }
           }
           ++Index;
         }
@@ -4055,12 +4058,14 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
           else if ((OperationProgress->BatchOverwrite != boAll) && !NoConfirmation)
           {
             uintptr_t Answer;
-            SUSPEND_OPERATION
-            (
+
+            {
+              TSuspendFileOperationProgress Suspend(OperationProgress);
               Answer = QueryUser(
                 MainInstructions(FMTLOAD(READ_ONLY_OVERWRITE, FileName.c_str())), NULL,
                 qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll, 0);
-            );
+            }
+
             switch (Answer)
             {
               case qaYesToAll: OperationProgress->BatchOverwrite = boAll; break;

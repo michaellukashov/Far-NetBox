@@ -3840,12 +3840,11 @@ void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
       catch (EScpSkipFile & E)
       {
         DEBUG_PRINTF(L"before FTerminal->HandleException");
-        SUSPEND_OPERATION (
-          if (!FTerminal->HandleException(&E))
-          {
-            throw;
-          }
-        );
+        TSuspendFileOperationProgress Suspend(OperationProgress);
+        if (!FTerminal->HandleException(&E))
+        {
+          throw;
+        }
       }
     }
     ++Index;
@@ -3861,8 +3860,8 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(UnicodeString & FileName,
     (FileParams != nullptr) &&
     (FileParams->DestSize < FileParams->SourceSize);
   uintptr_t Answer = 0;
-  SUSPEND_OPERATION
-  (
+  {
+    TSuspendFileOperationProgress Suspend(OperationProgress);
     // abort = "append"
     // retry = "resume"
     // all = "yes to newer"
@@ -3901,7 +3900,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(UnicodeString & FileName,
       Answers, &QueryParams,
       OperationProgress->Side == osLocal ? osRemote : osLocal,
       CopyParam, Params, OperationProgress);
-  );
+  }
 
   if (CanAppend &&
       ((Answer == qaRetry) || (Answer == qaSkip)))
@@ -3929,11 +3928,12 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(UnicodeString & FileName,
     else
     {
       TQueryParams Params(0, HELP_APPEND_OR_RESUME);
-      SUSPEND_OPERATION
-      (
+
+      {
+        TSuspendFileOperationProgress Suspend(OperationProgress);
         Answer = FTerminal->QueryUser(FORMAT(LoadStr(APPEND_OR_RESUME2).c_str(), FileName.c_str()),
           nullptr, qaYes | qaNo | qaNoToAll | qaCancel, &Params);
-      );
+      }
 
       switch (Answer)
       {
@@ -4001,16 +4001,16 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString & DestFileName,
 {
   bool ResumeTransfer = false;
   assert(OperationProgress);
-  uintptr_t Answer = 0;
   if (PartialBiggerThanSource)
   {
-    SUSPEND_OPERATION
-    (
+    uintptr_t Answer = 0;
+    {
+      TSuspendFileOperationProgress Suspend(OperationProgress);
       TQueryParams Params(qpAllowContinueOnError, HELP_PARTIAL_BIGGER_THAN_SOURCE);
       Answer = FTerminal->QueryUser(
         FMTLOAD(PARTIAL_BIGGER_THAN_SOURCE, DestFileName.c_str()), nullptr,
           qaOK | qaAbort, &Params, qtWarning);
-    )
+    }
 
     if (Answer == qaAbort)
     {
@@ -4024,16 +4024,17 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString & DestFileName,
   }
   else if (FTerminal->GetConfiguration()->GetConfirmResume())
   {
-    uintptr_t Answer;
-    SUSPEND_OPERATION
-    (
+    uintptr_t Answer = 0;
+
+    {
+      TSuspendFileOperationProgress Suspend(OperationProgress);
       TQueryParams Params(qpAllowContinueOnError | qpNeverAskAgainCheck,
         HELP_RESUME_TRANSFER);
       // "abort" replaced with "cancel" to unify with "append/resume" query
       Answer = FTerminal->QueryUser(
         FMTLOAD(RESUME_TRANSFER2, DestFileName.c_str()), nullptr, qaYes | qaNo | qaCancel,
         &Params);
-    );
+    }
 
     switch (Answer)
     {
@@ -4886,12 +4887,14 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
       catch (EScpSkipFile &E)
       {
         // If ESkipFile occurs, just log it and continue with next file
-        SUSPEND_OPERATION (
-          // here a message to user was displayed, which was not appropriate
-          // when user refused to overwrite the file in subdirectory.
-          // hopefully it won't be missing in other situations.
-          if (!FTerminal->HandleException(&E)) throw;
-        );
+        TSuspendFileOperationProgress Suspend(OperationProgress);
+        // here a message to user was displayed, which was not appropriate
+        // when user refused to overwrite the file in subdirectory.
+        // hopefully it won't be missing in other situations.
+        if (!FTerminal->HandleException(&E))
+        {
+          throw;
+        }
       }
 
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
@@ -4957,9 +4960,11 @@ void TSFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
       }
       catch (EScpSkipFile & E)
       {
-        SUSPEND_OPERATION (
-          if (!FTerminal->HandleException(&E)) throw;
-        );
+        TSuspendFileOperationProgress Suspend(OperationProgress);
+        if (!FTerminal->HandleException(&E))
+        {
+          throw;
+        }
       }
       catch (...)
       {
@@ -5542,9 +5547,13 @@ void TSFTPFileSystem::SFTPSinkFile(const UnicodeString & FileName,
 
     Params->Skipped = true;
 
-    SUSPEND_OPERATION (
-      if (!FTerminal->HandleException(&E)) throw;
-    );
+    {
+      TSuspendFileOperationProgress Suspend(OperationProgress);
+      if (!FTerminal->HandleException(&E))
+      {
+        throw;
+      }
+    }
 
     if (OperationProgress->Cancel)
     {

@@ -12614,12 +12614,14 @@ bool TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & FileName,
     TQueryParams QueryParams(qpNeverAskAgainCheck);
     QueryParams.Aliases = Aliases;
     QueryParams.AliasesCount = LENOF(Aliases);
-    SUSPEND_OPERATION (
+
+    {
+      TSuspendFileOperationProgress Suspend(OperationProgress);
       Answer = FTerminal->ConfirmFileOverwrite(FileName, FileParams,
                  Answers, &QueryParams,
                  OperationProgress->Side == osLocal ? osRemote : osLocal,
                  CopyParam, Params, OperationProgress);
-    )
+    }
   }
 
   bool Result = true;
@@ -12768,12 +12770,11 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
       }
       catch (EScpSkipFile & E)
       {
-        SUSPEND_OPERATION (
-          if (!FTerminal->HandleException(&E))
-          {
-            throw;
-          }
-        );
+        TSuspendFileOperationProgress Suspend(OperationProgress);
+        if (!FTerminal->HandleException(&E))
+        {
+          throw;
+        }
       }
     }
     ++Index;
@@ -12844,12 +12845,15 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
       {
         UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, RealFileName.c_str());
         TQueryParams QueryParams(qpNeverAskAgainCheck);
-        SUSPEND_OPERATION (
+
+        {
+          TSuspendFileOperationProgress Suspend(OperationProgress);
           Answer = FTerminal->ConfirmFileOverwrite(
             RealFileName /*not used*/, nullptr,
             qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
             &QueryParams, osRemote, CopyParam, Params, OperationProgress, Message);
-        );
+        }
+
         switch (Answer)
         {
           case qaYes:
@@ -13060,15 +13064,14 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
       catch (EScpSkipFile & E)
       {
         // If ESkipFile occurs, just log it and continue with next file
-        SUSPEND_OPERATION (
-          // here a message to user was displayed, which was not appropriate
-          // when user refused to overwrite the file in subdirectory.
-          // hopefully it won't be missing in other situations.
-          if (!FTerminal->HandleException(&E))
-          {
-            throw;
-          }
-        );
+        TSuspendFileOperationProgress Suspend(OperationProgress);
+        // here a message to user was displayed, which was not appropriate
+        // when user refused to overwrite the file in subdirectory.
+        // hopefully it won't be missing in other situations.
+        if (!FTerminal->HandleException(&E))
+        {
+          throw;
+        }
       }
 
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
@@ -13176,12 +13179,11 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
       }
       catch (EScpSkipFile & E)
       {
-        SUSPEND_OPERATION (
-          if (!FTerminal->HandleException(&E))
-          {
-            throw;
-          }
-        );
+        TSuspendFileOperationProgress Suspend(OperationProgress);
+        if (!FTerminal->HandleException(&E))
+        {
+          throw;
+        }
       }
     }
     ++Index;
@@ -13269,12 +13271,14 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       uintptr_t Answer = 0;
       UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly.c_str());
       TQueryParams QueryParams(qpNeverAskAgainCheck);
-      SUSPEND_OPERATION (
+
+      {
+        TSuspendFileOperationProgress Suspend(OperationProgress);
         Answer = FTerminal->ConfirmFileOverwrite(
           FileNameOnly /*not used*/, nullptr,
           qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
           &QueryParams, osRemote, CopyParam, Params, OperationProgress, Message);
-      );
+      }
       switch (Answer)
       {
         case qaCancel:
@@ -13454,12 +13458,14 @@ void TWebDAVFileSystem::SinkFile(const UnicodeString & FileName,
     TFileOperationProgressType * OperationProgress = Params->OperationProgress;
 
     Params->Skipped = true;
-    SUSPEND_OPERATION (
+
+    {
+      TSuspendFileOperationProgress Suspend(OperationProgress);
       if (!FTerminal->HandleException(&E))
       {
         throw;
       }
-    );
+    }
 
     if (OperationProgress->Cancel)
     {

@@ -1411,13 +1411,15 @@ uintptr_t TSCPFileSystem::ConfirmOverwrite(
   QueryParams.Aliases = Aliases;
   QueryParams.AliasesCount = LENOF(Aliases);
   uintptr_t Answer;
-  SUSPEND_OPERATION
-  (
+
+
+  {
+    TSuspendFileOperationProgress Suspend(OperationProgress);
     Answer = FTerminal->ConfirmFileOverwrite(
       FileName, FileParams,
       qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll,
       &QueryParams, Side, CopyParam, Params, OperationProgress);
-  );
+  }
   return Answer;
 }
 //---------------------------------------------------------------------------
@@ -1595,13 +1597,13 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         {
           UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly.c_str());
           TQueryParams QueryParams(qpNeverAskAgainCheck);
-          SUSPEND_OPERATION
-          (
+          {
+            TSuspendFileOperationProgress Suspend(OperationProgress);
             Answer = FTerminal->ConfirmFileOverwrite(
               FileNameOnly /*not used*/, nullptr,
               qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
               &QueryParams, osRemote, CopyParam, Params, OperationProgress, Message);
-          );
+          }
         }
         else
         {
@@ -1670,23 +1672,31 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       catch (EScpFileSkipped &E)
       {
         TQueryParams QueryParams(qpAllowContinueOnError);
-        SUSPEND_OPERATION (
-          if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()), &E,
-            qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
-          {
-            OperationProgress->Cancel = csCancel;
-          }
-          OperationProgress->Finish(FileName, false, OnceDoneOperation);
-          if (!FTerminal->HandleException(&E)) throw;
-        );
+
+        TSuspendFileOperationProgress Suspend(OperationProgress);
+
+        if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()), &E,
+          qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
+        {
+          OperationProgress->Cancel = csCancel;
+        }
+        OperationProgress->Finish(FileName, false, OnceDoneOperation);
+        if (!FTerminal->HandleException(&E))
+        {
+          throw;
+        }
       }
       catch (EScpSkipFile &E)
       {
         OperationProgress->Finish(FileName, false, OnceDoneOperation);
-        // If ESkipFile occurs, just log it and continue with next file
-        SUSPEND_OPERATION (
-          if (!FTerminal->HandleException(&E)) throw;
-        );
+        {
+          TSuspendFileOperationProgress Suspend(OperationProgress);
+          // If ESkipFile occurs, just log it and continue with next file
+          if (!FTerminal->HandleException(&E))
+          {
+            throw;
+          }
+        }
       }
       catch (...)
       {
@@ -2070,7 +2080,9 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
         catch (EScpFileSkipped &E)
         {
           TQueryParams QueryParams(qpAllowContinueOnError);
-          SUSPEND_OPERATION (
+
+          {
+            TSuspendFileOperationProgress Suspend(OperationProgress);
             if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()), &E,
                   qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
             {
@@ -2080,14 +2092,16 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
             {
               throw;
             }
-          );
+          }
         }
         catch (EScpSkipFile &E)
         {
           // If ESkipFile occurs, just log it and continue with next file
-          SUSPEND_OPERATION (
-            if (!FTerminal->HandleException(&E)) throw;
-          );
+          TSuspendFileOperationProgress Suspend(OperationProgress);
+          if (!FTerminal->HandleException(&E))
+          {
+            throw;
+          }
         }
         FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
           FindOK = (FindNextChecked(SearchRec) == 0);
@@ -2430,9 +2444,8 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
         }
         catch (Exception &E)
         {
-          SUSPEND_OPERATION (
-            FTerminal->GetLog()->AddException(&E);
-          );
+          TSuspendFileOperationProgress Suspend(OperationProgress);
+          FTerminal->GetLog()->AddException(&E);
           SCPError(LoadStr(SCP_ILLEGAL_FILE_DESCRIPTOR), false);
         }
 
@@ -2668,15 +2681,14 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
     {
       if (!SkipConfirmed)
       {
-        SUSPEND_OPERATION (
-          TQueryParams QueryParams(qpAllowContinueOnError);
-          if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, AbsoluteFileName.c_str()),
-                &E, qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
-          {
-            OperationProgress->Cancel = csCancel;
-          }
-          FTerminal->GetLog()->AddException(&E);
-        );
+        TSuspendFileOperationProgress Suspend(OperationProgress);
+        TQueryParams QueryParams(qpAllowContinueOnError);
+        if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, AbsoluteFileName.c_str()),
+              &E, qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
+        {
+          OperationProgress->Cancel = csCancel;
+        }
+        FTerminal->GetLog()->AddException(&E);
       }
       // this was inside above condition, but then transfer was considered
       // successful, even when for example user refused to overwrite file

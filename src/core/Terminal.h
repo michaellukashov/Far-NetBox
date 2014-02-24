@@ -74,12 +74,6 @@ DEFINE_CALLBACK_TYPE2(TCreateLocalDirectoryEvent, BOOL,
   const UnicodeString & /* LocalDirName */, LPSECURITY_ATTRIBUTES /* SecurityAttributes */);
 DEFINE_CALLBACK_TYPE0(TCheckForEscEvent, bool);
 //------------------------------------------------------------------------------
-#define SUSPEND_OPERATION(Command)                            \
-  {                                                           \
-    TSuspendFileOperationProgress Suspend(OperationProgress); \
-    Command                                                   \
-  }
-
 inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
 {
   throw EScpSkipFile(Exception, Message);

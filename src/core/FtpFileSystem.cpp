@@ -898,13 +898,14 @@ bool TFTPFileSystem::ConfirmOverwrite(UnicodeString & FileName,
     TQueryParams QueryParams(qpNeverAskAgainCheck);
     QueryParams.Aliases = Aliases;
     QueryParams.AliasesCount = LENOF(Aliases);
-    SUSPEND_OPERATION
-    (
+
+    {
+      TSuspendFileOperationProgress Suspend(OperationProgress);
       Answer = FTerminal->ConfirmFileOverwrite(FileName, FileParams,
         Answers, &QueryParams,
         OperationProgress->Side == osLocal ? osRemote : osLocal,
         CopyParam, Params, OperationProgress);
-    )
+    }
   }
 
   Result = true;
@@ -1103,12 +1104,11 @@ void TFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
       }
       catch (EScpSkipFile & E)
       {
-        SUSPEND_OPERATION (
-          if (!FTerminal->HandleException(&E)) 
-          {
-            throw;
-          }
-        );
+        TSuspendFileOperationProgress Suspend(OperationProgress);
+        if (!FTerminal->HandleException(&E))
+        {
+          throw;
+        }
       }
     }
     ++Index;
@@ -1346,12 +1346,13 @@ void TFTPFileSystem::SinkFile(const UnicodeString & FileName,
 
     Params->Skipped = true;
 
-    SUSPEND_OPERATION (
+    {
+      TSuspendFileOperationProgress Suspend(OperationProgress);
       if (!FTerminal->HandleException(&E))
       {
         throw;
       }
-    );
+    }
 
     if (OperationProgress->Cancel)
     {
@@ -1404,12 +1405,11 @@ void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
       }
       catch (EScpSkipFile & E)
       {
-        SUSPEND_OPERATION (
-          if (!FTerminal->HandleException(&E))
-          {
-            throw;
-          }
-        );
+        TSuspendFileOperationProgress Suspend(OperationProgress);
+        if (!FTerminal->HandleException(&E))
+        {
+          throw;
+        }
       }
     }
     ++Index;
@@ -1644,15 +1644,14 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
       catch (EScpSkipFile &E)
       {
         // If ESkipFile occurs, just log it and continue with next file
-        SUSPEND_OPERATION (
-          // here a message to user was displayed, which was not appropriate
-          // when user refused to overwrite the file in subdirectory.
-          // hopefully it won't be missing in other situations.
-          if (!FTerminal->HandleException(&E))
-          {
-            throw;
-          }
-        );
+        TSuspendFileOperationProgress Suspend(OperationProgress);
+        // here a message to user was displayed, which was not appropriate
+        // when user refused to overwrite the file in subdirectory.
+        // hopefully it won't be missing in other situations.
+        if (!FTerminal->HandleException(&E))
+        {
+          throw;
+        }
       }
 
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
