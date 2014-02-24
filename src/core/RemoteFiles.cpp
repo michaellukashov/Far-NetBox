@@ -1357,7 +1357,10 @@ void TRemoteFile::FindLinkedFile()
     }
     catch (Exception &E)
     {
-      if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr) throw;
+      if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
+      {
+        throw;
+      }
       else
       {
         GetTerminal()->GetLog()->AddException(&E);
