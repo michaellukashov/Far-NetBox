@@ -282,7 +282,7 @@ protected:
   bool OverrideItemStatus(TQueueItem::TStatus & ItemStatus);
 
   void TerminalQueryUser(TObject * Sender,
-    const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+    const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
     const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions,
@@ -1411,7 +1411,7 @@ void TTerminalItem::Finished()
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::TerminalQueryUser(TObject * Sender,
-  const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+  const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
   const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg)
 {
   // so far query without queue item can occur only for key confirmation
@@ -1423,7 +1423,7 @@ void TTerminalItem::TerminalQueryUser(TObject * Sender,
 
     TQueryUserAction Action(FQueue->GetOnQueryUser());
     Action.Sender = Sender;
-    Action.Query = Query;
+    Action.Query = AQuery;
     Action.MoreMessages = MoreMessages;
     Action.Answers = Answers;
     Action.Params = Params;
@@ -2414,7 +2414,7 @@ void TTerminalThread::TerminalInformation(
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalQueryUser(TObject * Sender,
-  const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+  const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
   const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg)
 {
   USEDPARAM(Arg);
@@ -2431,7 +2431,7 @@ void TTerminalThread::TerminalQueryUser(TObject * Sender,
 
   TQueryUserAction Action(FOnQueryUser);
   Action.Sender = Sender;
-  Action.Query = Query;
+  Action.Query = AQuery;
   Action.MoreMessages = MoreMessages;
   Action.Answers = Answers;
   Action.Params = Params;

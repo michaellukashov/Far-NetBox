@@ -3216,17 +3216,17 @@ uintptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString & Str,
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
-  const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+  const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
   const TQueryParams * AParams, uintptr_t & Answer, TQueryType Type, void * /*Arg*/)
 {
   TMessageParams Params;
-  UnicodeString AQuery = Query;
+  UnicodeString Query = AQuery;
 
   if (AParams != nullptr)
   {
     if (AParams->Params & qpFatalAbort)
     {
-      AQuery = FORMAT(GetMsg(WARN_FATAL_ERROR).c_str(), AQuery.c_str());
+      Query = FORMAT(GetMsg(WARN_FATAL_ERROR).c_str(), Query.c_str());
     }
 
     Params.Aliases = AParams->Aliases;
@@ -3240,7 +3240,7 @@ void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
     Params.TimeoutAnswer = AParams->TimeoutAnswer;
   }
 
-  Answer = MoreMessageDialog(AQuery, MoreMessages, Type, Answers, &Params);
+  Answer = MoreMessageDialog(Query, MoreMessages, Type, Answers, &Params);
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
