@@ -718,6 +718,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         SCOPE_EXIT
         {
           DeleteUnnecessary();
+
           EndUpdate();
         };
         DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
@@ -1113,12 +1114,6 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     #undef ADF
     #undef ADSTR
   }
-//  __finally
-//  {
-//    DeleteUnnecessary();
-
-//    EndUpdate();
-//  }
 }
 //---------------------------------------------------------------------------
 void TSessionLog::AddSeparator()
