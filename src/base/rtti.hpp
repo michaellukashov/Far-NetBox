@@ -236,6 +236,7 @@ enum TObjectClassId
   OBJECT_CLASS_TSynchronizeOptions,
   OBJECT_CLASS_TSynchronizeChecklist,
   OBJECT_CLASS_TItem,
+  OBJECT_CLASS_TChecklistItem,
   OBJECT_CLASS_TFileInfo,
   OBJECT_CLASS_TSpaceAvailable,
   OBJECT_CLASS_TWebDAVFileListHelper,

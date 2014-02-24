@@ -7120,7 +7120,7 @@ private:
   void RefreshChecklist(bool Scroll);
   void UpdateControls();
   void CheckAll(bool Check);
-  UnicodeString ItemLine(const TSynchronizeChecklist::TItem * ChecklistItem);
+  UnicodeString ItemLine(const TChecklistItem * ChecklistItem);
   void AddColumn(UnicodeString & List, const UnicodeString & Value, size_t Column,
     bool Header = false);
   UnicodeString FormatSize(__int64 Size, int Column);
@@ -7344,8 +7344,7 @@ UnicodeString TSynchronizeChecklistDialog::FormatSize(
   return Result;
 }
 //------------------------------------------------------------------------------
-UnicodeString TSynchronizeChecklistDialog::ItemLine(
-  const TSynchronizeChecklist::TItem * ChecklistItem)
+UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * ChecklistItem)
 {
   UnicodeString Line;
   UnicodeString S;
@@ -7357,7 +7356,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(
   }
   AddColumn(Line, S, 0);
 
-  if (ChecklistItem->Action == TSynchronizeChecklist::saDeleteRemote)
+  if (ChecklistItem->Action == saDeleteRemote)
   {
     AddColumn(Line, L"", 1);
     AddColumn(Line, L"", 2);
@@ -7376,7 +7375,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(
       assert(false);
     }
     AddColumn(Line, S, 1);
-    if (ChecklistItem->Action == TSynchronizeChecklist::saDownloadNew)
+    if (ChecklistItem->Action == saDownloadNew)
     {
       AddColumn(Line, L"", 2);
       AddColumn(Line, L"", 3);
@@ -7400,7 +7399,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(
   assert((Action != NPOS) && (Action < static_cast<intptr_t>(LENOF(FActions))));
   AddColumn(Line, FActions[Action], 4);
 
-  if (ChecklistItem->Action == TSynchronizeChecklist::saDeleteLocal)
+  if (ChecklistItem->Action == saDeleteLocal)
   {
     AddColumn(Line, L"", 5);
     AddColumn(Line, L"", 6);
@@ -7419,7 +7418,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(
       assert(false);
     }
     AddColumn(Line, S, 5);
-    if (ChecklistItem->Action == TSynchronizeChecklist::saUploadNew)
+    if (ChecklistItem->Action == saUploadNew)
     {
       AddColumn(Line, L"", 6);
       AddColumn(Line, L"", 7);
@@ -7449,7 +7448,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
   List->BeginUpdate();
   for (intptr_t Index = 0; Index < FChecklist->GetCount(); ++Index)
   {
-    const TSynchronizeChecklist::TItem * ChecklistItem = FChecklist->GetItem(Index);
+    const TChecklistItem * ChecklistItem = FChecklist->GetItem(Index);
 
     List->AddObject(ItemLine(ChecklistItem),
       const_cast<TObject *>(reinterpret_cast<const TObject *>(ChecklistItem)));
@@ -7459,7 +7458,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
   // items must be checked in second pass once the internal array is allocated
   for (intptr_t Index = 0; Index < FChecklist->GetCount(); ++Index)
   {
-    const TSynchronizeChecklist::TItem * ChecklistItem = FChecklist->GetItem(Index);
+    const TChecklistItem * ChecklistItem = FChecklist->GetItem(Index);
 
     List->SetChecked(Index, ChecklistItem->Checked);
     if (ChecklistItem->Checked)
@@ -7496,8 +7495,8 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
     {
       if (!Scroll || (List->GetString(Index).LastDelimiter(L"{}") > 0))
       {
-        const TSynchronizeChecklist::TItem * ChecklistItem =
-          reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObject(Index));
+        const TChecklistItem * ChecklistItem =
+          reinterpret_cast<TChecklistItem *>(List->GetObject(Index));
 
         List->SetString(Index, ItemLine(ChecklistItem));
       }
@@ -7665,8 +7664,8 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist * Checklist)
     intptr_t Count = List->GetCount();
     for (intptr_t Index = 0; Index < Count; ++Index)
     {
-      TSynchronizeChecklist::TItem * ChecklistItem =
-        reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObject(Index));
+      TChecklistItem * ChecklistItem =
+        reinterpret_cast<TChecklistItem *>(List->GetObject(Index));
       ChecklistItem->Checked = List->GetChecked(Index);
     }
   }

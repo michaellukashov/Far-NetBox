@@ -176,7 +176,7 @@ TSpaceAvailable::TSpaceAvailable() :
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-TSynchronizeChecklist::TItem::TItem() :
+TChecklistItem::TChecklistItem() :
   Action(saNone), IsDirectory(false), ImageIndex(-1), Checked(true), RemoteFile(nullptr)
 {
   Local.ModificationFmt = mfFull;
@@ -189,12 +189,12 @@ TSynchronizeChecklist::TItem::TItem() :
   FLocalLastWriteTime.dwLowDateTime = 0;
 }
 //------------------------------------------------------------------------------
-TSynchronizeChecklist::TItem::~TItem()
+TChecklistItem::~TChecklistItem()
 {
   SAFE_DESTROY(RemoteFile);
 }
 //------------------------------------------------------------------------------
-const UnicodeString & TSynchronizeChecklist::TItem::GetFileName() const
+const UnicodeString & TChecklistItem::GetFileName() const
 {
   if (!Remote.FileName.IsEmpty())
   {
@@ -217,21 +217,21 @@ TSynchronizeChecklist::~TSynchronizeChecklist()
 {
   for (intptr_t Index = 0; Index < FList->GetCount(); ++Index)
   {
-    TItem * Item = static_cast<TItem *>(static_cast<void *>(FList->GetItem(Index)));
+    TChecklistItem * Item = NB_STATIC_DOWNCAST(TChecklistItem, static_cast<void *>(FList->GetItem(Index)));
     SAFE_DESTROY(Item);
   }
   SAFE_DESTROY(FList);
 }
 //------------------------------------------------------------------------------
-void TSynchronizeChecklist::Add(TItem * Item)
+void TSynchronizeChecklist::Add(TChecklistItem * Item)
 {
   FList->Add(Item);
 }
 //------------------------------------------------------------------------------
 intptr_t TSynchronizeChecklist::Compare(const void * AItem1, const void * AItem2)
 {
-  const TItem * Item1 = static_cast<const TItem *>(AItem1);
-  const TItem * Item2 = static_cast<const TItem *>(AItem2);
+  const TChecklistItem * Item1 = static_cast<const TChecklistItem *>(AItem1);
+  const TChecklistItem * Item2 = static_cast<const TChecklistItem *>(AItem2);
 
   intptr_t Result;
   if (!Item1->Local.Directory.IsEmpty())
@@ -262,9 +262,9 @@ intptr_t TSynchronizeChecklist::GetCount() const
   return FList->GetCount();
 }
 //------------------------------------------------------------------------------
-const TSynchronizeChecklist::TItem * TSynchronizeChecklist::GetItem(intptr_t Index) const
+const TChecklistItem * TSynchronizeChecklist::GetItem(intptr_t Index) const
 {
-  return static_cast<TItem *>(FList->GetItem(Index));
+  return NB_STATIC_DOWNCAST(TChecklistItem, FList->GetItem(Index));
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -3199,7 +3199,7 @@ bool TTerminal::DeleteLocalFiles(TStrings * FileList, intptr_t Params)
 void TTerminal::CustomCommandOnFile(const UnicodeString & FileName,
   const TRemoteFile * AFile, void * AParams)
 {
-  TCustomCommandParams * Params = (static_cast<TCustomCommandParams *>(AParams));
+  TCustomCommandParams * Params = NB_STATIC_DOWNCAST(TCustomCommandParams, AParams);
   UnicodeString LocalFileName = FileName;
   if (FileName.IsEmpty() && AFile)
   {
@@ -3287,7 +3287,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
     UnicodeString FileList;
     for (intptr_t I = 0; I < Files->GetCount(); ++I)
     {
-      TRemoteFile * File = static_cast<TRemoteFile *>(Files->GetObject(I));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, Files->GetObject(I));
       bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
 
       if (!Dir || FLAGSET(Params, ccApplyToDirectories))
@@ -3312,7 +3312,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
 void TTerminal::ChangeFileProperties(const UnicodeString & FileName,
   const TRemoteFile * File, /*const TRemoteProperties*/ void * Properties)
 {
-  TRemoteProperties * RProperties = static_cast<TRemoteProperties *>(Properties);
+  TRemoteProperties * RProperties = NB_STATIC_DOWNCAST(TRemoteProperties, Properties);
   assert(RProperties && !RProperties->Valid.Empty());
   UnicodeString LocalFileName = FileName;
   if (FileName.IsEmpty() && File)
@@ -4385,8 +4385,8 @@ struct TSynchronizeFileData : public TObject
   bool Modified;
   bool New;
   bool IsDirectory;
-  TSynchronizeChecklist::TItem::TFileInfo Info;
-  TSynchronizeChecklist::TItem::TFileInfo MatchingRemoteFile;
+  TChecklistItem::TFileInfo Info;
+  TChecklistItem::TFileInfo MatchingRemoteFile;
   TRemoteFile * MatchingRemoteFileFile;
   intptr_t MatchingRemoteFileImageIndex;
   FILETIME LocalLastWriteTime;
@@ -4631,7 +4631,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
 
         if (Modified || New)
         {
-          std::unique_ptr<TSynchronizeChecklist::TItem> ChecklistItem(new TSynchronizeChecklist::TItem());
+          std::unique_ptr<TChecklistItem> ChecklistItem(new TChecklistItem());
           ChecklistItem->IsDirectory = FileData->IsDirectory;
 
           ChecklistItem->Local = FileData->Info;
@@ -4652,7 +4652,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
           if ((Mode == smBoth) || (Mode == smRemote))
           {
             ChecklistItem->Action =
-              (Modified ? TSynchronizeChecklist::saUploadUpdate : TSynchronizeChecklist::saUploadNew);
+              (Modified ? saUploadUpdate : saUploadNew);
             ChecklistItem->Checked =
               (Modified || FLAGCLEAR(Params, spExistingOnly)) &&
               (!ChecklistItem->IsDirectory || FLAGCLEAR(Params, spNoRecurse) ||
@@ -4660,14 +4660,14 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
           }
           else if ((Mode == smLocal) && FLAGCLEAR(Params, spTimestamp))
           {
-            ChecklistItem->Action = TSynchronizeChecklist::saDeleteLocal;
+            ChecklistItem->Action = saDeleteLocal;
             ChecklistItem->Checked =
               FLAGSET(Params, spDelete) &&
               (!ChecklistItem->IsDirectory || FLAGCLEAR(Params, spNoRecurse) ||
                FLAGSET(Params, spSubDirs));
           }
 
-          if (ChecklistItem->Action != TSynchronizeChecklist::saNone)
+          if (ChecklistItem->Action != saNone)
           {
             Data.Checklist->Add(ChecklistItem.get());
             ChecklistItem.release();
@@ -4706,7 +4706,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
         Data->Options->MatchesFilter(File->GetFileName()) ||
         Data->Options->MatchesFilter(LocalFileName)))
   {
-    std::unique_ptr<TSynchronizeChecklist::TItem> ChecklistItem(new TSynchronizeChecklist::TItem());
+    std::unique_ptr<TChecklistItem> ChecklistItem(new TChecklistItem());
     ChecklistItem->IsDirectory = File->GetIsDirectory();
     ChecklistItem->ImageIndex = File->GetIconIndex();
 
@@ -4841,7 +4841,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
         if (FLAGCLEAR(Data->Params, spTimestamp) || Modified)
         {
           ChecklistItem->Action =
-            (Modified ? TSynchronizeChecklist::saDownloadUpdate : TSynchronizeChecklist::saDownloadNew);
+            (Modified ? saDownloadUpdate : saDownloadNew);
           ChecklistItem->Checked =
             (Modified || FLAGCLEAR(Data->Params, spExistingOnly)) &&
             (!ChecklistItem->IsDirectory || FLAGCLEAR(Data->Params, spNoRecurse) ||
@@ -4852,7 +4852,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
       {
         if (FLAGCLEAR(Data->Params, spTimestamp))
         {
-          ChecklistItem->Action = TSynchronizeChecklist::saDeleteRemote;
+          ChecklistItem->Action = saDeleteRemote;
           ChecklistItem->Checked =
             FLAGSET(Data->Params, spDelete) &&
             (!ChecklistItem->IsDirectory || FLAGCLEAR(Data->Params, spNoRecurse) ||
@@ -4860,7 +4860,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
         }
       }
 
-      if (ChecklistItem->Action != TSynchronizeChecklist::saNone)
+      if (ChecklistItem->Action != saNone)
       {
         ChecklistItem->RemoteFile = File->Duplicate();
         Data->Checklist->Add(ChecklistItem.get());
@@ -4910,7 +4910,7 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
     intptr_t IIndex = 0;
     while (IIndex < Checklist->GetCount())
     {
-      const TSynchronizeChecklist::TItem * ChecklistItem;
+      const TChecklistItem * ChecklistItem;
 
       DownloadList->Clear();
       DeleteRemoteList->Clear();
@@ -4941,18 +4941,18 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
           {
             switch (ChecklistItem->Action)
             {
-              case TSynchronizeChecklist::saDownloadUpdate:
+              case saDownloadUpdate:
                 DownloadList->AddObject(
                   UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) +
                     ChecklistItem->Remote.FileName,
-                  static_cast<TObject *>(const_cast<TSynchronizeChecklist::TItem *>(ChecklistItem)));
+                  NB_STATIC_DOWNCAST(TObject, const_cast<TChecklistItem *>(ChecklistItem)));
                 break;
 
-              case TSynchronizeChecklist::saUploadUpdate:
+              case saUploadUpdate:
                 UploadList->AddObject(
                   IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
                     ChecklistItem->Local.FileName,
-                  static_cast<TObject *>(const_cast<TSynchronizeChecklist::TItem *>(ChecklistItem)));
+                  NB_STATIC_DOWNCAST(TObject, const_cast<TChecklistItem *>(ChecklistItem)));
                 break;
 
               default:
@@ -4964,29 +4964,29 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
           {
             switch (ChecklistItem->Action)
             {
-              case TSynchronizeChecklist::saDownloadNew:
-              case TSynchronizeChecklist::saDownloadUpdate:
+              case saDownloadNew:
+              case saDownloadUpdate:
                 DownloadList->AddObject(
                   UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) +
                     ChecklistItem->Remote.FileName,
                   ChecklistItem->RemoteFile);
                 break;
 
-              case TSynchronizeChecklist::saDeleteRemote:
+              case saDeleteRemote:
                 DeleteRemoteList->AddObject(
                   UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) +
                     ChecklistItem->Remote.FileName,
                   ChecklistItem->RemoteFile);
                 break;
 
-              case TSynchronizeChecklist::saUploadNew:
-              case TSynchronizeChecklist::saUploadUpdate:
+              case saUploadNew:
+              case saUploadUpdate:
                 UploadList->Add(
                   IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
                     ChecklistItem->Local.FileName);
                 break;
 
-              case TSynchronizeChecklist::saDeleteLocal:
+              case saDeleteLocal:
                 DeleteLocalList->Add(
                   IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
                     ChecklistItem->Local.FileName);
@@ -5072,8 +5072,8 @@ void TTerminal::DoSynchronizeProgress(const TSynchronizeData & Data,
 void TTerminal::SynchronizeLocalTimestamp(const UnicodeString & /*FileName*/,
   const TRemoteFile * File, void * /*Param*/)
 {
-  const TSynchronizeChecklist::TItem * ChecklistItem =
-    reinterpret_cast<const TSynchronizeChecklist::TItem *>(File);
+  const TChecklistItem * ChecklistItem =
+    reinterpret_cast<const TChecklistItem *>(File);
 
   UnicodeString LocalFile =
     IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
@@ -5084,8 +5084,8 @@ void TTerminal::SynchronizeLocalTimestamp(const UnicodeString & /*FileName*/,
 void TTerminal::SynchronizeRemoteTimestamp(const UnicodeString & /*FileName*/,
   const TRemoteFile * File, void * /*Param*/)
 {
-  const TSynchronizeChecklist::TItem * ChecklistItem =
-    reinterpret_cast<const TSynchronizeChecklist::TItem *>(File);
+  const TChecklistItem * ChecklistItem =
+    reinterpret_cast<const TChecklistItem *>(File);
 
   TRemoteProperties Properties;
   Properties.Valid << vpModification;
@@ -5742,4 +5742,5 @@ UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName)
 }
 //------------------------------------------------------------------------------
 NB_IMPLEMENT_CLASS(TTerminal, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TChecklistItem, NB_GET_CLASS_INFO(TObject), nullptr)
 //------------------------------------------------------------------------------
