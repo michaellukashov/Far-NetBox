@@ -3210,7 +3210,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         }
         catch (Exception &E)
         {
-          if (NB_STATIC_DOWNCAST(EFatal, static_cast<TObject *>(&E)) != nullptr)
+          if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
           {
             throw;
           }

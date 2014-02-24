@@ -2971,7 +2971,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
   }
   catch (Exception & E)
   {
-    EFatal * Fatal = NB_STATIC_DOWNCAST(EFatal, static_cast<TObject *>(&E));
+    EFatal * Fatal = NB_STATIC_DOWNCAST(EFatal, &E);
     if ((Fatal == nullptr) || !Fatal->GetReopenQueried())
     {
       FTerminal->ShowExtendedException(&E);
