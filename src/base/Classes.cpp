@@ -992,7 +992,7 @@ const UnicodeString & TStringList::GetString(intptr_t Index) const
   }
   if (Index == static_cast<intptr_t>(FStrings.size()))
   {
-    const_cast<TStringList*>(this)->InsertItem(Index, UnicodeString(), nullptr);
+    const_cast<TStringList *>(this)->InsertItem(Index, UnicodeString(), nullptr);
   }
   return FStrings[Index];
 }
