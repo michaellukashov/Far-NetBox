@@ -38,6 +38,7 @@ friend TFarButton;
 friend TFarList;
 friend class TFarListBox;
 NB_DISABLE_COPY(TFarDialog)
+NB_DECLARE_CLASS(TFarDialog)
 public:
   explicit TFarDialog(TCustomFarPlugin * AFarPlugin);
   virtual ~TFarDialog();
@@ -154,6 +155,7 @@ class TFarDialogContainer : public TObject
 friend TFarDialog;
 friend TFarDialogItem;
 NB_DISABLE_COPY(TFarDialogContainer)
+NB_DECLARE_CLASS(TFarDialogContainer)
 public:
   intptr_t GetLeft() const { return FLeft; }
   void SetLeft(intptr_t Value) { SetPosition(0, Value); }
@@ -477,6 +479,7 @@ protected:
 //---------------------------------------------------------------------------
 class TFarText : public TFarDialogItem
 {
+NB_DECLARE_CLASS(TFarText)
 public:
   explicit TFarText(TFarDialog * ADialog);
 

@@ -580,6 +580,8 @@ void TWinSCPPlugin::HandleException(Exception * E, int OpMode)
 //---------------------------------------------------------------------------
 struct TFarMessageData : public TObject
 {
+NB_DECLARE_CLASS(TFarMessageData)
+public:
   TFarMessageData()
   {
     Params = nullptr;
@@ -594,7 +596,7 @@ struct TFarMessageData : public TObject
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
 {
-  TFarMessageData & Data = *static_cast<TFarMessageData *>(Token);
+  TFarMessageData & Data = *NB_STATIC_DOWNCAST(TFarMessageData, Token);
 
   assert(Result != -1 && Result < Data.ButtonCount);
 
@@ -850,4 +852,5 @@ void TWinSCPPlugin::CleanupConfiguration()
 }
 //---------------------------------------------------------------------------
 NB_IMPLEMENT_CLASS(TWinSCPPlugin, NB_GET_CLASS_INFO(TCustomFarPlugin), nullptr);
+NB_IMPLEMENT_CLASS(TFarMessageData, NB_GET_CLASS_INFO(TObject), nullptr);
 //---------------------------------------------------------------------------

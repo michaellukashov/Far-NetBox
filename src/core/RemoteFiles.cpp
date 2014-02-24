@@ -1353,13 +1353,14 @@ void TRemoteFile::FindLinkedFile()
       {
         GetTerminal()->SetExceptionOnFail(false);
       };
-      {
-        GetTerminal()->ReadSymlink(this, FLinkedFile);
-      }
+      GetTerminal()->ReadSymlink(this, FLinkedFile);
     }
     catch (Exception &E)
     {
-      if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr) throw;
+      if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
+      {
+        throw;
+      }
       else
       {
         GetTerminal()->GetLog()->AddException(&E);
@@ -1549,7 +1550,7 @@ UnicodeString TRemoteFileList::GetFullDirectory()
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFileList::GetFile(Integer Index) const
 {
-  return static_cast<TRemoteFile *>(GetItem(Index));
+  return NB_STATIC_DOWNCAST(TRemoteFile, GetItem(Index));
 }
 //---------------------------------------------------------------------------
 Boolean TRemoteFileList::GetIsRoot()
@@ -1753,13 +1754,11 @@ void TRemoteDirectoryCache::Clear()
   {
     TStringList::Clear();
   };
+  for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    for (intptr_t Index = 0; Index < GetCount(); ++Index)
-    {
-      TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index));
-      SAFE_DESTROY(List);
-      SetObject(Index, nullptr);
-    }
+    TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index));
+    SAFE_DESTROY(List);
+    SetObject(Index, nullptr);
   }
 }
 //---------------------------------------------------------------------------
@@ -1767,7 +1766,7 @@ bool TRemoteDirectoryCache::GetIsEmpty() const
 {
   TGuard Guard(FSection);
 
-  return (const_cast<TRemoteDirectoryCache*>(this)->GetCount() == 0);
+  return (const_cast<TRemoteDirectoryCache *>(this)->GetCount() == 0);
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory)
@@ -1878,7 +1877,7 @@ void TRemoteDirectoryChangesCache::Clear()
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryChangesCache::GetIsEmpty() const
 {
-  return (const_cast<TRemoteDirectoryChangesCache*>(this)->GetCount() == 0);
+  return (const_cast<TRemoteDirectoryChangesCache *>(this)->GetCount() == 0);
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::SetValue(const UnicodeString & Name,
@@ -2642,7 +2641,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * FileList)
   TRemoteProperties CommonProperties;
   for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
   {
-    TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObject(Index));
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObject(Index));
     assert(File);
     if (!Index)
     {
@@ -2741,4 +2740,5 @@ void TRemoteProperties::Save(THierarchicalStorage * Storage) const
 //------------------------------------------------------------------------------
 NB_IMPLEMENT_CLASS(TRemoteFile, NB_GET_CLASS_INFO(TPersistent), nullptr);
 NB_IMPLEMENT_CLASS(TRemoteFileList, NB_GET_CLASS_INFO(TObjectList), nullptr);
+NB_IMPLEMENT_CLASS(TRemoteProperties, NB_GET_CLASS_INFO(TObject), nullptr)
 //------------------------------------------------------------------------------

@@ -8,8 +8,8 @@
 //---------------------------------------------------------------------------
 static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
 {
-  bool HasPrefix1 = (static_cast<const TNamedObject *>(Item1))->GetHidden();
-  bool HasPrefix2 = (static_cast<const TNamedObject *>(Item2))->GetHidden();
+  bool HasPrefix1 = NB_STATIC_DOWNCAST_CONST(TNamedObject, Item1)->GetHidden();
+  bool HasPrefix2 = NB_STATIC_DOWNCAST_CONST(TNamedObject, Item2)->GetHidden();
   if (HasPrefix1 && !HasPrefix2)
   {
     return -1;
@@ -20,7 +20,9 @@ static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
   }
   else
   {
-    return AnsiCompareStr((static_cast<const TNamedObject *>(Item1))->GetName(), (static_cast<const TNamedObject *>(Item2))->GetName());
+    return AnsiCompareStr(
+      NB_STATIC_DOWNCAST_CONST(TNamedObject, Item1)->GetName(),
+      NB_STATIC_DOWNCAST_CONST(TNamedObject, Item2)->GetName());
   }
 }
 //--- TNamedObject ----------------------------------------------------------
@@ -93,13 +95,13 @@ const TNamedObject * TNamedObjectList::AtObject(intptr_t Index) const
 //---------------------------------------------------------------------------
 TNamedObject * TNamedObjectList::AtObject(intptr_t Index)
 {
-  return static_cast<TNamedObject *>(GetItem(Index + GetHiddenCount()));
+  return NB_STATIC_DOWNCAST(TNamedObject, GetItem(Index + GetHiddenCount()));
 }
 //---------------------------------------------------------------------------
 void TNamedObjectList::Recount()
 {
   intptr_t I = 0;
-  while ((I < TObjectList::GetCount()) && (static_cast<TNamedObject *>(GetItem(I))->GetHidden()))
+  while ((I < TObjectList::GetCount()) && (NB_STATIC_DOWNCAST(TNamedObject, GetItem(I))->GetHidden()))
   {
     ++I;
   }
@@ -126,9 +128,9 @@ TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name,
 {
   for (Integer Index = 0; Index < TObjectList::GetCount(); ++Index)
   {
-    if (!(static_cast<TNamedObject *>(GetItem(Index)))->CompareName(Name, CaseSensitive))
+    if (!(NB_STATIC_DOWNCAST(TNamedObject, GetItem(Index)))->CompareName(Name, CaseSensitive))
     {
-      return static_cast<TNamedObject *>(GetItem(Index));
+      return NB_STATIC_DOWNCAST(TNamedObject, GetItem(Index));
     }
   }
   return nullptr;

@@ -15,38 +15,6 @@
 
 namespace Classes {
 
-intptr_t __cdecl debug_printf(const wchar_t * format, ...)
-{
-  (void)format;
-  intptr_t len = 0;
-#ifdef NETBOX_DEBUG
-  va_list args;
-  va_start(args, format);
-  len = _vscwprintf(format, args);
-  std::wstring buf(len + 1, 0);
-  vswprintf(const_cast<wchar_t *>(buf.c_str()), buf.size(), format, args);
-  va_end(args);
-  OutputDebugStringW(buf.c_str());
-#endif
-  return len;
-}
-
-intptr_t __cdecl debug_printf2(const char * format, ...)
-{
-  (void)format;
-  intptr_t len = 0;
-#ifdef NETBOX_DEBUG
-  va_list args;
-  va_start(args, format);
-  len = _vscprintf(format, args);
-  std::string buf(len + sizeof(char), 0);
-  vsprintf_s(&buf[0], buf.size(), format, args);
-  va_end(args);
-  OutputDebugStringA(buf.c_str());
-#endif
-  return len;
-}
-
 //---------------------------------------------------------------------------
 void Abort()
 {
@@ -319,7 +287,7 @@ TObject * TObjectList::operator [](intptr_t Index) const
 
 TObject * TObjectList::GetItem(intptr_t Index) const
 {
-  return reinterpret_cast<TObject *>(TList::GetItem(Index));
+  return static_cast<TObject *>(TList::GetItem(Index));
 }
 
 void TObjectList::SetItem(intptr_t Index, TObject * Value)
@@ -421,25 +389,23 @@ void TStrings::SetTextStr(const UnicodeString & Text)
   {
     EndUpdate();
   };
+  Clear();
+  const wchar_t * P = Text.c_str();
+  if (P != nullptr)
   {
-    Clear();
-    const wchar_t * P = Text.c_str();
-    if (P != nullptr)
+    while (*P != 0x00)
     {
-      while (*P != 0x00)
+      const wchar_t * Start = P;
+      while (!((*P == 0x00) || (*P == 0x0A) || (*P == 0x0D)))
       {
-        const wchar_t * Start = P;
-        while (!((*P == 0x00) || (*P == 0x0A) || (*P == 0x0D)))
-        {
-          P++;
-        }
-        UnicodeString S;
-        S.SetLength(P - Start);
-        memmove(const_cast<wchar_t *>(S.c_str()), Start, (P - Start) * sizeof(wchar_t));
-        Add(S);
-        if (*P == 0x0D) { P++; }
-        if (*P == 0x0A) { P++; }
+        P++;
       }
+      UnicodeString S;
+      S.SetLength(P - Start);
+      memmove(const_cast<wchar_t *>(S.c_str()), Start, (P - Start) * sizeof(wchar_t));
+      Add(S);
+      if (*P == 0x0D) { P++; }
+      if (*P == 0x0A) { P++; }
     }
   }
 }
@@ -456,9 +422,7 @@ UnicodeString TStrings::GetCommaText() const
     FDelimiter = LOldDelimiter;
     FQuoteChar = LOldQuoteChar;
   };
-  {
-    Result = GetDelimitedText();
-  }
+  Result = GetDelimitedText();
   return Result;
 }
 
@@ -518,17 +482,15 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
   {
     EndUpdate();
   };
+  Clear();
+  rde::vector<std::wstring> Lines;
+  std::wstring delim = std::wstring(1, GetDelimiter());
+  delim.append(1, L'\n');
+  std::wstring StrValue = Value.c_str();
+  tokenize(StrValue, Lines, delim, true);
+  for (size_t I = 0; I < Lines.size(); I++)
   {
-    Clear();
-    rde::vector<std::wstring> Lines;
-    std::wstring delim = std::wstring(1, GetDelimiter());
-    delim.append(1, L'\n');
-    std::wstring StrValue = Value.c_str();
-    tokenize(StrValue, Lines, delim, true);
-    for (size_t I = 0; I < Lines.size(); I++)
-    {
-      Add(Lines[I]);
-    }
+    Add(Lines[I]);
   }
 }
 
@@ -547,13 +509,11 @@ void TStrings::Assign(const TPersistent * Source)
     {
       EndUpdate();
     };
-    {
-      Clear();
-      assert(Strings);
-      FQuoteChar = Strings->FQuoteChar;
-      FDelimiter = Strings->FDelimiter;
-      AddStrings(Strings);
-    }
+    Clear();
+    assert(Strings);
+    FQuoteChar = Strings->FQuoteChar;
+    FDelimiter = Strings->FDelimiter;
+    AddStrings(Strings);
   }
   else
   {
@@ -687,12 +647,10 @@ void TStrings::Move(intptr_t CurIndex, intptr_t NewIndex)
     {
       EndUpdate();
     };
-    {
-      UnicodeString TempString = GetString(CurIndex);
-      TObject * TempObject = GetObject(CurIndex);
-      Delete(CurIndex);
-      InsertObject(NewIndex, TempString, TempObject);
-    }
+    UnicodeString TempString = GetString(CurIndex);
+    TObject * TempObject = GetObject(CurIndex);
+    Delete(CurIndex);
+    InsertObject(NewIndex, TempString, TempObject);
   }
 }
 
@@ -786,11 +744,9 @@ void TStrings::AddStrings(const TStrings * Strings)
   {
     EndUpdate();
   };
+  for (intptr_t I = 0; I < Strings->GetCount(); I++)
   {
-    for (intptr_t I = 0; I < Strings->GetCount(); I++)
-    {
-      AddObject(Strings->GetString(I), Strings->GetObject(I));
-    }
+    AddObject(Strings->GetString(I), Strings->GetObject(I));
   }
 }
 
@@ -1004,7 +960,7 @@ const UnicodeString & TStringList::GetString(intptr_t Index) const
   }
   if (Index == static_cast<intptr_t>(FStrings.size()))
   {
-    const_cast<TStringList*>(this)->InsertItem(Index, UnicodeString(), nullptr);
+    const_cast<TStringList *>(this)->InsertItem(Index, UnicodeString(), nullptr);
   }
   return FStrings[Index];
 }
@@ -1851,21 +1807,19 @@ bool TRegistry::DeleteKey(const UnicodeString & Key)
       SetCurrentKey(OldKey);
       RegCloseKey(DeleteKey);
     };
+    SetCurrentKey(DeleteKey);
+    TRegKeyInfo Info;
+    if (GetKeyInfo(Info))
     {
-      SetCurrentKey(DeleteKey);
-      TRegKeyInfo Info;
-      if (GetKeyInfo(Info))
+      UnicodeString KeyName;
+      KeyName.SetLength(Info.MaxSubKeyLen + 1);
+      for (intptr_t I = static_cast<intptr_t>(Info.NumSubKeys) - 1; I >= 0; I--)
       {
-        UnicodeString KeyName;
-        KeyName.SetLength(Info.MaxSubKeyLen + 1);
-        for (intptr_t I = static_cast<intptr_t>(Info.NumSubKeys) - 1; I >= 0; I--)
+        DWORD Len = Info.MaxSubKeyLen + 1;
+        if (RegEnumKeyEx(DeleteKey, static_cast<DWORD>(I), &KeyName[1], &Len,
+                         nullptr, nullptr, nullptr, nullptr) == ERROR_SUCCESS)
         {
-          DWORD Len = Info.MaxSubKeyLen + 1;
-          if (RegEnumKeyEx(DeleteKey, static_cast<DWORD>(I), &KeyName[1], &Len,
-                           nullptr, nullptr, nullptr, nullptr) == ERROR_SUCCESS)
-          {
-            this->DeleteKey(KeyName);
-          }
+          this->DeleteKey(KeyName);
         }
       }
     }
@@ -1888,15 +1842,13 @@ bool TRegistry::KeyExists(const UnicodeString & Key)
   {
     FAccess = OldAccess;
   };
+  FAccess = STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS;
+  HKEY TempKey = GetKey(Key);
+  if (TempKey != 0)
   {
-    FAccess = STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS;
-    HKEY TempKey = GetKey(Key);
-    if (TempKey != 0)
-    {
-      RegCloseKey(TempKey);
-    }
-    Result = TempKey != 0;
+    RegCloseKey(TempKey);
   }
+  Result = TempKey != 0;
   return Result;
 }
 

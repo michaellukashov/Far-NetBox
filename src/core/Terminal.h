@@ -74,12 +74,6 @@ DEFINE_CALLBACK_TYPE2(TCreateLocalDirectoryEvent, BOOL,
   const UnicodeString & /* LocalDirName */, LPSECURITY_ATTRIBUTES /* SecurityAttributes */);
 DEFINE_CALLBACK_TYPE0(TCheckForEscEvent, bool);
 //------------------------------------------------------------------------------
-#define SUSPEND_OPERATION(Command)                            \
-  {                                                           \
-    TSuspendFileOperationProgress Suspend(OperationProgress); \
-    Command                                                   \
-  }
-
 inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
 {
   throw EScpSkipFile(Exception, Message);
@@ -639,6 +633,8 @@ private:
 //------------------------------------------------------------------------------
 struct TCustomCommandParams : public TObject
 {
+NB_DECLARE_CLASS(TCustomCommandParams)
+public:
   UnicodeString Command;
   intptr_t Params;
   TCaptureOutputEvent OutputEvent;
@@ -655,6 +651,8 @@ struct TCalculateSizeStats : public TObject
 //------------------------------------------------------------------------------
 struct TCalculateSizeParams : public TObject
 {
+NB_DECLARE_CLASS(TCalculateSizeParams)
+public:
   __int64 Size;
   intptr_t Params;
   const TCopyParamType * CopyParam;
@@ -665,6 +663,8 @@ struct TCalculateSizeParams : public TObject
 //------------------------------------------------------------------------------
 struct TMakeLocalFileListParams : public TObject
 {
+NB_DECLARE_CLASS(TMakeLocalFileListParams)
+public:
   TStrings * FileList;
   bool IncludeDirs;
   bool Recursive;
@@ -683,57 +683,59 @@ public:
   bool MatchesFilter(const UnicodeString & FileName);
 };
 //------------------------------------------------------------------------------
+enum TChecklistAction { saNone, saUploadNew, saDownloadNew, saUploadUpdate,
+  saDownloadUpdate, saDeleteRemote, saDeleteLocal };
+
+class TChecklistItem : public TObject
+{
+friend class TTerminal;
+NB_DECLARE_CLASS(TChecklistItem)
+public:
+  struct TFileInfo : public TObject
+  {
+    UnicodeString FileName;
+    UnicodeString Directory;
+    TDateTime Modification;
+    TModificationFmt ModificationFmt;
+    __int64 Size;
+  };
+
+  TChecklistAction Action;
+  bool IsDirectory;
+  TFileInfo Local;
+  TFileInfo Remote;
+  intptr_t ImageIndex;
+  bool Checked;
+  TRemoteFile * RemoteFile;
+
+  const UnicodeString & GetFileName() const;
+
+  ~TChecklistItem();
+
+private:
+  FILETIME FLocalLastWriteTime;
+
+  TChecklistItem();
+};
+
+//------------------------------------------------------------------------------
 class TSynchronizeChecklist : public TObject
 {
 friend class TTerminal;
 NB_DISABLE_COPY(TSynchronizeChecklist)
 public:
-  enum TAction { saNone, saUploadNew, saDownloadNew, saUploadUpdate,
-    saDownloadUpdate, saDeleteRemote, saDeleteLocal };
   static const intptr_t ActionCount = saDeleteLocal;
-
-  class TItem : public TObject
-  {
-  friend class TTerminal;
-
-  public:
-    struct TFileInfo : public TObject
-    {
-      UnicodeString FileName;
-      UnicodeString Directory;
-      TDateTime Modification;
-      TModificationFmt ModificationFmt;
-      __int64 Size;
-    };
-
-    TAction Action;
-    bool IsDirectory;
-    TFileInfo Local;
-    TFileInfo Remote;
-    intptr_t ImageIndex;
-    bool Checked;
-    TRemoteFile * RemoteFile;
-
-    const UnicodeString & GetFileName() const;
-
-    ~TItem();
-
-  private:
-    FILETIME FLocalLastWriteTime;
-
-    TItem();
-  };
 
   ~TSynchronizeChecklist();
 
   intptr_t GetCount() const;
-  const TItem * GetItem(intptr_t Index) const;
+  const TChecklistItem * GetItem(intptr_t Index) const;
 
 protected:
   TSynchronizeChecklist();
 
   void Sort();
-  void Add(TItem * Item);
+  void Add(TChecklistItem * Item);
 
 public:
   void SetMasks(const UnicodeString & Value);

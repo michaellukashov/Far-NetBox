@@ -672,7 +672,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     assert(false);
   }
 
-  LogEvent(FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(), Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : UnicodeString(L"<no prompt>").c_str())).c_str());
+  LogEvent(FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(), Instructions.c_str(), UnicodeString(Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : UnicodeString(L"<no prompt>")).c_str()));
 
   Name = Name.Trim();
 
@@ -1037,7 +1037,7 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
     Params.HelpKeyword = HELP_MESSAGE_HOST_IS_NOT_COMMUNICATING;
     Params.Timer = 500;
     Params.TimerEvent = PoolEvent;
-    Params.TimerMessage = MainInstructions(FMTLOAD(TIMEOUT_STILL_WAITING3, FSessionData->GetTimeout()));
+    Params.TimerMessage = MainInstructionsFirstParagraph(FMTLOAD(TIMEOUT_STILL_WAITING3, FSessionData->GetTimeout()));
     Params.TimerAnswers = qaAbort;
     Params.TimerQueryType = qtInformation;
     if (FConfiguration->GetSessionReopenAutoStall() > 0)
@@ -2231,3 +2231,6 @@ void TSecureShell::CollectUsage()
     // Configuration->Usage->Inc(L"OpenedSessionsSSH2");
   }
 }
+//------------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TSecureShell, NB_GET_CLASS_INFO(TObject), nullptr);
+//------------------------------------------------------------------------------

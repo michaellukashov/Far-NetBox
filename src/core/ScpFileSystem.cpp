@@ -379,7 +379,7 @@ TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal) :
 
 void TSCPFileSystem::Init(void * Data)
 {
-  FSecureShell = reinterpret_cast<TSecureShell *>(Data);
+  FSecureShell = NB_STATIC_DOWNCAST(TSecureShell, Data);
   assert(FSecureShell);
   FCommandSet = new TCommandSet(FTerminal->GetSessionData());
   FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
@@ -435,11 +435,11 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
   {
     UnicodeString UName;
     FTerminal->SetExceptionOnFail(true);
-    SCOPE_EXIT
     {
-      FTerminal->SetExceptionOnFail(false);
-    };
-    {
+      SCOPE_EXIT
+      {
+        FTerminal->SetExceptionOnFail(false);
+      };
       try
       {
         AnyCommand(L"uname -a", nullptr);
@@ -678,65 +678,63 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
   {
     FProcessingCommand = false;
   };
+  if (Params & coWaitForLastLine)
   {
-    if (Params & coWaitForLastLine)
+    UnicodeString Line;
+    bool IsLast = true;
+    intptr_t Total = 0;
+    // #55: fixed so, even when last line of command output does not
+    // contain CR/LF, we can recognize last line
+    do
     {
-      UnicodeString Line;
-      bool IsLast = true;
-      intptr_t Total = 0;
-      // #55: fixed so, even when last line of command output does not
-      // contain CR/LF, we can recognize last line
-      do
+      Line = FSecureShell->ReceiveLine();
+      IsLast = IsLastLine(Line);
+      if (!IsLast || !Line.IsEmpty())
       {
-        Line = FSecureShell->ReceiveLine();
-        IsLast = IsLastLine(Line);
-        if (!IsLast || !Line.IsEmpty())
+        FOutput->Add(Line);
+        if (FLAGSET(Params, coReadProgress))
         {
-          FOutput->Add(Line);
-          if (FLAGSET(Params, coReadProgress))
-          {
-            Total++;
+          Total++;
 
-            if (Total % 10 == 0)
-            {
-              bool Cancel; //dummy
-              FTerminal->DoReadDirectoryProgress(Total, Cancel);
-            }
+          if (Total % 10 == 0)
+          {
+            bool Cancel; //dummy
+            FTerminal->DoReadDirectoryProgress(Total, Cancel);
           }
         }
       }
-      while (!IsLast);
     }
-    if (Params & coRaiseExcept)
+    while (!IsLast);
+  }
+  if (Params & coRaiseExcept)
+  {
+    UnicodeString Message = FSecureShell->GetStdError();
+    if ((Params & coExpectNoOutput) && FOutput->GetCount())
     {
-      UnicodeString Message = FSecureShell->GetStdError();
-      if ((Params & coExpectNoOutput) && FOutput->GetCount())
+      if (!Message.IsEmpty())
       {
-        if (!Message.IsEmpty())
-        {
-          Message += L"\n";
-        }
-        Message += FOutput->GetText();
+        Message += L"\n";
       }
-      while (!Message.IsEmpty() && (Message.LastDelimiter(L"\n\r") == Message.Length()))
-      {
-        Message.SetLength(Message.Length() - 1);
-      }
+      Message += FOutput->GetText();
+    }
+    while (!Message.IsEmpty() && (Message.LastDelimiter(L"\n\r") == Message.Length()))
+    {
+      Message.SetLength(Message.Length() - 1);
+    }
 
-      bool WrongReturnCode =
-        (GetReturnCode() > 1) || (GetReturnCode() == 1 && !(Params & coIgnoreWarnings));
+    bool WrongReturnCode =
+      (GetReturnCode() > 1) || (GetReturnCode() == 1 && !(Params & coIgnoreWarnings));
 
-      if ((Params & coOnlyReturnCode) && WrongReturnCode)
-      {
-        FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED_CODEONLY, GetReturnCode()));
-      }
-      else if (!(Params & coOnlyReturnCode) &&
-          ((!Message.IsEmpty() && ((FOutput->GetCount() == 0) || !(Params & coIgnoreWarnings))) ||
-           WrongReturnCode))
-      {
-        assert(Cmd != nullptr);
-        FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED, Cmd->c_str(), GetReturnCode(), Message.c_str()));
-      }
+    if ((Params & coOnlyReturnCode) && WrongReturnCode)
+    {
+      FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED_CODEONLY, GetReturnCode()));
+    }
+    else if (!(Params & coOnlyReturnCode) &&
+        ((!Message.IsEmpty() && ((FOutput->GetCount() == 0) || !(Params & coIgnoreWarnings))) ||
+         WrongReturnCode))
+    {
+      assert(Cmd != nullptr);
+      FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED, Cmd->c_str(), GetReturnCode(), Message.c_str()));
     }
   }
 }
@@ -1372,9 +1370,7 @@ void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
     FOnCaptureOutput = nullptr;
     FSecureShell->SetOnCaptureOutput(nullptr);
   };
-  {
-    ExecCommand2(fsAnyCommand, ecDefault | ecIgnoreWarnings, Command.c_str());
-  }
+  ExecCommand2(fsAnyCommand, ecDefault | ecIgnoreWarnings, Command.c_str());
 }
 //---------------------------------------------------------------------------
 UnicodeString TSCPFileSystem::FileUrl(const UnicodeString & FileName) const
@@ -1415,13 +1411,15 @@ uintptr_t TSCPFileSystem::ConfirmOverwrite(
   QueryParams.Aliases = Aliases;
   QueryParams.AliasesCount = LENOF(Aliases);
   uintptr_t Answer;
-  SUSPEND_OPERATION
-  (
+
+
+  {
+    TSuspendFileOperationProgress Suspend(OperationProgress);
     Answer = FTerminal->ConfirmFileOverwrite(
       FileName, FileParams,
       qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll,
       &QueryParams, Side, CopyParam, Params, OperationProgress);
-  );
+  }
   return Answer;
 }
 //---------------------------------------------------------------------------
@@ -1550,158 +1548,164 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       }
     }
   };
+  try
   {
-    try
-    {
-      SCPResponse(&GotLastLine);
+    SCPResponse(&GotLastLine);
 
-      // This can happen only if SCP command is not executed and return code is 0
-      // It has never happened to me (return code is usually 127)
-      if (GotLastLine)
-      {
-        throw Exception(L"");
-      }
+    // This can happen only if SCP command is not executed and return code is 0
+    // It has never happened to me (return code is usually 127)
+    if (GotLastLine)
+    {
+      throw Exception(L"");
     }
-    catch (Exception & E)
+  }
+  catch (Exception & E)
+  {
+    if (GotLastLine && FTerminal->GetActive())
     {
-      if (GotLastLine && FTerminal->GetActive())
-      {
-        FTerminal->TerminalError(&E, LoadStr(SCP_INIT_ERROR));
-      }
-      else
-      {
-        throw;
-      }
+      FTerminal->TerminalError(&E, LoadStr(SCP_INIT_ERROR));
     }
-    CopyBatchStarted = true;
-
-    for (intptr_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
-      !OperationProgress->Cancel; ++IFile)
+    else
     {
-      UnicodeString FileName = FilesToCopy->GetString(IFile);
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FilesToCopy->GetObject(IFile));
-      UnicodeString RealFileName = File ? File->GetFileName() : FileName;
-      bool CanProceed = false;
+      throw;
+    }
+  }
+  CopyBatchStarted = true;
 
-      UnicodeString FileNameOnly =
-        CopyParam->ChangeFileName(ExtractFileName(RealFileName, false), osLocal, true);
+  for (intptr_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
+    !OperationProgress->Cancel; ++IFile)
+  {
+    UnicodeString FileName = FilesToCopy->GetString(IFile);
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FilesToCopy->GetObject(IFile));
+    UnicodeString RealFileName = File ? File->GetFileName() : FileName;
+    bool CanProceed = false;
 
-      if (CheckExistence)
+    UnicodeString FileNameOnly =
+      CopyParam->ChangeFileName(ExtractFileName(RealFileName, false), osLocal, true);
+
+    if (CheckExistence)
+    {
+      // previously there was assertion on FTerminal->FFiles->Loaded, but it
+      // fails for scripting, if 'ls' is not issued before.
+      // formally we should call CheckRemoteFile here but as checking is for
+      // free here (almost) ...
+      TRemoteFile * File = FTerminal->FFiles->FindFile(FileNameOnly);
+      if (File != nullptr)
       {
-        // previously there was assertion on FTerminal->FFiles->Loaded, but it
-        // fails for scripting, if 'ls' is not issued before.
-        // formally we should call CheckRemoteFile here but as checking is for
-        // free here (almost) ...
-        TRemoteFile * File = FTerminal->FFiles->FindFile(FileNameOnly);
-        if (File != nullptr)
+        uintptr_t Answer;
+        if (File->GetIsDirectory())
         {
-          uintptr_t Answer;
-          if (File->GetIsDirectory())
+          UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly.c_str());
+          TQueryParams QueryParams(qpNeverAskAgainCheck);
           {
-            UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly.c_str());
-            TQueryParams QueryParams(qpNeverAskAgainCheck);
-            SUSPEND_OPERATION
-            (
-              Answer = FTerminal->ConfirmFileOverwrite(
-                FileNameOnly /*not used*/, nullptr,
-                qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
-                &QueryParams, osRemote, CopyParam, Params, OperationProgress, Message);
-            );
-          }
-          else
-          {
-            __int64 MTime;
-            TOverwriteFileParams FileParams;
-            FTerminal->OpenLocalFile(FileName, GENERIC_READ,
-              nullptr, nullptr, nullptr, &MTime, nullptr,
-              &FileParams.SourceSize);
-            FileParams.SourceTimestamp = UnixToDateTime(MTime,
-              FTerminal->GetSessionData()->GetDSTMode());
-            FileParams.DestSize = File->GetSize();
-            FileParams.DestTimestamp = File->GetModification();
-            Answer = ConfirmOverwrite(FileNameOnly, osRemote,
-              &FileParams, CopyParam, Params, OperationProgress);
-          }
-
-          switch (Answer)
-          {
-            case qaYes:
-              CanProceed = true;
-              break;
-
-            case qaCancel:
-              if (!OperationProgress->Cancel)
-              {
-                OperationProgress->Cancel = csCancel;
-              }
-            case qaNo:
-              CanProceed = false;
-              break;
-
-            default:
-              assert(false);
-              break;
+            TSuspendFileOperationProgress Suspend(OperationProgress);
+            Answer = FTerminal->ConfirmFileOverwrite(
+              FileNameOnly /*not used*/, nullptr,
+              qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
+              &QueryParams, osRemote, CopyParam, Params, OperationProgress, Message);
           }
         }
         else
         {
-          CanProceed = true;
+          __int64 MTime;
+          TOverwriteFileParams FileParams;
+          FTerminal->OpenLocalFile(FileName, GENERIC_READ,
+            nullptr, nullptr, nullptr, &MTime, nullptr,
+            &FileParams.SourceSize);
+          FileParams.SourceTimestamp = UnixToDateTime(MTime,
+            FTerminal->GetSessionData()->GetDSTMode());
+          FileParams.DestSize = File->GetSize();
+          FileParams.DestTimestamp = File->GetModification();
+          Answer = ConfirmOverwrite(FileNameOnly, osRemote,
+            &FileParams, CopyParam, Params, OperationProgress);
+        }
+
+        switch (Answer)
+        {
+          case qaYes:
+            CanProceed = true;
+            break;
+
+          case qaCancel:
+            if (!OperationProgress->Cancel)
+            {
+              OperationProgress->Cancel = csCancel;
+            }
+          case qaNo:
+            CanProceed = false;
+            break;
+
+          default:
+            assert(false);
+            break;
         }
       }
       else
       {
         CanProceed = true;
       }
+    }
+    else
+    {
+      CanProceed = true;
+    }
 
-      if (CanProceed)
+    if (CanProceed)
+    {
+      if (FTerminal->GetSessionData()->GetCacheDirectories())
       {
-        if (FTerminal->GetSessionData()->GetCacheDirectories())
-        {
-          FTerminal->DirectoryModified(TargetDir, false);
+        FTerminal->DirectoryModified(TargetDir, false);
 
-          if (DirectoryExists(::ExtractFilePath(FileName)))
-          {
-            FTerminal->DirectoryModified(UnixIncludeTrailingBackslash(TargetDir)+
-              FileNameOnly, true);
-          }
+        if (DirectoryExists(::ExtractFilePath(FileName)))
+        {
+          FTerminal->DirectoryModified(UnixIncludeTrailingBackslash(TargetDir)+
+            FileNameOnly, true);
         }
+      }
 
-        try
+      try
+      {
+        SCPSource(FileName, File, TargetDirFull,
+          CopyParam, Params, OperationProgress, 0);
+        OperationProgress->Finish(RealFileName, true, OnceDoneOperation);
+      }
+      catch (EScpFileSkipped &E)
+      {
+        TQueryParams QueryParams(qpAllowContinueOnError);
+
+        TSuspendFileOperationProgress Suspend(OperationProgress);
+
+        if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()), &E,
+          qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
         {
-          SCPSource(FileName, File, TargetDirFull,
-            CopyParam, Params, OperationProgress, 0);
-          OperationProgress->Finish(RealFileName, true, OnceDoneOperation);
+          OperationProgress->Cancel = csCancel;
         }
-        catch (EScpFileSkipped &E)
+        OperationProgress->Finish(FileName, false, OnceDoneOperation);
+        if (!FTerminal->HandleException(&E))
         {
-          TQueryParams QueryParams(qpAllowContinueOnError);
-          SUSPEND_OPERATION (
-            if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()), &E,
-              qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
-            {
-              OperationProgress->Cancel = csCancel;
-            }
-            OperationProgress->Finish(FileName, false, OnceDoneOperation);
-            if (!FTerminal->HandleException(&E)) throw;
-          );
-        }
-        catch (EScpSkipFile &E)
-        {
-          OperationProgress->Finish(FileName, false, OnceDoneOperation);
-          // If ESkipFile occurs, just log it and continue with next file
-          SUSPEND_OPERATION (
-            if (!FTerminal->HandleException(&E)) throw;
-          );
-        }
-        catch (...)
-        {
-          OperationProgress->Finish(FileName, false, OnceDoneOperation);
           throw;
         }
       }
+      catch (EScpSkipFile &E)
+      {
+        OperationProgress->Finish(FileName, false, OnceDoneOperation);
+        {
+          TSuspendFileOperationProgress Suspend(OperationProgress);
+          // If ESkipFile occurs, just log it and continue with next file
+          if (!FTerminal->HandleException(&E))
+          {
+            throw;
+          }
+        }
+      }
+      catch (...)
+      {
+        OperationProgress->Finish(FileName, false, OnceDoneOperation);
+        throw;
+      }
     }
-    Failed = false;
   }
+  Failed = false;
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
@@ -2034,17 +2038,17 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   FSecureShell->SendLine(Buf);
   SCPResponse();
 
-  SCOPE_EXIT
   {
-    if (FTerminal->GetActive())
+    SCOPE_EXIT
     {
-      // Tell remote side, that we're done.
-      FTerminal->LogEvent(FORMAT(L"Leaving directory \"%s\".", DirectoryName.c_str()));
-      FSecureShell->SendLine(L"E");
-      SCPResponse();
-    }
-  };
-  {
+      if (FTerminal->GetActive())
+      {
+        // Tell remote side, that we're done.
+        FTerminal->LogEvent(FORMAT(L"Leaving directory \"%s\".", DirectoryName.c_str()));
+        FSecureShell->SendLine(L"E");
+        SCPResponse();
+      }
+    };
     DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     TSearchRec SearchRec;
     memset(&SearchRec, 0, sizeof(SearchRec));
@@ -2055,11 +2059,11 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
         FindAttrs, SearchRec) == 0;
     );
 
-    SCOPE_EXIT
     {
-      FindClose(SearchRec);
-    };
-    {
+      SCOPE_EXIT
+      {
+        FindClose(SearchRec);
+      };
       while (FindOK && !OperationProgress->Cancel)
       {
         UnicodeString FileName = IncludeTrailingBackslash(DirectoryName) + SearchRec.Name;
@@ -2076,21 +2080,28 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
         catch (EScpFileSkipped &E)
         {
           TQueryParams QueryParams(qpAllowContinueOnError);
-          SUSPEND_OPERATION (
+
+          {
+            TSuspendFileOperationProgress Suspend(OperationProgress);
             if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()), &E,
                   qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
             {
               OperationProgress->Cancel = csCancel;
             }
-            if (!FTerminal->HandleException(&E)) throw;
-          );
+            if (!FTerminal->HandleException(&E))
+            {
+              throw;
+            }
+          }
         }
         catch (EScpSkipFile &E)
         {
           // If ESkipFile occurs, just log it and continue with next file
-          SUSPEND_OPERATION (
-            if (!FTerminal->HandleException(&E)) throw;
-          );
+          TSuspendFileOperationProgress Suspend(OperationProgress);
+          if (!FTerminal->HandleException(&E))
+          {
+            throw;
+          }
         }
         FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
           FindOK = (FindNextChecked(SearchRec) == 0);
@@ -2137,41 +2148,41 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
     L"\"%s\"", FilesToCopy->GetCount(), TargetDir.c_str()));
   FTerminal->LogEvent(CopyParam->GetLogStr());
 
-  SCOPE_EXIT
   {
-    // In case that copying doesn't cause fatal error (ie. connection is
-    // still active) but wasn't successful (exception or user termination)
-    // we need to ensure, that SCP on remote side is closed
-    if (FTerminal->GetActive() && (CloseSCP ||
-        (OperationProgress->Cancel == csCancel) ||
-        (OperationProgress->Cancel == csCancelTransfer)))
+    SCOPE_EXIT
     {
-      // If we get LastLine, it means that remote side 'scp' is already
-      // terminated, so we need not to terminate it. There is also
-      // possibility that remote side waits for confirmation, so it will hang.
-      // This should not happen (hope)
-      UnicodeString Line = FSecureShell->ReceiveLine();
-      bool LastLineRead = IsLastLine(Line);
-      if (!LastLineRead)
+      // In case that copying doesn't cause fatal error (ie. connection is
+      // still active) but wasn't successful (exception or user termination)
+      // we need to ensure, that SCP on remote side is closed
+      if (FTerminal->GetActive() && (CloseSCP ||
+          (OperationProgress->Cancel == csCancel) ||
+          (OperationProgress->Cancel == csCancelTransfer)))
       {
-        SCPSendError((OperationProgress->Cancel ? L"Terminated by user." : L"Exception"), true);
+        // If we get LastLine, it means that remote side 'scp' is already
+        // terminated, so we need not to terminate it. There is also
+        // possibility that remote side waits for confirmation, so it will hang.
+        // This should not happen (hope)
+        UnicodeString Line = FSecureShell->ReceiveLine();
+        bool LastLineRead = IsLastLine(Line);
+        if (!LastLineRead)
+        {
+          SCPSendError((OperationProgress->Cancel ? L"Terminated by user." : L"Exception"), true);
+        }
+        // Just in case, remote side already sent some more data (it's probable)
+        // but we don't want to raise exception (user asked to terminate, it's not error)
+        int ECParams = coOnlyReturnCode;
+        if (!LastLineRead)
+        {
+          ECParams |= coWaitForLastLine;
+        }
+        ReadCommandOutput(ECParams);
       }
-      // Just in case, remote side already sent some more data (it's probable)
-      // but we don't want to raise exception (user asked to terminate, it's not error)
-      int ECParams = coOnlyReturnCode;
-      if (!LastLineRead)
-      {
-        ECParams |= coWaitForLastLine;
-      }
-      ReadCommandOutput(ECParams);
-    }
-  };
-  {
+    };
     for (intptr_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; ++IFile)
     {
       UnicodeString FileName = FilesToCopy->GetString(IFile);
-      TRemoteFile * File = static_cast<TRemoteFile *>(FilesToCopy->GetObject(IFile));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FilesToCopy->GetObject(IFile));
       assert(File);
 
       // Filename is used for error messaging and excluding files only
@@ -2212,11 +2223,11 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
           try
           {
             FTerminal->SetExceptionOnFail(true);
-            SCOPE_EXIT
             {
-              FTerminal->SetExceptionOnFail(false);
-            };
-            {
+              SCOPE_EXIT
+              {
+                FTerminal->SetExceptionOnFail(false);
+              };
               FILE_OPERATION_LOOP(FMTLOAD(DELETE_FILE_ERROR, FileName.c_str()),
                 // pass full file name in FileName, in case we are not moving
                 // from current directory
@@ -2433,9 +2444,8 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
         }
         catch (Exception &E)
         {
-          SUSPEND_OPERATION (
-            FTerminal->GetLog()->AddException(&E);
-          );
+          TSuspendFileOperationProgress Suspend(OperationProgress);
+          FTerminal->GetLog()->AddException(&E);
           SCPError(LoadStr(SCP_ILLEGAL_FILE_DESCRIPTOR), false);
         }
 
@@ -2671,15 +2681,14 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
     {
       if (!SkipConfirmed)
       {
-        SUSPEND_OPERATION (
-          TQueryParams QueryParams(qpAllowContinueOnError);
-          if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, AbsoluteFileName.c_str()),
-                &E, qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
-          {
-            OperationProgress->Cancel = csCancel;
-          }
-          FTerminal->GetLog()->AddException(&E);
-        );
+        TSuspendFileOperationProgress Suspend(OperationProgress);
+        TQueryParams QueryParams(qpAllowContinueOnError);
+        if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, AbsoluteFileName.c_str()),
+              &E, qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
+        {
+          OperationProgress->Cancel = csCancel;
+        }
+        FTerminal->GetLog()->AddException(&E);
       }
       // this was inside above condition, but then transfer was considered
       // successful, even when for example user refused to overwrite file

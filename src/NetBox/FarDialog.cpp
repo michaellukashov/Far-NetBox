@@ -74,11 +74,11 @@ void TFarDialog::SetBounds(const TRect & Value)
   if (GetBounds() != Value)
   {
     LockChanges();
-    SCOPE_EXIT
     {
-      UnlockChanges();
-    };
-    {
+      SCOPE_EXIT
+      {
+        UnlockChanges();
+      };
       FBounds = Value;
       if (GetHandle())
       {
@@ -708,15 +708,15 @@ intptr_t TFarDialog::ShowModal()
   TFarDialog * PrevTopDialog = GetFarPlugin()->FTopDialog;
   GetFarPlugin()->FTopDialog = this;
   HANDLE Handle = INVALID_HANDLE_VALUE;
-  SCOPE_EXIT
   {
-    GetFarPlugin()->FTopDialog = PrevTopDialog;
-    if (Handle != INVALID_HANDLE_VALUE)
+    SCOPE_EXIT
     {
-      GetFarPlugin()->GetStartupInfo()->DialogFree(Handle);
-    }
-  };
-  {
+      GetFarPlugin()->FTopDialog = PrevTopDialog;
+      if (Handle != INVALID_HANDLE_VALUE)
+      {
+        GetFarPlugin()->GetStartupInfo()->DialogFree(Handle);
+      }
+    };
     assert(GetDefaultButton());
     assert(GetDefaultButton()->GetDefault());
 
@@ -799,7 +799,7 @@ void TFarDialog::Change()
 
     for (intptr_t Index = 0; Index < NotifiedContainers->GetCount(); ++Index)
     {
-      (static_cast<TFarDialogContainer *>((*NotifiedContainers)[Index]))->Change();
+      NB_STATIC_DOWNCAST(TFarDialogContainer, (*NotifiedContainers)[Index])->Change();
     }
   }
 }
@@ -841,11 +841,11 @@ void TFarDialog::ProcessGroup(intptr_t Group, TFarProcessGroupEvent Callback,
   void * Arg)
 {
   LockChanges();
-  SCOPE_EXIT
   {
-    UnlockChanges();
-  };
-  {
+    SCOPE_EXIT
+    {
+      UnlockChanges();
+    };
     for (intptr_t I = 0; I < GetItemCount(); I++)
     {
       TFarDialogItem * Item = GetItem(I);
@@ -908,12 +908,10 @@ void TFarDialog::UnlockChanges()
         this->SendMessage(DM_ENABLEREDRAW, TRUE, 0);
       }
     };
+    if (FChangesPending)
     {
-      if (FChangesPending)
-      {
-        FChangesPending = false;
-        Change();
-      }
+      FChangesPending = false;
+      Change();
     }
   }
 }
@@ -2157,12 +2155,10 @@ void TFarList::Put(intptr_t Index, const UnicodeString & S)
     {
       FNoDialogUpdate = false;
     };
+    TStringList::SetString(Index, S);
+    if (GetUpdateCount() == 0)
     {
-      TStringList::SetString(Index, S);
-      if (GetUpdateCount() == 0)
-      {
-        UpdateItem(Index);
-      }
+      UpdateItem(Index);
     }
   }
   else
@@ -2223,15 +2219,13 @@ void TFarList::Changed()
       {
         GetDialogItem()->GetDialog()->UnlockChanges();
       };
+      GetDialogItem()->SendMessage(DM_LISTSET, reinterpret_cast<void *>(FListItems));
+      if (PrevTopIndex + GetDialogItem()->GetHeight() > GetCount())
       {
-        GetDialogItem()->SendMessage(DM_LISTSET, reinterpret_cast<void *>(FListItems));
-        if (PrevTopIndex + GetDialogItem()->GetHeight() > GetCount())
-        {
-          PrevTopIndex = GetCount() > GetDialogItem()->GetHeight() ? GetCount() - GetDialogItem()->GetHeight() : 0;
-        }
-        SetCurPos((PrevSelected >= GetCount()) ? (GetCount() - 1) : PrevSelected,
-          PrevTopIndex);
+        PrevTopIndex = GetCount() > GetDialogItem()->GetHeight() ? GetCount() - GetDialogItem()->GetHeight() : 0;
       }
+      SetCurPos((PrevSelected >= GetCount()) ? (GetCount() - 1) : PrevSelected,
+        PrevTopIndex);
     }
   }
 }
@@ -2781,9 +2775,12 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
   return Result;
 }
 //---------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TFarDialog, NB_GET_CLASS_INFO(TObject), nullptr)
 NB_IMPLEMENT_CLASS(TFarDialogItem, NB_GET_CLASS_INFO(TObject), nullptr)
 NB_IMPLEMENT_CLASS(TFarButton, NB_GET_CLASS_INFO(TFarDialogItem), nullptr)
 NB_IMPLEMENT_CLASS(TFarListBox, NB_GET_CLASS_INFO(TFarDialogItem), nullptr)
 NB_IMPLEMENT_CLASS(TFarEdit, NB_GET_CLASS_INFO(TFarDialogItem), nullptr)
+NB_IMPLEMENT_CLASS(TFarText, NB_GET_CLASS_INFO(TFarDialogItem), nullptr)
 NB_IMPLEMENT_CLASS(TFarList, NB_GET_CLASS_INFO(TStringList), nullptr)
+NB_IMPLEMENT_CLASS(TFarDialogContainer, NB_GET_CLASS_INFO(TObject), nullptr)
 //---------------------------------------------------------------------------

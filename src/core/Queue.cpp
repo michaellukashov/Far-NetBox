@@ -254,6 +254,7 @@ class TTerminalItem : public TSignalThread
 friend class TQueueItem;
 friend class TBackgroundTerminal;
 NB_DISABLE_COPY(TTerminalItem)
+NB_DECLARE_CLASS(TTerminalItem)
 public:
   explicit TTerminalItem(TTerminalQueue * Queue);
   virtual ~TTerminalItem();
@@ -281,7 +282,7 @@ protected:
   bool OverrideItemStatus(TQueueItem::TStatus & ItemStatus);
 
   void TerminalQueryUser(TObject * Sender,
-    const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+    const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
     const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions,
@@ -299,7 +300,7 @@ protected:
 //---------------------------------------------------------------------------
 int TSimpleThread::ThreadProc(void * Thread)
 {
-  TSimpleThread * SimpleThread = reinterpret_cast<TSimpleThread*>(Thread);
+  TSimpleThread * SimpleThread = NB_STATIC_DOWNCAST(TSimpleThread, Thread);
   assert(SimpleThread != nullptr);
   try
   {
@@ -497,7 +498,7 @@ TTerminalQueue::~TTerminalQueue()
 
     while (FTerminals->GetCount() > 0)
     {
-      TTerminalItem * TerminalItem = reinterpret_cast<TTerminalItem *>(FTerminals->GetItem(0));
+      TTerminalItem * TerminalItem = NB_STATIC_DOWNCAST(TTerminalItem, FTerminals->GetItem(0));
       FTerminals->Delete(0);
       TerminalItem->Terminate();
       TerminalItem->WaitFor();
@@ -671,12 +672,12 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
 //---------------------------------------------------------------------------
 TQueueItem * TTerminalQueue::GetItem(TList * List, intptr_t Index)
 {
-  return reinterpret_cast<TQueueItem*>(List->GetItem(Index));
+  return NB_STATIC_DOWNCAST(TQueueItem, List->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 TQueueItem * TTerminalQueue::GetItem(intptr_t Index)
 {
-  return reinterpret_cast<TQueueItem *>(FItems->GetItem(Index));
+  return NB_STATIC_DOWNCAST(TQueueItem, FItems->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::UpdateStatusForList(
@@ -718,13 +719,11 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
       SAFE_DESTROY(Current);
     }
   };
-  {
-    TGuard Guard(FItemsSection);
+  TGuard Guard(FItemsSection);
 
-    UpdateStatusForList(Status.get(), FDoneItems, Current);
-    Status->SetDoneCount(Status->GetCount());
-    UpdateStatusForList(Status.get(), FItems, Current);
-  }
+  UpdateStatusForList(Status.get(), FDoneItems, Current);
+  Status->SetDoneCount(Status->GetCount());
+  UpdateStatusForList(Status.get(), FItems, Current);
 
   return Status.release();
 }
@@ -967,7 +966,7 @@ void TTerminalQueue::Idle()
       {
         // take the last free terminal, because TerminalFree() puts it to the
         // front, this ensures we cycle thru all free terminals
-        TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->GetItem(FFreeTerminals - 1));
+        TerminalItem = NB_STATIC_DOWNCAST(TTerminalItem, FTerminals->GetItem(FFreeTerminals - 1));
         FTerminals->Move(FFreeTerminals - 1, FTerminals->GetCount() - 1);
         FFreeTerminals--;
       }
@@ -1038,7 +1037,7 @@ void TTerminalQueue::ProcessEvent()
           }
           else if (FFreeTerminals > 0)
           {
-            TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->GetItem(0));
+            TerminalItem = NB_STATIC_DOWNCAST(TTerminalItem, FTerminals->GetItem(0));
             FTerminals->Move(0, FTerminals->GetCount() - 1);
             FFreeTerminals--;
           }
@@ -1394,14 +1393,12 @@ bool TTerminalItem::WaitForUserAction(
     FUserAction = nullptr;
     FItem->SetStatus(PrevStatus);
   };
-  {
-    FUserAction = UserAction;
+  FUserAction = UserAction;
 
-    FItem->SetStatus(ItemStatus);
-    FQueue->DoEvent(qePendingUserAction);
+  FItem->SetStatus(ItemStatus);
+  FQueue->DoEvent(qePendingUserAction);
 
-    Result = !FTerminated && WaitForEvent() && !FCancel;
-  }
+  Result = !FTerminated && WaitForEvent() && !FCancel;
 
   return Result;
 }
@@ -1414,7 +1411,7 @@ void TTerminalItem::Finished()
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::TerminalQueryUser(TObject * Sender,
-  const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+  const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
   const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg)
 {
   // so far query without queue item can occur only for key confirmation
@@ -1426,7 +1423,7 @@ void TTerminalItem::TerminalQueryUser(TObject * Sender,
 
     TQueryUserAction Action(FQueue->GetOnQueryUser());
     Action.Sender = Sender;
-    Action.Query = Query;
+    Action.Query = AQuery;
     Action.MoreMessages = MoreMessages;
     Action.Answers = Answers;
     Action.Params = Params;
@@ -1520,11 +1517,9 @@ void TTerminalItem::OperationProgress(
       FItem->SetStatus(PrevStatus);
       ProgressData.Resume();
     };
-    {
-      FItem->SetStatus(TQueueItem::qsPaused);
+    FItem->SetStatus(TQueueItem::qsPaused);
 
-      WaitForEvent();
-    }
+    WaitForEvent();
   }
 
   if (FTerminated || FCancel)
@@ -1777,11 +1772,11 @@ bool TQueueItemProxy::ProcessUserAction()
 
   bool Result = false;
   FProcessingUserAction = true;
-  SCOPE_EXIT
   {
-    FProcessingUserAction = false;
-  };
-  {
+    SCOPE_EXIT
+    {
+      FProcessingUserAction = false;
+    };
     Result = FQueue->ItemProcessUserAction(FQueueItem, nullptr);
   }
   return Result;
@@ -1886,7 +1881,7 @@ TQueueItemProxy * TTerminalQueueStatus::GetItem(intptr_t Index) const
 //---------------------------------------------------------------------------
 TQueueItemProxy * TTerminalQueueStatus::GetItem(intptr_t Index)
 {
-  return reinterpret_cast<TQueueItemProxy *>(FList->GetItem(Index));
+  return NB_STATIC_DOWNCAST(TQueueItemProxy, FList->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
@@ -2193,52 +2188,50 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
       FAction = nullptr;
       SAFE_DESTROY(FException);
     };
+    TriggerEvent();
+
+    bool Done = false;
+
+    do
     {
-      TriggerEvent();
-
-      bool Done = false;
-
-      do
+      switch (WaitForSingleObject(FActionEvent, 50))
       {
-        switch (WaitForSingleObject(FActionEvent, 50))
-        {
-          case WAIT_OBJECT_0:
-            Done = true;
-            break;
+        case WAIT_OBJECT_0:
+          Done = true;
+          break;
 
-          case WAIT_TIMEOUT:
-            if (FUserAction != nullptr)
+        case WAIT_TIMEOUT:
+          if (FUserAction != nullptr)
+          {
+            try
             {
-              try
-              {
-                FUserAction->Execute(nullptr);
-              }
-              catch (Exception & E)
-              {
-                SaveException(E, FException);
-              }
-
-              FUserAction = nullptr;
-              TriggerEvent();
+              FUserAction->Execute(nullptr);
             }
-            else
+            catch (Exception & E)
             {
-              if (FOnIdle != nullptr)
-              {
-                FOnIdle(nullptr);
-              }
+              SaveException(E, FException);
             }
-            break;
 
-          default:
-            throw Exception(L"Error waiting for background session task to complete");
-        }
+            FUserAction = nullptr;
+            TriggerEvent();
+          }
+          else
+          {
+            if (FOnIdle != nullptr)
+            {
+              FOnIdle(nullptr);
+            }
+          }
+          break;
+
+        default:
+          throw Exception(L"Error waiting for background session task to complete");
       }
-      while (!Done);
-
-
-      Rethrow(FException);
     }
+    while (!Done);
+
+
+    Rethrow(FException);
   }
   catch (...)
   {
@@ -2291,9 +2284,7 @@ void TTerminalThread::Rethrow(Exception *& Exception)
     {
       SAFE_DESTROY(Exception);
     };
-    {
-      RethrowException(Exception);
-    }
+    RethrowException(Exception);
   }
 }
 //---------------------------------------------------------------------------
@@ -2346,12 +2337,12 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     // have to save it as we can go recursive via TQueryParams::TimerEvent,
     // see TTerminalThread::TerminalQueryUser
     TUserAction * PrevUserAction = FUserAction;
-    SCOPE_EXIT
     {
-      FUserAction = PrevUserAction;
-      SAFE_DESTROY(FException);
-    };
-    {
+      SCOPE_EXIT
+      {
+        FUserAction = PrevUserAction;
+        SAFE_DESTROY(FException);
+      };
       FUserAction = UserAction;
 
       while (true)
@@ -2423,7 +2414,7 @@ void TTerminalThread::TerminalInformation(
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalQueryUser(TObject * Sender,
-  const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+  const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
   const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg)
 {
   USEDPARAM(Arg);
@@ -2440,7 +2431,7 @@ void TTerminalThread::TerminalQueryUser(TObject * Sender,
 
   TQueryUserAction Action(FOnQueryUser);
   Action.Sender = Sender;
-  Action.Query = Query;
+  Action.Query = AQuery;
   Action.MoreMessages = MoreMessages;
   Action.Answers = Answers;
   Action.Params = Params;
@@ -2554,3 +2545,9 @@ void TTerminalThread::TerminalReadDirectoryProgress(
   Cancel = Action.Cancel;
 }
 //---------------------------------------------------------------------------
+NB_IMPLEMENT_CLASS(TSimpleThread, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TQueueItem, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TQueueItemProxy, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TSignalThread, NB_GET_CLASS_INFO(TSimpleThread), nullptr);
+NB_IMPLEMENT_CLASS(TTerminalItem, NB_GET_CLASS_INFO(TSignalThread), nullptr);
+//------------------------------------------------------------------------------

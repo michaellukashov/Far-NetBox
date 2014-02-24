@@ -45,23 +45,6 @@ extern const UnicodeString kernel32;
 UnicodeString MB2W(const char * src, const UINT cp = CP_ACP);
 AnsiString W2MB(const wchar_t * src, const UINT cp = CP_ACP);
 //---------------------------------------------------------------------------
-intptr_t __cdecl debug_printf(const wchar_t * format, ...);
-intptr_t __cdecl debug_printf2(const char * format, ...);
-
-#ifdef NETBOX_DEBUG
-#if defined(_MSC_VER)
-#define DEBUG_PRINTF(format, ...) do { debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", Sysutils::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
-#define DEBUG_PRINTF2(format, ...) do { debug_printf2("NetBox: [%s:%d] %s: "format "\n", W2MB(Sysutils::ExtractFilename(__FILEW__, '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
-#else
-#define DEBUG_PRINTF(format, ...) do { debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", Sysutils::ExtractFilename(MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, MB2W(__FUNCTION__).c_str(), ##__VA_ARGS__); } while (0)
-#define DEBUG_PRINTF2(format, ...) do { debug_printf2("NetBox: [%s:%d] %s: "format "\n", W2MB(Sysutils::ExtractFilename(MB2W(__FILE__).c_str(), '\\').c_str()).c_str(), __LINE__, __FUNCTION__, ##__VA_ARGS__); } while (0)
-#endif
-#else
-#define DEBUG_PRINTF(format, ...)
-#define DEBUG_PRINTF2(format, ...)
-#endif
-
-//---------------------------------------------------------------------------
 class TObject;
 DEFINE_CALLBACK_TYPE0(TThreadMethod, void);
 

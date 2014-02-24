@@ -927,7 +927,7 @@ void TCustomIniFileStorage::WriteStringRaw(const UnicodeString & Name, const Uni
 void TCustomIniFileStorage::WriteBinaryData(const UnicodeString & Name,
   const void * Buffer, size_t Size)
 {
-  WriteStringRaw(Name, BytesToHex(RawByteString(static_cast<const char*>(Buffer), Size)));
+  WriteStringRaw(Name, BytesToHex(RawByteString(static_cast<const char *>(Buffer), Size)));
 }
 //===========================================================================
 TIniFileStorage::TIniFileStorage(const UnicodeString & AStorage):
@@ -943,11 +943,11 @@ void TIniFileStorage::Flush()
   if (FOriginal != nullptr)
   {
     std::unique_ptr<TStrings> Strings(new TStringList);
-    SCOPE_EXIT
     {
-      SAFE_DESTROY(FOriginal);
-    };
-    {
+      SCOPE_EXIT
+      {
+        SAFE_DESTROY(FOriginal);
+      };
       NB_STATIC_DOWNCAST(TMemIniFile, FIniFile)->GetString(Strings.get());
       if (!Strings->Equals(FOriginal))
       {
@@ -981,9 +981,7 @@ void TIniFileStorage::Flush()
           {
             ::CloseHandle(Handle);
           };
-          {
-            Strings->SaveToStream(Stream);
-          }
+          Strings->SaveToStream(Stream);
         }
       }
     }
@@ -1086,11 +1084,9 @@ void TOptionsIniFile::ReadSection(const UnicodeString & Section, TStrings * Stri
   {
     Strings->EndUpdate();
   };
+  for (intptr_t Index = 0; Index < FOptions->GetCount(); ++Index)
   {
-    for (intptr_t Index = 0; Index < FOptions->GetCount(); ++Index)
-    {
-      Strings->Add(FOptions->Names[Index]);
-    }
+    Strings->Add(FOptions->Names[Index]);
   }
 }
 //------------------------------------------------------------------------------

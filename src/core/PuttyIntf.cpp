@@ -88,7 +88,7 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
   frontend = get_ssh_frontend(plug);
   assert(frontend);
 
-  TSecureShell * SecureShell = reinterpret_cast<TSecureShell *>(frontend);
+  TSecureShell * SecureShell = NB_STATIC_DOWNCAST(TSecureShell, frontend);
   if (!pfwd)
   {
     SecureShell->UpdateSocket(skt, startup != 0);
@@ -107,12 +107,12 @@ int from_backend(void * frontend, int is_stderr, const char * data, int datalen)
   if (is_stderr >= 0)
   {
     assert((is_stderr == 0) || (is_stderr == 1));
-    (static_cast<TSecureShell *>(frontend))->FromBackend((is_stderr == 1), reinterpret_cast<const uint8_t *>(data), datalen);
+    (NB_STATIC_DOWNCAST(TSecureShell, frontend))->FromBackend((is_stderr == 1), reinterpret_cast<const uint8_t *>(data), datalen);
   }
   else
   {
     assert(is_stderr == -1);
-    (static_cast<TSecureShell *>(frontend))->CWrite(data, datalen);
+    (NB_STATIC_DOWNCAST(TSecureShell, frontend))->CWrite(data, datalen);
   }
   return 0;
 }
@@ -132,7 +132,7 @@ int from_backend_eof(void * /*frontend*/)
 int GetUserpassInput(prompts_t * p, uint8_t * /*in*/, int /*inlen*/)
 {
   assert(p != nullptr);
-  TSecureShell * SecureShell = reinterpret_cast<TSecureShell *>(p->frontend);
+  TSecureShell * SecureShell = NB_STATIC_DOWNCAST(TSecureShell, p->frontend);
   assert(SecureShell != nullptr);
 
   int Result;
@@ -183,7 +183,7 @@ void logevent(void * frontend, const char * string)
   // Frontend maybe nullptr here
   if (frontend != nullptr)
   {
-    (static_cast<TSecureShell *>(frontend))->PuttyLogEvent(string);
+    (NB_STATIC_DOWNCAST(TSecureShell, frontend))->PuttyLogEvent(string);
   }
 }
 //---------------------------------------------------------------------------
@@ -197,7 +197,7 @@ void connection_fatal(void * frontend, char * fmt, ...)
   va_end(Param);
 
   assert(frontend != nullptr);
-  (static_cast<TSecureShell *>(frontend))->PuttyFatalError(UnicodeString(Buf));
+  (NB_STATIC_DOWNCAST(TSecureShell, frontend))->PuttyFatalError(UnicodeString(Buf));
 }
 //---------------------------------------------------------------------------
 int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
@@ -205,7 +205,7 @@ int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
   void * /*ctx*/)
 {
   assert(frontend != nullptr);
-  (static_cast<TSecureShell *>(frontend))->VerifyHostKey(UnicodeString(host), port, keytype, keystr, fingerprint);
+  (NB_STATIC_DOWNCAST(TSecureShell, frontend))->VerifyHostKey(UnicodeString(host), port, keytype, keystr, fingerprint);
 
   // We should return 0 when key was not confirmed, we throw exception instead.
   return 1;
@@ -215,7 +215,7 @@ int askalg(void * frontend, const char * algtype, const char * algname,
   void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
   assert(frontend != nullptr);
-  (static_cast<TSecureShell *>(frontend))->AskAlg(algtype, algname);
+  (NB_STATIC_DOWNCAST(TSecureShell, frontend))->AskAlg(algtype, algname);
 
   // We should return 0 when alg was not confirmed, we throw exception instead.
   return 1;
@@ -230,7 +230,7 @@ void display_banner(void * frontend, const char * banner, int size)
 {
   assert(frontend);
   UnicodeString Banner(banner, size);
-  (static_cast<TSecureShell *>(frontend))->DisplayBanner(Banner);
+  (NB_STATIC_DOWNCAST(TSecureShell, frontend))->DisplayBanner(Banner);
 }
 //---------------------------------------------------------------------------
 static void SSHFatalError(const char * Format, va_list Param)
@@ -472,7 +472,7 @@ long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*R
   assert(Storage != nullptr);
   if (Storage != nullptr)
   {
-    UnicodeString Value(reinterpret_cast<const char*>(Data), DataSize - 1);
+    UnicodeString Value(reinterpret_cast<const char *>(Data), DataSize - 1);
     Storage->WriteStringRaw(ValueName, Value);
   }
 
@@ -521,12 +521,12 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
   {
     Conf * conf = conf_new();
     ssh_gss_liblist * List = NULL;
-    SCOPE_EXIT
     {
-      ssh_gss_cleanup(List);
-      conf_free(conf);
-    };
-    {
+      SCOPE_EXIT
+      {
+        ssh_gss_cleanup(List);
+        conf_free(conf);
+      };
       Filename * filename = filename_from_str(AnsiString(CustomPath).c_str());
       conf_set_filename(conf, CONF_ssh_gss_custom, filename);
       filename_free(filename);

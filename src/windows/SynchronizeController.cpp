@@ -152,13 +152,13 @@ void TSynchronizeController::SynchronizeChange(
           assert(Checklist != nullptr);
           for (intptr_t Index = 0; Index < Checklist->GetCount(); ++Index)
           {
-            const TSynchronizeChecklist::TItem * Item = Checklist->GetItem(Index);
+            const TChecklistItem * Item = Checklist->GetItem(Index);
             // note that there may be action saDeleteRemote even if nothing has changed
             // so this is sub-optimal
             if (Item->IsDirectory)
             {
-              if ((Item->Action == TSynchronizeChecklist::saUploadNew) ||
-                  (Item->Action == TSynchronizeChecklist::saDeleteRemote))
+              if ((Item->Action == saUploadNew) ||
+                  (Item->Action == saDeleteRemote))
               {
                 SubdirsChanged = true;
                 break;
@@ -179,7 +179,7 @@ void TSynchronizeController::SynchronizeChange(
   }
   catch (Exception & E)
   {
-    SynchronizeAbort(NB_STATIC_DOWNCAST(EFatal, static_cast<TObject *>(&E)) != nullptr);
+    SynchronizeAbort(NB_STATIC_DOWNCAST(EFatal, &E) != nullptr);
   }
 }
 //---------------------------------------------------------------------------

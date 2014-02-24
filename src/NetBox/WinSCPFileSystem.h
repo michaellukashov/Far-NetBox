@@ -252,7 +252,7 @@ private:
   void TerminalInformation(TTerminal * Terminal,
     const UnicodeString & Str, bool Status, intptr_t Phase);
   void TerminalQueryUser(TObject * Sender,
-    const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+    const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
     const TQueryParams * AParams, uintptr_t & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal,
     TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions,

@@ -450,9 +450,7 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
     {
       GetConfiguration()->EndUpdate();
     };
-    {
-      GetConfiguration()->SetAutoReadDirectoryAfterOp(AutoReadDirectoryAfterOpCheck->GetChecked());
-    }
+    GetConfiguration()->SetAutoReadDirectoryAfterOp(AutoReadDirectoryAfterOpCheck->GetChecked());
   }
   return Result;
 }
@@ -537,11 +535,11 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    SCOPE_EXIT
     {
-      GetConfiguration()->EndUpdate();
-    };
-    {
+      SCOPE_EXIT
+      {
+        GetConfiguration()->EndUpdate();
+      };
       GetConfiguration()->SetLogging(LoggingCheck->GetChecked());
       GetConfiguration()->SetLogProtocol(LogProtocolCombo->GetItemIndex());
       GetConfiguration()->SetLogToFile(LogToFileCheck->GetChecked());
@@ -670,11 +668,11 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
-    SCOPE_EXIT
     {
-      GetConfiguration()->EndUpdate();
-    };
-    {
+      SCOPE_EXIT
+      {
+        GetConfiguration()->EndUpdate();
+      };
       if (ResumeOnButton->GetChecked())
       {
         CopyParam.SetResumeSupport(rsOn);
@@ -752,17 +750,15 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
     {
       GetConfiguration()->EndUpdate();
     };
-    {
-      TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
+    TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
 
-      GetFarConfiguration()->SetQueueTransfersLimit(QueueTransferLimitEdit->GetAsInteger());
-      CopyParam.SetQueue(QueueCheck->GetChecked());
-      GetFarConfiguration()->SetQueueAutoPopup(QueueAutoPopupCheck->GetChecked());
-      GetGUIConfiguration()->SetSessionRememberPassword(RememberPasswordCheck->GetChecked());
-      GetFarConfiguration()->SetQueueBeep(QueueBeepCheck->GetChecked());
+    GetFarConfiguration()->SetQueueTransfersLimit(QueueTransferLimitEdit->GetAsInteger());
+    CopyParam.SetQueue(QueueCheck->GetChecked());
+    GetFarConfiguration()->SetQueueAutoPopup(QueueAutoPopupCheck->GetChecked());
+    GetGUIConfiguration()->SetSessionRememberPassword(RememberPasswordCheck->GetChecked());
+    GetFarConfiguration()->SetQueueBeep(QueueBeepCheck->GetChecked());
 
-      GetGUIConfiguration()->SetDefaultCopyParam(CopyParam);
-    }
+    GetGUIConfiguration()->SetDefaultCopyParam(CopyParam);
   }
   return Result;
 }
@@ -845,12 +841,10 @@ bool TTransferEditorConfigurationDialog::Execute()
     {
       GetConfiguration()->EndUpdate();
     };
-    {
-      GetFarConfiguration()->SetEditorDownloadDefaultMode(EditorDownloadDefaultButton->GetChecked());
-      GetFarConfiguration()->SetEditorUploadSameOptions(EditorUploadSameButton->GetChecked());
-      GetFarConfiguration()->SetEditorUploadOnSave(EditorUploadOnSaveCheck->GetChecked());
-      GetFarConfiguration()->SetEditorMultiple(EditorMultipleCheck->GetChecked());
-    }
+    GetFarConfiguration()->SetEditorDownloadDefaultMode(EditorDownloadDefaultButton->GetChecked());
+    GetFarConfiguration()->SetEditorUploadSameOptions(EditorUploadSameButton->GetChecked());
+    GetFarConfiguration()->SetEditorUploadOnSave(EditorUploadOnSaveCheck->GetChecked());
+    GetFarConfiguration()->SetEditorMultiple(EditorMultipleCheck->GetChecked());
   }
 
   return Result;
@@ -867,9 +861,7 @@ void TTransferEditorConfigurationDialog::Change()
     {
       UnlockChanges();
     };
-    {
-      UpdateControls();
-    }
+    UpdateControls();
   }
 }
 //------------------------------------------------------------------------------
@@ -930,17 +922,15 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
     {
       GetConfiguration()->EndUpdate();
     };
+    GetFarConfiguration()->SetConfirmOverwritingOverride(
+      ConfirmOverwritingCheck->GetSelected() != BSTATE_3STATE);
+    GetGUIConfiguration()->SetConfirmCommandSession(ConfirmCommandSessionCheck->GetChecked());
+    GetGUIConfiguration()->SetConfirmResume(ConfirmResumeCheck->GetChecked());
+    if (GetFarConfiguration()->GetConfirmOverwritingOverride())
     {
-      GetFarConfiguration()->SetConfirmOverwritingOverride(
-        ConfirmOverwritingCheck->GetSelected() != BSTATE_3STATE);
-      GetGUIConfiguration()->SetConfirmCommandSession(ConfirmCommandSessionCheck->GetChecked());
-      GetGUIConfiguration()->SetConfirmResume(ConfirmResumeCheck->GetChecked());
-      if (GetFarConfiguration()->GetConfirmOverwritingOverride())
-      {
-        GetConfiguration()->SetConfirmOverwriting(ConfirmOverwritingCheck->GetChecked());
-      }
-      GetFarConfiguration()->SetConfirmSynchronizedBrowsing(ConfirmSynchronizedBrowsingCheck->GetChecked());
+      GetConfiguration()->SetConfirmOverwriting(ConfirmOverwritingCheck->GetChecked());
     }
+    GetFarConfiguration()->SetConfirmSynchronizedBrowsing(ConfirmSynchronizedBrowsingCheck->GetChecked());
   }
   return Result;
 }
@@ -996,13 +986,11 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
     {
       GetConfiguration()->EndUpdate();
     };
-    {
-      GetGUIConfiguration()->SetPuttyPath(PuttyPathEdit->GetText());
-      GetGUIConfiguration()->SetPuttyPassword(PuttyPasswordCheck->GetChecked());
-      GetGUIConfiguration()->SetTelnetForFtpInPutty(TelnetForFtpInPuttyCheck->GetChecked());
-      GetFarConfiguration()->SetPageantPath(PageantPathEdit->GetText());
-      GetFarConfiguration()->SetPuttygenPath(PuttygenPathEdit->GetText());
-    }
+    GetGUIConfiguration()->SetPuttyPath(PuttyPathEdit->GetText());
+    GetGUIConfiguration()->SetPuttyPassword(PuttyPasswordCheck->GetChecked());
+    GetGUIConfiguration()->SetTelnetForFtpInPutty(TelnetForFtpInPuttyCheck->GetChecked());
+    GetFarConfiguration()->SetPageantPath(PageantPathEdit->GetText());
+    GetFarConfiguration()->SetPuttygenPath(PuttygenPathEdit->GetText());
   }
   return Result;
 }
@@ -1372,7 +1360,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
 {
   for (intptr_t Index = 0; Index < FEdits->GetCount(); ++Index)
   {
-    reinterpret_cast<TFarEdit *>(FEdits->GetItem(Index))->SetText(Results->GetString(Index));
+    NB_STATIC_DOWNCAST(TFarEdit, FEdits->GetItem(Index))->SetText(Results->GetString(Index));
   }
 
   bool Result = (ShowModal() != brCancel);
@@ -1380,7 +1368,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
   {
     for (intptr_t Index = 0; Index < FEdits->GetCount(); ++Index)
     {
-      UnicodeString Text = reinterpret_cast<TFarEdit *>(FEdits->GetItem(Index))->GetText();
+      UnicodeString Text = NB_STATIC_DOWNCAST(TFarEdit, FEdits->GetItem(Index))->GetText();
       Results->SetString(Index, Text);
     }
 
@@ -1705,11 +1693,9 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
       { \
         COMBO->GetItems()->EndUpdate(); \
       }; \
-      { \
-        COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_AUTO)); \
-        COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_OFF)); \
-        COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_ON)); \
-      } \
+      COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_AUTO)); \
+      COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_OFF)); \
+      COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_ON)); \
     } \
     Text->SetEnabledFollow(COMBO); \
     SetNextItemPosition(ipNewLine);
@@ -2552,11 +2538,11 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TunnelLocalPortNumberEdit->SetLeft(TunnelPortNumberEdit->GetLeft());
   TunnelLocalPortNumberEdit->SetEnabledDependency(TunnelCheck);
   TunnelLocalPortNumberEdit->GetItems()->BeginUpdate();
-  SCOPE_EXIT
   {
-    TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
-  };
-  {
+    SCOPE_EXIT
+    {
+      TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
+    };
     TunnelLocalPortNumberEdit->GetItems()->Add(GetMsg(LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN));
     for (intptr_t Index = GetConfiguration()->GetTunnelLocalPortNumberLow();
          Index <= GetConfiguration()->GetTunnelLocalPortNumberHigh(); ++Index)
@@ -2848,9 +2834,7 @@ void TSessionDialog::Change()
     {
       UnlockChanges();
     };
-    {
-      UpdateControls();
-    }
+    UpdateControls();
   }
 }
 //------------------------------------------------------------------------------
@@ -3411,15 +3395,13 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     {
       KexListBox->GetItems()->EndUpdate();
     };
+    KexListBox->GetItems()->Clear();
+    assert(KEX_NAME_WARN+KEX_COUNT+1 == KEX_NAME_GSSGEX);
+    for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
     {
-      KexListBox->GetItems()->Clear();
-      assert(KEX_NAME_WARN+KEX_COUNT+1 == KEX_NAME_GSSGEX);
-      for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
-      {
-        KexListBox->GetItems()->AddObject(
-          GetMsg(KEX_NAME_WARN + static_cast<intptr_t>(SessionData->GetKex(Index))),
-          static_cast<TObject *>(reinterpret_cast<void *>(SessionData->GetKex(Index))));
-      }
+      KexListBox->GetItems()->AddObject(
+        GetMsg(KEX_NAME_WARN + static_cast<intptr_t>(SessionData->GetKex(Index))),
+        static_cast<TObject *>(reinterpret_cast<void *>(SessionData->GetKex(Index))));
     }
   }
 
@@ -4554,15 +4536,13 @@ void TRightsContainer::SetRights(const TRights & Value)
     {
       GetDialog()->UnlockChanges();
     };
+    SetAllowUndef(true); // temporarily
+    for (size_t Right = 0; Right < LENOF(FCheckBoxes); Right++)
     {
-      SetAllowUndef(true); // temporarily
-      for (size_t Right = 0; Right < LENOF(FCheckBoxes); Right++)
-      {
-        SetStates(static_cast<TRights::TRight>(Right),
-          Value.GetRightUndef(static_cast<TRights::TRight>(Right)));
-      }
-      SetAllowUndef(Value.GetAllowUndef());
+      SetStates(static_cast<TRights::TRight>(Right),
+        Value.GetRightUndef(static_cast<TRights::TRight>(Right)));
     }
+    SetAllowUndef(Value.GetAllowUndef());
   }
 }
 //------------------------------------------------------------------------------
@@ -4640,7 +4620,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   OkButton(nullptr)
 {
   assert(FileList->GetCount() > 0);
-  TRemoteFile * OnlyFile = reinterpret_cast<TRemoteFile *>(FileList->GetObject(0));
+  TRemoteFile * OnlyFile = NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObject(0));
   USEDPARAM(OnlyFile);
   assert(OnlyFile);
   FMultiple = (FileList->GetCount() > 1);
@@ -4664,7 +4644,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     intptr_t Directories = 0;
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->GetObject(Index));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObject(Index));
       assert(File);
       if (UsedGroupList.get() && !File->GetFileGroup().GetName().IsEmpty())
       {
@@ -5566,11 +5546,9 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     {
       GetConfiguration()->EndUpdate();
     };
+    if (SaveSettingsCheck->GetChecked())
     {
-      if (SaveSettingsCheck->GetChecked())
-      {
-        GetGUIConfiguration()->SetDefaultCopyParam(*Params);
-      }
+      GetGUIConfiguration()->SetDefaultCopyParam(*Params);
     }
   }
   return Result;
@@ -6132,7 +6110,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
     assert(List != nullptr);
     if (!Value.IsEmpty())
     {
-      TFarText * Text = reinterpret_cast<TFarText *>(List->GetItem(FLastListItem));
+      TFarText * Text = NB_STATIC_DOWNCAST(TFarText, List->GetItem(FLastListItem));
       FLastListItem++;
 
       Text->SetCaption(FORMAT(L"%d-%s  %s", List->MaxLen, GetMsg(Label).c_str(), Value.c_str()));
@@ -6469,7 +6447,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
         assert(ItemFocused >= 0);
         if (ItemFocused >= BookmarksOffset)
         {
-          TBookmark * Bookmark = static_cast<TBookmark *>(Bookmarks->GetItem(ItemFocused - BookmarksOffset));
+          TBookmark * Bookmark = NB_STATIC_DOWNCAST(TBookmark, Bookmarks->GetItem(ItemFocused - BookmarksOffset));
           BookmarkList->Delete(Bookmark);
         }
         else
@@ -7148,7 +7126,7 @@ private:
   void RefreshChecklist(bool Scroll);
   void UpdateControls();
   void CheckAll(bool Check);
-  UnicodeString ItemLine(const TSynchronizeChecklist::TItem * ChecklistItem);
+  UnicodeString ItemLine(const TChecklistItem * ChecklistItem);
   void AddColumn(UnicodeString & List, const UnicodeString & Value, size_t Column,
     bool Header = false);
   UnicodeString FormatSize(__int64 Size, int Column);
@@ -7372,8 +7350,7 @@ UnicodeString TSynchronizeChecklistDialog::FormatSize(
   return Result;
 }
 //------------------------------------------------------------------------------
-UnicodeString TSynchronizeChecklistDialog::ItemLine(
-  const TSynchronizeChecklist::TItem * ChecklistItem)
+UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * ChecklistItem)
 {
   UnicodeString Line;
   UnicodeString S;
@@ -7385,7 +7362,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(
   }
   AddColumn(Line, S, 0);
 
-  if (ChecklistItem->Action == TSynchronizeChecklist::saDeleteRemote)
+  if (ChecklistItem->Action == saDeleteRemote)
   {
     AddColumn(Line, L"", 1);
     AddColumn(Line, L"", 2);
@@ -7404,7 +7381,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(
       assert(false);
     }
     AddColumn(Line, S, 1);
-    if (ChecklistItem->Action == TSynchronizeChecklist::saDownloadNew)
+    if (ChecklistItem->Action == saDownloadNew)
     {
       AddColumn(Line, L"", 2);
       AddColumn(Line, L"", 3);
@@ -7428,7 +7405,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(
   assert((Action != NPOS) && (Action < static_cast<intptr_t>(LENOF(FActions))));
   AddColumn(Line, FActions[Action], 4);
 
-  if (ChecklistItem->Action == TSynchronizeChecklist::saDeleteLocal)
+  if (ChecklistItem->Action == saDeleteLocal)
   {
     AddColumn(Line, L"", 5);
     AddColumn(Line, L"", 6);
@@ -7447,7 +7424,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(
       assert(false);
     }
     AddColumn(Line, S, 5);
-    if (ChecklistItem->Action == TSynchronizeChecklist::saUploadNew)
+    if (ChecklistItem->Action == saUploadNew)
     {
       AddColumn(Line, L"", 6);
       AddColumn(Line, L"", 7);
@@ -7477,7 +7454,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
   List->BeginUpdate();
   for (intptr_t Index = 0; Index < FChecklist->GetCount(); ++Index)
   {
-    const TSynchronizeChecklist::TItem * ChecklistItem = FChecklist->GetItem(Index);
+    const TChecklistItem * ChecklistItem = FChecklist->GetItem(Index);
 
     List->AddObject(ItemLine(ChecklistItem),
       const_cast<TObject *>(reinterpret_cast<const TObject *>(ChecklistItem)));
@@ -7487,7 +7464,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
   // items must be checked in second pass once the internal array is allocated
   for (intptr_t Index = 0; Index < FChecklist->GetCount(); ++Index)
   {
-    const TSynchronizeChecklist::TItem * ChecklistItem = FChecklist->GetItem(Index);
+    const TChecklistItem * ChecklistItem = FChecklist->GetItem(Index);
 
     List->SetChecked(Index, ChecklistItem->Checked);
     if (ChecklistItem->Checked)
@@ -7524,8 +7501,8 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
     {
       if (!Scroll || (List->GetString(Index).LastDelimiter(L"{}") > 0))
       {
-        const TSynchronizeChecklist::TItem * ChecklistItem =
-          reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObject(Index));
+        const TChecklistItem * ChecklistItem =
+          NB_STATIC_DOWNCAST(TChecklistItem, List->GetObject(Index));
 
         List->SetString(Index, ItemLine(ChecklistItem));
       }
@@ -7696,8 +7673,8 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist * Checklist)
     intptr_t Count = List->GetCount();
     for (intptr_t Index = 0; Index < Count; ++Index)
     {
-      TSynchronizeChecklist::TItem * ChecklistItem =
-        reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObject(Index));
+      TChecklistItem * ChecklistItem =
+        NB_STATIC_DOWNCAST(TChecklistItem, List->GetObject(Index));
       ChecklistItem->Checked = List->GetChecked(Index);
     }
   }
@@ -8318,7 +8295,7 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
 {
   if (QueueListBox->GetItems()->GetSelected() != NPOS)
   {
-    TQueueItemProxy * QueueItem = reinterpret_cast<TQueueItemProxy *>(
+    TQueueItemProxy * QueueItem = NB_STATIC_DOWNCAST(TQueueItemProxy,
       QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->GetSelected()));
 
     if (Sender == ExecuteButton)
@@ -8410,7 +8387,7 @@ void TQueueDialog::UpdateControls()
   TQueueItemProxy * QueueItem = nullptr;
   if (QueueListBox->GetItems()->GetSelected() >= 0)
   {
-    QueueItem = reinterpret_cast<TQueueItemProxy *>(
+    QueueItem = NB_STATIC_DOWNCAST(TQueueItemProxy,
       QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->GetSelected()));
   }
 
@@ -8517,7 +8494,7 @@ void TQueueDialog::RefreshQueue()
     while ((Index < QueueListBox->GetItems()->GetCount()) &&
            (Index < TopIndex + QueueListBox->GetHeight()))
     {
-      QueueItem = reinterpret_cast<TQueueItemProxy *>(
+      QueueItem = NB_STATIC_DOWNCAST(TQueueItemProxy,
         QueueListBox->GetItems()->GetObject(Index));
       assert(QueueItem != nullptr);
       if ((PrevQueueItem != nullptr) && (QueueItem != PrevQueueItem))
@@ -8558,7 +8535,7 @@ void TQueueDialog::LoadQueue()
     size_t ILine = 0;
     while (FillQueueItemLine(Line, QueueItem, ILine))
     {
-      List->AddObject(Line, reinterpret_cast<TObject *>(QueueItem));
+      List->AddObject(Line, QueueItem);
       List->SetDisabled(List->GetCount() - 1, (ILine > 0));
       ILine++;
     }

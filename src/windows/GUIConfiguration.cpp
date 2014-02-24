@@ -333,8 +333,8 @@ void TCopyParamList::Insert(intptr_t Index, const UnicodeString & Name,
   assert(FNames->IndexOf(Name) < 0);
   FNames->Insert(Index, Name);
   assert(CopyParam != nullptr);
-  FCopyParams->Insert(Index, reinterpret_cast<TObject *>(CopyParam));
-  FRules->Insert(Index, reinterpret_cast<TObject *>(Rule));
+  FCopyParams->Insert(Index, CopyParam);
+  FRules->Insert(Index, Rule);
   Modify();
 }
 //---------------------------------------------------------------------------
@@ -345,9 +345,9 @@ void TCopyParamList::Change(intptr_t Index, const UnicodeString & Name,
   {
     FNames->SetString(Index, Name);
     delete GetCopyParam(Index);
-    FCopyParams->SetItem(Index, reinterpret_cast<TObject *>(CopyParam));
+    FCopyParams->SetItem(Index, CopyParam);
     delete GetRule(Index);
-    FRules->SetItem(Index, reinterpret_cast<TObject *>(Rule));
+    FRules->SetItem(Index, Rule);
     Modify();
   }
   else
@@ -410,20 +410,18 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
       {
         Storage->CloseSubKey();
       };
-      {
-        Name = Storage->ReadString(L"Name", Name);
-        CopyParam->Load(Storage);
+      Name = Storage->ReadString(L"Name", Name);
+      CopyParam->Load(Storage);
 
-        if (Storage->ReadBool(L"HasRule", false))
-        {
-          Rule.reset(new TCopyParamRule());
-          Rule->Load(Storage);
-        }
+      if (Storage->ReadBool(L"HasRule", false))
+      {
+        Rule.reset(new TCopyParamRule());
+        Rule->Load(Storage);
       }
     }
 
-    FCopyParams->Add(reinterpret_cast<TObject *>(CopyParam.release()));
-    FRules->Add(reinterpret_cast<TObject *>(Rule.release()));
+    FCopyParams->Add(CopyParam.release());
+    FRules->Add(Rule.release());
     FNames->Add(Name);
   }
   Reset();
@@ -440,17 +438,15 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
       {
         Storage->CloseSubKey();
       };
-      {
-        const TCopyParamType * CopyParam = GetCopyParam(Index);
-        const TCopyParamRule * Rule = GetRule(Index);
+      const TCopyParamType * CopyParam = GetCopyParam(Index);
+      const TCopyParamRule * Rule = GetRule(Index);
 
-        Storage->WriteString(L"Name", GetName(Index));
-        CopyParam->Save(Storage);
-        Storage->WriteBool(L"HasRule", (Rule != nullptr));
-        if (Rule != nullptr)
-        {
-          Rule->Save(Storage);
-        }
+      Storage->WriteString(L"Name", GetName(Index));
+      CopyParam->Save(Storage);
+      Storage->WriteBool(L"HasRule", (Rule != nullptr));
+      if (Rule != nullptr)
+      {
+        Rule->Save(Storage);
       }
     }
   }
@@ -458,12 +454,12 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
 //---------------------------------------------------------------------------
 const TCopyParamRule * TCopyParamList::GetRule(intptr_t Index) const
 {
-  return reinterpret_cast<TCopyParamRule *>(FRules->GetItem(Index));
+  return NB_STATIC_DOWNCAST(TCopyParamRule, FRules->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 const TCopyParamType * TCopyParamList::GetCopyParam(intptr_t Index) const
 {
-  return reinterpret_cast<TCopyParamType *>(FCopyParams->GetItem(Index));
+  return NB_STATIC_DOWNCAST(TCopyParamType, FCopyParams->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 UnicodeString TCopyParamList::GetName(intptr_t Index) const
@@ -674,19 +670,17 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     {
       Storage->CloseSubKey();
     };
-    {
-      FDefaultCopyParam.Save(Storage);
+    FDefaultCopyParam.Save(Storage);
 
-      if (FCopyParamListDefaults)
-      {
-        assert(!FCopyParamList->GetModified());
-        Storage->WriteInteger(L"CopyParamList", -1);
-      }
-      else if (All || FCopyParamList->GetModified())
-      {
-        Storage->WriteInteger(L"CopyParamList", FCopyParamList->GetCount());
-        FCopyParamList->Save(Storage);
-      }
+    if (FCopyParamListDefaults)
+    {
+      assert(!FCopyParamList->GetModified());
+      Storage->WriteInteger(L"CopyParamList", -1);
+    }
+    else if (All || FCopyParamList->GetModified())
+    {
+      Storage->WriteInteger(L"CopyParamList", FCopyParamList->GetCount());
+      FCopyParamList->Save(Storage);
     }
   }
 
@@ -696,9 +690,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     {
       Storage->CloseSubKey();
     };
-    {
-      FNewDirectoryProperties.Save(Storage);
-    }
+    FNewDirectoryProperties.Save(Storage);
   }
 }
 //---------------------------------------------------------------------------
@@ -723,24 +715,22 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     {
       Storage->CloseSubKey();
     };
-    {
-      // must be loaded before eventual setting defaults for CopyParamList
-      FDefaultCopyParam.Load(Storage);
+    // must be loaded before eventual setting defaults for CopyParamList
+    FDefaultCopyParam.Load(Storage);
 
-      intptr_t CopyParamListCount = Storage->ReadInteger(L"CopyParamList", (DWORD)-1);
-      FCopyParamListDefaults = (CopyParamListCount == (DWORD)-1);
-      if (!FCopyParamListDefaults)
-      {
-        FCopyParamList->Clear();
-        FCopyParamList->Load(Storage, CopyParamListCount);
-      }
-      else if (FCopyParamList->GetModified())
-      {
-        FCopyParamList->Clear();
-        FCopyParamListDefaults = false;
-      }
-      FCopyParamList->Reset();
+    intptr_t CopyParamListCount = Storage->ReadInteger(L"CopyParamList", (DWORD)-1);
+    FCopyParamListDefaults = (CopyParamListCount == (DWORD)-1);
+    if (!FCopyParamListDefaults)
+    {
+      FCopyParamList->Clear();
+      FCopyParamList->Load(Storage, CopyParamListCount);
     }
+    else if (FCopyParamList->GetModified())
+    {
+      FCopyParamList->Clear();
+      FCopyParamListDefaults = false;
+    }
+    FCopyParamList->Reset();
   }
 
   // Make it compatible with versions prior to 3.7.1 that have not saved PuttyPath
@@ -763,9 +753,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     {
       Storage->CloseSubKey();
     };
-    {
-      FNewDirectoryProperties.Load(Storage);
-    }
+    FNewDirectoryProperties.Load(Storage);
   }
 }
 //---------------------------------------------------------------------------
@@ -960,11 +948,11 @@ TStrings * TGUIConfiguration::GetLocales()
 
   Found = (bool)(FindFirst(ChangeFileExt(ModuleFileName(), L".*"),
     FindAttrs, SearchRec) == 0);
-  SCOPE_EXIT
   {
-    FindClose(SearchRec);
-  };
-  {
+    SCOPE_EXIT
+    {
+      FindClose(SearchRec);
+    };
     UnicodeString Ext;
     while (Found)
     {
@@ -1010,7 +998,7 @@ TStrings * TGUIConfiguration::GetLocales()
 
         if (Ext >= 0)
         {
-          Exts->SetObject(Ext, reinterpret_cast<TObject*>(Locale));
+          Exts->SetObject(Ext, reinterpret_cast<TObject *>(Locale));
         }
         else
         {
@@ -1033,7 +1021,7 @@ TStrings * TGUIConfiguration::GetLocales()
         GetLocaleInfo(Locale, LOCALE_SLANGUAGE,
           LocaleStr, sizeof(LocaleStr));
         Name += LocaleStr;
-        FLocales->AddObject(Name, reinterpret_cast<TObject*>(Locale));
+        FLocales->AddObject(Name, reinterpret_cast<TObject *>(Locale));
       }
       ++Index;
     }
@@ -1184,7 +1172,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   }
 
   TSessionData * PuttySessionData =
-    static_cast<TSessionData *>(ImportSessionList->FindByName(GetPuttySession()));
+    NB_STATIC_DOWNCAST(TSessionData, ImportSessionList->FindByName(GetPuttySession()));
   if (PuttySessionData != nullptr)
   {
     ImportSessionList->Remove(PuttySessionData);
@@ -1300,4 +1288,5 @@ inline TGUIConfiguration * GetGUIConfiguration()
 //------------------------------------------------------------------------------
 NB_IMPLEMENT_CLASS(TGUICopyParamType, NB_GET_CLASS_INFO(TCopyParamType), nullptr);
 NB_IMPLEMENT_CLASS(TGUIConfiguration, NB_GET_CLASS_INFO(TConfiguration), nullptr);
+NB_IMPLEMENT_CLASS(TCopyParamRule, NB_GET_CLASS_INFO(TObject), nullptr);
 //---------------------------------------------------------------------------

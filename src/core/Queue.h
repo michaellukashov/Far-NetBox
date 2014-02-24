@@ -9,6 +9,7 @@ class TTerminalItem;
 class TSimpleThread : public TObject
 {
 NB_DISABLE_COPY(TSimpleThread)
+NB_DECLARE_CLASS(TSimpleThread)
 public:
   explicit TSimpleThread();
   virtual ~TSimpleThread();
@@ -35,6 +36,7 @@ public:
 class TSignalThread : public TSimpleThread
 {
 NB_DISABLE_COPY(TSignalThread)
+NB_DECLARE_CLASS(TSignalThread)
 public:
   void Init(bool LowPriority);
   virtual void Start();
@@ -168,6 +170,7 @@ class TQueueItem : public TObject
 friend class TTerminalQueue;
 friend class TTerminalItem;
 NB_DISABLE_COPY(TQueueItem)
+NB_DECLARE_CLASS(TQueueItem)
 public:
   enum TStatus {
     qsPending, qsConnecting, qsProcessing, qsPrompt, qsQuery, qsError,
@@ -223,6 +226,7 @@ friend class TQueueItem;
 friend class TTerminalQueueStatus;
 friend class TTerminalQueue;
 NB_DISABLE_COPY(TQueueItemProxy)
+NB_DECLARE_CLASS(TQueueItemProxy)
 public:
   bool Update();
   bool ProcessUserAction();
@@ -411,7 +415,7 @@ private:
 
   void TerminalInformation(TTerminal * Terminal, const UnicodeString & Str, bool Status, intptr_t Phase);
   void TerminalQueryUser(TObject * Sender,
-    const UnicodeString & Query, TStrings * MoreMessages, uintptr_t Answers,
+    const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
     const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions,

@@ -77,6 +77,7 @@ static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
 #pragma warn -inl
 class TSessionActionRecord : public TObject
 {
+NB_DECLARE_CLASS(TSessionActionRecord)
 public:
   explicit TSessionActionRecord(TActionLog * Log, TLogAction Action) :
     FLog(Log),
@@ -718,11 +719,10 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         SCOPE_EXIT
         {
           DeleteUnnecessary();
+
           EndUpdate();
         };
-        {
-          DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
-        }
+        DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
       }
     }
     catch (Exception &E)
@@ -834,18 +834,16 @@ void TSessionLog::DeleteUnnecessary()
   {
     EndUpdate();
   };
+  if (!GetLogging() || (FParent != nullptr))
   {
-    if (!GetLogging() || (FParent != nullptr))
+    Clear();
+  }
+  else
+  {
+    while (!FConfiguration->GetLogWindowComplete() && (GetCount() > FConfiguration->GetLogWindowLines()))
     {
-      Clear();
-    }
-    else
-    {
-      while (!FConfiguration->GetLogWindowComplete() && (GetCount() > FConfiguration->GetLogWindowLines()))
-      {
-        Delete(0);
-        ++FTopIndex;
-      }
+      Delete(0);
+      ++FTopIndex;
     }
   }
 }
@@ -1118,12 +1116,6 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     #undef ADF
     #undef ADSTR
   }
-//  __finally
-//  {
-//    DeleteUnnecessary();
-
-//    EndUpdate();
-//  }
 }
 //---------------------------------------------------------------------------
 void TSessionLog::AddSeparator()
@@ -1379,7 +1371,7 @@ void TActionLog::AddPendingAction(TSessionActionRecord * Action)
 void TActionLog::RecordPendingActions()
 {
   while ((FPendingActions->GetCount() > 0) &&
-         static_cast<TSessionActionRecord *>(FPendingActions->GetItem(0))->Record())
+         NB_STATIC_DOWNCAST(TSessionActionRecord, FPendingActions->GetItem(0))->Record())
   {
     FPendingActions->Delete(0);
   }
@@ -1419,5 +1411,5 @@ void TActionLog::SetEnabled(bool Value)
 }
 
 //------------------------------------------------------------------------------
-//NB_IMPLEMENT_CLASS(TSessionUI, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TSessionActionRecord, NB_GET_CLASS_INFO(TObject), nullptr);
 //------------------------------------------------------------------------------

@@ -166,9 +166,7 @@ void TFarConfiguration::Load()
   {
     FForceInheritance = false;
   };
-  {
-    TGUIConfiguration::Load();
-  }
+  TGUIConfiguration::Load();
 }
 //---------------------------------------------------------------------------
 void TFarConfiguration::Save(bool All, bool Explicit)
@@ -178,9 +176,7 @@ void TFarConfiguration::Save(bool All, bool Explicit)
   {
     FForceInheritance = false;
   };
-  {
-    TGUIConfiguration::DoSave(All, Explicit);
-  }
+  TGUIConfiguration::DoSave(All, Explicit);
 }
 //---------------------------------------------------------------------------
 void TFarConfiguration::SetPlugin(TCustomFarPlugin * Value)

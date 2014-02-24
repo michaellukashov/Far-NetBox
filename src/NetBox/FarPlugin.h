@@ -366,9 +366,8 @@ private:
 //---------------------------------------------------------------------------
 class TCustomFarPanelItem : public TObject
 {
-  friend class TCustomFarFileSystem;
-public:
-
+friend class TCustomFarFileSystem;
+NB_DECLARE_CLASS(TCustomFarPanelItem)
 protected:
   virtual ~TCustomFarPanelItem()
   {}
@@ -386,6 +385,7 @@ protected:
 class TFarPanelItem : public TCustomFarPanelItem
 {
 NB_DISABLE_COPY(TFarPanelItem)
+NB_DECLARE_CLASS(TFarPanelItem)
 public:
   explicit TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem);
   virtual ~TFarPanelItem();

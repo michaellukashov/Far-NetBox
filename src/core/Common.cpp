@@ -290,7 +290,7 @@ UnicodeString ExceptionLogString(Exception *E)
 #if defined(__BORLANDC__)
     Msg = FORMAT(L"(%s) %s", (E->ClassName(), E->Message.c_str()));
 #else
-    Msg = FORMAT(L"%s", ::MB2W(E->what()).c_str());
+    Msg = FORMAT(L"%s", UnicodeString(E->what()).c_str());
 #endif
     if (NB_STATIC_DOWNCAST(ExtException, E) != nullptr)
     {
@@ -924,17 +924,15 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
     {
       FindClose(SearchRec);
     };
+    do
     {
-      do
+      if ((SearchRec.Name != L".") && (SearchRec.Name != L".."))
       {
-        if ((SearchRec.Name != L".") && (SearchRec.Name != L".."))
-        {
-          UnicodeString FileName = DirName2 + SearchRec.Name;
-          CallBackFunc(FileName, SearchRec, Param);
-        }
+        UnicodeString FileName = DirName2 + SearchRec.Name;
+        CallBackFunc(FileName, SearchRec, Param);
+      }
 
-      } while (FindNextChecked(SearchRec) == 0);
-    }
+    } while (FindNextChecked(SearchRec) == 0);
   }
 }
 //---------------------------------------------------------------------------
