@@ -1908,7 +1908,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
         if (Unquote(Path))
         {
-          FCurrentDirectory = UnixExcludeTrailingBackslash(Path);
+          FCurrentDirectory = ::AbsolutePath(L"/", UnixExcludeTrailingBackslash(Path));
           if (FCurrentDirectory.IsEmpty())
           {
             FCurrentDirectory = L"/";
