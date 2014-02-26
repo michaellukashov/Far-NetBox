@@ -1306,7 +1306,7 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
     {
       SYSTEMTIME UniverzalSysTime;
       FileTimeToSystemTime(&FileTime, &UniverzalSysTime);
-      SystemTimeToTzSpecificLocalTime(NULL, &UniverzalSysTime, &SysTime);
+      SystemTimeToTzSpecificLocalTime(nullptr, &UniverzalSysTime, &SysTime);
     }
     else
     {
@@ -2014,7 +2014,7 @@ bool GetWindowsProductType(DWORD & Type)
   typedef BOOL (WINAPI * TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
   TGetProductInfo GetProductInfo =
       (TGetProductInfo)GetProcAddress(Kernel32, "GetProductInfo");
-  if (GetProductInfo == NULL)
+  if (GetProductInfo == nullptr)
   {
     Result = false;
   }

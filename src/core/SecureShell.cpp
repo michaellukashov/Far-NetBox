@@ -1196,7 +1196,7 @@ int TSecureShell::TranslatePuttyMessage(
     }
   }
 
-  if ((HelpKeyword != NULL) && (Result >= 0))
+  if ((HelpKeyword != nullptr) && (Result >= 0))
   {
     *HelpKeyword = Translation[Result].HelpKeyword;
   }

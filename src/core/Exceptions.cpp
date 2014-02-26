@@ -391,7 +391,7 @@ Exception * CloneException(Exception * E)
   Exception * Result;
   // this list has to be in sync with ExceptionMessage
   ExtException * Ext = NB_STATIC_DOWNCAST(ExtException, E);
-  if (Ext != NULL)
+  if (Ext != nullptr)
   {
     Result = Ext->Clone();
   }
@@ -429,7 +429,7 @@ void RethrowException(Exception * E)
   {
     throw EAbort(E->Message);
   }
-  else if (WellKnownException(E, NULL, NULL, NULL, true))
+  else if (WellKnownException(E, nullptr, nullptr, nullptr, true))
   {
     // noop, should never get here
   }

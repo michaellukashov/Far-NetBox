@@ -2005,7 +2005,7 @@ inline void TSFTPFileSystem::BusyEnd()
   if (FBusy == 0 && FTerminal->GetUseBusyCursor() && !FAvoidBusy)
   {
     ::BusyEnd(FBusyToken);
-    FBusyToken = NULL;
+    FBusyToken = nullptr;
   }
 }
 //---------------------------------------------------------------------------

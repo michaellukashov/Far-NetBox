@@ -3203,7 +3203,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
     catch (Exception & E)
     {
       UnicodeString Message;
-      if (RecryptPasswordOnly && ALWAYS_TRUE(RecryptPasswordErrors != NULL) &&
+      if (RecryptPasswordOnly && ALWAYS_TRUE(RecryptPasswordErrors != nullptr) &&
           ExceptionMessage(&E, Message))
       {
         RecryptPasswordErrors->Add(FORMAT(L"%s: %s", SessionData->GetSessionName().c_str(), Message.c_str()));
@@ -3218,7 +3218,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
 //---------------------------------------------------------------------
 void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
 {
-  DoSave(Storage, All, false, NULL);
+  DoSave(Storage, All, false, nullptr);
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::DoSave(bool All, bool Explicit,

@@ -1325,7 +1325,7 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
     }
 
     TQueryParams HelpKeywordOverrideParams;
-    if (Params != NULL)
+    if (Params != nullptr)
     {
       HelpKeywordOverrideParams.Assign(*Params);
     }
@@ -4066,7 +4066,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
             {
               TSuspendFileOperationProgress Suspend(OperationProgress);
               Answer = QueryUser(
-                MainInstructions(FMTLOAD(READ_ONLY_OVERWRITE, FileName.c_str())), NULL,
+                MainInstructions(FMTLOAD(READ_ONLY_OVERWRITE, FileName.c_str())), nullptr,
                 qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll, 0);
             }
 
@@ -5277,7 +5277,7 @@ bool TTerminal::CopyToRemote(TStrings * AFilesToCopy,
     bool CalculatedSize =
       CalculateLocalFilesSize(
         AFilesToCopy, Size,
-        (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL),
+        (FLAGCLEAR(Params, cpDelete) ? CopyParam : nullptr),
         CopyParam->GetCalculateSize());
 
     OperationProgress.Start((Params & cpDelete ? foMove : foCopy), osLocal,
@@ -5388,8 +5388,8 @@ bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
       // dirty trick: when moving, do not pass copy param to avoid exclude mask
       if (CalculateFilesSize(
            AFilesToCopy, TotalSize, csIgnoreErrors,
-           (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL),
-           CopyParam->GetCalculateSize(), NULL))
+           (FLAGCLEAR(Params, cpDelete) ? CopyParam : nullptr),
+           CopyParam->GetCalculateSize(), nullptr))
       {
         TotalSizeKnown = true;
       }
