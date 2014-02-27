@@ -798,7 +798,7 @@ HANDLE TWinSCPPlugin::CreateLocalFile(const UnicodeString & LocalFileName,
   DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
   return GetSystemFunctions()->CreateFile(LocalFileName.c_str(), DesiredAccess,
-    ShareMode, NULL, CreationDisposition, FlagsAndAttributes, 0);
+    ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
 }
 
 DWORD TWinSCPPlugin::GetLocalFileAttributes(const UnicodeString & LocalFileName)

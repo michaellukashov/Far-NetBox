@@ -79,7 +79,7 @@ void TFarConfiguration::Default()
 THierarchicalStorage * TFarConfiguration::CreateStorage(bool SessionList)
 {
   assert(FFarPlugin);
-  return FFarPlugin ? new TFar3Storage(GetRegistryStorageKey(), MainGuid, FFarPlugin->GetStartupInfo()->SettingsControl) : NULL;
+  return FFarPlugin ? new TFar3Storage(GetRegistryStorageKey(), MainGuid, FFarPlugin->GetStartupInfo()->SettingsControl) : nullptr;
 }
 //---------------------------------------------------------------------------
 void TFarConfiguration::Saved()

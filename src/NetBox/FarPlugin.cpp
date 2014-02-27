@@ -334,7 +334,7 @@ void * TCustomFarPlugin::OpenPlugin(const struct OpenInfo *Info)
     }
     else
     {
-      Result = NULL;
+      Result = nullptr;
     }
 
     return Result;
@@ -343,7 +343,7 @@ void * TCustomFarPlugin::OpenPlugin(const struct OpenInfo *Info)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
-    return NULL;
+    return nullptr;
   }
 }
 //---------------------------------------------------------------------------
@@ -1524,7 +1524,7 @@ UnicodeString TCustomFarPlugin::FormatConsoleTitle()
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::UpdateProgress(intptr_t State, intptr_t Progress)
 {
-  FarAdvControl(ACTL_SETPROGRESSSTATE, State, NULL);
+  FarAdvControl(ACTL_SETPROGRESSSTATE, State, nullptr);
   if (State == TBPS_NORMAL)
   {
     ProgressValue pv;
@@ -2112,7 +2112,7 @@ bool TCustomFarFileSystem::UpdatePanel(bool ClearSelection, bool Another)
 //---------------------------------------------------------------------------
 void TCustomFarFileSystem::RedrawPanel(bool Another)
 {
-  FPlugin->FarControl(FCTL_REDRAWPANEL, 0, NULL, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
+  FPlugin->FarControl(FCTL_REDRAWPANEL, 0, nullptr, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
 }
 //---------------------------------------------------------------------------
 void TCustomFarFileSystem::ClosePanel()
@@ -2378,7 +2378,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   Labels[FunctionKey - 1].Key.VirtualKeyCode = VK_F1 + FunctionKey - 1;
   Labels[FunctionKey - 1].Key.ControlKeyState = FKeys[shift];
   Labels[FunctionKey - 1].Text = TCustomFarPlugin::DuplicateStr(Title, true);
-  Labels[FunctionKey-1].LongText = NULL;
+  Labels[FunctionKey-1].LongText = nullptr;
 }
 //---------------------------------------------------------------------------
 void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
@@ -2389,7 +2389,7 @@ void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
     nb_free((void*)Titles.Labels[Index].LongText);
   }
   nb_free(Titles.Labels);
-  Titles.Labels = NULL;
+  Titles.Labels = nullptr;
   Titles.CountLabels = 0;
 }
 //---------------------------------------------------------------------------

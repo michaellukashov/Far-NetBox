@@ -775,7 +775,7 @@ void TFarDialog::Synchronize(TThreadMethod Event)
 void TFarDialog::Close(TFarButton * Button)
 {
   assert(Button != nullptr);
-  SendMessage(DM_CLOSE, Button->GetItem(), NULL);
+  SendMessage(DM_CLOSE, Button->GetItem(), nullptr);
 }
 //---------------------------------------------------------------------------
 void TFarDialog::Change()
@@ -824,7 +824,7 @@ FarColor TFarDialog::GetSystemColor(PaletteColors colorId)
 //---------------------------------------------------------------------------
 void TFarDialog::Redraw()
 {
-  SendMessage(DM_REDRAW, 0, NULL);
+  SendMessage(DM_REDRAW, 0, nullptr);
 }
 //---------------------------------------------------------------------------
 void TFarDialog::ShowGroup(intptr_t Group, bool Show)
@@ -1587,7 +1587,7 @@ void TFarDialogItem::SetFocus()
   {
     if (GetDialog()->GetHandle())
     {
-      SendMessage(DM_SETFOCUS, NULL);
+      SendMessage(DM_SETFOCUS, nullptr);
     }
     else
     {

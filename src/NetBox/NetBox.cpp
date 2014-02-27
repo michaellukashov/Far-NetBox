@@ -205,22 +205,22 @@ extern "C"
   HANDLE WINAPI AnalyseW(const struct AnalyseInfo *Info)
   {
     if (Info->StructSize < sizeof(AnalyseInfo))
-      return NULL;
+      return nullptr;
     assert(FarPlugin);
     TFarPluginGuard Guard;
     if (!Info->FileName)
     {
-      return NULL;
+      return nullptr;
     }
 
     const size_t fileNameLen = wcslen(Info->FileName);
     if (fileNameLen < 8 || _wcsicmp(Info->FileName + fileNameLen - 7, L".netbox") != 0)
     {
-      return NULL;
+      return nullptr;
     }
     if (Info->BufferSize > 4 && strncmp(reinterpret_cast<const char *>(Info->Buffer), "<?xml", 5) != 0)
     {
-      return NULL;
+      return nullptr;
     }
     return HANDLE(1);
   }
@@ -228,7 +228,7 @@ extern "C"
   HANDLE WINAPI OpenW(const struct OpenInfo *Info)
   {
     if (Info->StructSize < sizeof(OpenInfo))
-      return NULL;
+      return nullptr;
     assert(FarPlugin);
     TFarPluginGuard Guard;
     HANDLE Handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(Info));
