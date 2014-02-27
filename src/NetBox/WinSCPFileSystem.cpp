@@ -1729,6 +1729,8 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
       {
         UnicodeString Target = FTerminal->GetCurrentDirectory();
         UnicodeString FileMask = L"*.*";
+        if (FileList->GetCount() == 1)
+          FileMask = ::UnixExtractFileName(FileList->GetString(0));
         if (RemoteTransferDialog(FileList.get(), Target, FileMask, Move))
         {
           SCOPE_EXIT
