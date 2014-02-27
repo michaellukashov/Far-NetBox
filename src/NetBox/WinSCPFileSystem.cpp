@@ -1726,29 +1726,27 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
     if (FileList.get())
     {
       assert(!FPanelItems);
+      UnicodeString Target = FTerminal->GetCurrentDirectory();
+      UnicodeString FileMask = L"*.*";
+      if (FileList->GetCount() == 1)
+        FileMask = ::UnixExtractFileName(FileList->GetString(0));
+      if (RemoteTransferDialog(FileList.get(), Target, FileMask, Move))
       {
-        UnicodeString Target = FTerminal->GetCurrentDirectory();
-        UnicodeString FileMask = L"*.*";
-        if (FileList->GetCount() == 1)
-          FileMask = ::UnixExtractFileName(FileList->GetString(0));
-        if (RemoteTransferDialog(FileList.get(), Target, FileMask, Move))
+        SCOPE_EXIT
         {
-          SCOPE_EXIT
+          GetPanelInfo()->ApplySelection();
+          if (UpdatePanel())
           {
-            GetPanelInfo()->ApplySelection();
-            if (UpdatePanel())
-            {
-              RedrawPanel();
-            }
-          };
-          if (Move)
-          {
-            GetTerminal()->MoveFiles(FileList.get(), Target, FileMask);
+            RedrawPanel();
           }
-          else
-          {
-            GetTerminal()->CopyFiles(FileList.get(), Target, FileMask);
-          }
+        };
+        if (Move)
+        {
+          GetTerminal()->MoveFiles(FileList.get(), Target, FileMask);
+        }
+        else
+        {
+          GetTerminal()->CopyFiles(FileList.get(), Target, FileMask);
         }
       }
     }
