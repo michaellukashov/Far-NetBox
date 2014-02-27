@@ -1558,7 +1558,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       if ((ARemoteDirectory[ARemoteDirectory.Length()] != L'/') &&
           (FileName != nullptr))
       {
-        *FileName = DecodeUrlChars(UnixExtractFileName(ARemoteDirectory));
+        *FileName = DecodeUrlChars(::UnixExtractFileName(ARemoteDirectory));
         ARemoteDirectory = ::UnixExtractFilePath(ARemoteDirectory);
       }
       SetRemoteDirectory(DecodeUrlChars(ARemoteDirectory));

@@ -1581,7 +1581,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     bool CanProceed = false;
 
     UnicodeString FileNameOnly =
-      CopyParam->ChangeFileName(ExtractFileName(RealFileName, false), osLocal, true);
+      CopyParam->ChangeFileName(::ExtractFileName(RealFileName, false), osLocal, true);
 
     if (CheckExistence)
     {
@@ -1715,7 +1715,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
 {
   UnicodeString RealFileName = File ? File->GetFileName() : FileName;
   UnicodeString DestFileName = CopyParam->ChangeFileName(
-    ExtractFileName(RealFileName, false), osLocal, Level == 0);
+    ::ExtractFileName(RealFileName, false), osLocal, Level == 0);
 
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", RealFileName.c_str()));
 
@@ -2015,7 +2015,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
 
   OperationProgress->SetFile(DirectoryName);
   UnicodeString DestFileName = CopyParam->ChangeFileName(
-    ExtractFileName(DirectoryName, false), osLocal, Level == 0);
+    ::ExtractFileName(DirectoryName, false), osLocal, Level == 0);
 
   // Get directory attributes
   FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, DirectoryName.c_str()),
@@ -2431,14 +2431,14 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
           MaskParams.Size = TSize;
           // Security fix: ensure the file ends up where we asked for it.
           // (accept only filename, not path)
-          UnicodeString OnlyFileName = UnixExtractFileName(Line);
+          UnicodeString OnlyFileName = ::UnixExtractFileName(Line);
           if (Line != OnlyFileName)
           {
             FTerminal->LogEvent(FORMAT(L"Warning: Remote host set a compound pathname '%s'", Line.c_str()));
           }
 
           OperationProgress->SetFile(File && !File->GetIsDirectory() ?
-            UnixExtractFileName(File->GetFileName()) : OnlyFileName);
+            ::UnixExtractFileName(File->GetFileName()) : OnlyFileName);
           AbsoluteFileName = SourceDir + OnlyFileName;
           OperationProgress->SetTransferSize(TSize);
         }

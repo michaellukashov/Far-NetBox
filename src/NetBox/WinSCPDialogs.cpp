@@ -5430,8 +5430,8 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
     {
       UnicodeString PromptMsg = GetMsg(Move ? MOVE_FILE_PROMPT : COPY_FILE_PROMPT);
       UnicodeString FileName = ToRemote ?
-        ExtractFileName(FileList->GetString(0), false).c_str() :
-        UnixExtractFileName(FileList->GetString(0)).c_str();
+        ::ExtractFileName(FileList->GetString(0), false).c_str() :
+        ::UnixExtractFileName(FileList->GetString(0)).c_str();
       UnicodeString MinimizedName = MinimizeName(FileName, DlgLength - PromptMsg.Length() - 6, false);
       Prompt = FORMAT(PromptMsg.c_str(), MinimizedName.c_str());
     }
@@ -5529,13 +5529,13 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     {
       if (FToRemote)
       {
-        Params->SetFileMask(UnixExtractFileName(DirectoryEdit->GetText()));
+        Params->SetFileMask(::UnixExtractFileName(DirectoryEdit->GetText()));
         TargetDirectory = ::UnixExtractFilePath(DirectoryEdit->GetText());
       }
       else
       {
-        Params->SetFileMask(ExtractFileName(DirectoryEdit->GetText(), false));
-        TargetDirectory = ExtractFilePath(DirectoryEdit->GetText());
+        Params->SetFileMask(::ExtractFileName(DirectoryEdit->GetText(), false));
+        TargetDirectory = ::ExtractFilePath(DirectoryEdit->GetText());
       }
 
       Params->SetNewerOnly(FLAGCLEAR(FOptions, coDisableNewerOnly) && NewerOnlyCheck->GetChecked());
@@ -8155,7 +8155,7 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * FileList,
   if (Result)
   {
     Target = ::UnixExtractFilePath(Value);
-    FileMask = UnixExtractFileName(Value);
+    FileMask = ::UnixExtractFileName(Value);
   }
   return Result;
 }

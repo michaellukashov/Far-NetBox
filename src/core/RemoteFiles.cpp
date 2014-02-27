@@ -119,7 +119,7 @@ UnicodeString UnixExtractFileName(const UnicodeString & Path)
 //---------------------------------------------------------------------------
 UnicodeString UnixExtractFileExt(const UnicodeString & Path)
 {
-  UnicodeString FileName = UnixExtractFileName(Path);
+  UnicodeString FileName = ::UnixExtractFileName(Path);
   intptr_t Pos = FileName.LastDelimiter(L".");
   return (Pos > 0) ? Path.SubString(Pos, Path.Length() - Pos + 1) : UnicodeString();
 }
@@ -128,11 +128,11 @@ UnicodeString ExtractFileName(const UnicodeString & Path, bool Unix)
 {
   if (Unix)
   {
-    return UnixExtractFileName(Path);
+    return ::UnixExtractFileName(Path);
   }
   else
   {
-    return ExtractFilename(Path, L'\\');
+    return ::ExtractFilename(Path, L'\\');
   }
 }
 //---------------------------------------------------------------------------
@@ -308,8 +308,8 @@ UnicodeString MinimizeName(const UnicodeString & FileName, intptr_t MaxLen, bool
   }
   else
   {
-    Dir = ExtractFilePath(Result);
-    Name = ExtractFileName(Result, false);
+    Dir = ::ExtractFilePath(Result);
+    Name = ::ExtractFileName(Result, false);
 
     if (Dir.Length() >= 2 && Dir[2] == L':')
     {
@@ -1283,7 +1283,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             Abort();
           }
         }
-        FFileName = UnixExtractFileName(::Trim(Line));
+        FFileName = ::UnixExtractFileName(::Trim(Line));
       }
     }
 

@@ -12746,7 +12746,7 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
     FileName = FilesToCopy->GetString(Index);
     TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FilesToCopy->GetObject(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
-    FileNameOnly = ExtractFileName(RealFileName, false);
+    FileNameOnly = ::ExtractFileName(RealFileName, false);
 
     {
       SCOPE_EXIT
@@ -12834,7 +12834,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
     (FTerminal->FFiles != nullptr) && FTerminal->FFiles->GetLoaded();
   bool CanProceed = false;
   UnicodeString FileNameOnly =
-    CopyParam->ChangeFileName(ExtractFileName(RealFileName, false), osLocal, true);
+    CopyParam->ChangeFileName(::ExtractFileName(RealFileName, false), osLocal, true);
   if (CheckExistence)
   {
     TRemoteFile * File = FTerminal->FFiles->FindFile(FileNameOnly);
@@ -12945,7 +12945,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
     }
     else
     {
-      UnicodeString DestFileName = CopyParam->ChangeFileName(ExtractFileName(RealFileName, false),
+      UnicodeString DestFileName = CopyParam->ChangeFileName(::ExtractFileName(RealFileName, false),
         osLocal, FLAGSET(Flags, tfFirstLevel));
 
       FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", RealFileName.c_str()));
@@ -13011,7 +13011,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
   intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
-    ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
+    ::ExtractFileName(::ExcludeTrailingBackslash(DirectoryName), false), osLocal,
     FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
   // create DestFullName if it does not exist
@@ -13241,7 +13241,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TDownloadSessionAction & Action)
 {
-  UnicodeString FileNameOnly = UnixExtractFileName(FileName);
+  UnicodeString FileNameOnly = ::UnixExtractFileName(FileName);
 
   Action.FileName(FileName);
 
@@ -13259,7 +13259,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
 
   OperationProgress->SetFile(FileNameOnly);
 
-  UnicodeString DestFileName = CopyParam->ChangeFileName(UnixExtractFileName(File->GetFileName()),
+  UnicodeString DestFileName = CopyParam->ChangeFileName(::UnixExtractFileName(File->GetFileName()),
     osRemote, FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = TargetDir + DestFileName;
 

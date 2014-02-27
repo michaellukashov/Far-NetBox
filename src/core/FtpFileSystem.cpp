@@ -808,7 +808,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
 
     Action.Rights(Rights);
 
-    UnicodeString FileNameOnly = UnixExtractFileName(FileName);
+    UnicodeString FileNameOnly = ::UnixExtractFileName(FileName);
     UnicodeString FilePath = ::UnixExtractFilePath(FileName);
     // FZAPI wants octal number represented as decadic
     FFileZillaIntf->Chmod(Rights.GetNumberDecadic(), FileNameOnly.c_str(), FilePath.c_str());
@@ -1167,7 +1167,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
   TDownloadSessionAction & Action)
 {
   assert(AFile);
-  UnicodeString OnlyFileName = UnixExtractFileName(FileName);
+  UnicodeString OnlyFileName = ::UnixExtractFileName(FileName);
 
   Action.FileName(FileName);
 
@@ -1185,7 +1185,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
 
   OperationProgress->SetFile(OnlyFileName);
 
-  UnicodeString DestFileName = CopyParam->ChangeFileName(UnixExtractFileName(AFile->GetFileName()),
+  UnicodeString DestFileName = CopyParam->ChangeFileName(::UnixExtractFileName(AFile->GetFileName()),
     osRemote, FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = TargetDir + DestFileName;
 
@@ -1380,7 +1380,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
     TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
 
-    FileNameOnly = ExtractFileName(RealFileName, false);
+    FileNameOnly = ::ExtractFileName(RealFileName, false);
 
     {
       SCOPE_EXIT
@@ -1498,7 +1498,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
   }
   else
   {
-    UnicodeString DestFileName = CopyParam->ChangeFileName(ExtractFileName(RealFileName, false),
+    UnicodeString DestFileName = CopyParam->ChangeFileName(::ExtractFileName(RealFileName, false),
       osLocal, FLAGSET(Flags, tfFirstLevel));
 
     FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", RealFileName.c_str()));
@@ -1603,7 +1603,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
-    ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
+    ::ExtractFileName(::ExcludeTrailingBackslash(DirectoryName), false), osLocal,
     FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
 
@@ -1740,7 +1740,7 @@ void TFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action)
 {
   UnicodeString FileName = AbsolutePath(AFileName, false);
-  UnicodeString FileNameOnly = UnixExtractFileName(FileName);
+  UnicodeString FileNameOnly = ::UnixExtractFileName(FileName);
   UnicodeString FilePath = ::UnixExtractFilePath(FileName);
 
   bool Dir = (AFile != nullptr) && AFile->GetIsDirectory() && !AFile->GetIsSymLink();
@@ -2040,7 +2040,7 @@ void TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
   FFileZillaIntf->ListFile(FileName.c_str());
 
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
-  TRemoteFile * File = FileList->FindFile(UnixExtractFileName(FileName));
+  TRemoteFile * File = FileList->FindFile(::UnixExtractFileName(FileName));
   if (File != nullptr)
   {
     AFile = File->Duplicate();
@@ -2053,7 +2053,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & FileName,
   TRemoteFile *& AFile)
 {
   UnicodeString Path = ::UnixExtractFilePath(FileName);
-  UnicodeString NameOnly = UnixExtractFileName(FileName);
+  UnicodeString NameOnly = ::UnixExtractFileName(FileName);
   TRemoteFile * File = nullptr;
   bool Own = false;
   if (FServerCapabilities->GetCapability(mlsd_command) == yes)
@@ -2114,7 +2114,7 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   // the file is symlink anyway.
   std::unique_ptr<TRemoteFile> File(new TRemoteFile(SymlinkFile));
   File->SetTerminal(FTerminal);
-  File->SetFileName(UnixExtractFileName(SymlinkFile->GetLinkTo()));
+  File->SetFileName(::UnixExtractFileName(SymlinkFile->GetLinkTo()));
   File->SetType(FILETYPE_SYMLINK);
   AFile = File.release();
 }
@@ -2125,9 +2125,9 @@ void TFTPFileSystem::RenameFile(const UnicodeString & AFileName,
   UnicodeString FileName = AbsolutePath(AFileName, false);
   UnicodeString NewName = AbsolutePath(ANewName, false);
 
-  UnicodeString FileNameOnly = UnixExtractFileName(FileName);
+  UnicodeString FileNameOnly = ::UnixExtractFileName(FileName);
   UnicodeString FilePathOnly = ::UnixExtractFilePath(FileName);
-  UnicodeString NewNameOnly = UnixExtractFileName(NewName);
+  UnicodeString NewNameOnly = ::UnixExtractFileName(NewName);
   UnicodeString NewPathOnly = ::UnixExtractFilePath(NewName);
 
   // ignore file list

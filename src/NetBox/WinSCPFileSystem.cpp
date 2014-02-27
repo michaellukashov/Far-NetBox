@@ -2866,7 +2866,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
           {
             if (FileNameOnly)
             {
-              FileName = ExtractFileName(FileName, false);
+              FileName = ::ExtractFileName(FileName, false);
             }
           }
         }
@@ -3344,7 +3344,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
     }
 
     assert(PanelItem && PanelItem->GetFileName() ==
-      ((Side == osLocal) ? ExtractFileName(FileName, false) : FileName));
+      ((Side == osLocal) ? ::ExtractFileName(FileName, false) : FileName));
     if (Success && PanelItem)
     {
       PanelItem->SetSelected(false);
@@ -3413,7 +3413,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
     // do not show source directory
     if (TransferOperation && (ProgressData.Side == osLocal) && ProgressData.Temp)
     {
-      FileName = ExtractFileName(FileName, false);
+      FileName = ::ExtractFileName(FileName, false);
     }
     Message1 = ProgressFileLabel + MinimizeName(FileName,
       ProgressWidth - ProgressFileLabel.Length(), ProgressData.Side == osRemote) + L"\n";
@@ -3800,7 +3800,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
             FLastMultipleEditFile = L"";
 
             TMultipleEdit MultipleEdit;
-            MultipleEdit.FileName = ExtractFileName(Info->GetFileName(), false);
+            MultipleEdit.FileName = ::ExtractFileName(Info->GetFileName(), false);
             MultipleEdit.FileTitle = FLastMultipleEditFileTitle;
             MultipleEdit.Directory = FLastMultipleEditDirectory;
             MultipleEdit.LocalFileName = Info->GetFileName();

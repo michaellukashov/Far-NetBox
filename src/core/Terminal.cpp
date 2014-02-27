@@ -2346,8 +2346,8 @@ void TTerminal::FileModified(const TRemoteFile * File,
       // this case for scripting
       if ((File != nullptr) && File->GetIsDirectory())
       {
-        Directory = UnixIncludeTrailingBackslash(ParentDirectory) +
-          UnixExtractFileName(File->GetFileName());
+        Directory = ::UnixIncludeTrailingBackslash(ParentDirectory) +
+          ::UnixExtractFileName(File->GetFileName());
       }
     }
   }
@@ -3628,8 +3628,8 @@ void TTerminal::MoveFile(const UnicodeString & FileName,
 
   assert(Param != nullptr);
   const TMoveFileParams & Params = *NB_STATIC_DOWNCAST_CONST(TMoveFileParams, Param);
-  UnicodeString NewName = UnixIncludeTrailingBackslash(Params.Target) +
-    MaskFileName(UnixExtractFileName(FileName), Params.FileMask);
+  UnicodeString NewName = ::UnixIncludeTrailingBackslash(Params.Target) +
+    MaskFileName(::UnixExtractFileName(FileName), Params.FileMask);
   LogEvent(FORMAT(L"Moving file \"%s\" to \"%s\".", FileName.c_str(), NewName.c_str()));
   FileModified(File, FileName);
   DoRenameFile(FileName, NewName, true);
@@ -3736,8 +3736,8 @@ void TTerminal::CopyFile(const UnicodeString & FileName,
 
   assert(Param != nullptr);
   const TMoveFileParams & Params = *NB_STATIC_DOWNCAST_CONST(TMoveFileParams, Param);
-  UnicodeString NewName = UnixIncludeTrailingBackslash(Params.Target) +
-    MaskFileName(UnixExtractFileName(FileName), Params.FileMask);
+  UnicodeString NewName = ::UnixIncludeTrailingBackslash(Params.Target) +
+    MaskFileName(::UnixExtractFileName(FileName), Params.FileMask);
   LogEvent(FORMAT(L"Copying file \"%s\" to \"%s\".", FileName.c_str(), NewName.c_str()));
   DoCopyFile(FileName, NewName);
   ReactOnCommand(fsCopyFile);

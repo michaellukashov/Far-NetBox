@@ -3815,7 +3815,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
     FileName = AFilesToCopy->GetString(Index);
     TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
-    FileNameOnly = ExtractFileName(RealFileName, false);
+    FileNameOnly = ::ExtractFileName(RealFileName, false);
     assert(!FAvoidBusy);
     FAvoidBusy = true;
 
@@ -4173,7 +4173,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
       // File is regular file (not directory)
       assert(LocalFileHandle);
 
-      UnicodeString DestFileName = CopyParam->ChangeFileName(ExtractFileName(RealFileName, false),
+      UnicodeString DestFileName = CopyParam->ChangeFileName(::ExtractFileName(RealFileName, false),
         osLocal, FLAGSET(Flags, tfFirstLevel));
       UnicodeString DestFullName = LocalCanonify(TargetDir + DestFileName);
       UnicodeString DestPartialFullName;
@@ -4826,7 +4826,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
   intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
-    ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
+    ::ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
     FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = ::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
 
@@ -5054,7 +5054,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
   OperationProgress->SetFile(OnlyFileName);
 
-  UnicodeString DestFileName = CopyParam->ChangeFileName(UnixExtractFileName(AFile->GetFileName()),
+  UnicodeString DestFileName = CopyParam->ChangeFileName(::UnixExtractFileName(AFile->GetFileName()),
     osRemote, FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = TargetDir + DestFileName;
 
@@ -5497,7 +5497,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       if (ResumeAllowed)
       {
         FILE_OPERATION_LOOP (FMTLOAD(RENAME_AFTER_RESUME_ERROR,
-            ExtractFileName(DestPartialFullName, true).c_str(), DestFileName.c_str()),
+          ::ExtractFileName(DestPartialFullName, true).c_str(), DestFileName.c_str()),
 
           if (::FileExists(DestFullName))
           {

@@ -555,7 +555,7 @@ UnicodeString ExtractProgram(const UnicodeString & Command)
 //---------------------------------------------------------------------------
 UnicodeString ExtractProgramName(const UnicodeString & Command)
 {
-  UnicodeString Name = ExtractFileName(ExtractProgram(Command), false);
+  UnicodeString Name = ::ExtractFileName(ExtractProgram(Command), false);
   intptr_t Dot = Name.LastDelimiter(L".");
   if (Dot > 0)
   {
@@ -2077,7 +2077,7 @@ UnicodeString FormatSize(__int64 Size)
 //---------------------------------------------------------------------------
 UnicodeString ExtractFileBaseName(const UnicodeString & Path)
 {
-  return ChangeFileExt(ExtractFileName(Path, false), L"");
+  return ChangeFileExt(::ExtractFileName(Path, false), L"");
 }
 //---------------------------------------------------------------------
 UnicodeString FormatBytes(__int64 Bytes, bool UseOrders)
