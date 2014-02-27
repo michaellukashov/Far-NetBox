@@ -449,7 +449,7 @@ bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly) const
 //---------------------------------------------------------------------
 bool TSessionData::IsInFolderOrWorkspace(const UnicodeString & AFolder) const
 {
-  return StartsText(UnixIncludeTrailingBackslash(AFolder), GetName());
+  return StartsText(::UnixIncludeTrailingBackslash(AFolder), GetName());
 }
 //---------------------------------------------------------------------
 void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword)
@@ -2948,7 +2948,7 @@ UnicodeString TSessionData::GetFolderName() const
 UnicodeString TSessionData::ComposePath(
   const UnicodeString & Path, const UnicodeString & Name)
 {
-  return UnixIncludeTrailingBackslash(Path) + Name;
+  return ::UnixIncludeTrailingBackslash(Path) + Name;
 }
 //---------------------------------------------------------------------
 TLoginType TSessionData::GetLoginType() const

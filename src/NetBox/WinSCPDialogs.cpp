@@ -5513,7 +5513,7 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     NewerOnlyCheck->SetChecked(FLAGCLEAR(FOptions, coDisableNewerOnly) && Params->GetNewerOnly());
 
     DirectoryEdit->SetText(
-      (FToRemote ? UnixIncludeTrailingBackslash(TargetDirectory) :
+      (FToRemote ? ::UnixIncludeTrailingBackslash(TargetDirectory) :
        ::IncludeTrailingBackslash(TargetDirectory)) + Params->GetFileMask());
     QueueCheck->SetChecked(Params->GetQueue());
     QueueNoConfirmationCheck->SetChecked(Params->GetQueueNoConfirmation());
@@ -8148,7 +8148,7 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * FileList,
     GetMsg(Move ? REMOTE_MOVE_FILE : REMOTE_COPY_FILE),
     GetMsg(Move ? REMOTE_MOVE_FILES : REMOTE_COPY_FILES), FileList, true);
 
-  UnicodeString Value = UnixIncludeTrailingBackslash(Target) + FileMask;
+  UnicodeString Value = ::UnixIncludeTrailingBackslash(Target) + FileMask;
   bool Result = FPlugin->InputBox(
     GetMsg(Move ? REMOTE_MOVE_TITLE : REMOTE_COPY_TITLE), Prompt,
     Value, 0, MOVE_TO_HISTORY) && !Value.IsEmpty();

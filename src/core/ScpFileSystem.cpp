@@ -982,7 +982,7 @@ void TSCPFileSystem::ReadCurrentDirectory()
   if (FCachedDirectoryChange.IsEmpty())
   {
     ExecCommand2(fsCurrentDirectory, 0);
-    FCurrentDirectory = UnixExcludeTrailingBackslash(FOutput->GetString(0));
+    FCurrentDirectory = ::UnixExcludeTrailingBackslash(FOutput->GetString(0));
   }
   else
   {
@@ -1018,7 +1018,7 @@ void TSCPFileSystem::ChangeDirectory(const UnicodeString & Directory)
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
 {
-  FCachedDirectoryChange = UnixExcludeTrailingBackslash(Directory);
+  FCachedDirectoryChange = ::UnixExcludeTrailingBackslash(Directory);
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
@@ -1087,7 +1087,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           // Empty file list -> probably "permission denied", we
           // at least get link to parent directory ("..")
           FTerminal->ReadFile(
-            UnixIncludeTrailingBackslash(FTerminal->FFiles->GetDirectory()) +
+            ::UnixIncludeTrailingBackslash(FTerminal->FFiles->GetDirectory()) +
               PARENTDIRECTORY, File);
           Empty = (File == nullptr);
           if (!Empty)
@@ -1496,13 +1496,13 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
   Params &= ~(cpAppend | cpResume);
   UnicodeString Options = L"";
-  bool CheckExistence = UnixComparePaths(TargetDir, FTerminal->GetCurrentDirectory()) &&
+  bool CheckExistence = ::UnixComparePaths(TargetDir, FTerminal->GetCurrentDirectory()) &&
     (FTerminal->FFiles != nullptr) && FTerminal->FFiles->GetLoaded();
   bool CopyBatchStarted = false;
   bool Failed = true;
   bool GotLastLine = false;
 
-  UnicodeString TargetDirFull = UnixIncludeTrailingBackslash(TargetDir);
+  UnicodeString TargetDirFull = ::UnixIncludeTrailingBackslash(TargetDir);
 
   if (CopyParam->GetPreserveRights())
   {
@@ -1514,7 +1514,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   }
 
   SendCommand(FCommandSet->FullCommand(fsCopyToRemote,
-    Options.c_str(), DelimitStr(UnixExcludeTrailingBackslash(TargetDir)).c_str()));
+    Options.c_str(), DelimitStr(::UnixExcludeTrailingBackslash(TargetDir)).c_str()));
   SkipFirstLine();
 
   SCOPE_EXIT
@@ -1612,7 +1612,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
           FTerminal->OpenLocalFile(FileName, GENERIC_READ,
             nullptr, nullptr, nullptr, &MTime, nullptr,
             &FileParams.SourceSize);
-          FileParams.SourceTimestamp = UnixToDateTime(MTime,
+          FileParams.SourceTimestamp = ::UnixToDateTime(MTime,
             FTerminal->GetSessionData()->GetDSTMode());
           FileParams.DestSize = File->GetSize();
           FileParams.DestTimestamp = File->GetModification();
@@ -1658,7 +1658,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
         if (DirectoryExists(::ExtractFilePath(FileName)))
         {
-          FTerminal->DirectoryModified(UnixIncludeTrailingBackslash(TargetDir)+
+          FTerminal->DirectoryModified(::UnixIncludeTrailingBackslash(TargetDir)+
             FileNameOnly, true);
         }
       }
@@ -1766,7 +1766,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
       OperationProgress->SetTransferSize(OperationProgress->LocalSize);
       OperationProgress->TransferingFile = false;
 
-      TDateTime Modification = UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
+      TDateTime Modification = ::UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
 
       // Will we use ASCII of BINARY file transfer?
       TFileMasks::TParams MaskParams;
@@ -2026,7 +2026,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
     }
   )
 
-  UnicodeString TargetDirFull = UnixIncludeTrailingBackslash(TargetDir + DestFileName);
+  UnicodeString TargetDirFull = ::UnixIncludeTrailingBackslash(TargetDir + DestFileName);
 
   UnicodeString Buf;
 
@@ -2206,7 +2206,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 
         // Filename is used for error messaging and excluding files only
         // Send in full path to allow path-based excluding
-        // UnicodeString FullFileName = UnixExcludeTrailingBackslash(File->FullFileName);
+        // UnicodeString FullFileName = ::UnixExcludeTrailingBackslash(File->FullFileName);
         SCPSink(FullFileName, File, TargetDirectory, ::UnixExtractFilePath(FullFileName),
           CopyParam, Success, OperationProgress, Params, 0);
         // operation succeeded (no exception), so it's ok that
@@ -2395,11 +2395,11 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
             if (swscanf(Line.c_str(), L"%ld %*d %ld %*d",  &MTime, &ATime) == 2)
             {
               const TSessionData * Data = FTerminal->GetSessionData();
-              FileData.AcTime = DateTimeToFileTime(UnixToDateTime(ATime,
+              FileData.AcTime = DateTimeToFileTime(::UnixToDateTime(ATime,
                 Data->GetDSTMode()), Data->GetDSTMode());
-              FileData.WrTime = DateTimeToFileTime(UnixToDateTime(MTime,
+              FileData.WrTime = DateTimeToFileTime(::UnixToDateTime(MTime,
                 Data->GetDSTMode()), Data->GetDSTMode());
-              SourceTimestamp = UnixToDateTime(MTime,
+              SourceTimestamp = ::UnixToDateTime(MTime,
                 Data->GetDSTMode());
               FSecureShell->SendNull();
               // File time is only valid until next pass
@@ -2490,7 +2490,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
             /* SCP: can we set the timestamp for directories ? */
           }
           UnicodeString FullFileName = SourceDir + OperationProgress->FileName;
-          SCPSink(FullFileName, nullptr, DestFileName, UnixIncludeTrailingBackslash(FullFileName),
+          SCPSink(FullFileName, nullptr, DestFileName, ::UnixIncludeTrailingBackslash(FullFileName),
             CopyParam, Success, OperationProgress, Params, Level + 1);
           continue;
         }
@@ -2526,7 +2526,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                   FTerminal->OpenLocalFile(DestFileName, GENERIC_READ,
                     nullptr, nullptr, nullptr, &MTime, nullptr,
                     &FileParams.DestSize);
-                  FileParams.DestTimestamp = UnixToDateTime(MTime,
+                  FileParams.DestTimestamp = ::UnixToDateTime(MTime,
                     FTerminal->GetSessionData()->GetDSTMode());
 
                   uintptr_t Answer =

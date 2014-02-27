@@ -655,12 +655,12 @@ public:
     {
       if (Flags & SSH_FILEXFER_ATTR_ACMODTIME)
       {
-        File->SetLastAccess(UnixToDateTime(
+        File->SetLastAccess(::UnixToDateTime(
           SignedTS ?
             static_cast<__int64>(static_cast<int32_t>(GetCardinal())) :
             static_cast<__int64>(GetCardinal()),
           DSTMode));
-        File->SetModification(UnixToDateTime(
+        File->SetModification(::UnixToDateTime(
           SignedTS ?
             static_cast<__int64>(static_cast<int32_t>(GetCardinal())) :
             static_cast<__int64>(GetCardinal()),
@@ -671,7 +671,7 @@ public:
     {
       if (Flags & SSH_FILEXFER_ATTR_ACCESSTIME)
       {
-        File->SetLastAccess(UnixToDateTime(GetInt64(), DSTMode));
+        File->SetLastAccess(::UnixToDateTime(GetInt64(), DSTMode));
         if (Flags & SSH_FILEXFER_ATTR_SUBSECOND_TIMES)
         {
           GetCardinal(); // skip access time subseconds
@@ -691,7 +691,7 @@ public:
       }
       if (Flags & SSH_FILEXFER_ATTR_MODIFYTIME)
       {
-        File->SetModification(UnixToDateTime(GetInt64(), DSTMode));
+        File->SetModification(::UnixToDateTime(GetInt64(), DSTMode));
         if (Flags & SSH_FILEXFER_ATTR_SUBSECOND_TIMES)
         {
           GetCardinal(); // skip modification time subseconds
@@ -1855,7 +1855,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 //---------------------------------------------------------------------------
 bool TSFTPFileSystem::TemporaryTransferFile(const UnicodeString & FileName)
 {
-  return AnsiSameText(UnixExtractFileExt(FileName), PARTIAL_EXT);
+  return AnsiSameText(::UnixExtractFileExt(FileName), PARTIAL_EXT);
 }
 //---------------------------------------------------------------------------
 bool TSFTPFileSystem::GetStoredCredentialsTried()
@@ -3041,7 +3041,7 @@ void TSFTPFileSystem::TryOpenDirectory(const UnicodeString & Directory)
     // traverse-only (chmod 110) directories.
     // This is workaround for http://www.ftpshell.com/
     TSFTPPacket Packet(SSH_FXP_OPENDIR, FCodePage);
-    Packet.AddPathString(UnixExcludeTrailingBackslash(Directory), FUtfStrings);
+    Packet.AddPathString(::UnixExcludeTrailingBackslash(Directory), FUtfStrings);
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_HANDLE);
     RawByteString Handle = Packet.GetFileHandle();
     Packet.ChangeType(SSH_FXP_CLOSE);
@@ -3189,7 +3189,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       bool Failure = false;
       // no point reading parent of root directory,
       // moreover CompleteFTP terminates session upon attempt to do so
-      if (IsUnixRootPath(FileList->GetDirectory()))
+      if (::IsUnixRootPath(FileList->GetDirectory()))
       {
         File = nullptr;
       }
@@ -3833,7 +3833,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
 
           if (DirectoryExists(ExtractFilePath(FileName)))
           {
-            FTerminal->DirectoryModified(UnixIncludeTrailingBackslash(TargetDir) +
+            FTerminal->DirectoryModified(::UnixIncludeTrailingBackslash(TargetDir) +
               FileNameOnly, true);
           }
         }

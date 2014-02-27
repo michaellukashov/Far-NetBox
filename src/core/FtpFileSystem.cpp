@@ -649,7 +649,7 @@ UnicodeString TFTPFileSystem::ActualCurrentDirectory()
 {
   wchar_t CurrentPath[1024];
   FFileZillaIntf->GetCurrentPath(CurrentPath, LENOF(CurrentPath));
-  UnicodeString fn = UnixExcludeTrailingBackslash(CurrentPath);
+  UnicodeString fn = ::UnixExcludeTrailingBackslash(CurrentPath);
   if (fn.IsEmpty())
   {
     fn = L"/";
@@ -668,7 +668,7 @@ void TFTPFileSystem::EnsureLocation()
     // 1) We did cached directory change
     // 2) Listing was requested for non-current directory, which
     // makes FZAPI change its current directory (and not restoring it back afterwards)
-    if (!UnixComparePaths(ActualCurrentDirectory(), FCurrentDirectory))
+    if (!::UnixComparePaths(ActualCurrentDirectory(), FCurrentDirectory))
     {
       FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
         FCurrentDirectory.c_str()));
@@ -750,7 +750,7 @@ void TFTPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
 {
-  FCurrentDirectory = UnixExcludeTrailingBackslash(Directory);
+  FCurrentDirectory = ::UnixExcludeTrailingBackslash(Directory);
   if (FCurrentDirectory.IsEmpty())
   {
     FCurrentDirectory = L"/";
@@ -1371,7 +1371,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
   Params &= ~cpAppend;
   UnicodeString FileName, FileNameOnly;
   UnicodeString TargetDir = AbsolutePath(ATargetDir, false);
-  UnicodeString FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
+  UnicodeString FullTargetDir = ::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
   while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
@@ -1517,8 +1517,8 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
     if (Handle != INVALID_HANDLE_VALUE)
     {
       Modification =
-        UnixToDateTime(
-          ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
+        ::UnixToDateTime(
+          ::ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
           dstmUnix);
       ::FindClose(Handle);
     }
@@ -1546,7 +1546,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
     OperationProgress->SetResumeStatus(ResumeAllowed ? rsEnabled : rsDisabled);
 
     FileParams->SourceSize = OperationProgress->LocalSize;
-    FileParams->SourceTimestamp = UnixToDateTime(MTime,
+    FileParams->SourceTimestamp = ::UnixToDateTime(MTime,
                                   FTerminal->GetSessionData()->GetDSTMode());
     bool DoResume = (ResumeAllowed && (OpenParams->OverwriteMode == omOverwrite));
     {
@@ -1605,7 +1605,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
     ::ExtractFileName(::ExcludeTrailingBackslash(DirectoryName), false), osLocal,
     FLAGSET(Flags, tfFirstLevel));
-  UnicodeString DestFullName = UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
+  UnicodeString DestFullName = ::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
 
   OperationProgress->SetFile(DirectoryName);
 
@@ -1682,7 +1682,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
     {
       TRemoteFile * File = nullptr;
       // ignore non-fatal error when the directory already exists
-      UnicodeString Fn = UnixExcludeTrailingBackslash(DestFullName);
+      UnicodeString Fn = ::UnixExcludeTrailingBackslash(DestFullName);
       if (Fn.IsEmpty())
       {
         Fn = L"/";
@@ -1771,7 +1771,7 @@ void TFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
       // EnsureLocation should reset actual current directory to user's working directory.
       // If user's working directory is still below deleted directory, it is
       // perfectly correct to report an error.
-      if (UnixIsChildPath(ActualCurrentDirectory(), FileName))
+      if (::UnixIsChildPath(ActualCurrentDirectory(), FileName))
       {
         EnsureLocation();
       }
@@ -1908,7 +1908,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
         if (Unquote(Path))
         {
-          FCurrentDirectory = ::AbsolutePath(L"/", UnixExcludeTrailingBackslash(Path));
+          FCurrentDirectory = ::AbsolutePath(L"/", ::UnixExcludeTrailingBackslash(Path));
           if (FCurrentDirectory.IsEmpty())
           {
             FCurrentDirectory = L"/";
@@ -2067,7 +2067,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & FileName,
     // In case we need properties of set of files from the same directory,
     // cache the file list for future
     if ((FFileListCache != nullptr) &&
-        UnixComparePaths(Path, FFileListCache->GetDirectory()) &&
+        ::UnixComparePaths(Path, FFileListCache->GetDirectory()) &&
         (::UnixIsAbsolutePath(FFileListCache->GetDirectory()) ||
         (FFileListCachePath == GetCurrentDirectory())))
     {
@@ -3033,7 +3033,7 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
     SystemTimeToFileTime(&SystemTime, &LocalTime);
     FILETIME FileTime;
     LocalFileTimeToFileTime(&LocalTime, &FileTime);
-    Timestamp = ConvertTimestampToUnixSafe(FileTime, dstmUnix);
+    Timestamp = ::ConvertTimestampToUnixSafe(FileTime, dstmUnix);
   }
   else
   {
@@ -3041,7 +3041,7 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
     Timestamp = Time;
   }
 
-  return UnixToDateTime(Timestamp, dstmUnix);
+  return ::UnixToDateTime(Timestamp, dstmUnix);
 }
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::HandleAsynchRequestOverwrite(
@@ -3485,7 +3485,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
     assert(FFileList != nullptr);
     // this can actually fail in real life,
     // when connected to server with case insensitive paths
-    assert(UnixComparePaths(AbsolutePath(FFileList->GetDirectory(), false), Path));
+    assert(::UnixComparePaths(AbsolutePath(FFileList->GetDirectory(), false), Path));
     USEDPARAM(Path);
 
     for (uintptr_t Index = 0; Index < Count; ++Index)
