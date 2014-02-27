@@ -28,7 +28,7 @@ bool FindFile(UnicodeString & Path)
       Paths.SetLength(Len - 1);
       GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), static_cast<DWORD>(Len));
 
-      UnicodeString NewPath = FileSearch(ExtractFileName(Path, true), Paths);
+      UnicodeString NewPath = FileSearch(::ExtractFileName(Path, true), Paths);
       Result = !NewPath.IsEmpty();
       if (Result)
       {
@@ -259,8 +259,8 @@ UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
   UnicodeString Item;
   if (Files->GetCount() > 0)
   {
-    Item = Remote ? UnixExtractFileName(Files->GetString(0)) :
-      ExtractFileName(Files->GetString(0), true);
+    Item = Remote ? ::UnixExtractFileName(Files->GetString(0)) :
+      ::ExtractFileName(Files->GetString(0), true);
   }
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
     Files->GetCount(), Item);

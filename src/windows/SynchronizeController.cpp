@@ -120,14 +120,14 @@ void TSynchronizeController::SynchronizeChange(
     UnicodeString RemoteDirectory;
     UnicodeString RootLocalDirectory;
     RootLocalDirectory = IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory);
-    RemoteDirectory = UnixIncludeTrailingBackslash(FSynchronizeParams.RemoteDirectory);
+    RemoteDirectory = ::UnixIncludeTrailingBackslash(FSynchronizeParams.RemoteDirectory);
 
     UnicodeString LocalDirectory = IncludeTrailingBackslash(Directory);
 
     assert(LocalDirectory.SubString(1, RootLocalDirectory.Length()) ==
       RootLocalDirectory);
     RemoteDirectory = RemoteDirectory +
-      ToUnixPath(LocalDirectory.SubString(RootLocalDirectory.Length() + 1,
+      ::ToUnixPath(LocalDirectory.SubString(RootLocalDirectory.Length() + 1,
         LocalDirectory.Length() - RootLocalDirectory.Length()));
 
     SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,
@@ -236,7 +236,7 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
           IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory))
     {
       intptr_t FoundIndex;
-      Add = FOptions->Filter->Find(ExtractFileName(DirectoryName, true), FoundIndex);
+      Add = FOptions->Filter->Find(::ExtractFileName(DirectoryName, true), FoundIndex);
     }
   }
   TFileMasks::TParams MaskParams; // size/time does not matter for directories

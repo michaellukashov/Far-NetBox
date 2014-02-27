@@ -4415,7 +4415,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
 }
 //------------------------------------------------------------------------------
 void TRightsContainer::RightsButtonClick(TFarButton * Sender,
-    bool & /*Close*/)
+  bool & /*Close*/)
 {
   TRights R = GetRights();
   R.SetNumber(static_cast<unsigned short>(Sender->GetTag()));
@@ -5427,8 +5427,8 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
     {
       UnicodeString PromptMsg = GetMsg(Move ? MOVE_FILE_PROMPT : COPY_FILE_PROMPT);
       UnicodeString FileName = ToRemote ?
-        ExtractFileName(FileList->GetString(0), false).c_str() :
-        UnixExtractFileName(FileList->GetString(0)).c_str();
+        ::ExtractFileName(FileList->GetString(0), false).c_str() :
+        ::UnixExtractFileName(FileList->GetString(0)).c_str();
       UnicodeString MinimizedName = MinimizeName(FileName, DlgLength - PromptMsg.Length() - 6, false);
       Prompt = FORMAT(PromptMsg.c_str(), MinimizedName.c_str());
     }
@@ -5510,7 +5510,7 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     NewerOnlyCheck->SetChecked(FLAGCLEAR(FOptions, coDisableNewerOnly) && Params->GetNewerOnly());
 
     DirectoryEdit->SetText(
-      (FToRemote ? UnixIncludeTrailingBackslash(TargetDirectory) :
+      (FToRemote ? ::UnixIncludeTrailingBackslash(TargetDirectory) :
        ::IncludeTrailingBackslash(TargetDirectory)) + Params->GetFileMask());
     QueueCheck->SetChecked(Params->GetQueue());
     QueueNoConfirmationCheck->SetChecked(Params->GetQueueNoConfirmation());
@@ -5526,13 +5526,13 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     {
       if (FToRemote)
       {
-        Params->SetFileMask(UnixExtractFileName(DirectoryEdit->GetText()));
+        Params->SetFileMask(::UnixExtractFileName(DirectoryEdit->GetText()));
         TargetDirectory = ::UnixExtractFilePath(DirectoryEdit->GetText());
       }
       else
       {
-        Params->SetFileMask(ExtractFileName(DirectoryEdit->GetText(), false));
-        TargetDirectory = ExtractFilePath(DirectoryEdit->GetText());
+        Params->SetFileMask(::ExtractFileName(DirectoryEdit->GetText(), false));
+        TargetDirectory = ::ExtractFilePath(DirectoryEdit->GetText());
       }
 
       Params->SetNewerOnly(FLAGCLEAR(FOptions, coDisableNewerOnly) && NewerOnlyCheck->GetChecked());
@@ -5698,7 +5698,7 @@ private:
 };
 //------------------------------------------------------------------------------
 TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
-    bool Edit, bool AllowSymbolic) : TFarDialog(AFarPlugin)
+  bool Edit, bool AllowSymbolic) : TFarDialog(AFarPlugin)
 {
   TFarButton * Button;
   TFarSeparator * Separator;
@@ -5758,7 +5758,7 @@ void TLinkDialog::Change()
 }
 //------------------------------------------------------------------------------
 bool TLinkDialog::Execute(UnicodeString & FileName, UnicodeString & PointTo,
-    bool & Symbolic)
+  bool & Symbolic)
 {
   FileNameEdit->SetText(FileName);
   PointToEdit->SetText(PointTo);
@@ -8013,7 +8013,7 @@ void TSynchronizeDialog::DoLog(TSynchronizeController * /*Controller*/,
 }
 //------------------------------------------------------------------------------
 void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
-    bool & /*Close*/)
+  bool & /*Close*/)
 {
   bool Synchronize = false;
   bool Continue = true;
@@ -8153,27 +8153,27 @@ bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * FileList,
-    UnicodeString & Target, UnicodeString & FileMask, bool Move)
+  UnicodeString & Target, UnicodeString & FileMask, bool Move)
 {
   UnicodeString Prompt = FileNameFormatString(
     GetMsg(Move ? REMOTE_MOVE_FILE : REMOTE_COPY_FILE),
     GetMsg(Move ? REMOTE_MOVE_FILES : REMOTE_COPY_FILES), FileList, true);
 
-  UnicodeString Value = UnixIncludeTrailingBackslash(Target) + FileMask;
+  UnicodeString Value = ::UnixIncludeTrailingBackslash(Target) + FileMask;
   bool Result = FPlugin->InputBox(
     GetMsg(Move ? REMOTE_MOVE_TITLE : REMOTE_COPY_TITLE), Prompt,
     Value, 0, MOVE_TO_HISTORY) && !Value.IsEmpty();
   if (Result)
   {
     Target = ::UnixExtractFilePath(Value);
-    FileMask = UnixExtractFileName(Value);
+    FileMask = ::UnixExtractFileName(Value);
   }
   return Result;
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * File,
-    UnicodeString & NewName)
+  UnicodeString & NewName)
 {
   return FPlugin->InputBox(GetMsg(RENAME_FILE_TITLE).c_str(),
     FORMAT(GetMsg(RENAME_FILE).c_str(), File->GetFileName().c_str()), NewName, 0) &&

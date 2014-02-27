@@ -1993,13 +1993,13 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
       assert(FilesToCopy->GetCount() > 0);
       FInfo->Source = FilesToCopy->GetString(0);
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
-        IncludeTrailingBackslash(ExtractFilePath(FInfo->Source));
+        ::IncludeTrailingBackslash(ExtractFilePath(FInfo->Source));
     }
   }
 
   FInfo->Destination =
-    UnixIncludeTrailingBackslash(TargetDir) + CopyParam->GetFileMask();
-  FInfo->ModifiedRemote = UnixIncludeTrailingBackslash(TargetDir);
+    ::UnixIncludeTrailingBackslash(TargetDir) + CopyParam->GetFileMask();
+  FInfo->ModifiedRemote = ::UnixIncludeTrailingBackslash(TargetDir);
 }
 //---------------------------------------------------------------------------
 void TUploadQueueItem::DoExecute(TTerminal * Terminal)
@@ -2019,13 +2019,13 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
 {
   if (FilesToCopy->GetCount() > 1)
   {
-    if (!UnixExtractCommonPath(FilesToCopy, FInfo->Source))
+    if (!::UnixExtractCommonPath(FilesToCopy, FInfo->Source))
     {
       FInfo->Source = Terminal->GetCurrentDirectory();
     }
-    FInfo->Source = UnixExcludeTrailingBackslash(FInfo->Source);
+    FInfo->Source = ::UnixExcludeTrailingBackslash(FInfo->Source);
     FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
-      UnixIncludeTrailingBackslash(FInfo->Source);
+      ::UnixIncludeTrailingBackslash(FInfo->Source);
   }
   else
   {
@@ -2033,10 +2033,10 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
     FInfo->Source = FilesToCopy->GetString(0);
     if (::UnixExtractFilePath(FInfo->Source).IsEmpty())
     {
-      FInfo->Source = UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory()) +
+      FInfo->Source = ::UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory()) +
         FInfo->Source;
       FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
-        UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory());
+        ::UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory());
     }
     else
     {

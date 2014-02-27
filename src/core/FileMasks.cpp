@@ -395,9 +395,9 @@ bool TFileMasks::MatchesMasks(const UnicodeString & FileName, bool Directory,
     ++it;
   }
 
-  if (!Result && Directory && !IsUnixRootPath(Path) && Recurse)
+  if (!Result && Directory && !::IsUnixRootPath(Path) && Recurse)
   {
-    UnicodeString ParentFileName = UnixExtractFileName(Path);
+    UnicodeString ParentFileName = ::UnixExtractFileName(Path);
     UnicodeString ParentPath = ::SimpleUnixExcludeTrailingBackslash(::UnixExtractFilePath(Path));
     // Pass Params down or not?
     // Currently it includes Size/Time only, what is not used for directories.
@@ -447,14 +447,14 @@ bool TFileMasks::Matches(const UnicodeString & FileName, bool Local,
     UnicodeString Path = ExtractFilePath(FileName);
     if (!Path.IsEmpty())
     {
-      Path = ToUnixPath(ExcludeTrailingBackslash(Path));
+      Path = ::ToUnixPath(ExcludeTrailingBackslash(Path));
     }
-    Result = Matches(ExtractFileName(FileName, false), Directory, Path, Params,
+    Result = Matches(::ExtractFileName(FileName, false), Directory, Path, Params,
       ImplicitMatch);
   }
   else
   {
-    Result = Matches(UnixExtractFileName(FileName), Directory,
+    Result = Matches(::UnixExtractFileName(FileName), Directory,
       ::SimpleUnixExcludeTrailingBackslash(::UnixExtractFilePath(FileName)), Params,
       ImplicitMatch);
   }
@@ -645,7 +645,7 @@ void TFileMasks::CreateMask(
       {
         // make sure sole "/" (root dir) is preserved as is
         CreateMaskMask(
-          ::SimpleUnixExcludeTrailingBackslash(ToUnixPath(PartStr.SubString(1, D))),
+          ::SimpleUnixExcludeTrailingBackslash(::ToUnixPath(PartStr.SubString(1, D))),
           PartStart, PartStart + D - 1, false,
           Mask.DirectoryMask);
         CreateMaskMask(
@@ -1143,7 +1143,7 @@ bool TFileCustomCommand::PatternReplacement(
   }
   else if (Pattern == L"!/")
   {
-    Replacement = UnixIncludeTrailingBackslash(FPath);
+    Replacement = ::UnixIncludeTrailingBackslash(FPath);
   }
   else if (Pattern == L"!&")
   {

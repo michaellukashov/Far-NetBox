@@ -411,10 +411,10 @@ void TWinSCPFileSystem::Close()
 
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
-    UnicodeString & /*HostFile*/, UnicodeString & CurDir, UnicodeString & Format,
-    UnicodeString & PanelTitle, TFarPanelModes * PanelModes, intptr_t & /*StartPanelMode*/,
-    OPENPANELINFO_SORTMODES & /*StartSortMode*/, bool & /*StartSortOrder*/, TFarKeyBarTitles * KeyBarTitles,
-    UnicodeString & ShortcutData)
+  UnicodeString & /*HostFile*/, UnicodeString & CurDir, UnicodeString & Format,
+  UnicodeString & PanelTitle, TFarPanelModes * PanelModes, intptr_t & /*StartPanelMode*/,
+  OPENPANELINFO_SORTMODES & /*StartSortMode*/, bool & /*StartSortOrder*/, TFarKeyBarTitles * KeyBarTitles,
+  UnicodeString & ShortcutData)
 {
   if (!SessionList())
   {
@@ -1734,27 +1734,27 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
     if (FileList.get())
     {
       assert(!FPanelItems);
+      UnicodeString Target = FTerminal->GetCurrentDirectory();
+      UnicodeString FileMask = L"*.*";
+      if (FileList->GetCount() == 1)
+        FileMask = ::UnixExtractFileName(FileList->GetString(0));
+      if (RemoteTransferDialog(FileList.get(), Target, FileMask, Move))
       {
-        UnicodeString Target = FTerminal->GetCurrentDirectory();
-        UnicodeString FileMask = L"*.*";
-        if (RemoteTransferDialog(FileList.get(), Target, FileMask, Move))
+        SCOPE_EXIT
         {
-          SCOPE_EXIT
+          GetPanelInfo()->ApplySelection();
+          if (UpdatePanel())
           {
-            GetPanelInfo()->ApplySelection();
-            if (UpdatePanel())
-            {
-              RedrawPanel();
-            }
-          };
-          if (Move)
-          {
-            GetTerminal()->MoveFiles(FileList.get(), Target, FileMask);
+            RedrawPanel();
           }
-          else
-          {
-            GetTerminal()->CopyFiles(FileList.get(), Target, FileMask);
-          }
+        };
+        if (Move)
+        {
+          GetTerminal()->MoveFiles(FileList.get(), Target, FileMask);
+        }
+        else
+        {
+          GetTerminal()->CopyFiles(FileList.get(), Target, FileMask);
         }
       }
     }
@@ -2877,7 +2877,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
           {
             if (FileNameOnly)
             {
-              FileName = ExtractFileName(FileName, false);
+              FileName = ::ExtractFileName(FileName, false);
             }
           }
         }
@@ -3405,7 +3405,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
     }
 
     assert(PanelItem && PanelItem->GetFileName() ==
-      ((Side == osLocal) ? ExtractFileName(FileName, false) : FileName));
+      ((Side == osLocal) ? ::ExtractFileName(FileName, false) : FileName));
     if (Success && PanelItem)
     {
       PanelItem->SetSelected(false);
@@ -3474,7 +3474,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
     // do not show source directory
     if (TransferOperation && (ProgressData.Side == osLocal) && ProgressData.Temp)
     {
-      FileName = ExtractFileName(FileName, false);
+      FileName = ::ExtractFileName(FileName, false);
     }
     Message1 = ProgressFileLabel + MinimizeName(FileName,
       ProgressWidth - ProgressFileLabel.Length(), ProgressData.Side == osRemote) + L"\n";
@@ -3862,7 +3862,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
             FLastMultipleEditFile = L"";
 
             TMultipleEdit MultipleEdit;
-            MultipleEdit.FileName = ExtractFileName(Info->GetFileName(), false);
+            MultipleEdit.FileName = ::ExtractFileName(Info->GetFileName(), false);
             MultipleEdit.FileTitle = FLastMultipleEditFileTitle;
             MultipleEdit.Directory = FLastMultipleEditDirectory;
             MultipleEdit.LocalFileName = Info->GetFileName();

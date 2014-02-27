@@ -655,12 +655,12 @@ public:
     {
       if (Flags & SSH_FILEXFER_ATTR_ACMODTIME)
       {
-        File->SetLastAccess(UnixToDateTime(
+        File->SetLastAccess(::UnixToDateTime(
           SignedTS ?
             static_cast<__int64>(static_cast<int32_t>(GetCardinal())) :
             static_cast<__int64>(GetCardinal()),
           DSTMode));
-        File->SetModification(UnixToDateTime(
+        File->SetModification(::UnixToDateTime(
           SignedTS ?
             static_cast<__int64>(static_cast<int32_t>(GetCardinal())) :
             static_cast<__int64>(GetCardinal()),
@@ -671,7 +671,7 @@ public:
     {
       if (Flags & SSH_FILEXFER_ATTR_ACCESSTIME)
       {
-        File->SetLastAccess(UnixToDateTime(GetInt64(), DSTMode));
+        File->SetLastAccess(::UnixToDateTime(GetInt64(), DSTMode));
         if (Flags & SSH_FILEXFER_ATTR_SUBSECOND_TIMES)
         {
           GetCardinal(); // skip access time subseconds
@@ -691,7 +691,7 @@ public:
       }
       if (Flags & SSH_FILEXFER_ATTR_MODIFYTIME)
       {
-        File->SetModification(UnixToDateTime(GetInt64(), DSTMode));
+        File->SetModification(::UnixToDateTime(GetInt64(), DSTMode));
         if (Flags & SSH_FILEXFER_ATTR_SUBSECOND_TIMES)
         {
           GetCardinal(); // skip modification time subseconds
@@ -1855,7 +1855,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 //---------------------------------------------------------------------------
 bool TSFTPFileSystem::TemporaryTransferFile(const UnicodeString & FileName)
 {
-  return AnsiSameText(UnixExtractFileExt(FileName), PARTIAL_EXT);
+  return AnsiSameText(::UnixExtractFileExt(FileName), PARTIAL_EXT);
 }
 //---------------------------------------------------------------------------
 bool TSFTPFileSystem::GetStoredCredentialsTried()
@@ -3041,7 +3041,7 @@ void TSFTPFileSystem::TryOpenDirectory(const UnicodeString & Directory)
     // traverse-only (chmod 110) directories.
     // This is workaround for http://www.ftpshell.com/
     TSFTPPacket Packet(SSH_FXP_OPENDIR, FCodePage);
-    Packet.AddPathString(UnixExcludeTrailingBackslash(Directory), FUtfStrings);
+    Packet.AddPathString(::UnixExcludeTrailingBackslash(Directory), FUtfStrings);
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_HANDLE);
     RawByteString Handle = Packet.GetFileHandle();
     Packet.ChangeType(SSH_FXP_CLOSE);
@@ -3189,7 +3189,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       bool Failure = false;
       // no point reading parent of root directory,
       // moreover CompleteFTP terminates session upon attempt to do so
-      if (IsUnixRootPath(FileList->GetDirectory()))
+      if (::IsUnixRootPath(FileList->GetDirectory()))
       {
         File = nullptr;
       }
@@ -3815,7 +3815,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
     FileName = AFilesToCopy->GetString(Index);
     TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
-    FileNameOnly = ExtractFileName(RealFileName, false);
+    FileNameOnly = ::ExtractFileName(RealFileName, false);
     assert(!FAvoidBusy);
     FAvoidBusy = true;
 
@@ -3833,7 +3833,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
 
           if (DirectoryExists(ExtractFilePath(FileName)))
           {
-            FTerminal->DirectoryModified(UnixIncludeTrailingBackslash(TargetDir) +
+            FTerminal->DirectoryModified(::UnixIncludeTrailingBackslash(TargetDir) +
               FileNameOnly, true);
           }
         }
@@ -4173,7 +4173,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
       // File is regular file (not directory)
       assert(LocalFileHandle);
 
-      UnicodeString DestFileName = CopyParam->ChangeFileName(ExtractFileName(RealFileName, false),
+      UnicodeString DestFileName = CopyParam->ChangeFileName(::ExtractFileName(RealFileName, false),
         osLocal, FLAGSET(Flags, tfFirstLevel));
       UnicodeString DestFullName = LocalCanonify(TargetDir + DestFileName);
       UnicodeString DestPartialFullName;
@@ -4826,7 +4826,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
   intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
-    ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
+    ::ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
     FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = ::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
 
@@ -5054,7 +5054,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
   OperationProgress->SetFile(OnlyFileName);
 
-  UnicodeString DestFileName = CopyParam->ChangeFileName(UnixExtractFileName(AFile->GetFileName()),
+  UnicodeString DestFileName = CopyParam->ChangeFileName(::UnixExtractFileName(AFile->GetFileName()),
     osRemote, FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = TargetDir + DestFileName;
 
@@ -5497,7 +5497,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       if (ResumeAllowed)
       {
         FILE_OPERATION_LOOP (FMTLOAD(RENAME_AFTER_RESUME_ERROR,
-            ExtractFileName(DestPartialFullName, true).c_str(), DestFileName.c_str()),
+          ::ExtractFileName(DestPartialFullName, true).c_str(), DestFileName.c_str()),
 
           if (::FileExists(DestFullName))
           {

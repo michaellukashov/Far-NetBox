@@ -24,7 +24,7 @@
 
 #ifdef _AFX_MINREBUILD
 #pragma component(minrebuild, off)
-#endif 
+#endif
 
 #ifdef _AFX_PACKING
 #pragma pack(push, _AFX_PACKING)
@@ -35,34 +35,6 @@
 
 // Classes declared in this file
 
-//CObject
-	//CCmdTarget;
-		//CWnd
-			//CButton
-				// class CBitmapButton;    // Bitmap button (self-draw)
-
-			class CControlBar;          // control bar
-				class CStatusBar;       // status bar
-				class CToolBar;         // toolbar
-				class CDialogBar;       // dialog as control bar
-				class CReBar;			// ie40 dock bar
-
-			class CSplitterWnd;         // splitter manager
-
-			//CView
-				//CScrollView
-				class CFormView;        // view with a dialog template
-				class CEditView;        // simple text editor view
-
-	//CDC
-//		class CMetaFileDC;              // a metafile with proxy
-
-class CRectTracker;                     // tracker for rectangle objects
-
-// information structures
-struct CPrintInfo;          // Printing context
-struct CPrintPreviewState;  // Print Preview context/state
-struct CCreateContext;      // Creation context
 
 #undef AFX_DATA
 #define AFX_DATA AFX_CORE_DATA

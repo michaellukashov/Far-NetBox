@@ -23,7 +23,7 @@
 
 #ifdef _AFX_MINREBUILD
 #pragma component(minrebuild, off)
-#endif 
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // Classes declared in this file
@@ -187,23 +187,23 @@ protected: \
 
 #define EVENT_STOCK_MOUSEDOWN() \
 	{ afxEventStock, DISPID_MOUSEDOWN, _T("MouseDown"), \
-	  VTS_I2 VTS_I2 VTS_XPOS_PIXELS VTS_YPOS_PIXELS },
+		VTS_I2 VTS_I2 VTS_XPOS_PIXELS VTS_YPOS_PIXELS },
 
 #define EVENT_STOCK_MOUSEMOVE() \
 	{ afxEventStock, DISPID_MOUSEMOVE, _T("MouseMove"), \
-	  VTS_I2 VTS_I2 VTS_XPOS_PIXELS VTS_YPOS_PIXELS },
+		VTS_I2 VTS_I2 VTS_XPOS_PIXELS VTS_YPOS_PIXELS },
 
 #define EVENT_STOCK_MOUSEUP() \
 	{ afxEventStock, DISPID_MOUSEUP, _T("MouseUp"), \
-	  VTS_I2 VTS_I2 VTS_XPOS_PIXELS VTS_YPOS_PIXELS },
+		VTS_I2 VTS_I2 VTS_XPOS_PIXELS VTS_YPOS_PIXELS },
 
 #define EVENT_STOCK_ERROREVENT() \
 	{ afxEventStock, DISPID_ERROREVENT, _T("Error"), \
-	  VTS_I2 VTS_PBSTR VTS_SCODE VTS_BSTR VTS_BSTR VTS_I4 VTS_PBOOL },
+		VTS_I2 VTS_PBSTR VTS_SCODE VTS_BSTR VTS_BSTR VTS_I4 VTS_PBOOL },
 
 #define EVENT_STOCK_READYSTATECHANGE() \
 	{ afxEventStock, DISPID_READYSTATECHANGE, _T("ReadyStateChange"), \
-	  VTS_I4 },
+		VTS_I4 },
 
 // Shift state values for mouse and keyboard events
 #define SHIFT_MASK      0x01
@@ -329,59 +329,6 @@ public:
 protected:
 	DWORD m_dwConnectCookie;
 	LPPROPERTYNOTIFYSINK m_pNotify;
-};
-
-/////////////////////////////////////////////////////////////////////////////
-// CPictureHolder - helper class for dealing with picture objects
-
-class CPictureHolder
-{
-// Constructors
-public:
-	CPictureHolder();
-
-// Attributes
-	LPPICTURE m_pPict;
-
-// Operations
-	BOOL CreateEmpty();
-
-	BOOL CreateFromBitmap(UINT idResource);
-	// BOOL CreateFromBitmap(CBitmap* pBitmap, CPalette* pPal = NULL,
-		BOOL bTransferOwnership = TRUE);
-	BOOL CreateFromBitmap(HBITMAP hbm, HPALETTE hpal = NULL,
-		BOOL bTransferOwnership = FALSE);
-
-	BOOL CreateFromMetafile(HMETAFILE hmf, int xExt, int yExt,
-		BOOL bTransferOwnership = FALSE);
-
-	BOOL CreateFromIcon(UINT idResource);
-	BOOL CreateFromIcon(HICON hIcon, BOOL bTransferOwnership = FALSE);
-
-	short GetType();
-	BOOL GetDisplayString(CString& strValue);
-	LPPICTUREDISP GetPictureDispatch();
-	void SetPictureDispatch(LPPICTUREDISP pDisp);
-	void Render(CDC* pDC, const CRect& rcRender, const CRect& rcWBounds);
-
-// Implementation
-public:
-	~CPictureHolder();
-};
-
-/////////////////////////////////////////////////////////////////////////////
-// COleControl - base class for a control implemented in C++ with MFC
-
-struct _AFXCTL_ADVISE_INFO;     // implementation class
-struct _AFXCTL_UIACTIVE_INFO;   // implementation class
-
-class CControlRectTracker : public CRectTracker
-{
-// Implementation
-public:
-	CControlRectTracker(LPCRECT lpSrcRect, UINT nStyle)
-		: CRectTracker(lpSrcRect, nStyle) { }
-	CRect m_rectClip;   // saves the original clipping rectangle
 };
 
 /////////////////////////////////////////////////////////////////////////////

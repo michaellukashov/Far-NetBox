@@ -17,38 +17,23 @@ class TClassInfo
 public:
   TClassInfo(int classId,
              const TClassInfo * baseInfo1,
-             const TClassInfo * baseInfo2) :
-    m_classId(classId),
-    m_baseInfo1(baseInfo1),
-    m_baseInfo2(baseInfo2),
-    m_next(sm_first)
-  {
-    sm_first = this;
-    Register();
-  }
-
+             const TClassInfo * baseInfo2);
   ~TClassInfo();
 
   int GetClassId() const { return m_classId; }
   int GetBaseClassId1() const
   { return m_baseInfo1 ? m_baseInfo1->GetClassId() : 0; }
-  int GetBaseClassName2() const
+  int GetBaseClassId2() const
   { return m_baseInfo2 ? m_baseInfo2->GetClassId() : 0; }
-  const TClassInfo * GetBaseClass1() const { return m_baseInfo1; }
-  const TClassInfo * GetBaseClass2() const { return m_baseInfo2; }
+  const TClassInfo * GetBaseClassInfo1() const { return m_baseInfo1; }
+  const TClassInfo * GetBaseClassInfo2() const { return m_baseInfo2; }
 
   static const TClassInfo * GetFirst() { return sm_first; }
   const TClassInfo * GetNext() const { return m_next; }
   static TClassInfo * FindClass(int classId);
 
   // Climb upwards through inheritance hierarchy.
-  bool IsKindOf(const TClassInfo * info) const
-  {
-    return info != nullptr &&
-        (info == this ||
-          (m_baseInfo1 && m_baseInfo1->IsKindOf(info)) ||
-          (m_baseInfo2 && m_baseInfo2->IsKindOf(info)));
-  }
+  bool IsKindOf(const TClassInfo * info) const;
 
 private:
   int m_classId;
