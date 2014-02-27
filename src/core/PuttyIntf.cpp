@@ -520,7 +520,7 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
   if (has < 0)
   {
     Conf * conf = conf_new();
-    ssh_gss_liblist * List = NULL;
+    ssh_gss_liblist * List = nullptr;
     {
       SCOPE_EXIT
       {
