@@ -22,7 +22,7 @@
 #endif
 
 #if _WIN32_WINNT >= 0x0502
-	#include <atlsocket.h>
+  #include <atlsocket.h>
 #else
     #include <winsock2.h>
     #include <mswsock.h>
@@ -30,7 +30,7 @@
 
 #ifndef _WINSOCK2API_
 #ifdef _WINSOCKAPI_
-	#error MFC requires use of Winsock2.h
+  #error MFC requires use of Winsock2.h
 #endif
 
 
@@ -67,7 +67,7 @@
 
 	// CFile
 		class CSocketFile; // Used with CSocket and CArchive for
-						   // streaming objects on sockets.
+							 // streaming objects on sockets.
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -93,7 +93,7 @@ public:
 		LPCTSTR lpszSocketAddress = NULL);
 
 #if _WIN32_WINNT >= 0x0502
-	BOOL CreateEx(ADDRINFOT* pAI, 
+	BOOL CreateEx(ADDRINFOT* pAI,
 		long lEvent = FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE);
 #endif  // _WIN32_WINNT
 
@@ -109,7 +109,7 @@ public:
 	BOOL GetPeerName(CString& rPeerAddress, UINT& rPeerPort);
 	BOOL GetPeerName(SOCKADDR* lpSockAddr, int* lpSockAddrLen);
 #if _WIN32_WINNT >= 0x0502
-	BOOL GetPeerNameEx(CString& rPeerAddress, UINT& rPeerPort);	
+	BOOL GetPeerNameEx(CString& rPeerAddress, UINT& rPeerPort);
 #endif  // _WIN32_WINNT
 
 	BOOL GetSockName(CString& rSocketAddress, UINT& rSocketPort);
@@ -274,42 +274,6 @@ protected:
 };
 
 /////////////////////////////////////////////////////////////////////////////
-// CSocketFile
-
-class CSocketFile : public CFile
-{
-	DECLARE_DYNAMIC(CSocketFile)
-public:
-//Constructors
-	explicit CSocketFile(CSocket* pSocket, BOOL bArchiveCompatible = TRUE);
-
-// Implementation
-public:
-	CSocket* m_pSocket;
-	BOOL m_bArchiveCompatible;
-
-	virtual ~CSocketFile();
-
-	virtual UINT GetBufferPtr(UINT nCommand, UINT nCount, void** ppBufStart,
-		void** ppBufMax);
-	virtual UINT Read(void* lpBuf, UINT nCount);
-	virtual void Write(const void* lpBuf, UINT nCount);
-	virtual void Close();
-
-// Unsupported APIs
-	virtual BOOL Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException* pError = NULL);
-	virtual CFile* Duplicate() const;
-	virtual ULONGLONG GetPosition() const;
-	virtual ULONGLONG Seek(LONGLONG lOff, UINT nFrom);
-	virtual void SetLength(ULONGLONG dwNewLen);
-	virtual ULONGLONG GetLength() const;
-	virtual void LockRange(ULONGLONG dwPos, ULONGLONG dwCount);
-	virtual void UnlockRange(ULONGLONG dwPos, ULONGLONG dwCount);
-	virtual void Flush();
-	virtual void Abort();
-};
-
-/////////////////////////////////////////////////////////////////////////////
 // Global functions
 
 BOOL AFXAPI AfxSocketInit(WSADATA* lpwsaData = NULL);
@@ -435,7 +399,7 @@ inline int CAsyncSocket::SendToEx(const void* lpBuf, int nBufLen, UINT nHostPort
 		WSASetLastError(WSAEINVAL);
 		return SOCKET_ERROR;
 	}
-	
+
 	SOCKADDR_STORAGE sockAddrSelf;
 	memset(&sockAddrSelf, 0, sizeof(sockAddrSelf));
 
@@ -445,9 +409,9 @@ inline int CAsyncSocket::SendToEx(const void* lpBuf, int nBufLen, UINT nHostPort
 	if (!bResult)
 	{
 		WSASetLastError(WSAEINVAL);
-		return SOCKET_ERROR;		
+		return SOCKET_ERROR;
 	}
-	
+
 	int nSocketType;
 	int nSocketTypeLen = int(sizeof(int));
 	if (!GetSockOpt(SO_TYPE, &nSocketType, &nSocketTypeLen))
@@ -462,7 +426,7 @@ inline int CAsyncSocket::SendToEx(const void* lpBuf, int nBufLen, UINT nHostPort
 		WSASetLastError(nRet);
 		return SOCKET_ERROR;
 	}
-	
+
 	ADDRINFOT *p = sockAddr.GetAddrInfo();
 
 	return SendTo(lpBuf, nBufLen, p->ai_addr, (int)p->ai_addrlen, nFlags);

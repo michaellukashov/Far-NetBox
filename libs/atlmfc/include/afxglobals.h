@@ -209,7 +209,6 @@ struct AFX_GLOBAL_DATA
 		return bHorz ? m_nTextWidthHorz : m_nTextWidthVert;
 	}
 
-//	BOOL DrawParentBackground(CWnd* pWnd, CDC* pDC, LPRECT lpRect = NULL);
 	void CleanUp();
 
 	// COLORREF GetColor(int nColor);
@@ -238,7 +237,7 @@ struct AFX_GLOBAL_DATA
 	/// <summary>
 	/// Determines positions of Shell auto hide bars.</summary>
 	/// <returns> An integer value with encoded flags that specify positions of auto hide bars.
-	/// It may combine the following values: AFX_AUTOHIDE_BOTTOM, AFX_AUTOHIDE_TOP, AFX_AUTOHIDE_LEFT, 
+	/// It may combine the following values: AFX_AUTOHIDE_BOTTOM, AFX_AUTOHIDE_TOP, AFX_AUTOHIDE_LEFT,
 	/// AFX_AUTOHIDE_RIGHT.</returns>
 	/*int GetShellAutohideBars()
 	{
@@ -289,7 +288,7 @@ protected:
 
 	void UpdateTextMetrics();
 	// HBITMAP CreateDitherBitmap(HDC hDC);
-	
+
 	int m_nTextHeightHorz;
 	int m_nTextHeightVert;
 	int m_nTextWidthHorz;
