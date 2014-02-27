@@ -4418,7 +4418,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
 }
 //------------------------------------------------------------------------------
 void TRightsContainer::RightsButtonClick(TFarButton * Sender,
-    bool & /*Close*/)
+  bool & /*Close*/)
 {
   TRights R = GetRights();
   R.SetNumber(static_cast<unsigned short>(Sender->GetTag()));
@@ -5701,7 +5701,7 @@ private:
 };
 //------------------------------------------------------------------------------
 TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
-    bool Edit, bool AllowSymbolic) : TFarDialog(AFarPlugin)
+  bool Edit, bool AllowSymbolic) : TFarDialog(AFarPlugin)
 {
   TFarButton * Button;
   TFarSeparator * Separator;
@@ -5761,7 +5761,7 @@ void TLinkDialog::Change()
 }
 //------------------------------------------------------------------------------
 bool TLinkDialog::Execute(UnicodeString & FileName, UnicodeString & PointTo,
-    bool & Symbolic)
+  bool & Symbolic)
 {
   FileNameEdit->SetText(FileName);
   PointToEdit->SetText(PointTo);
@@ -8004,7 +8004,7 @@ void TSynchronizeDialog::DoLog(TSynchronizeController * /*Controller*/,
 }
 //------------------------------------------------------------------------------
 void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
-    bool & /*Close*/)
+  bool & /*Close*/)
 {
   bool Synchronize = false;
   bool Continue = true;
@@ -8142,7 +8142,7 @@ bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * FileList,
-    UnicodeString & Target, UnicodeString & FileMask, bool Move)
+  UnicodeString & Target, UnicodeString & FileMask, bool Move)
 {
   UnicodeString Prompt = FileNameFormatString(
     GetMsg(Move ? REMOTE_MOVE_FILE : REMOTE_COPY_FILE),
@@ -8162,7 +8162,7 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * FileList,
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * File,
-    UnicodeString & NewName)
+  UnicodeString & NewName)
 {
   return FPlugin->InputBox(GetMsg(RENAME_FILE_TITLE).c_str(),
     FORMAT(GetMsg(RENAME_FILE).c_str(), File->GetFileName().c_str()), NewName, 0) &&

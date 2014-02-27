@@ -410,10 +410,10 @@ void TWinSCPFileSystem::Close()
 
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::GetOpenPluginInfoEx(DWORD & Flags,
-    UnicodeString & /*HostFile*/, UnicodeString & CurDir, UnicodeString & Format,
-    UnicodeString & PanelTitle, TFarPanelModes * PanelModes, int & /*StartPanelMode*/,
-    int & /*StartSortMode*/, bool & /*StartSortOrder*/, TFarKeyBarTitles * KeyBarTitles,
-    UnicodeString & ShortcutData)
+  UnicodeString & /*HostFile*/, UnicodeString & CurDir, UnicodeString & Format,
+  UnicodeString & PanelTitle, TFarPanelModes * PanelModes, int & /*StartPanelMode*/,
+  int & /*StartSortMode*/, bool & /*StartSortOrder*/, TFarKeyBarTitles * KeyBarTitles,
+  UnicodeString & ShortcutData)
 {
   if (!SessionList())
   {

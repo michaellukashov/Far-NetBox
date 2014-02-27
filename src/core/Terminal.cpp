@@ -2296,8 +2296,8 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & FileName,
 
           LogEvent(FORMAT(L"Source file timestamp is [%s], destination timestamp is [%s], will%s overwrite",
             StandardTimestamp(ReducedSourceTimestamp).c_str(),
-             StandardTimestamp(ReducedDestTimestamp).c_str(),
-             UnicodeString(Result == qaYes ? L"" : L" not").c_str()));
+            StandardTimestamp(ReducedDestTimestamp).c_str(),
+            UnicodeString(Result == qaYes ? L"" : L" not").c_str()));
         }
         break;
 
