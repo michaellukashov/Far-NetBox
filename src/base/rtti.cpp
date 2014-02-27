@@ -6,6 +6,18 @@
 TClassInfo * TClassInfo::sm_first = nullptr;
 THashTable * TClassInfo::sm_classTable = nullptr;
 
+TClassInfo::TClassInfo(int classId,
+  const TClassInfo * baseInfo1,
+  const TClassInfo * baseInfo2) :
+  m_classId(classId),
+  m_baseInfo1(baseInfo1),
+  m_baseInfo2(baseInfo2),
+  m_next(sm_first)
+{
+  sm_first = this;
+  Register();
+}
+
 TClassInfo::~TClassInfo()
 {
   // remove this object from the linked list of all class infos: if we don't
@@ -30,6 +42,14 @@ TClassInfo::~TClassInfo()
     }
   }
   Unregister();
+}
+
+bool TClassInfo::IsKindOf(const TClassInfo * info) const
+{
+  return info != nullptr &&
+    (info == this ||
+      (m_baseInfo1 && m_baseInfo1->IsKindOf(info)) ||
+      (m_baseInfo2 && m_baseInfo2->IsKindOf(info)));
 }
 
 TClassInfo * TClassInfo::FindClass(int classId)
