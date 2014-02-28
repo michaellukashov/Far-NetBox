@@ -1424,7 +1424,7 @@ __int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   }
   else
   {
-    Result = ConvertTimestampToUnix(FileTime, DSTMode);
+    Result = ::ConvertTimestampToUnix(FileTime, DSTMode);
   }
   return Result;
 }
@@ -1596,7 +1596,7 @@ UnicodeString StandardTimestamp(const TDateTime & DateTime)
 #if defined(__BORLANDC__)
   return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
 #else
-  TDateTime DT = ConvertTimestampToUTC(DateTime);
+  TDateTime DT = ::ConvertTimestampToUTC(DateTime);
   unsigned short Y, M, D, H, N, S, MS;
   DT.DecodeDate(Y, M, D);
   DT.DecodeTime(H, N, S, MS);

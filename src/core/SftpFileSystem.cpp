@@ -5250,9 +5250,9 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       }
 
       Modification = File->GetModification();
-      AcTime = DateTimeToFileTime(File->GetLastAccess(),
+      AcTime = ::DateTimeToFileTime(File->GetLastAccess(),
         FTerminal->GetSessionData()->GetDSTMode());
-      WrTime = DateTimeToFileTime(File->GetModification(),
+      WrTime = ::DateTimeToFileTime(File->GetModification(),
         FTerminal->GetSessionData()->GetDSTMode());
 
       if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && !ResumeTransfer)

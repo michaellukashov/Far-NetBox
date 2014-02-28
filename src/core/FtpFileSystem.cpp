@@ -3032,7 +3032,7 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
     FILETIME LocalTime;
     SystemTimeToFileTime(&SystemTime, &LocalTime);
     FILETIME FileTime;
-    LocalFileTimeToFileTime(&LocalTime, &FileTime);
+    ::LocalFileTimeToFileTime(&LocalTime, &FileTime);
     Timestamp = ::ConvertTimestampToUnixSafe(FileTime, dstmUnix);
   }
   else
@@ -3454,7 +3454,7 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
 
     if (Source.Utc)
     {
-      DateTime = ConvertTimestampFromUTC(DateTime);
+      DateTime = ::ConvertTimestampFromUTC(DateTime);
     }
 
   }
@@ -3726,7 +3726,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
 void TFTPFileSystem::PreserveDownloadFileTime(HANDLE Handle, void * UserData)
 {
   TFileTransferData * Data = NB_STATIC_DOWNCAST(TFileTransferData, UserData);
-  FILETIME WrTime = DateTimeToFileTime(Data->Modification, dstmUnix);
+  FILETIME WrTime = ::DateTimeToFileTime(Data->Modification, dstmUnix);
   SetFileTime(Handle, nullptr, nullptr, &WrTime);
 }
 //---------------------------------------------------------------------------
@@ -3751,7 +3751,7 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
       }
       else
       {
-        TDateTime Modification = ConvertTimestampToUTC(FileTimeToDateTime(MTime));
+        TDateTime Modification = ::ConvertTimestampToUTC(::FileTimeToDateTime(MTime));
 
         unsigned short Year;
         unsigned short Month;

@@ -4247,7 +4247,7 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & FileName,
     Params.Size =
       (static_cast<__int64>(FindData.nFileSizeHigh) << 32) +
       FindData.nFileSizeLow;
-    Params.Modification = FileTimeToDateTime(FindData.ftLastWriteTime);
+    Params.Modification = ::FileTimeToDateTime(FindData.ftLastWriteTime);
     Result = CopyParam->AllowTransfer(FileName, osLocal, Directory, Params);
     if (Result)
     {
@@ -4304,7 +4304,7 @@ void TTerminal::CalculateLocalFileSize(const UnicodeString & FileName,
   {
     TFileMasks::TParams MaskParams;
     MaskParams.Size = Size;
-    MaskParams.Modification = FileTimeToDateTime(Rec.FindData.ftLastWriteTime);
+    MaskParams.Modification = ::FileTimeToDateTime(Rec.FindData.ftLastWriteTime);
 
     AllowTransfer = AParams->CopyParam->AllowTransfer(FileName, osLocal, Dir, MaskParams);
   }
@@ -4554,7 +4554,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
           __int64 Size =
             (static_cast<__int64>(SearchRec.FindData.nFileSizeHigh) << 32) +
             SearchRec.FindData.nFileSizeLow;
-          TDateTime Modification = FileTimeToDateTime(SearchRec.FindData.ftLastWriteTime);
+          TDateTime Modification = ::FileTimeToDateTime(SearchRec.FindData.ftLastWriteTime);
           TFileMasks::TParams MaskParams;
           MaskParams.Size = Size;
           MaskParams.Modification = Modification;
@@ -5452,7 +5452,7 @@ bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
 void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
   const TDateTime & Modification)
 {
-  FILETIME WrTime = DateTimeToFileTime(Modification,
+  FILETIME WrTime = ::DateTimeToFileTime(Modification,
     GetSessionData()->GetDSTMode());
   SetLocalFileTime(LocalFileName, nullptr, &WrTime);
 }

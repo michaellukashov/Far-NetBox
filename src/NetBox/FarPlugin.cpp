@@ -2375,8 +2375,8 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
     LastWriteTime, LastAccess, PanelItem->NumberOfLinks, Description, Owner,
     UserData, PanelItem->CustomColumnNumber);
   PanelItem->UserData = reinterpret_cast<uintptr_t>(UserData);
-  FILETIME FileTime = DateTimeToFileTime(LastWriteTime, dstmWin);
-  FILETIME FileTimeA = DateTimeToFileTime(LastAccess, dstmWin);
+  FILETIME FileTime = ::DateTimeToFileTime(LastWriteTime, dstmWin);
+  FILETIME FileTimeA = ::DateTimeToFileTime(LastAccess, dstmWin);
   PanelItem->FindData.ftCreationTime = FileTime;
   PanelItem->FindData.ftLastAccessTime = FileTimeA;
   PanelItem->FindData.ftLastWriteTime = FileTime;

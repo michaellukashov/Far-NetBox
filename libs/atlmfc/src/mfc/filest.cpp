@@ -229,7 +229,7 @@ void AFX_CDECL AfxTimeToFileTime(const CTime& time, LPFILETIME pFileTime)
 		CFileException::ThrowOsError((LONG)::GetLastError());
 
 	// convert local file time to UTC file time
-	if (!LocalFileTimeToFileTime(&localTime, pFileTime))
+	if (!::LocalFileTimeToFileTime(&localTime, pFileTime))
 		CFileException::ThrowOsError((LONG)::GetLastError());
 }
 
