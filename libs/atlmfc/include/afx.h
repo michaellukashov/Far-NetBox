@@ -162,16 +162,14 @@ struct CRuntimeClass;          // object type information
 class CObject;                        // the root of all objects classes
 
 	class CException;                 // the root of all exceptions
-		class CArchiveException;      // archive exception
-		class CFileException;         // file exception
-		class CSimpleException;
-			class CMemoryException;       // out-of-memory exception
-			class CNotSupportedException; // feature not supported exception
-			class CInvalidArgException;	  // one of the parameters to the function is invalid
-
 	class CFile;                      // raw binary file
 		class CStdioFile;             // buffered stdio text/binary file
 		class CMemFile;               // memory based file
+//		class CFileException;         // file exception
+//		class CSimpleException;
+//			class CMemoryException;       // out-of-memory exception
+//			class CNotSupportedException; // feature not supported exception
+//			class CInvalidArgException;	  // one of the parameters to the function is invalid
 
 // Non CObject classes
 struct CFileStatus;                   // file status information
@@ -1066,168 +1064,12 @@ protected:
 };
 
 /////////////////////////////////////////////////////////////////////////////
-// STDIO file implementation
-
-class CStdioFile : public CFile
-{
-	DECLARE_DYNAMIC(CStdioFile)
-
-public:
-// Constructors
-	CStdioFile();
-
-	CStdioFile(FILE* pOpenStream);
-	CStdioFile(LPCTSTR lpszFileName, UINT nOpenFlags);
-	
-// Attributes
-	FILE* m_pStream;    // stdio FILE
-						// m_hFile from base class is _fileno(m_pStream)
-
-// Operations
-	// reading and writing strings
-	virtual void WriteString(LPCTSTR lpsz);
-	virtual LPTSTR ReadString(_Out_z_cap_(nMax) LPTSTR lpsz, _In_ UINT nMax);
-	virtual BOOL ReadString(CString& rString);
-
-// Implementation
-public:
-	virtual ~CStdioFile();
-	virtual ULONGLONG GetPosition() const;
-	virtual ULONGLONG GetLength() const;
-	virtual BOOL Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException* pError = NULL);
-
-	virtual UINT Read(void* lpBuf, UINT nCount);
-	virtual void Write(const void* lpBuf, UINT nCount);
-	virtual ULONGLONG Seek(LONGLONG lOff, UINT nFrom);
-	virtual void Abort();
-	virtual void Flush();
-	virtual void Close();
-
-	// Unsupported APIs
-	virtual CFile* Duplicate() const;
-	virtual void LockRange(ULONGLONG dwPos, ULONGLONG dwCount);
-	virtual void UnlockRange(ULONGLONG dwPos, ULONGLONG dwCount);
-
-protected:
-	void CommonBaseInit(FILE* pOpenStream);
-	void CommonInit(LPCTSTR lpszFileName, UINT nOpenFlags);
-};
-
-////////////////////////////////////////////////////////////////////////////
-// Memory based file implementation
-
-class CMemFile : public CFile
-{
-	DECLARE_DYNAMIC(CMemFile)
-
-public:
-// Constructors
-	/* explicit */ CMemFile(UINT nGrowBytes = 1024);
-	CMemFile(BYTE* lpBuffer, UINT nBufferSize, UINT nGrowBytes = 0);
-
-// Operations
-	void Attach(BYTE* lpBuffer, UINT nBufferSize, UINT nGrowBytes = 0);
-	BYTE* Detach();
-
-// Advanced Overridables
-protected:
-	virtual BYTE* Alloc(SIZE_T nBytes);
-	virtual BYTE* Realloc(BYTE* lpMem, SIZE_T nBytes);
-	virtual BYTE* Memcpy(BYTE* lpMemTarget, const BYTE* lpMemSource, SIZE_T nBytes);
-	virtual void Free(BYTE* lpMem);
-	virtual void GrowFile(SIZE_T dwNewLen);
-
-// Implementation
-protected:
-	SIZE_T m_nGrowBytes;
-	SIZE_T m_nPosition;
-	SIZE_T m_nBufferSize;
-	SIZE_T m_nFileSize;
-	BYTE* m_lpBuffer;
-	BOOL m_bAutoDelete;
-
-public:
-	virtual ~CMemFile();
-	virtual ULONGLONG GetPosition() const;
-	BOOL GetStatus(CFileStatus& rStatus) const;
-	virtual ULONGLONG Seek(LONGLONG lOff, UINT nFrom);
-	virtual void SetLength(ULONGLONG dwNewLen);
-	virtual UINT Read(void* lpBuf, UINT nCount);
-	virtual void Write(const void* lpBuf, UINT nCount);
-	virtual void Abort();
-	virtual void Flush();
-	virtual void Close();
-	virtual UINT GetBufferPtr(UINT nCommand, UINT nCount = 0,
-		void** ppBufStart = NULL, void** ppBufMax = NULL);
-	virtual ULONGLONG GetLength() const;
-
-	// Unsupported APIs
-	virtual CFile* Duplicate() const;
-	virtual void LockRange(ULONGLONG dwPos, ULONGLONG dwCount);
-	virtual void UnlockRange(ULONGLONG dwPos, ULONGLONG dwCount);
-};
-
 ////////////////////////////////////////////////////////////////////////////
 // Local file searches
 
 #include <atltime.h>
 using ATL::CTime;
 using ATL::CTimeSpan;
-
-class CFileFind : public CObject
-{
-public:
-	CFileFind();
-
-	virtual ~CFileFind();
-
-// Attributes
-public:
-	ULONGLONG GetLength() const;
-	virtual CString GetFileName() const;
-	virtual CString GetFilePath() const;
-	virtual CString GetFileTitle() const;
-	virtual CString GetFileURL() const;
-	virtual CString GetRoot() const;
-
-	virtual BOOL GetLastWriteTime(FILETIME* pTimeStamp) const;
-	virtual BOOL GetLastAccessTime(FILETIME* pTimeStamp) const;
-	virtual BOOL GetCreationTime(FILETIME* pTimeStamp) const;
-	virtual BOOL GetLastWriteTime(CTime& refTime) const;
-	virtual BOOL GetLastAccessTime(CTime& refTime) const;
-	virtual BOOL GetCreationTime(CTime& refTime) const;
-
-	virtual BOOL MatchesMask(DWORD dwMask) const;
-
-	virtual BOOL IsDots() const;
-	// these aren't virtual because they all use MatchesMask(), which is
-	BOOL IsReadOnly() const;
-	BOOL IsDirectory() const;
-	BOOL IsCompressed() const;
-	BOOL IsSystem() const;
-	BOOL IsHidden() const;
-	BOOL IsTemporary() const;
-	BOOL IsNormal() const;
-	BOOL IsArchived() const;
-
-// Operations
-	void Close();
-	virtual BOOL FindFile(LPCTSTR pstrName = NULL, DWORD dwUnused = 0);
-	virtual BOOL FindNextFile();
-
-protected:
-	virtual void CloseContext();
-
-// Implementation
-protected:
-	void* m_pFoundInfo;
-	void* m_pNextInfo;
-	HANDLE m_hContext;
-	CString m_strRoot;
-	TCHAR m_chDirSeparator;     // not '\\' for Internet classes
-
-	DECLARE_DYNAMIC(CFileFind)
-};
 
 /////////////////////////////////////////////////////////////////////////////
 // File status

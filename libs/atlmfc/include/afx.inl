@@ -111,23 +111,6 @@ _AFX_INLINE void CFile::SetFilePath(LPCTSTR lpszNewName)
 }
 
 // CFileFind
-_AFX_INLINE BOOL CFileFind::IsReadOnly() const
-	{ return MatchesMask(FILE_ATTRIBUTE_READONLY); }
-_AFX_INLINE BOOL CFileFind::IsDirectory() const
-	{ return MatchesMask(FILE_ATTRIBUTE_DIRECTORY); }
-_AFX_INLINE BOOL CFileFind::IsCompressed() const
-	{ return MatchesMask(FILE_ATTRIBUTE_COMPRESSED); }
-_AFX_INLINE BOOL CFileFind::IsSystem() const
-	{ return MatchesMask(FILE_ATTRIBUTE_SYSTEM); }
-_AFX_INLINE BOOL CFileFind::IsHidden() const
-	{ return MatchesMask(FILE_ATTRIBUTE_HIDDEN); }
-_AFX_INLINE BOOL CFileFind::IsTemporary() const
-	{ return MatchesMask(FILE_ATTRIBUTE_TEMPORARY); }
-_AFX_INLINE BOOL CFileFind::IsNormal() const
-	{ return MatchesMask(FILE_ATTRIBUTE_NORMAL); }
-_AFX_INLINE BOOL CFileFind::IsArchived() const
-	{ return MatchesMask(FILE_ATTRIBUTE_ARCHIVE); }
-
 /////////////////////////////////////////////////////////////////////////////
 #endif //AFX_INL_INCLUDE_GUARD
 #endif //_AFX_INLINE

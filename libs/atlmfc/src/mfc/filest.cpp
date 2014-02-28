@@ -303,20 +303,4 @@ void PASCAL CFile::SetStatus(LPCTSTR lpszFileName, const CFileStatus& status)
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// CMemFile::GetStatus implementation
-
-BOOL CMemFile::GetStatus(CFileStatus& rStatus) const
-{
-	ASSERT_VALID(this);
-
-	rStatus.m_ctime = 0;
-	rStatus.m_mtime = 0;
-	rStatus.m_atime = 0;
-	rStatus.m_size = m_nFileSize;
-	rStatus.m_attribute = normal;
-	rStatus.m_szFullName[0] = '\0';
-	return TRUE;
-}
-
 /////////////////////////////////////////////////////////////////////////////
