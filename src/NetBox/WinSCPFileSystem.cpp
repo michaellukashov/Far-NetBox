@@ -2146,7 +2146,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
       bool Result = false;
       SCOPE_EXIT
       {
-        FSavedFindFolder = "";
+        FSavedFindFolder.Clear();
       };
       Result = SetDirectoryEx(FSavedFindFolder, OpMode);
       return Result;
@@ -2646,17 +2646,16 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
     // moreover we may upload the file under name that does not exist in
     // remote panel
     FNoProgressFinish = Edit;
-    SCOPE_EXIT
     {
-      FNoProgressFinish = false;
-    };
-    {
+      SCOPE_EXIT
+      {
+        FNoProgressFinish = false;
+      };
       // these parameters are known only after transfer dialog
       Params |=
         FLAGMASK(!Ask, cpNoConfirmation) |
         FLAGMASK(Edit, cpTemporary) |
-        FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly)
-        ;
+        FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
       FTerminal->CopyToRemote(FFileList, DestPath, &CopyParam, Params);
     }
   }
