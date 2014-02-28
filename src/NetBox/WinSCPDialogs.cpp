@@ -3371,11 +3371,11 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   }
 
   CipherListBox->GetItems()->BeginUpdate();
-  SCOPE_EXIT
   {
-    CipherListBox->GetItems()->EndUpdate();
-  };
-  {
+    SCOPE_EXIT
+    {
+      CipherListBox->GetItems()->EndUpdate();
+    };
     CipherListBox->GetItems()->Clear();
     assert(CIPHER_NAME_WARN+CIPHER_COUNT-1 == CIPHER_NAME_ARCFOUR);
     for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
@@ -5545,12 +5545,12 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     }
 
     GetConfiguration()->BeginUpdate();
-    SCOPE_EXIT
-    {
-      GetConfiguration()->EndUpdate();
-    };
     if (SaveSettingsCheck->GetChecked())
     {
+      SCOPE_EXIT
+      {
+        GetConfiguration()->EndUpdate();
+      };
       GetGUIConfiguration()->SetDefaultCopyParam(*Params);
     }
   }
@@ -7486,11 +7486,11 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
   FCanScrollRight = false;
   TFarList * List = ListBox->GetItems();
   List->BeginUpdate();
-  SCOPE_EXIT
   {
-    List->EndUpdate();
-  };
-  {
+    SCOPE_EXIT
+    {
+      List->EndUpdate();
+    };
     for (intptr_t Index = 0; Index < List->GetCount(); ++Index)
     {
       if (!Scroll || (List->GetString(Index).LastDelimiter(L"{}") > 0))
@@ -7526,11 +7526,11 @@ void TSynchronizeChecklistDialog::CheckAll(bool Check)
 {
   TFarList * List = ListBox->GetItems();
   List->BeginUpdate();
-  SCOPE_EXIT
   {
-    List->EndUpdate();
-  };
-  {
+    SCOPE_EXIT
+    {
+      List->EndUpdate();
+    };
     intptr_t Count = List->GetCount();
     for (intptr_t Index = 0; Index < Count; ++Index)
     {
