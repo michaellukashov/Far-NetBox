@@ -1212,11 +1212,6 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   // anymore in TSecondaryTerminal.
   return DoPromptUser(Data, Kind, Name, Instructions, Prompts, Results);
 }
-//---------------------------------------------------------------------------
-TTerminal * TTerminal::GetPasswordSource()
-{
-  return this;
-}
 //------------------------------------------------------------------------------
 bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
@@ -5657,11 +5652,6 @@ void TSecondaryTerminal::DirectoryModified(const UnicodeString & Path,
 {
   // clear cache of main terminal
   FMainTerminal->DirectoryModified(Path, SubDirs);
-}
-//---------------------------------------------------------------------------
-TTerminal * TSecondaryTerminal::GetPasswordSource()
-{
-  return FMainTerminal;
 }
 //------------------------------------------------------------------------------
 TTerminalList::TTerminalList(TConfiguration * AConfiguration) :

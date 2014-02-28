@@ -500,7 +500,8 @@ protected:
   void LogRemoteFile(TRemoteFile * AFile);
   UnicodeString FormatFileDetailsForLog(const UnicodeString & FileName, TDateTime Modification, __int64 Size);
   void LogFileDetails(const UnicodeString & FileName, TDateTime Modification, __int64 Size);
-  virtual TTerminal * GetPasswordSource();
+  virtual const TTerminal * GetPasswordSource() const { return this; }
+  virtual TTerminal * GetPasswordSource() { return this; }
 
   TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
 
@@ -602,7 +603,8 @@ protected:
   virtual void DirectoryLoaded(TRemoteFileList * FileList);
   virtual void DirectoryModified(const UnicodeString & Path,
     bool SubDirs);
-  virtual TTerminal * GetPasswordSource();
+  virtual const TTerminal * GetPasswordSource() const { return FMainTerminal; }
+  virtual TTerminal * GetPasswordSource() { return FMainTerminal; }
 
 private:
   TTerminal * FMainTerminal;
