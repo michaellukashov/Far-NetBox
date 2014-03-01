@@ -1072,7 +1072,7 @@ void TFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
-    Params &= ~cpAppend;
+  Params &= ~cpAppend;
   UnicodeString FullTargetDir = IncludeTrailingBackslash(TargetDir);
 
   intptr_t Index = 0;
