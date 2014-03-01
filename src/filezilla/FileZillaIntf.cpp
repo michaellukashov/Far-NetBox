@@ -237,7 +237,7 @@ bool TFileZillaIntf::ListFile(const wchar_t * AFullFileName)
 }
 #endif
 //---------------------------------------------------------------------------
-bool TFileZillaIntf::FileTransfer(const wchar_t * LocalFile, HANDLE Handle,
+bool TFileZillaIntf::FileTransfer(const wchar_t * LocalFile,
   const wchar_t * RemoteFile, const wchar_t * RemotePath, bool Get, __int64 Size,
   int Type, void * UserData)
 {
@@ -245,7 +245,6 @@ bool TFileZillaIntf::FileTransfer(const wchar_t * LocalFile, HANDLE Handle,
 
   Transfer.localfile = LocalFile;
   Transfer.remotefile = RemoteFile;
-  Transfer.handle = Handle;
   Transfer.remotepath = CServerPath(RemotePath);
   Transfer.get = Get;
   Transfer.size = Size;

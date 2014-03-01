@@ -1034,12 +1034,12 @@ void TFTPFileSystem::FileTransferProgress(int64_t TransferSize,
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::FileTransfer(const UnicodeString & FileName,
-  const UnicodeString & LocalFile, HANDLE Handle, const UnicodeString & RemoteFile,
+  const UnicodeString & LocalFile, const UnicodeString & RemoteFile,
   const UnicodeString & RemotePath, bool Get, int64_t Size, intptr_t Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
   FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
-    FFileZillaIntf->FileTransfer(LocalFile.c_str(), Handle, RemoteFile.c_str(),
+    FFileZillaIntf->FileTransfer(LocalFile.c_str(), RemoteFile.c_str(),
       RemotePath.c_str(), Get, Size, (int)Type, &UserData);
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
@@ -1278,21 +1278,14 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
       UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
       UserData.CopyParam = CopyParam;
       UserData.Modification = AFile->GetModification();
-
-      HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-      if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress,
-        &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
-      {
-        ThrowSkipFileNull();
-      }
       try
       {
-        FileTransfer(FileName, DestFullName, LocalFileHandle, OnlyFileName,
+        FileTransfer(FileName, DestFullName, OnlyFileName,
           FilePath, true, AFile->GetSize(), TransferType, UserData, OperationProgress);
       }
       catch (Exception &)
       {
-        ::CloseHandle(LocalFileHandle);
+        //::CloseHandle(LocalFileHandle);
         throw;
       }
     }
@@ -1562,7 +1555,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
       UserData.AutoResume = FLAGSET(Flags, tfAutoResume) || DoResume;
       UserData.CopyParam = CopyParam;
       UserData.Modification = Modification;
-      FileTransfer(RealFileName, FileName, INVALID_HANDLE_VALUE, DestFileName,
+      FileTransfer(RealFileName, FileName, DestFileName,
         TargetDir, false, Size, TransferType, UserData, OperationProgress);
     }
 

@@ -57,7 +57,6 @@ typedef struct
 {
     CString localfile;
     CString remotefile;
-    HANDLE handle;
     CServerPath remotepath;
     BOOL get;
     __int64 size;

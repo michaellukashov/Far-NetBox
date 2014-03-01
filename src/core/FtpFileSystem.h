@@ -182,7 +182,7 @@ protected:
   void CaptureOutput(const UnicodeString & Str);
   void DoReadDirectory(TRemoteFileList * FileList);
   void DoReadFile(const UnicodeString & FileName, TRemoteFile *& AFile);
-  void FileTransfer(const UnicodeString & FileName, const UnicodeString & LocalFile, HANDLE Handle,
+  void FileTransfer(const UnicodeString & FileName, const UnicodeString & LocalFile,
     const UnicodeString & RemoteFile, const UnicodeString & RemotePath, bool Get,
     int64_t Size, intptr_t Type, TFileTransferData & UserData,
     TFileOperationProgressType * OperationProgress);

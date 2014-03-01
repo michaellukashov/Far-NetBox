@@ -186,7 +186,7 @@ public:
   bool Rename(const wchar_t* OldName, const wchar_t* NewName,
     const wchar_t* Path, const wchar_t* NewPath);
 
-  bool FileTransfer(const wchar_t * LocalFile, HANDLE Handle, const wchar_t * RemoteFile,
+  bool FileTransfer(const wchar_t * LocalFile, const wchar_t * RemoteFile,
     const wchar_t * RemotePath, bool Get, __int64 Size, int Type, void * UserData);
 
   virtual const wchar_t * Option(intptr_t OptionID) const = 0;

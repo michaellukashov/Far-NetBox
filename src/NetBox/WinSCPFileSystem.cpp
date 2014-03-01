@@ -2507,7 +2507,7 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
     (OpMode & OPM_SILENT) &&
     (!EditView || GetFarConfiguration()->GetEditorDownloadDefaultMode());
 
-  TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
+  TGUICopyParamType CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
   if (EditView)
   {
     EditViewCopyParam(CopyParam);
@@ -2521,6 +2521,7 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
   {
     intptr_t CopyParamAttrs =
       GetTerminal()->UsableCopyParamAttrs(Params).Download;
+      ; // FLAGMASK(EditView, cpaNoExcludeMask);
 
     uintptr_t Options =
       FLAGMASK(EditView, coTempTransfer | coDisableNewerOnly);
