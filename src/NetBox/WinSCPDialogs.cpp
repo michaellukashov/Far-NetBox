@@ -538,20 +538,18 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
+    SCOPE_EXIT
     {
-      SCOPE_EXIT
-      {
-        GetConfiguration()->EndUpdate();
-      };
-      GetConfiguration()->SetLogging(LoggingCheck->GetChecked());
-      GetConfiguration()->SetLogProtocol(LogProtocolCombo->GetItemIndex());
-      GetConfiguration()->SetLogToFile(LogToFileCheck->GetChecked());
-      if (LogToFileCheck->GetChecked())
-      {
-        GetConfiguration()->SetLogFileName(LogFileNameEdit->GetText());
-      }
-      GetConfiguration()->SetLogFileAppend(LogFileAppendButton->GetChecked());
+      GetConfiguration()->EndUpdate();
+    };
+    GetConfiguration()->SetLogging(LoggingCheck->GetChecked());
+    GetConfiguration()->SetLogProtocol(LogProtocolCombo->GetItemIndex());
+    GetConfiguration()->SetLogToFile(LogToFileCheck->GetChecked());
+    if (LogToFileCheck->GetChecked())
+    {
+      GetConfiguration()->SetLogFileName(LogFileNameEdit->GetText());
     }
+    GetConfiguration()->SetLogFileAppend(LogFileAppendButton->GetChecked());
   }
   return Result;
 }
