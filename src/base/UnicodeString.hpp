@@ -387,7 +387,6 @@ private:
   void Init(const char * Str, intptr_t Length);
   void Init(const uint8_t * Str, intptr_t Length);
 
-  // typedef std::basic_string<uint8_t> rawstring_t;
   typedef std::basic_string<uint8_t, std::char_traits<uint8_t>, custom_nballocator_t<uint8_t> > rawstring_t;
   rawstring_t Data;
 };
