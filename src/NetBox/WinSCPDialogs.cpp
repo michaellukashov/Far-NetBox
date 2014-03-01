@@ -5545,12 +5545,12 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     }
 
     GetConfiguration()->BeginUpdate();
+    SCOPE_EXIT
+    {
+      GetConfiguration()->EndUpdate();
+    };
     if (SaveSettingsCheck->GetChecked())
     {
-      SCOPE_EXIT
-      {
-        GetConfiguration()->EndUpdate();
-      };
       GetGUIConfiguration()->SetDefaultCopyParam(*Params);
     }
   }
