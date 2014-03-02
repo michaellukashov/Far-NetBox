@@ -76,7 +76,7 @@ struct TFtpsCertificateData
 //---------------------------------------------------------------------------
 struct TNeedPassRequestData
 {
-    wchar_t * Password;
+  wchar_t * Password;
 };
 //---------------------------------------------------------------------------
 class t_server;
