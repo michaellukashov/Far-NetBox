@@ -354,7 +354,9 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
             (Data->localtime != NULL) ? Data->localtime->GetTime() : 0,
             (Data->localtime != NULL) && ((Data->localtime->GetHour() != 0) || (Data->localtime->GetMinute() != 0)),
             RemoteTime,
-            reinterpret_cast<void *>(Data->pTransferFile->UserData), RequestResult);
+            reinterpret_cast<void *>(Data->pTransferFile->UserData),
+            Data->localFileHandle,
+            RequestResult);
         }
         catch (...)
         {

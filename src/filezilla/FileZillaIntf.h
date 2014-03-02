@@ -204,7 +204,9 @@ protected:
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
     __int64 Size1, __int64 Size2, time_t LocalTime,
-    bool HasLocalTime1, const TRemoteFileTime & RemoteTime, void * UserData, int & RequestResult) = 0;
+    bool HasLocalTime1, const TRemoteFileTime & RemoteTime, void * UserData,
+    HANDLE & LocalFileHandle,
+    int & RequestResult) = 0;
   virtual bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult) = 0;
   virtual bool HandleAsynchRequestNeedPass(
