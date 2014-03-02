@@ -54,11 +54,17 @@
 #define CSMODE_LISTFILE			0x4000
 #endif
 
-typedef struct
+struct t_transferdata
 {
+	t_transferdata() :
+		bResume(FALSE), bType(FALSE),
+		transfersize(0),transferleft(0),nTransferStart(0),
+		localFileHandle(INVALID_HANDLE_VALUE)
+	{}
 	BOOL bResume,bType;
 	__int64 transfersize,transferleft,nTransferStart;
-} t_transferdata;
+	HANDLE localFileHandle;
+};
 
 class CMainThread;
 class CAsyncProxySocketLayer;
@@ -101,15 +107,15 @@ public:
 	virtual void RemoveDir(CString dirname, const CServerPath &path)=0;
 	virtual void Cancel(BOOL bQuit=FALSE)=0;
 	virtual void Chmod(CString filename, const CServerPath &path, int nValue)=0;
-	
+
 	virtual void SetAsyncRequestResult(int nAction, CAsyncRequestData *pData)=0;
-	
+
 	virtual void OnTimer()=0; //Called every 1000 msecs
 	virtual BOOL IsReady()=0; //ALWAYS return return TRUE if processing a command (Return false if keepalive is in progress for example)
 	virtual void ProcessReply()=0;
 	virtual void TransferEnd(int nMode)=0;
 	virtual void DoClose(int nErrorCode = 0)=0;
-	
+
 	t_server GetCurrentServer();
 	void ShowStatus(UINT nID, int type) const;
 	void ShowStatus(CString status,int type) const;
@@ -141,7 +147,7 @@ protected:
 public:
 	BOOL RemoveActiveTransfer();
 	BOOL SpeedLimitAddTransferredBytes(enum transferDirection direction, _int64 nBytesTransferred);
-	
+
 	_int64 GetSpeedLimit(enum transferDirection direction, CTime &time);
 
 	_int64 GetAbleToTransferSize(enum transferDirection direction, bool &beenWaiting, int nBufSize = 0);
@@ -164,7 +170,7 @@ protected:
 	_int64 GetSpeedLimit(CTime &time, int valType, int valValue);
 #endif
 	//End Speed limit
-	
+
 	virtual void LogSocketMessage(int nMessageType, LPCTSTR pMsgFormat);
 
 public:

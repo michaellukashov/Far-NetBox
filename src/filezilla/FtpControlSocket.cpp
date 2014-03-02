@@ -5342,6 +5342,7 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
 		if (pData->size1 >= 0)
 		{
 			pTransferData->transferdata.bResume = TRUE;
+			pTransferData->transferdata.localFileHandle = pData->localFileHandle;
 		}
 		pTransferData->nWaitNextOpState = FILETRANSFER_TYPE;
 		break;
