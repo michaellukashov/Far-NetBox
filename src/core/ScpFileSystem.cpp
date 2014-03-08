@@ -2548,7 +2548,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                 Action.Destination(DestFileName);
 
                 if (!FTerminal->CreateFile(DestFileName, OperationProgress,
-                    &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
+                    &LocalFileHandle, FLAGSET(Params, cpResume), FLAGSET(Params, cpNoConfirmation)))
                 {
                   SkipConfirmed = true;
                   ThrowExtException();

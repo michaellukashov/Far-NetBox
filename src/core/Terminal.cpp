@@ -4038,6 +4038,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & Command,
 //------------------------------------------------------------------------------
 bool TTerminal::DoCreateFile(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
+  bool Resume,
   bool NoConfirmation)
 {
   assert(OperationProgress);
@@ -4046,7 +4047,7 @@ bool TTerminal::DoCreateFile(const UnicodeString & FileName,
   bool Done;
   DWORD DesiredAccess = GENERIC_WRITE;
   DWORD ShareMode = FILE_SHARE_READ;
-  DWORD CreationDisposition = CREATE_ALWAYS; // OPEN_ALWAYS
+  DWORD CreationDisposition = Resume ? OPEN_ALWAYS : CREATE_ALWAYS;
   DWORD FlagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
   do
   {
@@ -4124,13 +4125,14 @@ bool TTerminal::DoCreateFile(const UnicodeString & FileName,
 //------------------------------------------------------------------------------
 bool TTerminal::CreateFile(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
+  bool Resume,
   bool NoConfirmation)
 {
   assert(OperationProgress);
   assert(AHandle);
   bool Result = true;
   FILE_OPERATION_LOOP (FMTLOAD(CREATE_FILE_ERROR, FileName.c_str()),
-    Result = DoCreateFile(FileName, OperationProgress, AHandle, NoConfirmation);
+    Result = DoCreateFile(FileName, OperationProgress, AHandle, Resume, NoConfirmation);
   );
 
   return Result;

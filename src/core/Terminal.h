@@ -412,6 +412,7 @@ protected:
     bool Symbolic);
   bool CreateFile(const UnicodeString & FileName,
     TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
+    bool Resume,
     bool NoConfirmation);
   void OpenLocalFile(const UnicodeString & FileName, uintptr_t Access,
     uintptr_t * AAttrs, HANDLE * AHandle, int64_t * ACTime, int64_t * AMTime,
@@ -469,7 +470,7 @@ protected:
   void FileFind(const UnicodeString & FileName, const TRemoteFile * File, void * Param);
   void DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params);
   bool DoCreateFile(const UnicodeString & FileName,
-    TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
+    TFileOperationProgressType * OperationProgress, HANDLE * AHandle, bool Resume,
     bool NoConfirmation);
 
   virtual void Information(const UnicodeString & Str, bool Status);
