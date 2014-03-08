@@ -183,7 +183,7 @@ private:
   bool WebDAVMakeDirectory(const wchar_t * Path);
   bool WebDAVGetList(const UnicodeString & Directory);
   bool WebDAVGetFile(const wchar_t * RemotePath, const wchar_t * LocalPath);
-  bool WebDAVPutFile(const wchar_t * RemotePath, const wchar_t * LocalPath, const unsigned __int64);
+  bool WebDAVPutFile(const wchar_t * RemotePath, const wchar_t * LocalPath, const uint64_t FileSize);
   bool WebDAVRenameFile(const wchar_t * SrcPath, const wchar_t * DstPath);
   bool WebDAVDeleteFile(const wchar_t * Path);
 

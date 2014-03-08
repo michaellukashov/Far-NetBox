@@ -13847,7 +13847,7 @@ bool TWebDAVFileSystem::WebDAVGetFile(
 }
 //------------------------------------------------------------------------------
 bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t * RemotePath,
-  const wchar_t * LocalPath, const unsigned __int64 /*FileSize*/)
+  const wchar_t * LocalPath, const uint64_t /*FileSize*/)
 {
   assert(RemotePath && *RemotePath);
   assert(LocalPath && *LocalPath);
