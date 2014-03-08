@@ -3110,7 +3110,8 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
 
         case omResume:
           if (!FTerminal->CreateFile(DestFullName, OperationProgress,
-            &LocalFileHandle, true, true))
+            true, true,
+            &LocalFileHandle))
           {
 //            ThrowSkipFileNull();
             RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;

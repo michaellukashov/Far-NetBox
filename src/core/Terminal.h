@@ -411,9 +411,10 @@ protected:
   void DoCreateLink(const UnicodeString & FileName, const UnicodeString & PointTo,
     bool Symbolic);
   bool CreateFile(const UnicodeString & FileName,
-    TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
+    TFileOperationProgressType * OperationProgress,
     bool Resume,
-    bool NoConfirmation);
+    bool NoConfirmation,
+    OUT HANDLE * AHandle);
   void OpenLocalFile(const UnicodeString & FileName, uintptr_t Access,
     uintptr_t * AAttrs, HANDLE * AHandle, int64_t * ACTime, int64_t * AMTime,
     int64_t * AATime, int64_t * ASize, bool TryWriteReadOnly = true);
@@ -470,8 +471,10 @@ protected:
   void FileFind(const UnicodeString & FileName, const TRemoteFile * File, void * Param);
   void DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params);
   bool DoCreateFile(const UnicodeString & FileName,
-    TFileOperationProgressType * OperationProgress, HANDLE * AHandle, bool Resume,
-    bool NoConfirmation);
+    TFileOperationProgressType * OperationProgress,
+    bool Resume,
+    bool NoConfirmation,
+    OUT HANDLE * AHandle);
 
   virtual void Information(const UnicodeString & Str, bool Status);
   virtual uintptr_t QueryUser(const UnicodeString & Query,

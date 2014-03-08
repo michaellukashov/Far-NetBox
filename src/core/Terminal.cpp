@@ -4037,9 +4037,10 @@ void TTerminal::DoAnyCommand(const UnicodeString & Command,
 }
 //------------------------------------------------------------------------------
 bool TTerminal::DoCreateFile(const UnicodeString & FileName,
-  TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
+  TFileOperationProgressType * OperationProgress,
   bool Resume,
-  bool NoConfirmation)
+  bool NoConfirmation,
+  OUT HANDLE * AHandle)
 {
   assert(OperationProgress);
   assert(AHandle);
@@ -4124,15 +4125,17 @@ bool TTerminal::DoCreateFile(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 bool TTerminal::CreateFile(const UnicodeString & FileName,
-  TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
+  TFileOperationProgressType * OperationProgress,
   bool Resume,
-  bool NoConfirmation)
+  bool NoConfirmation,
+  OUT HANDLE * AHandle)
 {
   assert(OperationProgress);
   assert(AHandle);
   bool Result = true;
   FILE_OPERATION_LOOP (FMTLOAD(CREATE_FILE_ERROR, FileName.c_str()),
-    Result = DoCreateFile(FileName, OperationProgress, AHandle, Resume, NoConfirmation);
+    Result = DoCreateFile(FileName, OperationProgress, Resume, NoConfirmation,
+      AHandle);
   );
 
   return Result;

@@ -5330,7 +5330,8 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
       {
         if (!FTerminal->CreateFile(LocalFileName, OperationProgress,
-            &LocalFileHandle, FLAGSET(Params, cpResume), FLAGSET(Params, cpNoConfirmation)))
+            FLAGSET(Params, cpResume), FLAGSET(Params, cpNoConfirmation),
+            &LocalFileHandle))
         {
           ThrowSkipFileNull();
         }
