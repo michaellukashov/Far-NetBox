@@ -700,7 +700,6 @@ void TFTPFileSystem::AnyCommand(const UnicodeString & Command,
 void TFTPFileSystem::ResetCaches()
 {
   SAFE_DESTROY(FFileListCache);
-  FFileListCache = nullptr;
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::AnnounceFileListOperation()

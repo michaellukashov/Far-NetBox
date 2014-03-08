@@ -329,7 +329,6 @@ void ExtException::AddMoreMessages(const Exception * E)
     if (FMoreMessages->GetCount() == 0)
     {
       SAFE_DESTROY(FMoreMessages);
-      FMoreMessages = nullptr;
     }
   }
 }

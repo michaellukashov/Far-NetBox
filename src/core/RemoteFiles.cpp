@@ -1616,12 +1616,10 @@ void TRemoteDirectory::ReleaseRelativeDirectories()
   if ((GetThisDirectory() != nullptr) && !GetIncludeThisDirectory())
   {
     SAFE_DESTROY(FThisDirectory);
-    FThisDirectory = nullptr;
   }
   if ((GetParentDirectory() != nullptr) && !GetIncludeParentDirectory())
   {
     SAFE_DESTROY(FParentDirectory);
-    FParentDirectory = nullptr;
   }
 }
 //---------------------------------------------------------------------------
