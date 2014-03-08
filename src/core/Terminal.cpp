@@ -4040,6 +4040,8 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
   bool NoConfirmation)
 {
+  assert(OperationProgress);
+  assert(AHandle);
   bool Result = true;
   bool Done;
   DWORD CreateAttrs = FILE_ATTRIBUTE_NORMAL;
@@ -4121,6 +4123,7 @@ bool TTerminal::CreateLocalFile(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
   bool NoConfirmation)
 {
+  assert(OperationProgress);
   assert(AHandle);
   bool Result = true;
   FILE_OPERATION_LOOP (FMTLOAD(CREATE_FILE_ERROR, FileName.c_str()),
