@@ -3113,9 +3113,11 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
           if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress,
             &LocalFileHandle, true))
           {
-
+//            ThrowSkipFileNull();
+            RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
           }
-          RequestResult = TFileZillaIntf::FILEEXISTS_RESUME;
+          else
+            RequestResult = TFileZillaIntf::FILEEXISTS_RESUME;
           break;
 
         case omComplete:
