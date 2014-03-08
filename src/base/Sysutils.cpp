@@ -1401,7 +1401,7 @@ void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
 }
 
 //---------------------------------------------------------------------------
-bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
+static bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
 {
   const TDayTable * DayTable = &MonthDays[IsLeapYear(static_cast<Word>(Year))];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
@@ -1429,7 +1429,7 @@ TDateTime EncodeDate(int Year, int Month, int Day)
 }
 
 //---------------------------------------------------------------------------
-bool TryEncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec,
+static bool TryEncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec,
   TDateTime & Time)
 {
   bool Result = false;
