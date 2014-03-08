@@ -489,7 +489,7 @@ DWORD TCopyParamType::LocalFileAttrs(const TRights & Rights) const
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TCopyParamType::AllowResume(__int64 Size) const
+bool TCopyParamType::AllowResume(int64_t Size) const
 {
   switch (GetResumeSupport())
   {

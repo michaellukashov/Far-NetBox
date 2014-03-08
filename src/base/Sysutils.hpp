@@ -203,14 +203,14 @@ int StringCmpI(const wchar_t * S1, const wchar_t * S2);
 
 //---------------------------------------------------------------------------
 UnicodeString IntToStr(intptr_t Value);
-UnicodeString Int64ToStr(__int64 Value);
+UnicodeString Int64ToStr(int64_t Value);
 intptr_t StrToInt(const UnicodeString & Value);
-__int64 ToInt(const UnicodeString & Value);
+int64_t ToInt(const UnicodeString & Value);
 intptr_t StrToIntDef(const UnicodeString & Value, intptr_t DefVal);
-__int64 StrToInt64(const UnicodeString & Value);
-__int64 StrToInt64Def(const UnicodeString & Value, __int64 DefVal);
+int64_t StrToInt64(const UnicodeString & Value);
+int64_t StrToInt64Def(const UnicodeString & Value, int64_t DefVal);
 bool TryStrToInt(const std::wstring & StrValue, intptr_t & Value);
-bool TryStrToInt(const std::wstring & StrValue, __int64 & Value);
+bool TryStrToInt(const std::wstring & StrValue, int64_t & Value);
 
 //---------------------------------------------------------------------------
 double StrToFloat(const UnicodeString & Value);
@@ -220,9 +220,9 @@ UnicodeString FormatFloat(const UnicodeString & Format, double Value);
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime);
 //---------------------------------------------------------------------------
 
-__int64 FileRead(HANDLE Handle, void * Buffer, __int64 Count);
-__int64 FileWrite(HANDLE Handle, const void * Buffer, __int64 Count);
-__int64 FileSeek(HANDLE Handle, __int64 Offset, DWORD Origin);
+int64_t FileRead(HANDLE Handle, void * Buffer, int64_t Count);
+int64_t FileWrite(HANDLE Handle, const void * Buffer, int64_t Count);
+int64_t FileSeek(HANDLE Handle, int64_t Offset, DWORD Origin);
 
 //---------------------------------------------------------------------------
 

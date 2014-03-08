@@ -107,7 +107,7 @@ UnicodeString IntToStr(intptr_t Value)
 }
 
 //---------------------------------------------------------------------------
-UnicodeString Int64ToStr(__int64 Value)
+UnicodeString Int64ToStr(int64_t Value)
 {
   UnicodeString Result;
   Result.sprintf(L"%lld", Value);
@@ -117,7 +117,7 @@ UnicodeString Int64ToStr(__int64 Value)
 //---------------------------------------------------------------------------
 intptr_t StrToInt(const UnicodeString & Value)
 {
-  __int64 Result = 0;
+  int64_t Result = 0;
   if (TryStrToInt(Value, Result))
   {
     return static_cast<intptr_t>(Result);
@@ -128,9 +128,9 @@ intptr_t StrToInt(const UnicodeString & Value)
   }
 }
 
-__int64 ToInt(const UnicodeString & Value)
+int64_t ToInt(const UnicodeString & Value)
 {
-  __int64 Result = 0;
+  int64_t Result = 0;
   if (TryStrToInt(Value, Result))
   {
     return Result;
@@ -143,7 +143,7 @@ __int64 ToInt(const UnicodeString & Value)
 
 intptr_t StrToIntDef(const UnicodeString & Value, intptr_t DefVal)
 {
-  __int64 Result = DefVal;
+  int64_t Result = DefVal;
   if (TryStrToInt(Value, Result))
   {
     return static_cast<intptr_t>(Result);
@@ -154,14 +154,14 @@ intptr_t StrToIntDef(const UnicodeString & Value, intptr_t DefVal)
   }
 }
 
-__int64 StrToInt64(const UnicodeString & Value)
+int64_t StrToInt64(const UnicodeString & Value)
 {
   return ToInt(Value);
 }
 
-__int64 StrToInt64Def(const UnicodeString & Value, __int64 DefVal)
+int64_t StrToInt64Def(const UnicodeString & Value, int64_t DefVal)
 {
-  __int64 Result = DefVal;
+  int64_t Result = DefVal;
   if (TryStrToInt(Value, Result))
   {
     return Result;
@@ -172,7 +172,7 @@ __int64 StrToInt64Def(const UnicodeString & Value, __int64 DefVal)
   }
 }
 
-bool TryStrToInt(const std::wstring & StrValue, __int64 & Value)
+bool TryStrToInt(const std::wstring & StrValue, int64_t & Value)
 {
   bool Result = !StrValue.empty() && (StrValue.find_first_not_of(L"+-0123456789") == std::string::npos);
   if (Result)
@@ -445,9 +445,9 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 
 //---------------------------------------------------------------------------
 
-__int64 FileRead(HANDLE Handle, void * Buffer, __int64 Count)
+int64_t FileRead(HANDLE Handle, void * Buffer, int64_t Count)
 {
-  __int64 Result = -1;
+  int64_t Result = -1;
   DWORD Res = 0;
   if (::ReadFile(Handle, reinterpret_cast<LPVOID>(Buffer), static_cast<DWORD>(Count), &Res, nullptr))
   {
@@ -460,9 +460,9 @@ __int64 FileRead(HANDLE Handle, void * Buffer, __int64 Count)
   return Result;
 }
 
-__int64 FileWrite(HANDLE Handle, const void * Buffer, __int64 Count)
+int64_t FileWrite(HANDLE Handle, const void * Buffer, int64_t Count)
 {
-  __int64 Result = -1;
+  int64_t Result = -1;
   DWORD Res = 0;
   if (::WriteFile(Handle, Buffer, static_cast<DWORD>(Count), &Res, nullptr))
   {
@@ -475,7 +475,7 @@ __int64 FileWrite(HANDLE Handle, const void * Buffer, __int64 Count)
   return Result;
 }
 
-__int64 FileSeek(HANDLE Handle, __int64 Offset, DWORD Origin)
+int64_t FileSeek(HANDLE Handle, int64_t Offset, DWORD Origin)
 {
   LONG low = Offset & 0xFFFFFFFF;
   LONG high = Offset >> 32;

@@ -114,15 +114,15 @@ bool IsWin7();
 #if defined(__BORLANDC__)
 TLibModule * FindModule(void * Instance);
 #endif
-__int64 Round(double Number);
+int64_t Round(double Number);
 bool TryRelativeStrToDateTime(const UnicodeString & S, TDateTime & DateTime);
 LCID GetDefaultLCID();
 UnicodeString DefaultEncodingName();
 UnicodeString WindowsProductName();
 bool GetWindowsProductType(DWORD & Type);
 bool IsDirectoryWriteable(const UnicodeString & Path);
-UnicodeString FormatNumber(__int64 Size);
-UnicodeString FormatSize(__int64 Size);
+UnicodeString FormatNumber(int64_t Size);
+UnicodeString FormatSize(int64_t Size);
 UnicodeString ExtractFileBaseName(const UnicodeString & Path);
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
@@ -144,16 +144,16 @@ bool UsesDaylightHack();
 TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day);
 TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec);
 TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime);
-TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode);
+TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode);
 TDateTime ConvertTimestampToUTC(const TDateTime & DateTime);
 TDateTime ConvertTimestampFromUTC(const TDateTime & DateTime);
 FILETIME DateTimeToFileTime(const TDateTime & DateTime, TDSTMode DSTMode);
 TDateTime AdjustDateTimeFromUnix(const TDateTime & DateTime, TDSTMode DSTMode);
 void UnifyDateTimePrecision(TDateTime & DateTime1, TDateTime & DateTime2);
 TDateTime FileTimeToDateTime(const FILETIME & FileTime);
-__int64 ConvertTimestampToUnix(const FILETIME & FileTime,
+int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
   TDSTMode DSTMode);
-__int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
+int64_t ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode);
 UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format);
 UnicodeString StandardTimestamp(const TDateTime & DateTime);
@@ -279,6 +279,6 @@ public:
   }
 };
 //---------------------------------------------------------------------------
-UnicodeString FormatBytes(__int64 Bytes, bool UseOrders = true);
+UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
 //---------------------------------------------------------------------------
 #endif

@@ -5806,7 +5806,7 @@ protected:
   UnicodeString CapabilityStr(TFSCapability Capability);
   UnicodeString CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
-  UnicodeString SpaceStr(__int64 Bytes);
+  UnicodeString SpaceStr(int64_t Bytes);
   void ControlsAddItem(TObject * Control, int Label, const UnicodeString & Value);
   void CalculateMaxLenAddItem(TObject * Control, int Label, const UnicodeString & Value);
   void ClipboardAddItem(TObject * Control, int Label, const UnicodeString & Value);
@@ -5998,7 +5998,7 @@ UnicodeString TFileSystemInfoDialog::CapabilityStr(TFSCapability Capability1,
   return FORMAT(L"%s/%s", CapabilityStr(Capability1).c_str(), CapabilityStr(Capability2).c_str());
 }
 //---------------------------------------------------------------------
-UnicodeString TFileSystemInfoDialog::SpaceStr(__int64 Bytes)
+UnicodeString TFileSystemInfoDialog::SpaceStr(int64_t Bytes)
 {
   UnicodeString Result;
   if (Bytes == 0)
@@ -7121,7 +7121,7 @@ private:
   UnicodeString ItemLine(const TChecklistItem * ChecklistItem);
   void AddColumn(UnicodeString & List, const UnicodeString & Value, size_t Column,
     bool Header = false);
-  UnicodeString FormatSize(__int64 Size, int Column);
+  UnicodeString FormatSize(int64_t Size, int Column);
 };
 //------------------------------------------------------------------------------
 TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
@@ -7316,7 +7316,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
 }
 //------------------------------------------------------------------------------
 UnicodeString TSynchronizeChecklistDialog::FormatSize(
-  __int64 Size, int Column)
+  int64_t Size, int Column)
 {
   intptr_t Width = static_cast<intptr_t>(FWidths[Column]);
   UnicodeString Result = FORMAT(L"%lu", Size);

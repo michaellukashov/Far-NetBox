@@ -26,7 +26,7 @@ public:
   virtual ~TWebDAVFileSystem();
 
   virtual void Init(void *);
-  virtual void FileTransferProgress(__int64 TransferSize, __int64 Bytes);
+  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes);
 
   virtual void Open();
   virtual void Close();
@@ -85,7 +85,7 @@ public:
   virtual UnicodeString GetUserName();
 
 public:
-  virtual void ReadDirectoryProgress(__int64 Bytes);
+  virtual void ReadDirectoryProgress(int64_t Bytes);
 
 public:
   webdav::error_t GetServerSettings(
@@ -165,11 +165,11 @@ protected:
     bool AutoResume,
     uintptr_t & Answer);
   void ResetFileTransfer();
-  void DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);
+  void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);
   void DoReadDirectory(TRemoteFileList * FileList);
   void FileTransfer(const UnicodeString & FileName, const UnicodeString & LocalFile,
     const UnicodeString & RemoteFile, const UnicodeString & RemotePath, bool Get,
-    __int64 Size, int Type, TFileTransferData & UserData,
+    int64_t Size, int Type, TFileTransferData & UserData,
     TFileOperationProgressType * OperationProgress);
 
 private:
@@ -200,7 +200,7 @@ private:
   enum { ftaNone, ftaSkip, ftaCancel } FFileTransferAbort;
   bool FIgnoreFileList;
   bool FFileTransferCancelled;
-  __int64 FFileTransferResumed;
+  int64_t FFileTransferResumed;
   bool FFileTransferPreserveTime;
   bool FHasTrailingSlash;
   size_t FFileTransferCPSLimit;

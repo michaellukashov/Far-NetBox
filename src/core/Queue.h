@@ -249,7 +249,7 @@ public:
   void SetMasks(const UnicodeString & Value);
   intptr_t GetIndex();
   TFileOperationProgressType * GetProgressData();
-  __int64 GetTotalTransferred();
+  int64_t GetTotalTransferred();
 
 private:
   TFileOperationProgressType * FProgressData;

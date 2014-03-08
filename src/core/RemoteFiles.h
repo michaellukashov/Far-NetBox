@@ -114,8 +114,8 @@ public:
 
   TRemoteFileList * GetDirectory() const { return FDirectory; }
   void SetDirectory(TRemoteFileList * Value) { FDirectory = Value; }
-  __int64 GetSize() const { return FSize; }
-  void SetSize(__int64 Value) { FSize = Value; }
+  int64_t GetSize() const { return FSize; }
+  void SetSize(int64_t Value) { FSize = Value; }
   const TRemoteToken & GetFileOwner() const;
   TRemoteToken & GetFileOwner();
   void SetFileOwner(const TRemoteToken & Value);
@@ -145,7 +145,7 @@ private:
   TRemoteFileList * FDirectory;
   TRemoteToken FOwner;
   TModificationFmt FModificationFmt;
-  __int64 FSize;
+  int64_t FSize;
   UnicodeString FFileName;
   Integer FINodeBlocks;
   TDateTime FModification;
@@ -207,7 +207,7 @@ public:
   UnicodeString GetFullDirectory();
   Boolean GetIsRoot();
   UnicodeString GetParentPath();
-  __int64 GetTotalSize();
+  int64_t GetTotalSize();
   TDateTime GetTimestamp() const { return FTimestamp; }
 };
 //---------------------------------------------------------------------------
@@ -427,7 +427,7 @@ public:
   }
   TValidProperties & operator >> (const TValidProperty Value)
   {
-    FValue &= ~(static_cast<__int64>(Value));
+    FValue &= ~(static_cast<int64_t>(Value));
     return *this;
   }
   bool Empty() const
@@ -436,7 +436,7 @@ public:
   }
 
 private:
-  __int64 FValue;
+  int64_t FValue;
 };
 #endif
 
@@ -450,8 +450,8 @@ public:
   bool AddXToDirectories;
   TRemoteToken Group;
   TRemoteToken Owner;
-  __int64 Modification; // unix time
-  __int64 LastAccess; // unix time
+  int64_t Modification; // unix time
+  int64_t LastAccess; // unix time
 
   TRemoteProperties();
   TRemoteProperties(const TRemoteProperties & rhp);

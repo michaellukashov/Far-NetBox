@@ -45,7 +45,7 @@ class CNBFile : public TObject
      * Get file size
      * \return file size or -1 if error
      */
-  __int64 GetFileSize();
+  int64_t GetFileSize();
   /**
      * Close file
      */

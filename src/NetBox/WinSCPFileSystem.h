@@ -362,7 +362,7 @@ protected:
   const TSessionData * FSessionData;
 
   virtual void GetData(
-    DWORD & Flags, UnicodeString & FileName, __int64 & Size,
+    DWORD & Flags, UnicodeString & FileName, int64_t & Size,
     DWORD & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     DWORD & NumberOfLinks, UnicodeString & Description,
@@ -378,7 +378,7 @@ protected:
   UnicodeString FFolder;
 
   virtual void GetData(
-    DWORD & Flags, UnicodeString & FileName, __int64 & Size,
+    DWORD & Flags, UnicodeString & FileName, int64_t & Size,
     DWORD & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     DWORD & NumberOfLinks, UnicodeString & Description,
@@ -397,7 +397,7 @@ protected:
   TRemoteFile * FRemoteFile;
 
   virtual void GetData(
-    DWORD & Flags, UnicodeString & FileName, __int64 & Size,
+    DWORD & Flags, UnicodeString & FileName, int64_t & Size,
     DWORD & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     DWORD & NumberOfLinks, UnicodeString & Description,

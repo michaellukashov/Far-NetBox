@@ -1695,7 +1695,7 @@ TFileOperationProgressType * TQueueItemProxy::GetProgressData()
   return (FProgressData->Operation == foNone) ? nullptr : FProgressData;
 }
 //---------------------------------------------------------------------------
-__int64 TQueueItemProxy::GetTotalTransferred()
+int64_t TQueueItemProxy::GetTotalTransferred()
 {
   // want to show total transferred also for "completed" items,
   // for which GetProgressData() is nullptr

@@ -361,7 +361,7 @@ protected:
   virtual ~TCustomFarPanelItem()
   {}
   virtual void GetData(
-    DWORD & Flags, UnicodeString & FileName, __int64 & Size,
+    DWORD & Flags, UnicodeString & FileName, int64_t & Size,
     DWORD & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     DWORD & NumberOfLinks, UnicodeString & Description,
@@ -393,7 +393,7 @@ protected:
   bool FOwnsItem;
 
   virtual void GetData(
-    DWORD & Flags, UnicodeString & FileName, __int64 & Size,
+    DWORD & Flags, UnicodeString & FileName, int64_t & Size,
     DWORD & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     DWORD & NumberOfLinks, UnicodeString & Description,
@@ -409,7 +409,7 @@ public:
 
 protected:
   virtual void GetData(
-    DWORD & Flags, UnicodeString & FileName, __int64 & Size,
+    DWORD & Flags, UnicodeString & FileName, int64_t & Size,
     DWORD & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     DWORD & NumberOfLinks, UnicodeString & Description,

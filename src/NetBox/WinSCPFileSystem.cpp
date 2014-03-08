@@ -54,7 +54,7 @@ void TSessionPanelItem::SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles)
 }
 //------------------------------------------------------------------------------
 void TSessionPanelItem::GetData(
-  DWORD & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
+  DWORD & /*Flags*/, UnicodeString & FileName, int64_t & /*Size*/,
   DWORD & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   DWORD & /*NumberOfLinks*/, UnicodeString & /*Description*/,
@@ -71,7 +71,7 @@ TSessionFolderPanelItem::TSessionFolderPanelItem(const UnicodeString & Folder):
 }
 //------------------------------------------------------------------------------
 void TSessionFolderPanelItem::GetData(
-  DWORD & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
+  DWORD & /*Flags*/, UnicodeString & FileName, int64_t & /*Size*/,
   DWORD & FileAttributes,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   DWORD & /*NumberOfLinks*/, UnicodeString & /*Description*/,
@@ -89,7 +89,7 @@ TRemoteFilePanelItem::TRemoteFilePanelItem(TRemoteFile * ARemoteFile):
 }
 //------------------------------------------------------------------------------
 void TRemoteFilePanelItem::GetData(
-  DWORD & /*Flags*/, UnicodeString & FileName, __int64 & Size,
+  DWORD & /*Flags*/, UnicodeString & FileName, int64_t & Size,
   DWORD & FileAttributes,
   TDateTime & LastWriteTime, TDateTime & LastAccess,
   DWORD & /*NumberOfLinks*/, UnicodeString & /*Description*/,

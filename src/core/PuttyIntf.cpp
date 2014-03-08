@@ -508,7 +508,7 @@ UnicodeString KeyTypeName(TKeyType KeyType)
   return key_type_to_str(KeyType);
 }
 //---------------------------------------------------------------------------
-__int64 ParseSize(const UnicodeString & SizeStr)
+int64_t ParseSize(const UnicodeString & SizeStr)
 {
   AnsiString AnsiSizeStr = SizeStr;
   return parse_blocksize(AnsiSizeStr.c_str());

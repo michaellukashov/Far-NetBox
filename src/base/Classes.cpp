@@ -995,7 +995,7 @@ void TStringList::LoadFromFile(const UnicodeString & FileName)
   if (FileHandle != INVALID_HANDLE_VALUE)
   {
     TSafeHandleStream Stream(FileHandle);
-    __int64 Size = Stream.GetSize();
+    int64_t Size = Stream.GetSize();
     TFileBuffer FileBuffer;
     FileBuffer.LoadStream(&Stream, Size, True);
     bool ConvertToken = false;
@@ -1257,11 +1257,11 @@ double MilliSecondSpan(const TDateTime  ANow, const TDateTime AThen)
   return Result;
 }
 
-__int64 MilliSecondsBetween(const TDateTime ANow, const TDateTime AThen)
+int64_t MilliSecondsBetween(const TDateTime ANow, const TDateTime AThen)
 {
   TDateTime Result;
   Result = floor(MilliSecondSpan(ANow, AThen));
-  return (__int64)Result;
+  return (int64_t)Result;
 }
 
 //---------------------------------------------------------------------------
@@ -1371,7 +1371,7 @@ TStream::~TStream()
 {
 }
 
-void TStream::ReadBuffer(void * Buffer, __int64 Count)
+void TStream::ReadBuffer(void * Buffer, int64_t Count)
 {
   if ((Count != 0) && (Read(Buffer, Count) != Count))
   {
@@ -1379,7 +1379,7 @@ void TStream::ReadBuffer(void * Buffer, __int64 Count)
   }
 }
 
-void TStream::WriteBuffer(const void * Buffer, __int64 Count)
+void TStream::WriteBuffer(const void * Buffer, int64_t Count)
 {
   if ((Count != 0) && (Write(Buffer, Count) != Count))
   {
@@ -1405,9 +1405,9 @@ THandleStream::~THandleStream()
   //   ::CloseHandle(FHandle);
 }
 
-__int64 THandleStream::Read(void * Buffer, __int64 Count)
+int64_t THandleStream::Read(void * Buffer, int64_t Count)
 {
-  __int64 Result = ::FileRead(FHandle, Buffer, Count);
+  int64_t Result = ::FileRead(FHandle, Buffer, Count);
   if (Result == -1)
   {
     Result = 0;
@@ -1415,9 +1415,9 @@ __int64 THandleStream::Read(void * Buffer, __int64 Count)
   return Result;
 }
 
-__int64 THandleStream::Write(const void * Buffer, __int64 Count)
+int64_t THandleStream::Write(const void * Buffer, int64_t Count)
 {
-  __int64 Result = ::FileWrite(FHandle, Buffer, Count);
+  int64_t Result = ::FileWrite(FHandle, Buffer, Count);
   if (Result == -1)
   {
     Result = 0;
@@ -1425,13 +1425,13 @@ __int64 THandleStream::Write(const void * Buffer, __int64 Count)
   return Result;
 }
 
-__int64 THandleStream::Seek(__int64 Offset, int Origin)
+int64_t THandleStream::Seek(int64_t Offset, int Origin)
 {
-  __int64 Result = ::FileSeek(FHandle, Offset, Origin);
+  int64_t Result = ::FileSeek(FHandle, Offset, Origin);
   return Result;
 }
 
-__int64 THandleStream::Seek(const __int64 Offset, TSeekOrigin Origin)
+int64_t THandleStream::Seek(const int64_t Offset, TSeekOrigin Origin)
 {
   int origin = FILE_BEGIN;
   switch (Origin)
@@ -1449,7 +1449,7 @@ __int64 THandleStream::Seek(const __int64 Offset, TSeekOrigin Origin)
   return Seek(Offset, origin);
 }
 
-void THandleStream::SetSize(const __int64 NewSize)
+void THandleStream::SetSize(const int64_t NewSize)
 {
   Seek(NewSize, Classes::soFromBeginning);
   // LARGE_INTEGER li;
@@ -1473,9 +1473,9 @@ TMemoryStream::~TMemoryStream()
   Clear();
 }
 
-__int64 TMemoryStream::Read(void * Buffer, __int64 Count)
+int64_t TMemoryStream::Read(void * Buffer, int64_t Count)
 {
-  __int64 Result = 0;
+  int64_t Result = 0;
   if ((FPosition >= 0) && (Count >= 0))
   {
     Result = FSize - FPosition;
@@ -1494,12 +1494,12 @@ __int64 TMemoryStream::Read(void * Buffer, __int64 Count)
   return Result;
 }
 
-__int64 TMemoryStream::Seek(__int64 Offset, int Origin)
+int64_t TMemoryStream::Seek(int64_t Offset, int Origin)
 {
   return Seek(Offset, static_cast<TSeekOrigin>(Origin));
 }
 
-__int64 TMemoryStream::Seek(const __int64 Offset, TSeekOrigin Origin)
+int64_t TMemoryStream::Seek(const int64_t Offset, TSeekOrigin Origin)
 {
   switch (Origin)
   {
@@ -1513,7 +1513,7 @@ __int64 TMemoryStream::Seek(const __int64 Offset, TSeekOrigin Origin)
       FPosition = FSize + Offset;
       break;
   }
-  __int64 Result = FPosition;
+  int64_t Result = FPosition;
   return Result;
 }
 
@@ -1539,9 +1539,9 @@ void TMemoryStream::Clear()
   FPosition = 0;
 }
 
-void TMemoryStream::SetSize(const __int64 NewSize)
+void TMemoryStream::SetSize(const int64_t NewSize)
 {
-  __int64 OldPosition = FPosition;
+  int64_t OldPosition = FPosition;
   SetCapacity(NewSize);
   FSize = NewSize;
   if (OldPosition > NewSize)
@@ -1550,13 +1550,13 @@ void TMemoryStream::SetSize(const __int64 NewSize)
   }
 }
 
-void TMemoryStream::SetCapacity(__int64 NewCapacity)
+void TMemoryStream::SetCapacity(int64_t NewCapacity)
 {
   SetPointer(Realloc(NewCapacity), FSize);
   FCapacity = NewCapacity;
 }
 
-void * TMemoryStream::Realloc(__int64 & NewCapacity)
+void * TMemoryStream::Realloc(int64_t & NewCapacity)
 {
   if ((NewCapacity > 0) && (NewCapacity != FSize))
   {
@@ -1590,18 +1590,18 @@ void * TMemoryStream::Realloc(__int64 & NewCapacity)
   return Result;
 }
 
-void TMemoryStream::SetPointer(void * Ptr, __int64 Size)
+void TMemoryStream::SetPointer(void * Ptr, int64_t Size)
 {
   FMemory = Ptr;
   FSize = Size;
 }
 
-__int64 TMemoryStream::Write(const void * Buffer, __int64 Count)
+int64_t TMemoryStream::Write(const void * Buffer, int64_t Count)
 {
-  __int64 Result = 0;
+  int64_t Result = 0;
   if ((FPosition >= 0) && (Count >= 0))
   {
-    __int64 Pos = FPosition + Count;
+    int64_t Pos = FPosition + Count;
     if (Pos > 0)
     {
       if (Pos > FSize)
@@ -1935,9 +1935,9 @@ intptr_t TRegistry::ReadInteger(const UnicodeString & Name) const
   return Result;
 }
 
-__int64 TRegistry::ReadInt64(const UnicodeString & Name)
+int64_t TRegistry::ReadInt64(const UnicodeString & Name)
 {
-  __int64 Result = 0;
+  int64_t Result = 0;
   ReadBinaryData(Name, &Result, sizeof(Result));
   return Result;
 }
@@ -2053,7 +2053,7 @@ void TRegistry::WriteInteger(const UnicodeString & Name, intptr_t Value)
   PutData(Name, &Val, sizeof(Val), rdInteger);
 }
 
-void TRegistry::WriteInt64(const UnicodeString & Name, __int64 Value)
+void TRegistry::WriteInt64(const UnicodeString & Name, int64_t Value)
 {
   WriteBinaryData(Name, &Value, sizeof(Value));
 }

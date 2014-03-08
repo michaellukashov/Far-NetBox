@@ -12873,8 +12873,8 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
       }
       else
       {
-        __int64 Size;
-        __int64 MTime;
+        int64_t Size;
+        int64_t MTime;
         TOverwriteFileParams FileParams;
         FTerminal->OpenLocalFile(FileName, GENERIC_READ,
           nullptr, nullptr, nullptr, &MTime, nullptr,
@@ -12928,7 +12928,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
       ThrowSkipFileNull();
     }
 
-    __int64 Size;
+    int64_t Size;
     uintptr_t LocalFileAttrs;
 
     FTerminal->OpenLocalFile(FileName, GENERIC_READ, &LocalFileAttrs,
@@ -13338,8 +13338,8 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
     bool CanProceed = true;
     if (::FileExists(DestFullName))
     {
-      __int64 Size;
-      __int64 MTime;
+      int64_t Size;
+      int64_t MTime;
       FTerminal->OpenLocalFile(DestFullName, GENERIC_READ, nullptr,
         nullptr, nullptr, &MTime, nullptr, &Size);
       TOverwriteFileParams FileParams;
@@ -13608,7 +13608,7 @@ void TWebDAVFileSystem::ResetFileTransfer()
   webdav::cancelled = false;
 }
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::ReadDirectoryProgress(__int64 Bytes)
+void TWebDAVFileSystem::ReadDirectoryProgress(int64_t Bytes)
 {
   // with WebDAV we do not know exactly how many entries we have received,
   // instead we know number of bytes received only.
@@ -13626,8 +13626,8 @@ void TWebDAVFileSystem::ReadDirectoryProgress(__int64 Bytes)
   }
 }
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::DoFileTransferProgress(__int64 TransferSize,
-  __int64 Bytes)
+void TWebDAVFileSystem::DoFileTransferProgress(int64_t TransferSize,
+  int64_t Bytes)
 {
   TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
   if (!OperationProgress) return;
@@ -13640,7 +13640,7 @@ void TWebDAVFileSystem::DoFileTransferProgress(__int64 TransferSize,
     FFileTransferResumed = 0;
   }
 
-  __int64 Diff = Bytes - OperationProgress->TransferedSize;
+  int64_t Diff = Bytes - OperationProgress->TransferedSize;
   if (Diff >= 0)
   {
     OperationProgress->AddTransfered(Diff);
@@ -13658,8 +13658,8 @@ void TWebDAVFileSystem::DoFileTransferProgress(__int64 TransferSize,
   }
 }
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::FileTransferProgress(__int64 TransferSize,
-  __int64 Bytes)
+void TWebDAVFileSystem::FileTransferProgress(int64_t TransferSize,
+  int64_t Bytes)
 {
   TGuard Guard(FTransferStatusCriticalSection);
 
@@ -13668,7 +13668,7 @@ void TWebDAVFileSystem::FileTransferProgress(__int64 TransferSize,
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::FileTransfer(const UnicodeString & FileName,
   const UnicodeString & LocalFile, const UnicodeString & RemoteFile,
-  const UnicodeString & RemotePath, bool Get, __int64 Size, int Type,
+  const UnicodeString & RemotePath, bool Get, int64_t Size, int Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
   FCurrentOperationProgress = OperationProgress;

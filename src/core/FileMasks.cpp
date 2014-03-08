@@ -599,7 +599,7 @@ void TFileMasks::CreateMask(
       else
       {
         TMask::TMaskBoundary & SizeMask = (Low ? Mask.LowSizeMask : Mask.HighSizeMask);
-        __int64 & Size = (Low ? Mask.LowSize : Mask.HighSize);
+        int64_t & Size = (Low ? Mask.LowSize : Mask.HighSize);
 
         if ((SizeMask != TMask::None) || Directory)
         {

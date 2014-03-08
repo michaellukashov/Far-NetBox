@@ -314,7 +314,7 @@ public:
     Add(&Buf, sizeof(Buf));
   }
 
-  void AddInt64(__int64 Value)
+  void AddInt64(int64_t Value)
   {
     AddCardinal((uint32_t)(Value >> 32));
     AddCardinal((uint32_t)(Value & 0xFFFFFFFF));
@@ -360,8 +360,8 @@ public:
   }
 
   void AddProperties(uint16_t * Rights, TRemoteToken * Owner,
-    TRemoteToken * Group, __int64 * MTime, __int64 * ATime,
-    __int64 * Size, bool IsDirectory, intptr_t Version, bool Utf)
+    TRemoteToken * Group, int64_t * MTime, int64_t * ATime,
+    int64_t * Size, bool IsDirectory, intptr_t Version, bool Utf)
   {
     uint32_t Flags = 0;
     if (Size != nullptr)
@@ -436,7 +436,7 @@ public:
     if ((Version < 4) && ((MTime != nullptr) || (ATime != nullptr)))
     {
       // any way to reflect sbSignedTS here?
-      // (note that casting __int64 > 2^31 < 2^32 to uint32_t is wrapped,
+      // (note that casting int64_t > 2^31 < 2^32 to uint32_t is wrapped,
       // thus we never can set time after 2038, even if the server supports it)
       AddCardinal(static_cast<uint32_t>(ATime != nullptr ? *ATime : *MTime));
       AddCardinal(static_cast<uint32_t>(MTime != nullptr ? *MTime : *ATime));
@@ -460,8 +460,8 @@ public:
     uint16_t RightsNum = 0;
     TRemoteToken Owner;
     TRemoteToken Group;
-    __int64 MTime;
-    __int64 ATime;
+    int64_t MTime;
+    int64_t ATime;
 
     if (Properties != nullptr)
     {
@@ -543,10 +543,10 @@ public:
     return Result;
   }
 
-  __int64 GetInt64() const
+  int64_t GetInt64() const
   {
-    __int64 Hi = GetCardinal();
-    __int64 Lo = GetCardinal();
+    int64_t Hi = GetCardinal();
+    int64_t Lo = GetCardinal();
     return (Hi << 32) + Lo;
   }
 
@@ -657,13 +657,13 @@ public:
       {
         File->SetLastAccess(::UnixToDateTime(
           SignedTS ?
-            static_cast<__int64>(static_cast<int32_t>(GetCardinal())) :
-            static_cast<__int64>(GetCardinal()),
+            static_cast<int64_t>(static_cast<int32_t>(GetCardinal())) :
+            static_cast<int64_t>(GetCardinal()),
           DSTMode));
         File->SetModification(::UnixToDateTime(
           SignedTS ?
-            static_cast<__int64>(static_cast<int32_t>(GetCardinal())) :
-            static_cast<__int64>(GetCardinal()),
+            static_cast<int64_t>(static_cast<int32_t>(GetCardinal())) :
+            static_cast<int64_t>(GetCardinal()),
           DSTMode));
       }
     }
@@ -1302,7 +1302,7 @@ public:
   }
   virtual ~TSFTPDownloadQueue() {}
 
-  bool Init(intptr_t QueueLen, const RawByteString & AHandle, __int64 ATransfered,
+  bool Init(intptr_t QueueLen, const RawByteString & AHandle, int64_t ATransfered,
     TFileOperationProgressType * AOperationProgress)
   {
     FHandle = AHandle;
@@ -1312,7 +1312,7 @@ public:
     return TSFTPFixedLenQueue::Init(QueueLen);
   }
 
-  void InitFillGapRequest(__int64 Offset, uint32_t Missing,
+  void InitFillGapRequest(int64_t Offset, uint32_t Missing,
     TSFTPPacket * Packet)
   {
     InitRequest(Packet, Offset, Missing);
@@ -1336,7 +1336,7 @@ protected:
     return true;
   }
 
-  void InitRequest(TSFTPPacket * Request, __int64 Offset,
+  void InitRequest(TSFTPPacket * Request, int64_t Offset,
     uint32_t Size)
   {
     Request->ChangeType(SSH_FXP_READ);
@@ -1352,7 +1352,7 @@ protected:
 
 private:
   TFileOperationProgressType * OperationProgress;
-  __int64 FTransfered;
+  int64_t FTransfered;
   RawByteString FHandle;
 };
 //---------------------------------------------------------------------------
@@ -1380,7 +1380,7 @@ public:
 
   bool Init(const UnicodeString & AFileName,
     HANDLE AFile, TFileOperationProgressType * AOperationProgress,
-    const RawByteString & AHandle, __int64 ATransfered,
+    const RawByteString & AHandle, int64_t ATransfered,
     int ConvertParams)
   {
     FFileName = AFileName;
@@ -1418,7 +1418,7 @@ protected:
         // We do ASCII transfer: convert EOL of current block
         if (OperationProgress->AsciiTransfer)
         {
-          __int64 PrevBufSize = BlockBuf.GetSize();
+          int64_t PrevBufSize = BlockBuf.GetSize();
           BlockBuf.Convert(FTerminal->GetConfiguration()->GetLocalEOLType(),
             FFileSystem->GetEOL(), FConvertParams, FConvertToken);
           // update transfer size with difference araised from EOL conversion
@@ -1479,7 +1479,7 @@ private:
   UnicodeString FFileName;
   uint32_t FLastBlockSize;
   bool FEnd;
-  __int64 FTransfered;
+  int64_t FTransfered;
   RawByteString FHandle;
   bool FConvertToken;
   int FConvertParams;
@@ -1683,7 +1683,7 @@ struct TOpenRemoteFileParams
   bool Resume;
   bool Resuming;
   TOverwriteMode OverwriteMode;
-  __int64 DestFileSize; // output
+  int64_t DestFileSize; // output
   RawByteString RemoteFileHandle; // output
   TOverwriteFileParams * FileParams;
   bool Confirmed;
@@ -2076,7 +2076,7 @@ uint32_t TSFTPFileSystem::UploadBlockSize(const RawByteString & Handle,
 {
   // handle length + offset + data size
   const uintptr_t UploadPacketOverhead =
-    sizeof(uint32_t) + sizeof(__int64) + sizeof(uint32_t);
+    sizeof(uint32_t) + sizeof(int64_t) + sizeof(uint32_t);
   return TransferBlockSize(UploadPacketOverhead + static_cast<uint32_t>(Handle.Length()), OperationProgress,
     static_cast<uint32_t>(GetSessionData()->GetSFTPMinPacketSize()),
     static_cast<uint32_t>(GetSessionData()->GetSFTPMaxPacketSize()));
@@ -2800,7 +2800,7 @@ void TSFTPFileSystem::DoStartup()
         UnicodeString VendorName(VendorIdStruct.GetAnsiString());
         UnicodeString ProductName(VendorIdStruct.GetAnsiString());
         UnicodeString ProductVersion(VendorIdStruct.GetAnsiString());
-        __int64 ProductBuildNumber = VendorIdStruct.GetInt64();
+        int64_t ProductBuildNumber = VendorIdStruct.GetInt64();
         FTerminal->LogEvent(FORMAT(L"Server software: %s %s (%d) by %s",
           ProductName.c_str(), ProductVersion.c_str(), int(ProductBuildNumber), VendorName.c_str()));
       }
@@ -3745,17 +3745,17 @@ void TSFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
 
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_EXTENDED_REPLY);
 
-    __int64 BlockSize = Packet.GetInt64(); // file system block size
-    __int64 FundamentalBlockSize = Packet.GetInt64(); // fundamental fs block size
-    __int64 Blocks = Packet.GetInt64(); // number of blocks (unit f_frsize)
-    __int64 FreeBlocks = Packet.GetInt64(); // free blocks in file system
-    __int64 AvailableBlocks = Packet.GetInt64(); // free blocks for non-root
-    __int64 FileINodes = Packet.GetInt64(); // total file inodes
-    __int64 FreeFileINodes = Packet.GetInt64(); // free file inodes
-    __int64 AvailableFileINodes = Packet.GetInt64(); // free file inodes for to non-root
-    __int64 SID = Packet.GetInt64(); // file system id
-    __int64 Flags = Packet.GetInt64(); // bit mask of f_flag values
-    __int64 NameMax = Packet.GetInt64(); // maximum filename length
+    int64_t BlockSize = Packet.GetInt64(); // file system block size
+    int64_t FundamentalBlockSize = Packet.GetInt64(); // fundamental fs block size
+    int64_t Blocks = Packet.GetInt64(); // number of blocks (unit f_frsize)
+    int64_t FreeBlocks = Packet.GetInt64(); // free blocks in file system
+    int64_t AvailableBlocks = Packet.GetInt64(); // free blocks for non-root
+    int64_t FileINodes = Packet.GetInt64(); // total file inodes
+    int64_t FreeFileINodes = Packet.GetInt64(); // free file inodes
+    int64_t AvailableFileINodes = Packet.GetInt64(); // free file inodes for to non-root
+    int64_t SID = Packet.GetInt64(); // file system id
+    int64_t Flags = Packet.GetInt64(); // bit mask of f_flag values
+    int64_t NameMax = Packet.GetInt64(); // maximum filename length
 
     FTerminal->LogEvent(FORMAT(L"Block size: %s", IntToStr(BlockSize).c_str()));
     FTerminal->LogEvent(FORMAT(L"Fundamental block size: %s", IntToStr(FundamentalBlockSize).c_str()));
@@ -4144,8 +4144,8 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
   // OpenParams.OverwriteMode = omOverwrite;
 
   HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-  __int64 MTime = 0, ATime = 0;
-  __int64 Size = 0;
+  int64_t MTime = 0, ATime = 0;
+  int64_t Size = 0;
 
   FTerminal->OpenLocalFile(FileName, GENERIC_READ, &OpenParams.LocalFileAttrs,
     &LocalFileHandle, nullptr, &MTime, &ATime, &Size);
@@ -4182,7 +4182,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
       bool DestFileExists = false;
       TRights DestRights;
 
-      __int64 ResumeOffset = 0;
+      int64_t ResumeOffset = 0;
 
       FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", RealFileName.c_str()));
 
@@ -4385,7 +4385,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
             }
           }
         };
-        __int64 DestWriteOffset = 0;
+        int64_t DestWriteOffset = 0;
         if (OpenParams.OverwriteMode == omAppend)
         {
           FTerminal->LogEvent(L"Appending file.");
@@ -4568,7 +4568,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
 }
 //---------------------------------------------------------------------------
 RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
-  const UnicodeString & FileName, uint32_t OpenType, __int64 Size)
+  const UnicodeString & FileName, uint32_t OpenType, int64_t Size)
 {
   TSFTPPacket Packet(SSH_FXP_OPEN, FCodePage);
 
@@ -5106,7 +5106,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
     UnicodeString DestPartialFullName;
     bool ResumeAllowed;
     bool ResumeTransfer = false;
-    __int64 ResumeOffset;
+    int64_t ResumeOffset;
 
     // Will we use ASCII of BINARY file transfer?
     OperationProgress->SetAsciiTransfer(
@@ -5257,8 +5257,8 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
       if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && !ResumeTransfer)
       {
-        __int64 DestFileSize = 0;
-        __int64 MTime = 0;
+        int64_t DestFileSize = 0;
+        int64_t MTime = 0;
         FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
           nullptr, &LocalFileHandle, nullptr, &MTime, nullptr, &DestFileSize, false);
 
@@ -5430,7 +5430,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
               }
               else if (DataLen < BlockSize)
               {
-                if (OperationProgress->TransferedSize + static_cast<__int64>(DataLen) !=
+                if (OperationProgress->TransferedSize + static_cast<int64_t>(DataLen) !=
                       OperationProgress->TransferSize)
                 {
                   // with native text transfer mode (SFTP>=4), do not bother about
@@ -5455,7 +5455,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
               {
                 assert(!ResumeTransfer && !ResumeAllowed);
 
-                __int64 PrevBlockSize = BlockBuf.GetSize();
+                int64_t PrevBlockSize = BlockBuf.GetSize();
                 BlockBuf.Convert(GetEOL(), FTerminal->GetConfiguration()->GetLocalEOLType(), 0, ConvertToken);
                 OperationProgress->SetLocalSize(
                   OperationProgress->LocalSize - PrevBlockSize + BlockBuf.GetSize());

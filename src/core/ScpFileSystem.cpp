@@ -1607,7 +1607,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         }
         else
         {
-          __int64 MTime;
+          int64_t MTime;
           TOverwriteFileParams FileParams;
           FTerminal->OpenLocalFile(FileName, GENERIC_READ,
             nullptr, nullptr, nullptr, &MTime, nullptr,
@@ -1729,8 +1729,8 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
 
   HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
   uintptr_t LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
-  __int64 MTime, ATime;
-  __int64 Size;
+  int64_t MTime, ATime;
+  int64_t Size;
 
   FTerminal->OpenLocalFile(FileName, GENERIC_READ,
     &LocalFileAttrs, &LocalFileHandle, nullptr, &MTime, &ATime, &Size);
@@ -1825,7 +1825,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
             // First check if file contains anything (div by zero!)
             if (OperationProgress->LocallyUsed)
             {
-              __int64 X = OperationProgress->LocalSize;
+              int64_t X = OperationProgress->LocalSize;
               X *= AsciiBuf.GetSize();
               X /= OperationProgress->LocallyUsed;
               OperationProgress->ChangeTransferSize(X);
@@ -1859,7 +1859,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
 
             // Send file modes (rights), filesize and file name
             // TVarRec don't understand 'uint32_t' -> we use sprintf()
-            __int64 sz = OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
+            int64_t sz = OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
               OperationProgress->LocalSize;
             Buf.sprintf(L"C%s %lld %s",
               Rights.GetOctal().data(),
@@ -2427,7 +2427,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
         {
           FileData.RemoteRights.SetOctal(CutToChar(Line, L' ', True));
           // do not trim leading spaces of the filename
-          __int64 TSize = StrToInt64(CutToChar(Line, L' ', False).TrimRight());
+          int64_t TSize = StrToInt64(CutToChar(Line, L' ', False).TrimRight());
           MaskParams.Size = TSize;
           // Security fix: ensure the file ends up where we asked for it.
           // (accept only filename, not path)
@@ -2519,7 +2519,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
               {
                 if (::FileExists(DestFileName))
                 {
-                  __int64 MTime;
+                  int64_t MTime;
                   TOverwriteFileParams FileParams;
                   FileParams.SourceSize = OperationProgress->TransferSize;
                   FileParams.SourceTimestamp = SourceTimestamp;
@@ -2594,7 +2594,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
 
                   if (OperationProgress->AsciiTransfer)
                   {
-                    __int64 PrevBlockSize = BlockBuf.GetSize();
+                    int64_t PrevBlockSize = BlockBuf.GetSize();
                     BlockBuf.Convert(FTerminal->GetSessionData()->GetEOLType(),
                       FTerminal->GetConfiguration()->GetLocalEOLType(), 0, ConvertToken);
                     OperationProgress->SetLocalSize(

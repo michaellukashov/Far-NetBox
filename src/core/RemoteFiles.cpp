@@ -1092,7 +1092,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     // #60 17.10.01: group name can contain space
     FGroup.SetName(L"");
     GETCOL;
-    __int64 ASize;
+    int64_t ASize;
     do
     {
       FGroup.SetName(FGroup.GetName() + Col);
@@ -1563,9 +1563,9 @@ UnicodeString TRemoteFileList::GetParentPath()
   return ::UnixExtractFilePath(GetDirectory());
 }
 //---------------------------------------------------------------------------
-__int64 TRemoteFileList::GetTotalSize()
+int64_t TRemoteFileList::GetTotalSize()
 {
-  __int64 Result = 0;
+  int64_t Result = 0;
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     if (!GetFile(Index)->GetIsDirectory())

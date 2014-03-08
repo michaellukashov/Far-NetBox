@@ -351,7 +351,7 @@ intptr_t TXmlStorage::ReadInteger(const UnicodeString & Name, intptr_t Default)
   return StrToIntDef(GetSubKeyText(Name), Default);
 }
 //---------------------------------------------------------------------------
-__int64 TXmlStorage::ReadInt64(const UnicodeString & Name, __int64 Default)
+int64_t TXmlStorage::ReadInt64(const UnicodeString & Name, int64_t Default)
 {
   return StrToInt64Def(GetSubKeyText(Name), Default);
 }
@@ -398,7 +398,7 @@ void TXmlStorage::WriteInteger(const UnicodeString & Name, intptr_t Value)
   AddNewElement(Name, ::IntToStr(Value));
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::WriteInt64(const UnicodeString & Name, __int64 Value)
+void TXmlStorage::WriteInt64(const UnicodeString & Name, int64_t Value)
 {
   RemoveIfExists(Name);
   AddNewElement(Name, ::Int64ToStr(Value));

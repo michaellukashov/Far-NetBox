@@ -33,11 +33,11 @@ public:
   bool Temp;
 
   // file size to read/write
-  __int64 LocalSize;
-  __int64 LocallyUsed;
-  __int64 TransferSize;
-  __int64 TransferedSize;
-  __int64 SkippedSize;
+  int64_t LocalSize;
+  int64_t LocallyUsed;
+  int64_t TransferSize;
+  int64_t TransferedSize;
+  int64_t SkippedSize;
   TResumeStatus ResumeStatus;
   bool InProgress;
   bool FileInProgress;
@@ -46,9 +46,9 @@ public:
   // when operation started
   TDateTime StartTime;
   // bytes transfered
-  __int64 TotalTransfered;
-  __int64 TotalSkipped;
-  __int64 TotalSize;
+  int64_t TotalTransfered;
+  int64_t TotalSkipped;
+  int64_t TotalSize;
 
   TBatchOverwrite BatchOverwrite;
   bool SkipToAll;
@@ -61,9 +61,9 @@ public:
   explicit TFileOperationProgressType(
     TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished);
   virtual ~TFileOperationProgressType();
-  void AddLocallyUsed(__int64 ASize);
-  void AddTransfered(__int64 ASize, bool AddToTotals = true);
-  void AddResumed(__int64 ASize);
+  void AddLocallyUsed(int64_t ASize);
+  void AddTransfered(int64_t ASize, bool AddToTotals = true);
+  void AddResumed(int64_t ASize);
   void Clear();
   uintptr_t CPS();
   void Finish(const UnicodeString & FileName, bool Success,
@@ -79,13 +79,13 @@ public:
   static uintptr_t StaticBlockSize();
   void Reset();
   void Resume();
-  void SetLocalSize(__int64 ASize);
+  void SetLocalSize(int64_t ASize);
   void SetAsciiTransfer(bool AAsciiTransfer);
   void SetResumeStatus(TResumeStatus AResumeStatus);
-  void SetTransferSize(__int64 ASize);
-  void ChangeTransferSize(__int64 ASize);
+  void SetTransferSize(int64_t ASize);
+  void ChangeTransferSize(int64_t ASize);
   void RollbackTransfer();
-  void SetTotalSize(__int64 ASize);
+  void SetTotalSize(int64_t ASize);
   void Start(TFileOperation AOperation, TOperationSide ASide, intptr_t ACount);
   void Start(TFileOperation AOperation,
     TOperationSide ASide, intptr_t ACount, bool ATemp, const UnicodeString & ADirectory,
@@ -118,7 +118,7 @@ private:
   uintptr_t FLastSecond;
   uintptr_t FRemainingCPS;
   rde::vector<uint32_t> FTicks;
-  rde::vector<__int64> FTotalTransferredThen;
+  rde::vector<int64_t> FTotalTransferredThen;
 };
 //---------------------------------------------------------------------------
 class TSuspendFileOperationProgress : public TObject

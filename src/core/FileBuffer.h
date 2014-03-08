@@ -18,20 +18,20 @@ public:
   void Convert(TEOLType Source, TEOLType Dest, intptr_t Params, bool & Token);
   void Convert(char * Source, TEOLType Dest, intptr_t Params, bool & Token);
   void Convert(TEOLType Source, char * Dest, intptr_t Params, bool & Token);
-  void Insert(__int64 Index, const char * Buf, size_t Len);
-  void Delete(__int64 Index, size_t Len);
-  __int64 LoadStream(TStream * Stream, const __int64 Len, bool ForceLen);
-  __int64 ReadStream(TStream * Stream, const __int64 Len, bool ForceLen);
-  void WriteToStream(TStream * Stream, const __int64 Len);
+  void Insert(int64_t Index, const char * Buf, size_t Len);
+  void Delete(int64_t Index, size_t Len);
+  int64_t LoadStream(TStream * Stream, const int64_t Len, bool ForceLen);
+  int64_t ReadStream(TStream * Stream, const int64_t Len, bool ForceLen);
+  void WriteToStream(TStream * Stream, const int64_t Len);
 
 public:
   TMemoryStream * GetMemory() const { return FMemory; }
   void SetMemory(TMemoryStream * Value);
   char * GetData() const { return static_cast<char *>(FMemory->GetMemory()); }
-  __int64 GetSize() const { return FMemory->GetSize(); }
-  void SetSize(__int64 Value);
-  void SetPosition(__int64 Value);
-  __int64 GetPosition() const;
+  int64_t GetSize() const { return FMemory->GetSize(); }
+  void SetSize(int64_t Value);
+  void SetPosition(int64_t Value);
+  int64_t GetPosition() const;
 
 private:
   TMemoryStream * FMemory;
@@ -42,8 +42,8 @@ class TSafeHandleStream : public THandleStream
 public:
   explicit TSafeHandleStream(THandle AHandle);
   virtual ~TSafeHandleStream() {}
-  virtual __int64 Read(void * Buffer, __int64 Count);
-  virtual __int64 Write(const void * Buffer, __int64 Count);
+  virtual int64_t Read(void * Buffer, int64_t Count);
+  virtual int64_t Write(const void * Buffer, int64_t Count);
 };
 //---------------------------------------------------------------------------
 char * EOLToStr(TEOLType EOLType);

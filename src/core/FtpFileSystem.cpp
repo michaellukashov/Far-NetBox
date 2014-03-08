@@ -48,7 +48,7 @@ protected:
   virtual bool HandleAsynchRequestOverwrite(
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
-    __int64 Size1, __int64 Size2, time_t LocalTime,
+    int64_t Size1, int64_t Size2, time_t LocalTime,
     bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData, int & RequestResult);
   virtual bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult);
@@ -56,8 +56,8 @@ protected:
     struct TNeedPassRequestData & Data, int & RequestResult);
   virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     uintptr_t Count);
-  virtual bool HandleTransferStatus(bool Valid, __int64 TransferSize,
-    __int64 Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
+  virtual bool HandleTransferStatus(bool Valid, int64_t TransferSize,
+    int64_t Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
     bool FileTransfer);
   virtual bool HandleReply(intptr_t Command, uintptr_t Reply);
   virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
@@ -99,7 +99,7 @@ bool TFileZillaImpl::HandleStatus(const wchar_t * Status, int Type)
 bool TFileZillaImpl::HandleAsynchRequestOverwrite(
   wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
   const wchar_t * Path1, const wchar_t * Path2,
-  __int64 Size1, __int64 Size2, time_t LocalTime,
+  int64_t Size1, int64_t Size2, time_t LocalTime,
   bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData, int & RequestResult)
 {
   return FFileSystem->HandleAsynchRequestOverwrite(
@@ -125,8 +125,8 @@ bool TFileZillaImpl::HandleListData(const wchar_t * Path,
   return FFileSystem->HandleListData(Path, Entries, Count);
 }
 //---------------------------------------------------------------------------
-bool TFileZillaImpl::HandleTransferStatus(bool Valid, __int64 TransferSize,
-  __int64 Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
+bool TFileZillaImpl::HandleTransferStatus(bool Valid, int64_t TransferSize,
+  int64_t Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
   bool FileTransfer)
 {
   return FFileSystem->HandleTransferStatus(Valid, TransferSize, Bytes, Percent,
@@ -975,7 +975,7 @@ void TFTPFileSystem::ResetFileTransfer()
   FFileTransferResumed = 0;
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::ReadDirectoryProgress(__int64 Bytes)
+void TFTPFileSystem::ReadDirectoryProgress(int64_t Bytes)
 {
   // with FTP we do not know exactly how many entries we have received,
   // instead we know number of bytes received only.
@@ -994,8 +994,8 @@ void TFTPFileSystem::ReadDirectoryProgress(__int64 Bytes)
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::DoFileTransferProgress(__int64 TransferSize,
-  __int64 Bytes)
+void TFTPFileSystem::DoFileTransferProgress(int64_t TransferSize,
+  int64_t Bytes)
 {
   TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
 
@@ -1007,7 +1007,7 @@ void TFTPFileSystem::DoFileTransferProgress(__int64 TransferSize,
     FFileTransferResumed = 0;
   }
 
-  __int64 Diff = Bytes - OperationProgress->TransferedSize;
+  int64_t Diff = Bytes - OperationProgress->TransferedSize;
   if (ALWAYS_TRUE(Diff >= 0))
   {
     OperationProgress->AddTransfered(Diff);
@@ -1026,8 +1026,8 @@ void TFTPFileSystem::DoFileTransferProgress(__int64 TransferSize,
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::FileTransferProgress(__int64 TransferSize,
-  __int64 Bytes)
+void TFTPFileSystem::FileTransferProgress(int64_t TransferSize,
+  int64_t Bytes)
 {
   TGuard Guard(FTransferStatusCriticalSection);
 
@@ -1036,7 +1036,7 @@ void TFTPFileSystem::FileTransferProgress(__int64 TransferSize,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::FileTransfer(const UnicodeString & FileName,
   const UnicodeString & LocalFile, HANDLE Handle, const UnicodeString & RemoteFile,
-  const UnicodeString & RemotePath, bool Get, __int64 Size, intptr_t Type,
+  const UnicodeString & RemotePath, bool Get, int64_t Size, intptr_t Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
   FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
@@ -1481,8 +1481,8 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
     ThrowSkipFileNull();
   }
 
-  __int64 MTime = 0, ATime = 0;
-  __int64 Size = 0;
+  int64_t MTime = 0, ATime = 0;
+  int64_t Size = 0;
 
   FTerminal->OpenLocalFile(FileName, GENERIC_READ, &OpenParams->LocalFileAttrs,
     nullptr, nullptr, &MTime, &ATime, &Size);
@@ -3015,7 +3015,7 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
 {
   // This reverses how FZAPI converts FILETIME to time_t,
   // before passing it to FZ_ASYNCREQUEST_OVERWRITE.
-  __int64 Timestamp;
+  int64_t Timestamp;
   tm * Tm = localtime(&Time);
   if (Tm != nullptr)
   {
@@ -3047,7 +3047,7 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
 bool TFTPFileSystem::HandleAsynchRequestOverwrite(
   wchar_t * FileName1, size_t FileName1Len, const wchar_t * /*FileName2*/,
   const wchar_t * /*Path1*/, const wchar_t * /*Path2*/,
-  __int64 Size1, __int64 Size2, time_t LocalTime,
+  int64_t Size1, int64_t Size2, time_t LocalTime,
   bool /*HasLocalTime*/, const TRemoteFileTime & RemoteTime, void * AUserData, int & RequestResult)
 {
   if (!FActive)
@@ -3568,8 +3568,8 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
   }
 }
 //---------------------------------------------------------------------------
-bool TFTPFileSystem::HandleTransferStatus(bool Valid, __int64 TransferSize,
-  __int64 Bytes, intptr_t /*Percent*/, intptr_t /*TimeElapsed*/, intptr_t /*TimeLeft*/, intptr_t /*TransferRate*/,
+bool TFTPFileSystem::HandleTransferStatus(bool Valid, int64_t TransferSize,
+  int64_t Bytes, intptr_t /*Percent*/, intptr_t /*TimeElapsed*/, intptr_t /*TimeLeft*/, intptr_t /*TransferRate*/,
   bool FileTransfer)
 {
   if (!FActive)

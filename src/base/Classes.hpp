@@ -432,7 +432,7 @@ extern TDateTime MinDateTime;
 TDateTime Now();
 TDateTime SpanOfNowAndThen(const TDateTime  ANow, const TDateTime AThen);
 double MilliSecondSpan(const TDateTime  ANow, const TDateTime AThen);
-__int64 MilliSecondsBetween(const TDateTime ANow, const TDateTime AThen);
+int64_t MilliSecondsBetween(const TDateTime ANow, const TDateTime AThen);
 
 //---------------------------------------------------------------------------
 
@@ -465,27 +465,27 @@ class TStream : public TObject
 public:
   TStream();
   virtual ~TStream();
-  virtual __int64 Read(void * Buffer, __int64 Count) = 0;
-  virtual __int64 Write(const void * Buffer, __int64 Count) = 0;
-  virtual __int64 Seek(__int64 Offset, int Origin) = 0;
-  virtual __int64 Seek(const __int64 Offset, TSeekOrigin Origin) = 0;
-  void ReadBuffer(void * Buffer, __int64 Count);
-  void WriteBuffer(const void * Buffer, __int64 Count);
-  __int64 CopyFrom(TStream * Source, __int64 Count);
+  virtual int64_t Read(void * Buffer, int64_t Count) = 0;
+  virtual int64_t Write(const void * Buffer, int64_t Count) = 0;
+  virtual int64_t Seek(int64_t Offset, int Origin) = 0;
+  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) = 0;
+  void ReadBuffer(void * Buffer, int64_t Count);
+  void WriteBuffer(const void * Buffer, int64_t Count);
+  int64_t CopyFrom(TStream * Source, int64_t Count);
 
 public:
-  __int64 GetPosition() { return Seek(0, soFromCurrent); }
-  __int64 GetSize()
+  int64_t GetPosition() { return Seek(0, soFromCurrent); }
+  int64_t GetSize()
   {
-    __int64 Pos = Seek(0, soFromCurrent);
-    __int64 Result = Seek(0, soFromEnd);
+    int64_t Pos = Seek(0, soFromCurrent);
+    int64_t Result = Seek(0, soFromEnd);
     Seek(Pos, soFromBeginning);
     return Result;
   }
 
 public:
-  virtual void SetSize(const __int64 NewSize) = 0;
-  void SetPosition(const __int64 Pos)
+  virtual void SetSize(const int64_t NewSize) = 0;
+  void SetPosition(const int64_t Pos)
   {
     Seek(Pos, soFromBeginning);
   }
@@ -499,14 +499,14 @@ NB_DISABLE_COPY(THandleStream)
 public:
   explicit THandleStream(HANDLE AHandle);
   virtual ~THandleStream();
-  virtual __int64 Read(void * Buffer, __int64 Count);
-  virtual __int64 Write(const void * Buffer, __int64 Count);
-  virtual __int64 Seek(__int64 Offset, int Origin);
-  virtual __int64 Seek(const __int64 Offset, TSeekOrigin Origin);
+  virtual int64_t Read(void * Buffer, int64_t Count);
+  virtual int64_t Write(const void * Buffer, int64_t Count);
+  virtual int64_t Seek(int64_t Offset, int Origin);
+  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin);
 
   HANDLE GetHandle() { return FHandle; }
 protected:
-  virtual void SetSize(const __int64 NewSize);
+  virtual void SetSize(const int64_t NewSize);
 protected:
   HANDLE FHandle;
 };
@@ -536,33 +536,33 @@ NB_DISABLE_COPY(TMemoryStream)
 public:
   TMemoryStream();
   virtual ~TMemoryStream();
-  virtual __int64 Read(void * Buffer, __int64 Count);
-  virtual __int64 Seek(__int64 Offset, int Origin);
-  virtual __int64 Seek(const __int64 Offset, TSeekOrigin Origin);
+  virtual int64_t Read(void * Buffer, int64_t Count);
+  virtual int64_t Seek(int64_t Offset, int Origin);
+  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin);
   void SaveToStream(TStream * Stream);
   void SaveToFile(const UnicodeString & FileName);
 
   void Clear();
   void LoadFromStream(TStream * Stream);
   void LoadFromFile(const UnicodeString & FileName);
-  __int64 GetSize() const { return FSize; }
-  virtual void SetSize(const __int64 NewSize);
-  virtual __int64 Write(const void * Buffer, __int64 Count);
+  int64_t GetSize() const { return FSize; }
+  virtual void SetSize(const int64_t NewSize);
+  virtual int64_t Write(const void * Buffer, int64_t Count);
 
   void * GetMemory() { return FMemory; }
 
 protected:
-  void SetPointer(void * Ptr, __int64 Size);
-  virtual void * Realloc(__int64 & NewCapacity);
-  __int64 GetCapacity() const { return FCapacity; }
+  void SetPointer(void * Ptr, int64_t Size);
+  virtual void * Realloc(int64_t & NewCapacity);
+  int64_t GetCapacity() const { return FCapacity; }
 
 private:
-  void SetCapacity(__int64 NewCapacity);
+  void SetCapacity(int64_t NewCapacity);
 private:
   void * FMemory;
-  __int64 FSize;
-  __int64 FPosition;
-  __int64 FCapacity;
+  int64_t FSize;
+  int64_t FPosition;
+  int64_t FCapacity;
 };
 
 //---------------------------------------------------------------------------
@@ -612,7 +612,7 @@ public:
   TDateTime ReadDateTime(const UnicodeString & Name);
   double ReadFloat(const UnicodeString & Name) const;
   intptr_t ReadInteger(const UnicodeString & Name) const;
-  __int64 ReadInt64(const UnicodeString & Name);
+  int64_t ReadInt64(const UnicodeString & Name);
   UnicodeString ReadString(const UnicodeString & Name);
   UnicodeString ReadStringRaw(const UnicodeString & Name);
   size_t ReadBinaryData(const UnicodeString & Name,
@@ -624,7 +624,7 @@ public:
   void WriteString(const UnicodeString & Name, const UnicodeString & Value);
   void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
   void WriteInteger(const UnicodeString & Name, intptr_t Value);
-  void WriteInt64(const UnicodeString & Name, __int64 Value);
+  void WriteInt64(const UnicodeString & Name, int64_t Value);
   void WriteBinaryData(const UnicodeString & Name,
     const void * Buffer, size_t Size);
 private:

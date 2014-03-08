@@ -266,7 +266,7 @@ public:
     /* const TMoveFileParams */ void * Param);
   bool CopyFiles(TStrings * FileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
-  bool CalculateFilesSize(TStrings * FileList, __int64 & Size,
+  bool CalculateFilesSize(TStrings * FileList, int64_t & Size,
     intptr_t Params, const TCopyParamType * CopyParam,
     bool AllowDirs, TCalculateSizeStats * Stats = nullptr);
   void CalculateFilesChecksum(const UnicodeString & Alg, TStrings * FileList,
@@ -414,8 +414,8 @@ protected:
     TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
   void OpenLocalFile(const UnicodeString & FileName, uintptr_t Access,
-    uintptr_t * AAttrs, HANDLE * AHandle, __int64 * ACTime, __int64 * AMTime,
-    __int64 * AATime, __int64 * ASize, bool TryWriteReadOnly = true);
+    uintptr_t * AAttrs, HANDLE * AHandle, int64_t * ACTime, int64_t * AMTime,
+    int64_t * AATime, int64_t * ASize, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(const UnicodeString & FileName, const TCopyParamType * CopyParam);
   bool HandleException(Exception * E);
   void CalculateFileSize(const UnicodeString & FileName,
@@ -423,8 +423,8 @@ protected:
   void DoCalculateDirectorySize(const UnicodeString & FileName,
     const TRemoteFile * File, TCalculateSizeParams * Params);
   void CalculateLocalFileSize(const UnicodeString & FileName,
-    const TSearchRec & Rec, /*__int64*/ void * Params);
-  bool CalculateLocalFilesSize(TStrings * FileList, __int64 & Size,
+    const TSearchRec & Rec, /*int64_t*/ void * Params);
+  bool CalculateLocalFilesSize(TStrings * FileList, int64_t & Size,
     const TCopyParamType * CopyParam, bool AllowDirs);
   TBatchOverwrite EffectiveBatchOverwrite(
     const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
@@ -498,8 +498,8 @@ protected:
   RawByteString EncryptPassword(const UnicodeString & Password);
   UnicodeString DecryptPassword(const RawByteString & Password);
   void LogRemoteFile(TRemoteFile * AFile);
-  UnicodeString FormatFileDetailsForLog(const UnicodeString & FileName, TDateTime Modification, __int64 Size);
-  void LogFileDetails(const UnicodeString & FileName, TDateTime Modification, __int64 Size);
+  UnicodeString FormatFileDetailsForLog(const UnicodeString & FileName, TDateTime Modification, int64_t Size);
+  void LogFileDetails(const UnicodeString & FileName, TDateTime Modification, int64_t Size);
   virtual const TTerminal * GetPasswordSource() const { return this; }
   virtual TTerminal * GetPasswordSource() { return this; }
 
@@ -655,7 +655,7 @@ struct TCalculateSizeParams : public TObject
 {
 NB_DECLARE_CLASS(TCalculateSizeParams)
 public:
-  __int64 Size;
+  int64_t Size;
   intptr_t Params;
   const TCopyParamType * CopyParam;
   TCalculateSizeStats * Stats;
@@ -699,7 +699,7 @@ public:
     UnicodeString Directory;
     TDateTime Modification;
     TModificationFmt ModificationFmt;
-    __int64 Size;
+    int64_t Size;
   };
 
   TChecklistAction Action;
@@ -752,10 +752,10 @@ struct TSpaceAvailable : public TObject
 {
   TSpaceAvailable();
 
-  __int64 BytesOnDevice;
-  __int64 UnusedBytesOnDevice;
-  __int64 BytesAvailableToUser;
-  __int64 UnusedBytesAvailableToUser;
+  int64_t BytesOnDevice;
+  int64_t UnusedBytesOnDevice;
+  int64_t BytesAvailableToUser;
+  int64_t UnusedBytesAvailableToUser;
   uintptr_t BytesPerAllocationUnit;
 };
 //------------------------------------------------------------------------------

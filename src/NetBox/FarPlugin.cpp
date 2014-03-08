@@ -2364,7 +2364,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   assert(PanelItem);
 
   UnicodeString FileName;
-  __int64 Size = 0;
+  int64_t Size = 0;
   TDateTime LastWriteTime;
   TDateTime LastAccess;
   UnicodeString Description;
@@ -2415,7 +2415,7 @@ TFarPanelItem::~TFarPanelItem()
 
 //---------------------------------------------------------------------------
 void TFarPanelItem::GetData(
-  DWORD & /*Flags*/, UnicodeString & /*FileName*/, __int64 & /*Size*/,
+  DWORD & /*Flags*/, UnicodeString & /*FileName*/, int64_t & /*Size*/,
   DWORD & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   DWORD & /*NumberOfLinks*/, UnicodeString & /*Description*/,
@@ -2486,7 +2486,7 @@ THintPanelItem::THintPanelItem(const UnicodeString & AHint) :
 }
 //---------------------------------------------------------------------------
 void THintPanelItem::GetData(
-  DWORD & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
+  DWORD & /*Flags*/, UnicodeString & FileName, int64_t & /*Size*/,
   DWORD & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   DWORD & /*NumberOfLinks*/, UnicodeString & /*Description*/,

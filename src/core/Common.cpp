@@ -1175,7 +1175,7 @@ bool UsesDaylightHack()
   return GetDateTimeParams(0)->DaylightHack;
 }
 //---------------------------------------------------------------------------
-TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
+TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode)
 {
   assert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
@@ -1207,11 +1207,11 @@ TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
   return Result;
 }
 //---------------------------------------------------------------------------
-__int64 Round(double Number)
+int64_t Round(double Number)
 {
   double Floor = floor(Number);
   double Ceil = ceil(Number);
-  return static_cast<__int64>(((Number - Floor) > (Ceil - Number)) ? Ceil : Floor);
+  return static_cast<int64_t>(((Number - Floor) > (Ceil - Number)) ? Ceil : Floor);
 }
 //---------------------------------------------------------------------------
 bool TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
@@ -1259,7 +1259,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
   return Result;
 }
 //---------------------------------------------------------------------------
-static __int64 DateTimeToUnix(const TDateTime & DateTime)
+static int64_t DateTimeToUnix(const TDateTime & DateTime)
 {
   const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
 
@@ -1272,7 +1272,7 @@ static __int64 DateTimeToUnix(const TDateTime & DateTime)
 FILETIME DateTimeToFileTime(const TDateTime & DateTime,
   TDSTMode /*DSTMode*/)
 {
-  __int64 UnixTimeStamp = ::DateTimeToUnix(DateTime);
+  int64_t UnixTimeStamp = ::DateTimeToUnix(DateTime);
 
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
   if (!Params->DaylightHack)
@@ -1284,7 +1284,7 @@ FILETIME DateTimeToFileTime(const TDateTime & DateTime,
     UnixTimeStamp -= CurrentParams->CurrentDaylightDifferenceSec;
   }
   FILETIME Result;
-  (*(__int64*)&(Result) = ((__int64)(UnixTimeStamp) + 11644473600LL) * 10000000LL);
+  (*(int64_t*)&(Result) = ((int64_t)(UnixTimeStamp) + 11644473600LL) * 10000000LL);
 
   return Result;
 }
@@ -1335,10 +1335,10 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
   return Result;
 }
 //---------------------------------------------------------------------------
-__int64 ConvertTimestampToUnix(const FILETIME & FileTime,
+int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
   TDSTMode DSTMode)
 {
-  __int64 Result = ((*(__int64*)&(FileTime)) / 10000000LL - 11644473600LL);
+  int64_t Result = ((*(int64_t*)&(FileTime)) / 10000000LL - 11644473600LL);
   if (UsesDaylightHack())
   {
     if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
@@ -1413,10 +1413,10 @@ TDateTime ConvertTimestampFromUTC(const TDateTime & DateTime)
   return Result;
 }
 //---------------------------------------------------------------------------
-__int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
+int64_t ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode)
 {
-  __int64 Result;
+  int64_t Result;
   if ((FileTime.dwLowDateTime == 0) &&
       (FileTime.dwHighDateTime == 0))
   {
@@ -2063,14 +2063,14 @@ bool IsDirectoryWriteable(const UnicodeString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString FormatNumber(__int64 Number)
+UnicodeString FormatNumber(int64_t Number)
 {
 //  return FormatFloat(L"#,##0", Number);
   return FORMAT(L"%.0f", static_cast<double>(Number));
 }
 //---------------------------------------------------------------------------
 // simple alternative to FormatBytes
-UnicodeString FormatSize(__int64 Size)
+UnicodeString FormatSize(int64_t Size)
 {
   return FormatNumber(Size);
 }
@@ -2080,16 +2080,16 @@ UnicodeString ExtractFileBaseName(const UnicodeString & Path)
   return ChangeFileExt(::ExtractFileName(Path, false), L"");
 }
 //---------------------------------------------------------------------
-UnicodeString FormatBytes(__int64 Bytes, bool UseOrders)
+UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
 {
   UnicodeString Result;
 
-  if (!UseOrders || (Bytes < static_cast<__int64>(100*1024)))
+  if (!UseOrders || (Bytes < static_cast<int64_t>(100*1024)))
   {
     // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
     Result = FORMAT(L"%.0f B", static_cast<double>(Bytes));
   }
-  else if (Bytes < static_cast<__int64>(100*1024*1024))
+  else if (Bytes < static_cast<int64_t>(100*1024*1024))
   {
     // Result = FormatFloat(L"#,##0 \"KiB\"", Bytes / 1024);
     Result = FORMAT(L"%.0f KiB", static_cast<double>(Bytes / 1024.0));
