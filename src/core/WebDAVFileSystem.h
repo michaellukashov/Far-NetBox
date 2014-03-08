@@ -91,7 +91,7 @@ public:
   webdav::error_t GetServerSettings(
     int * proxy_method,
     const char **proxy_host,
-    unsigned int *proxy_port,
+    uint32_t *proxy_port,
     const char **proxy_username,
     const char **proxy_password,
     int *timeout_seconds,

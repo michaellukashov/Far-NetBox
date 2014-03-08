@@ -148,7 +148,7 @@
 //---------------------------------------------------------------------------
 const int SFTPMinVersion = 0;
 const int SFTPMaxVersion = 5;
-const unsigned int SFTPNoMessageNumber = static_cast<unsigned int>(-1);
+const uint32_t SFTPNoMessageNumber = static_cast<uint32_t>(-1);
 
 const int asNo =            0;
 const int asOK =            1 << SSH_FX_OK;
@@ -2359,7 +2359,7 @@ uintptr_t TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
         TSFTPPacket * ReservedPacket;
         for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); ++Index)
         {
-          unsigned int MessageNumber = (unsigned int)FPacketNumbers[Index];
+          uint32_t MessageNumber = (uint32_t)FPacketNumbers[Index];
           if (MessageNumber == Packet->GetMessageNumber())
           {
             ReservedPacket = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Index));

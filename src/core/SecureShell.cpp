@@ -1745,7 +1745,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       {
         Timeout = 0;
       }
-      unsigned int WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, Timeout);
+      uint32_t WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, Timeout);
       if (WaitResult < WAIT_OBJECT_0 + HandleCount)
       {
         if (handle_got_event(Handles[WaitResult - WAIT_OBJECT_0]))
@@ -1857,7 +1857,7 @@ void TSecureShell::KeepAlive()
   }
 }
 //---------------------------------------------------------------------------
-static unsigned int minPacketSize = 0;
+static uint32_t minPacketSize = 0;
 
 unsigned long TSecureShell::MinPacketSize()
 {

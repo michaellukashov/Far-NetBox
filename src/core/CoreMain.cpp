@@ -182,7 +182,7 @@ TInstantOperationVisualizer::~TInstantOperationVisualizer()
   const __int64 MinDuration = 250;
   if (Duration < MinDuration)
   {
-    Sleep(static_cast<unsigned int>(MinDuration - Duration));
+    Sleep(static_cast<uint32_t>(MinDuration - Duration));
   }
 }
 //---------------------------------------------------------------------------

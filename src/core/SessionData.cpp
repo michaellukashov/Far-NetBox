@@ -2627,13 +2627,13 @@ void TSessionData::SetFtpProxyLogonType(intptr_t Value)
 //---------------------------------------------------------------------
 void TSessionData::SetBug(TSshBug Bug, TAutoSwitch Value)
 {
-  assert(Bug >= 0 && static_cast<unsigned int>(Bug) < LENOF(FBugs));
+  assert(Bug >= 0 && static_cast<uint32_t>(Bug) < LENOF(FBugs));
   SET_SESSION_PROPERTY(Bugs[Bug]);
 }
 //---------------------------------------------------------------------
 TAutoSwitch TSessionData::GetBug(TSshBug Bug) const
 {
-  assert(Bug >= 0 && static_cast<unsigned int>(Bug) < LENOF(FBugs));
+  assert(Bug >= 0 && static_cast<uint32_t>(Bug) < LENOF(FBugs));
   return FBugs[Bug];
 }
 //---------------------------------------------------------------------
@@ -2679,13 +2679,13 @@ void TSessionData::SetSFTPMaxPacketSize(intptr_t Value)
 //---------------------------------------------------------------------
 void TSessionData::SetSFTPBug(TSftpBug Bug, TAutoSwitch Value)
 {
-  assert(Bug >= 0 && static_cast<unsigned int>(Bug) < LENOF(FSFTPBugs));
+  assert(Bug >= 0 && static_cast<uint32_t>(Bug) < LENOF(FSFTPBugs));
   SET_SESSION_PROPERTY(SFTPBugs[Bug]);
 }
 //---------------------------------------------------------------------
 TAutoSwitch TSessionData::GetSFTPBug(TSftpBug Bug) const
 {
-  assert(Bug >= 0 && static_cast<unsigned int>(Bug) < LENOF(FSFTPBugs));
+  assert(Bug >= 0 && static_cast<uint32_t>(Bug) < LENOF(FSFTPBugs));
   return FSFTPBugs[Bug];
 }
 //---------------------------------------------------------------------

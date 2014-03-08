@@ -16,7 +16,7 @@ public:
   void Init();
 
   virtual void Start();
-  void WaitFor(unsigned int Milliseconds = INFINITE);
+  void WaitFor(uint32_t Milliseconds = INFINITE);
   virtual void Terminate() {}
   void Close();
   bool IsFinished();
@@ -51,7 +51,7 @@ protected:
   virtual ~TSignalThread();
 
   virtual bool WaitForEvent();
-  int WaitForEvent(unsigned int Timeout);
+  int WaitForEvent(uint32_t Timeout);
   virtual void Execute();
   virtual void ProcessEvent() = 0;
 };

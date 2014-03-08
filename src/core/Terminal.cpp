@@ -357,7 +357,7 @@ public:
 
 private:
   TTerminal * FTerminal;
-  unsigned int FTerminalThread;
+  uint32_t FTerminalThread;
 };
 //------------------------------------------------------------------------------
 TTunnelUI::TTunnelUI(TTerminal * Terminal)

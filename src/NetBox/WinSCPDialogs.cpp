@@ -1497,7 +1497,7 @@ private:
   void TransferProtocolComboChange();
   void LoginTypeComboChange();
   void FillCodePageEdit();
-  void CodePageEditAdd(unsigned int Cp);
+  void CodePageEditAdd(uint32_t Cp);
   void FtpProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType);
   void SshProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType);
   bool IsSshProtocol(TFSProtocol FSProtocol) const;
@@ -4235,7 +4235,7 @@ void TSessionDialog::FillCodePageEdit()
   CodePageEditAdd(20866); // KOI8-r
 }
 //------------------------------------------------------------------------------
-void TSessionDialog::CodePageEditAdd(unsigned int Cp)
+void TSessionDialog::CodePageEditAdd(uint32_t Cp)
 {
   CPINFOEX cpInfoEx;
   if (::GetCodePageInfo(Cp, cpInfoEx))

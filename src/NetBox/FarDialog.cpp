@@ -727,7 +727,7 @@ intptr_t TFarDialog::ShowModal()
               GetFarPlugin()->GetStartupInfo()->ModuleNumber,
               Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
               AHelpTopic.c_str(), FDialogItems,
-              static_cast<unsigned int>(GetItemCount()),
+              static_cast<uint32_t>(GetItemCount()),
               0, GetFlags(),
               DialogProcGeneral, reinterpret_cast<LONG_PTR>(this));
       BResult = GetFarPlugin()->GetStartupInfo()->DialogRun(Handle);

@@ -1850,7 +1850,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
             if (CopyParam->GetPreserveTime())
             {
               // Send last file access and modification time
-              // TVarRec don't understand 'unsigned int' -> we use sprintf()
+              // TVarRec don't understand 'uint32_t' -> we use sprintf()
               Buf.sprintf(L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
                 static_cast<unsigned long>(ATime));
               FSecureShell->SendLine(Buf.c_str());
@@ -1858,7 +1858,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
             }
 
             // Send file modes (rights), filesize and file name
-            // TVarRec don't understand 'unsigned int' -> we use sprintf()
+            // TVarRec don't understand 'uint32_t' -> we use sprintf()
             __int64 sz = OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
               OperationProgress->LocalSize;
             Buf.sprintf(L"C%s %lld %s",
@@ -2603,7 +2603,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
 
                   // This is crucial, if it fails during file transfer, it's fatal error
                   FILE_OPERATION_LOOP_EX (false, FMTLOAD(WRITE_ERROR, DestFileName.c_str()),
-                    BlockBuf.WriteToStream(FileStream.get(), static_cast<unsigned int>(BlockBuf.GetSize()));
+                    BlockBuf.WriteToStream(FileStream.get(), static_cast<uint32_t>(BlockBuf.GetSize()));
                   );
 
                   OperationProgress->AddLocallyUsed(BlockBuf.GetSize());

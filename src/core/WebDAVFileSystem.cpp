@@ -208,7 +208,7 @@ typedef struct neon_xml_elm_t
   // NEON_XML_CDATA    - child-less element,
   // NEON_XML_COLLECT  - complete contents of such element must be
   //                     collected as CDATA, includes *_CDATA flag.
-  unsigned int flags;
+  uint32_t flags;
 
 } neon_xml_elm_t;
 
@@ -11000,7 +11000,7 @@ client_ssl_pkcs11_pin_entry(
   int attempt,
   const char * slot_descr,
   const char * token_label,
-  unsigned int flags,
+  uint32_t flags,
   char * pin)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(userdata);
@@ -11522,13 +11522,13 @@ neon_open(
   ne_session * sess = ne_session_create(uri->scheme, uri->host, uri->port);
   apr_pool_cleanup_register(pool, sess, cleanup_session, apr_pool_cleanup_null);
   bool compression = false;
-  unsigned int neon_auth_types = 0;
+  uint32_t neon_auth_types = 0;
   const char * pkcs11_provider = nullptr;
   const char * ssl_authority_file = nullptr;
   {
     int proxy_method = 0;
     const char * proxy_host = nullptr;
-    unsigned int proxy_port = 0;
+    uint32_t proxy_port = 0;
     const char * proxy_username = nullptr;
     const char * proxy_password = nullptr;
     int timeout = 0;
@@ -12966,7 +12966,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
       TFileTransferData UserData;
 
       {
-        unsigned int TransferType = 2; // OperationProgress->AsciiTransfer = false
+        uint32_t TransferType = 2; // OperationProgress->AsciiTransfer = false
         // ignore file list
         TWebDAVFileListHelper Helper(this, nullptr, true);
 
@@ -13988,7 +13988,7 @@ webdav::error_t TWebDAVFileSystem::OpenURL(
 webdav::error_t TWebDAVFileSystem::GetServerSettings(
   int * proxy_method,
   const char ** proxy_host,
-  unsigned int * proxy_port,
+  uint32_t * proxy_port,
   const char ** proxy_username,
   const char ** proxy_password,
   int * timeout_seconds,
@@ -14002,7 +14002,7 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
   // If we find nothing, default to nulls.
   *proxy_method = 0;
   *proxy_host = nullptr;
-  *proxy_port = static_cast<unsigned int>(-1);
+  *proxy_port = static_cast<uint32_t>(-1);
   *proxy_username = nullptr;
   *proxy_password = nullptr;
   *pk11_provider = nullptr;
@@ -14043,7 +14043,7 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
         "Invalid URL: proxy port number greater "
         "than maximum TCP port number 65535");
     }
-    *proxy_port = static_cast<unsigned int>(l_proxy_port);
+    *proxy_port = static_cast<uint32_t>(l_proxy_port);
   }
 
   {

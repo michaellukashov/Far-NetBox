@@ -159,7 +159,7 @@ bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, TFormat
 UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
                             TDateTime DateTime);
 UnicodeString DateTimeToString(TDateTime DateTime);
-unsigned int DayOfWeek(const TDateTime & DateTime);
+uint32_t DayOfWeek(const TDateTime & DateTime);
 
 TDateTime Date();
 void DecodeDate(const TDateTime & DateTime, unsigned short & Y,
@@ -171,7 +171,7 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, TDateTime DateTime);
 TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
 
 TDateTime EncodeDate(int Year, int Month, int Day);
-TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
+TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec);
 
 UnicodeString Trim(const UnicodeString & Str);
 UnicodeString TrimLeft(const UnicodeString & Str);

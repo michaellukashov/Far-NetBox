@@ -364,7 +364,7 @@ void TSimpleThread::Close()
   }
 }
 //---------------------------------------------------------------------------
-void TSimpleThread::WaitFor(unsigned int Milliseconds)
+void TSimpleThread::WaitFor(uint32_t Milliseconds)
 {
   WaitForSingleObject(FThread, Milliseconds);
 }
@@ -419,9 +419,9 @@ bool TSignalThread::WaitForEvent()
   return WaitForEvent(INFINITE) > 0;
 }
 //---------------------------------------------------------------------------
-int TSignalThread::WaitForEvent(unsigned int Timeout)
+int TSignalThread::WaitForEvent(uint32_t Timeout)
 {
-  unsigned int Result = WaitForSingleObject(FEvent, Timeout);
+  uint32_t Result = WaitForSingleObject(FEvent, Timeout);
   int Return;
   if ((Result == WAIT_TIMEOUT) && !FTerminated)
   {

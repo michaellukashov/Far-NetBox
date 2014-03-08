@@ -1429,7 +1429,7 @@ TDateTime EncodeDate(int Year, int Month, int Day)
 }
 
 //---------------------------------------------------------------------------
-bool TryEncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec,
+bool TryEncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec,
   TDateTime & Time)
 {
   bool Result = false;
@@ -1441,7 +1441,7 @@ bool TryEncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsign
   return Result;
 }
 
-TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec)
+TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec)
 {
   TDateTime Result;
   if (!TryEncodeTime(Hour, Min, Sec, MSec, Result))
@@ -1486,7 +1486,7 @@ UnicodeString DateTimeToString(TDateTime DateTime)
 // DayOfWeek returns the day of the week of the given date. The Result is an
 // integer between 1 and 7, corresponding to Sunday through Saturday.
 // This function is not ISO 8601 compliant, for that see the DateUtils unit.
-unsigned int DayOfWeek(const TDateTime & DateTime)
+uint32_t DayOfWeek(const TDateTime & DateTime)
 {
   return ::DateTimeToTimeStamp(DateTime).Date % 7 + 1;
 }
@@ -1537,7 +1537,7 @@ UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & Path)
 //---------------------------------------------------------------------------
 void Randomize()
 {
-  srand(static_cast<unsigned int>(time(nullptr)));
+  srand(static_cast<uint32_t>(time(nullptr)));
 }
 
 //---------------------------------------------------------------------------
