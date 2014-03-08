@@ -687,7 +687,7 @@ void TTerminalQueue::UpdateStatusForList(
   {
     TQueueItem * Item = GetItem(List, Index);
     TQueueItemProxy * ItemProxy;
-    if (Current != nullptr)
+    if (Current)
     {
       ItemProxy = Current->FindByQueueItem(Item);
     }
@@ -696,7 +696,7 @@ void TTerminalQueue::UpdateStatusForList(
       ItemProxy = nullptr;
     }
 
-    if (ItemProxy != nullptr)
+    if (Current && ItemProxy)
     {
       Current->Delete(ItemProxy);
       Status->Add(ItemProxy);

@@ -3571,7 +3571,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
     {
       TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObject(Index));
       assert(File != nullptr);
-      if (File->GetIsDirectory() && !File->GetIsSymLink() &&
+      if (File && File->GetIsDirectory() && !File->GetIsSymLink() &&
           !File->GetIsParentDirectory() && !File->GetIsThisDirectory())
       {
         OperationProgress->SetFile(File->GetFileName());
@@ -3585,7 +3585,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
             bool Success = false;
             SCOPE_EXIT
             {
-              if (FirstLevel)
+              if (FirstLevel && File)
               {
                 OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
               }
@@ -3631,7 +3631,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
           bool Success = false;
           SCOPE_EXIT
           {
-            if (FirstLevel)
+            if (FirstLevel && File)
             {
               OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
             }
