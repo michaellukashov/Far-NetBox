@@ -33,8 +33,9 @@ TFarMessageParams::TFarMessageParams()
 //---------------------------------------------------------------------------
 TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
   TObject(),
-  FCriticalSection(new TCriticalSection()),
   FOpenedPlugins(new TObjectList()),
+  FTopDialog(nullptr),
+  FCriticalSection(new TCriticalSection()),
   FSavedTitles(new TStringList())
 {
   InitPlatformId();
@@ -45,7 +46,6 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
 
   FOpenedPlugins->SetOwnsObjects(false);
   FCurrentProgress = -1;
-  FTopDialog = nullptr;
   FValidFarSystemSettings = false;
   FFarSystemSettings = 0;
 

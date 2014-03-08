@@ -1492,8 +1492,8 @@ NB_DISABLE_COPY(TSFTPLoadFilesPropertiesQueue)
 public:
   explicit TSFTPLoadFilesPropertiesQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
     TSFTPFixedLenQueue(AFileSystem, CodePage),
-    FIndex(0),
-    FFileList(nullptr)
+    FFileList(nullptr),
+    FIndex(0)
   {
   }
   virtual ~TSFTPLoadFilesPropertiesQueue() {}
@@ -1572,8 +1572,8 @@ NB_DISABLE_COPY(TSFTPCalculateFilesChecksumQueue)
 public:
   explicit TSFTPCalculateFilesChecksumQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
     TSFTPFixedLenQueue(AFileSystem, CodePage),
-    FIndex(0),
-    FFileList(nullptr)
+    FFileList(nullptr),
+    FIndex(0)
   {
   }
   virtual ~TSFTPCalculateFilesChecksumQueue() {}
