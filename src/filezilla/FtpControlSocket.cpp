@@ -3821,7 +3821,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 				}
 				if (pData->transferfile.get)
 				{
-					if (pData->transferdata.bResume)
+					if (pData->transferdata.bResume && pData->transferdata.localFileHandle==INVALID_HANDLE_VALUE)
 						res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeCreate|CFile::modeWrite|CFile::modeNoTruncate|CFile::shareDenyWrite);
 					else if (pData->transferdata.localFileHandle==INVALID_HANDLE_VALUE)
 						res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeWrite|CFile::modeCreate|CFile::shareDenyWrite);
@@ -5361,6 +5361,7 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
 		{
 			pTransferData->transferdata.bResume = TRUE;
 		}
+		pTransferData->transferdata.localFileHandle = pData->localFileHandle;
 		pTransferData->nWaitNextOpState = FILETRANSFER_TYPE;
 		break;
 	#ifdef MPEXT
