@@ -4044,11 +4044,14 @@ bool TTerminal::DoCreateFile(const UnicodeString & FileName,
   assert(AHandle);
   bool Result = true;
   bool Done;
-  DWORD CreateAttrs = FILE_ATTRIBUTE_NORMAL;
+  DWORD DesiredAccess = GENERIC_WRITE;
+  DWORD ShareMode = FILE_SHARE_READ;
+  DWORD CreationDisposition = CREATE_ALWAYS; // OPEN_ALWAYS
+  DWORD FlagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
   do
   {
-    *AHandle = CreateLocalFile(FileName.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
-      CREATE_ALWAYS, CreateAttrs);
+    *AHandle = CreateLocalFile(FileName.c_str(), DesiredAccess, ShareMode,
+      CreationDisposition, FlagsAndAttributes);
     Done = (*AHandle != INVALID_HANDLE_VALUE);
     if (!Done)
     {
@@ -4092,7 +4095,7 @@ bool TTerminal::DoCreateFile(const UnicodeString & FileName,
 
         if (Result)
         {
-          CreateAttrs |=
+          FlagsAndAttributes |=
             FLAGMASK(FLAGSET(LocalFileAttrs, faHidden), FILE_ATTRIBUTE_HIDDEN) |
             FLAGMASK(FLAGSET(LocalFileAttrs, faReadOnly), FILE_ATTRIBUTE_READONLY);
 
