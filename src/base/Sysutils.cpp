@@ -1313,8 +1313,8 @@ static void DivMod(const uintptr_t Dividend, uintptr_t Divisor,
 
 //---------------------------------------------------------------------------
 static bool DecodeDateFully(const TDateTime & DateTime,
-  unsigned short & Year, unsigned short & Month, unsigned short & Day,
-  unsigned short & DOW)
+  uint16_t & Year, uint16_t & Month, uint16_t & Day,
+  uint16_t & DOW)
 {
   static const int D1 = 365;
   static const int D4 = D1 * 4 + 1;
@@ -1371,33 +1371,33 @@ static bool DecodeDateFully(const TDateTime & DateTime,
       D -= I;
       M++;
     }
-    Year = static_cast<unsigned short>(Y);
-    Month = static_cast<unsigned short>(M);
-    Day = static_cast<unsigned short>(D + 1);
+    Year = static_cast<uint16_t>(Y);
+    Month = static_cast<uint16_t>(M);
+    Day = static_cast<uint16_t>(D + 1);
   }
   return Result;
 }
 
 //---------------------------------------------------------------------------
-void DecodeDate(const TDateTime & DateTime, unsigned short & Year,
-  unsigned short & Month, unsigned short & Day)
+void DecodeDate(const TDateTime & DateTime, uint16_t & Year,
+  uint16_t & Month, uint16_t & Day)
 {
-  unsigned short Dummy = 0;
+  uint16_t Dummy = 0;
   DecodeDateFully(DateTime, Year, Month, Day, Dummy);
 }
 
-void DecodeTime(const TDateTime & DateTime, unsigned short & Hour,
-  unsigned short & Min, unsigned short & Sec, unsigned short & MSec)
+void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
+  uint16_t & Min, uint16_t & Sec, uint16_t & MSec)
 {
   uintptr_t MinCount, MSecCount;
   DivMod(DateTimeToTimeStamp(DateTime).Time, 60000, MinCount, MSecCount);
   uintptr_t H, M, S, MS;
   DivMod(MinCount, 60, H, M);
   DivMod(MSecCount, 1000, S, MS);
-  Hour = static_cast<unsigned short>(H);
-  Min = static_cast<unsigned short>(M);
-  Sec = static_cast<unsigned short>(S);
-  MSec = static_cast<unsigned short>(MS);
+  Hour = static_cast<uint16_t>(H);
+  Min = static_cast<uint16_t>(M);
+  Sec = static_cast<uint16_t>(S);
+  MSec = static_cast<uint16_t>(MS);
 }
 
 //---------------------------------------------------------------------------

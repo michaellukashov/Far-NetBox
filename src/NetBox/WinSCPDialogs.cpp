@@ -4419,7 +4419,7 @@ void TRightsContainer::RightsButtonClick(TFarButton * Sender,
   bool & /*Close*/)
 {
   TRights R = GetRights();
-  R.SetNumber(static_cast<unsigned short>(Sender->GetTag()));
+  R.SetNumber(static_cast<uint16_t>(Sender->GetTag()));
   SetRights(R);
 }
 //------------------------------------------------------------------------------

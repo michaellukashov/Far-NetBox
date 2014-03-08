@@ -1002,17 +1002,17 @@ struct TDateTimeParams : public TObject
 typedef rde::map<int, TDateTimeParams> TYearlyDateTimeParams;
 static TYearlyDateTimeParams YearlyDateTimeParams;
 static std::unique_ptr<TCriticalSection> DateTimeParamsSection(new TCriticalSection());
-static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
+static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
   TDateTime & Result);
 //---------------------------------------------------------------------------
-static unsigned short DecodeYear(const TDateTime & DateTime)
+static uint16_t DecodeYear(const TDateTime & DateTime)
 {
-  unsigned short Year, Month, Day;
+  uint16_t Year, Month, Day;
   DecodeDate(DateTime, Year, Month, Day);
   return Year;
 }
 //---------------------------------------------------------------------------
-static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
+static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
 {
   TGuard Guard(DateTimeParamsSection.get());
 
@@ -1087,7 +1087,7 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
     Result->SystemStandardDate = TZI.StandardDate;
     Result->SystemDaylightDate = TZI.DaylightDate;
 
-    unsigned short AYear = (Year != 0) ? Year : DecodeYear(Now());
+    uint16_t AYear = (Year != 0) ? Year : DecodeYear(Now());
     if (Result->SystemStandardDate.wMonth != 0)
     {
       EncodeDSTMargin(Result->SystemStandardDate, AYear, Result->StandardDate);
@@ -1104,7 +1104,7 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
   return Result;
 }
 //---------------------------------------------------------------------------
-static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
+static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
   TDateTime & Result)
 {
   if (Date.wYear == 0)
@@ -1114,10 +1114,10 @@ static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
       (7 * (Date.wDay - 1));
     if (Date.wDay == 5)
     {
-      unsigned short Month = static_cast<unsigned short>(Date.wMonth + 1);
+      uint16_t Month = static_cast<uint16_t>(Date.wMonth + 1);
       if (Month > 12)
       {
-        Month = static_cast<unsigned short>(Month - 12);
+        Month = static_cast<uint16_t>(Month - 12);
         Year++;
       }
 
@@ -1597,7 +1597,7 @@ UnicodeString StandardTimestamp(const TDateTime & DateTime)
   return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
 #else
   TDateTime DT = ::ConvertTimestampToUTC(DateTime);
-  unsigned short Y, M, D, H, N, S, MS;
+  uint16_t Y, M, D, H, N, S, MS;
   DT.DecodeDate(Y, M, D);
   DT.DecodeTime(H, N, S, MS);
   UnicodeString Result = FORMAT(L"%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", Y, M, D, H, N, S, MS);

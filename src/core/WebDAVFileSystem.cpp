@@ -13548,16 +13548,16 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
         {
           // should be the same as ConvertRemoteTimestamp
           TDateTime Modification =
-            EncodeDateVerbose(static_cast<unsigned short>(Entry->Time.Year), static_cast<unsigned short>(Entry->Time.Month),
-              static_cast<unsigned short>(Entry->Time.Day));
+            EncodeDateVerbose(static_cast<uint16_t>(Entry->Time.Year), static_cast<uint16_t>(Entry->Time.Month),
+              static_cast<uint16_t>(Entry->Time.Day));
           if (Entry->Time.HasTime)
           {
-            unsigned short seconds = 0;
+            uint16_t seconds = 0;
             if (Entry->Time.HasSeconds)
-              seconds = static_cast<unsigned short>(Entry->Time.Second);
+              seconds = static_cast<uint16_t>(Entry->Time.Second);
             File->SetModification(Modification +
-              EncodeTimeVerbose(static_cast<unsigned short>(Entry->Time.Hour),
-                static_cast<unsigned short>(Entry->Time.Minute),
+              EncodeTimeVerbose(static_cast<uint16_t>(Entry->Time.Hour),
+                static_cast<uint16_t>(Entry->Time.Minute),
                 seconds, 0));
             // not exact as we got year as well, but it is most probably
             // guessed by FZAPI anyway

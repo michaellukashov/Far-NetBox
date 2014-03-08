@@ -124,7 +124,7 @@ public:
   UnicodeString TimePMString;
   UnicodeString ShortTimeFormat;
   UnicodeString LongTimeFormat;
-  unsigned short TwoDigitYearCenturyWindow;
+  uint16_t TwoDigitYearCenturyWindow;
 };
 
 void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings);
@@ -162,10 +162,10 @@ UnicodeString DateTimeToString(TDateTime DateTime);
 uint32_t DayOfWeek(const TDateTime & DateTime);
 
 TDateTime Date();
-void DecodeDate(const TDateTime & DateTime, unsigned short & Y,
-  unsigned short & M, unsigned short & D);
-void DecodeTime(const TDateTime & DateTime, unsigned short & H,
-  unsigned short & N, unsigned short & S, unsigned short & MS);
+void DecodeDate(const TDateTime & DateTime, uint16_t & Y,
+  uint16_t & M, uint16_t & D);
+void DecodeTime(const TDateTime & DateTime, uint16_t & H,
+  uint16_t & N, uint16_t & S, uint16_t & MS);
 
 UnicodeString FormatDateTime(const UnicodeString & Fmt, TDateTime DateTime);
 TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);

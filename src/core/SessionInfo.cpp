@@ -669,7 +669,7 @@ void TSessionLog::DoAddToSelf(TLogLineType AType, const UnicodeString & ALine)
       UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + Line + "\n");
       fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
 #else
-      unsigned short Y, M, D, H, N, S, MS;
+      uint16_t Y, M, D, H, N, S, MS;
       TDateTime DateTime = Now();
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
@@ -929,7 +929,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         }
         ADF(L"Local account: %s", UserName);
       }
-      unsigned short Y, M, D, H, N, S, MS;
+      uint16_t Y, M, D, H, N, S, MS;
       TDateTime DateTime = Now();
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);

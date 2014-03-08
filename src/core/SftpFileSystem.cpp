@@ -359,7 +359,7 @@ public:
     AddString(Value, Utf);
   }
 
-  void AddProperties(unsigned short * Rights, TRemoteToken * Owner,
+  void AddProperties(uint16_t * Rights, TRemoteToken * Owner,
     TRemoteToken * Group, __int64 * MTime, __int64 * ATime,
     __int64 * Size, bool IsDirectory, intptr_t Version, bool Utf)
   {
@@ -452,12 +452,12 @@ public:
   }
 
   void AddProperties(const TRemoteProperties * Properties,
-    unsigned short BaseRights, bool IsDirectory, intptr_t Version, bool Utf,
+    uint16_t BaseRights, bool IsDirectory, intptr_t Version, bool Utf,
     TChmodSessionAction * Action)
   {
     enum TValid { valNone = 0, valRights = 0x01, valOwner = 0x02, valGroup = 0x04,
       valMTime = 0x08, valATime = 0x10 } Valid = valNone;
-    unsigned short RightsNum = 0;
+    uint16_t RightsNum = 0;
     TRemoteToken Owner;
     TRemoteToken Group;
     __int64 MTime;
@@ -482,7 +482,7 @@ public:
         Valid = (TValid)(Valid | valRights);
         TRights Rights = TRights(BaseRights);
         Rights |= Properties->Rights.GetNumberSet();
-        Rights &= static_cast<unsigned short>(~Properties->Rights.GetNumberUnset());
+        Rights &= static_cast<uint16_t >(~Properties->Rights.GetNumberUnset());
         if (IsDirectory && Properties->AddXToDirectories)
         {
           Rights.AddExecute();
@@ -740,7 +740,7 @@ public:
       wchar_t Type = L'-';
       if (FLAGSET(Flags, SSH_FILEXFER_ATTR_PERMISSIONS))
       {
-        File->GetRights()->SetNumber(static_cast<unsigned short>(Permissions & TRights::rfAllSpecials));
+        File->GetRights()->SetNumber(static_cast<uint16_t>(Permissions & TRights::rfAllSpecials));
         if (FLAGSET(Permissions, TRights::rfDirectory))
         {
           Type = FILETYPE_DIRECTORY;
@@ -4239,7 +4239,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
             // gets overwritten by large file (that would trigger resumable transfer).
             if (File->GetIsSymLink() ||
                 ((FVersion < 4) &&
-                 ((*File->GetRights() & static_cast<unsigned short>(TRights::rfAll)) == static_cast<unsigned short>(TRights::rfAll)) &&
+                 ((*File->GetRights() & static_cast<uint16_t>(TRights::rfAll)) == static_cast<uint16_t>(TRights::rfAll)) &&
                  (File->GetSize() < 100)))
             {
               ResumeAllowed = false;
@@ -4353,7 +4353,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
           assert(!SetRights);
         }
 
-        unsigned short RightsNumber = Rights.GetNumberSet();
+        uint16_t RightsNumber = Rights.GetNumberSet();
         PropertiesRequest.AddProperties(
           SetRights ? &RightsNumber : nullptr, nullptr, nullptr,
           CopyParam->GetPreserveTime() ? &MTime : nullptr,

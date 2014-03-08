@@ -284,7 +284,7 @@ UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & I
       TempDir += IncludeTrailingBackslash(FormatDateTime(L"nnzzz", Now()));
 #else
       TDateTime dt = Now();
-      unsigned short H, M, S, MS;
+      uint16_t H, M, S, MS;
       dt.DecodeTime(H, M, S, MS);
       TempDir += IncludeTrailingBackslash(FORMAT(L"%02d%03d", M, MS));
 #endif
@@ -353,7 +353,7 @@ UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, TDateTime Dat
   Result += FormatDateTime(TimeFormat, DateTime - int(DateTime));
 #else
   TDateTime dt(DateTime - static_cast<int>(DateTime));
-  unsigned short H, M, S, MS;
+  uint16_t H, M, S, MS;
   dt.DecodeTime(H, M, S, MS);
   Result += FORMAT(L"%02d:%02d:%02d", H, M, S);
 #endif

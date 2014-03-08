@@ -358,8 +358,8 @@ public:
     FValue(Value)
   {
   }
-  explicit TDateTime(unsigned short Hour,
-                     unsigned short Min, unsigned short Sec, unsigned short MSec);
+  explicit TDateTime(uint16_t Hour,
+    uint16_t Min, uint16_t Sec, uint16_t MSec);
   TDateTime(const TDateTime & rhs)
   {
     FValue = rhs.FValue;
@@ -419,10 +419,10 @@ public:
   UnicodeString DateString() const;
   UnicodeString TimeString(bool Short) const;
   UnicodeString FormatString(wchar_t * fmt) const;
-  void DecodeDate(unsigned short & Y,
-                  unsigned short & M, unsigned short & D) const;
-  void DecodeTime(unsigned short & H,
-                  unsigned short & N, unsigned short & S, unsigned short & MS) const;
+  void DecodeDate(uint16_t & Y,
+    uint16_t & M, uint16_t & D) const;
+  void DecodeTime(uint16_t & H,
+    uint16_t & N, uint16_t & S, uint16_t & MS) const;
 private:
   double FValue;
 };

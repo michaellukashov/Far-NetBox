@@ -331,38 +331,38 @@ public:
 
   TRights();
   TRights(const TRights & Source);
-  explicit TRights(unsigned short Number);
+  explicit TRights(uint16_t Number);
   void Assign(const TRights * Source);
   void AddExecute();
   void AllUndef();
 
   bool operator ==(const TRights & rhr) const;
-  bool operator ==(unsigned short rhr) const;
+  bool operator ==(uint16_t rhr) const;
   bool operator !=(const TRights & rhr) const;
   TRights & operator =(const TRights & rhr);
-  TRights & operator =(unsigned short rhr);
+  TRights & operator =(uint16_t rhr);
   TRights operator ~() const;
-  TRights operator &(unsigned short rhr) const;
+  TRights operator &(uint16_t rhr) const;
   TRights operator &(const TRights & rhr) const;
-  TRights & operator &=(unsigned short rhr);
+  TRights & operator &=(uint16_t rhr);
   TRights & operator &=(const TRights & rhr);
-  TRights operator |(unsigned short rhr) const;
+  TRights operator |(uint16_t rhr) const;
   TRights operator |(const TRights & rhr) const;
-  TRights & operator |=(unsigned short rhr);
+  TRights & operator |=(uint16_t rhr);
   TRights & operator |=(const TRights & rhr);
-  operator unsigned short() const;
+  operator uint16_t() const;
   operator unsigned long() const;
 
   bool GetIsUndef() const;
   UnicodeString GetModeStr() const;
   UnicodeString GetSimplestStr() const;
-  void SetNumber(unsigned short Value);
+  void SetNumber(uint16_t Value);
   UnicodeString GetText() const;
   void SetText(const UnicodeString & Value);
   void SetOctal(const UnicodeString & Value);
-  unsigned short GetNumber() const;
-  unsigned short GetNumberSet() const { return FSet; }
-  unsigned short GetNumberUnset() const { return FUnset; }
+  uint16_t GetNumber() const;
+  uint16_t GetNumberSet() const { return FSet; }
+  uint16_t GetNumberUnset() const { return FUnset; }
   unsigned long GetNumberDecadic() const;
   UnicodeString GetOctal() const;
   bool GetReadOnly() const;
@@ -377,8 +377,8 @@ public:
 
 private:
   bool FAllowUndef;
-  unsigned short FSet;
-  unsigned short FUnset;
+  uint16_t FSet;
+  uint16_t FUnset;
   UnicodeString FText;
   bool FUnknown;
 };

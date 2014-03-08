@@ -2152,7 +2152,7 @@ void TSessionData::SetPuttyProtocol(const UnicodeString & Value)
 //---------------------------------------------------------------------
 void TSessionData::SetPingIntervalDT(TDateTime Value)
 {
-  unsigned short hour, min, sec, msec;
+  uint16_t hour, min, sec, msec;
 
   Value.DecodeTime(hour, min, sec, msec);
   SetPingInterval(hour*SecsPerHour + min*SecsPerMin + sec);
@@ -3833,7 +3833,7 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
     {
       UnicodeString Replacement;
       // keep consistent with TFileCustomCommand::PatternReplacement
-      unsigned short Y, M, D, H, NN, S, MS;
+      uint16_t Y, M, D, H, NN, S, MS;
       TDateTime DateTime = N;
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, NN, S, MS);

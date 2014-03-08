@@ -1178,8 +1178,8 @@ AnsiString W2MB(const wchar_t * src, const UINT cp)
 
 //---------------------------------------------------------------------------
 
-TDateTime::TDateTime(unsigned short Hour,
-                     unsigned short Min, unsigned short Sec, unsigned short MSec)
+TDateTime::TDateTime(uint16_t Hour,
+  uint16_t Min, uint16_t Sec, uint16_t MSec)
 {
   FValue = ::EncodeTimeVerbose(Hour, Min, Sec, MSec);
 }
@@ -1187,7 +1187,7 @@ TDateTime::TDateTime(unsigned short Hour,
 //---------------------------------------------------------------------------
 UnicodeString TDateTime::DateString() const
 {
-  unsigned short Y, M, D;
+  uint16_t Y, M, D;
   DecodeDate(Y, M, D);
   UnicodeString Result = FORMAT(L"%02d.%02d.%04d", D, M, Y);
   return Result;
@@ -1196,7 +1196,7 @@ UnicodeString TDateTime::DateString() const
 //---------------------------------------------------------------------------
 UnicodeString TDateTime::TimeString(bool Short) const
 {
-  unsigned short H, N, S, MS;
+  uint16_t H, N, S, MS;
   DecodeTime(H, N, S, MS);
   UnicodeString Result;
   if (Short)
@@ -1210,21 +1210,21 @@ UnicodeString TDateTime::TimeString(bool Short) const
 UnicodeString TDateTime::FormatString(wchar_t * fmt) const
 {
   (void)fmt;
-  unsigned short H, N, S, MS;
+  uint16_t H, N, S, MS;
   DecodeTime(H, N, S, MS);
   UnicodeString Result = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
   return Result;
 }
 
 //---------------------------------------------------------------------------
-void TDateTime::DecodeDate(unsigned short & Y,
-                           unsigned short & M, unsigned short & D) const
+void TDateTime::DecodeDate(uint16_t & Y,
+  uint16_t & M, uint16_t & D) const
 {
   ::DecodeDate(*this, Y, M, D);
 }
 
-void TDateTime::DecodeTime(unsigned short & H,
-                           unsigned short & N, unsigned short & S, unsigned short & MS) const
+void TDateTime::DecodeTime(uint16_t & H,
+  uint16_t & N, uint16_t & S, uint16_t & MS) const
 {
   ::DecodeTime(*this, H, N, S, MS);
 }

@@ -377,7 +377,7 @@ TDateTime ReduceDateTimePrecision(const TDateTime & DateTime,
   }
   else if (Precision != mfFull)
   {
-    unsigned short Y, M, D, H, N, S, MS;
+    uint16_t Y, M, D, H, N, S, MS;
 
     DecodeDate(Result, Y, M, D);
     DecodeTime(Result, H, N, S, MS);
@@ -437,7 +437,7 @@ UnicodeString UserModificationStr(const TDateTime & DateTime,
 UnicodeString ModificationStr(TDateTime DateTime,
   TModificationFmt Precision)
 {
-  unsigned short Year, Month, Day, Hour, Min, Sec, MSec;
+  uint16_t Year, Month, Day, Hour, Min, Sec, MSec;
   DateTime.DecodeDate(Year, Month, Day);
   DateTime.DecodeTime(Hour, Min, Sec, MSec);
   switch (Precision)
@@ -2054,7 +2054,7 @@ TRights::TRights()
   FUnknown = true;
 }
 //---------------------------------------------------------------------------
-TRights::TRights(unsigned short ANumber)
+TRights::TRights(uint16_t ANumber)
 {
   FAllowUndef = false;
   FSet = 0;
@@ -2102,7 +2102,7 @@ bool TRights::operator ==(const TRights & rhr) const
   }
 }
 //---------------------------------------------------------------------------
-bool TRights::operator ==(unsigned short rhr) const
+bool TRights::operator ==(uint16_t rhr) const
 {
   return (GetNumber() == rhr);
 }
@@ -2112,7 +2112,7 @@ bool TRights::operator !=(const TRights & rhr) const
   return !(*this == rhr);
 }
 //---------------------------------------------------------------------------
-TRights & TRights::operator =(unsigned short rhr)
+TRights & TRights::operator =(uint16_t rhr)
 {
   SetNumber(rhr);
   return *this;
@@ -2126,7 +2126,7 @@ TRights & TRights::operator =(const TRights & rhr)
 //---------------------------------------------------------------------------
 TRights TRights::operator ~() const
 {
-  TRights Result(static_cast<unsigned short>(~GetNumber()));
+  TRights Result(static_cast<uint16_t>(~GetNumber()));
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2137,7 +2137,7 @@ TRights TRights::operator &(const TRights & rhr) const
   return Result;
 }
 //---------------------------------------------------------------------------
-TRights TRights::operator &(unsigned short rhr) const
+TRights TRights::operator &(uint16_t rhr) const
 {
   TRights Result(*this);
   Result &= rhr;
@@ -2164,7 +2164,7 @@ TRights & TRights::operator &=(const TRights & rhr)
   return *this;
 }
 //---------------------------------------------------------------------------
-TRights & TRights::operator &=(unsigned short rhr)
+TRights & TRights::operator &=(uint16_t rhr)
 {
   SetNumber(GetNumber() & rhr);
   return *this;
@@ -2177,7 +2177,7 @@ TRights TRights::operator |(const TRights & rhr) const
   return Result;
 }
 //---------------------------------------------------------------------------
-TRights TRights::operator |(unsigned short rhr) const
+TRights TRights::operator |(uint16_t rhr) const
 {
   TRights Result(*this);
   Result |= rhr;
@@ -2190,7 +2190,7 @@ TRights & TRights::operator |=(const TRights & rhr)
   return *this;
 }
 //---------------------------------------------------------------------------
-TRights & TRights::operator |=(unsigned short rhr)
+TRights & TRights::operator |=(uint16_t rhr)
 {
   SetNumber(GetNumber() | rhr);
   return *this;
@@ -2225,7 +2225,7 @@ void TRights::SetText(const UnicodeString & Value)
     {
       if (Value[I] == UnsetSymbol)
       {
-        FUnset |= static_cast<unsigned short>(Flag | ExtendedFlag);
+        FUnset |= static_cast<uint16_t>(Flag | ExtendedFlag);
       }
       else if (Value[I] == UndefSymbol)
       {
@@ -2233,12 +2233,12 @@ void TRights::SetText(const UnicodeString & Value)
       }
       else if (Value[I] == CombinedSymbols[I - 1])
       {
-        FSet |= static_cast<unsigned short>(Flag | ExtendedFlag);
+        FSet |= static_cast<uint16_t>(Flag | ExtendedFlag);
       }
       else if (Value[I] == ExtendedSymbols[I - 1])
       {
-        FSet |= static_cast<unsigned short>(ExtendedFlag);
-        FUnset |= static_cast<unsigned short>(Flag);
+        FSet |= static_cast<uint16_t>(ExtendedFlag);
+        FUnset |= static_cast<uint16_t>(Flag);
       }
       else
       {
@@ -2246,10 +2246,10 @@ void TRights::SetText(const UnicodeString & Value)
         {
           KeepText = true;
         }
-        FSet |= static_cast<unsigned short>(Flag);
+        FSet |= static_cast<uint16_t>(Flag);
         if (I % 3 == 0)
         {
-          FUnset |= static_cast<unsigned short>(ExtendedFlag);
+          FUnset |= static_cast<uint16_t>(ExtendedFlag);
         }
       }
 
@@ -2343,7 +2343,7 @@ void TRights::SetOctal(const UnicodeString & Value)
       throw Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, Value.c_str()));
     }
 
-    SetNumber(static_cast<unsigned short>(
+    SetNumber(static_cast<uint16_t>(
       ((AValue[1] - L'0') << 9) +
       ((AValue[2] - L'0') << 6) +
       ((AValue[3] - L'0') << 3) +
@@ -2367,7 +2367,7 @@ unsigned long TRights::GetNumberDecadic() const
 UnicodeString TRights::GetOctal() const
 {
   UnicodeString Result;
-  unsigned short N = GetNumberSet(); // used to be "Number"
+  uint16_t N = GetNumberSet(); // used to be "Number"
   Result.SetLength(4);
   Result[1] = static_cast<wchar_t>(L'0' + ((N & 07000) >> 9));
   Result[2] = static_cast<wchar_t>(L'0' + ((N & 00700) >> 6));
@@ -2377,18 +2377,18 @@ UnicodeString TRights::GetOctal() const
   return Result;
 }
 //---------------------------------------------------------------------------
-void TRights::SetNumber(unsigned short Value)
+void TRights::SetNumber(uint16_t Value)
 {
   if ((FSet != Value) || ((FSet | FUnset) != rfAllSpecials))
   {
     FSet = Value;
-    FUnset = static_cast<unsigned short>(rfAllSpecials & ~FSet);
+    FUnset = static_cast<uint16_t>(rfAllSpecials & ~FSet);
     FText = L"";
   }
   FUnknown = false;
 }
 //---------------------------------------------------------------------------
-unsigned short TRights::GetNumber() const
+uint16_t TRights::GetNumber() const
 {
   assert(!GetIsUndef());
   return FSet;
@@ -2417,19 +2417,19 @@ void TRights::SetRightUndef(TRight Right, TState Value)
     switch (Value)
     {
       case rsYes:
-        FSet |= static_cast<unsigned short>(Flag);
-        FUnset &= static_cast<unsigned short>(~Flag);
+        FSet |= static_cast<uint16_t>(Flag);
+        FUnset &= static_cast<uint16_t>(~Flag);
         break;
 
       case rsNo:
-        FSet &= static_cast<unsigned short>(~Flag);
-        FUnset |= static_cast<unsigned short>(Flag);
+        FSet &= static_cast<uint16_t>(~Flag);
+        FUnset |= static_cast<uint16_t>(Flag);
         break;
 
       case rsUndef:
       default:
-        FSet &= static_cast<unsigned short>(~Flag);
-        FUnset &= static_cast<unsigned short>(~Flag);
+        FSet &= static_cast<uint16_t>(~Flag);
+        FUnset &= static_cast<uint16_t>(~Flag);
         break;
     }
 
@@ -2571,7 +2571,7 @@ bool TRights::GetIsUndef() const
   return ((FSet | FUnset) != rfAllSpecials);
 }
 //---------------------------------------------------------------------------
-TRights::operator unsigned short() const
+TRights::operator uint16_t() const
 {
   return GetNumber();
 }

@@ -3092,7 +3092,7 @@ void TTerminal::RecycleFile(const UnicodeString & FileName,
 #if defined(__BORLANDC__)
     Params.FileMask = FORMAT(L"*-%s.*", (FormatDateTime(L"yyyymmdd-hhnnss", Now())));
 #else
-    unsigned short Y, M, D, H, N, S, MS;
+    uint16_t Y, M, D, H, N, S, MS;
     TDateTime DateTime = Now();
     DateTime.DecodeDate(Y, M, D);
     DateTime.DecodeTime(H, N, S, MS);
@@ -3344,7 +3344,7 @@ void TTerminal::ChangeFileProperties(const UnicodeString & FileName,
     }
     if (RProperties->Valid.Contains(vpModification))
     {
-      unsigned short Y, M, D, H, N, S, MS;
+      uint16_t Y, M, D, H, N, S, MS;
       TDateTime DateTime = ::UnixToDateTime(RProperties->Modification, GetSessionData()->GetDSTMode());
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
@@ -3356,7 +3356,7 @@ void TTerminal::ChangeFileProperties(const UnicodeString & FileName,
     }
     if (RProperties->Valid.Contains(vpLastAccess))
     {
-      unsigned short Y, M, D, H, N, S, MS;
+      uint16_t Y, M, D, H, N, S, MS;
       TDateTime DateTime = ::UnixToDateTime(RProperties->LastAccess, GetSessionData()->GetDSTMode());
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);

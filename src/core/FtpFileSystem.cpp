@@ -800,7 +800,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
       Rights = *AFile->GetRights();
     }
     Rights |= Properties->Rights.GetNumberSet();
-    Rights &= static_cast<unsigned short>(~Properties->Rights.GetNumberUnset());
+    Rights &= static_cast<uint16_t>(~Properties->Rights.GetNumberUnset());
     if ((AFile != nullptr) && AFile->GetIsDirectory() && Properties->AddXToDirectories)
     {
       Rights.AddExecute();
@@ -3200,20 +3200,20 @@ UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & Val
   /*
   return FormatDateTime(L"ddddd tt",
     EncodeDateVerbose(
-      static_cast<unsigned short>(ValidityTime.Year), static_cast<unsigned short>(ValidityTime.Month),
-      static_cast<unsigned short>(ValidityTime.Day)) +
+      static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
+      static_cast<uint16_t>(ValidityTime.Day)) +
     EncodeTimeVerbose(
-      static_cast<unsigned short>(ValidityTime.Hour), static_cast<unsigned short>(ValidityTime.Min),
-      static_cast<unsigned short>(ValidityTime.Sec), 0));
+      static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
+      static_cast<uint16_t>(ValidityTime.Sec), 0));
   */
-  unsigned short Y, M, D, H, N, S, MS;
+  uint16_t Y, M, D, H, N, S, MS;
   TDateTime DateTime =
     EncodeDateVerbose(
-      static_cast<unsigned short>(ValidityTime.Year), static_cast<unsigned short>(ValidityTime.Month),
-      static_cast<unsigned short>(ValidityTime.Day)) +
+      static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
+      static_cast<uint16_t>(ValidityTime.Day)) +
     EncodeTimeVerbose(
-      static_cast<unsigned short>(ValidityTime.Hour), static_cast<unsigned short>(ValidityTime.Min),
-      static_cast<unsigned short>(ValidityTime.Sec), 0);
+      static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
+      static_cast<uint16_t>(ValidityTime.Sec), 0);
   DateTime.DecodeDate(Y, M, D);
   DateTime.DecodeTime(H, N, S, MS);
   UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, N, S);
@@ -3753,18 +3753,18 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
       {
         TDateTime Modification = ::ConvertTimestampToUTC(::FileTimeToDateTime(MTime));
 
-        unsigned short Year;
-        unsigned short Month;
-        unsigned short Day;
+        uint16_t Year;
+        uint16_t Month;
+        uint16_t Day;
         Modification.DecodeDate(Year, Month, Day);
         Time.tm_year = Year - 1900;
         Time.tm_mon = Month - 1;
         Time.tm_mday = Day;
 
-        unsigned short Hour;
-        unsigned short Min;
-        unsigned short Sec;
-        unsigned short MSec;
+        uint16_t Hour;
+        uint16_t Min;
+        uint16_t Sec;
+        uint16_t MSec;
         Modification.DecodeTime(Hour, Min, Sec, MSec);
         Time.tm_hour = Hour;
         Time.tm_min = Min;
