@@ -4036,7 +4036,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & Command,
   }
 }
 //------------------------------------------------------------------------------
-bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
+bool TTerminal::DoCreateFile(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
   bool NoConfirmation)
 {
@@ -4119,7 +4119,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
   return Result;
 }
 //------------------------------------------------------------------------------
-bool TTerminal::CreateLocalFile(const UnicodeString & FileName,
+bool TTerminal::CreateFile(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
   bool NoConfirmation)
 {
@@ -4127,7 +4127,7 @@ bool TTerminal::CreateLocalFile(const UnicodeString & FileName,
   assert(AHandle);
   bool Result = true;
   FILE_OPERATION_LOOP (FMTLOAD(CREATE_FILE_ERROR, FileName.c_str()),
-    Result = DoCreateLocalFile(FileName, OperationProgress, AHandle, NoConfirmation);
+    Result = DoCreateFile(FileName, OperationProgress, AHandle, NoConfirmation);
   );
 
   return Result;

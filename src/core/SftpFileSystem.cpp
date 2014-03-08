@@ -5329,7 +5329,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       // if not already opened (resume, append...), create new empty file
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
       {
-        if (!FTerminal->CreateLocalFile(LocalFileName, OperationProgress,
+        if (!FTerminal->CreateFile(LocalFileName, OperationProgress,
             &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
         {
           ThrowSkipFileNull();

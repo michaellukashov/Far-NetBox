@@ -410,7 +410,7 @@ protected:
   void CustomReadDirectory(TRemoteFileList * FileList);
   void DoCreateLink(const UnicodeString & FileName, const UnicodeString & PointTo,
     bool Symbolic);
-  bool CreateLocalFile(const UnicodeString & FileName,
+  bool CreateFile(const UnicodeString & FileName,
     TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
   void OpenLocalFile(const UnicodeString & FileName, uintptr_t Access,
@@ -468,7 +468,7 @@ protected:
     intptr_t MaxLen, UnicodeString & AResult);
   void FileFind(const UnicodeString & FileName, const TRemoteFile * File, void * Param);
   void DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params);
-  bool DoCreateLocalFile(const UnicodeString & FileName,
+  bool DoCreateFile(const UnicodeString & FileName,
     TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
 

@@ -3109,8 +3109,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
           break;
 
         case omResume:
-          // HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-          if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress,
+          if (!FTerminal->CreateFile(DestFullName, OperationProgress,
             &LocalFileHandle, true))
           {
 //            ThrowSkipFileNull();
