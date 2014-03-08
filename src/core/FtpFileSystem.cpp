@@ -3041,7 +3041,7 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::HandleAsynchRequestOverwrite(
   wchar_t * FileName1, size_t FileName1Len, const wchar_t * /*FileName2*/,
-  const wchar_t * /*Path1*/, const wchar_t * /*Path2*/,
+  const wchar_t * Path1, const wchar_t * /*Path2*/,
   int64_t Size1, int64_t Size2, time_t LocalTime,
   bool /*HasLocalTime*/, const TRemoteFileTime & RemoteTime, void * AUserData,
   HANDLE & LocalFileHandle,
@@ -3051,6 +3051,9 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
   {
     return false;
   }
+  UnicodeString DestFullName = Path1;
+  AppendPathDelimiterW(DestFullName);
+  DestFullName += FileName1;
   TFileTransferData & UserData = *(NB_STATIC_DOWNCAST(TFileTransferData, AUserData));
   if (UserData.OverwriteResult >= 0)
   {
@@ -3106,6 +3109,12 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
           break;
 
         case omResume:
+          // HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
+          if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress,
+            &LocalFileHandle, true))
+          {
+
+          }
           RequestResult = TFileZillaIntf::FILEEXISTS_RESUME;
           break;
 
