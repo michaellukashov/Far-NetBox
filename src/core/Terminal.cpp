@@ -538,6 +538,14 @@ TTerminal::TTerminal() :
   TObject(),
   TSessionUI()
 {
+  FReadCurrentDirectoryPending = false;
+  FReadDirectoryPending = false;
+  FTunnelOpening = false;
+  FSessionData = nullptr;
+  FLog = nullptr;
+  FActionLog = nullptr;
+  FConfiguration = nullptr;
+  FFiles = nullptr;
   FInTransaction = 0;
   FSuspendTransaction = false;
   FUsersGroupsLookedup = false;

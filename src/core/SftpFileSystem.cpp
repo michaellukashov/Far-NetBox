@@ -3581,8 +3581,8 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
         if (SubFiles.get() != nullptr)
         {
           std::unique_ptr<TStrings> SubFileList(new TStringList());
-          bool Success = false;
           {
+            bool Success = false;
             SCOPE_EXIT
             {
               if (FirstLevel)
@@ -3623,12 +3623,12 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
       bool Next = false;
       do
       {
-        bool Success = false;
         UnicodeString Alg;
         UnicodeString Checksum;
-        TRemoteFile * File = nullptr;
 
         {
+          TRemoteFile * File = nullptr;
+          bool Success = false;
           SCOPE_EXIT
           {
             if (FirstLevel)
@@ -3811,7 +3811,6 @@ void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
   intptr_t Index = 0;
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
-    bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
     TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
@@ -3820,6 +3819,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
     FAvoidBusy = true;
 
     {
+      bool Success = false;
       SCOPE_EXIT
       {
         FAvoidBusy = false;
@@ -4330,7 +4330,6 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
 
       Action.Destination(DestFullName);
 
-      bool TransferFinished = false;
       TSFTPPacket CloseRequest(FCodePage);
       bool SetRights = ((DoResume && DestFileExists) || CopyParam->GetPreserveRights());
       bool SetProperties = (CopyParam->GetPreserveTime() || SetRights);
@@ -4362,6 +4361,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
       }
 
       {
+        bool TransferFinished = false;
         SCOPE_EXIT
         {
           if (FTerminal->GetActive())
@@ -4936,7 +4936,6 @@ void TSFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
   intptr_t Index = 0;
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
-    bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
     const TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
 
@@ -4944,6 +4943,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
     FAvoidBusy = true;
 
     {
+      bool Success = false;
       SCOPE_EXIT
       {
         FAvoidBusy = false;
@@ -5105,7 +5105,6 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
     UnicodeString DestPartialFullName;
     bool ResumeAllowed;
-    bool ResumeTransfer = false;
     int64_t ResumeOffset;
 
     // Will we use ASCII of BINARY file transfer?
@@ -5138,12 +5137,13 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
     HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
     TStream * FileStream = nullptr;
-    bool DeleteLocalFile = false;
     RawByteString RemoteHandle;
     UnicodeString LocalFileName = DestFullName;
     TOverwriteMode OverwriteMode = omOverwrite;
 
     {
+      bool ResumeTransfer = false;
+      bool DeleteLocalFile = false;
       SCOPE_EXIT
       {
         if (LocalFileHandle != INVALID_HANDLE_VALUE)
