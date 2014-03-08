@@ -3139,7 +3139,7 @@ config_read_auth_data(
     apr_hash_set(*hash, AUTHN_ASCII_CERT_KEY, APR_HASH_KEY_STRING,
       string_create(AnsiString(Key).c_str(), pool));
     apr_hash_set(*hash, AUTHN_FAILURES_KEY, APR_HASH_KEY_STRING,
-      string_createf(pool, "%lu", (unsigned long)
+      string_createf(pool, "%lu", (uint32_t)
         StrToIntDef(Value, 0)));
   }
   return WEBDAV_NO_ERROR;
@@ -9165,7 +9165,7 @@ ssl_server_trust_file_first_credentials(
     if (failstr)
     {
       char * endptr;
-      unsigned long tmp_ulong = strtoul(failstr->data, &endptr, 10);
+      uint32_t tmp_ulong = strtoul(failstr->data, &endptr, 10);
 
       if (*endptr == '\0')
         last_failures = (apr_uint32_t) tmp_ulong;
@@ -9222,7 +9222,7 @@ ssl_server_trust_file_save_credentials(
   apr_hash_set(creds_hash, AUTHN_ASCII_CERT_KEY, APR_HASH_KEY_STRING,
                string_create(cert_info->fingerprint, pool));
   apr_hash_set(creds_hash, AUTHN_FAILURES_KEY, APR_HASH_KEY_STRING,
-               string_createf(pool, "%lu", (unsigned long)
+               string_createf(pool, "%lu", (uint32_t)
                               creds->accepted_failures));
 
   WEBDAV_ERR(config_write_auth_data(creds_hash,

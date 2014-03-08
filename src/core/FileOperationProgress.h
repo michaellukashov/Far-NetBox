@@ -117,7 +117,7 @@ private:
   bool FReset;
   uintptr_t FLastSecond;
   uintptr_t FRemainingCPS;
-  rde::vector<unsigned long> FTicks;
+  rde::vector<uint32_t> FTicks;
   rde::vector<__int64> FTotalTransferredThen;
 };
 //---------------------------------------------------------------------------

@@ -43,8 +43,8 @@ public:
 
   const TSessionInfo & GetSessionInfo() const;
   bool SshFallbackCmd() const;
-  unsigned long MinPacketSize();
-  unsigned long MaxPacketSize();
+  uint32_t MinPacketSize();
+  uint32_t MaxPacketSize();
   void ClearStdError();
   bool GetStoredCredentialsTried() const;
   void CollectUsage();

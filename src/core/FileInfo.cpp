@@ -91,7 +91,7 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
   return Len;
 }
 //---------------------------------------------------------------------------
-static uintptr_t GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long * AHandle)
+static uintptr_t GetFileVersionInfoSizeFix(const wchar_t * FileName, DWORD * AHandle)
 {
   uintptr_t Len;
   if (IsWin7())
@@ -112,7 +112,7 @@ static uintptr_t GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned lo
   return Len;
 }
 //---------------------------------------------------------------------------
-bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
+bool GetFileVersionInfoFix(const wchar_t * FileName, uint32_t Handle,
   uintptr_t DataSize, void * Data)
 {
   bool Result;
@@ -147,7 +147,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
 // Return pointer to file version info block
 void * CreateFileInfo(const UnicodeString & FileName)
 {
-  unsigned long Handle;
+  DWORD Handle;
   uintptr_t Size;
   void * Result = nullptr;
 

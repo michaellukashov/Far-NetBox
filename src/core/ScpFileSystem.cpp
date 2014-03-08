@@ -1851,8 +1851,8 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
             {
               // Send last file access and modification time
               // TVarRec don't understand 'uint32_t' -> we use sprintf()
-              Buf.sprintf(L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
-                static_cast<unsigned long>(ATime));
+              Buf.sprintf(L"T%lu 0 %lu 0", static_cast<uint32_t>(MTime),
+                static_cast<uint32_t>(ATime));
               FSecureShell->SendLine(Buf.c_str());
               SCPResponse();
             }
@@ -2391,7 +2391,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
             return;
 
           case L'T':
-            unsigned long MTime, ATime;
+            uint32_t MTime, ATime;
             if (swscanf(Line.c_str(), L"%ld %*d %ld %*d",  &MTime, &ATime) == 2)
             {
               const TSessionData * Data = FTerminal->GetSessionData();

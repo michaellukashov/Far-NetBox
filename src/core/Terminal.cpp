@@ -4188,8 +4188,8 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
       {
         // Get file size
         FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, FileName.c_str()),
-          unsigned long LSize;
-          unsigned long HSize;
+          uint32_t LSize;
+          DWORD HSize;
           LSize = GetFileSize(LocalFileHandle, &HSize);
           if ((LSize == 0xFFFFFFFF) && (::GetLastError() != NO_ERROR))
           {

@@ -351,7 +351,7 @@ public:
   TRights & operator |=(uint16_t rhr);
   TRights & operator |=(const TRights & rhr);
   operator uint16_t() const;
-  operator unsigned long() const;
+  operator uint32_t() const;
 
   bool GetIsUndef() const;
   UnicodeString GetModeStr() const;
@@ -363,7 +363,7 @@ public:
   uint16_t GetNumber() const;
   uint16_t GetNumberSet() const { return FSet; }
   uint16_t GetNumberUnset() const { return FUnset; }
-  unsigned long GetNumberDecadic() const;
+  uint32_t GetNumberDecadic() const;
   UnicodeString GetOctal() const;
   bool GetReadOnly() const;
   bool GetRight(TRight Right) const;
@@ -494,7 +494,7 @@ UnicodeString UserModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision);
 UnicodeString ModificationStr(TDateTime DateTime,
   TModificationFmt Precision);
-int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs = INVALID_FILE_ATTRIBUTES,
+int FakeFileImageIndex(const UnicodeString & FileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
   UnicodeString * TypeName = nullptr);
 //---------------------------------------------------------------------------
 #endif

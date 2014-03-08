@@ -462,7 +462,7 @@ UnicodeString ModificationStr(TDateTime DateTime,
   }
 }
 //---------------------------------------------------------------------------
-int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs,
+int FakeFileImageIndex(const UnicodeString & FileName, uint32_t Attrs,
   UnicodeString * TypeName)
 {
   /*Attrs |= FILE_ATTRIBUTE_NORMAL;
@@ -839,7 +839,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 void TRemoteFile::LoadTypeInfo() const
 {
   /* TODO : If file is link: Should be attributes taken from linked file? */
-  /* unsigned long Attrs = INVALID_FILE_ATTRIBUTES;
+  /* uint32_t Attrs = INVALID_FILE_ATTRIBUTES;
   if (GetIsDirectory())
   {
     Attrs |= FILE_ATTRIBUTE_DIRECTORY;
@@ -2352,10 +2352,10 @@ void TRights::SetOctal(const UnicodeString & Value)
   FUnknown = false;
 }
 //---------------------------------------------------------------------------
-unsigned long TRights::GetNumberDecadic() const
+uint32_t TRights::GetNumberDecadic() const
 {
-  unsigned long N = GetNumberSet(); // used to be "Number"
-  unsigned long Result =
+  uint32_t N = GetNumberSet(); // used to be "Number"
+  uint32_t Result =
       ((N & 07000) / 01000 * 1000) +
       ((N & 00700) /  0100 *  100) +
       ((N & 00070) /   010 *   10) +
@@ -2576,7 +2576,7 @@ TRights::operator uint16_t() const
   return GetNumber();
 }
 //---------------------------------------------------------------------------
-TRights::operator unsigned long() const
+TRights::operator uint32_t() const
 {
   return GetNumber();
 }

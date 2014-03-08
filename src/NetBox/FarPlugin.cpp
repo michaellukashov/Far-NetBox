@@ -1558,8 +1558,8 @@ UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId)
 //---------------------------------------------------------------------------
 bool TCustomFarPlugin::CheckForEsc()
 {
-  static unsigned long LastTicks;
-  unsigned long Ticks = GetTickCount();
+  static uint32_t LastTicks;
+  uint32_t Ticks = GetTickCount();
   if ((LastTicks == 0) || (Ticks - LastTicks > 500))
   {
     LastTicks = Ticks;

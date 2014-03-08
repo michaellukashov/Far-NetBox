@@ -932,7 +932,7 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TTerminalQueue::ItemSetCPSLimit(TQueueItem * Item, unsigned long CPSLimit)
+bool TTerminalQueue::ItemSetCPSLimit(TQueueItem * Item, uint32_t CPSLimit)
 {
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
@@ -1627,7 +1627,7 @@ void TQueueItem::SetProgress(
 
     if (FCPSLimit >= 0)
     {
-      ProgressData.CPSLimit = static_cast<unsigned long>(FCPSLimit);
+      ProgressData.CPSLimit = static_cast<uint32_t>(FCPSLimit);
       FCPSLimit = -1;
     }
   }
@@ -1665,7 +1665,7 @@ void TQueueItem::Execute(TTerminalItem * TerminalItem)
   DoExecute(TerminalItem->FTerminal);
 }
 //---------------------------------------------------------------------------
-void TQueueItem::SetCPSLimit(unsigned long CPSLimit)
+void TQueueItem::SetCPSLimit(uint32_t CPSLimit)
 {
   FCPSLimit = static_cast<long>(CPSLimit);
 }
@@ -1782,7 +1782,7 @@ bool TQueueItemProxy::ProcessUserAction()
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TQueueItemProxy::SetCPSLimit(unsigned long CPSLimit)
+bool TQueueItemProxy::SetCPSLimit(uint32_t CPSLimit)
 {
   return FQueue->ItemSetCPSLimit(FQueueItem, CPSLimit);
 }

@@ -3793,7 +3793,7 @@ void TSFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
     ASpaceAvailable.BytesAvailableToUser = 0;
     ASpaceAvailable.UnusedBytesAvailableToUser = BlockSize * AvailableBlocks;
     ASpaceAvailable.BytesPerAllocationUnit =
-      (BlockSize > UINT_MAX /*std::numeric_limits<unsigned long>::max()*/) ? 0 : static_cast<unsigned long>(BlockSize);
+      (BlockSize > UINT_MAX /*std::numeric_limits<uint32_t>::max()*/) ? 0 : static_cast<uint32_t>(BlockSize);
   }
 }
 //---------------------------------------------------------------------------

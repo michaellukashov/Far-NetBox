@@ -70,7 +70,7 @@ static void hmac_sha1_begin(hmac_ctx cx[1])
 }
 
 /* input the HMAC key (can be called multiple times)    */
-static void hmac_sha1_key(const uint8_t key[], unsigned long key_len, hmac_ctx cx[1])
+static void hmac_sha1_key(const uint8_t key[], uint32_t key_len, hmac_ctx cx[1])
 {
   if(cx->klen + key_len > IN_BLOCK_LENGTH)    /* if the key has to be hashed  */
   {
@@ -90,7 +90,7 @@ static void hmac_sha1_key(const uint8_t key[], unsigned long key_len, hmac_ctx c
 
 /* input the HMAC data (can be called multiple times) - */
 /* note that this call terminates the key input phase   */
-static void hmac_sha1_data(const uint8_t data[], unsigned long data_len, hmac_ctx cx[1])
+static void hmac_sha1_data(const uint8_t data[], uint32_t data_len, hmac_ctx cx[1])
 {
   if (cx->klen != HMAC_IN_DATA)                /* if not yet in data phase */
   {
@@ -105,7 +105,7 @@ static void hmac_sha1_data(const uint8_t data[], unsigned long data_len, hmac_ct
 
     /* xor ipad into key value  */
     for (uint32 i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
-      ((unsigned long*)cx->key)[i] ^= 0x36363636;
+      ((uint32_t*)cx->key)[i] ^= 0x36363636;
 
     /* and start hash operation */
     sha1_begin(cx->ctx);
@@ -121,7 +121,7 @@ static void hmac_sha1_data(const uint8_t data[], unsigned long data_len, hmac_ct
 }
 
 /* compute and output the MAC value */
-static void hmac_sha1_end(uint8_t mac[], unsigned long mac_len, hmac_ctx cx[1])
+static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
 {
   uint8_t dig[OUT_BLOCK_LENGTH];
   uint32_t i;
@@ -134,7 +134,7 @@ static void hmac_sha1_end(uint8_t mac[], unsigned long mac_len, hmac_ctx cx[1])
 
   /* set outer key value using opad and removing ipad */
   for(i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
-    ((unsigned long*)cx->key)[i] ^= 0x36363636 ^ 0x5c5c5c5c;
+    ((uint32_t*)cx->key)[i] ^= 0x36363636 ^ 0x5c5c5c5c;
 
   /* perform the outer hash operation */
   sha1_begin(cx->ctx);
@@ -275,9 +275,9 @@ static void derive_key(const uint8_t pwd[],  /* the PASSWORD     */
   }
 }
 
-static void encr_data(uint8_t data[], unsigned long d_len, fcrypt_ctx cx[1])
+static void encr_data(uint8_t data[], uint32_t d_len, fcrypt_ctx cx[1])
 {
-  unsigned long i = 0, pos = cx->encr_pos;
+  uint32_t i = 0, pos = cx->encr_pos;
 
   while(i < d_len)
   {

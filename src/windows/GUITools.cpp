@@ -189,7 +189,7 @@ bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Path,
   {
     if (ProcessMessages != nullptr)
     {
-      unsigned long WaitResult;
+      uint32_t WaitResult;
       do
       {
         WaitResult = WaitForSingleObject(ExecuteInfo.hProcess, 200);

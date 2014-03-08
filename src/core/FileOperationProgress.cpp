@@ -147,7 +147,7 @@ void TFileOperationProgressType::Resume()
 
   // shift timestamps for CPS calculation in advance
   // by the time the progress was suspended
-  unsigned long Stopped = (unsigned long)(GetTickCount() - FSuspendTime);
+  uint32_t Stopped = (uint32_t)(GetTickCount() - FSuspendTime);
   size_t I = 0;
   while (I < FTicks.size())
   {
@@ -362,7 +362,7 @@ void TFileOperationProgressType::AddTransfered(__int64 ASize,
   if (AddToTotals)
   {
     TotalTransfered += ASize;
-    unsigned long Ticks = static_cast<unsigned long>(GetTickCount());
+    uint32_t Ticks = static_cast<uint32_t>(GetTickCount());
     if (FTicks.empty() ||
         (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
         ((Ticks - FTicks.back()) >= MSecsPerSec))

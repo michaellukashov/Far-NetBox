@@ -922,7 +922,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         TGetUserNameEx GetUserNameEx =
           (Secur32 != nullptr) ? reinterpret_cast<TGetUserNameEx>(GetProcAddress(Secur32, "GetUserNameExW")) : nullptr;
         wchar_t UserName[UNLEN + 1];
-        unsigned long UserNameSize = LENOF(UserName);
+        ULONG UserNameSize = LENOF(UserName);
         if ((GetUserNameEx == nullptr) || !GetUserNameEx(NameSamCompatible, (LPWSTR)UserName, &UserNameSize))
         {
           wcscpy(UserName, L"<Failed to retrieve username>");

@@ -326,8 +326,8 @@ private:
   intptr_t FItem;
   bool FEnabled;
   bool FIsEnabled;
-  unsigned long FColors;
-  unsigned long FColorMask;
+  uint32_t FColors;
+  uint32_t FColorMask;
 };
 //---------------------------------------------------------------------------
 class TFarBox : public TFarDialogItem
