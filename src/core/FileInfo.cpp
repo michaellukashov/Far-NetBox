@@ -194,7 +194,7 @@ PVSFixedFileInfo GetFixedFileInfo(void * FileInfo)
 }
 //---------------------------------------------------------------------------
 // Return number of available file version info translations
-unsigned GetTranslationCount(void * FileInfo)
+uint32_t GetTranslationCount(void * FileInfo)
 {
   PTranslations P;
   UINT Len;

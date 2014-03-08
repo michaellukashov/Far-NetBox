@@ -1837,7 +1837,7 @@ bool TRegistry::DeleteValue(const UnicodeString & Name) const
 bool TRegistry::KeyExists(const UnicodeString & Key)
 {
   bool Result = false;
-  unsigned OldAccess = FAccess;
+  uint32_t OldAccess = FAccess;
   SCOPE_EXIT
   {
     FAccess = OldAccess;

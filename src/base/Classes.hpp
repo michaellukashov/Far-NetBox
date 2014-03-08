@@ -650,7 +650,7 @@ private:
   // bool FLazyWrite;
   UnicodeString FCurrentPath;
   bool FCloseRootKey;
-  unsigned FAccess;
+  uint32_t FAccess;
 };
 
 //---------------------------------------------------------------------------
