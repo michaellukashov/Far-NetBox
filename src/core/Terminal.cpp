@@ -1264,7 +1264,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   {
     if (PasswordPrompt && !GetConfiguration()->GetRememberPassword())
     {
-      Prompts->SetObject(0, (TObject*)(int(Prompts->GetObject(0)) | pupRemember));
+      Prompts->SetObject(0, reinterpret_cast<TObject*>(intptr_t(Prompts->GetObject(0)) | pupRemember));
     }
 
     if (GetOnPromptUser() != nullptr)
