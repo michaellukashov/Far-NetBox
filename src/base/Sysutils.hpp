@@ -389,18 +389,18 @@ uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobal
 class ScopeExit
 {
 public:
-    ScopeExit(const std::function<void()>& f) : m_f(f) {}
-    ~ScopeExit() { m_f(); }
+  ScopeExit(const std::function<void()>& f) : m_f(f) {}
+  ~ScopeExit() { m_f(); }
 
 private:
-    std::function<void()> m_f;
+  std::function<void()> m_f;
 };
 
 #define _SCOPE_EXIT_NAME(name, suffix) name ## suffix
 #define SCOPE_EXIT_NAME(name, suffix) _SCOPE_EXIT_NAME(name, suffix)
 #define SCOPE_EXIT \
-    std::function<void()> SCOPE_EXIT_NAME(scope_exit_func_, __LINE__); \
-    ScopeExit SCOPE_EXIT_NAME(scope_exit_, __LINE__) = SCOPE_EXIT_NAME(scope_exit_func_, __LINE__) = [&]() /* lambda body here */
+  std::function<void()> SCOPE_EXIT_NAME(scope_exit_func_, __LINE__); \
+  ScopeExit SCOPE_EXIT_NAME(scope_exit_, __LINE__) = SCOPE_EXIT_NAME(scope_exit_func_, __LINE__) = [&]() /* lambda body here */
 //---------------------------------------------------------------------------
 } // namespace Sysutils
 
