@@ -3095,6 +3095,13 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
       switch (OverwriteMode)
       {
         case omOverwrite:
+          if (!FTerminal->CreateFile(DestFullName, OperationProgress,
+            false, true,
+            &LocalFileHandle))
+          {
+            RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
+            break;
+          }
           if (FileName != FileName1)
           {
             wcsncpy(FileName1, FileName.c_str(), FileName1Len);
