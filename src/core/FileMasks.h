@@ -22,7 +22,7 @@ public:
   struct TParams : public TObject
   {
     TParams();
-    __int64 Size;
+    int64_t Size;
     TDateTime Modification;
 
     UnicodeString ToString() const;
@@ -95,9 +95,9 @@ private:
     enum TMaskBoundary { None, Open, Close };
 
     TMaskBoundary HighSizeMask;
-    __int64 HighSize;
+    int64_t HighSize;
     TMaskBoundary LowSizeMask;
-    __int64 LowSize;
+    int64_t LowSize;
 
     TMaskBoundary HighModificationMask;
     TDateTime HighModification;

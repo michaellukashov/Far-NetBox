@@ -357,7 +357,7 @@ public:
 
 private:
   TTerminal * FTerminal;
-  unsigned int FTerminalThread;
+  uint32_t FTerminalThread;
 };
 //------------------------------------------------------------------------------
 TTunnelUI::TTunnelUI(TTerminal * Terminal)
@@ -538,6 +538,14 @@ TTerminal::TTerminal() :
   TObject(),
   TSessionUI()
 {
+  FReadCurrentDirectoryPending = false;
+  FReadDirectoryPending = false;
+  FTunnelOpening = false;
+  FSessionData = nullptr;
+  FLog = nullptr;
+  FActionLog = nullptr;
+  FConfiguration = nullptr;
+  FFiles = nullptr;
   FInTransaction = 0;
   FSuspendTransaction = false;
   FUsersGroupsLookedup = false;
@@ -1212,11 +1220,6 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   // anymore in TSecondaryTerminal.
   return DoPromptUser(Data, Kind, Name, Instructions, Prompts, Results);
 }
-//---------------------------------------------------------------------------
-TTerminal * TTerminal::GetPasswordSource()
-{
-  return this;
-}
 //------------------------------------------------------------------------------
 bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
@@ -1238,16 +1241,16 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
       // let's expect that the main session is already authenticated and its password
       // is not written after, so no locking is necessary
       // (no longer true, once the main session can be reconnected)
-      UnicodeString APassword;
+      UnicodeString Password;
       if (FTunnelOpening)
       {
-        APassword = GetPasswordSource()->GetTunnelPassword();
+        Password = GetPasswordSource()->GetTunnelPassword();
       }
       else
       {
-        APassword = GetPasswordSource()->GetPassword();
+        Password = GetPasswordSource()->GetPassword();
       }
-      Results->SetString(0, APassword);
+      Results->SetString(0, Password);
       if (!Results->GetString(0).IsEmpty())
       {
         LogEvent(L"Using remembered password.");
@@ -1261,7 +1264,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   {
     if (PasswordPrompt && !GetConfiguration()->GetRememberPassword())
     {
-      Prompts->SetObject(0, (TObject*)(int(Prompts->GetObject(0)) | pupRemember));
+      Prompts->SetObject(0, reinterpret_cast<TObject*>(intptr_t(Prompts->GetObject(0)) | pupRemember));
     }
 
     if (GetOnPromptUser() != nullptr)
@@ -2630,7 +2633,7 @@ void TTerminal::LogRemoteFile(TRemoteFile * AFile)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TTerminal::FormatFileDetailsForLog(const UnicodeString & FileName, TDateTime Modification, __int64 Size)
+UnicodeString TTerminal::FormatFileDetailsForLog(const UnicodeString & FileName, TDateTime Modification, int64_t Size)
 {
   UnicodeString Result;
     // optimization
@@ -2641,7 +2644,7 @@ UnicodeString TTerminal::FormatFileDetailsForLog(const UnicodeString & FileName,
   return Result;
 }
 //---------------------------------------------------------------------------
-void TTerminal::LogFileDetails(const UnicodeString & FileName, TDateTime Modification, __int64 Size)
+void TTerminal::LogFileDetails(const UnicodeString & FileName, TDateTime Modification, int64_t Size)
 {
   // optimization
   if (GetLog()->GetLogging())
@@ -3097,7 +3100,7 @@ void TTerminal::RecycleFile(const UnicodeString & FileName,
 #if defined(__BORLANDC__)
     Params.FileMask = FORMAT(L"*-%s.*", (FormatDateTime(L"yyyymmdd-hhnnss", Now())));
 #else
-    unsigned short Y, M, D, H, N, S, MS;
+    uint16_t Y, M, D, H, N, S, MS;
     TDateTime DateTime = Now();
     DateTime.DecodeDate(Y, M, D);
     DateTime.DecodeTime(H, N, S, MS);
@@ -3349,7 +3352,7 @@ void TTerminal::ChangeFileProperties(const UnicodeString & FileName,
     }
     if (RProperties->Valid.Contains(vpModification))
     {
-      unsigned short Y, M, D, H, N, S, MS;
+      uint16_t Y, M, D, H, N, S, MS;
       TDateTime DateTime = ::UnixToDateTime(RProperties->Modification, GetSessionData()->GetDSTMode());
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
@@ -3361,7 +3364,7 @@ void TTerminal::ChangeFileProperties(const UnicodeString & FileName,
     }
     if (RProperties->Valid.Contains(vpLastAccess))
     {
-      unsigned short Y, M, D, H, N, S, MS;
+      uint16_t Y, M, D, H, N, S, MS;
       TDateTime DateTime = ::UnixToDateTime(RProperties->LastAccess, GetSessionData()->GetDSTMode());
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
@@ -3517,7 +3520,7 @@ void TTerminal::DoCalculateDirectorySize(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 bool TTerminal::CalculateFilesSize(TStrings * FileList,
-  __int64 & Size, intptr_t Params, const TCopyParamType * CopyParam,
+  int64_t & Size, intptr_t Params, const TCopyParamType * CopyParam,
   bool AllowDirs, TCalculateSizeStats * Stats)
 {
   TCalculateSizeParams Param;
@@ -4037,6 +4040,8 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
   bool NoConfirmation)
 {
+  assert(OperationProgress);
+  assert(AHandle);
   bool Result = true;
   bool Done;
   DWORD CreateAttrs = FILE_ATTRIBUTE_NORMAL;
@@ -4118,6 +4123,7 @@ bool TTerminal::CreateLocalFile(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
   bool NoConfirmation)
 {
+  assert(OperationProgress);
   assert(AHandle);
   bool Result = true;
   FILE_OPERATION_LOOP (FMTLOAD(CREATE_FILE_ERROR, FileName.c_str()),
@@ -4128,8 +4134,8 @@ bool TTerminal::CreateLocalFile(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 void TTerminal::OpenLocalFile(const UnicodeString & FileName,
-  uintptr_t Access, uintptr_t * AAttrs, HANDLE * AHandle, __int64 * ACTime,
-  __int64 * AMTime, __int64 * AATime, __int64 * ASize,
+  uintptr_t Access, uintptr_t * AAttrs, HANDLE * AHandle, int64_t * ACTime,
+  int64_t * AMTime, int64_t * AATime, int64_t * ASize,
   bool TryWriteReadOnly)
 {
   DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
@@ -4193,14 +4199,14 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
       {
         // Get file size
         FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, FileName.c_str()),
-          unsigned long LSize;
-          unsigned long HSize;
+          uint32_t LSize;
+          DWORD HSize;
           LSize = GetFileSize(LocalFileHandle, &HSize);
           if ((LSize == 0xFFFFFFFF) && (::GetLastError() != NO_ERROR))
           {
             RaiseLastOSError();
           }
-          *ASize = ((__int64)(HSize) << 32) + LSize;
+          *ASize = ((int64_t)(HSize) << 32) + LSize;
         );
       }
 
@@ -4247,12 +4253,12 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & FileName,
     ::FindClose(Handle);
     bool Directory = FLAGSET(FindData.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
     TFileMasks::TParams Params;
-    // SearchRec.Size in C++B2010 is __int64,
+    // SearchRec.Size in C++B2010 is int64_t,
     // so we should be able to use it instead of FindData.nFileSize*
     Params.Size =
-      (static_cast<__int64>(FindData.nFileSizeHigh) << 32) +
+      (static_cast<int64_t>(FindData.nFileSizeHigh) << 32) +
       FindData.nFileSizeLow;
-    Params.Modification = FileTimeToDateTime(FindData.ftLastWriteTime);
+    Params.Modification = ::FileTimeToDateTime(FindData.ftLastWriteTime);
     Result = CopyParam->AllowTransfer(FileName, osLocal, Directory, Params);
     if (Result)
     {
@@ -4293,23 +4299,23 @@ void TTerminal::MakeLocalFileList(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 void TTerminal::CalculateLocalFileSize(const UnicodeString & FileName,
-  const TSearchRec & Rec, /*__int64*/ void * Params)
+  const TSearchRec & Rec, /*int64_t*/ void * Params)
 {
   TCalculateSizeParams * AParams = NB_STATIC_DOWNCAST(TCalculateSizeParams, Params);
 
   bool Dir = FLAGSET(Rec.Attr, faDirectory);
 
   bool AllowTransfer = (AParams->CopyParam == nullptr);
-  // SearchRec.Size in C++B2010 is __int64,
+  // SearchRec.Size in C++B2010 is int64_t,
   // so we should be able to use it instead of FindData.nFileSize*
-  __int64 Size =
-    (static_cast<__int64>(Rec.FindData.nFileSizeHigh) << 32) +
+  int64_t Size =
+    (static_cast<int64_t>(Rec.FindData.nFileSizeHigh) << 32) +
     Rec.FindData.nFileSizeLow;
   if (!AllowTransfer)
   {
     TFileMasks::TParams MaskParams;
     MaskParams.Size = Size;
-    MaskParams.Modification = FileTimeToDateTime(Rec.FindData.ftLastWriteTime);
+    MaskParams.Modification = ::FileTimeToDateTime(Rec.FindData.ftLastWriteTime);
 
     AllowTransfer = AParams->CopyParam->AllowTransfer(FileName, osLocal, Dir, MaskParams);
   }
@@ -4337,7 +4343,7 @@ void TTerminal::CalculateLocalFileSize(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 bool TTerminal::CalculateLocalFilesSize(TStrings * FileList,
-  __int64 & Size, const TCopyParamType * CopyParam, bool AllowDirs)
+  int64_t & Size, const TCopyParamType * CopyParam, bool AllowDirs)
 {
   bool Result = true;
   TFileOperationProgressType OperationProgress(MAKE_CALLBACK(TTerminal::DoProgress, this), MAKE_CALLBACK(TTerminal::DoFinished, this));
@@ -4554,12 +4560,12 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
           FileName = SearchRec.Name;
           // add dirs for recursive mode or when we are interested in newly
           // added subdirs
-          // SearchRec.Size in C++B2010 is __int64,
+          // SearchRec.Size in C++B2010 is int64_t,
           // so we should be able to use it instead of FindData.nFileSize*
-          __int64 Size =
-            (static_cast<__int64>(SearchRec.FindData.nFileSizeHigh) << 32) +
+          int64_t Size =
+            (static_cast<int64_t>(SearchRec.FindData.nFileSizeHigh) << 32) +
             SearchRec.FindData.nFileSizeLow;
-          TDateTime Modification = FileTimeToDateTime(SearchRec.FindData.ftLastWriteTime);
+          TDateTime Modification = ::FileTimeToDateTime(SearchRec.FindData.ftLastWriteTime);
           TFileMasks::TParams MaskParams;
           MaskParams.Size = Size;
           MaskParams.Modification = Modification;
@@ -5272,7 +5278,7 @@ bool TTerminal::CopyToRemote(TStrings * AFilesToCopy,
   TFileOperationProgressType OperationProgress(MAKE_CALLBACK(TTerminal::DoProgress, this), MAKE_CALLBACK(TTerminal::DoFinished, this));
   try
   {
-    __int64 Size = 0;
+    int64_t Size = 0;
     // dirty trick: when moving, do not pass copy param to avoid exclude mask
     bool CalculatedSize =
       CalculateLocalFilesSize(
@@ -5375,7 +5381,7 @@ bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
       // by calling EndTransaction
       EndTransaction();
     };
-    __int64 TotalSize = 0;
+    int64_t TotalSize = 0;
     bool TotalSizeKnown = false;
     TFileOperationProgressType OperationProgress(MAKE_CALLBACK(TTerminal::DoProgress, this), MAKE_CALLBACK(TTerminal::DoFinished, this));
 
@@ -5457,7 +5463,7 @@ bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
 void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
   const TDateTime & Modification)
 {
-  FILETIME WrTime = DateTimeToFileTime(Modification,
+  FILETIME WrTime = ::DateTimeToFileTime(Modification,
     GetSessionData()->GetDSTMode());
   SetLocalFileTime(LocalFileName, nullptr, &WrTime);
 }
@@ -5657,11 +5663,6 @@ void TSecondaryTerminal::DirectoryModified(const UnicodeString & Path,
 {
   // clear cache of main terminal
   FMainTerminal->DirectoryModified(Path, SubDirs);
-}
-//---------------------------------------------------------------------------
-TTerminal * TSecondaryTerminal::GetPasswordSource()
-{
-  return FMainTerminal;
 }
 //------------------------------------------------------------------------------
 TTerminalList::TTerminalList(TConfiguration * AConfiguration) :

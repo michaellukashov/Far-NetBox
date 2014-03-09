@@ -16,7 +16,7 @@ public:
   void Init();
 
   virtual void Start();
-  void WaitFor(unsigned int Milliseconds = INFINITE);
+  void WaitFor(uint32_t Milliseconds = INFINITE);
   virtual void Terminate() {}
   void Close();
   bool IsFinished();
@@ -51,7 +51,7 @@ protected:
   virtual ~TSignalThread();
 
   virtual bool WaitForEvent();
-  int WaitForEvent(unsigned int Timeout);
+  int WaitForEvent(uint32_t Timeout);
   virtual void Execute();
   virtual void ProcessEvent() = 0;
 };
@@ -143,7 +143,7 @@ public:
   bool ItemExecuteNow(TQueueItem * Item);
   bool ItemDelete(TQueueItem * Item);
   bool ItemPause(TQueueItem * Item, bool Pause);
-  bool ItemSetCPSLimit(TQueueItem * Item, unsigned long CPSLimit);
+  bool ItemSetCPSLimit(TQueueItem * Item, uint32_t CPSLimit);
 
   void RetryItem(TQueueItem * Item);
   void DeleteItem(TQueueItem * Item, bool CanKeep);
@@ -211,7 +211,7 @@ public:
   void SetStatus(TStatus Status);
   void SetProgress(TFileOperationProgressType & ProgressData);
   void GetData(TQueueItemProxy * Proxy);
-  void SetCPSLimit(unsigned long CPSLimit);
+  void SetCPSLimit(uint32_t CPSLimit);
 
 private:
   void Execute(TTerminalItem * TerminalItem);
@@ -236,7 +236,7 @@ public:
   bool Delete();
   bool Pause();
   bool Resume();
-  bool SetCPSLimit(unsigned long CPSLimit);
+  bool SetCPSLimit(uint32_t CPSLimit);
 
   TQueueItem::TInfo * GetInfo() const { return FInfo; }
   TQueueItem::TStatus GetStatus() const { return FStatus; }
@@ -249,7 +249,7 @@ public:
   void SetMasks(const UnicodeString & Value);
   intptr_t GetIndex();
   TFileOperationProgressType * GetProgressData();
-  __int64 GetTotalTransferred();
+  int64_t GetTotalTransferred();
 
 private:
   TFileOperationProgressType * FProgressData;

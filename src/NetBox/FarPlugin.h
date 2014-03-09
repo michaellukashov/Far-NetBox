@@ -372,7 +372,7 @@ protected:
   virtual ~TCustomFarPanelItem()
   {}
   virtual void GetData(
-    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, __int64 & Size,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, int64_t & Size,
     uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     uintptr_t & NumberOfLinks, UnicodeString & Description,
@@ -404,7 +404,7 @@ protected:
   bool FOwnsItem;
 
   virtual void GetData(
-    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, __int64 & Size,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, int64_t & Size,
     uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     uintptr_t & NumberOfLinks, UnicodeString & Description,
@@ -420,7 +420,7 @@ public:
 
 protected:
   virtual void GetData(
-    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, __int64 & Size,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, int64_t & Size,
     uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     uintptr_t & NumberOfLinks, UnicodeString & Description,

@@ -364,7 +364,7 @@ void TSimpleThread::Close()
   }
 }
 //---------------------------------------------------------------------------
-void TSimpleThread::WaitFor(unsigned int Milliseconds)
+void TSimpleThread::WaitFor(uint32_t Milliseconds)
 {
   WaitForSingleObject(FThread, Milliseconds);
 }
@@ -419,9 +419,9 @@ bool TSignalThread::WaitForEvent()
   return WaitForEvent(INFINITE) > 0;
 }
 //---------------------------------------------------------------------------
-int TSignalThread::WaitForEvent(unsigned int Timeout)
+int TSignalThread::WaitForEvent(uint32_t Timeout)
 {
-  unsigned int Result = WaitForSingleObject(FEvent, Timeout);
+  uint32_t Result = WaitForSingleObject(FEvent, Timeout);
   int Return;
   if ((Result == WAIT_TIMEOUT) && !FTerminated)
   {
@@ -687,7 +687,7 @@ void TTerminalQueue::UpdateStatusForList(
   {
     TQueueItem * Item = GetItem(List, Index);
     TQueueItemProxy * ItemProxy;
-    if (Current != nullptr)
+    if (Current)
     {
       ItemProxy = Current->FindByQueueItem(Item);
     }
@@ -696,7 +696,7 @@ void TTerminalQueue::UpdateStatusForList(
       ItemProxy = nullptr;
     }
 
-    if (ItemProxy != nullptr)
+    if (Current && ItemProxy)
     {
       Current->Delete(ItemProxy);
       Status->Add(ItemProxy);
@@ -932,7 +932,7 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TTerminalQueue::ItemSetCPSLimit(TQueueItem * Item, unsigned long CPSLimit)
+bool TTerminalQueue::ItemSetCPSLimit(TQueueItem * Item, uint32_t CPSLimit)
 {
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
@@ -1627,7 +1627,7 @@ void TQueueItem::SetProgress(
 
     if (FCPSLimit >= 0)
     {
-      ProgressData.CPSLimit = static_cast<unsigned long>(FCPSLimit);
+      ProgressData.CPSLimit = static_cast<uint32_t>(FCPSLimit);
       FCPSLimit = -1;
     }
   }
@@ -1665,7 +1665,7 @@ void TQueueItem::Execute(TTerminalItem * TerminalItem)
   DoExecute(TerminalItem->FTerminal);
 }
 //---------------------------------------------------------------------------
-void TQueueItem::SetCPSLimit(unsigned long CPSLimit)
+void TQueueItem::SetCPSLimit(uint32_t CPSLimit)
 {
   FCPSLimit = static_cast<long>(CPSLimit);
 }
@@ -1695,7 +1695,7 @@ TFileOperationProgressType * TQueueItemProxy::GetProgressData()
   return (FProgressData->Operation == foNone) ? nullptr : FProgressData;
 }
 //---------------------------------------------------------------------------
-__int64 TQueueItemProxy::GetTotalTransferred()
+int64_t TQueueItemProxy::GetTotalTransferred()
 {
   // want to show total transferred also for "completed" items,
   // for which GetProgressData() is nullptr
@@ -1782,7 +1782,7 @@ bool TQueueItemProxy::ProcessUserAction()
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TQueueItemProxy::SetCPSLimit(unsigned long CPSLimit)
+bool TQueueItemProxy::SetCPSLimit(uint32_t CPSLimit)
 {
   return FQueue->ItemSetCPSLimit(FQueueItem, CPSLimit);
 }

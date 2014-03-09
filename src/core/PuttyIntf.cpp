@@ -457,7 +457,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
     char * DataStr = reinterpret_cast<char *>(Data);
     strncpy(DataStr, Value.c_str(), static_cast<size_t>(*DataSize));
     DataStr[*DataSize - 1] = '\0';
-    *DataSize = static_cast<unsigned long>(strlen(DataStr));
+    *DataSize = static_cast<uint32_t>(strlen(DataStr));
   }
 
   return R;
@@ -508,7 +508,7 @@ UnicodeString KeyTypeName(TKeyType KeyType)
   return key_type_to_str(KeyType);
 }
 //---------------------------------------------------------------------------
-__int64 ParseSize(const UnicodeString & SizeStr)
+int64_t ParseSize(const UnicodeString & SizeStr)
 {
   AnsiString AnsiSizeStr = SizeStr;
   return parse_blocksize(AnsiSizeStr.c_str());

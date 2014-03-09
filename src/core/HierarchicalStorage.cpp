@@ -564,9 +564,9 @@ intptr_t TRegistryStorage::ReadInteger(const UnicodeString & Name, intptr_t Defa
   READ_REGISTRY(ReadInteger);
 }
 //------------------------------------------------------------------------------
-__int64 TRegistryStorage::ReadInt64(const UnicodeString & Name, __int64 Default)
+int64_t TRegistryStorage::ReadInt64(const UnicodeString & Name, int64_t Default)
 {
-  __int64 Result = Default;
+  int64_t Result = Default;
   if (FRegistry->ValueExists(Name))
   {
     try
@@ -634,7 +634,7 @@ void TRegistryStorage::WriteInteger(const UnicodeString & Name, intptr_t Value)
   WRITE_REGISTRY(WriteInteger);
 }
 //------------------------------------------------------------------------------
-void TRegistryStorage::WriteInt64(const UnicodeString & Name, __int64 Value)
+void TRegistryStorage::WriteInt64(const UnicodeString & Name, int64_t Value)
 {
   try
   {
@@ -797,10 +797,10 @@ intptr_t TCustomIniFileStorage::ReadInteger(const UnicodeString & Name, intptr_t
   return Result;
 }
 //------------------------------------------------------------------------------
-__int64 TCustomIniFileStorage::ReadInt64(const UnicodeString & Name, __int64 Default)
+int64_t TCustomIniFileStorage::ReadInt64(const UnicodeString & Name, int64_t Default)
 {
 
-  __int64 Result = Default;
+  int64_t Result = Default;
   UnicodeString Str;
   Str = ReadStringRaw(Name, L"");
   if (!Str.IsEmpty())
@@ -904,7 +904,7 @@ void TCustomIniFileStorage::WriteInteger(const UnicodeString & Name, int Value)
   FIniFile->WriteInteger(GetCurrentSection(), MungeIniName(Name), Value);
 }
 //------------------------------------------------------------------------------
-void TCustomIniFileStorage::WriteInt64(const UnicodeString & Name, __int64 Value)
+void TCustomIniFileStorage::WriteInt64(const UnicodeString & Name, int64_t Value)
 {
   WriteStringRaw(Name, IntToStr(Value));
 }

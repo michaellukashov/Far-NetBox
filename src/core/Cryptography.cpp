@@ -60,7 +60,7 @@
 typedef struct
 {   uint8_t         key[IN_BLOCK_LENGTH];
     sha1_ctx        ctx[1];
-    unsigned int    klen;
+    uint32_t        klen;
 } hmac_ctx;
 
 /* initialise the HMAC context to zero */
@@ -70,7 +70,7 @@ static void hmac_sha1_begin(hmac_ctx cx[1])
 }
 
 /* input the HMAC key (can be called multiple times)    */
-static void hmac_sha1_key(const uint8_t key[], unsigned long key_len, hmac_ctx cx[1])
+static void hmac_sha1_key(const uint8_t key[], uint32_t key_len, hmac_ctx cx[1])
 {
   if(cx->klen + key_len > IN_BLOCK_LENGTH)    /* if the key has to be hashed  */
   {
@@ -90,7 +90,7 @@ static void hmac_sha1_key(const uint8_t key[], unsigned long key_len, hmac_ctx c
 
 /* input the HMAC data (can be called multiple times) - */
 /* note that this call terminates the key input phase   */
-static void hmac_sha1_data(const uint8_t data[], unsigned long data_len, hmac_ctx cx[1])
+static void hmac_sha1_data(const uint8_t data[], uint32_t data_len, hmac_ctx cx[1])
 {
   if (cx->klen != HMAC_IN_DATA)                /* if not yet in data phase */
   {
@@ -104,8 +104,8 @@ static void hmac_sha1_data(const uint8_t data[], unsigned long data_len, hmac_ct
     memset(cx->key + cx->klen, 0, IN_BLOCK_LENGTH - cx->klen);
 
     /* xor ipad into key value  */
-    for (unsigned int i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
-      ((unsigned long*)cx->key)[i] ^= 0x36363636;
+    for (uint32 i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
+      ((uint32_t*)cx->key)[i] ^= 0x36363636;
 
     /* and start hash operation */
     sha1_begin(cx->ctx);
@@ -121,10 +121,10 @@ static void hmac_sha1_data(const uint8_t data[], unsigned long data_len, hmac_ct
 }
 
 /* compute and output the MAC value */
-static void hmac_sha1_end(uint8_t mac[], unsigned long mac_len, hmac_ctx cx[1])
+static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
 {
   uint8_t dig[OUT_BLOCK_LENGTH];
-  unsigned int i;
+  uint32_t i;
 
   /* if no data has been entered perform a null data phase        */
   if(cx->klen != HMAC_IN_DATA)
@@ -134,7 +134,7 @@ static void hmac_sha1_end(uint8_t mac[], unsigned long mac_len, hmac_ctx cx[1])
 
   /* set outer key value using opad and removing ipad */
   for(i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
-    ((unsigned long*)cx->key)[i] ^= 0x36363636 ^ 0x5c5c5c5c;
+    ((uint32_t*)cx->key)[i] ^= 0x36363636 ^ 0x5c5c5c5c;
 
   /* perform the outer hash operation */
   sha1_begin(cx->ctx);
@@ -149,7 +149,7 @@ static void hmac_sha1_end(uint8_t mac[], unsigned long mac_len, hmac_ctx cx[1])
 
 #define BLOCK_SIZE  16
 
-void aes_set_encrypt_key(const uint8_t in_key[], unsigned int klen, void * cx)
+static void aes_set_encrypt_key(const uint8_t in_key[], uint32_t klen, void * cx)
 {
   call_aes_setup(cx, BLOCK_SIZE, const_cast<uint8_t *>(in_key), klen);
 }
@@ -168,7 +168,7 @@ void aes_encrypt_block(const uint8_t in_blk[], uint8_t out_blk[], void * cx)
     out_blk[Index * 4 + 1] = out_blk[Index * 4 + 2];
     out_blk[Index * 4 + 2] = t;
   }
-  call_aes_encrypt(cx, reinterpret_cast<unsigned int *>(out_blk));
+  call_aes_encrypt(cx, reinterpret_cast<uint32_t *>(out_blk));
   for (Index = 0; Index < 4; ++Index)
   {
     uint8_t t;
@@ -186,9 +186,9 @@ typedef struct
     uint8_t         encr_bfr[BLOCK_SIZE];       /* encrypt buffer         */
     void *          encr_ctx;                   /* encryption context     */
     hmac_ctx        auth_ctx;                   /* authentication context */
-    unsigned int    encr_pos;                   /* block position (enc)   */
-    unsigned int    pwd_len;                    /* password length        */
-    unsigned int    mode;                       /* File encryption mode   */
+    uint32_t        encr_pos;                   /* block position (enc)   */
+    uint32_t        pwd_len;                    /* password length        */
+    uint32_t        mode;                       /* File encryption mode   */
 } fcrypt_ctx;
 
 #define MAX_KEY_LENGTH        32
@@ -215,14 +215,14 @@ typedef struct
 /* buffers and using 32 bit operations          */
 
 static void derive_key(const uint8_t pwd[],  /* the PASSWORD     */
-               unsigned int pwd_len,        /* and its length   */
+               uint32_t pwd_len,        /* and its length   */
                const uint8_t salt[],  /* the SALT and its */
-               unsigned int salt_len,       /* length           */
-               unsigned int iter,   /* the number of iterations */
+               uint32_t salt_len,       /* length           */
+               uint32_t iter,   /* the number of iterations */
                uint8_t key[], /* space for the output key */
-               unsigned int key_len)/* and its required length  */
+               uint32_t key_len)/* and its required length  */
 {
-  unsigned int    i, j, k, n_blk;
+  uint32_t i, j, k, n_blk;
   uint8_t uu[OUT_BLOCK_LENGTH], ux[OUT_BLOCK_LENGTH];
   hmac_ctx c1[1] = {0}, c2[1] = {0}, c3[1] = {0};
 
@@ -275,14 +275,14 @@ static void derive_key(const uint8_t pwd[],  /* the PASSWORD     */
   }
 }
 
-static void encr_data(uint8_t data[], unsigned long d_len, fcrypt_ctx cx[1])
+static void encr_data(uint8_t data[], uint32_t d_len, fcrypt_ctx cx[1])
 {
-  unsigned long i = 0, pos = cx->encr_pos;
+  uint32_t i = 0, pos = cx->encr_pos;
 
   while(i < d_len)
   {
     if(pos == BLOCK_SIZE)
-    {   unsigned int j = 0;
+    {   uint32_t j = 0;
       /* increment encryption nonce   */
       while(j < 8 && !++cx->nonce[j])
         ++j;
@@ -300,7 +300,7 @@ static void encr_data(uint8_t data[], unsigned long d_len, fcrypt_ctx cx[1])
 static void fcrypt_init(
     int mode,                               /* the mode to be used (input)          */
     const uint8_t pwd[],              /* the user specified password (input)  */
-    unsigned int pwd_len,                   /* the length of the password (input)   */
+    uint32_t pwd_len,                   /* the length of the password (input)   */
     const uint8_t salt[],             /* the salt (input)                     */
     uint8_t pwd_ver[PWD_VER_LENGTH],  /* 2 byte password verifier (output)    */
     fcrypt_ctx      cx[1])                  /* the file encryption context (output) */
@@ -336,7 +336,7 @@ static void fcrypt_init(
 
 /* perform 'in place' encryption and authentication */
 
-static void fcrypt_encrypt(uint8_t data[], unsigned int data_len, fcrypt_ctx cx[1])
+static void fcrypt_encrypt(uint8_t data[], uint32_t data_len, fcrypt_ctx cx[1])
 {
   encr_data(data, data_len, cx);
   hmac_sha1_data(data, data_len, &cx->auth_ctx);
@@ -344,7 +344,7 @@ static void fcrypt_encrypt(uint8_t data[], unsigned int data_len, fcrypt_ctx cx[
 
 /* perform 'in place' authentication and decryption */
 
-static void fcrypt_decrypt(uint8_t data[], unsigned int data_len, fcrypt_ctx cx[1])
+static void fcrypt_decrypt(uint8_t data[], uint32_t data_len, fcrypt_ctx cx[1])
 {
   hmac_sha1_data(data, data_len, &cx->auth_ctx);
   encr_data(data, data_len, cx);
@@ -390,10 +390,10 @@ void AES256EncyptWithMAC(const RawByteString & Input, const UnicodeString & Pass
   assert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   UTF8String UtfPassword = Password;
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
-    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<unsigned int>(UtfPassword.Length()),
+    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
     reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
   Output = Input;
-  fcrypt_encrypt(reinterpret_cast<uint8_t *>(const_cast<char *>(Output.c_str())), static_cast<unsigned int>(Output.Length()), &aes);
+  fcrypt_encrypt(reinterpret_cast<uint8_t *>(const_cast<char *>(Output.c_str())), static_cast<uint32_t>(Output.Length()), &aes);
   Mac.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
   fcrypt_end(reinterpret_cast<uint8_t *>(const_cast<char *>(Mac.c_str())), &aes);
 }
@@ -415,10 +415,10 @@ bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   assert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   UTF8String UtfPassword = Password;
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
-    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<unsigned int>(UtfPassword.Length()),
+    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
     reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
   Output = Input;
-  fcrypt_decrypt(reinterpret_cast<uint8_t *>(const_cast<char *>(Output.c_str())), static_cast<unsigned int>(Output.Length()), &aes);
+  fcrypt_decrypt(reinterpret_cast<uint8_t *>(const_cast<char *>(Output.c_str())), static_cast<uint32_t>(Output.Length()), &aes);
   RawByteString Mac2;
   Mac2.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
   assert(Mac.Length() == Mac2.Length());
@@ -582,7 +582,7 @@ void CryptographyInitialize()
   {
     UnscrambleTable[SScrambleTable[Index]] = (uint8_t)Index;
   }
-  srand((unsigned int)time(nullptr) ^ (unsigned int)getpid());
+  srand((uint32_t)time(nullptr) ^ (uint32_t)getpid());
 }
 //---------------------------------------------------------------------------
 void CryptographyFinalize()

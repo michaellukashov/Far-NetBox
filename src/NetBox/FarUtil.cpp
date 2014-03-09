@@ -64,7 +64,7 @@ bool CNBFile::Write(const void *buff, const size_t buffSize)
   return (m_LastError == ERROR_SUCCESS);
 }
 
-__int64 CNBFile::GetFileSize()
+int64_t CNBFile::GetFileSize()
 {
   assert(m_File != INVALID_HANDLE_VALUE);
   m_LastError = ERROR_SUCCESS;
@@ -120,7 +120,7 @@ DWORD CNBFile::LoadFile(const wchar_t *fileName, rde::vector<char>& fileContent)
   CNBFile f;
   if (f.OpenRead(fileName))
   {
-    const __int64 fs = f.GetFileSize();
+    const int64_t fs = f.GetFileSize();
     if (fs < 0)
     {
       return f.LastError();

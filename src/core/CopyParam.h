@@ -47,7 +47,7 @@ public:
   TRights RemoteFileRights(uintptr_t Attrs) const;
   bool UseAsciiTransfer(const UnicodeString & FileName, TOperationSide Side,
     const TFileMasks::TParams & Params) const;
-  bool AllowResume(__int64 Size) const;
+  bool AllowResume(int64_t Size) const;
   inline UnicodeString ValidLocalFileName(const UnicodeString & FileName) const;
   UnicodeString ValidLocalPath(const UnicodeString & Path) const;
   bool AllowAnyTransfer() const;
@@ -84,8 +84,8 @@ public:
   void SetIgnorePermErrors(bool Value) { FIgnorePermErrors = Value; }
   TResumeSupport GetResumeSupport() const { return FResumeSupport; }
   void SetResumeSupport(TResumeSupport Value) { FResumeSupport = Value; }
-  __int64 GetResumeThreshold() const { return FResumeThreshold; }
-  void SetResumeThreshold(__int64 Value) { FResumeThreshold = Value; }
+  int64_t GetResumeThreshold() const { return FResumeThreshold; }
+  void SetResumeThreshold(int64_t Value) { FResumeThreshold = Value; }
   wchar_t GetInvalidCharsReplacement() const { return FInvalidCharsReplacement; }
   void SetInvalidCharsReplacement(wchar_t Value) { FInvalidCharsReplacement = Value; }
   UnicodeString GetLocalInvalidChars() const { return FLocalInvalidChars; }
@@ -131,7 +131,7 @@ private:
   bool FPreserveRights;
   bool FIgnorePermErrors;
   TResumeSupport FResumeSupport;
-  __int64 FResumeThreshold;
+  int64_t FResumeThreshold;
   wchar_t FInvalidCharsReplacement;
   UnicodeString FLocalInvalidChars;
   UnicodeString FTokenizibleChars;

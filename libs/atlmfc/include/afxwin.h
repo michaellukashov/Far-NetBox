@@ -1160,19 +1160,6 @@ public:
 
 #ifndef _AFX_NO_OCC_SUPPORT
 	// for wrapping OLE controls
-	BOOL CreateControl(REFCLSID clsid, LPCTSTR pszWindowName, DWORD dwStyle,
-		const RECT& rect, CWnd* pParentWnd, UINT nID, CFile* pPersist=NULL,
-		BOOL bStorage=FALSE, BSTR bstrLicKey=NULL);
-
-	BOOL CreateControl(LPCTSTR pszClass, LPCTSTR pszWindowName, DWORD dwStyle,
-		const RECT& rect, CWnd* pParentWnd, UINT nID, CFile* pPersist=NULL,
-		BOOL bStorage=FALSE, BSTR bstrLicKey=NULL);
-
-   // Another overload for creating controls that use default extents.
-   BOOL CreateControl( REFCLSID clsid, LPCTSTR pszWindowName, DWORD dwStyle,
-	  const POINT* ppt, const SIZE* psize, CWnd* pParentWnd, UINT nID,
-	  CFile* pPersist = NULL, BOOL bStorage = FALSE, BSTR bstrLicKey = NULL );
-
 
    //Overload for special controls (WinForms), that require more than CLSID.
    BOOL CreateControl(const CControlCreationInfo& creationInfo, DWORD dwStyle,

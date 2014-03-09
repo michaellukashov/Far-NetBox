@@ -107,7 +107,7 @@ UnicodeString IntToStr(intptr_t Value)
 }
 
 //---------------------------------------------------------------------------
-UnicodeString Int64ToStr(__int64 Value)
+UnicodeString Int64ToStr(int64_t Value)
 {
   UnicodeString Result;
   Result.sprintf(L"%lld", Value);
@@ -117,7 +117,7 @@ UnicodeString Int64ToStr(__int64 Value)
 //---------------------------------------------------------------------------
 intptr_t StrToInt(const UnicodeString & Value)
 {
-  __int64 Result = 0;
+  int64_t Result = 0;
   if (TryStrToInt(Value, Result))
   {
     return static_cast<intptr_t>(Result);
@@ -128,9 +128,9 @@ intptr_t StrToInt(const UnicodeString & Value)
   }
 }
 
-__int64 ToInt(const UnicodeString & Value)
+int64_t ToInt(const UnicodeString & Value)
 {
-  __int64 Result = 0;
+  int64_t Result = 0;
   if (TryStrToInt(Value, Result))
   {
     return Result;
@@ -143,7 +143,7 @@ __int64 ToInt(const UnicodeString & Value)
 
 intptr_t StrToIntDef(const UnicodeString & Value, intptr_t DefVal)
 {
-  __int64 Result = DefVal;
+  int64_t Result = DefVal;
   if (TryStrToInt(Value, Result))
   {
     return static_cast<intptr_t>(Result);
@@ -154,14 +154,14 @@ intptr_t StrToIntDef(const UnicodeString & Value, intptr_t DefVal)
   }
 }
 
-__int64 StrToInt64(const UnicodeString & Value)
+int64_t StrToInt64(const UnicodeString & Value)
 {
   return ToInt(Value);
 }
 
-__int64 StrToInt64Def(const UnicodeString & Value, __int64 DefVal)
+int64_t StrToInt64Def(const UnicodeString & Value, int64_t DefVal)
 {
-  __int64 Result = DefVal;
+  int64_t Result = DefVal;
   if (TryStrToInt(Value, Result))
   {
     return Result;
@@ -172,7 +172,7 @@ __int64 StrToInt64Def(const UnicodeString & Value, __int64 DefVal)
   }
 }
 
-bool TryStrToInt(const std::wstring & StrValue, __int64 & Value)
+bool TryStrToInt(const std::wstring & StrValue, int64_t & Value)
 {
   bool Result = !StrValue.empty() && (StrValue.find_first_not_of(L"+-0123456789") == std::string::npos);
   if (Result)
@@ -445,9 +445,9 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 
 //---------------------------------------------------------------------------
 
-__int64 FileRead(HANDLE Handle, void * Buffer, __int64 Count)
+int64_t FileRead(HANDLE Handle, void * Buffer, int64_t Count)
 {
-  __int64 Result = -1;
+  int64_t Result = -1;
   DWORD Res = 0;
   if (::ReadFile(Handle, reinterpret_cast<LPVOID>(Buffer), static_cast<DWORD>(Count), &Res, nullptr))
   {
@@ -460,9 +460,9 @@ __int64 FileRead(HANDLE Handle, void * Buffer, __int64 Count)
   return Result;
 }
 
-__int64 FileWrite(HANDLE Handle, const void * Buffer, __int64 Count)
+int64_t FileWrite(HANDLE Handle, const void * Buffer, int64_t Count)
 {
-  __int64 Result = -1;
+  int64_t Result = -1;
   DWORD Res = 0;
   if (::WriteFile(Handle, Buffer, static_cast<DWORD>(Count), &Res, nullptr))
   {
@@ -475,7 +475,7 @@ __int64 FileWrite(HANDLE Handle, const void * Buffer, __int64 Count)
   return Result;
 }
 
-__int64 FileSeek(HANDLE Handle, __int64 Offset, DWORD Origin)
+int64_t FileSeek(HANDLE Handle, int64_t Offset, DWORD Origin)
 {
   LONG low = Offset & 0xFFFFFFFF;
   LONG high = Offset >> 32;
@@ -1313,8 +1313,8 @@ static void DivMod(const uintptr_t Dividend, uintptr_t Divisor,
 
 //---------------------------------------------------------------------------
 static bool DecodeDateFully(const TDateTime & DateTime,
-  unsigned short & Year, unsigned short & Month, unsigned short & Day,
-  unsigned short & DOW)
+  uint16_t & Year, uint16_t & Month, uint16_t & Day,
+  uint16_t & DOW)
 {
   static const int D1 = 365;
   static const int D4 = D1 * 4 + 1;
@@ -1371,37 +1371,37 @@ static bool DecodeDateFully(const TDateTime & DateTime,
       D -= I;
       M++;
     }
-    Year = static_cast<unsigned short>(Y);
-    Month = static_cast<unsigned short>(M);
-    Day = static_cast<unsigned short>(D + 1);
+    Year = static_cast<uint16_t>(Y);
+    Month = static_cast<uint16_t>(M);
+    Day = static_cast<uint16_t>(D + 1);
   }
   return Result;
 }
 
 //---------------------------------------------------------------------------
-void DecodeDate(const TDateTime & DateTime, unsigned short & Year,
-  unsigned short & Month, unsigned short & Day)
+void DecodeDate(const TDateTime & DateTime, uint16_t & Year,
+  uint16_t & Month, uint16_t & Day)
 {
-  unsigned short Dummy = 0;
+  uint16_t Dummy = 0;
   DecodeDateFully(DateTime, Year, Month, Day, Dummy);
 }
 
-void DecodeTime(const TDateTime & DateTime, unsigned short & Hour,
-  unsigned short & Min, unsigned short & Sec, unsigned short & MSec)
+void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
+  uint16_t & Min, uint16_t & Sec, uint16_t & MSec)
 {
   uintptr_t MinCount, MSecCount;
   DivMod(DateTimeToTimeStamp(DateTime).Time, 60000, MinCount, MSecCount);
   uintptr_t H, M, S, MS;
   DivMod(MinCount, 60, H, M);
   DivMod(MSecCount, 1000, S, MS);
-  Hour = static_cast<unsigned short>(H);
-  Min = static_cast<unsigned short>(M);
-  Sec = static_cast<unsigned short>(S);
-  MSec = static_cast<unsigned short>(MS);
+  Hour = static_cast<uint16_t>(H);
+  Min = static_cast<uint16_t>(M);
+  Sec = static_cast<uint16_t>(S);
+  MSec = static_cast<uint16_t>(MS);
 }
 
 //---------------------------------------------------------------------------
-bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
+static bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
 {
   const TDayTable * DayTable = &MonthDays[IsLeapYear(static_cast<Word>(Year))];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
@@ -1429,7 +1429,7 @@ TDateTime EncodeDate(int Year, int Month, int Day)
 }
 
 //---------------------------------------------------------------------------
-bool TryEncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec,
+static bool TryEncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec,
   TDateTime & Time)
 {
   bool Result = false;
@@ -1441,7 +1441,7 @@ bool TryEncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsign
   return Result;
 }
 
-TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec)
+TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec)
 {
   TDateTime Result;
   if (!TryEncodeTime(Hour, Min, Sec, MSec, Result))
@@ -1486,7 +1486,7 @@ UnicodeString DateTimeToString(TDateTime DateTime)
 // DayOfWeek returns the day of the week of the given date. The Result is an
 // integer between 1 and 7, corresponding to Sunday through Saturday.
 // This function is not ISO 8601 compliant, for that see the DateUtils unit.
-unsigned int DayOfWeek(const TDateTime & DateTime)
+uint32_t DayOfWeek(const TDateTime & DateTime)
 {
   return ::DateTimeToTimeStamp(DateTime).Date % 7 + 1;
 }
@@ -1537,7 +1537,7 @@ UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & Path)
 //---------------------------------------------------------------------------
 void Randomize()
 {
-  srand(static_cast<unsigned int>(time(nullptr)));
+  srand(static_cast<uint32_t>(time(nullptr)));
 }
 
 //---------------------------------------------------------------------------

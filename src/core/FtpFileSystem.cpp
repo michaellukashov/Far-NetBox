@@ -48,7 +48,7 @@ protected:
   virtual bool HandleAsynchRequestOverwrite(
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
-    __int64 Size1, __int64 Size2, time_t LocalTime,
+    int64_t Size1, int64_t Size2, time_t LocalTime,
     bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData, int & RequestResult);
   virtual bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult);
@@ -56,8 +56,8 @@ protected:
     struct TNeedPassRequestData & Data, int & RequestResult);
   virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     uintptr_t Count);
-  virtual bool HandleTransferStatus(bool Valid, __int64 TransferSize,
-    __int64 Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
+  virtual bool HandleTransferStatus(bool Valid, int64_t TransferSize,
+    int64_t Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
     bool FileTransfer);
   virtual bool HandleReply(intptr_t Command, uintptr_t Reply);
   virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
@@ -99,7 +99,7 @@ bool TFileZillaImpl::HandleStatus(const wchar_t * Status, int Type)
 bool TFileZillaImpl::HandleAsynchRequestOverwrite(
   wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
   const wchar_t * Path1, const wchar_t * Path2,
-  __int64 Size1, __int64 Size2, time_t LocalTime,
+  int64_t Size1, int64_t Size2, time_t LocalTime,
   bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData, int & RequestResult)
 {
   return FFileSystem->HandleAsynchRequestOverwrite(
@@ -125,8 +125,8 @@ bool TFileZillaImpl::HandleListData(const wchar_t * Path,
   return FFileSystem->HandleListData(Path, Entries, Count);
 }
 //---------------------------------------------------------------------------
-bool TFileZillaImpl::HandleTransferStatus(bool Valid, __int64 TransferSize,
-  __int64 Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
+bool TFileZillaImpl::HandleTransferStatus(bool Valid, int64_t TransferSize,
+  int64_t Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
   bool FileTransfer)
 {
   return FFileSystem->HandleTransferStatus(Valid, TransferSize, Bytes, Percent,
@@ -700,7 +700,6 @@ void TFTPFileSystem::AnyCommand(const UnicodeString & Command,
 void TFTPFileSystem::ResetCaches()
 {
   SAFE_DESTROY(FFileListCache);
-  FFileListCache = nullptr;
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::AnnounceFileListOperation()
@@ -800,7 +799,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
       Rights = *AFile->GetRights();
     }
     Rights |= Properties->Rights.GetNumberSet();
-    Rights &= static_cast<unsigned short>(~Properties->Rights.GetNumberUnset());
+    Rights &= static_cast<uint16_t>(~Properties->Rights.GetNumberUnset());
     if ((AFile != nullptr) && AFile->GetIsDirectory() && Properties->AddXToDirectories)
     {
       Rights.AddExecute();
@@ -975,7 +974,7 @@ void TFTPFileSystem::ResetFileTransfer()
   FFileTransferResumed = 0;
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::ReadDirectoryProgress(__int64 Bytes)
+void TFTPFileSystem::ReadDirectoryProgress(int64_t Bytes)
 {
   // with FTP we do not know exactly how many entries we have received,
   // instead we know number of bytes received only.
@@ -994,8 +993,8 @@ void TFTPFileSystem::ReadDirectoryProgress(__int64 Bytes)
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::DoFileTransferProgress(__int64 TransferSize,
-  __int64 Bytes)
+void TFTPFileSystem::DoFileTransferProgress(int64_t TransferSize,
+  int64_t Bytes)
 {
   TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
 
@@ -1007,7 +1006,7 @@ void TFTPFileSystem::DoFileTransferProgress(__int64 TransferSize,
     FFileTransferResumed = 0;
   }
 
-  __int64 Diff = Bytes - OperationProgress->TransferedSize;
+  int64_t Diff = Bytes - OperationProgress->TransferedSize;
   if (ALWAYS_TRUE(Diff >= 0))
   {
     OperationProgress->AddTransfered(Diff);
@@ -1026,8 +1025,8 @@ void TFTPFileSystem::DoFileTransferProgress(__int64 TransferSize,
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::FileTransferProgress(__int64 TransferSize,
-  __int64 Bytes)
+void TFTPFileSystem::FileTransferProgress(int64_t TransferSize,
+  int64_t Bytes)
 {
   TGuard Guard(FTransferStatusCriticalSection);
 
@@ -1036,7 +1035,7 @@ void TFTPFileSystem::FileTransferProgress(__int64 TransferSize,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::FileTransfer(const UnicodeString & FileName,
   const UnicodeString & LocalFile, HANDLE Handle, const UnicodeString & RemoteFile,
-  const UnicodeString & RemotePath, bool Get, __int64 Size, intptr_t Type,
+  const UnicodeString & RemotePath, bool Get, int64_t Size, intptr_t Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
   FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
@@ -1072,7 +1071,7 @@ void TFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
-    Params &= ~cpAppend;
+  Params &= ~cpAppend;
   UnicodeString FullTargetDir = IncludeTrailingBackslash(TargetDir);
 
   intptr_t Index = 0;
@@ -1080,9 +1079,9 @@ void TFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
   {
     UnicodeString FileName = AFilesToCopy->GetString(Index);
     const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFilesToCopy->GetObject(Index));
-    bool Success = false;
 
     {
+      bool Success = false;
       SCOPE_EXIT
       {
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
@@ -1375,7 +1374,6 @@ void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
   intptr_t Index = 0;
   while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
-    bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
     TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
@@ -1383,6 +1381,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
     FileNameOnly = ::ExtractFileName(RealFileName, false);
 
     {
+      bool Success = false;
       SCOPE_EXIT
       {
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
@@ -1481,8 +1480,8 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
     ThrowSkipFileNull();
   }
 
-  __int64 MTime = 0, ATime = 0;
-  __int64 Size = 0;
+  int64_t MTime = 0, ATime = 0;
+  int64_t Size = 0;
 
   FTerminal->OpenLocalFile(FileName, GENERIC_READ, &OpenParams->LocalFileAttrs,
     nullptr, nullptr, &MTime, &ATime, &Size);
@@ -3015,7 +3014,7 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
 {
   // This reverses how FZAPI converts FILETIME to time_t,
   // before passing it to FZ_ASYNCREQUEST_OVERWRITE.
-  __int64 Timestamp;
+  int64_t Timestamp;
   tm * Tm = localtime(&Time);
   if (Tm != nullptr)
   {
@@ -3032,7 +3031,7 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
     FILETIME LocalTime;
     SystemTimeToFileTime(&SystemTime, &LocalTime);
     FILETIME FileTime;
-    LocalFileTimeToFileTime(&LocalTime, &FileTime);
+    ::LocalFileTimeToFileTime(&LocalTime, &FileTime);
     Timestamp = ::ConvertTimestampToUnixSafe(FileTime, dstmUnix);
   }
   else
@@ -3047,7 +3046,7 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
 bool TFTPFileSystem::HandleAsynchRequestOverwrite(
   wchar_t * FileName1, size_t FileName1Len, const wchar_t * /*FileName2*/,
   const wchar_t * /*Path1*/, const wchar_t * /*Path2*/,
-  __int64 Size1, __int64 Size2, time_t LocalTime,
+  int64_t Size1, int64_t Size2, time_t LocalTime,
   bool /*HasLocalTime*/, const TRemoteFileTime & RemoteTime, void * AUserData, int & RequestResult)
 {
   if (!FActive)
@@ -3200,20 +3199,20 @@ UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & Val
   /*
   return FormatDateTime(L"ddddd tt",
     EncodeDateVerbose(
-      static_cast<unsigned short>(ValidityTime.Year), static_cast<unsigned short>(ValidityTime.Month),
-      static_cast<unsigned short>(ValidityTime.Day)) +
+      static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
+      static_cast<uint16_t>(ValidityTime.Day)) +
     EncodeTimeVerbose(
-      static_cast<unsigned short>(ValidityTime.Hour), static_cast<unsigned short>(ValidityTime.Min),
-      static_cast<unsigned short>(ValidityTime.Sec), 0));
+      static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
+      static_cast<uint16_t>(ValidityTime.Sec), 0));
   */
-  unsigned short Y, M, D, H, N, S, MS;
+  uint16_t Y, M, D, H, N, S, MS;
   TDateTime DateTime =
     EncodeDateVerbose(
-      static_cast<unsigned short>(ValidityTime.Year), static_cast<unsigned short>(ValidityTime.Month),
-      static_cast<unsigned short>(ValidityTime.Day)) +
+      static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
+      static_cast<uint16_t>(ValidityTime.Day)) +
     EncodeTimeVerbose(
-      static_cast<unsigned short>(ValidityTime.Hour), static_cast<unsigned short>(ValidityTime.Min),
-      static_cast<unsigned short>(ValidityTime.Sec), 0);
+      static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
+      static_cast<uint16_t>(ValidityTime.Sec), 0);
   DateTime.DecodeDate(Y, M, D);
   DateTime.DecodeTime(H, N, S, MS);
   UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, N, S);
@@ -3454,7 +3453,7 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
 
     if (Source.Utc)
     {
-      DateTime = ConvertTimestampFromUTC(DateTime);
+      DateTime = ::ConvertTimestampFromUTC(DateTime);
     }
 
   }
@@ -3568,8 +3567,8 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
   }
 }
 //---------------------------------------------------------------------------
-bool TFTPFileSystem::HandleTransferStatus(bool Valid, __int64 TransferSize,
-  __int64 Bytes, intptr_t /*Percent*/, intptr_t /*TimeElapsed*/, intptr_t /*TimeLeft*/, intptr_t /*TransferRate*/,
+bool TFTPFileSystem::HandleTransferStatus(bool Valid, int64_t TransferSize,
+  int64_t Bytes, intptr_t /*Percent*/, intptr_t /*TimeElapsed*/, intptr_t /*TimeLeft*/, intptr_t /*TransferRate*/,
   bool FileTransfer)
 {
   if (!FActive)
@@ -3726,7 +3725,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
 void TFTPFileSystem::PreserveDownloadFileTime(HANDLE Handle, void * UserData)
 {
   TFileTransferData * Data = NB_STATIC_DOWNCAST(TFileTransferData, UserData);
-  FILETIME WrTime = DateTimeToFileTime(Data->Modification, dstmUnix);
+  FILETIME WrTime = ::DateTimeToFileTime(Data->Modification, dstmUnix);
   SetFileTime(Handle, nullptr, nullptr, &WrTime);
 }
 //---------------------------------------------------------------------------
@@ -3751,20 +3750,20 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
       }
       else
       {
-        TDateTime Modification = ConvertTimestampToUTC(FileTimeToDateTime(MTime));
+        TDateTime Modification = ::ConvertTimestampToUTC(::FileTimeToDateTime(MTime));
 
-        unsigned short Year;
-        unsigned short Month;
-        unsigned short Day;
+        uint16_t Year;
+        uint16_t Month;
+        uint16_t Day;
         Modification.DecodeDate(Year, Month, Day);
         Time.tm_year = Year - 1900;
         Time.tm_mon = Month - 1;
         Time.tm_mday = Day;
 
-        unsigned short Hour;
-        unsigned short Min;
-        unsigned short Sec;
-        unsigned short MSec;
+        uint16_t Hour;
+        uint16_t Min;
+        uint16_t Sec;
+        uint16_t MSec;
         Modification.DecodeTime(Hour, Min, Sec, MSec);
         Time.tm_hour = Hour;
         Time.tm_min = Min;

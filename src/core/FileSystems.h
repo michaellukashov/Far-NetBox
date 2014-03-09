@@ -91,8 +91,8 @@ public:
     DestPrecision(mfFull)
   {}
 
-  __int64 SourceSize;
-  __int64 DestSize;
+  int64_t SourceSize;
+  int64_t DestSize;
   TDateTime SourceTimestamp;
   TDateTime DestTimestamp;
   TModificationFmt SourcePrecision;
@@ -124,7 +124,7 @@ public:
   bool Resume;
   bool Resuming;
   TOverwriteMode OverwriteMode;
-  __int64 DestFileSize; // output
+  int64_t DestFileSize; // output
   RawByteString RemoteFileHandle; // output
   TOverwriteFileParams *FileParams;
   bool Confirmed;
@@ -140,7 +140,7 @@ public:
   virtual ~TFileSystemIntf() {}
 
   virtual void Init(void *) = 0;
-  virtual void FileTransferProgress(__int64 TransferSize, __int64 Bytes) = 0;
+  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) = 0;
 };
 
 //---------------------------------------------------------------------------

@@ -30,7 +30,7 @@ public:
   virtual ~TSFTPFileSystem();
 
   virtual void Init(void * Data); // TSecureShell *
-  virtual void FileTransferProgress(__int64 TransferSize, __int64 Bytes) {}
+  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) {}
 
   virtual void Open();
   virtual void Close();
@@ -164,7 +164,7 @@ protected:
     TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TUploadSessionAction & Action, bool & ChildError);
   RawByteString SFTPOpenRemoteFile(const UnicodeString & FileName,
-    uint32_t OpenType, __int64 Size = -1);
+    uint32_t OpenType, int64_t Size = -1);
   int SFTPOpenRemote(void * AOpenParams, void * Param2);
   void SFTPCloseRemote(const RawByteString & Handle,
     const UnicodeString & FileName, TFileOperationProgressType * OperationProgress,

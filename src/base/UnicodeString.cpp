@@ -637,22 +637,22 @@ UnicodeString operator +(const UnicodeString & lhs, const char * rhs)
 
 bool operator ==(const UnicodeString & lhs, const wchar_t * rhs)
 {
-  return wcscmp(lhs.Data.c_str(), rhs ? rhs : L"") == 0;
+  return wcscmp(lhs.Data.c_str(), NullToEmpty(rhs)) == 0;
 }
 
 bool operator ==(const wchar_t * lhs, const UnicodeString & rhs)
 {
-  return wcscmp(lhs ? lhs : L"", rhs.Data.c_str()) == 0;
+  return wcscmp(NullToEmpty(lhs), rhs.Data.c_str()) == 0;
 }
 
 bool operator !=(const UnicodeString & lhs, const wchar_t * rhs)
 {
-  return wcscmp(lhs.Data.c_str(), rhs ? rhs : L"") != 0;
+  return wcscmp(lhs.Data.c_str(), NullToEmpty(rhs)) != 0;
 }
 
 bool operator !=(const wchar_t * lhs, const UnicodeString & rhs)
 {
-  return wcscmp(lhs ? lhs : L"", rhs.Data.c_str()) != 0;
+  return wcscmp(NullToEmpty(lhs), rhs.Data.c_str()) != 0;
 }
 
 //------------------------------------------------------------------------------

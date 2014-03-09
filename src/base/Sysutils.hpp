@@ -124,7 +124,7 @@ public:
   UnicodeString TimePMString;
   UnicodeString ShortTimeFormat;
   UnicodeString LongTimeFormat;
-  unsigned short TwoDigitYearCenturyWindow;
+  uint16_t TwoDigitYearCenturyWindow;
 };
 
 void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings);
@@ -159,19 +159,19 @@ bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, TFormat
 UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
                             TDateTime DateTime);
 UnicodeString DateTimeToString(TDateTime DateTime);
-unsigned int DayOfWeek(const TDateTime & DateTime);
+uint32_t DayOfWeek(const TDateTime & DateTime);
 
 TDateTime Date();
-void DecodeDate(const TDateTime & DateTime, unsigned short & Y,
-  unsigned short & M, unsigned short & D);
-void DecodeTime(const TDateTime & DateTime, unsigned short & H,
-  unsigned short & N, unsigned short & S, unsigned short & MS);
+void DecodeDate(const TDateTime & DateTime, uint16_t & Y,
+  uint16_t & M, uint16_t & D);
+void DecodeTime(const TDateTime & DateTime, uint16_t & H,
+  uint16_t & N, uint16_t & S, uint16_t & MS);
 
 UnicodeString FormatDateTime(const UnicodeString & Fmt, TDateTime DateTime);
 TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
 
 TDateTime EncodeDate(int Year, int Month, int Day);
-TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
+TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec);
 
 UnicodeString Trim(const UnicodeString & Str);
 UnicodeString TrimLeft(const UnicodeString & Str);
@@ -203,14 +203,14 @@ int StringCmpI(const wchar_t * S1, const wchar_t * S2);
 
 //---------------------------------------------------------------------------
 UnicodeString IntToStr(intptr_t Value);
-UnicodeString Int64ToStr(__int64 Value);
+UnicodeString Int64ToStr(int64_t Value);
 intptr_t StrToInt(const UnicodeString & Value);
-__int64 ToInt(const UnicodeString & Value);
+int64_t ToInt(const UnicodeString & Value);
 intptr_t StrToIntDef(const UnicodeString & Value, intptr_t DefVal);
-__int64 StrToInt64(const UnicodeString & Value);
-__int64 StrToInt64Def(const UnicodeString & Value, __int64 DefVal);
+int64_t StrToInt64(const UnicodeString & Value);
+int64_t StrToInt64Def(const UnicodeString & Value, int64_t DefVal);
 bool TryStrToInt(const std::wstring & StrValue, intptr_t & Value);
-bool TryStrToInt(const std::wstring & StrValue, __int64 & Value);
+bool TryStrToInt(const std::wstring & StrValue, int64_t & Value);
 
 //---------------------------------------------------------------------------
 double StrToFloat(const UnicodeString & Value);
@@ -220,9 +220,9 @@ UnicodeString FormatFloat(const UnicodeString & Format, double Value);
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime);
 //---------------------------------------------------------------------------
 
-__int64 FileRead(HANDLE Handle, void * Buffer, __int64 Count);
-__int64 FileWrite(HANDLE Handle, const void * Buffer, __int64 Count);
-__int64 FileSeek(HANDLE Handle, __int64 Offset, DWORD Origin);
+int64_t FileRead(HANDLE Handle, void * Buffer, int64_t Count);
+int64_t FileWrite(HANDLE Handle, const void * Buffer, int64_t Count);
+int64_t FileSeek(HANDLE Handle, int64_t Offset, DWORD Origin);
 
 //---------------------------------------------------------------------------
 

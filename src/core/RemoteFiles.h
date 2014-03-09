@@ -114,8 +114,8 @@ public:
 
   TRemoteFileList * GetDirectory() const { return FDirectory; }
   void SetDirectory(TRemoteFileList * Value) { FDirectory = Value; }
-  __int64 GetSize() const { return FSize; }
-  void SetSize(__int64 Value) { FSize = Value; }
+  int64_t GetSize() const { return FSize; }
+  void SetSize(int64_t Value) { FSize = Value; }
   const TRemoteToken & GetFileOwner() const;
   TRemoteToken & GetFileOwner();
   void SetFileOwner(const TRemoteToken & Value);
@@ -145,7 +145,7 @@ private:
   TRemoteFileList * FDirectory;
   TRemoteToken FOwner;
   TModificationFmt FModificationFmt;
-  __int64 FSize;
+  int64_t FSize;
   UnicodeString FFileName;
   Integer FINodeBlocks;
   TDateTime FModification;
@@ -207,7 +207,7 @@ public:
   UnicodeString GetFullDirectory();
   Boolean GetIsRoot();
   UnicodeString GetParentPath();
-  __int64 GetTotalSize();
+  int64_t GetTotalSize();
   TDateTime GetTimestamp() const { return FTimestamp; }
 };
 //---------------------------------------------------------------------------
@@ -331,39 +331,39 @@ public:
 
   TRights();
   TRights(const TRights & Source);
-  explicit TRights(unsigned short Number);
+  explicit TRights(uint16_t Number);
   void Assign(const TRights * Source);
   void AddExecute();
   void AllUndef();
 
   bool operator ==(const TRights & rhr) const;
-  bool operator ==(unsigned short rhr) const;
+  bool operator ==(uint16_t rhr) const;
   bool operator !=(const TRights & rhr) const;
   TRights & operator =(const TRights & rhr);
-  TRights & operator =(unsigned short rhr);
+  TRights & operator =(uint16_t rhr);
   TRights operator ~() const;
-  TRights operator &(unsigned short rhr) const;
+  TRights operator &(uint16_t rhr) const;
   TRights operator &(const TRights & rhr) const;
-  TRights & operator &=(unsigned short rhr);
+  TRights & operator &=(uint16_t rhr);
   TRights & operator &=(const TRights & rhr);
-  TRights operator |(unsigned short rhr) const;
+  TRights operator |(uint16_t rhr) const;
   TRights operator |(const TRights & rhr) const;
-  TRights & operator |=(unsigned short rhr);
+  TRights & operator |=(uint16_t rhr);
   TRights & operator |=(const TRights & rhr);
-  operator unsigned short() const;
-  operator unsigned long() const;
+  operator uint16_t() const;
+  operator uint32_t() const;
 
   bool GetIsUndef() const;
   UnicodeString GetModeStr() const;
   UnicodeString GetSimplestStr() const;
-  void SetNumber(unsigned short Value);
+  void SetNumber(uint16_t Value);
   UnicodeString GetText() const;
   void SetText(const UnicodeString & Value);
   void SetOctal(const UnicodeString & Value);
-  unsigned short GetNumber() const;
-  unsigned short GetNumberSet() const { return FSet; }
-  unsigned short GetNumberUnset() const { return FUnset; }
-  unsigned long GetNumberDecadic() const;
+  uint16_t GetNumber() const;
+  uint16_t GetNumberSet() const { return FSet; }
+  uint16_t GetNumberUnset() const { return FUnset; }
+  uint32_t GetNumberDecadic() const;
   UnicodeString GetOctal() const;
   bool GetReadOnly() const;
   bool GetRight(TRight Right) const;
@@ -377,8 +377,8 @@ public:
 
 private:
   bool FAllowUndef;
-  unsigned short FSet;
-  unsigned short FUnset;
+  uint16_t FSet;
+  uint16_t FUnset;
   UnicodeString FText;
   bool FUnknown;
 };
@@ -427,7 +427,7 @@ public:
   }
   TValidProperties & operator >> (const TValidProperty Value)
   {
-    FValue &= ~(static_cast<__int64>(Value));
+    FValue &= ~(static_cast<int64_t>(Value));
     return *this;
   }
   bool Empty() const
@@ -436,7 +436,7 @@ public:
   }
 
 private:
-  __int64 FValue;
+  int64_t FValue;
 };
 #endif
 
@@ -450,8 +450,8 @@ public:
   bool AddXToDirectories;
   TRemoteToken Group;
   TRemoteToken Owner;
-  __int64 Modification; // unix time
-  __int64 LastAccess; // unix time
+  int64_t Modification; // unix time
+  int64_t LastAccess; // unix time
 
   TRemoteProperties();
   TRemoteProperties(const TRemoteProperties & rhp);
@@ -494,7 +494,7 @@ UnicodeString UserModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision);
 UnicodeString ModificationStr(TDateTime DateTime,
   TModificationFmt Precision);
-int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs = INVALID_FILE_ATTRIBUTES,
+int FakeFileImageIndex(const UnicodeString & FileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
   UnicodeString * TypeName = nullptr);
 //---------------------------------------------------------------------------
 #endif

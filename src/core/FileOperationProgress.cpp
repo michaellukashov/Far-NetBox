@@ -74,7 +74,7 @@ void TFileOperationProgressType::ClearTransfer()
 {
   if ((TransferSize > 0) && (TransferedSize < TransferSize))
   {
-    __int64 RemainingSize = (TransferSize - TransferedSize);
+    int64_t RemainingSize = (TransferSize - TransferedSize);
     TotalSkipped += RemainingSize;
   }
   LocalSize = 0;
@@ -147,7 +147,7 @@ void TFileOperationProgressType::Resume()
 
   // shift timestamps for CPS calculation in advance
   // by the time the progress was suspended
-  unsigned long Stopped = (unsigned long)(GetTickCount() - FSuspendTime);
+  uint32_t Stopped = (uint32_t)(GetTickCount() - FSuspendTime);
   size_t I = 0;
   while (I < FTicks.size())
   {
@@ -233,13 +233,13 @@ void TFileOperationProgressType::SetFileInProgress()
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::SetLocalSize(__int64 ASize)
+void TFileOperationProgressType::SetLocalSize(int64_t ASize)
 {
   LocalSize = ASize;
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::AddLocallyUsed(__int64 ASize)
+void TFileOperationProgressType::AddLocallyUsed(int64_t ASize)
 {
   LocallyUsed += ASize;
   if (LocallyUsed > LocalSize)
@@ -305,20 +305,20 @@ uintptr_t TFileOperationProgressType::LocalBlockSize()
   return Result;
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::SetTotalSize(__int64 ASize)
+void TFileOperationProgressType::SetTotalSize(int64_t ASize)
 {
   TotalSize = ASize;
   TotalSizeSet = true;
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::SetTransferSize(__int64 ASize)
+void TFileOperationProgressType::SetTransferSize(int64_t ASize)
 {
   TransferSize = ASize;
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::ChangeTransferSize(__int64 ASize)
+void TFileOperationProgressType::ChangeTransferSize(int64_t ASize)
 {
   // reflect change on file size (due to text transfer mode conversion particularly)
   // on total transfer size
@@ -345,7 +345,7 @@ void TFileOperationProgressType::RollbackTransfer()
   LocallyUsed = 0;
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::AddTransfered(__int64 ASize,
+void TFileOperationProgressType::AddTransfered(int64_t ASize,
   bool AddToTotals)
 {
   TransferedSize += ASize;
@@ -362,7 +362,7 @@ void TFileOperationProgressType::AddTransfered(__int64 ASize,
   if (AddToTotals)
   {
     TotalTransfered += ASize;
-    unsigned long Ticks = static_cast<unsigned long>(GetTickCount());
+    uint32_t Ticks = static_cast<uint32_t>(GetTickCount());
     if (FTicks.empty() ||
         (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
         ((Ticks - FTicks.back()) >= MSecsPerSec))
@@ -380,7 +380,7 @@ void TFileOperationProgressType::AddTransfered(__int64 ASize,
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::AddResumed(__int64 ASize)
+void TFileOperationProgressType::AddResumed(int64_t ASize)
 {
   TotalSkipped += ASize;
   SkippedSize += ASize;
@@ -391,7 +391,7 @@ void TFileOperationProgressType::AddResumed(__int64 ASize)
 uintptr_t TFileOperationProgressType::TransferBlockSize()
 {
   uintptr_t Result = TRANSFER_BUF_SIZE;
-  if (TransferedSize + (__int64)Result > TransferSize)
+  if (TransferedSize + (int64_t)Result > TransferSize)
   {
     Result = static_cast<uintptr_t>(TransferSize - TransferedSize);
   }
@@ -454,7 +454,7 @@ uintptr_t TFileOperationProgressType::CPS()
     }
     else
     {
-      __int64 Transferred = (TotalTransfered - FTotalTransferredThen.front());
+      int64_t Transferred = (TotalTransfered - FTotalTransferredThen.front());
       Result = static_cast<uintptr_t>(Transferred * MSecsPerSec / TimeSpan);
     }
   }

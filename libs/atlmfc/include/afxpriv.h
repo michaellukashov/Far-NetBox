@@ -219,19 +219,6 @@ struct AFX_CMDHANDLERINFO
 // opens a temp file if modeCreate specified and enough free space
 // renaming, etc occurs automatically if everything succeeds
 
-class CMirrorFile : public CFile
-{
-// Implementation
-public:
-	virtual void Abort();
-	virtual void Close();
-	virtual BOOL Open(LPCTSTR lpszFileName, UINT nOpenFlags,
-		CFileException* pError = NULL);
-
-protected:
-	CString m_strMirrorName;
-};
-
 /////////////////////////////////////////////////////////////////////////////
 // Implementation of PrintPreview
 

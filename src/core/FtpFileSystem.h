@@ -27,7 +27,7 @@ public:
   virtual ~TFTPFileSystem();
 
   virtual void Init(void *);
-  virtual void FileTransferProgress(__int64 TransferSize, __int64 Bytes);
+  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes);
 
   virtual void Open();
   virtual void Close();
@@ -124,7 +124,7 @@ protected:
   bool HandleAsynchRequestOverwrite(
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
-    __int64 Size1, __int64 Size2, time_t LocalTime,
+    int64_t Size1, int64_t Size2, time_t LocalTime,
     bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData, int & RequestResult);
   bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult);
@@ -132,8 +132,8 @@ protected:
     struct TNeedPassRequestData & Data, int & RequestResult) const;
   bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     uintptr_t Count);
-  bool HandleTransferStatus(bool Valid, __int64 TransferSize,
-    __int64 Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
+  bool HandleTransferStatus(bool Valid, int64_t TransferSize,
+    int64_t Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
     bool FileTransfer);
   bool HandleReply(intptr_t Command, uintptr_t Reply);
   bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
@@ -175,16 +175,16 @@ protected:
     bool AutoResume,
     const TOverwriteFileParams * FileParams,
     const TCopyParamType * CopyParam);
-  void ReadDirectoryProgress(__int64 Bytes);
+  void ReadDirectoryProgress(int64_t Bytes);
   void ResetFileTransfer();
-  void DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);
+  void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);
   void ResetCaches();
   void CaptureOutput(const UnicodeString & Str);
   void DoReadDirectory(TRemoteFileList * FileList);
   void DoReadFile(const UnicodeString & FileName, TRemoteFile *& AFile);
   void FileTransfer(const UnicodeString & FileName, const UnicodeString & LocalFile, HANDLE Handle,
     const UnicodeString & RemoteFile, const UnicodeString & RemotePath, bool Get,
-    __int64 Size, intptr_t Type, TFileTransferData & UserData,
+    int64_t Size, intptr_t Type, TFileTransferData & UserData,
     TFileOperationProgressType * OperationProgress);
   TDateTime ConvertLocalTimestamp(time_t Time);
   void RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime & Source,
@@ -238,7 +238,7 @@ private:
   enum { ftaNone, ftaSkip, ftaCancel } FFileTransferAbort;
   bool FIgnoreFileList;
   bool FFileTransferCancelled;
-  __int64 FFileTransferResumed;
+  int64_t FFileTransferResumed;
   bool FFileTransferPreserveTime;
   bool FFileTransferRemoveBOM;
   uintptr_t FFileTransferCPSLimit;

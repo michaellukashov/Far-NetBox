@@ -55,7 +55,7 @@ void TSessionPanelItem::SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles)
 }
 //------------------------------------------------------------------------------
 void TSessionPanelItem::GetData(
-  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
+  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & FileName, int64_t & /*Size*/,
   uintptr_t & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
@@ -72,7 +72,7 @@ TSessionFolderPanelItem::TSessionFolderPanelItem(const UnicodeString & Folder):
 }
 //------------------------------------------------------------------------------
 void TSessionFolderPanelItem::GetData(
-  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
+  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & FileName, int64_t & /*Size*/,
   uintptr_t & FileAttributes,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
@@ -90,7 +90,7 @@ TRemoteFilePanelItem::TRemoteFilePanelItem(TRemoteFile * ARemoteFile):
 }
 //------------------------------------------------------------------------------
 void TRemoteFilePanelItem::GetData(
-  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & FileName, __int64 & Size,
+  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & FileName, int64_t & Size,
   uintptr_t & FileAttributes,
   TDateTime & LastWriteTime, TDateTime & LastAccess,
   uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
@@ -1529,8 +1529,8 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
   const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
   bool & Continue, bool Collect)
 {
-  static unsigned long LastTicks;
-  unsigned long Ticks = GetTickCount();
+  static uint32_t LastTicks;
+  uint32_t Ticks = GetTickCount();
   if ((LastTicks == 0) || (Ticks - LastTicks > 500))
   {
     LastTicks = Ticks;
@@ -2157,7 +2157,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
       SCOPE_EXIT
       {
         // Result = SetDirectoryEx(Dir, OpMode);
-        FSavedFindFolder = "";
+        FSavedFindFolder.Clear();
       };
       Result = SetDirectoryEx(FSavedFindFolder, OpMode);
       return Result;
@@ -2657,17 +2657,16 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
     // moreover we may upload the file under name that does not exist in
     // remote panel
     FNoProgressFinish = Edit;
-    SCOPE_EXIT
     {
-      FNoProgressFinish = false;
-    };
-    {
+      SCOPE_EXIT
+      {
+        FNoProgressFinish = false;
+      };
       // these parameters are known only after transfer dialog
       Params |=
         FLAGMASK(!Ask, cpNoConfirmation) |
         FLAGMASK(Edit, cpTemporary) |
-        FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly)
-        ;
+        FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
       FTerminal->CopyToRemote(FFileList, DestPath, &CopyParam, Params);
     }
   }
@@ -3430,8 +3429,8 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
 void TWinSCPFileSystem::ShowOperationProgress(
   TFileOperationProgressType & ProgressData, bool First)
 {
-  static unsigned long LastTicks;
-  unsigned long Ticks = GetTickCount();
+  static uint32_t LastTicks;
+  uint32_t Ticks = GetTickCount();
   short percents = static_cast<short>(ProgressData.OverallProgress());
   if (Ticks - LastTicks > 500 || First)
   {
@@ -3816,8 +3815,8 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
     // Whenever editor title is changed (and restored back), it is restored
     // to default FAR text, not to ours (see EE_SAVE). Hence we periodically
     // reset the title.
-    static unsigned long LastTicks = 0;
-    unsigned long Ticks = GetTickCount();
+    static uint32_t LastTicks = 0;
+    uint32_t Ticks = GetTickCount();
     if ((LastTicks == 0) || (Ticks - LastTicks > 500))
     {
       LastTicks = Ticks;

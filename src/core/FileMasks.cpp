@@ -599,7 +599,7 @@ void TFileMasks::CreateMask(
       else
       {
         TMask::TMaskBoundary & SizeMask = (Low ? Mask.LowSizeMask : Mask.HighSizeMask);
-        __int64 & Size = (Low ? Mask.LowSize : Mask.HighSize);
+        int64_t & Size = (Low ? Mask.LowSize : Mask.HighSize);
 
         if ((SizeMask != TMask::None) || Directory)
         {
@@ -682,7 +682,6 @@ TStrings * TFileMasks::GetMasksStr(intptr_t Index) const
 void TFileMasks::ReleaseMaskMask(TMaskMask & MaskMask)
 {
   SAFE_DESTROY(MaskMask.Mask);
-  MaskMask.Mask = nullptr;
 }
 //---------------------------------------------------------------------------
 void TFileMasks::TrimEx(UnicodeString & Str, intptr_t & Start, intptr_t & End)

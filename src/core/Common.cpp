@@ -1002,17 +1002,17 @@ struct TDateTimeParams : public TObject
 typedef rde::map<int, TDateTimeParams> TYearlyDateTimeParams;
 static TYearlyDateTimeParams YearlyDateTimeParams;
 static std::unique_ptr<TCriticalSection> DateTimeParamsSection(new TCriticalSection());
-static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
+static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
   TDateTime & Result);
 //---------------------------------------------------------------------------
-static unsigned short DecodeYear(const TDateTime & DateTime)
+static uint16_t DecodeYear(const TDateTime & DateTime)
 {
-  unsigned short Year, Month, Day;
+  uint16_t Year, Month, Day;
   DecodeDate(DateTime, Year, Month, Day);
   return Year;
 }
 //---------------------------------------------------------------------------
-static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
+static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
 {
   TGuard Guard(DateTimeParamsSection.get());
 
@@ -1029,7 +1029,7 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
     Result = &YearlyDateTimeParams[Year];
     TIME_ZONE_INFORMATION TZI;
 
-    unsigned long GTZI;
+    uint32_t GTZI;
 
     HINSTANCE Kernel32 = GetModuleHandle(kernel32);
     typedef BOOL (WINAPI * TGetTimeZoneInformationForYear)(USHORT wYear, PDYNAMIC_TIME_ZONE_INFORMATION pdtzi, LPTIME_ZONE_INFORMATION ptzi);
@@ -1087,7 +1087,7 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
     Result->SystemStandardDate = TZI.StandardDate;
     Result->SystemDaylightDate = TZI.DaylightDate;
 
-    unsigned short AYear = (Year != 0) ? Year : DecodeYear(Now());
+    uint16_t AYear = (Year != 0) ? Year : DecodeYear(Now());
     if (Result->SystemStandardDate.wMonth != 0)
     {
       EncodeDSTMargin(Result->SystemStandardDate, AYear, Result->StandardDate);
@@ -1104,7 +1104,7 @@ static const TDateTimeParams * GetDateTimeParams(unsigned short Year)
   return Result;
 }
 //---------------------------------------------------------------------------
-static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
+static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
   TDateTime & Result)
 {
   if (Date.wYear == 0)
@@ -1114,10 +1114,10 @@ static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
       (7 * (Date.wDay - 1));
     if (Date.wDay == 5)
     {
-      unsigned short Month = static_cast<unsigned short>(Date.wMonth + 1);
+      uint16_t Month = static_cast<uint16_t>(Date.wMonth + 1);
       if (Month > 12)
       {
-        Month = static_cast<unsigned short>(Month - 12);
+        Month = static_cast<uint16_t>(Month - 12);
         Year++;
       }
 
@@ -1175,7 +1175,7 @@ bool UsesDaylightHack()
   return GetDateTimeParams(0)->DaylightHack;
 }
 //---------------------------------------------------------------------------
-TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
+TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode)
 {
   assert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
@@ -1207,11 +1207,11 @@ TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
   return Result;
 }
 //---------------------------------------------------------------------------
-__int64 Round(double Number)
+int64_t Round(double Number)
 {
   double Floor = floor(Number);
   double Ceil = ceil(Number);
-  return static_cast<__int64>(((Number - Floor) > (Ceil - Number)) ? Ceil : Floor);
+  return static_cast<int64_t>(((Number - Floor) > (Ceil - Number)) ? Ceil : Floor);
 }
 //---------------------------------------------------------------------------
 bool TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
@@ -1259,7 +1259,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
   return Result;
 }
 //---------------------------------------------------------------------------
-static __int64 DateTimeToUnix(const TDateTime & DateTime)
+static int64_t DateTimeToUnix(const TDateTime & DateTime)
 {
   const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
 
@@ -1272,7 +1272,7 @@ static __int64 DateTimeToUnix(const TDateTime & DateTime)
 FILETIME DateTimeToFileTime(const TDateTime & DateTime,
   TDSTMode /*DSTMode*/)
 {
-  __int64 UnixTimeStamp = ::DateTimeToUnix(DateTime);
+  int64_t UnixTimeStamp = ::DateTimeToUnix(DateTime);
 
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
   if (!Params->DaylightHack)
@@ -1284,7 +1284,7 @@ FILETIME DateTimeToFileTime(const TDateTime & DateTime,
     UnixTimeStamp -= CurrentParams->CurrentDaylightDifferenceSec;
   }
   FILETIME Result;
-  (*(__int64*)&(Result) = ((__int64)(UnixTimeStamp) + 11644473600LL) * 10000000LL);
+  (*(int64_t*)&(Result) = ((int64_t)(UnixTimeStamp) + 11644473600LL) * 10000000LL);
 
   return Result;
 }
@@ -1335,10 +1335,10 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
   return Result;
 }
 //---------------------------------------------------------------------------
-__int64 ConvertTimestampToUnix(const FILETIME & FileTime,
+int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
   TDSTMode DSTMode)
 {
-  __int64 Result = ((*(__int64*)&(FileTime)) / 10000000LL - 11644473600LL);
+  int64_t Result = ((*(int64_t*)&(FileTime)) / 10000000LL - 11644473600LL);
   if (UsesDaylightHack())
   {
     if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
@@ -1413,10 +1413,10 @@ TDateTime ConvertTimestampFromUTC(const TDateTime & DateTime)
   return Result;
 }
 //---------------------------------------------------------------------------
-__int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
+int64_t ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode)
 {
-  __int64 Result;
+  int64_t Result;
   if ((FileTime.dwLowDateTime == 0) &&
       (FileTime.dwHighDateTime == 0))
   {
@@ -1424,7 +1424,7 @@ __int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   }
   else
   {
-    Result = ConvertTimestampToUnix(FileTime, DSTMode);
+    Result = ::ConvertTimestampToUnix(FileTime, DSTMode);
   }
   return Result;
 }
@@ -1596,8 +1596,8 @@ UnicodeString StandardTimestamp(const TDateTime & DateTime)
 #if defined(__BORLANDC__)
   return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
 #else
-  TDateTime DT = ConvertTimestampToUTC(DateTime);
-  unsigned short Y, M, D, H, N, S, MS;
+  TDateTime DT = ::ConvertTimestampToUTC(DateTime);
+  uint16_t Y, M, D, H, N, S, MS;
   DT.DecodeDate(Y, M, D);
   DT.DecodeTime(H, N, S, MS);
   UnicodeString Result = FORMAT(L"%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", Y, M, D, H, N, S, MS);
@@ -2063,14 +2063,14 @@ bool IsDirectoryWriteable(const UnicodeString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString FormatNumber(__int64 Number)
+UnicodeString FormatNumber(int64_t Number)
 {
 //  return FormatFloat(L"#,##0", Number);
   return FORMAT(L"%.0f", static_cast<double>(Number));
 }
 //---------------------------------------------------------------------------
 // simple alternative to FormatBytes
-UnicodeString FormatSize(__int64 Size)
+UnicodeString FormatSize(int64_t Size)
 {
   return FormatNumber(Size);
 }
@@ -2080,16 +2080,16 @@ UnicodeString ExtractFileBaseName(const UnicodeString & Path)
   return ChangeFileExt(::ExtractFileName(Path, false), L"");
 }
 //---------------------------------------------------------------------
-UnicodeString FormatBytes(__int64 Bytes, bool UseOrders)
+UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
 {
   UnicodeString Result;
 
-  if (!UseOrders || (Bytes < static_cast<__int64>(100*1024)))
+  if (!UseOrders || (Bytes < static_cast<int64_t>(100*1024)))
   {
     // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
     Result = FORMAT(L"%.0f B", static_cast<double>(Bytes));
   }
-  else if (Bytes < static_cast<__int64>(100*1024*1024))
+  else if (Bytes < static_cast<int64_t>(100*1024*1024))
   {
     // Result = FormatFloat(L"#,##0 \"KiB\"", Bytes / 1024);
     Result = FORMAT(L"%.0f KiB", static_cast<double>(Bytes / 1024.0));

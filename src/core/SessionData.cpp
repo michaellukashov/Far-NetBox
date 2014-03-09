@@ -2152,7 +2152,7 @@ void TSessionData::SetPuttyProtocol(const UnicodeString & Value)
 //---------------------------------------------------------------------
 void TSessionData::SetPingIntervalDT(TDateTime Value)
 {
-  unsigned short hour, min, sec, msec;
+  uint16_t hour, min, sec, msec;
 
   Value.DecodeTime(hour, min, sec, msec);
   SetPingInterval(hour*SecsPerHour + min*SecsPerMin + sec);
@@ -2627,13 +2627,13 @@ void TSessionData::SetFtpProxyLogonType(intptr_t Value)
 //---------------------------------------------------------------------
 void TSessionData::SetBug(TSshBug Bug, TAutoSwitch Value)
 {
-  assert(Bug >= 0 && static_cast<unsigned int>(Bug) < LENOF(FBugs));
+  assert(Bug >= 0 && static_cast<uint32_t>(Bug) < LENOF(FBugs));
   SET_SESSION_PROPERTY(Bugs[Bug]);
 }
 //---------------------------------------------------------------------
 TAutoSwitch TSessionData::GetBug(TSshBug Bug) const
 {
-  assert(Bug >= 0 && static_cast<unsigned int>(Bug) < LENOF(FBugs));
+  assert(Bug >= 0 && static_cast<uint32_t>(Bug) < LENOF(FBugs));
   return FBugs[Bug];
 }
 //---------------------------------------------------------------------
@@ -2679,13 +2679,13 @@ void TSessionData::SetSFTPMaxPacketSize(intptr_t Value)
 //---------------------------------------------------------------------
 void TSessionData::SetSFTPBug(TSftpBug Bug, TAutoSwitch Value)
 {
-  assert(Bug >= 0 && static_cast<unsigned int>(Bug) < LENOF(FSFTPBugs));
+  assert(Bug >= 0 && static_cast<uint32_t>(Bug) < LENOF(FSFTPBugs));
   SET_SESSION_PROPERTY(SFTPBugs[Bug]);
 }
 //---------------------------------------------------------------------
 TAutoSwitch TSessionData::GetSFTPBug(TSftpBug Bug) const
 {
-  assert(Bug >= 0 && static_cast<unsigned int>(Bug) < LENOF(FSFTPBugs));
+  assert(Bug >= 0 && static_cast<uint32_t>(Bug) < LENOF(FSFTPBugs));
   return FSFTPBugs[Bug];
 }
 //---------------------------------------------------------------------
@@ -3833,7 +3833,7 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
     {
       UnicodeString Replacement;
       // keep consistent with TFileCustomCommand::PatternReplacement
-      unsigned short Y, M, D, H, NN, S, MS;
+      uint16_t Y, M, D, H, NN, S, MS;
       TDateTime DateTime = N;
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, NN, S, MS);

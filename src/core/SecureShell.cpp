@@ -456,7 +456,7 @@ bool TSecureShell::TryFtp()
           Address.sin_family = AF_INET;
           intptr_t Port = FtpPortNumber;
           Address.sin_port = htons(static_cast<short>(Port));
-          Address.sin_addr.s_addr = *((unsigned long *)*HostEntry->h_addr_list);
+          Address.sin_addr.s_addr = *((uint32_t *)*HostEntry->h_addr_list);
 
           HANDLE Event = ::CreateEvent(nullptr, false, false, nullptr);
           Result = (WSAEventSelect(Socket, (WSAEVENT)Event, FD_CONNECT | FD_CLOSE) != SOCKET_ERROR);
@@ -1637,7 +1637,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
   WSANETWORKEVENTS AEvents;
   if (WSAEnumNetworkEvents(Socket, nullptr, &AEvents) == 0)
   {
-    noise_ultralight(static_cast<unsigned long>(Socket));
+    noise_ultralight(static_cast<uint32_t>(Socket));
     noise_ultralight(AEvents.lNetworkEvents);
 
     Events.lNetworkEvents |= AEvents.lNetworkEvents;
@@ -1745,7 +1745,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       {
         Timeout = 0;
       }
-      unsigned int WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, Timeout);
+      uint32_t WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, Timeout);
       if (WaitResult < WAIT_OBJECT_0 + HandleCount)
       {
         if (handle_got_event(Handles[WaitResult - WAIT_OBJECT_0]))
@@ -1857,9 +1857,9 @@ void TSecureShell::KeepAlive()
   }
 }
 //---------------------------------------------------------------------------
-static unsigned int minPacketSize = 0;
+static uint32_t minPacketSize = 0;
 
-unsigned long TSecureShell::MinPacketSize()
+uint32_t TSecureShell::MinPacketSize()
 {
   if (!FSessionInfoValid)
   {
@@ -1880,7 +1880,7 @@ unsigned long TSecureShell::MinPacketSize()
   }
 }
 //---------------------------------------------------------------------------
-unsigned long TSecureShell::MaxPacketSize()
+uint32_t TSecureShell::MaxPacketSize()
 {
   if (!FSessionInfoValid)
   {

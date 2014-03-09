@@ -489,7 +489,7 @@ DWORD TCopyParamType::LocalFileAttrs(const TRights & Rights) const
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TCopyParamType::AllowResume(__int64 Size) const
+bool TCopyParamType::AllowResume(int64_t Size) const
 {
   switch (GetResumeSupport())
   {
@@ -576,7 +576,7 @@ void TCopyParamType::Save(THierarchicalStorage * Storage) const
   Storage->WriteInteger(L"ResumeSupport", GetResumeSupport());
 
   Storage->WriteInt64(L"ResumeThreshold", GetResumeThreshold());
-  Storage->WriteInteger(L"ReplaceInvalidChars", static_cast<unsigned int>(GetInvalidCharsReplacement()));
+  Storage->WriteInteger(L"ReplaceInvalidChars", static_cast<uint32_t>(GetInvalidCharsReplacement()));
   Storage->WriteString(L"LocalInvalidChars", GetLocalInvalidChars());
   Storage->WriteBool(L"CalculateSize", GetCalculateSize());
   Storage->WriteString(L"IncludeFileMask", GetIncludeFileMask().GetMasks());

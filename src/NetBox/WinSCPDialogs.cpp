@@ -535,20 +535,18 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   if (Result)
   {
     GetConfiguration()->BeginUpdate();
+    SCOPE_EXIT
     {
-      SCOPE_EXIT
-      {
-        GetConfiguration()->EndUpdate();
-      };
-      GetConfiguration()->SetLogging(LoggingCheck->GetChecked());
-      GetConfiguration()->SetLogProtocol(LogProtocolCombo->GetItemIndex());
-      GetConfiguration()->SetLogToFile(LogToFileCheck->GetChecked());
-      if (LogToFileCheck->GetChecked())
-      {
-        GetConfiguration()->SetLogFileName(LogFileNameEdit->GetText());
-      }
-      GetConfiguration()->SetLogFileAppend(LogFileAppendButton->GetChecked());
+      GetConfiguration()->EndUpdate();
+    };
+    GetConfiguration()->SetLogging(LoggingCheck->GetChecked());
+    GetConfiguration()->SetLogProtocol(LogProtocolCombo->GetItemIndex());
+    GetConfiguration()->SetLogToFile(LogToFileCheck->GetChecked());
+    if (LogToFileCheck->GetChecked())
+    {
+      GetConfiguration()->SetLogFileName(LogFileNameEdit->GetText());
     }
+    GetConfiguration()->SetLogFileAppend(LogFileAppendButton->GetChecked());
   }
   return Result;
 }
@@ -1496,7 +1494,7 @@ private:
   void TransferProtocolComboChange();
   void LoginTypeComboChange();
   void FillCodePageEdit();
-  void CodePageEditAdd(unsigned int Cp);
+  void CodePageEditAdd(uint32_t Cp);
   void FtpProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType);
   void SshProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType);
   bool IsSshProtocol(TFSProtocol FSProtocol) const;
@@ -3368,11 +3366,11 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   }
 
   CipherListBox->GetItems()->BeginUpdate();
-  SCOPE_EXIT
   {
-    CipherListBox->GetItems()->EndUpdate();
-  };
-  {
+    SCOPE_EXIT
+    {
+      CipherListBox->GetItems()->EndUpdate();
+    };
     CipherListBox->GetItems()->Clear();
     assert(CIPHER_NAME_WARN+CIPHER_COUNT-1 == CIPHER_NAME_ARCFOUR);
     for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
@@ -4234,7 +4232,7 @@ void TSessionDialog::FillCodePageEdit()
   CodePageEditAdd(20866); // KOI8-r
 }
 //------------------------------------------------------------------------------
-void TSessionDialog::CodePageEditAdd(unsigned int Cp)
+void TSessionDialog::CodePageEditAdd(uint32_t Cp)
 {
   CPINFOEX cpInfoEx;
   if (::GetCodePageInfo(Cp, cpInfoEx))
@@ -4418,7 +4416,7 @@ void TRightsContainer::RightsButtonClick(TFarButton * Sender,
   bool & /*Close*/)
 {
   TRights R = GetRights();
-  R.SetNumber(static_cast<unsigned short>(Sender->GetTag()));
+  R.SetNumber(static_cast<uint16_t>(Sender->GetTag()));
   SetRights(R);
 }
 //------------------------------------------------------------------------------
@@ -5805,7 +5803,7 @@ protected:
   UnicodeString CapabilityStr(TFSCapability Capability);
   UnicodeString CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
-  UnicodeString SpaceStr(__int64 Bytes);
+  UnicodeString SpaceStr(int64_t Bytes);
   void ControlsAddItem(TObject * Control, int Label, const UnicodeString & Value);
   void CalculateMaxLenAddItem(TObject * Control, int Label, const UnicodeString & Value);
   void ClipboardAddItem(TObject * Control, int Label, const UnicodeString & Value);
@@ -5997,7 +5995,7 @@ UnicodeString TFileSystemInfoDialog::CapabilityStr(TFSCapability Capability1,
   return FORMAT(L"%s/%s", CapabilityStr(Capability1).c_str(), CapabilityStr(Capability2).c_str());
 }
 //---------------------------------------------------------------------
-UnicodeString TFileSystemInfoDialog::SpaceStr(__int64 Bytes)
+UnicodeString TFileSystemInfoDialog::SpaceStr(int64_t Bytes)
 {
   UnicodeString Result;
   if (Bytes == 0)
@@ -7129,7 +7127,7 @@ private:
   UnicodeString ItemLine(const TChecklistItem * ChecklistItem);
   void AddColumn(UnicodeString & List, const UnicodeString & Value, size_t Column,
     bool Header = false);
-  UnicodeString FormatSize(__int64 Size, int Column);
+  UnicodeString FormatSize(int64_t Size, int Column);
 };
 //------------------------------------------------------------------------------
 TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
@@ -7324,7 +7322,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
 }
 //------------------------------------------------------------------------------
 UnicodeString TSynchronizeChecklistDialog::FormatSize(
-  __int64 Size, int Column)
+  int64_t Size, int Column)
 {
   intptr_t Width = static_cast<intptr_t>(FWidths[Column]);
   UnicodeString Result = FORMAT(L"%lu", Size);
@@ -7492,11 +7490,11 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
   FCanScrollRight = false;
   TFarList * List = ListBox->GetItems();
   List->BeginUpdate();
-  SCOPE_EXIT
   {
-    List->EndUpdate();
-  };
-  {
+    SCOPE_EXIT
+    {
+      List->EndUpdate();
+    };
     for (intptr_t Index = 0; Index < List->GetCount(); ++Index)
     {
       if (!Scroll || (List->GetString(Index).LastDelimiter(L"{}") > 0))
@@ -7532,11 +7530,11 @@ void TSynchronizeChecklistDialog::CheckAll(bool Check)
 {
   TFarList * List = ListBox->GetItems();
   List->BeginUpdate();
-  SCOPE_EXIT
   {
-    List->EndUpdate();
-  };
-  {
+    SCOPE_EXIT
+    {
+      List->EndUpdate();
+    };
     intptr_t Count = List->GetCount();
     for (intptr_t Index = 0; Index < Count; ++Index)
     {

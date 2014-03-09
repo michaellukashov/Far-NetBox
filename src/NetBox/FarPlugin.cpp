@@ -33,8 +33,9 @@ TFarMessageParams::TFarMessageParams()
 //---------------------------------------------------------------------------
 TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
   TObject(),
-  FCriticalSection(new TCriticalSection()),
   FOpenedPlugins(new TObjectList()),
+  FTopDialog(nullptr),
+  FCriticalSection(new TCriticalSection()),
   FSavedTitles(new TStringList())
 {
   InitPlatformId();
@@ -45,7 +46,6 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
 
   FOpenedPlugins->SetOwnsObjects(false);
   FCurrentProgress = -1;
-  FTopDialog = nullptr;
   FValidFarSystemSettings = false;
   FFarSystemSettings = 0;
 
@@ -1574,8 +1574,8 @@ UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId)
 //---------------------------------------------------------------------------
 bool TCustomFarPlugin::CheckForEsc()
 {
-  static unsigned long LastTicks;
-  unsigned long Ticks = GetTickCount();
+  static uint32_t LastTicks;
+  uint32_t Ticks = GetTickCount();
   if ((LastTicks == 0) || (Ticks - LastTicks > 500))
   {
     LastTicks = Ticks;
@@ -2415,7 +2415,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   assert(PanelItem);
 
   UnicodeString FileName;
-  __int64 Size = 0;
+  int64_t Size = 0;
   TDateTime LastWriteTime;
   TDateTime LastAccess;
   UnicodeString Description;
@@ -2426,8 +2426,8 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
     LastWriteTime, LastAccess, PanelItem->NumberOfLinks, Description, Owner,
     UserData, PanelItem->CustomColumnNumber);
   PanelItem->UserData.Data = UserData;
-  FILETIME FileTime = DateTimeToFileTime(LastWriteTime, dstmWin);
-  FILETIME FileTimeA = DateTimeToFileTime(LastAccess, dstmWin);
+  FILETIME FileTime = ::DateTimeToFileTime(LastWriteTime, dstmWin);
+  FILETIME FileTimeA = ::DateTimeToFileTime(LastAccess, dstmWin);
   PanelItem->CreationTime = FileTime;
   PanelItem->LastAccessTime = FileTimeA;
   PanelItem->LastWriteTime = FileTime;
@@ -2466,7 +2466,7 @@ TFarPanelItem::~TFarPanelItem()
 
 //---------------------------------------------------------------------------
 void TFarPanelItem::GetData(
-  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & /*FileName*/, __int64 & /*Size*/,
+  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & /*FileName*/, int64_t & /*Size*/,
   uintptr_t & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
@@ -2537,7 +2537,7 @@ THintPanelItem::THintPanelItem(const UnicodeString & AHint) :
 }
 //---------------------------------------------------------------------------
 void THintPanelItem::GetData(
-  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
+  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & FileName, int64_t & /*Size*/,
   uintptr_t & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,

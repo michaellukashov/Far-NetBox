@@ -6,7 +6,7 @@ enum TKeyType { ktUnopenable, ktUnknown, ktSSH1, ktSSH2, ktOpenSSH, ktSSHCom };
 TKeyType KeyType(const UnicodeString & FileName);
 UnicodeString KeyTypeName(TKeyType KeyType);
 //---------------------------------------------------------------------------
-__int64 ParseSize(const UnicodeString & SizeStr);
+int64_t ParseSize(const UnicodeString & SizeStr);
 //---------------------------------------------------------------------------
 bool HasGSSAPI(const UnicodeString & CustomPath);
 //---------------------------------------------------------------------------

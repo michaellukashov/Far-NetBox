@@ -208,7 +208,7 @@ typedef struct neon_xml_elm_t
   // NEON_XML_CDATA    - child-less element,
   // NEON_XML_COLLECT  - complete contents of such element must be
   //                     collected as CDATA, includes *_CDATA flag.
-  unsigned int flags;
+  uint32_t flags;
 
 } neon_xml_elm_t;
 
@@ -3139,7 +3139,7 @@ config_read_auth_data(
     apr_hash_set(*hash, AUTHN_ASCII_CERT_KEY, APR_HASH_KEY_STRING,
       string_create(AnsiString(Key).c_str(), pool));
     apr_hash_set(*hash, AUTHN_FAILURES_KEY, APR_HASH_KEY_STRING,
-      string_createf(pool, "%lu", (unsigned long)
+      string_createf(pool, "%lu", (uint32_t)
         StrToIntDef(Value, 0)));
   }
   return WEBDAV_NO_ERROR;
@@ -9165,7 +9165,7 @@ ssl_server_trust_file_first_credentials(
     if (failstr)
     {
       char * endptr;
-      unsigned long tmp_ulong = strtoul(failstr->data, &endptr, 10);
+      uint32_t tmp_ulong = strtoul(failstr->data, &endptr, 10);
 
       if (*endptr == '\0')
         last_failures = (apr_uint32_t) tmp_ulong;
@@ -9222,7 +9222,7 @@ ssl_server_trust_file_save_credentials(
   apr_hash_set(creds_hash, AUTHN_ASCII_CERT_KEY, APR_HASH_KEY_STRING,
                string_create(cert_info->fingerprint, pool));
   apr_hash_set(creds_hash, AUTHN_FAILURES_KEY, APR_HASH_KEY_STRING,
-               string_createf(pool, "%lu", (unsigned long)
+               string_createf(pool, "%lu", (uint32_t)
                               creds->accepted_failures));
 
   WEBDAV_ERR(config_write_auth_data(creds_hash,
@@ -11000,7 +11000,7 @@ client_ssl_pkcs11_pin_entry(
   int attempt,
   const char * slot_descr,
   const char * token_label,
-  unsigned int flags,
+  uint32_t flags,
   char * pin)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(userdata);
@@ -11522,13 +11522,13 @@ neon_open(
   ne_session * sess = ne_session_create(uri->scheme, uri->host, uri->port);
   apr_pool_cleanup_register(pool, sess, cleanup_session, apr_pool_cleanup_null);
   bool compression = false;
-  unsigned int neon_auth_types = 0;
+  uint32_t neon_auth_types = 0;
   const char * pkcs11_provider = nullptr;
   const char * ssl_authority_file = nullptr;
   {
     int proxy_method = 0;
     const char * proxy_host = nullptr;
-    unsigned int proxy_port = 0;
+    uint32_t proxy_port = 0;
     const char * proxy_username = nullptr;
     const char * proxy_password = nullptr;
     int timeout = 0;
@@ -12742,13 +12742,13 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
   intptr_t Index = 0;
   while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
-    bool Success = false;
     FileName = FilesToCopy->GetString(Index);
     TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FilesToCopy->GetObject(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ::ExtractFileName(RealFileName, false);
 
     {
+      bool Success = false;
       SCOPE_EXIT
       {
         OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
@@ -12873,8 +12873,8 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
       }
       else
       {
-        __int64 Size;
-        __int64 MTime;
+        int64_t Size;
+        int64_t MTime;
         TOverwriteFileParams FileParams;
         FTerminal->OpenLocalFile(FileName, GENERIC_READ,
           nullptr, nullptr, nullptr, &MTime, nullptr,
@@ -12928,7 +12928,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
       ThrowSkipFileNull();
     }
 
-    __int64 Size;
+    int64_t Size;
     uintptr_t LocalFileAttrs;
 
     FTerminal->OpenLocalFile(FileName, GENERIC_READ, &LocalFileAttrs,
@@ -12966,7 +12966,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
       TFileTransferData UserData;
 
       {
-        unsigned int TransferType = 2; // OperationProgress->AsciiTransfer = false
+        uint32_t TransferType = 2; // OperationProgress->AsciiTransfer = false
         // ignore file list
         TWebDAVFileListHelper Helper(this, nullptr, true);
 
@@ -13155,9 +13155,9 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
   {
     UnicodeString FileName = FilesToCopy->GetString(Index);
     const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, FilesToCopy->GetObject(Index));
-    bool Success = false;
     FTerminal->SetExceptionOnFail(true);
     {
+      bool Success = false;
       SCOPE_EXIT
       {
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
@@ -13338,8 +13338,8 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
     bool CanProceed = true;
     if (::FileExists(DestFullName))
     {
-      __int64 Size;
-      __int64 MTime;
+      int64_t Size;
+      int64_t MTime;
       FTerminal->OpenLocalFile(DestFullName, GENERIC_READ, nullptr,
         nullptr, nullptr, &MTime, nullptr, &Size);
       TOverwriteFileParams FileParams;
@@ -13548,16 +13548,16 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
         {
           // should be the same as ConvertRemoteTimestamp
           TDateTime Modification =
-            EncodeDateVerbose(static_cast<unsigned short>(Entry->Time.Year), static_cast<unsigned short>(Entry->Time.Month),
-              static_cast<unsigned short>(Entry->Time.Day));
+            EncodeDateVerbose(static_cast<uint16_t>(Entry->Time.Year), static_cast<uint16_t>(Entry->Time.Month),
+              static_cast<uint16_t>(Entry->Time.Day));
           if (Entry->Time.HasTime)
           {
-            unsigned short seconds = 0;
+            uint16_t seconds = 0;
             if (Entry->Time.HasSeconds)
-              seconds = static_cast<unsigned short>(Entry->Time.Second);
+              seconds = static_cast<uint16_t>(Entry->Time.Second);
             File->SetModification(Modification +
-              EncodeTimeVerbose(static_cast<unsigned short>(Entry->Time.Hour),
-                static_cast<unsigned short>(Entry->Time.Minute),
+              EncodeTimeVerbose(static_cast<uint16_t>(Entry->Time.Hour),
+                static_cast<uint16_t>(Entry->Time.Minute),
                 seconds, 0));
             // not exact as we got year as well, but it is most probably
             // guessed by FZAPI anyway
@@ -13608,7 +13608,7 @@ void TWebDAVFileSystem::ResetFileTransfer()
   webdav::cancelled = false;
 }
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::ReadDirectoryProgress(__int64 Bytes)
+void TWebDAVFileSystem::ReadDirectoryProgress(int64_t Bytes)
 {
   // with WebDAV we do not know exactly how many entries we have received,
   // instead we know number of bytes received only.
@@ -13626,8 +13626,8 @@ void TWebDAVFileSystem::ReadDirectoryProgress(__int64 Bytes)
   }
 }
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::DoFileTransferProgress(__int64 TransferSize,
-  __int64 Bytes)
+void TWebDAVFileSystem::DoFileTransferProgress(int64_t TransferSize,
+  int64_t Bytes)
 {
   TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
   if (!OperationProgress) return;
@@ -13640,7 +13640,7 @@ void TWebDAVFileSystem::DoFileTransferProgress(__int64 TransferSize,
     FFileTransferResumed = 0;
   }
 
-  __int64 Diff = Bytes - OperationProgress->TransferedSize;
+  int64_t Diff = Bytes - OperationProgress->TransferedSize;
   if (Diff >= 0)
   {
     OperationProgress->AddTransfered(Diff);
@@ -13658,8 +13658,8 @@ void TWebDAVFileSystem::DoFileTransferProgress(__int64 TransferSize,
   }
 }
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::FileTransferProgress(__int64 TransferSize,
-  __int64 Bytes)
+void TWebDAVFileSystem::FileTransferProgress(int64_t TransferSize,
+  int64_t Bytes)
 {
   TGuard Guard(FTransferStatusCriticalSection);
 
@@ -13668,7 +13668,7 @@ void TWebDAVFileSystem::FileTransferProgress(__int64 TransferSize,
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::FileTransfer(const UnicodeString & FileName,
   const UnicodeString & LocalFile, const UnicodeString & RemoteFile,
-  const UnicodeString & RemotePath, bool Get, __int64 Size, int Type,
+  const UnicodeString & RemotePath, bool Get, int64_t Size, int Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
   FCurrentOperationProgress = OperationProgress;
@@ -13847,7 +13847,7 @@ bool TWebDAVFileSystem::WebDAVGetFile(
 }
 //------------------------------------------------------------------------------
 bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t * RemotePath,
-  const wchar_t * LocalPath, const unsigned __int64 /*FileSize*/)
+  const wchar_t * LocalPath, const uint64_t /*FileSize*/)
 {
   assert(RemotePath && *RemotePath);
   assert(LocalPath && *LocalPath);
@@ -13988,7 +13988,7 @@ webdav::error_t TWebDAVFileSystem::OpenURL(
 webdav::error_t TWebDAVFileSystem::GetServerSettings(
   int * proxy_method,
   const char ** proxy_host,
-  unsigned int * proxy_port,
+  uint32_t * proxy_port,
   const char ** proxy_username,
   const char ** proxy_password,
   int * timeout_seconds,
@@ -14002,7 +14002,7 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
   // If we find nothing, default to nulls.
   *proxy_method = 0;
   *proxy_host = nullptr;
-  *proxy_port = static_cast<unsigned int>(-1);
+  *proxy_port = static_cast<uint32_t>(-1);
   *proxy_username = nullptr;
   *proxy_password = nullptr;
   *pk11_provider = nullptr;
@@ -14043,7 +14043,7 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
         "Invalid URL: proxy port number greater "
         "than maximum TCP port number 65535");
     }
-    *proxy_port = static_cast<unsigned int>(l_proxy_port);
+    *proxy_port = static_cast<uint32_t>(l_proxy_port);
   }
 
   {
