@@ -237,7 +237,7 @@ bool TFileZillaIntf::ListFile(const wchar_t * AFullFileName)
 }
 #endif
 //---------------------------------------------------------------------------
-bool TFileZillaIntf::FileTransfer(const wchar_t * LocalFile, HANDLE Handle,
+bool TFileZillaIntf::FileTransfer(const wchar_t * LocalFile,
   const wchar_t * RemoteFile, const wchar_t * RemotePath, bool Get, __int64 Size,
   int Type, void * UserData)
 {
@@ -245,7 +245,6 @@ bool TFileZillaIntf::FileTransfer(const wchar_t * LocalFile, HANDLE Handle,
 
   Transfer.localfile = LocalFile;
   Transfer.remotefile = RemoteFile;
-  Transfer.handle = Handle;
   Transfer.remotepath = CServerPath(RemotePath);
   Transfer.get = Get;
   Transfer.size = Size;
@@ -355,7 +354,9 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
             (Data->localtime != NULL) ? Data->localtime->GetTime() : 0,
             (Data->localtime != NULL) && ((Data->localtime->GetHour() != 0) || (Data->localtime->GetMinute() != 0)),
             RemoteTime,
-            reinterpret_cast<void *>(Data->pTransferFile->UserData), RequestResult);
+            reinterpret_cast<void *>(Data->pTransferFile->UserData),
+            Data->localFileHandle,
+            RequestResult);
         }
         catch (...)
         {

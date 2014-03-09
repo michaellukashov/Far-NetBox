@@ -4036,19 +4036,24 @@ void TTerminal::DoAnyCommand(const UnicodeString & Command,
   }
 }
 //------------------------------------------------------------------------------
-bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
-  TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
-  bool NoConfirmation)
+bool TTerminal::DoCreateFile(const UnicodeString & FileName,
+  TFileOperationProgressType * OperationProgress,
+  bool Resume,
+  bool NoConfirmation,
+  OUT HANDLE * AHandle)
 {
   assert(OperationProgress);
   assert(AHandle);
   bool Result = true;
   bool Done;
-  DWORD CreateAttrs = FILE_ATTRIBUTE_NORMAL;
+  DWORD DesiredAccess = GENERIC_WRITE;
+  DWORD ShareMode = FILE_SHARE_READ;
+  DWORD CreationDisposition = Resume ? OPEN_ALWAYS : CREATE_ALWAYS;
+  DWORD FlagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
   do
   {
-    *AHandle = CreateLocalFile(FileName.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
-      CREATE_ALWAYS, CreateAttrs);
+    *AHandle = CreateLocalFile(FileName.c_str(), DesiredAccess, ShareMode,
+      CreationDisposition, FlagsAndAttributes);
     Done = (*AHandle != INVALID_HANDLE_VALUE);
     if (!Done)
     {
@@ -4092,7 +4097,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
 
         if (Result)
         {
-          CreateAttrs |=
+          FlagsAndAttributes |=
             FLAGMASK(FLAGSET(LocalFileAttrs, faHidden), FILE_ATTRIBUTE_HIDDEN) |
             FLAGMASK(FLAGSET(LocalFileAttrs, faReadOnly), FILE_ATTRIBUTE_READONLY);
 
@@ -4119,15 +4124,18 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & FileName,
   return Result;
 }
 //------------------------------------------------------------------------------
-bool TTerminal::CreateLocalFile(const UnicodeString & FileName,
-  TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
-  bool NoConfirmation)
+bool TTerminal::CreateFile(const UnicodeString & FileName,
+  TFileOperationProgressType * OperationProgress,
+  bool Resume,
+  bool NoConfirmation,
+  OUT HANDLE * AHandle)
 {
   assert(OperationProgress);
   assert(AHandle);
   bool Result = true;
   FILE_OPERATION_LOOP (FMTLOAD(CREATE_FILE_ERROR, FileName.c_str()),
-    Result = DoCreateLocalFile(FileName, OperationProgress, AHandle, NoConfirmation);
+    Result = DoCreateFile(FileName, OperationProgress, Resume, NoConfirmation,
+      AHandle);
   );
 
   return Result;

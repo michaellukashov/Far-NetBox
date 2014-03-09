@@ -36,7 +36,7 @@
 #endif
 
 //This structure holds the commands which will be processed by the api.
-//You don't have to fill this struct, you may use the command specific 
+//You don't have to fill this struct, you may use the command specific
 //functions which is easier.
 //See below for a list of supported commands and their parameters.
 typedef struct
@@ -55,24 +55,24 @@ typedef struct
 #define FZ_COMMAND_CONNECT 0x0001
 //Connects to the server passed in t_command::server
 //Possible return values:
-//FZ_REPLY_BUSY, FZ_REPLY_ERROR, FZ_REPLY_INVALIDPARAM, 
-//FZ_REPLY_NOTINITIALIZED, FZ_REPLY_OK, FZ_REPLY_WOULDBLOCK 
+//FZ_REPLY_BUSY, FZ_REPLY_ERROR, FZ_REPLY_INVALIDPARAM,
+//FZ_REPLY_NOTINITIALIZED, FZ_REPLY_OK, FZ_REPLY_WOULDBLOCK
 
 #define FZ_COMMAND_LIST 0x0002
 //Lists the contents of a directory. If no parameter is given, the current
 //directory will be listed, else t_command::path specifies the directory
 //which contents will be listed. t_command::param1 may specify the name
-//of a direct child or parent directory (Use only the last path segment or 
+//of a direct child or parent directory (Use only the last path segment or
 //".."). When the directory listing is successful, it will be sent to the
 //owner window (see FZ_DATA_LIST)
 //t_command::param4 controls the list mode. (See list modes section)
 //Possible return values:
-//FZ_REPLY_BUSY, FZ_REPLY_ERROR, FZ_REPLY_INVALIDPARAM, 
+//FZ_REPLY_BUSY, FZ_REPLY_ERROR, FZ_REPLY_INVALIDPARAM,
 //FZ_REPLY_NOTCONNECTED, FZ_REPLY_NOTINITIALIZED, FZ_REPLY_OK,
 //FZ_REPLY_WOULDBLOCK
 
 #define FZ_COMMAND_FILETRANSFER 0x0004
-//Transfers the file specified with t_command::transferfile, see 
+//Transfers the file specified with t_command::transferfile, see
 //t_transferfile for detailed information
 //Possible return values:
 //FZ_REPLY_BUSY, FZ_REPLY_ERROR, FZ_REPLY_INVALIDPARAM,
@@ -147,6 +147,7 @@ public:
 	__int64 size1;
 	__int64 size2;
 	CTime *localtime;
+	HANDLE localFileHandle;
 	t_directory::t_direntry::t_date remotetime;
 	const t_transferfile *pTransferFile;
 };
@@ -311,13 +312,13 @@ public:
 	int RemoveDir(CString DirName, const CServerPath &path = CServerPath());
 	int Rename(CString oldName,CString newName, const CServerPath &path = CServerPath(), const CServerPath &newPath = CServerPath());
 	int MakeDir(const CServerPath &path);
-	
-	
+
+
 	//Functions to reply to async requests
 
 	//General reply function
 	int SetAsyncRequestResult(int nAction, CAsyncRequestData *pData);
-	
+
 	int Command(t_command *pCommand);
 	int Disconnect();
 	void Destroy();
@@ -336,10 +337,10 @@ public:
 	//Status
 	int IsConnected();
 	int IsBusy();
-	
+
 	//Operations
 	int Connect(const t_server& server);
-	
+
 	int List(int nListMode=FZ_LIST_USECACHE); //Lists current folder
 	int List(const CServerPath& path, int nListMode=FZ_LIST_USECACHE);
 	int List(const CServerPath& parent, CString dirname, int nListMode=FZ_LIST_USECACHE);
@@ -348,7 +349,7 @@ public:
 
 	int FileTransfer(const t_transferfile &TransferFile);
 	int GetCurrentServer(t_server &server);
-	
+
 #ifdef MPEXT
 	int SetCurrentPath(CServerPath path);
 	int GetCurrentPath(CServerPath & path);
