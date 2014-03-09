@@ -53,17 +53,16 @@ const bool operator != (const t_server &a,const t_server &b);
 
 #include "ServerPath.h"
 
-typedef struct
+struct t_transferfile
 {
-    CString localfile;
-    CString remotefile;
-    HANDLE handle;
-    CServerPath remotepath;
-    BOOL get;
-    __int64 size;
-    t_server server;
-    int nType;
-    void *UserData;
-} t_transferfile;
+  CString localfile;
+  CString remotefile;
+  CServerPath remotepath;
+  BOOL get;
+  __int64 size;
+  t_server server;
+  int nType;
+  void *UserData;
+};
 
 #endif

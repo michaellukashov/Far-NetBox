@@ -125,7 +125,9 @@ protected:
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
     int64_t Size1, int64_t Size2, time_t LocalTime,
-    bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData, int & RequestResult);
+    bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData,
+    HANDLE & LocalFileHandle,
+    int & RequestResult);
   bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult);
   bool HandleAsynchRequestNeedPass(
@@ -182,7 +184,7 @@ protected:
   void CaptureOutput(const UnicodeString & Str);
   void DoReadDirectory(TRemoteFileList * FileList);
   void DoReadFile(const UnicodeString & FileName, TRemoteFile *& AFile);
-  void FileTransfer(const UnicodeString & FileName, const UnicodeString & LocalFile, HANDLE Handle,
+  void FileTransfer(const UnicodeString & FileName, const UnicodeString & LocalFile,
     const UnicodeString & RemoteFile, const UnicodeString & RemotePath, bool Get,
     int64_t Size, intptr_t Type, TFileTransferData & UserData,
     TFileOperationProgressType * OperationProgress);

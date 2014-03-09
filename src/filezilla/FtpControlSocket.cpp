@@ -68,7 +68,6 @@ public:
 		bUseAbsolutePaths = FALSE;
 		bTriedPortPasvOnce = FALSE;
 		askOnResumeFail = false;
-		transferfile.handle = INVALID_HANDLE_VALUE;
 	};
 	~CFileTransferData()
 	{
@@ -3810,9 +3809,9 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 				BOOL res = FALSE;
 				if (!m_pDataFile)
 				{
-					if (pData->transferfile.handle!=INVALID_HANDLE_VALUE)
+					if (pData->transferdata.localFileHandle!=INVALID_HANDLE_VALUE)
 					{
-						m_pDataFile = new CFile(pData->transferfile.handle);
+						m_pDataFile = new CFile(pData->transferdata.localFileHandle);
 						m_pDataFile->SetCloseOnDelete(TRUE);
 					}
 					else
@@ -3822,9 +3821,9 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 				}
 				if (pData->transferfile.get)
 				{
-					if (pData->transferdata.bResume)
+					if (pData->transferdata.bResume && pData->transferdata.localFileHandle==INVALID_HANDLE_VALUE)
 						res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeCreate|CFile::modeWrite|CFile::modeNoTruncate|CFile::shareDenyWrite);
-					else if (pData->transferfile.handle==INVALID_HANDLE_VALUE)
+					else if (pData->transferdata.localFileHandle==INVALID_HANDLE_VALUE)
 						res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeWrite|CFile::modeCreate|CFile::shareDenyWrite);
 					else
 						res = TRUE;
@@ -5160,7 +5159,7 @@ int CFtpControlSocket::CheckOverwriteFile()
 	int nReplyError = 0;
 	CFileStatus64 status;
 	BOOL res = FALSE;
-	if (pData->transferfile.handle == INVALID_HANDLE_VALUE)
+	if (pData->transferdata.localFileHandle == INVALID_HANDLE_VALUE)
 	{
 		res = GetStatus64(pData->transferfile.localfile, status);
 	}
@@ -5211,7 +5210,7 @@ int CFtpControlSocket::CheckOverwriteFile()
 				for (int i=0; i<m_pDirectoryListing->num; i++)
 				{
 					CString remotefile = pData->transferfile.remotefile;
-					if (m_pDirectoryListing->direntry[i].name == remotefile && pData->transferfile.handle == INVALID_HANDLE_VALUE)
+					if (m_pDirectoryListing->direntry[i].name == remotefile && pData->transferdata.localFileHandle == INVALID_HANDLE_VALUE)
 					{
 						remotesize = m_pDirectoryListing->direntry[i].size;
 						remotetime = m_pDirectoryListing->direntry[i].date;
@@ -5362,6 +5361,7 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
 		{
 			pTransferData->transferdata.bResume = TRUE;
 		}
+		pTransferData->transferdata.localFileHandle = pData->localFileHandle;
 		pTransferData->nWaitNextOpState = FILETRANSFER_TYPE;
 		break;
 	#ifdef MPEXT

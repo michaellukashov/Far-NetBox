@@ -49,7 +49,8 @@ protected:
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
     int64_t Size1, int64_t Size2, time_t LocalTime,
-    bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData, int & RequestResult);
+    bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData,
+    HANDLE & LocalFileHandle, int & RequestResult);
   virtual bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult);
   virtual bool HandleAsynchRequestNeedPass(
@@ -100,11 +101,13 @@ bool TFileZillaImpl::HandleAsynchRequestOverwrite(
   wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
   const wchar_t * Path1, const wchar_t * Path2,
   int64_t Size1, int64_t Size2, time_t LocalTime,
-  bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData, int & RequestResult)
+  bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData,
+  HANDLE & LocalFileHandle,
+  int & RequestResult)
 {
   return FFileSystem->HandleAsynchRequestOverwrite(
     FileName1, FileName1Len, FileName2, Path1, Path2, Size1, Size2, LocalTime,
-    HasLocalTime, RemoteTime, UserData, RequestResult);
+    HasLocalTime, RemoteTime, UserData, LocalFileHandle, RequestResult);
 }
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::HandleAsynchRequestVerifyCertificate(
@@ -1034,12 +1037,12 @@ void TFTPFileSystem::FileTransferProgress(int64_t TransferSize,
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::FileTransfer(const UnicodeString & FileName,
-  const UnicodeString & LocalFile, HANDLE Handle, const UnicodeString & RemoteFile,
+  const UnicodeString & LocalFile, const UnicodeString & RemoteFile,
   const UnicodeString & RemotePath, bool Get, int64_t Size, intptr_t Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
   FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
-    FFileZillaIntf->FileTransfer(LocalFile.c_str(), Handle, RemoteFile.c_str(),
+    FFileZillaIntf->FileTransfer(LocalFile.c_str(), RemoteFile.c_str(),
       RemotePath.c_str(), Get, Size, (int)Type, &UserData);
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
@@ -1278,21 +1281,14 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
       UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
       UserData.CopyParam = CopyParam;
       UserData.Modification = AFile->GetModification();
-
-      HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-      if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress,
-        &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
-      {
-        ThrowSkipFileNull();
-      }
       try
       {
-        FileTransfer(FileName, DestFullName, LocalFileHandle, OnlyFileName,
+        FileTransfer(FileName, DestFullName, OnlyFileName,
           FilePath, true, AFile->GetSize(), TransferType, UserData, OperationProgress);
       }
       catch (Exception &)
       {
-        ::CloseHandle(LocalFileHandle);
+        //::CloseHandle(LocalFileHandle);
         throw;
       }
     }
@@ -1562,7 +1558,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
       UserData.AutoResume = FLAGSET(Flags, tfAutoResume) || DoResume;
       UserData.CopyParam = CopyParam;
       UserData.Modification = Modification;
-      FileTransfer(RealFileName, FileName, INVALID_HANDLE_VALUE, DestFileName,
+      FileTransfer(RealFileName, FileName, DestFileName,
         TargetDir, false, Size, TransferType, UserData, OperationProgress);
     }
 
@@ -3045,103 +3041,120 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::HandleAsynchRequestOverwrite(
   wchar_t * FileName1, size_t FileName1Len, const wchar_t * /*FileName2*/,
-  const wchar_t * /*Path1*/, const wchar_t * /*Path2*/,
+  const wchar_t * Path1, const wchar_t * /*Path2*/,
   int64_t Size1, int64_t Size2, time_t LocalTime,
-  bool /*HasLocalTime*/, const TRemoteFileTime & RemoteTime, void * AUserData, int & RequestResult)
+  bool /*HasLocalTime*/, const TRemoteFileTime & RemoteTime, void * AUserData,
+  HANDLE & LocalFileHandle,
+  int & RequestResult)
 {
   if (!FActive)
   {
     return false;
   }
+  UnicodeString DestFullName = Path1;
+  AppendPathDelimiterW(DestFullName);
+  DestFullName += FileName1;
+  TFileTransferData & UserData = *(NB_STATIC_DOWNCAST(TFileTransferData, AUserData));
+  if (UserData.OverwriteResult >= 0)
+  {
+    // on retry, use the same answer as on the first attempt
+    RequestResult = UserData.OverwriteResult;
+  }
   else
   {
-    TFileTransferData & UserData = *(NB_STATIC_DOWNCAST(TFileTransferData, AUserData));
-    if (UserData.OverwriteResult >= 0)
+    TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
+    UnicodeString FileName = FileName1;
+    assert(UserData.FileName == FileName);
+    TOverwriteMode OverwriteMode = omOverwrite;
+    TOverwriteFileParams FileParams;
+    bool NoFileParams =
+      (Size1 < 0) || (LocalTime == 0) ||
+      (Size2 < 0) || !RemoteTime.HasDate;
+    if (!NoFileParams)
     {
-      // on retry, use the same answer as on the first attempt
-      RequestResult = UserData.OverwriteResult;
-    }
-    else
-    {
-      TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
-      UnicodeString FileName = FileName1;
-      assert(UserData.FileName == FileName);
-      TOverwriteMode OverwriteMode = omOverwrite;
-      TOverwriteFileParams FileParams;
-      bool NoFileParams =
-        (Size1 < 0) || (LocalTime == 0) ||
-        (Size2 < 0) || !RemoteTime.HasDate;
-      if (!NoFileParams)
+      FileParams.SourceSize = Size2;
+      FileParams.DestSize = Size1;
+
+      if (OperationProgress->Side == osLocal)
       {
-        FileParams.SourceSize = Size2;
-        FileParams.DestSize = Size1;
-
-        if (OperationProgress->Side == osLocal)
-        {
-          FileParams.SourceTimestamp = ConvertLocalTimestamp(LocalTime);
-          RemoteFileTimeToDateTimeAndPrecision(RemoteTime, FileParams.DestTimestamp, FileParams.DestPrecision);
-        }
-        else
-        {
-          FileParams.DestTimestamp = ConvertLocalTimestamp(LocalTime);
-          RemoteFileTimeToDateTimeAndPrecision(RemoteTime, FileParams.SourceTimestamp, FileParams.SourcePrecision);
-        }
-      }
-
-      if (ConfirmOverwrite(FileName, UserData.Params, OperationProgress,
-            OverwriteMode,
-            UserData.AutoResume && UserData.CopyParam->AllowResume(FileParams.SourceSize),
-            NoFileParams ? nullptr : &FileParams, UserData.CopyParam))
-      {
-        switch (OverwriteMode)
-        {
-          case omOverwrite:
-            if (FileName != FileName1)
-            {
-              wcsncpy(FileName1, FileName.c_str(), FileName1Len);
-              FileName1[FileName1Len - 1] = L'\0';
-              UserData.FileName = FileName1;
-              RequestResult = TFileZillaIntf::FILEEXISTS_RENAME;
-            }
-            else
-            {
-              RequestResult = TFileZillaIntf::FILEEXISTS_OVERWRITE;
-            }
-            break;
-
-          case omResume:
-            RequestResult = TFileZillaIntf::FILEEXISTS_RESUME;
-            break;
-
-          case omComplete:
-            FTerminal->LogEvent(L"File transfer was completed before disconnect");
-            RequestResult = TFileZillaIntf::FILEEXISTS_COMPLETE;
-            break;
-
-          default:
-            assert(false);
-            RequestResult = TFileZillaIntf::FILEEXISTS_OVERWRITE;
-            break;
-        }
+        FileParams.SourceTimestamp = ConvertLocalTimestamp(LocalTime);
+        RemoteFileTimeToDateTimeAndPrecision(RemoteTime, FileParams.DestTimestamp, FileParams.DestPrecision);
       }
       else
       {
-        RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
+        FileParams.DestTimestamp = ConvertLocalTimestamp(LocalTime);
+        RemoteFileTimeToDateTimeAndPrecision(RemoteTime, FileParams.SourceTimestamp, FileParams.SourcePrecision);
       }
     }
 
-    // remember the answer for the retries
-    UserData.OverwriteResult = RequestResult;
-
-    if (RequestResult == TFileZillaIntf::FILEEXISTS_SKIP)
+    if (ConfirmOverwrite(FileName, UserData.Params, OperationProgress,
+          OverwriteMode,
+          UserData.AutoResume && UserData.CopyParam->AllowResume(FileParams.SourceSize),
+          NoFileParams ? nullptr : &FileParams, UserData.CopyParam))
     {
-      // when user chooses not to overwrite, break loop waiting for response code
-      // by setting dummy one, as FZAPI won't do anything then
-      SetLastCode(DummyTimeoutCode);
-    }
+      switch (OverwriteMode)
+      {
+        case omOverwrite:
+          if (!FTerminal->CreateFile(DestFullName, OperationProgress,
+            false, true,
+            &LocalFileHandle))
+          {
+            RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
+            break;
+          }
+          if (FileName != FileName1)
+          {
+            wcsncpy(FileName1, FileName.c_str(), FileName1Len);
+            FileName1[FileName1Len - 1] = L'\0';
+            UserData.FileName = FileName1;
+            RequestResult = TFileZillaIntf::FILEEXISTS_RENAME;
+          }
+          else
+          {
+            RequestResult = TFileZillaIntf::FILEEXISTS_OVERWRITE;
+          }
+          break;
 
-    return true;
+        case omResume:
+          if (!FTerminal->CreateFile(DestFullName, OperationProgress,
+            true, true,
+            &LocalFileHandle))
+          {
+//            ThrowSkipFileNull();
+            RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
+          }
+          else
+            RequestResult = TFileZillaIntf::FILEEXISTS_RESUME;
+          break;
+
+        case omComplete:
+          FTerminal->LogEvent(L"File transfer was completed before disconnect");
+          RequestResult = TFileZillaIntf::FILEEXISTS_COMPLETE;
+          break;
+
+        default:
+          assert(false);
+          RequestResult = TFileZillaIntf::FILEEXISTS_OVERWRITE;
+          break;
+      }
+    }
+    else
+    {
+      RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
+    }
   }
+
+  // remember the answer for the retries
+  UserData.OverwriteResult = RequestResult;
+
+  if (RequestResult == TFileZillaIntf::FILEEXISTS_SKIP)
+  {
+    // when user chooses not to overwrite, break loop waiting for response code
+    // by setting dummy one, as FZAPI won't do anything then
+    SetLastCode(DummyTimeoutCode);
+  }
+
+  return true;
 }
 //---------------------------------------------------------------------------
 #if defined(__BORLANDC__)

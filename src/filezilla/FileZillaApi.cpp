@@ -47,7 +47,7 @@ static char THIS_FILE[]=__FILE__;
 CFileZillaApi::CFileZillaApi()
 {
 	m_hOwnerWnd=0;
-#ifndef MPEXT  
+#ifndef MPEXT
 	//Create Message IDs
 	m_nReplyMessageID=RegisterWindowMessage( _T("FileZillaApiReplyMessage{8EF2E328-685E-4815-A9B9-823512F8381D}") );
 #else
@@ -85,7 +85,7 @@ int CFileZillaApi::Init(CApiLog * pParent, CFileZillaTools * pTools)
 	m_nInternalMessageID=RegisterWindowMessage( _T("FileZillaInternalApiMessage{F958620E-040C-4b33-A091-7E04E10AA660}") );
 	if (!m_nInternalMessageID)
 		return FZ_REPLY_NOTINITIALIZED;
-	
+
 	//Create thread object
 	m_pMainThread = CMainThread::Create(THREAD_PRIORITY_BELOW_NORMAL, CREATE_SUSPENDED);
 
@@ -101,7 +101,7 @@ int CFileZillaApi::Init(CApiLog * pParent, CFileZillaTools * pTools)
 #else
 	m_pMainThread->InitLog(pParent);
 #endif
-	
+
 	//Resume Thread
 	m_pMainThread->ResumeThread();
 
@@ -279,7 +279,7 @@ void CFileZillaApi::Destroy()
 #ifndef MPEXT
 	PostMessage(m_hOwnerWnd, m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_QUITCOMPLETE, 0), 0);
 #endif
-		
+
 	m_pMainThread=0;
 	m_bInitialized=FALSE;
 }
@@ -293,7 +293,7 @@ int CFileZillaApi::Disconnect()
 		return FZ_REPLY_NOTCONNECTED;
 	if (IsBusy()==FZ_REPLY_BUSY)
 		return FZ_REPLY_BUSY;
-	
+
 	m_pMainThread->PostThreadMessage(m_nInternalMessageID,FZAPI_THREADMSG_DISCONNECT,0);
 	return FZ_REPLY_WOULDBLOCK;
 }
@@ -361,7 +361,7 @@ int CFileZillaApi::List(const CServerPath& path, int nListMode /*=FZ_LIST_USECAC
 #endif
 	if (path.IsEmpty())
 		return FZ_REPLY_INVALIDPARAM;
-	
+
 #ifndef MPEXT_NO_CACHE
 	//Check if current dir is cached
 	if (nListMode&FZ_LIST_USECACHE && !(nListMode&FZ_LIST_REALCHANGE))
@@ -491,7 +491,7 @@ int CFileZillaApi::ListFile(const CServerPath& path, const CString& fileName)
 		return FZ_REPLY_NOTCONNECTED;
 	if (fileName.IsEmpty())
 		return FZ_REPLY_INVALIDPARAM;
-	
+
 	if (m_pMainThread->IsBusy())
 		return FZ_REPLY_BUSY;
 	t_command command;
@@ -718,7 +718,7 @@ int CFileZillaApi::MakeDir(const CServerPath &path)
 		return FZ_REPLY_WOULDBLOCK;
 	else
 		return m_pMainThread->LastOperationSuccessful()?FZ_REPLY_OK:FZ_REPLY_ERROR;
-	
+
 	return FZ_REPLY_ERROR;
 }
 
@@ -753,7 +753,7 @@ int CFileZillaApi::Rename(CString oldName, CString newName, const CServerPath &p
 		return FZ_REPLY_WOULDBLOCK;
 	else
 		return m_pMainThread->LastOperationSuccessful()?FZ_REPLY_OK:FZ_REPLY_ERROR;
-	
+
 	return FZ_REPLY_ERROR;
 }
 
@@ -764,7 +764,7 @@ int CFileZillaApi::SetAsyncRequestResult(int nAction, CAsyncRequestData *pData)
 
 	if (IsBadWritePtr(pData, sizeof(CAsyncRequestData)))
 		return FZ_REPLY_CRITICALERROR;
-	
+
 	if (!m_bInitialized)
 	{
 		delete pData;
@@ -816,7 +816,7 @@ int CFileZillaApi::SetAsyncRequestResult(int nAction, CAsyncRequestData *pData)
 	}
 
 	m_pMainThread->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_ASYNCREQUESTREPLY, reinterpret_cast<LPARAM>(pData));
-	
+
 	return FZ_REPLY_OK;
 }
 
@@ -913,6 +913,7 @@ COverwriteRequestData::COverwriteRequestData()
 	size2 = 0;
 	nRequestType=FZ_ASYNCREQUEST_OVERWRITE;
 	localtime=0;
+	localFileHandle = INVALID_HANDLE_VALUE;
 	remotetime.hasdate = false;
 	pTransferFile=0;
 }
