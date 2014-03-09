@@ -1,5 +1,7 @@
 NetBox 2.1.35 ??.03.2014
 --------------------
+  * bugfix: FTP: resume download did not work
+    (http://forum.farmanager.com/memberlist.php?mode=viewprofile&u=420)
   * fix issue #57: "Could not retrieve directory listing" error when attempting to access FTP
     (https://github.com/michaellukashov/Far-NetBox/issues/57)
 
