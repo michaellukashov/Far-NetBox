@@ -10580,7 +10580,7 @@ neon_get_props(
   stringbuf_t * body = stringbuf_create("<?xml version=\"1.0\" encoding=\"utf-8\"?>" DEBUG_CR
     "<propfind xmlns=\"DAV:\">" DEBUG_CR, pool);
 
-  // Are we asking for specific propert(y/ies), or just all of them?
+  // Are we asking for specific property(/ies), or just all of them?
   if (which_props)
   {
     apr_pool_t * iterpool = webdav_pool_create(pool);
@@ -12325,7 +12325,7 @@ void TWebDAVFileSystem::EnsureLocation()
       // when location to cached directory fails, pretend again
       // location in cached directory
       // here used to be check (CurrentDirectory != Directory), but it is
-      // false always (currentdirectory is already set to cached directory),
+      // false always (current directory is already set to cached directory),
       // making the condition below useless. check removed.
       if (FTerminal->GetActive())
       {
