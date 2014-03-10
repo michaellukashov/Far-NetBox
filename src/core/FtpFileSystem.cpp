@@ -3429,7 +3429,12 @@ bool TFTPFileSystem::HandleAsynchRequestNeedPass(
   else
   {
     UnicodeString Password = L"";
-    if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), L"",
+    if (!FPasswordFailed && FTerminal->GetSessionData()->GetLoginType() == ltAnonymous)
+    {
+      Data.Password = _wcsdup(Password.c_str());
+      RequestResult = TFileZillaIntf::REPLY_OK;
+    }
+    else if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), L"",
       LoadStr(PASSWORD_PROMPT), false, 0, Password))
     {
       Data.Password = _wcsdup(Password.c_str());
