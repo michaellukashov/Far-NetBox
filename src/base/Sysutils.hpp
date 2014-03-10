@@ -305,6 +305,16 @@ struct TFileTime
 
 struct TSearchRec
 {
+  TSearchRec() :
+    Time(0),
+    Size(0),
+    Attr(0),
+    ExcludeAttr(0),
+    FindHandle(INVALID_HANDLE_VALUE)
+  {
+//    memset(&FindData, 0, sizeof(FindData));
+    ClearStruct(FindData);
+  }
   Integer Time;
   Int64 Size;
   Integer Attr;

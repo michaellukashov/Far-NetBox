@@ -971,10 +971,10 @@ UnicodeString ExpandUNCFileName(const UnicodeString & FileName)
 }
 
 //---------------------------------------------------------------------------
-static int FindMatchingFile(TSearchRec & Rec)
+static DWORD FindMatchingFile(TSearchRec & Rec)
 {
   TFileTime LocalFileTime = {0};
-  int Result = 0;
+  DWORD Result = ERROR_SUCCESS;
   while ((Rec.FindData.dwFileAttributes && Rec.ExcludeAttr) != 0)
   {
     if (!::FindNextFile(Rec.FindHandle, &Rec.FindData))
@@ -991,7 +991,7 @@ static int FindMatchingFile(TSearchRec & Rec)
   Rec.Size = Rec.FindData.nFileSizeLow || static_cast<Int64>(Rec.FindData.nFileSizeHigh) << 32;
   Rec.Attr = Rec.FindData.dwFileAttributes;
   Rec.Name = Rec.FindData.cFileName;
-  Result = 0;
+  Result = ERROR_SUCCESS;
   return Result;
 }
 
@@ -1001,11 +1001,11 @@ DWORD FindFirst(const UnicodeString & FileName, DWORD LocalFileAttrs, TSearchRec
   const DWORD faSpecial = faHidden | faSysFile | faDirectory;
   Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
   Rec.FindHandle = ::FindFirstFile(FileName.c_str(), &Rec.FindData);
-  DWORD Result = 0;
+  DWORD Result = ERROR_SUCCESS;
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)
   {
     Result = FindMatchingFile(Rec);
-    if (Result != 0)
+    if (Result != ERROR_SUCCESS)
     {
       FindClose(Rec);
     }
