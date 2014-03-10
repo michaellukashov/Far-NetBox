@@ -1538,6 +1538,7 @@ bool TTerminal::DoQueryReopen(Exception * E)
       TQueryButtonAlias Aliases[1];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(RECONNECT_BUTTON);
+      Aliases[0].Default = true;
       Params.Aliases = Aliases;
       Params.AliasesCount = LENOF(Aliases);
       Result = (QueryUserException(L"", E, qaRetry | qaAbort, &Params, qtError) == qaRetry);

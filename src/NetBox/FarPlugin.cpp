@@ -18,17 +18,18 @@ TCustomFarPlugin * FarPlugin = nullptr;
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-TFarMessageParams::TFarMessageParams()
+TFarMessageParams::TFarMessageParams() :
+  MoreMessages(nullptr),
+  CheckBox(false),
+  Timer(0),
+  TimerAnswer(0),
+  TimerEvent(nullptr),
+  Timeout(0),
+  TimeoutButton(0),
+  DefaultButton(0),
+  ClickEvent(nullptr),
+  Token(nullptr)
 {
-  MoreMessages = nullptr;
-  CheckBox = false;
-  Timer = 0;
-  TimerAnswer = 0;
-  TimerEvent = nullptr;
-  Timeout = 0;
-  TimeoutButton = 0;
-  ClickEvent = nullptr;
-  Token = nullptr;
 }
 //---------------------------------------------------------------------------
 TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
@@ -764,7 +765,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin * Plugin,
   FTimeoutButton(nullptr),
   FCheckBox(nullptr)
 {
-  assert(Params != nullptr);
+  assert(FParams != nullptr);
 }
 //---------------------------------------------------------------------------
 void TFarMessageDialog::Init(uintptr_t AFlags,
@@ -774,7 +775,6 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
   assert(FLAGCLEAR(AFlags, FMSG_KEEPBACKGROUND));
   // FIXME assert(FLAGCLEAR(AFlags, FMSG_DOWN));
   assert(FLAGCLEAR(AFlags, FMSG_ALLINONE));
-
   std::unique_ptr<TStrings> MessageLines(new TStringList());
   FarWrapText(Message, MessageLines.get(), MaxMessageWidth);
   intptr_t MaxLen = GetFarPlugin()->MaxLength(MessageLines.get());
@@ -832,7 +832,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
   {
     TFarButton * PrevButton = Button;
     Button = new TFarButton(this);
-    Button->SetDefault(Index == 0);
+    Button->SetDefault(FParams->DefaultButton == Index);
     Button->SetBrackets(brNone);
     Button->SetOnClick(MAKE_CALLBACK(TFarMessageDialog::ButtonClick, this));
     UnicodeString Caption = Buttons->GetString(Index);

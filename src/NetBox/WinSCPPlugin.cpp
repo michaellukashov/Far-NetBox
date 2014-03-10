@@ -559,11 +559,11 @@ struct TFarMessageData : public TObject
 {
 NB_DECLARE_CLASS(TFarMessageData)
 public:
-  TFarMessageData()
+  TFarMessageData() :
+    Params(nullptr),
+    ButtonCount(0)
   {
-    Params = nullptr;
-    memset(Buttons, 0, sizeof(Buttons));
-    ButtonCount = 0;
+    ClearArray(Buttons);
   }
 
   const TMessageParams * Params;
@@ -688,6 +688,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   USEDPARAM(NeverAskAgainPending);
   assert(!NeverAskAgainPending);
 
+  uintptr_t DefaultButtonIndex = 0;
   if ((Params != nullptr) && (Params->Aliases != nullptr))
   {
     for (uintptr_t bi = 0; bi < Data.ButtonCount; bi++)
@@ -698,6 +699,8 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
             !Params->Aliases[ai].Alias.IsEmpty())
         {
           ButtonLabels->SetString(bi, Params->Aliases[ai].Alias);
+          if (Params->Aliases[ai].Default)
+            DefaultButtonIndex = bi;
           break;
         }
       }
@@ -731,6 +734,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   }
 
   FarParams.Token = &Data;
+  FarParams.DefaultButton = DefaultButtonIndex;
   FarParams.ClickEvent = MAKE_CALLBACK(TWinSCPPlugin::MessageClick, this);
 
   if (MoreMessages && (MoreMessages->GetCount() > 0))
