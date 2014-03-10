@@ -542,7 +542,7 @@ void TConfiguration::CleanupConfiguration()
       FDontSave = true;
     }
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     throw ExtException(&E, LoadStr(CLEANUP_CONFIG_ERROR));
   }
@@ -560,7 +560,7 @@ void TConfiguration::CleanupHostKeys()
   {
     CleanupRegistry(GetSshHostKeysSubKey());
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     throw ExtException(&E, LoadStr(CLEANUP_HOSTKEYS_ERROR));
   }
@@ -576,7 +576,7 @@ void TConfiguration::CleanupRandomSeedFile()
       DeleteFileChecked(GetRandomSeedFileName());
     }
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     throw ExtException(&E, LoadStr(CLEANUP_SEEDFILE_ERROR));
   }
@@ -597,7 +597,7 @@ void TConfiguration::CleanupIniFile()
     }
 #endif
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     throw ExtException(&E, LoadStr(CLEANUP_INIFILE_ERROR));
   }
@@ -761,7 +761,7 @@ UnicodeString TConfiguration::GetVersionStr() const
       HIWORD(Info->dwFileVersionLS),
       LOWORD(Info->dwFileVersionLS));
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     throw ExtException(&E, L"Can't get application version");
   }
@@ -783,7 +783,7 @@ UnicodeString TConfiguration::GetVersion() const
         HIWORD(Info->dwFileVersionLS));
     }
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     throw ExtException(&E, L"Can't get application version");
   }

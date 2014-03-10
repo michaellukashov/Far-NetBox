@@ -2539,7 +2539,7 @@ void TTerminal::ReadCurrentDirectory()
     }
     /* if (OldDirectory != FFileSystem->GetCurrentDirectory()) */ { DoChangeDirectory(); }
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     CommandError(&E, LoadStr(READ_CURRENT_DIR_ERROR));
   }
@@ -2612,7 +2612,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
         CustomReadDirectory(Files);
       }
     }
-    catch (Exception &E)
+    catch (Exception & E)
     {
       CommandError(&E, FmtLoadStr(LIST_DIR_ERROR, FFiles->GetDirectory().c_str()));
     }
@@ -2832,7 +2832,7 @@ void TTerminal::ReadDirectory(TRemoteFileList * FileList)
   {
     CustomReadDirectory(FileList);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     CommandError(&E, FmtLoadStr(LIST_DIR_ERROR, FileList->GetDirectory().c_str()));
   }
@@ -2848,7 +2848,7 @@ void TTerminal::ReadSymlink(TRemoteFile * SymlinkFile,
     FFileSystem->ReadSymlink(SymlinkFile, File);
     ReactOnCommand(fsReadSymlink);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     CommandError(&E, FMTLOAD(READ_SYMLINK_ERROR, SymlinkFile->GetFileName().c_str()));
   }
@@ -2866,7 +2866,7 @@ void TTerminal::ReadFile(const UnicodeString & FileName,
     ReactOnCommand(fsListFile);
     LogRemoteFile(AFile);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     if (AFile)
     {
@@ -3834,7 +3834,7 @@ void TTerminal::HomeDirectory()
     FFileSystem->HomeDirectory();
     ReactOnCommand(fsHomeDirectory);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     CommandError(&E, LoadStr(CHANGE_HOMEDIR_ERROR));
   }
@@ -3867,7 +3867,7 @@ void TTerminal::ChangeDirectory(const UnicodeString & Directory)
     FLastDirectoryChange = DirectoryNormalized;
     ReactOnCommand(fsChangeDirectory);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     CommandError(&E, FMTLOAD(CHANGE_DIR_ERROR, DirectoryNormalized.c_str()));
   }
@@ -3894,7 +3894,7 @@ void TTerminal::LookupUsersGroups()
         FUsers.Log(this, L"users");
       }
     }
-    catch (Exception &E)
+    catch (Exception & E)
     {
       if (!GetActive() || (GetSessionData()->GetLookupUserGroups() == asOn))
       {
@@ -4017,7 +4017,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & Command,
     }
     ReactOnCommand(fsAnyCommand);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     if (Action != nullptr)
     {
@@ -5206,7 +5206,7 @@ void TTerminal::SpaceAvailable(const UnicodeString & Path,
   {
     FFileSystem->SpaceAvailable(Path, ASpaceAvailable);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     CommandError(&E, FMTLOAD(SPACE_AVAILABLE_ERROR, Path.c_str()));
   }
@@ -5343,7 +5343,7 @@ bool TTerminal::CopyToRemote(TStrings * AFilesToCopy,
       }
     }
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     if (OperationProgress.Cancel != csCancel)
     {
@@ -5442,7 +5442,7 @@ bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
         FFileSystem->CopyToLocal(AFilesToCopy, TargetDir, CopyParam, Params,
           &OperationProgress, OnceDoneOperation);
       }
-      catch (Exception &E)
+      catch (Exception & E)
       {
         if (OperationProgress.Cancel != csCancel)
         {

@@ -2694,7 +2694,7 @@ void TSFTPFileSystem::DoStartup()
   {
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_VERSION);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     FTerminal->FatalError(&E, LoadStr(SFTP_INITIALIZE_ERROR));
   }
@@ -3210,7 +3210,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
               ::UnixIncludeTrailingBackslash(FileList->GetDirectory()) + PARENTDIRECTORY, File);
           }
         }
-        catch (Exception &E)
+        catch (Exception & E)
         {
           if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
           {

@@ -658,7 +658,7 @@ bool TSCPFileSystem::IsLastLine(UnicodeString & Line)
   {
     Result = RemoveLastLine(Line, FReturnCode, FCommandSet->GetLastLine());
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     FTerminal->TerminalError(&E, LoadStr(CANT_DETECT_RETURN_CODE));
   }
@@ -929,7 +929,7 @@ void TSCPFileSystem::DetectReturnVar()
         FCommandSet->GetReturnVar().c_str()));
     }
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     FTerminal->CommandError(&E, LoadStr(DETECT_RETURNVAR_ERROR));
   }
@@ -957,7 +957,7 @@ void TSCPFileSystem::ClearAliases()
       ClearAlias(CommandList->GetString(Index));
     }
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     FTerminal->CommandError(&E, LoadStr(UNALIAS_ALL_ERROR));
   }
@@ -973,7 +973,7 @@ void TSCPFileSystem::UnsetNationalVars()
       ExecCommand2(fsUnset, 0, NationalVars[Index], false);
     }
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     FTerminal->CommandError(&E, LoadStr(UNSET_NATIONAL_ERROR));
   }
@@ -1542,7 +1542,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
             (Failed ? 0 : coRaiseExcept));
         }
       }
-      catch (Exception &E)
+      catch (Exception & E)
       {
         // Only log error message (it should always succeed, but
         // some pending error maybe in queue) }
@@ -2444,7 +2444,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
           AbsoluteFileName = SourceDir + OnlyFileName;
           OperationProgress->SetTransferSize(TSize);
         }
-        catch (Exception &E)
+        catch (Exception & E)
         {
           TSuspendFileOperationProgress Suspend(OperationProgress);
           FTerminal->GetLog()->AddException(&E);
@@ -2559,7 +2559,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
 
                 FileStream.reset(new TSafeHandleStream(LocalFileHandle));
               }
-              catch (Exception &E)
+              catch (Exception & E)
               {
                 // In this step we can still cancel transfer, so we do it
                 SCPError(E.Message, false);
@@ -2619,7 +2619,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                 while (!OperationProgress->IsLocallyDone() || !
                     OperationProgress->IsTransferDone());
               }
-              catch (Exception &E)
+              catch (Exception & E)
               {
                 // Every exception during file transfer is fatal
                 FTerminal->FatalError(&E,
@@ -2680,7 +2680,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
         }
       }
     }
-    catch (EFileSkipped &E)
+    catch (EFileSkipped & E)
     {
       if (!SkipConfirmed)
       {
