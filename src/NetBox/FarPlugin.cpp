@@ -2933,7 +2933,7 @@ UnicodeString TGlobalFunctions::GetCurrentDirectory() const
 
 UnicodeString TGlobalFunctions::GetStrVersionNumber() const
 {
-  return NETBOX_VERSION_NUMBER;
+  return NETBOX_VERSION_NUMBER.c_str();
 }
 //------------------------------------------------------------------------------
 NB_IMPLEMENT_CLASS(TCustomFarFileSystem, NB_GET_CLASS_INFO(TObject), nullptr);

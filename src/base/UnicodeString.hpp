@@ -20,7 +20,6 @@ public:
   UTF8String(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
   UTF8String(const char * Str, intptr_t Size) { Init(Str, Size); }
   UTF8String(const UnicodeString & Str);
-  UTF8String(const std::wstring & Str) { Init(Str.c_str(), Str.size()); }
 
   ~UTF8String() {}
 
@@ -50,7 +49,6 @@ public:
   UTF8String & operator=(wchar_t chData);
 
   UTF8String operator +(const UTF8String & rhs) const;
-  UTF8String operator +(const std::wstring & rhs) const;
   UTF8String operator +(const RawByteString & rhs) const;
   UTF8String & operator +=(const UTF8String & rhs);
   UTF8String & operator +=(const RawByteString & rhs);
@@ -84,7 +82,6 @@ public:
 
   UnicodeString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
   UnicodeString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
-  UnicodeString(const std::wstring & Str) { Init(Str.c_str(), Str.size()); }
 
   ~UnicodeString() {}
 
@@ -150,7 +147,6 @@ public:
   UnicodeString & operator=(const RawByteString & StrCopy);
   UnicodeString & operator=(const AnsiString & StrCopy);
   UnicodeString & operator=(const UTF8String & StrCopy);
-  UnicodeString & operator=(const std::wstring & StrCopy);
   UnicodeString & operator=(const wchar_t * lpwszData);
   UnicodeString & operator=(const char * lpszData);
   UnicodeString & operator=(const wchar_t Ch);
@@ -159,7 +155,6 @@ public:
   UnicodeString operator +(const RawByteString & rhs) const;
   UnicodeString operator +(const AnsiString & rhs) const;
   UnicodeString operator +(const UTF8String & rhs) const;
-  UnicodeString operator +(const std::wstring & rhs) const;
 
   friend UnicodeString operator +(const wchar_t lhs, const UnicodeString & rhs);
   friend UnicodeString operator +(const UnicodeString & lhs, wchar_t rhs);
@@ -171,7 +166,6 @@ public:
   UnicodeString & operator +=(const wchar_t * rhs);
   UnicodeString & operator +=(const UTF8String & rhs);
   UnicodeString & operator +=(const RawByteString & rhs);
-  UnicodeString & operator +=(const std::wstring & rhs);
   UnicodeString & operator +=(const char rhs);
   UnicodeString & operator +=(const char * rhs);
   UnicodeString & operator +=(const wchar_t rhs);
@@ -262,7 +256,6 @@ public:
   AnsiString & operator=(const RawByteString & strCopy);
   AnsiString & operator=(const AnsiString & strCopy);
   AnsiString & operator=(const UTF8String & strCopy);
-  AnsiString & operator=(const std::wstring & strCopy);
   AnsiString & operator=(const char * lpszData);
   AnsiString & operator=(const wchar_t * lpwszData);
   AnsiString & operator=(wchar_t chData);
@@ -271,7 +264,6 @@ public:
   AnsiString operator +(const RawByteString & rhs) const;
   AnsiString operator +(const AnsiString & rhs) const;
   AnsiString operator +(const UTF8String & rhs) const;
-  AnsiString operator +(const std::wstring & rhs) const;
   AnsiString operator +(const char * rhs) const;
 
   AnsiString & operator +=(const UnicodeString & rhs);
@@ -325,7 +317,6 @@ public:
   RawByteString(const RawByteString & Str) { Init(Str.c_str(), Str.GetLength()); }
   RawByteString(const AnsiString & Str) { Init(Str.c_str(), Str.GetLength()); }
   RawByteString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
-  RawByteString(const std::wstring & Str) { Init(Str.c_str(), Str.size()); }
   ~RawByteString() {}
 
   operator const char * () const { return reinterpret_cast<const char *>(Data.c_str()); }
@@ -352,7 +343,6 @@ public:
   RawByteString & operator=(const RawByteString & strCopy);
   RawByteString & operator=(const AnsiString & strCopy);
   RawByteString & operator=(const UTF8String & strCopy);
-  RawByteString & operator=(const std::wstring & strCopy);
   RawByteString & operator=(const char * lpszData);
   RawByteString & operator=(const wchar_t * lpwszData);
   RawByteString & operator=(wchar_t chData);
@@ -361,13 +351,11 @@ public:
   RawByteString operator +(const RawByteString & rhs) const;
   RawByteString operator +(const AnsiString & rhs) const;
   RawByteString operator +(const UTF8String & rhs) const;
-  RawByteString operator +(const std::wstring & rhs) const;
 
   RawByteString & operator +=(const UnicodeString & rhs);
   RawByteString & operator +=(const RawByteString & rhs);
   RawByteString & operator +=(const AnsiString & rhs);
   RawByteString & operator +=(const UTF8String & rhs);
-  RawByteString & operator +=(const std::wstring & rhs);
   RawByteString & operator +=(const char Ch);
   RawByteString & operator +=(const char * rhs);
 

@@ -243,12 +243,6 @@ RawByteString & RawByteString::operator=(const UTF8String & StrCopy)
   return *this;
 }
 
-RawByteString & RawByteString::operator=(const std::wstring & StrCopy)
-{
-  Init(StrCopy.c_str(), StrCopy.size());
-  return *this;
-}
-
 RawByteString & RawByteString::operator=(const char * lpszData)
 {
   Init(lpszData, strlen(lpszData ? lpszData : ""));
@@ -535,12 +529,6 @@ UnicodeString & UnicodeString::operator=(const UTF8String & StrCopy)
   return *this;
 }
 
-UnicodeString & UnicodeString::operator=(const std::wstring & StrCopy)
-{
-  Init(StrCopy.c_str(), StrCopy.size());
-  return *this;
-}
-
 UnicodeString & UnicodeString::operator=(const wchar_t * Str)
 {
   Init(Str, wcslen(NullToEmpty(Str)));
@@ -581,12 +569,6 @@ UnicodeString & UnicodeString::operator +=(const RawByteString & rhs)
 {
   UnicodeString s(rhs.c_str(), rhs.Length());
   Data.append(s.Data.c_str(), s.Length());
-  return *this;
-}
-
-UnicodeString & UnicodeString::operator +=(const std::wstring & rhs)
-{
-  Data.append(rhs.c_str(), rhs.size());
   return *this;
 }
 

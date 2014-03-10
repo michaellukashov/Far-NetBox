@@ -222,14 +222,14 @@ UnicodeString UpperCase(const UnicodeString & Str)
   std::wstring Result(Str.c_str(), Str.Length());
   // Result.SetLength(Str.Length());
   std::transform(Result.begin(), Result.end(), Result.begin(), ::toupper);
-  return Result;
+  return Result.c_str();
 }
 
 UnicodeString LowerCase(const UnicodeString & Str)
 {
   std::wstring Result(Str.c_str(), Str.Length());
   std::transform(Result.begin(), Result.end(), Result.begin(), ::tolower);
-  return Result;
+  return Result.c_str();
 }
 
 //---------------------------------------------------------------------------
@@ -1234,7 +1234,7 @@ UnicodeString HexToStr(const UnicodeString & Hex)
       }
     }
   }
-  return UnicodeString(Result);
+  return UnicodeString(Result.c_str());
 }
 
 //---------------------------------------------------------------------------
