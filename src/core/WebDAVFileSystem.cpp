@@ -12578,11 +12578,12 @@ void TWebDAVFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
 }
 //------------------------------------------------------------------------------
 bool TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & FileName,
-  TOverwriteMode & OverwriteMode, TFileOperationProgressType * OperationProgress,
+  TFileOperationProgressType * OperationProgress,
   const TOverwriteFileParams * FileParams,
   const TCopyParamType * CopyParam, intptr_t Params,
   bool AutoResume,
-  uintptr_t & Answer)
+  OUT TOverwriteMode & OverwriteMode,
+  OUT uintptr_t & Answer)
 {
   bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
   bool CanResume = false; // disable resume
@@ -12885,8 +12886,9 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
 
         TOverwriteMode OverwriteMode = omOverwrite;
         bool AutoResume = false;
-        ConfirmOverwrite(FileNameOnly, OverwriteMode, OperationProgress,
-            &FileParams, CopyParam, Params, AutoResume, Answer);
+        ConfirmOverwrite(FileNameOnly, OperationProgress,
+            &FileParams, CopyParam, Params, AutoResume,
+            OverwriteMode, Answer);
         switch (Answer)
         {
           case qaYes:
@@ -13345,8 +13347,9 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
       uintptr_t Answer = 0;
       TOverwriteMode OverwriteMode = omOverwrite;
       bool AutoResume = false;
-      ConfirmOverwrite(DestFullName, OverwriteMode, OperationProgress,
-          &FileParams, CopyParam, Params, AutoResume, Answer);
+      ConfirmOverwrite(DestFullName, OperationProgress,
+          &FileParams, CopyParam, Params, AutoResume,
+          OverwriteMode, Answer);
       switch (Answer)
       {
         case qaCancel:

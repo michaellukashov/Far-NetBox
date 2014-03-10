@@ -3857,7 +3857,8 @@ void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::SFTPConfirmOverwrite(UnicodeString & FileName,
   const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
-  TOverwriteMode & OverwriteMode, const TOverwriteFileParams * FileParams)
+  const TOverwriteFileParams * FileParams,
+  OUT TOverwriteMode & OverwriteMode)
 {
   bool CanAppend = (FVersion < 4) || !OperationProgress->AsciiTransfer;
   bool CanResume =
@@ -4285,7 +4286,8 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
               {
                 UnicodeString PrevDestFileName = DestFileName;
                 SFTPConfirmOverwrite(DestFileName,
-                  CopyParam, Params, OperationProgress, OpenParams.OverwriteMode, &FileParams);
+                  CopyParam, Params, OperationProgress, &FileParams,
+                  OpenParams.OverwriteMode);
                 if (PrevDestFileName != DestFileName)
                 {
                   // update paths in case user changes the file name
@@ -4711,7 +4713,8 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
           // confirmation duplicated in SFTPSource for resumable file transfers.
           UnicodeString RemoteFileNameOnly = ::UnixExtractFileName(OpenParams->RemoteFileName);
           SFTPConfirmOverwrite(RemoteFileNameOnly,
-            OpenParams->CopyParam, OpenParams->Params, OperationProgress, OpenParams->OverwriteMode, OpenParams->FileParams);
+            OpenParams->CopyParam, OpenParams->Params, OperationProgress, OpenParams->FileParams,
+            OpenParams->OverwriteMode);
           if (RemoteFileNameOnly != ::UnixExtractFileName(OpenParams->RemoteFileName))
           {
             OpenParams->RemoteFileName =
@@ -5270,7 +5273,8 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           GetSessionData()->GetDSTMode());
         FileParams.DestSize = DestFileSize;
         UnicodeString PrevDestFileName = DestFileName;
-        SFTPConfirmOverwrite(DestFileName, CopyParam, Params, OperationProgress, OverwriteMode, &FileParams);
+        SFTPConfirmOverwrite(DestFileName, CopyParam, Params, OperationProgress, &FileParams,
+          OverwriteMode);
         if (PrevDestFileName != DestFileName)
         {
           DestFullName = TargetDir + DestFileName;

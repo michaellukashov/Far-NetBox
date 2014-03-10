@@ -158,11 +158,12 @@ protected:
     const UnicodeString & TargetDir, uintptr_t Attrs, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   bool ConfirmOverwrite(UnicodeString & FileName,
-    TOverwriteMode & OverwriteMode, TFileOperationProgressType * OperationProgress,
+    TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams,
     const TCopyParamType * CopyParam, intptr_t Params,
     bool AutoResume,
-    uintptr_t & Answer);
+    OUT TOverwriteMode & OverwriteMode,
+    OUT uintptr_t & Answer);
   void ResetFileTransfer();
   void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);
   void DoReadDirectory(TRemoteFileList * FileList);

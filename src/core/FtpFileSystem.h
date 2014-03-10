@@ -173,10 +173,10 @@ protected:
     intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   bool ConfirmOverwrite(UnicodeString & FileName,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
-    TOverwriteMode & OverwriteMode,
     bool AutoResume,
     const TOverwriteFileParams * FileParams,
-    const TCopyParamType * CopyParam);
+    const TCopyParamType * CopyParam,
+    OUT TOverwriteMode & OverwriteMode);
   void ReadDirectoryProgress(int64_t Bytes);
   void ResetFileTransfer();
   void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);

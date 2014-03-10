@@ -838,10 +838,10 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::ConfirmOverwrite(UnicodeString & FileName,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
-  TOverwriteMode & OverwriteMode,
   bool AutoResume,
   const TOverwriteFileParams * FileParams,
-  const TCopyParamType * CopyParam)
+  const TCopyParamType * CopyParam,
+  OUT TOverwriteMode & OverwriteMode)
 {
   bool Result;
   bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
@@ -3088,9 +3088,9 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
     }
 
     if (ConfirmOverwrite(FileName, UserData.Params, OperationProgress,
-          OverwriteMode,
           UserData.AutoResume && UserData.CopyParam->AllowResume(FileParams.SourceSize),
-          NoFileParams ? nullptr : &FileParams, UserData.CopyParam))
+          NoFileParams ? nullptr : &FileParams, UserData.CopyParam,
+          OverwriteMode))
     {
       switch (OverwriteMode)
       {
