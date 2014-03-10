@@ -13625,7 +13625,10 @@ void TWebDAVFileSystem::DoFileTransferProgress(int64_t TransferSize,
   int64_t Bytes)
 {
   TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
-  if (!OperationProgress) return;
+  if (!OperationProgress)
+  {
+    return;
+  }
 
   OperationProgress->SetTransferSize(TransferSize);
 
