@@ -7829,11 +7829,11 @@ start_err_element(
   {
     case ELEM_error:
     {
-      // allocate the error_t.  Hopefully the value will be
+      // allocate the error_t. Hopefully the value will be
       // overwritten by the <human-readable> tag, or even someday by
       // a <D:failed-precondition/> tag.
       *err = error_create(APR_EGENERAL, nullptr,
-        "General svn error from server");
+        "General error from server");
       break;
     }
     case ELEM_human_readable:
@@ -10643,9 +10643,9 @@ neon_get_props_resource(
   WEBDAV_ERR(neon_get_props(&props, sess, url_path, NEON_DEPTH_ZERO,
     which_props, check_errors, pool));
 
-  // HACK.  We need to have the client canonicalize paths, get rid
-  // of double slashes and such.  This check is just a check against
-  // non-SVN servers;  in the long run we want to re-enable this.
+  // HACK. We need to have the client canonicalize paths, get rid
+  // of double slashes and such. This check is just a check against
+  // non-SVN servers; in the long run we want to re-enable this.
   {
     // pick out the first response: the URL requested will not match
     // the response href.
