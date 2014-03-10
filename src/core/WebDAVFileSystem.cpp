@@ -472,7 +472,7 @@ error_createf(
   const char * fmt,
   ...)
 {
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
   va_list args;
 
   err = make_error_internal(apr_err, child);
@@ -493,7 +493,7 @@ error_wrap_apr(
   const char * fmt,
   ...)
 {
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
   va_list args;
 
   err = make_error_internal(status, nullptr);
@@ -2453,7 +2453,7 @@ convert_to_stringbuf(// xlate_handle_node_t *node,
   if (apr_err)
   {
     const char * errstr = nullptr;
-    error_t err = 0;
+    error_t err = WEBDAV_NO_ERROR;
 
     // Can't use error_wrap_apr here because it calls functions in
     // this file, leading to infinite recursion.
@@ -2743,7 +2743,7 @@ utf8_or_nothing(
   {
     const char * utf8_str;
     error_t err = utf_cstring_to_utf8(&utf8_str, str, pool);
-    if (!err)
+    if (err == WEBDAV_NO_ERROR)
       return utf8_str;
     error_clear(&err);
   }
@@ -3290,7 +3290,7 @@ auth_simple_first_creds_helper(
   // allowed by the run-time configuration.
   bool need_to_save = false;
   apr_hash_t * creds_hash = nullptr;
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
 
   // Try to load credentials from a file on disk, based on the
   // realmstring.  Don't throw an error, though: if something went
@@ -3437,7 +3437,7 @@ auth_simple_save_creds_helper(
 {
   auth_cred_simple_t * creds = static_cast<auth_cred_simple_t *>(credentials);
   apr_hash_t * creds_hash = nullptr;
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
   bool dont_store_passwords =
     apr_hash_get(parameters,
       WEBDAV_AUTH_PARAM_DONT_STORE_PASSWORDS,
@@ -3694,7 +3694,7 @@ prompt_for_simple_creds(
       err = config_read_auth_data(&creds_hash, AUTH_CRED_SIMPLE,
         realmstring, fs, pool);
       error_clear(&err);
-      if (!err && creds_hash)
+      if ((err == WEBDAV_NO_ERROR) && creds_hash)
       {
         str = static_cast<string_t *>(apr_hash_get(creds_hash, AUTHN_USERNAME_KEY,
           APR_HASH_KEY_STRING));
@@ -3928,7 +3928,7 @@ auth_ssl_client_cert_pw_file_first_creds_helper(
       AUTH_CRED_SSL_CLIENT_CERT_PW,
       realmstring, fs, pool);
     error_clear(&err);
-    if (!err && creds_hash)
+    if ((err == WEBDAV_NO_ERROR) && creds_hash)
     {
       bool done;
       WEBDAV_ERR(passphrase_get(&done, &password, creds_hash, realmstring,
@@ -3965,7 +3965,7 @@ auth_ssl_client_cert_pw_file_save_creds_helper(
   auth_cred_ssl_client_cert_pw_t * creds =
     static_cast<auth_cred_ssl_client_cert_pw_t *>(credentials);
   apr_hash_t * creds_hash = nullptr;
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
   bool dont_store_passphrase =
     apr_hash_get(parameters,
       WEBDAV_AUTH_PARAM_DONT_STORE_SSL_CLIENT_CERT_PP,
@@ -4091,7 +4091,7 @@ auth_ssl_client_cert_pw_file_save_creds_helper(
         AUTH_CRED_SSL_CLIENT_CERT_PW,
         realmstring, fs, pool);
       error_clear(&err);
-      *saved = !err;
+      *saved = (err == WEBDAV_NO_ERROR);
     }
   }
 
@@ -4772,7 +4772,7 @@ username_first_creds(
     WEBDAV_AUTH_PARAM_DEFAULT_USERNAME,
     APR_HASH_KEY_STRING));
   bool may_save = !!username;
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
 
   // If we don't have a usename yet, try the auth cache
   if (!username)
@@ -4792,7 +4792,7 @@ username_first_creds(
                                 realmstring, fs,
                                 pool);
     error_clear(&err);
-    if (!err && creds_hash)
+    if ((err == WEBDAV_NO_ERROR) && creds_hash)
     {
       string_t * str = static_cast<string_t *>(apr_hash_get(creds_hash, AUTHN_USERNAME_KEY,
                        APR_HASH_KEY_STRING));
@@ -4854,7 +4854,7 @@ username_save_creds(
     fs,
     pool);
   error_clear(&err);
-  *saved = !err;
+  *saved = (err == WEBDAV_NO_ERROR);
 
   return WEBDAV_NO_ERROR;
 }
@@ -6685,7 +6685,7 @@ read_handler_apr(
   apr_size_t * len)
 {
   struct baton_apr_t * btn = static_cast<baton_apr_t *>(baton);
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
   bool eof = false;
 
   if (*len == 1)
@@ -6726,7 +6726,7 @@ write_handler_apr(
   apr_size_t * len)
 {
   struct baton_apr_t * btn = static_cast<baton_apr_t *>(baton);
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
 
   if (*len == 1)
   {
@@ -7525,7 +7525,7 @@ neon_parsed_request(
 {
   // create/prep the request
   neon_request_t * req = nullptr;
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
 
   WEBDAV_ERR(neon_request_create(&req, sess, method, url, pool));
 
@@ -7550,7 +7550,7 @@ neon_simple_request(
   int okay_1, int okay_2, apr_pool_t * pool)
 {
   neon_request_t * req = nullptr;
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
 
   WEBDAV_ERR(neon_request_create(&req, ras, method, url, pool));
 
@@ -8357,7 +8357,7 @@ client_path_relative_to_root(
   }
   else
   {
-    error_t err = 0;
+    error_t err = WEBDAV_NO_ERROR;
 
     WEBDAV_ERR_ASSERT(ra_session != nullptr);
 
@@ -8525,7 +8525,7 @@ custom_get_request(
 {
   custom_get_ctx_t cgc = { 0 };
   neon_request_t * request = nullptr;
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
 
   WEBDAV_ERR(neon_request_create(&request, ras, "GET", url, pool));
 
@@ -9152,7 +9152,7 @@ ssl_server_trust_file_first_credentials(
   error = config_read_auth_data(&creds_hash, AUTH_CRED_SSL_SERVER_TRUST,
             realmstring, fs, pool);
   error_clear(&error);
-  if (!error && creds_hash)
+  if ((error == WEBDAV_NO_ERROR) && creds_hash)
   {
     string_t * trusted_cert, *this_cert, *failstr;
     apr_uint32_t last_failures = 0;
@@ -9965,7 +9965,7 @@ get_dir_contents(
   apr_hash_t * tmpdirents = nullptr;
   apr_pool_t * iterpool = webdav_pool_create(pool);
   apr_array_header_t * array = nullptr;
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
 
   if (depth == depth_empty)
     return WEBDAV_NO_ERROR;
@@ -10687,7 +10687,7 @@ client_list(
   const char * url = nullptr;
   const char * webdav_root = nullptr;
   const char * fs_path = nullptr;
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
 
   assert(session);
 
@@ -10765,7 +10765,7 @@ client_put_file(
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
   assert(ras);
 
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
   int code = 0;
   apr_hash_t * extra_headers = nullptr; // apr_hash_make(pool);
 
@@ -10813,7 +10813,7 @@ client_move_file_or_directory(
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
   assert(ras);
 
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
   const char * target_from = path_uri_encode(remote_path_from, pool);
   const char * target_to = path_uri_encode(remote_path_to, pool);
   int code = 0;
@@ -10847,7 +10847,7 @@ client_delete_file(
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
   assert(ras);
 
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
   const char * target = path_uri_encode(remote_path, pool);
   int code = 0;
 
@@ -10879,7 +10879,7 @@ client_check_path(
 
   *kind = node_none;
 
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
   char * target = apr_pstrdup(pool, path_uri_encode(remote_path, pool));
 
   const char * rel_path = nullptr;
@@ -10929,7 +10929,7 @@ client_make_directory(
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
   assert(ras);
 
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
   const char * target = path_uri_encode(remote_path, pool);
   int code = 0;
 
@@ -10958,7 +10958,7 @@ client_send_propfind_request(
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
   assert(ras);
 
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
   int code = 0;
 
   apr_hash_t * props = nullptr;
@@ -11010,7 +11010,7 @@ client_ssl_pkcs11_pin_entry(
   // Always prevent PIN caching.
   auth_baton_set_parameter(ras->callbacks->auth_baton,
     AUTH_PARAM_NO_AUTH_CACHE, "");
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
   if (attempt == 0)
   {
     const char * realmstring;
@@ -11320,7 +11320,7 @@ request_auth(
   char * username,
   char * password)
 {
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
   neon_session_t * ras = static_cast<neon_session_t *>(userdata);
   void * creds = nullptr;
   auth_cred_simple_t * simple_creds = nullptr;
@@ -11939,21 +11939,21 @@ neon_check_path(
   assert(ras);
 
   const char * url = ras->url->data;
-  error_t err = 0;
+  error_t err = WEBDAV_NO_ERROR;
   bool is_dir = false;
 
   // If we were given a relative path to append, append it.
   if (path)
     url = path_url_add_component2(url, path, pool);
 
-  if (!err)
+  if (err == WEBDAV_NO_ERROR)
   {
     neon_resource_t * rsrc;
     const char * full_bc_url = url;
 
     // query the DAV:resourcetype of the full, assembled URL.
     err = neon_get_starting_props(&rsrc, ras, full_bc_url, true, pool);
-    if (!err)
+    if (err == WEBDAV_NO_ERROR)
       is_dir = rsrc->is_collection != 0;
   }
 
@@ -13712,7 +13712,7 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t * Path, int & Response
 
   assert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
-  webdav::error_t err = 0;
+  webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;
   err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Path).c_str(), pool);
   if (err) return false;
@@ -13732,7 +13732,7 @@ bool TWebDAVFileSystem::WebDAVCheckExisting(const wchar_t * Path, int & IsDir)
   IsDir = 0;
   assert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
-  webdav::error_t err = 0;
+  webdav::error_t err = WEBDAV_NO_ERROR;
   webdav::node_kind_t kind = webdav::node_none;
   const char * remote_path = nullptr;
   err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Path).c_str(), pool);
@@ -13755,7 +13755,7 @@ bool TWebDAVFileSystem::WebDAVMakeDirectory(const wchar_t * Path)
 
   assert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
-  webdav::error_t err = 0;
+  webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;
   err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Path).c_str(), pool);
   if (err) return false;
@@ -13778,7 +13778,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString & Directory)
   baton.entries = &Entries;
   baton.session = FSession;
   baton.pool = webdav_pool_create(webdav_pool);
-  webdav::error_t err = 0;
+  webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;
   err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Directory).c_str(), baton.pool);
   if (err) return false;
@@ -13810,7 +13810,7 @@ bool TWebDAVFileSystem::WebDAVGetFile(
   try
   {
     apr_pool_t * pool = webdav_pool_create(webdav_pool);
-    webdav::error_t err = 0;
+    webdav::error_t err = WEBDAV_NO_ERROR;
     const char * remote_path = nullptr;
     err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(RemotePath).c_str(), pool);
     if (err)
@@ -13854,7 +13854,7 @@ bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t * RemotePath,
 
   assert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
-  webdav::error_t err = 0;
+  webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;
   const char * local_path = nullptr;
   err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(RemotePath).c_str(), pool);
@@ -13890,7 +13890,7 @@ bool TWebDAVFileSystem::WebDAVRenameFile(const wchar_t * SrcPath, const wchar_t 
 
   assert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
-  webdav::error_t err = 0;
+  webdav::error_t err = WEBDAV_NO_ERROR;
   const char * src_path = nullptr;
   const char * dst_path = nullptr;
   err = webdav::path_cstring_to_utf8(&src_path, AnsiString(SrcPath).c_str(), pool);
@@ -13914,7 +13914,7 @@ bool TWebDAVFileSystem::WebDAVDeleteFile(const wchar_t * Path)
 
   assert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
-  webdav::error_t err = 0;
+  webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;
   err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Path).c_str(), pool);
   if (err) return false;
