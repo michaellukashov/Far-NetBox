@@ -802,7 +802,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
   SetSize(TPoint(MaxMessageWidth, 10));
   SetCaption(Title);
   SetFlags(GetFlags() |
-           FLAGMASK(FLAGSET(AFlags, FMSG_WARNING), FDLG_WARNING));
+    FLAGMASK(FLAGSET(AFlags, FMSG_WARNING), FDLG_WARNING));
 
   for (intptr_t Index = 0; Index < MessageLines->GetCount(); ++Index)
   {
