@@ -145,9 +145,6 @@ public:
   void sprintf(const wchar_t * fmt, ...);
 
 public:
-  operator std::wstring () const { return std::wstring(Data.c_str(), Data.size()); }
-  operator LPCWSTR () const { return Data.c_str(); }
-
   UnicodeString & operator=(const UnicodeString & StrCopy);
   UnicodeString & operator=(const RawByteString & StrCopy);
   UnicodeString & operator=(const AnsiString & StrCopy);

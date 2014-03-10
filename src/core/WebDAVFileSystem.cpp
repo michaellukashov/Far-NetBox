@@ -11628,7 +11628,8 @@ neon_open(
   }
 
   {
-    static AnsiString useragent = "NetBox/" + GetGlobalFunctions()->GetStrVersionNumber();
+    AnsiString useragent = "NetBox/";
+    useragent += AnsiString(GetGlobalFunctions()->GetStrVersionNumber().c_str());
     ne_set_useragent(sess, useragent.c_str());
   }
 

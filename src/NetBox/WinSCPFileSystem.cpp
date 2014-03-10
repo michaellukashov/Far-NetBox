@@ -3187,7 +3187,7 @@ BOOL TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString & LocalFileNam
 //------------------------------------------------------------------------------
 BOOL TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString & LocalDirName)
 {
-  return ::RemoveDirectory(LocalDirName) != 0;
+  return ::RemoveDirectory(LocalDirName.c_str()) != 0;
 }
 //------------------------------------------------------------------------------
 BOOL TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)

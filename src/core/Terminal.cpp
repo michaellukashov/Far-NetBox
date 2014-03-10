@@ -5550,7 +5550,7 @@ BOOL TTerminal::RemoveLocalDirectory(const UnicodeString & LocalDirName)
   }
   else
   {
-    return ::RemoveDirectory(LocalDirName) != 0;
+    return ::RemoveDirectory(LocalDirName.c_str()) != 0;
   }
 }
 //------------------------------------------------------------------------------

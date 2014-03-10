@@ -571,7 +571,7 @@ intptr_t TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t * Dir, int 
       try
       {
         TGuard Guard(FarFileSystem->GetCriticalSection());
-        return FarFileSystem->SetDirectory(PrevCurrentDirectory, OpMode);
+        return FarFileSystem->SetDirectory(PrevCurrentDirectory.c_str(), OpMode);
       }
       catch (Exception &)
       {
