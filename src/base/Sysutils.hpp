@@ -57,7 +57,7 @@ class EAbort : public Exception
 {
 NB_DECLARE_CLASS(EAbort)
 public:
-  explicit EAbort(const std::wstring & what) : Exception(what)
+  explicit EAbort(const UnicodeString & what) : Exception(what)
   {}
 };
 
@@ -65,7 +65,7 @@ class EAccessViolation : public Exception
 {
 NB_DECLARE_CLASS(EAccessViolation)
 public:
-  explicit EAccessViolation(const std::wstring & what) : Exception(what)
+  explicit EAccessViolation(const UnicodeString & what) : Exception(what)
   {}
 };
 

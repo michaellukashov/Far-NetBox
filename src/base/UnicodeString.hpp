@@ -107,6 +107,7 @@ public:
   intptr_t Compare(const UnicodeString & Str) const;
   intptr_t CompareIC(const UnicodeString & Str) const;
   intptr_t ToInt() const;
+  intptr_t FindFirstNotOf(const wchar_t * Str) const { return Data.find_first_not_of(Str); }
 
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str, intptr_t DataLen);
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const UnicodeString & Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
@@ -385,6 +386,37 @@ private:
   typedef std::basic_string<uint8_t, std::char_traits<uint8_t>, custom_nballocator_t<uint8_t> > rawstring_t;
   rawstring_t Data;
 };
+
+namespace rde {
+//-----------------------------------------------------------------------------
+template<typename S>
+bool operator==(const S & lhs, const S & rhs)
+{
+  return lhs.Compare(rhs) == 0;
+}
+
+//-----------------------------------------------------------------------------
+template<typename S>
+bool operator!=(const S & lhs, const S & rhs)
+{
+  return !(lhs == rhs);
+}
+
+//-----------------------------------------------------------------------------
+template<typename S>
+bool operator<(const S & lhs, const S & rhs)
+{
+  return lhs.Compare(rhs) < 0;
+}
+
+//-----------------------------------------------------------------------------
+template<typename S>
+bool operator>(const S & lhs, const S & rhs)
+{
+  return lhs.Compare(rhs) > 0;
+}
+
+}  // namespace rde
 
 //------------------------------------------------------------------------------
 
