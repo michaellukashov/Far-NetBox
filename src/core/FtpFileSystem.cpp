@@ -1104,7 +1104,7 @@ void TFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
         Success = true;
         FLastDataSent = Now();
       }
-      catch (EScpSkipFile & E)
+      catch (ESkipFile & E)
       {
         TSuspendFileOperationProgress Suspend(OperationProgress);
         if (!FTerminal->HandleException(&E))
@@ -1335,7 +1335,7 @@ void TFTPFileSystem::SinkFile(const UnicodeString & FileName,
     SinkRobust(FileName, AFile, Params->TargetDir, Params->CopyParam,
       Params->Params, Params->OperationProgress, Params->Flags);
   }
-  catch (EScpSkipFile & E)
+  catch (ESkipFile & E)
   {
     TFileOperationProgressType * OperationProgress = Params->OperationProgress;
 
@@ -1398,7 +1398,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
         Success = true;
         FLastDataSent = Now();
       }
-      catch (EScpSkipFile & E)
+      catch (ESkipFile & E)
       {
         TSuspendFileOperationProgress Suspend(OperationProgress);
         if (!FTerminal->HandleException(&E))
@@ -1636,7 +1636,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
           CreateDir = false;
         }
       }
-      catch (EScpSkipFile &E)
+      catch (ESkipFile & E)
       {
         // If ESkipFile occurs, just log it and continue with next file
         TSuspendFileOperationProgress Suspend(OperationProgress);

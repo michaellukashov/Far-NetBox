@@ -2458,11 +2458,11 @@ void TTerminal::LogEvent(const UnicodeString & Str)
 void TTerminal::RollbackAction(TSessionAction & Action,
   TFileOperationProgressType * OperationProgress, Exception * E)
 {
-  // EScpSkipFile without "cancel" is file skip,
+  // ESkipFile without "cancel" is file skip,
   // and we do not want to record skipped actions.
-  // But EScpSkipFile with "cancel" is abort and we want to record that.
+  // But ESkipFile with "cancel" is abort and we want to record that.
   // Note that TSCPFileSystem modifies the logic of RollbackAction little bit.
-  if ((NB_STATIC_DOWNCAST(EScpSkipFile, E) != nullptr) &&
+  if ((NB_STATIC_DOWNCAST(ESkipFile, E) != nullptr) &&
       ((OperationProgress == nullptr) ||
        (OperationProgress->Cancel == csContinue)))
   {
@@ -2985,7 +2985,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
               Success = true;
             }
           }
-          catch (EScpSkipFile & E)
+          catch (ESkipFile & E)
           {
             DEBUG_PRINTF(L"before HandleException");
             TSuspendFileOperationProgress Suspend(OperationProgress);

@@ -76,7 +76,7 @@ DEFINE_CALLBACK_TYPE0(TCheckForEscEvent, bool);
 //------------------------------------------------------------------------------
 inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
 {
-  throw EScpSkipFile(Exception, Message);
+  throw ESkipFile(Exception, Message);
 }
 inline void ThrowSkipFileNull() { ThrowSkipFile(nullptr, L""); }
 
@@ -92,7 +92,7 @@ inline void ThrowSkipFileNull() { ThrowSkipFile(nullptr, L""); }
     {                                                                       \
       throw;                                                                \
     }                                                                       \
-    catch (EScpSkipFile &)                                                  \
+    catch (ESkipFile &)                                                  \
     {                                                                       \
       throw;                                                                \
     }                                                                       \

@@ -3841,7 +3841,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
           tfFirstLevel);
         Success = true;
       }
-      catch (EScpSkipFile & E)
+      catch (ESkipFile & E)
       {
         DEBUG_PRINTF(L"before FTerminal->HandleException");
         TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -4888,7 +4888,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
             Flags & ~tfFirstLevel);
         }
       }
-      catch (EScpSkipFile &E)
+      catch (ESkipFile & E)
       {
         // If ESkipFile occurs, just log it and continue with next file
         TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -4962,7 +4962,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
           Params, OperationProgress, tfFirstLevel);
         Success = true;
       }
-      catch (EScpSkipFile & E)
+      catch (ESkipFile & E)
       {
         TSuspendFileOperationProgress Suspend(OperationProgress);
         if (!FTerminal->HandleException(&E))
@@ -5546,7 +5546,7 @@ void TSFTPFileSystem::SFTPSinkFile(const UnicodeString & FileName,
     SFTPSinkRobust(FileName, AFile, Params->TargetDir, Params->CopyParam,
       Params->Params, Params->OperationProgress, Params->Flags);
   }
-  catch (EScpSkipFile & E)
+  catch (ESkipFile & E)
   {
     TFileOperationProgressType * OperationProgress = Params->OperationProgress;
 

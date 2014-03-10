@@ -34,7 +34,7 @@ const int ecDefault = ecRaiseExcept;
 //---------------------------------------------------------------------------
 inline void ThrowFileSkipped(Exception * Exception, const UnicodeString & Message)
 {
-  throw EScpFileSkipped(Exception, Message);
+  throw EFileSkipped(Exception, Message);
 }
 
 inline void ThrowScpEror(Exception * Exception, const UnicodeString & Message)
@@ -1671,7 +1671,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
           CopyParam, Params, OperationProgress, 0);
         OperationProgress->Finish(RealFileName, true, OnceDoneOperation);
       }
-      catch (EScpFileSkipped &E)
+      catch (EFileSkipped & E)
       {
         TQueryParams QueryParams(qpAllowContinueOnError);
 
@@ -1688,7 +1688,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
           throw;
         }
       }
-      catch (EScpSkipFile &E)
+      catch (ESkipFile & E)
       {
         OperationProgress->Finish(FileName, false, OnceDoneOperation);
         {
@@ -1936,7 +1936,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
           OperationProgress->TransferingFile = false;
           throw;
         }
-        catch (EScpFileSkipped &)
+        catch (EFileSkipped &)
         {
           // SCP protocol non-fatal error
           OperationProgress->TransferingFile = false;
@@ -1947,11 +1947,11 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
         // normally -> no fatal error
         OperationProgress->TransferingFile = false;
       }
-      catch (Exception &E)
+      catch (Exception & E)
       {
-        // EScpFileSkipped is derived from EScpSkipFile,
+        // EScpFileSkipped is derived from ESkipFile,
         // but is does not indicate file skipped by user here
-        if (NB_STATIC_DOWNCAST(EScpFileSkipped, &E) != nullptr)
+        if (NB_STATIC_DOWNCAST(EFileSkipped, &E) != nullptr)
         {
           Action.Rollback(&E);
         }
@@ -2076,10 +2076,10 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
             SCPSource(FileName, nullptr, TargetDirFull, CopyParam, Params, OperationProgress, Level + 1);
           }
         }
-        // Previously we caught EScpSkipFile, making error being displayed
-        // even when file was excluded by mask. Now the EScpSkipFile is special
+        // Previously we caught ESkipFile, making error being displayed
+        // even when file was excluded by mask. Now the ESkipFile is special
         // case without error message.
-        catch (EScpFileSkipped &E)
+        catch (EFileSkipped & E)
         {
           TQueryParams QueryParams(qpAllowContinueOnError);
 
@@ -2096,7 +2096,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
             }
           }
         }
-        catch (EScpSkipFile &E)
+        catch (ESkipFile & E)
         {
           // If ESkipFile occurs, just log it and continue with next file
           TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -2639,7 +2639,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                 FSecureShell->SendNull();
                 throw;
               }
-              catch (EScpFileSkipped &)
+              catch (EFileSkipped &)
               {
                 FSecureShell->SendNull();
                 throw;
@@ -2680,7 +2680,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
         }
       }
     }
-    catch (EScpFileSkipped &E)
+    catch (EFileSkipped &E)
     {
       if (!SkipConfirmed)
       {
@@ -2697,7 +2697,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
       // successful, even when for example user refused to overwrite file
       Success = false;
     }
-    catch (EScpSkipFile &E)
+    catch (ESkipFile & E)
     {
       SCPSendError(E.Message, false);
       Success = false;

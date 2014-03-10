@@ -448,6 +448,6 @@ NB_IMPLEMENT_CLASS(ESsh, NB_GET_CLASS_INFO(ExtException), nullptr);
 NB_IMPLEMENT_CLASS(ETerminal, NB_GET_CLASS_INFO(ExtException), nullptr);
 NB_IMPLEMENT_CLASS(ECommand, NB_GET_CLASS_INFO(ExtException), nullptr);
 NB_IMPLEMENT_CLASS(EScp, NB_GET_CLASS_INFO(ExtException), nullptr);
-NB_IMPLEMENT_CLASS(EScpSkipFile, NB_GET_CLASS_INFO(ExtException), nullptr);
-NB_IMPLEMENT_CLASS(EScpFileSkipped, NB_GET_CLASS_INFO(EScpSkipFile), nullptr);
+NB_IMPLEMENT_CLASS(ESkipFile, NB_GET_CLASS_INFO(ExtException), nullptr);
+NB_IMPLEMENT_CLASS(EFileSkipped, NB_GET_CLASS_INFO(ESkipFile), nullptr);
 //------------------------------------------------------------------------------

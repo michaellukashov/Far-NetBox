@@ -12770,7 +12770,7 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
           tfFirstLevel);
         Success = true;
       }
-      catch (EScpSkipFile & E)
+      catch (ESkipFile & E)
       {
         TSuspendFileOperationProgress Suspend(OperationProgress);
         if (!FTerminal->HandleException(&E))
@@ -13057,7 +13057,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
           CreateDir = false;
         }
       }
-      catch (EScpSkipFile & E)
+      catch (ESkipFile & E)
       {
         // If ESkipFile occurs, just log it and continue with next file
         TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -13173,7 +13173,7 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
           OperationProgress, tfFirstLevel);
         Success = true;
       }
-      catch (EScpSkipFile & E)
+      catch (ESkipFile & E)
       {
         TSuspendFileOperationProgress Suspend(OperationProgress);
         if (!FTerminal->HandleException(&E))
@@ -13449,7 +13449,7 @@ void TWebDAVFileSystem::SinkFile(const UnicodeString & FileName,
     SinkRobust(FileName, File, Params->TargetDir, Params->CopyParam,
       Params->Params, Params->OperationProgress, Params->Flags);
   }
-  catch (EScpSkipFile & E)
+  catch (ESkipFile & E)
   {
     TFileOperationProgressType * OperationProgress = Params->OperationProgress;
 
@@ -13869,7 +13869,7 @@ bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t * RemotePath,
       local_path,
       pool);
   }
-  catch (EScpSkipFile &)
+  catch (ESkipFile &)
   {
     err = WEBDAV_ERR_CANCELLED;
   }
