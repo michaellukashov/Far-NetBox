@@ -398,7 +398,8 @@ typedef struct list_func_baton_t
 
 #define WEBDAV_ERR_ASSERT(expr)                                 \
   do {                                                          \
-    if (!(expr))                                                \
+    bool res = (expr);                                          \
+    if (!res)                                                   \
       WEBDAV_ERR(WEBDAV_UNKNOWN_ERROR);                         \
   } while (0)
 
