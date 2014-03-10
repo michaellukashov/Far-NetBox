@@ -290,7 +290,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       }
       else
       {
-        conf_set_str(conf, CONF_remote_cmd, AnsiString(Data->GetShell().c_str()));
+        conf_set_str(conf, CONF_remote_cmd, AnsiString(Data->GetShell().c_str()).c_str());
       }
     }
     else
@@ -303,7 +303,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       else
       {
         conf_set_int(conf, CONF_ssh_subsys, FALSE);
-        conf_set_str(conf, CONF_remote_cmd, AnsiString(Data->GetSftpServer().c_str()));
+        conf_set_str(conf, CONF_remote_cmd, AnsiString(Data->GetSftpServer().c_str()).c_str());
       }
 
       if (Data->GetFSProtocol() != fsSFTPonly)
@@ -321,7 +321,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
         }
         else
         {
-          conf_set_str(conf, CONF_remote_cmd2, AnsiString(Data->GetShell().c_str()));
+          conf_set_str(conf, CONF_remote_cmd2, AnsiString(Data->GetShell().c_str()).c_str());
         }
       }
 

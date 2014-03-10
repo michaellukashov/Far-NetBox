@@ -153,7 +153,7 @@ int GetUserpassInput(prompts_t * p, uint8_t * /*in*/, int /*inlen*/)
       for (size_t Index = 0; Index < p->n_prompts; ++Index)
       {
         prompt_t * Prompt = p->prompts[Index];
-        prompt_set_result(Prompt, AnsiString(Results->GetString(Index).c_str()));
+        prompt_set_result(Prompt, AnsiString(Results->GetString(Index).c_str()).c_str());
       }
       Result = 1;
     }
