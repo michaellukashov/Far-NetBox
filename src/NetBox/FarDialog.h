@@ -188,6 +188,7 @@ private:
 class TFarDialogItem : public TObject
 {
 friend TFarDialog;
+friend TFarMessageDialog;
 friend TFarDialogContainer;
 friend TFarList;
 NB_DISABLE_COPY(TFarDialogItem)

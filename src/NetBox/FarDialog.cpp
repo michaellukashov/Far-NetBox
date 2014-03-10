@@ -723,8 +723,6 @@ intptr_t TFarDialog::ShowModal()
     {
       TFarEnvGuard Guard;
       TRect Bounds = GetBounds();
-      if (GetDefaultButton()->CanFocus())
-        GetDefaultButton()->UpdateFocused(true);
       PluginStartupInfo & Info = *GetFarPlugin()->GetStartupInfo();
       Handle = Info.DialogInit(
         Info.ModuleNumber,

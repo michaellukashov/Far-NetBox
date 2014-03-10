@@ -987,6 +987,8 @@ void TFarMessageDialog::Change()
 //---------------------------------------------------------------------------
 intptr_t TFarMessageDialog::Execute(bool & ACheckBox)
 {
+  if (GetDefaultButton()->CanFocus())
+    GetDefaultButton()->UpdateFocused(true);
   FStartTime = Now();
   FLastTimerTime = FStartTime;
   FCheckBoxChecked = !ACheckBox;
