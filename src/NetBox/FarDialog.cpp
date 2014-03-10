@@ -1693,11 +1693,11 @@ TFarBox::TFarBox(TFarDialog * ADialog) :
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TFarButton::TFarButton(TFarDialog * ADialog) :
-  TFarDialogItem(ADialog, DI_BUTTON)
+  TFarDialogItem(ADialog, DI_BUTTON),
+  FResult(0),
+  FOnClick(nullptr),
+  FBrackets(brNormal)
 {
-  FResult = 0;
-  FOnClick = nullptr;
-  FBrackets = brNormal;
 }
 //---------------------------------------------------------------------------
 void TFarButton::SetDataInternal(const UnicodeString & Value)
