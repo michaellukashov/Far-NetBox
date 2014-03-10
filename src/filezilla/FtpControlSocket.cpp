@@ -5306,6 +5306,7 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
 		break;
 	case FILEEXISTS_OVERWRITE:
 		pTransferData->nWaitNextOpState = FILETRANSFER_TYPE;
+		pTransferData->transferdata.localFileHandle = pData->localFileHandle;
 		break;
 	case FILEEXISTS_OVERWRITEIFNEWER:
 		// MPEXT
@@ -5331,6 +5332,7 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
 						pTransferData->transferfile.localfile.SetAt(i, _MPT('_'));
 
 				pTransferData->nWaitNextOpState=  FILETRANSFER_TYPE;
+				pTransferData->transferdata.localFileHandle = pData->localFileHandle;
 			}
 		}
 		else
@@ -5361,8 +5363,8 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
 		{
 			pTransferData->transferdata.bResume = TRUE;
 		}
-		pTransferData->transferdata.localFileHandle = pData->localFileHandle;
 		pTransferData->nWaitNextOpState = FILETRANSFER_TYPE;
+		pTransferData->transferdata.localFileHandle = pData->localFileHandle;
 		break;
 	#ifdef MPEXT
 	case FILEEXISTS_COMPLETE:
