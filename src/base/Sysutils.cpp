@@ -172,25 +172,13 @@ int64_t StrToInt64Def(const UnicodeString & Value, int64_t DefVal)
   }
 }
 
-bool TryStrToInt(const std::wstring & StrValue, int64_t & Value)
+bool TryStrToInt(const UnicodeString & StrValue, int64_t & Value)
 {
-  bool Result = !StrValue.empty() && (StrValue.find_first_not_of(L"+-0123456789") == std::string::npos);
+  bool Result = !StrValue.IsEmpty() && (StrValue.FindFirstNotOf(L"+-0123456789") == std::string::npos);
   if (Result)
   {
     errno = 0;
     Value = _wtoi64(StrValue.c_str());
-    Result = (errno != EINVAL) && (errno != ERANGE);
-  }
-  return Result;
-}
-
-bool TryStrToInt(const std::wstring & StrValue, int & Value)
-{
-  bool Result = !StrValue.empty()&& (StrValue.find_first_not_of(L"+-0123456789") == std::string::npos);
-  if (Result)
-  {
-    errno = 0;
-    Value = _wtoi(StrValue.c_str());
     Result = (errno != EINVAL) && (errno != ERANGE);
   }
   return Result;
@@ -234,14 +222,14 @@ UnicodeString UpperCase(const UnicodeString & Str)
   std::wstring Result(Str.c_str(), Str.Length());
   // Result.SetLength(Str.Length());
   std::transform(Result.begin(), Result.end(), Result.begin(), ::toupper);
-  return Result;
+  return Result.c_str();
 }
 
 UnicodeString LowerCase(const UnicodeString & Str)
 {
   std::wstring Result(Str.c_str(), Str.Length());
   std::transform(Result.begin(), Result.end(), Result.begin(), ::tolower);
-  return Result;
+  return Result.c_str();
 }
 
 //---------------------------------------------------------------------------
@@ -971,10 +959,10 @@ UnicodeString ExpandUNCFileName(const UnicodeString & FileName)
 }
 
 //---------------------------------------------------------------------------
-static int FindMatchingFile(TSearchRec & Rec)
+static DWORD FindMatchingFile(TSearchRec & Rec)
 {
   TFileTime LocalFileTime = {0};
-  int Result = 0;
+  DWORD Result = ERROR_SUCCESS;
   while ((Rec.FindData.dwFileAttributes && Rec.ExcludeAttr) != 0)
   {
     if (!::FindNextFile(Rec.FindHandle, &Rec.FindData))
@@ -991,7 +979,7 @@ static int FindMatchingFile(TSearchRec & Rec)
   Rec.Size = Rec.FindData.nFileSizeLow || static_cast<Int64>(Rec.FindData.nFileSizeHigh) << 32;
   Rec.Attr = Rec.FindData.dwFileAttributes;
   Rec.Name = Rec.FindData.cFileName;
-  Result = 0;
+  Result = ERROR_SUCCESS;
   return Result;
 }
 
@@ -1001,11 +989,11 @@ DWORD FindFirst(const UnicodeString & FileName, DWORD LocalFileAttrs, TSearchRec
   const DWORD faSpecial = faHidden | faSysFile | faDirectory;
   Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
   Rec.FindHandle = ::FindFirstFile(FileName.c_str(), &Rec.FindData);
-  DWORD Result = 0;
+  DWORD Result = ERROR_SUCCESS;
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)
   {
     Result = FindMatchingFile(Rec);
-    if (Result != 0)
+    if (Result != ERROR_SUCCESS)
     {
       FindClose(Rec);
     }
@@ -1246,7 +1234,7 @@ UnicodeString HexToStr(const UnicodeString & Hex)
       }
     }
   }
-  return UnicodeString(Result);
+  return UnicodeString(Result.c_str());
 }
 
 //---------------------------------------------------------------------------

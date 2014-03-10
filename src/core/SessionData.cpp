@@ -3367,7 +3367,7 @@ void TStoredSessionList::Cleanup()
       Storage->RecursiveDeleteSubKey(GetConfiguration()->GetStoredSessionsSubKey());
     }
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     throw ExtException(&E, LoadStr(CLEANUP_SESSIONS_ERROR));
   }

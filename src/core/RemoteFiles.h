@@ -147,7 +147,7 @@ private:
   TModificationFmt FModificationFmt;
   int64_t FSize;
   UnicodeString FFileName;
-  Integer FINodeBlocks;
+  int64_t FINodeBlocks;
   TDateTime FModification;
   TDateTime FLastAccess;
   TRemoteToken FGroup;

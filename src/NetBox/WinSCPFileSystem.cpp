@@ -3236,7 +3236,7 @@ BOOL TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString & Local
 {
   if (!WinSCPPlugin()->GetSystemFunctions())
   {
-    return ::RemoveDirectory(LocalDirName) != 0;
+    return ::RemoveDirectory(LocalDirName.c_str()) != 0;
   }
   else
   {
@@ -3273,7 +3273,7 @@ uintptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString & Str,
   }
 
   return WinSCPPlugin()->MoreMessageDialog(Str, MoreMessages, Type,
-         Answers, &Params);
+    Answers, &Params);
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
@@ -3725,8 +3725,9 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
     case qaYes:
       ACancel = csCancelTransfer; break;
     case qaOK:
-    case qaNo:
       ACancel = csCancel; break;
+    case qaNo:
+      ACancel = csContinue; break;
     default:
       ACancel = csContinue; break;
     }
@@ -4146,7 +4147,7 @@ void TWinSCPFileSystem::EditHistory()
   MenuItems->SetItemFocused(MenuItems->GetCount() - 1);
 
   const FarKey BreakKeys[] = { { VK_F4, 0 }, { 0 } };
-    
+
   intptr_t BreakCode = 0;
   intptr_t Result = WinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
     GetMsg(MENU_EDIT_HISTORY), L"", MenuItems.get(), BreakKeys, BreakCode);

@@ -14,6 +14,7 @@
 #define CSIDL_PERSONAL                  0x0005        // My Documents
 //---------------------------------------------------------------------------
 #include <FileMasks.H>
+#include <FarDialog.h>
 //---------------------------------------------------------------------------
 class TSessionData;
 //---------------------------------------------------------------------------
@@ -65,6 +66,9 @@ protected:
 private:
   UnicodeString FLocalFileName;
 };
+//---------------------------------------------------------------------------
+void ValidateMaskEdit(TFarComboBox * Edit);
+void ValidateMaskEdit(TFarEdit * Edit);
 //---------------------------------------------------------------------------
 extern const UnicodeString PageantTool;
 extern const UnicodeString PuttygenTool;

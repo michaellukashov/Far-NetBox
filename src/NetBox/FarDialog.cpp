@@ -726,14 +726,15 @@ intptr_t TFarDialog::ShowModal()
     {
       TFarEnvGuard Guard;
       TRect Bounds = GetBounds();
-      Handle = GetFarPlugin()->GetStartupInfo()->DialogInit(
-              &MainGuid, &MainGuid,
-              Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
-              AHelpTopic.c_str(), FDialogItems,
-              GetItemCount(), 0, GetFlags(),
-              DialogProcGeneral,
-              reinterpret_cast<void *>(this));
-      BResult = GetFarPlugin()->GetStartupInfo()->DialogRun(Handle);
+      PluginStartupInfo & Info = *GetFarPlugin()->GetStartupInfo();
+      Handle = Info.DialogInit(
+        &MainGuid, &MainGuid,
+        Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
+        AHelpTopic.c_str(), FDialogItems,
+        GetItemCount(), 0, GetFlags(),
+        DialogProcGeneral,
+        reinterpret_cast<void *>(this));
+      BResult = Info.DialogRun(Handle);
     }
 
     if (BResult >= 0)
@@ -769,7 +770,7 @@ void TFarDialog::Synchronize(TThreadMethod Event)
   FSynchronizeMethod = Event;
   FNeedsSynchronize = true;
   WaitForMultipleObjects(LENOF(FSynchronizeObjects),
-                         reinterpret_cast<HANDLE *>(&FSynchronizeObjects), false, INFINITE);
+    reinterpret_cast<HANDLE *>(&FSynchronizeObjects), false, INFINITE);
 }
 //---------------------------------------------------------------------------
 void TFarDialog::Close(TFarButton * Button)
@@ -1711,11 +1712,11 @@ TFarBox::TFarBox(TFarDialog * ADialog) :
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TFarButton::TFarButton(TFarDialog * ADialog) :
-  TFarDialogItem(ADialog, DI_BUTTON)
+  TFarDialogItem(ADialog, DI_BUTTON),
+  FResult(0),
+  FOnClick(nullptr),
+  FBrackets(brNormal)
 {
-  FResult = 0;
-  FOnClick = nullptr;
-  FBrackets = brNormal;
 }
 //---------------------------------------------------------------------------
 void TFarButton::SetDataInternal(const UnicodeString & Value)

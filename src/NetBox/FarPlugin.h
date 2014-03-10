@@ -48,6 +48,7 @@ struct TFarMessageParams : public TObject
   TFarMessageTimerEvent TimerEvent;
   uintptr_t Timeout;
   uintptr_t TimeoutButton;
+  uintptr_t DefaultButton;
   UnicodeString TimeoutStr;
   TFarMessageClickEvent ClickEvent;
   void * Token;

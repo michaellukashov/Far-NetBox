@@ -53,10 +53,11 @@ void DeleteConfiguration()
 
 //---------------------------------------------------------------------------
 TQueryButtonAlias::TQueryButtonAlias() :
-  Button(0)
+  Button(0),
+  OnClick(nullptr),
+  GroupWith(-1),
+  Default(false)
 {
-  OnClick = nullptr;
-  GroupWith = -1;
 }
 //---------------------------------------------------------------------------
 TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString & AHelpKeyword)

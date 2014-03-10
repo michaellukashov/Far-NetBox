@@ -838,10 +838,10 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::ConfirmOverwrite(UnicodeString & FileName,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
-  TOverwriteMode & OverwriteMode,
   bool AutoResume,
   const TOverwriteFileParams * FileParams,
-  const TCopyParamType * CopyParam)
+  const TCopyParamType * CopyParam,
+  OUT TOverwriteMode & OverwriteMode)
 {
   bool Result;
   bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
@@ -1104,7 +1104,7 @@ void TFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
         Success = true;
         FLastDataSent = Now();
       }
-      catch (EScpSkipFile & E)
+      catch (ESkipFile & E)
       {
         TSuspendFileOperationProgress Suspend(OperationProgress);
         if (!FTerminal->HandleException(&E))
@@ -1335,7 +1335,7 @@ void TFTPFileSystem::SinkFile(const UnicodeString & FileName,
     SinkRobust(FileName, AFile, Params->TargetDir, Params->CopyParam,
       Params->Params, Params->OperationProgress, Params->Flags);
   }
-  catch (EScpSkipFile & E)
+  catch (ESkipFile & E)
   {
     TFileOperationProgressType * OperationProgress = Params->OperationProgress;
 
@@ -1398,7 +1398,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
         Success = true;
         FLastDataSent = Now();
       }
-      catch (EScpSkipFile & E)
+      catch (ESkipFile & E)
       {
         TSuspendFileOperationProgress Suspend(OperationProgress);
         if (!FTerminal->HandleException(&E))
@@ -1636,7 +1636,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
           CreateDir = false;
         }
       }
-      catch (EScpSkipFile &E)
+      catch (ESkipFile & E)
       {
         // If ESkipFile occurs, just log it and continue with next file
         TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -2774,7 +2774,7 @@ void TFTPFileSystem::StoreLastResponse(const UnicodeString & Text)
 //---------------------------------------------------------------------------
 void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
 {
-  intptr_t Code = 0;
+  int64_t Code = 0;
 
   if (FOnCaptureOutput != nullptr)
   {
@@ -3088,14 +3088,14 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
     }
 
     if (ConfirmOverwrite(FileName, UserData.Params, OperationProgress,
-          OverwriteMode,
           UserData.AutoResume && UserData.CopyParam->AllowResume(FileParams.SourceSize),
-          NoFileParams ? nullptr : &FileParams, UserData.CopyParam))
+          NoFileParams ? nullptr : &FileParams, UserData.CopyParam,
+          OverwriteMode))
     {
       switch (OverwriteMode)
       {
         case omOverwrite:
-          if (!FTerminal->CreateFile(DestFullName, OperationProgress,
+          if ((OperationProgress->Side == osRemote) && !FTerminal->TerminalCreateFile(DestFullName, OperationProgress,
             false, true,
             &LocalFileHandle))
           {
@@ -3116,7 +3116,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
           break;
 
         case omResume:
-          if (!FTerminal->CreateFile(DestFullName, OperationProgress,
+          if ((OperationProgress->Side == osRemote) && !FTerminal->TerminalCreateFile(DestFullName, OperationProgress,
             true, true,
             &LocalFileHandle))
           {
@@ -3429,7 +3429,12 @@ bool TFTPFileSystem::HandleAsynchRequestNeedPass(
   else
   {
     UnicodeString Password = L"";
-    if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), L"",
+    if (!FPasswordFailed && FTerminal->GetSessionData()->GetLoginType() == ltAnonymous)
+    {
+      Data.Password = _wcsdup(Password.c_str());
+      RequestResult = TFileZillaIntf::REPLY_OK;
+    }
+    else if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), L"",
       LoadStr(PASSWORD_PROMPT), false, 0, Password))
     {
       Data.Password = _wcsdup(Password.c_str());

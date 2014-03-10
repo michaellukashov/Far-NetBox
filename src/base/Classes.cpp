@@ -490,7 +490,7 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
   tokenize(StrValue, Lines, delim, true);
   for (size_t I = 0; I < Lines.size(); I++)
   {
-    Add(Lines[I]);
+    Add(Lines[I].c_str());
   }
 }
 

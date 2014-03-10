@@ -76,7 +76,7 @@ DEFINE_CALLBACK_TYPE0(TCheckForEscEvent, bool);
 //------------------------------------------------------------------------------
 inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
 {
-  throw EScpSkipFile(Exception, Message);
+  throw ESkipFile(Exception, Message);
 }
 inline void ThrowSkipFileNull() { ThrowSkipFile(nullptr, L""); }
 
@@ -92,7 +92,7 @@ inline void ThrowSkipFileNull() { ThrowSkipFile(nullptr, L""); }
     {                                                                       \
       throw;                                                                \
     }                                                                       \
-    catch (EScpSkipFile &)                                                  \
+    catch (ESkipFile &)                                                  \
     {                                                                       \
       throw;                                                                \
     }                                                                       \
@@ -410,7 +410,7 @@ protected:
   void CustomReadDirectory(TRemoteFileList * FileList);
   void DoCreateLink(const UnicodeString & FileName, const UnicodeString & PointTo,
     bool Symbolic);
-  bool CreateFile(const UnicodeString & FileName,
+  bool TerminalCreateFile(const UnicodeString & FileName,
     TFileOperationProgressType * OperationProgress,
     bool Resume,
     bool NoConfirmation,

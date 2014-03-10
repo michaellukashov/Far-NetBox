@@ -331,7 +331,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
       OpenAnalyseInfo *Info = reinterpret_cast<OpenAnalyseInfo *>(Item);
       const wchar_t * XmlFileName = Info->Info->FileName;
       std::unique_ptr<THierarchicalStorage> ImportStorage(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
-  
+
       ImportStorage->Init();
       ImportStorage->SetAccessMode(smRead);
       if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
@@ -582,11 +582,11 @@ struct TFarMessageData : public TObject
 {
 NB_DECLARE_CLASS(TFarMessageData)
 public:
-  TFarMessageData()
+  TFarMessageData() :
+    Params(nullptr),
+    ButtonCount(0)
   {
-    Params = nullptr;
-    memset(Buttons, 0, sizeof(Buttons));
-    ButtonCount = 0;
+    ClearArray(Buttons);
   }
 
   const TMessageParams * Params;
@@ -711,6 +711,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   USEDPARAM(NeverAskAgainPending);
   assert(!NeverAskAgainPending);
 
+  uintptr_t DefaultButtonIndex = 0;
   if ((Params != nullptr) && (Params->Aliases != nullptr))
   {
     for (uintptr_t bi = 0; bi < Data.ButtonCount; bi++)
@@ -721,6 +722,8 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
             !Params->Aliases[ai].Alias.IsEmpty())
         {
           ButtonLabels->SetString(bi, Params->Aliases[ai].Alias);
+          if (Params->Aliases[ai].Default)
+            DefaultButtonIndex = bi;
           break;
         }
       }
@@ -754,6 +757,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   }
 
   FarParams.Token = &Data;
+  FarParams.DefaultButton = DefaultButtonIndex;
   FarParams.ClickEvent = MAKE_CALLBACK(TWinSCPPlugin::MessageClick, this);
 
   if (MoreMessages && (MoreMessages->GetCount() > 0))
@@ -813,7 +817,7 @@ BOOL TWinSCPPlugin::SetLocalFileAttributes(const UnicodeString & LocalFileName, 
 
 BOOL TWinSCPPlugin::MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
 {
-  return GetSystemFunctions()->MoveFileEx(LocalFileName.c_str(), NewLocalFileName, Flags);
+  return GetSystemFunctions()->MoveFileEx(LocalFileName.c_str(), NewLocalFileName.c_str(), Flags);
 }
 
 BOOL TWinSCPPlugin::RemoveLocalDirectory(const UnicodeString & LocalDirName)

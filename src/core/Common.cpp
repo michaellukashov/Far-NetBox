@@ -376,7 +376,7 @@ UnicodeString UnformatMessage(const UnicodeString & S)
 //---------------------------------------------------------------------------
 bool IsNumber(const UnicodeString & Str)
 {
-  intptr_t Value = 0;
+  int64_t Value = 0;
   if (Str == L"0") return true;
   return TryStrToInt(Str, Value);
 }
@@ -1031,7 +1031,7 @@ static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
 
     uint32_t GTZI;
 
-    HINSTANCE Kernel32 = GetModuleHandle(kernel32);
+    HINSTANCE Kernel32 = GetModuleHandle(kernel32.c_str());
     typedef BOOL (WINAPI * TGetTimeZoneInformationForYear)(USHORT wYear, PDYNAMIC_TIME_ZONE_INFORMATION pdtzi, LPTIME_ZONE_INFORMATION ptzi);
     TGetTimeZoneInformationForYear GetTimeZoneInformationForYear =
       (TGetTimeZoneInformationForYear)GetProcAddress(Kernel32, "GetTimeZoneInformationForYear");
@@ -1223,7 +1223,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
     ++Index;
   }
   UnicodeString NumberStr = S.SubString(1, Index - 1);
-  intptr_t Number = 0;
+  int64_t Number = 0;
   bool Result = TryStrToInt(NumberStr, Number);
   if (Result)
   {
@@ -2010,7 +2010,7 @@ UnicodeString DefaultEncodingName()
 bool GetWindowsProductType(DWORD & Type)
 {
   bool Result;
-  HINSTANCE Kernel32 = GetModuleHandle(kernel32);
+  HINSTANCE Kernel32 = GetModuleHandle(kernel32.c_str());
   typedef BOOL (WINAPI * TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
   TGetProductInfo GetProductInfo =
       (TGetProductInfo)GetProcAddress(Kernel32, "GetProductInfo");

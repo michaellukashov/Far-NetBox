@@ -1290,7 +1290,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     #undef GETNCOL
     #undef GETCOL
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     throw ETerminal(&E, FmtLoadStr(LIST_LINE_ERROR, Value.c_str()), HELP_LIST_LINE_ERROR);
   }
@@ -1355,7 +1355,7 @@ void TRemoteFile::FindLinkedFile()
       };
       GetTerminal()->ReadSymlink(this, FLinkedFile);
     }
-    catch (Exception &E)
+    catch (Exception & E)
     {
       if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
       {

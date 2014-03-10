@@ -2776,7 +2776,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(MSG_BUTTON_OK));
-  Button->SetDefault((Action != saConnect));
+  Button->SetDefault(Action != saConnect);
   Button->SetResult(brOK);
   Button->SetCenterGroup(true);
 
@@ -2784,7 +2784,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   ConnectButton = new TFarButton(this);
   ConnectButton->SetCaption(GetMsg(LOGIN_CONNECT_BUTTON));
-  ConnectButton->SetDefault((Action == saConnect));
+  ConnectButton->SetDefault(Action == saConnect);
   ConnectButton->SetResult(brConnect);
   ConnectButton->SetCenterGroup(true);
 

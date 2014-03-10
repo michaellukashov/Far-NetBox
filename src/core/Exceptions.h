@@ -65,8 +65,8 @@ DERIVE_EXT_EXCEPTION(ESsh, ExtException)
 DERIVE_EXT_EXCEPTION(ETerminal, ExtException)
 DERIVE_EXT_EXCEPTION(ECommand, ExtException)
 DERIVE_EXT_EXCEPTION(EScp, ExtException) // SCP protocol fatal error (non-fatal in application context)
-DERIVE_EXT_EXCEPTION(EScpSkipFile, ExtException)
-DERIVE_EXT_EXCEPTION(EScpFileSkipped, EScpSkipFile)
+DERIVE_EXT_EXCEPTION(ESkipFile, ExtException)
+DERIVE_EXT_EXCEPTION(EFileSkipped, ESkipFile)
 //---------------------------------------------------------------------------
 class EOSExtException : public ExtException
 {

@@ -1538,6 +1538,7 @@ bool TTerminal::DoQueryReopen(Exception * E)
       TQueryButtonAlias Aliases[1];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(RECONNECT_BUTTON);
+      Aliases[0].Default = true;
       Params.Aliases = Aliases;
       Params.AliasesCount = LENOF(Aliases);
       Result = (QueryUserException(L"", E, qaRetry | qaAbort, &Params, qtError) == qaRetry);
@@ -1969,20 +1970,18 @@ void TTerminal::EndTransaction()
   {
     if (FInTransaction == 0)
     {
+      SCOPE_EXIT
       {
-        SCOPE_EXIT
-        {
-          FReadCurrentDirectoryPending = false;
-          FReadDirectoryPending = false;
-        };
-        if (FReadCurrentDirectoryPending)
-        {
-          ReadCurrentDirectory();
-        }
-        if (FReadDirectoryPending)
-        {
-          ReadDirectory(!FReadCurrentDirectoryPending);
-        }
+        FReadCurrentDirectoryPending = false;
+        FReadDirectoryPending = false;
+      };
+      if (FReadCurrentDirectoryPending)
+      {
+        ReadCurrentDirectory();
+      }
+      if (FReadDirectoryPending)
+      {
+        ReadDirectory(!FReadCurrentDirectoryPending);
       }
     }
   }
@@ -2460,11 +2459,11 @@ void TTerminal::LogEvent(const UnicodeString & Str)
 void TTerminal::RollbackAction(TSessionAction & Action,
   TFileOperationProgressType * OperationProgress, Exception * E)
 {
-  // EScpSkipFile without "cancel" is file skip,
+  // ESkipFile without "cancel" is file skip,
   // and we do not want to record skipped actions.
-  // But EScpSkipFile with "cancel" is abort and we want to record that.
+  // But ESkipFile with "cancel" is abort and we want to record that.
   // Note that TSCPFileSystem modifies the logic of RollbackAction little bit.
-  if ((NB_STATIC_DOWNCAST(EScpSkipFile, E) != nullptr) &&
+  if ((NB_STATIC_DOWNCAST(ESkipFile, E) != nullptr) &&
       ((OperationProgress == nullptr) ||
        (OperationProgress->Cancel == csContinue)))
   {
@@ -2541,7 +2540,7 @@ void TTerminal::ReadCurrentDirectory()
     }
     /* if (OldDirectory != FFileSystem->GetCurrentDirectory()) */ { DoChangeDirectory(); }
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     CommandError(&E, LoadStr(READ_CURRENT_DIR_ERROR));
   }
@@ -2614,7 +2613,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
         CustomReadDirectory(Files);
       }
     }
-    catch (Exception &E)
+    catch (Exception & E)
     {
       CommandError(&E, FmtLoadStr(LIST_DIR_ERROR, FFiles->GetDirectory().c_str()));
     }
@@ -2834,7 +2833,7 @@ void TTerminal::ReadDirectory(TRemoteFileList * FileList)
   {
     CustomReadDirectory(FileList);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     CommandError(&E, FmtLoadStr(LIST_DIR_ERROR, FileList->GetDirectory().c_str()));
   }
@@ -2850,7 +2849,7 @@ void TTerminal::ReadSymlink(TRemoteFile * SymlinkFile,
     FFileSystem->ReadSymlink(SymlinkFile, File);
     ReactOnCommand(fsReadSymlink);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     CommandError(&E, FMTLOAD(READ_SYMLINK_ERROR, SymlinkFile->GetFileName().c_str()));
   }
@@ -2868,7 +2867,7 @@ void TTerminal::ReadFile(const UnicodeString & FileName,
     ReactOnCommand(fsListFile);
     LogRemoteFile(AFile);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     if (AFile)
     {
@@ -2987,7 +2986,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
               Success = true;
             }
           }
-          catch (EScpSkipFile & E)
+          catch (ESkipFile & E)
           {
             DEBUG_PRINTF(L"before HandleException");
             TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -3836,7 +3835,7 @@ void TTerminal::HomeDirectory()
     FFileSystem->HomeDirectory();
     ReactOnCommand(fsHomeDirectory);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     CommandError(&E, LoadStr(CHANGE_HOMEDIR_ERROR));
   }
@@ -3869,7 +3868,7 @@ void TTerminal::ChangeDirectory(const UnicodeString & Directory)
     FLastDirectoryChange = DirectoryNormalized;
     ReactOnCommand(fsChangeDirectory);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     CommandError(&E, FMTLOAD(CHANGE_DIR_ERROR, DirectoryNormalized.c_str()));
   }
@@ -3896,7 +3895,7 @@ void TTerminal::LookupUsersGroups()
         FUsers.Log(this, L"users");
       }
     }
-    catch (Exception &E)
+    catch (Exception & E)
     {
       if (!GetActive() || (GetSessionData()->GetLookupUserGroups() == asOn))
       {
@@ -4019,7 +4018,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & Command,
     }
     ReactOnCommand(fsAnyCommand);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     if (Action != nullptr)
     {
@@ -4124,7 +4123,7 @@ bool TTerminal::DoCreateFile(const UnicodeString & FileName,
   return Result;
 }
 //------------------------------------------------------------------------------
-bool TTerminal::CreateFile(const UnicodeString & FileName,
+bool TTerminal::TerminalCreateFile(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress,
   bool Resume,
   bool NoConfirmation,
@@ -5208,7 +5207,7 @@ void TTerminal::SpaceAvailable(const UnicodeString & Path,
   {
     FFileSystem->SpaceAvailable(Path, ASpaceAvailable);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     CommandError(&E, FMTLOAD(SPACE_AVAILABLE_ERROR, Path.c_str()));
   }
@@ -5345,7 +5344,7 @@ bool TTerminal::CopyToRemote(TStrings * AFilesToCopy,
       }
     }
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     if (OperationProgress.Cancel != csCancel)
     {
@@ -5444,7 +5443,7 @@ bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
         FFileSystem->CopyToLocal(AFilesToCopy, TargetDir, CopyParam, Params,
           &OperationProgress, OnceDoneOperation);
       }
-      catch (Exception &E)
+      catch (Exception & E)
       {
         if (OperationProgress.Cancel != csCancel)
         {
@@ -5550,7 +5549,7 @@ BOOL TTerminal::RemoveLocalDirectory(const UnicodeString & LocalDirName)
   }
   else
   {
-    return ::RemoveDirectory(LocalDirName) != 0;
+    return ::RemoveDirectory(LocalDirName.c_str()) != 0;
   }
 }
 //------------------------------------------------------------------------------

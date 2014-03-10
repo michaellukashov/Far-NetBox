@@ -2694,7 +2694,7 @@ void TSFTPFileSystem::DoStartup()
   {
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_VERSION);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     FTerminal->FatalError(&E, LoadStr(SFTP_INITIALIZE_ERROR));
   }
@@ -3210,7 +3210,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
               ::UnixIncludeTrailingBackslash(FileList->GetDirectory()) + PARENTDIRECTORY, File);
           }
         }
-        catch (Exception &E)
+        catch (Exception & E)
         {
           if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
           {
@@ -3841,7 +3841,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
           tfFirstLevel);
         Success = true;
       }
-      catch (EScpSkipFile & E)
+      catch (ESkipFile & E)
       {
         DEBUG_PRINTF(L"before FTerminal->HandleException");
         TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -3857,7 +3857,8 @@ void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::SFTPConfirmOverwrite(UnicodeString & FileName,
   const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
-  TOverwriteMode & OverwriteMode, const TOverwriteFileParams * FileParams)
+  const TOverwriteFileParams * FileParams,
+  OUT TOverwriteMode & OverwriteMode)
 {
   bool CanAppend = (FVersion < 4) || !OperationProgress->AsciiTransfer;
   bool CanResume =
@@ -4285,7 +4286,8 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
               {
                 UnicodeString PrevDestFileName = DestFileName;
                 SFTPConfirmOverwrite(DestFileName,
-                  CopyParam, Params, OperationProgress, OpenParams.OverwriteMode, &FileParams);
+                  CopyParam, Params, OperationProgress, &FileParams,
+                  OpenParams.OverwriteMode);
                 if (PrevDestFileName != DestFileName)
                 {
                   // update paths in case user changes the file name
@@ -4711,7 +4713,8 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
           // confirmation duplicated in SFTPSource for resumable file transfers.
           UnicodeString RemoteFileNameOnly = ::UnixExtractFileName(OpenParams->RemoteFileName);
           SFTPConfirmOverwrite(RemoteFileNameOnly,
-            OpenParams->CopyParam, OpenParams->Params, OperationProgress, OpenParams->OverwriteMode, OpenParams->FileParams);
+            OpenParams->CopyParam, OpenParams->Params, OperationProgress, OpenParams->FileParams,
+            OpenParams->OverwriteMode);
           if (RemoteFileNameOnly != ::UnixExtractFileName(OpenParams->RemoteFileName))
           {
             OpenParams->RemoteFileName =
@@ -4888,7 +4891,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
             Flags & ~tfFirstLevel);
         }
       }
-      catch (EScpSkipFile &E)
+      catch (ESkipFile & E)
       {
         // If ESkipFile occurs, just log it and continue with next file
         TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -4962,7 +4965,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
           Params, OperationProgress, tfFirstLevel);
         Success = true;
       }
-      catch (EScpSkipFile & E)
+      catch (ESkipFile & E)
       {
         TSuspendFileOperationProgress Suspend(OperationProgress);
         if (!FTerminal->HandleException(&E))
@@ -5270,7 +5273,8 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           GetSessionData()->GetDSTMode());
         FileParams.DestSize = DestFileSize;
         UnicodeString PrevDestFileName = DestFileName;
-        SFTPConfirmOverwrite(DestFileName, CopyParam, Params, OperationProgress, OverwriteMode, &FileParams);
+        SFTPConfirmOverwrite(DestFileName, CopyParam, Params, OperationProgress, &FileParams,
+          OverwriteMode);
         if (PrevDestFileName != DestFileName)
         {
           DestFullName = TargetDir + DestFileName;
@@ -5329,7 +5333,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       // if not already opened (resume, append...), create new empty file
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
       {
-        if (!FTerminal->CreateFile(LocalFileName, OperationProgress,
+        if (!FTerminal->TerminalCreateFile(LocalFileName, OperationProgress,
             FLAGSET(Params, cpResume), FLAGSET(Params, cpNoConfirmation),
             &LocalFileHandle))
         {
@@ -5546,7 +5550,7 @@ void TSFTPFileSystem::SFTPSinkFile(const UnicodeString & FileName,
     SFTPSinkRobust(FileName, AFile, Params->TargetDir, Params->CopyParam,
       Params->Params, Params->OperationProgress, Params->Flags);
   }
-  catch (EScpSkipFile & E)
+  catch (ESkipFile & E)
   {
     TFileOperationProgressType * OperationProgress = Params->OperationProgress;
 

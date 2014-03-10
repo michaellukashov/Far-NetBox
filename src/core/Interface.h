@@ -57,6 +57,7 @@ struct TQueryButtonAlias : public TObject
   UnicodeString Alias;
   TNotifyEvent OnClick;
   int GroupWith;
+  bool Default;
   TShiftState GrouppedShiftState;
 };
 

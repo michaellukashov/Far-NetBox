@@ -57,7 +57,7 @@ class EAbort : public Exception
 {
 NB_DECLARE_CLASS(EAbort)
 public:
-  explicit EAbort(const std::wstring & what) : Exception(what)
+  explicit EAbort(const UnicodeString & what) : Exception(what)
   {}
 };
 
@@ -65,7 +65,7 @@ class EAccessViolation : public Exception
 {
 NB_DECLARE_CLASS(EAccessViolation)
 public:
-  explicit EAccessViolation(const std::wstring & what) : Exception(what)
+  explicit EAccessViolation(const UnicodeString & what) : Exception(what)
   {}
 };
 
@@ -209,8 +209,7 @@ int64_t ToInt(const UnicodeString & Value);
 intptr_t StrToIntDef(const UnicodeString & Value, intptr_t DefVal);
 int64_t StrToInt64(const UnicodeString & Value);
 int64_t StrToInt64Def(const UnicodeString & Value, int64_t DefVal);
-bool TryStrToInt(const std::wstring & StrValue, intptr_t & Value);
-bool TryStrToInt(const std::wstring & StrValue, int64_t & Value);
+bool TryStrToInt(const UnicodeString & StrValue, int64_t & Value);
 
 //---------------------------------------------------------------------------
 double StrToFloat(const UnicodeString & Value);
@@ -305,6 +304,16 @@ struct TFileTime
 
 struct TSearchRec
 {
+  TSearchRec() :
+    Time(0),
+    Size(0),
+    Attr(0),
+    ExcludeAttr(0),
+    FindHandle(INVALID_HANDLE_VALUE)
+  {
+//    memset(&FindData, 0, sizeof(FindData));
+    ClearStruct(FindData);
+  }
   Integer Time;
   Int64 Size;
   Integer Attr;
@@ -389,18 +398,18 @@ uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobal
 class ScopeExit
 {
 public:
-    ScopeExit(const std::function<void()>& f) : m_f(f) {}
-    ~ScopeExit() { m_f(); }
+  ScopeExit(const std::function<void()>& f) : m_f(f) {}
+  ~ScopeExit() { m_f(); }
 
 private:
-    std::function<void()> m_f;
+  std::function<void()> m_f;
 };
 
 #define _SCOPE_EXIT_NAME(name, suffix) name ## suffix
 #define SCOPE_EXIT_NAME(name, suffix) _SCOPE_EXIT_NAME(name, suffix)
 #define SCOPE_EXIT \
-    std::function<void()> SCOPE_EXIT_NAME(scope_exit_func_, __LINE__); \
-    ScopeExit SCOPE_EXIT_NAME(scope_exit_, __LINE__) = SCOPE_EXIT_NAME(scope_exit_func_, __LINE__) = [&]() /* lambda body here */
+  std::function<void()> SCOPE_EXIT_NAME(scope_exit_func_, __LINE__); \
+  ScopeExit SCOPE_EXIT_NAME(scope_exit_, __LINE__) = SCOPE_EXIT_NAME(scope_exit_func_, __LINE__) = [&]() /* lambda body here */
 //---------------------------------------------------------------------------
 } // namespace Sysutils
 

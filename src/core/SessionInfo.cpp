@@ -725,7 +725,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
       }
     }
-    catch (Exception &E)
+    catch (Exception & E)
     {
       // We failed logging, turn it off and notify user.
       FConfiguration->SetLogging(false);
@@ -733,7 +733,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
       {
         throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
       }
-      catch (Exception &E)
+      catch (Exception & E)
       {
         AddException(&E);
         FUI->HandleExtendedException(&E);
@@ -1249,7 +1249,7 @@ void TActionLog::Add(const UnicodeString & Line)
         fwrite("\n", 1, 1, (FILE *)FFile);
       }
     }
-    catch (Exception &E)
+    catch (Exception & E)
     {
       // We failed logging, turn it off and notify user.
       FConfiguration->SetLogActions(false);
@@ -1257,7 +1257,7 @@ void TActionLog::Add(const UnicodeString & Line)
       {
         throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
       }
-      catch (Exception &E)
+      catch (Exception & E)
       {
         FUI->HandleExtendedException(&E);
       }

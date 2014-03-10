@@ -69,7 +69,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
           Name.Delete(P, Name.Length() - P + 1);
           SetName(Name.TrimRight());
         }
-        catch (Exception &E)
+        catch (Exception & E)
         {
           (void)E;
           N = 0;
