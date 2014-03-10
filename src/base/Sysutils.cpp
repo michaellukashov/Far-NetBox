@@ -172,25 +172,13 @@ int64_t StrToInt64Def(const UnicodeString & Value, int64_t DefVal)
   }
 }
 
-bool TryStrToInt(const std::wstring & StrValue, int64_t & Value)
+bool TryStrToInt(const UnicodeString & StrValue, int64_t & Value)
 {
-  bool Result = !StrValue.empty() && (StrValue.find_first_not_of(L"+-0123456789") == std::string::npos);
+  bool Result = !StrValue.IsEmpty() && (StrValue.FindFirstNotOf(L"+-0123456789") == std::string::npos);
   if (Result)
   {
     errno = 0;
     Value = _wtoi64(StrValue.c_str());
-    Result = (errno != EINVAL) && (errno != ERANGE);
-  }
-  return Result;
-}
-
-bool TryStrToInt(const std::wstring & StrValue, int & Value)
-{
-  bool Result = !StrValue.empty()&& (StrValue.find_first_not_of(L"+-0123456789") == std::string::npos);
-  if (Result)
-  {
-    errno = 0;
-    Value = _wtoi(StrValue.c_str());
     Result = (errno != EINVAL) && (errno != ERANGE);
   }
   return Result;

@@ -209,8 +209,7 @@ int64_t ToInt(const UnicodeString & Value);
 intptr_t StrToIntDef(const UnicodeString & Value, intptr_t DefVal);
 int64_t StrToInt64(const UnicodeString & Value);
 int64_t StrToInt64Def(const UnicodeString & Value, int64_t DefVal);
-bool TryStrToInt(const std::wstring & StrValue, intptr_t & Value);
-bool TryStrToInt(const std::wstring & StrValue, int64_t & Value);
+bool TryStrToInt(const UnicodeString & StrValue, int64_t & Value);
 
 //---------------------------------------------------------------------------
 double StrToFloat(const UnicodeString & Value);

@@ -376,7 +376,7 @@ UnicodeString UnformatMessage(const UnicodeString & S)
 //---------------------------------------------------------------------------
 bool IsNumber(const UnicodeString & Str)
 {
-  intptr_t Value = 0;
+  int64_t Value = 0;
   if (Str == L"0") return true;
   return TryStrToInt(Str, Value);
 }
@@ -1223,7 +1223,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
     ++Index;
   }
   UnicodeString NumberStr = S.SubString(1, Index - 1);
-  intptr_t Number = 0;
+  int64_t Number = 0;
   bool Result = TryStrToInt(NumberStr, Number);
   if (Result)
   {

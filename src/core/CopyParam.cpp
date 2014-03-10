@@ -626,7 +626,7 @@ uintptr_t GetSpeedLimit(const UnicodeString & Text)
   }
   else
   {
-    intptr_t SSpeed = 0;
+    int64_t SSpeed = 0;
     if (!TryStrToInt(Text, SSpeed) ||
          (SSpeed < 0))
     {

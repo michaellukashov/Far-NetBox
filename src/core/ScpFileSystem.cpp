@@ -640,11 +640,13 @@ bool TSCPFileSystem::RemoveLastLine(UnicodeString & Line,
     // in console window
     UnicodeString ReturnCodeStr = Line.SubString(Pos + LastLine.Length() + 1,
       Line.Length() - Pos + LastLine.Length());
-    if (TryStrToInt(ReturnCodeStr, ReturnCode))
+    int64_t Code = 0;
+    if (TryStrToInt(ReturnCodeStr, Code))
     {
       IsLastLine = true;
       Line.SetLength(Pos - 1);
     }
+    ReturnCode = Code;
   }
   return IsLastLine;
 }

@@ -2774,7 +2774,7 @@ void TFTPFileSystem::StoreLastResponse(const UnicodeString & Text)
 //---------------------------------------------------------------------------
 void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
 {
-  intptr_t Code = 0;
+  int64_t Code = 0;
 
   if (FOnCaptureOutput != nullptr)
   {
