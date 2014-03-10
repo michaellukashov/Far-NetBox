@@ -2547,7 +2547,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
 
                 Action.Destination(DestFileName);
 
-                if (!FTerminal->CreateFile(DestFileName, OperationProgress,
+                if (!FTerminal->TerminalCreateFile(DestFileName, OperationProgress,
                     FLAGSET(Params, cpResume), FLAGSET(Params, cpNoConfirmation),
                     &LocalFileHandle))
                 {

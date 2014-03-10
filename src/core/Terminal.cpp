@@ -4124,7 +4124,7 @@ bool TTerminal::DoCreateFile(const UnicodeString & FileName,
   return Result;
 }
 //------------------------------------------------------------------------------
-bool TTerminal::CreateFile(const UnicodeString & FileName,
+bool TTerminal::TerminalCreateFile(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress,
   bool Resume,
   bool NoConfirmation,

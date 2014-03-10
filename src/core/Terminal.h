@@ -410,7 +410,7 @@ protected:
   void CustomReadDirectory(TRemoteFileList * FileList);
   void DoCreateLink(const UnicodeString & FileName, const UnicodeString & PointTo,
     bool Symbolic);
-  bool CreateFile(const UnicodeString & FileName,
+  bool TerminalCreateFile(const UnicodeString & FileName,
     TFileOperationProgressType * OperationProgress,
     bool Resume,
     bool NoConfirmation,
