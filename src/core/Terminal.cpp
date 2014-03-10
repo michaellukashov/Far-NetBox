@@ -1969,20 +1969,18 @@ void TTerminal::EndTransaction()
   {
     if (FInTransaction == 0)
     {
+      SCOPE_EXIT
       {
-        SCOPE_EXIT
-        {
-          FReadCurrentDirectoryPending = false;
-          FReadDirectoryPending = false;
-        };
-        if (FReadCurrentDirectoryPending)
-        {
-          ReadCurrentDirectory();
-        }
-        if (FReadDirectoryPending)
-        {
-          ReadDirectory(!FReadCurrentDirectoryPending);
-        }
+        FReadCurrentDirectoryPending = false;
+        FReadDirectoryPending = false;
+      };
+      if (FReadCurrentDirectoryPending)
+      {
+        ReadCurrentDirectory();
+      }
+      if (FReadDirectoryPending)
+      {
+        ReadDirectory(!FReadCurrentDirectoryPending);
       }
     }
   }
