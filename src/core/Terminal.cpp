@@ -2286,9 +2286,9 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & FileName,
 
   if (!Applicable)
   {
-    TBatchOverwrite ABatchOverwrite = EffectiveBatchOverwrite(CopyParam, Params, OperationProgress, false);
-    assert(BatchOverwrite != ABatchOverwrite);
-    BatchOverwrite = ABatchOverwrite;
+    TBatchOverwrite EffBatchOverwrite = EffectiveBatchOverwrite(CopyParam, Params, OperationProgress, false);
+    assert(BatchOverwrite != EffBatchOverwrite);
+    BatchOverwrite = EffBatchOverwrite;
   }
 
   if (BatchOverwrite == boNo)
