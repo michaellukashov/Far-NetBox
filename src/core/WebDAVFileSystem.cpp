@@ -10673,7 +10673,7 @@ neon_get_props_resource(
 //------------------------------------------------------------------------------
 
 static error_t
-client_list2(
+client_list(
   session_t * session,
   const char * path_or_url,
   depth_t depth,
@@ -13781,7 +13781,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString & Directory)
   const char * remote_path = nullptr;
   err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Directory).c_str(), baton.pool);
   if (err) return false;
-  err = webdav::client_list2(
+  err = webdav::client_list(
     FSession,
     remote_path,
     webdav::depth_immediates,
