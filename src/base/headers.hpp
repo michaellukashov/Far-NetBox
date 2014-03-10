@@ -331,11 +331,11 @@ bool CheckStructSize(const T * s) { return s && (s->StructSize >= sizeof(T)); }
 
 #define NB_DISABLE_COPY(Class) \
 private: \
-    Class(const Class &); \
-    Class &operator=(const Class &);
+  Class(const Class &); \
+  Class &operator=(const Class &);
 
 #define NB_STATIC_ASSERT(Condition, Message) \
-    static_assert(bool(Condition), Message)
+  static_assert(bool(Condition), Message)
 
 //---------------------------------------------------------------------------
 
