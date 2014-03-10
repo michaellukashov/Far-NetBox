@@ -766,7 +766,7 @@ void TFarDialog::Synchronize(TThreadMethod Event)
   FSynchronizeMethod = Event;
   FNeedsSynchronize = true;
   WaitForMultipleObjects(LENOF(FSynchronizeObjects),
-                         reinterpret_cast<HANDLE *>(&FSynchronizeObjects), false, INFINITE);
+    reinterpret_cast<HANDLE *>(&FSynchronizeObjects), false, INFINITE);
 }
 //---------------------------------------------------------------------------
 void TFarDialog::Close(TFarButton * Button)
