@@ -9847,10 +9847,6 @@ static error_t
 cancel_callback(void * baton)
 {
   callback_baton_t * cb = static_cast<callback_baton_t *>(baton);
-  TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(cb->ctx->auth_baton->parameters,
-    CONST_FS_KEY,
-    APR_HASH_KEY_STRING));
-  assert(fs);
   return error_trace((cb->ctx->cancel_func)(cb->ctx->cancel_baton));
 }
 
