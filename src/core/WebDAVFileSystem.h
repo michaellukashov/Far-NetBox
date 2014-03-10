@@ -126,7 +126,6 @@ public:
     uintptr_t & RequestResult);
   webdav::error_t CreateStorage(THierarchicalStorage *& Storage);
   uintptr_t AdjustToCPSLimit(uintptr_t Len);
-  bool GetIsCancelled();
 
 protected:
   virtual UnicodeString GetCurrentDirectory();

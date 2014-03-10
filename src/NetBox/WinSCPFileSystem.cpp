@@ -3664,8 +3664,9 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
     case qaYes:
       ACancel = csCancelTransfer; break;
     case qaOK:
-    case qaNo:
       ACancel = csCancel; break;
+    case qaNo:
+      ACancel = csContinue; break;
     default:
       ACancel = csContinue; break;
     }

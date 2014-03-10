@@ -9850,7 +9850,6 @@ cancel_callback(void * baton)
     CONST_FS_KEY,
     APR_HASH_KEY_STRING));
   assert(fs);
-  cancelled = static_cast<atomic_t>(fs->GetIsCancelled());
   return error_trace((cb->ctx->cancel_func)(cb->ctx->cancel_baton));
 }
 
@@ -12206,7 +12205,7 @@ void TWebDAVFileSystem::Open()
     }
     catch (...)
     {
-      if (GetIsCancelled() || FFileTransferCancelled)
+      if (webdav::cancelled || FFileTransferCancelled)
         break;
       apr_sleep(200000); // 0.2 sec
     }
@@ -12446,6 +12445,7 @@ void TWebDAVFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 void TWebDAVFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   assert(FileList);
+  webdav::cancelled = 0;
   bool Repeat = false;
 
   do
@@ -13600,7 +13600,7 @@ void TWebDAVFileSystem::ResetFileTransfer()
   FFileTransferAbort = ftaNone;
   FFileTransferCancelled = false;
   FFileTransferResumed = 0;
-  webdav::cancelled = false;
+  webdav::cancelled = 0;
 }
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::ReadDirectoryProgress(int64_t Bytes)
@@ -13644,10 +13644,11 @@ void TWebDAVFileSystem::DoFileTransferProgress(int64_t TransferSize,
     OperationProgress->AddTransfered(Diff);
   }
 
-  if (OperationProgress->Cancel == csCancel)
+  if (!FFileTransferCancelled && OperationProgress->Cancel == csCancel)
   {
     FFileTransferCancelled = true;
     FFileTransferAbort = ftaCancel;
+    webdav::cancelled = 1;
   }
 
   if (FFileTransferCPSLimit != OperationProgress->CPSLimit)
@@ -13859,11 +13860,18 @@ bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t * RemotePath,
   if (err) return false;
   err = webdav::path_cstring_to_utf8(&local_path, AnsiString(LocalPath).c_str(), pool);
   if (err) return false;
-  err = webdav::client_put_file(
-    FSession,
-    remote_path,
-    local_path,
-    pool);
+  try
+  {
+    err = webdav::client_put_file(
+      FSession,
+      remote_path,
+      local_path,
+      pool);
+  }
+  catch (EScpSkipFile &)
+  {
+    err = WEBDAV_ERR_CANCELLED;
+  }
 
   webdav_pool_destroy(pool);
   if (err == WEBDAV_ERR_CANCELLED)
@@ -14214,11 +14222,6 @@ webdav::error_t TWebDAVFileSystem::CreateStorage(
 uintptr_t TWebDAVFileSystem::AdjustToCPSLimit(uintptr_t Len)
 {
   return FCurrentOperationProgress ? (uintptr_t)FCurrentOperationProgress->AdjustToCPSLimit(Len) : Len;
-}
-//------------------------------------------------------------------------------
-bool TWebDAVFileSystem::GetIsCancelled()
-{
-  return FTerminal->CheckForEsc();
 }
 //------------------------------------------------------------------------------
 NB_IMPLEMENT_CLASS(TWebDAVFileSystem, NB_GET_CLASS_INFO(TCustomFileSystem), nullptr);
