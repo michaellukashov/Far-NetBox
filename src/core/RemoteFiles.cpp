@@ -1239,7 +1239,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             Sec = 0;
             FModificationFmt = mfMDHM;
           }
-            else
+          else
           {
             Year = static_cast<Word>(Sysutils::StrToInt(Col));
             if (Year > 10000) Abort();
