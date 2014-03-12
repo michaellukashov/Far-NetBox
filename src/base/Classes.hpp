@@ -42,9 +42,6 @@ extern const intptr_t DateDelta;
 extern const intptr_t UnixDateDelta;
 extern const UnicodeString kernel32;
 //---------------------------------------------------------------------------
-UnicodeString MB2W(const char * src, const UINT cp = CP_ACP);
-AnsiString W2MB(const wchar_t * src, const UINT cp = CP_ACP);
-//---------------------------------------------------------------------------
 class TObject;
 DEFINE_CALLBACK_TYPE0(TThreadMethod, void);
 

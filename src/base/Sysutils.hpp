@@ -28,6 +28,9 @@ intptr_t __cdecl debug_printf2(const char * format, ...);
 #endif
 
 //---------------------------------------------------------------------------
+UnicodeString MB2W(const char * src, const UINT cp = CP_ACP);
+AnsiString W2MB(const wchar_t * src, const UINT cp = CP_ACP);
+//---------------------------------------------------------------------------
 typedef int TDayTable[12];
 extern const TDayTable MonthDays[];
 
