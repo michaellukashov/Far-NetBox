@@ -80,44 +80,18 @@ inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
 }
 inline void ThrowSkipFileNull() { ThrowSkipFile(nullptr, L""); }
 
-/* TODO : Better user interface (query to user) */
-#define FILE_OPERATION_LOOP_CUSTOM(TERMINAL, ALLOW_SKIP, MESSAGE, OPERATION, HELPKEYWORD) { \
-  bool DoRepeat;                                                            \
-  do {                                                                      \
-    DoRepeat = false;                                                       \
-    try {                                                                   \
-      OPERATION;                                                            \
-    }                                                                       \
-    catch (EAbort &)                                                        \
-    {                                                                       \
-      throw;                                                                \
-    }                                                                       \
-    catch (ESkipFile &)                                                  \
-    {                                                                       \
-      throw;                                                                \
-    }                                                                       \
-    catch (EFatal &)                                                        \
-    {                                                                       \
-      throw;                                                                \
-    }                                                                       \
-    catch (EFileNotFoundError &)                                            \
-    {                                                                       \
-      throw;                                                                \
-    }                                                                       \
-    catch (EOSError &)                                                      \
-    {                                                                       \
-      throw;                                                                \
-    }                                                                       \
-    catch (Exception & E)                                                   \
-    {                                                                       \
-      TERMINAL->FileOperationLoopQuery(                                     \
-        E, OperationProgress, MESSAGE, ALLOW_SKIP, L"", HELPKEYWORD);       \
-      DoRepeat = true;                                                      \
-    } \
-  } while (DoRepeat); }
+void FileOperationLoopCustom(TTerminal * Terminal,
+  TFileOperationProgressType * OperationProgress,
+  bool AllowSkip, const UnicodeString & Message,
+  const UnicodeString & HelpKeyword,
+  const std::function<void()>& Operation);
 
 #define FILE_OPERATION_LOOP(MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_EX(True, MESSAGE, OPERATION)
+
+#define FILE_OPERATION_LOOP_EX2(ALLOW_SKIP, MESSAGE, HELP_KEYWORD, OPERATION) \
+  FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, HELP_KEYWORD, \
+    [&]() { OPERATION })
 //------------------------------------------------------------------------------
 enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsFTPS, cfsWebDAV };
 //------------------------------------------------------------------------------
