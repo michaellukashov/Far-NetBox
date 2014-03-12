@@ -904,8 +904,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       DeleteUnnecessary();
       EndUpdate();
     };
-    #define ADSTR(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
-    #define ADF(S, ...) ADSTR(S, ##__VA_ARGS__);
+    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
     if (Data == nullptr)
     {
       AddSeparator();
@@ -939,7 +938,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       // ADF(L"Time zone: %s", GetTimeZoneLogString().c_str());
       if (!AdjustClockForDSTEnabled())
       {
-        ADSTR(L"Warning: System option \"Automatically adjust clock for Daylight Saving Time\" is disabled, timestamps will not be represented correctly");
+        ADF(L"Warning: System option \"Automatically adjust clock for Daylight Saving Time\" is disabled, timestamps will not be represented correctly");
       }
       ADF(L"Login time: %s", dt.c_str());
       AddSeparator();
@@ -1112,7 +1111,6 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     }
 
     #undef ADF
-    #undef ADSTR
   }
 }
 //---------------------------------------------------------------------------
