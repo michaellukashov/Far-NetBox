@@ -405,10 +405,7 @@ public:
     FValue = Value;
     return *this;
   }
-  bool operator == (const TDateTime & rhs)
-  {
-    return fabs(FValue - rhs.FValue) < std::numeric_limits<double>::epsilon();
-  }
+  bool operator == (const TDateTime & rhs);
   bool operator != (const TDateTime & rhs)
   {
     return !(operator == (rhs));

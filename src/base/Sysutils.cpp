@@ -461,7 +461,11 @@ UnicodeString FormatFloat(const UnicodeString & Format, double Value)
   swprintf(&Result[1], L"%.2f", Value);
   return Result.c_str();
 }
-
+//---------------------------------------------------------------------------
+bool IsZero(double Value)
+{
+  return fabs(Value) < std::numeric_limits<double>::epsilon();
+}
 //---------------------------------------------------------------------------
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 {

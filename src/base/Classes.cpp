@@ -1133,6 +1133,11 @@ TDateTime::TDateTime(uint16_t Hour,
 }
 
 //---------------------------------------------------------------------------
+bool TDateTime::operator ==(const TDateTime& rhs)
+{
+  return IsZero(FValue - rhs.FValue);
+}
+
 UnicodeString TDateTime::DateString() const
 {
   uint16_t Y, M, D;

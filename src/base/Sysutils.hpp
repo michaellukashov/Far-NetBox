@@ -218,6 +218,7 @@ bool TryStrToInt(const UnicodeString & StrValue, int64_t & Value);
 double StrToFloat(const UnicodeString & Value);
 double StrToFloatDef(const UnicodeString & Value, double DefVal);
 UnicodeString FormatFloat(const UnicodeString & Format, double Value);
+bool IsZero(double Value);
 //---------------------------------------------------------------------------
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime);
 //---------------------------------------------------------------------------
