@@ -500,6 +500,15 @@ private:
   void InternalDoTryOpen();
   void InitFileSystem();
 
+  void CommandErrorAri(
+    Exception & E,
+    const UnicodeString & Message,
+    const std::function<void()> & Repeat);
+  void CommandErrorAriAction(
+    Exception & E,
+    const UnicodeString & Message,
+    const std::function<void()> & Repeat,
+    TSessionAction & Action);
 private:
   TSessionData * FSessionData;
   TSessionLog * FLog;

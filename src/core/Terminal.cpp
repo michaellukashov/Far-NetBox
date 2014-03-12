@@ -73,38 +73,68 @@ void FileOperationLoopCustom(TTerminal * Terminal,
     }
   } while (DoRepeat);
 }
+
+void TTerminal::CommandErrorAri(
+  Exception & E,
+  const UnicodeString & Message,
+  const std::function<void()> & Repeat)
+{
+  uintptr_t Result = CommandError(&E, Message, qaRetry | qaSkip | qaAbort);
+  switch (Result)
+  {
+    case qaRetry:
+      Repeat();
+      break;
+    case qaAbort:
+      Abort();
+      break;
+  }
+}
+
 //------------------------------------------------------------------------------
 #define COMMAND_ERROR_ARI(MESSAGE, REPEAT) \
-  { \
-    uintptr_t Result = CommandError(&E, MESSAGE, qaRetry | qaSkip | qaAbort); \
-    switch (Result) \
-    { \
-      case qaRetry: { REPEAT; } break; \
-      case qaAbort: Abort(); \
-    } \
-  }
+  CommandErrorAri(E, MESSAGE, \
+    [&]() { REPEAT; })
+
 //------------------------------------------------------------------------------
 // Note that the action may already be canceled when RollbackAction is called
-#define COMMAND_ERROR_ARI_ACTION(MESSAGE, REPEAT, ACTION) \
-  { \
-    uintptr_t Result; \
-    try \
-    { \
-      Result = CommandError(&E, MESSAGE, qaRetry | qaSkip | qaAbort); \
-    } \
-    catch (Exception & E2) \
-    { \
-      RollbackAction(ACTION, nullptr, &E2); \
-      throw; \
-    } \
-    switch (Result) \
-    { \
-      case qaRetry: ACTION.Cancel(); { REPEAT; } break; \
-      case qaAbort: RollbackAction(ACTION, nullptr, &E); Abort(); \
-      case qaSkip:  ACTION.Cancel(); break; \
-      default: assert(false); \
-    } \
+void TTerminal::CommandErrorAriAction(
+  Exception & E,
+  const UnicodeString & Message,
+  const std::function<void()> & Repeat,
+  TSessionAction & Action)
+{
+  uintptr_t Result;
+  try
+  {
+    Result = CommandError(&E, Message, qaRetry | qaSkip | qaAbort);
   }
+  catch (Exception & E2)
+  {
+    RollbackAction(Action, nullptr, &E2);
+    throw;
+  }
+  switch (Result)
+  {
+    case qaRetry:
+      Action.Cancel();
+      Repeat();
+      break;
+    case qaAbort:
+      RollbackAction(Action, nullptr, &E);
+      Abort();
+      break;
+    case qaSkip:
+      Action.Cancel();
+      break;
+    default:
+      assert(false);
+  }
+}
+
+#define COMMAND_ERROR_ARI_ACTION(MESSAGE, REPEAT, ACTION) \
+  CommandErrorAriAction(E, MESSAGE, \
+    [&]() { REPEAT; }, Action)
 
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FileOperationLoopCustom(this, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
