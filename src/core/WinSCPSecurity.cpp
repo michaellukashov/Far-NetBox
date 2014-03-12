@@ -12,7 +12,7 @@
 //---------------------------------------------------------------------------
 int random(int range)
 {
-  return static_cast<int>(static_cast<double>(rand()) / (static_cast<double>(RAND_MAX) / range));
+  return static_cast<int>(ToDouble(rand()) / (ToDouble(RAND_MAX) / range));
 }
 
 //---------------------------------------------------------------------------

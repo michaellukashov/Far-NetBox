@@ -3524,8 +3524,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetListingCommand(ListingCommandEdit->GetText());
     SessionData->SetSCPLsFullTime(SCPLsFullTimeAutoCheck->GetChecked() ? asAuto : asOff);
     SessionData->SetTimeDifference(TDateTime(
-      (static_cast<double>(TimeDifferenceEdit->GetAsInteger()) / 24) +
-      (static_cast<double>(TimeDifferenceMinutesEdit->GetAsInteger()) / 24 / 60)));
+      (ToDouble(TimeDifferenceEdit->GetAsInteger()) / 24) +
+      (ToDouble(TimeDifferenceMinutesEdit->GetAsInteger()) / 24 / 60)));
 
     // SFTP tab
 
@@ -7280,7 +7280,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
   {
     if (Ratio[Index] >= 0)
     {
-      double W = static_cast<double>(Ratio[Index]) * (Width - FixedRatio) / TotalRatio;
+      double W = ToDouble(Ratio[Index]) * (Width - FixedRatio) / TotalRatio;
       FWidths[Index] = static_cast<int>(floor(W));
       Temp[Index] = W - FWidths[Index];
     }

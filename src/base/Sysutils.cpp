@@ -1469,7 +1469,7 @@ static bool TryEncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MS
   bool Result = false;
   if ((Hour < 24) && (Min < 60) && (Sec < 60) && (MSec < 1000))
   {
-    Time = (Hour * 3600000 + Min * 60000 + Sec * 1000 + MSec) / static_cast<double>(MSecsPerDay);
+    Time = (Hour * 3600000 + Min * 60000 + Sec * 1000 + MSec) / ToDouble(MSecsPerDay);
     Result = true;
   }
   return Result;

@@ -466,7 +466,7 @@ TDateTime TFileOperationProgressType::TimeExpected()
   uintptr_t CurCps = CPS();
   if (CurCps)
   {
-    return TDateTime(static_cast<double>((static_cast<double>(TransferSize - TransferedSize)) / CurCps) / SecsPerDay);
+    return TDateTime(ToDouble((ToDouble(TransferSize - TransferedSize)) / CurCps) / SecsPerDay);
   }
   else
   {
@@ -481,7 +481,7 @@ TDateTime TFileOperationProgressType::TotalTimeExpected()
   // sanity check
   if ((CurCps > 0) && (TotalSize > TotalSkipped))
   {
-    return TDateTime(static_cast<double>(static_cast<double>(TotalSize - TotalSkipped) / CurCps) /
+    return TDateTime(ToDouble(ToDouble(TotalSize - TotalSkipped) / CurCps) /
       SecsPerDay);
   }
   else
@@ -497,7 +497,7 @@ TDateTime TFileOperationProgressType::TotalTimeLeft()
   // sanity check
   if ((CurCps > 0) && (TotalSize > TotalSkipped + TotalTransfered))
   {
-    return TDateTime(static_cast<double>(static_cast<double>(TotalSize - TotalSkipped - TotalTransfered) / CurCps) /
+    return TDateTime(ToDouble(ToDouble(TotalSize - TotalSkipped - TotalTransfered) / CurCps) /
       SecsPerDay);
   }
   else
