@@ -1389,10 +1389,10 @@ static bool DecodeDateFully(const TDateTime & DateTime,
     if (I == 4)
     {
       I--;
-      D += static_cast<Word>(D1);
+      D += ToWord(D1);
     }
     Y += I;
-    Result = IsLeapYear(static_cast<Word>(Y));
+    Result = IsLeapYear(ToWord(Y));
     const TDayTable * DayTable = &MonthDays[Result];
     uintptr_t M = 1;
     while (true)
@@ -1437,7 +1437,7 @@ void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
 //---------------------------------------------------------------------------
 static bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
 {
-  const TDayTable * DayTable = &MonthDays[IsLeapYear(static_cast<Word>(Year))];
+  const TDayTable * DayTable = &MonthDays[IsLeapYear(ToWord(Year))];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
       (Day >= 1) && (Day <= (*DayTable)[Month - 1]))
   {
@@ -1585,14 +1585,14 @@ static void IncAMonth(Word & Year, Word & Month, Word & Day, Int64 NumberOfMonth
     Sign = -1;
   Year = Year + (NumberOfMonths % 12);
   NumberOfMonths = NumberOfMonths / 12;
-  Month += static_cast<Word>(NumberOfMonths);
-  if (static_cast<Word>(Month-1) > 11) // if Month <= 0, word(Month-1) > 11)
+  Month += ToWord(NumberOfMonths);
+  if (ToWord(Month-1) > 11) // if Month <= 0, word(Month-1) > 11)
   {
-    Year += static_cast<Word>(Sign);
-    Month += -12 * static_cast<Word>(Sign);
+    Year += ToWord(Sign);
+    Month += -12 * ToWord(Sign);
   }
   const TDayTable * DayTable = &MonthDays[IsLeapYear(Year)];
-  if (Day > (*DayTable)[Month]) Day = static_cast<Word>(*DayTable[Month]);
+  if (Day > (*DayTable)[Month]) Day = ToWord(*DayTable[Month]);
 }
 
 static void ReplaceTime(TDateTime & DateTime, const TDateTime & NewTime)

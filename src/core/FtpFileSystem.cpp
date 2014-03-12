@@ -3015,13 +3015,13 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
   if (Tm != nullptr)
   {
     SYSTEMTIME SystemTime;
-    SystemTime.wYear = static_cast<WORD>(Tm->tm_year + 1900);
-    SystemTime.wMonth = static_cast<WORD>(Tm->tm_mon + 1);
+    SystemTime.wYear = ToWord(Tm->tm_year + 1900);
+    SystemTime.wMonth = ToWord(Tm->tm_mon + 1);
     SystemTime.wDayOfWeek = 0;
-    SystemTime.wDay = static_cast<WORD>(Tm->tm_mday);
-    SystemTime.wHour = static_cast<WORD>(Tm->tm_hour);
-    SystemTime.wMinute = static_cast<WORD>(Tm->tm_min);
-    SystemTime.wSecond = static_cast<WORD>(Tm->tm_sec);
+    SystemTime.wDay = ToWord(Tm->tm_mday);
+    SystemTime.wHour = ToWord(Tm->tm_hour);
+    SystemTime.wMinute = ToWord(Tm->tm_min);
+    SystemTime.wSecond = ToWord(Tm->tm_sec);
     SystemTime.wMilliseconds = 0;
 
     FILETIME LocalTime;

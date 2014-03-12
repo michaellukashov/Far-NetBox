@@ -294,6 +294,9 @@ inline void * ToPtr(const T & a) { return reinterpret_cast<void *>(a); }
 template <class T>
 inline double ToDouble(const T & a) { return static_cast<double>(a); }
 
+template <class T>
+inline double ToWord(const T & a) { return static_cast<Word>(a); }
+
 template<typename T>
 inline void ClearStruct(T & s) { memset(&s, 0, sizeof(s)); }
 

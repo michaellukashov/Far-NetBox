@@ -1130,7 +1130,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
 
       GetCol();
       // format dd mmm or mmm dd ?
-      Day = static_cast<Word>(StrToIntDef(Col, 0));
+      Day = ToWord(StrToIntDef(Col, 0));
       if (Day > 0)
       {
         DayMonthFormat = true;
@@ -1153,15 +1153,15 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       // for --full-time format
       if ((Month == 0) && (Col.Length() == 10) && (Col[5] == L'-') && (Col[8] == L'-'))
       {
-        Year = static_cast<Word>(Col.SubString(1, 4).ToInt());
-        Month = static_cast<Word>(Col.SubString(6, 2).ToInt());
-        Day = static_cast<Word>(Col.SubString(9, 2).ToInt());
+        Year = ToWord(Col.SubString(1, 4).ToInt());
+        Month = ToWord(Col.SubString(6, 2).ToInt());
+        Day = ToWord(Col.SubString(9, 2).ToInt());
         GetCol();
-        Hour = static_cast<Word>(Col.SubString(1, 2).ToInt());
-        Min = static_cast<Word>(Col.SubString(4, 2).ToInt());
+        Hour = ToWord(Col.SubString(1, 2).ToInt());
+        Min = ToWord(Col.SubString(4, 2).ToInt());
         if (Col.Length() >= 8)
         {
-          Sec = static_cast<Word>(Sysutils::StrToInt(Col.SubString(7, 2)));
+          Sec = ToWord(Sysutils::StrToInt(Col.SubString(7, 2)));
         }
         else
         {
@@ -1177,11 +1177,11 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         // drwxr-xr-x   4 root  wheel   512  2 mmm 13:00 .'.
         Month = CurrMonth;
         GetCol();
-        Hour = static_cast<Word>(Col.SubString(1, 2).ToInt());
-        Min = static_cast<Word>(Col.SubString(4, 2).ToInt());
+        Hour = ToWord(Col.SubString(1, 2).ToInt());
+        Min = ToWord(Col.SubString(4, 2).ToInt());
         if (Col.Length() >= 8)
         {
-          Sec = static_cast<Word>(Sysutils::StrToInt(Col.SubString(7, 2)));
+          Sec = ToWord(Sysutils::StrToInt(Col.SubString(7, 2)));
         }
         else
         {
@@ -1210,7 +1210,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         if (Day == 0)
         {
           GetNCol();
-          Day = static_cast<Word>(Sysutils::StrToInt(Col));
+          Day = ToWord(Sysutils::StrToInt(Col));
         }
         if ((Day < 1) || (Day > 31))
         {
@@ -1226,13 +1226,13 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           {
             Abort();
           }
-          Hour = static_cast<Word>(Sysutils::StrToInt(Col.SubString(1, 2)));
-          Min = static_cast<Word>(Sysutils::StrToInt(Col.SubString(4, 2)));
-          Sec = static_cast<Word>(Sysutils::StrToInt(Col.SubString(7, 2)));
+          Hour = ToWord(Sysutils::StrToInt(Col.SubString(1, 2)));
+          Min = ToWord(Sysutils::StrToInt(Col.SubString(4, 2)));
+          Sec = ToWord(Sysutils::StrToInt(Col.SubString(7, 2)));
           FModificationFmt = mfFull;
           // do not trim leading space of filename
           GetNCol();
-          Year = static_cast<Word>(Sysutils::StrToInt(Col));
+          Year = ToWord(Sysutils::StrToInt(Col));
         }
         else
         {
@@ -1254,10 +1254,10 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           // GetNCol(); // We don't want to trim input strings (name with space at beginning???)
           // Check if we got time (contains :) or year
           intptr_t P;
-          if ((P = static_cast<Word>(Col.Pos(L':'))) > 0)
+          if ((P = ToWord(Col.Pos(L':'))) > 0)
           {
-            Hour = static_cast<Word>(Sysutils::StrToInt(Col.SubString(1, P-1)));
-            Min = static_cast<Word>(Sysutils::StrToInt(Col.SubString(P+1, Col.Length() - P)));
+            Hour = ToWord(Sysutils::StrToInt(Col.SubString(1, P-1)));
+            Min = ToWord(Sysutils::StrToInt(Col.SubString(P+1, Col.Length() - P)));
             if ((Hour > 23) || (Min > 59))
               Abort();
             // When we don't got year, we assume current year
@@ -1274,7 +1274,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           }
           else
           {
-            Year = static_cast<Word>(Sysutils::StrToInt(Col));
+            Year = ToWord(Sysutils::StrToInt(Col));
             if (Year > 10000)
               Abort();
             // When we don't got time we assume midnight
