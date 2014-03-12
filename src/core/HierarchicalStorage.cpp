@@ -862,7 +862,7 @@ double TCustomIniFileStorage::ReadFloat(const UnicodeString & Name, double Defau
       }
       else
       {
-        Result = static_cast<double>(StrToFloat(Value));
+        Result = StrToFloat(Value);
       }
     }
     catch (...)
