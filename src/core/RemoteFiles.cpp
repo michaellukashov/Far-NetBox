@@ -1113,7 +1113,9 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       FSize = ASize;
 
       bool DayMonthFormat = false;
-      Word Day, Month, Year, Hour, Min, Sec;
+      Word Year = 0, Month = 0, Day = 0, Hour = 0, Min = 0, Sec = 0;
+      Word CurrYear = 0, CurrMonth = 0, CurrDay = 0;
+      DecodeDate(Date(), CurrYear, CurrMonth, CurrDay);
 
       GETCOL;
       // format dd mmm or mmm dd ?
@@ -1153,6 +1155,22 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         // skip TZ (TODO)
         // do not trim leading space of filename
         GETNCOL;
+      }
+      else if ((Month == 0) && (Col.Length() == 3))
+      {
+        // drwxr-xr-x   4 root  wheel   512  2 mmm 13:00 .'.
+        Month = CurrMonth;
+        GETCOL;
+        Hour = static_cast<Word>(Col.SubString(1, 2).ToInt());
+        Min = static_cast<Word>(Col.SubString(4, 2).ToInt());
+        if (Col.Length() >= 8)
+        {
+          Sec = static_cast<Word>(Sysutils::StrToInt(Col.SubString(7, 2)));
+        }
+        else
+        {
+          Sec = 0;
+        }
       }
       else
       {
@@ -1223,7 +1241,6 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           intptr_t P;
           if ((P = static_cast<Word>(Col.Pos(L':'))) > 0)
           {
-            Word CurrMonth, CurrDay;
             Hour = static_cast<Word>(Sysutils::StrToInt(Col.SubString(1, P-1)));
             Min = static_cast<Word>(Sysutils::StrToInt(Col.SubString(P+1, Col.Length() - P)));
             if ((Hour > 23) || (Min > 59)) Abort();
@@ -1250,6 +1267,12 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         }
       }
 
+      if (Year == 0)
+        Year = CurrYear;
+      if (Month == 0)
+        Month = CurrMonth;
+      if (Day == 0)
+        Day = CurrDay;
       FModification = EncodeDateVerbose(Year, Month, Day) + EncodeTimeVerbose(Hour, Min, Sec, 0);
       // adjust only when time is known,
       // adjusting default "midnight" time makes no sense
