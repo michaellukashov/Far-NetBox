@@ -3620,7 +3620,7 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
 
     if (QueueItem != nullptr)
     {
-      QueueItem->SetUserData(reinterpret_cast<void *>(1));
+      QueueItem->SetUserData(ToPtr(1));
       FQueueItemInvalidated = true;
     }
   }
@@ -4019,7 +4019,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
         {
           // Switch to current editor.
           if (FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW,
-            reinterpret_cast<void *>(Pos)) != 0)
+            ToPtr(Pos)) != 0)
           {
             FarPlugin->FarAdvControl(ACTL_COMMIT, 0);
           }

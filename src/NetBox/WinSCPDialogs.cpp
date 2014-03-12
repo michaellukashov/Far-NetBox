@@ -2800,13 +2800,13 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 void TSessionDialog::FtpProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType)
 {
   FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
-    static_cast<TObject *>(reinterpret_cast<void *>(ProxyType)));
+    static_cast<TObject *>(ToPtr(ProxyType)));
 }
 //------------------------------------------------------------------------------
 void TSessionDialog::SshProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType)
 {
   SshProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
-    static_cast<TObject *>(reinterpret_cast<void *>(ProxyType)));
+    static_cast<TObject *>(ToPtr(ProxyType)));
 }
 //------------------------------------------------------------------------------
 TSessionDialog::~TSessionDialog()
@@ -3378,7 +3378,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     assert(CIPHER_NAME_WARN+CIPHER_COUNT-1 == CIPHER_NAME_ARCFOUR);
     for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
     {
-      TObject * Obj = static_cast<TObject *>(reinterpret_cast<void *>(SessionData->GetCipher(Index)));
+      TObject * Obj = static_cast<TObject *>(ToPtr(SessionData->GetCipher(Index)));
       CipherListBox->GetItems()->AddObject(
         GetMsg(CIPHER_NAME_WARN + static_cast<intptr_t>(SessionData->GetCipher(Index))),
         Obj);
@@ -3402,7 +3402,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     {
       KexListBox->GetItems()->AddObject(
         GetMsg(KEX_NAME_WARN + static_cast<intptr_t>(SessionData->GetKex(Index))),
-        static_cast<TObject *>(reinterpret_cast<void *>(SessionData->GetKex(Index))));
+        static_cast<TObject *>(ToPtr(SessionData->GetKex(Index))));
     }
   }
 
@@ -4230,7 +4230,7 @@ void TSessionDialog::FillCodePageEdit()
   CodePageEditAdd(CP_ACP);
   // CodePageEditAdd(CP_UTF8);
   CodePageEdit->GetItems()->AddObject(L"65001 (UTF-8)",
-    static_cast<TObject *>(reinterpret_cast<void *>(65001)));
+    static_cast<TObject *>(ToPtr(65001)));
   CodePageEditAdd(CP_OEMCP);
   CodePageEditAdd(20866); // KOI8-r
 }
@@ -4241,7 +4241,7 @@ void TSessionDialog::CodePageEditAdd(uint32_t Cp)
   if (::GetCodePageInfo(Cp, cpInfoEx))
   {
     CodePageEdit->GetItems()->AddObject(cpInfoEx.CodePageName,
-      static_cast<TObject *>(reinterpret_cast<void *>(cpInfoEx.CodePage)));
+      static_cast<TObject *>(ToPtr(cpInfoEx.CodePage)));
   }
 }
 //------------------------------------------------------------------------------

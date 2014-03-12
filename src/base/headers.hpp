@@ -288,7 +288,8 @@ inline const T & Max(const T & a, const T & b) { return a > b ? a : b; }
 template <class T>
 inline const T Round(const T & a, const T & b) { return a / b + (a % b * 2 > b ? 1 : 0); }
 
-inline void * ToPtr(intptr_t T) { return reinterpret_cast<void *>(T); }
+template <class T>
+inline void * ToPtr(const T & a) { return reinterpret_cast<void *>(a); }
 
 template <class T>
 inline double ToDouble(const T & a) { return static_cast<double>(a); }

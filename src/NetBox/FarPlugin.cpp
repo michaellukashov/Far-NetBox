@@ -1511,7 +1511,7 @@ UnicodeString TCustomFarPlugin::FormatConsoleTitle()
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::UpdateProgress(intptr_t State, intptr_t Progress)
 {
-  FarAdvControl(ACTL_SETPROGRESSSTATE, reinterpret_cast<void *>(State));
+  FarAdvControl(ACTL_SETPROGRESSSTATE, ToPtr(State));
   if (State == PS_NORMAL)
   {
     PROGRESSVALUE pv;
@@ -2372,7 +2372,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   UnicodeString Description;
   UnicodeString Owner;
 
-  void * UserData = reinterpret_cast<void *>(PanelItem->UserData);
+  void * UserData = ToPtr(PanelItem->UserData);
   GetData(PanelItem->Flags, FileName, Size, PanelItem->FindData.dwFileAttributes,
     LastWriteTime, LastAccess, PanelItem->NumberOfLinks, Description, Owner,
     UserData, PanelItem->CustomColumnNumber);
@@ -2445,7 +2445,7 @@ UnicodeString TFarPanelItem::GetFileName() const
 //---------------------------------------------------------------------------
 void * TFarPanelItem::GetUserData()
 {
-  return reinterpret_cast<void *>(FPanelItem->UserData);
+  return ToPtr(FPanelItem->UserData);
 }
 //---------------------------------------------------------------------------
 bool TFarPanelItem::GetSelected() const

@@ -1331,7 +1331,7 @@ protected:
   {
     uint32_t BlockSize = FFileSystem->DownloadBlockSize(OperationProgress);
     InitRequest(Request, FTransfered, BlockSize);
-    Request->Token = reinterpret_cast<void *>(BlockSize);
+    Request->Token = ToPtr(BlockSize);
     FTransfered += BlockSize;
     return true;
   }
