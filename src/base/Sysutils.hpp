@@ -28,6 +28,9 @@ intptr_t __cdecl debug_printf2(const char * format, ...);
 #endif
 
 //---------------------------------------------------------------------------
+UnicodeString MB2W(const char * src, const UINT cp = CP_ACP);
+AnsiString W2MB(const wchar_t * src, const UINT cp = CP_ACP);
+//---------------------------------------------------------------------------
 typedef int TDayTable[12];
 extern const TDayTable MonthDays[];
 
@@ -215,6 +218,7 @@ bool TryStrToInt(const UnicodeString & StrValue, int64_t & Value);
 double StrToFloat(const UnicodeString & Value);
 double StrToFloatDef(const UnicodeString & Value, double DefVal);
 UnicodeString FormatFloat(const UnicodeString & Format, double Value);
+bool IsZero(double Value);
 //---------------------------------------------------------------------------
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime);
 //---------------------------------------------------------------------------

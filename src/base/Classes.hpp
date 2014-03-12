@@ -42,9 +42,6 @@ extern const intptr_t DateDelta;
 extern const intptr_t UnixDateDelta;
 extern const UnicodeString kernel32;
 //---------------------------------------------------------------------------
-UnicodeString MB2W(const char * src, const UINT cp = CP_ACP);
-AnsiString W2MB(const wchar_t * src, const UINT cp = CP_ACP);
-//---------------------------------------------------------------------------
 class TObject;
 DEFINE_CALLBACK_TYPE0(TThreadMethod, void);
 
@@ -364,6 +361,7 @@ public:
   {
     FValue = rhs.FValue;
   }
+  double GetValue() const { return operator double(); }
   TDateTime & operator = (const TDateTime & rhs)
   {
     FValue = rhs.FValue;
@@ -408,10 +406,7 @@ public:
     FValue = Value;
     return *this;
   }
-  bool operator == (const TDateTime & rhs)
-  {
-    return fabs(FValue - rhs.FValue) < std::numeric_limits<double>::epsilon();
-  }
+  bool operator == (const TDateTime & rhs);
   bool operator != (const TDateTime & rhs)
   {
     return !(operator == (rhs));

@@ -1003,7 +1003,6 @@ UnicodeString TSecureShell::ReceiveLine()
   // We don't want end-of-line character
   Line.SetLength(Line.Length()-1);
 
-  // UnicodeString UnicodeLine = Line;
   UnicodeString UnicodeLine = ::TrimRight(MB2W(Line.c_str(), (UINT)FSessionData->GetCodePageAsNumber()));
   CaptureOutput(llOutput, UnicodeLine);
   return UnicodeLine;

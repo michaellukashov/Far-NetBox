@@ -17,8 +17,10 @@
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
 #undef FILE_OPERATION_LOOP_EX
-#define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION, L"")
+#define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION)   \
+  FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
+    [&]() { OPERATION })
+
 //---------------------------------------------------------------------------
 const int coRaiseExcept = 1;
 const int coExpectNoOutput = 2;
@@ -1799,8 +1801,8 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
           TFileBuffer BlockBuf;
 
           // This is crucial, if it fails during file transfer, it's fatal error
-          FILE_OPERATION_LOOP_EX (!OperationProgress->TransferingFile,
-              FMTLOAD(READ_ERROR, FileName.c_str()),
+          FILE_OPERATION_LOOP_EX(!OperationProgress->TransferingFile,
+            FMTLOAD(READ_ERROR, FileName.c_str()),
             BlockBuf.LoadStream(Stream.get(), OperationProgress->LocalBlockSize(), true);
           );
 
@@ -1992,16 +1994,16 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
   {
     if (!Dir)
     {
-      FILE_OPERATION_LOOP (FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
+      FILE_OPERATION_LOOP(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
         THROWOSIFFALSE(Sysutils::DeleteFile(FileName));
-      )
+      );
     }
   }
   else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
   {
-    FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
+    FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
       THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(FileName, LocalFileAttrs & ~faArchive) == 0);
-    )
+    );
   }
 
   FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory finished.", FileName.c_str()));
@@ -2020,13 +2022,13 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
     ::ExtractFileName(DirectoryName, false), osLocal, Level == 0);
 
   // Get directory attributes
-  FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, DirectoryName.c_str()),
+  FILE_OPERATION_LOOP(FMTLOAD(CANT_GET_ATTRS, DirectoryName.c_str()),
     LocalFileAttrs = FTerminal->GetLocalFileAttributes(DirectoryName);
     if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
     {
       RaiseLastOSError();
     }
-  )
+  );
 
   UnicodeString TargetDirFull = ::UnixIncludeTrailingBackslash(TargetDir + DestFileName);
 
@@ -2055,7 +2057,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
     TSearchRec SearchRec;
     memset(&SearchRec, 0, sizeof(SearchRec));
     bool FindOK = false;
-    FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+    FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
       UnicodeString Path = IncludeTrailingBackslash(DirectoryName) + L"*.*";
       FindOK = FindFirstChecked(Path.c_str(),
         FindAttrs, SearchRec) == 0;
@@ -2105,7 +2107,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
             throw;
           }
         }
-        FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+        FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
           FindOK = (FindNextChecked(SearchRec) == 0);
         );
       }
@@ -2121,9 +2123,9 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
       }
       else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
       {
-        FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
+        FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
           THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, LocalFileAttrs & ~faArchive) == 0);
-        )
+        );
       }
     }
   }
@@ -2208,7 +2210,6 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 
         // Filename is used for error messaging and excluding files only
         // Send in full path to allow path-based excluding
-        // UnicodeString FullFileName = ::UnixExcludeTrailingBackslash(File->FullFileName);
         SCPSink(FullFileName, File, TargetDirectory, ::UnixExtractFilePath(FullFileName),
           CopyParam, Success, OperationProgress, Params, 0);
         // operation succeeded (no exception), so it's ok that
@@ -2233,7 +2234,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
               FILE_OPERATION_LOOP(FMTLOAD(DELETE_FILE_ERROR, FileName.c_str()),
                 // pass full file name in FileName, in case we are not moving
                 // from current directory
-                FTerminal->DeleteFile(FileName, File)
+                FTerminal->DeleteFile(FileName, File);
               );
             }
           }
@@ -2486,7 +2487,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
 
           if (!FileData.Exists)
           {
-            FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFileName.c_str()),
+            FILE_OPERATION_LOOP(FMTLOAD(CREATE_DIR_ERROR, DestFileName.c_str()),
               THROWOSIFFALSE(ForceDirectories(DestFileName));
             );
             /* SCP: can we set the timestamp for directories ? */
@@ -2605,7 +2606,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
                   }
 
                   // This is crucial, if it fails during file transfer, it's fatal error
-                  FILE_OPERATION_LOOP_EX (false, FMTLOAD(WRITE_ERROR, DestFileName.c_str()),
+                  FILE_OPERATION_LOOP_EX(false, FMTLOAD(WRITE_ERROR, DestFileName.c_str()),
                     BlockBuf.WriteToStream(FileStream.get(), static_cast<uint32_t>(BlockBuf.GetSize()));
                   );
 
@@ -2673,7 +2674,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
           DWORD NewAttrs = CopyParam->LocalFileAttrs(FileData.RemoteRights);
           if ((NewAttrs & FileData.LocalFileAttrs) != NewAttrs)
           {
-            FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFileName.c_str()),
+            FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DestFileName.c_str()),
               THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFileName, FileData.LocalFileAttrs | NewAttrs) == 0);
             );
           }

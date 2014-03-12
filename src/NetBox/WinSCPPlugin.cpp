@@ -363,9 +363,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
 void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
   TOptions * Options)
 {
-  // UnicodeString CommandLineParams;
   UnicodeString CmdLine = CommandLine;
-  // intptr_t Pos = FirstDelimiter(Opt->GetSwitchMarks(), CmdLine);
   intptr_t Index = 1;
   // Skip session name
   {

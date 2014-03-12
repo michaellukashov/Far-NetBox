@@ -279,7 +279,7 @@ void TKeepaliveThread::Execute()
   {
     static long MillisecondsPerDay = 24 * 60 * 60 * 1000;
     if ((WaitForSingleObject(FEvent, static_cast<DWORD>(
-         static_cast<double>(FInterval) * MillisecondsPerDay)) != WAIT_FAILED) &&
+         ToDouble(FInterval) * MillisecondsPerDay)) != WAIT_FAILED) &&
         !IsFinished())
     {
       FFileSystem->KeepaliveThreadCallback();
@@ -3681,7 +3681,7 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
 
     if (QueueItem != nullptr)
     {
-      QueueItem->SetUserData(reinterpret_cast<void *>(1));
+      QueueItem->SetUserData(ToPtr(1));
       FQueueItemInvalidated = true;
     }
   }

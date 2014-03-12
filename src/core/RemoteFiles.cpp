@@ -982,13 +982,13 @@ bool TRemoteFile::GetBrokenLink() const
 //---------------------------------------------------------------------------
 void TRemoteFile::ShiftTime(const TDateTime & Difference)
 {
-  double D = static_cast<double>(Difference.operator double());
-  if ((abs(D) > std::numeric_limits<double>::epsilon()) && (FModificationFmt != mfMDY))
+  double D = Difference.GetValue();
+  if (!IsZero(D) && (FModificationFmt != mfMDY))
   {
     assert(static_cast<int>(FModification) != 0);
-    FModification = static_cast<double>(FModification) + D;
+    FModification = FModification.GetValue() + D;
     assert(static_cast<int>(FLastAccess) != 0);
-    FLastAccess = static_cast<double>(FLastAccess) + D;
+    FLastAccess = FLastAccess.GetValue() + D;
   }
 }
 //---------------------------------------------------------------------------
@@ -1029,53 +1029,62 @@ UnicodeString TRemoteFile::GetRightsStr() const
 void TRemoteFile::SetListingStr(const UnicodeString & Value)
 {
   // Value stored in 'Value' can be used for error message
-  UnicodeString Line = Value;
+  UnicodeString ListingStr = Value;
   FIconIndex = -1;
   try
   {
     UnicodeString Col;
 
     // Do we need to do this (is ever TAB is LS output)?
-    Line = ReplaceChar(Line, L'\t', L' ');
+    ListingStr = ReplaceChar(ListingStr, L'\t', L' ');
 
-    SetType(Line[1]);
-    Line.Delete(1, 1);
+    SetType(ListingStr[1]);
+    ListingStr.Delete(1, 1);
 
-    #define GETNCOL  \
-      { if (Line.IsEmpty()) throw Exception(L""); \
-        intptr_t P = Line.Pos(L' '); \
-        if (P) \
-        { \
-          Col = Line; Col.SetLength(P-1); Line.Delete(1, P); \
-        } \
-        else \
-        { \
-          Col = Line; Line = L""; \
-        } \
+    auto GetNCol = [&]()
+    {
+      if (ListingStr.IsEmpty())
+        throw Exception(L"");
+      intptr_t P = ListingStr.Pos(L' ');
+      if (P)
+      {
+        Col = ListingStr;
+        Col.SetLength(P-1);
+        ListingStr.Delete(1, P);
       }
-    #define GETCOL { GETNCOL; Line = TrimLeft(Line); }
+      else
+      {
+        Col = ListingStr;
+        ListingStr.Clear();
+      }
+    };
+    auto GetCol = [&]()
+    {
+      GetNCol();
+      ListingStr = TrimLeft(ListingStr);
+    };
 
     // Rights string may contain special permission attributes (S,t, ...)
     // (TODO: maybe no longer necessary, once we can handle the special permissions)
     GetRights()->SetAllowUndef(True);
     // On some system there is no space between permissions and node blocks count columns
     // so we get only first 9 characters and trim all following spaces (if any)
-    GetRights()->SetText(Line.SubString(1, 9));
-    Line.Delete(1, 9);
+    GetRights()->SetText(ListingStr.SubString(1, 9));
+    ListingStr.Delete(1, 9);
     // Rights column maybe followed by '+', '@' or '.' signs, we ignore them
     // (On MacOS, there may be a space in between)
-    if (!Line.IsEmpty() && ((Line[1] == L'+') || (Line[1] == L'@') || (Line[1] == L'.')))
+    if (!ListingStr.IsEmpty() && ((ListingStr[1] == L'+') || (ListingStr[1] == L'@') || (ListingStr[1] == L'.')))
     {
-      Line.Delete(1, 1);
+      ListingStr.Delete(1, 1);
     }
-    else if ((Line.Length() >= 2) && (Line[1] == L' ') &&
-             ((Line[2] == L'+') || (Line[2] == L'@') || (Line[2] == L'.')))
+    else if ((ListingStr.Length() >= 2) && (ListingStr[1] == L' ') &&
+             ((ListingStr[2] == L'+') || (ListingStr[2] == L'@') || (ListingStr[2] == L'.')))
     {
-      Line.Delete(1, 2);
+      ListingStr.Delete(1, 2);
     }
-    Line = Line.TrimLeft();
+    ListingStr = ListingStr.TrimLeft();
 
-    GETCOL;
+    GetCol();
     if (!TryStrToInt(Col, FINodeBlocks))
     {
       // if the column is not an integer, suppose it's owner
@@ -1084,66 +1093,75 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     }
     else
     {
-      GETCOL;
+      GetCol();
     }
 
     FOwner.SetName(Col);
 
     // #60 17.10.01: group name can contain space
     FGroup.SetName(L"");
-    GETCOL;
+    GetCol();
     int64_t ASize;
     do
     {
       FGroup.SetName(FGroup.GetName() + Col);
-      GETCOL;
+      GetCol();
       assert(!Col.IsEmpty());
       // for devices etc.. there is additional column ending by comma, we ignore it
-      if (Col[Col.Length()] == L',') GETCOL;
+      if (Col[Col.Length()] == L',')
+        GetCol();
       ASize = StrToInt64Def(Col, -1);
       // if it's not a number (file size) we take it as part of group name
       // (at least on CygWin, there can be group with space in its name)
-      if (ASize < 0) Col = L" " + Col;
+      if (ASize < 0)
+        Col = L" " + Col;
     }
     while (ASize < 0);
 
     // do not read modification time and filename if it is already set
-    if ((fabs(static_cast<double>(FModification)) < std::numeric_limits<double>::epsilon()) && GetFileName().IsEmpty())
+    if (IsZero(FModification.GetValue()) && GetFileName().IsEmpty())
     {
       FSize = ASize;
 
       bool DayMonthFormat = false;
-      Word Day, Month, Year, Hour, Min, Sec;
+      Word Year = 0, Month = 0, Day = 0, Hour = 0, Min = 0, Sec = 0;
+      Word CurrYear = 0, CurrMonth = 0, CurrDay = 0;
+      DecodeDate(Date(), CurrYear, CurrMonth, CurrDay);
 
-      GETCOL;
+      GetCol();
       // format dd mmm or mmm dd ?
-      Day = static_cast<Word>(StrToIntDef(Col, 0));
+      Day = ToWord(StrToIntDef(Col, 0));
       if (Day > 0)
       {
         DayMonthFormat = true;
-        GETCOL;
+        GetCol();
       }
       Month = 0;
-      #define COL2MONTH \
-        for (Word IMonth = 0; IMonth < 12; IMonth++) \
-          if (!Col.CompareIC(EngShortMonthNames[IMonth])) \
-          { \
-            Month = IMonth; Month++; break; \
+      auto Col2Month = [&]()
+      {
+        for (Word IMonth = 0; IMonth < 12; IMonth++)
+          if (!Col.CompareIC(EngShortMonthNames[IMonth]))
+          {
+            Month = IMonth;
+            Month++;
+            break;
           }
-      COL2MONTH;
+      };
+
+      Col2Month();
       // if the column is not known month name, it may have been "yyyy-mm-dd"
       // for --full-time format
       if ((Month == 0) && (Col.Length() == 10) && (Col[5] == L'-') && (Col[8] == L'-'))
       {
-        Year = static_cast<Word>(Col.SubString(1, 4).ToInt());
-        Month = static_cast<Word>(Col.SubString(6, 2).ToInt());
-        Day = static_cast<Word>(Col.SubString(9, 2).ToInt());
-        GETCOL;
-        Hour = static_cast<Word>(Col.SubString(1, 2).ToInt());
-        Min = static_cast<Word>(Col.SubString(4, 2).ToInt());
+        Year = ToWord(Col.SubString(1, 4).ToInt());
+        Month = ToWord(Col.SubString(6, 2).ToInt());
+        Day = ToWord(Col.SubString(9, 2).ToInt());
+        GetCol();
+        Hour = ToWord(Col.SubString(1, 2).ToInt());
+        Min = ToWord(Col.SubString(4, 2).ToInt());
         if (Col.Length() >= 8)
         {
-          Sec = static_cast<Word>(Sysutils::StrToInt(Col.SubString(7, 2)));
+          Sec = ToWord(Sysutils::StrToInt(Col.SubString(7, 2)));
         }
         else
         {
@@ -1152,7 +1170,23 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         FModificationFmt = mfFull;
         // skip TZ (TODO)
         // do not trim leading space of filename
-        GETNCOL;
+        GetNCol();
+      }
+      else if ((Month == 0) && (Col.Length() == 3))
+      {
+        // drwxr-xr-x   4 root  wheel   512  2 mmm 13:00 .'.
+        Month = CurrMonth;
+        GetCol();
+        Hour = ToWord(Col.SubString(1, 2).ToInt());
+        Min = ToWord(Col.SubString(4, 2).ToInt());
+        if (Col.Length() >= 8)
+        {
+          Sec = ToWord(Sysutils::StrToInt(Col.SubString(7, 2)));
+        }
+        else
+        {
+          Sec = 0;
+        }
       }
       else
       {
@@ -1160,8 +1194,8 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         // or it may have been day name for another format of --full-time
         if (Month == 0)
         {
-          GETCOL;
-          COL2MONTH;
+          GetCol();
+          Col2Month();
           // neither standard, not --full-time format
           if (Month == 0)
           {
@@ -1172,12 +1206,11 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             FullTime = true;
           }
         }
-        #undef COL2MONTH
 
         if (Day == 0)
         {
-          GETNCOL;
-          Day = static_cast<Word>(Sysutils::StrToInt(Col));
+          GetNCol();
+          Day = ToWord(Sysutils::StrToInt(Col));
         }
         if ((Day < 1) || (Day > 31))
         {
@@ -1188,18 +1221,18 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         // ddd mmm dd hh:nn:ss yyyy
         if (FullTime)
         {
-          GETCOL;
+          GetCol();
           if (Col.Length() != 8)
           {
             Abort();
           }
-          Hour = static_cast<Word>(Sysutils::StrToInt(Col.SubString(1, 2)));
-          Min = static_cast<Word>(Sysutils::StrToInt(Col.SubString(4, 2)));
-          Sec = static_cast<Word>(Sysutils::StrToInt(Col.SubString(7, 2)));
+          Hour = ToWord(Sysutils::StrToInt(Col.SubString(1, 2)));
+          Min = ToWord(Sysutils::StrToInt(Col.SubString(4, 2)));
+          Sec = ToWord(Sysutils::StrToInt(Col.SubString(7, 2)));
           FModificationFmt = mfFull;
           // do not trim leading space of filename
-          GETNCOL;
-          Year = static_cast<Word>(Sysutils::StrToInt(Col));
+          GetNCol();
+          Year = ToWord(Sysutils::StrToInt(Col));
         }
         else
         {
@@ -1207,7 +1240,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           // the year is not aligned to 5 characters
           if (DayMonthFormat)
           {
-            GETCOL;
+            GetCol();
           }
           else
           {
@@ -1215,18 +1248,18 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             // systems year is aligned to right (_YYYY), but on some to left (YYYY_),
             // we must ensure that trailing space is also deleted, so real
             // separator space is not treated as part of file name
-            Col = Line.SubString(1, 6).Trim();
-            Line.Delete(1, 6);
+            Col = ListingStr.SubString(1, 6).Trim();
+            ListingStr.Delete(1, 6);
           }
-          // GETNCOL; // We don't want to trim input strings (name with space at beginning???)
+          // GetNCol(); // We don't want to trim input strings (name with space at beginning???)
           // Check if we got time (contains :) or year
           intptr_t P;
-          if ((P = static_cast<Word>(Col.Pos(L':'))) > 0)
+          if ((P = ToWord(Col.Pos(L':'))) > 0)
           {
-            Word CurrMonth, CurrDay;
-            Hour = static_cast<Word>(Sysutils::StrToInt(Col.SubString(1, P-1)));
-            Min = static_cast<Word>(Sysutils::StrToInt(Col.SubString(P+1, Col.Length() - P)));
-            if ((Hour > 23) || (Min > 59)) Abort();
+            Hour = ToWord(Sysutils::StrToInt(Col.SubString(1, P-1)));
+            Min = ToWord(Sysutils::StrToInt(Col.SubString(P+1, Col.Length() - P)));
+            if ((Hour > 23) || (Min > 59))
+              Abort();
             // When we don't got year, we assume current year
             // with exception that the date would be in future
             // in this case we assume last year.
@@ -1239,17 +1272,26 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             Sec = 0;
             FModificationFmt = mfMDHM;
           }
-            else
+          else
           {
-            Year = static_cast<Word>(Sysutils::StrToInt(Col));
-            if (Year > 10000) Abort();
+            Year = ToWord(Sysutils::StrToInt(Col));
+            if (Year > 10000)
+              Abort();
             // When we don't got time we assume midnight
-            Hour = 0; Min = 0; Sec = 0;
+            Hour = 0;
+            Min = 0;
+            Sec = 0;
             FModificationFmt = mfMDY;
           }
         }
       }
 
+      if (Year == 0)
+        Year = CurrYear;
+      if (Month == 0)
+        Month = CurrMonth;
+      if (Day == 0)
+        Day = CurrDay;
       FModification = EncodeDateVerbose(Year, Month, Day) + EncodeTimeVerbose(Hour, Min, Sec, 0);
       // adjust only when time is known,
       // adjusting default "midnight" time makes no sense
@@ -1260,7 +1302,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           GetTerminal()->GetSessionData()->GetDSTMode());
       }
 
-      if (fabs(static_cast<double>(FLastAccess)) < std::numeric_limits<double>::epsilon())
+      if (IsZero(FLastAccess.GetValue()))
       {
         FLastAccess = FModification;
       }
@@ -1271,24 +1313,21 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         FLinkTo = L"";
         if (GetIsSymLink())
         {
-          intptr_t P = Line.Pos(SYMLINKSTR);
+          intptr_t P = ListingStr.Pos(SYMLINKSTR);
           if (P)
           {
-            FLinkTo = Line.SubString(
-              P + wcslen(SYMLINKSTR), Line.Length() - P + wcslen(SYMLINKSTR) + 1);
-            Line.SetLength(P - 1);
+            FLinkTo = ListingStr.SubString(
+              P + wcslen(SYMLINKSTR), ListingStr.Length() - P + wcslen(SYMLINKSTR) + 1);
+            ListingStr.SetLength(P - 1);
           }
           else
           {
             Abort();
           }
         }
-        FFileName = ::UnixExtractFileName(::Trim(Line));
+        FFileName = ::UnixExtractFileName(::Trim(ListingStr));
       }
     }
-
-    #undef GETNCOL
-    #undef GETCOL
   }
   catch (Exception & E)
   {

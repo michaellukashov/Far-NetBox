@@ -2797,13 +2797,13 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 void TSessionDialog::FtpProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType)
 {
   FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
-    static_cast<TObject *>(reinterpret_cast<void *>(ProxyType)));
+    static_cast<TObject *>(ToPtr(ProxyType)));
 }
 //------------------------------------------------------------------------------
 void TSessionDialog::SshProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType)
 {
   SshProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
-    static_cast<TObject *>(reinterpret_cast<void *>(ProxyType)));
+    static_cast<TObject *>(ToPtr(ProxyType)));
 }
 //------------------------------------------------------------------------------
 TSessionDialog::~TSessionDialog()
@@ -3218,7 +3218,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   ListingCommandEdit->SetText(SessionData->GetListingCommand());
   SCPLsFullTimeAutoCheck->SetChecked((SessionData->GetSCPLsFullTime() != asOff));
   intptr_t TimeDifferenceMin = DateTimeToTimeStamp(SessionData->GetTimeDifference()).Time / 60000;
-  if (static_cast<double>(SessionData->GetTimeDifference()) < 0)
+  if (SessionData->GetTimeDifference().GetValue() < 0)
   {
     TimeDifferenceMin = -TimeDifferenceMin;
   }
@@ -3375,7 +3375,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     assert(CIPHER_NAME_WARN+CIPHER_COUNT-1 == CIPHER_NAME_ARCFOUR);
     for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
     {
-      TObject * Obj = static_cast<TObject *>(reinterpret_cast<void *>(SessionData->GetCipher(Index)));
+      TObject * Obj = static_cast<TObject *>(ToPtr(SessionData->GetCipher(Index)));
       CipherListBox->GetItems()->AddObject(
         GetMsg(CIPHER_NAME_WARN + static_cast<intptr_t>(SessionData->GetCipher(Index))),
         Obj);
@@ -3399,7 +3399,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     {
       KexListBox->GetItems()->AddObject(
         GetMsg(KEX_NAME_WARN + static_cast<intptr_t>(SessionData->GetKex(Index))),
-        static_cast<TObject *>(reinterpret_cast<void *>(SessionData->GetKex(Index))));
+        static_cast<TObject *>(ToPtr(SessionData->GetKex(Index))));
     }
   }
 
@@ -3521,8 +3521,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetListingCommand(ListingCommandEdit->GetText());
     SessionData->SetSCPLsFullTime(SCPLsFullTimeAutoCheck->GetChecked() ? asAuto : asOff);
     SessionData->SetTimeDifference(TDateTime(
-      (static_cast<double>(TimeDifferenceEdit->GetAsInteger()) / 24) +
-      (static_cast<double>(TimeDifferenceMinutesEdit->GetAsInteger()) / 24 / 60)));
+      (ToDouble(TimeDifferenceEdit->GetAsInteger()) / 24) +
+      (ToDouble(TimeDifferenceMinutesEdit->GetAsInteger()) / 24 / 60)));
 
     // SFTP tab
 
@@ -4227,7 +4227,7 @@ void TSessionDialog::FillCodePageEdit()
   CodePageEditAdd(CP_ACP);
   // CodePageEditAdd(CP_UTF8);
   CodePageEdit->GetItems()->AddObject(L"65001 (UTF-8)",
-    static_cast<TObject *>(reinterpret_cast<void *>(65001)));
+    static_cast<TObject *>(ToPtr(65001)));
   CodePageEditAdd(CP_OEMCP);
   CodePageEditAdd(20866); // KOI8-r
 }
@@ -4238,7 +4238,7 @@ void TSessionDialog::CodePageEditAdd(uint32_t Cp)
   if (::GetCodePageInfo(Cp, cpInfoEx))
   {
     CodePageEdit->GetItems()->AddObject(cpInfoEx.CodePageName,
-      static_cast<TObject *>(reinterpret_cast<void *>(cpInfoEx.CodePage)));
+      static_cast<TObject *>(ToPtr(cpInfoEx.CodePage)));
   }
 }
 //------------------------------------------------------------------------------
@@ -7286,7 +7286,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
   {
     if (Ratio[Index] >= 0)
     {
-      double W = static_cast<double>(Ratio[Index]) * (Width - FixedRatio) / TotalRatio;
+      double W = ToDouble(Ratio[Index]) * (Width - FixedRatio) / TotalRatio;
       FWidths[Index] = static_cast<int>(floor(W));
       Temp[Index] = W - FWidths[Index];
     }

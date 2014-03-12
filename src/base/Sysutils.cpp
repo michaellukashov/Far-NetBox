@@ -43,6 +43,48 @@ intptr_t __cdecl debug_printf2(const char * format, ...)
   return len;
 }
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+
+UnicodeString MB2W(const char * src, const UINT cp)
+{
+  // assert(src);
+  if (!src || !*src)
+  {
+    return UnicodeString(L"");
+  }
+
+  intptr_t reqLength = MultiByteToWideChar(cp, 0, src, -1, nullptr, 0);
+  UnicodeString Result;
+  if (reqLength)
+  {
+    Result.SetLength(reqLength);
+    MultiByteToWideChar(cp, 0, src, -1, const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
+    Result.SetLength(Result.Length() - 1);  //remove NULL character
+  }
+  return Result;
+}
+
+AnsiString W2MB(const wchar_t * src, const UINT cp)
+{
+  // assert(src);
+  if (!src || !*src)
+  {
+    return AnsiString("");
+  }
+
+  intptr_t reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, nullptr, nullptr);
+  AnsiString Result;
+  if (reqLength)
+  {
+    Result.SetLength(reqLength);
+    WideCharToMultiByte(cp, 0, src, -1, const_cast<LPSTR>(Result.c_str()),
+      static_cast<int>(reqLength), nullptr, nullptr);
+    Result.SetLength(Result.Length() - 1);  //remove NULL character
+  }
+  return Result;
+}
+
+//---------------------------------------------------------------------------
 int RandSeed;
 const TDayTable MonthDays[] =
 {
@@ -419,7 +461,11 @@ UnicodeString FormatFloat(const UnicodeString & Format, double Value)
   swprintf(&Result[1], L"%.2f", Value);
   return Result.c_str();
 }
-
+//---------------------------------------------------------------------------
+bool IsZero(double Value)
+{
+  return fabs(Value) < std::numeric_limits<double>::epsilon();
+}
 //---------------------------------------------------------------------------
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 {
@@ -1343,10 +1389,10 @@ static bool DecodeDateFully(const TDateTime & DateTime,
     if (I == 4)
     {
       I--;
-      D += static_cast<Word>(D1);
+      D += ToWord(D1);
     }
     Y += I;
-    Result = IsLeapYear(static_cast<Word>(Y));
+    Result = IsLeapYear(ToWord(Y));
     const TDayTable * DayTable = &MonthDays[Result];
     uintptr_t M = 1;
     while (true)
@@ -1391,7 +1437,7 @@ void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
 //---------------------------------------------------------------------------
 static bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
 {
-  const TDayTable * DayTable = &MonthDays[IsLeapYear(static_cast<Word>(Year))];
+  const TDayTable * DayTable = &MonthDays[IsLeapYear(ToWord(Year))];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
       (Day >= 1) && (Day <= (*DayTable)[Month - 1]))
   {
@@ -1423,7 +1469,7 @@ static bool TryEncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MS
   bool Result = false;
   if ((Hour < 24) && (Min < 60) && (Sec < 60) && (MSec < 1000))
   {
-    Time = (Hour * 3600000 + Min * 60000 + Sec * 1000 + MSec) / static_cast<double>(MSecsPerDay);
+    Time = (Hour * 3600000 + Min * 60000 + Sec * 1000 + MSec) / ToDouble(MSecsPerDay);
     Result = true;
   }
   return Result;
@@ -1539,14 +1585,14 @@ static void IncAMonth(Word & Year, Word & Month, Word & Day, Int64 NumberOfMonth
     Sign = -1;
   Year = Year + (NumberOfMonths % 12);
   NumberOfMonths = NumberOfMonths / 12;
-  Month += static_cast<Word>(NumberOfMonths);
-  if (static_cast<Word>(Month-1) > 11) // if Month <= 0, word(Month-1) > 11)
+  Month += ToWord(NumberOfMonths);
+  if (ToWord(Month-1) > 11) // if Month <= 0, word(Month-1) > 11)
   {
-    Year += static_cast<Word>(Sign);
-    Month += -12 * static_cast<Word>(Sign);
+    Year += ToWord(Sign);
+    Month += -12 * ToWord(Sign);
   }
   const TDayTable * DayTable = &MonthDays[IsLeapYear(Year)];
-  if (Day > (*DayTable)[Month]) Day = static_cast<Word>(*DayTable[Month]);
+  if (Day > (*DayTable)[Month]) Day = ToWord(*DayTable[Month]);
 }
 
 static void ReplaceTime(TDateTime & DateTime, const TDateTime & NewTime)

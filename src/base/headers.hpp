@@ -101,7 +101,7 @@ inline void operator_delete(void * p)
 /// custom memory allocation
 #define DEF_CUSTOM_MEM_ALLOCATION_IMPL            \
   public:                                         \
-   void * operator new(size_t size)               \
+  void * operator new(size_t size)                \
   {                                               \
     return operator_new(size);                    \
   }                                               \
@@ -117,14 +117,14 @@ inline void operator_delete(void * p)
   {                                               \
     operator_delete(p);                           \
   }                                               \
-   void * operator new(size_t, void * p)          \
+  void * operator new(size_t, void * p)           \
   {                                               \
     return p;                                     \
   }                                               \
   void operator delete(void *, void *)            \
   {                                               \
   }                                               \
-   void * operator new[](size_t, void * p)        \
+  void * operator new[](size_t, void * p)         \
   {                                               \
     return p;                                     \
   }                                               \
@@ -134,11 +134,11 @@ inline void operator_delete(void * p)
 
 #ifdef _DEBUG
 #define CUSTOM_MEM_ALLOCATION_IMPL DEF_CUSTOM_MEM_ALLOCATION_IMPL \
-   void * operator new(size_t size, const char * /*lpszFileName*/, int /*nLine*/) \
+  void * operator new(size_t size, const char * /*lpszFileName*/, int /*nLine*/) \
   { \
     return operator_new(size); \
   } \
-   void * operator new[](size_t size, const char * /*lpszFileName*/, int /*nLine*/) \
+  void * operator new[](size_t size, const char * /*lpszFileName*/, int /*nLine*/) \
   { \
     return operator_new(size); \
   } \
@@ -163,7 +163,7 @@ inline void operator_delete(void * p)
 namespace nballoc
 {
   inline void destruct(char *) {}
-  inline void destruct(wchar_t*) {}
+  inline void destruct(wchar_t *) {}
   template <typename T>
   inline void destruct(T * t) { t->~T(); }
 } // namespace nballoc
@@ -173,8 +173,8 @@ template <typename T> struct custom_nballocator_t;
 template <> struct custom_nballocator_t<void>
 {
 public:
-  typedef void* pointer;
-  typedef const void* const_pointer;
+  typedef void * pointer;
+  typedef const void * const_pointer;
   // reference to void members are impossible.
   typedef void value_type;
   template <class U>
@@ -194,9 +194,9 @@ struct custom_nballocator_t
 
   template <class U> struct rebind { typedef custom_nballocator_t<U> other; };
   inline custom_nballocator_t() noexcept {}
-  inline custom_nballocator_t(const custom_nballocator_t&) noexcept {}
+  inline custom_nballocator_t(const custom_nballocator_t &) noexcept {}
 
-  template <class U> custom_nballocator_t(const custom_nballocator_t<U>&) noexcept {}
+  template <class U> custom_nballocator_t(const custom_nballocator_t<U> &) noexcept {}
 
   ~custom_nballocator_t() noexcept {}
 
@@ -288,7 +288,14 @@ inline const T & Max(const T & a, const T & b) { return a > b ? a : b; }
 template <class T>
 inline const T Round(const T & a, const T & b) { return a / b + (a % b * 2 > b ? 1 : 0); }
 
-inline void* ToPtr(intptr_t T) { return reinterpret_cast<void *>(T); }
+template <class T>
+inline void * ToPtr(const T & a) { return reinterpret_cast<void *>(a); }
+
+template <class T>
+inline double ToDouble(const T & a) { return static_cast<double>(a); }
+
+template <class T>
+inline double ToWord(const T & a) { return static_cast<Word>(a); }
 
 template<typename T>
 inline void ClearStruct(T & s) { memset(&s, 0, sizeof(s)); }

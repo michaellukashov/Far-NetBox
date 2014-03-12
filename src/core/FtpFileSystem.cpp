@@ -25,7 +25,8 @@
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION, L"")
+  FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
+    [&]() { OPERATION })
 //---------------------------------------------------------------------------
 const int DummyCodeClass = 8;
 const int DummyTimeoutCode = 801;
@@ -602,7 +603,7 @@ void TFTPFileSystem::Idle()
 
     // Keep session alive
     if ((FTerminal->GetSessionData()->GetFtpPingType() != ptOff) &&
-        (static_cast<double>(Now() - FLastDataSent) > static_cast<double>(FTerminal->GetSessionData()->GetFtpPingIntervalDT()) * 4))
+        ((Now() - FLastDataSent).GetValue() > FTerminal->GetSessionData()->GetFtpPingIntervalDT().GetValue() * 4))
     {
       FLastDataSent = Now();
 
@@ -1196,7 +1197,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
     Action.Cancel();
     if (!AFile->GetIsSymLink())
     {
-      FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
+      FILE_OPERATION_LOOP(FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
         DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
         if (FLAGCLEAR(LocalFileAttrs, faDirectory))
         {
@@ -1204,7 +1205,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
         }
       );
 
-      FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
+      FILE_OPERATION_LOOP(FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
         THROWOSIFFALSE(ForceDirectories(DestFullName));
       );
 
@@ -1247,7 +1248,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
     OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
     DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
-    FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
+    FILE_OPERATION_LOOP(FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
       if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, faDirectory))
       {
@@ -1309,7 +1310,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
     DWORD NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
     if ((NewAttrs & LocalFileAttrs) != NewAttrs)
     {
-      FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
+      FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
         THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, (LocalFileAttrs | NewAttrs)) == 0);
       );
     }
@@ -1580,16 +1581,16 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
   {
     if (!Dir)
     {
-      FILE_OPERATION_LOOP (FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
+      FILE_OPERATION_LOOP(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
         THROWOSIFFALSE(Sysutils::DeleteFile(FileName));
-      )
+      );
     }
   }
   else if (CopyParam->GetClearArchive() && FLAGSET(OpenParams->LocalFileAttrs, faArchive))
   {
-    FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
+    FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
       THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(FileName, OpenParams->LocalFileAttrs & ~faArchive) == 0);
-    )
+    );
   }
 }
 //---------------------------------------------------------------------------
@@ -1608,7 +1609,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   TSearchRec SearchRec;
   bool FindOK = false;
 
-  FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+  FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
     FindOK = (bool)(FindFirstChecked((DirectoryName + L"*.*").c_str(),
       FindAttrs, SearchRec) == 0);
   );
@@ -1649,7 +1650,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
         }
       }
 
-      FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+      FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
         FindOK = (FindNextChecked(SearchRec) == 0);
       );
     }
@@ -1704,9 +1705,9 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
-      FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
+      FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
         THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~faArchive) == 0);
-      )
+      );
     }
   }
 }
@@ -3015,13 +3016,13 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
   if (Tm != nullptr)
   {
     SYSTEMTIME SystemTime;
-    SystemTime.wYear = static_cast<WORD>(Tm->tm_year + 1900);
-    SystemTime.wMonth = static_cast<WORD>(Tm->tm_mon + 1);
+    SystemTime.wYear = ToWord(Tm->tm_year + 1900);
+    SystemTime.wMonth = ToWord(Tm->tm_mon + 1);
     SystemTime.wDayOfWeek = 0;
-    SystemTime.wDay = static_cast<WORD>(Tm->tm_mday);
-    SystemTime.wHour = static_cast<WORD>(Tm->tm_hour);
-    SystemTime.wMinute = static_cast<WORD>(Tm->tm_min);
-    SystemTime.wSecond = static_cast<WORD>(Tm->tm_sec);
+    SystemTime.wDay = ToWord(Tm->tm_mday);
+    SystemTime.wHour = ToWord(Tm->tm_hour);
+    SystemTime.wMinute = ToWord(Tm->tm_min);
+    SystemTime.wSecond = ToWord(Tm->tm_sec);
     SystemTime.wMilliseconds = 0;
 
     FILETIME LocalTime;

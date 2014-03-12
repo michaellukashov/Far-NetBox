@@ -526,8 +526,6 @@ private:
   TTlsVersion FMinTlsVersion;
   TTlsVersion FMaxTlsVersion;
   TAutoSwitch FNotUtf;
-  // bool FIsWorkspace;
-  // UnicodeString FLink;
   UnicodeString FHostKey;
   bool FOverrideCachedHostKey;
 

@@ -2066,7 +2066,7 @@ bool IsDirectoryWriteable(const UnicodeString & Path)
 UnicodeString FormatNumber(int64_t Number)
 {
 //  return FormatFloat(L"#,##0", Number);
-  return FORMAT(L"%.0f", static_cast<double>(Number));
+  return FORMAT(L"%.0f", ToDouble(Number));
 }
 //---------------------------------------------------------------------------
 // simple alternative to FormatBytes
@@ -2087,17 +2087,17 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
   if (!UseOrders || (Bytes < static_cast<int64_t>(100*1024)))
   {
     // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
-    Result = FORMAT(L"%.0f B", static_cast<double>(Bytes));
+    Result = FORMAT(L"%.0f B", ToDouble(Bytes));
   }
   else if (Bytes < static_cast<int64_t>(100*1024*1024))
   {
     // Result = FormatFloat(L"#,##0 \"KiB\"", Bytes / 1024);
-    Result = FORMAT(L"%.0f KiB", static_cast<double>(Bytes / 1024.0));
+    Result = FORMAT(L"%.0f KiB", ToDouble(Bytes / 1024.0));
   }
   else
   {
     // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
-    Result = FORMAT(L"%.0f MiB", static_cast<double>(Bytes / (1024*1024.0)));
+    Result = FORMAT(L"%.0f MiB", ToDouble(Bytes / (1024*1024.0)));
   }
   return Result;
 }

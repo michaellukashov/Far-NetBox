@@ -1125,58 +1125,6 @@ intptr_t TStringList::CompareStrings(const UnicodeString & S1, const UnicodeStri
 }
 
 //---------------------------------------------------------------------------
-/**
- * @brief Encoding multibyte to wide std::string
- * @param $src source char *
- * @param $cp code page
- * @return UnicodeString
- */
-UnicodeString MB2W(const char * src, const UINT cp)
-{
-  // assert(src);
-  if (!src || !*src)
-  {
-    return UnicodeString(L"");
-  }
-
-  intptr_t reqLength = MultiByteToWideChar(cp, 0, src, -1, nullptr, 0);
-  UnicodeString Result;
-  if (reqLength)
-  {
-    Result.SetLength(reqLength);
-    MultiByteToWideChar(cp, 0, src, -1, const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
-    Result.SetLength(Result.Length() - 1);  //remove NULL character
-  }
-  return Result;
-}
-
-/**
- * @brief Encoding wide to multibyte std::string
- * @param $src UnicodeString
- * @param $cp code page
- * @return multibyte std::string
- */
-AnsiString W2MB(const wchar_t * src, const UINT cp)
-{
-  // assert(src);
-  if (!src || !*src)
-  {
-    return AnsiString("");
-  }
-
-  intptr_t reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, nullptr, nullptr);
-  AnsiString Result;
-  if (reqLength)
-  {
-    Result.SetLength(reqLength);
-    WideCharToMultiByte(cp, 0, src, -1, const_cast<LPSTR>(Result.c_str()),
-      static_cast<int>(reqLength), nullptr, nullptr);
-    Result.SetLength(Result.Length() - 1);  //remove NULL character
-  }
-  return Result;
-}
-
-//---------------------------------------------------------------------------
 
 TDateTime::TDateTime(uint16_t Hour,
   uint16_t Min, uint16_t Sec, uint16_t MSec)
@@ -1185,6 +1133,11 @@ TDateTime::TDateTime(uint16_t Hour,
 }
 
 //---------------------------------------------------------------------------
+bool TDateTime::operator ==(const TDateTime& rhs)
+{
+  return IsZero(FValue - rhs.FValue);
+}
+
 UnicodeString TDateTime::DateString() const
 {
   uint16_t Y, M, D;
@@ -2028,7 +1981,7 @@ void TRegistry::WriteBool(const UnicodeString & Name, bool Value)
 
 void TRegistry::WriteDateTime(const UnicodeString & Name, TDateTime & Value)
 {
-  double Val = Value.operator double();
+  double Val = Value.GetValue();
   PutData(Name, &Val, sizeof(double), rdBinary);
 }
 

@@ -15,7 +15,7 @@
 //---------------------------------------------------------------------------
 void * BusyStart()
 {
-  void * Token = nullptr; // reinterpret_cast<void *>(Screen->Cursor);
+  void * Token = nullptr; // ToPtr(Screen->Cursor);
   // Screen->Cursor = crHourGlass;
   return Token;
 }

@@ -223,6 +223,7 @@ void TFileBuffer::Delete(int64_t Index, size_t Len)
 //---------------------------------------------------------------------------
 void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
 {
+  assert(Stream);
   try
   {
     Stream->WriteBuffer(GetData() + GetPosition(), Len);
