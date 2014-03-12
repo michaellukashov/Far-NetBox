@@ -3221,7 +3221,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   ListingCommandEdit->SetText(SessionData->GetListingCommand());
   SCPLsFullTimeAutoCheck->SetChecked((SessionData->GetSCPLsFullTime() != asOff));
   intptr_t TimeDifferenceMin = DateTimeToTimeStamp(SessionData->GetTimeDifference()).Time / 60000;
-  if (static_cast<double>(SessionData->GetTimeDifference()) < 0)
+  if (SessionData->GetTimeDifference().GetValue() < 0)
   {
     TimeDifferenceMin = -TimeDifferenceMin;
   }

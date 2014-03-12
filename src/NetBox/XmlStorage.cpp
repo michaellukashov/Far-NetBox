@@ -337,7 +337,7 @@ bool TXmlStorage::ReadBool(const UnicodeString & Name, bool Default)
 //---------------------------------------------------------------------------
 TDateTime TXmlStorage::ReadDateTime(const UnicodeString & Name, TDateTime Default)
 {
-  double Result = ReadFloat(Name, Default.operator double());
+  double Result = ReadFloat(Name, Default.GetValue());
   return TDateTime(Result);
 }
 //---------------------------------------------------------------------------

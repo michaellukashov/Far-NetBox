@@ -361,6 +361,7 @@ public:
   {
     FValue = rhs.FValue;
   }
+  double GetValue() const { return operator double(); }
   TDateTime & operator = (const TDateTime & rhs)
   {
     FValue = rhs.FValue;
