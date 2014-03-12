@@ -1029,51 +1029,51 @@ UnicodeString TRemoteFile::GetRightsStr() const
 void TRemoteFile::SetListingStr(const UnicodeString & Value)
 {
   // Value stored in 'Value' can be used for error message
-  UnicodeString Line = Value;
+  UnicodeString ListingStr = Value;
   FIconIndex = -1;
   try
   {
     UnicodeString Col;
 
     // Do we need to do this (is ever TAB is LS output)?
-    Line = ReplaceChar(Line, L'\t', L' ');
+    ListingStr = ReplaceChar(ListingStr, L'\t', L' ');
 
-    SetType(Line[1]);
-    Line.Delete(1, 1);
+    SetType(ListingStr[1]);
+    ListingStr.Delete(1, 1);
 
     #define GETNCOL  \
-      { if (Line.IsEmpty()) throw Exception(L""); \
-        intptr_t P = Line.Pos(L' '); \
+      { if (ListingStr.IsEmpty()) throw Exception(L""); \
+        intptr_t P = ListingStr.Pos(L' '); \
         if (P) \
         { \
-          Col = Line; Col.SetLength(P-1); Line.Delete(1, P); \
+          Col = ListingStr; Col.SetLength(P-1); ListingStr.Delete(1, P); \
         } \
         else \
         { \
-          Col = Line; Line = L""; \
+          Col = ListingStr; ListingStr.Clear(); \
         } \
       }
-    #define GETCOL { GETNCOL; Line = TrimLeft(Line); }
+    #define GETCOL { GETNCOL; ListingStr = TrimLeft(ListingStr); }
 
     // Rights string may contain special permission attributes (S,t, ...)
     // (TODO: maybe no longer necessary, once we can handle the special permissions)
     GetRights()->SetAllowUndef(True);
     // On some system there is no space between permissions and node blocks count columns
     // so we get only first 9 characters and trim all following spaces (if any)
-    GetRights()->SetText(Line.SubString(1, 9));
-    Line.Delete(1, 9);
+    GetRights()->SetText(ListingStr.SubString(1, 9));
+    ListingStr.Delete(1, 9);
     // Rights column maybe followed by '+', '@' or '.' signs, we ignore them
     // (On MacOS, there may be a space in between)
-    if (!Line.IsEmpty() && ((Line[1] == L'+') || (Line[1] == L'@') || (Line[1] == L'.')))
+    if (!ListingStr.IsEmpty() && ((ListingStr[1] == L'+') || (ListingStr[1] == L'@') || (ListingStr[1] == L'.')))
     {
-      Line.Delete(1, 1);
+      ListingStr.Delete(1, 1);
     }
-    else if ((Line.Length() >= 2) && (Line[1] == L' ') &&
-             ((Line[2] == L'+') || (Line[2] == L'@') || (Line[2] == L'.')))
+    else if ((ListingStr.Length() >= 2) && (ListingStr[1] == L' ') &&
+             ((ListingStr[2] == L'+') || (ListingStr[2] == L'@') || (ListingStr[2] == L'.')))
     {
-      Line.Delete(1, 2);
+      ListingStr.Delete(1, 2);
     }
-    Line = Line.TrimLeft();
+    ListingStr = ListingStr.TrimLeft();
 
     GETCOL;
     if (!TryStrToInt(Col, FINodeBlocks))
@@ -1233,8 +1233,8 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             // systems year is aligned to right (_YYYY), but on some to left (YYYY_),
             // we must ensure that trailing space is also deleted, so real
             // separator space is not treated as part of file name
-            Col = Line.SubString(1, 6).Trim();
-            Line.Delete(1, 6);
+            Col = ListingStr.SubString(1, 6).Trim();
+            ListingStr.Delete(1, 6);
           }
           // GETNCOL; // We don't want to trim input strings (name with space at beginning???)
           // Check if we got time (contains :) or year
@@ -1294,19 +1294,19 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         FLinkTo = L"";
         if (GetIsSymLink())
         {
-          intptr_t P = Line.Pos(SYMLINKSTR);
+          intptr_t P = ListingStr.Pos(SYMLINKSTR);
           if (P)
           {
-            FLinkTo = Line.SubString(
-              P + wcslen(SYMLINKSTR), Line.Length() - P + wcslen(SYMLINKSTR) + 1);
-            Line.SetLength(P - 1);
+            FLinkTo = ListingStr.SubString(
+              P + wcslen(SYMLINKSTR), ListingStr.Length() - P + wcslen(SYMLINKSTR) + 1);
+            ListingStr.SetLength(P - 1);
           }
           else
           {
             Abort();
           }
         }
-        FFileName = ::UnixExtractFileName(::Trim(Line));
+        FFileName = ::UnixExtractFileName(::Trim(ListingStr));
       }
     }
 
