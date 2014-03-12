@@ -695,7 +695,6 @@ void TSessionLog::DoAdd(TLogLineType AType, const UnicodeString & Line,
   UnicodeString Ln = Line;
   while (!Ln.IsEmpty())
   {
-    // UnicodeString Param = ;
     Event(AType, Prefix + CutToChar(Ln, L'\n', false));
   }
 }
