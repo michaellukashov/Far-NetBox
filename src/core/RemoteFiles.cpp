@@ -1108,11 +1108,13 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       GetCol();
       assert(!Col.IsEmpty());
       // for devices etc.. there is additional column ending by comma, we ignore it
-      if (Col[Col.Length()] == L',') GetCol();
+      if (Col[Col.Length()] == L',')
+        GetCol();
       ASize = StrToInt64Def(Col, -1);
       // if it's not a number (file size) we take it as part of group name
       // (at least on CygWin, there can be group with space in its name)
-      if (ASize < 0) Col = L" " + Col;
+      if (ASize < 0)
+        Col = L" " + Col;
     }
     while (ASize < 0);
 
@@ -1140,7 +1142,9 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         for (Word IMonth = 0; IMonth < 12; IMonth++)
           if (!Col.CompareIC(EngShortMonthNames[IMonth]))
           {
-            Month = IMonth; Month++; break;
+            Month = IMonth;
+            Month++;
+            break;
           }
       };
 
@@ -1254,7 +1258,8 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           {
             Hour = static_cast<Word>(Sysutils::StrToInt(Col.SubString(1, P-1)));
             Min = static_cast<Word>(Sysutils::StrToInt(Col.SubString(P+1, Col.Length() - P)));
-            if ((Hour > 23) || (Min > 59)) Abort();
+            if ((Hour > 23) || (Min > 59))
+              Abort();
             // When we don't got year, we assume current year
             // with exception that the date would be in future
             // in this case we assume last year.
@@ -1270,9 +1275,12 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           else
           {
             Year = static_cast<Word>(Sysutils::StrToInt(Col));
-            if (Year > 10000) Abort();
+            if (Year > 10000)
+              Abort();
             // When we don't got time we assume midnight
-            Hour = 0; Min = 0; Sec = 0;
+            Hour = 0;
+            Min = 0;
+            Sec = 0;
             FModificationFmt = mfMDY;
           }
         }
