@@ -1041,19 +1041,28 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     SetType(ListingStr[1]);
     ListingStr.Delete(1, 1);
 
-    #define GETNCOL  \
-      { if (ListingStr.IsEmpty()) throw Exception(L""); \
-        intptr_t P = ListingStr.Pos(L' '); \
-        if (P) \
-        { \
-          Col = ListingStr; Col.SetLength(P-1); ListingStr.Delete(1, P); \
-        } \
-        else \
-        { \
-          Col = ListingStr; ListingStr.Clear(); \
-        } \
+    auto GetNCol = [&]()
+    {
+      if (ListingStr.IsEmpty())
+        throw Exception(L"");
+      intptr_t P = ListingStr.Pos(L' ');
+      if (P)
+      {
+        Col = ListingStr;
+        Col.SetLength(P-1);
+        ListingStr.Delete(1, P);
       }
-    #define GETCOL { GETNCOL; ListingStr = TrimLeft(ListingStr); }
+      else
+      {
+        Col = ListingStr;
+        ListingStr.Clear();
+      }
+    };
+    auto GetCol = [&]()
+    {
+      GetNCol();
+      ListingStr = TrimLeft(ListingStr);
+    };
 
     // Rights string may contain special permission attributes (S,t, ...)
     // (TODO: maybe no longer necessary, once we can handle the special permissions)
@@ -1075,7 +1084,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     }
     ListingStr = ListingStr.TrimLeft();
 
-    GETCOL;
+    GetCol();
     if (!TryStrToInt(Col, FINodeBlocks))
     {
       // if the column is not an integer, suppose it's owner
@@ -1084,22 +1093,22 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     }
     else
     {
-      GETCOL;
+      GetCol();
     }
 
     FOwner.SetName(Col);
 
     // #60 17.10.01: group name can contain space
     FGroup.SetName(L"");
-    GETCOL;
+    GetCol();
     int64_t ASize;
     do
     {
       FGroup.SetName(FGroup.GetName() + Col);
-      GETCOL;
+      GetCol();
       assert(!Col.IsEmpty());
       // for devices etc.. there is additional column ending by comma, we ignore it
-      if (Col[Col.Length()] == L',') GETCOL;
+      if (Col[Col.Length()] == L',') GetCol();
       ASize = StrToInt64Def(Col, -1);
       // if it's not a number (file size) we take it as part of group name
       // (at least on CygWin, there can be group with space in its name)
@@ -1117,22 +1126,25 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       Word CurrYear = 0, CurrMonth = 0, CurrDay = 0;
       DecodeDate(Date(), CurrYear, CurrMonth, CurrDay);
 
-      GETCOL;
+      GetCol();
       // format dd mmm or mmm dd ?
       Day = static_cast<Word>(StrToIntDef(Col, 0));
       if (Day > 0)
       {
         DayMonthFormat = true;
-        GETCOL;
+        GetCol();
       }
       Month = 0;
-      #define COL2MONTH \
-        for (Word IMonth = 0; IMonth < 12; IMonth++) \
-          if (!Col.CompareIC(EngShortMonthNames[IMonth])) \
-          { \
-            Month = IMonth; Month++; break; \
+      auto Col2Month = [&]()
+      {
+        for (Word IMonth = 0; IMonth < 12; IMonth++)
+          if (!Col.CompareIC(EngShortMonthNames[IMonth]))
+          {
+            Month = IMonth; Month++; break;
           }
-      COL2MONTH;
+      };
+
+      Col2Month();
       // if the column is not known month name, it may have been "yyyy-mm-dd"
       // for --full-time format
       if ((Month == 0) && (Col.Length() == 10) && (Col[5] == L'-') && (Col[8] == L'-'))
@@ -1140,7 +1152,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         Year = static_cast<Word>(Col.SubString(1, 4).ToInt());
         Month = static_cast<Word>(Col.SubString(6, 2).ToInt());
         Day = static_cast<Word>(Col.SubString(9, 2).ToInt());
-        GETCOL;
+        GetCol();
         Hour = static_cast<Word>(Col.SubString(1, 2).ToInt());
         Min = static_cast<Word>(Col.SubString(4, 2).ToInt());
         if (Col.Length() >= 8)
@@ -1154,13 +1166,13 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         FModificationFmt = mfFull;
         // skip TZ (TODO)
         // do not trim leading space of filename
-        GETNCOL;
+        GetNCol();
       }
       else if ((Month == 0) && (Col.Length() == 3))
       {
         // drwxr-xr-x   4 root  wheel   512  2 mmm 13:00 .'.
         Month = CurrMonth;
-        GETCOL;
+        GetCol();
         Hour = static_cast<Word>(Col.SubString(1, 2).ToInt());
         Min = static_cast<Word>(Col.SubString(4, 2).ToInt());
         if (Col.Length() >= 8)
@@ -1178,8 +1190,8 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         // or it may have been day name for another format of --full-time
         if (Month == 0)
         {
-          GETCOL;
-          COL2MONTH;
+          GetCol();
+          Col2Month();
           // neither standard, not --full-time format
           if (Month == 0)
           {
@@ -1190,11 +1202,10 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             FullTime = true;
           }
         }
-        #undef COL2MONTH
 
         if (Day == 0)
         {
-          GETNCOL;
+          GetNCol();
           Day = static_cast<Word>(Sysutils::StrToInt(Col));
         }
         if ((Day < 1) || (Day > 31))
@@ -1206,7 +1217,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         // ddd mmm dd hh:nn:ss yyyy
         if (FullTime)
         {
-          GETCOL;
+          GetCol();
           if (Col.Length() != 8)
           {
             Abort();
@@ -1216,7 +1227,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           Sec = static_cast<Word>(Sysutils::StrToInt(Col.SubString(7, 2)));
           FModificationFmt = mfFull;
           // do not trim leading space of filename
-          GETNCOL;
+          GetNCol();
           Year = static_cast<Word>(Sysutils::StrToInt(Col));
         }
         else
@@ -1225,7 +1236,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           // the year is not aligned to 5 characters
           if (DayMonthFormat)
           {
-            GETCOL;
+            GetCol();
           }
           else
           {
@@ -1236,7 +1247,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             Col = ListingStr.SubString(1, 6).Trim();
             ListingStr.Delete(1, 6);
           }
-          // GETNCOL; // We don't want to trim input strings (name with space at beginning???)
+          // GetNCol(); // We don't want to trim input strings (name with space at beginning???)
           // Check if we got time (contains :) or year
           intptr_t P;
           if ((P = static_cast<Word>(Col.Pos(L':'))) > 0)
@@ -1309,9 +1320,6 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         FFileName = ::UnixExtractFileName(::Trim(ListingStr));
       }
     }
-
-    #undef GETNCOL
-    #undef GETCOL
   }
   catch (Exception & E)
   {
