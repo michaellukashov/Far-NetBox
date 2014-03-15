@@ -1,5 +1,9 @@
 NetBox 2.1.35 ??.03.2014
 --------------------
+  * bugfix: FTP: plugin hangs up if connection with server is lost while searching on server
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=117453#p117453)
+  * fix Mantis #0002478: SCP: cannot login if host uses nonstandard directory listing format
+    (http://bugs.farmanager.com/view.php?id=2478)
   * improvement: "Connection failed" dialog: make "Reconnect" button default
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=1530#p117083)
   * fix Mantis #0002602: WebDAV: Processing of copy file don't break
