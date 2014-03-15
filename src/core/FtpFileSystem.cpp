@@ -2449,7 +2449,9 @@ void TFTPFileSystem::DiscardMessages()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::WaitForMessages()
 {
-  intptr_t Result = WaitForSingleObject(FQueueEvent, INFINITE);
+  if (FQueue->empty())
+    return;
+  DWORD Result = WaitForSingleObject(FQueueEvent, INFINITE);
   if (Result != WAIT_OBJECT_0)
   {
     FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", IntToStr(Result).c_str()));
