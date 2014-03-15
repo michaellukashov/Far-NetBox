@@ -552,7 +552,7 @@ DWORD CMainThread::Run()
 	m_EventStarted.SetEvent();
 	LCS;
 	MSG msg;
-	while (GetMessage(&msg, 0, 0, 0))
+	while (IsValid() && !m_bQuit && GetMessage(&msg, 0, 0, 0))
 	{
 		TranslateMessage(&msg);
 		if (!msg.hwnd)

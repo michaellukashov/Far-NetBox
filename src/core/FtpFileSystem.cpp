@@ -2449,7 +2449,9 @@ void TFTPFileSystem::DiscardMessages()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::WaitForMessages()
 {
-  intptr_t Result = WaitForSingleObject(FQueueEvent, INFINITE);
+  if (FQueue->empty())
+    return;
+  DWORD Result = WaitForSingleObject(FQueueEvent, INFINITE);
   if (Result != WAIT_OBJECT_0)
   {
     FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", IntToStr(Result).c_str()));
@@ -2509,7 +2511,7 @@ void TFTPFileSystem::DoWaitForReply(uintptr_t & ReplyToAwait, bool WantLastCode)
 {
   try
   {
-    while (KeepWaitingForReply(ReplyToAwait, WantLastCode))
+    while (FTerminal && (FTerminal->GetStatus() != ssClosed) && KeepWaitingForReply(ReplyToAwait, WantLastCode))
     {
       WaitForMessages();
       // wait for the first reply only,
