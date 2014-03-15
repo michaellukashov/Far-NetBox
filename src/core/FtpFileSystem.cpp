@@ -2511,7 +2511,7 @@ void TFTPFileSystem::DoWaitForReply(uintptr_t & ReplyToAwait, bool WantLastCode)
 {
   try
   {
-    while (KeepWaitingForReply(ReplyToAwait, WantLastCode))
+    while (FTerminal && (FTerminal->GetStatus() != ssClosed) && KeepWaitingForReply(ReplyToAwait, WantLastCode))
     {
       WaitForMessages();
       // wait for the first reply only,
