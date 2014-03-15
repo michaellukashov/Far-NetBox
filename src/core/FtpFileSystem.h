@@ -9,13 +9,28 @@
 //---------------------------------------------------------------------------
 class TFileZillaIntf;
 class TFileZillaImpl;
-class TMessageQueue;
 class TFTPServerCapabilities;
 struct TOverwriteFileParams;
 struct TListDataEntry;
 struct TFileTransferData;
 struct TFtpsCertificateData;
 struct TRemoteFileTime;
+//---------------------------------------------------------------------------
+struct message_t
+{
+  message_t() : wparam(0), lparam(0)
+  {}
+  message_t(WPARAM w, LPARAM l) : wparam(w), lparam(l)
+  {}
+  WPARAM wparam;
+  LPARAM lparam;
+};
+//---------------------------------------------------------------------------
+class TMessageQueue : public TObject, public rde::vector<message_t>
+{
+public:
+  typedef message_t value_type;
+};
 //---------------------------------------------------------------------------
 class TFTPFileSystem : public TCustomFileSystem
 {
@@ -209,7 +224,7 @@ private:
   TFileZillaIntf * FFileZillaIntf;
   TCriticalSection * FQueueCriticalSection;
   TCriticalSection * FTransferStatusCriticalSection;
-  TMessageQueue * FQueue;
+  TMessageQueue FQueue;
   HANDLE FQueueEvent;
   TSessionInfo FSessionInfo;
   TFileSystemInfo FFileSystemInfo;

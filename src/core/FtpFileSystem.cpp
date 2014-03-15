@@ -162,23 +162,6 @@ bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
   return FFileSystem->GetFileModificationTimeInUtc(FileName, Time);
 }
 //---------------------------------------------------------------------------
-struct message_t
-{
-  message_t() : wparam(0), lparam(0)
-  {}
-  message_t(WPARAM w, LPARAM l) : wparam(w), lparam(l)
-  {}
-  WPARAM wparam;
-  LPARAM lparam;
-};
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-class TMessageQueue : public TObject, public rde::vector<message_t>
-{
-public:
-  typedef message_t value_type;
-};
-//---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 #if defined(__BORLANDC__)
 struct TFileTransferData : public TObject
@@ -247,7 +230,6 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   FFileZillaIntf(nullptr),
   FQueueCriticalSection(new TCriticalSection()),
   FTransferStatusCriticalSection(new TCriticalSection()),
-  FQueue(new TMessageQueue()),
   FQueueEvent(CreateEvent(nullptr, true, false, nullptr)),
   FFileSystemInfoValid(false),
   FReply(0),
@@ -284,6 +266,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
 
 void TFTPFileSystem::Init(void *)
 {
+  FQueue.reserve(1000);
   ResetReply();
 
   FListAll = FTerminal->GetSessionData()->GetFtpListAll();
@@ -304,8 +287,6 @@ TFTPFileSystem::~TFTPFileSystem()
   DiscardMessages();
 
   SAFE_DESTROY(FFileZillaIntf);
-
-  SAFE_DESTROY(FQueue);
 
   ::CloseHandle(FQueueEvent);
 
@@ -2406,7 +2387,7 @@ bool TFTPFileSystem::PostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam)
 
   TGuard Guard(FQueueCriticalSection);
 
-  FQueue->push_back(TMessageQueue::value_type(wParam, lParam));
+  FQueue.push_back(TMessageQueue::value_type(wParam, lParam));
   SetEvent(FQueueEvent);
 
   return true;
@@ -2420,11 +2401,11 @@ bool TFTPFileSystem::ProcessMessage()
   {
     TGuard Guard(FQueueCriticalSection);
 
-    Result = !FQueue->empty();
+    Result = !FQueue.empty();
     if (Result)
     {
-      Message = FQueue->front();
-      FQueue->erase(FQueue->begin());
+      Message = FQueue.front();
+      FQueue.erase(FQueue.begin());
     }
     else
     {
@@ -2449,8 +2430,8 @@ void TFTPFileSystem::DiscardMessages()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::WaitForMessages()
 {
-  if (FQueue->empty())
-    return;
+  //if (FQueue.empty())
+  //  return;
   DWORD Result = WaitForSingleObject(FQueueEvent, INFINITE);
   if (Result != WAIT_OBJECT_0)
   {
