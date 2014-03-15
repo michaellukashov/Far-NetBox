@@ -1,5 +1,7 @@
-NetBox 2.1.35 ??.03.2014
+NetBox 2.1.35 15.03.2014
 --------------------
+  * fix Mantis #0002478: FTP: plugin hangs up if file is read-protected
+    (http://bugs.farmanager.com/view.php?id=2479)
   * bugfix: FTP: plugin hangs up if connection with server is lost while searching on server
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=117453#p117453)
   * fix Mantis #0002478: SCP: cannot login if host uses nonstandard directory listing format
