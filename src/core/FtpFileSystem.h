@@ -245,7 +245,6 @@ private:
   bool FFileTransferRemoveBOM;
   uintptr_t FFileTransferCPSLimit;
   bool FAwaitingProgress;
-  bool FTerminated;
   TCaptureOutputEvent FOnCaptureOutput;
   UnicodeString FUserName;
   TAutoSwitch FListAll;

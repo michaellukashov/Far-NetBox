@@ -275,7 +275,6 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   FFileTransferRemoveBOM(false),
   FFileTransferCPSLimit(0),
   FAwaitingProgress(false),
-  FTerminated(false),
   FOnCaptureOutput(nullptr),
   FListAll(asOn),
   FDoListAll(false),
@@ -2450,18 +2449,10 @@ void TFTPFileSystem::DiscardMessages()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::WaitForMessages()
 {
-  static DWORD Milliseconds = 10000;
-  while (!FTerminated)
+  intptr_t Result = WaitForSingleObject(FQueueEvent, INFINITE);
+  if (Result != WAIT_OBJECT_0)
   {
-    DWORD Result = WaitForSingleObject(FQueueEvent, Milliseconds);
-    if (Result == WAIT_TIMEOUT) 
-    {
-      FTerminated = !FTerminal || FTerminal->CheckForEsc();
-    }
-    else if (Result != WAIT_OBJECT_0)
-    {
-      FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", IntToStr(Result).c_str()));
-    }
+    FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", IntToStr(Result).c_str()));
   }
 }
 //---------------------------------------------------------------------------
