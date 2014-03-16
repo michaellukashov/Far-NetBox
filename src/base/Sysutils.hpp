@@ -398,7 +398,7 @@ uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobal
 class ScopeExit
 {
 public:
-  ScopeExit(const std::function<void()>& f) : m_f(f) {}
+  ScopeExit(const std::function<void()> & f) : m_f(f) {}
   ~ScopeExit() { m_f(); }
 
 private:

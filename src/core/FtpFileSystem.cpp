@@ -203,8 +203,9 @@ class TFTPFileListHelper : public TObject
 {
 NB_DISABLE_COPY(TFTPFileListHelper)
 public:
-  explicit TFTPFileListHelper(TFTPFileSystem * FileSystem, TRemoteFileList * FileList,
-      bool IgnoreFileList) :
+  explicit TFTPFileListHelper(TFTPFileSystem * FileSystem,
+    TRemoteFileList * FileList,
+    bool IgnoreFileList) :
     FFileSystem(FileSystem),
     FFileList(FFileSystem->FFileList),
     FIgnoreFileList(FFileSystem->FIgnoreFileList)
