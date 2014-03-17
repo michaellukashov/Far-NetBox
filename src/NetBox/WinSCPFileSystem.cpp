@@ -2032,7 +2032,7 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
 
   if (Add)
   {
-    TBookmark * Bookmark = new TBookmark;
+    TBookmark * Bookmark = new TBookmark();
     Bookmark->SetRemote(Directory);
     Bookmark->SetName(Directory);
     BookmarkList->Add(Bookmark);
@@ -2507,7 +2507,7 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
     (OpMode & OPM_SILENT) &&
     (!EditView || GetFarConfiguration()->GetEditorDownloadDefaultMode());
 
-  TGUICopyParamType CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
+  TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
   if (EditView)
   {
     EditViewCopyParam(CopyParam);
