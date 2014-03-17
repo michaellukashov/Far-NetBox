@@ -84,7 +84,7 @@ void FileOperationLoopCustom(TTerminal * Terminal,
   TFileOperationProgressType * OperationProgress,
   bool AllowSkip, const UnicodeString & Message,
   const UnicodeString & HelpKeyword,
-  const std::function<void()>& Operation);
+  const std::function<void()> & Operation);
 
 #define FILE_OPERATION_LOOP(MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_EX(True, MESSAGE, OPERATION)

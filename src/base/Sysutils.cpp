@@ -47,7 +47,6 @@ intptr_t __cdecl debug_printf2(const char * format, ...)
 
 UnicodeString MB2W(const char * src, const UINT cp)
 {
-  // assert(src);
   if (!src || !*src)
   {
     return UnicodeString(L"");
@@ -66,7 +65,6 @@ UnicodeString MB2W(const char * src, const UINT cp)
 
 AnsiString W2MB(const wchar_t * src, const UINT cp)
 {
-  // assert(src);
   if (!src || !*src)
   {
     return AnsiString("");
@@ -262,7 +260,6 @@ UnicodeString TrimRight(const UnicodeString & Str)
 UnicodeString UpperCase(const UnicodeString & Str)
 {
   std::wstring Result(Str.c_str(), Str.Length());
-  // Result.SetLength(Str.Length());
   std::transform(Result.begin(), Result.end(), Result.begin(), ::toupper);
   return Result.c_str();
 }
@@ -650,7 +647,6 @@ UnicodeString Format(const wchar_t * Format, va_list Args)
   {
     intptr_t Len = _vscwprintf(Format, Args);
     Result.SetLength(Len + 1);
-    // vswprintf(Buf, Len + 1, Format, args);
     vswprintf(const_cast<wchar_t *>(Result.c_str()), Len + 1, Format, Args);
   }
   return Result.c_str();
@@ -945,18 +941,6 @@ UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len)
   {
     Result[I] = Ch;
   }
-  return Result;
-}
-
-// void RaiseLastOSError()
-// {
-// }
-
-char * StrNew(const char * Str)
-{
-  rsize_t sz = strlen(Str) + 1;
-  char * Result = static_cast<char *>(nb_malloc(sizeof(char) * sz));
-  strncpy_s(Result, sz, Str, sz);
   return Result;
 }
 
@@ -1592,7 +1576,8 @@ static void IncAMonth(Word & Year, Word & Month, Word & Day, Int64 NumberOfMonth
     Month += -12 * ToWord(Sign);
   }
   const TDayTable * DayTable = &MonthDays[IsLeapYear(Year)];
-  if (Day > (*DayTable)[Month]) Day = ToWord(*DayTable[Month]);
+  if (Day > (*DayTable)[Month])
+    Day = ToWord(*DayTable[Month]);
 }
 
 static void ReplaceTime(TDateTime & DateTime, const TDateTime & NewTime)

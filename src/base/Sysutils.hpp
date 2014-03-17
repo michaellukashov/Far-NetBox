@@ -131,7 +131,6 @@ public:
 };
 
 void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings);
-// int GetDefaultLCID();
 
 //---------------------------------------------------------------------------
 
@@ -278,8 +277,6 @@ UnicodeString ExpandEnvVars(const UnicodeString & Str2);
 
 UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len);
 
-char * StrNew(const char * Str2);
-
 UnicodeString ChangeFileExt(const UnicodeString & FileName, const UnicodeString & Ext);
 UnicodeString ExtractFileExt(const UnicodeString & FileName);
 UnicodeString ExpandUNCFileName(const UnicodeString & FileName);
@@ -315,7 +312,6 @@ struct TSearchRec
     ExcludeAttr(0),
     FindHandle(INVALID_HANDLE_VALUE)
   {
-//    memset(&FindData, 0, sizeof(FindData));
     ClearStruct(FindData);
   }
   Integer Time;
@@ -402,7 +398,7 @@ uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobal
 class ScopeExit
 {
 public:
-  ScopeExit(const std::function<void()>& f) : m_f(f) {}
+  ScopeExit(const std::function<void()> & f) : m_f(f) {}
   ~ScopeExit() { m_f(); }
 
 private:
