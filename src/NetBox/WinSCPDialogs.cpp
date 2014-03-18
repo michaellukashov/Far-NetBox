@@ -4413,6 +4413,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   {
     FDirectoriesXCheck = nullptr;
   }
+  ClearArray(FFixedStates);
 }
 //------------------------------------------------------------------------------
 void TRightsContainer::RightsButtonClick(TFarButton * Sender,
@@ -5405,7 +5406,9 @@ private:
 TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   bool ToRemote, bool Move, TStrings * FileList,
   intptr_t Options, intptr_t CopyParamAttrs) :
-  TFarDialog(AFarPlugin)
+  TFarDialog(AFarPlugin),
+  QueueCheck(nullptr),
+  QueueNoConfirmationCheck(nullptr)
 {
   FOptions = Options;
   FCopyParamAttrs = CopyParamAttrs;
@@ -5859,7 +5862,8 @@ public:
 //------------------------------------------------------------------------------
 TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
     TGetSpaceAvailableEvent OnGetSpaceAvailable) : TTabbedDialog(AFarPlugin, tabCount),
-  FSpaceAvailableLoaded(false)
+  FSpaceAvailableLoaded(false),
+  InfoLabel(nullptr)
 {
   FOnGetSpaceAvailable = OnGetSpaceAvailable;
   TFarText * Text;
