@@ -5407,6 +5407,8 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   bool ToRemote, bool Move, TStrings * FileList,
   intptr_t Options, intptr_t CopyParamAttrs) :
   TFarDialog(AFarPlugin),
+  DirectoryEdit(nullptr),
+  NewerOnlyCheck(nullptr),
   QueueCheck(nullptr),
   QueueNoConfirmationCheck(nullptr)
 {
@@ -5863,6 +5865,8 @@ public:
 TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
     TGetSpaceAvailableEvent OnGetSpaceAvailable) : TTabbedDialog(AFarPlugin, tabCount),
   FSpaceAvailableLoaded(false),
+  FLastFeededControl(nullptr),
+  FLastListItem(0),
   InfoLabel(nullptr)
 {
   FOnGetSpaceAvailable = OnGetSpaceAvailable;
