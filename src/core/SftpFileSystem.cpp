@@ -4470,7 +4470,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
           FMTLOAD(RENAME_AFTER_RESUME_ERROR,
             ::UnixExtractFileName(OpenParams.RemoteFileName.c_str()).c_str(), DestFileName.c_str()),
           HELP_RENAME_AFTER_RESUME_ERROR,
-          RenameFile(OpenParams.RemoteFileName, DestFileName);
+          this->RenameFile(OpenParams.RemoteFileName, DestFileName);
         );
       }
 
