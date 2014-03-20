@@ -1,5 +1,9 @@
 NetBox 2.1.36 ??.03.2014
 --------------------
+  * fix Mantis #0002625: error while trying to upload file if option "Enable transfer resume/transfer to temporary filename" is set
+    (http://bugs.farmanager.com/view.php?id=2625)
+  * bugfix: SCP: "Set atttributes" dialog: cannot set owner:group if option "Set attributes recursively" is not set
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=1545#p117633)
   * bugfix: FTP: timeout while trying to resume upload
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=117590#p117575)
 

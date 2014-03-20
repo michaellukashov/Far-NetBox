@@ -7221,6 +7221,7 @@ static void ssh2_msg_channel_open_confirmation(Ssh ssh, struct Packet *pktin)
          * server's id to put in the close message.
          */
         ssh2_channel_check_close(c);
+        c = NULL;
     } else {
         /*
          * We never expect to receive OPEN_CONFIRMATION for any
@@ -7236,7 +7237,7 @@ static void ssh2_msg_channel_open_confirmation(Ssh ssh, struct Packet *pktin)
         assert(!"Funny channel type in ssh2_msg_channel_open_confirmation");
     }
 
-    if (c->pending_eof)
+    if (c && c->pending_eof)
         ssh_channel_try_eof(c);        /* in case we had a pending EOF */
 }
 

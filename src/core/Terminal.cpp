@@ -4174,7 +4174,7 @@ bool TTerminal::DoCreateFile(const UnicodeString & FileName,
             FLAGMASK(FLAGSET(LocalFileAttrs, faReadOnly), FILE_ATTRIBUTE_READONLY);
 
           FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
-            if (!SetLocalFileAttributes(FileName, LocalFileAttrs & ~(faReadOnly | faHidden)))
+            if (!this->SetLocalFileAttributes(FileName, LocalFileAttrs & ~(faReadOnly | faHidden)))
             {
               RaiseLastOSError();
             }
@@ -4223,7 +4223,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
 
   FILE_OPERATION_LOOP(FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
-    LocalFileAttrs = GetLocalFileAttributes(FileName);
+    LocalFileAttrs = this->GetLocalFileAttributes(FileName);
     if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
     {
       RaiseLastOSError();
@@ -4241,7 +4241,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
     }
 
     FILE_OPERATION_LOOP(FMTLOAD(OPENFILE_ERROR, FileName.c_str()),
-      LocalFileHandle = CreateLocalFile(FileName.c_str(), (DWORD)Access,
+      LocalFileHandle = this->CreateLocalFile(FileName.c_str(), (DWORD)Access,
         Access == GENERIC_READ ? FILE_SHARE_READ | FILE_SHARE_WRITE : FILE_SHARE_READ,
         OPEN_EXISTING, 0);
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
@@ -4259,7 +4259,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
         FILETIME CTime;
         // Get last file access and modification time
         FILE_OPERATION_LOOP(FMTLOAD(CANT_GET_ATTRS, FileName.c_str()),
-          THROWOSIFFALSE(GetFileTime(LocalFileHandle, &CTime, &ATime, &MTime));
+          THROWOSIFFALSE(::GetFileTime(LocalFileHandle, &CTime, &ATime, &MTime));
         );
         if (ACTime)
         {
@@ -4281,7 +4281,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
         FILE_OPERATION_LOOP(FMTLOAD(CANT_GET_ATTRS, FileName.c_str()),
           uint32_t LSize;
           DWORD HSize;
-          LSize = GetFileSize(LocalFileHandle, &HSize);
+          LSize = ::GetFileSize(LocalFileHandle, &HSize);
           if ((LSize == 0xFFFFFFFF) && (::GetLastError() != NO_ERROR))
           {
             RaiseLastOSError();
@@ -4624,7 +4624,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
 
     FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
       DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-      Found = (FindFirstChecked(Data.LocalDirectory + L"*.*", FindAttrs, SearchRec) == 0);
+      Found = (::FindFirstChecked(Data.LocalDirectory + L"*.*", FindAttrs, SearchRec) == 0);
     );
 
     if (Found)
@@ -4683,7 +4683,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
           }
 
           FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
-            Found = (FindNextChecked(SearchRec) == 0);
+            Found = (::FindNextChecked(SearchRec) == 0);
           );
         }
       }
@@ -5554,7 +5554,7 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
   FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, LocalFileName.c_str()),
     HANDLE LocalFileHandle;
-    OpenLocalFile(LocalFileName, GENERIC_WRITE, nullptr, &LocalFileHandle,
+    this->OpenLocalFile(LocalFileName, GENERIC_WRITE, nullptr, &LocalFileHandle,
       nullptr, nullptr, nullptr, nullptr);
     bool Result = ::SetFileTime(LocalFileHandle, nullptr, AcTime, WrTime) > 0;
     ::CloseHandle(LocalFileHandle);
