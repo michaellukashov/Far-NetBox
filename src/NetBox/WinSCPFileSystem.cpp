@@ -3404,9 +3404,9 @@ void TWinSCPFileSystem::ShowOperationProgress(
       ((ProgressData.Operation == foCopy) || (ProgressData.Operation == foMove));
 
     UnicodeString Message1;
-    UnicodeString ProgressBar1;
+    UnicodeString ProgressBarCurrentFile;
     UnicodeString Message2;
-    UnicodeString ProgressBar2;
+    UnicodeString ProgressBarTotal;
     UnicodeString Title = GetMsg(Captions[static_cast<int>(ProgressData.Operation - 1)]);
     UnicodeString FileName = ProgressData.FileName;
     // for upload from temporary directory,
@@ -3424,7 +3424,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
       Message1 += TargetDirLabel + MinimizeName(ProgressData.Directory,
                   ProgressWidth - TargetDirLabel.Length(), ProgressData.Side == osLocal) + L"\n";
     }
-    ProgressBar1 = ProgressBar(ProgressData.OverallProgress(), ProgressWidth) + L"\n";
+    ProgressBarTotal = ProgressBar(ProgressData.OverallProgress(), ProgressWidth) + L"\n";
     if (TransferOperation)
     {
       Message2 = L"\1\n";
@@ -3461,10 +3461,10 @@ void TWinSCPFileSystem::ShowOperationProgress(
                    ::StringOfChar(' ', ProgressWidth - StatusLine.Length() -
                                   CPSLabel.Length() - Value.Length()) + Value;
       Message2 += StatusLine + L"\n";
-      ProgressBar2 += ProgressBar(ProgressData.TransferProgress(), ProgressWidth) + L"\n";
+      ProgressBarCurrentFile = ProgressBar(ProgressData.TransferProgress(), ProgressWidth) + L"\n";
     }
     UnicodeString Message =
-      Message1 + ProgressBar1 + Message2 + ProgressBar2;
+      Message1 + ProgressBarCurrentFile + Message2 + ProgressBarTotal;
     WinSCPPlugin()->Message(0, Title, Message, nullptr, nullptr);
 
     if (First)
