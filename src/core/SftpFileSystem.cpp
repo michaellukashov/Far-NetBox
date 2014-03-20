@@ -5075,7 +5075,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
       );
 
       FILE_OPERATION_LOOP(FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
-        THROWOSIFFALSE(ForceDirectories(DestFullName));
+        THROWOSIFFALSE(Sysutils::ForceDirectories(DestFullName));
       );
 
       TSinkFileParams SinkFileParams;
