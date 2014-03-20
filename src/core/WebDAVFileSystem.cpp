@@ -13030,7 +13030,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
 
   FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
     UnicodeString Path = DirectoryName + L"*.*";
-    FindOK = FindFirstChecked(Path, Attrs, Rec) == ERROR_SUCCESS;
+    FindOK = ::FindFirstChecked(Path, Attrs, Rec) == ERROR_SUCCESS;
   );
 
   bool CreateDir = true;
@@ -13073,7 +13073,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
         FindOK = (FindNext(Rec) == ERROR_SUCCESS);
         if (!FindOK)
         {
-          FindCheck(::GetLastError());
+          ::FindCheck(::GetLastError());
         }
       );
     }

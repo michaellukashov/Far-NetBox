@@ -1188,7 +1188,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
       );
 
       FILE_OPERATION_LOOP(FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
-        THROWOSIFFALSE(ForceDirectories(DestFullName));
+        THROWOSIFFALSE(Sysutils::ForceDirectories(DestFullName));
       );
 
       TSinkFileParams SinkFileParams;
@@ -1592,7 +1592,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   bool FindOK = false;
 
   FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    FindOK = (bool)(FindFirstChecked((DirectoryName + L"*.*").c_str(),
+    FindOK = (bool)(::FindFirstChecked((DirectoryName + L"*.*").c_str(),
       FindAttrs, SearchRec) == 0);
   );
 
@@ -1633,7 +1633,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
       }
 
       FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        FindOK = (FindNextChecked(SearchRec) == 0);
+        FindOK = (::FindNextChecked(SearchRec) == 0);
       );
     }
   }

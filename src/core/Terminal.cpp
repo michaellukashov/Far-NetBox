@@ -4259,7 +4259,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
         FILETIME CTime;
         // Get last file access and modification time
         FILE_OPERATION_LOOP(FMTLOAD(CANT_GET_ATTRS, FileName.c_str()),
-          THROWOSIFFALSE(GetFileTime(LocalFileHandle, &CTime, &ATime, &MTime));
+          THROWOSIFFALSE(::GetFileTime(LocalFileHandle, &CTime, &ATime, &MTime));
         );
         if (ACTime)
         {
@@ -4281,7 +4281,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & FileName,
         FILE_OPERATION_LOOP(FMTLOAD(CANT_GET_ATTRS, FileName.c_str()),
           uint32_t LSize;
           DWORD HSize;
-          LSize = GetFileSize(LocalFileHandle, &HSize);
+          LSize = ::GetFileSize(LocalFileHandle, &HSize);
           if ((LSize == 0xFFFFFFFF) && (::GetLastError() != NO_ERROR))
           {
             RaiseLastOSError();
@@ -4624,7 +4624,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
 
     FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
       DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-      Found = (FindFirstChecked(Data.LocalDirectory + L"*.*", FindAttrs, SearchRec) == 0);
+      Found = (::FindFirstChecked(Data.LocalDirectory + L"*.*", FindAttrs, SearchRec) == 0);
     );
 
     if (Found)
@@ -4683,7 +4683,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
           }
 
           FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
-            Found = (FindNextChecked(SearchRec) == 0);
+            Found = (::FindNextChecked(SearchRec) == 0);
           );
         }
       }

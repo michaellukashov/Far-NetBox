@@ -2058,8 +2058,8 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
     memset(&SearchRec, 0, sizeof(SearchRec));
     bool FindOK = false;
     FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-      UnicodeString Path = IncludeTrailingBackslash(DirectoryName) + L"*.*";
-      FindOK = FindFirstChecked(Path.c_str(),
+      UnicodeString Path = ::IncludeTrailingBackslash(DirectoryName) + L"*.*";
+      FindOK = ::FindFirstChecked(Path.c_str(),
         FindAttrs, SearchRec) == 0;
     );
 
@@ -2070,7 +2070,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
       };
       while (FindOK && !OperationProgress->Cancel)
       {
-        UnicodeString FileName = IncludeTrailingBackslash(DirectoryName) + SearchRec.Name;
+        UnicodeString FileName = ::IncludeTrailingBackslash(DirectoryName) + SearchRec.Name;
         try
         {
           if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
@@ -2108,7 +2108,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
           }
         }
         FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-          FindOK = (FindNextChecked(SearchRec) == 0);
+          FindOK = (::FindNextChecked(SearchRec) == 0);
         );
       }
     }
@@ -2471,7 +2471,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & FileName,
         FTerminal->LogFileDetails(FileName, SourceTimestamp, MaskParams.Size);
 
         UnicodeString DestFileName =
-          IncludeTrailingBackslash(TargetDir) +
+          ::IncludeTrailingBackslash(TargetDir) +
           CopyParam->ChangeFileName(OperationProgress->FileName, osRemote,
             Level == 0);
 

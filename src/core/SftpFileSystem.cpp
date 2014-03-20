@@ -4871,7 +4871,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
   bool FindOK = false;
 
   FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    FindOK = (bool)(FindFirstChecked(DirectoryName + L"*.*",
+    FindOK = (bool)(::FindFirstChecked(DirectoryName + L"*.*",
       FindAttrs, SearchRec) == 0);
   );
 
@@ -4905,7 +4905,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
       }
 
       FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        FindOK = (FindNextChecked(SearchRec) == 0);
+        FindOK = (::FindNextChecked(SearchRec) == 0);
       );
     }
   }
@@ -5506,7 +5506,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
           if (::FileExists(DestFullName))
           {
-            DeleteFileChecked(DestFullName);
+            ::DeleteFileChecked(DestFullName);
           }
           THROWOSIFFALSE(Sysutils::RenameFile(DestPartialFullName, DestFullName));
         );
