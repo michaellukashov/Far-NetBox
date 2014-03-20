@@ -604,7 +604,7 @@ intptr_t TRemoteToken::Compare(const TRemoteToken & rht) const
 void TRemoteToken::SetID(intptr_t Value)
 {
   FID = Value;
-  FIDValid = true;
+  FIDValid = Value != 0;
 }
 //---------------------------------------------------------------------------
 bool TRemoteToken::GetNameValid() const
