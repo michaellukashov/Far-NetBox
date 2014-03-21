@@ -398,8 +398,9 @@ protected:
     const TRemoteFile * File, TCalculateSizeParams * Params);
   void CalculateLocalFileSize(const UnicodeString & FileName,
     const TSearchRec & Rec, /*int64_t*/ void * Params);
-  bool CalculateLocalFilesSize(const TStrings * FileList, int64_t & Size,
-    const TCopyParamType * CopyParam, bool AllowDirs);
+  bool CalculateLocalFilesSize(const TStrings * FileList,
+    const TCopyParamType * CopyParam, bool AllowDirs,
+    OUT int64_t & Size);
   TBatchOverwrite EffectiveBatchOverwrite(
     const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
     bool Special);

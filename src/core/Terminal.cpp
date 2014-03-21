@@ -4417,7 +4417,8 @@ void TTerminal::CalculateLocalFileSize(const UnicodeString & FileName,
 }
 //------------------------------------------------------------------------------
 bool TTerminal::CalculateLocalFilesSize(const TStrings * FileList,
-  int64_t & Size, const TCopyParamType * CopyParam, bool AllowDirs)
+  const TCopyParamType * CopyParam, bool AllowDirs,
+  OUT int64_t & Size)
 {
   bool Result = true;
   TFileOperationProgressType OperationProgress(MAKE_CALLBACK(TTerminal::DoProgress, this), MAKE_CALLBACK(TTerminal::DoFinished, this));
@@ -5353,11 +5354,11 @@ bool TTerminal::CopyToRemote(const TStrings * AFilesToCopy,
   {
     int64_t Size = 0;
     // dirty trick: when moving, do not pass copy param to avoid exclude mask
-    bool CalculatedSize =
-      CalculateLocalFilesSize(
-        AFilesToCopy, Size,
+    bool CalculatedSize = CalculateLocalFilesSize(
+        AFilesToCopy,
         (FLAGCLEAR(Params, cpDelete) ? CopyParam : nullptr),
-        CopyParam->GetCalculateSize());
+        CopyParam->GetCalculateSize(),
+        Size);
 
     OperationProgress.Start((Params & cpDelete ? foMove : foCopy), osLocal,
       AFilesToCopy->GetCount(), (Params & cpTemporary) > 0, TargetDir, CopyParam->GetCPSLimit());
