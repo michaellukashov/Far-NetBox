@@ -202,9 +202,9 @@ public:
   void ReadFile(const UnicodeString & FileName, TRemoteFile *& AFile);
   bool FileExists(const UnicodeString & FileName, TRemoteFile ** File = nullptr);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& File);
-  bool CopyToLocal(TStrings * AFilesToCopy,
+  bool CopyToLocal(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params);
-  bool CopyToRemote(TStrings * AFilesToCopy,
+  bool CopyToRemote(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params);
   void CreateDirectory(const UnicodeString & DirName,
     const TRemoteProperties * Properties = nullptr);
@@ -240,7 +240,7 @@ public:
     /* const TMoveFileParams */ void * Param);
   bool CopyFiles(TStrings * FileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
-  bool CalculateFilesSize(TStrings * FileList, int64_t & Size,
+  bool CalculateFilesSize(const TStrings * AFileList, int64_t & Size,
     intptr_t Params, const TCopyParamType * CopyParam,
     bool AllowDirs, TCalculateSizeStats * Stats = nullptr);
   void CalculateFilesChecksum(const UnicodeString & Alg, TStrings * FileList,
@@ -370,11 +370,9 @@ protected:
   intptr_t FileOperationLoop(TFileOperationEvent CallBackFunc,
     TFileOperationProgressType * OperationProgress, bool AllowSkip,
     const UnicodeString & Message, void * Param1 = nullptr, void * Param2 = nullptr);
-  bool ProcessFiles(TStrings * FileList, TFileOperation Operation,
+  bool ProcessFiles(const TStrings * AFileList, TFileOperation Operation,
     TProcessFileEvent ProcessFile, void * Param = nullptr, TOperationSide Side = osRemote,
     bool Ex = false);
-  bool ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
-    TProcessFileEventEx ProcessFile, void * Param = nullptr, TOperationSide Side = osRemote);
   void ProcessDirectory(const UnicodeString & DirName,
     TProcessFileEvent CallBackFunc, void * Param = nullptr, bool UseCache = false,
     bool IgnoreErrors = false);
@@ -400,7 +398,7 @@ protected:
     const TRemoteFile * File, TCalculateSizeParams * Params);
   void CalculateLocalFileSize(const UnicodeString & FileName,
     const TSearchRec & Rec, /*int64_t*/ void * Params);
-  bool CalculateLocalFilesSize(TStrings * FileList, int64_t & Size,
+  bool CalculateLocalFilesSize(const TStrings * FileList, int64_t & Size,
     const TCopyParamType * CopyParam, bool AllowDirs);
   TBatchOverwrite EffectiveBatchOverwrite(
     const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,

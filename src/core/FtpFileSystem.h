@@ -62,11 +62,11 @@ public:
   virtual void CalculateFilesChecksum(const UnicodeString & Alg,
     TStrings * FileList, TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum);
-  virtual void CopyToLocal(TStrings * AFilesToCopy,
+  virtual void CopyToLocal(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
-  virtual void CopyToRemote(TStrings * AFilesToCopy,
+  virtual void CopyToRemote(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);

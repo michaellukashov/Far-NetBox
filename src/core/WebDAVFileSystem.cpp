@@ -12728,7 +12728,7 @@ void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & Path,
   assert(false);
 }
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
+void TWebDAVFileSystem::CopyToRemote(const TStrings * FilesToCopy,
   const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
@@ -13138,7 +13138,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
 }
 
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
+void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
@@ -13147,10 +13147,10 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
   UnicodeString FullTargetDir = ::IncludeTrailingBackslash(TargetDir);
 
   intptr_t Index = 0;
-  while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
+  while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
-    UnicodeString FileName = FilesToCopy->GetString(Index);
-    const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, FilesToCopy->GetObject(Index));
+    UnicodeString FileName = AFilesToCopy->GetString(Index);
+    const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFilesToCopy->GetObject(Index));
     FTerminal->SetExceptionOnFail(true);
     {
       bool Success = false;

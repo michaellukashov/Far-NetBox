@@ -1490,7 +1490,7 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
   }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
+void TSCPFileSystem::CopyToRemote(const TStrings * FilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
@@ -2131,7 +2131,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
+void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
@@ -2149,7 +2149,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   }
 
   FTerminal->LogEvent(FORMAT(L"Copying %d files/directories to local directory "
-    L"\"%s\"", FilesToCopy->GetCount(), TargetDir.c_str()));
+    L"\"%s\"", AFilesToCopy->GetCount(), TargetDir.c_str()));
   FTerminal->LogEvent(CopyParam->GetLogStr());
 
   {
@@ -2182,11 +2182,11 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         ReadCommandOutput(ECParams);
       }
     };
-    for (intptr_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
+    for (intptr_t IFile = 0; (IFile < AFilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; ++IFile)
     {
-      UnicodeString FileName = FilesToCopy->GetString(IFile);
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FilesToCopy->GetObject(IFile));
+      UnicodeString FileName = AFilesToCopy->GetString(IFile);
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(IFile));
       assert(File);
 
       // Filename is used for error messaging and excluding files only

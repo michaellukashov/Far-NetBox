@@ -3800,7 +3800,7 @@ void TSFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
 //---------------------------------------------------------------------------
 // transfer protocol
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
+void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
@@ -4927,7 +4927,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
   }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
+void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)

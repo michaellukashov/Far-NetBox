@@ -2995,12 +2995,12 @@ void TTerminal::AnnounceFileListOperation()
   FFileSystem->AnnounceFileListOperation();
 }
 //------------------------------------------------------------------------------
-bool TTerminal::ProcessFiles(TStrings * FileList,
+bool TTerminal::ProcessFiles(const TStrings * AFileList,
   TFileOperation Operation, TProcessFileEvent ProcessFile, void * Param,
   TOperationSide Side, bool Ex)
 {
   assert(FFileSystem);
-  assert(FileList);
+  assert(AFileList);
 
   bool Result = false;
   TOnceDoneOperation OnceDoneOperation = odoIdle;
@@ -3008,7 +3008,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
   try
   {
     TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, this), MAKE_CALLBACK(TTerminal::DoFinished, this));
-    Progress.Start(Operation, Side, FileList->GetCount());
+    Progress.Start(Operation, Side, AFileList->GetCount());
 
     FOperationProgress = &Progress; //-V506
     TFileOperationProgressType * OperationProgress(&Progress);
@@ -3034,9 +3034,9 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
         intptr_t Index = 0;
         UnicodeString FileName;
         bool Success;
-        while ((Index < FileList->GetCount()) && (Progress.Cancel == csContinue))
+        while ((Index < AFileList->GetCount()) && (Progress.Cancel == csContinue))
         {
-          FileName = FileList->GetString(Index);
+          FileName = AFileList->GetString(Index);
           try
           {
             {
@@ -3047,7 +3047,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
               Success = false;
               if (!Ex)
               {
-                TRemoteFile * RemoteFile = NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObject(Index));
+                TRemoteFile * RemoteFile = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObject(Index));
                 ProcessFile(FileName, RemoteFile, Param);
               }
               else
@@ -3092,18 +3092,6 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
   }
 
   return Result;
-}
-//------------------------------------------------------------------------------
-// not used anymore
-bool TTerminal::ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
-  TProcessFileEventEx ProcessFile, void * Param, TOperationSide Side)
-{
-#if defined(__BORLANDC__)
-  return ProcessFiles(FileList, Operation, TProcessFileEvent(ProcessFile),
-    Param, Side, true);
-#else
-  return false;
-#endif
 }
 //------------------------------------------------------------------------------
 TStrings * TTerminal::GetFixedPaths()
@@ -3597,7 +3585,7 @@ void TTerminal::DoCalculateDirectorySize(const UnicodeString & FileName,
   }
 }
 //------------------------------------------------------------------------------
-bool TTerminal::CalculateFilesSize(TStrings * FileList,
+bool TTerminal::CalculateFilesSize(const TStrings * AFileList,
   int64_t & Size, intptr_t Params, const TCopyParamType * CopyParam,
   bool AllowDirs, TCalculateSizeStats * Stats)
 {
@@ -3608,7 +3596,7 @@ bool TTerminal::CalculateFilesSize(TStrings * FileList,
   Param.Stats = Stats;
   Param.AllowDirs = AllowDirs;
   Param.Result = true;
-  ProcessFiles(FileList, foCalculateSize, MAKE_CALLBACK(TTerminal::CalculateFileSize, this), &Param);
+  ProcessFiles(AFileList, foCalculateSize, MAKE_CALLBACK(TTerminal::CalculateFileSize, this), &Param);
   Size = Param.Size;
   return Param.Result;
 }
@@ -4428,7 +4416,7 @@ void TTerminal::CalculateLocalFileSize(const UnicodeString & FileName,
   }
 }
 //------------------------------------------------------------------------------
-bool TTerminal::CalculateLocalFilesSize(TStrings * FileList,
+bool TTerminal::CalculateLocalFilesSize(const TStrings * FileList,
   int64_t & Size, const TCopyParamType * CopyParam, bool AllowDirs)
 {
   bool Result = true;
@@ -5351,12 +5339,11 @@ bool TTerminal::GetStoredCredentialsTried()
   return Result;
 }
 //------------------------------------------------------------------------------
-bool TTerminal::CopyToRemote(TStrings * AFilesToCopy,
+bool TTerminal::CopyToRemote(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params)
 {
   assert(FFileSystem);
   assert(AFilesToCopy);
-
 
   bool Result = false;
   TOnceDoneOperation OnceDoneOperation = odoIdle;
@@ -5442,7 +5429,7 @@ bool TTerminal::CopyToRemote(TStrings * AFilesToCopy,
   return Result;
 }
 //------------------------------------------------------------------------------
-bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
+bool TTerminal::CopyToLocal(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params)
 {
   assert(FFileSystem);

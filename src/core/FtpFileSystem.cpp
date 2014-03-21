@@ -1060,7 +1060,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & FileName,
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
+void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
@@ -1347,7 +1347,7 @@ void TFTPFileSystem::SinkFile(const UnicodeString & FileName,
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
+void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
