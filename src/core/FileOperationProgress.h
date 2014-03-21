@@ -101,6 +101,7 @@ public:
   intptr_t TransferProgress() const;
   intptr_t OverallProgress() const;
   intptr_t TotalTransferProgress() const;
+  void SetSpeedCounters();
 
 protected:
   void ClearTransfer();
@@ -117,6 +118,7 @@ private:
   bool FReset;
   uintptr_t FLastSecond;
   uintptr_t FRemainingCPS;
+  bool FCounterSet;
   rde::vector<uint32_t> FTicks;
   rde::vector<int64_t> FTotalTransferredThen;
 };

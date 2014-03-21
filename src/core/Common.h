@@ -128,9 +128,13 @@ UnicodeString ExtractFileBaseName(const UnicodeString & Path);
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);
 bool FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec);
-DWORD FindCheck(DWORD Result);
-DWORD FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRec & F);
-DWORD FindNextChecked(TSearchRec & F);
+struct TSearchRecChecked : public TSearchRec
+{
+  UnicodeString Path;
+};
+DWORD FindCheck(DWORD Result, const UnicodeString & Path);
+DWORD FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRecChecked & F);
+DWORD FindNextChecked(TSearchRecChecked & F);
 void ProcessLocalDirectory(const UnicodeString & DirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = nullptr, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
 //---------------------------------------------------------------------------
@@ -162,6 +166,7 @@ UnicodeString GetTimeZoneLogString();
 bool AdjustClockForDSTEnabled();
 intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2);
 intptr_t TimeToMSec(const TDateTime & T);
+intptr_t TimeToSeconds(const TDateTime & T);
 intptr_t TimeToMinutes(const TDateTime & T);
 //---------------------------------------------------------------------------
 #if defined(__BORLANDC__)

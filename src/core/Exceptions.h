@@ -74,6 +74,7 @@ NB_DECLARE_CLASS(EOSExtException)
 public:
   explicit EOSExtException();
   explicit EOSExtException(const UnicodeString & Msg);
+  explicit EOSExtException(const UnicodeString & Msg, int LastError);
 };
 //---------------------------------------------------------------------------
 class EFatal : public ExtException

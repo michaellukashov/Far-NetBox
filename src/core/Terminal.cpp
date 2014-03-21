@@ -3125,14 +3125,20 @@ TUsableCopyParamAttrs TTerminal::UsableCopyParamAttrs(intptr_t Params)
     FLAGMASK(!GetIsCapable(fcModeChanging), cpaNoRights) |
     FLAGMASK(!GetIsCapable(fcModeChanging), cpaNoPreserveReadOnly) |
     FLAGMASK(FLAGSET(Params, cpDelete), cpaNoClearArchive) |
-    FLAGMASK(!GetIsCapable(fcIgnorePermErrors), cpaNoIgnorePermErrors);
-  Result.Download = Result.General | cpaNoClearArchive | cpaNoRights |
-    cpaNoIgnorePermErrors | cpaNoRemoveCtrlZ | cpaNoRemoveBOM;
-  Result.Upload = Result.General | cpaNoPreserveReadOnly |
+    FLAGMASK(!GetIsCapable(fcIgnorePermErrors), cpaNoIgnorePermErrors) |
+    // the following three are never supported for download,
+    // so when they are not suppored for upload too,
+    // set them in General flags, so that they do not get enabled on
+    // Synchronize dialog.
     FLAGMASK(!GetIsCapable(fcModeChangingUpload), cpaNoRights) |
-    FLAGMASK(!GetIsCapable(fcPreservingTimestampUpload), cpaNoPreserveTime) |
     FLAGMASK(!GetIsCapable(fcRemoveCtrlZUpload), cpaNoRemoveCtrlZ) |
     FLAGMASK(!GetIsCapable(fcRemoveBOMUpload), cpaNoRemoveBOM);
+  Result.Download = Result.General | cpaNoClearArchive |
+    cpaNoIgnorePermErrors |
+    // May be already set in General flags, but it's unconditional here
+    cpaNoRights | cpaNoRemoveCtrlZ | cpaNoRemoveBOM;
+  Result.Upload = Result.General | cpaNoPreserveReadOnly |
+    FLAGMASK(!GetIsCapable(fcPreservingTimestampUpload), cpaNoPreserveTime);
   return Result;
 }
 //------------------------------------------------------------------------------
@@ -4617,7 +4623,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
       Data.DeleteLocalFileList();
     };
     bool Found = false;
-    TSearchRec SearchRec;
+    TSearchRecChecked SearchRec;
     Data.LocalFileList = new TStringList();
     Data.LocalFileList->SetSorted(true);
     Data.LocalFileList->SetCaseSensitive(false);
@@ -5370,6 +5376,7 @@ bool TTerminal::CopyToRemote(TStrings * AFilesToCopy,
       AFilesToCopy->GetCount(), (Params & cpTemporary) > 0, TargetDir, CopyParam->GetCPSLimit());
 
     FOperationProgress = &OperationProgress; //-V506
+    bool CollectingUsage = false;
     {
       SCOPE_EXIT
       {
@@ -5384,6 +5391,7 @@ bool TTerminal::CopyToRemote(TStrings * AFilesToCopy,
 //          Configuration->Usage->Inc(L"Uploads");
 //          Configuration->Usage->Inc(L"UploadedBytes", CounterSize);
 //          Configuration->Usage->SetMax(L"MaxUploadSize", CounterSize);
+//          CollectingUsage = true;
 //        }
 
         OperationProgress.SetTotalSize(Size);
@@ -5485,6 +5493,7 @@ bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
       AFilesToCopy->GetCount(), (Params & cpTemporary) != 0, TargetDir, CopyParam->GetCPSLimit());
 
     FOperationProgress = &OperationProgress;
+    bool CollectingUsage = false;
     {
       SCOPE_EXIT
       {
@@ -5499,6 +5508,7 @@ bool TTerminal::CopyToLocal(TStrings * AFilesToCopy,
 //          Configuration->Usage->Inc(L"Downloads");
 //          Configuration->Usage->Inc(L"DownloadedBytes", CounterTotalSize);
 //          Configuration->Usage->SetMax(L"MaxDownloadSize", CounterTotalSize);
+//          CollectingUsage = true;
 //        }
 
         OperationProgress.SetTotalSize(TotalSize);
