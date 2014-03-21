@@ -434,7 +434,7 @@ UnicodeString UserModificationStr(const TDateTime & DateTime,
   return UnicodeString();
 }
 //---------------------------------------------------------------------------
-UnicodeString ModificationStr(TDateTime DateTime,
+UnicodeString ModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision)
 {
   uint16_t Year, Month, Day, Hour, Min, Sec, MSec;

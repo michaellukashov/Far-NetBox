@@ -159,8 +159,8 @@ UnicodeString SysErrorMessage(int Code);
 
 bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
 UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
-                            TDateTime DateTime);
-UnicodeString DateTimeToString(TDateTime DateTime);
+  const TDateTime & DateTime);
+UnicodeString DateTimeToString(const TDateTime & DateTime);
 uint32_t DayOfWeek(const TDateTime & DateTime);
 
 TDateTime Date();
@@ -169,7 +169,7 @@ void DecodeDate(const TDateTime & DateTime, uint16_t & Y,
 void DecodeTime(const TDateTime & DateTime, uint16_t & H,
   uint16_t & N, uint16_t & S, uint16_t & MS);
 
-UnicodeString FormatDateTime(const UnicodeString & Fmt, TDateTime DateTime);
+UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & DateTime);
 TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
 
 TDateTime EncodeDate(int Year, int Month, int Day);
@@ -219,7 +219,7 @@ double StrToFloatDef(const UnicodeString & Value, double DefVal);
 UnicodeString FormatFloat(const UnicodeString & Format, double Value);
 bool IsZero(double Value);
 //---------------------------------------------------------------------------
-TTimeStamp DateTimeToTimeStamp(TDateTime DateTime);
+TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime);
 //---------------------------------------------------------------------------
 
 int64_t FileRead(HANDLE Handle, void * Buffer, int64_t Count);

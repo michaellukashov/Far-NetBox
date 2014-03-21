@@ -492,7 +492,7 @@ TModificationFmt LessDateTimePrecision(
   TModificationFmt Precision1, TModificationFmt Precision2);
 UnicodeString UserModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision);
-UnicodeString ModificationStr(TDateTime DateTime,
+UnicodeString ModificationStr(const Classes::TDateTime & DateTime,
   TModificationFmt Precision);
 int FakeFileImageIndex(const UnicodeString & FileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
   UnicodeString * TypeName = nullptr);

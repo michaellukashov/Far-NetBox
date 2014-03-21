@@ -42,7 +42,7 @@ UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
 UnicodeString UniqTempDir(const UnicodeString & BaseDir,
   const UnicodeString & Identity, bool Mask = false);
 bool DeleteDirectory(const UnicodeString & DirName);
-UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, TDateTime DateTime);
+UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, const TDateTime & DateTime);
 //---------------------------------------------------------------------------
 class TLocalCustomCommand : public TFileCustomCommand
 {
