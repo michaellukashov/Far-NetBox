@@ -2708,7 +2708,7 @@ void TTerminal::LogRemoteFile(TRemoteFile * AFile)
 UnicodeString TTerminal::FormatFileDetailsForLog(const UnicodeString & AFileName, const TDateTime & Modification, int64_t Size)
 {
   UnicodeString Result;
-    // optimization
+  // optimization
   if (GetLog()->GetLogging())
   {
     Result = FORMAT(L"'%s' [%s] [%s]", AFileName.c_str(), UnicodeString(Modification != TDateTime() ? StandardTimestamp(Modification) : UnicodeString(L"n/a")).c_str(), IntToStr(Size).c_str());
