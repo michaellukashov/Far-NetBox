@@ -208,6 +208,7 @@ protected:
     TDateTime & DateTime, TModificationFmt & ModificationFmt);
   void SetLastCode(intptr_t Code);
   void StoreLastResponse(const UnicodeString & Text);
+  void SetCPSLimit(TFileOperationProgressType * OperationProgress);
 
   static bool Unquote(UnicodeString & Str);
   static UnicodeString ExtractStatusMessage(const UnicodeString & Status);

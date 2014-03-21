@@ -1105,7 +1105,7 @@ void TSessionData::ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & 
     FtpAccount = ReadXmlNode(Node, L"Account", FtpAccount);
   }
 
-  int DefaultTimeDifference = TimeToMSec(TimeDifference) / MSecsPerSec;
+  int DefaultTimeDifference = TimeToSeconds(TimeDifference) / MSecsPerSec;
   TimeDifference =
     (double(ReadXmlNode(Node, L"TimezoneOffset", DefaultTimeDifference) / SecsPerDay));
 

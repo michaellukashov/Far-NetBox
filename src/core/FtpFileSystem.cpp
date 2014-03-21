@@ -1007,8 +1007,16 @@ void TFTPFileSystem::DoFileTransferProgress(int64_t TransferSize,
 
   if (FFileTransferCPSLimit != OperationProgress->CPSLimit)
   {
-    FFileTransferCPSLimit = OperationProgress->CPSLimit;
+    SetCPSLimit(OperationProgress);
   }
+}
+//---------------------------------------------------------------------------
+void TFTPFileSystem::SetCPSLimit(TFileOperationProgressType * OperationProgress)
+{
+  // Any reason we use separate field intead of directly using OperationProgress->CPSLimit?
+  // Maybe thread-safety?
+  FFileTransferCPSLimit = OperationProgress->CPSLimit;
+  OperationProgress->SetSpeedCounters();
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::FileTransferProgress(int64_t TransferSize,
@@ -1255,7 +1263,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
       // ignore file list
       TFTPFileListHelper Helper(this, nullptr, true);
 
-      FFileTransferCPSLimit = OperationProgress->CPSLimit;
+      SetCPSLimit(OperationProgress);
       FFileTransferPreserveTime = CopyParam->GetPreserveTime();
       // not used for downloads anyway
       FFileTransferRemoveBOM = CopyParam->GetRemoveBOM();
@@ -1531,7 +1539,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
       // ignore file list
       TFTPFileListHelper Helper(this, nullptr, true);
 
-      FFileTransferCPSLimit = OperationProgress->CPSLimit;
+      SetCPSLimit(OperationProgress);
       // not used for uploads anyway
       FFileTransferPreserveTime = CopyParam->GetPreserveTime();
       FFileTransferRemoveBOM = CopyParam->GetRemoveBOM();
@@ -1588,7 +1596,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   OperationProgress->SetFile(DirectoryName);
 
   DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-  TSearchRec SearchRec;
+  TSearchRecChecked SearchRec;
   bool FindOK = false;
 
   FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),

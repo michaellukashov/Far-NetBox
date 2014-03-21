@@ -400,6 +400,8 @@ UnicodeString GetShellFolderPath(int CSIdl)
   return Result;
 }
 //---------------------------------------------------------------------------
+// Particularly needed when using file name selected by TFilenameEdit,
+// as it wraps a path to double-quotes, when there is a space in the path.
 UnicodeString StripPathQuotes(const UnicodeString & Path)
 {
   if ((Path.Length() >= 2) &&
@@ -871,28 +873,36 @@ bool IsHex(wchar_t Ch)
     ((Ch >= 'a') && (Ch <= 'f'));
 }
 //---------------------------------------------------------------------------
-DWORD FindCheck(DWORD Result)
+DWORD FindCheck(DWORD Result, const UnicodeString & Path)
 {
   if ((Result != ERROR_SUCCESS) &&
       (Result != ERROR_FILE_NOT_FOUND) &&
       (Result != ERROR_NO_MORE_FILES))
   {
-    RaiseLastOSError(Result);
+    throw EOSExtException(FMTLOAD(FIND_FILE_ERROR, Path.c_str()), Result);
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-DWORD FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRec & F)
+DWORD FindFirstUnchecked(const UnicodeString & Path, DWORD Attr, TSearchRecChecked & F)
 {
-  return FindCheck(FindFirst(Path, LocalFileAttrs, F));
+  F.Path = Path;
+  return FindFirst(Path, Attr, F);
+}
+//---------------------------------------------------------------------------
+DWORD FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRecChecked & F)
+{
+  // return FindCheck(FindFirst(Path, LocalFileAttrs, F));
+  DWORD Result = FindFirstUnchecked(Path, LocalFileAttrs, F);
+  return FindCheck(Result, F.Path);
 }
 //---------------------------------------------------------------------------
 // It can make sense to use FindNextChecked, even if unchecked FindFirst is used.
 // I.e. even if we do not care that FindFirst failed, if FindNext
 // fails after successful FindFirst, it mean some terrible problem
-DWORD FindNextChecked(TSearchRec & F)
+DWORD FindNextChecked(TSearchRecChecked & F)
 {
-  return FindCheck(FindNext(F));
+  return FindCheck(FindNext(F), F.Path);
 }
 //---------------------------------------------------------------------------
 bool FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec)
@@ -915,7 +925,7 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
   {
     FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   }
-  TSearchRec SearchRec;
+  TSearchRecChecked SearchRec;
 
   UnicodeString DirName2 = IncludeTrailingBackslash(DirName);
   if (FindFirstChecked(DirName2 + L"*.*", FindAttrs, SearchRec) == 0)
@@ -995,9 +1005,26 @@ struct TDateTimeParams : public TObject
   SYSTEMTIME SystemDaylightDate;
   TDateTime StandardDate;
   TDateTime DaylightDate;
-  bool SummerDST;
+  UnicodeString StandardName;
+  UnicodeString DaylightName;
   // This is actually global, not per-year
   bool DaylightHack;
+
+  bool HasDST() const
+  {
+    // On some systems it occurs that StandardDate is unset, while
+    // DaylightDate is set. MSDN states that this is invalid and
+    // should be treated as if there is no daylight saving.
+    // So check both.
+    return
+      (SystemStandardDate.wMonth != 0) &&
+      (SystemDaylightDate.wMonth != 0);
+  }
+
+  bool SummerDST() const
+  {
+    return HasDST() && (DaylightDate < StandardDate);
+  }
 };
 typedef rde::map<int, TDateTimeParams> TYearlyDateTimeParams;
 static TYearlyDateTimeParams YearlyDateTimeParams;
@@ -1088,15 +1115,14 @@ static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
     Result->SystemDaylightDate = TZI.DaylightDate;
 
     uint16_t AYear = (Year != 0) ? Year : DecodeYear(Now());
-    if (Result->SystemStandardDate.wMonth != 0)
+    if (Result->HasDST())
     {
       EncodeDSTMargin(Result->SystemStandardDate, AYear, Result->StandardDate);
-    }
-    if (Result->SystemDaylightDate.wMonth != 0)
-    {
       EncodeDSTMargin(Result->SystemDaylightDate, AYear, Result->DaylightDate);
     }
-    Result->SummerDST = (Result->DaylightDate < Result->StandardDate);
+
+    Result->StandardName = TZI.StandardName;
+    Result->DaylightName = TZI.DaylightName;
 
     Result->DaylightHack = !IsWin7();
   }
@@ -1147,14 +1173,14 @@ static bool IsDateInDST(const TDateTime & DateTime)
   // DaylightDate is set. MSDN states that this is invalid and
   // should be treated as if there is no daylight saving.
   // So check both.
-  if ((Params->SystemStandardDate.wMonth == 0) ||
-      (Params->SystemDaylightDate.wMonth == 0))
+  if (!Params->HasDST())
   {
     Result = false;
   }
   else
   {
-    if (Params->SummerDST)
+
+    if (Params->SummerDST())
     {
       Result =
         (DateTime >= Params->DaylightDate) &&
@@ -1277,12 +1303,23 @@ FILETIME DateTimeToFileTime(const TDateTime & DateTime,
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
   if (!Params->DaylightHack)
   {
+    // We should probably use reversed code of FileTimeToDateTime here instead of custom implementation
+
+    // We are incrementing and decrementing BaseDifferenceSec because it
+    // can actually change between years
+    // (as it did in Belarus from GMT+2 to GMT+3 between 2011 and 2012)
+
     UnixTimeStamp += (IsDateInDST(DateTime) ?
-      Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
+      Params->DaylightDifferenceSec : Params->StandardDifferenceSec) +
+      Params->BaseDifferenceSec;
 
     const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
-    UnixTimeStamp -= CurrentParams->CurrentDaylightDifferenceSec;
+    UnixTimeStamp -=
+      CurrentParams->CurrentDaylightDifferenceSec +
+      CurrentParams->BaseDifferenceSec;
+
   }
+
   FILETIME Result;
   (*(int64_t*)&(Result) = ((int64_t)(UnixTimeStamp) + 11644473600LL) * 10000000LL);
 
@@ -1546,15 +1583,27 @@ static UnicodeString FormatTimeZone(long Sec)
 //---------------------------------------------------------------------------
 UnicodeString GetTimeZoneLogString()
 {
-  const TDateTimeParams * Params = GetDateTimeParams(0);
+  const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
 
   UnicodeString Result =
-    FORMAT(L"Current: GMT%s, Standard: GMT%s, DST: GMT%s, DST Start: %s, DST End: %s",
-      FormatTimeZone(Params->CurrentDifferenceSec).c_str(),
-       FormatTimeZone(Params->BaseDifferenceSec + Params->StandardDifferenceSec).c_str(),
-       FormatTimeZone(Params->BaseDifferenceSec + Params->DaylightDifferenceSec).c_str(),
-       Params->DaylightDate.DateString().c_str(),
-       Params->StandardDate.DateString().c_str());
+    FORMAT(L"Current: GMT%s", FormatTimeZone(CurrentParams->CurrentDifferenceSec).c_str());
+
+  if (!CurrentParams->HasDST())
+  {
+    Result += FORMAT(L" (%s), No DST", CurrentParams->StandardName.c_str());
+  }
+  else
+  {
+    Result +=
+      FORMAT(L", Standard: GMT%s (%s), DST: GMT%s (%s), DST Start: %s, DST End: %s",
+        FormatTimeZone(CurrentParams->BaseDifferenceSec + CurrentParams->StandardDifferenceSec).c_str(),
+         CurrentParams->StandardName.c_str(),
+         FormatTimeZone(CurrentParams->BaseDifferenceSec + CurrentParams->DaylightDifferenceSec).c_str(),
+         CurrentParams->DaylightName.c_str(),
+         CurrentParams->DaylightDate.DateString().c_str(),
+         CurrentParams->StandardDate.DateString().c_str());
+  }
+
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1644,9 +1693,14 @@ intptr_t TimeToMSec(const TDateTime & T)
   return int(Round(double(T) * double(MSecsPerDay)));
 }
 //---------------------------------------------------------------------------
+intptr_t TimeToSeconds(const TDateTime & T)
+{
+  return TimeToMSec(T) / MSecsPerSec;
+}
+//---------------------------------------------------------------------------
 intptr_t TimeToMinutes(const TDateTime & T)
 {
-  return TimeToMSec(T) / MSecsPerSec / SecsPerMin;
+  return TimeToSeconds(T) / SecsPerMin;
 }
 //---------------------------------------------------------------------------
 bool RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin)
