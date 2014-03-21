@@ -136,7 +136,7 @@ UnicodeString ExtractFileName(const UnicodeString & Path, bool Unix)
   }
 }
 //---------------------------------------------------------------------------
-bool ExtractCommonPath(const TStrings * AFiles, UnicodeString & Path)
+bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & Path)
 {
   assert(AFiles->GetCount() > 0);
 
@@ -163,7 +163,7 @@ bool ExtractCommonPath(const TStrings * AFiles, UnicodeString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool UnixExtractCommonPath(const TStrings * const AFiles, UnicodeString & Path)
+bool UnixExtractCommonPath(const TStrings * const AFiles, OUT UnicodeString & Path)
 {
   assert(AFiles->GetCount() > 0);
 
