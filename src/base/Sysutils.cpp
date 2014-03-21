@@ -1526,7 +1526,7 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & DateTi
   return Result;
 }
 
-TDateTime ComposeDateTime(const TDateTime & Date, const TDateTime & Time)
+static TDateTime ComposeDateTime(const TDateTime & Date, const TDateTime & Time)
 {
   TDateTime Result = TDateTime((double)Date);
   Result += Time;
