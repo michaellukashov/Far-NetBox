@@ -12728,22 +12728,22 @@ void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & Path,
   assert(false);
 }
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::CopyToRemote(const TStrings * FilesToCopy,
+void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
-  assert((FilesToCopy != nullptr) && (OperationProgress != nullptr));
+  assert((AFilesToCopy != nullptr) && (OperationProgress != nullptr));
 
   Params &= ~cpAppend;
   UnicodeString FileName, FileNameOnly;
   UnicodeString TargetDir = AbsolutePath(ATargetDir, false);
   UnicodeString FullTargetDir = ::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
-  while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
+  while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
-    FileName = FilesToCopy->GetString(Index);
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FilesToCopy->GetObject(Index));
+    FileName = AFilesToCopy->GetString(Index);
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ::ExtractFileName(RealFileName, false);
 

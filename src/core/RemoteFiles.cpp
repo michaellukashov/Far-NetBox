@@ -136,18 +136,18 @@ UnicodeString ExtractFileName(const UnicodeString & Path, bool Unix)
   }
 }
 //---------------------------------------------------------------------------
-bool ExtractCommonPath(TStrings * Files, UnicodeString & Path)
+bool ExtractCommonPath(const TStrings * AFiles, UnicodeString & Path)
 {
-  assert(Files->GetCount() > 0);
+  assert(AFiles->GetCount() > 0);
 
-  Path = ExtractFilePath(Files->GetString(0));
+  Path = ExtractFilePath(AFiles->GetString(0));
   bool Result = !Path.IsEmpty();
   if (Result)
   {
-    for (intptr_t Index = 1; Index < Files->GetCount(); ++Index)
+    for (intptr_t Index = 1; Index < AFiles->GetCount(); ++Index)
     {
       while (!Path.IsEmpty() &&
-        (Files->GetString(Index).SubString(1, Path.Length()) != Path))
+        (AFiles->GetString(Index).SubString(1, Path.Length()) != Path))
       {
         intptr_t PrevLen = Path.Length();
         Path = ExtractFilePath(ExcludeTrailingBackslash(Path));
@@ -163,18 +163,18 @@ bool ExtractCommonPath(TStrings * Files, UnicodeString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool UnixExtractCommonPath(TStrings * Files, UnicodeString & Path)
+bool UnixExtractCommonPath(const TStrings * const AFiles, UnicodeString & Path)
 {
-  assert(Files->GetCount() > 0);
+  assert(AFiles->GetCount() > 0);
 
-  Path = ::UnixExtractFilePath(Files->GetString(0));
+  Path = ::UnixExtractFilePath(AFiles->GetString(0));
   bool Result = !Path.IsEmpty();
   if (Result)
   {
-    for (intptr_t Index = 1; Index < Files->GetCount(); ++Index)
+    for (intptr_t Index = 1; Index < AFiles->GetCount(); ++Index)
     {
       while (!Path.IsEmpty() &&
-        (Files->GetString(Index).SubString(1, Path.Length()) != Path))
+        (AFiles->GetString(Index).SubString(1, Path.Length()) != Path))
       {
         intptr_t PrevLen = Path.Length();
         Path = ::UnixExtractFilePath(::UnixExcludeTrailingBackslash(Path));
@@ -342,17 +342,17 @@ UnicodeString MinimizeName(const UnicodeString & FileName, intptr_t MaxLen, bool
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString MakeFileList(TStrings * FileList)
+UnicodeString MakeFileList(const TStrings * AFileList)
 {
   UnicodeString Result;
-  for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
+  for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
   {
     if (!Result.IsEmpty())
     {
       Result += L" ";
     }
 
-    UnicodeString FileName = FileList->GetString(Index);
+    UnicodeString FileName = AFileList->GetString(Index);
     // currently this is used for local file only, so no delimiting is done
     if (FileName.Pos(L" ") > 0)
     {

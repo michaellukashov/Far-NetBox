@@ -322,7 +322,7 @@ class TTransferQueueItem : public TLocatedQueueItem
 NB_DISABLE_COPY(TTransferQueueItem)
 public:
   explicit TTransferQueueItem(TTerminal * Terminal,
-    TStrings * FilesToCopy, const UnicodeString & TargetDir,
+    const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side,
     bool SingleFile);
   virtual ~TTransferQueueItem();
@@ -340,7 +340,7 @@ class TUploadQueueItem : public TTransferQueueItem
 {
 public:
   explicit TUploadQueueItem(TTerminal * Terminal,
-    TStrings * FilesToCopy, const UnicodeString & TargetDir,
+    const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile);
   virtual ~TUploadQueueItem() {}
 protected:
@@ -351,7 +351,7 @@ class TDownloadQueueItem : public TTransferQueueItem
 {
 public:
   explicit TDownloadQueueItem(TTerminal * Terminal,
-    TStrings * FilesToCopy, const UnicodeString & TargetDir,
+    const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile);
   virtual ~TDownloadQueueItem() {}
 protected:

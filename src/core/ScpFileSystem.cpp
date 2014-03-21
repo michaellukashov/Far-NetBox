@@ -1490,13 +1490,13 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
   }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::CopyToRemote(const TStrings * FilesToCopy,
+void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
   // scp.c: source(), toremote()
-  assert(FilesToCopy && OperationProgress);
+  assert(AFilesToCopy && OperationProgress);
 
   Params &= ~(cpAppend | cpResume);
   UnicodeString Options = L"";
@@ -1576,11 +1576,11 @@ void TSCPFileSystem::CopyToRemote(const TStrings * FilesToCopy,
   }
   CopyBatchStarted = true;
 
-  for (intptr_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
+  for (intptr_t IFile = 0; (IFile < AFilesToCopy->GetCount()) &&
     !OperationProgress->Cancel; ++IFile)
   {
-    UnicodeString FileName = FilesToCopy->GetString(IFile);
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FilesToCopy->GetObject(IFile));
+    UnicodeString FileName = AFilesToCopy->GetString(IFile);
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(IFile));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     bool CanProceed = false;
 

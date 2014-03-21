@@ -476,8 +476,8 @@ UnicodeString UnixExtractFileName(const UnicodeString & Path);
 UnicodeString UnixExtractFileExt(const UnicodeString & Path);
 Boolean UnixComparePaths(const UnicodeString & Path1, const UnicodeString & Path2);
 bool UnixIsChildPath(const UnicodeString & Parent, const UnicodeString & Child);
-bool ExtractCommonPath(TStrings * Files, UnicodeString & Path);
-bool UnixExtractCommonPath(TStrings * Files, UnicodeString & Path);
+bool ExtractCommonPath(const TStrings * AFiles, UnicodeString & Path);
+bool UnixExtractCommonPath(const TStrings * AFiles, UnicodeString & Path);
 UnicodeString ExtractFileName(const UnicodeString & Path, bool Unix);
 bool IsUnixRootPath(const UnicodeString & Path);
 bool IsUnixHiddenFile(const UnicodeString & Path);
@@ -485,7 +485,7 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Pat
 UnicodeString FromUnixPath(const UnicodeString & Path);
 UnicodeString ToUnixPath(const UnicodeString & Path);
 UnicodeString MinimizeName(const UnicodeString & FileName, intptr_t MaxLen, bool Unix);
-UnicodeString MakeFileList(TStrings * FileList);
+UnicodeString MakeFileList(const TStrings * AFileList);
 TDateTime ReduceDateTimePrecision(const TDateTime & DateTime,
   TModificationFmt Precision);
 TModificationFmt LessDateTimePrecision(

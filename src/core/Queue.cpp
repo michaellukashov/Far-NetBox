@@ -1976,7 +1976,7 @@ void TLocatedQueueItem::DoExecute(TTerminal * Terminal)
 // TTransferQueueItem
 //---------------------------------------------------------------------------
 TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
-  TStrings * FilesToCopy, const UnicodeString & TargetDir,
+  const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side,
   bool SingleFile) :
   TLocatedQueueItem(Terminal), FFilesToCopy(nullptr), FCopyParam(nullptr)
@@ -1985,13 +1985,13 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
   FInfo->Side = Side;
   FInfo->SingleFile = SingleFile;
 
-  assert(FilesToCopy != nullptr);
+  assert(AFilesToCopy != nullptr);
   FFilesToCopy = new TStringList();
-  for (intptr_t Index = 0; Index < FilesToCopy->GetCount(); ++Index)
+  for (intptr_t Index = 0; Index < AFilesToCopy->GetCount(); ++Index)
   {
-    FFilesToCopy->AddObject(FilesToCopy->GetString(Index),
-      ((FilesToCopy->GetObject(Index) == nullptr) || (Side == osLocal)) ? nullptr :
-        NB_STATIC_DOWNCAST(TRemoteFile, FilesToCopy->GetObject(Index))->Duplicate());
+    FFilesToCopy->AddObject(AFilesToCopy->GetString(Index),
+      ((AFilesToCopy->GetObject(Index) == nullptr) || (Side == osLocal)) ? nullptr :
+        NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index))->Duplicate());
   }
 
   FTargetDir = TargetDir;
@@ -2021,11 +2021,11 @@ uint32_t TTransferQueueItem::DefaultCPSLimit() const
 // TUploadQueueItem
 //---------------------------------------------------------------------------
 TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
-  TStrings * FilesToCopy, const UnicodeString & TargetDir,
+  const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile) :
-  TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osLocal, SingleFile)
+  TTransferQueueItem(Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osLocal, SingleFile)
 {
-  if (FilesToCopy->GetCount() > 1)
+  if (AFilesToCopy->GetCount() > 1)
   {
     if (FLAGSET(Params, cpTemporary))
     {
@@ -2034,7 +2034,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
     }
     else
     {
-      ExtractCommonPath(FilesToCopy, FInfo->Source);
+      ExtractCommonPath(AFilesToCopy, FInfo->Source);
       // this way the trailing backslash is preserved for root directories like "D:\\"
       FInfo->Source = ExtractFileDir(IncludeTrailingBackslash(FInfo->Source));
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
@@ -2045,13 +2045,13 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
   {
     if (FLAGSET(Params, cpTemporary))
     {
-      FInfo->Source = ::ExtractFileName(FilesToCopy->GetString(0), true);
+      FInfo->Source = ::ExtractFileName(AFilesToCopy->GetString(0), true);
       FInfo->ModifiedLocal = L"";
     }
     else
     {
-      assert(FilesToCopy->GetCount() > 0);
-      FInfo->Source = FilesToCopy->GetString(0);
+      assert(AFilesToCopy->GetCount() > 0);
+      FInfo->Source = AFilesToCopy->GetString(0);
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
         ::IncludeTrailingBackslash(ExtractFilePath(FInfo->Source));
     }
@@ -2073,13 +2073,13 @@ void TUploadQueueItem::DoExecute(TTerminal * Terminal)
 // TDownloadQueueItem
 //---------------------------------------------------------------------------
 TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
-  TStrings * FilesToCopy, const UnicodeString & TargetDir,
+  const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile) :
-  TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osRemote, SingleFile)
+  TTransferQueueItem(Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osRemote, SingleFile)
 {
-  if (FilesToCopy->GetCount() > 1)
+  if (AFilesToCopy->GetCount() > 1)
   {
-    if (!::UnixExtractCommonPath(FilesToCopy, FInfo->Source))
+    if (!::UnixExtractCommonPath(AFilesToCopy, FInfo->Source))
     {
       FInfo->Source = Terminal->GetCurrentDirectory();
     }
@@ -2089,8 +2089,8 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   }
   else
   {
-    assert(FilesToCopy->GetCount() > 0);
-    FInfo->Source = FilesToCopy->GetString(0);
+    assert(AFilesToCopy->GetCount() > 0);
+    FInfo->Source = AFilesToCopy->GetString(0);
     if (::UnixExtractFilePath(FInfo->Source).IsEmpty())
     {
       FInfo->Source = ::UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory()) +
