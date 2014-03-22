@@ -276,7 +276,13 @@ public:
   }
 
 protected:
-  enum TState { Opened, Committed, RolledBack, Cancelled };
+  enum TState
+  {
+    Opened,
+    Committed,
+    RolledBack,
+    Cancelled
+  };
 
   inline void Close(TState State)
   {

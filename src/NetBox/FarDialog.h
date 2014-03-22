@@ -18,7 +18,12 @@ class TFarSeparator;
 class TFarBox;
 class TFarList;
 struct FarDialogItem;
-enum TItemPosition { ipNewLine, ipBelow, ipRight };
+enum TItemPosition
+{
+  ipNewLine,
+  ipBelow,
+  ipRight
+};
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE4(TFarKeyEvent, void,
   TFarDialog * /* Sender */, TFarDialogItem * /* Item */, long /* KeyCode */, bool & /* Handled */);
@@ -344,7 +349,13 @@ public:
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE2(TFarButtonClickEvent, void,
   TFarButton * /* Sender */, bool & /* Close */);
-enum TFarButtonBrackets { brNone, brTight, brSpace, brNormal };
+enum TFarButtonBrackets
+{
+  brNone,
+  brTight,
+  brSpace,
+  brNormal
+};
 //---------------------------------------------------------------------------
 class TFarButton : public TFarDialogItem
 {
@@ -545,7 +556,12 @@ private:
   bool FNoDialogUpdate;
 };
 //---------------------------------------------------------------------------
-enum TFarListBoxAutoSelect { asOnlyFocus, asAlways, asNever };
+enum TFarListBoxAutoSelect
+{
+  asOnlyFocus,
+  asAlways,
+  asNever
+};
 //---------------------------------------------------------------------------
 class TFarListBox : public TFarDialogItem
 {

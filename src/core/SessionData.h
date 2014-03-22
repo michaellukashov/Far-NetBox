@@ -12,27 +12,82 @@
 #define SET_SESSION_PROPERTY(Property) \
   if (F##Property != Value) { F##Property = Value; Modify(); }
 //---------------------------------------------------------------------------
-enum TCipher { cipWarn, cip3DES, cipBlowfish, cipAES, cipDES, cipArcfour };
+enum TCipher
+{
+  cipWarn,
+  cip3DES,
+  cipBlowfish,
+  cipAES,
+  cipDES,
+  cipArcfour
+};
 #define CIPHER_COUNT (cipArcfour+1)
-enum TProtocol { ptRaw, ptTelnet, ptRLogin, ptSSH };
+enum TProtocol
+{
+  ptRaw,
+  ptTelnet,
+  ptRLogin,
+  ptSSH
+};
 #define PROTOCOL_COUNT (ptSSH+1)
 // explicit values to skip obsoleted fsExternalSSH, fsExternalSFTP
-enum TFSProtocol_219 { fsFTPS_219 = 6, fsHTTP_219 = 7, fsHTTPS_219 = 8 };
-enum TFSProtocol { fsSCPonly = 0, fsSFTP = 1, fsSFTPonly = 2, fsFTP = 5, fsWebDAV = 6 };
-enum TLoginType { ltAnonymous = 0, ltNormal = 1 };
+enum TFSProtocol_219
+{
+  fsFTPS_219 = 6,
+  fsHTTP_219 = 7,
+  fsHTTPS_219 = 8
+};
+enum TFSProtocol
+{
+  fsSCPonly = 0,
+  fsSFTP = 1,
+  fsSFTPonly = 2,
+  fsFTP = 5,
+  fsWebDAV = 6
+};
+enum TLoginType
+{
+  ltAnonymous = 0,
+  ltNormal = 1
+};
 #define FSPROTOCOL_COUNT (fsWebDAV+1)
-enum TProxyMethod { pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd, pmSystem };
-enum TSshProt { ssh1only, ssh1, ssh2, ssh2only };
-enum TKex { kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexRSA };
+enum TProxyMethod
+{
+  pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd, pmSystem
+};
+enum TSshProt
+{
+  ssh1only, ssh1, ssh2, ssh2only
+};
+enum TKex
+{
+  kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexRSA
+};
 #define KEX_COUNT (kexRSA+1)
-enum TSshBug { sbIgnore1, sbPlainPW1, sbRSA1, sbHMAC2, sbDeriveKey2, sbRSAPad2,
-  sbPKSessID2, sbRekey2, sbMaxPkt2, sbIgnore2 };
+enum TSshBug
+{
+  sbIgnore1, sbPlainPW1, sbRSA1, sbHMAC2, sbDeriveKey2, sbRSAPad2,
+  sbPKSessID2, sbRekey2, sbMaxPkt2, sbIgnore2
+};
 #define BUG_COUNT (sbIgnore2+1)
-enum TSftpBug { sbSymlink, sbSignedTS };
+enum TSftpBug
+{
+  sbSymlink,
+  sbSignedTS
+};
 #define SFTP_BUG_COUNT (sbSignedTS+1)
-enum TPingType { ptOff, ptNullPacket, ptDummyCommand };
-enum TAddressFamily { afAuto, afIPv4, afIPv6 };
-enum TFtps { ftpsNone, ftpsImplicit, ftpsExplicitSsl, ftpsExplicitTls };
+enum TPingType
+{
+  ptOff, ptNullPacket, ptDummyCommand
+};
+enum TAddressFamily
+{
+  afAuto, afIPv4, afIPv6
+};
+enum TFtps
+{
+  ftpsNone, ftpsImplicit, ftpsExplicitSsl, ftpsExplicitTls
+};
 // has to match SSL_VERSION_XXX constants in AsyncSslSocketLayer.h
 enum TTlsVersion { ssl2 = 2, ssl3 = 3, tls10 = 10, tls11 = 11, tls12 = 12 };
 enum TSessionSource { ssNone, ssStored, ssStoredModified };

@@ -66,7 +66,13 @@ DEFINE_CALLBACK_TYPE1(TQueueListUpdateEvent, void,
   TTerminalQueue * /* Queue */);
 DEFINE_CALLBACK_TYPE2(TQueueItemUpdateEvent, void,
   TTerminalQueue * /* Queue */, TQueueItem * /* Item */);
-enum TQueueEvent { qeEmpty, qePendingUserAction };
+
+enum TQueueEvent
+{
+  qeEmpty,
+  qePendingUserAction
+};
+
 DEFINE_CALLBACK_TYPE2(TQueueEventEvent, void,
   TTerminalQueue * /* Queue */, TQueueEvent /* Event */);
 //---------------------------------------------------------------------------
@@ -173,9 +179,11 @@ friend class TTerminalItem;
 NB_DISABLE_COPY(TQueueItem)
 NB_DECLARE_CLASS(TQueueItem)
 public:
-  enum TStatus {
+  enum TStatus
+  {
     qsPending, qsConnecting, qsProcessing, qsPrompt, qsQuery, qsError,
-    qsPaused, qsDone };
+    qsPaused, qsDone
+  };
   struct TInfo : public TObject
   {
     TFileOperation Operation;

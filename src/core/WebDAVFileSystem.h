@@ -197,7 +197,12 @@ private:
   UnicodeString FUserName;
   bool FPasswordFailed;
   bool FActive;
-  enum { ftaNone, ftaSkip, ftaCancel } FFileTransferAbort;
+  enum
+  {
+    ftaNone,
+    ftaSkip,
+    ftaCancel
+  } FFileTransferAbort;
   bool FIgnoreFileList;
   bool FFileTransferCancelled;
   int64_t FFileTransferResumed;

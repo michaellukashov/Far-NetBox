@@ -253,7 +253,12 @@ private:
   bool FActive;
   bool FOpening;
   bool FWaitingForReply;
-  enum { ftaNone, ftaSkip, ftaCancel } FFileTransferAbort;
+  enum
+  {
+    ftaNone,
+    ftaSkip,
+    ftaCancel
+  } FFileTransferAbort;
   bool FIgnoreFileList;
   bool FFileTransferCancelled;
   int64_t FFileTransferResumed;

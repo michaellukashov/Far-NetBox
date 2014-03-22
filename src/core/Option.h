@@ -3,7 +3,11 @@
 #define OptionH
 
 //---------------------------------------------------------------------------
-enum TOptionType { otParam, otSwitch };
+enum TOptionType
+{
+  otParam,
+  otSwitch
+};
 //---------------------------------------------------------------------------
 class TOptions : public TObject
 {

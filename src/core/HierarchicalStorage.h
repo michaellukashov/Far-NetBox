@@ -4,8 +4,20 @@
 
 #include <registry.hpp>
 //------------------------------------------------------------------------------
-enum TStorage { stDetect, stRegistry, stIniFile, stNul, stXmlFile };
-enum TStorageAccessMode { smRead, smReadWrite };
+enum TStorage
+{
+  stDetect,
+  stRegistry,
+  stIniFile,
+  stNul,
+  stXmlFile
+};
+
+enum TStorageAccessMode
+{
+  smRead,
+  smReadWrite
+};
 //------------------------------------------------------------------------------
 class THierarchicalStorage : public TObject
 {

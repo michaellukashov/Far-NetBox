@@ -93,7 +93,15 @@ void FileOperationLoopCustom(TTerminal * Terminal,
   FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, HELP_KEYWORD, \
     [&]() { OPERATION })
 //------------------------------------------------------------------------------
-enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsFTPS, cfsWebDAV };
+enum TCurrentFSProtocol
+{
+  cfsUnknown,
+  cfsSCP,
+  cfsSFTP,
+  cfsFTP,
+  cfsFTPS,
+  cfsWebDAV
+};
 //------------------------------------------------------------------------------
 const int cpDelete = 0x01;
 const int cpTemporary = 0x04;
@@ -118,7 +126,12 @@ NB_DISABLE_COPY(TTerminal)
 NB_DECLARE_CLASS(TTerminal)
 public:
   // TScript::SynchronizeProc relies on the order
-  enum TSynchronizeMode { smRemote, smLocal, smBoth };
+  enum TSynchronizeMode
+  {
+    smRemote,
+    smLocal,
+    smBoth
+  };
   static const int spDelete = 0x01; // cannot be combined with spTimestamp
   static const int spNoConfirmation = 0x02; // has no effect for spTimestamp
   static const int spExistingOnly = 0x04; // is implicit for spTimestamp
@@ -672,8 +685,11 @@ public:
   bool MatchesFilter(const UnicodeString & FileName);
 };
 //------------------------------------------------------------------------------
-enum TChecklistAction { saNone, saUploadNew, saDownloadNew, saUploadUpdate,
-  saDownloadUpdate, saDeleteRemote, saDeleteLocal };
+enum TChecklistAction
+{
+  saNone, saUploadNew, saDownloadNew, saUploadUpdate,
+  saDownloadUpdate, saDeleteRemote, saDeleteLocal
+};
 
 class TChecklistItem : public TObject
 {

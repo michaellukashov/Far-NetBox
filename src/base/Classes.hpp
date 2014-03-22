@@ -862,10 +862,17 @@ public:
 
 //---------------------------------------------------------------------------
 
-enum TReplaceFlag { rfReplaceAll, rfIgnoreCase };
+enum TReplaceFlag
+{
+  rfReplaceAll,
+  rfIgnoreCase
+};
 typedef DelphiSet<TReplaceFlag> TReplaceFlags;
 
-enum TShiftStateFlag { ssShift, ssAlt, ssCtrl, ssLeft, ssRight, ssMiddle, ssDouble, ssTouch, ssPen };
+enum TShiftStateFlag
+{
+  ssShift, ssAlt, ssCtrl, ssLeft, ssRight, ssMiddle, ssDouble, ssTouch, ssPen
+};
 typedef DelphiSet<TShiftStateFlag> TShiftState;
 
 //---------------------------------------------------------------------------

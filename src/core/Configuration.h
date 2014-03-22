@@ -14,8 +14,20 @@
 //---------------------------------------------------------------------------
 #define CONST_DEFAULT_NUMBER_OF_RETRIES 2
 //---------------------------------------------------------------------------
-enum TAutoSwitch { asOn, asOff, asAuto };
-enum TFtpEncryptionSwitch_219 { fesPlainFTP, fesExplicitSSL, fesImplicit, fesExplicitTLS };
+enum TAutoSwitch
+{
+  asOn,
+  asOff,
+  asAuto
+};
+
+enum TFtpEncryptionSwitch_219
+{
+  fesPlainFTP,
+  fesExplicitSSL,
+  fesImplicit,
+  fesExplicitTLS
+};
 //---------------------------------------------------------------------------
 class TConfiguration : public TObject
 {

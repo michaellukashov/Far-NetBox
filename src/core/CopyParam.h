@@ -6,11 +6,35 @@
 #include "RemoteFiles.h"
 //---------------------------------------------------------------------------
 // When adding new options, mind TCopyParamType::GetLogStr()
-enum TOperationSide { osLocal, osRemote, osCurrent };
-enum TFileNameCase { ncNoChange, ncUpperCase, ncLowerCase, ncFirstUpperCase, ncLowerCaseShort };
+enum TOperationSide
+{
+  osLocal,
+  osRemote,
+  osCurrent
+};
+
+enum TFileNameCase
+{
+  ncNoChange,
+  ncUpperCase,
+  ncLowerCase,
+  ncFirstUpperCase,
+  ncLowerCaseShort
+};
 // TScript::OptionProc depend on the order
-enum TTransferMode { tmBinary, tmAscii, tmAutomatic };
-enum TResumeSupport { rsOn, rsSmart, rsOff };
+enum TTransferMode
+{
+  tmBinary,
+  tmAscii,
+  tmAutomatic
+};
+
+enum TResumeSupport
+{
+  rsOn,
+  rsSmart,
+  rsOff
+};
 class THierarchicalStorage;
 const int cpaIncludeMaskOnly = 0x01;
 const int cpaNoTransferMode =  0x02;

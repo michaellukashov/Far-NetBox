@@ -7,12 +7,36 @@
 #include "Exceptions.h"
 //---------------------------------------------------------------------------
 class TFileOperationProgressType;
-enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
+enum TFileOperation
+{
+  foNone, foCopy, foMove, foDelete, foSetProperties,
   foRename, foCustomCommand, foCalculateSize, foRemoteMove, foRemoteCopy,
-  foGetProperties, foCalculateChecksum };
-enum TCancelStatus { csContinue = 0, csCancel, csCancelTransfer, csRemoteAbort };
-enum TResumeStatus { rsNotAvailable, rsEnabled, rsDisabled };
-enum TBatchOverwrite { boNo, boAll, boNone, boOlder, boAlternateResume, boAppend, boResume };
+  foGetProperties, foCalculateChecksum
+};
+
+enum TCancelStatus
+{
+  csContinue = 0, csCancel, csCancelTransfer, csRemoteAbort
+};
+
+enum TResumeStatus
+{
+  rsNotAvailable,
+  rsEnabled,
+  rsDisabled
+};
+
+enum TBatchOverwrite
+{
+  boNo,
+  boAll,
+  boNone,
+  boOlder,
+  boAlternateResume,
+  boAppend,
+  boResume
+};
+
 DEFINE_CALLBACK_TYPE2(TFileOperationProgressEvent, void,
   TFileOperationProgressType & /* ProgressData */, TCancelStatus & /* Cancel */);
 DEFINE_CALLBACK_TYPE6(TFileOperationFinishedEvent, void,

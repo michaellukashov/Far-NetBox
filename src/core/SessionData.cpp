@@ -18,7 +18,13 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-enum TProxyType { pxNone, pxHTTP, pxSocks, pxTelnet }; // 0.53b and older
+enum TProxyType
+{
+  pxNone,
+  pxHTTP,
+  pxSocks,
+  pxTelnet
+}; // 0.53b and older
 const wchar_t * DefaultName = L"Default Settings";
 const wchar_t CipherNames[CIPHER_COUNT][10] = {L"WARN", L"3des", L"blowfish", L"aes", L"des", L"arcfour"};
 const wchar_t KexNames[KEX_COUNT][20] = {L"WARN", L"dh-group1-sha1", L"dh-group14-sha1", L"dh-gex-sha1", L"rsa" };

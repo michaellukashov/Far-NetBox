@@ -28,7 +28,13 @@ const int dfNoRecursive = 0x01;
 const int dfAlternative = 0x02;
 const int dfForceDelete = 0x04;
 //---------------------------------------------------------------------------
-enum TOverwriteMode { omOverwrite, omAppend, omResume, omComplete };
+enum TOverwriteMode
+{
+  omOverwrite,
+  omAppend,
+  omResume,
+  omComplete
+};
 //---------------------------------------------------------------------------
 const int tfFirstLevel =   0x01;
 const int tfAutoResume = 0x02;

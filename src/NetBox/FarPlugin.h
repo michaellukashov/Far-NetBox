@@ -22,9 +22,22 @@ class TFarPluginGuard;
 //---------------------------------------------------------------------------
 const int MaxMessageWidth = 64;
 //---------------------------------------------------------------------------
-enum TFarShiftStatus { fsNone, fsCtrl, fsAlt, fsShift, fsCtrlShift,
-  fsAltShift, fsCtrlAlt };
-enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessEvent };
+enum TFarShiftStatus
+{
+  fsNone,
+  fsCtrl,
+  fsAlt,
+  fsShift,
+  fsCtrlShift,
+  fsAltShift,
+  fsCtrlAlt
+};
+enum THandlesFunction
+{
+  hfProcessKey,
+  hfProcessHostFile,
+  hfProcessEvent
+};
 DEFINE_CALLBACK_TYPE1(TFarInputBoxValidateEvent, void, UnicodeString & /* Text */);
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE1(TFarMessageTimerEvent, void, intptr_t & /* Result */);
@@ -420,7 +433,13 @@ private:
   UnicodeString FHint;
 };
 //---------------------------------------------------------------------------
-enum TFarPanelType { ptFile, ptTree, ptQuickView, ptInfo };
+enum TFarPanelType
+{
+  ptFile,
+  ptTree,
+  ptQuickView,
+  ptInfo
+};
 //---------------------------------------------------------------------------
 class TFarPanelInfo : public TObject
 {

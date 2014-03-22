@@ -1903,7 +1903,11 @@ uint32_t TSecureShell::MaxPacketSize()
 UnicodeString TSecureShell::FuncToCompression(
   int SshVersion, const void * Compress) const
 {
-  enum TCompressionType { ctNone, ctZLib };
+  enum TCompressionType
+  {
+    ctNone,
+    ctZLib
+  };
   if (SshVersion == 1)
   {
     return get_ssh1_compressing(FBackendHandle) ? L"ZLib" : L"";
