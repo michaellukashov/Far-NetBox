@@ -7,10 +7,10 @@
 //---------------------------------------------------------------------------
 #define TRANSFER_BUF_SIZE 128 * 1024
 //---------------------------------------------------------------------------
-TFileOperationProgressType::TFileOperationProgressType()
+TFileOperationProgressType::TFileOperationProgressType() :
+  FOnProgress(nullptr),
+  FOnFinished(nullptr)
 {
-  FOnProgress = nullptr;
-  FOnFinished = nullptr;
   Clear();
 }
 //---------------------------------------------------------------------------
