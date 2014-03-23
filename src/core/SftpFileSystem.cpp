@@ -4112,8 +4112,8 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
   int64_t MTime = 0, ATime = 0;
   int64_t Size = 0;
 
-  FTerminal->OpenLocalFile(FileName, GENERIC_READ, &OpenParams.LocalFileAttrs,
-    &LocalFileHandle, nullptr, &MTime, &ATime, &Size);
+  FTerminal->OpenLocalFile(FileName, GENERIC_READ,
+    &LocalFileHandle, &OpenParams.LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(OpenParams.LocalFileAttrs, faDirectory);
 
@@ -5146,7 +5146,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         {
           FTerminal->LogEvent(L"Partially transfered file exists.");
           FTerminal->OpenLocalFile(DestPartialFullName, GENERIC_WRITE,
-            nullptr, &LocalFileHandle, nullptr, nullptr, nullptr, &ResumeOffset);
+            &LocalFileHandle, nullptr, nullptr, nullptr, nullptr, &ResumeOffset);
 
           bool PartialBiggerThanSource = (ResumeOffset > OperationProgress->TransferSize);
           if (FLAGCLEAR(Params, cpNoConfirmation))
@@ -5226,7 +5226,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         int64_t DestFileSize = 0;
         int64_t MTime = 0;
         FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
-          nullptr, &LocalFileHandle, nullptr, &MTime, nullptr, &DestFileSize, false);
+          &LocalFileHandle, nullptr, nullptr, &MTime, nullptr, &DestFileSize, false);
 
         FTerminal->LogEvent(L"Confirming overwriting of file.");
         TOverwriteFileParams FileParams;
@@ -5274,7 +5274,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           if (LocalFileHandle == INVALID_HANDLE_VALUE)
           {
             FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
-              nullptr, &LocalFileHandle, nullptr, nullptr, nullptr, nullptr);
+              &LocalFileHandle, nullptr, nullptr, nullptr, nullptr, nullptr);
           }
           ResumeAllowed = false;
           FileSeek(LocalFileHandle, DestFileSize, 0);

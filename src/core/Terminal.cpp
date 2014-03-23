@@ -4204,7 +4204,8 @@ bool TTerminal::TerminalCreateFile(const UnicodeString & AFileName,
 }
 //------------------------------------------------------------------------------
 void TTerminal::OpenLocalFile(const UnicodeString & AFileName,
-  uintptr_t Access, uintptr_t * AAttrs, HANDLE * AHandle, int64_t * ACTime,
+  uintptr_t Access,
+  HANDLE * AHandle, uintptr_t * AAttrs, int64_t * ACTime,
   int64_t * AMTime, int64_t * AATime, int64_t * ASize,
   bool TryWriteReadOnly)
 {
@@ -5548,8 +5549,8 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
   FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, LocalFileName.c_str()),
     HANDLE LocalFileHandle;
-    this->OpenLocalFile(LocalFileName, GENERIC_WRITE, nullptr, &LocalFileHandle,
-      nullptr, nullptr, nullptr, nullptr);
+    this->OpenLocalFile(LocalFileName, GENERIC_WRITE,
+      &LocalFileHandle, nullptr, nullptr, nullptr, nullptr, nullptr);
     bool Result = ::SetFileTime(LocalFileHandle, nullptr, AcTime, WrTime) > 0;
     ::CloseHandle(LocalFileHandle);
     if (!Result)

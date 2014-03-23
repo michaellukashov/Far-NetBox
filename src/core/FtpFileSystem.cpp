@@ -1435,8 +1435,8 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
   int64_t MTime = 0, ATime = 0;
   int64_t Size = 0;
 
-  FTerminal->OpenLocalFile(FileName, GENERIC_READ, &OpenParams->LocalFileAttrs,
-    nullptr, nullptr, &MTime, &ATime, &Size);
+  FTerminal->OpenLocalFile(FileName, GENERIC_READ,
+    nullptr, &OpenParams->LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
 
   OperationProgress->SetFileInProgress();
 

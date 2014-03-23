@@ -1695,7 +1695,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
   int64_t Size;
 
   FTerminal->OpenLocalFile(FileName, GENERIC_READ,
-    &LocalFileAttrs, &LocalFileHandle, nullptr, &MTime, &ATime, &Size);
+    &LocalFileHandle, &LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
   std::unique_ptr<TSafeHandleStream> Stream(new TSafeHandleStream(LocalFileHandle));

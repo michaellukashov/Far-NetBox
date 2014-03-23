@@ -401,7 +401,7 @@ protected:
     bool NoConfirmation,
     OUT HANDLE * AHandle);
   void OpenLocalFile(const UnicodeString & AFileName, uintptr_t Access,
-    uintptr_t * AAttrs, HANDLE * AHandle, int64_t * ACTime, int64_t * AMTime,
+    HANDLE * AHandle, uintptr_t * AAttrs, int64_t * ACTime, int64_t * AMTime,
     int64_t * AATime, int64_t * ASize, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(const UnicodeString & FileName, const TCopyParamType * CopyParam);
   bool HandleException(Exception * E);
