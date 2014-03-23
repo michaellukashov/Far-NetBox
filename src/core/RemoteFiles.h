@@ -271,7 +271,7 @@ protected:
   virtual void Delete(intptr_t Index);
 
 private:
-  TCriticalSection * FSection;
+  TCriticalSection FSection;
   void DoClearFileList(const UnicodeString & Directory, bool SubDirs);
 };
 //---------------------------------------------------------------------------
