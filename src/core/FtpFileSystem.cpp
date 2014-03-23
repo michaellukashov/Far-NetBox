@@ -2070,7 +2070,7 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   AFile = File.release();
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::RenameFile(const UnicodeString & AFileName,
+void TFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   const UnicodeString & ANewName)
 {
   UnicodeString FileName = AbsolutePath(AFileName, false);

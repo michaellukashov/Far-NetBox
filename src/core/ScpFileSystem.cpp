@@ -1164,7 +1164,7 @@ void TSCPFileSystem::DeleteFile(const UnicodeString & FileName,
   ExecCommand2(fsDeleteFile, Params, DelimitStr(FileName).c_str());
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::RenameFile(const UnicodeString & FileName,
+void TSCPFileSystem::RemoteRenameFile(const UnicodeString & FileName,
   const UnicodeString & NewName)
 {
   ExecCommand2(fsRenameFile, 0, DelimitStr(FileName).c_str(), DelimitStr(NewName).c_str());

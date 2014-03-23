@@ -200,7 +200,7 @@ public:
     TRemoteFile *& File) = 0;
   virtual void ReadSymlink(TRemoteFile * SymLinkFile,
     TRemoteFile *& File) = 0;
-  virtual void RenameFile(const UnicodeString & FileName,
+  virtual void RemoteRenameFile(const UnicodeString & FileName,
     const UnicodeString & NewName) = 0;
   virtual void CopyFile(const UnicodeString & FileName,
     const UnicodeString & NewName) = 0;

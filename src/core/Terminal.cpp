@@ -3664,7 +3664,7 @@ void TTerminal::DoRenameFile(const UnicodeString & FileName,
   try
   {
     assert(FFileSystem);
-    FFileSystem->RenameFile(FileName, NewName);
+    FFileSystem->RemoteRenameFile(FileName, NewName);
   }
   catch (Exception & E)
   {

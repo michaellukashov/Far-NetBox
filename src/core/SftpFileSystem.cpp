@@ -3356,7 +3356,7 @@ void TSFTPFileSystem::DeleteFile(const UnicodeString & FileName,
   DoDeleteFile(FileName, Type);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::RenameFile(const UnicodeString & FileName,
+void TSFTPFileSystem::RemoteRenameFile(const UnicodeString & FileName,
   const UnicodeString & NewName)
 {
   TSFTPPacket Packet(SSH_FXP_RENAME, FCodePage);
@@ -4433,7 +4433,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
           FMTLOAD(RENAME_AFTER_RESUME_ERROR,
             ::UnixExtractFileName(OpenParams.RemoteFileName.c_str()).c_str(), DestFileName.c_str()),
           HELP_RENAME_AFTER_RESUME_ERROR,
-          this->RenameFile(OpenParams.RemoteFileName, DestFileName);
+          this->RemoteRenameFile(OpenParams.RemoteFileName, DestFileName);
         );
       }
 

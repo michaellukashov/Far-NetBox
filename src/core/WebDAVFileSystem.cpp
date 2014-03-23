@@ -12438,7 +12438,7 @@ void TWebDAVFileSystem::DeleteFile(const UnicodeString & FileName,
   }
 }
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::RenameFile(const UnicodeString & FileName,
+void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString & FileName,
   const UnicodeString & NewName)
 {
   UnicodeString FullFileName = ::UnixIncludeTrailingBackslash(FCurrentDirectory) + FileName;
