@@ -1771,7 +1771,7 @@ void TWinSCPFileSystem::RenameFile()
           RedrawPanel();
         }
       };
-      GetTerminal()->RenameFile(File, NewName, true);
+      GetTerminal()->TerminalRenameFile(File, NewName, true);
     }
   }
 }

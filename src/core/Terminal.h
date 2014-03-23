@@ -243,8 +243,8 @@ public:
   void TerminalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   void ReloadDirectory();
   void RefreshDirectory();
-  void RenameFile(const UnicodeString & FileName, const UnicodeString & NewName);
-  void RenameFile(const TRemoteFile * File, const UnicodeString & NewName, bool CheckExistence);
+  void TerminalRenameFile(const UnicodeString & FileName, const UnicodeString & NewName);
+  void TerminalRenameFile(const TRemoteFile * File, const UnicodeString & NewName, bool CheckExistence);
   void MoveFile(const UnicodeString & FileName, const TRemoteFile * File,
     /* const TMoveFileParams */ void * Param);
   bool MoveFiles(TStrings * FileList, const UnicodeString & Target,

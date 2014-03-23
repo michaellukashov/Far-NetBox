@@ -3604,7 +3604,7 @@ void TTerminal::CalculateFilesChecksum(const UnicodeString & Alg,
   FFileSystem->CalculateFilesChecksum(Alg, FileList, Checksums, OnCalculatedChecksum);
 }
 //------------------------------------------------------------------------------
-void TTerminal::RenameFile(const UnicodeString & FileName,
+void TTerminal::TerminalRenameFile(const UnicodeString & FileName,
   const UnicodeString & NewName)
 {
   LogEvent(FORMAT(L"Renaming file \"%s\" to \"%s\".", FileName.c_str(), NewName.c_str()));
@@ -3612,7 +3612,7 @@ void TTerminal::RenameFile(const UnicodeString & FileName,
   ReactOnCommand(fsRenameFile);
 }
 //------------------------------------------------------------------------------
-void TTerminal::RenameFile(const TRemoteFile * File,
+void TTerminal::TerminalRenameFile(const TRemoteFile * File,
   const UnicodeString & NewName, bool CheckExistence)
 {
   assert(File && File->GetDirectory() == FFiles);
@@ -3653,7 +3653,7 @@ void TTerminal::RenameFile(const TRemoteFile * File,
   if (Proceed)
   {
     FileModified(File, File->GetFileName());
-    RenameFile(File->GetFileName(), NewName);
+    TerminalRenameFile(File->GetFileName(), NewName);
   }
 }
 //------------------------------------------------------------------------------
