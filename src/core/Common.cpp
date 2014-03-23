@@ -32,7 +32,7 @@ typedef struct _TIME_DYNAMIC_ZONE_INFORMATION {
 //---------------------------------------------------------------------------
 // TGuard
 //---------------------------------------------------------------------------
-TGuard::TGuard(TCriticalSection * ACriticalSection) :
+TGuard::TGuard(const TCriticalSection * ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
   assert(ACriticalSection != nullptr);

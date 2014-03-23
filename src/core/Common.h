@@ -166,11 +166,11 @@ class TGuard : public TObject
 {
 NB_DISABLE_COPY(TGuard)
 public:
-  explicit TGuard(TCriticalSection * ACriticalSection);
+  explicit TGuard(const TCriticalSection * ACriticalSection);
   ~TGuard();
 
 private:
-  TCriticalSection * FCriticalSection;
+  const TCriticalSection * FCriticalSection;
 };
 //---------------------------------------------------------------------------
 class TUnguard : public TObject
