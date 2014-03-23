@@ -28,7 +28,13 @@ const int dfNoRecursive = 0x01;
 const int dfAlternative = 0x02;
 const int dfForceDelete = 0x04;
 //---------------------------------------------------------------------------
-enum TOverwriteMode { omOverwrite, omAppend, omResume, omComplete };
+enum TOverwriteMode
+{
+  omOverwrite,
+  omAppend,
+  omResume,
+  omComplete
+};
 //---------------------------------------------------------------------------
 const int tfFirstLevel =   0x01;
 const int tfAutoResume = 0x02;
@@ -169,11 +175,11 @@ public:
   virtual void CalculateFilesChecksum(const UnicodeString & Alg,
     TStrings * FileList, TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) = 0;
-  virtual void CopyToLocal(TStrings * AFilesToCopy,
+  virtual void CopyToLocal(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
-  virtual void CopyToRemote(TStrings * AFilesToCopy,
+  virtual void CopyToRemote(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
@@ -194,7 +200,7 @@ public:
     TRemoteFile *& File) = 0;
   virtual void ReadSymlink(TRemoteFile * SymLinkFile,
     TRemoteFile *& File) = 0;
-  virtual void RenameFile(const UnicodeString & FileName,
+  virtual void RemoteRenameFile(const UnicodeString & FileName,
     const UnicodeString & NewName) = 0;
   virtual void CopyFile(const UnicodeString & FileName,
     const UnicodeString & NewName) = 0;

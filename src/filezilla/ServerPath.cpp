@@ -64,8 +64,6 @@ CServerPath::CServerPath(CString path)
 		m_nServerType |= FZ_SERVERTYPE_SUB_FTP_MVS;
 	else if (path.GetLength() > 2 && path[0] == _MPT('\'') && path.Right(1) == _T("'") && path.Find(_MPT('/')) == -1 && path.Find(_MPT('\\')) == -1)
 		m_nServerType |= FZ_SERVERTYPE_SUB_FTP_MVS;
-	else if (path.GetLength() >= 2 && path[0] != _MPT('/') && path.Right(1) == _T("."))
-		m_nServerType |= FZ_SERVERTYPE_SUB_FTP_UNKNOWN;
 
 	*this = CServerPath(path, m_nServerType);
 }
@@ -135,8 +133,6 @@ CServerPath::CServerPath(CString path, int nServerType)
 					m_Segments.push_back(path);
 			}
 			break;
-		case FZ_SERVERTYPE_SUB_FTP_UNKNOWN:
-			while (path.Replace(_MPT('.'), _MPT('/')));
 		default:
 			path.Replace( _T("\\"), _T("/") );
 			while (path.Replace( _T("//"), _T("/") ));
@@ -228,8 +224,6 @@ BOOL CServerPath::SetPath(CString &newpath, BOOL bIsFile /*=FALSE*/)
 			m_nServerType |= FZ_SERVERTYPE_SUB_FTP_WINDOWS;
 		else if (path[0] == FTP_MVS_DOUBLE_QUOTA && path[path.GetLength() - 1] == FTP_MVS_DOUBLE_QUOTA)
 			m_nServerType |= FZ_SERVERTYPE_SUB_FTP_MVS;
-		else if (path.GetLength() >= 2 && path[0] != _MPT('/') && path.Right(1) == _T("."))
-			m_nServerType |= FZ_SERVERTYPE_SUB_FTP_UNKNOWN;
 	}
 	m_Segments.clear();
 	m_Prefix = _MPT("");
@@ -320,8 +314,6 @@ BOOL CServerPath::SetPath(CString &newpath, BOOL bIsFile /*=FALSE*/)
 						m_Segments.push_back(path);
 				}
 				break;
-			case FZ_SERVERTYPE_SUB_FTP_UNKNOWN:
-				while (path.Replace(_MPT('.'), _MPT('/')));
 			default:
 				path.Replace( _T("\\"), _T("/") );
 				while(path.Replace( _T("//"), _T("/") ));
@@ -427,10 +419,6 @@ const CString CServerPath::GetPath() const
 				path += *iter + _T(".");
 			path.TrimRight( _T(".") );
 			path += _MPT("]");
-			break;
-		case FZ_SERVERTYPE_SUB_FTP_UNKNOWN:
-			for (iter=m_Segments.begin(); iter!=m_Segments.end(); ++iter)
-				path+=*iter + _T(".");
 			break;
 		default:
 			if (!(m_nServerType & FZ_SERVERTYPE_SUB_FTP_WINDOWS))
@@ -736,8 +724,6 @@ CServerPath::CServerPath(CString subdir, const CServerPath &parent)
 					m_Segments.push_back(subdir);
 				break;
 			}
-		case FZ_SERVERTYPE_SUB_FTP_UNKNOWN:
-			subdir.Replace(_MPT('.'), _MPT('/'));
 		default:
 			subdir.Replace( _T("\\"), _T("/") );
 			while(subdir.Replace( _T("//"), _T("/") ));
@@ -842,13 +828,6 @@ CString CServerPath::FormatFilename(CString fn, bool omitPath /*=false*/) const
 				path += *iter + _T(".");
 			path.TrimRight( _T(".") );
 			path += _MPT("]");
-			path += fn;
-			break;
-		case FZ_SERVERTYPE_SUB_FTP_UNKNOWN:
-			if (omitPath)
-				return fn;
-			for (iter=m_Segments.begin(); iter!=m_Segments.end(); ++iter)
-				path+=*iter + _T(".");
 			path += fn;
 			break;
 		default:

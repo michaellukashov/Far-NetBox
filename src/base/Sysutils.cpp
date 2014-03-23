@@ -464,7 +464,7 @@ bool IsZero(double Value)
   return fabs(Value) < std::numeric_limits<double>::epsilon();
 }
 //---------------------------------------------------------------------------
-TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
+TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime)
 {
   TTimeStamp Result = {0, 0};
   double fractpart, intpart;
@@ -1487,14 +1487,14 @@ bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value,
 }
 
 UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
-  TDateTime DateTime)
+  const TDateTime & DateTime)
 {
   (void)Result;
   (void)Format;
   return DateTime.FormatString(L"");
 }
 
-UnicodeString DateTimeToString(TDateTime DateTime)
+UnicodeString DateTimeToString(const TDateTime & DateTime)
 {
   return DateTime.FormatString(L"");
 }
@@ -1517,7 +1517,7 @@ TDateTime Date()
   return Result;
 }
 
-UnicodeString FormatDateTime(const UnicodeString & Fmt, TDateTime DateTime)
+UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & DateTime)
 {
   (void)Fmt;
   (void)DateTime;
@@ -1526,7 +1526,7 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, TDateTime DateTime)
   return Result;
 }
 
-TDateTime ComposeDateTime(TDateTime Date, TDateTime Time)
+static TDateTime ComposeDateTime(const TDateTime & Date, const TDateTime & Time)
 {
   TDateTime Result = TDateTime((double)Date);
   Result += Time;
@@ -1670,9 +1670,9 @@ Boolean IsLeapYear(Word Year)
 //---------------------------------------------------------------------------
 // TCriticalSection
 //---------------------------------------------------------------------------
-TCriticalSection::TCriticalSection()
+TCriticalSection::TCriticalSection() :
+  FAcquired(0)
 {
-  FAcquired = 0;
   InitializeCriticalSection(&FSection);
 }
 
@@ -1684,14 +1684,14 @@ TCriticalSection::~TCriticalSection()
 }
 
 //---------------------------------------------------------------------------
-void TCriticalSection::Enter()
+void TCriticalSection::Enter() const
 {
   ::EnterCriticalSection(&FSection);
   FAcquired++;
 }
 
 //---------------------------------------------------------------------------
-void TCriticalSection::Leave()
+void TCriticalSection::Leave() const
 {
   FAcquired--;
   ::LeaveCriticalSection(&FSection);

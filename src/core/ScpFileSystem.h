@@ -36,11 +36,11 @@ public:
   virtual void CalculateFilesChecksum(const UnicodeString & Alg,
     TStrings * FileList, TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum);
-  virtual void CopyToLocal(TStrings * FilesToCopy,
+  virtual void CopyToLocal(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
-  virtual void CopyToRemote(TStrings * FilesToCopy,
+  virtual void CopyToRemote(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
@@ -60,7 +60,7 @@ public:
     TRemoteFile *& File);
   virtual void ReadSymlink(TRemoteFile * SymlinkFile,
     TRemoteFile *& File);
-  virtual void RenameFile(const UnicodeString & FileName,
+  virtual void RemoteRenameFile(const UnicodeString & FileName,
     const UnicodeString & NewName);
   virtual void CopyFile(const UnicodeString & FileName,
     const UnicodeString & NewName);
@@ -103,12 +103,7 @@ private:
   void EnsureLocation();
   void ExecCommand(const UnicodeString & Cmd, intptr_t Params,
     const UnicodeString & CmdString);
-#if defined(__BORLANDC__)
-  void ExecCommand(TFSCommand Cmd, const TVarRec * args = nullptr,
-    int size = 0, intptr_t Params = -1);
-#else
   void ExecCommand2(TFSCommand Cmd, intptr_t Params, ...);
-#endif
   void ReadCommandOutput(intptr_t Params, const UnicodeString * Cmd = nullptr);
   void SCPResponse(bool * GotLastLine = nullptr);
   void SCPDirectorySource(const UnicodeString & DirectoryName,

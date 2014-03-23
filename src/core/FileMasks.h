@@ -75,7 +75,12 @@ private:
       Kind(Any),
       Mask(nullptr)
     {}
-    enum { Any, NoExt, Regular } Kind;
+    enum
+    {
+      Any,
+      NoExt,
+      Regular
+    } Kind;
     Masks::TMask * Mask;
   };
 
@@ -92,7 +97,12 @@ private:
     TMaskMask FileNameMask;
     TMaskMask DirectoryMask;
 
-    enum TMaskBoundary { None, Open, Close };
+    enum TMaskBoundary
+    {
+      None,
+      Open,
+      Close
+    };
 
     TMaskBoundary HighSizeMask;
     int64_t HighSize;

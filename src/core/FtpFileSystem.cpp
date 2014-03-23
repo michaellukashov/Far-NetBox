@@ -22,8 +22,6 @@
 #define OPENSSL_NO_ECDH
 #include <openssl/x509_vfy.h>
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
     [&]() { OPERATION })
@@ -163,41 +161,8 @@ bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-struct TFileTransferData : public TObject
-{
-  TFileTransferData()
-  {
-    Params = 0;
-    AutoResume = false;
-    OverwriteResult = -1;
-    CopyParam = nullptr;
-  }
-
-  UnicodeString FileName;
-  intptr_t Params;
-  bool AutoResume;
-  int OverwriteResult;
-  const TCopyParamType * CopyParam;
-  TDateTime Modification;
-};
-//---------------------------------------------------------------------------
-const int tfFirstLevel = 0x01;
-const int tfAutoResume = 0x02;
-#endif
 static const wchar_t FtpsCertificateStorageKey[] = L"FtpsCertificates";
 //---------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-struct TSinkFileParams
-{
-  UnicodeString TargetDir;
-  const TCopyParamType * CopyParam;
-  intptr_t Params;
-  TFileOperationProgressType * OperationProgress;
-  bool Skipped;
-  uintptr_t Flags;
-};
-#endif
 //---------------------------------------------------------------------------
 class TFTPFileListHelper : public TObject
 {
@@ -1007,8 +972,16 @@ void TFTPFileSystem::DoFileTransferProgress(int64_t TransferSize,
 
   if (FFileTransferCPSLimit != OperationProgress->CPSLimit)
   {
-    FFileTransferCPSLimit = OperationProgress->CPSLimit;
+    SetCPSLimit(OperationProgress);
   }
+}
+//---------------------------------------------------------------------------
+void TFTPFileSystem::SetCPSLimit(TFileOperationProgressType * OperationProgress)
+{
+  // Any reason we use separate field intead of directly using OperationProgress->CPSLimit?
+  // Maybe thread-safety?
+  FFileTransferCPSLimit = OperationProgress->CPSLimit;
+  OperationProgress->SetSpeedCounters();
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::FileTransferProgress(int64_t TransferSize,
@@ -1052,7 +1025,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & FileName,
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
+void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
@@ -1255,7 +1228,7 @@ void TFTPFileSystem::Sink(const UnicodeString & FileName,
       // ignore file list
       TFTPFileListHelper Helper(this, nullptr, true);
 
-      FFileTransferCPSLimit = OperationProgress->CPSLimit;
+      SetCPSLimit(OperationProgress);
       FFileTransferPreserveTime = CopyParam->GetPreserveTime();
       // not used for downloads anyway
       FFileTransferRemoveBOM = CopyParam->GetRemoveBOM();
@@ -1339,7 +1312,7 @@ void TFTPFileSystem::SinkFile(const UnicodeString & FileName,
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
+void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
@@ -1462,8 +1435,8 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
   int64_t MTime = 0, ATime = 0;
   int64_t Size = 0;
 
-  FTerminal->OpenLocalFile(FileName, GENERIC_READ, &OpenParams->LocalFileAttrs,
-    nullptr, nullptr, &MTime, &ATime, &Size);
+  FTerminal->OpenLocalFile(FileName, GENERIC_READ,
+    nullptr, &OpenParams->LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
 
   OperationProgress->SetFileInProgress();
 
@@ -1531,7 +1504,7 @@ void TFTPFileSystem::Source(const UnicodeString & FileName,
       // ignore file list
       TFTPFileListHelper Helper(this, nullptr, true);
 
-      FFileTransferCPSLimit = OperationProgress->CPSLimit;
+      SetCPSLimit(OperationProgress);
       // not used for uploads anyway
       FFileTransferPreserveTime = CopyParam->GetPreserveTime();
       FFileTransferRemoveBOM = CopyParam->GetRemoveBOM();
@@ -1588,7 +1561,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   OperationProgress->SetFile(DirectoryName);
 
   DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-  TSearchRec SearchRec;
+  TSearchRecChecked SearchRec;
   bool FindOK = false;
 
   FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
@@ -2097,7 +2070,7 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   AFile = File.release();
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::RenameFile(const UnicodeString & AFileName,
+void TFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   const UnicodeString & ANewName)
 {
   UnicodeString FileName = AbsolutePath(AFileName, false);
@@ -3142,18 +3115,6 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
   return true;
 }
 //---------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-struct TClipboardHandler
-{
-  UnicodeString Text;
-
-  void Copy(TObject * /*Sender*/)
-  {
-    TInstantOperationVisualizer Visualizer;
-    CopyToClipboard(Text.c_str());
-  }
-};
-#endif
 //---------------------------------------------------------------------------
 static UnicodeString FormatContactList(const UnicodeString & Entry1, const UnicodeString & Entry2)
 {

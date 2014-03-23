@@ -13,7 +13,12 @@ bool ExceptionMessageFormatted(const Exception * E, UnicodeString & Message);
 UnicodeString LastSysErrorMessage();
 TStrings * ExceptionToMoreMessages(Exception * E);
 //---------------------------------------------------------------------------
-enum TOnceDoneOperation { odoIdle, odoDisconnect, odoShutDown };
+enum TOnceDoneOperation
+{
+  odoIdle,
+  odoDisconnect,
+  odoShutDown
+};
 //---------------------------------------------------------------------------
 class ExtException : public Sysutils::Exception
 {
@@ -74,6 +79,7 @@ NB_DECLARE_CLASS(EOSExtException)
 public:
   explicit EOSExtException();
   explicit EOSExtException(const UnicodeString & Msg);
+  explicit EOSExtException(const UnicodeString & Msg, int LastError);
 };
 //---------------------------------------------------------------------------
 class EFatal : public ExtException

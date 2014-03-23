@@ -11,8 +11,6 @@
 #include <CoreMain.h>
 #include <SessionData.h>
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 extern const UnicodeString PageantTool = L"pageant.exe";
 extern const UnicodeString PuttygenTool = L"puttygen.exe";
 //---------------------------------------------------------------------------
@@ -329,32 +327,32 @@ UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & I
 //---------------------------------------------------------------------------
 bool DeleteDirectory(const UnicodeString & DirName)
 {
-  TSearchRec sr;
+  TSearchRecChecked SearchRec;
   bool retval = true;
-  if (FindFirst(DirName + L"\\*", faAnyFile, sr) == 0) // VCL Function
+  if (FindFirst(DirName + L"\\*", faAnyFile, SearchRec) == 0) // VCL Function
   {
-    if (FLAGSET(sr.Attr, faDirectory))
+    if (FLAGSET(SearchRec.Attr, faDirectory))
     {
-      if ((sr.Name != THISDIRECTORY) && (sr.Name != PARENTDIRECTORY))
-        retval = DeleteDirectory(DirName + L"\\" + sr.Name);
+      if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
+        retval = DeleteDirectory(DirName + L"\\" + SearchRec.Name);
     }
     else
     {
-      retval = DeleteFile(DirName + L"\\" + sr.Name);
+      retval = DeleteFile(DirName + L"\\" + SearchRec.Name);
     }
 
     if (retval)
     {
-      while (FindNextChecked(sr) == 0)
+      while (FindNextChecked(SearchRec) == 0)
       { // VCL Function
-        if (FLAGSET(sr.Attr, faDirectory))
+        if (FLAGSET(SearchRec.Attr, faDirectory))
         {
-          if ((sr.Name != THISDIRECTORY) && (sr.Name != PARENTDIRECTORY))
-            retval = DeleteDirectory(DirName + L"\\" + sr.Name);
+          if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
+            retval = DeleteDirectory(DirName + L"\\" + SearchRec.Name);
         }
         else
         {
-          retval = DeleteFile(DirName + L"\\" + sr.Name);
+          retval = DeleteFile(DirName + L"\\" + SearchRec.Name);
         }
 
         if (!retval)
@@ -364,7 +362,7 @@ bool DeleteDirectory(const UnicodeString & DirName)
       }
     }
   }
-  FindClose(sr);
+  FindClose(SearchRec);
   if (retval)
   {
     retval = RemoveDir(DirName); // VCL function
@@ -372,7 +370,7 @@ bool DeleteDirectory(const UnicodeString & DirName)
   return retval;
 }
 //---------------------------------------------------------------------------
-UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, TDateTime DateTime)
+UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, const TDateTime & DateTime)
 {
   UnicodeString Result;
   if (static_cast<int>(DateTime) > 0)

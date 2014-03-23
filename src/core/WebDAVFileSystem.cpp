@@ -34,76 +34,9 @@
 #include "HelpCore.h"
 
 //------------------------------------------------------------------------------
-#pragma package(smart_init)
-//------------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-const int tfFirstLevel = 0x01;
-const int tfAutoResume = 0x02;
-//------------------------------------------------------------------------------
-struct TSinkFileParams
-{
-  UnicodeString TargetDir;
-  const TCopyParamType * CopyParam;
-  intptr_t Params;
-  TFileOperationProgressType * OperationProgress;
-  bool Skipped;
-  intptr_t Flags;
-};
-//------------------------------------------------------------------------------
-struct TFileTransferData
-{
-  TFileTransferData()
-  {
-    Params = 0;
-    AutoResume = false;
-    OverwriteResult = -1;
-    CopyParam = nullptr;
-  }
-
-  UnicodeString FileName;
-  intptr_t Params;
-  bool AutoResume;
-  int OverwriteResult;
-  const TCopyParamType * CopyParam;
-};
-//------------------------------------------------------------------------------
-struct TClipboardHandler
-{
-  UnicodeString Text;
-
-  void Copy(TObject * /*Sender*/)
-  {
-    TInstantOperationVisualizer Visualizer;
-    CopyToClipboard(Text.c_str());
-  }
-};
-#endif
 //------------------------------------------------------------------------------
 
 namespace webdav {
-
-#if defined(__BORLANDC__)
-
-#pragma warn -8004
-
-const AnsiString __cdecl Format(const char * format, va_list args)
-{
-  int len = AnsiString().vprintf(format, args);
-  AnsiString Result;
-  Result.SetLength(len + 1);
-  vsprintf(&Result[1], format, args);
-  return Result.c_str();
-}
-
-const AnsiString __cdecl Format(const char * format, ...)
-{
-  va_list args;
-  va_start(args, format);
-  AnsiString Result = Format(format, args);
-  va_end(args);
-  return Result;
-}
-#endif
 
 //------------------------------------------------------------------------------
 struct auth_baton_t;
@@ -6294,8 +6227,6 @@ atomic_init_once(
 #define RETRY_INITIAL_SLEEP 1000
 #define RETRY_MAX_SLEEP 128000
 
-// Suppress warning: Condition is always true
-#pragma warn -8008
 #define RETRY_LOOP(err, expr, retry_test, sleep_test)                      \
   do                                                                       \
   {                                                                        \
@@ -6373,7 +6304,6 @@ file_open(
   }
   return status;
 }
-#pragma warn +8008
 
 static error_t
 io_file_open(
@@ -12508,7 +12438,7 @@ void TWebDAVFileSystem::DeleteFile(const UnicodeString & FileName,
   }
 }
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::RenameFile(const UnicodeString & FileName,
+void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString & FileName,
   const UnicodeString & NewName)
 {
   UnicodeString FullFileName = ::UnixIncludeTrailingBackslash(FCurrentDirectory) + FileName;
@@ -12728,22 +12658,22 @@ void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & Path,
   assert(false);
 }
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
+void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
-  assert((FilesToCopy != nullptr) && (OperationProgress != nullptr));
+  assert((AFilesToCopy != nullptr) && (OperationProgress != nullptr));
 
   Params &= ~cpAppend;
   UnicodeString FileName, FileNameOnly;
   UnicodeString TargetDir = AbsolutePath(ATargetDir, false);
   UnicodeString FullTargetDir = ::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
-  while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
+  while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
-    FileName = FilesToCopy->GetString(Index);
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FilesToCopy->GetObject(Index));
+    FileName = AFilesToCopy->GetString(Index);
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ::ExtractFileName(RealFileName, false);
 
@@ -12932,8 +12862,8 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
     int64_t Size;
     uintptr_t LocalFileAttrs;
 
-    FTerminal->OpenLocalFile(FileName, GENERIC_READ, &LocalFileAttrs,
-      nullptr, nullptr, nullptr, nullptr, &Size);
+    FTerminal->OpenLocalFile(FileName, GENERIC_READ,
+      nullptr, &LocalFileAttrs, nullptr, nullptr, nullptr, &Size);
 
     OperationProgress->SetFileInProgress();
 
@@ -13025,12 +12955,19 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
 
   OperationProgress->SetFile(DirectoryName);
 
-  TSearchRec Rec;
+  WIN32_FIND_DATA SearchRec;
   bool FindOK = false;
+  HANDLE FindHandle = INVALID_HANDLE_VALUE;
+
+  UnicodeString FindPath = DirectoryName + L"*.*";
 
   FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    UnicodeString Path = DirectoryName + L"*.*";
-    FindOK = ::FindFirstChecked(Path, Attrs, Rec) == ERROR_SUCCESS;
+    FindHandle = ::FindFirstFile(FindPath.c_str(), &SearchRec);
+    FindOK = FindHandle != INVALID_HANDLE_VALUE;
+    if (!FindOK)
+    {
+      FindCheck(::GetLastError(), FindPath);
+    }
   );
 
   bool CreateDir = true;
@@ -13038,14 +12975,14 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
   {
     SCOPE_EXIT
     {
-      ::FindClose(Rec.FindHandle);
+      ::FindClose(FindHandle);
     };
     while (FindOK && !OperationProgress->Cancel)
     {
-      UnicodeString FileName = DirectoryName + Rec.Name;
+      UnicodeString FileName = DirectoryName + SearchRec.cFileName;
       try
       {
-        if ((wcscmp(Rec.Name.c_str(), THISDIRECTORY) != 0) && (wcscmp(Rec.Name.c_str(), PARENTDIRECTORY) != 0))
+        if ((wcscmp(SearchRec.cFileName, THISDIRECTORY) != 0) && (wcscmp(SearchRec.cFileName, PARENTDIRECTORY) != 0))
         {
           WebDAVSourceRobust(FileName, nullptr, DestFullName, CopyParam, Params, OperationProgress,
             Flags & ~(tfFirstLevel | tfAutoResume));
@@ -13070,10 +13007,10 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
       }
 
       FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        FindOK = (Sysutils::FindNext(Rec) == ERROR_SUCCESS);
+        FindOK = ::FindNextFile(FindHandle, &SearchRec);
         if (!FindOK)
         {
-          ::FindCheck(::GetLastError());
+          ::FindCheck(::GetLastError(), FindPath);
         }
       );
     }
@@ -13137,7 +13074,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
 }
 
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
+void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
@@ -13146,10 +13083,10 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
   UnicodeString FullTargetDir = ::IncludeTrailingBackslash(TargetDir);
 
   intptr_t Index = 0;
-  while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
+  while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
-    UnicodeString FileName = FilesToCopy->GetString(Index);
-    const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, FilesToCopy->GetObject(Index));
+    UnicodeString FileName = AFilesToCopy->GetString(Index);
+    const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFilesToCopy->GetObject(Index));
     FTerminal->SetExceptionOnFail(true);
     {
       bool Success = false;
@@ -13335,8 +13272,8 @@ void TWebDAVFileSystem::Sink(const UnicodeString & FileName,
     {
       int64_t Size;
       int64_t MTime;
-      FTerminal->OpenLocalFile(DestFullName, GENERIC_READ, nullptr,
-        nullptr, nullptr, &MTime, nullptr, &Size);
+      FTerminal->OpenLocalFile(DestFullName, GENERIC_READ,
+        nullptr, nullptr, nullptr, &MTime, nullptr, &Size);
       TOverwriteFileParams FileParams;
 
       FileParams.SourceSize = File->GetSize();

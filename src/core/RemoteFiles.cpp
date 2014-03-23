@@ -136,18 +136,18 @@ UnicodeString ExtractFileName(const UnicodeString & Path, bool Unix)
   }
 }
 //---------------------------------------------------------------------------
-bool ExtractCommonPath(TStrings * Files, UnicodeString & Path)
+bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & Path)
 {
-  assert(Files->GetCount() > 0);
+  assert(AFiles->GetCount() > 0);
 
-  Path = ExtractFilePath(Files->GetString(0));
+  Path = ExtractFilePath(AFiles->GetString(0));
   bool Result = !Path.IsEmpty();
   if (Result)
   {
-    for (intptr_t Index = 1; Index < Files->GetCount(); ++Index)
+    for (intptr_t Index = 1; Index < AFiles->GetCount(); ++Index)
     {
       while (!Path.IsEmpty() &&
-        (Files->GetString(Index).SubString(1, Path.Length()) != Path))
+        (AFiles->GetString(Index).SubString(1, Path.Length()) != Path))
       {
         intptr_t PrevLen = Path.Length();
         Path = ExtractFilePath(ExcludeTrailingBackslash(Path));
@@ -163,18 +163,18 @@ bool ExtractCommonPath(TStrings * Files, UnicodeString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool UnixExtractCommonPath(TStrings * Files, UnicodeString & Path)
+bool UnixExtractCommonPath(const TStrings * const AFiles, OUT UnicodeString & Path)
 {
-  assert(Files->GetCount() > 0);
+  assert(AFiles->GetCount() > 0);
 
-  Path = ::UnixExtractFilePath(Files->GetString(0));
+  Path = ::UnixExtractFilePath(AFiles->GetString(0));
   bool Result = !Path.IsEmpty();
   if (Result)
   {
-    for (intptr_t Index = 1; Index < Files->GetCount(); ++Index)
+    for (intptr_t Index = 1; Index < AFiles->GetCount(); ++Index)
     {
       while (!Path.IsEmpty() &&
-        (Files->GetString(Index).SubString(1, Path.Length()) != Path))
+        (AFiles->GetString(Index).SubString(1, Path.Length()) != Path))
       {
         intptr_t PrevLen = Path.Length();
         Path = ::UnixExtractFilePath(::UnixExcludeTrailingBackslash(Path));
@@ -342,17 +342,17 @@ UnicodeString MinimizeName(const UnicodeString & FileName, intptr_t MaxLen, bool
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString MakeFileList(TStrings * FileList)
+UnicodeString MakeFileList(const TStrings * AFileList)
 {
   UnicodeString Result;
-  for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
+  for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
   {
     if (!Result.IsEmpty())
     {
       Result += L" ";
     }
 
-    UnicodeString FileName = FileList->GetString(Index);
+    UnicodeString FileName = AFileList->GetString(Index);
     // currently this is used for local file only, so no delimiting is done
     if (FileName.Pos(L" ") > 0)
     {
@@ -434,7 +434,7 @@ UnicodeString UserModificationStr(const TDateTime & DateTime,
   return UnicodeString();
 }
 //---------------------------------------------------------------------------
-UnicodeString ModificationStr(TDateTime DateTime,
+UnicodeString ModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision)
 {
   uint16_t Year, Month, Day, Hour, Min, Sec, MSec;
@@ -1770,7 +1770,6 @@ void TRemoteDirectory::SetIncludeThisDirectory(Boolean Value)
 //===========================================================================
 TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
 {
-  FSection = new TCriticalSection();
   SetSorted(true);
   SetDuplicates(dupError);
   SetCaseSensitive(true);
@@ -1779,13 +1778,11 @@ TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
 TRemoteDirectoryCache::~TRemoteDirectoryCache()
 {
   Clear();
-  SAFE_DESTROY(FSection);
-  FSection = nullptr;
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryCache::Clear()
 {
-  TGuard Guard(FSection);
+  TGuard Guard(&FSection);
 
   SCOPE_EXIT
   {
@@ -1801,14 +1798,14 @@ void TRemoteDirectoryCache::Clear()
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::GetIsEmpty() const
 {
-  TGuard Guard(FSection);
+  TGuard Guard(&FSection);
 
   return (const_cast<TRemoteDirectoryCache *>(this)->GetCount() == 0);
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory)
 {
-  TGuard Guard(FSection);
+  TGuard Guard(&FSection);
 
   intptr_t Index = IndexOf(::UnixExcludeTrailingBackslash(Directory));
   return (Index >= 0);
@@ -1817,7 +1814,7 @@ bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory)
 bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
   TDateTime Timestamp)
 {
-  TGuard Guard(FSection);
+  TGuard Guard(&FSection);
 
   intptr_t Index = IndexOf(::UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
@@ -1834,7 +1831,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
 bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   TRemoteFileList * FileList)
 {
-  TGuard Guard(FSection);
+  TGuard Guard(&FSection);
 
   intptr_t Index = IndexOf(::UnixExcludeTrailingBackslash(Directory));
   bool Result = (Index >= 0);
@@ -1855,7 +1852,7 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
 
     FileList->DuplicateTo(Copy);
 
-    TGuard Guard(FSection);
+    TGuard Guard(&FSection);
 
     // file list cannot be cached already with only one thread, but it can be
     // when directory is loaded by secondary terminal
@@ -1866,7 +1863,7 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
 //---------------------------------------------------------------------------
 void TRemoteDirectoryCache::ClearFileList(const UnicodeString & Directory, bool SubDirs)
 {
-  TGuard Guard(FSection);
+  TGuard Guard(&FSection);
   DoClearFileList(Directory, SubDirs);
 }
 //---------------------------------------------------------------------------

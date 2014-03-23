@@ -14,8 +14,6 @@
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 TConfiguration::TConfiguration() :
   FCriticalSection(nullptr),
   FDontSave(false),
@@ -153,12 +151,6 @@ THierarchicalStorage * TConfiguration::CreateStorage(bool /*SessionList*/)
   {
     Result = new TRegistryStorage(GetRegistryStorageKey());
   }
-#if defined(__BORLANDC__)
-  else if (GetStorage() == stNul)
-  {
-    Result = new TIniFileStorage(L"nul");
-  }
-#endif
   else
   {
     Classes::Error(SNotImplemented, 3005);
@@ -318,9 +310,7 @@ void TConfiguration::Import(const UnicodeString & FileName)
 void TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
   #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR()))
-  #pragma warn -eas
   REGCONFIG(false);
-  #pragma warn +eas
   #undef KEYEX
 
   if (Storage->OpenSubKey(L"Usage", false))
@@ -673,9 +663,6 @@ intptr_t TConfiguration::GetCompoundVersion() const
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::ModuleFileName() const
 {
-#if defined(__BORLANDC__)
-  return ParamStr(0);
-#endif
   Classes::Error(SNotImplemented, 204);
   return L"";
 }

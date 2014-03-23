@@ -18,8 +18,6 @@
 
 #include <memory>
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
     [&]() { OPERATION })
@@ -159,10 +157,6 @@ const int asOpUnsupported = 1 << SSH_FX_OP_UNSUPPORTED;
 const int asNoSuchFile =    1 << SSH_FX_NO_SUCH_FILE;
 const int asAll = 0xFFFF;
 
-#if defined(__BORLANDC__)
-const int tfFirstLevel =   0x01;
-const int tfNewDirectory = 0x02;
-#endif
 //---------------------------------------------------------------------------
 #ifndef GET_32BIT
 #define GET_32BIT(cp) \
@@ -181,7 +175,6 @@ const int tfNewDirectory = 0x02;
 //---------------------------------------------------------------------------
 #define SFTP_PACKET_ALLOC_DELTA 256
 //---------------------------------------------------------------------------
-#pragma warn -inl
 //---------------------------------------------------------------------------
 struct TSFTPSupport : public TObject
 {
@@ -456,8 +449,11 @@ public:
     uint16_t BaseRights, bool IsDirectory, intptr_t Version, bool Utf,
     TChmodSessionAction * Action)
   {
-    enum TValid { valNone = 0, valRights = 0x01, valOwner = 0x02, valGroup = 0x04,
-      valMTime = 0x08, valATime = 0x10 } Valid = valNone;
+    enum TValid
+    {
+      valNone = 0, valRights = 0x01, valOwner = 0x02, valGroup = 0x04,
+      valMTime = 0x08, valATime = 0x10
+    } Valid = valNone;
     uint16_t RightsNum = 0;
     TRemoteToken Owner;
     TRemoteToken Group;
@@ -1651,8 +1647,6 @@ private:
   int FIndex;
 };
 //---------------------------------------------------------------------------
-#pragma warn .inl
-//---------------------------------------------------------------------------
 class TSFTPBusy : public TObject
 {
 NB_DISABLE_COPY(TSFTPBusy)
@@ -1673,33 +1667,6 @@ private:
   TSFTPFileSystem * FFileSystem;
 };
 //===========================================================================
-#if defined(__BORLANDC__)
-struct TOpenRemoteFileParams
-{
-  uintptr_t LocalFileAttrs;
-  UnicodeString RemoteFileName;
-  TFileOperationProgressType * OperationProgress;
-  const TCopyParamType * CopyParam;
-  intptr_t Params;
-  bool Resume;
-  bool Resuming;
-  TOverwriteMode OverwriteMode;
-  int64_t DestFileSize; // output
-  RawByteString RemoteFileHandle; // output
-  TOverwriteFileParams * FileParams;
-  bool Confirmed;
-};
-//---------------------------------------------------------------------------
-struct TSinkFileParams : public TObject
-{
-  UnicodeString TargetDir;
-  const TCopyParamType * CopyParam;
-  intptr_t Params;
-  TFileOperationProgressType * OperationProgress;
-  bool Skipped;
-  uintptr_t Flags;
-};
-#endif
 //===========================================================================
 TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(ATerminal),
@@ -1730,11 +1697,7 @@ void TSFTPFileSystem::Init(void * Data)
   FFileSystemInfoValid = false;
   FVersion = NPOS;
   FPacketReservations = new TList();
-#if defined(__BORLANDC__)
-  FPacketNumbers = VarArrayCreate(OPENARRAY(int, (0, 1)), varLongWord);
-#else
   FPacketNumbers.clear();
-#endif
   FPreviousLoggedPacket = 0;
   FNotLoggedPackets = 0;
   FBusy = 0;
@@ -3393,7 +3356,7 @@ void TSFTPFileSystem::DeleteFile(const UnicodeString & FileName,
   DoDeleteFile(FileName, Type);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::RenameFile(const UnicodeString & FileName,
+void TSFTPFileSystem::RemoteRenameFile(const UnicodeString & FileName,
   const UnicodeString & NewName)
 {
   TSFTPPacket Packet(SSH_FXP_RENAME, FCodePage);
@@ -3800,7 +3763,7 @@ void TSFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
 //---------------------------------------------------------------------------
 // transfer protocol
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
+void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
@@ -4149,8 +4112,8 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
   int64_t MTime = 0, ATime = 0;
   int64_t Size = 0;
 
-  FTerminal->OpenLocalFile(FileName, GENERIC_READ, &OpenParams.LocalFileAttrs,
-    &LocalFileHandle, nullptr, &MTime, &ATime, &Size);
+  FTerminal->OpenLocalFile(FileName, GENERIC_READ,
+    &LocalFileHandle, &OpenParams.LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(OpenParams.LocalFileAttrs, faDirectory);
 
@@ -4470,7 +4433,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
           FMTLOAD(RENAME_AFTER_RESUME_ERROR,
             ::UnixExtractFileName(OpenParams.RemoteFileName.c_str()).c_str(), DestFileName.c_str()),
           HELP_RENAME_AFTER_RESUME_ERROR,
-          this->RenameFile(OpenParams.RemoteFileName, DestFileName);
+          this->RemoteRenameFile(OpenParams.RemoteFileName, DestFileName);
         );
       }
 
@@ -4867,7 +4830,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
   }
 
   DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-  TSearchRec SearchRec;
+  TSearchRecChecked SearchRec;
   bool FindOK = false;
 
   FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
@@ -4927,7 +4890,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
   }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
+void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
@@ -5183,7 +5146,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         {
           FTerminal->LogEvent(L"Partially transfered file exists.");
           FTerminal->OpenLocalFile(DestPartialFullName, GENERIC_WRITE,
-            nullptr, &LocalFileHandle, nullptr, nullptr, nullptr, &ResumeOffset);
+            &LocalFileHandle, nullptr, nullptr, nullptr, nullptr, &ResumeOffset);
 
           bool PartialBiggerThanSource = (ResumeOffset > OperationProgress->TransferSize);
           if (FLAGCLEAR(Params, cpNoConfirmation))
@@ -5263,7 +5226,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
         int64_t DestFileSize = 0;
         int64_t MTime = 0;
         FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
-          nullptr, &LocalFileHandle, nullptr, &MTime, nullptr, &DestFileSize, false);
+          &LocalFileHandle, nullptr, nullptr, &MTime, nullptr, &DestFileSize, false);
 
         FTerminal->LogEvent(L"Confirming overwriting of file.");
         TOverwriteFileParams FileParams;
@@ -5311,7 +5274,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
           if (LocalFileHandle == INVALID_HANDLE_VALUE)
           {
             FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
-              nullptr, &LocalFileHandle, nullptr, nullptr, nullptr, nullptr);
+              &LocalFileHandle, nullptr, nullptr, nullptr, nullptr, nullptr);
           }
           ResumeAllowed = false;
           FileSeek(LocalFileHandle, DestFileSize, 0);

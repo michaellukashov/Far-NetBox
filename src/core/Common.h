@@ -19,13 +19,8 @@ inline void ThrowExtException() { throw ExtException((Exception* )nullptr, Unico
     strncpy(dest, CopyBuf.c_str(), LENOF(dest)); \
     dest[LENOF(dest)-1] = '\0'; \
   }
-#if defined(__BORLANDC__)
-#define FORMAT(S, F) Format(S, ARRAYOFCONST(F))
-#define FMTLOAD(I, F) FmtLoadStr(I, ARRAYOFCONST(F))
-#else
 #define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
 #define FMTLOAD(I, ...) ::FmtLoadStr(I, ##__VA_ARGS__)
-#endif
 #define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
@@ -111,9 +106,6 @@ bool CutToken(UnicodeString & Str, UnicodeString & Token,
 void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter);
 bool IsWinVista();
 bool IsWin7();
-#if defined(__BORLANDC__)
-TLibModule * FindModule(void * Instance);
-#endif
 int64_t Round(double Number);
 bool TryRelativeStrToDateTime(const UnicodeString & S, TDateTime & DateTime);
 LCID GetDefaultLCID();
@@ -128,9 +120,13 @@ UnicodeString ExtractFileBaseName(const UnicodeString & Path);
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);
 bool FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec);
-DWORD FindCheck(DWORD Result);
-DWORD FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRec & F);
-DWORD FindNextChecked(TSearchRec & F);
+struct TSearchRecChecked : public TSearchRec
+{
+  UnicodeString Path;
+};
+DWORD FindCheck(DWORD Result, const UnicodeString & Path);
+DWORD FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRecChecked & F);
+DWORD FindNextChecked(TSearchRecChecked & F);
 void ProcessLocalDirectory(const UnicodeString & DirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = nullptr, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
 //---------------------------------------------------------------------------
@@ -162,28 +158,19 @@ UnicodeString GetTimeZoneLogString();
 bool AdjustClockForDSTEnabled();
 intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2);
 intptr_t TimeToMSec(const TDateTime & T);
+intptr_t TimeToSeconds(const TDateTime & T);
 intptr_t TimeToMinutes(const TDateTime & T);
 //---------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-template<class MethodT>
-MethodT MakeMethod(void * Data, void * Code)
-{
-  MethodT Method;
-  ((TMethod*)&Method)->Data = Data;
-  ((TMethod*)&Method)->Code = Code;
-  return Method;
-}
-#endif
 //---------------------------------------------------------------------------
 class TGuard : public TObject
 {
 NB_DISABLE_COPY(TGuard)
 public:
-  explicit TGuard(TCriticalSection * ACriticalSection);
+  explicit TGuard(const TCriticalSection * ACriticalSection);
   ~TGuard();
 
 private:
-  TCriticalSection * FCriticalSection;
+  const TCriticalSection * FCriticalSection;
 };
 //---------------------------------------------------------------------------
 class TUnguard : public TObject

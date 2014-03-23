@@ -4,7 +4,13 @@
 //---------------------------------------------------------------------------
 #include <map.h>
 //---------------------------------------------------------------------------
-enum TModificationFmt { mfNone, mfMDHM, mfMDY, mfFull };
+enum TModificationFmt
+{
+  mfNone,
+  mfMDHM,
+  mfMDY,
+  mfFull
+};
 //---------------------------------------------------------------------------
 #define SYMLINKSTR L" -> "
 #define PARENTDIRECTORY L".."
@@ -265,7 +271,7 @@ protected:
   virtual void Delete(intptr_t Index);
 
 private:
-  TCriticalSection * FSection;
+  TCriticalSection FSection;
   void DoClearFileList(const UnicodeString & Directory, bool SubDirs);
 };
 //---------------------------------------------------------------------------
@@ -308,23 +314,34 @@ public:
   static const wchar_t CombinedSymbols[];
   static const wchar_t ExtendedSymbols[];
   static const wchar_t ModeGroups[];
-  enum TRight {
+  enum TRight
+  {
     rrUserIDExec, rrGroupIDExec, rrStickyBit,
     rrUserRead, rrUserWrite, rrUserExec,
     rrGroupRead, rrGroupWrite, rrGroupExec,
     rrOtherRead, rrOtherWrite, rrOtherExec,
-    rrFirst = rrUserIDExec, rrLast = rrOtherExec };
-  enum TFlag {
+    rrFirst = rrUserIDExec, rrLast = rrOtherExec
+  };
+  enum TFlag
+  {
     rfSetUID =    04000, rfSetGID =      02000, rfStickyBit = 01000,
     rfUserRead =  00400, rfUserWrite =   00200, rfUserExec =  00100,
     rfGroupRead = 00040, rfGroupWrite =  00020, rfGroupExec = 00010,
     rfOtherRead = 00004, rfOtherWrite =  00002, rfOtherExec = 00001,
     rfRead =      00444, rfWrite =       00222, rfExec =      00111,
     rfNo =        00000, rfDefault =     00644, rfAll =       00777,
-    rfSpecials =  07000, rfAllSpecials = 07777 };
-  enum TUnsupportedFlag {
-    rfDirectory  = 040000 };
-  enum TState { rsNo, rsYes, rsUndef };
+    rfSpecials =  07000, rfAllSpecials = 07777
+  };
+  enum TUnsupportedFlag
+  {
+    rfDirectory  = 040000
+  };
+  enum TState
+  {
+    rsNo,
+    rsYes,
+    rsUndef
+  };
 
 public:
   static TFlag RightToFlag(TRight Right);
@@ -383,10 +400,6 @@ private:
   bool FUnknown;
 };
 //---------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-enum TValidProperty { vpRights, vpGroup, vpOwner, vpModification, vpLastAccess };
-typedef Set<TValidProperty, vpRights, vpLastAccess> TValidProperties;
-#else
 enum TValidProperty
 {
   vpRights = 0x1,
@@ -438,7 +451,6 @@ public:
 private:
   int64_t FValue;
 };
-#endif
 
 class TRemoteProperties : public TObject
 {
@@ -476,8 +488,8 @@ UnicodeString UnixExtractFileName(const UnicodeString & Path);
 UnicodeString UnixExtractFileExt(const UnicodeString & Path);
 Boolean UnixComparePaths(const UnicodeString & Path1, const UnicodeString & Path2);
 bool UnixIsChildPath(const UnicodeString & Parent, const UnicodeString & Child);
-bool ExtractCommonPath(TStrings * Files, UnicodeString & Path);
-bool UnixExtractCommonPath(TStrings * Files, UnicodeString & Path);
+bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & Path);
+bool UnixExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & Path);
 UnicodeString ExtractFileName(const UnicodeString & Path, bool Unix);
 bool IsUnixRootPath(const UnicodeString & Path);
 bool IsUnixHiddenFile(const UnicodeString & Path);
@@ -485,14 +497,14 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Pat
 UnicodeString FromUnixPath(const UnicodeString & Path);
 UnicodeString ToUnixPath(const UnicodeString & Path);
 UnicodeString MinimizeName(const UnicodeString & FileName, intptr_t MaxLen, bool Unix);
-UnicodeString MakeFileList(TStrings * FileList);
+UnicodeString MakeFileList(const TStrings * AFileList);
 TDateTime ReduceDateTimePrecision(const TDateTime & DateTime,
   TModificationFmt Precision);
 TModificationFmt LessDateTimePrecision(
   TModificationFmt Precision1, TModificationFmt Precision2);
 UnicodeString UserModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision);
-UnicodeString ModificationStr(TDateTime DateTime,
+UnicodeString ModificationStr(const Classes::TDateTime & DateTime,
   TModificationFmt Precision);
 int FakeFileImageIndex(const UnicodeString & FileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
   UnicodeString * TypeName = nullptr);

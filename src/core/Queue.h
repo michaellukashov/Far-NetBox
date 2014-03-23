@@ -66,7 +66,13 @@ DEFINE_CALLBACK_TYPE1(TQueueListUpdateEvent, void,
   TTerminalQueue * /* Queue */);
 DEFINE_CALLBACK_TYPE2(TQueueItemUpdateEvent, void,
   TTerminalQueue * /* Queue */, TQueueItem * /* Item */);
-enum TQueueEvent { qeEmpty, qePendingUserAction };
+
+enum TQueueEvent
+{
+  qeEmpty,
+  qePendingUserAction
+};
+
 DEFINE_CALLBACK_TYPE2(TQueueEventEvent, void,
   TTerminalQueue * /* Queue */, TQueueEvent /* Event */);
 //---------------------------------------------------------------------------
@@ -119,7 +125,7 @@ protected:
   TList * FItems;
   TList * FDoneItems;
   intptr_t FItemsInProcess;
-  TCriticalSection * FItemsSection;
+  TCriticalSection FItemsSection;
   intptr_t FFreeTerminals;
   TList * FTerminals;
   TList * FForcedItems;
@@ -144,6 +150,7 @@ public:
   bool ItemDelete(TQueueItem * Item);
   bool ItemPause(TQueueItem * Item, bool Pause);
   bool ItemSetCPSLimit(TQueueItem * Item, uint32_t CPSLimit);
+  bool ItemGetCPSLimit(TQueueItem * Item, uint32_t & CPSLimit) const;
 
   void RetryItem(TQueueItem * Item);
   void DeleteItem(TQueueItem * Item, bool CanKeep);
@@ -172,9 +179,11 @@ friend class TTerminalItem;
 NB_DISABLE_COPY(TQueueItem)
 NB_DECLARE_CLASS(TQueueItem)
 public:
-  enum TStatus {
+  enum TStatus
+  {
     qsPending, qsConnecting, qsProcessing, qsPrompt, qsQuery, qsError,
-    qsPaused, qsDone };
+    qsPaused, qsDone
+  };
   struct TInfo : public TObject
   {
     TFileOperation Operation;
@@ -212,10 +221,13 @@ public:
   void SetProgress(TFileOperationProgressType & ProgressData);
   void GetData(TQueueItemProxy * Proxy);
   void SetCPSLimit(uint32_t CPSLimit);
+  bool GetCPSLimit(uint32_t & CPSLimit) const;
 
 private:
   void Execute(TTerminalItem * TerminalItem);
   virtual void DoExecute(TTerminal * Terminal) = 0;
+  uint32_t GetCPSLimit() const;
+  virtual uint32_t DefaultCPSLimit() const;
   virtual UnicodeString StartupDirectory() = 0;
   void Complete();
 };
@@ -237,6 +249,7 @@ public:
   bool Pause();
   bool Resume();
   bool SetCPSLimit(uint32_t CPSLimit);
+  bool GetCPSLimit(uint32_t & CPSLimit) const;
 
   TQueueItem::TInfo * GetInfo() const { return FInfo; }
   TQueueItem::TStatus GetStatus() const { return FStatus; }
@@ -317,7 +330,7 @@ class TTransferQueueItem : public TLocatedQueueItem
 NB_DISABLE_COPY(TTransferQueueItem)
 public:
   explicit TTransferQueueItem(TTerminal * Terminal,
-    TStrings * FilesToCopy, const UnicodeString & TargetDir,
+    const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side,
     bool SingleFile);
   virtual ~TTransferQueueItem();
@@ -327,13 +340,15 @@ protected:
   UnicodeString FTargetDir;
   TCopyParamType * FCopyParam;
   intptr_t FParams;
+
+  virtual uint32_t DefaultCPSLimit() const;
 };
 //---------------------------------------------------------------------------
 class TUploadQueueItem : public TTransferQueueItem
 {
 public:
   explicit TUploadQueueItem(TTerminal * Terminal,
-    TStrings * FilesToCopy, const UnicodeString & TargetDir,
+    const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile);
   virtual ~TUploadQueueItem() {}
 protected:
@@ -344,7 +359,7 @@ class TDownloadQueueItem : public TTransferQueueItem
 {
 public:
   explicit TDownloadQueueItem(TTerminal * Terminal,
-    TStrings * FilesToCopy, const UnicodeString & TargetDir,
+    const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile);
   virtual ~TDownloadQueueItem() {}
 protected:

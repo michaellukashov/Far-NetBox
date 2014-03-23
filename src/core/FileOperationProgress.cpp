@@ -5,12 +5,12 @@
 #include "Common.h"
 #include "FileOperationProgress.h"
 //---------------------------------------------------------------------------
-#define TRANSFER_BUF_SIZE 64 * 1024
+#define TRANSFER_BUF_SIZE 128 * 1024
 //---------------------------------------------------------------------------
-TFileOperationProgressType::TFileOperationProgressType()
+TFileOperationProgressType::TFileOperationProgressType() :
+  FOnProgress(nullptr),
+  FOnFinished(nullptr)
 {
-  FOnProgress = nullptr;
-  FOnFinished = nullptr;
   Clear();
 }
 //---------------------------------------------------------------------------
@@ -39,6 +39,7 @@ void TFileOperationProgressType::Clear()
   FRemainingCPS = 0;
   FTicks.clear();
   FTotalTransferredThen.clear();
+  FCounterSet = false;
   Operation = foNone;
   Side = osLocal;
   FileName.Clear();
@@ -255,9 +256,20 @@ bool TFileOperationProgressType::IsLocallyDone() const
   return (LocallyUsed == LocalSize);
 }
 //---------------------------------------------------------------------------
+void TFileOperationProgressType::SetSpeedCounters()
+{
+  if ((CPSLimit > 0) && !FCounterSet)
+  {
+    FCounterSet = true;
+    // Configuration->Usage->Inc(L"SpeedLimitUses");
+  }
+}
+//---------------------------------------------------------------------------
 uintptr_t TFileOperationProgressType::AdjustToCPSLimit(
   uintptr_t Size)
 {
+  SetSpeedCounters();
+
   if (CPSLimit > 0)
   {
     // we must not return 0, hence, if we reach zero,
@@ -296,7 +308,7 @@ uintptr_t TFileOperationProgressType::AdjustToCPSLimit(
 //---------------------------------------------------------------------------
 uintptr_t TFileOperationProgressType::LocalBlockSize()
 {
-  intptr_t Result = TRANSFER_BUF_SIZE;
+  uintptr_t Result = TRANSFER_BUF_SIZE;
   if (LocallyUsed + Result > LocalSize)
   {
     Result = static_cast<uintptr_t>(LocalSize - LocallyUsed);

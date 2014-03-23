@@ -8,8 +8,6 @@
 #include "WinSCPPlugin.h"
 #include "Queue.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 TConfiguration * CreateConfiguration()
 {
   return new TFarConfiguration(FarPlugin);

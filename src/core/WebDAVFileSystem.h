@@ -46,11 +46,11 @@ public:
   virtual void CalculateFilesChecksum(const UnicodeString & Alg,
     TStrings * FileList, TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum);
-  virtual void CopyToLocal(TStrings * FilesToCopy,
+  virtual void CopyToLocal(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
-  virtual void CopyToRemote(TStrings * FilesToCopy,
+  virtual void CopyToRemote(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
@@ -70,7 +70,7 @@ public:
     TRemoteFile *& File);
   virtual void ReadSymlink(TRemoteFile * SymlinkFile,
     TRemoteFile *& File);
-  virtual void RenameFile(const UnicodeString & FileName,
+  virtual void RemoteRenameFile(const UnicodeString & FileName,
     const UnicodeString & NewName);
   virtual void CopyFile(const UnicodeString & FileName,
     const UnicodeString & NewName);
@@ -197,7 +197,12 @@ private:
   UnicodeString FUserName;
   bool FPasswordFailed;
   bool FActive;
-  enum { ftaNone, ftaSkip, ftaCancel } FFileTransferAbort;
+  enum
+  {
+    ftaNone,
+    ftaSkip,
+    ftaCancel
+  } FFileTransferAbort;
   bool FIgnoreFileList;
   bool FFileTransferCancelled;
   int64_t FFileTransferResumed;

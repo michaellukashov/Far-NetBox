@@ -38,7 +38,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static PVOID WINAPI ReturnSamePointer(PVOID Ptr) {return Ptr;}
 
 static const char* ProcNames[] = {"EncodePointer", "DecodePointer"};
-static enum {EncodePointerIndex, DecodePointerIndex};
+static enum
+{
+	EncodePointerIndex,
+	DecodePointerIndex
+};
 
 template<int Index>
 static PVOID WINAPI Wrapper(PVOID Ptr)

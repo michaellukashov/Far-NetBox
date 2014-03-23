@@ -51,7 +51,12 @@ const int soAllowSelectedOnly = 0x01;
 // for FullSynchronize dialog
 const int fsoDisableTimestamp = 0x01;
 const int fsoAllowSelectedOnly = 0x02;
-enum TSessionActionEnum { saAdd, saEdit, saConnect };
+enum TSessionActionEnum
+{
+  saAdd,
+  saEdit,
+  saConnect
+};
 //------------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
   intptr_t /* Params */, TSynchronizeOptions & /* Options */);

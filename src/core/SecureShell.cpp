@@ -16,9 +16,7 @@
 #include <winsock2.h>
 #endif
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
-#define MAX_BUFSIZE 64 * 1024
+#define MAX_BUFSIZE 128 * 1024
 //---------------------------------------------------------------------------
 struct TPuttyTranslation
 {
@@ -1690,9 +1688,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
         LogEvent(FORMAT(L"Handling network %s event on socket %d with error %d",
           EventTypes[Event].Desc, int(Socket), Err));
       }
-      #pragma option push -w-prc
       LPARAM SelectEvent = WSAMAKESELECTREPLY(EventTypes[Event].Mask, Err);
-      #pragma option pop
       if (!select_result(static_cast<WPARAM>(Socket), SelectEvent))
       {
         // note that connection was closed definitely,
@@ -1903,7 +1899,11 @@ uint32_t TSecureShell::MaxPacketSize()
 UnicodeString TSecureShell::FuncToCompression(
   int SshVersion, const void * Compress) const
 {
-  enum TCompressionType { ctNone, ctZLib };
+  enum TCompressionType
+  {
+    ctNone,
+    ctZLib
+  };
   if (SshVersion == 1)
   {
     return get_ssh1_compressing(FBackendHandle) ? L"ZLib" : L"";
@@ -1957,18 +1957,6 @@ TCipher TSecureShell::FuncToSsh2Cipher(const void * Cipher)
   return Result;
 }
 //---------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-struct TClipboardHandler
-{
-  UnicodeString Text;
-
-  void Copy(TObject * /*Sender*/)
-  {
-    TInstantOperationVisualizer Visualizer;
-    CopyToClipboard(Text.c_str());
-  }
-};
-#endif
 //---------------------------------------------------------------------------
 UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & KeyStr) const
 {

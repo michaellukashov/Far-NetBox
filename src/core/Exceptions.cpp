@@ -9,8 +9,6 @@
 #include "Configuration.h"
 #include "CoreMain.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 static bool WellKnownException(
   const Exception * E, UnicodeString * AMessage, const wchar_t ** ACounterName, Exception ** AClone, bool Rethrow)
 {
@@ -344,9 +342,8 @@ ExtException * ExtException::Clone()
   return new ExtException(this, L"");
 }
 //---------------------------------------------------------------------------
-UnicodeString LastSysErrorMessage()
+UnicodeString SysErrorMessageForError(int LastError)
 {
-  DWORD LastError = ::GetLastError();
   UnicodeString Result;
   if (LastError != 0)
   {
@@ -355,8 +352,18 @@ UnicodeString LastSysErrorMessage()
   return Result;
 }
 //---------------------------------------------------------------------------
+UnicodeString LastSysErrorMessage()
+{
+  return SysErrorMessageForError(GetLastError());
+}
+//---------------------------------------------------------------------------
 EOSExtException::EOSExtException(const UnicodeString & Msg) :
   ExtException(Msg, LastSysErrorMessage())
+{
+}
+//---------------------------------------------------------------------------
+EOSExtException::EOSExtException(const UnicodeString & Msg, int LastError) :
+  ExtException(Msg, SysErrorMessageForError(LastError))
 {
 }
 //---------------------------------------------------------------------------

@@ -22,9 +22,12 @@
 #include <farcolor.hpp>
 
 //------------------------------------------------------------------------------
-#pragma package(smart_init)
-//------------------------------------------------------------------------------
-enum TButtonResult { brCancel = -1, brOK = 1, brConnect };
+enum TButtonResult
+{
+  brCancel = -1,
+  brOK = 1,
+  brConnect
+};
 //------------------------------------------------------------------------------
 class TWinSCPDialog : public TFarDialog
 {
@@ -1450,8 +1453,11 @@ bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
 class TSessionDialog : public TTabbedDialog
 {
 public:
-  enum TSessionTab { tabSession = 1, tabEnvironment, tabDirectories, tabSFTP, tabSCP, tabFTP,
-    tabConnection, tabTunnel, tabProxy, tabSsh, tabKex, tabAuthentication, tabBugs, tabWebDAV, tabCount };
+  enum TSessionTab
+  {
+    tabSession = 1, tabEnvironment, tabDirectories, tabSFTP, tabSCP, tabFTP,
+    tabConnection, tabTunnel, tabProxy, tabSsh, tabKex, tabAuthentication, tabBugs, tabWebDAV, tabCount
+  };
 
   explicit TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action);
   virtual ~TSessionDialog();
@@ -5795,7 +5801,13 @@ class TFileSystemInfoDialog : TTabbedDialog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  enum { tabProtocol = 1, tabCapabilities, tabSpaceAvailable, tabCount };
+  enum
+  {
+    tabProtocol = 1,
+    tabCapabilities,
+    tabSpaceAvailable,
+    tabCount
+  };
 
   explicit TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
     TGetSpaceAvailableEvent OnGetSpaceAvailable);

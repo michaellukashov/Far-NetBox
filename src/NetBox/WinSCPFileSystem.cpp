@@ -21,8 +21,6 @@
 #include "PuttyIntf.h"
 #include "XmlStorage.h"
 //------------------------------------------------------------------------------
-#pragma package(smart_init)
-//------------------------------------------------------------------------------
 TSessionPanelItem::TSessionPanelItem(const TSessionData * ASessionData):
   TCustomFarPanelItem()
 {
@@ -1781,7 +1779,7 @@ void TWinSCPFileSystem::RenameFile()
           RedrawPanel();
         }
       };
-      GetTerminal()->RenameFile(File, NewName, true);
+      GetTerminal()->TerminalRenameFile(File, NewName, true);
     }
   }
 }

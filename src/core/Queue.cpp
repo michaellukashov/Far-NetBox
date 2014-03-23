@@ -7,8 +7,6 @@
 #include "Queue.h"
 #include "Exceptions.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 class TBackgroundTerminal;
 //---------------------------------------------------------------------------
 class TUserAction : public TObject
@@ -457,7 +455,7 @@ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   TConfiguration * Configuration) :
   TSignalThread(),
   FTerminal(Terminal), FConfiguration(Configuration), FSessionData(nullptr),
-  FItems(nullptr), FDoneItems(nullptr), FItemsInProcess(0), FItemsSection(nullptr),
+  FItems(nullptr), FDoneItems(nullptr), FItemsInProcess(0),
   FFreeTerminals(0), FTerminals(nullptr), FForcedItems(nullptr), FTemporaryTerminals(0),
   FOverallTerminals(0), FTransfersLimit(2), FKeepDoneItemsFor(0), FEnabled(true)
 {
@@ -484,8 +482,6 @@ void TTerminalQueue::Init()
   FTerminals = new TList();
   FForcedItems = new TList();
 
-  FItemsSection = new TCriticalSection();
-
   Start();
 }
 //---------------------------------------------------------------------------
@@ -494,7 +490,7 @@ TTerminalQueue::~TTerminalQueue()
   Close();
 
   {
-    TGuard Guard(FItemsSection);
+    TGuard Guard(&FItemsSection);
 
     while (FTerminals->GetCount() > 0)
     {
@@ -511,7 +507,6 @@ TTerminalQueue::~TTerminalQueue()
     FreeItemsList(FDoneItems);
   }
 
-  SAFE_DESTROY(FItemsSection);
   SAFE_DESTROY(FSessionData);
 }
 //---------------------------------------------------------------------------
@@ -530,7 +525,7 @@ void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
   if (!FTerminated)
   {
     {
-      TGuard Guard(FItemsSection);
+      TGuard Guard(&FItemsSection);
 
       intptr_t Index = FTerminals->IndexOf(TerminalItem);
       assert(Index >= 0);
@@ -564,7 +559,7 @@ bool TTerminalQueue::TerminalFree(TTerminalItem * TerminalItem)
   if (!FTerminated)
   {
     {
-      TGuard Guard(FItemsSection);
+      TGuard Guard(&FItemsSection);
 
       intptr_t Index = FTerminals->IndexOf(TerminalItem);
       assert(Index >= 0);
@@ -591,7 +586,7 @@ void TTerminalQueue::AddItem(TQueueItem * Item)
   Item->SetStatus(TQueueItem::qsPending);
 
   {
-    TGuard Guard(FItemsSection);
+    TGuard Guard(&FItemsSection);
 
     FItems->Add(Item);
     Item->FQueue = this;
@@ -607,7 +602,7 @@ void TTerminalQueue::RetryItem(TQueueItem * Item)
   if (!FTerminated)
   {
     {
-      TGuard Guard(FItemsSection);
+      TGuard Guard(&FItemsSection);
 
       intptr_t Index = FItems->Remove(Item);
       assert(Index < FItemsInProcess);
@@ -629,7 +624,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
     bool Empty;
     bool Monitored;
     {
-      TGuard Guard(FItemsSection);
+      TGuard Guard(&FItemsSection);
 
       // does this need to be within guard?
       Monitored = (Item->GetCompleteEvent() != INVALID_HANDLE_VALUE);
@@ -719,7 +714,7 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
       SAFE_DESTROY(Current);
     }
   };
-  TGuard Guard(FItemsSection);
+  TGuard Guard(&FItemsSection);
 
   UpdateStatusForList(Status.get(), FDoneItems, Current);
   Status->SetDoneCount(Status->GetCount());
@@ -735,7 +730,7 @@ bool TTerminalQueue::ItemGetData(TQueueItem * Item,
   bool Result = !FFinished;
   if (Result)
   {
-    TGuard Guard(FItemsSection);
+    TGuard Guard(&FItemsSection);
 
     Result = (FDoneItems->IndexOf(Item) >= 0) || (FItems->IndexOf(Item) >= 0);
     if (Result)
@@ -756,7 +751,7 @@ bool TTerminalQueue::ItemProcessUserAction(TQueueItem * Item, void * Arg)
     TTerminalItem * TerminalItem = nullptr;
 
     {
-      TGuard Guard(FItemsSection);
+      TGuard Guard(&FItemsSection);
 
       Result = (FItems->IndexOf(Item) >= 0) &&
         TQueueItem::IsUserActionStatus(Item->GetStatus());
@@ -782,7 +777,7 @@ bool TTerminalQueue::ItemMove(TQueueItem * Item, TQueueItem * BeforeItem)
   if (Result)
   {
     {
-      TGuard Guard(FItemsSection);
+      TGuard Guard(&FItemsSection);
 
       intptr_t Index = FItems->IndexOf(Item);
       intptr_t IndexDest = FItems->IndexOf(BeforeItem);
@@ -812,7 +807,7 @@ bool TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
   if (Result)
   {
     {
-      TGuard Guard(FItemsSection);
+      TGuard Guard(&FItemsSection);
 
       intptr_t Index = FItems->IndexOf(Item);
       Result = (Index >= 0) && (Item->GetStatus() == TQueueItem::qsPending) &&
@@ -856,7 +851,7 @@ bool TTerminalQueue::ItemDelete(TQueueItem * Item)
     bool UpdateList = false;
 
     {
-      TGuard Guard(FItemsSection);
+      TGuard Guard(&FItemsSection);
 
       intptr_t Index = FItems->IndexOf(Item);
       Result = (Index >= 0);
@@ -905,7 +900,7 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
     TTerminalItem * TerminalItem = nullptr;
 
     {
-      TGuard Guard(FItemsSection);
+      TGuard Guard(&FItemsSection);
 
       Result = (FItems->IndexOf(Item) >= 0) &&
         ((Pause && (Item->GetStatus() == TQueueItem::qsProcessing)) ||
@@ -938,12 +933,31 @@ bool TTerminalQueue::ItemSetCPSLimit(TQueueItem * Item, uint32_t CPSLimit)
   bool Result = !FFinished;
   if (Result)
   {
-    TGuard Guard(FItemsSection);
+    TGuard Guard(&FItemsSection);
 
     Result = (FItems->IndexOf(Item) >= 0);
     if (Result)
     {
       Item->SetCPSLimit(CPSLimit);
+    }
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------------
+bool TTerminalQueue::ItemGetCPSLimit(TQueueItem * Item, uint32_t & CPSLimit) const
+{
+  CPSLimit = 0;
+  // to prevent deadlocks when closing queue from other thread
+  bool Result = !FFinished;
+  if (Result)
+  {
+    TGuard Guard(&FItemsSection);
+
+    Result = (FItems->IndexOf(Item) >= 0);
+    if (Result)
+    {
+      CPSLimit = Item->GetCPSLimit();
     }
   }
 
@@ -960,7 +974,7 @@ void TTerminalQueue::Idle()
 
     if (FFreeTerminals > 0)
     {
-      TGuard Guard(FItemsSection);
+      TGuard Guard(&FItemsSection);
 
       if (FFreeTerminals > 0)
       {
@@ -995,7 +1009,7 @@ void TTerminalQueue::ProcessEvent()
     TQueueItem * Item = nullptr;
 
     {
-      TGuard Guard(FItemsSection);
+      TGuard Guard(&FItemsSection);
 
       // =0  do not keep
       // <0  infinity
@@ -1091,7 +1105,7 @@ void TTerminalQueue::SetTransfersLimit(intptr_t Value)
   if (FTransfersLimit != Value)
   {
     {
-      TGuard Guard(FItemsSection);
+      TGuard Guard(&FItemsSection);
 
       if ((Value >= 0) && (Value < FItemsInProcess))
       {
@@ -1113,7 +1127,7 @@ void TTerminalQueue::SetKeepDoneItemsFor(intptr_t Value)
   if (FKeepDoneItemsFor != Value)
   {
     {
-      TGuard Guard(FItemsSection);
+      TGuard Guard(&FItemsSection);
 
       FKeepDoneItemsFor = Value;
     }
@@ -1125,7 +1139,7 @@ void TTerminalQueue::SetEnabled(bool Value)
   if (FEnabled != Value)
   {
     {
-      TGuard Guard(FItemsSection);
+      TGuard Guard(&FItemsSection);
 
       FEnabled = Value;
     }
@@ -1136,7 +1150,7 @@ void TTerminalQueue::SetEnabled(bool Value)
 //---------------------------------------------------------------------------
 bool TTerminalQueue::GetIsEmpty()
 {
-  TGuard Guard(FItemsSection);
+  TGuard Guard(&FItemsSection);
   return (FItems->GetCount() == 0);
 }
 //---------------------------------------------------------------------------
@@ -1621,6 +1635,14 @@ void TQueueItem::SetProgress(
   {
     TGuard Guard(FSection);
 
+    // do not lose CPS limit override on "calculate size" operation,
+    // wait until the real transfer operation starts
+    if ((FCPSLimit >= 0) && ((ProgressData.Operation == foMove) || (ProgressData.Operation == foCopy)))
+    {
+      ProgressData.CPSLimit = static_cast<unsigned long>(FCPSLimit);
+      FCPSLimit = -1;
+    }
+
     assert(FProgressData != nullptr);
     *FProgressData = ProgressData;
     FProgressData->Reset();
@@ -1668,6 +1690,29 @@ void TQueueItem::Execute(TTerminalItem * TerminalItem)
 void TQueueItem::SetCPSLimit(uint32_t CPSLimit)
 {
   FCPSLimit = static_cast<long>(CPSLimit);
+}
+//---------------------------------------------------------------------------
+uint32_t TQueueItem::DefaultCPSLimit() const
+{
+  return 0;
+}
+//---------------------------------------------------------------------------
+uint32_t TQueueItem::GetCPSLimit() const
+{
+  uint32_t Result;
+  if (FCPSLimit >= 0)
+  {
+    Result = FCPSLimit;
+  }
+  else if (FProgressData != NULL)
+  {
+    Result = FProgressData->CPSLimit;
+  }
+  else
+  {
+    Result = DefaultCPSLimit();
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
 // TQueueItemProxy
@@ -1780,6 +1825,11 @@ bool TQueueItemProxy::ProcessUserAction()
     Result = FQueue->ItemProcessUserAction(FQueueItem, nullptr);
   }
   return Result;
+}
+//---------------------------------------------------------------------------
+bool TQueueItemProxy::GetCPSLimit(uint32_t & CPSLimit) const
+{
+  return FQueue->ItemGetCPSLimit(FQueueItem, CPSLimit);
 }
 //---------------------------------------------------------------------------
 bool TQueueItemProxy::SetCPSLimit(uint32_t CPSLimit)
@@ -1921,7 +1971,7 @@ void TLocatedQueueItem::DoExecute(TTerminal * Terminal)
 // TTransferQueueItem
 //---------------------------------------------------------------------------
 TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
-  TStrings * FilesToCopy, const UnicodeString & TargetDir,
+  const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side,
   bool SingleFile) :
   TLocatedQueueItem(Terminal), FFilesToCopy(nullptr), FCopyParam(nullptr)
@@ -1930,13 +1980,13 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
   FInfo->Side = Side;
   FInfo->SingleFile = SingleFile;
 
-  assert(FilesToCopy != nullptr);
+  assert(AFilesToCopy != nullptr);
   FFilesToCopy = new TStringList();
-  for (intptr_t Index = 0; Index < FilesToCopy->GetCount(); ++Index)
+  for (intptr_t Index = 0; Index < AFilesToCopy->GetCount(); ++Index)
   {
-    FFilesToCopy->AddObject(FilesToCopy->GetString(Index),
-      ((FilesToCopy->GetObject(Index) == nullptr) || (Side == osLocal)) ? nullptr :
-        NB_STATIC_DOWNCAST(TRemoteFile, FilesToCopy->GetObject(Index))->Duplicate());
+    FFilesToCopy->AddObject(AFilesToCopy->GetString(Index),
+      ((AFilesToCopy->GetObject(Index) == nullptr) || (Side == osLocal)) ? nullptr :
+        NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index))->Duplicate());
   }
 
   FTargetDir = TargetDir;
@@ -1958,14 +2008,19 @@ TTransferQueueItem::~TTransferQueueItem()
   SAFE_DESTROY(FCopyParam);
 }
 //---------------------------------------------------------------------------
+uint32_t TTransferQueueItem::DefaultCPSLimit() const
+{
+  return FCopyParam->GetCPSLimit();
+}
+//---------------------------------------------------------------------------
 // TUploadQueueItem
 //---------------------------------------------------------------------------
 TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
-  TStrings * FilesToCopy, const UnicodeString & TargetDir,
+  const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile) :
-  TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osLocal, SingleFile)
+  TTransferQueueItem(Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osLocal, SingleFile)
 {
-  if (FilesToCopy->GetCount() > 1)
+  if (AFilesToCopy->GetCount() > 1)
   {
     if (FLAGSET(Params, cpTemporary))
     {
@@ -1974,7 +2029,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
     }
     else
     {
-      ExtractCommonPath(FilesToCopy, FInfo->Source);
+      ExtractCommonPath(AFilesToCopy, FInfo->Source);
       // this way the trailing backslash is preserved for root directories like "D:\\"
       FInfo->Source = ExtractFileDir(IncludeTrailingBackslash(FInfo->Source));
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
@@ -1985,13 +2040,13 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
   {
     if (FLAGSET(Params, cpTemporary))
     {
-      FInfo->Source = ::ExtractFileName(FilesToCopy->GetString(0), true);
+      FInfo->Source = ::ExtractFileName(AFilesToCopy->GetString(0), true);
       FInfo->ModifiedLocal = L"";
     }
     else
     {
-      assert(FilesToCopy->GetCount() > 0);
-      FInfo->Source = FilesToCopy->GetString(0);
+      assert(AFilesToCopy->GetCount() > 0);
+      FInfo->Source = AFilesToCopy->GetString(0);
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
         ::IncludeTrailingBackslash(ExtractFilePath(FInfo->Source));
     }
@@ -2013,13 +2068,13 @@ void TUploadQueueItem::DoExecute(TTerminal * Terminal)
 // TDownloadQueueItem
 //---------------------------------------------------------------------------
 TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
-  TStrings * FilesToCopy, const UnicodeString & TargetDir,
+  const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile) :
-  TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osRemote, SingleFile)
+  TTransferQueueItem(Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osRemote, SingleFile)
 {
-  if (FilesToCopy->GetCount() > 1)
+  if (AFilesToCopy->GetCount() > 1)
   {
-    if (!::UnixExtractCommonPath(FilesToCopy, FInfo->Source))
+    if (!::UnixExtractCommonPath(AFilesToCopy, FInfo->Source))
     {
       FInfo->Source = Terminal->GetCurrentDirectory();
     }
@@ -2029,8 +2084,8 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   }
   else
   {
-    assert(FilesToCopy->GetCount() > 0);
-    FInfo->Source = FilesToCopy->GetString(0);
+    assert(AFilesToCopy->GetCount() > 0);
+    FInfo->Source = AFilesToCopy->GetString(0);
     if (::UnixExtractFilePath(FInfo->Source).IsEmpty())
     {
       FInfo->Source = ::UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory()) +

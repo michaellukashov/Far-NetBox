@@ -4,8 +4,6 @@
 #include <Common.h>
 #include "ProgParams.h"
 //------------------------------------------------------------------------------
-#pragma package(smart_init)
-//------------------------------------------------------------------------------
 // unique_ptr-like class
 class TProgramParamsOwner : public TObject
 {

@@ -11,8 +11,6 @@
 #include <CoreMain.h>
 #include <shlobj.h>
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 const intptr_t ccLocal = ccUser;
 const intptr_t ccShowResults = ccUser << 1;
 const intptr_t ccCopyResults = ccUser << 2;
@@ -703,9 +701,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR()))
   #undef KEY
   #define KEY(TYPE, NAME) Set ## NAME(Storage->Read ## TYPE(PropertyToKey(TEXT(#NAME)), Get ## NAME()))
-  #pragma warn -eas
   REGCONFIG(false);
-  #pragma warn +eas
   #undef KEY
   #undef KEYEX
 
@@ -896,43 +892,6 @@ void TGUIConfiguration::SetLocaleSafe(LCID Value)
     }
   }
 }
-#if defined(__BORLANDC__)
-//---------------------------------------------------------------------------
-void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
-{
-  TLibModule * MainModule = FindModule(HInstance);
-  if ((unsigned)Instance != MainModule->Instance)
-  {
-    FreeLibrary(static_cast<HMODULE>(Instance));
-  }
-}
-//---------------------------------------------------------------------------
-HANDLE TGUIConfiguration::ChangeResourceModule(HANDLE Instance)
-{
-  if (Instance == nullptr)
-  {
-    Instance = HInstance;
-  }
-  TLibModule * MainModule = FindModule(HInstance);
-  HANDLE Result = (HANDLE)MainModule->ResInstance;
-  MainModule->ResInstance = (unsigned)Instance;
-  CoreSetResourceModule(Instance);
-  return Result;
-}
-//---------------------------------------------------------------------------
-HANDLE TGUIConfiguration::GetResourceModule()
-{
-  return (HANDLE)FindModule(HInstance)->ResInstance;
-}
-//---------------------------------------------------------------------------
-void TGUIConfiguration::SetResourceModule(HINSTANCE Instance)
-{
-  HANDLE PrevHandle = ChangeResourceModule(Instance);
-  FreeResourceModule(PrevHandle);
-
-  DefaultLocalized();
-}
-#endif
 //---------------------------------------------------------------------------
 TStrings * TGUIConfiguration::GetLocales()
 {
@@ -943,7 +902,7 @@ TStrings * TGUIConfiguration::GetLocales()
   Exts->SetCaseSensitive(false);
 
   DWORD FindAttrs = faReadOnly | faArchive;
-  TSearchRec SearchRec;
+  TSearchRecChecked SearchRec;
   bool Found;
 
   Found = (bool)(FindFirst(ChangeFileExt(ModuleFileName(), L".*"),

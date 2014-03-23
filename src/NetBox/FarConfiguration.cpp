@@ -8,8 +8,6 @@
 #include "Far3Storage.h"
 #include "FarPlugin.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 enum NetBoxConfirmationsSettings
 {
 	NBCS_COPYOVERWRITE                  = 0x00000001,
@@ -147,9 +145,7 @@ void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
 
   // duplicated from core\configuration.cpp
   #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR()))
-  #pragma warn -eas
   REGCONFIG(false);
-  #pragma warn +eas
   #undef KEY
 
   if (Storage->OpenSubKey(L"Bookmarks", false))

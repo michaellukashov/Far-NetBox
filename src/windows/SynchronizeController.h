@@ -20,7 +20,15 @@ DEFINE_CALLBACK_TYPE2(TSynchronizeAbortEvent, void,
   TObject * /* Sender */, bool /* Close */);
 DEFINE_CALLBACK_TYPE2(TSynchronizeThreadsEvent, void,
   TObject * /* Sender */, TThreadMethod /* Method */);
-enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange };
+enum TSynchronizeLogEntry
+{
+  slScan,
+  slStart,
+  slChange,
+  slUpload,
+  slDelete,
+  slDirChange
+};
 DEFINE_CALLBACK_TYPE3(TSynchronizeLogEvent, void,
   TSynchronizeController * /* Controller */, TSynchronizeLogEntry /* Entry */, const UnicodeString & /* Message */);
 DEFINE_CALLBACK_TYPE8(TSynchronizeStartStopEvent, void,
@@ -42,7 +50,11 @@ namespace Discmon {
 class TDiscMonitor;
 }
 //---------------------------------------------------------------------------
-enum TSynchronizeOperation { soUpload, soDelete };
+enum TSynchronizeOperation
+{
+  soUpload,
+  soDelete
+};
 //---------------------------------------------------------------------------
 class TSynchronizeController : public TObject
 {

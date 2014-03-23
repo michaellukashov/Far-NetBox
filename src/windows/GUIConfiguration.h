@@ -7,8 +7,17 @@
 //---------------------------------------------------------------------------
 class TGUIConfiguration;
 class TStoredSessionList;
-enum TLogView { lvNone, lvWindow, pvPanel };
-enum TInterface { ifCommander, ifExplorer };
+enum TLogView
+{
+  lvNone,
+  lvWindow,
+  pvPanel
+};
+enum TInterface
+{
+  ifCommander,
+  ifExplorer
+};
 //---------------------------------------------------------------------------
 extern const intptr_t ccLocal;
 extern const intptr_t ccShowResults;

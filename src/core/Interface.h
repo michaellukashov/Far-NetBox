@@ -63,7 +63,13 @@ struct TQueryButtonAlias : public TObject
 
 DEFINE_CALLBACK_TYPE1(TQueryParamsTimerEvent, void,
   intptr_t & /* Result */);
-enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };
+enum TQueryType
+{
+  qtConfirmation,
+  qtWarning,
+  qtError,
+  qtInformation
+};
 
 struct TQueryParams : public TObject
 {
@@ -102,7 +108,11 @@ enum TPromptKind
   pkNewPassword
 };
 
-enum TPromptUserParam { pupEcho = 0x01, pupRemember = 0x02 };
+enum TPromptUserParam
+{
+  pupEcho = 0x01,
+  pupRemember = 0x02
+};
 
 bool IsAuthenticationPrompt(TPromptKind Kind);
 //---------------------------------------------------------------------------

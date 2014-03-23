@@ -2,7 +2,16 @@
 #ifndef PuttyToolsH
 #define PuttyToolsH
 //---------------------------------------------------------------------------
-enum TKeyType { ktUnopenable, ktUnknown, ktSSH1, ktSSH2, ktOpenSSH, ktSSHCom };
+enum TKeyType
+{
+  ktUnopenable,
+  ktUnknown,
+  ktSSH1,
+  ktSSH2,
+  ktOpenSSH,
+  ktSSHCom
+};
+
 TKeyType KeyType(const UnicodeString & FileName);
 UnicodeString KeyTypeName(TKeyType KeyType);
 //---------------------------------------------------------------------------

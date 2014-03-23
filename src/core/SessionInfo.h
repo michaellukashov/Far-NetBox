@@ -7,7 +7,12 @@
 #include "SessionData.h"
 #include "Interface.h"
 //---------------------------------------------------------------------------
-enum TSessionStatus { ssClosed, ssOpening, ssOpened };
+enum TSessionStatus
+{
+  ssClosed,
+  ssOpening,
+  ssOpened
+};
 //---------------------------------------------------------------------------
 struct TSessionInfo : public TObject
 {
@@ -31,14 +36,17 @@ struct TSessionInfo : public TObject
   UnicodeString Certificate;
 };
 //---------------------------------------------------------------------------
-enum TFSCapability { fcUserGroupListing = 0, fcModeChanging, fcGroupChanging,
+enum TFSCapability
+{
+  fcUserGroupListing = 0, fcModeChanging, fcGroupChanging,
   fcOwnerChanging, fcGroupOwnerChangingByID, fcAnyCommand, fcHardLink,
   fcSymbolicLink, fcResolveSymlink,
   fcTextMode, fcRename, fcNativeTextMode, fcNewerOnlyUpload, fcRemoteCopy,
   fcTimestampChanging, fcRemoteMove, fcLoadingAdditionalProperties,
   fcCheckingSpaceAvailable, fcIgnorePermErrors, fcCalculatingChecksum,
   fcModeChangingUpload, fcPreservingTimestampUpload, fcShellAnyCommand,
-  fcSecondaryShell, fcRemoveCtrlZUpload, fcRemoveBOMUpload, fcCount };
+  fcSecondaryShell, fcRemoveCtrlZUpload, fcRemoveBOMUpload, fcCount
+};
 //---------------------------------------------------------------------------
 struct TFileSystemInfo : public TObject
 {
@@ -74,8 +82,18 @@ public:
 };
 //---------------------------------------------------------------------------
 // Duplicated in LogMemo.h for design-time-only purposes
-enum TLogLineType { llOutput, llInput, llStdError, llMessage, llException };
-enum TLogAction { laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs, laStat };
+enum TLogLineType
+{
+  llOutput,
+  llInput,
+  llStdError,
+  llMessage,
+  llException
+};
+enum TLogAction
+{
+  laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs, laStat
+};
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE2(TCaptureOutputEvent, void,
   const UnicodeString & /* Str */, bool /* StdError */);
@@ -262,7 +280,7 @@ protected:
 private:
   TConfiguration * FConfiguration;
   TSessionLog * FParent;
-  TCriticalSection * FCriticalSection;
+  TCriticalSection FCriticalSection;
   bool FLogging;
   void * FFile;
   UnicodeString FCurrentLogFileName;
@@ -308,7 +326,7 @@ protected:
 
 private:
   TConfiguration * FConfiguration;
-  TCriticalSection * FCriticalSection;
+  TCriticalSection FCriticalSection;
   bool FLogging;
   void * FFile;
   UnicodeString FCurrentLogFileName;

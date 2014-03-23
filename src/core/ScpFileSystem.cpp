@@ -14,8 +14,6 @@
 
 #include <stdio.h>
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 #undef FILE_OPERATION_LOOP_EX
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION)   \
   FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
@@ -92,19 +90,11 @@ public:
   TCommandSet(TSessionData *aSessionData);
   void Default();
   void CopyFrom(TCommandSet * Source);
-#if defined(__BORLANDC__)
-  UnicodeString Command(TFSCommand Cmd, const TVarRec * args, int size) const;
-#else
   UnicodeString Command(TFSCommand Cmd, ...) const;
   UnicodeString Command(TFSCommand Cmd, va_list args) const;
-#endif
   TStrings * CreateCommandList();
-#if defined(__BORLANDC__)
-  UnicodeString FullCommand(TFSCommand Cmd, const TVarRec * args, int size) const;
-#else
   UnicodeString FullCommand(TFSCommand Cmd, ...) const;
   UnicodeString FullCommand(TFSCommand Cmd, va_list args) const;
-#endif
   static UnicodeString ExtractCommand(const UnicodeString & Command);
   TSessionData * GetSessionData() const { return FSessionData; }
   void SetSessionData(TSessionData * Value) { FSessionData = Value; }
@@ -223,16 +213,6 @@ UnicodeString TCommandSet::GetCommands(TFSCommand Cmd) const
   return CommandSet[Cmd].Command;
 }
 //---------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-UnicodeString TCommandSet::Command(TFSCommand Cmd, const TVarRec * args, int size) const
-{
-  if (args)
-    return Format(GetCommands(Cmd).c_str(), args, size);
-  else
-    return GetCommands(Cmd);
-}
-#endif
-//---------------------------------------------------------------------------
 UnicodeString TCommandSet::Command(TFSCommand Cmd, ...) const
 {
   UnicodeString Result;
@@ -249,28 +229,6 @@ UnicodeString TCommandSet::Command(TFSCommand Cmd, va_list args) const
   Result = ::Format(GetCommands(Cmd).c_str(), args);
   return Result.c_str();
 }
-//---------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, const TVarRec * args, int size)
-{
-  UnicodeString Separator;
-  if (GetOneLineCommand(Cmd)) Separator = L" ; ";
-    else Separator = L"\n";
-  UnicodeString Line = Command(Cmd, args, size);
-  UnicodeString LastLineCmd =
-    Command(fsLastLine, ARRAYOFCONST((GetLastLine(), GetReturnVar())));
-  UnicodeString FirstLineCmd;
-  if (GetInteractiveCommand(Cmd))
-    FirstLineCmd = Command(fsFirstLine, ARRAYOFCONST((GetFirstLine()))) + Separator;
-
-  UnicodeString Result;
-  if (!Line.IsEmpty())
-    Result = FORMAT(L"%s%s%s%s", FirstLineCmd.c_str(), Line.c_str(), Separator.c_str(), LastLineCmd.c_str());
-  else
-    Result = FORMAT(L"%s%s", FirstLineCmd.c_str(), LastLineCmd.c_str());
-  return Result;
-}
-#endif
 //---------------------------------------------------------------------------
 UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, ...) const
 {
@@ -1206,7 +1164,7 @@ void TSCPFileSystem::DeleteFile(const UnicodeString & FileName,
   ExecCommand2(fsDeleteFile, Params, DelimitStr(FileName).c_str());
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::RenameFile(const UnicodeString & FileName,
+void TSCPFileSystem::RemoteRenameFile(const UnicodeString & FileName,
   const UnicodeString & NewName)
 {
   ExecCommand2(fsRenameFile, 0, DelimitStr(FileName).c_str(), DelimitStr(NewName).c_str());
@@ -1490,13 +1448,13 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
   }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
+void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
   // scp.c: source(), toremote()
-  assert(FilesToCopy && OperationProgress);
+  assert(AFilesToCopy && OperationProgress);
 
   Params &= ~(cpAppend | cpResume);
   UnicodeString Options = L"";
@@ -1576,11 +1534,11 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   }
   CopyBatchStarted = true;
 
-  for (intptr_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
+  for (intptr_t IFile = 0; (IFile < AFilesToCopy->GetCount()) &&
     !OperationProgress->Cancel; ++IFile)
   {
-    UnicodeString FileName = FilesToCopy->GetString(IFile);
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FilesToCopy->GetObject(IFile));
+    UnicodeString FileName = AFilesToCopy->GetString(IFile);
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(IFile));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     bool CanProceed = false;
 
@@ -1737,7 +1695,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & FileName,
   int64_t Size;
 
   FTerminal->OpenLocalFile(FileName, GENERIC_READ,
-    &LocalFileAttrs, &LocalFileHandle, nullptr, &MTime, &ATime, &Size);
+    &LocalFileHandle, &LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
   std::unique_ptr<TSafeHandleStream> Stream(new TSafeHandleStream(LocalFileHandle));
@@ -2054,7 +2012,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
       }
     };
     DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-    TSearchRec SearchRec;
+    TSearchRecChecked SearchRec;
     memset(&SearchRec, 0, sizeof(SearchRec));
     bool FindOK = false;
     FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
@@ -2131,7 +2089,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
+void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
@@ -2149,7 +2107,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   }
 
   FTerminal->LogEvent(FORMAT(L"Copying %d files/directories to local directory "
-    L"\"%s\"", FilesToCopy->GetCount(), TargetDir.c_str()));
+    L"\"%s\"", AFilesToCopy->GetCount(), TargetDir.c_str()));
   FTerminal->LogEvent(CopyParam->GetLogStr());
 
   {
@@ -2182,11 +2140,11 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         ReadCommandOutput(ECParams);
       }
     };
-    for (intptr_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
+    for (intptr_t IFile = 0; (IFile < AFilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; ++IFile)
     {
-      UnicodeString FileName = FilesToCopy->GetString(IFile);
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FilesToCopy->GetObject(IFile));
+      UnicodeString FileName = AFilesToCopy->GetString(IFile);
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(IFile));
       assert(File);
 
       // Filename is used for error messaging and excluding files only
