@@ -12955,13 +12955,19 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
 
   OperationProgress->SetFile(DirectoryName);
 
-  TSearchRecChecked SearchRec;
+  WIN32_FIND_DATA SearchRec;
   bool FindOK = false;
+  HANDLE FindHandle = INVALID_HANDLE_VALUE;
 
   UnicodeString FindPath = DirectoryName + L"*.*";
 
   FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    FindOK = ::FindFirstChecked(FindPath, Attrs, SearchRec) == ERROR_SUCCESS;
+    FindHandle = ::FindFirstFile(FindPath.c_str(), &SearchRec);
+    FindOK = FindHandle != INVALID_HANDLE_VALUE;
+    if (!FindOK)
+    {
+      FindCheck(::GetLastError(), FindPath);
+    }
   );
 
   bool CreateDir = true;
@@ -12969,14 +12975,14 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
   {
     SCOPE_EXIT
     {
-      ::FindClose(SearchRec.FindHandle);
+      ::FindClose(FindHandle);
     };
     while (FindOK && !OperationProgress->Cancel)
     {
-      UnicodeString FileName = DirectoryName + SearchRec.Name;
+      UnicodeString FileName = DirectoryName + SearchRec.cFileName;
       try
       {
-        if ((wcscmp(SearchRec.Name.c_str(), THISDIRECTORY) != 0) && (wcscmp(SearchRec.Name.c_str(), PARENTDIRECTORY) != 0))
+        if ((wcscmp(SearchRec.cFileName, THISDIRECTORY) != 0) && (wcscmp(SearchRec.cFileName, PARENTDIRECTORY) != 0))
         {
           WebDAVSourceRobust(FileName, nullptr, DestFullName, CopyParam, Params, OperationProgress,
             Flags & ~(tfFirstLevel | tfAutoResume));
@@ -13001,7 +13007,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
       }
 
       FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        FindOK = (Sysutils::FindNext(SearchRec) == ERROR_SUCCESS);
+        FindOK = ::FindNextFile(FindHandle, &SearchRec);
         if (!FindOK)
         {
           ::FindCheck(::GetLastError(), FindPath);
