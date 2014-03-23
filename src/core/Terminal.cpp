@@ -28,8 +28,6 @@
 #include <winsock2.h>
 #endif
 //------------------------------------------------------------------------------
-#pragma package(smart_init)
-//------------------------------------------------------------------------------
 ///* TODO : Better user interface (query to user) */
 void FileOperationLoopCustom(TTerminal * Terminal,
   TFileOperationProgressType * OperationProgress,

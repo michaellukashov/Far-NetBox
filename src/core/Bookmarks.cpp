@@ -8,8 +8,6 @@
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 TBookmarks::TBookmarks() : TObject()
 {
   FSharedKey = TNamedObjectList::HiddenPrefix + L"shared";

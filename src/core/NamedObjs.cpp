@@ -4,8 +4,6 @@
 
 #include "NamedObjs.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
 {
   bool HasPrefix1 = NB_STATIC_DOWNCAST_CONST(TNamedObject, Item1)->GetHidden();

@@ -6,8 +6,6 @@
 #include "Option.h"
 #include "TextsCore.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 TOptions::TOptions() :
   FSwitchMarks(L"-/"),
   FSwitchValueDelimiters(L":="),

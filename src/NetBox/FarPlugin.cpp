@@ -16,8 +16,6 @@
 TCustomFarPlugin * FarPlugin = nullptr;
 #define FAR_TITLE_SUFFIX L" - Far"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 TFarMessageParams::TFarMessageParams() :
   MoreMessages(nullptr),
   CheckBox(false),

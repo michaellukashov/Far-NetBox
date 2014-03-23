@@ -20,8 +20,6 @@
 #include "PuttyIntf.h"
 #include "XmlStorage.h"
 //------------------------------------------------------------------------------
-#pragma package(smart_init)
-//------------------------------------------------------------------------------
 TSessionPanelItem::TSessionPanelItem(const TSessionData * ASessionData):
   TCustomFarPanelItem()
 {

@@ -14,8 +14,6 @@
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 TConfiguration::TConfiguration() :
   FCriticalSection(nullptr),
   FDontSave(false),

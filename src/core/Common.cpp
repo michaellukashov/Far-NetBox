@@ -14,8 +14,6 @@
 #include <shlobj.h>
 #include <limits>
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 
 #if defined(__MINGW32__)
 typedef struct _TIME_DYNAMIC_ZONE_INFORMATION {

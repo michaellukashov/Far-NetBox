@@ -12,8 +12,6 @@
 #include "Common.h"
 
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 inline TRect Rect(int Left, int Top, int Right, int Bottom)
 {
   return TRect(Left, Top, Right, Bottom);

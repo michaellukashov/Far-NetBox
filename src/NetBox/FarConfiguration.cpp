@@ -7,8 +7,6 @@
 #include "FarConfiguration.h"
 #include "FarPlugin.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   TGUIConfiguration(),
   FFarPlugin(APlugin),

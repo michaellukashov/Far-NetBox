@@ -9,8 +9,6 @@
 #include "Configuration.h"
 #include "CoreMain.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 static bool WellKnownException(
   const Exception * E, UnicodeString * AMessage, const wchar_t ** ACounterName, Exception ** AClone, bool Rethrow)
 {

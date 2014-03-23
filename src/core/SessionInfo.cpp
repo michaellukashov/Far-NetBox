@@ -14,8 +14,6 @@
 #include "Exceptions.h"
 #include "TextsCore.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 static UnicodeString DoXmlEscape(const UnicodeString & Str, bool NewLine)
 {
   UnicodeString Result = Str;

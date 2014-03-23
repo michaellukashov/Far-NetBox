@@ -15,8 +15,6 @@
 #include "FarDialog.h"
 #include "XmlStorage.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 
 TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
 {

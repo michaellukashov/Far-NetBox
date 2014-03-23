@@ -14,8 +14,6 @@
 #pragma comment(lib, "uafxcwd.lib")
 #endif
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 void TFileZillaIntf::Initialize()
 {
   // noop

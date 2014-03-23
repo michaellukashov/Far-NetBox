@@ -6,8 +6,6 @@
 #include "RemoteFiles.h"
 #include "Common.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 TCustomFileSystem::TCustomFileSystem(TTerminal * ATerminal):
   FTerminal(ATerminal)
 {

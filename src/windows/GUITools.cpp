@@ -11,8 +11,6 @@
 #include <CoreMain.h>
 #include <SessionData.h>
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 extern const UnicodeString PageantTool = L"pageant.exe";
 extern const UnicodeString PuttygenTool = L"puttygen.exe";
 //---------------------------------------------------------------------------

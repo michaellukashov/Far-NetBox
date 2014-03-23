@@ -11,8 +11,6 @@
 #include <CoreMain.h>
 #include <shlobj.h>
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 const intptr_t ccLocal = ccUser;
 const intptr_t ccShowResults = ccUser << 1;
 const intptr_t ccCopyResults = ccUser << 2;

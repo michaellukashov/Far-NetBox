@@ -5,8 +5,6 @@
 #include "Common.h"
 #include "FileBuffer.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 char * EOLToStr(TEOLType EOLType)
 {
   switch (EOLType)

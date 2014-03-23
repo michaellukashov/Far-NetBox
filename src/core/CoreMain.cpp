@@ -14,8 +14,6 @@
 #include "FileZillaIntf.h"
 #endif
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 TStoredSessionList * StoredSessions = nullptr;
 //---------------------------------------------------------------------------
 TConfiguration * GetConfiguration()

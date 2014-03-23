@@ -18,8 +18,6 @@
 
 #include <memory>
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
     [&]() { OPERATION })
