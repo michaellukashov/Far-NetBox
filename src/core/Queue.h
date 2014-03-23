@@ -125,7 +125,7 @@ protected:
   TList * FItems;
   TList * FDoneItems;
   intptr_t FItemsInProcess;
-  TCriticalSection * FItemsSection;
+  TCriticalSection FItemsSection;
   intptr_t FFreeTerminals;
   TList * FTerminals;
   TList * FForcedItems;
