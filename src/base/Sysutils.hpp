@@ -367,14 +367,14 @@ public:
   TCriticalSection();
   ~TCriticalSection();
 
-  void Enter();
-  void Leave();
+  void Enter() const;
+  void Leave() const;
 
   int GetAcquired() const { return FAcquired; }
 
 private:
-  CRITICAL_SECTION FSection;
-  int FAcquired;
+  mutable CRITICAL_SECTION FSection;
+  mutable int FAcquired;
 };
 //---------------------------------------------------------------------------
 UnicodeString StripHotkey(const UnicodeString & AText);

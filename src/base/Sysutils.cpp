@@ -1670,9 +1670,9 @@ Boolean IsLeapYear(Word Year)
 //---------------------------------------------------------------------------
 // TCriticalSection
 //---------------------------------------------------------------------------
-TCriticalSection::TCriticalSection()
+TCriticalSection::TCriticalSection() :
+  FAcquired(0)
 {
-  FAcquired = 0;
   InitializeCriticalSection(&FSection);
 }
 
@@ -1684,14 +1684,14 @@ TCriticalSection::~TCriticalSection()
 }
 
 //---------------------------------------------------------------------------
-void TCriticalSection::Enter()
+void TCriticalSection::Enter() const
 {
   ::EnterCriticalSection(&FSection);
   FAcquired++;
 }
 
 //---------------------------------------------------------------------------
-void TCriticalSection::Leave()
+void TCriticalSection::Leave() const
 {
   FAcquired--;
   ::LeaveCriticalSection(&FSection);
