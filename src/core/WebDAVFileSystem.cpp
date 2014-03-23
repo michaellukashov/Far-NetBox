@@ -36,74 +36,9 @@
 //------------------------------------------------------------------------------
 #pragma package(smart_init)
 //------------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-const int tfFirstLevel = 0x01;
-const int tfAutoResume = 0x02;
-//------------------------------------------------------------------------------
-struct TSinkFileParams
-{
-  UnicodeString TargetDir;
-  const TCopyParamType * CopyParam;
-  intptr_t Params;
-  TFileOperationProgressType * OperationProgress;
-  bool Skipped;
-  intptr_t Flags;
-};
-//------------------------------------------------------------------------------
-struct TFileTransferData
-{
-  TFileTransferData()
-  {
-    Params = 0;
-    AutoResume = false;
-    OverwriteResult = -1;
-    CopyParam = nullptr;
-  }
-
-  UnicodeString FileName;
-  intptr_t Params;
-  bool AutoResume;
-  int OverwriteResult;
-  const TCopyParamType * CopyParam;
-};
-//------------------------------------------------------------------------------
-struct TClipboardHandler
-{
-  UnicodeString Text;
-
-  void Copy(TObject * /*Sender*/)
-  {
-    TInstantOperationVisualizer Visualizer;
-    CopyToClipboard(Text.c_str());
-  }
-};
-#endif
 //------------------------------------------------------------------------------
 
 namespace webdav {
-
-#if defined(__BORLANDC__)
-
-#pragma warn -8004
-
-const AnsiString __cdecl Format(const char * format, va_list args)
-{
-  int len = AnsiString().vprintf(format, args);
-  AnsiString Result;
-  Result.SetLength(len + 1);
-  vsprintf(&Result[1], format, args);
-  return Result.c_str();
-}
-
-const AnsiString __cdecl Format(const char * format, ...)
-{
-  va_list args;
-  va_start(args, format);
-  AnsiString Result = Format(format, args);
-  va_end(args);
-  return Result;
-}
-#endif
 
 //------------------------------------------------------------------------------
 struct auth_baton_t;

@@ -1961,18 +1961,6 @@ TCipher TSecureShell::FuncToSsh2Cipher(const void * Cipher)
   return Result;
 }
 //---------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-struct TClipboardHandler
-{
-  UnicodeString Text;
-
-  void Copy(TObject * /*Sender*/)
-  {
-    TInstantOperationVisualizer Visualizer;
-    CopyToClipboard(Text.c_str());
-  }
-};
-#endif
 //---------------------------------------------------------------------------
 UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & KeyStr) const
 {

@@ -163,41 +163,8 @@ bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-struct TFileTransferData : public TObject
-{
-  TFileTransferData()
-  {
-    Params = 0;
-    AutoResume = false;
-    OverwriteResult = -1;
-    CopyParam = nullptr;
-  }
-
-  UnicodeString FileName;
-  intptr_t Params;
-  bool AutoResume;
-  int OverwriteResult;
-  const TCopyParamType * CopyParam;
-  TDateTime Modification;
-};
-//---------------------------------------------------------------------------
-const int tfFirstLevel = 0x01;
-const int tfAutoResume = 0x02;
-#endif
 static const wchar_t FtpsCertificateStorageKey[] = L"FtpsCertificates";
 //---------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-struct TSinkFileParams
-{
-  UnicodeString TargetDir;
-  const TCopyParamType * CopyParam;
-  intptr_t Params;
-  TFileOperationProgressType * OperationProgress;
-  bool Skipped;
-  uintptr_t Flags;
-};
-#endif
 //---------------------------------------------------------------------------
 class TFTPFileListHelper : public TObject
 {
@@ -3150,18 +3117,6 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
   return true;
 }
 //---------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-struct TClipboardHandler
-{
-  UnicodeString Text;
-
-  void Copy(TObject * /*Sender*/)
-  {
-    TInstantOperationVisualizer Visualizer;
-    CopyToClipboard(Text.c_str());
-  }
-};
-#endif
 //---------------------------------------------------------------------------
 static UnicodeString FormatContactList(const UnicodeString & Entry1, const UnicodeString & Entry2)
 {

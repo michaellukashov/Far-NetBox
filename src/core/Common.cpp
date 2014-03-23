@@ -287,11 +287,7 @@ UnicodeString ExceptionLogString(Exception *E)
   if (NB_STATIC_DOWNCAST(Exception, E) != nullptr)
   {
     UnicodeString Msg;
-#if defined(__BORLANDC__)
-    Msg = FORMAT(L"(%s) %s", (E->ClassName(), E->Message.c_str()));
-#else
     Msg = FORMAT(L"%s", UnicodeString(E->what()).c_str());
-#endif
     if (NB_STATIC_DOWNCAST(ExtException, E) != nullptr)
     {
       TStrings * MoreMessages = NB_STATIC_DOWNCAST(ExtException, E)->GetMoreMessages();

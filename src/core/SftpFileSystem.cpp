@@ -159,10 +159,6 @@ const int asOpUnsupported = 1 << SSH_FX_OP_UNSUPPORTED;
 const int asNoSuchFile =    1 << SSH_FX_NO_SUCH_FILE;
 const int asAll = 0xFFFF;
 
-#if defined(__BORLANDC__)
-const int tfFirstLevel =   0x01;
-const int tfNewDirectory = 0x02;
-#endif
 //---------------------------------------------------------------------------
 #ifndef GET_32BIT
 #define GET_32BIT(cp) \
@@ -1676,33 +1672,6 @@ private:
   TSFTPFileSystem * FFileSystem;
 };
 //===========================================================================
-#if defined(__BORLANDC__)
-struct TOpenRemoteFileParams
-{
-  uintptr_t LocalFileAttrs;
-  UnicodeString RemoteFileName;
-  TFileOperationProgressType * OperationProgress;
-  const TCopyParamType * CopyParam;
-  intptr_t Params;
-  bool Resume;
-  bool Resuming;
-  TOverwriteMode OverwriteMode;
-  int64_t DestFileSize; // output
-  RawByteString RemoteFileHandle; // output
-  TOverwriteFileParams * FileParams;
-  bool Confirmed;
-};
-//---------------------------------------------------------------------------
-struct TSinkFileParams : public TObject
-{
-  UnicodeString TargetDir;
-  const TCopyParamType * CopyParam;
-  intptr_t Params;
-  TFileOperationProgressType * OperationProgress;
-  bool Skipped;
-  uintptr_t Flags;
-};
-#endif
 //===========================================================================
 TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(ATerminal),
@@ -1733,11 +1702,7 @@ void TSFTPFileSystem::Init(void * Data)
   FFileSystemInfoValid = false;
   FVersion = NPOS;
   FPacketReservations = new TList();
-#if defined(__BORLANDC__)
-  FPacketNumbers = VarArrayCreate(OPENARRAY(int, (0, 1)), varLongWord);
-#else
   FPacketNumbers.clear();
-#endif
   FPreviousLoggedPacket = 0;
   FNotLoggedPackets = 0;
   FBusy = 0;

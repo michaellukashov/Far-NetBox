@@ -400,10 +400,6 @@ private:
   bool FUnknown;
 };
 //---------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-enum TValidProperty { vpRights, vpGroup, vpOwner, vpModification, vpLastAccess };
-typedef Set<TValidProperty, vpRights, vpLastAccess> TValidProperties;
-#else
 enum TValidProperty
 {
   vpRights = 0x1,
@@ -455,7 +451,6 @@ public:
 private:
   int64_t FValue;
 };
-#endif
 
 class TRemoteProperties : public TObject
 {

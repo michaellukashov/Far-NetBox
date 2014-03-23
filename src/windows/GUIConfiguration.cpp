@@ -896,43 +896,6 @@ void TGUIConfiguration::SetLocaleSafe(LCID Value)
     }
   }
 }
-#if defined(__BORLANDC__)
-//---------------------------------------------------------------------------
-void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
-{
-  TLibModule * MainModule = FindModule(HInstance);
-  if ((unsigned)Instance != MainModule->Instance)
-  {
-    FreeLibrary(static_cast<HMODULE>(Instance));
-  }
-}
-//---------------------------------------------------------------------------
-HANDLE TGUIConfiguration::ChangeResourceModule(HANDLE Instance)
-{
-  if (Instance == nullptr)
-  {
-    Instance = HInstance;
-  }
-  TLibModule * MainModule = FindModule(HInstance);
-  HANDLE Result = (HANDLE)MainModule->ResInstance;
-  MainModule->ResInstance = (unsigned)Instance;
-  CoreSetResourceModule(Instance);
-  return Result;
-}
-//---------------------------------------------------------------------------
-HANDLE TGUIConfiguration::GetResourceModule()
-{
-  return (HANDLE)FindModule(HInstance)->ResInstance;
-}
-//---------------------------------------------------------------------------
-void TGUIConfiguration::SetResourceModule(HINSTANCE Instance)
-{
-  HANDLE PrevHandle = ChangeResourceModule(Instance);
-  FreeResourceModule(PrevHandle);
-
-  DefaultLocalized();
-}
-#endif
 //---------------------------------------------------------------------------
 TStrings * TGUIConfiguration::GetLocales()
 {

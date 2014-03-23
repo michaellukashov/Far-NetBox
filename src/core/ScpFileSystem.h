@@ -103,12 +103,7 @@ private:
   void EnsureLocation();
   void ExecCommand(const UnicodeString & Cmd, intptr_t Params,
     const UnicodeString & CmdString);
-#if defined(__BORLANDC__)
-  void ExecCommand(TFSCommand Cmd, const TVarRec * args = nullptr,
-    int size = 0, intptr_t Params = -1);
-#else
   void ExecCommand2(TFSCommand Cmd, intptr_t Params, ...);
-#endif
   void ReadCommandOutput(intptr_t Params, const UnicodeString * Cmd = nullptr);
   void SCPResponse(bool * GotLastLine = nullptr);
   void SCPDirectorySource(const UnicodeString & DirectoryName,

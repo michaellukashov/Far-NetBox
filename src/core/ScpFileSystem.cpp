@@ -92,19 +92,11 @@ public:
   TCommandSet(TSessionData *aSessionData);
   void Default();
   void CopyFrom(TCommandSet * Source);
-#if defined(__BORLANDC__)
-  UnicodeString Command(TFSCommand Cmd, const TVarRec * args, int size) const;
-#else
   UnicodeString Command(TFSCommand Cmd, ...) const;
   UnicodeString Command(TFSCommand Cmd, va_list args) const;
-#endif
   TStrings * CreateCommandList();
-#if defined(__BORLANDC__)
-  UnicodeString FullCommand(TFSCommand Cmd, const TVarRec * args, int size) const;
-#else
   UnicodeString FullCommand(TFSCommand Cmd, ...) const;
   UnicodeString FullCommand(TFSCommand Cmd, va_list args) const;
-#endif
   static UnicodeString ExtractCommand(const UnicodeString & Command);
   TSessionData * GetSessionData() const { return FSessionData; }
   void SetSessionData(TSessionData * Value) { FSessionData = Value; }
@@ -223,16 +215,6 @@ UnicodeString TCommandSet::GetCommands(TFSCommand Cmd) const
   return CommandSet[Cmd].Command;
 }
 //---------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-UnicodeString TCommandSet::Command(TFSCommand Cmd, const TVarRec * args, int size) const
-{
-  if (args)
-    return Format(GetCommands(Cmd).c_str(), args, size);
-  else
-    return GetCommands(Cmd);
-}
-#endif
-//---------------------------------------------------------------------------
 UnicodeString TCommandSet::Command(TFSCommand Cmd, ...) const
 {
   UnicodeString Result;
@@ -249,28 +231,6 @@ UnicodeString TCommandSet::Command(TFSCommand Cmd, va_list args) const
   Result = ::Format(GetCommands(Cmd).c_str(), args);
   return Result.c_str();
 }
-//---------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, const TVarRec * args, int size)
-{
-  UnicodeString Separator;
-  if (GetOneLineCommand(Cmd)) Separator = L" ; ";
-    else Separator = L"\n";
-  UnicodeString Line = Command(Cmd, args, size);
-  UnicodeString LastLineCmd =
-    Command(fsLastLine, ARRAYOFCONST((GetLastLine(), GetReturnVar())));
-  UnicodeString FirstLineCmd;
-  if (GetInteractiveCommand(Cmd))
-    FirstLineCmd = Command(fsFirstLine, ARRAYOFCONST((GetFirstLine()))) + Separator;
-
-  UnicodeString Result;
-  if (!Line.IsEmpty())
-    Result = FORMAT(L"%s%s%s%s", FirstLineCmd.c_str(), Line.c_str(), Separator.c_str(), LastLineCmd.c_str());
-  else
-    Result = FORMAT(L"%s%s", FirstLineCmd.c_str(), LastLineCmd.c_str());
-  return Result;
-}
-#endif
 //---------------------------------------------------------------------------
 UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, ...) const
 {

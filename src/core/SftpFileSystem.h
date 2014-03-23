@@ -10,14 +10,6 @@ struct TOverwriteFileParams;
 struct TSFTPSupport;
 class TSecureShell;
 //---------------------------------------------------------------------------
-#if defined(__BORLANDC__)
-enum TSFTPOverwriteMode
-{
-  omOverwrite,
-  omAppend,
-  omResume
-};
-#endif
 //---------------------------------------------------------------------------
 class TSFTPFileSystem : public TCustomFileSystem
 {
