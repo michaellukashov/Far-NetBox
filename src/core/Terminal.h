@@ -746,7 +746,7 @@ public:
   void SetMasks(const UnicodeString & Value);
 
 private:
-  TList * FList;
+  TList FList;
 
   static intptr_t Compare(const void * Item1, const void * Item2);
 };

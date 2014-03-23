@@ -285,24 +285,22 @@ const UnicodeString & TChecklistItem::GetFileName() const
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-TSynchronizeChecklist::TSynchronizeChecklist() :
-  FList(new TList())
+TSynchronizeChecklist::TSynchronizeChecklist()
 {
 }
 //------------------------------------------------------------------------------
 TSynchronizeChecklist::~TSynchronizeChecklist()
 {
-  for (intptr_t Index = 0; Index < FList->GetCount(); ++Index)
+  for (intptr_t Index = 0; Index < FList.GetCount(); ++Index)
   {
-    TChecklistItem * Item = NB_STATIC_DOWNCAST(TChecklistItem, static_cast<void *>(FList->GetItem(Index)));
+    TChecklistItem * Item = NB_STATIC_DOWNCAST(TChecklistItem, static_cast<void *>(FList.GetItem(Index)));
     SAFE_DESTROY(Item);
   }
-  SAFE_DESTROY(FList);
 }
 //------------------------------------------------------------------------------
 void TSynchronizeChecklist::Add(TChecklistItem * Item)
 {
-  FList->Add(Item);
+  FList.Add(Item);
 }
 //------------------------------------------------------------------------------
 intptr_t TSynchronizeChecklist::Compare(const void * AItem1, const void * AItem2)
@@ -331,17 +329,17 @@ intptr_t TSynchronizeChecklist::Compare(const void * AItem1, const void * AItem2
 //------------------------------------------------------------------------------
 void TSynchronizeChecklist::Sort()
 {
-  FList->Sort(Compare);
+  FList.Sort(Compare);
 }
 //------------------------------------------------------------------------------
 intptr_t TSynchronizeChecklist::GetCount() const
 {
-  return FList->GetCount();
+  return FList.GetCount();
 }
 //------------------------------------------------------------------------------
 const TChecklistItem * TSynchronizeChecklist::GetItem(intptr_t Index) const
 {
-  return NB_STATIC_DOWNCAST(TChecklistItem, FList->GetItem(Index));
+  return NB_STATIC_DOWNCAST(TChecklistItem, FList.GetItem(Index));
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
