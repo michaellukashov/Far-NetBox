@@ -48,16 +48,7 @@
 class CFileFix;
 #define CFile CFileFix
 //---------------------------------------------------------------------------
-#ifdef _MSC_VER
 #include <FzApiStructures.h>
-#else
-#include "MFC64bitFix.h"
-#include <ApiLog.h>
-#include <FileZillaOpt.h>
-#include <Options.h>
-#include <Crypt.h>
-#include <TextsFileZilla.h>
-#endif
 //---------------------------------------------------------------------------
 #include <oleauto.h>
 #include <afxdisp.h>
@@ -68,9 +59,6 @@ class CFileFix;
 #define USEDPARAM(p) (void)(p);
 #endif
 //---------------------------------------------------------------------------
-#ifdef _MSC_VER
-extern HINSTANCE HInst;
-#endif
 
 //---------------------------------------------------------------------------
 const int FILEEXISTS_ASK = -1;
