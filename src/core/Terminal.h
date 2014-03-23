@@ -401,8 +401,8 @@ protected:
     bool NoConfirmation,
     OUT HANDLE * AHandle);
   void OpenLocalFile(const UnicodeString & AFileName, uintptr_t Access,
-    HANDLE * AHandle, uintptr_t * AAttrs, int64_t * ACTime, int64_t * AMTime,
-    int64_t * AATime, int64_t * ASize, bool TryWriteReadOnly = true);
+    OUT HANDLE * AHandle, OUT uintptr_t * AAttrs, OUT int64_t * ACTime, OUT int64_t * AMTime,
+    OUT int64_t * AATime, OUT int64_t * ASize, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(const UnicodeString & FileName, const TCopyParamType * CopyParam);
   bool HandleException(Exception * E);
   void CalculateFileSize(const UnicodeString & AFileName,
