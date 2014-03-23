@@ -310,9 +310,7 @@ void TConfiguration::Import(const UnicodeString & FileName)
 void TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
   #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR()))
-  #pragma warn -eas
   REGCONFIG(false);
-  #pragma warn +eas
   #undef KEYEX
 
   if (Storage->OpenSubKey(L"Usage", false))

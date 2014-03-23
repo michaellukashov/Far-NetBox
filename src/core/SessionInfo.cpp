@@ -72,7 +72,6 @@ static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-#pragma warn -inl
 class TSessionActionRecord : public TObject
 {
 NB_DECLARE_CLASS(TSessionActionRecord)
@@ -324,7 +323,6 @@ private:
   TRemoteFileList * FFileList;
   TRemoteFile * FFile;
 };
-#pragma warn .inl
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TSessionAction::TSessionAction(TActionLog *Log, TLogAction Action)

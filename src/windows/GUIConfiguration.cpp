@@ -701,9 +701,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR()))
   #undef KEY
   #define KEY(TYPE, NAME) Set ## NAME(Storage->Read ## TYPE(PropertyToKey(TEXT(#NAME)), Get ## NAME()))
-  #pragma warn -eas
   REGCONFIG(false);
-  #pragma warn +eas
   #undef KEY
   #undef KEYEX
 

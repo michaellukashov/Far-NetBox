@@ -6227,8 +6227,6 @@ atomic_init_once(
 #define RETRY_INITIAL_SLEEP 1000
 #define RETRY_MAX_SLEEP 128000
 
-// Suppress warning: Condition is always true
-#pragma warn -8008
 #define RETRY_LOOP(err, expr, retry_test, sleep_test)                      \
   do                                                                       \
   {                                                                        \
@@ -6306,7 +6304,6 @@ file_open(
   }
   return status;
 }
-#pragma warn +8008
 
 static error_t
 io_file_open(

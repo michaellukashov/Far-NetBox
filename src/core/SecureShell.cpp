@@ -1688,9 +1688,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
         LogEvent(FORMAT(L"Handling network %s event on socket %d with error %d",
           EventTypes[Event].Desc, int(Socket), Err));
       }
-      #pragma option push -w-prc
       LPARAM SelectEvent = WSAMAKESELECTREPLY(EventTypes[Event].Mask, Err);
-      #pragma option pop
       if (!select_result(static_cast<WPARAM>(Socket), SelectEvent))
       {
         // note that connection was closed definitely,

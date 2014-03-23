@@ -2150,6 +2150,4 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
   return Result;
 }
 //---------------------------------------------------------------------------
-// Suppress warning about unused constants in DateUtils.hpp
-#pragma warn -8080
 

@@ -185,5 +185,3 @@ TInstantOperationVisualizer::~TInstantOperationVisualizer()
   }
 }
 //---------------------------------------------------------------------------
-// WORKAROUND, suppress warning about unused constants in DateUtils.hpp
-#pragma warn -8080
