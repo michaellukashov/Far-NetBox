@@ -125,7 +125,7 @@ DEFINE_CALLBACK_TYPE3(TFindingFileEvent, void,
 class TOperationVisualizer
 {
 public:
-  TOperationVisualizer(bool UseBusyCursor = true);
+  explicit TOperationVisualizer(bool UseBusyCursor);
   ~TOperationVisualizer();
 
 private:

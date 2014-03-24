@@ -73,9 +73,9 @@ struct TPoint
     x(0),
     y(0)
   {}
-  TPoint(int x, int y) :
-    x(x),
-    y(y)
+  TPoint(int ax, int ay) :
+    x(ax),
+    y(ay)
   {}
 };
 
