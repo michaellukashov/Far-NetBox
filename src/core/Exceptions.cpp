@@ -122,7 +122,7 @@ static bool ExceptionMessage(const Exception * E, bool Count,
 
   if (InternalError)
   {
-    Message = FMTLOAD(REPORT_ERROR, (Message));
+    Message = FMTLOAD(REPORT_ERROR, Message.c_str());
   }
 /*
   if (Count && (CounterName != nullptr) && (Configuration->Usage != nullptr))
