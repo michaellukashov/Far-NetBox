@@ -203,7 +203,7 @@ public:
 
 protected:
   TStatus FStatus;
-  TCriticalSection * FSection;
+  TCriticalSection FSection;
   TTerminalItem * FTerminalItem;
   TFileOperationProgressType * FProgressData;
   TQueueItem::TInfo * FInfo;
@@ -415,7 +415,7 @@ private:
   bool FPendingIdle;
 
   DWORD FMainThread;
-  TCriticalSection * FSection;
+  TCriticalSection FSection;
 
   void WaitForUserAction(TUserAction * UserAction);
   void RunAction(TNotifyEvent Action);

@@ -12067,7 +12067,6 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
   FFileTransferCPSLimit(0),
   FLastReadDirectoryProgress(0),
   FCurrentOperationProgress(nullptr),
-  FTransferStatusCriticalSection(new TCriticalSection()),
   webdav_pool(nullptr),
   FSession(nullptr)
 {
@@ -12085,8 +12084,6 @@ void TWebDAVFileSystem::Init(void *)
 //------------------------------------------------------------------------------
 TWebDAVFileSystem::~TWebDAVFileSystem()
 {
-  SAFE_DESTROY(FTransferStatusCriticalSection);
-
   webdav_pool_destroy(webdav_pool);
   apr_terminate();
   webdav_pool = nullptr;
@@ -13598,7 +13595,7 @@ void TWebDAVFileSystem::DoFileTransferProgress(int64_t TransferSize,
 void TWebDAVFileSystem::FileTransferProgress(int64_t TransferSize,
   int64_t Bytes)
 {
-  TGuard Guard(FTransferStatusCriticalSection);
+  TGuard Guard(&FTransferStatusCriticalSection);
 
   DoFileTransferProgress(TransferSize, Bytes);
 }

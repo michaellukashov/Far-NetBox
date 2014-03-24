@@ -269,7 +269,7 @@ protected:
   TTerminalQueue * FQueue;
   TBackgroundTerminal * FTerminal;
   TQueueItem * FItem;
-  TCriticalSection * FCriticalSection;
+  TCriticalSection FCriticalSection;
   TUserAction * FUserAction;
   bool FCancel;
   bool FPause;
@@ -1204,15 +1204,13 @@ bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
 //---------------------------------------------------------------------------
 TTerminalItem::TTerminalItem(TTerminalQueue * Queue) :
   TSignalThread(), FQueue(Queue), FTerminal(nullptr), FItem(nullptr),
-  FCriticalSection(nullptr), FUserAction(nullptr), FCancel(false), FPause(false)
+  FUserAction(nullptr), FCancel(false), FPause(false)
 {
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::Init(intptr_t Index)
 {
   TSignalThread::Init(true);
-
-  FCriticalSection = new TCriticalSection();
 
   std::unique_ptr<TBackgroundTerminal> Terminal(new TBackgroundTerminal(FQueue->FTerminal));
   Terminal->Init(FQueue->FSessionData, FQueue->FConfiguration, this, FORMAT(L"Background %d", Index));
@@ -1234,13 +1232,12 @@ TTerminalItem::~TTerminalItem()
 
   assert(FItem == nullptr);
   SAFE_DESTROY(FTerminal);
-  SAFE_DESTROY(FCriticalSection);
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::Process(TQueueItem * Item)
 {
   {
-    TGuard Guard(FCriticalSection);
+    TGuard Guard(&FCriticalSection);
 
     assert(FItem == nullptr);
     FItem = Item;
@@ -1251,7 +1248,7 @@ void TTerminalItem::Process(TQueueItem * Item)
 //---------------------------------------------------------------------------
 void TTerminalItem::ProcessEvent()
 {
-  TGuard Guard(FCriticalSection);
+  TGuard Guard(&FCriticalSection);
 
   bool Retry = true;
 
@@ -1320,7 +1317,7 @@ void TTerminalItem::ProcessEvent()
 //---------------------------------------------------------------------------
 void TTerminalItem::Idle()
 {
-  TGuard Guard(FCriticalSection);
+  TGuard Guard(&FCriticalSection);
 
   assert(FTerminal->GetActive());
 
@@ -1566,12 +1563,11 @@ bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus)
 // TQueueItem
 //---------------------------------------------------------------------------
 TQueueItem::TQueueItem() :
-  FStatus(qsPending), FSection(nullptr), FTerminalItem(nullptr), FProgressData(nullptr),
+  FStatus(qsPending), FTerminalItem(nullptr), FProgressData(nullptr),
   FInfo(nullptr),
   FQueue(nullptr), FCompleteEvent(INVALID_HANDLE_VALUE),
   FCPSLimit(-1)
 {
-  FSection = new TCriticalSection();
   FInfo = new TInfo();
   FInfo->SingleFile = false;
 }
@@ -1583,13 +1579,12 @@ TQueueItem::~TQueueItem()
 
   Complete();
 
-  SAFE_DESTROY(FSection);
   SAFE_DESTROY(FInfo);
 }
 //---------------------------------------------------------------------------
 void TQueueItem::Complete()
 {
-  TGuard Guard(FSection);
+  TGuard Guard(&FSection);
 
   if (FCompleteEvent != INVALID_HANDLE_VALUE)
   {
@@ -1605,7 +1600,7 @@ bool TQueueItem::IsUserActionStatus(TStatus Status)
 //---------------------------------------------------------------------------
 TQueueItem::TStatus TQueueItem::GetStatus()
 {
-  TGuard Guard(FSection);
+  TGuard Guard(&FSection);
 
   return FStatus;
 }
@@ -1613,7 +1608,7 @@ TQueueItem::TStatus TQueueItem::GetStatus()
 void TQueueItem::SetStatus(TStatus Status)
 {
   {
-    TGuard Guard(FSection);
+    TGuard Guard(&FSection);
 
     FStatus = Status;
     if (FStatus == qsDone)
@@ -1633,7 +1628,7 @@ void TQueueItem::SetProgress(
   TFileOperationProgressType & ProgressData)
 {
   {
-    TGuard Guard(FSection);
+    TGuard Guard(&FSection);
 
     // do not lose CPS limit override on "calculate size" operation,
     // wait until the real transfer operation starts
@@ -1658,7 +1653,7 @@ void TQueueItem::SetProgress(
 //---------------------------------------------------------------------------
 void TQueueItem::GetData(TQueueItemProxy * Proxy)
 {
-  TGuard Guard(FSection);
+  TGuard Guard(&FSection);
 
   assert(Proxy->FProgressData != nullptr);
   if (FProgressData != nullptr)
@@ -1681,7 +1676,7 @@ void TQueueItem::Execute(TTerminalItem * TerminalItem)
 {
   {
     assert(FProgressData == nullptr);
-    TGuard Guard(FSection);
+    TGuard Guard(&FSection);
     FProgressData = new TFileOperationProgressType();
   }
   DoExecute(TerminalItem->FTerminal);
@@ -2135,7 +2130,6 @@ TTerminalThread::TTerminalThread(TTerminal * Terminal) :
   FCancelled = false;
   FPendingIdle = false;
   FMainThread = GetCurrentThreadId();
-  FSection = new TCriticalSection();
 }
 
 void TTerminalThread::Init()
@@ -2194,8 +2188,6 @@ TTerminalThread::~TTerminalThread()
   FTerminal->SetOnStartReadDirectory(FOnStartReadDirectory);
   FTerminal->SetOnReadDirectoryProgress(FOnReadDirectoryProgress);
   FTerminal->SetOnInitializeLog(FOnInitializeLog);
-
-  SAFE_DESTROY(FSection);
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::Cancel()
@@ -2205,7 +2197,7 @@ void TTerminalThread::Cancel()
 //---------------------------------------------------------------------------
 void TTerminalThread::Idle()
 {
-  TGuard Guard(FSection);
+  TGuard Guard(&FSection);
   // only when running user action already,
   // so that the exception is caught, saved and actually
   // passed back into the terminal thread, saved again
@@ -2404,7 +2396,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
       {
 
         {
-          TGuard Guard(FSection);
+          TGuard Guard(&FSection);
           // If idle exception is already set, we are only waiting
           // for the main thread to pick it up
           // (or at least to finish handling the user action, so

@@ -194,8 +194,6 @@ private:
 TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   TCustomFileSystem(ATerminal),
   FFileZillaIntf(nullptr),
-  FQueueCriticalSection(new TCriticalSection()),
-  FTransferStatusCriticalSection(new TCriticalSection()),
   FQueueEvent(CreateEvent(nullptr, true, false, nullptr)),
   FFileSystemInfoValid(false),
   FReply(0),
@@ -255,9 +253,6 @@ TFTPFileSystem::~TFTPFileSystem()
   SAFE_DESTROY(FFileZillaIntf);
 
   ::CloseHandle(FQueueEvent);
-
-  SAFE_DESTROY(FQueueCriticalSection);
-  SAFE_DESTROY(FTransferStatusCriticalSection);
 
   SAFE_DESTROY(FLastResponse);
   SAFE_DESTROY(FLastErrorResponse);
@@ -987,7 +982,7 @@ void TFTPFileSystem::SetCPSLimit(TFileOperationProgressType * OperationProgress)
 void TFTPFileSystem::FileTransferProgress(int64_t TransferSize,
   int64_t Bytes)
 {
-  TGuard Guard(FTransferStatusCriticalSection);
+  TGuard Guard(&FTransferStatusCriticalSection);
 
   DoFileTransferProgress(TransferSize, Bytes);
 }
@@ -2356,10 +2351,10 @@ bool TFTPFileSystem::PostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam)
     // it makes "pause" in queue work.
     // Paused queue item stops in some of the TFileOperationProgressType
     // methods called from FileTransferProgress
-    TGuard Guard(FTransferStatusCriticalSection);
+    TGuard Guard(&FTransferStatusCriticalSection);
   }
 
-  TGuard Guard(FQueueCriticalSection);
+  TGuard Guard(&FQueueCriticalSection);
 
   FQueue.push_back(TMessageQueue::value_type(wParam, lParam));
   SetEvent(FQueueEvent);
@@ -2373,7 +2368,7 @@ bool TFTPFileSystem::ProcessMessage()
   TMessageQueue::value_type Message;
 
   {
-    TGuard Guard(FQueueCriticalSection);
+    TGuard Guard(&FQueueCriticalSection);
 
     Result = !FQueue.empty();
     if (Result)
@@ -2502,7 +2497,7 @@ uintptr_t TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
   assert(FReply == 0);
   assert(FCommandReply == 0);
   assert(!FWaitingForReply);
-  assert(!FTransferStatusCriticalSection->GetAcquired());
+  assert(!FTransferStatusCriticalSection.GetAcquired());
 
   ResetReply();
   FWaitingForReply = true;
