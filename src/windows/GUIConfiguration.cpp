@@ -219,8 +219,8 @@ void TCopyParamRule::SetData(const TCopyParamRuleData & Value)
 UnicodeString TCopyParamList::FInvalidChars(L"/\\[]");
 //---------------------------------------------------------------------------
 TCopyParamList::TCopyParamList() :
-  FCopyParams(new TList()),
   FRules(new TList()),
+  FCopyParams(new TList()),
   FNames(new TStringList()),
   FNameList(nullptr),
   FModified(false)

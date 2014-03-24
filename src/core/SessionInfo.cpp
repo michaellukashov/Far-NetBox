@@ -592,13 +592,13 @@ TSessionLog::TSessionLog(TSessionUI * UI, TSessionData * SessionData,
   TConfiguration * Configuration) :
   TStringList(),
   FConfiguration(Configuration),
-  FSessionData(SessionData),
-  FLogging(false),
   FParent(nullptr),
-  FUI(UI),
+  FLogging(false),
   FFile(nullptr),
   FLoggedLines(0),
   FTopIndex(-1),
+  FUI(UI),
+  FSessionData(SessionData),
   FClosed(false)
 {
 }

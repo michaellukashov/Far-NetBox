@@ -170,6 +170,7 @@ TOperationVisualizer::~TOperationVisualizer()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TInstantOperationVisualizer::TInstantOperationVisualizer() :
+  TOperationVisualizer(true),
   FStart(Now())
 {
 }

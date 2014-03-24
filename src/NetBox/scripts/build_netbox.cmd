@@ -9,8 +9,8 @@ if "s%PROJECT_BUILD%"=="s" set PROJECT_BUILD=Build
 
 if "s%PROJECT_CONF%"=="s" set PROJECT_CONF=x86
 if "s%PROJECT_PLATFORM%"=="s" set PROJECT_PLATFORM=Win32
+REM if "s%PROJECT_GEN%"=="s" set PROJECT_GEN=Visual Studio 10
 if "s%PROJECT_GEN%"=="s" set PROJECT_GEN=NMake Makefiles
-rem Visual Studio 10
 if "s%PROJECT_VARS%"=="s" set PROJECT_VARS=x86
 
 set PROJECT_BUIILDDIR=%PROJECT_ROOT%\build\%PROJECT_CONFIG%\%PROJECT_CONF%

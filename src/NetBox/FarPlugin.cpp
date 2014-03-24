@@ -34,7 +34,6 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
   TObject(),
   FOpenedPlugins(new TObjectList()),
   FTopDialog(nullptr),
-  FCriticalSection(new TCriticalSection()),
   FSavedTitles(new TStringList())
 {
   InitPlatformId();
@@ -87,7 +86,6 @@ TCustomFarPlugin::~TCustomFarPlugin()
     SAFE_DESTROY(Object);
   }
   SAFE_DESTROY(FSavedTitles);
-  SAFE_DESTROY(FCriticalSection);
   TGlobalFunctionsIntf * Intf = GetGlobalFunctions();
   SAFE_DESTROY_EX(TGlobalFunctionsIntf, Intf);
 }
@@ -1797,7 +1795,6 @@ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
   TObject(),
   FPlugin(APlugin),
   FClosed(false),
-  FCriticalSection(nullptr),
   FOpenPanelInfoValid(false)
 {
   memset(FPanelInfo, 0, sizeof(FPanelInfo));
@@ -1806,7 +1803,6 @@ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
 
 void TCustomFarFileSystem::Init()
 {
-  FCriticalSection = new TCriticalSection();
   FPanelInfo[0] = nullptr;
   FPanelInfo[1] = nullptr;
   FClosed = false;
@@ -1822,7 +1818,6 @@ TCustomFarFileSystem::~TCustomFarFileSystem()
   FInstances--;
   ResetCachedInfo();
   ClearOpenPanelInfo(FOpenPanelInfo);
-  SAFE_DESTROY(FCriticalSection);
 }
 //---------------------------------------------------------------------------
 void TCustomFarFileSystem::HandleException(Exception * E, int OpMode)

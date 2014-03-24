@@ -1336,7 +1336,7 @@ void CFtpControlSocket::OnConnect(int nErrorCode)
 		if (nErrorCode == WSAHOST_NOT_FOUND)
 		{
 			CString str;
-			str.Format(IDS_ERRORMSG_CANTRESOLVEHOST2, m_ServerName);
+			str.Format(IDS_ERRORMSG_CANTRESOLVEHOST2, (LPCTSTR)m_ServerName);
 			ShowStatus(str, FZ_LOG_ERROR);
 		}
 #ifdef MPEXT

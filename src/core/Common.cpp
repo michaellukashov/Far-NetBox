@@ -448,15 +448,15 @@ UnicodeString ValidLocalFileName(const UnicodeString & FileName)
   return ValidLocalFileName(FileName, L'_', L"", LocalInvalidChars);
 }
 //---------------------------------------------------------------------------
-UnicodeString ValidLocalFileName(
+static UnicodeString ValidLocalFileName(
   const UnicodeString & FileName, wchar_t InvalidCharsReplacement,
-  const UnicodeString & TokenizibleChars, const UnicodeString & LocalInvalidChars)
+  const UnicodeString & TokenizibleChars, const UnicodeString & ALocalInvalidChars)
 {
   UnicodeString FileName2 = FileName;
   if (InvalidCharsReplacement != NoReplacement)
   {
     bool ATokenReplacement = (InvalidCharsReplacement == TokenReplacement);
-    UnicodeString CharsStr = ATokenReplacement ? TokenizibleChars : LocalInvalidChars;
+    UnicodeString CharsStr = ATokenReplacement ? TokenizibleChars : ALocalInvalidChars;
     const wchar_t * Chars = CharsStr.c_str();
     wchar_t * InvalidChar = const_cast<wchar_t *>(FileName2.c_str());
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != nullptr)

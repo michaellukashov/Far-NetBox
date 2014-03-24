@@ -187,7 +187,7 @@ protected:
   HANDLE FConsoleOutput;
   intptr_t FFarVersion;
   bool FTerminalScreenShowing;
-  TCriticalSection * FCriticalSection;
+  TCriticalSection FCriticalSection;
   uintptr_t FFarThread;
   bool FValidFarSystemSettings;
   intptr_t FFarSystemSettings;
@@ -213,7 +213,7 @@ protected:
     TFarMessageParams * Params);
   void InvalidateOpenPanelInfo();
 
-  TCriticalSection * GetCriticalSection() const { return FCriticalSection; }
+  const TCriticalSection * GetCriticalSection() const { return &FCriticalSection; }
 
 #ifdef NETBOX_DEBUG
 public:
@@ -310,12 +310,12 @@ protected:
   TFarPanelInfo * GetPanelInfo() { return GetPanelInfo(0); }
   const TFarPanelInfo * GetAnotherPanelInfo() const { return GetPanelInfo(1); }
   TFarPanelInfo * GetAnotherPanelInfo() { return GetPanelInfo(1); }
-  TCriticalSection * GetCriticalSection() const { return FCriticalSection; }
-  TCriticalSection * GetCriticalSection() { return FCriticalSection; }
+  const TCriticalSection * GetCriticalSection() const { return &FCriticalSection; }
+  TCriticalSection * GetCriticalSection() { return &FCriticalSection; }
   bool GetOpenPanelInfoValid() const { return FOpenPanelInfoValid; }
 
 protected:
-  TCriticalSection * FCriticalSection;
+  TCriticalSection FCriticalSection;
   void InvalidateOpenPanelInfo();
 
 private:

@@ -15,7 +15,6 @@
 #include "WinSCPSecurity.h"
 //---------------------------------------------------------------------------
 TConfiguration::TConfiguration() :
-  FCriticalSection(nullptr),
   FDontSave(false),
   FChanged(false),
   FUpdating(0),
@@ -47,7 +46,6 @@ TConfiguration::TConfiguration() :
   FDefaultCollectUsage(false),
   FSessionReopenAutoMaximumNumberOfRetries(0)
 {
-  FCriticalSection = new TCriticalSection();
   FUpdating = 0;
   FStorage = stRegistry;
   FDontSave = false;
@@ -75,7 +73,7 @@ TConfiguration::TConfiguration() :
 //---------------------------------------------------------------------------
 void TConfiguration::Default()
 {
-  TGuard Guard(FCriticalSection);
+  TGuard Guard(&FCriticalSection);
 
   FDisablePasswordStoring = false;
   FForceBanners = false;
@@ -131,7 +129,6 @@ TConfiguration::~TConfiguration()
   {
     FreeFileInfo(FApplicationInfo);
   }
-  SAFE_DESTROY(FCriticalSection);
   // SAFE_DESTROY(FUsage);
 }
 //---------------------------------------------------------------------------
@@ -347,7 +344,7 @@ void TConfiguration::LoadFrom(THierarchicalStorage * Storage)
 //---------------------------------------------------------------------------
 void TConfiguration::Load()
 {
-  TGuard Guard(FCriticalSection);
+  TGuard Guard(&FCriticalSection);
   std::unique_ptr<THierarchicalStorage> Storage(CreateStorage(false));
   Storage->SetAccessMode(smRead);
   LoadFrom(Storage.get());
@@ -738,7 +735,7 @@ UnicodeString TConfiguration::TrimVersion(const UnicodeString & Version) const
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetVersionStr() const
 {
-  TGuard Guard(FCriticalSection);
+  TGuard Guard(&FCriticalSection);
   try
   {
     TVSFixedFileInfo * Info = GetFixedApplicationInfo();
@@ -757,7 +754,7 @@ UnicodeString TConfiguration::GetVersionStr() const
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetVersion() const
 {
-  TGuard Guard(FCriticalSection);
+  TGuard Guard(&FCriticalSection);
   UnicodeString Result;
   try
   {
@@ -780,7 +777,7 @@ UnicodeString TConfiguration::GetVersion() const
 UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key,
   const UnicodeString & FileName) const
 {
-  TGuard Guard(FCriticalSection);
+  TGuard Guard(&FCriticalSection);
 
   UnicodeString Result;
   void * Info = GetFileApplicationInfo(FileName);
@@ -1172,37 +1169,37 @@ UnicodeString TConfiguration::GetDefaultLogFileName() const
 //---------------------------------------------------------------------------
 void TConfiguration::SetConfirmOverwriting(bool Value)
 {
-  TGuard Guard(FCriticalSection);
+  TGuard Guard(&FCriticalSection);
   SET_CONFIG_PROPERTY(ConfirmOverwriting);
 }
 //---------------------------------------------------------------------------
 bool TConfiguration::GetConfirmOverwriting() const
 {
-  TGuard Guard(FCriticalSection);
+  TGuard Guard(&FCriticalSection);
   return FConfirmOverwriting;
 }
 //---------------------------------------------------------------------------
 void TConfiguration::SetConfirmResume(bool Value)
 {
-  TGuard Guard(FCriticalSection);
+  TGuard Guard(&FCriticalSection);
   SET_CONFIG_PROPERTY(ConfirmResume);
 }
 //---------------------------------------------------------------------------
 bool TConfiguration::GetConfirmResume() const
 {
-  TGuard Guard(FCriticalSection);
+  TGuard Guard(&FCriticalSection);
   return FConfirmResume;
 }
 //---------------------------------------------------------------------------
 void TConfiguration::SetAutoReadDirectoryAfterOp(bool Value)
 {
-  TGuard Guard(FCriticalSection);
+  TGuard Guard(&FCriticalSection);
   SET_CONFIG_PROPERTY(AutoReadDirectoryAfterOp);
 }
 //---------------------------------------------------------------------------
 bool TConfiguration::GetAutoReadDirectoryAfterOp() const
 {
-  TGuard Guard(FCriticalSection);
+  TGuard Guard(&FCriticalSection);
   return FAutoReadDirectoryAfterOp;
 }
 //---------------------------------------------------------------------------

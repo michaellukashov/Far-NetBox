@@ -1300,7 +1300,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
 
 
   bool PasswordPrompt =
-    (Prompts->GetCount() == 1) && FLAGCLEAR(int(Prompts->GetObject(0)), pupEcho) &&
+    (Prompts->GetCount() == 1) && FLAGCLEAR(intptr_t(Prompts->GetObject(0)), pupEcho) &&
     ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
      (Kind == pkTIS) || (Kind == pkCryptoCard));
   if (PasswordPrompt)

@@ -305,7 +305,6 @@ void TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
   FTerminal = nullptr;
   FQueue = nullptr;
   FQueueStatus = nullptr;
-  FQueueStatusSection = new TCriticalSection();
   FQueueStatusInvalidated = false;
   FQueueItemInvalidated = false;
   FRefreshLocalDirectory = false;
@@ -332,7 +331,6 @@ void TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
 TWinSCPFileSystem::~TWinSCPFileSystem()
 {
   Disconnect();
-  SAFE_DESTROY(FQueueStatusSection);
   SAFE_DESTROY(FPathHistory);
 }
 //------------------------------------------------------------------------------
@@ -362,7 +360,7 @@ void TWinSCPFileSystem::HandleException(Exception * E, int OpMode)
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::KeepaliveThreadCallback()
 {
-  TGuard Guard(FCriticalSection);
+  TGuard Guard(&FCriticalSection);
 
   if (Connected())
   {
@@ -3564,7 +3562,7 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
   {
     if (FQueueStatusInvalidated)
     {
-      TGuard Guard(FQueueStatusSection);
+      TGuard Guard(&FQueueStatusSection);
 
       FQueueStatusInvalidated = false;
 
@@ -3622,7 +3620,7 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
     TQueueEvent Event;
 
     {
-      TGuard Guard(FQueueStatusSection);
+      TGuard Guard(&FQueueStatusSection);
       Event = FQueueEvent;
       FQueueEventPending = false;
     }
@@ -3663,7 +3661,7 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
 {
   if (FQueue == Queue)
   {
-    TGuard Guard(FQueueStatusSection);
+    TGuard Guard(&FQueueStatusSection);
 
     assert(FQueueStatus != nullptr);
 
@@ -3688,7 +3686,7 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
 void TWinSCPFileSystem::QueueEvent(TTerminalQueue * Queue,
   TQueueEvent Event)
 {
-  TGuard Guard(FQueueStatusSection);
+  TGuard Guard(&FQueueStatusSection);
   if (Queue == FQueue)
   {
     FQueueEventPending = true;

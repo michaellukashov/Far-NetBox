@@ -7146,7 +7146,7 @@ private:
   void CheckAll(bool Check);
   UnicodeString ItemLine(const TChecklistItem * ChecklistItem);
   void AddColumn(UnicodeString & List, const UnicodeString & Value, size_t Column,
-    bool Header = false);
+    bool AHeader = false);
   UnicodeString FormatSize(int64_t Size, int Column);
 };
 //------------------------------------------------------------------------------
@@ -7207,7 +7207,7 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
 }
 //------------------------------------------------------------------------------
 void TSynchronizeChecklistDialog::AddColumn(UnicodeString & List,
-  const UnicodeString & Value, size_t Column, bool Header)
+  const UnicodeString & Value, size_t Column, bool AHeader)
 {
   wchar_t Separator = L'|'; // '\xB3';
   intptr_t Len = Value.Length();
@@ -7217,7 +7217,7 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString & List,
   if (Len <= Width)
   {
     intptr_t Added = 0;
-    if (Header && (Len < Width))
+    if (AHeader && (Len < Width))
     {
       Added += (Width - Len) / 2;
     }
@@ -7239,7 +7239,7 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString & List,
   else
   {
     intptr_t Scroll = FScroll;
-    if ((Scroll > 0) && !Header)
+    if ((Scroll > 0) && !AHeader)
     {
       if (List.IsEmpty())
       {
@@ -7256,7 +7256,7 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString & List,
     {
       Scroll = Len - Width;
     }
-    else if (!Header && LastCol && (Scroll < Len - Width))
+    else if (!AHeader && LastCol && (Scroll < Len - Width))
     {
       Width--;
     }

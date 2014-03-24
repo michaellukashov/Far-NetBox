@@ -1,21 +1,6 @@
 project(NetBox)
 cmake_minimum_required(VERSION 2.8)
 
-if(NOT DEFINED PROJECT_ROOT OR PROJECT_ROOT STREQUAL "")
-set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
-endif()
-string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
-
-if(NOT DEFINED BUILD_DIR OR BUILD_DIR STREQUAL "")
-string(REPLACE "/" "\\" BUILD_DIR ${PROJECT_ROOT}/build/${CMAKE_BUILD_TYPE}/${CONF})
-endif()
-
-#-------------------------------------------------------------------------------
-
-include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
-include(CMakeDetermineCXXCompiler)
-message("System: ${CMAKE_SYSTEM_NAME}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
-
 if(NOT DEFINED CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug)
 endif()
@@ -28,7 +13,20 @@ if(NOT DEFINED CONF)
   set(CONF "x86")
 endif()
 
-set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${CONF}/Plugins/NetBox)
+if(NOT DEFINED PROJECT_ROOT OR PROJECT_ROOT STREQUAL "")
+set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+endif()
+string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
+
+if(NOT DEFINED BUILD_DIR OR BUILD_DIR STREQUAL "")
+string(REPLACE "/" "\\" BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
+#-------------------------------------------------------------------------------
+
+include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
+include(CMakeDetermineCXXCompiler)
+message("System: ${CMAKE_SYSTEM_NAME}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
 
 set(LIBS_ROOT ${PROJECT_ROOT}/libs)
 set(SRC_ROOT ${PROJECT_ROOT}/src)
@@ -278,6 +276,7 @@ add_dependencies(NetBox
   rdestl
 )
 
+set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${CONF}/Plugins/NetBox)
 string(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
 
 add_custom_command(TARGET NetBox

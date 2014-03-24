@@ -206,12 +206,12 @@ void TFileOperationProgressType::DoProgress()
   FOnProgress(*this, Cancel);
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::Finish(const UnicodeString & FileName,
+void TFileOperationProgressType::Finish(const UnicodeString & AFileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   assert(InProgress);
 
-  FOnFinished(Operation, Side, Temp, FileName,
+  FOnFinished(Operation, Side, Temp, AFileName,
     /* TODO : There wasn't 'Success' condition, was it by mistake or by purpose? */
     Success && (Cancel == csContinue), OnceDoneOperation);
   FFilesFinished++;
