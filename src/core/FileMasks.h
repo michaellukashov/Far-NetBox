@@ -8,7 +8,7 @@
 class EFileMasksException : public Exception
 {
 public:
-  explicit EFileMasksException(const UnicodeString & Message, intptr_t ErrorStart, intptr_t ErrorLen);
+  explicit EFileMasksException(const UnicodeString & AMessage, intptr_t ErrorStart, intptr_t ErrorLen);
   intptr_t ErrorStart;
   intptr_t ErrorLen;
 };
@@ -208,7 +208,7 @@ struct TCustomCommandData : public TObject
   explicit TCustomCommandData(TTerminal * Terminal);
   explicit TCustomCommandData(
     TSessionData * SessionData, const UnicodeString & AUserName,
-    const UnicodeString & Password);
+    const UnicodeString & APassword);
 
   UnicodeString HostName;
   UnicodeString UserName;

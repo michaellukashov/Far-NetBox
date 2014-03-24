@@ -18,8 +18,8 @@ static UnicodeString DirectoryMaskDelimiters = L"/\\";
 static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1]) + L' ';
 //---------------------------------------------------------------------------
 EFileMasksException::EFileMasksException(
-  const UnicodeString & Message, intptr_t AErrorStart, intptr_t AErrorLen) :
-  Exception(Message)
+  const UnicodeString & AMessage, intptr_t AErrorStart, intptr_t AErrorLen) :
+  Exception(AMessage)
 {
   ErrorStart = AErrorStart;
   ErrorLen = AErrorLen;
@@ -1067,9 +1067,9 @@ TCustomCommandData::TCustomCommandData(TTerminal * Terminal)
 }
 //---------------------------------------------------------------------------
 TCustomCommandData::TCustomCommandData(
-  TSessionData * SessionData, const UnicodeString & AUserName, const UnicodeString & Password)
+  TSessionData * SessionData, const UnicodeString & AUserName, const UnicodeString & APassword)
 {
-  Init(SessionData, AUserName, Password);
+  Init(SessionData, AUserName, APassword);
 }
 //---------------------------------------------------------------------------
 void TCustomCommandData::Init(

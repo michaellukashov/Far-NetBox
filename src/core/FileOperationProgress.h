@@ -90,7 +90,7 @@ public:
   void AddResumed(int64_t ASize);
   void Clear();
   uintptr_t CPS();
-  void Finish(const UnicodeString & FileName, bool Success,
+  void Finish(const UnicodeString & AFileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
   uintptr_t LocalBlockSize();
   bool IsLocallyDone() const;
