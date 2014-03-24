@@ -5071,7 +5071,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & FileName,
 
     UnicodeString DestPartialFullName;
     bool ResumeAllowed;
-    int64_t ResumeOffset;
+    int64_t ResumeOffset = 0;
 
     // Will we use ASCII of BINARY file transfer?
     OperationProgress->SetAsciiTransfer(
