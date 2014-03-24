@@ -15,6 +15,7 @@ call ms\do_win64a
 nmake -f ms\nt.mak
 mkdir x64
 cp out32/ssleay32.lib out32/libeay32.lib x64
+cp tmp32/lib.pdb x64
 cp -R inc32 x64
 goto end
 
@@ -27,6 +28,7 @@ call ms\do_ms
 nmake -f ms\nt.mak
 mkdir x86
 cp out32/ssleay32.lib out32/libeay32.lib x86
+cp tmp32/lib.pdb x86
 cp -R inc32 x86
 goto end
 
