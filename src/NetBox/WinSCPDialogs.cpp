@@ -6959,7 +6959,7 @@ void TFullSynchronizeDialog::Change()
 //------------------------------------------------------------------------------
 intptr_t TFullSynchronizeDialog::ActualCopyParamAttrs()
 {
-  intptr_t Result;
+  intptr_t Result = -1;
   if (SynchronizeTimestampsButton->GetChecked())
   {
     Result = cpaIncludeMaskOnly;
