@@ -5424,7 +5424,6 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
 
   const intptr_t DlgLength = 78;
   SetSize(TPoint(DlgLength, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
-  // TRect CRect = GetClientRect();
 
   SetCaption(GetMsg(Move ? MOVE_TITLE : COPY_TITLE));
 
