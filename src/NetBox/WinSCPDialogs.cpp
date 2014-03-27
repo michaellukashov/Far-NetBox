@@ -5407,6 +5407,7 @@ private:
   intptr_t FOptions;
   intptr_t FCopyParamAttrs;
   TGUICopyParamType FCopyParams;
+  UnicodeString FTargetDirectory;
   bool FToRemote;
 };
 //------------------------------------------------------------------------------
@@ -5516,6 +5517,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
 bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
   TGUICopyParamType * Params)
 {
+  FTargetDirectory = TargetDirectory;
   FCopyParams.Assign(Params);
 
   if (FLAGCLEAR(FOptions, coTempTransfer))
