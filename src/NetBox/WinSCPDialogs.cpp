@@ -5385,7 +5385,7 @@ public:
   explicit TCopyDialog(TCustomFarPlugin * AFarPlugin,
     bool ToRemote, bool Move, TStrings * FileList, intptr_t Options, intptr_t CopyParamAttrs);
 
-  bool Execute(UnicodeString & TargetDirectory, TGUICopyParamType * Params);
+  bool Execute(OUT UnicodeString & TargetDirectory, OUT TGUICopyParamType * Params);
 
 protected:
   virtual bool CloseQuery();
@@ -5514,8 +5514,8 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetCenterGroup(true);
 }
 //------------------------------------------------------------------------------
-bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
-  TGUICopyParamType * Params)
+bool TCopyDialog::Execute(OUT UnicodeString & TargetDirectory,
+  OUT TGUICopyParamType * Params)
 {
   FTargetDirectory = TargetDirectory;
   FCopyParams.Assign(Params);
@@ -5525,7 +5525,7 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     NewerOnlyCheck->SetChecked(FLAGCLEAR(FOptions, coDisableNewerOnly) && Params->GetNewerOnly());
 
     UnicodeString FileMask = Params->GetFileMask();
-    UnicodeString Directory = FToRemote ? 
+    UnicodeString Directory = FToRemote ?
       ::UnixIncludeTrailingBackslash(TargetDirectory) :
       ::IncludeTrailingBackslash(TargetDirectory);
     if (FFileList->GetCount() == 1)
