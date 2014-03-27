@@ -5416,11 +5416,11 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   DirectoryEdit(nullptr),
   NewerOnlyCheck(nullptr),
   QueueCheck(nullptr),
-  QueueNoConfirmationCheck(nullptr)
+  QueueNoConfirmationCheck(nullptr),
+  FOptions(Options),
+  FCopyParamAttrs(CopyParamAttrs),
+  FToRemote(ToRemote)
 {
-  FOptions = Options;
-  FCopyParamAttrs = CopyParamAttrs;
-  FToRemote = ToRemote;
 
   const intptr_t DlgLength = 78;
   SetSize(TPoint(DlgLength, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
