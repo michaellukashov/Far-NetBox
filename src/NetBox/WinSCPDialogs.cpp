@@ -5524,9 +5524,15 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
   {
     NewerOnlyCheck->SetChecked(FLAGCLEAR(FOptions, coDisableNewerOnly) && Params->GetNewerOnly());
 
-    DirectoryEdit->SetText(
-      (FToRemote ? ::UnixIncludeTrailingBackslash(TargetDirectory) :
-       ::IncludeTrailingBackslash(TargetDirectory)) + Params->GetFileMask());
+    UnicodeString FileMask = Params->GetFileMask();
+    UnicodeString Directory = FToRemote ? 
+      ::UnixIncludeTrailingBackslash(TargetDirectory) :
+      ::IncludeTrailingBackslash(TargetDirectory);
+    if (FFileList->GetCount() == 1)
+    {
+      FileMask = ::ExtractFileName(FFileList->GetString(0), false);
+    }
+    DirectoryEdit->SetText(Directory + FileMask);
     QueueCheck->SetChecked(Params->GetQueue());
     QueueNoConfirmationCheck->SetChecked(Params->GetQueueNoConfirmation());
   }
