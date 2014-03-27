@@ -5439,8 +5439,8 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
       UnicodeString PromptMsg = GetMsg(Move ? MOVE_FILE_PROMPT : COPY_FILE_PROMPT);
       UnicodeString FileName = FileList->GetString(0);
       UnicodeString OnlyFileName = ToRemote ?
-        ::ExtractFileName(FileName, false).c_str() :
-        ::UnixExtractFileName(FileName).c_str();
+        ::ExtractFileName(FileName, false) :
+        ::UnixExtractFileName(FileName);
       UnicodeString MinimizedName = MinimizeName(OnlyFileName, DlgLength - PromptMsg.Length() - 6, false);
       Prompt = FORMAT(PromptMsg.c_str(), MinimizedName.c_str());
     }
