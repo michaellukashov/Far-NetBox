@@ -5380,9 +5380,9 @@ class TCopyDialog : TFarDialog
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   explicit TCopyDialog(TCustomFarPlugin * AFarPlugin,
-    bool ToRemote, bool Move, TStrings * FileList, intptr_t Options, intptr_t CopyParamAttrs);
+    bool ToRemote, bool Move, const TStrings * AFileList, intptr_t Options, intptr_t CopyParamAttrs);
 
-  bool Execute(UnicodeString & TargetDirectory, TGUICopyParamType * Params);
+  bool Execute(OUT UnicodeString & TargetDirectory, OUT TGUICopyParamType * Params);
 
 protected:
   virtual bool CloseQuery();
@@ -5400,45 +5400,48 @@ private:
   TFarCheckBox * QueueCheck;
   TFarCheckBox * QueueNoConfirmationCheck;
 
+  const TStrings * FFileList;
   intptr_t FOptions;
   intptr_t FCopyParamAttrs;
   TGUICopyParamType FCopyParams;
+  UnicodeString FTargetDirectory;
   bool FToRemote;
 };
 //------------------------------------------------------------------------------
 TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
-  bool ToRemote, bool Move, TStrings * FileList,
+  bool ToRemote, bool Move, const TStrings * AFileList,
   intptr_t Options, intptr_t CopyParamAttrs) :
   TFarDialog(AFarPlugin),
   DirectoryEdit(nullptr),
   NewerOnlyCheck(nullptr),
   QueueCheck(nullptr),
-  QueueNoConfirmationCheck(nullptr)
+  QueueNoConfirmationCheck(nullptr),
+  FFileList(AFileList),
+  FOptions(Options),
+  FCopyParamAttrs(CopyParamAttrs),
+  FToRemote(ToRemote)
 {
-  FOptions = Options;
-  FCopyParamAttrs = CopyParamAttrs;
-  FToRemote = ToRemote;
-
+  assert(FFileList);
   const intptr_t DlgLength = 78;
   SetSize(TPoint(DlgLength, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
-  // TRect CRect = GetClientRect();
 
   SetCaption(GetMsg(Move ? MOVE_TITLE : COPY_TITLE));
 
   if (FLAGCLEAR(FOptions, coTempTransfer))
   {
     UnicodeString Prompt;
-    if (FileList->GetCount() > 1)
+    if (FFileList->GetCount() > 1)
     {
-      Prompt = FORMAT(GetMsg(Move ? MOVE_FILES_PROMPT : COPY_FILES_PROMPT).c_str(), FileList->GetCount());
+      Prompt = FORMAT(GetMsg(Move ? MOVE_FILES_PROMPT : COPY_FILES_PROMPT).c_str(), FFileList->GetCount());
     }
     else
     {
       UnicodeString PromptMsg = GetMsg(Move ? MOVE_FILE_PROMPT : COPY_FILE_PROMPT);
-      UnicodeString FileName = ToRemote ?
-        ::ExtractFileName(FileList->GetString(0), false).c_str() :
-        ::UnixExtractFileName(FileList->GetString(0)).c_str();
-      UnicodeString MinimizedName = MinimizeName(FileName, DlgLength - PromptMsg.Length() - 6, false);
+      UnicodeString FileName = FFileList->GetString(0);
+      UnicodeString OnlyFileName = ToRemote ?
+        ::ExtractFileName(FileName, false) :
+        ::UnixExtractFileName(FileName);
+      UnicodeString MinimizedName = MinimizeName(OnlyFileName, DlgLength - PromptMsg.Length() - 6, false);
       Prompt = FORMAT(PromptMsg.c_str(), MinimizedName.c_str());
     }
 
@@ -5509,18 +5512,25 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetCenterGroup(true);
 }
 //------------------------------------------------------------------------------
-bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
-  TGUICopyParamType * Params)
+bool TCopyDialog::Execute(OUT UnicodeString & TargetDirectory,
+  OUT TGUICopyParamType * Params)
 {
+  FTargetDirectory = TargetDirectory;
   FCopyParams.Assign(Params);
 
   if (FLAGCLEAR(FOptions, coTempTransfer))
   {
     NewerOnlyCheck->SetChecked(FLAGCLEAR(FOptions, coDisableNewerOnly) && Params->GetNewerOnly());
 
-    DirectoryEdit->SetText(
-      (FToRemote ? ::UnixIncludeTrailingBackslash(TargetDirectory) :
-       ::IncludeTrailingBackslash(TargetDirectory)) + Params->GetFileMask());
+    UnicodeString FileMask = Params->GetFileMask();
+    UnicodeString Directory = FToRemote ?
+      ::UnixIncludeTrailingBackslash(TargetDirectory) :
+      ::IncludeTrailingBackslash(TargetDirectory);
+    if (FFileList->GetCount() == 1)
+    {
+      FileMask = ::ExtractFileName(FFileList->GetString(0), false);
+    }
+    DirectoryEdit->SetText(Directory + FileMask);
     QueueCheck->SetChecked(Params->GetQueue());
     QueueNoConfirmationCheck->SetChecked(Params->GetQueueNoConfirmation());
   }
@@ -5572,6 +5582,8 @@ bool TCopyDialog::CloseQuery()
     if (!FToRemote && ((FOptions & coTempTransfer) == 0))
     {
       UnicodeString Directory = ExtractFilePath(DirectoryEdit->GetText());
+      if (Directory.IsEmpty())
+        Directory = FTargetDirectory;
       if (!DirectoryExists(Directory))
       {
         TWinSCPPlugin * WinSCPPlugin = NB_STATIC_DOWNCAST(TWinSCPPlugin, FarPlugin);
@@ -5636,14 +5648,14 @@ void TCopyDialog::CustomCopyParam()
 }
 //------------------------------------------------------------------------------
 bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
-  bool Move, TStrings * FileList,
-  UnicodeString & TargetDirectory,
-  TGUICopyParamType * Params,
+  bool Move, const TStrings * AFileList,
   intptr_t Options,
-  intptr_t CopyParamAttrs)
+  intptr_t CopyParamAttrs,
+  OUT UnicodeString & TargetDirectory,
+  OUT TGUICopyParamType * Params)
 {
   std::unique_ptr<TCopyDialog> Dialog(new TCopyDialog(FPlugin, ToRemote,
-    Move, FileList, Options, CopyParamAttrs));
+    Move, AFileList, Options, CopyParamAttrs));
   bool Result = Dialog->Execute(TargetDirectory, Params);
   return Result;
 }
@@ -6965,7 +6977,7 @@ void TFullSynchronizeDialog::Change()
 //------------------------------------------------------------------------------
 intptr_t TFullSynchronizeDialog::ActualCopyParamAttrs()
 {
-  intptr_t Result;
+  intptr_t Result = -1;
   if (SynchronizeTimestampsButton->GetChecked())
   {
     Result = cpaIncludeMaskOnly;

@@ -219,7 +219,7 @@ intptr_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo
 //---------------------------------------------------------------------------
 intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 {
-  intptr_t Result;
+  intptr_t Result = 0;
   if ((Rec->EventType == KEY_EVENT) &&
       Rec->Event.KeyEvent.bKeyDown &&
      (Rec->Event.KeyEvent.uChar.AsciiChar == 'W') &&
@@ -228,10 +228,6 @@ intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
   {
     CommandsMenu(false);
     Result = 1;
-  }
-  else
-  {
-    Result = 0;
   }
 
   return Result;

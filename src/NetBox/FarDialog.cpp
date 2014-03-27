@@ -2290,12 +2290,8 @@ intptr_t TFarList::GetPosition() const
 //---------------------------------------------------------------------------
 intptr_t TFarList::GetTopIndex() const
 {
-  intptr_t Result;
-  if (GetCount() == 0)
-  {
-    Result = -1;
-  }
-  else
+  intptr_t Result = -1;
+  if (GetCount() != 0)
   {
     FarListPos ListPos;
     ClearStruct(ListPos);

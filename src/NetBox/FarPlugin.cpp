@@ -1020,10 +1020,9 @@ intptr_t TCustomFarPlugin::DialogMessage(unsigned int Flags,
   const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons,
   TFarMessageParams * Params)
 {
-  intptr_t Result;
   std::unique_ptr<TFarMessageDialog> Dialog(new TFarMessageDialog(this, Params));
   Dialog->Init(Flags, Title, Message, Buttons);
-  Result = Dialog->Execute(Params->CheckBox);
+  intptr_t Result = Dialog->Execute(Params->CheckBox);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1033,7 +1032,6 @@ intptr_t TCustomFarPlugin::FarMessage(unsigned int Flags,
 {
   assert(Params != nullptr);
 
-  intptr_t Result;
   TStringList * MessageLines = nullptr;
   std::unique_ptr<TStrings> MessageLinesPtr(nullptr);
   wchar_t ** Items = nullptr;
@@ -1082,7 +1080,7 @@ intptr_t TCustomFarPlugin::FarMessage(unsigned int Flags,
   }
 
   TFarEnvGuard Guard;
-  Result = static_cast<intptr_t>(FStartupInfo.Message(&MainGuid, &MainGuid,
+  intptr_t Result = static_cast<intptr_t>(FStartupInfo.Message(&MainGuid, &MainGuid,
     Flags | FMSG_LEFTALIGN, nullptr, Items, static_cast<int>(MessageLines->GetCount()),
     static_cast<int>(Buttons->GetCount())));
 
@@ -1100,7 +1098,7 @@ intptr_t TCustomFarPlugin::Message(uintptr_t Flags,
     FarControl(FCTL_SETUSERSCREEN, 0, 0);
   }
 
-  intptr_t Result;
+  intptr_t Result = -1;
   if (Buttons != nullptr)
   {
     TFarMessageParams DefaultParams;
@@ -1327,7 +1325,7 @@ HWND TCustomFarPlugin::GetConsoleWindow() const
 //---------------------------------------------------------------------------
 uintptr_t TCustomFarPlugin::ConsoleWindowState() const
 {
-  uintptr_t Result;
+  uintptr_t Result = SW_SHOWNORMAL;
   HWND Window = GetConsoleWindow();
   if (Window != nullptr)
   {
@@ -1336,10 +1334,6 @@ uintptr_t TCustomFarPlugin::ConsoleWindowState() const
     WindowPlacement.length = sizeof(WindowPlacement);
     Win32Check(::GetWindowPlacement(Window, &WindowPlacement) > 0);
     Result = WindowPlacement.showCmd;
-  }
-  else
-  {
-    Result = SW_SHOWNORMAL;
   }
   return Result;
 }

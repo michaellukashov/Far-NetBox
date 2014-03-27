@@ -2459,7 +2459,7 @@ struct TExportSessionParam
 intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
   UnicodeString & DestPath, int OpMode)
 {
-  intptr_t Result;
+  intptr_t Result = -1;
   if (Connected())
   {
     FFileList = CreateFileList(PanelItems, osRemote);
@@ -2493,14 +2493,6 @@ intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
       ProcessSessions(PanelItems, MAKE_CALLBACK(TWinSCPFileSystem::ExportSession, this), &Param);
       Result = 1;
     }
-    else
-    {
-      Result = -1;
-    }
-  }
-  else
-  {
-    Result = -1;
   }
   return Result;
 }
@@ -2508,13 +2500,13 @@ intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
 intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
   UnicodeString & DestPath, int OpMode)
 {
-  intptr_t Result;
+  intptr_t Result = -1;
   bool EditView = (OpMode & (OPM_EDIT | OPM_VIEW)) != 0;
   bool Confirmed =
     (OpMode & OPM_SILENT) &&
     (!EditView || GetFarConfiguration()->GetEditorDownloadDefaultMode());
 
-  TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
+  TGUICopyParamType CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
   if (EditView)
   {
     EditViewCopyParam(CopyParam);
@@ -2532,8 +2524,9 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
 
     uintptr_t Options =
       FLAGMASK(EditView, coTempTransfer | coDisableNewerOnly);
-    Confirmed = CopyDialog(false, Move, FFileList, DestPath,
-      &CopyParam, Options, CopyParamAttrs);
+    Confirmed = CopyDialog(false, Move, FFileList,
+      Options, CopyParamAttrs,
+      DestPath, &CopyParam);
 
     if (Confirmed && !EditView && CopyParam.GetQueue())
     {
@@ -2571,10 +2564,6 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
       FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
     FTerminal->CopyToLocal(FFileList, DestPath, &CopyParam, Params);
     Result = 1;
-  }
-  else
-  {
-    Result = -1;
   }
   return Result;
 }
@@ -2632,8 +2621,9 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
     uintptr_t Options =
       FLAGMASK(Edit, coTempTransfer) |
       FLAGMASK(Edit || !GetTerminal()->GetIsCapable(fcNewerOnlyUpload), coDisableNewerOnly);
-    Confirmed = CopyDialog(true, Move, FFileList, DestPath,
-      &CopyParam, Options, CopyParamAttrs);
+    Confirmed = CopyDialog(true, Move, FFileList,
+      Options, CopyParamAttrs,
+      DestPath, &CopyParam);
 
     if (Confirmed && !Edit && CopyParam.GetQueue())
     {
@@ -3704,7 +3694,7 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
       ProgressData.Resume();
     };
     TCancelStatus ACancel;
-    uintptr_t Result;
+    uintptr_t Result = -1;
     if (ProgressData.TransferingFile &&
         (ProgressData.TimeExpected() > GetGUIConfiguration()->GetIgnoreCancelBeforeFinish()))
     {

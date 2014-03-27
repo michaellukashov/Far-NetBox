@@ -161,11 +161,11 @@ protected:
     TRemoteProperties * Properties, intptr_t AllowedChanges);
   bool ExecuteCommand(const UnicodeString & Command);
   void TerminalCaptureLog(const UnicodeString & AddedLine, bool StdError);
-  bool CopyDialog(bool ToRemote, bool Move, TStrings * FileList,
-    UnicodeString & TargetDirectory,
-    TGUICopyParamType * Params,
+  bool CopyDialog(bool ToRemote, bool Move, const TStrings * AFileList,
     intptr_t Options,
-    intptr_t CopyParamAttrs);
+    intptr_t CopyParamAttrs,
+    OUT UnicodeString & TargetDirectory,
+    OUT TGUICopyParamType * Params);
   bool LinkDialog(UnicodeString & FileName, UnicodeString & PointTo, bool & Symbolic,
     bool Edit, bool AllowSymbolic);
   void FileSystemInfoDialog(const TSessionInfo & SessionInfo,
