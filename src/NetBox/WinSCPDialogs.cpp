@@ -5584,6 +5584,8 @@ bool TCopyDialog::CloseQuery()
     if (!FToRemote && ((FOptions & coTempTransfer) == 0))
     {
       UnicodeString Directory = ExtractFilePath(DirectoryEdit->GetText());
+      if (Directory.IsEmpty())
+        Directory = FTargetDirectory;
       if (!DirectoryExists(Directory))
       {
         TWinSCPPlugin * WinSCPPlugin = NB_STATIC_DOWNCAST(TWinSCPPlugin, FarPlugin);
