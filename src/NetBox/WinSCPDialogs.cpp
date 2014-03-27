@@ -5652,10 +5652,10 @@ void TCopyDialog::CustomCopyParam()
 //------------------------------------------------------------------------------
 bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   bool Move, const TStrings * AFileList,
-  UnicodeString & TargetDirectory,
-  TGUICopyParamType * Params,
   intptr_t Options,
-  intptr_t CopyParamAttrs)
+  intptr_t CopyParamAttrs,
+  OUT UnicodeString & TargetDirectory,
+  OUT TGUICopyParamType * Params)
 {
   std::unique_ptr<TCopyDialog> Dialog(new TCopyDialog(FPlugin, ToRemote,
     Move, AFileList, Options, CopyParamAttrs));

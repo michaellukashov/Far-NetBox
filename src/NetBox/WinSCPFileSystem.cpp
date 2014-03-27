@@ -2513,8 +2513,9 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
 
     uintptr_t Options =
       FLAGMASK(EditView, coTempTransfer | coDisableNewerOnly);
-    Confirmed = CopyDialog(false, Move, FFileList, DestPath,
-      &CopyParam, Options, CopyParamAttrs);
+    Confirmed = CopyDialog(false, Move, FFileList,
+      Options, CopyParamAttrs,
+      DestPath, &CopyParam);
 
     if (Confirmed && !EditView && CopyParam.GetQueue())
     {
@@ -2609,8 +2610,9 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
     uintptr_t Options =
       FLAGMASK(Edit, coTempTransfer) |
       FLAGMASK(Edit || !GetTerminal()->GetIsCapable(fcNewerOnlyUpload), coDisableNewerOnly);
-    Confirmed = CopyDialog(true, Move, FFileList, DestPath,
-      &CopyParam, Options, CopyParamAttrs);
+    Confirmed = CopyDialog(true, Move, FFileList,
+      Options, CopyParamAttrs,
+      DestPath, &CopyParam);
 
     if (Confirmed && !Edit && CopyParam.GetQueue())
     {
