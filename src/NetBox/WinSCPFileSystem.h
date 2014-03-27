@@ -161,7 +161,7 @@ protected:
     TRemoteProperties * Properties, intptr_t AllowedChanges);
   bool ExecuteCommand(const UnicodeString & Command);
   void TerminalCaptureLog(const UnicodeString & AddedLine, bool StdError);
-  bool CopyDialog(bool ToRemote, bool Move, TStrings * FileList,
+  bool CopyDialog(bool ToRemote, bool Move, const TStrings * AFileList,
     UnicodeString & TargetDirectory,
     TGUICopyParamType * Params,
     intptr_t Options,

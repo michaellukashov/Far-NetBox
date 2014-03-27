@@ -276,14 +276,14 @@ UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
 }
 //---------------------------------------------------------------------------
 UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
-  const UnicodeString & MultiItemsFormat, TStrings * Items)
+  const UnicodeString & MultiItemsFormat, const TStrings * Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
     Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
 }
 //---------------------------------------------------------------------------
 UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
-  const UnicodeString & MultiFilesFormat, TStrings * Files, bool Remote)
+  const UnicodeString & MultiFilesFormat, const TStrings * Files, bool Remote)
 {
   assert(Files != nullptr);
   UnicodeString Item;
