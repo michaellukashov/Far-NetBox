@@ -5403,6 +5403,7 @@ private:
   TFarCheckBox * QueueCheck;
   TFarCheckBox * QueueNoConfirmationCheck;
 
+  TStrings * FFileList;
   intptr_t FOptions;
   intptr_t FCopyParamAttrs;
   TGUICopyParamType FCopyParams;
@@ -5417,11 +5418,11 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   NewerOnlyCheck(nullptr),
   QueueCheck(nullptr),
   QueueNoConfirmationCheck(nullptr),
+  FFileList(FileList),
   FOptions(Options),
   FCopyParamAttrs(CopyParamAttrs),
   FToRemote(ToRemote)
 {
-
   const intptr_t DlgLength = 78;
   SetSize(TPoint(DlgLength, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
 
