@@ -5407,7 +5407,6 @@ private:
   intptr_t FOptions;
   intptr_t FCopyParamAttrs;
   TGUICopyParamType FCopyParams;
-  UnicodeString FTargetDirectory;
   bool FToRemote;
 };
 //------------------------------------------------------------------------------
@@ -5518,7 +5517,6 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
 bool TCopyDialog::Execute(OUT UnicodeString & TargetDirectory,
   OUT TGUICopyParamType * Params)
 {
-  FTargetDirectory = TargetDirectory;
   FCopyParams.Assign(Params);
 
   if (FLAGCLEAR(FOptions, coTempTransfer))
@@ -5546,15 +5544,20 @@ bool TCopyDialog::Execute(OUT UnicodeString & TargetDirectory,
 
     if (FLAGCLEAR(FOptions, coTempTransfer))
     {
+      UnicodeString NewTargetDirectory;
       if (FToRemote)
       {
         Params->SetFileMask(::UnixExtractFileName(DirectoryEdit->GetText()));
-        TargetDirectory = ::UnixExtractFilePath(DirectoryEdit->GetText());
+        NewTargetDirectory = ::UnixExtractFilePath(DirectoryEdit->GetText());
+        if (!NewTargetDirectory.IsEmpty())
+          TargetDirectory = NewTargetDirectory;
       }
       else
       {
         Params->SetFileMask(::ExtractFileName(DirectoryEdit->GetText(), false));
-        TargetDirectory = ::ExtractFilePath(DirectoryEdit->GetText());
+        NewTargetDirectory = ::ExtractFilePath(DirectoryEdit->GetText());
+        if (!NewTargetDirectory.IsEmpty())
+          TargetDirectory = NewTargetDirectory;
       }
 
       Params->SetNewerOnly(FLAGCLEAR(FOptions, coDisableNewerOnly) && NewerOnlyCheck->GetChecked());
@@ -5585,9 +5588,7 @@ bool TCopyDialog::CloseQuery()
     if (!FToRemote && ((FOptions & coTempTransfer) == 0))
     {
       UnicodeString Directory = ExtractFilePath(DirectoryEdit->GetText());
-      if (Directory.IsEmpty())
-        Directory = FTargetDirectory;
-      if (!DirectoryExists(Directory))
+      if (!Directory.IsEmpty() && !DirectoryExists(Directory))
       {
         TWinSCPPlugin * WinSCPPlugin = NB_STATIC_DOWNCAST(TWinSCPPlugin, FarPlugin);
 
