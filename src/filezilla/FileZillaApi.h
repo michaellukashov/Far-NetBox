@@ -39,7 +39,7 @@
 //You don't have to fill this struct, you may use the command specific
 //functions which is easier.
 //See below for a list of supported commands and their parameters.
-typedef struct
+struct t_command : public TObject
 {
 	int id; //Type of command, see below
 	CString param1; //Parameters for this command
@@ -49,7 +49,7 @@ typedef struct
 	CServerPath newPath; //Used for rename
 	t_transferfile transferfile;
 	t_server server;
-} t_command;
+};
 
 //Description of all api commands
 #define FZ_COMMAND_CONNECT 0x0001
@@ -126,7 +126,7 @@ typedef struct
 #endif
 #define FZ_ASYNCREQUEST_NEEDPASS 10
 
-class CAsyncRequestData
+class CAsyncRequestData : public TObject
 {
 public:
 	CAsyncRequestData();
