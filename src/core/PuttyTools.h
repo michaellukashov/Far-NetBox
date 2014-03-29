@@ -12,7 +12,7 @@ enum TKeyType
   ktSSHCom
 };
 
-TKeyType KeyType(const UnicodeString & FileName);
+TKeyType KeyType(const UnicodeString & AFileName);
 UnicodeString KeyTypeName(TKeyType KeyType);
 //---------------------------------------------------------------------------
 int64_t ParseSize(const UnicodeString & SizeStr);

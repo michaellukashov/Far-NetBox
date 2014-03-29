@@ -240,13 +240,13 @@ enum FileAttributesEnum
   faAnyFile = 0x0000003f,
 };
 
-bool FileExists(const UnicodeString & FileName);
+bool FileExists(const UnicodeString & AFileName);
 bool RenameFile(const UnicodeString & From, const UnicodeString & To);
-bool DirectoryExists(const UnicodeString & Dir);
-UnicodeString FileSearch(const UnicodeString & FileName, const UnicodeString & DirectoryList);
+bool DirectoryExists(const UnicodeString & ADir);
+UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & DirectoryList);
 
-inline DWORD FileGetAttr(const UnicodeString & FileName);
-inline DWORD FileSetAttr(const UnicodeString & FileName, DWORD LocalFileAttrs);
+inline DWORD FileGetAttr(const UnicodeString & AFileName);
+inline DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs);
 
 bool ForceDirectories(const UnicodeString & Dir);
 bool DeleteFile(const UnicodeString & File);
@@ -277,9 +277,9 @@ UnicodeString ExpandEnvVars(const UnicodeString & Str2);
 
 UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len);
 
-UnicodeString ChangeFileExt(const UnicodeString & FileName, const UnicodeString & Ext);
-UnicodeString ExtractFileExt(const UnicodeString & FileName);
-UnicodeString ExpandUNCFileName(const UnicodeString & FileName);
+UnicodeString ChangeFileExt(const UnicodeString & AFileName, const UnicodeString & AExt);
+UnicodeString ExtractFileExt(const UnicodeString & AFileName);
+UnicodeString ExpandUNCFileName(const UnicodeString & AFileName);
 
 //---------------------------------------------------------------------------
 typedef WIN32_FIND_DATA TWin32FindData;
@@ -325,7 +325,7 @@ struct TSearchRec
 
 //---------------------------------------------------------------------------
 
-DWORD FindFirst(const UnicodeString & FileName, DWORD LocalFileAttrs, TSearchRec & Rec);
+DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec);
 DWORD FindNext(TSearchRec & Rec);
 DWORD FindClose(TSearchRec & Rec);
 

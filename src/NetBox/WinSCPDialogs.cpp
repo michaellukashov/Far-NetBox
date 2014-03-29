@@ -1491,7 +1491,7 @@ private:
   TFtps GetFtps() const;
   TLoginType IndexToLoginType(intptr_t Index) const;
   TLoginType GetLoginType() const;
-  bool VerifyKey(const UnicodeString & FileName, bool TypeOnly);
+  bool VerifyKey(const UnicodeString & AFileName, bool TypeOnly);
   void PrevTabClick(TFarButton * /* Sender */, bool & Close);
   void NextTabClick(TFarButton * /* Sender */, bool & Close);
   void CipherButtonClick(TFarButton * Sender, bool & Close);
@@ -3991,22 +3991,22 @@ TLoginType TSessionDialog::IndexToLoginType(intptr_t Index) const
   return Result;
 }
 //------------------------------------------------------------------------------
-bool TSessionDialog::VerifyKey(const UnicodeString & FileName, bool TypeOnly)
+bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
 {
   bool Result = true;
 
-  if (!::Trim(FileName).IsEmpty())
+  if (!::Trim(AFileName).IsEmpty())
   {
-    TKeyType Type = KeyType(FileName);
+    TKeyType Type = KeyType(AFileName);
     UnicodeString Message;
     switch (Type)
     {
       case ktOpenSSH:
-        Message = FMTLOAD(KEY_TYPE_UNSUPPORTED, FileName.c_str(), L"OpenSSH SSH-2");
+        Message = FMTLOAD(KEY_TYPE_UNSUPPORTED, AFileName.c_str(), L"OpenSSH SSH-2");
         break;
 
       case ktSSHCom:
-        Message = FMTLOAD(KEY_TYPE_UNSUPPORTED, FileName.c_str(), L"ssh.com SSH-2");
+        Message = FMTLOAD(KEY_TYPE_UNSUPPORTED, AFileName.c_str(), L"ssh.com SSH-2");
         break;
 
       case ktSSH1:
@@ -4017,7 +4017,7 @@ bool TSessionDialog::VerifyKey(const UnicodeString & FileName, bool TypeOnly)
               (SshProt1onlyButton->GetChecked() || SshProt1Button->GetChecked()))
           {
             Message = FMTLOAD(KEY_TYPE_DIFFERENT_SSH,
-              FileName.c_str(), (Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2"));
+              AFileName.c_str(), (Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2"));
           }
         }
         break;
@@ -4027,7 +4027,7 @@ bool TSessionDialog::VerifyKey(const UnicodeString & FileName, bool TypeOnly)
         // fallthru
       case ktUnopenable:
       case ktUnknown:
-        Message = FMTLOAD(KEY_TYPE_UNKNOWN, FileName.c_str());
+        Message = FMTLOAD(KEY_TYPE_UNKNOWN, AFileName.c_str());
         break;
     }
 
@@ -5709,8 +5709,8 @@ public:
   explicit TLinkDialog(TCustomFarPlugin * AFarPlugin,
     bool Edit, bool AllowSymbolic);
 
-  bool Execute(UnicodeString & FileName, UnicodeString & PointTo,
-               bool & Symbolic);
+  bool Execute(UnicodeString & AFileName, UnicodeString & PointTo,
+    bool & Symbolic);
 
 protected:
   virtual void Change();
@@ -5782,17 +5782,17 @@ void TLinkDialog::Change()
   }
 }
 //------------------------------------------------------------------------------
-bool TLinkDialog::Execute(UnicodeString & FileName, UnicodeString & PointTo,
+bool TLinkDialog::Execute(UnicodeString & AFileName, UnicodeString & PointTo,
   bool & Symbolic)
 {
-  FileNameEdit->SetText(FileName);
+  FileNameEdit->SetText(AFileName);
   PointToEdit->SetText(PointTo);
   SymbolicCheck->SetChecked(Symbolic);
 
   bool Result = ShowModal() != brCancel;
   if (Result)
   {
-    FileName = FileNameEdit->GetText();
+    AFileName = FileNameEdit->GetText();
     PointTo = PointToEdit->GetText();
     Symbolic = SymbolicCheck->GetChecked();
   }
@@ -5800,11 +5800,11 @@ bool TLinkDialog::Execute(UnicodeString & FileName, UnicodeString & PointTo,
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-bool TWinSCPFileSystem::LinkDialog(UnicodeString & FileName,
+bool TWinSCPFileSystem::LinkDialog(UnicodeString & AFileName,
   UnicodeString & PointTo, bool & Symbolic, bool Edit, bool AllowSymbolic)
 {
   std::unique_ptr<TLinkDialog> Dialog(new TLinkDialog(FPlugin, Edit, AllowSymbolic));
-  bool Result = Dialog->Execute(FileName, PointTo, Symbolic);
+  bool Result = Dialog->Execute(AFileName, PointTo, Symbolic);
   return Result;
 }
 //------------------------------------------------------------------------------

@@ -47,14 +47,14 @@ public:
 
   void SetMask(const UnicodeString & Mask);
 
-  bool Matches(const UnicodeString & FileName, bool Directory = false,
+  bool Matches(const UnicodeString & AFileName, bool Directory = false,
     const UnicodeString & Path = "", const TParams * Params = nullptr) const;
-  bool Matches(const UnicodeString & FileName, bool Directory,
+  bool Matches(const UnicodeString & AFileName, bool Directory,
     const UnicodeString & Path, const TParams * Params,
     bool & ImplicitMatch) const;
-  bool Matches(const UnicodeString & FileName, bool Local, bool Directory,
+  bool Matches(const UnicodeString & AFileName, bool Local, bool Directory,
     const TParams * Params = nullptr) const;
-  bool Matches(const UnicodeString & FileName, bool Local, bool Directory,
+  bool Matches(const UnicodeString & AFileName, bool Local, bool Directory,
     const TParams * Params, bool & ImplicitMatch) const;
 
   UnicodeString GetMasks() const { return FStr; }
@@ -138,14 +138,14 @@ private:
   void Clear();
   static void Clear(TMasks & Masks);
   static void TrimEx(UnicodeString & Str, intptr_t & Start, intptr_t & End);
-  static bool MatchesMasks(const UnicodeString & FileName, bool Directory,
+  static bool MatchesMasks(const UnicodeString & AFileName, bool Directory,
     const UnicodeString & Path, const TParams * Params, const TMasks & Masks, bool Recurse);
   static inline bool MatchesMaskMask(const TMaskMask & MaskMask, const UnicodeString & Str);
   static inline bool IsAnyMask(const UnicodeString & Mask);
   void ThrowError(intptr_t Start, intptr_t End) const;
 };
 //---------------------------------------------------------------------------
-UnicodeString MaskFileName(const UnicodeString & FileName, const UnicodeString & Mask);
+UnicodeString MaskFileName(const UnicodeString & AFileName, const UnicodeString & Mask);
 bool IsEffectiveFileNameMask(const UnicodeString & Mask);
 UnicodeString DelimitFileNameMask(const UnicodeString & Mask);
 //---------------------------------------------------------------------------
@@ -226,7 +226,7 @@ public:
   TFileCustomCommand();
   explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path);
   explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path,
-    const UnicodeString & FileName, const UnicodeString & FileList);
+    const UnicodeString & AFileName, const UnicodeString & FileList);
   virtual ~TFileCustomCommand() {}
 
   virtual void Validate(const UnicodeString & Command);

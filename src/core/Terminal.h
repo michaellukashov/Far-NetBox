@@ -212,8 +212,8 @@ public:
   TRemoteFileList * ReadDirectoryListing(const UnicodeString & Directory, const TFileMasks & Mask);
   TRemoteFileList * CustomReadDirectoryListing(const UnicodeString & Directory, bool UseCache);
   TRemoteFile * ReadFileListing(const UnicodeString & Path);
-  void ReadFile(const UnicodeString & FileName, TRemoteFile *& AFile);
-  bool FileExists(const UnicodeString & FileName, TRemoteFile ** File = nullptr);
+  void ReadFile(const UnicodeString & AFileName, TRemoteFile *& AFile);
+  bool FileExists(const UnicodeString & AFileName, TRemoteFile ** File = nullptr);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& File);
   bool CopyToLocal(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params);
@@ -221,20 +221,20 @@ public:
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params);
   void CreateDirectory(const UnicodeString & DirName,
     const TRemoteProperties * Properties = nullptr);
-  void CreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic);
-  void DeleteFile(const UnicodeString & FileName,
+  void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
+  void DeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile = nullptr, void * Params = nullptr);
   bool DeleteFiles(TStrings * FilesToDelete, intptr_t Params = 0);
   bool DeleteLocalFiles(TStrings * FileList, intptr_t Params = 0);
-  bool IsRecycledFile(const UnicodeString & FileName);
-  void CustomCommandOnFile(const UnicodeString & FileName,
+  bool IsRecycledFile(const UnicodeString & AFileName);
+  void CustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, void * AParams);
   void CustomCommandOnFiles(const UnicodeString & Command, intptr_t Params,
     TStrings * Files, TCaptureOutputEvent OutputEvent);
   void ChangeDirectory(const UnicodeString & Directory);
   void EndTransaction();
   void HomeDirectory();
-  void ChangeFileProperties(const UnicodeString & FileName,
+  void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * File, /*const TRemoteProperties */ void * Properties);
   void ChangeFilesProperties(TStrings * FileList,
     const TRemoteProperties * Properties);
@@ -243,13 +243,13 @@ public:
   void TerminalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   void ReloadDirectory();
   void RefreshDirectory();
-  void TerminalRenameFile(const UnicodeString & FileName, const UnicodeString & NewName);
+  void TerminalRenameFile(const UnicodeString & AFileName, const UnicodeString & NewName);
   void TerminalRenameFile(const TRemoteFile * File, const UnicodeString & NewName, bool CheckExistence);
-  void MoveFile(const UnicodeString & FileName, const TRemoteFile * File,
+  void MoveFile(const UnicodeString & AFileName, const TRemoteFile * File,
     /* const TMoveFileParams */ void * Param);
   bool MoveFiles(TStrings * FileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
-  void CopyFile(const UnicodeString & FileName, const TRemoteFile * File,
+  void CopyFile(const UnicodeString & AFileName, const TRemoteFile * File,
     /* const TMoveFileParams */ void * Param);
   bool CopyFiles(TStrings * FileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
@@ -272,9 +272,9 @@ public:
   void SpaceAvailable(const UnicodeString & Path, TSpaceAvailable & ASpaceAvailable);
   bool DirectoryFileList(const UnicodeString & Path,
     TRemoteFileList *& FileList, bool CanLoad);
-  void MakeLocalFileList(const UnicodeString & FileName,
+  void MakeLocalFileList(const UnicodeString & AFileName,
     const TSearchRec & Rec, void * Param);
-  UnicodeString FileUrl(const UnicodeString & FileName) const;
+  UnicodeString FileUrl(const UnicodeString & AFileName) const;
   bool FileOperationLoopQuery(Exception & E,
     TFileOperationProgressType * OperationProgress,
     const UnicodeString & Message,
@@ -364,14 +364,14 @@ protected:
   void DoReadDirectoryProgress(intptr_t Progress, bool & Cancel);
   void DoReadDirectory(bool ReloadOnly);
   void DoCreateDirectory(const UnicodeString & DirName);
-  void DoDeleteFile(const UnicodeString & FileName, const TRemoteFile * File,
+  void DoDeleteFile(const UnicodeString & AFileName, const TRemoteFile * File,
     intptr_t Params);
-  void DoCustomCommandOnFile(const UnicodeString & FileName,
+  void DoCustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params,
     TCaptureOutputEvent OutputEvent);
-  void DoRenameFile(const UnicodeString & FileName,
+  void DoRenameFile(const UnicodeString & AFileName,
     const UnicodeString & NewName, bool Move);
-  void DoCopyFile(const UnicodeString & FileName, const UnicodeString & NewName);
+  void DoCopyFile(const UnicodeString & AFileName, const UnicodeString & NewName);
   void DoChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties);
   void DoChangeDirectory();
@@ -403,7 +403,7 @@ protected:
   void OpenLocalFile(const UnicodeString & AFileName, uintptr_t Access,
     OUT HANDLE * AHandle, OUT uintptr_t * AAttrs, OUT int64_t * ACTime, OUT int64_t * AMTime,
     OUT int64_t * AATime, OUT int64_t * ASize, bool TryWriteReadOnly = true);
-  bool AllowLocalFileTransfer(const UnicodeString & FileName, const TCopyParamType * CopyParam);
+  bool AllowLocalFileTransfer(const UnicodeString & AFileName, const TCopyParamType * CopyParam);
   bool HandleException(Exception * E);
   void CalculateFileSize(const UnicodeString & AFileName,
     const TRemoteFile * AFile, /*TCalculateSizeParams*/ void * Size);
@@ -449,7 +449,7 @@ protected:
   void OpenTunnel();
   void CloseTunnel();
   void DoInformation(const UnicodeString & Str, bool Status, intptr_t Phase = -1);
-  UnicodeString FileUrl(const UnicodeString & Protocol, const UnicodeString & FileName) const;
+  UnicodeString FileUrl(const UnicodeString & Protocol, const UnicodeString & AFileName) const;
   bool PromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString & AName, const UnicodeString & Instructions, const UnicodeString & Prompt,
     bool Echo,
@@ -681,8 +681,8 @@ public:
 
   TStringList * Filter;
 
-  bool FilterFind(const UnicodeString & FileName);
-  bool MatchesFilter(const UnicodeString & FileName);
+  bool FilterFind(const UnicodeString & AFileName);
+  bool MatchesFilter(const UnicodeString & AFileName);
 };
 //------------------------------------------------------------------------------
 enum TChecklistAction

@@ -111,12 +111,12 @@ public:
 
   virtual UnicodeString ModuleFileName() const;
 
-  UnicodeString GetFileInfoString(const UnicodeString & Key,
-    const UnicodeString & FileName) const;
-  void * GetFileApplicationInfo(const UnicodeString & FileName) const;
-  UnicodeString GetFileProductVersion(const UnicodeString & FileName) const;
-  UnicodeString GetFileProductName(const UnicodeString & FileName) const;
-  UnicodeString GetFileCompanyName(const UnicodeString & FileName) const;
+  UnicodeString GetFileInfoString(const UnicodeString & AKey,
+    const UnicodeString & AFileName) const;
+  void * GetFileApplicationInfo(const UnicodeString & AFileName) const;
+  UnicodeString GetFileProductVersion(const UnicodeString & AFileName) const;
+  UnicodeString GetFileProductName(const UnicodeString & AFileName) const;
+  UnicodeString GetFileCompanyName(const UnicodeString & AFileName) const;
 
   bool GetPermanentLogging() const { return FPermanentLogging; }
   void SetPermanentLogging(bool Value) { FPermanentLogging = Value; }
@@ -138,8 +138,8 @@ public:
   void SaveExplicit();
   void SetNulStorage();
   void SetDefaultStorage();
-  void Export(const UnicodeString & FileName);
-  void Import(const UnicodeString & FileName);
+  void Export(const UnicodeString & AFileName);
+  void Import(const UnicodeString & AFileName);
   void CleanupConfiguration();
   void CleanupIniFile();
   void CleanupHostKeys();
@@ -158,7 +158,7 @@ public:
   virtual RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
   virtual UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
-  UnicodeString GetFileDescription(const UnicodeString & FileName);
+  UnicodeString GetFileDescription(const UnicodeString & AFileName);
 
   // TUsage * GetUsage() { return FUsage; }
   UnicodeString GetPuttyRegistryStorageKey() const { return FPuttyRegistryStorageKey; }

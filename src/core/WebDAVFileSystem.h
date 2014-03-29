@@ -39,7 +39,7 @@ public:
   virtual void ChangeDirectory(const UnicodeString & Directory);
   virtual void CachedChangeDirectory(const UnicodeString & Directory);
   virtual void AnnounceFileListOperation();
-  virtual void ChangeFileProperties(const UnicodeString & FileName,
+  virtual void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * File, const TRemoteProperties * Properties,
     TChmodSessionAction & Action);
   virtual bool LoadFilesProperties(TStrings * FileList);
@@ -55,10 +55,10 @@ public:
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CreateDirectory(const UnicodeString & DirName);
-  virtual void CreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic);
-  virtual void DeleteFile(const UnicodeString & FileName,
+  virtual void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
+  virtual void DeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action);
-  virtual void CustomCommandOnFile(const UnicodeString & FileName,
+  virtual void CustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * File, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
   virtual void DoStartup();
   virtual void HomeDirectory();
@@ -66,21 +66,21 @@ public:
   virtual void LookupUsersGroups();
   virtual void ReadCurrentDirectory();
   virtual void ReadDirectory(TRemoteFileList * FileList);
-  virtual void ReadFile(const UnicodeString & FileName,
+  virtual void ReadFile(const UnicodeString & AFileName,
     TRemoteFile *& File);
   virtual void ReadSymlink(TRemoteFile * SymlinkFile,
     TRemoteFile *& File);
-  virtual void RemoteRenameFile(const UnicodeString & FileName,
+  virtual void RemoteRenameFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
-  virtual void CopyFile(const UnicodeString & FileName,
+  virtual void CopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
-  virtual UnicodeString FileUrl(const UnicodeString & FileName) const;
+  virtual UnicodeString FileUrl(const UnicodeString & AFileName) const;
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo() const;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
-  virtual bool TemporaryTransferFile(const UnicodeString & FileName);
+  virtual bool TemporaryTransferFile(const UnicodeString & AFileName);
   virtual bool GetStoredCredentialsTried();
   virtual UnicodeString GetUserName();
 
@@ -135,21 +135,21 @@ protected:
   void EnsureLocation();
   void DoChangeDirectory(const UnicodeString & Directory);
 
-  void Sink(const UnicodeString & FileName,
+  void Sink(const UnicodeString & AFileName,
     const TRemoteFile * File, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TDownloadSessionAction & Action);
-  void SinkRobust(const UnicodeString & FileName,
+  void SinkRobust(const UnicodeString & AFileName,
     const TRemoteFile * File, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, uintptr_t Flags);
-  void SinkFile(const UnicodeString & FileName, const TRemoteFile * File, void * Param);
-  void WebDAVSourceRobust(const UnicodeString & FileName,
+  void SinkFile(const UnicodeString & AFileName, const TRemoteFile * File, void * Param);
+  void WebDAVSourceRobust(const UnicodeString & AFileName,
     const TRemoteFile * File,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, uintptr_t Flags);
-  void WebDAVSource(const UnicodeString & FileName,
+  void WebDAVSource(const UnicodeString & AFileName,
     const TRemoteFile * File,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, uintptr_t Flags,
@@ -157,7 +157,7 @@ protected:
   void WebDAVDirectorySource(const UnicodeString & DirectoryName,
     const UnicodeString & TargetDir, uintptr_t Attrs, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
-  bool ConfirmOverwrite(UnicodeString & FileName,
+  bool ConfirmOverwrite(UnicodeString & AFileName,
     TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams,
     const TCopyParamType * CopyParam, intptr_t Params,
@@ -167,13 +167,13 @@ protected:
   void ResetFileTransfer();
   void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);
   void DoReadDirectory(TRemoteFileList * FileList);
-  void FileTransfer(const UnicodeString & FileName, const UnicodeString & LocalFile,
+  void FileTransfer(const UnicodeString & AFileName, const UnicodeString & LocalFile,
     const UnicodeString & RemoteFile, const UnicodeString & RemotePath, bool Get,
     int64_t Size, int Type, TFileTransferData & UserData,
     TFileOperationProgressType * OperationProgress);
 
 private:
-  void CustomReadFile(const UnicodeString & FileName,
+  void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);
   bool SendPropFindRequest(const wchar_t * Path, int & ResponseCode);
   webdav::error_t OpenURL(const UnicodeString & SessionURL,

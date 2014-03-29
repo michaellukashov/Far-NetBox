@@ -288,7 +288,7 @@ protected:
   void TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
   void OperationFinished(TFileOperation Operation, TOperationSide Side,
-    bool Temp, const UnicodeString & FileName, bool Success,
+    bool Temp, const UnicodeString & AFileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
   void OperationProgress(TFileOperationProgressType & ProgressData,
     TCancelStatus & Cancel);
@@ -1504,7 +1504,7 @@ void TTerminalItem::TerminalShowExtendedException(
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::OperationFinished(TFileOperation /*Operation*/,
-  TOperationSide /*Side*/, bool /*Temp*/, const UnicodeString & /*FileName*/,
+  TOperationSide /*Side*/, bool /*Temp*/, const UnicodeString & /*AFileName*/,
   bool /*Success*/, TOnceDoneOperation & /*OnceDoneOperation*/)
 {
   // nothing

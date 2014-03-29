@@ -210,9 +210,9 @@ public:
     Close(Cancelled);
   }
 
-  void FileName(const UnicodeString & FileName)
+  void FileName(const UnicodeString & AFileName)
   {
-    Parameter(L"filename", FileName);
+    Parameter(L"filename", AFileName);
   }
 
   void Destination(const UnicodeString & Destination)
@@ -396,11 +396,11 @@ TFileSessionAction::TFileSessionAction(
   FileName(AFileName);
 }
 //---------------------------------------------------------------------------
-void TFileSessionAction::FileName(const UnicodeString & FileName)
+void TFileSessionAction::FileName(const UnicodeString & AFileName)
 {
   if (FRecord != nullptr)
   {
-    FRecord->FileName(FileName);
+    FRecord->FileName(AFileName);
   }
 }
 //---------------------------------------------------------------------------
@@ -412,8 +412,8 @@ TFileLocationSessionAction::TFileLocationSessionAction(
 }
 //---------------------------------------------------------------------------
 TFileLocationSessionAction::TFileLocationSessionAction(
-    TActionLog * Log, TLogAction Action, const UnicodeString & FileName) :
-  TFileSessionAction(Log, Action, FileName)
+    TActionLog * Log, TLogAction Action, const UnicodeString & AFileName) :
+  TFileSessionAction(Log, Action, AFileName)
 {
 }
 //---------------------------------------------------------------------------
@@ -439,8 +439,8 @@ TDownloadSessionAction::TDownloadSessionAction(TActionLog * Log) :
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TChmodSessionAction::TChmodSessionAction(
-    TActionLog * Log, const UnicodeString & FileName) :
-  TFileSessionAction(Log, laChmod, FileName)
+    TActionLog * Log, const UnicodeString & AFileName) :
+  TFileSessionAction(Log, laChmod, AFileName)
 {
 }
 //---------------------------------------------------------------------------
@@ -453,8 +453,8 @@ void TChmodSessionAction::Recursive()
 }
 //---------------------------------------------------------------------------
 TChmodSessionAction::TChmodSessionAction(
-    TActionLog * Log, const UnicodeString & FileName, const TRights & ARights) :
-  TFileSessionAction(Log, laChmod, FileName)
+    TActionLog * Log, const UnicodeString & AFileName, const TRights & ARights) :
+  TFileSessionAction(Log, laChmod, AFileName)
 {
   Rights(ARights);
 }
@@ -468,8 +468,8 @@ void TChmodSessionAction::Rights(const TRights & Rights)
 }
 //---------------------------------------------------------------------------
 TTouchSessionAction::TTouchSessionAction(
-    TActionLog * Log, const UnicodeString & FileName, const TDateTime & Modification) :
-  TFileSessionAction(Log, laTouch, FileName)
+    TActionLog * Log, const UnicodeString & AFileName, const TDateTime & Modification) :
+  TFileSessionAction(Log, laTouch, AFileName)
 {
   if (FRecord != nullptr)
   {
@@ -478,14 +478,14 @@ TTouchSessionAction::TTouchSessionAction(
 }
 //---------------------------------------------------------------------------
 TMkdirSessionAction::TMkdirSessionAction(
-    TActionLog * Log, const UnicodeString & FileName) :
-  TFileSessionAction(Log, laMkdir, FileName)
+    TActionLog * Log, const UnicodeString & AFileName) :
+  TFileSessionAction(Log, laMkdir, AFileName)
 {
 }
 //---------------------------------------------------------------------------
 TRmSessionAction::TRmSessionAction(
-    TActionLog * Log, const UnicodeString & FileName) :
-  TFileSessionAction(Log, laRm, FileName)
+    TActionLog * Log, const UnicodeString & AFileName) :
+  TFileSessionAction(Log, laRm, AFileName)
 {
 }
 //---------------------------------------------------------------------------
@@ -498,8 +498,8 @@ void TRmSessionAction::Recursive()
 }
 //---------------------------------------------------------------------------
 TMvSessionAction::TMvSessionAction(TActionLog * Log,
-    const UnicodeString & FileName, const UnicodeString & ADestination) :
-  TFileLocationSessionAction(Log, laMv, FileName)
+    const UnicodeString & AFileName, const UnicodeString & ADestination) :
+  TFileLocationSessionAction(Log, laMv, AFileName)
 {
   Destination(ADestination);
 }
@@ -542,8 +542,8 @@ void TLsSessionAction::FileList(TRemoteFileList * FileList)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TStatSessionAction::TStatSessionAction(TActionLog * Log, const UnicodeString & FileName) :
-  TFileSessionAction(Log, laStat, FileName)
+TStatSessionAction::TStatSessionAction(TActionLog * Log, const UnicodeString & AFileName) :
+  TFileSessionAction(Log, laStat, AFileName)
 {
 }
 //---------------------------------------------------------------------------

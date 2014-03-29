@@ -124,16 +124,16 @@ class TFileSessionAction : public TSessionAction
 {
 public:
   explicit TFileSessionAction(TActionLog * Log, TLogAction Action);
-  explicit TFileSessionAction(TActionLog * Log, TLogAction Action, const UnicodeString & FileName);
+  explicit TFileSessionAction(TActionLog * Log, TLogAction Action, const UnicodeString & AFileName);
 
-  void FileName(const UnicodeString & FileName);
+  void FileName(const UnicodeString & AFileName);
 };
 //---------------------------------------------------------------------------
 class TFileLocationSessionAction : public TFileSessionAction
 {
 public:
   explicit TFileLocationSessionAction(TActionLog * Log, TLogAction Action);
-  explicit TFileLocationSessionAction(TActionLog * Log, TLogAction Action, const UnicodeString & FileName);
+  explicit TFileLocationSessionAction(TActionLog * Log, TLogAction Action, const UnicodeString & AFileName);
 
   void Destination(const UnicodeString & Destination);
 };
@@ -155,8 +155,8 @@ class TRights;
 class TChmodSessionAction : public TFileSessionAction
 {
 public:
-  explicit TChmodSessionAction(TActionLog * Log, const UnicodeString & FileName);
-  explicit TChmodSessionAction(TActionLog * Log, const UnicodeString & FileName,
+  explicit TChmodSessionAction(TActionLog * Log, const UnicodeString & AFileName);
+  explicit TChmodSessionAction(TActionLog * Log, const UnicodeString & AFileName,
     const TRights & Rights);
 
   void Rights(const TRights & Rights);
@@ -166,20 +166,20 @@ public:
 class TTouchSessionAction : public TFileSessionAction
 {
 public:
-  explicit TTouchSessionAction(TActionLog * Log, const UnicodeString & FileName,
+  explicit TTouchSessionAction(TActionLog * Log, const UnicodeString & AFileName,
     const TDateTime & Modification);
 };
 //---------------------------------------------------------------------------
 class TMkdirSessionAction : public TFileSessionAction
 {
 public:
-  explicit TMkdirSessionAction(TActionLog * Log, const UnicodeString & FileName);
+  explicit TMkdirSessionAction(TActionLog * Log, const UnicodeString & AFileName);
 };
 //---------------------------------------------------------------------------
 class TRmSessionAction : public TFileSessionAction
 {
 public:
-  explicit TRmSessionAction(TActionLog * Log, const UnicodeString & FileName);
+  explicit TRmSessionAction(TActionLog * Log, const UnicodeString & AFileName);
 
   void Recursive();
 };
@@ -187,7 +187,7 @@ public:
 class TMvSessionAction : public TFileLocationSessionAction
 {
 public:
-  explicit TMvSessionAction(TActionLog * Log, const UnicodeString & FileName,
+  explicit TMvSessionAction(TActionLog * Log, const UnicodeString & AFileName,
     const UnicodeString & Destination);
 };
 //---------------------------------------------------------------------------
@@ -211,7 +211,7 @@ public:
 class TStatSessionAction : public TFileSessionAction
 {
 public:
-  explicit TStatSessionAction(TActionLog * Log, const UnicodeString & FileName);
+  explicit TStatSessionAction(TActionLog * Log, const UnicodeString & AFileName);
 
   void File(TRemoteFile * File);
 };

@@ -73,9 +73,9 @@ UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeString & Mas
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString MaskFileName(const UnicodeString & FileName, const UnicodeString & Mask)
+UnicodeString MaskFileName(const UnicodeString & AFileName, const UnicodeString & Mask)
 {
-  UnicodeString Result = FileName;
+  UnicodeString Result = AFileName;
   if (IsEffectiveFileNameMask(Mask))
   {
     bool Masked;
@@ -303,7 +303,7 @@ void TFileMasks::Clear(TMasks & Masks)
   Masks.clear();
 }
 //---------------------------------------------------------------------------
-bool TFileMasks::MatchesMasks(const UnicodeString & FileName, bool Directory,
+bool TFileMasks::MatchesMasks(const UnicodeString & AFileName, bool Directory,
   const UnicodeString & Path, const TParams * Params, const TMasks & Masks, bool Recurse)
 {
   bool Result = false;
@@ -314,7 +314,7 @@ bool TFileMasks::MatchesMasks(const UnicodeString & FileName, bool Directory,
     const TMask & Mask = *it;
     Result =
       MatchesMaskMask(Mask.DirectoryMask, Path) &&
-      MatchesMaskMask(Mask.FileNameMask, FileName);
+      MatchesMaskMask(Mask.FileNameMask, AFileName);
 
     if (Result)
     {
@@ -409,53 +409,53 @@ bool TFileMasks::MatchesMasks(const UnicodeString & FileName, bool Directory,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TFileMasks::Matches(const UnicodeString & FileName, bool Directory,
+bool TFileMasks::Matches(const UnicodeString & AFileName, bool Directory,
   const UnicodeString & Path, const TParams * Params) const
 {
   bool ImplicitMatch;
-  return Matches(FileName, Directory, Path, Params, ImplicitMatch);
+  return Matches(AFileName, Directory, Path, Params, ImplicitMatch);
 }
 //---------------------------------------------------------------------------
-bool TFileMasks::Matches(const UnicodeString & FileName, bool Directory,
+bool TFileMasks::Matches(const UnicodeString & AFileName, bool Directory,
   const UnicodeString & Path, const TParams * Params,
   bool & ImplicitMatch) const
 {
   bool ImplicitIncludeMatch = (FMasks[MASK_INDEX(Directory, true)].empty());
-  bool ExplicitIncludeMatch = MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, true)], true);
+  bool ExplicitIncludeMatch = MatchesMasks(AFileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, true)], true);
   bool Result =
     (ImplicitIncludeMatch || ExplicitIncludeMatch) &&
-    !MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, false)], false);
+    !MatchesMasks(AFileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, false)], false);
   ImplicitMatch =
     Result && ImplicitIncludeMatch && !ExplicitIncludeMatch &&
     FMasks[MASK_INDEX(Directory, false)].empty();
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TFileMasks::Matches(const UnicodeString & FileName, bool Local,
+bool TFileMasks::Matches(const UnicodeString & AFileName, bool Local,
   bool Directory, const TParams * Params) const
 {
   bool ImplicitMatch;
-  return Matches(FileName, Local, Directory, Params, ImplicitMatch);
+  return Matches(AFileName, Local, Directory, Params, ImplicitMatch);
 }
 //---------------------------------------------------------------------------
-bool TFileMasks::Matches(const UnicodeString & FileName, bool Local,
+bool TFileMasks::Matches(const UnicodeString & AFileName, bool Local,
   bool Directory, const TParams * Params, bool & ImplicitMatch) const
 {
   bool Result;
   if (Local)
   {
-    UnicodeString Path = ExtractFilePath(FileName);
+    UnicodeString Path = ExtractFilePath(AFileName);
     if (!Path.IsEmpty())
     {
       Path = ::ToUnixPath(ExcludeTrailingBackslash(Path));
     }
-    Result = Matches(::ExtractFileName(FileName, false), Directory, Path, Params,
+    Result = Matches(::ExtractFileName(AFileName, false), Directory, Path, Params,
       ImplicitMatch);
   }
   else
   {
-    Result = Matches(::UnixExtractFileName(FileName), Directory,
-      ::SimpleUnixExcludeTrailingBackslash(::UnixExtractFilePath(FileName)), Params,
+    Result = Matches(::UnixExtractFileName(AFileName), Directory,
+      ::SimpleUnixExcludeTrailingBackslash(::UnixExtractFilePath(AFileName)), Params,
       ImplicitMatch);
   }
   return Result;
@@ -1093,11 +1093,11 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
 }
 //---------------------------------------------------------------------------
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
-  const UnicodeString & Path, const UnicodeString & FileName,
+  const UnicodeString & Path, const UnicodeString & AFileName,
   const UnicodeString & FileList) :
   FData(Data),
   FPath(Path),
-  FFileName(FileName),
+  FFileName(AFileName),
   FFileList(FileList)
 {
 }

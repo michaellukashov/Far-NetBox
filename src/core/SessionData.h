@@ -611,8 +611,8 @@ public:
   void Load();
   void Save(bool All, bool Explicit);
   void Saved();
-  void ImportFromFilezilla(const UnicodeString & FileName);
-  void Export(const UnicodeString & FileName);
+  void ImportFromFilezilla(const UnicodeString & AFileName);
+  void Export(const UnicodeString & AFileName);
   void Load(THierarchicalStorage * Storage, bool AsModified = false,
     bool UseDefaults = false);
   void Save(THierarchicalStorage * Storage, bool All = false);

@@ -193,7 +193,7 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
-  const UnicodeString & FileName)
+  const UnicodeString & AFileName)
 {
   TSynchronizeLogEntry Entry;
   UnicodeString Message;
@@ -201,7 +201,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
   {
     case soDelete:
       Entry = slDelete;
-      Message = FMTLOAD(SYNCHRONIZE_DELETED, FileName.c_str());
+      Message = FMTLOAD(SYNCHRONIZE_DELETED, AFileName.c_str());
       break;
 
     default:
@@ -210,7 +210,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
 
     case soUpload:
       Entry = slUpload;
-      Message = FMTLOAD(SYNCHRONIZE_UPLOADED, FileName.c_str());
+      Message = FMTLOAD(SYNCHRONIZE_UPLOADED, AFileName.c_str());
       break;
   }
   SynchronizeLog(Entry, Message);

@@ -143,7 +143,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, uint32_t Handle,
 }
 //---------------------------------------------------------------------------
 // Return pointer to file version info block
-void * CreateFileInfo(const UnicodeString & FileName)
+void * CreateFileInfo(const UnicodeString & AFileName)
 {
   DWORD Handle;
   uintptr_t Size;
@@ -151,13 +151,13 @@ void * CreateFileInfo(const UnicodeString & FileName)
 
 
   // Get file version info block size
-  Size = GetFileVersionInfoSizeFix(FileName.c_str(), &Handle);
+  Size = GetFileVersionInfoSizeFix(AFileName.c_str(), &Handle);
   // If size is valid
   if (Size > 0)
   {
     Result = nb_malloc(Size);
     // Get file version info block
-    if (!GetFileVersionInfoFix(FileName.c_str(), Handle, Size, Result))
+    if (!GetFileVersionInfoFix(AFileName.c_str(), Handle, Size, Result))
     {
       nb_free(Result);
       Result = nullptr;

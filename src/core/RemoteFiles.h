@@ -204,7 +204,7 @@ public:
   TRemoteFileList();
   virtual ~TRemoteFileList() { Reset(); }
   virtual void Reset();
-  TRemoteFile * FindFile(const UnicodeString & FileName) const;
+  TRemoteFile * FindFile(const UnicodeString & AFileName) const;
   virtual void DuplicateTo(TRemoteFileList * Copy) const;
   virtual void AddFile(TRemoteFile * File);
   UnicodeString GetDirectory() const { return FDirectory; }
@@ -496,7 +496,7 @@ bool IsUnixHiddenFile(const UnicodeString & Path);
 UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Path);
 UnicodeString FromUnixPath(const UnicodeString & Path);
 UnicodeString ToUnixPath(const UnicodeString & Path);
-UnicodeString MinimizeName(const UnicodeString & FileName, intptr_t MaxLen, bool Unix);
+UnicodeString MinimizeName(const UnicodeString & AFileName, intptr_t MaxLen, bool Unix);
 UnicodeString MakeFileList(const TStrings * AFileList);
 TDateTime ReduceDateTimePrecision(const TDateTime & DateTime,
   TModificationFmt Precision);
@@ -506,7 +506,7 @@ UnicodeString UserModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision);
 UnicodeString ModificationStr(const Classes::TDateTime & DateTime,
   TModificationFmt Precision);
-int FakeFileImageIndex(const UnicodeString & FileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
+int FakeFileImageIndex(const UnicodeString & AFileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
   UnicodeString * TypeName = nullptr);
 //---------------------------------------------------------------------------
 #endif

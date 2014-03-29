@@ -125,8 +125,8 @@ public:
   void SaveScreen(HANDLE & Screen);
   void RestoreScreen(HANDLE & Screen);
   bool CheckForEsc();
-  bool Viewer(const UnicodeString & FileName, const UnicodeString & Title, DWORD Flags);
-  bool Editor(const UnicodeString & FileName, const UnicodeString & Title, DWORD Flags);
+  bool Viewer(const UnicodeString & AFileName, const UnicodeString & Title, DWORD Flags);
+  bool Editor(const UnicodeString & AFileName, const UnicodeString & Title, DWORD Flags);
 
   intptr_t FarControl(uintptr_t Command, intptr_t Param1, intptr_t Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
   intptr_t FarAdvControl(uintptr_t Command, void * Param = nullptr) const;
@@ -375,7 +375,7 @@ protected:
   virtual ~TCustomFarPanelItem()
   {}
   virtual void GetData(
-    DWORD & Flags, UnicodeString & FileName, int64_t & Size,
+    DWORD & Flags, UnicodeString & AFileName, int64_t & Size,
     DWORD & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     DWORD & NumberOfLinks, UnicodeString & Description,
@@ -407,7 +407,7 @@ protected:
   bool FOwnsItem;
 
   virtual void GetData(
-    DWORD & Flags, UnicodeString & FileName, int64_t & Size,
+    DWORD & Flags, UnicodeString & AFileName, int64_t & Size,
     DWORD & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     DWORD & NumberOfLinks, UnicodeString & Description,
@@ -423,7 +423,7 @@ public:
 
 protected:
   virtual void GetData(
-    DWORD & Flags, UnicodeString & FileName, int64_t & Size,
+    DWORD & Flags, UnicodeString & AFileName, int64_t & Size,
     DWORD & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     DWORD & NumberOfLinks, UnicodeString & Description,
@@ -461,7 +461,7 @@ public:
   UnicodeString GetCurrentDirectory() const;
 
   void ApplySelection();
-  TFarPanelItem * FindFileName(const UnicodeString & FileName) const;
+  TFarPanelItem * FindFileName(const UnicodeString & AFileName) const;
   const TFarPanelItem * FindUserData(const void * UserData) const;
   TFarPanelItem * FindUserData(const void * UserData);
 

@@ -65,17 +65,17 @@ public:
   TCopyParamType & operator =(const TCopyParamType & rhp);
   virtual void Assign(const TCopyParamType * Source);
   virtual void Default();
-  UnicodeString ChangeFileName(const UnicodeString & FileName,
+  UnicodeString ChangeFileName(const UnicodeString & AFileName,
     TOperationSide Side, bool FirstLevel) const;
   DWORD LocalFileAttrs(const TRights & Rights) const;
   TRights RemoteFileRights(uintptr_t Attrs) const;
-  bool UseAsciiTransfer(const UnicodeString & FileName, TOperationSide Side,
+  bool UseAsciiTransfer(const UnicodeString & AFileName, TOperationSide Side,
     const TFileMasks::TParams & Params) const;
   bool AllowResume(int64_t Size) const;
-  inline UnicodeString ValidLocalFileName(const UnicodeString & FileName) const;
+  inline UnicodeString ValidLocalFileName(const UnicodeString & AFileName) const;
   UnicodeString ValidLocalPath(const UnicodeString & Path) const;
   bool AllowAnyTransfer() const;
-  bool AllowTransfer(const UnicodeString & FileName, TOperationSide Side,
+  bool AllowTransfer(const UnicodeString & AFileName, TOperationSide Side,
     bool Directory, const TFileMasks::TParams & Params) const;
 
   void Load(THierarchicalStorage * Storage);
@@ -140,7 +140,7 @@ public:
   void SetLocalInvalidChars(const UnicodeString & Value);
   bool GetReplaceInvalidChars() const;
   void SetReplaceInvalidChars(bool Value);
-  UnicodeString RestoreChars(const UnicodeString & FileName) const;
+  UnicodeString RestoreChars(const UnicodeString & AFileName) const;
   void DoGetInfoStr(const UnicodeString & Separator, intptr_t Options,
     UnicodeString & Result, bool & SomeAttrIncluded) const;
 

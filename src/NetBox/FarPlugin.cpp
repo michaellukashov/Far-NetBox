@@ -1572,23 +1572,23 @@ bool TCustomFarPlugin::CheckForEsc()
   return false;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarPlugin::Viewer(const UnicodeString & FileName,
+bool TCustomFarPlugin::Viewer(const UnicodeString & AFileName,
   const UnicodeString & Title, DWORD Flags)
 {
   TFarEnvGuard Guard;
   int Result = FStartupInfo.Viewer(
-    FileName.c_str(),
+    AFileName.c_str(),
     Title.c_str(), 0, 0, -1, -1, Flags,
     CP_AUTODETECT);
   return Result > 0;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarPlugin::Editor(const UnicodeString & FileName,
+bool TCustomFarPlugin::Editor(const UnicodeString & AFileName,
   const UnicodeString & Title, DWORD Flags)
 {
   TFarEnvGuard Guard;
   int Result = FStartupInfo.Editor(
-    FileName.c_str(),
+    AFileName.c_str(),
     Title.c_str(), 0, 0, -1, -1, Flags, -1, -1,
     CP_AUTODETECT);
   return (Result == EEC_MODIFIED) || (Result == EEC_NOT_MODIFIED);
@@ -2475,13 +2475,13 @@ THintPanelItem::THintPanelItem(const UnicodeString & AHint) :
 }
 //---------------------------------------------------------------------------
 void THintPanelItem::GetData(
-  DWORD & /*Flags*/, UnicodeString & FileName, int64_t & /*Size*/,
+  DWORD & /*Flags*/, UnicodeString & AFileName, int64_t & /*Size*/,
   DWORD & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   DWORD & /*NumberOfLinks*/, UnicodeString & /*Description*/,
   UnicodeString & /*Owner*/, void *& /*UserData*/, int & /*CustomColumnNumber*/)
 {
-  FileName = FHint;
+  AFileName = FHint;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2551,13 +2551,13 @@ TObjectList * TFarPanelInfo::GetItems()
   return FItems;
 }
 //---------------------------------------------------------------------------
-TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & FileName) const
+TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & AFileName) const
 {
   const TObjectList * AItems = GetItems();
   for (intptr_t Index = 0; Index < AItems->GetCount(); ++Index)
   {
     TFarPanelItem * PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, AItems->GetItem(Index));
-    if (PanelItem->GetFileName() == FileName)
+    if (PanelItem->GetFileName() == AFileName)
     {
       return PanelItem;
     }
