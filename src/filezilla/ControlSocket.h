@@ -178,7 +178,7 @@ public:
 	{
 		int nOpMode;
 		int nOpState;
-		class COpData //Base class which will store operation specific parameters.
+		class COpData : public TObject //Base class which will store operation specific parameters.
 		{
 		public:
 			COpData() {};
