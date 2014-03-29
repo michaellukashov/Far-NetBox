@@ -26,6 +26,9 @@
 
 #else
 
+#include <FastDelegate.h>
+#include <FastDelegateBind.h>
+
 #define DEFINE_CALLBACK_TYPE0(EVENT,     R) \
   typedef fastdelegate::FastDelegate0<R> EVENT
 #define DEFINE_CALLBACK_TYPE1(EVENT,     R, T1) \
