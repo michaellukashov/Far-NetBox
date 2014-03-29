@@ -248,6 +248,20 @@ public:
   void SetFocus();
   void SetItem(intptr_t Value) { FItem = Value; }
 
+public:
+  virtual void SetDataInternal(const UnicodeString & Value);
+  void UpdateData(const UnicodeString & Value);
+  void UpdateSelected(intptr_t Value);
+
+  bool GetFlag(intptr_t Index) const;
+  void SetFlag(intptr_t Index, bool Value);
+
+  virtual void DoFocus();
+  virtual void DoExit();
+
+  char GetColor(intptr_t Index) const;
+  void SetColor(intptr_t Index, char Value);
+
 protected:
   uintptr_t FDefaultType;
   intptr_t FGroup;
@@ -307,20 +321,6 @@ protected:
   void Text(int X, int Y, uintptr_t Color, const UnicodeString & Str);
   void Redraw();
   virtual bool HotKey(char HotKey);
-
-public:
-  virtual void SetDataInternal(const UnicodeString & Value);
-  void UpdateData(const UnicodeString & Value);
-  void UpdateSelected(intptr_t Value);
-
-  bool GetFlag(intptr_t Index) const;
-  void SetFlag(intptr_t Index, bool Value);
-
-  virtual void DoFocus();
-  virtual void DoExit();
-
-  char GetColor(intptr_t Index) const;
-  void SetColor(intptr_t Index, char Value);
 
 private:
   struct PluginStartupInfo * GetStartupInfo();
