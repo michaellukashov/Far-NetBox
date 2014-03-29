@@ -72,14 +72,16 @@ const int FILEEXISTS_COMPLETE = 6;
 //---------------------------------------------------------------------------
 class t_ffam_statusmessage
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   CString status;
   int type;
   BOOL post;
 };
 //---------------------------------------------------------------------------
-typedef struct
+struct t_ffam_transferstatus
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   __int64 bytes;
 #ifdef MPEXT
   __int64 transfersize;
@@ -89,12 +91,13 @@ typedef struct
   int timeleft;
   int transferrate;
   BOOL bFileTransfer;
-} t_ffam_transferstatus;
+};
 //---------------------------------------------------------------------------
 #undef CFile
 //---------------------------------------------------------------------------
 class CFileFix : public CFile
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   explicit CFileFix() : CFile() {}
   explicit CFileFix(HANDLE hFile) : CFile(hFile) {}

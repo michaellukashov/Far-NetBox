@@ -195,10 +195,10 @@ bool IsUnixRootPath(const UnicodeString & Path)
   return Path.IsEmpty() || (Path == ROOTDIRECTORY);
 }
 //---------------------------------------------------------------------------
-bool IsUnixHiddenFile(const UnicodeString & FileName)
+bool IsUnixHiddenFile(const UnicodeString & AFileName)
 {
-  return (FileName != ROOTDIRECTORY) && (FileName != PARENTDIRECTORY) &&
-    !FileName.IsEmpty() && (FileName[1] == L'.');
+  return (AFileName != ROOTDIRECTORY) && (AFileName != PARENTDIRECTORY) &&
+    !AFileName.IsEmpty() && (AFileName[1] == L'.');
 }
 //---------------------------------------------------------------------------
 UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Path)
@@ -286,12 +286,12 @@ static void CutFirstDirectory(UnicodeString & S, bool Unix)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString MinimizeName(const UnicodeString & FileName, intptr_t MaxLen, bool Unix)
+UnicodeString MinimizeName(const UnicodeString & AFileName, intptr_t MaxLen, bool Unix)
 {
   UnicodeString Drive, Dir, Name, Result;
   UnicodeString Sep = Unix ? L"/" : L"\\";
 
-  Result = FileName;
+  Result = AFileName;
   if (Unix)
   {
     intptr_t P = Result.LastDelimiter(L"/");
@@ -462,7 +462,7 @@ UnicodeString ModificationStr(const TDateTime & DateTime,
   }
 }
 //---------------------------------------------------------------------------
-int FakeFileImageIndex(const UnicodeString & FileName, uint32_t Attrs,
+int FakeFileImageIndex(const UnicodeString & AFileName, uint32_t Attrs,
   UnicodeString * TypeName)
 {
   /*Attrs |= FILE_ATTRIBUTE_NORMAL;
@@ -1615,11 +1615,11 @@ int64_t TRemoteFileList::GetTotalSize()
   return Result;
 }
 //---------------------------------------------------------------------------
-TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & FileName) const
+TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & AFileName) const
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (GetFile(Index)->GetFileName() == FileName)
+    if (GetFile(Index)->GetFileName() == AFileName)
     {
       return GetFile(Index);
     }

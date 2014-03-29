@@ -29,7 +29,7 @@ public:
   virtual void ChangeDirectory(const UnicodeString & Directory);
   virtual void CachedChangeDirectory(const UnicodeString & Directory);
   virtual void AnnounceFileListOperation();
-  virtual void ChangeFileProperties(const UnicodeString & FileName,
+  virtual void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * File, const TRemoteProperties * Properties,
     TChmodSessionAction & Action);
   virtual bool LoadFilesProperties(TStrings * FileList);
@@ -45,10 +45,10 @@ public:
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CreateDirectory(const UnicodeString & DirName);
-  virtual void CreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic);
-  virtual void DeleteFile(const UnicodeString & FileName,
+  virtual void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
+  virtual void DeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action);
-  virtual void CustomCommandOnFile(const UnicodeString & FileName,
+  virtual void CustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * File, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
   virtual void DoStartup();
   virtual void HomeDirectory();
@@ -56,21 +56,21 @@ public:
   virtual void LookupUsersGroups();
   virtual void ReadCurrentDirectory();
   virtual void ReadDirectory(TRemoteFileList * FileList);
-  virtual void ReadFile(const UnicodeString & FileName,
+  virtual void ReadFile(const UnicodeString & AFileName,
     TRemoteFile *& File);
   virtual void ReadSymlink(TRemoteFile * SymlinkFile,
     TRemoteFile *& File);
-  virtual void RemoteRenameFile(const UnicodeString & FileName,
+  virtual void RemoteRenameFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
-  virtual void CopyFile(const UnicodeString & FileName,
+  virtual void CopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
-  virtual UnicodeString FileUrl(const UnicodeString & FileName) const;
+  virtual UnicodeString FileUrl(const UnicodeString & AFileName) const;
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo() const;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
-  virtual bool TemporaryTransferFile(const UnicodeString & FileName);
+  virtual bool TemporaryTransferFile(const UnicodeString & AFileName);
   virtual bool GetStoredCredentialsTried();
   virtual UnicodeString GetUserName();
 
@@ -94,7 +94,7 @@ private:
 
   void ClearAliases();
   void ClearAlias(const UnicodeString & Alias);
-  void CustomReadFile(const UnicodeString & FileName,
+  void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);
   static UnicodeString DelimitStr(const UnicodeString & Str);
   void DetectReturnVar();
@@ -111,12 +111,12 @@ private:
     TFileOperationProgressType * OperationProgress, intptr_t Level);
   inline void SCPError(const UnicodeString & Message, bool Fatal);
   void SCPSendError(const UnicodeString & Message, bool Fatal);
-  void SCPSink(const UnicodeString & FileName,
+  void SCPSink(const UnicodeString & AFileName,
     const TRemoteFile * File, const UnicodeString & TargetDir,
     const UnicodeString & SourceDir,
     const TCopyParamType * CopyParam, bool & Success,
     TFileOperationProgressType * OperationProgress, intptr_t Params, intptr_t Level);
-  void SCPSource(const UnicodeString & FileName,
+  void SCPSource(const UnicodeString & AFileName,
     const TRemoteFile * File,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, intptr_t Level);
@@ -130,7 +130,7 @@ private:
   void ChangeFileToken(const UnicodeString & DelimitedName,
     const TRemoteToken & Token, TFSCommand Cmd, const UnicodeString & RecursiveStr);
   uintptr_t ConfirmOverwrite(
-    UnicodeString & FileName, TOperationSide Side,
+    UnicodeString & AFileName, TOperationSide Side,
     const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress);
 

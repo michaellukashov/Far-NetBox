@@ -492,11 +492,11 @@ long reg_close_winscp_key(HKEY Key)
   return ERROR_SUCCESS;
 }
 //---------------------------------------------------------------------------
-TKeyType KeyType(const UnicodeString & FileName)
+TKeyType KeyType(const UnicodeString & AFileName)
 {
   assert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   assert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
-  AnsiString AnsiFileName = AnsiString(FileName);
+  AnsiString AnsiFileName = AnsiString(AFileName);
   Filename * KeyFile = filename_from_str(AnsiFileName.c_str());
   TKeyType Result = static_cast<TKeyType>(key_type(KeyFile));
   filename_free(KeyFile);

@@ -64,7 +64,7 @@ public:                                       \
   virtual TClassInfo * GetClassInfo() const;
 
 #define NB_DECLARE_CLASS(name)          \
-  NB_DECLARE_RUNTIME_CLASS(name);       \
+  NB_DECLARE_RUNTIME_CLASS(name)        \
 
 #define NB_GET_CLASS_INFO(name)         \
   &name::FClassInfo

@@ -322,14 +322,14 @@ void TCopyParamType::SetReplaceInvalidChars(bool Value)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TCopyParamType::ValidLocalFileName(const UnicodeString & FileName) const
+UnicodeString TCopyParamType::ValidLocalFileName(const UnicodeString & AFileName) const
 {
-  return ::ValidLocalFileName(FileName, GetInvalidCharsReplacement(), FTokenizibleChars, LocalInvalidChars);
+  return ::ValidLocalFileName(AFileName, GetInvalidCharsReplacement(), FTokenizibleChars, LocalInvalidChars);
 }
 //---------------------------------------------------------------------------
-UnicodeString TCopyParamType::RestoreChars(const UnicodeString & FileName) const
+UnicodeString TCopyParamType::RestoreChars(const UnicodeString & AFileName) const
 {
-  UnicodeString Result = FileName;
+  UnicodeString Result = AFileName;
   if (GetInvalidCharsReplacement() == TokenReplacement)
   {
     wchar_t * InvalidChar = const_cast<wchar_t *>(Result.c_str());
@@ -384,10 +384,10 @@ UnicodeString TCopyParamType::ValidLocalPath(const UnicodeString & Path) const
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TCopyParamType::ChangeFileName(const UnicodeString & FileName,
+UnicodeString TCopyParamType::ChangeFileName(const UnicodeString & AFileName,
   TOperationSide Side, bool FirstLevel) const
 {
-  UnicodeString Result = FileName;
+  UnicodeString Result = AFileName;
   if (FirstLevel)
   {
     Result = MaskFileName(Result, GetFileMask());
@@ -427,14 +427,14 @@ UnicodeString TCopyParamType::ChangeFileName(const UnicodeString & FileName,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TCopyParamType::UseAsciiTransfer(const UnicodeString & FileName,
+bool TCopyParamType::UseAsciiTransfer(const UnicodeString & AFileName,
   TOperationSide Side, const TFileMasks::TParams & Params) const
 {
   switch (GetTransferMode())
   {
     case tmBinary: return false;
     case tmAscii: return true;
-    case tmAutomatic: return GetAsciiFileMask().Matches(FileName, (Side == osLocal),
+    case tmAutomatic: return GetAsciiFileMask().Matches(AFileName, (Side == osLocal),
       false, &Params);
     default: assert(false); return false;
   }
@@ -505,13 +505,13 @@ bool TCopyParamType::AllowAnyTransfer() const
   return GetIncludeFileMask().GetMasks().IsEmpty();
 }
 //---------------------------------------------------------------------------
-bool TCopyParamType::AllowTransfer(const UnicodeString & FileName,
+bool TCopyParamType::AllowTransfer(const UnicodeString & AFileName,
   TOperationSide Side, bool Directory, const TFileMasks::TParams & Params) const
 {
   bool Result = true;
   if (!GetIncludeFileMask().GetMasks().IsEmpty())
   {
-    Result = GetIncludeFileMask().Matches(FileName, (Side == osLocal),
+    Result = GetIncludeFileMask().Matches(AFileName, (Side == osLocal),
       Directory, &Params);
   }
   return Result;

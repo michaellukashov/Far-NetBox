@@ -516,9 +516,9 @@ int64_t FileSeek(HANDLE Handle, int64_t Offset, DWORD Origin)
 
 //---------------------------------------------------------------------------
 
-bool FileExists(const UnicodeString & FileName)
+bool FileExists(const UnicodeString & AFileName)
 {
-  return FileGetAttr(FileName) != INVALID_FILE_ATTRIBUTES;
+  return FileGetAttr(AFileName) != INVALID_FILE_ATTRIBUTES;
 }
 
 bool RenameFile(const UnicodeString & From, const UnicodeString & To)
@@ -527,14 +527,14 @@ bool RenameFile(const UnicodeString & From, const UnicodeString & To)
   return Result;
 }
 
-bool DirectoryExists(const UnicodeString & FileName)
+bool DirectoryExists(const UnicodeString & ADir)
 {
-  if ((FileName == THISDIRECTORY) || (FileName == PARENTDIRECTORY))
+  if ((ADir == THISDIRECTORY) || (ADir == PARENTDIRECTORY))
   {
     return true;
   }
 
-  DWORD LocalFileAttrs = FileGetAttr(FileName);
+  DWORD LocalFileAttrs = FileGetAttr(ADir);
 
   if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, FILE_ATTRIBUTE_DIRECTORY))
   {
@@ -543,7 +543,7 @@ bool DirectoryExists(const UnicodeString & FileName)
   return false;
 }
 
-UnicodeString FileSearch(const UnicodeString & FileName, const UnicodeString & DirectoryList)
+UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & DirectoryList)
 {
   UnicodeString Temp;
   UnicodeString Result;
@@ -569,7 +569,7 @@ UnicodeString FileSearch(const UnicodeString & FileName, const UnicodeString & D
       Temp = L"";
     }
     Result = ::IncludeTrailingBackslash(Result);
-    Result = Result + FileName;
+    Result = Result + AFileName;
     if (!::FileExists(Result))
     {
       Result = L"";
@@ -579,15 +579,15 @@ UnicodeString FileSearch(const UnicodeString & FileName, const UnicodeString & D
   return Result;
 }
 
-inline DWORD FileGetAttr(const UnicodeString & FileName)
+inline DWORD FileGetAttr(const UnicodeString & AFileName)
 {
-  DWORD LocalFileAttrs = ::GetFileAttributes(FileName.c_str());
+  DWORD LocalFileAttrs = ::GetFileAttributes(AFileName.c_str());
   return LocalFileAttrs;
 }
 
-inline DWORD FileSetAttr(const UnicodeString & FileName, DWORD LocalFileAttrs)
+inline DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs)
 {
-  DWORD Result = ::SetFileAttributes(FileName.c_str(), LocalFileAttrs);
+  DWORD Result = ::SetFileAttributes(AFileName.c_str(), LocalFileAttrs);
   return Result;
 }
 
@@ -944,42 +944,42 @@ UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len)
   return Result;
 }
 
-UnicodeString ChangeFileExt(const UnicodeString & FileName, const UnicodeString & Ext)
+UnicodeString ChangeFileExt(const UnicodeString & AFileName, const UnicodeString & AExt)
 {
-  UnicodeString Result = ::ChangeFileExtension(FileName, Ext);
+  UnicodeString Result = ::ChangeFileExtension(AFileName, AExt);
   return Result;
 }
 
-UnicodeString ExtractFileExt(const UnicodeString & FileName)
+UnicodeString ExtractFileExt(const UnicodeString & AFileName)
 {
-  UnicodeString Result = ExtractFileExtension(FileName, L'.');
+  UnicodeString Result = ExtractFileExtension(AFileName, L'.');
   return Result;
 }
 
-UnicodeString ExpandFileName(const UnicodeString & FileName)
+static UnicodeString ExpandFileName(const UnicodeString & AFileName)
 {
   UnicodeString Result;
   UnicodeString Buf(MAX_PATH, 0);
-  intptr_t Size = GetFullPathNameW(FileName.c_str(), static_cast<DWORD>(Buf.Length() - 1),
+  intptr_t Size = GetFullPathNameW(AFileName.c_str(), static_cast<DWORD>(Buf.Length() - 1),
     reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), nullptr);
   if (Size > Buf.Length())
   {
     Buf.SetLength(Size);
-    Size = ::GetFullPathNameW(FileName.c_str(), static_cast<DWORD>(Buf.Length() - 1),
+    Size = ::GetFullPathNameW(AFileName.c_str(), static_cast<DWORD>(Buf.Length() - 1),
       reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), nullptr);
   }
   return UnicodeString(Buf.c_str(), Size);
 }
 
-UnicodeString GetUniversalName(UnicodeString & FileName)
+static UnicodeString GetUniversalName(UnicodeString & AFileName)
 {
-  UnicodeString Result = FileName;
+  UnicodeString Result = AFileName;
   return Result;
 }
 
-UnicodeString ExpandUNCFileName(const UnicodeString & FileName)
+UnicodeString ExpandUNCFileName(const UnicodeString & AFileName)
 {
-  UnicodeString Result = ExpandFileName(FileName);
+  UnicodeString Result = ExpandFileName(AFileName);
   if ((Result.Length() >= 3) && (Result[1] == L':') && (::UpCase(Result[1]) >= 'A')
       && (::UpCase(Result[1]) <= 'Z'))
   {
@@ -1014,11 +1014,11 @@ static DWORD FindMatchingFile(TSearchRec & Rec)
 }
 
 //---------------------------------------------------------------------------
-DWORD FindFirst(const UnicodeString & FileName, DWORD LocalFileAttrs, TSearchRec & Rec)
+DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec)
 {
   const DWORD faSpecial = faHidden | faSysFile | faDirectory;
   Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
-  Rec.FindHandle = ::FindFirstFile(FileName.c_str(), &Rec.FindData);
+  Rec.FindHandle = ::FindFirstFile(AFileName.c_str(), &Rec.FindData);
   DWORD Result = ERROR_SUCCESS;
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)
   {

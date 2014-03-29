@@ -139,8 +139,8 @@ public:
   void SaveScreen(HANDLE & Screen);
   void RestoreScreen(HANDLE & Screen);
   bool CheckForEsc();
-  bool Viewer(const UnicodeString & FileName, const UnicodeString & Title, unsigned int Flags);
-  bool Editor(const UnicodeString & FileName, const UnicodeString & Title, unsigned int Flags);
+  bool Viewer(const UnicodeString & AFileName, const UnicodeString & Title, unsigned int Flags);
+  bool Editor(const UnicodeString & AFileName, const UnicodeString & Title, unsigned int Flags);
   intptr_t FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
   __int64 FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, intptr_t Param1, void *Param2 = nullptr) const;
   intptr_t FarEditorControl(EDITOR_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2) const;
@@ -386,7 +386,7 @@ protected:
   virtual ~TCustomFarPanelItem()
   {}
   virtual void GetData(
-    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, int64_t & Size,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & AFileName, int64_t & Size,
     uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     uintptr_t & NumberOfLinks, UnicodeString & Description,
@@ -418,7 +418,7 @@ protected:
   bool FOwnsItem;
 
   virtual void GetData(
-    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, int64_t & Size,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & AFileName, int64_t & Size,
     uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     uintptr_t & NumberOfLinks, UnicodeString & Description,
@@ -434,7 +434,7 @@ public:
 
 protected:
   virtual void GetData(
-    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, int64_t & Size,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & AFileName, int64_t & Size,
     uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     uintptr_t & NumberOfLinks, UnicodeString & Description,
@@ -472,7 +472,7 @@ public:
   UnicodeString GetCurrentDirectory() const;
 
   void ApplySelection();
-  TFarPanelItem * FindFileName(const UnicodeString & FileName) const;
+  TFarPanelItem * FindFileName(const UnicodeString & AFileName) const;
   const TFarPanelItem * FindUserData(const void * UserData) const;
   TFarPanelItem * FindUserData(const void * UserData);
 

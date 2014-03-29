@@ -254,7 +254,7 @@ void TConfiguration::DoSave(bool All, bool Explicit)
   }
 }
 //---------------------------------------------------------------------------
-void TConfiguration::Export(const UnicodeString & /*FileName*/)
+void TConfiguration::Export(const UnicodeString & /*AFileName*/)
 {
   Classes::Error(SNotImplemented, 3004);
   /*
@@ -277,7 +277,7 @@ void TConfiguration::Export(const UnicodeString & /*FileName*/)
   */
 }
 //---------------------------------------------------------------------------
-void TConfiguration::Import(const UnicodeString & FileName)
+void TConfiguration::Import(const UnicodeString & AFileName)
 {
   Classes::Error(SNotImplemented, 3005);
 /*
@@ -664,10 +664,10 @@ UnicodeString TConfiguration::ModuleFileName() const
   return L"";
 }
 //---------------------------------------------------------------------------
-void * TConfiguration::GetFileApplicationInfo(const UnicodeString & FileName) const
+void * TConfiguration::GetFileApplicationInfo(const UnicodeString & AFileName) const
 {
   void * Result;
-  if (FileName.IsEmpty())
+  if (AFileName.IsEmpty())
   {
     if (!FApplicationInfo)
     {
@@ -677,7 +677,7 @@ void * TConfiguration::GetFileApplicationInfo(const UnicodeString & FileName) co
   }
   else
   {
-    Result = CreateFileInfo(FileName);
+    Result = CreateFileInfo(AFileName);
   }
   return Result;
 }
@@ -687,14 +687,14 @@ void * TConfiguration::GetApplicationInfo() const
   return GetFileApplicationInfo("");
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetFileProductName(const UnicodeString & FileName) const
+UnicodeString TConfiguration::GetFileProductName(const UnicodeString & AFileName) const
 {
-  return GetFileInfoString(L"ProductName", FileName);
+  return GetFileInfoString(L"ProductName", AFileName);
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetFileCompanyName(const UnicodeString & FileName) const
+UnicodeString TConfiguration::GetFileCompanyName(const UnicodeString & AFileName) const
 {
-  return GetFileInfoString(L"CompanyName", FileName);
+  return GetFileInfoString(L"CompanyName", AFileName);
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetProductName() const
@@ -707,14 +707,14 @@ UnicodeString TConfiguration::GetCompanyName() const
   return GetFileCompanyName(L"");
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetFileProductVersion(const UnicodeString & FileName) const
+UnicodeString TConfiguration::GetFileProductVersion(const UnicodeString & AFileName) const
 {
-  return TrimVersion(GetFileInfoString(L"ProductVersion", FileName));
+  return TrimVersion(GetFileInfoString(L"ProductVersion", AFileName));
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetFileDescription(const UnicodeString & FileName)
+UnicodeString TConfiguration::GetFileDescription(const UnicodeString & AFileName)
 {
-  return GetFileInfoString(L"FileDescription", FileName);
+  return GetFileInfoString(L"FileDescription", AFileName);
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetProductVersion() const
@@ -774,16 +774,16 @@ UnicodeString TConfiguration::GetVersion() const
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key,
-  const UnicodeString & FileName) const
+UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & AKey,
+  const UnicodeString & AFileName) const
 {
   TGuard Guard(&FCriticalSection);
 
   UnicodeString Result;
-  void * Info = GetFileApplicationInfo(FileName);
+  void * Info = GetFileApplicationInfo(AFileName);
   SCOPE_EXIT
   {
-    if (!FileName.IsEmpty() && Info)
+    if (!AFileName.IsEmpty() && Info)
     {
       FreeFileInfo(Info);
     }
@@ -793,7 +793,7 @@ UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key,
     TTranslation Translation = GetTranslation(Info, 0);
     try
     {
-      Result = ::GetFileInfoString(Info, Translation, Key);
+      Result = ::GetFileInfoString(Info, Translation, AKey);
     }
     catch (const std::exception & e)
     {

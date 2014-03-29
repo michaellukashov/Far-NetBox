@@ -53,13 +53,13 @@ void TSessionPanelItem::SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles)
 }
 //------------------------------------------------------------------------------
 void TSessionPanelItem::GetData(
-  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & FileName, int64_t & /*Size*/,
+  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & AFileName, int64_t & /*Size*/,
   uintptr_t & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
   UnicodeString & /*Owner*/, void *& UserData, size_t & /*CustomColumnNumber*/)
 {
-  FileName = ::UnixExtractFileName(FSessionData->GetName());
+  AFileName = ::UnixExtractFileName(FSessionData->GetName());
   UserData = (void *)FSessionData;
 }
 //------------------------------------------------------------------------------
@@ -70,13 +70,13 @@ TSessionFolderPanelItem::TSessionFolderPanelItem(const UnicodeString & Folder):
 }
 //------------------------------------------------------------------------------
 void TSessionFolderPanelItem::GetData(
-  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & FileName, int64_t & /*Size*/,
+  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & AFileName, int64_t & /*Size*/,
   uintptr_t & FileAttributes,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
   UnicodeString & /*Owner*/, void *& /*UserData*/, size_t & /*CustomColumnNumber*/)
 {
-  FileName = FFolder;
+  AFileName = FFolder;
   FileAttributes = FILE_ATTRIBUTE_DIRECTORY;
 }
 //------------------------------------------------------------------------------
@@ -88,13 +88,13 @@ TRemoteFilePanelItem::TRemoteFilePanelItem(TRemoteFile * ARemoteFile):
 }
 //------------------------------------------------------------------------------
 void TRemoteFilePanelItem::GetData(
-  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & FileName, int64_t & Size,
+  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & AFileName, int64_t & Size,
   uintptr_t & FileAttributes,
   TDateTime & LastWriteTime, TDateTime & LastAccess,
   uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
   UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber)
 {
-  FileName = FRemoteFile->GetFileName();
+  AFileName = FRemoteFile->GetFileName();
   Size = FRemoteFile->GetSize();
   if (Size < 0) Size = 0;
   if (FRemoteFile->GetIsDirectory()) Size = 0;
@@ -3151,20 +3151,20 @@ void TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sender*/,
   }
 }
 //------------------------------------------------------------------------------
-void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString & FileName,
+void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString & AFileName,
   bool Alternative)
 {
   bool ToRecycleBin = FLAGSET(WinSCPPlugin()->FarSystemSettings(), NBSS_DELETETORECYCLEBIN) != Alternative;
   if (ToRecycleBin || !WinSCPPlugin()->GetSystemFunctions())
   {
-    if (!RecursiveDeleteFile(FileName, ToRecycleBin))
+    if (!RecursiveDeleteFile(AFileName, ToRecycleBin))
     {
-      throw Exception(FORMAT(GetMsg(DELETE_LOCAL_FILE_ERROR).c_str(), FileName.c_str()));
+      throw Exception(FORMAT(GetMsg(DELETE_LOCAL_FILE_ERROR).c_str(), AFileName.c_str()));
     }
   }
   else
   {
-    WinSCPPlugin()->DeleteLocalFile(FileName);
+    WinSCPPlugin()->DeleteLocalFile(AFileName);
   }
 }
 //------------------------------------------------------------------------------
@@ -3356,7 +3356,7 @@ void TWinSCPFileSystem::OperationProgress(
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
-  TOperationSide Side, bool /*Temp*/, const UnicodeString & FileName, bool Success,
+  TOperationSide Side, bool /*Temp*/, const UnicodeString & AFileName, bool Success,
   TOnceDoneOperation & /*DisconnectWhenComplete*/)
 {
   USEDPARAM(Side);
@@ -3374,7 +3374,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
       TObjectList * PanelItems = GetPanelInfo()->GetItems();
       for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
       {
-        if ((NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetItem(Index)))->GetFileName() == FileName)
+        if ((NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetItem(Index)))->GetFileName() == AFileName)
         {
           PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetItem(Index));
           break;
@@ -3385,13 +3385,13 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
     {
       assert(FFileList);
       assert(FPanelItems->GetCount() == FFileList->GetCount());
-      intptr_t Index = FFileList->IndexOf(FileName.c_str());
+      intptr_t Index = FFileList->IndexOf(AFileName.c_str());
       assert(Index >= 0);
       PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, FPanelItems->GetItem(Index));
     }
 
     assert(PanelItem && PanelItem->GetFileName() ==
-      ((Side == osLocal) ? ::ExtractFileName(FileName, false) : FileName));
+      ((Side == osLocal) ? ::ExtractFileName(AFileName, false) : AFileName));
     if (Success && PanelItem)
     {
       PanelItem->SetSelected(false);
@@ -3403,12 +3403,12 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
     if (Operation == foCopy)
     {
       assert(Side == osLocal);
-      FSynchronizeController->LogOperation(soUpload, FileName);
+      FSynchronizeController->LogOperation(soUpload, AFileName);
     }
     else if (Operation == foDelete)
     {
       assert(Side == osRemote);
-      FSynchronizeController->LogOperation(soDelete, FileName);
+      FSynchronizeController->LogOperation(soDelete, AFileName);
     }
   }
 }
@@ -3726,7 +3726,7 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
-  const UnicodeString & FileName, const UnicodeString & RealFileName,
+  const UnicodeString & AFileName, const UnicodeString & RealFileName,
   UnicodeString & DestPath)
 {
   assert(FFileList == nullptr);
@@ -3749,7 +3749,7 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
     FTerminal->SetAutoReadDirectory(PrevAutoReadDirectory);
     SAFE_DESTROY(FFileList);
   };
-  FFileList->AddObject(FileName, File.get());
+  FFileList->AddObject(AFileName, File.get());
   UploadFiles(false, 0, true, DestPath);
 }
 //------------------------------------------------------------------------------
@@ -3982,11 +3982,11 @@ void TWinSCPFileSystem::MultipleEdit()
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
-  const UnicodeString & FileName, TRemoteFile * File)
+  const UnicodeString & AFileName, TRemoteFile * File)
 {
   TEditHistory EditHistory;
   EditHistory.Directory = Directory;
-  EditHistory.FileName = FileName;
+  EditHistory.FileName = AFileName;
 
   TEditHistories::iterator it_h = rde::find(FEditHistories.begin(), FEditHistories.end(), EditHistory);
   if (it_h != FEditHistories.end())
@@ -3995,10 +3995,10 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   }
   FEditHistories.push_back(EditHistory);
 
-  UnicodeString FullFileName = ::UnixIncludeTrailingBackslash(Directory) + FileName;
+  UnicodeString FullFileName = ::UnixIncludeTrailingBackslash(Directory) + AFileName;
 
   std::unique_ptr<TRemoteFile> FileDuplicate(File->Duplicate());
-  UnicodeString NewFileName = FileName; // FullFileName;
+  UnicodeString NewFileName = AFileName; // FullFileName;
   FileDuplicate->SetFileName(NewFileName);
 
   TMultipleEdits::iterator it_e = FMultipleEdits.begin();
@@ -4100,7 +4100,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     }
 
     FLastMultipleEditFile = ::IncludeTrailingBackslash(TempDir) + NewFileName;
-    FLastMultipleEditFileTitle = FileName;
+    FLastMultipleEditFileTitle = AFileName;
     FLastMultipleEditDirectory = Directory;
 
     if (FarPlugin->Editor(FLastMultipleEditFile, FullFileName,
@@ -4167,12 +4167,12 @@ void TWinSCPFileSystem::ShowLog()
   WinSCPPlugin()->Viewer(FTerminal->GetLog()->GetCurrentFileName(), FTerminal->GetLog()->GetCurrentFileName(), VF_NONMODAL);
 }
 //------------------------------------------------------------------------------
-UnicodeString TWinSCPFileSystem::GetFileNameHash(const UnicodeString & FileName)
+UnicodeString TWinSCPFileSystem::GetFileNameHash(const UnicodeString & AFileName)
 {
   RawByteString Result;
   Result.SetLength(16);
   md5checksum(
-    reinterpret_cast<const char *>(FileName.c_str()), static_cast<int>(FileName.Length() * sizeof(wchar_t)),
+    reinterpret_cast<const char *>(AFileName.c_str()), static_cast<int>(AFileName.Length() * sizeof(wchar_t)),
     reinterpret_cast<uint8_t *>(const_cast<char *>(Result.c_str())));
   return BytesToHex(Result);
 }

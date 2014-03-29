@@ -251,6 +251,20 @@ public:
   void SetFocus();
   void SetItem(intptr_t Value) { FItem = Value; }
 
+public:
+  virtual void SetDataInternal(const UnicodeString & Value);
+  void UpdateData(const UnicodeString & Value);
+  void UpdateSelected(intptr_t Value);
+
+  bool GetFlag(FARDIALOGITEMFLAGS Index) const;
+  void SetFlag(FARDIALOGITEMFLAGS Index, bool Value);
+
+  virtual void DoFocus();
+  virtual void DoExit();
+
+  char GetColor(intptr_t Index) const;
+  void SetColor(intptr_t Index, char Value);
+
 protected:
   FARDIALOGITEMTYPES FDefaultType;
   intptr_t FGroup;
@@ -312,19 +326,9 @@ protected:
   void Redraw();
   virtual bool HotKey(char HotKey);
 
-public:
-  virtual void SetDataInternal(const UnicodeString & Value);
-  void UpdateData(const UnicodeString & Value);
-  void UpdateSelected(intptr_t Value);
+private:
+  struct PluginStartupInfo * GetStartupInfo();
 
-  bool GetFlag(FARDIALOGITEMFLAGS Index) const;
-  void SetFlag(FARDIALOGITEMFLAGS Index, bool Value);
-
-  virtual void DoFocus();
-  virtual void DoExit();
-
-  char GetColor(intptr_t Index) const;
-  void SetColor(intptr_t Index, char Value);
 
 private:
   TFarDialog * FDialog;

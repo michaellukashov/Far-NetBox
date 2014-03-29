@@ -294,7 +294,7 @@ public:
 
   intptr_t Add(const UnicodeString & S);
   intptr_t AddObject(const UnicodeString & S, TObject * AObject);
-  void LoadFromFile(const UnicodeString & FileName);
+  void LoadFromFile(const UnicodeString & AFileName);
   TNotifyEvent & GetOnChange() { return FOnChange; }
   void SetOnChange(TNotifyEvent OnChange) { FOnChange = OnChange; }
   TNotifyEvent & GetOnChanging() { return FOnChanging; }
@@ -535,11 +535,11 @@ public:
   virtual int64_t Seek(int64_t Offset, int Origin);
   virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin);
   void SaveToStream(TStream * Stream);
-  void SaveToFile(const UnicodeString & FileName);
+  void SaveToFile(const UnicodeString & AFileName);
 
   void Clear();
   void LoadFromStream(TStream * Stream);
-  void LoadFromFile(const UnicodeString & FileName);
+  //void LoadFromFile(const UnicodeString & AFileName);
   int64_t GetSize() const { return FSize; }
   virtual void SetSize(const int64_t NewSize);
   virtual int64_t Write(const void * Buffer, int64_t Count);

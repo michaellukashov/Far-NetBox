@@ -6,7 +6,7 @@ struct TTranslation {
 };
 
 // Return pointer to file version info block
-void * CreateFileInfo(const UnicodeString & FileName);
+void * CreateFileInfo(const UnicodeString & AFileName);
 
 // Free file version info block memory
 void FreeFileInfo(void * FileInfo);

@@ -111,9 +111,9 @@ void Shred(UnicodeString & Str)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString MakeValidFileName(const UnicodeString & FileName)
+static UnicodeString MakeValidFileName(const UnicodeString & AFileName)
 {
-  UnicodeString Result = FileName;
+  UnicodeString Result = AFileName;
   static UnicodeString IllegalChars = L":;,=+<>|\"[] \\/?*";
   for (intptr_t Index = 0; Index < IllegalChars.Length(); ++Index)
   {
@@ -420,39 +420,39 @@ UnicodeString AddPathQuotes(const UnicodeString & Path)
 }
 //---------------------------------------------------------------------------
 static wchar_t * ReplaceChar(
-  UnicodeString & FileName, wchar_t * InvalidChar, wchar_t InvalidCharsReplacement)
+  UnicodeString & AFileName, wchar_t * InvalidChar, wchar_t InvalidCharsReplacement)
 {
-  intptr_t Index = InvalidChar - FileName.c_str() + 1;
+  intptr_t Index = InvalidChar - AFileName.c_str() + 1;
   if (InvalidCharsReplacement == TokenReplacement)
   {
     // currently we do not support unicode chars replacement
-    if (FileName[Index] > 0xFF)
+    if (AFileName[Index] > 0xFF)
     {
       ThrowExtException();
     }
 
-    FileName.Insert(ByteToHex(static_cast<uint8_t>(FileName[Index])), Index + 1);
-    FileName[Index] = TokenPrefix;
-    InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index + 2);
+    AFileName.Insert(ByteToHex(static_cast<uint8_t>(AFileName[Index])), Index + 1);
+    AFileName[Index] = TokenPrefix;
+    InvalidChar = const_cast<wchar_t *>(AFileName.c_str() + Index + 2);
   }
   else
   {
-    FileName[Index] = InvalidCharsReplacement;
-    InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index);
+    AFileName[Index] = InvalidCharsReplacement;
+    InvalidChar = const_cast<wchar_t *>(AFileName.c_str() + Index);
   }
   return InvalidChar;
 }
 //---------------------------------------------------------------------------
-UnicodeString ValidLocalFileName(const UnicodeString & FileName)
+UnicodeString ValidLocalFileName(const UnicodeString & AFileName)
 {
-  return ValidLocalFileName(FileName, L'_', L"", LocalInvalidChars);
+  return ValidLocalFileName(AFileName, L'_', L"", LocalInvalidChars);
 }
 //---------------------------------------------------------------------------
 static UnicodeString ValidLocalFileName(
-  const UnicodeString & FileName, wchar_t InvalidCharsReplacement,
+  const UnicodeString & AFileName, wchar_t InvalidCharsReplacement,
   const UnicodeString & TokenizibleChars, const UnicodeString & ALocalInvalidChars)
 {
-  UnicodeString FileName2 = FileName;
+  UnicodeString FileName2 = AFileName;
   if (InvalidCharsReplacement != NoReplacement)
   {
     bool ATokenReplacement = (InvalidCharsReplacement == TokenReplacement);
@@ -586,10 +586,10 @@ void ReformatFileNameCommand(UnicodeString & Command)
 }
 //---------------------------------------------------------------------------
 UnicodeString ExpandFileNameCommand(const UnicodeString & Command,
-  const UnicodeString & FileName)
+  const UnicodeString & AFileName)
 {
   return AnsiReplaceStr(Command, ShellCommandFileNamePattern,
-    AddPathQuotes(FileName));
+    AddPathQuotes(AFileName));
 }
 //---------------------------------------------------------------------------
 UnicodeString EscapePuttyCommandParam(const UnicodeString & Param)
@@ -680,9 +680,9 @@ bool ComparePaths(const UnicodeString & Path1, const UnicodeString & Path2)
   return AnsiSameText(IncludeTrailingBackslash(Path1), IncludeTrailingBackslash(Path2));
 }
 //---------------------------------------------------------------------------
-bool IsReservedName(const UnicodeString & FileName)
+bool IsReservedName(const UnicodeString & AFileName)
 {
-  UnicodeString fileName = FileName;
+  UnicodeString fileName = AFileName;
   intptr_t P = fileName.Pos(L".");
   intptr_t Len = (P > 0) ? P - 1 : fileName.Length();
   if ((Len == 3) || (Len == 4))
@@ -899,10 +899,10 @@ DWORD FindNextChecked(TSearchRecChecked & F)
   return FindCheck(FindNext(F), F.Path);
 }
 //---------------------------------------------------------------------------
-bool FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec)
+bool FileSearchRec(const UnicodeString & AFileName, TSearchRec & Rec)
 {
   DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-  bool Result = (FindFirst(FileName, FindAttrs, Rec) == 0);
+  bool Result = (FindFirst(AFileName, FindAttrs, Rec) == 0);
   if (Result)
   {
     FindClose(Rec);
@@ -1697,14 +1697,14 @@ intptr_t TimeToMinutes(const TDateTime & T)
   return TimeToSeconds(T) / SecsPerMin;
 }
 //---------------------------------------------------------------------------
-bool RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin)
+bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin)
 {
   SHFILEOPSTRUCT Data;
 
   ClearStruct(Data);
   Data.hwnd = nullptr;
   Data.wFunc = FO_DELETE;
-  UnicodeString FileList(FileName);
+  UnicodeString FileList(AFileName);
   FileList.SetLength(FileList.Length() + 2);
   FileList[FileList.Length() - 1] = L'\0';
   FileList[FileList.Length()] = L'\0';
@@ -1733,11 +1733,11 @@ bool RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin)
   return Result;
 }
 //---------------------------------------------------------------------------
-void DeleteFileChecked(const UnicodeString & FileName)
+void DeleteFileChecked(const UnicodeString & AFileName)
 {
-  if (!DeleteFile(FileName))
+  if (!DeleteFile(AFileName))
   {
-    throw EOSExtException(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, FileName.c_str()));
+    throw EOSExtException(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()));
   }
 }
 //---------------------------------------------------------------------------

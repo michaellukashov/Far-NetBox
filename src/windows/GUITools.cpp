@@ -401,9 +401,9 @@ TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
 }
 //---------------------------------------------------------------------------
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
-  const UnicodeString & Path, const UnicodeString & FileName,
+  const UnicodeString & Path, const UnicodeString & AFileName,
   const UnicodeString & LocalFileName, const UnicodeString & FileList) :
-  TFileCustomCommand(Data, Path, FileName, FileList)
+  TFileCustomCommand(Data, Path, AFileName, FileList)
 {
   FLocalFileName = LocalFileName;
 }

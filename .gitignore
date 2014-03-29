@@ -1,17 +1,11 @@
-.svn/
 *.log
-Temp/
 build/
-Release/
-Debug/
-Far2_x86/
-Far2_x64/
-Far3_x86/
-Far3_x64/
+/Far2_x86/
+/Far2_x64/
+/Far3_x86/
+/Far3_x64/
 res.txt
-svn.log
 libs/
-dlls/
 ipch/
 *.tmp
 *.opensdf
@@ -30,7 +24,6 @@ ipch/
 *.7z
 *.tgz
 *.orig
-tags
 
 *.vsp
 *.psess
@@ -43,6 +36,7 @@ tags
 *.idc
 *.ctl
 
+tags
 README.html
 CMakeLists.txt.user
 

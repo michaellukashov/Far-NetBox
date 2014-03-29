@@ -168,7 +168,7 @@ public:
   virtual void ChangeDirectory(const UnicodeString & Directory) = 0;
   virtual void CachedChangeDirectory(const UnicodeString & Directory) = 0;
   virtual void AnnounceFileListOperation() = 0;
-  virtual void ChangeFileProperties(const UnicodeString & FileName,
+  virtual void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties,
     TChmodSessionAction & Action) = 0;
   virtual bool LoadFilesProperties(TStrings * FileList) = 0;
@@ -184,11 +184,11 @@ public:
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
   virtual void CreateDirectory(const UnicodeString & DirName) = 0;
-  virtual void CreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic) = 0;
-  virtual void DeleteFile(const UnicodeString & FileName,
+  virtual void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic) = 0;
+  virtual void DeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, intptr_t Params,
     TRmSessionAction & Action) = 0;
-  virtual void CustomCommandOnFile(const UnicodeString & FileName,
+  virtual void CustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent) = 0;
   virtual void DoStartup() = 0;
   virtual void HomeDirectory() = 0;
@@ -196,21 +196,21 @@ public:
   virtual void LookupUsersGroups() = 0;
   virtual void ReadCurrentDirectory() = 0;
   virtual void ReadDirectory(TRemoteFileList * FileList) = 0;
-  virtual void ReadFile(const UnicodeString & FileName,
+  virtual void ReadFile(const UnicodeString & AFileName,
     TRemoteFile *& File) = 0;
   virtual void ReadSymlink(TRemoteFile * SymLinkFile,
     TRemoteFile *& File) = 0;
-  virtual void RemoteRenameFile(const UnicodeString & FileName,
+  virtual void RemoteRenameFile(const UnicodeString & AFileName,
     const UnicodeString & NewName) = 0;
-  virtual void CopyFile(const UnicodeString & FileName,
+  virtual void CopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName) = 0;
-  virtual UnicodeString FileUrl(const UnicodeString & FileName) const = 0;
+  virtual UnicodeString FileUrl(const UnicodeString & AFileName) const = 0;
   virtual TStrings * GetFixedPaths() = 0;
   virtual void SpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable) = 0;
   virtual const TSessionInfo & GetSessionInfo() const = 0;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) = 0;
-  virtual bool TemporaryTransferFile(const UnicodeString & FileName) = 0;
+  virtual bool TemporaryTransferFile(const UnicodeString & AFileName) = 0;
   virtual bool GetStoredCredentialsTried() = 0;
   virtual UnicodeString GetUserName() = 0;
   virtual UnicodeString GetCurrentDirectory() = 0;

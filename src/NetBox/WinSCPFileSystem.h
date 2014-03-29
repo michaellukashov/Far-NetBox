@@ -166,7 +166,7 @@ protected:
     intptr_t CopyParamAttrs,
     OUT UnicodeString & TargetDirectory,
     OUT TGUICopyParamType * Params);
-  bool LinkDialog(UnicodeString & FileName, UnicodeString & PointTo, bool & Symbolic,
+  bool LinkDialog(UnicodeString & AFileName, UnicodeString & PointTo, bool & Symbolic,
     bool Edit, bool AllowSymbolic);
   void FileSystemInfoDialog(const TSessionInfo & SessionInfo,
     const TFileSystemInfo & FileSystemInfo, const UnicodeString & SpaceAvailablePath,
@@ -225,11 +225,11 @@ protected:
     TCopyParamType & CopyParam, UnicodeString & TempDir);
   intptr_t UploadFiles(bool Move, int OpMode, bool Edit, UnicodeString & DestPath);
   void UploadOnSave(bool NoReload);
-  void UploadFromEditor(bool NoReload, const UnicodeString & FileName,
+  void UploadFromEditor(bool NoReload, const UnicodeString & AFileName,
     const UnicodeString & RealFileName, UnicodeString & DestPath);
   void LogAuthentication(TTerminal * Terminal, const UnicodeString & Msg);
   void MultipleEdit();
-  void MultipleEdit(const UnicodeString & Directory, const UnicodeString & FileName, TRemoteFile * File);
+  void MultipleEdit(const UnicodeString & Directory, const UnicodeString & AFileName, TRemoteFile * File);
   void EditViewCopyParam(TCopyParamType & CopyParam);
   bool SynchronizeBrowsing(const UnicodeString & NewPath);
   bool IsEditHistoryEmpty();
@@ -268,7 +268,7 @@ private:
     intptr_t Options);
   void TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
-  void TerminalDeleteLocalFile(const UnicodeString & FileName, bool Alternative);
+  void TerminalDeleteLocalFile(const UnicodeString & AFileName, bool Alternative);
   HANDLE TerminalCreateLocalFile(const UnicodeString & LocalFileName,
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
   inline DWORD TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName);
@@ -279,7 +279,7 @@ private:
   void OperationProgress(
     TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
   void OperationFinished(TFileOperation Operation,
-    TOperationSide Side, bool DragDrop, const UnicodeString & FileName, bool Success,
+    TOperationSide Side, bool DragDrop, const UnicodeString & AFileName, bool Success,
     TOnceDoneOperation & DisconnectWhenComplete);
   void CancelConfiguration(TFileOperationProgressType & ProgressData);
   TStrings * CreateFileList(TObjectList * PanelItems,
@@ -299,7 +299,7 @@ private:
   void GetSpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable, bool & Close);
   void QueueAddItem(TQueueItem * Item);
-  UnicodeString GetFileNameHash(const UnicodeString & FileName);
+  UnicodeString GetFileNameHash(const UnicodeString & AFileName);
   intptr_t GetFilesRemote(TObjectList * PanelItems, bool Move,
     UnicodeString & DestPath, int OpMode);
 
@@ -367,7 +367,7 @@ protected:
   const TSessionData * FSessionData;
 
   virtual void GetData(
-    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, int64_t & Size,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & AFileName, int64_t & Size,
     uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     uintptr_t & NumberOfLinks, UnicodeString & Description,
@@ -383,7 +383,7 @@ protected:
   UnicodeString FFolder;
 
   virtual void GetData(
-    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, int64_t & Size,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & AFileName, int64_t & Size,
     uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     uintptr_t & NumberOfLinks, UnicodeString & Description,
@@ -402,7 +402,7 @@ protected:
   TRemoteFile * FRemoteFile;
 
   virtual void GetData(
-    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, int64_t & Size,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & AFileName, int64_t & Size,
     uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     uintptr_t & NumberOfLinks, UnicodeString & Description,

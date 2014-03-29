@@ -989,9 +989,9 @@ void TStringList::SetSorted(bool Value)
   }
 }
 
-void TStringList::LoadFromFile(const UnicodeString & FileName)
+void TStringList::LoadFromFile(const UnicodeString & AFileName)
 {
-  HANDLE FileHandle = ::CreateFile(FileName.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, 0);
+  HANDLE FileHandle = ::CreateFile(AFileName.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, 0);
   if (FileHandle != INVALID_HANDLE_VALUE)
   {
     TSafeHandleStream Stream(FileHandle);
@@ -1478,7 +1478,7 @@ void TMemoryStream::SaveToStream(TStream * Stream)
   }
 }
 
-void TMemoryStream::SaveToFile(const UnicodeString & FileName)
+void TMemoryStream::SaveToFile(const UnicodeString & AFileName)
 {
   // TFileStream Stream(FileName, fmCreate);
   // SaveToStream(Stream);

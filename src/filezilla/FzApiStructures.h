@@ -23,8 +23,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <nbglobals.h>
+
 class t_server
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
 	t_server();
 	~t_server();
@@ -55,6 +58,8 @@ const bool operator != (const t_server &a,const t_server &b);
 
 struct t_transferfile
 {
+CUSTOM_MEM_ALLOCATION_IMPL
+
   CString localfile;
   CString remotefile;
   CServerPath remotepath;

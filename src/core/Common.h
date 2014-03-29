@@ -40,7 +40,7 @@ UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C);
 void PackStr(UnicodeString & Str);
 void PackStr(RawByteString & Str);
 void Shred(UnicodeString & Str);
-UnicodeString MakeValidFileName(const UnicodeString & FileName);
+UnicodeString MakeValidFileName(const UnicodeString & AFileName);
 UnicodeString RootKeyToStr(HKEY RootKey);
 UnicodeString BooleanToStr(bool B);
 UnicodeString BooleanToEngStr(bool B);
@@ -63,21 +63,21 @@ UnicodeString StripPathQuotes(const UnicodeString & Path);
 UnicodeString AddPathQuotes(const UnicodeString & Path);
 void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
   UnicodeString & Params, UnicodeString & Dir);
-UnicodeString ValidLocalFileName(const UnicodeString & FileName);
+UnicodeString ValidLocalFileName(const UnicodeString & AFileName);
 UnicodeString ValidLocalFileName(
-  const UnicodeString & FileName, wchar_t InvalidCharsReplacement,
+  const UnicodeString & AFileName, wchar_t InvalidCharsReplacement,
   const UnicodeString & TokenizibleChars, const UnicodeString & LocalInvalidChars);
 UnicodeString ExtractProgram(const UnicodeString & Command);
 UnicodeString ExtractProgramName(const UnicodeString & Command);
 UnicodeString FormatCommand(const UnicodeString & Program, const UnicodeString & Params);
 UnicodeString ExpandFileNameCommand(const UnicodeString & Command,
-  const UnicodeString & FileName);
+  const UnicodeString & AFileName);
 void ReformatFileNameCommand(UnicodeString & Command);
 UnicodeString EscapePuttyCommandParam(const UnicodeString & Param);
 UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str);
 bool ComparePaths(const UnicodeString & Path1, const UnicodeString & Path2);
 bool CompareFileName(const UnicodeString & Path1, const UnicodeString & Path2);
-bool IsReservedName(const UnicodeString & FileName);
+bool IsReservedName(const UnicodeString & AFileName);
 UnicodeString DisplayableStr(const RawByteString & Str);
 UnicodeString ByteToHex(uint8_t B, bool UpperCase = true);
 UnicodeString BytesToHex(const uint8_t * B, uintptr_t Length, bool UpperCase = true, wchar_t Separator = L'\0');
@@ -93,8 +93,8 @@ bool IsHex(wchar_t Ch);
 UnicodeString DecodeUrlChars(const UnicodeString & S);
 UnicodeString EncodeUrlChars(const UnicodeString & S, const UnicodeString & Ignore = UnicodeString());
 UnicodeString EncodeUrlString(const UnicodeString & S);
-bool RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin);
-void DeleteFileChecked(const UnicodeString & FileName);
+bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin);
+void DeleteFileChecked(const UnicodeString & AFileName);
 uintptr_t CancelAnswer(uintptr_t Answers);
 uintptr_t AbortAnswer(uintptr_t Answers);
 uintptr_t ContinueAnswer(uintptr_t Answers);
@@ -119,7 +119,7 @@ UnicodeString ExtractFileBaseName(const UnicodeString & Path);
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);
-bool FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec);
+bool FileSearchRec(const UnicodeString & AFileName, TSearchRec & Rec);
 struct TSearchRecChecked : public TSearchRec
 {
   UnicodeString Path;

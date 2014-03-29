@@ -70,7 +70,7 @@ public:
     TSynchronizeOptions * Options,
     TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
     TSynchronizeLogEvent OnSynchronizeLog);
-  void LogOperation(TSynchronizeOperation Operation, const UnicodeString & FileName);
+  void LogOperation(TSynchronizeOperation Operation, const UnicodeString & AFileName);
 
 private:
   TSynchronizeEvent FOnSynchronize;

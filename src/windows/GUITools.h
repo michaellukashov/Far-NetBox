@@ -50,7 +50,7 @@ public:
   TLocalCustomCommand();
   explicit TLocalCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path);
   explicit TLocalCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path,
-    const UnicodeString & FileName, const UnicodeString & LocalFileName,
+    const UnicodeString & AFileName, const UnicodeString & LocalFileName,
     const UnicodeString & FileList);
   virtual ~TLocalCustomCommand() {}
 
