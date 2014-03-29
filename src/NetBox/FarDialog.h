@@ -323,6 +323,9 @@ public:
   void SetColor(intptr_t Index, char Value);
 
 private:
+  struct PluginStartupInfo * GetStartupInfo();
+
+private:
   TFarDialog * FDialog;
   TRect FBounds;
   TFarDialogItem * FEnabledFollow;

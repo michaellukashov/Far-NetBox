@@ -1098,6 +1098,11 @@ void TFarDialogItem::SetColor(intptr_t Index, char Value)
   }
 }
 //---------------------------------------------------------------------------
+struct PluginStartupInfo * TFarDialogItem::GetStartupInfo()
+{
+ return GetDialog()->GetFarPlugin()->GetStartupInfo();
+}
+//---------------------------------------------------------------------------
 void TFarDialogItem::SetFlags(DWORD Value)
 {
   if (GetFlags() != Value)
@@ -1364,13 +1369,13 @@ void TFarDialogItem::DoExit()
 LONG_PTR TFarDialogItem::DefaultItemProc(int Msg, LONG_PTR Param)
 {
   TFarEnvGuard Guard;
-  return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(GetItem()), Param);
+  return GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(GetItem()), Param);
 }
 //---------------------------------------------------------------------------
 LONG_PTR TFarDialogItem::DefaultDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
   TFarEnvGuard Guard;
-  return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(Param1), Param2);
+  return GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(Param1), Param2);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::Change()
@@ -1648,7 +1653,7 @@ bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
 void TFarDialogItem::Text(int X, int Y, uintptr_t Color, const UnicodeString & Str)
 {
   TFarEnvGuard Guard;
-  GetDialog()->GetFarPlugin()->GetStartupInfo()->Text(
+  GetStartupInfo()->Text(
     static_cast<int>(GetDialog()->GetBounds().Left + GetLeft() + X),
     static_cast<int>(GetDialog()->GetBounds().Top + GetTop() + Y),
     static_cast<int>(Color), Str.c_str());
