@@ -956,7 +956,7 @@ UnicodeString ExtractFileExt(const UnicodeString & AFileName)
   return Result;
 }
 
-UnicodeString ExpandFileName(const UnicodeString & AFileName)
+static UnicodeString ExpandFileName(const UnicodeString & AFileName)
 {
   UnicodeString Result;
   UnicodeString Buf(MAX_PATH, 0);
@@ -971,7 +971,7 @@ UnicodeString ExpandFileName(const UnicodeString & AFileName)
   return UnicodeString(Buf.c_str(), Size);
 }
 
-UnicodeString GetUniversalName(UnicodeString & AFileName)
+static UnicodeString GetUniversalName(UnicodeString & AFileName)
 {
   UnicodeString Result = AFileName;
   return Result;
