@@ -2399,8 +2399,8 @@ void TFTPFileSystem::DiscardMessages()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::WaitForMessages()
 {
-  //if (FQueue.empty())
-  //  return;
+  if (FQueue.empty())
+    return;
   DWORD Result = WaitForSingleObject(FQueueEvent, INFINITE);
   if (Result != WAIT_OBJECT_0)
   {
