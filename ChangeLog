@@ -1,5 +1,6 @@
 NetBox 2.1.37 ??.04.2014
 --------------------
+  * Update openssl sources to 1.0.1g
   * Bugfix Mantis #0002632: Moving/renaming (F6) any file on FTP (SFTP) doesn't work properly
     (http://bugs.farmanager.com/view.php?id=2632)
 
