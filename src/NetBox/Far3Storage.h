@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <vector.h>
 
 #include <Classes.hpp>
 #include "HierarchicalStorage.h"
@@ -53,7 +53,7 @@ private:
 private:
   intptr_t FRoot;
   mutable PluginSettings FPluginSettings;
-  std::vector<intptr_t> FSubKeyIds;
+  rde::vector<intptr_t> FSubKeyIds;
 
   void Init();
 };
