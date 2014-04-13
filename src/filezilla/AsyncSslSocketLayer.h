@@ -109,8 +109,10 @@ Version 2.0:
 #include <openssl/ssl.h>
 
 // Details of SSL certificate, can be used by app to verify if certificate is valid
-struct t_SslCertData : public TObject
+struct t_SslCertData
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
+
 	struct t_Contact
 	{
 		TCHAR Organization[256];
