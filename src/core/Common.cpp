@@ -448,7 +448,7 @@ UnicodeString ValidLocalFileName(const UnicodeString & AFileName)
   return ValidLocalFileName(AFileName, L'_', L"", LocalInvalidChars);
 }
 //---------------------------------------------------------------------------
-static UnicodeString ValidLocalFileName(
+UnicodeString ValidLocalFileName(
   const UnicodeString & AFileName, wchar_t InvalidCharsReplacement,
   const UnicodeString & TokenizibleChars, const UnicodeString & ALocalInvalidChars)
 {
