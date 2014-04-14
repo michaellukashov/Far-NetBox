@@ -12800,8 +12800,8 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
       }
       else
       {
-        int64_t Size;
-        int64_t MTime;
+        int64_t Size = 0;
+        int64_t MTime = 0;
         TOverwriteFileParams FileParams;
         FTerminal->OpenLocalFile(AFileName, GENERIC_READ,
           nullptr, nullptr, nullptr, &MTime, nullptr,
@@ -12856,8 +12856,8 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
       ThrowSkipFileNull();
     }
 
-    int64_t Size;
-    uintptr_t LocalFileAttrs;
+    int64_t Size = 0;
+    uintptr_t LocalFileAttrs = 0;
 
     FTerminal->OpenLocalFile(AFileName, GENERIC_READ,
       nullptr, &LocalFileAttrs, nullptr, nullptr, nullptr, &Size);
@@ -13267,8 +13267,8 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     bool CanProceed = true;
     if (::FileExists(DestFullName))
     {
-      int64_t Size;
-      int64_t MTime;
+      int64_t Size = 0;
+      int64_t MTime = 0;
       FTerminal->OpenLocalFile(DestFullName, GENERIC_READ,
         nullptr, nullptr, nullptr, &MTime, nullptr, &Size);
       TOverwriteFileParams FileParams;
