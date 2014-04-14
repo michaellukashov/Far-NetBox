@@ -16,7 +16,8 @@
 //---------------------------------------------------------------------------
 
 #if defined(__MINGW32__)
-typedef struct _TIME_DYNAMIC_ZONE_INFORMATION {
+typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
+{
   LONG       Bias;
   WCHAR      StandardName[32];
   SYSTEMTIME StandardDate;
@@ -691,7 +692,8 @@ bool IsReservedName(const UnicodeString & AFileName)
     {
       fileName.SetLength(P - 1);
     }
-    static UnicodeString Reserved[] = {
+    static UnicodeString Reserved[] =
+    {
       L"CON", L"PRN", L"AUX", L"NUL",
       L"COM1", L"COM2", L"COM3", L"COM4", L"COM5", L"COM6", L"COM7", L"COM8", L"COM9",
       L"LPT1", L"LPT2", L"LPT3", L"LPT4", L"LPT5", L"LPT6", L"LPT7", L"LPT8", L"LPT9" };
