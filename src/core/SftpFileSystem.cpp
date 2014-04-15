@@ -4059,9 +4059,9 @@ void TSFTPFileSystem::SFTPSourceRobust(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-      Retry = true;
-      if (FTerminal->GetActive() ||
-          !FTerminal->QueryReopen(&E, ropNoReadDirectory, OperationProgress))
+      Retry = FTerminal != nullptr;
+      if (FTerminal && (FTerminal->GetActive() ||
+          !FTerminal->QueryReopen(&E, ropNoReadDirectory, OperationProgress)))
       {
         if (!ChildError)
         {

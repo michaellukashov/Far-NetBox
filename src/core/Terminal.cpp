@@ -818,7 +818,7 @@ UnicodeString TTerminal::ExpandFileName(const UnicodeString & Path,
 //------------------------------------------------------------------------------
 bool TTerminal::GetActive() const
 {
-  return (FFileSystem != nullptr) && FFileSystem->GetActive();
+  return (this != nullptr) && (FFileSystem != nullptr) && FFileSystem->GetActive();
 }
 //------------------------------------------------------------------------------
 void TTerminal::Close()
