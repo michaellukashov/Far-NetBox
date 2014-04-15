@@ -556,7 +556,8 @@ void TSecureShell::PuttyLogEvent(const UnicodeString & Str)
     FLastTunnelError = Str.SubString(wcslen(FORWARDING_FAILURE_MSG) + 1,
       Str.Length() - wcslen(FORWARDING_FAILURE_MSG));
 
-    static const TPuttyTranslation Translation[] = {
+    static const TPuttyTranslation Translation[] =
+    {
       { L"Administratively prohibited [%]", PFWD_TRANSL_ADMIN },
       { L"Connect failed [%]", PFWD_TRANSL_CONNECT },
     };
@@ -576,7 +577,8 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 
   TPromptKind PromptKind;
   // beware of changing order
-  static const TPuttyTranslation NameTranslation[] = {
+  static const TPuttyTranslation NameTranslation[] =
+  {
     { L"SSH login name", USERNAME_TITLE },
     { L"SSH key passphrase", PASSPHRASE_TITLE },
     { L"SSH TIS authentication", SERVER_PROMPT_TITLE },
@@ -596,7 +598,8 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 
   if (Index == 0) // username
   {
-    static const TPuttyTranslation UsernamePromptTranslation[] = {
+    static const TPuttyTranslation UsernamePromptTranslation[] =
+    {
       { L"login as: ", USERNAME_PROMPT2 },
     };
 
@@ -605,7 +608,8 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
   else if (Index == 1) // passphrase
   {
-    static const TPuttyTranslation PassphrasePromptTranslation[] = {
+    static const TPuttyTranslation PassphrasePromptTranslation[] =
+    {
       { L"Passphrase for key \"%\": ", PROMPT_KEY_PASSPHRASE },
     };
 
@@ -614,10 +618,12 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
   else if (Index == 2) // TIS
   {
-    static const TPuttyTranslation TISInstructionTranslation[] = {
+    static const TPuttyTranslation TISInstructionTranslation[] =
+    {
       { L"Using TIS authentication.%", TIS_INSTRUCTION },
     };
-    static const TPuttyTranslation TISPromptTranslation[] = {
+    static const TPuttyTranslation TISPromptTranslation[] =
+    {
       { L"Response: ", PROMPT_PROMPT },
     };
 
@@ -627,10 +633,12 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
   else if (Index == 3) // CryptoCard
   {
-    static const TPuttyTranslation CryptoCardInstructionTranslation[] = {
+    static const TPuttyTranslation CryptoCardInstructionTranslation[] =
+    {
       { L"Using CryptoCard authentication.%", CRYPTOCARD_INSTRUCTION },
     };
-    static const TPuttyTranslation CryptoCardPromptTranslation[] = {
+    static const TPuttyTranslation CryptoCardPromptTranslation[] =
+    {
       { L"Response: ", PROMPT_PROMPT },
     };
 
@@ -640,7 +648,8 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
   else if ((Index == 4) || (Index == 5))
   {
-    static const TPuttyTranslation KeybInteractiveInstructionTranslation[] = {
+    static const TPuttyTranslation KeybInteractiveInstructionTranslation[] =
+    {
       { L"Using keyboard-interactive authentication.%", KEYBINTER_INSTRUCTION },
     };
 
@@ -655,7 +664,8 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
   else if (Index == 7)
   {
-    static const TPuttyTranslation NewPasswordPromptTranslation[] = {
+    static const TPuttyTranslation NewPasswordPromptTranslation[] =
+    {
       { L"Current password (blank for previously entered password): ", NEW_PASSWORD_CURRENT_PROMPT },
       { L"Enter new password: ", NEW_PASSWORD_NEW_PROMPT },
       { L"Confirm new password: ", NEW_PASSWORD_CONFIRM_PROMPT },
@@ -1204,7 +1214,8 @@ int TSecureShell::TranslatePuttyMessage(
 int TSecureShell::TranslateAuthenticationMessage(
   UnicodeString & Message, UnicodeString * HelpKeyword)
 {
-  static const TPuttyTranslation Translation[] = {
+  static const TPuttyTranslation Translation[] =
+  {
     { L"Using username \"%\".", AUTH_TRANSL_USERNAME },
     { L"Using keyboard-interactive authentication.", AUTH_TRANSL_KEYB_INTER }, // not used anymore
     { L"Authenticating with public key \"%\" from agent", AUTH_TRANSL_PUBLIC_KEY_AGENT },
@@ -1294,7 +1305,8 @@ void TSecureShell::CaptureOutput(TLogLineType Type,
 int TSecureShell::TranslateErrorMessage(
   UnicodeString & Message, UnicodeString * HelpKeyword)
 {
-  static const TPuttyTranslation Translation[] = {
+  static const TPuttyTranslation Translation[] =
+  {
     { L"Server unexpectedly closed network connection", UNEXPECTED_CLOSE_ERROR, HELP_UNEXPECTED_CLOSE_ERROR },
     { L"Network error: Connection refused", NET_TRANSL_REFUSED2, HELP_NET_TRANSL_REFUSED },
     { L"Network error: Connection reset by peer", NET_TRANSL_RESET, HELP_NET_TRANSL_RESET },

@@ -1,7 +1,8 @@
 #ifndef FileInfoH
 #define FileInfoH
 
-struct TTranslation {
+struct TTranslation
+{
   Word Language, CharSet;
 };
 

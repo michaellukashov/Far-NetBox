@@ -357,10 +357,10 @@ public:
 private:
 	void grow()
 	{
-		const int newCapacity = (m_capacity == 0 ? kInitialCapacity : m_capacity * 2);
+		const size_type newCapacity = (m_capacity == 0 ? kInitialCapacity : m_capacity * 2);
 		grow(newCapacity);
 	}
-	void grow(int new_capacity)
+	void grow(size_type new_capacity)
 	{
 		RDE_ASSERT((new_capacity & (new_capacity - 1)) == 0);	// Must be power-of-two
 		node* newNodes = allocate_nodes(new_capacity);
@@ -532,7 +532,7 @@ private:
 
 	node*			m_nodes;
 	int				m_size;
-	int				m_capacity;
+	size_type				m_capacity;
 	uint32			m_capacityMask;
 	int				m_numUsed;
 	THashFunc       m_hashFunc;

@@ -40,7 +40,6 @@ UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C);
 void PackStr(UnicodeString & Str);
 void PackStr(RawByteString & Str);
 void Shred(UnicodeString & Str);
-UnicodeString MakeValidFileName(const UnicodeString & AFileName);
 UnicodeString RootKeyToStr(HKEY RootKey);
 UnicodeString BooleanToStr(bool B);
 UnicodeString BooleanToEngStr(bool B);

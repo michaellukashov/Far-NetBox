@@ -43,3 +43,4 @@ CMakeLists.txt.user
 *.cbp
 
 cov-int/
+/src/NetBox/My */
