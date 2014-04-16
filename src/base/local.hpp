@@ -83,9 +83,9 @@ inline int __cdecl IsAlpha(wchar_t Ch) { return IsCharAlpha(Ch); }
 
 inline int __cdecl IsAlphaNum(wchar_t Ch) { return IsCharAlphaNumeric(Ch); }
 
-inline void __cdecl UpperBuf(wchar_t *Buf, int Length) { CharUpperBuff(Buf, Length); }
+inline void __cdecl UpperBuf(wchar_t *Buf, intptr_t Length) { CharUpperBuff(Buf, (DWORD)Length); }
 
-inline void __cdecl LowerBuf(wchar_t *Buf,int Length) { CharLowerBuff(Buf, Length); }
+inline void __cdecl LowerBuf(wchar_t *Buf, intptr_t Length) { CharLowerBuff(Buf, (DWORD)Length); }
 
 inline void __cdecl StrUpper(wchar_t *s1) { UpperBuf(s1, StrLength(s1)); }
 
@@ -99,5 +99,5 @@ const wchar_t * __cdecl RevStrStrI(const wchar_t *str1, const wchar_t *str2);
 int NumStrCmp(const wchar_t *s1, size_t n1, const wchar_t *s2, size_t n2, bool IgnoreCase);
 inline int NumStrCmpN(const wchar_t *s1, int n1, const wchar_t *s2, int n2) { return NumStrCmp(s1, n1, s2, n2, false); }
 inline int NumStrCmpNI(const wchar_t *s1, int n1, const wchar_t *s2, int n2) { return NumStrCmp(s1, n1, s2, n2, true); }
-inline int NumStrCmp(const wchar_t *s1, const wchar_t *s2) { return NumStrCmp(s1, -1, s2, -1, false); }
-inline int NumStrCmpI(const wchar_t *s1, const wchar_t *s2) { return NumStrCmp(s1, -1, s2, -1, true); }
+inline int NumStrCmp(const wchar_t *s1, const wchar_t *s2) { return NumStrCmp(s1, (size_t)-1, s2, (size_t)-1, false); }
+inline int NumStrCmpI(const wchar_t *s1, const wchar_t *s2) { return NumStrCmp(s1, (size_t)-1, s2, (size_t)-1, true); }

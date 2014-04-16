@@ -927,7 +927,7 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TTerminalQueue::ItemSetCPSLimit(TQueueItem * Item, uint32_t CPSLimit)
+bool TTerminalQueue::ItemSetCPSLimit(TQueueItem * Item, uintptr_t CPSLimit)
 {
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
@@ -945,7 +945,7 @@ bool TTerminalQueue::ItemSetCPSLimit(TQueueItem * Item, uint32_t CPSLimit)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TTerminalQueue::ItemGetCPSLimit(TQueueItem * Item, uint32_t & CPSLimit) const
+bool TTerminalQueue::ItemGetCPSLimit(TQueueItem * Item, uintptr_t & CPSLimit) const
 {
   CPSLimit = 0;
   // to prevent deadlocks when closing queue from other thread
@@ -1566,7 +1566,7 @@ TQueueItem::TQueueItem() :
   FStatus(qsPending), FTerminalItem(nullptr), FProgressData(nullptr),
   FInfo(nullptr),
   FQueue(nullptr), FCompleteEvent(INVALID_HANDLE_VALUE),
-  FCPSLimit(-1)
+  FCPSLimit((uint32_t)-1)
 {
   FInfo = new TInfo();
   FInfo->SingleFile = false;
@@ -1635,7 +1635,7 @@ void TQueueItem::SetProgress(
     if ((FCPSLimit >= 0) && ((ProgressData.Operation == foMove) || (ProgressData.Operation == foCopy)))
     {
       ProgressData.CPSLimit = static_cast<unsigned long>(FCPSLimit);
-      FCPSLimit = -1;
+      FCPSLimit = (uint32_t)-1;
     }
 
     assert(FProgressData != nullptr);
@@ -1645,7 +1645,7 @@ void TQueueItem::SetProgress(
     if (FCPSLimit >= 0)
     {
       ProgressData.CPSLimit = static_cast<uint32_t>(FCPSLimit);
-      FCPSLimit = -1;
+      FCPSLimit = (uint32_t)-1;
     }
   }
   FQueue->DoQueueItemUpdate(this);
@@ -1682,19 +1682,19 @@ void TQueueItem::Execute(TTerminalItem * TerminalItem)
   DoExecute(TerminalItem->FTerminal);
 }
 //---------------------------------------------------------------------------
-void TQueueItem::SetCPSLimit(uint32_t CPSLimit)
+void TQueueItem::SetCPSLimit(uintptr_t CPSLimit)
 {
-  FCPSLimit = static_cast<long>(CPSLimit);
+  FCPSLimit = CPSLimit;
 }
 //---------------------------------------------------------------------------
-uint32_t TQueueItem::DefaultCPSLimit() const
+uintptr_t TQueueItem::DefaultCPSLimit() const
 {
   return 0;
 }
 //---------------------------------------------------------------------------
-uint32_t TQueueItem::GetCPSLimit() const
+uintptr_t TQueueItem::GetCPSLimit() const
 {
-  uint32_t Result;
+  uintptr_t Result;
   if (FCPSLimit >= 0)
   {
     Result = FCPSLimit;
@@ -1822,12 +1822,12 @@ bool TQueueItemProxy::ProcessUserAction()
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TQueueItemProxy::GetCPSLimit(uint32_t & CPSLimit) const
+bool TQueueItemProxy::GetCPSLimit(uintptr_t & CPSLimit) const
 {
   return FQueue->ItemGetCPSLimit(FQueueItem, CPSLimit);
 }
 //---------------------------------------------------------------------------
-bool TQueueItemProxy::SetCPSLimit(uint32_t CPSLimit)
+bool TQueueItemProxy::SetCPSLimit(uintptr_t CPSLimit)
 {
   return FQueue->ItemSetCPSLimit(FQueueItem, CPSLimit);
 }
@@ -2003,7 +2003,7 @@ TTransferQueueItem::~TTransferQueueItem()
   SAFE_DESTROY(FCopyParam);
 }
 //---------------------------------------------------------------------------
-uint32_t TTransferQueueItem::DefaultCPSLimit() const
+uintptr_t TTransferQueueItem::DefaultCPSLimit() const
 {
   return FCopyParam->GetCPSLimit();
 }

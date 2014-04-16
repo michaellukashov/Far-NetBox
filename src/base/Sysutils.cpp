@@ -214,7 +214,7 @@ int64_t StrToInt64Def(const UnicodeString & Value, int64_t DefVal)
 
 bool TryStrToInt(const UnicodeString & StrValue, int64_t & Value)
 {
-  bool Result = !StrValue.IsEmpty() && (StrValue.FindFirstNotOf(L"+-0123456789") == std::string::npos);
+  bool Result = !StrValue.IsEmpty() && (StrValue.FindFirstNotOf(L"+-0123456789") == -1);
   if (Result)
   {
     errno = 0;

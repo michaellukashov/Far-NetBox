@@ -68,7 +68,7 @@ CString CCrypt::decrypt(CString str)
 		if (digit < '0' || digit > '9')
 			return _T("");
 		number += digit - '0';
-		tmp[0] = number^m_key[(i+pos)%strlen(m_key)];
+		tmp[0] = (TCHAR)(number^m_key[(i+pos)%strlen(m_key)]);
 		ret += tmp;
 	}
 	return ret;
