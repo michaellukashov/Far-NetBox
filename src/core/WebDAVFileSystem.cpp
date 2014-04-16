@@ -13004,7 +13004,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
       }
 
       FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        FindOK = ::FindNextFile(FindHandle, &SearchRec);
+        FindOK = ::FindNextFile(FindHandle, &SearchRec) == TRUE;
         if (!FindOK)
         {
           ::FindCheck(::GetLastError(), FindPath);
