@@ -443,15 +443,15 @@ private:
 		return m_nodes + m_capacity;
 	}
 
-	static void rehash(int new_capacity, node* new_nodes,
-		int capacity, const node* nodes, bool destruct_original)
+	static void rehash(size_type new_capacity, node* new_nodes,
+		size_type capacity, const node* nodes, bool destruct_original)
 	{
         //if (nodes == &ms_emptyNode || new_nodes == &ms_emptyNode)
           //  return;
         
 		const node* it = nodes;
 		const node* itEnd = nodes + capacity;
-		const uint32 mask = new_capacity - 1;
+		const size_type mask = new_capacity - 1;
 		while (it != itEnd)
 		{
 			if (it->is_occupied())
@@ -476,7 +476,7 @@ private:
 		}
 	}
 
-	node* allocate_nodes(int n)
+	node* allocate_nodes(size_type n)
 	{
 		node* buckets = static_cast<node*>(m_allocator.allocate(n * sizeof(node)));
         node* iterBuckets(buckets);
@@ -533,7 +533,7 @@ private:
 	node*			m_nodes;
 	int				m_size;
 	size_type				m_capacity;
-	uint32			m_capacityMask;
+	size_type			m_capacityMask;
 	int				m_numUsed;
 	THashFunc       m_hashFunc;
 	TKeyEqualFunc	m_keyEqualFunc;

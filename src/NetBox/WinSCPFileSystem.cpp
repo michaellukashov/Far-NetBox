@@ -3694,7 +3694,7 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
       ProgressData.Resume();
     };
     TCancelStatus ACancel;
-    uintptr_t Result = -1;
+    uintptr_t Result = 0;
     if (ProgressData.TransferingFile &&
         (ProgressData.TimeExpected() > GetGUIConfiguration()->GetIgnoreCancelBeforeFinish()))
     {

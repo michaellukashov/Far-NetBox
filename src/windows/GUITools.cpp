@@ -260,6 +260,51 @@ bool SpecialFolderLocation(int PathID, UnicodeString & Path)
   return false;
 }
 //---------------------------------------------------------------------------
+UnicodeString GetPersonalFolder()
+{
+  UnicodeString Result;
+  SpecialFolderLocation(CSIDL_PERSONAL, Result);
+
+  if (IsWine())
+  {
+    UnicodeString WineHostHome;
+    int Len = GetEnvironmentVariable(L"WINE_HOST_HOME", NULL, 0);
+    if (Len > 0)
+    {
+      WineHostHome.SetLength(Len - 1);
+      GetEnvironmentVariable(L"WINE_HOST_HOME", (LPWSTR)WineHostHome.c_str(), Len);
+    }
+    if (!WineHostHome.IsEmpty())
+    {
+      UnicodeString WineHome = L"Z:" + ToUnixPath(WineHostHome);
+      if (DirectoryExists(WineHome))
+      {
+        Result = WineHome;
+      }
+    }
+    else
+    {
+      // Should we use WinAPI GetUserName() instead?
+      UnicodeString UserName;
+      int Len = GetEnvironmentVariable(L"USERNAME", NULL, 0);
+      if (Len > 0)
+      {
+        UserName.SetLength(Len - 1);
+        GetEnvironmentVariable(L"USERNAME", (LPWSTR)UserName.c_str(), Len);
+      }
+      if (!UserName.IsEmpty())
+      {
+        UnicodeString WineHome = L"Z:\\home\\" + UserName;
+        if (DirectoryExists(WineHome))
+        {
+          Result = WineHome;
+        }
+      }
+    }
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
 UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   const UnicodeString & MultiItemsFormat, intptr_t Count, const UnicodeString & FirstItem)
 {

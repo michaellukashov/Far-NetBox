@@ -149,8 +149,8 @@ public:
   bool ItemExecuteNow(TQueueItem * Item);
   bool ItemDelete(TQueueItem * Item);
   bool ItemPause(TQueueItem * Item, bool Pause);
-  bool ItemSetCPSLimit(TQueueItem * Item, uint32_t CPSLimit);
-  bool ItemGetCPSLimit(TQueueItem * Item, uint32_t & CPSLimit) const;
+  bool ItemSetCPSLimit(TQueueItem * Item, uintptr_t CPSLimit);
+  bool ItemGetCPSLimit(TQueueItem * Item, uintptr_t & CPSLimit) const;
 
   void RetryItem(TQueueItem * Item);
   void DeleteItem(TQueueItem * Item, bool CanKeep);
@@ -209,7 +209,7 @@ protected:
   TQueueItem::TInfo * FInfo;
   TTerminalQueue * FQueue;
   HANDLE FCompleteEvent;
-  long FCPSLimit;
+  uintptr_t FCPSLimit;
   TDateTime FDoneAt;
 
   explicit TQueueItem();
@@ -220,14 +220,14 @@ public:
   void SetStatus(TStatus Status);
   void SetProgress(TFileOperationProgressType & ProgressData);
   void GetData(TQueueItemProxy * Proxy);
-  void SetCPSLimit(uint32_t CPSLimit);
-  bool GetCPSLimit(uint32_t & CPSLimit) const;
+  void SetCPSLimit(uintptr_t CPSLimit);
+  bool GetCPSLimit(uintptr_t & CPSLimit) const;
 
 private:
   void Execute(TTerminalItem * TerminalItem);
   virtual void DoExecute(TTerminal * Terminal) = 0;
-  uint32_t GetCPSLimit() const;
-  virtual uint32_t DefaultCPSLimit() const;
+  uintptr_t GetCPSLimit() const;
+  virtual uintptr_t DefaultCPSLimit() const;
   virtual UnicodeString StartupDirectory() = 0;
   void Complete();
 };
@@ -248,8 +248,8 @@ public:
   bool Delete();
   bool Pause();
   bool Resume();
-  bool SetCPSLimit(uint32_t CPSLimit);
-  bool GetCPSLimit(uint32_t & CPSLimit) const;
+  bool SetCPSLimit(uintptr_t CPSLimit);
+  bool GetCPSLimit(uintptr_t & CPSLimit) const;
 
   TQueueItem::TInfo * GetInfo() const { return FInfo; }
   TQueueItem::TStatus GetStatus() const { return FStatus; }
@@ -341,7 +341,7 @@ protected:
   TCopyParamType * FCopyParam;
   intptr_t FParams;
 
-  virtual uint32_t DefaultCPSLimit() const;
+  virtual uintptr_t DefaultCPSLimit() const;
 };
 //---------------------------------------------------------------------------
 class TUploadQueueItem : public TTransferQueueItem

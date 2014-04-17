@@ -826,7 +826,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
   int ButtonLines = 1;
   TFarButton * Button = nullptr;
   FTimeoutButton = nullptr;
-  for (intptr_t Index = 0; Index < Buttons->GetCount(); ++Index)
+  for (uintptr_t Index = 0; Index < (uintptr_t)Buttons->GetCount(); ++Index)
   {
     TFarButton * PrevButton = Button;
     Button = new TFarButton(this);

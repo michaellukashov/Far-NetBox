@@ -209,6 +209,7 @@ protected:
   void SetLastCode(intptr_t Code);
   void StoreLastResponse(const UnicodeString & Text);
   void SetCPSLimit(TFileOperationProgressType * OperationProgress);
+  bool VerifyCertificateHostName(const TFtpsCertificateData & Data);
 
   static bool Unquote(UnicodeString & Str);
   static UnicodeString ExtractStatusMessage(const UnicodeString & Status);

@@ -5361,7 +5361,7 @@ bool TTerminal::CopyToRemote(const TStrings * AFilesToCopy,
       AFilesToCopy->GetCount(), (Params & cpTemporary) > 0, TargetDir, CopyParam->GetCPSLimit());
 
     FOperationProgress = &OperationProgress; //-V506
-    bool CollectingUsage = false;
+    //bool CollectingUsage = false;
     {
       SCOPE_EXIT
       {
@@ -5478,7 +5478,7 @@ bool TTerminal::CopyToLocal(const TStrings * AFilesToCopy,
       AFilesToCopy->GetCount(), (Params & cpTemporary) != 0, TargetDir, CopyParam->GetCPSLimit());
 
     FOperationProgress = &OperationProgress;
-    bool CollectingUsage = false;
+    //bool CollectingUsage = false;
     {
       SCOPE_EXIT
       {
