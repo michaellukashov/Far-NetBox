@@ -131,6 +131,8 @@ struct t_SslCertData
 		int y,M,d,h,m,s;
 	} validFrom, validUntil;
 
+	TCHAR subjectAltName[10240];
+
 	uint8_t hash[20];
 
 	int verificationResult;

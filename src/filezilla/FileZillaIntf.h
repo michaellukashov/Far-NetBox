@@ -67,6 +67,8 @@ struct TFtpsCertificateData
   TValidityTime ValidFrom;
   TValidityTime ValidUntil;
 
+  const wchar_t * SubjectAltName;
+
   const uint8_t * Hash;
   static const size_t HashLen = 20;
 

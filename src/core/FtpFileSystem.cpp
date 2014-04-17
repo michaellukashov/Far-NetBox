@@ -3173,6 +3173,86 @@ UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & Val
   return dt;
 }
 //---------------------------------------------------------------------------
+static bool VerifyNameMask(const UnicodeString & AName, const UnicodeString & AMask)
+{
+  bool Result = true;
+  UnicodeString Name = AName;
+  UnicodeString Mask = AMask;
+  int Pos;
+  while (Result && (Pos = Mask.Pos(L"*")) > 0)
+  {
+    // Pos will typically be 1 here, so not actual comparison is done
+    Result = SameText(Mask.SubString(1, Pos - 1), Name.SubString(1, Pos - 1));
+    if (Result)
+    {
+      Mask.Delete(1, Pos); // including *
+      Name.Delete(1, Pos - 1);
+      // remove everything until the next dot
+      Pos = Name.Pos(L".");
+      if (Pos == 0)
+      {
+        Pos = Name.Length() + 1;
+      }
+      Name.Delete(1, Pos - 1);
+    }
+  }
+
+  if (Result)
+  {
+    Result = SameText(Mask, Name);
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------------
+bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData & Data)
+{
+  UnicodeString HostName = FTerminal->GetSessionData()->GetHostNameExpanded();
+
+  UnicodeString CommonName = Data.Subject.CommonName;
+  bool NoMask = CommonName.IsEmpty();
+  bool Result = !NoMask && VerifyNameMask(HostName, CommonName);
+  if (Result)
+  {
+    FTerminal->LogEvent(FORMAT(L"Certificate common name \"%s\" matches hostname", CommonName.c_str()));
+  }
+  else
+  {
+    if (!NoMask && (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1))
+    {
+      FTerminal->LogEvent(FORMAT(L"Certificate common name \"%s\" does not match hostname", CommonName.c_str()));
+    }
+    UnicodeString SubjectAltName = Data.SubjectAltName;
+    while (!Result && !SubjectAltName.IsEmpty())
+    {
+      UnicodeString Entry = CutToChar(SubjectAltName, L',', true);
+      UnicodeString EntryName = CutToChar(Entry, L':', true);
+      if (SameText(EntryName, L"DNS"))
+      {
+        NoMask = false;
+        Result = VerifyNameMask(HostName, Entry);
+        if (Result)
+        {
+          FTerminal->LogEvent(FORMAT(L"Certificate subject alternative name \"%s\" matches hostname", Entry.c_str()));
+        }
+        else
+        {
+          if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
+          {
+            FTerminal->LogEvent(FORMAT(L"Certificate subject alternative name \"%s\" does not match hostname", Entry.c_str()));
+          }
+        }
+      }
+    }
+  }
+  if (!Result && NoMask)
+  {
+    FTerminal->LogEvent(L"Certificate has no common name nor subject alternative name, not verifying hostname");
+    Result = true;
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
 bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
   const TFtpsCertificateData & Data, int & RequestResult)
 {
@@ -3185,11 +3265,14 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     FSessionInfo.CertificateFingerprint =
       BytesToHex(RawByteString(reinterpret_cast<const char *>(Data.Hash), Data.HashLen), false, L':');
 
+    UnicodeString CertificateSubject = Data.Subject.Organization;
+    FTerminal->LogEvent(FORMAT(L"Verifying certificate for \"%s\" with fingerprint %s", CertificateSubject.c_str(), FSessionInfo.CertificateFingerprint.c_str()));
+
     int VerificationResultStr;
     switch (Data.VerificationResult)
     {
       case X509_V_OK:
-        VerificationResultStr = CERT_OK;
+        VerificationResultStr = -1;
         break;
       case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
         VerificationResultStr = CERT_ERR_UNABLE_TO_GET_ISSUER_CERT;
@@ -3253,10 +3336,15 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         break;
     }
 
-    UnicodeString Summary = LoadStr(VerificationResultStr);
-    if (Data.VerificationResult != X509_V_OK)
+    UnicodeString Summary;
+    if (VerificationResultStr >= 0)
     {
-      Summary += L" " + FMTLOAD(CERT_ERRDEPTH, Data.VerificationDepth + 1);
+      Summary = LoadStr(VerificationResultStr) + L" " + FMTLOAD(CERT_ERRDEPTH, Data.VerificationDepth + 1);
+    }
+
+    if (!VerifyCertificateHostName(Data))
+    {
+      AddToList(Summary, FMTLOAD(CERT_NAME_MISMATCH, FTerminal->GetSessionData()->GetHostNameExpanded().c_str()), L"\n\n");
     }
 
     FSessionInfo.Certificate =
@@ -3270,6 +3358,12 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
     RequestResult = 0;
 
+    if (Summary.IsEmpty())
+    {
+      RequestResult = 1;
+    }
+
+    if (RequestResult == 0)
     {
       std::unique_ptr<THierarchicalStorage> Storage(
         FTerminal->GetConfiguration()->CreateStorage(false));
@@ -3278,6 +3372,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       if (Storage->OpenSubKey(FtpsCertificateStorageKey, false) &&
           Storage->ValueExists(FSessionInfo.CertificateFingerprint))
       {
+        FTerminal->LogEvent(FORMAT(L"Certificate for \"%s\" matches cached fingerprint", CertificateSubject.c_str()));
         RequestResult = 1;
       }
     }
@@ -3297,6 +3392,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         }
         else if (ExpectedKey == FSessionInfo.CertificateFingerprint)
         {
+          FTerminal->LogEvent(FORMAT(L"Certificate for \"%s\" matches configured fingerprint", CertificateSubject.c_str()));
           RequestResult = 1;
         }
       }

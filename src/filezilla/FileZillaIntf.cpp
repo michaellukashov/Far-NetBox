@@ -381,6 +381,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           CopyContact(Data.Issuer, AData->pCertData->issuer);
           CopyValidityTime(Data.ValidFrom, AData->pCertData->validFrom);
           CopyValidityTime(Data.ValidUntil, AData->pCertData->validUntil);
+          Data.SubjectAltName = AData->pCertData->subjectAltName;
           Data.Hash = AData->pCertData->hash;
           Data.VerificationResult = AData->pCertData->verificationResult;
           Data.VerificationDepth = AData->pCertData->verificationDepth;
