@@ -1931,6 +1931,29 @@ UnicodeString EncodeUrlString(const UnicodeString & S)
   return DoEncodeUrl(S, NonUrlChars());
 }
 //---------------------------------------------------------------------------
+UnicodeString AppendUrlParams(const UnicodeString & AURL, const UnicodeString & Params)
+{
+  UnicodeString URL = AURL;
+  // see also TWebHelpSystem::ShowHelp
+  const wchar_t FragmentSeparator = L'#';
+  UnicodeString Result = ::CutToChar(URL, FragmentSeparator, false);
+
+  if (Result.Pos(L"?") == 0)
+  {
+    Result += L"?";
+  }
+  else
+  {
+    Result += L"&";
+  }
+
+  Result += Params;
+
+  AddToList(Result, URL, FragmentSeparator);
+
+  return Result;
+}
+//---------------------------------------------------------------------------
 UnicodeString EscapeHotkey(const UnicodeString & Caption)
 {
   return ReplaceStr(Caption, L"&", L"&&");
@@ -2038,6 +2061,14 @@ bool IsWin7()
   return
     (Win32MajorVersion > 6) ||
     ((Win32MajorVersion == 6) && (Win32MinorVersion >= 1));
+}
+//---------------------------------------------------------------------------
+bool IsWine()
+{
+  HMODULE NtDll = GetModuleHandle(L"ntdll.dll");
+  return
+    ALWAYS_TRUE(NtDll != NULL) &&
+    (GetProcAddress(NtDll, "wine_get_version") != NULL);
 }
 //---------------------------------------------------------------------------
 LCID GetDefaultLCID()

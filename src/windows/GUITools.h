@@ -33,6 +33,7 @@ bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Command,
 void OpenSessionInPutty(const UnicodeString & PuttyPath,
   TSessionData * SessionData, const UnicodeString & Password);
 bool SpecialFolderLocation(int PathID, UnicodeString & Path);
+UnicodeString GetPersonalFolder();
 UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   const UnicodeString & MultiItemsFormat, intptr_t Count, const UnicodeString & FirstItem);
 UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,

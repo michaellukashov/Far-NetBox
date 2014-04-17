@@ -91,6 +91,7 @@ bool IsDigit(wchar_t Ch);
 bool IsHex(wchar_t Ch);
 UnicodeString DecodeUrlChars(const UnicodeString & S);
 UnicodeString EncodeUrlChars(const UnicodeString & S, const UnicodeString & Ignore = UnicodeString());
+UnicodeString AppendUrlParams(const UnicodeString & AURL, const UnicodeString & Params);
 UnicodeString EncodeUrlString(const UnicodeString & S);
 bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin);
 void DeleteFileChecked(const UnicodeString & AFileName);
@@ -105,6 +106,7 @@ bool CutToken(UnicodeString & Str, UnicodeString & Token,
 void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter);
 bool IsWinVista();
 bool IsWin7();
+bool IsWine();
 int64_t Round(double Number);
 bool TryRelativeStrToDateTime(const UnicodeString & S, TDateTime & DateTime);
 LCID GetDefaultLCID();
