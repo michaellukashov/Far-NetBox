@@ -1566,7 +1566,7 @@ TQueueItem::TQueueItem() :
   FStatus(qsPending), FTerminalItem(nullptr), FProgressData(nullptr),
   FInfo(nullptr),
   FQueue(nullptr), FCompleteEvent(INVALID_HANDLE_VALUE),
-  FCPSLimit((uint32_t)-1)
+  FCPSLimit((uintptr_t)-1)
 {
   FInfo = new TInfo();
   FInfo->SingleFile = false;
@@ -1635,7 +1635,7 @@ void TQueueItem::SetProgress(
     if ((FCPSLimit >= 0) && ((ProgressData.Operation == foMove) || (ProgressData.Operation == foCopy)))
     {
       ProgressData.CPSLimit = static_cast<unsigned long>(FCPSLimit);
-      FCPSLimit = (uint32_t)-1;
+      FCPSLimit = (uintptr_t)-1;
     }
 
     assert(FProgressData != nullptr);
@@ -1645,7 +1645,7 @@ void TQueueItem::SetProgress(
     if (FCPSLimit >= 0)
     {
       ProgressData.CPSLimit = static_cast<uint32_t>(FCPSLimit);
-      FCPSLimit = (uint32_t)-1;
+      FCPSLimit = (uintptr_t)-1;
     }
   }
   FQueue->DoQueueItemUpdate(this);
