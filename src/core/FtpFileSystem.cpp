@@ -1560,8 +1560,8 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   bool FindOK = false;
 
   FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    FindOK = (bool)(::FindFirstChecked((DirectoryName + L"*.*").c_str(),
-      FindAttrs, SearchRec) == 0);
+    FindOK = ::FindFirstChecked((DirectoryName + L"*.*").c_str(),
+      FindAttrs, SearchRec) == 0;
   );
 
   bool CreateDir = true;

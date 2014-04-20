@@ -2019,7 +2019,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
     bool FindOK = false;
     FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
       UnicodeString Path = ::IncludeTrailingBackslash(DirectoryName) + L"*.*";
-      FindOK = ::FindFirstChecked(Path.c_str(),
+      FindOK = ::FindFirstChecked(Path,
         FindAttrs, SearchRec) == 0;
     );
 

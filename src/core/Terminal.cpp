@@ -4616,7 +4616,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
 
     FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
       DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-      Found = (::FindFirstChecked(Data.LocalDirectory + L"*.*", FindAttrs, SearchRec) == 0);
+      Found = ::FindFirstChecked(Data.LocalDirectory + L"*.*", FindAttrs, SearchRec) == 0;
     );
 
     if (Found)
