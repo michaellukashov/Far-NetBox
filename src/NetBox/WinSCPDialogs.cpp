@@ -4244,6 +4244,7 @@ void TSessionDialog::FillCodePageEdit()
 void TSessionDialog::CodePageEditAdd(uint32_t Cp)
 {
   CPINFOEX cpInfoEx;
+  ::ClearStruct(cpInfoEx);
   if (::GetCodePageInfo(Cp, cpInfoEx))
   {
     CodePageEdit->GetItems()->AddObject(cpInfoEx.CodePageName,
