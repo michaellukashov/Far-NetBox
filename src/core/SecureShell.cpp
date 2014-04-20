@@ -959,10 +959,10 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
       }
 
       // This seems ambiguous
-      if (Length <= 0)
-      {
-        FatalError(LoadStr(LOST_CONNECTION));
-      }
+//      if (Length <= 0)
+//      {
+//        FatalError(LoadStr(LOST_CONNECTION));
+//      }
     }
   }
   if (GetConfiguration()->GetActualLogProtocol() >= 1)

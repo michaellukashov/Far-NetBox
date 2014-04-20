@@ -1938,6 +1938,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
 			buf[len] = '\0';
 			_tcsncpy(SslCertData.subjectAltName, A2CT(buf), LENOF(SslCertData.subjectAltName));
 			SslCertData.subjectAltName[LENOF(SslCertData.subjectAltName) - 1] = '\0';
+			delete[] buf;
 		}
 
 		BIO_vfree(subjectAltNameBio);

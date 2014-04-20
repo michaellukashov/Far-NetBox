@@ -4834,8 +4834,8 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
   bool FindOK = false;
 
   FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    FindOK = (bool)(::FindFirstChecked(DirectoryName + L"*.*",
-      FindAttrs, SearchRec) == 0);
+    FindOK = ::FindFirstChecked(DirectoryName + L"*.*",
+      FindAttrs, SearchRec) == 0;
   );
 
   {

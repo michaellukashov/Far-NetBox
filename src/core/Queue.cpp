@@ -1632,7 +1632,7 @@ void TQueueItem::SetProgress(
 
     // do not lose CPS limit override on "calculate size" operation,
     // wait until the real transfer operation starts
-    if ((FCPSLimit >= 0) && ((ProgressData.Operation == foMove) || (ProgressData.Operation == foCopy)))
+    if ((FCPSLimit != (uintptr_t)-1) && ((ProgressData.Operation == foMove) || (ProgressData.Operation == foCopy)))
     {
       ProgressData.CPSLimit = static_cast<unsigned long>(FCPSLimit);
       FCPSLimit = (uintptr_t)-1;
@@ -1642,7 +1642,7 @@ void TQueueItem::SetProgress(
     *FProgressData = ProgressData;
     FProgressData->Reset();
 
-    if (FCPSLimit >= 0)
+    if (FCPSLimit != (uintptr_t)-1)
     {
       ProgressData.CPSLimit = static_cast<uint32_t>(FCPSLimit);
       FCPSLimit = (uintptr_t)-1;
@@ -1695,7 +1695,7 @@ uintptr_t TQueueItem::DefaultCPSLimit() const
 uintptr_t TQueueItem::GetCPSLimit() const
 {
   uintptr_t Result;
-  if (FCPSLimit >= 0)
+  if (FCPSLimit != (uintptr_t)-1)
   {
     Result = FCPSLimit;
   }
