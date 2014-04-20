@@ -1593,6 +1593,8 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
             {
               OperationProgress->Cancel = csCancel;
             }
+            CanProceed = false;
+            break;
           case qaNo:
             CanProceed = false;
             break;
