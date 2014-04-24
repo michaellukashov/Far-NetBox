@@ -870,7 +870,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString & Command)
       {
         SCOPE_EXIT
         {
-          WinSCPPlugin()->ScrollTerminalScreen(1);
+          //WinSCPPlugin()->ScrollTerminalScreen(1);
           WinSCPPlugin()->SaveTerminalScreen();
           WinSCPPlugin()->ClearConsoleTitle();
         };
