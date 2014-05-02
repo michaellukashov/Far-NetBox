@@ -4041,7 +4041,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const UnicodeString & AFileName,
   // the same in TFTPFileSystem
   bool Retry;
 
-  TUploadSessionAction Action(FTerminal->GetActionLog());
+  TUploadSessionAction Action(FTerminal ? FTerminal->GetActionLog() : nullptr);
   TOpenRemoteFileParams OpenParams;
   OpenParams.OverwriteMode = omOverwrite;
   TOverwriteFileParams FileParams;
