@@ -2482,7 +2482,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
               {
                 if (::FileExists(DestFileName))
                 {
-                  int64_t MTime;
+                  int64_t MTime = 0;
                   TOverwriteFileParams FileParams;
                   FileParams.SourceSize = OperationProgress->TransferSize;
                   FileParams.SourceTimestamp = SourceTimestamp;
