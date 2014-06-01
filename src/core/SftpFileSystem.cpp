@@ -228,6 +228,11 @@ public:
     Init(codePage);
   }
 
+  explicit TSFTPPacket(const TSFTPPacket & other)
+  {
+    this->operator=(other);
+  }
+
   explicit TSFTPPacket(const TSFTPPacket & Source, uintptr_t codePage)
   {
     Init(codePage);
