@@ -92,6 +92,9 @@ public:
   void SetData(const TCopyParamRuleData & Value);
   bool GetEmpty() const;
 
+public:
+  TCopyParamRule & operator=(const TCopyParamRule & other);
+
 private:
   TCopyParamRuleData FData;
 

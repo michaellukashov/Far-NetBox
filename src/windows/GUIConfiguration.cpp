@@ -195,6 +195,12 @@ bool TCopyParamRule::GetEmpty() const
     FData.RemoteDirectory.IsEmpty() &&
     FData.LocalDirectory.IsEmpty();
 }
+
+TCopyParamRule & TCopyParamRule::operator=(const TCopyParamRule & other)
+{
+  SetData(other.FData);
+  return *this;
+}
 //---------------------------------------------------------------------------
 UnicodeString TCopyParamRule::GetInfoStr(const UnicodeString & Separator) const
 {
