@@ -522,6 +522,13 @@ TRemoteToken::TRemoteToken(const UnicodeString & Name) :
 {
 }
 //---------------------------------------------------------------------------
+TRemoteToken::TRemoteToken(const TRemoteToken & rhp) :
+  FName(rhp.FName),
+  FID(rhp.FID),
+  FIDValid(rhp.FIDValid)
+{
+}
+//---------------------------------------------------------------------------
 void TRemoteToken::Clear()
 {
   FID = 0;

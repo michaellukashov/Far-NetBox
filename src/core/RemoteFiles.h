@@ -30,6 +30,7 @@ class TRemoteToken : public TObject
 public:
   TRemoteToken();
   explicit TRemoteToken(const UnicodeString & Name);
+  explicit TRemoteToken(const TRemoteToken & rht);
 
   void Clear();
 
