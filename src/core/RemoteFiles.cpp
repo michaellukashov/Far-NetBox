@@ -2742,6 +2742,19 @@ TRemoteProperties TRemoteProperties::ChangedProperties(
   }
   return NewProperties;
 }
+
+TRemoteProperties & TRemoteProperties::operator=(const TRemoteProperties & other)
+{
+  Valid = other.Valid;
+  Recursive = other.Recursive;
+  Rights = other.Rights;
+  AddXToDirectories = other.AddXToDirectories;
+  Group = other.Group;
+  Owner = other.Owner;
+  Modification = other.Modification;
+  LastAccess = other.Modification;
+  return *this;
+}
 //---------------------------------------------------------------------------
 void TRemoteProperties::Load(THierarchicalStorage * Storage)
 {

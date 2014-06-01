@@ -475,6 +475,9 @@ public:
 
   static TRemoteProperties CommonProperties(TStrings * FileList);
   static TRemoteProperties ChangedProperties(const TRemoteProperties & OriginalProperties, TRemoteProperties & NewProperties);
+
+public:
+  TRemoteProperties & operator=(const TRemoteProperties & other);
 };
 //---------------------------------------------------------------------------
 bool IsUnixStyleWindowsPath(const UnicodeString & Path);
