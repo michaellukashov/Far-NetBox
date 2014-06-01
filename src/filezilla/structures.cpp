@@ -34,6 +34,11 @@ t_directory::t_directory()
 #endif
 }
 
+t_directory::t_directory(const t_directory & a)
+{
+	this->operator=(a);
+}
+
 t_directory::~t_directory()
 {
 	if (direntry)
