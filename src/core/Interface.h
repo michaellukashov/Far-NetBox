@@ -91,6 +91,9 @@ struct TQueryParams : public TObject
   uintptr_t NoBatchAnswers;
   UnicodeString HelpKeyword;
 
+public:
+  TQueryParams & operator=(const TQueryParams & other);
+
 private:
   // NB_DISABLE_COPY(TQueryParams)
 };

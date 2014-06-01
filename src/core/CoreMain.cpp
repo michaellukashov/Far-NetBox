@@ -81,7 +81,24 @@ TQueryParams::TQueryParams(const TQueryParams & Source)
 //---------------------------------------------------------------------------
 void TQueryParams::Assign(const TQueryParams & Source)
 {
-  *this = Source;
+  Params = Source.Params;
+  Aliases = Source.Aliases;
+  AliasesCount = Source.AliasesCount;
+  Timer = Source.Timer;
+  TimerEvent = Source.TimerEvent;
+  TimerMessage = Source.TimerMessage;
+  TimerAnswers = Source.TimerAnswers;
+  TimerQueryType = Source.TimerQueryType;
+  Timeout = Source.Timeout;
+  TimeoutAnswer = Source.TimeoutAnswer;
+  NoBatchAnswers = Source.NoBatchAnswers;
+  HelpKeyword = Source.HelpKeyword;
+}
+
+TQueryParams &TQueryParams::operator=(const TQueryParams & other)
+{
+  Assign(other);
+  return *this;
 }
 //---------------------------------------------------------------------------
 bool IsAuthenticationPrompt(TPromptKind Kind)
