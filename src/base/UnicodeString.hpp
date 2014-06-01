@@ -16,10 +16,11 @@ class UTF8String
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UTF8String() {}
+  explicit UTF8String(const UTF8String & rht);
   UTF8String(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
   UTF8String(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
   UTF8String(const char * Str, intptr_t Size) { Init(Str, Size); }
-  UTF8String(const UnicodeString & Str);
+  explicit UTF8String(const UnicodeString & Str);
 
   ~UTF8String() {}
 

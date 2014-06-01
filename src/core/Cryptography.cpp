@@ -388,7 +388,7 @@ void AES256EncyptWithMAC(const RawByteString & Input, const UnicodeString & Pass
     Salt = AES256Salt();
   }
   assert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  UTF8String UtfPassword = Password;
+  UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
     reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
     reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
@@ -413,7 +413,7 @@ bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
 {
   fcrypt_ctx aes;
   assert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  UTF8String UtfPassword = Password;
+  UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
     reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
     reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
@@ -499,7 +499,7 @@ uint8_t * UnscrambleTable;
 RawByteString ScramblePassword(const UnicodeString & Password)
 {
 #define SCRAMBLE_LENGTH_EXTENSION 50
-  UTF8String UtfPassword = Password;
+  UTF8String UtfPassword = UTF8String(Password);
   intptr_t Len = UtfPassword.Length();
   char * Buf = static_cast<char *>(nb_malloc(Len + SCRAMBLE_LENGTH_EXTENSION));
   intptr_t Padding = (((Len + 3) / 17) * 17 + 17) - 3 - Len;

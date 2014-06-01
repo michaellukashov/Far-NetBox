@@ -287,6 +287,11 @@ RawByteString & RawByteString::operator +=(const char Ch)
 
 //------------------------------------------------------------------------------
 
+UTF8String::UTF8String(const UTF8String & rht)
+{
+  Init(rht.c_str(), rht.Length());
+}
+
 void UTF8String::Init(const wchar_t * Str, intptr_t Length)
 {
   Data.resize(Length);

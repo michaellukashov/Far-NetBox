@@ -37,8 +37,8 @@ uint8_t SimpleDecryptNextChar(RawByteString & Str)
 //---------------------------------------------------------------------------
 RawByteString EncryptPassword(const UnicodeString & UnicodePassword, const UnicodeString & UnicodeKey, Integer /* Algorithm */)
 {
-  UTF8String Password = UnicodePassword;
-  UTF8String Key = UnicodeKey;
+  UTF8String Password = UTF8String(UnicodePassword);
+  UTF8String Key = UTF8String(UnicodeKey);
 
   RawByteString Result("");
   intptr_t Shift, Index;
@@ -62,7 +62,7 @@ RawByteString EncryptPassword(const UnicodeString & UnicodePassword, const Unico
 //---------------------------------------------------------------------------
 UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & UnicodeKey, Integer /* Algorithm */)
 {
-  UTF8String Key = UnicodeKey;
+  UTF8String Key = UTF8String(UnicodeKey);
   UTF8String Result("");
   Integer Index;
   uint8_t Length, Flag;
