@@ -5,6 +5,11 @@
 
 //------------------------------------------------------------------------------
 
+AnsiString::AnsiString(const AnsiString & rht)
+{
+  Init(rht.c_str(), rht.Length());
+}
+
 void AnsiString::Init(const wchar_t * Str, intptr_t Length)
 {
   intptr_t Size = WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0, nullptr, nullptr);
