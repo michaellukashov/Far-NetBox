@@ -397,6 +397,7 @@ TSignalThread::~TSignalThread()
   if (FEvent)
   {
     ::CloseHandle(FEvent);
+    FEvent = nullptr;
   }
 }
 //---------------------------------------------------------------------------
@@ -408,7 +409,11 @@ void TSignalThread::Start()
 //---------------------------------------------------------------------------
 void TSignalThread::TriggerEvent()
 {
-  SetEvent(FEvent);
+  if (FEvent && FEvent != INVALID_HANDLE_VALUE)
+  {
+    SetEvent(FEvent);
+    //FEvent = INVALID_HANDLE_VALUE;
+  }
 }
 //---------------------------------------------------------------------------
 bool TSignalThread::WaitForEvent()
@@ -419,15 +424,18 @@ bool TSignalThread::WaitForEvent()
 //---------------------------------------------------------------------------
 int TSignalThread::WaitForEvent(uint32_t Timeout)
 {
-  uint32_t Result = WaitForSingleObject(FEvent, Timeout);
-  int Return;
-  if ((Result == WAIT_TIMEOUT) && !FTerminated)
+  int Return = 0;
+  if (FEvent && FEvent != INVALID_HANDLE_VALUE)
   {
-    Return = -1;
-  }
-  else
-  {
-    Return = ((Result == WAIT_OBJECT_0) && !FTerminated) ? 1 : 0;
+    uint32_t Result = WaitForSingleObject(FEvent, Timeout);
+    if ((Result == WAIT_TIMEOUT) && !FTerminated)
+    {
+      Return = -1;
+    }
+    else
+    {
+      Return = ((Result == WAIT_OBJECT_0) && !FTerminated) ? 1 : 0;
+    }
   }
   return Return;
 }
