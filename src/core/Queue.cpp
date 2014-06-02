@@ -409,11 +409,7 @@ void TSignalThread::Start()
 //---------------------------------------------------------------------------
 void TSignalThread::TriggerEvent()
 {
-  if (FEvent && FEvent != INVALID_HANDLE_VALUE)
-  {
-    SetEvent(FEvent);
-    //FEvent = INVALID_HANDLE_VALUE;
-  }
+  SetEvent(FEvent);
 }
 //---------------------------------------------------------------------------
 bool TSignalThread::WaitForEvent()
@@ -425,7 +421,7 @@ bool TSignalThread::WaitForEvent()
 int TSignalThread::WaitForEvent(uint32_t Timeout)
 {
   int Return = 0;
-  if (FEvent && FEvent != INVALID_HANDLE_VALUE)
+  if (!FTerminated)
   {
     uint32_t Result = WaitForSingleObject(FEvent, Timeout);
     if ((Result == WAIT_TIMEOUT) && !FTerminated)
