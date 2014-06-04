@@ -458,9 +458,9 @@ void TSignalThread::Terminate()
 TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   TConfiguration * Configuration) :
   TSignalThread(),
-  FTerminal(Terminal), FConfiguration(Configuration), FSessionData(nullptr),
-  FItems(nullptr), FDoneItems(nullptr), FItemsInProcess(0),
-  FFreeTerminals(0), FTerminals(nullptr), FForcedItems(nullptr), FTemporaryTerminals(0),
+  FTerminal(Terminal), FConfiguration(Configuration), FSessionData(new TSessionData(L"")),
+  FItems(new TList()), FDoneItems(new TList()), FItemsInProcess(0),
+  FFreeTerminals(0), FTerminals(new TList()), FForcedItems(new TList()), FTemporaryTerminals(0),
   FOverallTerminals(0), FTransfersLimit(2), FKeepDoneItemsFor(0), FEnabled(true)
 {
 }
@@ -478,13 +478,7 @@ void TTerminalQueue::Init()
   FIdleInterval = EncodeTimeVerbose(0, 0, 2, 0);
 
   assert(FTerminal != nullptr);
-  FSessionData = new TSessionData(L"");
   FSessionData->Assign(FTerminal->GetSessionData());
-
-  FItems = new TList();
-  FDoneItems = new TList();
-  FTerminals = new TList();
-  FForcedItems = new TList();
 
   Start();
 }
@@ -1568,11 +1562,10 @@ bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus)
 //---------------------------------------------------------------------------
 TQueueItem::TQueueItem() :
   FStatus(qsPending), FTerminalItem(nullptr), FProgressData(nullptr),
-  FInfo(nullptr),
+  FInfo(new TInfo()),
   FQueue(nullptr), FCompleteEvent(INVALID_HANDLE_VALUE),
   FCPSLimit((uintptr_t)-1)
 {
-  FInfo = new TInfo();
   FInfo->SingleFile = false;
 }
 //---------------------------------------------------------------------------
@@ -1718,13 +1711,10 @@ uintptr_t TQueueItem::GetCPSLimit() const
 //---------------------------------------------------------------------------
 TQueueItemProxy::TQueueItemProxy(TTerminalQueue * Queue,
   TQueueItem * QueueItem) :
-  FProgressData(nullptr), FStatus(TQueueItem::qsPending), FQueue(Queue), FQueueItem(QueueItem),
-  FQueueStatus(nullptr), FInfo(nullptr),
+  FProgressData(new TFileOperationProgressType()), FStatus(TQueueItem::qsPending), FQueue(Queue), FQueueItem(QueueItem),
+  FQueueStatus(nullptr), FInfo(new TQueueItem::TInfo()),
   FProcessingUserAction(false), FUserData(nullptr)
 {
-  FProgressData = new TFileOperationProgressType();
-  FInfo = new TQueueItem::TInfo();
-
   Update();
 }
 //---------------------------------------------------------------------------
@@ -1847,11 +1837,10 @@ intptr_t TQueueItemProxy::GetIndex()
 // TTerminalQueueStatus
 //---------------------------------------------------------------------------
 TTerminalQueueStatus::TTerminalQueueStatus() :
-  FList(nullptr),
+  FList(new TList()),
   FDoneCount(0),
   FActiveCount(0)
 {
-  FList = new TList();
   ResetStats();
 }
 //---------------------------------------------------------------------------
@@ -1973,14 +1962,13 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
   const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side,
   bool SingleFile) :
-  TLocatedQueueItem(Terminal), FFilesToCopy(nullptr), FCopyParam(nullptr)
+  TLocatedQueueItem(Terminal), FFilesToCopy(new TStringList()), FCopyParam(nullptr)
 {
   FInfo->Operation = (Params & cpDelete ? foMove : foCopy);
   FInfo->Side = Side;
   FInfo->SingleFile = SingleFile;
 
   assert(AFilesToCopy != nullptr);
-  FFilesToCopy = new TStringList();
   for (intptr_t Index = 0; Index < AFilesToCopy->GetCount(); ++Index)
   {
     FFilesToCopy->AddObject(AFilesToCopy->GetString(Index),

@@ -224,7 +224,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   FOnCaptureOutput(nullptr),
   FListAll(asOn),
   FDoListAll(false),
-  FServerCapabilities(nullptr)
+  FServerCapabilities(new TFTPServerCapabilities())
 {
 }
 
@@ -238,7 +238,6 @@ void TFTPFileSystem::Init(void *)
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
   FTimeoutStatus = LoadStr(IDS_ERRORMSG_TIMEOUT);
   FDisconnectStatus = LoadStr(IDS_STATUSMSG_DISCONNECTED);
-  FServerCapabilities = new TFTPServerCapabilities();
 }
 //---------------------------------------------------------------------------
 TFTPFileSystem::~TFTPFileSystem()
