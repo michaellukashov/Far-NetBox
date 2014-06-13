@@ -985,11 +985,11 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"Ping type: %s, Ping interval: %d sec; Timeout: %d sec",
         UnicodeString(PingTypes[PingType]).c_str(), PingInterval, Data->GetTimeout());
       TProxyMethod ProxyMethod = Data->GetProxyMethod();
-      UnicodeString ProxyMethodStr;
-      if (ProxyMethod == pmSystem)
-        ProxyMethodStr = FORMAT(L" (%s)", ProxyMethodList[Data->GetActualProxyMethod()]);
-      ADF(L"Proxy: %s%s", ProxyMethodList[ProxyMethod], ProxyMethodStr.c_str());
-      if (ProxyMethod != ::pmNone)
+      ADF(L"Proxy: %s",
+        (Data->GetFtpProxyLogonType() != 0) ?
+          FORMAT(L"FTP proxy %d", Data->GetFtpProxyLogonType()).c_str() :
+          UnicodeString(ProxyMethodList[Data->GetActualProxyMethod()]).c_str());
+      if ((Data->GetFtpProxyLogonType() != 0) || (ProxyMethod != ::pmNone))
       {
         ADF(L"HostName: %s (Port: %d); Username: %s; Passwd: %s",
           Data->GetProxyHost().c_str(), Data->GetProxyPort(),
@@ -1032,7 +1032,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
            Data->GetDetectReturnVar() ? UnicodeString(L"Autodetect").c_str() : Data->GetReturnVar().c_str(),
            BugFlags[Data->GetLookupUserGroups()]);
         ADF(L"Shell: %s", Data->GetShell().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetShell().c_str());
-        ADF(L"EOL: %d, UTF: %d", Data->GetEOLType(), Data->GetNotUtf());
+        ADF(L"EOL: %d, UTF: %d", Data->GetEOLType(), Data->GetNotUtf()); // NotUtf duplicated in FTP branch
         ADF(L"Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s",
            BooleanToEngStr(Data->GetClearAliases()).c_str(), BooleanToEngStr(Data->GetUnsetNationalVars()).c_str(),
            BooleanToEngStr(Data->GetResolveSymlinks()).c_str());
@@ -1053,6 +1053,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       }
       if (Data->GetFSProtocol() == fsFTP)
       {
+        ADF(L"UTF: %d", Data->GetNotUtf()); // duplicated in UsesSsh branch
         UnicodeString Ftps;
         switch (Data->GetFtps())
         {

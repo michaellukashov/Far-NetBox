@@ -91,6 +91,9 @@ struct TQueryParams : public TObject
   uintptr_t NoBatchAnswers;
   UnicodeString HelpKeyword;
 
+public:
+  TQueryParams & operator=(const TQueryParams & other);
+
 private:
   // NB_DISABLE_COPY(TQueryParams)
 };
@@ -115,6 +118,7 @@ enum TPromptUserParam
 };
 
 bool IsAuthenticationPrompt(TPromptKind Kind);
+bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE4(TFileFoundEvent, void,
   TTerminal * /* Terminal */, const UnicodeString & /* FileName */, const TRemoteFile * /* File */,

@@ -179,10 +179,12 @@ public:
   TTerminal * GetCommandSession();
   bool GetResolvingSymlinks() const;
   bool GetActive() const;
-  UnicodeString GetPassword();
-  void SetPassword(const UnicodeString & Value) { FPassword = Value; }
-  UnicodeString GetTunnelPassword();
-  void SetTunnelPassword(const UnicodeString & Value) { FTunnelPassword = Value; }
+  UnicodeString GetPassword() const;
+  void SetRememberedPassword(const UnicodeString & Value) { FRememberedPassword = Value; }
+  void SetRememberedTunnelPassword(const UnicodeString & Value) { FRememberedTunnelPassword = Value; }
+  UnicodeString GetRememberedPassword() const;
+  UnicodeString GetRememberedTunnelPassword() const;
+  void SetTunnelPassword(const UnicodeString & Value) { FRememberedTunnelPassword = Value; }
   bool GetStoredCredentialsTried();
   TCustomFileSystem * GetFileSystem() const { return FFileSystem; }
   TCustomFileSystem * GetFileSystem() { return FFileSystem; }
@@ -486,8 +488,8 @@ protected:
     TCallSessionAction * Action);
   TRemoteFileList * DoReadDirectoryListing(const UnicodeString & ADirectory,
     bool UseCache);
-  RawByteString EncryptPassword(const UnicodeString & APassword);
-  UnicodeString DecryptPassword(const RawByteString & APassword);
+  RawByteString EncryptPassword(const UnicodeString & APassword) const;
+  UnicodeString DecryptPassword(const RawByteString & APassword) const;
   void LogRemoteFile(TRemoteFile * AFile);
   UnicodeString FormatFileDetailsForLog(const UnicodeString & AFileName, const TDateTime & AModification, int64_t Size);
   void LogFileDetails(const UnicodeString & AFileName, const TDateTime & Modification, int64_t Size);
@@ -564,8 +566,8 @@ private:
   bool FReadingCurrentDirectory;
   bool * FClosedOnCompletion;
   TSessionStatus FStatus;
-  RawByteString FPassword;
-  RawByteString FTunnelPassword;
+  RawByteString FRememberedPassword;
+  RawByteString FRememberedTunnelPassword;
   TTunnelThread * FTunnelThread;
   TSecureShell * FTunnel;
   TSessionData * FTunnelData;

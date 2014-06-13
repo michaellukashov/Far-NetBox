@@ -135,7 +135,7 @@ TMask::TMask(const UnicodeString & Mask)
 
 bool TMask::Matches(const UnicodeString & Str)
 {
-  //UnicodeString Ext = ::ExtractFileExtension(Str, L'\\');
+  // UnicodeString Ext = ::ExtractFileExtension(Str, L'\\');
   //return Sysutils::AnsiCompareIC(FMask, Ext) == 0;
   return CmpName(FMask.c_str(), Str.c_str()) == TRUE;
 }

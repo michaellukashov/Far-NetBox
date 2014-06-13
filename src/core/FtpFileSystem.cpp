@@ -224,7 +224,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   FOnCaptureOutput(nullptr),
   FListAll(asOn),
   FDoListAll(false),
-  FServerCapabilities(nullptr)
+  FServerCapabilities(new TFTPServerCapabilities())
 {
 }
 
@@ -238,7 +238,6 @@ void TFTPFileSystem::Init(void *)
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
   FTimeoutStatus = LoadStr(IDS_ERRORMSG_TIMEOUT);
   FDisconnectStatus = LoadStr(IDS_STATUSMSG_DISCONNECTED);
-  FServerCapabilities = new TFTPServerCapabilities();
 }
 //---------------------------------------------------------------------------
 TFTPFileSystem::~TFTPFileSystem()
@@ -1955,7 +1954,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         // further try without "-a" only as the server may not support it
         if (FListAll == asAuto)
         {
-          FTerminal->LogEvent(L"LIST with -a failed, walling back to pure LIST");
+          FTerminal->LogEvent(L"LIST with -a failed, will try pure LIST");
           if (!FTerminal->GetActive())
           {
             FTerminal->Reopen(ropNoReadDirectory);
@@ -3430,6 +3429,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
           break;
 
         case qaCancel:
+          // FTerminal->Configuration->Usage->Inc(L"HostNotVerified");
           RequestResult = 0;
           break;
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#define PLUGIN_VERSION_NUM ${file.ver.major},${file.ver.minor},${file.ver.patch},${file.ver.build}
-#define PLUGIN_VERSION_TXT "${file.ver.major}.${file.ver.minor}.${file.ver.patch}"
-#define PLUGIN_VERSION_WTXT L"${file.ver.major}.${file.ver.minor}.${file.ver.patch}"
+#define PLUGIN_VERSION_NUM ${file.ver.major},${file.ver.minor},${file.ver.version_subminor},${file.ver.build}
+#define PLUGIN_VERSION_TXT "${file.ver.major}.${file.ver.minor}.${file.ver.version_subminor}"
+#define PLUGIN_VERSION_WTXT L"${file.ver.major}.${file.ver.minor}.${file.ver.version_subminor}"
 
 #define PLUGIN_AUTHOR       L"Michael Lukashov"
 #define PLUGIN_DESCR        L"SFTP/FTP(S)/SCP/WebDAV client for FAR 2.0/3.0 x86/x64"
@@ -12,5 +12,5 @@
 #define PUTTY_VERSION_WTXT          L"0.63"
 #define FILEZILLA_VERSION_WTXT      L"2.2.32"
 #define ZLIB_VERSION_WTXT           L"1.2.8"
-#define OPENSSL_VERSION_WTXT        L"1.0.1g"
-#define WINSCP_VERSION_WTXT         L"5.5.3"
+#define OPENSSL_VERSION_WTXT        L"1.0.1h"
+#define WINSCP_VERSION_WTXT         L"5.5.4"

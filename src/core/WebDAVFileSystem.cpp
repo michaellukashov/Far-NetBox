@@ -14044,6 +14044,7 @@ webdav::error_t TWebDAVFileSystem::VerifyCertificate(
   switch (RequestResult)
   {
     case qaCancel:
+      // FTerminal->Configuration->Usage->Inc(L"HostNotVerified");
       FFileTransferCancelled = true;
       FFileTransferAbort = ftaCancel;
       break;

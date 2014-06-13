@@ -395,12 +395,14 @@ void TWinSCPFileSystem::Close()
 
   if (Connected())
   {
-    assert(FQueue != nullptr);
-    if (!FQueue->GetIsEmpty() &&
-        (MoreMessageDialog(GetMsg(PENDING_QUEUE_ITEMS), nullptr, qtWarning,
-           qaOK | qaCancel) == qaOK))
+    if (FQueue != nullptr)
     {
-      QueueShow(true);
+      if (!FQueue->GetIsEmpty() &&
+          (MoreMessageDialog(GetMsg(PENDING_QUEUE_ITEMS), nullptr, qtWarning,
+             qaOK | qaCancel) == qaOK))
+      {
+        QueueShow(true);
+      }
     }
   }
 }
@@ -2016,8 +2018,8 @@ void TWinSCPFileSystem::OpenSessionInPutty()
 void TWinSCPFileSystem::QueueShow(bool ClosingPlugin)
 {
   assert(Connected());
-  assert(FQueueStatus != nullptr);
-  QueueDialog(FQueueStatus, ClosingPlugin);
+  assert(GetQueueStatus() != nullptr);
+  QueueDialog(GetQueueStatus(), ClosingPlugin);
   ProcessQueue(true);
 }
 //------------------------------------------------------------------------------
@@ -2448,7 +2450,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
 void TWinSCPFileSystem::QueueAddItem(TQueueItem * Item)
 {
   GetFarConfiguration()->CacheFarSettings();
-  FQueue->AddItem(Item);
+  GetQueue()->AddItem(Item);
 }
 //------------------------------------------------------------------------------
 struct TExportSessionParam
@@ -2566,6 +2568,32 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
     Result = 1;
   }
   return Result;
+}
+
+TTerminalQueue * TWinSCPFileSystem::GetQueue()
+{
+  if (FQueue == nullptr)
+  {
+    FQueue = new TTerminalQueue(FTerminal, GetConfiguration());
+    FQueue->Init();
+    FQueue->SetTransfersLimit(GetGUIConfiguration()->GetQueueTransfersLimit());
+    FQueue->SetOnQueryUser(MAKE_CALLBACK(TWinSCPFileSystem::TerminalQueryUser, this));
+    FQueue->SetOnPromptUser(MAKE_CALLBACK(TWinSCPFileSystem::TerminalPromptUser, this));
+    FQueue->SetOnShowExtendedException(MAKE_CALLBACK(TWinSCPFileSystem::TerminalShowExtendedException, this));
+    FQueue->SetOnListUpdate(MAKE_CALLBACK(TWinSCPFileSystem::QueueListUpdate, this));
+    FQueue->SetOnQueueItemUpdate(MAKE_CALLBACK(TWinSCPFileSystem::QueueItemUpdate, this));
+    FQueue->SetOnEvent(MAKE_CALLBACK(TWinSCPFileSystem::QueueEvent, this));
+  }
+  return FQueue;
+}
+
+TTerminalQueueStatus * TWinSCPFileSystem::GetQueueStatus()
+{
+  if (FQueueStatus == nullptr)
+  {
+    FQueueStatus = GetQueue()->CreateStatus(nullptr);
+  }
+  return FQueueStatus;
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
@@ -2944,18 +2972,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
     FTerminal->SetOnClose(MAKE_CALLBACK(TWinSCPFileSystem::TerminalClose, this));
 
     assert(FQueue == nullptr);
-    FQueue = new TTerminalQueue(FTerminal, GetConfiguration());
-    FQueue->Init();
-    FQueue->SetTransfersLimit(GetGUIConfiguration()->GetQueueTransfersLimit());
-    FQueue->SetOnQueryUser(MAKE_CALLBACK(TWinSCPFileSystem::TerminalQueryUser, this));
-    FQueue->SetOnPromptUser(MAKE_CALLBACK(TWinSCPFileSystem::TerminalPromptUser, this));
-    FQueue->SetOnShowExtendedException(MAKE_CALLBACK(TWinSCPFileSystem::TerminalShowExtendedException, this));
-    FQueue->SetOnListUpdate(MAKE_CALLBACK(TWinSCPFileSystem::QueueListUpdate, this));
-    FQueue->SetOnQueueItemUpdate(MAKE_CALLBACK(TWinSCPFileSystem::QueueItemUpdate, this));
-    FQueue->SetOnEvent(MAKE_CALLBACK(TWinSCPFileSystem::QueueEvent, this));
-
     assert(FQueueStatus == nullptr);
-    FQueueStatus = FQueue->CreateStatus(nullptr);
 
     // TODO: Create instance of TKeepaliveThread here, once its implementation
     // is complete
@@ -3545,7 +3562,10 @@ UnicodeString TWinSCPFileSystem::ProgressBar(intptr_t Percentage, intptr_t Width
 TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
 {
   TTerminalQueueStatus * Result = nullptr;
-  assert(FQueueStatus != nullptr);
+  if (FQueue == nullptr)
+    return Result;
+
+  assert(GetQueueStatus() != nullptr);
   FarPlugin->UpdateProgress(FQueueStatus->GetCount() > 0 ? TBPS_INDETERMINATE : TBPS_NOPROGRESS, 0);
 
   if (FQueueStatusInvalidated || FQueueItemInvalidated)
@@ -3556,7 +3576,6 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
 
       FQueueStatusInvalidated = false;
 
-      assert(FQueue != nullptr);
       if (FQueue != nullptr)
         FQueueStatus = FQueue->CreateStatus(FQueueStatus);
       Result = FQueueStatus;
@@ -3640,7 +3659,7 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::QueueListUpdate(TTerminalQueue * Queue)
 {
-  if (FQueue == Queue)
+  if (GetQueue() == Queue)
   {
     FQueueStatusInvalidated = true;
   }
@@ -3649,11 +3668,11 @@ void TWinSCPFileSystem::QueueListUpdate(TTerminalQueue * Queue)
 void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
   TQueueItem * Item)
 {
-  if (FQueue == Queue)
+  if (GetQueue() == Queue)
   {
     TGuard Guard(&FQueueStatusSection);
 
-    assert(FQueueStatus != nullptr);
+    assert(GetQueueStatus() != nullptr);
 
     TQueueItemProxy * QueueItem = FQueueStatus->FindByQueueItem(Item);
 
@@ -3677,7 +3696,7 @@ void TWinSCPFileSystem::QueueEvent(TTerminalQueue * Queue,
   TQueueEvent Event)
 {
   TGuard Guard(&FQueueStatusSection);
-  if (Queue == FQueue)
+  if (Queue == GetQueue())
   {
     FQueueEventPending = true;
     FQueueEvent = Event;

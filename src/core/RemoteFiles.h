@@ -30,6 +30,7 @@ class TRemoteToken : public TObject
 public:
   TRemoteToken();
   explicit TRemoteToken(const UnicodeString & Name);
+  explicit TRemoteToken(const TRemoteToken & rht);
 
   void Clear();
 
@@ -475,6 +476,9 @@ public:
 
   static TRemoteProperties CommonProperties(TStrings * FileList);
   static TRemoteProperties ChangedProperties(const TRemoteProperties & OriginalProperties, TRemoteProperties & NewProperties);
+
+public:
+  TRemoteProperties & operator=(const TRemoteProperties & other);
 };
 //---------------------------------------------------------------------------
 bool IsUnixStyleWindowsPath(const UnicodeString & Path);

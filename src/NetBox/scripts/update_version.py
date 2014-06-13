@@ -16,17 +16,17 @@ plugin_version_h = \
 
 #define NETBOX_VERSION_MAJOR         %(version_major)s
 #define NETBOX_VERSION_MINOR         %(version_minor)s
-#define NETBOX_VERSION_PATCH         %(patch)s
+#define NETBOX_VERSION_SUBMINOR      %(version_subminor)s
 #define NETBOX_VERSION_BUILD         %(build)s
 
-static const std::wstring NETBOX_VERSION_NUMBER(L"%(version_major)s.%(version_minor)s.%(patch)s");
+static const std::wstring NETBOX_VERSION_NUMBER(L"%(version_major)s.%(version_minor)s.%(version_subminor)s");
 static const std::wstring NETBOX_COMPILATION_TIME(L"%(compile_time)s");
 
 """
 
 PLUGIN_VERSION_FILE = 'plugin_version.hpp'
 
-def write_header(version_major, version_minor, patch, build, git_revision):
+def write_header(version_major, version_minor, version_subminor, build, git_revision):
     f = open(PLUGIN_VERSION_FILE, "w")
     compile_time = time.strftime('%d.%m.%Y %H:%M:%S')
     plugin_version_h_content = plugin_version_h % locals()
@@ -40,16 +40,16 @@ def write_header(version_major, version_minor, patch, build, git_revision):
 ###############################################################################
 
 def transform_template_file(template_file_name, file_name,
-    major_version, minor_version, patch, build, git_revision):
+    major_version, minor_version, version_subminor, build, git_revision):
     # print 'transform_template_file: major_version = %s' % major_version
-    # print '%s: %s.%s.%s.%s' % (rc_file, major_version, minor_version, patch, git_revision)
+    # print '%s: %s.%s.%s.%s' % (rc_file, major_version, minor_version, version_subminor, git_revision)
     contents = []
     f = open(template_file_name)
     for line in f.readlines():
         # print 'line = %s' % line.rstrip()
         s = line.replace('${file.ver.major}', major_version)
         s = s.replace('${file.ver.minor}', minor_version)
-        s = s.replace('${file.ver.patch}', patch)
+        s = s.replace('${file.ver.version_subminor}', version_subminor)
         s = s.replace('${file.ver.build}', build)
         # s = s.replace('${file.ver.revision}', revision)
         s = s.replace('${file.ver.gitrevision}', git_revision)
@@ -63,12 +63,12 @@ def transform_template_file(template_file_name, file_name,
     return
     #--transform_template_file
 
-def transform_template_files(version_major, version_minor, patch, build, git_revision):
+def transform_template_files(version_major, version_minor, version_subminor, build, git_revision):
     template_files = ['resource.h.template', 'NetBox.rc.template']
     for template_file_name in template_files :
         file_name = template_file_name[0:-len('.template')] # + '.tmp'
         transform_template_file(template_file_name, file_name,
-            version_major, version_minor, patch, build, git_revision)
+            version_major, version_minor, version_subminor, build, git_revision)
     return
 
 def getstatusoutput(cmdstr):
@@ -138,11 +138,11 @@ def main():
         if context:
             version_major = context.groups(1)[0]
             version_minor = context.groups(1)[1]
-            patch = context.groups(1)[2]
+            version_subminor = context.groups(1)[2]
             build = get_build_number()
             git_revision = get_revision()
-            write_header(version_major, version_minor, patch, build, git_revision)
-            transform_template_files(version_major, version_minor, patch, build, git_revision)
+            write_header(version_major, version_minor, version_subminor, build, git_revision)
+            transform_template_files(version_major, version_minor, version_subminor, build, git_revision)
             break
     return
 

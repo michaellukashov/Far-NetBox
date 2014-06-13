@@ -29,6 +29,7 @@ class t_directory : public TObject
 {
 public:
 	t_directory();
+	t_directory(const t_directory &a);
 	~t_directory();
 	t_server server;
 	CServerPath path;

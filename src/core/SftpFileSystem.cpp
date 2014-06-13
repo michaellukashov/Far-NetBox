@@ -228,6 +228,11 @@ public:
     Init(codePage);
   }
 
+  explicit TSFTPPacket(const TSFTPPacket & other)
+  {
+    this->operator=(other);
+  }
+
   explicit TSFTPPacket(const TSFTPPacket & Source, uintptr_t codePage)
   {
     Init(codePage);
@@ -4041,7 +4046,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const UnicodeString & AFileName,
   // the same in TFTPFileSystem
   bool Retry;
 
-  TUploadSessionAction Action(FTerminal->GetActionLog());
+  TUploadSessionAction Action(FTerminal ? FTerminal->GetActionLog() : nullptr);
   TOpenRemoteFileParams OpenParams;
   OpenParams.OverwriteMode = omOverwrite;
   TOverwriteFileParams FileParams;

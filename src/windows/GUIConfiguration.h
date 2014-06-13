@@ -92,6 +92,9 @@ public:
   void SetData(const TCopyParamRuleData & Value);
   bool GetEmpty() const;
 
+public:
+  TCopyParamRule & operator=(const TCopyParamRule & other);
+
 private:
   TCopyParamRuleData FData;
 
@@ -104,6 +107,11 @@ class TCopyParamList : public TObject
 friend class TGUIConfiguration;
 public:
   explicit TCopyParamList();
+  explicit TCopyParamList(const TCopyParamList & other)
+  {
+    this->operator=(other);
+  }
+
   virtual ~TCopyParamList();
   intptr_t Find(const TCopyParamRuleData & Value) const;
 

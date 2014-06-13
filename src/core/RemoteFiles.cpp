@@ -522,6 +522,13 @@ TRemoteToken::TRemoteToken(const UnicodeString & Name) :
 {
 }
 //---------------------------------------------------------------------------
+TRemoteToken::TRemoteToken(const TRemoteToken & rhp) :
+  FName(rhp.FName),
+  FID(rhp.FID),
+  FIDValid(rhp.FIDValid)
+{
+}
+//---------------------------------------------------------------------------
 void TRemoteToken::Clear()
 {
   FID = 0;
@@ -922,11 +929,12 @@ Boolean TRemoteFile::GetIsInaccesibleDirectory() const
   {
     assert(GetTerminal());
     Result = !
+       (SameText(GetTerminal()->GetUserName(), L"root")) ||
        (((GetRights()->GetRightUndef(TRights::rrOtherExec) != TRights::rsNo)) ||
         ((GetRights()->GetRight(TRights::rrGroupExec) != TRights::rsNo) &&
          GetTerminal()->GetMembership()->Exists(GetFileGroup().GetName())) ||
         ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
-         (AnsiCompareText(GetTerminal()->GetUserName(), GetFileOwner().GetName()) == 0)));
+         (SameText(GetTerminal()->GetUserName(), GetFileOwner().GetName()))));
   }
   else
   {
@@ -2741,6 +2749,19 @@ TRemoteProperties TRemoteProperties::ChangedProperties(
     NewProperties.Owner.SetID(OriginalProperties.Owner.GetID());
   }
   return NewProperties;
+}
+
+TRemoteProperties & TRemoteProperties::operator=(const TRemoteProperties & other)
+{
+  Valid = other.Valid;
+  Recursive = other.Recursive;
+  Rights = other.Rights;
+  AddXToDirectories = other.AddXToDirectories;
+  Group = other.Group;
+  Owner = other.Owner;
+  Modification = other.Modification;
+  LastAccess = other.Modification;
+  return *this;
 }
 //---------------------------------------------------------------------------
 void TRemoteProperties::Load(THierarchicalStorage * Storage)

@@ -304,6 +304,10 @@ private:
     UnicodeString & DestPath, int OpMode);
 
 private:
+  TTerminalQueue * GetQueue();
+  TTerminalQueueStatus * GetQueueStatus();
+
+private:
   TTerminal * FTerminal;
   TTerminalQueue * FQueue;
   TTerminalQueueStatus * FQueueStatus;

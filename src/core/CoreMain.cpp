@@ -81,7 +81,24 @@ TQueryParams::TQueryParams(const TQueryParams & Source)
 //---------------------------------------------------------------------------
 void TQueryParams::Assign(const TQueryParams & Source)
 {
-  *this = Source;
+  Params = Source.Params;
+  Aliases = Source.Aliases;
+  AliasesCount = Source.AliasesCount;
+  Timer = Source.Timer;
+  TimerEvent = Source.TimerEvent;
+  TimerMessage = Source.TimerMessage;
+  TimerAnswers = Source.TimerAnswers;
+  TimerQueryType = Source.TimerQueryType;
+  Timeout = Source.Timeout;
+  TimeoutAnswer = Source.TimeoutAnswer;
+  NoBatchAnswers = Source.NoBatchAnswers;
+  HelpKeyword = Source.HelpKeyword;
+}
+
+TQueryParams &TQueryParams::operator=(const TQueryParams & other)
+{
+  Assign(other);
+  return *this;
 }
 //---------------------------------------------------------------------------
 bool IsAuthenticationPrompt(TPromptKind Kind)
@@ -90,6 +107,14 @@ bool IsAuthenticationPrompt(TPromptKind Kind)
     (Kind == pkUserName) || (Kind == pkPassphrase) || (Kind == pkTIS) ||
     (Kind == pkCryptoCard) || (Kind == pkKeybInteractive) ||
     (Kind == pkPassword) || (Kind == pkNewPassword);
+}
+//---------------------------------------------------------------------------
+bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
+{
+  return
+    (Prompts->GetCount() == 1) && FLAGCLEAR(intptr_t(Prompts->GetObject(0)), pupEcho) &&
+    ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
+     (Kind == pkTIS) || (Kind == pkCryptoCard));
 }
 //---------------------------------------------------------------------------
 void CoreInitialize()
