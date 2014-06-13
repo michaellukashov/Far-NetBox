@@ -1636,6 +1636,20 @@ bool AdjustClockForDSTEnabled()
   return !DynamicDaylightTimeDisabled;
 }
 //---------------------------------------------------------------------------
+UnicodeString StandardDatestamp()
+{
+#if defined(__BORLANDC__)
+  return FormatDateTime(L"yyyy'-'mm'-'dd", ConvertTimestampToUTC(Now()));
+#else
+  TDateTime DT = ::ConvertTimestampToUTC(Now());
+  uint16_t Y, M, D, H, N, S, MS;
+  DT.DecodeDate(Y, M, D);
+  DT.DecodeTime(H, N, S, MS);
+  UnicodeString Result = FORMAT(L"%04d-%02d-%02d", Y, M, D);
+  return Result;
+#endif
+}
+//---------------------------------------------------------------------------
 UnicodeString StandardTimestamp(const TDateTime & DateTime)
 {
 #if defined(__BORLANDC__)
@@ -1711,7 +1725,7 @@ bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin)
   FileList[FileList.Length() - 1] = L'\0';
   FileList[FileList.Length()] = L'\0';
   Data.pFrom = FileList.c_str();
-  Data.pTo = L"\0\0";
+  Data.pTo = L"\0\0"; // this will actually give one null more than needed
   Data.fFlags = FOF_NOCONFIRMATION | FOF_RENAMEONCOLLISION | FOF_NOCONFIRMMKDIR |
     FOF_NOERRORUI | FOF_SILENT;
   if (ToRecycleBin)

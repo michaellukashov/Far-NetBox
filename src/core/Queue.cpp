@@ -2433,10 +2433,13 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
       }
     }
 
-    if (DoCheckCancel)
-    {
-      CheckCancel();
-    }
+    // Contrary to a call before, this is unconditional,
+    // otherwise cancelling authentication won't work,
+    // if it is tried only after the last user action
+    // (what is common, when cancelling while waiting for
+    // resolving of unresolvable host name, where the last user action is
+    // "resolving hostname" information action)
+    CheckCancel();
   }
 }
 //---------------------------------------------------------------------------

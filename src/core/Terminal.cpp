@@ -769,12 +769,12 @@ void TTerminal::Idle()
   }
 }
 //---------------------------------------------------------------------
-RawByteString TTerminal::EncryptPassword(const UnicodeString & APassword)
+RawByteString TTerminal::EncryptPassword(const UnicodeString & APassword) const
 {
   return FConfiguration->EncryptPassword(APassword, GetSessionData()->GetSessionName());
 }
 //---------------------------------------------------------------------
-UnicodeString TTerminal::DecryptPassword(const RawByteString & APassword)
+UnicodeString TTerminal::DecryptPassword(const RawByteString & APassword) const
 {
   UnicodeString Result;
   try
@@ -791,8 +791,8 @@ UnicodeString TTerminal::DecryptPassword(const RawByteString & APassword)
 void TTerminal::RecryptPasswords()
 {
   FSessionData->RecryptPasswords();
-  FPassword = EncryptPassword(DecryptPassword(FPassword));
-  FTunnelPassword = EncryptPassword(DecryptPassword(FTunnelPassword));
+  FRememberedPassword = EncryptPassword(DecryptPassword(FRememberedPassword));
+  FRememberedTunnelPassword = EncryptPassword(DecryptPassword(FRememberedTunnelPassword));
 }
 //------------------------------------------------------------------------------
 UnicodeString TTerminal::ExpandFileName(const UnicodeString & Path,
@@ -1299,10 +1299,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   bool Result = false;
 
 
-  bool PasswordPrompt =
-    (Prompts->GetCount() == 1) && FLAGCLEAR(intptr_t(Prompts->GetObject(0)), pupEcho) &&
-    ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
-     (Kind == pkTIS) || (Kind == pkCryptoCard));
+  bool PasswordPrompt = ::IsPasswordPrompt(Kind, Prompts);
   if (PasswordPrompt)
   {
     bool & PasswordTried =
@@ -1315,11 +1312,11 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
       UnicodeString Password;
       if (FTunnelOpening)
       {
-        Password = GetPasswordSource()->GetTunnelPassword();
+        Password = GetPasswordSource()->GetRememberedTunnelPassword();
       }
       else
       {
-        Password = GetPasswordSource()->GetPassword();
+        Password = GetPasswordSource()->GetRememberedPassword();
       }
       Results->SetString(0, Password);
       if (!Results->GetString(0).IsEmpty())
@@ -1351,11 +1348,11 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
       RawByteString EncryptedPassword = EncryptPassword(Results->GetString(0));
       if (FTunnelOpening)
       {
-        GetPasswordSource()->SetTunnelPassword(EncryptedPassword);
+        GetPasswordSource()->SetRememberedTunnelPassword(EncryptedPassword);
       }
       else
       {
-        GetPasswordSource()->SetPassword(EncryptedPassword);
+        GetPasswordSource()->SetRememberedPassword(EncryptedPassword);
       }
     }
   }
@@ -2751,7 +2748,12 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & Director
       while (Index < FileList->GetCount())
       {
         TRemoteFile * File = FileList->GetFile(Index);
-        if (!Mask.Matches(File->GetFileName()))
+        TFileMasks::TParams Params;
+        Params.Size = File->GetSize();
+        Params.Modification = File->GetModification();
+        // Have to use UnicodeString(), instead of L"", as with that
+        // overload with (UnicodeString, bool, bool, TParams*) wins
+        if (!Mask.Matches(File->GetFileName(), false,  UnicodeString(), &Params))
         {
           FileList->Delete(Index);
         }
@@ -4315,7 +4317,7 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
     WIN32_FIND_DATA FindData = {};
     HANDLE Handle = INVALID_HANDLE_VALUE;
     FILE_OPERATION_LOOP(FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()),
-      Handle = ::FindFirstFile(AFileName.c_str(), &FindData);
+      Handle = ::FindFirstFile(::ExcludeTrailingBackslash(AFileName).c_str(), &FindData);
       if (Handle == INVALID_HANDLE_VALUE)
       {
         RaiseLastOSError();
@@ -5288,34 +5290,29 @@ const TFileSystemInfo & TTerminal::GetFileSystemInfo(bool Retrieve)
   return FFileSystem->GetFileSystemInfo(Retrieve);
 }
 //---------------------------------------------------------------------
-UnicodeString TTerminal::GetPassword()
+UnicodeString TTerminal::GetPassword() const
 {
   UnicodeString Result;
-  // FPassword is empty also when stored password was used
-  if (FPassword.IsEmpty())
+  // FRememberedPassword is empty also when stored password was used
+  if (FRememberedPassword.IsEmpty())
   {
     Result = GetSessionData()->GetPassword();
   }
   else
   {
-    Result = DecryptPassword(FPassword);
+    Result = GetRememberedPassword();
   }
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString TTerminal::GetTunnelPassword()
+UnicodeString TTerminal::GetRememberedPassword() const
 {
-  UnicodeString Result;
-  // FTunnelPassword is empty also when stored password was used
-  if (FTunnelPassword.IsEmpty())
-  {
-    Result = GetSessionData()->GetTunnelPassword();
-  }
-  else
-  {
-    Result = DecryptPassword(FTunnelPassword);
-  }
-  return Result;
+  return DecryptPassword(FRememberedPassword);
+}
+//---------------------------------------------------------------------
+UnicodeString TTerminal::GetRememberedTunnelPassword() const
+{
+  return DecryptPassword(FRememberedTunnelPassword);
 }
 //---------------------------------------------------------------------
 bool TTerminal::GetStoredCredentialsTried()
@@ -5692,6 +5689,15 @@ void TTerminal::CollectUsage()
   if (!GetSessionData()->IsSame(FactoryDefaults.get(), true))
   {
 //    Configuration->Usage->Inc(L"OpenedSessionsAdvanced");
+  }
+
+  if (GetSessionData()->GetProxyMethod() != ::pmNone)
+  {
+//    Configuration->Usage->Inc(L"OpenedSessionsProxy");
+  }
+  if (GetSessionData()->GetFtpProxyLogonType() > 0)
+  {
+//    Configuration->Usage->Inc(L"OpenedSessionsFtpProxy");
   }
 
   FCollectFileSystemUsage = true;

@@ -189,6 +189,12 @@ BEGIN
   TLS_CERT_DECODE_ERROR, "Error decoding TLS/SSL certificate (%s)."
   FIND_FILE_ERROR, "Error retrieving file list for '%s'."
   CERT_NAME_MISMATCH, "Certificate was not issued for this server. You might be connecting to a server that is pretending to be '%s'."
+  CERT_ERR_CERT_CHAIN_TOO_LONG, "Certificate chain too long."
+  CERT_ERR_CERT_HAS_EXPIRED, "Certificate has expired."
+  CERT_ERR_CERT_NOT_YET_VALID, "Certificate is not yet valid."
+  CERT_ERR_CERT_REJECTED, "Certificate rejected."
+  CERT_ERR_CERT_SIGNATURE_FAILURE, "Certificate signature failure."
+  CERT_ERR_CERT_UNTRUSTED, "Certificate not trusted."
 
   CORE_CONFIRMATION_STRINGS, "CORE_CONFIRMATION"
   CONFIRM_PROLONG_TIMEOUT3, "Host is not communicating for %d seconds.\n\nWait for another %d seconds?"

@@ -1954,7 +1954,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         // further try without "-a" only as the server may not support it
         if (FListAll == asAuto)
         {
-          FTerminal->LogEvent(L"LIST with -a failed, walling back to pure LIST");
+          FTerminal->LogEvent(L"LIST with -a failed, will try pure LIST");
           if (!FTerminal->GetActive())
           {
             FTerminal->Reopen(ropNoReadDirectory);
@@ -3429,6 +3429,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
           break;
 
         case qaCancel:
+          // FTerminal->Configuration->Usage->Inc(L"HostNotVerified");
           RequestResult = 0;
           break;
 

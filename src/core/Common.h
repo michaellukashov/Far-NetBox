@@ -155,6 +155,7 @@ int64_t ConvertTimestampToUnixSafe(const FILETIME & FileTime,
 UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format);
 UnicodeString StandardTimestamp(const TDateTime & DateTime);
 UnicodeString StandardTimestamp();
+UnicodeString StandardDatestamp();
 UnicodeString GetTimeZoneLogString();
 bool AdjustClockForDSTEnabled();
 intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2);

@@ -929,11 +929,12 @@ Boolean TRemoteFile::GetIsInaccesibleDirectory() const
   {
     assert(GetTerminal());
     Result = !
+       (SameText(GetTerminal()->GetUserName(), L"root")) ||
        (((GetRights()->GetRightUndef(TRights::rrOtherExec) != TRights::rsNo)) ||
         ((GetRights()->GetRight(TRights::rrGroupExec) != TRights::rsNo) &&
          GetTerminal()->GetMembership()->Exists(GetFileGroup().GetName())) ||
         ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
-         (AnsiCompareText(GetTerminal()->GetUserName(), GetFileOwner().GetName()) == 0)));
+         (SameText(GetTerminal()->GetUserName(), GetFileOwner().GetName()))));
   }
   else
   {
