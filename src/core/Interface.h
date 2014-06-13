@@ -118,6 +118,7 @@ enum TPromptUserParam
 };
 
 bool IsAuthenticationPrompt(TPromptKind Kind);
+bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE4(TFileFoundEvent, void,
   TTerminal * /* Terminal */, const UnicodeString & /* FileName */, const TRemoteFile * /* File */,

@@ -109,6 +109,14 @@ bool IsAuthenticationPrompt(TPromptKind Kind)
     (Kind == pkPassword) || (Kind == pkNewPassword);
 }
 //---------------------------------------------------------------------------
+bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
+{
+  return
+    (Prompts->GetCount() == 1) && FLAGCLEAR(intptr_t(Prompts->GetObject(0)), pupEcho) &&
+    ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
+     (Kind == pkTIS) || (Kind == pkCryptoCard));
+}
+//---------------------------------------------------------------------------
 void CoreInitialize()
 {
   Randomize();
