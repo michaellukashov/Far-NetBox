@@ -1,5 +1,8 @@
-NetBox 2.1.38.312 ??.06.2014
+NetBox 2.1.38.313 ??.06.2014
 --------------------
+  * fix issue #111: FTP: High CPU load
+    (https://github.com/michaellukashov/Far-NetBox/issues/111)
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=1616#p119451)
   * fix issue #113: AV copying file using option "Transfer on background (add to queue)"
     (https://github.com/michaellukashov/Far-NetBox/issues/113)
 
