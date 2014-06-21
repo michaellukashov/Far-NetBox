@@ -1,5 +1,7 @@
-NetBox 2.1.38.311 ??.06.2014
+NetBox 2.1.38.312 ??.06.2014
 --------------------
+  * fix issue #113: AV copying file using option "Transfer on background (add to queue)"
+    (https://github.com/michaellukashov/Far-NetBox/issues/113)
 
 NetBox 2.1.37.311 13.06.2014
 --------------------
