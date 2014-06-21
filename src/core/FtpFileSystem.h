@@ -227,7 +227,6 @@ private:
   TCriticalSection FQueueCriticalSection;
   TCriticalSection FTransferStatusCriticalSection;
   TMessageQueue FQueue;
-  HANDLE FQueueEvent;
   TSessionInfo FSessionInfo;
   TFileSystemInfo FFileSystemInfo;
   bool FFileSystemInfoValid;
