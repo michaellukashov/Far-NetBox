@@ -340,6 +340,8 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
   {
     while ((Index < CmdLine.Length()) && (CmdLine[Index] == L' '))
      ++Index;
+    if (Index >= CmdLine.Length())
+      return;
     if (CmdLine[Index] == L'"')
     {
       ++Index;
