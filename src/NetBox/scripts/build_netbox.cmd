@@ -9,7 +9,6 @@ if "s%PROJECT_BUILD%"=="s" set PROJECT_BUILD=Build
 
 if "s%PROJECT_CONF%"=="s" set PROJECT_CONF=x86
 if "s%PROJECT_PLATFORM%"=="s" set PROJECT_PLATFORM=Win32
-REM if "s%PROJECT_GEN%"=="s" set PROJECT_GEN=Visual Studio 10
 if "s%PROJECT_GEN%"=="s" set PROJECT_GEN=NMake Makefiles
 if "s%PROJECT_VARS%"=="s" set PROJECT_VARS=x86
 
@@ -19,7 +18,6 @@ cd %PROJECT_BUIILDDIR%
 
 @call "%VS100COMNTOOLS%..\..\VC\vcvarsall.bat" %PROJECT_VARS%
 cmake.exe -D PROJECT_ROOT=%PROJECT_ROOT% -D CMAKE_BUILD_TYPE=%PROJECT_CONFIG% -G "%PROJECT_GEN%" -D CONF=%PROJECT_CONF% -D FAR_VERSION=%FAR_VERSION% %PROJECT_ROOT%\src\NetBox
-REM msbuild.exe NetBox.sln /t:NetBox;%PROJECT_BUILD% /maxcpucount:2 /p:Configuration=%PROJECT_CONFIG% /p:Platform=%PROJECT_PLATFORM%
 nmake
 
 @endlocal
