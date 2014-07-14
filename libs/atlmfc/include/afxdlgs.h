@@ -37,7 +37,7 @@
 
 #ifdef _AFX_MINREBUILD
 #pragma component(minrebuild, off)
-#endif 
+#endif
 
 #ifndef _AFX_NOFORCE_LIBS
 
@@ -68,11 +68,6 @@
 
 #ifdef _AFX_PACKING
 #pragma pack(pop)
-#endif
-
-#ifdef _AFX_ENABLE_INLINES
-#define _AFXDLGS_INLINE AFX_INLINE
-#include <afxdlgs.inl>
 #endif
 
 #undef AFX_DATA

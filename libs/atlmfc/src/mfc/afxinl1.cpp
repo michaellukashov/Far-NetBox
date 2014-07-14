@@ -21,11 +21,4 @@
 
 // the main 'afxwin.inl' is in a separate file
 
-#define _AFXDLGS_INLINE
-// #include "afxdlgs.inl"
-
-// expand inlines
-#define _AFXEXT_INLINE
-// #include "afxext.inl"
-
 #endif //!_AFX_ENABLE_INLINES
