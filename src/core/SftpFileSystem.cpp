@@ -2110,7 +2110,8 @@ uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
 {
   uintptr_t Code = Packet->GetCardinal();
 
-  static int Messages[] = {
+  static int Messages[] =
+  {
     SFTP_STATUS_OK,
     SFTP_STATUS_EOF,
     SFTP_STATUS_NO_SUCH_FILE,
@@ -2228,9 +2229,9 @@ uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
 {
-  for (intptr_t Index = Reservation+1; Index < FPacketReservations->GetCount(); ++Index)
+  for (intptr_t Index = Reservation + 1; Index < FPacketReservations->GetCount(); ++Index)
   {
-    FPacketNumbers[Index-1] = FPacketNumbers[Index];
+    FPacketNumbers[Index - 1] = FPacketNumbers[Index];
   }
   TSFTPPacket * Packet = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Reservation));
   if (Packet)

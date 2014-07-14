@@ -202,9 +202,9 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
 //---------------------------------------------------------------------------
 void TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
 {
-  #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR())
+#define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR())
   REGCONFIG(true);
-  #undef KEYEX
+#undef KEYEX
 
   if (Storage->OpenSubKey(L"Usage", true))
   {
@@ -306,9 +306,9 @@ void TConfiguration::Import(const UnicodeString & AFileName)
 //---------------------------------------------------------------------------
 void TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
-  #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR()))
+#define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR()))
   REGCONFIG(false);
-  #undef KEYEX
+#undef KEYEX
 
   if (Storage->OpenSubKey(L"Usage", false))
   {

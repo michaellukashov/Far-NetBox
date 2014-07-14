@@ -87,7 +87,7 @@ public:
   UnicodeString GetReturnVar() const;
 
 public:
-  TCommandSet(TSessionData *aSessionData);
+  TCommandSet(TSessionData * aSessionData);
   void Default();
   void CopyFrom(TCommandSet * Source);
   UnicodeString Command(TFSCommand Cmd, ...) const;
@@ -107,40 +107,43 @@ private:
 };
 //===========================================================================
 const wchar_t NationalVars[NationalVarCount][15] =
-  {L"LANG", L"LANGUAGE", L"LC_CTYPE", L"LC_COLLATE", L"LC_MONETARY", L"LC_NUMERIC",
-   L"LC_TIME", L"LC_MESSAGES", L"LC_ALL", L"HUMAN_BLOCKS" };
+{
+  L"LANG", L"LANGUAGE", L"LC_CTYPE", L"LC_COLLATE", L"LC_MONETARY", L"LC_NUMERIC",
+  L"LC_TIME", L"LC_MESSAGES", L"LC_ALL", L"HUMAN_BLOCKS"
+};
 const wchar_t FullTimeOption[] = L"--full-time";
 //---------------------------------------------------------------------------
 #define F false
 #define T true
 // TODO: remove "mf" and "cd", it is implemented in TTerminal already
-const TCommandType DefaultCommandSet[ShellCommandCount] = {
+const TCommandType DefaultCommandSet[ShellCommandCount] =
+{
 //                       min max mf cd ia  command
-/*Null*/                { -1, -1, F, F, F, L"" },
-/*VarValue*/            { -1, -1, F, F, F, L"echo \"$%s\"" /* variable */ },
-/*LastLine*/            { -1, -1, F, F, F, L"echo \"%s" LastLineSeparator L"%s\"" /* last line, return var */ },
-/*FirstLine*/           { -1, -1, F, F, F, L"echo \"%s\"" /* first line */ },
-/*CurrentDirectory*/    {  1,  1, F, F, F, L"pwd" },
-/*ChangeDirectory*/     {  0,  0, F, T, F, L"cd %s" /* directory */ },
+  /*Null*/                { -1, -1, F, F, F, L"" },
+  /*VarValue*/            { -1, -1, F, F, F, L"echo \"$%s\"" /* variable */ },
+  /*LastLine*/            { -1, -1, F, F, F, L"echo \"%s" LastLineSeparator L"%s\"" /* last line, return var */ },
+  /*FirstLine*/           { -1, -1, F, F, F, L"echo \"%s\"" /* first line */ },
+  /*CurrentDirectory*/    {  1,  1, F, F, F, L"pwd" },
+  /*ChangeDirectory*/     {  0,  0, F, T, F, L"cd %s" /* directory */ },
 // list directory can be empty on permission denied, this is handled in ReadDirectory
-/*ListDirectory*/       { -1, -1, F, F, F, L"%s %s \"%s\"" /* listing command, options, directory */ },
-/*ListCurrentDirectory*/{ -1, -1, F, F, F, L"%s %s" /* listing command, options */ },
-/*ListFile*/            {  1,  1, F, F, F, L"%s -d %s \"%s\"" /* listing command, options, file/directory */ },
-/*LookupUserGroups*/    {  0,  1, F, F, F, L"groups" },
-/*CopyToRemote*/        { -1, -1, T, F, T, L"scp -r %s -d -t \"%s\"" /* options, directory */ },
-/*CopyToLocal*/         { -1, -1, F, F, T, L"scp -r %s -d -f \"%s\"" /* options, file */ },
-/*DeleteFile*/          {  0,  0, T, F, F, L"rm -f -r \"%s\"" /* file/directory */},
-/*RenameFile*/          {  0,  0, T, F, F, L"mv -f \"%s\" \"%s\"" /* file/directory, new name*/},
-/*CreateDirectory*/     {  0,  0, T, F, F, L"mkdir \"%s\"" /* new directory */},
-/*ChangeMode*/          {  0,  0, T, F, F, L"chmod %s %s \"%s\"" /* options, mode, filename */},
-/*ChangeGroup*/         {  0,  0, T, F, F, L"chgrp %s \"%s\" \"%s\"" /* options, group, filename */},
-/*ChangeOwner*/         {  0,  0, T, F, F, L"chown %s \"%s\" \"%s\"" /* options, owner, filename */},
-/*HomeDirectory*/       {  0,  0, F, T, F, L"cd" },
-/*Unset*/               {  0,  0, F, F, F, L"unset \"%s\"" /* variable */ },
-/*Unalias*/             {  0,  0, F, F, F, L"unalias \"%s\"" /* alias */ },
-/*CreateLink*/          {  0,  0, T, F, F, L"ln %s \"%s\" \"%s\"" /*symbolic (-s), filename, point to*/},
-/*CopyFile*/            {  0,  0, T, F, F, L"cp -p -r -f \"%s\" \"%s\"" /* file/directory, target name*/},
-/*AnyCommand*/          {  0, -1, T, T, F, L"%s" }
+  /*ListDirectory*/       { -1, -1, F, F, F, L"%s %s \"%s\"" /* listing command, options, directory */ },
+  /*ListCurrentDirectory*/{ -1, -1, F, F, F, L"%s %s" /* listing command, options */ },
+  /*ListFile*/            {  1,  1, F, F, F, L"%s -d %s \"%s\"" /* listing command, options, file/directory */ },
+  /*LookupUserGroups*/    {  0,  1, F, F, F, L"groups" },
+  /*CopyToRemote*/        { -1, -1, T, F, T, L"scp -r %s -d -t \"%s\"" /* options, directory */ },
+  /*CopyToLocal*/         { -1, -1, F, F, T, L"scp -r %s -d -f \"%s\"" /* options, file */ },
+  /*DeleteFile*/          {  0,  0, T, F, F, L"rm -f -r \"%s\"" /* file/directory */},
+  /*RenameFile*/          {  0,  0, T, F, F, L"mv -f \"%s\" \"%s\"" /* file/directory, new name*/},
+  /*CreateDirectory*/     {  0,  0, T, F, F, L"mkdir \"%s\"" /* new directory */},
+  /*ChangeMode*/          {  0,  0, T, F, F, L"chmod %s %s \"%s\"" /* options, mode, filename */},
+  /*ChangeGroup*/         {  0,  0, T, F, F, L"chgrp %s \"%s\" \"%s\"" /* options, group, filename */},
+  /*ChangeOwner*/         {  0,  0, T, F, F, L"chown %s \"%s\" \"%s\"" /* options, owner, filename */},
+  /*HomeDirectory*/       {  0,  0, F, T, F, L"cd" },
+  /*Unset*/               {  0,  0, F, F, F, L"unset \"%s\"" /* variable */ },
+  /*Unalias*/             {  0,  0, F, F, F, L"unalias \"%s\"" /* alias */ },
+  /*CreateLink*/          {  0,  0, T, F, F, L"ln %s \"%s\" \"%s\"" /*symbolic (-s), filename, point to*/},
+  /*CopyFile*/            {  0,  0, T, F, F, L"cp -p -r -f \"%s\" \"%s\"" /* file/directory, target name*/},
+  /*AnyCommand*/          {  0, -1, T, T, F, L"%s" }
 };
 #undef F
 #undef T
@@ -305,7 +308,7 @@ UnicodeString TCommandSet::ExtractCommand(const UnicodeString & Command)
   intptr_t P = Result.Pos(L" ");
   if (P > 0)
   {
-    Result.SetLength(P-1);
+    Result.SetLength(P - 1);
   }
   return Result;
 }
@@ -527,7 +530,7 @@ UnicodeString TSCPFileSystem::DelimitStr(const UnicodeString & Str)
   if (!Result.IsEmpty())
   {
     Result = ::DelimitStr(Result, L"\\`$\"");
-    if (Result[1] == L'-') Result = L"./"+Result;
+    if (Result[1] == L'-') Result = L"./" + Result;
   }
   return Result;
 }
@@ -797,10 +800,10 @@ void TSCPFileSystem::DoStartup()
     FTerminal->FatalError(&E, L"");
   }
 
-  #define COND_OPER(OPER) if (Data->Get##OPER()) OPER()
+#define COND_OPER(OPER) if (Data->Get##OPER()) OPER()
   COND_OPER(ClearAliases);
   COND_OPER(UnsetNationalVars);
-  #undef COND_OPER
+#undef COND_OPER
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SkipStartupMessage()

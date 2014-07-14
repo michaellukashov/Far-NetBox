@@ -378,12 +378,12 @@ void TSessionData::Assign(const TPersistent * Source)
   {
     TSessionData * SourceData = NB_STATIC_DOWNCAST(TSessionData, const_cast<TPersistent *>(Source));
 
-    #define PROPERTY(P) Set ## P(SourceData->Get ## P())
+#define PROPERTY(P) Set ## P(SourceData->Get ## P())
     PROPERTY(Name);
     BASE_PROPERTIES;
     ADVANCED_PROPERTIES;
     //META_PROPERTIES;
-    #undef PROPERTY
+#undef PROPERTY
 
     for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FBugs)); ++Index)
     {
@@ -414,7 +414,7 @@ void TSessionData::Assign(const TPersistent * Source)
 bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties) const
 {
   bool Result = true;
-  #define PROPERTY(P) \
+#define PROPERTY(P) \
     if (Get ## P() != Default->Get ## P()) \
     { \
       if (DifferentProperties != nullptr) \
@@ -430,7 +430,7 @@ bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly, TStri
     //META_PROPERTIES;
   }
   ADVANCED_PROPERTIES;
-  #undef PROPERTY
+#undef PROPERTY
 
   for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FBugs)); ++Index)
   {
@@ -484,10 +484,10 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   intptr_t PingIntervalSecs = Storage->ReadInteger(L"PingIntervalSecs", -1);
   if (PingIntervalSecs < 0)
   {
-    PingIntervalSecs = Storage->ReadInteger(L"PingIntervalSec", GetPingInterval()%SecsPerMin);
+    PingIntervalSecs = Storage->ReadInteger(L"PingIntervalSec", GetPingInterval() % SecsPerMin);
   }
   SetPingInterval(
-    Storage->ReadInteger(L"PingInterval", GetPingInterval()/SecsPerMin)*SecsPerMin +
+    Storage->ReadInteger(L"PingInterval", GetPingInterval() / SecsPerMin)*SecsPerMin +
     PingIntervalSecs);
   if (GetPingInterval() == 0)
   {
@@ -627,7 +627,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetProxyDNS(static_cast<TAutoSwitch>((Storage->ReadInteger(L"ProxyDNS", (GetProxyDNS() + 2) % 3) + 1) % 3));
   SetProxyLocalhost(Storage->ReadBool(L"ProxyLocalhost", GetProxyLocalhost()));
 
-  #define READ_BUG(BUG) \
+#define READ_BUG(BUG) \
     SetBug(sb##BUG, TAutoSwitch(2 - Storage->ReadInteger(TEXT("Bug"#BUG), \
       2 - GetBug(sb##BUG))));
   READ_BUG(Ignore1);
@@ -640,7 +640,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   READ_BUG(Rekey2);
   READ_BUG(MaxPkt2);
   READ_BUG(Ignore2);
-  #undef READ_BUG
+#undef READ_BUG
 
   if ((GetBug(sbHMAC2) == asAuto) &&
       Storage->ReadBool(L"BuggyMAC", false))
@@ -649,11 +649,11 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   }
 
   SetSftpServer(Storage->ReadString(L"SftpServer", GetSftpServer()));
-  #define READ_SFTP_BUG(BUG) \
+#define READ_SFTP_BUG(BUG) \
     SetSFTPBug(sb##BUG, TAutoSwitch(Storage->ReadInteger(TEXT("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG))));
   READ_SFTP_BUG(Symlink);
   READ_SFTP_BUG(SignedTS);
-  #undef READ_SFTP_BUG
+#undef READ_SFTP_BUG
 
   SetSFTPMaxVersion(Storage->ReadInteger(L"SFTPMaxVersion", GetSFTPMaxVersion()));
   SetSFTPMinPacketSize(Storage->ReadInteger(L"SFTPMinPacketSize", GetSFTPMinPacketSize()));
@@ -781,7 +781,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 {
   if (Storage->OpenSubKey(GetInternalStorageKey(), true))
   {
-    #define WRITE_DATA_EX(TYPE, NAME, PROPERTY, CONV) \
+#define WRITE_DATA_EX(TYPE, NAME, PROPERTY, CONV) \
       if ((Default != nullptr) && (CONV(Default->PROPERTY) == CONV(PROPERTY))) \
       { \
         Storage->DeleteValue(NAME); \
@@ -790,12 +790,12 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       { \
         Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
       }
-    #define WRITE_DATA_EX2(TYPE, NAME, PROPERTY, CONV) \
+#define WRITE_DATA_EX2(TYPE, NAME, PROPERTY, CONV) \
       { \
         Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
       }
-    #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
-    #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, TEXT(#PROPERTY), Get ## PROPERTY(), )
+#define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
+#define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, TEXT(#PROPERTY), Get ## PROPERTY(), )
 
     Storage->WriteString(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
     WRITE_DATA(String, HostName);
@@ -947,13 +947,13 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     {
       WRITE_DATA_EX(StringRaw, L"ProxyTelnetCommand", GetProxyTelnetCommand(), );
     }
-    #define WRITE_DATA_CONV_FUNC(X) (((X) + 2) % 3)
+#define WRITE_DATA_CONV_FUNC(X) (((X) + 2) % 3)
     WRITE_DATA_CONV(Integer, L"ProxyDNS", GetProxyDNS());
-    #undef WRITE_DATA_CONV_FUNC
+#undef WRITE_DATA_CONV_FUNC
     WRITE_DATA_EX(Bool, L"ProxyLocalhost", GetProxyLocalhost(), );
 
-    #define WRITE_DATA_CONV_FUNC(X) (2 - (X))
-    #define WRITE_BUG(BUG) WRITE_DATA_CONV(Integer, TEXT("Bug" #BUG), GetBug(sb##BUG));
+#define WRITE_DATA_CONV_FUNC(X) (2 - (X))
+#define WRITE_BUG(BUG) WRITE_DATA_CONV(Integer, TEXT("Bug" #BUG), GetBug(sb##BUG));
     WRITE_BUG(Ignore1);
     WRITE_BUG(PlainPW1);
     WRITE_BUG(RSA1);
@@ -964,8 +964,8 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     WRITE_BUG(Rekey2);
     WRITE_BUG(MaxPkt2);
     WRITE_BUG(Ignore2);
-    #undef WRITE_BUG
-    #undef WRITE_DATA_CONV_FUNC
+#undef WRITE_BUG
+#undef WRITE_DATA_CONV_FUNC
 
     Storage->DeleteValue(L"BuggyMAC");
     Storage->DeleteValue(L"AliasGroupList");
@@ -979,10 +979,10 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     {
       WRITE_DATA(String, SftpServer);
 
-      #define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(Integer, TEXT("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), );
+#define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(Integer, TEXT("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), );
       WRITE_SFTP_BUG(Symlink);
       WRITE_SFTP_BUG(SignedTS);
-      #undef WRITE_SFTP_BUG
+#undef WRITE_SFTP_BUG
 
       WRITE_DATA(Integer, SFTPMaxVersion);
       WRITE_DATA(Integer, SFTPMaxPacketSize);
@@ -3335,7 +3335,7 @@ void TStoredSessionList::Import(TStoredSessionList * From,
   {
     if (!OnlySelected || From->GetSession(Index)->GetSelected())
     {
-      TSessionData *Session = new TSessionData(L"");
+      TSessionData * Session = new TSessionData(L"");
       Session->Assign(From->GetSession(Index));
       Session->SetModified(true);
       Session->MakeUniqueIn(this);
@@ -3766,7 +3766,7 @@ TSessionData * TStoredSessionList::ParseUrl(const UnicodeString & Url,
   bool * AProtocolDefined, UnicodeString * MaskedUrl)
 {
   std::unique_ptr<TSessionData> Data(new TSessionData(L""));
-    Data->ParseUrl(Url, Options, this, DefaultsOnly, FileName, AProtocolDefined, MaskedUrl);
+  Data->ParseUrl(Url, Options, this, DefaultsOnly, FileName, AProtocolDefined, MaskedUrl);
 
   return Data.release();
 }

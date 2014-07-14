@@ -1197,7 +1197,7 @@ void TTerminal::Closed()
 {
   if (FTunnel != nullptr)
   {
-     CloseTunnel();
+    CloseTunnel();
   }
 
   if (GetOnClose())

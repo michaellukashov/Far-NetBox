@@ -220,7 +220,7 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Pat
     intptr_t P;
     while ((P = Result.Pos(L"/../")) > 0)
     {
-      intptr_t P2 = Result.SubString(1, P-1).LastDelimiter(L"/\\");
+      intptr_t P2 = Result.SubString(1, P - 1).LastDelimiter(L"/\\");
       if (P2 > 0)
       {
         Result.Delete(P2, P - P2 + 3);
@@ -818,7 +818,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
     Result->FLinkedFile->FLinkedByFile = Result.get();
   }
   Result->SetRights(FRights);
-  #define COPY_FP(PROP) Result->F ## PROP = F ## PROP;
+#define COPY_FP(PROP) Result->F ## PROP = F ## PROP;
   COPY_FP(Terminal);
   COPY_FP(Owner);
   COPY_FP(ModificationFmt);
@@ -835,7 +835,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
   COPY_FP(Type);
   COPY_FP(Selected);
   COPY_FP(CyclicLink);
-  #undef COPY_FP
+#undef COPY_FP
   if (Standalone && (!FFullFileName.IsEmpty() || (GetDirectory() != nullptr)))
   {
     Result->FFullFileName = GetFullFileName();
@@ -951,7 +951,7 @@ wchar_t TRemoteFile::GetType() const
   }
   else
   {
-     return FType;
+    return FType;
   }
 }
 //---------------------------------------------------------------------------
@@ -973,7 +973,7 @@ void TRemoteFile::SetLinkedFile(TRemoteFile * Value)
   {
     if (FLinkedFile)
     {
-       SAFE_DESTROY(FLinkedFile);
+      SAFE_DESTROY(FLinkedFile);
     }
     FLinkedFile = Value;
   }
@@ -1057,7 +1057,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       if (P)
       {
         Col = ListingStr;
-        Col.SetLength(P-1);
+        Col.SetLength(P - 1);
         ListingStr.Delete(1, P);
       }
       else
@@ -1264,8 +1264,8 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           intptr_t P;
           if ((P = ToWord(Col.Pos(L':'))) > 0)
           {
-            Hour = ToWord(Sysutils::StrToInt(Col.SubString(1, P-1)));
-            Min = ToWord(Sysutils::StrToInt(Col.SubString(P+1, Col.Length() - P)));
+            Hour = ToWord(Sysutils::StrToInt(Col.SubString(1, P - 1)));
+            Min = ToWord(Sysutils::StrToInt(Col.SubString(P + 1, Col.Length() - P)));
             if ((Hour > 23) || (Min > 59))
               Abort();
             // When we don't got year, we assume current year

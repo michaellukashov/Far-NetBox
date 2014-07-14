@@ -61,8 +61,10 @@ TUnguard::~TUnguard()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 const wchar_t EngShortMonthNames[12][4] =
-  {L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
-   L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
+{
+  L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
+  L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"
+};
 const std::string Bom = "\xEF\xBB\xBF";
 const wchar_t TokenPrefix = L'%';
 const wchar_t NoReplacement = wchar_t(0);
@@ -118,7 +120,7 @@ static UnicodeString MakeValidFileName(const UnicodeString & AFileName)
   static UnicodeString IllegalChars = L":;,=+<>|\"[] \\/?*";
   for (intptr_t Index = 0; Index < IllegalChars.Length(); ++Index)
   {
-    Result = ReplaceChar(Result, IllegalChars[Index+1], L'-');
+    Result = ReplaceChar(Result, IllegalChars[Index + 1], L'-');
   }
   return Result;
 }
@@ -126,17 +128,12 @@ static UnicodeString MakeValidFileName(const UnicodeString & AFileName)
 UnicodeString RootKeyToStr(HKEY RootKey)
 {
   if (RootKey == HKEY_USERS) return L"HKEY_USERS";
-    else
-  if (RootKey == HKEY_LOCAL_MACHINE) return L"HKEY_LOCAL_MACHINE";
-    else
-  if (RootKey == HKEY_CURRENT_USER) return L"HKEY_CURRENT_USER";
-    else
-  if (RootKey == HKEY_CLASSES_ROOT) return L"HKEY_CLASSES_ROOT";
-    else
-  if (RootKey == HKEY_CURRENT_CONFIG) return L"HKEY_CURRENT_CONFIG";
-    else
-  if (RootKey == HKEY_DYN_DATA) return L"HKEY_DYN_DATA";
-    else
+  else if (RootKey == HKEY_LOCAL_MACHINE) return L"HKEY_LOCAL_MACHINE";
+  else if (RootKey == HKEY_CURRENT_USER) return L"HKEY_CURRENT_USER";
+  else if (RootKey == HKEY_CLASSES_ROOT) return L"HKEY_CLASSES_ROOT";
+  else if (RootKey == HKEY_CURRENT_CONFIG) return L"HKEY_CURRENT_CONFIG";
+  else if (RootKey == HKEY_DYN_DATA) return L"HKEY_DYN_DATA";
+  else
   {  Abort(); return L""; }
 }
 //---------------------------------------------------------------------------
@@ -182,7 +179,7 @@ UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim)
   UnicodeString Result;
   if (P)
   {
-    Result = Str.SubString(1, P-1);
+    Result = Str.SubString(1, P - 1);
     Str.Delete(1, P);
   }
   else
@@ -244,7 +241,7 @@ UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
   // even if we reached the end, return index, as if there were the delimiter,
   // so caller can easily find index of the end of the piece by subtracting
   // 2 from From (as long as he did not asked for trimming)
-  From = P+1;
+  From = P + 1;
   if (Trim)
   {
     Result = Result.TrimRight();
@@ -280,7 +277,7 @@ UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote)
   return DelimitStr(Str, Chars);
 }
 //---------------------------------------------------------------------------
-UnicodeString ExceptionLogString(Exception *E)
+UnicodeString ExceptionLogString(Exception * E)
 {
   assert(E);
   if (NB_STATIC_DOWNCAST(Exception, E) != nullptr)
@@ -511,7 +508,7 @@ void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
     intptr_t P = Cmd.Pos(L'"');
     if (P)
     {
-      Program = Cmd.SubString(1, P-1).Trim();
+      Program = Cmd.SubString(1, P - 1).Trim();
       Params = Cmd.SubString(P + 1, Cmd.Length() - P).Trim();
     }
     else
@@ -696,7 +693,8 @@ bool IsReservedName(const UnicodeString & AFileName)
     {
       L"CON", L"PRN", L"AUX", L"NUL",
       L"COM1", L"COM2", L"COM3", L"COM4", L"COM5", L"COM6", L"COM7", L"COM8", L"COM9",
-      L"LPT1", L"LPT2", L"LPT3", L"LPT4", L"LPT5", L"LPT6", L"LPT7", L"LPT8", L"LPT9" };
+      L"LPT1", L"LPT2", L"LPT3", L"LPT4", L"LPT5", L"LPT6", L"LPT7", L"LPT8", L"LPT9"
+    };
     for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(Reserved)); ++Index)
     {
       if (SameText(fileName, Reserved[Index]))
@@ -1371,7 +1369,7 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
 int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
   TDSTMode DSTMode)
 {
-  int64_t Result = ((*(int64_t*)&(FileTime)) / 10000000LL - 11644473600LL);
+  int64_t Result = ((*(int64_t *) & (FileTime)) / 10000000LL - 11644473600LL);
   if (UsesDaylightHack())
   {
     if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
@@ -2179,12 +2177,12 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
 {
   UnicodeString Result;
 
-  if (!UseOrders || (Bytes < static_cast<int64_t>(100*1024)))
+  if (!UseOrders || (Bytes < static_cast<int64_t>(100 * 1024)))
   {
     // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
     Result = FORMAT(L"%.0f B", ToDouble(Bytes));
   }
-  else if (Bytes < static_cast<int64_t>(100*1024*1024))
+  else if (Bytes < static_cast<int64_t>(100 * 1024 * 1024))
   {
     // Result = FormatFloat(L"#,##0 \"KiB\"", Bytes / 1024);
     Result = FORMAT(L"%.0f KiB", ToDouble(Bytes / 1024.0));
@@ -2192,7 +2190,7 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
   else
   {
     // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
-    Result = FORMAT(L"%.0f MiB", ToDouble(Bytes / (1024*1024.0)));
+    Result = FORMAT(L"%.0f MiB", ToDouble(Bytes / (1024 * 1024.0)));
   }
   return Result;
 }

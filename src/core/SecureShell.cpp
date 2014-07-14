@@ -139,30 +139,30 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
 
   assert((asOn == FORCE_ON) && (asOff == FORCE_OFF) && (asAuto == AUTO));
 
-  #define CONF_ssh_cipherlist_MAX CIPHER_MAX
-  #define CONF_DEF_INT_NONE(KEY) conf_set_int(conf, KEY, 0);
-  #define CONF_DEF_STR_NONE(KEY) conf_set_str(conf, KEY, "");
+#define CONF_ssh_cipherlist_MAX CIPHER_MAX
+#define CONF_DEF_INT_NONE(KEY) conf_set_int(conf, KEY, 0);
+#define CONF_DEF_STR_NONE(KEY) conf_set_str(conf, KEY, "");
   // noop, used only for these and we set the first three explicitly below and latter two are not used in our code
-  #define CONF_DEF_INT_INT(KEY) assert((KEY == CONF_ssh_cipherlist) || (KEY == CONF_ssh_kexlist) || (KEY == CONF_ssh_gsslist) || (KEY == CONF_colours) || (KEY == CONF_wordness));
+#define CONF_DEF_INT_INT(KEY) assert((KEY == CONF_ssh_cipherlist) || (KEY == CONF_ssh_kexlist) || (KEY == CONF_ssh_gsslist) || (KEY == CONF_colours) || (KEY == CONF_wordness));
   // noop, used only for these three and they all can handle undef value
-  #define CONF_DEF_STR_STR(KEY) assert((KEY == CONF_ttymodes) || (KEY == CONF_portfwd) || (KEY == CONF_environmt));
+#define CONF_DEF_STR_STR(KEY) assert((KEY == CONF_ttymodes) || (KEY == CONF_portfwd) || (KEY == CONF_environmt));
   // noop, not used in our code
-  #define CONF_DEF_FONT_NONE(KEY) assert((KEY == CONF_font) || (KEY == CONF_boldfont) || (KEY == CONF_widefont) || (KEY == CONF_wideboldfont));
-  #define CONF_DEF_FILENAME_NONE(KEY) \
+#define CONF_DEF_FONT_NONE(KEY) assert((KEY == CONF_font) || (KEY == CONF_boldfont) || (KEY == CONF_widefont) || (KEY == CONF_wideboldfont));
+#define CONF_DEF_FILENAME_NONE(KEY) \
     { \
       Filename * filename = filename_from_str(""); \
       conf_set_filename(conf, KEY, filename); \
       filename_free(filename); \
     }
-  #define CONF_SET_DEFAULT(VALTYPE, KEYTYPE, KEYWORD) CONF_DEF_ ## VALTYPE ## _ ## KEYTYPE(CONF_ ## KEYWORD);
+#define CONF_SET_DEFAULT(VALTYPE, KEYTYPE, KEYWORD) CONF_DEF_ ## VALTYPE ## _ ## KEYTYPE(CONF_ ## KEYWORD);
   CONFIG_OPTIONS(CONF_SET_DEFAULT);
-  #undef CONF_SET_DEFAULT
-  #undef CONF_DEF_FILENAME_NONE
-  #undef CONF_DEF_FONT_NONE
-  #undef CONF_DEF_STR_STR
-  #undef CONF_DEF_INT_INT
-  #undef CONF_DEF_STR_NONE
-  #undef CONF_DEF_INT_NONE
+#undef CONF_SET_DEFAULT
+#undef CONF_DEF_FILENAME_NONE
+#undef CONF_DEF_FONT_NONE
+#undef CONF_DEF_STR_STR
+#undef CONF_DEF_INT_INT
+#undef CONF_DEF_STR_NONE
+#undef CONF_DEF_INT_NONE
 
   // user-configurable settings
   conf_set_str(conf, CONF_host, AnsiString(Data->GetHostNameExpanded()).c_str());
@@ -536,7 +536,7 @@ void TSecureShell::Init()
 //---------------------------------------------------------------------------
 void TSecureShell::PuttyLogEvent(const UnicodeString & Str)
 {
-  #define SERVER_VERSION_MSG L"Server version: "
+#define SERVER_VERSION_MSG L"Server version: "
   // Gross hack
   if (Str.Pos(SERVER_VERSION_MSG) == 1)
   {
@@ -550,7 +550,7 @@ void TSecureShell::PuttyLogEvent(const UnicodeString & Str)
     }
     FSessionInfo.SshImplementation = (Ptr != nullptr) ? Ptr + 1 : L"";
   }
-  #define FORWARDING_FAILURE_MSG L"Forwarded connection refused by server: "
+#define FORWARDING_FAILURE_MSG L"Forwarded connection refused by server: "
   else if (Str.Pos(FORWARDING_FAILURE_MSG) == 1)
   {
     FLastTunnelError = Str.SubString(wcslen(FORWARDING_FAILURE_MSG) + 1,
@@ -837,7 +837,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t * Data, intptr_t Len
   }
   else
   {
-    const uint8_t *p = Data;
+    const uint8_t * p = Data;
     intptr_t Len = Length;
 
     // with event-select mechanism we can now receive data even before we
@@ -986,11 +986,11 @@ UnicodeString TSecureShell::ReceiveLine()
     {
       Index = 0;
       // Repeat until we walk thru whole buffer or reach end-of-line
-      while ((Index < PendLen) && (!Index || (Pending[Index-1] != '\n')))
+      while ((Index < PendLen) && (!Index || (Pending[Index - 1] != '\n')))
       {
         ++Index;
       }
-      EOL = static_cast<Boolean>(Index && (Pending[Index-1] == '\n'));
+      EOL = static_cast<Boolean>(Index && (Pending[Index - 1] == '\n'));
       intptr_t PrevLen = Line.Length();
       Line.SetLength(PrevLen + Index);
       Receive(reinterpret_cast<uint8_t *>(const_cast<char *>(Line.c_str()) + PrevLen), Index);
@@ -1009,7 +1009,7 @@ UnicodeString TSecureShell::ReceiveLine()
   while (!EOL);
 
   // We don't want end-of-line character
-  Line.SetLength(Line.Length()-1);
+  Line.SetLength(Line.Length() - 1);
 
   UnicodeString UnicodeLine = ::TrimRight(MB2W(Line.c_str(), (UINT)FSessionData->GetCodePageAsNumber()));
   CaptureOutput(llOutput, UnicodeLine);
@@ -1253,7 +1253,7 @@ void TSecureShell::AddStdError(const UnicodeString & Str)
   // Do we have at least one complete line in std error cache?
   while ((P = FStdErrorTemp.Pos(L"\n")) > 0)
   {
-    Line = FStdErrorTemp.SubString(1, P-1);
+    Line = FStdErrorTemp.SubString(1, P - 1);
     FStdErrorTemp.Delete(1, P);
     AddStdErrorLine(Line);
   }
