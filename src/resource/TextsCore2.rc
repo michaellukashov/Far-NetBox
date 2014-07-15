@@ -12,7 +12,7 @@ SCRIPT_HELP_HELP,
 "help [ <command> [ <command2> ... ] ]\n  Displays list of commands when no parameters are specified.\n  Displays help for each command when some are specified.\nalias:\n  man\nexamples:\n  help\n  help ls\n"
 SCRIPT_EXIT_HELP,
 "exit\n  Closes all sessions and terminates the program.\nalias:\n  bye\n"
-SCRIPT_OPEN_HELP5,
+SCRIPT_OPEN_HELP6,
 "open <stored session>\nopen [ sftp|scp|ftp:// ][ <user> [ :password ] @ ] <host> [ :<port> ]\n  Establishes connection to given host. Use either name of the stored\n  session or specify host, username, port and protocol directly.\nswitches:\n  -privatekey=<key>  Private key file\n  -timeout=<sec>     Server response timeout\n  -hostkey=<fingerprint> Fingerprint of server host key (SFTP and SCP only).\n  -certificate=<fingerprint> Fingerprint of TLS/SSL certificate (FTPS only)\n  -passive           Passive mode (FTP protocol only)\n  -implicit          Implicit TLS/SSL (FTPS protocol only)\n  -explicitssl       Explicit SSL (FTPS protocol only)\n  -explicittls       Explicit TLS (FTPS protocol only)\nexamples:\n  open\n  open sftp://martin@example.com:2222 -privatekey=mykey.ppk\n  open martin@example.com\n  open example.com\n"
 SCRIPT_CLOSE_HELP,
 "close [ <session> ]\n  Closes session specified by its number. When session number is not\n  specified, closes currently selected session.\nexamples:\n  close\n  close 1\n"
@@ -29,7 +29,7 @@ SCRIPT_LPWD_HELP,
 SCRIPT_LCD_HELP,
 "lcd <directory>\n  Changes local working directory for all sessions.\nexample:\n  lcd d:\\\n"
 SCRIPT_LLS_HELP,
-"lls [ <directory> ]\\[ <wildcard> ]\n  Lists the contents of specified local directory. If directory is \n  not specified, lists working directory.\n  When wildcard is specified, it is treated as set of files to list.\n  Otherwise, all files are listed.\nexamples:\n  lls\n  lls *.html\n  lls d:\\\n"
+"lls [ <directory-speed=<kbps>   > ]\\[ <wildcard> ]\n  Lists the contents of specified local directory. If directory is \n  not specified, lists working directory.\n  When wildcard is specified, it is treated as set of files to list.\n  Otherwise, all files are listed.\nexamples:\n  lls\n  lls *.html\n  lls d:\\\n"
 SCRIPT_RM_HELP,
 "rm <file> [ <file2> ... ]\n  Removes one or more remote files. If remote recycle bin is\n  configured, moves file to the bin instead of deleting it.\n  Filename can be replaced with wildcard to select multiple files.\nexamples:\n  rm index.html\n  rm index.html about.html\n  rm *.html\n"
 SCRIPT_RMDIR_HELP,
