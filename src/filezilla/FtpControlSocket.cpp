@@ -441,11 +441,6 @@ void CFtpControlSocket::Connect(t_server &server)
 			COptions::GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
 			COptions::GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
 			COptions::GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
-#ifndef MPEXT_NO_SSLDLL
-		if (res == SSL_FAILURE_LOADDLLS)
-			ShowStatus(IDS_ERRORMSG_CANTLOADSSLDLLS, FZ_LOG_ERROR);
-		else
-#endif
 		if (res == SSL_FAILURE_INITSSL)
 			ShowStatus(IDS_ERRORMSG_CANTINITSSL, FZ_LOG_ERROR);
 		if (!res)
@@ -572,11 +567,6 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 				COptions::GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
 				COptions::GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
 				COptions::GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
-#ifndef MPEXT_NO_SSLDLL
-			if (res == SSL_FAILURE_LOADDLLS)
-				ShowStatus(IDS_ERRORMSG_CANTLOADSSLDLLS, FZ_LOG_ERROR);
-			else
-#endif
 			if (res == SSL_FAILURE_INITSSL)
 				ShowStatus(IDS_ERRORMSG_CANTINITSSL, FZ_LOG_ERROR);
 			if (res)
@@ -921,8 +911,10 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 			return;
 		}
 		else
+		{
 			//GSS authentication complete but we still have to go through the standard logon procedure
 			m_Operation.nOpState = CONNECT_INIT;
+		}
 	}
 #endif
 
@@ -930,7 +922,6 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 	{
 		if (logontype)
 		{
-
 			CString str;
 			str.Format(IDS_STATUSMSG_FWCONNECT,(LPCTSTR)hostname);
 			ShowStatus(str,FZ_LOG_STATUS);
@@ -1201,7 +1192,9 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 					}
 				}
 				else
+				{
 					ShowStatus(A2CT(m_RecvBuffer.back()), FZ_LOG_REPLY);
+				}
 				//Check for multi-line responses
 				if (m_RecvBuffer.back().GetLength() > 3)
 				{
@@ -1226,10 +1219,14 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 						m_RecvBuffer.pop_back();
 					}
 					else
+					{
 						m_pOwner->PostThreadMessage(m_pOwner->m_nInternalMessageID, FZAPI_THREADMSG_PROCESSREPLY, 0);
+					}
 				}
 				else
+				{
 					m_RecvBuffer.pop_back();
+				}
 				m_RecvBuffer.push_back("");
 			}
 		}
@@ -4022,12 +4019,12 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 							}
 						}
 					}
-					if (!nReplyError && !COptions::GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELLY))
+					if (!nReplyError && !COptions::GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY))
 					{
 						m_pTransferSocket->SetActive();
 					}
 				}
-				else if (pData->bPasv && !COptions::GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELLY))
+				else if (pData->bPasv && !COptions::GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY))
 				{
 					m_pTransferSocket->SetActive();
 				}
@@ -4559,9 +4556,9 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 			return;
 		}
 		m_pTransferSocket->m_transferdata=pData->transferdata;
-		// not sure what happens when we active transfer socket immediatelly while resuming
+		// not sure what happens when we active transfer socket immediately while resuming
 		// it can possibly make transfer socket start reading from a file before a file pointer is advanced
-		if (COptions::GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELLY) ||
+		if (COptions::GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY) ||
 				((pData->transferfile.get || !pData->transferdata.bResume) && !pData->bPasv))
 		{
 			m_pTransferSocket->SetActive();
@@ -6020,11 +6017,6 @@ int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 					case SSL_FAILURE_ESTABLISH:
 						ShowStatus(IDS_ERRORMSG_CANTESTABLISHSSLCONNECTION, FZ_LOG_ERROR);
 						break;
-#ifndef MPEXT_NO_SSLDLL
-					case SSL_FAILURE_LOADDLLS:
-						ShowStatus(IDS_ERRORMSG_CANTLOADSSLDLLS, FZ_LOG_ERROR);
-						break;
-#endif
 					case SSL_FAILURE_INITSSL:
 						ShowStatus(IDS_ERRORMSG_CANTINITSSL, FZ_LOG_ERROR);
 						break;
