@@ -41,7 +41,6 @@ public:
   UnicodeString GetProductVersion() const;
   UnicodeString GetProductName() const;
   UnicodeString GetCompanyName() const;
-  UnicodeString TrimVersion(const UnicodeString & Version) const;
   UnicodeString GetStoredSessionsSubKey() const;
   UnicodeString GetPuttySessionsKey() const;
   void SetRandomSeedFile(const UnicodeString & Value);
@@ -85,6 +84,7 @@ public:
   void SetTryFtpWhenSshFails(bool Value);
   bool GetCollectUsage() const;
   void SetCollectUsage(bool);
+  bool GetIsUnofficial();
 
 public:
   virtual TStorage GetStorage();
@@ -111,8 +111,8 @@ public:
 
   virtual UnicodeString ModuleFileName() const;
 
-  UnicodeString GetFileInfoString(const UnicodeString & AKey,
-    const UnicodeString & AFileName) const;
+  UnicodeString GetFileFileInfoString(const UnicodeString & AKey,
+    const UnicodeString & AFileName, bool AllowEmpty = false) const;
   void * GetFileApplicationInfo(const UnicodeString & AFileName) const;
   UnicodeString GetFileProductVersion(const UnicodeString & AFileName) const;
   UnicodeString GetFileProductName(const UnicodeString & AFileName) const;
