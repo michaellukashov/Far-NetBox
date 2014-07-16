@@ -72,11 +72,13 @@ public:
   bool UseAsciiTransfer(const UnicodeString & AFileName, TOperationSide Side,
     const TFileMasks::TParams & Params) const;
   bool AllowResume(int64_t Size) const;
+  bool ResumeTransfer(const UnicodeString & AFileName) const;
   inline UnicodeString ValidLocalFileName(const UnicodeString & AFileName) const;
   UnicodeString ValidLocalPath(const UnicodeString & Path) const;
   bool AllowAnyTransfer() const;
   bool AllowTransfer(const UnicodeString & AFileName, TOperationSide Side,
     bool Directory, const TFileMasks::TParams & Params) const;
+  bool SkipTransfer(const UnicodeString & AFileName, bool Directory) const;
 
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
@@ -143,6 +145,10 @@ public:
   UnicodeString RestoreChars(const UnicodeString & AFileName) const;
   void DoGetInfoStr(const UnicodeString & Separator, intptr_t Options,
     UnicodeString & Result, bool & SomeAttrIncluded) const;
+  TStrings * GetTransferSkipList() const;
+  void SetTransferSkipList(TStrings * Value);
+  UnicodeString GetTransferResumeFile() const { return FTransferResumeFile; }
+  void SetTransferResumeFile(const UnicodeString & Value) { FTransferResumeFile = Value; }
 
 private:
   TFileMasks FAsciiFileMask;
@@ -162,6 +168,8 @@ private:
   bool FCalculateSize;
   UnicodeString FFileMask;
   TFileMasks FIncludeFileMask;
+  std::unique_ptr<TStringList> FTransferSkipList;
+  UnicodeString FTransferResumeFile;
   bool FClearArchive;
   bool FRemoveCtrlZ;
   bool FRemoveBOM;
