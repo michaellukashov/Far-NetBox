@@ -14,7 +14,7 @@ TBookmarks::TBookmarks() : TObject()
   FBookmarkLists = new TStringList();
   FBookmarkLists->SetSorted(true);
   FBookmarkLists->SetCaseSensitive(false);
-  FBookmarkLists->SetDuplicates(dupError);
+  FBookmarkLists->SetDuplicates(Types::dupError);
 }
 //---------------------------------------------------------------------------
 TBookmarks::~TBookmarks()
