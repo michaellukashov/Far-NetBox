@@ -84,7 +84,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
   if (FindFile(Program))
   {
     Params = ExpandEnvironmentVariables(Params);
-    UnicodeString Password = GUIConfiguration->PuttyPassword ? SessionData->Password : UnicodeString();
+    UnicodeString Password = GetGUIConfiguration()->GetPuttyPassword() ? SessionData->GetPassword() : UnicodeString();
     UnicodeString Psw = Password;
     UnicodeString SessionName;
     std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetConfiguration()->GetPuttySessionsKey()));
