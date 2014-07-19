@@ -245,7 +245,6 @@ void TCopyParamType::DoGetInfoStr(
   assert(FTransferSkipList.get() == NULL);
   assert(FTransferResumeFile.IsEmpty());
 
-  if (CPSLimit > 0)
   if (GetCPSLimit() > 0)
   {
     ADD(FMTLOAD(COPY_INFO_CPS_LIMIT2, static_cast<int>(GetCPSLimit() / 1024)).c_str(), cpaIncludeMaskOnly);
@@ -463,56 +462,56 @@ UnicodeString TCopyParamType::GetLogStr() const
   wchar_t ResumeC[] = L"YSN";
   // OpenArray (ARRAYOFCONST) supports only up to 19 arguments, so we had to split it
   return
-   TODO: FORMAT(
-      L"  PrTime: %s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %s; RIC: %s; "
-         "Resume: %s (%d); CalcS: %s; Mask: %s\n",
-      (BooleanToEngStr(PreserveTime),
-       BooleanToEngStr(PreserveReadOnly),
-       Rights.Text,
-       BooleanToEngStr(PreserveRights),
-       BooleanToEngStr(IgnorePermErrors),
-       CaseC[FileNameCase],
-       CharToHex(InvalidCharsReplacement),
-       ResumeC[ResumeSupport],
-       (int)ResumeThreshold,
-       BooleanToEngStr(CalculateSize),
-       FileMask)) +
+   FORMAT(
+      L"  PrTime: %s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %c; "
+      L"Resume: %c (%d); CalcS: %s; Mask: %s\n",
+      BooleanToEngStr(GetPreserveTime()).c_str(),
+      BooleanToEngStr(GetPreserveReadOnly()).c_str(),
+      GetRights().GetText().c_str(),
+      BooleanToEngStr(GetPreserveRights()).c_str(),
+      BooleanToEngStr(GetIgnorePermErrors()).c_str(),
+      CaseC[GetFileNameCase()],
+      CharToHex(GetInvalidCharsReplacement()).c_str(),
+      ResumeC[GetResumeSupport()],
+      (int)GetResumeThreshold(),
+      BooleanToEngStr(GetCalculateSize()).c_str(),
+      GetFileMask().c_str()) +
     FORMAT(
-      L"  TM: %s; ClAr: %s; RemEOF: %s; RemBOM: %s; CPS: %u; NewerOnly: %s; InclM: %s; ResumeL: %d\n"
-       "  AscM: %s\n",
-      (ModeC[TransferMode],
-       BooleanToEngStr(ClearArchive),
-       BooleanToEngStr(RemoveCtrlZ),
-       BooleanToEngStr(RemoveBOM),
-       int(CPSLimit),
-       BooleanToEngStr(NewerOnly),
-       IncludeFileMask.Masks,
-       ((FTransferSkipList.get() != NULL) ? FTransferSkipList->Count : 0) + (!FTransferResumeFile.IsEmpty() ? 1 : 0),
-       AsciiFileMask.Masks));
-  return FORMAT(
-    L"  PrTime: %s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %s; "
-       L"Resume: %c (%d); CalcS: %s; Mask: %s\n"
-    L"  TM: %c; ClAr: %s; RemEOF: %s; RemBOM: %s; CPS: %u; NewerOnly: %s; InclM: %s\n"
-    L"  AscM: %s\n",
-    BooleanToEngStr(GetPreserveTime()).c_str(),
-    BooleanToEngStr(GetPreserveReadOnly()).c_str(),
-    GetRights().GetText().c_str(),
-    BooleanToEngStr(GetPreserveRights()).c_str(),
-    BooleanToEngStr(GetIgnorePermErrors()).c_str(),
-    CaseC[GetFileNameCase()],
-    CharToHex(GetInvalidCharsReplacement()).c_str(),
-    ResumeC[GetResumeSupport()],
-    (int)GetResumeThreshold(),
-    BooleanToEngStr(GetCalculateSize()).c_str(),
-    GetFileMask().c_str(),
-    ModeC[GetTransferMode()],
-    BooleanToEngStr(GetClearArchive()).c_str(),
-    BooleanToEngStr(GetRemoveCtrlZ()).c_str(),
-    BooleanToEngStr(GetRemoveBOM()).c_str(),
-    int(GetCPSLimit()),
-    BooleanToEngStr(GetNewerOnly()).c_str(),
-    GetIncludeFileMask().GetMasks().c_str(),
-    GetAsciiFileMask().GetMasks().c_str());
+      L"  TM: %c; ClAr: %s; RemEOF: %s; RemBOM: %s; CPS: %u; NewerOnly: %s; InclM: %s; ResumeL: %d\n"
+      L"  AscM: %s\n",
+      ModeC[GetTransferMode()],
+      BooleanToEngStr(GetClearArchive()).c_str(),
+      BooleanToEngStr(GetRemoveCtrlZ()).c_str(),
+      BooleanToEngStr(GetRemoveBOM()).c_str(),
+      int(GetCPSLimit()),
+      BooleanToEngStr(GetNewerOnly()).c_str(),
+      GetIncludeFileMask().GetMasks().c_str(),
+      ((FTransferSkipList.get() != NULL) ? FTransferSkipList->GetCount() : 0) + (!FTransferResumeFile.IsEmpty() ? 1 : 0),
+      GetAsciiFileMask().GetMasks().c_str());
+//  return FORMAT(
+//    L"  PrTime: %s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %s; "
+//       L"Resume: %c (%d); CalcS: %s; Mask: %s\n"
+//    L"  TM: %c; ClAr: %s; RemEOF: %s; RemBOM: %s; CPS: %u; NewerOnly: %s; InclM: %s\n"
+//    L"  AscM: %s\n",
+//    BooleanToEngStr(GetPreserveTime()).c_str(),
+//    BooleanToEngStr(GetPreserveReadOnly()).c_str(),
+//    GetRights().GetText().c_str(),
+//    BooleanToEngStr(GetPreserveRights()).c_str(),
+//    BooleanToEngStr(GetIgnorePermErrors()).c_str(),
+//    CaseC[GetFileNameCase()],
+//    CharToHex(GetInvalidCharsReplacement()).c_str(),
+//    ResumeC[GetResumeSupport()],
+//    (int)GetResumeThreshold(),
+//    BooleanToEngStr(GetCalculateSize()).c_str(),
+//    GetFileMask().c_str(),
+//    ModeC[GetTransferMode()],
+//    BooleanToEngStr(GetClearArchive()).c_str(),
+//    BooleanToEngStr(GetRemoveCtrlZ()).c_str(),
+//    BooleanToEngStr(GetRemoveBOM()).c_str(),
+//    int(GetCPSLimit()),
+//    BooleanToEngStr(GetNewerOnly()).c_str(),
+//    GetIncludeFileMask().GetMasks().c_str(),
+//    GetAsciiFileMask().GetMasks().c_str());
 }
 //---------------------------------------------------------------------------
 DWORD TCopyParamType::LocalFileAttrs(const TRights & Rights) const
@@ -538,11 +537,10 @@ bool TCopyParamType::AllowResume(int64_t Size) const
 //---------------------------------------------------------------------------
 bool TCopyParamType::AllowAnyTransfer() const
 {
-  TODO: return
-    IncludeFileMask.Masks.IsEmpty() &&
-    ((FTransferSkipList.get() == NULL) || (FTransferSkipList->Count == 0)) &&
+  return
+    GetIncludeFileMask().GetMasks().IsEmpty() &&
+    ((FTransferSkipList.get() == NULL) || (FTransferSkipList->GetCount() == 0)) &&
     FTransferResumeFile.IsEmpty();
-  return GetIncludeFileMask().GetMasks().IsEmpty();
 }
 //---------------------------------------------------------------------------
 bool TCopyParamType::AllowTransfer(const UnicodeString & AFileName,
@@ -557,8 +555,8 @@ bool TCopyParamType::AllowTransfer(const UnicodeString & AFileName,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCopyParamType::SkipTransfer(
-  UnicodeString FileName, bool Directory) const
+bool TCopyParamType::SkipTransfer(
+  const UnicodeString & FileName, bool Directory) const
 {
   bool Result = false;
   // we deliberatelly do not filter directories, as path is added to resume list
@@ -571,7 +569,7 @@ bool __fastcall TCopyParamType::SkipTransfer(
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCopyParamType::ResumeTransfer(UnicodeString FileName) const
+bool TCopyParamType::ResumeTransfer(const UnicodeString & FileName) const
 {
   // Returning true has the same effect as cpResume
   return
@@ -579,7 +577,25 @@ bool __fastcall TCopyParamType::ResumeTransfer(UnicodeString FileName) const
     ALWAYS_TRUE(!FTransferResumeFile.IsEmpty());
 }
 //---------------------------------------------------------------------------
-TStrings * __fastcall TCopyParamType::GetTransferSkipList() const
+TStrings * TCopyParamType::GetTransferSkipList() const
+{
+  return FTransferSkipList.get();
+}
+
+void TCopyParamType::SetTransferSkipList(TStrings * Value)
+{
+  if ((Value == nullptr) || (Value->GetCount() == 0))
+  {
+    FTransferSkipList.reset(nullptr);
+  }
+  else
+  {
+    FTransferSkipList.reset(new TStringList());
+    FTransferSkipList->AddStrings(Value);
+    FTransferSkipList->SetSorted(true);
+  }
+}
+//---------------------------------------------------------------------------
 void TCopyParamType::Load(THierarchicalStorage * Storage)
 {
   SetAddXToDirectories(Storage->ReadBool(L"AddXToDirectories", GetAddXToDirectories()));
