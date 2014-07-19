@@ -652,7 +652,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
         EmptyButMonitored = (GetItem(FItems, Index)->GetCompleteEvent() != INVALID_HANDLE_VALUE);
         Index++;
       }
-      Empty = (FItems->Count == 0);
+      Empty = (FItems->GetCount() == 0);
     }
 
     DoListUpdate();
