@@ -151,6 +151,8 @@ private:
 //---------------------------------------------------------------------------
 struct TClipboardHandler
 {
+NB_DECLARE_CLASS(TClipboardHandler)
+public:
   UnicodeString Text;
 
   void Copy(TObject * /*Sender*/)
