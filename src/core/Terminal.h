@@ -42,7 +42,7 @@ DEFINE_CALLBACK_TYPE5(TDisplayBannerEvent, void,
 DEFINE_CALLBACK_TYPE3(TExtendedExceptionEvent, void,
   TTerminal * /* Terminal */, Exception * /* E */, void * /* Arg */);
 DEFINE_CALLBACK_TYPE2(TReadDirectoryEvent, void, TObject * /* Sender */, Boolean /* ReloadOnly */);
-DEFINE_CALLBACK_TYPE3(TReadDirectoryProgressEvent, void,
+DEFINE_CALLBACK_TYPE4(TReadDirectoryProgressEvent, void,
   TObject * /* Sender */, intptr_t /* Progress */, intptr_t /* ResolvedLinks */, bool & /* Cancel */);
 DEFINE_CALLBACK_TYPE3(TProcessFileEvent, void,
   const UnicodeString & /* FileName */, const TRemoteFile * /* File */, void * /* Param */);
