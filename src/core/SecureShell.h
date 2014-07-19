@@ -49,6 +49,7 @@ public:
   bool GetStoredCredentialsTried() const;
   void CollectUsage();
   bool IsOpenSSH() const;
+  bool IsProFTPD() const;
 
   void RegisterReceiveHandler(TNotifyEvent Handler);
   void UnregisterReceiveHandler(TNotifyEvent Handler);
@@ -144,6 +145,7 @@ private:
   bool FDataWhileFrozen;
   bool FStoredPasswordTried;
   bool FStoredPasswordTriedForKI;
+  bool FStoredPassphraseTried;
   mutable int FSshVersion;
   bool FOpened;
   int FWaiting;
@@ -152,6 +154,7 @@ private:
   bool FCollectPrivateKeyUsage;
   int FWaitingForData;
   bool FOpenSSH;
+  bool FProFTPD;
 
   intptr_t PendLen;
   intptr_t PendSize;
