@@ -22,6 +22,7 @@
 #include <neon/src/ne_request.h>
 #include <neon/src/ne_xml.h>
 #include <neon/src/ne_pkcs11.h>
+#include <expat/lib/expat.h>
 
 #include "WebDAVFileSystem.h"
 
@@ -12049,6 +12050,37 @@ private:
     [&]() { OPERATION })
 //------------------------------------------------------------------------------
 static const UnicodeString CONST_WEBDAV_PROTOCOL_BASE_NAME = L"WebDAV";
+//---------------------------------------------------------------------------
+#define StrToNeon(S) UTF8String(S).c_str()
+#define StrFromNeon(S) UnicodeString(UTF8String(S))
+#define AbsolutePathToNeon(P) PathEscape(StrToNeon(P)).c_str()
+#define PathToNeon(P) AbsolutePathToNeon(AbsolutePath(P, false))
+//------------------------------------------------------------------------------
+void NeonInitialize()
+{
+  // Even if this fails, we do not want to interrupt WinSCP starting for that.
+  // We may possibly remember that and fail opening session later.
+  // Anyway, it can hardly fail.
+  ALWAYS_TRUE(ne_sock_init());
+}
+//---------------------------------------------------------------------------
+void NeonFinalize()
+{
+  ne_sock_exit();
+}
+//---------------------------------------------------------------------------
+UnicodeString NeonVersion()
+{
+  UnicodeString Str = StrFromNeon(ne_version_string());
+  CutToChar(Str, L' ', true); // "neon"
+  UnicodeString Result = CutToChar(Str, L':', true);
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString ExpatVersion()
+{
+  return FORMAT(L"%d.%d.%d", XML_MAJOR_VERSION, XML_MINOR_VERSION, XML_MICRO_VERSION);
+}
 
 //===========================================================================
 
@@ -12636,13 +12668,6 @@ void TWebDAVFileSystem::AnyCommand(const UnicodeString & Command,
 {
   Classes::Error(SNotImplemented, 1008);
 }
-
-//------------------------------------------------------------------------------
-UnicodeString TWebDAVFileSystem::FileUrl(const UnicodeString & AFileName) const
-{
-  return FTerminal->FileUrl(FTerminal->GetSessionData()->GetFtps() == ftpsNone ?
-    L"http" : L"https", AFileName);
-}
 //------------------------------------------------------------------------------
 TStrings * TWebDAVFileSystem::GetFixedPaths()
 {
@@ -12757,7 +12782,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
   TUploadSessionAction & Action)
 {
   UnicodeString RealFileName = File ? File->GetFileName() : AFileName;
-  bool CheckExistence = ::UnixComparePaths(TargetDir, FTerminal->GetCurrentDirectory()) &&
+  bool CheckExistence = ::UnixSamePath(TargetDir, FTerminal->GetCurrentDirectory()) &&
     (FTerminal->FFiles != nullptr) && FTerminal->FFiles->GetLoaded();
   bool CanProceed = false;
   UnicodeString FileNameOnly =
@@ -12814,7 +12839,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
 
         TOverwriteMode OverwriteMode = omOverwrite;
         bool AutoResume = false;
-        ConfirmOverwrite(FileNameOnly, OperationProgress,
+        ConfirmOverwrite(AFileName, FileNameOnly, OperationProgress,
             &FileParams, CopyParam, Params, AutoResume,
             OverwriteMode, Answer);
         switch (Answer)
@@ -12850,7 +12875,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
 
     OperationProgress->SetFile(RealFileName, false);
 
-    if (!FTerminal->AllowLocalFileTransfer(AFileName, CopyParam))
+    if (!FTerminal->AllowLocalFileTransfer(AFileName, CopyParam, OperationProgress))
     {
       FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", RealFileName.c_str()));
       ThrowSkipFileNull();
@@ -13282,7 +13307,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       uintptr_t Answer = 0;
       TOverwriteMode OverwriteMode = omOverwrite;
       bool AutoResume = false;
-      ConfirmOverwrite(DestFullName, OperationProgress,
+      ConfirmOverwrite(DestFullName, DestFullName, OperationProgress,
           &FileParams, CopyParam, Params, AutoResume,
           OverwriteMode, Answer);
       switch (Answer)
@@ -13422,7 +13447,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
     assert(FFileList != nullptr);
     // this can actually fail in real life,
     // when connected to server with case insensitive paths
-    assert(::UnixComparePaths(AbsolutePath(FFileList->GetDirectory(), false), Path));
+    assert(::UnixSamePath(AbsolutePath(FFileList->GetDirectory(), false), Path));
     USEDPARAM(Path);
 
     for (intptr_t Index = 0; Index < Count; ++Index)
@@ -13548,10 +13573,10 @@ void TWebDAVFileSystem::ReadDirectoryProgress(int64_t Bytes)
   {
     bool Cancel = false;
     FLastReadDirectoryProgress = Progress;
-    FTerminal->DoReadDirectoryProgress(Progress, Cancel);
+    FTerminal->DoReadDirectoryProgress(Progress, 0, Cancel);
     if (Cancel)
     {
-      FTerminal->DoReadDirectoryProgress(-2, Cancel);
+      FTerminal->DoReadDirectoryProgress(-2, 0, Cancel);
     }
   }
 }

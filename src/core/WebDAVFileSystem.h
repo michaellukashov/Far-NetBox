@@ -74,7 +74,6 @@ public:
     const UnicodeString & NewName);
   virtual void CopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
-  virtual UnicodeString FileUrl(const UnicodeString & AFileName) const;
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable);
@@ -215,5 +214,9 @@ private:
   apr_pool_t * webdav_pool;
   webdav::session_t * FSession;
 };
+
+//------------------------------------------------------------------------------
+void NeonInitialize();
+void NeonFinalize();
 
 #endif
