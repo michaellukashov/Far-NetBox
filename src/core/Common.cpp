@@ -957,20 +957,20 @@ UnicodeString __fastcall MakeUnicodeLargePath(UnicodeString Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall ApiPath(UnicodeString Path)
+UnicodeString ApiPath(const UnicodeString & Path)
 {
-  if (Path.Length() >= MAX_PATH)
+  UnicodeString Result = Path;
+  if (Result.Length() >= MAX_PATH)
   {
-    if (Configuration != NULL)
+    if (GetConfiguration() != nullptr)
     {
-      Configuration->Usage->Inc(L"LongPath");
+//      GetConfiguration()->Usage->Inc(L"LongPath");
     }
-    Path = MakeUnicodeLargePath(Path);
+    Result = MakeUnicodeLargePath(Result);
   }
-  return Path;
+  return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall DisplayableStr(const RawByteString & Str)
 UnicodeString DisplayableStr(const RawByteString & Str)
 {
   bool Displayable = true;
@@ -2445,40 +2445,41 @@ UnicodeString ExtractFileBaseName(const UnicodeString & Path)
   return ChangeFileExt(::ExtractFileName(Path, false), L"");
 }
 //---------------------------------------------------------------------------
-TStringList * __fastcall TextToStringList(const UnicodeString & Text)
+TStringList * TextToStringList(const UnicodeString & Text)
 {
   std::unique_ptr<TStringList> List(new TStringList());
-  List->Text = Text;
+  List->SetText(Text);
   return List.release();
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TrimVersion(UnicodeString Version)
+UnicodeString TrimVersion(const UnicodeString & Version)
 {
-  while ((Version.Pos(L".") != Version.LastDelimiter(L".")) &&
-    (Version.SubString(Version.Length() - 1, 2) == L".0"))
+  UnicodeString Result = Version;
+  while ((Result.Pos(L".") != Result.LastDelimiter(L".")) &&
+    (Result.SubString(Result.Length() - 1, 2) == L".0"))
   {
-    Version.SetLength(Version.Length() - 2);
+    Result.SetLength(Result.Length() - 2);
   }
-  return Version;
+  return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall FormatVersion(int MajovVersion, int MinorVersion, int Release)
+UnicodeString FormatVersion(int MajovVersion, int MinorVersion, int Release)
 {
   return
     TrimVersion(FORMAT(L"%d.%d.%d",
-      (MajovVersion, MinorVersion, Release)));
+      MajovVersion, MinorVersion, Release));
 }
 //---------------------------------------------------------------------------
-TFormatSettings __fastcall GetEngFormatSettings()
+TFormatSettings GetEngFormatSettings()
 {
-  return TFormatSettings::Create((TLocaleID)1033);
+  return TFormatSettings::Create(1033);
 }
 //---------------------------------------------------------------------------
-int __fastcall ParseShortEngMonthName(const UnicodeString & MonthStr)
-{
-  TFormatSettings FormatSettings = GetEngFormatSettings();
-  return IndexStr(MonthStr, FormatSettings.ShortMonthNames, FormatSettings.ShortMonthNames.Size()) + 1;
-}
+//int ParseShortEngMonthName(const UnicodeString & MonthStr)
+//{
+//  TFormatSettings FormatSettings = GetEngFormatSettings();
+//  return IndexStr(MonthStr, FormatSettings.ShortMonthNames, FormatSettings.ShortMonthNames.size()) + 1;
+//}
 //---------------------------------------------------------------------------
 UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
 {
