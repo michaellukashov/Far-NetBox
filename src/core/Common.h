@@ -124,7 +124,7 @@ TStringList * TextToStringList(const UnicodeString & Text);
 UnicodeString TrimVersion(const UnicodeString & Version);
 UnicodeString FormatVersion(int MajovVersion, int MinorVersion, int Release);
 TFormatSettings GetEngFormatSettings();
-int ParseShortEngMonthName(const UnicodeString & MonthStr);
+//int ParseShortEngMonthName(const UnicodeString & MonthStr);
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);

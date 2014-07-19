@@ -2492,8 +2492,8 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
   }
   else if (Bytes < static_cast<int64_t>(100 * 1024 * 1024))
   {
-    // Result = FormatFloat(L"#,##0 \"KiB\"", Bytes / 1024);
-    Result = FORMAT(L"%.0f KiB", ToDouble(Bytes / 1024.0));
+    // Result = FormatFloat(L"#,##0 \"KB\"", Bytes / 1024);
+    Result = FORMAT(L"%.0f KB", ToDouble(Bytes / 1024.0));
   }
   else
   {
