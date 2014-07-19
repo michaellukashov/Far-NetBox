@@ -1779,7 +1779,7 @@ void TRemoteDirectory::SetIncludeThisDirectory(Boolean Value)
 TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
 {
   SetSorted(true);
-  SetDuplicates(Types::dupError);
+  SetDuplicates(dupError);
   SetCaseSensitive(true);
 }
 //---------------------------------------------------------------------------
