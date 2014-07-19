@@ -489,7 +489,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
     }
   }
   SetHostKey(Storage->ReadString(L"HostKey", GetHostKey()));
-  SetNote = Storage->ReadString(L"Note", Note);
+  SetNote(Storage->ReadString(L"Note", GetNote()));
   // Putty uses PingIntervalSecs
   intptr_t PingIntervalSecs = Storage->ReadInteger(L"PingIntervalSecs", -1);
   if (PingIntervalSecs < 0)
@@ -692,7 +692,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetFtpAccount(Storage->ReadString(L"FtpAccount", GetFtpAccount()));
   SetFtpPingInterval(Storage->ReadInteger(L"FtpPingInterval", GetFtpPingInterval()));
   SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger(L"FtpPingType", GetFtpPingType())));
-  SetFtpTransferActiveImmediately(Storage->ReadBool(L"FtpTransferActiveImmediatelly", GetFtpTransferActiveImmediatelly()));
+  SetFtpTransferActiveImmediately(Storage->ReadBool(L"FtpTransferActiveImmediatelly", GetFtpTransferActiveImmediately()));
   SetFtps(static_cast<TFtps>(Storage->ReadInteger(L"Ftps", GetFtps())));
   SetFtpListAll(static_cast<TAutoSwitch>(Storage->ReadInteger(L"FtpListAll", GetFtpListAll())));
   SetFtpDupFF(Storage->ReadBool(L"FtpDupFF", GetFtpDupFF()));
@@ -1615,7 +1615,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     }
     if (Options->FindSwitch(L"timeout", Value))
     {
-      SetTimeout(Sysutils::StrToInt(Value));
+      SetTimeout(Sysutils::StrToInt64(Value));
     }
     if (Options->FindSwitch(L"hostkey", Value) ||
         Options->FindSwitch(L"certificate", Value))
@@ -1745,7 +1745,7 @@ void TSessionData::ValidateName(const UnicodeString & Name)
   }
 }
 //---------------------------------------------------------------------
-UnicodeString TSessionData::MakeValidName(const UnicodeString & Name) const
+UnicodeString TSessionData::MakeValidName(const UnicodeString & Name)
 {
   // keep consistent with ValidateName
   return ReplaceStr(Name, L"/", L"\\");
@@ -1802,9 +1802,9 @@ UnicodeString TSessionData::GetStorageKey() const
   return GetSessionName();
 }
 //---------------------------------------------------------------------
-UnicodeString TSessionData::GetSiteKey()
+UnicodeString TSessionData::GetSiteKey() const
 {
-  return FORMAT(L"%s:%d", HostNameExpanded.c_str(), PortNumber.c_str());
+  return FORMAT(L"%s:%d", GetHostNameExpanded().c_str(), GetPortNumber());
 }
 //---------------------------------------------------------------------
 void TSessionData::SetHostName(const UnicodeString & Value)
@@ -2105,25 +2105,25 @@ void TSessionData::SetPublicKeyFile(const UnicodeString & Value)
   if (FPublicKeyFile != Value)
   {
     // PublicKeyFile is key for Passphrase encryption
-    UnicodeString XPassphrase = Passphrase;
+    UnicodeString XPassphrase = GetPassphrase();
 
     FPublicKeyFile = StripPathQuotes(Value);
     Modify();
 
-    Passphrase = XPassphrase;
+    SetPassphrase(XPassphrase);
     Shred(XPassphrase);
   }
 }
 //---------------------------------------------------------------------
-void TSessionData::SetPassphrase(const UnicodeString & Avalue)
+void TSessionData::SetPassphrase(const UnicodeString & AValue)
 {
-  RawByteString value = EncryptPassword(avalue, PublicKeyFile);
+  RawByteString Value = EncryptPassword(AValue, GetPublicKeyFile());
   SET_SESSION_PROPERTY(Passphrase);
 }
 //---------------------------------------------------------------------
 UnicodeString TSessionData::GetPassphrase() const
 {
-  return DecryptPassword(FPassphrase, PublicKeyFile);
+  return DecryptPassword(FPassphrase, GetPublicKeyFile());
 }
 //---------------------------------------------------------------------
 void TSessionData::SetReturnVar(const UnicodeString & Value)
@@ -2291,7 +2291,7 @@ UnicodeString TSessionData::GetSessionName() const
 UnicodeString TSessionData::GetProtocolUrl() const
 {
   UnicodeString Url;
-  switch (FSProtocol)
+  switch (GetFSProtocol())
   {
     case fsSCPonly:
       Url = ScpProtocol;
@@ -2306,7 +2306,7 @@ UnicodeString TSessionData::GetProtocolUrl() const
       break;
 
     case fsFTP:
-      if (Ftps == ftpsImplicit)
+      if (GetFtps() == ftpsImplicit)
       {
         Url = FtpsProtocol;
       }
@@ -2317,7 +2317,7 @@ UnicodeString TSessionData::GetProtocolUrl() const
       break;
 
     case fsWebDAV:
-      if (Ftps == ftpsImplicit)
+      if (GetFtps() == ftpsImplicit)
       {
         Url = WebDAVSProtocol;
       }
@@ -3797,7 +3797,7 @@ TStrings * TStoredSessionList::GetWorkspaces()
 {
   std::unique_ptr<TStringList> Result(new TStringList());
   Result->SetSorted(true);
-  Result->SetDuplicates(Types::dupIgnore);
+  Result->SetDuplicates(dupIgnore);
   Result->SetCaseSensitive(false);
 
   for (intptr_t Index = 0; Index < GetCount(); Index++)
@@ -3860,7 +3860,7 @@ TSessionData * TStoredSessionList::ParseUrl(const UnicodeString & Url,
   return Data.release();
 }
 //---------------------------------------------------------------------
-bool TStoredSessionList::IsUrl(UnicodeString Url)
+bool TStoredSessionList::IsUrl(const UnicodeString & Url)
 {
   bool DefaultsOnly;
   bool ProtocolDefined = false;
