@@ -709,10 +709,10 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
 
   UnicodeString InstructionsLog =
-    (Instructions.IsEmpty() ? UnicodeString(L"<no instructions>") : FORMAT(L"\"%s\"", (Instructions)));
+    (Instructions.IsEmpty() ? UnicodeString(L"<no instructions>") : FORMAT(L"\"%s\"", Instructions.c_str()));
   UnicodeString PromptsLog =
-    (Prompts->Count > 0 ? FORMAT(L"\"%s\"", (Prompts->Strings[0])) : UnicodeString(L"<no prompt>")) +
-    (Prompts->Count > 1 ? FORMAT(L"%d more", (Prompts->Count - 1)) : UnicodeString());
+    (Prompts->GetCount() > 0 ? FORMAT(L"\"%s\"", Prompts->GetString(0).c_str()) : UnicodeString(L"<no prompt>")) +
+    (Prompts->GetCount() > 1 ? FORMAT(L"%d more", Prompts->GetCount() - 1) : UnicodeString());
   LogEvent(FORMAT(L"Prompt (%s, \"%s\", %s, %s)", PromptDesc.c_str(), AName.c_str(), InstructionsLog.c_str(), PromptsLog.c_str()));
 
   Name = Name.Trim();
@@ -787,11 +787,11 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
   else if (PromptKind == pkPassphrase)
   {
-    if (!FSessionData->Passphrase.IsEmpty() && !FStoredPassphraseTried)
+    if (!FSessionData->GetPassphrase().IsEmpty() && !FStoredPassphraseTried)
     {
       LogEvent(L"Using configured passphrase.");
       Result = true;
-      Results->Strings[0] = FSessionData->Passphrase;
+      Results->SetString(0, FSessionData->GetPassphrase());
       FStoredPassphraseTried = true;
     }
   }
@@ -803,9 +803,9 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 
     if (Result)
     {
-      if ((Prompts->Count >= 1) && FLAGSET(int(Prompts->Objects[0]), pupEcho))
+      if ((Prompts->GetCount() >= 1) && FLAGSET((intptr_t)Prompts->GetObject(0), pupEcho))
       {
-        LogEvent(FORMAT(L"Response: \"%s\"", Results->Strings[0].c_str()));
+        LogEvent(FORMAT(L"Response: \"%s\"", Results->GetString(0).c_str()));
       }
 
       if ((PromptKind == pkUserName) && (Prompts->GetCount() == 1))
@@ -2106,7 +2106,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
 
   bool ConfiguredKeyNotMatch = false;
 
-  if (!Result && !FSessionData->HostKey.IsEmpty() &&
+  if (!Result && !FSessionData->GetHostKey().IsEmpty() &&
       (StoredKeys.IsEmpty() || FSessionData->GetOverrideCachedHostKey()))
   {
     UnicodeString Buf = FSessionData->GetHostKey();
@@ -2209,7 +2209,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       // Configuration->Usage->Inc(L"HostNotVerified");
 
       UnicodeString Message =
-        ConfiguredKeyNotMatch ? FMTLOAD(CONFIGURED_KEY_NOT_MATCH, FSessionData->HostKey.c_str()) : LoadStr(KEY_NOT_VERIFIED);
+        ConfiguredKeyNotMatch ? FMTLOAD(CONFIGURED_KEY_NOT_MATCH, FSessionData->GetHostKey().c_str()) : LoadStr(KEY_NOT_VERIFIED);
       std::unique_ptr<Exception> E(new Exception(MainInstructions(Message)));
       FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, Fingerprint.c_str()));
     }
