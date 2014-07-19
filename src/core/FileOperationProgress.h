@@ -14,6 +14,7 @@ enum TFileOperation
   foGetProperties, foCalculateChecksum
 };
 
+// csCancelTransfer and csRemoteAbort are used with SCP only
 enum TCancelStatus
 {
   csContinue = 0, csCancel, csCancelTransfer, csRemoteAbort
@@ -38,7 +39,7 @@ enum TBatchOverwrite
 };
 
 DEFINE_CALLBACK_TYPE2(TFileOperationProgressEvent, void,
-  TFileOperationProgressType & /* ProgressData */, TCancelStatus & /* Cancel */);
+  TFileOperationProgressType & /* ProgressData */);
 DEFINE_CALLBACK_TYPE6(TFileOperationFinishedEvent, void,
   TFileOperation /* Operation */, TOperationSide /* Side */, bool /* Temp */,
   const UnicodeString & /* FileName */, bool /* Success */, TOnceDoneOperation & /* OnceDoneOperation */);
@@ -51,8 +52,10 @@ public:
   // on what side if operation being processed (local/remote), source of copy
   TOperationSide Side;
   UnicodeString FileName;
+  UnicodeString FullFileName;
   UnicodeString Directory;
   bool AsciiTransfer;
+  // Can be true with SCP protocol only
   bool TransferingFile;
   bool Temp;
 
@@ -88,6 +91,7 @@ public:
   void AddLocallyUsed(int64_t ASize);
   void AddTransfered(int64_t ASize, bool AddToTotals = true);
   void AddResumed(int64_t ASize);
+  void AddSkippedFileSize(int64_t ASize);
   void Clear();
   uintptr_t CPS();
   void Finish(const UnicodeString & AFileName, bool Success,
@@ -100,6 +104,7 @@ public:
   intptr_t OperationProgress() const;
   uintptr_t TransferBlockSize();
   uintptr_t AdjustToCPSLimit(uintptr_t Size);
+  void ThrottleToCPSLimit(uintptr_t Size);
   static uintptr_t StaticBlockSize();
   void Reset();
   void Resume();
