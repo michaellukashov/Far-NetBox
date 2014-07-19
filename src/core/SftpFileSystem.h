@@ -74,7 +74,7 @@ public:
   virtual void RemoteRenameFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
   virtual void CopyFile(const UnicodeString & AFileName,
-    const UnicodeString & NewName);
+    const UnicodeString & ANewName);
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable);
