@@ -17,7 +17,7 @@
 #include "TextsCore.h"
 #include "TextsFileZilla.h"
 #include "HelpCore.h"
-#include "Security.h"
+#include "WinSCPSecurity.h"
 #include <openssl/x509_vfy.h>
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
@@ -990,17 +990,14 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & AFileName,
   const UnicodeString & RemotePath, bool Get, int64_t Size, intptr_t Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
-  // FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, AFileName.c_str()),
-  FILE_OPERATION_LOOP_BEGIN
-  {
+  FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, AFileName.c_str()),
     FFileZillaIntf->FileTransfer(LocalFile.c_str(), RemoteFile.c_str(),
       RemotePath.c_str(), Get, Size, (int)Type, &UserData);
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
     uintptr_t Reply = WaitForCommandReply();
     GotReply(Reply, FLAGMASK(FFileTransferCancelled, REPLY_ALLOW_CANCEL));
-  )
-  FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, AFileName.c_str()));
+  );
 
   switch (FFileTransferAbort)
   {
@@ -1137,8 +1134,8 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
 
   if (CopyParam->SkipTransfer(AFileName, AFile->GetIsDirectory()))
   {
-    OperationProgress->AddSkippedFileSize(File->Size);
-    THROW_SKIP_FILE_NULL;
+    OperationProgress->AddSkippedFileSize(AFile->GetSize());
+    ThrowSkipFileNull();
   }
 
   FTerminal->LogFileDetails(AFileName, AFile->GetModification(), AFile->GetSize());
@@ -1154,23 +1151,17 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     Action.Cancel();
     if (!AFile->GetIsSymLink())
     {
-      // FILE_OPERATION_LOOP(FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
-      FILE_OPERATION_LOOP_BEGIN
-      {
+      FILE_OPERATION_LOOP(FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
         DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
         if (FLAGCLEAR(LocalFileAttrs, faDirectory))
         {
           ThrowExtException();
         }
-      )
-      FILE_OPERATION_LOOP_END(FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()));
+      );
 
-      // FILE_OPERATION_LOOP(FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
-      FILE_OPERATION_LOOP_BEGIN
-      {
+      FILE_OPERATION_LOOP(FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
         THROWOSIFFALSE(Sysutils::ForceDirectories(DestFullName));
-      )
-      FILE_OPERATION_LOOP_END(FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()));
+      );
 
       TSinkFileParams SinkFileParams;
       SinkFileParams.TargetDir = IncludeTrailingBackslash(DestFullName);
@@ -1211,16 +1202,13 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
     DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
-    // FILE_OPERATION_LOOP(FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
-    FILE_OPERATION_LOOP_BEGIN
-    {
+    FILE_OPERATION_LOOP(FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
       if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, faDirectory))
       {
         ThrowExtException();
       }
-    )
-    FILE_OPERATION_LOOP_END(FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()));
+    );
 
     OperationProgress->TransferingFile = false; // not set with FTP protocol
 
@@ -1276,12 +1264,9 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     DWORD NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
     if ((NewAttrs & LocalFileAttrs) != NewAttrs)
     {
-      //FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-      FILE_OPERATION_LOOP_BEGIN
-      {
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, (LocalFileAttrs | NewAttrs)) == 0);
-      )
       FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, (LocalFileAttrs | NewAttrs)) == 0);
+      );
     }
   }
 
@@ -1440,7 +1425,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
 
   OperationProgress->SetFile(RealFileName, false);
 
-  if (!FTerminal->AllowLocalFileTransfer(AFileName, CopyParam))
+  if (!FTerminal->AllowLocalFileTransfer(AFileName, CopyParam, OperationProgress))
   {
     // FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", RealFileName.c_str()));
     ThrowSkipFileNull();
@@ -1550,21 +1535,16 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
   {
     if (!Dir)
     {
-      // FILE_OPERATION_LOOP(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()),
-      FILE_OPERATION_LOOP_BEGIN
-      {
-        THROWOSIFFALSE(Sysutils::DeleteFile(AFileName));
-      )
       FILE_OPERATION_LOOP(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()),
+        THROWOSIFFALSE(Sysutils::DeleteFile(AFileName));
+      );
     }
   }
   else if (CopyParam->GetClearArchive() && FLAGSET(OpenParams->LocalFileAttrs, faArchive))
   {
-    FILE_OPERATION_LOOP_BEGIN
-    {
-      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(AFileName, OpenParams->LocalFileAttrs & ~faArchive) == 0);
-    )
     FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()),
+      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(AFileName, OpenParams->LocalFileAttrs & ~faArchive) == 0);
+    );
   }
 }
 //---------------------------------------------------------------------------
@@ -1583,13 +1563,11 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   TSearchRecChecked SearchRec;
   bool FindOK = false;
 
-  FILE_OPERATION_LOOP_BEGIN
-  {
+  FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
     FindOK =
       ::FindFirstChecked((DirectoryName + L"*.*").c_str(),
         FindAttrs, SearchRec) == 0;
-  )
-  FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+  );
 
   bool CreateDir = true;
 
@@ -1627,11 +1605,9 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
         }
       }
 
-      FILE_OPERATION_LOOP_BEGIN
-      {
-        FindOK = (::FindNextChecked(SearchRec) == 0);
-      )
       FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+        FindOK = (::FindNextChecked(SearchRec) == 0);
+      );
     }
   }
 
@@ -1684,11 +1660,9 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
-      FILE_OPERATION_LOOP_BEGIN
-      {
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~faArchive) == 0);
-      )
       FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~faArchive) == 0);
+      );
     }
   }
 }
@@ -3292,7 +3266,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     switch (Data.VerificationResult)
     {
       case X509_V_OK:
-        VerificationResult = -1;
+        VerificationResult = true;
         break;
       case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
         VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_GET_ISSUER_CERT);
@@ -3384,7 +3358,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     if (!VerifyCertificateHostName(Data))
     {
       VerificationResult = false;
-      AddToList(Summary, FMTLOAD(CERT_NAME_MISMATCH, (FTerminal->SessionData->HostNameExpanded)), L"\n\n");
+      AddToList(Summary, FMTLOAD(CERT_NAME_MISMATCH, FTerminal->GetSessionData()->GetHostNameExpanded().c_str()), L"\n\n");
     }
 
     if (VerificationResult)
@@ -3410,7 +3384,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
     if (RequestResult == 0)
     {
-      if (FTerminal->VerifyCertificate(CertificateStorageKey,
+      if (FTerminal->VerifyCertificate(FtpsCertificateStorageKey,
             FSessionInfo.CertificateFingerprint, CertificateSubject, Data.VerificationResult))
       {
         RequestResult = 1;
@@ -3462,7 +3436,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       if (RequestResult == 2)
       {
         FTerminal->CacheCertificate(
-          CertificateStorageKey, FSessionInfo.CertificateFingerprint, Data.VerificationResult);
+          FtpsCertificateStorageKey, FSessionInfo.CertificateFingerprint, Data.VerificationResult);
       }
     }
 
