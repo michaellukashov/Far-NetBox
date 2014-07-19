@@ -84,7 +84,7 @@ public:
   void SetTryFtpWhenSshFails(bool Value);
   bool GetCollectUsage() const;
   void SetCollectUsage(bool);
-  bool GetIsUnofficial();
+  bool GetIsUnofficial() const;
 
 public:
   virtual TStorage GetStorage();

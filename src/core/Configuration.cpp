@@ -691,7 +691,7 @@ void * TConfiguration::GetApplicationInfo() const
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileProductName(const UnicodeString & AFileName) const
 {
-  return GetFileInfoString(L"ProductName", AFileName);
+  return GetFileFileInfoString(L"ProductName", AFileName);
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileCompanyName(const UnicodeString & AFileName) const
@@ -712,12 +712,12 @@ UnicodeString TConfiguration::GetCompanyName() const
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileProductVersion(const UnicodeString & AFileName) const
 {
-  return TrimVersion(GetFileInfoString(L"ProductVersion", AFileName));
+  return TrimVersion(GetFileFileInfoString(L"ProductVersion", AFileName));
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileDescription(const UnicodeString & AFileName)
 {
-  return GetFileInfoString(L"FileDescription", AFileName);
+  return GetFileFileInfoString(L"FileDescription", AFileName);
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetProductVersion() const
@@ -725,7 +725,7 @@ UnicodeString TConfiguration::GetProductVersion() const
   return GetFileProductVersion(L"");
 }
 //---------------------------------------------------------------------------
-bool TConfiguration::GetIsUnofficial()
+bool TConfiguration::GetIsUnofficial() const
 {
   #ifdef BUILD_OFFICIAL
   return false;
@@ -734,30 +734,19 @@ bool TConfiguration::GetIsUnofficial()
   #endif
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::TrimVersion(const UnicodeString & Version) const
-{
-  UnicodeString Result = Version;
-  while ((Result.Pos(L".") != Result.LastDelimiter(L".")) &&
-    (Result.SubString(Result.Length() - 1, 2) == L".0"))
-  {
-    Result.SetLength(Result.Length() - 2);
-  }
-  return Result;
-}
-//---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetVersionStr() const
 {
   TGuard Guard(&FCriticalSection);
   try
   {
-    /*TVSFixedFileInfo * Info = GetFixedApplicationInfo();
-    return FMTLOAD(VERSION,
+    TVSFixedFileInfo * Info = GetFixedApplicationInfo();
+    /*return FMTLOAD(VERSION,
       HIWORD(Info->dwFileVersionMS),
       LOWORD(Info->dwFileVersionMS),
       HIWORD(Info->dwFileVersionLS),
       LOWORD(Info->dwFileVersionLS));*/
     UnicodeString BuildStr;
-    if (!IsUnofficial)
+    if (!GetIsUnofficial())
     {
       BuildStr = LoadStr(VERSION_BUILD);
     }
@@ -770,23 +759,23 @@ UnicodeString TConfiguration::GetVersionStr() const
       #endif
     }
 
-    int Build = LOWORD(FixedApplicationInfo->dwFileVersionLS);
+    int Build = LOWORD(Info->dwFileVersionLS);
     if (Build > 0)
     {
       BuildStr += L" " + IntToStr(Build);
     }
 
-    #ifndef BUILD_OFFICIAL
-    UnicodeString BuildDate = __DATE__;
-    UnicodeString MonthStr = CutToChar(BuildDate, L' ', true);
-    int Month = ParseShortEngMonthName(MonthStr);
-    int Day = StrToInt(CutToChar(BuildDate, L' ', true));
-    int Year = StrToInt(Trim(BuildDate));
-    UnicodeString DateStr = FORMAT(L"%d-%2.2d-%2.2d", (Year, Month, Day));
-    AddToList(BuildStr, DateStr, L" ");
-    #endif
+//    #ifndef BUILD_OFFICIAL
+//    UnicodeString BuildDate = __DATE__;
+//    UnicodeString MonthStr = CutToChar(BuildDate, L' ', true);
+//    int Month = ParseShortEngMonthName(MonthStr);
+//    int Day = StrToInt64(CutToChar(BuildDate, L' ', true));
+//    int Year = StrToInt64(Trim(BuildDate));
+//    UnicodeString DateStr = FORMAT(L"%d-%2.2d-%2.2d", Year, Month, Day);
+//    AddToList(BuildStr, DateStr, L" ");
+//    #endif
 
-    UnicodeString Result = FMTLOAD(VERSION2, (Version, BuildStr));
+    UnicodeString Result = FMTLOAD(VERSION2, GetVersion(), BuildStr.c_str());
 
     #ifndef BUILD_OFFICIAL
     Result += L" " + LoadStr(VERSION_DONT_DISTRIBUTE);
@@ -823,7 +812,7 @@ UnicodeString TConfiguration::GetVersion() const
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & AKey,
+UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
   const UnicodeString & AFileName, bool AllowEmpty) const
 {
   TGuard Guard(&FCriticalSection);
@@ -853,14 +842,14 @@ UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & AKey,
   }
   else
   {
-    assert(!FileName.IsEmpty());
+    assert(!AFileName.IsEmpty());
   }
   return Result;
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key) const
 {
-  return GetFileInfoString(Key, L"");
+  return GetFileFileInfoString(Key, L"");
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetRegistryStorageKey() const
