@@ -63,7 +63,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
       {
         try
         {
-          N = Sysutils::StrToInt(Name.SubString(P + 1, Name.Length() - P - 1));
+          N = Sysutils::StrToInt64(Name.SubString(P + 1, Name.Length() - P - 1));
           Name.Delete(P, Name.Length() - P + 1);
           SetName(Name.TrimRight());
         }
