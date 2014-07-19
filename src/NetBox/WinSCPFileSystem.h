@@ -253,7 +253,7 @@ private:
   void TerminalReadDirectory(TObject * Sender, bool ReloadOnly);
   void TerminalStartReadDirectory(TObject * Sender);
   void TerminalReadDirectoryProgress(TObject * Sender, intptr_t Progress,
-    bool & Cancel);
+    intptr_t ResolvedLinks, bool & Cancel);
   void TerminalInformation(TTerminal * Terminal,
     const UnicodeString & Str, bool Status, intptr_t Phase);
   void TerminalQueryUser(TObject * Sender,
@@ -277,7 +277,7 @@ private:
   BOOL TerminalRemoveLocalDirectory(const UnicodeString & LocalDirName);
   BOOL TerminalCreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
   void OperationProgress(
-    TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
+    TFileOperationProgressType & ProgressData);
   void OperationFinished(TFileOperation Operation,
     TOperationSide Side, bool DragDrop, const UnicodeString & AFileName, bool Success,
     TOnceDoneOperation & DisconnectWhenComplete);
