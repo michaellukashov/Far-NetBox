@@ -12505,7 +12505,7 @@ void TWebDAVFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
   assert(false);
 }
 //------------------------------------------------------------------------------
-bool TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & AFileName,
+bool TWebDAVFileSystem::ConfirmOverwrite(const UnicodeString & AFullFileName, UnicodeString & AFileName,
   TFileOperationProgressType * OperationProgress,
   const TOverwriteFileParams * FileParams,
   const TCopyParamType * CopyParam, intptr_t Params,
