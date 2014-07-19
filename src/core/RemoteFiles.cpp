@@ -2,8 +2,8 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include "Common.h"
 #include "RemoteFiles.h"
+#include "Common.h"
 
 #include <SysUtils.hpp>
 #include <StrUtils.hpp>
