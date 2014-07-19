@@ -237,13 +237,14 @@ public:
   {
     if (OnReadDirectoryProgress != nullptr)
     {
-      OnReadDirectoryProgress(Sender, Progress, Cancel);
+      OnReadDirectoryProgress(Sender, Progress, ResolvedLinks, Cancel);
     }
   }
 
   TReadDirectoryProgressEvent OnReadDirectoryProgress;
   TObject * Sender;
   intptr_t Progress;
+  intptr_t ResolvedLinks;
   bool Cancel;
 };
 //---------------------------------------------------------------------------
@@ -290,8 +291,7 @@ protected:
   void OperationFinished(TFileOperation Operation, TOperationSide Side,
     bool Temp, const UnicodeString & AFileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
-  void OperationProgress(TFileOperationProgressType & ProgressData,
-    TCancelStatus & Cancel);
+  void OperationProgress(TFileOperationProgressType & ProgressData);
 };
 //---------------------------------------------------------------------------
 // TSignalThread
@@ -307,7 +307,7 @@ int TSimpleThread::ThreadProc(void * Thread)
   catch (...)
   {
     // we do not expect thread to be terminated with exception
-    assert(false);
+    FAIL;
   }
   SimpleThread->FFinished = true;
   SimpleThread->Finished();
@@ -620,6 +620,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
   if (!FTerminated)
   {
     bool Empty;
+    bool EmptyButMonitored;
     bool Monitored;
     {
       TGuard Guard(&FItemsSection);
@@ -644,19 +645,24 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
         SAFE_DESTROY(Item);
       }
 
-      Empty = true;
+      EmptyButMonitored = true;
       Index = 0;
-      while (Empty && (Index < FItems->GetCount()))
+      while (EmptyButMonitored && (Index < FItems->GetCount()))
       {
-        Empty = (GetItem(FItems, Index)->GetCompleteEvent() != INVALID_HANDLE_VALUE);
+        EmptyButMonitored = (GetItem(FItems, Index)->GetCompleteEvent() != INVALID_HANDLE_VALUE);
         Index++;
       }
+      Empty = (FItems->Count == 0);
     }
 
     DoListUpdate();
-    // report empty, if queue is empty or only monitored items are pending.
+    // report empty but/except for monitored, if queue is empty or only monitored items are pending.
     // do not report if current item was the last, but was monitored.
-    if (!Monitored && Empty)
+    if (!Monitored && EmptyButMonitored)
+    {
+      DoEvent(qeEmptyButMonitored);
+    }
+    if (Empty)
     {
       DoEvent(qeEmpty);
     }
@@ -1459,7 +1465,7 @@ void TTerminalItem::TerminalPromptUser(TTerminal * Terminal,
   if (FItem == nullptr)
   {
     // sanity, should not occur
-    assert(false);
+    FAIL;
     Result = false;
   }
   else
@@ -1509,7 +1515,7 @@ void TTerminalItem::OperationFinished(TFileOperation /*Operation*/,
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::OperationProgress(
-  TFileOperationProgressType & ProgressData, TCancelStatus & Cancel)
+  TFileOperationProgressType & ProgressData)
 {
   if (FPause && !FTerminated && !FCancel)
   {
@@ -1535,11 +1541,11 @@ void TTerminalItem::OperationProgress(
   {
     if (ProgressData.TransferingFile)
     {
-      Cancel = csCancelTransfer;
+      ProgressData.Cancel = csCancelTransfer;
     }
     else
     {
-      Cancel = csCancel;
+      ProgressData.Cancel = csCancel;
     }
   }
 
@@ -2011,8 +2017,8 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
   {
     if (FLAGSET(Params, cpTemporary))
     {
-      FInfo->Source = "";
-      FInfo->ModifiedLocal = "";
+      FInfo->Source = L"";
+      FInfo->ModifiedLocal = L"";
     }
     else
     {
@@ -2575,11 +2581,12 @@ void TTerminalThread::TerminalStartReadDirectory(TObject * Sender)
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalReadDirectoryProgress(
-  TObject * Sender, intptr_t Progress, bool & Cancel)
+  TObject * Sender, intptr_t Progress, int ResolvedLinks, bool & Cancel)
 {
   TReadDirectoryProgressAction Action(FOnReadDirectoryProgress);
   Action.Sender = Sender;
   Action.Progress = Progress;
+  Action.ResolvedLinks = ResolvedLinks;
   Action.Cancel = Cancel;
 
   WaitForUserAction(&Action);

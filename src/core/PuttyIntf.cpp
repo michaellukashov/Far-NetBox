@@ -174,7 +174,7 @@ int get_userpass_input(prompts_t * p, uint8_t * in, int inlen)
 char * get_ttymode(void * /*frontend*/, const char * /*mode*/)
 {
   // should never happen when Config.nopty == TRUE
-  assert(false);
+  FAIL;
   return nullptr;
 }
 //---------------------------------------------------------------------------
@@ -283,7 +283,7 @@ int askappend(void * /*frontend*/, Filename * /*filename*/,
   void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
   // this is called from logging.c of putty, which is never used with WinSCP
-  assert(false);
+  FAIL;
   return 0;
 }
 //---------------------------------------------------------------------------
@@ -300,7 +300,7 @@ void ldisc_send(void * /*handle*/, char * /*buf*/, int len, int /*interactive*/)
 void agent_schedule_callback(void (* /*callback*/)(void *, void *, int),
   void * /*callback_ctx*/, void * /*data*/, int /*len*/)
 {
-  assert(false);
+  FAIL;
 }
 //---------------------------------------------------------------------------
 void notify_remote_exit(void * /*frontend*/)
@@ -422,6 +422,8 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
   unsigned long * Type, uint8_t * Data, unsigned long * DataSize)
 {
   long R;
+  assert(GetConfiguration() != nullptr);
+
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
   AnsiString Value;
   if (Storage == nullptr)
@@ -433,7 +435,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
     }
     else
     {
-      assert(false);
+      FAIL;
       R = ERROR_READ_FAULT;
     }
   }
