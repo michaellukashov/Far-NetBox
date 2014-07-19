@@ -954,7 +954,7 @@ void CAsyncSslSocketLayer::ResetSslSession()
 			if (iter->second <= 1)
 			{
 				SSL_CTX_free(m_ssl_ctx);
-				m_contextRefCount.erase(iter);
+				m_contextRefCount.erase(m_ssl_ctx);
 			}
 			else
 				iter->second--;
@@ -1463,7 +1463,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
 					int maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
 
 					USES_CONVERSION;
-					_tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), A2CT(pOBJ_nid2sn(OBJ_obj2nid(pObject))), maxlen);
+					_tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), A2CT(OBJ_nid2sn(OBJ_obj2nid(pObject))), maxlen);
 
 					maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
 					_tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), _T("="), maxlen);
@@ -1776,7 +1776,7 @@ int CAsyncSslSocketLayer::verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
      * Retrieve the pointer to the SSL of the connection currently treated
      * and the application specific data stored into the SSL object.
      */
-    ssl = (SSL *)X509_STORE_CTX_get_ex_data(ctx, pSSL_get_ex_data_X509_STORE_CTX_idx());
+    ssl = (SSL *)X509_STORE_CTX_get_ex_data(ctx, SSL_get_ex_data_X509_STORE_CTX_idx());
 
 	// Lookup CAsyncSslSocketLayer instance
 	CAsyncSslSocketLayer *pLayer = 0;
@@ -1833,7 +1833,7 @@ BOOL CAsyncSslSocketLayer::SetCertStorage(CString file)
 void CAsyncSslSocketLayer::OnClose(int nErrorCode)
 {
 	m_onCloseCalled = true;
-	if (m_bUseSSL && BIO_ctrl)
+	if (m_bUseSSL && &BIO_ctrl)
 	{
 		size_t pending = BIO_ctrl_pending(m_sslbio);
 		if (pending > 0)
