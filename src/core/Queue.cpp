@@ -2581,7 +2581,7 @@ void TTerminalThread::TerminalStartReadDirectory(TObject * Sender)
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalReadDirectoryProgress(
-  TObject * Sender, intptr_t Progress, int ResolvedLinks, bool & Cancel)
+  TObject * Sender, intptr_t Progress, intptr_t ResolvedLinks, bool & Cancel)
 {
   TReadDirectoryProgressAction Action(FOnReadDirectoryProgress);
   Action.Sender = Sender;

@@ -2000,7 +2000,7 @@ void TTerminal::DoStartReadDirectory()
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::DoReadDirectoryProgress(intptr_t Progress, int ResolvedLinks, bool & Cancel)
+void TTerminal::DoReadDirectoryProgress(intptr_t Progress, intptr_t ResolvedLinks, bool & Cancel)
 {
   if (FReadingCurrentDirectory && (FOnReadDirectoryProgress != nullptr))
   {
