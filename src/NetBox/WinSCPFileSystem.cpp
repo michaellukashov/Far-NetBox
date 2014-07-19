@@ -2004,6 +2004,7 @@ void TWinSCPFileSystem::OpenSessionInPutty()
 {
   assert(Connected());
   ::OpenSessionInPutty(GetGUIConfiguration()->GetPuttyPath(), GetSessionData(),
+    GetSessionData()->GetUserNameExpanded(),
     GetGUIConfiguration()->GetPuttyPassword() ? GetTerminal()->GetPassword() : UnicodeString());
 }
 //------------------------------------------------------------------------------
