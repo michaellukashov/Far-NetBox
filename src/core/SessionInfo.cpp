@@ -902,7 +902,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       DeleteUnnecessary();
       EndUpdate();
     };
-#define ADSTR(S) DoAdd(llMessage, S, DoAddToSelf);
+#define ADSTR(S) DoAdd(llMessage, S, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
 #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
     if (Data == nullptr)
     {
@@ -955,7 +955,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
           Data->GetUserNameExpanded().c_str(), BooleanToEngStr(!Data->GetPassword().IsEmpty()).c_str(),
            BooleanToEngStr(!Data->GetPublicKeyFile().IsEmpty()).c_str())
       }
-      if (Data->UsesSsh)
+      if (Data->GetUsesSsh())
       {
         ADF(L"Tunnel: %s", BooleanToEngStr(Data->GetTunnel()).c_str());
         if (Data->GetTunnel())
@@ -973,7 +973,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"Transfer Protocol: %s", Data->GetFSProtocolStr().c_str());
       ADF(L"Code Page: %d", Data->GetCodePageAsNumber());
       wchar_t * PingTypes = L"-NC";
-      if (Data->UsesSsh || (Data->FSProtocol == fsFTP))
+      if (Data->GetUsesSsh() || (Data->GetFSProtocol() == fsFTP))
       {
         TPingType PingType;
         intptr_t PingInterval;
@@ -1009,7 +1009,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
           ADF(L"Local command: %s", Data->GetProxyLocalCommand().c_str());
         }
       }
-      if (Data->UsesSsh || (Data->FSProtocol == fsFTP))
+      if (Data->GetUsesSsh() || (Data->GetFSProtocol() == fsFTP))
       {
         ADF(L"Send buffer: %d", Data->GetSendBuf());
       }
@@ -1050,7 +1050,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
            BooleanToEngStr(Data->GetIgnoreLsWarnings()).c_str(),
            BooleanToEngStr(Data->GetScp1Compatibility()).c_str());
       }
-      if (Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly))
+      if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly))
       {
         UnicodeString Bugs;
         for (int Index = 0; Index < SFTP_BUG_COUNT; Index++)
@@ -1110,13 +1110,13 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       //intptr_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
       //ADF(L"DST mode: %d; Timezone offset: %dh %dm", static_cast<int>(Data->GetDSTMode()), (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour));
       UnicodeString TimeInfo;
-      if ((Data->FSProtocol == fsSFTP) || (Data->FSProtocol == fsSFTPonly) || (Data->FSProtocol == fsSCPonly) || (Data->FSProtocol == fsWebDAV))
+      if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly) || (Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsWebDAV))
       {
-        AddToList(TimeInfo, FORMAT("DST mode: %d", int(Data->DSTMode)), L";");
+        AddToList(TimeInfo, FORMAT("DST mode: %d", int(Data->GetDSTMode())), L";");
       }
-      if ((Data->FSProtocol == fsSCPonly) || (Data->FSProtocol == fsFTP))
+      if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
       {
-        int TimeDifferenceMin = TimeToMinutes(Data->TimeDifference);
+        int TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
         AddToList(TimeInfo, FORMAT("Timezone offset: %dh %dm", (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour)), L";");
       }
       ADSTR(TimeInfo);

@@ -648,7 +648,7 @@ public:
   bool IsWorkspace(const UnicodeString & Name);
   TSessionData * ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
     UnicodeString * FileName = nullptr, bool * ProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr);
-  bool IsUrl(const UnicodeString & Url) const;
+  bool IsUrl(const UnicodeString & Url);
   bool CanLogin(TSessionData * Data);
   void GetFolderOrWorkspace(const UnicodeString & Name, TList * List);
   TStrings * GetFolderOrWorkspaceList(const UnicodeString & Name);
