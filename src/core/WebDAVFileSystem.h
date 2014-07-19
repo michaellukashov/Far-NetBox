@@ -74,7 +74,6 @@ public:
     const UnicodeString & NewName);
   virtual void CopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
-  virtual UnicodeString FileUrl(const UnicodeString & AFileName) const;
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable);
@@ -157,7 +156,7 @@ protected:
   void WebDAVDirectorySource(const UnicodeString & DirectoryName,
     const UnicodeString & TargetDir, uintptr_t Attrs, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
-  bool ConfirmOverwrite(UnicodeString & AFileName,
+  bool ConfirmOverwrite(const UnicodeString & AFullFileName, UnicodeString & AFileName,
     TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams,
     const TCopyParamType * CopyParam, intptr_t Params,
@@ -215,5 +214,9 @@ private:
   apr_pool_t * webdav_pool;
   webdav::session_t * FSession;
 };
+
+//------------------------------------------------------------------------------
+void NeonInitialize();
+void NeonFinalize();
 
 #endif

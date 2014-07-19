@@ -12,7 +12,7 @@ char * EOLToStr(TEOLType EOLType)
     case eolLF: return "\n";
     case eolCRLF: return "\r\n";
     case eolCR: return "\r";
-    default: assert(false); return "";
+    default: FAIL; return "";
   }
 }
 //---------------------------------------------------------------------------

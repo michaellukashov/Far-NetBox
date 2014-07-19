@@ -67,9 +67,9 @@ enum TKex
 enum TSshBug
 {
   sbIgnore1, sbPlainPW1, sbRSA1, sbHMAC2, sbDeriveKey2, sbRSAPad2,
-  sbPKSessID2, sbRekey2, sbMaxPkt2, sbIgnore2
+  sbPKSessID2, sbRekey2, sbMaxPkt2, sbIgnore2, sbWinAdj
 };
-#define BUG_COUNT (sbIgnore2+1)
+#define BUG_COUNT (sbWinAdj+1)
 enum TSftpBug
 {
   sbSymlink,
@@ -108,6 +108,7 @@ extern const intptr_t FtpsImplicitPortNumber;
 extern const intptr_t HTTPPortNumber;
 extern const intptr_t HTTPSPortNumber;
 extern const intptr_t TelnetPortNumber;
+extern const intptr_t ProxyPortNumber;
 extern const UnicodeString PuttySshProtocol;
 extern const UnicodeString PuttyTelnetProtocol;
 extern const UnicodeString SftpProtocol;
@@ -118,6 +119,10 @@ extern const UnicodeString WebDAVProtocol;
 extern const UnicodeString WebDAVSProtocol;
 extern const UnicodeString ProtocolSeparator;
 extern const UnicodeString WinSCPProtocolPrefix;
+extern const wchar_t UrlParamSeparator;
+extern const wchar_t UrlParamValueSeparator;
+extern const UnicodeString UrlHostKeyParamName;
+extern const UnicodeString UrlSaveParamName;
 //---------------------------------------------------------------------------
 struct TIEProxyConfig : public TObject
 {
@@ -171,6 +176,8 @@ public:
   TKex GetKex(intptr_t Index) const;
   void SetPublicKeyFile(const UnicodeString & Value);
   void SetPuttyProtocol(const UnicodeString & Value);
+  UnicodeString GetPassphrase() const;
+  void SetPassphrase(const UnicodeString & Value);
 
   void SetProtocolStr(const UnicodeString & Value);
   UnicodeString GetProtocolStr() const;
@@ -184,6 +191,7 @@ public:
   bool HasSessionName() const;
   UnicodeString GetDefaultSessionName() const;
   UnicodeString GetSessionUrl() const;
+  UnicodeString GetProtocolUrl() const;
   // void SetProtocol(TProtocol Value);
   void SetFSProtocol(TFSProtocol Value);
   UnicodeString GetFSProtocolStr() const;
@@ -253,6 +261,7 @@ public:
   void SetSslSessionReuse(bool Value);
   UnicodeString GetStorageKey() const;
   UnicodeString GetInternalStorageKey() const;
+  UnicodeString GetSiteKey() const;
   void SetDSTMode(TDSTMode Value);
   void SetDeleteToRecycleBin(bool Value);
   void SetOverwrittenToRecycleBin(bool Value);
@@ -279,7 +288,7 @@ public:
   void SetFtpAccount(const UnicodeString & Value);
   void SetFtpPingInterval(intptr_t Value);
   void SetFtpPingType(TPingType Value);
-  void SetFtpTransferActiveImmediatelly(bool Value);
+  void SetFtpTransferActiveImmediately(bool Value);
   void SetFtps(TFtps Value);
   void SetMinTlsVersion(TTlsVersion Value);
   void SetMaxTlsVersion(TTlsVersion Value);
@@ -288,6 +297,8 @@ public:
   // void SetIsWorkspace(bool Value);
   // void SetLink(const UnicodeString & Value);
   void SetHostKey(const UnicodeString & Value);
+  UnicodeString GetNote() const { return FNote; }
+  void SetNote(const UnicodeString & Value);
   TDateTime GetTimeoutDT();
   void SavePasswords(THierarchicalStorage * Storage, bool PuttyExport);
   UnicodeString GetLocalName() const;
@@ -317,7 +328,9 @@ public:
   void SaveRecryptedPasswords(THierarchicalStorage * Storage);
   void RecryptPasswords();
   bool HasPassword() const;
+  bool HasAnySessionPassword() const;
   bool HasAnyPassword() const;
+  void ClearSessionPasswords();
   void Remove();
   void CacheHostKeyIfNotCached();
   virtual void Assign(const TPersistent * Source);
@@ -333,6 +346,7 @@ public:
   bool IsInFolderOrWorkspace(const UnicodeString & Name) const;
   static void ValidatePath(const UnicodeString & Path);
   static void ValidateName(const UnicodeString & Name);
+  static UnicodeString MakeValidName(const UnicodeString & Name);
   static UnicodeString ExtractLocalName(const UnicodeString & Name);
   static UnicodeString ExtractFolderName(const UnicodeString & Name);
   static UnicodeString ComposePath(const UnicodeString & Path, const UnicodeString & Name);
@@ -444,7 +458,7 @@ public:
   UnicodeString GetFtpAccount() const { return FFtpAccount; }
   intptr_t GetFtpPingInterval() const { return FFtpPingInterval; }
   TPingType GetFtpPingType() const { return FFtpPingType; }
-  bool GetFtpTransferActiveImmediatelly() const { return FFtpTransferActiveImmediatelly; }
+  bool GetFtpTransferActiveImmediately() const { return FFtpTransferActiveImmediately; }
   TFtps GetFtps() const { return FFtps; }
   TTlsVersion GetMinTlsVersion() const { return FMinTlsVersion; }
   TTlsVersion GetMaxTlsVersion() const { return FMaxTlsVersion; }
@@ -500,6 +514,7 @@ private:
   bool FClearAliases;
   TEOLType FEOLType;
   UnicodeString FPublicKeyFile;
+  UnicodeString FPassphrase;
   TProtocol FProtocol;
   UnicodeString FPuttyProtocol;
   TFSProtocol FFSProtocol;
@@ -576,13 +591,16 @@ private:
   UnicodeString FFtpAccount;
   intptr_t FFtpPingInterval;
   TPingType FFtpPingType;
-  bool FFtpTransferActiveImmediatelly;
+  bool FFtpTransferActiveImmediately;
   TFtps FFtps;
   TTlsVersion FMinTlsVersion;
   TTlsVersion FMaxTlsVersion;
   TAutoSwitch FNotUtf;
+  bool FIsWorkspace;
+  UnicodeString FLink;
   UnicodeString FHostKey;
   bool FOverrideCachedHostKey;
+  UnicodeString FNote;
 
   UnicodeString FOrigHostName;
   intptr_t FOrigPortNumber;
@@ -617,7 +635,7 @@ public:
     bool UseDefaults = false);
   void Save(THierarchicalStorage * Storage, bool All = false);
   void SelectAll(bool Select);
-  void Import(TStoredSessionList * From, bool OnlySelected);
+  void Import(TStoredSessionList * From, bool OnlySelected, TList * Imported);
   void RecryptPasswords(TStrings * RecryptPasswordErrors);
   void SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void Cleanup();
@@ -630,6 +648,7 @@ public:
   bool IsWorkspace(const UnicodeString & Name);
   TSessionData * ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
     UnicodeString * FileName = nullptr, bool * ProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr);
+  bool IsUrl(const UnicodeString & Url);
   bool CanLogin(TSessionData * Data);
   void GetFolderOrWorkspace(const UnicodeString & Name, TList * List);
   TStrings * GetFolderOrWorkspaceList(const UnicodeString & Name);
@@ -669,5 +688,6 @@ UnicodeString GetCodePageAsString(uintptr_t CodePage);
 //---------------------------------------------------------------------------
 UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSessionData * SessionData);
 bool IsSshProtocol(TFSProtocol FSProtocol);
+intptr_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
 //---------------------------------------------------------------------------
 #endif

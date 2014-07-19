@@ -76,13 +76,15 @@ bool FileExistsEx(const UnicodeString & Path)
 }
 //---------------------------------------------------------------------------
 void OpenSessionInPutty(const UnicodeString & PuttyPath,
-  TSessionData * SessionData, const UnicodeString & Password)
+  TSessionData * SessionData, const UnicodeString & UserName, const UnicodeString & Password)
 {
   UnicodeString Program, Params, Dir;
   SplitCommand(PuttyPath, Program, Params, Dir);
   Program = ExpandEnvironmentVariables(Program);
   if (FindFile(Program))
   {
+    Params = ExpandEnvironmentVariables(Params);
+    UnicodeString Password = GetGUIConfiguration()->GetPuttyPassword() ? SessionData->GetPassword() : UnicodeString();
     UnicodeString Psw = Password;
     UnicodeString SessionName;
     std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetConfiguration()->GetPuttySessionsKey()));

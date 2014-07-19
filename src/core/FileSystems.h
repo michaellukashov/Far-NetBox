@@ -74,18 +74,6 @@ public:
   bool AutoResume;
 };
 //---------------------------------------------------------------------------
-struct TClipboardHandler : public TObject
-{
-NB_DECLARE_CLASS(TClipboardHandler)
-public:
-  UnicodeString Text;
-
-  void Copy(TObject * /*Sender*/)
-  {
-    CopyToClipboard(Text.c_str());
-  }
-};
-//---------------------------------------------------------------------------
 struct TOverwriteFileParams : public TObject
 {
 NB_DECLARE_CLASS(TOverwriteFileParams)
@@ -123,6 +111,7 @@ public:
     Confirmed(false)
   {}
   uintptr_t LocalFileAttrs;
+  UnicodeString FileName;
   UnicodeString RemoteFileName;
   TFileOperationProgressType * OperationProgress;
   const TCopyParamType * CopyParam;
@@ -204,7 +193,6 @@ public:
     const UnicodeString & NewName) = 0;
   virtual void CopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName) = 0;
-  virtual UnicodeString FileUrl(const UnicodeString & AFileName) const = 0;
   virtual TStrings * GetFixedPaths() = 0;
   virtual void SpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable) = 0;
