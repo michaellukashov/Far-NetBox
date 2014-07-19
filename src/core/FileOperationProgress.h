@@ -38,7 +38,7 @@ enum TBatchOverwrite
   boResume
 };
 
-DEFINE_CALLBACK_TYPE2(TFileOperationProgressEvent, void,
+DEFINE_CALLBACK_TYPE1(TFileOperationProgressEvent, void,
   TFileOperationProgressType & /* ProgressData */);
 DEFINE_CALLBACK_TYPE6(TFileOperationFinishedEvent, void,
   TFileOperation /* Operation */, TOperationSide /* Side */, bool /* Temp */,
