@@ -302,7 +302,7 @@ protected:
       case laCall: return L"call";
       case laLs: return L"ls";
       case laStat: return L"stat";
-      default: assert(false); return L"";
+      default: FAIL; return L"";
     }
   }
 
@@ -572,7 +572,7 @@ FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * SessionData, b
   FILE * Result;
   UnicodeString ANewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, SessionData));
   // Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
-  Result = _fsopen(W2MB(ANewFileName.c_str()).c_str(),
+  Result = _fsopen(W2MB(ApiPath(ANewFileName).c_str()).c_str(),
     Append ? "a" : "w", SH_DENYWR); // _SH_DENYNO); //
   if (Result != nullptr)
   {
@@ -902,7 +902,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       DeleteUnnecessary();
       EndUpdate();
     };
-    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
+#define ADSTR(S) DoAdd(llMessage, S, DoAddToSelf);
+#define ADF(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
     if (Data == nullptr)
     {
       AddSeparator();
@@ -954,35 +955,41 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
           Data->GetUserNameExpanded().c_str(), BooleanToEngStr(!Data->GetPassword().IsEmpty()).c_str(),
            BooleanToEngStr(!Data->GetPublicKeyFile().IsEmpty()).c_str())
       }
-      ADF(L"Tunnel: %s", BooleanToEngStr(Data->GetTunnel()).c_str());
-      if (Data->GetTunnel())
+      if (Data->UsesSsh)
       {
-        ADF(L"Tunnel: Host name: %s (Port: %d)", Data->GetTunnelHostName().c_str(), Data->GetTunnelPortNumber());
-        if (0)
+        ADF(L"Tunnel: %s", BooleanToEngStr(Data->GetTunnel()).c_str());
+        if (Data->GetTunnel())
         {
-          ADF(L"Tunnel: User name: %s (Password: %s, Key file: %s)",
-            Data->GetTunnelUserName().c_str(), BooleanToEngStr(!Data->GetTunnelPassword().IsEmpty()).c_str(),
-             BooleanToEngStr(!Data->GetTunnelPublicKeyFile().IsEmpty()).c_str());
-            ADF(L"Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
+          ADF(L"Tunnel: Host name: %s (Port: %d)", Data->GetTunnelHostName().c_str(), Data->GetTunnelPortNumber());
+          if (0)
+          {
+            ADF(L"Tunnel: User name: %s (Password: %s, Key file: %s)",
+              Data->GetTunnelUserName().c_str(), BooleanToEngStr(!Data->GetTunnelPassword().IsEmpty()).c_str(),
+               BooleanToEngStr(!Data->GetTunnelPublicKeyFile().IsEmpty()).c_str());
+              ADF(L"Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
+          }
         }
       }
       ADF(L"Transfer Protocol: %s", Data->GetFSProtocolStr().c_str());
       ADF(L"Code Page: %d", Data->GetCodePageAsNumber());
       wchar_t * PingTypes = L"-NC";
-      TPingType PingType;
-      intptr_t PingInterval;
-      if (Data->GetFSProtocol() == fsFTP)
+      if (Data->UsesSsh || (Data->FSProtocol == fsFTP))
       {
-        PingType = Data->GetFtpPingType();
-        PingInterval = Data->GetFtpPingInterval();
+        TPingType PingType;
+        intptr_t PingInterval;
+        if (Data->GetFSProtocol() == fsFTP)
+        {
+          PingType = Data->GetFtpPingType();
+          PingInterval = Data->GetFtpPingInterval();
+        }
+        else
+        {
+          PingType = Data->GetPingType();
+          PingInterval = Data->GetPingInterval();
+        }
+        ADF(L"Ping type: %s, Ping interval: %d sec; Timeout: %d sec",
+          UnicodeString(PingTypes[PingType]).c_str(), PingInterval, Data->GetTimeout());
       }
-      else
-      {
-        PingType = Data->GetPingType();
-        PingInterval = Data->GetPingInterval();
-      }
-      ADF(L"Ping type: %s, Ping interval: %d sec; Timeout: %d sec",
-        UnicodeString(PingTypes[PingType]).c_str(), PingInterval, Data->GetTimeout());
       TProxyMethod ProxyMethod = Data->GetProxyMethod();
       ADF(L"Proxy: %s",
         (Data->GetFtpProxyLogonType() != 0) ?
@@ -1002,7 +1009,10 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
           ADF(L"Local command: %s", Data->GetProxyLocalCommand().c_str());
         }
       }
-      ADF(L"Send buffer: %d", Data->GetSendBuf());
+      if (Data->UsesSsh || (Data->FSProtocol == fsFTP))
+      {
+        ADF(L"Send buffer: %d", Data->GetSendBuf());
+      }
       wchar_t const * BugFlags = L"+-A";
       if (Data->GetUsesSsh())
       {
@@ -1040,7 +1050,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
            BooleanToEngStr(Data->GetIgnoreLsWarnings()).c_str(),
            BooleanToEngStr(Data->GetScp1Compatibility()).c_str());
       }
-      if (Data->GetFSProtocol() == fsSFTP)
+      if (Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly))
       {
         UnicodeString Bugs;
         for (int Index = 0; Index < SFTP_BUG_COUNT; Index++)
@@ -1084,9 +1094,9 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
           ADF(L"TLS/SSL versions: %s-%s", GetTlsVersionName(Data->GetMinTlsVersion()).c_str(), GetTlsVersionName(Data->GetMaxTlsVersion()).c_str());
         }
         // kind of hidden option, so do not reveal it unless it is set
-        if (Data->GetFtpTransferActiveImmediatelly())
+        if (Data->GetFtpTransferActiveImmediately())
         {
-          ADF(L"Transfer active immediatelly: %s", BooleanToEngStr(Data->GetFtpTransferActiveImmediatelly()).c_str());
+          ADF(L"Transfer active immediately: %s", BooleanToEngStr(Data->GetFtpTransferActiveImmediately()).c_str());
         }
       }
       ADF(L"Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
@@ -1097,8 +1107,19 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"Cache directory changes: %s, Permanent: %s",
          BooleanToEngStr(Data->GetCacheDirectoryChanges()).c_str(),
          BooleanToEngStr(Data->GetPreserveDirectoryChanges()).c_str());
-      intptr_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
-      ADF(L"DST mode: %d; Timezone offset: %dh %dm", static_cast<int>(Data->GetDSTMode()), (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour));
+      //intptr_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
+      //ADF(L"DST mode: %d; Timezone offset: %dh %dm", static_cast<int>(Data->GetDSTMode()), (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour));
+      UnicodeString TimeInfo;
+      if ((Data->FSProtocol == fsSFTP) || (Data->FSProtocol == fsSFTPonly) || (Data->FSProtocol == fsSCPonly) || (Data->FSProtocol == fsWebDAV))
+      {
+        AddToList(TimeInfo, FORMAT("DST mode: %d", int(Data->DSTMode)), L";");
+      }
+      if ((Data->FSProtocol == fsSCPonly) || (Data->FSProtocol == fsFTP))
+      {
+        int TimeDifferenceMin = TimeToMinutes(Data->TimeDifference);
+        AddToList(TimeInfo, FORMAT("Timezone offset: %dh %dm", (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour)), L";");
+      }
+      ADSTR(TimeInfo);
 
       if (Data->GetFSProtocol() == fsWebDAV)
       {
@@ -1109,7 +1130,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       AddSeparator();
     }
 
-    #undef ADF
+#undef ADF
+#undef ADSTR
   }
 }
 //---------------------------------------------------------------------------
