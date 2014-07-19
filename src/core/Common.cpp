@@ -2044,7 +2044,6 @@ uintptr_t CancelAnswer(uintptr_t Answers)
   }
   else
   {
-    //assert(false);
     FAIL;
     Result = qaCancel;
   }
