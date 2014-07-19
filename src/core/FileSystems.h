@@ -74,18 +74,6 @@ public:
   bool AutoResume;
 };
 //---------------------------------------------------------------------------
-struct TClipboardHandler : public TObject
-{
-NB_DECLARE_CLASS(TClipboardHandler)
-public:
-  UnicodeString Text;
-
-  void Copy(TObject * /*Sender*/)
-  {
-    CopyToClipboard(Text.c_str());
-  }
-};
-//---------------------------------------------------------------------------
 struct TOverwriteFileParams : public TObject
 {
 NB_DECLARE_CLASS(TOverwriteFileParams)
