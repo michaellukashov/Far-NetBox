@@ -48,7 +48,7 @@ DEFINE_CALLBACK_TYPE3(TProcessFileEvent, void,
   const UnicodeString & /* FileName */, const TRemoteFile * /* File */, void * /* Param */);
 DEFINE_CALLBACK_TYPE4(TProcessFileEventEx, void,
   const UnicodeString & /* FileName */, const TRemoteFile * /* File */, void * /* Param */, intptr_t /* Index */);
-DEFINE_CALLBACK_TYPE2(TFileOperationEvent, int,
+DEFINE_CALLBACK_TYPE2(TFileOperationEvent, intptr_t,
   void * /* Param1 */, void * /* Param2 */);
 DEFINE_CALLBACK_TYPE4(TSynchronizeDirectoryEvent, void,
   const UnicodeString & /* LocalDirectory */, const UnicodeString & /* RemoteDirectory */,

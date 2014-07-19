@@ -1757,12 +1757,10 @@ intptr_t TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
   const UnicodeString & Message, void * Param1, void * Param2)
 {
   assert(CallBackFunc);
-  int Result = 0;
-  FILE_OPERATION_LOOP_BEGIN
-  {
+  intptr_t Result = 0;
+  FILE_OPERATION_LOOP_EX(AllowSkip, Message,
     Result = CallBackFunc(Param1, Param2);
-  }
-  FILE_OPERATION_LOOP_EX(AllowSkip, Message);
+  );
 
   return Result;
 }
@@ -2315,7 +2313,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & AFileName,
     if (Msg.IsEmpty())
     {
       // Side refers to destination side here
-      UnicodeString FileNameOnly = (Side == osRemote) ? ExtractFileName(AFileName) : UnixExtractFileName(AFileName);
+      UnicodeString FileNameOnly = (Side == osRemote) ? ExtractFileName(AFileName, false) : UnixExtractFileName(AFileName);
       Msg = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE2 :
         REMOTE_FILE_OVERWRITE2), FileNameOnly.c_str(), AFileName.c_str());
     }
@@ -4192,14 +4190,12 @@ bool TTerminal::DoCreateFile(const UnicodeString & AFileName,
             FLAGMASK(FLAGSET(LocalFileAttrs, faHidden), FILE_ATTRIBUTE_HIDDEN) |
             FLAGMASK(FLAGSET(LocalFileAttrs, faReadOnly), FILE_ATTRIBUTE_READONLY);
 
-          FILE_OPERATION_LOOP_BEGIN
-          {
+          FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()),
             if (!this->SetLocalFileAttributes(ApiPath(AFileName), LocalFileAttrs & ~(faReadOnly | faHidden)))
             {
               RaiseLastOSError();
             }
-          }
-          FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()));
+          );
         }
         else
         {
@@ -4226,12 +4222,10 @@ bool TTerminal::TerminalCreateFile(const UnicodeString & AFileName,
   assert(OperationProgress);
   assert(AHandle);
   bool Result = true;
-  FILE_OPERATION_LOOP_BEGIN
-  {
+  FILE_OPERATION_LOOP(FMTLOAD(CREATE_FILE_ERROR, AFileName.c_str()),
     Result = DoCreateFile(AFileName, OperationProgress, Resume, NoConfirmation,
       AHandle);
-  )
-  FILE_OPERATION_LOOP(FMTLOAD(CREATE_FILE_ERROR, AFileName.c_str()));
+  );
 
   return Result;
 }
@@ -4246,15 +4240,13 @@ void TTerminal::OpenLocalFile(const UnicodeString & AFileName,
   HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
 
-  FILE_OPERATION_LOOP_BEGIN
-  {
+  FILE_OPERATION_LOOP(FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()),
     LocalFileAttrs = this->GetLocalFileAttributes(ApiPath(AFileName));
     if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
     {
       RaiseLastOSError();
     }
-  )
-  FILE_OPERATION_LOOP(FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()));
+  );
 
   if ((LocalFileAttrs & faDirectory) == 0)
   {
@@ -4266,8 +4258,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & AFileName,
       NoHandle = true;
     }
 
-    FILE_OPERATION_LOOP_BEGIN
-    {
+    FILE_OPERATION_LOOP(FMTLOAD(OPENFILE_ERROR, AFileName.c_str()),
       LocalFileHandle = this->CreateLocalFile(ApiPath(AFileName).c_str(), (DWORD)Access,
         Access == GENERIC_READ ? FILE_SHARE_READ | FILE_SHARE_WRITE : FILE_SHARE_READ,
         OPEN_EXISTING, 0);
@@ -4275,8 +4266,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & AFileName,
       {
         RaiseLastOSError();
       }
-    )
-    FILE_OPERATION_LOOP(FMTLOAD(OPENFILE_ERROR, AFileName.c_str()));
+    );
 
     try
     {
@@ -4287,11 +4277,9 @@ void TTerminal::OpenLocalFile(const UnicodeString & AFileName,
         FILETIME CTime;
 
         // Get last file access and modification time
-        FILE_OPERATION_LOOP_BEGIN
-        {
+        FILE_OPERATION_LOOP(FMTLOAD(CANT_GET_ATTRS, AFileName.c_str()),
           THROWOSIFFALSE(::GetFileTime(LocalFileHandle, &CTime, &ATime, &MTime));
-        )
-        FILE_OPERATION_LOOP(FMTLOAD(CANT_GET_ATTRS, AFileName.c_str()));
+        );
         if (ACTime)
         {
           *ACTime = ::ConvertTimestampToUnixSafe(CTime, GetSessionData()->GetDSTMode());
@@ -4309,8 +4297,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & AFileName,
       if (ASize)
       {
         // Get file size
-        FILE_OPERATION_LOOP_BEGIN
-        {
+        FILE_OPERATION_LOOP(FMTLOAD(CANT_GET_ATTRS, AFileName.c_str()),
           uint32_t LSize;
           DWORD HSize;
           LSize = ::GetFileSize(LocalFileHandle, &HSize);
@@ -4319,8 +4306,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & AFileName,
             RaiseLastOSError();
           }
           *ASize = ((int64_t)(HSize) << 32) + LSize;
-        )
-        FILE_OPERATION_LOOP(FMTLOAD(CANT_GET_ATTRS, AFileName.c_str()));
+        );
       }
 
       if ((AHandle == nullptr) || NoHandle)
@@ -4350,21 +4336,19 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
   const TCopyParamType * CopyParam, TFileOperationProgressType * OperationProgress)
 {
   bool Result = true;
-  TFileOperationProgressType * OperationProgress = GetOperationProgress();
+  //TFileOperationProgressType * OperationProgress = GetOperationProgress();
   // optimization
   if (GetLog()->GetLogging() || !CopyParam->AllowAnyTransfer())
   {
     WIN32_FIND_DATA FindData = {};
     HANDLE Handle = INVALID_HANDLE_VALUE;
-    FILE_OPERATION_LOOP_BEGIN
-    {
+    FILE_OPERATION_LOOP(FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()),
       Handle = ::FindFirstFile(::ExcludeTrailingBackslash(AFileName).c_str(), &FindData);
       if (Handle == INVALID_HANDLE_VALUE)
       {
         RaiseLastOSError();
       }
-    )
-    FILE_OPERATION_LOOP(FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()));
+    );
     ::FindClose(Handle);
     bool Directory = FLAGSET(FindData.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
     TFileMasks::TParams Params;
@@ -4374,7 +4358,7 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
       (static_cast<int64_t>(FindData.nFileSizeHigh) << 32) +
       FindData.nFileSizeLow;
     Params.Modification = ::FileTimeToDateTime(FindData.ftLastWriteTime);
-    if (!CopyParam->AllowTransfer(AFileName, osLocal, Directory, Params);
+    if (!CopyParam->AllowTransfer(AFileName, osLocal, Directory, Params))
     {
       LogEvent(FORMAT(L"File \"%s\" excluded from transfer", AFileName.c_str()));
       Result = false;
@@ -4654,12 +4638,10 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
     Data.LocalFileList->SetSorted(true);
     Data.LocalFileList->SetCaseSensitive(false);
 
-    FILE_OPERATION_LOOP_BEGIN
-    {
+    FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
       DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
       Found = ::FindFirstChecked(Data.LocalDirectory + L"*.*", FindAttrs, SearchRec) == 0;
-    )
-    FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()));
+    );
 
     if (Found)
     {
@@ -4716,11 +4698,9 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
               FormatFileDetailsForLog(FullLocalFileName, Modification, Size).c_str()));
           }
 
-          FILE_OPERATION_LOOP_BEGIN
-          {
+          FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
             Found = (::FindNextChecked(SearchRec) == 0);
-          )
-          FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()));
+          );
         }
       }
 
@@ -4817,11 +4797,12 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
 void TTerminal::SynchronizeCollectFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param)
 {
+  TFileOperationProgressType * OperationProgress = GetOperationProgress();
   try
   {
     DoSynchronizeCollectFile(AFileName, AFile, Param);
   }
-  catch(EScpSkipFile & E)
+  catch(ESkipFile & E)
   {
     TSuspendFileOperationProgress Suspend(OperationProgress);
     if (!HandleException(&E))
@@ -5218,17 +5199,17 @@ void TTerminal::DoSynchronizeProgress(const TSynchronizeData & Data,
 void TTerminal::SynchronizeLocalTimestamp(const UnicodeString & /*FileName*/,
   const TRemoteFile * AFile, void * /*Param*/)
 {
+  TFileOperationProgressType * OperationProgress = GetOperationProgress();
+
   const TChecklistItem * ChecklistItem =
     reinterpret_cast<const TChecklistItem *>(AFile);
 
   UnicodeString LocalFile =
     IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
       ChecklistItem->Local.FileName;
-  FILE_OPERATION_LOOP_BEGIN
-  {
+  FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, LocalFile.c_str()),
     SetLocalFileTime(LocalFile, ChecklistItem->Remote.Modification);
-  }
-  FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, LocalFile.c_str()));
+  );
 }
 //------------------------------------------------------------------------------
 void TTerminal::SynchronizeRemoteTimestamp(const UnicodeString & /*AFileName*/,
@@ -5787,14 +5768,14 @@ bool TTerminal::VerifyCertificate(
 
   UnicodeString CertificateData = FormatCertificateData(Fingerprint, Failures);
 
-  std::unique_ptr<THierarchicalStorage> Storage(Configuration->CreateScpStorage(false));
-  Storage->AccessMode = smRead;
+  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(false));
+  Storage->SetAccessMode(smRead);
 
   if (Storage->OpenSubKey(CertificateStorageKey, false))
   {
-    if (Storage->ValueExists(SessionData->SiteKey))
+    if (Storage->ValueExists(GetSessionData()->GetSiteKey()))
     {
-      UnicodeString CachedCertificateData = Storage->ReadString(SessionData->SiteKey, L"");
+      UnicodeString CachedCertificateData = Storage->ReadString(GetSessionData()->GetSiteKey(), L"");
       if (CertificateData == CachedCertificateData)
       {
         LogEvent(FORMAT(L"Certificate for \"%s\" matches cached fingerprint and failures", CertificateSubject.c_str()));
@@ -5810,7 +5791,7 @@ bool TTerminal::VerifyCertificate(
 
   if (!Result)
   {
-    UnicodeString Buf = SessionData->HostKey;
+    UnicodeString Buf = GetSessionData()->GetHostKey();
     while (!Result && !Buf.IsEmpty())
     {
       UnicodeString ExpectedKey = CutToChar(Buf, L';', false);
@@ -5818,7 +5799,7 @@ bool TTerminal::VerifyCertificate(
       {
         UnicodeString Message = LoadStr(ANY_CERTIFICATE);
         Information(Message, true);
-        Log->Add(llException, Message);
+        GetLog()->Add(llException, Message);
         Result = true;
       }
       else if (ExpectedKey == Fingerprint)
@@ -5837,12 +5818,12 @@ void TTerminal::CacheCertificate(const UnicodeString & CertificateStorageKey,
 {
   UnicodeString CertificateData = FormatCertificateData(Fingerprint, Failures);
 
-  std::unique_ptr<THierarchicalStorage> Storage(Configuration->CreateScpStorage(false));
-  Storage->AccessMode = smReadWrite;
+  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(false));
+  Storage->SetAccessMode(smReadWrite);
 
   if (Storage->OpenSubKey(CertificateStorageKey, true))
   {
-    Storage->WriteString(SessionData->SiteKey, CertificateData);
+    Storage->WriteString(GetSessionData()->GetSiteKey(), CertificateData);
   }
 }
 //------------------------------------------------------------------------------
