@@ -55,12 +55,6 @@ UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & Path, bool Simp
   {
     return Path.SubString(1, Path.Length() - 1);
   }
-/*
-  if ((Path.Length() > 1) && Path.IsDelimiter(L"/", Path.Length()))
-    return Path.SubString(1, Path.Length() - 1);
-  else
-    return Path;
-*/
 }
 //---------------------------------------------------------------------------
 UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & Path)
@@ -68,7 +62,7 @@ UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & Path)
   return ::UnixExcludeTrailingBackslash(Path, true);
 }
 //---------------------------------------------------------------------------
-Boolean UnixComparePaths(const UnicodeString & Path1, const UnicodeString & Path2)
+Boolean UnixSamePath(const UnicodeString & Path1, const UnicodeString & Path2)
 {
   return (::UnixIncludeTrailingBackslash(Path1) == ::UnixIncludeTrailingBackslash(Path2));
 }
@@ -220,9 +214,15 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Pat
     intptr_t P;
     while ((P = Result.Pos(L"/../")) > 0)
     {
-      intptr_t P2 = Result.SubString(1, P - 1).LastDelimiter(L"/\\");
-      if (P2 > 0)
+      // special case, "/../" => "/"
+      if (P == 1)
       {
+        Result = L"/";
+      }
+      else
+      {
+        intptr_t P2 = Result.SubString(1, P-1).LastDelimiter(L"/");
+        assert(P2 > 0);
         Result.Delete(P2, P - P2 + 3);
       }
     }
@@ -396,7 +396,7 @@ TDateTime ReduceDateTimePrecision(const TDateTime & DateTime,
         break;
 
       default:
-        assert(false);
+        FAIL;
     }
 
     Result = EncodeDateVerbose(Y, M, D) + EncodeTimeVerbose(H, N, S, MS);
@@ -453,7 +453,7 @@ UnicodeString ModificationStr(const TDateTime & DateTime,
         EngShortMonthNames[Month-1], Day, Hour, Min);
 
     default:
-      assert(false);
+      FAIL;
       // fall thru
 
     case mfFull:
@@ -1779,7 +1779,7 @@ void TRemoteDirectory::SetIncludeThisDirectory(Boolean Value)
 TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
 {
   SetSorted(true);
-  SetDuplicates(dupError);
+  SetDuplicates(Types::dupError);
   SetCaseSensitive(true);
 }
 //---------------------------------------------------------------------------
