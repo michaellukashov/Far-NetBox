@@ -1398,7 +1398,7 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
     // We know MoreMessages not to be NULL here,
     // AppendExceptionStackTrace should never return true
     // (indicating it had to create the string list)
-    ALWAYS_FALSE(AppendExceptionStackTrace(MoreMessages));
+    //ALWAYS_FALSE(AppendExceptionStackTrace(MoreMessages));
 
     TQueryParams HelpKeywordOverrideParams;
     if (Params != nullptr)
@@ -1500,7 +1500,7 @@ void TTerminal::SaveCapabilities(TFileSystemInfo & FileSystemInfo)
 {
   for (intptr_t Index = 0; Index < fcCount; Index++)
   {
-    FileSystemInfo.IsCapable[Index] = IsCapable[(TFSCapability)Index];
+    FileSystemInfo.IsCapable[Index] = GetIsCapable((TFSCapability)Index);
   }
 }
 //------------------------------------------------------------------------------
@@ -1761,7 +1761,7 @@ intptr_t TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
   FILE_OPERATION_LOOP_BEGIN
   {
     Result = CallBackFunc(Param1, Param2);
-  )
+  }
   FILE_OPERATION_LOOP_EX(AllowSkip, Message);
 
   return Result;
@@ -2315,7 +2315,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & AFileName,
     if (Msg.IsEmpty())
     {
       // Side refers to destination side here
-      UnicodeString FileNameOnly = (Side == osRemote) ? ExtractFileName(FileName) : UnixExtractFileName(AFileName);
+      UnicodeString FileNameOnly = (Side == osRemote) ? ExtractFileName(AFileName) : UnixExtractFileName(AFileName);
       Msg = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE2 :
         REMOTE_FILE_OVERWRITE2), FileNameOnly.c_str(), AFileName.c_str());
     }
@@ -4198,7 +4198,7 @@ bool TTerminal::DoCreateFile(const UnicodeString & AFileName,
             {
               RaiseLastOSError();
             }
-          )
+          }
           FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()));
         }
         else
