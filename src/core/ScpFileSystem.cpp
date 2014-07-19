@@ -1351,6 +1351,7 @@ void TSCPFileSystem::SpaceAvailable(const UnicodeString & /*APath*/,
 // transfer protocol
 //---------------------------------------------------------------------------
 uintptr_t TSCPFileSystem::ConfirmOverwrite(
+  const UnicodeString & AFullFileName,
   const UnicodeString & AFileName, TOperationSide Side,
   const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress)
