@@ -12,7 +12,7 @@ char * EOLToStr(TEOLType EOLType)
     case eolLF: return "\n";
     case eolCRLF: return "\r\n";
     case eolCR: return "\r";
-    default: assert(false); return "";
+    default: FAIL; return "";
   }
 }
 //---------------------------------------------------------------------------
@@ -77,7 +77,7 @@ int64_t TFileBuffer::ReadStream(TStream * Stream, const int64_t Len, bool ForceL
     {
       SetSize(GetSize() - Len + Result);
     }
-    FMemory->Seek(Len, soFromCurrent);
+    FMemory->Seek(Len, soCurrent);
   }
   catch (EReadError &)
   {
@@ -225,7 +225,7 @@ void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
   try
   {
     Stream->WriteBuffer(GetData() + GetPosition(), Len);
-    FMemory->Seek(Len, soFromCurrent);
+    FMemory->Seek(Len, soCurrent);
   }
   catch (EWriteError &)
   {

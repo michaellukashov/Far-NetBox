@@ -12,6 +12,7 @@ bool ExceptionMessage(const Exception * E, UnicodeString & Message);
 bool ExceptionMessageFormatted(const Exception * E, UnicodeString & Message);
 UnicodeString LastSysErrorMessage();
 TStrings * ExceptionToMoreMessages(Exception * E);
+bool IsInternalException(Exception * E);
 //---------------------------------------------------------------------------
 enum TOnceDoneOperation
 {
@@ -30,8 +31,8 @@ public:
   explicit ExtException(Exception * E, int Ident);
   // "copy the exception", just append message to the end
   explicit ExtException(const UnicodeString & Msg, Exception * E, const UnicodeString & HelpKeyword = L"");
-  explicit ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = UnicodeString());
-  explicit ExtException(const UnicodeString & Msg, TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = UnicodeString());
+  explicit ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(const UnicodeString & Msg, TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
   virtual ~ExtException(void) noexcept;
   TStrings * GetMoreMessages() const { return FMoreMessages; }
   UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
