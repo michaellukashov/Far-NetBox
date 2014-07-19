@@ -123,6 +123,7 @@ public:
     Confirmed(false)
   {}
   uintptr_t LocalFileAttrs;
+  UnicodeString FileName;
   UnicodeString RemoteFileName;
   TFileOperationProgressType * OperationProgress;
   const TCopyParamType * CopyParam;
