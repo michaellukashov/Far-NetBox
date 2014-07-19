@@ -77,7 +77,7 @@ int64_t TFileBuffer::ReadStream(TStream * Stream, const int64_t Len, bool ForceL
     {
       SetSize(GetSize() - Len + Result);
     }
-    FMemory->Seek(Len, soCurrent);
+    FMemory->Seek(Len, soFromCurrent);
   }
   catch (EReadError &)
   {
@@ -225,7 +225,7 @@ void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
   try
   {
     Stream->WriteBuffer(GetData() + GetPosition(), Len);
-    FMemory->Seek(Len, soCurrent);
+    FMemory->Seek(Len, soFromCurrent);
   }
   catch (EWriteError &)
   {
