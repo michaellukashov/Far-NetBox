@@ -129,7 +129,7 @@ void CoreInitialize()
   Randomize();
   CryptographyInitialize();
 
-   assert(GetConfiguration() == nullptr);
+  assert(GetConfiguration() != nullptr);
 
   PuttyInitialize();
   #ifndef NO_FILEZILLA
