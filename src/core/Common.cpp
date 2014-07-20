@@ -722,7 +722,7 @@ enum PATH_PREFIX_TYPE
   PPT_LONG_UNICODE_UNC,   //Found \\?\UNC\ prefix
 };
 //---------------------------------------------------------------------------
-static int __fastcall PathRootLength(UnicodeString Path)
+static int PathRootLength(const UnicodeString & Path)
 {
   // Correction for PathSkipRoot API
 
@@ -735,7 +735,7 @@ static int __fastcall PathRootLength(UnicodeString Path)
   return (Buffer != NULL) ? (Buffer - Result.c_str()) : -1;
 }
 //---------------------------------------------------------------------------
-static bool __fastcall PathIsRelative_CorrectedForMicrosoftStupidity(UnicodeString Path)
+static bool PathIsRelative_CorrectedForMicrosoftStupidity(const UnicodeString & Path)
 {
   // Correction for PathIsRelative API
 
@@ -746,7 +746,7 @@ static bool __fastcall PathIsRelative_CorrectedForMicrosoftStupidity(UnicodeStri
   return PathIsRelative(Result.c_str());
 }
 //---------------------------------------------------------------------------
-static int __fastcall GetOffsetAfterPathRoot(UnicodeString Path, PATH_PREFIX_TYPE & PrefixType)
+static int GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_TYPE & PrefixType)
 {
   // Checks if 'pPath' begins with the drive, share, prefix, etc
   // EXAMPLES:
@@ -895,7 +895,7 @@ static int __fastcall GetOffsetAfterPathRoot(UnicodeString Path, PATH_PREFIX_TYP
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall MakeUnicodeLargePath(UnicodeString Path)
+static UnicodeString MakeUnicodeLargePath(const UnicodeString & Path)
 {
   // Convert path from 'into a larger Unicode path, that allows up to 32,767 character length
   UnicodeString Result;
@@ -2044,7 +2044,6 @@ uintptr_t CancelAnswer(uintptr_t Answers)
   }
   else
   {
-    //assert(false);
     FAIL;
     Result = qaCancel;
   }

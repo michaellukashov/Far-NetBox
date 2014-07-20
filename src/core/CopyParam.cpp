@@ -443,7 +443,7 @@ bool TCopyParamType::UseAsciiTransfer(const UnicodeString & AFileName,
     case tmAscii: return true;
     case tmAutomatic: return GetAsciiFileMask().Matches(AFileName, (Side == osLocal),
       false, &Params);
-    default: FAIL; /*assert(false); */ return false;
+    default: FAIL; return false;
   }
 }
 //---------------------------------------------------------------------------
@@ -531,7 +531,7 @@ bool TCopyParamType::AllowResume(int64_t Size) const
     case rsOn: return true;
     case rsOff: return false;
     case rsSmart: return (Size >= GetResumeThreshold());
-    default: FAIL; /* assert(false); */ return false;
+    default: FAIL; return false;
   }
 }
 //---------------------------------------------------------------------------

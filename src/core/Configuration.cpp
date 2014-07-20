@@ -799,7 +799,7 @@ UnicodeString TConfiguration::GetVersion() const
     TVSFixedFileInfo * Info = GetFixedApplicationInfo();
     if (Info)
     {
-      Result = FormatVersion( // FORMAT(L"%d.%d.%d",
+      Result = FormatVersion(
         HIWORD(Info->dwFileVersionMS),
         LOWORD(Info->dwFileVersionMS),
         HIWORD(Info->dwFileVersionLS));
