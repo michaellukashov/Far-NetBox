@@ -1074,7 +1074,7 @@ void TCustomCommandData::Init(
   TSessionData * SessionData, const UnicodeString & AUserName, const UnicodeString & APassword)
 {
   HostName = SessionData->GetHostNameExpanded();
-  UserName = AUserName; // SessionData->GetUserNameExpanded();
+  UserName = AUserName;
   Password = APassword;
 }
 //---------------------------------------------------------------------------
