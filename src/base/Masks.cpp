@@ -130,7 +130,7 @@ int CmpName(const wchar_t *pattern,const wchar_t *str, bool CmpNameSearchMode)
 
 TMask::TMask(const UnicodeString & Mask)
 {
-  FMask = ::ExtractFileExtension(Mask, L'\\');
+  FMask = Mask;
 }
 
 bool TMask::Matches(const UnicodeString & Str)
