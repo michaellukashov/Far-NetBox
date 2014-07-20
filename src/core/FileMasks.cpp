@@ -1194,7 +1194,7 @@ bool TFileCustomCommand::IsFileCommand(const UnicodeString & Command)
 {
   return FindPattern(Command, L'!') || FindPattern(Command, L'&');
 }
-/*//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 bool TFileCustomCommand::IsSiteCommand(const UnicodeString & Command)
 {
   return FindPattern(Command, L'@');
@@ -1205,4 +1205,3 @@ bool TFileCustomCommand::IsPasswordCommand(const UnicodeString & Command)
   return FindPattern(Command, L'p');
 }
 //---------------------------------------------------------------------------
-*/
