@@ -98,11 +98,11 @@ Version 2.0:
 // Details of SSL certificate, can be used by app to verify if certificate is valid
 struct t_SslCertData
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+	CUSTOM_MEM_ALLOCATION_IMPL
 
 	~t_SslCertData()
 	{
-		delete [] certificate;
+		nb_free(certificate);
 	}
 
 	struct t_Contact
