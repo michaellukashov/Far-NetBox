@@ -21,7 +21,7 @@ UnicodeString MungeStr(const UnicodeString & Str, bool ForceAnsi)
   RawByteString Source;
   if (ForceAnsi)
   {
-    Source = AnsiString(W2MB(Str.c_str()).c_str());
+    Source = AnsiString(Str);
   }
   else
   {
@@ -54,7 +54,7 @@ UnicodeString UnMungeStr(const UnicodeString & Str)
   }
   else
   {
-    Result = AnsiString(MB2W(Dest.c_str()).c_str());
+    Result = AnsiString(Dest.c_str());
   }
   return Result;
 }
