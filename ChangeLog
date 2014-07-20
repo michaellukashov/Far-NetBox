@@ -1,6 +1,8 @@
 NetBox 2.1.38.314 ??.07.2014
 --------------------
-  * fix wrong non-ASCII strings encoding/decoding
+  * Bugfix: Filter not working on uploading files on server
+    (http://forum.farmanager.com/viewtopic.php?p=120480#p120480)
+  * Bugfix: non-ASCII session name is corrupted
     (http://forum.farmanager.com/viewtopic.php?p=120841#p120841)
   * Update WinSCP sources to 5.6.0
   * fix issue #111: FTP: High CPU load
