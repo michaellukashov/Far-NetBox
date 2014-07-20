@@ -19,10 +19,8 @@ static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1
 //---------------------------------------------------------------------------
 EFileMasksException::EFileMasksException(
   const UnicodeString & AMessage, intptr_t AErrorStart, intptr_t AErrorLen) :
-  Exception(AMessage)
+  Exception(AMessage), ErrorStart(AErrorStart), ErrorLen(AErrorLen)
 {
-  ErrorStart = AErrorStart;
-  ErrorLen = AErrorLen;
 }
 //---------------------------------------------------------------------------
 UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeString & Mask, bool & Masked)
