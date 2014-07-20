@@ -1650,7 +1650,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
 	// Inspired by ne_ssl_cert_export()
 	// Find the length of the DER encoding.
 	SslCertData.certificateLen = i2d_X509(pX509, NULL);
-	SslCertData.certificate = new unsigned char[SslCertData.certificateLen];
+	SslCertData.certificate = static_cast<unsigned char *>(nb_calloc(1, SslCertData.certificateLen));
 	unsigned char * p = SslCertData.certificate;
 	i2d_X509(pX509, &p);
 
