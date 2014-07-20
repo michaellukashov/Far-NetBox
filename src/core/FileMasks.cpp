@@ -418,7 +418,7 @@ bool TFileMasks::Matches(const UnicodeString & AFileName, bool Directory,
   const UnicodeString & Path, const TParams * Params,
   bool & ImplicitMatch) const
 {
-  bool ImplicitIncludeMatch = (FMasks[MASK_INDEX(Directory, true)].empty());
+  bool ImplicitIncludeMatch = FMasks[MASK_INDEX(Directory, true)].empty();
   bool ExplicitIncludeMatch = MatchesMasks(AFileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, true)], true);
   bool Result =
     (ImplicitIncludeMatch || ExplicitIncludeMatch) &&
@@ -981,28 +981,28 @@ intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, in
   switch (PatternCmd)
   {
     case L'?':
+    {
+      const wchar_t * Ptr = Command.c_str() + Index - 1;
+      const wchar_t * PatternEnd = wcschr(Ptr + 1, L'!');
+      if (PatternEnd == nullptr)
       {
-        const wchar_t * Ptr = Command.c_str() + Index - 1;
-        const wchar_t * PatternEnd = wcschr(Ptr + 1, L'!');
-        if (PatternEnd == nullptr)
-        {
-          throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
-        }
-        Len = PatternEnd - Ptr + 1;
+        throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
       }
-      break;
+      Len = PatternEnd - Ptr + 1;
+    }
+    break;
 
     case L'`':
+    {
+      const wchar_t * Ptr = Command.c_str() + Index - 1;
+      const wchar_t * PatternEnd = wcschr(Ptr + 2, L'`');
+      if (PatternEnd == nullptr)
       {
-        const wchar_t * Ptr = Command.c_str() + Index - 1;
-        const wchar_t * PatternEnd = wcschr(Ptr + 2, L'`');
-        if (PatternEnd == nullptr)
-        {
-          throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
-        }
-        Len = PatternEnd - Ptr + 1;
+        throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
       }
-      break;
+      Len = PatternEnd - Ptr + 1;
+    }
+    break;
 
     default:
       Len = FChildCustomCommand->PatternLen(Command, Index);
