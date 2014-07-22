@@ -14,4 +14,7 @@ void CoreSetResourceModule(void * ResourceHandle);
 void CoreMaintenanceTask();
 TConfiguration * GetConfiguration();
 //---------------------------------------------------------------------------
+UnicodeString NeonVersion();
+UnicodeString ExpatVersion();
+//---------------------------------------------------------------------------
 #endif

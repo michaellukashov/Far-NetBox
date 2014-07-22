@@ -13,6 +13,8 @@
 #include <math.h>
 #include <shlobj.h>
 #include <limits>
+#include <shlwapi.h>
+#include <CoreMain.h>
 //---------------------------------------------------------------------------
 
 #if defined(__MINGW32__)
@@ -61,13 +63,16 @@ TUnguard::~TUnguard()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 const wchar_t EngShortMonthNames[12][4] =
-  {L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
-   L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
+{
+  L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
+  L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"
+};
 const std::string Bom = "\xEF\xBB\xBF";
 const wchar_t TokenPrefix = L'%';
 const wchar_t NoReplacement = wchar_t(0);
 const wchar_t TokenReplacement = wchar_t(1);
 const UnicodeString LocalInvalidChars = L"/\\:*?\"<>|";
+const UnicodeString PasswordMask = L"***";
 //---------------------------------------------------------------------------
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
@@ -118,7 +123,7 @@ static UnicodeString MakeValidFileName(const UnicodeString & AFileName)
   static UnicodeString IllegalChars = L":;,=+<>|\"[] \\/?*";
   for (intptr_t Index = 0; Index < IllegalChars.Length(); ++Index)
   {
-    Result = ReplaceChar(Result, IllegalChars[Index+1], L'-');
+    Result = ReplaceChar(Result, IllegalChars[Index + 1], L'-');
   }
   return Result;
 }
@@ -126,17 +131,12 @@ static UnicodeString MakeValidFileName(const UnicodeString & AFileName)
 UnicodeString RootKeyToStr(HKEY RootKey)
 {
   if (RootKey == HKEY_USERS) return L"HKEY_USERS";
-    else
-  if (RootKey == HKEY_LOCAL_MACHINE) return L"HKEY_LOCAL_MACHINE";
-    else
-  if (RootKey == HKEY_CURRENT_USER) return L"HKEY_CURRENT_USER";
-    else
-  if (RootKey == HKEY_CLASSES_ROOT) return L"HKEY_CLASSES_ROOT";
-    else
-  if (RootKey == HKEY_CURRENT_CONFIG) return L"HKEY_CURRENT_CONFIG";
-    else
-  if (RootKey == HKEY_DYN_DATA) return L"HKEY_DYN_DATA";
-    else
+  else if (RootKey == HKEY_LOCAL_MACHINE) return L"HKEY_LOCAL_MACHINE";
+  else if (RootKey == HKEY_CURRENT_USER) return L"HKEY_CURRENT_USER";
+  else if (RootKey == HKEY_CLASSES_ROOT) return L"HKEY_CLASSES_ROOT";
+  else if (RootKey == HKEY_CURRENT_CONFIG) return L"HKEY_CURRENT_CONFIG";
+  else if (RootKey == HKEY_DYN_DATA) return L"HKEY_DYN_DATA";
+  else
   {  Abort(); return L""; }
 }
 //---------------------------------------------------------------------------
@@ -182,7 +182,7 @@ UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim)
   UnicodeString Result;
   if (P)
   {
-    Result = Str.SubString(1, P-1);
+    Result = Str.SubString(1, P - 1);
     Str.Delete(1, P);
   }
   else
@@ -244,7 +244,7 @@ UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
   // even if we reached the end, return index, as if there were the delimiter,
   // so caller can easily find index of the end of the piece by subtracting
   // 2 from From (as long as he did not asked for trimming)
-  From = P+1;
+  From = P + 1;
   if (Trim)
   {
     Result = Result.TrimRight();
@@ -280,7 +280,7 @@ UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote)
   return DelimitStr(Str, Chars);
 }
 //---------------------------------------------------------------------------
-UnicodeString ExceptionLogString(Exception *E)
+UnicodeString ExceptionLogString(Exception * E)
 {
   assert(E);
   if (NB_STATIC_DOWNCAST(Exception, E) != nullptr)
@@ -511,7 +511,7 @@ void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
     intptr_t P = Cmd.Pos(L'"');
     if (P)
     {
-      Program = Cmd.SubString(1, P-1).Trim();
+      Program = Cmd.SubString(1, P - 1).Trim();
       Params = Cmd.SubString(P + 1, Cmd.Length() - P).Trim();
     }
     else
@@ -696,7 +696,8 @@ bool IsReservedName(const UnicodeString & AFileName)
     {
       L"CON", L"PRN", L"AUX", L"NUL",
       L"COM1", L"COM2", L"COM3", L"COM4", L"COM5", L"COM6", L"COM7", L"COM8", L"COM9",
-      L"LPT1", L"LPT2", L"LPT3", L"LPT4", L"LPT5", L"LPT6", L"LPT7", L"LPT8", L"LPT9" };
+      L"LPT1", L"LPT2", L"LPT3", L"LPT4", L"LPT5", L"LPT6", L"LPT7", L"LPT8", L"LPT9"
+    };
     for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(Reserved)); ++Index)
     {
       if (SameText(fileName, Reserved[Index]))
@@ -706,6 +707,268 @@ bool IsReservedName(const UnicodeString & AFileName)
     }
   }
   return false;
+}
+//---------------------------------------------------------------------------
+// ApiPath support functions
+// Inspired by
+// http://stackoverflow.com/questions/18580945/need-clarification-for-converting-paths-into-long-unicode-paths-or-the-ones-star
+// This can be reimplemented using PathCchCanonicalizeEx on Windows 8 and later
+enum PATH_PREFIX_TYPE
+{
+  PPT_UNKNOWN,
+  PPT_ABSOLUTE,           //Found absolute path that is none of the other types
+  PPT_UNC,                //Found \\server\share\ prefix
+  PPT_LONG_UNICODE,       //Found \\?\ prefix
+  PPT_LONG_UNICODE_UNC,   //Found \\?\UNC\ prefix
+};
+//---------------------------------------------------------------------------
+static intptr_t PathRootLength(const UnicodeString & Path)
+{
+  // Correction for PathSkipRoot API
+
+  // Replace all /'s with \'s because PathSkipRoot can't handle /'s
+  UnicodeString Result = ReplaceChar(Path, L'/', L'\\');
+
+  // Now call the API
+  LPCTSTR Buffer = PathSkipRoot(Result.c_str());
+
+  return (Buffer != NULL) ? (Buffer - Result.c_str()) : -1;
+}
+//---------------------------------------------------------------------------
+static bool PathIsRelative_CorrectedForMicrosoftStupidity(const UnicodeString & Path)
+{
+  // Correction for PathIsRelative API
+
+  // Replace all /'s with \'s because PathIsRelative can't handle /'s
+  UnicodeString Result = ReplaceChar(Path, L'/', L'\\');
+
+  //Now call the API
+  return PathIsRelative(Result.c_str()) == TRUE;
+}
+//---------------------------------------------------------------------------
+static intptr_t GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_TYPE & PrefixType)
+{
+  // Checks if 'pPath' begins with the drive, share, prefix, etc
+  // EXAMPLES:
+  //    Path                          Return:   Points at:                 PrefixType:
+  //   Relative\Folder\File.txt        0         Relative\Folder\File.txt   PPT_UNKNOWN
+  //   \RelativeToRoot\Folder          1         RelativeToRoot\Folder      PPT_ABSOLUTE
+  //   C:\Windows\Folder               3         Windows\Folder             PPT_ABSOLUTE
+  //   \\server\share\Desktop          15        Desktop                    PPT_UNC
+  //   \\?\C:\Windows\Folder           7         Windows\Folder             PPT_LONG_UNICODE
+  //   \\?\UNC\server\share\Desktop    21        Desktop                    PPT_LONG_UNICODE_UNC
+  // RETURN:
+  //      = Index in 'pPath' after the root, or
+  //      = 0 if no root was found
+  intptr_t Result = 0;
+
+  PrefixType = PPT_UNKNOWN;
+
+  if (!Path.IsEmpty())
+  {
+    intptr_t Len = Path.Length();
+
+    bool WinXPOnly = !IsWinVista();
+
+    // The PathSkipRoot() API doesn't work correctly on Windows XP
+    if (!WinXPOnly)
+    {
+      // Works since Vista and up, but still needs correction :)
+      intptr_t RootLength = PathRootLength(Path);
+      if (RootLength >= 0)
+      {
+        Result = RootLength + 1;
+      }
+    }
+
+    // Now determine the type of prefix
+    intptr_t IndCheckUNC = -1;
+
+    if ((Len >= 8) &&
+        (Path[1] == L'\\' || Path[1] == L'/') &&
+        (Path[2] == L'\\' || Path[2] == L'/') &&
+        (Path[3] == L'?') &&
+        (Path[4] == L'\\' || Path[4] == L'/') &&
+        (Path[5] == L'U' || Path[5] == L'u') &&
+        (Path[6] == L'N' || Path[6] == L'n') &&
+        (Path[7] == L'C' || Path[7] == L'c') &&
+        (Path[8] == L'\\' || Path[8] == L'/'))
+    {
+      // Found \\?\UNC\ prefix
+      PrefixType = PPT_LONG_UNICODE_UNC;
+
+      if (WinXPOnly)
+      {
+          //For older OS
+          Result += 8;
+      }
+
+      //Check for UNC share later
+      IndCheckUNC = 8;
+    }
+    else if ((Len >= 4) &&
+        (Path[1] == L'\\' || Path[1] == L'/') &&
+        (Path[2] == L'\\' || Path[2] == L'/') &&
+        (Path[3] == L'?') &&
+        (Path[4] == L'\\' || Path[4] == L'/'))
+    {
+      // Found \\?\ prefix
+      PrefixType = PPT_LONG_UNICODE;
+
+      if (WinXPOnly)
+      {
+          //For older OS
+          Result += 4;
+      }
+    }
+    else if ((Len >= 2) &&
+        (Path[1] == L'\\' || Path[1] == L'/') &&
+        (Path[2] == L'\\' || Path[2] == L'/'))
+    {
+      // Check for UNC share later
+      IndCheckUNC = 2;
+    }
+
+    if (IndCheckUNC >= 0)
+    {
+      // Check for UNC, i.e. \\server\share\ part
+      intptr_t Index = IndCheckUNC;
+      for (int SkipSlashes = 2; SkipSlashes > 0; SkipSlashes--)
+      {
+        for(; Index <= Len; Index++)
+        {
+          TCHAR z = Path[Index];
+          if ((z == L'\\') || (z == L'/') || (Index >= Len))
+          {
+            Index++;
+            if (SkipSlashes == 1)
+            {
+              if (PrefixType == PPT_UNKNOWN)
+              {
+                PrefixType = PPT_UNC;
+              }
+
+              if (WinXPOnly)
+              {
+                  //For older OS
+                  Result = Index;
+              }
+            }
+
+            break;
+          }
+        }
+      }
+    }
+
+    if (WinXPOnly)
+    {
+      // Only if we didn't determine any other type
+      if (PrefixType == PPT_UNKNOWN)
+      {
+        if (!PathIsRelative_CorrectedForMicrosoftStupidity(Path.SubString(Result, Path.Length() - Result + 1)))
+        {
+          PrefixType = PPT_ABSOLUTE;
+        }
+      }
+
+      // For older OS only
+      intptr_t RootLength = PathRootLength(Path.SubString(Result, Path.Length() - Result + 1));
+      if (RootLength >= 0)
+      {
+        Result = RootLength + 1;
+      }
+    }
+    else
+    {
+      // Only if we didn't determine any other type
+      if (PrefixType == PPT_UNKNOWN)
+      {
+        if (!PathIsRelative_CorrectedForMicrosoftStupidity(Path))
+        {
+          PrefixType = PPT_ABSOLUTE;
+        }
+      }
+    }
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------------
+static UnicodeString MakeUnicodeLargePath(const UnicodeString & Path)
+{
+  // Convert path from 'into a larger Unicode path, that allows up to 32,767 character length
+  UnicodeString Result;
+
+  if (!Path.IsEmpty())
+  {
+      // Determine the type of the existing prefix
+      PATH_PREFIX_TYPE PrefixType;
+      GetOffsetAfterPathRoot(Path, PrefixType);
+
+      // Assume path to be without change
+      Result = Path;
+
+      switch (PrefixType)
+      {
+        case PPT_ABSOLUTE:
+          {
+            // First we need to check if its an absolute path relative to the root
+            bool AddPrefix = true;
+            if ((Path.Length() >= 1) &&
+                ((Path[1] == L'\\') || (Path[1] == L'/')))
+            {
+              AddPrefix = FALSE;
+
+              // Get current root path
+              UnicodeString CurrentDir = GetCurrentDir();
+              PATH_PREFIX_TYPE PrefixType2; // unused
+              intptr_t Following = GetOffsetAfterPathRoot(CurrentDir, PrefixType2);
+              if (Following > 0)
+              {
+                AddPrefix = true;
+                Result = CurrentDir.SubString(1, Following - 1) + Result.SubString(2, Result.Length() - 1);
+              }
+            }
+
+            if (AddPrefix)
+            {
+              // Add \\?\ prefix
+              Result = L"\\\\?\\" + Result;
+            }
+          }
+          break;
+
+      case PPT_UNC:
+        // First we need to remove the opening slashes for UNC share
+        if ((Result.Length() >= 2) &&
+            ((Result[1] == L'\\') || (Result[1] == L'/')) &&
+            ((Result[2] == L'\\') || (Result[2] == L'/')))
+        {
+          Result = Result.SubString(3, Result.Length() - 2);
+        }
+
+        // Add \\?\UNC\ prefix
+        Result = L"\\\\?\\UNC\\" + Result;
+        break;
+    }
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString ApiPath(const UnicodeString & Path)
+{
+  UnicodeString Result = Path;
+  if (Result.Length() >= MAX_PATH)
+  {
+    if (GetConfiguration() != nullptr)
+    {
+//      GetConfiguration()->Usage->Inc(L"LongPath");
+    }
+    Result = MakeUnicodeLargePath(Result);
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
 UnicodeString DisplayableStr(const RawByteString & Str)
@@ -883,7 +1146,7 @@ DWORD FindCheck(DWORD Result, const UnicodeString & Path)
 DWORD FindFirstUnchecked(const UnicodeString & Path, DWORD Attr, TSearchRecChecked & F)
 {
   F.Path = Path;
-  return FindFirst(Path, Attr, F);
+  return FindFirst(ApiPath(Path), Attr, F);
 }
 //---------------------------------------------------------------------------
 DWORD FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRecChecked & F)
@@ -904,7 +1167,7 @@ DWORD FindNextChecked(TSearchRecChecked & F)
 bool FileSearchRec(const UnicodeString & AFileName, TSearchRec & Rec)
 {
   DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-  bool Result = (FindFirst(AFileName, FindAttrs, Rec) == 0);
+  bool Result = (FindFirst(ApiPath(AFileName), FindAttrs, Rec) == 0);
   if (Result)
   {
     FindClose(Rec);
@@ -944,30 +1207,30 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
 //---------------------------------------------------------------------------
 TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)
 {
+  TDateTime Result;  
   try
   {
-    TDateTime DateTime = EncodeDate(Year, Month, Day);
-    return DateTime;
+    Result = EncodeDate(Year, Month, Day);
   }
   catch (EConvertError & E)
   {
     throw EConvertError(FORMAT(L"%s [%04u-%02u-%02u]", E.Message.c_str(), int(Year), int(Month), int(Day)));
   }
-  return TDateTime();
+  return Result;
 }
 //---------------------------------------------------------------------------
 TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
 {
+  TDateTime Result;
   try
   {
-    TDateTime DateTime = EncodeTime(Hour, Min, Sec, MSec);
-    return DateTime;
+    Result = EncodeTime(Hour, Min, Sec, MSec);
   }
   catch (EConvertError & E)
   {
     throw EConvertError(FORMAT(L"%s [%02u:%02u:%02u.%04u]", E.Message.c_str(), int(Hour), int(Min), int(Sec), int(MSec)));
   }
-  return TDateTime();
+  return Result;
 }
 //---------------------------------------------------------------------------
 TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime)
@@ -989,6 +1252,7 @@ struct TDateTimeParams : public TObject
   double BaseDifference;
   long BaseDifferenceSec;
   // All Current* are actually global, not per-year
+  // are valid for Year 0 (current) only
   double CurrentDaylightDifference;
   long CurrentDaylightDifferenceSec;
   double CurrentDifference;
@@ -1134,6 +1398,7 @@ static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
     TDateTime Temp = EncodeDateVerbose(Year, Date.wMonth, 1);
     Result = Temp + ((Date.wDayOfWeek - DayOfWeek(Temp) + 8) % 7) +
       (7 * (Date.wDay - 1));
+    // Day 5 means, the last occurence of day-of-week in month
     if (Date.wDay == 5)
     {
       uint16_t Month = static_cast<uint16_t>(Date.wMonth + 1);
@@ -1371,7 +1636,7 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
 int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
   TDSTMode DSTMode)
 {
-  int64_t Result = ((*(int64_t*)&(FileTime)) / 10000000LL - 11644473600LL);
+  int64_t Result = ((*(int64_t *) & (FileTime)) / 10000000LL - 11644473600LL);
   if (UsesDaylightHack())
   {
     if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
@@ -1720,7 +1985,8 @@ bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin)
   ClearStruct(Data);
   Data.hwnd = nullptr;
   Data.wFunc = FO_DELETE;
-  UnicodeString FileList(AFileName);
+  // SHFileOperation does not support long paths anyway
+  UnicodeString FileList(ApiPath(AFileName));
   FileList.SetLength(FileList.Length() + 2);
   FileList[FileList.Length() - 1] = L'\0';
   FileList[FileList.Length()] = L'\0';
@@ -1751,7 +2017,7 @@ bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin)
 //---------------------------------------------------------------------------
 void DeleteFileChecked(const UnicodeString & AFileName)
 {
-  if (!DeleteFile(AFileName))
+  if (!DeleteFile(ApiPath(AFileName)))
   {
     throw EOSExtException(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()));
   }
@@ -1778,7 +2044,7 @@ uintptr_t CancelAnswer(uintptr_t Answers)
   }
   else
   {
-    assert(false);
+    FAIL;
     Result = qaCancel;
   }
   return Result;
@@ -1906,18 +2172,10 @@ UnicodeString DoEncodeUrl(const UnicodeString & S, const UnicodeString & Chars)
   return Result;
 }
 //---------------------------------------------------------------------------
+// we should probably replace all uses with EncodeUrlString
 UnicodeString EncodeUrlChars(const UnicodeString & S, const UnicodeString & Ignore)
 {
-  UnicodeString Chars;
-  if (Ignore.Pos(L' ') == 0)
-  {
-    Chars += L' ';
-  }
-  if (Ignore.Pos(L'/') == 0)
-  {
-    Chars += L'/';
-  }
-  return DoEncodeUrl(S, Chars);
+  return DoEncodeUrl(S, L" /");
 }
 //---------------------------------------------------------------------------
 UnicodeString NonUrlChars()
@@ -1943,6 +2201,17 @@ UnicodeString NonUrlChars()
 UnicodeString EncodeUrlString(const UnicodeString & S)
 {
   return DoEncodeUrl(S, NonUrlChars());
+}
+//---------------------------------------------------------------------------
+UnicodeString EncodeUrlPath(const UnicodeString & S)
+{
+  UnicodeString Ignore = NonUrlChars();
+  intptr_t P = Ignore.Pos(L"/");
+  if (ALWAYS_TRUE(P > 0))
+  {
+    Ignore.Delete(P, 1);
+  }
+  return DoEncodeUrl(S, Ignore);
 }
 //---------------------------------------------------------------------------
 UnicodeString AppendUrlParams(const UnicodeString & AURL, const UnicodeString & Params)
@@ -2148,7 +2417,7 @@ bool IsDirectoryWriteable(const UnicodeString & Path)
   UnicodeString FileName =
     ::IncludeTrailingPathDelimiter(Path) +
     FORMAT(L"wscp_%s_%d.tmp", FormatDateTime(L"nnzzz", Now()).c_str(), int(GetCurrentProcessId()));
-  HANDLE Handle = ::CreateFile(FileName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
+  HANDLE Handle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
     CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, 0);
   bool Result = (Handle != INVALID_HANDLE_VALUE);
   if (Result)
@@ -2174,25 +2443,61 @@ UnicodeString ExtractFileBaseName(const UnicodeString & Path)
 {
   return ChangeFileExt(::ExtractFileName(Path, false), L"");
 }
-//---------------------------------------------------------------------
+//---------------------------------------------------------------------------
+TStringList * TextToStringList(const UnicodeString & Text)
+{
+  std::unique_ptr<TStringList> List(new TStringList());
+  List->SetText(Text);
+  return List.release();
+}
+//---------------------------------------------------------------------------
+UnicodeString TrimVersion(const UnicodeString & Version)
+{
+  UnicodeString Result = Version;
+  while ((Result.Pos(L".") != Result.LastDelimiter(L".")) &&
+    (Result.SubString(Result.Length() - 1, 2) == L".0"))
+  {
+    Result.SetLength(Result.Length() - 2);
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString FormatVersion(int MajovVersion, int MinorVersion, int Release)
+{
+  return
+    TrimVersion(FORMAT(L"%d.%d.%d",
+      MajovVersion, MinorVersion, Release));
+}
+//---------------------------------------------------------------------------
+TFormatSettings GetEngFormatSettings()
+{
+  return TFormatSettings::Create(1033);
+}
+//---------------------------------------------------------------------------
+//int ParseShortEngMonthName(const UnicodeString & MonthStr)
+//{
+//  TFormatSettings FormatSettings = GetEngFormatSettings();
+//  return IndexStr(MonthStr, FormatSettings.ShortMonthNames, FormatSettings.ShortMonthNames.size()) + 1;
+//}
+//---------------------------------------------------------------------------
 UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
 {
   UnicodeString Result;
 
-  if (!UseOrders || (Bytes < static_cast<int64_t>(100*1024)))
+  if (!UseOrders || (Bytes < static_cast<int64_t>(100 * 1024)))
   {
     // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
     Result = FORMAT(L"%.0f B", ToDouble(Bytes));
   }
-  else if (Bytes < static_cast<int64_t>(100*1024*1024))
+  else if (Bytes < static_cast<int64_t>(100 * 1024 * 1024))
   {
-    // Result = FormatFloat(L"#,##0 \"KiB\"", Bytes / 1024);
-    Result = FORMAT(L"%.0f KiB", ToDouble(Bytes / 1024.0));
+    // Result = FormatFloat(L"#,##0 \"KB\"", Bytes / 1024);
+    Result = FORMAT(L"%.0f KB", ToDouble(Bytes / 1024.0));
   }
   else
   {
     // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
-    Result = FORMAT(L"%.0f MiB", ToDouble(Bytes / (1024*1024.0)));
+    Result = FORMAT(L"%.0f MiB", ToDouble(Bytes / (1024 * 1024.0)));
   }
   return Result;
 }

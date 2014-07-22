@@ -440,7 +440,7 @@
 "Common options"
 "&Ignore permission errors"
 "&Calculate total size"
-"Sp&eed (KiB/s):"
+"Sp&eed (KB/s):"
 
 "Edit link"
 "Add link"
@@ -490,7 +490,7 @@
 " Enable transfer resume/transfer to temporary filename for "
 "A&ll files (not recommended)"
 "Files abo&ve"
-"KiB"
+"KB"
 "Di&sable"
 " Automatic reconnect "
 "&Reconnect after"

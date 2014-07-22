@@ -1,4 +1,3 @@
-// #include "src\mfc\afxinl1.cpp"
 #include "src\mfc\afxtls.cpp"
 #include "src\mfc\afxasert.cpp"
 #include "src\mfc\mtcore.cpp"

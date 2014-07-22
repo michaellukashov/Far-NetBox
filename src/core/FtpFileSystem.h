@@ -91,7 +91,6 @@ public:
     const UnicodeString & NewName);
   virtual void CopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
-  virtual UnicodeString FileUrl(const UnicodeString & AFileName) const;
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable);
@@ -186,7 +185,7 @@ protected:
   void DirectorySource(const UnicodeString & DirectoryName,
     const UnicodeString & TargetDir, intptr_t Attrs, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
-  bool ConfirmOverwrite(UnicodeString & AFileName,
+  bool ConfirmOverwrite(const UnicodeString & AFullFileName, UnicodeString & AFileName,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     bool AutoResume,
     const TOverwriteFileParams * FileParams,
@@ -274,6 +273,8 @@ private:
   TDateTime FLastDataSent;
   mutable UnicodeString FOptionScratch;
 };
+//---------------------------------------------------------------------------
+UnicodeString GetOpenSSLVersionText();
 //---------------------------------------------------------------------------
 #endif // NO_FILEZILLA
 //---------------------------------------------------------------------------

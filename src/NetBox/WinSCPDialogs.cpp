@@ -1031,9 +1031,9 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   UnicodeString LegalCopyright; // = GetConfiguration()->GetFileInfoString(L"LegalCopyright");
 
   int Height = 15;
-  #ifndef NO_FILEZILLA
+#ifndef NO_FILEZILLA
   Height += 2;
-  #endif
+#endif
   if (!ProductName.IsEmpty())
   {
     Height++;
@@ -1136,7 +1136,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCaption(LoadStr(PUTTY_COPYRIGHT));
   Text->SetCenterGroup(true);
 
-  #ifndef NO_FILEZILLA
+#ifndef NO_FILEZILLA
   Text = new TFarText(this);
   Text->SetCaption(LoadStr(FILEZILLA_BASED_ON2));
   Text->SetCenterGroup(true);
@@ -1144,7 +1144,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text = new TFarText(this);
   Text->SetCaption(LoadStr(FILEZILLA_COPYRIGHT2));
   Text->SetCenterGroup(true);
-  #endif
+#endif
 
   new TFarSeparator(this);
 
@@ -2768,7 +2768,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   WebDAVCompressionCheck = new TFarCheckBox(this);
   WebDAVCompressionCheck->SetCaption(GetMsg(LOGIN_COMPRESSION));
 
-  #undef TRISTATE
+#undef TRISTATE
 
   new TFarSeparator(this);
 
@@ -2890,7 +2890,7 @@ void TSessionDialog::TransferProtocolComboChange()
   }
   else if ((GetFSProtocol() == fsFTP) && ((Ftps == ftpsNone) || (Ftps == ftpsExplicitSsl) || (Ftps == ftpsExplicitTls)))
   {
-    if ((Port== SshPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPPortNumber) || (Port == HTTPSPortNumber))
+    if ((Port == SshPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPPortNumber) || (Port == HTTPSPortNumber))
     {
       PortNumberEdit->SetAsInteger(FtpPortNumber);
     }
@@ -3233,7 +3233,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   // SFTP tab
 
-  #define TRISTATE(COMBO, PROP, MSG) \
+#define TRISTATE(COMBO, PROP, MSG) \
     COMBO->SetItemIndex(static_cast<intptr_t>(2 - SessionData->Get ## PROP))
   SFTP_BUGS();
 
@@ -3378,7 +3378,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
       CipherListBox->GetItems()->EndUpdate();
     };
     CipherListBox->GetItems()->Clear();
-    assert(CIPHER_NAME_WARN+CIPHER_COUNT-1 == CIPHER_NAME_ARCFOUR);
+    assert(CIPHER_NAME_WARN + CIPHER_COUNT - 1 == CIPHER_NAME_ARCFOUR);
     for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
     {
       TObject * Obj = static_cast<TObject *>(ToPtr(SessionData->GetCipher(Index)));
@@ -3400,7 +3400,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
       KexListBox->GetItems()->EndUpdate();
     };
     KexListBox->GetItems()->Clear();
-    assert(KEX_NAME_WARN+KEX_COUNT+1 == KEX_NAME_GSSGEX);
+    assert(KEX_NAME_WARN + KEX_COUNT + 1 == KEX_NAME_GSSGEX);
     for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
     {
       KexListBox->GetItems()->AddObject(
@@ -3426,7 +3426,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   // WebDAV tab
   WebDAVCompressionCheck->SetChecked(SessionData->GetCompression());
 
-  #undef TRISTATE
+#undef TRISTATE
 
   intptr_t Button = ShowModal();
   bool Result = (Button == brOK || Button == brConnect);
@@ -3532,7 +3532,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     // SFTP tab
 
-    #define TRISTATE(COMBO, PROP, MSG) \
+#define TRISTATE(COMBO, PROP, MSG) \
       SessionData->Set##PROP(sb##PROP, static_cast<TAutoSwitch>(2 - COMBO->GetItemIndex()));
     // SFTP_BUGS();
     SessionData->SetSFTPBug(sbSymlink, static_cast<TAutoSwitch>(2 - SFTPBugSymlinkCombo->GetItemIndex()));
@@ -3749,7 +3749,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     if (GetFSProtocol() == fsWebDAV)
       SessionData->SetCompression(WebDAVCompressionCheck->GetChecked());
 
-    #undef TRISTATE
+#undef TRISTATE
     SessionData->SetBug(sbIgnore1, static_cast<TAutoSwitch>(2 - BugIgnore1Combo->GetItemIndex()));
     SessionData->SetBug(sbPlainPW1, static_cast<TAutoSwitch>(2 - BugPlainPW1Combo->GetItemIndex()));
     SessionData->SetBug(sbRSA1, static_cast<TAutoSwitch>(2 - BugRSA1Combo->GetItemIndex()));
@@ -4338,7 +4338,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
     for (intptr_t ColIndex = 0; ColIndex < 3; ++ColIndex)
     {
       TFarCheckBox * CheckBox = new TFarCheckBox(GetDialog());
-      FCheckBoxes[(RowIndex + 1)* 3 + ColIndex] = CheckBox;
+      FCheckBoxes[(RowIndex + 1) * 3 + ColIndex] = CheckBox;
       Add(CheckBox);
       CheckBox->SetEnabledDependency(EnabledDependency);
       CheckBox->SetCaption(GetMsg(ColLabels[ColIndex]));
@@ -4830,7 +4830,7 @@ void TPropertiesDialog::UpdateProperties(TRemoteProperties & Properties)
     Properties.AddXToDirectories = RightsContainer->GetAddXToDirectories();
   }
 
-  #define STORE_NAME(PROPERTY) \
+#define STORE_NAME(PROPERTY) \
     if (!PROPERTY ## ComboBox->GetText().IsEmpty() && \
         FAllowedChanges & cp ## PROPERTY) \
     { \
@@ -4839,7 +4839,7 @@ void TPropertiesDialog::UpdateProperties(TRemoteProperties & Properties)
     }
   STORE_NAME(Group);
   STORE_NAME(Owner);
-  #undef STORE_NAME
+#undef STORE_NAME
 
   Properties.Recursive = RecursiveCheck != nullptr && RecursiveCheck->GetChecked();
 }

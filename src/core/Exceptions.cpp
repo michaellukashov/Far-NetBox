@@ -35,7 +35,8 @@ static bool WellKnownException(
            (NB_STATIC_DOWNCAST(EStringListError, E) != nullptr) ||
            (NB_STATIC_DOWNCAST(EIntError, E) != nullptr) ||
            (NB_STATIC_DOWNCAST(EMathError, E) != nullptr) ||
-           (NB_STATIC_DOWNCAST(EVariantError, E) != nullptr))
+           (NB_STATIC_DOWNCAST(EVariantError, E) != nullptr) ||
+           (NB_STATIC_DOWNCAST(EInvalidOperation, E) != nullptr))
   {
     if (Rethrow)
     {
@@ -95,7 +96,7 @@ static bool ExceptionMessage(const Exception * E, bool Count,
 {
   bool Result = true;
   const wchar_t * CounterName = nullptr;
-  InternalError = false;
+  InternalError = false; // see also IsInternalException
 
   // this list has to be in sync with CloneException
   if (NB_STATIC_DOWNCAST_CONST(EAbort, E) != nullptr)
@@ -131,6 +132,12 @@ static bool ExceptionMessage(const Exception * E, bool Count,
   }
 */
   return Result;
+}
+//---------------------------------------------------------------------------
+bool IsInternalException(Exception * E)
+{
+  // see also InternalError in ExceptionMessage
+  return WellKnownException(E, NULL, NULL, NULL, false);
 }
 //---------------------------------------------------------------------------
 bool ExceptionMessage(const Exception * E, UnicodeString & Message)
@@ -270,8 +277,7 @@ ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & More
 {
   if (!MoreMessages.IsEmpty())
   {
-    FMoreMessages = new TStringList();
-    FMoreMessages->SetText(MoreMessages);
+    FMoreMessages = TextToStringList(MoreMessages);
   }
 }
 //---------------------------------------------------------------------------

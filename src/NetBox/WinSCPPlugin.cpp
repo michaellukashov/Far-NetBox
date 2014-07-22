@@ -362,7 +362,7 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
   // Skip session name
   {
     while ((Index < CmdLine.Length()) && (CmdLine[Index] == L' '))
-     ++Index;
+      ++Index;
     if (Index >= CmdLine.Length())
       return;
     if (CmdLine[Index] == L'"')
@@ -663,7 +663,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   bool NeverAskAgainPending = NeverAskAgainCheck;
   uintptr_t TimeoutButton = 0;
 
-  #define ADD_BUTTON_EX(TYPE, CANNEVERASK) \
+#define ADD_BUTTON_EX(TYPE, CANNEVERASK) \
     if (AAnswers & qa ## TYPE) \
     { \
       ButtonLabels->Add(GetMsg(MSG_BUTTON_ ## TYPE)); \
@@ -681,9 +681,9 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
         NeverAskAgainPending = false; \
       } \
     }
-  #define ADD_BUTTON(TYPE) ADD_BUTTON_EX(TYPE, false)
-  #pragma warning(push)
-  #pragma warning(disable: 4127)
+#define ADD_BUTTON(TYPE) ADD_BUTTON_EX(TYPE, false)
+#pragma warning(push)
+#pragma warning(disable: 4127)
   ADD_BUTTON_EX(Yes, true);
   ADD_BUTTON(No);
   ADD_BUTTON_EX(OK, true);
@@ -696,9 +696,9 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   ADD_BUTTON(NoToAll);
   ADD_BUTTON_EX(YesToAll, true);
   ADD_BUTTON(Help);
-  #pragma warning(pop)
-  #undef ADD_BUTTON
-  #undef ADD_BUTTON_EX
+#pragma warning(pop)
+#undef ADD_BUTTON
+#undef ADD_BUTTON_EX
 
   USEDPARAM(AAnswers);
   assert(!AAnswers);
@@ -724,7 +724,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
     }
   }
 
-  #define MORE_BUTTON_ID -2
+#define MORE_BUTTON_ID -2
   TFarMessageParams FarParams;
 
   if (NeverAskAgainCheck)
@@ -839,7 +839,7 @@ void TWinSCPPlugin::CleanupConfiguration()
     else
     {
       UnicodeString Version = Storage->ReadString(L"Version", L"");
-      if (::StrToVersionNumber(Version) < MAKEVERSIONNUMBER(2,1,19))
+      if (::StrToVersionNumber(Version) < MAKEVERSIONNUMBER(2, 1, 19))
       {
         Storage->DeleteSubKey(L"CDCache");
       }

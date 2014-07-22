@@ -2012,6 +2012,7 @@ void TWinSCPFileSystem::OpenSessionInPutty()
 {
   assert(Connected());
   ::OpenSessionInPutty(GetGUIConfiguration()->GetPuttyPath(), GetSessionData(),
+    GetSessionData()->GetUserNameExpanded(),
     GetGUIConfiguration()->GetPuttyPassword() ? GetTerminal()->GetPassword() : UnicodeString());
 }
 //------------------------------------------------------------------------------
@@ -2240,7 +2241,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
             {
               UnicodeString NewLocalPath;
               ALocalPath = ExcludeTrailingBackslash(AnotherPanel->GetCurrentDirectory());
-              while (!::UnixComparePaths(FullPrevPath, RemotePath))
+              while (!::UnixSamePath(FullPrevPath, RemotePath))
               {
                 NewLocalPath = ExcludeTrailingBackslash(ExtractFileDir(ALocalPath));
                 if (NewLocalPath == ALocalPath)
@@ -3134,7 +3135,7 @@ void TWinSCPFileSystem::TerminalStartReadDirectory(TObject * /*Sender*/)
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalReadDirectoryProgress(
-  TObject * /*Sender*/, intptr_t Progress, bool & Cancel)
+  TObject * /*Sender*/, intptr_t Progress, intptr_t ResolvedLinks, bool & Cancel)
 {
   if (Progress < 0)
   {
@@ -3346,7 +3347,7 @@ void TWinSCPFileSystem::TerminalShowExtendedException(
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::OperationProgress(
-  TFileOperationProgressType & ProgressData, TCancelStatus & /*Cancel*/)
+  TFileOperationProgressType & ProgressData)
 {
   if (FNoProgress)
   {
@@ -3755,7 +3756,7 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
   if (NoReload)
   {
     FTerminal->SetAutoReadDirectory(false);
-    if (::UnixComparePaths(DestPath, FTerminal->GetCurrentDirectory()))
+    if (::UnixSamePath(DestPath, FTerminal->GetCurrentDirectory()))
     {
       FReloadDirectory = true;
     }
@@ -4023,7 +4024,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   TMultipleEdits::iterator it_e = FMultipleEdits.begin();
   while (it_e != FMultipleEdits.end())
   {
-    if (::UnixComparePaths(Directory, it_e->second.Directory) &&
+    if (::UnixSamePath(Directory, it_e->second.Directory) &&
         (NewFileName == it_e->second.FileName))
     {
       break;

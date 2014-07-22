@@ -42,13 +42,13 @@ DEFINE_CALLBACK_TYPE5(TDisplayBannerEvent, void,
 DEFINE_CALLBACK_TYPE3(TExtendedExceptionEvent, void,
   TTerminal * /* Terminal */, Exception * /* E */, void * /* Arg */);
 DEFINE_CALLBACK_TYPE2(TReadDirectoryEvent, void, TObject * /* Sender */, Boolean /* ReloadOnly */);
-DEFINE_CALLBACK_TYPE3(TReadDirectoryProgressEvent, void,
-  TObject * /* Sender */, intptr_t /* Progress */, bool & /* Cancel */);
+DEFINE_CALLBACK_TYPE4(TReadDirectoryProgressEvent, void,
+  TObject * /* Sender */, intptr_t /* Progress */, intptr_t /* ResolvedLinks */, bool & /* Cancel */);
 DEFINE_CALLBACK_TYPE3(TProcessFileEvent, void,
   const UnicodeString & /* FileName */, const TRemoteFile * /* File */, void * /* Param */);
 DEFINE_CALLBACK_TYPE4(TProcessFileEventEx, void,
   const UnicodeString & /* FileName */, const TRemoteFile * /* File */, void * /* Param */, intptr_t /* Index */);
-DEFINE_CALLBACK_TYPE2(TFileOperationEvent, int,
+DEFINE_CALLBACK_TYPE2(TFileOperationEvent, intptr_t,
   void * /* Param1 */, void * /* Param2 */);
 DEFINE_CALLBACK_TYPE4(TSynchronizeDirectoryEvent, void,
   const UnicodeString & /* LocalDirectory */, const UnicodeString & /* RemoteDirectory */,
@@ -145,6 +145,7 @@ public:
   static const int spBySize = 0x400; // cannot be combined with smBoth, has opposite meaning for spTimestamp
   static const int spSelectedOnly = 0x800; // not used by core
   static const int spMirror = 0x1000;
+  static const int spDefault = spNoConfirmation | spPreviewChanges;
 
 // for TranslateLockedPath()
 friend class TRemoteFile;
@@ -189,6 +190,7 @@ public:
   TCustomFileSystem * GetFileSystem() const { return FFileSystem; }
   TCustomFileSystem * GetFileSystem() { return FFileSystem; }
   inline bool InTransaction();
+  void SaveCapabilities(TFileSystemInfo & FileSystemInfo);
   static UnicodeString SynchronizeModeStr(TSynchronizeMode Mode);
   static UnicodeString SynchronizeParamsStr(intptr_t Params);
 
@@ -276,7 +278,6 @@ public:
     TRemoteFileList *& FileList, bool CanLoad);
   void MakeLocalFileList(const UnicodeString & AFileName,
     const TSearchRec & Rec, void * Param);
-  UnicodeString FileUrl(const UnicodeString & AFileName) const;
   bool FileOperationLoopQuery(Exception & E,
     TFileOperationProgressType * OperationProgress,
     const UnicodeString & Message,
@@ -363,7 +364,7 @@ protected:
   bool FTunnelOpening;
 
   void DoStartReadDirectory();
-  void DoReadDirectoryProgress(intptr_t Progress, bool & Cancel);
+  void DoReadDirectoryProgress(intptr_t Progress, intptr_t ResolvedLinks, bool & Cancel);
   void DoReadDirectory(bool ReloadOnly);
   void DoCreateDirectory(const UnicodeString & DirName);
   void DoDeleteFile(const UnicodeString & AFileName, const TRemoteFile * File,
@@ -405,7 +406,8 @@ protected:
   void OpenLocalFile(const UnicodeString & AFileName, uintptr_t Access,
     OUT HANDLE * AHandle, OUT uintptr_t * AAttrs, OUT int64_t * ACTime, OUT int64_t * AMTime,
     OUT int64_t * AATime, OUT int64_t * ASize, bool TryWriteReadOnly = true);
-  bool AllowLocalFileTransfer(const UnicodeString & AFileName, const TCopyParamType * CopyParam);
+  bool AllowLocalFileTransfer(const UnicodeString & AFileName,
+    const TCopyParamType * CopyParam, TFileOperationProgressType * OperationProgress);
   bool HandleException(Exception * E);
   void CalculateFileSize(const UnicodeString & AFileName,
     const TRemoteFile * AFile, /*TCalculateSizeParams*/ void * Size);
@@ -417,10 +419,10 @@ protected:
     const TCopyParamType * CopyParam, bool AllowDirs,
     OUT int64_t & Size);
   TBatchOverwrite EffectiveBatchOverwrite(
-    const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
+    const UnicodeString & AFileName, const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
     bool Special);
   bool CheckRemoteFile(
-    const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress);
+    const UnicodeString & AFileName, const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress);
   uintptr_t ConfirmFileOverwrite(const UnicodeString & AFileName,
     const TOverwriteFileParams * FileParams, uintptr_t Answers, TQueryParams * QueryParams,
     TOperationSide Side, const TCopyParamType * CopyParam, intptr_t Params,
@@ -430,6 +432,8 @@ protected:
     const TCopyParamType * CopyParam, intptr_t Params,
     TSynchronizeDirectoryEvent OnSynchronizeDirectory,
     TSynchronizeOptions * Options, intptr_t Level, TSynchronizeChecklist * Checklist);
+  void DoSynchronizeCollectFile(const UnicodeString & AFileName,
+    const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param);
   void SynchronizeCollectFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param);
   void SynchronizeRemoteTimestamp(const UnicodeString & AFileName,
@@ -451,7 +455,6 @@ protected:
   void OpenTunnel();
   void CloseTunnel();
   void DoInformation(const UnicodeString & Str, bool Status, intptr_t Phase = -1);
-  UnicodeString FileUrl(const UnicodeString & Protocol, const UnicodeString & AFileName) const;
   bool PromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString & AName, const UnicodeString & Instructions, const UnicodeString & Prompt,
     bool Echo,
@@ -479,7 +482,7 @@ protected:
   virtual void Closed();
   virtual void HandleExtendedException(Exception * E);
   bool IsListenerFree(uintptr_t PortNumber) const;
-  void DoProgress(TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
+  void DoProgress(TFileOperationProgressType & ProgressData);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
     const UnicodeString & AFileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
   void RollbackAction(TSessionAction & Action,
@@ -495,6 +498,12 @@ protected:
   void LogFileDetails(const UnicodeString & AFileName, const TDateTime & Modification, int64_t Size);
   virtual const TTerminal * GetPasswordSource() const { return this; }
   virtual TTerminal * GetPasswordSource() { return this; }
+  void DoEndTransaction(bool Inform);
+  bool VerifyCertificate(
+    const UnicodeString & CertificateStorageKey, const UnicodeString & Fingerprint,
+    const UnicodeString & CertificateSubject, int Failures);
+  void CacheCertificate(const UnicodeString & CertificateStorageKey,
+    const UnicodeString & Fingerprint, int Failures);
 
   TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
 

@@ -293,7 +293,9 @@ public:
 		}
 
 		for (rde::list<MSG>::iterator iter = msgList.begin(); iter != msgList.end(); iter++)
+		{
 			PostMessage(m_hWnd, iter->message, iter->wParam, iter->lParam);
+		}
 	}
 
 	//Processes event notifications sent by the sockets or the layers
@@ -339,7 +341,9 @@ public:
 							break;
 						}
 						else if (pSocket->GetState() == attached)
+						{
 							pSocket->SetState(connected);
+						}
 						if (pSocket->GetState() != connected)
 							break;
 
@@ -356,7 +360,9 @@ public:
 									nErrorCode = WSAGetLastError();
 #ifndef NOSOCKETSTATES
 							if (nErrorCode)
+							{
 								pSocket->SetState(aborted);
+							}
 #endif //NOSOCKETSTATES
 							if (nBytes != 0 || nErrorCode != 0)
 								pSocket->OnReceive(nErrorCode);
@@ -370,7 +376,9 @@ public:
 							break;
 						}
 						else if (pSocket->GetState() == attached)
+						{
 							pSocket->SetState(connected);
+						}
 						if (pSocket->GetState() != connected)
 							break;
 #endif //NOSOCKETSTATES
@@ -378,7 +386,9 @@ public:
 						{
 #ifndef NOSOCKETSTATES
 							if (nErrorCode)
+							{
 								pSocket->SetState(aborted);
+							}
 #endif //NOSOCKETSTATES
 							pSocket->OnReceive(nErrorCode);
 						}
@@ -391,7 +401,9 @@ public:
 							break;
 						}
 						else if (pSocket->GetState() == attached && !nErrorCode)
+						{
 							pSocket->SetState(connected);
+						}
 						if (pSocket->GetState() != connected)
 							break;
 #endif //NOSOCKETSTATES
@@ -399,7 +411,9 @@ public:
 						{
 #ifndef NOSOCKETSTATES
 							if (nErrorCode)
+							{
 								pSocket->SetState(aborted);
+							}
 #endif //NOSOCKETSTATES
 							pSocket->OnSend(nErrorCode);
 						}
@@ -416,7 +430,9 @@ public:
 							pSocket->SetState(connected);
 						}
 						else if (pSocket->GetState() == attached && !nErrorCode)
+						{
 							pSocket->SetState(connected);
+						}
 #endif //NOSOCKETSTATES
 						if (pSocket->m_lEvent & FD_CONNECT)
 							pSocket->OnConnect(nErrorCode);
@@ -547,7 +563,9 @@ public:
 						break;
 					}
 					else if (pSocket->GetState() == attached && !nErrorCode)
+					{
 						pSocket->SetState(connected);
+					}
 					if (pSocket->GetState() != connected)
 						break;
 #endif //NOSOCKETSTATES
@@ -555,7 +573,9 @@ public:
 					{
 #ifndef NOSOCKETSTATES
 						if (nErrorCode)
+						{
 							pSocket->SetState(aborted);
+						}
 #endif //NOSOCKETSTATES
 						pSocket->OnReceive(nErrorCode);
 					}
@@ -568,7 +588,9 @@ public:
 						break;
 					}
 					else if (pSocket->GetState() == attached && !nErrorCode)
+					{
 						pSocket->SetState(connected);
+					}
 					if (pSocket->GetState() != connected)
 						break;
 #endif //NOSOCKETSTATES
@@ -576,7 +598,9 @@ public:
 					{
 #ifndef NOSOCKETSTATES
 						if (nErrorCode)
+						{
 							pSocket->SetState(aborted);
+						}
 #endif //NOSOCKETSTATES
 						pSocket->OnReceive(nErrorCode);
 					}
@@ -589,7 +613,9 @@ public:
 						break;
 					}
 					else if (pSocket->GetState() == attached && !nErrorCode)
+					{
 						pSocket->SetState(connected);
+					}
 					if (pSocket->GetState() != connected)
 						break;
 #endif //NOSOCKETSTATES
@@ -597,7 +623,9 @@ public:
 					{
 #ifndef NOSOCKETSTATES
 						if (nErrorCode)
+						{
 							pSocket->SetState(aborted);
+						}
 #endif //NOSOCKETSTATES
 						pSocket->OnSend(nErrorCode);
 					}
@@ -605,9 +633,13 @@ public:
 				case FD_CONNECT:
 #ifndef NOSOCKETSTATES
 					if (pSocket->GetState() == connecting)
+					{
 						pSocket->SetState(connected);
+					}
 					else if (pSocket->GetState() == attached && !nErrorCode)
+					{
 						pSocket->SetState(connected);
+					}
 #endif //NOSOCKETSTATES
 					if (pSocket->m_lEvent & FD_CONNECT)
 						pSocket->OnConnect(nErrorCode);
@@ -814,7 +846,9 @@ BOOL CAsyncSocketEx::Create(UINT nSocketPort /*=0*/, int nSocketType /*=SOCK_STR
 		BOOL res = m_pFirstLayer->Create(nSocketPort, nSocketType, lEvent, lpszSocketAddress, nFamily);
 #ifndef NOSOCKETSTATES
 		if (res)
+		{
 			SetState(unconnected);
+		}
 #endif //NOSOCKETSTATES
 		return res;
 	}
@@ -1206,7 +1240,9 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
 		BOOL res = m_pFirstLayer->Connect(lpszHostAddress, nHostPort);
 #ifndef NOSOCKETSTATES
 		if (res || GetLastError()==WSAEWOULDBLOCK)
+		{
 			SetState(connecting);
+		}
 #endif //NOSOCKETSTATES
 		return res;
 	} else
@@ -1374,7 +1410,9 @@ BOOL CAsyncSocketEx::Connect(const SOCKADDR* lpSockAddr, int nSockAddrLen)
 
 #ifndef NOSOCKETSTATES
 	if (res || GetLastError()==WSAEWOULDBLOCK)
+	{
 		SetState(connecting);
+	}
 #endif //NOSOCKETSTATES
 	return res;
 }
@@ -1649,7 +1687,9 @@ BOOL CAsyncSocketEx::TriggerEvent(long lEvent)
 	}
 	else
 #endif //NOLAYERS
+	{
 		return PostMessage(GetHelperWindowHandle(), m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, m_SocketData.hSocket, lEvent%0xFFFF);
+	}
 
 }
 
@@ -1872,7 +1912,9 @@ void CAsyncSocketEx::AddCallbackNotification(const t_callbackMsg& msg)
 	m_pendingCallbacks.push_back(msg);
 
 	if(m_pendingCallbacks.size() == 1 && m_SocketData.nSocketIndex != -1)
+	{
 		PostMessage(GetHelperWindowHandle(), WM_USER + 2, (WPARAM)m_SocketData.nSocketIndex, 0);
+	}
 }
 
 #endif //NOLAYERS

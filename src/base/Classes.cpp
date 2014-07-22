@@ -358,12 +358,12 @@ const intptr_t MonthsPerYear = 12;
 const intptr_t DaysPerWeek = 7;
 const intptr_t MinsPerHour = 60;
 const intptr_t SecsPerMin = 60;
-const intptr_t SecsPerHour = MinsPerHour * SecsPerMin;
 const intptr_t HoursPerDay = 24;
+const intptr_t MSecsPerSec = 1000;
+const intptr_t SecsPerHour = MinsPerHour * SecsPerMin;
 const intptr_t MinsPerDay  = HoursPerDay * MinsPerHour;
 const intptr_t SecsPerDay  = MinsPerDay * SecsPerMin;
 const intptr_t MSecsPerDay = SecsPerDay * MSecsPerSec;
-const intptr_t MSecsPerSec = 1000;
 // Days between 1/1/0001 and 12/31/1899
 const intptr_t DateDelta = 693594;
 const intptr_t UnixDateDelta = 25569;

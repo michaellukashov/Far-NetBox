@@ -34,7 +34,7 @@ public:
   virtual bool GetActive() const { return FSecureShell->GetActive(); }
   virtual void CollectUsage();
   virtual void Idle();
-  virtual UnicodeString AbsolutePath(const UnicodeString & Path, bool Local);
+  virtual UnicodeString AbsolutePath(const UnicodeString & APath, bool Local);
   virtual void AnyCommand(const UnicodeString & Command,
     TCaptureOutputEvent OutputEvent);
   virtual void ChangeDirectory(const UnicodeString & Directory);
@@ -74,8 +74,7 @@ public:
   virtual void RemoteRenameFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
   virtual void CopyFile(const UnicodeString & AFileName,
-    const UnicodeString & NewName);
-  virtual UnicodeString FileUrl(const UnicodeString & AFileName) const;
+    const UnicodeString & ANewName);
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable);
@@ -124,10 +123,10 @@ protected:
     TRemoteFileList * TempFileList = nullptr, bool Complete = true);
   void LoadFile(TRemoteFile * AFile, TSFTPPacket * Packet,
     bool Complete = true);
-  UnicodeString LocalCanonify(const UnicodeString & Path);
-  UnicodeString Canonify(const UnicodeString & Path);
-  UnicodeString RealPath(const UnicodeString & Path);
-  UnicodeString RealPath(const UnicodeString & Path, const UnicodeString & BaseDir);
+  UnicodeString LocalCanonify(const UnicodeString & APath);
+  UnicodeString Canonify(const UnicodeString & APath);
+  UnicodeString RealPath(const UnicodeString & APath);
+  UnicodeString RealPath(const UnicodeString & APath, const UnicodeString & ABaseDir);
   void ReserveResponse(const TSFTPPacket * Packet,
     TSFTPPacket * Response);
   uintptr_t ReceivePacket(TSFTPPacket * Packet, int ExpectedType = -1,
@@ -162,14 +161,14 @@ protected:
     TUploadSessionAction & Action, bool & ChildError);
   RawByteString SFTPOpenRemoteFile(const UnicodeString & AFileName,
     uint32_t OpenType, int64_t Size = -1);
-  int SFTPOpenRemote(void * AOpenParams, void * Param2);
+  intptr_t SFTPOpenRemote(void * AOpenParams, void * Param2);
   void SFTPCloseRemote(const RawByteString & Handle,
     const UnicodeString & AFileName, TFileOperationProgressType * OperationProgress,
     bool TransferFinished, bool Request, TSFTPPacket * Packet);
   void SFTPDirectorySource(const UnicodeString & DirectoryName,
     const UnicodeString & TargetDir, uintptr_t LocalFileAttrs, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
-  void SFTPConfirmOverwrite(UnicodeString & AFileName,
+  void SFTPConfirmOverwrite(const UnicodeString & AFullFileName, UnicodeString & AFileName,
     const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams,
     OUT TOverwriteMode & Mode);

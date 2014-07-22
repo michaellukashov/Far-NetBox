@@ -914,14 +914,6 @@ void AppendPathDelimiterW(UnicodeString & Str)
   }
 }
 
-void AppendPathDelimiterA(std::string & Str)
-{
-  if (!Str.empty() && Str[Str.length() - 1] != '/' && Str[Str.length() - 1] != '\\')
-  {
-    Str += "\\";;
-  }
-}
-
 //---------------------------------------------------------------------------
 
 UnicodeString ExpandEnvVars(const UnicodeString & Str)

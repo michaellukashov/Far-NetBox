@@ -75,7 +75,7 @@ static int CmpName_Body(const wchar_t *pattern,const wchar_t *str, bool CmpNameS
 
 				int match = 0;
 				wchar_t rangec;
-				while ((rangec = Upper(*pattern++)))
+				while ((rangec = Upper(*pattern++)) != 0)
 				{
 					if (rangec == L']')
 					{
@@ -135,8 +135,6 @@ TMask::TMask(const UnicodeString & Mask)
 
 bool TMask::Matches(const UnicodeString & Str)
 {
-  // UnicodeString Ext = ::ExtractFileExtension(Str, L'\\');
-  //return Sysutils::AnsiCompareIC(FMask, Ext) == 0;
   return CmpName(FMask.c_str(), Str.c_str()) == TRUE;
 }
 

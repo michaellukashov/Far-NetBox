@@ -2,8 +2,8 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include "Common.h"
 #include "RemoteFiles.h"
+#include "Common.h"
 
 #include <SysUtils.hpp>
 #include <StrUtils.hpp>
@@ -55,12 +55,6 @@ UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & Path, bool Simp
   {
     return Path.SubString(1, Path.Length() - 1);
   }
-/*
-  if ((Path.Length() > 1) && Path.IsDelimiter(L"/", Path.Length()))
-    return Path.SubString(1, Path.Length() - 1);
-  else
-    return Path;
-*/
 }
 //---------------------------------------------------------------------------
 UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & Path)
@@ -68,7 +62,7 @@ UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & Path)
   return ::UnixExcludeTrailingBackslash(Path, true);
 }
 //---------------------------------------------------------------------------
-Boolean UnixComparePaths(const UnicodeString & Path1, const UnicodeString & Path2)
+Boolean UnixSamePath(const UnicodeString & Path1, const UnicodeString & Path2)
 {
   return (::UnixIncludeTrailingBackslash(Path1) == ::UnixIncludeTrailingBackslash(Path2));
 }
@@ -220,9 +214,15 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Pat
     intptr_t P;
     while ((P = Result.Pos(L"/../")) > 0)
     {
-      intptr_t P2 = Result.SubString(1, P-1).LastDelimiter(L"/\\");
-      if (P2 > 0)
+      // special case, "/../" => "/"
+      if (P == 1)
       {
+        Result = L"/";
+      }
+      else
+      {
+        intptr_t P2 = Result.SubString(1, P-1).LastDelimiter(L"/");
+        assert(P2 > 0);
         Result.Delete(P2, P - P2 + 3);
       }
     }
@@ -396,7 +396,7 @@ TDateTime ReduceDateTimePrecision(const TDateTime & DateTime,
         break;
 
       default:
-        assert(false);
+        FAIL;
     }
 
     Result = EncodeDateVerbose(Y, M, D) + EncodeTimeVerbose(H, N, S, MS);
@@ -453,7 +453,7 @@ UnicodeString ModificationStr(const TDateTime & DateTime,
         EngShortMonthNames[Month-1], Day, Hour, Min);
 
     default:
-      assert(false);
+      FAIL;
       // fall thru
 
     case mfFull:
@@ -818,7 +818,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
     Result->FLinkedFile->FLinkedByFile = Result.get();
   }
   Result->SetRights(FRights);
-  #define COPY_FP(PROP) Result->F ## PROP = F ## PROP;
+#define COPY_FP(PROP) Result->F ## PROP = F ## PROP;
   COPY_FP(Terminal);
   COPY_FP(Owner);
   COPY_FP(ModificationFmt);
@@ -835,7 +835,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
   COPY_FP(Type);
   COPY_FP(Selected);
   COPY_FP(CyclicLink);
-  #undef COPY_FP
+#undef COPY_FP
   if (Standalone && (!FFullFileName.IsEmpty() || (GetDirectory() != nullptr)))
   {
     Result->FFullFileName = GetFullFileName();
@@ -951,7 +951,7 @@ wchar_t TRemoteFile::GetType() const
   }
   else
   {
-     return FType;
+    return FType;
   }
 }
 //---------------------------------------------------------------------------
@@ -973,7 +973,7 @@ void TRemoteFile::SetLinkedFile(TRemoteFile * Value)
   {
     if (FLinkedFile)
     {
-       SAFE_DESTROY(FLinkedFile);
+      SAFE_DESTROY(FLinkedFile);
     }
     FLinkedFile = Value;
   }
@@ -1057,7 +1057,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       if (P)
       {
         Col = ListingStr;
-        Col.SetLength(P-1);
+        Col.SetLength(P - 1);
         ListingStr.Delete(1, P);
       }
       else
@@ -1169,7 +1169,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         Min = ToWord(Col.SubString(4, 2).ToInt());
         if (Col.Length() >= 8)
         {
-          Sec = ToWord(Sysutils::StrToInt(Col.SubString(7, 2)));
+          Sec = ToWord(Sysutils::StrToInt64(Col.SubString(7, 2)));
         }
         else
         {
@@ -1189,7 +1189,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         Min = ToWord(Col.SubString(4, 2).ToInt());
         if (Col.Length() >= 8)
         {
-          Sec = ToWord(Sysutils::StrToInt(Col.SubString(7, 2)));
+          Sec = ToWord(Sysutils::StrToInt64(Col.SubString(7, 2)));
         }
         else
         {
@@ -1218,7 +1218,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         if (Day == 0)
         {
           GetNCol();
-          Day = ToWord(Sysutils::StrToInt(Col));
+          Day = ToWord(Sysutils::StrToInt64(Col));
         }
         if ((Day < 1) || (Day > 31))
         {
@@ -1234,13 +1234,13 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           {
             Abort();
           }
-          Hour = ToWord(Sysutils::StrToInt(Col.SubString(1, 2)));
-          Min = ToWord(Sysutils::StrToInt(Col.SubString(4, 2)));
-          Sec = ToWord(Sysutils::StrToInt(Col.SubString(7, 2)));
+          Hour = ToWord(Sysutils::StrToInt64(Col.SubString(1, 2)));
+          Min = ToWord(Sysutils::StrToInt64(Col.SubString(4, 2)));
+          Sec = ToWord(Sysutils::StrToInt64(Col.SubString(7, 2)));
           FModificationFmt = mfFull;
           // do not trim leading space of filename
           GetNCol();
-          Year = ToWord(Sysutils::StrToInt(Col));
+          Year = ToWord(Sysutils::StrToInt64(Col));
         }
         else
         {
@@ -1264,8 +1264,8 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           intptr_t P;
           if ((P = ToWord(Col.Pos(L':'))) > 0)
           {
-            Hour = ToWord(Sysutils::StrToInt(Col.SubString(1, P-1)));
-            Min = ToWord(Sysutils::StrToInt(Col.SubString(P+1, Col.Length() - P)));
+            Hour = ToWord(Sysutils::StrToInt64(Col.SubString(1, P - 1)));
+            Min = ToWord(Sysutils::StrToInt64(Col.SubString(P + 1, Col.Length() - P)));
             if ((Hour > 23) || (Min > 59))
               Abort();
             // When we don't got year, we assume current year
@@ -1282,7 +1282,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           }
           else
           {
-            Year = ToWord(Sysutils::StrToInt(Col));
+            Year = ToWord(Sysutils::StrToInt64(Col));
             if (Year > 10000)
               Abort();
             // When we don't got time we assume midnight
@@ -1426,7 +1426,7 @@ UnicodeString TRemoteFile::GetListingStr() const
     LinkPart = UnicodeString(SYMLINKSTR) + GetLinkTo();
   }
   return Format(L"%s%s %3s %-8s %-8s %9s %-12s %s%s",
-    GetType(), GetRights()->GetText().c_str(), IntToStr(FINodeBlocks).c_str(), GetFileOwner().GetName().c_str(),
+    GetType(), GetRights()->GetText().c_str(), Int64ToStr(FINodeBlocks).c_str(), GetFileOwner().GetName().c_str(),
     GetFileGroup().GetName().c_str(), Int64ToStr(GetSize()).c_str(), GetModificationStr().c_str(), GetFileName().c_str(),
     LinkPart.c_str());
 }

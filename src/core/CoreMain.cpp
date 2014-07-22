@@ -109,7 +109,7 @@ bool IsAuthenticationPrompt(TPromptKind Kind)
     (Kind == pkPassword) || (Kind == pkNewPassword);
 }
 //---------------------------------------------------------------------------
-bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
+bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
 {
   return
     (Prompts->GetCount() == 1) && FLAGCLEAR(intptr_t(Prompts->GetObject(0)), pupEcho) &&
@@ -117,14 +117,25 @@ bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
      (Kind == pkTIS) || (Kind == pkCryptoCard));
 }
 //---------------------------------------------------------------------------
+bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
+{
+  return
+    IsPasswordOrPassphrasePrompt(Kind, Prompts) &&
+    (Kind != pkPassphrase);
+}
+//---------------------------------------------------------------------------
 void CoreInitialize()
 {
   Randomize();
   CryptographyInitialize();
 
+  assert(GetConfiguration() != nullptr);
+
+  PuttyInitialize();
   #ifndef NO_FILEZILLA
   TFileZillaIntf::Initialize();
   #endif
+  NeonInitialize();
 
   StoredSessions = new TStoredSessionList();
 
@@ -149,6 +160,7 @@ void CoreFinalize()
     ShowExtendedException(&E);
   }
 
+  NeonFinalize();
   #ifndef NO_FILEZILLA
   TFileZillaIntf::Finalize();
   #endif

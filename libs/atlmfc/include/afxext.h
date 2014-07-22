@@ -16,11 +16,6 @@
 #ifndef __AFXWIN_H__
 	#include <afxwin.h>
 #endif
-#ifndef __AFXDLGS_H__
-	#include <afxdlgs.h>
-#endif
-
-#include <uxtheme.h>
 
 #ifdef _AFX_MINREBUILD
 #pragma component(minrebuild, off)

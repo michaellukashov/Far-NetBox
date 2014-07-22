@@ -269,7 +269,6 @@ void AppendWChar(UnicodeString & Str2, const wchar_t Ch);
 void AppendChar(std::string & Str2, const char Ch);
 
 void AppendPathDelimiterW(UnicodeString & Str2);
-void AppendPathDelimiterA(std::string & Str2);
 
 UnicodeString ExpandEnvVars(const UnicodeString & Str2);
 

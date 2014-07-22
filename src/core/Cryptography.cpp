@@ -569,7 +569,7 @@ bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Passwor
   }
   else
   {
-    Password = "";
+    Password = L"";
   }
   return Result;
 }

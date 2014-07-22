@@ -11,6 +11,7 @@
 TConfiguration * CreateConfiguration();
 
 void ShowExtendedException(Exception * E);
+bool AppendExceptionStackTrace(TStrings *& MoreMessages);
 
 UnicodeString GetRegistryKey();
 void * BusyStart();
@@ -118,6 +119,7 @@ enum TPromptUserParam
 };
 
 bool IsAuthenticationPrompt(TPromptKind Kind);
+bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts);
 bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE4(TFileFoundEvent, void,
@@ -145,6 +147,19 @@ public:
 
 private:
   TDateTime FStart;
+};
+//---------------------------------------------------------------------------
+struct TClipboardHandler
+{
+NB_DECLARE_CLASS(TClipboardHandler)
+public:
+  UnicodeString Text;
+
+  void Copy(TObject * /*Sender*/)
+  {
+    TInstantOperationVisualizer Visualizer;
+    CopyToClipboard(Text);
+  }
 };
 //---------------------------------------------------------------------------
 #endif

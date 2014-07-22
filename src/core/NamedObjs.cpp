@@ -56,14 +56,14 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
     while (List->FindByName(GetName()))
     {
       intptr_t P = 0;
-      intptr_t N = 0;
+      int64_t N = 0;
       // If name already contains number parenthesis remove it (and remember it)
       UnicodeString Name = GetName();
       if ((Name[Name.Length()] == L')') && ((P = Name.LastDelimiter(L'(')) > 0))
       {
         try
         {
-          N = Sysutils::StrToInt(Name.SubString(P + 1, Name.Length() - P - 1));
+          N = Sysutils::StrToInt64(Name.SubString(P + 1, Name.Length() - P - 1));
           Name.Delete(P, Name.Length() - P + 1);
           SetName(Name.TrimRight());
         }
@@ -73,7 +73,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
           N = 0;
         }
       }
-      SetName(Name + L" (" + IntToStr(N+1) + L")");
+      SetName(Name + L" (" + Int64ToStr(N+1) + L")");
     }
 }
 //--- TNamedObjectList ------------------------------------------------------

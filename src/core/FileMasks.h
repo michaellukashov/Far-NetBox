@@ -29,7 +29,7 @@ public:
   };
 
   static bool IsMask(const UnicodeString & Mask);
-  static UnicodeString NormalizeMask(const UnicodeString & Mask, const UnicodeString & AnyMask = "");
+  static UnicodeString NormalizeMask(const UnicodeString & Mask, const UnicodeString & AnyMask = L"");
   static UnicodeString ComposeMaskStr(
     TStrings * IncludeFileMasksStr, TStrings * ExcludeFileMasksStr,
     TStrings * IncludeDirectoryMasksStr, TStrings * ExcludeDirectoryMasksStr);
@@ -48,7 +48,7 @@ public:
   void SetMask(const UnicodeString & Mask);
 
   bool Matches(const UnicodeString & AFileName, bool Directory = false,
-    const UnicodeString & Path = "", const TParams * Params = nullptr) const;
+    const UnicodeString & Path = L"", const TParams * Params = nullptr) const;
   bool Matches(const UnicodeString & AFileName, bool Directory,
     const UnicodeString & Path, const TParams * Params,
     bool & ImplicitMatch) const;
@@ -235,8 +235,8 @@ public:
 
   bool IsFileListCommand(const UnicodeString & Command);
   virtual bool IsFileCommand(const UnicodeString & Command);
-  // bool IsSiteCommand(const UnicodeString & Command);
-  // bool IsPasswordCommand(const UnicodeString & Command);
+  bool IsSiteCommand(const UnicodeString & Command);
+  bool IsPasswordCommand(const UnicodeString & Command);
 
 protected:
   virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index);

@@ -70,7 +70,8 @@ DEFINE_CALLBACK_TYPE2(TQueueItemUpdateEvent, void,
 enum TQueueEvent
 {
   qeEmpty,
-  qePendingUserAction
+  qeEmptyButMonitored,
+  qePendingUserAction,
 };
 
 DEFINE_CALLBACK_TYPE2(TQueueEventEvent, void,
@@ -443,7 +444,7 @@ private:
   void TerminalChangeDirectory(TObject * Sender);
   void TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly);
   void TerminalStartReadDirectory(TObject * Sender);
-  void TerminalReadDirectoryProgress(TObject * Sender, intptr_t Progress, bool & Cancel);
+  void TerminalReadDirectoryProgress(TObject * Sender, intptr_t Progress, intptr_t ResolvedLinks, bool & Cancel);
   void TerminalInitializeLog(TObject * Sender);
 };
 //---------------------------------------------------------------------------

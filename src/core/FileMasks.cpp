@@ -19,10 +19,8 @@ static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1
 //---------------------------------------------------------------------------
 EFileMasksException::EFileMasksException(
   const UnicodeString & AMessage, intptr_t AErrorStart, intptr_t AErrorLen) :
-  Exception(AMessage)
+  Exception(AMessage), ErrorStart(AErrorStart), ErrorLen(AErrorLen)
 {
-  ErrorStart = AErrorStart;
-  ErrorLen = AErrorLen;
 }
 //---------------------------------------------------------------------------
 UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeString & Mask, bool & Masked)
@@ -420,7 +418,7 @@ bool TFileMasks::Matches(const UnicodeString & AFileName, bool Directory,
   const UnicodeString & Path, const TParams * Params,
   bool & ImplicitMatch) const
 {
-  bool ImplicitIncludeMatch = (FMasks[MASK_INDEX(Directory, true)].empty());
+  bool ImplicitIncludeMatch = FMasks[MASK_INDEX(Directory, true)].empty();
   bool ExplicitIncludeMatch = MatchesMasks(AFileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, true)], true);
   bool Result =
     (ImplicitIncludeMatch || ExplicitIncludeMatch) &&
@@ -983,28 +981,28 @@ intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, in
   switch (PatternCmd)
   {
     case L'?':
+    {
+      const wchar_t * Ptr = Command.c_str() + Index - 1;
+      const wchar_t * PatternEnd = wcschr(Ptr + 1, L'!');
+      if (PatternEnd == nullptr)
       {
-        const wchar_t * Ptr = Command.c_str() + Index - 1;
-        const wchar_t * PatternEnd = wcschr(Ptr + 1, L'!');
-        if (PatternEnd == nullptr)
-        {
-          throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
-        }
-        Len = PatternEnd - Ptr + 1;
+        throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
       }
-      break;
+      Len = PatternEnd - Ptr + 1;
+    }
+    break;
 
     case L'`':
+    {
+      const wchar_t * Ptr = Command.c_str() + Index - 1;
+      const wchar_t * PatternEnd = wcschr(Ptr + 2, L'`');
+      if (PatternEnd == nullptr)
       {
-        const wchar_t * Ptr = Command.c_str() + Index - 1;
-        const wchar_t * PatternEnd = wcschr(Ptr + 2, L'`');
-        if (PatternEnd == nullptr)
-        {
-          throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
-        }
-        Len = PatternEnd - Ptr + 1;
+        throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
       }
-      break;
+      Len = PatternEnd - Ptr + 1;
+    }
+    break;
 
     default:
       Len = FChildCustomCommand->PatternLen(Command, Index);
@@ -1076,7 +1074,7 @@ void TCustomCommandData::Init(
   TSessionData * SessionData, const UnicodeString & AUserName, const UnicodeString & APassword)
 {
   HostName = SessionData->GetHostNameExpanded();
-  UserName = AUserName; // SessionData->GetUserNameExpanded();
+  UserName = AUserName;
   Password = APassword;
 }
 //---------------------------------------------------------------------------
@@ -1196,7 +1194,7 @@ bool TFileCustomCommand::IsFileCommand(const UnicodeString & Command)
 {
   return FindPattern(Command, L'!') || FindPattern(Command, L'&');
 }
-/*//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 bool TFileCustomCommand::IsSiteCommand(const UnicodeString & Command)
 {
   return FindPattern(Command, L'@');
@@ -1207,4 +1205,3 @@ bool TFileCustomCommand::IsPasswordCommand(const UnicodeString & Command)
   return FindPattern(Command, L'p');
 }
 //---------------------------------------------------------------------------
-*/

@@ -105,7 +105,6 @@
 
 // public headers
 #include "afxwin.h"
-#include "afxdlgs.h"
 #include "afxext.h"
 
 #ifndef _AFX_NO_OLE_SUPPORT
@@ -188,7 +187,7 @@
 
 #if (0x0600 <= WINVER) && defined(_UNICODE)
 	// #include "afxtaskdialog.h"
-#endif 
+#endif
 
 #include <winreg.h>
 #include <winnls.h>
