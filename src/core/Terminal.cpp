@@ -2727,7 +2727,7 @@ UnicodeString TTerminal::FormatFileDetailsForLog(const UnicodeString & AFileName
   // optimization
   if (GetLog()->GetLogging())
   {
-    Result = FORMAT(L"'%s' [%s] [%s]", AFileName.c_str(), UnicodeString(Modification != TDateTime() ? StandardTimestamp(Modification) : UnicodeString(L"n/a")).c_str(), IntToStr(Size).c_str());
+    Result = FORMAT(L"'%s' [%s] [%s]", AFileName.c_str(), UnicodeString(Modification != TDateTime() ? StandardTimestamp(Modification) : UnicodeString(L"n/a")).c_str(), Int64ToStr(Size).c_str());
   }
   return Result;
 }
