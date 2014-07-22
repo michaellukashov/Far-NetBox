@@ -743,7 +743,7 @@ static bool PathIsRelative_CorrectedForMicrosoftStupidity(const UnicodeString & 
   UnicodeString Result = ReplaceChar(Path, L'/', L'\\');
 
   //Now call the API
-  return PathIsRelative(Result.c_str());
+  return PathIsRelative(Result.c_str()) == TRUE;
 }
 //---------------------------------------------------------------------------
 static int GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_TYPE & PrefixType)
