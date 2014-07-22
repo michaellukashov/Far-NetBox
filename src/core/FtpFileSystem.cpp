@@ -2945,7 +2945,7 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
   // This reverses how FZAPI converts FILETIME to time_t,
   // before passing it to FZ_ASYNCREQUEST_OVERWRITE.
   int64_t Timestamp;
-  tm * Tm = localtime(&Time);
+  tm * Tm = gmtime(&Time); // localtime(&Time);
   if (Tm != nullptr)
   {
     SYSTEMTIME SystemTime;
