@@ -1,6 +1,7 @@
-NetBox 2.1.38.314 ??.07.2014
+NetBox 2.1.38.315 ??.07.2014
 --------------------
   * Bugfix: Filter not working on uploading files on server
+    Copy only new/changed files not working
     (http://forum.farmanager.com/viewtopic.php?p=120480#p120480)
   * Bugfix: non-ASCII session name is corrupted
     (http://forum.farmanager.com/viewtopic.php?p=120841#p120841)
