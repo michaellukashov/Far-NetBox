@@ -722,7 +722,7 @@ enum PATH_PREFIX_TYPE
   PPT_LONG_UNICODE_UNC,   //Found \\?\UNC\ prefix
 };
 //---------------------------------------------------------------------------
-static int PathRootLength(const UnicodeString & Path)
+static intptr_t PathRootLength(const UnicodeString & Path)
 {
   // Correction for PathSkipRoot API
 
@@ -746,7 +746,7 @@ static bool PathIsRelative_CorrectedForMicrosoftStupidity(const UnicodeString & 
   return PathIsRelative(Result.c_str()) == TRUE;
 }
 //---------------------------------------------------------------------------
-static int GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_TYPE & PrefixType)
+static intptr_t GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_TYPE & PrefixType)
 {
   // Checks if 'pPath' begins with the drive, share, prefix, etc
   // EXAMPLES:
@@ -760,13 +760,13 @@ static int GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_TYPE &
   // RETURN:
   //      = Index in 'pPath' after the root, or
   //      = 0 if no root was found
-  int Result = 0;
+  intptr_t Result = 0;
 
   PrefixType = PPT_UNKNOWN;
 
   if (!Path.IsEmpty())
   {
-    int Len = Path.Length();
+    intptr_t Len = Path.Length();
 
     bool WinXPOnly = !IsWinVista();
 
@@ -774,7 +774,7 @@ static int GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_TYPE &
     if (!WinXPOnly)
     {
       // Works since Vista and up, but still needs correction :)
-      int RootLength = PathRootLength(Path);
+      intptr_t RootLength = PathRootLength(Path);
       if (RootLength >= 0)
       {
         Result = RootLength + 1;
@@ -782,7 +782,7 @@ static int GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_TYPE &
     }
 
     // Now determine the type of prefix
-    int IndCheckUNC = -1;
+    intptr_t IndCheckUNC = -1;
 
     if ((Len >= 8) &&
         (Path[1] == L'\\' || Path[1] == L'/') &&
@@ -832,7 +832,7 @@ static int GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_TYPE &
     if (IndCheckUNC >= 0)
     {
       // Check for UNC, i.e. \\server\share\ part
-      int Index = IndCheckUNC;
+      intptr_t Index = IndCheckUNC;
       for (int SkipSlashes = 2; SkipSlashes > 0; SkipSlashes--)
       {
         for(; Index <= Len; Index++)
@@ -873,7 +873,7 @@ static int GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_TYPE &
       }
 
       // For older OS only
-      int RootLength = PathRootLength(Path.SubString(Result, Path.Length() - Result + 1));
+      intptr_t RootLength = PathRootLength(Path.SubString(Result, Path.Length() - Result + 1));
       if (RootLength >= 0)
       {
         Result = RootLength + 1;
@@ -923,7 +923,7 @@ static UnicodeString MakeUnicodeLargePath(const UnicodeString & Path)
               // Get current root path
               UnicodeString CurrentDir = GetCurrentDir();
               PATH_PREFIX_TYPE PrefixType2; // unused
-              int Following = GetOffsetAfterPathRoot(CurrentDir, PrefixType2);
+              intptr_t Following = GetOffsetAfterPathRoot(CurrentDir, PrefixType2);
               if (Following > 0)
               {
                 AddPrefix = true;
@@ -2206,7 +2206,7 @@ UnicodeString EncodeUrlString(const UnicodeString & S)
 UnicodeString EncodeUrlPath(const UnicodeString & S)
 {
   UnicodeString Ignore = NonUrlChars();
-  int P = Ignore.Pos(L"/");
+  intptr_t P = Ignore.Pos(L"/");
   if (ALWAYS_TRUE(P > 0))
   {
     Ignore.Delete(P, 1);
