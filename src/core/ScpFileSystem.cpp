@@ -608,7 +608,7 @@ bool TSCPFileSystem::RemoveLastLine(UnicodeString & Line,
       IsLastLine = true;
       Line.SetLength(Pos - 1);
     }
-    ReturnCode = Code;
+    ReturnCode = static_cast<intptr_t>(Code);
   }
   return IsLastLine;
 }
@@ -2557,7 +2557,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
                   BlockBuf.SetSize(OperationProgress->TransferBlockSize());
                   BlockBuf.SetPosition(0);
 
-                  FSecureShell->Receive(reinterpret_cast<uint8_t *>(BlockBuf.GetData()), BlockBuf.GetSize());
+                  FSecureShell->Receive(reinterpret_cast<uint8_t *>(BlockBuf.GetData()), static_cast<intptr_t>(BlockBuf.GetSize()));
                   OperationProgress->AddTransfered(BlockBuf.GetSize());
 
                   if (OperationProgress->AsciiTransfer)

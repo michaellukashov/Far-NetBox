@@ -2744,7 +2744,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
     FMultineResponse = (Response.Length() >= 4) && (Response[4] == L'-');
     FLastResponse->Clear();
     FLastErrorResponse->Clear();
-    SetLastCode(Code);
+    SetLastCode(static_cast<intptr_t>(Code));
     if (Response.Length() >= 5)
     {
       StoreLastResponse(Response.SubString(5, Response.Length() - 4));

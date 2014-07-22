@@ -719,7 +719,7 @@ uintptr_t GetSpeedLimit(const UnicodeString & Text)
     {
       throw Exception(FMTLOAD(SPEED_INVALID, Text.c_str()));
     }
-    Result = SSpeed;
+    Result = static_cast<uintptr_t>(SSpeed);
   }
   return Result * 1024;
 }

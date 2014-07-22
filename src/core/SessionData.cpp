@@ -1615,7 +1615,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     }
     if (Options->FindSwitch(L"timeout", Value))
     {
-      SetTimeout(Sysutils::StrToInt64(Value));
+      SetTimeout(static_cast<intptr_t>(Sysutils::StrToInt64(Value)));
     }
     if (Options->FindSwitch(L"hostkey", Value) ||
         Options->FindSwitch(L"certificate", Value))

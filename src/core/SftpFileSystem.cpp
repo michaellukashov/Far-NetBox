@@ -3747,14 +3747,14 @@ void TSFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
     int64_t Flags = Packet.GetInt64(); // bit mask of f_flag values
     int64_t NameMax = Packet.GetInt64(); // maximum filename length
 
-    FTerminal->LogEvent(FORMAT(L"Block size: %s", IntToStr(BlockSize).c_str()));
-    FTerminal->LogEvent(FORMAT(L"Fundamental block size: %s", IntToStr(FundamentalBlockSize).c_str()));
-    FTerminal->LogEvent(FORMAT(L"Total blocks: %s", IntToStr(Blocks).c_str()));
-    FTerminal->LogEvent(FORMAT(L"Free blocks: %s", IntToStr(FreeBlocks).c_str()));
-    FTerminal->LogEvent(FORMAT(L"Free blocks for non-root: %s", IntToStr(AvailableBlocks).c_str()));
-    FTerminal->LogEvent(FORMAT(L"Total file inodes: %s", IntToStr(FileINodes).c_str()));
-    FTerminal->LogEvent(FORMAT(L"Free file inodes: %s", IntToStr(FreeFileINodes).c_str()));
-    FTerminal->LogEvent(FORMAT(L"Free file inodes for non-root: %s", IntToStr(AvailableFileINodes).c_str()));
+    FTerminal->LogEvent(FORMAT(L"Block size: %s", Int64ToStr(BlockSize).c_str()));
+    FTerminal->LogEvent(FORMAT(L"Fundamental block size: %s", Int64ToStr(FundamentalBlockSize).c_str()));
+    FTerminal->LogEvent(FORMAT(L"Total blocks: %s", Int64ToStr(Blocks).c_str()));
+    FTerminal->LogEvent(FORMAT(L"Free blocks: %s", Int64ToStr(FreeBlocks).c_str()));
+    FTerminal->LogEvent(FORMAT(L"Free blocks for non-root: %s", Int64ToStr(AvailableBlocks).c_str()));
+    FTerminal->LogEvent(FORMAT(L"Total file inodes: %s", Int64ToStr(FileINodes).c_str()));
+    FTerminal->LogEvent(FORMAT(L"Free file inodes: %s", Int64ToStr(FreeFileINodes).c_str()));
+    FTerminal->LogEvent(FORMAT(L"Free file inodes for non-root: %s", Int64ToStr(AvailableFileINodes).c_str()));
     FTerminal->LogEvent(FORMAT(L"File system ID: %s", BytesToHex(reinterpret_cast<const uint8_t *>(&SID), sizeof(SID)).c_str()));
     UnicodeString FlagStr;
     if (FLAGSET(Flags, SFTP_EXT_STATVFS_ST_RDONLY))
@@ -3769,14 +3769,14 @@ void TSFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
     }
     if (Flags != 0)
     {
-      AddToList(FlagStr, UnicodeString(L"0x") + IntToHex(Flags, 2), L",");
+      AddToList(FlagStr, UnicodeString(L"0x") + IntToHex(static_cast<uintptr_t>(Flags), 2), L",");
     }
     if (FlagStr.IsEmpty())
     {
       FlagStr = L"none";
     }
     FTerminal->LogEvent(FORMAT(L"Flags: %s", FlagStr.c_str()));
-    FTerminal->LogEvent(FORMAT(L"Max name length: %s", IntToStr(NameMax).c_str()));
+    FTerminal->LogEvent(FORMAT(L"Max name length: %s", Int64ToStr(NameMax).c_str()));
 
     ASpaceAvailable.BytesOnDevice = BlockSize * Blocks;
     ASpaceAvailable.UnusedBytesOnDevice = BlockSize * FreeBlocks;
