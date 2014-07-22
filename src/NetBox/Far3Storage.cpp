@@ -44,14 +44,13 @@ void TFar3Storage::SetAccessMode(TStorageAccessMode Value)
 intptr_t TFar3Storage::OpenSubKeyInternal(intptr_t Root, const UnicodeString & SubKey, bool CanCreate)
 {
   intptr_t NewRoot = 0;
-  UnicodeString UnmungedSubKey = PuttyUnMungeStr(SubKey);
   if (CanCreate)
   {
-    NewRoot = FPluginSettings.CreateSubKey(Root, UnmungedSubKey.c_str());
+    NewRoot = FPluginSettings.CreateSubKey(Root, SubKey.c_str());
   }
   else
   {
-    NewRoot = FPluginSettings.OpenSubKey(Root, UnmungedSubKey.c_str());
+    NewRoot = FPluginSettings.OpenSubKey(Root, SubKey.c_str());
   }
   return NewRoot;
 }
@@ -102,7 +101,7 @@ bool TFar3Storage::DeleteSubKey(const UnicodeString & SubKey)
     K = GetFullCurrentSubKey();
     FRoot = FPluginSettings.OpenSubKey(FRoot, K.c_str());
   }
-  intptr_t Root = FPluginSettings.OpenSubKey(FRoot, SubKey.c_str());
+  intptr_t Root = FPluginSettings.OpenSubKey(FRoot, MungeKeyName(SubKey).c_str());
   if (Root != 0)
   {
     return FPluginSettings.DeleteSubKey(Root);
