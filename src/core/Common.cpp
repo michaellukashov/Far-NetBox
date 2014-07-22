@@ -1207,30 +1207,30 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
 //---------------------------------------------------------------------------
 TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)
 {
+  TDateTime Result;  
   try
   {
-    TDateTime DateTime = EncodeDate(Year, Month, Day);
-    return DateTime;
+    Result = EncodeDate(Year, Month, Day);
   }
   catch (EConvertError & E)
   {
     throw EConvertError(FORMAT(L"%s [%04u-%02u-%02u]", E.Message.c_str(), int(Year), int(Month), int(Day)));
   }
-  return TDateTime();
+  return Result;
 }
 //---------------------------------------------------------------------------
 TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
 {
+  TDateTime Result;
   try
   {
-    TDateTime DateTime = EncodeTime(Hour, Min, Sec, MSec);
-    return DateTime;
+    Result = EncodeTime(Hour, Min, Sec, MSec);
   }
   catch (EConvertError & E)
   {
     throw EConvertError(FORMAT(L"%s [%02u:%02u:%02u.%04u]", E.Message.c_str(), int(Hour), int(Min), int(Sec), int(MSec)));
   }
-  return TDateTime();
+  return Result;
 }
 //---------------------------------------------------------------------------
 TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime)

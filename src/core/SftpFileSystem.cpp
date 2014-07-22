@@ -2463,6 +2463,7 @@ uintptr_t TSFTPFileSystem::SendPacketAndReceiveResponse(
 //---------------------------------------------------------------------------
 UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & APath)
 {
+  UnicodeString Result;
   try
   {
     FTerminal->LogEvent(FORMAT(L"Getting real path for '%s'",
@@ -2476,12 +2477,10 @@ UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & APath)
       FTerminal->FatalError(nullptr, LoadStr(SFTP_NON_ONE_FXP_NAME_PACKET));
     }
 
-    UnicodeString RealDir = ::UnixExcludeTrailingBackslash(Packet.GetPathString(FUtfStrings));
+    Result = ::UnixExcludeTrailingBackslash(Packet.GetPathString(FUtfStrings));
     // ignore rest of SSH_FXP_NAME packet
 
-    FTerminal->LogEvent(FORMAT(L"Real path is '%s'", RealDir.c_str()));
-
-    return RealDir;
+    FTerminal->LogEvent(FORMAT(L"Real path is '%s'", Result.c_str()));
   }
   catch (Exception & E)
   {
@@ -2494,7 +2493,7 @@ UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & APath)
       throw;
     }
   }
-  return UnicodeString();
+  return Result;
 }
 //---------------------------------------------------------------------------
 UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & APath,

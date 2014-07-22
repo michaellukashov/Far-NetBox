@@ -573,9 +573,9 @@ void TConfiguration::CleanupRandomSeedFile()
 //---------------------------------------------------------------------------
 void TConfiguration::CleanupIniFile()
 {
+#if 0
   try
   {
-#if 0
     if (::FileExists(ApiPath(GetIniFileStorageNameForReading())))
     {
       DeleteFileChecked(GetIniFileStorageNameForReading());
@@ -584,12 +584,12 @@ void TConfiguration::CleanupIniFile()
     {
       FDontSave = true;
     }
-#endif
   }
   catch (Exception & E)
   {
     throw ExtException(&E, LoadStr(CLEANUP_INIFILE_ERROR));
   }
+#endif
 }
 //---------------------------------------------------------------------------
 RawByteString TConfiguration::EncryptPassword(const UnicodeString & Password, const UnicodeString & Key)
@@ -736,6 +736,7 @@ bool TConfiguration::GetIsUnofficial() const
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetVersionStr() const
 {
+  UnicodeString Result;
   TGuard Guard(&FCriticalSection);
   try
   {
@@ -775,19 +776,17 @@ UnicodeString TConfiguration::GetVersionStr() const
 //    AddToList(BuildStr, DateStr, L" ");
 //    #endif
 
-    UnicodeString Result = FMTLOAD(VERSION2, GetVersion(), BuildStr.c_str());
+    Result = FMTLOAD(VERSION2, GetVersion(), BuildStr.c_str());
 
     #ifndef BUILD_OFFICIAL
     Result += L" " + LoadStr(VERSION_DONT_DISTRIBUTE);
     #endif
-
-    return Result;
   }
   catch (Exception & E)
   {
     throw ExtException(&E, L"Can't get application version");
   }
-  return UnicodeString();
+  return Result;
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetVersion() const
