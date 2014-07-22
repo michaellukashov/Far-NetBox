@@ -2455,22 +2455,21 @@ uintptr_t TSFTPFileSystem::SendPacketAndReceiveResponse(
   const TSFTPPacket * Packet, TSFTPPacket * Response, int ExpectedType,
   int AllowStatus)
 {
-  uintptr_t Result;
   TSFTPBusy Busy(this);
   SendPacket(Packet);
-  Result = ReceiveResponse(Packet, Response, ExpectedType, AllowStatus);
+  uintptr_t Result = ReceiveResponse(Packet, Response, ExpectedType, AllowStatus);
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & Path)
+UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & APath)
 {
   try
   {
     FTerminal->LogEvent(FORMAT(L"Getting real path for '%s'",
-      Path.c_str()));
+      APath.c_str()));
 
     TSFTPPacket Packet(SSH_FXP_REALPATH, FCodePage);
-    Packet.AddPathString(Path, FUtfStrings);
+    Packet.AddPathString(APath, FUtfStrings);
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_NAME);
     if (Packet.GetCardinal() != 1)
     {
@@ -2488,7 +2487,7 @@ UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & Path)
   {
     if (FTerminal->GetActive())
     {
-      throw ExtException(&E, FMTLOAD(SFTP_REALPATH_ERROR, Path.c_str()));
+      throw ExtException(&E, FMTLOAD(SFTP_REALPATH_ERROR, APath.c_str()));
     }
     else
     {
@@ -2498,55 +2497,55 @@ UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & Path)
   return UnicodeString();
 }
 //---------------------------------------------------------------------------
-UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & Path,
-  const UnicodeString & BaseDir)
+UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & APath,
+  const UnicodeString & ABaseDir)
 {
-  UnicodeString APath;
+  UnicodeString Path;
 
-  if (::UnixIsAbsolutePath(Path))
+  if (::UnixIsAbsolutePath(APath))
   {
-    APath = Path;
+    Path = APath;
   }
   else
   {
-    if (!Path.IsEmpty())
+    if (!APath.IsEmpty())
     {
       // this condition/block was outside (before) current block
       // but it did not work when Path was empty
-      if (!BaseDir.IsEmpty())
+      if (!ABaseDir.IsEmpty())
       {
-        APath = ::UnixIncludeTrailingBackslash(BaseDir);
+        Path = ::UnixIncludeTrailingBackslash(ABaseDir);
       }
-      APath = APath + Path;
+      Path = Path + APath;
     }
-    if (APath.IsEmpty())
+    if (Path.IsEmpty())
     {
-      APath = ::UnixIncludeTrailingBackslash(L".");
+      Path = ::UnixIncludeTrailingBackslash(L".");
     }
   }
-  return RealPath(APath);
+  return RealPath(Path);
 }
 //---------------------------------------------------------------------------
-UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString & Path)
+UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString & APath)
 {
   // TODO: improve (handle .. etc.)
-  if (::UnixIsAbsolutePath(Path) ||
-      (!FCurrentDirectory.IsEmpty() && ::UnixSamePath(FCurrentDirectory, Path)))
+  if (::UnixIsAbsolutePath(APath) ||
+      (!FCurrentDirectory.IsEmpty() && ::UnixSamePath(FCurrentDirectory, APath)))
   {
-    return Path;
+    return APath;
   }
   else
   {
-    return ::AbsolutePath(FCurrentDirectory, Path);
+    return ::AbsolutePath(FCurrentDirectory, APath);
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & Path)
+UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
 {
   // inspired by canonify() from PSFTP.C
   UnicodeString Result;
-  FTerminal->LogEvent(FORMAT(L"Canonifying: \"%s\"", Path.c_str()));
-  Result = LocalCanonify(Path);
+  FTerminal->LogEvent(FORMAT(L"Canonifying: \"%s\"", APath.c_str()));
+  Result = LocalCanonify(APath);
   bool TryParent = false;
   try
   {
@@ -2566,15 +2565,15 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & Path)
 
   if (TryParent)
   {
-    UnicodeString APath = ::UnixExcludeTrailingBackslash(Result);
-    UnicodeString Name = ::UnixExtractFileName(APath);
+    UnicodeString Path = ::UnixExcludeTrailingBackslash(Result);
+    UnicodeString Name = ::UnixExtractFileName(Path);
     if (Name == THISDIRECTORY || Name == PARENTDIRECTORY)
     {
       // Result = Result;
     }
     else
     {
-      UnicodeString FPath = ::UnixExtractFilePath(APath);
+      UnicodeString FPath = ::UnixExtractFilePath(Path);
       try
       {
         Result = RealPath(FPath);
@@ -2599,15 +2598,15 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TSFTPFileSystem::AbsolutePath(const UnicodeString & Path, bool Local)
+UnicodeString TSFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
 {
   if (Local)
   {
-    return LocalCanonify(Path);
+    return LocalCanonify(APath);
   }
   else
   {
-    return RealPath(Path, GetCurrentDirectory());
+    return RealPath(APath, GetCurrentDirectory());
   }
 }
 //---------------------------------------------------------------------------
