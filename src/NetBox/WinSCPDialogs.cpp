@@ -531,7 +531,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   LogToFileCheck->SetChecked(GetConfiguration()->GetLogToFile());
   LogFileNameEdit->SetText(
     (!GetConfiguration()->GetLogToFile() && GetConfiguration()->GetLogFileName().IsEmpty()) ?
-    IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"&s.log" :
+    ::IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"&s.log" :
     GetConfiguration()->GetLogFileName());
   LogFileAppendButton->SetChecked(GetConfiguration()->GetLogFileAppend());
   LogFileOverwriteButton->SetChecked(!GetConfiguration()->GetLogFileAppend());
@@ -7384,7 +7384,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * Check
   S = ChecklistItem->GetFileName();
   if (ChecklistItem->IsDirectory)
   {
-    S = IncludeTrailingBackslash(S);
+    S = ::IncludeTrailingBackslash(S);
   }
   AddColumn(Line, S, 0);
 

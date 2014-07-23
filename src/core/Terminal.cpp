@@ -5077,7 +5077,7 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
 
               case saUploadUpdate:
                 UploadList->AddObject(
-                  IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
+                  ::IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
                     ChecklistItem->Local.FileName,
                   const_cast<TChecklistItem *>(ChecklistItem));
                 break;
@@ -5109,13 +5109,13 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
               case saUploadNew:
               case saUploadUpdate:
                 UploadList->Add(
-                  IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
+                  ::IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
                     ChecklistItem->Local.FileName);
                 break;
 
               case saDeleteLocal:
                 DeleteLocalList->Add(
-                  IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
+                  ::IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
                     ChecklistItem->Local.FileName);
                 break;
 
@@ -5205,7 +5205,7 @@ void TTerminal::SynchronizeLocalTimestamp(const UnicodeString & /*FileName*/,
     reinterpret_cast<const TChecklistItem *>(AFile);
 
   UnicodeString LocalFile =
-    IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
+    ::IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
       ChecklistItem->Local.FileName;
   FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, LocalFile.c_str()),
     SetLocalFileTime(LocalFile, ChecklistItem->Remote.Modification);

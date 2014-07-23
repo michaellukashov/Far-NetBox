@@ -2024,9 +2024,9 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
     {
       ExtractCommonPath(AFilesToCopy, FInfo->Source);
       // this way the trailing backslash is preserved for root directories like "D:\\"
-      FInfo->Source = ExtractFileDir(IncludeTrailingBackslash(FInfo->Source));
+      FInfo->Source = ExtractFileDir(::IncludeTrailingBackslash(FInfo->Source));
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
-        IncludeTrailingBackslash(FInfo->Source);
+        ::IncludeTrailingBackslash(FInfo->Source);
     }
   }
   else
@@ -2100,9 +2100,9 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   else
   {
     FInfo->Destination =
-      IncludeTrailingBackslash(TargetDir) + CopyParam->GetFileMask();
+      ::IncludeTrailingBackslash(TargetDir) + CopyParam->GetFileMask();
   }
-  FInfo->ModifiedLocal = IncludeTrailingBackslash(TargetDir);
+  FInfo->ModifiedLocal = ::IncludeTrailingBackslash(TargetDir);
 }
 //---------------------------------------------------------------------------
 void TDownloadQueueItem::DoExecute(TTerminal * Terminal)

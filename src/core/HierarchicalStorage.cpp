@@ -176,7 +176,7 @@ bool THierarchicalStorage::OpenSubKey(const UnicodeString & SubKey, bool CanCrea
     // hack to restore last opened key for registry storage
     if (!Result)
     {
-      FKeyHistory->Add(IncludeTrailingBackslash(GetCurrentSubKey() + MungedKey));
+      FKeyHistory->Add(::IncludeTrailingBackslash(GetCurrentSubKey() + MungedKey));
       CloseSubKey();
     }
   }
@@ -188,7 +188,7 @@ bool THierarchicalStorage::OpenSubKey(const UnicodeString & SubKey, bool CanCrea
 
   if (Result)
   {
-    FKeyHistory->Add(IncludeTrailingBackslash(GetCurrentSubKey() + MungedKey));
+    FKeyHistory->Add(::IncludeTrailingBackslash(GetCurrentSubKey() + MungedKey));
   }
 
   return Result;

@@ -678,7 +678,7 @@ bool CompareFileName(const UnicodeString & Path1, const UnicodeString & Path2)
 bool ComparePaths(const UnicodeString & Path1, const UnicodeString & Path2)
 {
   // TODO: ExpandUNCFileName
-  return AnsiSameText(IncludeTrailingBackslash(Path1), IncludeTrailingBackslash(Path2));
+  return AnsiSameText(::IncludeTrailingBackslash(Path1), ::IncludeTrailingBackslash(Path2));
 }
 //---------------------------------------------------------------------------
 bool IsReservedName(const UnicodeString & AFileName)
@@ -1186,7 +1186,7 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
   }
   TSearchRecChecked SearchRec;
 
-  UnicodeString DirName2 = IncludeTrailingBackslash(DirName);
+  UnicodeString DirName2 = ::IncludeTrailingBackslash(DirName);
   if (FindFirstChecked(DirName2 + L"*.*", FindAttrs, SearchRec) == 0)
   {
     SCOPE_EXIT

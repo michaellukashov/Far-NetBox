@@ -12893,7 +12893,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
     if (Dir)
     {
       Action.Cancel();
-      WebDAVDirectorySource(IncludeTrailingBackslash(AFileName), TargetDir,
+      WebDAVDirectorySource(::IncludeTrailingBackslash(AFileName), TargetDir,
         LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
     }
     else

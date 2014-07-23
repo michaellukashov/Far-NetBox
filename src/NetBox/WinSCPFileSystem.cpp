@@ -2090,7 +2090,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
   TFarPanelInfo * AnotherPanel = GetAnotherPanelInfo();
   UnicodeString OldPath = AnotherPanel->GetCurrentDirectory();
   // IncludeTrailingBackslash to expand C: to C:\.
-  UnicodeString LocalPath = IncludeTrailingBackslash(NewPath);
+  UnicodeString LocalPath = ::IncludeTrailingBackslash(NewPath);
   if (!FarControl(FCTL_SETPANELDIR,
                   0,
                   reinterpret_cast<intptr_t>(LocalPath.c_str()),
@@ -2222,7 +2222,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
             UnicodeString ALocalPath;
             if (RemotePath.SubString(1, FullPrevPath.Length()) == FullPrevPath)
             {
-              ALocalPath = IncludeTrailingBackslash(AnotherPanel->GetCurrentDirectory()) +
+              ALocalPath = ::IncludeTrailingBackslash(AnotherPanel->GetCurrentDirectory()) +
                 FromUnixPath(RemotePath.SubString(FullPrevPath.Length() + 1,
                   RemotePath.Length() - FullPrevPath.Length()));
             }
@@ -2536,7 +2536,7 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
   {
     if ((FFileList->GetCount() == 1) && (OpMode & OPM_EDIT))
     {
-      FOriginalEditFile = IncludeTrailingBackslash(DestPath) +
+      FOriginalEditFile = ::IncludeTrailingBackslash(DestPath) +
         ::UnixExtractFileName(FFileList->GetString(0));
       FLastEditFile = FOriginalEditFile;
       FLastEditCopyParam = CopyParam;
@@ -2594,7 +2594,7 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   std::unique_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
   ExportData->Assign(Data);
   ExportData->SetModified(true);
-  UnicodeString XmlFileName = IncludeTrailingBackslash(Param.DestPath) +
+  UnicodeString XmlFileName = ::IncludeTrailingBackslash(Param.DestPath) +
     ::ValidLocalFileName(::ExtractFilename(ExportData->GetName())) + L".netbox";
   std::unique_ptr<THierarchicalStorage> ExportStorage(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
   ExportStorage->Init();
@@ -2812,7 +2812,7 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(
     UnicodeString FileName = PanelItem->GetFileName();
     if (Side == osLocal)
     {
-      FileName = IncludeTrailingBackslash(GetPanelInfo()->GetCurrentDirectory()) + FileName;
+      FileName = ::IncludeTrailingBackslash(GetPanelInfo()->GetCurrentDirectory()) + FileName;
     }
     Result->AddObject(FileName, static_cast<TObject *>(PanelItem->GetUserData()));
   }
@@ -2874,7 +2874,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
               {
                 Dir = GetCurrentDir();
               }
-              FileName = IncludeTrailingBackslash(Dir) + FileName;
+              FileName = ::IncludeTrailingBackslash(Dir) + FileName;
             }
           }
           else

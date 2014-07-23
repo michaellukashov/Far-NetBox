@@ -1024,7 +1024,7 @@ void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   TOnceDoneOperation & OnceDoneOperation)
 {
   Params &= ~cpAppend;
-  UnicodeString FullTargetDir = IncludeTrailingBackslash(TargetDir);
+  UnicodeString FullTargetDir = ::IncludeTrailingBackslash(TargetDir);
 
   intptr_t Index = 0;
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
@@ -1164,7 +1164,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       );
 
       TSinkFileParams SinkFileParams;
-      SinkFileParams.TargetDir = IncludeTrailingBackslash(DestFullName);
+      SinkFileParams.TargetDir = ::IncludeTrailingBackslash(DestFullName);
       SinkFileParams.CopyParam = CopyParam;
       SinkFileParams.Params = Params;
       SinkFileParams.OperationProgress = OperationProgress;
@@ -1443,7 +1443,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
   if (Dir)
   {
     Action.Cancel();
-    DirectorySource(IncludeTrailingBackslash(RealFileName), TargetDir,
+    DirectorySource(::IncludeTrailingBackslash(RealFileName), TargetDir,
       OpenParams->LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
   }
   else
@@ -3024,11 +3024,11 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
     UnicodeString FullFileName = Path2;
     if (OperationProgress->Side == osLocal)
     {
-      FullFileName = IncludeTrailingBackslash(FullFileName);
+      FullFileName = ::IncludeTrailingBackslash(FullFileName);
     }
     else
     {
-      FullFileName = UnixIncludeTrailingBackslash(FullFileName);
+      FullFileName = ::UnixIncludeTrailingBackslash(FullFileName);
     }
     FullFileName += FileName;
 

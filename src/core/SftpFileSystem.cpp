@@ -4155,7 +4155,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
     if (Dir)
     {
       Action.Cancel();
-      SFTPDirectorySource(IncludeTrailingBackslash(AFileName), TargetDir,
+      SFTPDirectorySource(::IncludeTrailingBackslash(AFileName), TargetDir,
         OpenParams.LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
     }
     else
@@ -4926,7 +4926,7 @@ void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   assert(AFilesToCopy && OperationProgress);
 
   UnicodeString FileName;
-  UnicodeString FullTargetDir = IncludeTrailingBackslash(TargetDir);
+  UnicodeString FullTargetDir = ::IncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
@@ -5076,7 +5076,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
       );
 
       TSinkFileParams SinkFileParams;
-      SinkFileParams.TargetDir = IncludeTrailingBackslash(DestFullName);
+      SinkFileParams.TargetDir = ::IncludeTrailingBackslash(DestFullName);
       SinkFileParams.CopyParam = CopyParam;
       SinkFileParams.Params = Params;
       SinkFileParams.OperationProgress = OperationProgress;
