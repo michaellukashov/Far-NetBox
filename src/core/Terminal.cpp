@@ -2313,7 +2313,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & AFileName,
     if (Msg.IsEmpty())
     {
       // Side refers to destination side here
-      UnicodeString FileNameOnly = (Side == osRemote) ? ExtractFileName(AFileName, false) : UnixExtractFileName(AFileName);
+      UnicodeString FileNameOnly = (Side == osRemote) ? ::ExtractFileName(AFileName, false) : ::UnixExtractFileName(AFileName);
       Msg = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE2 :
         REMOTE_FILE_OVERWRITE2), FileNameOnly.c_str(), AFileName.c_str());
     }
