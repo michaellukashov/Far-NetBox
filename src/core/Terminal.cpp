@@ -3201,13 +3201,13 @@ void TTerminal::RecycleFile(const UnicodeString & AFileName,
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::DeleteFile(const UnicodeString & AFileName,
+void TTerminal::RemoteDeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, void * AParams)
 {
-  UnicodeString LocalFileName = AFileName;
+  UnicodeString FileName = AFileName;
   if (AFileName.IsEmpty() && AFile)
   {
-    LocalFileName = AFile->GetFileName();
+    FileName = AFile->GetFileName();
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foDelete)
   {
@@ -3215,25 +3215,25 @@ void TTerminal::DeleteFile(const UnicodeString & AFileName,
     {
       Abort();
     }
-    GetOperationProgress()->SetFile(LocalFileName);
+    GetOperationProgress()->SetFile(FileName);
   }
   intptr_t Params = (AParams != nullptr) ? *(static_cast<int *>(AParams)) : 0;
   bool Recycle =
     FLAGCLEAR(Params, dfForceDelete) &&
     (GetSessionData()->GetDeleteToRecycleBin() != FLAGSET(Params, dfAlternative)) &&
     !GetSessionData()->GetRecycleBinPath().IsEmpty();
-  if (Recycle && !IsRecycledFile(LocalFileName))
+  if (Recycle && !IsRecycledFile(FileName))
   {
-    RecycleFile(LocalFileName, AFile);
+    RecycleFile(FileName, AFile);
   }
   else
   {
-    LogEvent(FORMAT(L"Deleting file \"%s\".", LocalFileName.c_str()));
+    LogEvent(FORMAT(L"Deleting file \"%s\".", FileName.c_str()));
     if (AFile)
     {
-      FileModified(AFile, LocalFileName, true);
+      FileModified(AFile, FileName, true);
     }
-    DoDeleteFile(LocalFileName, AFile, Params);
+    DoDeleteFile(FileName, AFile, Params);
     ReactOnCommand(fsDeleteFile);
   }
 }
@@ -3246,7 +3246,7 @@ void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
   {
     assert(FFileSystem);
     // 'File' parameter: SFTPFileSystem needs to know if file is file or directory
-    FFileSystem->DeleteFile(AFileName, File, Params, Action);
+    FFileSystem->RemoteDeleteFile(AFileName, File, Params, Action);
   }
   catch (Exception & E)
   {
@@ -3264,7 +3264,7 @@ bool TTerminal::DeleteFiles(TStrings * FilesToDelete, intptr_t Params)
   // TODO: avoid resolving symlinks while reading subdirectories.
   // Resolving does not work anyway for relative symlinks in subdirectories
   // (at least for SFTP).
-  return ProcessFiles(FilesToDelete, foDelete, MAKE_CALLBACK(TTerminal::DeleteFile, this), &Params);
+  return ProcessFiles(FilesToDelete, foDelete, MAKE_CALLBACK(TTerminal::RemoteDeleteFile, this), &Params);
 }
 //------------------------------------------------------------------------------
 void TTerminal::DeleteLocalFile(const UnicodeString & AFileName,

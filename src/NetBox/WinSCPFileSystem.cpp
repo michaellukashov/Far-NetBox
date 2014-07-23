@@ -1070,7 +1070,7 @@ void TWinSCPFileSystem::CreateLink()
         {
           GetTerminal()->SetExceptionOnFail(false);
         };
-        GetTerminal()->DeleteFile(L"", File, &Params);
+        GetTerminal()->RemoteDeleteFile(L"", File, &Params);
       }
     }
     GetTerminal()->CreateLink(FileName, PointTo, SymbolicLink);

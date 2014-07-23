@@ -12454,7 +12454,7 @@ void TWebDAVFileSystem::CustomReadFile(const UnicodeString & AFileName,
   }
 }
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::DeleteFile(const UnicodeString & AFileName,
+void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action)
 {
   USEDPARAM(File);
@@ -13394,7 +13394,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     // empty already. If not, it should not be deleted (some files were
     // skipped or some new files were copied to it, while we were downloading)
     intptr_t Params = dfNoRecursive;
-    FTerminal->DeleteFile(AFileName, File, &Params);
+    FTerminal->RemoteDeleteFile(AFileName, File, &Params);
   }
 }
 //------------------------------------------------------------------------------

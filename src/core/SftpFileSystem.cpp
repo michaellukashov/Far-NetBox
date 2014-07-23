@@ -3339,7 +3339,7 @@ void TSFTPFileSystem::DoDeleteFile(const UnicodeString & AFileName, uint8_t Type
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
+void TSFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action)
 {
   uint8_t Type;
@@ -3349,7 +3349,7 @@ void TSFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
     {
       try
       {
-        FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TTerminal::DeleteFile, FTerminal), &Params);
+        FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TTerminal::RemoteDeleteFile, FTerminal), &Params);
       }
       catch (...)
       {
@@ -4766,7 +4766,7 @@ intptr_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
               true, LoadStr(SFTP_OVERWRITE_DELETE_BUTTON)))
         {
           intptr_t Params = dfNoRecursive;
-          FTerminal->DeleteFile(OpenParams->RemoteFileName, nullptr, &Params);
+          FTerminal->RemoteDeleteFile(OpenParams->RemoteFileName, nullptr, &Params);
         }
       }
       else
@@ -5533,7 +5533,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
     // empty already. If not, it should not be deleted (some files were
     // skipped or some new files were copied to it, while we were downloading)
     intptr_t Params2 = dfNoRecursive;
-    FTerminal->DeleteFile(AFileName, AFile, &Params2);
+    FTerminal->RemoteDeleteFile(AFileName, AFile, &Params2);
     ChildError = false;
   }
 }

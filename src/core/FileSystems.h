@@ -174,7 +174,7 @@ public:
     TOnceDoneOperation & OnceDoneOperation) = 0;
   virtual void CreateDirectory(const UnicodeString & DirName) = 0;
   virtual void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic) = 0;
-  virtual void DeleteFile(const UnicodeString & AFileName,
+  virtual void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, intptr_t Params,
     TRmSessionAction & Action) = 0;
   virtual void CustomCommandOnFile(const UnicodeString & AFileName,
