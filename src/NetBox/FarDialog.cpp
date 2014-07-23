@@ -54,9 +54,9 @@ TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
 //---------------------------------------------------------------------------
 TFarDialog::~TFarDialog()
 {
-  for (intptr_t I = 0; I < GetItemCount(); I++)
+  for (intptr_t Index = 0; Index < GetItemCount(); Index++)
   {
-    GetItem(I)->Detach();
+    GetItem(Index)->Detach();
   }
   SAFE_DESTROY(FItems);
   nb_free(FDialogItems);
@@ -93,9 +93,9 @@ void TFarDialog::SetBounds(const TRect & Value)
         Coord.Y = static_cast<short int>(FBounds.Top);
         SendMessage(DM_MOVEDIALOG, (int)true, reinterpret_cast<LONG_PTR>(&Coord));
       }
-      for (intptr_t I = 0; I < GetItemCount(); I++)
+      for (intptr_t Index = 0; Index < GetItemCount(); Index++)
       {
-        GetItem(I)->DialogResized();
+        GetItem(Index)->DialogResized();
       }
     }
   }
@@ -634,9 +634,9 @@ bool TFarDialog::HotKey(uintptr_t Key)
   if (Result)
   {
     Result = false;
-    for (intptr_t I = 0; I < GetItemCount(); I++)
+    for (intptr_t Index = 0; Index < GetItemCount(); Index++)
     {
-      if (GetItem(I)->HotKey(HotKey))
+      if (GetItem(Index)->HotKey(HotKey))
       {
         Result = true;
       }
@@ -649,13 +649,13 @@ bool TFarDialog::HotKey(uintptr_t Key)
 TFarDialogItem * TFarDialog::ItemAt(int X, int Y)
 {
   TFarDialogItem * Result = nullptr;
-  for (intptr_t I = 0; I < GetItemCount(); I++)
+  for (intptr_t Index = 0; Index < GetItemCount(); Index++)
   {
-    TRect Bounds = GetItem(I)->GetActualBounds();
+    TRect Bounds = GetItem(Index)->GetActualBounds();
     if ((Bounds.Left <= X) && (X <= Bounds.Right) &&
         (Bounds.Top <= Y) && (Y <= Bounds.Bottom))
     {
-      Result = GetItem(I);
+      Result = GetItem(Index);
     }
   }
   return Result;
@@ -664,9 +664,9 @@ TFarDialogItem * TFarDialog::ItemAt(int X, int Y)
 bool TFarDialog::CloseQuery()
 {
   bool Result = true;
-  for (intptr_t I = 0; I < GetItemCount() && Result; I++)
+  for (intptr_t Index = 0; Index < GetItemCount() && Result; Index++)
   {
-    if (!GetItem(I)->CloseQuery())
+    if (!GetItem(Index)->CloseQuery())
     {
       Result = false;
     }
@@ -686,9 +686,9 @@ void TFarDialog::RefreshBounds()
 //---------------------------------------------------------------------------
 void TFarDialog::Init()
 {
-  for (intptr_t I = 0; I < GetItemCount(); I++)
+  for (intptr_t Index = 0; Index < GetItemCount(); Index++)
   {
-    GetItem(I)->Init();
+    GetItem(Index)->Init();
   }
 
   RefreshBounds();
@@ -783,9 +783,9 @@ void TFarDialog::Change()
   else
   {
     std::unique_ptr<TList> NotifiedContainers(new TList());
-    for (intptr_t I = 0; I < GetItemCount(); I++)
+    for (intptr_t Index = 0; Index < GetItemCount(); Index++)
     {
-      TFarDialogItem * DItem = GetItem(I);
+      TFarDialogItem * DItem = GetItem(Index);
       DItem->Change();
       if (DItem->GetContainer() && NotifiedContainers->IndexOf(DItem->GetContainer()) == NPOS)
       {
@@ -837,9 +837,9 @@ void TFarDialog::ProcessGroup(intptr_t Group, TFarProcessGroupEvent Callback,
     {
       UnlockChanges();
     };
-    for (intptr_t I = 0; I < GetItemCount(); I++)
+    for (intptr_t Index = 0; Index < GetItemCount(); Index++)
     {
-      TFarDialogItem * Item = GetItem(I);
+      TFarDialogItem * Item = GetItem(Index);
       if (Item->GetGroup() == Group)
       {
         Callback(Item, Arg);
@@ -2188,9 +2188,9 @@ void TFarList::Changed()
       nb_free(Items);
       FListItems->ItemsNumber = static_cast<int>(GetCount());
     }
-    for (intptr_t I = 0; I < GetCount(); I++)
+    for (intptr_t Index = 0; Index < GetCount(); Index++)
     {
-      FListItems->Items[I].Text = TCustomFarPlugin::DuplicateStr(GetString(I), true);
+      FListItems->Items[Index].Text = TCustomFarPlugin::DuplicateStr(GetString(Index), true);
     }
     if ((GetDialogItem() != nullptr) && GetDialogItem()->GetDialog()->GetHandle())
     {
@@ -2285,11 +2285,11 @@ intptr_t TFarList::GetTopIndex() const
 intptr_t TFarList::GetMaxLength() const
 {
   intptr_t Result = 0;
-  for (intptr_t I = 0; I < GetCount(); I++)
+  for (intptr_t Index = 0; Index < GetCount(); Index++)
   {
-    if (Result < GetString(I).Length())
+    if (Result < GetString(Index).Length())
     {
-      Result = GetString(I).Length();
+      Result = GetString(Index).Length();
     }
   }
   return Result;

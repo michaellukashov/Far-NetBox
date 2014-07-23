@@ -158,9 +158,9 @@ TTabbedDialog::TTabbedDialog(TCustomFarPlugin * AFarPlugin, int TabCount) :
 //------------------------------------------------------------------------------
 void TTabbedDialog::HideTabs()
 {
-  for (intptr_t I = 0; I < GetItemCount(); ++I)
+  for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
   {
-    TFarDialogItem * Item = GetItem(I);
+    TFarDialogItem * Item = GetItem(Index);
     if (Item->GetGroup())
     {
       Item->SetVisible(false);
@@ -185,9 +185,9 @@ void TTabbedDialog::SelectTab(intptr_t Tab)
     FTab = Tab;
   }
 
-  for (intptr_t I = 0; I < GetItemCount(); I++)
+  for (intptr_t Index = 0; Index < GetItemCount(); Index++)
   {
-    TFarDialogItem * Item = GetItem(I);
+    TFarDialogItem * Item = GetItem(Index);
     if ((Item->GetGroup() == Tab) && Item->CanFocus())
     {
       Item->SetFocus();
@@ -205,9 +205,9 @@ void TTabbedDialog::SelectTab(intptr_t Tab)
 TTabButton * TTabbedDialog::TabButton(intptr_t Tab)
 {
   TTabButton * Result = nullptr;
-  for (intptr_t I = 0; I < GetItemCount(); I++)
+  for (intptr_t Index = 0; Index < GetItemCount(); Index++)
   {
-    TTabButton * T = NB_STATIC_DOWNCAST(TTabButton, GetItem(I));
+    TTabButton * T = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index));
     if ((T != nullptr) && (T->GetTab() == Tab))
     {
       Result = T;
@@ -488,9 +488,9 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   TFarComboBox * LogProtocolCombo = new TFarComboBox(Dialog);
   LogProtocolCombo->SetDropDownList(true);
   LogProtocolCombo->SetWidth(10);
-  for (intptr_t I = 0; I <= 2; I++)
+  for (intptr_t Index = 0; Index <= 2; Index++)
   {
-    LogProtocolCombo->GetItems()->Add(GetMsg(LOGGING_LOG_PROTOCOL_0 + I));
+    LogProtocolCombo->GetItems()->Add(GetMsg(LOGGING_LOG_PROTOCOL_0 + Index));
   }
   LogProtocolCombo->SetEnabledDependency(LoggingCheck);
 
@@ -2159,9 +2159,9 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SFTPMaxVersionCombo = new TFarComboBox(this);
   SFTPMaxVersionCombo->SetDropDownList(true);
   SFTPMaxVersionCombo->SetWidth(7);
-  for (intptr_t I = 0; I <= 5; I++)
+  for (intptr_t Index = 0; Index <= 5; Index++)
   {
-    SFTPMaxVersionCombo->GetItems()->Add(IntToStr(I));
+    SFTPMaxVersionCombo->GetItems()->Add(IntToStr(Index));
   }
   Text->SetEnabledFollow(SFTPMaxVersionCombo);
 
@@ -4118,24 +4118,24 @@ void TSessionDialog::ChangeTabs(intptr_t FirstVisibleTabIndex)
   intptr_t VisibleTabsCount = GetVisibleTabsCount(FirstVisibleTabIndex, true);
   intptr_t LastVisibleTabIndex = FirstVisibleTabIndex + VisibleTabsCount;
   // Change visibility
-  for (intptr_t I = 0; I < FirstVisibleTabIndex; I++)
+  for (intptr_t Index = 0; Index < FirstVisibleTabIndex; Index++)
   {
-    TTabButton * TabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(I));
+    TTabButton * TabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(Index));
     TabBtn->SetVisible(false);
   }
   intptr_t LeftPos = GetBorderBox()->GetLeft() + 2;
-  for (intptr_t I = FirstVisibleTabIndex; I <= LastVisibleTabIndex; I++)
+  for (intptr_t Index = FirstVisibleTabIndex; Index <= LastVisibleTabIndex; Index++)
   {
-    TTabButton * TabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(I));
+    TTabButton * TabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(Index));
     intptr_t Width = TabBtn->GetWidth();
     TabBtn->SetLeft(LeftPos);
     TabBtn->SetWidth(Width);
     LeftPos += Width + 1;
     TabBtn->SetVisible(true);
   }
-  for (intptr_t I = LastVisibleTabIndex + 1; I < FTabs->GetCount(); I++)
+  for (intptr_t Index = LastVisibleTabIndex + 1; Index < FTabs->GetCount(); Index++)
   {
-    TTabButton * TabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(I));
+    TTabButton * TabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(Index));
     TabBtn->SetVisible(false);
   }
 }
@@ -4149,11 +4149,11 @@ intptr_t TSessionDialog::GetVisibleTabsCount(intptr_t TabIndex, bool Forward) co
   intptr_t TabsWidth = 0;
   if (Forward)
   {
-    for (intptr_t I = TabIndex; I < FTabs->GetCount() - 1; I++)
+    for (intptr_t Index = TabIndex; Index < FTabs->GetCount() - 1; Index++)
     {
-      TTabButton * TabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(I));
+      TTabButton * TabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(Index));
       TabsWidth += TabBtn->GetWidth() + 1;
-      TTabButton * NextTabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(I + 1));
+      TTabButton * NextTabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(Index + 1));
       intptr_t NextTabWidth = NextTabBtn->GetWidth() + 1;
       if (TabsWidth + NextTabWidth >= DialogWidth)
         break;
@@ -4162,11 +4162,11 @@ intptr_t TSessionDialog::GetVisibleTabsCount(intptr_t TabIndex, bool Forward) co
   }
   else
   {
-    for (intptr_t I = TabIndex; I >= 1; I--)
+    for (intptr_t Index = TabIndex; Index >= 1; Index--)
     {
-      TTabButton * TabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(I));
+      TTabButton * TabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(Index));
       TabsWidth += TabBtn->GetWidth() + 1;
-      TTabButton * PrevTabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(I - 1));
+      TTabButton * PrevTabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(Index - 1));
       intptr_t PrevTabWidth = PrevTabBtn->GetWidth() + 1;
       if (TabsWidth + PrevTabWidth >= DialogWidth)
         break;
@@ -6381,9 +6381,9 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       FirstHistory = FPathHistory->GetCount() - MaxHistory + 1;
     }
 
-    for (intptr_t I = FirstHistory; I < FPathHistory->GetCount(); I++)
+    for (intptr_t Index = FirstHistory; Index < FPathHistory->GetCount(); Index++)
     {
-      UnicodeString Path = FPathHistory->GetString(I);
+      UnicodeString Path = FPathHistory->GetString(Index);
       BookmarkPaths->Add(Path);
       BookmarkItems->Add(MinimizeName(Path, MaxLength, true));
     }
@@ -6391,9 +6391,9 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     intptr_t FirstItemFocused = -1;
     std::unique_ptr<TStringList> BookmarkDirectories(new TStringList());
     BookmarkDirectories->SetSorted(true);
-    for (intptr_t I = 0; I < BookmarkList->GetCount(); I++)
+    for (intptr_t Index = 0; Index < BookmarkList->GetCount(); Index++)
     {
-      TBookmark * Bookmark = BookmarkList->GetBookmarks(I);
+      TBookmark * Bookmark = BookmarkList->GetBookmarks(Index);
       UnicodeString RemoteDirectory = Bookmark->GetRemote();
       if (!RemoteDirectory.IsEmpty() && (BookmarkDirectories->IndexOf(RemoteDirectory.c_str()) == NPOS))
       {

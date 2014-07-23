@@ -287,12 +287,12 @@ bool TCopyParamList::operator==(const TCopyParamList & rhl) const
   bool Result = (GetCount() == rhl.GetCount());
   if (Result)
   {
-    intptr_t I = 0;
-    while ((I < GetCount()) && Result)
+    intptr_t Index = 0;
+    while ((Index < GetCount()) && Result)
     {
-      Result = (GetName(I) == rhl.GetName(I)) &&
-        CompareItem(I, rhl.GetCopyParam(I), rhl.GetRule(I));
-      I++;
+      Result = (GetName(Index) == rhl.GetName(Index)) &&
+        CompareItem(Index, rhl.GetCopyParam(Index), rhl.GetRule(Index));
+      Index++;
     }
   }
   return Result;
@@ -315,10 +315,10 @@ bool TCopyParamList::CompareItem(intptr_t Index,
 //---------------------------------------------------------------------------
 void TCopyParamList::Clear()
 {
-  for (intptr_t I = 0; I < GetCount(); I++)
+  for (intptr_t Index = 0; Index < GetCount(); Index++)
   {
-    delete GetCopyParam(I);
-    delete GetRule(I);
+    delete GetCopyParam(Index);
+    delete GetRule(Index);
   }
   FCopyParams->Clear();
   FRules->Clear();
@@ -386,17 +386,17 @@ void TCopyParamList::Delete(intptr_t Index)
 intptr_t TCopyParamList::Find(const TCopyParamRuleData & Value) const
 {
   intptr_t Result = -1;
-  intptr_t I = 0;
-  while ((I < FRules->GetCount()) && (Result < 0))
+  intptr_t Index = 0;
+  while ((Index < FRules->GetCount()) && (Result < 0))
   {
-    if (FRules->GetItem(I) != nullptr)
+    if (FRules->GetItem(Index) != nullptr)
     {
-      if (GetRule(I)->Matches(Value))
+      if (GetRule(Index)->Matches(Value))
       {
-        Result = I;
+        Result = Index;
       }
     }
-    I++;
+    Index++;
   }
   return Result;
 }
@@ -477,9 +477,9 @@ TStrings * TCopyParamList::GetNameList() const
   {
     FNameList = new TStringList();
 
-    for (intptr_t I = 0; I < GetCount(); ++I)
+    for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
-      FNameList->Add(FNames->GetString(I));
+      FNameList->Add(FNames->GetString(Index));
     }
   }
   return FNameList;
@@ -488,11 +488,11 @@ TStrings * TCopyParamList::GetNameList() const
 bool TCopyParamList::GetAnyRule() const
 {
   bool Result = false;
-  intptr_t I = 0;
-  while ((I < GetCount()) && !Result)
+  intptr_t Index = 0;
+  while ((Index < GetCount()) && !Result)
   {
-    Result = (GetRule(I) != nullptr);
-    ++I;
+    Result = (GetRule(Index) != nullptr);
+    ++Index;
   }
   return Result;
 }
