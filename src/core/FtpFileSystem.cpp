@@ -228,7 +228,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
 
 void TFTPFileSystem::Init(void *)
 {
-  FQueue.reserve(1000);
+  //FQueue.reserve(1000);
   ResetReply();
 
   FListAll = FTerminal->GetSessionData()->GetFtpListAll();
@@ -2358,6 +2358,9 @@ bool TFTPFileSystem::PostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam)
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::ProcessMessage()
 {
+  if (FQueue.empty())
+    return false;
+
   bool Result;
   TMessageQueue::value_type Message;
 
