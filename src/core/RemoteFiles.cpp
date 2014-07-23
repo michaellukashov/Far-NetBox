@@ -2361,35 +2361,35 @@ UnicodeString TRights::GetText() const
   }
 }
 //---------------------------------------------------------------------------
-void TRights::SetOctal(const UnicodeString & Value)
+void TRights::SetOctal(const UnicodeString & AValue)
 {
-  UnicodeString AValue(Value);
-  if (AValue.Length() == 3)
+  UnicodeString Value(AValue);
+  if (Value.Length() == 3)
   {
-    AValue = L"0" + AValue;
+    Value = L"0" + Value;
   }
 
-  if (GetOctal() != AValue.c_str())
+  if (GetOctal() != Value.c_str())
   {
-    bool Correct = (AValue.Length() == 4);
+    bool Correct = (Value.Length() == 4);
     if (Correct)
     {
-      for (intptr_t Index = 1; (Index <= AValue.Length()) && Correct; Index++)
+      for (intptr_t Index = 1; (Index <= Value.Length()) && Correct; Index++)
       {
-        Correct = (AValue[Index] >= L'0') && (AValue[Index] <= L'7');
+        Correct = (Value[Index] >= L'0') && (Value[Index] <= L'7');
       }
     }
 
     if (!Correct)
     {
-      throw Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, Value.c_str()));
+      throw Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, AValue.c_str()));
     }
 
     SetNumber(static_cast<uint16_t>(
-      ((AValue[1] - L'0') << 9) +
-      ((AValue[2] - L'0') << 6) +
-      ((AValue[3] - L'0') << 3) +
-      ((AValue[4] - L'0') << 0)));
+      ((Value[1] - L'0') << 9) +
+      ((Value[2] - L'0') << 6) +
+      ((Value[3] - L'0') << 3) +
+      ((Value[4] - L'0') << 0)));
   }
   FUnknown = false;
 }

@@ -378,7 +378,7 @@ public:
   void SetNumber(uint16_t Value);
   UnicodeString GetText() const;
   void SetText(const UnicodeString & Value);
-  void SetOctal(const UnicodeString & Value);
+  void SetOctal(const UnicodeString & AValue);
   uint16_t GetNumber() const;
   uint16_t GetNumberSet() const { return FSet; }
   uint16_t GetNumberUnset() const { return FUnset; }
