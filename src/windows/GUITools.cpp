@@ -160,7 +160,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
 //---------------------------------------------------------------------------
 bool FindTool(const UnicodeString & Name, UnicodeString & Path)
 {
-  UnicodeString AppPath = IncludeTrailingBackslash(ExtractFilePath(GetConfiguration()->ModuleFileName()));
+  UnicodeString AppPath = ::IncludeTrailingBackslash(::ExtractFilePath(GetConfiguration()->ModuleFileName()));
   Path = AppPath + Name;
   bool Result = true;
   if (!::FileExists(Path))
@@ -350,7 +350,7 @@ UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & I
   do
   {
     TempDir = BaseDir.IsEmpty() ? SystemTemporaryDirectory() : BaseDir;
-    TempDir = IncludeTrailingBackslash(TempDir) + Identity;
+    TempDir = ::IncludeTrailingBackslash(TempDir) + Identity;
     if (Mask)
     {
       TempDir += L"?????";
@@ -358,12 +358,12 @@ UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & I
     else
     {
 #if defined(__BORLANDC__)
-      TempDir += IncludeTrailingBackslash(FormatDateTime(L"nnzzz", Now()));
+      TempDir += ::IncludeTrailingBackslash(FormatDateTime(L"nnzzz", Now()));
 #else
       TDateTime dt = Now();
       uint16_t H, M, S, MS;
       dt.DecodeTime(H, M, S, MS);
-      TempDir += IncludeTrailingBackslash(FORMAT(L"%02d%03d", M, MS));
+      TempDir += ::IncludeTrailingBackslash(FORMAT(L"%02d%03d", M, MS));
 #endif
     };
   }
@@ -385,7 +385,7 @@ bool DeleteDirectory(const UnicodeString & DirName)
     }
     else
     {
-      retval = DeleteFile(DirName + L"\\" + SearchRec.Name);
+      retval = Sysutils::DeleteFile(ApiPath(DirName + L"\\" + SearchRec.Name));
     }
 
     if (retval)
@@ -399,7 +399,7 @@ bool DeleteDirectory(const UnicodeString & DirName)
         }
         else
         {
-          retval = DeleteFile(DirName + L"\\" + SearchRec.Name);
+          retval = Sysutils::DeleteFile(ApiPath(DirName + L"\\" + SearchRec.Name));
         }
 
         if (!retval)

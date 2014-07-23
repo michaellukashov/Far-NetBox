@@ -112,12 +112,12 @@ bool IsEffectiveFileNameMask(const UnicodeString & Mask)
 UnicodeString DelimitFileNameMask(const UnicodeString & Mask)
 {
   UnicodeString Result = Mask;
-  for (intptr_t I = 1; I <= Result.Length(); I++)
+  for (intptr_t Index = 1; Index <= Result.Length(); Index++)
   {
-    if (wcschr(L"\\*?", Result[I]) != nullptr)
+    if (wcschr(L"\\*?", Result[Index]) != nullptr)
     {
-      Result.Insert(L"\\", I);
-      I++;
+      Result.Insert(L"\\", Index);
+      Index++;
     }
   }
   return Result;
@@ -162,9 +162,9 @@ UnicodeString TFileMasks::ComposeMaskStr(
 {
   UnicodeString Result;
   UnicodeString ResultNoDirMask;
-  for (intptr_t I = 0; I < MasksStr->GetCount(); ++I)
+  for (intptr_t Index = 0; Index < MasksStr->GetCount(); ++Index)
   {
-    UnicodeString Str = MasksStr->GetString(I).Trim();
+    UnicodeString Str = MasksStr->GetString(Index).Trim();
     if (!Str.IsEmpty())
     {
       for (intptr_t P = 1; P <= Str.Length(); P++)
@@ -442,10 +442,10 @@ bool TFileMasks::Matches(const UnicodeString & AFileName, bool Local,
   bool Result;
   if (Local)
   {
-    UnicodeString Path = ExtractFilePath(AFileName);
+    UnicodeString Path = ::ExtractFilePath(AFileName);
     if (!Path.IsEmpty())
     {
-      Path = ::ToUnixPath(ExcludeTrailingBackslash(Path));
+      Path = ::ToUnixPath(::ExcludeTrailingBackslash(Path));
     }
     Result = Matches(::ExtractFileName(AFileName, false), Directory, Path, Params,
       ImplicitMatch);

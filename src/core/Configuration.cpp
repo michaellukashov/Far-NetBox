@@ -69,7 +69,7 @@ TConfiguration::TConfiguration() :
     }
   }
 
-  FDefaultRandomSeedFile = IncludeTrailingBackslash(RandomSeedPath) + L"winscp.rnd";
+  FDefaultRandomSeedFile = ::IncludeTrailingBackslash(RandomSeedPath) + L"winscp.rnd";
 }
 //---------------------------------------------------------------------------
 void TConfiguration::Default()

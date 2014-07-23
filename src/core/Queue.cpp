@@ -1768,19 +1768,19 @@ bool TQueueItemProxy::ExecuteNow()
 bool TQueueItemProxy::Move(bool Sooner)
 {
   bool Result = false;
-  intptr_t I = GetIndex();
+  intptr_t Index = GetIndex();
   if (Sooner)
   {
-    if (I > 0)
+    if (Index > 0)
     {
-      Result = Move(FQueueStatus->GetItem(I - 1));
+      Result = Move(FQueueStatus->GetItem(Index - 1));
     }
   }
   else
   {
-    if (I < FQueueStatus->GetCount() - 1)
+    if (Index < FQueueStatus->GetCount() - 1)
     {
-      Result = FQueueStatus->GetItem(I + 1)->Move(this);
+      Result = FQueueStatus->GetItem(Index + 1)->Move(this);
     }
   }
   return Result;
@@ -2024,9 +2024,9 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
     {
       ExtractCommonPath(AFilesToCopy, FInfo->Source);
       // this way the trailing backslash is preserved for root directories like "D:\\"
-      FInfo->Source = ExtractFileDir(IncludeTrailingBackslash(FInfo->Source));
+      FInfo->Source = ExtractFileDir(::IncludeTrailingBackslash(FInfo->Source));
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
-        IncludeTrailingBackslash(FInfo->Source);
+        ::IncludeTrailingBackslash(FInfo->Source);
     }
   }
   else
@@ -2041,7 +2041,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
       assert(AFilesToCopy->GetCount() > 0);
       FInfo->Source = AFilesToCopy->GetString(0);
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
-        ::IncludeTrailingBackslash(ExtractFilePath(FInfo->Source));
+        ::IncludeTrailingBackslash(::ExtractFilePath(FInfo->Source));
     }
   }
 
@@ -2100,9 +2100,9 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   else
   {
     FInfo->Destination =
-      IncludeTrailingBackslash(TargetDir) + CopyParam->GetFileMask();
+      ::IncludeTrailingBackslash(TargetDir) + CopyParam->GetFileMask();
   }
-  FInfo->ModifiedLocal = IncludeTrailingBackslash(TargetDir);
+  FInfo->ModifiedLocal = ::IncludeTrailingBackslash(TargetDir);
 }
 //---------------------------------------------------------------------------
 void TDownloadQueueItem::DoExecute(TTerminal * Terminal)

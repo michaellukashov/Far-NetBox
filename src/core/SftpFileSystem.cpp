@@ -1861,10 +1861,10 @@ void TSFTPFileSystem::Idle()
 void TSFTPFileSystem::ResetConnection()
 {
   // there must be no valid packet reservation at the end
-  for (intptr_t I = 0; I < FPacketReservations->GetCount(); I++)
+  for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); Index++)
   {
-    assert(FPacketReservations->GetItem(I) == nullptr);
-    TSFTPPacket * Item = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(I));
+    assert(FPacketReservations->GetItem(Index) == nullptr);
+    TSFTPPacket * Item = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Index));
     SAFE_DESTROY(Item);
   }
   FPacketReservations->Clear();
@@ -2726,12 +2726,12 @@ void TSFTPFileSystem::DoStartup()
           FSupport->BlockMasks = SupportedStruct.GetSmallCardinal();
           uintptr_t ExtensionCount;
           ExtensionCount = SupportedStruct.GetCardinal();
-          for (uintptr_t I = 0; I < ExtensionCount; I++)
+          for (uintptr_t Index = 0; Index < ExtensionCount; Index++)
           {
             FSupport->AttribExtensions->Add(SupportedStruct.GetAnsiString());
           }
           ExtensionCount = SupportedStruct.GetCardinal();
-          for (uintptr_t I = 0; I < ExtensionCount; I++)
+          for (uintptr_t Index = 0; Index < ExtensionCount; Index++)
           {
             FSupport->Extensions->Add(SupportedStruct.GetAnsiString());
           }
@@ -3339,7 +3339,7 @@ void TSFTPFileSystem::DoDeleteFile(const UnicodeString & AFileName, uint8_t Type
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
+void TSFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action)
 {
   uint8_t Type;
@@ -3349,7 +3349,7 @@ void TSFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
     {
       try
       {
-        FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TTerminal::DeleteFile, FTerminal), &Params);
+        FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TTerminal::RemoteDeleteFile, FTerminal), &Params);
       }
       catch (...)
       {
@@ -3819,7 +3819,7 @@ void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
-          if (DirectoryExists(ExtractFilePath(ApiPath(FileName))))
+          if (DirectoryExists(::ExtractFilePath(ApiPath(FileName))))
           {
             FTerminal->DirectoryModified(::UnixIncludeTrailingBackslash(TargetDir) +
               FileNameOnly, true);
@@ -4155,7 +4155,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
     if (Dir)
     {
       Action.Cancel();
-      SFTPDirectorySource(IncludeTrailingBackslash(AFileName), TargetDir,
+      SFTPDirectorySource(::IncludeTrailingBackslash(AFileName), TargetDir,
         OpenParams.LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
     }
     else
@@ -4766,7 +4766,7 @@ intptr_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
               true, LoadStr(SFTP_OVERWRITE_DELETE_BUTTON)))
         {
           intptr_t Params = dfNoRecursive;
-          FTerminal->DeleteFile(OpenParams->RemoteFileName, nullptr, &Params);
+          FTerminal->RemoteDeleteFile(OpenParams->RemoteFileName, nullptr, &Params);
         }
       }
       else
@@ -4819,7 +4819,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
   intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
-    ::ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
+    ::ExtractFileName(::ExcludeTrailingBackslash(DirectoryName), false), osLocal,
     FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = ::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
 
@@ -4926,7 +4926,7 @@ void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   assert(AFilesToCopy && OperationProgress);
 
   UnicodeString FileName;
-  UnicodeString FullTargetDir = IncludeTrailingBackslash(TargetDir);
+  UnicodeString FullTargetDir = ::IncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
@@ -5076,7 +5076,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
       );
 
       TSinkFileParams SinkFileParams;
-      SinkFileParams.TargetDir = IncludeTrailingBackslash(DestFullName);
+      SinkFileParams.TargetDir = ::IncludeTrailingBackslash(DestFullName);
       SinkFileParams.CopyParam = CopyParam;
       SinkFileParams.Params = Params;
       SinkFileParams.OperationProgress = OperationProgress;
@@ -5533,7 +5533,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
     // empty already. If not, it should not be deleted (some files were
     // skipped or some new files were copied to it, while we were downloading)
     intptr_t Params2 = dfNoRecursive;
-    FTerminal->DeleteFile(AFileName, AFile, &Params2);
+    FTerminal->RemoteDeleteFile(AFileName, AFile, &Params2);
     ChildError = false;
   }
 }

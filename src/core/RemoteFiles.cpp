@@ -134,7 +134,7 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & Path)
 {
   assert(AFiles->GetCount() > 0);
 
-  Path = ExtractFilePath(AFiles->GetString(0));
+  Path = ::ExtractFilePath(AFiles->GetString(0));
   bool Result = !Path.IsEmpty();
   if (Result)
   {
@@ -144,7 +144,7 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & Path)
         (AFiles->GetString(Index).SubString(1, Path.Length()) != Path))
       {
         intptr_t PrevLen = Path.Length();
-        Path = ExtractFilePath(ExcludeTrailingBackslash(Path));
+        Path = ::ExtractFilePath(::ExcludeTrailingBackslash(Path));
         if (Path.Length() == PrevLen)
         {
           Path = L"";
@@ -1820,7 +1820,7 @@ bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory)
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
-  TDateTime Timestamp)
+  const TDateTime& Timestamp)
 {
   TGuard Guard(&FSection);
 
@@ -2263,40 +2263,40 @@ void TRights::SetText(const UnicodeString & Value)
     intptr_t Flag = 00001;
     int ExtendedFlag = 01000; //-V536
     bool KeepText = false;
-    for (intptr_t I = TextLen; I >= 1; I--)
+    for (intptr_t Index = TextLen; Index >= 1; Index--)
     {
-      if (Value[I] == UnsetSymbol)
+      if (Value[Index] == UnsetSymbol)
       {
         FUnset |= static_cast<uint16_t>(Flag | ExtendedFlag);
       }
-      else if (Value[I] == UndefSymbol)
+      else if (Value[Index] == UndefSymbol)
       {
         // do nothing
       }
-      else if (Value[I] == CombinedSymbols[I - 1])
+      else if (Value[Index] == CombinedSymbols[Index - 1])
       {
         FSet |= static_cast<uint16_t>(Flag | ExtendedFlag);
       }
-      else if (Value[I] == ExtendedSymbols[I - 1])
+      else if (Value[Index] == ExtendedSymbols[Index - 1])
       {
         FSet |= static_cast<uint16_t>(ExtendedFlag);
         FUnset |= static_cast<uint16_t>(Flag);
       }
       else
       {
-        if (Value[I] != BasicSymbols[I - 1])
+        if (Value[Index] != BasicSymbols[Index - 1])
         {
           KeepText = true;
         }
         FSet |= static_cast<uint16_t>(Flag);
-        if (I % 3 == 0)
+        if (Index % 3 == 0)
         {
           FUnset |= static_cast<uint16_t>(ExtendedFlag);
         }
       }
 
       Flag <<= 1;
-      if (I % 3 == 1)
+      if (Index % 3 == 1)
       {
         ExtendedFlag <<= 1;
       }
@@ -2321,21 +2321,21 @@ UnicodeString TRights::GetText() const
     int ExtendedFlag = 01000; //-V536
     bool ExtendedPos = true;
     wchar_t Symbol;
-    intptr_t I = TextLen;
-    while (I >= 1)
+    intptr_t Index = TextLen;
+    while (Index >= 1)
     {
       if (ExtendedPos &&
           ((FSet & (Flag | ExtendedFlag)) == (Flag | ExtendedFlag)))
       {
-        Symbol = CombinedSymbols[I - 1];
+        Symbol = CombinedSymbols[Index - 1];
       }
       else if ((FSet & Flag) != 0)
       {
-        Symbol = BasicSymbols[I - 1];
+        Symbol = BasicSymbols[Index - 1];
       }
       else if (ExtendedPos && ((FSet & ExtendedFlag) != 0))
       {
-        Symbol = ExtendedSymbols[I - 1];
+        Symbol = ExtendedSymbols[Index - 1];
       }
       else if ((!ExtendedPos && ((FUnset & Flag) == Flag)) ||
         (ExtendedPos && ((FUnset & (Flag | ExtendedFlag)) == (Flag | ExtendedFlag))))
@@ -2347,11 +2347,11 @@ UnicodeString TRights::GetText() const
         Symbol = UndefSymbol;
       }
 
-      Result[I] = Symbol;
+      Result[Index] = Symbol;
 
       Flag <<= 1;
-      I--;
-      ExtendedPos = ((I % 3) == 0);
+      Index--;
+      ExtendedPos = ((Index % 3) == 0);
       if (ExtendedPos)
       {
         ExtendedFlag <<= 1;
@@ -2361,35 +2361,35 @@ UnicodeString TRights::GetText() const
   }
 }
 //---------------------------------------------------------------------------
-void TRights::SetOctal(const UnicodeString & Value)
+void TRights::SetOctal(const UnicodeString & AValue)
 {
-  UnicodeString AValue(Value);
-  if (AValue.Length() == 3)
+  UnicodeString Value(AValue);
+  if (Value.Length() == 3)
   {
-    AValue = L"0" + AValue;
+    Value = L"0" + Value;
   }
 
-  if (GetOctal() != AValue.c_str())
+  if (GetOctal() != Value.c_str())
   {
-    bool Correct = (AValue.Length() == 4);
+    bool Correct = (Value.Length() == 4);
     if (Correct)
     {
-      for (intptr_t I = 1; (I <= AValue.Length()) && Correct; I++)
+      for (intptr_t Index = 1; (Index <= Value.Length()) && Correct; Index++)
       {
-        Correct = (AValue[I] >= L'0') && (AValue[I] <= L'7');
+        Correct = (Value[Index] >= L'0') && (Value[Index] <= L'7');
       }
     }
 
     if (!Correct)
     {
-      throw Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, Value.c_str()));
+      throw Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, AValue.c_str()));
     }
 
     SetNumber(static_cast<uint16_t>(
-      ((AValue[1] - L'0') << 9) +
-      ((AValue[2] - L'0') << 6) +
-      ((AValue[3] - L'0') << 3) +
-      ((AValue[4] - L'0') << 0)));
+      ((Value[1] - L'0') << 9) +
+      ((Value[2] - L'0') << 6) +
+      ((Value[3] - L'0') << 3) +
+      ((Value[4] - L'0') << 0)));
   }
   FUnknown = false;
 }

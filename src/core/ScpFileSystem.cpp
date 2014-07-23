@@ -1156,7 +1156,7 @@ void TSCPFileSystem::CustomReadFile(const UnicodeString & AFileName,
   }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::DeleteFile(const UnicodeString & AFileName,
+void TSCPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action)
 {
   USEDPARAM(File);
@@ -2191,7 +2191,7 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
               FILE_OPERATION_LOOP(FMTLOAD(DELETE_FILE_ERROR, FileName.c_str()),
                 // pass full file name in FileName, in case we are not moving
                 // from current directory
-                FTerminal->DeleteFile(FileName, File);
+                FTerminal->RemoteDeleteFile(FileName, File);
               );
             }
           }

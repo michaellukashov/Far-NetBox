@@ -5,6 +5,7 @@
 #ifndef NO_FILEZILLA
 //---------------------------------------------------------------------------
 #include <time.h>
+#include <list.h>
 #include <FileSystems.h>
 //---------------------------------------------------------------------------
 class TFileZillaIntf;
@@ -26,7 +27,7 @@ struct message_t
   LPARAM lparam;
 };
 //---------------------------------------------------------------------------
-class TMessageQueue : public TObject, public rde::vector<message_t>
+class TMessageQueue : public TObject, public rde::list<message_t> //  rde::vector<message_t>
 {
 public:
   typedef message_t value_type;
@@ -72,7 +73,7 @@ public:
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CreateDirectory(const UnicodeString & DirName);
   virtual void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
-  virtual void DeleteFile(const UnicodeString & AFileName,
+  virtual void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action);
   virtual void CustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params,

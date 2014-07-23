@@ -259,12 +259,12 @@ UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
 UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars)
 {
   UnicodeString Result = Str;
-  for (intptr_t I = 1; I <= Result.Length(); I++)
+  for (intptr_t Index = 1; Index <= Result.Length(); Index++)
   {
-    if (Result.IsDelimiter(Chars, I))
+    if (Result.IsDelimiter(Chars, Index))
     {
-      Result.Insert(L"\\", I);
-      I++;
+      Result.Insert(L"\\", Index);
+      Index++;
     }
   }
   return Result;
@@ -598,13 +598,13 @@ UnicodeString EscapePuttyCommandParam(const UnicodeString & Param)
   UnicodeString Result = Param;
   bool Space = false;
 
-  for (intptr_t I = 1; I <= Result.Length(); I++)
+  for (intptr_t Index = 1; Index <= Result.Length(); Index++)
   {
-    switch (Result[I])
+    switch (Result[Index])
     {
       case L'"':
-        Result.Insert(L"\\", I);
-        I++;
+        Result.Insert(L"\\", Index);
+        Index++;
         break;
 
       case L' ':
@@ -612,19 +612,19 @@ UnicodeString EscapePuttyCommandParam(const UnicodeString & Param)
         break;
 
       case L'\\':
-        intptr_t I2 = I;
+        intptr_t I2 = Index;
         while ((I2 <= Result.Length()) && (Result[I2] == L'\\'))
         {
           I2++;
         }
         if ((I2 <= Result.Length()) && (Result[I2] == L'"'))
         {
-          while (Result[I] == L'\\')
+          while (Result[Index] == L'\\')
           {
-            Result.Insert(L"\\", I);
-            I += 2;
+            Result.Insert(L"\\", Index);
+            Index += 2;
           }
-          I--;
+          Index--;
         }
         break;
     }
@@ -678,7 +678,7 @@ bool CompareFileName(const UnicodeString & Path1, const UnicodeString & Path2)
 bool ComparePaths(const UnicodeString & Path1, const UnicodeString & Path2)
 {
   // TODO: ExpandUNCFileName
-  return AnsiSameText(IncludeTrailingBackslash(Path1), IncludeTrailingBackslash(Path2));
+  return AnsiSameText(::IncludeTrailingBackslash(Path1), ::IncludeTrailingBackslash(Path2));
 }
 //---------------------------------------------------------------------------
 bool IsReservedName(const UnicodeString & AFileName)
@@ -1047,10 +1047,10 @@ UnicodeString ByteToHex(uint8_t B, bool UpperCase)
 UnicodeString BytesToHex(const uint8_t * B, uintptr_t Length, bool UpperCase, wchar_t Separator)
 {
   UnicodeString Result;
-  for (uintptr_t i = 0; i < Length; i++)
+  for (uintptr_t Index = 0; Index < Length; Index++)
   {
-    Result += ByteToHex(B[i], UpperCase);
-    if ((Separator != L'\0') && (i < Length - 1))
+    Result += ByteToHex(B[Index], UpperCase);
+    if ((Separator != L'\0') && (Index < Length - 1))
     {
       Result += Separator;
     }
@@ -1075,10 +1075,10 @@ RawByteString HexToBytes(const UnicodeString & Hex)
   intptr_t L = Hex.Length();
   if (L % 2 == 0)
   {
-    for (intptr_t I = 1; I <= Hex.Length(); I += 2)
+    for (intptr_t Index = 1; Index <= Hex.Length(); Index += 2)
     {
-      intptr_t P1 = Digits.Pos(UpCase(Hex[I]));
-      intptr_t P2 = Digits.Pos(UpCase(Hex[I + 1]));
+      intptr_t P1 = Digits.Pos(UpCase(Hex[Index]));
+      intptr_t P2 = Digits.Pos(UpCase(Hex[Index + 1]));
       if (P1 <= 0 || P2 <= 0)
       {
         Result = L"";
@@ -1186,7 +1186,7 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
   }
   TSearchRecChecked SearchRec;
 
-  UnicodeString DirName2 = IncludeTrailingBackslash(DirName);
+  UnicodeString DirName2 = ::IncludeTrailingBackslash(DirName);
   if (FindFirstChecked(DirName2 + L"*.*", FindAttrs, SearchRec) == 0)
   {
     SCOPE_EXIT
@@ -2121,22 +2121,22 @@ UnicodeString LoadStrPart(int Ident, int Part)
 UnicodeString DecodeUrlChars(const UnicodeString & S)
 {
   UnicodeString Result = S;
-  intptr_t I = 1;
-  while (I <= Result.Length())
+  intptr_t Index = 1;
+  while (Index <= Result.Length())
   {
-    switch (Result[I])
+    switch (Result[Index])
     {
       case L'+':
-        Result[I] = ' ';
+        Result[Index] = ' ';
         break;
 
       case L'%':
         UnicodeString Hex;
-        while ((I + 2 <= Result.Length()) && (Result[I] == L'%') &&
-               IsHex(Result[I + 1]) && IsHex(Result[I + 2]))
+        while ((Index + 2 <= Result.Length()) && (Result[Index] == L'%') &&
+               IsHex(Result[Index + 1]) && IsHex(Result[Index + 2]))
         {
-          Hex += Result.SubString(I + 1, 2);
-          Result.Delete(I, 3);
+          Hex += Result.SubString(Index + 1, 2);
+          Result.Delete(Index, 3);
         }
 
         if (!Hex.IsEmpty())
@@ -2144,12 +2144,12 @@ UnicodeString DecodeUrlChars(const UnicodeString & S)
           RawByteString Bytes = HexToBytes(Hex);
           UTF8String UTF8(Bytes.c_str(), Bytes.Length());
           UnicodeString Chars(UTF8);
-          Result.Insert(Chars, I);
-          I += Chars.Length() - 1;
+          Result.Insert(Chars, Index);
+          Index += Chars.Length() - 1;
         }
         break;
     }
-    I++;
+    Index++;
   }
   return Result;
 }
@@ -2157,17 +2157,17 @@ UnicodeString DecodeUrlChars(const UnicodeString & S)
 UnicodeString DoEncodeUrl(const UnicodeString & S, const UnicodeString & Chars)
 {
   UnicodeString Result = S;
-  intptr_t i = 1;
-  while (i <= Result.Length())
+  intptr_t Index = 1;
+  while (Index <= Result.Length())
   {
-    if (Chars.Pos(Result[i]) > 0)
+    if (Chars.Pos(Result[Index]) > 0)
     {
-      UnicodeString H = ByteToHex(AnsiString(UnicodeString(Result[i]))[1]);
-      Result.Insert(H, i + 1);
-      Result[i] = '%';
-      i += H.Length();
+      UnicodeString H = ByteToHex(AnsiString(UnicodeString(Result[Index]))[1]);
+      Result.Insert(H, Index + 1);
+      Result[Index] = '%';
+      Index += H.Length();
     }
-    i++;
+    Index++;
   }
   return Result;
 }
@@ -2181,9 +2181,9 @@ UnicodeString EncodeUrlChars(const UnicodeString & S, const UnicodeString & Igno
 UnicodeString NonUrlChars()
 {
   UnicodeString S;
-  for (uintptr_t I = 0; I <= 127; I++)
+  for (uintptr_t Index = 0; Index <= 127; Index++)
   {
-    wchar_t C = static_cast<wchar_t>(I);
+    wchar_t C = static_cast<wchar_t>(Index);
     if (IsLetter(C) ||
         IsDigit(C) ||
         (C == L'_') || (C == L'-') || (C == L'.'))

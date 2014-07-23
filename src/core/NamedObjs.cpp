@@ -98,12 +98,12 @@ TNamedObject * TNamedObjectList::AtObject(intptr_t Index)
 //---------------------------------------------------------------------------
 void TNamedObjectList::Recount()
 {
-  intptr_t I = 0;
-  while ((I < TObjectList::GetCount()) && (NB_STATIC_DOWNCAST(TNamedObject, GetItem(I))->GetHidden()))
+  intptr_t Index = 0;
+  while ((Index < TObjectList::GetCount()) && (NB_STATIC_DOWNCAST(TNamedObject, GetItem(Index))->GetHidden()))
   {
-    ++I;
+    ++Index;
   }
-  FHiddenCount = I;
+  FHiddenCount = Index;
 }
 //---------------------------------------------------------------------------
 void TNamedObjectList::AlphaSort()

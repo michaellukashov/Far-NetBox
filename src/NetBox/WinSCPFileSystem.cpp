@@ -592,7 +592,7 @@ void TWinSCPFileSystem::DuplicateOrRenameSession(TSessionData * Data,
     else
     {
       TSessionData * NData = StoredSessions->NewSession(Name, Data);
-      FSessionsFolder = ExcludeTrailingBackslash(::UnixExtractFilePath(Name));
+      FSessionsFolder = ::ExcludeTrailingBackslash(::UnixExtractFilePath(Name));
 
       // change of letter case during duplication degrades the operation to rename
       if (!Duplicate || (Data == NData))
@@ -684,7 +684,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool 
             else
             {
               SelectSession = StoredSessions->NewSession(Name, Data);
-              FSessionsFolder = ExcludeTrailingBackslash(::UnixExtractFilePath(Name));
+              FSessionsFolder = ::ExcludeTrailingBackslash(::UnixExtractFilePath(Name));
             }
           }
         }
@@ -1078,7 +1078,7 @@ void TWinSCPFileSystem::CreateLink()
         {
           GetTerminal()->SetExceptionOnFail(false);
         };
-        GetTerminal()->DeleteFile(L"", File, &Params);
+        GetTerminal()->RemoteDeleteFile(L"", File, &Params);
       }
     }
     GetTerminal()->CreateLink(FileName, PointTo, SymbolicLink);
@@ -1247,7 +1247,7 @@ void TWinSCPFileSystem::ApplyCommand()
           {
             SCOPE_EXIT
             {
-              RecursiveDeleteFile(ExcludeTrailingBackslash(TempDir), false);
+              RecursiveDeleteFile(::ExcludeTrailingBackslash(TempDir), false);
             };
             RemoteFileList.reset(new TStringList());
 
@@ -2098,7 +2098,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
   TFarPanelInfo * AnotherPanel = GetAnotherPanelInfo();
   UnicodeString OldPath = AnotherPanel->GetCurrentDirectory();
   // IncludeTrailingBackslash to expand C: to C:\.
-  UnicodeString LocalPath = IncludeTrailingBackslash(NewPath);
+  UnicodeString LocalPath = ::IncludeTrailingBackslash(NewPath);
   FarPanelDirectory fpd;
   memset(&fpd, 0, sizeof(fpd));
   fpd.StructSize = sizeof(fpd);
@@ -2171,7 +2171,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
 
     if (SessionList())
     {
-      FSessionsFolder = AbsolutePath(L"/" + FSessionsFolder, Dir);
+      FSessionsFolder = ::AbsolutePath(L"/" + FSessionsFolder, Dir);
       assert(FSessionsFolder[1] == L'/');
       FSessionsFolder.Delete(1, 1);
       FNewSessionsFolder = L"";
@@ -2233,17 +2233,17 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
             UnicodeString ALocalPath;
             if (RemotePath.SubString(1, FullPrevPath.Length()) == FullPrevPath)
             {
-              ALocalPath = IncludeTrailingBackslash(AnotherPanel->GetCurrentDirectory()) +
-                FromUnixPath(RemotePath.SubString(FullPrevPath.Length() + 1,
+              ALocalPath = ::IncludeTrailingBackslash(AnotherPanel->GetCurrentDirectory()) +
+                ::FromUnixPath(RemotePath.SubString(FullPrevPath.Length() + 1,
                   RemotePath.Length() - FullPrevPath.Length()));
             }
             else if (FullPrevPath.SubString(1, RemotePath.Length()) == RemotePath)
             {
               UnicodeString NewLocalPath;
-              ALocalPath = ExcludeTrailingBackslash(AnotherPanel->GetCurrentDirectory());
+              ALocalPath = ::ExcludeTrailingBackslash(AnotherPanel->GetCurrentDirectory());
               while (!::UnixSamePath(FullPrevPath, RemotePath))
               {
-                NewLocalPath = ExcludeTrailingBackslash(ExtractFileDir(ALocalPath));
+                NewLocalPath = ::ExcludeTrailingBackslash(ExtractFileDir(ALocalPath));
                 if (NewLocalPath == ALocalPath)
                 {
                   Abort();
@@ -2547,7 +2547,7 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
   {
     if ((FFileList->GetCount() == 1) && (OpMode & OPM_EDIT))
     {
-      FOriginalEditFile = IncludeTrailingBackslash(DestPath) +
+      FOriginalEditFile = ::IncludeTrailingBackslash(DestPath) +
         ::UnixExtractFileName(FFileList->GetString(0));
       FLastEditFile = FOriginalEditFile;
       FLastEditCopyParam = CopyParam;
@@ -2605,7 +2605,7 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   std::unique_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
   ExportData->Assign(Data);
   ExportData->SetModified(true);
-  UnicodeString XmlFileName = IncludeTrailingBackslash(Param.DestPath) +
+  UnicodeString XmlFileName = ::IncludeTrailingBackslash(Param.DestPath) +
     ::ValidLocalFileName(::ExtractFilename(ExportData->GetName())) + L".netbox";
   std::unique_ptr<THierarchicalStorage> ExportStorage(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
   ExportStorage->Init();
@@ -2773,9 +2773,9 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
   {
     UnicodeString FileName;
     TFarPanelItem * PanelItem;
-    for (intptr_t I = 0; I < PanelItems->GetCount(); ++I)
+    for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
     {
-      PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetItem(I));
+      PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetItem(Index));
       bool AnyData = false;
       FileName = PanelItem->GetFileName();
       if (PanelItem->GetIsFile())
@@ -2823,7 +2823,7 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(
     UnicodeString FileName = PanelItem->GetFileName();
     if (Side == osLocal)
     {
-      FileName = IncludeTrailingBackslash(GetPanelInfo()->GetCurrentDirectory()) + FileName;
+      FileName = ::IncludeTrailingBackslash(GetPanelInfo()->GetCurrentDirectory()) + FileName;
     }
     Result->AddObject(FileName, static_cast<TObject *>(PanelItem->GetUserData()));
   }
@@ -2876,7 +2876,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
         }
         if (Side == osLocal)
         {
-          if (ExtractFilePath(FileName).IsEmpty())
+          if (::ExtractFilePath(FileName).IsEmpty())
           {
             if (!FileNameOnly)
             {
@@ -2885,7 +2885,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
               {
                 Dir = GetCurrentDir();
               }
-              FileName = IncludeTrailingBackslash(Dir) + FileName;
+              FileName = ::IncludeTrailingBackslash(Dir) + FileName;
             }
           }
           else
@@ -3920,7 +3920,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
         {
           // remove directory only if it is empty
           // (to avoid deleting another directory if user uses "save as")
-          ::RemoveDir(ExcludeTrailingBackslash(ExtractFilePath(Info->GetFileName())));
+          ::RemoveDir(::ExcludeTrailingBackslash(::ExtractFilePath(Info->GetFileName())));
         }
 
         FMultipleEdits.erase(it->first);

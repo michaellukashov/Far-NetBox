@@ -226,7 +226,7 @@ public:
   void CreateDirectory(const UnicodeString & DirName,
     const TRemoteProperties * Properties = nullptr);
   void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
-  void DeleteFile(const UnicodeString & AFileName,
+  void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile = nullptr, void * Params = nullptr);
   bool DeleteFiles(TStrings * FilesToDelete, intptr_t Params = 0);
   bool DeleteLocalFiles(TStrings * FileList, intptr_t Params = 0);

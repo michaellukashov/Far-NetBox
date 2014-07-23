@@ -186,7 +186,7 @@ UnicodeString AnsiReplaceStr(const UnicodeString & Str, const UnicodeString & Fr
 intptr_t AnsiPos(const UnicodeString & Str2, wchar_t Ch);
 intptr_t Pos(const UnicodeString & Str2, const UnicodeString & Substr);
 UnicodeString StringReplace(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To, const TReplaceFlags & Flags);
-bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, intptr_t Index);
+bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, intptr_t AIndex);
 intptr_t FirstDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
 intptr_t LastDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
 //---------------------------------------------------------------------------
@@ -248,10 +248,10 @@ UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & 
 inline DWORD FileGetAttr(const UnicodeString & AFileName);
 inline DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs);
 
-bool ForceDirectories(const UnicodeString & Dir);
-bool DeleteFile(const UnicodeString & File);
-bool CreateDir(const UnicodeString & Dir);
-bool RemoveDir(const UnicodeString & Dir);
+bool ForceDirectories(const UnicodeString & ADir);
+bool DeleteFile(const UnicodeString & AFileName);
+bool CreateDir(const UnicodeString & ADir);
+bool RemoveDir(const UnicodeString & ADir);
 
 //---------------------------------------------------------------------------
 UnicodeString Format(const wchar_t * Format, ...);
@@ -268,9 +268,9 @@ UnicodeString TranslateExceptionMessage(Exception * E);
 void AppendWChar(UnicodeString & Str2, const wchar_t Ch);
 void AppendChar(std::string & Str2, const char Ch);
 
-void AppendPathDelimiterW(UnicodeString & Str2);
+void AppendPathDelimiterW(UnicodeString & Str);
 
-UnicodeString ExpandEnvVars(const UnicodeString & Str2);
+UnicodeString ExpandEnvVars(const UnicodeString & Str);
 
 //---------------------------------------------------------------------------
 

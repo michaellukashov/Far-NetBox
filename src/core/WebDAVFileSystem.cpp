@@ -12454,7 +12454,7 @@ void TWebDAVFileSystem::CustomReadFile(const UnicodeString & AFileName,
   }
 }
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::DeleteFile(const UnicodeString & AFileName,
+void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action)
 {
   USEDPARAM(File);
@@ -12494,13 +12494,13 @@ void TWebDAVFileSystem::CreateDirectory(const UnicodeString & DirName)
     Strings.SetDelimiter(L'/');
     Strings.SetDelimitedText(DirName);
     UnicodeString CurDir;
-    for (intptr_t I = 0; I < Strings.GetCount(); ++I)
+    for (intptr_t Index = 0; Index < Strings.GetCount(); ++Index)
     {
-      if (Strings.GetString(I).IsEmpty())
+      if (Strings.GetString(Index).IsEmpty())
       {
         continue;
       }
-      CurDir += L"/" + Strings.GetString(I);
+      CurDir += L"/" + Strings.GetString(Index);
       res = WebDAVMakeDirectory(CurDir.c_str());
     }
     if (!res)
@@ -12893,7 +12893,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
     if (Dir)
     {
       Action.Cancel();
-      WebDAVDirectorySource(IncludeTrailingBackslash(AFileName), TargetDir,
+      WebDAVDirectorySource(::IncludeTrailingBackslash(AFileName), TargetDir,
         LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
     }
     else
@@ -13394,7 +13394,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     // empty already. If not, it should not be deleted (some files were
     // skipped or some new files were copied to it, while we were downloading)
     intptr_t Params = dfNoRecursive;
-    FTerminal->DeleteFile(AFileName, File, &Params);
+    FTerminal->RemoteDeleteFile(AFileName, File, &Params);
   }
 }
 //------------------------------------------------------------------------------

@@ -335,7 +335,7 @@ bool TXmlStorage::ReadBool(const UnicodeString & Name, bool Default)
   }
 }
 //---------------------------------------------------------------------------
-TDateTime TXmlStorage::ReadDateTime(const UnicodeString & Name, TDateTime Default)
+TDateTime TXmlStorage::ReadDateTime(const UnicodeString & Name, const TDateTime& Default)
 {
   double Result = ReadFloat(Name, Default.GetValue());
   return TDateTime(Result);
@@ -375,7 +375,7 @@ void TXmlStorage::WriteBool(const UnicodeString & Name, bool Value)
   WriteString(Name, ::BooleanToEngStr(Value));
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::WriteDateTime(const UnicodeString & Name, TDateTime Value)
+void TXmlStorage::WriteDateTime(const UnicodeString & Name, const TDateTime& Value)
 {
   WriteFloat(Name, Value);
 }

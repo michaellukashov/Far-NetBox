@@ -46,7 +46,7 @@ public:
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CreateDirectory(const UnicodeString & DirName);
   virtual void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
-  virtual void DeleteFile(const UnicodeString & AFileName,
+  virtual void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action);
   virtual void CustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * File, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent);

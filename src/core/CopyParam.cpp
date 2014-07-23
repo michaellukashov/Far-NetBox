@@ -556,7 +556,7 @@ bool TCopyParamType::AllowTransfer(const UnicodeString & AFileName,
 }
 //---------------------------------------------------------------------------
 bool TCopyParamType::SkipTransfer(
-  const UnicodeString & FileName, bool Directory) const
+  const UnicodeString & AFileName, bool Directory) const
 {
   bool Result = false;
   // we deliberatelly do not filter directories, as path is added to resume list
@@ -564,16 +564,16 @@ bool TCopyParamType::SkipTransfer(
   // so for directories we need to recurse and check every single file
   if (!Directory && (FTransferSkipList.get() != NULL))
   {
-    Result = (FTransferSkipList->IndexOf(FileName) >= 0);
+    Result = (FTransferSkipList->IndexOf(AFileName) >= 0);
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TCopyParamType::ResumeTransfer(const UnicodeString & FileName) const
+bool TCopyParamType::ResumeTransfer(const UnicodeString & AFileName) const
 {
   // Returning true has the same effect as cpResume
   return
-    (FileName == FTransferResumeFile) &&
+    (AFileName == FTransferResumeFile) &&
     ALWAYS_TRUE(!FTransferResumeFile.IsEmpty());
 }
 //---------------------------------------------------------------------------

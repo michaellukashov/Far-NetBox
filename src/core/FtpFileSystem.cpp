@@ -228,7 +228,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
 
 void TFTPFileSystem::Init(void *)
 {
-  FQueue.reserve(1000);
+  //FQueue.reserve(1000);
   ResetReply();
 
   FListAll = FTerminal->GetSessionData()->GetFtpListAll();
@@ -1024,7 +1024,7 @@ void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   TOnceDoneOperation & OnceDoneOperation)
 {
   Params &= ~cpAppend;
-  UnicodeString FullTargetDir = IncludeTrailingBackslash(TargetDir);
+  UnicodeString FullTargetDir = ::IncludeTrailingBackslash(TargetDir);
 
   intptr_t Index = 0;
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
@@ -1164,7 +1164,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       );
 
       TSinkFileParams SinkFileParams;
-      SinkFileParams.TargetDir = IncludeTrailingBackslash(DestFullName);
+      SinkFileParams.TargetDir = ::IncludeTrailingBackslash(DestFullName);
       SinkFileParams.CopyParam = CopyParam;
       SinkFileParams.Params = Params;
       SinkFileParams.OperationProgress = OperationProgress;
@@ -1276,7 +1276,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     // empty already. If not, it should not be deleted (some files were
     // skipped or some new files were copied to it, while we were downloading)
     intptr_t Params = dfNoRecursive;
-    FTerminal->DeleteFile(AFileName, AFile, &Params);
+    FTerminal->RemoteDeleteFile(AFileName, AFile, &Params);
   }
 }
 //---------------------------------------------------------------------------
@@ -1343,7 +1343,7 @@ void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
-          if (DirectoryExists(ExtractFilePath(ApiPath(FileName))))
+          if (DirectoryExists(::ExtractFilePath(ApiPath(FileName))))
           {
             FTerminal->DirectoryModified(FullTargetDir + FileNameOnly, true);
           }
@@ -1443,7 +1443,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
   if (Dir)
   {
     Action.Cancel();
-    DirectorySource(IncludeTrailingBackslash(RealFileName), TargetDir,
+    DirectorySource(::IncludeTrailingBackslash(RealFileName), TargetDir,
       OpenParams->LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
   }
   else
@@ -1687,7 +1687,7 @@ void TFTPFileSystem::CreateLink(const UnicodeString & /*FileName*/,
   FAIL;
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
+void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action)
 {
   UnicodeString FileName = AbsolutePath(AFileName, false);
@@ -1700,7 +1700,7 @@ void TFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
   {
     try
     {
-      FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK(TTerminal::DeleteFile, FTerminal), &Params);
+      FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK(TTerminal::RemoteDeleteFile, FTerminal), &Params);
     }
     catch (...)
     {
@@ -2358,6 +2358,9 @@ bool TFTPFileSystem::PostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam)
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::ProcessMessage()
 {
+  if (FQueue.empty())
+    return false;
+
   bool Result;
   TMessageQueue::value_type Message;
 
@@ -3024,11 +3027,11 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
     UnicodeString FullFileName = Path2;
     if (OperationProgress->Side == osLocal)
     {
-      FullFileName = IncludeTrailingBackslash(FullFileName);
+      FullFileName = ::IncludeTrailingBackslash(FullFileName);
     }
     else
     {
-      FullFileName = UnixIncludeTrailingBackslash(FullFileName);
+      FullFileName = ::UnixIncludeTrailingBackslash(FullFileName);
     }
     FullFileName += FileName;
 

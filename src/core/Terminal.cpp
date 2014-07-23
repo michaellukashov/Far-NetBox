@@ -158,7 +158,7 @@ TLoopDetector::TLoopDetector()
 //---------------------------------------------------------------------------
 void TLoopDetector::RecordVisitedDirectory(const UnicodeString & Directory)
 {
-  FVisitedDirectories->Add(ExcludeTrailingBackslash(Directory));
+  FVisitedDirectories->Add(::ExcludeTrailingBackslash(Directory));
 }
 //---------------------------------------------------------------------------
 bool TLoopDetector::IsUnvisitedDirectory(const TRemoteFile * File)
@@ -2313,7 +2313,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & AFileName,
     if (Msg.IsEmpty())
     {
       // Side refers to destination side here
-      UnicodeString FileNameOnly = (Side == osRemote) ? ExtractFileName(AFileName, false) : UnixExtractFileName(AFileName);
+      UnicodeString FileNameOnly = (Side == osRemote) ? ::ExtractFileName(AFileName, false) : ::UnixExtractFileName(AFileName);
       Msg = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE2 :
         REMOTE_FILE_OVERWRITE2), FileNameOnly.c_str(), AFileName.c_str());
     }
@@ -3201,13 +3201,13 @@ void TTerminal::RecycleFile(const UnicodeString & AFileName,
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::DeleteFile(const UnicodeString & AFileName,
+void TTerminal::RemoteDeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, void * AParams)
 {
-  UnicodeString LocalFileName = AFileName;
+  UnicodeString FileName = AFileName;
   if (AFileName.IsEmpty() && AFile)
   {
-    LocalFileName = AFile->GetFileName();
+    FileName = AFile->GetFileName();
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foDelete)
   {
@@ -3215,25 +3215,25 @@ void TTerminal::DeleteFile(const UnicodeString & AFileName,
     {
       Abort();
     }
-    GetOperationProgress()->SetFile(LocalFileName);
+    GetOperationProgress()->SetFile(FileName);
   }
   intptr_t Params = (AParams != nullptr) ? *(static_cast<int *>(AParams)) : 0;
   bool Recycle =
     FLAGCLEAR(Params, dfForceDelete) &&
     (GetSessionData()->GetDeleteToRecycleBin() != FLAGSET(Params, dfAlternative)) &&
     !GetSessionData()->GetRecycleBinPath().IsEmpty();
-  if (Recycle && !IsRecycledFile(LocalFileName))
+  if (Recycle && !IsRecycledFile(FileName))
   {
-    RecycleFile(LocalFileName, AFile);
+    RecycleFile(FileName, AFile);
   }
   else
   {
-    LogEvent(FORMAT(L"Deleting file \"%s\".", LocalFileName.c_str()));
+    LogEvent(FORMAT(L"Deleting file \"%s\".", FileName.c_str()));
     if (AFile)
     {
-      FileModified(AFile, LocalFileName, true);
+      FileModified(AFile, FileName, true);
     }
-    DoDeleteFile(LocalFileName, AFile, Params);
+    DoDeleteFile(FileName, AFile, Params);
     ReactOnCommand(fsDeleteFile);
   }
 }
@@ -3246,7 +3246,7 @@ void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
   {
     assert(FFileSystem);
     // 'File' parameter: SFTPFileSystem needs to know if file is file or directory
-    FFileSystem->DeleteFile(AFileName, File, Params, Action);
+    FFileSystem->RemoteDeleteFile(AFileName, File, Params, Action);
   }
   catch (Exception & E)
   {
@@ -3264,7 +3264,7 @@ bool TTerminal::DeleteFiles(TStrings * FilesToDelete, intptr_t Params)
   // TODO: avoid resolving symlinks while reading subdirectories.
   // Resolving does not work anyway for relative symlinks in subdirectories
   // (at least for SFTP).
-  return ProcessFiles(FilesToDelete, foDelete, MAKE_CALLBACK(TTerminal::DeleteFile, this), &Params);
+  return ProcessFiles(FilesToDelete, foDelete, MAKE_CALLBACK(TTerminal::RemoteDeleteFile, this), &Params);
 }
 //------------------------------------------------------------------------------
 void TTerminal::DeleteLocalFile(const UnicodeString & AFileName,
@@ -3381,9 +3381,9 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
   else
   {
     UnicodeString FileList;
-    for (intptr_t I = 0; I < Files->GetCount(); ++I)
+    for (intptr_t Index = 0; Index < Files->GetCount(); ++Index)
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, Files->GetObject(I));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, Files->GetObject(Index));
       bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
 
       if (!Dir || FLAGSET(Params, ccApplyToDirectories))
@@ -3393,7 +3393,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
           FileList += L" ";
         }
 
-        FileList += L"\"" + ShellDelimitStr(Files->GetString(I), L'"') + L"\"";
+        FileList += L"\"" + ShellDelimitStr(Files->GetString(Index), L'"') + L"\"";
       }
     }
 
@@ -5077,7 +5077,7 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
 
               case saUploadUpdate:
                 UploadList->AddObject(
-                  IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
+                  ::IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
                     ChecklistItem->Local.FileName,
                   const_cast<TChecklistItem *>(ChecklistItem));
                 break;
@@ -5109,13 +5109,13 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
               case saUploadNew:
               case saUploadUpdate:
                 UploadList->Add(
-                  IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
+                  ::IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
                     ChecklistItem->Local.FileName);
                 break;
 
               case saDeleteLocal:
                 DeleteLocalList->Add(
-                  IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
+                  ::IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
                     ChecklistItem->Local.FileName);
                 break;
 
@@ -5205,7 +5205,7 @@ void TTerminal::SynchronizeLocalTimestamp(const UnicodeString & /*FileName*/,
     reinterpret_cast<const TChecklistItem *>(AFile);
 
   UnicodeString LocalFile =
-    IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
+    ::IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
       ChecklistItem->Local.FileName;
   FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, LocalFile.c_str()),
     SetLocalFileTime(LocalFile, ChecklistItem->Remote.Modification);
@@ -5909,9 +5909,9 @@ TTerminal * TTerminalList::GetTerminal(intptr_t Index)
 //------------------------------------------------------------------------------
 void TTerminalList::Idle()
 {
-  for (intptr_t I = 0; I < GetCount(); ++I)
+  for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    TTerminal * Terminal = GetTerminal(I);
+    TTerminal * Terminal = GetTerminal(Index);
     if (Terminal->GetStatus() == ssOpened)
     {
       Terminal->Idle();

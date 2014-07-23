@@ -80,9 +80,9 @@ TCustomFarPlugin::~TCustomFarPlugin()
   ClearPluginInfo(FPluginInfo);
   assert(FOpenedPlugins->GetCount() == 0);
   SAFE_DESTROY(FOpenedPlugins);
-  for (intptr_t I = 0; I < FSavedTitles->GetCount(); I++)
+  for (intptr_t Index = 0; Index < FSavedTitles->GetCount(); Index++)
   {
-    TObject * Object = FSavedTitles->GetObject(I);
+    TObject * Object = FSavedTitles->GetObject(Index);
     SAFE_DESTROY(Object);
   }
   SAFE_DESTROY(FSavedTitles);
@@ -1151,9 +1151,9 @@ intptr_t TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString & Title,
   };
   intptr_t Selected = NPOS;
   intptr_t Count = 0;
-  for (intptr_t I = 0; I < Items->GetCount(); ++I)
+  for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    uintptr_t Flags = reinterpret_cast<uintptr_t>(Items->GetObject(I));
+    uintptr_t Flags = reinterpret_cast<uintptr_t>(Items->GetObject(Index));
     if (FLAGCLEAR(Flags, MIF_HIDDEN))
     {
       ClearStruct(MenuItems[Count]);
@@ -1161,10 +1161,10 @@ intptr_t TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString & Title,
       if (MenuItems[Count].Flags & MIF_SELECTED)
       {
         assert(Selected == NPOS);
-        Selected = I;
+        Selected = Index;
       }
-      MenuItems[Count].Text = Items->GetString(I).c_str();
-      MenuItems[Count].UserData = I;
+      MenuItems[Count].Text = Items->GetString(Index).c_str();
+      MenuItems[Count].UserData = Index;
       Count++;
     }
   }
