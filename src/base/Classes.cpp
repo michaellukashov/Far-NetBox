@@ -99,9 +99,9 @@ void TList::SetCount(intptr_t NewCount)
   if (NewCount <= static_cast<intptr_t>(FList.size()))
   {
     intptr_t sz = FList.size();
-    for (intptr_t I = sz - 1; (I != NPOS) && (I >= NewCount); I--)
+    for (intptr_t Index = sz - 1; (Index != NPOS) && (Index >= NewCount); Index--)
     {
-      Delete(I);
+      Delete(Index);
     }
   }
   FList.resize(NewCount);
@@ -436,9 +436,9 @@ UnicodeString TStrings::GetDelimitedText() const
   }
   else
   {
-    for (intptr_t I = 0; I < GetCount(); I++)
+    for (intptr_t Index = 0; Index < GetCount(); Index++)
     {
-      UnicodeString line = GetString(I);
+      UnicodeString line = GetString(Index);
       Result += GetQuoteChar() + line + GetQuoteChar() + GetDelimiter();
     }
     if (Result.Length() > 0)
@@ -539,15 +539,15 @@ UnicodeString TStrings::GetTextStr() const
   intptr_t Count = GetCount();
   intptr_t Size = 0;
   UnicodeString LB = sLineBreak;
-  for (intptr_t I = 0; I < Count; I++)
+  for (intptr_t Index = 0; Index < Count; Index++)
   {
-    Size += GetString(I).Length() + LB.Length();
+    Size += GetString(Index).Length() + LB.Length();
   }
   Result.SetLength(Size);
   wchar_t * P = const_cast<wchar_t *>(Result.c_str());
-  for (intptr_t I = 0; I < Count; I++)
+  for (intptr_t Index = 0; Index < Count; Index++)
   {
-    UnicodeString S = GetString(I);
+    UnicodeString S = GetString(Index);
     intptr_t L = S.Length() * sizeof(wchar_t);
     if (L != 0)
     {
@@ -616,9 +616,9 @@ bool TStrings::Equals(const TStrings * Strings) const
   {
     return false;
   }
-  for (intptr_t I = 0; I < GetCount(); ++I)
+  for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (GetString(I) != Strings->GetString(I))
+    if (GetString(Index) != Strings->GetString(Index))
     {
       return false;
     }
@@ -709,30 +709,30 @@ UnicodeString TStrings::ExtractName(const UnicodeString & S) const
 const UnicodeString TStrings::GetValue(const UnicodeString & Name) const
 {
   UnicodeString Result;
-  intptr_t I = IndexOfName(Name);
-  if (I >= 0)
+  intptr_t Index = IndexOfName(Name);
+  if (Index >= 0)
   {
-    Result = GetString(I).SubStr(Name.Length() + 2, -1);
+    Result = GetString(Index).SubStr(Name.Length() + 2, -1);
   }
   return Result;
 }
 
 void TStrings::SetValue(const UnicodeString & Name, const UnicodeString & Value)
 {
-  intptr_t I = IndexOfName(Name);
+  intptr_t Index = IndexOfName(Name);
   if (!Value.IsEmpty())
   {
-    if (I < 0)
+    if (Index < 0)
     {
-      I = Add(L"");
+      Index = Add(L"");
     }
-    SetString(I, Name + L'=' + Value);
+    SetString(Index, Name + L'=' + Value);
   }
   else
   {
-    if (I >= 0)
+    if (Index >= 0)
     {
-      Delete(I);
+      Delete(Index);
     }
   }
 }
@@ -744,9 +744,9 @@ void TStrings::AddStrings(const TStrings * Strings)
   {
     EndUpdate();
   };
-  for (intptr_t I = 0; I < Strings->GetCount(); I++)
+  for (intptr_t Index = 0; Index < Strings->GetCount(); Index++)
   {
-    AddObject(Strings->GetString(I), Strings->GetObject(I));
+    AddObject(Strings->GetString(Index), Strings->GetObject(Index));
   }
 }
 
@@ -1766,10 +1766,10 @@ bool TRegistry::DeleteKey(const UnicodeString & Key)
     {
       UnicodeString KeyName;
       KeyName.SetLength(Info.MaxSubKeyLen + 1);
-      for (intptr_t I = static_cast<intptr_t>(Info.NumSubKeys) - 1; I >= 0; I--)
+      for (intptr_t Index = static_cast<intptr_t>(Info.NumSubKeys) - 1; Index >= 0; Index--)
       {
         DWORD Len = Info.MaxSubKeyLen + 1;
-        if (RegEnumKeyEx(DeleteKey, static_cast<DWORD>(I), &KeyName[1], &Len,
+        if (RegEnumKeyEx(DeleteKey, static_cast<DWORD>(Index), &KeyName[1], &Len,
                          nullptr, nullptr, nullptr, nullptr) == ERROR_SUCCESS)
         {
           this->DeleteKey(KeyName);

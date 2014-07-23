@@ -314,14 +314,14 @@ UnicodeString StringReplace(const UnicodeString & Str, const UnicodeString & Fro
   return AnsiReplaceStr(Str, From, To);
 }
 
-bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, intptr_t Index)
+bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, intptr_t AIndex)
 {
-  if (Index <= Str.Length())
+  if (AIndex <= Str.Length())
   {
-    wchar_t Ch = Str[Index];
-    for (intptr_t I = 1; I <= Delimiters.Length(); I++)
+    wchar_t Ch = Str[AIndex];
+    for (intptr_t Index = 1; Index <= Delimiters.Length(); Index++)
     {
-      if (Delimiters[I] == Ch)
+      if (Delimiters[Index] == Ch)
       {
         return true;
       }
@@ -334,11 +334,11 @@ intptr_t FirstDelimiter(const UnicodeString & Delimiters, const UnicodeString & 
 {
   if (Str.Length())
   {
-    for (intptr_t I = 1; I <= Str.Length(); ++I)
+    for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
     {
-      if (Str.IsDelimiter(Delimiters, I))
+      if (Str.IsDelimiter(Delimiters, Index))
       {
-        return I;
+        return Index;
       }
     }
   }
@@ -349,11 +349,11 @@ intptr_t LastDelimiter(const UnicodeString & Delimiters, const UnicodeString & S
 {
   if (Str.Length())
   {
-    for (intptr_t I = Str.Length(); I >= 1; --I)
+    for (intptr_t Index = Str.Length(); Index >= 1; --Index)
     {
-      if (Str.IsDelimiter(Delimiters, I))
+      if (Str.IsDelimiter(Delimiters, Index))
       {
-        return I;
+        return Index;
       }
     }
   }
@@ -551,17 +551,17 @@ UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & 
   UnicodeString PathSeparators = L"/\\";
   do
   {
-    intptr_t I = ::Pos(Temp, PathSeparators);
-    while ((Temp.Length() > 0) && (I == 0))
+    intptr_t Index = ::Pos(Temp, PathSeparators);
+    while ((Temp.Length() > 0) && (Index == 0))
     {
       Temp.Delete(1, 1);
-      I = ::Pos(Temp, PathSeparators);
+      Index = ::Pos(Temp, PathSeparators);
     }
-    I = ::Pos(Temp, PathSeparators);
-    if (I > 0)
+    Index = ::Pos(Temp, PathSeparators);
+    if (Index > 0)
     {
-      Result = Temp.SubString(1, I - 1);
-      Temp.Delete(1, I);
+      Result = Temp.SubString(1, Index - 1);
+      Temp.Delete(1, Index);
     }
     else
     {
@@ -929,9 +929,9 @@ UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len)
   UnicodeString Result;
   if (Len < 0) Len = 0;
   Result.SetLength(Len);
-  for (intptr_t I = 1; I <= Len; I++)
+  for (intptr_t Index = 1; Index <= Len; Index++)
   {
-    Result[I] = Ch;
+    Result[Index] = Ch;
   }
   return Result;
 }
@@ -1222,10 +1222,10 @@ UnicodeString GetCurrentDir()
 UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase, char Separator)
 {
   UnicodeString Result;
-  for (intptr_t I = 1; I <= Str.Length(); I++)
+  for (intptr_t Index = 1; Index <= Str.Length(); Index++)
   {
-    Result += CharToHex(static_cast<char>(Str[I]), UpperCase);
-    if ((Separator != L'\0') && (I <= Str.Length()))
+    Result += CharToHex(static_cast<char>(Str[Index]), UpperCase);
+    if ((Separator != L'\0') && (Index <= Str.Length()))
     {
       Result += Separator;
     }
@@ -1241,10 +1241,10 @@ UnicodeString HexToStr(const UnicodeString & Hex)
   intptr_t L = Hex.Length() - 1;
   if (L % 2 == 0)
   {
-    for (intptr_t I = 1; I <= Hex.Length(); I += 2)
+    for (intptr_t Index = 1; Index <= Hex.Length(); Index += 2)
     {
-      uintptr_t P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[I])));
-      uintptr_t P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[I + 1])));
+      uintptr_t P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[Index])));
+      uintptr_t P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[Index + 1])));
       if ((P1 == std::wstring::npos) || (P2 == std::wstring::npos))
       {
         Result = L"";
@@ -1264,13 +1264,13 @@ uintptr_t HexToInt(const UnicodeString & Hex, uintptr_t MinChars)
 {
   static std::wstring Digits = L"0123456789ABCDEF";
   uintptr_t Result = 0;
-  intptr_t I = 1;
-  while (I <= Hex.Length())
+  intptr_t Index = 1;
+  while (Index <= Hex.Length())
   {
-    size_t A = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[I])));
+    size_t A = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[Index])));
     if (A == std::wstring::npos)
     {
-      if ((MinChars == NPOS) || (I <= static_cast<intptr_t>(MinChars)))
+      if ((MinChars == NPOS) || (Index <= static_cast<intptr_t>(MinChars)))
       {
           Result = 0;
       }
@@ -1279,7 +1279,7 @@ uintptr_t HexToInt(const UnicodeString & Hex, uintptr_t MinChars)
 
     Result = (Result * 16) + (static_cast<int>(A) - 1);
 
-    I++;
+    Index++;
   }
   return Result;
 }
@@ -1292,7 +1292,7 @@ UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars)
   intptr_t Pad = MinChars - Result.Length();
   if (Pad > 0)
   {
-    for (intptr_t I = 0; I < Pad; I++)
+    for (intptr_t Index = 0; Index < Pad; Index++)
     {
       Result.Insert(L'0', 1);
     }

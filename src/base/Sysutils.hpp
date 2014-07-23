@@ -186,7 +186,7 @@ UnicodeString AnsiReplaceStr(const UnicodeString & Str, const UnicodeString & Fr
 intptr_t AnsiPos(const UnicodeString & Str2, wchar_t Ch);
 intptr_t Pos(const UnicodeString & Str2, const UnicodeString & Substr);
 UnicodeString StringReplace(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To, const TReplaceFlags & Flags);
-bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, intptr_t Index);
+bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, intptr_t AIndex);
 intptr_t FirstDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
 intptr_t LastDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
 //---------------------------------------------------------------------------
