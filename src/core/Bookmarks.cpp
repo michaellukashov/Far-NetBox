@@ -247,7 +247,7 @@ void TBookmarks::SetBookmarks(const UnicodeString & AIndex, TBookmarkList * Valu
   {
     TBookmarkList * BookmarkList = new TBookmarkList();
     BookmarkList->Assign(Value);
-    FBookmarkLists->AddObject(Index, BookmarkList);
+    FBookmarkLists->AddObject(AIndex, BookmarkList);
   }
 }
 //---------------------------------------------------------------------------
