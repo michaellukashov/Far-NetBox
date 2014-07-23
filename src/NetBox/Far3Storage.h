@@ -27,7 +27,7 @@ public:
   virtual bool ReadBool(const UnicodeString & Name, bool Default);
   virtual intptr_t ReadInteger(const UnicodeString & Name, intptr_t Default);
   virtual __int64 ReadInt64(const UnicodeString & Name, __int64 Default);
-  virtual TDateTime ReadDateTime(const UnicodeString & Name, TDateTime Default);
+  virtual TDateTime ReadDateTime(const UnicodeString & Name, const TDateTime & Default);
   virtual double ReadFloat(const UnicodeString & Name, double Default);
   virtual UnicodeString ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default);
   virtual size_t ReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size);
@@ -36,7 +36,7 @@ public:
   virtual void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
   virtual void WriteInteger(const UnicodeString & Name, intptr_t Value);
   virtual void WriteInt64(const UnicodeString & Name, __int64 Value);
-  virtual void WriteDateTime(const UnicodeString & Name, TDateTime AValue);
+  virtual void WriteDateTime(const UnicodeString & Name, const TDateTime & AValue);
   virtual void WriteFloat(const UnicodeString & Name, double AValue);
   virtual void WriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size);
 

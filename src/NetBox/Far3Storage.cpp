@@ -170,7 +170,7 @@ bool TFar3Storage::ReadBool(const UnicodeString & Name, bool Default)
   return FPluginSettings.Get(FRoot, Name.c_str(), Default);
 }
 //---------------------------------------------------------------------------
-TDateTime TFar3Storage::ReadDateTime(const UnicodeString & Name, TDateTime Default)
+TDateTime TFar3Storage::ReadDateTime(const UnicodeString & Name, const TDateTime & Default)
 {
   TDateTime Result;
   double Val = 0.0;
@@ -223,7 +223,7 @@ void TFar3Storage::WriteBool(const UnicodeString & Name, bool Value)
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
 //---------------------------------------------------------------------------
-void TFar3Storage::WriteDateTime(const UnicodeString & Name, TDateTime AValue)
+void TFar3Storage::WriteDateTime(const UnicodeString & Name, const TDateTime & AValue)
 {
   double Val = AValue.operator double();
   void * Value = reinterpret_cast<void *>(&Val);
