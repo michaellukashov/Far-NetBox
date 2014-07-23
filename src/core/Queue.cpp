@@ -2041,7 +2041,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
       assert(AFilesToCopy->GetCount() > 0);
       FInfo->Source = AFilesToCopy->GetString(0);
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
-        ::IncludeTrailingBackslash(ExtractFilePath(FInfo->Source));
+        ::IncludeTrailingBackslash(::ExtractFilePath(FInfo->Source));
     }
   }
 

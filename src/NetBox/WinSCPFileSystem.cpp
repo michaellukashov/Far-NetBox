@@ -2865,7 +2865,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
         }
         if (Side == osLocal)
         {
-          if (ExtractFilePath(FileName).IsEmpty())
+          if (::ExtractFilePath(FileName).IsEmpty())
           {
             if (!FileNameOnly)
             {
@@ -3857,7 +3857,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
         {
           // remove directory only if it is empty
           // (to avoid deleting another directory if user uses "save as")
-          ::RemoveDir(::ExcludeTrailingBackslash(ExtractFilePath(Info->GetFileName())));
+          ::RemoveDir(::ExcludeTrailingBackslash(::ExtractFilePath(Info->GetFileName())));
         }
 
         FMultipleEdits.erase(it->first);

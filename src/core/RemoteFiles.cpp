@@ -134,7 +134,7 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & Path)
 {
   assert(AFiles->GetCount() > 0);
 
-  Path = ExtractFilePath(AFiles->GetString(0));
+  Path = ::ExtractFilePath(AFiles->GetString(0));
   bool Result = !Path.IsEmpty();
   if (Result)
   {
@@ -144,7 +144,7 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & Path)
         (AFiles->GetString(Index).SubString(1, Path.Length()) != Path))
       {
         intptr_t PrevLen = Path.Length();
-        Path = ExtractFilePath(::ExcludeTrailingBackslash(Path));
+        Path = ::ExtractFilePath(::ExcludeTrailingBackslash(Path));
         if (Path.Length() == PrevLen)
         {
           Path = L"";

@@ -230,7 +230,7 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
 {
   if ((FOptions != nullptr) && (FOptions->Filter != nullptr))
   {
-    if (::IncludeTrailingBackslash(ExtractFilePath(DirectoryName)) ==
+    if (::IncludeTrailingBackslash(::ExtractFilePath(DirectoryName)) ==
         ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory))
     {
       intptr_t FoundIndex;

@@ -613,11 +613,11 @@ bool ForceDirectories(const UnicodeString & ADir)
   {
     return Result;
   }
-  if (ExtractFilePath(Dir2).IsEmpty())
+  if (::ExtractFilePath(Dir2).IsEmpty())
   {
     return ::CreateDir(Dir2);
   }
-  Result = ForceDirectories(ExtractFilePath(Dir2)) && CreateDir(Dir2);
+  Result = ::ForceDirectories(::ExtractFilePath(Dir2)) && CreateDir(Dir2);
   return Result;
 }
 

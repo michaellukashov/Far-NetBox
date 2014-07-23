@@ -442,7 +442,7 @@ bool TFileMasks::Matches(const UnicodeString & AFileName, bool Local,
   bool Result;
   if (Local)
   {
-    UnicodeString Path = ExtractFilePath(AFileName);
+    UnicodeString Path = ::ExtractFilePath(AFileName);
     if (!Path.IsEmpty())
     {
       Path = ::ToUnixPath(::ExcludeTrailingBackslash(Path));

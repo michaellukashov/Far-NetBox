@@ -3819,7 +3819,7 @@ void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
-          if (DirectoryExists(ExtractFilePath(ApiPath(FileName))))
+          if (DirectoryExists(::ExtractFilePath(ApiPath(FileName))))
           {
             FTerminal->DirectoryModified(::UnixIncludeTrailingBackslash(TargetDir) +
               FileNameOnly, true);
