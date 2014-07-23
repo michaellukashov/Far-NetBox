@@ -49,7 +49,7 @@ public:
   virtual bool ReadBool(const UnicodeString & Name, bool Default) = 0;
   virtual intptr_t ReadInteger(const UnicodeString & Name, intptr_t Default) = 0;
   virtual int64_t ReadInt64(const UnicodeString & Name, int64_t Default) = 0;
-  virtual TDateTime ReadDateTime(const UnicodeString & Name, TDateTime Default) = 0;
+  virtual TDateTime ReadDateTime(const UnicodeString & Name, const TDateTime & Default) = 0;
   virtual double ReadFloat(const UnicodeString & Name, double Default) = 0;
   virtual UnicodeString ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) = 0;
   virtual size_t ReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size) = 0;
@@ -62,7 +62,7 @@ public:
   virtual void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) = 0;
   virtual void WriteInteger(const UnicodeString & Name, intptr_t Value) = 0;
   virtual void WriteInt64(const UnicodeString & Name, int64_t Value) = 0;
-  virtual void WriteDateTime(const UnicodeString & Name, TDateTime Value) = 0;
+  virtual void WriteDateTime(const UnicodeString & Name, const TDateTime & Value) = 0;
   virtual void WriteFloat(const UnicodeString & Name, double Value) = 0;
   virtual void WriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size) = 0;
 
@@ -122,7 +122,7 @@ public:
   virtual bool ReadBool(const UnicodeString & Name, bool Default);
   virtual intptr_t ReadInteger(const UnicodeString & Name, intptr_t Default);
   virtual int64_t ReadInt64(const UnicodeString & Name, int64_t Default);
-  virtual TDateTime ReadDateTime(const UnicodeString & Name, TDateTime Default);
+  virtual TDateTime ReadDateTime(const UnicodeString & Name, const TDateTime & Default);
   virtual double ReadFloat(const UnicodeString & Name, double Default);
   virtual UnicodeString ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default);
   virtual size_t ReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size);
@@ -130,7 +130,7 @@ public:
   virtual void WriteBool(const UnicodeString & Name, bool Value);
   virtual void WriteInteger(const UnicodeString & Name, intptr_t Value);
   virtual void WriteInt64(const UnicodeString & Name, int64_t Value);
-  virtual void WriteDateTime(const UnicodeString & Name, TDateTime Value);
+  virtual void WriteDateTime(const UnicodeString & Name, const TDateTime & Value);
   virtual void WriteFloat(const UnicodeString & Name, double Value);
   virtual void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
   virtual void WriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size);

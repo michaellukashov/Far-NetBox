@@ -547,7 +547,7 @@ bool TRegistryStorage::ReadBool(const UnicodeString & Name, bool Default)
   READ_REGISTRY(ReadBool);
 }
 //------------------------------------------------------------------------------
-TDateTime TRegistryStorage::ReadDateTime(const UnicodeString & Name, TDateTime Default)
+TDateTime TRegistryStorage::ReadDateTime(const UnicodeString & Name, const TDateTime & Default)
 {
   READ_REGISTRY(ReadDateTime);
 }
@@ -612,7 +612,7 @@ void TRegistryStorage::WriteBool(const UnicodeString & Name, bool Value)
   WRITE_REGISTRY(WriteBool);
 }
 //------------------------------------------------------------------------------
-void TRegistryStorage::WriteDateTime(const UnicodeString & Name, TDateTime Value)
+void TRegistryStorage::WriteDateTime(const UnicodeString & Name, const TDateTime & Value)
 {
   WRITE_REGISTRY(WriteDateTime);
 }

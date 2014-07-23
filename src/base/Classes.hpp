@@ -614,7 +614,7 @@ public:
     void * Buffer, size_t Size) const;
 
   void WriteBool(const UnicodeString & Name, bool Value);
-  void WriteDateTime(const UnicodeString & Name, TDateTime & Value);
+  void WriteDateTime(const UnicodeString & Name, const Classes::TDateTime& Value);
   void WriteFloat(const UnicodeString & Name, double Value);
   void WriteString(const UnicodeString & Name, const UnicodeString & Value);
   void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);

@@ -1979,7 +1979,7 @@ void TRegistry::WriteBool(const UnicodeString & Name, bool Value)
   WriteInteger(Name, Value);
 }
 
-void TRegistry::WriteDateTime(const UnicodeString & Name, TDateTime & Value)
+void TRegistry::WriteDateTime(const UnicodeString & Name, const TDateTime & Value)
 {
   double Val = Value.GetValue();
   PutData(Name, &Val, sizeof(double), rdBinary);

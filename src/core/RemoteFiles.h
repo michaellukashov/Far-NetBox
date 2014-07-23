@@ -261,7 +261,7 @@ public:
   TRemoteDirectoryCache();
   virtual ~TRemoteDirectoryCache();
   bool HasFileList(const UnicodeString & Directory);
-  bool HasNewerFileList(const UnicodeString & Directory, TDateTime Timestamp);
+  bool HasNewerFileList(const UnicodeString & Directory, const TDateTime & Timestamp);
   bool GetFileList(const UnicodeString & Directory,
     TRemoteFileList * FileList);
   void AddFileList(TRemoteFileList * FileList);
