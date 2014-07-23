@@ -591,24 +591,24 @@ inline DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs)
   return Result;
 }
 
-bool CreateDir(const UnicodeString & Dir)
+bool CreateDir(const UnicodeString & ADir)
 {
-  return ::CreateDirectory(Dir.c_str(), nullptr) != 0;
+  return ::CreateDirectory(ADir.c_str(), nullptr) != 0;
 }
 
-bool RemoveDir(const UnicodeString & Dir)
+bool RemoveDir(const UnicodeString & ADir)
 {
-  return ::RemoveDirectory(Dir.c_str()) != 0;
+  return ::RemoveDirectory(ADir.c_str()) != 0;
 }
 
-bool ForceDirectories(const UnicodeString & Dir)
+bool ForceDirectories(const UnicodeString & ADir)
 {
   bool Result = true;
-  if (Dir.IsEmpty())
+  if (ADir.IsEmpty())
   {
     return false;
   }
-  UnicodeString Dir2 = ExcludeTrailingBackslash(Dir);
+  UnicodeString Dir2 = ExcludeTrailingBackslash(ADir);
   if ((Dir2.Length() < 3) || DirectoryExists(Dir2))
   {
     return Result;

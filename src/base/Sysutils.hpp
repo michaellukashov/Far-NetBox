@@ -248,10 +248,10 @@ UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & 
 inline DWORD FileGetAttr(const UnicodeString & AFileName);
 inline DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs);
 
-bool ForceDirectories(const UnicodeString & Dir);
+bool ForceDirectories(const UnicodeString & ADir);
 bool DeleteFile(const UnicodeString & AFileName);
-bool CreateDir(const UnicodeString & Dir);
-bool RemoveDir(const UnicodeString & Dir);
+bool CreateDir(const UnicodeString & ADir);
+bool RemoveDir(const UnicodeString & ADir);
 
 //---------------------------------------------------------------------------
 UnicodeString Format(const wchar_t * Format, ...);
@@ -268,9 +268,9 @@ UnicodeString TranslateExceptionMessage(Exception * E);
 void AppendWChar(UnicodeString & Str2, const wchar_t Ch);
 void AppendChar(std::string & Str2, const char Ch);
 
-void AppendPathDelimiterW(UnicodeString & Str2);
+void AppendPathDelimiterW(UnicodeString & Str);
 
-UnicodeString ExpandEnvVars(const UnicodeString & Str2);
+UnicodeString ExpandEnvVars(const UnicodeString & Str);
 
 //---------------------------------------------------------------------------
 
