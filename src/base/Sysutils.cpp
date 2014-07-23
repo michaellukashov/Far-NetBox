@@ -621,10 +621,10 @@ bool ForceDirectories(const UnicodeString & Dir)
   return Result;
 }
 
-bool DeleteFile(const UnicodeString & File)
+bool DeleteFile(const UnicodeString & AFileName)
 {
-  ::DeleteFile(File.c_str());
-  return !::FileExists(File);
+  ::DeleteFile(AFileName.c_str());
+  return !::FileExists(AFileName);
 }
 
 //---------------------------------------------------------------------------

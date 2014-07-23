@@ -249,7 +249,7 @@ inline DWORD FileGetAttr(const UnicodeString & AFileName);
 inline DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs);
 
 bool ForceDirectories(const UnicodeString & Dir);
-bool DeleteFile(const UnicodeString & File);
+bool DeleteFile(const UnicodeString & AFileName);
 bool CreateDir(const UnicodeString & Dir);
 bool RemoveDir(const UnicodeString & Dir);
 
