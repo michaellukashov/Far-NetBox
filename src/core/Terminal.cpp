@@ -158,7 +158,7 @@ TLoopDetector::TLoopDetector()
 //---------------------------------------------------------------------------
 void TLoopDetector::RecordVisitedDirectory(const UnicodeString & Directory)
 {
-  FVisitedDirectories->Add(ExcludeTrailingBackslash(Directory));
+  FVisitedDirectories->Add(::ExcludeTrailingBackslash(Directory));
 }
 //---------------------------------------------------------------------------
 bool TLoopDetector::IsUnvisitedDirectory(const TRemoteFile * File)

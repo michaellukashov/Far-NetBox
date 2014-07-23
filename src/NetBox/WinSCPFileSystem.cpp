@@ -590,7 +590,7 @@ void TWinSCPFileSystem::DuplicateOrRenameSession(TSessionData * Data,
     else
     {
       TSessionData * NData = StoredSessions->NewSession(Name, Data);
-      FSessionsFolder = ExcludeTrailingBackslash(::UnixExtractFilePath(Name));
+      FSessionsFolder = ::ExcludeTrailingBackslash(::UnixExtractFilePath(Name));
 
       // change of letter case during duplication degrades the operation to rename
       if (!Duplicate || (Data == NData))
@@ -682,7 +682,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool 
             else
             {
               SelectSession = StoredSessions->NewSession(Name, Data);
-              FSessionsFolder = ExcludeTrailingBackslash(::UnixExtractFilePath(Name));
+              FSessionsFolder = ::ExcludeTrailingBackslash(::UnixExtractFilePath(Name));
             }
           }
         }
@@ -1239,7 +1239,7 @@ void TWinSCPFileSystem::ApplyCommand()
           {
             SCOPE_EXIT
             {
-              RecursiveDeleteFile(ExcludeTrailingBackslash(TempDir), false);
+              RecursiveDeleteFile(::ExcludeTrailingBackslash(TempDir), false);
             };
             RemoteFileList.reset(new TStringList());
 
@@ -2160,7 +2160,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
 
     if (SessionList())
     {
-      FSessionsFolder = AbsolutePath(L"/" + FSessionsFolder, Dir);
+      FSessionsFolder = ::AbsolutePath(L"/" + FSessionsFolder, Dir);
       assert(FSessionsFolder[1] == L'/');
       FSessionsFolder.Delete(1, 1);
       FNewSessionsFolder = L"";
@@ -2223,16 +2223,16 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
             if (RemotePath.SubString(1, FullPrevPath.Length()) == FullPrevPath)
             {
               ALocalPath = ::IncludeTrailingBackslash(AnotherPanel->GetCurrentDirectory()) +
-                FromUnixPath(RemotePath.SubString(FullPrevPath.Length() + 1,
+                ::FromUnixPath(RemotePath.SubString(FullPrevPath.Length() + 1,
                   RemotePath.Length() - FullPrevPath.Length()));
             }
             else if (FullPrevPath.SubString(1, RemotePath.Length()) == RemotePath)
             {
               UnicodeString NewLocalPath;
-              ALocalPath = ExcludeTrailingBackslash(AnotherPanel->GetCurrentDirectory());
+              ALocalPath = ::ExcludeTrailingBackslash(AnotherPanel->GetCurrentDirectory());
               while (!::UnixSamePath(FullPrevPath, RemotePath))
               {
-                NewLocalPath = ExcludeTrailingBackslash(ExtractFileDir(ALocalPath));
+                NewLocalPath = ::ExcludeTrailingBackslash(ExtractFileDir(ALocalPath));
                 if (NewLocalPath == ALocalPath)
                 {
                   Abort();
@@ -3857,7 +3857,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
         {
           // remove directory only if it is empty
           // (to avoid deleting another directory if user uses "save as")
-          ::RemoveDir(ExcludeTrailingBackslash(ExtractFilePath(Info->GetFileName())));
+          ::RemoveDir(::ExcludeTrailingBackslash(ExtractFilePath(Info->GetFileName())));
         }
 
         FMultipleEdits.erase(it->first);

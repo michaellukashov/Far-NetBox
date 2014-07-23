@@ -4819,7 +4819,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
   intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
-    ::ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
+    ::ExtractFileName(::ExcludeTrailingBackslash(DirectoryName), false), osLocal,
     FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = ::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
 

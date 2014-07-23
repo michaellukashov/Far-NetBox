@@ -608,7 +608,7 @@ bool ForceDirectories(const UnicodeString & ADir)
   {
     return false;
   }
-  UnicodeString Dir2 = ExcludeTrailingBackslash(ADir);
+  UnicodeString Dir2 = ::ExcludeTrailingBackslash(ADir);
   if ((Dir2.Length() < 3) || DirectoryExists(Dir2))
   {
     return Result;
