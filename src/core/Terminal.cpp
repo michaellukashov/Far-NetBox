@@ -3381,9 +3381,9 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
   else
   {
     UnicodeString FileList;
-    for (intptr_t I = 0; I < Files->GetCount(); ++I)
+    for (intptr_t Index = 0; Index < Files->GetCount(); ++Index)
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, Files->GetObject(I));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, Files->GetObject(Index));
       bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
 
       if (!Dir || FLAGSET(Params, ccApplyToDirectories))
@@ -3393,7 +3393,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
           FileList += L" ";
         }
 
-        FileList += L"\"" + ShellDelimitStr(Files->GetString(I), L'"') + L"\"";
+        FileList += L"\"" + ShellDelimitStr(Files->GetString(Index), L'"') + L"\"";
       }
     }
 
@@ -5909,9 +5909,9 @@ TTerminal * TTerminalList::GetTerminal(intptr_t Index)
 //------------------------------------------------------------------------------
 void TTerminalList::Idle()
 {
-  for (intptr_t I = 0; I < GetCount(); ++I)
+  for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    TTerminal * Terminal = GetTerminal(I);
+    TTerminal * Terminal = GetTerminal(Index);
     if (Terminal->GetStatus() == ssOpened)
     {
       Terminal->Idle();

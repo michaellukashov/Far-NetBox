@@ -3688,9 +3688,9 @@ void TStoredSessionList::ImportHostKeys(const UnicodeString & TargetKey,
 //---------------------------------------------------------------------------
 const TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString & SessionName) const
 {
-  for (intptr_t I = 0; I < GetCount(); ++I)
+  for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    const TSessionData * SessionData = GetSession(I);
+    const TSessionData * SessionData = GetSession(Index);
     if (SessionData->GetName() == SessionName)
     {
       return SessionData;

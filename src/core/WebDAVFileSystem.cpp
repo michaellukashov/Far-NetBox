@@ -12494,13 +12494,13 @@ void TWebDAVFileSystem::CreateDirectory(const UnicodeString & DirName)
     Strings.SetDelimiter(L'/');
     Strings.SetDelimitedText(DirName);
     UnicodeString CurDir;
-    for (intptr_t I = 0; I < Strings.GetCount(); ++I)
+    for (intptr_t Index = 0; Index < Strings.GetCount(); ++Index)
     {
-      if (Strings.GetString(I).IsEmpty())
+      if (Strings.GetString(Index).IsEmpty())
       {
         continue;
       }
-      CurDir += L"/" + Strings.GetString(I);
+      CurDir += L"/" + Strings.GetString(Index);
       res = WebDAVMakeDirectory(CurDir.c_str());
     }
     if (!res)

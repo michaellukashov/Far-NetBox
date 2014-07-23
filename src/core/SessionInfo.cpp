@@ -17,10 +17,10 @@
 static UnicodeString DoXmlEscape(const UnicodeString & Str, bool NewLine)
 {
   UnicodeString Result = Str;
-  for (intptr_t I = 1; I <= Result.Length(); I++)
+  for (intptr_t Index = 1; Index <= Result.Length(); Index++)
   {
     const wchar_t * Repl = nullptr;
-    switch (Result[I])
+    switch (Result[Index])
     {
       case L'&':
         Repl = L"amp;";
@@ -46,16 +46,16 @@ static UnicodeString DoXmlEscape(const UnicodeString & Str, bool NewLine)
         break;
 
       case L'\r':
-        Result.Delete(I, 1);
-        I--;
+        Result.Delete(Index, 1);
+        Index--;
         break;
     }
 
     if (Repl != nullptr)
     {
-      Result[I] = L'&';
-      Result.Insert(Repl, I + 1);
-      I += wcslen(Repl);
+      Result[Index] = L'&';
+      Result.Insert(Repl, Index + 1);
+      Index += wcslen(Repl);
     }
   }
   return Result;

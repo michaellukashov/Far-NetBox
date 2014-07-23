@@ -1861,10 +1861,10 @@ void TSFTPFileSystem::Idle()
 void TSFTPFileSystem::ResetConnection()
 {
   // there must be no valid packet reservation at the end
-  for (intptr_t I = 0; I < FPacketReservations->GetCount(); I++)
+  for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); Index++)
   {
-    assert(FPacketReservations->GetItem(I) == nullptr);
-    TSFTPPacket * Item = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(I));
+    assert(FPacketReservations->GetItem(Index) == nullptr);
+    TSFTPPacket * Item = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Index));
     SAFE_DESTROY(Item);
   }
   FPacketReservations->Clear();
@@ -2726,12 +2726,12 @@ void TSFTPFileSystem::DoStartup()
           FSupport->BlockMasks = SupportedStruct.GetSmallCardinal();
           uintptr_t ExtensionCount;
           ExtensionCount = SupportedStruct.GetCardinal();
-          for (uintptr_t I = 0; I < ExtensionCount; I++)
+          for (uintptr_t Index = 0; Index < ExtensionCount; Index++)
           {
             FSupport->AttribExtensions->Add(SupportedStruct.GetAnsiString());
           }
           ExtensionCount = SupportedStruct.GetCardinal();
-          for (uintptr_t I = 0; I < ExtensionCount; I++)
+          for (uintptr_t Index = 0; Index < ExtensionCount; Index++)
           {
             FSupport->Extensions->Add(SupportedStruct.GetAnsiString());
           }
