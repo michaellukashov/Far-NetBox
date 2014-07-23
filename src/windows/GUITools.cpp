@@ -385,7 +385,7 @@ bool DeleteDirectory(const UnicodeString & DirName)
     }
     else
     {
-      retval = DeleteFile(DirName + L"\\" + SearchRec.Name);
+      retval = Sysutils::DeleteFile(ApiPath(DirName + L"\\" + SearchRec.Name));
     }
 
     if (retval)
@@ -399,7 +399,7 @@ bool DeleteDirectory(const UnicodeString & DirName)
         }
         else
         {
-          retval = DeleteFile(DirName + L"\\" + SearchRec.Name);
+          retval = Sysutils::DeleteFile(ApiPath(DirName + L"\\" + SearchRec.Name));
         }
 
         if (!retval)
