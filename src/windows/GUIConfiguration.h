@@ -290,6 +290,6 @@ private:
   intptr_t FSessionReopenAutoIdle;
 };
 //---------------------------------------------------------------------------
-inline TGUIConfiguration * GetGUIConfiguration();
+TGUIConfiguration * GetGUIConfiguration();
 //---------------------------------------------------------------------------
 #endif

@@ -660,6 +660,10 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   TConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
+#ifndef LASTELEM
+#define LASTELEM(ELEM) \
+  ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
+#endif
   #undef KEYEX
   #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR())
   #undef KEY
@@ -1246,7 +1250,7 @@ void TGUIConfiguration::SetChecksumAlg(const UnicodeString & Value)
   FChecksumAlg = Value;
 }
 //---------------------------------------------------------------------------
-inline TGUIConfiguration * GetGUIConfiguration()
+TGUIConfiguration * GetGUIConfiguration()
 {
   return NB_STATIC_DOWNCAST(TGUIConfiguration, GetConfiguration());
 }
