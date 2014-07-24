@@ -1186,6 +1186,7 @@ void TBackgroundTerminal::Init(TSessionData * SessionData, TConfiguration * Conf
     const UnicodeString & Name)
 {
   TSecondaryTerminal::Init(SessionData, Configuration, Name);
+  FItem = Item;
 }
 //---------------------------------------------------------------------------
 bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
