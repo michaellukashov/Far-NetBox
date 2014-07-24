@@ -462,8 +462,8 @@ UnicodeString ModificationStr(const TDateTime & DateTime,
   }
 }
 //---------------------------------------------------------------------------
-int FakeFileImageIndex(const UnicodeString & AFileName, uint32_t Attrs,
-  UnicodeString * TypeName)
+int FakeFileImageIndex(const UnicodeString & /* AFileName */, uint32_t /* Attrs */,
+  UnicodeString * /* TypeName */)
 {
   /*Attrs |= FILE_ATTRIBUTE_NORMAL;
 

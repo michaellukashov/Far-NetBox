@@ -95,7 +95,7 @@ bool TXmlStorage::WriteXml()
   return (CNBFile::SaveFile(GetStorage().c_str(), xmlContent) == ERROR_SUCCESS);
 }
 //---------------------------------------------------------------------------
-bool TXmlStorage::Copy(TXmlStorage * Storage)
+bool TXmlStorage::Copy(TXmlStorage * /* Storage */)
 {
   Classes::Error(SNotImplemented, 3020);
   bool Result = false;

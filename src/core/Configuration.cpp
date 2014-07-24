@@ -279,7 +279,7 @@ void TConfiguration::Export(const UnicodeString & /*AFileName*/)
   */
 }
 //---------------------------------------------------------------------------
-void TConfiguration::Import(const UnicodeString & AFileName)
+void TConfiguration::Import(const UnicodeString & /* AFileName */)
 {
   Classes::Error(SNotImplemented, 3005);
 /*

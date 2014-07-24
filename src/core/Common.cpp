@@ -1819,7 +1819,7 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
   return Result;
 }
 //---------------------------------------------------------------------------
-static UnicodeString FormatTimeZone(long Sec)
+static UnicodeString FormatTimeZone(long /* Sec */)
 {
   // TTimeSpan Span = TTimeSpan::FromSeconds(Sec);
   UnicodeString Str;
@@ -2171,7 +2171,7 @@ UnicodeString DoEncodeUrl(const UnicodeString & S, const UnicodeString & Chars)
 }
 //---------------------------------------------------------------------------
 // we should probably replace all uses with EncodeUrlString
-UnicodeString EncodeUrlChars(const UnicodeString & S, const UnicodeString & Ignore)
+UnicodeString EncodeUrlChars(const UnicodeString & S, const UnicodeString & /* Ignore */)
 {
   return DoEncodeUrl(S, L" /");
 }

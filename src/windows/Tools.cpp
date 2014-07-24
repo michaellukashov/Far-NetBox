@@ -20,7 +20,7 @@ void * BusyStart()
   return Token;
 }
 //---------------------------------------------------------------------------
-void BusyEnd(void * Token)
+void BusyEnd(void * /* Token */)
 {
   // Screen->Cursor = reinterpret_cast<TCursor>(Token);
 }

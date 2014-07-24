@@ -417,7 +417,7 @@ bool DeleteDirectory(const UnicodeString & DirName)
   return retval;
 }
 //---------------------------------------------------------------------------
-UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, const TDateTime & DateTime)
+UnicodeString FormatDateTimeSpan(const UnicodeString & /* TimeFormat */, const TDateTime & DateTime)
 {
   UnicodeString Result;
   if (static_cast<int>(DateTime) > 0)
