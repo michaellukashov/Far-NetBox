@@ -21,6 +21,7 @@
 #include <Queue.h>
 #include <farkeys.hpp>
 #include <farcolor.hpp>
+#include "plugin_version.hpp"
 
 //------------------------------------------------------------------------------
 enum TButtonResult

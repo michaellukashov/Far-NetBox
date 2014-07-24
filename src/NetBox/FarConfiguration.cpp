@@ -6,6 +6,7 @@
 #include "Bookmarks.h"
 #include "FarConfiguration.h"
 #include "FarPlugin.h"
+#include "CoreMain.h"
 //---------------------------------------------------------------------------
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   TGUIConfiguration(),
@@ -241,7 +242,7 @@ TBookmarkList * TFarConfiguration::GetBookmarks(const UnicodeString & Key)
   return FBookmarks->GetBookmarks(Key);
 }
 //---------------------------------------------------------------------------
-inline TFarConfiguration * GetFarConfiguration()
+TFarConfiguration * GetFarConfiguration()
 {
   return NB_STATIC_DOWNCAST(TFarConfiguration, GetConfiguration());
 }

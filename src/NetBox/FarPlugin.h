@@ -522,8 +522,8 @@ public:
 class TFarPluginEnvGuard : public TObject
 {
 public:
-  inline TFarPluginEnvGuard();
-  inline ~TFarPluginEnvGuard();
+  TFarPluginEnvGuard();
+  ~TFarPluginEnvGuard();
 };
 //---------------------------------------------------------------------------
 void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidth);
