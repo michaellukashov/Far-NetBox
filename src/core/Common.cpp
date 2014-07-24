@@ -115,7 +115,7 @@ void Shred(UnicodeString & Str)
   }
 }
 //---------------------------------------------------------------------------
-static UnicodeString MakeValidFileName(const UnicodeString & AFileName)
+UnicodeString MakeValidFileName(const UnicodeString & AFileName)
 {
   UnicodeString Result = AFileName;
   static UnicodeString IllegalChars = L":;,=+<>|\"[] \\/?*";

@@ -2,6 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <WinCrypt.h>
 #include "Common.h"
 #include "WinSCPSecurity.h"
 //---------------------------------------------------------------------------

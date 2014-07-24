@@ -1738,6 +1738,11 @@ void TSFTPFileSystem::Close()
 {
   FSecureShell->Close();
 }
+
+bool TSFTPFileSystem::GetActive() const
+{
+  return FSecureShell->GetActive();
+}
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::CollectUsage()
 {
@@ -2260,6 +2265,11 @@ intptr_t TSFTPFileSystem::PacketLength(uint8_t * LenBuf, intptr_t ExpectedType)
     FTerminal->FatalError(nullptr, Message, HELP_SFTP_PACKET_TOO_BIG);
   }
   return Length;
+}
+
+const TSessionData *TSFTPFileSystem::GetSessionData() const
+{
+   return FTerminal->GetSessionData();
 }
 //---------------------------------------------------------------------------
 bool TSFTPFileSystem::PeekPacket()

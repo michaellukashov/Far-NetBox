@@ -31,7 +31,7 @@ public:
 
   virtual void Open();
   virtual void Close();
-  virtual bool GetActive() const { return FSecureShell->GetActive(); }
+  virtual bool GetActive() const;
   virtual void CollectUsage();
   virtual void Idle();
   virtual UnicodeString AbsolutePath(const UnicodeString & APath, bool Local);
@@ -199,7 +199,7 @@ protected:
   intptr_t PacketLength(uint8_t * LenBuf, intptr_t ExpectedType);
 
 private:
-  inline const TSessionData * GetSessionData() const { return FTerminal->GetSessionData(); }
+  const TSessionData * GetSessionData() const;
 };
 //---------------------------------------------------------------------------
 #endif // SftpFileSystemH
