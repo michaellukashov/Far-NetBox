@@ -396,7 +396,7 @@ void TFileOperationProgressType::AddTransfered(int64_t ASize,
     uint32_t Ticks = static_cast<uint32_t>(GetTickCount());
     if (FTicks.empty() ||
         (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
-        ((Ticks - FTicks.back()) >= MSecsPerSec))
+        ((Ticks - FTicks.back()) >= static_cast<uint32_t>(MSecsPerSec)))
     {
       FTicks.push_back(Ticks);
       FTotalTransferredThen.push_back(TotalTransfered);
