@@ -35,30 +35,28 @@ typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
 //---------------------------------------------------------------------------
 // TGuard
 //---------------------------------------------------------------------------
-TGuard::TGuard(const TCriticalSection * ACriticalSection) :
+TGuard::TGuard(const TCriticalSection & ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
-  assert(ACriticalSection != nullptr);
-  FCriticalSection->Enter();
+  FCriticalSection.Enter();
 }
 //---------------------------------------------------------------------------
 TGuard::~TGuard()
 {
-  FCriticalSection->Leave();
+  FCriticalSection.Leave();
 }
 //---------------------------------------------------------------------------
 // TUnguard
 //---------------------------------------------------------------------------
-TUnguard::TUnguard(TCriticalSection * ACriticalSection) :
+TUnguard::TUnguard(TCriticalSection & ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
-  assert(ACriticalSection != nullptr);
-  FCriticalSection->Leave();
+  FCriticalSection.Leave();
 }
 //---------------------------------------------------------------------------
 TUnguard::~TUnguard()
 {
-  FCriticalSection->Enter();
+  FCriticalSection.Enter();
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -1207,7 +1205,7 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
 //---------------------------------------------------------------------------
 TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)
 {
-  TDateTime Result;  
+  TDateTime Result;
   try
   {
     Result = EncodeDate(Year, Month, Day);
@@ -1301,7 +1299,7 @@ static uint16_t DecodeYear(const TDateTime & DateTime)
 //---------------------------------------------------------------------------
 static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
 {
-  TGuard Guard(DateTimeParamsSection.get());
+  TGuard Guard(*DateTimeParamsSection.get());
 
   TDateTimeParams * Result;
 

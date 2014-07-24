@@ -710,7 +710,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
       }
       else
       {
-        TGuard Guard(&FCriticalSection);
+        TGuard Guard(FCriticalSection);
 
         BeginUpdate();
         SCOPE_EXIT
@@ -749,7 +749,7 @@ void TSessionLog::AddException(Exception * E)
 //---------------------------------------------------------------------------
 void TSessionLog::ReflectSettings()
 {
-  TGuard Guard(&FCriticalSection);
+  TGuard Guard(FCriticalSection);
 
   bool ALogging =
     !FClosed &&
@@ -893,7 +893,7 @@ UnicodeString TSessionLog::GetTlsVersionName(TTlsVersion TlsVersion)
 //---------------------------------------------------------------------------
 void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 {
-  TGuard Guard(&FCriticalSection);
+  TGuard Guard(FCriticalSection);
 
   BeginUpdate();
   {
@@ -1153,7 +1153,7 @@ bool TSessionLog::GetLoggingToFile() const
 //---------------------------------------------------------------------------
 void TSessionLog::Clear()
 {
-  TGuard Guard(&FCriticalSection);
+  TGuard Guard(FCriticalSection);
 
   FTopIndex += GetCount();
   TStringList::Clear();
@@ -1251,7 +1251,7 @@ void TActionLog::Add(const UnicodeString & Line)
   {
     try
     {
-      TGuard Guard(&FCriticalSection);
+      TGuard Guard(FCriticalSection);
       if (FFile == nullptr)
       {
         OpenLogFile();
@@ -1312,7 +1312,7 @@ void TActionLog::AddMessages(const UnicodeString & Indent, TStrings * Messages)
 //---------------------------------------------------------------------------
 void TActionLog::ReflectSettings()
 {
-  TGuard Guard(&FCriticalSection);
+  TGuard Guard(FCriticalSection);
 
   bool ALogging =
     !FClosed && FConfiguration->GetLogActions() && GetEnabled();

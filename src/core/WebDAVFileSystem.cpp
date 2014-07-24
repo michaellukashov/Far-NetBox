@@ -13620,7 +13620,7 @@ void TWebDAVFileSystem::DoFileTransferProgress(int64_t TransferSize,
 void TWebDAVFileSystem::FileTransferProgress(int64_t TransferSize,
   int64_t Bytes)
 {
-  TGuard Guard(&FTransferStatusCriticalSection);
+  TGuard Guard(FTransferStatusCriticalSection);
 
   DoFileTransferProgress(TransferSize, Bytes);
 }

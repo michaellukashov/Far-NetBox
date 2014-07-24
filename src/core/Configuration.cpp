@@ -74,7 +74,7 @@ TConfiguration::TConfiguration() :
 //---------------------------------------------------------------------------
 void TConfiguration::Default()
 {
-  TGuard Guard(&FCriticalSection);
+  TGuard Guard(FCriticalSection);
 
   FDisablePasswordStoring = false;
   FForceBanners = false;
@@ -346,7 +346,7 @@ void TConfiguration::LoadFrom(THierarchicalStorage * Storage)
 //---------------------------------------------------------------------------
 void TConfiguration::Load()
 {
-  TGuard Guard(&FCriticalSection);
+  TGuard Guard(FCriticalSection);
   std::unique_ptr<THierarchicalStorage> Storage(CreateStorage(false));
   Storage->SetAccessMode(smRead);
   LoadFrom(Storage.get());
@@ -737,7 +737,7 @@ bool TConfiguration::GetIsUnofficial() const
 UnicodeString TConfiguration::GetVersionStr() const
 {
   UnicodeString Result;
-  TGuard Guard(&FCriticalSection);
+  TGuard Guard(FCriticalSection);
   try
   {
     TVSFixedFileInfo * Info = GetFixedApplicationInfo();
@@ -791,7 +791,7 @@ UnicodeString TConfiguration::GetVersionStr() const
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetVersion() const
 {
-  TGuard Guard(&FCriticalSection);
+  TGuard Guard(FCriticalSection);
   UnicodeString Result;
   try
   {
@@ -814,7 +814,7 @@ UnicodeString TConfiguration::GetVersion() const
 UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
   const UnicodeString & AFileName, bool AllowEmpty) const
 {
-  TGuard Guard(&FCriticalSection);
+  TGuard Guard(FCriticalSection);
 
   UnicodeString Result;
   void * Info = GetFileApplicationInfo(AFileName);
@@ -1210,37 +1210,37 @@ UnicodeString TConfiguration::GetDefaultLogFileName() const
 //---------------------------------------------------------------------------
 void TConfiguration::SetConfirmOverwriting(bool Value)
 {
-  TGuard Guard(&FCriticalSection);
+  TGuard Guard(FCriticalSection);
   SET_CONFIG_PROPERTY(ConfirmOverwriting);
 }
 //---------------------------------------------------------------------------
 bool TConfiguration::GetConfirmOverwriting() const
 {
-  TGuard Guard(&FCriticalSection);
+  TGuard Guard(FCriticalSection);
   return FConfirmOverwriting;
 }
 //---------------------------------------------------------------------------
 void TConfiguration::SetConfirmResume(bool Value)
 {
-  TGuard Guard(&FCriticalSection);
+  TGuard Guard(FCriticalSection);
   SET_CONFIG_PROPERTY(ConfirmResume);
 }
 //---------------------------------------------------------------------------
 bool TConfiguration::GetConfirmResume() const
 {
-  TGuard Guard(&FCriticalSection);
+  TGuard Guard(FCriticalSection);
   return FConfirmResume;
 }
 //---------------------------------------------------------------------------
 void TConfiguration::SetAutoReadDirectoryAfterOp(bool Value)
 {
-  TGuard Guard(&FCriticalSection);
+  TGuard Guard(FCriticalSection);
   SET_CONFIG_PROPERTY(AutoReadDirectoryAfterOp);
 }
 //---------------------------------------------------------------------------
 bool TConfiguration::GetAutoReadDirectoryAfterOp() const
 {
-  TGuard Guard(&FCriticalSection);
+  TGuard Guard(FCriticalSection);
   return FAutoReadDirectoryAfterOp;
 }
 //---------------------------------------------------------------------------

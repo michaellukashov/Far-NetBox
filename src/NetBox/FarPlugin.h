@@ -199,7 +199,7 @@ protected:
     TFarMessageParams * Params);
   void InvalidateOpenPluginInfo();
 
-  const TCriticalSection * GetCriticalSection() const { return &FCriticalSection; }
+  const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
 
 #ifdef NETBOX_DEBUG
 public:
@@ -300,8 +300,8 @@ protected:
   TFarPanelInfo * GetPanelInfo() { return GetPanelInfo(0); }
   const TFarPanelInfo * GetAnotherPanelInfo() const { return GetPanelInfo(1); }
   TFarPanelInfo * GetAnotherPanelInfo() { return GetPanelInfo(1); }
-  const TCriticalSection * GetCriticalSection() const { return &FCriticalSection; }
-  TCriticalSection * GetCriticalSection() { return &FCriticalSection; }
+  const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
+  TCriticalSection & GetCriticalSection() { return FCriticalSection; }
   bool GetOpenPluginInfoValid() const { return FOpenPluginInfoValid; }
 
 protected:

@@ -176,22 +176,22 @@ class TGuard : public TObject
 {
 NB_DISABLE_COPY(TGuard)
 public:
-  explicit TGuard(const TCriticalSection * ACriticalSection);
+  explicit TGuard(const TCriticalSection & ACriticalSection);
   ~TGuard();
 
 private:
-  const TCriticalSection * FCriticalSection;
+  const TCriticalSection & FCriticalSection;
 };
 //---------------------------------------------------------------------------
 class TUnguard : public TObject
 {
 NB_DISABLE_COPY(TUnguard)
 public:
-  explicit TUnguard(TCriticalSection * ACriticalSection);
+  explicit TUnguard(TCriticalSection & ACriticalSection);
   ~TUnguard();
 
 private:
-  TCriticalSection * FCriticalSection;
+  TCriticalSection & FCriticalSection;
 };
 //---------------------------------------------------------------------------
 #undef TEXT
