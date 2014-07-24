@@ -180,8 +180,8 @@ UnicodeString TrimLeft(const UnicodeString & Str);
 UnicodeString TrimRight(const UnicodeString & Str);
 UnicodeString UpperCase(const UnicodeString & Str);
 UnicodeString LowerCase(const UnicodeString & Str);
-inline wchar_t UpCase(const wchar_t Ch);
-inline wchar_t LowCase(const wchar_t Ch);
+wchar_t UpCase(const wchar_t Ch);
+wchar_t LowCase(const wchar_t Ch);
 UnicodeString AnsiReplaceStr(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To);
 intptr_t AnsiPos(const UnicodeString & Str2, wchar_t Ch);
 intptr_t Pos(const UnicodeString & Str2, const UnicodeString & Substr);
@@ -245,8 +245,8 @@ bool RenameFile(const UnicodeString & From, const UnicodeString & To);
 bool DirectoryExists(const UnicodeString & ADir);
 UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & DirectoryList);
 
-inline DWORD FileGetAttr(const UnicodeString & AFileName);
-inline DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs);
+DWORD FileGetAttr(const UnicodeString & AFileName);
+DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs);
 
 bool ForceDirectories(const UnicodeString & ADir);
 bool DeleteFile(const UnicodeString & AFileName);
