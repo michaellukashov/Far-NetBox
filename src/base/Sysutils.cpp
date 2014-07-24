@@ -6,6 +6,7 @@
 #include <Classes.hpp>
 #include <Sysutils.hpp>
 #include "RemoteFiles.h"
+#include <Common.h>
 
 //---------------------------------------------------------------------------
 
