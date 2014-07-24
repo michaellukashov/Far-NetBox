@@ -230,12 +230,57 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="UnityBuildCore.cpp">
-    </ClCompile>
-    <ClCompile Include="UnityBuildMain.cpp">
-    </ClCompile>
+    <ClCompile Include="..\base\Classes.cpp" />
+    <ClCompile Include="..\base\local.cpp" />
+    <ClCompile Include="..\base\Masks.cpp" />
+    <ClCompile Include="..\base\rtti.cpp" />
+    <ClCompile Include="..\base\StrUtils.cpp" />
+    <ClCompile Include="..\base\Sysutils.cpp" />
+    <ClCompile Include="..\base\UnicodeString.cpp" />
+    <ClCompile Include="..\core\Bookmarks.cpp" />
+    <ClCompile Include="..\core\Common.cpp" />
+    <ClCompile Include="..\core\Configuration.cpp" />
+    <ClCompile Include="..\core\CopyParam.cpp" />
+    <ClCompile Include="..\core\CoreMain.cpp" />
+    <ClCompile Include="..\core\Cryptography.cpp" />
+    <ClCompile Include="..\core\Exceptions.cpp" />
+    <ClCompile Include="..\core\FileBuffer.cpp" />
+    <ClCompile Include="..\core\FileInfo.cpp" />
+    <ClCompile Include="..\core\FileMasks.cpp" />
+    <ClCompile Include="..\core\FileOperationProgress.cpp" />
+    <ClCompile Include="..\core\FileSystems.cpp" />
+    <ClCompile Include="..\core\FtpFileSystem.cpp" />
+    <ClCompile Include="..\core\HierarchicalStorage.cpp" />
+    <ClCompile Include="..\core\NamedObjs.cpp" />
+    <ClCompile Include="..\core\Option.cpp" />
+    <ClCompile Include="..\core\PuttyIntf.cpp" />
+    <ClCompile Include="..\core\Queue.cpp" />
+    <ClCompile Include="..\core\RemoteFiles.cpp" />
+    <ClCompile Include="..\core\ScpFileSystem.cpp" />
+    <ClCompile Include="..\core\SecureShell.cpp" />
+    <ClCompile Include="..\core\SessionData.cpp" />
+    <ClCompile Include="..\core\SessionInfo.cpp" />
+    <ClCompile Include="..\core\SftpFileSystem.cpp" />
+    <ClCompile Include="..\core\Terminal.cpp" />
+    <ClCompile Include="..\core\WebDAVFileSystem.cpp" />
+    <ClCompile Include="..\core\WinSCPSecurity.cpp" />
+    <ClCompile Include="..\windows\GUIConfiguration.cpp" />
+    <ClCompile Include="..\windows\GUITools.cpp" />
+    <ClCompile Include="..\windows\ProgParams.cpp" />
+    <ClCompile Include="..\windows\SynchronizeController.cpp" />
+    <ClCompile Include="..\windows\Tools.cpp" />
+    <ClCompile Include="FarConfiguration.cpp" />
+    <ClCompile Include="FarDialog.cpp" />
+    <ClCompile Include="FarInterface.cpp" />
+    <ClCompile Include="FarPlugin.cpp" />
+    <ClCompile Include="FarUtil.cpp" />
+    <ClCompile Include="NetBox.cpp" />
     <ClCompile Include="UnityBuildFilezilla.cpp">
     </ClCompile>
+    <ClCompile Include="WinSCPDialogs.cpp" />
+    <ClCompile Include="WinSCPFileSystem.cpp" />
+    <ClCompile Include="WinSCPPlugin.cpp" />
+    <ClCompile Include="XmlStorage.cpp" />
     <MASM Include="vc10.asm">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
