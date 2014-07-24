@@ -25,7 +25,7 @@ public:
 
 private:
   void LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
-    intptr_t Index, TBookmarkList * BookmarkList);
+    intptr_t AIndex, TBookmarkList * BookmarkList);
 
 private:
   TStringList * FBookmarkLists;

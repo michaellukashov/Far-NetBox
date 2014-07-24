@@ -73,7 +73,7 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
 }
 //---------------------------------------------------------------------------
 void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
-  intptr_t Index, TBookmarkList * BookmarkList)
+  intptr_t AIndex, TBookmarkList * BookmarkList)
 {
   std::unique_ptr<TStrings> Names(new TStringList());
   Storage->GetValueNames(Names.get());
@@ -83,7 +83,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString &
   for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
   {
     Name = Names->GetString(Index);
-    bool IsDirectory = (Index == 0) || (Index == 1);
+    bool IsDirectory = (AIndex == 0) || (AIndex == 1);
     if (IsDirectory)
     {
       Directory = Storage->ReadString(Name, L"");
@@ -108,7 +108,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString &
         Bookmark->SetNode(Key);
         Bookmark->SetName(Name);
       }
-      switch (Index)
+      switch (AIndex)
       {
         case 0:
           Bookmark->SetLocal(Directory);
@@ -135,7 +135,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString &
     Name = Names->GetString(Index);
     if (Storage->OpenSubKey(Name, false))
     {
-      LoadLevel(Storage, Key + (Key.IsEmpty() ? L"" : L"/") + Name, Index, BookmarkList);
+      LoadLevel(Storage, Key + (Key.IsEmpty() ? L"" : L"/") + Name, AIndex, BookmarkList);
       Storage->CloseSubKey();
     }
   }
