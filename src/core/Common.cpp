@@ -1286,7 +1286,7 @@ struct TDateTimeParams : public TObject
 };
 typedef rde::map<int, TDateTimeParams> TYearlyDateTimeParams;
 static TYearlyDateTimeParams YearlyDateTimeParams;
-static std::unique_ptr<TCriticalSection> DateTimeParamsSection(new TCriticalSection());
+static TCriticalSection DateTimeParamsSection;
 static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
   TDateTime & Result);
 //---------------------------------------------------------------------------
@@ -1299,7 +1299,7 @@ static uint16_t DecodeYear(const TDateTime & DateTime)
 //---------------------------------------------------------------------------
 static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
 {
-  TGuard Guard(*DateTimeParamsSection.get());
+  TGuard Guard(DateTimeParamsSection);
 
   TDateTimeParams * Result;
 
