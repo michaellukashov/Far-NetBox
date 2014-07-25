@@ -205,7 +205,7 @@ bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Path,
+bool ExecuteShellAndWait(HINSTANCE /* Handle */, const UnicodeString & Path,
   const UnicodeString & Params, TProcessMessagesEvent ProcessMessages)
 {
   TShellExecuteInfoW ExecuteInfo;

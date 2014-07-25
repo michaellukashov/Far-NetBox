@@ -5003,7 +5003,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
 }
 //------------------------------------------------------------------------------
 void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
-  const UnicodeString & /*LocalDirectory*/, const UnicodeString & RemoteDirectory,
+  const UnicodeString & /*LocalDirectory*/, const UnicodeString & /* RemoteDirectory */,
   const TCopyParamType * CopyParam, intptr_t Params,
   TSynchronizeDirectoryEvent OnSynchronizeDirectory)
 {

@@ -53,7 +53,7 @@ public:
   {
   }
 
-  virtual void Execute(void * Arg)
+  virtual void Execute(void * /* Arg */)
   {
     if (OnInformation != nullptr)
     {
@@ -233,7 +233,7 @@ public:
   {
   }
 
-  virtual void Execute(void * Arg)
+  virtual void Execute(void * /* Arg */)
   {
     if (OnReadDirectoryProgress != nullptr)
     {

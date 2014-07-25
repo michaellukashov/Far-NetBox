@@ -27,7 +27,7 @@ public:
   virtual ~TSFTPFileSystem();
 
   virtual void Init(void * Data); // TSecureShell *
-  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) {}
+  virtual void FileTransferProgress(int64_t /* TransferSize */, int64_t /* Bytes */) {}
 
   virtual void Open();
   virtual void Close();
