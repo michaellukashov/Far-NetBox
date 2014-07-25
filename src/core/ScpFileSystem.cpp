@@ -353,8 +353,6 @@ void TSCPFileSystem::Init(void * Data)
 
   FFileSystemInfo.ProtocolBaseName = L"SCP";
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
-  // capabilities of SCP protocol are fixed
-  FTerminal->SaveCapabilities(FFileSystemInfo);
 }
 //---------------------------------------------------------------------------
 TSCPFileSystem::~TSCPFileSystem()
@@ -781,6 +779,9 @@ UnicodeString TSCPFileSystem::GetCurrentDirectory()
 //---------------------------------------------------------------------------
 void TSCPFileSystem::DoStartup()
 {
+  // capabilities of SCP protocol are fixed
+  FTerminal->SaveCapabilities(FFileSystemInfo);
+
   const TSessionData * Data = FTerminal->GetSessionData();
   // SkipStartupMessage and DetectReturnVar must succeed,
   // otherwise session is to be closed.

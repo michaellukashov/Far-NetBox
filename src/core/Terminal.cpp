@@ -1396,9 +1396,9 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
     }
 
     // We know MoreMessages not to be NULL here,
-    // AppendExceptionStackTrace should never return true
+      // AppendExceptionStackTraceAndForget should never return true
     // (indicating it had to create the string list)
-    //ALWAYS_FALSE(AppendExceptionStackTrace(MoreMessages));
+    // ALWAYS_FALSE(AppendExceptionStackTraceAndForget(MoreMessages));
 
     TQueryParams HelpKeywordOverrideParams;
     if (Params != nullptr)

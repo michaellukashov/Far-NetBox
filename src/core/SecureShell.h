@@ -17,6 +17,13 @@ typedef struct _WSANETWORKEVENTS WSANETWORKEVENTS;
 typedef UINT_PTR SOCKET;
 typedef rde::vector<SOCKET> TSockets;
 struct TPuttyTranslation;
+enum TSshImplementation
+{
+  sshiUnknown,
+  sshiOpenSSH,
+  sshiProFTPD,
+  sshiBitvise,
+};
 //---------------------------------------------------------------------------
 class TSecureShell : public TObject
 {
@@ -48,8 +55,7 @@ public:
   void ClearStdError();
   bool GetStoredCredentialsTried() const;
   void CollectUsage();
-  bool IsOpenSSH() const;
-  bool IsProFTPD() const;
+  TSshImplementation GetSshImplementation() const { return FSshImplementation; }
 
   void RegisterReceiveHandler(TNotifyEvent Handler);
   void UnregisterReceiveHandler(TNotifyEvent Handler);
@@ -153,8 +159,7 @@ private:
   bool FNoConnectionResponse;
   bool FCollectPrivateKeyUsage;
   int FWaitingForData;
-  bool FOpenSSH;
-  bool FProFTPD;
+  TSshImplementation FSshImplementation;
 
   intptr_t PendLen;
   intptr_t PendSize;

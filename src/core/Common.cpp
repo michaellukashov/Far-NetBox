@@ -356,6 +356,22 @@ bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions
   return Result;
 }
 //---------------------------------------------------------------------------
+static intptr_t FindInteractiveMsgStart(const UnicodeString & S)
+{
+  intptr_t Result = 0;
+  UnicodeString InteractiveMsgTag = LoadStr(INTERACTIVE_MSG_TAG);
+  if (EndsStr(InteractiveMsgTag, S) &&
+      (S.Length() >= 2 * InteractiveMsgTag.Length()))
+  {
+    Result = S.Length() - 2 * InteractiveMsgTag.Length() + 1;
+    while ((Result > 0) && (S.SubString(Result, InteractiveMsgTag.Length()) != InteractiveMsgTag))
+    {
+      Result--;
+    }
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
 UnicodeString UnformatMessage(const UnicodeString & S)
 {
   UnicodeString Result = S;
@@ -363,6 +379,19 @@ UnicodeString UnformatMessage(const UnicodeString & S)
   if (ExtractMainInstructions(Result, MainInstruction))
   {
     Result = MainInstruction + Result;
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString RemoveInteractiveMsgTag(const UnicodeString & S)
+{
+  UnicodeString Result = S;
+  intptr_t InteractiveMsgStart = FindInteractiveMsgStart(Result);
+  if (InteractiveMsgStart > 0)
+  {
+    UnicodeString InteractiveMsgTag = LoadStr(INTERACTIVE_MSG_TAG);
+    Result.Delete(InteractiveMsgStart, InteractiveMsgTag.Length());
+    Result.Delete(Result.Length() - InteractiveMsgTag.Length() + 1, InteractiveMsgTag.Length());
   }
   return Result;
 }

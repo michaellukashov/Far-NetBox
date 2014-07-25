@@ -1860,12 +1860,22 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
         if (Unquote(Path))
         {
-          FCurrentDirectory = ::AbsolutePath(L"/", ::UnixExcludeTrailingBackslash(Path));
-          if (FCurrentDirectory.IsEmpty())
-          {
-            FCurrentDirectory = L"/";
-          }
           Result = true;
+        }
+      }
+      else
+      {
+        P = Path.Pos(L" ");
+        Path.Delete(P, Path.Length() - P + 1);
+        Result = true;
+      }
+
+      if (Result)
+      {
+        FCurrentDirectory = ::AbsolutePath(L"/", ::UnixExcludeTrailingBackslash(Path));
+        if (FCurrentDirectory.IsEmpty())
+        {
+          FCurrentDirectory = L"/";
         }
       }
     }

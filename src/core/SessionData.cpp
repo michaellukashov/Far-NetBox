@@ -14,7 +14,7 @@
 #include "TextsCore.h"
 #include "PuttyIntf.h"
 #include "RemoteFiles.h"
-
+#include "SFTPFileSystem.h"
 //---------------------------------------------------------------------------
 enum TProxyType
 {
@@ -189,7 +189,7 @@ void TSessionData::Default()
   SetSFTPDownloadQueue(4);
   SetSFTPUploadQueue(4);
   SetSFTPListingQueue(2);
-  SetSFTPMaxVersion(5);
+  SetSFTPMaxVersion(::SFTPMaxVersion);
   SetSFTPMaxPacketSize(0);
   SetSFTPMinPacketSize(0);
 
