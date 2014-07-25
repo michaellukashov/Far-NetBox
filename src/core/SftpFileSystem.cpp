@@ -1940,7 +1940,7 @@ bool TSFTPFileSystem::IsCapable(intptr_t Capability) const
 
     case fcCheckingSpaceAvailable:
       return
-        // extension announced in estension list of by
+        // extension announced in extension list of by
         // SFTP_EXT_SUPPORTED/SFTP_EXT_SUPPORTED2 extension
         // (SFTP version 5 and newer only)
         SupportsExtension(SFTP_EXT_SPACE_AVAILABLE) ||
