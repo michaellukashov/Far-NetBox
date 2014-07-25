@@ -1248,17 +1248,17 @@ struct TDateTimeParams : public TObject
 {
   TDateTime UnixEpoch;
   double BaseDifference;
-  long BaseDifferenceSec;
+  intptr_t BaseDifferenceSec;
   // All Current* are actually global, not per-year
   // are valid for Year 0 (current) only
   double CurrentDaylightDifference;
-  long CurrentDaylightDifferenceSec;
+  intptr_t CurrentDaylightDifferenceSec;
   double CurrentDifference;
-  long CurrentDifferenceSec;
+  intptr_t CurrentDifferenceSec;
   double StandardDifference;
-  long StandardDifferenceSec;
+  intptr_t StandardDifferenceSec;
   double DaylightDifference;
-  long DaylightDifferenceSec;
+  intptr_t DaylightDifferenceSec;
   SYSTEMTIME SystemStandardDate;
   SYSTEMTIME SystemDaylightDate;
   TDateTime StandardDate;
