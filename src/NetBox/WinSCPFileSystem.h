@@ -175,7 +175,7 @@ protected:
     TBookmarkList * BookmarkList);
   bool ApplyCommandDialog(UnicodeString & Command, intptr_t & Params);
   bool FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode,
-    intptr_t  & Params, UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
+    intptr_t & Params, UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
     TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode, intptr_t Options,
     const TUsableCopyParamAttrs & CopyParamAttrs);
   bool SynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,

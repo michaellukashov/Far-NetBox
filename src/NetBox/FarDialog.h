@@ -281,7 +281,7 @@ protected:
   virtual void SetData(const UnicodeString & Value);
   intptr_t GetType() const;
   void SetType(intptr_t Value);
-  intptr_t  GetItem() const { return FItem; }
+  intptr_t GetItem() const { return FItem; }
   intptr_t GetSelected() const;
   void SetSelected(intptr_t Value);
   TFarDialogContainer * GetContainer() const { return FContainer; }
