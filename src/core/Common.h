@@ -57,6 +57,7 @@ UnicodeString MainInstructions(const UnicodeString & S);
 UnicodeString MainInstructionsFirstParagraph(const UnicodeString & S);
 bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions);
 UnicodeString UnformatMessage(const UnicodeString & S);
+UnicodeString RemoveInteractiveMsgTag(const UnicodeString & S);
 bool IsNumber(const UnicodeString & Str);
 UnicodeString SystemTemporaryDirectory();
 UnicodeString GetShellFolderPath(int CSIdl);

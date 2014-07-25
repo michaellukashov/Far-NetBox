@@ -12,7 +12,7 @@ bool ExceptionMessage(const Exception * E, UnicodeString & Message);
 bool ExceptionMessageFormatted(const Exception * E, UnicodeString & Message);
 UnicodeString LastSysErrorMessage();
 TStrings * ExceptionToMoreMessages(Exception * E);
-bool IsInternalException(Exception * E);
+bool IsInternalException(const Exception* E);
 //---------------------------------------------------------------------------
 enum TOnceDoneOperation
 {
@@ -45,6 +45,8 @@ public:
   { AddMoreMessages(&E); }
   ExtException & operator =(const ExtException &rhs)
   { Message = rhs.Message; AddMoreMessages(&rhs); return *this; }
+
+  static ExtException * CloneFrom(Exception * E);
 
   virtual ExtException * Clone();
 

@@ -35,8 +35,7 @@ TSecureShell::TSecureShell(TSessionUI * UI,
   FActive = false;
   FSessionInfoValid = false;
   FBackend = nullptr;
-  FOpenSSH = false;
-  FProFTPD = false;
+  FSshImplementation = sshiUnknown;
   PendLen = 0;
   PendSize = 0;
   OutLen = 0;
@@ -128,16 +127,6 @@ const TSessionInfo & TSecureShell::GetSessionInfo() const
     UpdateSessionInfo();
   }
   return FSessionInfo;
-}
-//---------------------------------------------------------------------------
-bool TSecureShell::IsOpenSSH() const
-{
-  return FOpenSSH;
-}
-//---------------------------------------------------------------------------
-bool TSecureShell::IsProFTPD() const
-{
-  return FProFTPD;
 }
 //---------------------------------------------------------------------
 Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
@@ -424,12 +413,27 @@ void TSecureShell::Open()
   FOpened = true;
 
   UnicodeString SshImplementation = GetSessionInfo().SshImplementation;
-  FOpenSSH =
-    // Sun SSH is based on OpenSSH (suffers the same bugs)
+  if (// e.g. "OpenSSH_5.3"
     (SshImplementation.Pos(L"OpenSSH") == 1) ||
-    (SshImplementation.Pos(L"Sun_SSH") == 1);
-  FProFTPD =
-    (SshImplementation.Pos(L"mod_sftp") == 1);
+      // Sun SSH is based on OpenSSH (suffers the same bugs)
+      (SshImplementation.Pos(L"Sun_SSH") == 1))
+  {
+    FSshImplementation = sshiOpenSSH;
+  }
+  // e.g. "mod_sftp/0.9.8"
+  else if (SshImplementation.Pos(L"mod_sftp") == 1)
+  {
+    FSshImplementation = sshiProFTPD;
+  }
+  // e.g. "5.25 FlowSsh: Bitvise SSH Server (WinSSHD) 6.07: free only for personal non-commercial use"
+  else if (SshImplementation.Pos(L"FlowSsh") > 0)
+  {
+    FSshImplementation = sshiBitvise;
+  }
+  else
+  {
+    FSshImplementation = sshiUnknown;
+  }
 }
 //---------------------------------------------------------------------------
 bool TSecureShell::TryFtp()
@@ -2285,17 +2289,18 @@ void TSecureShell::CollectUsage()
   {
     // Configuration->Usage->Inc(L"OpenedSessionsSSH1");
   }
-  else if (FSshVersion == 2)
-  {
-    // Configuration->Usage->Inc(L"OpenedSessionsSSH2");
-  }
-  if (FOpenSSH)
+
+  if (GetSshImplementation() == sshiOpenSSH)
   {
     // Configuration->Usage->Inc(L"OpenedSessionsSSHOpenSSH");
   }
-  else if (FProFTPD)
+  else if (GetSshImplementation() == sshiProFTPD)
   {
     // Configuration->Usage->Inc(L"OpenedSessionsSSHProFTPD");
+  }
+  else if (GetSshImplementation() == sshiBitvise)
+  {
+    // Configuration->Usage->Inc(L"OpenedSessionsSSHBitvise");
   }
   else
   {
