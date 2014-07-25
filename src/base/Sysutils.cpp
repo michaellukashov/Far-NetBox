@@ -973,8 +973,8 @@ static UnicodeString GetUniversalName(UnicodeString & AFileName)
 UnicodeString ExpandUNCFileName(const UnicodeString & AFileName)
 {
   UnicodeString Result = ExpandFileName(AFileName);
-  if ((Result.Length() >= 3) && (Result[1] == L':') && (::UpCase(Result[1]) >= 'A')
-      && (::UpCase(Result[1]) <= 'Z'))
+  if ((Result.Length() >= 3) && (Result[1] == L':') && (::UpCase(Result[1]) >= 'A') &&
+      (::UpCase(Result[1]) <= 'Z'))
   {
     Result = GetUniversalName(Result);
   }

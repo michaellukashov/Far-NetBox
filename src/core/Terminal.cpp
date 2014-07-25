@@ -1343,7 +1343,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
     }
 
     if (Result && PasswordOrPassphrasePrompt &&
-        (GetConfiguration()->GetRememberPassword()  || FLAGSET(int(Prompts->GetObject(0)), pupRemember)))
+        (GetConfiguration()->GetRememberPassword() || FLAGSET(int(Prompts->GetObject(0)), pupRemember)))
     {
       RawByteString EncryptedPassword = EncryptPassword(Results->GetString(0));
       if (FTunnelOpening)

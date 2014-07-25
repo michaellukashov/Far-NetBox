@@ -38,7 +38,7 @@ static int CmpName_Body(const wchar_t *pattern,const wchar_t *str, bool CmpNameS
 
 						const wchar_t *patdot = wcschr(pattern+1, L'.');
 
-						if (patdot  && !dot)
+						if (patdot && !dot)
 							return FALSE;
 
 						if (!patdot && dot )
