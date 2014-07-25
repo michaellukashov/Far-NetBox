@@ -11,7 +11,7 @@ struct TSFTPSupport;
 class TSecureShell;
 //---------------------------------------------------------------------------
 //enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
-extern const int SFTPMaxVersion;
+extern const intptr_t SFTPMaxVersion;
 //---------------------------------------------------------------------------
 class TSFTPFileSystem : public TCustomFileSystem
 {
@@ -116,10 +116,10 @@ protected:
     uint32_t Flags);
   void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& AFile, uint8_t Type, TRemoteFile * ALinkedByFile = nullptr,
-    int AllowStatus = -1);
+    intptr_t AllowStatus = -1);
   virtual UnicodeString GetCurrentDirectory();
   UnicodeString GetHomeDirectory();
-  uintptr_t GotStatusPacket(TSFTPPacket * Packet, int AllowStatus);
+  uintptr_t GotStatusPacket(TSFTPPacket * Packet, intptr_t AllowStatus);
   bool RemoteFileExists(const UnicodeString & FullPath, TRemoteFile ** AFile = nullptr);
   TRemoteFile * LoadFile(TSFTPPacket * Packet,
     TRemoteFile * ALinkedByFile, const UnicodeString & AFileName,
@@ -132,15 +132,15 @@ protected:
   UnicodeString RealPath(const UnicodeString & APath, const UnicodeString & ABaseDir);
   void ReserveResponse(const TSFTPPacket * Packet,
     TSFTPPacket * Response);
-  uintptr_t ReceivePacket(TSFTPPacket * Packet, int ExpectedType = -1,
-    int AllowStatus = -1);
+  uintptr_t ReceivePacket(TSFTPPacket * Packet, intptr_t ExpectedType = -1,
+    intptr_t AllowStatus = -1);
   bool PeekPacket();
   void RemoveReservation(intptr_t Reservation);
   void SendPacket(const TSFTPPacket * Packet);
   uintptr_t ReceiveResponse(const TSFTPPacket * Packet,
-    TSFTPPacket * AResponse, int ExpectedType = -1, int AllowStatus = -1);
+    TSFTPPacket * AResponse, intptr_t ExpectedType = -1, intptr_t AllowStatus = -1);
   uintptr_t SendPacketAndReceiveResponse(const TSFTPPacket * Packet,
-    TSFTPPacket * Response, int ExpectedType = -1, int AllowStatus = -1);
+    TSFTPPacket * Response, intptr_t ExpectedType = -1, intptr_t AllowStatus = -1);
   void UnreserveResponse(TSFTPPacket * Response);
   void TryOpenDirectory(const UnicodeString & Directory);
   bool SupportsExtension(const UnicodeString & Extension) const;
