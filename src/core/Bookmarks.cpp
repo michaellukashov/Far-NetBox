@@ -369,7 +369,7 @@ void TBookmarkList::Insert(intptr_t Index, TBookmark * Bookmark)
   FBookmarks->InsertObject(Index, Bookmark->GetKey(), Bookmark);
 }
 //---------------------------------------------------------------------------
-void TBookmarkList::Delete(TBookmark * Bookmark)
+void TBookmarkList::Delete(TBookmark *& Bookmark)
 {
   assert(Bookmark);
   assert(Bookmark->FOwner == this);
