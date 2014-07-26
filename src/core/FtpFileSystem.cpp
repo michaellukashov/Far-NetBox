@@ -193,6 +193,7 @@ private:
 TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   TCustomFileSystem(ATerminal),
   FFileZillaIntf(nullptr),
+  FQueueEvent(CreateEvent(nullptr, true, false, nullptr)),
   FFileSystemInfoValid(false),
   FReply(0),
   FCommandReply(0),
@@ -248,6 +249,8 @@ TFTPFileSystem::~TFTPFileSystem()
   DiscardMessages();
 
   SAFE_DESTROY(FFileZillaIntf);
+
+  ::CloseHandle(FQueueEvent);
 
   SAFE_DESTROY(FLastResponse);
   SAFE_DESTROY(FLastErrorResponse);
@@ -2362,15 +2365,13 @@ bool TFTPFileSystem::PostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam)
   TGuard Guard(FQueueCriticalSection);
 
   FQueue.push_back(TMessageQueue::value_type(wParam, lParam));
+  SetEvent(FQueueEvent);
 
   return true;
 }
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::ProcessMessage()
 {
-  if (FQueue.empty())
-    return false;
-
   bool Result;
   TMessageQueue::value_type Message;
 
@@ -2382,6 +2383,12 @@ bool TFTPFileSystem::ProcessMessage()
     {
       Message = FQueue.front();
       FQueue.erase(FQueue.begin());
+    }
+    else
+    {
+      // now we are perfectly sure that the queue is empty as it is locked,
+      // so reset the event
+      ResetEvent(FQueueEvent);
     }
   }
 
@@ -2400,6 +2407,13 @@ void TFTPFileSystem::DiscardMessages()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::WaitForMessages()
 {
+  //if (FQueue.empty())
+  //  return;
+  DWORD Result = WaitForSingleObject(FQueueEvent, INFINITE);
+  if (Result != WAIT_OBJECT_0)
+  {
+    FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", IntToStr(Result).c_str()));
+  }
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::PoolForFatalNonCommandReply()
