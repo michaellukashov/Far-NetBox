@@ -1343,7 +1343,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
     }
 
     if (Result && PasswordOrPassphrasePrompt &&
-        (GetConfiguration()->GetRememberPassword()  || FLAGSET(int(Prompts->GetObject(0)), pupRemember)))
+        (GetConfiguration()->GetRememberPassword() || FLAGSET(int(Prompts->GetObject(0)), pupRemember)))
     {
       RawByteString EncryptedPassword = EncryptPassword(Results->GetString(0));
       if (FTunnelOpening)
@@ -1396,9 +1396,9 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
     }
 
     // We know MoreMessages not to be NULL here,
-    // AppendExceptionStackTrace should never return true
+      // AppendExceptionStackTraceAndForget should never return true
     // (indicating it had to create the string list)
-    //ALWAYS_FALSE(AppendExceptionStackTrace(MoreMessages));
+    // ALWAYS_FALSE(AppendExceptionStackTraceAndForget(MoreMessages));
 
     TQueryParams HelpKeywordOverrideParams;
     if (Params != nullptr)
@@ -5003,7 +5003,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
 }
 //------------------------------------------------------------------------------
 void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
-  const UnicodeString & /*LocalDirectory*/, const UnicodeString & RemoteDirectory,
+  const UnicodeString & /*LocalDirectory*/, const UnicodeString & /* RemoteDirectory */,
   const TCopyParamType * CopyParam, intptr_t Params,
   TSynchronizeDirectoryEvent OnSynchronizeDirectory)
 {

@@ -7,6 +7,7 @@
 #include "FarConfiguration.h"
 #include "Far3Storage.h"
 #include "FarPlugin.h"
+#include "CoreMain.h"
 //---------------------------------------------------------------------------
 enum NetBoxConfirmationsSettings
 {
@@ -315,7 +316,7 @@ TBookmarkList * TFarConfiguration::GetBookmarks(const UnicodeString & Key)
   return FBookmarks->GetBookmarks(Key);
 }
 //---------------------------------------------------------------------------
-inline TFarConfiguration * GetFarConfiguration()
+TFarConfiguration * GetFarConfiguration()
 {
   return NB_STATIC_DOWNCAST(TFarConfiguration, GetConfiguration());
 }

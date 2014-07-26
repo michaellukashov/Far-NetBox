@@ -41,6 +41,7 @@ UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C);
 void PackStr(UnicodeString & Str);
 void PackStr(RawByteString & Str);
 void Shred(UnicodeString & Str);
+UnicodeString MakeValidFileName(const UnicodeString & AFileName);
 UnicodeString RootKeyToStr(HKEY RootKey);
 UnicodeString BooleanToStr(bool B);
 UnicodeString BooleanToEngStr(bool B);
@@ -56,6 +57,7 @@ UnicodeString MainInstructions(const UnicodeString & S);
 UnicodeString MainInstructionsFirstParagraph(const UnicodeString & S);
 bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions);
 UnicodeString UnformatMessage(const UnicodeString & S);
+UnicodeString RemoveInteractiveMsgTag(const UnicodeString & S);
 bool IsNumber(const UnicodeString & Str);
 UnicodeString SystemTemporaryDirectory();
 UnicodeString GetShellFolderPath(int CSIdl);
@@ -176,22 +178,22 @@ class TGuard : public TObject
 {
 NB_DISABLE_COPY(TGuard)
 public:
-  explicit TGuard(const TCriticalSection * ACriticalSection);
+  explicit TGuard(const TCriticalSection & ACriticalSection);
   ~TGuard();
 
 private:
-  const TCriticalSection * FCriticalSection;
+  const TCriticalSection & FCriticalSection;
 };
 //---------------------------------------------------------------------------
 class TUnguard : public TObject
 {
 NB_DISABLE_COPY(TUnguard)
 public:
-  explicit TUnguard(TCriticalSection * ACriticalSection);
+  explicit TUnguard(TCriticalSection & ACriticalSection);
   ~TUnguard();
 
 private:
-  TCriticalSection * FCriticalSection;
+  TCriticalSection & FCriticalSection;
 };
 //---------------------------------------------------------------------------
 #undef TEXT

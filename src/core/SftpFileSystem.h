@@ -10,6 +10,8 @@ struct TOverwriteFileParams;
 struct TSFTPSupport;
 class TSecureShell;
 //---------------------------------------------------------------------------
+//enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
+extern const intptr_t SFTPMaxVersion;
 //---------------------------------------------------------------------------
 class TSFTPFileSystem : public TCustomFileSystem
 {
@@ -27,11 +29,11 @@ public:
   virtual ~TSFTPFileSystem();
 
   virtual void Init(void * Data); // TSecureShell *
-  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) {}
+  virtual void FileTransferProgress(int64_t /* TransferSize */, int64_t /* Bytes */) {}
 
   virtual void Open();
   virtual void Close();
-  virtual bool GetActive() const { return FSecureShell->GetActive(); }
+  virtual bool GetActive() const;
   virtual void CollectUsage();
   virtual void Idle();
   virtual UnicodeString AbsolutePath(const UnicodeString & APath, bool Local);
@@ -108,15 +110,16 @@ protected:
   uint32_t FMaxPacketSize;
   bool FSupportsStatVfsV2;
   uintptr_t FCodePage;
+  bool FSupportsHardlink;
 
   void SendCustomReadFile(TSFTPPacket * Packet, TSFTPPacket * Response,
     uint32_t Flags);
   void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& AFile, uint8_t Type, TRemoteFile * ALinkedByFile = nullptr,
-    int AllowStatus = -1);
+    intptr_t AllowStatus = -1);
   virtual UnicodeString GetCurrentDirectory();
   UnicodeString GetHomeDirectory();
-  uintptr_t GotStatusPacket(TSFTPPacket * Packet, int AllowStatus);
+  uintptr_t GotStatusPacket(TSFTPPacket * Packet, intptr_t AllowStatus);
   bool RemoteFileExists(const UnicodeString & FullPath, TRemoteFile ** AFile = nullptr);
   TRemoteFile * LoadFile(TSFTPPacket * Packet,
     TRemoteFile * ALinkedByFile, const UnicodeString & AFileName,
@@ -129,15 +132,15 @@ protected:
   UnicodeString RealPath(const UnicodeString & APath, const UnicodeString & ABaseDir);
   void ReserveResponse(const TSFTPPacket * Packet,
     TSFTPPacket * Response);
-  uintptr_t ReceivePacket(TSFTPPacket * Packet, int ExpectedType = -1,
-    int AllowStatus = -1);
+  uintptr_t ReceivePacket(TSFTPPacket * Packet, intptr_t ExpectedType = -1,
+    intptr_t AllowStatus = -1);
   bool PeekPacket();
   void RemoveReservation(intptr_t Reservation);
   void SendPacket(const TSFTPPacket * Packet);
   uintptr_t ReceiveResponse(const TSFTPPacket * Packet,
-    TSFTPPacket * AResponse, int ExpectedType = -1, int AllowStatus = -1);
+    TSFTPPacket * AResponse, intptr_t ExpectedType = -1, intptr_t AllowStatus = -1);
   uintptr_t SendPacketAndReceiveResponse(const TSFTPPacket * Packet,
-    TSFTPPacket * Response, int ExpectedType = -1, int AllowStatus = -1);
+    TSFTPPacket * Response, intptr_t ExpectedType = -1, intptr_t AllowStatus = -1);
   void UnreserveResponse(TSFTPPacket * Response);
   void TryOpenDirectory(const UnicodeString & Directory);
   bool SupportsExtension(const UnicodeString & Extension) const;
@@ -199,7 +202,7 @@ protected:
   intptr_t PacketLength(uint8_t * LenBuf, intptr_t ExpectedType);
 
 private:
-  inline const TSessionData * GetSessionData() const { return FTerminal->GetSessionData(); }
+  const TSessionData * GetSessionData() const;
 };
 //---------------------------------------------------------------------------
 #endif // SftpFileSystemH

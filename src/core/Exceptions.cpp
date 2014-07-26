@@ -8,6 +8,7 @@
 #include "HelpCore.h"
 #include "Configuration.h"
 #include "CoreMain.h"
+#include "Interface.h"
 //---------------------------------------------------------------------------
 static bool WellKnownException(
   const Exception * E, UnicodeString * AMessage, const wchar_t ** ACounterName, Exception ** AClone, bool Rethrow)
@@ -91,7 +92,7 @@ static bool WellKnownException(
   return Result;
 }
 //---------------------------------------------------------------------------
-static bool ExceptionMessage(const Exception * E, bool Count,
+static bool ExceptionMessage(const Exception * E, bool /* Count */,
   bool Formatted, UnicodeString & Message, bool & InternalError)
 {
   bool Result = true;
@@ -134,7 +135,7 @@ static bool ExceptionMessage(const Exception * E, bool Count,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool IsInternalException(Exception * E)
+bool IsInternalException(const Exception * E)
 {
   // see also InternalError in ExceptionMessage
   return WellKnownException(E, NULL, NULL, NULL, false);
@@ -330,6 +331,11 @@ void ExtException::AddMoreMessages(const Exception * E)
       FMoreMessages->Insert(0, UnformatMessage(Msg));
     }
 
+    if (IsInternalException(E))
+    {
+      // AppendExceptionStackTraceAndForget(FMoreMessages);
+    }
+
     if (FMoreMessages->GetCount() == 0)
     {
       SAFE_DESTROY(FMoreMessages);
@@ -343,9 +349,14 @@ ExtException::~ExtException() noexcept
   FMoreMessages = nullptr;
 }
 //---------------------------------------------------------------------------
+ExtException * ExtException::CloneFrom(Exception * E)
+{
+  return new ExtException(E, L"");
+}
+//---------------------------------------------------------------------------
 ExtException * ExtException::Clone()
 {
-  return new ExtException(this, L"");
+  return CloneFrom(this);
 }
 //---------------------------------------------------------------------------
 UnicodeString SysErrorMessageForError(int LastError)
@@ -421,7 +432,16 @@ Exception * CloneException(Exception * E)
   }
   else
   {
-    Result = new Exception(E->Message);
+    // we do not expect this to happen
+    if (ALWAYS_FALSE(IsInternalException(E)))
+    {
+      // to save exception stack trace
+      Result = ExtException::CloneFrom(E);
+    }
+    else
+    {
+      Result = new Exception(E->Message);
+    }
   }
   return Result;
 }

@@ -2,6 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <Sysutils.hpp>
 #include "NamedObjs.h"
 //---------------------------------------------------------------------------
 static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)

@@ -20,6 +20,7 @@
 #include <Bookmarks.h>
 #include <Queue.h>
 #include <farcolor.hpp>
+#include "plugin_version.hpp"
 
 //------------------------------------------------------------------------------
 enum TButtonResult
@@ -1220,9 +1221,9 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   bool ShowSavePassword = false;
   if (((Kind == pkPassword) || (Kind == pkTIS) || (Kind == pkCryptoCard) ||
        (Kind == pkKeybInteractive)) &&
-       (Prompts->GetCount() == 1) && FLAGSET((intptr_t)Prompts->GetObject(0), pupRemember) &&
+       (Prompts->GetCount() == 1) && // FLAGSET((intptr_t)Prompts->GetObject(0), pupRemember) &&
       !SessionName.IsEmpty())
-      // StoredCredentialsTried)
+  //    // StoredCredentialsTried)
   {
     FSessionData = NB_STATIC_DOWNCAST(TSessionData, StoredSessions->FindByName(SessionName));
     ShowSavePassword = (FSessionData != nullptr);

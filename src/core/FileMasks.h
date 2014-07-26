@@ -4,6 +4,7 @@
 //---------------------------------------------------------------------------
 #include <CoreDefs.hpp>
 #include <Masks.hpp>
+#include <Exceptions.h>
 //---------------------------------------------------------------------------
 class EFileMasksException : public Exception
 {

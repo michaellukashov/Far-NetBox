@@ -462,8 +462,8 @@ UnicodeString ModificationStr(const TDateTime & DateTime,
   }
 }
 //---------------------------------------------------------------------------
-int FakeFileImageIndex(const UnicodeString & AFileName, uint32_t Attrs,
-  UnicodeString * TypeName)
+int FakeFileImageIndex(const UnicodeString & /* AFileName */, uint32_t /* Attrs */,
+  UnicodeString * /* TypeName */)
 {
   /*Attrs |= FILE_ATTRIBUTE_NORMAL;
 
@@ -1790,7 +1790,7 @@ TRemoteDirectoryCache::~TRemoteDirectoryCache()
 //---------------------------------------------------------------------------
 void TRemoteDirectoryCache::Clear()
 {
-  TGuard Guard(&FSection);
+  TGuard Guard(FSection);
 
   SCOPE_EXIT
   {
@@ -1806,14 +1806,14 @@ void TRemoteDirectoryCache::Clear()
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::GetIsEmpty() const
 {
-  TGuard Guard(&FSection);
+  TGuard Guard(FSection);
 
   return (const_cast<TRemoteDirectoryCache *>(this)->GetCount() == 0);
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory)
 {
-  TGuard Guard(&FSection);
+  TGuard Guard(FSection);
 
   intptr_t Index = IndexOf(::UnixExcludeTrailingBackslash(Directory));
   return (Index >= 0);
@@ -1822,7 +1822,7 @@ bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory)
 bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
   const TDateTime& Timestamp)
 {
-  TGuard Guard(&FSection);
+  TGuard Guard(FSection);
 
   intptr_t Index = IndexOf(::UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
@@ -1839,7 +1839,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
 bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   TRemoteFileList * FileList)
 {
-  TGuard Guard(&FSection);
+  TGuard Guard(FSection);
 
   intptr_t Index = IndexOf(::UnixExcludeTrailingBackslash(Directory));
   bool Result = (Index >= 0);
@@ -1860,7 +1860,7 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
 
     FileList->DuplicateTo(Copy);
 
-    TGuard Guard(&FSection);
+    TGuard Guard(FSection);
 
     // file list cannot be cached already with only one thread, but it can be
     // when directory is loaded by secondary terminal
@@ -1871,7 +1871,7 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
 //---------------------------------------------------------------------------
 void TRemoteDirectoryCache::ClearFileList(const UnicodeString & Directory, bool SubDirs)
 {
-  TGuard Guard(&FSection);
+  TGuard Guard(FSection);
   DoClearFileList(Directory, SubDirs);
 }
 //---------------------------------------------------------------------------

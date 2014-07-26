@@ -35,30 +35,28 @@ typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
 //---------------------------------------------------------------------------
 // TGuard
 //---------------------------------------------------------------------------
-TGuard::TGuard(const TCriticalSection * ACriticalSection) :
+TGuard::TGuard(const TCriticalSection & ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
-  assert(ACriticalSection != nullptr);
-  FCriticalSection->Enter();
+  FCriticalSection.Enter();
 }
 //---------------------------------------------------------------------------
 TGuard::~TGuard()
 {
-  FCriticalSection->Leave();
+  FCriticalSection.Leave();
 }
 //---------------------------------------------------------------------------
 // TUnguard
 //---------------------------------------------------------------------------
-TUnguard::TUnguard(TCriticalSection * ACriticalSection) :
+TUnguard::TUnguard(TCriticalSection & ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
-  assert(ACriticalSection != nullptr);
-  FCriticalSection->Leave();
+  FCriticalSection.Leave();
 }
 //---------------------------------------------------------------------------
 TUnguard::~TUnguard()
 {
-  FCriticalSection->Enter();
+  FCriticalSection.Enter();
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -117,7 +115,7 @@ void Shred(UnicodeString & Str)
   }
 }
 //---------------------------------------------------------------------------
-static UnicodeString MakeValidFileName(const UnicodeString & AFileName)
+UnicodeString MakeValidFileName(const UnicodeString & AFileName)
 {
   UnicodeString Result = AFileName;
   static UnicodeString IllegalChars = L":;,=+<>|\"[] \\/?*";
@@ -358,6 +356,22 @@ bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions
   return Result;
 }
 //---------------------------------------------------------------------------
+static intptr_t FindInteractiveMsgStart(const UnicodeString & S)
+{
+  intptr_t Result = 0;
+  UnicodeString InteractiveMsgTag = LoadStr(INTERACTIVE_MSG_TAG);
+  if (EndsStr(InteractiveMsgTag, S) &&
+      (S.Length() >= 2 * InteractiveMsgTag.Length()))
+  {
+    Result = S.Length() - 2 * InteractiveMsgTag.Length() + 1;
+    while ((Result > 0) && (S.SubString(Result, InteractiveMsgTag.Length()) != InteractiveMsgTag))
+    {
+      Result--;
+    }
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
 UnicodeString UnformatMessage(const UnicodeString & S)
 {
   UnicodeString Result = S;
@@ -365,6 +379,19 @@ UnicodeString UnformatMessage(const UnicodeString & S)
   if (ExtractMainInstructions(Result, MainInstruction))
   {
     Result = MainInstruction + Result;
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString RemoveInteractiveMsgTag(const UnicodeString & S)
+{
+  UnicodeString Result = S;
+  intptr_t InteractiveMsgStart = FindInteractiveMsgStart(Result);
+  if (InteractiveMsgStart > 0)
+  {
+    UnicodeString InteractiveMsgTag = LoadStr(INTERACTIVE_MSG_TAG);
+    Result.Delete(InteractiveMsgStart, InteractiveMsgTag.Length());
+    Result.Delete(Result.Length() - InteractiveMsgTag.Length() + 1, InteractiveMsgTag.Length());
   }
   return Result;
 }
@@ -1207,7 +1234,7 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
 //---------------------------------------------------------------------------
 TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)
 {
-  TDateTime Result;  
+  TDateTime Result;
   try
   {
     Result = EncodeDate(Year, Month, Day);
@@ -1250,17 +1277,17 @@ struct TDateTimeParams : public TObject
 {
   TDateTime UnixEpoch;
   double BaseDifference;
-  long BaseDifferenceSec;
+  intptr_t BaseDifferenceSec;
   // All Current* are actually global, not per-year
   // are valid for Year 0 (current) only
   double CurrentDaylightDifference;
-  long CurrentDaylightDifferenceSec;
+  intptr_t CurrentDaylightDifferenceSec;
   double CurrentDifference;
-  long CurrentDifferenceSec;
+  intptr_t CurrentDifferenceSec;
   double StandardDifference;
-  long StandardDifferenceSec;
+  intptr_t StandardDifferenceSec;
   double DaylightDifference;
-  long DaylightDifferenceSec;
+  intptr_t DaylightDifferenceSec;
   SYSTEMTIME SystemStandardDate;
   SYSTEMTIME SystemDaylightDate;
   TDateTime StandardDate;
@@ -1288,7 +1315,7 @@ struct TDateTimeParams : public TObject
 };
 typedef rde::map<int, TDateTimeParams> TYearlyDateTimeParams;
 static TYearlyDateTimeParams YearlyDateTimeParams;
-static std::unique_ptr<TCriticalSection> DateTimeParamsSection(new TCriticalSection());
+static TCriticalSection DateTimeParamsSection;
 static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
   TDateTime & Result);
 //---------------------------------------------------------------------------
@@ -1301,7 +1328,7 @@ static uint16_t DecodeYear(const TDateTime & DateTime)
 //---------------------------------------------------------------------------
 static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
 {
-  TGuard Guard(DateTimeParamsSection.get());
+  TGuard Guard(DateTimeParamsSection);
 
   TDateTimeParams * Result;
 
@@ -1821,7 +1848,7 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
   return Result;
 }
 //---------------------------------------------------------------------------
-static UnicodeString FormatTimeZone(long Sec)
+static UnicodeString FormatTimeZone(long /* Sec */)
 {
   // TTimeSpan Span = TTimeSpan::FromSeconds(Sec);
   UnicodeString Str;
@@ -2173,7 +2200,7 @@ UnicodeString DoEncodeUrl(const UnicodeString & S, const UnicodeString & Chars)
 }
 //---------------------------------------------------------------------------
 // we should probably replace all uses with EncodeUrlString
-UnicodeString EncodeUrlChars(const UnicodeString & S, const UnicodeString & Ignore)
+UnicodeString EncodeUrlChars(const UnicodeString & S, const UnicodeString & /* Ignore */)
 {
   return DoEncodeUrl(S, L" /");
 }

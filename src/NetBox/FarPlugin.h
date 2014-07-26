@@ -213,7 +213,7 @@ protected:
     TFarMessageParams * Params);
   void InvalidateOpenPanelInfo();
 
-  const TCriticalSection * GetCriticalSection() const { return &FCriticalSection; }
+  const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
 
 #ifdef NETBOX_DEBUG
 public:
@@ -310,8 +310,8 @@ protected:
   TFarPanelInfo * GetPanelInfo() { return GetPanelInfo(0); }
   const TFarPanelInfo * GetAnotherPanelInfo() const { return GetPanelInfo(1); }
   TFarPanelInfo * GetAnotherPanelInfo() { return GetPanelInfo(1); }
-  const TCriticalSection * GetCriticalSection() const { return &FCriticalSection; }
-  TCriticalSection * GetCriticalSection() { return &FCriticalSection; }
+  const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
+  TCriticalSection & GetCriticalSection() { return FCriticalSection; }
   bool GetOpenPanelInfoValid() const { return FOpenPanelInfoValid; }
 
 protected:
@@ -533,8 +533,8 @@ public:
 class TFarPluginEnvGuard : public TObject
 {
 public:
-  inline TFarPluginEnvGuard();
-  inline ~TFarPluginEnvGuard();
+  TFarPluginEnvGuard();
+  ~TFarPluginEnvGuard();
 };
 //---------------------------------------------------------------------------
 void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidth);

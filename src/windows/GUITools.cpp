@@ -10,6 +10,7 @@
 #include <TextsCore.h>
 #include <CoreMain.h>
 #include <SessionData.h>
+#include <Interface.h>
 //---------------------------------------------------------------------------
 extern const UnicodeString PageantTool = L"pageant.exe";
 extern const UnicodeString PuttygenTool = L"puttygen.exe";
@@ -204,7 +205,7 @@ bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Path,
+bool ExecuteShellAndWait(HINSTANCE /* Handle */, const UnicodeString & Path,
   const UnicodeString & Params, TProcessMessagesEvent ProcessMessages)
 {
   TShellExecuteInfoW ExecuteInfo;
@@ -417,7 +418,7 @@ bool DeleteDirectory(const UnicodeString & DirName)
   return retval;
 }
 //---------------------------------------------------------------------------
-UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, const TDateTime & DateTime)
+UnicodeString FormatDateTimeSpan(const UnicodeString & /* TimeFormat */, const TDateTime & DateTime)
 {
   UnicodeString Result;
   if (static_cast<int>(DateTime) > 0)

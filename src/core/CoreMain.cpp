@@ -13,6 +13,7 @@
 #ifndef NO_FILEZILLA
 #include "FileZillaIntf.h"
 #endif
+#include "WebDAVFileSystem.h"
 //---------------------------------------------------------------------------
 TStoredSessionList * StoredSessions = nullptr;
 //---------------------------------------------------------------------------

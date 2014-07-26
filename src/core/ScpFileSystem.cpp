@@ -353,8 +353,6 @@ void TSCPFileSystem::Init(void * Data)
 
   FFileSystemInfo.ProtocolBaseName = L"SCP";
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
-  // capabilities of SCP protocol are fixed
-  FTerminal->SaveCapabilities(FFileSystemInfo);
 }
 //---------------------------------------------------------------------------
 TSCPFileSystem::~TSCPFileSystem()
@@ -781,6 +779,9 @@ UnicodeString TSCPFileSystem::GetCurrentDirectory()
 //---------------------------------------------------------------------------
 void TSCPFileSystem::DoStartup()
 {
+  // capabilities of SCP protocol are fixed
+  FTerminal->SaveCapabilities(FFileSystemInfo);
+
   const TSessionData * Data = FTerminal->GetSessionData();
   // SkipStartupMessage and DetectReturnVar must succeed,
   // otherwise session is to be closed.
@@ -2242,7 +2243,7 @@ void TSCPFileSystem::SCPSendError(const UnicodeString & Message, bool Fatal)
   FSecureShell->Send(&ErrorLevel, 1);
   // We don't send exact error message, because some unspecified
   // characters can terminate remote scp
-  FSecureShell->SendLine(L"scp: error");
+  FSecureShell->SendLine(FORMAT(L"scp: error: %s", Message.c_str()));
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,

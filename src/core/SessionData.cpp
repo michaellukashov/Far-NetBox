@@ -14,7 +14,7 @@
 #include "TextsCore.h"
 #include "PuttyIntf.h"
 #include "RemoteFiles.h"
-
+#include "SFTPFileSystem.h"
 //---------------------------------------------------------------------------
 enum TProxyType
 {
@@ -46,12 +46,12 @@ const UnicodeString AnonymousUserName(L"anonymous");
 const UnicodeString AnonymousPassword(L"");
 const UnicodeString PuttySshProtocol(L"ssh");
 const UnicodeString PuttyTelnetProtocol(L"telnet");
-const UnicodeString SftpProtocol(L"sftp");
-const UnicodeString ScpProtocol(L"scp");
-const UnicodeString FtpProtocol(L"ftp");
-const UnicodeString FtpsProtocol(L"ftps");
-const UnicodeString WebDAVProtocol(L"http");
-const UnicodeString WebDAVSProtocol(L"https");
+const UnicodeString SftpProtocolStr(L"sftp");
+const UnicodeString ScpProtocolStr(L"scp");
+const UnicodeString FtpProtocolStr(L"ftp");
+const UnicodeString FtpsProtocolStr(L"ftps");
+const UnicodeString WebDAVProtocolStr(L"http");
+const UnicodeString WebDAVSProtocolStr(L"https");
 const UnicodeString ProtocolSeparator(L"://");
 const UnicodeString WinSCPProtocolPrefix(L"winscp-");
 const wchar_t UrlParamSeparator = L';';
@@ -189,7 +189,7 @@ void TSessionData::Default()
   SetSFTPDownloadQueue(4);
   SetSFTPUploadQueue(4);
   SetSFTPListingQueue(2);
-  SetSFTPMaxVersion(5);
+  SetSFTPMaxVersion(::SFTPMaxVersion);
   SetSFTPMaxPacketSize(0);
   SetSFTPMinPacketSize(0);
 
@@ -1345,21 +1345,21 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     url.Delete(1, 7);
     ProtocolDefined = true;
   }
-  if (IsProtocolUrl(url, ScpProtocol, ProtocolLen))
+  if (IsProtocolUrl(url, ScpProtocolStr, ProtocolLen))
   {
     AFSProtocol = fsSCPonly;
     APortNumber = SshPortNumber;
     MoveStr(url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(url, SftpProtocol, ProtocolLen))
+  else if (IsProtocolUrl(url, SftpProtocolStr, ProtocolLen))
   {
     AFSProtocol = fsSFTPonly;
     APortNumber = SshPortNumber;
     MoveStr(url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(url, FtpProtocol, ProtocolLen))
+  else if (IsProtocolUrl(url, FtpProtocolStr, ProtocolLen))
   {
     AFSProtocol = fsFTP;
     SetFtps(ftpsNone);
@@ -1367,7 +1367,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     MoveStr(url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(url, FtpsProtocol, ProtocolLen))
+  else if (IsProtocolUrl(url, FtpsProtocolStr, ProtocolLen))
   {
     AFSProtocol = fsFTP;
     AFtps = ftpsImplicit;
@@ -1375,7 +1375,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     MoveStr(url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(url, WebDAVProtocol, ProtocolLen))
+  else if (IsProtocolUrl(url, WebDAVProtocolStr, ProtocolLen))
   {
     AFSProtocol = fsWebDAV;
     AFtps = ftpsNone;
@@ -1383,7 +1383,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     MoveStr(url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(url, WebDAVSProtocol, ProtocolLen))
+  else if (IsProtocolUrl(url, WebDAVSProtocolStr, ProtocolLen))
   {
     AFSProtocol = fsWebDAV;
     AFtps = ftpsImplicit;
@@ -2294,7 +2294,7 @@ UnicodeString TSessionData::GetProtocolUrl() const
   switch (GetFSProtocol())
   {
     case fsSCPonly:
-      Url = ScpProtocol;
+      Url = ScpProtocolStr;
       break;
 
     default:
@@ -2302,28 +2302,28 @@ UnicodeString TSessionData::GetProtocolUrl() const
       // fallback
     case fsSFTP:
     case fsSFTPonly:
-      Url = SftpProtocol;
+      Url = SftpProtocolStr;
       break;
 
     case fsFTP:
       if (GetFtps() == ftpsImplicit)
       {
-        Url = FtpsProtocol;
+        Url = FtpsProtocolStr;
       }
       else
       {
-        Url = FtpProtocol;
+        Url = FtpProtocolStr;
       }
       break;
 
     case fsWebDAV:
       if (GetFtps() == ftpsImplicit)
       {
-        Url = WebDAVSProtocol;
+        Url = WebDAVSProtocolStr;
       }
       else
       {
-        Url = WebDAVProtocol;
+        Url = WebDAVProtocolStr;
       }
       break;
   }
@@ -3383,7 +3383,7 @@ void TStoredSessionList::ImportFromFilezilla(const UnicodeString & /*AFileName*/
 */
 }
 //---------------------------------------------------------------------
-void TStoredSessionList::Export(const UnicodeString & AFileName)
+void TStoredSessionList::Export(const UnicodeString & /* AFileName */)
 {
   Classes::Error(SNotImplemented, 3003);
 /*

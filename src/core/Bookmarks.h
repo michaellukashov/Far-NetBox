@@ -25,7 +25,7 @@ public:
 
 private:
   void LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
-    intptr_t Index, TBookmarkList * BookmarkList);
+    intptr_t AIndex, TBookmarkList * BookmarkList);
 
 private:
   TStringList * FBookmarkLists;
@@ -49,7 +49,7 @@ public:
   void Insert(intptr_t Index, TBookmark * Bookmark);
   void InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmark);
   void MoveTo(TBookmark * ToBookmark, TBookmark * Bookmark, bool Before);
-  void Delete(TBookmark * Bookmark);
+  void Delete(TBookmark *& Bookmark);
   TBookmark * FindByName(const UnicodeString & Node, const UnicodeString & Name);
   TBookmark * FindByShortCut(TShortCut ShortCut);
   virtual void Assign(const TPersistent * Source);

@@ -980,7 +980,7 @@ void TFTPFileSystem::SetCPSLimit(TFileOperationProgressType * OperationProgress)
 void TFTPFileSystem::FileTransferProgress(int64_t TransferSize,
   int64_t Bytes)
 {
-  TGuard Guard(&FTransferStatusCriticalSection);
+  TGuard Guard(FTransferStatusCriticalSection);
 
   DoFileTransferProgress(TransferSize, Bytes);
 }
@@ -1860,12 +1860,22 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
         if (Unquote(Path))
         {
-          FCurrentDirectory = ::AbsolutePath(L"/", ::UnixExcludeTrailingBackslash(Path));
-          if (FCurrentDirectory.IsEmpty())
-          {
-            FCurrentDirectory = L"/";
-          }
           Result = true;
+        }
+      }
+      else
+      {
+        P = Path.Pos(L" ");
+        Path.Delete(P, Path.Length() - P + 1);
+        Result = true;
+      }
+
+      if (Result)
+      {
+        FCurrentDirectory = ::AbsolutePath(L"/", ::UnixExcludeTrailingBackslash(Path));
+        if (FCurrentDirectory.IsEmpty())
+        {
+          FCurrentDirectory = L"/";
         }
       }
     }
@@ -2089,8 +2099,8 @@ void TFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::CopyFile(const UnicodeString & AFileName,
-  const UnicodeString & NewName)
+void TFTPFileSystem::CopyFile(const UnicodeString & /* AFileName */,
+  const UnicodeString & /* NewName */)
 {
   FAIL;
 }
@@ -2346,10 +2356,10 @@ bool TFTPFileSystem::PostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam)
     // it makes "pause" in queue work.
     // Paused queue item stops in some of the TFileOperationProgressType
     // methods called from FileTransferProgress
-    TGuard Guard(&FTransferStatusCriticalSection);
+    TGuard Guard(FTransferStatusCriticalSection);
   }
 
-  TGuard Guard(&FQueueCriticalSection);
+  TGuard Guard(FQueueCriticalSection);
 
   FQueue.push_back(TMessageQueue::value_type(wParam, lParam));
 
@@ -2365,7 +2375,7 @@ bool TFTPFileSystem::ProcessMessage()
   TMessageQueue::value_type Message;
 
   {
-    TGuard Guard(&FQueueCriticalSection);
+    TGuard Guard(FQueueCriticalSection);
 
     Result = !FQueue.empty();
     if (Result)

@@ -11,7 +11,7 @@
 TConfiguration * CreateConfiguration();
 
 void ShowExtendedException(Exception * E);
-bool AppendExceptionStackTrace(TStrings *& MoreMessages);
+bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
 
 UnicodeString GetRegistryKey();
 void * BusyStart();

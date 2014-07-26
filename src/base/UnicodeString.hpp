@@ -134,12 +134,12 @@ public:
   UnicodeString SubStr(intptr_t Pos, intptr_t Len = -1) const;
   UnicodeString SubString(intptr_t Pos, intptr_t Len = -1) const { return SubStr(Pos, Len); }
 
-  inline bool IsDelimiter(const UnicodeString & Chars, intptr_t Pos) const;
-  inline intptr_t LastDelimiter(const UnicodeString & Delimiters) const;
+  bool IsDelimiter(const UnicodeString & Chars, intptr_t Pos) const;
+  intptr_t LastDelimiter(const UnicodeString & Delimiters) const;
 
-  inline UnicodeString Trim() const;
-  inline UnicodeString TrimLeft() const;
-  inline UnicodeString TrimRight() const;
+  UnicodeString Trim() const;
+  UnicodeString TrimLeft() const;
+  UnicodeString TrimRight() const;
 
   void sprintf(const wchar_t * fmt, ...);
 

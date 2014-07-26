@@ -6,6 +6,7 @@
 #include <Classes.hpp>
 #include <Sysutils.hpp>
 #include "RemoteFiles.h"
+#include <Common.h>
 
 //---------------------------------------------------------------------------
 
@@ -309,7 +310,7 @@ intptr_t Pos(const UnicodeString & Str, const UnicodeString & Substr)
   return Result;
 }
 
-UnicodeString StringReplace(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To, const TReplaceFlags & Flags)
+UnicodeString StringReplace(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To, const TReplaceFlags & /* Flags */)
 {
   return AnsiReplaceStr(Str, From, To);
 }
@@ -452,7 +453,7 @@ double StrToFloatDef(const UnicodeString & Value, double DefVal)
 }
 
 //---------------------------------------------------------------------------
-UnicodeString FormatFloat(const UnicodeString & Format, double Value)
+UnicodeString FormatFloat(const UnicodeString & /* Format */, double Value)
 {
   UnicodeString Result(20, L'\0');
   swprintf(&Result[1], L"%.2f", Value);
@@ -972,8 +973,8 @@ static UnicodeString GetUniversalName(UnicodeString & AFileName)
 UnicodeString ExpandUNCFileName(const UnicodeString & AFileName)
 {
   UnicodeString Result = ExpandFileName(AFileName);
-  if ((Result.Length() >= 3) && (Result[1] == L':') && (::UpCase(Result[1]) >= 'A')
-      && (::UpCase(Result[1]) <= 'Z'))
+  if ((Result.Length() >= 3) && (Result[1] == L':') && (::UpCase(Result[1]) >= 'A') &&
+      (::UpCase(Result[1]) <= 'Z'))
   {
     Result = GetUniversalName(Result);
   }

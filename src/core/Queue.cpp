@@ -53,7 +53,7 @@ public:
   {
   }
 
-  virtual void Execute(void * Arg)
+  virtual void Execute(void * /* Arg */)
   {
     if (OnInformation != nullptr)
     {
@@ -233,7 +233,7 @@ public:
   {
   }
 
-  virtual void Execute(void * Arg)
+  virtual void Execute(void * /* Arg */)
   {
     if (OnReadDirectoryProgress != nullptr)
     {
@@ -488,7 +488,7 @@ TTerminalQueue::~TTerminalQueue()
   Close();
 
   {
-    TGuard Guard(&FItemsSection);
+    TGuard Guard(FItemsSection);
 
     while (FTerminals->GetCount() > 0)
     {
@@ -523,7 +523,7 @@ void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
   if (!FTerminated)
   {
     {
-      TGuard Guard(&FItemsSection);
+      TGuard Guard(FItemsSection);
 
       intptr_t Index = FTerminals->IndexOf(TerminalItem);
       assert(Index >= 0);
@@ -557,7 +557,7 @@ bool TTerminalQueue::TerminalFree(TTerminalItem * TerminalItem)
   if (!FTerminated)
   {
     {
-      TGuard Guard(&FItemsSection);
+      TGuard Guard(FItemsSection);
 
       intptr_t Index = FTerminals->IndexOf(TerminalItem);
       assert(Index >= 0);
@@ -584,7 +584,7 @@ void TTerminalQueue::AddItem(TQueueItem * Item)
   Item->SetStatus(TQueueItem::qsPending);
 
   {
-    TGuard Guard(&FItemsSection);
+    TGuard Guard(FItemsSection);
 
     FItems->Add(Item);
     Item->FQueue = this;
@@ -600,7 +600,7 @@ void TTerminalQueue::RetryItem(TQueueItem * Item)
   if (!FTerminated)
   {
     {
-      TGuard Guard(&FItemsSection);
+      TGuard Guard(FItemsSection);
 
       intptr_t Index = FItems->Remove(Item);
       assert(Index < FItemsInProcess);
@@ -623,7 +623,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
     bool EmptyButMonitored;
     bool Monitored;
     {
-      TGuard Guard(&FItemsSection);
+      TGuard Guard(FItemsSection);
 
       // does this need to be within guard?
       Monitored = (Item->GetCompleteEvent() != INVALID_HANDLE_VALUE);
@@ -718,7 +718,7 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
       SAFE_DESTROY(Current);
     }
   };
-  TGuard Guard(&FItemsSection);
+  TGuard Guard(FItemsSection);
 
   UpdateStatusForList(Status.get(), FDoneItems, Current);
   Status->SetDoneCount(Status->GetCount());
@@ -734,7 +734,7 @@ bool TTerminalQueue::ItemGetData(TQueueItem * Item,
   bool Result = !FFinished;
   if (Result)
   {
-    TGuard Guard(&FItemsSection);
+    TGuard Guard(FItemsSection);
 
     Result = (FDoneItems->IndexOf(Item) >= 0) || (FItems->IndexOf(Item) >= 0);
     if (Result)
@@ -755,7 +755,7 @@ bool TTerminalQueue::ItemProcessUserAction(TQueueItem * Item, void * Arg)
     TTerminalItem * TerminalItem = nullptr;
 
     {
-      TGuard Guard(&FItemsSection);
+      TGuard Guard(FItemsSection);
 
       Result = (FItems->IndexOf(Item) >= 0) &&
         TQueueItem::IsUserActionStatus(Item->GetStatus());
@@ -781,7 +781,7 @@ bool TTerminalQueue::ItemMove(TQueueItem * Item, TQueueItem * BeforeItem)
   if (Result)
   {
     {
-      TGuard Guard(&FItemsSection);
+      TGuard Guard(FItemsSection);
 
       intptr_t Index = FItems->IndexOf(Item);
       intptr_t IndexDest = FItems->IndexOf(BeforeItem);
@@ -811,7 +811,7 @@ bool TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
   if (Result)
   {
     {
-      TGuard Guard(&FItemsSection);
+      TGuard Guard(FItemsSection);
 
       intptr_t Index = FItems->IndexOf(Item);
       Result = (Index >= 0) && (Item->GetStatus() == TQueueItem::qsPending) &&
@@ -855,7 +855,7 @@ bool TTerminalQueue::ItemDelete(TQueueItem * Item)
     bool UpdateList = false;
 
     {
-      TGuard Guard(&FItemsSection);
+      TGuard Guard(FItemsSection);
 
       intptr_t Index = FItems->IndexOf(Item);
       Result = (Index >= 0);
@@ -904,7 +904,7 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
     TTerminalItem * TerminalItem = nullptr;
 
     {
-      TGuard Guard(&FItemsSection);
+      TGuard Guard(FItemsSection);
 
       Result = (FItems->IndexOf(Item) >= 0) &&
         ((Pause && (Item->GetStatus() == TQueueItem::qsProcessing)) ||
@@ -937,7 +937,7 @@ bool TTerminalQueue::ItemSetCPSLimit(TQueueItem * Item, uintptr_t CPSLimit)
   bool Result = !FFinished;
   if (Result)
   {
-    TGuard Guard(&FItemsSection);
+    TGuard Guard(FItemsSection);
 
     Result = (FItems->IndexOf(Item) >= 0);
     if (Result)
@@ -956,7 +956,7 @@ bool TTerminalQueue::ItemGetCPSLimit(TQueueItem * Item, uintptr_t & CPSLimit) co
   bool Result = !FFinished;
   if (Result)
   {
-    TGuard Guard(&FItemsSection);
+    TGuard Guard(FItemsSection);
 
     Result = (FItems->IndexOf(Item) >= 0);
     if (Result)
@@ -978,7 +978,7 @@ void TTerminalQueue::Idle()
 
     if (FFreeTerminals > 0)
     {
-      TGuard Guard(&FItemsSection);
+      TGuard Guard(FItemsSection);
 
       if (FFreeTerminals > 0)
       {
@@ -1013,7 +1013,7 @@ void TTerminalQueue::ProcessEvent()
     TQueueItem * Item = nullptr;
 
     {
-      TGuard Guard(&FItemsSection);
+      TGuard Guard(FItemsSection);
 
       // =0  do not keep
       // <0  infinity
@@ -1109,7 +1109,7 @@ void TTerminalQueue::SetTransfersLimit(intptr_t Value)
   if (FTransfersLimit != Value)
   {
     {
-      TGuard Guard(&FItemsSection);
+      TGuard Guard(FItemsSection);
 
       if ((Value >= 0) && (Value < FItemsInProcess))
       {
@@ -1131,7 +1131,7 @@ void TTerminalQueue::SetKeepDoneItemsFor(intptr_t Value)
   if (FKeepDoneItemsFor != Value)
   {
     {
-      TGuard Guard(&FItemsSection);
+      TGuard Guard(FItemsSection);
 
       FKeepDoneItemsFor = Value;
     }
@@ -1143,7 +1143,7 @@ void TTerminalQueue::SetEnabled(bool Value)
   if (FEnabled != Value)
   {
     {
-      TGuard Guard(&FItemsSection);
+      TGuard Guard(FItemsSection);
 
       FEnabled = Value;
     }
@@ -1154,7 +1154,7 @@ void TTerminalQueue::SetEnabled(bool Value)
 //---------------------------------------------------------------------------
 bool TTerminalQueue::GetIsEmpty()
 {
-  TGuard Guard(&FItemsSection);
+  TGuard Guard(FItemsSection);
   return (FItems->GetCount() == 0);
 }
 //---------------------------------------------------------------------------
@@ -1186,6 +1186,7 @@ void TBackgroundTerminal::Init(TSessionData * SessionData, TConfiguration * Conf
     const UnicodeString & Name)
 {
   TSecondaryTerminal::Init(SessionData, Configuration, Name);
+  FItem = Item;
 }
 //---------------------------------------------------------------------------
 bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
@@ -1241,7 +1242,7 @@ TTerminalItem::~TTerminalItem()
 void TTerminalItem::Process(TQueueItem * Item)
 {
   {
-    TGuard Guard(&FCriticalSection);
+    TGuard Guard(FCriticalSection);
 
     assert(FItem == nullptr);
     FItem = Item;
@@ -1252,7 +1253,7 @@ void TTerminalItem::Process(TQueueItem * Item)
 //---------------------------------------------------------------------------
 void TTerminalItem::ProcessEvent()
 {
-  TGuard Guard(&FCriticalSection);
+  TGuard Guard(FCriticalSection);
 
   bool Retry = true;
 
@@ -1321,7 +1322,7 @@ void TTerminalItem::ProcessEvent()
 //---------------------------------------------------------------------------
 void TTerminalItem::Idle()
 {
-  TGuard Guard(&FCriticalSection);
+  TGuard Guard(FCriticalSection);
 
   assert(FTerminal->GetActive());
 
@@ -1587,7 +1588,7 @@ TQueueItem::~TQueueItem()
 //---------------------------------------------------------------------------
 void TQueueItem::Complete()
 {
-  TGuard Guard(&FSection);
+  TGuard Guard(FSection);
 
   if (FCompleteEvent != INVALID_HANDLE_VALUE)
   {
@@ -1603,7 +1604,7 @@ bool TQueueItem::IsUserActionStatus(TStatus Status)
 //---------------------------------------------------------------------------
 TQueueItem::TStatus TQueueItem::GetStatus()
 {
-  TGuard Guard(&FSection);
+  TGuard Guard(FSection);
 
   return FStatus;
 }
@@ -1611,7 +1612,7 @@ TQueueItem::TStatus TQueueItem::GetStatus()
 void TQueueItem::SetStatus(TStatus Status)
 {
   {
-    TGuard Guard(&FSection);
+    TGuard Guard(FSection);
 
     FStatus = Status;
     if (FStatus == qsDone)
@@ -1631,7 +1632,7 @@ void TQueueItem::SetProgress(
   TFileOperationProgressType & ProgressData)
 {
   {
-    TGuard Guard(&FSection);
+    TGuard Guard(FSection);
 
     // do not lose CPS limit override on "calculate size" operation,
     // wait until the real transfer operation starts
@@ -1656,7 +1657,7 @@ void TQueueItem::SetProgress(
 //---------------------------------------------------------------------------
 void TQueueItem::GetData(TQueueItemProxy * Proxy)
 {
-  TGuard Guard(&FSection);
+  TGuard Guard(FSection);
 
   assert(Proxy->FProgressData != nullptr);
   if (FProgressData != nullptr)
@@ -1679,7 +1680,7 @@ void TQueueItem::Execute(TTerminalItem * TerminalItem)
 {
   {
     assert(FProgressData == nullptr);
-    TGuard Guard(&FSection);
+    TGuard Guard(FSection);
     FProgressData = new TFileOperationProgressType();
   }
   DoExecute(TerminalItem->FTerminal);
@@ -2195,7 +2196,7 @@ void TTerminalThread::Cancel()
 //---------------------------------------------------------------------------
 void TTerminalThread::Idle()
 {
-  TGuard Guard(&FSection);
+  TGuard Guard(FSection);
   // only when running user action already,
   // so that the exception is caught, saved and actually
   // passed back into the terminal thread, saved again
@@ -2394,7 +2395,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
       {
 
         {
-          TGuard Guard(&FSection);
+          TGuard Guard(FSection);
           // If idle exception is already set, we are only waiting
           // for the main thread to pick it up
           // (or at least to finish handling the user action, so

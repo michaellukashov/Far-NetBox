@@ -685,9 +685,8 @@ const UnicodeString TStrings::GetName(intptr_t Index) const
   return ExtractName(GetString(Index));
 }
 
-void TStrings::SetName(intptr_t Index, const UnicodeString & Value)
+void TStrings::SetName(intptr_t /* Index */, const UnicodeString & /* Value */)
 {
-  (void)Index;
   Classes::Error(SNotImplemented, 2012);
 }
 
@@ -1343,7 +1342,7 @@ void TStream::WriteBuffer(const void * Buffer, int64_t Count)
 //---------------------------------------------------------------------------
 void ReadError(const UnicodeString & Name)
 {
-  throw Sysutils::Exception("InvalidRegType"); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
+  throw Sysutils::Exception(FORMAT("InvalidRegType: %s", Name.c_str())); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
 
 //---------------------------------------------------------------------------
@@ -1478,7 +1477,7 @@ void TMemoryStream::SaveToStream(TStream * Stream)
   }
 }
 
-void TMemoryStream::SaveToFile(const UnicodeString & AFileName)
+void TMemoryStream::SaveToFile(const UnicodeString & /* AFileName */)
 {
   // TFileStream Stream(FileName, fmCreate);
   // SaveToStream(Stream);

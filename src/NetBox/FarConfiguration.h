@@ -127,6 +127,6 @@ private:
   intptr_t FarConfirmations() const;
 };
 //---------------------------------------------------------------------------
-inline TFarConfiguration * GetFarConfiguration();
+TFarConfiguration * GetFarConfiguration();
 //---------------------------------------------------------------------------
 #endif
