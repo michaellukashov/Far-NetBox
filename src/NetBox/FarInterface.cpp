@@ -7,6 +7,8 @@
 #include "FarConfiguration.h"
 #include "WinSCPPlugin.h"
 #include "Queue.h"
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 TConfiguration * CreateConfiguration()
 {

@@ -7,6 +7,8 @@
 #include "FarConfiguration.h"
 #include "FarPlugin.h"
 #include "CoreMain.h"
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   TGUIConfiguration(),

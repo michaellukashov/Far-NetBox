@@ -11,6 +11,8 @@
 #include "CoreMain.h"
 #include "TextsCore.h"
 #include "SynchronizeController.h"
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 TSynchronizeController::TSynchronizeController(
   TSynchronizeEvent AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,
@@ -129,7 +131,7 @@ void TSynchronizeController::SynchronizeChange(
         LocalDirectory.Length() - RootLocalDirectory.Length()));
 
     SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,
-      ::ExcludeTrailingBackslash(LocalDirectory).c_str()));
+      Sysutils::ExcludeTrailingBackslash(LocalDirectory).c_str()));
 
     if (FOnSynchronize != nullptr)
     {
@@ -230,8 +232,8 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
 {
   if ((FOptions != nullptr) && (FOptions->Filter != nullptr))
   {
-    if (::IncludeTrailingBackslash(::ExtractFilePath(DirectoryName)) ==
-        ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory))
+    if (Sysutils::IncludeTrailingBackslash(::ExtractFilePath(DirectoryName)) ==
+        Sysutils::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory))
     {
       intptr_t FoundIndex;
       Add = FOptions->Filter->Find(core::ExtractFileName(DirectoryName, true), FoundIndex);

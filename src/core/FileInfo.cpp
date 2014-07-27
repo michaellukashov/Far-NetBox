@@ -7,6 +7,8 @@
 #include <Windows.hpp>
 #include "FileInfo.h"
 #include "FileBuffer.h"
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 #define DWORD_ALIGN( base, ptr ) \
     ( (LPBYTE)(base) + ((((LPBYTE)(ptr) - (LPBYTE)(base)) + 3) & ~3) )

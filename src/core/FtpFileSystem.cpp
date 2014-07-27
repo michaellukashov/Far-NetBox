@@ -19,6 +19,8 @@
 #include "HelpCore.h"
 #include "WinSCPSecurity.h"
 #include <openssl/x509_vfy.h>
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
@@ -1027,7 +1029,7 @@ void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   TOnceDoneOperation & OnceDoneOperation)
 {
   Params &= ~cpAppend;
-  UnicodeString FullTargetDir = ::IncludeTrailingBackslash(TargetDir);
+  UnicodeString FullTargetDir = Sysutils::IncludeTrailingBackslash(TargetDir);
 
   intptr_t Index = 0;
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
@@ -1043,11 +1045,11 @@ void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       };
       UnicodeString AbsoluteFilePath = AbsolutePath(FileName, false);
       UnicodeString TargetDirectory = FullTargetDir;
-      UnicodeString FileNamePath = ::ExtractFilePath(File->GetFileName());
+      UnicodeString FileNamePath = Sysutils::ExtractFilePath(File->GetFileName());
       if (!FileNamePath.IsEmpty())
       {
-        TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
-        ::ForceDirectories(TargetDirectory);
+        TargetDirectory = Sysutils::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
+        Sysutils::ForceDirectories(TargetDirectory);
       }
       try
       {
@@ -1167,7 +1169,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       );
 
       TSinkFileParams SinkFileParams;
-      SinkFileParams.TargetDir = ::IncludeTrailingBackslash(DestFullName);
+      SinkFileParams.TargetDir = Sysutils::IncludeTrailingBackslash(DestFullName);
       SinkFileParams.CopyParam = CopyParam;
       SinkFileParams.Params = Params;
       SinkFileParams.OperationProgress = OperationProgress;
@@ -1258,7 +1260,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
     }
 
-    Action.Destination(ExpandUNCFileName(DestFullName));
+    Action.Destination(Sysutils::ExpandUNCFileName(DestFullName));
 
     if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
     {
@@ -1346,7 +1348,7 @@ void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
-          if (DirectoryExists(::ExtractFilePath(ApiPath(FileName))))
+          if (Sysutils::DirectoryExists(Sysutils::ExtractFilePath(ApiPath(FileName))))
           {
             FTerminal->DirectoryModified(FullTargetDir + FileNameOnly, true);
           }
@@ -1424,7 +1426,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
   TUploadSessionAction & Action)
 {
   UnicodeString RealFileName = AFile ? AFile->GetFileName() : AFileName;
-  Action.FileName(ExpandUNCFileName(AFileName));
+  Action.FileName(Sysutils::ExpandUNCFileName(AFileName));
 
   OperationProgress->SetFile(RealFileName, false);
 
@@ -1446,7 +1448,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
   if (Dir)
   {
     Action.Cancel();
-    DirectorySource(::IncludeTrailingBackslash(RealFileName), TargetDir,
+    DirectorySource(Sysutils::IncludeTrailingBackslash(RealFileName), TargetDir,
       OpenParams->LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
   }
   else
@@ -2412,7 +2414,7 @@ void TFTPFileSystem::WaitForMessages()
   DWORD Result = WaitForSingleObject(FQueueEvent, INFINITE);
   if (Result != WAIT_OBJECT_0)
   {
-    FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", IntToStr(Result).c_str()));
+    FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", Sysutils::IntToStr(Result).c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -2762,7 +2764,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
 
   bool HasCodePrefix =
     (Response.Length() >= 3) &&
-    TryStrToInt(Response.SubString(1, 3), Code) &&
+    Sysutils::TryStrToInt(Response.SubString(1, 3), Code) &&
     (Code >= 100) && (Code <= 599) &&
     ((Response.Length() == 3) || (Response[4] == L' ') || (Response[4] == L'-'));
 
@@ -3013,7 +3015,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
     return false;
   }
   UnicodeString DestFullName = Path1;
-  AppendPathDelimiterW(DestFullName);
+  Sysutils::AppendPathDelimiterW(DestFullName);
   DestFullName += FileName1;
   TFileTransferData & UserData = *(NB_STATIC_DOWNCAST(TFileTransferData, AUserData));
   if (UserData.OverwriteResult >= 0)
@@ -3201,7 +3203,7 @@ static bool VerifyNameMask(const UnicodeString & AName, const UnicodeString & AM
   while (Result && (Pos = Mask.Pos(L"*")) > 0)
   {
     // Pos will typically be 1 here, so not actual comparison is done
-    Result = SameText(Mask.SubString(1, Pos - 1), Name.SubString(1, Pos - 1));
+    Result = Sysutils::SameText(Mask.SubString(1, Pos - 1), Name.SubString(1, Pos - 1));
     if (Result)
     {
       Mask.Delete(1, Pos); // including *
@@ -3218,7 +3220,7 @@ static bool VerifyNameMask(const UnicodeString & AName, const UnicodeString & AM
 
   if (Result)
   {
-    Result = SameText(Mask, Name);
+    Result = Sysutils::SameText(Mask, Name);
   }
 
   return Result;
@@ -3246,7 +3248,7 @@ bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData & Data
     {
       UnicodeString Entry = CutToChar(SubjectAltName, L',', true);
       UnicodeString EntryName = CutToChar(Entry, L':', true);
-      if (SameText(EntryName, L"DNS"))
+      if (Sysutils::SameText(EntryName, L"DNS"))
       {
         NoMask = false;
         Result = VerifyNameMask(HostName, Entry);
@@ -3624,7 +3626,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
       {
         UnicodeString EntryData =
           FORMAT(L"%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d",
-             Entry->Name, Entry->Permissions, Entry->OwnerGroup, Int64ToStr(Entry->Size).c_str(),
+             Entry->Name, Entry->Permissions, Entry->OwnerGroup, Sysutils::Int64ToStr(Entry->Size).c_str(),
              int(Entry->Dir), int(Entry->Link), Entry->Time.Year, Entry->Time.Month, Entry->Time.Day,
              Entry->Time.Hour, Entry->Time.Minute, int(Entry->Time.HasTime),
              int(Entry->Time.HasSeconds), int(Entry->Time.HasDate));
@@ -3721,7 +3723,7 @@ bool TFTPFileSystem::CheckError(intptr_t ReturnCode, const wchar_t * Context)
   else
   {
     FTerminal->FatalError(nullptr,
-      FMTLOAD(INTERNAL_ERROR, FORMAT(L"fz#%s", Context).c_str(), IntToHex(ReturnCode, 4).c_str()));
+      FMTLOAD(INTERNAL_ERROR, FORMAT(L"fz#%s", Context).c_str(), Sysutils::IntToHex(ReturnCode, 4).c_str()));
     FAIL;
   }
 

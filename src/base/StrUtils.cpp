@@ -8,7 +8,7 @@
 
 UnicodeString ReplaceStr(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat)
 {
-  return StringReplace(Str, What, ByWhat, TReplaceFlags() << rfReplaceAll);
+  return Sysutils::StringReplace(Str, What, ByWhat, TReplaceFlags() << rfReplaceAll);
 }
 
 bool StartsStr(const UnicodeString & SubStr, const UnicodeString & Str)

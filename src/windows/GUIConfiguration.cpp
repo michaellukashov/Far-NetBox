@@ -10,6 +10,8 @@
 #include <Terminal.h>
 #include <CoreMain.h>
 #include <shlobj.h>
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 const intptr_t ccLocal = ccUser;
 const intptr_t ccShowResults = ccUser << 1;
@@ -405,7 +407,7 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
 {
   for (intptr_t Index = 0; Index < ACount; ++Index)
   {
-    UnicodeString Name = IntToStr(Index);
+    UnicodeString Name = Sysutils::IntToStr(Index);
     std::unique_ptr<TCopyParamRule> Rule(nullptr);
     std::unique_ptr<TCopyParamType> CopyParam(new TCopyParamType());
     if (Storage->OpenSubKey(Name, false))
@@ -436,7 +438,7 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
   Storage->ClearSubKeys();
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (Storage->OpenSubKey(IntToStr(Index), true))
+    if (Storage->OpenSubKey(Sysutils::IntToStr(Index), true))
     {
       SCOPE_EXIT
       {
@@ -559,7 +561,7 @@ void TGUIConfiguration::Default()
   FSessionRememberPassword = false;
   UnicodeString ProgramsFolder;
   SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
-  FDefaultPuttyPathOnly = ::IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
+  FDefaultPuttyPathOnly = Sysutils::IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
   FDefaultPuttyPath = FormatCommand(L"%PROGRAMFILES%\\PuTTY\\putty.exe", L"");
   FPuttyPath = FDefaultPuttyPath;
   SetPSftpPath(FormatCommand(L"%PROGRAMFILES%\\PuTTY\\psftp.exe", L""));

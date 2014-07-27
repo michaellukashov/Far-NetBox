@@ -9,6 +9,8 @@
 #include "Configuration.h"
 #include "CoreMain.h"
 #include "Interface.h"
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 static bool WellKnownException(
   const Exception * E, UnicodeString * AMessage, const wchar_t ** ACounterName, Exception ** AClone, bool Rethrow)

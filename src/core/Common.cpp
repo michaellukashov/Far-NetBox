@@ -15,6 +15,8 @@
 #include <limits>
 #include <shlwapi.h>
 #include <CoreMain.h>
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 
 #if defined(__MINGW32__)
@@ -205,11 +207,11 @@ UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
   intptr_t P;
   for (P = From; P <= Str.Length(); P++)
   {
-    if (IsDelimiter(Chs, Str, P))
+    if (Sysutils::IsDelimiter(Chs, Str, P))
     {
       if (DoubleDelimiterEscapes &&
           (P < Str.Length()) &&
-          IsDelimiter(Chs, Str, P + 1))
+          Sysutils::IsDelimiter(Chs, Str, P + 1))
       {
         Result += Str[P];
         P++;

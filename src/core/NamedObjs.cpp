@@ -4,6 +4,8 @@
 
 #include <Sysutils.hpp>
 #include "NamedObjs.h"
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
 {
@@ -19,7 +21,7 @@ static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
   }
   else
   {
-    return AnsiCompareStr(
+    return Sysutils::AnsiCompareStr(
       NB_STATIC_DOWNCAST_CONST(TNamedObject, Item1)->GetName(),
       NB_STATIC_DOWNCAST_CONST(TNamedObject, Item2)->GetName());
   }
@@ -74,7 +76,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
           N = 0;
         }
       }
-      SetName(Name + L" (" + Int64ToStr(N+1) + L")");
+      SetName(Name + L" (" + Sysutils::Int64ToStr(N+1) + L")");
     }
 }
 //--- TNamedObjectList ------------------------------------------------------

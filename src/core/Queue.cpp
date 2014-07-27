@@ -6,6 +6,8 @@
 #include "Terminal.h"
 #include "Queue.h"
 #include "Exceptions.h"
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 class TBackgroundTerminal;
 //---------------------------------------------------------------------------

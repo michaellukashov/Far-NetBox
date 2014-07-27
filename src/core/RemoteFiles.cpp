@@ -14,6 +14,8 @@
 #include "TextsCore.h"
 #include "HelpCore.h"
 /* TODO 1 : Path class instead of UnicodeString (handle relativity...) */
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 
 namespace core {
@@ -137,7 +139,7 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & Path)
 {
   assert(AFiles->GetCount() > 0);
 
-  Path = ::ExtractFilePath(AFiles->GetString(0));
+  Path = Sysutils::ExtractFilePath(AFiles->GetString(0));
   bool Result = !Path.IsEmpty();
   if (Result)
   {
@@ -147,7 +149,7 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & Path)
         (AFiles->GetString(Index).SubString(1, Path.Length()) != Path))
       {
         intptr_t PrevLen = Path.Length();
-        Path = ::ExtractFilePath(::ExcludeTrailingBackslash(Path));
+        Path = Sysutils::ExtractFilePath(Sysutils::ExcludeTrailingBackslash(Path));
         if (Path.Length() == PrevLen)
         {
           Path = L"";
@@ -382,8 +384,8 @@ TDateTime ReduceDateTimePrecision(const TDateTime & DateTime,
   {
     uint16_t Y, M, D, H, N, S, MS;
 
-    DecodeDate(Result, Y, M, D);
-    DecodeTime(Result, H, N, S, MS);
+    Sysutils::DecodeDate(Result, Y, M, D);
+    Sysutils::DecodeTime(Result, H, N, S, MS);
     switch (Precision)
     {
       case mfMDHM:
@@ -572,7 +574,7 @@ intptr_t TRemoteToken::Compare(const TRemoteToken & rht) const
   {
     if (!rht.FName.IsEmpty())
     {
-      Result = AnsiCompareText(FName, rht.FName);
+      Result = Sysutils::AnsiCompareText(FName, rht.FName);
     }
     else
     {
@@ -638,7 +640,7 @@ UnicodeString TRemoteToken::GetDisplayText() const
   }
   else if (FIDValid)
   {
-    return IntToStr(FID);
+    return Sysutils::IntToStr(FID);
   }
   else
   {
@@ -915,7 +917,7 @@ void TRemoteFile::SetIsHidden(bool Value)
 //---------------------------------------------------------------------------
 Boolean TRemoteFile::GetIsDirectory() const
 {
-  return (UpCase(GetType()) == FILETYPE_DIRECTORY);
+  return (Sysutils::UpCase(GetType()) == FILETYPE_DIRECTORY);
 }
 //---------------------------------------------------------------------------
 Boolean TRemoteFile::GetIsParentDirectory() const
@@ -935,12 +937,12 @@ Boolean TRemoteFile::GetIsInaccesibleDirectory() const
   {
     assert(GetTerminal());
     Result = !
-       (SameText(GetTerminal()->GetUserName(), L"root")) ||
+       (Sysutils::SameText(GetTerminal()->GetUserName(), L"root")) ||
        (((GetRights()->GetRightUndef(TRights::rrOtherExec) != TRights::rsNo)) ||
         ((GetRights()->GetRight(TRights::rrGroupExec) != TRights::rsNo) &&
          GetTerminal()->GetMembership()->Exists(GetFileGroup().GetName())) ||
         ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
-         (SameText(GetTerminal()->GetUserName(), GetFileOwner().GetName()))));
+         (Sysutils::SameText(GetTerminal()->GetUserName(), GetFileOwner().GetName()))));
   }
   else
   {
@@ -997,7 +999,7 @@ bool TRemoteFile::GetBrokenLink() const
 void TRemoteFile::ShiftTime(const TDateTime & Difference)
 {
   double D = Difference.GetValue();
-  if (!IsZero(D) && (FModificationFmt != mfMDY))
+  if (!Sysutils::IsZero(D) && (FModificationFmt != mfMDY))
   {
     assert(static_cast<int>(FModification) != 0);
     FModification = FModification.GetValue() + D;
@@ -1075,7 +1077,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     auto GetCol = [&]()
     {
       GetNCol();
-      ListingStr = TrimLeft(ListingStr);
+      ListingStr = Sysutils::TrimLeft(ListingStr);
     };
 
     // Rights string may contain special permission attributes (S,t, ...)
@@ -1099,7 +1101,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     ListingStr = ListingStr.TrimLeft();
 
     GetCol();
-    if (!TryStrToInt(Col, FINodeBlocks))
+    if (!Sysutils::TryStrToInt(Col, FINodeBlocks))
     {
       // if the column is not an integer, suppose it's owner
       // (Android BusyBox)
@@ -1124,7 +1126,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       // for devices etc.. there is additional column ending by comma, we ignore it
       if (Col[Col.Length()] == L',')
         GetCol();
-      ASize = StrToInt64Def(Col, -1);
+      ASize = Sysutils::StrToInt64Def(Col, -1);
       // if it's not a number (file size) we take it as part of group name
       // (at least on CygWin, there can be group with space in its name)
       if (ASize < 0)
@@ -1133,18 +1135,18 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     while (ASize < 0);
 
     // do not read modification time and filename if it is already set
-    if (IsZero(FModification.GetValue()) && GetFileName().IsEmpty())
+    if (Sysutils::IsZero(FModification.GetValue()) && GetFileName().IsEmpty())
     {
       FSize = ASize;
 
       bool DayMonthFormat = false;
       Word Year = 0, Month = 0, Day = 0, Hour = 0, Min = 0, Sec = 0;
       Word CurrYear = 0, CurrMonth = 0, CurrDay = 0;
-      DecodeDate(Date(), CurrYear, CurrMonth, CurrDay);
+      Sysutils::DecodeDate(Date(), CurrYear, CurrMonth, CurrDay);
 
       GetCol();
       // format dd mmm or mmm dd ?
-      Day = ToWord(StrToIntDef(Col, 0));
+      Day = ::ToWord(Sysutils::StrToIntDef(Col, 0));
       if (Day > 0)
       {
         DayMonthFormat = true;
@@ -1277,7 +1279,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             // When we don't got year, we assume current year
             // with exception that the date would be in future
             // in this case we assume last year.
-            DecodeDate(Date(), Year, CurrMonth, CurrDay);
+            Sysutils::DecodeDate(Date(), Year, CurrMonth, CurrDay);
             if ((Month > CurrMonth) ||
                 (Month == CurrMonth && Day > CurrDay))
             {
@@ -1316,7 +1318,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           GetTerminal()->GetSessionData()->GetDSTMode());
       }
 
-      if (IsZero(FLastAccess.GetValue()))
+      if (Sysutils::IsZero(FLastAccess.GetValue()))
       {
         FLastAccess = FModification;
       }
@@ -1339,13 +1341,13 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             Abort();
           }
         }
-        FFileName = core::UnixExtractFileName(::Trim(ListingStr));
+        FFileName = core::UnixExtractFileName(Sysutils::Trim(ListingStr));
       }
     }
   }
   catch (Exception & E)
   {
-    throw ETerminal(&E, FmtLoadStr(LIST_LINE_ERROR, Value.c_str()), HELP_LIST_LINE_ERROR);
+    throw ETerminal(&E, Sysutils::FmtLoadStr(LIST_LINE_ERROR, Value.c_str()), HELP_LIST_LINE_ERROR);
   }
 }
 //---------------------------------------------------------------------------
@@ -1432,8 +1434,8 @@ UnicodeString TRemoteFile::GetListingStr() const
     LinkPart = UnicodeString(SYMLINKSTR) + GetLinkTo();
   }
   return Format(L"%s%s %3s %-8s %-8s %9s %-12s %s%s",
-    GetType(), GetRights()->GetText().c_str(), Int64ToStr(FINodeBlocks).c_str(), GetFileOwner().GetName().c_str(),
-    GetFileGroup().GetName().c_str(), Int64ToStr(GetSize()).c_str(), GetModificationStr().c_str(), GetFileName().c_str(),
+    GetType(), GetRights()->GetText().c_str(), Sysutils::Int64ToStr(FINodeBlocks).c_str(), GetFileOwner().GetName().c_str(),
+    GetFileGroup().GetName().c_str(), Sysutils::Int64ToStr(GetSize()).c_str(), GetModificationStr().c_str(), GetFileName().c_str(),
     LinkPart.c_str());
 }
 //---------------------------------------------------------------------------

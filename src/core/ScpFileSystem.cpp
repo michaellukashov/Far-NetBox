@@ -32,6 +32,8 @@ const int ecRaiseExcept = 1;
 const int ecIgnoreWarnings = 2;
 const int ecReadProgress = 4;
 const int ecDefault = ecRaiseExcept;
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 inline void ThrowFileSkipped(Exception * Exception, const UnicodeString & Message)
 {
@@ -230,7 +232,7 @@ UnicodeString TCommandSet::Command(TFSCommand Cmd, ...) const
 UnicodeString TCommandSet::Command(TFSCommand Cmd, va_list args) const
 {
   UnicodeString Result;
-  Result = ::Format(GetCommands(Cmd).c_str(), args);
+  Result = Sysutils::Format(GetCommands(Cmd).c_str(), args);
   return Result.c_str();
 }
 //---------------------------------------------------------------------------
@@ -601,7 +603,7 @@ bool TSCPFileSystem::RemoveLastLine(UnicodeString & Line,
     UnicodeString ReturnCodeStr = Line.SubString(Pos + LastLine.Length() + 1,
       Line.Length() - Pos + LastLine.Length());
     int64_t Code = 0;
-    if (TryStrToInt(ReturnCodeStr, Code))
+    if (Sysutils::TryStrToInt(ReturnCodeStr, Code))
     {
       IsLastLine = true;
       Line.SetLength(Pos - 1);
@@ -766,7 +768,7 @@ void TSCPFileSystem::ExecCommand2(TFSCommand Cmd, intptr_t Params, ...)
     if (((MinL >= 0) && (MinL > static_cast<int>(FOutput->GetCount()))) ||
         ((MaxL >= 0) && (MaxL > static_cast<int>(FOutput->GetCount()))))
     {
-      FTerminal->TerminalError(::FmtLoadStr(INVALID_OUTPUT_ERROR,
+      FTerminal->TerminalError(Sysutils::FmtLoadStr(INVALID_OUTPUT_ERROR,
         FullCommand.c_str(), GetOutput()->GetText().c_str()));
     }
   }
@@ -856,7 +858,7 @@ void TSCPFileSystem::DetectReturnVar()
         FTerminal->LogEvent(FORMAT(L"Trying \"$%s\".", ReturnVars[Index].c_str()));
         ExecCommand2(fsVarValue, 0, ReturnVars[Index].c_str());
         UnicodeString Str = GetOutput()->GetCount() > 0 ? GetOutput()->GetString(0) : L"";
-        intptr_t Val = StrToIntDef(Str, 256);
+        intptr_t Val = Sysutils::StrToIntDef(Str, 256);
         if ((GetOutput()->GetCount() != 1) || Str.IsEmpty() || (Val > 255))
         {
           FTerminal->LogEvent(L"The response is not numerical exit code");
@@ -1197,7 +1199,7 @@ void TSCPFileSystem::ChangeFileToken(const UnicodeString & DelimitedName,
   UnicodeString Str;
   if (Token.GetIDValid())
   {
-    Str = IntToStr(Token.GetID());
+    Str = Sysutils::IntToStr(Token.GetID());
   }
   else if (Token.GetNameValid())
   {
@@ -1614,7 +1616,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
       {
         FTerminal->DirectoryModified(TargetDir, false);
 
-        if (DirectoryExists(Sysutils::ExtractFilePath(ApiPath(FileName))))
+        if (Sysutils::DirectoryExists(Sysutils::ExtractFilePath(ApiPath(FileName))))
         {
           FTerminal->DirectoryModified(core::UnixIncludeTrailingBackslash(TargetDir)+
             FileNameOnly, true);
@@ -1740,7 +1742,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
           L" transfer mode selected.");
 
       TUploadSessionAction Action(FTerminal->GetActionLog());
-      Action.FileName(ExpandUNCFileName(AFileName));
+      Action.FileName(Sysutils::ExpandUNCFileName(AFileName));
       Action.Destination(AbsoluteFileName);
 
       TRights Rights = CopyParam->RemoteFileRights(LocalFileAttrs);

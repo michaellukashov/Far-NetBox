@@ -8,6 +8,8 @@
 #include "HierarchicalStorage.h"
 #include <TextsCore.h>
 #include <StrUtils.hpp>
+
+using namespace Sysutils;
 //------------------------------------------------------------------------------
 #define READ_REGISTRY(Method) \
   if (FRegistry->ValueExists(Name)) \
@@ -176,7 +178,7 @@ bool THierarchicalStorage::OpenSubKey(const UnicodeString & SubKey, bool CanCrea
     // hack to restore last opened key for registry storage
     if (!Result)
     {
-      FKeyHistory->Add(::IncludeTrailingBackslash(GetCurrentSubKey() + MungedKey));
+      FKeyHistory->Add(Sysutils::IncludeTrailingBackslash(GetCurrentSubKey() + MungedKey));
       CloseSubKey();
     }
   }
@@ -188,7 +190,7 @@ bool THierarchicalStorage::OpenSubKey(const UnicodeString & SubKey, bool CanCrea
 
   if (Result)
   {
-    FKeyHistory->Add(::IncludeTrailingBackslash(GetCurrentSubKey() + MungedKey));
+    FKeyHistory->Add(Sysutils::IncludeTrailingBackslash(GetCurrentSubKey() + MungedKey));
   }
 
   return Result;
@@ -290,7 +292,7 @@ void THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
       }
       else
       {
-        WriteString(IntToStr(Index), Strings->GetString(Index));
+        WriteString(Sysutils::IntToStr(Index), Strings->GetString(Index));
       }
     }
   }
@@ -380,7 +382,7 @@ UnicodeString THierarchicalStorage::ExcludeTrailingBackslash(const UnicodeString
   }
   else
   {
-    return ::ExcludeTrailingBackslash(S);
+    return Sysutils::ExcludeTrailingBackslash(S);
   }
 }
 //===========================================================================

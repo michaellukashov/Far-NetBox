@@ -2,6 +2,9 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <limits>
+#include <memory>
+
 #define CLEAN_SPACE_AVAILABLE
 
 #include "SftpFileSystem.h"
@@ -14,9 +17,8 @@
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "SecureShell.h"
-#include <limits>
 
-#include <memory>
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
@@ -340,7 +342,7 @@ public:
 
   void AddStringW(const UnicodeString & ValueW)
   {
-    AddString(W2MB(ValueW.c_str(), (UINT)FCodePage).c_str());
+    AddString(Sysutils::W2MB(ValueW.c_str(), (UINT)FCodePage).c_str());
   }
 
   void AddString(const RawByteString & Value)
@@ -636,7 +638,7 @@ public:
 
   inline UnicodeString GetStringW() const
   {
-    return MB2W(GetRawByteString().c_str(), (UINT)FCodePage);
+    return Sysutils::MB2W(GetRawByteString().c_str(), (UINT)FCodePage);
   }
 
   inline UnicodeString GetString(bool Utf) const
