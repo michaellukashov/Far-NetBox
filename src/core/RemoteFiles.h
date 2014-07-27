@@ -165,8 +165,8 @@ private:
   TRemoteFile * FLinkedFile;
   TRemoteFile * FLinkedByFile;
   UnicodeString FLinkTo;
-  TRights *FRights;
-  TTerminal *FTerminal;
+  TRights * FRights;
+  TTerminal * FTerminal;
   wchar_t FType;
   bool FSelected;
   bool FCyclicLink;

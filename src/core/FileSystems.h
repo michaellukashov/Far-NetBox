@@ -121,7 +121,7 @@ public:
   TOverwriteMode OverwriteMode;
   int64_t DestFileSize; // output
   RawByteString RemoteFileHandle; // output
-  TOverwriteFileParams *FileParams;
+  TOverwriteFileParams * FileParams;
   bool Confirmed;
 };
 //---------------------------------------------------------------------------
