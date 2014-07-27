@@ -6,6 +6,8 @@
 #include "Terminal.h"
 #include "Queue.h"
 #include "Exceptions.h"
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 class TBackgroundTerminal;
 //---------------------------------------------------------------------------
@@ -2023,7 +2025,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
     }
     else
     {
-      ExtractCommonPath(AFilesToCopy, FInfo->Source);
+      core::ExtractCommonPath(AFilesToCopy, FInfo->Source);
       // this way the trailing backslash is preserved for root directories like "D:\\"
       FInfo->Source = ExtractFileDir(::IncludeTrailingBackslash(FInfo->Source));
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
@@ -2034,7 +2036,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
   {
     if (FLAGSET(Params, cpTemporary))
     {
-      FInfo->Source = ::ExtractFileName(AFilesToCopy->GetString(0), true);
+      FInfo->Source = core::ExtractFileName(AFilesToCopy->GetString(0), true);
       FInfo->ModifiedLocal = L"";
     }
     else
@@ -2047,8 +2049,8 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
   }
 
   FInfo->Destination =
-    ::UnixIncludeTrailingBackslash(TargetDir) + CopyParam->GetFileMask();
-  FInfo->ModifiedRemote = ::UnixIncludeTrailingBackslash(TargetDir);
+    core::UnixIncludeTrailingBackslash(TargetDir) + CopyParam->GetFileMask();
+  FInfo->ModifiedRemote = core::UnixIncludeTrailingBackslash(TargetDir);
 }
 //---------------------------------------------------------------------------
 void TUploadQueueItem::DoExecute(TTerminal * Terminal)
@@ -2068,29 +2070,29 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
 {
   if (AFilesToCopy->GetCount() > 1)
   {
-    if (!::UnixExtractCommonPath(AFilesToCopy, FInfo->Source))
+    if (!core::UnixExtractCommonPath(AFilesToCopy, FInfo->Source))
     {
       FInfo->Source = Terminal->GetCurrentDirectory();
     }
-    FInfo->Source = ::UnixExcludeTrailingBackslash(FInfo->Source);
+    FInfo->Source = core::UnixExcludeTrailingBackslash(FInfo->Source);
     FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
-      ::UnixIncludeTrailingBackslash(FInfo->Source);
+      core::UnixIncludeTrailingBackslash(FInfo->Source);
   }
   else
   {
     assert(AFilesToCopy->GetCount() > 0);
     FInfo->Source = AFilesToCopy->GetString(0);
-    if (::UnixExtractFilePath(FInfo->Source).IsEmpty())
+    if (core::UnixExtractFilePath(FInfo->Source).IsEmpty())
     {
-      FInfo->Source = ::UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory()) +
+      FInfo->Source = core::UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory()) +
         FInfo->Source;
       FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
-        ::UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory());
+        core::UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory());
     }
     else
     {
       FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
-        ::UnixExtractFilePath(FInfo->Source);
+        core::UnixExtractFilePath(FInfo->Source);
     }
   }
 

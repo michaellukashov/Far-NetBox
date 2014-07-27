@@ -11,6 +11,8 @@
 #include <CoreMain.h>
 #include <SessionData.h>
 #include <Interface.h>
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 extern const UnicodeString PageantTool = L"pageant.exe";
 extern const UnicodeString PuttygenTool = L"puttygen.exe";
@@ -49,7 +51,7 @@ void ValidateMaskEdit(TFarEdit * Edit)
 //---------------------------------------------------------------------------
 bool FindFile(UnicodeString & Path)
 {
-  bool Result = ::FileExists(Path);
+  bool Result = Sysutils::FileExists(Path);
   if (!Result)
   {
     intptr_t Len = GetEnvironmentVariable(L"PATH", nullptr, 0);
@@ -59,7 +61,7 @@ bool FindFile(UnicodeString & Path)
       Paths.SetLength(Len - 1);
       GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), static_cast<DWORD>(Len));
 
-      UnicodeString NewPath = FileSearch(::ExtractFileName(Path, true), Paths);
+      UnicodeString NewPath = Sysutils::FileSearch(core::ExtractFileName(Path, true), Paths);
       Result = !NewPath.IsEmpty();
       if (Result)
       {
@@ -161,13 +163,13 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
 //---------------------------------------------------------------------------
 bool FindTool(const UnicodeString & Name, UnicodeString & Path)
 {
-  UnicodeString AppPath = ::IncludeTrailingBackslash(::ExtractFilePath(GetConfiguration()->ModuleFileName()));
+  UnicodeString AppPath = Sysutils::IncludeTrailingBackslash(Sysutils::ExtractFilePath(GetConfiguration()->ModuleFileName()));
   Path = AppPath + Name;
   bool Result = true;
-  if (!::FileExists(Path))
+  if (!Sysutils::FileExists(Path))
   {
     Path = AppPath + L"PuTTY\\" + Name;
-    if (!::FileExists(Path))
+    if (!Sysutils::FileExists(Path))
     {
       Path = Name;
       if (!FindFile(Path))
@@ -279,8 +281,8 @@ UnicodeString GetPersonalFolder()
     }
     if (!WineHostHome.IsEmpty())
     {
-      UnicodeString WineHome = L"Z:" + ToUnixPath(WineHostHome);
-      if (DirectoryExists(WineHome))
+      UnicodeString WineHome = L"Z:" + core::ToUnixPath(WineHostHome);
+      if (Sysutils::DirectoryExists(WineHome))
       {
         Result = WineHome;
       }
@@ -298,7 +300,7 @@ UnicodeString GetPersonalFolder()
       if (!UserName.IsEmpty())
       {
         UnicodeString WineHome = L"Z:\\home\\" + UserName;
-        if (DirectoryExists(WineHome))
+        if (Sysutils::DirectoryExists(WineHome))
         {
           Result = WineHome;
         }
@@ -337,8 +339,8 @@ UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
   UnicodeString Item;
   if (Files->GetCount() > 0)
   {
-    Item = Remote ? ::UnixExtractFileName(Files->GetString(0)) :
-      ::ExtractFileName(Files->GetString(0), true);
+    Item = Remote ? core::UnixExtractFileName(Files->GetString(0)) :
+      core::ExtractFileName(Files->GetString(0), true);
   }
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
     Files->GetCount(), Item);
@@ -351,7 +353,7 @@ UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & I
   do
   {
     TempDir = BaseDir.IsEmpty() ? SystemTemporaryDirectory() : BaseDir;
-    TempDir = ::IncludeTrailingBackslash(TempDir) + Identity;
+    TempDir = Sysutils::IncludeTrailingBackslash(TempDir) + Identity;
     if (Mask)
     {
       TempDir += L"?????";
@@ -364,11 +366,11 @@ UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & I
       TDateTime dt = Now();
       uint16_t H, M, S, MS;
       dt.DecodeTime(H, M, S, MS);
-      TempDir += ::IncludeTrailingBackslash(FORMAT(L"%02d%03d", M, MS));
+      TempDir += Sysutils::IncludeTrailingBackslash(FORMAT(L"%02d%03d", M, MS));
 #endif
     };
   }
-  while (!Mask && DirectoryExists(TempDir));
+  while (!Mask && Sysutils::DirectoryExists(TempDir));
 
   return TempDir;
 }
@@ -377,7 +379,7 @@ bool DeleteDirectory(const UnicodeString & DirName)
 {
   TSearchRecChecked SearchRec;
   bool retval = true;
-  if (FindFirst(DirName + L"\\*", faAnyFile, SearchRec) == 0) // VCL Function
+  if (Sysutils::FindFirst(DirName + L"\\*", faAnyFile, SearchRec) == 0) // VCL Function
   {
     if (FLAGSET(SearchRec.Attr, faDirectory))
     {
@@ -413,7 +415,7 @@ bool DeleteDirectory(const UnicodeString & DirName)
   FindClose(SearchRec);
   if (retval)
   {
-    retval = RemoveDir(DirName); // VCL function
+    retval = Sysutils::RemoveDir(DirName); // VCL function
   }
   return retval;
 }
@@ -423,7 +425,7 @@ UnicodeString FormatDateTimeSpan(const UnicodeString & /* TimeFormat */, const T
   UnicodeString Result;
   if (static_cast<int>(DateTime) > 0)
   {
-    Result = IntToStr(static_cast<intptr_t>((double)DateTime)) + L", ";
+    Result = Sysutils::IntToStr(static_cast<intptr_t>((double)DateTime)) + L", ";
   }
   // days are decremented, because when there are to many of them,
   // "integer overflow" error occurs

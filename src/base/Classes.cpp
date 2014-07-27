@@ -25,7 +25,7 @@ void Abort()
 void Error(int ErrorID, intptr_t data)
 {
   UnicodeString Msg = FMTLOAD(ErrorID, data);
-  throw ExtException((Exception *)nullptr, Msg);
+  throw ExtException((Sysutils::Exception *)nullptr, Msg);
 }
 
 //---------------------------------------------------------------------------
@@ -72,7 +72,7 @@ TPersistent * TPersistent::GetOwner()
 void TPersistent::AssignError(const TPersistent * Source)
 {
   (void)Source;
-  throw Exception("Cannot assign");
+  throw Sysutils::Exception("Cannot assign");
 }
 
 //---------------------------------------------------------------------------
@@ -496,7 +496,7 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
 
 intptr_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const
 {
-  return static_cast<intptr_t>(::AnsiCompareText(S1, S2));
+  return static_cast<intptr_t>(Sysutils::AnsiCompareText(S1, S2));
 }
 
 void TStrings::Assign(const TPersistent * Source)
@@ -671,7 +671,7 @@ intptr_t TStrings::IndexOfName(const UnicodeString & Name) const
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     UnicodeString S = GetString(Index);
-    intptr_t P = ::AnsiPos(S, L'=');
+    intptr_t P = Sysutils::AnsiPos(S, L'=');
     if ((P > 0) && (CompareStrings(S.SubStr(1, P - 1), Name) == 0))
     {
       return Index;
@@ -693,7 +693,7 @@ void TStrings::SetName(intptr_t /* Index */, const UnicodeString & /* Value */)
 UnicodeString TStrings::ExtractName(const UnicodeString & S) const
 {
   UnicodeString Result = S;
-  intptr_t P = ::AnsiPos(Result, L'=');
+  intptr_t P = Sysutils::AnsiPos(Result, L'=');
   if (P > 0)
   {
     Result.SetLength(P - 1);
@@ -1115,11 +1115,11 @@ intptr_t TStringList::CompareStrings(const UnicodeString & S1, const UnicodeStri
 {
   if (GetCaseSensitive())
   {
-    return ::AnsiCompareStr(S1, S2);
+    return Sysutils::AnsiCompareStr(S1, S2);
   }
   else
   {
-    return ::AnsiCompareText(S1, S2);
+    return Sysutils::AnsiCompareText(S1, S2);
   }
 }
 
@@ -1134,7 +1134,7 @@ TDateTime::TDateTime(uint16_t Hour,
 //---------------------------------------------------------------------------
 bool TDateTime::operator ==(const TDateTime& rhs)
 {
-  return IsZero(FValue - rhs.FValue);
+  return Sysutils::IsZero(FValue - rhs.FValue);
 }
 
 UnicodeString TDateTime::DateString() const
@@ -1172,13 +1172,13 @@ UnicodeString TDateTime::FormatString(wchar_t * fmt) const
 void TDateTime::DecodeDate(uint16_t & Y,
   uint16_t & M, uint16_t & D) const
 {
-  ::DecodeDate(*this, Y, M, D);
+  Sysutils::DecodeDate(*this, Y, M, D);
 }
 
 void TDateTime::DecodeTime(uint16_t & H,
   uint16_t & N, uint16_t & S, uint16_t & MS) const
 {
-  ::DecodeTime(*this, H, N, S, MS);
+  Sysutils::DecodeTime(*this, H, N, S, MS);
 }
 
 //---------------------------------------------------------------------------
@@ -1187,8 +1187,8 @@ TDateTime Now()
   TDateTime Result(0.0);
   SYSTEMTIME SystemTime;
   ::GetLocalTime(&SystemTime);
-  Result = EncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay) +
-    EncodeTime(SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds);
+  Result = Sysutils::EncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay) +
+    Sysutils::EncodeTime(SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds);
   return Result;
 }
 
@@ -1327,7 +1327,7 @@ void TStream::ReadBuffer(void * Buffer, int64_t Count)
 {
   if ((Count != 0) && (Read(Buffer, Count) != Count))
   {
-    throw Exception(FMTLOAD(SReadError));
+    throw Sysutils::Exception(FMTLOAD(SReadError));
   }
 }
 
@@ -1335,7 +1335,7 @@ void TStream::WriteBuffer(const void * Buffer, int64_t Count)
 {
   if ((Count != 0) && (Write(Buffer, Count) != Count))
   {
-    throw Exception(FMTLOAD(SWriteError));
+    throw Sysutils::Exception(FMTLOAD(SWriteError));
   }
 }
 
@@ -1359,7 +1359,7 @@ THandleStream::~THandleStream()
 
 int64_t THandleStream::Read(void * Buffer, int64_t Count)
 {
-  int64_t Result = ::FileRead(FHandle, Buffer, Count);
+  int64_t Result = Sysutils::FileRead(FHandle, Buffer, Count);
   if (Result == -1)
   {
     Result = 0;
@@ -1369,7 +1369,7 @@ int64_t THandleStream::Read(void * Buffer, int64_t Count)
 
 int64_t THandleStream::Write(const void * Buffer, int64_t Count)
 {
-  int64_t Result = ::FileWrite(FHandle, Buffer, Count);
+  int64_t Result = Sysutils::FileWrite(FHandle, Buffer, Count);
   if (Result == -1)
   {
     Result = 0;
@@ -1379,7 +1379,7 @@ int64_t THandleStream::Write(const void * Buffer, int64_t Count)
 
 int64_t THandleStream::Seek(int64_t Offset, int Origin)
 {
-  int64_t Result = ::FileSeek(FHandle, Offset, Origin);
+  int64_t Result = Sysutils::FileSeek(FHandle, Offset, Origin);
   return Result;
 }
 
@@ -1408,7 +1408,7 @@ void THandleStream::SetSize(const int64_t NewSize)
   // li.QuadPart = size;
   // if (SetFilePointer(fh.get(), li.LowPart, &li.HighPart, FILE_BEGIN) == -1)
   // handleLastErrorImpl(_path);
-  ::Win32Check(::SetEndOfFile(FHandle) > 0);
+  Sysutils::Win32Check(::SetEndOfFile(FHandle) > 0);
 }
 
 //---------------------------------------------------------------------------
@@ -1955,7 +1955,7 @@ int TRegistry::GetData(const UnicodeString & Name, void * Buffer,
   if (RegQueryValueEx(GetCurrentKey(), Name.c_str(), nullptr, &DataType,
     reinterpret_cast<BYTE *>(Buffer), &bufSize) != ERROR_SUCCESS)
   {
-    throw Exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
+    throw Sysutils::Exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
   RegData = DataTypeToRegData(DataType);
   int Result = static_cast<int>(BufSize);
@@ -1969,7 +1969,7 @@ void TRegistry::PutData(const UnicodeString & Name, const void * Buffer,
   if (RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType,
                     reinterpret_cast<const BYTE *>(Buffer), static_cast<DWORD>(BufSize)) != ERROR_SUCCESS)
   {
-    throw Exception("RegSetValueEx failed");    // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
+    throw Sysutils::Exception("RegSetValueEx failed");    // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
   }
 }
 
@@ -2077,7 +2077,7 @@ bool TShortCut::operator < (const TShortCut & rhs) const
 
 //---------------------------------------------------------------------------
 
-void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
+void GetLocaleFormatSettings(int LCID, Sysutils::TFormatSettings & FormatSettings)
 {
   (void)LCID;
   (void)FormatSettings;

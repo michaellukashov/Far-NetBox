@@ -7,12 +7,12 @@
 #include <SysInit.hpp>
 #include <System.hpp>
 //---------------------------------------------------------------------------
-bool ShouldDisplayException(Exception * E);
-bool ExceptionMessage(const Exception * E, UnicodeString & Message);
-bool ExceptionMessageFormatted(const Exception * E, UnicodeString & Message);
+bool ShouldDisplayException(Sysutils::Exception * E);
+bool ExceptionMessage(const Sysutils::Exception * E, UnicodeString & Message);
+bool ExceptionMessageFormatted(const Sysutils::Exception * E, UnicodeString & Message);
 UnicodeString LastSysErrorMessage();
-TStrings * ExceptionToMoreMessages(Exception * E);
-bool IsInternalException(const Exception* E);
+TStrings * ExceptionToMoreMessages(Sysutils::Exception * E);
+bool IsInternalException(const Sysutils::Exception * E);
 //---------------------------------------------------------------------------
 enum TOnceDoneOperation
 {
@@ -129,16 +129,16 @@ public:
   TOnceDoneOperation Operation;
 };
 //---------------------------------------------------------------------------
-class ECallbackGuardAbort : public EAbort
+class ECallbackGuardAbort : public Sysutils::EAbort
 {
 NB_DECLARE_CLASS(ECallbackGuardAbort)
 public:
   ECallbackGuardAbort();
 };
 //---------------------------------------------------------------------------
-Exception * CloneException(Exception * Exception);
-void RethrowException(Exception * E);
-UnicodeString GetExceptionHelpKeyword(Exception * E);
+Sysutils::Exception * CloneException(Sysutils::Exception * Exception);
+void RethrowException(Sysutils::Exception * E);
+UnicodeString GetExceptionHelpKeyword(Sysutils::Exception * E);
 UnicodeString MergeHelpKeyword(const UnicodeString & PrimaryHelpKeyword, const UnicodeString & SecondaryHelpKeyword);
 bool IsInternalErrorHelpKeyword(const UnicodeString & HelpKeyword);
 //---------------------------------------------------------------------------

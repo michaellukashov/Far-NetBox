@@ -17,6 +17,8 @@
 #endif
 //---------------------------------------------------------------------------
 #define MAX_BUFSIZE 128 * 1024
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 struct TPuttyTranslation
 {
@@ -721,11 +723,11 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 
   Name = Name.Trim();
 
-  UnicodeString Instructions2 = ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
-  Instructions2 = ReplaceStrAll(Instructions2, L"\x0A\x0D", L"\x01");
-  Instructions2 = ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
-  Instructions2 = ReplaceStrAll(Instructions2, L"\x0D", L"\x01");
-  Instructions2 = ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
+  UnicodeString Instructions2 = Sysutils::ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
+  Instructions2 = Sysutils::ReplaceStrAll(Instructions2, L"\x0A\x0D", L"\x01");
+  Instructions2 = Sysutils::ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
+  Instructions2 = Sysutils::ReplaceStrAll(Instructions2, L"\x0D", L"\x01");
+  Instructions2 = Sysutils::ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
   if (InstructionTranslation != nullptr)
   {
     TranslatePuttyMessage(InstructionTranslation, 1, Instructions2);
@@ -1063,7 +1065,7 @@ UnicodeString TSecureShell::ReceiveLine()
   // We don't want end-of-line character
   Line.SetLength(Line.Length() - 1);
 
-  UnicodeString UnicodeLine = ::TrimRight(MB2W(Line.c_str(), (UINT)FSessionData->GetCodePageAsNumber()));
+  UnicodeString UnicodeLine = Sysutils::TrimRight(MB2W(Line.c_str(), (UINT)FSessionData->GetCodePageAsNumber()));
   CaptureOutput(llOutput, UnicodeLine);
   return UnicodeLine;
 }
@@ -1209,7 +1211,7 @@ void TSecureShell::SendNull()
 void TSecureShell::SendStr(const UnicodeString & Str)
 {
   CheckConnection();
-  AnsiString AnsiStr = W2MB(Str.c_str(), (UINT)FSessionData->GetCodePageAsNumber());
+  AnsiString AnsiStr = Sysutils::W2MB(Str.c_str(), (UINT)FSessionData->GetCodePageAsNumber());
   Send(reinterpret_cast<const uint8_t *>(AnsiStr.c_str()), AnsiStr.Length());
 }
 //---------------------------------------------------------------------------
@@ -2075,10 +2077,10 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   AnsiString AnsiStoredKeys(10240, '\0');
 
   if (retrieve_host_key(
-        W2MB(Host2.c_str(),
+        Sysutils::W2MB(Host2.c_str(),
              static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
         Port,
-        W2MB(KeyType.c_str(),
+        Sysutils::W2MB(KeyType.c_str(),
              static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
         const_cast<char *>(AnsiStoredKeys.c_str()), (int)AnsiStoredKeys.Length()) == 0)
   {

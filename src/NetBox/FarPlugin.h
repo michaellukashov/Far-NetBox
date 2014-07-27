@@ -115,7 +115,7 @@ public:
   virtual intptr_t PutFiles(const struct PutFilesInfo *Info);
   virtual intptr_t ProcessEditorEvent(const struct ProcessEditorEventInfo *Info);
   virtual intptr_t ProcessEditorInput(const struct ProcessEditorInputInfo *Info);
-  virtual void HandleException(Exception * E, int OpMode = 0);
+  virtual void HandleException(Sysutils::Exception * E, int OpMode = 0);
 
   static wchar_t * DuplicateStr(const UnicodeString & Str, bool AllowEmpty = false);
   intptr_t Message(uintptr_t Flags, const UnicodeString & Title,
@@ -187,7 +187,7 @@ protected:
   HANDLE FConsoleOutput;
   intptr_t FFarVersion;
   bool FTerminalScreenShowing;
-  TCriticalSection FCriticalSection;
+  Sysutils::TCriticalSection FCriticalSection;
   uintptr_t FFarThread;
   bool FValidFarSystemSettings;
   intptr_t FFarSystemSettings;
@@ -202,7 +202,7 @@ protected:
   virtual intptr_t ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info) = 0;
   virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD * Rec) = 0;
   virtual void HandleFileSystemException(TCustomFarFileSystem * FarFileSystem,
-    Exception * E, int OpMode = 0);
+    Sysutils::Exception * E, int OpMode = 0);
   void ResetCachedInfo();
   intptr_t MaxLength(TStrings * Strings);
   intptr_t FarMessage(unsigned int Flags,
@@ -213,7 +213,7 @@ protected:
     TFarMessageParams * Params);
   void InvalidateOpenPanelInfo();
 
-  const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
+  const Sysutils::TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
 
 #ifdef NETBOX_DEBUG
 public:
@@ -304,18 +304,18 @@ protected:
   bool IsLeft();
   bool IsRight();
 
-  virtual void HandleException(Exception * E, int OpMode = 0);
+  virtual void HandleException(Sysutils::Exception * E, int OpMode = 0);
 
   const TFarPanelInfo * GetPanelInfo() const { return GetPanelInfo(0); }
   TFarPanelInfo * GetPanelInfo() { return GetPanelInfo(0); }
   const TFarPanelInfo * GetAnotherPanelInfo() const { return GetPanelInfo(1); }
   TFarPanelInfo * GetAnotherPanelInfo() { return GetPanelInfo(1); }
-  const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
-  TCriticalSection & GetCriticalSection() { return FCriticalSection; }
+  const Sysutils::TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
+  Sysutils::TCriticalSection & GetCriticalSection() { return FCriticalSection; }
   bool GetOpenPanelInfoValid() const { return FOpenPanelInfoValid; }
 
 protected:
-  TCriticalSection FCriticalSection;
+  Sysutils::TCriticalSection FCriticalSection;
   void InvalidateOpenPanelInfo();
 
 private:

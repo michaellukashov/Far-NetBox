@@ -427,7 +427,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
           {
             Result = I->ItemProc(Msg, Param2);
           }
-          catch (Exception & E)
+          catch (Sysutils::Exception & E)
           {
             Handled = true;
             DEBUG_PRINTF(L"before GetFarPlugin()->HandleException");
@@ -543,7 +543,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
       Change();
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before GetFarPlugin()->HandleException");
     GetFarPlugin()->HandleException(&E);
@@ -1760,7 +1760,7 @@ void TFarButton::SetDataInternal(const UnicodeString & Value)
         Margin = 2;
         break;
     }
-    SetWidth(Margin + StripHotkey(AValue).GetLength() + Margin);
+    SetWidth(Margin + Sysutils::StripHotkey(AValue).GetLength() + Margin);
   }
 }
 //---------------------------------------------------------------------------
@@ -1904,7 +1904,7 @@ void TFarCheckBox::SetData(const UnicodeString & Value)
   TFarDialogItem::SetData(Value);
   if (GetLeft() >= 0 || GetRight() >= 0)
   {
-    SetWidth(4 + StripHotkey(Value).Length());
+    SetWidth(4 + Sysutils::StripHotkey(Value).Length());
   }
 }
 //---------------------------------------------------------------------------
@@ -1949,7 +1949,7 @@ void TFarRadioButton::SetData(const UnicodeString & Value)
   TFarDialogItem::SetData(Value);
   if (GetLeft() >= 0 || GetRight() >= 0)
   {
-    SetWidth(4 + StripHotkey(Value).Length());
+    SetWidth(4 + Sysutils::StripHotkey(Value).Length());
   }
 }
 //---------------------------------------------------------------------------
@@ -2029,14 +2029,14 @@ void TFarEdit::SetAsInteger(intptr_t Value)
   intptr_t Int = GetAsInteger();
   if (!Int || (Int != Value))
   {
-    SetText(::IntToStr(Value));
+    SetText(Sysutils::IntToStr(Value));
     DialogChange();
   }
 }
 //---------------------------------------------------------------------------
 intptr_t TFarEdit::GetAsInteger()
 {
-  return ::StrToIntDef(::Trim(GetText()), 0);
+  return Sysutils::StrToIntDef(Sysutils::Trim(GetText()), 0);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2095,7 +2095,7 @@ void TFarText::SetData(const UnicodeString & Value)
   TFarDialogItem::SetData(Value);
   if (GetLeft() >= 0 || GetRight() >= 0)
   {
-    SetWidth(StripHotkey(Value).Length());
+    SetWidth(Sysutils::StripHotkey(Value).Length());
   }
 }
 //---------------------------------------------------------------------------
@@ -2616,7 +2616,7 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
         UnicodeString Value = GetItems()->GetString(Index).SubString(1, DisplayWidth - 1);
         Buf += Value;
       }
-      UnicodeString Value = ::StringOfChar(' ', DisplayWidth - Buf.Length());
+      UnicodeString Value = Sysutils::StringOfChar(' ', DisplayWidth - Buf.Length());
       Value.SetLength(DisplayWidth - Buf.Length());
       Buf += Value;
       if (AScrollBar)

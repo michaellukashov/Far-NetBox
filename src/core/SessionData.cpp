@@ -15,6 +15,8 @@
 #include "PuttyIntf.h"
 #include "RemoteFiles.h"
 #include "SFTPFileSystem.h"
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 enum TProxyType
 {
@@ -242,7 +244,7 @@ void TSessionData::Default()
   SetFtpAllowEmptyPassword(false);
 
   FNumberOfRetries = 0;
-  FSessionVersion = ::StrToVersionNumber(GetGlobalFunctions()->GetStrVersionNumber());
+  FSessionVersion = Sysutils::StrToVersionNumber(GetGlobalFunctions()->GetStrVersionNumber());
   // add also to TSessionLog::AddStartupInfo()
 }
 //---------------------------------------------------------------------
@@ -462,12 +464,12 @@ bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly) const
 //---------------------------------------------------------------------
 bool TSessionData::IsInFolderOrWorkspace(const UnicodeString & AFolder) const
 {
-  return StartsText(::UnixIncludeTrailingBackslash(AFolder), GetName());
+  return Sysutils::StartsText(core::UnixIncludeTrailingBackslash(AFolder), GetName());
 }
 //---------------------------------------------------------------------
 void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword)
 {
-  SetSessionVersion(::StrToVersionNumber(Storage->ReadString(L"Version", L"")));
+  SetSessionVersion(Sysutils::StrToVersionNumber(Storage->ReadString(L"Version", L"")));
   // Make sure we only ever use methods supported by TOptionsStorage
   // (implemented by TOptionsIniFile)
 
@@ -530,7 +532,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetRekeyData(Storage->ReadString(L"RekeyBytes", GetRekeyData()));
   SetRekeyTime(Storage->ReadInteger(L"RekeyTime", GetRekeyTime()));
 
-  if (GetSessionVersion() < GetVersionNumber2121())
+  if (GetSessionVersion() < Sysutils::GetVersionNumber2121())
   {
     SetFSProtocol(TranslateFSProtocolNumber(Storage->ReadInteger(L"FSProtocol", GetFSProtocol())));
   }
@@ -1575,8 +1577,8 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       if ((ARemoteDirectory[ARemoteDirectory.Length()] != L'/') &&
           (FileName != nullptr))
       {
-        *FileName = DecodeUrlChars(::UnixExtractFileName(ARemoteDirectory));
-        ARemoteDirectory = ::UnixExtractFilePath(ARemoteDirectory);
+        *FileName = DecodeUrlChars(core::UnixExtractFileName(ARemoteDirectory));
+        ARemoteDirectory = core::UnixExtractFilePath(ARemoteDirectory);
       }
       SetRemoteDirectory(DecodeUrlChars(ARemoteDirectory));
     }
@@ -3026,7 +3028,7 @@ UnicodeString TSessionData::GetFolderName() const
 UnicodeString TSessionData::ComposePath(
   const UnicodeString & Path, const UnicodeString & Name)
 {
-  return ::UnixIncludeTrailingBackslash(Path) + Name;
+  return core::UnixIncludeTrailingBackslash(Path) + Name;
 }
 //---------------------------------------------------------------------
 TLoginType TSessionData::GetLoginType() const

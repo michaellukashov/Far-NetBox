@@ -164,15 +164,15 @@ void TLoopDetector::RecordVisitedDirectory(const UnicodeString & Directory)
 bool TLoopDetector::IsUnvisitedDirectory(const TRemoteFile * File)
 {
   assert(File->GetIsDirectory());
-  UnicodeString Directory = ::UnixExcludeTrailingBackslash(File->GetFullFileName());
+  UnicodeString Directory = core::UnixExcludeTrailingBackslash(File->GetFullFileName());
   bool Result = (FVisitedDirectories->IndexOf(Directory) < 0);
   if (Result)
   {
     if (File->GetIsSymLink())
     {
-      UnicodeString BaseDirectory = ::UnixExtractFileDir(Directory);
+      UnicodeString BaseDirectory = core::UnixExtractFileDir(Directory);
       UnicodeString SymlinkDirectory =
-        ::UnixExcludeTrailingBackslash(AbsolutePath(BaseDirectory, File->GetLinkTo()));
+        core::UnixExcludeTrailingBackslash(core::AbsolutePath(BaseDirectory, File->GetLinkTo()));
       Result = (FVisitedDirectories->IndexOf(SymlinkDirectory) < 0);
     }
   }
@@ -799,18 +799,18 @@ UnicodeString TTerminal::ExpandFileName(const UnicodeString & Path,
   const UnicodeString & BasePath)
 {
   // replace this by AbsolutePath()
-  UnicodeString Result = ::UnixExcludeTrailingBackslash(Path);
-  if (!::UnixIsAbsolutePath(Result) && !BasePath.IsEmpty())
+  UnicodeString Result = core::UnixExcludeTrailingBackslash(Path);
+  if (!core::UnixIsAbsolutePath(Result) && !BasePath.IsEmpty())
   {
     // TODO: Handle more complicated cases like "../../xxx"
     if (Result == PARENTDIRECTORY)
     {
-      Result = ::UnixExcludeTrailingBackslash(::UnixExtractFilePath(
-        ::UnixExcludeTrailingBackslash(BasePath)));
+      Result = core::UnixExcludeTrailingBackslash(core::UnixExtractFilePath(
+        core::UnixExcludeTrailingBackslash(BasePath)));
     }
     else
     {
-      Result = ::UnixIncludeTrailingBackslash(BasePath) + Path;
+      Result = core::UnixIncludeTrailingBackslash(BasePath) + Path;
     }
   }
   return Result;
@@ -1783,7 +1783,7 @@ UnicodeString TTerminal::TranslateLockedPath(const UnicodeString & Path, bool Lo
     }
     else
     {
-      Result = ::UnixExcludeTrailingBackslash(FLockDirectory + Result);
+      Result = core::UnixExcludeTrailingBackslash(FLockDirectory + Result);
     }
   }
   return Result;
@@ -1817,7 +1817,7 @@ bool TTerminal::DirectoryFileList(const UnicodeString & Path,
   TRemoteFileList *& FileList, bool CanLoad)
 {
   bool Result = false;
-  if (::UnixSamePath(FFiles->GetDirectory(), Path))
+  if (core::UnixSamePath(FFiles->GetDirectory(), Path))
   {
     Result = (FileList == nullptr) || (FileList->GetTimestamp() < FFiles->GetTimestamp());
     if (Result)
@@ -2313,7 +2313,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & AFileName,
     if (Msg.IsEmpty())
     {
       // Side refers to destination side here
-      UnicodeString FileNameOnly = (Side == osRemote) ? ::ExtractFileName(AFileName, false) : ::UnixExtractFileName(AFileName);
+      UnicodeString FileNameOnly = (Side == osRemote) ? core::ExtractFileName(AFileName, false) : core::UnixExtractFileName(AFileName);
       Msg = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE2 :
         REMOTE_FILE_OVERWRITE2), FileNameOnly.c_str(), AFileName.c_str());
     }
@@ -2321,9 +2321,9 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & AFileName,
     {
       Msg = FMTLOAD(FILE_OVERWRITE_DETAILS, Msg.c_str(),
         Int64ToStr(FileParams->SourceSize).c_str(),
-        UserModificationStr(FileParams->SourceTimestamp, FileParams->SourcePrecision).c_str(),
+        core::UserModificationStr(FileParams->SourceTimestamp, FileParams->SourcePrecision).c_str(),
         Int64ToStr(FileParams->DestSize).c_str(),
-        UserModificationStr(FileParams->DestTimestamp, FileParams->DestPrecision).c_str());
+        core::UserModificationStr(FileParams->DestTimestamp, FileParams->DestPrecision).c_str());
     }
     if (ALWAYS_TRUE(QueryParams->HelpKeyword.IsEmpty()))
     {
@@ -2379,11 +2379,11 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & AFileName,
         }
         else
         {
-          TModificationFmt Precision = LessDateTimePrecision(FileParams->SourcePrecision, FileParams->DestPrecision);
+          TModificationFmt Precision = core::LessDateTimePrecision(FileParams->SourcePrecision, FileParams->DestPrecision);
           TDateTime ReducedSourceTimestamp =
-            ReduceDateTimePrecision(FileParams->SourceTimestamp, Precision);
+            core::ReduceDateTimePrecision(FileParams->SourceTimestamp, Precision);
           TDateTime ReducedDestTimestamp =
-            ReduceDateTimePrecision(FileParams->DestTimestamp, Precision);
+            core::ReduceDateTimePrecision(FileParams->DestTimestamp, Precision);
 
           Result = CompareFileTime(ReducedSourceTimestamp, ReducedDestTimestamp) > 0 ? qaYes : qaNo;
 
@@ -2430,7 +2430,7 @@ void TTerminal::FileModified(const TRemoteFile * AFile,
     }
     else if (!AFileName.IsEmpty())
     {
-      ParentDirectory = ::UnixExtractFilePath(AFileName);
+      ParentDirectory = core::UnixExtractFilePath(AFileName);
       if (ParentDirectory.IsEmpty())
       {
         ParentDirectory = GetCurrentDirectory();
@@ -2439,8 +2439,8 @@ void TTerminal::FileModified(const TRemoteFile * AFile,
       // this case for scripting
       if ((AFile != nullptr) && AFile->GetIsDirectory())
       {
-        Directory = ::UnixIncludeTrailingBackslash(ParentDirectory) +
-          ::UnixExtractFileName(AFile->GetFileName());
+        Directory = core::UnixIncludeTrailingBackslash(ParentDirectory) +
+          core::UnixExtractFileName(AFile->GetFileName());
       }
     }
   }
@@ -2521,8 +2521,8 @@ void TTerminal::RefreshDirectory()
 void TTerminal::EnsureNonExistence(const UnicodeString & AFileName)
 {
   // if filename doesn't contain path, we check for existence of file
-  if ((::UnixExtractFileDir(AFileName).IsEmpty()) &&
-      ::UnixSamePath(GetCurrentDirectory(), FFiles->GetDirectory()))
+  if ((core::UnixExtractFileDir(AFileName).IsEmpty()) &&
+      core::UnixSamePath(GetCurrentDirectory(), FFiles->GetDirectory()))
   {
     TRemoteFile * File = FFiles->FindFile(AFileName);
     if (File)
@@ -2908,7 +2908,7 @@ void TTerminal::ProcessDirectory(const UnicodeString & ADirName,
   // skip if directory listing fails and user selects "skip"
   if (FileList.get())
   {
-    UnicodeString Directory = ::UnixIncludeTrailingBackslash(ADirName);
+    UnicodeString Directory = core::UnixIncludeTrailingBackslash(ADirName);
 
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
@@ -3158,12 +3158,12 @@ bool TTerminal::IsRecycledFile(const UnicodeString & AFileName)
   bool Result = !GetSessionData()->GetRecycleBinPath().IsEmpty();
   if (Result)
   {
-    UnicodeString Path = ::UnixExtractFilePath(AFileName);
+    UnicodeString Path = core::UnixExtractFilePath(AFileName);
     if (Path.IsEmpty())
     {
       Path = GetCurrentDirectory();
     }
-    Result = ::UnixSamePath(Path, GetSessionData()->GetRecycleBinPath());
+    Result = core::UnixSamePath(Path, GetSessionData()->GetRecycleBinPath());
   }
   return Result;
 }
@@ -3540,7 +3540,7 @@ void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
     MaskParams.Modification = AFile->GetModification();
 
     AllowTransfer = AParams->CopyParam->AllowTransfer(
-      ::UnixExcludeTrailingBackslash(AFile->GetFullFileName()), osRemote, AFile->GetIsDirectory(),
+      core::UnixExcludeTrailingBackslash(AFile->GetFullFileName()), osRemote, AFile->GetIsDirectory(),
       MaskParams);
   }
 
@@ -3647,7 +3647,7 @@ void TTerminal::TerminalRenameFile(const TRemoteFile * File,
   // if filename doesn't contain path, we check for existence of file
   if ((File->GetFileName() != NewName) && CheckExistence &&
       FConfiguration->GetConfirmOverwriting() &&
-      ::UnixSamePath(GetCurrentDirectory(), FFiles->GetDirectory()))
+      core::UnixSamePath(GetCurrentDirectory(), FFiles->GetDirectory()))
   {
     TRemoteFile * DuplicateFile = FFiles->FindFile(NewName);
     if (DuplicateFile)
@@ -3720,8 +3720,8 @@ void TTerminal::MoveFile(const UnicodeString & AFileName,
 
   assert(Param != nullptr);
   const TMoveFileParams & Params = *NB_STATIC_DOWNCAST_CONST(TMoveFileParams, Param);
-  UnicodeString NewName = ::UnixIncludeTrailingBackslash(Params.Target) +
-    MaskFileName(::UnixExtractFileName(AFileName), Params.FileMask);
+  UnicodeString NewName = core::UnixIncludeTrailingBackslash(Params.Target) +
+    MaskFileName(core::UnixExtractFileName(AFileName), Params.FileMask);
   LogEvent(FORMAT(L"Moving file \"%s\" to \"%s\".", AFileName.c_str(), NewName.c_str()));
   FileModified(File, AFileName);
   DoRenameFile(AFileName, NewName, true);
@@ -3742,7 +3742,7 @@ bool TTerminal::MoveFiles(TStrings * FileList, const UnicodeString & Target,
     {
       if (GetActive())
       {
-        UnicodeString WithTrailing = ::UnixIncludeTrailingBackslash(this->GetCurrentDirectory());
+        UnicodeString WithTrailing = core::UnixIncludeTrailingBackslash(this->GetCurrentDirectory());
         bool PossiblyMoved = false;
         // check if we was moving current directory.
         // this is just optimization to avoid checking existence of current
@@ -3771,9 +3771,9 @@ bool TTerminal::MoveFiles(TStrings * FileList, const UnicodeString & Target,
           UnicodeString NearestExisting = CurrentDirectory;
           do
           {
-            NearestExisting = ::UnixExtractFileDir(NearestExisting);
+            NearestExisting = core::UnixExtractFileDir(NearestExisting);
           }
-          while (!::IsUnixRootPath(NearestExisting) && !FileExists(NearestExisting));
+          while (!core::IsUnixRootPath(NearestExisting) && !FileExists(NearestExisting));
 
           ChangeDirectory(NearestExisting);
         }
@@ -3828,8 +3828,8 @@ void TTerminal::CopyFile(const UnicodeString & AFileName,
 
   assert(Param != nullptr);
   const TMoveFileParams & Params = *NB_STATIC_DOWNCAST_CONST(TMoveFileParams, Param);
-  UnicodeString NewName = ::UnixIncludeTrailingBackslash(Params.Target) +
-    MaskFileName(::UnixExtractFileName(AFileName), Params.FileMask);
+  UnicodeString NewName = core::UnixIncludeTrailingBackslash(Params.Target) +
+    MaskFileName(core::UnixExtractFileName(AFileName), Params.FileMask);
   LogEvent(FORMAT(L"Copying file \"%s\" to \"%s\".", AFileName.c_str(), NewName.c_str()));
   DoCopyFile(AFileName, NewName);
   ReactOnCommand(fsCopyFile);
@@ -3933,7 +3933,7 @@ void TTerminal::HomeDirectory()
 //------------------------------------------------------------------------------
 void TTerminal::ChangeDirectory(const UnicodeString & Directory)
 {
-  UnicodeString DirectoryNormalized = ::ToUnixPath(Directory);
+  UnicodeString DirectoryNormalized = core::ToUnixPath(Directory);
   assert(FFileSystem);
   try
   {
@@ -4607,8 +4607,8 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
   TSynchronizeData Data;
 
-  Data.LocalDirectory = ::IncludeTrailingBackslash(LocalDirectory);
-  Data.RemoteDirectory = ::UnixIncludeTrailingBackslash(ARemoteDirectory);
+  Data.LocalDirectory = Sysutils::IncludeTrailingBackslash(LocalDirectory);
+  Data.RemoteDirectory = core::UnixIncludeTrailingBackslash(ARemoteDirectory);
   Data.Mode = Mode;
   Data.Params = Params;
   Data.OnSynchronizeDirectory = OnSynchronizeDirectory;
@@ -4823,7 +4823,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
   UnicodeString LocalFileName =
     Data->CopyParam->ChangeFileName(AFile->GetFileName(), osRemote, false);
   UnicodeString FullRemoteFileName =
-    ::UnixExcludeTrailingBackslash(AFile->GetFullFileName());
+    core::UnixExcludeTrailingBackslash(AFile->GetFullFileName());
   if (Data->CopyParam->AllowTransfer(
         FullRemoteFileName, osRemote,
         AFile->GetIsDirectory(), MaskParams) &&
@@ -4863,7 +4863,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
         ChecklistItem->Local = LocalData->Info;
 
         ChecklistItem->Local.Modification =
-          ReduceDateTimePrecision(ChecklistItem->Local.Modification, AFile->GetModificationFmt());
+          core::ReduceDateTimePrecision(ChecklistItem->Local.Modification, AFile->GetModificationFmt());
 
         bool LocalModified = false;
         // for spTimestamp+spBySize require that the file sizes are the same
@@ -5070,7 +5070,7 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
             {
               case saDownloadUpdate:
                 DownloadList->AddObject(
-                  ::UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) +
+                  core::UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) +
                     ChecklistItem->Remote.FileName,
                   const_cast<TChecklistItem *>(ChecklistItem));
                 break;
@@ -5094,14 +5094,14 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
               case saDownloadNew:
               case saDownloadUpdate:
                 DownloadList->AddObject(
-                  ::UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) +
+                  core::UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) +
                     ChecklistItem->Remote.FileName,
                   ChecklistItem->RemoteFile);
                 break;
 
               case saDeleteRemote:
                 DeleteRemoteList->AddObject(
-                  ::UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) +
+                  core::UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) +
                     ChecklistItem->Remote.FileName,
                   ChecklistItem->RemoteFile);
                 break;
@@ -5131,8 +5131,8 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
       // prevent showing/updating of progress dialog if there's nothing to do
       if (Count > 0)
       {
-        Data.LocalDirectory = ::IncludeTrailingBackslash(CurrentLocalDirectory);
-        Data.RemoteDirectory = ::UnixIncludeTrailingBackslash(CurrentRemoteDirectory);
+        Data.LocalDirectory = Sysutils::IncludeTrailingBackslash(CurrentLocalDirectory);
+        Data.RemoteDirectory = core::UnixIncludeTrailingBackslash(CurrentRemoteDirectory);
         DoSynchronizeProgress(Data, false);
 
         if (FLAGSET(Params, spTimestamp))
@@ -5224,7 +5224,7 @@ void TTerminal::SynchronizeRemoteTimestamp(const UnicodeString & /*AFileName*/,
     GetSessionData()->GetDSTMode());
 
   ChangeFileProperties(
-    ::UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) + ChecklistItem->Remote.FileName,
+    core::UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) + ChecklistItem->Remote.FileName,
     nullptr, &Properties);
 }
 //------------------------------------------------------------------------------
@@ -5250,7 +5250,7 @@ void TTerminal::FileFind(const UnicodeString & AFileName,
     MaskParams.Size = AFile->GetSize();
     MaskParams.Modification = AFile->GetModification();
 
-    UnicodeString FullFileName = ::UnixExcludeTrailingBackslash(AFile->GetFullFileName());
+    UnicodeString FullFileName = core::UnixExcludeTrailingBackslash(AFile->GetFullFileName());
     bool ImplicitMatch = false;
     if (AParams->FileMask.Matches(FullFileName, false,
          AFile->GetIsDirectory(), &MaskParams, ImplicitMatch))

@@ -475,7 +475,7 @@ public:
   void RemoveProtocolPrefix(UnicodeString & HostName) const;
 
 private:
-  uintptr_t GetDefaultVersion() const { return ::GetCurrentVersionNumber(); }
+  uintptr_t GetDefaultVersion() const { return Sysutils::GetCurrentVersionNumber(); }
   TFSProtocol TranslateFSProtocolNumber(intptr_t FSProtocol);
   TFSProtocol TranslateFSProtocol(const UnicodeString & ProtocolID);
   TFtps TranslateFtpEncryptionNumber(intptr_t FtpEncryption);

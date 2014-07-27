@@ -5,6 +5,8 @@
 #include <Common.h>
 #include "Option.h"
 #include "TextsCore.h"
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 TOptions::TOptions() :
   FSwitchMarks(L"-/"),
@@ -123,7 +125,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
     }
     else if (FOptions[Index].Type == otSwitch)
     {
-      if (AnsiSameText(FOptions[Index].Name, Switch))
+      if (Sysutils::AnsiSameText(FOptions[Index].Name, Switch))
       {
         Found = true;
         Value = FOptions[Index].Value;
@@ -216,15 +218,15 @@ bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default, bool Defa
   {
     Result = Default;
   }
-  else if (SameText(Value, "on"))
+  else if (Sysutils::SameText(Value, "on"))
   {
     Result = true;
   }
-  else if (SameText(Value, "off"))
+  else if (Sysutils::SameText(Value, "off"))
   {
     Result = false;
   }
-  else if (TryStrToInt(Value, IntValue))
+  else if (Sysutils::TryStrToInt(Value, IntValue))
   {
     Result = (IntValue != 0);
   }

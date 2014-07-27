@@ -7,6 +7,8 @@
 #include "CopyParam.h"
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 TCopyParamType::TCopyParamType()
 {

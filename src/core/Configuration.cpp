@@ -14,6 +14,8 @@
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
 #include <shlobj.h>
+
+using namespace Sysutils;
 //---------------------------------------------------------------------------
 TConfiguration::TConfiguration() :
   FDontSave(false),
@@ -69,7 +71,7 @@ TConfiguration::TConfiguration() :
     }
   }
 
-  FDefaultRandomSeedFile = ::IncludeTrailingBackslash(RandomSeedPath) + L"winscp.rnd";
+  FDefaultRandomSeedFile = Sysutils::IncludeTrailingBackslash(RandomSeedPath) + L"winscp.rnd";
 }
 //---------------------------------------------------------------------------
 void TConfiguration::Default()
@@ -899,7 +901,7 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
     {
       UnicodeString AppDataIniPath =
         IncludeTrailingBackslash(GetShellFolderPath(CSIDL_APPDATA)) +
-        ExtractFileName(ProgramIniPath);
+        Sysutils::ExtractFileName(ProgramIniPath);
       if (::FileExists(ApiPath(AppDataIniPath)))
       {
         IniPath = AppDataIniPath;
