@@ -227,7 +227,7 @@ void TFileOperationProgressType::SetFile(const UnicodeString & AFileName, bool A
     // historically set were passing filename-only for remote site operations,
     // now we need to collect a full paths, so we pass in full path,
     // but still want to have filename-only in FileName
-    FileName = ::UnixExtractFileName(FileName);
+    FileName = core::UnixExtractFileName(FileName);
   }
   FileInProgress = AFileInProgress;
   ClearTransfer();

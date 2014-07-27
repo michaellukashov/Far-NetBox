@@ -462,7 +462,7 @@ bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly) const
 //---------------------------------------------------------------------
 bool TSessionData::IsInFolderOrWorkspace(const UnicodeString & AFolder) const
 {
-  return StartsText(::UnixIncludeTrailingBackslash(AFolder), GetName());
+  return StartsText(core::UnixIncludeTrailingBackslash(AFolder), GetName());
 }
 //---------------------------------------------------------------------
 void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword)
@@ -1575,8 +1575,8 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       if ((ARemoteDirectory[ARemoteDirectory.Length()] != L'/') &&
           (FileName != nullptr))
       {
-        *FileName = DecodeUrlChars(::UnixExtractFileName(ARemoteDirectory));
-        ARemoteDirectory = ::UnixExtractFilePath(ARemoteDirectory);
+        *FileName = DecodeUrlChars(core::UnixExtractFileName(ARemoteDirectory));
+        ARemoteDirectory = core::UnixExtractFilePath(ARemoteDirectory);
       }
       SetRemoteDirectory(DecodeUrlChars(ARemoteDirectory));
     }
@@ -3026,7 +3026,7 @@ UnicodeString TSessionData::GetFolderName() const
 UnicodeString TSessionData::ComposePath(
   const UnicodeString & Path, const UnicodeString & Name)
 {
-  return ::UnixIncludeTrailingBackslash(Path) + Name;
+  return core::UnixIncludeTrailingBackslash(Path) + Name;
 }
 //---------------------------------------------------------------------
 TLoginType TSessionData::GetLoginType() const

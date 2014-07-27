@@ -474,7 +474,7 @@ void TSCPFileSystem::Idle()
 //---------------------------------------------------------------------------
 UnicodeString TSCPFileSystem::AbsolutePath(const UnicodeString & Path, bool /*Local*/)
 {
-  return ::AbsolutePath(GetCurrentDirectory(), Path);
+  return core::AbsolutePath(GetCurrentDirectory(), Path);
 }
 //---------------------------------------------------------------------------
 bool TSCPFileSystem::IsCapable(intptr_t Capability) const
@@ -947,7 +947,7 @@ void TSCPFileSystem::ReadCurrentDirectory()
   if (FCachedDirectoryChange.IsEmpty())
   {
     ExecCommand2(fsCurrentDirectory, 0);
-    FCurrentDirectory = ::UnixExcludeTrailingBackslash(FOutput->GetString(0));
+    FCurrentDirectory = core::UnixExcludeTrailingBackslash(FOutput->GetString(0));
   }
   else
   {
@@ -983,7 +983,7 @@ void TSCPFileSystem::ChangeDirectory(const UnicodeString & Directory)
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
 {
-  FCachedDirectoryChange = ::UnixExcludeTrailingBackslash(Directory);
+  FCachedDirectoryChange = core::UnixExcludeTrailingBackslash(Directory);
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
@@ -1052,7 +1052,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           // Empty file list -> probably "permission denied", we
           // at least get link to parent directory ("..")
           FTerminal->ReadFile(
-            ::UnixIncludeTrailingBackslash(FTerminal->FFiles->GetDirectory()) +
+            core::UnixIncludeTrailingBackslash(FTerminal->FFiles->GetDirectory()) +
               PARENTDIRECTORY, File);
           Empty = (File == nullptr);
           if (!Empty)
@@ -1454,13 +1454,13 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 
   Params &= ~(cpAppend | cpResume);
   UnicodeString Options = L"";
-  bool CheckExistence = ::UnixSamePath(TargetDir, FTerminal->GetCurrentDirectory()) &&
+  bool CheckExistence = core::UnixSamePath(TargetDir, FTerminal->GetCurrentDirectory()) &&
     (FTerminal->FFiles != nullptr) && FTerminal->FFiles->GetLoaded();
   bool CopyBatchStarted = false;
   bool Failed = true;
   bool GotLastLine = false;
 
-  UnicodeString TargetDirFull = ::UnixIncludeTrailingBackslash(TargetDir);
+  UnicodeString TargetDirFull = core::UnixIncludeTrailingBackslash(TargetDir);
 
   if (CopyParam->GetPreserveRights())
   {
@@ -1472,7 +1472,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   }
 
   SendCommand(FCommandSet->FullCommand(fsCopyToRemote,
-    Options.c_str(), DelimitStr(::UnixExcludeTrailingBackslash(TargetDir)).c_str()));
+    Options.c_str(), DelimitStr(core::UnixExcludeTrailingBackslash(TargetDir)).c_str()));
   SkipFirstLine();
 
   SCOPE_EXIT
@@ -1539,7 +1539,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
     bool CanProceed = false;
 
     UnicodeString FileNameOnly =
-      CopyParam->ChangeFileName(::ExtractFileName(RealFileName, false), osLocal, true);
+      CopyParam->ChangeFileName(core::ExtractFileName(RealFileName, false), osLocal, true);
 
     if (CheckExistence)
     {
@@ -1614,9 +1614,9 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
       {
         FTerminal->DirectoryModified(TargetDir, false);
 
-        if (DirectoryExists(::ExtractFilePath(ApiPath(FileName))))
+        if (DirectoryExists(Sysutils::ExtractFilePath(ApiPath(FileName))))
         {
-          FTerminal->DirectoryModified(::UnixIncludeTrailingBackslash(TargetDir)+
+          FTerminal->DirectoryModified(core::UnixIncludeTrailingBackslash(TargetDir)+
             FileNameOnly, true);
         }
       }
@@ -1677,7 +1677,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
 {
   UnicodeString RealFileName = File ? File->GetFileName() : AFileName;
   UnicodeString DestFileName = CopyParam->ChangeFileName(
-    ::ExtractFileName(RealFileName, false), osLocal, Level == 0);
+    core::ExtractFileName(RealFileName, false), osLocal, Level == 0);
 
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", RealFileName.c_str()));
 
@@ -1976,7 +1976,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
 
   OperationProgress->SetFile(DirectoryName);
   UnicodeString DestFileName = CopyParam->ChangeFileName(
-    ::ExtractFileName(DirectoryName, false), osLocal, Level == 0);
+    core::ExtractFileName(DirectoryName, false), osLocal, Level == 0);
 
   // Get directory attributes
   FILE_OPERATION_LOOP(FMTLOAD(CANT_GET_ATTRS, DirectoryName.c_str()),
@@ -1987,7 +1987,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
     }
   );
 
-  UnicodeString TargetDirFull = ::UnixIncludeTrailingBackslash(TargetDir + DestFileName);
+  UnicodeString TargetDirFull = core::UnixIncludeTrailingBackslash(TargetDir + DestFileName);
 
   UnicodeString Buf;
 
@@ -2151,9 +2151,9 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       // Send in full path to allow path-based excluding
       // operation succeeded (no exception), so it's ok that
       // remote side closed SCP, but we continue with next file
-      UnicodeString FullFileName = ::UnixExcludeTrailingBackslash(File->GetFullFileName());
+      UnicodeString FullFileName = core::UnixExcludeTrailingBackslash(File->GetFullFileName());
       UnicodeString TargetDirectory = TargetDir;
-      UnicodeString FileNamePath = ::ExtractFilePath(File->GetFileName());
+      UnicodeString FileNamePath = Sysutils::ExtractFilePath(File->GetFileName());
       if (!FileNamePath.IsEmpty())
       {
         TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
@@ -2168,7 +2168,7 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
 
         // Filename is used for error messaging and excluding files only
         // Send in full path to allow path-based excluding
-        SCPSink(FullFileName, File, TargetDirectory, ::UnixExtractFilePath(FullFileName),
+        SCPSink(FullFileName, File, TargetDirectory, core::UnixExtractFilePath(FullFileName),
           CopyParam, Success, OperationProgress, Params, 0);
         // operation succeeded (no exception), so it's ok that
         // remote side closed SCP, but we continue with next file
@@ -2392,7 +2392,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
           MaskParams.Size = TSize;
           // Security fix: ensure the file ends up where we asked for it.
           // (accept only filename, not path)
-          UnicodeString OnlyFileName = ::UnixExtractFileName(Line);
+          UnicodeString OnlyFileName = core::UnixExtractFileName(Line);
           if (Line != OnlyFileName)
           {
             FTerminal->LogEvent(FORMAT(L"Warning: Remote host set a compound pathname '%s'", Line.c_str()));
@@ -2458,7 +2458,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
             /* SCP: can we set the timestamp for directories ? */
           }
           UnicodeString FullFileName = SourceDir + OperationProgress->FileName;
-          SCPSink(FullFileName, nullptr, DestFileName, ::UnixIncludeTrailingBackslash(FullFileName),
+          SCPSink(FullFileName, nullptr, DestFileName, core::UnixIncludeTrailingBackslash(FullFileName),
             CopyParam, Success, OperationProgress, Params, Level + 1);
           continue;
         }

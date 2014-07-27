@@ -483,6 +483,8 @@ public:
   TRemoteProperties & operator=(const TRemoteProperties & other);
 };
 //---------------------------------------------------------------------------
+namespace core {
+
 bool IsUnixStyleWindowsPath(const UnicodeString & Path);
 bool UnixIsAbsolutePath(const UnicodeString & Path);
 UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & Path);
@@ -514,5 +516,7 @@ UnicodeString ModificationStr(const Classes::TDateTime & DateTime,
   TModificationFmt Precision);
 int FakeFileImageIndex(const UnicodeString & AFileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
   UnicodeString * TypeName = nullptr);
+
+} // namespace core
 //---------------------------------------------------------------------------
 #endif

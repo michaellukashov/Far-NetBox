@@ -59,7 +59,7 @@ bool FindFile(UnicodeString & Path)
       Paths.SetLength(Len - 1);
       GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), static_cast<DWORD>(Len));
 
-      UnicodeString NewPath = FileSearch(::ExtractFileName(Path, true), Paths);
+      UnicodeString NewPath = FileSearch(core::ExtractFileName(Path, true), Paths);
       Result = !NewPath.IsEmpty();
       if (Result)
       {
@@ -279,7 +279,7 @@ UnicodeString GetPersonalFolder()
     }
     if (!WineHostHome.IsEmpty())
     {
-      UnicodeString WineHome = L"Z:" + ToUnixPath(WineHostHome);
+      UnicodeString WineHome = L"Z:" + core::ToUnixPath(WineHostHome);
       if (DirectoryExists(WineHome))
       {
         Result = WineHome;
@@ -337,8 +337,8 @@ UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
   UnicodeString Item;
   if (Files->GetCount() > 0)
   {
-    Item = Remote ? ::UnixExtractFileName(Files->GetString(0)) :
-      ::ExtractFileName(Files->GetString(0), true);
+    Item = Remote ? core::UnixExtractFileName(Files->GetString(0)) :
+      core::ExtractFileName(Files->GetString(0), true);
   }
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
     Files->GetCount(), Item);

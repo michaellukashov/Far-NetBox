@@ -579,7 +579,7 @@ UnicodeString ExtractProgram(const UnicodeString & Command)
 //---------------------------------------------------------------------------
 UnicodeString ExtractProgramName(const UnicodeString & Command)
 {
-  UnicodeString Name = ::ExtractFileName(ExtractProgram(Command), false);
+  UnicodeString Name = core::ExtractFileName(ExtractProgram(Command), false);
   intptr_t Dot = Name.LastDelimiter(L".");
   if (Dot > 0)
   {
@@ -2468,7 +2468,7 @@ UnicodeString FormatSize(int64_t Size)
 //---------------------------------------------------------------------------
 UnicodeString ExtractFileBaseName(const UnicodeString & Path)
 {
-  return ChangeFileExt(::ExtractFileName(Path, false), L"");
+  return ChangeFileExt(core::ExtractFileName(Path, false), L"");
 }
 //---------------------------------------------------------------------------
 TStringList * TextToStringList(const UnicodeString & Text)
