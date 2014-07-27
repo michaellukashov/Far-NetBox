@@ -2,6 +2,7 @@
 #ifndef FarConfigurationH
 #define FarConfigurationH
 //---------------------------------------------------------------------------
+#include <plugin.hpp>
 #include "GUIConfiguration.h"
 //---------------------------------------------------------------------------
 class TCustomFarPlugin;
