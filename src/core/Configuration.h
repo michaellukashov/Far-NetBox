@@ -192,7 +192,7 @@ public:
 
 protected:
   TStorage FStorage;
-  TCriticalSection FCriticalSection;
+  Sysutils::TCriticalSection FCriticalSection;
 
 private:
   bool FDontSave;

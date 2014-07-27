@@ -36,7 +36,7 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
   FTopDialog(nullptr),
   FSavedTitles(new TStringList())
 {
-  InitPlatformId();
+  Sysutils::InitPlatformId();
   FFarThread = GetCurrentThreadId();
   FHandle = HInst;
   FFarVersion = 0;
@@ -123,7 +123,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
               sizeof(FFarStandardFunctions) : Info->FSF->StructSize);
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -177,7 +177,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
 
     memmove(Info, &FPluginInfo, sizeof(FPluginInfo));
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -291,7 +291,7 @@ intptr_t TCustomFarPlugin::Configure(intptr_t Item)
 
     return Result;
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -329,7 +329,7 @@ void * TCustomFarPlugin::OpenPlugin(int OpenFrom, intptr_t Item)
 
     return Result;
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -357,7 +357,7 @@ void TCustomFarPlugin::ClosePlugin(void * Plugin)
     // dlmalloc_trim(0); // 64 * 1024);
 #endif
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -365,7 +365,7 @@ void TCustomFarPlugin::ClosePlugin(void * Plugin)
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::HandleFileSystemException(
-  TCustomFarFileSystem * FarFileSystem, Exception * E, int OpMode)
+  TCustomFarFileSystem * FarFileSystem, Sysutils::Exception * E, int OpMode)
 {
   // This method is called as last-resort exception handler before
   // leaving plugin API. Especially for API functions that must update
@@ -395,7 +395,7 @@ void TCustomFarPlugin::GetOpenPluginInfo(HANDLE Plugin,
     TGuard Guard(FarFileSystem->GetCriticalSection());
     FarFileSystem->GetOpenPluginInfo(Info);
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
@@ -416,7 +416,7 @@ intptr_t TCustomFarPlugin::GetFindData(HANDLE Plugin,
       return FarFileSystem->GetFindData(PanelItem, ItemsNumber, OpMode);
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, OpMode);
@@ -438,7 +438,7 @@ void TCustomFarPlugin::FreeFindData(HANDLE Plugin,
       FarFileSystem->FreeFindData(PanelItem, ItemsNumber);
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
@@ -466,7 +466,7 @@ intptr_t TCustomFarPlugin::ProcessHostFile(HANDLE Plugin,
       return 0;
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, OpMode);
@@ -495,7 +495,7 @@ intptr_t TCustomFarPlugin::ProcessKey(HANDLE Plugin, int Key,
       return 0;
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
@@ -533,7 +533,7 @@ intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * Param)
       return 0;
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
@@ -559,7 +559,7 @@ intptr_t TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t * Dir, int 
       return FarFileSystem->SetDirectory(Dir, OpMode);
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, OpMode);
@@ -570,7 +570,7 @@ intptr_t TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t * Dir, int 
         TGuard Guard(FarFileSystem->GetCriticalSection());
         return FarFileSystem->SetDirectory(PrevCurrentDirectory.c_str(), OpMode);
       }
-      catch (Exception &)
+      catch (Sysutils::Exception &)
       {
         return 0;
       }
@@ -592,7 +592,7 @@ intptr_t TCustomFarPlugin::MakeDirectory(HANDLE Plugin, const wchar_t ** Name, i
       return FarFileSystem->MakeDirectory(Name, OpMode);
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, OpMode);
@@ -614,7 +614,7 @@ intptr_t TCustomFarPlugin::DeleteFiles(HANDLE Plugin,
       return FarFileSystem->DeleteFiles(PanelItem, ItemsNumber, OpMode);
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, OpMode);
@@ -637,7 +637,7 @@ intptr_t TCustomFarPlugin::GetFiles(HANDLE Plugin,
       return FarFileSystem->GetFiles(PanelItem, ItemsNumber, Move, DestPath, OpMode);
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     // display error even for OPM_FIND
@@ -660,7 +660,7 @@ intptr_t TCustomFarPlugin::PutFiles(HANDLE Plugin,
       return FarFileSystem->PutFiles(PanelItem, ItemsNumber, Move, srcPath, OpMode);
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, OpMode);
@@ -676,7 +676,7 @@ intptr_t TCustomFarPlugin::ProcessEditorEvent(int Event, void * Param)
 
     return ProcessEditorEventEx(Event, Param);
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -692,7 +692,7 @@ intptr_t TCustomFarPlugin::ProcessEditorInput(const INPUT_RECORD * Rec)
 
     return ProcessEditorInputEx(Rec);
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -951,10 +951,10 @@ void TFarMessageDialog::Idle()
     else
     {
       UnicodeString Caption =
-        FORMAT(L" %s ", ::Format(FParams->TimeoutStr.c_str(),
-                               FTimeoutButtonCaption.c_str(), static_cast<int>((FParams->Timeout - Running) / 1000)).c_str()).c_str();
+        FORMAT(L" %s ", Sysutils::Format(FParams->TimeoutStr.c_str(),
+          FTimeoutButtonCaption.c_str(), static_cast<int>((FParams->Timeout - Running) / 1000)).c_str()).c_str();
       intptr_t sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ? FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
-      Caption += ::StringOfChar(L' ', sz);
+      Caption += Sysutils::StringOfChar(L' ', sz);
       FTimeoutButton->SetCaption(Caption);
     }
   }
@@ -1222,7 +1222,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
         {
           OnValidate(Text);
         }
-        catch (Exception & E)
+        catch (Sysutils::Exception & E)
         {
           DEBUG_PRINTF(L"before HandleException");
           HandleException(&E);
@@ -1317,7 +1317,7 @@ uintptr_t TCustomFarPlugin::ConsoleWindowState() const
     WINDOWPLACEMENT WindowPlacement;
     ClearStruct(WindowPlacement);
     WindowPlacement.length = sizeof(WindowPlacement);
-    Win32Check(::GetWindowPlacement(Window, &WindowPlacement) > 0);
+    Sysutils::Win32Check(::GetWindowPlacement(Window, &WindowPlacement) > 0);
     Result = WindowPlacement.showCmd;
   }
   return Result;
@@ -1334,38 +1334,38 @@ void TCustomFarPlugin::ToggleVideoMode()
       {
         COORD Size = { static_cast<short>(FNormalConsoleSize.x), static_cast<short>(FNormalConsoleSize.y) };
 
-        Win32Check(ShowWindow(Window, SW_RESTORE) > 0);
+        Sysutils::Win32Check(ShowWindow(Window, SW_RESTORE) > 0);
 
         SMALL_RECT WindowSize;
         WindowSize.Left = 0;
         WindowSize.Top = 0;
         WindowSize.Right = static_cast<short>(Size.X - 1);
         WindowSize.Bottom = static_cast<short>(Size.Y - 1);
-        Win32Check(SetConsoleWindowInfo(FConsoleOutput, true, &WindowSize) > 0);
+        Sysutils::Win32Check(SetConsoleWindowInfo(FConsoleOutput, true, &WindowSize) > 0);
 
-        Win32Check(SetConsoleScreenBufferSize(FConsoleOutput, Size) > 0);
+        Sysutils::Win32Check(SetConsoleScreenBufferSize(FConsoleOutput, Size) > 0);
       }
     }
     else
     {
       COORD Size = ::GetLargestConsoleWindowSize(FConsoleOutput);
-      Win32Check((Size.X != 0) || (Size.Y != 0));
+      Sysutils::Win32Check((Size.X != 0) || (Size.Y != 0));
 
       FNormalConsoleSize = TerminalInfo();
 
-      Win32Check(::ShowWindow(Window, SW_MAXIMIZE) > 0);
+      Sysutils::Win32Check(::ShowWindow(Window, SW_MAXIMIZE) > 0);
 
-      Win32Check(::SetConsoleScreenBufferSize(FConsoleOutput, Size) > 0);
+      Sysutils::Win32Check(::SetConsoleScreenBufferSize(FConsoleOutput, Size) > 0);
 
       CONSOLE_SCREEN_BUFFER_INFO BufferInfo;
-      Win32Check(::GetConsoleScreenBufferInfo(FConsoleOutput, &BufferInfo) > 0);
+      Sysutils::Win32Check(::GetConsoleScreenBufferInfo(FConsoleOutput, &BufferInfo) > 0);
 
       SMALL_RECT WindowSize;
       WindowSize.Left = 0;
       WindowSize.Top = 0;
       WindowSize.Right = static_cast<short>(BufferInfo.dwMaximumWindowSize.X - 1);
       WindowSize.Bottom = static_cast<short>(BufferInfo.dwMaximumWindowSize.Y - 1);
-      Win32Check(::SetConsoleWindowInfo(FConsoleOutput, true, &WindowSize) > 0);
+      Sysutils::Win32Check(::SetConsoleWindowInfo(FConsoleOutput, true, &WindowSize) > 0);
     }
   }
 }
@@ -1394,7 +1394,7 @@ void TCustomFarPlugin::ShowTerminalScreen()
   TPoint Size, Cursor;
   TerminalInfo(&Size, &Cursor);
 
-  UnicodeString Blank = ::StringOfChar(L' ', static_cast<intptr_t>(Size.x));
+  UnicodeString Blank = Sysutils::StringOfChar(L' ', static_cast<intptr_t>(Size.x));
   for (int Y = 0; Y < Size.y; Y++)
   {
     Text(0, Y, 7/* LIGHTGRAY */, Blank);
@@ -1535,7 +1535,7 @@ void TCustomFarPlugin::RestoreScreen(HANDLE & Screen)
   Screen = 0;
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::HandleException(Exception * E, int /*OpMode*/)
+void TCustomFarPlugin::HandleException(Sysutils::Exception * E, int /*OpMode*/)
 {
   assert(E);
   Message(FMSG_WARNING | FMSG_MB_OK, L"", E ? E->Message : L"");
@@ -1776,7 +1776,7 @@ TCustomFarFileSystem::~TCustomFarFileSystem()
   ClearOpenPluginInfo(FOpenPluginInfo);
 }
 //---------------------------------------------------------------------------
-void TCustomFarFileSystem::HandleException(Exception * E, int OpMode)
+void TCustomFarFileSystem::HandleException(Sysutils::Exception * E, int OpMode)
 {
   DEBUG_PRINTF(L"before FPlugin->HandleException");
   FPlugin->HandleException(E, OpMode);
@@ -1849,7 +1849,7 @@ void TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo * Info)
         FOpenPluginInfo.StartSortMode, StartSortOrder, KeyBarTitles.get(), ShortcutData);
 
       FOpenPluginInfo.HostFile = TCustomFarPlugin::DuplicateStr(HostFile);
-      FOpenPluginInfo.CurDir = TCustomFarPlugin::DuplicateStr(::StringReplace(CurDir, L"\\", L"/", TReplaceFlags() << rfReplaceAll));
+      FOpenPluginInfo.CurDir = TCustomFarPlugin::DuplicateStr(Sysutils::StringReplace(CurDir, L"\\", L"/", TReplaceFlags() << rfReplaceAll));
       FOpenPluginInfo.Format = TCustomFarPlugin::DuplicateStr(Format);
       FOpenPluginInfo.PanelTitle = TCustomFarPlugin::DuplicateStr(PanelTitle);
       PanelModes->FillOpenPluginInfo(&FOpenPluginInfo);
@@ -2867,7 +2867,7 @@ void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidt
           while ((P = Line.Pos(L'\t')) > 0)
           {
             Line.Delete(P, 1);
-            Line.Insert(::StringOfChar(' ',
+            Line.Insert(Sysutils::StringOfChar(' ',
                 ((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1),
               P);
           }

@@ -281,7 +281,7 @@ void TTabButton::SetTabName(const UnicodeString & Value)
   if (FTabName != Val)
   {
     UnicodeString C;
-    intptr_t P = ::Pos(Val, L"|");
+    intptr_t P = Sysutils::Pos(Val, L"|");
     if (P > 0)
     {
       C = Val.SubString(1, P - 1);
@@ -292,7 +292,7 @@ void TTabButton::SetTabName(const UnicodeString & Value)
       C = Val;
     }
     SetCaption(C);
-    FTabName = StripHotkey(Val);
+    FTabName = Sysutils::StripHotkey(Val);
   }
 }
 //------------------------------------------------------------------------------
@@ -306,7 +306,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
 
   Dialog->SetSize(TPoint(67, 22));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_INTERFACE)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), Sysutils::StripHotkey(GetMsg(CONFIG_INTERFACE)).c_str()));
 
   TFarCheckBox * DisksMenuCheck = new TFarCheckBox(Dialog);
   DisksMenuCheck->SetCaption(GetMsg(CONFIG_DISKS_MENU));
@@ -439,7 +439,7 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
   std::unique_ptr<TWinSCPDialog> Dialog(new TWinSCPDialog(this));
   Dialog->SetSize(TPoint(65, 7));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_PANEL)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), Sysutils::StripHotkey(GetMsg(CONFIG_PANEL)).c_str()));
 
   TFarCheckBox * AutoReadDirectoryAfterOpCheck = new TFarCheckBox(Dialog.get());
   AutoReadDirectoryAfterOpCheck->SetCaption(GetMsg(CONFIG_AUTO_READ_DIRECTORY_AFTER_OP));
@@ -472,7 +472,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 
   Dialog->SetSize(TPoint(65, 15));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_LOGGING)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), Sysutils::StripHotkey(GetMsg(CONFIG_LOGGING)).c_str()));
 
   TFarCheckBox * LoggingCheck = new TFarCheckBox(Dialog);
   LoggingCheck->SetCaption(GetMsg(LOGGING_ENABLE));
@@ -532,7 +532,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   LogToFileCheck->SetChecked(GetConfiguration()->GetLogToFile());
   LogFileNameEdit->SetText(
     (!GetConfiguration()->GetLogToFile() && GetConfiguration()->GetLogFileName().IsEmpty()) ?
-    ::IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"&s.log" :
+    Sysutils::IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"&s.log" :
     GetConfiguration()->GetLogFileName());
   LogFileAppendButton->SetChecked(GetConfiguration()->GetLogFileAppend());
   LogFileOverwriteButton->SetChecked(!GetConfiguration()->GetLogFileAppend());
@@ -561,7 +561,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 bool TWinSCPPlugin::TransferConfigurationDialog()
 {
   UnicodeString Caption = FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_TRANSFER)).c_str());
+    GetMsg(PLUGIN_TITLE).c_str(), Sysutils::StripHotkey(GetMsg(CONFIG_TRANSFER)).c_str());
 
   TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
   bool Result = CopyParamDialog(Caption, CopyParam, 0);
@@ -583,7 +583,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
   Dialog->SetSize(TPoint(76, 13));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_ENDURANCE)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), Sysutils::StripHotkey(GetMsg(CONFIG_ENDURANCE)).c_str()));
 
   Separator = new TFarSeparator(Dialog);
   Separator->SetCaption(GetMsg(TRANSFER_RESUME));
@@ -712,7 +712,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
 
   Dialog->SetSize(TPoint(76, 11));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_BACKGROUND)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), Sysutils::StripHotkey(GetMsg(CONFIG_BACKGROUND)).c_str()));
 
   Text = new TFarText(Dialog);
   Text->SetCaption(GetMsg(TRANSFER_QUEUE_LIMIT));
@@ -799,7 +799,7 @@ TTransferEditorConfigurationDialog::TTransferEditorConfigurationDialog(
 
   SetSize(TPoint(65, 14));
   SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_TRANSFER_EDITOR)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), Sysutils::StripHotkey(GetMsg(CONFIG_TRANSFER_EDITOR)).c_str()));
 
   EditorMultipleCheck = new TFarCheckBox(this);
   EditorMultipleCheck->SetCaption(GetMsg(TRANSFER_EDITOR_MULTIPLE));
@@ -894,7 +894,7 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
   assert(DialogPtr.get());
   Dialog->SetSize(TPoint(67, 10));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_CONFIRMATIONS)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), Sysutils::StripHotkey(GetMsg(CONFIG_CONFIRMATIONS)).c_str()));
 
   TFarCheckBox * ConfirmOverwritingCheck = new TFarCheckBox(Dialog);
   ConfirmOverwritingCheck->SetAllowGrayed(true);
@@ -949,7 +949,7 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
 
   Dialog->SetSize(TPoint(65, 14));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_INTEGRATION)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), Sysutils::StripHotkey(GetMsg(CONFIG_INTEGRATION)).c_str()));
 
   Text = new TFarText(Dialog);
   Text->SetCaption(GetMsg(INTEGRATION_PUTTY));
@@ -1012,7 +1012,7 @@ private:
 //------------------------------------------------------------------------------
 UnicodeString ReplaceCopyright(const UnicodeString & S)
 {
-  return ::StringReplace(S, L"©", L"(c)", TReplaceFlags() << rfReplaceAll);
+  return Sysutils::StringReplace(S, L"©", L"(c)", TReplaceFlags() << rfReplaceAll);
 }
 //------------------------------------------------------------------------------
 TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
@@ -1053,7 +1053,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   SetSize(TPoint(55, Height));
 
   SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), StripHotkey(GetMsg(CONFIG_ABOUT)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), Sysutils::StripHotkey(GetMsg(CONFIG_ABOUT)).c_str()));
   Text = new TFarText(this);
   Text->SetCaption(GetConfiguration()->GetFileInfoString(L"FileDescription"));
   Text->SetCenterGroup(true);
@@ -2162,7 +2162,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SFTPMaxVersionCombo->SetWidth(7);
   for (intptr_t Index = 0; Index <= 5; Index++)
   {
-    SFTPMaxVersionCombo->GetItems()->Add(IntToStr(Index));
+    SFTPMaxVersionCombo->GetItems()->Add(Sysutils::IntToStr(Index));
   }
   Text->SetEnabledFollow(SFTPMaxVersionCombo);
 
@@ -2555,7 +2555,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
     for (intptr_t Index = GetConfiguration()->GetTunnelLocalPortNumberLow();
          Index <= GetConfiguration()->GetTunnelLocalPortNumberHigh(); ++Index)
     {
-      TunnelLocalPortNumberEdit->GetItems()->Add(IntToStr(Index));
+      TunnelLocalPortNumberEdit->GetItems()->Add(Sysutils::IntToStr(Index));
     }
   }
 
@@ -3090,10 +3090,10 @@ void TSessionDialog::UpdateControls()
      ProxyLocalCommandEdit->GetText() : ProxyTelnetCommandEdit->GetText();
   ProxyHostEdit->SetEnabled(Proxy && (ProxyMethod != pmSystem) &&
     ((ProxyMethod != pmCmd) ||
-     AnsiContainsText(ProxyCommand, L"%proxyhost")));
+     Sysutils::AnsiContainsText(ProxyCommand, L"%proxyhost")));
   ProxyPortEdit->SetEnabled(Proxy && (ProxyMethod != pmSystem) &&
     ((ProxyMethod != pmCmd) ||
-     AnsiContainsText(ProxyCommand, L"%proxyport")));
+     Sysutils::AnsiContainsText(ProxyCommand, L"%proxyport")));
   ProxyUsernameEdit->SetEnabled(Proxy &&
     // FZAPI does not support username for SOCKS4
     (((ProxyMethod == pmSocks4) && SshProtocol) ||
@@ -3101,14 +3101,14 @@ void TSessionDialog::UpdateControls()
      (ProxyMethod == pmHTTP) ||
      (((ProxyMethod == pmTelnet) ||
        (ProxyMethod == pmCmd)) &&
-      AnsiContainsText(ProxyCommand, L"%user")) ||
+      Sysutils::AnsiContainsText(ProxyCommand, L"%user")) ||
      (ProxyMethod == pmSystem)));
   ProxyPasswordEdit->SetEnabled(Proxy &&
     ((ProxyMethod == pmSocks5) ||
      (ProxyMethod == pmHTTP) ||
      (((ProxyMethod == pmTelnet) ||
        (ProxyMethod == pmCmd)) &&
-      AnsiContainsText(ProxyCommand, L"%pass")) ||
+      Sysutils::AnsiContainsText(ProxyCommand, L"%pass")) ||
      (ProxyMethod == pmSystem)));
   bool ProxySettings = Proxy && SshProtocol;
   ProxyTelnetCommandEdit->SetEnabled(ProxySettings && (ProxyMethod == pmTelnet));
@@ -3227,7 +3227,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   UnsetNationalVarsCheck->SetChecked(SessionData->GetUnsetNationalVars());
   ListingCommandEdit->SetText(SessionData->GetListingCommand());
   SCPLsFullTimeAutoCheck->SetChecked((SessionData->GetSCPLsFullTime() != asOff));
-  intptr_t TimeDifferenceMin = DateTimeToTimeStamp(SessionData->GetTimeDifference()).Time / 60000;
+  intptr_t TimeDifferenceMin = Sysutils::DateTimeToTimeStamp(SessionData->GetTimeDifference()).Time / 60000;
   if (SessionData->GetTimeDifference().GetValue() < 0)
   {
     TimeDifferenceMin = -TimeDifferenceMin;
@@ -3357,7 +3357,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   }
   else
   {
-    TunnelLocalPortNumberEdit->SetText(IntToStr(SessionData->GetTunnelLocalPortNumber()));
+    TunnelLocalPortNumberEdit->SetText(Sysutils::IntToStr(SessionData->GetTunnelLocalPortNumber()));
   }
 
   // SSH tab
@@ -3693,7 +3693,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     }
     else
     {
-      SessionData->SetTunnelLocalPortNumber(StrToIntDef(TunnelLocalPortNumberEdit->GetText(), 0));
+      SessionData->SetTunnelLocalPortNumber(Sysutils::StrToIntDef(TunnelLocalPortNumberEdit->GetText(), 0));
     }
 
     // SSH tab
@@ -3996,7 +3996,7 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
 {
   bool Result = true;
 
-  if (!::Trim(AFileName).IsEmpty())
+  if (!Sysutils::Trim(AFileName).IsEmpty())
   {
     TKeyType Type = KeyType(AFileName);
     UnicodeString Message;
@@ -4434,10 +4434,10 @@ void TRightsContainer::RightsButtonClick(TFarButton * Sender,
 //------------------------------------------------------------------------------
 void TRightsContainer::OctalEditExit(TObject * /*Sender*/)
 {
-  if (!::Trim(FOctalEdit->GetText()).IsEmpty())
+  if (!Sysutils::Trim(FOctalEdit->GetText()).IsEmpty())
   {
     TRights R = GetRights();
-    R.SetOctal(::Trim(FOctalEdit->GetText()));
+    R.SetOctal(Sysutils::Trim(FOctalEdit->GetText()));
     SetRights(R);
   }
 }
@@ -4458,7 +4458,7 @@ void TRightsContainer::UpdateControls()
     {
       FOctalEdit->SetText(R.GetIsUndef() ? UnicodeString() : R.GetOctal());
     }
-    else if (::Trim(FOctalEdit->GetText()).Length() >= 3)
+    else if (Sysutils::Trim(FOctalEdit->GetText()).Length() >= 3)
     {
       try
       {
@@ -4839,7 +4839,7 @@ void TPropertiesDialog::UpdateProperties(TRemoteProperties & Properties)
         FAllowedChanges & cp ## PROPERTY) \
     { \
       Properties.Valid << vp ## PROPERTY; \
-      Properties.PROPERTY.SetName(::Trim(PROPERTY ## ComboBox->GetText())); \
+      Properties.PROPERTY.SetName(Sysutils::Trim(PROPERTY ## ComboBox->GetText())); \
     }
   STORE_NAME(Group);
   STORE_NAME(Owner);
@@ -5189,7 +5189,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   intptr_t Speed = 1024;
   while (Speed >= 8)
   {
-    SpeedCombo->GetItems()->Add(IntToStr(Speed));
+    SpeedCombo->GetItems()->Add(Sysutils::IntToStr(Speed));
     Speed = Speed / 2;
   }
   SpeedCombo->SetOnExit(MAKE_CALLBACK(TCopyParamsContainer::ValidateSpeedComboExit, this));
@@ -5589,15 +5589,15 @@ bool TCopyDialog::CloseQuery()
   {
     if (!FToRemote && ((FOptions & coTempTransfer) == 0))
     {
-      UnicodeString Directory = ::ExtractFilePath(DirectoryEdit->GetText());
-      if (!Directory.IsEmpty() && !DirectoryExists(Directory))
+      UnicodeString Directory = Sysutils::ExtractFilePath(DirectoryEdit->GetText());
+      if (!Directory.IsEmpty() && !Sysutils::DirectoryExists(Directory))
       {
         TWinSCPPlugin * WinSCPPlugin = NB_STATIC_DOWNCAST(TWinSCPPlugin, FarPlugin);
 
         if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(CREATE_LOCAL_DIRECTORY).c_str(), Directory.c_str()),
           nullptr, qtConfirmation, qaOK | qaCancel) != qaCancel)
         {
-          if (!ForceDirectories(Directory))
+          if (!Sysutils::ForceDirectories(Directory))
           {
             DirectoryEdit->SetFocus();
             throw ExtException(FORMAT(GetMsg(CREATE_LOCAL_DIR_ERROR).c_str(), Directory.c_str()));
@@ -6183,7 +6183,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
     {
       if (FLastFeededControl != nullptr)
       {
-        FClipboard += StringOfChar('-', 60) + L"\r\n";
+        FClipboard += Sysutils::StringOfChar('-', 60) + L"\r\n";
       }
       FLastFeededControl = AControl;
     }
@@ -6197,7 +6197,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
       }
       else if (Control == InfoLister)
       {
-        LabelStr = ::Trim(GetMsg(PROTOCOL_INFO_GROUP));
+        LabelStr = Sysutils::Trim(GetMsg(PROTOCOL_INFO_GROUP));
       }
       else
       {
@@ -7234,11 +7234,11 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString & List,
     {
       Added += Width - Len;
     }
-    List += ::StringOfChar(L' ', Added) + Value;
+    List += Sysutils::StringOfChar(L' ', Added) + Value;
     Added += Value.Length();
     if (Width > Added)
     {
-      List += ::StringOfChar(' ', Width - Added);
+      List += Sysutils::StringOfChar(' ', Width - Added);
     }
     if (!LastCol)
     {
@@ -7385,7 +7385,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * Check
   S = ChecklistItem->GetFileName();
   if (ChecklistItem->IsDirectory)
   {
-    S = ::IncludeTrailingBackslash(S);
+    S = Sysutils::IncludeTrailingBackslash(S);
   }
   AddColumn(Line, S, 0);
 
@@ -7398,7 +7398,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * Check
   else
   {
     S = ChecklistItem->Local.Directory;
-    if (AnsiSameText(FLocalDirectory, S.SubString(1, FLocalDirectory.Length())))
+    if (Sysutils::AnsiSameText(FLocalDirectory, S.SubString(1, FLocalDirectory.Length())))
     {
       S[1] = '.';
       S.Delete(2, FLocalDirectory.Length() - 1);
@@ -7441,7 +7441,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * Check
   else
   {
     S = ChecklistItem->Remote.Directory;
-    if (AnsiSameText(FRemoteDirectory, S.SubString(1, FRemoteDirectory.Length())))
+    if (Sysutils::AnsiSameText(FRemoteDirectory, S.SubString(1, FRemoteDirectory.Length())))
     {
       S[1] = '.';
       S.Delete(2, FRemoteDirectory.Length() - 1);
@@ -7508,7 +7508,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
 void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
 {
   UnicodeString HeaderStr = GetMsg(CHECKLIST_HEADER);
-  UnicodeString HeaderCaption(::StringOfChar(' ', 2));
+  UnicodeString HeaderCaption(Sysutils::StringOfChar(' ', 2));
 
   for (intptr_t Index = 0; Index < FColumns; ++Index)
   {
@@ -8086,7 +8086,7 @@ void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
       StopButton->SetFocus();
       FStarted = true;
     }
-    catch (Exception & E)
+    catch (Sysutils::Exception & E)
     {
       FSynchronizing = false;
       UpdateControls();

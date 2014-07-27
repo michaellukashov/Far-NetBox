@@ -413,7 +413,7 @@ intptr_t AnsiCompareIC(const UnicodeString & Str1, const UnicodeString & Str2)
 
 bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
 {
-  return ::Pos(Str1, Str2) > 0;
+  return Sysutils::Pos(Str1, Str2) > 0;
 }
 
 void RaiseLastOSError(DWORD LastError)
@@ -422,7 +422,7 @@ void RaiseLastOSError(DWORD LastError)
   UnicodeString ErrorMsg;
   if (LastError != 0)
   {
-    ErrorMsg = FMTLOAD(SOSError, LastError, ::SysErrorMessage(LastError).c_str());
+    ErrorMsg = FMTLOAD(SOSError, LastError, Sysutils::SysErrorMessage(LastError).c_str());
   }
   else
   {
@@ -552,13 +552,13 @@ UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & 
   UnicodeString PathSeparators = L"/\\";
   do
   {
-    intptr_t Index = ::Pos(Temp, PathSeparators);
+    intptr_t Index = Sysutils::Pos(Temp, PathSeparators);
     while ((Temp.Length() > 0) && (Index == 0))
     {
       Temp.Delete(1, 1);
-      Index = ::Pos(Temp, PathSeparators);
+      Index = Sysutils::Pos(Temp, PathSeparators);
     }
-    Index = ::Pos(Temp, PathSeparators);
+    Index = Sysutils::Pos(Temp, PathSeparators);
     if (Index > 0)
     {
       Result = Temp.SubString(1, Index - 1);
@@ -569,9 +569,9 @@ UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & 
       Result = Temp;
       Temp = L"";
     }
-    Result = ::IncludeTrailingBackslash(Result);
+    Result = Sysutils::IncludeTrailingBackslash(Result);
     Result = Result + AFileName;
-    if (!::FileExists(Result))
+    if (!Sysutils::FileExists(Result))
     {
       Result = L"";
     }
@@ -609,23 +609,23 @@ bool ForceDirectories(const UnicodeString & ADir)
   {
     return false;
   }
-  UnicodeString Dir2 = ::ExcludeTrailingBackslash(ADir);
+  UnicodeString Dir2 = Sysutils::ExcludeTrailingBackslash(ADir);
   if ((Dir2.Length() < 3) || DirectoryExists(Dir2))
   {
     return Result;
   }
-  if (::ExtractFilePath(Dir2).IsEmpty())
+  if (Sysutils::ExtractFilePath(Dir2).IsEmpty())
   {
-    return ::CreateDir(Dir2);
+    return Sysutils::CreateDir(Dir2);
   }
-  Result = ::ForceDirectories(::ExtractFilePath(Dir2)) && CreateDir(Dir2);
+  Result = Sysutils::ForceDirectories(Sysutils::ExtractFilePath(Dir2)) && CreateDir(Dir2);
   return Result;
 }
 
 bool DeleteFile(const UnicodeString & AFileName)
 {
   ::DeleteFile(AFileName.c_str());
-  return !::FileExists(AFileName);
+  return !Sysutils::FileExists(AFileName);
 }
 
 //---------------------------------------------------------------------------
@@ -634,7 +634,7 @@ UnicodeString Format(const wchar_t * Format, ...)
 {
   va_list Args;
   va_start(Args, Format);
-  UnicodeString Result = ::Format(Format, Args);
+  UnicodeString Result = Sysutils::Format(Format, Args);
   va_end(Args);
   return Result.c_str();
 }
@@ -660,7 +660,7 @@ AnsiString Format(const char * Format, ...)
   AnsiString Result(64, 0);
   va_list Args;
   va_start(Args, Format);
-  Result = ::Format(Format, Args);
+  Result = Sysutils::Format(Format, Args);
   va_end(Args);
   return Result.c_str();
 }
@@ -939,7 +939,7 @@ UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len)
 
 UnicodeString ChangeFileExt(const UnicodeString & AFileName, const UnicodeString & AExt)
 {
-  UnicodeString Result = ::ChangeFileExtension(AFileName, AExt);
+  UnicodeString Result = Sysutils::ChangeFileExtension(AFileName, AExt);
   return Result;
 }
 
@@ -973,8 +973,8 @@ static UnicodeString GetUniversalName(UnicodeString & AFileName)
 UnicodeString ExpandUNCFileName(const UnicodeString & AFileName)
 {
   UnicodeString Result = ExpandFileName(AFileName);
-  if ((Result.Length() >= 3) && (Result[1] == L':') && (::UpCase(Result[1]) >= 'A') &&
-      (::UpCase(Result[1]) <= 'Z'))
+  if ((Result.Length() >= 3) && (Result[1] == L':') && (Sysutils::UpCase(Result[1]) >= 'A') &&
+      (Sysutils::UpCase(Result[1]) <= 'Z'))
   {
     Result = GetUniversalName(Result);
   }
@@ -1209,7 +1209,7 @@ UnicodeString ExtractFileDir(const UnicodeString & Str)
 
 UnicodeString ExtractFilePath(const UnicodeString & Str)
 {
-  UnicodeString Result = ::ExtractFileDir(Str);
+  UnicodeString Result = Sysutils::ExtractFileDir(Str);
   return Result;
 }
 
@@ -1434,7 +1434,7 @@ TDateTime EncodeDate(int Year, int Month, int Day)
   TDateTime Result;
   if (!TryEncodeDate(Year, Month, Day, Result))
   {
-    ::ConvertError(SDateEncodeError);
+    Sysutils::ConvertError(SDateEncodeError);
   }
   return Result;
 }
@@ -1457,7 +1457,7 @@ TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec)
   TDateTime Result;
   if (!TryEncodeTime(Hour, Min, Sec, MSec, Result))
   {
-    ::ConvertError(STimeEncodeError);
+    Sysutils::ConvertError(STimeEncodeError);
   }
   return Result;
 }
@@ -1499,14 +1499,14 @@ UnicodeString DateTimeToString(const TDateTime & DateTime)
 // This function is not ISO 8601 compliant, for that see the DateUtils unit.
 uint32_t DayOfWeek(const TDateTime & DateTime)
 {
-  return ::DateTimeToTimeStamp(DateTime).Date % 7 + 1;
+  return Sysutils::DateTimeToTimeStamp(DateTime).Date % 7 + 1;
 }
 
 TDateTime Date()
 {
   SYSTEMTIME t;
   ::GetLocalTime(&t);
-  TDateTime Result = ::EncodeDate(t.wYear, t.wMonth, t.wDay);
+  TDateTime Result = Sysutils::EncodeDate(t.wYear, t.wMonth, t.wDay);
   return Result;
 }
 
@@ -1740,6 +1740,8 @@ UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
 }
 //---------------------------------------------------------------------------
 } // namespace Sysutils
+
+using namespace Sysutils;
 
 //------------------------------------------------------------------------------
 NB_IMPLEMENT_CLASS(Exception, NB_GET_CLASS_INFO(TObject), nullptr);

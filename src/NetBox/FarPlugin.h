@@ -102,7 +102,7 @@ public:
   virtual intptr_t ProcessEditorEvent(int Event, void * Param);
   virtual intptr_t ProcessEditorInput(const INPUT_RECORD * Rec);
 
-  virtual void HandleException(Exception * E, int OpMode = 0);
+  virtual void HandleException(Sysutils::Exception * E, int OpMode = 0);
 
   static wchar_t * DuplicateStr(const UnicodeString & Str, bool AllowEmpty = false);
   intptr_t Message(DWORD Flags, const UnicodeString & Title,
@@ -173,7 +173,7 @@ protected:
   HANDLE FConsoleOutput;
   intptr_t FFarVersion;
   bool FTerminalScreenShowing;
-  TCriticalSection FCriticalSection;
+  Sysutils::TCriticalSection FCriticalSection;
   uintptr_t FFarThread;
   bool FValidFarSystemSettings;
   intptr_t FFarSystemSettings;
@@ -188,7 +188,7 @@ protected:
   virtual intptr_t ProcessEditorEventEx(intptr_t Event, void * Param) = 0;
   virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD * Rec) = 0;
   virtual void HandleFileSystemException(TCustomFarFileSystem * FarFileSystem,
-    Exception * E, int OpMode = 0);
+    Sysutils::Exception * E, int OpMode = 0);
   void ResetCachedInfo();
   intptr_t MaxLength(TStrings * Strings);
   intptr_t FarMessage(DWORD Flags,
@@ -199,7 +199,7 @@ protected:
     TFarMessageParams * Params);
   void InvalidateOpenPluginInfo();
 
-  const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
+  const Sysutils::TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
 
 #ifdef NETBOX_DEBUG
 public:
@@ -294,18 +294,18 @@ protected:
   bool IsLeft();
   bool IsRight();
 
-  virtual void HandleException(Exception * E, int OpMode = 0);
+  virtual void HandleException(Sysutils::Exception * E, int OpMode = 0);
 
   const TFarPanelInfo * GetPanelInfo() const { return GetPanelInfo(0); }
   TFarPanelInfo * GetPanelInfo() { return GetPanelInfo(0); }
   const TFarPanelInfo * GetAnotherPanelInfo() const { return GetPanelInfo(1); }
   TFarPanelInfo * GetAnotherPanelInfo() { return GetPanelInfo(1); }
-  const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
-  TCriticalSection & GetCriticalSection() { return FCriticalSection; }
+  const Sysutils::TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
+  Sysutils::TCriticalSection & GetCriticalSection() { return FCriticalSection; }
   bool GetOpenPluginInfoValid() const { return FOpenPluginInfoValid; }
 
 protected:
-  TCriticalSection FCriticalSection;
+  Sysutils::TCriticalSection FCriticalSection;
   void InvalidateOpenPluginInfo();
 
 private:

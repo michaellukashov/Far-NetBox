@@ -455,7 +455,7 @@ UnicodeString & UnicodeString::Replace(intptr_t Pos, intptr_t Len, const wchar_t
 
 UnicodeString & UnicodeString::Append(const char * lpszAdd, UINT CodePage)
 {
-  Data.append(::MB2W(lpszAdd, CodePage).c_str());
+  Data.append(Sysutils::MB2W(lpszAdd, CodePage).c_str());
   return *this;
 }
 
@@ -507,7 +507,7 @@ void UnicodeString::sprintf(const wchar_t * fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
-  Data = ::Format(fmt, args).c_str();
+  Data = Sysutils::Format(fmt, args).c_str();
   va_end(args);
 }
 

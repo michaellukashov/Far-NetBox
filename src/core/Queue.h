@@ -126,7 +126,7 @@ protected:
   TList * FItems;
   TList * FDoneItems;
   intptr_t FItemsInProcess;
-  TCriticalSection FItemsSection;
+  Sysutils::TCriticalSection FItemsSection;
   intptr_t FFreeTerminals;
   TList * FTerminals;
   TList * FForcedItems;
@@ -204,7 +204,7 @@ public:
 
 protected:
   TStatus FStatus;
-  TCriticalSection FSection;
+  Sysutils::TCriticalSection FSection;
   TTerminalItem * FTerminalItem;
   TFileOperationProgressType * FProgressData;
   TQueueItem::TInfo * FInfo;
@@ -409,20 +409,20 @@ private:
   HANDLE FActionEvent;
   TUserAction * FUserAction;
 
-  Exception * FException;
-  Exception * FIdleException;
+  Sysutils::Exception * FException;
+  Sysutils::Exception * FIdleException;
   bool FCancel;
   bool FCancelled;
   bool FPendingIdle;
 
   DWORD FMainThread;
-  TCriticalSection FSection;
+  Sysutils::TCriticalSection FSection;
 
   void WaitForUserAction(TUserAction * UserAction);
   void RunAction(TNotifyEvent Action);
 
-  static void SaveException(Exception & E, Exception *& Exception);
-  static void Rethrow(Exception *& Exception);
+  static void SaveException(Sysutils::Exception & E, Sysutils::Exception *& Exception);
+  static void Rethrow(Sysutils::Exception *& Exception);
   void FatalAbort();
   void CheckCancel();
 
@@ -437,7 +437,7 @@ private:
     const UnicodeString & Name, const UnicodeString & Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
   void TerminalShowExtendedException(TTerminal * Terminal,
-    Exception * E, void * Arg);
+    Sysutils::Exception * E, void * Arg);
   void TerminalDisplayBanner(TTerminal * Terminal,
     const UnicodeString & SessionName, const UnicodeString & Banner,
     bool & NeverShowAgain, intptr_t Options);

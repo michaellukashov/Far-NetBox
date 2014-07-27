@@ -10,7 +10,7 @@
 //---------------------------------------------------------------------------
 TConfiguration * CreateConfiguration();
 
-void ShowExtendedException(Exception * E);
+void ShowExtendedException(Sysutils::Exception * E);
 bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
 
 UnicodeString GetRegistryKey();
