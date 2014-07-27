@@ -899,7 +899,7 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
     {
       UnicodeString AppDataIniPath =
         IncludeTrailingBackslash(GetShellFolderPath(CSIDL_APPDATA)) +
-        ExtractFileName(ProgramIniPath);
+        Sysutils::ExtractFileName(ProgramIniPath);
       if (::FileExists(ApiPath(AppDataIniPath)))
       {
         IniPath = AppDataIniPath;
