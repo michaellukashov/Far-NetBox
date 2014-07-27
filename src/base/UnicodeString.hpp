@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string>
 
+#include <nbglobals.h>
 #include "local.hpp"
 
 //------------------------------------------------------------------------------
