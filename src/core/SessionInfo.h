@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef SessionInfoH
-#define SessionInfoH
+#pragma once
 
 #include <CoreDefs.hpp>
 
@@ -347,4 +346,3 @@ private:
   void OpenLogFile();
 };
 //---------------------------------------------------------------------------
-#endif

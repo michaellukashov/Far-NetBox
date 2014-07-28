@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef CopyParamH
-#define CopyParamH
+#pragma once
 
 #include "FileMasks.h"
 #include "RemoteFiles.h"
@@ -180,4 +179,3 @@ private:
 uintptr_t GetSpeedLimit(const UnicodeString & Text);
 UnicodeString SetSpeedLimit(uintptr_t Limit);
 //---------------------------------------------------------------------------
-#endif

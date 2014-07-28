@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef SessionDataH
-#define SessionDataH
+#pragma once
 
 #include "Common.h"
 #include "Option.h"
@@ -690,4 +689,3 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
 bool IsSshProtocol(TFSProtocol FSProtocol);
 intptr_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
 //---------------------------------------------------------------------------
-#endif

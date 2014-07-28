@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef GUIToolsH
-#define GUIToolsH
+#pragma once
 
 #include <CoreDefs.hpp>
 //---------------------------------------------------------------------------
@@ -74,4 +73,3 @@ void ValidateMaskEdit(TFarEdit * Edit);
 extern const UnicodeString PageantTool;
 extern const UnicodeString PuttygenTool;
 //---------------------------------------------------------------------------
-#endif

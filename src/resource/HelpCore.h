@@ -1,5 +1,4 @@
-#ifndef HelpCoreH
-#define HelpCoreH
+#pragma once
 
 #define HELP_UNKNOWN_KEY                       "message_host_key"
 #define HELP_DIFFERENT_KEY                     "message_security_breach"
@@ -32,4 +31,3 @@
 #define HELP_PRESERVE_TIME_PERM_ERROR          "message_preserve_time_perm"
 #define HELP_FTP_SUGGESTION                    "message_server_rejected_sftp_listens_for_ftp"
 
-#endif // HelpCoreH

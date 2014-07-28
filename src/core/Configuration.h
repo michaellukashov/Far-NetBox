@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef ConfigurationH
-#define ConfigurationH
+#pragma once
 
 #include "RemoteFiles.h"
 #include "FileBuffer.h"
@@ -256,4 +255,3 @@ extern const UnicodeString KittyRegistryStorageKey;
 extern const UnicodeString OriginalPuttyExecutable;
 extern const UnicodeString KittyExecutable;
 //---------------------------------------------------------------------------
-#endif

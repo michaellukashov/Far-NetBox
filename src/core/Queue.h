@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef QueueH
-#define QueueH
+#pragma once
 //---------------------------------------------------------------------------
 #include "Terminal.h"
 #include "FileOperationProgress.h"
@@ -448,4 +447,3 @@ private:
   void TerminalInitializeLog(TObject * Sender);
 };
 //---------------------------------------------------------------------------
-#endif

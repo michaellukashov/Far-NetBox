@@ -1,5 +1,4 @@
-#ifndef WebDavFileSystemH
-#define WebDavFileSystemH
+#pragma once
 
 #include <apr_pools.h>
 
@@ -220,4 +219,3 @@ private:
 void NeonInitialize();
 void NeonFinalize();
 
-#endif

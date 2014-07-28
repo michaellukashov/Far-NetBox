@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef FileSystemsH
-#define FileSystemsH
+#pragma once
 
 #include <SessionInfo.h>
 #include "Exceptions.h"
@@ -209,4 +208,3 @@ protected:
   explicit TCustomFileSystem(TTerminal * ATerminal);
 };
 //---------------------------------------------------------------------------
-#endif

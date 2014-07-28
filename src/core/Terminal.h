@@ -1,6 +1,5 @@
 //------------------------------------------------------------------------------
-#ifndef TerminalH
-#define TerminalH
+#pragma once
 
 #include <CoreDefs.hpp>
 #include <Classes.hpp>
@@ -775,4 +774,3 @@ struct TSpaceAvailable : public TObject
 //------------------------------------------------------------------------------
 UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName = false);
 //------------------------------------------------------------------------------
-#endif

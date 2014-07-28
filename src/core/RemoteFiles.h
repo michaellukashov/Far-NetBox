@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef RemoteFilesH
-#define RemoteFilesH
+#pragma once
 //---------------------------------------------------------------------------
 #include <map.h>
 #include <Sysutils.hpp>
@@ -519,4 +518,3 @@ int FakeFileImageIndex(const UnicodeString & AFileName, uint32_t Attrs = INVALID
 
 } // namespace core
 //---------------------------------------------------------------------------
-#endif

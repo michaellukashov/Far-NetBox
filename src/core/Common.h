@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef CommonH
-#define CommonH
+#pragma once
 
 #include <CoreDefs.hpp>
 #include <headers.hpp>
@@ -280,4 +279,3 @@ public:
 //---------------------------------------------------------------------------
 UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
 //---------------------------------------------------------------------------
-#endif

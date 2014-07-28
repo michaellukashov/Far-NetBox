@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef FileOperationProgressH
-#define FileOperationProgressH
+#pragma once
 //---------------------------------------------------------------------------
 #include "Configuration.h"
 #include "CopyParam.h"
@@ -177,4 +176,3 @@ private:
   TFileOperationProgressType * FOperationProgress;
 };
 //---------------------------------------------------------------------------
-#endif

@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef ScpFileSystemH
-#define ScpFileSystemH
+#pragma once
 
 #include <FileSystems.h>
 #include <CopyParam.h>
@@ -137,4 +136,3 @@ private:
     intptr_t & ReturnCode, const UnicodeString & ALastLine);
 };
 //---------------------------------------------------------------------------
-#endif // ScpFileSystemH

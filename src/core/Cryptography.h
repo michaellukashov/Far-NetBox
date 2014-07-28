@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef CryptographyH
-#define CryptographyH
+#pragma once
 //---------------------------------------------------------------------------
 void CryptographyInitialize();
 void CryptographyFinalize();
@@ -15,4 +14,3 @@ bool AES256Verify(const UnicodeString & Input, const RawByteString & Verifier);
 int IsValidPassword(const UnicodeString & Password);
 int PasswordMaxLength();
 //---------------------------------------------------------------------------
-#endif

@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef SecureShellH
-#define SecureShellH
+#pragma once
 
 #include "PuttyIntf.h"
 #include "Configuration.h"
@@ -178,4 +177,3 @@ private:
   UnicodeString FUserName;
 };
 //---------------------------------------------------------------------------
-#endif
