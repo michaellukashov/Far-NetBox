@@ -8,7 +8,6 @@
 #include <FileMasks.h>
 #include <CoreMain.h>
 #include <RemoteFiles.h>
-//#include <PuttyTools.h>
 
 #include "GUITools.h"
 #include "Tools.h"

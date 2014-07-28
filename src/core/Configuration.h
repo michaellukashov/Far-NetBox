@@ -4,7 +4,6 @@
 #include "RemoteFiles.h"
 #include "FileBuffer.h"
 #include "HierarchicalStorage.h"
-// #include "Usage.h"
 //---------------------------------------------------------------------------
 #define SET_CONFIG_PROPERTY_EX(PROPERTY, APPLY) \
   if (Get ## PROPERTY() != Value) { F ## PROPERTY = Value; Changed(); APPLY; }

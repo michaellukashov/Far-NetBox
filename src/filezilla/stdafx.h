@@ -41,7 +41,6 @@
 #include <list.h>
 #include <map.h>
 #include <vector.h>
-//#include <deque>
 #include <set.h>
 #include <algorithm>
 //---------------------------------------------------------------------------
