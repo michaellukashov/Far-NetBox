@@ -2794,7 +2794,7 @@ void TSFTPFileSystem::DoStartup()
   {
     MaxVersion = SFTPMaxVersion;
   }
-  Packet.AddCardinal(MaxVersion);
+  Packet.AddCardinal((uint32_t)MaxVersion);
 
   try
   {
