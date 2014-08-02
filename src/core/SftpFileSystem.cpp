@@ -595,7 +595,7 @@ public:
   RawByteString GetRawByteString() const
   {
     RawByteString Result;
-    uintptr_t Len = GetCardinal();
+    uint32_t Len = GetCardinal();
     Need(Len);
     // cannot happen anyway as Need() would raise exception
     assert(Len < SFTP_MAX_PACKET_LEN);
@@ -967,7 +967,7 @@ private:
   uint32_t FMessageNumber;
   TSFTPFileSystem * FReservedBy;
 
-  static intptr_t FMessageCounter;
+  static uint32_t FMessageCounter;
   static const intptr_t FSendPrefixLen = 4;
   uintptr_t FCodePage;
 
@@ -1123,7 +1123,7 @@ private:
   }
 };
 //---------------------------------------------------------------------------
-intptr_t TSFTPPacket::FMessageCounter = 0;
+uint32_t TSFTPPacket::FMessageCounter = 0;
 //---------------------------------------------------------------------------
 class TSFTPQueuePacket : public TSFTPPacket
 {
@@ -2275,7 +2275,7 @@ uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
     SFTP_STATUS_GROUP_INVALID,
     SFTP_STATUS_NO_MATCHING_BYTE_RANGE_LOCK
   };
-  if ((AllowStatus & (0x01 << Code)) == 0)
+  if ((AllowStatus & (0x01LL << Code)) == 0)
   {
     intptr_t Message;
     if (Code >= LENOF(Messages))
