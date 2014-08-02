@@ -240,7 +240,7 @@ bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
 {
   bool Result = false;
   WORD Key = KeyCode & 0xFFFF;
-  DWORD ControlState = KeyCode >> 16;
+  LONG_PTR ControlState = KeyCode >> 16;
   if ((((Key == VK_NEXT) || (Key == VK_NUMPAD3)) && (ControlState & CTRLMASK) != 0) ||
        (((Key == VK_PRIOR) || (Key == VK_NUMPAD9)) && (ControlState & CTRLMASK) != 0))
   {
@@ -6271,7 +6271,7 @@ bool TFileSystemInfoDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
 {
   bool Result = false;
   WORD Key = KeyCode & 0xFFFF;
-  DWORD ControlState = KeyCode >> 16;
+  LONG_PTR ControlState = KeyCode >> 16;
   if ((Item == SpaceAvailablePathEdit) && (Key == VK_RETURN))
   {
     CheckSpaceAvailable();
@@ -7623,8 +7623,8 @@ void TSynchronizeChecklistDialog::ListBoxClick(
 bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
 {
   bool Result = false;
-    WORD Key = KeyCode & 0xFFFF;
-    DWORD ControlState = KeyCode >> 16;
+  WORD Key = KeyCode & 0xFFFF;
+  LONG_PTR ControlState = KeyCode >> 16;
   if (ListBox->Focused())
   {
     if (((Key == VK_ADD) && (ControlState & SHIFTMASK) != 0) ||
@@ -8141,7 +8141,7 @@ bool TSynchronizeDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
 {
   bool Result = false;
   WORD Key = KeyCode & 0xFFFF;
-  DWORD ControlState = KeyCode >> 16;
+  LONG_PTR ControlState = KeyCode >> 16;
   if ((Key == VK_ESCAPE) && FSynchronizing)
   {
     Stop();
@@ -8369,7 +8369,7 @@ bool TQueueDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
 {
   bool Result = false;
   WORD Key = KeyCode & 0xFFFF;
-  DWORD ControlState = KeyCode >> 16;
+  LONG_PTR ControlState = KeyCode >> 16;
   if (QueueListBox->Focused())
   {
     TFarButton * DoButton = nullptr;
