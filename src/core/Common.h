@@ -102,8 +102,8 @@ void DeleteFileChecked(const UnicodeString & AFileName);
 uintptr_t CancelAnswer(uintptr_t Answers);
 uintptr_t AbortAnswer(uintptr_t Answers);
 uintptr_t ContinueAnswer(uintptr_t Answers);
-UnicodeString LoadStr(int Ident, intptr_t MaxLength = 0);
-UnicodeString LoadStrPart(int Ident, int Part);
+UnicodeString LoadStr(intptr_t Ident, intptr_t MaxLength = 0);
+UnicodeString LoadStrPart(intptr_t Ident, intptr_t Part);
 UnicodeString EscapeHotkey(const UnicodeString & Caption);
 bool CutToken(UnicodeString & Str, UnicodeString & Token,
   UnicodeString * RawToken = nullptr);

@@ -2123,7 +2123,7 @@ uintptr_t ContinueAnswer(uintptr_t Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString LoadStr(int Ident, intptr_t MaxLength)
+UnicodeString LoadStr(intptr_t Ident, intptr_t MaxLength)
 {
   UnicodeString Result;
   Result.SetLength(MaxLength > 0 ? MaxLength : 1024);
@@ -2134,7 +2134,7 @@ UnicodeString LoadStr(int Ident, intptr_t MaxLength)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString LoadStrPart(int Ident, int Part)
+UnicodeString LoadStrPart(intptr_t Ident, intptr_t Part)
 {
   UnicodeString Result;
   UnicodeString Str = LoadStr(Ident);
