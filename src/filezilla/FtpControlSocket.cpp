@@ -5983,8 +5983,8 @@ int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 					nb_free(iter->str);
 					continue;
 				}
-			}
 #endif
+				}
 		}
 		else if (iter->nType == LAYERCALLBACK_LAYERSPECIFIC)
 		{
