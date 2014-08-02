@@ -459,8 +459,8 @@ public:
       // any way to reflect sbSignedTS here?
       // (note that casting int64_t > 2^31 < 2^32 to uint32_t is wrapped,
       // thus we never can set time after 2038, even if the server supports it)
-      AddCardinal(static_cast<uint32_t>(ATime != nullptr ? *ATime : *MTime));
-      AddCardinal(static_cast<uint32_t>(MTime != nullptr ? *MTime : *ATime));
+      AddCardinal(static_cast<uint32_t>(ATime != nullptr ? *ATime : MTime != nullptr ? *MTime : 0));
+      AddCardinal(static_cast<uint32_t>(MTime != nullptr ? *MTime : ATime != nullptr ? *ATime : 0));
     }
     if ((Version >= 4) && (ATime != nullptr))
     {
