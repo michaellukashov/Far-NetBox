@@ -271,7 +271,7 @@ void nonfatal(char * fmt, ...)
 //---------------------------------------------------------------------------
 void CleanupExit(int /*code*/)
 {
-  throw ESshFatal(nullptr, "");
+  throw ESshFatal(nullptr, L"");
 }
 //---------------------------------------------------------------------------
 void cleanup_exit(int code)

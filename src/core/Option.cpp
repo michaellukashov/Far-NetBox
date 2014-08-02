@@ -218,11 +218,11 @@ bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default, bool Defa
   {
     Result = Default;
   }
-  else if (Sysutils::SameText(Value, "on"))
+  else if (Sysutils::SameText(Value, L"on"))
   {
     Result = true;
   }
-  else if (Sysutils::SameText(Value, "off"))
+  else if (Sysutils::SameText(Value, L"off"))
   {
     Result = false;
   }
