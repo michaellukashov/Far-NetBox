@@ -197,7 +197,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
   if (Info.StructSize)
   {
     #define FREESTRINGARRAY(NAME) \
-      for (intptr_t Index = 0; Index < Info.NAME.Count; ++Index) \
+      for (size_t Index = 0; Index < Info.NAME.Count; ++Index) \
       { \
         nb_free((void*)Info.NAME.Strings[Index]); \
       } \
@@ -1843,7 +1843,7 @@ void TCustomFarFileSystem::ClearOpenPanelInfo(OpenPanelInfo & Info)
     assert(!Info.DescrFiles);
     assert(!Info.DescrFilesNumber);
     assert(Info.PanelModesNumber == 0 || Info.PanelModesNumber == PANEL_MODES_COUNT);
-    for (intptr_t Index = 0; Index < Info.PanelModesNumber; ++Index)
+    for (size_t Index = 0; Index < Info.PanelModesNumber; ++Index)
     {
       assert(Info.PanelModesArray);
       TFarPanelModes::ClearPanelMode(
@@ -1941,12 +1941,12 @@ void TCustomFarFileSystem::FreeFindData(const struct FreeFindDataInfo *Info)
   if (Info->PanelItem)
   {
     assert(Info->ItemsNumber > 0);
-    for (intptr_t Index = 0; Index < Info->ItemsNumber; ++Index)
+    for (size_t Index = 0; Index < Info->ItemsNumber; ++Index)
     {
       nb_free((void*)Info->PanelItem[Index].FileName);
       nb_free((void*)Info->PanelItem[Index].Description);
       nb_free((void*)Info->PanelItem[Index].Owner);
-      for (intptr_t CustomIndex = 0; CustomIndex < Info->PanelItem[Index].CustomColumnNumber; ++CustomIndex)
+      for (size_t CustomIndex = 0; CustomIndex < Info->PanelItem[Index].CustomColumnNumber; ++CustomIndex)
       {
         nb_free((void*)Info->PanelItem[Index].CustomColumnData[CustomIndex]);
       }
@@ -2183,7 +2183,7 @@ TObjectList * TCustomFarFileSystem::CreatePanelItemList(
 {
   std::unique_ptr<TObjectList> PanelItems(new TObjectList());
   PanelItems->SetOwnsObjects(true);
-  for (intptr_t Index = 0; Index < ItemsNumber; ++Index)
+  for (size_t Index = 0; Index < ItemsNumber; ++Index)
   {
     PanelItems->Add(new TFarPanelItem(&PanelItem[Index], false));
   }
@@ -2373,7 +2373,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
 //---------------------------------------------------------------------------
 void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
 {
-  for (intptr_t Index = 0; Index < Titles.CountLabels; ++Index)
+  for (size_t Index = 0; Index < Titles.CountLabels; ++Index)
   {
     nb_free((void*)Titles.Labels[Index].Text);
     nb_free((void*)Titles.Labels[Index].LongText);
@@ -2428,7 +2428,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   PanelItem->Owner = TCustomFarPlugin::DuplicateStr(Owner);
   wchar_t ** CustomColumnData = static_cast<wchar_t **>(
     nb_malloc(sizeof(wchar_t *) * PanelItem->CustomColumnNumber));
-  for (intptr_t Index = 0; Index < PanelItem->CustomColumnNumber; ++Index)
+  for (size_t Index = 0; Index < PanelItem->CustomColumnNumber; ++Index)
   {
     CustomColumnData[Index] =
       TCustomFarPlugin::DuplicateStr(GetCustomColumnData(Index));
@@ -2591,7 +2591,7 @@ TObjectList * TFarPanelInfo::GetItems()
   }
   if (FOwner)
   {
-    for (intptr_t Index = 0; Index < FPanelInfo->ItemsNumber; ++Index)
+    for (size_t Index = 0; Index < FPanelInfo->ItemsNumber; ++Index)
     {
       // TODO: move to common function
       intptr_t Size = FOwner->FarControl(FCTL_GETPANELITEM, Index, 0);

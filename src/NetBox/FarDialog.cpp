@@ -2114,7 +2114,7 @@ TFarList::TFarList(TFarDialogItem * ADialogItem) :
 //---------------------------------------------------------------------------
 TFarList::~TFarList()
 {
-  for (intptr_t Index = 0; Index < FListItems->ItemsNumber; ++Index)
+  for (size_t Index = 0; Index < FListItems->ItemsNumber; ++Index)
   {
     nb_free((void*)FListItems->Items[Index].Text);
   }
@@ -2184,7 +2184,7 @@ void TFarList::Changed()
       PrevSelected = GetSelected();
       PrevTopIndex = GetTopIndex();
     }
-    intptr_t Count = GetCount();
+    size_t Count = GetCount();
     if (FListItems->ItemsNumber != Count)
     {
       FarListItem * Items = FListItems->Items;
@@ -2193,7 +2193,7 @@ void TFarList::Changed()
       {
         FListItems->Items = static_cast<FarListItem *>(
           nb_calloc(1, sizeof(FarListItem) * Count));
-        for (intptr_t Index = 0; Index < Count; ++Index)
+        for (size_t Index = 0; Index < Count; ++Index)
         {
           if (Index < FListItems->ItemsNumber)
           {
