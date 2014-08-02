@@ -79,7 +79,7 @@ bool FileExistsEx(const UnicodeString & Path)
 }
 //---------------------------------------------------------------------------
 void OpenSessionInPutty(const UnicodeString & PuttyPath,
-  TSessionData * SessionData, const UnicodeString & UserName, const UnicodeString & Password)
+  TSessionData * SessionData)
 {
   UnicodeString Program, Params, Dir;
   SplitCommand(PuttyPath, Program, Params, Dir);

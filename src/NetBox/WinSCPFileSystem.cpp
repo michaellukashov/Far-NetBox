@@ -2003,9 +2003,7 @@ void TWinSCPFileSystem::ClearCaches()
 void TWinSCPFileSystem::OpenSessionInPutty()
 {
   assert(Connected());
-  ::OpenSessionInPutty(GetGUIConfiguration()->GetPuttyPath(), GetSessionData(),
-    GetSessionData()->GetUserNameExpanded(),
-    GetGUIConfiguration()->GetPuttyPassword() ? GetTerminal()->GetPassword() : UnicodeString());
+  ::OpenSessionInPutty(GetGUIConfiguration()->GetPuttyPath(), GetSessionData());
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::QueueShow(bool ClosingPlugin)
