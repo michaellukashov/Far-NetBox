@@ -231,6 +231,7 @@ public:
     OnReadDirectoryProgress(AOnReadDirectoryProgress),
     Sender(nullptr),
     Progress(0),
+    ResolvedLinks(0),
     Cancel(false)
   {
   }
