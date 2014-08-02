@@ -451,7 +451,7 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
   }
 }
 //------------------------------------------------------------------------------
-bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
+bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES OpMode)
 {
   bool Result = false;
   if (Connected())
@@ -2132,7 +2132,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
   return Result;
 }
 //------------------------------------------------------------------------------
-bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
+bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, OPERATION_MODES OpMode)
 {
   if (!SessionList() && !Connected())
   {
@@ -2292,7 +2292,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
   }
 }
 //------------------------------------------------------------------------------
-intptr_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int OpMode)
+intptr_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, OPERATION_MODES OpMode)
 {
   if (Connected())
   {
@@ -2399,7 +2399,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
   }
 }
 //------------------------------------------------------------------------------
-bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
+bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES OpMode)
 {
   if (Connected())
   {
@@ -2458,7 +2458,7 @@ struct TExportSessionParam
 };
 //------------------------------------------------------------------------------
 intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
-  UnicodeString & DestPath, int OpMode)
+  UnicodeString & DestPath, OPERATION_MODES OpMode)
 {
   intptr_t Result = -1;
   if (Connected())
@@ -2499,7 +2499,7 @@ intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
 }
 //------------------------------------------------------------------------------
 intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
-  UnicodeString & DestPath, int OpMode)
+  UnicodeString & DestPath, OPERATION_MODES OpMode)
 {
   intptr_t Result = -1;
   bool EditView = (OpMode & (OPM_EDIT | OPM_VIEW)) != 0;
@@ -2614,7 +2614,7 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   }
 }
 //------------------------------------------------------------------------------
-intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
+intptr_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool Edit,
   UnicodeString & DestPath)
 {
   intptr_t Result = 1;
@@ -2691,7 +2691,7 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
   return Result;
 }
 //------------------------------------------------------------------------------
-intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode)
+intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERATION_MODES OpMode)
 {
   intptr_t Result;
   if (Connected())
@@ -2761,7 +2761,7 @@ intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int 
 }
 //------------------------------------------------------------------------------
 bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
-  int OpMode)
+  OPERATION_MODES OpMode)
 {
   bool Result = (OpMode & OPM_SILENT) ||
     (MoreMessageDialog(GetMsg(IMPORT_SESSIONS_PROMPT), nullptr,

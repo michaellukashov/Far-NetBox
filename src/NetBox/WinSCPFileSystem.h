@@ -105,14 +105,14 @@ protected:
     UnicodeString & PanelTitle, TFarPanelModes * PanelModes, intptr_t & StartPanelMode,
     OPENPANELINFO_SORTMODES &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
     UnicodeString & ShortcutData);
-  virtual bool GetFindDataEx(TObjectList * PanelItems, int OpMode);
+  virtual bool GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES OpMode);
   virtual bool ProcessKeyEx(intptr_t Key, uintptr_t ControlState);
-  virtual bool SetDirectoryEx(const UnicodeString & Dir, int OpMode);
-  virtual intptr_t MakeDirectoryEx(UnicodeString & Name, int OpMode);
-  virtual bool DeleteFilesEx(TObjectList * PanelItems, int OpMode);
+  virtual bool SetDirectoryEx(const UnicodeString & Dir, OPERATION_MODES OpMode);
+  virtual intptr_t MakeDirectoryEx(UnicodeString & Name, OPERATION_MODES OpMode);
+  virtual bool DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES OpMode);
   virtual intptr_t GetFilesEx(TObjectList * PanelItems, bool Move,
-    UnicodeString & DestPath, int OpMode);
-  virtual intptr_t PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode);
+    UnicodeString & DestPath, OPERATION_MODES OpMode);
+  virtual intptr_t PutFilesEx(TObjectList * PanelItems, bool Move, OPERATION_MODES OpMode);
   virtual bool ProcessPanelEventEx(intptr_t Event, void *Param);
 
   void ProcessEditorEvent(intptr_t Event, void * Param);
@@ -135,7 +135,7 @@ protected:
   void ProcessSessions(TObjectList * PanelItems,
     TProcessSessionEvent ProcessSession, void * Param);
   void ExportSession(TSessionData * Data, void * Param);
-  bool ImportSessions(TObjectList * PanelItems, bool Move, int OpMode);
+  bool ImportSessions(TObjectList * PanelItems, bool Move, OPERATION_MODES OpMode);
   void FileProperties();
   void CreateLink();
   void TransferFiles(bool Move);
@@ -222,7 +222,7 @@ protected:
   void ConnectTerminal(TTerminal * Terminal);
   void TemporarilyDownloadFiles(TStrings * FileList,
     TCopyParamType & CopyParam, UnicodeString & TempDir);
-  intptr_t UploadFiles(bool Move, int OpMode, bool Edit, UnicodeString & DestPath);
+  intptr_t UploadFiles(bool Move, OPERATION_MODES OpMode, bool Edit, UnicodeString & DestPath);
   void UploadOnSave(bool NoReload);
   void UploadFromEditor(bool NoReload, const UnicodeString & AFileName,
     const UnicodeString & RealFileName, UnicodeString & DestPath);
@@ -300,7 +300,7 @@ private:
   void QueueAddItem(TQueueItem * Item);
   UnicodeString GetFileNameHash(const UnicodeString & AFileName);
   intptr_t GetFilesRemote(TObjectList * PanelItems, bool Move,
-    UnicodeString & DestPath, int OpMode);
+    UnicodeString & DestPath, OPERATION_MODES OpMode);
 
 private:
   TTerminalQueue * GetQueue();

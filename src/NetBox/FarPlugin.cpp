@@ -372,7 +372,7 @@ void TCustomFarPlugin::ClosePanel(void * Plugin)
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::HandleFileSystemException(
-  TCustomFarFileSystem * FarFileSystem, Sysutils::Exception * E, int OpMode)
+  TCustomFarFileSystem * FarFileSystem, Sysutils::Exception * E, OPERATION_MODES OpMode)
 {
   // This method is called as last-resort exception handler before
   // leaving plugin API. Especially for API functions that must update
@@ -1551,7 +1551,7 @@ void TCustomFarPlugin::RestoreScreen(HANDLE & Screen)
   Screen = 0;
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::HandleException(Sysutils::Exception * E, int /*OpMode*/)
+void TCustomFarPlugin::HandleException(Sysutils::Exception * E, OPERATION_MODES /*OpMode*/)
 {
   assert(E);
   Message(FMSG_WARNING | FMSG_MB_OK, L"", E ? E->Message : L"");
@@ -1814,7 +1814,7 @@ TCustomFarFileSystem::~TCustomFarFileSystem()
   ClearOpenPanelInfo(FOpenPanelInfo);
 }
 //---------------------------------------------------------------------------
-void TCustomFarFileSystem::HandleException(Sysutils::Exception * E, int OpMode)
+void TCustomFarFileSystem::HandleException(Sysutils::Exception * E, OPERATION_MODES OpMode)
 {
   DEBUG_PRINTF(L"before FPlugin->HandleException");
   FPlugin->HandleException(E, OpMode);
@@ -2137,7 +2137,7 @@ bool TCustomFarFileSystem::IsRight()
   return !IsLeft();
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::ProcessHostFileEx(TObjectList * /* PanelItems */, int /* OpMode */)
+bool TCustomFarFileSystem::ProcessHostFileEx(TObjectList * /* PanelItems */, OPERATION_MODES /* OpMode */)
 {
   return false;
 }
@@ -2152,28 +2152,28 @@ bool TCustomFarFileSystem::ProcessPanelEventEx(intptr_t /*Event*/, void * /*Para
   return false;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::SetDirectoryEx(const UnicodeString & /* Dir */, int /* OpMode */)
+bool TCustomFarFileSystem::SetDirectoryEx(const UnicodeString & /* Dir */, OPERATION_MODES /* OpMode */)
 {
   return false;
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarFileSystem::MakeDirectoryEx(UnicodeString & /* Name */, int /* OpMode */)
+intptr_t TCustomFarFileSystem::MakeDirectoryEx(UnicodeString & /* Name */, OPERATION_MODES /* OpMode */)
 {
   return -1;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::DeleteFilesEx(TObjectList * /* PanelItems */, int /* OpMode */)
+bool TCustomFarFileSystem::DeleteFilesEx(TObjectList * /* PanelItems */, OPERATION_MODES /* OpMode */)
 {
   return false;
 }
 //---------------------------------------------------------------------------
 intptr_t TCustomFarFileSystem::GetFilesEx(TObjectList * /* PanelItems */, bool /* Move */,
-  UnicodeString & /* DestPath */, int /* OpMode */)
+  UnicodeString & /* DestPath */, OPERATION_MODES /* OpMode */)
 {
   return 0;
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarFileSystem::PutFilesEx(TObjectList * /* PanelItems */, bool /* Move */, int /* OpMode */)
+intptr_t TCustomFarFileSystem::PutFilesEx(TObjectList * /* PanelItems */, bool /* Move */, OPERATION_MODES /* OpMode */)
 {
   return 0;
 }

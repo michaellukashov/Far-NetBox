@@ -115,7 +115,7 @@ public:
   virtual intptr_t PutFiles(const struct PutFilesInfo *Info);
   virtual intptr_t ProcessEditorEvent(const struct ProcessEditorEventInfo *Info);
   virtual intptr_t ProcessEditorInput(const struct ProcessEditorInputInfo *Info);
-  virtual void HandleException(Sysutils::Exception * E, int OpMode = 0);
+  virtual void HandleException(Sysutils::Exception * E, OPERATION_MODES OpMode = 0);
 
   static wchar_t * DuplicateStr(const UnicodeString & Str, bool AllowEmpty = false);
   intptr_t Message(uintptr_t Flags, const UnicodeString & Title,
@@ -202,7 +202,7 @@ protected:
   virtual intptr_t ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info) = 0;
   virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD * Rec) = 0;
   virtual void HandleFileSystemException(TCustomFarFileSystem * FarFileSystem,
-    Sysutils::Exception * E, int OpMode = 0);
+    Sysutils::Exception * E, OPERATION_MODES OpMode = 0);
   void ResetCachedInfo();
   intptr_t MaxLength(TStrings * Strings);
   intptr_t FarMessage(uintptr_t Flags,
@@ -281,16 +281,16 @@ protected:
     UnicodeString & PanelTitle, TFarPanelModes * PanelModes, intptr_t & StartPanelMode,
     OPENPANELINFO_SORTMODES & StartSortMode, bool & StartSortOrder, TFarKeyBarTitles * KeyBarTitles,
     UnicodeString & ShortcutData) = 0;
-  virtual bool GetFindDataEx(TObjectList * PanelItems, int OpMode) = 0;
-  virtual bool ProcessHostFileEx(TObjectList * PanelItems, int OpMode);
+  virtual bool GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES OpMode) = 0;
+  virtual bool ProcessHostFileEx(TObjectList * PanelItems, OPERATION_MODES OpMode);
   virtual bool ProcessKeyEx(intptr_t Key, uintptr_t ControlState);
   virtual bool ProcessPanelEventEx(intptr_t Event, void *Param);
-  virtual bool SetDirectoryEx(const UnicodeString & Dir, int OpMode);
-  virtual intptr_t MakeDirectoryEx(UnicodeString & Name, int OpMode);
-  virtual bool DeleteFilesEx(TObjectList * PanelItems, int OpMode);
+  virtual bool SetDirectoryEx(const UnicodeString & Dir, OPERATION_MODES OpMode);
+  virtual intptr_t MakeDirectoryEx(UnicodeString & Name, OPERATION_MODES OpMode);
+  virtual bool DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES OpMode);
   virtual intptr_t GetFilesEx(TObjectList * PanelItems, bool Move,
-    UnicodeString & DestPath, int OpMode);
-  virtual intptr_t PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode);
+    UnicodeString & DestPath, OPERATION_MODES OpMode);
+  virtual intptr_t PutFilesEx(TObjectList * PanelItems, bool Move, OPERATION_MODES OpMode);
 
   void ResetCachedInfo();
   intptr_t FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2);
@@ -304,7 +304,7 @@ protected:
   bool IsLeft();
   bool IsRight();
 
-  virtual void HandleException(Sysutils::Exception * E, int OpMode = 0);
+  virtual void HandleException(Sysutils::Exception * E, OPERATION_MODES OpMode = 0);
 
   const TFarPanelInfo * GetPanelInfo() const { return GetPanelInfo(0); }
   TFarPanelInfo * GetPanelInfo() { return GetPanelInfo(0); }
