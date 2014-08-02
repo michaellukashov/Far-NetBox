@@ -1200,7 +1200,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
   const UnicodeString & HistoryName, intptr_t MaxLen, TFarInputBoxValidateEvent OnValidate)
 {
   bool Repeat = false;
-  int Result = 0;
+  intptr_t Result = 0;
   do
   {
     UnicodeString DestText;
@@ -1592,7 +1592,7 @@ bool TCustomFarPlugin::Viewer(const UnicodeString & AFileName,
   const UnicodeString & Title, unsigned int Flags)
 {
   TFarEnvGuard Guard;
-  int Result = FStartupInfo.Viewer(
+  intptr_t Result = FStartupInfo.Viewer(
     AFileName.c_str(),
     Title.c_str(), 0, 0, -1, -1, Flags,
     CP_DEFAULT);
@@ -1603,7 +1603,7 @@ bool TCustomFarPlugin::Editor(const UnicodeString & AFileName,
   const UnicodeString & Title, unsigned int Flags)
 {
   TFarEnvGuard Guard;
-  int Result = FStartupInfo.Editor(
+  intptr_t Result = FStartupInfo.Editor(
     AFileName.c_str(),
     Title.c_str(), 0, 0, -1, -1, Flags, -1, -1,
     CP_DEFAULT);

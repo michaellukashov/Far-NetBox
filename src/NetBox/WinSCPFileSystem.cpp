@@ -2693,7 +2693,7 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
 //------------------------------------------------------------------------------
 intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode)
 {
-  int Result;
+  intptr_t Result;
   if (Connected())
   {
     FFileList = CreateFileList(PanelItems, osLocal);

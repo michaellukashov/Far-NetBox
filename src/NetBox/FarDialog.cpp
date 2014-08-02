@@ -2079,7 +2079,7 @@ void TFarSeparator::SetPosition(intptr_t Value)
   SetBounds(R);
 }
 //---------------------------------------------------------------------------
-int TFarSeparator::GetPosition()
+intptr_t TFarSeparator::GetPosition()
 {
   return GetBounds().Top;
 }

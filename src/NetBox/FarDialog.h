@@ -484,7 +484,7 @@ public:
   virtual UnicodeString GetCaption() { return GetData(); }
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
   void SetPosition(intptr_t Value);
-  int GetPosition();
+  intptr_t GetPosition();
 
 protected:
   virtual void ResetBounds();
