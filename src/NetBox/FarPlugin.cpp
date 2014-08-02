@@ -2179,7 +2179,7 @@ intptr_t TCustomFarFileSystem::PutFilesEx(TObjectList * /* PanelItems */, bool /
 }
 //---------------------------------------------------------------------------
 TObjectList * TCustomFarFileSystem::CreatePanelItemList(
-  struct PluginPanelItem * PanelItem, int ItemsNumber)
+  struct PluginPanelItem * PanelItem, size_t ItemsNumber)
 {
   std::unique_ptr<TObjectList> PanelItems(new TObjectList());
   PanelItems->SetOwnsObjects(true);

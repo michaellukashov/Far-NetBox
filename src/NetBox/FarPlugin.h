@@ -328,7 +328,7 @@ private:
 
   void ClearOpenPanelInfo(OpenPanelInfo & Info);
   TObjectList * CreatePanelItemList(struct PluginPanelItem * PanelItem,
-    int ItemsNumber);
+    size_t ItemsNumber);
   const TFarPanelInfo * GetPanelInfo(int Another) const;
   TFarPanelInfo * GetPanelInfo(int Another);
 };
