@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef PuttyToolsH
-#define PuttyToolsH
+#pragma once
 //---------------------------------------------------------------------------
 enum TKeyType
 {
@@ -25,4 +24,3 @@ void AES256EncodeWithMAC(char * Data, size_t Len, const char * Password,
 UnicodeString NormalizeFingerprint(const UnicodeString & Fingerprint);
 UnicodeString KeyTypeFromFingerprint(const UnicodeString & Fingerprint);
 //---------------------------------------------------------------------------
-#endif

@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef SftpFileSystemH
-#define SftpFileSystemH
+#pragma once
 
 #include <stdint.h>
 #include <FileSystems.h>
@@ -205,4 +204,3 @@ private:
   const TSessionData * GetSessionData() const;
 };
 //---------------------------------------------------------------------------
-#endif // SftpFileSystemH

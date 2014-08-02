@@ -2106,7 +2106,7 @@ bool TTerminal::GetExceptionOnFail() const
 //------------------------------------------------------------------------------
 void TTerminal::FatalAbort()
 {
-  FatalError(nullptr, "");
+  FatalError(nullptr, L"");
 }
 //------------------------------------------------------------------------------
 void TTerminal::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
@@ -4549,7 +4549,7 @@ static void AddFlagName(UnicodeString & ParamsStr, intptr_t & Params, intptr_t P
 {
   if (FLAGSET(Params, Param))
   {
-    AddToList(ParamsStr, Name, ", ");
+    AddToList(ParamsStr, Name, L", ");
   }
   Params &= ~Param;
 }

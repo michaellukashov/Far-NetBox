@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef GUIToolsH
-#define GUIToolsH
+#pragma once
 
 #include <CoreDefs.hpp>
 //---------------------------------------------------------------------------
@@ -31,7 +30,7 @@ bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Path,
 bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Command,
   TProcessMessagesEvent ProcessMessages);
 void OpenSessionInPutty(const UnicodeString & PuttyPath,
-  TSessionData * SessionData, const UnicodeString & UserName, const UnicodeString & Password);
+  TSessionData * SessionData);
 bool SpecialFolderLocation(int PathID, UnicodeString & Path);
 UnicodeString GetPersonalFolder();
 UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
@@ -74,4 +73,3 @@ void ValidateMaskEdit(TFarEdit * Edit);
 extern const UnicodeString PageantTool;
 extern const UnicodeString PuttygenTool;
 //---------------------------------------------------------------------------
-#endif

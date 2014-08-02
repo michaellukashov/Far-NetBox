@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef OptionsH
-#define OptionsH
+#pragma once
 //---------------------------------------------------------------------------
 #ifndef MPEXT_NO_SPEED_LIM_RULES
 #include <SpeedLimit.h>
@@ -19,4 +18,3 @@ public:
   static int GetInstanceOptionVal(CApiLog * Instance, int OptionID);
 };
 //---------------------------------------------------------------------------
-#endif

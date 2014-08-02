@@ -1,6 +1,5 @@
 //------------------------------------------------------------------------------
-#ifndef HierarchicalStorageH
-#define HierarchicalStorageH
+#pragma once
 
 #include <registry.hpp>
 //------------------------------------------------------------------------------
@@ -155,4 +154,3 @@ private:
 UnicodeString PuttyMungeStr(const UnicodeString & Str);
 UnicodeString PuttyUnMungeStr(const UnicodeString & Str);
 //------------------------------------------------------------------------------
-#endif

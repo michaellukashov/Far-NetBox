@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef NamedObjsH
-#define NamedObjsH
+#pragma once
 
 #include <system.hpp>
 #include <contnrs.hpp>
@@ -55,4 +54,3 @@ private:
 //---------------------------------------------------------------------------
 int NamedObjectSortProc(void * Item1, void * Item2);
 //---------------------------------------------------------------------------
-#endif

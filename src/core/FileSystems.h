@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef FileSystemsH
-#define FileSystemsH
+#pragma once
 
 #include <SessionInfo.h>
 #include "Exceptions.h"
@@ -121,7 +120,7 @@ public:
   TOverwriteMode OverwriteMode;
   int64_t DestFileSize; // output
   RawByteString RemoteFileHandle; // output
-  TOverwriteFileParams *FileParams;
+  TOverwriteFileParams * FileParams;
   bool Confirmed;
 };
 //---------------------------------------------------------------------------
@@ -209,4 +208,3 @@ protected:
   explicit TCustomFileSystem(TTerminal * ATerminal);
 };
 //---------------------------------------------------------------------------
-#endif

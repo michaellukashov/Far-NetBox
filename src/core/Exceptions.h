@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef ExceptionsH
-#define ExceptionsH
+#pragma once
 
 #include <Classes.hpp>
 #include <SysUtils.hpp>
@@ -142,4 +141,3 @@ UnicodeString GetExceptionHelpKeyword(Sysutils::Exception * E);
 UnicodeString MergeHelpKeyword(const UnicodeString & PrimaryHelpKeyword, const UnicodeString & SecondaryHelpKeyword);
 bool IsInternalErrorHelpKeyword(const UnicodeString & HelpKeyword);
 //---------------------------------------------------------------------------
-#endif  // Exceptions

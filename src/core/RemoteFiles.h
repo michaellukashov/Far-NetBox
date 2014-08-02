@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef RemoteFilesH
-#define RemoteFilesH
+#pragma once
 //---------------------------------------------------------------------------
 #include <map.h>
 #include <Sysutils.hpp>
@@ -165,8 +164,8 @@ private:
   TRemoteFile * FLinkedFile;
   TRemoteFile * FLinkedByFile;
   UnicodeString FLinkTo;
-  TRights *FRights;
-  TTerminal *FTerminal;
+  TRights * FRights;
+  TTerminal * FTerminal;
   wchar_t FType;
   bool FSelected;
   bool FCyclicLink;
@@ -519,4 +518,3 @@ int FakeFileImageIndex(const UnicodeString & AFileName, uint32_t Attrs = INVALID
 
 } // namespace core
 //---------------------------------------------------------------------------
-#endif

@@ -231,6 +231,7 @@ public:
     OnReadDirectoryProgress(AOnReadDirectoryProgress),
     Sender(nullptr),
     Progress(0),
+    ResolvedLinks(0),
     Cancel(false)
   {
   }
@@ -510,7 +511,7 @@ TTerminalQueue::~TTerminalQueue()
   SAFE_DESTROY(FSessionData);
 }
 //---------------------------------------------------------------------------
-void TTerminalQueue::FreeItemsList(TList * List)
+void TTerminalQueue::FreeItemsList(TList *& List)
 {
   for (intptr_t Index = 0; Index < List->GetCount(); ++Index)
   {

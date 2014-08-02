@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef SysutilsH
-#define SysutilsH
+#pragma once
 
 #include <WinBase.h>
 #include <functional>
@@ -415,5 +414,3 @@ private:
 //---------------------------------------------------------------------------
 
 //using namespace Sysutils;
-
-#endif

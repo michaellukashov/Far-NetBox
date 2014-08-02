@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef SecurityH
-#define SecurityH
+#pragma once
 //---------------------------------------------------------------------------
 #define PWALG_SIMPLE 1
 #define PWALG_SIMPLE_MAGIC 0xA3
@@ -15,4 +14,3 @@ bool GetExternalEncryptedPassword(const RawByteString & Encrypted, RawByteString
 //---------------------------------------------------------------------------
 bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len);
 //---------------------------------------------------------------------------
-#endif

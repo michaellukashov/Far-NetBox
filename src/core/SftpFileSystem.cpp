@@ -459,8 +459,8 @@ public:
       // any way to reflect sbSignedTS here?
       // (note that casting int64_t > 2^31 < 2^32 to uint32_t is wrapped,
       // thus we never can set time after 2038, even if the server supports it)
-      AddCardinal(static_cast<uint32_t>(ATime != nullptr ? *ATime : *MTime));
-      AddCardinal(static_cast<uint32_t>(MTime != nullptr ? *MTime : *ATime));
+      AddCardinal(static_cast<uint32_t>(ATime != nullptr ? *ATime : MTime != nullptr ? *MTime : 0));
+      AddCardinal(static_cast<uint32_t>(MTime != nullptr ? *MTime : ATime != nullptr ? *ATime : 0));
     }
     if ((Version >= 4) && (ATime != nullptr))
     {
@@ -595,7 +595,7 @@ public:
   RawByteString GetRawByteString() const
   {
     RawByteString Result;
-    uintptr_t Len = GetCardinal();
+    uint32_t Len = GetCardinal();
     Need(Len);
     // cannot happen anyway as Need() would raise exception
     assert(Len < SFTP_MAX_PACKET_LEN);
@@ -967,7 +967,7 @@ private:
   uint32_t FMessageNumber;
   TSFTPFileSystem * FReservedBy;
 
-  static intptr_t FMessageCounter;
+  static uint32_t FMessageCounter;
   static const intptr_t FSendPrefixLen = 4;
   uintptr_t FCodePage;
 
@@ -1123,7 +1123,7 @@ private:
   }
 };
 //---------------------------------------------------------------------------
-intptr_t TSFTPPacket::FMessageCounter = 0;
+uint32_t TSFTPPacket::FMessageCounter = 0;
 //---------------------------------------------------------------------------
 class TSFTPQueuePacket : public TSFTPPacket
 {
@@ -1793,7 +1793,8 @@ TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
   FSignedTS(false),
   FFixedPaths(nullptr),
   FMaxPacketSize(0),
-  FSupportsStatVfsV2(false)
+  FSupportsStatVfsV2(false),
+  FSupportsHardlink(false)
 {
   FCodePage = GetSessionData()->GetCodePageAsNumber();
 }
@@ -2274,7 +2275,7 @@ uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
     SFTP_STATUS_GROUP_INVALID,
     SFTP_STATUS_NO_MATCHING_BYTE_RANGE_LOCK
   };
-  if ((AllowStatus & (0x01 << Code)) == 0)
+  if ((AllowStatus & (0x01LL << Code)) == 0)
   {
     intptr_t Message;
     if (Code >= LENOF(Messages))
@@ -2793,7 +2794,7 @@ void TSFTPFileSystem::DoStartup()
   {
     MaxVersion = SFTPMaxVersion;
   }
-  Packet.AddCardinal(MaxVersion);
+  Packet.AddCardinal((uint32_t)MaxVersion);
 
   try
   {

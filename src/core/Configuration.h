@@ -1,11 +1,9 @@
 //---------------------------------------------------------------------------
-#ifndef ConfigurationH
-#define ConfigurationH
+#pragma once
 
 #include "RemoteFiles.h"
 #include "FileBuffer.h"
 #include "HierarchicalStorage.h"
-// #include "Usage.h"
 //---------------------------------------------------------------------------
 #define SET_CONFIG_PROPERTY_EX(PROPERTY, APPLY) \
   if (Get ## PROPERTY() != Value) { F ## PROPERTY = Value; Changed(); APPLY; }
@@ -256,4 +254,3 @@ extern const UnicodeString KittyRegistryStorageKey;
 extern const UnicodeString OriginalPuttyExecutable;
 extern const UnicodeString KittyExecutable;
 //---------------------------------------------------------------------------
-#endif

@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef QueueH
-#define QueueH
+#pragma once
 //---------------------------------------------------------------------------
 #include "Terminal.h"
 #include "FileOperationProgress.h"
@@ -141,7 +140,7 @@ protected:
 public:
   inline static TQueueItem * GetItem(TList * List, intptr_t Index);
   inline TQueueItem * GetItem(intptr_t Index);
-  void FreeItemsList(TList * List);
+  void FreeItemsList(TList *& List);
   void UpdateStatusForList(
     TTerminalQueueStatus * Status, TList * List, TTerminalQueueStatus * Current);
   bool ItemGetData(TQueueItem * Item, TQueueItemProxy * Proxy);
@@ -448,4 +447,3 @@ private:
   void TerminalInitializeLog(TObject * Sender);
 };
 //---------------------------------------------------------------------------
-#endif

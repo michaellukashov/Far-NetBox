@@ -1,5 +1,4 @@
-#ifndef FileInfoH
-#define FileInfoH
+#pragma once
 
 struct TTranslation
 {
@@ -31,5 +30,3 @@ UnicodeString GetFileInfoString(void * FileInfo,
 
 int CalculateCompoundVersion(int MajorVer,
   int MinorVer, int Release, int Build);
-
-#endif // FileInfoH

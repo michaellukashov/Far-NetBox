@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef SynchronizeControllerH
-#define SynchronizeControllerH
+#pragma once
 //---------------------------------------------------------------------------
 #include <CoreDefs.hpp>
 #include <CopyParam.h>
@@ -96,4 +95,3 @@ private:
   void SynchronizeDirectoriesChange(TObject * Sender, intptr_t Directories);
 };
 //---------------------------------------------------------------------------
-#endif
