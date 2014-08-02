@@ -1793,7 +1793,8 @@ TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
   FSignedTS(false),
   FFixedPaths(nullptr),
   FMaxPacketSize(0),
-  FSupportsStatVfsV2(false)
+  FSupportsStatVfsV2(false),
+  FSupportsHardlink(false)
 {
   FCodePage = GetSessionData()->GetCodePageAsNumber();
 }
