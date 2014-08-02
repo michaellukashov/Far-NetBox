@@ -66,14 +66,6 @@ union ClassesAllowedInStream
 };
 #endif
 
-_Check_return_ inline HRESULT AtlInternalOleLoadFromStream(
-	_Inout_ IStream* pStm, 
-	_In_ REFIID iidInterface, 
-	_Deref_out_ void** ppvObj, 
-	// _In_ ClassesAllowedInStream rgclsidAllowed, 
-	_In_ DWORD cclsidAllowed);
-
-
 #ifndef _ATL_DLL
 
 ATLINLINE ATLAPI_(IUnknown*) AtlComPtrAssign(
@@ -3029,115 +3021,6 @@ _Check_return_ inline HRESULT CComVariant::WriteToStream(_Inout_ IStream* pStrea
 #pragma warning(pop)	// C4702
 
 
-_Check_return_ inline HRESULT CComVariant::ReadFromStream(
-	_Inout_ IStream* pStream, 
-	_In_ VARTYPE vtExpected /* = VT_EMPTY */)
-{
-	// ClassesAllowedInStream allowed;
-	// allowed.rgclsidAllowed = NULL;
-
-	// return ReadFromStream(pStream, vtExpected, allowed, 0);
-	return S_OK;
-}
-
-_Check_return_ inline HRESULT CComVariant::ReadFromStream(
-	_Inout_ IStream* pStream, 
-	_In_ VARTYPE vtExpected, 
-	// _In_ ClassesAllowedInStream rgclsidAllowed, 
-	_In_ DWORD cclsidAllowed)
-{
-	ATLASSERT(pStream != NULL);
-	if(pStream == NULL)
-		return E_INVALIDARG;
-		
-	HRESULT hr;
-	hr = VariantClear(this);
-	if (FAILED(hr))
-		return hr;
-	VARTYPE vtRead = VT_EMPTY;
-	ULONG cbRead = 0;
-
-	hr = pStream->Read(&vtRead, sizeof(VARTYPE), &cbRead);
-	if (hr == S_FALSE || (cbRead != sizeof(VARTYPE) && hr == S_OK))
-		hr = E_FAIL;
-	if (FAILED(hr))
-		return hr;
-	if (vtExpected != VT_EMPTY && vtRead != vtExpected)
-		return E_FAIL;
-
-	vt = vtRead;
-	cbRead = 0;
-	switch (vtRead)
-	{
-	case VT_UNKNOWN:
-	case VT_DISPATCH:
-		{
-			/*punkVal = NULL;
-			hr = AtlInternalOleLoadFromStream(pStream,
-				(vtRead == VT_UNKNOWN) ? __uuidof(IUnknown) : __uuidof(IDispatch),
-				(void**)&punkVal, rgclsidAllowed, cclsidAllowed);
-			// If IPictureDisp or IFontDisp property is not set, 
-			// OleLoadFromStream() will return REGDB_E_CLASSNOTREG.
-			if (hr == REGDB_E_CLASSNOTREG)
-				hr = S_OK;*/
-			return hr;
-		}
-	case VT_UI1:
-	case VT_I1:
-		cbRead = sizeof(BYTE);
-		break;
-	case VT_I2:
-	case VT_UI2:
-	case VT_BOOL:
-		cbRead = sizeof(short);
-		break;
-	case VT_I4:
-	case VT_UI4:
-	case VT_R4:
-	case VT_INT:
-	case VT_UINT:
-	case VT_ERROR:
-		cbRead = sizeof(long);
-		break;
-	case VT_I8:
-	case VT_UI8:
-		cbRead = sizeof(LONGLONG);
-		break;
-	case VT_R8:
-	case VT_CY:
-	case VT_DATE:
-		cbRead = sizeof(double);
-		break;
-	default:
-		break;
-	}
-	if (cbRead != 0)
-	{
-		hr = pStream->Read((void*) &bVal, cbRead, NULL);
-		if (hr == S_FALSE)
-			hr = E_FAIL;
-		return hr;
-	}
-	CComBSTR bstrRead;
-
-	hr = bstrRead.ReadFromStream(pStream);
-	if (FAILED(hr))
-	{
-		// If CComBSTR::ReadFromStream failed, reset seek pointer to start of
-		// variant type.
-		LARGE_INTEGER nOffset;
-		nOffset.QuadPart = -(static_cast<LONGLONG>(sizeof(VARTYPE)));
-		pStream->Seek(nOffset, STREAM_SEEK_CUR, NULL);
-		vt = VT_EMPTY;
-		return hr;
-	}
-	vt = VT_BSTR;
-	bstrVal = bstrRead.Detach();
-	if (vtRead != VT_BSTR)
-		hr = ChangeType(vtRead);
-	return hr;
-}
-
 inline HRESULT CComVariant::GetSizeMax(_Out_ ULARGE_INTEGER* pcbSize) const
 {
 	ATLASSERT(pcbSize != NULL);
@@ -3314,76 +3197,6 @@ inline HRESULT CComVariant::VarCmp(
 			return ::VarCmp(pvarLeft, pvarRight, lcid, dwFlags);
 	}
 }
-
-ATLPREFAST_SUPPRESS(6387)
-_Check_return_ inline HRESULT AtlInternalOleLoadFromStream(
-	_Inout_ IStream* pStm, 
-	_In_ REFIID iidInterface, 
-	_Deref_out_ void** ppvObj, 
-	// _In_ ClassesAllowedInStream rgclsidAllowed, 
-	_In_ DWORD cclsidAllowed)
-{
-	ATLASSUME(pStm != NULL);
-	*ppvObj = NULL;
-
-	HRESULT hr = S_OK; /* ReadClassStm(pStm, &clsid);
-
-	if (FAILED(hr))
-	{		
-		return hr;
-	}
-	
-	CComPtr<IUnknown> punkVal;
-
-	if (cclsidAllowed != 0)
-	{
-		ATLASSUME(rgclsidAllowed.rgclsidAllowed != NULL);
-		hr = E_ACCESSDENIED;
-		
-		for(DWORD i = 0; i < cclsidAllowed; i++)
-		{
-			if (IsEqualCLSID(clsid, rgclsidAllowed.rgclsidAllowed[i]))
-			{
-				hr = S_OK;
-				break;
-			}
-		}		
-	}
-	else if (rgclsidAllowed.pfnClsidAllowed != NULL) 
-	{
-		hr = rgclsidAllowed.pfnClsidAllowed(clsid, iidInterface, reinterpret_cast<void**>(&punkVal));
-	}
-	
-	if (FAILED(hr))
-	{
-		return hr;
-	}
-
-	if (punkVal == NULL)
-	{
-		hr = CoCreateInstance(clsid, NULL, CLSCTX_SERVER | CLSCTX_NO_CODE_DOWNLOAD, iidInterface, reinterpret_cast<void**>(&punkVal));
-		if (FAILED(hr))
-		{		
-			return hr;
-		}
-	}
-
-	CComPtr<IPersistStream> pPersistStm;
-	hr = punkVal->QueryInterface(&pPersistStm);
-	
-	if (SUCCEEDED(hr))
-	{
-		hr = pPersistStm->Load(pStm);
-		
-		if (SUCCEEDED(hr))
-		{
-			*ppvObj = punkVal.Detach();			
-		}
-	}*/
-	
-	return hr;
-}
-ATLPREFAST_UNSUPPRESS()
 
 }	// namespace ATL
 #pragma pack(pop)
