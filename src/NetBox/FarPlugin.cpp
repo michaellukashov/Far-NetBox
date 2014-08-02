@@ -1016,7 +1016,7 @@ void TFarMessageDialog::ButtonClick(TFarButton * Sender, bool & Close)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::DialogMessage(unsigned int Flags,
+intptr_t TCustomFarPlugin::DialogMessage(uintptr_t Flags,
   const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons,
   TFarMessageParams * Params)
 {
@@ -1026,7 +1026,7 @@ intptr_t TCustomFarPlugin::DialogMessage(unsigned int Flags,
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::FarMessage(unsigned int Flags,
+intptr_t TCustomFarPlugin::FarMessage(uintptr_t Flags,
   const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons,
   TFarMessageParams * Params)
 {

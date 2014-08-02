@@ -205,10 +205,10 @@ protected:
     Sysutils::Exception * E, int OpMode = 0);
   void ResetCachedInfo();
   intptr_t MaxLength(TStrings * Strings);
-  intptr_t FarMessage(unsigned int Flags,
+  intptr_t FarMessage(uintptr_t Flags,
     const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons,
     TFarMessageParams * Params);
-  intptr_t DialogMessage(unsigned int Flags,
+  intptr_t DialogMessage(uintptr_t Flags,
     const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons,
     TFarMessageParams * Params);
   void InvalidateOpenPanelInfo();
