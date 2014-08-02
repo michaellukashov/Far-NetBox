@@ -515,7 +515,7 @@ RawByteString ScramblePassword(const UnicodeString & Password)
   Buf[Padding] = (char)('0' + (Len % 10));
   Buf[Padding + 1] = (char)('0' + ((Len / 10) % 10));
   Buf[Padding + 2] = (char)('0' + ((Len / 100) % 10));
-  strcpy(Buf + Padding + 3, reinterpret_cast<char *>(const_cast<wchar_t *>((UtfPassword.c_str()))));
+  strcpy_s(Buf + Padding + 3, UtfPassword.Length(), reinterpret_cast<char *>(const_cast<wchar_t *>((UtfPassword.c_str()))));
   char * S = Buf;
   int Last = 31;
   while (*S != '\0')
