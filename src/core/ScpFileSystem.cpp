@@ -2014,7 +2014,6 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
     };
     DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     TSearchRecChecked SearchRec;
-    memset(&SearchRec, 0, sizeof(SearchRec));
     bool FindOK = false;
     FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
       UnicodeString Path = ::IncludeTrailingBackslash(DirectoryName) + L"*.*";
