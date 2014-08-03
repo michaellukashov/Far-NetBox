@@ -123,13 +123,13 @@ public:
     TFarMessageParams * Params = nullptr);
   intptr_t MaxMessageLines();
   intptr_t MaxMenuItemLength();
-  intptr_t Menu(unsigned int Flags, const UnicodeString & Title,
+  intptr_t Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
     const UnicodeString & Bottom, TStrings * Items,
     const FarKey * BreakKeys,
     intptr_t & BreakCode);
-  intptr_t Menu(unsigned int Flags, const UnicodeString & Title,
+  intptr_t Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
     const UnicodeString & Bottom, TStrings * Items);
-  intptr_t Menu(unsigned int Flags, const UnicodeString & Title,
+  intptr_t Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
     const UnicodeString & Bottom, const FarMenuItem * Items, intptr_t Count,
     const FarKey * BreakKeys, intptr_t & BreakCode);
   bool InputBox(const UnicodeString & Title, const UnicodeString & Prompt,
@@ -139,8 +139,8 @@ public:
   void SaveScreen(HANDLE & Screen);
   void RestoreScreen(HANDLE & Screen);
   bool CheckForEsc();
-  bool Viewer(const UnicodeString & AFileName, const UnicodeString & Title, unsigned int Flags);
-  bool Editor(const UnicodeString & AFileName, const UnicodeString & Title, unsigned int Flags);
+  bool Viewer(const UnicodeString & AFileName, const UnicodeString & Title, VIEWER_FLAGS Flags);
+  bool Editor(const UnicodeString & AFileName, const UnicodeString & Title, EDITOR_FLAGS Flags);
   intptr_t FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
   __int64 FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, intptr_t Param1, void *Param2 = nullptr) const;
   intptr_t FarEditorControl(EDITOR_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2) const;
