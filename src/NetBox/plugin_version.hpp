@@ -12,5 +12,5 @@
 #define NETBOX_VERSION_BUILD         317
 
 static const std::wstring NETBOX_VERSION_NUMBER(L"2.1.38");
-static const std::wstring NETBOX_COMPILATION_TIME(L"27.07.2014 02:33:51");
+static const std::wstring NETBOX_COMPILATION_TIME(L"03.08.2014 23:43:51");
 
