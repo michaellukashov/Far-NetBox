@@ -393,7 +393,7 @@ intptr_t AnsiCompareStr(const UnicodeString & Str1, const UnicodeString & Str2)
 
 bool AnsiSameText(const UnicodeString & Str1, const UnicodeString & Str2)
 {
-  return StringCmp(Str1.c_str(), Str2.c_str()) == 0;
+  return StringCmpI(Str1.c_str(), Str2.c_str()) == 0;
 }
 
 bool SameText(const UnicodeString & Str1, const UnicodeString & Str2)
