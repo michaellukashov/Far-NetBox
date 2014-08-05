@@ -662,8 +662,9 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   SessionReopenAutoCheck->SetChecked((GetConfiguration()->GetSessionReopenAuto() > 0));
   SessionReopenAutoEdit->SetAsInteger((GetConfiguration()->GetSessionReopenAuto() > 0 ?
     (GetConfiguration()->GetSessionReopenAuto() / 1000) : 5));
-  SessionReopenNumberOfRetriesEdit->SetAsInteger((GetConfiguration()->GetSessionReopenAutoMaximumNumberOfRetries() > 0 ?
-    GetConfiguration()->GetSessionReopenAutoMaximumNumberOfRetries() : CONST_DEFAULT_NUMBER_OF_RETRIES));
+  intptr_t Value = GetConfiguration()->GetSessionReopenAutoMaximumNumberOfRetries();
+  SessionReopenNumberOfRetriesEdit->SetAsInteger(Value < 0 || Value > 99 ?
+    CONST_DEFAULT_NUMBER_OF_RETRIES : Value);
 
   bool Result = (Dialog->ShowModal() == brOK);
 
