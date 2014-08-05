@@ -1,5 +1,7 @@
 NetBox 2.1.39.318 ??.08.2014
 --------------------
+  * Setting "Maximum number of retries" = 0 means unlimited retries
+    (http://forum.farmanager.com/viewtopic.php?p=121309#p121309)
 
 NetBox 2.1.38.317 03.08.2014
 --------------------
