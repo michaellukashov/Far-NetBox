@@ -1601,7 +1601,7 @@ bool TTerminal::DoQueryReopen(Exception * E)
   else
   {
     intptr_t NumberOfRetries = FSessionData->GetNumberOfRetries();
-    if (NumberOfRetries >= FConfiguration->GetSessionReopenAutoMaximumNumberOfRetries())
+    if (FConfiguration->GetSessionReopenAutoMaximumNumberOfRetries() > 0 && NumberOfRetries >= FConfiguration->GetSessionReopenAutoMaximumNumberOfRetries())
     {
       LogEvent(FORMAT(L"Reached maximum number of retries: %d", FConfiguration->GetSessionReopenAutoMaximumNumberOfRetries()));
     }
