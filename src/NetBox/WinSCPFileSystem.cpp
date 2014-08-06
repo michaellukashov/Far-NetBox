@@ -334,7 +334,7 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
   SAFE_DESTROY(FPathHistory);
 }
 //------------------------------------------------------------------------------
-void TWinSCPFileSystem::HandleException(Sysutils::Exception * E, int OpMode)
+void TWinSCPFileSystem::HandleException(Sysutils::Exception * E, OPERATION_MODES OpMode)
 {
   if ((GetTerminal() != nullptr) && (NB_STATIC_DOWNCAST(EFatal, E) != nullptr))
   {

@@ -117,7 +117,7 @@ protected:
 
   void ProcessEditorEvent(intptr_t Event, void * Param);
 
-  virtual void HandleException(Sysutils::Exception * E, int OpMode = 0);
+  virtual void HandleException(Sysutils::Exception * E, OPERATION_MODES OpMode = 0);
   void KeepaliveThreadCallback();
 
   inline bool SessionList();

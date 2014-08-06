@@ -567,7 +567,7 @@ void TWinSCPPlugin::ShowExtendedException(Sysutils::Exception * E)
   }
 }
 //---------------------------------------------------------------------------
-void TWinSCPPlugin::HandleException(Sysutils::Exception * E, int OpMode)
+void TWinSCPPlugin::HandleException(Sysutils::Exception * E, OPERATION_MODES OpMode)
 {
   if (((OpMode & OPM_FIND) == 0) || (NB_STATIC_DOWNCAST(EFatal, E) != nullptr))
   {
