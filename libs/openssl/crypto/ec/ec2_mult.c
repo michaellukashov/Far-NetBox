@@ -281,8 +281,8 @@ static int ec_GF2m_montgomery_point_multiply(const EC_GROUP *group, EC_POINT *r,
 			{
 			BN_consttime_swap(word & mask, x1, x2, group->field.top);
 			BN_consttime_swap(word & mask, z1, z2, group->field.top);
-				if (!gf2m_Madd(group, &point->X, x2, z2, x1, z1, ctx)) goto err;
-				if (!gf2m_Mdouble(group, x1, z1, ctx)) goto err;
+			if (!gf2m_Madd(group, &point->X, x2, z2, x1, z1, ctx)) goto err;
+			if (!gf2m_Mdouble(group, x1, z1, ctx)) goto err;
 			BN_consttime_swap(word & mask, x1, x2, group->field.top);
 			BN_consttime_swap(word & mask, z1, z2, group->field.top);
 			mask >>= 1;
