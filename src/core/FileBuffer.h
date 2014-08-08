@@ -10,7 +10,7 @@ enum TEOLType
   eolCR /* \r */
 };
 const int cpRemoveCtrlZ = 0x01;
-const int cpRemoveBOM =   0x02;
+const int cpRemoveBOM   = 0x02;
 //---------------------------------------------------------------------------
 class TFileBuffer : public TObject
 {

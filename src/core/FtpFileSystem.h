@@ -110,10 +110,10 @@ protected:
 
   enum
   {
-    REPLY_CONNECT =      0x01,
-    REPLY_2XX_CODE =     0x02,
+    REPLY_CONNECT      = 0x01,
+    REPLY_2XX_CODE     = 0x02,
     REPLY_ALLOW_CANCEL = 0x04,
-    REPLY_3XX_CODE =     0x08
+    REPLY_3XX_CODE     = 0x08
   };
 
   bool PostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam);

@@ -36,11 +36,11 @@ enum TResumeSupport
 };
 class THierarchicalStorage;
 const int cpaIncludeMaskOnly = 0x01;
-const int cpaNoTransferMode =  0x02;
-const int cpaNoIncludeMask =   0x04;
-const int cpaNoClearArchive =  0x08;
-const int cpaNoPreserveTime =  0x10;
-const int cpaNoRights =        0x20;
+const int cpaNoTransferMode  = 0x02;
+const int cpaNoIncludeMask   = 0x04;
+const int cpaNoClearArchive  = 0x08;
+const int cpaNoPreserveTime  = 0x10;
+const int cpaNoRights        = 0x20;
 const int cpaNoPreserveReadOnly = 0x40;
 const int cpaNoIgnorePermErrors = 0x80;
 const int cpaNoNewerOnly        = 0x100;

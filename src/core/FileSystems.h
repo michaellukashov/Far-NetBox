@@ -35,8 +35,8 @@ enum TOverwriteMode
   omComplete
 };
 //---------------------------------------------------------------------------
-const int tfFirstLevel =   0x01;
-const int tfAutoResume = 0x02;
+const int tfFirstLevel   = 0x01;
+const int tfAutoResume   = 0x02;
 const int tfNewDirectory = 0x04;
 //---------------------------------------------------------------------------
 struct TSinkFileParams : public TObject

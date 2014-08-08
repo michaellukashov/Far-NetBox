@@ -142,7 +142,7 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
 //---------------------------------------------------------------------------
 enum TDSTMode
 {
-  dstmWin =  0, //
+  dstmWin  = 0, //
   dstmUnix = 1, // adjust UTC time to Windows "bug"
   dstmKeep = 2
 };

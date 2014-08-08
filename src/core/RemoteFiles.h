@@ -336,7 +336,7 @@ public:
   };
   enum TUnsupportedFlag
   {
-    rfDirectory  = 040000
+    rfDirectory = 040000
   };
   enum TState
   {
