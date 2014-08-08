@@ -1260,7 +1260,7 @@ void TCustomFarPlugin::FarCopyToClipboard(const UnicodeString & Str)
   FFarStandardFunctions.CopyToClipboard(Str.c_str());
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::FarCopyToClipboard(TStrings * Strings)
+void TCustomFarPlugin::FarCopyToClipboard(const TStrings * Strings)
 {
   if (Strings->GetCount() > 0)
   {

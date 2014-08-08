@@ -136,7 +136,7 @@ public:
   void FlushText();
   void WriteConsole(const UnicodeString & Str);
   void FarCopyToClipboard(const UnicodeString & Str);
-  void FarCopyToClipboard(TStrings * Strings);
+  void FarCopyToClipboard(const TStrings * Strings);
   intptr_t FarVersion();
   UnicodeString FormatFarVersion(intptr_t Version) const;
   UnicodeString TemporaryDir() const;
