@@ -1198,14 +1198,13 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
     DestText.SetLength(MaxLen + 1);
     HANDLE ScreenHandle = 0;
     SaveScreen(ScreenHandle);
-    UnicodeString AText = Text;
     {
       TFarEnvGuard Guard;
       Result = FStartupInfo.InputBox(
         Title.c_str(),
         Prompt.c_str(),
         HistoryName.c_str(),
-        AText.c_str(),
+        Text.c_str(),
         const_cast<wchar_t *>(DestText.c_str()),
         static_cast<int>(MaxLen),
         nullptr,
