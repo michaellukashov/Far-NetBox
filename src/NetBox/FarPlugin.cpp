@@ -1211,8 +1211,8 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
     {
       TFarEnvGuard Guard;
       Result = FStartupInfo.InputBox(
-                         &MainGuid,
-                         &MainGuid,
+        &MainGuid,
+        &MainGuid,
         Title.c_str(),
         Prompt.c_str(),
         HistoryName.c_str(),
