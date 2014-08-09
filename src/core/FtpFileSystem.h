@@ -103,7 +103,7 @@ public:
 protected:
   // enum TOverwriteMode { omOverwrite, omResume, omComplete };
 
-  virtual UnicodeString GetCurrentDirectory();
+  virtual UnicodeString GetCurrDirectory();
 
   const wchar_t * GetOption(intptr_t OptionID) const;
   intptr_t GetOptionVal(intptr_t OptionID) const;

@@ -12219,7 +12219,7 @@ void TWebDAVFileSystem::Idle()
 //------------------------------------------------------------------------------
 UnicodeString TWebDAVFileSystem::AbsolutePath(const UnicodeString & Path, bool /*Local*/)
 {
-  return core::AbsolutePath(GetCurrentDirectory(), Path);
+  return core::AbsolutePath(GetCurrDirectory(), Path);
 }
 //------------------------------------------------------------------------------
 bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
@@ -12294,7 +12294,7 @@ void TWebDAVFileSystem::EnsureLocation()
 }
 
 //------------------------------------------------------------------------------
-UnicodeString TWebDAVFileSystem::GetCurrentDirectory()
+UnicodeString TWebDAVFileSystem::GetCurrDirectory()
 {
   return FCurrentDirectory;
 }
@@ -12659,7 +12659,7 @@ void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
   {
     TCustomCommandData Data(FTerminal);
     UnicodeString Cmd = TRemoteCustomCommand(
-      Data, FTerminal->GetCurrentDirectory(), AFileName, L"").
+      Data, FTerminal->GetCurrDirectory(), AFileName, L"").
       Complete(Command, true);
   }
 }
@@ -12783,7 +12783,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
   TUploadSessionAction & Action)
 {
   UnicodeString RealFileName = File ? File->GetFileName() : AFileName;
-  bool CheckExistence = core::UnixSamePath(TargetDir, FTerminal->GetCurrentDirectory()) &&
+  bool CheckExistence = core::UnixSamePath(TargetDir, FTerminal->GetCurrDirectory()) &&
     (FTerminal->FFiles != nullptr) && FTerminal->FFiles->GetLoaded();
   bool CanProceed = false;
   UnicodeString FileNameOnly =

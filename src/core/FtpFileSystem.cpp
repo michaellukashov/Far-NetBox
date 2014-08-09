@@ -553,7 +553,7 @@ void TFTPFileSystem::Idle()
       std::unique_ptr<TRemoteDirectory> Files(new TRemoteDirectory(FTerminal));
       try
       {
-        Files->SetDirectory(GetCurrentDirectory());
+        Files->SetDirectory(GetCurrDirectory());
         DoReadDirectory(Files.get());
       }
       catch (...)
@@ -2036,7 +2036,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
     if ((FFileListCache != nullptr) &&
         core::UnixSamePath(Path, FFileListCache->GetDirectory()) &&
         (core::UnixIsAbsolutePath(FFileListCache->GetDirectory()) ||
-        (FFileListCachePath == GetCurrentDirectory())))
+        (FFileListCachePath == GetCurrDirectory())))
     {
       File = FFileListCache->FindFile(NameOnly);
     }
@@ -2051,7 +2051,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
       // the FFileListCache is reset from ResetCache.
       SAFE_DESTROY(FFileListCache);
       FFileListCache = FileListCache.release();
-      FFileListCachePath = GetCurrentDirectory();
+      FFileListCachePath = GetCurrDirectory();
 
       File = FFileListCache->FindFile(NameOnly);
     }
@@ -2168,7 +2168,7 @@ UnicodeString TFTPFileSystem::GetUserName()
   return FUserName;
 }
 //---------------------------------------------------------------------------
-UnicodeString TFTPFileSystem::GetCurrentDirectory()
+UnicodeString TFTPFileSystem::GetCurrDirectory()
 {
   return FCurrentDirectory;
 }

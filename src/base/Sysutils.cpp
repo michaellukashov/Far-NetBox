@@ -1215,7 +1215,7 @@ UnicodeString ExtractFilePath(const UnicodeString & Str)
 
 UnicodeString GetCurrentDir()
 {
-  UnicodeString Result = GetGlobalFunctions()->GetCurrentDirectory();
+  UnicodeString Result = GetGlobalFunctions()->GetCurrDirectory();
   return Result;
 }
 

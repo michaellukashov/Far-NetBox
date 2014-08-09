@@ -200,7 +200,7 @@ public:
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName) = 0;
   virtual bool GetStoredCredentialsTried() = 0;
   virtual UnicodeString GetUserName() = 0;
-  virtual UnicodeString GetCurrentDirectory() = 0;
+  virtual UnicodeString GetCurrDirectory() = 0;
 
 protected:
   TTerminal * FTerminal;

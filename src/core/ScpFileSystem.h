@@ -76,7 +76,7 @@ protected:
   TStrings * GetOutput() const { return FOutput; }
   intptr_t GetReturnCode() const { return FReturnCode; }
 
-  virtual UnicodeString GetCurrentDirectory();
+  virtual UnicodeString GetCurrDirectory();
 
 private:
   TSecureShell * FSecureShell;

@@ -127,7 +127,7 @@ public:
   uintptr_t AdjustToCPSLimit(uintptr_t Len);
 
 protected:
-  virtual UnicodeString GetCurrentDirectory();
+  virtual UnicodeString GetCurrDirectory();
 
   bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     intptr_t Count);
