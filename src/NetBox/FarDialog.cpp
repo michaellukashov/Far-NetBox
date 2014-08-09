@@ -88,10 +88,10 @@ void TFarDialog::SetBounds(const TRect & Value)
         COORD Coord;
         Coord.X = static_cast<short int>(GetSize().x);
         Coord.Y = static_cast<short int>(GetSize().y);
-        SendMessage(DM_RESIZEDIALOG, 0, reinterpret_cast<LONG_PTR>(&Coord));
+        SendDlgMessage(DM_RESIZEDIALOG, 0, reinterpret_cast<LONG_PTR>(&Coord));
         Coord.X = static_cast<short int>(FBounds.Left);
         Coord.Y = static_cast<short int>(FBounds.Top);
-        SendMessage(DM_MOVEDIALOG, (int)true, reinterpret_cast<LONG_PTR>(&Coord));
+        SendDlgMessage(DM_MOVEDIALOG, (int)true, reinterpret_cast<LONG_PTR>(&Coord));
       }
       for (intptr_t Index = 0; Index < GetItemCount(); Index++)
       {
@@ -677,7 +677,7 @@ bool TFarDialog::CloseQuery()
 void TFarDialog::RefreshBounds()
 {
   SMALL_RECT Rect = {0};
-  SendMessage(DM_GETDLGRECT, 0, reinterpret_cast<LONG_PTR>(&Rect));
+  SendDlgMessage(DM_GETDLGRECT, 0, reinterpret_cast<LONG_PTR>(&Rect));
   FBounds.Left = Rect.Left;
   FBounds.Top = Rect.Top;
   FBounds.Right = Rect.Right;
@@ -771,7 +771,7 @@ void TFarDialog::Synchronize(TThreadMethod Event)
 void TFarDialog::Close(TFarButton * Button)
 {
   assert(Button != nullptr);
-  SendMessage(DM_CLOSE, Button->GetItem(), 0);
+  SendDlgMessage(DM_CLOSE, Button->GetItem(), 0);
 }
 //---------------------------------------------------------------------------
 void TFarDialog::Change()
@@ -800,7 +800,7 @@ void TFarDialog::Change()
   }
 }
 //---------------------------------------------------------------------------
-LONG_PTR TFarDialog::SendMessage(int Msg, intptr_t Param1, LONG_PTR Param2)
+LONG_PTR TFarDialog::SendDlgMessage(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
   assert(GetHandle());
   TFarEnvGuard Guard;
@@ -815,7 +815,7 @@ uintptr_t TFarDialog::GetSystemColor(intptr_t Index)
 //---------------------------------------------------------------------------
 void TFarDialog::Redraw()
 {
-  SendMessage(DM_REDRAW, 0, 0);
+  SendDlgMessage(DM_REDRAW, 0, 0);
 }
 //---------------------------------------------------------------------------
 void TFarDialog::ShowGroup(intptr_t Group, bool Show)
@@ -881,7 +881,7 @@ void TFarDialog::LockChanges()
     assert(!FChangesPending);
     if (GetHandle())
     {
-      SendMessage(DM_ENABLEREDRAW, static_cast<intptr_t>(false), 0);
+      SendDlgMessage(DM_ENABLEREDRAW, static_cast<intptr_t>(false), 0);
     }
   }
 }
@@ -896,7 +896,7 @@ void TFarDialog::UnlockChanges()
     {
       if (GetHandle())
       {
-        this->SendMessage(DM_ENABLEREDRAW, TRUE, 0);
+        this->SendDlgMessage(DM_ENABLEREDRAW, TRUE, 0);
       }
     };
     if (FChangesPending)
@@ -1421,12 +1421,12 @@ void TFarDialogItem::DialogChange()
 //---------------------------------------------------------------------------
 LONG_PTR TFarDialogItem::SendDialogMessage(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
-  return GetDialog()->SendMessage(Msg, Param1, Param2);
+  return GetDialog()->SendDlgMessage(Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
 LONG_PTR TFarDialogItem::SendMessage(int Msg, LONG_PTR Param)
 {
-  return GetDialog()->SendMessage(Msg, GetItem(), Param);
+  return GetDialog()->SendDlgMessage(Msg, GetItem(), Param);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetSelected(intptr_t Value)

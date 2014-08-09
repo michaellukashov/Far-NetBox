@@ -97,7 +97,7 @@ protected:
   TObjectList * GetItems() { return FItems; }
   void Add(TFarDialogItem * Item);
   void Add(TFarDialogContainer * Container);
-  LONG_PTR SendMessage(int Msg, intptr_t Param1, LONG_PTR Param2);
+  LONG_PTR SendDlgMessage(int Msg, intptr_t Param1, LONG_PTR Param2);
   virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
   virtual LONG_PTR FailDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
   LONG_PTR DefaultDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
