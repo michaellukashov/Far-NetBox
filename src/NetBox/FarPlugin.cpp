@@ -2909,7 +2909,7 @@ UnicodeString TGlobalFunctions::GetCurrentDirectory() const
   wchar_t Path[MAX_PATH + 1];
   if (FarPlugin)
   {
-    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(sizeof(Path), Path);
+    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(LENOF(Path), Path);
   }
   else
   {
