@@ -257,7 +257,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
     FileSystem->Init(nullptr);
 
     if (OpenFrom == OPEN_LEFTDISKMENU || OpenFrom == OPEN_RIGHTDISKMENU ||
-          OpenFrom == OPEN_PLUGINSMENU ||
+        OpenFrom == OPEN_PLUGINSMENU ||
         OpenFrom == OPEN_FINDLIST)
     {
       // nothing
@@ -266,18 +266,18 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
     {
       UnicodeString Directory;
       UnicodeString CommandLine;
-        FAROPENSHORTCUTFLAGS Flags = FOSF_NONE;
-        if (OpenFrom == OPEN_SHORTCUT)
-        {
-          OpenShortcutInfo * Info = reinterpret_cast<OpenShortcutInfo *>(Item);
-          CommandLine = Info->ShortcutData;
-          Flags = Info->Flags;
-        }
-        else
-        {
-          OpenCommandLineInfo * Info = reinterpret_cast<OpenCommandLineInfo *>(Item);
-          CommandLine = Info->CommandLine;
-        }
+      FAROPENSHORTCUTFLAGS Flags = FOSF_NONE;
+      if (OpenFrom == OPEN_SHORTCUT)
+      {
+        OpenShortcutInfo * Info = reinterpret_cast<OpenShortcutInfo *>(Item);
+        CommandLine = Info->ShortcutData;
+        Flags = Info->Flags;
+      }
+      else
+      {
+        OpenCommandLineInfo * Info = reinterpret_cast<OpenCommandLineInfo *>(Item);
+        CommandLine = Info->CommandLine;
+      }
       if (OpenFrom == OPEN_SHORTCUT)
       {
         intptr_t P = CommandLine.Pos(L"\1");
