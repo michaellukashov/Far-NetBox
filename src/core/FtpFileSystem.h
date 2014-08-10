@@ -103,17 +103,17 @@ public:
 protected:
   // enum TOverwriteMode { omOverwrite, omResume, omComplete };
 
-  virtual UnicodeString GetCurrentDirectory();
+  virtual UnicodeString GetCurrDirectory();
 
   const wchar_t * GetOption(intptr_t OptionID) const;
   intptr_t GetOptionVal(intptr_t OptionID) const;
 
   enum
   {
-    REPLY_CONNECT =      0x01,
-    REPLY_2XX_CODE =     0x02,
+    REPLY_CONNECT      = 0x01,
+    REPLY_2XX_CODE     = 0x02,
     REPLY_ALLOW_CANCEL = 0x04,
-    REPLY_3XX_CODE =     0x08
+    REPLY_3XX_CODE     = 0x08
   };
 
   bool PostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam);

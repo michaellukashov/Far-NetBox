@@ -116,7 +116,7 @@ protected:
   void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& AFile, uint8_t Type, TRemoteFile * ALinkedByFile = nullptr,
     intptr_t AllowStatus = -1);
-  virtual UnicodeString GetCurrentDirectory();
+  virtual UnicodeString GetCurrDirectory();
   UnicodeString GetHomeDirectory();
   uintptr_t GotStatusPacket(TSFTPPacket * Packet, intptr_t AllowStatus);
   bool RemoteFileExists(const UnicodeString & FullPath, TRemoteFile ** AFile = nullptr);

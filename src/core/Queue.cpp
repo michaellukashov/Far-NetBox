@@ -1952,7 +1952,7 @@ TLocatedQueueItem::TLocatedQueueItem(TTerminal * Terminal) :
   TQueueItem()
 {
   assert(Terminal != nullptr);
-  FCurrentDir = Terminal->GetCurrentDirectory();
+  FCurrentDir = Terminal->GetCurrDirectory();
 }
 //---------------------------------------------------------------------------
 UnicodeString TLocatedQueueItem::StartupDirectory()
@@ -2073,7 +2073,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   {
     if (!core::UnixExtractCommonPath(AFilesToCopy, FInfo->Source))
     {
-      FInfo->Source = Terminal->GetCurrentDirectory();
+      FInfo->Source = Terminal->GetCurrDirectory();
     }
     FInfo->Source = core::UnixExcludeTrailingBackslash(FInfo->Source);
     FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
@@ -2085,10 +2085,10 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
     FInfo->Source = AFilesToCopy->GetString(0);
     if (core::UnixExtractFilePath(FInfo->Source).IsEmpty())
     {
-      FInfo->Source = core::UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory()) +
+      FInfo->Source = core::UnixIncludeTrailingBackslash(Terminal->GetCurrDirectory()) +
         FInfo->Source;
       FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
-        core::UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory());
+        core::UnixIncludeTrailingBackslash(Terminal->GetCurrDirectory());
     }
     else
     {

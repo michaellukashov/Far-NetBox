@@ -149,7 +149,7 @@ public:
   void FlushText();
   void WriteConsole(const UnicodeString & Str);
   void FarCopyToClipboard(const UnicodeString & Str);
-  void FarCopyToClipboard(TStrings * Strings);
+  void FarCopyToClipboard(const TStrings * Strings);
   intptr_t FarVersion();
   UnicodeString FormatFarVersion(VersionInfo & Info) const;
   UnicodeString TemporaryDir() const;
@@ -270,7 +270,7 @@ public:
   virtual void Close();
 
 protected:
-  virtual UnicodeString GetCurrentDirectory() const = 0;
+  virtual UnicodeString GetCurrDirectory() const = 0;
 
 protected:
   TCustomFarPlugin * FPlugin;
@@ -469,7 +469,7 @@ public:
   TRect GetBounds() const;
   TFarPanelType GetType() const;
   bool GetIsPlugin() const;
-  UnicodeString GetCurrentDirectory() const;
+  UnicodeString GetCurrDirectory() const;
 
   void ApplySelection();
   TFarPanelItem * FindFileName(const UnicodeString & AFileName) const;
@@ -545,7 +545,7 @@ class TGlobalFunctions : public TGlobalFunctionsIntf, public TObject
 {
 public:
   virtual HINSTANCE GetInstanceHandle() const;
-  virtual UnicodeString GetCurrentDirectory() const;
+  virtual UnicodeString GetCurrDirectory() const;
   virtual UnicodeString GetStrVersionNumber() const;
 };
 //------------------------------------------------------------------------------

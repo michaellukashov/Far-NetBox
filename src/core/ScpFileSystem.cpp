@@ -476,7 +476,7 @@ void TSCPFileSystem::Idle()
 //---------------------------------------------------------------------------
 UnicodeString TSCPFileSystem::AbsolutePath(const UnicodeString & Path, bool /*Local*/)
 {
-  return core::AbsolutePath(GetCurrentDirectory(), Path);
+  return core::AbsolutePath(GetCurrDirectory(), Path);
 }
 //---------------------------------------------------------------------------
 bool TSCPFileSystem::IsCapable(intptr_t Capability) const
@@ -774,7 +774,7 @@ void TSCPFileSystem::ExecCommand2(TFSCommand Cmd, intptr_t Params, ...)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TSCPFileSystem::GetCurrentDirectory()
+UnicodeString TSCPFileSystem::GetCurrDirectory()
 {
   return FCurrentDirectory;
 }
@@ -1005,7 +1005,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         FLAGMASK(FTerminal->GetSessionData()->GetIgnoreLsWarnings(), ecIgnoreWarnings);
       const wchar_t * Options =
         ((FLsFullTime == asAuto) || (FLsFullTime == asOn)) ? FullTimeOption : L"";
-      bool ListCurrentDirectory = (FileList->GetDirectory() == FTerminal->GetCurrentDirectory());
+      bool ListCurrentDirectory = (FileList->GetDirectory() == FTerminal->GetCurrDirectory());
       if (ListCurrentDirectory)
       {
         FTerminal->LogEvent(L"Listing current directory.");
@@ -1302,7 +1302,7 @@ void TSCPFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
   {
     TCustomCommandData Data(FTerminal);
     UnicodeString Cmd = TRemoteCustomCommand(
-      Data, FTerminal->GetCurrentDirectory(), AFileName, L"").
+      Data, FTerminal->GetCurrDirectory(), AFileName, L"").
       Complete(Command, true);
 
     AnyCommand(Cmd, OutputEvent);
@@ -1456,7 +1456,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 
   Params &= ~(cpAppend | cpResume);
   UnicodeString Options = L"";
-  bool CheckExistence = core::UnixSamePath(TargetDir, FTerminal->GetCurrentDirectory()) &&
+  bool CheckExistence = core::UnixSamePath(TargetDir, FTerminal->GetCurrDirectory()) &&
     (FTerminal->FFiles != nullptr) && FTerminal->FFiles->GetLoaded();
   bool CopyBatchStarted = false;
   bool Failed = true;

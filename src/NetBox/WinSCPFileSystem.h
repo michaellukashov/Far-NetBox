@@ -37,7 +37,7 @@ struct TMessageParams;
 #define MAKE_SESSION_FOLDER_HISTORY L"WinscpSessionFolder"
 //------------------------------------------------------------------------------
 // for Properties dialog
-const int cpMode =  0x01;
+const int cpMode  = 0x01;
 const int cpOwner = 0x02;
 const int cpGroup = 0x04;
 // for Copy dialog
@@ -242,7 +242,7 @@ protected:
   TSessionData * GetSessionData() { return FTerminal ? FTerminal->GetSessionData() : nullptr; }
 
 protected:
-  virtual UnicodeString GetCurrentDirectory() const { return FTerminal ? FTerminal->GetCurrentDirectory() : UnicodeString(); }
+  virtual UnicodeString GetCurrDirectory() const { return FTerminal ? FTerminal->GetCurrDirectory() : UnicodeString(); }
 
 private:
   bool TerminalCheckForEsc();

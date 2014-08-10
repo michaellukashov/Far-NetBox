@@ -162,7 +162,7 @@ public:
   uintptr_t CommandError(Sysutils::Exception * E, const UnicodeString & Msg,
     uintptr_t Answers, const UnicodeString & HelpKeyword = L"");
   void SetMasks(const UnicodeString & Value);
-  UnicodeString GetCurrentDirectory();
+  UnicodeString GetCurrDirectory();
   bool GetExceptionOnFail() const;
   const TRemoteTokenList * GetGroups();
   const TRemoteTokenList * GetUsers();

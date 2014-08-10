@@ -549,7 +549,7 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
   {
     return 0;
   }
-  UnicodeString PrevCurrentDirectory = FarFileSystem->GetCurrentDirectory();
+  UnicodeString PrevCurrentDirectory = FarFileSystem->GetCurrDirectory();
   try
   {
     ResetCachedInfo();
@@ -1274,7 +1274,7 @@ void TCustomFarPlugin::FarCopyToClipboard(const UnicodeString & Str)
   FFarStandardFunctions.CopyToClipboard(FCT_STREAM, Str.c_str());
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::FarCopyToClipboard(TStrings * Strings)
+void TCustomFarPlugin::FarCopyToClipboard(const TStrings * Strings)
 {
   if (Strings->GetCount() > 0)
   {
@@ -2717,7 +2717,7 @@ bool TFarPanelInfo::GetIsPlugin() const
   return ((FPanelInfo->PluginHandle != INVALID_HANDLE_VALUE) && (FPanelInfo->PluginHandle != 0));
 }
 //---------------------------------------------------------------------------
-UnicodeString TFarPanelInfo::GetCurrentDirectory() const
+UnicodeString TFarPanelInfo::GetCurrDirectory() const
 {
   UnicodeString Result = L"";
   intptr_t Size = FarPlugin->FarControl(FCTL_GETPANELDIRECTORY,
@@ -2963,13 +2963,13 @@ HINSTANCE TGlobalFunctions::GetInstanceHandle() const
   return Result;
 }
 //------------------------------------------------------------------------------
-UnicodeString TGlobalFunctions::GetCurrentDirectory() const
+UnicodeString TGlobalFunctions::GetCurrDirectory() const
 {
   UnicodeString Result;
   wchar_t Path[MAX_PATH + 1];
   if (FarPlugin)
   {
-    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(sizeof(Path), Path);
+    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(LENOF(Path), Path);
   }
   else
   {

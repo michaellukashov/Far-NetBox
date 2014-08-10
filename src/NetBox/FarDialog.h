@@ -100,7 +100,7 @@ protected:
   TObjectList * GetItems() { return FItems; }
   void Add(TFarDialogItem * Item);
   void Add(TFarDialogContainer * Container);
-  intptr_t SendMessage(intptr_t Msg, intptr_t Param1, void * Param2);
+  intptr_t SendDlgMessage(intptr_t Msg, intptr_t Param1, void * Param2);
   virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   virtual intptr_t FailDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   intptr_t DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);

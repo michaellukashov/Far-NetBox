@@ -2741,7 +2741,7 @@ UnicodeString TSFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool Lo
   }
   else
   {
-    return RealPath(APath, GetCurrentDirectory());
+    return RealPath(APath, GetCurrDirectory());
   }
 }
 //---------------------------------------------------------------------------
@@ -2778,7 +2778,7 @@ TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket * Packet,
   return File.release();
 }
 //---------------------------------------------------------------------------
-UnicodeString TSFTPFileSystem::GetCurrentDirectory()
+UnicodeString TSFTPFileSystem::GetCurrDirectory()
 {
   return FCurrentDirectory;
 }

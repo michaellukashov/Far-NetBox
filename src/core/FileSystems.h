@@ -35,8 +35,8 @@ enum TOverwriteMode
   omComplete
 };
 //---------------------------------------------------------------------------
-const int tfFirstLevel =   0x01;
-const int tfAutoResume = 0x02;
+const int tfFirstLevel   = 0x01;
+const int tfAutoResume   = 0x02;
 const int tfNewDirectory = 0x04;
 //---------------------------------------------------------------------------
 struct TSinkFileParams : public TObject
@@ -200,7 +200,7 @@ public:
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName) = 0;
   virtual bool GetStoredCredentialsTried() = 0;
   virtual UnicodeString GetUserName() = 0;
-  virtual UnicodeString GetCurrentDirectory() = 0;
+  virtual UnicodeString GetCurrDirectory() = 0;
 
 protected:
   TTerminal * FTerminal;
