@@ -123,7 +123,7 @@ UnicodeString FormatSize(int64_t Size);
 UnicodeString ExtractFileBaseName(const UnicodeString & Path);
 TStringList * TextToStringList(const UnicodeString & Text);
 UnicodeString TrimVersion(const UnicodeString & Version);
-UnicodeString FormatVersion(int MajovVersion, int MinorVersion, int Release);
+UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion);
 Sysutils::TFormatSettings GetEngFormatSettings();
 //int ParseShortEngMonthName(const UnicodeString & MonthStr);
 //---------------------------------------------------------------------------
