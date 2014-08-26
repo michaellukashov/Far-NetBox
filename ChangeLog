@@ -1,5 +1,7 @@
-NetBox 2.1.39.320 ??.08.2014
+NetBox 2.1.39.321 ??.08.2014
 --------------------
+  * Bugfix: remote command output is scrolled up if Far.exe is started with /w command line switch (Stretch to console window instead of console buffer)
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=1680#p121335)
   * Update openssl sources to 1.0.1i
   * Bugfix: "Apply command": patterns substitution not working
     (http://forum.farmanager.com/viewtopic.php?p=121023#p121023)
