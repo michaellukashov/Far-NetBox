@@ -1294,7 +1294,7 @@ TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor) const
   if (Cursor != nullptr)
   {
     Cursor->x = BufferInfo.dwCursorPosition.X - BufferInfo.srWindow.Left;
-    Cursor->y = BufferInfo.dwCursorPosition.Y - BufferInfo.srWindow.Top;
+    Cursor->y = BufferInfo.dwCursorPosition.Y; // - BufferInfo.srWindow.Top;
   }
   return Result;
 }
