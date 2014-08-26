@@ -802,10 +802,12 @@ void TFarDialog::Change()
 //---------------------------------------------------------------------------
 LONG_PTR TFarDialog::SendDlgMessage(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
-  assert(GetHandle());
-  TFarEnvGuard Guard;
-  return GetFarPlugin()->GetStartupInfo()->SendDlgMessage(GetHandle(),
-    Msg, static_cast<int>(Param1), Param2);
+  if (GetHandle())
+  {
+    TFarEnvGuard Guard;
+    return GetFarPlugin()->GetStartupInfo()->SendDlgMessage(GetHandle(),
+      Msg, static_cast<int>(Param1), Param2);
+  }
 }
 //---------------------------------------------------------------------------
 uintptr_t TFarDialog::GetSystemColor(intptr_t Index)
