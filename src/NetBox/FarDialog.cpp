@@ -805,10 +805,12 @@ void TFarDialog::Change()
 //---------------------------------------------------------------------------
 intptr_t TFarDialog::SendDlgMessage(intptr_t Msg, intptr_t Param1, void * Param2)
 {
-  assert(GetHandle());
-  TFarEnvGuard Guard;
-  return GetFarPlugin()->GetStartupInfo()->SendDlgMessage(GetHandle(),
-    Msg, static_cast<int>(Param1), Param2);
+  if (GetHandle())
+  {
+    TFarEnvGuard Guard;
+    return GetFarPlugin()->GetStartupInfo()->SendDlgMessage(GetHandle(),
+      Msg, Param1, Param2);
+  }
 }
 //---------------------------------------------------------------------------
 FarColor TFarDialog::GetSystemColor(PaletteColors colorId)

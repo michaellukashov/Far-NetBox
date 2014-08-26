@@ -778,11 +778,11 @@ UnicodeString TConfiguration::GetVersionStr() const
 //    AddToList(BuildStr, DateStr, L" ");
 //    #endif
 
-    Result = FMTLOAD(VERSION2, GetVersion(), BuildStr.c_str());
+    Result = FMTLOAD(VERSION2, GetVersion().c_str(), Build);
 
-    #ifndef BUILD_OFFICIAL
-    Result += L" " + LoadStr(VERSION_DONT_DISTRIBUTE);
-    #endif
+//    #ifndef BUILD_OFFICIAL
+//    Result += L" " + LoadStr(VERSION_DONT_DISTRIBUTE);
+//    #endif
   }
   catch (Exception & E)
   {
