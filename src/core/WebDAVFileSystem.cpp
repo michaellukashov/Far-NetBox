@@ -11261,7 +11261,7 @@ request_auth(
   // Start by marking the current credentials invalid.
   ras->auth_used = false;
 
-  // No auth_baton?  Give up.
+  // No auth_baton? Give up.
   if (!ras->callbacks->auth_baton)
     return -1;
 
