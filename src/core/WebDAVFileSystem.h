@@ -106,6 +106,11 @@ public:
   webdav::error_t AskForClientCertificateFilename(
     const char **cert_file, uintptr_t & RequestResult,
     apr_pool_t *pool);
+  webdav::error_t NeonRequestAuth(
+    const char ** user_name,
+    const char ** password,
+    uintptr_t & RequestResult,
+    apr_pool_t *pool);
   webdav::error_t AskForUsername(
     const char ** user_name,
     uintptr_t & RequestResult,
@@ -194,6 +199,9 @@ private:
   TCaptureOutputEvent FOnCaptureOutput;
   TSessionInfo FSessionInfo;
   UnicodeString FUserName;
+  UnicodeString FPassword;
+  enum TIgnoreAuthenticationFailure { iafNo, iafWaiting, iafPasswordFailed } FIgnoreAuthenticationFailure;
+  bool FStoredPasswordTried;
   bool FPasswordFailed;
   bool FActive;
   enum

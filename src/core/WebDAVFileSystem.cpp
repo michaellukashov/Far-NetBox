@@ -312,7 +312,8 @@ typedef struct list_func_baton_t
 //------------------------------------------------------------------------------
 // #define WEBDAV_ARRAY_IDX(ary,i,type) ((type)(ary)[i])
 #define WEBDAV_NO_ERROR 0
-#define WEBDAV_UNKNOWN_ERROR 1
+#define WEBDAV_ERROR_AUTH 1
+#define WEBDAV_UNKNOWN_ERROR 100
 #define WEBDAV_ERR(expr)              \
   do {                                \
   webdav::error_t err__temp = (expr); \
@@ -9551,18 +9552,24 @@ cmdline_auth_simple_prompt(
   assert(fs);
   uintptr_t RequestResult = 0;
 
-  if (username)
+  if (username && password)
+  {
     ret->username = apr_pstrdup(pool, username);
+    ret->password = apr_pstrdup(pool, password);
+  }
   else
   {
-    WEBDAV_ERR(fs->AskForUsername(&ret->username, RequestResult, pool));
+    //WEBDAV_ERR(fs->AskForUsername(&ret->username, RequestResult, pool));
+    //if (RequestResult != qaOK)
+    //  return WEBDAV_NO_ERROR;
+    //WEBDAV_ERR(fs->AskForUserPassword(&ret->password, RequestResult, pool));
+    //if (RequestResult != qaOK)
+    //  return WEBDAV_NO_ERROR;
+
+    WEBDAV_ERR(fs->NeonRequestAuth(&ret->username, &ret->password, RequestResult, pool));
     if (RequestResult != qaOK)
       return WEBDAV_NO_ERROR;
   }
-
-  WEBDAV_ERR(fs->AskForUserPassword(&ret->password, RequestResult, pool));
-  if (RequestResult != qaOK)
-    return WEBDAV_NO_ERROR;
 
   ret->may_save = may_save;
   *cred_p = ret;
@@ -12100,6 +12107,8 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(ATerminal),
   FFileList(nullptr),
   FOnCaptureOutput(nullptr),
+  FIgnoreAuthenticationFailure(iafNo),
+  FStoredPasswordTried(false),
   FPasswordFailed(false),
   FActive(false),
   FFileTransferAbort(ftaNone),
@@ -12138,6 +12147,7 @@ void TWebDAVFileSystem::Open()
 {
   FCurrentDirectory = L"";
   FHasTrailingSlash = false;
+  FStoredPasswordTried = false;
 
   TSessionData * Data = FTerminal->GetSessionData();
 
@@ -14115,6 +14125,108 @@ webdav::error_t TWebDAVFileSystem::AskForClientCertificateFilename(
   WEBDAV_ERR(webdav::path_cstring_to_utf8(cert_file, AnsiString(FileName).c_str(), pool));
   RequestResult = qaOK;
   return WEBDAV_NO_ERROR;
+}
+//------------------------------------------------------------------------------
+webdav::error_t TWebDAVFileSystem::NeonRequestAuth(
+  const char ** user_name,
+  const char ** password,
+  uintptr_t & RequestResult,
+  apr_pool_t * pool)
+{
+  bool Result = true;
+  RequestResult = 0;
+  TSessionData * SessionData = FTerminal->GetSessionData();
+  UnicodeString UserName = SessionData->GetUserNameExpanded();
+  // will ask for username only once
+  if (this->FUserName.IsEmpty())
+  {
+    if (!UserName.IsEmpty())
+    {
+      this->FUserName = UserName;
+    }
+    else
+    {
+      if (!FTerminal->PromptUser(SessionData, pkUserName, LoadStr(USERNAME_TITLE), L"",
+        LoadStr(USERNAME_PROMPT2), true, NE_ABUFSIZ, this->FUserName))
+      {
+        // note that we never get here actually
+        Result = false;
+      }
+    }
+  }
+
+  //if (!FTerminal->PromptUser(Data, pkUserName, LoadStr(USERNAME_TITLE), L"",
+  //  LoadStr(USERNAME_PROMPT2), true, 0, UserName))
+  //{
+  //  FFileTransferCancelled = true;
+  //  FFileTransferAbort = ftaCancel;
+  //  return WEBDAV_ERR_CANCELLED;
+  //}
+  //WEBDAV_ERR(webdav::path_cstring_to_utf8(user_name, AnsiString(UserName).c_str(), pool));
+  //RequestResult = qaOK;
+
+  UnicodeString Password;
+  if (Result)
+  {
+    // Some servers (Gallery2 on https://g2.pixi.me/w/webdav/)
+    // return authentication error (401) on PROPFIND request for
+    // non-existing files.
+    // When we already tried password before, do not try anymore.
+    // When we did not try password before (possible only when
+    // server does not require authentication for any previous request,
+    // such as when read access is not authenticated), try it now,
+    // but use special flag for the try, because when it fails
+    // we still want to try password for future requests (such as PUT).
+
+    if (!this->FPassword.IsEmpty())
+    {
+      if (this->FIgnoreAuthenticationFailure == iafPasswordFailed)
+      {
+        // Fail PROPFIND /nonexisting request...
+        Result = false;
+      }
+      else
+      {
+        Password = FTerminal->DecryptPassword(this->FPassword);
+      }
+    }
+    else
+    {
+      if (!SessionData->GetPassword().IsEmpty() && !this->FStoredPasswordTried)
+      {
+        Password = SessionData->GetPassword();
+        this->FStoredPasswordTried = true;
+      }
+      else
+      {
+        // Asking for password (or using configured password) the first time,
+        // and asking for password.
+        // Note that we never get false here actually
+        Result =
+          FTerminal->PromptUser(
+          SessionData, pkPassword, LoadStr(PASSWORD_TITLE), L"",
+          LoadStr(PASSWORD_PROMPT), false, NE_ABUFSIZ, Password);
+      }
+
+      if (Result)
+      {
+        // While neon remembers the password on its own,
+        // we need to keep a copy in case neon store gets reset by
+        // 401 response to PROPFIND /nonexisting on G2, see above.
+        // Possibly we can do this for G2 servers only.
+        this->FPassword = FTerminal->EncryptPassword(Password);
+      }
+    }
+  }
+
+  if (Result)
+  {
+    WEBDAV_ERR(webdav::path_cstring_to_utf8(user_name, AnsiString(this->FUserName).c_str(), pool));
+    WEBDAV_ERR(webdav::path_cstring_to_utf8(password, AnsiString(Password).c_str(), pool));
+    RequestResult = qaOK;
+  }
+
+  return Result ? WEBDAV_NO_ERROR : WEBDAV_ERROR_AUTH;
 }
 //------------------------------------------------------------------------------
 webdav::error_t TWebDAVFileSystem::AskForUsername(
