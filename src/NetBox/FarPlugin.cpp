@@ -1393,10 +1393,14 @@ void TCustomFarPlugin::ShowTerminalScreen()
   TPoint Size, Cursor;
   TerminalInfo(&Size, &Cursor);
 
-  UnicodeString Blank = Sysutils::StringOfChar(L' ', static_cast<intptr_t>(Size.x));
-  for (int Y = 0; Y < Size.y; Y++)
+  if (Size.y >= 2) 
   {
-    Text(0, Y, 7/* LIGHTGRAY */, Blank);
+    // clean menu keybar area before command output
+    UnicodeString Blank = Sysutils::StringOfChar(L' ', static_cast<intptr_t>(Size.x));
+    for (int Y = Size.y - 2; Y < Size.y; Y++)
+    {
+      Text(0, Y, 7/* LIGHTGRAY */, Blank);
+    }
   }
   FlushText();
 
