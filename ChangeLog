@@ -1,5 +1,7 @@
-NetBox 2.1.39.321 ??.08.2014
+NetBox 2.1.39.322 06.09.2014
 --------------------
+  * Bugfix: WebDAV: login/password asked twice
+    http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=122049#p122049
   * Bugfix: remote command output is scrolled up if Far.exe is started with /w command line switch (Stretch to console window instead of console buffer)
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=1680#p121335)
   * Update openssl sources to 1.0.1i

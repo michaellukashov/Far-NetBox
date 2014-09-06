@@ -811,6 +811,7 @@ intptr_t TFarDialog::SendDlgMessage(intptr_t Msg, intptr_t Param1, void * Param2
     return GetFarPlugin()->GetStartupInfo()->SendDlgMessage(GetHandle(),
       Msg, Param1, Param2);
   }
+  return 0;
 }
 //---------------------------------------------------------------------------
 FarColor TFarDialog::GetSystemColor(PaletteColors colorId)

@@ -622,7 +622,7 @@ public:
     return UnicodeString(UTF8String(GetRawByteString().c_str()));
   }
 
-  // For reading string that are character strings (not byte strings as
+  // For reading strings that are character strings (not byte strings as
   // as file handles), and SFTP spec does not say explicitly that they
   // are in UTF. For most of them it actually does not matter as
   // the content should be pure ASCII (e.g. extension names, etc.)

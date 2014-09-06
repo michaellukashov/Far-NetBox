@@ -298,6 +298,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="NetBox.def" />
+    <None Include="NetBoxEng.lng" />
+    <None Include="NetBoxRus.lng" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NetBox.rc" />
