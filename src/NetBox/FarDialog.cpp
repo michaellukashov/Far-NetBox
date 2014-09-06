@@ -808,6 +808,7 @@ LONG_PTR TFarDialog::SendDlgMessage(int Msg, intptr_t Param1, LONG_PTR Param2)
     return GetFarPlugin()->GetStartupInfo()->SendDlgMessage(GetHandle(),
       Msg, static_cast<int>(Param1), Param2);
   }
+  return 0;
 }
 //---------------------------------------------------------------------------
 uintptr_t TFarDialog::GetSystemColor(intptr_t Index)
