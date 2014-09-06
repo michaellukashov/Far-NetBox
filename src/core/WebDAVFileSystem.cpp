@@ -2925,16 +2925,13 @@ typedef error_t (*auth_password_get_t)(
 
 typedef struct auth_cred_simple_t
 {
-  // Username
   const char * username;
-  // Password
   const char * password;
   bool may_save;
 } auth_cred_simple_t;
 
 typedef struct auth_cred_username_t
 {
-  // Username
   const char * username;
   bool may_save;
 } auth_cred_username_t;
@@ -3026,6 +3023,7 @@ typedef error_t (*auth_simple_prompt_func_t)(
   void * baton,
   const char * realm,
   const char * username,
+  const char * password,
   bool may_save,
   apr_pool_t * pool);
 
@@ -3669,7 +3667,7 @@ prompt_for_simple_creds(
   else
   {
     WEBDAV_ERR(pb->prompt_func(cred_p, pb->prompt_baton, realmstring,
-      default_username, may_save, pool));
+      default_username, default_password, may_save, pool));
   }
 
   return WEBDAV_NO_ERROR;
@@ -9536,6 +9534,7 @@ cmdline_auth_simple_prompt(
   void * baton,
   const char * realm,
   const char * username,
+  const char * password,
   bool may_save,
   apr_pool_t * pool)
 {
