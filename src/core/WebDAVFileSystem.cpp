@@ -11246,7 +11246,7 @@ proxy_auth(
 // challenged.  In turn, this routine 'pulls' the data from the client
 // callbacks if needed.
 static int
-request_auth(
+neon_request_auth(
   void * userdata,
   const char * realm,
   int attempt,
@@ -11588,9 +11588,11 @@ neon_open(
   ras->progress_func = callbacks->progress_func;
   ras->capabilities = apr_hash_make(ras->pool);
 
-  // note that ras->username and ras->password are still nullptr at this point.
-  // Register an authentication 'pull' callback with the neon sessions
-  ne_add_server_auth(sess, neon_auth_types, request_auth, ras);
+  {
+    // note that ras->username and ras->password are still nullptr at this point.
+    // Register an authentication 'pull' callback with the neon sessions
+    ne_add_server_auth(sess, neon_auth_types, neon_request_auth, ras);
+  }
 
   if (is_ssl_session)
   {
