@@ -186,7 +186,7 @@ PVSFixedFileInfo GetFixedFileInfo(void * FileInfo)
 {
   UINT Len;
   PVSFixedFileInfo Result = nullptr;
-  if (FileInfo && !VerQueryValue(FileInfo, L"\\", reinterpret_cast<void **>(&Result), &Len))
+  if (FileInfo && !::VerQueryValue(FileInfo, L"\\", reinterpret_cast<void **>(&Result), &Len))
   {
     throw Exception(L"Fixed file info not available");
   }
@@ -198,7 +198,7 @@ uint32_t GetTranslationCount(void * FileInfo)
 {
   PTranslations P;
   UINT Len;
-  if (!VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
+  if (!::VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
     throw Exception(L"File info translations not available");
   return Len / 4;
 }
@@ -209,7 +209,7 @@ TTranslation GetTranslation(void * FileInfo, intptr_t I)
   PTranslations P = nullptr;
   UINT Len;
 
-  if (!VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
+  if (!::VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
     throw Exception(L"File info translations not available");
   if (I * sizeof(TTranslation) >= Len)
     throw Exception(L"Specified translation not available");
@@ -222,7 +222,7 @@ UnicodeString GetLanguage(Word Language)
   uintptr_t Len;
   wchar_t P[256];
 
-  Len = VerLanguageName(Language, P, LENOF(P));
+  Len = ::VerLanguageName(Language, P, LENOF(P));
   if (Len > LENOF(P))
     throw Exception(L"Language not available");
   return UnicodeString(P, Len);
@@ -237,7 +237,7 @@ UnicodeString GetFileInfoString(void * FileInfo,
   wchar_t * P;
   UINT Len;
 
-  if (!VerQueryValue(FileInfo, (UnicodeString(L"\\StringFileInfo\\") +
+  if (!::VerQueryValue(FileInfo, (UnicodeString(L"\\StringFileInfo\\") +
     IntToHex(Translation.Language, 4) +
     IntToHex(Translation.CharSet, 4) +
     L"\\" + StringName).c_str(), reinterpret_cast<void **>(&P), &Len))
