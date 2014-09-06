@@ -2111,7 +2111,8 @@ static apr_size_t
 path_component_count(
   const char * path)
 {
-  if (!path) return 0;
+  if (!path)
+    return 0;
   apr_size_t count = 0;
 
   while (*path)
@@ -4153,8 +4154,8 @@ ssl_client_cert_pw_prompt_first_cred(
     WEBDAV_AUTH_PARAM_NO_AUTH_CACHE,
     APR_HASH_KEY_STRING));
 
-  WEBDAV_ERR(pb->prompt_func((auth_cred_ssl_client_cert_pw_t **)
-    credentials_p, pb->prompt_baton, realmstring,
+  WEBDAV_ERR(pb->prompt_func((auth_cred_ssl_client_cert_pw_t **)credentials_p,
+    pb->prompt_baton, realmstring,
     !no_auth_cache, pool));
 
   ib->pb = pb;
@@ -9481,7 +9482,8 @@ cmdline_auth_ssl_client_cert_prompt(
 
   uintptr_t RequestResult = 0;
   WEBDAV_ERR(fs->AskForClientCertificateFilename(&cert_file, RequestResult, pool));
-  if (RequestResult != qaOK) return WEBDAV_NO_ERROR;
+  if (RequestResult != qaOK)
+    return WEBDAV_NO_ERROR;
 
   WEBDAV_ERR(dirent_get_absolute(&abs_cert_file, cert_file, pool));
 
@@ -9516,7 +9518,8 @@ cmdline_auth_ssl_client_cert_pw_prompt(
   uintptr_t RequestResult = 0;
   const char * result = nullptr;
   WEBDAV_ERR(fs->AskForPassphrase(&result, realm, RequestResult, pool));
-  if (RequestResult != qaOK) return WEBDAV_NO_ERROR;
+  if (RequestResult != qaOK)
+    return WEBDAV_NO_ERROR;
 
   cred = static_cast<auth_cred_ssl_client_cert_pw_t *>(apr_pcalloc(pool, sizeof(*cred)));
   cred->password = result;
@@ -9554,11 +9557,13 @@ cmdline_auth_simple_prompt(
   else
   {
     WEBDAV_ERR(fs->AskForUsername(&ret->username, RequestResult, pool));
-    if (RequestResult != qaOK) return WEBDAV_NO_ERROR;
+    if (RequestResult != qaOK)
+      return WEBDAV_NO_ERROR;
   }
 
   WEBDAV_ERR(fs->AskForUserPassword(&ret->password, RequestResult, pool));
-  if (RequestResult != qaOK) return WEBDAV_NO_ERROR;
+  if (RequestResult != qaOK)
+    return WEBDAV_NO_ERROR;
 
   ret->may_save = may_save;
   *cred_p = ret;
@@ -9588,7 +9593,8 @@ cmdline_auth_username_prompt(
 
   uintptr_t RequestResult = 0;
   WEBDAV_ERR(fs->AskForUsername(&ret->username, RequestResult, pool));
-  if (RequestResult != qaOK) return WEBDAV_NO_ERROR;
+  if (RequestResult != qaOK)
+    return WEBDAV_NO_ERROR;
 
   ret->may_save = may_save;
   *cred_p = ret;
@@ -11278,11 +11284,13 @@ request_auth(
       ras->pool);
   }
   else // attempt > 0
+  {
     // TODO:  if the http realm changed this time around, we
     // should be calling first_creds(), not next_creds().
     err = auth_next_credentials(&creds,
       ras->auth_iterstate,
       ras->pool);
+  }
   if (err || !creds)
   {
     error_clear(&err);
@@ -11295,8 +11303,10 @@ request_auth(
   ras->auth_used = true;
 
   // silently truncates username/password to 256 chars.
-  if (simple_creds->username) strncpy(username, simple_creds->username, NE_ABUFSIZ);
-  if (simple_creds->password) strncpy(password, simple_creds->password, NE_ABUFSIZ);
+  if (simple_creds->username)
+    strncpy(username, simple_creds->username, NE_ABUFSIZ);
+  if (simple_creds->password)
+    strncpy(password, simple_creds->password, NE_ABUFSIZ);
 
   return 0;
 }
@@ -13675,7 +13685,8 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t * Path, int & Response
   webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;
   err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Path).c_str(), pool);
-  if (err) return false;
+  if (err)
+    return false;
   err = webdav::client_send_propfind_request(
     FSession,
     remote_path,
@@ -13696,7 +13707,8 @@ bool TWebDAVFileSystem::WebDAVCheckExisting(const wchar_t * Path, int & IsDir)
   webdav::node_kind_t kind = webdav::node_none;
   const char * remote_path = nullptr;
   err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Path).c_str(), pool);
-  if (err) return false;
+  if (err)
+    return false;
   err = webdav::client_check_path(
     FSession,
     remote_path,
@@ -13718,7 +13730,8 @@ bool TWebDAVFileSystem::WebDAVMakeDirectory(const wchar_t * Path)
   webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;
   err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Path).c_str(), pool);
-  if (err) return false;
+  if (err)
+    return false;
   err = webdav::client_make_directory(
     FSession,
     remote_path,
@@ -13741,7 +13754,8 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString & Directory)
   webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;
   err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Directory).c_str(), baton.pool);
-  if (err) return false;
+  if (err)
+    return false;
   err = webdav::client_list(
     FSession,
     remote_path,
@@ -13818,9 +13832,11 @@ bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t * RemotePath,
   const char * remote_path = nullptr;
   const char * local_path = nullptr;
   err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(RemotePath).c_str(), pool);
-  if (err) return false;
+  if (err)
+    return false;
   err = webdav::path_cstring_to_utf8(&local_path, AnsiString(LocalPath).c_str(), pool);
-  if (err) return false;
+  if (err)
+    return false;
   try
   {
     err = webdav::client_put_file(
@@ -13854,9 +13870,11 @@ bool TWebDAVFileSystem::WebDAVRenameFile(const wchar_t * SrcPath, const wchar_t 
   const char * src_path = nullptr;
   const char * dst_path = nullptr;
   err = webdav::path_cstring_to_utf8(&src_path, AnsiString(SrcPath).c_str(), pool);
-  if (err) return false;
+  if (err)
+    return false;
   err = webdav::path_cstring_to_utf8(&dst_path, AnsiString(DstPath).c_str(), pool);
-  if (err) return false;
+  if (err)
+    return false;
   err = webdav::client_move_file_or_directory(
     FSession,
     src_path,
@@ -13877,7 +13895,8 @@ bool TWebDAVFileSystem::WebDAVDeleteFile(const wchar_t * Path)
   webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;
   err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Path).c_str(), pool);
-  if (err) return false;
+  if (err)
+    return false;
   err = webdav::client_delete_file(
     FSession,
     remote_path,

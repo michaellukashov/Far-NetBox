@@ -107,11 +107,11 @@ public:
     const char **cert_file, uintptr_t & RequestResult,
     apr_pool_t *pool);
   webdav::error_t AskForUsername(
-    const char **user_name,
+    const char ** user_name,
     uintptr_t & RequestResult,
     apr_pool_t *pool);
   webdav::error_t AskForUserPassword(
-    const char **password,
+    const char ** password,
     uintptr_t & RequestResult,
     apr_pool_t *pool);
   webdav::error_t AskForPassphrase(
