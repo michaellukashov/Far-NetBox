@@ -1,4 +1,4 @@
-NetBox 2.1.39.323 06.09.2014
+NetBox 2.1.39.324 09.09.2014
 --------------------
   * Improvement: "Apply command": do not clean previous console output
     (http://forum.farmanager.com/viewtopic.php?p=121937#p121937)
