@@ -14178,7 +14178,7 @@ webdav::error_t TWebDAVFileSystem::NeonRequestAuth(
     // but use special flag for the try, because when it fails
     // we still want to try password for future requests (such as PUT).
 
-    if (!this->FPassword.IsEmpty())
+    if (!this->FPassword.IsEmpty() && !this->FStoredPasswordTried)
     {
       if (this->FIgnoreAuthenticationFailure == iafPasswordFailed)
       {
@@ -14205,7 +14205,7 @@ webdav::error_t TWebDAVFileSystem::NeonRequestAuth(
         Result =
           FTerminal->PromptUser(
           SessionData, pkPassword, LoadStr(PASSWORD_TITLE), L"",
-          LoadStr(PASSWORD_PROMPT), false, NE_ABUFSIZ, Password);
+            LoadStr(PASSWORD_PROMPT), false, NE_ABUFSIZ, Password);
       }
 
       if (Result)
