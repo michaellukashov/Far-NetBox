@@ -1088,7 +1088,7 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(
   CopyParam.SetPreserveReadOnly(false);
   CopyParam.SetResumeSupport(rsOff);
 
-  TempDir = WinSCPPlugin()->TemporaryDir();
+  TempDir = WinSCPPlugin()->GetTemporaryDir();
   if (TempDir.IsEmpty() || !Sysutils::ForceDirectories(TempDir))
   {
     throw Sysutils::Exception(FMTLOAD(CREATE_TEMP_DIR_ERROR, TempDir.c_str()));
