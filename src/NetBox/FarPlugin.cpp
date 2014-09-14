@@ -1701,7 +1701,7 @@ UnicodeString TCustomFarPlugin::FormatFarVersion(intptr_t Version) const
   return FORMAT(L"%d.%d.%d", (Version >> 8) & 0xFF, Version & 0xFF, Version >> 16);
 }
 //---------------------------------------------------------------------------
-UnicodeString TCustomFarPlugin::TemporaryDir() const
+UnicodeString TCustomFarPlugin::GetTemporaryDir() const
 {
   UnicodeString Result;
   if (FTemporaryDir.IsEmpty())
