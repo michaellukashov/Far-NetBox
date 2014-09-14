@@ -1056,7 +1056,7 @@ stringbuf_ensure(
         }
       }
 
-    str->data = (char *) my_realloc(str->data,
+    str->data = (char *)my_realloc(str->data,
       str->len + 1,
       // We need to maintain (and thus copy)
       // the trailing null
@@ -2537,7 +2537,7 @@ apr_base64_encode(
   const char * string,
   int len)
 {
-  return apr_base64_encode_binary(encoded, (const uint8_t *) string, len);
+  return apr_base64_encode_binary(encoded, (const uint8_t *)string, len);
 }
 
 static int
@@ -2576,10 +2576,10 @@ apr_base64_decode_len(
   register const uint8_t * bufin;
   register apr_size_t nprbytes;
 
-  bufin = (const uint8_t *) bufcoded;
+  bufin = (const uint8_t *)bufcoded;
   while (pr2six[*(bufin++)] <= 63);
 
-  nprbytes = (bufin - (const uint8_t *) bufcoded) - 1;
+  nprbytes = (bufin - (const uint8_t *)bufcoded) - 1;
   nbytesdecoded = (((int)nprbytes + 3) / 4) * 3;
 
   return nbytesdecoded + 1;
@@ -2598,13 +2598,13 @@ apr_base64_decode_binary(
   register uint8_t * bufout;
   register apr_size_t nprbytes;
 
-  bufin = (const uint8_t *) bufcoded;
+  bufin = (const uint8_t *)bufcoded;
   while (pr2six[*(bufin++)] <= 63);
-  nprbytes = (bufin - (const uint8_t *) bufcoded) - 1;
+  nprbytes = (bufin - (const uint8_t *)bufcoded) - 1;
   nbytesdecoded = (((int)nprbytes + 3) / 4) * 3;
 
-  bufout = (uint8_t *) bufplain;
-  bufin = (const uint8_t *) bufcoded;
+  bufout = (uint8_t *)bufplain;
+  bufin = (const uint8_t *)bufcoded;
 
   while (nprbytes > 4)
   {
@@ -2644,7 +2644,7 @@ apr_base64_decode(
   char * bufplain,
   const char * bufcoded)
 {
-  int len = apr_base64_decode_binary((uint8_t *) bufplain, bufcoded);
+  int len = apr_base64_decode_binary((uint8_t *)bufplain, bufcoded);
   bufplain[len] = '\0';
   return len;
 }
@@ -3694,7 +3694,7 @@ simple_prompt_first_creds(
     WEBDAV_AUTH_PARAM_NO_AUTH_CACHE,
     APR_HASH_KEY_STRING));
 
-  WEBDAV_ERR(prompt_for_simple_creds((auth_cred_simple_t **) credentials_p,
+  WEBDAV_ERR(prompt_for_simple_creds((auth_cred_simple_t **)credentials_p,
     pb, parameters, realmstring, true,
     !no_auth_cache, pool));
 
@@ -3731,7 +3731,7 @@ simple_prompt_next_creds(
   }
   ib->retries++;
 
-  return prompt_for_simple_creds((auth_cred_simple_t **) credentials_p,
+  return prompt_for_simple_creds((auth_cred_simple_t **)credentials_p,
     pb, parameters, realmstring, false,
     !no_auth_cache, pool);
 }
@@ -4249,7 +4249,7 @@ windows_password_encrypter(
   DATA_BLOB blobout;
 
   blobin.cbData = (DWORD)strlen(in);
-  blobin.pbData = (BYTE *) in;
+  blobin.pbData = (BYTE *)in;
   BOOL crypted = CryptProtectData(&blobin, description, nullptr, nullptr, nullptr,
     CRYPTPROTECT_UI_FORBIDDEN, &blobout);
   if (crypted)
@@ -4392,7 +4392,7 @@ windows_ssl_client_cert_pw_encrypter(
   BOOL crypted;
 
   blobin.cbData = (DWORD)strlen(in);
-  blobin.pbData = (BYTE *) in;
+  blobin.pbData = (BYTE *)in;
   crypted = CryptProtectData(&blobin, description, nullptr, nullptr, nullptr,
     CRYPTPROTECT_UI_FORBIDDEN, &blobout);
   if (crypted)
@@ -4894,7 +4894,7 @@ username_prompt_first_creds(
     WEBDAV_AUTH_PARAM_NO_AUTH_CACHE,
     APR_HASH_KEY_STRING));
 
-  WEBDAV_ERR(prompt_for_username_creds((auth_cred_username_t **) credentials_p, pb,
+  WEBDAV_ERR(prompt_for_username_creds((auth_cred_username_t **)credentials_p, pb,
     parameters, realmstring, true, !no_auth_cache, pool));
 
   ibaton->retries = 0;
@@ -4931,7 +4931,7 @@ username_prompt_next_creds(
   }
   ib->retries++;
 
-  return prompt_for_username_creds((auth_cred_username_t **) credentials_p, pb,
+  return prompt_for_username_creds((auth_cred_username_t **)credentials_p, pb,
     parameters, realmstring, false, !no_auth_cache, pool);
 }
 
