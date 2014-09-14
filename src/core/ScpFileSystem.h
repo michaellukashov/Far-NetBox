@@ -43,7 +43,7 @@ public:
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
-  virtual void CreateDirectory(const UnicodeString & DirName);
+  virtual void RemoteCreateDirectory(const UnicodeString & DirName);
   virtual void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
   virtual void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action);

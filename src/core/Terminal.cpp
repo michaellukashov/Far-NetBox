@@ -3845,7 +3845,7 @@ bool TTerminal::CopyFiles(TStrings * FileList, const UnicodeString & Target,
   return ProcessFiles(FileList, foRemoteCopy, MAKE_CALLBACK(TTerminal::CopyFile, this), &Params);
 }
 //------------------------------------------------------------------------------
-void TTerminal::CreateDirectory(const UnicodeString & DirName,
+void TTerminal::RemoteCreateDirectory(const UnicodeString & DirName,
   const TRemoteProperties * Properties)
 {
   assert(FFileSystem);
@@ -3869,7 +3869,7 @@ void TTerminal::DoCreateDirectory(const UnicodeString & DirName)
   try
   {
     assert(FFileSystem);
-    FFileSystem->CreateDirectory(DirName);
+    FFileSystem->RemoteCreateDirectory(DirName);
   }
   catch (Exception & E)
   {

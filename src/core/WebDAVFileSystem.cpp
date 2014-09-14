@@ -12506,7 +12506,7 @@ void TWebDAVFileSystem::CopyFile(const UnicodeString & AFileName,
   Classes::Error(SNotImplemented, 1012);
 }
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::CreateDirectory(const UnicodeString & DirName)
+void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString & DirName)
 {
   UnicodeString FullDirName = AbsolutePath(DirName, true);
   bool res = WebDAVMakeDirectory(FullDirName.c_str());
@@ -12994,7 +12994,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
   bool Exists = WebDAVCheckExisting(DestFullName.c_str(), IsDir);
   if (!Exists)
   {
-    CreateDirectory(DestFullName);
+    RemoteCreateDirectory(DestFullName);
   }
 
   OperationProgress->SetFile(DirectoryName);
@@ -13076,7 +13076,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
         {
           FTerminal->SetExceptionOnFail(false);
         };
-        FTerminal->CreateDirectory(DestFullName, &Properties);
+        FTerminal->RemoteCreateDirectory(DestFullName, &Properties);
       }
     }
     catch (...)

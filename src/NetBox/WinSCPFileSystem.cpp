@@ -2303,7 +2303,7 @@ intptr_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int OpMode)
       {
         WinSCPPlugin()->ClearConsoleTitle();
       };
-      FTerminal->CreateDirectory(Name, &Properties);
+      FTerminal->RemoteCreateDirectory(Name, &Properties);
       return 1;
     }
     else
