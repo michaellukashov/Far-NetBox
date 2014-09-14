@@ -378,7 +378,8 @@ typedef struct list_func_baton_t
 static void
 error_clear(error_t * err)
 {
-  if (err) *err = 0;
+  if (err)
+    *err = 0;
 }
 
 static error_t
@@ -8677,7 +8678,8 @@ session_open(
     {
       ne_uri * corrected_URI = nullptr;
       WEBDAV_ERR(parse_ne_uri(&corrected_URI, session_URL, sesspool));
-      if (corrected_URI->path) ne_free(corrected_URI->path);
+      if (corrected_URI->path)
+        ne_free(corrected_URI->path);
       corrected_URI->path = ne_strdup(corrected_url);
       corrected_url = neon_uri_unparse(corrected_URI, pool);
     }
@@ -8796,7 +8798,8 @@ client_url_from_path2(
   {
     ne_uri * uri = nullptr;
     WEBDAV_ERR(parse_ne_uri(&uri, session_url->data, result_pool));
-    if (uri->path) ne_free(uri->path);
+    if (uri->path)
+      ne_free(uri->path);
     uri->path = ne_strdup(path_or_url);
     const char * corrected_url = neon_uri_unparse(uri, result_pool);
     *url = uri_canonicalize(corrected_url, result_pool);
