@@ -1703,19 +1703,10 @@ UnicodeString TCustomFarPlugin::FormatFarVersion(intptr_t Version) const
 //---------------------------------------------------------------------------
 UnicodeString TCustomFarPlugin::GetTemporaryDir() const
 {
-  UnicodeString Result;
-  if (FTemporaryDir.IsEmpty())
-  {
-    Result.SetLength(MAX_PATH);
-    TFarEnvGuard Guard;
-    FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), (DWORD)Result.Length(), nullptr);
-    PackStr(Result);
-    FTemporaryDir = Result;
-  }
-  else
-  {
-    Result = FTemporaryDir;
-  }
+  UnicodeString Result(4096, 0);
+  TFarEnvGuard Guard;
+  FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), (DWORD)Result.Length(), nullptr);
+  PackStr(Result);
   return Result;
 }
 //---------------------------------------------------------------------------
