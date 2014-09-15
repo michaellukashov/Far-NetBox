@@ -1,5 +1,10 @@
-NetBox 2.1.39.324 09.09.2014
+NetBox 2.1.39.326 14.09.2014
 --------------------
+  * Bugfix: "NetBox commands" -> "Open in Putty": fix open session using Putty 0.63
+    (http://forum.farmanager.com/viewtopic.php?p=122618#p122618)
+  * Bugfix: Issue with files with same name on different folders/servers with SSH/SCP
+    (http://forum.farmanager.com/viewtopic.php?p=122597#p122597)
+    (https://github.com/michaellukashov/Far-NetBox/issues/67)
   * Improvement: "Apply command": do not clean previous console output
     (http://forum.farmanager.com/viewtopic.php?p=121937#p121937)
   * Bugfix: WebDAV: login/password asked twice

@@ -148,7 +148,10 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
     {
       Params += FORMAT(L"-pw %s ", EscapePuttyCommandParam(Psw).c_str());
     }
-    Params += FORMAT(L"-load %s", EscapePuttyCommandParam(SessionName).c_str());
+    //Params += FORMAT(L"-load %s", EscapePuttyCommandParam(SessionName).c_str());
+    Params += FORMAT(L"-l %s ", EscapePuttyCommandParam(SessionData->GetUserNameExpanded()).c_str());
+    Params += FORMAT(L"-P %d ", SessionData->GetPortNumber());
+    Params += FORMAT(L"%s ", EscapePuttyCommandParam(SessionData->GetHostNameExpanded()).c_str());
 
     if (!ExecuteShell(Program, Params))
     {

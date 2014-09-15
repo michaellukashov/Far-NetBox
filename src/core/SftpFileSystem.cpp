@@ -3562,7 +3562,7 @@ void TSFTPFileSystem::CopyFile(const UnicodeString & AFileName,
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CreateDirectory(const UnicodeString & DirName)
+void TSFTPFileSystem::RemoteCreateDirectory(const UnicodeString & DirName)
 {
   TSFTPPacket Packet(SSH_FXP_MKDIR, FCodePage);
   UnicodeString CanonifiedName = Canonify(DirName);
@@ -5094,7 +5094,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
       Properties.Valid = TValidProperties() << vpRights;
       Properties.Rights = CopyParam->RemoteFileRights(LocalFileAttrs);
     }
-    FTerminal->CreateDirectory(DestFullName, &Properties);
+    FTerminal->RemoteCreateDirectory(DestFullName, &Properties);
     Flags |= tfNewDirectory;
   }
 

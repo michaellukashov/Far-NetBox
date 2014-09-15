@@ -1632,7 +1632,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
       {
         FTerminal->SetExceptionOnFail(false);
       };
-      FTerminal->CreateDirectory(DestFullName, &Properties);
+      FTerminal->RemoteCreateDirectory(DestFullName, &Properties);
     }
     catch (...)
     {
@@ -1672,7 +1672,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::CreateDirectory(const UnicodeString & ADirName)
+void TFTPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
 {
   UnicodeString DirName = AbsolutePath(ADirName, false);
 

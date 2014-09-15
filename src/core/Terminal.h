@@ -222,7 +222,7 @@ public:
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params);
   bool CopyToRemote(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params);
-  void CreateDirectory(const UnicodeString & DirName,
+  void RemoteCreateDirectory(const UnicodeString & DirName,
     const TRemoteProperties * Properties = nullptr);
   void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
   void RemoteDeleteFile(const UnicodeString & AFileName,
