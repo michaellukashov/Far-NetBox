@@ -123,7 +123,7 @@ inline int TIXML_SNPRINTF( char* buffer, size_t size, const char* format, ... )
 	http://semver.org/
 */
 static const int TIXML2_MAJOR_VERSION = 2;
-static const int TIXML2_MINOR_VERSION = 1;
+static const int TIXML2_MINOR_VERSION = 2;
 static const int TIXML2_PATCH_VERSION = 0;
 
 namespace tinyxml2
@@ -478,6 +478,33 @@ public:
     virtual bool Visit( const XMLUnknown& /*unknown*/ )				{
         return true;
     }
+};
+
+// WARNING: must match XMLErrorNames[]
+enum XMLError {
+    XML_SUCCESS = 0,
+    XML_NO_ERROR = 0,
+    XML_NO_ATTRIBUTE,
+    XML_WRONG_ATTRIBUTE_TYPE,
+    XML_ERROR_FILE_NOT_FOUND,
+    XML_ERROR_FILE_COULD_NOT_BE_OPENED,
+    XML_ERROR_FILE_READ_ERROR,
+    XML_ERROR_ELEMENT_MISMATCH,
+    XML_ERROR_PARSING_ELEMENT,
+    XML_ERROR_PARSING_ATTRIBUTE,
+    XML_ERROR_IDENTIFYING_TAG,
+    XML_ERROR_PARSING_TEXT,
+    XML_ERROR_PARSING_CDATA,
+    XML_ERROR_PARSING_COMMENT,
+    XML_ERROR_PARSING_DECLARATION,
+    XML_ERROR_PARSING_UNKNOWN,
+    XML_ERROR_EMPTY_DOCUMENT,
+    XML_ERROR_MISMATCHED_ELEMENT,
+    XML_ERROR_PARSING,
+    XML_CAN_NOT_CONVERT_TEXT,
+    XML_NO_TEXT_NODE,
+
+	XML_ERROR_COUNT
 };
 
 
@@ -996,33 +1023,6 @@ protected:
     XMLUnknown& operator=( const XMLUnknown& );	// not supported
 };
 
-
-enum XMLError {
-    XML_NO_ERROR = 0,
-    XML_SUCCESS = 0,
-
-    XML_NO_ATTRIBUTE,
-    XML_WRONG_ATTRIBUTE_TYPE,
-
-    XML_ERROR_FILE_NOT_FOUND,
-    XML_ERROR_FILE_COULD_NOT_BE_OPENED,
-    XML_ERROR_FILE_READ_ERROR,
-    XML_ERROR_ELEMENT_MISMATCH,
-    XML_ERROR_PARSING_ELEMENT,
-    XML_ERROR_PARSING_ATTRIBUTE,
-    XML_ERROR_IDENTIFYING_TAG,
-    XML_ERROR_PARSING_TEXT,
-    XML_ERROR_PARSING_CDATA,
-    XML_ERROR_PARSING_COMMENT,
-    XML_ERROR_PARSING_DECLARATION,
-    XML_ERROR_PARSING_UNKNOWN,
-    XML_ERROR_EMPTY_DOCUMENT,
-    XML_ERROR_MISMATCHED_ELEMENT,
-    XML_ERROR_PARSING,
-
-    XML_CAN_NOT_CONVERT_TEXT,
-    XML_NO_TEXT_NODE
-};
 
 
 /** An attribute is a name-value pair. Elements have an arbitrary
@@ -1663,6 +1663,8 @@ public:
     XMLError  ErrorID() const {
         return _errorID;
     }
+	const char* ErrorName() const;
+
     /// Return a possibly helpful diagnostic location or string.
     const char* GetErrorStr1() const {
         return _errorStr1;
@@ -1703,6 +1705,8 @@ private:
     MemPoolT< sizeof(XMLAttribute) > _attributePool;
     MemPoolT< sizeof(XMLText) >		 _textPool;
     MemPoolT< sizeof(XMLComment) >	 _commentPool;
+
+	static const char* _errorNames[XML_ERROR_COUNT];
 };
 
 
