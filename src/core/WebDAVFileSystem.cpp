@@ -12801,12 +12801,12 @@ void TWebDAVFileSystem::WebDAVSourceRobust(const UnicodeString & AFileName,
 }
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
-  const TRemoteFile * File,
+  const TRemoteFile * AFile,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TUploadSessionAction & Action)
 {
-  UnicodeString RealFileName = File ? File->GetFileName() : AFileName;
+  UnicodeString RealFileName = AFile ? AFile->GetFileName() : AFileName;
   bool CheckExistence = core::UnixSamePath(TargetDir, FTerminal->GetCurrDirectory()) &&
     (FTerminal->FFiles != nullptr) && FTerminal->FFiles->GetLoaded();
   bool CanProceed = false;
