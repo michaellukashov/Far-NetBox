@@ -1763,7 +1763,6 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
       }
     }
   }
-
 }
 //---------------------------------------------------------------------------
 bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)

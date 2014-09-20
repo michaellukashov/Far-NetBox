@@ -1340,7 +1340,6 @@ void TActionLog::ReflectSettings()
     CloseLogFile();
     FLogging = false;
   }
-
 }
 //---------------------------------------------------------------------------
 void TActionLog::CloseLogFile()
