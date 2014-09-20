@@ -448,7 +448,7 @@ protected:
   virtual void FatalError(Sysutils::Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   void ResetConnection();
   virtual bool DoPromptUser(TSessionData * Data, TPromptKind Kind,
-    const UnicodeString & Name, const UnicodeString & Instructions, TStrings* Prompts,
+    const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
     TStrings * Response);
   void SetupTunnelLocalPortNumber();
   void OpenTunnel();

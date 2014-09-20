@@ -478,7 +478,7 @@ uintptr_t TTunnelUI::QueryUserException(const UnicodeString & Query,
 }
 //------------------------------------------------------------------------------
 bool TTunnelUI::PromptUser(TSessionData * Data, TPromptKind Kind,
-  const UnicodeString & Name, const UnicodeString & Instructions, TStrings* Prompts,
+  const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
   TStrings * Results)
 {
   bool Result = false;

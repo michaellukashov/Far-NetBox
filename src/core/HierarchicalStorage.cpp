@@ -247,7 +247,7 @@ bool THierarchicalStorage::KeyExists(const UnicodeString & SubKey)
   return DoKeyExists(SubKey, GetForceAnsi());
 }
 //------------------------------------------------------------------------------
-void THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
+void THierarchicalStorage::ReadValues(Classes::TStrings * Strings,
   bool MaintainKeys)
 {
   std::unique_ptr<TStrings> Names(new TStringList());
