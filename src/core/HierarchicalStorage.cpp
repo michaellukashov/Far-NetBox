@@ -659,7 +659,7 @@ void TRegistryStorage::WriteBinaryData(const UnicodeString & Name,
   }
 }
 //------------------------------------------------------------------------------
-intptr_t TRegistryStorage::GetFailed()
+intptr_t TRegistryStorage::GetFailed() const
 {
   intptr_t Result = FFailed;
   FFailed = 0;
