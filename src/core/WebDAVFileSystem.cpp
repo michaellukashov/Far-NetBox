@@ -12736,7 +12736,7 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
-          if (::DirectoryExists(::ExtractFilePath(FileName)))
+          if (::DirectoryExists(ApiPath(::ExtractFilePath(FileName))))
           {
             FTerminal->DirectoryModified(FullTargetDir + FileNameOnly, true);
           }
@@ -12971,14 +12971,14 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
       if (!Dir)
       {
         FILE_OPERATION_LOOP(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()),
-          THROWOSIFFALSE(::DeleteFile(AFileName.c_str()));
+          THROWOSIFFALSE(::DeleteFile(ApiPath(AFileName).c_str()));
         );
       }
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
     {
       FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()),
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(AFileName, LocalFileAttrs & ~faArchive) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(AFileName), LocalFileAttrs & ~faArchive) == 0);
       );
     }
   }
@@ -13109,12 +13109,12 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
   {
     if (FLAGSET(Params, cpDelete))
     {
-      FTerminal->RemoveLocalDirectory(DirectoryName);
+      FTerminal->RemoveLocalDirectory(ApiPath(DirectoryName));
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
       FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~faArchive) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DirectoryName), Attrs & ~faArchive) == 0);
       );
     }
   }
@@ -13144,11 +13144,11 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       };
       UnicodeString AbsoluteFilePath = AbsolutePath(FileName, false);
       UnicodeString TargetDirectory = FullTargetDir;
-      UnicodeString FileNamePath = ::ExtractFilePath(File->GetFileName());
+      UnicodeString FileNamePath = ApiPath(::ExtractFilePath(File->GetFileName()));
       if (!FileNamePath.IsEmpty())
       {
         TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
-        ::ForceDirectories(TargetDirectory);
+        ::ForceDirectories(ApiPath(TargetDirectory));
       }
       try
       {
@@ -13275,7 +13275,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       if (!File->GetIsSymLink())
       {
         FILE_OPERATION_LOOP(FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
-          DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
+          DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
           if (FLAGCLEAR(LocalFileAttrs, faDirectory))
           {
             ThrowExtException();
@@ -13315,7 +13315,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
   {
     FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to local directory started.", AFileName.c_str()));
     bool CanProceed = true;
-    if (::FileExists(DestFullName))
+    if (::FileExists(ApiPath(DestFullName)))
     {
       int64_t Size = 0;
       int64_t MTime = 0;
@@ -13354,7 +13354,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 
       DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
       FILE_OPERATION_LOOP(FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
-        LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
+        LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
         if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, faDirectory))
         {
           ThrowExtException();
@@ -13392,7 +13392,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       if (DestFileName != UserData.FileName)
       {
         DestFullName = TargetDir + UserData.FileName;
-        LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
+        LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
       }
 
       Action.Destination(ExpandUNCFileName(DestFullName));
@@ -13405,7 +13405,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       if ((NewAttrs & LocalFileAttrs) != NewAttrs)
       {
         FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, LocalFileAttrs | NewAttrs) == 0);
+          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DestFullName), LocalFileAttrs | NewAttrs) == 0);
         );
       }
       // set time
