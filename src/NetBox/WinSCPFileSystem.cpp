@@ -235,7 +235,7 @@ void TFarInteractiveCustomCommand::Prompt(const UnicodeString & Prompt, UnicodeS
 class TKeepaliveThread : public TSimpleThread
 {
 public:
-  explicit TKeepaliveThread(TWinSCPFileSystem * FileSystem, TDateTime Interval);
+  explicit TKeepaliveThread(TWinSCPFileSystem * FileSystem, const TDateTime & Interval);
   virtual ~TKeepaliveThread()
   {}
   virtual void Init();
@@ -249,7 +249,7 @@ private:
 };
 //------------------------------------------------------------------------------
 TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem * FileSystem,
-  TDateTime Interval) :
+  const TDateTime & Interval) :
   TSimpleThread(),
   FFileSystem(FileSystem),
   FInterval(Interval),

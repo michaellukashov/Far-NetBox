@@ -425,9 +425,9 @@ private:
 extern TDateTime MinDateTime;
 
 TDateTime Now();
-TDateTime SpanOfNowAndThen(const TDateTime  ANow, const TDateTime AThen);
-double MilliSecondSpan(const TDateTime  ANow, const TDateTime AThen);
-int64_t MilliSecondsBetween(const TDateTime ANow, const TDateTime AThen);
+TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen);
+double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen);
+int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
 
 //---------------------------------------------------------------------------
 

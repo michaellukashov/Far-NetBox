@@ -236,12 +236,12 @@ public:
   UnicodeString GetPuttySession() const;
   void SetPuttySession(const UnicodeString & Value);
   TDateTime GetIgnoreCancelBeforeFinish() const { return FIgnoreCancelBeforeFinish; }
-  void SetIgnoreCancelBeforeFinish(TDateTime Value) { FIgnoreCancelBeforeFinish = Value; }
+  void SetIgnoreCancelBeforeFinish(const TDateTime & Value) { FIgnoreCancelBeforeFinish = Value; }
   TGUICopyParamType & GetDefaultCopyParam() { return FDefaultCopyParam; }
   bool GetBeepOnFinish() const { return FBeepOnFinish; }
   void SetBeepOnFinish(bool Value) { FBeepOnFinish = Value; }
   TDateTime GetBeepOnFinishAfter() const { return FBeepOnFinishAfter; }
-  void SetBeepOnFinishAfter(TDateTime Value) { FBeepOnFinishAfter = Value; }
+  void SetBeepOnFinishAfter(const TDateTime & Value) { FBeepOnFinishAfter = Value; }
   UnicodeString GetCopyParamCurrent() const;
   const TRemoteProperties & GetNewDirectoryProperties() const { return FNewDirectoryProperties; }
   intptr_t GetKeepUpToDateChangeDelay() const { return FKeepUpToDateChangeDelay; }

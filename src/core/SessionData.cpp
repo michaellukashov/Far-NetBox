@@ -2207,7 +2207,7 @@ void TSessionData::SetPuttyProtocol(const UnicodeString & Value)
   SET_SESSION_PROPERTY(PuttyProtocol);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetPingIntervalDT(TDateTime Value)
+void TSessionData::SetPingIntervalDT(const TDateTime & Value)
 {
   uint16_t hour, min, sec, msec;
 
@@ -2361,7 +2361,7 @@ UnicodeString TSessionData::GetSessionUrl() const
   return Url;
 }
 //---------------------------------------------------------------------
-void TSessionData::SetTimeDifference(TDateTime Value)
+void TSessionData::SetTimeDifference(const TDateTime & Value)
 {
   SET_SESSION_PROPERTY(TimeDifference);
 }

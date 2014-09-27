@@ -181,10 +181,10 @@ public:
   void SetProtocolStr(const UnicodeString & Value);
   UnicodeString GetProtocolStr() const;
   bool GetCanLogin() const;
-  void SetPingIntervalDT(TDateTime Value);
+  void SetPingIntervalDT(const TDateTime & Value);
   TDateTime GetPingIntervalDT() const;
   TDateTime GetFtpPingIntervalDT() const;
-  void SetTimeDifference(TDateTime Value);
+  void SetTimeDifference(const TDateTime & Value);
   void SetPingType(TPingType Value);
   UnicodeString GetSessionName() const;
   bool HasSessionName() const;

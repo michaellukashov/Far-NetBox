@@ -1192,7 +1192,7 @@ TDateTime Now()
   return Result;
 }
 
-TDateTime SpanOfNowAndThen(const TDateTime  ANow, const TDateTime AThen)
+TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen)
 {
   TDateTime Result;
   if (ANow < AThen)
@@ -1202,14 +1202,14 @@ TDateTime SpanOfNowAndThen(const TDateTime  ANow, const TDateTime AThen)
   return Result;
 }
 
-double MilliSecondSpan(const TDateTime  ANow, const TDateTime AThen)
+double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen)
 {
   TDateTime Result;
   Result = MSecsPerDay * SpanOfNowAndThen(ANow, AThen);
   return Result;
 }
 
-int64_t MilliSecondsBetween(const TDateTime ANow, const TDateTime AThen)
+int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen)
 {
   TDateTime Result;
   Result = floor(MilliSecondSpan(ANow, AThen));
