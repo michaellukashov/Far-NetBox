@@ -92,7 +92,7 @@ public:
   void AddResumed(int64_t ASize);
   void AddSkippedFileSize(int64_t ASize);
   void Clear();
-  uintptr_t CPS();
+  uintptr_t CPS() const;
   void Finish(const UnicodeString & AFileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
   uintptr_t LocalBlockSize();
@@ -123,9 +123,9 @@ public:
   // whole operation
   TDateTime TimeElapsed() const;
   // only current file
-  TDateTime TimeExpected();
-  TDateTime TotalTimeExpected();
-  TDateTime TotalTimeLeft();
+  TDateTime TimeExpected() const;
+  TDateTime TotalTimeExpected() const;
+  TDateTime TotalTimeLeft() const;
   intptr_t TransferProgress() const;
   intptr_t OverallProgress() const;
   intptr_t TotalTransferProgress() const;

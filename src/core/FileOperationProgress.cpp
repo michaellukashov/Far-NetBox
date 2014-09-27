@@ -464,7 +464,7 @@ TDateTime TFileOperationProgressType::TimeElapsed() const
   return Now() - StartTime;
 }
 //---------------------------------------------------------------------------
-uintptr_t TFileOperationProgressType::CPS()
+uintptr_t TFileOperationProgressType::CPS() const
 {
   uintptr_t Result;
   if (FTicks.empty())
@@ -498,7 +498,7 @@ uintptr_t TFileOperationProgressType::CPS()
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime TFileOperationProgressType::TimeExpected()
+TDateTime TFileOperationProgressType::TimeExpected() const
 {
   uintptr_t CurCps = CPS();
   if (CurCps)
@@ -511,7 +511,7 @@ TDateTime TFileOperationProgressType::TimeExpected()
   }
 }
 //---------------------------------------------------------------------------
-TDateTime TFileOperationProgressType::TotalTimeExpected()
+TDateTime TFileOperationProgressType::TotalTimeExpected() const
 {
   assert(TotalSizeSet);
   uintptr_t CurCps = CPS();
@@ -527,7 +527,7 @@ TDateTime TFileOperationProgressType::TotalTimeExpected()
   }
 }
 //---------------------------------------------------------------------------
-TDateTime TFileOperationProgressType::TotalTimeLeft()
+TDateTime TFileOperationProgressType::TotalTimeLeft() const
 {
   assert(TotalSizeSet);
   uintptr_t CurCps = CPS();
