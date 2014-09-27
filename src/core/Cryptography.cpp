@@ -582,7 +582,7 @@ void CryptographyInitialize()
   {
     UnscrambleTable[SScrambleTable[Index]] = (uint8_t)Index;
   }
-  srand((uint32_t)time(nullptr) ^ (uint32_t)getpid());
+  srand((uint32_t)time(nullptr) ^ (uint32_t)_getpid());
 }
 //---------------------------------------------------------------------------
 void CryptographyFinalize()
