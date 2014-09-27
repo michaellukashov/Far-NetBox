@@ -3155,7 +3155,7 @@ void TSFTPFileSystem::HomeDirectory()
 void TSFTPFileSystem::TryOpenDirectory(const UnicodeString & Directory)
 {
   FTerminal->LogEvent(FORMAT(L"Trying to open directory \"%s\".", Directory.c_str()));
-  TRemoteFile * File;
+  TRemoteFile * File = nullptr;
   CustomReadFile(Directory, File, SSH_FXP_LSTAT, nullptr, asOpUnsupported);
   if (File == nullptr)
   {
@@ -3248,7 +3248,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
     };
     bool isEOF = false;
     intptr_t Total = 0;
-    TRemoteFile * File;
+    TRemoteFile * File = nullptr;
 
     Packet.ChangeType(SSH_FXP_READDIR);
     Packet.AddString(Handle);
@@ -3429,7 +3429,7 @@ bool TSFTPFileSystem::RemoteFileExists(const UnicodeString & FullPath,
   bool Result;
   try
   {
-    TRemoteFile * File;
+    TRemoteFile * File = nullptr;
     CustomReadFile(FullPath, File, SSH_FXP_LSTAT, nullptr, asNoSuchFile);
     Result = (File != nullptr);
     if (Result)
@@ -3674,7 +3674,7 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
   assert(AProperties != nullptr);
 
   UnicodeString RealFileName = LocalCanonify(AFileName);
-  TRemoteFile * File;
+  TRemoteFile * File = nullptr;
   ReadFile(RealFileName, File);
   std::unique_ptr<TRemoteFile> FilePtr(File);
   assert(FilePtr.get());
@@ -3737,7 +3737,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
       static intptr_t LoadFilesPropertiesQueueLen = 5;
       if (Queue.Init(LoadFilesPropertiesQueueLen, FileList))
       {
-        TRemoteFile * File;
+        TRemoteFile * File = nullptr;
         TSFTPPacket Packet(FCodePage);
         bool Next;
         do
@@ -4978,7 +4978,7 @@ intptr_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
           // or similar error. In this case throw original exception.
           try
           {
-            TRemoteFile * File;
+            TRemoteFile * File = nullptr;
             UnicodeString RealFileName = LocalCanonify(OpenParams->RemoteFileName);
             ReadFile(RealFileName, File);
             SAFE_DESTROY(File);
