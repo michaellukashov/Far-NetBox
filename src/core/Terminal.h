@@ -238,7 +238,7 @@ public:
   void EndTransaction();
   void HomeDirectory();
   void ChangeFileProperties(const UnicodeString & AFileName,
-    const TRemoteFile * File, /*const TRemoteProperties */ void * Properties);
+    const TRemoteFile * AFile, /*const TRemoteProperties */ void * Properties);
   void ChangeFilesProperties(TStrings * FileList,
     const TRemoteProperties * Properties);
   bool LoadFilesProperties(TStrings * FileList);
@@ -247,12 +247,12 @@ public:
   void ReloadDirectory();
   void RefreshDirectory();
   void TerminalRenameFile(const UnicodeString & AFileName, const UnicodeString & NewName);
-  void TerminalRenameFile(const TRemoteFile * File, const UnicodeString & NewName, bool CheckExistence);
-  void MoveFile(const UnicodeString & AFileName, const TRemoteFile * File,
+  void TerminalRenameFile(const TRemoteFile * AFile, const UnicodeString & NewName, bool CheckExistence);
+  void MoveFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     /* const TMoveFileParams */ void * Param);
   bool MoveFiles(TStrings * FileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
-  void CopyFile(const UnicodeString & AFileName, const TRemoteFile * File,
+  void CopyFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     /* const TMoveFileParams */ void * Param);
   bool CopyFiles(TStrings * FileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
@@ -366,7 +366,7 @@ protected:
   void DoReadDirectoryProgress(intptr_t Progress, intptr_t ResolvedLinks, bool & Cancel);
   void DoReadDirectory(bool ReloadOnly);
   void DoCreateDirectory(const UnicodeString & ADirName);
-  void DoDeleteFile(const UnicodeString & AFileName, const TRemoteFile * File,
+  void DoDeleteFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     intptr_t Params);
   void DoCustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params,

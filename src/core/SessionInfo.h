@@ -217,7 +217,7 @@ class TStatSessionAction : public TFileSessionAction
 public:
   explicit TStatSessionAction(TActionLog * Log, const UnicodeString & AFileName);
 
-  void File(TRemoteFile * File);
+  void File(TRemoteFile * AFile);
 };
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE2(TDoAddLogEvent, void,

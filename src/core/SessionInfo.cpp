@@ -265,13 +265,13 @@ public:
     FileList->DuplicateTo(FFileList);
   }
 
-  void File(TRemoteFile * File)
+  void File(TRemoteFile * AFile)
   {
     if (FFile != nullptr)
     {
       SAFE_DESTROY(FFile);
     }
-    FFile = File->Duplicate(true);
+    FFile = AFile->Duplicate(true);
   }
 
 protected:
@@ -549,11 +549,11 @@ TStatSessionAction::TStatSessionAction(TActionLog * Log, const UnicodeString & A
 {
 }
 //---------------------------------------------------------------------------
-void TStatSessionAction::File(TRemoteFile * File)
+void TStatSessionAction::File(TRemoteFile * AFile)
 {
   if (FRecord != nullptr)
   {
-    FRecord->File(File);
+    FRecord->File(AFile);
   }
 }
 //---------------------------------------------------------------------------

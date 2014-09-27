@@ -1909,10 +1909,10 @@ void TWinSCPFileSystem::InsertFileNameOnCommandLine(bool Full)
   }
 }
 //------------------------------------------------------------------------------
-UnicodeString TWinSCPFileSystem::GetFullFilePath(const TRemoteFile * File) const
+UnicodeString TWinSCPFileSystem::GetFullFilePath(const TRemoteFile * AFile) const
 {
   UnicodeString SessionUrl = GetSessionUrl(FTerminal, true);
-  UnicodeString Result = FORMAT(L"%s%s", SessionUrl.c_str(), File->GetFullFileName().c_str());
+  UnicodeString Result = FORMAT(L"%s%s", SessionUrl.c_str(), AFile->GetFullFileName().c_str());
   return Result;
 }
 //------------------------------------------------------------------------------
@@ -3936,7 +3936,7 @@ void TWinSCPFileSystem::MultipleEdit()
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
-  const UnicodeString & AFileName, TRemoteFile * File)
+  const UnicodeString & AFileName, TRemoteFile * AFile)
 {
   TEditHistory EditHistory;
   EditHistory.Directory = Directory;
@@ -3951,7 +3951,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
 
   UnicodeString FullFileName = core::UnixIncludeTrailingBackslash(Directory) + AFileName;
 
-  std::unique_ptr<TRemoteFile> FileDuplicate(File->Duplicate());
+  std::unique_ptr<TRemoteFile> FileDuplicate(AFile->Duplicate());
   UnicodeString NewFileName = AFileName; // FullFileName;
   FileDuplicate->SetFileName(NewFileName);
 

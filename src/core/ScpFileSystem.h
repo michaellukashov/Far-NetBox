@@ -29,7 +29,7 @@ public:
   virtual void CachedChangeDirectory(const UnicodeString & Directory);
   virtual void AnnounceFileListOperation();
   virtual void ChangeFileProperties(const UnicodeString & AFileName,
-    const TRemoteFile * File, const TRemoteProperties * Properties,
+    const TRemoteFile * AFile, const TRemoteProperties * Properties,
     TChmodSessionAction & Action);
   virtual bool LoadFilesProperties(TStrings * FileList);
   virtual void CalculateFilesChecksum(const UnicodeString & Alg,
@@ -46,9 +46,9 @@ public:
   virtual void RemoteCreateDirectory(const UnicodeString & ADirName);
   virtual void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
   virtual void RemoteDeleteFile(const UnicodeString & AFileName,
-    const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action);
+    const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action);
   virtual void CustomCommandOnFile(const UnicodeString & AFileName,
-    const TRemoteFile * File, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
+    const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
   virtual void DoStartup();
   virtual void HomeDirectory();
   virtual bool IsCapable(intptr_t Capability) const;
@@ -110,12 +110,12 @@ private:
   inline void SCPError(const UnicodeString & Message, bool Fatal);
   void SCPSendError(const UnicodeString & Message, bool Fatal);
   void SCPSink(const UnicodeString & AFileName,
-    const TRemoteFile * File, const UnicodeString & TargetDir,
+    const TRemoteFile * AFile, const UnicodeString & TargetDir,
     const UnicodeString & SourceDir,
     const TCopyParamType * CopyParam, bool & Success,
     TFileOperationProgressType * OperationProgress, intptr_t Params, intptr_t Level);
   void SCPSource(const UnicodeString & AFileName,
-    const TRemoteFile * File,
+    const TRemoteFile * AFile,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, intptr_t Level);
   void SendCommand(const UnicodeString & Cmd);

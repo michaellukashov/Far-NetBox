@@ -144,7 +144,7 @@ class TLoopDetector : public TObject
 public:
   TLoopDetector();
   void RecordVisitedDirectory(const UnicodeString & Directory);
-  bool IsUnvisitedDirectory(const TRemoteFile * File);
+  bool IsUnvisitedDirectory(const TRemoteFile * AFile);
 
 private:
   std::unique_ptr<TStringList> FVisitedDirectories;
@@ -161,18 +161,18 @@ void TLoopDetector::RecordVisitedDirectory(const UnicodeString & Directory)
   FVisitedDirectories->Add(::ExcludeTrailingBackslash(Directory));
 }
 //---------------------------------------------------------------------------
-bool TLoopDetector::IsUnvisitedDirectory(const TRemoteFile * File)
+bool TLoopDetector::IsUnvisitedDirectory(const TRemoteFile * AFile)
 {
-  assert(File->GetIsDirectory());
-  UnicodeString Directory = core::UnixExcludeTrailingBackslash(File->GetFullFileName());
+  assert(AFile->GetIsDirectory());
+  UnicodeString Directory = core::UnixExcludeTrailingBackslash(AFile->GetFullFileName());
   bool Result = (FVisitedDirectories->IndexOf(Directory) < 0);
   if (Result)
   {
-    if (File->GetIsSymLink())
+    if (AFile->GetIsSymLink())
     {
       UnicodeString BaseDirectory = core::UnixExtractFileDir(Directory);
       UnicodeString SymlinkDirectory =
-        core::UnixExcludeTrailingBackslash(core::AbsolutePath(BaseDirectory, File->GetLinkTo()));
+        core::UnixExcludeTrailingBackslash(core::AbsolutePath(BaseDirectory, AFile->GetLinkTo()));
       Result = (FVisitedDirectories->IndexOf(SymlinkDirectory) < 0);
     }
   }
@@ -3238,21 +3238,21 @@ void TTerminal::RemoteDeleteFile(const UnicodeString & AFileName,
 }
 //------------------------------------------------------------------------------
 void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
-  const TRemoteFile * File, intptr_t Params)
+  const TRemoteFile * AFile, intptr_t Params)
 {
   TRmSessionAction Action(GetActionLog(), AbsolutePath(AFileName, true));
   try
   {
     assert(FFileSystem);
     // 'File' parameter: SFTPFileSystem needs to know if file is file or directory
-    FFileSystem->RemoteDeleteFile(AFileName, File, Params, Action);
+    FFileSystem->RemoteDeleteFile(AFileName, AFile, Params, Action);
   }
   catch (Exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
       FMTLOAD(DELETE_FILE_ERROR, AFileName.c_str()),
-      DoDeleteFile(AFileName, File, Params),
+      DoDeleteFile(AFileName, AFile, Params),
       Action
     );
   }
@@ -3405,14 +3405,14 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
 }
 //------------------------------------------------------------------------------
 void TTerminal::ChangeFileProperties(const UnicodeString & AFileName,
-  const TRemoteFile * File, /*const TRemoteProperties*/ void * Properties)
+  const TRemoteFile * AFile, /*const TRemoteProperties*/ void * Properties)
 {
   TRemoteProperties * RProperties = NB_STATIC_DOWNCAST(TRemoteProperties, Properties);
   assert(RProperties && !RProperties->Valid.Empty());
   UnicodeString LocalFileName = AFileName;
-  if (AFileName.IsEmpty() && File)
+  if (AFileName.IsEmpty() && AFile)
   {
-    LocalFileName = File->GetFileName();
+    LocalFileName = AFile->GetFileName();
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foSetProperties)
   {
@@ -3463,8 +3463,8 @@ void TTerminal::ChangeFileProperties(const UnicodeString & AFileName,
            dt.c_str()));
     }
   }
-  FileModified(File, LocalFileName);
-  DoChangeFileProperties(LocalFileName, File, RProperties);
+  FileModified(AFile, LocalFileName);
+  DoChangeFileProperties(LocalFileName, AFile, RProperties);
   ReactOnCommand(fsChangeProperties);
 }
 //------------------------------------------------------------------------------
@@ -3638,13 +3638,13 @@ void TTerminal::TerminalRenameFile(const UnicodeString & AFileName,
   ReactOnCommand(fsRenameFile);
 }
 //------------------------------------------------------------------------------
-void TTerminal::TerminalRenameFile(const TRemoteFile * File,
+void TTerminal::TerminalRenameFile(const TRemoteFile * AFile,
   const UnicodeString & NewName, bool CheckExistence)
 {
-  assert(File && File->GetDirectory() == FFiles);
+  assert(AFile && AFile->GetDirectory() == FFiles);
   bool Proceed = true;
   // if filename doesn't contain path, we check for existence of file
-  if ((File->GetFileName() != NewName) && CheckExistence &&
+  if ((AFile->GetFileName() != NewName) && CheckExistence &&
       FConfiguration->GetConfirmOverwriting() &&
       core::UnixSamePath(GetCurrDirectory(), FFiles->GetDirectory()))
   {
@@ -3678,8 +3678,8 @@ void TTerminal::TerminalRenameFile(const TRemoteFile * File,
 
   if (Proceed)
   {
-    FileModified(File, File->GetFileName());
-    TerminalRenameFile(File->GetFileName(), NewName);
+    FileModified(AFile, AFile->GetFileName());
+    TerminalRenameFile(AFile->GetFileName(), NewName);
   }
 }
 //------------------------------------------------------------------------------
@@ -3704,7 +3704,7 @@ void TTerminal::DoRenameFile(const UnicodeString & AFileName,
 }
 //------------------------------------------------------------------------------
 void TTerminal::MoveFile(const UnicodeString & AFileName,
-  const TRemoteFile * File, /*const TMoveFileParams*/ void * Param)
+  const TRemoteFile * AFile, /*const TMoveFileParams*/ void * Param)
 {
   if (GetOperationProgress() &&
       ((GetOperationProgress()->Operation == foRemoteMove) ||
@@ -3722,7 +3722,7 @@ void TTerminal::MoveFile(const UnicodeString & AFileName,
   UnicodeString NewName = core::UnixIncludeTrailingBackslash(Params.Target) +
     MaskFileName(core::UnixExtractFileName(AFileName), Params.FileMask);
   LogEvent(FORMAT(L"Moving file \"%s\" to \"%s\".", AFileName.c_str(), NewName.c_str()));
-  FileModified(File, AFileName);
+  FileModified(AFile, AFileName);
   DoRenameFile(AFileName, NewName, true);
   ReactOnCommand(fsMoveFile);
 }

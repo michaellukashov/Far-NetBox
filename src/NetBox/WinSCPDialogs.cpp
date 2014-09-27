@@ -8195,11 +8195,11 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * FileList,
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * File,
+bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * AFile,
   UnicodeString & NewName)
 {
   return FPlugin->InputBox(GetMsg(RENAME_FILE_TITLE).c_str(),
-    FORMAT(GetMsg(RENAME_FILE).c_str(), File->GetFileName().c_str()), NewName, 0) &&
+    FORMAT(GetMsg(RENAME_FILE).c_str(), AFile->GetFileName().c_str()), NewName, 0) &&
     !NewName.IsEmpty();
 }
 //------------------------------------------------------------------------------

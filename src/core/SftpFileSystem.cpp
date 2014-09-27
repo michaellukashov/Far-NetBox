@@ -653,16 +653,16 @@ public:
     return GetString(Utf);
   }
 
-  void GetFile(TRemoteFile * File, intptr_t Version, TDSTMode DSTMode, bool Utf, bool SignedTS, bool Complete)
+  void GetFile(TRemoteFile * AFile, intptr_t Version, TDSTMode DSTMode, bool Utf, bool SignedTS, bool Complete)
   {
-    assert(File);
+    assert(AFile);
     uintptr_t Flags;
     UnicodeString ListingStr;
     uintptr_t Permissions = 0;
     bool ParsingFailed = false;
     if (GetType() != SSH_FXP_ATTRS)
     {
-      File->SetFileName(GetPathString(Utf));
+      AFile->SetFileName(GetPathString(Utf));
       if (Version < 4)
       {
         ListingStr = GetAnsiString();
@@ -682,11 +682,11 @@ public:
       {
         throw Exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, static_cast<int>(FXType)));
       }
-      File->SetType(Types[FXType]);
+      AFile->SetType(Types[FXType]);
     }
     if (Flags & SSH_FILEXFER_ATTR_SIZE)
     {
-      File->SetSize(GetInt64());
+      AFile->SetSize(GetInt64());
     }
     // SFTP-6 only
     if (Flags & SSH_FILEXFER_ATTR_ALLOCATION_SIZE)
@@ -697,14 +697,14 @@ public:
     // sets SSH_FILEXFER_ATTR_UIDGID for v4, but does not include the UID/GUID
     if ((Flags & SSH_FILEXFER_ATTR_UIDGID) && (Version < 4))
     {
-      File->GetFileOwner().SetID(GetCardinal());
-      File->GetFileGroup().SetID(GetCardinal());
+      AFile->GetFileOwner().SetID(GetCardinal());
+      AFile->GetFileGroup().SetID(GetCardinal());
     }
     if (Flags & SSH_FILEXFER_ATTR_OWNERGROUP)
     {
       assert(Version >= 4);
-      File->GetFileOwner().SetName(GetString(Utf));
-      File->GetFileGroup().SetName(GetString(Utf));
+      AFile->GetFileOwner().SetName(GetString(Utf));
+      AFile->GetFileGroup().SetName(GetString(Utf));
     }
     if (Flags & SSH_FILEXFER_ATTR_PERMISSIONS)
     {
@@ -714,12 +714,12 @@ public:
     {
       if (Flags & SSH_FILEXFER_ATTR_ACMODTIME)
       {
-        File->SetLastAccess(::UnixToDateTime(
+        AFile->SetLastAccess(::UnixToDateTime(
           SignedTS ?
             static_cast<int64_t>(static_cast<int32_t>(GetCardinal())) :
             static_cast<int64_t>(GetCardinal()),
           DSTMode));
-        File->SetModification(::UnixToDateTime(
+        AFile->SetModification(::UnixToDateTime(
           SignedTS ?
             static_cast<int64_t>(static_cast<int32_t>(GetCardinal())) :
             static_cast<int64_t>(GetCardinal()),
@@ -730,7 +730,7 @@ public:
     {
       if (Flags & SSH_FILEXFER_ATTR_ACCESSTIME)
       {
-        File->SetLastAccess(::UnixToDateTime(GetInt64(), DSTMode));
+        AFile->SetLastAccess(::UnixToDateTime(GetInt64(), DSTMode));
         if (Flags & SSH_FILEXFER_ATTR_SUBSECOND_TIMES)
         {
           GetCardinal(); // skip access time subseconds
@@ -738,7 +738,7 @@ public:
       }
       else
       {
-        File->SetLastAccess(Now());
+        AFile->SetLastAccess(Now());
       }
       if (Flags & SSH_FILEXFER_ATTR_CREATETIME)
       {
@@ -750,7 +750,7 @@ public:
       }
       if (Flags & SSH_FILEXFER_ATTR_MODIFYTIME)
       {
-        File->SetModification(::UnixToDateTime(GetInt64(), DSTMode));
+        AFile->SetModification(::UnixToDateTime(GetInt64(), DSTMode));
         if (Flags & SSH_FILEXFER_ATTR_SUBSECOND_TIMES)
         {
           GetCardinal(); // skip modification time subseconds
@@ -758,7 +758,7 @@ public:
       }
       else
       {
-        File->SetModification(Now());
+        AFile->SetModification(Now());
       }
       // SFTP-6
       if (Flags & SSH_FILEXFER_ATTR_CTIME)
@@ -788,7 +788,7 @@ public:
       }
       if (FLAGSET(Bits, SSH_FILEXFER_ATTR_FLAGS_HIDDEN))
       {
-        File->SetIsHidden(true);
+        AFile->SetIsHidden(true);
       }
     }
 
@@ -816,7 +816,7 @@ public:
       {
         // update permissions and user/group name
         // modification time and filename is ignored
-        File->SetListingStr(ListingStr);
+        AFile->SetListingStr(ListingStr);
       }
       catch (...)
       {
@@ -831,7 +831,7 @@ public:
       wchar_t Type = FILETYPE_DEFAULT;
       if (FLAGSET(Flags, SSH_FILEXFER_ATTR_PERMISSIONS))
       {
-        File->GetRights()->SetNumber(static_cast<uint16_t>(Permissions & TRights::rfAllSpecials));
+        AFile->GetRights()->SetNumber(static_cast<uint16_t>(Permissions & TRights::rfAllSpecials));
         if (FLAGSET(Permissions, TRights::rfDirectory))
         {
           Type = FILETYPE_DIRECTORY;
@@ -840,7 +840,7 @@ public:
 
       if (Version < 4)
       {
-        File->SetType(Type);
+        AFile->SetType(Type);
       }
     }
 
@@ -856,7 +856,7 @@ public:
 
     if (Complete)
     {
-      File->Complete();
+      AFile->Complete();
     }
   }
 

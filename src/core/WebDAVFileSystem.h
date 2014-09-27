@@ -40,7 +40,7 @@ public:
   virtual void CachedChangeDirectory(const UnicodeString & Directory);
   virtual void AnnounceFileListOperation();
   virtual void ChangeFileProperties(const UnicodeString & AFileName,
-    const TRemoteFile * File, const TRemoteProperties * Properties,
+    const TRemoteFile * AFile, const TRemoteProperties * Properties,
     TChmodSessionAction & Action);
   virtual bool LoadFilesProperties(TStrings * FileList);
   virtual void CalculateFilesChecksum(const UnicodeString & Alg,
@@ -57,9 +57,9 @@ public:
   virtual void RemoteCreateDirectory(const UnicodeString & ADirName);
   virtual void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
   virtual void RemoteDeleteFile(const UnicodeString & AFileName,
-    const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action);
+    const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action);
   virtual void CustomCommandOnFile(const UnicodeString & AFileName,
-    const TRemoteFile * File, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
+    const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
   virtual void DoStartup();
   virtual void HomeDirectory();
   virtual bool IsCapable(intptr_t Capability) const;
@@ -140,17 +140,17 @@ protected:
   void DoChangeDirectory(const UnicodeString & Directory);
 
   void Sink(const UnicodeString & AFileName,
-    const TRemoteFile * File, const UnicodeString & TargetDir,
+    const TRemoteFile * AFile, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TDownloadSessionAction & Action);
   void SinkRobust(const UnicodeString & AFileName,
-    const TRemoteFile * File, const UnicodeString & TargetDir,
+    const TRemoteFile * AFile, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, uintptr_t Flags);
-  void SinkFile(const UnicodeString & AFileName, const TRemoteFile * File, void * Param);
+  void SinkFile(const UnicodeString & AFileName, const TRemoteFile * AFile, void * Param);
   void WebDAVSourceRobust(const UnicodeString & AFileName,
-    const TRemoteFile * File,
+    const TRemoteFile * AFile,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   void WebDAVSource(const UnicodeString & AFileName,

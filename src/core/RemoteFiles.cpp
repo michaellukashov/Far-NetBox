@@ -1569,10 +1569,10 @@ TRemoteFileList::TRemoteFileList() :
   SetOwnsObjects(true);
 }
 //---------------------------------------------------------------------------
-void TRemoteFileList::AddFile(TRemoteFile * File)
+void TRemoteFileList::AddFile(TRemoteFile * AFile)
 {
-  Add(File);
-  File->SetDirectory(this);
+  Add(AFile);
+  AFile->SetDirectory(this);
 }
 //---------------------------------------------------------------------------
 void TRemoteFileList::DuplicateTo(TRemoteFileList * Copy) const
@@ -1689,23 +1689,23 @@ void TRemoteDirectory::SetDirectory(const UnicodeString & Value)
   TRemoteFileList::SetDirectory(Value);
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectory::AddFile(TRemoteFile * File)
+void TRemoteDirectory::AddFile(TRemoteFile * AFile)
 {
-  if (File->GetIsThisDirectory())
+  if (AFile->GetIsThisDirectory())
   {
-    FThisDirectory = File;
+    FThisDirectory = AFile;
   }
-  if (File->GetIsParentDirectory())
+  if (AFile->GetIsParentDirectory())
   {
-    FParentDirectory = File;
+    FParentDirectory = AFile;
   }
 
-  if ((!File->GetIsThisDirectory() || GetIncludeThisDirectory()) &&
-      (!File->GetIsParentDirectory() || GetIncludeParentDirectory()))
+  if ((!AFile->GetIsThisDirectory() || GetIncludeThisDirectory()) &&
+      (!AFile->GetIsParentDirectory() || GetIncludeParentDirectory()))
   {
-    TRemoteFileList::AddFile(File);
+    TRemoteFileList::AddFile(AFile);
   }
-  File->SetTerminal(GetTerminal());
+  AFile->SetTerminal(GetTerminal());
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectory::DuplicateTo(TRemoteFileList * Copy) const
