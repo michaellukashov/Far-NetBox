@@ -2388,16 +2388,16 @@ LCID GetDefaultLCID()
   return GetUserDefaultLCID();
 }
 //---------------------------------------------------------------------------
-static UnicodeString ADefaultEncodingName;
 UnicodeString DefaultEncodingName()
 {
-  if (ADefaultEncodingName.IsEmpty())
+  static UnicodeString DefaultEncodingName;
+  if (DefaultEncodingName.IsEmpty())
   {
     CPINFOEX Info;
     GetCPInfoEx(CP_ACP, 0, &Info);
-    ADefaultEncodingName = Info.CodePageName;
+    DefaultEncodingName = Info.CodePageName;
   }
-  return ADefaultEncodingName;
+  return DefaultEncodingName;
 }
 //---------------------------------------------------------------------------
 bool GetWindowsProductType(DWORD & Type)
