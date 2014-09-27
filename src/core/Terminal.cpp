@@ -1497,7 +1497,7 @@ void TTerminal::DoFinished(TFileOperation Operation, TOperationSide Side, bool T
 //---------------------------------------------------------------------------
 void TTerminal::SaveCapabilities(TFileSystemInfo & FileSystemInfo)
 {
-  for (intptr_t Index = 0; Index < fcCount; Index++)
+  for (intptr_t Index = 0; Index < fcCount; ++Index)
   {
     FileSystemInfo.IsCapable[Index] = GetIsCapable((TFSCapability)Index);
   }

@@ -294,7 +294,7 @@ bool TCopyParamList::operator==(const TCopyParamList & rhl) const
     {
       Result = (GetName(Index) == rhl.GetName(Index)) &&
         CompareItem(Index, rhl.GetCopyParam(Index), rhl.GetRule(Index));
-      Index++;
+      ++Index;
     }
   }
   return Result;
@@ -317,7 +317,7 @@ bool TCopyParamList::CompareItem(intptr_t Index,
 //---------------------------------------------------------------------------
 void TCopyParamList::Clear()
 {
-  for (intptr_t Index = 0; Index < GetCount(); Index++)
+  for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     delete GetCopyParam(Index);
     delete GetRule(Index);
@@ -398,7 +398,7 @@ intptr_t TCopyParamList::Find(const TCopyParamRuleData & Value) const
         Result = Index;
       }
     }
-    Index++;
+    ++Index;
   }
   return Result;
 }

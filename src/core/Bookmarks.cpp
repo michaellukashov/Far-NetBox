@@ -25,7 +25,7 @@ TBookmarks::~TBookmarks()
 //---------------------------------------------------------------------------
 void TBookmarks::Clear()
 {
-  for (intptr_t Index = 0; Index < FBookmarkLists->GetCount(); Index++)
+  for (intptr_t Index = 0; Index < FBookmarkLists->GetCount(); ++Index)
   {
     TObject * Object = FBookmarkLists->GetObject(Index);
     SAFE_DESTROY(Object);
@@ -37,7 +37,7 @@ UnicodeString TBookmarks::Keys[] = { L"Local", L"Remote", L"ShortCuts", L"Option
 //---------------------------------------------------------------------------
 void TBookmarks::Load(THierarchicalStorage * Storage)
 {
-  for (intptr_t Index = 0; Index <= 3; Index++)
+  for (intptr_t Index = 0; Index <= 3; ++Index)
   {
     if (Storage->OpenSubKey(Keys[Index], false))
     {
@@ -213,7 +213,7 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
 //---------------------------------------------------------------------------
 void TBookmarks::ModifyAll(bool Modify)
 {
-  for (intptr_t Index = 0; Index < FBookmarkLists->GetCount(); Index++)
+  for (intptr_t Index = 0; Index < FBookmarkLists->GetCount(); ++Index)
   {
     TBookmarkList * BookmarkList = NB_STATIC_DOWNCAST(TBookmarkList, FBookmarkLists->GetObject(Index));
     assert(BookmarkList);
@@ -281,7 +281,7 @@ TBookmarkList::~TBookmarkList()
 //---------------------------------------------------------------------------
 void TBookmarkList::Clear()
 {
-  for (intptr_t Index = 0; Index < FBookmarks->GetCount(); Index++)
+  for (intptr_t Index = 0; Index < FBookmarks->GetCount(); ++Index)
   {
     TObject * Object = FBookmarks->GetObject(Index);
     SAFE_DESTROY(Object);
@@ -296,7 +296,7 @@ void TBookmarkList::Assign(const TPersistent * Source)
   if (SourceList)
   {
     Clear();
-    for (intptr_t Index = 0; Index < SourceList->FBookmarks->GetCount(); Index++)
+    for (intptr_t Index = 0; Index < SourceList->FBookmarks->GetCount(); ++Index)
     {
       TBookmark * Bookmark = new TBookmark();
       Bookmark->Assign(NB_STATIC_DOWNCAST(TBookmark, SourceList->FBookmarks->GetObject(Index)));

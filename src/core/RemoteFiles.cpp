@@ -2382,7 +2382,7 @@ void TRights::SetOctal(const UnicodeString & AValue)
     bool Correct = (Value.Length() == 4);
     if (Correct)
     {
-      for (intptr_t Index = 1; (Index <= Value.Length()) && Correct; Index++)
+      for (intptr_t Index = 1; (Index <= Value.Length()) && Correct; ++Index)
       {
         Correct = (Value[Index] >= L'0') && (Value[Index] <= L'7');
       }

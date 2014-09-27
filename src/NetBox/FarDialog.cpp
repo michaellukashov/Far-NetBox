@@ -54,7 +54,7 @@ TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
 //---------------------------------------------------------------------------
 TFarDialog::~TFarDialog()
 {
-  for (intptr_t Index = 0; Index < GetItemCount(); Index++)
+  for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
   {
     GetItem(Index)->Detach();
   }
@@ -93,7 +93,7 @@ void TFarDialog::SetBounds(const TRect & Value)
         Coord.Y = static_cast<short int>(FBounds.Top);
         SendDlgMessage(DM_MOVEDIALOG, (int)true, reinterpret_cast<LONG_PTR>(&Coord));
       }
-      for (intptr_t Index = 0; Index < GetItemCount(); Index++)
+      for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
       {
         GetItem(Index)->DialogResized();
       }
@@ -634,7 +634,7 @@ bool TFarDialog::HotKey(uintptr_t Key)
   if (Result)
   {
     Result = false;
-    for (intptr_t Index = 0; Index < GetItemCount(); Index++)
+    for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
     {
       if (GetItem(Index)->HotKey(HotKey))
       {
@@ -649,7 +649,7 @@ bool TFarDialog::HotKey(uintptr_t Key)
 TFarDialogItem * TFarDialog::ItemAt(int X, int Y)
 {
   TFarDialogItem * Result = nullptr;
-  for (intptr_t Index = 0; Index < GetItemCount(); Index++)
+  for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
   {
     TRect Bounds = GetItem(Index)->GetActualBounds();
     if ((Bounds.Left <= X) && (X <= Bounds.Right) &&
@@ -664,7 +664,7 @@ TFarDialogItem * TFarDialog::ItemAt(int X, int Y)
 bool TFarDialog::CloseQuery()
 {
   bool Result = true;
-  for (intptr_t Index = 0; Index < GetItemCount() && Result; Index++)
+  for (intptr_t Index = 0; Index < GetItemCount() && Result; ++Index)
   {
     if (!GetItem(Index)->CloseQuery())
     {
@@ -686,7 +686,7 @@ void TFarDialog::RefreshBounds()
 //---------------------------------------------------------------------------
 void TFarDialog::Init()
 {
-  for (intptr_t Index = 0; Index < GetItemCount(); Index++)
+  for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
   {
     GetItem(Index)->Init();
   }
@@ -783,7 +783,7 @@ void TFarDialog::Change()
   else
   {
     std::unique_ptr<TList> NotifiedContainers(new TList());
-    for (intptr_t Index = 0; Index < GetItemCount(); Index++)
+    for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
     {
       TFarDialogItem * DItem = GetItem(Index);
       DItem->Change();
@@ -840,7 +840,7 @@ void TFarDialog::ProcessGroup(intptr_t Group, TFarProcessGroupEvent Callback,
     {
       UnlockChanges();
     };
-    for (intptr_t Index = 0; Index < GetItemCount(); Index++)
+    for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
     {
       TFarDialogItem * Item = GetItem(Index);
       if (Item->GetGroup() == Group)
@@ -2191,7 +2191,7 @@ void TFarList::Changed()
       nb_free(Items);
       FListItems->ItemsNumber = static_cast<int>(GetCount());
     }
-    for (intptr_t Index = 0; Index < GetCount(); Index++)
+    for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
       FListItems->Items[Index].Text = TCustomFarPlugin::DuplicateStr(GetString(Index), true);
     }
@@ -2288,7 +2288,7 @@ intptr_t TFarList::GetTopIndex() const
 intptr_t TFarList::GetMaxLength() const
 {
   intptr_t Result = 0;
-  for (intptr_t Index = 0; Index < GetCount(); Index++)
+  for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     if (Result < GetString(Index).Length())
     {

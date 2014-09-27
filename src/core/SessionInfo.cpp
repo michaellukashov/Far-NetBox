@@ -19,7 +19,7 @@ using namespace Sysutils;
 static UnicodeString DoXmlEscape(const UnicodeString & Str, bool NewLine)
 {
   UnicodeString Result = Str;
-  for (intptr_t Index = 1; Index <= Result.Length(); Index++)
+  for (intptr_t Index = 1; Index <= Result.Length(); ++Index)
   {
     const wchar_t * Repl = nullptr;
     switch (Result[Index])
@@ -1055,7 +1055,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly))
       {
         UnicodeString Bugs;
-        for (int Index = 0; Index < SFTP_BUG_COUNT; Index++)
+        for (int Index = 0; Index < SFTP_BUG_COUNT; ++Index)
         {
           Bugs += UnicodeString(BugFlags[Data->GetSFTPBug(static_cast<TSftpBug>(Index))])+(Index<SFTP_BUG_COUNT-1 ? L"," : L"");
         }

@@ -3169,7 +3169,7 @@ TStoredSessionList::TStoredSessionList(bool AReadOnly) :
 TStoredSessionList::~TStoredSessionList()
 {
   SAFE_DESTROY(FDefaultSettings);
-  for (intptr_t Index = 0; Index < GetCount(); Index++)
+  for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     delete AtObject(Index);
     SetItem(Index, nullptr);
@@ -3335,7 +3335,7 @@ void TStoredSessionList::Saved()
 //---------------------------------------------------------------------
 /*void TStoredSessionList::ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path)
 {
-  for (int Index = 0; Index < Node->ChildNodes->Count; Index++)
+  for (int Index = 0; Index < Node->ChildNodes->Count; ++Index)
   {
     _di_IXMLNode ChildNode = Node->ChildNodes->Get(Index);
     if (ChildNode->NodeName == L"Server")
@@ -3349,7 +3349,7 @@ void TStoredSessionList::Saved()
     {
       UnicodeString Name;
 
-      for (int Index = 0; Index < ChildNode->ChildNodes->Count; Index++)
+      for (int Index = 0; Index < ChildNode->ChildNodes->Count; ++Index)
       {
         _di_IXMLNode PossibleTextMode = ChildNode->ChildNodes->Get(Index);
         if (PossibleTextMode->NodeType == ntText)
@@ -3477,7 +3477,7 @@ void TStoredSessionList::UpdateStaticUsage()
   std::unique_ptr<TStringList> DifferentAdvancedProperties(new TStringList(L""));
   DifferentAdvancedProperties->Sorted = true;
   DifferentAdvancedProperties->Duplicates = Types::dupIgnore;
-  for (int Index = 0; Index < Count; Index++)
+  for (int Index = 0; Index < Count; ++Index)
   {
     TSessionData * Data = Sessions[Index];
     if (Data->IsWorkspace)
@@ -3717,7 +3717,7 @@ bool TStoredSessionList::IsFolderOrWorkspace(
   TSessionData * FirstData = nullptr;
   if (!Name.IsEmpty())
   {
-    for (intptr_t Index = 0; !Result && (Index < GetCount()); Index++)
+    for (intptr_t Index = 0; !Result && (Index < GetCount()); ++Index)
     {
       Result = GetSession(Index)->IsInFolderOrWorkspace(Name);
       if (Result)
@@ -3761,7 +3761,7 @@ TSessionData * TStoredSessionList::CheckIsInFolderOrWorkspaceAndResolve(
 //---------------------------------------------------------------------------
 void TStoredSessionList::GetFolderOrWorkspace(const UnicodeString & Name, TList * List)
 {
-  for (intptr_t Index = 0; (Index < GetCount()); Index++)
+  for (intptr_t Index = 0; (Index < GetCount()); ++Index)
   {
     TSessionData * Data =
       CheckIsInFolderOrWorkspaceAndResolve(GetSession(Index), Name);
@@ -3780,7 +3780,7 @@ TStrings * TStoredSessionList::GetFolderOrWorkspaceList(
 {
   std::unique_ptr<TStringList> Result(new TStringList());
 
-  for (intptr_t Index = 0; Index < GetCount(); Index++)
+  for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     TSessionData * Data =
       CheckIsInFolderOrWorkspaceAndResolve(GetSession(Index), Name);
@@ -3801,7 +3801,7 @@ TStrings * TStoredSessionList::GetWorkspaces()
   Result->SetDuplicates(dupIgnore);
   Result->SetCaseSensitive(false);
 
-  for (intptr_t Index = 0; Index < GetCount(); Index++)
+  for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     TSessionData * Data = GetSession(Index);
     if (Data->IsWorkspace())
@@ -3816,7 +3816,7 @@ TStrings * TStoredSessionList::GetWorkspaces()
 void TStoredSessionList::NewWorkspace(
   const UnicodeString & Name, TList * DataList)
 {
-  for (intptr_t Index = 0; Index < GetCount(); Index++)
+  for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     TSessionData * Data = GetSession(Index);
     if (Data->IsInFolderOrWorkspace(Name))
@@ -3827,7 +3827,7 @@ void TStoredSessionList::NewWorkspace(
     }
   }
 
-  for (intptr_t Index = 0; Index < DataList->GetCount(); Index++)
+  for (intptr_t Index = 0; Index < DataList->GetCount(); ++Index)
   {
     TSessionData * Data = NB_STATIC_DOWNCAST(TSessionData, DataList->GetItem(Index));
 
@@ -3843,7 +3843,7 @@ void TStoredSessionList::NewWorkspace(
 bool TStoredSessionList::HasAnyWorkspace()
 {
   bool Result = false;
-  for (intptr_t Index = 0; !Result && (Index < GetCount()); Index++)
+  for (intptr_t Index = 0; !Result && (Index < GetCount()); ++Index)
   {
     TSessionData * Data = GetSession(Index);
     Result = Data->IsWorkspace();

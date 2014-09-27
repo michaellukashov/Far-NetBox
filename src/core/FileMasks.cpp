@@ -114,12 +114,12 @@ bool IsEffectiveFileNameMask(const UnicodeString & Mask)
 UnicodeString DelimitFileNameMask(const UnicodeString & Mask)
 {
   UnicodeString Result = Mask;
-  for (intptr_t Index = 1; Index <= Result.Length(); Index++)
+  for (intptr_t Index = 1; Index <= Result.Length(); ++Index)
   {
     if (wcschr(L"\\*?", Result[Index]) != nullptr)
     {
       Result.Insert(L"\\", Index);
-      Index++;
+      ++Index;
     }
   }
   return Result;

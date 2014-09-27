@@ -1973,7 +1973,7 @@ void TSFTPFileSystem::Idle()
 void TSFTPFileSystem::ResetConnection()
 {
   // there must be no valid packet reservation at the end
-  for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); Index++)
+  for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); ++Index)
   {
     assert(FPacketReservations->GetItem(Index) == nullptr);
     TSFTPPacket * Item = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Index));
@@ -2866,12 +2866,12 @@ void TSFTPFileSystem::DoStartup()
           FSupport->BlockVector = SupportedStruct.GetSmallCardinal();
           uintptr_t ExtensionCount;
           ExtensionCount = SupportedStruct.GetCardinal();
-          for (uintptr_t Index = 0; Index < ExtensionCount; Index++)
+          for (uintptr_t Index = 0; Index < ExtensionCount; ++Index)
           {
             FSupport->AttribExtensions->Add(SupportedStruct.GetAnsiString());
           }
           ExtensionCount = SupportedStruct.GetCardinal();
-          for (uintptr_t Index = 0; Index < ExtensionCount; Index++)
+          for (uintptr_t Index = 0; Index < ExtensionCount; ++Index)
           {
             FSupport->Extensions->Add(SupportedStruct.GetAnsiString());
           }

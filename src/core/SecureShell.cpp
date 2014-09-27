@@ -2036,7 +2036,7 @@ UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & KeyStr) const
       if (Digits >= 16)
       {
         Result.Insert(L" ", Index + 1);
-        Index++;
+        ++Index;
         Digits = 0;
       }
     }
@@ -2044,7 +2044,7 @@ UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & KeyStr) const
     {
       Digits = 0;
     }
-    Index++;
+    ++Index;
   }
   return Result;
 }

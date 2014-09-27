@@ -259,12 +259,12 @@ UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
 UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars)
 {
   UnicodeString Result = Str;
-  for (intptr_t Index = 1; Index <= Result.Length(); Index++)
+  for (intptr_t Index = 1; Index <= Result.Length(); ++Index)
   {
     if (Result.IsDelimiter(Chars, Index))
     {
       Result.Insert(L"\\", Index);
-      Index++;
+      ++Index;
     }
   }
   return Result;
@@ -627,13 +627,13 @@ UnicodeString EscapePuttyCommandParam(const UnicodeString & Param)
   UnicodeString Result = Param;
   bool Space = false;
 
-  for (intptr_t Index = 1; Index <= Result.Length(); Index++)
+  for (intptr_t Index = 1; Index <= Result.Length(); ++Index)
   {
     switch (Result[Index])
     {
       case L'"':
         Result.Insert(L"\\", Index);
-        Index++;
+        ++Index;
         break;
 
       case L' ':
@@ -864,12 +864,12 @@ static intptr_t GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_T
       intptr_t Index = IndCheckUNC;
       for (int SkipSlashes = 2; SkipSlashes > 0; SkipSlashes--)
       {
-        for(; Index <= Len; Index++)
+        for(; Index <= Len; ++Index)
         {
           TCHAR z = Path[Index];
           if ((z == L'\\') || (z == L'/') || (Index >= Len))
           {
-            Index++;
+            ++Index;
             if (SkipSlashes == 1)
             {
               if (PrefixType == PPT_UNKNOWN)
@@ -1076,7 +1076,7 @@ UnicodeString ByteToHex(uint8_t B, bool UpperCase)
 UnicodeString BytesToHex(const uint8_t * B, uintptr_t Length, bool UpperCase, wchar_t Separator)
 {
   UnicodeString Result;
-  for (uintptr_t Index = 0; Index < Length; Index++)
+  for (uintptr_t Index = 0; Index < Length; ++Index)
   {
     Result += ByteToHex(B[Index], UpperCase);
     if ((Separator != L'\0') && (Index < Length - 1))
@@ -2178,7 +2178,7 @@ UnicodeString DecodeUrlChars(const UnicodeString & S)
         }
         break;
     }
-    Index++;
+    ++Index;
   }
   return Result;
 }
@@ -2196,7 +2196,7 @@ UnicodeString DoEncodeUrl(const UnicodeString & S, const UnicodeString & Chars)
       Result[Index] = '%';
       Index += H.Length();
     }
-    Index++;
+    ++Index;
   }
   return Result;
 }
@@ -2210,7 +2210,7 @@ UnicodeString EncodeUrlChars(const UnicodeString & S, const UnicodeString & /* I
 UnicodeString NonUrlChars()
 {
   UnicodeString S;
-  for (uintptr_t Index = 0; Index <= 127; Index++)
+  for (uintptr_t Index = 0; Index <= 127; ++Index)
   {
     wchar_t C = static_cast<wchar_t>(Index);
     if (IsLetter(C) ||

@@ -653,7 +653,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
       while (EmptyButMonitored && (Index < FItems->GetCount()))
       {
         EmptyButMonitored = (GetItem(FItems, Index)->GetCompleteEvent() != INVALID_HANDLE_VALUE);
-        Index++;
+        ++Index;
       }
       Empty = (FItems->GetCount() == 0);
     }
@@ -685,7 +685,7 @@ TQueueItem * TTerminalQueue::GetItem(intptr_t Index)
 void TTerminalQueue::UpdateStatusForList(
   TTerminalQueueStatus * Status, TList * List, TTerminalQueueStatus * Current)
 {
-  for (intptr_t Index = 0; Index < List->GetCount(); Index++)
+  for (intptr_t Index = 0; Index < List->GetCount(); ++Index)
   {
     TQueueItem * Item = GetItem(List, Index);
     TQueueItemProxy * ItemProxy;
@@ -1027,7 +1027,7 @@ void TTerminalQueue::ProcessEvent()
         {
           RemoveDoneItemsBefore = IncSecond(RemoveDoneItemsBefore, -FKeepDoneItemsFor);
         }
-        for (intptr_t Index = 0; Index < FDoneItems->GetCount(); Index++)
+        for (intptr_t Index = 0; Index < FDoneItems->GetCount(); ++Index)
         {
           TQueueItem * Item = GetItem(FDoneItems, Index);
           if (Item->FDoneAt <= RemoveDoneItemsBefore)
@@ -1886,7 +1886,7 @@ intptr_t TTerminalQueueStatus::GetActiveCount() const
       (GetItem(Index)->GetStatus() != TQueueItem::qsPending))
     {
       FActiveCount++;
-      Index++;
+      ++Index;
     }
   }
 
