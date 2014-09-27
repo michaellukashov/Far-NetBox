@@ -837,7 +837,7 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
     catch (const std::exception & e)
     {
       (void)e;
-      DEBUG_PRINTF(L"Error: %s", MB2W(e.what()).c_str());
+      DEBUG_PRINTF(L"Error: %s", Sysutils::MB2W(e.what()).c_str());
       Result = L"";
     }
   }
