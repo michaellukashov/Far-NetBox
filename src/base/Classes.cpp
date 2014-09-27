@@ -2016,11 +2016,11 @@ void TRegistry::WriteBinaryData(const UnicodeString & Name,
   PutData(Name, Buffer, BufSize, rdBinary);
 }
 
-void TRegistry::ChangeKey(HKEY Value, const UnicodeString & Path)
+void TRegistry::ChangeKey(HKEY Value, const UnicodeString & APath)
 {
   CloseKey();
   FCurrentKey = Value;
-  FCurrentPath = Path;
+  FCurrentPath = APath;
 }
 
 HKEY TRegistry::GetBaseKey(bool Relative)

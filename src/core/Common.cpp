@@ -426,22 +426,22 @@ UnicodeString GetShellFolderPath(int CSIdl)
 //---------------------------------------------------------------------------
 // Particularly needed when using file name selected by TFilenameEdit,
 // as it wraps a path to double-quotes, when there is a space in the path.
-UnicodeString StripPathQuotes(const UnicodeString & Path)
+UnicodeString StripPathQuotes(const UnicodeString & APath)
 {
-  if ((Path.Length() >= 2) &&
-      (Path[1] == L'\"') && (Path[Path.Length()] == L'\"'))
+  if ((APath.Length() >= 2) &&
+      (APath[1] == L'\"') && (APath[APath.Length()] == L'\"'))
   {
-    return Path.SubString(2, Path.Length() - 2);
+    return APath.SubString(2, APath.Length() - 2);
   }
   else
   {
-    return Path;
+    return APath;
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString AddPathQuotes(const UnicodeString & Path)
+UnicodeString AddPathQuotes(const UnicodeString & APath)
 {
-  UnicodeString Result = StripPathQuotes(Path);
+  UnicodeString Result = StripPathQuotes(APath);
   if (Result.Pos(L" ") > 0)
   {
     Result = L"\"" + Result + L"\"";
@@ -686,16 +686,16 @@ UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str)
   return Buf;
 }
 //---------------------------------------------------------------------------
-bool CompareFileName(const UnicodeString & Path1, const UnicodeString & Path2)
+bool CompareFileName(const UnicodeString & APath1, const UnicodeString & APath2)
 {
-  UnicodeString ShortPath1 = ExtractShortPathName(Path1);
-  UnicodeString ShortPath2 = ExtractShortPathName(Path2);
+  UnicodeString ShortPath1 = ExtractShortPathName(APath1);
+  UnicodeString ShortPath2 = ExtractShortPathName(APath2);
 
   bool Result;
   // ExtractShortPathName returns empty string if file does not exist
   if (ShortPath1.IsEmpty() || ShortPath2.IsEmpty())
   {
-    Result = AnsiSameText(Path1, Path2);
+    Result = AnsiSameText(APath1, APath2);
   }
   else
   {
@@ -704,10 +704,10 @@ bool CompareFileName(const UnicodeString & Path1, const UnicodeString & Path2)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool ComparePaths(const UnicodeString & Path1, const UnicodeString & Path2)
+bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2)
 {
   // TODO: ExpandUNCFileName
-  return AnsiSameText(::IncludeTrailingBackslash(Path1), ::IncludeTrailingBackslash(Path2));
+  return AnsiSameText(::IncludeTrailingBackslash(APath1), ::IncludeTrailingBackslash(APath2));
 }
 //---------------------------------------------------------------------------
 bool IsReservedName(const UnicodeString & AFileName)
@@ -751,12 +751,12 @@ enum PATH_PREFIX_TYPE
   PPT_LONG_UNICODE_UNC,   //Found \\?\UNC\ prefix
 };
 //---------------------------------------------------------------------------
-static intptr_t PathRootLength(const UnicodeString & Path)
+static intptr_t PathRootLength(const UnicodeString & APath)
 {
   // Correction for PathSkipRoot API
 
   // Replace all /'s with \'s because PathSkipRoot can't handle /'s
-  UnicodeString Result = ReplaceChar(Path, L'/', L'\\');
+  UnicodeString Result = ReplaceChar(APath, L'/', L'\\');
 
   // Now call the API
   LPCTSTR Buffer = PathSkipRoot(Result.c_str());
@@ -764,18 +764,18 @@ static intptr_t PathRootLength(const UnicodeString & Path)
   return (Buffer != NULL) ? (Buffer - Result.c_str()) : -1;
 }
 //---------------------------------------------------------------------------
-static bool PathIsRelative_CorrectedForMicrosoftStupidity(const UnicodeString & Path)
+static bool PathIsRelative_CorrectedForMicrosoftStupidity(const UnicodeString & APath)
 {
   // Correction for PathIsRelative API
 
   // Replace all /'s with \'s because PathIsRelative can't handle /'s
-  UnicodeString Result = ReplaceChar(Path, L'/', L'\\');
+  UnicodeString Result = ReplaceChar(APath, L'/', L'\\');
 
   //Now call the API
   return ::PathIsRelative(Result.c_str()) != FALSE;
 }
 //---------------------------------------------------------------------------
-static intptr_t GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_TYPE & PrefixType)
+static intptr_t GetOffsetAfterPathRoot(const UnicodeString & APath, PATH_PREFIX_TYPE & PrefixType)
 {
   // Checks if 'pPath' begins with the drive, share, prefix, etc
   // EXAMPLES:
@@ -793,9 +793,9 @@ static intptr_t GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_T
 
   PrefixType = PPT_UNKNOWN;
 
-  if (!Path.IsEmpty())
+  if (!APath.IsEmpty())
   {
-    intptr_t Len = Path.Length();
+    intptr_t Len = APath.Length();
 
     bool WinXPOnly = !IsWinVista();
 
@@ -803,7 +803,7 @@ static intptr_t GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_T
     if (!WinXPOnly)
     {
       // Works since Vista and up, but still needs correction :)
-      intptr_t RootLength = PathRootLength(Path);
+      intptr_t RootLength = PathRootLength(APath);
       if (RootLength >= 0)
       {
         Result = RootLength + 1;
@@ -814,14 +814,14 @@ static intptr_t GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_T
     intptr_t IndCheckUNC = -1;
 
     if ((Len >= 8) &&
-        (Path[1] == L'\\' || Path[1] == L'/') &&
-        (Path[2] == L'\\' || Path[2] == L'/') &&
-        (Path[3] == L'?') &&
-        (Path[4] == L'\\' || Path[4] == L'/') &&
-        (Path[5] == L'U' || Path[5] == L'u') &&
-        (Path[6] == L'N' || Path[6] == L'n') &&
-        (Path[7] == L'C' || Path[7] == L'c') &&
-        (Path[8] == L'\\' || Path[8] == L'/'))
+        (APath[1] == L'\\' || APath[1] == L'/') &&
+        (APath[2] == L'\\' || APath[2] == L'/') &&
+        (APath[3] == L'?') &&
+        (APath[4] == L'\\' || APath[4] == L'/') &&
+        (APath[5] == L'U' || APath[5] == L'u') &&
+        (APath[6] == L'N' || APath[6] == L'n') &&
+        (APath[7] == L'C' || APath[7] == L'c') &&
+        (APath[8] == L'\\' || APath[8] == L'/'))
     {
       // Found \\?\UNC\ prefix
       PrefixType = PPT_LONG_UNICODE_UNC;
@@ -836,10 +836,10 @@ static intptr_t GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_T
       IndCheckUNC = 8;
     }
     else if ((Len >= 4) &&
-        (Path[1] == L'\\' || Path[1] == L'/') &&
-        (Path[2] == L'\\' || Path[2] == L'/') &&
-        (Path[3] == L'?') &&
-        (Path[4] == L'\\' || Path[4] == L'/'))
+        (APath[1] == L'\\' || APath[1] == L'/') &&
+        (APath[2] == L'\\' || APath[2] == L'/') &&
+        (APath[3] == L'?') &&
+        (APath[4] == L'\\' || APath[4] == L'/'))
     {
       // Found \\?\ prefix
       PrefixType = PPT_LONG_UNICODE;
@@ -851,8 +851,8 @@ static intptr_t GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_T
       }
     }
     else if ((Len >= 2) &&
-        (Path[1] == L'\\' || Path[1] == L'/') &&
-        (Path[2] == L'\\' || Path[2] == L'/'))
+        (APath[1] == L'\\' || APath[1] == L'/') &&
+        (APath[2] == L'\\' || APath[2] == L'/'))
     {
       // Check for UNC share later
       IndCheckUNC = 2;
@@ -866,7 +866,7 @@ static intptr_t GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_T
       {
         for(; Index <= Len; ++Index)
         {
-          TCHAR z = Path[Index];
+          TCHAR z = APath[Index];
           if ((z == L'\\') || (z == L'/') || (Index >= Len))
           {
             ++Index;
@@ -895,14 +895,14 @@ static intptr_t GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_T
       // Only if we didn't determine any other type
       if (PrefixType == PPT_UNKNOWN)
       {
-        if (!PathIsRelative_CorrectedForMicrosoftStupidity(Path.SubString(Result, Path.Length() - Result + 1)))
+        if (!PathIsRelative_CorrectedForMicrosoftStupidity(APath.SubString(Result, APath.Length() - Result + 1)))
         {
           PrefixType = PPT_ABSOLUTE;
         }
       }
 
       // For older OS only
-      intptr_t RootLength = PathRootLength(Path.SubString(Result, Path.Length() - Result + 1));
+      intptr_t RootLength = PathRootLength(APath.SubString(Result, APath.Length() - Result + 1));
       if (RootLength >= 0)
       {
         Result = RootLength + 1;
@@ -913,7 +913,7 @@ static intptr_t GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_T
       // Only if we didn't determine any other type
       if (PrefixType == PPT_UNKNOWN)
       {
-        if (!PathIsRelative_CorrectedForMicrosoftStupidity(Path))
+        if (!PathIsRelative_CorrectedForMicrosoftStupidity(APath))
         {
           PrefixType = PPT_ABSOLUTE;
         }
@@ -924,19 +924,19 @@ static intptr_t GetOffsetAfterPathRoot(const UnicodeString & Path, PATH_PREFIX_T
   return Result;
 }
 //---------------------------------------------------------------------------
-static UnicodeString MakeUnicodeLargePath(const UnicodeString & Path)
+static UnicodeString MakeUnicodeLargePath(const UnicodeString & APath)
 {
   // Convert path from 'into a larger Unicode path, that allows up to 32,767 character length
   UnicodeString Result;
 
-  if (!Path.IsEmpty())
+  if (!APath.IsEmpty())
   {
       // Determine the type of the existing prefix
       PATH_PREFIX_TYPE PrefixType;
-      GetOffsetAfterPathRoot(Path, PrefixType);
+      GetOffsetAfterPathRoot(APath, PrefixType);
 
       // Assume path to be without change
-      Result = Path;
+      Result = APath;
 
       switch (PrefixType)
       {
@@ -944,8 +944,8 @@ static UnicodeString MakeUnicodeLargePath(const UnicodeString & Path)
           {
             // First we need to check if its an absolute path relative to the root
             bool AddPrefix = true;
-            if ((Path.Length() >= 1) &&
-                ((Path[1] == L'\\') || (Path[1] == L'/')))
+            if ((APath.Length() >= 1) &&
+                ((APath[1] == L'\\') || (APath[1] == L'/')))
             {
               AddPrefix = FALSE;
 
@@ -986,9 +986,9 @@ static UnicodeString MakeUnicodeLargePath(const UnicodeString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString ApiPath(const UnicodeString & Path)
+UnicodeString ApiPath(const UnicodeString & APath)
 {
-  UnicodeString Result = Path;
+  UnicodeString Result = APath;
   if (Result.Length() >= MAX_PATH)
   {
     if (GetConfiguration() != nullptr)
@@ -1161,27 +1161,27 @@ bool IsHex(wchar_t Ch)
     ((Ch >= 'a') && (Ch <= 'f'));
 }
 //---------------------------------------------------------------------------
-DWORD FindCheck(DWORD Result, const UnicodeString & Path)
+DWORD FindCheck(DWORD Result, const UnicodeString & APath)
 {
   if ((Result != ERROR_SUCCESS) &&
       (Result != ERROR_FILE_NOT_FOUND) &&
       (Result != ERROR_NO_MORE_FILES))
   {
-    throw EOSExtException(FMTLOAD(FIND_FILE_ERROR, Path.c_str()), Result);
+    throw EOSExtException(FMTLOAD(FIND_FILE_ERROR, APath.c_str()), Result);
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-DWORD FindFirstUnchecked(const UnicodeString & Path, DWORD Attr, TSearchRecChecked & F)
+static DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD Attr, TSearchRecChecked & F)
 {
-  F.Path = Path;
-  return FindFirst(ApiPath(Path), Attr, F);
+  F.Path = APath;
+  return FindFirst(ApiPath(APath), Attr, F);
 }
 //---------------------------------------------------------------------------
-DWORD FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRecChecked & F)
+DWORD FindFirstChecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearchRecChecked & F)
 {
   // return FindCheck(FindFirst(Path, LocalFileAttrs, F));
-  DWORD Result = FindFirstUnchecked(Path, LocalFileAttrs, F);
+  DWORD Result = FindFirstUnchecked(APath, LocalFileAttrs, F);
   return FindCheck(Result, F.Path);
 }
 //---------------------------------------------------------------------------
@@ -2441,10 +2441,10 @@ UnicodeString WindowsProductName()
   return Result;
 }
 //---------------------------------------------------------------------------
-bool IsDirectoryWriteable(const UnicodeString & Path)
+bool IsDirectoryWriteable(const UnicodeString & APath)
 {
   UnicodeString FileName =
-    ::IncludeTrailingPathDelimiter(Path) +
+    ::IncludeTrailingPathDelimiter(APath) +
     FORMAT(L"wscp_%s_%d.tmp", FormatDateTime(L"nnzzz", Now()).c_str(), int(GetCurrentProcessId()));
   HANDLE Handle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
     CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, 0);
@@ -2468,9 +2468,9 @@ UnicodeString FormatSize(int64_t Size)
   return FormatNumber(Size);
 }
 //---------------------------------------------------------------------------
-UnicodeString ExtractFileBaseName(const UnicodeString & Path)
+UnicodeString ExtractFileBaseName(const UnicodeString & APath)
 {
-  return ChangeFileExt(core::ExtractFileName(Path, false), L"");
+  return ChangeFileExt(core::ExtractFileName(APath, false), L"");
 }
 //---------------------------------------------------------------------------
 TStringList * TextToStringList(const UnicodeString & Text)

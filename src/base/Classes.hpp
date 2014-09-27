@@ -623,7 +623,7 @@ public:
   void WriteBinaryData(const UnicodeString & Name,
     const void * Buffer, size_t Size);
 private:
-  void ChangeKey(HKEY Value, const UnicodeString & Path);
+  void ChangeKey(HKEY Value, const UnicodeString & APath);
   HKEY GetBaseKey(bool Relative);
   HKEY GetKey(const UnicodeString & Key);
   void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }

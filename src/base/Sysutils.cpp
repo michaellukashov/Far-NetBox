@@ -1104,10 +1104,10 @@ UnicodeString ReplaceStrAll(const UnicodeString & Str, const UnicodeString & Wha
   return Result;
 }
 
-UnicodeString ExtractShortPathName(const UnicodeString & Path1)
+UnicodeString ExtractShortPathName(const UnicodeString & APath)
 {
   // FIXME
-  return Path1;
+  return APath;
 }
 
 //
@@ -1115,18 +1115,18 @@ UnicodeString ExtractShortPathName(const UnicodeString & Path1)
 // part of the Path.
 //
 // "/foo/bar/baz.txt" --> "/foo/bar/"
-UnicodeString ExtractDirectory(const UnicodeString & Path, wchar_t Delimiter)
+UnicodeString ExtractDirectory(const UnicodeString & APath, wchar_t Delimiter)
 {
-  return Path.SubString(1, Path.RPos(Delimiter) + 1);
+  return APath.SubString(1, APath.RPos(Delimiter) + 1);
 }
 
 //
 // Returns only the Filename part of the Path.
 //
 // "/foo/bar/baz.txt" --> "baz.txt"
-UnicodeString ExtractFilename(const UnicodeString & Path, wchar_t Delimiter)
+UnicodeString ExtractFilename(const UnicodeString & APath, wchar_t Delimiter)
 {
-  return Path.SubString(Path.RPos(Delimiter) + 1);
+  return APath.SubString(APath.RPos(Delimiter) + 1);
 }
 
 //
@@ -1135,9 +1135,9 @@ UnicodeString ExtractFilename(const UnicodeString & Path, wchar_t Delimiter)
 //
 // "/foo/bar/baz.txt" --> ".txt"
 // "/foo/bar/baz" --> ""
-UnicodeString ExtractFileExtension(const UnicodeString & Path, wchar_t Delimiter)
+UnicodeString ExtractFileExtension(const UnicodeString & APath, wchar_t Delimiter)
 {
-  UnicodeString FileName = Sysutils::ExtractFilename(Path, Delimiter);
+  UnicodeString FileName = Sysutils::ExtractFilename(APath, Delimiter);
   intptr_t N = FileName.RPos(L'.');
   if (N > 0)
   {
@@ -1154,10 +1154,10 @@ UnicodeString ExtractFileExtension(const UnicodeString & Path, wchar_t Delimiter
 // "/foo/bar/baz.txt", "" --> "/foo/bar/baz"
 // "/foo/bar/baz", ".txt" --> "/foo/bar/baz.txt"
 //
-UnicodeString ChangeFileExtension(const UnicodeString & Path, const UnicodeString & Ext, wchar_t Delimiter)
+UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeString & Ext, wchar_t Delimiter)
 {
-  UnicodeString FileName = Sysutils::ExtractFilename(Path, Delimiter);
-  return ExtractDirectory(Path, Delimiter) +
+  UnicodeString FileName = Sysutils::ExtractFilename(APath, Delimiter);
+  return ExtractDirectory(APath, Delimiter) +
          FileName.SubString(1, FileName.RPos(L'.')) +
          Ext;
 }
@@ -1535,9 +1535,9 @@ TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime)
 }
 
 //---------------------------------------------------------------------------
-UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & Path)
+UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & APath)
 {
-  UnicodeString Result = Path;
+  UnicodeString Result = APath;
   while (!Result.IsEmpty() && Result[1] == L'/')
   {
     Result.Delete(1, 1);

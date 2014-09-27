@@ -173,7 +173,7 @@ public:
   UnicodeString GetUserName() const;
   bool GetAreCachesEmpty() const;
   bool GetIsCapable(TFSCapability Capability) const;
-  void ClearCachedFileList(const UnicodeString & Path, bool SubDirs);
+  void ClearCachedFileList(const UnicodeString & APath, bool SubDirs);
   void AddCachedFileList(TRemoteFileList * FileList);
   bool GetCommandSessionOpened() const;
   TTerminal * GetCommandSession();
@@ -200,7 +200,7 @@ public:
   void Open();
   void Close();
   void Reopen(intptr_t Params);
-  virtual void DirectoryModified(const UnicodeString & Path, bool SubDirs);
+  virtual void DirectoryModified(const UnicodeString & APath, bool SubDirs);
   virtual void DirectoryLoaded(TRemoteFileList * FileList);
   void ShowExtendedException(Sysutils::Exception * E);
   void Idle();
@@ -208,13 +208,13 @@ public:
   bool AllowedAnyCommand(const UnicodeString & Command) const;
   void AnyCommand(const UnicodeString & Command, TCaptureOutputEvent OutputEvent);
   void CloseOnCompletion(TOnceDoneOperation Operation = odoDisconnect, const UnicodeString & Message = L"");
-  UnicodeString AbsolutePath(const UnicodeString & Path, bool Local);
+  UnicodeString AbsolutePath(const UnicodeString & APath, bool Local);
   void BeginTransaction();
   void ReadCurrentDirectory();
   void ReadDirectory(bool ReloadOnly, bool ForceCache = false);
   TRemoteFileList * ReadDirectoryListing(const UnicodeString & Directory, const TFileMasks & Mask);
   TRemoteFileList * CustomReadDirectoryListing(const UnicodeString & Directory, bool UseCache);
-  TRemoteFile * ReadFileListing(const UnicodeString & Path);
+  TRemoteFile * ReadFileListing(const UnicodeString & APath);
   void ReadFile(const UnicodeString & AFileName, TRemoteFile *& AFile);
   bool FileExists(const UnicodeString & AFileName, TRemoteFile ** File = nullptr);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& File);
@@ -272,8 +272,8 @@ public:
     TSynchronizeDirectoryEvent OnSynchronizeDirectory);
   void FilesFind(const UnicodeString & Directory, const TFileMasks & FileMask,
     TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
-  void SpaceAvailable(const UnicodeString & Path, TSpaceAvailable & ASpaceAvailable);
-  bool DirectoryFileList(const UnicodeString & Path,
+  void SpaceAvailable(const UnicodeString & APath, TSpaceAvailable & ASpaceAvailable);
+  bool DirectoryFileList(const UnicodeString & APath,
     TRemoteFileList *& FileList, bool CanLoad);
   void MakeLocalFileList(const UnicodeString & AFileName,
     const Sysutils::TSearchRec & Rec, void * Param);
@@ -295,7 +295,7 @@ public:
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
   void LogEvent(const UnicodeString & Str);
 
-  static UnicodeString ExpandFileName(const UnicodeString & Path,
+  static UnicodeString ExpandFileName(const UnicodeString & APath,
     const UnicodeString & BasePath);
 
   TSessionData * GetSessionData() const { return FSessionData; }
@@ -392,7 +392,7 @@ protected:
     TProcessFileEvent CallBackFunc, void * Param = nullptr, bool UseCache = false,
     bool IgnoreErrors = false);
   void AnnounceFileListOperation();
-  UnicodeString TranslateLockedPath(const UnicodeString & Path, bool Lock);
+  UnicodeString TranslateLockedPath(const UnicodeString & APath, bool Lock);
   void ReadDirectory(TRemoteFileList * AFileList);
   void CustomReadDirectory(TRemoteFileList * AFileList);
   void DoCreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo,
@@ -611,7 +611,7 @@ public:
 
 protected:
   virtual void DirectoryLoaded(TRemoteFileList * FileList);
-  virtual void DirectoryModified(const UnicodeString & Path,
+  virtual void DirectoryModified(const UnicodeString & APath,
     bool SubDirs);
   virtual const TTerminal * GetPasswordSource() const { return FMainTerminal; }
   virtual TTerminal * GetPasswordSource() { return FMainTerminal; }

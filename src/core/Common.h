@@ -60,8 +60,8 @@ UnicodeString RemoveInteractiveMsgTag(const UnicodeString & S);
 bool IsNumber(const UnicodeString & Str);
 UnicodeString SystemTemporaryDirectory();
 UnicodeString GetShellFolderPath(int CSIdl);
-UnicodeString StripPathQuotes(const UnicodeString & Path);
-UnicodeString AddPathQuotes(const UnicodeString & Path);
+UnicodeString StripPathQuotes(const UnicodeString & APath);
+UnicodeString AddPathQuotes(const UnicodeString & APath);
 void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
   UnicodeString & Params, UnicodeString & Dir);
 UnicodeString ValidLocalFileName(const UnicodeString & AFileName);
@@ -76,10 +76,10 @@ UnicodeString ExpandFileNameCommand(const UnicodeString & Command,
 void ReformatFileNameCommand(UnicodeString & Command);
 UnicodeString EscapePuttyCommandParam(const UnicodeString & Param);
 UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str);
-bool ComparePaths(const UnicodeString & Path1, const UnicodeString & Path2);
-bool CompareFileName(const UnicodeString & Path1, const UnicodeString & Path2);
+bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2);
+bool CompareFileName(const UnicodeString & APath1, const UnicodeString & APath2);
 bool IsReservedName(const UnicodeString & AFileName);
-UnicodeString ApiPath(const UnicodeString & Path);
+UnicodeString ApiPath(const UnicodeString & APath);
 UnicodeString DisplayableStr(const RawByteString & Str);
 UnicodeString ByteToHex(uint8_t B, bool UpperCase = true);
 UnicodeString BytesToHex(const uint8_t * B, uintptr_t Length, bool UpperCase = true, wchar_t Separator = L'\0');
@@ -117,10 +117,10 @@ LCID GetDefaultLCID();
 UnicodeString DefaultEncodingName();
 UnicodeString WindowsProductName();
 bool GetWindowsProductType(DWORD & Type);
-bool IsDirectoryWriteable(const UnicodeString & Path);
+bool IsDirectoryWriteable(const UnicodeString & APath);
 UnicodeString FormatNumber(int64_t Size);
 UnicodeString FormatSize(int64_t Size);
-UnicodeString ExtractFileBaseName(const UnicodeString & Path);
+UnicodeString ExtractFileBaseName(const UnicodeString & APath);
 TStringList * TextToStringList(const UnicodeString & Text);
 UnicodeString TrimVersion(const UnicodeString & Version);
 UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion);
@@ -134,8 +134,8 @@ struct TSearchRecChecked : public Sysutils::TSearchRec
 {
   UnicodeString Path;
 };
-DWORD FindCheck(DWORD Result, const UnicodeString & Path);
-DWORD FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRecChecked & F);
+DWORD FindCheck(DWORD Result, const UnicodeString & APath);
+DWORD FindFirstChecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearchRecChecked & F);
 DWORD FindNextChecked(TSearchRecChecked & F);
 void ProcessLocalDirectory(const UnicodeString & ADirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = nullptr, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);

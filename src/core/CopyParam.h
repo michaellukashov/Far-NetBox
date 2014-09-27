@@ -73,7 +73,7 @@ public:
   bool AllowResume(int64_t Size) const;
   bool ResumeTransfer(const UnicodeString & AFileName) const;
   inline UnicodeString ValidLocalFileName(const UnicodeString & AFileName) const;
-  UnicodeString ValidLocalPath(const UnicodeString & Path) const;
+  UnicodeString ValidLocalPath(const UnicodeString & APath) const;
   bool AllowAnyTransfer() const;
   bool AllowTransfer(const UnicodeString & AFileName, TOperationSide Side,
     bool Directory, const TFileMasks::TParams & Params) const;

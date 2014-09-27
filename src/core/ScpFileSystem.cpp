@@ -474,9 +474,9 @@ void TSCPFileSystem::Idle()
   FSecureShell->Idle();
 }
 //---------------------------------------------------------------------------
-UnicodeString TSCPFileSystem::AbsolutePath(const UnicodeString & Path, bool /*Local*/)
+UnicodeString TSCPFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/)
 {
-  return core::AbsolutePath(GetCurrDirectory(), Path);
+  return core::AbsolutePath(GetCurrDirectory(), APath);
 }
 //---------------------------------------------------------------------------
 bool TSCPFileSystem::IsCapable(intptr_t Capability) const

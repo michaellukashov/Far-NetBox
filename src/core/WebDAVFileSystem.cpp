@@ -12241,9 +12241,9 @@ void TWebDAVFileSystem::Idle()
   return;
 }
 //------------------------------------------------------------------------------
-UnicodeString TWebDAVFileSystem::AbsolutePath(const UnicodeString & Path, bool /*Local*/)
+UnicodeString TWebDAVFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/)
 {
-  return core::AbsolutePath(GetCurrDirectory(), Path);
+  return core::AbsolutePath(GetCurrDirectory(), APath);
 }
 //------------------------------------------------------------------------------
 bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
@@ -12699,7 +12699,7 @@ TStrings * TWebDAVFileSystem::GetFixedPaths()
   return nullptr;
 }
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & Path,
+void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & /*APath*/,
   TSpaceAvailable & /*ASpaceAvailable*/)
 {
   assert(false);

@@ -304,7 +304,7 @@ void TFileMasks::Clear(TMasks & Masks)
 }
 //---------------------------------------------------------------------------
 bool TFileMasks::MatchesMasks(const UnicodeString & AFileName, bool Directory,
-  const UnicodeString & Path, const TParams * Params, const TMasks & Masks, bool Recurse)
+  const UnicodeString & APath, const TParams * Params, const TMasks & Masks, bool Recurse)
 {
   bool Result = false;
 
@@ -313,7 +313,7 @@ bool TFileMasks::MatchesMasks(const UnicodeString & AFileName, bool Directory,
   {
     const TMask & Mask = *it;
     Result =
-      MatchesMaskMask(Mask.DirectoryMask, Path) &&
+      MatchesMaskMask(Mask.DirectoryMask, APath) &&
       MatchesMaskMask(Mask.FileNameMask, AFileName);
 
     if (Result)
@@ -395,10 +395,10 @@ bool TFileMasks::MatchesMasks(const UnicodeString & AFileName, bool Directory,
     ++it;
   }
 
-  if (!Result && Directory && !core::IsUnixRootPath(Path) && Recurse)
+  if (!Result && Directory && !core::IsUnixRootPath(APath) && Recurse)
   {
-    UnicodeString ParentFileName = core::UnixExtractFileName(Path);
-    UnicodeString ParentPath = core::SimpleUnixExcludeTrailingBackslash(core::UnixExtractFilePath(Path));
+    UnicodeString ParentFileName = core::UnixExtractFileName(APath);
+    UnicodeString ParentPath = core::SimpleUnixExcludeTrailingBackslash(core::UnixExtractFilePath(APath));
     // Pass Params down or not?
     // Currently it includes Size/Time only, what is not used for directories.
     // So it depends of future use. Possibly we should make a copy
@@ -410,21 +410,21 @@ bool TFileMasks::MatchesMasks(const UnicodeString & AFileName, bool Directory,
 }
 //---------------------------------------------------------------------------
 bool TFileMasks::Matches(const UnicodeString & AFileName, bool Directory,
-  const UnicodeString & Path, const TParams * Params) const
+  const UnicodeString & APath, const TParams * Params) const
 {
   bool ImplicitMatch;
-  return Matches(AFileName, Directory, Path, Params, ImplicitMatch);
+  return Matches(AFileName, Directory, APath, Params, ImplicitMatch);
 }
 //---------------------------------------------------------------------------
 bool TFileMasks::Matches(const UnicodeString & AFileName, bool Directory,
-  const UnicodeString & Path, const TParams * Params,
+  const UnicodeString & APath, const TParams * Params,
   bool & ImplicitMatch) const
 {
   bool ImplicitIncludeMatch = FMasks[MASK_INDEX(Directory, true)].empty();
-  bool ExplicitIncludeMatch = MatchesMasks(AFileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, true)], true);
+  bool ExplicitIncludeMatch = MatchesMasks(AFileName, Directory, APath, Params, FMasks[MASK_INDEX(Directory, true)], true);
   bool Result =
     (ImplicitIncludeMatch || ExplicitIncludeMatch) &&
-    !MatchesMasks(AFileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, false)], false);
+    !MatchesMasks(AFileName, Directory, APath, Params, FMasks[MASK_INDEX(Directory, false)], false);
   ImplicitMatch =
     Result && ImplicitIncludeMatch && !ExplicitIncludeMatch &&
     FMasks[MASK_INDEX(Directory, false)].empty();
@@ -1086,17 +1086,17 @@ TFileCustomCommand::TFileCustomCommand()
 }
 //---------------------------------------------------------------------------
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
-  const UnicodeString & Path) :
+  const UnicodeString & APath) :
   FData(Data),
-  FPath(Path)
+  FPath(APath)
 {
 }
 //---------------------------------------------------------------------------
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
-  const UnicodeString & Path, const UnicodeString & AFileName,
+  const UnicodeString & APath, const UnicodeString & AFileName,
   const UnicodeString & FileList) :
   FData(Data),
-  FPath(Path),
+  FPath(APath),
   FFileName(AFileName),
   FFileList(FileList)
 {

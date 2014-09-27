@@ -1055,7 +1055,7 @@ int TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int
   return Result;
 }
 //---------------------------------------------------------------------
-void TSessionData::ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path)
+void TSessionData::ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & APath)
 {
   Name = UnixIncludeTrailingBackslash(Path) + MakeValidName(ReadXmlNode(Node, L"Name", Name));
   HostName = ReadXmlNode(Node, L"Host", HostName);
@@ -1732,7 +1732,7 @@ void TSessionData::ExpandEnvironmentVariables()
   SetPublicKeyFile(::ExpandEnvironmentVariables(GetPublicKeyFile()));
 }
 //---------------------------------------------------------------------
-void TSessionData::ValidatePath(const UnicodeString & /*Path*/)
+void TSessionData::ValidatePath(const UnicodeString & /*APath*/)
 {
   // noop
 }
@@ -3025,9 +3025,9 @@ UnicodeString TSessionData::GetFolderName() const
 }
 //---------------------------------------------------------------------
 UnicodeString TSessionData::ComposePath(
-  const UnicodeString & Path, const UnicodeString & Name)
+  const UnicodeString & APath, const UnicodeString & Name)
 {
-  return core::UnixIncludeTrailingBackslash(Path) + Name;
+  return core::UnixIncludeTrailingBackslash(APath) + Name;
 }
 //---------------------------------------------------------------------
 TLoginType TSessionData::GetLoginType() const
@@ -3333,7 +3333,7 @@ void TStoredSessionList::Saved()
   }
 }
 //---------------------------------------------------------------------
-/*void TStoredSessionList::ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path)
+/*void TStoredSessionList::ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & APath)
 {
   for (int Index = 0; Index < Node->ChildNodes->Count; ++Index)
   {

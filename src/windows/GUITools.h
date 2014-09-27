@@ -19,19 +19,19 @@ class TSessionData;
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE0(TProcessMessagesEvent, void);
 //---------------------------------------------------------------------------
-bool FindFile(UnicodeString & Path);
-bool FindTool(const UnicodeString & Name, UnicodeString & Path);
-bool FileExistsEx(const UnicodeString & Path);
-bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params);
-bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params,
+bool FindFile(UnicodeString & APath);
+bool FindTool(const UnicodeString & Name, UnicodeString & APath);
+bool FileExistsEx(const UnicodeString & APath);
+bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params);
+bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params,
   HANDLE & Handle);
-bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Path,
+bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & APath,
   const UnicodeString & Params, TProcessMessagesEvent ProcessMessages);
 bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Command,
   TProcessMessagesEvent ProcessMessages);
 void OpenSessionInPutty(const UnicodeString & PuttyPath,
   TSessionData * SessionData);
-bool SpecialFolderLocation(int PathID, UnicodeString & Path);
+bool SpecialFolderLocation(int PathID, UnicodeString & APath);
 UnicodeString GetPersonalFolder();
 UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   const UnicodeString & MultiItemsFormat, intptr_t Count, const UnicodeString & FirstItem);
@@ -48,8 +48,8 @@ class TLocalCustomCommand : public TFileCustomCommand
 {
 public:
   TLocalCustomCommand();
-  explicit TLocalCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path);
-  explicit TLocalCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path,
+  explicit TLocalCustomCommand(const TCustomCommandData & Data, const UnicodeString & APath);
+  explicit TLocalCustomCommand(const TCustomCommandData & Data, const UnicodeString & APath,
     const UnicodeString & AFileName, const UnicodeString & LocalFileName,
     const UnicodeString & FileList);
   virtual ~TLocalCustomCommand() {}

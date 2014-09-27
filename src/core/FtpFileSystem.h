@@ -49,7 +49,7 @@ public:
   virtual bool GetActive() const;
   virtual void CollectUsage();
   virtual void Idle();
-  virtual UnicodeString AbsolutePath(const UnicodeString & Path, bool Local);
+  virtual UnicodeString AbsolutePath(const UnicodeString & APath, bool Local);
   virtual void AnyCommand(const UnicodeString & Command,
     TCaptureOutputEvent OutputEvent);
   virtual void ChangeDirectory(const UnicodeString & Directory);
@@ -92,7 +92,7 @@ public:
   virtual void CopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
   virtual TStrings * GetFixedPaths();
-  virtual void SpaceAvailable(const UnicodeString & Path,
+  virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo() const;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);

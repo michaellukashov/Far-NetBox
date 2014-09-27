@@ -133,11 +133,11 @@ void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings);
 
 //---------------------------------------------------------------------------
 
-UnicodeString ExtractShortPathName(const UnicodeString & Path1);
-UnicodeString ExtractDirectory(const UnicodeString & Path, wchar_t Delimiter = '/');
-UnicodeString ExtractFilename(const UnicodeString & Path, wchar_t Delimiter = '/');
-UnicodeString ExtractFileExtension(const UnicodeString & Path, wchar_t Delimiter = '/');
-UnicodeString ChangeFileExtension(const UnicodeString & Path, const UnicodeString & Ext, wchar_t Delimiter = '/');
+UnicodeString ExtractShortPathName(const UnicodeString & APath);
+UnicodeString ExtractDirectory(const UnicodeString & APath, wchar_t Delimiter = '/');
+UnicodeString ExtractFilename(const UnicodeString & APath, wchar_t Delimiter = '/');
+UnicodeString ExtractFileExtension(const UnicodeString & APath, wchar_t Delimiter = '/');
+UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeString & Ext, wchar_t Delimiter = '/');
 
 UnicodeString IncludeTrailingBackslash(const UnicodeString & Str);
 UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str);
@@ -340,7 +340,7 @@ public:
 };
 
 //---------------------------------------------------------------------------
-UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & Path);
+UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & APath);
 //---------------------------------------------------------------------------
 extern int RandSeed;
 extern void Randomize();

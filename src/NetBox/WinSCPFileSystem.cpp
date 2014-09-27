@@ -1953,7 +1953,7 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
   WinSCPPlugin()->FarCopyToClipboard(FileNames.get());
 }
 //------------------------------------------------------------------------------
-void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & Path,
+void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & APath,
   TSpaceAvailable & ASpaceAvailable, bool & Close)
 {
   // terminal can be already closed (e.g. dropped connection)
@@ -1961,7 +1961,7 @@ void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & Path,
   {
     try
     {
-      GetTerminal()->SpaceAvailable(Path, ASpaceAvailable);
+      GetTerminal()->SpaceAvailable(APath, ASpaceAvailable);
     }
     catch (Sysutils::Exception & E)
     {

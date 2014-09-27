@@ -22,7 +22,7 @@ public:
   virtual bool GetActive() const;
   virtual void CollectUsage();
   virtual void Idle();
-  virtual UnicodeString AbsolutePath(const UnicodeString & Path, bool Local);
+  virtual UnicodeString AbsolutePath(const UnicodeString & APath, bool Local);
   virtual void AnyCommand(const UnicodeString & Command,
     TCaptureOutputEvent OutputEvent);
   virtual void ChangeDirectory(const UnicodeString & Directory);

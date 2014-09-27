@@ -3925,7 +3925,7 @@ TStrings * TSFTPFileSystem::GetFixedPaths()
   return FFixedPaths;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
+void TSFTPFileSystem::SpaceAvailable(const UnicodeString & APath,
   TSpaceAvailable & ASpaceAvailable)
 {
   if (SupportsExtension(SFTP_EXT_SPACE_AVAILABLE) ||
@@ -3934,7 +3934,7 @@ void TSFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
   {
     TSFTPPacket Packet(SSH_FXP_EXTENDED);
     Packet.AddString(SFTP_EXT_SPACE_AVAILABLE);
-    Packet.AddPathString(LocalCanonify(Path), FUtfStrings);
+    Packet.AddPathString(LocalCanonify(APath), FUtfStrings);
 
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_EXTENDED_REPLY);
 
@@ -3965,7 +3965,7 @@ void TSFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
     // http://www.openbsd.org/cgi-bin/cvsweb/src/usr.bin/ssh/PROTOCOL?rev=HEAD;content-type=text/plain
     TSFTPPacket Packet(SSH_FXP_EXTENDED);
     Packet.AddString(SFTP_EXT_STATVFS);
-    Packet.AddPathString(LocalCanonify(Path), FUtfStrings);
+    Packet.AddPathString(LocalCanonify(APath), FUtfStrings);
 
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_EXTENDED_REPLY);
 
