@@ -378,20 +378,20 @@ UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & I
   return TempDir;
 }
 //---------------------------------------------------------------------------
-bool DeleteDirectory(const UnicodeString & DirName)
+bool DeleteDirectory(const UnicodeString & ADirName)
 {
   TSearchRecChecked SearchRec;
   bool retval = true;
-  if (Sysutils::FindFirst(DirName + L"\\*", faAnyFile, SearchRec) == 0) // VCL Function
+  if (Sysutils::FindFirst(ADirName + L"\\*", faAnyFile, SearchRec) == 0) // VCL Function
   {
     if (FLAGSET(SearchRec.Attr, faDirectory))
     {
       if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
-        retval = DeleteDirectory(DirName + L"\\" + SearchRec.Name);
+        retval = DeleteDirectory(ADirName + L"\\" + SearchRec.Name);
     }
     else
     {
-      retval = Sysutils::DeleteFile(ApiPath(DirName + L"\\" + SearchRec.Name));
+      retval = Sysutils::DeleteFile(ApiPath(ADirName + L"\\" + SearchRec.Name));
     }
 
     if (retval)
@@ -401,11 +401,11 @@ bool DeleteDirectory(const UnicodeString & DirName)
         if (FLAGSET(SearchRec.Attr, faDirectory))
         {
           if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
-            retval = DeleteDirectory(DirName + L"\\" + SearchRec.Name);
+            retval = DeleteDirectory(ADirName + L"\\" + SearchRec.Name);
         }
         else
         {
-          retval = Sysutils::DeleteFile(ApiPath(DirName + L"\\" + SearchRec.Name));
+          retval = Sysutils::DeleteFile(ApiPath(ADirName + L"\\" + SearchRec.Name));
         }
 
         if (!retval)
@@ -418,7 +418,7 @@ bool DeleteDirectory(const UnicodeString & DirName)
   FindClose(SearchRec);
   if (retval)
   {
-    retval = Sysutils::RemoveDir(DirName); // VCL function
+    retval = Sysutils::RemoveDir(ADirName); // VCL function
   }
   return retval;
 }

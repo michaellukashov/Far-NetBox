@@ -1204,7 +1204,7 @@ bool FileSearchRec(const UnicodeString & AFileName, TSearchRec & Rec)
   return Result;
 }
 //---------------------------------------------------------------------------
-void ProcessLocalDirectory(const UnicodeString & DirName,
+void ProcessLocalDirectory(const UnicodeString & ADirName,
   TProcessLocalFileEvent CallBackFunc, void * Param,
   DWORD FindAttrs)
 {
@@ -1215,7 +1215,7 @@ void ProcessLocalDirectory(const UnicodeString & DirName,
   }
   TSearchRecChecked SearchRec;
 
-  UnicodeString DirName2 = ::IncludeTrailingBackslash(DirName);
+  UnicodeString DirName2 = ::IncludeTrailingBackslash(ADirName);
   if (FindFirstChecked(DirName2 + L"*.*", FindAttrs, SearchRec) == 0)
   {
     SCOPE_EXIT

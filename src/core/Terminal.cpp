@@ -3844,38 +3844,38 @@ bool TTerminal::CopyFiles(TStrings * FileList, const UnicodeString & Target,
   return ProcessFiles(FileList, foRemoteCopy, MAKE_CALLBACK(TTerminal::CopyFile, this), &Params);
 }
 //------------------------------------------------------------------------------
-void TTerminal::RemoteCreateDirectory(const UnicodeString & DirName,
+void TTerminal::RemoteCreateDirectory(const UnicodeString & ADirName,
   const TRemoteProperties * Properties)
 {
   assert(FFileSystem);
-  EnsureNonExistence(DirName);
-  FileModified(nullptr, DirName);
+  EnsureNonExistence(ADirName);
+  FileModified(nullptr, ADirName);
 
-  LogEvent(FORMAT(L"Creating directory \"%s\".", DirName.c_str()));
-  DoCreateDirectory(DirName);
+  LogEvent(FORMAT(L"Creating directory \"%s\".", ADirName.c_str()));
+  DoCreateDirectory(ADirName);
 
   if ((Properties != nullptr) && !Properties->Valid.Empty())
   {
-    DoChangeFileProperties(DirName, nullptr, Properties);
+    DoChangeFileProperties(ADirName, nullptr, Properties);
   }
 
   ReactOnCommand(fsCreateDirectory);
 }
 //------------------------------------------------------------------------------
-void TTerminal::DoCreateDirectory(const UnicodeString & DirName)
+void TTerminal::DoCreateDirectory(const UnicodeString & ADirName)
 {
-  TMkdirSessionAction Action(GetActionLog(), AbsolutePath(DirName, true));
+  TMkdirSessionAction Action(GetActionLog(), AbsolutePath(ADirName, true));
   try
   {
     assert(FFileSystem);
-    FFileSystem->RemoteCreateDirectory(DirName);
+    FFileSystem->RemoteCreateDirectory(ADirName);
   }
   catch (Exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
-      FMTLOAD(CREATE_DIR_ERROR, DirName.c_str()),
-      DoCreateDirectory(DirName),
+      FMTLOAD(CREATE_DIR_ERROR, ADirName.c_str()),
+      DoCreateDirectory(ADirName),
       Action
     );
   }

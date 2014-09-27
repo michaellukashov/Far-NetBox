@@ -3562,10 +3562,10 @@ void TSFTPFileSystem::CopyFile(const UnicodeString & AFileName,
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::RemoteCreateDirectory(const UnicodeString & DirName)
+void TSFTPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
 {
   TSFTPPacket Packet(SSH_FXP_MKDIR, FCodePage);
-  UnicodeString CanonifiedName = Canonify(DirName);
+  UnicodeString CanonifiedName = Canonify(ADirName);
   Packet.AddPathString(CanonifiedName, FUtfStrings);
   Packet.AddProperties(nullptr, 0, true, FVersion, FUtfStrings, nullptr);
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);

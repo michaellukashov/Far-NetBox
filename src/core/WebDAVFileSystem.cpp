@@ -12509,15 +12509,15 @@ void TWebDAVFileSystem::CopyFile(const UnicodeString & AFileName,
   Classes::Error(SNotImplemented, 1012);
 }
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString & DirName)
+void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
 {
-  UnicodeString FullDirName = AbsolutePath(DirName, true);
+  UnicodeString FullDirName = AbsolutePath(ADirName, true);
   bool res = WebDAVMakeDirectory(FullDirName.c_str());
   if (!res)
   {
     TStringList Strings;
     Strings.SetDelimiter(L'/');
-    Strings.SetDelimitedText(DirName);
+    Strings.SetDelimitedText(ADirName);
     UnicodeString CurDir;
     for (intptr_t Index = 0; Index < Strings.GetCount(); ++Index)
     {

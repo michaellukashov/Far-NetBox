@@ -1181,9 +1181,9 @@ void TSCPFileSystem::CopyFile(const UnicodeString & AFileName,
   ExecCommand2(fsCopyFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(NewName).c_str());
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::RemoteCreateDirectory(const UnicodeString & DirName)
+void TSCPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
 {
-  ExecCommand2(fsCreateDirectory, 0, DelimitStr(DirName).c_str());
+  ExecCommand2(fsCreateDirectory, 0, DelimitStr(ADirName).c_str());
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CreateLink(const UnicodeString & AFileName,
