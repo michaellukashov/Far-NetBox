@@ -116,7 +116,7 @@ protected:
     REPLY_3XX_CODE     = 0x08
   };
 
-  bool PostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam);
+  bool FTPPostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam);
   bool ProcessMessage();
   void DiscardMessages();
   void WaitForMessages();

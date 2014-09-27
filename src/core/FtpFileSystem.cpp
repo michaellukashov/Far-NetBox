@@ -89,7 +89,7 @@ intptr_t TFileZillaImpl::OptionVal(intptr_t OptionID) const
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam)
 {
-  return FFileSystem->PostMessage(Type, wParam, lParam);
+  return FFileSystem->FTPPostMessage(Type, wParam, lParam);
 }
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::HandleStatus(const wchar_t * Status, int Type)
@@ -2353,7 +2353,7 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TFTPFileSystem::PostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam)
+bool TFTPFileSystem::FTPPostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam)
 {
   if (Type == TFileZillaIntf::MSG_TRANSFERSTATUS)
   {
