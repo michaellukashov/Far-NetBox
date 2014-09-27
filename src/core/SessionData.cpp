@@ -626,7 +626,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetProxyLocalhost(Storage->ReadBool(L"ProxyLocalhost", GetProxyLocalhost()));
 
 #define READ_BUG(BUG) \
-    SetBug(sb##BUG, TAutoSwitch(2 - Storage->ReadInteger(TEXT("Bug"#BUG), \
+    SetBug(sb##BUG, TAutoSwitch(2 - Storage->ReadInteger(MB_TEXT("Bug"#BUG), \
       2 - GetBug(sb##BUG))));
   READ_BUG(Ignore1);
   READ_BUG(PlainPW1);
@@ -649,7 +649,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
 
   SetSftpServer(Storage->ReadString(L"SftpServer", GetSftpServer()));
 #define READ_SFTP_BUG(BUG) \
-    SetSFTPBug(sb##BUG, TAutoSwitch(Storage->ReadInteger(TEXT("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG))));
+    SetSFTPBug(sb##BUG, TAutoSwitch(Storage->ReadInteger(MB_TEXT("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG))));
   READ_SFTP_BUG(Symlink);
   READ_SFTP_BUG(SignedTS);
 #undef READ_SFTP_BUG
@@ -793,7 +793,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
         Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
       }
 #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
-#define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, TEXT(#PROPERTY), Get ## PROPERTY(), )
+#define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, MB_TEXT(#PROPERTY), Get ## PROPERTY(), )
 
     Storage->WriteString(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
     WRITE_DATA(String, HostName);
@@ -942,7 +942,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     WRITE_DATA_EX(Bool, L"ProxyLocalhost", GetProxyLocalhost(), );
 
 #define WRITE_DATA_CONV_FUNC(X) (2 - (X))
-#define WRITE_BUG(BUG) WRITE_DATA_CONV(Integer, TEXT("Bug" #BUG), GetBug(sb##BUG));
+#define WRITE_BUG(BUG) WRITE_DATA_CONV(Integer, MB_TEXT("Bug" #BUG), GetBug(sb##BUG));
     WRITE_BUG(Ignore1);
     WRITE_BUG(PlainPW1);
     WRITE_BUG(RSA1);
@@ -969,7 +969,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     {
       WRITE_DATA(String, SftpServer);
 
-#define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(Integer, TEXT("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), );
+#define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(Integer, MB_TEXT("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), );
       WRITE_SFTP_BUG(Symlink);
       WRITE_SFTP_BUG(SignedTS);
 #undef WRITE_SFTP_BUG

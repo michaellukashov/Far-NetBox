@@ -195,8 +195,7 @@ private:
   Sysutils::TCriticalSection & FCriticalSection;
 };
 //---------------------------------------------------------------------------
-#undef TEXT
-#define TEXT(x) const_cast<wchar_t *>(MB2W(x).c_str())
+#define MB_TEXT(x) const_cast<wchar_t *>(MB2W(x).c_str())
 #define CALLSTACK
 #define CCALLSTACK(TRACING)
 #define TRACING

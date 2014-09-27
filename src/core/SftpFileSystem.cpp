@@ -1051,7 +1051,7 @@ public:
 
   UnicodeString GetTypeName() const
   {
-    #define TYPE_CASE(TYPE) case TYPE: return TEXT(#TYPE)
+    #define TYPE_CASE(TYPE) case TYPE: return MB_TEXT(#TYPE)
     switch (GetType())
     {
       TYPE_CASE(SSH_FXP_INIT);
