@@ -230,7 +230,7 @@ bool ExecuteShellAndWait(HINSTANCE /* Handle */, const UnicodeString & Path,
       uint32_t WaitResult;
       do
       {
-        WaitResult = WaitForSingleObject(ExecuteInfo.hProcess, 200);
+        WaitResult = ::WaitForSingleObject(ExecuteInfo.hProcess, 200);
         if (WaitResult == WAIT_FAILED)
         {
           throw Exception(LoadStr(DOCUMENT_WAIT_ERROR));
@@ -241,7 +241,7 @@ bool ExecuteShellAndWait(HINSTANCE /* Handle */, const UnicodeString & Path,
     }
     else
     {
-      WaitForSingleObject(ExecuteInfo.hProcess, INFINITE);
+      ::WaitForSingleObject(ExecuteInfo.hProcess, INFINITE);
     }
   }
   return Result;

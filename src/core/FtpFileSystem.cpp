@@ -195,7 +195,7 @@ private:
 TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   TCustomFileSystem(ATerminal),
   FFileZillaIntf(nullptr),
-  FQueueEvent(CreateEvent(nullptr, true, false, nullptr)),
+  FQueueEvent(::CreateEvent(nullptr, true, false, nullptr)),
   FFileSystemInfoValid(false),
   FReply(0),
   FCommandReply(0),
@@ -2390,7 +2390,7 @@ bool TFTPFileSystem::ProcessMessage()
     {
       // now we are perfectly sure that the queue is empty as it is locked,
       // so reset the event
-      ResetEvent(FQueueEvent);
+      ::ResetEvent(FQueueEvent);
     }
   }
 
@@ -2411,7 +2411,7 @@ void TFTPFileSystem::WaitForMessages()
 {
   //if (FQueue.empty())
   //  return;
-  DWORD Result = WaitForSingleObject(FQueueEvent, INFINITE);
+  DWORD Result = ::WaitForSingleObject(FQueueEvent, INFINITE);
   if (Result != WAIT_OBJECT_0)
   {
     FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", Sysutils::IntToStr(Result).c_str()));

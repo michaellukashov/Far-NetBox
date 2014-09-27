@@ -367,7 +367,7 @@ void TSimpleThread::Close()
 //---------------------------------------------------------------------------
 void TSimpleThread::WaitFor(uint32_t Milliseconds)
 {
-  WaitForSingleObject(FThread, Milliseconds);
+  ::WaitForSingleObject(FThread, Milliseconds);
 }
 //---------------------------------------------------------------------------
 // TSignalThread
@@ -382,7 +382,7 @@ TSignalThread::TSignalThread() :
 void TSignalThread::Init(bool LowPriority)
 {
   TSimpleThread::Init();
-  FEvent = CreateEvent(nullptr, false, false, nullptr);
+  FEvent = ::CreateEvent(nullptr, false, false, nullptr);
   assert(FEvent != nullptr);
 
   if (LowPriority)
@@ -426,7 +426,7 @@ bool TSignalThread::WaitForEvent()
 //---------------------------------------------------------------------------
 int TSignalThread::WaitForEvent(uint32_t Timeout)
 {
-  uint32_t Result = WaitForSingleObject(FEvent, Timeout);
+  uint32_t Result = ::WaitForSingleObject(FEvent, Timeout);
   int Return;
   if ((Result == WAIT_TIMEOUT) && !FTerminated)
   {
@@ -1202,7 +1202,7 @@ bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
   }
   else
   {
-    Sleep((DWORD)GetConfiguration()->GetSessionReopenBackground());
+    ::Sleep((DWORD)GetConfiguration()->GetSessionReopenBackground());
     Result = true;
   }
   return Result;
@@ -2123,7 +2123,7 @@ TTerminalThread::TTerminalThread(TTerminal * Terminal) :
   TSignalThread(), FTerminal(Terminal)
 {
   FAction = nullptr;
-  FActionEvent = CreateEvent(nullptr, false, false, nullptr);
+  FActionEvent = ::CreateEvent(nullptr, false, false, nullptr);
   FException = nullptr;
   FIdleException = nullptr;
   FOnIdle = nullptr;
@@ -2243,7 +2243,7 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
 
     do
     {
-      switch (WaitForSingleObject(FActionEvent, 50))
+      switch (::WaitForSingleObject(FActionEvent, 50))
       {
         case WAIT_OBJECT_0:
           Done = true;

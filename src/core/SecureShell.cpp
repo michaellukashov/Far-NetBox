@@ -48,7 +48,7 @@ TSecureShell::TSecureShell(TSessionUI * UI,
   FOnCaptureOutput = nullptr;
   FOnReceive = nullptr;
   FSocket = INVALID_SOCKET;
-  FSocketEvent = CreateEvent(nullptr, false, false, nullptr);
+  FSocketEvent = ::CreateEvent(nullptr, false, false, nullptr);
   FFrozen = false;
   FDataWhileFrozen = false;
   FSshVersion = 0;
@@ -484,7 +484,7 @@ bool TSecureShell::TryFtp()
               (WSAGetLastError() == WSAEWOULDBLOCK);
             if (Result)
             {
-              Result = (WaitForSingleObject(Event, 2000) == WAIT_OBJECT_0);
+              Result = (::WaitForSingleObject(Event, 2000) == WAIT_OBJECT_0);
             }
           }
           ::CloseHandle(Event);
@@ -1805,7 +1805,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       {
         Timeout = 0;
       }
-      uint32_t WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, Timeout);
+      uint32_t WaitResult = ::WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, Timeout);
       if (WaitResult < WAIT_OBJECT_0 + HandleCount)
       {
         if (handle_got_event(Handles[WaitResult - WAIT_OBJECT_0]))

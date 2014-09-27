@@ -260,7 +260,7 @@ TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem * FileSystem,
 void TKeepaliveThread::Init()
 {
   TSimpleThread::Init();
-  FEvent = CreateEvent(nullptr, false, false, nullptr);
+  FEvent = ::CreateEvent(nullptr, false, false, nullptr);
   Start();
 }
 //------------------------------------------------------------------------------
@@ -275,7 +275,7 @@ void TKeepaliveThread::Execute()
   while (!IsFinished())
   {
     static long MillisecondsPerDay = 24 * 60 * 60 * 1000;
-    if ((WaitForSingleObject(FEvent, static_cast<DWORD>(
+    if ((::WaitForSingleObject(FEvent, static_cast<DWORD>(
          ToDouble(FInterval) * MillisecondsPerDay)) != WAIT_FAILED) &&
         !IsFinished())
     {

@@ -222,7 +222,7 @@ TInstantOperationVisualizer::~TInstantOperationVisualizer()
   const int64_t MinDuration = 250;
   if (Duration < MinDuration)
   {
-    Sleep(static_cast<uint32_t>(MinDuration - Duration));
+    ::Sleep(static_cast<uint32_t>(MinDuration - Duration));
   }
 }
 //---------------------------------------------------------------------------

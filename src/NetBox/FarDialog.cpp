@@ -759,12 +759,12 @@ void TFarDialog::Synchronize(TThreadMethod Event)
 {
   if (FSynchronizeObjects[0] == INVALID_HANDLE_VALUE)
   {
-    FSynchronizeObjects[0] = CreateSemaphore(nullptr, 0, 2, nullptr);
-    FSynchronizeObjects[1] = CreateEvent(nullptr, false, false, nullptr);
+    FSynchronizeObjects[0] = ::CreateSemaphore(nullptr, 0, 2, nullptr);
+    FSynchronizeObjects[1] = ::CreateEvent(nullptr, false, false, nullptr);
   }
   FSynchronizeMethod = Event;
   FNeedsSynchronize = true;
-  WaitForMultipleObjects(LENOF(FSynchronizeObjects),
+  ::WaitForMultipleObjects(LENOF(FSynchronizeObjects),
     reinterpret_cast<HANDLE *>(&FSynchronizeObjects), false, INFINITE);
 }
 //---------------------------------------------------------------------------
