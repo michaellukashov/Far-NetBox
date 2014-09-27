@@ -145,7 +145,7 @@ protected:
   void InsertTokenOnCommandLine(const UnicodeString & Token, bool Separate);
   void InsertSessionNameOnCommandLine();
   void InsertFileNameOnCommandLine(bool Full);
-  UnicodeString GetFullFilePath(const TRemoteFile * File) const;
+  UnicodeString GetFullFilePath(const TRemoteFile * AFile) const;
   void InsertPathOnCommandLine();
   void CopyFullFileNamesToClipboard();
   void FullSynchronize(bool Source);
@@ -182,7 +182,7 @@ protected:
     const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory);
   bool RemoteTransferDialog(TStrings * FileList, UnicodeString & Target,
     UnicodeString & FileMask, bool Move);
-  bool RenameFileDialog(TRemoteFile * File, UnicodeString & NewName);
+  bool RenameFileDialog(TRemoteFile * AFile, UnicodeString & NewName);
   uintptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
     TQueryType Type, uintptr_t Answers, const TMessageParams * AParams = nullptr);
   bool PasswordDialog(TSessionData * SessionData,
@@ -228,7 +228,7 @@ protected:
     const UnicodeString & RealFileName, UnicodeString & DestPath);
   void LogAuthentication(TTerminal * Terminal, const UnicodeString & Msg);
   void MultipleEdit();
-  void MultipleEdit(const UnicodeString & Directory, const UnicodeString & AFileName, TRemoteFile * File);
+  void MultipleEdit(const UnicodeString & Directory, const UnicodeString & AFileName, TRemoteFile * AFile);
   void EditViewCopyParam(TCopyParamType & CopyParam);
   bool SynchronizeBrowsing(const UnicodeString & NewPath);
   bool IsEditHistoryEmpty();

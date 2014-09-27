@@ -367,7 +367,7 @@ void TSimpleThread::Close()
 //---------------------------------------------------------------------------
 void TSimpleThread::WaitFor(uint32_t Milliseconds)
 {
-  WaitForSingleObject(FThread, Milliseconds);
+  ::WaitForSingleObject(FThread, Milliseconds);
 }
 //---------------------------------------------------------------------------
 // TSignalThread
@@ -382,7 +382,7 @@ TSignalThread::TSignalThread() :
 void TSignalThread::Init(bool LowPriority)
 {
   TSimpleThread::Init();
-  FEvent = CreateEvent(nullptr, false, false, nullptr);
+  FEvent = ::CreateEvent(nullptr, false, false, nullptr);
   assert(FEvent != nullptr);
 
   if (LowPriority)
@@ -426,7 +426,7 @@ bool TSignalThread::WaitForEvent()
 //---------------------------------------------------------------------------
 int TSignalThread::WaitForEvent(uint32_t Timeout)
 {
-  uint32_t Result = WaitForSingleObject(FEvent, Timeout);
+  uint32_t Result = ::WaitForSingleObject(FEvent, Timeout);
   int Return;
   if ((Result == WAIT_TIMEOUT) && !FTerminated)
   {
@@ -653,7 +653,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
       while (EmptyButMonitored && (Index < FItems->GetCount()))
       {
         EmptyButMonitored = (GetItem(FItems, Index)->GetCompleteEvent() != INVALID_HANDLE_VALUE);
-        Index++;
+        ++Index;
       }
       Empty = (FItems->GetCount() == 0);
     }
@@ -685,7 +685,7 @@ TQueueItem * TTerminalQueue::GetItem(intptr_t Index)
 void TTerminalQueue::UpdateStatusForList(
   TTerminalQueueStatus * Status, TList * List, TTerminalQueueStatus * Current)
 {
-  for (intptr_t Index = 0; Index < List->GetCount(); Index++)
+  for (intptr_t Index = 0; Index < List->GetCount(); ++Index)
   {
     TQueueItem * Item = GetItem(List, Index);
     TQueueItemProxy * ItemProxy;
@@ -1027,7 +1027,7 @@ void TTerminalQueue::ProcessEvent()
         {
           RemoveDoneItemsBefore = IncSecond(RemoveDoneItemsBefore, -FKeepDoneItemsFor);
         }
-        for (intptr_t Index = 0; Index < FDoneItems->GetCount(); Index++)
+        for (intptr_t Index = 0; Index < FDoneItems->GetCount(); ++Index)
         {
           TQueueItem * Item = GetItem(FDoneItems, Index);
           if (Item->FDoneAt <= RemoveDoneItemsBefore)
@@ -1202,7 +1202,7 @@ bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
   }
   else
   {
-    Sleep((DWORD)GetConfiguration()->GetSessionReopenBackground());
+    ::Sleep((DWORD)GetConfiguration()->GetSessionReopenBackground());
     Result = true;
   }
   return Result;
@@ -1886,7 +1886,7 @@ intptr_t TTerminalQueueStatus::GetActiveCount() const
       (GetItem(Index)->GetStatus() != TQueueItem::qsPending))
     {
       FActiveCount++;
-      Index++;
+      ++Index;
     }
   }
 
@@ -2123,7 +2123,7 @@ TTerminalThread::TTerminalThread(TTerminal * Terminal) :
   TSignalThread(), FTerminal(Terminal)
 {
   FAction = nullptr;
-  FActionEvent = CreateEvent(nullptr, false, false, nullptr);
+  FActionEvent = ::CreateEvent(nullptr, false, false, nullptr);
   FException = nullptr;
   FIdleException = nullptr;
   FOnIdle = nullptr;
@@ -2243,7 +2243,7 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
 
     do
     {
-      switch (WaitForSingleObject(FActionEvent, 50))
+      switch (::WaitForSingleObject(FActionEvent, 50))
       {
         case WAIT_OBJECT_0:
           Done = true;

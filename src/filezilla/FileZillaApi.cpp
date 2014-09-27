@@ -274,7 +274,7 @@ void CFileZillaApi::Destroy()
 	HANDLE tmp=m_pMainThread->m_hThread;
 	m_pMainThread->Quit();
 	//Wait for the main thread to quit
-	WaitForSingleObject(tmp, 10000);
+	::WaitForSingleObject(tmp, 10000);
 #ifndef MPEXT
 	PostMessage(m_hOwnerWnd, m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_QUITCOMPLETE, 0), 0);
 #endif

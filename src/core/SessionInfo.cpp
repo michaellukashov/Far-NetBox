@@ -19,7 +19,7 @@ using namespace Sysutils;
 static UnicodeString DoXmlEscape(const UnicodeString & Str, bool NewLine)
 {
   UnicodeString Result = Str;
-  for (intptr_t Index = 1; Index <= Result.Length(); Index++)
+  for (intptr_t Index = 1; Index <= Result.Length(); ++Index)
   {
     const wchar_t * Repl = nullptr;
     switch (Result[Index])
@@ -265,13 +265,13 @@ public:
     FileList->DuplicateTo(FFileList);
   }
 
-  void File(TRemoteFile * File)
+  void File(TRemoteFile * AFile)
   {
     if (FFile != nullptr)
     {
       SAFE_DESTROY(FFile);
     }
-    FFile = File->Duplicate(true);
+    FFile = AFile->Duplicate(true);
   }
 
 protected:
@@ -549,11 +549,11 @@ TStatSessionAction::TStatSessionAction(TActionLog * Log, const UnicodeString & A
 {
 }
 //---------------------------------------------------------------------------
-void TStatSessionAction::File(TRemoteFile * File)
+void TStatSessionAction::File(TRemoteFile * AFile)
 {
   if (FRecord != nullptr)
   {
-    FRecord->File(File);
+    FRecord->File(AFile);
   }
 }
 //---------------------------------------------------------------------------
@@ -1056,7 +1056,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly))
       {
         UnicodeString Bugs;
-        for (int Index = 0; Index < SFTP_BUG_COUNT; Index++)
+        for (int Index = 0; Index < SFTP_BUG_COUNT; ++Index)
         {
           Bugs += UnicodeString(BugFlags[Data->GetSFTPBug(static_cast<TSftpBug>(Index))])+(Index<SFTP_BUG_COUNT-1 ? L"," : L"");
         }
@@ -1341,7 +1341,6 @@ void TActionLog::ReflectSettings()
     CloseLogFile();
     FLogging = false;
   }
-
 }
 //---------------------------------------------------------------------------
 void TActionLog::CloseLogFile()

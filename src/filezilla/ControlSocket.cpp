@@ -358,7 +358,7 @@ _int64 CControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _int6
 					}
 				}
 				m_SpeedLimitSync.Unlock();
-				Sleep(100);
+				::Sleep(100);
 				m_SpeedLimitSync.Lock();
 				nowTime = CTime::GetCurrentTime();
 				beenWaiting = true;

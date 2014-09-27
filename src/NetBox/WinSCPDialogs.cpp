@@ -185,7 +185,7 @@ void TTabbedDialog::SelectTab(intptr_t Tab)
     FTab = Tab;
   }
 
-  for (intptr_t Index = 0; Index < GetItemCount(); Index++)
+  for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
   {
     TFarDialogItem * Item = GetItem(Index);
     if ((Item->GetGroup() == Tab) && Item->CanFocus())
@@ -205,7 +205,7 @@ void TTabbedDialog::SelectTab(intptr_t Tab)
 TTabButton * TTabbedDialog::TabButton(intptr_t Tab)
 {
   TTabButton * Result = nullptr;
-  for (intptr_t Index = 0; Index < GetItemCount(); Index++)
+  for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
   {
     TTabButton * T = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index));
     if ((T != nullptr) && (T->GetTab() == Tab))
@@ -296,9 +296,9 @@ void TTabButton::SetTabName(const UnicodeString & Value)
 //------------------------------------------------------------------------------
 bool TWinSCPPlugin::ConfigurationDialog()
 {
-  TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  std::unique_ptr<TWinSCPDialog> DialogPtr(Dialog);
-  assert(DialogPtr.get());
+  std::unique_ptr<TWinSCPDialog> DialogPtr(new TWinSCPDialog(this));
+  TWinSCPDialog * Dialog = DialogPtr.get();
+
   TFarText * Text;
 
   Dialog->SetSize(TPoint(67, 22));
@@ -461,9 +461,9 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
 //------------------------------------------------------------------------------
 bool TWinSCPPlugin::LoggingConfigurationDialog()
 {
-  TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  std::unique_ptr<TWinSCPDialog> DialogPtr(Dialog);
-  assert(DialogPtr.get());
+  std::unique_ptr<TWinSCPDialog> DialogPtr(new TWinSCPDialog(this));
+  TWinSCPDialog * Dialog = DialogPtr.get();
+
   TFarSeparator * Separator;
   TFarText * Text;
 
@@ -486,7 +486,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   TFarComboBox * LogProtocolCombo = new TFarComboBox(Dialog);
   LogProtocolCombo->SetDropDownList(true);
   LogProtocolCombo->SetWidth(10);
-  for (intptr_t Index = 0; Index <= 2; Index++)
+  for (intptr_t Index = 0; Index <= 2; ++Index)
   {
     LogProtocolCombo->GetItems()->Add(GetMsg(LOGGING_LOG_PROTOCOL_0 + Index));
   }
@@ -572,9 +572,9 @@ bool TWinSCPPlugin::TransferConfigurationDialog()
 //------------------------------------------------------------------------------
 bool TWinSCPPlugin::EnduranceConfigurationDialog()
 {
-  TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  std::unique_ptr<TWinSCPDialog> DialogPtr(Dialog);
-  assert(DialogPtr.get());
+  std::unique_ptr<TWinSCPDialog> DialogPtr(new TWinSCPDialog(this));
+  TWinSCPDialog * Dialog = DialogPtr.get();
+
   TFarSeparator * Separator;
   TFarText * Text;
 
@@ -703,9 +703,9 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 //------------------------------------------------------------------------------
 bool TWinSCPPlugin::QueueConfigurationDialog()
 {
-  TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  std::unique_ptr<TWinSCPDialog> DialogPtr(Dialog);
-  assert(DialogPtr.get());
+  std::unique_ptr<TWinSCPDialog> DialogPtr(new TWinSCPDialog(this));
+  TWinSCPDialog * Dialog = DialogPtr.get();
+
   TFarText * Text;
 
   Dialog->SetSize(TPoint(76, 11));
@@ -887,9 +887,9 @@ bool TWinSCPPlugin::TransferEditorConfigurationDialog()
 //------------------------------------------------------------------------------
 bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
 {
-  TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  std::unique_ptr<TWinSCPDialog> DialogPtr(Dialog);
-  assert(DialogPtr.get());
+  std::unique_ptr<TWinSCPDialog> DialogPtr(new TWinSCPDialog(this));
+  TWinSCPDialog * Dialog = DialogPtr.get();
+
   Dialog->SetSize(TPoint(67, 10));
   Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), Sysutils::StripHotkey(GetMsg(CONFIG_CONFIRMATIONS)).c_str()));
@@ -940,9 +940,9 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
 //------------------------------------------------------------------------------
 bool TWinSCPPlugin::IntegrationConfigurationDialog()
 {
-  TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  std::unique_ptr<TWinSCPDialog> DialogPtr(Dialog);
-  assert(DialogPtr.get());
+  std::unique_ptr<TWinSCPDialog> DialogPtr(new TWinSCPDialog(this));
+  TWinSCPDialog * Dialog = DialogPtr.get();
+
   TFarText * Text;
 
   Dialog->SetSize(TPoint(65, 14));
@@ -1401,9 +1401,9 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
 bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
   const UnicodeString & Banner, bool & NeverShowAgain, intptr_t Options)
 {
-  TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
-  std::unique_ptr<TWinSCPDialog> DialogPtr(Dialog);
-  assert(DialogPtr.get());
+  std::unique_ptr<TWinSCPDialog> DialogPtr(new TWinSCPDialog(FPlugin));
+  TWinSCPDialog * Dialog = DialogPtr.get();
+
   Dialog->SetSize(TPoint(70, 21));
   Dialog->SetCaption(FORMAT(GetMsg(BANNER_TITLE).c_str(), SessionName.c_str()));
 
@@ -2158,7 +2158,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SFTPMaxVersionCombo = new TFarComboBox(this);
   SFTPMaxVersionCombo->SetDropDownList(true);
   SFTPMaxVersionCombo->SetWidth(7);
-  for (intptr_t Index = 0; Index <= 5; Index++)
+  for (intptr_t Index = 0; Index <= 5; ++Index)
   {
     SFTPMaxVersionCombo->GetItems()->Add(Sysutils::IntToStr(Index));
   }
@@ -4117,13 +4117,13 @@ void TSessionDialog::ChangeTabs(intptr_t FirstVisibleTabIndex)
   intptr_t VisibleTabsCount = GetVisibleTabsCount(FirstVisibleTabIndex, true);
   intptr_t LastVisibleTabIndex = FirstVisibleTabIndex + VisibleTabsCount;
   // Change visibility
-  for (intptr_t Index = 0; Index < FirstVisibleTabIndex; Index++)
+  for (intptr_t Index = 0; Index < FirstVisibleTabIndex; ++Index)
   {
     TTabButton * TabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(Index));
     TabBtn->SetVisible(false);
   }
   intptr_t LeftPos = GetBorderBox()->GetLeft() + 2;
-  for (intptr_t Index = FirstVisibleTabIndex; Index <= LastVisibleTabIndex; Index++)
+  for (intptr_t Index = FirstVisibleTabIndex; Index <= LastVisibleTabIndex; ++Index)
   {
     TTabButton * TabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(Index));
     intptr_t Width = TabBtn->GetWidth();
@@ -4132,7 +4132,7 @@ void TSessionDialog::ChangeTabs(intptr_t FirstVisibleTabIndex)
     LeftPos += Width + 1;
     TabBtn->SetVisible(true);
   }
-  for (intptr_t Index = LastVisibleTabIndex + 1; Index < FTabs->GetCount(); Index++)
+  for (intptr_t Index = LastVisibleTabIndex + 1; Index < FTabs->GetCount(); ++Index)
   {
     TTabButton * TabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(Index));
     TabBtn->SetVisible(false);
@@ -4148,7 +4148,7 @@ intptr_t TSessionDialog::GetVisibleTabsCount(intptr_t TabIndex, bool Forward) co
   intptr_t TabsWidth = 0;
   if (Forward)
   {
-    for (intptr_t Index = TabIndex; Index < FTabs->GetCount() - 1; Index++)
+    for (intptr_t Index = TabIndex; Index < FTabs->GetCount() - 1; ++Index)
     {
       TTabButton * TabBtn = NB_STATIC_DOWNCAST(TTabButton, FTabs->GetItem(Index));
       TabsWidth += TabBtn->GetWidth() + 1;
@@ -5667,9 +5667,9 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
 bool TWinSCPPlugin::CopyParamDialog(const UnicodeString & Caption,
   TCopyParamType & CopyParam, intptr_t CopyParamAttrs)
 {
-  TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  std::unique_ptr<TWinSCPDialog> DialogPtr(Dialog);
-  assert(DialogPtr.get());
+  std::unique_ptr<TWinSCPDialog> DialogPtr(new TWinSCPDialog(this));
+  TWinSCPDialog * Dialog = DialogPtr.get();
+
   Dialog->SetCaption(Caption);
 
   // temporary
@@ -6382,7 +6382,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       FirstHistory = FPathHistory->GetCount() - MaxHistory + 1;
     }
 
-    for (intptr_t Index = FirstHistory; Index < FPathHistory->GetCount(); Index++)
+    for (intptr_t Index = FirstHistory; Index < FPathHistory->GetCount(); ++Index)
     {
       UnicodeString Path = FPathHistory->GetString(Index);
       BookmarkPaths->Add(Path);
@@ -6392,7 +6392,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     intptr_t FirstItemFocused = -1;
     std::unique_ptr<TStringList> BookmarkDirectories(new TStringList());
     BookmarkDirectories->SetSorted(true);
-    for (intptr_t Index = 0; Index < BookmarkList->GetCount(); Index++)
+    for (intptr_t Index = 0; Index < BookmarkList->GetCount(); ++Index)
     {
       TBookmark * Bookmark = BookmarkList->GetBookmarks(Index);
       UnicodeString RemoteDirectory = Bookmark->GetRemote();
@@ -8206,11 +8206,11 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * FileList,
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * File,
+bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * AFile,
   UnicodeString & NewName)
 {
   return FPlugin->InputBox(GetMsg(RENAME_FILE_TITLE).c_str(),
-    FORMAT(GetMsg(RENAME_FILE).c_str(), File->GetFileName().c_str()), NewName, 0) &&
+    FORMAT(GetMsg(RENAME_FILE).c_str(), AFile->GetFileName().c_str()), NewName, 0) &&
     !NewName.IsEmpty();
 }
 //------------------------------------------------------------------------------

@@ -145,7 +145,7 @@ void TFileBuffer::Convert(char * Source, char * Dest, intptr_t Params,
       {
         Token = true;
         Insert(Index+1, Dest+1, 1);
-        Index++;
+        ++Index;
         Ptr = GetData() + Index;
       }
       else if (*Ptr == Source[0])

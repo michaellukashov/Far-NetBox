@@ -279,4 +279,4 @@ BOOL WINAPI DllMain(HINSTANCE HInstance, DWORD Reason, LPVOID /*ptr*/ )
   return Result;
 }
 
-}
+} // extern "C"

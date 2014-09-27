@@ -261,7 +261,7 @@ TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem * FileSystem,
 void TKeepaliveThread::Init()
 {
   TSimpleThread::Init();
-  FEvent = CreateEvent(nullptr, false, false, nullptr);
+  FEvent = ::CreateEvent(nullptr, false, false, nullptr);
   Start();
 }
 //------------------------------------------------------------------------------
@@ -276,7 +276,7 @@ void TKeepaliveThread::Execute()
   while (!IsFinished())
   {
     static long MillisecondsPerDay = 24 * 60 * 60 * 1000;
-    if ((WaitForSingleObject(FEvent, static_cast<DWORD>(
+    if ((::WaitForSingleObject(FEvent, static_cast<DWORD>(
          ToDouble(FInterval) * MillisecondsPerDay)) != WAIT_FAILED) &&
         !IsFinished())
     {
@@ -1917,10 +1917,10 @@ void TWinSCPFileSystem::InsertFileNameOnCommandLine(bool Full)
   }
 }
 //------------------------------------------------------------------------------
-UnicodeString TWinSCPFileSystem::GetFullFilePath(const TRemoteFile * File) const
+UnicodeString TWinSCPFileSystem::GetFullFilePath(const TRemoteFile * AFile) const
 {
   UnicodeString SessionUrl = GetSessionUrl(FTerminal, true);
-  UnicodeString Result = FORMAT(L"%s%s", SessionUrl.c_str(), File->GetFullFileName().c_str());
+  UnicodeString Result = FORMAT(L"%s%s", SessionUrl.c_str(), AFile->GetFullFileName().c_str());
   return Result;
 }
 //------------------------------------------------------------------------------
@@ -4000,7 +4000,7 @@ void TWinSCPFileSystem::MultipleEdit()
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
-  const UnicodeString & AFileName, TRemoteFile * File)
+  const UnicodeString & AFileName, TRemoteFile * AFile)
 {
   TEditHistory EditHistory;
   EditHistory.Directory = Directory;
@@ -4015,7 +4015,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
 
   UnicodeString FullFileName = core::UnixIncludeTrailingBackslash(Directory) + AFileName;
 
-  std::unique_ptr<TRemoteFile> FileDuplicate(File->Duplicate());
+  std::unique_ptr<TRemoteFile> FileDuplicate(AFile->Duplicate());
   UnicodeString NewFileName = AFileName; // FullFileName;
   FileDuplicate->SetFileName(NewFileName);
 
@@ -4158,7 +4158,7 @@ void TWinSCPFileSystem::EditHistory()
 
   if ((Result >= 0) && (Result < static_cast<intptr_t>(FEditHistories.size())))
   {
-    TRemoteFile * File;
+    TRemoteFile * File = nullptr;
     UnicodeString FullFileName =
       core::UnixIncludeTrailingBackslash(FEditHistories[Result].Directory) + FEditHistories[Result].FileName;
     FTerminal->ReadFile(FullFileName, File);

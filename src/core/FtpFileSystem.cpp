@@ -89,7 +89,7 @@ intptr_t TFileZillaImpl::OptionVal(intptr_t OptionID) const
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam)
 {
-  return FFileSystem->PostMessage(Type, wParam, lParam);
+  return FFileSystem->FTPPostMessage(Type, wParam, lParam);
 }
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::HandleStatus(const wchar_t * Status, int Type)
@@ -195,7 +195,7 @@ private:
 TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   TCustomFileSystem(ATerminal),
   FFileZillaIntf(nullptr),
-  FQueueEvent(CreateEvent(nullptr, true, false, nullptr)),
+  FQueueEvent(::CreateEvent(nullptr, true, false, nullptr)),
   FFileSystemInfoValid(false),
   FReply(0),
   FCommandReply(0),
@@ -2353,7 +2353,7 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TFTPFileSystem::PostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam)
+bool TFTPFileSystem::FTPPostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam)
 {
   if (Type == TFileZillaIntf::MSG_TRANSFERSTATUS)
   {
@@ -2390,7 +2390,7 @@ bool TFTPFileSystem::ProcessMessage()
     {
       // now we are perfectly sure that the queue is empty as it is locked,
       // so reset the event
-      ResetEvent(FQueueEvent);
+      ::ResetEvent(FQueueEvent);
     }
   }
 
@@ -2411,7 +2411,7 @@ void TFTPFileSystem::WaitForMessages()
 {
   //if (FQueue.empty())
   //  return;
-  DWORD Result = WaitForSingleObject(FQueueEvent, INFINITE);
+  DWORD Result = ::WaitForSingleObject(FQueueEvent, INFINITE);
   if (Result != WAIT_OBJECT_0)
   {
     FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", Sysutils::IntToStr(Result).c_str()));

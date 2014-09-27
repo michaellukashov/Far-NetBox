@@ -208,7 +208,7 @@ public:
   virtual void Reset();
   TRemoteFile * FindFile(const UnicodeString & AFileName) const;
   virtual void DuplicateTo(TRemoteFileList * Copy) const;
-  virtual void AddFile(TRemoteFile * File);
+  virtual void AddFile(TRemoteFile * AFile);
   UnicodeString GetDirectory() const { return FDirectory; }
   virtual void SetDirectory(const UnicodeString & Value);
   TRemoteFile * GetFile(Integer Index) const;
@@ -228,7 +228,7 @@ NB_DISABLE_COPY(TRemoteDirectory)
 public:
   explicit TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = nullptr);
   virtual ~TRemoteDirectory();
-  virtual void AddFile(TRemoteFile * File);
+  virtual void AddFile(TRemoteFile * AFile);
   virtual void DuplicateTo(TRemoteFileList * Copy) const;
   virtual void Reset();
   TTerminal * GetTerminal() const { return FTerminal; }

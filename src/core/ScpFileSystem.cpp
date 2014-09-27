@@ -1160,12 +1160,12 @@ void TSCPFileSystem::CustomReadFile(const UnicodeString & AFileName,
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
-  const TRemoteFile * File, intptr_t Params, TRmSessionAction & Action)
+  const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action)
 {
-  USEDPARAM(File);
+  USEDPARAM(AFile);
   USEDPARAM(Params);
   Action.Recursive();
-  assert(FLAGCLEAR(Params, dfNoRecursive) || (File && File->GetIsSymLink()));
+  assert(FLAGCLEAR(Params, dfNoRecursive) || (AFile && AFile->GetIsSymLink()));
   ExecCommand2(fsDeleteFile, Params, DelimitStr(AFileName).c_str());
 }
 //---------------------------------------------------------------------------
@@ -1181,9 +1181,9 @@ void TSCPFileSystem::CopyFile(const UnicodeString & AFileName,
   ExecCommand2(fsCopyFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(NewName).c_str());
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::RemoteCreateDirectory(const UnicodeString & DirName)
+void TSCPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
 {
-  ExecCommand2(fsCreateDirectory, 0, DelimitStr(DirName).c_str());
+  ExecCommand2(fsCreateDirectory, 0, DelimitStr(ADirName).c_str());
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CreateLink(const UnicodeString & AFileName,
@@ -1213,11 +1213,11 @@ void TSCPFileSystem::ChangeFileToken(const UnicodeString & DelimitedName,
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
-  const TRemoteFile * File, const TRemoteProperties * Properties,
+  const TRemoteFile * AFile, const TRemoteProperties * Properties,
   TChmodSessionAction & Action)
 {
   assert(Properties);
-  bool IsDirectory = File && File->GetIsDirectory();
+  bool IsDirectory = AFile && AFile->GetIsDirectory();
   bool Recursive = Properties->Recursive && IsDirectory;
   UnicodeString RecursiveStr = Recursive ? L"-R" : L"";
 
@@ -1283,11 +1283,11 @@ void TSCPFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
-  const TRemoteFile * File, const UnicodeString & Command, intptr_t Params,
+  const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params,
   TCaptureOutputEvent OutputEvent)
 {
-  assert(File);
-  bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
+  assert(AFile);
+  bool Dir = AFile->GetIsDirectory() && !AFile->GetIsSymLink();
   if (Dir && (Params & ccRecursive))
   {
     TCustomCommandParams AParams;
@@ -1673,11 +1673,11 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
-  const TRemoteFile * File,
+  const TRemoteFile * AFile,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
   TFileOperationProgressType * OperationProgress, intptr_t Level)
 {
-  UnicodeString RealFileName = File ? File->GetFileName() : AFileName;
+  UnicodeString RealFileName = AFile ? AFile->GetFileName() : AFileName;
   UnicodeString DestFileName = CopyParam->ChangeFileName(
     core::ExtractFileName(RealFileName, false), osLocal, Level == 0);
 
@@ -2248,7 +2248,7 @@ void TSCPFileSystem::SCPSendError(const UnicodeString & Message, bool Fatal)
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
-  const TRemoteFile * File,
+  const TRemoteFile * AFile,
   const UnicodeString & TargetDir,
   const UnicodeString & SourceDir,
   const TCopyParamType * CopyParam, bool & Success,

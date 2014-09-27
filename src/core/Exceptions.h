@@ -53,7 +53,7 @@ protected:
   void AddMoreMessages(const Exception * E);
 
 private:
-  Classes::TStrings* FMoreMessages;
+  Classes::TStrings * FMoreMessages;
   UnicodeString FHelpKeyword;
 };
 //---------------------------------------------------------------------------

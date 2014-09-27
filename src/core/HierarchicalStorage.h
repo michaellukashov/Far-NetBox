@@ -137,7 +137,7 @@ public:
 
   virtual void GetValueNames(Classes::TStrings * Strings) const;
 
-  intptr_t GetFailed();
+  intptr_t GetFailed() const;
   void SetFailed(intptr_t Value) { FFailed = Value; }
   virtual void SetAccessMode(TStorageAccessMode Value);
 
@@ -148,7 +148,7 @@ protected:
 
 private:
   TRegistry * FRegistry;
-  intptr_t FFailed;
+  mutable intptr_t FFailed;
 };
 //------------------------------------------------------------------------------
 UnicodeString PuttyMungeStr(const UnicodeString & Str);

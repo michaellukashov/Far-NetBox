@@ -80,7 +80,7 @@ TCustomFarPlugin::~TCustomFarPlugin()
   ClearPluginInfo(FPluginInfo);
   assert(FOpenedPlugins->GetCount() == 0);
   SAFE_DESTROY(FOpenedPlugins);
-  for (intptr_t Index = 0; Index < FSavedTitles->GetCount(); Index++)
+  for (intptr_t Index = 0; Index < FSavedTitles->GetCount(); ++Index)
   {
     TObject * Object = FSavedTitles->GetObject(Index);
     SAFE_DESTROY(Object);

@@ -320,7 +320,7 @@ bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, in
   if (AIndex <= Str.Length())
   {
     wchar_t Ch = Str[AIndex];
-    for (intptr_t Index = 1; Index <= Delimiters.Length(); Index++)
+    for (intptr_t Index = 1; Index <= Delimiters.Length(); ++Index)
     {
       if (Delimiters[Index] == Ch)
       {
@@ -930,7 +930,7 @@ UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len)
   UnicodeString Result;
   if (Len < 0) Len = 0;
   Result.SetLength(Len);
-  for (intptr_t Index = 1; Index <= Len; Index++)
+  for (intptr_t Index = 1; Index <= Len; ++Index)
   {
     Result[Index] = Ch;
   }
@@ -1223,7 +1223,7 @@ UnicodeString GetCurrentDir()
 UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase, char Separator)
 {
   UnicodeString Result;
-  for (intptr_t Index = 1; Index <= Str.Length(); Index++)
+  for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
   {
     Result += CharToHex(static_cast<char>(Str[Index]), UpperCase);
     if ((Separator != L'\0') && (Index <= Str.Length()))
@@ -1280,7 +1280,7 @@ uintptr_t HexToInt(const UnicodeString & Hex, uintptr_t MinChars)
 
     Result = (Result * 16) + (static_cast<int>(A) - 1);
 
-    Index++;
+    ++Index;
   }
   return Result;
 }
@@ -1293,7 +1293,7 @@ UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars)
   intptr_t Pad = MinChars - Result.Length();
   if (Pad > 0)
   {
-    for (intptr_t Index = 0; Index < Pad; Index++)
+    for (intptr_t Index = 0; Index < Pad; ++Index)
     {
       Result.Insert(L'0', 1);
     }

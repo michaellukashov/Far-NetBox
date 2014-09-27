@@ -436,7 +436,7 @@ UnicodeString TStrings::GetDelimitedText() const
   }
   else
   {
-    for (intptr_t Index = 0; Index < GetCount(); Index++)
+    for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
       UnicodeString line = GetString(Index);
       Result += GetQuoteChar() + line + GetQuoteChar() + GetDelimiter();
@@ -539,13 +539,13 @@ UnicodeString TStrings::GetTextStr() const
   intptr_t Count = GetCount();
   intptr_t Size = 0;
   UnicodeString LB = sLineBreak;
-  for (intptr_t Index = 0; Index < Count; Index++)
+  for (intptr_t Index = 0; Index < Count; ++Index)
   {
     Size += GetString(Index).Length() + LB.Length();
   }
   Result.SetLength(Size);
   wchar_t * P = const_cast<wchar_t *>(Result.c_str());
-  for (intptr_t Index = 0; Index < Count; Index++)
+  for (intptr_t Index = 0; Index < Count; ++Index)
   {
     UnicodeString S = GetString(Index);
     intptr_t L = S.Length() * sizeof(wchar_t);
@@ -743,7 +743,7 @@ void TStrings::AddStrings(const TStrings * Strings)
   {
     EndUpdate();
   };
-  for (intptr_t Index = 0; Index < Strings->GetCount(); Index++)
+  for (intptr_t Index = 0; Index < Strings->GetCount(); ++Index)
   {
     AddObject(Strings->GetString(Index), Strings->GetObject(Index));
   }

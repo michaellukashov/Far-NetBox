@@ -70,7 +70,7 @@ public:
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
-  virtual void RemoteCreateDirectory(const UnicodeString & DirName);
+  virtual void RemoteCreateDirectory(const UnicodeString & ADirName);
   virtual void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
   virtual void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action);
@@ -116,7 +116,7 @@ protected:
     REPLY_3XX_CODE     = 0x08
   };
 
-  bool PostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam);
+  bool FTPPostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam);
   bool ProcessMessage();
   void DiscardMessages();
   void WaitForMessages();

@@ -171,7 +171,7 @@ public:
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
-  virtual void RemoteCreateDirectory(const UnicodeString & DirName) = 0;
+  virtual void RemoteCreateDirectory(const UnicodeString & ADirName) = 0;
   virtual void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic) = 0;
   virtual void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, intptr_t Params,

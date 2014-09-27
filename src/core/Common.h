@@ -137,7 +137,7 @@ struct TSearchRecChecked : public Sysutils::TSearchRec
 DWORD FindCheck(DWORD Result, const UnicodeString & Path);
 DWORD FindFirstChecked(const UnicodeString & Path, DWORD LocalFileAttrs, TSearchRecChecked & F);
 DWORD FindNextChecked(TSearchRecChecked & F);
-void ProcessLocalDirectory(const UnicodeString & DirName,
+void ProcessLocalDirectory(const UnicodeString & ADirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = nullptr, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
 //---------------------------------------------------------------------------
 enum TDSTMode

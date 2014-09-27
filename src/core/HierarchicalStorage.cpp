@@ -247,7 +247,7 @@ bool THierarchicalStorage::KeyExists(const UnicodeString & SubKey)
   return DoKeyExists(SubKey, GetForceAnsi());
 }
 //------------------------------------------------------------------------------
-void THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
+void THierarchicalStorage::ReadValues(Classes::TStrings * Strings,
   bool MaintainKeys)
 {
   std::unique_ptr<TStrings> Names(new TStringList());
@@ -659,7 +659,7 @@ void TRegistryStorage::WriteBinaryData(const UnicodeString & Name,
   }
 }
 //------------------------------------------------------------------------------
-intptr_t TRegistryStorage::GetFailed()
+intptr_t TRegistryStorage::GetFailed() const
 {
   intptr_t Result = FFailed;
   FFailed = 0;
