@@ -30,7 +30,6 @@ message("System: ${CMAKE_SYSTEM_NAME}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_I
 
 set(LIBS_ROOT ${PROJECT_ROOT}/libs)
 set(SRC_ROOT ${PROJECT_ROOT}/src)
-set(TESTS_ROOT ${SRC_ROOT}/tests)
 
 #-------------------------------------------------------------------------------
 
@@ -648,6 +647,7 @@ set_target_properties(rdestl
 if(DEFINED OPT_COMPILE_TESTS)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
+set(TESTS_ROOT ${SRC_ROOT}/tests)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_DISABLE_ASSERTS")
 
 include_directories(
