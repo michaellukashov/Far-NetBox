@@ -1132,7 +1132,7 @@ TDateTime::TDateTime(uint16_t Hour,
 }
 
 //---------------------------------------------------------------------------
-bool TDateTime::operator ==(const TDateTime& rhs)
+bool TDateTime::operator ==(const TDateTime & rhs)
 {
   return Sysutils::IsZero(FValue - rhs.FValue);
 }

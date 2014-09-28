@@ -1828,7 +1828,7 @@ bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory)
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
-  const TDateTime& Timestamp)
+  const TDateTime & Timestamp)
 {
   TGuard Guard(FSection);
 
