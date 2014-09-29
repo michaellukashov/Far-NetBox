@@ -475,13 +475,13 @@ bool TSecureShell::TryFtp()
           Address.sin_addr.s_addr = *((uint32_t *)*HostEntry->h_addr_list);
 
           HANDLE Event = ::CreateEvent(nullptr, false, false, nullptr);
-          Result = (WSAEventSelect(Socket, (WSAEVENT)Event, FD_CONNECT | FD_CLOSE) != SOCKET_ERROR);
+          Result = (::WSAEventSelect(Socket, (WSAEVENT)Event, FD_CONNECT | FD_CLOSE) != SOCKET_ERROR);
 
           if (Result)
           {
             Result =
               (connect(Socket, reinterpret_cast<sockaddr *>(&Address), sizeof(Address)) != SOCKET_ERROR) ||
-              (WSAGetLastError() == WSAEWOULDBLOCK);
+              (::WSAGetLastError() == WSAEWOULDBLOCK);
             if (Result)
             {
               Result = (::WaitForSingleObject(Event, 2000) == WAIT_OBJECT_0);
@@ -1423,7 +1423,7 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
     LogEvent(FORMAT(L"Selecting events %d for socket %d", static_cast<int>(Events), static_cast<int>(Socket)));
   }
 
-  if (WSAEventSelect(Socket, (WSAEVENT)Event, Events) == SOCKET_ERROR)
+  if (::WSAEventSelect(Socket, (WSAEVENT)Event, Events) == SOCKET_ERROR)
   {
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
@@ -1432,7 +1432,7 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 
     if (Startup)
     {
-      FatalError(FMTLOAD(EVENT_SELECT_ERROR, WSAGetLastError()));
+      FatalError(FMTLOAD(EVENT_SELECT_ERROR, ::WSAGetLastError()));
     }
   }
 }
@@ -1698,7 +1698,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 
   // see winplink.c
   WSANETWORKEVENTS AEvents;
-  if (WSAEnumNetworkEvents(Socket, nullptr, &AEvents) == 0)
+  if (::WSAEnumNetworkEvents(Socket, nullptr, &AEvents) == 0)
   {
     noise_ultralight(static_cast<uint32_t>(Socket));
     noise_ultralight(AEvents.lNetworkEvents);

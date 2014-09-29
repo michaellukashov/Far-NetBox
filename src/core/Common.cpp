@@ -1347,10 +1347,10 @@ static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
 
     uint32_t GTZI;
 
-    HINSTANCE Kernel32 = GetModuleHandle(kernel32.c_str());
+    HINSTANCE Kernel32 = ::GetModuleHandle(kernel32.c_str());
     typedef BOOL (WINAPI * TGetTimeZoneInformationForYear)(USHORT wYear, PDYNAMIC_TIME_ZONE_INFORMATION pdtzi, LPTIME_ZONE_INFORMATION ptzi);
     TGetTimeZoneInformationForYear GetTimeZoneInformationForYear =
-      (TGetTimeZoneInformationForYear)GetProcAddress(Kernel32, "GetTimeZoneInformationForYear");
+      (TGetTimeZoneInformationForYear)::GetProcAddress(Kernel32, "GetTimeZoneInformationForYear");
 
     if ((Year == 0) || (GetTimeZoneInformationForYear == nullptr))
     {
@@ -2377,10 +2377,10 @@ bool IsWin7()
 //---------------------------------------------------------------------------
 bool IsWine()
 {
-  HMODULE NtDll = GetModuleHandle(L"ntdll.dll");
+  HMODULE NtDll = ::GetModuleHandle(L"ntdll.dll");
   return
     ALWAYS_TRUE(NtDll != NULL) &&
-    (GetProcAddress(NtDll, "wine_get_version") != NULL);
+    (::GetProcAddress(NtDll, "wine_get_version") != NULL);
 }
 //---------------------------------------------------------------------------
 LCID GetDefaultLCID()
@@ -2403,10 +2403,10 @@ UnicodeString DefaultEncodingName()
 bool GetWindowsProductType(DWORD & Type)
 {
   bool Result;
-  HINSTANCE Kernel32 = GetModuleHandle(kernel32.c_str());
+  HINSTANCE Kernel32 = ::GetModuleHandle(kernel32.c_str());
   typedef BOOL (WINAPI * TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
   TGetProductInfo GetProductInfo =
-      (TGetProductInfo)GetProcAddress(Kernel32, "GetProductInfo");
+      (TGetProductInfo)::GetProcAddress(Kernel32, "GetProductInfo");
   if (GetProductInfo == nullptr)
   {
     Result = false;

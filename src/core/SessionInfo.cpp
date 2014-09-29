@@ -919,7 +919,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         typedef BOOL (WINAPI * TGetUserNameEx)(EXTENDED_NAME_FORMAT NameFormat, LPWSTR lpNameBuffer, PULONG nSize);
         HINSTANCE Secur32 = LoadLibrary(L"secur32.dll");
         TGetUserNameEx GetUserNameEx =
-          (Secur32 != nullptr) ? reinterpret_cast<TGetUserNameEx>(GetProcAddress(Secur32, "GetUserNameExW")) : nullptr;
+          (Secur32 != nullptr) ? reinterpret_cast<TGetUserNameEx>(::GetProcAddress(Secur32, "GetUserNameExW")) : nullptr;
         wchar_t UserName[UNLEN + 1];
         ULONG UserNameSize = LENOF(UserName);
         if ((GetUserNameEx == nullptr) || !GetUserNameEx(NameSamCompatible, (LPWSTR)UserName, &UserNameSize))
