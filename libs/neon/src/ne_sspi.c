@@ -335,9 +335,9 @@ static int freeBuffer(SecBufferDesc * secBufferDesc)
  * Canonicalize a server host name if possible.
  * The returned pointer must be freed after usage.
  */
-static char *canonical_hostname(const char *serverName)
+static const char *canonical_hostname(const char *serverName)
 {
-    char *hostname;
+    const char *hostname;
     ne_sock_addr *addr;
     
     addr = ne_addr_resolve(serverName, NE_ADDR_CANON);
@@ -365,7 +365,7 @@ static char *canonical_hostname(const char *serverName)
 int ne_sspi_create_context(void **context, char *serverName, int ntlm)
 {
     SSPIContext *sspiContext;
-    char *canonicalName;
+    const char *canonicalName;
 
     if (initialized <= 0) {
         return -1;
@@ -383,7 +383,7 @@ int ne_sspi_create_context(void **context, char *serverName, int ntlm)
         /* Canonicalize to conform to GSSAPI behavior */
         canonicalName = canonical_hostname(serverName);
         sspiContext->serverName = ne_concat("HTTP/", canonicalName, NULL);
-        ne_free(canonicalName);
+        ne_free((void*)canonicalName);
         NE_DEBUG(NE_DBG_HTTPAUTH, "sspi: Created context with SPN '%s'\n",
                  sspiContext->serverName);
         sspiContext->maxTokenSize = negotiateMaxTokenSize;

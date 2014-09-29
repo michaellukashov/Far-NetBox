@@ -1874,6 +1874,7 @@ static int pkcs11_dsa(void)
  * only really happen if they mess with the SSL_CTX and enable
  * ADH cipher manually; but good to check the failure case is 
  * safe.
+ * -  SSL cert changes between connections; handle as normal & re-verify
  * From the SSL book:
  * - an early FIN should be returned as a possible truncation attack,
  * NOT just an NE_SOCK_CLOSED.

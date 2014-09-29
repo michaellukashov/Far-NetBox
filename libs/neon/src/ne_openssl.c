@@ -251,7 +251,7 @@ static int check_identity(const ne_uri *server, X509 *cert, char **identity)
 		char *name = dup_ia5string(nm->d.ia5);
                 if (identity && !found) *identity = ne_strdup(name);
 		match = ne__ssl_match_hostname(name, strlen(name), hostname);
-		free(name);
+		ne_free(name);
 		found = 1;
             } 
             else if (nm->type == GEN_IPADD) {
@@ -300,7 +300,7 @@ static int check_identity(const ne_uri *server, X509 *cert, char **identity)
                 }
 
                 ne_uri_free(&uri);
-                free(name);
+                ne_free(name);
             }
 	}
         /* free the whole stack. */
@@ -728,17 +728,10 @@ int ne__negotiate_ssl(ne_session *sess)
 	return NE_ERROR;
     }
 
-    if (sess->server_cert) {
-        int diff = X509_cmp(sk_X509_value(chain, 0), sess->server_cert->subject);
+    if (sess->server_cert 
+        && X509_cmp(sk_X509_value(chain, 0), sess->server_cert->subject) == 0) {
+        /* Same leaf cert used as last time - no need to reverify. */
         if (freechain) sk_X509_free(chain); /* no longer need the chain */
-	if (diff) {
-	    /* This could be a MITM attack: fail the request. */
-	    ne_set_error(sess, _("Server certificate changed: "
-				 "connection intercepted?"));
-	    return NE_ERROR;
-	} 
-	/* certificate has already passed verification: no need to
-	 * verify it again. */
     } else {
 	/* new connection: create the chain. */
         ne_ssl_certificate *cert = make_chain(chain);
