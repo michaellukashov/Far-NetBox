@@ -1616,7 +1616,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
       {
         FTerminal->DirectoryModified(TargetDir, false);
 
-        if (Sysutils::DirectoryExists(Sysutils::ExtractFilePath(ApiPath(FileName))))
+        if (Sysutils::DirectoryExists(ApiPath(Sysutils::ExtractFilePath(FileName))))
         {
           FTerminal->DirectoryModified(core::UnixIncludeTrailingBackslash(TargetDir)+
             FileNameOnly, true);
