@@ -1,8 +1,7 @@
 #pragma once
 
-#include <guiddef.h>
-#include <objbase.h>
-#include <initguid.h>
+#define INITGUID
+#include <Guiddef.h>
 
 // {00000000-0000-0000-0000-000000000000}
 DEFINE_GUID(FarGuid,0,0,0,0,0,0,0,0,0,0,0);
