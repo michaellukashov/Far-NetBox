@@ -25,10 +25,10 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
   uintptr_t Len = 0;
 
   bool NeedFree = false;
-  HMODULE Module = GetModuleHandle(FileName);
+  HMODULE Module = ::GetModuleHandle(FileName);
   if (Module == nullptr)
   {
-    Module = LoadLibraryEx(FileName, 0, LOAD_LIBRARY_AS_DATAFILE);
+    Module = ::LoadLibraryEx(FileName, 0, LOAD_LIBRARY_AS_DATAFILE);
     NeedFree = true;
   }
   if (Module == nullptr)
@@ -41,18 +41,18 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
     {
       if (NeedFree)
       {
-        FreeLibrary(Module);
+        ::FreeLibrary(Module);
       }
     };
-    HRSRC Rsrc = FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO),
+    HRSRC Rsrc = ::FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO),
       MAKEINTRESOURCE(VS_FILE_INFO));
     if (Rsrc == nullptr)
     {
     }
     else
     {
-      Len = SizeofResource(Module, static_cast<HRSRC>(Rsrc));
-      HANDLE Mem = LoadResource(Module, static_cast<HRSRC>(Rsrc));
+      Len = ::SizeofResource(Module, static_cast<HRSRC>(Rsrc));
+      HANDLE Mem = ::LoadResource(Module, static_cast<HRSRC>(Rsrc));
       if (Mem == nullptr)
       {
       }
@@ -60,7 +60,7 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
       {
         SCOPE_EXIT
         {
-          FreeResource(Mem);
+          ::FreeResource(Mem);
         };
         VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(LockResource(Mem));
         const VS_FIXEDFILEINFO * FixedInfo =
@@ -106,7 +106,7 @@ static uintptr_t GetFileVersionInfoSizeFix(const wchar_t * FileName, DWORD * AHa
   }
   else
   {
-    Len = GetFileVersionInfoSize(const_cast<wchar_t *>(FileName), AHandle);
+    Len = ::GetFileVersionInfoSize(const_cast<wchar_t *>(FileName), AHandle);
   }
 
   return Len;
@@ -138,7 +138,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, uint32_t Handle,
   }
   else
   {
-    Result = GetFileVersionInfo(FileName, Handle, (DWORD)DataSize, Data) != 0;
+    Result = ::GetFileVersionInfo(FileName, Handle, (DWORD)DataSize, Data) != 0;
   }
 
   return Result;

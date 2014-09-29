@@ -95,12 +95,12 @@ BOOL CMainThread::InitInstance()
 	WSADATA wsaData;
 	
 	WORD wVersionRequested = MAKEWORD(1, 1);
-	int nResult = WSAStartup(wVersionRequested, &wsaData);
+	int nResult = ::WSAStartup(wVersionRequested, &wsaData);
 	if (nResult != 0)
 		res=FALSE;
 	else if (LOBYTE(wsaData.wVersion) != 1 || HIBYTE(wsaData.wVersion) != 1)
 	{
-		WSACleanup();
+		::WSACleanup();
 		res=FALSE;
 	}
 	

@@ -189,7 +189,7 @@ static void append_dirstring(ne_buffer *buf, gnutls_datum_t *data, unsigned long
 char *ne_ssl_readable_dname(const ne_ssl_dname *name)
 {
     gnutls_x509_dn_t dn;
-    int ret, rdn = 0, flag = 0;
+    int ret, rdn = 0;
     ne_buffer *buf;
     gnutls_x509_ava_st val;
 
@@ -227,7 +227,6 @@ char *ne_ssl_readable_dname(const ne_ssl_dname *name)
                 && ((!CMPOID(&val, OID_emailAddress)
                      && !CMPOID(&val, OID_commonName))
                     || (buf->used == 1 && rdn == 0))) {
-                flag = 1;
                 if (buf->used > 1) ne_buffer_append(buf, ", ", 2);
 
                 append_dirstring(buf, &val.value, val.value_tag);
@@ -694,7 +693,11 @@ void ne_ssl_context_destroy(ne_ssl_context *ctx)
 {
     gnutls_certificate_free_credentials(ctx->cred);
     if (ctx->cache.client.data) {
+#if defined(HAVE_GNUTLS_SESSION_GET_DATA2)
+        gnutls_free(ctx->cache.client.data);
+#else
         ne_free(ctx->cache.client.data);
+#endif
     } else if (ctx->cache.server.key.data) {
         gnutls_free(ctx->cache.server.key.data);
         gnutls_free(ctx->cache.server.data.data);
@@ -1164,7 +1167,9 @@ ne_ssl_client_cert *ne_ssl_clicert_import(const unsigned char *buffer, size_t bu
     gnutls_x509_crt_t cert = NULL;
     gnutls_x509_privkey_t pkey = NULL;
 
-    data.data = buffer;
+    /* The datum structure is not modified by gnutls_pkcs12_import,
+     * cast safely: */
+    data.data = (unsigned char *)buffer;
     data.size = buflen;
 
     if (gnutls_pkcs12_init(&p12) != 0) {

@@ -374,6 +374,7 @@ static int addr_reverse(void)
 {
     ne_inet_addr *ia = ne_iaddr_make(ne_iaddr_ipv4, raw_127);
     char buf[128], *syshost = NULL;
+    int match;
 
 #ifdef HAVE_GETHOSTNAME
     char host[128];
@@ -388,10 +389,20 @@ static int addr_reverse(void)
     ONN("reverse lookup for 127.0.0.1 failed",
         ne_iaddr_reverse(ia, buf, sizeof buf) != 0);
 
-    ONV(!(strcmp(buf, "localhost.localdomain") == 0
-          || strcmp(buf, "localhost") == 0
-          || (syshost && strcmp(buf, syshost) == 0)),
-        ("reverse lookup for 127.0.0.1 got %s", buf));
+    NE_DEBUG(NE_DBG_SOCKET, "Reverse lookup for 127.0.0.1 => %s\n", buf);
+
+    match = strcmp(buf, "localhost.localdomain") == 0
+        || strcmp(buf, "localhost") == 0;
+
+    if (!match && syshost)
+        /* If the returned name has the system hostname as a prefix, that's
+         * good enough. */
+        match = strncmp(buf, syshost, strlen(syshost)) == 0;
+
+    if (!match)
+        t_warning("reverse lookup for 127.0.0.1 got '%s'", buf);
+    
+    ONN("reverse lookup for 127.0.0.1 got empty string", strlen(buf) == 0);
 
     ne_iaddr_free(ia);
 
