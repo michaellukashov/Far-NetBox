@@ -114,11 +114,11 @@ char* StrPair::ParseText( char* p, const char* endTag, int strFlags )
 
 char* StrPair::ParseName( char* p )
 {
-    char* start = p;
-
-    if ( !start || !(*start) ) {
+    if ( !p || !(*p) ) {
         return 0;
     }
+
+    char* const start = p;
 
     while( *p && ( p == start ? XMLUtil::IsNameStartChar( *p ) : XMLUtil::IsNameChar( *p ) )) {
         ++p;
@@ -479,8 +479,7 @@ bool XMLUtil::ToDouble( const char* str, double* value )
 
 char* XMLDocument::Identify( char* p, XMLNode** node )
 {
-    XMLNode* returnNode = 0;
-    char* start = p;
+    char* const start = p;
     p = XMLUtil::SkipWhiteSpace( p );
     if( !p || !*p ) {
         return p;
@@ -509,6 +508,7 @@ char* XMLDocument::Identify( char* p, XMLNode** node )
 #if defined(_MSC_VER)
 #pragma warning (pop)
 #endif
+    XMLNode* returnNode = 0;
     if ( XMLUtil::StringEqual( p, xmlHeader, xmlHeaderLen ) ) {
         returnNode = new (_commentPool.Alloc()) XMLDeclaration( this );
         returnNode->_memPool = &_commentPool;
@@ -623,7 +623,7 @@ void XMLNode::Unlink( XMLNode* child )
     if ( child->_next ) {
         child->_next->_prev = child->_prev;
     }
-    child->_parent = 0;
+	child->_parent = 0;
 }
 
 
@@ -823,7 +823,7 @@ char* XMLNode::ParseDeep( char* p, StrPair* parentEnd )
         // We read the end tag. Return it to the parent.
         if ( ele && ele->ClosingType() == XMLElement::CLOSING ) {
             if ( parentEnd ) {
-                *parentEnd = static_cast<XMLElement*>(node)->_value;
+                *parentEnd = ele->_value;
             }
 			node->_memPool->SetTracked();	// created and then immediately deleted.
             DeleteNode( node );
@@ -833,19 +833,21 @@ char* XMLNode::ParseDeep( char* p, StrPair* parentEnd )
         // Handle an end tag returned to this level.
         // And handle a bunch of annoying errors.
         if ( ele ) {
+            bool mismatch = false;
             if ( endTag.Empty() && ele->ClosingType() == XMLElement::OPEN ) {
-                _document->SetError( XML_ERROR_MISMATCHED_ELEMENT, node->Value(), 0 );
-                p = 0;
+                mismatch = true;
             }
             else if ( !endTag.Empty() && ele->ClosingType() != XMLElement::OPEN ) {
-                _document->SetError( XML_ERROR_MISMATCHED_ELEMENT, node->Value(), 0 );
-                p = 0;
+                mismatch = true;
             }
             else if ( !endTag.Empty() ) {
                 if ( !XMLUtil::StringEqual( endTag.GetStr(), node->Value() )) {
-                    _document->SetError( XML_ERROR_MISMATCHED_ELEMENT, node->Value(), 0 );
-                    p = 0;
+                    mismatch = true;
                 }
+            }
+            if ( mismatch ) {
+                _document->SetError( XML_ERROR_MISMATCHED_ELEMENT, node->Value(), 0 );
+                p = 0;
             }
         }
         if ( p == 0 ) {
@@ -911,7 +913,8 @@ XMLNode* XMLText::ShallowClone( XMLDocument* doc ) const
 
 bool XMLText::ShallowEqual( const XMLNode* compare ) const
 {
-    return ( compare->ToText() && XMLUtil::StringEqual( compare->ToText()->Value(), Value() ));
+    const XMLText* text = compare->ToText();
+    return ( text && XMLUtil::StringEqual( text->Value(), Value() ) );
 }
 
 
@@ -1715,7 +1718,7 @@ XMLError XMLDocument::LoadFile( const char* filename )
 {
     Clear();
     FILE* fp = callfopen( filename, "rb" );
-    if ( !fp) {
+    if ( !fp ) {
         SetError( XML_ERROR_FILE_NOT_FOUND, filename, 0 );
         return _errorID;
     }
@@ -1774,7 +1777,7 @@ XMLError XMLDocument::LoadFile( FILE* fp )
 XMLError XMLDocument::SaveFile( const char* filename, bool compact )
 {
     FILE* fp = callfopen( filename, "w" );
-    if ( !fp) {
+    if ( !fp ) {
         SetError( XML_ERROR_FILE_COULD_NOT_BE_OPENED, filename, 0 );
         return _errorID;
     }
@@ -1925,7 +1928,7 @@ void XMLPrinter::Print( const char* format, ... )
 		vsnprintf_s( p, len+1, _TRUNCATE, format, va );
 		#endif
 #else
-        vsnprintf( p, len+1, format, va );
+		vsnprintf( p, len+1, format, va );
 #endif
     }
     va_end( va );

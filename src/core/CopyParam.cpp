@@ -378,10 +378,10 @@ UnicodeString TCopyParamType::RestoreChars(const UnicodeString & AFileName) cons
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TCopyParamType::ValidLocalPath(const UnicodeString & Path) const
+UnicodeString TCopyParamType::ValidLocalPath(const UnicodeString & APath) const
 {
   UnicodeString Result;
-  UnicodeString Path2 = Path;
+  UnicodeString Path2 = APath;
   while (!Path2.IsEmpty())
   {
     if (!Result.IsEmpty())

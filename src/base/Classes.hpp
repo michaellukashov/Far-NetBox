@@ -425,9 +425,9 @@ private:
 extern TDateTime MinDateTime;
 
 TDateTime Now();
-TDateTime SpanOfNowAndThen(const TDateTime  ANow, const TDateTime AThen);
-double MilliSecondSpan(const TDateTime  ANow, const TDateTime AThen);
-int64_t MilliSecondsBetween(const TDateTime ANow, const TDateTime AThen);
+TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen);
+double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen);
+int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
 
 //---------------------------------------------------------------------------
 
@@ -614,7 +614,7 @@ public:
     void * Buffer, size_t Size) const;
 
   void WriteBool(const UnicodeString & Name, bool Value);
-  void WriteDateTime(const UnicodeString & Name, const Classes::TDateTime& Value);
+  void WriteDateTime(const UnicodeString & Name, const TDateTime & Value);
   void WriteFloat(const UnicodeString & Name, double Value);
   void WriteString(const UnicodeString & Name, const UnicodeString & Value);
   void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
@@ -623,7 +623,7 @@ public:
   void WriteBinaryData(const UnicodeString & Name,
     const void * Buffer, size_t Size);
 private:
-  void ChangeKey(HKEY Value, const UnicodeString & Path);
+  void ChangeKey(HKEY Value, const UnicodeString & APath);
   HKEY GetBaseKey(bool Relative);
   HKEY GetKey(const UnicodeString & Key);
   void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }

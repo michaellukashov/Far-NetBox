@@ -579,16 +579,16 @@ void TFTPFileSystem::Discard()
   FActive = false;
 }
 //---------------------------------------------------------------------------
-UnicodeString TFTPFileSystem::AbsolutePath(const UnicodeString & Path, bool /*Local*/)
+UnicodeString TFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/)
 {
   // TODO: improve (handle .. etc.)
-  if (core::UnixIsAbsolutePath(Path))
+  if (core::UnixIsAbsolutePath(APath))
   {
-    return Path;
+    return APath;
   }
   else
   {
-    return core::AbsolutePath(FCurrentDirectory, Path);
+    return core::AbsolutePath(FCurrentDirectory, APath);
   }
 }
 //---------------------------------------------------------------------------

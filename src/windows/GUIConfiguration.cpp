@@ -667,9 +667,9 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #endif
   #undef KEYEX
-  #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR())
+  #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(MB_TEXT(#NAME))), Get ## VAR())
   #undef KEY
-  #define KEY(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(TEXT(#NAME)), Get ## NAME())
+  #define KEY(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(MB_TEXT(#NAME)), Get ## NAME())
   REGCONFIG(true);
   #undef KEY
   #undef KEYEX
@@ -710,9 +710,9 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
 
   // duplicated from core\configuration.cpp
   #undef KEYEX
-  #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR()))
+  #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(MB_TEXT(#NAME))), Get ## VAR()))
   #undef KEY
-  #define KEY(TYPE, NAME) Set ## NAME(Storage->Read ## TYPE(PropertyToKey(TEXT(#NAME)), Get ## NAME()))
+  #define KEY(TYPE, NAME) Set ## NAME(Storage->Read ## TYPE(PropertyToKey(MB_TEXT(#NAME)), Get ## NAME()))
   REGCONFIG(false);
   #undef KEY
   #undef KEYEX

@@ -484,25 +484,25 @@ public:
 //---------------------------------------------------------------------------
 namespace core {
 
-bool IsUnixStyleWindowsPath(const UnicodeString & Path);
-bool UnixIsAbsolutePath(const UnicodeString & Path);
-UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & Path);
-UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & Path, bool Simple = false);
-UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & Path);
-UnicodeString UnixExtractFileDir(const UnicodeString & Path);
-UnicodeString UnixExtractFilePath(const UnicodeString & Path);
-UnicodeString UnixExtractFileName(const UnicodeString & Path);
-UnicodeString UnixExtractFileExt(const UnicodeString & Path);
-Boolean UnixSamePath(const UnicodeString & Path1, const UnicodeString & Path2);
+bool IsUnixStyleWindowsPath(const UnicodeString & APath);
+bool UnixIsAbsolutePath(const UnicodeString & APath);
+UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & APath);
+UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & APath, bool Simple = false);
+UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & APath);
+UnicodeString UnixExtractFileDir(const UnicodeString & APath);
+UnicodeString UnixExtractFilePath(const UnicodeString & APath);
+UnicodeString UnixExtractFileName(const UnicodeString & APath);
+UnicodeString UnixExtractFileExt(const UnicodeString & APath);
+Boolean UnixSamePath(const UnicodeString & APath1, const UnicodeString & APath2);
 bool UnixIsChildPath(const UnicodeString & Parent, const UnicodeString & Child);
-bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & Path);
-bool UnixExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & Path);
-UnicodeString ExtractFileName(const UnicodeString & Path, bool Unix);
-bool IsUnixRootPath(const UnicodeString & Path);
-bool IsUnixHiddenFile(const UnicodeString & Path);
-UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Path);
-UnicodeString FromUnixPath(const UnicodeString & Path);
-UnicodeString ToUnixPath(const UnicodeString & Path);
+bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
+bool UnixExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
+UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix);
+bool IsUnixRootPath(const UnicodeString & APath);
+bool IsUnixHiddenFile(const UnicodeString & APath);
+UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & APath);
+UnicodeString FromUnixPath(const UnicodeString & APath);
+UnicodeString ToUnixPath(const UnicodeString & APath);
 UnicodeString MinimizeName(const UnicodeString & AFileName, intptr_t MaxLen, bool Unix);
 UnicodeString MakeFileList(const TStrings * AFileList);
 TDateTime ReduceDateTimePrecision(const TDateTime & DateTime,

@@ -181,10 +181,10 @@ public:
   void SetProtocolStr(const UnicodeString & Value);
   UnicodeString GetProtocolStr() const;
   bool GetCanLogin() const;
-  void SetPingIntervalDT(TDateTime Value);
+  void SetPingIntervalDT(const TDateTime & Value);
   TDateTime GetPingIntervalDT() const;
   TDateTime GetFtpPingIntervalDT() const;
-  void SetTimeDifference(TDateTime Value);
+  void SetTimeDifference(const TDateTime & Value);
   void SetPingType(TPingType Value);
   UnicodeString GetSessionName() const;
   bool HasSessionName() const;
@@ -321,7 +321,7 @@ public:
   void Default();
   void NonPersistant();
   void Load(THierarchicalStorage * Storage);
-  // void ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path);
+  // void ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & APath);
   void Save(THierarchicalStorage * Storage, bool PuttyExport,
     const TSessionData * Default = nullptr);
   void SaveRecryptedPasswords(THierarchicalStorage * Storage);
@@ -343,12 +343,12 @@ public:
   bool IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties) const;
   bool IsSame(const TSessionData * Default, bool AdvancedOnly) const;
   bool IsInFolderOrWorkspace(const UnicodeString & Name) const;
-  static void ValidatePath(const UnicodeString & Path);
+  static void ValidatePath(const UnicodeString & APath);
   static void ValidateName(const UnicodeString & Name);
   static UnicodeString MakeValidName(const UnicodeString & Name);
   static UnicodeString ExtractLocalName(const UnicodeString & Name);
   static UnicodeString ExtractFolderName(const UnicodeString & Name);
-  static UnicodeString ComposePath(const UnicodeString & Path, const UnicodeString & Name);
+  static UnicodeString ComposePath(const UnicodeString & APath, const UnicodeString & Name);
 
   UnicodeString GetHostName() const { return FHostName; }
   intptr_t GetPortNumber() const { return FPortNumber; }
@@ -678,7 +678,7 @@ private:
   bool IsFolderOrWorkspace(const UnicodeString & Name, bool Workspace);
   TSessionData * CheckIsInFolderOrWorkspaceAndResolve(
     TSessionData * Data, const UnicodeString & Name);
-  // void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path);
+  // void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & APath);
 };
 //---------------------------------------------------------------------------
 bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);

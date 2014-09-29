@@ -20,56 +20,56 @@ using namespace Sysutils;
 
 namespace core {
 
-bool IsUnixStyleWindowsPath(const UnicodeString & Path)
+bool IsUnixStyleWindowsPath(const UnicodeString & APath)
 {
-  return (Path.Length() >= 3) && IsLetter(Path[1]) && (Path[2] == L':') && (Path[3] == L'/');
+  return (APath.Length() >= 3) && IsLetter(APath[1]) && (APath[2] == L':') && (APath[3] == L'/');
 }
 //---------------------------------------------------------------------------
-bool UnixIsAbsolutePath(const UnicodeString & Path)
+bool UnixIsAbsolutePath(const UnicodeString & APath)
 {
   return
-    ((Path.Length() >= 1) && (Path[1] == L'/')) ||
+    ((APath.Length() >= 1) && (APath[1] == L'/')) ||
     // we need this for FTP only, but this is unfortunately used in a static context
-    core::IsUnixStyleWindowsPath(Path);
+    core::IsUnixStyleWindowsPath(APath);
 }
 //---------------------------------------------------------------------------
-UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & Path)
+UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & APath)
 {
   // it used to return "/" when input path was empty
-  if (!Path.IsEmpty() && !Path.IsDelimiter(L"/", Path.Length()))
+  if (!APath.IsEmpty() && !APath.IsDelimiter(L"/", APath.Length()))
   {
-    return Path + L"/";
+    return APath + L"/";
   }
   else
   {
-    return Path;
+    return APath;
   }
 }
 //---------------------------------------------------------------------------
 // Keeps "/" for root path
-UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & Path, bool Simple)
+UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & APath, bool Simple)
 {
-  if (Path.IsEmpty() ||
-      (Path == L"/") ||
-      !Path.IsDelimiter(L"/", Path.Length()) ||
-      (!Simple && ((Path.Length() == 3) && core::IsUnixStyleWindowsPath(Path))))
+  if (APath.IsEmpty() ||
+      (APath == L"/") ||
+      !APath.IsDelimiter(L"/", APath.Length()) ||
+      (!Simple && ((APath.Length() == 3) && core::IsUnixStyleWindowsPath(APath))))
   {
-    return Path;
+    return APath;
   }
   else
   {
-    return Path.SubString(1, Path.Length() - 1);
+    return APath.SubString(1, APath.Length() - 1);
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & Path)
+UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & APath)
 {
-  return core::UnixExcludeTrailingBackslash(Path, true);
+  return core::UnixExcludeTrailingBackslash(APath, true);
 }
 //---------------------------------------------------------------------------
-Boolean UnixSamePath(const UnicodeString & Path1, const UnicodeString & Path2)
+Boolean UnixSamePath(const UnicodeString & APath1, const UnicodeString & APath2)
 {
-  return (core::UnixIncludeTrailingBackslash(Path1) == core::UnixIncludeTrailingBackslash(Path2));
+  return (core::UnixIncludeTrailingBackslash(APath1) == core::UnixIncludeTrailingBackslash(APath2));
 }
 //---------------------------------------------------------------------------
 bool UnixIsChildPath(const UnicodeString & Parent, const UnicodeString & Child)
@@ -79,13 +79,13 @@ bool UnixIsChildPath(const UnicodeString & Parent, const UnicodeString & Child)
   return (Child2.SubString(1, Parent2.Length()) == Parent2);
 }
 //---------------------------------------------------------------------------
-UnicodeString UnixExtractFileDir(const UnicodeString & Path)
+UnicodeString UnixExtractFileDir(const UnicodeString & APath)
 {
-  intptr_t Pos = Path.LastDelimiter(L'/');
+  intptr_t Pos = APath.LastDelimiter(L'/');
   // it used to return Path when no slash was found
   if (Pos > 1)
   {
-    return Path.SubString(1, Pos - 1);
+    return APath.SubString(1, Pos - 1);
   }
   else
   {
@@ -94,65 +94,65 @@ UnicodeString UnixExtractFileDir(const UnicodeString & Path)
 }
 //---------------------------------------------------------------------------
 // must return trailing backslash
-UnicodeString UnixExtractFilePath(const UnicodeString & Path)
+UnicodeString UnixExtractFilePath(const UnicodeString & APath)
 {
-  intptr_t Pos = Path.LastDelimiter(L'/');
+  intptr_t Pos = APath.LastDelimiter(L'/');
   // it used to return Path when no slash was found
-  return (Pos > 0) ? Path.SubString(1, Pos) : UnicodeString();
+  return (Pos > 0) ? APath.SubString(1, Pos) : UnicodeString();
 }
 //---------------------------------------------------------------------------
-UnicodeString UnixExtractFileName(const UnicodeString & Path)
+UnicodeString UnixExtractFileName(const UnicodeString & APath)
 {
-  intptr_t Pos = Path.LastDelimiter(L'/');
+  intptr_t Pos = APath.LastDelimiter(L'/');
   UnicodeString Result;
   if (Pos > 0)
   {
-    Result = Path.SubString(Pos + 1, Path.Length() - Pos);
+    Result = APath.SubString(Pos + 1, APath.Length() - Pos);
   }
   else
   {
-    Result = Path;
+    Result = APath;
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString UnixExtractFileExt(const UnicodeString & Path)
+UnicodeString UnixExtractFileExt(const UnicodeString & APath)
 {
-  UnicodeString FileName = core::UnixExtractFileName(Path);
+  UnicodeString FileName = core::UnixExtractFileName(APath);
   intptr_t Pos = FileName.LastDelimiter(L".");
-  return (Pos > 0) ? Path.SubString(Pos, Path.Length() - Pos + 1) : UnicodeString();
+  return (Pos > 0) ? APath.SubString(Pos, APath.Length() - Pos + 1) : UnicodeString();
 }
 //---------------------------------------------------------------------------
-UnicodeString ExtractFileName(const UnicodeString & Path, bool Unix)
+UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
 {
   if (Unix)
   {
-    return core::UnixExtractFileName(Path);
+    return core::UnixExtractFileName(APath);
   }
   else
   {
-    return Sysutils::ExtractFilename(Path, L'\\');
+    return Sysutils::ExtractFilename(APath, L'\\');
   }
 }
 //---------------------------------------------------------------------------
-bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & Path)
+bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath)
 {
   assert(AFiles->GetCount() > 0);
 
-  Path = Sysutils::ExtractFilePath(AFiles->GetString(0));
-  bool Result = !Path.IsEmpty();
+  APath = Sysutils::ExtractFilePath(AFiles->GetString(0));
+  bool Result = !APath.IsEmpty();
   if (Result)
   {
     for (intptr_t Index = 1; Index < AFiles->GetCount(); ++Index)
     {
-      while (!Path.IsEmpty() &&
-        (AFiles->GetString(Index).SubString(1, Path.Length()) != Path))
+      while (!APath.IsEmpty() &&
+        (AFiles->GetString(Index).SubString(1, APath.Length()) != APath))
       {
-        intptr_t PrevLen = Path.Length();
-        Path = Sysutils::ExtractFilePath(Sysutils::ExcludeTrailingBackslash(Path));
-        if (Path.Length() == PrevLen)
+        intptr_t PrevLen = APath.Length();
+        APath = Sysutils::ExtractFilePath(Sysutils::ExcludeTrailingBackslash(APath));
+        if (APath.Length() == PrevLen)
         {
-          Path = L"";
+          APath = L"";
           Result = false;
         }
       }
@@ -162,24 +162,24 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool UnixExtractCommonPath(const TStrings * const AFiles, OUT UnicodeString & Path)
+bool UnixExtractCommonPath(const TStrings * const AFiles, OUT UnicodeString & APath)
 {
   assert(AFiles->GetCount() > 0);
 
-  Path = core::UnixExtractFilePath(AFiles->GetString(0));
-  bool Result = !Path.IsEmpty();
+  APath = core::UnixExtractFilePath(AFiles->GetString(0));
+  bool Result = !APath.IsEmpty();
   if (Result)
   {
     for (intptr_t Index = 1; Index < AFiles->GetCount(); ++Index)
     {
-      while (!Path.IsEmpty() &&
-        (AFiles->GetString(Index).SubString(1, Path.Length()) != Path))
+      while (!APath.IsEmpty() &&
+        (AFiles->GetString(Index).SubString(1, APath.Length()) != APath))
       {
-        intptr_t PrevLen = Path.Length();
-        Path = core::UnixExtractFilePath(core::UnixExcludeTrailingBackslash(Path));
-        if (Path.Length() == PrevLen)
+        intptr_t PrevLen = APath.Length();
+        APath = core::UnixExtractFilePath(core::UnixExcludeTrailingBackslash(APath));
+        if (APath.Length() == PrevLen)
         {
-          Path = L"";
+          APath = L"";
           Result = false;
         }
       }
@@ -189,9 +189,9 @@ bool UnixExtractCommonPath(const TStrings * const AFiles, OUT UnicodeString & Pa
   return Result;
 }
 //---------------------------------------------------------------------------
-bool IsUnixRootPath(const UnicodeString & Path)
+bool IsUnixRootPath(const UnicodeString & APath)
 {
-  return Path.IsEmpty() || (Path == ROOTDIRECTORY);
+  return APath.IsEmpty() || (APath == ROOTDIRECTORY);
 }
 //---------------------------------------------------------------------------
 bool IsUnixHiddenFile(const UnicodeString & AFileName)
@@ -200,22 +200,22 @@ bool IsUnixHiddenFile(const UnicodeString & AFileName)
     !AFileName.IsEmpty() && (AFileName[1] == L'.');
 }
 //---------------------------------------------------------------------------
-UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Path)
+UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & APath)
 {
   // There's a duplicate implementation in TTerminal::ExpandFileName()
   UnicodeString Result;
-  if (Path.IsEmpty())
+  if (APath.IsEmpty())
   {
     Result = Base;
   }
-  else if (Path[1] == L'/')
+  else if (APath[1] == L'/')
   {
-    Result = core::UnixExcludeTrailingBackslash(Path);
+    Result = core::UnixExcludeTrailingBackslash(APath);
   }
   else
   {
     Result = core::UnixIncludeTrailingBackslash(
-      core::UnixIncludeTrailingBackslash(Base) + Path);
+      core::UnixIncludeTrailingBackslash(Base) + APath);
     intptr_t P;
     while ((P = Result.Pos(L"/../")) > 0)
     {
@@ -240,14 +240,14 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Pat
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString FromUnixPath(const UnicodeString & Path)
+UnicodeString FromUnixPath(const UnicodeString & APath)
 {
-  return ReplaceStr(Path, L"/", L"\\");
+  return ReplaceStr(APath, L"/", L"\\");
 }
 //---------------------------------------------------------------------------
-UnicodeString ToUnixPath(const UnicodeString & Path)
+UnicodeString ToUnixPath(const UnicodeString & APath)
 {
-  return ReplaceStr(Path, L"\\", L"/");
+  return ReplaceStr(APath, L"\\", L"/");
 }
 //---------------------------------------------------------------------------
 static void CutFirstDirectory(UnicodeString & S, bool Unix)
@@ -1828,7 +1828,7 @@ bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory)
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
-  const TDateTime& Timestamp)
+  const TDateTime & Timestamp)
 {
   TGuard Guard(FSection);
 

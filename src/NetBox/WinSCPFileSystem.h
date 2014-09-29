@@ -295,7 +295,7 @@ private:
   void QueueListUpdate(TTerminalQueue * Queue);
   void QueueItemUpdate(TTerminalQueue * Queue, TQueueItem * Item);
   void QueueEvent(TTerminalQueue * Queue, TQueueEvent Event);
-  void GetSpaceAvailable(const UnicodeString & Path,
+  void GetSpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable, bool & Close);
   void QueueAddItem(TQueueItem * Item);
   UnicodeString GetFileNameHash(const UnicodeString & AFileName);
@@ -360,7 +360,7 @@ class TSessionPanelItem : public TCustomFarPanelItem
 {
 NB_DISABLE_COPY(TSessionPanelItem)
 public:
-  explicit TSessionPanelItem(const UnicodeString & Path);
+  explicit TSessionPanelItem(const UnicodeString & APath);
   explicit TSessionPanelItem(const TSessionData * ASessionData);
   static void SetPanelModes(TFarPanelModes * PanelModes);
   static void SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles);

@@ -48,9 +48,9 @@ public:
   void SetMask(const UnicodeString & Mask);
 
   bool Matches(const UnicodeString & AFileName, bool Directory = false,
-    const UnicodeString & Path = L"", const TParams * Params = nullptr) const;
+    const UnicodeString & APath = L"", const TParams * Params = nullptr) const;
   bool Matches(const UnicodeString & AFileName, bool Directory,
-    const UnicodeString & Path, const TParams * Params,
+    const UnicodeString & APath, const TParams * Params,
     bool & ImplicitMatch) const;
   bool Matches(const UnicodeString & AFileName, bool Local, bool Directory,
     const TParams * Params = nullptr) const;
@@ -139,7 +139,7 @@ private:
   static void Clear(TMasks & Masks);
   static void TrimEx(UnicodeString & Str, intptr_t & Start, intptr_t & End);
   static bool MatchesMasks(const UnicodeString & AFileName, bool Directory,
-    const UnicodeString & Path, const TParams * Params, const TMasks & Masks, bool Recurse);
+    const UnicodeString & APath, const TParams * Params, const TMasks & Masks, bool Recurse);
   static inline bool MatchesMaskMask(const TMaskMask & MaskMask, const UnicodeString & Str);
   static inline bool IsAnyMask(const UnicodeString & Mask);
   void ThrowError(intptr_t Start, intptr_t End) const;
@@ -224,8 +224,8 @@ class TFileCustomCommand : public TCustomCommand
 {
 public:
   TFileCustomCommand();
-  explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path);
-  explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path,
+  explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & APath);
+  explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & APath,
     const UnicodeString & AFileName, const UnicodeString & FileList);
   virtual ~TFileCustomCommand() {}
 

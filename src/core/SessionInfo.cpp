@@ -574,7 +574,7 @@ FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * SessionData, b
   FILE * Result;
   UnicodeString ANewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, SessionData));
   // Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
-  Result = _fsopen(W2MB(ApiPath(ANewFileName).c_str()).c_str(),
+  Result = _fsopen(Sysutils::W2MB(ApiPath(ANewFileName).c_str()).c_str(),
     Append ? "a" : "w", SH_DENYWR); // _SH_DENYNO); //
   if (Result != nullptr)
   {

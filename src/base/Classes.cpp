@@ -1132,7 +1132,7 @@ TDateTime::TDateTime(uint16_t Hour,
 }
 
 //---------------------------------------------------------------------------
-bool TDateTime::operator ==(const TDateTime& rhs)
+bool TDateTime::operator ==(const TDateTime & rhs)
 {
   return Sysutils::IsZero(FValue - rhs.FValue);
 }
@@ -1192,7 +1192,7 @@ TDateTime Now()
   return Result;
 }
 
-TDateTime SpanOfNowAndThen(const TDateTime  ANow, const TDateTime AThen)
+TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen)
 {
   TDateTime Result;
   if (ANow < AThen)
@@ -1202,14 +1202,14 @@ TDateTime SpanOfNowAndThen(const TDateTime  ANow, const TDateTime AThen)
   return Result;
 }
 
-double MilliSecondSpan(const TDateTime  ANow, const TDateTime AThen)
+double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen)
 {
   TDateTime Result;
   Result = MSecsPerDay * SpanOfNowAndThen(ANow, AThen);
   return Result;
 }
 
-int64_t MilliSecondsBetween(const TDateTime ANow, const TDateTime AThen)
+int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen)
 {
   TDateTime Result;
   Result = floor(MilliSecondSpan(ANow, AThen));
@@ -1662,7 +1662,7 @@ void TRegistry::SetRootKey(HKEY ARootKey)
   {
     if (FCloseRootKey)
     {
-      RegCloseKey(GetRootKey());
+      ::RegCloseKey(GetRootKey());
       FCloseRootKey = false;
     }
     FRootKey = ARootKey;
@@ -1711,7 +1711,7 @@ void TRegistry::CloseKey()
 {
   if (GetCurrentKey() != 0)
   {
-    RegCloseKey(GetCurrentKey());
+    ::RegCloseKey(GetCurrentKey());
     FCurrentKey = 0;
     FCurrentPath = L"";
   }
@@ -1726,12 +1726,12 @@ bool TRegistry::OpenKey(const UnicodeString & Key, bool CanCreate)
   HKEY TempKey = 0;
   if (!CanCreate || S.IsEmpty())
   {
-    Result = RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0,
+    Result = ::RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0,
                           FAccess, &TempKey) == ERROR_SUCCESS;
   }
   else
   {
-    Result = RegCreateKeyEx(GetBaseKey(Relative), S.c_str(), 0, nullptr,
+    Result = ::RegCreateKeyEx(GetBaseKey(Relative), S.c_str(), 0, nullptr,
                             REG_OPTION_NON_VOLATILE, FAccess, nullptr, &TempKey, nullptr) == ERROR_SUCCESS;
   }
   if (Result)
@@ -1757,7 +1757,7 @@ bool TRegistry::DeleteKey(const UnicodeString & Key)
     SCOPE_EXIT
     {
       SetCurrentKey(OldKey);
-      RegCloseKey(DeleteKey);
+      ::RegCloseKey(DeleteKey);
     };
     SetCurrentKey(DeleteKey);
     TRegKeyInfo Info;
@@ -1798,7 +1798,7 @@ bool TRegistry::KeyExists(const UnicodeString & Key)
   HKEY TempKey = GetKey(Key);
   if (TempKey != 0)
   {
-    RegCloseKey(TempKey);
+    ::RegCloseKey(TempKey);
   }
   Result = TempKey != 0;
   return Result;
@@ -1815,7 +1815,7 @@ bool TRegistry::GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Valu
 {
   DWORD DataType;
   ClearStruct(Value);
-  bool Result = (RegQueryValueEx(GetCurrentKey(), ValueName.c_str(), nullptr, &DataType, nullptr,
+  bool Result = (::RegQueryValueEx(GetCurrentKey(), ValueName.c_str(), nullptr, &DataType, nullptr,
                                  &Value.DataSize) == ERROR_SUCCESS);
   Value.RegData = DataTypeToRegData(DataType);
   return Result;
@@ -1952,7 +1952,7 @@ int TRegistry::GetData(const UnicodeString & Name, void * Buffer,
 {
   DWORD DataType = REG_NONE;
   DWORD bufSize = static_cast<DWORD>(BufSize);
-  if (RegQueryValueEx(GetCurrentKey(), Name.c_str(), nullptr, &DataType,
+  if (::RegQueryValueEx(GetCurrentKey(), Name.c_str(), nullptr, &DataType,
     reinterpret_cast<BYTE *>(Buffer), &bufSize) != ERROR_SUCCESS)
   {
     throw Sysutils::Exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
@@ -1966,7 +1966,7 @@ void TRegistry::PutData(const UnicodeString & Name, const void * Buffer,
   intptr_t BufSize, TRegDataType RegData)
 {
   int DataType = Classes::RegDataToDataType(RegData);
-  if (RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType,
+  if (::RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType,
                     reinterpret_cast<const BYTE *>(Buffer), static_cast<DWORD>(BufSize)) != ERROR_SUCCESS)
   {
     throw Sysutils::Exception("RegSetValueEx failed");    // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
@@ -2016,11 +2016,11 @@ void TRegistry::WriteBinaryData(const UnicodeString & Name,
   PutData(Name, Buffer, BufSize, rdBinary);
 }
 
-void TRegistry::ChangeKey(HKEY Value, const UnicodeString & Path)
+void TRegistry::ChangeKey(HKEY Value, const UnicodeString & APath)
 {
   CloseKey();
   FCurrentKey = Value;
-  FCurrentPath = Path;
+  FCurrentPath = APath;
 }
 
 HKEY TRegistry::GetBaseKey(bool Relative)
@@ -2042,14 +2042,14 @@ HKEY TRegistry::GetKey(const UnicodeString & Key)
   UnicodeString S = Key;
   bool Relative = Classes::IsRelative(S);
   HKEY Result = 0;
-  RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0, FAccess, &Result);
+  ::RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0, FAccess, &Result);
   return Result;
 }
 
 bool TRegistry::GetKeyInfo(TRegKeyInfo & Value) const
 {
   ClearStruct(Value);
-  bool Result = RegQueryInfoKey(GetCurrentKey(), nullptr, nullptr, nullptr, &Value.NumSubKeys,
+  bool Result = ::RegQueryInfoKey(GetCurrentKey(), nullptr, nullptr, nullptr, &Value.NumSubKeys,
     &Value.MaxSubKeyLen, nullptr, &Value.NumValues, &Value.MaxValueLen,
     &Value.MaxDataLen, nullptr, &Value.FileTime) == ERROR_SUCCESS;
   return Result;

@@ -206,7 +206,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
 //---------------------------------------------------------------------------
 void TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
 {
-#define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR())
+#define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(MB_TEXT(#NAME))), Get ## VAR())
   REGCONFIG(true);
 #undef KEYEX
 
@@ -310,7 +310,7 @@ void TConfiguration::Import(const UnicodeString & /* AFileName */)
 //---------------------------------------------------------------------------
 void TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
-#define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR()))
+#define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(MB_TEXT(#NAME))), Get ## VAR()))
   REGCONFIG(false);
 #undef KEYEX
 
@@ -837,7 +837,7 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
     catch (const std::exception & e)
     {
       (void)e;
-      DEBUG_PRINTF(L"Error: %s", MB2W(e.what()).c_str());
+      DEBUG_PRINTF(L"Error: %s", Sysutils::MB2W(e.what()).c_str());
       Result = L"";
     }
   }

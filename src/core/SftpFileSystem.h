@@ -77,7 +77,7 @@ public:
   virtual void CopyFile(const UnicodeString & AFileName,
     const UnicodeString & ANewName);
   virtual TStrings * GetFixedPaths();
-  virtual void SpaceAvailable(const UnicodeString & Path,
+  virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo() const;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);

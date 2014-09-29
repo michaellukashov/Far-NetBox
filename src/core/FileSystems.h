@@ -150,7 +150,7 @@ public:
   virtual bool GetActive() const = 0;
   virtual void CollectUsage() = 0;
   virtual void Idle() = 0;
-  virtual UnicodeString AbsolutePath(const UnicodeString & Path, bool Local) = 0;
+  virtual UnicodeString AbsolutePath(const UnicodeString & APath, bool Local) = 0;
   virtual void AnyCommand(const UnicodeString & Command,
     TCaptureOutputEvent OutputEvent) = 0;
   virtual void ChangeDirectory(const UnicodeString & Directory) = 0;
@@ -193,7 +193,7 @@ public:
   virtual void CopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName) = 0;
   virtual TStrings * GetFixedPaths() = 0;
-  virtual void SpaceAvailable(const UnicodeString & Path,
+  virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable) = 0;
   virtual const TSessionInfo & GetSessionInfo() const = 0;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) = 0;

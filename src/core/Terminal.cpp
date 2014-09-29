@@ -795,11 +795,11 @@ void TTerminal::RecryptPasswords()
   FRememberedTunnelPassword = EncryptPassword(DecryptPassword(FRememberedTunnelPassword));
 }
 //------------------------------------------------------------------------------
-UnicodeString TTerminal::ExpandFileName(const UnicodeString & Path,
+UnicodeString TTerminal::ExpandFileName(const UnicodeString & APath,
   const UnicodeString & BasePath)
 {
   // replace this by AbsolutePath()
-  UnicodeString Result = core::UnixExcludeTrailingBackslash(Path);
+  UnicodeString Result = core::UnixExcludeTrailingBackslash(APath);
   if (!core::UnixIsAbsolutePath(Result) && !BasePath.IsEmpty())
   {
     // TODO: Handle more complicated cases like "../../xxx"
@@ -810,7 +810,7 @@ UnicodeString TTerminal::ExpandFileName(const UnicodeString & Path,
     }
     else
     {
-      Result = core::UnixIncludeTrailingBackslash(BasePath) + Path;
+      Result = core::UnixIncludeTrailingBackslash(BasePath) + APath;
     }
   }
   return Result;
@@ -1509,9 +1509,9 @@ bool TTerminal::GetIsCapable(TFSCapability Capability) const
   return FFileSystem->IsCapable(Capability);
 }
 //------------------------------------------------------------------------------
-UnicodeString TTerminal::AbsolutePath(const UnicodeString & Path, bool Local)
+UnicodeString TTerminal::AbsolutePath(const UnicodeString & APath, bool Local)
 {
-  return FFileSystem->AbsolutePath(Path, Local);
+  return FFileSystem->AbsolutePath(APath, Local);
 }
 //------------------------------------------------------------------------------
 void TTerminal::ReactOnCommand(intptr_t Cmd)
@@ -1764,9 +1764,9 @@ intptr_t TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
   return Result;
 }
 //------------------------------------------------------------------------------
-UnicodeString TTerminal::TranslateLockedPath(const UnicodeString & Path, bool Lock)
+UnicodeString TTerminal::TranslateLockedPath(const UnicodeString & APath, bool Lock)
 {
-  UnicodeString Result = Path;
+  UnicodeString Result = APath;
   if (GetSessionData()->GetLockInHome() && !Result.IsEmpty() && (Result[1] == L'/'))
   {
     if (Lock)
@@ -1801,10 +1801,10 @@ void TTerminal::ClearCaches()
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::ClearCachedFileList(const UnicodeString & Path,
+void TTerminal::ClearCachedFileList(const UnicodeString & APath,
   bool SubDirs)
 {
-  FDirectoryCache->ClearFileList(Path, SubDirs);
+  FDirectoryCache->ClearFileList(APath, SubDirs);
 }
 //------------------------------------------------------------------------------
 void TTerminal::AddCachedFileList(TRemoteFileList * FileList)
@@ -1812,11 +1812,11 @@ void TTerminal::AddCachedFileList(TRemoteFileList * FileList)
   FDirectoryCache->AddFileList(FileList);
 }
 //------------------------------------------------------------------------------
-bool TTerminal::DirectoryFileList(const UnicodeString & Path,
+bool TTerminal::DirectoryFileList(const UnicodeString & APath,
   TRemoteFileList *& FileList, bool CanLoad)
 {
   bool Result = false;
-  if (core::UnixSamePath(FFiles->GetDirectory(), Path))
+  if (core::UnixSamePath(FFiles->GetDirectory(), APath))
   {
     Result = (FileList == nullptr) || (FileList->GetTimestamp() < FFiles->GetTimestamp());
     if (Result)
@@ -1830,8 +1830,8 @@ bool TTerminal::DirectoryFileList(const UnicodeString & Path,
   }
   else
   {
-    if (((FileList == nullptr) && FDirectoryCache->HasFileList(Path)) ||
-        ((FileList != nullptr) && FDirectoryCache->HasNewerFileList(Path, FileList->GetTimestamp())))
+    if (((FileList == nullptr) && FDirectoryCache->HasFileList(APath)) ||
+        ((FileList != nullptr) && FDirectoryCache->HasNewerFileList(APath, FileList->GetTimestamp())))
     {
       bool Created = (FileList == nullptr);
       if (Created)
@@ -1839,7 +1839,7 @@ bool TTerminal::DirectoryFileList(const UnicodeString & Path,
         FileList = new TRemoteFileList();
       }
 
-      Result = FDirectoryCache->GetFileList(Path, FileList);
+      Result = FDirectoryCache->GetFileList(APath, FileList);
       if (!Result && Created)
       {
         SAFE_DESTROY(FileList);
@@ -1848,14 +1848,14 @@ bool TTerminal::DirectoryFileList(const UnicodeString & Path,
     // do not attempt to load file list if there is cached version,
     // only absence of cached version indicates that we consider
     // the directory content obsolete
-    else if (CanLoad && !FDirectoryCache->HasFileList(Path))
+    else if (CanLoad && !FDirectoryCache->HasFileList(APath))
     {
       bool Created = (FileList == nullptr);
       if (Created)
       {
         FileList = new TRemoteFileList();
       }
-      FileList->SetDirectory(Path);
+      FileList->SetDirectory(APath);
 
       try
       {
@@ -2466,15 +2466,15 @@ void TTerminal::FileModified(const TRemoteFile * AFile,
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::DirectoryModified(const UnicodeString & Path, bool SubDirs)
+void TTerminal::DirectoryModified(const UnicodeString & APath, bool SubDirs)
 {
-  if (Path.IsEmpty())
+  if (APath.IsEmpty())
   {
     ClearCachedFileList(GetCurrDirectory(), SubDirs);
   }
   else
   {
-    ClearCachedFileList(Path, SubDirs);
+    ClearCachedFileList(APath, SubDirs);
   }
 }
 //------------------------------------------------------------------------------
@@ -2800,15 +2800,15 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & Director
   return FileList;
 }
 //------------------------------------------------------------------------------
-TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & Path)
+TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & APath)
 {
-  TStatSessionAction Action(GetActionLog(), AbsolutePath(Path, true));
+  TStatSessionAction Action(GetActionLog(), AbsolutePath(APath, true));
   TRemoteFile * File = nullptr;
   try
   {
     // reset caches
     AnnounceFileListOperation();
-    ReadFile(Path, File);
+    ReadFile(APath, File);
     Action.File(File);
   }
   catch (Exception & E)
@@ -2816,7 +2816,7 @@ TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & Path)
     COMMAND_ERROR_ARI_ACTION
     (
       L"",
-      File = ReadFileListing(Path),
+      File = ReadFileListing(APath),
       Action
     );
   }
@@ -5308,18 +5308,18 @@ void TTerminal::FilesFind(const UnicodeString & Directory, const TFileMasks & Fi
   DoFilesFind(Directory, Params);
 }
 //------------------------------------------------------------------------------
-void TTerminal::SpaceAvailable(const UnicodeString & Path,
+void TTerminal::SpaceAvailable(const UnicodeString & APath,
   TSpaceAvailable & ASpaceAvailable)
 {
   assert(GetIsCapable(fcCheckingSpaceAvailable));
 
   try
   {
-    FFileSystem->SpaceAvailable(Path, ASpaceAvailable);
+    FFileSystem->SpaceAvailable(APath, ASpaceAvailable);
   }
   catch (Exception & E)
   {
-    CommandError(&E, FMTLOAD(SPACE_AVAILABLE_ERROR, Path.c_str()));
+    CommandError(&E, FMTLOAD(SPACE_AVAILABLE_ERROR, APath.c_str()));
   }
 }
 //------------------------------------------------------------------------------
@@ -5854,11 +5854,11 @@ void TSecondaryTerminal::DirectoryLoaded(TRemoteFileList * FileList)
   assert(FileList != nullptr);
 }
 //------------------------------------------------------------------------------
-void TSecondaryTerminal::DirectoryModified(const UnicodeString & Path,
+void TSecondaryTerminal::DirectoryModified(const UnicodeString & APath,
   bool SubDirs)
 {
   // clear cache of main terminal
-  FMainTerminal->DirectoryModified(Path, SubDirs);
+  FMainTerminal->DirectoryModified(APath, SubDirs);
 }
 //------------------------------------------------------------------------------
 TTerminalList::TTerminalList(TConfiguration * AConfiguration) :

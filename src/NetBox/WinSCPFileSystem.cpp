@@ -236,7 +236,7 @@ void TFarInteractiveCustomCommand::Prompt(const UnicodeString & Prompt, UnicodeS
 class TKeepaliveThread : public TSimpleThread
 {
 public:
-  explicit TKeepaliveThread(TWinSCPFileSystem * FileSystem, TDateTime Interval);
+  explicit TKeepaliveThread(TWinSCPFileSystem * FileSystem, const TDateTime & Interval);
   virtual ~TKeepaliveThread()
   {}
   virtual void Init();
@@ -250,7 +250,7 @@ private:
 };
 //------------------------------------------------------------------------------
 TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem * FileSystem,
-  TDateTime Interval) :
+  const TDateTime & Interval) :
   TSimpleThread(),
   FFileSystem(FileSystem),
   FInterval(Interval),
@@ -1961,7 +1961,7 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
   WinSCPPlugin()->FarCopyToClipboard(FileNames.get());
 }
 //------------------------------------------------------------------------------
-void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & Path,
+void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & APath,
   TSpaceAvailable & ASpaceAvailable, bool & Close)
 {
   // terminal can be already closed (e.g. dropped connection)
@@ -1969,7 +1969,7 @@ void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & Path,
   {
     try
     {
-      GetTerminal()->SpaceAvailable(Path, ASpaceAvailable);
+      GetTerminal()->SpaceAvailable(APath, ASpaceAvailable);
     }
     catch (Sysutils::Exception & E)
     {

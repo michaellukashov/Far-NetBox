@@ -49,9 +49,9 @@ void ValidateMaskEdit(TFarEdit * Edit)
 }
 
 //---------------------------------------------------------------------------
-bool FindFile(UnicodeString & Path)
+bool FindFile(UnicodeString & APath)
 {
-  bool Result = Sysutils::FileExists(Path);
+  bool Result = Sysutils::FileExists(APath);
   if (!Result)
   {
     intptr_t Len = GetEnvironmentVariable(L"PATH", nullptr, 0);
@@ -61,20 +61,20 @@ bool FindFile(UnicodeString & Path)
       Paths.SetLength(Len - 1);
       GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), static_cast<DWORD>(Len));
 
-      UnicodeString NewPath = Sysutils::FileSearch(core::ExtractFileName(Path, true), Paths);
+      UnicodeString NewPath = Sysutils::FileSearch(core::ExtractFileName(APath, true), Paths);
       Result = !NewPath.IsEmpty();
       if (Result)
       {
-        Path = NewPath;
+        APath = NewPath;
       }
     }
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-bool FileExistsEx(const UnicodeString & Path)
+bool FileExistsEx(const UnicodeString & APath)
 {
-  UnicodeString LocalPath = Path;
+  UnicodeString LocalPath = APath;
   return FindFile(LocalPath);
 }
 //---------------------------------------------------------------------------
@@ -164,18 +164,18 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
   }
 }
 //---------------------------------------------------------------------------
-bool FindTool(const UnicodeString & Name, UnicodeString & Path)
+bool FindTool(const UnicodeString & Name, UnicodeString & APath)
 {
   UnicodeString AppPath = Sysutils::IncludeTrailingBackslash(Sysutils::ExtractFilePath(GetConfiguration()->ModuleFileName()));
-  Path = AppPath + Name;
+  APath = AppPath + Name;
   bool Result = true;
-  if (!Sysutils::FileExists(Path))
+  if (!Sysutils::FileExists(APath))
   {
-    Path = AppPath + L"PuTTY\\" + Name;
-    if (!Sysutils::FileExists(Path))
+    APath = AppPath + L"PuTTY\\" + Name;
+    if (!Sysutils::FileExists(APath))
     {
-      Path = Name;
-      if (!FindFile(Path))
+      APath = Name;
+      if (!FindFile(APath))
       {
         Result = false;
       }
@@ -184,13 +184,13 @@ bool FindTool(const UnicodeString & Name, UnicodeString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params)
+bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params)
 {
-  return ((intptr_t)::ShellExecute(nullptr, L"open", const_cast<wchar_t *>(Path.data()),
+  return ((intptr_t)::ShellExecute(nullptr, L"open", const_cast<wchar_t *>(APath.data()),
     const_cast<wchar_t *>(Params.data()), nullptr, SW_SHOWNORMAL) > 32);
 }
 //---------------------------------------------------------------------------
-bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params,
+bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params,
   HANDLE & Handle)
 {
   TShellExecuteInfoW ExecuteInfo;
@@ -198,7 +198,7 @@ bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params,
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
   ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
-  ExecuteInfo.lpFile = const_cast<wchar_t *>(Path.data());
+  ExecuteInfo.lpFile = const_cast<wchar_t *>(APath.data());
   ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
   ExecuteInfo.nShow = SW_SHOW;
 
@@ -210,7 +210,7 @@ bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool ExecuteShellAndWait(HINSTANCE /* Handle */, const UnicodeString & Path,
+bool ExecuteShellAndWait(HINSTANCE /* Handle */, const UnicodeString & APath,
   const UnicodeString & Params, TProcessMessagesEvent ProcessMessages)
 {
   TShellExecuteInfoW ExecuteInfo;
@@ -218,7 +218,7 @@ bool ExecuteShellAndWait(HINSTANCE /* Handle */, const UnicodeString & Path,
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
   ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
-  ExecuteInfo.lpFile = const_cast<wchar_t *>(Path.data());
+  ExecuteInfo.lpFile = const_cast<wchar_t *>(APath.data());
   ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
   ExecuteInfo.nShow = SW_SHOW;
 
@@ -255,14 +255,14 @@ bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Command,
   return ExecuteShellAndWait(Handle, Program, Params, ProcessMessages);
 }
 //---------------------------------------------------------------------------
-bool SpecialFolderLocation(int PathID, UnicodeString & Path)
+bool SpecialFolderLocation(int PathID, UnicodeString & APath)
 {
   LPITEMIDLIST Pidl;
   wchar_t Buf[MAX_PATH];
   if (SHGetSpecialFolderLocation(nullptr, PathID, &Pidl) == NO_ERROR &&
       SHGetPathFromIDList(Pidl, Buf))
   {
-    Path = UnicodeString(Buf);
+    APath = UnicodeString(Buf);
     return true;
   }
   return false;
@@ -448,15 +448,15 @@ TLocalCustomCommand::TLocalCustomCommand()
 }
 //---------------------------------------------------------------------------
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
-    const UnicodeString & Path) :
-  TFileCustomCommand(Data, Path)
+    const UnicodeString & APath) :
+  TFileCustomCommand(Data, APath)
 {
 }
 //---------------------------------------------------------------------------
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
-  const UnicodeString & Path, const UnicodeString & AFileName,
+  const UnicodeString & APath, const UnicodeString & AFileName,
   const UnicodeString & LocalFileName, const UnicodeString & FileList) :
-  TFileCustomCommand(Data, Path, AFileName, FileList)
+  TFileCustomCommand(Data, APath, AFileName, FileList)
 {
   FLocalFileName = LocalFileName;
 }

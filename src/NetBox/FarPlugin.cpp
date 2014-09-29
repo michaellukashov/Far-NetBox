@@ -1408,7 +1408,7 @@ void TCustomFarPlugin::ShowTerminalScreen()
   TPoint Size, Cursor;
   TerminalInfo(&Size, &Cursor);
 
-  if (Size.y >= 2) 
+  if (Size.y >= 2)
   {
     // clean menu keybar area before command output
     UnicodeString Blank = Sysutils::StringOfChar(L' ', static_cast<intptr_t>(Size.x));
