@@ -12736,7 +12736,7 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
-          if (::DirectoryExists(ApiPath(::ExtractFilePath(FileName))))
+          if (Sysutils::DirectoryExists(ApiPath(::ExtractFilePath(FileName))))
           {
             FTerminal->DirectoryModified(FullTargetDir + FileNameOnly, true);
           }
@@ -13245,7 +13245,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
   if (AFile->GetIsDirectory())
   {
     bool CanProceed = true;
-    if (::DirectoryExists(DestFullName))
+    if (Sysutils::DirectoryExists(DestFullName))
     {
       uintptr_t Answer = 0;
       UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly.c_str());
