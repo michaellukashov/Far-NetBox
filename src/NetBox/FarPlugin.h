@@ -99,22 +99,22 @@ public:
   virtual struct PluginStartupInfo * GetStartupInfo() { return &FStartupInfo; }
   virtual void ExitFAR();
   virtual void GetPluginInfo(struct PluginInfo * Info);
-  virtual intptr_t Configure(const struct ConfigureInfo *Info);
-  virtual void * OpenPlugin(const struct OpenInfo *Info);
+  virtual intptr_t Configure(const struct ConfigureInfo * Info);
+  virtual void * OpenPlugin(const struct OpenInfo * Info);
   virtual void ClosePanel(void *Plugin);
-  virtual void GetOpenPanelInfo(struct OpenPanelInfo *Info);
-  virtual intptr_t GetFindData(struct GetFindDataInfo *Info);
-  virtual void FreeFindData(const struct FreeFindDataInfo *Info);
-  virtual intptr_t ProcessHostFile(const struct ProcessHostFileInfo *Info);
-  virtual intptr_t ProcessPanelInput(const struct ProcessPanelInputInfo *Info);
-  virtual intptr_t ProcessPanelEvent(const struct ProcessPanelEventInfo *Info);
-  virtual intptr_t SetDirectory(const struct SetDirectoryInfo *Info);
-  virtual intptr_t MakeDirectory(struct MakeDirectoryInfo *Info);
-  virtual intptr_t DeleteFiles(const struct DeleteFilesInfo *Info);
-  virtual intptr_t GetFiles(struct GetFilesInfo *Info);
-  virtual intptr_t PutFiles(const struct PutFilesInfo *Info);
-  virtual intptr_t ProcessEditorEvent(const struct ProcessEditorEventInfo *Info);
-  virtual intptr_t ProcessEditorInput(const struct ProcessEditorInputInfo *Info);
+  virtual void GetOpenPanelInfo(struct OpenPanelInfo * Info);
+  virtual intptr_t GetFindData(struct GetFindDataInfo * Info);
+  virtual void FreeFindData(const struct FreeFindDataInfo * Info);
+  virtual intptr_t ProcessHostFile(const struct ProcessHostFileInfo * Info);
+  virtual intptr_t ProcessPanelInput(const struct ProcessPanelInputInfo * Info);
+  virtual intptr_t ProcessPanelEvent(const struct ProcessPanelEventInfo * Info);
+  virtual intptr_t SetDirectory(const struct SetDirectoryInfo * Info);
+  virtual intptr_t MakeDirectory(struct MakeDirectoryInfo * Info);
+  virtual intptr_t DeleteFiles(const struct DeleteFilesInfo * Info);
+  virtual intptr_t GetFiles(struct GetFilesInfo * Info);
+  virtual intptr_t PutFiles(const struct PutFilesInfo * Info);
+  virtual intptr_t ProcessEditorEvent(const struct ProcessEditorEventInfo * Info);
+  virtual intptr_t ProcessEditorInput(const struct ProcessEditorInputInfo * Info);
   virtual void HandleException(Sysutils::Exception * E, OPERATION_MODES OpMode = 0);
 
   static wchar_t * DuplicateStr(const UnicodeString & Str, bool AllowEmpty = false);
@@ -199,7 +199,7 @@ protected:
     TStrings * PluginConfigStrings, TStrings * CommandPrefixes) = 0;
   virtual TCustomFarFileSystem * OpenPluginEx(OPENFROM OpenFrom, intptr_t Item) = 0;
   virtual bool ConfigureEx(const GUID * Guid) = 0;
-  virtual intptr_t ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info) = 0;
+  virtual intptr_t ProcessEditorEventEx(const struct ProcessEditorEventInfo * Info) = 0;
   virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD * Rec) = 0;
   virtual void HandleFileSystemException(TCustomFarFileSystem * FarFileSystem,
     Sysutils::Exception * E, OPERATION_MODES OpMode = 0);
@@ -255,17 +255,17 @@ public:
   void Init();
   virtual ~TCustomFarFileSystem();
 
-  void GetOpenPanelInfo(struct OpenPanelInfo *Info);
-  intptr_t GetFindData(struct GetFindDataInfo *Info);
-  void FreeFindData(const struct FreeFindDataInfo *Info);
-  intptr_t ProcessHostFile(const struct ProcessHostFileInfo *Info);
-  intptr_t ProcessPanelInput(const struct ProcessPanelInputInfo *Info);
+  void GetOpenPanelInfo(struct OpenPanelInfo * Info);
+  intptr_t GetFindData(struct GetFindDataInfo * Info);
+  void FreeFindData(const struct FreeFindDataInfo * Info);
+  intptr_t ProcessHostFile(const struct ProcessHostFileInfo * Info);
+  intptr_t ProcessPanelInput(const struct ProcessPanelInputInfo * Info);
   intptr_t ProcessPanelEvent(intptr_t Event, void *Param);
-  intptr_t SetDirectory(const struct SetDirectoryInfo *Info);
-  intptr_t MakeDirectory(struct MakeDirectoryInfo *Info);
-  intptr_t DeleteFiles(const struct DeleteFilesInfo *Info);
-  intptr_t GetFiles(struct GetFilesInfo *Info);
-  intptr_t PutFiles(const struct PutFilesInfo *Info);
+  intptr_t SetDirectory(const struct SetDirectoryInfo * Info);
+  intptr_t MakeDirectory(struct MakeDirectoryInfo * Info);
+  intptr_t DeleteFiles(const struct DeleteFilesInfo * Info);
+  intptr_t GetFiles(struct GetFilesInfo * Info);
+  intptr_t PutFiles(const struct PutFilesInfo * Info);
   virtual void Close();
 
 protected:
@@ -350,7 +350,7 @@ private:
   PanelMode FPanelModes[PANEL_MODES_COUNT];
   bool FReferenced;
 
-  void FillOpenPanelInfo(struct OpenPanelInfo *Info);
+  void FillOpenPanelInfo(struct OpenPanelInfo * Info);
   void SetFlag(PANELMODE_FLAGS & Flags, bool Value, PANELMODE_FLAGS Flag);
   static void ClearPanelMode(PanelMode & Mode);
   static intptr_t CommaCount(const UnicodeString & ColumnTypes);
@@ -373,7 +373,7 @@ private:
   KeyBarTitles FKeyBarTitles;
   bool FReferenced;
 
-  void FillOpenPanelInfo(struct OpenPanelInfo *Info);
+  void FillOpenPanelInfo(struct OpenPanelInfo * Info);
   static void ClearKeyBarTitles(KeyBarTitles & Titles);
 };
 //---------------------------------------------------------------------------

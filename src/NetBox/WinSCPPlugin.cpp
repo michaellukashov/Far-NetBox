@@ -204,7 +204,7 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
   return Change;
 }
 //---------------------------------------------------------------------------
-intptr_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info)
+intptr_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo * Info)
 {
   // for performance reasons, do not pass the event to file systems on redraw
   if ((Info->Event != EE_REDRAW) || GetFarConfiguration()->GetEditorUploadOnSave() ||

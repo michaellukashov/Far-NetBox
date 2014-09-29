@@ -63,7 +63,7 @@ protected:
     TStrings * CommandPrefixes);
   virtual TCustomFarFileSystem * OpenPluginEx(OPENFROM OpenFrom, intptr_t Item);
   virtual bool ConfigureEx(const GUID * Guid);
-  virtual intptr_t ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info);
+  virtual intptr_t ProcessEditorEventEx(const struct ProcessEditorEventInfo * Info);
   virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD * Rec);
   bool CopyParamDialog(const UnicodeString & Caption, TCopyParamType & CopyParam,
     intptr_t CopyParamAttrs);

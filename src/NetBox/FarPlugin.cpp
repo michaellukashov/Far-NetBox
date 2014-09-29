@@ -287,7 +287,7 @@ void TCustomFarPlugin::InvalidateOpenPanelInfo()
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::Configure(const struct ConfigureInfo *Info)
+intptr_t TCustomFarPlugin::Configure(const struct ConfigureInfo * Info)
 {
   try
   {
@@ -305,7 +305,7 @@ intptr_t TCustomFarPlugin::Configure(const struct ConfigureInfo *Info)
   }
 }
 //---------------------------------------------------------------------------
-void * TCustomFarPlugin::OpenPlugin(const struct OpenInfo *Info)
+void * TCustomFarPlugin::OpenPlugin(const struct OpenInfo * Info)
 {
 #ifdef USE_DLMALLOC
   // dlmallopt(M_GRANULARITY, 128 * 1024);
@@ -391,7 +391,7 @@ void TCustomFarPlugin::HandleFileSystemException(
   }
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo *Info)
+void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo * Info)
 {
   TCustomFarFileSystem * FarFileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, Info->hPanel);
   try
@@ -408,7 +408,7 @@ void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo *Info)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::GetFindData(struct GetFindDataInfo *Info)
+intptr_t TCustomFarPlugin::GetFindData(struct GetFindDataInfo * Info)
 {
   TCustomFarFileSystem * FarFileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, Info->hPanel);
   try
@@ -429,7 +429,7 @@ intptr_t TCustomFarPlugin::GetFindData(struct GetFindDataInfo *Info)
   }
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::FreeFindData(const struct FreeFindDataInfo *Info)
+void TCustomFarPlugin::FreeFindData(const struct FreeFindDataInfo * Info)
 {
   TCustomFarFileSystem * FarFileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, Info->hPanel);
   try
@@ -449,7 +449,7 @@ void TCustomFarPlugin::FreeFindData(const struct FreeFindDataInfo *Info)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo *Info)
+intptr_t TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo * Info)
 {
   TCustomFarFileSystem * FarFileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, Info->hPanel);
   try
@@ -477,7 +477,7 @@ intptr_t TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo *Inf
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo *Info)
+intptr_t TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo * Info)
 {
   TCustomFarFileSystem * FarFileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, Info->hPanel);
   try
@@ -507,7 +507,7 @@ intptr_t TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo 
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo *Info)
+intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo * Info)
 {
   TCustomFarFileSystem * FarFileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, Info->hPanel);
   try
@@ -541,7 +541,7 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
+intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo * Info)
 {
   TCustomFarFileSystem * FarFileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, Info->hPanel);
   assert(FarFileSystem);
@@ -585,7 +585,7 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo *Info)
+intptr_t TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo * Info)
 {
   TCustomFarFileSystem * FarFileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, Info->hPanel);
   try
@@ -606,7 +606,7 @@ intptr_t TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo *Info)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo *Info)
+intptr_t TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo * Info)
 {
   TCustomFarFileSystem * FarFileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, Info->hPanel);
   try
@@ -627,7 +627,7 @@ intptr_t TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo *Info)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::GetFiles(struct GetFilesInfo *Info)
+intptr_t TCustomFarPlugin::GetFiles(struct GetFilesInfo * Info)
 {
   TCustomFarFileSystem * FarFileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, Info->hPanel);
   try
@@ -649,7 +649,7 @@ intptr_t TCustomFarPlugin::GetFiles(struct GetFilesInfo *Info)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::PutFiles(const struct PutFilesInfo *Info)
+intptr_t TCustomFarPlugin::PutFiles(const struct PutFilesInfo * Info)
 {
   TCustomFarFileSystem * FarFileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, Info->hPanel);
   try
@@ -670,7 +670,7 @@ intptr_t TCustomFarPlugin::PutFiles(const struct PutFilesInfo *Info)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::ProcessEditorEvent(const struct ProcessEditorEventInfo *Info)
+intptr_t TCustomFarPlugin::ProcessEditorEvent(const struct ProcessEditorEventInfo * Info)
 {
   try
   {
@@ -686,7 +686,7 @@ intptr_t TCustomFarPlugin::ProcessEditorEvent(const struct ProcessEditorEventInf
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::ProcessEditorInput(const struct ProcessEditorInputInfo *Info)
+intptr_t TCustomFarPlugin::ProcessEditorInput(const struct ProcessEditorInputInfo * Info)
 {
   try
   {
@@ -1903,7 +1903,7 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo * Info)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarFileSystem::GetFindData(struct GetFindDataInfo *Info)
+intptr_t TCustomFarFileSystem::GetFindData(struct GetFindDataInfo * Info)
 {
   ResetCachedInfo();
   std::unique_ptr<TObjectList> PanelItems(new TObjectList());
@@ -1929,7 +1929,7 @@ intptr_t TCustomFarFileSystem::GetFindData(struct GetFindDataInfo *Info)
   return Result;
 }
 //---------------------------------------------------------------------------
-void TCustomFarFileSystem::FreeFindData(const struct FreeFindDataInfo *Info)
+void TCustomFarFileSystem::FreeFindData(const struct FreeFindDataInfo * Info)
 {
   ResetCachedInfo();
   if (Info->PanelItem)
@@ -1950,7 +1950,7 @@ void TCustomFarFileSystem::FreeFindData(const struct FreeFindDataInfo *Info)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarFileSystem::ProcessHostFile(const struct ProcessHostFileInfo *Info)
+intptr_t TCustomFarFileSystem::ProcessHostFile(const struct ProcessHostFileInfo * Info)
 {
   ResetCachedInfo();
   std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
@@ -1958,7 +1958,7 @@ intptr_t TCustomFarFileSystem::ProcessHostFile(const struct ProcessHostFileInfo 
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarFileSystem::ProcessPanelInput(const struct ProcessPanelInputInfo *Info)
+intptr_t TCustomFarFileSystem::ProcessPanelInput(const struct ProcessPanelInputInfo * Info)
 {
   ResetCachedInfo();
   if (Info->Rec.EventType == KEY_EVENT)
@@ -1985,7 +1985,7 @@ intptr_t TCustomFarFileSystem::SetDirectory(const struct SetDirectoryInfo * Info
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarFileSystem::MakeDirectory(struct MakeDirectoryInfo *Info)
+intptr_t TCustomFarFileSystem::MakeDirectory(struct MakeDirectoryInfo * Info)
 {
   ResetCachedInfo();
   FNameStr = Info->Name;
@@ -2002,7 +2002,7 @@ intptr_t TCustomFarFileSystem::MakeDirectory(struct MakeDirectoryInfo *Info)
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarFileSystem::DeleteFiles(const struct DeleteFilesInfo *Info)
+intptr_t TCustomFarFileSystem::DeleteFiles(const struct DeleteFilesInfo * Info)
 {
   ResetCachedInfo();
   std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
@@ -2030,7 +2030,7 @@ intptr_t TCustomFarFileSystem::GetFiles(struct GetFilesInfo * Info)
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarFileSystem::PutFiles(const struct PutFilesInfo *Info)
+intptr_t TCustomFarFileSystem::PutFiles(const struct PutFilesInfo * Info)
 {
   ResetCachedInfo();
   intptr_t Result = 0;
@@ -2377,7 +2377,7 @@ void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
   Titles.CountLabels = 0;
 }
 //---------------------------------------------------------------------------
-void TFarKeyBarTitles::FillOpenPanelInfo(struct OpenPanelInfo *Info)
+void TFarKeyBarTitles::FillOpenPanelInfo(struct OpenPanelInfo * Info)
 {
   assert(Info);
   KeyBarTitles * KeyBar = static_cast<KeyBarTitles *>(

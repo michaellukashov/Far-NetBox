@@ -26,7 +26,7 @@ public:
 extern "C"
 {
 
-void WINAPI GetGlobalInfoW(struct GlobalInfo *Info)
+void WINAPI GetGlobalInfoW(struct GlobalInfo * Info)
 {
   if (Info->StructSize < sizeof(GlobalInfo))
     return;
@@ -39,7 +39,7 @@ void WINAPI GetGlobalInfoW(struct GlobalInfo *Info)
   Info->Author = PLUGIN_AUTHOR;
 }
 
-void WINAPI SetStartupInfoW(const struct PluginStartupInfo *Info)
+void WINAPI SetStartupInfoW(const struct PluginStartupInfo * Info)
 {
   if (Info->StructSize < sizeof(PluginStartupInfo))
     return;
@@ -48,7 +48,7 @@ void WINAPI SetStartupInfoW(const struct PluginStartupInfo *Info)
   FarPlugin->SetStartupInfo(Info);
 }
 
-void WINAPI ExitFARW(const struct ExitInfo *Info)
+void WINAPI ExitFARW(const struct ExitInfo * Info)
 {
   if (Info->StructSize < sizeof(ExitInfo))
     return;
@@ -66,7 +66,7 @@ void WINAPI GetPluginInfoW(PluginInfo * Info)
   FarPlugin->GetPluginInfo(Info);
 }
 
-intptr_t WINAPI ConfigureW(const struct ConfigureInfo *Info)
+intptr_t WINAPI ConfigureW(const struct ConfigureInfo * Info)
 {
   if (Info->StructSize < sizeof(ConfigureInfo))
     return FALSE;
@@ -75,7 +75,7 @@ intptr_t WINAPI ConfigureW(const struct ConfigureInfo *Info)
   return FarPlugin->Configure(Info);
 }
 
-void WINAPI ClosePanelW(const struct ClosePanelInfo *Info)
+void WINAPI ClosePanelW(const struct ClosePanelInfo * Info)
 {
   if (Info->StructSize < sizeof(ClosePanelInfo))
     return;
@@ -84,7 +84,7 @@ void WINAPI ClosePanelW(const struct ClosePanelInfo *Info)
   FarPlugin->ClosePanel(Info->hPanel);
 }
 
-void WINAPI GetOpenPanelInfoW(struct OpenPanelInfo *Info)
+void WINAPI GetOpenPanelInfoW(struct OpenPanelInfo * Info)
 {
   if (Info->StructSize < sizeof(OpenPanelInfo))
     return;
@@ -93,7 +93,7 @@ void WINAPI GetOpenPanelInfoW(struct OpenPanelInfo *Info)
   FarPlugin->GetOpenPanelInfo(Info);
 }
 
-intptr_t WINAPI GetFindDataW(struct GetFindDataInfo *Info)
+intptr_t WINAPI GetFindDataW(struct GetFindDataInfo * Info)
 {
   if (Info->StructSize < sizeof(GetFindDataInfo))
     return FALSE;
@@ -102,7 +102,7 @@ intptr_t WINAPI GetFindDataW(struct GetFindDataInfo *Info)
   return FarPlugin->GetFindData(Info);
 }
 
-void WINAPI FreeFindDataW(const struct FreeFindDataInfo *Info)
+void WINAPI FreeFindDataW(const struct FreeFindDataInfo * Info)
 {
   if (Info->StructSize < sizeof(FreeFindDataInfo))
     return;
@@ -111,7 +111,7 @@ void WINAPI FreeFindDataW(const struct FreeFindDataInfo *Info)
   FarPlugin->FreeFindData(Info);
 }
 
-intptr_t WINAPI ProcessHostFileW(const struct ProcessHostFileInfo *Info)
+intptr_t WINAPI ProcessHostFileW(const struct ProcessHostFileInfo * Info)
 {
   if (Info->StructSize < sizeof(ProcessHostFileInfo))
     return FALSE;
@@ -120,14 +120,14 @@ intptr_t WINAPI ProcessHostFileW(const struct ProcessHostFileInfo *Info)
   return FarPlugin->ProcessHostFile(Info);
 }
 
-intptr_t WINAPI ProcessPanelInputW(const struct ProcessPanelInputInfo *Info)
+intptr_t WINAPI ProcessPanelInputW(const struct ProcessPanelInputInfo * Info)
 {
   assert(FarPlugin);
   TFarPluginGuard Guard;
   return FarPlugin->ProcessPanelInput(Info);
 }
 
-intptr_t WINAPI ProcessPanelEventW(const struct ProcessPanelEventInfo *Info)
+intptr_t WINAPI ProcessPanelEventW(const struct ProcessPanelEventInfo * Info)
 {
   if (Info->StructSize < sizeof(ProcessPanelEventInfo))
     return FALSE;
@@ -136,7 +136,7 @@ intptr_t WINAPI ProcessPanelEventW(const struct ProcessPanelEventInfo *Info)
   return FarPlugin->ProcessPanelEvent(Info);
 }
 
-intptr_t WINAPI SetDirectoryW(const struct SetDirectoryInfo *Info)
+intptr_t WINAPI SetDirectoryW(const struct SetDirectoryInfo * Info)
 {
   if (Info->StructSize < sizeof(SetDirectoryInfo))
     return FALSE;
@@ -146,7 +146,7 @@ intptr_t WINAPI SetDirectoryW(const struct SetDirectoryInfo *Info)
   return Result;
 }
 
-intptr_t WINAPI MakeDirectoryW(struct MakeDirectoryInfo *Info)
+intptr_t WINAPI MakeDirectoryW(struct MakeDirectoryInfo * Info)
 {
   if (Info->StructSize < sizeof(MakeDirectoryInfo))
     return FALSE;
@@ -156,7 +156,7 @@ intptr_t WINAPI MakeDirectoryW(struct MakeDirectoryInfo *Info)
   return Result;
 }
 
-intptr_t WINAPI DeleteFilesW(const struct DeleteFilesInfo *Info)
+intptr_t WINAPI DeleteFilesW(const struct DeleteFilesInfo * Info)
 {
   if (Info->StructSize < sizeof(DeleteFilesInfo))
     return FALSE;
@@ -165,7 +165,7 @@ intptr_t WINAPI DeleteFilesW(const struct DeleteFilesInfo *Info)
   return FarPlugin->DeleteFiles(Info);
 }
 
-intptr_t WINAPI GetFilesW(struct GetFilesInfo *Info)
+intptr_t WINAPI GetFilesW(struct GetFilesInfo * Info)
 {
   if (Info->StructSize < sizeof(GetFilesInfo))
     return FALSE;
@@ -174,7 +174,7 @@ intptr_t WINAPI GetFilesW(struct GetFilesInfo *Info)
   return FarPlugin->GetFiles(Info);
 }
 
-intptr_t WINAPI PutFilesW(const struct PutFilesInfo *Info)
+intptr_t WINAPI PutFilesW(const struct PutFilesInfo * Info)
 {
   if (Info->StructSize < sizeof(PutFilesInfo))
     return FALSE;
@@ -184,7 +184,7 @@ intptr_t WINAPI PutFilesW(const struct PutFilesInfo *Info)
   return Result;
 }
 
-intptr_t WINAPI ProcessEditorEventW(const struct ProcessEditorEventInfo *Info)
+intptr_t WINAPI ProcessEditorEventW(const struct ProcessEditorEventInfo * Info)
 {
   if (Info->StructSize < sizeof(ProcessEditorEventInfo))
     return FALSE;
@@ -193,7 +193,7 @@ intptr_t WINAPI ProcessEditorEventW(const struct ProcessEditorEventInfo *Info)
   return FarPlugin->ProcessEditorEvent(Info);
 }
 
-intptr_t WINAPI ProcessEditorInputW(const struct ProcessEditorInputInfo *Info)
+intptr_t WINAPI ProcessEditorInputW(const struct ProcessEditorInputInfo * Info)
 {
   if (Info->StructSize < sizeof(ProcessEditorInputInfo))
     return FALSE;
@@ -202,7 +202,7 @@ intptr_t WINAPI ProcessEditorInputW(const struct ProcessEditorInputInfo *Info)
   return FarPlugin->ProcessEditorInput(Info);
 }
 
-HANDLE WINAPI AnalyseW(const struct AnalyseInfo *Info)
+HANDLE WINAPI AnalyseW(const struct AnalyseInfo * Info)
 {
   if (Info->StructSize < sizeof(AnalyseInfo))
     return nullptr;
@@ -225,7 +225,7 @@ HANDLE WINAPI AnalyseW(const struct AnalyseInfo *Info)
   return HANDLE(1);
 }
 
-HANDLE WINAPI OpenW(const struct OpenInfo *Info)
+HANDLE WINAPI OpenW(const struct OpenInfo * Info)
 {
   if (Info->StructSize < sizeof(OpenInfo))
     return nullptr;
