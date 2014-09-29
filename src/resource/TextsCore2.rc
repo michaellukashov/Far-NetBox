@@ -8,40 +8,40 @@ DIFFERENT_KEY4,
 "**WARNING - POTENTIAL SECURITY BREACH!**\n\nThe server's host key does not match the one WinSCP has in cache. This means that either the server administrator has changed the host key, the server presents different key under certain circumstance, or you have actually connected to another computer pretending to be the server.\n\nThe new %s key fingerprint is:\n%s\n\nIf you were expecting this change, trust the new key and want to continue connecting to the server, either press Update to update cache, or press Add to add the new key to the cache while keeping the old one(s). If you want to carry on connecting but without updating the cache, press Skip. If you want to abandon the connection completely, press Cancel. Pressing Cancel is the ONLY guaranteed safe choice."
 OLD_KEY,
 "You are loading an SSH-2 private key which has an old version of the file format. This means your key file is not fully tamperproof. We recommend you convert your key to the new format.\n\nYou can perform this conversion by loading the key into PuTTYgen and then saving it again."
-SCRIPT_HELP_HELP,
-"help [ <command> [ <command2> ... ] ]\n  Displays list of commands when no parameters are specified.\n  Displays help for each command when some are specified.\nalias:\n  man\nexamples:\n  help\n  help ls\n"
-SCRIPT_EXIT_HELP,
-"exit\n  Closes all sessions and terminates the program.\nalias:\n  bye\n"
-SCRIPT_OPEN_HELP6,
-"open <stored session>\nopen [ sftp|scp|ftp:// ][ <user> [ :password ] @ ] <host> [ :<port> ]\n  Establishes connection to given host. Use either name of the stored\n  session or specify host, username, port and protocol directly.\nswitches:\n  -privatekey=<key>  Private key file\n  -timeout=<sec>     Server response timeout\n  -hostkey=<fingerprint> Fingerprint of server host key (SFTP and SCP only).\n  -certificate=<fingerprint> Fingerprint of TLS/SSL certificate (FTPS only)\n  -passive           Passive mode (FTP protocol only)\n  -implicit          Implicit TLS/SSL (FTPS protocol only)\n  -explicitssl       Explicit SSL (FTPS protocol only)\n  -explicittls       Explicit TLS (FTPS protocol only)\nexamples:\n  open\n  open sftp://martin@example.com:2222 -privatekey=mykey.ppk\n  open martin@example.com\n  open example.com\n"
-SCRIPT_CLOSE_HELP,
-"close [ <session> ]\n  Closes session specified by its number. When session number is not\n  specified, closes currently selected session.\nexamples:\n  close\n  close 1\n"
-SCRIPT_SESSION_HELP,
-"session [ <session> ]\n  Makes session specified by its number active. When session number\n  is not specified, lists connected sessions.\nexamples:\n  session\n  session 1\n"
-SCRIPT_PWD_HELP,
-"pwd\n  Prints current remote working directory for active session.\n"
-SCRIPT_CD_HELP,
-"cd [ <directory> ]\n  Changes remote working directory for active session.\n  If directory is not specified, changes to home directory.\nexamples:\n  cd /home/martin\n  cd\n"
-SCRIPT_LS_HELP,
-"ls [ <directory> ]/[ <wildcard> ]\n  Lists the contents of specified remote directory. If directory is \n  not specified, lists working directory.\n  When wildcard is specified, it is treated as set of files to list.\n  Otherwise, all files are listed.\nalias:\n  dir\nexamples:\n  ls\n  ls *.html\n  ls /home/martin\n"
-SCRIPT_LPWD_HELP,
-"lpwd\n  Prints current local working directory (valid for all sessions).\n"
-SCRIPT_LCD_HELP,
-"lcd <directory>\n  Changes local working directory for all sessions.\nexample:\n  lcd d:\\\n"
-SCRIPT_LLS_HELP,
-"lls [ <directory-speed=<kbps>   > ]\\[ <wildcard> ]\n  Lists the contents of specified local directory. If directory is \n  not specified, lists working directory.\n  When wildcard is specified, it is treated as set of files to list.\n  Otherwise, all files are listed.\nexamples:\n  lls\n  lls *.html\n  lls d:\\\n"
-SCRIPT_RM_HELP,
-"rm <file> [ <file2> ... ]\n  Removes one or more remote files. If remote recycle bin is\n  configured, moves file to the bin instead of deleting it.\n  Filename can be replaced with wildcard to select multiple files.\nexamples:\n  rm index.html\n  rm index.html about.html\n  rm *.html\n"
-SCRIPT_RMDIR_HELP,
-"rmdir <directory> [ <directory2> ... ]\n  Removes one or more remote directories. If remote recycle bin is\n  configured, moves directory to the bin instead of deleting it.\nexample:\n  rmdir public_html\n"
-SCRIPT_MV_HELP,
-"mv <file> [ <file2> ... ] [ <directory>/ ][ <newname> ]\n  Moves or renames one or more remote files. Destination directory or new\n  name or both must be specified. Destination directory must end with \n  slash. Operation mask can be used instead of new name.\n  Filename can be replaced with wildcard to select multiple files.\nalias:\n  rename\nexamples:\n  mv index.html public_html/\n  mv index.html about.*\n  mv index.html public_html/about.*\n  mv public_html/index.html public_html/about.html /home/martin/*.bak\n  mv *.html /home/backup/*.bak\n"
-SCRIPT_CHMOD_HELP,
-"chmod <mode> <file> [ <file2> ... ]\n  Changes permissions of one or more remote files. Mode can be specified\n  as three or four-digit octal number.\n  Filename can be replaced with wildcard to select multiple files.\nexamples:\n  chmod 644 index.html about.html\n  chmod 1700 /home/martin/public_html\n  chmod 644 *.html\n"
-SCRIPT_LN_HELP,
-"ln <target> <symlink>\n  Creates remote symlink.\nalias:\n  symlink\nexample:\n  ln /home/martin/public_html www\n"
-SCRIPT_MKDIR_HELP,
-"mkdir <directory>\n  Creates remote directory.\nexample:\n  mkdir public_html\n"
+//SCRIPT_HELP_HELP,
+//"help [ <command> [ <command2> ... ] ]\n  Displays list of commands when no parameters are specified.\n  Displays help for each command when some are specified.\nalias:\n  man\nexamples:\n  help\n  help ls\n"
+//SCRIPT_EXIT_HELP,
+//"exit\n  Closes all sessions and terminates the program.\nalias:\n  bye\n"
+//SCRIPT_OPEN_HELP6,
+//"open <stored session>\nopen [ sftp|scp|ftp:// ][ <user> [ :password ] @ ] <host> [ :<port> ]\n  Establishes connection to given host. Use either name of the stored\n  session or specify host, username, port and protocol directly.\nswitches:\n  -privatekey=<key>  Private key file\n  -timeout=<sec>     Server response timeout\n  -hostkey=<fingerprint> Fingerprint of server host key (SFTP and SCP only).\n  -certificate=<fingerprint> Fingerprint of TLS/SSL certificate (FTPS only)\n  -passive           Passive mode (FTP protocol only)\n  -implicit          Implicit TLS/SSL (FTPS protocol only)\n  -explicitssl       Explicit SSL (FTPS protocol only)\n  -explicittls       Explicit TLS (FTPS protocol only)\nexamples:\n  open\n  open sftp://martin@example.com:2222 -privatekey=mykey.ppk\n  open martin@example.com\n  open example.com\n"
+//SCRIPT_CLOSE_HELP,
+//"close [ <session> ]\n  Closes session specified by its number. When session number is not\n  specified, closes currently selected session.\nexamples:\n  close\n  close 1\n"
+//SCRIPT_SESSION_HELP,
+//"session [ <session> ]\n  Makes session specified by its number active. When session number\n  is not specified, lists connected sessions.\nexamples:\n  session\n  session 1\n"
+//SCRIPT_PWD_HELP,
+//"pwd\n  Prints current remote working directory for active session.\n"
+//SCRIPT_CD_HELP,
+//"cd [ <directory> ]\n  Changes remote working directory for active session.\n  If directory is not specified, changes to home directory.\nexamples:\n  cd /home/martin\n  cd\n"
+//SCRIPT_LS_HELP,
+//"ls [ <directory> ]/[ <wildcard> ]\n  Lists the contents of specified remote directory. If directory is \n  not specified, lists working directory.\n  When wildcard is specified, it is treated as set of files to list.\n  Otherwise, all files are listed.\nalias:\n  dir\nexamples:\n  ls\n  ls *.html\n  ls /home/martin\n"
+//SCRIPT_LPWD_HELP,
+//"lpwd\n  Prints current local working directory (valid for all sessions).\n"
+//SCRIPT_LCD_HELP,
+//"lcd <directory>\n  Changes local working directory for all sessions.\nexample:\n  lcd d:\\\n"
+//SCRIPT_LLS_HELP,
+//"lls [ <directory-speed=<kbps>   > ]\\[ <wildcard> ]\n  Lists the contents of specified local directory. If directory is \n  not specified, lists working directory.\n  When wildcard is specified, it is treated as set of files to list.\n  Otherwise, all files are listed.\nexamples:\n  lls\n  lls *.html\n  lls d:\\\n"
+//SCRIPT_RM_HELP,
+//"rm <file> [ <file2> ... ]\n  Removes one or more remote files. If remote recycle bin is\n  configured, moves file to the bin instead of deleting it.\n  Filename can be replaced with wildcard to select multiple files.\nexamples:\n  rm index.html\n  rm index.html about.html\n  rm *.html\n"
+//SCRIPT_RMDIR_HELP,
+//"rmdir <directory> [ <directory2> ... ]\n  Removes one or more remote directories. If remote recycle bin is\n  configured, moves directory to the bin instead of deleting it.\nexample:\n  rmdir public_html\n"
+//SCRIPT_MV_HELP,
+//"mv <file> [ <file2> ... ] [ <directory>/ ][ <newname> ]\n  Moves or renames one or more remote files. Destination directory or new\n  name or both must be specified. Destination directory must end with \n  slash. Operation mask can be used instead of new name.\n  Filename can be replaced with wildcard to select multiple files.\nalias:\n  rename\nexamples:\n  mv index.html public_html/\n  mv index.html about.*\n  mv index.html public_html/about.*\n  mv public_html/index.html public_html/about.html /home/martin/*.bak\n  mv *.html /home/backup/*.bak\n"
+//SCRIPT_CHMOD_HELP,
+//"chmod <mode> <file> [ <file2> ... ]\n  Changes permissions of one or more remote files. Mode can be specified\n  as three or four-digit octal number.\n  Filename can be replaced with wildcard to select multiple files.\nexamples:\n  chmod 644 index.html about.html\n  chmod 1700 /home/martin/public_html\n  chmod 644 *.html\n"
+//SCRIPT_LN_HELP,
+//"ln <target> <symlink>\n  Creates remote symlink.\nalias:\n  symlink\nexample:\n  ln /home/martin/public_html www\n"
+//SCRIPT_MKDIR_HELP,
+//"mkdir <directory>\n  Creates remote directory.\nexample:\n  mkdir public_html\n"
 //SCRIPT_GET_HELP3,
 //"get <file> [ [ <file2> ... ] <directory>\\[ <newname> ] ]\n  Downloads one or more files from remote directory to local directory.\n  If only one parameter is specified downloads the file to local working\n  directory. If more parameters are specified, all except the last one\n  specify set of files to download. The last parameter specifies target\n  local directory and optionally operation mask to store file(s) under\n  different name. Destination directory must end with backslash. \n  Filename can be replaced with wildcard to select multiple files.\n  To download more files to current working directory use '.\\' as the\n  last parameter.\n  Use 'option' command to set transfer options.\nalias:\n  recv\nswitches:\n  -delete         Delete source remote file(s) after transfer\n  -resume         Resume transfer if possible (SFTP and FTP protocols only)\n  -append         Append file to end of target file (SFTP protocol only)\n  -preservetime   Preserve timestamp\n  -nopreservetime Do not preserve timestamp\n  -speed=<kibps>  Limit transfer speed\neffective options:\n  transfer, confirm, exclude, include, reconnecttime\nexamples:\n  get index.html\n  get -delete index.html about.html .\\\n  get index.html about.html d:\\www\\\n  get public_html/index.html d:\\www\\about.*\n  get *.html *.png d:\\www\\*.bak\n"
 //SCRIPT_PUT_HELP3,
