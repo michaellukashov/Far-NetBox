@@ -124,7 +124,7 @@ public:
 	CRITICAL_SECTION m_sec;
 };
 
-class CComAutoCriticalSection : 
+class CComAutoCriticalSection :
 	public CComCriticalSection
 {
 public:
@@ -143,7 +143,7 @@ private :
 	HRESULT Term(); // Not implemented. CComAutoCriticalSection::Term should never be called
 };
 
-class CComSafeDeleteCriticalSection : 
+class CComSafeDeleteCriticalSection :
 	public CComCriticalSection
 {
 public:
@@ -197,7 +197,7 @@ private:
 	bool m_bInitialized;
 };
 
-class CComAutoDeleteCriticalSection : 
+class CComAutoDeleteCriticalSection :
 	public CComSafeDeleteCriticalSection
 {
 private:
@@ -242,7 +242,7 @@ struct _ATL_BASE_MODULE70
 };
 typedef _ATL_BASE_MODULE70 _ATL_BASE_MODULE;
 
-class CAtlBaseModule : 
+class CAtlBaseModule :
 	public _ATL_BASE_MODULE
 {
 public :

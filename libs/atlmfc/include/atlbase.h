@@ -2719,7 +2719,6 @@ public:
 
 	void Term()
 	{
-		AtlWinModuleTerm(this, _AtlBaseModule.GetModuleInstance());
 	}
 
 	void AddCreateWndData(_Inout_ _AtlCreateWndData* pData, _In_ void* pObject)
@@ -2939,8 +2938,6 @@ public :
 		if (FAILED(hr))
 			return hr;
 
-		return AtlUpdateRegistryFromResourceD(_AtlBaseModule.GetModuleInstance(), lpszRes, bRegister,
-			NULL, spRegistrar);
 	}
 #endif
 
@@ -3093,9 +3090,6 @@ public :
 
 
 #ifndef _ATL_NO_PERF_SUPPORT
-
-		if (SUCCEEDED(hr) && _pPerfRegFunc != NULL)
-			hr = (*_pPerfRegFunc)(_AtlBaseModule.m_hInst);
 
 #endif
 
@@ -3464,36 +3458,10 @@ public :
 #if !defined(__MINGW32__)
 	__declspec(property(get = get_m_hInst)) HINSTANCE m_hInst;
 #endif
-	HINSTANCE& get_m_hInst() const throw()
-	{
-		return _AtlBaseModule.m_hInst;
-	}
 
 #if !defined(__MINGW32__)
 	__declspec(property(get = get_m_hInstResource, put = put_m_hInstResource)) HINSTANCE m_hInstResource;
 #endif
-	HINSTANCE& get_m_hInstResource() const throw()
-	{
-		return _AtlBaseModule.m_hInstResource;
-	}
-	void put_m_hInstResource(_In_ HINSTANCE h) throw()
-	{
-		_AtlBaseModule.SetResourceInstance(h);
-	}
-	HINSTANCE SetResourceInstance(_In_ HINSTANCE h) throw()
-	{
-		return _AtlBaseModule.SetResourceInstance(h);
-	}
-
-	HINSTANCE GetModuleInstance() throw()
-	{
-		return _AtlBaseModule.m_hInst;
-	}
-	HINSTANCE GetResourceInstance() throw()
-	{
-		return _AtlBaseModule.m_hInstResource;
-	}
-
 #if !defined(__MINGW32__)
 	__declspec(property(get = get_m_hInstTypeLib, put = put_m_hInstTypeLib)) HINSTANCE m_hInstTypeLib;
 #endif
@@ -3545,10 +3513,6 @@ public :
 #if !defined(__MINGW32__)
 	__declspec(property(get  = get_dwAtlBuildVer)) DWORD dwAtlBuildVer;
 #endif
-	DWORD& get_dwAtlBuildVer() throw()
-	{
-		return _AtlBaseModule.dwAtlBuildVer;
-	}
 
 #if !defined(__MINGW32__)
 	__declspec(property(get  = get_m_pCreateWndList, put = put_m_pCreateWndList)) _AtlCreateWndData* m_pCreateWndList;
@@ -3559,10 +3523,6 @@ public :
 #if !defined(__MINGW32__)
 	__declspec(property(get  = get_pguidVer)) const GUID* pguidVer;
 #endif
-	const GUID*& get_pguidVer() throw()
-	{
-		return _AtlBaseModule.pguidVer;
-	}
 
 #ifdef _ATL_DEBUG_INTERFACES
 
@@ -5437,172 +5397,6 @@ inline HRESULT CComModule::UnregisterAppId(_In_z_ LPCTSTR pAppId)
 namespace ATL
 {
 
-// Statically linking to Registry Ponent
-inline HRESULT WINAPI CAtlModule::UpdateRegistryFromResourceS(
-	_In_z_ LPCTSTR lpszRes,
-	_In_ BOOL bRegister,
-	_In_opt_ struct _ATL_REGMAP_ENTRY* pMapEntries /*= NULL*/) throw()
-{
-	CRegObject ro;
-	HRESULT hr = ro.FinalConstruct();
-	if (FAILED(hr))
-	{
-		return hr;
-	}
-
-	if (pMapEntries != NULL)
-	{
-		while (pMapEntries->szKey != NULL)
-		{
-			ATLASSUME(NULL != pMapEntries->szData);
-			ro.AddReplacement(pMapEntries->szKey, pMapEntries->szData);
-			pMapEntries++;
-		}
-	}
-
-	hr = AddCommonRGSReplacements(&ro);
-	if (FAILED(hr))
-		return hr;
-
-	USES_CONVERSION_EX;
-	TCHAR szModule[MAX_PATH];
-	HINSTANCE hInst = _AtlBaseModule.GetModuleInstance();
-	DWORD dwFLen = GetModuleFileName(hInst, szModule, MAX_PATH);
-	if( dwFLen == 0 )
-		return AtlHresultFromLastError();
-	else if( dwFLen == MAX_PATH )
-		return HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER);
-
-	LPOLESTR pszModule = NULL;
-	pszModule = T2OLE_EX(szModule, _ATL_SAFE_ALLOCA_DEF_THRESHOLD);
-#ifndef _UNICODE
-	if(pszModule == NULL)
-		return E_OUTOFMEMORY;
-#endif
-
-	OLECHAR pszModuleUnquoted[_MAX_PATH * 2];
-	EscapeSingleQuote(pszModuleUnquoted, _countof(pszModuleUnquoted), pszModule);
-
-	HRESULT hRes;
-	if ((hInst == NULL) || (hInst == GetModuleHandle(NULL))) // register as EXE
-	{
-		// If Registering as an EXE, then we quote the resultant path.
-		// We don't do it for a DLL, because LoadLibrary fails if the path is
-		// quoted
-		OLECHAR pszModuleQuote[(_MAX_PATH + _ATL_QUOTES_SPACE)*2];
-		pszModuleQuote[0] = OLESTR('\"');
-		if(!ocscpy_s(pszModuleQuote + 1, (_MAX_PATH + _ATL_QUOTES_SPACE)*2 - 1, pszModuleUnquoted))
-		{
-			return E_FAIL;
-		}
-		size_t nLen = ocslen(pszModuleQuote);
-		pszModuleQuote[nLen] = OLESTR('\"');
-		pszModuleQuote[nLen + 1] = 0;
-
-		hRes = ro.AddReplacement(OLESTR("Module"), pszModuleQuote);
-	}
-	else
-	{
-		hRes = ro.AddReplacement(OLESTR("Module"), pszModuleUnquoted);
-	}
-
-	if(FAILED(hRes))
-		return hRes;
-
-	hRes = ro.AddReplacement(OLESTR("Module_Raw"), pszModuleUnquoted);
-	if(FAILED(hRes))
-		return hRes;
-
-	LPCOLESTR szType = OLESTR("REGISTRY");
-	LPCOLESTR pszRes = T2COLE_EX(lpszRes, _ATL_SAFE_ALLOCA_DEF_THRESHOLD);
-#ifndef _UNICODE
-	if(pszRes == NULL)
-		return E_OUTOFMEMORY;
-#endif
-	hr = (bRegister) ? ro.ResourceRegisterSz(pszModule, pszRes, szType) :
-		ro.ResourceUnregisterSz(pszModule, pszRes, szType);
-	return hr;
-}
-inline HRESULT WINAPI CAtlModule::UpdateRegistryFromResourceS(
-	_In_ UINT nResID,
-	_In_ BOOL bRegister,
-	_In_opt_ struct _ATL_REGMAP_ENTRY* pMapEntries /*= NULL*/) throw()
-{
-	CRegObject ro;
-	HRESULT hr = ro.FinalConstruct();
-	if (FAILED(hr))
-	{
-		return hr;
-	}
-
-	if (pMapEntries != NULL)
-	{
-		while (pMapEntries->szKey != NULL)
-		{
-			ATLASSUME(NULL != pMapEntries->szData);
-			ro.AddReplacement(pMapEntries->szKey, pMapEntries->szData);
-			pMapEntries++;
-		}
-	}
-
-	hr = AddCommonRGSReplacements(&ro);
-	if (FAILED(hr))
-		return hr;
-
-	USES_CONVERSION_EX;
-	TCHAR szModule[MAX_PATH];
-	HINSTANCE hInst = _AtlBaseModule.GetModuleInstance();
-	DWORD dwFLen = GetModuleFileName(hInst, szModule, MAX_PATH);
-	if( dwFLen == 0 )
-		return AtlHresultFromLastError();
-	else if( dwFLen == MAX_PATH )
-		return HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER);
-
-	LPOLESTR pszModule = NULL;
-	pszModule = T2OLE_EX(szModule, _ATL_SAFE_ALLOCA_DEF_THRESHOLD);
-#ifndef _UNICODE
-	if(pszModule == NULL)
-		return E_OUTOFMEMORY;
-#endif
-
-	OLECHAR pszModuleUnquoted[_MAX_PATH * 2];
-	EscapeSingleQuote(pszModuleUnquoted, _countof(pszModuleUnquoted), pszModule);
-
-	HRESULT hRes;
-	if ((hInst == NULL) || (hInst == GetModuleHandle(NULL))) // register as EXE
-	{
-		// If Registering as an EXE, then we quote the resultant path.
-		// We don't do it for a DLL, because LoadLibrary fails if the path is
-		// quoted
-		OLECHAR pszModuleQuote[(_MAX_PATH + _ATL_QUOTES_SPACE)*2];
-		pszModuleQuote[0] = OLESTR('\"');
-		if(!ocscpy_s(pszModuleQuote + 1, (_MAX_PATH + _ATL_QUOTES_SPACE)*2 - 1, pszModuleUnquoted))
-		{
-			return E_FAIL;
-		}
-		size_t nLen = ocslen(pszModuleQuote);
-		pszModuleQuote[nLen] = OLESTR('\"');
-		pszModuleQuote[nLen + 1] = 0;
-
-		hRes = ro.AddReplacement(OLESTR("Module"), pszModuleQuote);
-	}
-	else
-	{
-		hRes = ro.AddReplacement(OLESTR("Module"), pszModuleUnquoted);
-	}
-
-	if(FAILED(hRes))
-		return hRes;
-
-	hRes = ro.AddReplacement(OLESTR("Module_Raw"), pszModuleUnquoted);
-	if(FAILED(hRes))
-		return hRes;
-
-	LPCOLESTR szType = OLESTR("REGISTRY");
-	hr = (bRegister) ? ro.ResourceRegister(pszModule, nResID, szType) :
-		ro.ResourceUnregister(pszModule, nResID, szType);
-	return hr;
-}
 #endif //_ATL_STATIC_REGISTRY
 
 #ifndef _ATL_NO_COMMODULE
@@ -6563,17 +6357,6 @@ HRESULT AtlModuleUnregisterServerEx(
 	_In_opt_ const CLSID* pCLSID = NULL)
 {
 	return AtlComModuleUnregisterServer(&_AtlComModule, bUnRegTypeLib, pCLSID);
-}
-
-inline ATL_DEPRECATED("AtlModuleUpdateRegistryFromResourceD has been replaced by AtlUpdateRegistryFromResourceD")
-HRESULT AtlModuleUpdateRegistryFromResourceD(
-	_In_opt_ _ATL_MODULE* /*pM*/,
-	_In_z_ LPCOLESTR lpszRes,
-	_In_ BOOL bRegister,
-	_In_ struct _ATL_REGMAP_ENTRY* pMapEntries,
-	_In_opt_ IRegistrar* pReg = NULL)
-{
-	return AtlUpdateRegistryFromResourceD(_AtlBaseModule.GetModuleInstance(), lpszRes, bRegister, pMapEntries, pReg);
 }
 
 inline ATL_DEPRECATED("AtlModuleRegisterTypeLib has been replaced by AtlRegisterTypeLib")
