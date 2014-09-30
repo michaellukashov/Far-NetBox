@@ -432,51 +432,6 @@ _AFXWIN_INLINE DWORD CWinThread::SuspendThread()
 _AFXWIN_INLINE BOOL CWinThread::PostThreadMessage(UINT message, WPARAM wParam, LPARAM lParam)
 	{ ASSERT(m_hThread != NULL); return ::PostThreadMessage(m_nThreadID, message, wParam, lParam); }
 
-// CWinApp
-
-_AFXWIN_INLINE AFX_HELP_TYPE CWinApp::GetHelpMode()
-	{ return m_eHelpType; }
-
-_AFXWIN_INLINE void CWinApp::SetHelpMode( AFX_HELP_TYPE eHelpType )
-	{
-		ASSERT( eHelpType == afxHTMLHelp || eHelpType == afxWinHelp );
-		m_eHelpType = eHelpType;
-	}
-
-#pragma warning(push)
-#pragma warning(disable: 4996)
-_AFXWIN_INLINE BOOL CWinApp::Enable3dControls()
-	{ return TRUE; }
-#ifndef _AFXDLL
-_AFXWIN_INLINE BOOL CWinApp::Enable3dControlsStatic()
-	{ return TRUE; }
-#endif
-_AFXWIN_INLINE void CWinApp::SetDialogBkColor(COLORREF /*clrCtlBk*/, COLORREF /*clrCtlText*/)
-{
-}
-#pragma warning(pop)
-
-_AFXWIN_INLINE CWaitCursor::CWaitCursor()
-	{ AfxGetApp()->BeginWaitCursor(); }
-_AFXWIN_INLINE CWaitCursor::~CWaitCursor()
-{
-	AFX_BEGIN_DESTRUCTOR
-
-		AfxGetApp()->EndWaitCursor();
-
-	AFX_END_DESTRUCTOR
-}
-_AFXWIN_INLINE void CWaitCursor::Restore()
-	{ AfxGetApp()->RestoreWaitCursor(); }
-
-/////////////////////////////////////////////////////////////////////////////
-// Obsolete and non-portable
-
-_AFXWIN_INLINE void CWnd::CloseWindow()
-	{ ASSERT(::IsWindow(m_hWnd)); ::CloseWindow(m_hWnd); }
-_AFXWIN_INLINE BOOL CWnd::OpenIcon()
-	{ ASSERT(::IsWindow(m_hWnd)); return ::OpenIcon(m_hWnd); }
-
 /////////////////////////////////////////////////////////////////////////////
 
 #endif //_AFXWIN_INLINE

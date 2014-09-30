@@ -95,7 +95,7 @@ typedef int (__cdecl * _PNH)( size_t );
 #define _PNH_DEFINED
 #endif
 
-template<class TYPE> 
+template<class TYPE>
 class CEmbeddedButActsLikePtr
 {
 public:
@@ -148,7 +148,6 @@ public:
 };
 
 // forward references required for AFX_MODULE_STATE definition
-class CWinApp;
 class COleObjectFactory;
 
 class CWnd;
@@ -184,7 +183,6 @@ public:
 #endif
 	~AFX_MODULE_STATE();
 
-	CWinApp* m_pCurrentWinApp;
 	HINSTANCE m_hCurrentInstanceHandle;
 	HINSTANCE m_hCurrentResourceHandle;
 	LPCTSTR m_lpszCurrentAppName;
@@ -244,7 +242,7 @@ public:
 #endif
 
 #ifndef _AFX_NO_OLE_SUPPORT
-	// Type library caches
+  // Type library caches
     // CTypeLibCacheMap* m_pTypeLibCacheMap;
 #endif
 
@@ -259,7 +257,7 @@ public:
 	HANDLE	m_hActCtx;
 	void CreateActivationContext();
 
-	// bool indicating the return value of InitNetworkAddressControl() (from shell32.dll) 
+	// bool indicating the return value of InitNetworkAddressControl() (from shell32.dll)
 	BOOL m_bInitNetworkAddressControl;
 	// bool indicating whether or not InitNetworkAddressControl() (from shell32.dll) have been called for CNetAddressCtrl
 	BOOL m_bInitNetworkAddressControlCalled;

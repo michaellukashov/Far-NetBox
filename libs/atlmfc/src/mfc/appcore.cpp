@@ -22,13 +22,6 @@ AFX_STATIC_DATA const TCHAR _afxPreviewEntry[] = _T("PreviewPages");
 /////////////////////////////////////////////////////////////////////////////
 // globals (internal library use)
 
-BEGIN_MESSAGE_MAP(CWinApp, CCmdTarget)
-	//{{AFX_MSG_MAP(CWinApp)
-	// Global File commands
-	// MRU - most recently used file menu
-	//}}AFX_MSG_MAP
-END_MESSAGE_MAP()
-
 /////////////////////////////////////////////////////////////////////////////
 // _AFX_WIN_STATE implementation
 
@@ -66,12 +59,12 @@ static HINSTANCE _AfxLoadLangDLL(LPCTSTR pszFormat, LPCTSTR pszPath, LCID lcid)
 	return hInstance;
 }
 
-static BOOL CALLBACK _AfxEnumResLangProc(HMODULE /*hModule*/, LPCTSTR /*pszType*/, 
+static BOOL CALLBACK _AfxEnumResLangProc(HMODULE /*hModule*/, LPCTSTR /*pszType*/,
 	LPCTSTR /*pszName*/, WORD langid, LONG_PTR lParam)
 {
 	if(lParam == NULL)
 		return FALSE;
-		
+
 	LANGID* plangid = reinterpret_cast< LANGID* >( lParam );
 	*plangid = langid;
 
@@ -88,7 +81,7 @@ public:
 	CActivationContext(HANDLE hCtxt = INVALID_HANDLE_VALUE) : m_hCtxt( hCtxt ), m_uCookie( 0 )
 	{
 	};
-	
+
 	~CActivationContext()
 	{
 		Release();
@@ -133,10 +126,10 @@ public:
 		{
 			return false;
 		}
-	
+
 		return ( ActivateActCtx( m_hCtxt, &m_uCookie) == TRUE );
 	}
-	
+
 	bool Deactivate()
 	{
 		if ( m_uCookie != 0 )
@@ -254,248 +247,6 @@ HINSTANCE AFXAPI AfxLoadLangResourceDLL(LPCTSTR pszFormat)
 	ENSURE(_tcslen(pszFormat) <= MAX_PATH);
 	_tcscat_s (pszNewFormat, _countof(pszNewFormat), pszFormat);
 	return AfxLoadLangResourceDLL(pszNewFormat, _T(""));
-}
-
-CWinApp::CWinApp(LPCTSTR lpszAppName)
-{
-	if (lpszAppName != NULL)
-		m_pszAppName = _tcsdup(lpszAppName);
-	else
-		m_pszAppName = NULL;
-
-	// initialize CWinThread state
-	AFX_MODULE_STATE* pModuleState = _AFX_CMDTARGET_GETSTATE();
-	ENSURE(pModuleState);
-	AFX_MODULE_THREAD_STATE* pThreadState = pModuleState->m_thread;
-	ENSURE(pThreadState);
-	ASSERT(AfxGetThread() == NULL);
-	pThreadState->m_pCurrentWinThread = this;
-	ASSERT(AfxGetThread() == this);
-	m_hThread = ::GetCurrentThread();
-	m_nThreadID = ::GetCurrentThreadId();
-
-	// initialize CWinApp state
-	ASSERT(afxCurrentWinApp == NULL); // only one CWinApp object please
-	pModuleState->m_pCurrentWinApp = this;
-	ASSERT(AfxGetApp() == this);
-
-	// in non-running state until WinMain
-	m_hInstance = NULL;
-	m_hLangResourceDLL = NULL;
-	m_pszHelpFilePath = NULL;
-	m_pszProfileName = NULL;
-	m_pszRegistryKey = NULL;
-	m_pszExeName = NULL;
-	m_atomApp = m_atomSystemTopic = NULL;
-	m_pCmdInfo = NULL;
-
-	// initialize wait cursor state
-	m_nWaitCursorCount = 0;
-	m_hcurWaitCursorRestore = NULL;
-
-	// initialize current printer state
-	m_hDevMode = NULL;
-	m_hDevNames = NULL;
-	m_nNumPreviewPages = 0;     // not specified (defaults to 1)
-
-	// initialize DAO state
-	m_lpfnDaoTerm = NULL;   // will be set if AfxDaoInit called
-
-	// other initialization
-	m_eHelpType = afxWinHelp;
-	m_nSafetyPoolSize = 512;        // default size
-
-	m_dwRestartManagerSupportFlags = 0;    // don't support Restart Manager by default
-	m_nAutosaveInterval = 5 * 60 * 1000;   // default autosave interval is 5 minutes (only has effect if autosave flag is set)
-
-	m_bTaskbarInteractionEnabled = TRUE;
-}
-
-BOOL CWinApp::LoadSysPolicies() 
-{
-	return _LoadSysPolicies();
-}
-
-// This function is not exception safe - will leak a registry key if exceptions are thrown from some places
-// To reduce risk of leaks, I've declared the whole function throw(). This despite the fact that its callers have
-// no dependency on non-throwing.
-BOOL CWinApp::_LoadSysPolicies() throw()
-{
-	HKEY hkPolicy = NULL;
-	DWORD dwValue = 0;
-	DWORD dwDataLen = sizeof(dwValue);
-	DWORD dwType = 0;
-
-	// clear current policy settings.
-	m_dwPolicies = _AFX_SYSPOLICY_NOTINITIALIZED;
-
-	static _AfxSysPolicyData rgExplorerData[] = 
-	{
-		{_T("NoRun"), _AFX_SYSPOLICY_NORUN},
-		{_T("NoDrives"), _AFX_SYSPOLICY_NODRIVES},
-		{_T("RestrictRun"), _AFX_SYSPOLICY_RESTRICTRUN},
-		{_T("NoNetConnectDisconnect"), _AFX_SYSPOLICY_NONETCONNECTDISCONNECTD},
-		{_T("NoRecentDocsHistory"), _AFX_SYSPOLICY_NORECENTDOCHISTORY},
-		{_T("NoClose"), _AFX_SYSPOLICY_NOCLOSE},
-		{NULL, NULL}
-	};
-
-	static _AfxSysPolicyData rgNetworkData[] = 
-	{
-		{_T("NoEntireNetwork"), _AFX_SYSPOLICY_NOENTIRENETWORK},
-		{NULL, NULL}
-	};
-
-	static _AfxSysPolicyData rgComDlgData[] = 
-	{
-		{_T("NoPlacesBar"), _AFX_SYSPOLICY_NOPLACESBAR},
-		{_T("NoBackButton"), _AFX_SYSPOLICY_NOBACKBUTTON},
-		{_T("NoFileMru"), _AFX_SYSPOLICY_NOFILEMRU},
-		{NULL, NULL}
-	};
-
-	static _AfxSysPolicies rgPolicies[] = 
-	{
-		{_T("Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer"),
-			rgExplorerData},
-		{_T("Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Network"),
-			rgNetworkData},
-//		{_T("Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Comdlg32"),
-//			rgComDlgData},
-		{NULL, NULL}
-	};
-
-	_AfxSysPolicies *pPolicies = rgPolicies;
-	_AfxSysPolicyData *pData = NULL;
-
-	while (pPolicies->szPolicyKey != NULL)
-	{
-
-		if (ERROR_SUCCESS == ::RegOpenKeyEx(
-					HKEY_CURRENT_USER,
-					pPolicies->szPolicyKey,
-					NULL,
-					KEY_QUERY_VALUE,
-					&hkPolicy
-					))
-		{
-			pData = pPolicies->pData;
-			while (pData->szPolicyName)
-			{
-				if (ERROR_SUCCESS == ::RegQueryValueEx(
-									 hkPolicy,
-									 pData->szPolicyName,
-									 NULL,
-									 &dwType,
-									 (BYTE*)&dwValue,
-									 &dwDataLen))
-				{
-					if (dwType == REG_DWORD)
-					{
-						if (dwValue != 0)
-							m_dwPolicies |= pData->dwID;
-						else
-							m_dwPolicies &= ~pData->dwID;
-					}
-				}
-				dwValue = 0;
-				dwDataLen = sizeof(dwValue);
-				dwType = 0;
-				pData++;
-			}
-			::RegCloseKey(hkPolicy);
-			hkPolicy = NULL;
-		}
-		pPolicies++;
-	};
-	return TRUE;
-}
-
-BOOL CWinApp::GetSysPolicyValue(DWORD dwPolicyID, BOOL *pbValue)
-{
-	if (!pbValue)
-		return FALSE; // bad pointer
-	*pbValue = (m_dwPolicies & dwPolicyID) != 0;
-	return TRUE;
-}
-
-BOOL CWinApp::InitApplication()
-{
-	LoadSysPolicies();
-
-	return TRUE;
-}
-
-BOOL CWinApp::InitInstance()
-{
-	// InitLibId();
-	m_hLangResourceDLL = LoadAppLangResourceDLL();
-	if(m_hLangResourceDLL != NULL)
-	{
-		AfxSetResourceHandle(m_hLangResourceDLL);
-		_AtlBaseModule.SetResourceInstance(m_hLangResourceDLL);
-	}
-
-	return TRUE;
-}
-
-HINSTANCE CWinApp::LoadAppLangResourceDLL()
-{
-	TCHAR szPath[MAX_PATH];
-	LPTSTR pszExtension;
-
-	int ret = ::GetModuleFileName(m_hInstance, szPath, MAX_PATH);
-	if(ret == 0 || ret == MAX_PATH)
-	{
-		ASSERT(FALSE);
-		return NULL;
-	}
-	pszExtension = ::PathFindExtension(szPath);
-	*pszExtension = '\0';
-
-	TCHAR szFormat[] = _T("%s%s.dll");
-
-	return AfxLoadLangResourceDLL(szFormat, szPath);
-}
-
-void CWinApp::LoadStdProfileSettings(UINT nMaxMRU)
-{
-	ASSERT_VALID(this);
-
-	BOOL bNoRecentDocs = FALSE;
-	GetSysPolicyValue(_AFX_SYSPOLICY_NORECENTDOCHISTORY, &bNoRecentDocs);
-	if (nMaxMRU != 0 && !bNoRecentDocs )
-	{
-		// create file MRU since nMaxMRU not zero
-	}
-	// 0 by default means not set
-	m_nNumPreviewPages = 0;
-}
-
-void CWinApp::ParseCommandLine(CCommandLineInfo& rCmdInfo)
-{
-	for (int i = 1; i < __argc; i++)
-	{
-		LPCTSTR pszParam = __targv[i];
-		BOOL bFlag = FALSE;
-		BOOL bLast = ((i + 1) == __argc);
-		if (pszParam[0] == '-' || pszParam[0] == '/')
-		{
-			// remove flag specifier
-			bFlag = TRUE;
-			++pszParam;
-		}
-		rCmdInfo.ParseParam(pszParam, bFlag, bLast);
-	}
-}
-
-BOOL CWinApp::RestartInstance()
-{
-	BOOL bRet = FALSE;
-
-  // Return TRUE if any documents were opened, else return FALSE to indicate
-	// that a new document should be opened as in the normal startup scenario.
-	return bRet;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -641,110 +392,6 @@ void CCommandLineInfo::ParseLast(BOOL bLast)
 /////////////////////////////////////////////////////////////////////////////
 // App termination
 
-CWinApp::~CWinApp()
-{
-	AFX_BEGIN_DESTRUCTOR
-
-	// free recent file list
-	// free data recovery handler
-
-	// free static list of document templates
-	if (!afxContextIsDLL)
-	{
-	}
-
-	// free printer info
-//	if (m_hDevMode != NULL)
-//		AfxGlobalFree(m_hDevMode);
-//	if (m_hDevNames != NULL)
-//		AfxGlobalFree(m_hDevNames);
-
-	// free atoms if used
-	if (m_atomApp != NULL)
-		::GlobalDeleteAtom(m_atomApp);
-	if (m_atomSystemTopic != NULL)
-		::GlobalDeleteAtom(m_atomSystemTopic);
-
-	// free cached commandline
-	if (m_pCmdInfo != NULL)
-		delete m_pCmdInfo;
-
-	// cleanup module state
-	AFX_MODULE_STATE* pModuleState = _AFX_CMDTARGET_GETSTATE();
-	if (pModuleState->m_lpszCurrentAppName == m_pszAppName)
-		pModuleState->m_lpszCurrentAppName = NULL;
-	if (pModuleState->m_pCurrentWinApp == this)
-		pModuleState->m_pCurrentWinApp = NULL;
-
-	// free various strings allocated with _tcsdup
-	free((void*)m_pszAppName);
-	free((void*)m_pszRegistryKey);
-	free((void*)m_pszExeName);
-	free((void*)m_pszHelpFilePath);
-	free((void*)m_pszProfileName);
-
-	// avoid calling CloseHandle() on our own thread handle
-	// during the CWinThread destructor
-	m_hThread = NULL;
-	AFX_END_DESTRUCTOR
-}
-
-void CWinApp::SaveStdProfileSettings()
-{
-	ASSERT_VALID(this);
-}
-
-int CWinApp::ExitInstance()
-{
-	// if we remember that we're unregistering,
-	// don't save our profile settings
-
-	if (m_pCmdInfo == NULL ||
-		(m_pCmdInfo->m_nShellCommand != CCommandLineInfo::AppUnregister &&
-		 m_pCmdInfo->m_nShellCommand != CCommandLineInfo::AppRegister))
-	{
-		if (!afxContextIsDLL)
-			SaveStdProfileSettings();
-	}
-
-	// Cleanup DAO if necessary
-	if (m_lpfnDaoTerm != NULL)
-	{
-		// If a DLL, YOU must call AfxDaoTerm prior to ExitInstance
-		ASSERT(!afxContextIsDLL);
-		(*m_lpfnDaoTerm)();
-	}
-
-	if (m_hLangResourceDLL != NULL)
-	{
-		::FreeLibrary(m_hLangResourceDLL);
-		m_hLangResourceDLL = NULL;
-	}
-
-	int nReturnValue=0;
-	if(AfxGetCurrentMessage())
-	{
-		nReturnValue=static_cast<int>(AfxGetCurrentMessage()->wParam);
-	}
-	
-	return nReturnValue; // returns the value from PostQuitMessage
-}
-
-/////////////////////////////////////////////////////////////////////////////
-
-
-// Main running routine until application exits
-int CWinApp::Run()
-{
-	if (m_pMainWnd == NULL) //  && AfxOleGetUserCtrl())
-	{
-		// Not launched /Embedding or /Automation, but has no main window!
-		AfxPostQuitMessage(0);
-	}
-	return CWinThread::Run();
-}
-
-
 void AFXAPI AfxPostQuitMessage(int nExitCode)
 {
 	// cleanup OLE libraries
@@ -764,75 +411,14 @@ typedef HRESULT (WINAPI *PFNREGISTERAPPLICATIONRECOVERYCALLBACK)(APPLICATION_REC
 typedef HRESULT (WINAPI *PFNAPPLICATIONRECOVERYINPROGRESS)(PBOOL);
 typedef VOID    (WINAPI *PFNAPPLICATIONRECOVERYFINISHED)(BOOL);
 
-DWORD WINAPI AfxApplicationRecoveryWrapper(LPVOID lpvParam)
-{
-	DWORD dwRet = 0;
-	CWinApp *pApp = AfxGetApp();
-	if (pApp != NULL)
-	{
-		ASSERT_VALID(pApp);
-	}
-
-	return dwRet;
-}
-
 /////////////////////////////////////////////////////////////////////////////
 // Special exception handling
 
-LRESULT CWinApp::ProcessWndProcException(CException* e, const MSG* pMsg)
-{
-	ENSURE_ARG(e != NULL);
-	ENSURE_ARG(pMsg != NULL);
-	// handle certain messages in CWinThread
-	switch (pMsg->message)
-	{
-	case WM_CREATE:
-	case WM_PAINT:
-		return CWinThread::ProcessWndProcException(e, pMsg);
-	}
-
-	// handle all the rest
-	UINT nIDP = AFX_IDP_INTERNAL_FAILURE;   // generic message string
-	LRESULT lResult = 0;        // sensible default
-	if (pMsg->message == WM_COMMAND)
-	{
-		if ((HWND)pMsg->lParam == NULL)
-			nIDP = AFX_IDP_COMMAND_FAILURE; // command (not from a control)
-		lResult = (LRESULT)TRUE;        // pretend the command was handled
-	}
-	if (e->IsKindOf(RUNTIME_CLASS(CMemoryException)))
-	{
-		e->ReportError(MB_ICONEXCLAMATION|MB_SYSTEMMODAL, nIDP);
-	}
-	// else if (!e->IsKindOf(RUNTIME_CLASS(CUserException)))
-	// {
-		// user has not been alerted yet of this catastrophic problem
-		// e->ReportError(MB_ICONSTOP, nIDP);
-	// }
-	return lResult; // sensible default return from most WndProc functions
-}
-
 /////////////////////////////////////////////////////////////////////////////
 // CWinApp idle processing
 
-BOOL CWinApp::OnIdle(LONG lCount)
-{
-	if (lCount <= 0)
-	{
-		CWinThread::OnIdle(lCount);
-
-	}
-	else if (lCount == 1)
-	{
-		VERIFY(!CWinThread::OnIdle(lCount));
-	}
-	return lCount < 1;  // more to do if lCount < 1
-}
-
 /////////////////////////////////////////////////////////////////////////////
 // CWinApp idle processing
-
-IMPLEMENT_DYNAMIC(CWinApp, CWinThread)
 
 #pragma warning(disable: 4074)
 #pragma init_seg(lib)

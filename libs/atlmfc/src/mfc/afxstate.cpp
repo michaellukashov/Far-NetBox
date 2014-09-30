@@ -92,7 +92,7 @@ AFX_MAINTAIN_STATE2::AFX_MAINTAIN_STATE2(AFX_MODULE_STATE* pNewState) throw()
 	}
 #endif
 
-	if (AfxGetAmbientActCtx() && 
+	if (AfxGetAmbientActCtx() &&
 		pNewState->m_hActCtx != INVALID_HANDLE_VALUE)
 	{
 		m_bValidActCtxCookie = ActivateActCtx(pNewState->m_hActCtx, &m_ulActCtxCookie);
@@ -153,7 +153,7 @@ _AFX_THREAD_STATE::~_AFX_THREAD_STATE()
 _AFX_THREAD_STATE* AFXAPI AfxGetThreadState()
 {
 	_AFX_THREAD_STATE *pState =_afxThreadState.GetData();
-	ENSURE(pState != NULL); 
+	ENSURE(pState != NULL);
 	return pState;
 }
 
@@ -192,11 +192,11 @@ AFX_MODULE_STATE::AFX_MODULE_STATE(BOOL bDLL)
 		//called before the string frees memory, so need to disable tracking.
 		bEnable = AfxEnableMemoryTracking(FALSE);
 		m_strUnregisterList.Preallocate(4096);
-		AfxEnableMemoryTracking(bEnable);	
-	}		
+		AfxEnableMemoryTracking(bEnable);
+	}
 	CATCH(CMemoryException, e)
 	{
-		AfxEnableMemoryTracking(bEnable);	
+		AfxEnableMemoryTracking(bEnable);
 		DELETE_EXCEPTION(e);
 	}
 	END_CATCH
@@ -209,9 +209,9 @@ AFX_MODULE_STATE::AFX_MODULE_STATE(BOOL bDLL)
 #ifdef _AFXDLL
 	m_libraryList.Construct(offsetof(CDynLinkLibrary, m_pNextDLL));
 #endif
-	
 
-	bEnable = AfxEnableMemoryTracking(FALSE);		
+
+	bEnable = AfxEnableMemoryTracking(FALSE);
 	//Fusion: allocate dll wrappers array.
 	m_pDllIsolationWrappers = new CDllIsolationWrapperBase*[_AFX_ISOLATION_WRAPPER_ARRAY_SIZE];
 #ifndef _AFX_NO_AFXCMN_SUPPORT
@@ -284,19 +284,19 @@ void AFX_MODULE_STATE::CreateActivationContext()
 	actCtx.hModule = hModule;
 	m_hActCtx = CreateActCtxW(&actCtx);
 	if (m_hActCtx == INVALID_HANDLE_VALUE)
-	{		
+	{
 		actCtx.lpResourceName =  MAKEINTRESOURCEW(ISOLATIONAWARE_NOSTATICIMPORT_MANIFEST_RESOURCE_ID);
 		m_hActCtx = CreateActCtxW(&actCtx);
 	}
 	if (m_hActCtx == INVALID_HANDLE_VALUE)
-	{		
+	{
 		actCtx.lpResourceName =  MAKEINTRESOURCEW(CREATEPROCESS_MANIFEST_RESOURCE_ID);
 		m_hActCtx = CreateActCtxW(&actCtx);
 	}
 	if (m_hActCtx == INVALID_HANDLE_VALUE)
 	{
 		m_hActCtx = NULL;
-	}		
+	}
 }
 
 AFX_MODULE_STATE::~AFX_MODULE_STATE()
@@ -435,14 +435,6 @@ BOOL AFXAPI AfxIsModuleDll()
 
 BOOL AFXAPI AfxInitCurrentStateApp()
 {
-	CWinApp* pApp = AfxGetModuleState()->m_pCurrentWinApp;
-	if (pApp != NULL && !pApp->InitInstance())
-	{
-		// Init Failed
-		pApp->ExitInstance();
-		AfxWinTerm();
-		return FALSE;
-	}
 	return TRUE;
 }
 
