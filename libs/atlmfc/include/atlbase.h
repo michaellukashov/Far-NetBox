@@ -613,15 +613,15 @@ extern "C" __declspec(dllimport) HRESULT __stdcall AtlCreateRegistrar(_Deref_out
 // GUID comparison
 inline BOOL WINAPI InlineIsEqualUnknown(_In_ REFGUID rguid1)
 {
-   return (
-	  ((PLONG) &rguid1)[0] == 0 &&
-	  ((PLONG) &rguid1)[1] == 0 &&
+	 return (
+		((PLONG) &rguid1)[0] == 0 &&
+		((PLONG) &rguid1)[1] == 0 &&
 #ifdef _ATL_BYTESWAP
-	  ((PLONG) &rguid1)[2] == 0xC0000000 &&
-	  ((PLONG) &rguid1)[3] == 0x00000046);
+		((PLONG) &rguid1)[2] == 0xC0000000 &&
+		((PLONG) &rguid1)[3] == 0x00000046);
 #else
-	  ((PLONG) &rguid1)[2] == 0x000000C0 &&
-	  ((PLONG) &rguid1)[3] == 0x46000000);
+		((PLONG) &rguid1)[2] == 0x000000C0 &&
+		((PLONG) &rguid1)[3] == 0x46000000);
 #endif
 }
 
@@ -1011,10 +1011,10 @@ public:
 	void Free() throw()
 	{
 		/* Note: _freea only actually does anything if m_p was heap allocated
-		   If m_p was from the stack, it wouldn't be possible to actually free it here
-		   [wrong function] unless we got inlined. But really all we do if m_p is
-		   stack-based is ignore it and let its alloca storage disappear at the end
-		   of the outer function.
+			 If m_p was from the stack, it wouldn't be possible to actually free it here
+			 [wrong function] unless we got inlined. But really all we do if m_p is
+			 stack-based is ignore it and let its alloca storage disappear at the end
+			 of the outer function.
 		*/
 		_freea(m_p);
 		m_p = NULL;
@@ -2361,7 +2361,7 @@ struct _QIThunk
 #endif // _ATL_STATIC_REGISTRY
 
 
-class CAtlComModule : 
+class CAtlComModule :
 	public _ATL_COM_MODULE
 {
 public:
@@ -2695,7 +2695,7 @@ inline ULONG _QIThunk::Release()
 #endif 	// _ATL_DEBUG_INTERFACES
 
 
-class CAtlWinModule : 
+class CAtlWinModule :
 	public _ATL_WIN_MODULE
 {
 public:
@@ -2772,7 +2772,7 @@ __declspec (selectany) void *_pAtlReleaseManagedClassFactories = &_AtlReleaseMan
 
 #endif
 
-class ATL_NO_VTABLE CAtlModule : 
+class ATL_NO_VTABLE CAtlModule :
 	public _ATL_MODULE
 {
 public :
@@ -2844,7 +2844,7 @@ public :
 	}
 
 	HRESULT AddTermFunc(
-		_In_ _ATL_TERMFUNC* pFunc, 
+		_In_ _ATL_TERMFUNC* pFunc,
 		_In_ DWORD_PTR dw) throw()
 	{
 		return AtlModuleAddTermFunc(this, pFunc, dw);
@@ -3063,7 +3063,7 @@ inline HRESULT AtlGetGITPtr(_Deref_out_ IGlobalInterfaceTable** ppGIT) throw()
 }
 
 template <class T>
-class ATL_NO_VTABLE CAtlModuleT : 
+class ATL_NO_VTABLE CAtlModuleT :
 	public CAtlModule
 {
 public :
@@ -3165,7 +3165,7 @@ namespace __identifier("<AtlImplementationDetails>")
 #endif
 
 template <class T>
-class ATL_NO_VTABLE CAtlDllModuleT : 
+class ATL_NO_VTABLE CAtlDllModuleT :
 	public CAtlModuleT<T>
 {
 public :
@@ -3302,1031 +3302,11 @@ inline BOOL WINAPI CAtlDllModuleT<T>::DllMain(
 #ifndef _AFX
 
 
-template <class T>
-class ATL_NO_VTABLE CAtlExeModuleT : 
-	public CAtlModuleT<T>
-{
-public :
-#ifndef _ATL_NO_COM_SUPPORT
-
-	DWORD m_dwMainThreadID;
-	HANDLE m_hEventShutdown;
-	DWORD m_dwTimeOut;
-	DWORD m_dwPause;
-	bool m_bDelayShutdown;
-	bool m_bActivity;
-	bool m_bComInitialized;    // Flag that indicates if ATL initialized COM
-
-#endif // _ATL_NO_COM_SUPPORT
-
-	CAtlExeModuleT() throw()
-
-#ifndef _ATL_NO_COM_SUPPORT
-
-		: m_dwMainThreadID(::GetCurrentThreadId()),
-		m_dwTimeOut(5000),
-		m_dwPause(1000),
-		m_hEventShutdown(NULL),
-		m_bDelayShutdown(true),
-		m_bComInitialized(false)
-
-#endif // _ATL_NO_COM_SUPPORT
-
-	{
-#if !defined(_ATL_NO_COM_SUPPORT)
-
-		_AtlComModule.ExecuteObjectMain(true);
-
-#endif	//  !defined(_ATL_NO_COM_SUPPORT)
-
-	}
-
-	~CAtlExeModuleT() throw()
-	{
-#ifndef _ATL_NO_COM_SUPPORT
-
-		_AtlComModule.ExecuteObjectMain(false);
-
-#endif
-
-		// Call term functions before COM is uninitialized
-		Term();
-
-#ifndef _ATL_NO_COM_SUPPORT
-
-		// Clean up AtlComModule before COM is uninitialized
-		_AtlComModule.Term();
-
-#endif // _ATL_NO_COM_SUPPORT
-	}
-
-	static HRESULT InitializeCom() throw()
-	{
-#if defined(_ATL_FREE_THREADED)
-		return CoInitializeEx(NULL, COINIT_MULTITHREADED);
-#else
-		return CoInitialize(NULL);
-#endif
-	}
-
-	static void UninitializeCom() throw()
-	{
-		CoUninitialize();
-	}
-
-	LONG Lock() throw()
-	{
-		return CoAddRefServerProcess();
-	}
-
-	LONG Unlock() throw()
-	{
-		LONG lRet = CoReleaseServerProcess();
-
-#ifndef _ATL_NO_COM_SUPPORT
-
-		if (lRet == 0)
-		{
-			if (m_bDelayShutdown)
-			{
-				m_bActivity = true;
-				::SetEvent(m_hEventShutdown); // tell monitor that we transitioned to zero
-			}
-			else
-			{
-				::PostThreadMessage(m_dwMainThreadID, WM_QUIT, 0, 0);
-			}
-		}
-
-#endif	// _ATL_NO_COM_SUPPORT
-
-		return lRet;
-	}
-#ifndef _ATL_NO_COM_SUPPORT
-
-	void MonitorShutdown() throw()
-	{
-		::WaitForSingleObject(m_hEventShutdown, INFINITE);
-		::CloseHandle(m_hEventShutdown);
-		::PostThreadMessage(m_dwMainThreadID, WM_QUIT, 0, 0);
-	}
-
-	HANDLE StartMonitor() throw()
-	{
-		m_hEventShutdown = ::CreateEvent(NULL, false, false, NULL);
-		if (m_hEventShutdown == NULL)
-		{
-			return NULL;
-		}
-		DWORD dwThreadID;
-		HANDLE hThread = ::CreateThread(NULL, 0, MonitorProc, this, 0, &dwThreadID);
-		if(hThread==NULL)
-		{
-			::CloseHandle(m_hEventShutdown);
-		}
-		return hThread;
-	}
-
-	static DWORD WINAPI MonitorProc(_In_ void* pv) throw()
-	{
-		CAtlExeModuleT<T>* p = static_cast<CAtlExeModuleT<T>*>(pv);
-		p->MonitorShutdown();
-		return 0;
-	}
-#endif	// _ATL_NO_COM_SUPPORT
-
-	int WinMain(_In_ int nShowCmd) throw()
-	{
-		if (CAtlBaseModule::m_bInitFailed)
-		{
-			ATLASSERT(0);
-			return -1;
-		}
-		T* pT = static_cast<T*>(this);
-		HRESULT hr = S_OK;
-
-#if !defined(_ATL_NO_COM_SUPPORT)
-		hr = T::InitializeCom();
-		if (FAILED(hr))
-		{
-			// Ignore RPC_E_CHANGED_MODE if CLR is loaded. Error is due to CLR initializing
-			// COM and InitializeCOM trying to initialize COM with different flags.
-			if (hr != RPC_E_CHANGED_MODE || GetModuleHandle(_T("Mscoree.dll")) == NULL)
-			{
-				ATLASSERT(0);
-				return hr;
-			}
-		}
-		else
-		{
-			m_bComInitialized = true;
-		}
-#endif	//  !defined(_ATL_NO_COM_SUPPORT)
-
-		LPTSTR lpCmdLine = GetCommandLine();
-		if (pT->ParseCommandLine(lpCmdLine, &hr) == true)
-			hr = pT->Run(nShowCmd);
-
-#ifdef _DEBUG
-		// Prevent false memory leak reporting. ~CAtlWinModule may be too late.
-		_AtlWinModule.Term();
-#endif	// _DEBUG
-
-#ifndef _ATL_NO_COM_SUPPORT
-		if (m_bComInitialized)
-			T::UninitializeCom();
-#endif // _ATL_NO_COM_SUPPORT
-
-		return hr;
-	}
-
-	// Scan command line and perform registration
-	// Return value specifies if server should run
-
-	// Parses the command line and registers/unregisters the rgs file if necessary
-	bool ParseCommandLine(
-		_In_z_ LPCTSTR lpCmdLine,
-		_Out_ HRESULT* pnRetCode) throw()
-	{
-		*pnRetCode = S_OK;
-
-		TCHAR szTokens[] = _T("-/");
-
-		T* pT = static_cast<T*>(this);
-		LPCTSTR lpszToken = FindOneOf(lpCmdLine, szTokens);
-		while (lpszToken != NULL)
-		{
-			if (WordCmpI(lpszToken, _T("UnregServer"))==0)
-			{
-				*pnRetCode = pT->UnregisterServer(TRUE);
-				if (SUCCEEDED(*pnRetCode))
-					*pnRetCode = pT->UnregisterAppId();
-				return false;
-			}
-
-			if (WordCmpI(lpszToken, _T("RegServer"))==0)
-			{
-				*pnRetCode = pT->RegisterAppId();
-				if (SUCCEEDED(*pnRetCode))
-					*pnRetCode = pT->RegisterServer(TRUE);
-				return false;
-			}
-
-			if (WordCmpI(lpszToken, _T("UnregServerPerUser"))==0)
-			{
-				*pnRetCode = AtlSetPerUserRegistration(true);
-				if (FAILED(*pnRetCode))
-				{
-					return false;
-				}
-
-				*pnRetCode = pT->UnregisterServer(TRUE);
-				if (SUCCEEDED(*pnRetCode))
-					*pnRetCode = pT->UnregisterAppId();
-				return false;
-			}
-
-			if (WordCmpI(lpszToken, _T("RegServerPerUser"))==0)
-			{
-				*pnRetCode = AtlSetPerUserRegistration(true);
-				if (FAILED(*pnRetCode))
-				{
-					return false;
-				}
-
-				*pnRetCode = pT->RegisterAppId();
-				if (SUCCEEDED(*pnRetCode))
-					*pnRetCode = pT->RegisterServer(TRUE);
-				return false;
-			}
-
-			lpszToken = FindOneOf(lpszToken, szTokens);
-		}
-
-		return true;
-	}
-
-	HRESULT PreMessageLoop(_In_ int /*nShowCmd*/) throw()
-	{
-		HRESULT hr = S_OK;
-		T* pT = static_cast<T*>(this);
-		pT;
-
-#ifndef _ATL_NO_COM_SUPPORT
-
-#if defined(_ATL_FREE_THREADED)
-
-		// NOTE: much of this code is duplicated in CAtlServiceModuleT::PreMessageLoop below, so
-		// if you make changes to either method make sure to change both methods (if necessary).
-
-		hr = pT->RegisterClassObjects(CLSCTX_LOCAL_SERVER,
-			REGCLS_MULTIPLEUSE | REGCLS_SUSPENDED);
-
-		if (FAILED(hr))
-			return hr;
-
-		if (hr == S_OK)
-		{
-			if (m_bDelayShutdown)
-			{
-				CHandle h(pT->StartMonitor());
-				if (h.m_h == NULL)
-				{
-					hr = E_FAIL;
-				}
-				else
-				{
-					hr = CoResumeClassObjects();
-					ATLASSERT(SUCCEEDED(hr));
-					if (FAILED(hr))
-					{
-						::SetEvent(m_hEventShutdown); // tell monitor to shutdown
-						::WaitForSingleObject(h, m_dwTimeOut * 2);
-					}
-				}
-			}
-			else
-			{
-				hr = CoResumeClassObjects();
-				ATLASSERT(SUCCEEDED(hr));
-			}
-
-			if (FAILED(hr))
-				pT->RevokeClassObjects();
-		}
-		else
-		{
-			m_bDelayShutdown = false;
-		}
-
-#else
-
-		hr = pT->RegisterClassObjects(CLSCTX_LOCAL_SERVER,
-			REGCLS_MULTIPLEUSE);
-		if (hr == S_OK)
-		{
-			if (m_bDelayShutdown && !pT->StartMonitor())
-			{
-				hr = E_FAIL;
-			}
-		}
-		else
-		{
-			m_bDelayShutdown = false;
-		}
-
-
-#endif
-
-#endif	// _ATL_NO_COM_SUPPORT
-
-		ATLASSERT(SUCCEEDED(hr));
-		return hr;
-	}
-
-	HRESULT PostMessageLoop() throw()
-	{
-		HRESULT hr = S_OK;
-
-#ifndef _ATL_NO_COM_SUPPORT
-
-		T* pT = static_cast<T*>(this);
-		hr = pT->RevokeClassObjects();
-		if (m_bDelayShutdown)
-			Sleep(m_dwPause); //wait for any threads to finish
-
-#endif	// _ATL_NO_COM_SUPPORT
-
-		return hr;
-	}
-
-	void RunMessageLoop() throw()
-	{
-		MSG msg;
-		while (GetMessage(&msg, 0, 0, 0) > 0)
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-	}
-
-	HRESULT Run(_In_ int nShowCmd = SW_HIDE) throw()
-	{
-		HRESULT hr = S_OK;
-
-		T* pT = static_cast<T*>(this);
-		hr = pT->PreMessageLoop(nShowCmd);
-
-		// Call RunMessageLoop only if PreMessageLoop returns S_OK.
-		if (hr == S_OK)
-		{
-			pT->RunMessageLoop();
-		}
-
-		// Call PostMessageLoop if PreMessageLoop returns success.
-		if (SUCCEEDED(hr))
-		{
-			hr = pT->PostMessageLoop();
-		}
-
-		ATLASSERT(SUCCEEDED(hr));
-		return hr;
-	}
-
-	// Register/Revoke All Class Factories with the OS (EXE only)
-	HRESULT RegisterClassObjects(
-		_In_ DWORD dwClsContext,
-		_In_ DWORD dwFlags) throw()
-	{
-		return AtlComModuleRegisterClassObjects(&_AtlComModule, dwClsContext, dwFlags);
-	}
-	HRESULT RevokeClassObjects() throw()
-	{
-		return AtlComModuleRevokeClassObjects(&_AtlComModule);
-	}
-};
-
-#ifndef _ATL_NO_SERVICE
-template <class T, UINT nServiceNameID>
-class ATL_NO_VTABLE CAtlServiceModuleT : 
-	public CAtlExeModuleT<T>
-{
-public :
-
-	CAtlServiceModuleT() throw()
-	{
-		m_bService = TRUE;
-		LoadString(_AtlBaseModule.GetModuleInstance(), nServiceNameID, m_szServiceName, sizeof(m_szServiceName) / sizeof(TCHAR));
-
-		// set up the initial service status
-		m_hServiceStatus = NULL;
-		m_status.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
-		m_status.dwCurrentState = SERVICE_STOPPED;
-		m_status.dwControlsAccepted = SERVICE_ACCEPT_STOP;
-		m_status.dwWin32ExitCode = 0;
-		m_status.dwServiceSpecificExitCode = 0;
-		m_status.dwCheckPoint = 0;
-		m_status.dwWaitHint = 0;
-	}
-
-	int WinMain(_In_ int nShowCmd) throw()
-	{
-		if (CAtlBaseModule::m_bInitFailed)
-		{
-			ATLASSERT(0);
-			return -1;
-		}
-
-		T* pT = static_cast<T*>(this);
-		HRESULT hr = S_OK;
-
-		LPTSTR lpCmdLine = GetCommandLine();
-		if (pT->ParseCommandLine(lpCmdLine, &hr) == true)
-			hr = pT->Start(nShowCmd);
-
-#ifdef _DEBUG
-		// Prevent false memory leak reporting. ~CAtlWinModule may be too late.
-		_AtlWinModule.Term();
-#endif	// _DEBUG
-		return hr;
-	}
-
-	HRESULT Start(_In_ int nShowCmd) throw()
-	{
-		T* pT = static_cast<T*>(this);
-		// Are we Service or Local Server
-		CRegKey keyAppID;
-		LONG lRes = keyAppID.Open(HKEY_CLASSES_ROOT, _T("AppID"), KEY_READ);
-		if (lRes != ERROR_SUCCESS)
-		{
-			m_status.dwWin32ExitCode = lRes;
-			return m_status.dwWin32ExitCode;
-		}
-
-		CRegKey key;
-		lRes = key.Open(keyAppID, pT->GetAppIdT(), KEY_READ);
-		if (lRes != ERROR_SUCCESS)
-		{
-			m_status.dwWin32ExitCode = lRes;
-			return m_status.dwWin32ExitCode;
-		}
-
-		TCHAR szValue[MAX_PATH];
-		DWORD dwLen = MAX_PATH;
-		lRes = key.QueryStringValue(_T("LocalService"), szValue, &dwLen);
-
-		m_bService = FALSE;
-		if (lRes == ERROR_SUCCESS)
-			m_bService = TRUE;
-
-		if (m_bService)
-		{
-			SERVICE_TABLE_ENTRY st[] =
-			{
-				{ m_szServiceName, _ServiceMain },
-				{ NULL, NULL }
-			};
-			if (::StartServiceCtrlDispatcher(st) == 0)
-				m_status.dwWin32ExitCode = GetLastError();
-			return m_status.dwWin32ExitCode;
-		}
-		// local server - call Run() directly, rather than
-		// from ServiceMain()
-		m_status.dwWin32ExitCode = pT->Run(nShowCmd);
-		return m_status.dwWin32ExitCode;
-	}
-
-	inline HRESULT RegisterAppId(_In_ bool bService = false) throw()
-	{
-		if (!Uninstall())
-			return E_FAIL;
-
-		HRESULT hr = T::UpdateRegistryAppId(TRUE);
-		if (FAILED(hr))
-			return hr;
-
-		CRegKey keyAppID;
-		LONG lRes = keyAppID.Open(HKEY_CLASSES_ROOT, _T("AppID"), KEY_WRITE);
-		if (lRes != ERROR_SUCCESS)
-			return AtlHresultFromWin32(lRes);
-
-		CRegKey key;
-
-		lRes = key.Create(keyAppID, T::GetAppIdT());
-		if (lRes != ERROR_SUCCESS)
-			return AtlHresultFromWin32(lRes);
-
-		key.DeleteValue(_T("LocalService"));
-
-		if (!bService)
-			return S_OK;
-
-		key.SetStringValue(_T("LocalService"), m_szServiceName);
-
-		// Create service
-		if (!Install())
-			return E_FAIL;
-		return S_OK;
-	}
-
-	HRESULT UnregisterAppId() throw()
-	{
-		if (!Uninstall())
-			return E_FAIL;
-		// First remove entries not in the RGS file.
-		CRegKey keyAppID;
-		LONG lRes = keyAppID.Open(HKEY_CLASSES_ROOT, _T("AppID"), KEY_WRITE);
-		if (lRes != ERROR_SUCCESS)
-			return AtlHresultFromWin32(lRes);
-
-		CRegKey key;
-		lRes = key.Open(keyAppID, T::GetAppIdT(), KEY_WRITE);
-		if (lRes != ERROR_SUCCESS)
-			return AtlHresultFromWin32(lRes);
-		key.DeleteValue(_T("LocalService"));
-
-		return T::UpdateRegistryAppId(FALSE);
-	}
-
-	// Parses the command line and registers/unregisters the rgs file if necessary
-	bool ParseCommandLine(
-		_In_z_ LPCTSTR lpCmdLine,
-		_Out_ HRESULT* pnRetCode) throw()
-	{
-		if (!CAtlExeModuleT<T>::ParseCommandLine(lpCmdLine, pnRetCode))
-			return false;
-
-		TCHAR szTokens[] = _T("-/");
-		*pnRetCode = S_OK;
-
-		T* pT = static_cast<T*>(this);
-		LPCTSTR lpszToken = FindOneOf(lpCmdLine, szTokens);
-		while (lpszToken != NULL)
-		{
-			if (WordCmpI(lpszToken, _T("Service"))==0)
-			{
-				*pnRetCode = pT->RegisterAppId(true);
-				if (SUCCEEDED(*pnRetCode))
-					*pnRetCode = pT->RegisterServer(TRUE);
-				return false;
-			}
-			lpszToken = FindOneOf(lpszToken, szTokens);
-		}
-		return true;
-	}
-
-	void ServiceMain(
-		_In_ DWORD dwArgc,
-		_In_count_(dwArgc) _Deref_pre_z_ LPTSTR* lpszArgv) throw()
-	{
-		lpszArgv;
-		dwArgc;
-		// Register the control request handler
-		m_status.dwCurrentState = SERVICE_START_PENDING;
-		m_hServiceStatus = RegisterServiceCtrlHandler(m_szServiceName, _Handler);
-		if (m_hServiceStatus == NULL)
-		{
-			LogEvent(_T("Handler not installed"));
-			return;
-		}
-		SetServiceStatus(SERVICE_START_PENDING);
-
-		m_status.dwWin32ExitCode = S_OK;
-		m_status.dwCheckPoint = 0;
-		m_status.dwWaitHint = 0;
-
-		T* pT = static_cast<T*>(this);
-#ifndef _ATL_NO_COM_SUPPORT
-
-		HRESULT hr = E_FAIL;
-		hr = T::InitializeCom();
-		if (FAILED(hr))
-		{
-			// Ignore RPC_E_CHANGED_MODE if CLR is loaded. Error is due to CLR initializing
-			// COM and InitializeCOM trying to initialize COM with different flags.
-			if (hr != RPC_E_CHANGED_MODE || GetModuleHandle(_T("Mscoree.dll")) == NULL)
-			{
-				return;
-			}
-		}
-		else
-		{
-			m_bComInitialized = true;
-		}
-
-		m_bDelayShutdown = false;
-#endif //_ATL_NO_COM_SUPPORT
-		// When the Run function returns, the service has stopped.
-		m_status.dwWin32ExitCode = pT->Run(SW_HIDE);
-
-#ifndef _ATL_NO_COM_SUPPORT
-		if (m_bService && m_bComInitialized)
-			T::UninitializeCom();
-#endif
-
-		SetServiceStatus(SERVICE_STOPPED);
-		LogEvent(_T("Service stopped"));
-	}
-
-	HRESULT Run(_In_ int nShowCmd = SW_HIDE) throw()
-	{
-		HRESULT hr = S_OK;
-		T* pT = static_cast<T*>(this);
-
-		hr = pT->PreMessageLoop(nShowCmd);
-
-		if (hr == S_OK)
-		{
-			pT->RunMessageLoop();
-		}
-
-		if (SUCCEEDED(hr))
-		{
-			hr = pT->PostMessageLoop();
-		}
-
-		return hr;
-	}
-
-	HRESULT PreMessageLoop(_In_ int nShowCmd) throw()
-	{
-		HRESULT hr = S_OK;
-		T* pT = static_cast<T*>(this);		
-
-		if (m_bService)
-		{
-			m_dwThreadID = GetCurrentThreadId();			
-			hr = pT->InitializeSecurity();
-
-			if (FAILED(hr))
-			{
-				return hr;
-			}
-		}
-
-#ifndef _ATL_NO_COM_SUPPORT
-
-#if defined(_ATL_FREE_THREADED)
-
-		// NOTE: much of this code is duplicated in CAtlExeModuleT::PreMessageLoop above, so if
-		// you make changes to either method make sure to change both methods (if necessary).
-
-		hr = pT->RegisterClassObjects(CLSCTX_LOCAL_SERVER, REGCLS_MULTIPLEUSE | REGCLS_SUSPENDED);
-		if (FAILED(hr))
-		{
-			return hr;
-		}
-
-		if (hr == S_OK)
-		{
-			if (m_bDelayShutdown)
-			{
-				CHandle h(pT->StartMonitor());
-				if (h.m_h == NULL)
-				{
-					hr = E_FAIL;
-				}
-				else
-				{
-					if (m_bService)
-					{
-						LogEvent(_T("Service started/resumed"));
-						SetServiceStatus(SERVICE_RUNNING);
-					}
-
-					hr = CoResumeClassObjects();
-					ATLASSERT(SUCCEEDED(hr));
-					if (FAILED(hr))
-					{
-						::SetEvent(m_hEventShutdown); // tell monitor to shutdown
-						::WaitForSingleObject(h, m_dwTimeOut * 2);
-					}
-				}
-			}
-			else
-			{
-				if (m_bService)
-				{
-					LogEvent(_T("Service started/resumed"));
-					SetServiceStatus(SERVICE_RUNNING);
-				}
-
-				hr = CoResumeClassObjects();
-				ATLASSERT(SUCCEEDED(hr));
-			}
-
-			if (FAILED(hr))
-				pT->RevokeClassObjects();
-		}
-		else
-		{
-			m_bDelayShutdown = false;
-		}
-
-#else
-		hr = CAtlExeModuleT<T>::PreMessageLoop(nShowCmd);
-#endif // _ATL_FREE_THREADED
-
-#endif	// _ATL_NO_COM_SUPPORT
-
-		ATLASSERT(SUCCEEDED(hr));
-		return hr;
-	}
-
-	void OnStop() throw()
-	{
-		SetServiceStatus(SERVICE_STOP_PENDING);
-		PostThreadMessage(m_dwThreadID, WM_QUIT, 0, 0);
-	}
-
-	void OnPause() throw()
-	{
-	}
-
-	void OnContinue() throw()
-	{
-	}
-
-	void OnInterrogate() throw()
-	{
-	}
-
-	void OnShutdown() throw()
-	{
-	}
-
-	void OnUnknownRequest(_In_ DWORD /*dwOpcode*/) throw()
-	{
-		LogEvent(_T("Bad service request"));
-	}
-
-	void Handler(_In_ DWORD dwOpcode) throw()
-	{
-		T* pT = static_cast<T*>(this);
-
-		switch (dwOpcode)
-		{
-		case SERVICE_CONTROL_STOP:
-			pT->OnStop();
-			break;
-		case SERVICE_CONTROL_PAUSE:
-			pT->OnPause();
-			break;
-		case SERVICE_CONTROL_CONTINUE:
-			pT->OnContinue();
-			break;
-		case SERVICE_CONTROL_INTERROGATE:
-			pT->OnInterrogate();
-			break;
-		case SERVICE_CONTROL_SHUTDOWN:
-			pT->OnShutdown();
-			break;
-		default:
-			pT->OnUnknownRequest(dwOpcode);
-		}
-	}
-
-	BOOL IsInstalled() throw()
-	{
-		BOOL bResult = FALSE;
-
-		SC_HANDLE hSCM = ::OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
-
-		if (hSCM != NULL)
-		{
-			SC_HANDLE hService = ::OpenService(hSCM, m_szServiceName, SERVICE_QUERY_CONFIG);
-			if (hService != NULL)
-			{
-				bResult = TRUE;
-				::CloseServiceHandle(hService);
-			}
-			::CloseServiceHandle(hSCM);
-		}
-		return bResult;
-	}
-	BOOL Install() throw()
-	{
-		if (IsInstalled())
-			return TRUE;
-
-		// Get the executable file path
-		TCHAR szFilePath[MAX_PATH + _ATL_QUOTES_SPACE];
-		DWORD dwFLen = ::GetModuleFileName(NULL, szFilePath + 1, MAX_PATH);
-		if( dwFLen == 0 || dwFLen == MAX_PATH )
-			return FALSE;
-
-		// Quote the FilePath before calling CreateService
-		szFilePath[0] = _T('\"');
-		szFilePath[dwFLen + 1] = _T('\"');
-		szFilePath[dwFLen + 2] = 0;
-
-		SC_HANDLE hSCM = ::OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
-		if (hSCM == NULL)
-		{
-			TCHAR szBuf[1024];
-			if (AtlLoadString(ATL_SERVICE_MANAGER_OPEN_ERROR, szBuf, 1024) == 0)
-#ifdef UNICODE
-				Checked::wcscpy_s(szBuf, _countof(szBuf), _T("Could not open Service Manager"));
-#else
-				Checked::strcpy_s(szBuf, _countof(szBuf), _T("Could not open Service Manager"));
-#endif
-			MessageBox(NULL, szBuf, m_szServiceName, MB_OK);
-			return FALSE;
-		}
-
-		SC_HANDLE hService = ::CreateService(
-			hSCM, m_szServiceName, m_szServiceName,
-			SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
-			SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
-			szFilePath, NULL, NULL, _T("RPCSS\0"), NULL, NULL);
-
-		if (hService == NULL)
-		{
-			::CloseServiceHandle(hSCM);
-			TCHAR szBuf[1024];
-			if (AtlLoadString(ATL_SERVICE_START_ERROR, szBuf, 1024) == 0)
-#ifdef UNICODE
-				Checked::wcscpy_s(szBuf, _countof(szBuf), _T("Could not start service"));
-#else
-				Checked::strcpy_s(szBuf, _countof(szBuf), _T("Could not start service"));
-#endif
-			MessageBox(NULL, szBuf, m_szServiceName, MB_OK);
-			return FALSE;
-		}
-
-		::CloseServiceHandle(hService);
-		::CloseServiceHandle(hSCM);
-		return TRUE;
-	}
-
-	BOOL Uninstall() throw()
-	{
-		if (!IsInstalled())
-			return TRUE;
-
-		SC_HANDLE hSCM = ::OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
-
-		if (hSCM == NULL)
-		{
-			TCHAR szBuf[1024];
-			if (AtlLoadString(ATL_SERVICE_MANAGER_OPEN_ERROR, szBuf, 1024) == 0)
-#ifdef UNICODE
-				Checked::wcscpy_s(szBuf, _countof(szBuf), _T("Could not open Service Manager"));
-#else
-				Checked::strcpy_s(szBuf, _countof(szBuf), _T("Could not open Service Manager"));
-#endif
-			MessageBox(NULL, szBuf, m_szServiceName, MB_OK);
-			return FALSE;
-		}
-
-		SC_HANDLE hService = ::OpenService(hSCM, m_szServiceName, SERVICE_STOP | DELETE);
-
-		if (hService == NULL)
-		{
-			::CloseServiceHandle(hSCM);
-			TCHAR szBuf[1024];
-			if (AtlLoadString(ATL_SERVICE_OPEN_ERROR, szBuf, 1024) == 0)
-#ifdef UNICODE
-				Checked::wcscpy_s(szBuf, _countof(szBuf), _T("Could not open service"));
-#else
-				Checked::strcpy_s(szBuf, _countof(szBuf), _T("Could not open service"));
-#endif
-			MessageBox(NULL, szBuf, m_szServiceName, MB_OK);
-			return FALSE;
-		}
-		SERVICE_STATUS status;
-		BOOL bRet = ::ControlService(hService, SERVICE_CONTROL_STOP, &status);
-		if (!bRet)
-		{
-			DWORD dwError = GetLastError();
-			if (!((dwError == ERROR_SERVICE_NOT_ACTIVE) ||  (dwError == ERROR_SERVICE_CANNOT_ACCEPT_CTRL && status.dwCurrentState == SERVICE_STOP_PENDING)))
-			{
-				TCHAR szBuf[1024];
-				if (AtlLoadString(ATL_SERVICE_STOP_ERROR, szBuf, 1024) == 0)
-#ifdef UNICODE
-					Checked::wcscpy_s(szBuf, _countof(szBuf), _T("Could not stop service"));
-#else
-					Checked::strcpy_s(szBuf, _countof(szBuf), _T("Could not stop service"));
-#endif
-				MessageBox(NULL, szBuf, m_szServiceName, MB_OK);
-			}
-		}
-
-		BOOL bDelete = ::DeleteService(hService);
-		::CloseServiceHandle(hService);
-		::CloseServiceHandle(hSCM);
-
-		if (bDelete)
-			return TRUE;
-
-		TCHAR szBuf[1024];
-		if (AtlLoadString(ATL_SERVICE_DELETE_ERROR, szBuf, 1024) == 0)
-#ifdef UNICODE
-			Checked::wcscpy_s(szBuf, _countof(szBuf), _T("Could not delete service"));
-#else
-			Checked::strcpy_s(szBuf, _countof(szBuf), _T("Could not delete service"));
-#endif
-		MessageBox(NULL, szBuf, m_szServiceName, MB_OK);
-		return FALSE;
-	}
-
-	LONG Unlock() throw()
-	{
-		LONG lRet;
-		if (m_bService)
-		{
-			// We are running as a service, therefore transition to zero does not
-			// unload the process
-			lRet = CAtlModuleT<T>::Unlock();
-		}
-		else
-		{
-			// We are running as EXE, use MonitorShutdown logic provided by CExeModule
-			lRet = CAtlExeModuleT<T>::Unlock();
-		}
-		return lRet;
-	}
-
-	void LogEventEx(
-		_In_ int id,
-		_In_opt_z_ LPCTSTR pszMessage=NULL,
-		_In_ WORD type = EVENTLOG_INFORMATION_TYPE) throw()
-	{
-		HANDLE hEventSource;
-		if (m_szServiceName)
-		{
-			/* Get a handle to use with ReportEvent(). */
-			hEventSource = RegisterEventSource(NULL, m_szServiceName);
-			if (hEventSource != NULL)
-			{
-				/* Write to event log. */
-				ReportEvent(hEventSource,
-							type,
-							(WORD)0,
-							id,
-							NULL,
-							(WORD)(pszMessage != NULL ? 1 : 0),
-							0,
-							pszMessage != NULL ? &pszMessage : NULL,
-							NULL);
-				DeregisterEventSource(hEventSource);
-			}
-		}
-	}
-
-#pragma warning(push)
-#pragma warning(disable : 4793)
-	void __cdecl LogEvent(
-		_In_z_ _Printf_format_string_ LPCTSTR pszFormat, ...) throw()
-	{
-		const int LOG_EVENT_MSG_SIZE = 256;
-
-		TCHAR chMsg[LOG_EVENT_MSG_SIZE];
-		HANDLE hEventSource;
-		LPTSTR lpszStrings[1];
-		va_list pArg;
-
-		va_start(pArg, pszFormat);
-		_vsntprintf_s(chMsg, LOG_EVENT_MSG_SIZE, LOG_EVENT_MSG_SIZE-1, pszFormat, pArg);
-		va_end(pArg);
-
-		chMsg[LOG_EVENT_MSG_SIZE - 1] = 0;
-
-		lpszStrings[0] = chMsg;
-
-		if (!m_bService)
-		{
-			// Not running as a service, so print out the error message
-			// to the console if possible
-			_putts(chMsg);
-		}
-
-		/* Get a handle to use with ReportEvent(). */
-		hEventSource = RegisterEventSource(NULL, m_szServiceName);
-		if (hEventSource != NULL)
-		{
-			/* Write to event log. */
-			ReportEvent(hEventSource, EVENTLOG_INFORMATION_TYPE, 0, 0, NULL, 1, 0, (LPCTSTR*) &lpszStrings[0], NULL);
-			DeregisterEventSource(hEventSource);
-		}
-	}
-#pragma warning(pop)
-
-	void SetServiceStatus(_In_ DWORD dwState) throw()
-	{
-		m_status.dwCurrentState = dwState;
-		::SetServiceStatus(m_hServiceStatus, &m_status);
-	}
-
-//Implementation
-protected:
-	static void WINAPI _ServiceMain(
-		_In_ DWORD dwArgc,
-		_In_count_(dwArgc) _Deref_pre_z_ LPTSTR* lpszArgv) throw()
-	{
-		((T*)_pAtlModule)->ServiceMain(dwArgc, lpszArgv);
-	}
-	static void WINAPI _Handler(_In_ DWORD dwOpcode) throw()
-	{
-		((T*)_pAtlModule)->Handler(dwOpcode);
-	}
-
-// data members
-public:
-	TCHAR m_szServiceName[256];
-	SERVICE_STATUS_HANDLE m_hServiceStatus;
-	SERVICE_STATUS m_status;
-	BOOL m_bService;
-	DWORD m_dwThreadID;
-};
-
-#endif //	_ATL_NO_SERVICE
-
 #endif	// !_AFX
 
 #ifdef _AFX
 
-class CAtlMfcModule : 
+class CAtlMfcModule :
 	public ATL::CAtlModuleT<CAtlMfcModule>
 {
 public :
@@ -4435,7 +3415,7 @@ namespace __identifier("<AtlImplementationDetails>")
 
 
 __declspec(selectany) CComModule* _pModule = NULL;
-class CComModule : 
+class CComModule :
 	public CAtlModuleT<CComModule>
 {
 public :
@@ -4664,7 +3644,7 @@ public :
 	HRESULT UnregisterAppId(_In_z_ LPCTSTR pAppId);
 
 	// Resource-based Registration
-#if defined(_ATL_STATIC_REGISTRY)	
+#if defined(_ATL_STATIC_REGISTRY)
 	virtual HRESULT WINAPI UpdateRegistryFromResourceD(
 		_In_opt_z_ LPCTSTR lpszRes,
 		_In_ BOOL bRegister,
@@ -4683,8 +3663,8 @@ public :
 	{
 		return CAtlModuleT<CComModule>::UpdateRegistryFromResourceD(lpszRes, bRegister, pMapEntries);
 	}
-#endif	
-	
+#endif
+
 	virtual HRESULT WINAPI UpdateRegistryFromResourceD(
 		_In_ UINT nResID,
 		_In_ BOOL bRegister,
@@ -5041,7 +4021,7 @@ class IAtlAutoThreadModule
 {
 public:
 #if defined(__MINGW32__)
-  virtual ~IAtlAutoThreadModule() {}
+	virtual ~IAtlAutoThreadModule() {}
 #endif
 	HRESULT CreateInstance(
 		_In_ void* pfnCreateInstance,
@@ -5056,7 +4036,7 @@ IAtlAutoThreadModule* _pAtlAutoThreadModule;
 #endif
 
 template <class T, class ThreadAllocator = CComSimpleThreadAllocator, DWORD dwWait = INFINITE>
-class ATL_NO_VTABLE CAtlAutoThreadModuleT : 
+class ATL_NO_VTABLE CAtlAutoThreadModuleT :
 	public IAtlAutoThreadModule
 {
 // This class is not for use in a DLL.
@@ -5195,7 +4175,7 @@ public:
 	}
 };
 
-class CAtlAutoThreadModule : 
+class CAtlAutoThreadModule :
 	public CAtlAutoThreadModuleT<CAtlAutoThreadModule>
 {
 public :
@@ -5861,7 +4841,7 @@ inline LONG CRegKey::QueryValue(
 					if ((*pdwCount) % sizeof(TCHAR) != 0 || pszValue[(*pdwCount) / sizeof(TCHAR) - 1] != 0)
 					{
 						pszValue[0]=_T('\0');
-		 				return ERROR_INVALID_DATA;
+						return ERROR_INVALID_DATA;
 					}
 					break;
 				case REG_MULTI_SZ:
@@ -7084,9 +6064,9 @@ ATLINLINE ATLAPI AtlLoadTypeLib(
 ATLPREFAST_UNSUPPRESS()
 
 ATLINLINE ATLAPI AtlRegisterClassCategoriesHelper(
-	_In_ REFCLSID clsid,
+  _In_ REFCLSID clsid,
     _In_opt_ const struct _ATL_CATMAP_ENTRY* pCatMap,
-	_In_ BOOL bRegister)
+  _In_ BOOL bRegister)
 {
    CComPtr< ICatRegister > pCatRegister;
    HRESULT hResult;
@@ -7095,76 +6075,76 @@ ATLINLINE ATLAPI AtlRegisterClassCategoriesHelper(
 
    if( pCatMap == NULL )
    {
-	  return( S_OK );
+    return( S_OK );
    }
 
    if (InlineIsEqualGUID(clsid, GUID_NULL))
    {
-	  ATLASSERT(0 && _T("Use OBJECT_ENTRY_NON_CREATEABLE_EX macro if you want to register class categories for non creatable objects."));
-	  return S_OK;
+    ATLASSERT(0 && _T("Use OBJECT_ENTRY_NON_CREATEABLE_EX macro if you want to register class categories for non creatable objects."));
+    return S_OK;
    }
 
-   hResult = CoCreateInstance( CLSID_StdComponentCategoriesMgr, NULL,
-	  CLSCTX_INPROC_SERVER, __uuidof(ICatRegister), (void**)&pCatRegister );
-   if( FAILED( hResult ) )
-   {
-	  // Since not all systems have the category manager installed, we'll allow
-	  // the registration to succeed even though we didn't register our
-	  // categories.  If you really want to register categories on a system
-	  // without the category manager, you can either manually add the
-	  // appropriate entries to your registry script (.rgs), or you can
-	  // redistribute comcat.dll.
-	  return( S_OK );
-   }
+	 hResult = CoCreateInstance( CLSID_StdComponentCategoriesMgr, NULL,
+		CLSCTX_INPROC_SERVER, __uuidof(ICatRegister), (void**)&pCatRegister );
+	 if( FAILED( hResult ) )
+	 {
+		// Since not all systems have the category manager installed, we'll allow
+		// the registration to succeed even though we didn't register our
+		// categories.  If you really want to register categories on a system
+		// without the category manager, you can either manually add the
+		// appropriate entries to your registry script (.rgs), or you can
+		// redistribute comcat.dll.
+		return( S_OK );
+	 }
 
    hResult = S_OK;
    pEntry = pCatMap;
    while( pEntry->iType != _ATL_CATMAP_ENTRY_END )
    {
-	  catid = *pEntry->pcatid;
-	  if( bRegister )
-	  {
-		 if( pEntry->iType == _ATL_CATMAP_ENTRY_IMPLEMENTED )
-		 {
-			hResult = pCatRegister->RegisterClassImplCategories( clsid, 1,
-			   &catid );
-		 }
-		 else
-		 {
-			ATLASSERT( pEntry->iType == _ATL_CATMAP_ENTRY_REQUIRED );
-			hResult = pCatRegister->RegisterClassReqCategories( clsid, 1,
-			   &catid );
-		 }
-		 if( FAILED( hResult ) )
-		 {
-			return( hResult );
-		 }
-	  }
-	  else
-	  {
-		 if( pEntry->iType == _ATL_CATMAP_ENTRY_IMPLEMENTED )
-		 {
-			pCatRegister->UnRegisterClassImplCategories( clsid, 1, &catid );
-		 }
-		 else
-		 {
-			ATLASSERT( pEntry->iType == _ATL_CATMAP_ENTRY_REQUIRED );
-			pCatRegister->UnRegisterClassReqCategories( clsid, 1, &catid );
-		 }
-	  }
-	  pEntry++;
+    catid = *pEntry->pcatid;
+    if( bRegister )
+    {
+     if( pEntry->iType == _ATL_CATMAP_ENTRY_IMPLEMENTED )
+     {
+      hResult = pCatRegister->RegisterClassImplCategories( clsid, 1,
+         &catid );
+     }
+     else
+     {
+      ATLASSERT( pEntry->iType == _ATL_CATMAP_ENTRY_REQUIRED );
+      hResult = pCatRegister->RegisterClassReqCategories( clsid, 1,
+         &catid );
+     }
+     if( FAILED( hResult ) )
+     {
+      return( hResult );
+     }
+    }
+    else
+    {
+     if( pEntry->iType == _ATL_CATMAP_ENTRY_IMPLEMENTED )
+     {
+      pCatRegister->UnRegisterClassImplCategories( clsid, 1, &catid );
+     }
+     else
+     {
+      ATLASSERT( pEntry->iType == _ATL_CATMAP_ENTRY_REQUIRED );
+      pCatRegister->UnRegisterClassReqCategories( clsid, 1, &catid );
+     }
+    }
+    pEntry++;
    }
 
    // When unregistering remove "Implemented Categories" and "Required Categories" subkeys if they are empty.
    if (!bRegister)
    {
-		OLECHAR szGUID[64];
-		::StringFromGUID2(clsid, szGUID, 64);
-		USES_CONVERSION_EX;
-		TCHAR* pszGUID = OLE2T_EX(szGUID, _ATL_SAFE_ALLOCA_DEF_THRESHOLD);
-		if (pszGUID != NULL)
-		{
-			TCHAR szKey[128];
+    OLECHAR szGUID[64];
+    ::StringFromGUID2(clsid, szGUID, 64);
+    USES_CONVERSION_EX;
+    TCHAR* pszGUID = OLE2T_EX(szGUID, _ATL_SAFE_ALLOCA_DEF_THRESHOLD);
+    if (pszGUID != NULL)
+    {
+      TCHAR szKey[128];
 #ifdef UNICODE
 			Checked::wcscpy_s(szKey, _countof(szKey), _T("CLSID\\"));
 			Checked::wcscat_s(szKey, _countof(szKey), pszGUID);
@@ -7210,8 +6190,8 @@ ATLINLINE ATLAPI AtlRegisterClassCategoriesHelper(
 				}
 			}
 		}
-   }
-   return( S_OK );
+	 }
+	 return( S_OK );
 }
 
 #endif // _ATL_DLL
