@@ -17,7 +17,7 @@
 
 void CWinApp::EnableModeless(BOOL bEnable)
 {
-    DoEnableModeless(bEnable);
+		DoEnableModeless(bEnable);
 }
 
 void CWinApp::DoEnableModeless(BOOL bEnable)
@@ -30,7 +30,7 @@ void CWinApp::DoEnableModeless(BOOL bEnable)
 
 int AFXAPI AfxMessageBox(LPCTSTR lpszText, UINT nType, UINT nIDHelp)
 {
-	CWinApp* pApp = AfxGetApp();
+  CWinApp* pApp = AfxGetApp();
   return 0;
 }
 
@@ -48,45 +48,6 @@ int AFXAPI AfxMessageBox(UINT nIDPrompt, UINT nType, UINT nIDHelp)
 
 ////////////////////////////////////////////////////////////////////////////
 // UI related CWnd functions
-
-HWND PASCAL CWnd::GetSafeOwner_(HWND hParent, HWND* pWndTop)
-{
-	// get window to start with
-	HWND hWnd = hParent;
-
-	// a popup window cannot be owned by a child window
-	while (hWnd != NULL && (::GetWindowLong(hWnd, GWL_STYLE) & WS_CHILD))
-		hWnd = ::GetParent(hWnd);
-
-	// determine toplevel window to disable as well
-	HWND hWndTop = hWnd, hWndTemp = hWnd;
-	for (;;)
-	{
-		if (hWndTemp == NULL)
-			break;
-		else
-			hWndTop = hWndTemp;
-		hWndTemp = ::GetParent(hWndTop);
-	}
-
-	// get last active popup of first non-child that was found
-	if (hParent == NULL && hWnd != NULL)
-		hWnd = ::GetLastActivePopup(hWnd);
-
-	// disable and store top level parent window if specified
-	if (pWndTop != NULL)
-	{
-		if (hWndTop != NULL && ::IsWindowEnabled(hWndTop) && hWndTop != hWnd)
-		{
-			*pWndTop = hWndTop;
-			::EnableWindow(hWndTop, FALSE);
-		}
-		else
-			*pWndTop = NULL;
-	}
-
-	return hWnd;    // return the owner as HWND
-}
 
 /////////////////////////////////////////////////////////////////////////////
 // UI related CCmdTarget functions

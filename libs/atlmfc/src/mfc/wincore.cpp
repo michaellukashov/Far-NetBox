@@ -26,10 +26,6 @@
 const UINT CWnd::m_nMsgDragList = ::RegisterWindowMessage(DRAGLISTMSGSTRING);
 
 // CWnds for setting z-order with SetWindowPos's pWndInsertAfter parameter
-const AFX_DATADEF CWnd CWnd::wndTop(HWND_TOP);
-const AFX_DATADEF CWnd CWnd::wndBottom(HWND_BOTTOM);
-const AFX_DATADEF CWnd CWnd::wndTopMost(HWND_TOPMOST);
-const AFX_DATADEF CWnd CWnd::wndNoTopMost(HWND_NOTOPMOST);
 
 const TCHAR _afxWnd[] = AFX_WND;
 const TCHAR _afxWndControlBar[] = AFX_WNDCONTROLBAR;
@@ -50,7 +46,7 @@ CWnd::CWnd()
 	m_pfnSuper = NULL;
 	m_nModalResult = 0;
 	// m_pDropTarget = NULL;
-#ifndef _AFX_NO_OCC_SUPPORT	
+#ifndef _AFX_NO_OCC_SUPPORT
 	m_pCtrlCont = NULL;
 	m_pCtrlSite = NULL;
 #endif
@@ -66,7 +62,7 @@ CWnd::CWnd(HWND hWnd)
 	m_pfnSuper = NULL;
 	m_nModalResult = 0;
 	// m_pDropTarget = NULL;
-#ifndef _AFX_NO_OCC_SUPPORT	
+#ifndef _AFX_NO_OCC_SUPPORT
 	m_pCtrlCont = NULL;
 	m_pCtrlSite = NULL;
 #endif
@@ -108,49 +104,10 @@ CWnd::ModifyStyleEx(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags)
 /////////////////////////////////////////////////////////////////////////////
 // Special helpers for certain windows messages
 
-AFX_STATIC void AFXAPI _AfxPreInitDialog(
-	CWnd* pWnd, LPRECT lpRectOld, DWORD* pdwStyleOld)
-{
-	ASSERT(lpRectOld != NULL);
-	ASSERT(pdwStyleOld != NULL);
-
-	pWnd->GetWindowRect(lpRectOld);
-	*pdwStyleOld = pWnd->GetStyle();
-}
-
-AFX_STATIC void AFXAPI _AfxPostInitDialog(
-	CWnd* pWnd, const RECT& rectOld, DWORD dwStyleOld)
-{
-	// must be hidden to start with
-	if (dwStyleOld & WS_VISIBLE)
-		return;
-
-	// must not be visible after WM_INITDIALOG
-	if (pWnd->GetStyle() & (WS_VISIBLE|WS_CHILD))
-		return;
-
-	// must not move during WM_INITDIALOG
-	CRect rect;
-	pWnd->GetWindowRect(rect);
-	if (rectOld.left != rect.left || rectOld.top != rect.top)
-		return;
-
-	// must be unowned or owner disabled
-	CWnd* pParent = pWnd->GetWindow(GW_OWNER);
-	if (pParent != NULL && pParent->IsWindowEnabled())
-		return;
-
-	if (!pWnd->CheckAutoCenter())
-		return;
-
-	// center modal dialog boxes/message boxes
-	// pWnd->CenterWindow();
-}
-
 AFX_STATIC void AFXAPI
 _AfxHandleActivate(CWnd* pWnd, WPARAM nState, CWnd* pWndOther)
 {
-	ASSERT(pWnd != NULL);		
+	ASSERT(pWnd != NULL);
 
 	// send WM_ACTIVATETOPLEVEL when top-level parents change
 	if (!(pWnd->GetStyle() & WS_CHILD))
@@ -208,15 +165,11 @@ LRESULT AFXAPI AfxCallWndProc(CWnd* pWnd, HWND hWnd, UINT nMsg,
 		// special case for WM_INITDIALOG
 		CRect rectOld;
 		DWORD dwStyle = 0;
-		if (nMsg == WM_INITDIALOG)
-			_AfxPreInitDialog(pWnd, &rectOld, &dwStyle);
 
 		// delegate to object's WindowProc
 		lResult = pWnd->WindowProc(nMsg, wParam, lParam);
 
 		// more special case for WM_INITDIALOG
-		if (nMsg == WM_INITDIALOG)
-			_AfxPostInitDialog(pWnd, rectOld, dwStyle);
 	}
 	CATCH_ALL(e)
 	{
@@ -273,11 +226,11 @@ LRESULT CWnd::Default()
 CWnd* PASCAL CWnd::FromHandle(HWND hWnd)
 {
 //	CHandleMap* pMap = afxMapHWND(TRUE); //create map if not exist
-	// ASSERT(pMap != NULL);
+  // ASSERT(pMap != NULL);
     CWnd* pWnd = NULL; // (CWnd*)pMap->FromHandle(hWnd);
 
 #ifndef _AFX_NO_OCC_SUPPORT
-	pWnd->AttachControlSite(pMap);
+  pWnd->AttachControlSite(pMap);
 #endif
 
 	// ASSERT(pWnd == NULL || pWnd->m_hWnd == hWnd);
@@ -287,14 +240,14 @@ CWnd* PASCAL CWnd::FromHandle(HWND hWnd)
 CWnd* PASCAL CWnd::FromHandlePermanent(HWND hWnd)
 {
 //	CHandleMap* pMap = afxMapHWND();
-	CWnd* pWnd = NULL;
+  CWnd* pWnd = NULL;
     /*if (pMap != NULL)
-	{
-		// only look in the permanent map - does no allocations
-		pWnd = (CWnd*)pMap->LookupPermanent(hWnd);
-		// ASSERT(pWnd == NULL || pWnd->m_hWnd == hWnd);
+  {
+    // only look in the permanent map - does no allocations
+    pWnd = (CWnd*)pMap->LookupPermanent(hWnd);
+    // ASSERT(pWnd == NULL || pWnd->m_hWnd == hWnd);
     }*/
-	return pWnd;
+  return pWnd;
 }
 
 BOOL CWnd::Attach(HWND hWndNew)
@@ -354,12 +307,12 @@ AfxWndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 
 	// all other messages route through message map
 	// CWnd* pWnd = CWnd::FromHandlePermanent(hWnd);
-	// ASSERT(pWnd != NULL);					
+	// ASSERT(pWnd != NULL);
 	// ASSERT(pWnd==NULL || pWnd->m_hWnd == hWnd);
 	// if (pWnd == NULL || pWnd->m_hWnd != hWnd)
 		// return ::DefWindowProc(hWnd, nMsg, wParam, lParam);
 	// return AfxCallWndProc(pWnd, hWnd, nMsg, wParam, lParam);
-  return 0;
+	return 0;
 }
 
 // always indirectly accessed via AfxGetAfxWndProc
@@ -381,7 +334,7 @@ LRESULT CALLBACK
 _AfxActivationWndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
 	WNDPROC oldWndProc = (WNDPROC)::GetProp(hWnd, _afxOldWndProc);
-	ASSERT(oldWndProc != NULL);	
+	ASSERT(oldWndProc != NULL);
 
 	LRESULT lResult = 0;
 	TRY
@@ -394,10 +347,8 @@ _AfxActivationWndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 				DWORD dwStyle;
 				CRect rectOld;
 				CWnd* pWnd = CWnd::FromHandle(hWnd);
-				_AfxPreInitDialog(pWnd, &rectOld, &dwStyle);
 				bCallDefault = FALSE;
 				lResult = CallWindowProc(oldWndProc, hWnd, nMsg, wParam, lParam);
-				_AfxPostInitDialog(pWnd, rectOld, dwStyle);
 			}
 			break;
 
@@ -493,7 +444,7 @@ _AfxCbtFilterHook(int code, WPARAM wParam, LPARAM lParam)
 			ASSERT(!bContextIsDLL);   // should never get here
 
 			static ATOM s_atomMenu = 0;
-			bool bSubclass = true;			
+			bool bSubclass = true;
 
 			if (s_atomMenu == 0)
 			{
@@ -511,7 +462,7 @@ _AfxCbtFilterHook(int code, WPARAM wParam, LPARAM lParam)
 						bSubclass = false;
 			}
 			else
-			{			
+			{
 				TCHAR szClassName[256];
 				if (::GetClassName(hWnd, szClassName, 256))
 				{
@@ -519,7 +470,7 @@ _AfxCbtFilterHook(int code, WPARAM wParam, LPARAM lParam)
 					if (_tcscmp(szClassName, _T("#32768")) == 0)
 						bSubclass = false;
 				}
-			}			
+			}
 			if (bSubclass)
 			{
 				// subclass the window with the proc which does gray backgrounds
@@ -609,10 +560,10 @@ BOOL CWnd::CreateEx(DWORD dwExStyle, LPCTSTR lpszClassName,
 	int x, int y, int nWidth, int nHeight,
 	HWND hWndParent, HMENU nIDorHMenu, LPVOID lpParam)
 {
-	ASSERT(lpszClassName == NULL || AfxIsValidString(lpszClassName) || 
+	ASSERT(lpszClassName == NULL || AfxIsValidString(lpszClassName) ||
 		AfxIsValidAtom(lpszClassName));
 	ENSURE_ARG(lpszWindowName == NULL || AfxIsValidString(lpszWindowName));
-	
+
 	// allow modification of several common create parameters
 	CREATESTRUCT cs;
 	cs.dwExStyle = dwExStyle;
@@ -780,7 +731,7 @@ LRESULT CWnd::DefWindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 		// return ::DefWindowProc(m_hWnd, nMsg, wParam, lParam);
 	// else
 		// return ::CallWindowProc(pfnWndProc, m_hWnd, nMsg, wParam, lParam);
-  return 0;
+	return 0;
 }
 
 WNDPROC* CWnd::GetSuperWndProcAddr()
@@ -879,7 +830,7 @@ void CWnd::OnMeasureItem(int /*nIDCtl*/, LPMEASUREITEMSTRUCT lpMeasureItemStruct
 // like RegisterClass, except will automatically call UnregisterClass
 BOOL AFXAPI AfxRegisterClass(WNDCLASS* lpWndClass)
 {
-	WNDCLASS wndcls;		
+	WNDCLASS wndcls;
 	// if (AfxCtxGetClassInfo(lpWndClass->hInstance, lpWndClass->lpszClassName,
 		// &wndcls))
 	{
@@ -938,7 +889,7 @@ LPCTSTR AFXAPI AfxRegisterWndClass(UINT nClassStyle,
 		ATL_CRT_ERRORCHECK_SPRINTF(_sntprintf_s(lpszName, _AFX_TEMP_CLASS_NAME_SIZE, _AFX_TEMP_CLASS_NAME_SIZE - 1, _T("Afx:%p:%x:%p:%p:%p"), hInst, nClassStyle,
 			hCursor, hbrBackground, hIcon));
 	}
-	
+
 	// see if the class already exists
 	WNDCLASS wndcls;
 	/*if (::AfxCtxGetClassInfo(hInst, lpszName, &wndcls))
@@ -1001,7 +952,7 @@ LRESULT CWnd::OnNTCtlColor(WPARAM wParam, LPARAM lParam)
 BOOL CWnd::RegisterTouchWindow(BOOL bRegister, ULONG ulFlags)
 {
 	// m_bIsTouchWindowRegistered = FALSE;
-	
+
 	// static HMODULE hUserDll = AfxCtxLoadLibrary(_T("user32.dll"));
 	// ENSURE(hUserDll != NULL);
 
@@ -1020,10 +971,10 @@ BOOL CWnd::RegisterTouchWindow(BOOL bRegister, ULONG ulFlags)
 	// {
 		// return (*pfUnregister)(GetSafeHwnd());
 	// }
-	
+
 	// m_bIsTouchWindowRegistered = (*pfRegister)(GetSafeHwnd(), ulFlags);
 	// return m_bIsTouchWindowRegistered;
-  return false;
+	return false;
 }
 
 BOOL CWnd::IsTouchWindow() const
@@ -1055,7 +1006,7 @@ BEGIN_MESSAGE_MAP(CWnd, CCmdTarget)
 	// ON_MESSAGE(WM_CTLCOLORMSGBOX, &CWnd::OnNTCtlColor)
 	// ON_MESSAGE(WM_CTLCOLORSCROLLBAR, &CWnd::OnNTCtlColor)
 	//{{AFX_MSG_MAP(CWnd)
-    ON_WM_SETFOCUS()
+		ON_WM_SETFOCUS()
 	// ON_WM_DRAWITEM()
 	// ON_WM_MEASUREITEM()
 	// ON_WM_CTLCOLOR()
@@ -1217,16 +1168,16 @@ BOOL CWnd::OnWndMsg(UINT message, WPARAM wParam, LPARAM lParam, LRESULT* pResult
    bHandled = FALSE;
    /*if ((m_pCtrlCont != NULL) && (m_pCtrlCont->m_nWindowlessControls > 0))
    {
-	  if (((message >= WM_MOUSEFIRST) && (message <= AFX_WM_MOUSELAST)) ||
-		 ((message >= WM_KEYFIRST) && (message <= WM_IME_KEYLAST)) ||
-		 ((message >= WM_IME_SETCONTEXT) && (message <= WM_IME_KEYUP)))
-	  {
-		 bHandled = m_pCtrlCont->HandleWindowlessMessage(message, wParam, lParam, &lResult);
-	  }
+    if (((message >= WM_MOUSEFIRST) && (message <= AFX_WM_MOUSELAST)) ||
+     ((message >= WM_KEYFIRST) && (message <= WM_IME_KEYLAST)) ||
+     ((message >= WM_IME_SETCONTEXT) && (message <= WM_IME_KEYUP)))
+    {
+     bHandled = m_pCtrlCont->HandleWindowlessMessage(message, wParam, lParam, &lResult);
+    }
    }*/
    if (bHandled)
    {
-	  goto LReturnTrue;
+    goto LReturnTrue;
    }
 
 	const AFX_MSGMAP* pMessageMap; pMessageMap = GetMessageMap();
@@ -1328,7 +1279,7 @@ LDispatch:
 		break;
 
 	case AfxSig_v_u_W:
-		(this->*mmf.pfn_v_u_W)(static_cast<UINT>(wParam), 
+		(this->*mmf.pfn_v_u_W)(static_cast<UINT>(wParam),
 			CWnd::FromHandle(reinterpret_cast<HWND>(lParam)));
 		break;
 
@@ -1381,18 +1332,18 @@ LDispatch:
 
 	case AfxSig_l_uu_M:
 		break;
-		
+
 	case AfxSig_v_b_h:
-	    (this->*mmf.pfn_v_b_h)(static_cast<BOOL>(wParam), 
+			(this->*mmf.pfn_v_b_h)(static_cast<BOOL>(wParam),
 			reinterpret_cast<HANDLE>(lParam));
 		break;
 
 	case AfxSig_v_h_v:
-	    (this->*mmf.pfn_v_h)(reinterpret_cast<HANDLE>(wParam));
+			(this->*mmf.pfn_v_h)(reinterpret_cast<HANDLE>(wParam));
 		break;
 
 	case AfxSig_v_h_h:
-	    (this->*mmf.pfn_v_h_h)(reinterpret_cast<HANDLE>(wParam), 
+			(this->*mmf.pfn_v_h_h)(reinterpret_cast<HANDLE>(wParam),
 			reinterpret_cast<HANDLE>(lParam));
 		break;
 
@@ -1495,7 +1446,7 @@ LDispatch:
 		break;
 
 	case AfxSig_v_b_NCCALCSIZEPARAMS:
-		(this->*mmf.pfn_v_b_NCCALCSIZEPARAMS)(static_cast<BOOL>(wParam), 
+		(this->*mmf.pfn_v_b_NCCALCSIZEPARAMS)(static_cast<BOOL>(wParam),
 			reinterpret_cast<NCCALCSIZE_PARAMS*>(lParam));
 		break;
 
@@ -1943,25 +1894,25 @@ void CWnd::OnParentNotify(UINT message, LPARAM lParam)
 }
 
 void CWnd::OnSetFocus(CWnd*)
-{ 
+{
    BOOL bHandled;
 
    bHandled = FALSE;
 #ifndef _AFX_NO_OCC_SUPPORT
    if (m_pCtrlCont != NULL)
    {
-	  bHandled = m_pCtrlCont->HandleSetFocus();
+    bHandled = m_pCtrlCont->HandleSetFocus();
    }
 #endif  //!_AFX_NO_OCC_SUPPORT
    if( !bHandled )
    {
-	  Default();
+    Default();
    }
 }
 
 LRESULT CWnd::OnActivateTopLevel(WPARAM wParam, LPARAM)
 {
-	return 0;
+  return 0;
 }
 
 BOOL _afxGotScrollLines;
@@ -1974,7 +1925,7 @@ void CWnd::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
 	// force refresh of settings that we cache
 	_afxGotScrollLines = FALSE;
 
-	/*if (m_pCtrlCont != NULL) 
+	/*if (m_pCtrlCont != NULL)
 	{
 		m_pCtrlCont->BroadcastAmbientPropertyChange( DISPID_AMBIENT_LOCALEID );
 	}*/
@@ -2037,7 +1988,7 @@ public:
 	{
 		AfxOleLockApp();
 	}
-	// Set refcount to -(LONG_MAX/2) to protect destruction and 
+	// Set refcount to -(LONG_MAX/2) to protect destruction and
 	// also catch mismatched Release in debug builds
 	~CMFCComObject()
 	{
@@ -2095,7 +2046,7 @@ public:
 		}
 		*pp = p;
 		return hRes;
-	}	
+	}
 };
 
 long CWnd::GetWindowedChildCount()
@@ -2107,7 +2058,7 @@ long CWnd::GetWindowedChildCount()
 
 long CWnd::GetAccessibleChildCount()
 {
-    return 0; // GetWindowedChildCount() + GetWindowLessChildCount();
+		return 0; // GetWindowedChildCount() + GetWindowLessChildCount();
 }
 
 HRESULT CWnd::GetAccessibleChild(VARIANT varChild, IDispatch** ppdispChild)
@@ -2147,7 +2098,7 @@ HRESULT CWnd::GetAccessibleName(VARIANT varChild, BSTR* pszName)
 		long lCount = GetWindowedChildCount();
 		if (varChild.lVal > lCount)
 		{
- 			/* if (m_pCtrlCont != NULL)
+			/* if (m_pCtrlCont != NULL)
 			{
 				// Add to the count the number of windowless active X controls.
 				POSITION pos = m_pCtrlCont->m_listSitesOrWnds.GetHeadPosition();
@@ -2187,9 +2138,9 @@ void CWnd::OnPaint()
 {
    /*if (m_pCtrlCont != NULL)
    {
-	  // Paint windowless controls
-	  CPaintDC dc(this);
-	  m_pCtrlCont->OnPaint(&dc);
+    // Paint windowless controls
+    CPaintDC dc(this);
+    m_pCtrlCont->OnPaint(&dc);
    }*/
 
    Default();
@@ -2384,7 +2335,7 @@ BOOL CWnd::SetOccDialogInfo(_AFX_OCC_DIALOG_INFO*)
 	return FALSE;
 }
 _AFX_OCC_DIALOG_INFO* CWnd::GetOccDialogInfo()
-{	
+{
 	return NULL;
 }
 
@@ -2634,7 +2585,7 @@ BOOL CWnd::SubclassWindow(HWND hWnd)
 	{
 		ASSERT(FALSE);
 		// undo the subclassing if continuing after assert
-	  ::SetWindowLongPtr(hWnd, GWLP_WNDPROC, (INT_PTR)oldWndProc);
+		::SetWindowLongPtr(hWnd, GWLP_WNDPROC, (INT_PTR)oldWndProc);
 	}
 #endif
 
