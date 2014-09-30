@@ -36,15 +36,9 @@ void AFXAPI AfxUnregisterWndClasses()
 
 }
 void AFXAPI AfxWinTerm(void)
-{	
+{
 	AfxUnregisterWndClasses();
 	// cleanup OLE if required
-	CWinThread* pThread = AfxGetApp();
-	if (pThread != NULL && pThread->m_lpfnOleTermOrFreeLib != NULL)
-		(*pThread->m_lpfnOleTermOrFreeLib)(TRUE, FALSE);
-
-	// cleanup thread local tooltip window
-	AFX_MODULE_THREAD_STATE* pModuleThreadState = AfxGetModuleThreadState();
 
 	_AFX_THREAD_STATE* pThreadState = AfxGetThreadState();
 	if (!afxContextIsDLL)
@@ -61,9 +55,9 @@ void AFXAPI AfxWinTerm(void)
 			pThreadState->m_hHookOldCbtFilter = NULL;
 		}
 	}
-    // We used to suppress all exceptions here. But that's the wrong thing
-    // to do. If this process crashes, we should allow Windows to crash
-    // the process and invoke watson.
+		// We used to suppress all exceptions here. But that's the wrong thing
+		// to do. If this process crashes, we should allow Windows to crash
+		// the process and invoke watson.
 }
 
 /////////////////////////////////////////////////////////////////////////////

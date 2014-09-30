@@ -64,7 +64,7 @@
 // #ifndef __IThumbnailProvider_INTERFACE_DEFINED__
 	// #include <thumbcache.h>  // for IThumbnailProvider
 // #endif
-#endif 
+#endif
 
 #ifndef _AFX_NO_AFXCMN_SUPPORT
 #ifdef _AFX_PACKING
@@ -193,7 +193,7 @@ enum AFX_HELP_TYPE
 #include <atltypes.h>
 #endif
 
-// macro to be used in ATL search/organize/preview/thumbnail handlers with MFC document support 
+// macro to be used in ATL search/organize/preview/thumbnail handlers with MFC document support
 #define DECLARE_DOCUMENT(classDocument)\
 protected:\
 	virtual IDocument* CreateDocument()\
@@ -311,8 +311,8 @@ public:
 	CWnd* m_pDlgWnd;           // container usually a dialog
 
 // Operations (for implementors of DDX and DDV procs)
-	HWND PrepareCtrl(int nIDC);     
-	HWND PrepareEditCtrl(int nIDC); 
+	HWND PrepareCtrl(int nIDC);
+	HWND PrepareEditCtrl(int nIDC);
 	void Fail();                    // will throw exception
 
 	CDataExchange(CWnd* pDlgWnd, BOOL bSaveAndValidate);
@@ -322,7 +322,7 @@ public:
 #endif
 
 // Implementation
-   UINT m_idLastControl;      // last control used (for validation)
+	 UINT m_idLastControl;      // last control used (for validation)
 	BOOL m_bEditLastControl;   // last control was an edit item
 };
 
@@ -1159,13 +1159,13 @@ public:
 		LPVOID lpParam = NULL);
 
 #ifndef _AFX_NO_OCC_SUPPORT
-	// for wrapping OLE controls
+  // for wrapping OLE controls
 
    //Overload for special controls (WinForms), that require more than CLSID.
    BOOL CreateControl(const CControlCreationInfo& creationInfo, DWORD dwStyle,
-	const POINT* ppt, const SIZE* psize, CWnd* pParentWnd, UINT nID);
+  const POINT* ppt, const SIZE* psize, CWnd* pParentWnd, UINT nID);
 
-	LPUNKNOWN GetControlUnknown();
+  LPUNKNOWN GetControlUnknown();
 //	BOOL PaintWindowlessControls(CDC *pDC);
 #endif
 
@@ -1225,27 +1225,6 @@ public:
 	int GetWindowText(_Out_z_cap_post_count_(nMaxCount, return + 1) LPTSTR lpszStringBuf, _In_ int nMaxCount) const;
 	void GetWindowText(CString& rString) const;
 	int GetWindowTextLength() const;
-
-// Window Size and Position Functions
-	BOOL IsIconic() const;
-	BOOL IsZoomed() const;
-	void MoveWindow(int x, int y, int nWidth, int nHeight,
-				BOOL bRepaint = TRUE);
-	void MoveWindow(LPCRECT lpRect, BOOL bRepaint = TRUE);
-	int SetWindowRgn(HRGN hRgn, BOOL bRedraw);
-	int GetWindowRgn(HRGN hRgn) const;
-
-	static AFX_DATA const CWnd wndTop; // SetWindowPos's pWndInsertAfter
-	static AFX_DATA const CWnd wndBottom; // SetWindowPos's pWndInsertAfter
-	static AFX_DATA const CWnd wndTopMost; // SetWindowPos pWndInsertAfter
-	static AFX_DATA const CWnd wndNoTopMost; // SetWindowPos pWndInsertAfter
-
-	BOOL SetWindowPos(const CWnd* pWndInsertAfter, int x, int y,
-				int cx, int cy, UINT nFlags);
-	UINT ArrangeIconicWindows();
-	void BringWindowToTop();
-	void GetWindowRect(LPRECT lpRect) const;
-	void GetClientRect(LPRECT lpRect) const;
 
 	BOOL GetWindowPlacement(WINDOWPLACEMENT* lpwndpl) const;
 	BOOL SetWindowPlacement(const WINDOWPLACEMENT* lpwndpl);
@@ -1440,7 +1419,7 @@ public:
 
 #ifndef _AFX_NO_OCC_SUPPORT
 // OLE control wrapper functions
-   COleControlSite* GetOleControlSite(UINT idControl) const;
+	 COleControlSite* GetOleControlSite(UINT idControl) const;
 	void AFX_CDECL InvokeHelper(DISPID dwDispID, WORD wFlags,
 		VARTYPE vtRet, void* pvRet, const BYTE* pbParamInfo, ...);
 	void AFX_CDECL SetProperty(DISPID dwDispID, VARTYPE vtProp, ...);
@@ -1459,19 +1438,19 @@ public :
 	// Windows 7 taskbar Tabs support
 
 	/// <summary>
-	/// Called by the framework when it needs to obtain a bitmap to be displayed on Windows 7 tab thumbnail, 
+	/// Called by the framework when it needs to obtain a bitmap to be displayed on Windows 7 tab thumbnail,
 	/// or on the client for application peek. </summary>
 	/// <description>
 	/// Override this method in a derived class and draw on the specified device context in order to customize thumbnail and peek.
-	/// If bThumbnail is TRUE, szRequiredThumbnailSize can be ignored. In this case you should be aware 
-	/// that you draw full sized bitmap (e.g. a bitmap that cover the whole client area). The device context (dc) comes with selected 32 bits bitmap. 
+	/// If bThumbnail is TRUE, szRequiredThumbnailSize can be ignored. In this case you should be aware
+	/// that you draw full sized bitmap (e.g. a bitmap that cover the whole client area). The device context (dc) comes with selected 32 bits bitmap.
 	/// The default implementation sends WM_PRINT to this window with PRF_CLIENT, PRF_CHILDREN and PRF_NONCLIENT flags.</description>
 	/// <param name="dc"> Specifies the device context.</param>
 	/// <param name="rect"> Specifies the bounding rectangle of area to render.</param>
 	/// <param name="szRequiredThumbnailSize"> Specifies the size of target thumbnail. Should be ignored if bIsThumbnail is FALSE.</param>
 	/// <param name="bIsThumbnail"> Specifies whether this method is called for iconic thumbnail or live preview (peek).</param>
 	/// <param name="bAlphaChannelSet"> Output parameter. Set it to TRUE if your implementation initializes alpha channel of a bitmap
-	/// selected in dc.</param> 
+	/// selected in dc.</param>
 	// virtual void OnDrawIconicThumbnailOrLivePreview(CDC& dc, CRect rect, CSize szRequiredThumbnailSize, BOOL bIsThumbnail, BOOL& bAlphaChannelSet);
 
 protected :
@@ -1649,7 +1628,7 @@ public:
 
 	/// <summary>
 	/// Register/Unregister window Windows touch support</summary>
-	/// <returns> 
+	/// <returns>
 	/// TRUE if succeeds; otherwise FALSE.</returns>
 	/// <param name="bRegister">TRUE - register Windows touch support; FALSE - otherwise.</param>
 	/// <param name="ulFlags">A set of bit flags that specify optional modifications. This field may contain 0 or one of the following values: TWF_FINETOUCH; TWF_WANTPALM</param>
@@ -1657,7 +1636,7 @@ public:
 
 	/// <summary>
 	/// Specifies whether CWnd has touch support</summary>
-	/// <returns> 
+	/// <returns>
 	/// TRUE if CWnd has touch support; otherwise FALSE.</returns>
 	BOOL IsTouchWindow() const;
 
@@ -1681,7 +1660,7 @@ protected:
 
 	// for touch:
 	BOOL m_bIsTouchWindowRegistered;
-	
+
 // Implementation
 public:
 	virtual ~CWnd();
@@ -1756,7 +1735,7 @@ protected:
 	// cch      - size of the buffer in TCHAR to be pass to the windows message, uMsg
 	// cchBegin - initial size to allocate
 	// cchEnd   - maximum size to allocate
-	// uMsg     - window message 
+	// uMsg     - window message
 	// lParam   - the LPARAM of the message.  This is pass by reference because it could potentially be alias of pszText/cch for some messages.
 	// wParam   - the WPARAM of the message.  This is pass by reference because it could potentially be alias of pszText/cch for some messages.
 	// strOut   - the CString containing the received text
@@ -1770,7 +1749,7 @@ protected:
 		TReturnType retCode = errCode;
 		strOut = CString();
 		cch = cchBegin;
-		do 
+		do
 		{
 			pszText = strOut.GetBufferSetLength(cch);
 			retCode = static_cast<TReturnType>(this->SendMessage(uMsg, wParam, lParam));
@@ -1986,7 +1965,6 @@ void AFXAPI AfxWinTerm();
 ULONG AFXAPI AfxGetDllVersion();
 #endif
 
-CWinApp* AFXAPI AfxGetApp();
 CWnd* AFXAPI AfxGetMainWnd();
 HINSTANCE AFXAPI AfxGetInstanceHandle();
 HINSTANCE AFXAPI AfxGetResourceHandle();
@@ -2008,7 +1986,7 @@ HINSTANCE AFXAPI AfxFindResourceHandle(LPCTSTR lpszName, LPCTSTR lpszType);
 
 /// <summary>
 /// Deletes the subkeys and values of the specified key recursively.</summary>
-/// <returns> 
+/// <returns>
 /// If the function succeeds, the return value is ERROR_SUCCESS. If the function fails, the return value is a nonzero error code defined in Winerror.h</returns>
 /// <param name="hKey">A handle to an open registry key.</param>
 /// <param name="lpSubKey">The name of the key to be deleted.</param>
@@ -2070,7 +2048,7 @@ protected:
 #define _AFX_MRU_MAX_COUNT 16   // currently allocated id range supports 16
 
 #define _AFX_SYSPOLICY_NOTINITIALIZED			0
-#define _AFX_SYSPOLICY_NORUN					1 
+#define _AFX_SYSPOLICY_NORUN					1
 #define _AFX_SYSPOLICY_NODRIVES					2
 #define _AFX_SYSPOLICY_RESTRICTRUN				4
 #define _AFX_SYSPOLICY_NONETCONNECTDISCONNECTD	8
@@ -2104,272 +2082,6 @@ struct _AfxSysPolicies
 #define AFX_RESTART_MANAGER_SUPPORT_ALL_ASPECTS			AFX_RESTART_MANAGER_SUPPORT_NO_AUTOSAVE | AFX_RESTART_MANAGER_AUTOSAVE_AT_RESTART | AFX_RESTART_MANAGER_AUTOSAVE_AT_INTERVAL | AFX_RESTART_MANAGER_RESTORE_AUTOSAVED_FILES
 #define AFX_RESTART_MANAGER_SUPPORT_RESTART_ASPECTS		AFX_RESTART_MANAGER_SUPPORT_RESTART | AFX_RESTART_MANAGER_AUTOSAVE_AT_RESTART | AFX_RESTART_MANAGER_REOPEN_PREVIOUS_FILES | AFX_RESTART_MANAGER_RESTORE_AUTOSAVED_FILES
 #define AFX_RESTART_MANAGER_SUPPORT_RECOVERY_ASPECTS	AFX_RESTART_MANAGER_SUPPORT_RECOVERY | AFX_RESTART_MANAGER_AUTOSAVE_AT_INTERVAL | AFX_RESTART_MANAGER_REOPEN_PREVIOUS_FILES | AFX_RESTART_MANAGER_RESTORE_AUTOSAVED_FILES
-
-class CWinApp : public CWinThread
-{
-	DECLARE_DYNAMIC(CWinApp)
-public:
-
-// Constructor
-	/* explicit */ CWinApp(LPCTSTR lpszAppName = NULL);     // app name defaults to EXE name
-
-// Attributes
-	// Startup args (do not change)
-
-	// This module's hInstance.
-	HINSTANCE m_hInstance;
-
-	// Pointer to the command-line.
-	LPTSTR m_lpCmdLine;
-
-	// Initial state of the application's window; normally,
-	// this is an argument to ShowWindow().
-	int m_nCmdShow;
-
-	// Running args (can be changed in InitInstance)
-
-	// Human-redable name of the application. Normally set in
-	// constructor or retreived from AFX_IDS_APP_TITLE.
-	LPCTSTR m_pszAppName;
-
-	/// <summary>
-	/// Application User Model ID.</summary>
-	LPCTSTR m_pszAppID;
-
-	// Name of registry key for this application. See
-	// SetRegistryKey() member function.
-	LPCTSTR m_pszRegistryKey;
-
-	// Support for Shift+F1 help mode.
-
-	// TRUE if we're in SHIFT+F1 mode.
-	BOOL m_bHelpMode;
-
-public:
-	// set in constructor to override default
-
-	// Executable name (no spaces).
-	LPCTSTR m_pszExeName;
-
-	// Default based on this module's path.
-	LPCTSTR m_pszHelpFilePath;
-
-	// Default based on this application's name.
-	LPCTSTR m_pszProfileName;
-
-	// Sets and initializes usage of HtmlHelp instead of WinHelp.
-	void EnableHtmlHelp();
-
-	// Sets and initializes usage of HtmlHelp instead of WinHelp.
-	void SetHelpMode( AFX_HELP_TYPE eHelpType );
-	AFX_HELP_TYPE GetHelpMode();
-
-	// help mode used by the app
-	AFX_HELP_TYPE m_eHelpType;
-
-// Initialization Operations - should be done in InitInstance
-protected:
-	// Load MRU file list and last preview state.
-	void LoadStdProfileSettings(UINT nMaxMRU = _AFX_MRU_COUNT);
-
-	void EnableShellOpen();
-
-	// SetDialogBkColor is no longer supported.
-	// To change dialog background and text color, handle WM_CTLCOLORDLG instead.
-	AFX_DEPRECATED("CWinApp::SetDialogBkColor is no longer supported. Instead, handle WM_CTLCOLORDLG in your dialog")
-			void SetDialogBkColor(COLORREF clrCtlBk = RGB(192, 192, 192), COLORREF clrCtlText = RGB(0, 0, 0));
-
-	// Set registry key name to be used by CWinApp's
-	// profile member functions; prevents writing to an INI file.
-	void SetRegistryKey(LPCTSTR lpszRegistryKey);
-	void SetRegistryKey(UINT nIDRegistryKey);
-
-	/// <summary>
-	/// Explicitly sets Application User Model ID for the application. This method should be called before any user interface 
-	/// is presented to user (the best place is the application constructor).</summary>
-	/// <param name="lpcszAppID">Specifies the Application User Model ID.</param>
-	void SetAppID(LPCTSTR lpcszAppID);
-
-	// Enable3dControls and Enable3dControlsStatic are no longer necessary.
-	AFX_DEPRECATED("CWinApp::Enable3dControls is no longer needed. You should remove this call.")
-			BOOL Enable3dControls();
-#ifndef _AFXDLL
-	AFX_DEPRECATED("CWinApp::Enable3dControlsStatic is no longer needed. You should remove this call.")
-			BOOL Enable3dControlsStatic();
-#endif
-
-	void RegisterShellFileTypes(BOOL bCompat = FALSE);
-
-	// call after all doc templates are registered
-	void UnregisterShellFileTypes();
-
-public:
-
-	// Override in derived class.
-	// virtual void InitLibId();
-
-	// Register
-	// virtual BOOL Register();
-
-	// Unregisters everything this app was known to register.
-	// virtual BOOL Unregister();
-
-	/// <summary>
-	/// Deletes the subkeys and values of the specified key recursively.</summary>
-	/// <returns> 
-	/// If the function succeeds, the return value is ERROR_SUCCESS. If the function fails, the return value is a nonzero error code defined in Winerror.h</returns>
-	/// <param name="hParentKey">A handle to an open registry key.</param>
-	/// <param name="strKeyName">The name of the key to be deleted.</param>
-	LONG DelRegTree(HKEY hParentKey, const CString& strKeyName);
-
-// Running Operations - to be done on a running application
-	// Dealing with document templates
-	void AddDocTemplate(CDocTemplate* pTemplate);
-	POSITION GetFirstDocTemplatePosition() const;
-	CDocTemplate* GetNextDocTemplate(POSITION& pos) const;
-
-	// Printer DC Setup routine, 'struct tagPD' is a PRINTDLG structure.
-	void SelectPrinter(HANDLE hDevNames, HANDLE hDevMode,
-		BOOL bFreeOld = TRUE);
-
-	// Create a DC for the system default printer.
-//	BOOL CreatePrinterDC(CDC& dc);
-
-
-	BOOL GetPrinterDeviceDefaults(PRINTDLG* pPrintDlg);
-
-	// Run this app as an embedded object.
-	BOOL RunEmbedded();
-
-	// Run this app as an OLE automation server.
-	BOOL RunAutomated();
-
-	// Parse the command line for stock options and commands.
-	void ParseCommandLine(CCommandLineInfo& rCmdInfo);
-
-	// React to a shell-issued command line directive.
-	BOOL ProcessShellCommand(CCommandLineInfo& rCmdInfo);
-
-// Overridables
-
-	// Hooks for your initialization code
-	virtual BOOL InitApplication();
-
-	// exiting
-	void HideApplication();
-
-// Command Handlers
-protected:
-	// map to the following for file new/open
-	afx_msg void OnFileNew();
-	afx_msg void OnFileOpen();
-
-	// map to the following to enable print setup
-	afx_msg void OnFilePrintSetup();
-
-	// map to the following to enable help
-	afx_msg void OnContextHelp();   // shift-F1
-	afx_msg void OnHelp();          // F1 (uses current context)
-	afx_msg void OnHelpIndex();     // ID_HELP_INDEX
-	afx_msg void OnHelpFinder();    // ID_HELP_FINDER, ID_DEFAULT_HELP
-	afx_msg void OnHelpUsing();     // ID_HELP_USING
-
-// Implementation
-protected:
-	HGLOBAL m_hDevMode;             // printer Dev Mode
-	HGLOBAL m_hDevNames;            // printer Device Names
-	DWORD m_dwPromptContext;        // help context override for message box
-
-	HINSTANCE m_hLangResourceDLL;  // Satellite resource DLL
-
-	int m_nWaitCursorCount;         // for wait cursor (>0 => waiting)
-	HCURSOR m_hcurWaitCursorRestore; // old cursor to restore after wait cursor
-
-	void UpdatePrinterSelection(BOOL bForceDefaults);
-	void SaveStdProfileSettings();  // save options to .INI file
-
-public: // public for implementation access
-	CCommandLineInfo* m_pCmdInfo;
-
-	ATOM m_atomApp, m_atomSystemTopic;   // for DDE open
-	UINT m_nNumPreviewPages;        // number of default printed pages
-
-	size_t  m_nSafetyPoolSize;      // ideal size
-
-	void (AFXAPI* m_lpfnDaoTerm)();
-
-	void DevModeChange(_In_z_ LPTSTR lpDeviceName);
-	void SetCurrentHandles();
-
-	void EnableModeless(BOOL bEnable); // to disable OLE in-place dialogs
-
-	// overrides for implementation
-	virtual BOOL InitInstance();
-	virtual int ExitInstance(); // return app exit code
-	virtual BOOL RestartInstance(); // handle restart by Restart Manager
-	virtual int Run();
-	virtual BOOL OnIdle(LONG lCount); // return TRUE if more idle processing
-	virtual LRESULT ProcessWndProcException(CException* e, const MSG* pMsg);
-	virtual HINSTANCE LoadAppLangResourceDLL();
-
-    // Helper for message boxes; can work when no CWinApp can be found
-	static int ShowAppMessageBox(CWinApp *pApp, LPCTSTR lpszPrompt, UINT nType, UINT nIDPrompt);
-	static void DoEnableModeless(BOOL bEnable); // to disable OLE in-place dialogs
-
-public:
-	virtual ~CWinApp();
-
-	// helpers for registration
-
-	/// <summary>
-	/// returns key for HKEY_CURRENT_USER\"Software"\RegistryKey\AppName\lpszSection.</summary>
-	/// <returns> 
-	/// Section key if the function succeeds, NULL - otherwise</returns>
-	/// <param name="lpszSection">The name of the key to be obtained.</param>
-	HKEY GetSectionKey(LPCTSTR lpszSection);
-
-	/// <summary>
-	/// returns key for HKEY_CURRENT_USER\"Software"\RegistryKey\ProfileName.</summary>
-	/// <returns> 
-	/// Applixation key if the function succeeds, NULL - otherwise</returns>
-	HKEY GetAppRegistryKey();
-
-protected:
-	//{{AFX_MSG(CWinApp)
-	afx_msg void OnAppExit();
-	afx_msg void OnUpdateRecentFileMenu(CCmdUI* pCmdUI);
-	afx_msg BOOL OnOpenRecentFile(UINT nID);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
-public :
-	// System Policy Settings
-	virtual BOOL LoadSysPolicies(); // Override to load policies other than the system policies that MFC loads.
-	BOOL GetSysPolicyValue(DWORD dwPolicyID, BOOL *pbValue); // returns the policy's setting in the out parameter
-protected :
-	BOOL _LoadSysPolicies() throw(); // Implementation helper
-	DWORD m_dwPolicies;				// block for storing boolean system policies
-
-	// Restart Manager support
-	DWORD m_dwRestartManagerSupportFlags; // What aspects of restart/recovery does the application support?
-	int   m_nAutosaveInterval;            // How frequently are documents autosaved? (value in milliseconds)
-
-	BOOL m_bTaskbarInteractionEnabled;
-};
-
-/////////////////////////////////////////////////////////////////////////////
-// class CWaitCursor
-
-class CWaitCursor
-{
-// Construction/Destruction
-public:
-	CWaitCursor();
-	~CWaitCursor();
-
-// Operations
-public:
-	void Restore();
-};
 
 /////////////////////////////////////////////////////////////////////////////
 // Extra diagnostic tracing options

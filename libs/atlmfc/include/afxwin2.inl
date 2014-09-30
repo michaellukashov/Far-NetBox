@@ -71,34 +71,6 @@ _AFXWIN_INLINE CWnd* CWnd::EnsureTopLevelParent() const
     ENSURE_VALID(pWnd);
     return pWnd;
 }
-_AFXWIN_INLINE BOOL CWnd::IsIconic() const
-	{ ASSERT(::IsWindow(m_hWnd)); return ::IsIconic(m_hWnd); }
-_AFXWIN_INLINE BOOL CWnd::IsZoomed() const
-	{ ASSERT(::IsWindow(m_hWnd)); return ::IsZoomed(m_hWnd); }
-#ifdef _AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE void CWnd::MoveWindow(int x, int y, int nWidth, int nHeight, BOOL bRepaint)
-	{ ASSERT(::IsWindow(m_hWnd)); ::MoveWindow(m_hWnd, x, y, nWidth, nHeight, bRepaint); }
-#endif //_AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE void CWnd::MoveWindow(LPCRECT lpRect, BOOL bRepaint)
-	{ MoveWindow(lpRect->left, lpRect->top, lpRect->right - lpRect->left,
-		lpRect->bottom - lpRect->top, bRepaint); }
-#ifdef _AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE BOOL CWnd::SetWindowPos(const CWnd* pWndInsertAfter, int x, int y, int cx, int cy, UINT nFlags)
-	{ ASSERT(::IsWindow(m_hWnd)); return ::SetWindowPos(m_hWnd, pWndInsertAfter->GetSafeHwnd(),
-		x, y, cx, cy, nFlags); }
-#endif //_AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE UINT CWnd::ArrangeIconicWindows()
-	{ ASSERT(::IsWindow(m_hWnd)); return ::ArrangeIconicWindows(m_hWnd); }
-_AFXWIN_INLINE int CWnd::SetWindowRgn(HRGN hRgn, BOOL bRedraw)
-	{ ASSERT(::IsWindow(m_hWnd)); return ::SetWindowRgn(m_hWnd, hRgn, bRedraw); }
-_AFXWIN_INLINE int CWnd::GetWindowRgn(HRGN hRgn) const
-	{ ASSERT(::IsWindow(m_hWnd) && hRgn != NULL); return ::GetWindowRgn(m_hWnd, hRgn); }
-_AFXWIN_INLINE void CWnd::BringWindowToTop()
-	{ ASSERT(::IsWindow(m_hWnd)); ::BringWindowToTop(m_hWnd); }
-_AFXWIN_INLINE void CWnd::GetWindowRect(LPRECT lpRect) const
-	{ ASSERT(::IsWindow(m_hWnd)); ::GetWindowRect(m_hWnd, lpRect); }
-_AFXWIN_INLINE void CWnd::GetClientRect(LPRECT lpRect) const
-	{ ASSERT(::IsWindow(m_hWnd)); ::GetClientRect(m_hWnd, lpRect); }
 _AFXWIN_INLINE void CWnd::MapWindowPoints(CWnd* pwndTo, LPPOINT lpPoint, UINT nCount) const
 	{ ASSERT(::IsWindow(m_hWnd)); ::MapWindowPoints(m_hWnd, pwndTo->GetSafeHwnd(), lpPoint, nCount); }
 _AFXWIN_INLINE void CWnd::MapWindowPoints(CWnd* pwndTo, LPRECT lpRect) const
@@ -374,7 +346,7 @@ _AFXWIN_INLINE void CWnd::OnAskCbFormatName(_In_ UINT nMaxCount, _Out_z_cap_(nMa
 		/* defwindow proc should do this for us, but to be safe, we'll do it here too */
 		pszName[0]=_T('\0');
 	}
-	Default(); 
+	Default();
 }
 _AFXWIN_INLINE void CWnd::OnChangeCbChain(HWND, HWND)
 	{ Default(); }
@@ -459,51 +431,6 @@ _AFXWIN_INLINE DWORD CWinThread::SuspendThread()
 	{ ASSERT(m_hThread != NULL); return ::SuspendThread(m_hThread); }
 _AFXWIN_INLINE BOOL CWinThread::PostThreadMessage(UINT message, WPARAM wParam, LPARAM lParam)
 	{ ASSERT(m_hThread != NULL); return ::PostThreadMessage(m_nThreadID, message, wParam, lParam); }
-
-// CWinApp
-
-_AFXWIN_INLINE AFX_HELP_TYPE CWinApp::GetHelpMode() 
-	{ return m_eHelpType; }
-
-_AFXWIN_INLINE void CWinApp::SetHelpMode( AFX_HELP_TYPE eHelpType )
-	{ 
-		ASSERT( eHelpType == afxHTMLHelp || eHelpType == afxWinHelp );
-		m_eHelpType = eHelpType; 
-	}
-
-#pragma warning(push)
-#pragma warning(disable: 4996)
-_AFXWIN_INLINE BOOL CWinApp::Enable3dControls()
-	{ return TRUE; }
-#ifndef _AFXDLL
-_AFXWIN_INLINE BOOL CWinApp::Enable3dControlsStatic()
-	{ return TRUE; }
-#endif
-_AFXWIN_INLINE void CWinApp::SetDialogBkColor(COLORREF /*clrCtlBk*/, COLORREF /*clrCtlText*/)
-{
-}
-#pragma warning(pop)
-
-_AFXWIN_INLINE CWaitCursor::CWaitCursor()
-	{ AfxGetApp()->BeginWaitCursor(); }
-_AFXWIN_INLINE CWaitCursor::~CWaitCursor()
-{
-	AFX_BEGIN_DESTRUCTOR
-
-		AfxGetApp()->EndWaitCursor();
-
-	AFX_END_DESTRUCTOR
-}
-_AFXWIN_INLINE void CWaitCursor::Restore()
-	{ AfxGetApp()->RestoreWaitCursor(); }
-
-/////////////////////////////////////////////////////////////////////////////
-// Obsolete and non-portable
-
-_AFXWIN_INLINE void CWnd::CloseWindow()
-	{ ASSERT(::IsWindow(m_hWnd)); ::CloseWindow(m_hWnd); }
-_AFXWIN_INLINE BOOL CWnd::OpenIcon()
-	{ ASSERT(::IsWindow(m_hWnd)); return ::OpenIcon(m_hWnd); }
 
 /////////////////////////////////////////////////////////////////////////////
 

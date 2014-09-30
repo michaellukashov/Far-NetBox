@@ -73,92 +73,13 @@ namespace ATL
 /////////////////////////////////////////////////////////////////////////////
 // AtlReportError
 
-inline HRESULT WINAPI AtlReportError(
-	_In_ const CLSID& clsid, 
-	_In_ UINT nID, 
-	_In_ const IID& iid = GUID_NULL,
-	_In_ HRESULT hRes = 0, 
-	_In_ HINSTANCE hInst = _AtlBaseModule.GetResourceInstance())
-{
-	return AtlSetErrorInfo(clsid, (LPCOLESTR)MAKEINTRESOURCE(nID), 0, NULL, iid, hRes, hInst);
-}
-
-inline HRESULT WINAPI AtlReportError(
-	_In_ const CLSID& clsid, 
-	_In_ UINT nID, 
-	_In_ DWORD dwHelpID,
-	_In_z_ LPCOLESTR lpszHelpFile, 
-	_In_ const IID& iid = GUID_NULL, 
-	_In_ HRESULT hRes = 0, 
-	_In_ HINSTANCE hInst = _AtlBaseModule.GetResourceInstance())
-{
-	return AtlSetErrorInfo(clsid, (LPCOLESTR)MAKEINTRESOURCE(nID), dwHelpID,
-		lpszHelpFile, iid, hRes, hInst);
-}
-
-inline HRESULT WINAPI AtlReportError(
-	_In_ const CLSID& clsid, 
-	_In_z_ LPCSTR lpszDesc,
-	_In_ DWORD dwHelpID, 
-	_In_opt_z_ LPCSTR lpszHelpFile, 
-	_In_ const IID& iid = GUID_NULL, 
-	_In_ HRESULT hRes = 0)
-{
-	ATLASSERT(lpszDesc != NULL);
-	if (lpszDesc == NULL)
-		return E_POINTER;
-	USES_CONVERSION_EX;
-	LPCOLESTR pwszDesc = A2COLE_EX(lpszDesc, _ATL_SAFE_ALLOCA_DEF_THRESHOLD);
-	if(pwszDesc == NULL)
-		return E_OUTOFMEMORY;
-	
-	LPCWSTR pwzHelpFile = NULL;
-	if(lpszHelpFile != NULL)
-	{
-		pwzHelpFile = A2CW_EX(lpszHelpFile, _ATL_SAFE_ALLOCA_DEF_THRESHOLD);
-		if(pwzHelpFile == NULL)
-			return E_OUTOFMEMORY;
-	}
-		
-	return AtlSetErrorInfo(clsid, pwszDesc, dwHelpID, pwzHelpFile, iid, hRes, NULL);
-}
-
-inline HRESULT WINAPI AtlReportError(
-	_In_ const CLSID& clsid, 
-	_In_z_ LPCSTR lpszDesc,
-	_In_ const IID& iid = GUID_NULL, 
-	_In_ HRESULT hRes = 0)
-{
-	return AtlReportError(clsid, lpszDesc, 0, NULL, iid, hRes);
-}
-
-inline HRESULT WINAPI AtlReportError(
-	_In_ const CLSID& clsid, 
-	_In_z_ LPCOLESTR lpszDesc,
-	_In_ const IID& iid = GUID_NULL, 
-	_In_ HRESULT hRes = 0)
-{
-	return AtlSetErrorInfo(clsid, lpszDesc, 0, NULL, iid, hRes, NULL);
-}
-
-inline HRESULT WINAPI AtlReportError(
-	_In_ const CLSID& clsid, 
-	_In_z_ LPCOLESTR lpszDesc, 
-	_In_ DWORD dwHelpID,
-	_In_z_ LPCOLESTR lpszHelpFile, 
-	_In_ const IID& iid = GUID_NULL, 
-	_In_ HRESULT hRes = 0)
-{
-	return AtlSetErrorInfo(clsid, lpszDesc, dwHelpID, lpszHelpFile, iid, hRes, NULL);
-}
-
 // Returns the apartment type that the current thread is in. false is returned
 // if the thread isn't in an apartment.
 inline bool AtlGetApartmentType(_Out_ DWORD* pApartmentType)
 {
-	HRESULT hr = CoInitialize(NULL);
- 	if (SUCCEEDED(hr))
-		CoUninitialize();
+  HRESULT hr = CoInitialize(NULL);
+  if (SUCCEEDED(hr))
+    CoUninitialize();
 
 	if (hr == S_FALSE)
 	{
@@ -166,7 +87,7 @@ inline bool AtlGetApartmentType(_Out_ DWORD* pApartmentType)
 		return true;
 	}
 	else if (hr == RPC_E_CHANGED_MODE)
-	{	
+	{
 		*pApartmentType = COINIT_MULTITHREADED;
 		return true;
 	}
@@ -181,46 +102,46 @@ class CComTypeAttr
 {
 // Construction
 public:
-   CComTypeAttr(_In_ ITypeInfo* pTypeInfo) throw() :
-	  m_pTypeAttr( NULL ),
-	  m_pTypeInfo( pTypeInfo )
-   {
-   }
-   ~CComTypeAttr() throw()
-   {
-	  Release();
-   }
+	 CComTypeAttr(_In_ ITypeInfo* pTypeInfo) throw() :
+		m_pTypeAttr( NULL ),
+		m_pTypeInfo( pTypeInfo )
+	 {
+	 }
+	 ~CComTypeAttr() throw()
+	 {
+		Release();
+	 }
 
 // Operators
 public:
    TYPEATTR* operator->() throw()
    {
-	  ATLASSUME( m_pTypeAttr != NULL );
+    ATLASSUME( m_pTypeAttr != NULL );
 
-	  return m_pTypeAttr;
+    return m_pTypeAttr;
    }
    TYPEATTR** operator&() throw()
    {
-	  ATLASSUME( m_pTypeAttr == NULL );
+    ATLASSUME( m_pTypeAttr == NULL );
 
-	  return &m_pTypeAttr;
+    return &m_pTypeAttr;
    }
 
    operator const TYPEATTR*() const throw()
    {
-	  return m_pTypeAttr;
+    return m_pTypeAttr;
    }
 
 // Operations
 public:
    void Release() throw()
    {
-	  if( m_pTypeAttr != NULL )
-	  {
-		 ATLASSUME( m_pTypeInfo != NULL );
-		 m_pTypeInfo->ReleaseTypeAttr( m_pTypeAttr );
-		 m_pTypeAttr = NULL;
-	  }
+    if( m_pTypeAttr != NULL )
+    {
+     ATLASSUME( m_pTypeInfo != NULL );
+     m_pTypeInfo->ReleaseTypeAttr( m_pTypeAttr );
+     m_pTypeAttr = NULL;
+    }
    }
 
 public:
@@ -236,46 +157,46 @@ class CComVarDesc
 {
 // Construction
 public:
-   CComVarDesc(_In_ ITypeInfo* pTypeInfo) throw() :
-	  m_pVarDesc( NULL ),
-	  m_pTypeInfo( pTypeInfo )
-   {
-   }
-   ~CComVarDesc() throw()
-   {
-	  Release();
-   }
+	 CComVarDesc(_In_ ITypeInfo* pTypeInfo) throw() :
+		m_pVarDesc( NULL ),
+		m_pTypeInfo( pTypeInfo )
+	 {
+	 }
+	 ~CComVarDesc() throw()
+	 {
+		Release();
+	 }
 
 // Operators
 public:
    VARDESC* operator->() throw()
    {
-	  ATLASSUME( m_pVarDesc != NULL );
+    ATLASSUME( m_pVarDesc != NULL );
 
-	  return m_pVarDesc;
+    return m_pVarDesc;
    }
    VARDESC** operator&() throw()
    {
-	  ATLASSUME( m_pVarDesc == NULL );
+    ATLASSUME( m_pVarDesc == NULL );
 
-	  return &m_pVarDesc;
+    return &m_pVarDesc;
    }
 
    operator const VARDESC*() const throw()
    {
-	  return m_pVarDesc;
+    return m_pVarDesc;
    }
 
 // Operations
 public:
    void Release() throw()
    {
-	  if( m_pVarDesc != NULL )
-	  {
-		 ATLASSUME( m_pTypeInfo != NULL );
-		 m_pTypeInfo->ReleaseVarDesc( m_pVarDesc );
-		 m_pVarDesc = NULL;
-	  }
+    if( m_pVarDesc != NULL )
+    {
+     ATLASSUME( m_pTypeInfo != NULL );
+     m_pTypeInfo->ReleaseVarDesc( m_pVarDesc );
+     m_pVarDesc = NULL;
+    }
    }
 
 public:
@@ -291,46 +212,46 @@ class CComFuncDesc
 {
 // Construction
 public:
-   CComFuncDesc(_In_ ITypeInfo* pTypeInfo) throw() :
-	  m_pFuncDesc( NULL ),
-	  m_pTypeInfo( pTypeInfo )
-   {
-   }
-   ~CComFuncDesc() throw()
-   {
-	  Release();
-   }
+	 CComFuncDesc(_In_ ITypeInfo* pTypeInfo) throw() :
+		m_pFuncDesc( NULL ),
+		m_pTypeInfo( pTypeInfo )
+	 {
+	 }
+	 ~CComFuncDesc() throw()
+	 {
+		Release();
+	 }
 
 // Operators
 public:
    FUNCDESC* operator->() throw()
    {
-	  ATLASSUME( m_pFuncDesc != NULL );
+    ATLASSUME( m_pFuncDesc != NULL );
 
-	  return m_pFuncDesc;
+    return m_pFuncDesc;
    }
    FUNCDESC** operator&() throw()
    {
-	  ATLASSUME( m_pFuncDesc == NULL );
+    ATLASSUME( m_pFuncDesc == NULL );
 
-	  return &m_pFuncDesc;
+    return &m_pFuncDesc;
    }
 
    operator const FUNCDESC*() const throw()
    {
-	  return m_pFuncDesc;
+    return m_pFuncDesc;
    }
 
 // Operations
 public:
    void Release() throw()
    {
-	  if( m_pFuncDesc != NULL )
-	  {
-		 ATLASSUME( m_pTypeInfo != NULL );
-		 m_pTypeInfo->ReleaseFuncDesc( m_pFuncDesc );
-		 m_pFuncDesc = NULL;
-	  }
+    if( m_pFuncDesc != NULL )
+    {
+     ATLASSUME( m_pTypeInfo != NULL );
+     m_pTypeInfo->ReleaseFuncDesc( m_pFuncDesc );
+     m_pFuncDesc = NULL;
+    }
    }
 
 public:
@@ -349,11 +270,11 @@ class CComExcepInfo :
 public:
    CComExcepInfo()
    {
-	  memset( this, 0, sizeof( *this ) );
+    memset( this, 0, sizeof( *this ) );
    }
    ~CComExcepInfo()
    {
-	  Clear();
+    Clear();
    }
 
 // Operations
@@ -364,7 +285,7 @@ public:
       ::SysFreeString(bstrDescription);
       ::SysFreeString(bstrHelpFile);
 
-	  memset(this, 0, sizeof(*this));
+    memset(this, 0, sizeof(*this));
    }
 };
 
@@ -372,7 +293,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////
 // IPersistImpl
 template <class T>
-class ATL_NO_VTABLE IPersistImpl : 
+class ATL_NO_VTABLE IPersistImpl :
 	public IPersist
 {
 public:
@@ -391,13 +312,13 @@ class CFakeFirePropNotifyEvent
 {
 public:
 	static HRESULT FireOnRequestEdit(
-		_In_opt_ IUnknown* /*pUnk*/, 
+		_In_opt_ IUnknown* /*pUnk*/,
 		_In_ DISPID /*dispID*/)
 	{
 		return S_OK;
 	}
 	static HRESULT FireOnChanged(
-		_In_opt_ IUnknown* /*pUnk*/, 
+		_In_opt_ IUnknown* /*pUnk*/,
 		_In_ DISPID /*dispID*/)
 	{
 		return S_OK;
@@ -459,11 +380,11 @@ struct ATL_PROPMAP_ENTRY
 };
 
 template<VARTYPE V>
-struct AtlExpectedDispatchOrUnknown 
+struct AtlExpectedDispatchOrUnknown
 {
-	// ATLSTATIC_ASSERT(V == VT_DISPATCH || V == VT_UNKNOWN, 
+	// ATLSTATIC_ASSERT(V == VT_DISPATCH || V == VT_UNKNOWN,
 			// "Incorrect VARTYPE value in PROP_ENTRY_INTERFACE definition. Expected VT_DISPATCH or VT_UNKNOWN.");
-	static const VARTYPE value = V;	
+	static const VARTYPE value = V;
 };
 
 // This one is used for ATL 2.X controls
@@ -485,7 +406,7 @@ struct AtlExpectedDispatchOrUnknown
 	{\
 		static const ATL::ATL_PROPMAP_ENTRY pPropMap[] = \
 		{
-#ifndef _ATL_PROP_ENTRY_NO_WARNING 
+#ifndef _ATL_PROP_ENTRY_NO_WARNING
 #pragma deprecated(PROP_ENTRY, PROP_ENTRY_EX)
 #endif
 
@@ -495,7 +416,7 @@ struct AtlExpectedDispatchOrUnknown
 #define PROP_ENTRY_INTERFACE(szDesc, dispid, clsid, rgclsidAllowed, cclsidAllowed, vt) \
 		{OLESTR(szDesc), &clsid, &__uuidof(IDispatch), rgclsidAllowed, cclsidAllowed, dispid, 0, 0, \
 		ATL::AtlExpectedDispatchOrUnknown<vt>::value},
-		
+
 #define PROP_ENTRY_INTERFACE_CALLBACK(szDesc, dispid, clsid, pfnFunc, vt) \
 		{OLESTR(szDesc), &clsid, &__uuidof(IDispatch), reinterpret_cast<const CLSID *>(pfnFunc), 0, dispid, 0, 0, \
 		ATL::AtlExpectedDispatchOrUnknown<vt>::value},
@@ -506,11 +427,11 @@ struct AtlExpectedDispatchOrUnknown
 #define PROP_ENTRY_INTERFACE_EX(szDesc, dispid, clsid, iidDispatch, rgclsidAllowed, cclsidAllowed, vt) \
 		{OLESTR(szDesc), &clsid, &iidDispatch, rgclsidAllowed, cclsidAllowed, dispid, 0, 0, \
 		ATL::AtlExpectedDispatchOrUnknown<vt>::value},
-		
+
 #define PROP_ENTRY_INTERFACE_CALLBACK_EX(szDesc, dispid, clsid, iidDispatch, pfnFunc, vt) \
 		{OLESTR(szDesc), &clsid, &iidDispatch, reinterpret_cast<const CLSID *>(pfnFunc), 0, dispid, 0, 0, \
 		ATL::AtlExpectedDispatchOrUnknown<vt>::value},
-		
+
 #define PROP_ENTRY_TYPE(szDesc, dispid, clsid, vt) \
 		{OLESTR(szDesc), &clsid, &__uuidof(IDispatch), NULL, 0, dispid, 0, 0, vt},
 
@@ -539,37 +460,37 @@ struct AtlExpectedDispatchOrUnknown
 // IPersist* Helpers
 
 ATLAPI AtlIPersistStreamInit_Load(
-	_Inout_ LPSTREAM pStm, 
-	_In_ const ATL_PROPMAP_ENTRY* pMap, 
-	_Inout_ void* pThis, 
+	_Inout_ LPSTREAM pStm,
+	_In_ const ATL_PROPMAP_ENTRY* pMap,
+	_Inout_ void* pThis,
 	_Inout_ IUnknown* pUnk);
 
 ATLAPI AtlIPersistStreamInit_Save(
-	_Inout_ LPSTREAM pStm, 
-	_In_ BOOL fClearDirty, 
-	_In_ const ATL_PROPMAP_ENTRY* pMap, 
-	_Inout_ void* pThis, 
+	_Inout_ LPSTREAM pStm,
+	_In_ BOOL fClearDirty,
+	_In_ const ATL_PROPMAP_ENTRY* pMap,
+	_Inout_ void* pThis,
 	_Inout_ IUnknown* pUnk);
 
 ATLAPI AtlIPersistPropertyBag_Load(
-	_Inout_ LPPROPERTYBAG pPropBag, 
-	_Inout_ LPERRORLOG pErrorLog, 
-	_In_ const ATL_PROPMAP_ENTRY* pMap, 
-	_Inout_ void* pThis, 
+	_Inout_ LPPROPERTYBAG pPropBag,
+	_Inout_ LPERRORLOG pErrorLog,
+	_In_ const ATL_PROPMAP_ENTRY* pMap,
+	_Inout_ void* pThis,
 	_Inout_ IUnknown* pUnk);
 
 ATLAPI AtlIPersistPropertyBag_Save(
-	_Inout_ LPPROPERTYBAG pPropBag, 
-	_In_ BOOL fClearDirty, 
-	_In_ BOOL fSaveAllProperties, 
-	_In_ const ATL_PROPMAP_ENTRY* pMap, 
-	_Inout_ void* pThis, 
+	_Inout_ LPPROPERTYBAG pPropBag,
+	_In_ BOOL fClearDirty,
+	_In_ BOOL fSaveAllProperties,
+	_In_ const ATL_PROPMAP_ENTRY* pMap,
+	_Inout_ void* pThis,
 	_Inout_ IUnknown* pUnk);
 
 //////////////////////////////////////////////////////////////////////////////
 // IPersistStreamInitImpl
 template <class T>
-class ATL_NO_VTABLE IPersistStreamInitImpl : 
+class ATL_NO_VTABLE IPersistStreamInitImpl :
 	public IPersistStreamInit
 {
 public:
@@ -614,7 +535,7 @@ public:
 		ATLENSURE_RETURN(pMap != NULL);
 
 		// Start the size with the size of the ATL version we write out.
-		ULARGE_INTEGER nSize;		
+		ULARGE_INTEGER nSize;
 		nSize.QuadPart = sizeof(DWORD);
 
 		CComPtr<IDispatch> pDispatch;
@@ -623,7 +544,7 @@ public:
 		{
 			ULARGE_INTEGER nVarSize;
 			nVarSize.QuadPart = 0;
-			
+
 			if (pMap[i].szDesc == NULL)
 			{
 				continue;
@@ -631,7 +552,7 @@ public:
 
 			// check if raw data entry
 			if (pMap[i].dwSizeData != 0)
-			{			
+			{
 				//Calculate stream size for BSTRs special case
 				if (pMap[i].vt == VT_BSTR)
 				{
@@ -639,13 +560,13 @@ public:
 					ATLENSURE_RETURN( pData >= (void*)(DWORD_PTR)pMap[i].dwOffsetData
 									&& pData >= (void*)(DWORD_PTR)pT );
 					BSTR bstr = *reinterpret_cast<BSTR*>(pData);
-						
+
 					nVarSize.LowPart = CComBSTR::GetStreamSize(bstr);
-				} 
+				}
 				else
 				{
 					nVarSize.LowPart = pMap[i].dwSizeData;
-				}					
+				}
 			}
 			else
 			{
@@ -654,7 +575,7 @@ public:
 				{
 					pDispatch.Release();
 					ATLENSURE_RETURN(pMap[i].piidDispatch);
-					
+
 					hr = pT->GetUnknown()->QueryInterface(*pMap[i].piidDispatch, (void**)&pDispatch);
 					if (FAILED(hr))
 					{
@@ -668,19 +589,19 @@ public:
 				{
 					break;
 				}
-				
-				hr = var.GetSizeMax(&nVarSize);			
+
+				hr = var.GetSizeMax(&nVarSize);
 				if (FAILED(hr))
 				{
 					break;
 				}
 			}
-			
+
 			hr = AtlAdd(&nSize.QuadPart, nSize.QuadPart, nVarSize.QuadPart);
 			if (FAILED(hr))
 			{
 				break;
-			}			
+			}
 		}
 		*pcbSize = nSize;
 		return hr;
@@ -695,7 +616,7 @@ public:
 	}
 
 	HRESULT IPersistStreamInit_Load(
-		_Inout_ LPSTREAM pStm, 
+		_Inout_ LPSTREAM pStm,
 		_In_ const ATL_PROPMAP_ENTRY* pMap)
 	{
 		T* pT = static_cast<T*>(this);
@@ -706,8 +627,8 @@ public:
 
 	}
 	HRESULT IPersistStreamInit_Save(
-		_Inout_ LPSTREAM pStm, 
-		_In_ BOOL fClearDirty, 
+		_Inout_ LPSTREAM pStm,
+		_In_ BOOL fClearDirty,
 		_In_ const ATL_PROPMAP_ENTRY* pMap)
 	{
 		T* pT = static_cast<T*>(this);
@@ -725,7 +646,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////
 // IPersistStorageImpl
 template <class T>
-class ATL_NO_VTABLE IPersistStorageImpl : 
+class ATL_NO_VTABLE IPersistStorageImpl :
 	public IPersistStorage
 {
 public:
@@ -813,7 +734,7 @@ IPersistStreamInit* IPersistStorageImpl<T>::IPSI_GetIPersistStreamInit()
 //////////////////////////////////////////////////////////////////////////////
 // IPersistPropertyBagImpl
 template <class T>
-class ATL_NO_VTABLE IPersistPropertyBagImpl : 
+class ATL_NO_VTABLE IPersistPropertyBagImpl :
 	public IPersistPropertyBag
 {
 public:
@@ -835,7 +756,7 @@ public:
 		return S_OK;
 	}
 	STDMETHOD(Load)(
-		_Inout_ LPPROPERTYBAG pPropBag, 
+		_Inout_ LPPROPERTYBAG pPropBag,
 		_Inout_opt_ LPERRORLOG pErrorLog)
 	{
 		T* pT = static_cast<T*>(this);
@@ -844,8 +765,8 @@ public:
 		return pT->IPersistPropertyBag_Load(pPropBag, pErrorLog, pMap);
 	}
 	STDMETHOD(Save)(
-		_Inout_ LPPROPERTYBAG pPropBag, 
-		_In_ BOOL fClearDirty, 
+		_Inout_ LPPROPERTYBAG pPropBag,
+		_In_ BOOL fClearDirty,
 		_In_ BOOL fSaveAllProperties)
 	{
 		T* pT = static_cast<T*>(this);
@@ -854,8 +775,8 @@ public:
 		return pT->IPersistPropertyBag_Save(pPropBag, fClearDirty, fSaveAllProperties, pMap);
 	}
 	HRESULT IPersistPropertyBag_Load(
-		_Inout_ LPPROPERTYBAG pPropBag, 
-		_In_opt_ LPERRORLOG pErrorLog, 
+		_Inout_ LPPROPERTYBAG pPropBag,
+		_In_opt_ LPERRORLOG pErrorLog,
 		_In_ const ATL_PROPMAP_ENTRY* pMap)
 	{
 		T* pT = static_cast<T*>(this);
@@ -865,9 +786,9 @@ public:
 		return hr;
 	}
 	HRESULT IPersistPropertyBag_Save(
-		_Inout_ LPPROPERTYBAG pPropBag, 
-		_In_ BOOL fClearDirty, 
-		_In_ BOOL fSaveAllProperties, 
+		_Inout_ LPPROPERTYBAG pPropBag,
+		_In_ BOOL fClearDirty,
+		_In_ BOOL fSaveAllProperties,
 		_In_ const ATL_PROPMAP_ENTRY* pMap)
 	{
 		T* pT = static_cast<T*>(this);
@@ -894,8 +815,8 @@ class CComCreator
 {
 public:
 	_Success_(return == S_OK) static HRESULT WINAPI CreateInstance(
-		_In_opt_ void* pv, 
-		_In_ REFIID riid, 
+		_In_opt_ void* pv,
+		_In_ REFIID riid,
 		_Deref_out_ LPVOID* ppv)
 	{
 		ATLASSERT(ppv != NULL);
@@ -936,8 +857,8 @@ class CComInternalCreator
 {
 public:
 	static HRESULT WINAPI CreateInstance(
-		_In_opt_ void* pv, 
-		_In_ REFIID riid, 
+		_In_opt_ void* pv,
+		_In_ REFIID riid,
 		_Deref_out_ LPVOID* ppv)
 	{
 		ATLASSERT(ppv != NULL);
@@ -976,8 +897,8 @@ class CComFailCreator
 {
 public:
 	static HRESULT WINAPI CreateInstance(
-		_In_opt_ void*, 
-		_In_ REFIID, 
+		_In_opt_ void*,
+		_In_ REFIID,
 		_Deref_out_opt_ LPVOID* ppv)
 	{
 		if (ppv == NULL)
@@ -993,14 +914,14 @@ class CComCreator2
 {
 public:
 	static HRESULT WINAPI CreateInstance(
-		_In_opt_ void* pv, 
-		_In_ REFIID riid, 
+		_In_opt_ void* pv,
+		_In_ REFIID riid,
 		_Deref_out_ LPVOID* ppv)
 	{
 		ATLASSERT(ppv != NULL);
 
-		return (pv == NULL) ? 
-			T1::CreateInstance(NULL, riid, ppv) : 
+		return (pv == NULL) ?
+			T1::CreateInstance(NULL, riid, ppv) :
 			T2::CreateInstance(pv, riid, ppv);
 	}
 };
@@ -1058,8 +979,8 @@ class CComAggregateCreator
 {
 public:
 	static HRESULT WINAPI CreateInstance(
-		_In_ void* pv, 
-		_In_ REFIID/*riid*/, 
+		_In_ void* pv,
+		_In_ REFIID/*riid*/,
 		_Deref_out_ LPVOID* ppv) throw()
 	{
 		// Only Assert here. CoCreateInstance will return the correct HRESULT if ppv == NULL
@@ -1114,7 +1035,7 @@ public:
 		catch(...) \
 		{ \
 			p->Unlock();\
-      throw;\
+			throw;\
 		} \
 		p->Unlock();\
 		return hRes;\
@@ -1255,7 +1176,7 @@ public:
 #endif // _ATL_DEBUG
 
 #define END_ATTRCOM_MAP() \
-	{NULL, 0, 0}}; return _entries;} 
+	{NULL, 0, 0}}; return _entries;}
 
 
 #define BEGIN_CATEGORY_MAP(x)\
@@ -1319,14 +1240,14 @@ public:
 	{
 		return S_OK;
 	}
-	void FinalRelease() 
+	void FinalRelease()
 	{
 	}
 	void _AtlFinalRelease() // temp
 	{
-	}		
+	}
 
-	void _HRPass(_In_ HRESULT hr)		// temp 
+	void _HRPass(_In_ HRESULT hr)		// temp
 	{
 		(hr);
 	}
@@ -1340,14 +1261,14 @@ public:
 	//ObjectMain is called during Module::Init and Module::Term
 	static void WINAPI ObjectMain(_In_ bool /* bStarting */);
 
-	static const struct _ATL_CATMAP_ENTRY* GetCategoryMap() 
+	static const struct _ATL_CATMAP_ENTRY* GetCategoryMap()
 	{
 		return NULL;
 	}
 	static HRESULT WINAPI InternalQueryInterface(
 		_Inout_ void* pThis,
-		_In_ const _ATL_INTMAP_ENTRY* pEntries, 		
-		_In_ REFIID iid, 
+		_In_ const _ATL_INTMAP_ENTRY* pEntries,
+		_In_ REFIID iid,
 		_Deref_out_ void** ppvObject)
 	{
 		// Only Assert here. AtlInternalQueryInterface will return the correct HRESULT if ppvObject == NULL
@@ -1377,16 +1298,16 @@ public:
 		return this->m_pOuterUnknown->Release();
 	}
 	HRESULT OuterQueryInterface(
-		_In_ REFIID iid, 
+		_In_ REFIID iid,
 		_Deref_out_ void** ppvObject)
 	{
 		return this->m_pOuterUnknown->QueryInterface(iid, ppvObject);
 	}
 
-	void SetVoid(_In_opt_ void*) 
+	void SetVoid(_In_opt_ void*)
 	{
 	}
-	void InternalFinalConstructAddRef() 
+	void InternalFinalConstructAddRef()
 	{
 	}
 	void InternalFinalConstructRelease()
@@ -1398,9 +1319,9 @@ public:
 
 
 	static HRESULT WINAPI _Break(
-		_In_opt_ void* /* pv */, 
-		_In_ REFIID iid, 
-		_In_opt_ void** /* ppvObject */, 
+		_In_opt_ void* /* pv */,
+		_In_ REFIID iid,
+		_In_opt_ void** /* ppvObject */,
 		_In_ DWORD_PTR /* dw */)
 	{
 		(iid);
@@ -1409,26 +1330,26 @@ public:
 		return S_FALSE;
 	}
 	static HRESULT WINAPI _NoInterface(
-		_In_opt_ void* /* pv */, 
-		_In_ REFIID /* iid */, 
-		_In_opt_ void** /* ppvObject */, 
+		_In_opt_ void* /* pv */,
+		_In_ REFIID /* iid */,
+		_In_opt_ void** /* ppvObject */,
 		_In_ DWORD_PTR /* dw */)
 	{
 		return E_NOINTERFACE;
 	}
 	static HRESULT WINAPI _Creator(
-		_In_ void* pv, 
-		_In_ REFIID iid, 
-		_Deref_out_ void** ppvObject, 
+		_In_ void* pv,
+		_In_ REFIID iid,
+		_Deref_out_ void** ppvObject,
 		_In_ DWORD_PTR dw)
 	{
 		_ATL_CREATORDATA* pcd = (_ATL_CREATORDATA*)dw;
 		return pcd->pFunc(pv, iid, ppvObject);
 	}
 	static HRESULT WINAPI _Delegate(
-		_In_ void* pv, 
-		_In_ REFIID iid, 
-		_Deref_out_ void** ppvObject, 
+		_In_ void* pv,
+		_In_ REFIID iid,
+		_Deref_out_ void** ppvObject,
 		_In_ DWORD_PTR dw)
 	{
 		HRESULT hRes = E_NOINTERFACE;
@@ -1438,9 +1359,9 @@ public:
 		return hRes;
 	}
 	static HRESULT WINAPI _Chain(
-		_In_ void* pv, 
-		_In_ REFIID iid, 
-		_Deref_out_ void** ppvObject, 
+		_In_ void* pv,
+		_In_ REFIID iid,
+		_Deref_out_ void** ppvObject,
 		_In_ DWORD_PTR dw)
 	{
 		_ATL_CHAINDATA* pcd = (_ATL_CHAINDATA*)dw;
@@ -1448,9 +1369,9 @@ public:
 		return InternalQueryInterface(p, pcd->pFunc(), iid, ppvObject);
 	}
 	static HRESULT WINAPI _ChainAttr(
-		_In_ void* pv, 
-		_In_ REFIID iid, 
-		_Deref_out_ void** ppvObject, 
+		_In_ void* pv,
+		_In_ REFIID iid,
+		_Deref_out_ void** ppvObject,
 		_In_ DWORD_PTR dw)
 	{
 		const _ATL_INTMAP_ENTRY* (WINAPI *pFunc)() = (const _ATL_INTMAP_ENTRY* (WINAPI *)())dw;
@@ -1460,9 +1381,9 @@ public:
 		return InternalQueryInterface(pv, pEntries, iid, ppvObject);
 	}
 	static HRESULT WINAPI _Cache(
-		_In_ void* pv, 
-		_In_ REFIID iid, 
-		_Deref_out_ void** ppvObject, 
+		_In_ void* pv,
+		_In_ REFIID iid,
+		_Deref_out_ void** ppvObject,
 		_In_ DWORD_PTR dw)
 	{
 		HRESULT hRes = E_NOINTERFACE;
@@ -1515,7 +1436,7 @@ public:
 template <> class CComObjectLockT<CComSingleThreadModel>;
 
 template <class ThreadModel>
-class CComObjectRootEx : 
+class CComObjectRootEx :
 	public CComObjectRootBase
 {
 public:
@@ -1524,7 +1445,7 @@ public:
 	typedef typename _ThreadModel::AutoDeleteCriticalSection _AutoDelCritSec;
 	typedef CComObjectLockT<_ThreadModel> ObjectLock;
 
-	~CComObjectRootEx() 
+	~CComObjectRootEx()
 	{
 	}
 
@@ -1551,11 +1472,11 @@ public:
 	{
 		return m_critsec.Init();
 	}
-	void Lock() 
+	void Lock()
 	{
 		m_critsec.Lock();
 	}
-	void Unlock() 
+	void Unlock()
 	{
 		m_critsec.Unlock();
 	}
@@ -1564,7 +1485,7 @@ private:
 };
 
 template <>
-class CComObjectRootEx<CComSingleThreadModel> : 
+class CComObjectRootEx<CComSingleThreadModel> :
 	public CComObjectRootBase
 {
 public:
@@ -1591,7 +1512,7 @@ public:
 		return nRef;
 #else
 		return _ThreadModel::Decrement(&m_dwRef);
-#endif	
+#endif
 	}
 
 	HRESULT _AtlInitialConstruct()
@@ -1599,10 +1520,10 @@ public:
 		return S_OK;
 	}
 
-	void Lock() 
+	void Lock()
 	{
 	}
-	void Unlock() 
+	void Unlock()
 	{
 	}
 };
@@ -1611,10 +1532,10 @@ template <>
 class CComObjectLockT<CComSingleThreadModel>
 {
 public:
-	CComObjectLockT(_Inout_opt_ CComObjectRootEx<CComSingleThreadModel>*) 
+	CComObjectLockT(_Inout_opt_ CComObjectRootEx<CComSingleThreadModel>*)
 	{
 	}
-	~CComObjectLockT() 
+	~CComObjectLockT()
 	{
 	}
 };
@@ -1733,13 +1654,13 @@ typedef CComObjectRootEx<CComObjectThreadModel> CComObjectRoot;
 template<class Base> class CComObject; // fwd decl
 
 template <class Owner, class ThreadModel = CComObjectThreadModel>
-class CComTearOffObjectBase : 
+class CComTearOffObjectBase :
 	public CComObjectRootEx<ThreadModel>
 {
 public:
 	typedef Owner _OwnerClass;
 	Owner* m_pOwner;
-	CComTearOffObjectBase() 
+	CComTearOffObjectBase()
 	{
 		m_pOwner = NULL;
 	}
@@ -1748,7 +1669,7 @@ public:
 //Base is the user's class that derives from CComObjectRoot and whatever
 //interfaces the user wants to support on the object
 template <class Base>
-class CComObject : 
+class CComObject :
 	public Base
 {
 public:
@@ -1757,7 +1678,7 @@ public:
 	{
 		_pAtlModule->Lock();
 	}
-	// Set refcount to -(LONG_MAX/2) to protect destruction and 
+	// Set refcount to -(LONG_MAX/2) to protect destruction and
 	// also catch mismatched Release in debug builds
 	virtual ~CComObject() throw()
 	{
@@ -1770,7 +1691,7 @@ public:
 	}
 	//If InternalAddRef or InternalRelease is undefined then your class
 	//doesn't derive from CComObjectRoot
-	STDMETHOD_(ULONG, AddRef)() 
+	STDMETHOD_(ULONG, AddRef)()
 	{
 		return InternalAddRef();
 	}
@@ -1783,7 +1704,7 @@ public:
 	}
 	//if _InternalQueryInterface is undefined then you forgot BEGIN_COM_MAP
 	STDMETHOD(QueryInterface)(
-		_In_ REFIID iid, 
+		_In_ REFIID iid,
 		_Deref_out_ void** ppvObject) throw()
 	{
 		return _InternalQueryInterface(iid, ppvObject);
@@ -1827,7 +1748,7 @@ _Success_(return == S_OK) HRESULT WINAPI CComObject<Base>::CreateInstance(
 			p = NULL;
 		}
 	}
-	*pp = p;	
+	*pp = p;
 	return hRes;
 }
 ATLPREFAST_UNSUPPRESS()
@@ -1837,7 +1758,7 @@ ATLPREFAST_UNSUPPRESS()
 // CComObjectCached is used primarily for class factories in DLL's
 // but it is useful anytime you want to cache an object
 template <class Base>
-class CComObjectCached : 
+class CComObjectCached :
 	public Base
 {
 public:
@@ -1845,7 +1766,7 @@ public:
 	CComObjectCached(_In_opt_ void* = NULL)
 	{
 	}
-	// Set refcount to -(LONG_MAX/2) to protect destruction and 
+	// Set refcount to -(LONG_MAX/2) to protect destruction and
 	// also catch mismatched Release in debug builds
 	virtual ~CComObjectCached()
 	{
@@ -1875,7 +1796,7 @@ public:
 	}
 	//if _InternalQueryInterface is undefined then you forgot BEGIN_COM_MAP
 	STDMETHOD(QueryInterface)(
-		_In_ REFIID iid, 
+		_In_ REFIID iid,
 		_Deref_out_ void** ppvObject) throw()
 	{
 		return _InternalQueryInterface(iid, ppvObject);
@@ -1930,7 +1851,7 @@ public:
 	CComObjectNoLock(_In_opt_ void* = NULL)
 	{
 	}
-	// Set refcount to -(LONG_MAX/2) to protect destruction and 
+	// Set refcount to -(LONG_MAX/2) to protect destruction and
 	// also catch mismatched Release in debug builds
 
 	virtual ~CComObjectNoLock()
@@ -1944,7 +1865,7 @@ public:
 
 	//If InternalAddRef or InternalRelease is undefined then your class
 	//doesn't derive from CComObjectRoot
-	STDMETHOD_(ULONG, AddRef)() throw() 
+	STDMETHOD_(ULONG, AddRef)() throw()
 	{
 		return InternalAddRef();
 	}
@@ -1957,7 +1878,7 @@ public:
 	}
 	//if _InternalQueryInterface is undefined then you forgot BEGIN_COM_MAP
 	STDMETHOD(QueryInterface)(
-		_In_ REFIID iid, 
+		_In_ REFIID iid,
 		_Deref_out_ void** ppvObject) throw()
 	{
 		return _InternalQueryInterface(iid, ppvObject);
@@ -2015,7 +1936,7 @@ public:
 		return _pAtlModule->Unlock();
 	}
 	STDMETHOD(QueryInterface)(
-		_In_ REFIID iid, 
+		_In_ REFIID iid,
 		_Deref_out_ void** ppvObject) throw()
 	{
 		return _InternalQueryInterface(iid, ppvObject);
@@ -2026,7 +1947,7 @@ public:
 // It is possible for Base not to derive from CComObjectRoot
 // However, you will need to provide FinalConstruct and InternalQueryInterface
 template <class Base>
-class CComObjectStack : 
+class CComObjectStack :
 	public Base
 {
 public:
@@ -2044,19 +1965,19 @@ public:
 		_AtlDebugInterfacesModule.DeleteNonAddRefThunk(_GetRawUnknown());
 #endif
 	}
-	
-	STDMETHOD_(ULONG, AddRef)() throw() 
+
+	STDMETHOD_(ULONG, AddRef)() throw()
 	{
 		ATLASSERT(FALSE);
 		return 0;
 	}
-	STDMETHOD_(ULONG, Release)() throw() 
+	STDMETHOD_(ULONG, Release)() throw()
 	{
 		ATLASSERT(FALSE);
 		return 0;
 	}
 	STDMETHOD(QueryInterface)(
-		_In_ REFIID, 
+		_In_ REFIID,
 		_In_opt_ void**) throw()
 	{
 		ATLASSERT(FALSE);
@@ -2067,20 +1988,20 @@ public:
 
 // Base must be derived from CComObjectRoot
 template <class Base>
-class CComObjectStackEx : 
+class CComObjectStackEx :
 	public Base
 {
 public:
 	typedef Base _BaseClass;
 
-	CComObjectStackEx(_In_opt_ void* = NULL) 
-	{ 
+	CComObjectStackEx(_In_opt_ void* = NULL)
+	{
 #ifdef _DEBUG
 		// m_dwRef = 0;
 #endif
 		m_hResFinalConstruct = _AtlInitialConstruct();
 		if (SUCCEEDED(m_hResFinalConstruct))
-			m_hResFinalConstruct = FinalConstruct(); 
+			m_hResFinalConstruct = FinalConstruct();
 	}
 
 	virtual ~CComObjectStackEx()
@@ -2089,7 +2010,7 @@ public:
 		//
 		// The ref count has no control over the
 		// lifetime of this object, so you must ensure
-		// by some other means that the object remains 
+		// by some other means that the object remains
 		// alive while clients have references to its interfaces.
 		// ATLASSUME(m_dwRef == 0);
 		FinalRelease();
@@ -2117,7 +2038,7 @@ public:
 	}
 
 	STDMETHOD(QueryInterface)(
-		_In_ REFIID iid, 
+		_In_ REFIID iid,
 		_Deref_out_ void** ppvObject) throw()
 	{
 		return _InternalQueryInterface(iid, ppvObject);
@@ -2127,12 +2048,12 @@ public:
 };
 
 template <class Base> //Base must be derived from CComObjectRoot
-class CComContainedObject : 
+class CComContainedObject :
 	public Base
 {
 public:
 	typedef Base _BaseClass;
-	CComContainedObject(_In_opt_ void* pv) 
+	CComContainedObject(_In_opt_ void* pv)
 	{
 		this->m_pOuterUnknown = (IUnknown*)pv;
 	}
@@ -2144,16 +2065,16 @@ public:
 	}
 #endif
 
-	STDMETHOD_(ULONG, AddRef)() throw() 
+	STDMETHOD_(ULONG, AddRef)() throw()
 	{
 		return OuterAddRef();
 	}
-	STDMETHOD_(ULONG, Release)() throw() 
+	STDMETHOD_(ULONG, Release)() throw()
 	{
 		return OuterRelease();
 	}
 	STDMETHOD(QueryInterface)(
-		_In_ REFIID iid, 
+		_In_ REFIID iid,
 		_Deref_out_ void** ppvObject) throw()
 	{
 		return OuterQueryInterface(iid, ppvObject);
@@ -2183,45 +2104,45 @@ class CComCoClass
 {
 public:
 	typedef T _CoClass;
-	static const CLSID& WINAPI GetObjectCLSID() 
+	static const CLSID& WINAPI GetObjectCLSID()
 	{
 		return *pclsid;
 	}
-	static LPCTSTR WINAPI GetObjectDescription() 
+	static LPCTSTR WINAPI GetObjectDescription()
 	{
 		return NULL;
 	}
 	static HRESULT WINAPI Error(
 		_In_z_ LPCOLESTR lpszDesc,
-		_In_ const IID& iid = GUID_NULL, 
+		_In_ const IID& iid = GUID_NULL,
 		_In_ HRESULT hRes = 0)
 	{
 		return AtlReportError(GetObjectCLSID(), lpszDesc, iid, hRes);
 	}
 	static HRESULT WINAPI Error(
-		_In_z_ LPCOLESTR lpszDesc, 
+		_In_z_ LPCOLESTR lpszDesc,
 		_In_ DWORD dwHelpID,
-		_In_z_ LPCOLESTR lpszHelpFile, 
-		_In_ const IID& iid = GUID_NULL, 
+		_In_z_ LPCOLESTR lpszHelpFile,
+		_In_ const IID& iid = GUID_NULL,
 		_In_ HRESULT hRes = 0)
 	{
 		return AtlReportError(GetObjectCLSID(), lpszDesc, dwHelpID, lpszHelpFile,
 			iid, hRes);
 	}
 	static HRESULT WINAPI Error(
-		_In_ UINT nID, 
+		_In_ UINT nID,
 		_In_ const IID& iid = GUID_NULL,
-		_In_ HRESULT hRes = 0, 
+		_In_ HRESULT hRes = 0,
 		_In_ HINSTANCE hInst = _AtlBaseModule.GetResourceInstance())
 	{
 		return AtlReportError(GetObjectCLSID(), nID, iid, hRes, hInst);
 	}
 	static HRESULT WINAPI Error(
-		_In_ UINT nID, 
+		_In_ UINT nID,
 		_In_ DWORD dwHelpID,
-		_In_z_ LPCOLESTR lpszHelpFile, 
+		_In_z_ LPCOLESTR lpszHelpFile,
 		_In_ const IID& iid = GUID_NULL,
-		_In_ HRESULT hRes = 0, 
+		_In_ HRESULT hRes = 0,
 		_In_ HINSTANCE hInst = _AtlBaseModule.GetResourceInstance())
 	{
 		return AtlReportError(GetObjectCLSID(), nID, dwHelpID, lpszHelpFile,
@@ -2229,16 +2150,16 @@ public:
 	}
 	static HRESULT WINAPI Error(
 		_In_z_ LPCSTR lpszDesc,
-		_In_ const IID& iid = GUID_NULL, 
+		_In_ const IID& iid = GUID_NULL,
 		_In_ HRESULT hRes = 0)
 	{
 		return AtlReportError(GetObjectCLSID(), lpszDesc, iid, hRes);
 	}
 	static HRESULT WINAPI Error(
-		_In_z_ LPCSTR lpszDesc, 
+		_In_z_ LPCSTR lpszDesc,
 		_In_ DWORD dwHelpID,
-		_In_z_ LPCSTR lpszHelpFile, 
-		_In_ const IID& iid = GUID_NULL, 
+		_In_z_ LPCSTR lpszHelpFile,
+		_In_ const IID& iid = GUID_NULL,
 		_In_ HRESULT hRes = 0)
 	{
 		return AtlReportError(GetObjectCLSID(), lpszDesc, dwHelpID,
@@ -2246,7 +2167,7 @@ public:
 	}
 	template <class Q>
 	static HRESULT CreateInstance(
-		_Inout_opt_ IUnknown* punkOuter, 
+		_Inout_opt_ IUnknown* punkOuter,
 		_Deref_out_ Q** pp)
 	{
 		return T::_CreatorClass::CreateInstance(punkOuter, __uuidof(Q), (void**) pp);
@@ -2285,13 +2206,13 @@ public:
 
 #ifdef _ATL_DLL_IMPL
 	CComTypeInfoHolder(
-		_In_ const GUID* pguid, 
-		_In_ const GUID* plibid, 
-		_In_ WORD wMajor, 
+		_In_ const GUID* pguid,
+		_In_ const GUID* plibid,
+		_In_ WORD wMajor,
 		_In_ WORD wMinor) :
-		m_pguid(pguid), m_plibid(plibid), m_wMajor(wMajor), m_wMinor(wMinor), 
+		m_pguid(pguid), m_plibid(plibid), m_wMajor(wMajor), m_wMinor(wMinor),
 		m_pInfo(NULL), m_pMap(NULL), m_nCount(0)
-    // m_dwRef(0), 
+		// m_dwRef(0),
 	{
 	}
 
@@ -2306,7 +2227,7 @@ public:
 #endif
 
 	HRESULT GetTI(
-		_In_ LCID lcid, 
+		_In_ LCID lcid,
 		_Deref_out_ ITypeInfo** ppInfo)
 	{
 		ATLASSERT(ppInfo != NULL);
@@ -2338,8 +2259,8 @@ public:
 	static void __stdcall Cleanup(_In_ DWORD_PTR dw);
 
 	HRESULT GetTypeInfo(
-		_In_ UINT itinfo, 
-		_In_ LCID lcid, 
+		_In_ UINT itinfo,
+		_In_ LCID lcid,
 		_Deref_out_ ITypeInfo** pptinfo)
 	{
 		if (itinfo != 0)
@@ -2349,10 +2270,10 @@ public:
 		return GetTI(lcid, pptinfo);
 	}
 	HRESULT GetIDsOfNames(
-		_In_ REFIID /* riid */, 
-		_In_count_(cNames) _Deref_pre_z_ LPOLESTR* rgszNames, 
+		_In_ REFIID /* riid */,
+		_In_count_(cNames) _Deref_pre_z_ LPOLESTR* rgszNames,
 		_In_ UINT cNames,
-		_In_ LCID lcid, 
+		_In_ LCID lcid,
 		_Out_ DISPID* rgdispid)
 	{
 		HRESULT hRes = EnsureTI(lcid);
@@ -2387,14 +2308,14 @@ public:
 	}
 
 	_Check_return_ HRESULT Invoke(
-		_Inout_ IDispatch* p, 
-		_In_ DISPID dispidMember, 
+		_Inout_ IDispatch* p,
+		_In_ DISPID dispidMember,
 		_In_ REFIID /* riid */,
-		_In_ LCID lcid, 
-		_In_ WORD wFlags, 
-		_In_ DISPPARAMS* pdispparams, 
+		_In_ LCID lcid,
+		_In_ WORD wFlags,
+		_In_ DISPPARAMS* pdispparams,
 		_Out_opt_ VARIANT* pvarResult,
-		_Out_opt_ EXCEPINFO* pexcepinfo, 
+		_Out_opt_ EXCEPINFO* pexcepinfo,
 		_Out_opt_ UINT* puArgErr)
 	{
 		HRESULT hRes = EnsureTI(lcid);
@@ -2447,7 +2368,7 @@ inline void __stdcall CComTypeInfoHolder::Cleanup(_In_ DWORD_PTR dw)
 	ATLASSERT(dw != 0);
 	if (dw == 0)
 		return;
-		
+
 	CComTypeInfoHolder* p = (CComTypeInfoHolder*) dw;
 	if (p->m_pInfo != NULL)
 		p->m_pInfo->Release();
@@ -2461,7 +2382,7 @@ inline void __stdcall CComTypeInfoHolder::Cleanup(_In_ DWORD_PTR dw)
 //
 ATLPREFAST_SUPPRESS(6387)
 template <class T>
-class ATL_NO_VTABLE IObjectWithSiteImpl : 
+class ATL_NO_VTABLE IObjectWithSiteImpl :
 	public IObjectWithSite
 {
 public:
@@ -2475,7 +2396,7 @@ public:
 		return S_OK;
 	}
 	STDMETHOD(GetSite)(
-		_In_ REFIID riid, 
+		_In_ REFIID riid,
 		_Deref_out_ void** ppvSite)
 	{
 		T* pT = static_cast<T*>(this);
@@ -2492,7 +2413,7 @@ public:
 			}
 		}
 		return hRes;
-	}	
+	}
 	HRESULT SetChildSite(_Inout_ IUnknown* punkChild)
 	{
 		if (punkChild == NULL)
@@ -2519,13 +2440,13 @@ ATLPREFAST_UNSUPPRESS()
 // IServiceProvider
 //
 template <class T>
-class ATL_NO_VTABLE IServiceProviderImpl : 
+class ATL_NO_VTABLE IServiceProviderImpl :
 	public IServiceProvider
 {
 public:
 	STDMETHOD(QueryService)(
-		_In_ REFGUID guidService, 
-		_In_ REFIID riid, 
+		_In_ REFGUID guidService,
+		_In_ REFIID riid,
 		_Deref_out_ void** ppvObject)
 	{
 
@@ -2560,10 +2481,10 @@ public:
 // IDispEventImpl
 
 ATLAPI AtlGetObjectSourceInterface(
-	_Inout_ IUnknown* punkObj, 
-	_Out_ GUID* plibid, 
-	_Out_ IID* piid, 
-	_Out_ unsigned short* pdwMajor, 
+	_Inout_ IUnknown* punkObj,
+	_Out_ GUID* plibid,
+	_Out_ IID* piid,
+	_Out_ unsigned short* pdwMajor,
 	_Out_ unsigned short* pdwMinor);
 
 #ifdef _M_IA64
@@ -2578,7 +2499,7 @@ public:
 	void Init(_In_ TMFP dw, _In_ void* pThis)
 	{
 		pVtable = &pFunc;
-		pFunc = &thunk;		
+		pFunc = &thunk;
 		union {
 			DWORD_PTR dwFunc;
 			TMFP pfn;
@@ -2633,32 +2554,32 @@ struct _ATL_FUNC_INFO
 class ATL_NO_VTABLE _IDispEvent
 {
 public:
-	_IDispEvent() : m_libid(GUID_NULL), 
-		m_iid(IID_NULL), m_wMajorVerNum(0), 
-		m_wMinorVerNum(0), m_dwEventCookie(0xFEFEFEFE) 
+	_IDispEvent() : m_libid(GUID_NULL),
+		m_iid(IID_NULL), m_wMajorVerNum(0),
+		m_wMinorVerNum(0), m_dwEventCookie(0xFEFEFEFE)
 	{
 	}
 	//this method needs a different name than QueryInterface
 	STDMETHOD(_LocDEQueryInterface)(
-		_In_ REFIID riid, 
+		_In_ REFIID riid,
 		_Deref_out_ void** ppvObject) = 0;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;
 	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;
-	
+
 	GUID m_libid; // used for dynamic case
 	IID m_iid; // used for dynamic case
 	unsigned short m_wMajorVerNum;    // Major version number. used for dynamic case
 	unsigned short m_wMinorVerNum;    // Minor version number. used for dynamic case
 	DWORD m_dwEventCookie;
 	HRESULT DispEventAdvise(
-		_Inout_ IUnknown* pUnk, 
+		_Inout_ IUnknown* pUnk,
 		_In_ const IID* piid)
 	{
 		ATLENSURE(m_dwEventCookie == 0xFEFEFEFE);
 		return AtlAdvise(pUnk, (IUnknown*)this, *piid, &m_dwEventCookie);
 	}
 	HRESULT DispEventUnadvise(
-		_Inout_ IUnknown* pUnk, 
+		_Inout_ IUnknown* pUnk,
 		_In_ const IID* piid)
 	{
 		HRESULT hr = AtlUnadvise(pUnk, *piid, m_dwEventCookie);
@@ -2666,15 +2587,15 @@ public:
 		return hr;
 	}
 	//---- add Advise & Unadvise for ease of calling from attribute code ----
-	HRESULT Advise(_Inout_ IUnknown *punk) 
-	{ 
+	HRESULT Advise(_Inout_ IUnknown *punk)
+	{
 		HRESULT hr = AtlGetObjectSourceInterface(punk, &m_libid, &m_iid, &m_wMajorVerNum, &m_wMinorVerNum);
 		if (FAILED(hr))
 			return hr;
 		return DispEventAdvise(punk, &m_iid);
 	}
-	HRESULT Unadvise(_Inout_ IUnknown *punk) 
-	{ 
+	HRESULT Unadvise(_Inout_ IUnknown *punk)
+	{
 		HRESULT hr = AtlGetObjectSourceInterface(punk, &m_libid, &m_iid, &m_wMajorVerNum, &m_wMinorVerNum);
 		if (FAILED(hr))
 			return hr;
@@ -2683,19 +2604,19 @@ public:
 };
 
 template <UINT nID, const IID* piid>
-class ATL_NO_VTABLE _IDispEventLocator : 
+class ATL_NO_VTABLE _IDispEventLocator :
 	public _IDispEvent
 {
 public:
 };
 
 template <UINT nID, class T, const IID* pdiid>
-class ATL_NO_VTABLE IDispEventSimpleImpl : 
+class ATL_NO_VTABLE IDispEventSimpleImpl :
 	public _IDispEventLocator<nID, pdiid>
 {
 public:
 	STDMETHOD(_LocDEQueryInterface)(
-		_In_ REFIID riid, 
+		_In_ REFIID riid,
 		_Deref_out_ void** ppvObject)
 	{
 		ATLASSERT(ppvObject != NULL);
@@ -2706,7 +2627,7 @@ public:
 		if (InlineIsEqualGUID(riid, IID_NULL))
 			return E_NOINTERFACE;
 
-		/*if (InlineIsEqualGUID(riid, *pdiid) || 
+		/*if (InlineIsEqualGUID(riid, *pdiid) ||
 			InlineIsEqualUnknown(riid) ||
 			InlineIsEqualGUID(riid, __uuidof(IDispatch)) ||
 			InlineIsEqualGUID(riid, m_iid))
@@ -2722,7 +2643,7 @@ public:
 			return E_NOINTERFACE;
 	}
 
-	// These are here only to support use in non-COM objects	
+	// These are here only to support use in non-COM objects
 	virtual ULONG STDMETHODCALLTYPE AddRef()
 	{
 		return 1;
@@ -2737,37 +2658,37 @@ public:
 		ATLTRACENOTIMPL(_T("IDispEventSimpleImpl::GetTypeInfoCount"));
 	}
 	STDMETHOD(GetTypeInfo)(
-		_In_ UINT /*itinfo*/, 
-		_In_ LCID /*lcid*/, 
+		_In_ UINT /*itinfo*/,
+		_In_ LCID /*lcid*/,
 		_In_opt_ ITypeInfo** /*pptinfo*/)
 	{
 		ATLTRACENOTIMPL(_T("IDispEventSimpleImpl::GetTypeInfo"));
 	}
 	STDMETHOD(GetIDsOfNames)(
-		_In_ REFIID /*riid*/, 
-		_In_count_(cNames) _Deref_pre_z_ LPOLESTR* /*rgszNames*/, 
+		_In_ REFIID /*riid*/,
+		_In_count_(cNames) _Deref_pre_z_ LPOLESTR* /*rgszNames*/,
 		_In_ UINT cNames,
-		_In_ LCID /*lcid*/, 
+		_In_ LCID /*lcid*/,
 		_In_opt_ DISPID* /*rgdispid*/)
 	{
 		UNREFERENCED_PARAMETER(cNames);
 		ATLTRACENOTIMPL(_T("IDispEventSimpleImpl::GetIDsOfNames"));
 	}
 	STDMETHOD(Invoke)(
-		_In_ DISPID dispidMember, 
+		_In_ DISPID dispidMember,
 		_In_ REFIID /*riid*/,
-		_In_ LCID lcid, 
-		_In_ WORD /*wFlags*/, 
-		_In_ DISPPARAMS* pdispparams, 
+		_In_ LCID lcid,
+		_In_ WORD /*wFlags*/,
+		_In_ DISPPARAMS* pdispparams,
 		_Out_opt_ VARIANT* pvarResult,
-		_In_opt_ EXCEPINFO* /*pexcepinfo*/, 
+		_In_opt_ EXCEPINFO* /*pexcepinfo*/,
 		_In_opt_ UINT* /*puArgErr*/)
 	{
 		/*const _ATL_EVENT_ENTRY<T>* pMap = T::_GetSinkMap();
 		const _ATL_EVENT_ENTRY<T>* pFound = NULL;
 		while (pMap->piid != NULL)
 		{
-			if ((pMap->nControlID == nID) && (pMap->dispid == dispidMember) && 
+			if ((pMap->nControlID == nID) && (pMap->dispid == dispidMember) &&
 				(IsEqualIID(*(pMap->piid), *pdiid)))
 			{
 				pFound = pMap;
@@ -2791,22 +2712,22 @@ public:
 				return S_OK;
 		}
 		return InvokeFromFuncInfo(pFound->pfn, *pInfo, pdispparams, pvarResult);
-    */
-    return S_OK;
+		*/
+		return S_OK;
 	}
 
 	//Helper for invoking the event
 	HRESULT InvokeFromFuncInfo(
-		/* _In_ */ void (__stdcall T::*pEvent)(), 
-		_In_ _ATL_FUNC_INFO& info, 
-		_In_ DISPPARAMS* pdispparams, 
+		/* _In_ */ void (__stdcall T::*pEvent)(),
+		_In_ _ATL_FUNC_INFO& info,
+		_In_ DISPPARAMS* pdispparams,
 		_Out_opt_ VARIANT* pvarResult)
 	{
 		ATLASSERT(pdispparams->cArgs == (UINT)info.nParams);
 
 		T* pT = static_cast<T*>(this);
 
-		// If this assert occurs, then add 
+		// If this assert occurs, then add
 		// #define _ATL_MAX_VARTYPES nnnn
 		// before including atlcom.h
 		ATLASSERT(info.nParams <= _ATL_MAX_VARTYPES);
@@ -2863,9 +2784,9 @@ public:
 
 	//Helper for finding the function index for a DISPID
 	virtual HRESULT GetFuncInfoFromId(
-		_In_ const IID& /*iid*/, 
-		_In_ DISPID /*dispidMember*/, 
-		_In_ LCID /*lcid*/, 
+		_In_ const IID& /*iid*/,
+		_In_ DISPID /*dispidMember*/,
+		_In_ LCID /*lcid*/,
 		_In_ _ATL_FUNC_INFO& /*info*/)
 	{
 		ATLTRACE(_T("TODO: Classes using IDispEventSimpleImpl should override this method\n"));
@@ -2874,14 +2795,14 @@ public:
 	}
 	//Helpers for sinking events on random IUnknown*
 	HRESULT DispEventAdvise(
-		_Inout_ IUnknown* pUnk, 
+		_Inout_ IUnknown* pUnk,
 		_In_ const IID* piid)
 	{
-		ATLENSURE(this->m_dwEventCookie == 0xFEFEFEFE);		
+		ATLENSURE(this->m_dwEventCookie == 0xFEFEFEFE);
 		return AtlAdvise(pUnk, (IUnknown*)this, *piid, &this->m_dwEventCookie);
 	}
 	HRESULT DispEventUnadvise(
-		_Inout_ IUnknown* pUnk, 
+		_Inout_ IUnknown* pUnk,
 		_In_ const IID* piid)
 	{
 		HRESULT hr = AtlUnadvise(pUnk, *piid, this->m_dwEventCookie);
@@ -2901,7 +2822,7 @@ public:
 //Helper for advising connections points from a sink map
 template <class T>
 inline HRESULT AtlAdviseSinkMap(
-	_Inout_ T* pT, 
+	_Inout_ T* pT,
 	_In_ bool bAdvise)
 {
 	/*ATLASSERT(::IsWindow(pT->m_hWnd));
@@ -2955,13 +2876,13 @@ inline HRESULT AtlAdviseSinkMap(
 		pEntries++;
 	}
 	return hr;*/
-  return S_OK;
+	return S_OK;
 }
 
 #pragma warning(push)
 #pragma warning(disable: 4061) // enumerate XXX not explicitly handled by a case label
 inline VARTYPE AtlGetUserDefinedType(
-	_Inout_ ITypeInfo *pTI, 
+	_Inout_ ITypeInfo *pTI,
 	_In_ HREFTYPE hrt)
 {
 	ATLENSURE_THROW(pTI != NULL, E_INVALIDARG);
@@ -2995,7 +2916,7 @@ inline VARTYPE AtlGetUserDefinedType(
 			default:
 				vt = pta->tdescAlias.vt;
 			}
-		}				
+		}
 	}
 
 	if(pta)
@@ -3006,10 +2927,10 @@ inline VARTYPE AtlGetUserDefinedType(
 #pragma warning(pop)
 
 inline HRESULT AtlGetFuncInfoFromId(
-	_In_ ITypeInfo* pTypeInfo, 
-	_In_ const IID& /*iid*/, 
-	_In_ DISPID dispidMember, 
-	_In_ LCID /*lcid*/, 
+	_In_ ITypeInfo* pTypeInfo,
+	_In_ const IID& /*iid*/,
+	_In_ DISPID dispidMember,
+	_In_ LCID /*lcid*/,
 	_Inout_ _ATL_FUNC_INFO& info)
 {
 	if (pTypeInfo == NULL)
@@ -3076,9 +2997,9 @@ inline HRESULT AtlGetFuncInfoFromId(
 	return S_OK;
 }
 
-template <UINT nID, class T, const IID* pdiid = &IID_NULL, const GUID* plibid = &GUID_NULL, 
+template <UINT nID, class T, const IID* pdiid = &IID_NULL, const GUID* plibid = &GUID_NULL,
 	WORD wMajor = 0, WORD wMinor = 0, class tihclass = CComTypeInfoHolder>
-class ATL_NO_VTABLE IDispEventImpl : 
+class ATL_NO_VTABLE IDispEventImpl :
 	public IDispEventSimpleImpl<nID, T, pdiid>
 {
 public:
@@ -3093,26 +3014,26 @@ public:
 	}
 
 	STDMETHOD(GetTypeInfoCount)(_Out_ UINT* pctinfo)
-	{ 
-		if (pctinfo == NULL) 
-			return E_POINTER; 
-		*pctinfo = 1; 
+	{
+		if (pctinfo == NULL)
+			return E_POINTER;
+		*pctinfo = 1;
 		return S_OK;
 	}
 
 	STDMETHOD(GetTypeInfo)(
-		_In_ UINT itinfo, 
-		_In_ LCID lcid, 
+		_In_ UINT itinfo,
+		_In_ LCID lcid,
 		_Deref_out_ ITypeInfo** pptinfo)
 	{
 		return _tih.GetTypeInfo(itinfo, lcid, pptinfo);
 	}
 
 	STDMETHOD(GetIDsOfNames)(
-		_In_ REFIID riid, 
-		_In_count_(cNames) _Deref_pre_z_ LPOLESTR* rgszNames, 
+		_In_ REFIID riid,
+		_In_count_(cNames) _Deref_pre_z_ LPOLESTR* rgszNames,
 		_In_ UINT cNames,
-		_In_ LCID lcid, 
+		_In_ LCID lcid,
 		_Out_ DISPID* rgdispid)
 	{
 		return _tih.GetIDsOfNames(riid, rgszNames, cNames, lcid, rgdispid);
@@ -3120,16 +3041,16 @@ public:
 
 	//Helper for finding the function index for a DISPID
 	HRESULT GetFuncInfoFromId(
-		_In_ const IID& iid, 
-		_In_ DISPID dispidMember, 
-		_In_ LCID lcid, 
+		_In_ const IID& iid,
+		_In_ DISPID dispidMember,
+		_In_ LCID lcid,
 		_Inout_ _ATL_FUNC_INFO& info)
 	{
 		CComPtr<ITypeInfo> spTypeInfo;
-	 
+
 		if (InlineIsEqualGUID(*_tih.m_plibid, GUID_NULL))
 		{
-			m_InnerLibid = this->m_libid; 
+			m_InnerLibid = this->m_libid;
 			m_InnerIid = this->m_iid;
 			_tih.m_plibid = &this->m_InnerLibid;
 			_tih.m_pguid = &this->m_InnerIid;
@@ -3151,20 +3072,20 @@ protected:
 	static GUID	m_InnerLibid; // used for dynamic case
 	static IID m_InnerIid; // used for dynamic case
 	static HRESULT GetTI(
-		_In_ LCID lcid, 
+		_In_ LCID lcid,
 		_Deref_out_ ITypeInfo** ppInfo)
 	{
 		return _tih.GetTI(lcid, ppInfo);
 	}
 };
- 
+
 template <UINT nID, class T, const IID* piid, const GUID* plibid, WORD wMajor, WORD wMinor, class tihclass>
 typename IDispEventImpl<nID, T, piid, plibid, wMajor, wMinor, tihclass>::_tihclass
 IDispEventImpl<nID, T, piid, plibid, wMajor, wMinor, tihclass>::_tih =
 	{piid, plibid, wMajor, wMinor, NULL, 0, NULL, 0};
- 
+
 template <UINT nID, class T, const IID* piid, const GUID* plibid, WORD wMajor, WORD wMinor, class tihclass>
-GUID  IDispEventImpl<nID, T, piid, plibid, wMajor, wMinor, tihclass>::m_InnerLibid=GUID_NULL; 
+GUID  IDispEventImpl<nID, T, piid, plibid, wMajor, wMinor, tihclass>::m_InnerLibid=GUID_NULL;
 
 template <UINT nID, class T, const IID* piid, const GUID* plibid, WORD wMajor, WORD wMinor, class tihclass>
 IID  IDispEventImpl<nID, T, piid, plibid, wMajor, wMinor, tihclass>::m_InnerIid=IID_NULL;
@@ -3204,7 +3125,7 @@ struct _ATL_EVENT_ENTRY
 
 template <class T, const IID* piid = &__uuidof(T), const GUID* plibid = &CAtlModule::m_libid, WORD wMajor = 1,
 WORD wMinor = 0, class tihclass = CComTypeInfoHolder>
-class ATL_NO_VTABLE IDispatchImpl : 
+class ATL_NO_VTABLE IDispatchImpl :
 	public T
 {
 public:
@@ -3212,35 +3133,35 @@ public:
 // IDispatch
 	STDMETHOD(GetTypeInfoCount)(_Out_ UINT* pctinfo)
 	{
-		if (pctinfo == NULL) 
-			return E_POINTER; 
+		if (pctinfo == NULL)
+			return E_POINTER;
 		*pctinfo = 1;
 		return S_OK;
 	}
 	STDMETHOD(GetTypeInfo)(
-		_In_ UINT itinfo, 
-		_In_ LCID lcid, 
+		_In_ UINT itinfo,
+		_In_ LCID lcid,
 		_Deref_out_ ITypeInfo** pptinfo)
 	{
 		return _tih.GetTypeInfo(itinfo, lcid, pptinfo);
 	}
 	STDMETHOD(GetIDsOfNames)(
-		_In_ REFIID riid, 
-		_In_count_(cNames) _Deref_pre_z_ LPOLESTR* rgszNames, 
+		_In_ REFIID riid,
+		_In_count_(cNames) _Deref_pre_z_ LPOLESTR* rgszNames,
 		_In_ UINT cNames,
-		_In_ LCID lcid, 
+		_In_ LCID lcid,
 		_Out_ DISPID* rgdispid)
 	{
 		return _tih.GetIDsOfNames(riid, rgszNames, cNames, lcid, rgdispid);
 	}
 	STDMETHOD(Invoke)(
-		_In_ DISPID dispidMember, 
+		_In_ DISPID dispidMember,
 		_In_ REFIID riid,
-		_In_ LCID lcid, 
-		_In_ WORD wFlags, 
-		_In_ DISPPARAMS* pdispparams, 
+		_In_ LCID lcid,
+		_In_ WORD wFlags,
+		_In_ DISPPARAMS* pdispparams,
 		_Out_opt_ VARIANT* pvarResult,
-		_Out_opt_ EXCEPINFO* pexcepinfo, 
+		_Out_opt_ EXCEPINFO* pexcepinfo,
 		_Out_opt_ UINT* puArgErr)
 	{
 		return _tih.Invoke((IDispatch*)this, dispidMember, riid, lcid,
@@ -3259,7 +3180,7 @@ public:
 protected:
 	_tihclass _tih;
 	HRESULT GetTI(
-		_In_ LCID lcid, 
+		_In_ LCID lcid,
 		_Deref_out_ ITypeInfo** ppInfo)
 	{
 		return _tih.GetTI(lcid, ppInfo);
@@ -3270,7 +3191,7 @@ protected:
 protected:
 	static _tihclass _tih;
 	static HRESULT GetTI(
-		_In_ LCID lcid, 
+		_In_ LCID lcid,
 		_Deref_out_ ITypeInfo** ppInfo)
 	{
 		return _tih.GetTI(lcid, ppInfo);
@@ -3292,7 +3213,7 @@ IDispatchImpl<T, piid, plibid, wMajor, wMinor, tihclass>::_tih =
 // IProvideClassInfoImpl
 template <const CLSID* pcoclsid, const GUID* plibid = &CAtlModule::m_libid,
 WORD wMajor = 1, WORD wMinor = 0, class tihclass = CComTypeInfoHolder>
-class ATL_NO_VTABLE IProvideClassInfoImpl : 
+class ATL_NO_VTABLE IProvideClassInfoImpl :
 	public IProvideClassInfo
 {
 public:
@@ -3316,7 +3237,7 @@ IProvideClassInfoImpl<pcoclsid, plibid, wMajor, wMinor, tihclass>::_tih =
 // IProvideClassInfo2Impl
 template <const CLSID* pcoclsid, const IID* psrcid, const GUID* plibid = &CAtlModule::m_libid,
 WORD wMajor = 1, WORD wMinor = 0, class tihclass = CComTypeInfoHolder>
-class ATL_NO_VTABLE IProvideClassInfo2Impl : 
+class ATL_NO_VTABLE IProvideClassInfo2Impl :
 	public IProvideClassInfo2
 {
 public:
@@ -3327,7 +3248,7 @@ public:
 		return _tih.GetTypeInfo(0, LANG_NEUTRAL, pptinfo);
 	}
 	STDMETHOD(GetGUID)(
-		_In_ DWORD dwGuidKind, 
+		_In_ DWORD dwGuidKind,
 		_Out_ GUID* pGUID)
 	{
 		if (pGUID == NULL)
@@ -3362,7 +3283,7 @@ IProvideClassInfo2Impl<pcoclsid, psrcid, plibid, wMajor, wMinor, tihclass>::_tih
 // ISupportErrorInfoImpl
 
 template <const IID* piid>
-class ATL_NO_VTABLE ISupportErrorInfoImpl : 
+class ATL_NO_VTABLE ISupportErrorInfoImpl :
 	public ISupportErrorInfo
 {
 public:
@@ -3384,15 +3305,15 @@ template <class T>
 class _Copy
 {
 public:
-	static HRESULT copy(_Out_ T* p1, _In_ const T* p2) 
-	{ 
-		Checked::memcpy_s(p1, sizeof(T), p2, sizeof(T)); 
+	static HRESULT copy(_Out_ T* p1, _In_ const T* p2)
+	{
+		Checked::memcpy_s(p1, sizeof(T), p2, sizeof(T));
 		return S_OK;
 	}
-	static void init(_Inout_opt_ T*) 
+	static void init(_Inout_opt_ T*)
 	{
 	}
-	static void destroy(_Inout_opt_ T*) 
+	static void destroy(_Inout_opt_ T*)
 	{
 	}
 };
@@ -3401,16 +3322,16 @@ template<>
 class _Copy<VARIANT>
 {
 public:
-	static HRESULT copy(_Out_ VARIANT* p1, _In_ const VARIANT* p2) 
+	static HRESULT copy(_Out_ VARIANT* p1, _In_ const VARIANT* p2)
 	{
-		p1->vt = VT_EMPTY; 
+		p1->vt = VT_EMPTY;
 		return VariantCopy(p1, const_cast<VARIANT*>(p2));
 	}
-	static void init(_Inout_ VARIANT* p) 
+	static void init(_Inout_ VARIANT* p)
 	{
 		p->vt = VT_EMPTY;
 	}
-	static void destroy(_Inout_ VARIANT* p) 
+	static void destroy(_Inout_ VARIANT* p)
 	{
 		VariantClear(p);
 	}
@@ -3439,12 +3360,12 @@ public:
 		}
 		return hr;
 	}
-	static void init(_Inout_z_ LPOLESTR* p) 
+	static void init(_Inout_z_ LPOLESTR* p)
 	{
 		*p = NULL;
 	}
-	static void destroy(_Inout_z_ LPOLESTR* p) 
-	{ 
+	static void destroy(_Inout_z_ LPOLESTR* p)
+	{
 		CoTaskMemFree(*p);
 	}
 };
@@ -3478,12 +3399,12 @@ public:
 		}
 		return hr;
 	}
-	static void init(_Inout_ OLEVERB* p) 
-	{ 
+	static void init(_Inout_ OLEVERB* p)
+	{
 		p->lpszVerbName = NULL;
 	}
-	static void destroy(_Inout_ OLEVERB* p) 
-	{ 
+	static void destroy(_Inout_ OLEVERB* p)
+	{
 		if (p->lpszVerbName)
 		{
 			CoTaskMemFree(p->lpszVerbName);
@@ -3505,12 +3426,12 @@ public:
 		}
 		return S_OK;
 	}
-	static void init(_Inout_ CONNECTDATA* ) 
+	static void init(_Inout_ CONNECTDATA* )
 	{
 	}
-	static void destroy(_Inout_ CONNECTDATA* p) 
+	static void destroy(_Inout_ CONNECTDATA* p)
 	{
-		if (p->pUnk) 
+		if (p->pUnk)
 		{
 			p->pUnk->Release();
 		}
@@ -3530,9 +3451,9 @@ public:
 		return S_OK;
 	}
 	static void init(_Inout_ T** ) {}
-	static void destroy(_Inout_ T** p) 
+	static void destroy(_Inout_ T** p)
 	{
-		if (*p) 
+		if (*p)
 		{
 			(*p)->Release();
 		}
@@ -3540,13 +3461,13 @@ public:
 };
 
 template<class T>
-class ATL_NO_VTABLE CComIEnum : 
+class ATL_NO_VTABLE CComIEnum :
 	public IUnknown
 {
 public:
 	STDMETHOD(Next)(
-		_In_ ULONG celt, 
-		_Out_ T* rgelt, 
+		_In_ ULONG celt,
+		_Out_ T* rgelt,
 		_Out_opt_ ULONG* pceltFetched) = 0;
 	STDMETHOD(Skip)(_In_ ULONG celt) = 0;
 	STDMETHOD(Reset)(void) = 0;
@@ -3563,20 +3484,20 @@ enum CComEnumFlags
 };
 
 template <class Base, const IID* piid, class T, class Copy>
-class ATL_NO_VTABLE CComEnumImpl : 
+class ATL_NO_VTABLE CComEnumImpl :
 	public Base
 {
 public:
-	CComEnumImpl() 
+	CComEnumImpl()
 	{
 		m_begin = m_end = m_iter = NULL;
 		m_dwFlags = 0;
 	}
 	virtual ~CComEnumImpl();
-	
+
 	STDMETHOD(Next)(
-		_In_ ULONG celt, 
-		_Out_ T* rgelt, 
+		_In_ ULONG celt,
+		_Out_ T* rgelt,
 		_Out_opt_ ULONG* pceltFetched);
 	STDMETHOD(Skip)(_In_ ULONG celt);
 	STDMETHOD(Reset)(void)
@@ -3586,11 +3507,11 @@ public:
 	}
 	STDMETHOD(Clone)(_Deref_out_ Base** ppEnum);
 	HRESULT Init(
-		_In_ T* begin, 
-		_In_ T* end, 
+		_In_ T* begin,
+		_In_ T* end,
 		_In_opt_ IUnknown* pUnk,
 		_In_ CComEnumFlags flags = AtlFlagNoCopy);
-	
+
 	CComPtr<IUnknown> m_spUnk;
 	T* m_begin;
 	T* m_end;
@@ -3617,7 +3538,7 @@ CComEnumImpl<Base, piid, T, Copy>::~CComEnumImpl()
 
 template <class Base, const IID* piid, class T, class Copy>
 STDMETHODIMP CComEnumImpl<Base, piid, T, Copy>::Next(
-	_In_ ULONG celt, 
+	_In_ ULONG celt,
 	_Out_ T* rgelt,
 	_Out_opt_ ULONG* pceltFetched)
 {
@@ -3674,7 +3595,7 @@ STDMETHODIMP CComEnumImpl<Base, piid, T, Copy>::Clone(
 		_class* p;
 		hRes = _class::CreateInstance(&p);
 		if (SUCCEEDED(hRes))
-		{		
+		{
 			// If this object has ownership of the data then we need to keep it around
 			hRes = p->Init(m_begin, m_end, (m_dwFlags & BitOwn) ? this : m_spUnk);
 			if (SUCCEEDED(hRes))
@@ -3686,15 +3607,15 @@ STDMETHODIMP CComEnumImpl<Base, piid, T, Copy>::Clone(
 				delete p;
 		}
 	}
-		
+
 	return hRes;
 }
 ATLPREFAST_UNSUPPRESS()
 
 template <class Base, const IID* piid, class T, class Copy>
 HRESULT CComEnumImpl<Base, piid, T, Copy>::Init(
-	_In_ T* begin, 
-	_In_ T* end, 
+	_In_ T* begin,
+	_In_ T* end,
 	_In_opt_ IUnknown* pUnk,
 	_In_ CComEnumFlags flags)
 {
@@ -3747,12 +3668,12 @@ public:
 };
 */
 /*template <class Base, const IID* piid, class T, class Copy, class CollType>
-class ATL_NO_VTABLE IEnumOnSTLImpl : 
+class ATL_NO_VTABLE IEnumOnSTLImpl :
 	public Base
 {
 public:
 	HRESULT Init(
-		_In_ IUnknown *pUnkForRelease, 
+		_In_ IUnknown *pUnkForRelease,
 		_In_ CollType& collection)
 	{
 		m_spUnk = pUnkForRelease;
@@ -3761,8 +3682,8 @@ public:
 		return S_OK;
 	}
 	STDMETHOD(Next)(
-		_In_ ULONG celt, 
-		_Out_ T* rgelt, 
+		_In_ ULONG celt,
+		_Out_ T* rgelt,
 		_Out_opt_ ULONG* pceltFetched);
 	STDMETHOD(Skip)(_In_ ULONG celt);
 	STDMETHOD(Reset)(void)
@@ -3781,7 +3702,7 @@ public:
 
 template <class Base, const IID* piid, class T, class Copy, class CollType>
 STDMETHODIMP IEnumOnSTLImpl<Base, piid, T, Copy, CollType>::Next(
-	_In_ ULONG celt, 
+	_In_ ULONG celt,
 	_Out_ T* rgelt,
 	_Out_opt_ ULONG* pceltFetched)
 {
@@ -3878,7 +3799,7 @@ public:
 };
 
 template <class T, class CollType, class ItemType, class CopyItem, class EnumType>
-class ICollectionOnSTLImpl : 
+class ICollectionOnSTLImpl :
 	public T
 {
 public:
@@ -3893,7 +3814,7 @@ public:
 		return S_OK;
 	}
 	STDMETHOD(get_Item)(
-		_In_ long Index, 
+		_In_ long Index,
 		_Out_ ItemType* pvar)
 	{
 		//Index is 1-based
@@ -3937,7 +3858,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////
 // ISpecifyPropertyPagesImpl
 template <class T>
-class ATL_NO_VTABLE ISpecifyPropertyPagesImpl : 
+class ATL_NO_VTABLE ISpecifyPropertyPagesImpl :
 	public ISpecifyPropertyPages
 {
 public:
@@ -3950,7 +3871,7 @@ public:
 	}
 protected:
 	HRESULT GetPagesHelper(
-		_Out_ CAUUID* pPages, 
+		_Out_ CAUUID* pPages,
 		_In_ const ATL_PROPMAP_ENTRY* pMap)
 	{
 		if (pPages == NULL)
@@ -4191,7 +4112,7 @@ public:
 		ATLASSERT(dwCookie == 1);
 		if (dwCookie == 1)
 			return m_arr[0];
-		else 
+		else
 			return NULL;
 	}
 	IUnknown** begin()
@@ -4358,14 +4279,14 @@ class ATL_NO_VTABLE _ICPLocator
 public:
 	//this method needs a different name than QueryInterface
 	STDMETHOD(_LocCPQueryInterface)(
-		_In_ REFIID riid, 
+		_In_ REFIID riid,
 		_Deref_out_ void** ppvObject) = 0;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;
 	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;
 };
 
 /*template <class T, const IID* piid, class CDV = CComDynamicUnkArray >
-class ATL_NO_VTABLE IConnectionPointImpl : 
+class ATL_NO_VTABLE IConnectionPointImpl :
 	public _ICPLocator<piid>
 {
 	typedef CComEnum<IEnumConnections, &__uuidof(IEnumConnections), CONNECTDATA,
@@ -4375,7 +4296,7 @@ public:
 	~IConnectionPointImpl();
 ATLPREFAST_SUPPRESS(6387)
 	STDMETHOD(_LocCPQueryInterface)(
-		_In_ REFIID riid, 
+		_In_ REFIID riid,
 		_Deref_out_ void** ppvObject)
 	{
 #ifndef _ATL_OLEDB_CONFORMANCE_TESTS
@@ -4398,7 +4319,7 @@ ATLPREFAST_SUPPRESS(6387)
 			return E_NOINTERFACE;
 	}
 ATLPREFAST_UNSUPPRESS()
-	
+
 	STDMETHOD(GetConnectionInterface)(_Out_ IID* piid2)
 	{
 		if (piid2 == NULL)
@@ -4414,11 +4335,11 @@ ATLPREFAST_UNSUPPRESS()
 		return pT->QueryInterface(__uuidof(IConnectionPointContainer), (void**)ppCPC);
 	}
 	STDMETHOD(Advise)(
-		_Inout_ IUnknown* pUnkSink, 
+		_Inout_ IUnknown* pUnkSink,
 		_Out_ DWORD* pdwCookie);
 	STDMETHOD(Unadvise)(_In_ DWORD dwCookie);
 	STDMETHOD(EnumConnections)(_Deref_out_ IEnumConnections** ppEnum);
-	
+
 	CDV m_vec;
 };
 
@@ -4525,7 +4446,7 @@ ATLPREFAST_UNSUPPRESS()
 /////////////////////////////////////////////////////////////////////////////
 // IConnectionPointContainerImpl
 /*template <class T>
-class ATL_NO_VTABLE IConnectionPointContainerImpl : 
+class ATL_NO_VTABLE IConnectionPointContainerImpl :
 	public IConnectionPointContainer
 {
 	typedef CComEnum<IEnumConnectionPoints,
@@ -4533,7 +4454,7 @@ class ATL_NO_VTABLE IConnectionPointContainerImpl :
 		_CopyInterface<IConnectionPoint> >
 		CComEnumConnectionPoints;
 public:
-	
+
 ATLPREFAST_SUPPRESS(6014 6211 6387)
 	STDMETHOD(EnumConnectionPoints)(
 		_Deref_out_ IEnumConnectionPoints** ppEnum)
@@ -4592,13 +4513,13 @@ ATLPREFAST_SUPPRESS(6014 6211 6387)
 		hRes = pEnum->QueryInterface(__uuidof(IEnumConnectionPoints), (void**)ppEnum);
 		if (FAILED(hRes))
 			delete pEnum;
-				
+
 		return hRes;
 	}
 ATLPREFAST_UNSUPPRESS()
 
 	STDMETHOD(FindConnectionPoint)(
-		_In_ REFIID riid, 
+		_In_ REFIID riid,
 		_Deref_out_ IConnectionPoint** ppCP)
 	{
 		if (ppCP == NULL)
@@ -4637,21 +4558,21 @@ ATLPREFAST_UNSUPPRESS()
 /////////////////////////////////////////////////////////////////////////////
 // IExternalConnectionImpl
 
-// An object that implements IExternalConnection should explicitly call 
-// CoDisconnectObject on itself when its external reference count drops to 0. 
-// This call will cause the stub manager to call Release on the object so the 
+// An object that implements IExternalConnection should explicitly call
+// CoDisconnectObject on itself when its external reference count drops to 0.
+// This call will cause the stub manager to call Release on the object so the
 // object can destroy itself.
 
-template <class T> 
-class IExternalConnectionImpl : 
+template <class T>
+class IExternalConnectionImpl :
 	public IExternalConnection
 {
 public:
-	IExternalConnectionImpl(void) : m_nStrongLocks(0) 
+	IExternalConnectionImpl(void) : m_nStrongLocks(0)
 	{
 	}
 	STDMETHODIMP_(DWORD) AddConnection(
-		_In_ DWORD extconn, 
+		_In_ DWORD extconn,
 		_In_ DWORD /*dwReserved*/)
 	{
 		DWORD dw = 0;
@@ -4663,8 +4584,8 @@ public:
 		return dw;
 	}
 	STDMETHODIMP_(DWORD) ReleaseConnection(
-		_In_ DWORD extconn, 
-		_In_ DWORD /*dwReserved*/, 
+		_In_ DWORD extconn,
+		_In_ DWORD /*dwReserved*/,
 		_In_ BOOL bLastUnlockReleases)
 	{
 		DWORD dw = 0;
@@ -4677,13 +4598,13 @@ public:
 	}
 
 	// Services provided by this class
-	bool DoIHaveAStub() 
-	{ 
-		return m_nStrongLocks != 0; 
+	bool DoIHaveAStub()
+	{
+		return m_nStrongLocks != 0;
 	}
-	LONG GetStrongConnectionCount() 
-	{ 
-		return m_nStrongLocks; 
+	LONG GetStrongConnectionCount()
+	{
+		return m_nStrongLocks;
 	}
 	// Extensibility points provided by this class
 	void OnAddConnection(_In_ bool bThisIsFirstLock) {}
@@ -4705,12 +4626,12 @@ public:
 // IDispatch Error handling
 
 ATLINLINE ATLAPI AtlSetErrorInfo(
-	_In_ const CLSID& clsid, 
-	_In_z_ LPCOLESTR lpszDesc, 
+	_In_ const CLSID& clsid,
+	_In_z_ LPCOLESTR lpszDesc,
 	_In_ DWORD dwHelpID,
-	_In_opt_z_ LPCOLESTR lpszHelpFile, 
-	_In_ const IID& iid, 
-	_In_ HRESULT hRes, 
+	_In_opt_z_ LPCOLESTR lpszHelpFile,
+	_In_ const IID& iid,
+	_In_ HRESULT hRes,
 	_In_opt_ HINSTANCE hInst)
 {
 	USES_CONVERSION_EX;
@@ -4728,9 +4649,9 @@ ATLINLINE ATLAPI AtlSetErrorInfo(
 		}
 		lpszDesc = T2OLE_EX(szDesc, _ATL_SAFE_ALLOCA_DEF_THRESHOLD);
 #ifndef _UNICODE
-		if(lpszDesc == NULL) 
+		if(lpszDesc == NULL)
 			return E_OUTOFMEMORY;
-#endif			
+#endif
 		if (hRes == 0)
 			hRes = MAKE_HRESULT(3, FACILITY_ITF, nID);
 	}
@@ -4761,9 +4682,9 @@ ATLINLINE ATLAPI AtlSetErrorInfo(
 // IPersist* helpers.
 
 ATLINLINE ATLAPI AtlIPersistStreamInit_Load(
-	_Inout_ LPSTREAM pStm, 
-	_In_ const ATL_PROPMAP_ENTRY* pMap, 
-	_Inout_ void* pThis, 
+	_Inout_ LPSTREAM pStm,
+	_In_ const ATL_PROPMAP_ENTRY* pMap,
+	_Inout_ void* pThis,
 	_Inout_ IUnknown* pUnk)
 {
 	ATLASSERT(pMap != NULL);
@@ -4771,7 +4692,7 @@ ATLINLINE ATLAPI AtlIPersistStreamInit_Load(
 	{
 		return E_INVALIDARG;
 	}
-	
+
 	ULONG cbRead = 0;
 	DWORD dwVer;
 	HRESULT hr = pStm->Read(&dwVer, sizeof(DWORD), &cbRead);
@@ -4784,7 +4705,7 @@ ATLINLINE ATLAPI AtlIPersistStreamInit_Load(
 	{
 		return E_FAIL;
 	}
-	
+
 	if (dwVer > _ATL_VER)
 	{
 		return E_FAIL;
@@ -4792,7 +4713,7 @@ ATLINLINE ATLAPI AtlIPersistStreamInit_Load(
 
 	CComPtr<IDispatch> pDispatch;
 	const IID* piidOld = NULL;
-	
+
 ATLPREFAST_SUPPRESS(6385) // Invalid data accessing
 	for (int i = 0; pMap[i].pclsidPropPage != NULL; i++)
 ATLPREFAST_UNSUPPRESS()
@@ -4814,13 +4735,13 @@ ATLPREFAST_UNSUPPRESS()
 			else
 			{
 				hr = pStm->Read(pData, pMap[i].dwSizeData, &cbRead);
-				
+
 				if (SUCCEEDED(hr) && cbRead != pMap[i].dwSizeData)
 				{
 					return E_FAIL;
 				}
 			}
-			
+
 			if (FAILED(hr))
 			{
 				return hr;
@@ -4829,7 +4750,7 @@ ATLPREFAST_UNSUPPRESS()
 		}
 
 		CComVariant var;
-		
+
 		// hr = var.ReadFromStream(pStm, pMap[i].vt, pMap[i].rgclsidAllowed, pMap[i].cclsidAllowed);
 		if (FAILED(hr))
 			break;
@@ -4857,9 +4778,9 @@ ATLPREFAST_UNSUPPRESS()
 
 ATLINLINE ATLAPI AtlIPersistStreamInit_Save(
 	_Inout_ LPSTREAM pStm,
-	_In_ BOOL /* fClearDirty */, 
+	_In_ BOOL /* fClearDirty */,
 	_In_ const ATL_PROPMAP_ENTRY* pMap,
-	_Inout_ void* pThis, 
+	_Inout_ void* pThis,
 	_Inout_ IUnknown* pUnk)
 {
 	ATLASSERT(pMap != NULL);
@@ -4925,10 +4846,10 @@ ATLPREFAST_UNSUPPRESS()
 	return hr;
 }
 ATLINLINE ATLAPI AtlIPersistPropertyBag_Load(
-	_Inout_ LPPROPERTYBAG pPropBag, 
-	_Inout_ LPERRORLOG pErrorLog, 
-	_In_ const ATL_PROPMAP_ENTRY* pMap, 
-	_Inout_ void* pThis, 
+	_Inout_ LPPROPERTYBAG pPropBag,
+	_Inout_ LPERRORLOG pErrorLog,
+	_In_ const ATL_PROPMAP_ENTRY* pMap,
+	_Inout_ void* pThis,
 	_Inout_ IUnknown* pUnk)
 {
 	if (pPropBag == NULL || pMap == NULL || pThis == NULL || pUnk == NULL)
@@ -4947,8 +4868,8 @@ ATLPREFAST_UNSUPPRESS()
 		CComVariant var;
 
 		if (pMap[i].dwSizeData != 0)
-		{			
-			var.vt = pMap[i].vt; 
+		{
+			var.vt = pMap[i].vt;
 			void* pData = (void*) (pMap[i].dwOffsetData + (DWORD_PTR)pThis);
 			HRESULT hr = pPropBag->Read(pMap[i].szDesc, &var, pErrorLog);
 			if (SUCCEEDED(hr))
@@ -4973,7 +4894,7 @@ ATLPREFAST_UNSUPPRESS()
 				case VT_UINT:
 					*((long*)pData) = var.lVal;
 					break;
-				case VT_BSTR:									
+				case VT_BSTR:
 					*((BSTR*)pData) = var.bstrVal;
 					var.vt = VT_EMPTY;
 					break;
@@ -4982,8 +4903,8 @@ ATLPREFAST_UNSUPPRESS()
 			else
 			{
 				var.vt = VT_EMPTY;
-			}			
-			
+			}
+
 			continue;
 		}
 
@@ -5008,14 +4929,14 @@ ATLPREFAST_UNSUPPRESS()
 			vt = var.vt;
 			var.Clear();
 		}
-		
+
 		var.vt = vt;
 
 		HRESULT hr = pPropBag->Read(pMap[i].szDesc, &var, pErrorLog);
 		if (FAILED(hr))
 		{
 #ifdef _DEBUG
-            COLE2CT strDesc(pMap[i].szDesc);
+						COLE2CT strDesc(pMap[i].szDesc);
 			LPCTSTR lp = static_cast<LPCTSTR>(strDesc);
 
 			if (hr == E_INVALIDARG)
@@ -5025,7 +4946,7 @@ ATLPREFAST_UNSUPPRESS()
 			{
 				// Many containers return different ERROR values for Member not found
 			}
-#endif			
+#endif
 			var.vt = VT_EMPTY;
 			continue;
 		}
@@ -5039,10 +4960,10 @@ ATLPREFAST_UNSUPPRESS()
 }
 ATLINLINE ATLAPI AtlIPersistPropertyBag_Save(
 	_Inout_ LPPROPERTYBAG pPropBag,
-	_In_ BOOL /* fClearDirty */, 
+	_In_ BOOL /* fClearDirty */,
 	_In_ BOOL /* fSaveAllProperties */,
-	_In_ const ATL_PROPMAP_ENTRY* pMap, 
-	_Inout_ void* pThis, 
+	_In_ const ATL_PROPMAP_ENTRY* pMap,
+	_Inout_ void* pThis,
 	_Inout_ IUnknown* pUnk)
 {
 	if (pPropBag == NULL)
@@ -5149,19 +5070,19 @@ ATLPREFAST_UNSUPPRESS()
 // Connection Point Sink Helper
 
 ATLINLINE ATLAPI AtlGetObjectSourceInterface(
-	_Inout_ IUnknown* punkObj, 
-	_Out_ GUID* plibid, 
-	_Out_ IID* piid, 
-	_Out_ unsigned short* pdwMajor, 
+	_Inout_ IUnknown* punkObj,
+	_Out_ GUID* plibid,
+	_Out_ IID* piid,
+	_Out_ unsigned short* pdwMajor,
 	_Out_ unsigned short* pdwMinor)
 {
 	if (plibid == NULL || piid == NULL || pdwMajor == NULL || pdwMinor == NULL)
 		return E_POINTER;
-		
+
 	*plibid = GUID_NULL;
 	*piid = IID_NULL;
 	*pdwMajor = 0;
-	*pdwMinor = 0;	
+	*pdwMinor = 0;
 
 	HRESULT hr = E_FAIL;
 	if (punkObj != NULL)

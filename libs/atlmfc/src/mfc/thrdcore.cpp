@@ -64,16 +64,6 @@ UINT APIENTRY _AfxThreadEntry(void* pParam)
 
 		// forced initialization of the thread
 		AfxInitThread();
-
-		// thread inherits app's main window if not already set
-		CWinApp* pApp = AfxGetApp();
-		if (pApp != NULL && 
-			pThread->m_pMainWnd == NULL && pApp->m_pMainWnd->GetSafeHwnd() != NULL)
-		{
-			// just attach the HWND
-			threadWnd.Attach(pApp->m_pMainWnd->m_hWnd);
-			pThread->m_pMainWnd = &threadWnd;
-		}
 	}
 	CATCH_ALL(e)
 	{
@@ -160,47 +150,47 @@ BOOL AFXAPI AfxInternalPumpMessage()
 	_AfxTraceMsg(_T("PumpMessage"), &(pState->m_msgCur));
 #endif
 
-  // process this message
+	// process this message
 
 	if (pState->m_msgCur.message != WM_KICKIDLE && !AfxPreTranslateMessage(&(pState->m_msgCur)))
 	{
 		::TranslateMessage(&(pState->m_msgCur));
 		::DispatchMessage(&(pState->m_msgCur));
 	}
-  return TRUE;
+	return TRUE;
 }
 
 BOOL AFXAPI AfxPumpMessage()
 {
   CWinThread *pThread = AfxGetThread();
   if( pThread )
-	return pThread->PumpMessage();
+  return pThread->PumpMessage();
   else
-	return AfxInternalPumpMessage();
+  return AfxInternalPumpMessage();
 }
 
 LRESULT AFXAPI AfxInternalProcessWndProcException(CException*, const MSG* pMsg)
 {
-  if (pMsg->message == WM_CREATE)
+	if (pMsg->message == WM_CREATE)
 	{
-	  return -1;  // just fail
+		return -1;  // just fail
 	}
-  else if (pMsg->message == WM_PAINT)
+	else if (pMsg->message == WM_PAINT)
 	{
-	  // force validation of window to prevent getting WM_PAINT again
-	  ValidateRect(pMsg->hwnd, NULL);
-	  return 0;
+		// force validation of window to prevent getting WM_PAINT again
+		ValidateRect(pMsg->hwnd, NULL);
+		return 0;
 	}
-  return 0;   // sensible default for rest of commands
+	return 0;   // sensible default for rest of commands
 }
 
 LRESULT AFXAPI AfxProcessWndProcException(CException* e, const MSG* pMsg)
 {
   CWinThread *pThread = AfxGetThread();
   if( pThread )
-	return pThread->ProcessWndProcException( e, pMsg );
+  return pThread->ProcessWndProcException( e, pMsg );
   else
-	return AfxInternalProcessWndProcException( e, pMsg );
+  return AfxInternalProcessWndProcException( e, pMsg );
 }
 
 BOOL AfxInternalPreTranslateMessage(MSG* pMsg)
@@ -236,9 +226,9 @@ BOOL __cdecl AfxPreTranslateMessage(MSG* pMsg)
 {
   CWinThread *pThread = AfxGetThread();
   if( pThread )
-	return pThread->PreTranslateMessage( pMsg );
+  return pThread->PreTranslateMessage( pMsg );
   else
-	return AfxInternalPreTranslateMessage( pMsg );
+  return AfxInternalPreTranslateMessage( pMsg );
 }
 
 BOOL AfxInternalIsIdleMessage(MSG* pMsg)
@@ -252,7 +242,7 @@ BOOL AfxInternalIsIdleMessage(MSG* pMsg)
 	if (pMsg->message == WM_MOUSEMOVE || pMsg->message == WM_NCMOUSEMOVE)
 	{
 		// mouse move at same position as last mouse move?
-	  _AFX_THREAD_STATE *pState = AfxGetThreadState();
+		_AFX_THREAD_STATE *pState = AfxGetThreadState();
 		return TRUE;
 	}
 
@@ -264,9 +254,9 @@ BOOL __cdecl AfxIsIdleMessage(MSG* pMsg)
 {
   CWinThread *pThread = AfxGetThread();
   if( pThread )
-	return pThread->IsIdleMessage( pMsg );
+  return pThread->IsIdleMessage( pMsg );
   else
-	return AfxInternalIsIdleMessage( pMsg );
+  return AfxInternalIsIdleMessage( pMsg );
 }
 
 CWinThread* AFXAPI AfxBeginThread(AFX_THREADPROC pfnThreadProc, LPVOID pParam,
@@ -352,7 +342,6 @@ void AFXAPI AfxEndThread(UINT nExitCode, BOOL bDelete)
 	if (pThread != NULL)
 	{
 		ASSERT_VALID(pThread);
-		ASSERT(pThread != AfxGetApp());
 
 		// cleanup OLE if required
 		if (pThread->m_lpfnOleTermOrFreeLib != NULL)
@@ -514,7 +503,7 @@ BOOL CWinThread::CreateThread(DWORD dwCreateFlags, UINT nStackSize,
 	}
 
 	// create the thread (it may or may not start to run)
-	m_hThread = (HANDLE)(ULONG_PTR)_beginthreadex(lpSecurityAttrs, nStackSize,  
+	m_hThread = (HANDLE)(ULONG_PTR)_beginthreadex(lpSecurityAttrs, nStackSize,
 		&_AfxThreadEntry, &startup, dwCreateFlags | CREATE_SUSPENDED, (UINT*)&m_nThreadID);
 	if (m_hThread == NULL)
 	{
@@ -614,7 +603,6 @@ BOOL CWinThread::IsIdleMessage(MSG* pMsg)
 int CWinThread::ExitInstance()
 {
 	ASSERT_VALID(this);
-	ASSERT(AfxGetApp() != this);
 	int nResult = (int)AfxGetCurrentMessage()->wParam;  // returns the value from PostQuitMessage
 	return nResult;
 }
@@ -723,7 +711,7 @@ BOOL CWinThread::PreTranslateMessage(MSG* pMsg)
 
 LRESULT CWinThread::ProcessWndProcException(CException* e, const MSG* pMsg)
 {
-  return AfxInternalProcessWndProcException( e, pMsg );
+	return AfxInternalProcessWndProcException( e, pMsg );
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -746,11 +734,11 @@ AFX_STATIC BOOL AFXAPI IsHelpKey(LPMSG lpMsg)
 	// return TRUE only for non-repeat F1 keydowns.
 {
 	return lpMsg->message == WM_KEYDOWN &&
-		   lpMsg->wParam == VK_F1 &&
-		   !(HIWORD(lpMsg->lParam) & KF_REPEAT) &&
-		   GetKeyState(VK_SHIFT) >= 0 &&
-		   GetKeyState(VK_CONTROL) >= 0 &&
-		   GetKeyState(VK_MENU) >= 0;
+			 lpMsg->wParam == VK_F1 &&
+			 !(HIWORD(lpMsg->lParam) & KF_REPEAT) &&
+			 GetKeyState(VK_SHIFT) >= 0 &&
+			 GetKeyState(VK_CONTROL) >= 0 &&
+			 GetKeyState(VK_MENU) >= 0;
 }
 
 AFX_STATIC inline BOOL IsEnterKey(LPMSG lpMsg)
@@ -789,7 +777,7 @@ BOOL CWinThread::ProcessMessageFilter(int code, LPMSG lpMsg)
 		{
 			// need to translate messages for the in-place container
 			_AFX_THREAD_STATE* pThreadState = _afxThreadState.GetData();
-            ENSURE(pThreadState);
+						ENSURE(pThreadState);
 
 			if (pThreadState->m_bInMsgFilter)
 				return FALSE;
@@ -828,7 +816,7 @@ CWnd* CWinThread::GetMainWnd()
 
 BOOL CWinThread::PumpMessage()
 {
-  return AfxInternalPumpMessage();
+	return AfxInternalPumpMessage();
 }
 
 /////////////////////////////////////////////////////////////////////////////

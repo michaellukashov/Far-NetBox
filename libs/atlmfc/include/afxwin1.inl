@@ -14,9 +14,6 @@
 
 #ifdef _AFXWIN_INLINE
 
-// Global helper functions
-_AFXWIN_INLINE CWinApp* AFXAPI AfxGetApp()
-	{ return afxCurrentWinApp; }
 _AFXWIN_INLINE HINSTANCE AFXAPI AfxGetInstanceHandle()
 	{ ASSERT(afxCurrentInstanceHandle != NULL);
 		return afxCurrentInstanceHandle; }
@@ -55,7 +52,7 @@ _AFXWIN_INLINE CUserException::~CUserException()
 /////////////////////////////////////////////////////////////////////////////
 // CImageList
 
-/////////////////////////////////////////////////////////////////////////////	
+/////////////////////////////////////////////////////////////////////////////
 
 // CCmdUI
 _AFXWIN_INLINE void CCmdUI::ContinueRouting()
