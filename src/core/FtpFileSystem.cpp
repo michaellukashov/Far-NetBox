@@ -1049,7 +1049,7 @@ void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       if (!FileNamePath.IsEmpty())
       {
         TargetDirectory = Sysutils::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
-        Sysutils::ForceDirectories(TargetDirectory);
+        Sysutils::ForceDirectories(ApiPath(TargetDirectory));
       }
       try
       {
@@ -1157,7 +1157,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     if (!AFile->GetIsSymLink())
     {
       FILE_OPERATION_LOOP(FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
-        DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
+        DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
         if (FLAGCLEAR(LocalFileAttrs, faDirectory))
         {
           ThrowExtException();
@@ -1208,7 +1208,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
 
     DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
     FILE_OPERATION_LOOP(FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
-      LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
+      LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
       if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, faDirectory))
       {
         ThrowExtException();
@@ -1468,7 +1468,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
     TDateTime Modification;
     // Inspired by SysUtils::FileAge
     WIN32_FIND_DATA FindData;
-    HANDLE Handle = ::FindFirstFile(AFileName.c_str(), &FindData);
+    HANDLE Handle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
     if (Handle != INVALID_HANDLE_VALUE)
     {
       Modification =

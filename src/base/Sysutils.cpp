@@ -1011,7 +1011,7 @@ DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRe
 {
   const DWORD faSpecial = faHidden | faSysFile | faDirectory;
   Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
-  Rec.FindHandle = ::FindFirstFile(AFileName.c_str(), &Rec.FindData);
+  Rec.FindHandle = ::FindFirstFile(ApiPath(AFileName).c_str(), &Rec.FindData);
   DWORD Result = ERROR_SUCCESS;
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)
   {

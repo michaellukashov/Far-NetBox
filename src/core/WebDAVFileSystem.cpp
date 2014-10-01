@@ -13009,7 +13009,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
   UnicodeString FindPath = DirectoryName + L"*.*";
 
   FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    FindHandle = ::FindFirstFile(FindPath.c_str(), &SearchRec);
+    FindHandle = ::FindFirstFile(ApiPath(FindPath).c_str(), &SearchRec);
     FindOK = FindHandle != INVALID_HANDLE_VALUE;
     if (!FindOK)
     {
@@ -13148,7 +13148,7 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       if (!FileNamePath.IsEmpty())
       {
         TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
-        ::ForceDirectories(ApiPath(TargetDirectory));
+        Sysutils::ForceDirectories(ApiPath(TargetDirectory));
       }
       try
       {
@@ -13283,11 +13283,11 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
         );
 
         FILE_OPERATION_LOOP(FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
-          THROWOSIFFALSE(Sysutils::ForceDirectories(DestFullName));
+          THROWOSIFFALSE(Sysutils::ForceDirectories(ApiPath(DestFullName)));
         );
 
         TSinkFileParams SinkFileParams;
-        SinkFileParams.TargetDir = ::IncludeTrailingBackslash(DestFullName);
+        SinkFileParams.TargetDir = ApiPath(::IncludeTrailingBackslash(DestFullName));
         SinkFileParams.CopyParam = CopyParam;
         SinkFileParams.Params = Params;
         SinkFileParams.OperationProgress = OperationProgress;

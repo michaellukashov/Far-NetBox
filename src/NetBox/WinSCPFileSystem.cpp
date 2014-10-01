@@ -1097,7 +1097,7 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(
   CopyParam.SetResumeSupport(rsOff);
 
   TempDir = WinSCPPlugin()->GetTemporaryDir();
-  if (TempDir.IsEmpty() || !Sysutils::ForceDirectories(TempDir))
+  if (TempDir.IsEmpty() || !Sysutils::ForceDirectories(ApiPath(TempDir)))
   {
     throw Sysutils::Exception(FMTLOAD(CREATE_TEMP_DIR_ERROR, TempDir.c_str()));
   }
@@ -2260,7 +2260,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, OPERATION_MODE
               if (MoreMessageDialog(FORMAT(GetMsg(SYNC_DIR_BROWSE_CREATE).c_str(), ALocalPath.c_str()),
                     nullptr, qtInformation, qaYes | qaNo) == qaYes)
               {
-                if (!Sysutils::ForceDirectories(ALocalPath))
+                if (!Sysutils::ForceDirectories(ApiPath(ALocalPath)))
                 {
                   Sysutils::RaiseLastOSError();
                 }

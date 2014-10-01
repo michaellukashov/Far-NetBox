@@ -1,4 +1,4 @@
-NetBox 2.1.39.326 14.09.2014
+NetBox 2.1.39.327 01.10.2014
 --------------------
   * Bugfix: "NetBox commands" -> "Open in Putty": fix open session using Putty 0.63
     (http://forum.farmanager.com/viewtopic.php?p=122618#p122618)

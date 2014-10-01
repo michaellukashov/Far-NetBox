@@ -146,10 +146,6 @@ BOOL AFXAPI AfxInternalPumpMessage()
 	}
 
 
-#ifdef _DEBUG
-	_AfxTraceMsg(_T("PumpMessage"), &(pState->m_msgCur));
-#endif
-
 	// process this message
 
 	if (pState->m_msgCur.message != WM_KICKIDLE && !AfxPreTranslateMessage(&(pState->m_msgCur)))
