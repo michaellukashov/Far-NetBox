@@ -4342,7 +4342,7 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
     WIN32_FIND_DATA FindData = {};
     HANDLE Handle = INVALID_HANDLE_VALUE;
     FILE_OPERATION_LOOP(FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()),
-      Handle = ::FindFirstFile(::ExcludeTrailingBackslash(AFileName).c_str(), &FindData);
+      Handle = ::FindFirstFile(ApiPath(::ExcludeTrailingBackslash(AFileName)).c_str(), &FindData);
       if (Handle == INVALID_HANDLE_VALUE)
       {
         RaiseLastOSError();

@@ -13009,7 +13009,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
   UnicodeString FindPath = DirectoryName + L"*.*";
 
   FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    FindHandle = ::FindFirstFile(FindPath.c_str(), &SearchRec);
+    FindHandle = ::FindFirstFile(ApiPath(FindPath).c_str(), &SearchRec);
     FindOK = FindHandle != INVALID_HANDLE_VALUE;
     if (!FindOK)
     {
