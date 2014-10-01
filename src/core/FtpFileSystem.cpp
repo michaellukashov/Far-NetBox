@@ -1049,7 +1049,7 @@ void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       if (!FileNamePath.IsEmpty())
       {
         TargetDirectory = Sysutils::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
-        Sysutils::ForceDirectories(TargetDirectory);
+        Sysutils::ForceDirectories(ApiPath(TargetDirectory));
       }
       try
       {

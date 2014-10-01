@@ -5190,7 +5190,7 @@ void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       if (!FileNamePath.IsEmpty())
       {
         TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
-        ::ForceDirectories(TargetDirectory);
+        Sysutils::ForceDirectories(ApiPath(TargetDirectory));
       }
       try
       {

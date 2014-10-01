@@ -2158,7 +2158,7 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       if (!FileNamePath.IsEmpty())
       {
         TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
-        ::ForceDirectories(TargetDirectory);
+        ::ForceDirectories(ApiPath(TargetDirectory));
       }
       try
       {
@@ -2454,7 +2454,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
           if (!FileData.Exists)
           {
             FILE_OPERATION_LOOP(FMTLOAD(CREATE_DIR_ERROR, DestFileName.c_str()),
-              THROWOSIFFALSE(Sysutils::ForceDirectories(DestFileName));
+              THROWOSIFFALSE(Sysutils::ForceDirectories(ApiPath(DestFileName)));
             );
             /* SCP: can we set the timestamp for directories ? */
           }
