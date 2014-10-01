@@ -1,5 +1,5 @@
 #include "src\mfc\afxstate.cpp"
 #include "src\mfc\afxmem.cpp"
 #include "src\mfc\afxcrit.cpp"
-#include "src\mfc\afxtrace.cpp"
+//#include "src\mfc\afxtrace.cpp"
 #include "src\mfc\mtex.cpp"
