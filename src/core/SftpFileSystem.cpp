@@ -5306,7 +5306,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
     if (!AFile->GetIsSymLink())
     {
       FILE_OPERATION_LOOP(FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
-        DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
+        DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
         if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && (LocalFileAttrs & faDirectory) == 0)
         {
           ThrowExtException();
@@ -5368,7 +5368,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
 
     DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
     FILE_OPERATION_LOOP(FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
-      LocalFileAttrs = FTerminal->GetLocalFileAttributes(DestFullName);
+      LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
       if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && (LocalFileAttrs & faDirectory))
       {
         ThrowExtException();

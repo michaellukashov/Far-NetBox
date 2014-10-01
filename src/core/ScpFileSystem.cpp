@@ -1982,7 +1982,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
 
   // Get directory attributes
   FILE_OPERATION_LOOP(FMTLOAD(CANT_GET_ATTRS, DirectoryName.c_str()),
-    LocalFileAttrs = FTerminal->GetLocalFileAttributes(DirectoryName);
+    LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DirectoryName));
     if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
     {
       RaiseLastOSError();
