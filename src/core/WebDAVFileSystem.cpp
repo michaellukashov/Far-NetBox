@@ -12807,180 +12807,90 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
   TUploadSessionAction & Action)
 {
   UnicodeString RealFileName = AFile ? AFile->GetFileName() : AFileName;
-  bool CheckExistence = core::UnixSamePath(TargetDir, FTerminal->GetCurrDirectory()) &&
-    (FTerminal->FFiles != nullptr) && FTerminal->FFiles->GetLoaded();
-  bool CanProceed = false;
-  UnicodeString FileNameOnly =
-    CopyParam->ChangeFileName(core::ExtractFileName(RealFileName, false), osLocal, true);
-  if (CheckExistence)
+  Action.FileName(ExpandUNCFileName(RealFileName));
+
+  OperationProgress->SetFile(RealFileName, false);
+
+  if (!FTerminal->AllowLocalFileTransfer(AFileName, CopyParam, OperationProgress))
   {
-    TRemoteFile * File = FTerminal->FFiles->FindFile(FileNameOnly);
-    if (File != nullptr)
-    {
-      uintptr_t Answer = 0;
-      if (File->GetIsDirectory())
-      {
-        UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, RealFileName.c_str());
-        TQueryParams QueryParams(qpNeverAskAgainCheck);
+    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", RealFileName.c_str()));
+    ThrowSkipFileNull();
+  }
 
-        {
-          TSuspendFileOperationProgress Suspend(OperationProgress);
-          Answer = FTerminal->ConfirmFileOverwrite(
-            RealFileName /*not used*/, nullptr,
-            qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
-            &QueryParams, osRemote, CopyParam, Params, OperationProgress, Message);
-        }
+  int64_t Size = 0;
+  uintptr_t LocalFileAttrs = 0;
 
-        switch (Answer)
-        {
-          case qaYes:
-            CanProceed = true;
-            break;
+  FTerminal->OpenLocalFile(AFileName, GENERIC_READ,
+    nullptr, &LocalFileAttrs, nullptr, nullptr, nullptr, &Size);
 
-          case qaCancel:
-            OperationProgress->Cancel = csCancel; // continue on next case
-            // FALLTHROUGH
-          case qaNo:
-            CanProceed = false;
-            break;
+  OperationProgress->SetFileInProgress();
 
-          default:
-            break;
-        }
-      }
-      else
-      {
-        int64_t Size = 0;
-        int64_t MTime = 0;
-        TOverwriteFileParams FileParams;
-        FTerminal->OpenLocalFile(AFileName, GENERIC_READ,
-          nullptr, nullptr, nullptr, &MTime, nullptr,
-          &Size);
-        FileParams.SourceSize = Size;
-        FileParams.SourceTimestamp = ::UnixToDateTime(MTime,
-          FTerminal->GetSessionData()->GetDSTMode());
-        FileParams.DestSize = File->GetSize();
-        FileParams.DestTimestamp = File->GetModification();
-
-        TOverwriteMode OverwriteMode = omOverwrite;
-        bool AutoResume = false;
-        ConfirmOverwrite(AFileName, FileNameOnly, OperationProgress,
-            &FileParams, CopyParam, Params, AutoResume,
-            OverwriteMode, Answer);
-        switch (Answer)
-        {
-          case qaYes:
-            CanProceed = true;
-            break;
-
-          case qaCancel:
-            OperationProgress->Cancel = csCancel; // continue on next case
-            // FALLTHROUGH
-          case qaNo:
-            CanProceed = false;
-            break;
-
-          default:
-            break;
-        }
-      }
-    }
-    else
-    {
-      CanProceed = true;
-    }
+  bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
+  if (Dir)
+  {
+    Action.Cancel();
+    WebDAVDirectorySource(::IncludeTrailingBackslash(AFileName), TargetDir,
+      LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
   }
   else
   {
-    CanProceed = true;
+    UnicodeString DestFileName = CopyParam->ChangeFileName(core::ExtractFileName(RealFileName, false),
+      osLocal, FLAGSET(Flags, tfFirstLevel));
+
+    FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", RealFileName.c_str()));
+
+    OperationProgress->SetLocalSize(Size);
+
+    // Suppose same data size to transfer as to read
+    // (not true with ASCII transfer)
+    OperationProgress->SetTransferSize(OperationProgress->LocalSize);
+    OperationProgress->TransferingFile = false;
+
+    // Will we use ASCII of BINARY file transfer?
+    TFileMasks::TParams MaskParams;
+    MaskParams.Size = Size;
+
+    ResetFileTransfer();
+
+    TFileTransferData UserData;
+
+    {
+      uint32_t TransferType = 2; // OperationProgress->AsciiTransfer = false
+      // ignore file list
+      TWebDAVFileListHelper Helper(this, nullptr, true);
+
+      FFileTransferCPSLimit = OperationProgress->CPSLimit;
+      // not used for uploads anyway
+      FFileTransferPreserveTime = CopyParam->GetPreserveTime();
+      // not used for uploads, but we get new name (if any) back in this field
+      UserData.FileName = DestFileName;
+      UserData.Params = Params;
+      UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
+      UserData.CopyParam = CopyParam;
+      FileTransfer(RealFileName, AFileName, DestFileName,
+        TargetDir, false, Size, TransferType, UserData, OperationProgress);
+    }
+
+    UnicodeString DestFullName = TargetDir + UserData.FileName;
+    // only now, we know the final destination
+    Action.Destination(DestFullName);
   }
-  if (CanProceed)
+
+  // TODO : Delete also read-only files.
+  if (FLAGSET(Params, cpDelete))
   {
-    Action.FileName(ExpandUNCFileName(RealFileName));
-
-    OperationProgress->SetFile(RealFileName, false);
-
-    if (!FTerminal->AllowLocalFileTransfer(AFileName, CopyParam, OperationProgress))
+    if (!Dir)
     {
-      FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", RealFileName.c_str()));
-      ThrowSkipFileNull();
-    }
-
-    int64_t Size = 0;
-    uintptr_t LocalFileAttrs = 0;
-
-    FTerminal->OpenLocalFile(AFileName, GENERIC_READ,
-      nullptr, &LocalFileAttrs, nullptr, nullptr, nullptr, &Size);
-
-    OperationProgress->SetFileInProgress();
-
-    bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
-    if (Dir)
-    {
-      Action.Cancel();
-      WebDAVDirectorySource(::IncludeTrailingBackslash(AFileName), TargetDir,
-        LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
-    }
-    else
-    {
-      UnicodeString DestFileName = CopyParam->ChangeFileName(core::ExtractFileName(RealFileName, false),
-        osLocal, FLAGSET(Flags, tfFirstLevel));
-
-      FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", RealFileName.c_str()));
-
-      OperationProgress->SetLocalSize(Size);
-
-      // Suppose same data size to transfer as to read
-      // (not true with ASCII transfer)
-      OperationProgress->SetTransferSize(OperationProgress->LocalSize);
-      OperationProgress->TransferingFile = false;
-
-      // Will we use ASCII of BINARY file transfer?
-      TFileMasks::TParams MaskParams;
-      MaskParams.Size = Size;
-
-      ResetFileTransfer();
-
-      TFileTransferData UserData;
-
-      {
-        uint32_t TransferType = 2; // OperationProgress->AsciiTransfer = false
-        // ignore file list
-        TWebDAVFileListHelper Helper(this, nullptr, true);
-
-        FFileTransferCPSLimit = OperationProgress->CPSLimit;
-        // not used for uploads anyway
-        FFileTransferPreserveTime = CopyParam->GetPreserveTime();
-        // not used for uploads, but we get new name (if any) back in this field
-        UserData.FileName = DestFileName;
-        UserData.Params = Params;
-        UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
-        UserData.CopyParam = CopyParam;
-        FileTransfer(RealFileName, AFileName, DestFileName,
-          TargetDir, false, Size, TransferType, UserData, OperationProgress);
-      }
-
-      UnicodeString DestFullName = TargetDir + UserData.FileName;
-      // only now, we know the final destination
-      Action.Destination(DestFullName);
-    }
-
-    // TODO : Delete also read-only files.
-    if (FLAGSET(Params, cpDelete))
-    {
-      if (!Dir)
-      {
-        FILE_OPERATION_LOOP(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()),
-          THROWOSIFFALSE(::DeleteFile(ApiPath(AFileName).c_str()));
-        );
-      }
-    }
-    else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
-    {
-      FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()),
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(AFileName), LocalFileAttrs & ~faArchive) == 0);
+      FILE_OPERATION_LOOP(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()),
+        THROWOSIFFALSE(::DeleteFile(ApiPath(AFileName).c_str()));
       );
     }
+  }
+  else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
+  {
+    FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()),
+      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(AFileName), LocalFileAttrs & ~faArchive) == 0);
+    );
   }
 }
 //------------------------------------------------------------------------------
@@ -12993,11 +12903,15 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
     FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = core::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
   // create DestFullName if it does not exist
-  int IsDir = 0;
-  bool Exists = WebDAVCheckExisting(DestFullName.c_str(), IsDir);
-  if (!Exists)
+  if (!FTerminal->FileExists(DestFullName))
   {
-    RemoteCreateDirectory(DestFullName);
+    TRemoteProperties Properties;
+    if (CopyParam->GetPreserveRights())
+    {
+      Properties.Valid = TValidProperties() << vpRights;
+      Properties.Rights = CopyParam->RemoteFileRights(Attrs);
+    }
+    FTerminal->RemoteCreateDirectory(DestFullName, &Properties);
   }
 
   OperationProgress->SetFile(DirectoryName);

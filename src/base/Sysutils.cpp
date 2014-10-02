@@ -418,7 +418,8 @@ bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
 
 void RaiseLastOSError(DWORD LastError)
 {
-  if (LastError == 0) LastError = ::GetLastError();
+  if (LastError == 0)
+    LastError = ::GetLastError();
   UnicodeString ErrorMsg;
   if (LastError != 0)
   {
@@ -928,7 +929,8 @@ UnicodeString ExpandEnvVars(const UnicodeString & Str)
 UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len)
 {
   UnicodeString Result;
-  if (Len < 0) Len = 0;
+  if (Len < 0)
+    Len = 0;
   Result.SetLength(Len);
   for (intptr_t Index = 1; Index <= Len; ++Index)
   {
