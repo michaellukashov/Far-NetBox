@@ -2158,7 +2158,7 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       if (!FileNamePath.IsEmpty())
       {
         TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
-        ::ForceDirectories(ApiPath(TargetDirectory));
+        Sysutils::ForceDirectories(ApiPath(TargetDirectory));
       }
       try
       {
