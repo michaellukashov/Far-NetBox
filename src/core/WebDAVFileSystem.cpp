@@ -12903,11 +12903,15 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
     FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = core::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
   // create DestFullName if it does not exist
-  int IsDir = 0;
-  bool Exists = WebDAVCheckExisting(DestFullName.c_str(), IsDir);
-  if (!Exists)
+  if (!FTerminal->FileExists(DestFullName))
   {
-    RemoteCreateDirectory(DestFullName);
+    TRemoteProperties Properties;
+    if (CopyParam->GetPreserveRights())
+    {
+      Properties.Valid = TValidProperties() << vpRights;
+      Properties.Rights = CopyParam->RemoteFileRights(Attrs);
+    }
+    FTerminal->RemoteCreateDirectory(DestFullName, &Properties);
   }
 
   OperationProgress->SetFile(DirectoryName);
