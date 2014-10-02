@@ -89,7 +89,7 @@ class EFatal : public ExtException
 NB_DECLARE_CLASS(EFatal)
 public:
   // fatal errors are always copied, new message is only appended
-  explicit EFatal(Exception* E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  explicit EFatal(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
 
   bool GetReopenQueried() const { return FReopenQueried; }
   void SetReopenQueried(bool Value) { FReopenQueried = Value; }
@@ -117,7 +117,7 @@ class ESshTerminate : public EFatal
 {
 NB_DECLARE_CLASS(ESshTerminate)
 public:
-  explicit inline ESshTerminate(Exception* E, const UnicodeString & Msg, TOnceDoneOperation AOperation) :
+  explicit inline ESshTerminate(Exception * E, const UnicodeString & Msg, TOnceDoneOperation AOperation) :
     EFatal(E, Msg),
     Operation(AOperation)
   {

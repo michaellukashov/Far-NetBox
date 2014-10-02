@@ -225,7 +225,7 @@ ExtException::ExtException(Exception * E) :
   FHelpKeyword = GetExceptionHelpKeyword(E);
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(Exception* E, const UnicodeString & Msg, const UnicodeString & HelpKeyword):
+ExtException::ExtException(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword):
   Exception(Msg),
   FMoreMessages(nullptr)
 {
@@ -247,7 +247,7 @@ ExtException::ExtException(Exception * E, int Ident) :
 {
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(const UnicodeString & Msg, Exception* E, const UnicodeString & HelpKeyword) :
+ExtException::ExtException(const UnicodeString & Msg, Exception * E, const UnicodeString & HelpKeyword) :
   Exception(L""),
   FMoreMessages(nullptr)
 {
