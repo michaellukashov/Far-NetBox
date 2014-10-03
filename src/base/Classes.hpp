@@ -7,6 +7,7 @@
 #include <rdestl/pair.h>
 #include "stdafx.h"
 #include <CoreDefs.hpp>
+#include <FarTexts.h>
 
 #include <WinDef.h>
 

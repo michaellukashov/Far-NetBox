@@ -18,8 +18,11 @@ inline void ThrowExtException() { throw ExtException((Sysutils::Exception *)null
     strncpy(dest, CopyBuf.c_str(), LENOF(dest)); \
     dest[LENOF(dest)-1] = '\0'; \
   }
+
 #define FORMAT(S, ...) Sysutils::Format(S, ##__VA_ARGS__)
-#define FMTLOAD(I, ...) Sysutils::FmtLoadStr(I, ##__VA_ARGS__)
+#define FMTLOAD3(Id, ...) FMTLOAD2(MSG_##Id, ##__VA_ARGS__)
+#define FMTLOAD(MsgId, ...) FMTLOAD3(MsgId, ##__VA_ARGS__)
+#define FMTLOAD2(Id, ...) Sysutils::FmtLoadStr(Id, ##__VA_ARGS__)
 #define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
