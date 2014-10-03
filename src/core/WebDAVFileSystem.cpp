@@ -11353,7 +11353,8 @@ cleanup_neon_debug_file(
   void * debug_file_baton)
 {
   debug_file_baton_t * baton = static_cast<debug_file_baton_t *>(debug_file_baton);
-  if (baton->file) fclose(baton->file);
+  if (baton->file)
+    fclose(baton->file);
   return APR_SUCCESS;
 }
 #endif

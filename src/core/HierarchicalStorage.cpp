@@ -436,7 +436,8 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
       {
         Buffer.resize(Size);
       }
-    } while (RegResult == ERROR_MORE_DATA);
+    }
+    while (RegResult == ERROR_MORE_DATA);
 
     Result = (RegResult == ERROR_SUCCESS);
     if (Result)

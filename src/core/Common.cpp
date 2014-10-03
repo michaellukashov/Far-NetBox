@@ -604,8 +604,10 @@ UnicodeString FormatCommand(const UnicodeString & Program, const UnicodeString &
 {
   UnicodeString Result = Program.Trim();
   UnicodeString Params2 = Params.Trim();
-  if (!Params2.IsEmpty()) Params2 = L" " + Params2;
-  if (Result.Pos(L" ")) Result = L"\"" + Result + L"\"";
+  if (!Params2.IsEmpty())
+    Params2 = L" " + Params2;
+  if (Result.Pos(L" "))
+    Result = L"\"" + Result + L"\"";
   return Result + Params2;
 }
 //---------------------------------------------------------------------------
@@ -1240,7 +1242,8 @@ void ProcessLocalDirectory(const UnicodeString & ADirName,
         CallBackFunc(FileName, SearchRec, Param);
       }
 
-    } while (FindNextChecked(SearchRec) == 0);
+    }
+    while (FindNextChecked(SearchRec) == 0);
   }
 }
 //---------------------------------------------------------------------------

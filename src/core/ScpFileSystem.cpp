@@ -529,7 +529,8 @@ UnicodeString TSCPFileSystem::DelimitStr(const UnicodeString & Str)
   if (!Result.IsEmpty())
   {
     Result = ::DelimitStr(Result, L"\\`$\"");
-    if (Result[1] == L'-') Result = L"./" + Result;
+    if (Result[1] == L'-')
+      Result = L"./" + Result;
   }
   return Result;
 }
@@ -735,7 +736,8 @@ void TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, intptr_t Params,
 void TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args,
   int size, intptr_t Params)
 {
-  if (Params < 0) Params = ecDefault;
+  if (Params < 0)
+    Params = ecDefault;
   UnicodeString FullCommand = FCommandSet->FullCommand(Cmd, args, size);
   UnicodeString Command = FCommandSet->Command(Cmd, args, size);
   ExecCommand(FullCommand, Params, Command);

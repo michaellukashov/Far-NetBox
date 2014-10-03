@@ -69,7 +69,8 @@ void FileOperationLoopCustom(TTerminal * Terminal,
         E, OperationProgress, Message, AllowSkip, L"", HelpKeyword);
       DoRepeat = true;
     }
-  } while (DoRepeat);
+  }
+  while (DoRepeat);
 }
 
 void TTerminal::CommandErrorAri(
@@ -2626,7 +2627,10 @@ void TTerminal::ReadCurrentDirectory()
       FLockDirectory = (GetSessionData()->GetLockInHome() ?
         FFileSystem->GetCurrDirectory() : UnicodeString(L""));
     }
-    /* if (OldDirectory != FFileSystem->GetCurrentDirectory()) */ { DoChangeDirectory(); }
+    // if (OldDirectory != FFileSystem->GetCurrentDirectory())
+    {
+      DoChangeDirectory();
+    }
   }
   catch (Exception & E)
   {

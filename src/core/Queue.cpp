@@ -2279,7 +2279,6 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
     }
     while (!Done);
 
-
     Rethrow(FException);
   }
   catch (...)
