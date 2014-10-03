@@ -404,8 +404,14 @@ void TStrings::SetTextStr(const UnicodeString & Text)
       S.SetLength(P - Start);
       memmove(const_cast<wchar_t *>(S.c_str()), Start, (P - Start) * sizeof(wchar_t));
       Add(S);
-      if (*P == 0x0D) { P++; }
-      if (*P == 0x0A) { P++; }
+      if (*P == 0x0D)
+      {
+        P++;
+      }
+      if (*P == 0x0A)
+      {
+        P++;
+      }
     }
   }
 }
@@ -1074,8 +1080,14 @@ void TStringList::QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SComp
     intptr_t P = (L + R) >> 1;
     do
     {
-      while (SCompare(this, I, P) < 0) { I++; }
-      while (SCompare(this, J, P) > 0) { J--; }
+      while (SCompare(this, I, P) < 0)
+      {
+        I++;
+      }
+      while (SCompare(this, J, P) > 0)
+      {
+        J--;
+      }
       if (I <= J)
       {
         ExchangeItems(I, J);
