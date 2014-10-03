@@ -748,7 +748,7 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args,
     if (((MinL >= 0) && (MinL > FOutput->GetCount())) ||
         ((MaxL >= 0) && (MaxL > FOutput->GetCount())))
     {
-      FTerminal->TerminalError(FmtLoadStr(INVALID_OUTPUT_ERROR,
+      FTerminal->TerminalError(FMTLOAD(INVALID_OUTPUT_ERROR,
         ARRAYOFCONST((FullCommand, GetOutput()->GetText()))));
     }
   }
@@ -770,7 +770,7 @@ void TSCPFileSystem::ExecCommand2(TFSCommand Cmd, intptr_t Params, ...)
     if (((MinL >= 0) && (MinL > static_cast<int>(FOutput->GetCount()))) ||
         ((MaxL >= 0) && (MaxL > static_cast<int>(FOutput->GetCount()))))
     {
-      FTerminal->TerminalError(Sysutils::FmtLoadStr(INVALID_OUTPUT_ERROR,
+      FTerminal->TerminalError(FMTLOAD(INVALID_OUTPUT_ERROR,
         FullCommand.c_str(), GetOutput()->GetText().c_str()));
     }
   }

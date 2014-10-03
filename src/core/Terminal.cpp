@@ -2707,7 +2707,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     }
     catch (Exception & E)
     {
-      CommandError(&E, FmtLoadStr(LIST_DIR_ERROR, FFiles->GetDirectory().c_str()));
+      CommandError(&E, FMTLOAD(LIST_DIR_ERROR, FFiles->GetDirectory().c_str()));
     }
   }
 }
@@ -2934,7 +2934,7 @@ void TTerminal::ReadDirectory(TRemoteFileList * AFileList)
   }
   catch (Exception & E)
   {
-    CommandError(&E, FmtLoadStr(LIST_DIR_ERROR, AFileList->GetDirectory().c_str()));
+    CommandError(&E, FMTLOAD(LIST_DIR_ERROR, AFileList->GetDirectory().c_str()));
   }
 }
 //------------------------------------------------------------------------------
