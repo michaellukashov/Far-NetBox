@@ -342,7 +342,7 @@ BOOST_FIXTURE_TEST_CASE(test11, base_fixture_t)
 {
   // Тесты на ::FmtLoadStr FMTLOAD ::Format ::LoadStr ::LoadStrPart ::CutToChar ::TrimLeft ::TrimRight
   {
-    UnicodeString str = ::FmtLoadStr(CONST_TEST_STRING, L"lalala", 42);
+    UnicodeString str = FMTLOAD(CONST_TEST_STRING, L"lalala", 42);
     // BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
     // BOOST_TEST_MESSAGE("length = " << str.size());
     BOOST_CHECK(W2MB(str.c_str()) == "test string: \"lalala\" 42");
