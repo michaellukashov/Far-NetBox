@@ -2897,6 +2897,11 @@ HINSTANCE TGlobalFunctions::GetInstanceHandle() const
   }
   return Result;
 }
+
+UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
+{
+  return FarPlugin->GetMsg(Id);
+}
 //------------------------------------------------------------------------------
 UnicodeString TGlobalFunctions::GetCurrDirectory() const
 {
