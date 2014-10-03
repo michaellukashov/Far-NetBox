@@ -130,14 +130,23 @@ UnicodeString MakeValidFileName(const UnicodeString & AFileName)
 //---------------------------------------------------------------------------
 UnicodeString RootKeyToStr(HKEY RootKey)
 {
-  if (RootKey == HKEY_USERS) return L"HKEY_USERS";
-  else if (RootKey == HKEY_LOCAL_MACHINE) return L"HKEY_LOCAL_MACHINE";
-  else if (RootKey == HKEY_CURRENT_USER) return L"HKEY_CURRENT_USER";
-  else if (RootKey == HKEY_CLASSES_ROOT) return L"HKEY_CLASSES_ROOT";
-  else if (RootKey == HKEY_CURRENT_CONFIG) return L"HKEY_CURRENT_CONFIG";
-  else if (RootKey == HKEY_DYN_DATA) return L"HKEY_DYN_DATA";
+  if (RootKey == HKEY_USERS)
+    return L"HKEY_USERS";
+  else if (RootKey == HKEY_LOCAL_MACHINE)
+    return L"HKEY_LOCAL_MACHINE";
+  else if (RootKey == HKEY_CURRENT_USER)
+    return L"HKEY_CURRENT_USER";
+  else if (RootKey == HKEY_CLASSES_ROOT)
+    return L"HKEY_CLASSES_ROOT";
+  else if (RootKey == HKEY_CURRENT_CONFIG)
+    return L"HKEY_CURRENT_CONFIG";
+  else if (RootKey == HKEY_DYN_DATA)
+    return L"HKEY_DYN_DATA";
   else
-  {  Abort(); return L""; }
+  {
+    Abort();
+    return L"";
+  }
 }
 //---------------------------------------------------------------------------
 UnicodeString BooleanToEngStr(bool B)
@@ -401,7 +410,8 @@ UnicodeString RemoveInteractiveMsgTag(const UnicodeString & S)
 bool IsNumber(const UnicodeString & Str)
 {
   int64_t Value = 0;
-  if (Str == L"0") return true;
+  if (Str == L"0")
+    return true;
   return TryStrToInt(Str, Value);
 }
 //---------------------------------------------------------------------------
