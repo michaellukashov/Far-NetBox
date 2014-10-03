@@ -241,11 +241,13 @@ void QuickSort(rde::vector<void *> & SortList, intptr_t L, intptr_t R,
         I--;
         J--;
       }
-    } while (I > J);
+    }
+    while (I > J);
     if (L < J)
       QuickSort(SortList, L, J, SCompare);
     L = I;
-  } while (I >= R);
+  }
+  while (I >= R);
 }
 
 void TList::Sort(CompareFunc Func)

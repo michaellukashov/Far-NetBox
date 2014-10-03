@@ -238,7 +238,8 @@ UnicodeString TrimLeft(const UnicodeString & Str)
   UnicodeString Result = Str;
   intptr_t Len = Result.Length();
   intptr_t Pos = 1;
-  while ((Pos <= Len) && (Result[Pos] == L' ')) Pos++;
+  while ((Pos <= Len) && (Result[Pos] == L' '))
+    Pos++;
   if (Pos > 1)
     return Result.SubString(Pos, Len - Pos + 1);
   else
@@ -1727,7 +1728,8 @@ uintptr_t StrToVersionNumber(const UnicodeString & VersionMumberStr)
   {
     UnicodeString Num = CutToChar(Version, L'.', true);
     Result += static_cast<uintptr_t>(Num.ToInt()) << Shift;
-    if (Shift >= 8) Shift -= 8;
+    if (Shift >= 8)
+      Shift -= 8;
   }
   return Result;
 }
