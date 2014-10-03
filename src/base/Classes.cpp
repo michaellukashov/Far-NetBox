@@ -24,7 +24,7 @@ void Abort()
 //---------------------------------------------------------------------------
 void Error(int ErrorID, intptr_t data)
 {
-  UnicodeString Msg = FMTLOAD(ErrorID, data);
+  UnicodeString Msg = FMTLOAD2(ErrorID, data);
   throw ExtException((Sysutils::Exception *)nullptr, Msg);
 }
 
