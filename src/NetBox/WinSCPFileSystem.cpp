@@ -95,8 +95,10 @@ void TRemoteFilePanelItem::GetData(
 {
   AFileName = FRemoteFile->GetFileName();
   Size = FRemoteFile->GetSize();
-  if (Size < 0) Size = 0;
-  if (FRemoteFile->GetIsDirectory()) Size = 0;
+  if (Size < 0)
+    Size = 0;
+  if (FRemoteFile->GetIsDirectory())
+    Size = 0;
   FileAttributes =
     FLAGMASK(FRemoteFile->GetIsDirectory(), FILE_ATTRIBUTE_DIRECTORY) |
     FLAGMASK(FRemoteFile->GetIsHidden(), FILE_ATTRIBUTE_HIDDEN) |

@@ -251,7 +251,8 @@ intptr_t TFarDialog::GetItemCount()
 //---------------------------------------------------------------------------
 intptr_t TFarDialog::GetItem(TFarDialogItem * Item) const
 {
-  if (!Item) return -1;
+  if (!Item)
+    return -1;
   return Item->GetItem();
 }
 //---------------------------------------------------------------------------
