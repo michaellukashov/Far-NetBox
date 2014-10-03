@@ -686,14 +686,15 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
 {
   UnicodeString Result(256, 0);
   UnicodeString Fmt(2048, 0);
-  HINSTANCE hInstance = GetGlobalFunctions()->GetInstanceHandle();
-  intptr_t Length = ::LoadString(hInstance, static_cast<UINT>(Id),
-    const_cast<wchar_t *>(Fmt.c_str()), static_cast<int>(Fmt.GetLength()));
-  if (!Length)
-  {
-    DEBUG_PRINTF(L"Unknown resource string id: %d\n", Id);
-  }
-  else
+//  HINSTANCE hInstance = GetGlobalFunctions()->GetInstanceHandle();
+//  intptr_t Length = ::LoadString(hInstance, static_cast<UINT>(Id),
+//    const_cast<wchar_t *>(Fmt.c_str()), static_cast<int>(Fmt.GetLength()));
+//  if (!Length)
+//  {
+//    DEBUG_PRINTF(L"Unknown resource string id: %d\n", Id);
+//  }
+//  else
+  Fmt = GetGlobalFunctions()->GetMsg(Id);
   {
     va_list Args;
     va_start(Args, Id);
