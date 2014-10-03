@@ -1469,7 +1469,7 @@ TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec)
 TDateTime StrToDateTime(const UnicodeString & Value)
 {
   (void)Value;
-  Classes::Error(SNotImplemented, 145);
+  THROW_EXTEXEPTION(SNotImplemented, 145);
   return TDateTime();
 }
 
@@ -1479,7 +1479,7 @@ bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value,
   (void)StrValue;
   (void)Value;
   (void)FormatSettings;
-  Classes::Error(SNotImplemented, 147);
+  THROW_EXTEXEPTION(SNotImplemented, 147);
   return false;
 }
 
@@ -1519,7 +1519,7 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & DateTi
   (void)Fmt;
   (void)DateTime;
   UnicodeString Result;
-  Classes::Error(SNotImplemented, 150);
+  THROW_EXTEXEPTION(SNotImplemented, 150);
   return Result;
 }
 

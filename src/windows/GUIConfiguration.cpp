@@ -825,7 +825,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   {
     if (Internal)
     {
-      Classes::Error(SNotImplemented, 90);
+      THROW_EXTEXEPTION(SNotImplemented, 90);
       NewInstance = 0; // FIXME  HInstance;
     }
   }
@@ -907,7 +907,7 @@ void TGUIConfiguration::SetLocaleSafe(LCID Value)
 //---------------------------------------------------------------------------
 TStrings * TGUIConfiguration::GetLocales()
 {
-  Classes::Error(SNotImplemented, 93);
+  THROW_EXTEXEPTION(SNotImplemented, 93);
   UnicodeString LocalesExts;
   std::unique_ptr<TStringList> Exts(new TStringList());
   Exts->SetSorted(true);

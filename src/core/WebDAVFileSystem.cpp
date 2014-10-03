@@ -12351,7 +12351,7 @@ void TWebDAVFileSystem::ReadCurrentDirectory()
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::HomeDirectory()
 {
-  Classes::Error(SNotImplemented, 1009);
+  THROW_EXTEXEPTION(SNotImplemented, 1009);
 }
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::AnnounceFileListOperation()
@@ -12507,7 +12507,7 @@ void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
 void TWebDAVFileSystem::CopyFile(const UnicodeString & AFileName,
   const UnicodeString & NewName)
 {
-  Classes::Error(SNotImplemented, 1012);
+  THROW_EXTEXEPTION(SNotImplemented, 1012);
 }
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
@@ -12539,14 +12539,14 @@ void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
 void TWebDAVFileSystem::CreateLink(const UnicodeString & AFileName,
   const UnicodeString & PointTo, bool Symbolic)
 {
-  Classes::Error(SNotImplemented, 1014);
+  THROW_EXTEXEPTION(SNotImplemented, 1014);
 }
 //------------------------------------------------------------------------------
 void TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
   const TRemoteFile * AFile, const TRemoteProperties * Properties,
   TChmodSessionAction & Action)
 {
-  Classes::Error(SNotImplemented, 1006);
+  THROW_EXTEXEPTION(SNotImplemented, 1006);
   assert(Properties);
 }
 //------------------------------------------------------------------------------
@@ -12692,7 +12692,7 @@ void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
 void TWebDAVFileSystem::AnyCommand(const UnicodeString & Command,
   TCaptureOutputEvent OutputEvent)
 {
-  Classes::Error(SNotImplemented, 1008);
+  THROW_EXTEXEPTION(SNotImplemented, 1008);
 }
 //------------------------------------------------------------------------------
 TStrings * TWebDAVFileSystem::GetFixedPaths()

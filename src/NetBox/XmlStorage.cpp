@@ -104,7 +104,7 @@ bool TXmlStorage::WriteXml()
 //---------------------------------------------------------------------------
 bool TXmlStorage::Copy(TXmlStorage * /* Storage */)
 {
-  Classes::Error(SNotImplemented, 3020);
+  THROW_EXTEXEPTION(SNotImplemented, 3020);
   bool Result = false;
   return Result;
 }
@@ -136,7 +136,7 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
 //---------------------------------------------------------------------------
 bool TXmlStorage::DoKeyExists(const UnicodeString & SubKey, bool /* ForceAnsi */)
 {
-  Classes::Error(SNotImplemented, 3024);
+  THROW_EXTEXEPTION(SNotImplemented, 3024);
   UnicodeString K = PuttyMungeStr(SubKey);
   bool Result = false; // FRegistry->KeyExists(K);
   return Result;
@@ -212,7 +212,7 @@ void TXmlStorage::GetSubKeyNames(TStrings * Strings)
 //---------------------------------------------------------------------------
 void TXmlStorage::GetValueNames(TStrings * /* Strings */) const
 {
-  Classes::Error(SNotImplemented, 3022);
+  THROW_EXTEXEPTION(SNotImplemented, 3022);
   // FRegistry->GetValueNames(Strings);
 }
 //---------------------------------------------------------------------------
@@ -324,7 +324,7 @@ bool TXmlStorage::ValueExists(const UnicodeString & Value) const
 //---------------------------------------------------------------------------
 size_t TXmlStorage::BinaryDataSize(const UnicodeString & /* Name */)
 {
-  Classes::Error(SNotImplemented, 3026);
+  THROW_EXTEXEPTION(SNotImplemented, 3026);
   size_t Result = 0; // FRegistry->GetDataSize(Name);
   return Result;
 }
@@ -372,7 +372,7 @@ UnicodeString TXmlStorage::ReadStringRaw(const UnicodeString & Name, const Unico
 size_t TXmlStorage::ReadBinaryData(const UnicodeString & /* Name */,
   void * /* Buffer */, size_t /* Size */)
 {
-  Classes::Error(SNotImplemented, 3028);
+  THROW_EXTEXEPTION(SNotImplemented, 3028);
   size_t Result = 0;
   return Result;
 }

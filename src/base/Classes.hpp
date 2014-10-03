@@ -49,7 +49,8 @@ DEFINE_CALLBACK_TYPE0(TThreadMethod, void);
 DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /* Sender */);
 //---------------------------------------------------------------------------
 void Abort();
-void Error(int ErrorID, intptr_t data);
+//void Error(int ErrorID, intptr_t data);
+#define THROW_EXTEXEPTION(ErrorID, data) { throw ExtException((Sysutils::Exception *)nullptr, FMTLOAD(ErrorID, data)); }
 //---------------------------------------------------------------------------
 
 class TObject

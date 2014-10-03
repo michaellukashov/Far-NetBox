@@ -154,7 +154,7 @@ THierarchicalStorage * TConfiguration::CreateStorage(bool /*SessionList*/)
   }
   else
   {
-    Classes::Error(SNotImplemented, 3005);
+    THROW_EXTEXEPTION(SNotImplemented, 3005);
     assert(false);
   }
   return Result;
@@ -260,7 +260,7 @@ void TConfiguration::DoSave(bool All, bool Explicit)
 //---------------------------------------------------------------------------
 void TConfiguration::Export(const UnicodeString & /*AFileName*/)
 {
-  Classes::Error(SNotImplemented, 3004);
+  THROW_EXTEXEPTION(SNotImplemented, 3004);
   /*
   std::unique_ptr<THierarchicalStorage> Storage(CreateScpStorage(false));
   std::unique_ptr<THierarchicalStorage> ExportStorage(nullptr);
@@ -283,7 +283,7 @@ void TConfiguration::Export(const UnicodeString & /*AFileName*/)
 //---------------------------------------------------------------------------
 void TConfiguration::Import(const UnicodeString & /* AFileName */)
 {
-  Classes::Error(SNotImplemented, 3005);
+  THROW_EXTEXEPTION(SNotImplemented, 3005);
 /*
   std::unique_ptr<THierarchicalStorage> Storage(CreateScpStorage(false));
   std::unique_ptr<THierarchicalStorage> ImportStorage(new TIniFileStorage(FileName));
@@ -664,7 +664,7 @@ intptr_t TConfiguration::GetCompoundVersion() const
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::ModuleFileName() const
 {
-  Classes::Error(SNotImplemented, 204);
+  THROW_EXTEXEPTION(SNotImplemented, 204);
   return L"";
 }
 //---------------------------------------------------------------------------
