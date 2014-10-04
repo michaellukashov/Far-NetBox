@@ -696,7 +696,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetFtpAccount(Storage->ReadString(L"FtpAccount", GetFtpAccount()));
   SetFtpPingInterval(Storage->ReadInteger(L"FtpPingInterval", GetFtpPingInterval()));
   SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger(L"FtpPingType", GetFtpPingType())));
-  SetFtpTransferActiveImmediately(Storage->ReadBool(L"FtpTransferActiveImmediatelly", GetFtpTransferActiveImmediately()));
+  SetFtpTransferActiveImmediately(Storage->ReadBool(L"FtpTransferActiveImmediately", GetFtpTransferActiveImmediately()));
   SetFtps(static_cast<TFtps>(Storage->ReadInteger(L"Ftps", GetFtps())));
   SetFtpListAll(static_cast<TAutoSwitch>(Storage->ReadInteger(L"FtpListAll", GetFtpListAll())));
   SetFtpDupFF(Storage->ReadBool(L"FtpDupFF", GetFtpDupFF()));

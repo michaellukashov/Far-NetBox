@@ -561,7 +561,7 @@ bool TCopyParamType::SkipTransfer(
   const UnicodeString & AFileName, bool Directory) const
 {
   bool Result = false;
-  // we deliberatelly do not filter directories, as path is added to resume list
+  // we deliberately do not filter directories, as path is added to resume list
   // when a transfer of file or directory is started,
   // so for directories we need to recurse and check every single file
   if (!Directory && (FTransferSkipList.get() != NULL))
