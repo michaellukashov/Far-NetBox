@@ -78,7 +78,7 @@ UnicodeString MaskFileName(const UnicodeString & AFileName, const UnicodeString 
   UnicodeString Result = AFileName;
   if (IsEffectiveFileNameMask(Mask))
   {
-    bool Masked;
+    bool Masked = false;
     intptr_t P = Mask.LastDelimiter(L".");
     if (P > 0)
     {
