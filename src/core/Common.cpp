@@ -1236,7 +1236,7 @@ void ProcessLocalDirectory(const UnicodeString & ADirName,
     };
     do
     {
-      if ((SearchRec.Name != L".") && (SearchRec.Name != L".."))
+      if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
       {
         UnicodeString FileName = DirName2 + SearchRec.Name;
         CallBackFunc(FileName, SearchRec, Param);
