@@ -39,8 +39,8 @@ static UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeStrin
         {
           Delim = true;
           Masked = true;
-          break;
         }
+        break;
 
       case L'*':
         if (!Delim)
@@ -48,8 +48,8 @@ static UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeStrin
           Result += Part.SubString(RestStart, Part.Length() - RestStart + 1);
           RestStart = Part.Length() + 1;
           Masked = true;
-          break;
         }
+        break;
 
       case L'?':
         if (!Delim)
@@ -60,8 +60,8 @@ static UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeStrin
             RestStart++;
           }
           Masked = true;
-          break;
         }
+        break;
 
       default:
         Result += Mask[Index];
