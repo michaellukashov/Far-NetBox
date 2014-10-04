@@ -124,7 +124,7 @@ void TCopyParamType::DoGetInfoStr(
 
     if (TransferModeDiffers)
     {
-      ADD("", cpaIncludeMaskOnly | cpaNoTransferMode);
+      ADD(L"", cpaIncludeMaskOnly | cpaNoTransferMode);
     }
   }
   else

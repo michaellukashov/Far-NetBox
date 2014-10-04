@@ -1114,12 +1114,12 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       UnicodeString TimeInfo;
       if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly) || (Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsWebDAV))
       {
-        AddToList(TimeInfo, FORMAT("DST mode: %d", int(Data->GetDSTMode())), L";");
+        AddToList(TimeInfo, FORMAT(L"DST mode: %d", int(Data->GetDSTMode())), L";");
       }
       if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
       {
         intptr_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
-        AddToList(TimeInfo, FORMAT("Timezone offset: %dh %dm", (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour)), L";");
+        AddToList(TimeInfo, FORMAT(L"Timezone offset: %dh %dm", (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour)), L";");
       }
       ADSTR(TimeInfo);
 

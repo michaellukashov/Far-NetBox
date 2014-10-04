@@ -24,8 +24,8 @@ extern "C"
 }
 const UnicodeString OriginalPuttyRegistryStorageKey(_T(PUTTY_REG_POS));
 const UnicodeString KittyRegistryStorageKey(L"Software\\9bis.com\\KiTTY");
-const UnicodeString OriginalPuttyExecutable("putty.exe");
-const UnicodeString KittyExecutable("kitty.exe");
+const UnicodeString OriginalPuttyExecutable(L"putty.exe");
+const UnicodeString KittyExecutable(L"kitty.exe");
 //---------------------------------------------------------------------------
 void PuttyInitialize()
 {

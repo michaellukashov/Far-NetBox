@@ -75,7 +75,7 @@ class EFileNotFoundError : public Exception
 {
 NB_DECLARE_CLASS(EFileNotFoundError)
 public:
-  EFileNotFoundError() : Exception("")
+  EFileNotFoundError() : Exception(L"")
   {}
 };
 

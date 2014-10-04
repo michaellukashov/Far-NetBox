@@ -527,7 +527,7 @@ UnicodeString ValidLocalFileName(
 
     if (IsReservedName(FileName2))
     {
-      intptr_t P = FileName2.Pos(".");
+      intptr_t P = FileName2.Pos(L".");
       if (P == 0)
       {
         P = FileName2.Length() + 1;

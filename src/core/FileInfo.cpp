@@ -244,7 +244,7 @@ UnicodeString GetFileInfoString(void * FileInfo,
   {
     if (!AllowEmpty)
     {
-      throw Exception("Specified file info string not available");
+      throw Exception(L"Specified file info string not available");
     }
   }
   else

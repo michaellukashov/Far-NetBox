@@ -72,7 +72,7 @@ TPersistent * TPersistent::GetOwner()
 void TPersistent::AssignError(const TPersistent * Source)
 {
   (void)Source;
-  throw Sysutils::Exception("Cannot assign");
+  throw Sysutils::Exception(L"Cannot assign");
 }
 
 //---------------------------------------------------------------------------
@@ -1356,7 +1356,7 @@ void TStream::WriteBuffer(const void * Buffer, int64_t Count)
 //---------------------------------------------------------------------------
 void ReadError(const UnicodeString & Name)
 {
-  throw Sysutils::Exception(FORMAT("InvalidRegType: %s", Name.c_str())); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
+  throw Sysutils::Exception(FORMAT(L"InvalidRegType: %s", Name.c_str())); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
 
 //---------------------------------------------------------------------------
@@ -1969,7 +1969,7 @@ int TRegistry::GetData(const UnicodeString & Name, void * Buffer,
   if (::RegQueryValueEx(GetCurrentKey(), Name.c_str(), nullptr, &DataType,
     reinterpret_cast<BYTE *>(Buffer), &bufSize) != ERROR_SUCCESS)
   {
-    throw Sysutils::Exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
+    throw Sysutils::Exception(L"RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
   RegData = DataTypeToRegData(DataType);
   int Result = static_cast<int>(BufSize);
@@ -1983,7 +1983,7 @@ void TRegistry::PutData(const UnicodeString & Name, const void * Buffer,
   if (::RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType,
                     reinterpret_cast<const BYTE *>(Buffer), static_cast<DWORD>(BufSize)) != ERROR_SUCCESS)
   {
-    throw Sysutils::Exception("RegSetValueEx failed");    // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
+    throw Sysutils::Exception(L"RegSetValueEx failed");    // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
   }
 }
 

@@ -688,7 +688,7 @@ void * TConfiguration::GetFileApplicationInfo(const UnicodeString & AFileName) c
 //---------------------------------------------------------------------------
 void * TConfiguration::GetApplicationInfo() const
 {
-  return GetFileApplicationInfo("");
+  return GetFileApplicationInfo(L"");
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileProductName(const UnicodeString & AFileName) const

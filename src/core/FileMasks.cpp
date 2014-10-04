@@ -82,7 +82,7 @@ UnicodeString MaskFileName(const UnicodeString & AFileName, const UnicodeString 
     intptr_t P = Mask.LastDelimiter(L".");
     if (P > 0)
     {
-      intptr_t P2 = Result.LastDelimiter(".");
+      intptr_t P2 = Result.LastDelimiter(L".");
       // only dot at beginning of file name is not considered as
       // name/ext separator
       UnicodeString FileExt = P2 > 1 ?
