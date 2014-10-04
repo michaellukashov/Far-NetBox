@@ -1227,7 +1227,7 @@ void ProcessLocalDirectory(const UnicodeString & ADirName,
   }
   TSearchRecChecked SearchRec;
 
-  UnicodeString DirName2 = ::IncludeTrailingBackslash(ADirName);
+  UnicodeString DirName2 = ApiPath(::IncludeTrailingBackslash(ADirName));
   if (FindFirstChecked(DirName2 + L"*.*", FindAttrs, SearchRec) == 0)
   {
     SCOPE_EXIT
