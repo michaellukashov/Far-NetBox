@@ -774,7 +774,7 @@ void TGUIConfiguration::Saved()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
-  UnicodeString * FileName)
+  UnicodeString * AFileName)
 {
   UnicodeString LibraryFileName;
   HINSTANCE NewInstance = 0;
@@ -830,9 +830,9 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     }
   }
 
-  if (FileName != nullptr)
+  if (AFileName != nullptr)
   {
-    *FileName = LibraryFileName;
+    *AFileName = LibraryFileName;
   }
 
   return NewInstance;

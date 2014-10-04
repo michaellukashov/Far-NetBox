@@ -1325,7 +1325,7 @@ bool TSessionData::IsProtocolUrl(
 }
 //---------------------------------------------------------------------
 bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
-  TStoredSessionList * StoredSessions, bool & DefaultsOnly, UnicodeString * FileName,
+  TStoredSessionList * StoredSessions, bool & DefaultsOnly, UnicodeString * AFileName,
   bool * AProtocolDefined, UnicodeString * MaskedUrl)
 {
   UnicodeString url = Url;
@@ -1576,9 +1576,9 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     if (!ARemoteDirectory.IsEmpty() && (ARemoteDirectory != L"/"))
     {
       if ((ARemoteDirectory[ARemoteDirectory.Length()] != L'/') &&
-          (FileName != nullptr))
+          (AFileName != nullptr))
       {
-        *FileName = DecodeUrlChars(core::UnixExtractFileName(ARemoteDirectory));
+        *AFileName = DecodeUrlChars(core::UnixExtractFileName(ARemoteDirectory));
         ARemoteDirectory = core::UnixExtractFilePath(ARemoteDirectory);
       }
       SetRemoteDirectory(DecodeUrlChars(ARemoteDirectory));
@@ -3854,11 +3854,11 @@ bool TStoredSessionList::HasAnyWorkspace()
 }
 //---------------------------------------------------------------------------
 TSessionData * TStoredSessionList::ParseUrl(const UnicodeString & Url,
-  TOptions * Options, bool & DefaultsOnly, UnicodeString * FileName,
+  TOptions * Options, bool & DefaultsOnly, UnicodeString * AFileName,
   bool * AProtocolDefined, UnicodeString * MaskedUrl)
 {
   std::unique_ptr<TSessionData> Data(new TSessionData(L""));
-  Data->ParseUrl(Url, Options, this, DefaultsOnly, FileName, AProtocolDefined, MaskedUrl);
+  Data->ParseUrl(Url, Options, this, DefaultsOnly, AFileName, AProtocolDefined, MaskedUrl);
 
   return Data.release();
 }
