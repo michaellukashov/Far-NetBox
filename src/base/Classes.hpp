@@ -899,7 +899,7 @@ using namespace Classes;
 class TGlobalFunctionsIntf
 {
 public:
-  virtual ~TGlobalFunctionsIntf() {};
+  virtual ~TGlobalFunctionsIntf() {}
 
   virtual HINSTANCE GetInstanceHandle() const = 0;
   virtual UnicodeString GetCurrDirectory() const = 0;
