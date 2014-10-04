@@ -12808,7 +12808,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
   TUploadSessionAction & Action)
 {
   UnicodeString RealFileName = AFile ? AFile->GetFileName() : AFileName;
-  Action.FileName(ExpandUNCFileName(RealFileName));
+  Action.SetFileName(ExpandUNCFileName(RealFileName));
 
   OperationProgress->SetFile(RealFileName, false);
 
@@ -13137,7 +13137,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 {
   UnicodeString FileNameOnly = core::UnixExtractFileName(AFileName);
 
-  Action.FileName(AFileName);
+  Action.SetFileName(AFileName);
 
   assert(AFile);
   TFileMasks::TParams MaskParams;

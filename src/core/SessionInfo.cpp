@@ -212,7 +212,7 @@ public:
     Close(Cancelled);
   }
 
-  void FileName(const UnicodeString & AFileName)
+  void SetFileName(const UnicodeString & AFileName)
   {
     Parameter(L"filename", AFileName);
   }
@@ -395,14 +395,14 @@ TFileSessionAction::TFileSessionAction(
     TActionLog * Log, TLogAction Action, const UnicodeString & AFileName) :
   TSessionAction(Log, Action)
 {
-  FileName(AFileName);
+  SetFileName(AFileName);
 }
 //---------------------------------------------------------------------------
-void TFileSessionAction::FileName(const UnicodeString & AFileName)
+void TFileSessionAction::SetFileName(const UnicodeString & AFileName)
 {
   if (FRecord != nullptr)
   {
-    FRecord->FileName(AFileName);
+    FRecord->SetFileName(AFileName);
   }
 }
 //---------------------------------------------------------------------------

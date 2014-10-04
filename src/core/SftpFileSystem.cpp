@@ -4357,7 +4357,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
 {
   UnicodeString RealFileName = AFile ? AFile->GetFileName() : AFileName;
 
-  Action.FileName(ExpandUNCFileName(RealFileName));
+  Action.SetFileName(ExpandUNCFileName(RealFileName));
 
   OperationProgress->SetFile(RealFileName, false);
 
@@ -5271,7 +5271,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
   TDownloadSessionAction & Action, bool & ChildError)
 {
 
-  Action.FileName(AFileName);
+  Action.SetFileName(AFileName);
 
   UnicodeString OnlyFileName = core::UnixExtractFileName(AFileName);
 

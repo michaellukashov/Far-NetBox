@@ -1744,7 +1744,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
           L" transfer mode selected.");
 
       TUploadSessionAction Action(FTerminal->GetActionLog());
-      Action.FileName(Sysutils::ExpandUNCFileName(AFileName));
+      Action.SetFileName(Sysutils::ExpandUNCFileName(AFileName));
       Action.Destination(AbsoluteFileName);
 
       TRights Rights = CopyParam->RemoteFileRights(LocalFileAttrs);
@@ -2468,7 +2468,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
         else if (Ctrl == L'C')
         {
           TDownloadSessionAction Action(FTerminal->GetActionLog());
-          Action.FileName(AbsoluteFileName);
+          Action.SetFileName(AbsoluteFileName);
 
           try
           {
