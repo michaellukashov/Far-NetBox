@@ -1706,7 +1706,7 @@ uintptr_t TQueueItem::GetCPSLimit() const
   {
     Result = FCPSLimit;
   }
-  else if (FProgressData != NULL)
+  else if (FProgressData != nullptr)
   {
     Result = FProgressData->CPSLimit;
   }

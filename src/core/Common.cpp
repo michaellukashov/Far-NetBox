@@ -773,7 +773,7 @@ static intptr_t PathRootLength(const UnicodeString & APath)
   // Now call the API
   LPCTSTR Buffer = PathSkipRoot(Result.c_str());
 
-  return (Buffer != NULL) ? (Buffer - Result.c_str()) : -1;
+  return (Buffer != nullptr) ? (Buffer - Result.c_str()) : -1;
 }
 //---------------------------------------------------------------------------
 static bool PathIsRelative_CorrectedForMicrosoftStupidity(const UnicodeString & APath)
@@ -2392,8 +2392,8 @@ bool IsWine()
 {
   HMODULE NtDll = ::GetModuleHandle(L"ntdll.dll");
   return
-    ALWAYS_TRUE(NtDll != NULL) &&
-    (::GetProcAddress(NtDll, "wine_get_version") != NULL);
+    ALWAYS_TRUE(NtDll != nullptr) &&
+    (::GetProcAddress(NtDll, "wine_get_version") != nullptr);
 }
 //---------------------------------------------------------------------------
 LCID GetDefaultLCID()
