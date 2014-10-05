@@ -4318,12 +4318,24 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
 {
   GetDialog()->SetNextItemPosition(ipNewLine);
 
-  static int RowLabels[] = { PROPERTIES_OWNER_RIGHTS, PROPERTIES_GROUP_RIGHTS,
-    PROPERTIES_OTHERS_RIGHTS };
-  static int ColLabels[] = { PROPERTIES_READ_RIGHTS, PROPERTIES_WRITE_RIGHTS,
-    PROPERTIES_EXECUTE_RIGHTS };
-  static int SpecialLabels[] = { PROPERTIES_SETUID_RIGHTS, PROPERTIES_SETGID_RIGHTS,
-    PROPERTIES_STICKY_BIT_RIGHTS };
+  static int RowLabels[] =
+  {
+    PROPERTIES_OWNER_RIGHTS,
+    PROPERTIES_GROUP_RIGHTS,
+    PROPERTIES_OTHERS_RIGHTS
+  };
+  static int ColLabels[] =
+  {
+    PROPERTIES_READ_RIGHTS,
+    PROPERTIES_WRITE_RIGHTS,
+    PROPERTIES_EXECUTE_RIGHTS
+  };
+  static int SpecialLabels[] =
+  {
+    PROPERTIES_SETUID_RIGHTS,
+    PROPERTIES_SETGID_RIGHTS,
+    PROPERTIES_STICKY_BIT_RIGHTS
+  };
 
   for (intptr_t RowIndex = 0; RowIndex < 3; ++RowIndex)
   {
