@@ -426,22 +426,22 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
       case DN_KEY:
         if (Param1 >= 0)
         {
-          TFarDialogItem * I = GetItem(Param1);
+          TFarDialogItem * Item = GetItem(Param1);
           try
           {
-            Result = I->ItemProc(Msg, Param2);
+            Result = Item->ItemProc(Msg, Param2);
           }
           catch (Sysutils::Exception & E)
           {
             Handled = true;
             DEBUG_PRINTF(L"before GetFarPlugin()->HandleException");
             GetFarPlugin()->HandleException(&E);
-            Result = I->FailItemProc(Msg, Param2);
+            Result = Item->FailItemProc(Msg, Param2);
           }
 
           if (!Result && (Msg == DN_KEY))
           {
-            Result = Key(I, Param2);
+            Result = Key(Item, Param2);
           }
           Handled = true;
         }

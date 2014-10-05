@@ -1421,12 +1421,12 @@ static bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
       (Day >= 1) && (Day <= (*DayTable)[Month - 1]))
   {
-    for (int I = 1; I <= Month - 1; I++)
+    for (int Index = 1; Index <= Month - 1; Index++)
     {
-      Day += (*DayTable)[I - 1];
+      Day += (*DayTable)[Index - 1];
     }
-    int I = Year - 1;
-    Date = TDateTime((double)(I * 365 + I / 4 - I / 100 + I / 400 + Day - DateDelta));
+    int Idx = Year - 1;
+    Date = TDateTime((double)(Idx * 365 + Idx / 4 - Idx / 100 + Idx / 400 + Day - DateDelta));
     return true;
   }
   return false;

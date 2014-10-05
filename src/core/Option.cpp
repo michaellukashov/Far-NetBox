@@ -88,19 +88,19 @@ UnicodeString TOptions::GetParam(intptr_t Index)
   assert((Index >= 1) && (Index <= FParamCount));
 
   UnicodeString Result;
-  size_t I = 0;
-  while ((I < FOptions.size()) && (Index > 0))
+  size_t Idx = 0;
+  while ((Idx < FOptions.size()) && (Index > 0))
   {
-    if (FOptions[I].Type == otParam)
+    if (FOptions[Idx].Type == otParam)
     {
       --Index;
       if (Index == 0)
       {
-        Result = FOptions[I].Value;
-        FOptions[I].Used = true;
+        Result = FOptions[Idx].Value;
+        FOptions[Idx].Used = true;
       }
     }
-    ++I;
+    ++Idx;
   }
 
   return Result;

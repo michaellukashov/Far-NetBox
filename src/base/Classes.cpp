@@ -218,36 +218,36 @@ void TList::Clear()
 void QuickSort(rde::vector<void *> & SortList, intptr_t L, intptr_t R,
   CompareFunc SCompare)
 {
-  intptr_t I;
+  intptr_t Index;
   do
   {
-    I = L;
+    Index = L;
     intptr_t J = R;
     void * P = SortList[(L + R) >> 1];
     do
     {
-      while (SCompare(SortList[I], P) < 0)
-        I++;
+      while (SCompare(SortList[Index], P) < 0)
+        Index++;
       while (SCompare(SortList[J], P) > 0)
         J--;
-      if (I <= J)
+      if (Index <= J)
       {
-        if (I != J)
+        if (Index != J)
         {
-          void * T = SortList[I];
-          SortList[I] = SortList[J];
+          void * T = SortList[Index];
+          SortList[Index] = SortList[J];
           SortList[J] = T;
         }
-        I--;
+        Index--;
         J--;
       }
     }
-    while (I > J);
+    while (Index > J);
     if (L < J)
       QuickSort(SortList, L, J, SCompare);
-    L = I;
+    L = Index;
   }
-  while (I >= R);
+  while (Index >= R);
 }
 
 void TList::Sort(CompareFunc Func)
@@ -496,9 +496,9 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
   delim.append(1, L'\n');
   std::wstring StrValue = Value.c_str();
   tokenize(StrValue, Lines, delim, true);
-  for (size_t I = 0; I < Lines.size(); I++)
+  for (size_t Index = 0; Index < Lines.size(); Index++)
   {
-    Add(Lines[I].c_str());
+    Add(Lines[Index].c_str());
   }
 }
 
@@ -843,21 +843,21 @@ bool TStringList::Find(const UnicodeString & S, intptr_t & Index) const
   intptr_t H = GetCount() - 1;
   while ((H != NPOS) && (L <= H))
   {
-    intptr_t I = (L + H) >> 1;
-    intptr_t C = CompareStrings(FStrings[I], S);
+    intptr_t Idx = (L + H) >> 1;
+    intptr_t C = CompareStrings(FStrings[Idx], S);
     if (C < 0)
     {
-      L = I + 1;
+      L = Idx + 1;
     }
     else
     {
-      H = I - 1;
+      H = Idx - 1;
       if (C == 0)
       {
         Result = true;
         if (FDuplicates != dupAccept)
         {
-          L = I;
+          L = Idx;
         }
       }
     }
@@ -1074,45 +1074,45 @@ void TStringList::CustomSort(TStringListSortCompare ACompareFunc)
 
 void TStringList::QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare)
 {
-  intptr_t I;
+  intptr_t Index;
   do
   {
-    I = L;
+    Index = L;
     intptr_t J = R;
     intptr_t P = (L + R) >> 1;
     do
     {
-      while (SCompare(this, I, P) < 0)
+      while (SCompare(this, Index, P) < 0)
       {
-        I++;
+        Index++;
       }
       while (SCompare(this, J, P) > 0)
       {
         J--;
       }
-      if (I <= J)
+      if (Index <= J)
       {
-        ExchangeItems(I, J);
-        if (P == I)
+        ExchangeItems(Index, J);
+        if (P == Index)
         {
           P = J;
         }
         else if (P == J)
         {
-          P = I;
+          P = Index;
         }
-        I++;
+        Index++;
         J--;
       }
     }
-    while (I <= J);
+    while (Index <= J);
     if (L < J)
     {
       QuickSort(L, J, SCompare);
     }
-    L = I;
+    L = Index;
   }
-  while (I < R);
+  while (Index < R);
 }
 
 void TStringList::ExchangeItems(intptr_t Index1, intptr_t Index2)
@@ -1692,10 +1692,10 @@ void TRegistry::GetValueNames(TStrings * Strings) const
   if (GetKeyInfo(Info))
   {
     S.SetLength(Info.MaxValueLen + 1);
-    for (DWORD I = 0; I < Info.NumValues; I++)
+    for (DWORD Index = 0; Index < Info.NumValues; Index++)
     {
       DWORD Len = Info.MaxValueLen + 1;
-      RegEnumValue(GetCurrentKey(), I, &S[1], &Len, nullptr, nullptr, nullptr, nullptr);
+      RegEnumValue(GetCurrentKey(), Index, &S[1], &Len, nullptr, nullptr, nullptr, nullptr);
       Strings->Add(S.c_str());
     }
   }
@@ -1709,10 +1709,10 @@ void TRegistry::GetKeyNames(TStrings * Strings) const
   if (GetKeyInfo(Info))
   {
     S.SetLength(static_cast<intptr_t>(Info.MaxSubKeyLen) + 1);
-    for (DWORD I = 0; I < Info.NumSubKeys; I++)
+    for (DWORD Index = 0; Index < Info.NumSubKeys; Index++)
     {
       DWORD Len = Info.MaxSubKeyLen + 1;
-      RegEnumKeyEx(GetCurrentKey(), static_cast<DWORD>(I), &S[1], &Len, nullptr, nullptr, nullptr, nullptr);
+      RegEnumKeyEx(GetCurrentKey(), static_cast<DWORD>(Index), &S[1], &Len, nullptr, nullptr, nullptr, nullptr);
       Strings->Add(S.c_str());
     }
   }
