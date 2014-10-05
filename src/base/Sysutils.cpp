@@ -238,7 +238,8 @@ UnicodeString TrimLeft(const UnicodeString & Str)
   UnicodeString Result = Str;
   intptr_t Len = Result.Length();
   intptr_t Pos = 1;
-  while ((Pos <= Len) && (Result[Pos] == L' ')) Pos++;
+  while ((Pos <= Len) && (Result[Pos] == L' '))
+    Pos++;
   if (Pos > 1)
     return Result.SubString(Pos, Len - Pos + 1);
   else
@@ -1420,12 +1421,12 @@ static bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
       (Day >= 1) && (Day <= (*DayTable)[Month - 1]))
   {
-    for (int I = 1; I <= Month - 1; I++)
+    for (int Index = 1; Index <= Month - 1; Index++)
     {
-      Day += (*DayTable)[I - 1];
+      Day += (*DayTable)[Index - 1];
     }
-    int I = Year - 1;
-    Date = TDateTime((double)(I * 365 + I / 4 - I / 100 + I / 400 + Day - DateDelta));
+    int Idx = Year - 1;
+    Date = TDateTime((double)(Idx * 365 + Idx / 4 - Idx / 100 + Idx / 400 + Day - DateDelta));
     return true;
   }
   return false;
@@ -1727,7 +1728,8 @@ uintptr_t StrToVersionNumber(const UnicodeString & VersionMumberStr)
   {
     UnicodeString Num = CutToChar(Version, L'.', true);
     Result += static_cast<uintptr_t>(Num.ToInt()) << Shift;
-    if (Shift >= 8) Shift -= 8;
+    if (Shift >= 8)
+      Shift -= 8;
   }
   return Result;
 }

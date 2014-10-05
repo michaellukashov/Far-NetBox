@@ -143,9 +143,9 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString &
 //---------------------------------------------------------------------------
 void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
 {
-  for (intptr_t I = 0; I <= 3; I++)
+  for (intptr_t Idx = 0; Idx <= 3; Idx++)
   {
-    if (Storage->OpenSubKey(Keys[I], true))
+    if (Storage->OpenSubKey(Keys[Idx], true))
     {
       for (intptr_t Index = 0; Index < FBookmarkLists->GetCount(); ++Index)
       {
@@ -157,19 +157,19 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
           Storage->RecursiveDeleteSubKey(Key);
           if (Storage->OpenSubKey(Key, true))
           {
-            if (I < 3)
+            if (Idx < 3)
             {
               for (intptr_t IndexB = 0; IndexB < BookmarkList->GetCount(); IndexB++)
               {
                 TBookmark * Bookmark = BookmarkList->GetBookmarks(IndexB);
                 // avoid creating empty subfolder if there's no shortcut
-                if ((I == 0) || (I == 1) ||
-                    ((I == 2) && (Bookmark->GetShortCut() != 0)))
+                if ((Idx == 0) || (Idx == 1) ||
+                    ((Idx == 2) && (Bookmark->GetShortCut() != 0)))
                 {
                   bool HasNode = !Bookmark->GetNode().IsEmpty();
                   if (!HasNode || Storage->OpenSubKey(Bookmark->GetNode(), true))
                   {
-                    switch (I)
+                    switch (Idx)
                     {
                       case 0:
                         Storage->WriteString(Bookmark->GetName(), Bookmark->GetLocal());

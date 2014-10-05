@@ -1125,7 +1125,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
   assert(AFile);
   UnicodeString OnlyFileName = core::UnixExtractFileName(AFileName);
 
-  Action.FileName(AFileName);
+  Action.SetFileName(AFileName);
 
   TFileMasks::TParams MaskParams;
   MaskParams.Size = AFile->GetSize();
@@ -1426,7 +1426,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
   TUploadSessionAction & Action)
 {
   UnicodeString RealFileName = AFile ? AFile->GetFileName() : AFileName;
-  Action.FileName(Sysutils::ExpandUNCFileName(AFileName));
+  Action.SetFileName(Sysutils::ExpandUNCFileName(AFileName));
 
   OperationProgress->SetFile(RealFileName, false);
 

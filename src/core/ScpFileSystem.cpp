@@ -529,7 +529,8 @@ UnicodeString TSCPFileSystem::DelimitStr(const UnicodeString & Str)
   if (!Result.IsEmpty())
   {
     Result = ::DelimitStr(Result, L"\\`$\"");
-    if (Result[1] == L'-') Result = L"./" + Result;
+    if (Result[1] == L'-')
+      Result = L"./" + Result;
   }
   return Result;
 }
@@ -735,7 +736,8 @@ void TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, intptr_t Params,
 void TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args,
   int size, intptr_t Params)
 {
-  if (Params < 0) Params = ecDefault;
+  if (Params < 0)
+    Params = ecDefault;
   UnicodeString FullCommand = FCommandSet->FullCommand(Cmd, args, size);
   UnicodeString Command = FCommandSet->Command(Cmd, args, size);
   ExecCommand(FullCommand, Params, Command);
@@ -746,7 +748,7 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args,
     if (((MinL >= 0) && (MinL > FOutput->GetCount())) ||
         ((MaxL >= 0) && (MaxL > FOutput->GetCount())))
     {
-      FTerminal->TerminalError(FmtLoadStr(INVALID_OUTPUT_ERROR,
+      FTerminal->TerminalError(FMTLOAD(INVALID_OUTPUT_ERROR,
         ARRAYOFCONST((FullCommand, GetOutput()->GetText()))));
     }
   }
@@ -768,7 +770,7 @@ void TSCPFileSystem::ExecCommand2(TFSCommand Cmd, intptr_t Params, ...)
     if (((MinL >= 0) && (MinL > static_cast<int>(FOutput->GetCount()))) ||
         ((MaxL >= 0) && (MaxL > static_cast<int>(FOutput->GetCount()))))
     {
-      FTerminal->TerminalError(Sysutils::FmtLoadStr(INVALID_OUTPUT_ERROR,
+      FTerminal->TerminalError(FMTLOAD(INVALID_OUTPUT_ERROR,
         FullCommand.c_str(), GetOutput()->GetText().c_str()));
     }
   }
@@ -1354,7 +1356,7 @@ void TSCPFileSystem::SpaceAvailable(const UnicodeString & /*APath*/,
 // transfer protocol
 //---------------------------------------------------------------------------
 uintptr_t TSCPFileSystem::ConfirmOverwrite(
-  const UnicodeString & AFullFileName,
+  const UnicodeString & /*AFullFileName*/,
   const UnicodeString & AFileName, TOperationSide Side,
   const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress)
@@ -1742,7 +1744,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
           L" transfer mode selected.");
 
       TUploadSessionAction Action(FTerminal->GetActionLog());
-      Action.FileName(Sysutils::ExpandUNCFileName(AFileName));
+      Action.SetFileName(Sysutils::ExpandUNCFileName(AFileName));
       Action.Destination(AbsoluteFileName);
 
       TRights Rights = CopyParam->RemoteFileRights(LocalFileAttrs);
@@ -2248,7 +2250,7 @@ void TSCPFileSystem::SCPSendError(const UnicodeString & Message, bool Fatal)
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
-  const TRemoteFile * AFile,
+  const TRemoteFile * /*AFile*/,
   const UnicodeString & TargetDir,
   const UnicodeString & SourceDir,
   const TCopyParamType * CopyParam, bool & Success,
@@ -2466,7 +2468,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
         else if (Ctrl == L'C')
         {
           TDownloadSessionAction Action(FTerminal->GetActionLog());
-          Action.FileName(AbsoluteFileName);
+          Action.SetFileName(AbsoluteFileName);
 
           try
           {

@@ -65,14 +65,19 @@ bool TXmlStorage::ReadXml()
 
   // Get and check root node
   tinyxml2::XMLElement * xmlRoot = FXmlDoc->RootElement();
-  if (!xmlRoot) return false;
+  if (!xmlRoot)
+    return false;
   const char * Value = xmlRoot->Value();
-  if (!Value) return false;
-  if (strcmp(Value, CONST_ROOT_NODE) != 0) return false;
+  if (!Value)
+    return false;
+  if (strcmp(Value, CONST_ROOT_NODE) != 0)
+    return false;
   const char * Attr = xmlRoot->Attribute(CONST_VERSION_ATTR);
-  if (!Attr) return false;
+  if (!Attr)
+    return false;
   uintptr_t Version = Sysutils::StrToVersionNumber(UnicodeString(Attr));
-  if (Version < MAKEVERSIONNUMBER(2,0,0)) return false;
+  if (Version < MAKEVERSIONNUMBER(2,0,0))
+    return false;
   tinyxml2::XMLElement * Element = xmlRoot->FirstChildElement(ToStdString(FStoredSessionsSubKey).c_str());
   if (Element != nullptr)
   {

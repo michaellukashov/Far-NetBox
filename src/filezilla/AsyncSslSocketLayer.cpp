@@ -185,6 +185,7 @@ int CAsyncSslSocketLayer::InitSSL()
 		SSL_load_error_strings();
 		if (!SSL_library_init())
 		{
+			m_sCriticalSection.Unlock();
 			return SSL_FAILURE_INITSSL;
 		}
 	}

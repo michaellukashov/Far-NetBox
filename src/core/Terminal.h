@@ -216,7 +216,7 @@ public:
   TRemoteFileList * CustomReadDirectoryListing(const UnicodeString & Directory, bool UseCache);
   TRemoteFile * ReadFileListing(const UnicodeString & APath);
   void ReadFile(const UnicodeString & AFileName, TRemoteFile *& AFile);
-  bool FileExists(const UnicodeString & AFileName, TRemoteFile ** File = nullptr);
+  bool FileExists(const UnicodeString & AFileName, TRemoteFile ** AFile = nullptr);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& File);
   bool CopyToLocal(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params);

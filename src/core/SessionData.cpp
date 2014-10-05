@@ -125,6 +125,8 @@ void TSessionData::Default()
   SetTcpNoDelay(true);
   SetSendBuf(DefaultSendBuf);
   SetSshSimple(true);
+  FNotUtf = asAuto;
+  FIsWorkspace = false;
   SetHostKey(L"");
   FOverrideCachedHostKey = true;
   SetNote(L"");
@@ -446,12 +448,14 @@ bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly, TStri
   for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FBugs)); ++Index)
   {
     // PROPERTY(Bug[(TSshBug)Index]);
-    if (GetBug(static_cast<TSshBug>(Index)) != Default->GetBug(static_cast<TSshBug>(Index))) return false;
+    if (GetBug(static_cast<TSshBug>(Index)) != Default->GetBug(static_cast<TSshBug>(Index)))
+      return false;
   }
   for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FSFTPBugs)); ++Index)
   {
     // PROPERTY(SFTPBug[(TSftpBug)Index]);
-    if (GetSFTPBug(static_cast<TSftpBug>(Index)) != Default->GetSFTPBug(static_cast<TSftpBug>(Index))) return false;
+    if (GetSFTPBug(static_cast<TSftpBug>(Index)) != Default->GetSFTPBug(static_cast<TSftpBug>(Index)))
+      return false;
   }
 
   return Result;
@@ -694,7 +698,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetFtpAccount(Storage->ReadString(L"FtpAccount", GetFtpAccount()));
   SetFtpPingInterval(Storage->ReadInteger(L"FtpPingInterval", GetFtpPingInterval()));
   SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger(L"FtpPingType", GetFtpPingType())));
-  SetFtpTransferActiveImmediately(Storage->ReadBool(L"FtpTransferActiveImmediatelly", GetFtpTransferActiveImmediately()));
+  SetFtpTransferActiveImmediately(Storage->ReadBool(L"FtpTransferActiveImmediately", GetFtpTransferActiveImmediately()));
   SetFtps(static_cast<TFtps>(Storage->ReadInteger(L"Ftps", GetFtps())));
   SetFtpListAll(static_cast<TAutoSwitch>(Storage->ReadInteger(L"FtpListAll", GetFtpListAll())));
   SetFtpDupFF(Storage->ReadBool(L"FtpDupFF", GetFtpDupFF()));
@@ -1323,7 +1327,7 @@ bool TSessionData::IsProtocolUrl(
 }
 //---------------------------------------------------------------------
 bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
-  TStoredSessionList * StoredSessions, bool & DefaultsOnly, UnicodeString * FileName,
+  TStoredSessionList * StoredSessions, bool & DefaultsOnly, UnicodeString * AFileName,
   bool * AProtocolDefined, UnicodeString * MaskedUrl)
 {
   UnicodeString url = Url;
@@ -1411,7 +1415,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     // by creating stored session named by host)
     TSessionData * Data = nullptr;
     // When using to paste URL on Login dialog, we do not want to lookup the stored sites
-    if (StoredSessions != NULL)
+    if (StoredSessions != nullptr)
     {
       for (Integer Index = 0; Index < StoredSessions->GetCount() + StoredSessions->GetHiddenCount(); ++Index)
       {
@@ -1455,7 +1459,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     else
     {
       // This happens when pasting URL on Login dialog
-      if (StoredSessions != NULL)
+      if (StoredSessions != nullptr)
       {
         Assign(StoredSessions->GetDefaultSettings());
       }
@@ -1574,9 +1578,9 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     if (!ARemoteDirectory.IsEmpty() && (ARemoteDirectory != L"/"))
     {
       if ((ARemoteDirectory[ARemoteDirectory.Length()] != L'/') &&
-          (FileName != nullptr))
+          (AFileName != nullptr))
       {
-        *FileName = DecodeUrlChars(core::UnixExtractFileName(ARemoteDirectory));
+        *AFileName = DecodeUrlChars(core::UnixExtractFileName(ARemoteDirectory));
         ARemoteDirectory = core::UnixExtractFilePath(ARemoteDirectory);
       }
       SetRemoteDirectory(DecodeUrlChars(ARemoteDirectory));
@@ -3852,11 +3856,11 @@ bool TStoredSessionList::HasAnyWorkspace()
 }
 //---------------------------------------------------------------------------
 TSessionData * TStoredSessionList::ParseUrl(const UnicodeString & Url,
-  TOptions * Options, bool & DefaultsOnly, UnicodeString * FileName,
+  TOptions * Options, bool & DefaultsOnly, UnicodeString * AFileName,
   bool * AProtocolDefined, UnicodeString * MaskedUrl)
 {
   std::unique_ptr<TSessionData> Data(new TSessionData(L""));
-  Data->ParseUrl(Url, Options, this, DefaultsOnly, FileName, AProtocolDefined, MaskedUrl);
+  Data->ParseUrl(Url, Options, this, DefaultsOnly, AFileName, AProtocolDefined, MaskedUrl);
 
   return Data.release();
 }

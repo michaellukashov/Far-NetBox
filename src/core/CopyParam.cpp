@@ -124,7 +124,7 @@ void TCopyParamType::DoGetInfoStr(
 
     if (TransferModeDiffers)
     {
-      ADD("", cpaIncludeMaskOnly | cpaNoTransferMode);
+      ADD(L"", cpaIncludeMaskOnly | cpaNoTransferMode);
     }
   }
   else
@@ -244,7 +244,7 @@ void TCopyParamType::DoGetInfoStr(
       cpaNoIncludeMask);
   }
 
-  assert(FTransferSkipList.get() == NULL);
+  assert(FTransferSkipList.get() == nullptr);
   assert(FTransferResumeFile.IsEmpty());
 
   if (GetCPSLimit() > 0)
@@ -488,7 +488,7 @@ UnicodeString TCopyParamType::GetLogStr() const
       int(GetCPSLimit()),
       BooleanToEngStr(GetNewerOnly()).c_str(),
       GetIncludeFileMask().GetMasks().c_str(),
-      ((FTransferSkipList.get() != NULL) ? FTransferSkipList->GetCount() : 0) + (!FTransferResumeFile.IsEmpty() ? 1 : 0),
+      ((FTransferSkipList.get() != nullptr) ? FTransferSkipList->GetCount() : 0) + (!FTransferResumeFile.IsEmpty() ? 1 : 0),
       GetAsciiFileMask().GetMasks().c_str());
 //  return FORMAT(
 //    L"  PrTime: %s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %s; "
@@ -541,7 +541,7 @@ bool TCopyParamType::AllowAnyTransfer() const
 {
   return
     GetIncludeFileMask().GetMasks().IsEmpty() &&
-    ((FTransferSkipList.get() == NULL) || (FTransferSkipList->GetCount() == 0)) &&
+    ((FTransferSkipList.get() == nullptr) || (FTransferSkipList->GetCount() == 0)) &&
     FTransferResumeFile.IsEmpty();
 }
 //---------------------------------------------------------------------------
@@ -561,10 +561,10 @@ bool TCopyParamType::SkipTransfer(
   const UnicodeString & AFileName, bool Directory) const
 {
   bool Result = false;
-  // we deliberatelly do not filter directories, as path is added to resume list
+  // we deliberately do not filter directories, as path is added to resume list
   // when a transfer of file or directory is started,
   // so for directories we need to recurse and check every single file
-  if (!Directory && (FTransferSkipList.get() != NULL))
+  if (!Directory && FTransferSkipList.get() != nullptr)
   {
     Result = (FTransferSkipList->IndexOf(AFileName) >= 0);
   }
@@ -665,7 +665,7 @@ void TCopyParamType::Save(THierarchicalStorage * Storage) const
   Storage->WriteString(L"IncludeFileMask", GetIncludeFileMask().GetMasks());
   Storage->DeleteValue(L"ExcludeFileMask"); // obsolete
   Storage->DeleteValue(L"NegativeExclude"); // obsolete
-  assert(FTransferSkipList.get() == NULL);
+  assert(FTransferSkipList.get() == nullptr);
   assert(FTransferResumeFile.IsEmpty());
   Storage->WriteBool(L"ClearArchive", GetClearArchive());
   Storage->WriteBool(L"RemoveCtrlZ", GetRemoveCtrlZ());

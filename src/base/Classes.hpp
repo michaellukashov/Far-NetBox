@@ -758,7 +758,7 @@ public:
   DelphiSet<T>& AddRange(const T RangeStartValue, const int Count)
   {
     T RangeStartForAdd = RangeStartValue;
-    for (int I = 0; I < Count; ++I)
+    for (int Index = 0; Index < Count; ++Index)
       this->Add(RangeStartForAdd++);
     return *this;
   }
@@ -769,7 +769,7 @@ public:
       throw Sysutils::Exception(FORMAT(L"Start Value %d is greater than End Value %d", RangeStartValue, RangeEndValue));
     int Range = RangeEndValue - RangeStartValue;
     T RangeStartForAdd = RangeStartValue;
-    for (int I = 0; I < Range; ++I)
+    for (int Index = 0; Index < Range; ++Index)
       this->Add(RangeStartForAdd++);
     return *this;
   }
@@ -899,7 +899,7 @@ using namespace Classes;
 class TGlobalFunctionsIntf
 {
 public:
-  virtual ~TGlobalFunctionsIntf() {};
+  virtual ~TGlobalFunctionsIntf() {}
 
   virtual HINSTANCE GetInstanceHandle() const = 0;
   virtual UnicodeString GetCurrDirectory() const = 0;

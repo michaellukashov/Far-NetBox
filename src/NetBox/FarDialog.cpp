@@ -246,7 +246,8 @@ intptr_t TFarDialog::GetItemCount()
 //---------------------------------------------------------------------------
 intptr_t TFarDialog::GetItem(TFarDialogItem * Item) const
 {
-  if (!Item) return -1;
+  if (!Item)
+    return -1;
   return Item->GetItem();
 }
 //---------------------------------------------------------------------------
@@ -422,24 +423,24 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
       // case DN_KEY:
         if (Param1 >= 0)
         {
-          TFarDialogItem * I = GetItem(Param1);
+          TFarDialogItem * Item = GetItem(Param1);
           try
           {
-            Result = I->ItemProc(Msg, Param2);
+            Result = Item->ItemProc(Msg, Param2);
           }
           catch (Sysutils::Exception & E)
           {
             Handled = true;
             DEBUG_PRINTF(L"before GetFarPlugin()->HandleException");
             GetFarPlugin()->HandleException(&E);
-            Result = I->FailItemProc(Msg, Param2);
+            Result = Item->FailItemProc(Msg, Param2);
           }
 
           if (!Result && (Msg == DN_CONTROLINPUT))
           {
-            INPUT_RECORD *Rec = reinterpret_cast<INPUT_RECORD *>(Param2);
+            INPUT_RECORD * Rec = reinterpret_cast<INPUT_RECORD *>(Param2);
             const KEY_EVENT_RECORD &Event = Rec->Event.KeyEvent;
-            Result = Key(I, static_cast<long>(Event.wVirtualKeyCode | (Event.dwControlKeyState << 16)));
+            Result = Key(Item, static_cast<long>(Event.wVirtualKeyCode | (Event.dwControlKeyState << 16)));
           }
           Handled = true;
         }

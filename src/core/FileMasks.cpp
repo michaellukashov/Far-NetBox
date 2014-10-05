@@ -25,7 +25,7 @@ EFileMasksException::EFileMasksException(
 {
 }
 //---------------------------------------------------------------------------
-UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeString & Mask, bool & Masked)
+static UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeString & Mask, bool & Masked)
 {
   UnicodeString Result;
   intptr_t RestStart = 1;
@@ -39,8 +39,8 @@ UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeString & Mas
         {
           Delim = true;
           Masked = true;
-          break;
         }
+        break;
 
       case L'*':
         if (!Delim)
@@ -48,8 +48,8 @@ UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeString & Mas
           Result += Part.SubString(RestStart, Part.Length() - RestStart + 1);
           RestStart = Part.Length() + 1;
           Masked = true;
-          break;
         }
+        break;
 
       case L'?':
         if (!Delim)
@@ -60,8 +60,8 @@ UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeString & Mas
             RestStart++;
           }
           Masked = true;
-          break;
         }
+        break;
 
       default:
         Result += Mask[Index];
@@ -78,11 +78,11 @@ UnicodeString MaskFileName(const UnicodeString & AFileName, const UnicodeString 
   UnicodeString Result = AFileName;
   if (IsEffectiveFileNameMask(Mask))
   {
-    bool Masked;
+    bool Masked = false;
     intptr_t P = Mask.LastDelimiter(L".");
     if (P > 0)
     {
-      intptr_t P2 = Result.LastDelimiter(".");
+      intptr_t P2 = Result.LastDelimiter(L".");
       // only dot at beginning of file name is not considered as
       // name/ext separator
       UnicodeString FileExt = P2 > 1 ?

@@ -1347,7 +1347,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
   }
   catch (Exception & E)
   {
-    throw ETerminal(&E, Sysutils::FmtLoadStr(LIST_LINE_ERROR, Value.c_str()), HELP_LIST_LINE_ERROR);
+    throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, Value.c_str()), HELP_LIST_LINE_ERROR);
   }
 }
 //---------------------------------------------------------------------------

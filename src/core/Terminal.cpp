@@ -69,7 +69,8 @@ void FileOperationLoopCustom(TTerminal * Terminal,
         E, OperationProgress, Message, AllowSkip, L"", HelpKeyword);
       DoRepeat = true;
     }
-  } while (DoRepeat);
+  }
+  while (DoRepeat);
 }
 
 void TTerminal::CommandErrorAri(
@@ -132,7 +133,7 @@ void TTerminal::CommandErrorAriAction(
 
 #define COMMAND_ERROR_ARI_ACTION(MESSAGE, REPEAT, ACTION) \
   CommandErrorAriAction(E, MESSAGE, \
-    [&]() { REPEAT; }, Action)
+    [&]() { REPEAT; }, ACTION)
 
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FileOperationLoopCustom(this, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
@@ -2626,7 +2627,10 @@ void TTerminal::ReadCurrentDirectory()
       FLockDirectory = (GetSessionData()->GetLockInHome() ?
         FFileSystem->GetCurrDirectory() : UnicodeString(L""));
     }
-    /* if (OldDirectory != FFileSystem->GetCurrentDirectory()) */ { DoChangeDirectory(); }
+    // if (OldDirectory != FFileSystem->GetCurrentDirectory())
+    {
+      DoChangeDirectory();
+    }
   }
   catch (Exception & E)
   {
@@ -2703,7 +2707,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     }
     catch (Exception & E)
     {
-      CommandError(&E, FmtLoadStr(LIST_DIR_ERROR, FFiles->GetDirectory().c_str()));
+      CommandError(&E, FMTLOAD(LIST_DIR_ERROR, FFiles->GetDirectory().c_str()));
     }
   }
 }
@@ -2930,7 +2934,7 @@ void TTerminal::ReadDirectory(TRemoteFileList * AFileList)
   }
   catch (Exception & E)
   {
-    CommandError(&E, FmtLoadStr(LIST_DIR_ERROR, AFileList->GetDirectory().c_str()));
+    CommandError(&E, FMTLOAD(LIST_DIR_ERROR, AFileList->GetDirectory().c_str()));
   }
 }
 //------------------------------------------------------------------------------
@@ -4811,7 +4815,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & AFileName,
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
+void TTerminal::DoSynchronizeCollectFile(const UnicodeString & /*AFileName*/,
   const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param)
 {
   TSynchronizeData * Data = NB_STATIC_DOWNCAST(TSynchronizeData, Param);

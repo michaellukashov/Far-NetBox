@@ -335,7 +335,7 @@ public:
   virtual void Assign(const TPersistent * Source);
   bool ParseUrl(const UnicodeString & Url, TOptions * Options,
     TStoredSessionList * StoredSessions, bool & DefaultsOnly,
-    UnicodeString * FileName, bool * AProtocolDefined, UnicodeString * MaskedUrl);
+    UnicodeString * AFileName, bool * AProtocolDefined, UnicodeString * MaskedUrl);
   bool ParseOptions(TOptions * Options);
   void ConfigureTunnel(intptr_t PortNumber);
   void RollbackTunnel();
@@ -646,7 +646,7 @@ public:
   bool IsFolder(const UnicodeString & Name);
   bool IsWorkspace(const UnicodeString & Name);
   TSessionData * ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
-    UnicodeString * FileName = nullptr, bool * ProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr);
+    UnicodeString * AFileName = nullptr, bool * ProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr);
   bool IsUrl(const UnicodeString & Url);
   bool CanLogin(TSessionData * Data);
   void GetFolderOrWorkspace(const UnicodeString & Name, TList * List);

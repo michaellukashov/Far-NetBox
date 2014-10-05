@@ -371,7 +371,7 @@ UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & I
       dt.DecodeTime(H, M, S, MS);
       TempDir += Sysutils::IncludeTrailingBackslash(FORMAT(L"%02d%03d", M, MS));
 #endif
-    };
+    }
   }
   while (!Mask && Sysutils::DirectoryExists(TempDir));
 

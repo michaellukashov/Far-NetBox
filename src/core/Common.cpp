@@ -130,14 +130,23 @@ UnicodeString MakeValidFileName(const UnicodeString & AFileName)
 //---------------------------------------------------------------------------
 UnicodeString RootKeyToStr(HKEY RootKey)
 {
-  if (RootKey == HKEY_USERS) return L"HKEY_USERS";
-  else if (RootKey == HKEY_LOCAL_MACHINE) return L"HKEY_LOCAL_MACHINE";
-  else if (RootKey == HKEY_CURRENT_USER) return L"HKEY_CURRENT_USER";
-  else if (RootKey == HKEY_CLASSES_ROOT) return L"HKEY_CLASSES_ROOT";
-  else if (RootKey == HKEY_CURRENT_CONFIG) return L"HKEY_CURRENT_CONFIG";
-  else if (RootKey == HKEY_DYN_DATA) return L"HKEY_DYN_DATA";
+  if (RootKey == HKEY_USERS)
+    return L"HKEY_USERS";
+  else if (RootKey == HKEY_LOCAL_MACHINE)
+    return L"HKEY_LOCAL_MACHINE";
+  else if (RootKey == HKEY_CURRENT_USER)
+    return L"HKEY_CURRENT_USER";
+  else if (RootKey == HKEY_CLASSES_ROOT)
+    return L"HKEY_CLASSES_ROOT";
+  else if (RootKey == HKEY_CURRENT_CONFIG)
+    return L"HKEY_CURRENT_CONFIG";
+  else if (RootKey == HKEY_DYN_DATA)
+    return L"HKEY_DYN_DATA";
   else
-  {  Abort(); return L""; }
+  {
+    Abort();
+    return L"";
+  }
 }
 //---------------------------------------------------------------------------
 UnicodeString BooleanToEngStr(bool B)
@@ -401,7 +410,8 @@ UnicodeString RemoveInteractiveMsgTag(const UnicodeString & S)
 bool IsNumber(const UnicodeString & Str)
 {
   int64_t Value = 0;
-  if (Str == L"0") return true;
+  if (Str == L"0")
+    return true;
   return TryStrToInt(Str, Value);
 }
 //---------------------------------------------------------------------------
@@ -517,7 +527,7 @@ UnicodeString ValidLocalFileName(
 
     if (IsReservedName(FileName2))
     {
-      intptr_t P = FileName2.Pos(".");
+      intptr_t P = FileName2.Pos(L".");
       if (P == 0)
       {
         P = FileName2.Length() + 1;
@@ -594,8 +604,10 @@ UnicodeString FormatCommand(const UnicodeString & Program, const UnicodeString &
 {
   UnicodeString Result = Program.Trim();
   UnicodeString Params2 = Params.Trim();
-  if (!Params2.IsEmpty()) Params2 = L" " + Params2;
-  if (Result.Pos(L" ")) Result = L"\"" + Result + L"\"";
+  if (!Params2.IsEmpty())
+    Params2 = L" " + Params2;
+  if (Result.Pos(L" "))
+    Result = L"\"" + Result + L"\"";
   return Result + Params2;
 }
 //---------------------------------------------------------------------------
@@ -761,7 +773,7 @@ static intptr_t PathRootLength(const UnicodeString & APath)
   // Now call the API
   LPCTSTR Buffer = PathSkipRoot(Result.c_str());
 
-  return (Buffer != NULL) ? (Buffer - Result.c_str()) : -1;
+  return (Buffer != nullptr) ? (Buffer - Result.c_str()) : -1;
 }
 //---------------------------------------------------------------------------
 static bool PathIsRelative_CorrectedForMicrosoftStupidity(const UnicodeString & APath)
@@ -1215,7 +1227,7 @@ void ProcessLocalDirectory(const UnicodeString & ADirName,
   }
   TSearchRecChecked SearchRec;
 
-  UnicodeString DirName2 = ::IncludeTrailingBackslash(ADirName);
+  UnicodeString DirName2 = ApiPath(::IncludeTrailingBackslash(ADirName));
   if (FindFirstChecked(DirName2 + L"*.*", FindAttrs, SearchRec) == 0)
   {
     SCOPE_EXIT
@@ -1224,13 +1236,14 @@ void ProcessLocalDirectory(const UnicodeString & ADirName,
     };
     do
     {
-      if ((SearchRec.Name != L".") && (SearchRec.Name != L".."))
+      if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
       {
         UnicodeString FileName = DirName2 + SearchRec.Name;
         CallBackFunc(FileName, SearchRec, Param);
       }
 
-    } while (FindNextChecked(SearchRec) == 0);
+    }
+    while (FindNextChecked(SearchRec) == 0);
   }
 }
 //---------------------------------------------------------------------------
@@ -2379,8 +2392,8 @@ bool IsWine()
 {
   HMODULE NtDll = ::GetModuleHandle(L"ntdll.dll");
   return
-    ALWAYS_TRUE(NtDll != NULL) &&
-    (::GetProcAddress(NtDll, "wine_get_version") != NULL);
+    ALWAYS_TRUE(NtDll != nullptr) &&
+    (::GetProcAddress(NtDll, "wine_get_version") != nullptr);
 }
 //---------------------------------------------------------------------------
 LCID GetDefaultLCID()

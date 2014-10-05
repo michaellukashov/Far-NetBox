@@ -130,7 +130,7 @@ public:
   explicit TFileSessionAction(TActionLog * Log, TLogAction Action);
   explicit TFileSessionAction(TActionLog * Log, TLogAction Action, const UnicodeString & AFileName);
 
-  void FileName(const UnicodeString & AFileName);
+  void SetFileName(const UnicodeString & AFileName);
 };
 //---------------------------------------------------------------------------
 class TFileLocationSessionAction : public TFileSessionAction

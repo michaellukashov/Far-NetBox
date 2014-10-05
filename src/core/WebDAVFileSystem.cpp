@@ -11353,7 +11353,8 @@ cleanup_neon_debug_file(
   void * debug_file_baton)
 {
   debug_file_baton_t * baton = static_cast<debug_file_baton_t *>(debug_file_baton);
-  if (baton->file) fclose(baton->file);
+  if (baton->file)
+    fclose(baton->file);
   return APR_SUCCESS;
 }
 #endif
@@ -12807,7 +12808,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
   TUploadSessionAction & Action)
 {
   UnicodeString RealFileName = AFile ? AFile->GetFileName() : AFileName;
-  Action.FileName(ExpandUNCFileName(RealFileName));
+  Action.SetFileName(ExpandUNCFileName(RealFileName));
 
   OperationProgress->SetFile(RealFileName, false);
 
@@ -13136,7 +13137,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 {
   UnicodeString FileNameOnly = core::UnixExtractFileName(AFileName);
 
-  Action.FileName(AFileName);
+  Action.SetFileName(AFileName);
 
   assert(AFile);
   TFileMasks::TParams MaskParams;
