@@ -1,4 +1,4 @@
-NetBox 2.1.39.328 02.10.2014
+NetBox 2.1.39.329 05.10.2014
 --------------------
   * Bugfix: WebDAV: do not try to create existing directory on remote server
     (http://forum.farmanager.com/viewtopic.php?p=122658#p122658)
