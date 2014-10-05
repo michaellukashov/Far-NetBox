@@ -1356,7 +1356,7 @@ void TSCPFileSystem::SpaceAvailable(const UnicodeString & /*APath*/,
 // transfer protocol
 //---------------------------------------------------------------------------
 uintptr_t TSCPFileSystem::ConfirmOverwrite(
-  const UnicodeString & AFullFileName,
+  const UnicodeString & /*AFullFileName*/,
   const UnicodeString & AFileName, TOperationSide Side,
   const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress)
@@ -2250,7 +2250,7 @@ void TSCPFileSystem::SCPSendError(const UnicodeString & Message, bool Fatal)
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
-  const TRemoteFile * AFile,
+  const TRemoteFile * /*AFile*/,
   const UnicodeString & TargetDir,
   const UnicodeString & SourceDir,
   const TCopyParamType * CopyParam, bool & Success,

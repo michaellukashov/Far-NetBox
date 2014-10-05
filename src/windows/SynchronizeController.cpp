@@ -38,7 +38,7 @@ TSynchronizeController::~TSynchronizeController()
 void TSynchronizeController::StartStop(TObject * /*Sender*/,
   bool Start, const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
   TSynchronizeOptions * Options,
-  TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
+  TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent /*OnSynchronizeThreads*/,
   TSynchronizeLogEvent OnSynchronizeLog)
 {
   if (Start)

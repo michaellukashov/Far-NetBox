@@ -1214,7 +1214,7 @@ private:
 TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   const UnicodeString & SessionName, TPromptKind Kind, const UnicodeString & Name,
   const UnicodeString & Instructions, const TStrings * Prompts,
-  bool StoredCredentialsTried) :
+  bool /*StoredCredentialsTried*/) :
   TFarDialog(AFarPlugin),
   FSessionData(nullptr),
   FEdits(new TList()),
@@ -4630,7 +4630,7 @@ private:
 };
 //------------------------------------------------------------------------------
 TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
-  TStrings * FileList, const UnicodeString & Directory,
+  TStrings * FileList, const UnicodeString & /*Directory*/,
   const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
   intptr_t AAllowedChanges) :
   TFarDialog(AFarPlugin),

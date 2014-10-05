@@ -3124,7 +3124,7 @@ void TWinSCPFileSystem::TerminalStartReadDirectory(TObject * /*Sender*/)
 }
 //------------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalReadDirectoryProgress(
-  TObject * /*Sender*/, intptr_t Progress, intptr_t ResolvedLinks, bool & Cancel)
+  TObject * /*Sender*/, intptr_t Progress, intptr_t /*ResolvedLinks*/, bool & Cancel)
 {
   if (Progress < 0)
   {

@@ -4815,7 +4815,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & AFileName,
   }
 }
 //------------------------------------------------------------------------------
-void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
+void TTerminal::DoSynchronizeCollectFile(const UnicodeString & /*AFileName*/,
   const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param)
 {
   TSynchronizeData * Data = NB_STATIC_DOWNCAST(TSynchronizeData, Param);
