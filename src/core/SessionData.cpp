@@ -125,6 +125,8 @@ void TSessionData::Default()
   SetTcpNoDelay(true);
   SetSendBuf(DefaultSendBuf);
   SetSshSimple(true);
+  FNotUtf = asAuto;
+  FIsWorkspace = false;
   SetHostKey(L"");
   FOverrideCachedHostKey = true;
   SetNote(L"");
