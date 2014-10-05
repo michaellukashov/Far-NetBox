@@ -1116,7 +1116,7 @@ private:
 
   uint32_t PeekCardinal() const
   {
-    uint32_t Result;
+    uint32_t Result = 0;
     Need(sizeof(Result));
     Result = GET_32BIT(FData + FPosition);
     return Result;
