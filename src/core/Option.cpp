@@ -83,18 +83,18 @@ void TOptions::Add(const UnicodeString & Value)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TOptions::GetParam(intptr_t Index)
+UnicodeString TOptions::GetParam(intptr_t AIndex)
 {
-  assert((Index >= 1) && (Index <= FParamCount));
+  assert((AIndex >= 1) && (AIndex <= FParamCount));
 
   UnicodeString Result;
   size_t Idx = 0;
-  while ((Idx < FOptions.size()) && (Index > 0))
+  while ((Idx < FOptions.size()) && (AIndex > 0))
   {
     if (FOptions[Idx].Type == otParam)
     {
-      --Index;
-      if (Index == 0)
+      --AIndex;
+      if (AIndex == 0)
       {
         Result = FOptions[Idx].Value;
         FOptions[Idx].Used = true;
