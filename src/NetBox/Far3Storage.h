@@ -6,7 +6,7 @@
 #include "HierarchicalStorage.h"
 #include "PluginSettings.hpp"
 
-//---------------------------------------------------------------------------
+
 class TFar3Storage : public THierarchicalStorage
 {
 public:
@@ -57,4 +57,4 @@ private:
 
   void Init();
 };
-//---------------------------------------------------------------------------
+

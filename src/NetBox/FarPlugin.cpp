@@ -1627,7 +1627,7 @@ __int64 TCustomFarPlugin::GetSystemSetting(HANDLE & Settings, const wchar_t * Na
   }
   return 0;
 }
-//---------------------------------------------------------------------------
+
 __int64 TCustomFarPlugin::FarSystemSettings()
 {
   if (!FValidFarSystemSettings)
@@ -2248,7 +2248,7 @@ void TFarPanelModes::SetFlag(PANELMODE_FLAGS & Flags, bool Value, PANELMODE_FLAG
     Flags &= ~Flag;
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
 {
   if (Mode.ColumnTypes)

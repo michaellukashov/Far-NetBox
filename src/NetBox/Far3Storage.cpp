@@ -6,7 +6,7 @@
 #include "Far3Storage.h"
 #include "TextsCore.h"
 
-//---------------------------------------------------------------------------
+
 TFar3Storage::TFar3Storage(const UnicodeString & AStorage,
   const GUID & Guid, FARAPISETTINGSCONTROL SettingsControl) :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
@@ -14,33 +14,33 @@ TFar3Storage::TFar3Storage(const UnicodeString & AStorage,
 {
   Init();
 }
-//---------------------------------------------------------------------------
+
 void TFar3Storage::Init()
 {
   FRoot = 0;
 }
-//---------------------------------------------------------------------------
+
 TFar3Storage::~TFar3Storage()
 {
 }
-//---------------------------------------------------------------------------
+
 bool TFar3Storage::Copy(TFar3Storage * Storage)
 {
   Classes::Error(SNotImplemented, 3014);
   bool Result = true;
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TFar3Storage::GetSource() const
 {
   return GetStorage();
 }
-//---------------------------------------------------------------------------
+
 void TFar3Storage::SetAccessMode(TStorageAccessMode Value)
 {
   THierarchicalStorage::SetAccessMode(Value);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFar3Storage::OpenSubKeyInternal(intptr_t Root, const UnicodeString & SubKey, bool CanCreate)
 {
   intptr_t NewRoot = 0;
@@ -54,7 +54,7 @@ intptr_t TFar3Storage::OpenSubKeyInternal(intptr_t Root, const UnicodeString & S
   }
   return NewRoot;
 }
-//---------------------------------------------------------------------------
+
 bool TFar3Storage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate)
 {
   intptr_t OldRoot = FRoot;
@@ -77,7 +77,7 @@ bool TFar3Storage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCrea
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TFar3Storage::CloseSubKey()
 {
   THierarchicalStorage::CloseSubKey();
@@ -92,7 +92,7 @@ void TFar3Storage::CloseSubKey()
     FRoot = 0;
   }
 }
-//---------------------------------------------------------------------------
+
 bool TFar3Storage::DeleteSubKey(const UnicodeString & SubKey)
 {
   UnicodeString K;
@@ -108,7 +108,7 @@ bool TFar3Storage::DeleteSubKey(const UnicodeString & SubKey)
   }
   return false;
 }
-//---------------------------------------------------------------------------
+
 void TFar3Storage::GetSubKeyNames(Classes::TStrings * Strings)
 {
   FarSettingsEnum Settings = {sizeof(FarSettingsEnum),0,0,0};
@@ -124,7 +124,7 @@ void TFar3Storage::GetSubKeyNames(Classes::TStrings * Strings)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TFar3Storage::GetValueNames(Classes::TStrings * Strings) const
 {
   Strings->Clear();
@@ -139,12 +139,12 @@ void TFar3Storage::GetValueNames(Classes::TStrings * Strings) const
     }
   }
 }
-//---------------------------------------------------------------------------
+
 bool TFar3Storage::DeleteValue(const UnicodeString & Name)
 {
   return FPluginSettings.DeleteValue(FRoot, Name.c_str());
 }
-//---------------------------------------------------------------------------
+
 bool TFar3Storage::DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi)
 {
   Classes::Error(SNotImplemented, 3011);
@@ -152,24 +152,24 @@ bool TFar3Storage::DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi)
   bool Result = true; // FPluginSettings.KeyExists(K);
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool TFar3Storage::ValueExists(const UnicodeString & Value) const
 {
   bool Result = FPluginSettings.ValueExists(FRoot, Value.c_str());
   return Result;
 }
-//---------------------------------------------------------------------------
+
 size_t TFar3Storage::BinaryDataSize(const UnicodeString & Name)
 {
   size_t Result = FPluginSettings.BinaryDataSize(FRoot, Name.c_str());
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool TFar3Storage::ReadBool(const UnicodeString & Name, bool Default)
 {
   return FPluginSettings.Get(FRoot, Name.c_str(), Default);
 }
-//---------------------------------------------------------------------------
+
 Classes::TDateTime TFar3Storage::ReadDateTime(const UnicodeString & Name, const Classes::TDateTime & Default)
 {
   Classes::TDateTime Result;
@@ -182,7 +182,7 @@ Classes::TDateTime TFar3Storage::ReadDateTime(const UnicodeString & Name, const 
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 double TFar3Storage::ReadFloat(const UnicodeString & Name, double Default)
 {
   double Result = 0.0;
@@ -195,34 +195,34 @@ double TFar3Storage::ReadFloat(const UnicodeString & Name, double Default)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFar3Storage::ReadInteger(const UnicodeString & Name, intptr_t Default)
 {
   return FPluginSettings.Get(FRoot, Name.c_str(), Default);
 }
-//---------------------------------------------------------------------------
+
 __int64 TFar3Storage::ReadInt64(const UnicodeString & Name, __int64 Default)
 {
   return FPluginSettings.Get(FRoot, Name.c_str(), Default);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TFar3Storage::ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default)
 {
   UnicodeString Result = FPluginSettings.Get(FRoot, Name.c_str(), Default.c_str());
   return Result;
 }
-//---------------------------------------------------------------------------
+
 size_t TFar3Storage::ReadBinaryData(const UnicodeString & Name,
   void * Buffer, size_t Size)
 {
   return FPluginSettings.Get(FRoot, Name.c_str(), Buffer, Size);
 }
-//---------------------------------------------------------------------------
+
 void TFar3Storage::WriteBool(const UnicodeString & Name, bool Value)
 {
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
-//---------------------------------------------------------------------------
+
 void TFar3Storage::WriteDateTime(const UnicodeString & Name, const Classes::TDateTime & AValue)
 {
   double Val = AValue.operator double();
@@ -233,7 +233,7 @@ void TFar3Storage::WriteDateTime(const UnicodeString & Name, const Classes::TDat
     // TODO: report error
   }
 }
-//---------------------------------------------------------------------------
+
 void TFar3Storage::WriteFloat(const UnicodeString & Name, double AValue)
 {
   double Val = AValue;
@@ -244,25 +244,25 @@ void TFar3Storage::WriteFloat(const UnicodeString & Name, double AValue)
     // TODO: report error
   }
 }
-//---------------------------------------------------------------------------
+
 void TFar3Storage::WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value)
 {
   FPluginSettings.Set(FRoot, Name.c_str(), Value.c_str());
 }
-//---------------------------------------------------------------------------
+
 void TFar3Storage::WriteInteger(const UnicodeString & Name, intptr_t Value)
 {
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
-//---------------------------------------------------------------------------
+
 void TFar3Storage::WriteInt64(const UnicodeString & Name, __int64 Value)
 {
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
-//---------------------------------------------------------------------------
+
 void TFar3Storage::WriteBinaryData(const UnicodeString & Name,
   const void * Buffer, size_t Size)
 {
   FPluginSettings.Set(FRoot, Name.c_str(), Buffer, Size);
 }
-//---------------------------------------------------------------------------
+

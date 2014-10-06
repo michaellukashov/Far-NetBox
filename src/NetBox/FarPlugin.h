@@ -14,7 +14,7 @@
 #define ALTMASK (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED)
 #define CTRLMASK (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED)
 #define SHIFTMASK (SHIFT_PRESSED)
-//---------------------------------------------------------------------------
+
 class TCustomFarFileSystem;
 class TFarPanelModes;
 class TFarKeyBarTitles;
@@ -80,7 +80,7 @@ enum NetBoxSystemSettings
     // NBSS_AUTOSAVESETUP                  = 0x00000200,
     // NBSS_SCANSYMLINK                    = 0x00000400,
 };
-//---------------------------------------------------------------------------
+
 class TCustomFarPlugin : public Classes::TObject
 {
 friend class TCustomFarFileSystem;

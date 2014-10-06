@@ -23,7 +23,7 @@ enum NetBoxConfirmationsSettings
 	NBCS_EXIT                           = 0x00000200,
 	// NBCS_OVERWRITEDELETEROFILES         = 0x00000400,
 };
-//---------------------------------------------------------------------------
+
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   TGUIConfiguration(),
   FFarPlugin(APlugin),
@@ -203,7 +203,7 @@ __int64 TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t
     }
     return result;
 }
-//---------------------------------------------------------------------------
+
 __int64 TFarConfiguration::GetConfirmationsSetting(HANDLE & Settings, const wchar_t * Name) const
 {
     FarSettingsItem item = {sizeof(FarSettingsItem), FSSF_CONFIRMATIONS, Name, FST_UNKNOWN, {0} };
@@ -214,7 +214,7 @@ __int64 TFarConfiguration::GetConfirmationsSetting(HANDLE & Settings, const wcha
     return 0;
 }
 
-//---------------------------------------------------------------------------
+
 __int64 TFarConfiguration::GetConfirmationsSettings() const
 {
     __int64 result = 0;
@@ -246,7 +246,7 @@ __int64 TFarConfiguration::GetConfirmationsSettings() const
     }
     return result;
 }
-//---------------------------------------------------------------------------
+
 void TFarConfiguration::CacheFarSettings()
 {
   FFarConfirmations = GetConfirmationsSettings();
