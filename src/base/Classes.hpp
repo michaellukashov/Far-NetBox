@@ -893,9 +893,6 @@ public:
 
 } // namespace Classes
 
-using namespace Classes;
-
-
 class TGlobalFunctionsIntf
 {
 public:
