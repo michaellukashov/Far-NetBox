@@ -357,7 +357,7 @@ void TConfiguration::Load()
 void TConfiguration::CopyData(THierarchicalStorage * Source,
   THierarchicalStorage * Target)
 {
-  std::unique_ptr<TStrings > Names(new TStringList());
+  std::unique_ptr<Classes::TStrings > Names(new Classes::TStringList());
   if (Source->OpenSubKey(GetConfigurationSubKey(), false))
   {
     if (Target->OpenSubKey(GetConfigurationSubKey(), true))
@@ -1332,14 +1332,14 @@ void TConfiguration::SetPermanentActionsLogFileName(const UnicodeString & Value)
 }
 
 
-void TShortCuts::Add(const TShortCut & ShortCut)
+void TShortCuts::Add(const Classes::TShortCut & ShortCut)
 {
   FShortCuts.push_back(ShortCut);
 }
 
-bool TShortCuts::Has(const TShortCut & ShortCut) const
+bool TShortCuts::Has(const Classes::TShortCut & ShortCut) const
 {
-  rde::vector<TShortCut>::iterator it = const_cast<TShortCuts *>(this)->FShortCuts.find(ShortCut);
+  rde::vector<Classes::TShortCut>::iterator it = const_cast<TShortCuts *>(this)->FShortCuts.find(ShortCut);
   return (it != FShortCuts.end());
 }
 

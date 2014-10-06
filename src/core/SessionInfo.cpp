@@ -74,7 +74,7 @@ static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
 }
 
 
-class TSessionActionRecord : public TObject
+class TSessionActionRecord : public Classes::TObject
 {
 NB_DECLARE_CLASS(TSessionActionRecord)
 public:
@@ -84,8 +84,8 @@ public:
     FState(Opened),
     FRecursive(false),
     FErrorMessages(nullptr),
-    FNames(new TStringList()),
-    FValues(new TStringList()),
+    FNames(new Classes::TStringList()),
+    FValues(new Classes::TStringList()),
     FFileList(nullptr),
     FFile(nullptr)
   {
@@ -227,7 +227,7 @@ public:
     Parameter(L"permissions", Rights.GetText());
   }
 
-  void Modification(const TDateTime & DateTime)
+  void Modification(const Classes::TDateTime & DateTime)
   {
     Parameter(L"modification", StandardTimestamp(DateTime));
   }
@@ -319,9 +319,9 @@ private:
   TLogAction FAction;
   TState FState;
   bool FRecursive;
-  TStrings * FErrorMessages;
-  TStrings * FNames;
-  TStrings * FValues;
+  Classes::TStrings * FErrorMessages;
+  Classes::TStrings * FNames;
+  Classes::TStrings * FValues;
   TRemoteFileList * FFileList;
   TRemoteFile * FFile;
 };
@@ -470,7 +470,7 @@ void TChmodSessionAction::Rights(const TRights & Rights)
 }
 
 TTouchSessionAction::TTouchSessionAction(
-  TActionLog * Log, const UnicodeString & AFileName, const TDateTime & Modification) :
+  TActionLog * Log, const UnicodeString & AFileName, const Classes::TDateTime & Modification) :
   TFileSessionAction(Log, laTouch, AFileName)
 {
   if (FRecord != nullptr)
@@ -560,7 +560,7 @@ void TStatSessionAction::File(TRemoteFile * AFile)
 
 TSessionInfo::TSessionInfo()
 {
-  LoginTime = Now();
+  LoginTime = Classes::Now();
 }
 
 TFileSystemInfo::TFileSystemInfo()
@@ -670,7 +670,7 @@ void TSessionLog::DoAddToSelf(TLogLineType AType, const UnicodeString & ALine)
       fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
 #else
       uint16_t Y, M, D, H, N, S, MS;
-      TDateTime DateTime = Now();
+      Classes::TDateTime DateTime = Classes::Now();
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
       UnicodeString dt = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ", Y, M, D, H, N, S, MS);
@@ -929,7 +929,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         ADF(L"Local account: %s", UserName);
       }
       uint16_t Y, M, D, H, N, S, MS;
-      TDateTime DateTime = Now();
+      Classes::TDateTime DateTime = Classes::Now();
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
       UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d", D, M, Y, H, N, S);
@@ -1119,7 +1119,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
       {
         intptr_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
-        AddToList(TimeInfo, FORMAT(L"Timezone offset: %dh %dm", (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour)), L";");
+        AddToList(TimeInfo, FORMAT(L"Timezone offset: %dh %dm", (TimeDifferenceMin / Classes::MinsPerHour), (TimeDifferenceMin % Classes::MinsPerHour)), L";");
       }
       ADSTR(TimeInfo);
 
@@ -1176,22 +1176,22 @@ bool TSessionLog::GetLogging() const
   return FLogging;
 }
 
-TNotifyEvent & TSessionLog::GetOnChange()
+Classes::TNotifyEvent & TSessionLog::GetOnChange()
 {
   return TStringList::GetOnChange();
 }
 
-void TSessionLog::SetOnChange(TNotifyEvent Value)
+void TSessionLog::SetOnChange(Classes::TNotifyEvent Value)
 {
   TStringList::SetOnChange(Value);
 }
 
-TNotifyEvent & TSessionLog::GetOnStateChange()
+Classes::TNotifyEvent & TSessionLog::GetOnStateChange()
 {
   return FOnStateChange;
 }
 
-void TSessionLog::SetOnStateChange(TNotifyEvent Value)
+void TSessionLog::SetOnStateChange(Classes::TNotifyEvent Value)
 {
   FOnStateChange = Value;
 }
@@ -1229,7 +1229,7 @@ TActionLog::TActionLog(TSessionUI * UI, TSessionData * SessionData,
   FFile(nullptr),
   FUI(UI),
   FSessionData(SessionData),
-  FPendingActions(new TList()),
+  FPendingActions(new Classes::TList()),
   FClosed(false),
   FInGroup(false),
   FEnabled(true),
@@ -1287,7 +1287,7 @@ void TActionLog::AddIndented(const UnicodeString & Line)
   Add(FIndent + Line);
 }
 
-void TActionLog::AddFailure(TStrings * Messages)
+void TActionLog::AddFailure(Classes::TStrings * Messages)
 {
   AddIndented(L"<failure>");
   AddMessages(L"  ", Messages);
@@ -1296,14 +1296,14 @@ void TActionLog::AddFailure(TStrings * Messages)
 
 void TActionLog::AddFailure(Exception * E)
 {
-  std::unique_ptr<TStrings> Messages(ExceptionToMoreMessages(E));
+  std::unique_ptr<Classes::TStrings> Messages(ExceptionToMoreMessages(E));
   if (Messages.get() != nullptr)
   {
     AddFailure(Messages.get());
   }
 }
 
-void TActionLog::AddMessages(const UnicodeString & Indent, TStrings * Messages)
+void TActionLog::AddMessages(const UnicodeString & Indent, Classes::TStrings * Messages)
 {
   for (intptr_t Index = 0; Index < Messages->GetCount(); ++Index)
   {

@@ -5,12 +5,12 @@
 #include <contnrs.hpp>
 
 class TNamedObjectList;
-class TNamedObject : public TPersistent
+class TNamedObject : public Classes::TPersistent
 {
 NB_DECLARE_CLASS(TNamedObject)
 public:
   explicit TNamedObject(const UnicodeString & AName);
-  explicit TNamedObject() : TPersistent(), FHidden(false) {}
+  explicit TNamedObject() : Classes::TPersistent(), FHidden(false) {}
   virtual ~TNamedObject() {}
 
   bool GetHidden() const { return FHidden; }
@@ -24,7 +24,7 @@ private:
   bool FHidden;
 };
 
-class TNamedObjectList : public TObjectList
+class TNamedObjectList : public Classes::TObjectList
 {
 public:
   intptr_t GetCount() const;
@@ -37,7 +37,7 @@ public:
 
   TNamedObjectList();
 
-  virtual void Notify(void *Ptr, TListNotification Action);
+  virtual void Notify(void *Ptr, Classes::TListNotification Action);
   void AlphaSort();
   virtual TNamedObject * AtObject(intptr_t Index);
   virtual const TNamedObject * AtObject(intptr_t Index) const;

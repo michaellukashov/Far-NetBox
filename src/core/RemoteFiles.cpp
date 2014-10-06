@@ -135,7 +135,7 @@ UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
   }
 }
 
-bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath)
+bool ExtractCommonPath(const Classes::TStrings * AFiles, OUT UnicodeString & APath)
 {
   assert(AFiles->GetCount() > 0);
 
@@ -162,7 +162,7 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath)
   return Result;
 }
 
-bool UnixExtractCommonPath(const TStrings * const AFiles, OUT UnicodeString & APath)
+bool UnixExtractCommonPath(const Classes::TStrings * const AFiles, OUT UnicodeString & APath)
 {
   assert(AFiles->GetCount() > 0);
 
@@ -347,7 +347,7 @@ UnicodeString MinimizeName(const UnicodeString & AFileName, intptr_t MaxLen, boo
   return Result;
 }
 
-UnicodeString MakeFileList(const TStrings * AFileList)
+UnicodeString MakeFileList(const Classes::TStrings * AFileList)
 {
   UnicodeString Result;
   for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
@@ -372,10 +372,10 @@ UnicodeString MakeFileList(const TStrings * AFileList)
 }
 
 // copy from BaseUtils.pas
-TDateTime ReduceDateTimePrecision(const TDateTime & DateTime,
+Classes::TDateTime ReduceDateTimePrecision(const Classes::TDateTime & DateTime,
   TModificationFmt Precision)
 {
-  TDateTime Result = DateTime;
+  Classes::TDateTime Result = DateTime;
   if (Precision == mfNone)
   {
     Result = double(0.0);
@@ -415,7 +415,7 @@ TModificationFmt LessDateTimePrecision(
   return (Precision1 < Precision2) ? Precision1 : Precision2;
 }
 
-UnicodeString UserModificationStr(const TDateTime & DateTime,
+UnicodeString UserModificationStr(const Classes::TDateTime & DateTime,
   TModificationFmt Precision)
 {
   Word Year, Month, Day, Hour, Min, Sec, MSec;
@@ -439,7 +439,7 @@ UnicodeString UserModificationStr(const TDateTime & DateTime,
   return UnicodeString();
 }
 
-UnicodeString ModificationStr(const TDateTime & DateTime,
+UnicodeString ModificationStr(const Classes::TDateTime & DateTime,
   TModificationFmt Precision)
 {
   uint16_t Year, Month, Day, Hour, Min, Sec, MSec;
@@ -996,7 +996,7 @@ bool TRemoteFile::GetBrokenLink() const
   // "!FLinkTo.IsEmpty()" removed because it does not work with SFTP
 }
 
-void TRemoteFile::ShiftTime(const TDateTime & Difference)
+void TRemoteFile::ShiftTime(const Classes::TDateTime & Difference)
 {
   double D = Difference.GetValue();
   if (!Sysutils::IsZero(D) && (FModificationFmt != mfMDY))
@@ -1008,7 +1008,7 @@ void TRemoteFile::ShiftTime(const TDateTime & Difference)
   }
 }
 
-void TRemoteFile::SetModification(const TDateTime & Value)
+void TRemoteFile::SetModification(const Classes::TDateTime & Value)
 {
   if (FModification != Value)
   {
@@ -1215,7 +1215,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           // neither standard, not --full-time format
           if (Month == 0)
           {
-            Abort();
+            Classes::Abort();
           }
           else
           {
@@ -1230,7 +1230,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         }
         if ((Day < 1) || (Day > 31))
         {
-          Abort();
+          Classes::Abort();
         }
 
         // second full-time format
@@ -1240,7 +1240,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           GetCol();
           if (Col.Length() != 8)
           {
-            Abort();
+            Classes::Abort();
           }
           Hour = ToWord(Sysutils::StrToInt64(Col.SubString(1, 2)));
           Min = ToWord(Sysutils::StrToInt64(Col.SubString(4, 2)));
@@ -1275,7 +1275,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             Hour = ToWord(Sysutils::StrToInt64(Col.SubString(1, P - 1)));
             Min = ToWord(Sysutils::StrToInt64(Col.SubString(P + 1, Col.Length() - P)));
             if ((Hour > 23) || (Min > 59))
-              Abort();
+              Classes::Abort();
             // When we don't got year, we assume current year
             // with exception that the date would be in future
             // in this case we assume last year.
@@ -1292,7 +1292,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           {
             Year = ToWord(Sysutils::StrToInt64(Col));
             if (Year > 10000)
-              Abort();
+              Classes::Abort();
             // When we don't got time we assume midnight
             Hour = 0;
             Min = 0;
@@ -1338,7 +1338,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           }
           else
           {
-            Abort();
+            Classes::Abort();
           }
         }
         FFileName = core::UnixExtractFileName(Sysutils::Trim(ListingStr));
@@ -1547,7 +1547,7 @@ void TRemoteFile::SetFullFileName(const UnicodeString & Value)
 
 TRemoteDirectoryFile::TRemoteDirectoryFile() : TRemoteFile()
 {
-  SetModification(TDateTime(0.0));
+  SetModification(Classes::TDateTime(0.0));
   SetModificationFmt(mfNone);
   SetLastAccess(GetModification());
   SetType(L'D');
@@ -1565,7 +1565,7 @@ TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal)
 TRemoteFileList::TRemoteFileList() :
   TObjectList()
 {
-  FTimestamp = Now();
+  FTimestamp = Classes::Now();
   SetOwnsObjects(true);
 }
 
@@ -1589,7 +1589,7 @@ void TRemoteFileList::DuplicateTo(TRemoteFileList * Copy) const
 
 void TRemoteFileList::Reset()
 {
-  FTimestamp = Now();
+  FTimestamp = Classes::Now();
   TObjectList::Clear();
 }
 
@@ -1726,11 +1726,11 @@ bool TRemoteDirectory::GetLoaded() const
   return ((GetTerminal() != nullptr) && GetTerminal()->GetActive() && !GetDirectory().IsEmpty());
 }
 
-TStrings * TRemoteDirectory::GetSelectedFiles() const
+Classes::TStrings * TRemoteDirectory::GetSelectedFiles() const
 {
   if (!FSelectedFiles)
   {
-    FSelectedFiles = new TStringList();
+    FSelectedFiles = new Classes::TStringList();
   }
   else
   {
@@ -1787,7 +1787,7 @@ void TRemoteDirectory::SetIncludeThisDirectory(Boolean Value)
 TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
 {
   SetSorted(true);
-  SetDuplicates(dupError);
+  SetDuplicates(Classes::dupError);
   SetCaseSensitive(true);
 }
 
@@ -1828,7 +1828,7 @@ bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory)
 }
 
 bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
-  const TDateTime & Timestamp)
+  const Classes::TDateTime & Timestamp)
 {
   TGuard Guard(FSection);
 
@@ -2685,7 +2685,7 @@ bool TRemoteProperties::operator !=(const TRemoteProperties & rhp) const
   return !(*this == rhp);
 }
 
-TRemoteProperties TRemoteProperties::CommonProperties(TStrings * FileList)
+TRemoteProperties TRemoteProperties::CommonProperties(Classes::TStrings * FileList)
 {
   // TODO: Modification and LastAccess
   TRemoteProperties CommonProperties;

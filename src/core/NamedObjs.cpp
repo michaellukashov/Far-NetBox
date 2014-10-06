@@ -114,10 +114,10 @@ void TNamedObjectList::AlphaSort()
   Sort(NamedObjectSortProc);
 }
 
-void TNamedObjectList::Notify(void * Ptr, TListNotification Action)
+void TNamedObjectList::Notify(void * Ptr, Classes::TListNotification Action)
 {
   TObjectList::Notify(Ptr, Action);
-  if (AutoSort && (Action == lnAdded))
+  if (AutoSort && (Action == Classes::lnAdded))
   {
     AlphaSort();
   }

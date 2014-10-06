@@ -5,7 +5,7 @@
 #include "FileOperationProgress.h"
 
 class TTerminalItem;
-class TSimpleThread : public TObject
+class TSimpleThread : public Classes::TObject
 {
 NB_DISABLE_COPY(TSimpleThread)
 NB_DECLARE_CLASS(TSimpleThread)
@@ -22,7 +22,7 @@ public:
 
 protected:
   HANDLE FThread;
-  TThreadID FThreadId;
+  Classes::TThreadID FThreadId;
   bool FFinished;
 
   virtual void Execute() = 0;
@@ -122,27 +122,27 @@ protected:
   TTerminal * FTerminal;
   TConfiguration * FConfiguration;
   TSessionData * FSessionData;
-  TList * FItems;
-  TList * FDoneItems;
+  Classes::TList * FItems;
+  Classes::TList * FDoneItems;
   intptr_t FItemsInProcess;
   Sysutils::TCriticalSection FItemsSection;
   intptr_t FFreeTerminals;
-  TList * FTerminals;
-  TList * FForcedItems;
+  Classes::TList * FTerminals;
+  Classes::TList * FForcedItems;
   intptr_t FTemporaryTerminals;
   intptr_t FOverallTerminals;
   intptr_t FTransfersLimit;
   intptr_t FKeepDoneItemsFor;
   bool FEnabled;
-  TDateTime FIdleInterval;
-  TDateTime FLastIdle;
+  Classes::TDateTime FIdleInterval;
+  Classes::TDateTime FLastIdle;
 
 public:
-  inline static TQueueItem * GetItem(TList * List, intptr_t Index);
+  inline static TQueueItem * GetItem(Classes::TList * List, intptr_t Index);
   inline TQueueItem * GetItem(intptr_t Index);
-  void FreeItemsList(TList *& List);
+  void FreeItemsList(Classes::TList *& List);
   void UpdateStatusForList(
-    TTerminalQueueStatus * Status, TList * List, TTerminalQueueStatus * Current);
+    TTerminalQueueStatus * Status, Classes::TList * List, TTerminalQueueStatus * Current);
   bool ItemGetData(TQueueItem * Item, TQueueItemProxy * Proxy);
   bool ItemProcessUserAction(TQueueItem * Item, void * Arg);
   bool ItemMove(TQueueItem * Item, TQueueItem * BeforeItem);
@@ -172,7 +172,7 @@ public:
   void SetIsEmpty(bool Value);
 };
 
-class TQueueItem : public TObject
+class TQueueItem : public Classes::TObject
 {
 friend class TTerminalQueue;
 friend class TTerminalItem;
@@ -184,7 +184,7 @@ public:
     qsPending, qsConnecting, qsProcessing, qsPrompt, qsQuery, qsError,
     qsPaused, qsDone
   };
-  struct TInfo : public TObject
+  struct TInfo : public Classes::TObject
   {
     TFileOperation Operation;
     TOperationSide Side;
@@ -210,7 +210,7 @@ protected:
   TTerminalQueue * FQueue;
   HANDLE FCompleteEvent;
   uintptr_t FCPSLimit;
-  TDateTime FDoneAt;
+  Classes::TDateTime FDoneAt;
 
   explicit TQueueItem();
   virtual ~TQueueItem();
@@ -232,7 +232,7 @@ private:
   void Complete();
 };
 
-class TQueueItemProxy : public TObject
+class TQueueItemProxy : public Classes::TObject
 {
 friend class TQueueItem;
 friend class TTerminalQueueStatus;
@@ -278,7 +278,7 @@ private:
   virtual ~TQueueItemProxy();
 };
 
-class TTerminalQueueStatus : public TObject
+class TTerminalQueueStatus : public Classes::TObject
 {
 friend class TTerminalQueue;
 friend class TQueueItemProxy;
@@ -307,7 +307,7 @@ public:
   TQueueItemProxy * GetItem(intptr_t Index);
 
 private:
-  TList * FList;
+  Classes::TList * FList;
   intptr_t FDoneCount;
   mutable intptr_t FActiveCount;
 };
@@ -330,13 +330,13 @@ class TTransferQueueItem : public TLocatedQueueItem
 NB_DISABLE_COPY(TTransferQueueItem)
 public:
   explicit TTransferQueueItem(TTerminal * Terminal,
-    const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
+    const Classes::TStrings * AFilesToCopy, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side,
     bool SingleFile);
   virtual ~TTransferQueueItem();
 
 protected:
-  TStrings * FFilesToCopy;
+  Classes::TStrings * FFilesToCopy;
   UnicodeString FTargetDir;
   TCopyParamType * FCopyParam;
   intptr_t FParams;
@@ -348,7 +348,7 @@ class TUploadQueueItem : public TTransferQueueItem
 {
 public:
   explicit TUploadQueueItem(TTerminal * Terminal,
-    const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
+    const Classes::TStrings * AFilesToCopy, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile);
   virtual ~TUploadQueueItem() {}
 protected:
@@ -359,7 +359,7 @@ class TDownloadQueueItem : public TTransferQueueItem
 {
 public:
   explicit TDownloadQueueItem(TTerminal * Terminal,
-    const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
+    const Classes::TStrings * AFilesToCopy, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile);
   virtual ~TDownloadQueueItem() {}
 protected:
@@ -381,8 +381,8 @@ public:
   void Cancel();
   void Idle();
 
-  TNotifyEvent & GetOnIdle() { return FOnIdle; }
-  void SetOnIdle(TNotifyEvent Value) { FOnIdle = Value; }
+  Classes::TNotifyEvent & GetOnIdle() { return FOnIdle; }
+  void SetOnIdle(Classes::TNotifyEvent Value) { FOnIdle = Value; }
   bool GetCancelling() const { return FCancel; }
 
 protected:
@@ -396,15 +396,15 @@ private:
   TPromptUserEvent FOnPromptUser;
   TExtendedExceptionEvent FOnShowExtendedException;
   TDisplayBannerEvent FOnDisplayBanner;
-  TNotifyEvent FOnChangeDirectory;
+  Classes::TNotifyEvent FOnChangeDirectory;
   TReadDirectoryEvent FOnReadDirectory;
-  TNotifyEvent FOnStartReadDirectory;
+  Classes::TNotifyEvent FOnStartReadDirectory;
   TReadDirectoryProgressEvent FOnReadDirectoryProgress;
-  TNotifyEvent FOnInitializeLog;
+  Classes::TNotifyEvent FOnInitializeLog;
 
-  TNotifyEvent FOnIdle;
+  Classes::TNotifyEvent FOnIdle;
 
-  TNotifyEvent FAction;
+  Classes::TNotifyEvent FAction;
   HANDLE FActionEvent;
   TUserAction * FUserAction;
 
@@ -418,7 +418,7 @@ private:
   Sysutils::TCriticalSection FSection;
 
   void WaitForUserAction(TUserAction * UserAction);
-  void RunAction(TNotifyEvent Action);
+  void RunAction(Classes::TNotifyEvent Action);
 
   static void SaveException(Sysutils::Exception & E, Sysutils::Exception *& Exception);
   static void Rethrow(Sysutils::Exception *& Exception);
@@ -430,11 +430,11 @@ private:
 
   void TerminalInformation(TTerminal * Terminal, const UnicodeString & Str, bool Status, intptr_t Phase);
   void TerminalQueryUser(TObject * Sender,
-    const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
+    const UnicodeString & AQuery, Classes::TStrings * MoreMessages, uintptr_t Answers,
     const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions,
-    TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
+    Classes::TStrings * Prompts, Classes::TStrings * Results, bool & Result, void * Arg);
   void TerminalShowExtendedException(TTerminal * Terminal,
     Sysutils::Exception * E, void * Arg);
   void TerminalDisplayBanner(TTerminal * Terminal,

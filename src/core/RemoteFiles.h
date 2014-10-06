@@ -26,7 +26,7 @@ class TRights;
 class TRemoteFileList;
 class THierarchicalStorage;
 
-class TRemoteToken : public TObject
+class TRemoteToken : public Classes::TObject
 {
 public:
   TRemoteToken();
@@ -57,7 +57,7 @@ private:
   bool FIDValid;
 };
 
-class TRemoteTokenList : public TObject
+class TRemoteTokenList : public Classes::TObject
 {
 public:
   TRemoteTokenList * Duplicate() const;
@@ -81,7 +81,7 @@ private:
   mutable TIDMap FIDMap;
 };
 
-class TRemoteFile : public TPersistent
+class TRemoteFile : public Classes::TPersistent
 {
 NB_DISABLE_COPY(TRemoteFile)
 NB_DECLARE_CLASS(TRemoteFile)
@@ -92,7 +92,7 @@ public:
   TRemoteFile * GetLinkedFile() const;
   void SetLinkedFile(TRemoteFile * Value);
   UnicodeString GetModificationStr() const;
-  void SetModification(const TDateTime & Value);
+  void SetModification(const Classes::TDateTime & Value);
   void SetListingStr(const UnicodeString & Value);
   UnicodeString GetListingStr() const;
   UnicodeString GetRightsStr() const;
@@ -117,7 +117,7 @@ public:
   virtual ~TRemoteFile();
   TRemoteFile * Duplicate(bool Standalone = true) const;
 
-  void ShiftTime(const TDateTime & Difference);
+  void ShiftTime(const Classes::TDateTime & Difference);
   void Complete();
 
   TRemoteFileList * GetDirectory() const { return FDirectory; }
@@ -132,11 +132,11 @@ public:
   void SetFileGroup(const TRemoteToken & Value);
   UnicodeString GetFileName() const { return FFileName; }
   void SetFileName(const UnicodeString & Value);
-  TDateTime GetModification() const { return FModification; }
+  Classes::TDateTime GetModification() const { return FModification; }
   TModificationFmt GetModificationFmt() const { return FModificationFmt; }
   void SetModificationFmt(TModificationFmt Value) { FModificationFmt = Value; }
-  TDateTime GetLastAccess() const { return FLastAccess; }
-  void SetLastAccess(TDateTime Value) { FLastAccess = Value; }
+  Classes::TDateTime GetLastAccess() const { return FLastAccess; }
+  void SetLastAccess(Classes::TDateTime Value) { FLastAccess = Value; }
   bool GetIsSymLink() const { return FIsSymLink; }
   UnicodeString GetLinkTo() const;
   void SetLinkTo(const UnicodeString & Value);
@@ -156,8 +156,8 @@ private:
   int64_t FSize;
   UnicodeString FFileName;
   int64_t FINodeBlocks;
-  TDateTime FModification;
-  TDateTime FLastAccess;
+  Classes::TDateTime FModification;
+  Classes::TDateTime FLastAccess;
   TRemoteToken FGroup;
   intptr_t FIconIndex;
   Boolean FIsSymLink;
@@ -191,7 +191,7 @@ public:
   virtual ~TRemoteParentDirectory() {}
 };
 
-class TRemoteFileList : public TObjectList
+class TRemoteFileList : public Classes::TObjectList
 {
 friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
@@ -200,7 +200,7 @@ friend class TWebDAVFileSystem;
 NB_DECLARE_CLASS(TRemoteFileList)
 protected:
   UnicodeString FDirectory;
-  TDateTime FTimestamp;
+  Classes::TDateTime FTimestamp;
   TRemoteFile * GetParentDirectory();
 public:
   TRemoteFileList();
@@ -216,7 +216,7 @@ public:
   Boolean GetIsRoot();
   UnicodeString GetParentPath();
   int64_t GetTotalSize();
-  TDateTime GetTimestamp() const { return FTimestamp; }
+  Classes::TDateTime GetTimestamp() const { return FTimestamp; }
 };
 
 class TRemoteDirectory : public TRemoteFileList
@@ -233,7 +233,7 @@ public:
   virtual void Reset();
   TTerminal * GetTerminal() const { return FTerminal; }
   void SetTerminal(TTerminal * Value) { FTerminal = Value; }
-  TStrings * GetSelectedFiles() const;
+  Classes::TStrings * GetSelectedFiles() const;
   Boolean GetIncludeParentDirectory() const { return FIncludeParentDirectory; }
   void SetIncludeParentDirectory(Boolean Value);
   Boolean GetIncludeThisDirectory() const { return FIncludeThisDirectory; }
@@ -248,12 +248,12 @@ private:
   Boolean FIncludeParentDirectory;
   Boolean FIncludeThisDirectory;
   TTerminal * FTerminal;
-  mutable TStrings * FSelectedFiles;
+  mutable Classes::TStrings * FSelectedFiles;
   TRemoteFile * FParentDirectory;
   TRemoteFile * FThisDirectory;
 };
 
-class TRemoteDirectoryCache : private TStringList
+class TRemoteDirectoryCache : private Classes::TStringList
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 NB_DISABLE_COPY(TRemoteDirectoryCache)
@@ -261,7 +261,7 @@ public:
   TRemoteDirectoryCache();
   virtual ~TRemoteDirectoryCache();
   bool HasFileList(const UnicodeString & Directory);
-  bool HasNewerFileList(const UnicodeString & Directory, const TDateTime & Timestamp);
+  bool HasNewerFileList(const UnicodeString & Directory, const Classes::TDateTime & Timestamp);
   bool GetFileList(const UnicodeString & Directory,
     TRemoteFileList * FileList);
   void AddFileList(TRemoteFileList * FileList);
@@ -277,7 +277,7 @@ private:
   void DoClearFileList(const UnicodeString & Directory, bool SubDirs);
 };
 
-class TRemoteDirectoryChangesCache : private TStringList
+class TRemoteDirectoryChangesCache : private Classes::TStringList
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
@@ -306,7 +306,7 @@ private:
   intptr_t FMaxSize;
 };
 
-class TRights : public TObject
+class TRights : public Classes::TObject
 {
 public:
   static const intptr_t TextLen = 9;
@@ -412,7 +412,7 @@ enum TValidProperty
 };
 // FIXME
 // typedef Set<TValidProperty, vpRights, vpLastAccess> TValidProperties;
-class TValidProperties : public TObject
+class TValidProperties : public Classes::TObject
 {
 public:
   TValidProperties() :
@@ -454,7 +454,7 @@ private:
   int64_t FValue;
 };
 
-class TRemoteProperties : public TObject
+class TRemoteProperties : public Classes::TObject
 {
 NB_DECLARE_CLASS(TRemoteProperties)
 public:
@@ -475,7 +475,7 @@ public:
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
 
-  static TRemoteProperties CommonProperties(TStrings * FileList);
+  static TRemoteProperties CommonProperties(Classes::TStrings * FileList);
   static TRemoteProperties ChangedProperties(const TRemoteProperties & OriginalProperties, TRemoteProperties & NewProperties);
 
 public:
@@ -495,8 +495,8 @@ UnicodeString UnixExtractFileName(const UnicodeString & APath);
 UnicodeString UnixExtractFileExt(const UnicodeString & APath);
 Boolean UnixSamePath(const UnicodeString & APath1, const UnicodeString & APath2);
 bool UnixIsChildPath(const UnicodeString & Parent, const UnicodeString & Child);
-bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
-bool UnixExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
+bool ExtractCommonPath(const Classes::TStrings * AFiles, OUT UnicodeString & APath);
+bool UnixExtractCommonPath(const Classes::TStrings * AFiles, OUT UnicodeString & APath);
 UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix);
 bool IsUnixRootPath(const UnicodeString & APath);
 bool IsUnixHiddenFile(const UnicodeString & APath);
@@ -504,12 +504,12 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & APa
 UnicodeString FromUnixPath(const UnicodeString & APath);
 UnicodeString ToUnixPath(const UnicodeString & APath);
 UnicodeString MinimizeName(const UnicodeString & AFileName, intptr_t MaxLen, bool Unix);
-UnicodeString MakeFileList(const TStrings * AFileList);
-TDateTime ReduceDateTimePrecision(const TDateTime & DateTime,
+UnicodeString MakeFileList(const Classes::TStrings * AFileList);
+Classes::TDateTime ReduceDateTimePrecision(const Classes::TDateTime & DateTime,
   TModificationFmt Precision);
 TModificationFmt LessDateTimePrecision(
   TModificationFmt Precision1, TModificationFmt Precision2);
-UnicodeString UserModificationStr(const TDateTime & DateTime,
+UnicodeString UserModificationStr(const Classes::TDateTime & DateTime,
   TModificationFmt Precision);
 UnicodeString ModificationStr(const Classes::TDateTime & DateTime,
   TModificationFmt Precision);

@@ -11,10 +11,10 @@
 TBookmarks::TBookmarks() : TObject()
 {
   FSharedKey = TNamedObjectList::HiddenPrefix + L"shared";
-  FBookmarkLists = new TStringList();
+  FBookmarkLists = new Classes::TStringList();
   FBookmarkLists->SetSorted(true);
   FBookmarkLists->SetCaseSensitive(false);
-  FBookmarkLists->SetDuplicates(dupError);
+  FBookmarkLists->SetDuplicates(Classes::dupError);
 }
 
 TBookmarks::~TBookmarks()
@@ -41,7 +41,7 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
   {
     if (Storage->OpenSubKey(Keys[Index], false))
     {
-      std::unique_ptr<TStrings> BookmarkKeys(new TStringList());
+      std::unique_ptr<Classes::TStrings> BookmarkKeys(new Classes::TStringList());
       Storage->GetSubKeyNames(BookmarkKeys.get());
       for (intptr_t Index = 0; Index < BookmarkKeys->GetCount(); ++Index)
       {
@@ -75,11 +75,11 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
 void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
   intptr_t AIndex, TBookmarkList * BookmarkList)
 {
-  std::unique_ptr<TStrings> Names(new TStringList());
+  std::unique_ptr<Classes::TStrings> Names(new Classes::TStringList());
   Storage->GetValueNames(Names.get());
   UnicodeString Name;
   UnicodeString Directory;
-  TShortCut ShortCut(0);
+  Classes::TShortCut ShortCut(0);
   for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
   {
     Name = Names->GetString(Index);
@@ -91,7 +91,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString &
     else
     {
       Directory = L""; // use only in case of malformed config
-      ShortCut = static_cast<TShortCut>(Storage->ReadInteger(Name, 0));
+      ShortCut = static_cast<Classes::TShortCut>(Storage->ReadInteger(Name, 0));
     }
     if (Name.ToInt() > 0)
     {
@@ -265,9 +265,9 @@ void TBookmarks::SetSharedBookmarks(TBookmarkList * Value)
 TBookmarkList::TBookmarkList(): TPersistent()
 {
   FModified = false;
-  FBookmarks = new TStringList();
+  FBookmarks = new Classes::TStringList();
   FBookmarks->SetCaseSensitive(false);
-  FOpenedNodes = new TStringList();
+  FOpenedNodes = new Classes::TStringList();
   FOpenedNodes->SetCaseSensitive(false);
   FOpenedNodes->SetSorted(true);
 }
@@ -406,7 +406,7 @@ TBookmark * TBookmarkList::FindByName(const UnicodeString & Node, const UnicodeS
   return Bookmark;
 }
 
-TBookmark * TBookmarkList::FindByShortCut(TShortCut ShortCut)
+TBookmark * TBookmarkList::FindByShortCut(Classes::TShortCut ShortCut)
 {
   for (intptr_t Index = 0; Index < FBookmarks->GetCount(); ++Index)
   {
@@ -534,7 +534,7 @@ void TBookmark::SetNode(const UnicodeString & Value)
   }
 }
 
-void TBookmark::SetShortCut(TShortCut Value)
+void TBookmark::SetShortCut(Classes::TShortCut Value)
 {
   if (GetShortCut() != Value)
   {

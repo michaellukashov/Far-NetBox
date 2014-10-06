@@ -11,7 +11,7 @@ using namespace Sysutils;
 
 class TBackgroundTerminal;
 
-class TUserAction : public TObject
+class TUserAction : public Classes::TObject
 {
 NB_DISABLE_COPY(TUserAction)
 public:
@@ -25,7 +25,7 @@ class TNotifyAction : public TUserAction
 {
 NB_DISABLE_COPY(TNotifyAction)
 public:
-  explicit TNotifyAction(TNotifyEvent AOnNotify) :
+  explicit TNotifyAction(Classes::TNotifyEvent AOnNotify) :
     OnNotify(AOnNotify),
     Sender(nullptr)
   {
@@ -39,8 +39,8 @@ public:
     }
   }
 
-  TNotifyEvent OnNotify;
-  TObject * Sender;
+  Classes::TNotifyEvent OnNotify;
+  Classes::TObject * Sender;
 };
 
 class TInformationUserAction : public TUserAction
@@ -101,9 +101,9 @@ public:
   }
 
   TQueryUserEvent OnQueryUser;
-  TObject * Sender;
+  Classes::TObject * Sender;
   UnicodeString Query;
-  TStrings * MoreMessages;
+  Classes::TStrings * MoreMessages;
   uintptr_t Answers;
   const TQueryParams * Params;
   uintptr_t Answer;
@@ -119,7 +119,7 @@ public:
     Terminal(nullptr),
     Kind(pkPrompt),
     Prompts(nullptr),
-    Results(new TStringList()),
+    Results(new Classes::TStringList()),
     Result(false)
   {
   }
@@ -142,8 +142,8 @@ public:
   TPromptKind Kind;
   UnicodeString Name;
   UnicodeString Instructions;
-  TStrings * Prompts;
-  TStrings * Results;
+  Classes::TStrings * Prompts;
+  Classes::TStrings * Results;
   bool Result;
 };
 
@@ -284,11 +284,11 @@ protected:
   bool OverrideItemStatus(TQueueItem::TStatus & ItemStatus);
 
   void TerminalQueryUser(TObject * Sender,
-    const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
+    const UnicodeString & AQuery, Classes::TStrings * MoreMessages, uintptr_t Answers,
     const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions,
-    TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
+    Classes::TStrings * Prompts, Classes::TStrings * Results, bool & Result, void * Arg);
   void TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
   void OperationFinished(TFileOperation Operation, TOperationSide Side,
@@ -462,8 +462,8 @@ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   TConfiguration * Configuration) :
   TSignalThread(),
   FTerminal(Terminal), FConfiguration(Configuration), FSessionData(new TSessionData(L"")),
-  FItems(new TList()), FDoneItems(new TList()), FItemsInProcess(0),
-  FFreeTerminals(0), FTerminals(new TList()), FForcedItems(new TList()), FTemporaryTerminals(0),
+  FItems(new Classes::TList()), FDoneItems(new Classes::TList()), FItemsInProcess(0),
+  FFreeTerminals(0), FTerminals(new Classes::TList()), FForcedItems(new Classes::TList()), FTemporaryTerminals(0),
   FOverallTerminals(0), FTransfersLimit(2), FKeepDoneItemsFor(0), FEnabled(true)
 {
 }
@@ -477,7 +477,7 @@ void TTerminalQueue::Init()
   FOnQueueItemUpdate = nullptr;
   FOnListUpdate = nullptr;
   FOnEvent = nullptr;
-  FLastIdle = Now();
+  FLastIdle = Classes::Now();
   FIdleInterval = EncodeTimeVerbose(0, 0, 2, 0);
 
   assert(FTerminal != nullptr);
@@ -511,7 +511,7 @@ TTerminalQueue::~TTerminalQueue()
   SAFE_DESTROY(FSessionData);
 }
 
-void TTerminalQueue::FreeItemsList(TList *& List)
+void TTerminalQueue::FreeItemsList(Classes::TList *& List)
 {
   for (intptr_t Index = 0; Index < List->GetCount(); ++Index)
   {
@@ -672,7 +672,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
   }
 }
 
-TQueueItem * TTerminalQueue::GetItem(TList * List, intptr_t Index)
+TQueueItem * TTerminalQueue::GetItem(Classes::TList * List, intptr_t Index)
 {
   return NB_STATIC_DOWNCAST(TQueueItem, List->GetItem(Index));
 }
@@ -683,7 +683,7 @@ TQueueItem * TTerminalQueue::GetItem(intptr_t Index)
 }
 
 void TTerminalQueue::UpdateStatusForList(
-  TTerminalQueueStatus * Status, TList * List, TTerminalQueueStatus * Current)
+  TTerminalQueueStatus * Status, Classes::TList * List, TTerminalQueueStatus * Current)
 {
   for (intptr_t Index = 0; Index < List->GetCount(); ++Index)
   {
@@ -973,7 +973,7 @@ bool TTerminalQueue::ItemGetCPSLimit(TQueueItem * Item, uintptr_t & CPSLimit) co
 
 void TTerminalQueue::Idle()
 {
-  TDateTime N = Now();
+  Classes::TDateTime N = Classes::Now();
   if (N - FLastIdle > FIdleInterval)
   {
     FLastIdle = N;
@@ -1022,7 +1022,7 @@ void TTerminalQueue::ProcessEvent()
       // <0  infinity
       if (FKeepDoneItemsFor >= 0)
       {
-        TDateTime RemoveDoneItemsBefore = Now();
+        Classes::TDateTime RemoveDoneItemsBefore = Classes::Now();
         if (FKeepDoneItemsFor > 0)
         {
           RemoveDoneItemsBefore = IncSecond(RemoveDoneItemsBefore, -FKeepDoneItemsFor);
@@ -1430,7 +1430,7 @@ void TTerminalItem::Finished()
 }
 
 void TTerminalItem::TerminalQueryUser(TObject * Sender,
-  const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
+  const UnicodeString & AQuery, Classes::TStrings * MoreMessages, uintptr_t Answers,
   const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg)
 {
   // so far query without queue item can occur only for key confirmation
@@ -1463,8 +1463,8 @@ void TTerminalItem::TerminalQueryUser(TObject * Sender,
 }
 
 void TTerminalItem::TerminalPromptUser(TTerminal * Terminal,
-  TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
-  TStrings * Results, bool & Result, void * Arg)
+  TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, Classes::TStrings * Prompts,
+  Classes::TStrings * Results, bool & Result, void * Arg)
 {
   if (FItem == nullptr)
   {
@@ -1620,7 +1620,7 @@ void TQueueItem::SetStatus(TStatus Status)
     FStatus = Status;
     if (FStatus == qsDone)
     {
-      FDoneAt = Now();
+      FDoneAt = Classes::Now();
     }
   }
 
@@ -1847,7 +1847,7 @@ intptr_t TQueueItemProxy::GetIndex()
 // TTerminalQueueStatus
 
 TTerminalQueueStatus::TTerminalQueueStatus() :
-  FList(new TList()),
+  FList(new Classes::TList()),
   FDoneCount(0),
   FActiveCount(0)
 {
@@ -1969,10 +1969,10 @@ void TLocatedQueueItem::DoExecute(TTerminal * Terminal)
 // TTransferQueueItem
 
 TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
-  const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
+  const Classes::TStrings * AFilesToCopy, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side,
   bool SingleFile) :
-  TLocatedQueueItem(Terminal), FFilesToCopy(new TStringList()), FCopyParam(nullptr)
+  TLocatedQueueItem(Terminal), FFilesToCopy(new Classes::TStringList()), FCopyParam(nullptr)
 {
   FInfo->Operation = (Params & cpDelete ? foMove : foCopy);
   FInfo->Side = Side;
@@ -2013,7 +2013,7 @@ uintptr_t TTransferQueueItem::DefaultCPSLimit() const
 // TUploadQueueItem
 
 TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
-  const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
+  const Classes::TStrings * AFilesToCopy, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile) :
   TTransferQueueItem(Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osLocal, SingleFile)
 {
@@ -2065,7 +2065,7 @@ void TUploadQueueItem::DoExecute(TTerminal * Terminal)
 // TDownloadQueueItem
 
 TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
-  const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
+  const Classes::TStrings * AFilesToCopy, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile) :
   TTransferQueueItem(Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osRemote, SingleFile)
 {
@@ -2221,7 +2221,7 @@ void TTerminalThread::TerminalReopen()
   RunAction(MAKE_CALLBACK(TTerminalThread::TerminalReopenEvent, this));
 }
 
-void TTerminalThread::RunAction(TNotifyEvent Action)
+void TTerminalThread::RunAction(Classes::TNotifyEvent Action)
 {
   assert(FAction == nullptr);
   assert(FException == nullptr);
@@ -2465,7 +2465,7 @@ void TTerminalThread::TerminalInformation(
 }
 
 void TTerminalThread::TerminalQueryUser(TObject * Sender,
-  const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
+  const UnicodeString & AQuery, Classes::TStrings * MoreMessages, uintptr_t Answers,
   const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg)
 {
   USEDPARAM(Arg);
@@ -2508,8 +2508,8 @@ void TTerminalThread::TerminalInitializeLog(TObject * Sender)
 }
 
 void TTerminalThread::TerminalPromptUser(TTerminal * Terminal,
-  TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
-  TStrings * Results, bool & Result, void * Arg)
+  TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, Classes::TStrings * Prompts,
+  Classes::TStrings * Results, bool & Result, void * Arg)
 {
   USEDPARAM(Arg);
   assert(Arg == nullptr);

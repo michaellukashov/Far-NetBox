@@ -101,7 +101,7 @@ UnicodeString UnMungeIniName(const UnicodeString & Str)
 
 THierarchicalStorage::THierarchicalStorage(const UnicodeString & AStorage) :
   FStorage(AStorage),
-  FKeyHistory(new TStringList())
+  FKeyHistory(new Classes::TStringList())
 {
   SetAccessMode(smRead);
   SetExplicit(false);
@@ -206,7 +206,7 @@ void THierarchicalStorage::CloseSubKey()
 
 void THierarchicalStorage::ClearSubKeys()
 {
-  std::unique_ptr<TStringList> SubKeys(new TStringList());
+  std::unique_ptr<Classes::TStringList> SubKeys(new Classes::TStringList());
   GetSubKeyNames(SubKeys.get());
   for (intptr_t Index = 0; Index < SubKeys->GetCount(); ++Index)
   {
@@ -226,7 +226,7 @@ void THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString & Key)
 
 bool THierarchicalStorage::HasSubKeys()
 {
-  std::unique_ptr<TStrings> SubKeys(new TStringList());
+  std::unique_ptr<Classes::TStrings> SubKeys(new Classes::TStringList());
   GetSubKeyNames(SubKeys.get());
   bool Result = SubKeys->GetCount() > 0;
   return Result;
@@ -250,7 +250,7 @@ bool THierarchicalStorage::KeyExists(const UnicodeString & SubKey)
 void THierarchicalStorage::ReadValues(Classes::TStrings * Strings,
   bool MaintainKeys)
 {
-  std::unique_ptr<TStrings> Names(new TStringList());
+  std::unique_ptr<Classes::TStrings> Names(new Classes::TStringList());
   GetValueNames(Names.get());
   for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
   {
@@ -268,7 +268,7 @@ void THierarchicalStorage::ReadValues(Classes::TStrings * Strings,
 
 void THierarchicalStorage::ClearValues()
 {
-  std::unique_ptr<TStrings> Names(new TStringList());
+  std::unique_ptr<Classes::TStrings> Names(new Classes::TStringList());
   GetValueNames(Names.get());
   for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
   {
@@ -405,7 +405,7 @@ TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey
 void TRegistryStorage::Init()
 {
   FFailed = 0;
-  FRegistry = new TRegistry();
+  FRegistry = new Classes::TRegistry();
   FRegistry->SetAccess(KEY_READ);
 }
 
@@ -416,9 +416,9 @@ TRegistryStorage::~TRegistryStorage()
 
 bool TRegistryStorage::Copy(TRegistryStorage * Storage)
 {
-  TRegistry * Registry = Storage->FRegistry;
+  Classes::TRegistry * Registry = Storage->FRegistry;
   bool Result = true;
-  std::unique_ptr<TStrings> Names(new TStringList());
+  std::unique_ptr<Classes::TStrings> Names(new Classes::TStringList());
   rde::vector<uint8_t> Buffer(1024);
   Registry->GetValueNames(Names.get());
   intptr_t Index = 0;
@@ -550,7 +550,7 @@ bool TRegistryStorage::ReadBool(const UnicodeString & Name, bool Default)
   READ_REGISTRY(ReadBool);
 }
 
-TDateTime TRegistryStorage::ReadDateTime(const UnicodeString & Name, const TDateTime & Default)
+Classes::TDateTime TRegistryStorage::ReadDateTime(const UnicodeString & Name, const Classes::TDateTime & Default)
 {
   READ_REGISTRY(ReadDateTime);
 }
@@ -615,7 +615,7 @@ void TRegistryStorage::WriteBool(const UnicodeString & Name, bool Value)
   WRITE_REGISTRY(WriteBool);
 }
 
-void TRegistryStorage::WriteDateTime(const UnicodeString & Name, const TDateTime & Value)
+void TRegistryStorage::WriteDateTime(const UnicodeString & Name, const Classes::TDateTime & Value)
 {
   WRITE_REGISTRY(WriteDateTime);
 }

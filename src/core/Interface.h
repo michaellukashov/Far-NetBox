@@ -10,7 +10,7 @@
 TConfiguration * CreateConfiguration();
 
 void ShowExtendedException(Sysutils::Exception * E);
-bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
+bool AppendExceptionStackTraceAndForget(Classes::TStrings *& MoreMessages);
 
 UnicodeString GetRegistryKey();
 void * BusyStart();
@@ -20,7 +20,7 @@ UnicodeString SshVersionString();
 void CopyToClipboard(const UnicodeString & Text);
 HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
   /* TThreadFunc ThreadFunc, */ void * Parameter, DWORD CreationFlags,
-  TThreadID & ThreadId);
+  Classes::TThreadID & ThreadId);
 
 // Order of the values also define order of the buttons/answers on the prompts
 // MessageDlg relies on these to be <= 0x0000FFFF
@@ -49,16 +49,16 @@ const int qpNeverAskAgainCheck   = 0x02;
 const int qpAllowContinueOnError = 0x04;
 const int qpIgnoreAbort          = 0x08;
 
-struct TQueryButtonAlias : public TObject
+struct TQueryButtonAlias : public Classes::TObject
 {
   TQueryButtonAlias();
 
   uintptr_t Button;
   UnicodeString Alias;
-  TNotifyEvent OnClick;
+  Classes::TNotifyEvent OnClick;
   int GroupWith;
   bool Default;
-  TShiftState GrouppedShiftState;
+  Classes::TShiftState GrouppedShiftState;
 };
 
 DEFINE_CALLBACK_TYPE1(TQueryParamsTimerEvent, void,
@@ -71,7 +71,7 @@ enum TQueryType
   qtInformation
 };
 
-struct TQueryParams : public TObject
+struct TQueryParams : public Classes::TObject
 {
   explicit TQueryParams(uintptr_t AParams = 0, const UnicodeString & AHelpKeyword = HELP_NONE);
   explicit TQueryParams(const TQueryParams & Source);
@@ -118,8 +118,8 @@ enum TPromptUserParam
 };
 
 bool IsAuthenticationPrompt(TPromptKind Kind);
-bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts);
-bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
+bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, Classes::TStrings * Prompts);
+bool IsPasswordPrompt(TPromptKind Kind, Classes::TStrings * Prompts);
 
 DEFINE_CALLBACK_TYPE4(TFileFoundEvent, void,
   TTerminal * /* Terminal */, const UnicodeString & /* FileName */, const TRemoteFile * /* File */,
@@ -145,7 +145,7 @@ public:
   ~TInstantOperationVisualizer();
 
 private:
-  TDateTime FStart;
+  Classes::TDateTime FStart;
 };
 
 struct TClipboardHandler
@@ -154,7 +154,7 @@ NB_DECLARE_CLASS(TClipboardHandler)
 public:
   UnicodeString Text;
 
-  void Copy(TObject * /*Sender*/)
+  void Copy(Classes::TObject * /*Sender*/)
   {
     TInstantOperationVisualizer Visualizer;
     CopyToClipboard(Text);

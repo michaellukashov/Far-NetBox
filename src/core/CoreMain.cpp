@@ -112,7 +112,7 @@ bool IsAuthenticationPrompt(TPromptKind Kind)
     (Kind == pkPassword) || (Kind == pkNewPassword);
 }
 
-bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
+bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, Classes::TStrings * Prompts)
 {
   return
     (Prompts->GetCount() == 1) && FLAGCLEAR(intptr_t(Prompts->GetObject(0)), pupEcho) &&
@@ -120,7 +120,7 @@ bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
      (Kind == pkTIS) || (Kind == pkCryptoCard));
 }
 
-bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
+bool IsPasswordPrompt(TPromptKind Kind, Classes::TStrings * Prompts)
 {
   return
     IsPasswordOrPassphrasePrompt(Kind, Prompts) &&
@@ -211,13 +211,13 @@ TOperationVisualizer::~TOperationVisualizer()
 
 TInstantOperationVisualizer::TInstantOperationVisualizer() :
   TOperationVisualizer(true),
-  FStart(Now())
+  FStart(Classes::Now())
 {
 }
 
 TInstantOperationVisualizer::~TInstantOperationVisualizer()
 {
-  TDateTime Time = Now();
+  Classes::TDateTime Time = Classes::Now();
   int64_t Duration = MilliSecondsBetween(Time, FStart);
   const int64_t MinDuration = 250;
   if (Duration < MinDuration)

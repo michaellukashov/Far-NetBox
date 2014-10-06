@@ -144,7 +144,7 @@ UnicodeString RootKeyToStr(HKEY RootKey)
     return L"HKEY_DYN_DATA";
   else
   {
-    Abort();
+    Classes::Abort();
     return L"";
   }
 }
@@ -298,7 +298,7 @@ UnicodeString ExceptionLogString(Exception * E)
     Msg = FORMAT(L"%s", UnicodeString(E->what()).c_str());
     if (NB_STATIC_DOWNCAST(ExtException, E) != nullptr)
     {
-      TStrings * MoreMessages = NB_STATIC_DOWNCAST(ExtException, E)->GetMoreMessages();
+      Classes::TStrings * MoreMessages = NB_STATIC_DOWNCAST(ExtException, E)->GetMoreMessages();
       if (MoreMessages)
       {
         Msg += L"\n" +
@@ -1247,9 +1247,9 @@ void ProcessLocalDirectory(const UnicodeString & ADirName,
   }
 }
 
-TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)
+Classes::TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)
 {
-  TDateTime Result;
+  Classes::TDateTime Result;
   try
   {
     Result = EncodeDate(Year, Month, Day);
@@ -1261,9 +1261,9 @@ TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)
   return Result;
 }
 
-TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
+Classes::TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
 {
-  TDateTime Result;
+  Classes::TDateTime Result;
   try
   {
     Result = EncodeTime(Hour, Min, Sec, MSec);
@@ -1275,11 +1275,11 @@ TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
   return Result;
 }
 
-TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime)
+Classes::TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime)
 {
   try
   {
-    TDateTime DateTime = SystemTimeToDateTime(SystemTime);
+    Classes::TDateTime DateTime = SystemTimeToDateTime(SystemTime);
     return DateTime;
   }
   catch (EConvertError & E)
@@ -1288,9 +1288,9 @@ TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime)
   }
 }
 
-struct TDateTimeParams : public TObject
+struct TDateTimeParams : public Classes::TObject
 {
-  TDateTime UnixEpoch;
+  Classes::TDateTime UnixEpoch;
   double BaseDifference;
   intptr_t BaseDifferenceSec;
   // All Current* are actually global, not per-year
@@ -1305,8 +1305,8 @@ struct TDateTimeParams : public TObject
   intptr_t DaylightDifferenceSec;
   SYSTEMTIME SystemStandardDate;
   SYSTEMTIME SystemDaylightDate;
-  TDateTime StandardDate;
-  TDateTime DaylightDate;
+  Classes::TDateTime StandardDate;
+  Classes::TDateTime DaylightDate;
   UnicodeString StandardName;
   UnicodeString DaylightName;
   // This is actually global, not per-year
@@ -1332,9 +1332,9 @@ typedef rde::map<int, TDateTimeParams> TYearlyDateTimeParams;
 static TYearlyDateTimeParams YearlyDateTimeParams;
 static TCriticalSection DateTimeParamsSection;
 static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
-  TDateTime & Result);
+  Classes::TDateTime & Result);
 
-static uint16_t DecodeYear(const TDateTime & DateTime)
+static uint16_t DecodeYear(const Classes::TDateTime & DateTime)
 {
   uint16_t Year, Month, Day;
   DecodeDate(DateTime, Year, Month, Day);
@@ -1360,7 +1360,7 @@ static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
 
     uint32_t GTZI;
 
-    HINSTANCE Kernel32 = ::GetModuleHandle(kernel32.c_str());
+    HINSTANCE Kernel32 = ::GetModuleHandle(Classes::kernel32.c_str());
     typedef BOOL (WINAPI * TGetTimeZoneInformationForYear)(USHORT wYear, PDYNAMIC_TIME_ZONE_INFORMATION pdtzi, LPTIME_ZONE_INFORMATION ptzi);
     TGetTimeZoneInformationForYear GetTimeZoneInformationForYear =
       (TGetTimeZoneInformationForYear)::GetProcAddress(Kernel32, "GetTimeZoneInformationForYear");
@@ -1395,28 +1395,28 @@ static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
     }
 
     Result->BaseDifferenceSec = TZI.Bias;
-    Result->BaseDifference = (double)(TZI.Bias) / MinsPerDay;
-    Result->BaseDifferenceSec *= SecsPerMin;
+    Result->BaseDifference = (double)(TZI.Bias) / Classes::MinsPerDay;
+    Result->BaseDifferenceSec *= Classes::SecsPerMin;
 
     Result->CurrentDifferenceSec = TZI.Bias +
       Result->CurrentDaylightDifferenceSec;
     Result->CurrentDifference =
-      (double)(Result->CurrentDifferenceSec) / MinsPerDay;
-    Result->CurrentDifferenceSec *= SecsPerMin;
+      (double)(Result->CurrentDifferenceSec) / Classes::MinsPerDay;
+    Result->CurrentDifferenceSec *= Classes::SecsPerMin;
 
     Result->CurrentDaylightDifference =
-      (double)(Result->CurrentDaylightDifferenceSec) / MinsPerDay;
-    Result->CurrentDaylightDifferenceSec *= SecsPerMin;
+      (double)(Result->CurrentDaylightDifferenceSec) / Classes::MinsPerDay;
+    Result->CurrentDaylightDifferenceSec *= Classes::SecsPerMin;
 
-    Result->DaylightDifferenceSec = TZI.DaylightBias * SecsPerMin;
-    Result->DaylightDifference = (double)(TZI.DaylightBias) / MinsPerDay;
-    Result->StandardDifferenceSec = TZI.StandardBias * SecsPerMin;
-    Result->StandardDifference = (double)(TZI.StandardBias) / MinsPerDay;
+    Result->DaylightDifferenceSec = TZI.DaylightBias * Classes::SecsPerMin;
+    Result->DaylightDifference = (double)(TZI.DaylightBias) / Classes::MinsPerDay;
+    Result->StandardDifferenceSec = TZI.StandardBias * Classes::SecsPerMin;
+    Result->StandardDifference = (double)(TZI.StandardBias) / Classes::MinsPerDay;
 
     Result->SystemStandardDate = TZI.StandardDate;
     Result->SystemDaylightDate = TZI.DaylightDate;
 
-    uint16_t AYear = (Year != 0) ? Year : DecodeYear(Now());
+    uint16_t AYear = (Year != 0) ? Year : DecodeYear(Classes::Now());
     if (Result->HasDST())
     {
       EncodeDSTMargin(Result->SystemStandardDate, AYear, Result->StandardDate);
@@ -1433,11 +1433,11 @@ static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
 }
 
 static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
-  TDateTime & Result)
+  Classes::TDateTime & Result)
 {
   if (Date.wYear == 0)
   {
-    TDateTime Temp = EncodeDateVerbose(Year, Date.wMonth, 1);
+    Classes::TDateTime Temp = EncodeDateVerbose(Year, Date.wMonth, 1);
     Result = Temp + ((Date.wDayOfWeek - DayOfWeek(Temp) + 8) % 7) +
       (7 * (Date.wDay - 1));
     // Day 5 means, the last occurence of day-of-week in month
@@ -1465,7 +1465,7 @@ static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
   }
 }
 
-static bool IsDateInDST(const TDateTime & DateTime)
+static bool IsDateInDST(const Classes::TDateTime & DateTime)
 {
 
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
@@ -1504,11 +1504,11 @@ bool UsesDaylightHack()
   return GetDateTimeParams(0)->DaylightHack;
 }
 
-TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode)
+Classes::TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode)
 {
-  assert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
+  assert(int(EncodeDateVerbose(1970, 1, 1)) == Classes::UnixDateDelta);
 
-  TDateTime Result = TDateTime(UnixDateDelta + ((double)(TimeStamp) / SecsPerDay));
+  Classes::TDateTime Result = Classes::TDateTime(Classes::UnixDateDelta + ((double)(TimeStamp) / Classes::SecsPerDay));
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
 
   if (Params->DaylightHack)
@@ -1543,7 +1543,7 @@ int64_t Round(double Number)
   return static_cast<int64_t>(((Number - Floor) > (Ceil - Number)) ? Ceil : Floor);
 }
 
-bool TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
+bool TryRelativeStrToDateTime(const UnicodeString & Str, Classes::TDateTime & DateTime)
 {
   UnicodeString S = Str.Trim();
   intptr_t Index = 1;
@@ -1558,7 +1558,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
   {
     S.Delete(1, Index - 1);
     S = S.Trim().UpperCase();
-    DateTime = Now();
+    DateTime = Classes::Now();
     // These may not overlap with ParseSize (K, M and G)
     if (S == "S")
     {
@@ -1588,17 +1588,17 @@ bool TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
   return Result;
 }
 
-static int64_t DateTimeToUnix(const TDateTime & DateTime)
+static int64_t DateTimeToUnix(const Classes::TDateTime & DateTime)
 {
   const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
 
-  assert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
+  assert(int(EncodeDateVerbose(1970, 1, 1)) == Classes::UnixDateDelta);
 
-  return Round((double)(DateTime - UnixDateDelta) * SecsPerDay) +
+  return Round((double)(DateTime - Classes::UnixDateDelta) * Classes::SecsPerDay) +
     CurrentParams->CurrentDifferenceSec;
 }
 
-FILETIME DateTimeToFileTime(const TDateTime & DateTime,
+FILETIME DateTimeToFileTime(const Classes::TDateTime & DateTime,
   TDSTMode /*DSTMode*/)
 {
   int64_t UnixTimeStamp = ::DateTimeToUnix(DateTime);
@@ -1629,15 +1629,15 @@ FILETIME DateTimeToFileTime(const TDateTime & DateTime,
   return Result;
 }
 
-TDateTime FileTimeToDateTime(const FILETIME & FileTime)
+Classes::TDateTime FileTimeToDateTime(const FILETIME & FileTime)
 {
   // duplicated in DirView.pas
-  TDateTime Result;
+  Classes::TDateTime Result;
   // The 0xFFF... is sometime seen for invalid timestamps,
   // it would cause failure in SystemTimeToDateTime below
   if (FileTime.dwLowDateTime == DWORD(-1) / sizeof(DWORD)) // std::numeric_limits<DWORD>::max())
   {
-    Result = MinDateTime;
+    Result = Classes::MinDateTime;
   }
   else
   {
@@ -1687,7 +1687,7 @@ int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
       SYSTEMTIME SystemTime;
       FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
       FileTimeToSystemTime(&LocalFileTime, &SystemTime);
-      TDateTime DateTime = SystemTimeToDateTimeVerbose(SystemTime);
+      Classes::TDateTime DateTime = SystemTimeToDateTimeVerbose(SystemTime);
       const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
       Result += (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
@@ -1707,7 +1707,7 @@ int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
       SYSTEMTIME SystemTime;
       FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
       FileTimeToSystemTime(&LocalFileTime, &SystemTime);
-      TDateTime DateTime = SystemTimeToDateTimeVerbose(SystemTime);
+      Classes::TDateTime DateTime = SystemTimeToDateTimeVerbose(SystemTime);
       const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
       Result -= (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
@@ -1717,9 +1717,9 @@ int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
   return Result;
 }
 
-TDateTime ConvertTimestampToUTC(const TDateTime & DateTime)
+Classes::TDateTime ConvertTimestampToUTC(const Classes::TDateTime & DateTime)
 {
-  TDateTime Result = DateTime;
+  Classes::TDateTime Result = DateTime;
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
   Result +=
     (IsDateInDST(Result) ?
@@ -1735,9 +1735,9 @@ TDateTime ConvertTimestampToUTC(const TDateTime & DateTime)
   return Result;
 }
 
-TDateTime ConvertTimestampFromUTC(const TDateTime & DateTime)
+Classes::TDateTime ConvertTimestampFromUTC(const Classes::TDateTime & DateTime)
 {
-  TDateTime Result = DateTime;
+  Classes::TDateTime Result = DateTime;
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
   Result -=
     (IsDateInDST(Result) ?
@@ -1760,7 +1760,7 @@ int64_t ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   if ((FileTime.dwLowDateTime == 0) &&
       (FileTime.dwHighDateTime == 0))
   {
-    Result = ::DateTimeToUnix(Now());
+    Result = ::DateTimeToUnix(Classes::Now());
   }
   else
   {
@@ -1769,9 +1769,9 @@ int64_t ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   return Result;
 }
 
-TDateTime AdjustDateTimeFromUnix(const TDateTime & DateTime, TDSTMode DSTMode)
+Classes::TDateTime AdjustDateTimeFromUnix(const Classes::TDateTime & DateTime, TDSTMode DSTMode)
 {
-  TDateTime Result = DateTime;
+  Classes::TDateTime Result = DateTime;
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
 
   if (Params->DaylightHack)
@@ -1915,7 +1915,7 @@ bool AdjustClockForDSTEnabled()
   // Windows XP deletes the DisableAutoDaylightTimeSet value when it is off
   // (the later versions set it to DynamicDaylightTimeDisabled to 0)
   bool DynamicDaylightTimeDisabled = false;
-  std::unique_ptr<TRegistry> Registry(new TRegistry());
+  std::unique_ptr<Classes::TRegistry> Registry(new Classes::TRegistry());
   Registry->SetAccess(KEY_READ);
   try
   {
@@ -1948,7 +1948,7 @@ UnicodeString StandardDatestamp()
 #if defined(__BORLANDC__)
   return FormatDateTime(L"yyyy'-'mm'-'dd", ConvertTimestampToUTC(Now()));
 #else
-  TDateTime DT = ::ConvertTimestampToUTC(Now());
+  Classes::TDateTime DT = ::ConvertTimestampToUTC(Classes::Now());
   uint16_t Y, M, D, H, N, S, MS;
   DT.DecodeDate(Y, M, D);
   DT.DecodeTime(H, N, S, MS);
@@ -1957,12 +1957,12 @@ UnicodeString StandardDatestamp()
 #endif
 }
 
-UnicodeString StandardTimestamp(const TDateTime & DateTime)
+UnicodeString StandardTimestamp(const Classes::TDateTime & DateTime)
 {
 #if defined(__BORLANDC__)
   return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
 #else
-  TDateTime DT = ::ConvertTimestampToUTC(DateTime);
+  Classes::TDateTime DT = ::ConvertTimestampToUTC(DateTime);
   uint16_t Y, M, D, H, N, S, MS;
   DT.DecodeDate(Y, M, D);
   DT.DecodeTime(H, N, S, MS);
@@ -1973,12 +1973,12 @@ UnicodeString StandardTimestamp(const TDateTime & DateTime)
 
 UnicodeString StandardTimestamp()
 {
-  return StandardTimestamp(Now());
+  return StandardTimestamp(Classes::Now());
 }
 
-static TDateTime TwoSeconds(0, 0, 2, 0);
+static Classes::TDateTime TwoSeconds(0, 0, 2, 0);
 
-intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2)
+intptr_t CompareFileTime(const Classes::TDateTime & T1, const Classes::TDateTime & T2)
 {
   // "FAT" time precision
   // (when one time is seconds-precision and other is millisecond-precision,
@@ -2005,19 +2005,19 @@ intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2)
   return Result;
 }
 
-intptr_t TimeToMSec(const TDateTime & T)
+intptr_t TimeToMSec(const Classes::TDateTime & T)
 {
-  return int(Round(double(T) * double(MSecsPerDay)));
+  return int(Round(double(T) * double(Classes::MSecsPerDay)));
 }
 
-intptr_t TimeToSeconds(const TDateTime & T)
+intptr_t TimeToSeconds(const Classes::TDateTime & T)
 {
-  return TimeToMSec(T) / MSecsPerSec;
+  return TimeToMSec(T) / Classes::MSecsPerSec;
 }
 
-intptr_t TimeToMinutes(const TDateTime & T)
+intptr_t TimeToMinutes(const Classes::TDateTime & T)
 {
-  return TimeToSeconds(T) / SecsPerMin;
+  return TimeToSeconds(T) / Classes::SecsPerMin;
 }
 
 bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin)
@@ -2416,7 +2416,7 @@ UnicodeString DefaultEncodingName()
 bool GetWindowsProductType(DWORD & Type)
 {
   bool Result;
-  HINSTANCE Kernel32 = ::GetModuleHandle(kernel32.c_str());
+  HINSTANCE Kernel32 = ::GetModuleHandle(Classes::kernel32.c_str());
   typedef BOOL (WINAPI * TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
   TGetProductInfo GetProductInfo =
       (TGetProductInfo)::GetProcAddress(Kernel32, "GetProductInfo");
@@ -2435,7 +2435,7 @@ bool GetWindowsProductType(DWORD & Type)
 UnicodeString WindowsProductName()
 {
   UnicodeString Result;
-  std::unique_ptr<TRegistry> Registry(new TRegistry());
+  std::unique_ptr<Classes::TRegistry> Registry(new Classes::TRegistry());
   Registry->SetAccess(KEY_READ);
   try
   {
@@ -2458,7 +2458,7 @@ bool IsDirectoryWriteable(const UnicodeString & APath)
 {
   UnicodeString FileName =
     ::IncludeTrailingPathDelimiter(APath) +
-    FORMAT(L"wscp_%s_%d.tmp", FormatDateTime(L"nnzzz", Now()).c_str(), int(GetCurrentProcessId()));
+    FORMAT(L"wscp_%s_%d.tmp", FormatDateTime(L"nnzzz", Classes::Now()).c_str(), int(GetCurrentProcessId()));
   HANDLE Handle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
     CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, 0);
   bool Result = (Handle != INVALID_HANDLE_VALUE);
@@ -2486,9 +2486,9 @@ UnicodeString ExtractFileBaseName(const UnicodeString & APath)
   return ChangeFileExt(core::ExtractFileName(APath, false), L"");
 }
 
-TStringList * TextToStringList(const UnicodeString & Text)
+Classes::TStringList * TextToStringList(const UnicodeString & Text)
 {
-  std::unique_ptr<TStringList> List(new TStringList());
+  std::unique_ptr<Classes::TStringList> List(new Classes::TStringList());
   List->SetText(Text);
   return List.release();
 }

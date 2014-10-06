@@ -579,12 +579,12 @@ bool TCopyParamType::ResumeTransfer(const UnicodeString & AFileName) const
     ALWAYS_TRUE(!FTransferResumeFile.IsEmpty());
 }
 
-TStrings * TCopyParamType::GetTransferSkipList() const
+Classes::TStrings * TCopyParamType::GetTransferSkipList() const
 {
   return FTransferSkipList.get();
 }
 
-void TCopyParamType::SetTransferSkipList(TStrings * Value)
+void TCopyParamType::SetTransferSkipList(Classes::TStrings * Value)
 {
   if ((Value == nullptr) || (Value->GetCount() == 0))
   {
@@ -592,7 +592,7 @@ void TCopyParamType::SetTransferSkipList(TStrings * Value)
   }
   else
   {
-    FTransferSkipList.reset(new TStringList());
+    FTransferSkipList.reset(new Classes::TStringList());
     FTransferSkipList->AddStrings(Value);
     FTransferSkipList->SetSorted(true);
   }

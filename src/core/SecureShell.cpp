@@ -333,7 +333,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
     }
   }
 
-  conf_set_int(conf, CONF_connect_timeout, static_cast<int>(Data->GetTimeout() * MSecsPerSec));
+  conf_set_int(conf, CONF_connect_timeout, static_cast<int>(Data->GetTimeout() * Classes::MSecsPerSec));
   conf_set_int(conf, CONF_sndbuf, static_cast<int>(Data->GetSendBuf()));
 
   // permanent settings
@@ -401,9 +401,9 @@ void TSecureShell::Open()
       throw;
     }
   }
-  FLastDataSent = Now();
+  FLastDataSent = Classes::Now();
 
-  FSessionInfo.LoginTime = Now();
+  FSessionInfo.LoginTime = Classes::Now();
 
   FAuthenticating = false;
   FAuthenticated = true;
@@ -587,7 +587,7 @@ void TSecureShell::PuttyLogEvent(const UnicodeString & Str)
 bool TSecureShell::PromptUser(bool /*ToServer*/,
   const UnicodeString & AName, bool /*NameRequired*/,
   const UnicodeString & Instructions, bool InstructionsRequired,
-  TStrings * Prompts, TStrings * Results)
+  Classes::TStrings * Prompts, Classes::TStrings * Results)
 {
   // there can be zero prompts!
 
@@ -861,13 +861,13 @@ void TSecureShell::CWrite(const char * Data, intptr_t Length)
   }
 }
 
-void TSecureShell::RegisterReceiveHandler(TNotifyEvent Handler)
+void TSecureShell::RegisterReceiveHandler(Classes::TNotifyEvent Handler)
 {
   assert(FOnReceive == nullptr);
   FOnReceive = Handler;
 }
 
-void TSecureShell::UnregisterReceiveHandler(TNotifyEvent Handler)
+void TSecureShell::UnregisterReceiveHandler(Classes::TNotifyEvent Handler)
 {
   assert(FOnReceive == Handler);
   USEDPARAM(Handler);
@@ -1076,7 +1076,7 @@ void TSecureShell::SendSpecial(int Code)
   CheckConnection();
   FBackend->special(FBackendHandle, static_cast<Telnet_Special>(Code));
   CheckConnection();
-  FLastDataSent = Now();
+  FLastDataSent = Classes::Now();
 }
 
 void TSecureShell::SendEOF()
@@ -1137,7 +1137,7 @@ void TSecureShell::SendBuffer(intptr_t & Result)
 
 void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
 {
-  TDateTime Start = Now();
+  Classes::TDateTime Start = Classes::Now();
   do
   {
     CheckConnection();
@@ -1154,14 +1154,14 @@ void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
       LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
     }
 
-    if (Now() - Start > FSessionData->GetTimeoutDT())
+    if (Classes::Now() - Start > FSessionData->GetTimeoutDT())
     {
       LogEvent(L"Waiting for dispatching send buffer timed out, asking user what to do.");
       uintptr_t Answer = TimeoutPrompt(MAKE_CALLBACK(TSecureShell::SendBuffer, this));
       switch (Answer)
       {
         case qaRetry:
-          Start = Now();
+          Start = Classes::Now();
           break;
 
         case qaOK:
@@ -1190,7 +1190,7 @@ void TSecureShell::Send(const uint8_t * Buf, intptr_t Length)
     LogEvent(FORMAT(L"Sent %d bytes", static_cast<int>(Length)));
     LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
   }
-  FLastDataSent = Now();
+  FLastDataSent = Classes::Now();
   // among other forces receive of pending data to free the servers's send buffer
   EventSelectLoop(0, false, nullptr);
 
@@ -1613,7 +1613,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, intptr_t & Result)
   }
 }
 
-class TPoolForDataEvent : public TObject
+class TPoolForDataEvent : public Classes::TObject
 {
 NB_DISABLE_COPY(TPoolForDataEvent)
 public:
@@ -1645,7 +1645,7 @@ void TSecureShell::WaitForData()
       LogEvent(L"Looking for incoming data");
     }
 
-    IncomingData = EventSelectLoop(FSessionData->GetTimeout() * MSecsPerSec, true, nullptr);
+    IncomingData = EventSelectLoop(FSessionData->GetTimeout() * Classes::MSecsPerSec, true, nullptr);
     if (!IncomingData)
     {
       assert(FWaitingForData == 0);
@@ -1913,7 +1913,7 @@ void TSecureShell::KeepAlive()
   else
   {
     // defer next keepalive attempt
-    FLastDataSent = Now();
+    FLastDataSent = Classes::Now();
   }
 }
 
@@ -2254,7 +2254,7 @@ void TSecureShell::AskAlg(const UnicodeString & AlgType,
 
   if (FUI->QueryUser(Msg, nullptr, qaYes | qaNo, nullptr, qtWarning) == qaNo)
   {
-    Abort();
+    Classes::Abort();
   }
 }
 

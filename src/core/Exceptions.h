@@ -10,7 +10,7 @@ bool ShouldDisplayException(Sysutils::Exception * E);
 bool ExceptionMessage(const Sysutils::Exception * E, UnicodeString & Message);
 bool ExceptionMessageFormatted(const Sysutils::Exception * E, UnicodeString & Message);
 UnicodeString LastSysErrorMessage();
-TStrings * ExceptionToMoreMessages(Sysutils::Exception * E);
+Classes::TStrings * ExceptionToMoreMessages(Sysutils::Exception * E);
 bool IsInternalException(const Sysutils::Exception * E);
 
 enum TOnceDoneOperation
@@ -31,9 +31,9 @@ public:
   // "copy the exception", just append message to the end
   explicit ExtException(const UnicodeString & Msg, Exception * E, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
-  explicit ExtException(const UnicodeString & Msg, TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(const UnicodeString & Msg, Classes::TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
   virtual ~ExtException(void) noexcept;
-  TStrings * GetMoreMessages() const { return FMoreMessages; }
+  Classes::TStrings * GetMoreMessages() const { return FMoreMessages; }
   UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
 
   explicit ExtException(const UnicodeString & Msg) : Sysutils::Exception(Msg), FMoreMessages(nullptr) {}

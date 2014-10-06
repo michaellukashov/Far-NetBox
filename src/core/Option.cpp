@@ -169,7 +169,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch)
 }
 
 bool TOptions::FindSwitch(const UnicodeString & Switch,
-  TStrings * Params, intptr_t ParamsMax)
+  Classes::TStrings * Params, intptr_t ParamsMax)
 {
   UnicodeString Value;
   intptr_t ParamsStart;

@@ -160,7 +160,7 @@ UnicodeString TFileMasks::NormalizeMask(const UnicodeString & Mask, const Unicod
 }
 
 UnicodeString TFileMasks::ComposeMaskStr(
-  TStrings * MasksStr, bool Directory)
+  Classes::TStrings * MasksStr, bool Directory)
 {
   UnicodeString Result;
   UnicodeString ResultNoDirMask;
@@ -209,8 +209,8 @@ UnicodeString TFileMasks::ComposeMaskStr(
 }
 
 UnicodeString TFileMasks::ComposeMaskStr(
-  TStrings * IncludeFileMasksStr, TStrings * ExcludeFileMasksStr,
-  TStrings * IncludeDirectoryMasksStr, TStrings * ExcludeDirectoryMasksStr)
+  Classes::TStrings * IncludeFileMasksStr, Classes::TStrings * ExcludeFileMasksStr,
+  Classes::TStrings * IncludeDirectoryMasksStr, Classes::TStrings * ExcludeDirectoryMasksStr)
 {
   UnicodeString IncludeMasks = ComposeMaskStr(IncludeFileMasksStr, false);
   AddToList(IncludeMasks, ComposeMaskStr(IncludeDirectoryMasksStr, true), FileMasksDelimiterStr);
@@ -580,7 +580,7 @@ void TFileMasks::CreateMask(
       FormatSettings.ShortDateFormat = L"yyyy/mm/dd";
       FormatSettings.ShortTimeFormat = L"hh:nn:ss";
 
-      TDateTime Modification;
+      Classes::TDateTime Modification;
       if (TryStrToDateTime(PartStr, Modification, FormatSettings) ||
           TryRelativeStrToDateTime(PartStr, Modification))
       {
@@ -663,11 +663,11 @@ void TFileMasks::CreateMask(
   FMasks[MASK_INDEX(Directory, Include)].push_back(Mask);
 }
 
-TStrings * TFileMasks::GetMasksStr(intptr_t Index) const
+Classes::TStrings * TFileMasks::GetMasksStr(intptr_t Index) const
 {
   if (FMasksStr[Index] == nullptr)
   {
-    FMasksStr[Index] = new TStringList();
+    FMasksStr[Index] = new Classes::TStringList();
     TMasks::const_iterator it = FMasks[Index].begin();
     while (it != FMasks[Index].end())
     {
