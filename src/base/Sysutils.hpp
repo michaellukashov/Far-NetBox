@@ -34,7 +34,7 @@ typedef int TDayTable[12];
 extern const TDayTable MonthDays[];
 
 
-class Exception : public std::runtime_error, public TObject
+class Exception : public std::runtime_error, public Classes::TObject
 {
 NB_DECLARE_CLASS(Exception)
 public:
@@ -95,7 +95,7 @@ public:
 void RaiseLastOSError(DWORD Result = 0);
 
 
-struct TFormatSettings : public TObject
+struct TFormatSettings : public Classes::TObject
 {
 public:
   explicit TFormatSettings(int /* LCID */)
@@ -156,23 +156,23 @@ char HexToChar(const UnicodeString & Hex, uintptr_t MinChars = 0);
 UnicodeString ReplaceStrAll(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat);
 UnicodeString SysErrorMessage(int Code);
 
-bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
+bool TryStrToDateTime(const UnicodeString & StrValue, Classes::TDateTime & Value, TFormatSettings & FormatSettings);
 UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
-  const TDateTime & DateTime);
-UnicodeString DateTimeToString(const TDateTime & DateTime);
-uint32_t DayOfWeek(const TDateTime & DateTime);
+  const Classes::TDateTime & DateTime);
+UnicodeString DateTimeToString(const Classes::TDateTime & DateTime);
+uint32_t DayOfWeek(const Classes::TDateTime & DateTime);
 
-TDateTime Date();
-void DecodeDate(const TDateTime & DateTime, uint16_t & Y,
+Classes::TDateTime Date();
+void DecodeDate(const Classes::TDateTime & DateTime, uint16_t & Y,
   uint16_t & M, uint16_t & D);
-void DecodeTime(const TDateTime & DateTime, uint16_t & H,
+void DecodeTime(const Classes::TDateTime & DateTime, uint16_t & H,
   uint16_t & N, uint16_t & S, uint16_t & MS);
 
-UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & DateTime);
-TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
+UnicodeString FormatDateTime(const UnicodeString & Fmt, const Classes::TDateTime & DateTime);
+Classes::TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
 
-TDateTime EncodeDate(int Year, int Month, int Day);
-TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec);
+Classes::TDateTime EncodeDate(int Year, int Month, int Day);
+Classes::TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec);
 
 UnicodeString Trim(const UnicodeString & Str);
 UnicodeString TrimLeft(const UnicodeString & Str);
@@ -184,7 +184,7 @@ wchar_t LowCase(const wchar_t Ch);
 UnicodeString AnsiReplaceStr(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To);
 intptr_t AnsiPos(const UnicodeString & Str2, wchar_t Ch);
 intptr_t Pos(const UnicodeString & Str2, const UnicodeString & Substr);
-UnicodeString StringReplace(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To, const TReplaceFlags & Flags);
+UnicodeString StringReplace(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To, const Classes::TReplaceFlags & Flags);
 bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, intptr_t AIndex);
 intptr_t FirstDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
 intptr_t LastDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
@@ -218,7 +218,7 @@ double StrToFloatDef(const UnicodeString & Value, double DefVal);
 UnicodeString FormatFloat(const UnicodeString & Format, double Value);
 bool IsZero(double Value);
 
-TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime);
+Classes::TTimeStamp DateTimeToTimeStamp(const Classes::TDateTime & DateTime);
 
 
 int64_t FileRead(HANDLE Handle, void * Buffer, int64_t Count);
@@ -317,8 +317,8 @@ struct TSearchRec
   Integer Attr;
   TFileName Name;
   Integer ExcludeAttr;
-  THandle FindHandle;
-  TWin32FindData FindData;
+  Classes::THandle FindHandle;
+  Sysutils::TWin32FindData FindData;
 };
 
 
@@ -345,21 +345,21 @@ UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & APath);
 extern int RandSeed;
 extern void Randomize();
 
-TDateTime IncYear(const TDateTime & AValue, const Int64 ANumberOfYears = 1);
-TDateTime IncMonth(const TDateTime & AValue, const Int64 NumberOfMonths = 1);
-TDateTime IncWeek(const TDateTime & AValue, const Int64 ANumberOfWeeks = 1);
-TDateTime IncDay(const TDateTime & AValue, const Int64 ANumberOfDays = 1);
-TDateTime IncHour(const TDateTime & AValue, const Int64 ANumberOfHours = 1);
-TDateTime IncMinute(const TDateTime & AValue, const Int64 ANumberOfMinutes = 1);
-TDateTime IncSecond(const TDateTime & AValue, const Int64 ANumberOfSeconds = 1);
-TDateTime IncMilliSecond(const TDateTime & AValue, const Int64 ANumberOfMilliSeconds = 1);
+Classes::TDateTime IncYear(const Classes::TDateTime & AValue, const Int64 ANumberOfYears = 1);
+Classes::TDateTime IncMonth(const Classes::TDateTime & AValue, const Int64 NumberOfMonths = 1);
+Classes::TDateTime IncWeek(const Classes::TDateTime & AValue, const Int64 ANumberOfWeeks = 1);
+Classes::TDateTime IncDay(const Classes::TDateTime & AValue, const Int64 ANumberOfDays = 1);
+Classes::TDateTime IncHour(const Classes::TDateTime & AValue, const Int64 ANumberOfHours = 1);
+Classes::TDateTime IncMinute(const Classes::TDateTime & AValue, const Int64 ANumberOfMinutes = 1);
+Classes::TDateTime IncSecond(const Classes::TDateTime & AValue, const Int64 ANumberOfSeconds = 1);
+Classes::TDateTime IncMilliSecond(const Classes::TDateTime & AValue, const Int64 ANumberOfMilliSeconds = 1);
 
 Boolean IsLeapYear(Word Year);
 
 
 
 
-class TCriticalSection : public TObject
+class TCriticalSection : public Classes::TObject
 {
 public:
   TCriticalSection();

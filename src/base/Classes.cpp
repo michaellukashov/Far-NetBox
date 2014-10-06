@@ -2102,9 +2102,6 @@ void GetLocaleFormatSettings(int LCID, Sysutils::TFormatSettings & FormatSetting
 
 TDateTime MinDateTime = TDateTime(-657434.0);
 
-} // namespace Classes
-
-
 NB_IMPLEMENT_CLASS(TObject, nullptr, nullptr)
 NB_IMPLEMENT_CLASS(TPersistent, NB_GET_CLASS_INFO(TObject), nullptr)
 NB_IMPLEMENT_CLASS(TList, NB_GET_CLASS_INFO(TObject), nullptr)
@@ -2112,3 +2109,4 @@ NB_IMPLEMENT_CLASS(TObjectList, NB_GET_CLASS_INFO(TList), nullptr)
 NB_IMPLEMENT_CLASS(TStrings, NB_GET_CLASS_INFO(TPersistent), nullptr)
 NB_IMPLEMENT_CLASS(TStringList, NB_GET_CLASS_INFO(TStrings), nullptr)
 
+} // namespace Classes
