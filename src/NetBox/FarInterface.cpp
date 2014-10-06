@@ -13,7 +13,7 @@ TConfiguration * CreateConfiguration()
   return new TFarConfiguration(FarPlugin);
 }
 
-void ShowExtendedException(Exception * E)
+void ShowExtendedException(Sysutils::Exception * E)
 {
   assert(FarPlugin != nullptr);
   TWinSCPPlugin * WinSCPPlugin = NB_STATIC_DOWNCAST(TWinSCPPlugin, FarPlugin);
