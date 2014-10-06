@@ -1,7 +1,7 @@
 #include <Classes.hpp>
 #include "rtti.hpp"
 
-//---------------------------------------------------------------------------
+
 
 TClassInfo * TClassInfo::sm_first = nullptr;
 THashTable * TClassInfo::sm_classTable = nullptr;
@@ -130,7 +130,7 @@ void TClassInfo::Unregister()
   }
 }
 
-//---------------------------------------------------------------------------
+
 
 const TObject * NbStaticDownCastConst(TObjectClassId ClassId, const TObject * Object)
 {
@@ -148,4 +148,4 @@ TObject * NbStaticDownCast(TObjectClassId ClassId, TObject * Object)
     return nullptr;
 }
 
-//---------------------------------------------------------------------------
+

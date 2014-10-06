@@ -4,7 +4,7 @@
 #include "HierarchicalStorage.h"
 #include "tinyxml2.h"
 
-//---------------------------------------------------------------------------
+
 class TXmlStorage : public THierarchicalStorage
 {
 public:

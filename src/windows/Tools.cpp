@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -11,14 +11,14 @@
 
 #include "GUITools.h"
 #include "Tools.h"
-//---------------------------------------------------------------------------
+
 void * BusyStart()
 {
   void * Token = nullptr; // ToPtr(Screen->Cursor);
   // Screen->Cursor = crHourGlass;
   return Token;
 }
-//---------------------------------------------------------------------------
+
 void BusyEnd(void * /* Token */)
 {
   // Screen->Cursor = reinterpret_cast<TCursor>(Token);

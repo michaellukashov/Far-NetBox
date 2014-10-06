@@ -1,10 +1,10 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <CoreDefs.hpp>
 #include <Masks.hpp>
 #include <Exceptions.h>
-//---------------------------------------------------------------------------
+
 class EFileMasksException : public Sysutils::Exception
 {
 public:
@@ -12,10 +12,10 @@ public:
   intptr_t ErrorStart;
   intptr_t ErrorLen;
 };
-//---------------------------------------------------------------------------
+
 extern const wchar_t IncludeExcludeFileMasksDelimiter;
 #define MASK_INDEX(DIRECTORY, INCLUDE) ((DIRECTORY ? 2 : 0) + (INCLUDE ? 0 : 1))
-//---------------------------------------------------------------------------
+
 class TFileMasks : public TObject
 {
 public:
@@ -144,15 +144,15 @@ private:
   static inline bool IsAnyMask(const UnicodeString & Mask);
   void ThrowError(intptr_t Start, intptr_t End) const;
 };
-//---------------------------------------------------------------------------
+
 UnicodeString MaskFileName(const UnicodeString & AFileName, const UnicodeString & Mask);
 bool IsEffectiveFileNameMask(const UnicodeString & Mask);
 UnicodeString DelimitFileNameMask(const UnicodeString & Mask);
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE5(TCustomCommandPatternEvent, void,
   int /* Index */, const UnicodeString & /* Pattern */, void * /* Arg */, UnicodeString & /* Replacement */,
   bool & /* LastPass */);
-//---------------------------------------------------------------------------
+
 class TCustomCommand : public TObject
 {
 friend class TInteractiveCustomCommand;
@@ -180,7 +180,7 @@ protected:
     UnicodeString & Replacement, bool & Delimit) = 0;
   virtual void DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
 };
-//---------------------------------------------------------------------------
+
 class TInteractiveCustomCommand : public TCustomCommand
 {
 NB_DISABLE_COPY(TInteractiveCustomCommand)
@@ -199,7 +199,7 @@ protected:
 private:
   TCustomCommand * FChildCustomCommand;
 };
-//---------------------------------------------------------------------------
+
 class TTerminal;
 class TSessionData;
 struct TCustomCommandData : public TObject
@@ -219,7 +219,7 @@ private:
     TSessionData * SessionData, const UnicodeString & AUserName,
     const UnicodeString & Password);
 };
-//---------------------------------------------------------------------------
+
 class TFileCustomCommand : public TCustomCommand
 {
 public:
@@ -249,6 +249,6 @@ private:
   UnicodeString FFileName;
   UnicodeString FFileList;
 };
-//---------------------------------------------------------------------------
+
 typedef TFileCustomCommand TRemoteCustomCommand;
-//---------------------------------------------------------------------------
+

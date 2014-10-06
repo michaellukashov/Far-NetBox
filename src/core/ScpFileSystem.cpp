@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -13,14 +13,14 @@
 #include "SecureShell.h"
 
 #include <stdio.h>
-//---------------------------------------------------------------------------
+
 #undef FILE_OPERATION_LOOP_EX
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION)   \
   FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
     [&]() { OPERATION })
 
-//---------------------------------------------------------------------------
+
 const int coRaiseExcept = 1;
 const int coExpectNoOutput = 2;
 const int coWaitForLastLine = 4;
@@ -34,7 +34,7 @@ const int ecReadProgress = 4;
 const int ecDefault = ecRaiseExcept;
 
 using namespace Sysutils;
-//---------------------------------------------------------------------------
+
 inline void ThrowFileSkipped(Exception * Exception, const UnicodeString & Message)
 {
   throw EFileSkipped(Exception, Message);
@@ -45,7 +45,7 @@ inline void ThrowScpEror(Exception * Exception, const UnicodeString & Message)
   throw EScp(Exception, Message);
 }
 
-//===========================================================================
+
 #define MaxShellCommand fsAnyCommand
 #define ShellCommandCount MaxShellCommand + 1
 #define MaxCommandLen 40
@@ -71,7 +71,7 @@ extern const wchar_t NationalVars[NationalVarCount][15];
 #define CHECK_CMD assert((Cmd >=0) && (Cmd <= MaxShellCommand))
 
 class TSessionData;
-//---------------------------------------------------------------------------
+
 class TCommandSet : public TObject
 {
 NB_DISABLE_COPY(TCommandSet)
@@ -108,14 +108,14 @@ private:
   TSessionData * FSessionData;
   UnicodeString FReturnVar;
 };
-//===========================================================================
+
 const wchar_t NationalVars[NationalVarCount][15] =
 {
   L"LANG", L"LANGUAGE", L"LC_CTYPE", L"LC_COLLATE", L"LC_MONETARY", L"LC_NUMERIC",
   L"LC_TIME", L"LC_MESSAGES", L"LC_ALL", L"HUMAN_BLOCKS"
 };
 const wchar_t FullTimeOption[] = L"--full-time";
-//---------------------------------------------------------------------------
+
 #define F false
 #define T true
 // TODO: remove "mf" and "cd", it is implemented in TTerminal already
@@ -150,55 +150,55 @@ const TCommandType DefaultCommandSet[ShellCommandCount] =
 };
 #undef F
 #undef T
-//---------------------------------------------------------------------------
+
 TCommandSet::TCommandSet(TSessionData * ASessionData):
   FSessionData(ASessionData), FReturnVar(L"")
 {
   assert(FSessionData);
   Default();
 }
-//---------------------------------------------------------------------------
+
 void TCommandSet::CopyFrom(TCommandSet * Source)
 {
   memmove(&CommandSet, Source->CommandSet, sizeof(CommandSet));
 }
-//---------------------------------------------------------------------------
+
 void TCommandSet::Default()
 {
   assert(sizeof(CommandSet) == sizeof(DefaultCommandSet));
   memmove(&CommandSet, &DefaultCommandSet, sizeof(CommandSet));
 }
-//---------------------------------------------------------------------------
+
 int TCommandSet::GetMaxLines(TFSCommand Cmd) const
 {
   CHECK_CMD;
   return CommandSet[Cmd].MaxLines;
 }
-//---------------------------------------------------------------------------
+
 int TCommandSet::GetMinLines(TFSCommand Cmd) const
 {
   CHECK_CMD;
   return CommandSet[Cmd].MinLines;
 }
-//---------------------------------------------------------------------------
+
 bool TCommandSet::GetModifiesFiles(TFSCommand Cmd) const
 {
   CHECK_CMD;
   return CommandSet[Cmd].ModifiesFiles;
 }
-//---------------------------------------------------------------------------
+
 bool TCommandSet::GetChangesDirectory(TFSCommand Cmd) const
 {
   CHECK_CMD;
   return CommandSet[Cmd].ChangesDirectory;
 }
-//---------------------------------------------------------------------------
+
 bool TCommandSet::GetInteractiveCommand(TFSCommand Cmd) const
 {
   CHECK_CMD;
   return CommandSet[Cmd].InteractiveCommand;
 }
-//---------------------------------------------------------------------------
+
 bool TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/) const
 {
   //CHECK_CMD;
@@ -206,19 +206,19 @@ bool TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/) const
   // just as it was in 1.0
   return True; //CommandSet[Cmd].OneLineCommand;
 }
-//---------------------------------------------------------------------------
+
 void TCommandSet::SetCommands(TFSCommand Cmd, const UnicodeString & Value)
 {
   CHECK_CMD;
   wcscpy_s(const_cast<wchar_t *>(CommandSet[Cmd].Command), MaxCommandLen, Value.SubString(1, MaxCommandLen - 1).c_str());
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TCommandSet::GetCommands(TFSCommand Cmd) const
 {
   CHECK_CMD;
   return CommandSet[Cmd].Command;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TCommandSet::Command(TFSCommand Cmd, ...) const
 {
   UnicodeString Result;
@@ -228,14 +228,14 @@ UnicodeString TCommandSet::Command(TFSCommand Cmd, ...) const
   va_end(args);
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TCommandSet::Command(TFSCommand Cmd, va_list args) const
 {
   UnicodeString Result;
   Result = Sysutils::Format(GetCommands(Cmd).c_str(), args);
   return Result.c_str();
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, ...) const
 {
   UnicodeString Result;
@@ -245,7 +245,7 @@ UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, ...) const
   va_end(args);
   return Result.c_str();
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, va_list args) const
 {
   UnicodeString Separator;
@@ -277,17 +277,17 @@ UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, va_list args) const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TCommandSet::GetFirstLine() const
 {
   return FIRST_LINE;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TCommandSet::GetLastLine() const
 {
   return LAST_LINE;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TCommandSet::GetReturnVar() const
 {
   assert(GetSessionData());
@@ -304,7 +304,7 @@ UnicodeString TCommandSet::GetReturnVar() const
     return UnicodeString(L'$') + GetSessionData()->GetReturnVar();
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TCommandSet::ExtractCommand(const UnicodeString & Command)
 {
   UnicodeString Result = Command;
@@ -315,7 +315,7 @@ UnicodeString TCommandSet::ExtractCommand(const UnicodeString & Command)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TStrings * TCommandSet::CreateCommandList()
 {
   TStrings * CommandList = new TStringList();
@@ -331,7 +331,7 @@ TStrings * TCommandSet::CreateCommandList()
   }
   return CommandList;
 }
-//===========================================================================
+
 TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(ATerminal),
   FSecureShell(nullptr),
@@ -356,40 +356,40 @@ void TSCPFileSystem::Init(void * Data)
   FFileSystemInfo.ProtocolBaseName = L"SCP";
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
 }
-//---------------------------------------------------------------------------
+
 TSCPFileSystem::~TSCPFileSystem()
 {
   SAFE_DESTROY(FCommandSet);
   SAFE_DESTROY(FOutput);
   SAFE_DESTROY(FSecureShell);
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::Open()
 {
   // this is used for reconnects only
   FSecureShell->Open();
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::Close()
 {
   FSecureShell->Close();
 }
-//---------------------------------------------------------------------------
+
 bool TSCPFileSystem::GetActive() const
 {
   return FSecureShell->GetActive();
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::CollectUsage()
 {
   FSecureShell->CollectUsage();
 }
-//---------------------------------------------------------------------------
+
 const TSessionInfo & TSCPFileSystem::GetSessionInfo() const
 {
   return FSecureShell->GetSessionInfo();
 }
-//---------------------------------------------------------------------------
+
 const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
 {
   if (FFileSystemInfo.AdditionalInfo.IsEmpty() && Retrieve)
@@ -427,22 +427,22 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
 
   return FFileSystemInfo;
 }
-//---------------------------------------------------------------------------
+
 bool TSCPFileSystem::TemporaryTransferFile(const UnicodeString & /*AFileName*/)
 {
   return false;
 }
-//---------------------------------------------------------------------------
+
 bool TSCPFileSystem::GetStoredCredentialsTried()
 {
   return FSecureShell->GetStoredCredentialsTried();
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TSCPFileSystem::GetUserName()
 {
   return FSecureShell->GetUserName();
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::Idle()
 {
   // Keep session alive
@@ -473,12 +473,12 @@ void TSCPFileSystem::Idle()
 
   FSecureShell->Idle();
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TSCPFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/)
 {
   return core::AbsolutePath(GetCurrDirectory(), APath);
 }
-//---------------------------------------------------------------------------
+
 bool TSCPFileSystem::IsCapable(intptr_t Capability) const
 {
   assert(FTerminal);
@@ -522,7 +522,7 @@ bool TSCPFileSystem::IsCapable(intptr_t Capability) const
       return false;
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TSCPFileSystem::DelimitStr(const UnicodeString & Str)
 {
   UnicodeString Result = Str;
@@ -534,7 +534,7 @@ UnicodeString TSCPFileSystem::DelimitStr(const UnicodeString & Str)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::EnsureLocation()
 {
   if (!FCachedDirectoryChange.IsEmpty())
@@ -562,7 +562,7 @@ void TSCPFileSystem::EnsureLocation()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::SendCommand(const UnicodeString & Cmd)
 {
   EnsureLocation();
@@ -576,14 +576,14 @@ void TSCPFileSystem::SendCommand(const UnicodeString & Cmd)
   FSecureShell->SendLine(Cmd);
   FProcessingCommand = true;
 }
-//---------------------------------------------------------------------------
+
 bool TSCPFileSystem::IsTotalListingLine(const UnicodeString & Line)
 {
   // On some hosts there is not "total" but "totalt". What's the reason??
   // see mail from "Jan Wiklund (SysOp)" <jan@park.se>
   return !Line.SubString(1, 5).CompareIC(L"total");
 }
-//---------------------------------------------------------------------------
+
 bool TSCPFileSystem::RemoveLastLine(UnicodeString & Line,
   intptr_t & ReturnCode, const UnicodeString & ALastLine)
 {
@@ -613,7 +613,7 @@ bool TSCPFileSystem::RemoveLastLine(UnicodeString & Line,
   }
   return IsLastLine;
 }
-//---------------------------------------------------------------------------
+
 bool TSCPFileSystem::IsLastLine(UnicodeString & Line)
 {
   bool Result = false;
@@ -627,7 +627,7 @@ bool TSCPFileSystem::IsLastLine(UnicodeString & Line)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::SkipFirstLine()
 {
   UnicodeString Line = FSecureShell->ReceiveLine();
@@ -636,7 +636,7 @@ void TSCPFileSystem::SkipFirstLine()
     FTerminal->TerminalError(nullptr, FMTLOAD(FIRST_LINE_EXPECTED, Line.c_str()));
   }
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cmd)
 {
   SCOPE_EXIT
@@ -703,7 +703,7 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, intptr_t Params,
   const UnicodeString & CmdString)
 {
@@ -731,7 +731,7 @@ void TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, intptr_t Params,
   }
   ReadCommandOutput(COParams, &CmdString);
 }
-//---------------------------------------------------------------------------
+
 #if defined(__BORLANDC__)
 void TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args,
   int size, intptr_t Params)
@@ -754,7 +754,7 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args,
   }
 }
 #endif
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::ExecCommand2(TFSCommand Cmd, intptr_t Params, ...)
 {
   va_list args;
@@ -775,12 +775,12 @@ void TSCPFileSystem::ExecCommand2(TFSCommand Cmd, intptr_t Params, ...)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TSCPFileSystem::GetCurrDirectory()
 {
   return FCurrentDirectory;
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::DoStartup()
 {
   // capabilities of SCP protocol are fixed
@@ -809,7 +809,7 @@ void TSCPFileSystem::DoStartup()
   COND_OPER(UnsetNationalVars);
 #undef COND_OPER
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::SkipStartupMessage()
 {
   try
@@ -822,7 +822,7 @@ void TSCPFileSystem::SkipStartupMessage()
     FTerminal->CommandError(&E, LoadStr(SKIP_STARTUP_MESSAGE_ERROR), 0, HELP_SKIP_STARTUP_MESSAGE_ERROR);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::LookupUsersGroups()
 {
   ExecCommand2(fsLookupUsersGroups, 0);
@@ -839,7 +839,7 @@ void TSCPFileSystem::LookupUsersGroups()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::DetectReturnVar()
 {
   // This suppose that something was already executed (probably SkipStartupMessage())
@@ -901,7 +901,7 @@ void TSCPFileSystem::DetectReturnVar()
     FTerminal->CommandError(&E, LoadStr(DETECT_RETURNVAR_ERROR));
   }
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::ClearAlias(const UnicodeString & Alias)
 {
   if (!Alias.IsEmpty())
@@ -911,7 +911,7 @@ void TSCPFileSystem::ClearAlias(const UnicodeString & Alias)
     ExecCommand2(fsUnalias, 0, Alias.c_str(), false);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::ClearAliases()
 {
   try
@@ -929,7 +929,7 @@ void TSCPFileSystem::ClearAliases()
     FTerminal->CommandError(&E, LoadStr(UNALIAS_ALL_ERROR));
   }
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::UnsetNationalVars()
 {
   try
@@ -945,7 +945,7 @@ void TSCPFileSystem::UnsetNationalVars()
     FTerminal->CommandError(&E, LoadStr(UNSET_NATIONAL_ERROR));
   }
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::ReadCurrentDirectory()
 {
   if (FCachedDirectoryChange.IsEmpty())
@@ -958,17 +958,17 @@ void TSCPFileSystem::ReadCurrentDirectory()
     FCurrentDirectory = FCachedDirectoryChange;
   }
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::HomeDirectory()
 {
   ExecCommand2(fsHomeDirectory, 0);
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::AnnounceFileListOperation()
 {
   // noop
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::ChangeDirectory(const UnicodeString & Directory)
 {
   UnicodeString ToDir;
@@ -984,12 +984,12 @@ void TSCPFileSystem::ChangeDirectory(const UnicodeString & Directory)
   ExecCommand2(fsChangeDirectory, 0, ToDir.c_str());
   FCachedDirectoryChange = L"";
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
 {
   FCachedDirectoryChange = core::UnixExcludeTrailingBackslash(Directory);
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   assert(FileList);
@@ -1113,19 +1113,19 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
   }
   while (Again);
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   TRemoteFile *& File)
 {
   CustomReadFile(SymlinkFile->GetLinkTo(), File, SymlinkFile);
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::ReadFile(const UnicodeString & AFileName,
   TRemoteFile *& File)
 {
   CustomReadFile(AFileName, File, nullptr);
 }
-//---------------------------------------------------------------------------
+
 TRemoteFile * TSCPFileSystem::CreateRemoteFile(
   const UnicodeString & ListingStr, TRemoteFile * LinkedByFile)
 {
@@ -1137,7 +1137,7 @@ TRemoteFile * TSCPFileSystem::CreateRemoteFile(
 
   return File.release();
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::CustomReadFile(const UnicodeString & AFileName,
   TRemoteFile *& File, TRemoteFile * ALinkedByFile)
 {
@@ -1160,7 +1160,7 @@ void TSCPFileSystem::CustomReadFile(const UnicodeString & AFileName,
     File = CreateRemoteFile(FOutput->GetString(LineIndex), ALinkedByFile);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action)
 {
@@ -1170,31 +1170,31 @@ void TSCPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   assert(FLAGCLEAR(Params, dfNoRecursive) || (AFile && AFile->GetIsSymLink()));
   ExecCommand2(fsDeleteFile, Params, DelimitStr(AFileName).c_str());
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   const UnicodeString & NewName)
 {
   ExecCommand2(fsRenameFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(NewName).c_str());
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::CopyFile(const UnicodeString & AFileName,
   const UnicodeString & NewName)
 {
   ExecCommand2(fsCopyFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(NewName).c_str());
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
 {
   ExecCommand2(fsCreateDirectory, 0, DelimitStr(ADirName).c_str());
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::CreateLink(const UnicodeString & AFileName,
   const UnicodeString & PointTo, bool Symbolic)
 {
   ExecCommand2(fsCreateLink, 0,
     Symbolic ? L"-s" : L"", DelimitStr(PointTo).c_str(), DelimitStr(AFileName).c_str());
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::ChangeFileToken(const UnicodeString & DelimitedName,
   const TRemoteToken & Token, TFSCommand Cmd, const UnicodeString & RecursiveStr)
 {
@@ -1213,7 +1213,7 @@ void TSCPFileSystem::ChangeFileToken(const UnicodeString & DelimitedName,
     ExecCommand2(Cmd, 0, RecursiveStr.c_str(), Str.c_str(), DelimitedName.c_str());
   }
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
   const TRemoteFile * AFile, const TRemoteProperties * Properties,
   TChmodSessionAction & Action)
@@ -1270,20 +1270,20 @@ void TSCPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
   assert(!Properties->Valid.Contains(vpLastAccess));
   assert(!Properties->Valid.Contains(vpModification));
 }
-//---------------------------------------------------------------------------
+
 bool TSCPFileSystem::LoadFilesProperties(TStrings * /*FileList*/ )
 {
   FAIL;
   return false;
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
   TStrings * /*FileList*/, TStrings * /*Checksums*/,
   TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
 {
   FAIL;
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params,
   TCaptureOutputEvent OutputEvent)
@@ -1310,7 +1310,7 @@ void TSCPFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
     AnyCommand(Cmd, OutputEvent);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::CaptureOutput(const UnicodeString & AddedLine, bool StdError)
 {
   intptr_t ReturnCode;
@@ -1323,7 +1323,7 @@ void TSCPFileSystem::CaptureOutput(const UnicodeString & AddedLine, bool StdErro
     FOnCaptureOutput(Line, StdError);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
   TCaptureOutputEvent OutputEvent)
 {
@@ -1341,20 +1341,20 @@ void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
   };
   ExecCommand2(fsAnyCommand, ecDefault | ecIgnoreWarnings, Command.c_str());
 }
-//---------------------------------------------------------------------------
+
 TStrings * TSCPFileSystem::GetFixedPaths()
 {
   return nullptr;
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::SpaceAvailable(const UnicodeString & /*APath*/,
   TSpaceAvailable & /*ASpaceAvailable*/)
 {
   FAIL;
 }
-//---------------------------------------------------------------------------
+
 // transfer protocol
-//---------------------------------------------------------------------------
+
 uintptr_t TSCPFileSystem::ConfirmOverwrite(
   const UnicodeString & /*AFullFileName*/,
   const UnicodeString & AFileName, TOperationSide Side,
@@ -1384,7 +1384,7 @@ uintptr_t TSCPFileSystem::ConfirmOverwrite(
       &QueryParams, Side, CopyParam, Params, OperationProgress);
   return Answer;
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::SCPResponse(bool * GotLastLine)
 {
   // Taken from scp.c response() and modified
@@ -1447,7 +1447,7 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
       }
   }
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
@@ -1673,7 +1673,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   }
   Failed = false;
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
   const TRemoteFile * AFile,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
@@ -1969,7 +1969,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
 
   FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory finished.", AFileName.c_str()));
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
   TFileOperationProgressType * OperationProgress, intptr_t Level)
@@ -2091,7 +2091,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
@@ -2231,13 +2231,13 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
     }
   }
 }
-//---------------------------------------------------------------------------
+
 inline void TSCPFileSystem::SCPError(const UnicodeString & Message, bool Fatal)
 {
   SCPSendError(Message, Fatal);
   ThrowFileSkipped(nullptr, Message);
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::SCPSendError(const UnicodeString & Message, bool Fatal)
 {
   uint8_t ErrorLevel = static_cast<char>(Fatal ? 2 : 1);
@@ -2248,7 +2248,7 @@ void TSCPFileSystem::SCPSendError(const UnicodeString & Message, bool Fatal)
   // characters can terminate remote scp
   FSecureShell->SendLine(FORMAT(L"scp: error: %s", Message.c_str()));
 }
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
   const TRemoteFile * /*AFile*/,
   const UnicodeString & TargetDir,

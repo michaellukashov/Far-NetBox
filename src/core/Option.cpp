@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -7,7 +7,7 @@
 #include "TextsCore.h"
 
 using namespace Sysutils;
-//---------------------------------------------------------------------------
+
 TOptions::TOptions() :
   FSwitchMarks(L"-/"),
   FSwitchValueDelimiters(L":="),
@@ -15,7 +15,7 @@ TOptions::TOptions() :
   FParamCount(0)
 {
 }
-//---------------------------------------------------------------------------
+
 void TOptions::ParseParams(const UnicodeString & Params)
 {
   UnicodeString Param;
@@ -26,7 +26,7 @@ void TOptions::ParseParams(const UnicodeString & Params)
     Add(Param);
   }
 }
-//---------------------------------------------------------------------------
+
 void TOptions::Add(const UnicodeString & Value)
 {
   if (!FNoMoreSwitches &&
@@ -82,7 +82,7 @@ void TOptions::Add(const UnicodeString & Value)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TOptions::GetParam(intptr_t AIndex)
 {
   assert((AIndex >= 1) && (AIndex <= FParamCount));
@@ -105,12 +105,12 @@ UnicodeString TOptions::GetParam(intptr_t AIndex)
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::GetEmpty() const
 {
   return FOptions.empty();
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::FindSwitch(const UnicodeString & Switch,
   UnicodeString & Value, intptr_t & ParamsStart, intptr_t & ParamsCount)
 {
@@ -152,14 +152,14 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
 
   return Found;
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::FindSwitch(const UnicodeString & Switch, UnicodeString & Value)
 {
   intptr_t ParamsStart;
   intptr_t ParamsCount;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::FindSwitch(const UnicodeString & Switch)
 {
   UnicodeString Value;
@@ -167,7 +167,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch)
   intptr_t ParamsCount;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::FindSwitch(const UnicodeString & Switch,
   TStrings * Params, intptr_t ParamsMax)
 {
@@ -192,7 +192,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TOptions::SwitchValue(const UnicodeString & Switch,
   const UnicodeString & Default)
 {
@@ -204,7 +204,7 @@ UnicodeString TOptions::SwitchValue(const UnicodeString & Switch,
   }
   return Value;
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence)
 {
   bool Result = false;
@@ -236,12 +236,12 @@ bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default, bool Defa
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default)
 {
   return SwitchValue(Switch, Default, Default);
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::UnusedSwitch(UnicodeString & Switch) const
 {
   bool Result = false;
@@ -259,7 +259,7 @@ bool TOptions::UnusedSwitch(UnicodeString & Switch) const
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TOptions::ParamsProcessed(intptr_t ParamsStart, intptr_t ParamsCount)
 {
   if (ParamsCount > 0)

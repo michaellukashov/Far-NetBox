@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -11,7 +11,7 @@
 #include "Interface.h"
 
 using namespace Sysutils;
-//---------------------------------------------------------------------------
+
 static bool WellKnownException(
   const Exception * E, UnicodeString * AMessage, const wchar_t ** ACounterName, Exception ** AClone, bool Rethrow)
 {
@@ -93,7 +93,7 @@ static bool WellKnownException(
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 static bool ExceptionMessage(const Exception * E, bool /* Count */,
   bool Formatted, UnicodeString & Message, bool & InternalError)
 {
@@ -136,31 +136,31 @@ static bool ExceptionMessage(const Exception * E, bool /* Count */,
 */
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool IsInternalException(const Exception * E)
 {
   // see also InternalError in ExceptionMessage
   return WellKnownException(E, NULL, NULL, NULL, false);
 }
-//---------------------------------------------------------------------------
+
 bool ExceptionMessage(const Exception * E, UnicodeString & Message)
 {
   bool InternalError;
   return ExceptionMessage(E, true, false, Message, InternalError);
 }
-//---------------------------------------------------------------------------
+
 bool ExceptionMessageFormatted(const Exception * E, UnicodeString & Message)
 {
   bool InternalError;
   return ExceptionMessage(E, true, true, Message, InternalError);
 }
-//---------------------------------------------------------------------------
+
 bool ShouldDisplayException(Exception * E)
 {
   UnicodeString Message;
   return ExceptionMessageFormatted(E, Message);
 }
-//---------------------------------------------------------------------------
+
 TStrings * ExceptionToMoreMessages(Exception * E)
 {
   TStrings * Result = nullptr;
@@ -177,7 +177,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString GetExceptionHelpKeyword(Exception * E)
 {
   UnicodeString HelpKeyword;
@@ -195,7 +195,7 @@ UnicodeString GetExceptionHelpKeyword(Exception * E)
   }
   return HelpKeyword;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString MergeHelpKeyword(const UnicodeString & PrimaryHelpKeyword, const UnicodeString & SecondaryHelpKeyword)
 {
   if (!PrimaryHelpKeyword.IsEmpty() &&
@@ -210,13 +210,13 @@ UnicodeString MergeHelpKeyword(const UnicodeString & PrimaryHelpKeyword, const U
     return SecondaryHelpKeyword;
   }
 }
-//---------------------------------------------------------------------------
+
 bool IsInternalErrorHelpKeyword(const UnicodeString & HelpKeyword)
 {
   return
     (HelpKeyword == HELP_INTERNAL_ERROR);
 }
-//---------------------------------------------------------------------------
+
 ExtException::ExtException(Exception * E) :
   Exception(L""),
   FMoreMessages(nullptr)
@@ -224,7 +224,7 @@ ExtException::ExtException(Exception * E) :
   AddMoreMessages(E);
   FHelpKeyword = GetExceptionHelpKeyword(E);
 }
-//---------------------------------------------------------------------------
+
 ExtException::ExtException(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword):
   Exception(Msg),
   FMoreMessages(nullptr)
@@ -239,14 +239,14 @@ ExtException::ExtException(Exception * E, const UnicodeString & Msg, const Unico
 {
   AddMoreMessages(E);
 }*/
-//---------------------------------------------------------------------------
+
 ExtException::ExtException(Exception * E, int Ident) :
   Exception(E, Ident),
   FMoreMessages(nullptr),
   FHelpKeyword()
 {
 }
-//---------------------------------------------------------------------------
+
 ExtException::ExtException(const UnicodeString & Msg, Exception * E, const UnicodeString & HelpKeyword) :
   Exception(L""),
   FMoreMessages(nullptr)
@@ -271,7 +271,7 @@ ExtException::ExtException(const UnicodeString & Msg, Exception * E, const Unico
   }
   FHelpKeyword = MergeHelpKeyword(GetExceptionHelpKeyword(E), HelpKeyword);
 }
-//---------------------------------------------------------------------------
+
 ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages,
   const UnicodeString & HelpKeyword) :
   Exception(Msg),
@@ -283,7 +283,7 @@ ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & More
     FMoreMessages = TextToStringList(MoreMessages);
   }
 }
-//---------------------------------------------------------------------------
+
 ExtException::ExtException(const UnicodeString & Msg, TStrings * MoreMessages,
   bool Own, const UnicodeString & HelpKeyword) :
   Exception(Msg),
@@ -300,7 +300,7 @@ ExtException::ExtException(const UnicodeString & Msg, TStrings * MoreMessages,
     FMoreMessages->Assign(MoreMessages);
   }
 }
-//---------------------------------------------------------------------------
+
 void ExtException::AddMoreMessages(const Exception * E)
 {
   if (E != nullptr)
@@ -344,23 +344,23 @@ void ExtException::AddMoreMessages(const Exception * E)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 ExtException::~ExtException() noexcept
 {
   SAFE_DESTROY(FMoreMessages);
   FMoreMessages = nullptr;
 }
-//---------------------------------------------------------------------------
+
 ExtException * ExtException::CloneFrom(Exception * E)
 {
   return new ExtException(E, L"");
 }
-//---------------------------------------------------------------------------
+
 ExtException * ExtException::Clone()
 {
   return CloneFrom(this);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString SysErrorMessageForError(int LastError)
 {
   UnicodeString Result;
@@ -371,22 +371,22 @@ UnicodeString SysErrorMessageForError(int LastError)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString LastSysErrorMessage()
 {
   return SysErrorMessageForError(GetLastError());
 }
-//---------------------------------------------------------------------------
+
 EOSExtException::EOSExtException(const UnicodeString & Msg) :
   ExtException(Msg, LastSysErrorMessage())
 {
 }
-//---------------------------------------------------------------------------
+
 EOSExtException::EOSExtException(const UnicodeString & Msg, int LastError) :
   ExtException(Msg, SysErrorMessageForError(LastError))
 {
 }
-//---------------------------------------------------------------------------
+
 EFatal::EFatal(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
   ExtException(Msg, E, HelpKeyword),
   FReopenQueried(false)
@@ -397,21 +397,21 @@ EFatal::EFatal(Exception * E, const UnicodeString & Msg, const UnicodeString & H
     FReopenQueried = F->GetReopenQueried();
   }
 }
-//---------------------------------------------------------------------------
+
 ExtException * EFatal::Clone()
 {
   return new EFatal(this, L"");
 }
-//---------------------------------------------------------------------------
+
 ExtException * ESshTerminate::Clone()
 {
   return new ESshTerminate(this, L"", Operation);
 }
-//---------------------------------------------------------------------------
+
 ECallbackGuardAbort::ECallbackGuardAbort() : EAbort(L"callback abort")
 {
 }
-//---------------------------------------------------------------------------
+
 Exception * CloneException(Exception * E)
 {
   Exception * Result;
@@ -448,7 +448,7 @@ Exception * CloneException(Exception * E)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void RethrowException(Exception * E)
 {
   // this list has to be in sync with ExceptionMessage
@@ -473,7 +473,7 @@ void RethrowException(Exception * E)
     throw ExtException(E, L"");
   }
 }
-//------------------------------------------------------------------------------
+
 NB_IMPLEMENT_CLASS(ExtException, NB_GET_CLASS_INFO(Exception), nullptr);
 NB_IMPLEMENT_CLASS(EFatal, NB_GET_CLASS_INFO(ExtException), nullptr);
 NB_IMPLEMENT_CLASS(ESshFatal, NB_GET_CLASS_INFO(EFatal), nullptr);
@@ -486,4 +486,4 @@ NB_IMPLEMENT_CLASS(ECommand, NB_GET_CLASS_INFO(ExtException), nullptr);
 NB_IMPLEMENT_CLASS(EScp, NB_GET_CLASS_INFO(ExtException), nullptr);
 NB_IMPLEMENT_CLASS(ESkipFile, NB_GET_CLASS_INFO(ExtException), nullptr);
 NB_IMPLEMENT_CLASS(EFileSkipped, NB_GET_CLASS_INFO(ESkipFile), nullptr);
-//------------------------------------------------------------------------------
+

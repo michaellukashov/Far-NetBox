@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -6,7 +6,7 @@
 #include "NamedObjs.h"
 
 using namespace Sysutils;
-//---------------------------------------------------------------------------
+
 static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
 {
   bool HasPrefix1 = NB_STATIC_DOWNCAST_CONST(TNamedObject, Item1)->GetHidden();
@@ -26,19 +26,19 @@ static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
       NB_STATIC_DOWNCAST_CONST(TNamedObject, Item2)->GetName());
   }
 }
-//--- TNamedObject ----------------------------------------------------------
+
 TNamedObject::TNamedObject(const UnicodeString & AName) :
   FHidden(false)
 {
   SetName(AName);
 }
-//---------------------------------------------------------------------------
+
 void TNamedObject::SetName(const UnicodeString & Value)
 {
   FHidden = (Value.SubString(1, TNamedObjectList::HiddenPrefix.Length()) == TNamedObjectList::HiddenPrefix);
   FName = Value;
 }
-//---------------------------------------------------------------------------
+
 Integer TNamedObject::CompareName(const UnicodeString & AName,
   Boolean CaseSensitive)
 {
@@ -51,7 +51,7 @@ Integer TNamedObject::CompareName(const UnicodeString & AName,
     return GetName().CompareIC(AName);
   }
 }
-//---------------------------------------------------------------------------
+
 void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
 {
   // This object can't be item of list, it would create infinite loop
@@ -79,26 +79,26 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
       SetName(Name + L" (" + Sysutils::Int64ToStr(N+1) + L")");
     }
 }
-//--- TNamedObjectList ------------------------------------------------------
+
 const UnicodeString TNamedObjectList::HiddenPrefix = L"_!_";
-//---------------------------------------------------------------------------
+
 TNamedObjectList::TNamedObjectList():
   TObjectList(),
   AutoSort(true),
   FHiddenCount(0)
 {
 }
-//---------------------------------------------------------------------------
+
 const TNamedObject * TNamedObjectList::AtObject(intptr_t Index) const
 {
   return const_cast<TNamedObjectList *>(this)->AtObject(Index);
 }
-//---------------------------------------------------------------------------
+
 TNamedObject * TNamedObjectList::AtObject(intptr_t Index)
 {
   return NB_STATIC_DOWNCAST(TNamedObject, GetItem(Index + GetHiddenCount()));
 }
-//---------------------------------------------------------------------------
+
 void TNamedObjectList::Recount()
 {
   intptr_t Index = 0;
@@ -108,12 +108,12 @@ void TNamedObjectList::Recount()
   }
   FHiddenCount = Index;
 }
-//---------------------------------------------------------------------------
+
 void TNamedObjectList::AlphaSort()
 {
   Sort(NamedObjectSortProc);
 }
-//---------------------------------------------------------------------------
+
 void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
 {
   TObjectList::Notify(Ptr, Action);
@@ -123,7 +123,7 @@ void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
   }
   Recount();
 }
-//---------------------------------------------------------------------------
+
 TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name,
   Boolean CaseSensitive)
 {
@@ -136,17 +136,17 @@ TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name,
   }
   return nullptr;
 }
-//---------------------------------------------------------------------------
+
 void TNamedObjectList::SetCount(intptr_t Value)
 {
   TObjectList::SetCount(Value/*+HiddenCount*/);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TNamedObjectList::GetCount() const
 {
   return TObjectList::GetCount() - GetHiddenCount();
 }
 
-//------------------------------------------------------------------------------
+
 NB_IMPLEMENT_CLASS(TNamedObject, NB_GET_CLASS_INFO(TPersistent), nullptr);
-//------------------------------------------------------------------------------
+

@@ -1,12 +1,12 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include <FileSystems.h>
 #include <CopyParam.h>
-//---------------------------------------------------------------------------
+
 class TCommandSet;
 class TSecureShell;
-//---------------------------------------------------------------------------
+
 class TSCPFileSystem : public TCustomFileSystem
 {
 NB_DISABLE_COPY(TSCPFileSystem)
@@ -135,4 +135,4 @@ private:
   static bool RemoveLastLine(UnicodeString & Line,
     intptr_t & ReturnCode, const UnicodeString & ALastLine);
 };
-//---------------------------------------------------------------------------
+

@@ -1,6 +1,6 @@
 #pragma once
 
-//------------------------------------------------------------------------------
+
 // Some utility templates for emulating properties --
 // preferring a library solution to a new language feature
 // Each property has three sets of redundant accessors:
@@ -50,7 +50,7 @@ public:
   }
   typedef T value_type; // might be useful for template deductions
 };
-//------------------------------------------------------------------------------
+
 // a read-only property calling a user-defined getter
 template <
   class T,
@@ -87,7 +87,7 @@ public:
   }
   typedef T value_type; // might be useful for template deductions
 };
-//------------------------------------------------------------------------------
+
 // a write-only property calling a user-defined setter
 template <
   class T,
@@ -123,7 +123,7 @@ public:
   }
   typedef T value_type; // might be useful for template deductions
 };
-//------------------------------------------------------------------------------
+
 // a read-write property which invokes user-defined functions
 template <
   class T,
@@ -171,7 +171,7 @@ public:
   }
   typedef T value_type; // might be useful for template deductions
 };
-//------------------------------------------------------------------------------
+
 // a read/write property providing indexed access.
 // this class simply encapsulates a std::map and changes its interface
 // to functions consistent with the other property<> classes.
@@ -314,5 +314,5 @@ public:
   }
 };
 
-//------------------------------------------------------------------------------
+
 

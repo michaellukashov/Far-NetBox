@@ -1,10 +1,10 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #include "Configuration.h"
 #include "CopyParam.h"
 #include "Exceptions.h"
-//---------------------------------------------------------------------------
+
 class TFileOperationProgressType;
 enum TFileOperation
 {
@@ -42,7 +42,7 @@ DEFINE_CALLBACK_TYPE1(TFileOperationProgressEvent, void,
 DEFINE_CALLBACK_TYPE6(TFileOperationFinishedEvent, void,
   TFileOperation /* Operation */, TOperationSide /* Side */, bool /* Temp */,
   const UnicodeString & /* FileName */, bool /* Success */, TOnceDoneOperation & /* OnceDoneOperation */);
-//---------------------------------------------------------------------------
+
 class TFileOperationProgressType : public TObject
 {
 public:
@@ -150,7 +150,7 @@ private:
   rde::vector<uint32_t> FTicks;
   rde::vector<int64_t> FTotalTransferredThen;
 };
-//---------------------------------------------------------------------------
+
 class TSuspendFileOperationProgress : public TObject
 {
 NB_DISABLE_COPY(TSuspendFileOperationProgress)
@@ -175,4 +175,4 @@ public:
 private:
   TFileOperationProgressType * FOperationProgress;
 };
-//---------------------------------------------------------------------------
+

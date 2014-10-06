@@ -1,11 +1,11 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include <CoreDefs.hpp>
 #include <headers.hpp>
 
 #include "Exceptions.h"
-//---------------------------------------------------------------------------
+
 inline void ThrowExtException() { throw ExtException((Sysutils::Exception *)nullptr, UnicodeString(L"")); }
 #define EXCEPTION throw ExtException(nullptr, L"")
 #define THROWOSIFFALSE(C) { if (!(C)) RaiseLastOSError(); }
@@ -26,7 +26,7 @@ inline void ThrowExtException() { throw ExtException((Sysutils::Exception *)null
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
 #define SWAP(TYPE, FIRST, SECOND) \
   { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
-//---------------------------------------------------------------------------
+
 extern const wchar_t EngShortMonthNames[12][4];
 extern const std::string Bom;
 extern const wchar_t TokenPrefix;
@@ -34,7 +34,7 @@ extern const wchar_t NoReplacement;
 extern const wchar_t TokenReplacement;
 extern const UnicodeString LocalInvalidChars;
 extern const UnicodeString PasswordMask;
-//---------------------------------------------------------------------------
+
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B);
 UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C);
 void PackStr(UnicodeString & Str);
@@ -126,7 +126,7 @@ UnicodeString TrimVersion(const UnicodeString & Version);
 UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion);
 Sysutils::TFormatSettings GetEngFormatSettings();
 //int ParseShortEngMonthName(const UnicodeString & MonthStr);
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /* FileName */, const Sysutils::TSearchRec & /* Rec */, void * /* Param */);
 bool FileSearchRec(const UnicodeString & AFileName, Sysutils::TSearchRec & Rec);
@@ -139,7 +139,7 @@ DWORD FindFirstChecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearc
 DWORD FindNextChecked(TSearchRecChecked & F);
 void ProcessLocalDirectory(const UnicodeString & ADirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = nullptr, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
-//---------------------------------------------------------------------------
+
 enum TDSTMode
 {
   dstmWin  = 0, //
@@ -171,8 +171,8 @@ intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2);
 intptr_t TimeToMSec(const TDateTime & T);
 intptr_t TimeToSeconds(const TDateTime & T);
 intptr_t TimeToMinutes(const TDateTime & T);
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 class TGuard : public TObject
 {
 NB_DISABLE_COPY(TGuard)
@@ -183,7 +183,7 @@ public:
 private:
   const Sysutils::TCriticalSection & FCriticalSection;
 };
-//---------------------------------------------------------------------------
+
 class TUnguard : public TObject
 {
 NB_DISABLE_COPY(TUnguard)
@@ -194,7 +194,7 @@ public:
 private:
   Sysutils::TCriticalSection & FCriticalSection;
 };
-//---------------------------------------------------------------------------
+
 #define MB_TEXT(x) const_cast<wchar_t *>(MB2W(x).c_str())
 #define CALLSTACK
 #define CCALLSTACK(TRACING)
@@ -204,7 +204,7 @@ private:
 #define TRACEFMT(MESSAGE, ...)
 #define CTRACE(TRACING, MESSAGE)
 #define CTRACEFMT(TRACING, MESSAGE, ...)
-//---------------------------------------------------------------------------
+
 #include <assert.h>
 #define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
 #ifndef _DEBUG
@@ -233,7 +233,7 @@ private:
 #ifndef USEDPARAM
 #define USEDPARAM(p) void(p);
 #endif
-//---------------------------------------------------------------------------
+
 template<class T>
 class TValueRestorer : public TObject
 {
@@ -259,7 +259,7 @@ protected:
   T & FTarget;
   T FValue;
 };
-//---------------------------------------------------------------------------
+
 class TAutoNestingCounter : TValueRestorer<int>
 {
 public:
@@ -275,6 +275,6 @@ public:
     assert(FTarget == (FValue + 1));
   }
 };
-//---------------------------------------------------------------------------
+
 UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
-//---------------------------------------------------------------------------
+

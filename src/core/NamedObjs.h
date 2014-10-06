@@ -1,9 +1,9 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include <system.hpp>
 #include <contnrs.hpp>
-//---------------------------------------------------------------------------
+
 class TNamedObjectList;
 class TNamedObject : public TPersistent
 {
@@ -23,7 +23,7 @@ private:
   UnicodeString FName;
   bool FHidden;
 };
-//---------------------------------------------------------------------------
+
 class TNamedObjectList : public TObjectList
 {
 public:
@@ -51,6 +51,6 @@ protected:
 private:
   intptr_t FHiddenCount;
 };
-//---------------------------------------------------------------------------
+
 int NamedObjectSortProc(void * Item1, void * Item2);
-//---------------------------------------------------------------------------
+

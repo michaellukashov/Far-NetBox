@@ -8,7 +8,7 @@
 
 #include "Common.h"
 
-//---------------------------------------------------------------------------
+
 class TCustomFarFileSystem;
 class TFarPanelModes;
 class TFarKeyBarTitles;
@@ -19,9 +19,9 @@ class TFarDialogItem;
 class TFarMessageDialog;
 class TFarEditorInfo;
 class TFarPluginGuard;
-//---------------------------------------------------------------------------
+
 const int MaxMessageWidth = 64;
-//---------------------------------------------------------------------------
+
 enum TFarShiftStatus
 {
   fsNone,
@@ -39,10 +39,10 @@ enum THandlesFunction
   hfProcessEvent
 };
 DEFINE_CALLBACK_TYPE1(TFarInputBoxValidateEvent, void, UnicodeString & /* Text */);
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE1(TFarMessageTimerEvent, void, intptr_t & /* Result */);
 DEFINE_CALLBACK_TYPE3(TFarMessageClickEvent, void, void * /* Token */, uintptr_t /* Result */, bool & /* Close */);
-//---------------------------------------------------------------------------
+
 struct TFarMessageParams : public TObject
 {
   TFarMessageParams();
@@ -60,7 +60,7 @@ struct TFarMessageParams : public TObject
   TFarMessageClickEvent ClickEvent;
   void * Token;
 };
-//---------------------------------------------------------------------------
+
 class TCustomFarPlugin : public TObject
 {
 friend class TCustomFarFileSystem;
@@ -228,7 +228,7 @@ private:
       lhs.bottom == rhs.bottom;
   }
 };
-//---------------------------------------------------------------------------
+
 class TCustomFarFileSystem : public TObject
 {
 friend class TFarPanelInfo;
@@ -321,7 +321,7 @@ private:
   const TFarPanelInfo * GetPanelInfo(int Another) const;
   TFarPanelInfo * GetPanelInfo(int Another);
 };
-//---------------------------------------------------------------------------
+
 #define PANEL_MODES_COUNT 10
 class TFarPanelModes : public TObject
 {
@@ -344,7 +344,7 @@ private:
   static void ClearPanelMode(PanelMode & Mode);
   static intptr_t CommaCount(const UnicodeString & ColumnTypes);
 };
-//---------------------------------------------------------------------------
+
 class TFarKeyBarTitles : public TObject
 {
 friend class TCustomFarFileSystem;
@@ -365,7 +365,7 @@ private:
   void FillOpenPluginInfo(struct OpenPluginInfo * Info);
   static void ClearKeyBarTitles(KeyBarTitles & Titles);
 };
-//---------------------------------------------------------------------------
+
 class TCustomFarPanelItem : public TObject
 {
 friend class TCustomFarFileSystem;
@@ -383,7 +383,7 @@ protected:
 
   void FillPanelItem(struct PluginPanelItem * PanelItem);
 };
-//---------------------------------------------------------------------------
+
 class TFarPanelItem : public TCustomFarPanelItem
 {
 NB_DISABLE_COPY(TFarPanelItem)
@@ -413,7 +413,7 @@ protected:
     UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
   virtual UnicodeString GetCustomColumnData(size_t Column);
 };
-//---------------------------------------------------------------------------
+
 class THintPanelItem : public TCustomFarPanelItem
 {
 public:
@@ -431,7 +431,7 @@ protected:
 private:
   UnicodeString FHint;
 };
-//---------------------------------------------------------------------------
+
 enum TFarPanelType
 {
   ptFile,
@@ -439,7 +439,7 @@ enum TFarPanelType
   ptQuickView,
   ptInfo
 };
-//---------------------------------------------------------------------------
+
 class TFarPanelInfo : public TObject
 {
 public:
@@ -469,7 +469,7 @@ private:
   TObjectList * FItems;
   TCustomFarFileSystem * FOwner;
 };
-//---------------------------------------------------------------------------
+
 class TFarMenuItems : public TStringList
 {
 public:
@@ -497,7 +497,7 @@ protected:
 private:
   intptr_t FItemFocused;
 };
-//---------------------------------------------------------------------------
+
 class TFarEditorInfo : public TObject
 {
 public:
@@ -510,25 +510,25 @@ public:
 private:
   EditorInfo * FEditorInfo;
 };
-//---------------------------------------------------------------------------
+
 class TFarEnvGuard : public TObject
 {
 public:
   inline TFarEnvGuard();
   inline ~TFarEnvGuard();
 };
-//---------------------------------------------------------------------------
+
 class TFarPluginEnvGuard : public TObject
 {
 public:
   TFarPluginEnvGuard();
   ~TFarPluginEnvGuard();
 };
-//---------------------------------------------------------------------------
+
 void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidth);
-//---------------------------------------------------------------------------
+
 extern TCustomFarPlugin * FarPlugin;
-//------------------------------------------------------------------------------
+
 class TGlobalFunctions : public TGlobalFunctionsIntf, public TObject
 {
 public:
@@ -536,4 +536,4 @@ public:
   virtual UnicodeString GetCurrDirectory() const;
   virtual UnicodeString GetStrVersionNumber() const;
 };
-//------------------------------------------------------------------------------
+

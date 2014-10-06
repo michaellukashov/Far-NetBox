@@ -1,9 +1,9 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include "FileMasks.h"
 #include "RemoteFiles.h"
-//---------------------------------------------------------------------------
+
 // When adding new options, mind TCopyParamType::GetLogStr()
 enum TOperationSide
 {
@@ -46,14 +46,14 @@ const int cpaNoIgnorePermErrors = 0x80;
 const int cpaNoNewerOnly        = 0x100;
 const int cpaNoRemoveCtrlZ      = 0x200;
 const int cpaNoRemoveBOM        = 0x400;
-//---------------------------------------------------------------------------
+
 struct TUsableCopyParamAttrs
 {
   int General;
   int Upload;
   int Download;
 };
-//---------------------------------------------------------------------------
+
 class TCopyParamType : public TObject
 {
 NB_DECLARE_CLASS(TCopyParamType)
@@ -175,7 +175,7 @@ private:
   uintptr_t FCPSLimit;
   bool FNewerOnly;
 };
-//---------------------------------------------------------------------------
+
 uintptr_t GetSpeedLimit(const UnicodeString & Text);
 UnicodeString SetSpeedLimit(uintptr_t Limit);
-//---------------------------------------------------------------------------
+

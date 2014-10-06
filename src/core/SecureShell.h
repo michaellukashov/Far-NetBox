@@ -1,16 +1,16 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include "PuttyIntf.h"
 #include "Configuration.h"
 #include "SessionData.h"
 #include "SessionInfo.h"
-//---------------------------------------------------------------------------
+
 #ifndef PuttyIntfH
 struct Backend;
 struct Conf;
 #endif
-//---------------------------------------------------------------------------
+
 struct _WSANETWORKEVENTS;
 typedef struct _WSANETWORKEVENTS WSANETWORKEVENTS;
 typedef UINT_PTR SOCKET;
@@ -23,7 +23,7 @@ enum TSshImplementation
   sshiProFTPD,
   sshiBitvise,
 };
-//---------------------------------------------------------------------------
+
 class TSecureShell : public TObject
 {
 friend class TPoolForDataEvent;
@@ -176,4 +176,4 @@ private:
   UnicodeString FLastTunnelError;
   UnicodeString FUserName;
 };
-//---------------------------------------------------------------------------
+

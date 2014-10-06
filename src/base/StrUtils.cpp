@@ -1,10 +1,10 @@
-//---------------------------------------------------------------------------
+
 #include <headers.hpp>
 #include <Classes.hpp>
 #include <StrUtils.hpp>
 #include <Sysutils.hpp>
 
-//---------------------------------------------------------------------------
+
 
 UnicodeString ReplaceStr(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat)
 {

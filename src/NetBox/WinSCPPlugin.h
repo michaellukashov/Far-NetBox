@@ -1,13 +1,13 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <Interface.h>
 #include <Option.h>
 #include "FarPlugin.h"
-//---------------------------------------------------------------------------
+
 class TWinSCPFileSystem;
 class TCopyParamType;
-//---------------------------------------------------------------------------
+
 struct TMessageParams : public TObject
 {
 NB_DISABLE_COPY(TMessageParams)
@@ -38,7 +38,7 @@ public:
   uintptr_t Timeout;
   uintptr_t TimeoutAnswer;
 };
-//---------------------------------------------------------------------------
+
 class TWinSCPPlugin : public TCustomFarPlugin
 {
 friend TWinSCPFileSystem;
@@ -89,4 +89,4 @@ private:
 private:
   bool FInitialized;
 };
-//---------------------------------------------------------------------------
+

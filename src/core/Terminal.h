@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+
 #pragma once
 
 #include <CoreDefs.hpp>
@@ -9,7 +9,7 @@
 #include "FileOperationProgress.h"
 #include "FileMasks.h"
 #include "Exceptions.h"
-//------------------------------------------------------------------------------
+
 class TCopyParamType;
 class TFileOperationProgressType;
 class TRemoteDirectory;
@@ -28,7 +28,7 @@ struct TSpaceAvailable;
 struct TFilesFindParams;
 class TTunnelUI;
 class TCallbackGuard;
-//------------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE8(TQueryUserEvent, void,
   TObject * /* Sender */, const UnicodeString & /* Query */, TStrings * /* MoreMessages */ , uintptr_t /* Answers */,
   const TQueryParams * /* Params */, uintptr_t & /* Answer */, TQueryType /* QueryType */, void * /* Arg */);
@@ -72,7 +72,7 @@ DEFINE_CALLBACK_TYPE1(TRemoveLocalDirectoryEvent, BOOL,
 DEFINE_CALLBACK_TYPE2(TCreateLocalDirectoryEvent, BOOL,
   const UnicodeString & /* LocalDirName */, LPSECURITY_ATTRIBUTES /* SecurityAttributes */);
 DEFINE_CALLBACK_TYPE0(TCheckForEscEvent, bool);
-//------------------------------------------------------------------------------
+
 inline void ThrowSkipFile(Sysutils::Exception * Exception, const UnicodeString & Message)
 {
   throw ESkipFile(Exception, Message);
@@ -91,7 +91,7 @@ void FileOperationLoopCustom(TTerminal * Terminal,
 #define FILE_OPERATION_LOOP_EX2(ALLOW_SKIP, MESSAGE, HELP_KEYWORD, OPERATION) \
   FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, HELP_KEYWORD, \
     [&]() { OPERATION })
-//------------------------------------------------------------------------------
+
 enum TCurrentFSProtocol
 {
   cfsUnknown,
@@ -101,24 +101,24 @@ enum TCurrentFSProtocol
   cfsFTPS,
   cfsWebDAV
 };
-//------------------------------------------------------------------------------
+
 const int cpDelete = 0x01;
 const int cpTemporary = 0x04;
 const int cpNoConfirmation = 0x08;
 const int cpNewerOnly = 0x10;
 const int cpAppend = 0x20;
 const int cpResume = 0x40;
-//------------------------------------------------------------------------------
+
 const int ccApplyToDirectories = 0x01;
 const int ccRecursive = 0x02;
 const int ccUser = 0x100;
-//------------------------------------------------------------------------------
+
 const int csIgnoreErrors = 0x01;
-//------------------------------------------------------------------------------
+
 const int ropNoReadDirectory = 0x02;
-//------------------------------------------------------------------------------
+
 const int boDisableNeverShowAgain = 0x01;
-//------------------------------------------------------------------------------
+
 class TTerminal : public TObject, public TSessionUI
 {
 NB_DISABLE_COPY(TTerminal)
@@ -597,7 +597,7 @@ private:
   bool FRememberedPasswordTried;
   bool FRememberedTunnelPasswordTried;
 };
-//------------------------------------------------------------------------------
+
 class TSecondaryTerminal : public TTerminal
 {
 NB_DISABLE_COPY(TSecondaryTerminal)
@@ -619,7 +619,7 @@ protected:
 private:
   TTerminal * FMainTerminal;
 };
-//------------------------------------------------------------------------------
+
 class TTerminalList : public TObjectList
 {
 NB_DISABLE_COPY(TTerminalList)
@@ -642,7 +642,7 @@ protected:
 private:
   TConfiguration * FConfiguration;
 };
-//------------------------------------------------------------------------------
+
 struct TCustomCommandParams : public TObject
 {
 NB_DECLARE_CLASS(TCustomCommandParams)
@@ -651,7 +651,7 @@ public:
   intptr_t Params;
   TCaptureOutputEvent OutputEvent;
 };
-//------------------------------------------------------------------------------
+
 struct TCalculateSizeStats : public TObject
 {
   TCalculateSizeStats();
@@ -660,7 +660,7 @@ struct TCalculateSizeStats : public TObject
   intptr_t Directories;
   intptr_t SymLinks;
 };
-//------------------------------------------------------------------------------
+
 struct TCalculateSizeParams : public TObject
 {
 NB_DECLARE_CLASS(TCalculateSizeParams)
@@ -672,7 +672,7 @@ public:
   bool AllowDirs;
   bool Result;
 };
-//------------------------------------------------------------------------------
+
 struct TMakeLocalFileListParams : public TObject
 {
 NB_DECLARE_CLASS(TMakeLocalFileListParams)
@@ -681,7 +681,7 @@ public:
   bool IncludeDirs;
   bool Recursive;
 };
-//------------------------------------------------------------------------------
+
 struct TSynchronizeOptions : public TObject
 {
 NB_DISABLE_COPY(TSynchronizeOptions)
@@ -694,7 +694,7 @@ public:
   bool FilterFind(const UnicodeString & AFileName);
   bool MatchesFilter(const UnicodeString & AFileName);
 };
-//------------------------------------------------------------------------------
+
 enum TChecklistAction
 {
   saNone, saUploadNew, saDownloadNew, saUploadUpdate,
@@ -733,7 +733,7 @@ private:
   TChecklistItem();
 };
 
-//------------------------------------------------------------------------------
+
 class TSynchronizeChecklist : public TObject
 {
 friend class TTerminal;
@@ -760,7 +760,7 @@ private:
 
   static intptr_t Compare(const void * Item1, const void * Item2);
 };
-//------------------------------------------------------------------------------
+
 struct TSpaceAvailable : public TObject
 {
   TSpaceAvailable();
@@ -771,6 +771,6 @@ struct TSpaceAvailable : public TObject
   int64_t UnusedBytesAvailableToUser;
   uintptr_t BytesPerAllocationUnit;
 };
-//------------------------------------------------------------------------------
+
 UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName = false);
-//------------------------------------------------------------------------------
+

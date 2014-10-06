@@ -1,8 +1,8 @@
-//------------------------------------------------------------------------------
+
 #pragma once
 
 #include <registry.hpp>
-//------------------------------------------------------------------------------
+
 enum TStorage
 {
   stDetect,
@@ -17,7 +17,7 @@ enum TStorageAccessMode
   smRead,
   smReadWrite
 };
-//------------------------------------------------------------------------------
+
 class THierarchicalStorage : public TObject
 {
 NB_DISABLE_COPY(THierarchicalStorage)
@@ -99,7 +99,7 @@ protected:
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate) = 0;
   UnicodeString MungeKeyName(const UnicodeString & Key);
 };
-//------------------------------------------------------------------------------
+
 class TRegistryStorage : public THierarchicalStorage
 {
 public:
@@ -149,7 +149,7 @@ private:
   TRegistry * FRegistry;
   mutable intptr_t FFailed;
 };
-//------------------------------------------------------------------------------
+
 UnicodeString PuttyMungeStr(const UnicodeString & Str);
 UnicodeString PuttyUnMungeStr(const UnicodeString & Str);
-//------------------------------------------------------------------------------
+

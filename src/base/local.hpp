@@ -44,14 +44,14 @@ extern const wchar_t UNIX_EOL_fmt[];
 extern const wchar_t MAC_EOL_fmt[];
 extern const wchar_t WIN_EOL_fmt[];
 
-//---------------------------------------------------------------------------
+
 extern int Win32Platform;
 extern int Win32MajorVersion;
 extern int Win32MinorVersion;
 extern int Win32BuildNumber;
 // extern int Win32CSDVersion;
 
-//---------------------------------------------------------------------------
+
 
 inline intptr_t __cdecl StrLength(const wchar_t *str) { return wcslen(str ? str : L""); }
 

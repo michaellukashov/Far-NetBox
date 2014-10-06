@@ -8,10 +8,10 @@
 #include "resource.h"
 #include "Common.h"
 
-//---------------------------------------------------------------------------
+
 extern TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
 
-//---------------------------------------------------------------------------
+
 class TFarPluginGuard : public TFarPluginEnvGuard, public TGuard
 {
 public:
@@ -21,7 +21,7 @@ public:
   }
 };
 
-//---------------------------------------------------------------------------
+
 extern "C"
 {
 
@@ -195,9 +195,9 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t * fileName, const uint8_t * fileHead
   return Handle;
 }
 
-//---------------------------------------------------------------------------
+
   static int Processes = 0;
-//---------------------------------------------------------------------------
+
 BOOL DllProcessAttach(HINSTANCE HInstance)
 {
   FarPlugin = CreateFarPlugin(HInstance);
@@ -208,7 +208,7 @@ BOOL DllProcessAttach(HINSTANCE HInstance)
   return TRUE;
 }
 
-//---------------------------------------------------------------------------
+
 BOOL DllProcessDetach()
 {
   assert(Processes);
@@ -222,7 +222,7 @@ BOOL DllProcessDetach()
   return TRUE;
 }
 
-//---------------------------------------------------------------------------
+
 BOOL WINAPI DllMain(HINSTANCE HInstance, DWORD Reason, LPVOID /*ptr*/ )
 {
   BOOL Result = TRUE;

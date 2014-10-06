@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -9,7 +9,7 @@
 #include "CoreMain.h"
 
 using namespace Sysutils;
-//---------------------------------------------------------------------------
+
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   TGUIConfiguration(),
   FFarPlugin(APlugin),
@@ -19,12 +19,12 @@ TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   Default();
   CacheFarSettings();
 }
-//---------------------------------------------------------------------------
+
 TFarConfiguration::~TFarConfiguration()
 {
   SAFE_DESTROY(FBookmarks);
 }
-//---------------------------------------------------------------------------
+
 void TFarConfiguration::Default()
 {
   TGUIConfiguration::Default();
@@ -60,18 +60,18 @@ void TFarConfiguration::Default()
 
   FBookmarks->Clear();
 }
-//---------------------------------------------------------------------------
+
 THierarchicalStorage * TFarConfiguration::CreateStorage(bool SessionList)
 {
   return TGUIConfiguration::CreateStorage(SessionList);
 }
-//---------------------------------------------------------------------------
+
 void TFarConfiguration::Saved()
 {
   TGUIConfiguration::Saved();
   FBookmarks->ModifyAll(false);
 }
-//---------------------------------------------------------------------------
+
 // duplicated from core\configuration.cpp
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
@@ -107,7 +107,7 @@ void TFarConfiguration::Saved()
     KEY(Integer,  ApplyCommandParams); \
     KEY(Bool,     ConfirmSynchronizedBrowsing); \
   );
-//---------------------------------------------------------------------------
+
 void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 {
   TGUIConfiguration::SaveData(Storage, All);
@@ -124,7 +124,7 @@ void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     Storage->CloseSubKey();
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
 {
   TGUIConfiguration::LoadData(Storage);
@@ -140,7 +140,7 @@ void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
     Storage->CloseSubKey();
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarConfiguration::Load()
 {
   FForceInheritance = true;
@@ -150,7 +150,7 @@ void TFarConfiguration::Load()
   };
   TGUIConfiguration::Load();
 }
-//---------------------------------------------------------------------------
+
 void TFarConfiguration::Save(bool All, bool Explicit)
 {
   FForceInheritance = true;
@@ -160,7 +160,7 @@ void TFarConfiguration::Save(bool All, bool Explicit)
   };
   TGUIConfiguration::DoSave(All, Explicit);
 }
-//---------------------------------------------------------------------------
+
 void TFarConfiguration::SetPlugin(TCustomFarPlugin * Value)
 {
   if (GetPlugin() != Value)
@@ -169,7 +169,7 @@ void TFarConfiguration::SetPlugin(TCustomFarPlugin * Value)
     FFarPlugin = Value;
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarConfiguration::CacheFarSettings()
 {
   if (GetPlugin())
@@ -177,7 +177,7 @@ void TFarConfiguration::CacheFarSettings()
     FFarConfirmations = GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
   }
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarConfiguration::FarConfirmations() const
 {
   if (GetPlugin() && (GetCurrentThreadId() == GetPlugin()->GetFarThread()))
@@ -190,7 +190,7 @@ intptr_t TFarConfiguration::FarConfirmations() const
     return FFarConfirmations;
   }
 }
-//---------------------------------------------------------------------------
+
 bool TFarConfiguration::GetConfirmOverwriting() const
 {
   if (FForceInheritance || FConfirmOverwritingOverride)
@@ -203,7 +203,7 @@ bool TFarConfiguration::GetConfirmOverwriting() const
     return (FarConfirmations() & FCS_COPYOVERWRITE) != 0;
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarConfiguration::SetConfirmOverwriting(bool Value)
 {
   if (FForceInheritance)
@@ -219,35 +219,35 @@ void TFarConfiguration::SetConfirmOverwriting(bool Value)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 bool TFarConfiguration::GetConfirmDeleting() const
 {
   assert(GetPlugin());
   return (FarConfirmations() & FCS_DELETE) != 0;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TFarConfiguration::ModuleFileName() const
 {
   assert(GetPlugin());
   return GetPlugin()->GetModuleName();
 }
-//---------------------------------------------------------------------------
+
 void TFarConfiguration::SetBookmarks(const UnicodeString & Key,
   TBookmarkList * Value)
 {
   FBookmarks->SetBookmarks(Key, Value);
   Changed();
 }
-//---------------------------------------------------------------------------
+
 TBookmarkList * TFarConfiguration::GetBookmarks(const UnicodeString & Key)
 {
   return FBookmarks->GetBookmarks(Key);
 }
-//---------------------------------------------------------------------------
+
 TFarConfiguration * GetFarConfiguration()
 {
   return NB_STATIC_DOWNCAST(TFarConfiguration, GetConfiguration());
 }
-//---------------------------------------------------------------------------
+
 NB_IMPLEMENT_CLASS(TFarConfiguration, NB_GET_CLASS_INFO(TGUIConfiguration), nullptr)
-//---------------------------------------------------------------------------
+

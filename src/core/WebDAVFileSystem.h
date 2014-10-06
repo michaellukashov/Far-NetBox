@@ -6,16 +6,16 @@
 #include "Terminal.h"
 
 using namespace Sysutils;
-//------------------------------------------------------------------------------
+
 struct TListDataEntry;
 struct TFileTransferData;
-//------------------------------------------------------------------------------
+
 namespace webdav {
   struct session_t;
   typedef int error_t;
 } // namespace webdav
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
+
+
 class TWebDAVFileSystem : public TCustomFileSystem
 {
 friend class TWebDAVFileListHelper;
@@ -223,7 +223,7 @@ private:
   webdav::session_t * FSession;
 };
 
-//------------------------------------------------------------------------------
+
 void NeonInitialize();
 void NeonFinalize();
 

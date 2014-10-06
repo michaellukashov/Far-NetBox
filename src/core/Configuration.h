@@ -1,17 +1,17 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include "RemoteFiles.h"
 #include "FileBuffer.h"
 #include "HierarchicalStorage.h"
-//---------------------------------------------------------------------------
+
 #define SET_CONFIG_PROPERTY_EX(PROPERTY, APPLY) \
   if (Get ## PROPERTY() != Value) { F ## PROPERTY = Value; Changed(); APPLY; }
 #define SET_CONFIG_PROPERTY(PROPERTY) \
   SET_CONFIG_PROPERTY_EX(PROPERTY, )
-//---------------------------------------------------------------------------
+
 #define CONST_DEFAULT_NUMBER_OF_RETRIES 2
-//---------------------------------------------------------------------------
+
 enum TAutoSwitch
 {
   asOn,
@@ -26,7 +26,7 @@ enum TFtpEncryptionSwitch_219
   fesImplicit,
   fesExplicitTLS
 };
-//---------------------------------------------------------------------------
+
 class TConfiguration : public TObject
 {
 NB_DECLARE_CLASS(TConfiguration)
@@ -238,7 +238,7 @@ private:
   bool FDefaultCollectUsage;
   intptr_t FSessionReopenAutoMaximumNumberOfRetries;
 };
-//---------------------------------------------------------------------------
+
 class TShortCuts : public TObject
 {
 public:
@@ -248,9 +248,9 @@ public:
 private:
   rde::vector<TShortCut> FShortCuts;
 };
-//---------------------------------------------------------------------------
+
 extern const UnicodeString OriginalPuttyRegistryStorageKey;
 extern const UnicodeString KittyRegistryStorageKey;
 extern const UnicodeString OriginalPuttyExecutable;
 extern const UnicodeString KittyExecutable;
-//---------------------------------------------------------------------------
+

@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 #include <LanguagesDEPfix.hpp>
@@ -12,33 +12,33 @@
 #include <shlobj.h>
 
 using namespace Sysutils;
-//---------------------------------------------------------------------------
+
 const intptr_t ccLocal = ccUser;
 const intptr_t ccShowResults = ccUser << 1;
 const intptr_t ccCopyResults = ccUser << 2;
 const intptr_t ccSet = 0x80000000;
-//---------------------------------------------------------------------------
+
 static const uintptr_t AdditionaLanguageMask = 0xFFFFFF00;
 static const UnicodeString AdditionaLanguagePrefix(L"XX");
-//---------------------------------------------------------------------------
+
 TGUICopyParamType::TGUICopyParamType()
   : TCopyParamType()
 {
   GUIDefault();
 }
-//---------------------------------------------------------------------------
+
 TGUICopyParamType::TGUICopyParamType(const TCopyParamType & Source)
   : TCopyParamType(Source)
 {
   GUIDefault();
 }
-//---------------------------------------------------------------------------
+
 TGUICopyParamType::TGUICopyParamType(const TGUICopyParamType & Source)
   : TCopyParamType(Source)
 {
   GUIAssign(&Source);
 }
-//---------------------------------------------------------------------------
+
 void TGUICopyParamType::Assign(const TCopyParamType * Source)
 {
   TCopyParamType::Assign(Source);
@@ -50,19 +50,19 @@ void TGUICopyParamType::Assign(const TCopyParamType * Source)
     GUIAssign(GUISource);
   }
 }
-//---------------------------------------------------------------------------
+
 void TGUICopyParamType::GUIAssign(const TGUICopyParamType * Source)
 {
   SetQueue(Source->GetQueue());
   SetQueueNoConfirmation(Source->GetQueueNoConfirmation());
   SetQueueIndividually(Source->GetQueueIndividually());
 }
-//---------------------------------------------------------------------------
+
 void TGUICopyParamType::Default()
 {
   GUIDefault();
 }
-//---------------------------------------------------------------------------
+
 void TGUICopyParamType::GUIDefault()
 {
   TCopyParamType::Default();
@@ -71,7 +71,7 @@ void TGUICopyParamType::GUIDefault()
   SetQueueNoConfirmation(true);
   SetQueueIndividually(false);
 }
-//---------------------------------------------------------------------------
+
 void TGUICopyParamType::Load(THierarchicalStorage * Storage)
 {
   TCopyParamType::Load(Storage);
@@ -80,7 +80,7 @@ void TGUICopyParamType::Load(THierarchicalStorage * Storage)
   SetQueueNoConfirmation(Storage->ReadBool(L"QueueNoConfirmation", GetQueueNoConfirmation()));
   SetQueueIndividually(Storage->ReadBool(L"QueueIndividually", GetQueueIndividually()));
 }
-//---------------------------------------------------------------------------
+
 void TGUICopyParamType::Save(THierarchicalStorage * Storage)
 {
   TCopyParamType::Save(Storage);
@@ -89,20 +89,20 @@ void TGUICopyParamType::Save(THierarchicalStorage * Storage)
   Storage->WriteBool(L"QueueNoConfirmation", GetQueueNoConfirmation());
   Storage->WriteBool(L"QueueIndividually", GetQueueIndividually());
 }
-//---------------------------------------------------------------------------
+
 TGUICopyParamType & TGUICopyParamType::operator =(const TCopyParamType & rhp)
 {
   Assign(&rhp);
   return *this;
 }
-//---------------------------------------------------------------------------
+
 TGUICopyParamType & TGUICopyParamType::operator =(const TGUICopyParamType & rhp)
 {
   Assign(&rhp);
   return *this;
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 void TCopyParamRuleData::Default()
 {
   HostName = L"";
@@ -110,17 +110,17 @@ void TCopyParamRuleData::Default()
   RemoteDirectory = L"";
   LocalDirectory = L"";
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TCopyParamRule::TCopyParamRule()
 {
 }
-//---------------------------------------------------------------------------
+
 TCopyParamRule::TCopyParamRule(const TCopyParamRuleData & Data) :
   FData(Data)
 {
 }
-//---------------------------------------------------------------------------
+
 TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source)
 {
   FData.HostName = Source.FData.HostName;
@@ -128,7 +128,7 @@ TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source)
   FData.RemoteDirectory = Source.FData.RemoteDirectory;
   FData.LocalDirectory = Source.FData.LocalDirectory;
 }
-//---------------------------------------------------------------------------
+
 #define C(Property) (Property == rhp.Property)
 bool TCopyParamRule::operator==(const TCopyParamRule & rhp) const
 {
@@ -140,7 +140,7 @@ bool TCopyParamRule::operator==(const TCopyParamRule & rhp) const
     true;
 }
 #undef C
-//---------------------------------------------------------------------------
+
 bool TCopyParamRule::Match(const UnicodeString & Mask,
   const UnicodeString & Value, bool Path, bool Local) const
 {
@@ -163,7 +163,7 @@ bool TCopyParamRule::Match(const UnicodeString & Mask,
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool TCopyParamRule::Matches(const TCopyParamRuleData & Value) const
 {
   return
@@ -172,7 +172,7 @@ bool TCopyParamRule::Matches(const TCopyParamRuleData & Value) const
     Match(FData.RemoteDirectory, Value.RemoteDirectory, true, false) &&
     Match(FData.LocalDirectory, Value.LocalDirectory, true, true);
 }
-//---------------------------------------------------------------------------
+
 void TCopyParamRule::Load(THierarchicalStorage * Storage)
 {
   FData.HostName = Storage->ReadString(L"HostName", FData.HostName);
@@ -180,7 +180,7 @@ void TCopyParamRule::Load(THierarchicalStorage * Storage)
   FData.RemoteDirectory = Storage->ReadString(L"RemoteDirectory", FData.RemoteDirectory);
   FData.LocalDirectory = Storage->ReadString(L"LocalDirectory", FData.LocalDirectory);
 }
-//---------------------------------------------------------------------------
+
 void TCopyParamRule::Save(THierarchicalStorage * Storage) const
 {
   Storage->WriteString(L"HostName", FData.HostName);
@@ -188,7 +188,7 @@ void TCopyParamRule::Save(THierarchicalStorage * Storage) const
   Storage->WriteString(L"RemoteDirectory", FData.RemoteDirectory);
   Storage->WriteString(L"LocalDirectory", FData.LocalDirectory);
 }
-//---------------------------------------------------------------------------
+
 bool TCopyParamRule::GetEmpty() const
 {
   return
@@ -203,7 +203,7 @@ TCopyParamRule & TCopyParamRule::operator=(const TCopyParamRule & other)
   SetData(other.FData);
   return *this;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TCopyParamRule::GetInfoStr(const UnicodeString & Separator) const
 {
   UnicodeString Result;
@@ -217,15 +217,15 @@ UnicodeString TCopyParamRule::GetInfoStr(const UnicodeString & Separator) const
   #undef ADD
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TCopyParamRule::SetData(const TCopyParamRuleData & Value)
 {
   FData = Value;
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 UnicodeString TCopyParamList::FInvalidChars(L"/\\[]");
-//---------------------------------------------------------------------------
+
 TCopyParamList::TCopyParamList() :
   FRules(new TList()),
   FCopyParams(new TList()),
@@ -234,7 +234,7 @@ TCopyParamList::TCopyParamList() :
   FModified(false)
 {
 }
-//---------------------------------------------------------------------------
+
 TCopyParamList::~TCopyParamList()
 {
   Clear();
@@ -243,19 +243,19 @@ TCopyParamList::~TCopyParamList()
   SAFE_DESTROY(FNames);
   SAFE_DESTROY(FNameList);
 }
-//---------------------------------------------------------------------------
+
 void TCopyParamList::Reset()
 {
   SAFE_DESTROY(FNameList);
   FModified = false;
 }
-//---------------------------------------------------------------------
+
 void TCopyParamList::Modify()
 {
   SAFE_DESTROY(FNameList);
   FModified = true;
 }
-//---------------------------------------------------------------------
+
 void TCopyParamList::ValidateName(const UnicodeString & Name)
 {
   if (Name.LastDelimiter(FInvalidChars) > 0)
@@ -263,7 +263,7 @@ void TCopyParamList::ValidateName(const UnicodeString & Name)
     throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), FInvalidChars.c_str()));
   }
 }
-//---------------------------------------------------------------------------
+
 TCopyParamList & TCopyParamList::operator=(const TCopyParamList & rhl)
 {
   Clear();
@@ -283,7 +283,7 @@ TCopyParamList & TCopyParamList::operator=(const TCopyParamList & rhl)
   Modify();
   return *this;
 }
-//---------------------------------------------------------------------------
+
 bool TCopyParamList::operator==(const TCopyParamList & rhl) const
 {
   bool Result = (GetCount() == rhl.GetCount());
@@ -299,12 +299,12 @@ bool TCopyParamList::operator==(const TCopyParamList & rhl) const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TCopyParamList::IndexOfName(const UnicodeString & Name) const
 {
   return FNames->IndexOf(Name.c_str());
 }
-//---------------------------------------------------------------------------
+
 bool TCopyParamList::CompareItem(intptr_t Index,
   const TCopyParamType * CopyParam, const TCopyParamRule * Rule) const
 {
@@ -314,7 +314,7 @@ bool TCopyParamList::CompareItem(intptr_t Index,
       (Rule == nullptr) :
       ((Rule != nullptr) && (*GetRule(Index)) == (*Rule)));
 }
-//---------------------------------------------------------------------------
+
 void TCopyParamList::Clear()
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
@@ -326,13 +326,13 @@ void TCopyParamList::Clear()
   FRules->Clear();
   FNames->Clear();
 }
-//---------------------------------------------------------------------------
+
 void TCopyParamList::Add(const UnicodeString & Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   Insert(GetCount(), Name, CopyParam, Rule);
 }
-//---------------------------------------------------------------------------
+
 void TCopyParamList::Insert(intptr_t Index, const UnicodeString & Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
@@ -343,7 +343,7 @@ void TCopyParamList::Insert(intptr_t Index, const UnicodeString & Name,
   FRules->Insert(Index, Rule);
   Modify();
 }
-//---------------------------------------------------------------------------
+
 void TCopyParamList::Change(intptr_t Index, const UnicodeString & Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
@@ -362,7 +362,7 @@ void TCopyParamList::Change(intptr_t Index, const UnicodeString & Name,
     SAFE_DESTROY(Rule);
   }
 }
-//---------------------------------------------------------------------------
+
 void TCopyParamList::Move(intptr_t CurIndex, intptr_t NewIndex)
 {
   if (CurIndex != NewIndex)
@@ -373,7 +373,7 @@ void TCopyParamList::Move(intptr_t CurIndex, intptr_t NewIndex)
     Modify();
   }
 }
-//---------------------------------------------------------------------------
+
 void TCopyParamList::Delete(intptr_t Index)
 {
   assert((Index >= 0) && (Index < GetCount()));
@@ -384,7 +384,7 @@ void TCopyParamList::Delete(intptr_t Index)
   FRules->Delete(Index);
   Modify();
 }
-//---------------------------------------------------------------------------
+
 intptr_t TCopyParamList::Find(const TCopyParamRuleData & Value) const
 {
   intptr_t Result = -1;
@@ -402,7 +402,7 @@ intptr_t TCopyParamList::Find(const TCopyParamRuleData & Value) const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
 {
   for (intptr_t Index = 0; Index < ACount; ++Index)
@@ -432,7 +432,7 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
   }
   Reset();
 }
-//---------------------------------------------------------------------------
+
 void TCopyParamList::Save(THierarchicalStorage * Storage) const
 {
   Storage->ClearSubKeys();
@@ -457,22 +457,22 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
     }
   }
 }
-//---------------------------------------------------------------------------
+
 const TCopyParamRule * TCopyParamList::GetRule(intptr_t Index) const
 {
   return NB_STATIC_DOWNCAST(TCopyParamRule, FRules->GetItem(Index));
 }
-//---------------------------------------------------------------------------
+
 const TCopyParamType * TCopyParamList::GetCopyParam(intptr_t Index) const
 {
   return NB_STATIC_DOWNCAST(TCopyParamType, FCopyParams->GetItem(Index));
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TCopyParamList::GetName(intptr_t Index) const
 {
   return FNames->GetString(Index);
 }
-//---------------------------------------------------------------------------
+
 TStrings * TCopyParamList::GetNameList() const
 {
   if (FNameList == nullptr)
@@ -486,7 +486,7 @@ TStrings * TCopyParamList::GetNameList() const
   }
   return FNameList;
 }
-//---------------------------------------------------------------------------
+
 bool TCopyParamList::GetAnyRule() const
 {
   bool Result = false;
@@ -498,8 +498,8 @@ bool TCopyParamList::GetAnyRule() const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
   FLocale(0),
   FLocales(new TStringList()),
@@ -529,13 +529,13 @@ TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
   FCopyParamList = new TCopyParamList();
   CoreSetResourceModule(0);
 }
-//---------------------------------------------------------------------------
+
 TGUIConfiguration::~TGUIConfiguration()
 {
   SAFE_DESTROY(FLocales);
   SAFE_DESTROY(FCopyParamList);
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::Default()
 {
   TConfiguration::Default();
@@ -578,7 +578,7 @@ void TGUIConfiguration::Default()
   FNewDirectoryProperties.Default();
   FNewDirectoryProperties.Rights = TRights::rfDefault | TRights::rfExec;
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::DefaultLocalized()
 {
   if (FCopyParamListDefaults)
@@ -609,21 +609,21 @@ void TGUIConfiguration::DefaultLocalized()
     FCopyParamList->Reset();
   }
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::UpdateStaticUsage()
 {
   // TConfiguration::UpdateStaticUsage();
   // Usage->Set(L"CopyParamsCount", (FCopyParamListDefaults ? 0 : FCopyParamList->Count));
   // Usage->Set(L"CopyParamsCount", (FCopyParamListDefaults ? 0 : FCopyParamList->GetCount()));
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TGUIConfiguration::PropertyToKey(const UnicodeString & Property)
 {
   // no longer useful
   intptr_t P = Property.LastDelimiter(L".>");
   return Property.SubString(P + 1, Property.Length() - P);
 }
-//---------------------------------------------------------------------------
+
 // duplicated from core\configuration.cpp
 #undef BLOCK
 #define BLOCK(KEY, CANCREATE, BLOCK) \
@@ -656,7 +656,7 @@ UnicodeString TGUIConfiguration::PropertyToKey(const UnicodeString & Property)
     KEY(Integer,  SessionReopenAutoIdle); \
   ); \
 
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 {
   TConfiguration::SaveData(Storage, All);
@@ -703,7 +703,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     FNewDirectoryProperties.Save(Storage);
   }
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
 {
   TConfiguration::LoadData(Storage);
@@ -764,15 +764,15 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     FNewDirectoryProperties.Load(Storage);
   }
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::Saved()
 {
   TConfiguration::Saved();
 
   FCopyParamList->Reset();
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   UnicodeString * AFileName)
 {
@@ -837,7 +837,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 
   return NewInstance;
 }
-//---------------------------------------------------------------------------
+
 LCID TGUIConfiguration::InternalLocale() const
 {
   LCID Result;
@@ -854,7 +854,7 @@ LCID TGUIConfiguration::InternalLocale() const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 LCID TGUIConfiguration::GetLocale() const
 {
   if (!FLocale)
@@ -863,7 +863,7 @@ LCID TGUIConfiguration::GetLocale() const
   }
   return FLocale;
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::SetLocale(LCID Value)
 {
   if (GetLocale() != Value)
@@ -880,7 +880,7 @@ void TGUIConfiguration::SetLocale(LCID Value)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::SetLocaleSafe(LCID Value)
 {
   if (GetLocale() != Value)
@@ -904,7 +904,7 @@ void TGUIConfiguration::SetLocaleSafe(LCID Value)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 TStrings * TGUIConfiguration::GetLocales()
 {
   Classes::Error(SNotImplemented, 93);
@@ -1016,23 +1016,23 @@ TStrings * TGUIConfiguration::GetLocales()
 
   return FLocales;
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::SetDefaultCopyParam(const TGUICopyParamType & Value)
 {
   FDefaultCopyParam.Assign(&Value);
   Changed();
 }
-//---------------------------------------------------------------------------
+
 bool TGUIConfiguration::GetRememberPassword() const
 {
   return GetSessionRememberPassword() || GetPuttyPassword();
 }
-//---------------------------------------------------------------------------
+
 const TCopyParamList * TGUIConfiguration::GetCopyParamList()
 {
   return FCopyParamList;
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::SetCopyParamList(const TCopyParamList * Value)
 {
   if (!(*FCopyParamList == *Value))
@@ -1042,7 +1042,7 @@ void TGUIConfiguration::SetCopyParamList(const TCopyParamList * Value)
     Changed();
   }
 }
-//---------------------------------------------------------------------------
+
 intptr_t TGUIConfiguration::GetCopyParamIndex() const
 {
   intptr_t Result;
@@ -1056,7 +1056,7 @@ intptr_t TGUIConfiguration::GetCopyParamIndex() const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::SetCopyParamIndex(intptr_t Value)
 {
   UnicodeString Name;
@@ -1070,17 +1070,17 @@ void TGUIConfiguration::SetCopyParamIndex(intptr_t Value)
   }
   SetCopyParamCurrent(Name);
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::SetCopyParamCurrent(const UnicodeString & Value)
 {
   SET_CONFIG_PROPERTY(CopyParamCurrent);
 }
-//---------------------------------------------------------------------------
+
 const TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam() const
 {
   return GetCopyParamPreset(GetCopyParamCurrent());
 }
-//---------------------------------------------------------------------------
+
 const TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const UnicodeString & Name) const
 {
   TGUICopyParamType Result = FDefaultCopyParam;
@@ -1102,33 +1102,33 @@ const TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const UnicodeStrin
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool TGUIConfiguration::GetHasCopyParamPreset(const UnicodeString & Name) const
 {
   return Name.IsEmpty() || (FCopyParamList->IndexOfName(Name) >= 0);
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::SetNewDirectoryProperties(
   const TRemoteProperties & Value)
 {
   SET_CONFIG_PROPERTY(NewDirectoryProperties);
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::SetQueueTransfersLimit(intptr_t Value)
 {
   SET_CONFIG_PROPERTY(QueueTransfersLimit);
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::SetQueueKeepDoneItems(bool Value)
 {
   SET_CONFIG_PROPERTY(QueueKeepDoneItems);
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::SetQueueKeepDoneItemsFor(intptr_t Value)
 {
   SET_CONFIG_PROPERTY(QueueKeepDoneItemsFor);
 }
-//---------------------------------------------------------------------
+
 TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   TStoredSessionList * Sessions)
 {
@@ -1152,7 +1152,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
 
   return ImportSessionList.release();
 }
-//---------------------------------------------------------------------
+
 bool TGUIConfiguration::AnyPuttySessionForImport(TStoredSessionList * Sessions)
 {
   try
@@ -1165,7 +1165,7 @@ bool TGUIConfiguration::AnyPuttySessionForImport(TStoredSessionList * Sessions)
     return false;
   }
 }
-//---------------------------------------------------------------------
+
 TStoredSessionList * TGUIConfiguration::SelectFilezillaSessionsForImport(
   TStoredSessionList * /* Sessions */)
 {
@@ -1188,7 +1188,7 @@ TStoredSessionList * TGUIConfiguration::SelectFilezillaSessionsForImport(
 */
   return nullptr;
 }
-//---------------------------------------------------------------------
+
 bool TGUIConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessions)
 {
   try
@@ -1201,63 +1201,63 @@ bool TGUIConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessio
     return false;
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TGUIConfiguration::GetPuttyPath() const
 {
   return FPuttyPath;
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::SetPuttyPath(const UnicodeString & Value)
 {
   FPuttyPath = Value;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TGUIConfiguration::GetDefaultPuttyPath() const
 {
   return FDefaultPuttyPath;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TGUIConfiguration::GetPSftpPath() const
 {
   return FPSftpPath;
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::SetPSftpPath(const UnicodeString & Value)
 {
   FPSftpPath = Value;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TGUIConfiguration::GetPuttySession() const
 {
   return FPuttySession;
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::SetPuttySession(const UnicodeString & Value)
 {
   FPuttySession = Value;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TGUIConfiguration::GetCopyParamCurrent() const
 {
   return FCopyParamCurrent;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TGUIConfiguration::GetChecksumAlg() const
 {
   return FChecksumAlg;
 }
-//---------------------------------------------------------------------------
+
 void TGUIConfiguration::SetChecksumAlg(const UnicodeString & Value)
 {
   FChecksumAlg = Value;
 }
-//---------------------------------------------------------------------------
+
 TGUIConfiguration * GetGUIConfiguration()
 {
   return NB_STATIC_DOWNCAST(TGUIConfiguration, GetConfiguration());
 }
-//------------------------------------------------------------------------------
+
 NB_IMPLEMENT_CLASS(TGUICopyParamType, NB_GET_CLASS_INFO(TCopyParamType), nullptr);
 NB_IMPLEMENT_CLASS(TGUIConfiguration, NB_GET_CLASS_INFO(TConfiguration), nullptr);
 NB_IMPLEMENT_CLASS(TCopyParamRule, NB_GET_CLASS_INFO(TObject), nullptr);
-//---------------------------------------------------------------------------
+

@@ -1,17 +1,17 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include <stdint.h>
 #include <FileSystems.h>
-//---------------------------------------------------------------------------
+
 class TSFTPPacket;
 struct TOverwriteFileParams;
 struct TSFTPSupport;
 class TSecureShell;
-//---------------------------------------------------------------------------
+
 //enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
 extern const intptr_t SFTPMaxVersion;
-//---------------------------------------------------------------------------
+
 class TSFTPFileSystem : public TCustomFileSystem
 {
 NB_DISABLE_COPY(TSFTPFileSystem)
@@ -203,4 +203,4 @@ protected:
 private:
   const TSessionData * GetSessionData() const;
 };
-//---------------------------------------------------------------------------
+

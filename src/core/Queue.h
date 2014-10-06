@@ -1,9 +1,9 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #include "Terminal.h"
 #include "FileOperationProgress.h"
-//---------------------------------------------------------------------------
+
 class TTerminalItem;
 class TSimpleThread : public TObject
 {
@@ -31,7 +31,7 @@ protected:
 public:
   static int ThreadProc(void * Thread);
 };
-//---------------------------------------------------------------------------
+
 class TSignalThread : public TSimpleThread
 {
 NB_DISABLE_COPY(TSignalThread)
@@ -54,13 +54,13 @@ protected:
   virtual void Execute();
   virtual void ProcessEvent() = 0;
 };
-//---------------------------------------------------------------------------
+
 class TTerminal;
 class TQueueItem;
 class TTerminalQueue;
 class TQueueItemProxy;
 class TTerminalQueueStatus;
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE1(TQueueListUpdateEvent, void,
   TTerminalQueue * /* Queue */);
 DEFINE_CALLBACK_TYPE2(TQueueItemUpdateEvent, void,
@@ -75,7 +75,7 @@ enum TQueueEvent
 
 DEFINE_CALLBACK_TYPE2(TQueueEventEvent, void,
   TTerminalQueue * /* Queue */, TQueueEvent /* Event */);
-//---------------------------------------------------------------------------
+
 class TTerminalQueue : public TSignalThread
 {
 friend class TQueueItem;
@@ -171,7 +171,7 @@ public:
   void SetEnabled(bool Value);
   void SetIsEmpty(bool Value);
 };
-//---------------------------------------------------------------------------
+
 class TQueueItem : public TObject
 {
 friend class TTerminalQueue;
@@ -231,7 +231,7 @@ private:
   virtual UnicodeString StartupDirectory() = 0;
   void Complete();
 };
-//---------------------------------------------------------------------------
+
 class TQueueItemProxy : public TObject
 {
 friend class TQueueItem;
@@ -277,7 +277,7 @@ private:
   explicit TQueueItemProxy(TTerminalQueue * Queue, TQueueItem * QueueItem);
   virtual ~TQueueItemProxy();
 };
-//---------------------------------------------------------------------------
+
 class TTerminalQueueStatus : public TObject
 {
 friend class TTerminalQueue;
@@ -311,7 +311,7 @@ private:
   intptr_t FDoneCount;
   mutable intptr_t FActiveCount;
 };
-//---------------------------------------------------------------------------
+
 class TLocatedQueueItem : public TQueueItem
 {
 protected:
@@ -324,7 +324,7 @@ protected:
 private:
   UnicodeString FCurrentDir;
 };
-//---------------------------------------------------------------------------
+
 class TTransferQueueItem : public TLocatedQueueItem
 {
 NB_DISABLE_COPY(TTransferQueueItem)
@@ -343,7 +343,7 @@ protected:
 
   virtual uintptr_t DefaultCPSLimit() const;
 };
-//---------------------------------------------------------------------------
+
 class TUploadQueueItem : public TTransferQueueItem
 {
 public:
@@ -354,7 +354,7 @@ public:
 protected:
   virtual void DoExecute(TTerminal * Terminal);
 };
-//---------------------------------------------------------------------------
+
 class TDownloadQueueItem : public TTransferQueueItem
 {
 public:
@@ -365,7 +365,7 @@ public:
 protected:
   virtual void DoExecute(TTerminal * Terminal);
 };
-//---------------------------------------------------------------------------
+
 class TUserAction;
 class TTerminalThread : public TSignalThread
 {
@@ -446,4 +446,4 @@ private:
   void TerminalReadDirectoryProgress(TObject * Sender, intptr_t Progress, intptr_t ResolvedLinks, bool & Cancel);
   void TerminalInitializeLog(TObject * Sender);
 };
-//---------------------------------------------------------------------------
+

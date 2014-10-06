@@ -1,10 +1,10 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 class THierarchicalStorage;
 class TBookmarkList;
 class TShortCuts;
-//---------------------------------------------------------------------------
+
 class TBookmarks : public TObject
 {
 NB_DISABLE_COPY(TBookmarks)
@@ -31,7 +31,7 @@ private:
   UnicodeString FSharedKey;
   static UnicodeString Keys[];
 };
-//---------------------------------------------------------------------------
+
 class TBookmark;
 class TBookmarkList : public TPersistent
 {
@@ -73,7 +73,7 @@ private:
   TStringList * FOpenedNodes;
   bool FModified;
 };
-//---------------------------------------------------------------------------
+
 class TBookmark : public TPersistent
 {
 friend class TBookmarkList;
@@ -111,4 +111,4 @@ private:
   UnicodeString FNode;
   TShortCut FShortCut;
 };
-//---------------------------------------------------------------------------
+

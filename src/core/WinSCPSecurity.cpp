@@ -1,22 +1,22 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
 #include <WinCrypt.h>
 #include "Common.h"
 #include "WinSCPSecurity.h"
-//---------------------------------------------------------------------------
+
 #define PWALG_SIMPLE_INTERNAL 0x00
 #define PWALG_SIMPLE_EXTERNAL 0x01
 
 using namespace Sysutils;
-//---------------------------------------------------------------------------
+
 int random(int range)
 {
   return static_cast<int>(ToDouble(rand()) / (ToDouble(RAND_MAX) / range));
 }
 
-//---------------------------------------------------------------------------
+
 RawByteString SimpleEncryptChar(uint8_t Ch)
 {
   Ch = (uint8_t)((~Ch) ^ PWALG_SIMPLE_MAGIC);
@@ -24,7 +24,7 @@ RawByteString SimpleEncryptChar(uint8_t Ch)
     PWALG_SIMPLE_STRING.SubString(((Ch & 0xF0) >> 4) + 1, 1) +
     PWALG_SIMPLE_STRING.SubString(((Ch & 0x0F) >> 0) + 1, 1);
 }
-//---------------------------------------------------------------------------
+
 uint8_t SimpleDecryptNextChar(RawByteString & Str)
 {
   if (Str.Length() > 0)
@@ -37,7 +37,7 @@ uint8_t SimpleDecryptNextChar(RawByteString & Str)
   }
   else { return 0x00; }
 }
-//---------------------------------------------------------------------------
+
 RawByteString EncryptPassword(const UnicodeString & UnicodePassword, const UnicodeString & UnicodeKey, Integer /* Algorithm */)
 {
   UTF8String Password = UTF8String(UnicodePassword);
@@ -63,7 +63,7 @@ RawByteString EncryptPassword(const UnicodeString & UnicodePassword, const Unico
     Result += SimpleEncryptChar(static_cast<uint8_t>(random(256)));
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & UnicodeKey, Integer /* Algorithm */)
 {
   UTF8String Key = UTF8String(UnicodeKey);
@@ -92,7 +92,7 @@ UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeStrin
   }
   return UnicodeString(Result);
 }
-//---------------------------------------------------------------------------
+
 RawByteString SetExternalEncryptedPassword(const RawByteString & Password)
 {
   RawByteString Result;
@@ -101,7 +101,7 @@ RawByteString SetExternalEncryptedPassword(const RawByteString & Password)
   Result += UTF8String(BytesToHex(reinterpret_cast<const uint8_t *>(Password.c_str()), Password.Length()));
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool GetExternalEncryptedPassword(const RawByteString & Encrypted, RawByteString & Password)
 {
   RawByteString Enc = Encrypted;
@@ -114,7 +114,7 @@ bool GetExternalEncryptedPassword(const RawByteString & Encrypted, RawByteString
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len)
 {
   bool Result = false;
@@ -179,4 +179,4 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+

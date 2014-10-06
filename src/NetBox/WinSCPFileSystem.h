@@ -1,6 +1,6 @@
-//------------------------------------------------------------------------------
+
 #pragma once
-//------------------------------------------------------------------------------
+
 #include <Interface.h>
 #include "FarPlugin.h"
 #include <FileOperationProgress.h>
@@ -8,7 +8,7 @@
 #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
 #include <Queue.h>
-//------------------------------------------------------------------------------
+
 class TTerminal;
 class TSessionData;
 class TRemoteFile;
@@ -35,7 +35,7 @@ struct TMessageParams;
 #define MOVE_TO_HISTORY L"WinscpMoveTo"
 #define WINSCP_FILE_MASK_HISTORY L"WinscpFileMask"
 #define MAKE_SESSION_FOLDER_HISTORY L"WinscpSessionFolder"
-//------------------------------------------------------------------------------
+
 // for Properties dialog
 const int cpMode  = 0x01;
 const int cpOwner = 0x02;
@@ -56,7 +56,7 @@ enum TSessionActionEnum
   saEdit,
   saConnect
 };
-//------------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
   intptr_t /* Params */, TSynchronizeOptions & /* Options */);
 DEFINE_CALLBACK_TYPE3(TGetSpaceAvailableEvent, void,
@@ -77,9 +77,9 @@ struct TEditHistory : public TObject
   UnicodeString Directory;
   bool operator==(const TEditHistory & rh) const { return (FileName == rh.FileName) && (Directory == rh.Directory); }
 };
-//------------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE2(TProcessSessionEvent, void, TSessionData * /* Data */, void * /* Param */);
-//------------------------------------------------------------------------------
+
 class TWinSCPFileSystem : public TCustomFarFileSystem
 {
 friend class TWinSCPPlugin;
@@ -355,7 +355,7 @@ private:
   UnicodeString FPrevSessionName;
   bool FCurrentDirectoryWasChanged;
 };
-//------------------------------------------------------------------------------
+
 class TSessionPanelItem : public TCustomFarPanelItem
 {
 NB_DISABLE_COPY(TSessionPanelItem)
@@ -376,7 +376,7 @@ protected:
     DWORD & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
 };
-//------------------------------------------------------------------------------
+
 class TSessionFolderPanelItem : public TCustomFarPanelItem
 {
 public:
@@ -392,7 +392,7 @@ protected:
     DWORD & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
 };
-//------------------------------------------------------------------------------
+
 class TRemoteFilePanelItem : public TCustomFarPanelItem
 {
 NB_DISABLE_COPY(TRemoteFilePanelItem)
@@ -414,4 +414,4 @@ protected:
   static void TranslateColumnTypes(UnicodeString & ColumnTypes,
     TStrings * ColumnTitles);
 };
-//------------------------------------------------------------------------------
+

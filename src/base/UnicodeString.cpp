@@ -3,7 +3,7 @@
 #include "UnicodeString.hpp"
 #pragma hdrstop
 
-//------------------------------------------------------------------------------
+
 
 AnsiString::AnsiString(const AnsiString & rht)
 {
@@ -155,7 +155,7 @@ void AnsiString::ThrowIfOutOfRange(intptr_t Idx) const
     throw std::runtime_error("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
-//------------------------------------------------------------------------------
+
 
 void RawByteString::Init(const wchar_t * Str, intptr_t Length)
 {
@@ -285,7 +285,7 @@ RawByteString & RawByteString::operator +=(const char Ch)
   return *this;
 }
 
-//------------------------------------------------------------------------------
+
 
 UTF8String::UTF8String(const UTF8String & rht)
 {
@@ -396,7 +396,7 @@ bool operator !=(const UTF8String & lhs, const UTF8String & rhs)
   return lhs.Data != rhs.Data;
 }
 
-//------------------------------------------------------------------------------
+
 
 void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
 {
@@ -600,7 +600,7 @@ void UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const
     throw std::runtime_error("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
-//------------------------------------------------------------------------------
+
 
 UnicodeString operator +(const wchar_t lhs, const UnicodeString & rhs)
 {
@@ -647,4 +647,4 @@ bool operator !=(const wchar_t * lhs, const UnicodeString & rhs)
   return wcscmp(NullToEmpty(lhs), rhs.Data.c_str()) != 0;
 }
 
-//------------------------------------------------------------------------------
+
