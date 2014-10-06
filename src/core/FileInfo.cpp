@@ -149,7 +149,6 @@ void * CreateFileInfo(const UnicodeString & AFileName)
   uintptr_t Size;
   void * Result = nullptr;
 
-
   // Get file version info block size
   Size = GetFileVersionInfoSizeFix(AFileName.c_str(), &Handle);
   // If size is valid
@@ -220,8 +219,8 @@ UnicodeString GetLanguage(Word Language)
   uintptr_t Len;
   wchar_t P[256];
 
-  Len = ::VerLanguageName(Language, P, LENOF(P));
-  if (Len > LENOF(P))
+  Len = ::VerLanguageName(Language, P, _countof(P));
+  if (Len > _countof(P))
     throw Sysutils::Exception(L"Language not available");
   return UnicodeString(P, Len);
 }

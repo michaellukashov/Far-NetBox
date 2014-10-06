@@ -9,9 +9,7 @@
 #include "Common.h"
 #include "plugin_version.hpp"
 
-
 extern TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
-
 
 class TFarPluginGuard : public TFarPluginEnvGuard, public TGuard
 {
@@ -21,7 +19,6 @@ public:
   {
   }
 };
-
 
 extern "C"
 {
@@ -235,7 +232,6 @@ HANDLE WINAPI OpenW(const struct OpenInfo * Info)
   return Handle;
 }
 
-
 static int Processes = 0;
 
 BOOL DllProcessAttach(HINSTANCE HInstance)
@@ -247,7 +243,6 @@ BOOL DllProcessAttach(HINSTANCE HInstance)
   InitExtensionModule(HInstance);
   return TRUE;
 }
-
 
 BOOL DllProcessDetach()
 {
@@ -261,7 +256,6 @@ BOOL DllProcessDetach()
   }
   return TRUE;
 }
-
 
 BOOL WINAPI DllMain(HINSTANCE HInstance, DWORD Reason, LPVOID /*ptr*/ )
 {

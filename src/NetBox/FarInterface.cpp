@@ -26,7 +26,6 @@ UnicodeString AppNameString()
   return L"NetBox";
 }
 
-
 UnicodeString GetRegistryKey()
 {
   return L"NetBox 3"; // TODO: output MainGuid
@@ -41,7 +40,6 @@ UnicodeString SshVersionString()
 {
   return FORMAT(L"NetBox-FAR-release-%s", GetConfiguration()->GetVersion().c_str());
 }
-
 
 DWORD WINAPI threadstartroutine(void * Parameter)
 {
@@ -65,7 +63,6 @@ void EndThread(DWORD ExitCode)
 {
   ::ExitThread(ExitCode);
 }
-
 
 HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
   void * Parameter, DWORD CreationFlags,

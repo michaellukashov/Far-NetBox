@@ -159,9 +159,7 @@ bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
   return FFileSystem->GetFileModificationTimeInUtc(FileName, Time);
 }
 
-
 static const wchar_t FtpsCertificateStorageKey[] = L"FtpsCertificates";
-
 
 class TFTPFileListHelper : public Classes::TObject
 {
@@ -593,7 +591,7 @@ UnicodeString TFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool /*L
 UnicodeString TFTPFileSystem::ActualCurrentDirectory()
 {
   wchar_t CurrentPath[1024];
-  FFileZillaIntf->GetCurrentPath(CurrentPath, LENOF(CurrentPath));
+  FFileZillaIntf->GetCurrentPath(CurrentPath, _countof(CurrentPath));
   UnicodeString fn = core::UnixExcludeTrailingBackslash(CurrentPath);
   if (fn.IsEmpty())
   {
@@ -843,7 +841,7 @@ bool TFTPFileSystem::ConfirmOverwrite(
     Aliases[4].GrouppedShiftState = Classes::TShiftState() << Classes::ssShift;
     TQueryParams QueryParams(qpNeverAskAgainCheck);
     QueryParams.Aliases = Aliases;
-    QueryParams.AliasesCount = LENOF(Aliases);
+    QueryParams.AliasesCount = _countof(Aliases);
 
     {
       TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -3129,7 +3127,6 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
   return true;
 }
 
-
 static UnicodeString FormatContactList(const UnicodeString & Entry1, const UnicodeString & Entry2)
 {
   if (!Entry1.IsEmpty() && !Entry2.IsEmpty())
@@ -3432,7 +3429,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;
       Params.NoBatchAnswers = qaYes | qaRetry;
       Params.Aliases = Aliases;
-      Params.AliasesCount = LENOF(Aliases);
+      Params.AliasesCount = _countof(Aliases);
       uintptr_t Answer = FTerminal->QueryUser(
         FMTLOAD(VERIFY_CERT_PROMPT3, FSessionInfo.Certificate.c_str()),
         nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);

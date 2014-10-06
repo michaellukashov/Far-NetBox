@@ -42,10 +42,10 @@ void PuttyInitialize()
   sk_init();
 
   AnsiString VersionString = SshVersionString();
-  assert(!VersionString.IsEmpty() && (static_cast<size_t>(VersionString.Length()) < LENOF(sshver)));
+  assert(!VersionString.IsEmpty() && (static_cast<size_t>(VersionString.Length()) < _countof(sshver)));
   strcpy_s(sshver, sizeof(sshver), VersionString.c_str());
   AnsiString AppName = AppNameString();
-  assert(!AppName.IsEmpty() && (static_cast<size_t>(AppName.Length()) < LENOF(appname_)));
+  assert(!AppName.IsEmpty() && (static_cast<size_t>(AppName.Length()) < _countof(appname_)));
   strcpy_s(appname_, sizeof(appname_), AppName.c_str());
 }
 
@@ -192,8 +192,8 @@ void connection_fatal(void * frontend, char * fmt, ...)
   va_list Param;
   char Buf[200];
   va_start(Param, fmt);
-  vsnprintf(Buf, LENOF(Buf), fmt, Param); \
-  Buf[LENOF(Buf) - 1] = '\0'; \
+  vsnprintf(Buf, _countof(Buf), fmt, Param); \
+  Buf[_countof(Buf) - 1] = '\0'; \
   va_end(Param);
 
   assert(frontend != nullptr);
@@ -236,8 +236,8 @@ void display_banner(void * frontend, const char * banner, int size)
 static void SSHFatalError(const char * Format, va_list Param)
 {
   char Buf[200];
-  vsnprintf(Buf, LENOF(Buf), Format, Param);
-  Buf[LENOF(Buf) - 1] = '\0';
+  vsnprintf(Buf, _countof(Buf), Format, Param);
+  Buf[_countof(Buf) - 1] = '\0';
 
   // Only few calls from putty\winnet.c might be connected with specific
   // TSecureShell. Otherwise called only for really fatal errors

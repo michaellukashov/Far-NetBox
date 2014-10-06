@@ -261,7 +261,6 @@ void TBookmarks::SetSharedBookmarks(TBookmarkList * Value)
   SetBookmarks(FSharedKey, Value);
 }
 
-
 TBookmarkList::TBookmarkList(): TPersistent()
 {
   FModified = false;
@@ -464,7 +463,6 @@ void TBookmarkList::ShortCuts(TShortCuts & ShortCuts)
   }
 }
 
-
 TBookmark::TBookmark()
 {
   FOwner = nullptr;
@@ -565,8 +563,5 @@ UnicodeString TBookmark::GetKey()
   return BookmarkKey(GetNode(), GetName());
 }
 
-
 NB_IMPLEMENT_CLASS(TBookmark, NB_GET_CLASS_INFO(TPersistent), nullptr);
 NB_IMPLEMENT_CLASS(TBookmarkList, NB_GET_CLASS_INFO(TPersistent), nullptr);
-
-

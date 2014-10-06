@@ -82,4 +82,3 @@ private:
   DWORD   m_LastError;     ///< Last errno
 };
 
-

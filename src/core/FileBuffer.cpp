@@ -233,7 +233,6 @@ void TFileBuffer::WriteToStream(Classes::TStream * Stream, const int64_t Len)
   }
 }
 
-
 TSafeHandleStream::TSafeHandleStream(Classes::THandle AHandle) :
   THandleStream(AHandle)
 {

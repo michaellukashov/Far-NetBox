@@ -2428,7 +2428,6 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
         }
       }
 
-
       Rethrow(FException);
 
       if (FIdleException != nullptr)

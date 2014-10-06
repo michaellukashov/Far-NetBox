@@ -165,7 +165,6 @@ const intptr_t asOpUnsupported = 1 << SSH_FX_OP_UNSUPPORTED;
 const intptr_t asNoSuchFile =    1 << SSH_FX_NO_SUCH_FILE;
 const intptr_t asAll = 0xFFFF;
 
-
 #ifndef GET_32BIT
 #define GET_32BIT(cp) \
     (((uint32_t)(uint8_t)(cp)[0] << 24) | \
@@ -182,7 +181,6 @@ const intptr_t asAll = 0xFFFF;
 #endif
 
 #define SFTP_PACKET_ALLOC_DELTA 256
-
 
 struct TSFTPSupport : public Classes::TObject
 {
@@ -1773,7 +1771,6 @@ private:
   TSFTPFileSystem * FFileSystem;
 };
 
-
 TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(ATerminal),
   FSecureShell(nullptr),
@@ -2276,7 +2273,7 @@ uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
   if ((AllowStatus & (0x01LL << Code)) == 0)
   {
     intptr_t Message;
-    if (Code >= LENOF(Messages))
+    if (Code >= _countof(Messages))
     {
       Message = SFTP_STATUS_UNKNOWN;
     }
@@ -3092,7 +3089,7 @@ void TSFTPFileSystem::LookupUsersGroups()
   TRemoteTokenList * Lists[] = { &FTerminal->FUsers, &FTerminal->FGroups };
   wchar_t ListTypes[] = { OGQ_LIST_OWNERS, OGQ_LIST_GROUPS };
 
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(Packets)); ++Index)
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(Packets)); ++Index)
   {
     TSFTPPacket * Packet = Packets[Index];
     Packet->AddString(RawByteString(SFTP_EXT_OWNER_GROUP));
@@ -3101,7 +3098,7 @@ void TSFTPFileSystem::LookupUsersGroups()
     ReserveResponse(Packet, Packet);
   }
 
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(Packets)); ++Index)
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(Packets)); ++Index)
   {
     TSFTPPacket * Packet = Packets[Index];
 
@@ -4124,7 +4121,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
     TQueryParams QueryParams(qpNeverAskAgainCheck);
     QueryParams.NoBatchAnswers = qaIgnore | qaAbort | qaRetry | qaAll;
     QueryParams.Aliases = Aliases;
-    QueryParams.AliasesCount = LENOF(Aliases);
+    QueryParams.AliasesCount = _countof(Aliases);
     Answer = FTerminal->ConfirmFileOverwrite(AFullFileName, FileParams,
       Answers, &QueryParams,
       OperationProgress->Side == osLocal ? osRemote : osLocal,
@@ -5814,7 +5811,6 @@ void TSFTPFileSystem::SFTPSinkFile(const UnicodeString & AFileName,
     }
   }
 }
-
 
 NB_IMPLEMENT_CLASS(TSFTPPacket, NB_GET_CLASS_INFO(TObject), nullptr);
 NB_IMPLEMENT_CLASS(TSFTPQueuePacket, NB_GET_CLASS_INFO(TSFTPPacket), nullptr);

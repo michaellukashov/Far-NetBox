@@ -12,7 +12,6 @@
 #include "puttyexp.h"
 #include "plugin_version.hpp"
 
-
 TCustomFarPlugin * FarPlugin = nullptr;
 #define FAR_TITLE_SUFFIX L" - Far"
 
@@ -248,7 +247,6 @@ RECT TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
   }
   return Bounds;
 }
-
 
 TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
     HANDLE /* Plugin */)
@@ -918,7 +916,6 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
   SetSize(S);
 }
 
-
 void TFarMessageDialog::Idle()
 {
   TFarDialog::Idle();
@@ -1317,7 +1314,7 @@ Classes::TPoint TCustomFarPlugin::TerminalInfo(Classes::TPoint * Size, Classes::
 HWND TCustomFarPlugin::GetConsoleWindow() const
 {
   wchar_t Title[1024];
-  ::GetConsoleTitle(Title, LENOF(Title));
+  ::GetConsoleTitle(Title, _countof(Title));
   HWND Result = ::FindWindow(nullptr, Title);
   return Result;
 }
@@ -1447,7 +1444,7 @@ public:
 void TCustomFarPlugin::ShowConsoleTitle(const UnicodeString & Title)
 {
   wchar_t SaveTitle[1024];
-  ::GetConsoleTitle(SaveTitle, LENOF(SaveTitle));
+  ::GetConsoleTitle(SaveTitle, _countof(SaveTitle));
   TConsoleTitleParam * Param = new TConsoleTitleParam();
   Param->Progress = FCurrentProgress;
   Param->Own = !FCurrentTitle.IsEmpty() && (FormatConsoleTitle() == SaveTitle);
@@ -1799,7 +1796,6 @@ void TCustomFarFileSystem::Init()
   ClearOpenPanelInfo(FOpenPanelInfo);
   FInstances++;
 }
-
 
 TCustomFarFileSystem::~TCustomFarFileSystem()
 {
@@ -2194,7 +2190,7 @@ TFarPanelModes::~TFarPanelModes()
 {
   if (!FReferenced)
   {
-    for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FPanelModes)); ++Index)
+    for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FPanelModes)); ++Index)
     {
       ClearPanelMode(FPanelModes[Index]);
     }
@@ -2208,7 +2204,7 @@ void TFarPanelModes::SetPanelMode(size_t Mode, const UnicodeString & ColumnTypes
   const UnicodeString & StatusColumnWidths)
 {
   intptr_t ColumnTypesCount = !ColumnTypes.IsEmpty() ? CommaCount(ColumnTypes) + 1 : 0;
-  assert(Mode != NPOS && Mode < LENOF(FPanelModes));
+  assert(Mode != NPOS && Mode < _countof(FPanelModes));
   assert(!ColumnTitles || (ColumnTitles->GetCount() == ColumnTypesCount));
 
   ClearPanelMode(FPanelModes[Mode]);
@@ -2275,8 +2271,8 @@ void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
 void TFarPanelModes::FillOpenPanelInfo(struct OpenPanelInfo * Info)
 {
   assert(Info);
-  Info->PanelModesNumber = LENOF(FPanelModes);
-  PanelMode * PanelModesArray = static_cast<PanelMode *>(nb_calloc(1, sizeof(PanelMode) * LENOF(FPanelModes)));
+  Info->PanelModesNumber = _countof(FPanelModes);
+  PanelMode * PanelModesArray = static_cast<PanelMode *>(nb_calloc(1, sizeof(PanelMode) * _countof(FPanelModes)));
   memmove(PanelModesArray, &FPanelModes, sizeof(FPanelModes));
   Info->PanelModesArray = PanelModesArray;
   FReferenced = true;
@@ -2387,7 +2383,6 @@ void TFarKeyBarTitles::FillOpenPanelInfo(struct OpenPanelInfo * Info)
   FReferenced = true;
 }
 
-
 UnicodeString TCustomFarPanelItem::GetCustomColumnData(size_t /*Column*/)
 {
   assert(false);
@@ -2430,7 +2425,6 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   PanelItem->CustomColumnData = CustomColumnData;
 }
 
-
 TFarPanelItem::TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem):
   TCustomFarPanelItem(),
   FPanelItem(nullptr),
@@ -2447,7 +2441,6 @@ TFarPanelItem::~TFarPanelItem()
     nb_free(FPanelItem);
   FPanelItem = nullptr;
 }
-
 
 void TFarPanelItem::GetData(
   PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & /*FileName*/, int64_t & /*Size*/,
@@ -2513,7 +2506,6 @@ bool TFarPanelItem::GetIsFile() const
   return (GetFileAttributes() & FILE_ATTRIBUTE_DIRECTORY) == 0;
 }
 
-
 THintPanelItem::THintPanelItem(const UnicodeString & AHint) :
   TCustomFarPanelItem()
 {
@@ -2529,7 +2521,6 @@ void THintPanelItem::GetData(
 {
   AFileName = FHint;
 }
-
 
 TFarPanelInfo::TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner):
   TObject(),
@@ -2733,7 +2724,6 @@ UnicodeString TFarPanelInfo::GetCurrDirectory() const
   return Result.c_str();
 }
 
-
 TFarMenuItems::TFarMenuItems() :
   TStringList()
 {
@@ -2828,7 +2818,6 @@ bool TFarMenuItems::GetFlag(intptr_t Index, uintptr_t Flag) const
   return (reinterpret_cast<uintptr_t>(GetObject(Index)) & Flag) > 0;
 }
 
-
 TFarEditorInfo::TFarEditorInfo(EditorInfo * Info) :
   FEditorInfo(Info)
 {
@@ -2856,7 +2845,6 @@ UnicodeString TFarEditorInfo::GetFileName()
   return Result.c_str();
 }
 
-
 TFarEnvGuard::TFarEnvGuard()
 {
   assert(FarPlugin != nullptr);
@@ -2877,7 +2865,6 @@ TFarEnvGuard::~TFarEnvGuard()
   }
   */
 }
-
 
 TFarPluginEnvGuard::TFarPluginEnvGuard()
 {
@@ -2947,7 +2934,6 @@ TGlobalFunctionsIntf * GetGlobalFunctions()
   return GlobalFunctions;
 }
 
-
 HINSTANCE TGlobalFunctions::GetInstanceHandle() const
 {
   HINSTANCE Result = nullptr;
@@ -2964,11 +2950,11 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
   wchar_t Path[MAX_PATH + 1];
   if (FarPlugin)
   {
-    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(LENOF(Path), Path);
+    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(_countof(Path), Path);
   }
   else
   {
-    ::GetCurrentDirectory(LENOF(Path), Path);
+    ::GetCurrentDirectory(_countof(Path), Path);
   }
   Result = Path;
   return Result;

@@ -13,7 +13,6 @@ namespace webdav {
   typedef int error_t;
 } // namespace webdav
 
-
 class TWebDAVFileSystem : public TCustomFileSystem
 {
 friend class TWebDAVFileListHelper;
@@ -220,7 +219,6 @@ private:
   apr_pool_t * webdav_pool;
   webdav::session_t * FSession;
 };
-
 
 void NeonInitialize();
 void NeonFinalize();

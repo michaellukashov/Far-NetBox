@@ -20,7 +20,6 @@
   FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
     [&]() { OPERATION })
 
-
 const int coRaiseExcept = 1;
 const int coExpectNoOutput = 2;
 const int coWaitForLastLine = 4;
@@ -42,7 +41,6 @@ inline void ThrowScpEror(Sysutils::Exception * Exception, const UnicodeString & 
 {
   throw EScp(Exception, Message);
 }
-
 
 #define MaxShellCommand fsAnyCommand
 #define ShellCommandCount MaxShellCommand + 1
@@ -1374,7 +1372,7 @@ uintptr_t TSCPFileSystem::ConfirmOverwrite(
   Aliases[2].GrouppedShiftState = Classes::TShiftState() << Classes::ssShift;
   TQueryParams QueryParams(qpNeverAskAgainCheck);
   QueryParams.Aliases = Aliases;
-  QueryParams.AliasesCount = LENOF(Aliases);
+  QueryParams.AliasesCount = _countof(Aliases);
   uintptr_t Answer =
     FTerminal->ConfirmFileOverwrite(
       AFileName, FileParams,

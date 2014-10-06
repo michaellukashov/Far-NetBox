@@ -1,8 +1,6 @@
 #include <Classes.hpp>
 #include "rtti.hpp"
 
-
-
 TClassInfo * TClassInfo::sm_first = nullptr;
 THashTable * TClassInfo::sm_classTable = nullptr;
 
@@ -130,8 +128,6 @@ void TClassInfo::Unregister()
   }
 }
 
-
-
 const Classes::TObject * NbStaticDownCastConst(TObjectClassId ClassId, const Classes::TObject * Object)
 {
   if (Object != nullptr && Object->IsKindOf(ClassId))
@@ -147,5 +143,3 @@ Classes::TObject * NbStaticDownCast(TObjectClassId ClassId, Classes::TObject * O
   else
     return nullptr;
 }
-
-

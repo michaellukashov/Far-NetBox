@@ -65,8 +65,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _WIN32_IE 0x0501
 #endif  //_WIN32_IE
 
-
-
 // winnls.h
 #ifndef NORM_STOP_ON_NULL
 #define NORM_STOP_ON_NULL 0x10000000
@@ -152,8 +150,6 @@ bool CheckStructSize(const T * s) { return s && (s->StructSize >= sizeof(T)); }
 #define SELF_TEST(code)
 #endif
 
-
-
 #define NB_DISABLE_COPY(Class) \
 private: \
   Class(const Class &); \
@@ -161,8 +157,6 @@ private: \
 
 #define NB_STATIC_ASSERT(Condition, Message) \
   static_assert(bool(Condition), Message)
-
-
 
 #include "UnicodeString.hpp"
 #include "local.hpp"

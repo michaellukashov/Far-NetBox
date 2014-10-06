@@ -20,7 +20,6 @@ TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
   return new TWinSCPPlugin(HInst);
 }
 
-
 TMessageParams::TMessageParams()
 {
   Flags = 0;

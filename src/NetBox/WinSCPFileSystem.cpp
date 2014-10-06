@@ -196,7 +196,6 @@ void TRemoteFilePanelItem::SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles)
     FarPlugin->GetMsg(RENAME_FILE_KEYBAR));
 }
 
-
 class TFarInteractiveCustomCommand : public TInteractiveCustomCommand
 {
 public:
@@ -231,7 +230,6 @@ void TFarInteractiveCustomCommand::Prompt(const UnicodeString & Prompt, UnicodeS
     Classes::Abort();
   }
 }
-
 
 // Attempt to allow keepalives from background thread.
 // Not finished nor used.
@@ -288,7 +286,6 @@ void TKeepaliveThread::Execute()
   ::CloseHandle(FEvent);
 }
 
-
 TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   TCustomFarFileSystem(APlugin)
 {
@@ -328,7 +325,6 @@ void TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
   FEditorPendingSave = false;
   FOutputLog = false;
 }
-
 
 TWinSCPFileSystem::~TWinSCPFileSystem()
 {
@@ -408,7 +404,6 @@ void TWinSCPFileSystem::Close()
     }
   }
 }
-
 
 void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
   UnicodeString & /*HostFile*/, UnicodeString & CurDir, UnicodeString & Format,
@@ -4038,7 +4033,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     Aliases[2].Button = qaOK;
     Aliases[2].Alias = GetMsg(EDITOR_NEW_INSTANCE_RO);
     Params.Aliases = Aliases;
-    Params.AliasesCount = LENOF(Aliases);
+    Params.AliasesCount = _countof(Aliases);
     switch (MoreMessageDialog(FORMAT(GetMsg(EDITOR_ALREADY_LOADED).c_str(), FullFileName.c_str()),
           nullptr, qtConfirmation, qaYes | qaNo | qaOK | qaCancel, &Params))
     {

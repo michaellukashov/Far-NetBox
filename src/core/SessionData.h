@@ -617,7 +617,6 @@ private:
   mutable TIEProxyConfig * FIEProxyConfig;
 };
 
-
 class TStoredSessionList : public TNamedObjectList
 {
 NB_DISABLE_COPY(TStoredSessionList)

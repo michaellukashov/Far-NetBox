@@ -6,12 +6,10 @@
 #include "FarDialog.h"
 #include "Common.h"
 
-
 inline Classes::TRect Rect(int Left, int Top, int Right, int Bottom)
 {
   return Classes::TRect(Left, Top, Right, Bottom);
 }
-
 
 TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
   TObject(),
@@ -768,7 +766,7 @@ void TFarDialog::Synchronize(Classes::TThreadMethod Event)
   }
   FSynchronizeMethod = Event;
   FNeedsSynchronize = true;
-  ::WaitForMultipleObjects(LENOF(FSynchronizeObjects),
+  ::WaitForMultipleObjects(_countof(FSynchronizeObjects),
     reinterpret_cast<HANDLE *>(&FSynchronizeObjects), false, INFINITE);
 }
 
@@ -924,7 +922,6 @@ bool TFarDialog::ChangesLocked()
   return (FChangesLocked > 0);
 }
 
-
 TFarDialogContainer::TFarDialogContainer(TFarDialog * ADialog) :
   TObject(),
   FLeft(0),
@@ -1001,7 +998,6 @@ intptr_t TFarDialogContainer::GetItemCount() const
 {
   return FItems->GetCount();
 }
-
 
 TFarDialogItem::TFarDialogItem(TFarDialog * ADialog, FARDIALOGITEMTYPES AType) :
   TObject(),
@@ -1711,12 +1707,10 @@ bool TFarDialogItem::HotKey(char /*HotKey*/)
   return false;
 }
 
-
 TFarBox::TFarBox(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_SINGLEBOX)
 {
 }
-
 
 TFarButton::TFarButton(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_BUTTON),
@@ -1870,7 +1864,6 @@ bool TFarButton::HotKey(char HotKey)
   return Result;
 }
 
-
 TFarCheckBox::TFarCheckBox(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_CHECKBOX),
   FOnAllowChange(nullptr)
@@ -1911,7 +1904,6 @@ void TFarCheckBox::SetData(const UnicodeString & Value)
     SetWidth(4 + Sysutils::StripHotkey(Value).Length());
   }
 }
-
 
 TFarRadioButton::TFarRadioButton(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_RADIOBUTTON),
@@ -1956,7 +1948,6 @@ void TFarRadioButton::SetData(const UnicodeString & Value)
     SetWidth(4 + Sysutils::StripHotkey(Value).Length());
   }
 }
-
 
 TFarEdit::TFarEdit(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_EDIT)
@@ -2043,7 +2034,6 @@ intptr_t TFarEdit::GetAsInteger()
   return Sysutils::StrToIntDef(Sysutils::Trim(GetText()), 0);
 }
 
-
 TFarSeparator::TFarSeparator(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_TEXT)
 {
@@ -2088,7 +2078,6 @@ intptr_t TFarSeparator::GetPosition()
   return GetBounds().Top;
 }
 
-
 TFarText::TFarText(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_TEXT)
 {
@@ -2102,7 +2091,6 @@ void TFarText::SetData(const UnicodeString & Value)
     SetWidth(Sysutils::StripHotkey(Value).Length());
   }
 }
-
 
 TFarList::TFarList(TFarDialogItem * ADialogItem) :
   TStringList()
@@ -2418,7 +2406,6 @@ intptr_t TFarList::ItemProc(intptr_t Msg, void * Param)
   return 0;
 }
 
-
 TFarListBox::TFarListBox(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_LISTBOX),
   FDenyClose(nullptr)
@@ -2495,7 +2482,6 @@ bool TFarListBox::CloseQuery()
   return true;
 }
 
-
 TFarComboBox::TFarComboBox(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_COMBOBOX)
 {
@@ -2538,7 +2524,6 @@ void TFarComboBox::Init()
   TFarDialogItem::Init();
   GetItems()->Init();
 }
-
 
 TFarLister::TFarLister(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_USERCONTROL),

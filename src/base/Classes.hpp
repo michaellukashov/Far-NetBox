@@ -26,7 +26,6 @@ class Exception;
 
 namespace Classes {
 
-
 extern const UnicodeString sLineBreak;
 extern const intptr_t MonthsPerYear;
 extern const intptr_t DaysPerWeek;
@@ -50,7 +49,6 @@ DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /* Sender */);
 void Abort();
 void Error(int ErrorID, intptr_t data);
 
-
 class TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -62,8 +60,6 @@ public:
 
   bool IsKindOf(TObjectClassId ClassId) const;
 };
-
-
 
 struct TPoint
 {
@@ -78,8 +74,6 @@ struct TPoint
     y(ay)
   {}
 };
-
-
 
 struct TRect
 {
@@ -127,8 +121,6 @@ struct TRect
   }
 };
 
-
-
 class TPersistent : public TObject
 {
 NB_DECLARE_CLASS(TPersistent)
@@ -142,8 +134,6 @@ protected:
 private:
   void AssignError(const Classes::TPersistent * Source);
 };
-
-
 
 enum TListNotification
 {
@@ -429,8 +419,6 @@ TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen);
 double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen);
 int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
 
-
-
 class TSHFileInfo : public TObject
 {
 public:
@@ -445,15 +433,12 @@ public:
   UnicodeString GetFileType(const UnicodeString & StrFileName);
 };
 
-
-
 enum TSeekOrigin
 {
   soFromBeginning = 0,
   soFromCurrent = 1,
   soFromEnd = 2
 };
-
 
 class TStream : public TObject
 {
@@ -486,8 +471,6 @@ public:
   }
 };
 
-
-
 class THandleStream : public TStream
 {
 NB_DISABLE_COPY(THandleStream)
@@ -506,7 +489,6 @@ protected:
   HANDLE FHandle;
 };
 
-
 class EReadError : public std::runtime_error
 {
 public:
@@ -522,8 +504,6 @@ public:
     std::runtime_error(Msg)
   {}
 };
-
-
 
 class TMemoryStream : public TStream
 {
@@ -560,8 +540,6 @@ private:
   int64_t FCapacity;
 };
 
-
-
 struct TRegKeyInfo
 {
   DWORD NumSubKeys;
@@ -571,7 +549,6 @@ struct TRegKeyInfo
   DWORD MaxDataLen;
   FILETIME FileTime;
 };
-
 
 enum TRegDataType
 {
@@ -583,8 +560,6 @@ struct TRegDataInfo
   TRegDataType RegData;
   DWORD DataSize;
 };
-
-
 
 class TRegistry : public TObject
 {
@@ -648,13 +623,11 @@ private:
   uint32_t FAccess;
 };
 
-
 struct TTimeStamp
 {
   int Time; // Number of milliseconds since midnight
   int Date; // One plus number of days since 1/1/0001
 };
-
 
 // FIXME
 class TShortCut : public TObject
@@ -668,7 +641,6 @@ public:
 private:
   intptr_t FValue;
 };
-
 
 // from wxvcl\sysset.h
 
@@ -860,8 +832,6 @@ public:
   }
 };
 
-
-
 enum TReplaceFlag
 {
   rfReplaceAll,
@@ -875,10 +845,8 @@ enum TShiftStateFlag
 };
 typedef DelphiSet<TShiftStateFlag> TShiftState;
 
-
 typedef HANDLE THandle;
 typedef DWORD TThreadID;
-
 
 inline double Trunc(double Value) { double intpart; modf(Value, &intpart); return intpart; }
 inline double Frac(double Value) { double intpart; return modf(Value, &intpart); }

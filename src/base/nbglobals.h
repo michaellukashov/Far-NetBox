@@ -116,8 +116,6 @@ inline void operator_delete(void * p)
 #define CUSTOM_MEM_ALLOCATION_IMPL
 #endif // ifdef USE_DLMALLOC
 
-
-
 namespace nballoc
 {
   inline void destruct(char *) {}
