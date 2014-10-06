@@ -197,7 +197,7 @@ bool THierarchicalStorage::OpenSubKey(const UnicodeString & SubKey, bool CanCrea
 void THierarchicalStorage::CloseSubKey()
 {
   if (FKeyHistory->GetCount() == 0)
-    throw Exception(L"");
+    throw Sysutils::Exception(L"");
   else
     FKeyHistory->Delete(FKeyHistory->GetCount() - 1);
 }
@@ -367,7 +367,7 @@ UnicodeString THierarchicalStorage::IncludeTrailingBackslash(const UnicodeString
   }
   else
   {
-    return ::IncludeTrailingBackslash(S);
+    return Sysutils::IncludeTrailingBackslash(S);
   }
 }
 

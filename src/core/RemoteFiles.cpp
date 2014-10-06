@@ -1057,7 +1057,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     auto GetNCol = [&]()
     {
       if (ListingStr.IsEmpty())
-        throw Exception(L"");
+        throw Sysutils::Exception(L"");
       intptr_t P = ListingStr.Pos(L' ');
       if (P)
       {
@@ -1139,7 +1139,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       bool DayMonthFormat = false;
       Word Year = 0, Month = 0, Day = 0, Hour = 0, Min = 0, Sec = 0;
       Word CurrYear = 0, CurrMonth = 0, CurrDay = 0;
-      Sysutils::DecodeDate(Date(), CurrYear, CurrMonth, CurrDay);
+      Sysutils::DecodeDate(Sysutils::Date(), CurrYear, CurrMonth, CurrDay);
 
       GetCol();
       // format dd mmm or mmm dd ?
@@ -1276,7 +1276,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             // When we don't got year, we assume current year
             // with exception that the date would be in future
             // in this case we assume last year.
-            Sysutils::DecodeDate(Date(), Year, CurrMonth, CurrDay);
+            Sysutils::DecodeDate(Sysutils::Date(), Year, CurrMonth, CurrDay);
             if ((Month > CurrMonth) ||
                 (Month == CurrMonth && Day > CurrDay))
             {
@@ -1342,7 +1342,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       }
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, Value.c_str()), HELP_LIST_LINE_ERROR);
   }
@@ -1407,7 +1407,7 @@ void TRemoteFile::FindLinkedFile()
       };
       GetTerminal()->ReadSymlink(this, FLinkedFile);
     }
-    catch (Exception & E)
+    catch (Sysutils::Exception & E)
     {
       if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
       {
@@ -1430,7 +1430,7 @@ UnicodeString TRemoteFile::GetListingStr() const
   {
     LinkPart = UnicodeString(SYMLINKSTR) + GetLinkTo();
   }
-  return Format(L"%s%s %3s %-8s %-8s %9s %-12s %s%s",
+  return Sysutils::Format(L"%s%s %3s %-8s %-8s %9s %-12s %s%s",
     GetType(), GetRights()->GetText().c_str(), Sysutils::Int64ToStr(FINodeBlocks).c_str(), GetFileOwner().GetName().c_str(),
     GetFileGroup().GetName().c_str(), Sysutils::Int64ToStr(GetSize()).c_str(), GetModificationStr().c_str(), GetFileName().c_str(),
     LinkPart.c_str());
@@ -1473,11 +1473,11 @@ intptr_t TRemoteFile::GetAttr() const
   intptr_t Result = 0;
   if (GetRights()->GetReadOnly())
   {
-    Result |= faReadOnly;
+    Result |= Sysutils::faReadOnly;
   }
   if (GetIsHidden())
   {
-    Result |= faHidden;
+    Result |= Sysutils::faHidden;
   }
   return Result;
 }
@@ -2260,7 +2260,7 @@ void TRights::SetText(const UnicodeString & Value)
         (!GetAllowUndef() && (Value.Pos(UndefSymbol) > 0)) ||
         (Value.Pos(L" ") > 0))
     {
-      throw Exception(FMTLOAD(RIGHTS_ERROR, Value.c_str()));
+      throw Sysutils::Exception(FMTLOAD(RIGHTS_ERROR, Value.c_str()));
     }
 
     FSet = 0;
@@ -2387,7 +2387,7 @@ void TRights::SetOctal(const UnicodeString & AValue)
 
     if (!Correct)
     {
-      throw Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, AValue.c_str()));
+      throw Sysutils::Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, AValue.c_str()));
     }
 
     SetNumber(static_cast<uint16_t>(

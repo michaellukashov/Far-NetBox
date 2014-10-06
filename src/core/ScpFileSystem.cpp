@@ -33,12 +33,12 @@ const int ecIgnoreWarnings = 2;
 const int ecReadProgress = 4;
 const int ecDefault = ecRaiseExcept;
 
-inline void ThrowFileSkipped(Exception * Exception, const UnicodeString & Message)
+inline void ThrowFileSkipped(Sysutils::Exception * Exception, const UnicodeString & Message)
 {
   throw EFileSkipped(Exception, Message);
 }
 
-inline void ThrowScpEror(Exception * Exception, const UnicodeString & Message)
+inline void ThrowScpEror(Sysutils::Exception * Exception, const UnicodeString & Message)
 {
   throw EScp(Exception, Message);
 }
@@ -619,7 +619,7 @@ bool TSCPFileSystem::IsLastLine(UnicodeString & Line)
   {
     Result = RemoveLastLine(Line, FReturnCode, FCommandSet->GetLastLine());
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     FTerminal->TerminalError(&E, LoadStr(CANT_DETECT_RETURN_CODE));
   }
@@ -797,7 +797,7 @@ void TSCPFileSystem::DoStartup()
     }
     FTerminal->SetExceptionOnFail(false);
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     FTerminal->FatalError(&E, L"");
   }
@@ -815,7 +815,7 @@ void TSCPFileSystem::SkipStartupMessage()
     FTerminal->LogEvent(L"Skipping host startup message (if any).");
     ExecCommand2(fsNull, 0);
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     FTerminal->CommandError(&E, LoadStr(SKIP_STARTUP_MESSAGE_ERROR), 0, HELP_SKIP_STARTUP_MESSAGE_ERROR);
   }
@@ -870,7 +870,7 @@ void TSCPFileSystem::DetectReturnVar()
         // if fatal error occurs, we need to exit ...
         throw;
       }
-      catch (Exception &)
+      catch (Sysutils::Exception &)
       {
         // ...otherwise, we will try next variable (if any)
         Success = false;
@@ -894,7 +894,7 @@ void TSCPFileSystem::DetectReturnVar()
         FCommandSet->GetReturnVar().c_str()));
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     FTerminal->CommandError(&E, LoadStr(DETECT_RETURNVAR_ERROR));
   }
@@ -922,7 +922,7 @@ void TSCPFileSystem::ClearAliases()
       ClearAlias(CommandList->GetString(Index));
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     FTerminal->CommandError(&E, LoadStr(UNALIAS_ALL_ERROR));
   }
@@ -938,7 +938,7 @@ void TSCPFileSystem::UnsetNationalVars()
       ExecCommand2(fsUnset, 0, NationalVars[Index], false);
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     FTerminal->CommandError(&E, LoadStr(UNSET_NATIONAL_ERROR));
   }
@@ -1085,7 +1085,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           FLsFullTime = asOn;
       }
     }
-    catch (Exception & E)
+    catch (Sysutils::Exception & E)
     {
       if (FTerminal->GetActive())
       {
@@ -1500,7 +1500,7 @@ void TSCPFileSystem::CopyToRemote(const Classes::TStrings * AFilesToCopy,
             (Failed ? 0 : coRaiseExcept));
         }
       }
-      catch (Exception & E)
+      catch (Sysutils::Exception & E)
       {
         // Only log error message (it should always succeed, but
         // some pending error maybe in queue) }
@@ -1516,10 +1516,10 @@ void TSCPFileSystem::CopyToRemote(const Classes::TStrings * AFilesToCopy,
     // It has never happened to me (return code is usually 127)
     if (GotLastLine)
     {
-      throw Exception(L"");
+      throw Sysutils::Exception(L"");
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     if (GotLastLine && FTerminal->GetActive())
     {
@@ -1698,7 +1698,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
   FTerminal->OpenLocalFile(AFileName, GENERIC_READ,
     &LocalFileHandle, &LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
 
-  bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
+  bool Dir = FLAGSET(LocalFileAttrs, Sysutils::faDirectory);
   std::unique_ptr<TSafeHandleStream> Stream(new TSafeHandleStream(LocalFileHandle));
   {
     SCOPE_EXIT
@@ -1852,7 +1852,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
                 OperationProgress->AddTransfered(BlockSize);
                 if (OperationProgress->Cancel == csCancelTransfer)
                 {
-                  throw Exception(MainInstructions(LoadStr(USER_TERMINATED)));
+                  throw Sysutils::Exception(MainInstructions(LoadStr(USER_TERMINATED)));
                 }
               }
             }
@@ -1878,7 +1878,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
           if ((OperationProgress->Cancel == csCancelTransfer) ||
               (OperationProgress->Cancel == csCancel && !OperationProgress->TransferingFile))
           {
-            throw Exception(MainInstructions(LoadStr(USER_TERMINATED)));
+            throw Sysutils::Exception(MainInstructions(LoadStr(USER_TERMINATED)));
           }
         }
         while (!OperationProgress->IsLocallyDone() || !OperationProgress->IsTransferDone());
@@ -1908,7 +1908,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
         // normally -> no fatal error
         OperationProgress->TransferingFile = false;
       }
-      catch (Exception & E)
+      catch (Sysutils::Exception & E)
       {
         // EScpFileSkipped is derived from ESkipFile,
         // but is does not indicate file skipped by user here
@@ -1958,10 +1958,10 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
       );
     }
   }
-  else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
+  else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, Sysutils::faArchive))
   {
     FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()),
-      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(AFileName, LocalFileAttrs & ~faArchive) == 0);
+      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(AFileName, LocalFileAttrs & ~Sysutils::faArchive) == 0);
     );
   }
 
@@ -1985,7 +1985,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
     LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DirectoryName));
     if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
     {
-      RaiseLastOSError();
+      Sysutils::RaiseLastOSError();
     }
   );
 
@@ -2012,11 +2012,11 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
         SCPResponse();
       }
     };
-    DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+    DWORD FindAttrs = Sysutils::faReadOnly | Sysutils::faHidden | Sysutils::faSysFile | Sysutils::faDirectory | Sysutils::faArchive;
     TSearchRecChecked SearchRec;
     bool FindOK = false;
     FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-      UnicodeString Path = ::IncludeTrailingBackslash(DirectoryName) + L"*.*";
+      UnicodeString Path = Sysutils::IncludeTrailingBackslash(DirectoryName) + L"*.*";
       FindOK = ::FindFirstChecked(Path,
         FindAttrs, SearchRec) == 0;
     );
@@ -2028,7 +2028,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
       };
       while (FindOK && !OperationProgress->Cancel)
       {
-        UnicodeString FileName = ::IncludeTrailingBackslash(DirectoryName) + SearchRec.Name;
+        UnicodeString FileName = Sysutils::IncludeTrailingBackslash(DirectoryName) + SearchRec.Name;
         try
         {
           if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
@@ -2080,10 +2080,10 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
       {
         FTerminal->RemoveLocalDirectory(ApiPath(DirectoryName));
       }
-      else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
+      else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, Sysutils::faArchive))
       {
         FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
-          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, LocalFileAttrs & ~faArchive) == 0);
+          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, LocalFileAttrs & ~Sysutils::faArchive) == 0);
         );
       }
     }
@@ -2157,7 +2157,7 @@ void TSCPFileSystem::CopyToLocal(const Classes::TStrings * AFilesToCopy,
       UnicodeString FileNamePath = Sysutils::ExtractFilePath(File->GetFileName());
       if (!FileNamePath.IsEmpty())
       {
-        TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
+        TargetDirectory = Sysutils::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
         Sysutils::ForceDirectories(ApiPath(TargetDirectory));
       }
       try
@@ -2313,10 +2313,10 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
             coOnlyReturnCode | coIgnoreWarnings);
           if (!Initialized)
           {
-            throw Exception(L"");
+            throw Sysutils::Exception(L"");
           }
         }
-        catch (Exception & E)
+        catch (Sysutils::Exception & E)
         {
           if (!Initialized && FTerminal->GetActive())
           {
@@ -2389,7 +2389,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
         {
           FileData.RemoteRights.SetOctal(CutToChar(Line, L' ', True));
           // do not trim leading spaces of the filename
-          int64_t TSize = StrToInt64(CutToChar(Line, L' ', False).TrimRight());
+          int64_t TSize = Sysutils::StrToInt64(CutToChar(Line, L' ', False).TrimRight());
           MaskParams.Size = TSize;
           // Security fix: ensure the file ends up where we asked for it.
           // (accept only filename, not path)
@@ -2403,7 +2403,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
           OperationProgress->SetFile(AbsoluteFileName);
           OperationProgress->SetTransferSize(TSize);
         }
-        catch (Exception & E)
+        catch (Sysutils::Exception & E)
         {
           {
             TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -2437,7 +2437,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
         FTerminal->LogFileDetails(AFileName, SourceTimestamp, MaskParams.Size);
 
         UnicodeString DestFileName =
-          ::IncludeTrailingBackslash(TargetDir) +
+          Sysutils::IncludeTrailingBackslash(TargetDir) +
           CopyParam->ChangeFileName(OperationProgress->FileName, osRemote,
             Level == 0);
 
@@ -2446,7 +2446,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
         FileData.Exists = (FileData.LocalFileAttrs != INVALID_FILE_ATTRIBUTES);
         if (Dir)
         {
-          if (FileData.Exists && !(FileData.LocalFileAttrs & faDirectory))
+          if (FileData.Exists && !(FileData.LocalFileAttrs & Sysutils::faDirectory))
           {
             SCPError(FMTLOAD(NOT_DIRECTORY_ERROR, DestFileName.c_str()), false);
           }
@@ -2486,7 +2486,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
               };
               try
               {
-                if (::FileExists(ApiPath(DestFileName)))
+                if (Sysutils::FileExists(ApiPath(DestFileName)))
                 {
                   int64_t MTime = 0;
                   TOverwriteFileParams FileParams;
@@ -2526,7 +2526,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
 
                 FileStream.reset(new TSafeHandleStream(LocalFileHandle));
               }
-              catch (Exception & E)
+              catch (Sysutils::Exception & E)
               {
                 // In this step we can still cancel transfer, so we do it
                 SCPError(E.Message, false);
@@ -2580,13 +2580,13 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
 
                   if (OperationProgress->Cancel == csCancelTransfer)
                   {
-                    throw Exception(MainInstructions(LoadStr(USER_TERMINATED)));
+                    throw Sysutils::Exception(MainInstructions(LoadStr(USER_TERMINATED)));
                   }
                 }
                 while (!OperationProgress->IsLocallyDone() || !
                     OperationProgress->IsTransferDone());
               }
-              catch (Exception & E)
+              catch (Sysutils::Exception & E)
               {
                 // Every exception during file transfer is fatal
                 FTerminal->FatalError(&E,
@@ -2620,7 +2620,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
               }
             }
           }
-          catch (Exception & E)
+          catch (Sysutils::Exception & E)
           {
             if (SkipConfirmed)
             {
@@ -2635,7 +2635,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
 
           if (FileData.LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
           {
-            FileData.LocalFileAttrs = faArchive;
+            FileData.LocalFileAttrs = Sysutils::faArchive;
           }
           DWORD NewAttrs = CopyParam->LocalFileAttrs(FileData.RemoteRights);
           if ((NewAttrs & FileData.LocalFileAttrs) != NewAttrs)

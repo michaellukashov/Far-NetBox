@@ -717,7 +717,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetCodePage(Storage->ReadString(L"CodePage", GetCodePage()));
   SetLoginType(static_cast<TLoginType>(Storage->ReadInteger(L"LoginType", GetLoginType())));
   SetFtpAllowEmptyPassword(Storage->ReadBool(L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword()));
-  if (GetSessionVersion() < GetVersionNumber2110())
+  if (GetSessionVersion() < Sysutils::GetVersionNumber2110())
   {
     SetFtps(TranslateFtpEncryptionNumber(Storage->ReadInteger(L"FtpEncryption", -1)));
   }
@@ -797,7 +797,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
 #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, MB_TEXT(#PROPERTY), Get ## PROPERTY(), )
 
-    Storage->WriteString(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
+    Storage->WriteString(L"Version", Sysutils::VersionNumberToStr(Sysutils::GetCurrentVersionNumber()));
     WRITE_DATA(String, HostName);
     WRITE_DATA(Integer, PortNumber);
     WRITE_DATA_EX(Integer, L"PingInterval", GetPingInterval() / Classes::SecsPerMin, );
@@ -1308,7 +1308,7 @@ inline void MoveStr(UnicodeString & Source, UnicodeString * Dest, intptr_t Count
 bool TSessionData::DoIsProtocolUrl(
   const UnicodeString & Url, const UnicodeString & Protocol, intptr_t & ProtocolLen)
 {
-  bool Result = SameText(Url.SubString(1, Protocol.Length() + 1), Protocol + L":");
+  bool Result = Sysutils::SameText(Url.SubString(1, Protocol.Length() + 1), Protocol + L":");
   if (Result)
   {
     ProtocolLen = Protocol.Length() + 1;
@@ -1419,8 +1419,8 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       {
         TSessionData * AData = NB_STATIC_DOWNCAST(TSessionData, StoredSessions->GetItem(Index));
         if (// !AData->GetIsWorkspace() &&
-            AnsiSameText(AData->GetName(), DecodedUrl) ||
-            AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
+            Sysutils::AnsiSameText(AData->GetName(), DecodedUrl) ||
+            Sysutils::AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
         {
           Data = AData;
           break;
@@ -1434,7 +1434,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     {
       Assign(Data);
       intptr_t P = 1;
-      while (!AnsiSameText(DecodeUrlChars(url.SubString(1, P)), Data->GetName()))
+      while (!Sysutils::AnsiSameText(DecodeUrlChars(url.SubString(1, P)), Data->GetName()))
       {
         P++;
         assert(P <= url.Length());
@@ -1504,7 +1504,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       // expanded from ?: operator, as it caused strange "access violation" errors
       if (!HostInfo.IsEmpty())
       {
-        SetPortNumber(StrToIntDef(DecodeUrlChars(HostInfo), -1));
+        SetPortNumber(Sysutils::StrToIntDef(DecodeUrlChars(HostInfo), -1));
         PortNumberDefined = true;
       }
       else if (ProtocolDefined)
@@ -1525,7 +1525,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       {
         UnicodeString ConnectionParam = CutToChar(ConnectionParams, UrlParamSeparator, false);
         UnicodeString ConnectionParamName = CutToChar(ConnectionParam, UrlParamValueSeparator, false);
-        if (AnsiSameText(ConnectionParamName, UrlHostKeyParamName))
+        if (Sysutils::AnsiSameText(ConnectionParamName, UrlHostKeyParamName))
         {
           SetHostKey(ConnectionParam);
           FOverrideCachedHostKey = false;
@@ -1547,9 +1547,9 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       {
         UnicodeString SessionParam = CutToChar(SessionParams, UrlParamSeparator, false);
         UnicodeString SessionParamName = CutToChar(SessionParam, UrlParamValueSeparator, false);
-        if (AnsiSameText(SessionParamName, UrlSaveParamName))
+        if (Sysutils::AnsiSameText(SessionParamName, UrlSaveParamName))
         {
-          FSaveOnly = (StrToIntDef(SessionParam, 1) != 0);
+          FSaveOnly = (Sysutils::StrToIntDef(SessionParam, 1) != 0);
         }
       }
 
@@ -1668,11 +1668,11 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     }
     if (Options->FindSwitch(L"allowemptypassword", Value))
     {
-      SetFtpAllowEmptyPassword((StrToIntDef(Value, 0) != 0));
+      SetFtpAllowEmptyPassword((Sysutils::StrToIntDef(Value, 0) != 0));
     }
     if (Options->FindSwitch(L"explicitssl", Value))
     {
-      bool Enabled = (StrToIntDef(Value, 1) != 0);
+      bool Enabled = (Sysutils::StrToIntDef(Value, 1) != 0);
       SetFtps(Enabled ? ftpsExplicitSsl : ftpsNone);
       if (!PortNumberDefined && Enabled)
       {
@@ -1692,7 +1692,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     }
     if (Options->FindSwitch(L"codepage", Value))
     {
-      intptr_t CodePage = StrToIntDef(Value, 0);
+      intptr_t CodePage = Sysutils::StrToIntDef(Value, 0);
       if (CodePage != 0)
       {
         SetCodePage(GetCodePageAsString(CodePage));
@@ -1744,7 +1744,7 @@ void TSessionData::ValidateName(const UnicodeString & Name)
   // keep consistent with MakeValidName
   if (Name.LastDelimiter(L"/") > 0)
   {
-    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), L"/"));
+    throw Sysutils::Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), L"/"));
   }
 }
 
@@ -1771,7 +1771,7 @@ UnicodeString TSessionData::DecryptPassword(const RawByteString & Password, cons
   {
     Result = GetConfiguration()->DecryptPassword(Password, Key);
   }
-  catch (EAbort &)
+  catch (Sysutils::EAbort &)
   {
     // silently ignore aborted prompts for master password and return empty password
   }
@@ -2245,7 +2245,7 @@ void TSessionData::SetRekeyTime(uintptr_t Value)
 UnicodeString TSessionData::GetDefaultSessionName() const
 {
   UnicodeString Result;
-  UnicodeString HostName = TrimLeft(GetHostName());
+  UnicodeString HostName = Sysutils::TrimLeft(GetHostName());
   UnicodeString UserName = GetUserName();
   RemoveProtocolPrefix(HostName);
   // remove path
@@ -3064,7 +3064,7 @@ void TSessionData::SetCodePage(const UnicodeString & Value)
 
 void TSessionData::AdjustHostName(UnicodeString & HostName, const UnicodeString & Prefix) const
 {
-  if (::LowerCase(HostName.SubString(1, Prefix.Length())) == Prefix)
+  if (Sysutils::LowerCase(HostName.SubString(1, Prefix.Length())) == Prefix)
   {
     HostName.Delete(1, Prefix.Length());
   }
@@ -3083,7 +3083,7 @@ void TSessionData::RemoveProtocolPrefix(UnicodeString & HostName) const
 TFSProtocol TSessionData::TranslateFSProtocolNumber(intptr_t FSProtocol)
 {
   TFSProtocol Result = static_cast<TFSProtocol>(-1);
-  if (GetSessionVersion() >= GetVersionNumber2110())
+  if (GetSessionVersion() >= Sysutils::GetVersionNumber2110())
   {
     Result = static_cast<TFSProtocol>(FSProtocol);
   }
@@ -3134,7 +3134,7 @@ TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID)
 TFtps TSessionData::TranslateFtpEncryptionNumber(intptr_t FtpEncryption)
 {
   TFtps Result = GetFtps();
-  if ((GetSessionVersion() < GetVersionNumber2110()) &&
+  if ((GetSessionVersion() < Sysutils::GetVersionNumber2110()) &&
       (GetFSProtocol() == fsFTP) && (GetFtps() != ftpsNone))
   {
     switch (FtpEncryption)
@@ -3281,7 +3281,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
     {
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults.get());
     }
-    catch (Exception & E)
+    catch (Sysutils::Exception & E)
     {
       UnicodeString Message;
       if (RecryptPasswordOnly && ALWAYS_TRUE(RecryptPasswordErrors != nullptr) &&
@@ -3454,7 +3454,7 @@ void TStoredSessionList::Cleanup()
       Storage->RecursiveDeleteSubKey(GetConfiguration()->GetStoredSessionsSubKey());
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     throw ExtException(&E, LoadStr(CLEANUP_SESSIONS_ERROR));
   }
@@ -3924,7 +3924,7 @@ UnicodeString GetCodePageAsString(uintptr_t CodePage)
   {
     return UnicodeString(cpInfoEx.CodePageName);
   }
-  return IntToStr(CONST_DEFAULT_CODEPAGE);
+  return Sysutils::IntToStr(CONST_DEFAULT_CODEPAGE);
 }
 
 

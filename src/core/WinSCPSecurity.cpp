@@ -44,7 +44,7 @@ RawByteString EncryptPassword(const UnicodeString & UnicodePassword, const Unico
   RawByteString Result("");
   intptr_t Shift, Index;
 
-  if (!RandSeed)
+  if (!Sysutils::RandSeed)
     Sysutils::Randomize();
   Password = Key + Password;
   Shift = (Password.Length() < PWALG_SIMPLE_MAXLEN) ?

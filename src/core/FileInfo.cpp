@@ -186,7 +186,7 @@ PVSFixedFileInfo GetFixedFileInfo(void * FileInfo)
   PVSFixedFileInfo Result = nullptr;
   if (FileInfo && !::VerQueryValue(FileInfo, L"\\", reinterpret_cast<void **>(&Result), &Len))
   {
-    throw Exception(L"Fixed file info not available");
+    throw Sysutils::Exception(L"Fixed file info not available");
   }
   return Result;
 }
@@ -197,7 +197,7 @@ uint32_t GetTranslationCount(void * FileInfo)
   PTranslations P;
   UINT Len;
   if (!::VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
-    throw Exception(L"File info translations not available");
+    throw Sysutils::Exception(L"File info translations not available");
   return Len / 4;
 }
 
@@ -208,9 +208,9 @@ TTranslation GetTranslation(void * FileInfo, intptr_t I)
   UINT Len;
 
   if (!::VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
-    throw Exception(L"File info translations not available");
+    throw Sysutils::Exception(L"File info translations not available");
   if (I * sizeof(TTranslation) >= Len)
-    throw Exception(L"Specified translation not available");
+    throw Sysutils::Exception(L"Specified translation not available");
   return P[I];
 }
 
@@ -222,7 +222,7 @@ UnicodeString GetLanguage(Word Language)
 
   Len = ::VerLanguageName(Language, P, LENOF(P));
   if (Len > LENOF(P))
-    throw Exception(L"Language not available");
+    throw Sysutils::Exception(L"Language not available");
   return UnicodeString(P, Len);
 }
 
@@ -236,13 +236,13 @@ UnicodeString GetFileInfoString(void * FileInfo,
   UINT Len;
 
   if (!::VerQueryValue(FileInfo, (UnicodeString(L"\\StringFileInfo\\") +
-    IntToHex(Translation.Language, 4) +
-    IntToHex(Translation.CharSet, 4) +
+    Sysutils::IntToHex(Translation.Language, 4) +
+    Sysutils::IntToHex(Translation.CharSet, 4) +
     L"\\" + StringName).c_str(), reinterpret_cast<void **>(&P), &Len))
   {
     if (!AllowEmpty)
     {
-      throw Exception(L"Specified file info string not available");
+      throw Sysutils::Exception(L"Specified file info string not available");
     }
   }
   else

@@ -1087,7 +1087,7 @@ void TFTPFileSystem::SinkRobust(const UnicodeString & AFileName,
       Sink(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch (Exception & E)
+    catch (Sysutils::Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -1156,7 +1156,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     {
       FILE_OPERATION_LOOP(FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
         DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
-        if (FLAGCLEAR(LocalFileAttrs, faDirectory))
+        if (FLAGCLEAR(LocalFileAttrs, Sysutils::faDirectory))
         {
           ThrowExtException();
         }
@@ -1207,7 +1207,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
     FILE_OPERATION_LOOP(FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
-      if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, faDirectory))
+      if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, Sysutils::faDirectory))
       {
         ThrowExtException();
       }
@@ -1244,7 +1244,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
         FileTransfer(AFileName, DestFullName, OnlyFileName,
           FilePath, true, AFile->GetSize(), TransferType, UserData, OperationProgress);
       }
-      catch (Exception &)
+      catch (Sysutils::Exception &)
       {
         //::CloseHandle(LocalFileHandle);
         throw;
@@ -1262,7 +1262,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
 
     if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
     {
-      LocalFileAttrs = faArchive;
+      LocalFileAttrs = Sysutils::faArchive;
     }
     DWORD NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
     if ((NewAttrs & LocalFileAttrs) != NewAttrs)
@@ -1390,7 +1390,7 @@ void TFTPFileSystem::SourceRobust(const UnicodeString & AFileName,
       Source(AFileName, AFile, TargetDir, CopyParam, Params, &OpenParams, &FileParams, OperationProgress,
         Flags, Action);
     }
-    catch (Exception & E)
+    catch (Sysutils::Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -1442,7 +1442,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
 
   OperationProgress->SetFileInProgress();
 
-  bool Dir = FLAGSET(OpenParams->LocalFileAttrs, faDirectory);
+  bool Dir = FLAGSET(OpenParams->LocalFileAttrs, Sysutils::faDirectory);
   if (Dir)
   {
     Action.Cancel();
@@ -1543,10 +1543,10 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
       );
     }
   }
-  else if (CopyParam->GetClearArchive() && FLAGSET(OpenParams->LocalFileAttrs, faArchive))
+  else if (CopyParam->GetClearArchive() && FLAGSET(OpenParams->LocalFileAttrs, Sysutils::faArchive))
   {
     FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()),
-      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(AFileName, OpenParams->LocalFileAttrs & ~faArchive) == 0);
+      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(AFileName, OpenParams->LocalFileAttrs & ~Sysutils::faArchive) == 0);
     );
   }
 }
@@ -1562,7 +1562,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
 
   OperationProgress->SetFile(DirectoryName);
 
-  DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+  DWORD FindAttrs = Sysutils::faReadOnly | Sysutils::faHidden | Sysutils::faSysFile | Sysutils::faDirectory | Sysutils::faArchive;
   TSearchRecChecked SearchRec;
   bool FindOK = false;
 
@@ -1661,10 +1661,10 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
     {
       FTerminal->RemoveLocalDirectory(ApiPath(DirectoryName));
     }
-    else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
+    else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, Sysutils::faArchive))
     {
       FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~faArchive) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~Sysutils::faArchive) == 0);
       );
     }
   }
@@ -1889,7 +1889,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
     }
     else
     {
-      throw Exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, ResponsePtr->GetText().c_str()));
+      throw Sysutils::Exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, ResponsePtr->GetText().c_str()));
     }
   }
 }
@@ -1967,7 +1967,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         // (e.g. before file transfer)
         FDoListAll = (FListAll == asOn);
       }
-      catch (Exception &)
+      catch (Sysutils::Exception &)
       {
         FDoListAll = false;
         // reading the first directory has failed,
@@ -2060,7 +2060,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
   if (File == nullptr)
   {
     AFile = nullptr;
-    throw Exception(FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()));
+    throw Sysutils::Exception(FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()));
   }
 
   assert(File != nullptr);
@@ -3620,7 +3620,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
 
         File->Complete();
       }
-      catch (Exception & E)
+      catch (Sysutils::Exception & E)
       {
         UnicodeString EntryData =
           FORMAT(L"%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d",

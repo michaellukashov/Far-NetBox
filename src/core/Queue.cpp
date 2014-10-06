@@ -166,7 +166,7 @@ public:
 
   TExtendedExceptionEvent OnShowExtendedException;
   TTerminal * Terminal;
-  Exception * E;
+  Sysutils::Exception * E;
 };
 
 class TDisplayBannerAction : public TUserAction
@@ -271,7 +271,7 @@ protected:
   TTerminalQueue * FQueue;
   TBackgroundTerminal * FTerminal;
   TQueueItem * FItem;
-  TCriticalSection FCriticalSection;
+  Sysutils::TCriticalSection FCriticalSection;
   TUserAction * FUserAction;
   bool FCancel;
   bool FPause;
@@ -288,7 +288,7 @@ protected:
     const UnicodeString & Name, const UnicodeString & Instructions,
     Classes::TStrings * Prompts, Classes::TStrings * Results, bool & Result, void * Arg);
   void TerminalShowExtendedException(TTerminal * Terminal,
-    Exception * E, void * Arg);
+    Sysutils::Exception * E, void * Arg);
   void OperationFinished(TFileOperation Operation, TOperationSide Side,
     bool Temp, const UnicodeString & AFileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
@@ -1023,7 +1023,7 @@ void TTerminalQueue::ProcessEvent()
         Classes::TDateTime RemoveDoneItemsBefore = Classes::Now();
         if (FKeepDoneItemsFor > 0)
         {
-          RemoveDoneItemsBefore = IncSecond(RemoveDoneItemsBefore, -FKeepDoneItemsFor);
+          RemoveDoneItemsBefore = Sysutils::IncSecond(RemoveDoneItemsBefore, -FKeepDoneItemsFor);
         }
         for (intptr_t Index = 0; Index < FDoneItems->GetCount(); ++Index)
         {
@@ -1171,7 +1171,7 @@ public:
     TSessionData * SessionData, TConfiguration * Configuration,
     TTerminalItem * Item, const UnicodeString & Name);
 protected:
-  virtual bool DoQueryReopen(Exception * E);
+  virtual bool DoQueryReopen(Sysutils::Exception * E);
 
 private:
   TTerminalItem * FItem;
@@ -1190,7 +1190,7 @@ void TBackgroundTerminal::Init(TSessionData * SessionData, TConfiguration * Conf
   FItem = Item;
 }
 
-bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
+bool TBackgroundTerminal::DoQueryReopen(Sysutils::Exception * /*E*/)
 {
   bool Result;
   if (FItem->FTerminated || FItem->FCancel)
@@ -1283,7 +1283,7 @@ void TTerminalItem::ProcessEvent()
       FItem->Execute(this);
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     UnicodeString Message;
     if (ExceptionMessageFormatted(&E, Message))
@@ -1493,7 +1493,7 @@ void TTerminalItem::TerminalPromptUser(TTerminal * Terminal,
 }
 
 void TTerminalItem::TerminalShowExtendedException(
-  TTerminal * Terminal, Exception * E, void * Arg)
+  TTerminal * Terminal, Sysutils::Exception * E, void * Arg)
 {
   USEDPARAM(Arg);
   assert(Arg == nullptr);
@@ -2026,9 +2026,9 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
     {
       core::ExtractCommonPath(AFilesToCopy, FInfo->Source);
       // this way the trailing backslash is preserved for root directories like "D:\\"
-      FInfo->Source = ExtractFileDir(::IncludeTrailingBackslash(FInfo->Source));
+      FInfo->Source = Sysutils::ExtractFileDir(Sysutils::IncludeTrailingBackslash(FInfo->Source));
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
-        ::IncludeTrailingBackslash(FInfo->Source);
+        Sysutils::IncludeTrailingBackslash(FInfo->Source);
     }
   }
   else
@@ -2043,7 +2043,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
       assert(AFilesToCopy->GetCount() > 0);
       FInfo->Source = AFilesToCopy->GetString(0);
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
-        ::IncludeTrailingBackslash(::ExtractFilePath(FInfo->Source));
+        Sysutils::IncludeTrailingBackslash(Sysutils::ExtractFilePath(FInfo->Source));
     }
   }
 
@@ -2102,9 +2102,9 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   else
   {
     FInfo->Destination =
-      ::IncludeTrailingBackslash(TargetDir) + CopyParam->GetFileMask();
+      Sysutils::IncludeTrailingBackslash(TargetDir) + CopyParam->GetFileMask();
   }
-  FInfo->ModifiedLocal = ::IncludeTrailingBackslash(TargetDir);
+  FInfo->ModifiedLocal = Sysutils::IncludeTrailingBackslash(TargetDir);
 }
 
 void TDownloadQueueItem::DoExecute(TTerminal * Terminal)
@@ -2254,7 +2254,7 @@ void TTerminalThread::RunAction(Classes::TNotifyEvent Action)
             {
               FUserAction->Execute(nullptr);
             }
-            catch (Exception & E)
+            catch (Sysutils::Exception & E)
             {
               SaveException(E, FException);
             }
@@ -2272,7 +2272,7 @@ void TTerminalThread::RunAction(Classes::TNotifyEvent Action)
           break;
 
         default:
-          throw Exception(L"Error waiting for background session task to complete");
+          throw Sysutils::Exception(L"Error waiting for background session task to complete");
       }
     }
     while (!Done);
@@ -2314,7 +2314,7 @@ void TTerminalThread::ProcessEvent()
   {
     FAction(nullptr);
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     SaveException(E, FException);
   }
@@ -2322,7 +2322,7 @@ void TTerminalThread::ProcessEvent()
   SetEvent(FActionEvent);
 }
 
-void TTerminalThread::Rethrow(Exception *& Exception)
+void TTerminalThread::Rethrow(Sysutils::Exception *& Exception)
 {
   if (Exception != nullptr)
   {
@@ -2334,7 +2334,7 @@ void TTerminalThread::Rethrow(Exception *& Exception)
   }
 }
 
-void TTerminalThread::SaveException(Exception & E, Exception *& Exception)
+void TTerminalThread::SaveException(Sysutils::Exception & E, Sysutils::Exception *& Exception)
 {
   assert(Exception == nullptr);
 
@@ -2409,7 +2409,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
             {
               FTerminal->Idle();
             }
-            catch (Exception & E)
+            catch (Sysutils::Exception & E)
             {
               SaveException(E, FIdleException);
             }
@@ -2528,7 +2528,7 @@ void TTerminalThread::TerminalPromptUser(TTerminal * Terminal,
 }
 
 void TTerminalThread::TerminalShowExtendedException(
-  TTerminal * Terminal, Exception * E, void * Arg)
+  TTerminal * Terminal, Sysutils::Exception * E, void * Arg)
 {
   USEDPARAM(Arg);
   assert(Arg == nullptr);

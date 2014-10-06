@@ -8,7 +8,7 @@
 
 inline void ThrowExtException() { throw ExtException((Sysutils::Exception *)nullptr, UnicodeString(L"")); }
 #define EXCEPTION throw ExtException(nullptr, L"")
-#define THROWOSIFFALSE(C) { if (!(C)) RaiseLastOSError(); }
+#define THROWOSIFFALSE(C) { if (!(C)) Sysutils::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(Classes::TObject, OBJ)
 #define NULL_TERMINATE(S) S[LENOF(S) - 1] = L'\0'
@@ -195,7 +195,7 @@ private:
   Sysutils::TCriticalSection & FCriticalSection;
 };
 
-#define MB_TEXT(x) const_cast<wchar_t *>(MB2W(x).c_str())
+#define MB_TEXT(x) const_cast<wchar_t *>(Sysutils::MB2W(x).c_str())
 #define CALLSTACK
 #define CCALLSTACK(TRACING)
 #define TRACING

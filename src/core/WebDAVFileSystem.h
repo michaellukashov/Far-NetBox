@@ -216,7 +216,7 @@ private:
   size_t FFileTransferCPSLimit;
   size_t FLastReadDirectoryProgress;
   TFileOperationProgressType * FCurrentOperationProgress;
-  TCriticalSection FTransferStatusCriticalSection;
+  Sysutils::TCriticalSection FTransferStatusCriticalSection;
   apr_pool_t * webdav_pool;
   webdav::session_t * FSession;
 };
