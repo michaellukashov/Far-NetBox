@@ -142,7 +142,7 @@ void TSessionData::Default()
   SetProxyDNS(asAuto);
   SetProxyLocalhost(false);
 
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FBugs)); ++Index)
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FBugs)); ++Index)
   {
     SetBug(static_cast<TSshBug>(Index), asAuto);
   }
@@ -194,7 +194,7 @@ void TSessionData::Default()
   SetSFTPMaxPacketSize(0);
   SetSFTPMinPacketSize(0);
 
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FSFTPBugs)); ++Index)
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FSFTPBugs)); ++Index)
   {
     SetSFTPBug(static_cast<TSftpBug>(Index), asAuto);
   }
@@ -394,13 +394,13 @@ void TSessionData::Assign(const TPersistent * Source)
     //META_PROPERTIES;
 #undef PROPERTY
 
-    for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FBugs)); ++Index)
+    for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FBugs)); ++Index)
     {
       // PROPERTY(Bug[(TSshBug)Index]);
       SetBug(static_cast<TSshBug>(Index),
           SourceData->GetBug(static_cast<TSshBug>(Index)));
     }
-    for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FSFTPBugs)); ++Index)
+    for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FSFTPBugs)); ++Index)
     {
       // PROPERTY(SFTPBug[(TSftpBug)Index]);
       SetSFTPBug(static_cast<TSftpBug>(Index),
@@ -441,13 +441,13 @@ bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly, Class
   ADVANCED_PROPERTIES;
 #undef PROPERTY
 
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FBugs)); ++Index)
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FBugs)); ++Index)
   {
     // PROPERTY(Bug[(TSshBug)Index]);
     if (GetBug(static_cast<TSshBug>(Index)) != Default->GetBug(static_cast<TSshBug>(Index)))
       return false;
   }
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FSFTPBugs)); ++Index)
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FSFTPBugs)); ++Index)
   {
     // PROPERTY(SFTPBug[(TSftpBug)Index]);
     if (GetSFTPBug(static_cast<TSftpBug>(Index)) != Default->GetSFTPBug(static_cast<TSftpBug>(Index)))
@@ -2701,13 +2701,13 @@ void TSessionData::SetFtpProxyLogonType(intptr_t Value)
 
 void TSessionData::SetBug(TSshBug Bug, TAutoSwitch Value)
 {
-  assert(Bug >= 0 && static_cast<uint32_t>(Bug) < LENOF(FBugs));
+  assert(Bug >= 0 && static_cast<uint32_t>(Bug) < _countof(FBugs));
   SET_SESSION_PROPERTY(Bugs[Bug]);
 }
 
 TAutoSwitch TSessionData::GetBug(TSshBug Bug) const
 {
-  assert(Bug >= 0 && static_cast<uint32_t>(Bug) < LENOF(FBugs));
+  assert(Bug >= 0 && static_cast<uint32_t>(Bug) < _countof(FBugs));
   return FBugs[Bug];
 }
 
@@ -2753,13 +2753,13 @@ void TSessionData::SetSFTPMaxPacketSize(intptr_t Value)
 
 void TSessionData::SetSFTPBug(TSftpBug Bug, TAutoSwitch Value)
 {
-  assert(Bug >= 0 && static_cast<uint32_t>(Bug) < LENOF(FSFTPBugs));
+  assert(Bug >= 0 && static_cast<uint32_t>(Bug) < _countof(FSFTPBugs));
   SET_SESSION_PROPERTY(SFTPBugs[Bug]);
 }
 
 TAutoSwitch TSessionData::GetSFTPBug(TSftpBug Bug) const
 {
-  assert(Bug >= 0 && static_cast<uint32_t>(Bug) < LENOF(FSFTPBugs));
+  assert(Bug >= 0 && static_cast<uint32_t>(Bug) < _countof(FSFTPBugs));
   return FSFTPBugs[Bug];
 }
 

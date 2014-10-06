@@ -481,7 +481,7 @@ int FakeFileImageIndex(const UnicodeString & /* AFileName */, uint32_t /* Attrs 
   // as the "partial" overlay is added there too
   if (AnsiSameText(UnixExtractFileExt(FileName), PARTIAL_EXT))
   {
-    static const size_t PartialExtLen = LENOF(PARTIAL_EXT) - 1;
+    static const size_t PartialExtLen = _countof(PARTIAL_EXT) - 1;
     FileName.SetLength(FileName.Length() - PartialExtLen);
   }
 

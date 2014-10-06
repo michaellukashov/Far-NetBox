@@ -673,7 +673,7 @@ NextWord(const wchar_t * Input)
   static wchar_t buffer[1024];
   static const wchar_t * text = nullptr;
 
-  wchar_t * endOfBuffer = buffer + LENOF(buffer) - 1;
+  wchar_t * endOfBuffer = buffer + _countof(buffer) - 1;
   wchar_t * pBuffer = buffer;
 
   if (Input)

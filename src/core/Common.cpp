@@ -308,7 +308,7 @@ UnicodeString ExceptionLogString(Exception * E)
   {
 #if defined(__BORLANDC__)
     wchar_t Buffer[1024];
-    ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, LENOF(Buffer));
+    ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, _countof(Buffer));
     return UnicodeString(Buffer);
 #else
     return UnicodeString(E->what());
@@ -736,7 +736,7 @@ bool IsReservedName(const UnicodeString & AFileName)
       L"COM1", L"COM2", L"COM3", L"COM4", L"COM5", L"COM6", L"COM7", L"COM8", L"COM9",
       L"LPT1", L"LPT2", L"LPT3", L"LPT4", L"LPT5", L"LPT6", L"LPT7", L"LPT8", L"LPT9"
     };
-    for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(Reserved)); ++Index)
+    for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(Reserved)); ++Index)
     {
       if (SameText(fileName, Reserved[Index]))
       {

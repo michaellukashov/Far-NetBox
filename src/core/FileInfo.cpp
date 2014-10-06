@@ -219,8 +219,8 @@ UnicodeString GetLanguage(Word Language)
   uintptr_t Len;
   wchar_t P[256];
 
-  Len = ::VerLanguageName(Language, P, LENOF(P));
-  if (Len > LENOF(P))
+  Len = ::VerLanguageName(Language, P, _countof(P));
+  if (Len > _countof(P))
     throw Sysutils::Exception(L"Language not available");
   return UnicodeString(P, Len);
 }

@@ -1610,7 +1610,7 @@ bool TTerminal::DoQueryReopen(Sysutils::Exception * E)
       Aliases[0].Alias = LoadStr(RECONNECT_BUTTON);
       Aliases[0].Default = true;
       Params.Aliases = Aliases;
-      Params.AliasesCount = LENOF(Aliases);
+      Params.AliasesCount = _countof(Aliases);
       Result = (QueryUserException(L"", E, qaRetry | qaAbort, &Params, qtError) == qaRetry);
     }
 
@@ -2182,7 +2182,7 @@ uintptr_t TTerminal::CommandError(Sysutils::Exception * E, const UnicodeString &
         Aliases[0].Button = qaAll;
         Aliases[0].Alias = LoadStr(SKIP_ALL_BUTTON);
         Params.Aliases = Aliases;
-        Params.AliasesCount = LENOF(Aliases);
+        Params.AliasesCount = _countof(Aliases);
         Answers |= qaAll;
       }
       Result = QueryUserException(Msg, E, Answers, &Params, qtError);

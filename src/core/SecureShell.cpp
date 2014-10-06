@@ -577,7 +577,7 @@ void TSecureShell::PuttyLogEvent(const UnicodeString & Str)
       { L"Administratively prohibited [%]", PFWD_TRANSL_ADMIN },
       { L"Connect failed [%]", PFWD_TRANSL_CONNECT },
     };
-    TranslatePuttyMessage(Translation, LENOF(Translation), FLastTunnelError);
+    TranslatePuttyMessage(Translation, _countof(Translation), FLastTunnelError);
   }
   LogEvent(Str);
 }
@@ -606,7 +606,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   };
 
   UnicodeString Name = AName;
-  int Index = TranslatePuttyMessage(NameTranslation, LENOF(NameTranslation), Name);
+  int Index = TranslatePuttyMessage(NameTranslation, _countof(NameTranslation), Name);
 
   const TPuttyTranslation * InstructionTranslation = nullptr;
   const TPuttyTranslation * PromptTranslation = nullptr;
@@ -701,7 +701,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       { L"Confirm new password: ", NEW_PASSWORD_CONFIRM_PROMPT },
     };
     PromptTranslation = NewPasswordPromptTranslation;
-    PromptTranslationCount = LENOF(NewPasswordPromptTranslation);
+    PromptTranslationCount = _countof(NewPasswordPromptTranslation);
     PromptKind = pkNewPassword;
     PromptDesc = L"new password";
   }
@@ -1281,7 +1281,7 @@ int TSecureShell::TranslateAuthenticationMessage(
     { L"Server refused our key", AUTH_TRANSL_KEY_REFUSED }
   };
 
-  int Result = TranslatePuttyMessage(Translation, LENOF(Translation), Message, HelpKeyword);
+  int Result = TranslatePuttyMessage(Translation, _countof(Translation), Message, HelpKeyword);
 
   if ((Result == 2) || (Result == 3) || (Result == 4))
   {
@@ -1369,7 +1369,7 @@ int TSecureShell::TranslateErrorMessage(
     { L"Incoming packet was garbled on decryption", NET_TRANSL_PACKET_GARBLED, HELP_NET_TRANSL_PACKET_GARBLED },
   };
 
-  int Index = TranslatePuttyMessage(Translation, LENOF(Translation), Message, HelpKeyword);
+  int Index = TranslatePuttyMessage(Translation, _countof(Translation), Message, HelpKeyword);
 
   if ((Index == 0) || (Index == 1) || (Index == 2) || (Index == 3))
   {
@@ -1741,7 +1741,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
     { FD_CLOSE_BIT, FD_CLOSE, L"close" },
   };
 
-  for (uintptr_t Event = 0; Event < LENOF(EventTypes); Event++)
+  for (uintptr_t Event = 0; Event < _countof(EventTypes); Event++)
   {
     if (FLAGSET(Events.lNetworkEvents, EventTypes[Event].Mask))
     {
@@ -1982,10 +1982,10 @@ TCipher TSecureShell::FuncToSsh1Cipher(const void * Cipher)
   const ssh_cipher *CipherFuncs[] =
     {&ssh_3des, &ssh_des, &ssh_blowfish_ssh1};
   const TCipher TCiphers[] = {cip3DES, cipDES, cipBlowfish};
-  assert(LENOF(CipherFuncs) == LENOF(TCiphers));
+  assert(_countof(CipherFuncs) == _countof(TCiphers));
   TCipher Result = cipWarn;
 
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(TCiphers)); ++Index)
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(TCiphers)); ++Index)
   {
     if (static_cast<ssh_cipher *>(const_cast<void *>(Cipher)) == CipherFuncs[Index])
     {
@@ -2002,10 +2002,10 @@ TCipher TSecureShell::FuncToSsh2Cipher(const void * Cipher)
   const ssh2_ciphers *CipherFuncs[] =
     {&ssh2_3des, &ssh2_des, &ssh2_aes, &ssh2_blowfish, &ssh2_arcfour};
   const TCipher TCiphers[] = {cip3DES, cipDES, cipAES, cipBlowfish, cipArcfour};
-  assert(LENOF(CipherFuncs) == LENOF(TCiphers));
+  assert(_countof(CipherFuncs) == _countof(TCiphers));
   TCipher Result = cipWarn;
 
-  for (uintptr_t C = 0; C < LENOF(TCiphers); C++)
+  for (uintptr_t C = 0; C < _countof(TCiphers); C++)
   {
     for (int F = 0; F < CipherFuncs[C]->nciphers; F++)
     {

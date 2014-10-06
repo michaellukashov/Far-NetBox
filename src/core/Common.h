@@ -11,16 +11,16 @@ inline void ThrowExtException() { throw ExtException((Sysutils::Exception *)null
 #define THROWOSIFFALSE(C) { if (!(C)) Sysutils::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(Classes::TObject, OBJ)
-#define NULL_TERMINATE(S) S[LENOF(S) - 1] = L'\0'
+#define NULL_TERMINATE(S) S[_countof(S) - 1] = L'\0'
 #define ASCOPY(dest, source) \
   { \
     AnsiString CopyBuf = ::W2MB(source).c_str(); \
-    strncpy(dest, CopyBuf.c_str(), LENOF(dest)); \
-    dest[LENOF(dest)-1] = '\0'; \
+    strncpy(dest, CopyBuf.c_str(), _countof(dest)); \
+    dest[_countof(dest)-1] = '\0'; \
   }
 #define FORMAT(S, ...) Sysutils::Format(S, ##__VA_ARGS__)
 #define FMTLOAD(I, ...) Sysutils::FmtLoadStr(I, ##__VA_ARGS__)
-#define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
+//#define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)

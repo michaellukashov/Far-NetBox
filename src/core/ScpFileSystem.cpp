@@ -1372,7 +1372,7 @@ uintptr_t TSCPFileSystem::ConfirmOverwrite(
   Aliases[2].GrouppedShiftState = Classes::TShiftState() << Classes::ssShift;
   TQueryParams QueryParams(qpNeverAskAgainCheck);
   QueryParams.Aliases = Aliases;
-  QueryParams.AliasesCount = LENOF(Aliases);
+  QueryParams.AliasesCount = _countof(Aliases);
   uintptr_t Answer =
     FTerminal->ConfirmFileOverwrite(
       AFileName, FileParams,

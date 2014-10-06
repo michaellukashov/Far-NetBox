@@ -12521,7 +12521,7 @@ bool TWebDAVFileSystem::ConfirmOverwrite(const UnicodeString & AFullFileName, Un
     Aliases[2].Alias = LoadStr(RENAME_BUTTON);
     TQueryParams QueryParams(qpNeverAskAgainCheck);
     QueryParams.Aliases = Aliases;
-    QueryParams.AliasesCount = LENOF(Aliases);
+    QueryParams.AliasesCount = _countof(Aliases);
 
     {
       TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -13930,7 +13930,7 @@ webdav::error_t TWebDAVFileSystem::VerifyCertificate(
   Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;
   Params.NoBatchAnswers = qaYes | qaRetry;
   Params.Aliases = Aliases;
-  Params.AliasesCount = LENOF(Aliases);
+  Params.AliasesCount = _countof(Aliases);
   uintptr_t Answer = FTerminal->QueryUser(
     FMTLOAD(VERIFY_CERT_PROMPT3, UnicodeString(Prompt).c_str()),
     nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
