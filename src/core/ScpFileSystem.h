@@ -1,12 +1,12 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include <FileSystems.h>
 #include <CopyParam.h>
-//---------------------------------------------------------------------------
+
 class TCommandSet;
 class TSecureShell;
-//---------------------------------------------------------------------------
+
 class TSCPFileSystem : public TCustomFileSystem
 {
 NB_DISABLE_COPY(TSCPFileSystem)
@@ -31,15 +31,15 @@ public:
   virtual void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties,
     TChmodSessionAction & Action);
-  virtual bool LoadFilesProperties(TStrings * FileList);
+  virtual bool LoadFilesProperties(Classes::TStrings * FileList);
   virtual void CalculateFilesChecksum(const UnicodeString & Alg,
-    TStrings * FileList, TStrings * Checksums,
+    Classes::TStrings * FileList, Classes::TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum);
-  virtual void CopyToLocal(const TStrings * AFilesToCopy,
+  virtual void CopyToLocal(const Classes::TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
-  virtual void CopyToRemote(const TStrings * AFilesToCopy,
+  virtual void CopyToRemote(const Classes::TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
@@ -63,7 +63,7 @@ public:
     const UnicodeString & NewName);
   virtual void CopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
-  virtual TStrings * GetFixedPaths();
+  virtual Classes::TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo() const;
@@ -73,7 +73,7 @@ public:
   virtual UnicodeString GetUserName();
 
 protected:
-  TStrings * GetOutput() const { return FOutput; }
+  Classes::TStrings * GetOutput() const { return FOutput; }
   intptr_t GetReturnCode() const { return FReturnCode; }
 
   virtual UnicodeString GetCurrDirectory();
@@ -83,7 +83,7 @@ private:
   TCommandSet * FCommandSet;
   TFileSystemInfo FFileSystemInfo;
   UnicodeString FCurrentDirectory;
-  TStrings * FOutput;
+  Classes::TStrings * FOutput;
   intptr_t FReturnCode;
   UnicodeString FCachedDirectoryChange;
   bool FProcessingCommand;
@@ -135,4 +135,4 @@ private:
   static bool RemoveLastLine(UnicodeString & Line,
     intptr_t & ReturnCode, const UnicodeString & ALastLine);
 };
-//---------------------------------------------------------------------------
+

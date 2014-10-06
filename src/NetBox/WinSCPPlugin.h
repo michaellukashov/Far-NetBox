@@ -1,14 +1,14 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <Interface.h>
 #include <Option.h>
 #include "FarPlugin.h"
-//---------------------------------------------------------------------------
+
 class TWinSCPFileSystem;
 class TCopyParamType;
-//---------------------------------------------------------------------------
-struct TMessageParams : public TObject
+
+struct TMessageParams : public Classes::TObject
 {
 NB_DISABLE_COPY(TMessageParams)
 public:
@@ -38,7 +38,7 @@ public:
   uintptr_t Timeout;
   uintptr_t TimeoutAnswer;
 };
-//---------------------------------------------------------------------------
+
 class TWinSCPPlugin : public TCustomFarPlugin
 {
 friend TWinSCPFileSystem;
@@ -49,7 +49,7 @@ public:
   virtual VersionInfo GetMinFarVersion();
 
   virtual void HandleException(Sysutils::Exception * E, OPERATION_MODES OpMode = 0);
-  uintptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
+  uintptr_t MoreMessageDialog(const UnicodeString & Str, Classes::TStrings * MoreMessages,
     TQueryType Type, uintptr_t Answers, const TMessageParams * Params = nullptr);
   void ShowExtendedException(Sysutils::Exception * E);
   bool CopyParamCustomDialog(TCopyParamType & CopyParam,
@@ -58,9 +58,9 @@ public:
 
 protected:
   virtual bool HandlesFunction(THandlesFunction Function);
-  virtual void GetPluginInfoEx(PLUGIN_FLAGS & Flags, TStrings * DiskMenuStrings,
-    TStrings * PluginMenuStrings, TStrings * PluginConfigStrings,
-    TStrings * CommandPrefixes);
+  virtual void GetPluginInfoEx(PLUGIN_FLAGS & Flags, Classes::TStrings * DiskMenuStrings,
+    Classes::TStrings * PluginMenuStrings, Classes::TStrings * PluginConfigStrings,
+    Classes::TStrings * CommandPrefixes);
   virtual TCustomFarFileSystem * OpenPluginEx(OPENFROM OpenFrom, intptr_t Item);
   virtual bool ConfigureEx(const GUID * Guid);
   virtual intptr_t ProcessEditorEventEx(const struct ProcessEditorEventInfo * Info);
@@ -100,4 +100,4 @@ private:
 private:
   bool FInitialized;
 };
-//---------------------------------------------------------------------------
+

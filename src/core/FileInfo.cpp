@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -8,8 +8,6 @@
 #include "FileInfo.h"
 #include "FileBuffer.h"
 
-using namespace Sysutils;
-//---------------------------------------------------------------------------
 #define DWORD_ALIGN( base, ptr ) \
     ( (LPBYTE)(base) + ((((LPBYTE)(ptr) - (LPBYTE)(base)) + 3) & ~3) )
 struct VS_VERSION_INFO_STRUCT32
@@ -19,7 +17,7 @@ struct VS_VERSION_INFO_STRUCT32
   WORD  wType;
   WCHAR szKey[1];
 };
-//---------------------------------------------------------------------------
+
 static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr_t DataSize, void * Data)
 {
   uintptr_t Len = 0;
@@ -90,7 +88,7 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
 
   return Len;
 }
-//---------------------------------------------------------------------------
+
 static uintptr_t GetFileVersionInfoSizeFix(const wchar_t * FileName, DWORD * AHandle)
 {
   uintptr_t Len;
@@ -111,7 +109,7 @@ static uintptr_t GetFileVersionInfoSizeFix(const wchar_t * FileName, DWORD * AHa
 
   return Len;
 }
-//---------------------------------------------------------------------------
+
 bool GetFileVersionInfoFix(const wchar_t * FileName, uint32_t Handle,
   uintptr_t DataSize, void * Data)
 {
@@ -143,7 +141,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, uint32_t Handle,
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 // Return pointer to file version info block
 void * CreateFileInfo(const UnicodeString & AFileName)
 {
@@ -170,17 +168,17 @@ void * CreateFileInfo(const UnicodeString & AFileName)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 // Free file version info block memory
 void FreeFileInfo(void * FileInfo)
 {
   if (FileInfo)
     nb_free(FileInfo);
 }
-//---------------------------------------------------------------------------
+
 typedef TTranslation TTranslations[65536];
 typedef TTranslation *PTranslations;
-//---------------------------------------------------------------------------
+
 // Return pointer to fixed file version info
 PVSFixedFileInfo GetFixedFileInfo(void * FileInfo)
 {
@@ -188,21 +186,21 @@ PVSFixedFileInfo GetFixedFileInfo(void * FileInfo)
   PVSFixedFileInfo Result = nullptr;
   if (FileInfo && !::VerQueryValue(FileInfo, L"\\", reinterpret_cast<void **>(&Result), &Len))
   {
-    throw Exception(L"Fixed file info not available");
+    throw Sysutils::Exception(L"Fixed file info not available");
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 // Return number of available file version info translations
 uint32_t GetTranslationCount(void * FileInfo)
 {
   PTranslations P;
   UINT Len;
   if (!::VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
-    throw Exception(L"File info translations not available");
+    throw Sysutils::Exception(L"File info translations not available");
   return Len / 4;
 }
-//---------------------------------------------------------------------------
+
 // Return i-th translation in the file version info translation list
 TTranslation GetTranslation(void * FileInfo, intptr_t I)
 {
@@ -210,12 +208,12 @@ TTranslation GetTranslation(void * FileInfo, intptr_t I)
   UINT Len;
 
   if (!::VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
-    throw Exception(L"File info translations not available");
+    throw Sysutils::Exception(L"File info translations not available");
   if (I * sizeof(TTranslation) >= Len)
-    throw Exception(L"Specified translation not available");
+    throw Sysutils::Exception(L"Specified translation not available");
   return P[I];
 }
-//---------------------------------------------------------------------------
+
 // Return the name of the specified language
 UnicodeString GetLanguage(Word Language)
 {
@@ -224,10 +222,10 @@ UnicodeString GetLanguage(Word Language)
 
   Len = ::VerLanguageName(Language, P, LENOF(P));
   if (Len > LENOF(P))
-    throw Exception(L"Language not available");
+    throw Sysutils::Exception(L"Language not available");
   return UnicodeString(P, Len);
 }
-//---------------------------------------------------------------------------
+
 // Return the value of the specified file version info string using the
 // specified translation
 UnicodeString GetFileInfoString(void * FileInfo,
@@ -238,13 +236,13 @@ UnicodeString GetFileInfoString(void * FileInfo,
   UINT Len;
 
   if (!::VerQueryValue(FileInfo, (UnicodeString(L"\\StringFileInfo\\") +
-    IntToHex(Translation.Language, 4) +
-    IntToHex(Translation.CharSet, 4) +
+    Sysutils::IntToHex(Translation.Language, 4) +
+    Sysutils::IntToHex(Translation.CharSet, 4) +
     L"\\" + StringName).c_str(), reinterpret_cast<void **>(&P), &Len))
   {
     if (!AllowEmpty)
     {
-      throw Exception(L"Specified file info string not available");
+      throw Sysutils::Exception(L"Specified file info string not available");
     }
   }
   else
@@ -254,7 +252,7 @@ UnicodeString GetFileInfoString(void * FileInfo,
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int CalculateCompoundVersion(int MajorVer,
   int MinorVer, int Release, int Build)
 {

@@ -1,6 +1,6 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #define PWALG_SIMPLE 1
 #define PWALG_SIMPLE_MAGIC 0xA3
 #define PWALG_SIMPLE_STRING ((RawByteString)"0123456789ABCDEF")
@@ -11,6 +11,6 @@ RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeStrin
 UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key, Integer Algorithm = PWALG_SIMPLE);
 RawByteString SetExternalEncryptedPassword(const RawByteString & Password);
 bool GetExternalEncryptedPassword(const RawByteString & Encrypted, RawByteString & Password);
-//---------------------------------------------------------------------------
+
 bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len);
-//---------------------------------------------------------------------------
+

@@ -1,10 +1,10 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #include "Configuration.h"
 #include "CopyParam.h"
 #include "Exceptions.h"
-//---------------------------------------------------------------------------
+
 class TFileOperationProgressType;
 enum TFileOperation
 {
@@ -42,8 +42,8 @@ DEFINE_CALLBACK_TYPE1(TFileOperationProgressEvent, void,
 DEFINE_CALLBACK_TYPE6(TFileOperationFinishedEvent, void,
   TFileOperation /* Operation */, TOperationSide /* Side */, bool /* Temp */,
   const UnicodeString & /* FileName */, bool /* Success */, TOnceDoneOperation & /* OnceDoneOperation */);
-//---------------------------------------------------------------------------
-class TFileOperationProgressType : public TObject
+
+class TFileOperationProgressType : public Classes::TObject
 {
 public:
   // common data
@@ -70,7 +70,7 @@ public:
   TCancelStatus Cancel;
   intptr_t Count;
   // when operation started
-  TDateTime StartTime;
+  Classes::TDateTime StartTime;
   // bytes transfered
   int64_t TotalTransfered;
   int64_t TotalSkipped;
@@ -121,11 +121,11 @@ public:
   void Stop();
   void Suspend();
   // whole operation
-  TDateTime TimeElapsed() const;
+  Classes::TDateTime TimeElapsed() const;
   // only current file
-  TDateTime TimeExpected() const;
-  TDateTime TotalTimeExpected() const;
-  TDateTime TotalTimeLeft() const;
+  Classes::TDateTime TimeExpected() const;
+  Classes::TDateTime TotalTimeExpected() const;
+  Classes::TDateTime TotalTimeLeft() const;
   intptr_t TransferProgress() const;
   intptr_t OverallProgress() const;
   intptr_t TotalTransferProgress() const;
@@ -139,7 +139,7 @@ private:
   // when it was last time suspended (to calculate suspend time in Resume())
   uintptr_t FSuspendTime;
   // when current file was started being transfered
-  TDateTime FFileStartTime;
+  Classes::TDateTime FFileStartTime;
   intptr_t FFilesFinished;
   TFileOperationProgressEvent FOnProgress;
   TFileOperationFinishedEvent FOnFinished;
@@ -150,8 +150,8 @@ private:
   rde::vector<uint32_t> FTicks;
   rde::vector<int64_t> FTotalTransferredThen;
 };
-//---------------------------------------------------------------------------
-class TSuspendFileOperationProgress : public TObject
+
+class TSuspendFileOperationProgress : public Classes::TObject
 {
 NB_DISABLE_COPY(TSuspendFileOperationProgress)
 public:
@@ -175,4 +175,4 @@ public:
 private:
   TFileOperationProgressType * FOperationProgress;
 };
-//---------------------------------------------------------------------------
+

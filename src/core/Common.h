@@ -1,16 +1,16 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include <CoreDefs.hpp>
 #include <headers.hpp>
 
 #include "Exceptions.h"
-//---------------------------------------------------------------------------
+
 inline void ThrowExtException() { throw ExtException((Sysutils::Exception *)nullptr, UnicodeString(L"")); }
 #define EXCEPTION throw ExtException(nullptr, L"")
-#define THROWOSIFFALSE(C) { if (!(C)) RaiseLastOSError(); }
+#define THROWOSIFFALSE(C) { if (!(C)) Sysutils::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
-#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
+#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(Classes::TObject, OBJ)
 #define NULL_TERMINATE(S) S[LENOF(S) - 1] = L'\0'
 #define ASCOPY(dest, source) \
   { \
@@ -26,7 +26,7 @@ inline void ThrowExtException() { throw ExtException((Sysutils::Exception *)null
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
 #define SWAP(TYPE, FIRST, SECOND) \
   { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
-//---------------------------------------------------------------------------
+
 extern const wchar_t EngShortMonthNames[12][4];
 extern const std::string Bom;
 extern const wchar_t TokenPrefix;
@@ -34,7 +34,7 @@ extern const wchar_t NoReplacement;
 extern const wchar_t TokenReplacement;
 extern const UnicodeString LocalInvalidChars;
 extern const UnicodeString PasswordMask;
-//---------------------------------------------------------------------------
+
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B);
 UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C);
 void PackStr(UnicodeString & Str);
@@ -112,7 +112,7 @@ bool IsWinVista();
 bool IsWin7();
 bool IsWine();
 int64_t Round(double Number);
-bool TryRelativeStrToDateTime(const UnicodeString & S, TDateTime & DateTime);
+bool TryRelativeStrToDateTime(const UnicodeString & S, Classes::TDateTime & DateTime);
 LCID GetDefaultLCID();
 UnicodeString DefaultEncodingName();
 UnicodeString WindowsProductName();
@@ -121,12 +121,12 @@ bool IsDirectoryWriteable(const UnicodeString & APath);
 UnicodeString FormatNumber(int64_t Size);
 UnicodeString FormatSize(int64_t Size);
 UnicodeString ExtractFileBaseName(const UnicodeString & APath);
-TStringList * TextToStringList(const UnicodeString & Text);
+Classes::TStringList * TextToStringList(const UnicodeString & Text);
 UnicodeString TrimVersion(const UnicodeString & Version);
 UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion);
 Sysutils::TFormatSettings GetEngFormatSettings();
 //int ParseShortEngMonthName(const UnicodeString & MonthStr);
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /* FileName */, const Sysutils::TSearchRec & /* Rec */, void * /* Param */);
 bool FileSearchRec(const UnicodeString & AFileName, Sysutils::TSearchRec & Rec);
@@ -139,7 +139,7 @@ DWORD FindFirstChecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearc
 DWORD FindNextChecked(TSearchRecChecked & F);
 void ProcessLocalDirectory(const UnicodeString & ADirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = nullptr, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
-//---------------------------------------------------------------------------
+
 enum TDSTMode
 {
   dstmWin  = 0, //
@@ -147,33 +147,33 @@ enum TDSTMode
   dstmKeep = 2
 };
 bool UsesDaylightHack();
-TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day);
-TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec);
-TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime);
-TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode);
-TDateTime ConvertTimestampToUTC(const TDateTime & DateTime);
-TDateTime ConvertTimestampFromUTC(const TDateTime & DateTime);
-FILETIME DateTimeToFileTime(const TDateTime & DateTime, TDSTMode DSTMode);
-TDateTime AdjustDateTimeFromUnix(const TDateTime & DateTime, TDSTMode DSTMode);
-void UnifyDateTimePrecision(TDateTime & DateTime1, TDateTime & DateTime2);
-TDateTime FileTimeToDateTime(const FILETIME & FileTime);
+Classes::TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day);
+Classes::TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec);
+Classes::TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime);
+Classes::TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode);
+Classes::TDateTime ConvertTimestampToUTC(const Classes::TDateTime & DateTime);
+Classes::TDateTime ConvertTimestampFromUTC(const Classes::TDateTime & DateTime);
+FILETIME DateTimeToFileTime(const Classes::TDateTime & DateTime, TDSTMode DSTMode);
+Classes::TDateTime AdjustDateTimeFromUnix(const Classes::TDateTime & DateTime, TDSTMode DSTMode);
+void UnifyDateTimePrecision(Classes::TDateTime & DateTime1, Classes::TDateTime & DateTime2);
+Classes::TDateTime FileTimeToDateTime(const FILETIME & FileTime);
 int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
   TDSTMode DSTMode);
 int64_t ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode);
 UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format);
-UnicodeString StandardTimestamp(const TDateTime & DateTime);
+UnicodeString StandardTimestamp(const Classes::TDateTime & DateTime);
 UnicodeString StandardTimestamp();
 UnicodeString StandardDatestamp();
 UnicodeString GetTimeZoneLogString();
 bool AdjustClockForDSTEnabled();
-intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2);
-intptr_t TimeToMSec(const TDateTime & T);
-intptr_t TimeToSeconds(const TDateTime & T);
-intptr_t TimeToMinutes(const TDateTime & T);
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-class TGuard : public TObject
+intptr_t CompareFileTime(const Classes::TDateTime & T1, const Classes::TDateTime & T2);
+intptr_t TimeToMSec(const Classes::TDateTime & T);
+intptr_t TimeToSeconds(const Classes::TDateTime & T);
+intptr_t TimeToMinutes(const Classes::TDateTime & T);
+
+
+class TGuard : public Classes::TObject
 {
 NB_DISABLE_COPY(TGuard)
 public:
@@ -183,8 +183,8 @@ public:
 private:
   const Sysutils::TCriticalSection & FCriticalSection;
 };
-//---------------------------------------------------------------------------
-class TUnguard : public TObject
+
+class TUnguard : public Classes::TObject
 {
 NB_DISABLE_COPY(TUnguard)
 public:
@@ -194,8 +194,8 @@ public:
 private:
   Sysutils::TCriticalSection & FCriticalSection;
 };
-//---------------------------------------------------------------------------
-#define MB_TEXT(x) const_cast<wchar_t *>(MB2W(x).c_str())
+
+#define MB_TEXT(x) const_cast<wchar_t *>(Sysutils::MB2W(x).c_str())
 #define CALLSTACK
 #define CCALLSTACK(TRACING)
 #define TRACING
@@ -204,7 +204,7 @@ private:
 #define TRACEFMT(MESSAGE, ...)
 #define CTRACE(TRACING, MESSAGE)
 #define CTRACEFMT(TRACING, MESSAGE, ...)
-//---------------------------------------------------------------------------
+
 #include <assert.h>
 #define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
 #ifndef _DEBUG
@@ -233,9 +233,9 @@ private:
 #ifndef USEDPARAM
 #define USEDPARAM(p) void(p);
 #endif
-//---------------------------------------------------------------------------
+
 template<class T>
-class TValueRestorer : public TObject
+class TValueRestorer : public Classes::TObject
 {
 public:
   inline explicit TValueRestorer(T & Target, const T & Value) :
@@ -259,7 +259,7 @@ protected:
   T & FTarget;
   T FValue;
 };
-//---------------------------------------------------------------------------
+
 class TAutoNestingCounter : TValueRestorer<int>
 {
 public:
@@ -275,6 +275,6 @@ public:
     assert(FTarget == (FValue + 1));
   }
 };
-//---------------------------------------------------------------------------
+
 UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
-//---------------------------------------------------------------------------
+

@@ -1,23 +1,23 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include <CoreDefs.hpp>
 
 #include "SessionData.h"
 #include "Interface.h"
-//---------------------------------------------------------------------------
+
 enum TSessionStatus
 {
   ssClosed,
   ssOpening,
   ssOpened
 };
-//---------------------------------------------------------------------------
-struct TSessionInfo : public TObject
+
+struct TSessionInfo : public Classes::TObject
 {
   TSessionInfo();
 
-  TDateTime LoginTime;
+  Classes::TDateTime LoginTime;
   UnicodeString ProtocolBaseName;
   UnicodeString ProtocolName;
   UnicodeString SecurityProtocolName;
@@ -34,7 +34,7 @@ struct TSessionInfo : public TObject
   UnicodeString CertificateFingerprint;
   UnicodeString Certificate;
 };
-//---------------------------------------------------------------------------
+
 enum TFSCapability
 {
   fcUserGroupListing = 0, fcModeChanging, fcGroupChanging,
@@ -51,8 +51,8 @@ enum TFSCapability
   fcSecondaryShell, fcRemoveCtrlZUpload, fcRemoveBOMUpload, fcMoveToQueue,
   fcCount,
 };
-//---------------------------------------------------------------------------
-struct TFileSystemInfo : public TObject
+
+struct TFileSystemInfo : public Classes::TObject
 {
   TFileSystemInfo();
 
@@ -62,7 +62,7 @@ struct TFileSystemInfo : public TObject
   UnicodeString AdditionalInfo;
   bool IsCapable[fcCount];
 };
-//---------------------------------------------------------------------------
+
 class TSessionUI
 {
 //NB_DECLARE_CLASS(TSessionUI)
@@ -71,20 +71,20 @@ public:
   virtual ~TSessionUI() {}
   virtual void Information(const UnicodeString & Str, bool Status) = 0;
   virtual uintptr_t QueryUser(const UnicodeString & Query,
-    TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
+    Classes::TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual uintptr_t QueryUserException(const UnicodeString & Query,
     Sysutils::Exception * E, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
-    TStrings * Results) = 0;
+    const UnicodeString & Name, const UnicodeString & Instructions, Classes::TStrings * Prompts,
+    Classes::TStrings * Results) = 0;
   virtual void DisplayBanner(const UnicodeString & Banner) = 0;
   virtual void FatalError(Sysutils::Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") = 0;
   virtual void HandleExtendedException(Sysutils::Exception * E) = 0;
   virtual void Closed() = 0;
 };
-//---------------------------------------------------------------------------
+
 // Duplicated in LogMemo.h for design-time-only purposes
 enum TLogLineType
 {
@@ -98,16 +98,16 @@ enum TLogAction
 {
   laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs, laStat
 };
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE2(TCaptureOutputEvent, void,
   const UnicodeString & /* Str */, bool /* StdError */);
 DEFINE_CALLBACK_TYPE3(TCalculatedChecksumEvent, void,
   const UnicodeString & /* FileName */, const UnicodeString & /* Alg */, const UnicodeString & /* Hash */);
-//---------------------------------------------------------------------------
+
 class TSessionActionRecord;
 class TActionLog;
-//---------------------------------------------------------------------------
-class TSessionAction : public TObject
+
+class TSessionAction : public Classes::TObject
 {
 NB_DISABLE_COPY(TSessionAction)
 public:
@@ -123,7 +123,7 @@ public:
 protected:
   TSessionActionRecord * FRecord;
 };
-//---------------------------------------------------------------------------
+
 class TFileSessionAction : public TSessionAction
 {
 public:
@@ -132,7 +132,7 @@ public:
 
   void SetFileName(const UnicodeString & AFileName);
 };
-//---------------------------------------------------------------------------
+
 class TFileLocationSessionAction : public TFileSessionAction
 {
 public:
@@ -141,21 +141,21 @@ public:
 
   void Destination(const UnicodeString & Destination);
 };
-//---------------------------------------------------------------------------
+
 class TUploadSessionAction : public TFileLocationSessionAction
 {
 public:
   explicit TUploadSessionAction(TActionLog * Log);
 };
-//---------------------------------------------------------------------------
+
 class TDownloadSessionAction : public TFileLocationSessionAction
 {
 public:
   explicit TDownloadSessionAction(TActionLog * Log);
 };
-//---------------------------------------------------------------------------
+
 class TRights;
-//---------------------------------------------------------------------------
+
 class TChmodSessionAction : public TFileSessionAction
 {
 public:
@@ -166,20 +166,20 @@ public:
   void Rights(const TRights & Rights);
   void Recursive();
 };
-//---------------------------------------------------------------------------
+
 class TTouchSessionAction : public TFileSessionAction
 {
 public:
   explicit TTouchSessionAction(TActionLog * Log, const UnicodeString & AFileName,
-    const TDateTime & Modification);
+    const Classes::TDateTime & Modification);
 };
-//---------------------------------------------------------------------------
+
 class TMkdirSessionAction : public TFileSessionAction
 {
 public:
   explicit TMkdirSessionAction(TActionLog * Log, const UnicodeString & AFileName);
 };
-//---------------------------------------------------------------------------
+
 class TRmSessionAction : public TFileSessionAction
 {
 public:
@@ -187,14 +187,14 @@ public:
 
   void Recursive();
 };
-//---------------------------------------------------------------------------
+
 class TMvSessionAction : public TFileLocationSessionAction
 {
 public:
   explicit TMvSessionAction(TActionLog * Log, const UnicodeString & AFileName,
     const UnicodeString & Destination);
 };
-//---------------------------------------------------------------------------
+
 class TCallSessionAction : public TSessionAction
 {
 public:
@@ -203,7 +203,7 @@ public:
 
   void AddOutput(const UnicodeString & Output, bool StdError);
 };
-//---------------------------------------------------------------------------
+
 class TLsSessionAction : public TSessionAction
 {
 public:
@@ -211,7 +211,7 @@ public:
 
   void FileList(TRemoteFileList * FileList);
 };
-//---------------------------------------------------------------------------
+
 class TStatSessionAction : public TFileSessionAction
 {
 public:
@@ -219,11 +219,11 @@ public:
 
   void File(TRemoteFile * AFile);
 };
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE2(TDoAddLogEvent, void,
   TLogLineType, const UnicodeString &);
-//---------------------------------------------------------------------------
-class TSessionLog : protected TStringList
+
+class TSessionLog : protected Classes::TStringList
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 friend class TSessionAction;
@@ -247,10 +247,10 @@ public:
   TSessionLog * GetParent();
   void SetParent(TSessionLog * Value);
   bool GetLogging() const;
-  TNotifyEvent & GetOnChange();
-  void SetOnChange(TNotifyEvent Value);
-  TNotifyEvent & GetOnStateChange();
-  void SetOnStateChange(TNotifyEvent Value);
+  Classes::TNotifyEvent & GetOnChange();
+  void SetOnChange(Classes::TNotifyEvent Value);
+  Classes::TNotifyEvent & GetOnStateChange();
+  void SetOnStateChange(Classes::TNotifyEvent Value);
   UnicodeString GetCurrentFileName() const;
   intptr_t GetTopIndex() const;
   UnicodeString GetName() const;
@@ -295,10 +295,10 @@ private:
   TSessionData * FSessionData;
   UnicodeString FName;
   bool FClosed;
-  TNotifyEvent FOnStateChange;
+  Classes::TNotifyEvent FOnStateChange;
 };
-//---------------------------------------------------------------------------
-class TActionLog : public TObject
+
+class TActionLog : public Classes::TObject
 {
 friend class TSessionAction;
 friend class TSessionActionRecord;
@@ -310,7 +310,7 @@ public:
 
   void ReflectSettings();
   void AddFailure(Sysutils::Exception * E);
-  void AddFailure(TStrings * Messages);
+  void AddFailure(Classes::TStrings * Messages);
   void BeginGroup(const UnicodeString & Name);
   void EndGroup();
 
@@ -326,7 +326,7 @@ protected:
   void RecordPendingActions();
   void Add(const UnicodeString & Line);
   void AddIndented(const UnicodeString & Line);
-  void AddMessages(const UnicodeString & Indent, TStrings * Messages);
+  void AddMessages(const UnicodeString & Indent, Classes::TStrings * Messages);
 
 private:
   TConfiguration * FConfiguration;
@@ -337,7 +337,7 @@ private:
   UnicodeString FCurrentFileName;
   TSessionUI * FUI;
   TSessionData * FSessionData;
-  TList * FPendingActions;
+  Classes::TList * FPendingActions;
   bool FClosed;
   bool FInGroup;
   bool FEnabled;
@@ -345,4 +345,4 @@ private:
 
   void OpenLogFile();
 };
-//---------------------------------------------------------------------------
+

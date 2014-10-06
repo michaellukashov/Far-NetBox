@@ -26,7 +26,7 @@ class Exception;
 
 namespace Classes {
 
-//---------------------------------------------------------------------------
+
 extern const UnicodeString sLineBreak;
 extern const intptr_t MonthsPerYear;
 extern const intptr_t DaysPerWeek;
@@ -41,15 +41,15 @@ extern const intptr_t MSecsPerSec;
 extern const intptr_t DateDelta;
 extern const intptr_t UnixDateDelta;
 extern const UnicodeString kernel32;
-//---------------------------------------------------------------------------
+
 class TObject;
 DEFINE_CALLBACK_TYPE0(TThreadMethod, void);
 
 DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /* Sender */);
-//---------------------------------------------------------------------------
+
 void Abort();
 void Error(int ErrorID, intptr_t data);
-//---------------------------------------------------------------------------
+
 
 class TObject
 {
@@ -63,7 +63,7 @@ public:
   bool IsKindOf(TObjectClassId ClassId) const;
 };
 
-//---------------------------------------------------------------------------
+
 
 struct TPoint
 {
@@ -79,7 +79,7 @@ struct TPoint
   {}
 };
 
-//---------------------------------------------------------------------------
+
 
 struct TRect
 {
@@ -127,7 +127,7 @@ struct TRect
   }
 };
 
-//---------------------------------------------------------------------------
+
 
 class TPersistent : public TObject
 {
@@ -143,7 +143,7 @@ private:
   void AssignError(const Classes::TPersistent * Source);
 };
 
-//---------------------------------------------------------------------------
+
 
 enum TListNotification
 {
@@ -429,7 +429,7 @@ TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen);
 double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen);
 int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
 
-//---------------------------------------------------------------------------
+
 
 class TSHFileInfo : public TObject
 {
@@ -445,7 +445,7 @@ public:
   UnicodeString GetFileType(const UnicodeString & StrFileName);
 };
 
-//---------------------------------------------------------------------------
+
 
 enum TSeekOrigin
 {
@@ -454,7 +454,7 @@ enum TSeekOrigin
   soFromEnd = 2
 };
 
-//---------------------------------------------------------------------------
+
 class TStream : public TObject
 {
 public:
@@ -486,7 +486,7 @@ public:
   }
 };
 
-//---------------------------------------------------------------------------
+
 
 class THandleStream : public TStream
 {
@@ -506,7 +506,7 @@ protected:
   HANDLE FHandle;
 };
 
-//---------------------------------------------------------------------------
+
 class EReadError : public std::runtime_error
 {
 public:
@@ -523,7 +523,7 @@ public:
   {}
 };
 
-//---------------------------------------------------------------------------
+
 
 class TMemoryStream : public TStream
 {
@@ -560,7 +560,7 @@ private:
   int64_t FCapacity;
 };
 
-//---------------------------------------------------------------------------
+
 
 struct TRegKeyInfo
 {
@@ -572,7 +572,7 @@ struct TRegKeyInfo
   FILETIME FileTime;
 };
 
-//---------------------------------------------------------------------------
+
 enum TRegDataType
 {
   rdUnknown, rdString, rdExpandString, rdInteger, rdBinary
@@ -584,7 +584,7 @@ struct TRegDataInfo
   DWORD DataSize;
 };
 
-//---------------------------------------------------------------------------
+
 
 class TRegistry : public TObject
 {
@@ -648,14 +648,14 @@ private:
   uint32_t FAccess;
 };
 
-//---------------------------------------------------------------------------
+
 struct TTimeStamp
 {
   int Time; // Number of milliseconds since midnight
   int Date; // One plus number of days since 1/1/0001
 };
 
-//---------------------------------------------------------------------------
+
 // FIXME
 class TShortCut : public TObject
 {
@@ -669,7 +669,7 @@ private:
   intptr_t FValue;
 };
 
-//---------------------------------------------------------------------------
+
 // from wxvcl\sysset.h
 
 template <class T>
@@ -860,7 +860,7 @@ public:
   }
 };
 
-//---------------------------------------------------------------------------
+
 
 enum TReplaceFlag
 {
@@ -875,27 +875,24 @@ enum TShiftStateFlag
 };
 typedef DelphiSet<TShiftStateFlag> TShiftState;
 
-//---------------------------------------------------------------------------
+
 typedef HANDLE THandle;
 typedef DWORD TThreadID;
 
-//---------------------------------------------------------------------------
+
 inline double Trunc(double Value) { double intpart; modf(Value, &intpart); return intpart; }
 inline double Frac(double Value) { double intpart; return modf(Value, &intpart); }
 inline double Abs(double Value) { return fabs(Value); }
-//---------------------------------------------------------------------------
+
 class TCustomIniFile : public TObject
 {
 public:
   TCustomIniFile() {}
   virtual ~TCustomIniFile() {}
 };
-//---------------------------------------------------------------------------
+
 } // namespace Classes
 
-using namespace Classes;
-
-//---------------------------------------------------------------------------
 class TGlobalFunctionsIntf
 {
 public:
@@ -905,6 +902,6 @@ public:
   virtual UnicodeString GetCurrDirectory() const = 0;
   virtual UnicodeString GetStrVersionNumber() const = 0;
 };
-//---------------------------------------------------------------------------
+
 TGlobalFunctionsIntf * GetGlobalFunctions();
-//---------------------------------------------------------------------------
+

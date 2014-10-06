@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -16,9 +16,9 @@
 #include "WebDAVFileSystem.h"
 
 using namespace Sysutils;
-//---------------------------------------------------------------------------
+
 TStoredSessionList * StoredSessions = nullptr;
-//---------------------------------------------------------------------------
+
 TConfiguration * GetConfiguration()
 {
   static TConfiguration * Configuration = nullptr;
@@ -40,7 +40,7 @@ TConfiguration * GetConfiguration()
   }
   return Configuration;
 }
-//---------------------------------------------------------------------------
+
 void DeleteConfiguration()
 {
   static bool ConfigurationDeleted = false;
@@ -52,7 +52,7 @@ void DeleteConfiguration()
   }
 }
 
-//---------------------------------------------------------------------------
+
 TQueryButtonAlias::TQueryButtonAlias() :
   Button(0),
   OnClick(nullptr),
@@ -60,7 +60,7 @@ TQueryButtonAlias::TQueryButtonAlias() :
   Default(false)
 {
 }
-//---------------------------------------------------------------------------
+
 TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString & AHelpKeyword)
 {
   Params = AParams;
@@ -76,12 +76,12 @@ TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString & AHelpKeyword
   NoBatchAnswers = 0;
   HelpKeyword = AHelpKeyword;
 }
-//---------------------------------------------------------------------------
+
 TQueryParams::TQueryParams(const TQueryParams & Source)
 {
   Assign(Source);
 }
-//---------------------------------------------------------------------------
+
 void TQueryParams::Assign(const TQueryParams & Source)
 {
   Params = Source.Params;
@@ -103,7 +103,7 @@ TQueryParams &TQueryParams::operator=(const TQueryParams & other)
   Assign(other);
   return *this;
 }
-//---------------------------------------------------------------------------
+
 bool IsAuthenticationPrompt(TPromptKind Kind)
 {
   return
@@ -111,22 +111,22 @@ bool IsAuthenticationPrompt(TPromptKind Kind)
     (Kind == pkCryptoCard) || (Kind == pkKeybInteractive) ||
     (Kind == pkPassword) || (Kind == pkNewPassword);
 }
-//---------------------------------------------------------------------------
-bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
+
+bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, Classes::TStrings * Prompts)
 {
   return
     (Prompts->GetCount() == 1) && FLAGCLEAR(intptr_t(Prompts->GetObject(0)), pupEcho) &&
     ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
      (Kind == pkTIS) || (Kind == pkCryptoCard));
 }
-//---------------------------------------------------------------------------
-bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
+
+bool IsPasswordPrompt(TPromptKind Kind, Classes::TStrings * Prompts)
 {
   return
     IsPasswordOrPassphrasePrompt(Kind, Prompts) &&
     (Kind != pkPassphrase);
 }
-//---------------------------------------------------------------------------
+
 void CoreInitialize()
 {
   Randomize();
@@ -151,7 +151,7 @@ void CoreInitialize()
     ShowExtendedException(&E);
   }
 }
-//---------------------------------------------------------------------------
+
 void CoreFinalize()
 {
   try
@@ -174,7 +174,7 @@ void CoreFinalize()
 
   CryptographyFinalize();
 }
-//---------------------------------------------------------------------------
+
 void CoreSetResourceModule(void * ResourceHandle)
 {
   #ifndef NO_FILEZILLA
@@ -183,13 +183,13 @@ void CoreSetResourceModule(void * ResourceHandle)
   USEDPARAM(ResourceHandle);
   #endif
 }
-//---------------------------------------------------------------------------
+
 void CoreMaintenanceTask()
 {
   DontSaveRandomSeed();
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
   FUseBusyCursor(UseBusyCursor),
   FToken(nullptr)
@@ -199,7 +199,7 @@ TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
     FToken = BusyStart();
   }
 }
-//---------------------------------------------------------------------------
+
 TOperationVisualizer::~TOperationVisualizer()
 {
   if (FUseBusyCursor)
@@ -207,17 +207,17 @@ TOperationVisualizer::~TOperationVisualizer()
     BusyEnd(FToken);
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TInstantOperationVisualizer::TInstantOperationVisualizer() :
   TOperationVisualizer(true),
-  FStart(Now())
+  FStart(Classes::Now())
 {
 }
-//---------------------------------------------------------------------------
+
 TInstantOperationVisualizer::~TInstantOperationVisualizer()
 {
-  TDateTime Time = Now();
+  Classes::TDateTime Time = Classes::Now();
   int64_t Duration = MilliSecondsBetween(Time, FStart);
   const int64_t MinDuration = 250;
   if (Duration < MinDuration)
@@ -225,4 +225,4 @@ TInstantOperationVisualizer::~TInstantOperationVisualizer()
     ::Sleep(static_cast<uint32_t>(MinDuration - Duration));
   }
 }
-//---------------------------------------------------------------------------
+

@@ -1,16 +1,16 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include "PuttyIntf.h"
 #include "Configuration.h"
 #include "SessionData.h"
 #include "SessionInfo.h"
-//---------------------------------------------------------------------------
+
 #ifndef PuttyIntfH
 struct Backend;
 struct Conf;
 #endif
-//---------------------------------------------------------------------------
+
 struct _WSANETWORKEVENTS;
 typedef struct _WSANETWORKEVENTS WSANETWORKEVENTS;
 typedef UINT_PTR SOCKET;
@@ -23,8 +23,8 @@ enum TSshImplementation
   sshiProFTPD,
   sshiBitvise,
 };
-//---------------------------------------------------------------------------
-class TSecureShell : public TObject
+
+class TSecureShell : public Classes::TObject
 {
 friend class TPoolForDataEvent;
 NB_DISABLE_COPY(TSecureShell)
@@ -56,8 +56,8 @@ public:
   void CollectUsage();
   TSshImplementation GetSshImplementation() const { return FSshImplementation; }
 
-  void RegisterReceiveHandler(TNotifyEvent Handler);
-  void UnregisterReceiveHandler(TNotifyEvent Handler);
+  void RegisterReceiveHandler(Classes::TNotifyEvent Handler);
+  void UnregisterReceiveHandler(Classes::TNotifyEvent Handler);
 
   // interface to PuTTY core
   void UpdateSocket(SOCKET Value, bool Startup);
@@ -66,7 +66,7 @@ public:
   bool PromptUser(bool ToServer,
     const UnicodeString & AName, bool NameRequired,
     const UnicodeString & Instructions, bool InstructionsRequired,
-    TStrings * Prompts, TStrings * Results);
+    Classes::TStrings * Prompts, Classes::TStrings * Results);
   void FromBackend(bool IsStdErr, const uint8_t * Data, intptr_t Length);
   void CWrite(const char * Data, intptr_t Length);
   const UnicodeString & GetStdError() const;
@@ -81,7 +81,7 @@ public:
   bool GetActive() const { return FActive; }
   TCaptureOutputEvent & GetOnCaptureOutput() { return FOnCaptureOutput; }
   void SetOnCaptureOutput(TCaptureOutputEvent Value) { FOnCaptureOutput = Value; }
-  TDateTime GetLastDataSent() const { return FLastDataSent; }
+  Classes::TDateTime GetLastDataSent() const { return FLastDataSent; }
   UnicodeString GetLastTunnelError() const { return FLastTunnelError; }
   UnicodeString GetUserName() const { return FUserName; }
   bool GetSimple() const { return FSimple; }
@@ -140,12 +140,12 @@ private:
   bool FActive;
   mutable TSessionInfo FSessionInfo;
   mutable bool FSessionInfoValid;
-  TDateTime FLastDataSent;
+  Classes::TDateTime FLastDataSent;
   Backend * FBackend;
   void * FBackendHandle;
   const uint32_t * FMinPacketSize;
   const uint32_t * FMaxPacketSize;
-  TNotifyEvent FOnReceive;
+  Classes::TNotifyEvent FOnReceive;
   bool FFrozen;
   bool FDataWhileFrozen;
   bool FStoredPasswordTried;
@@ -176,4 +176,4 @@ private:
   UnicodeString FLastTunnelError;
   UnicodeString FUserName;
 };
-//---------------------------------------------------------------------------
+

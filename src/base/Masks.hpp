@@ -4,7 +4,7 @@
 
 namespace Masks {
 
-class TMask : public TObject
+class TMask : public Classes::TObject
 {
 public:
   explicit TMask(const UnicodeString & Mask);

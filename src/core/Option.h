@@ -1,14 +1,14 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
-//---------------------------------------------------------------------------
+
 enum TOptionType
 {
   otParam,
   otSwitch
 };
-//---------------------------------------------------------------------------
-class TOptions : public TObject
+
+class TOptions : public Classes::TObject
 {
 public:
   TOptions();
@@ -18,7 +18,7 @@ public:
   bool FindSwitch(const UnicodeString & Switch, UnicodeString & Value);
   bool FindSwitch(const UnicodeString & Switch, intptr_t & ParamsStart,
     intptr_t & ParamsCount);
-  bool FindSwitch(const UnicodeString & Switch, TStrings * Params,
+  bool FindSwitch(const UnicodeString & Switch, Classes::TStrings * Params,
     intptr_t ParamsMax = -1);
   void ParamsProcessed(intptr_t Position, intptr_t Count);
   UnicodeString SwitchValue(const UnicodeString & Switch, const UnicodeString & Default = L"");
@@ -54,4 +54,4 @@ private:
   bool FNoMoreSwitches;
   intptr_t FParamCount;
 };
-//---------------------------------------------------------------------------
+

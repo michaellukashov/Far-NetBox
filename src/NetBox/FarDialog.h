@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #pragma warning(push, 1)
@@ -9,7 +9,7 @@
 #define MAX_SIZE -1
 
 
-//---------------------------------------------------------------------------
+
 
 class TFarDialogContainer;
 class TFarDialogItem;
@@ -24,15 +24,15 @@ enum TItemPosition
   ipBelow,
   ipRight
 };
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE4(TFarKeyEvent, void,
   TFarDialog * /* Sender */, TFarDialogItem * /* Item */, long /* KeyCode */, bool & /* Handled */);
 DEFINE_CALLBACK_TYPE2(TFarMouseClickEvent, void,
   TFarDialogItem * /* Item */, MOUSE_EVENT_RECORD * /* Event */);
 DEFINE_CALLBACK_TYPE2(TFarProcessGroupEvent, void,
   TFarDialogItem * /* Item */, void * /* Arg */);
-//---------------------------------------------------------------------------
-class TFarDialog : public TObject
+
+class TFarDialog : public Classes::TObject
 {
 friend TFarDialogItem;
 friend TFarDialogContainer;
@@ -49,17 +49,17 @@ public:
   void ShowGroup(intptr_t Group, bool Show);
   void EnableGroup(intptr_t Group, bool Enable);
 
-  TRect GetBounds() const { return FBounds; }
-  TRect GetClientRect() const;
+  Classes::TRect GetBounds() const { return FBounds; }
+  Classes::TRect GetClientRect() const;
   UnicodeString GetHelpTopic() const { return FHelpTopic; }
   void SetHelpTopic(const UnicodeString & Value);
   FARDIALOGITEMFLAGS GetFlags() const { return FFlags; }
   void SetFlags(const FARDIALOGITEMFLAGS Value);
   bool GetCentered();
   void SetCentered(bool Value);
-  TPoint GetSize();
-  void SetSize(TPoint Value);
-  TPoint GetClientSize();
+  Classes::TPoint GetSize();
+  void SetSize(Classes::TPoint Value);
+  Classes::TPoint GetClientSize();
   intptr_t GetWidth();
   void SetWidth(intptr_t Value);
   intptr_t GetHeight();
@@ -82,7 +82,7 @@ public:
   TFarDialogItem * GetItemFocused() const { return FItemFocused; }
   void SetItemFocused(TFarDialogItem * Value);
   intptr_t GetResult() const { return FResult; }
-  TPoint GetMaxSize();
+  Classes::TPoint GetMaxSize();
 
   TFarKeyEvent & GetOnKey() { return FOnKey; }
   void SetOnKey(TFarKeyEvent Value) { FOnKey = Value; }
@@ -96,8 +96,8 @@ public:
 protected:
   TCustomFarPlugin * GetFarPlugin() const { return FFarPlugin; }
   TCustomFarPlugin * GetFarPlugin() { return FFarPlugin; }
-  TObjectList * GetItems() const { return FItems; }
-  TObjectList * GetItems() { return FItems; }
+  Classes::TObjectList * GetItems() const { return FItems; }
+  Classes::TObjectList * GetItems() { return FItems; }
   void Add(TFarDialogItem * Item);
   void Add(TFarDialogContainer * Container);
   intptr_t SendDlgMessage(intptr_t Msg, intptr_t Param1, void * Param2);
@@ -114,7 +114,7 @@ protected:
   void RefreshBounds();
   virtual void Idle();
   void BreakSynchronize();
-  void Synchronize(TThreadMethod Method);
+  void Synchronize(Classes::TThreadMethod Method);
   void Close(TFarButton * Button);
   void ProcessGroup(intptr_t Group, TFarProcessGroupEvent Callback, void * Arg);
   void ShowItem(TFarDialogItem * Item, void * Arg);
@@ -124,16 +124,16 @@ protected:
 
   static intptr_t WINAPI DialogProcGeneral(HANDLE Handle, intptr_t Msg, intptr_t Param1, void * Param2);
 
-  virtual void SetBounds(const TRect & Value);
+  virtual void SetBounds(const Classes::TRect & Value);
 
 private:
   TCustomFarPlugin * FFarPlugin;
-  TRect FBounds;
+  Classes::TRect FBounds;
   FARDIALOGITEMFLAGS FFlags;
   UnicodeString FHelpTopic;
   bool FVisible;
-  TObjectList * FItems;
-  TObjectList * FContainers;
+  Classes::TObjectList * FItems;
+  Classes::TObjectList * FContainers;
   HANDLE FHandle;
   TFarButton * FDefaultButton;
   TFarBox * FBorderBox;
@@ -149,10 +149,10 @@ private:
   intptr_t FResult;
   bool FNeedsSynchronize;
   HANDLE FSynchronizeObjects[2];
-  TThreadMethod FSynchronizeMethod;
+  Classes::TThreadMethod FSynchronizeMethod;
 };
-//---------------------------------------------------------------------------
-class TFarDialogContainer : public TObject
+
+class TFarDialogContainer : public Classes::TObject
 {
 friend TFarDialog;
 friend TFarDialogItem;
@@ -183,14 +183,14 @@ protected:
 private:
   intptr_t FLeft;
   intptr_t FTop;
-  TObjectList * FItems;
+  Classes::TObjectList * FItems;
   TFarDialog * FDialog;
   bool FEnabled;
 };
-//---------------------------------------------------------------------------
+
 #define DIF_INVERSE 0x00000001UL
-//---------------------------------------------------------------------------
-class TFarDialogItem : public TObject
+
+class TFarDialogItem : public Classes::TObject
 {
 friend TFarDialog;
 friend TFarMessageDialog;
@@ -199,8 +199,8 @@ friend TFarList;
 NB_DISABLE_COPY(TFarDialogItem)
 NB_DECLARE_CLASS(TFarDialogItem)
 public:
-  TRect GetBounds() const { return FBounds; }
-  TRect GetActualBounds() const;
+  Classes::TRect GetBounds() const { return FBounds; }
+  Classes::TRect GetActualBounds() const;
   intptr_t GetLeft() const { return GetCoordinate(0); }
   void SetLeft(intptr_t Value) { SetCoordinate(0, Value); }
   intptr_t GetTop() const { return GetCoordinate(1); }
@@ -234,8 +234,8 @@ public:
   TFarDialog * GetDialog() const { return FDialog; }
   TFarDialog * GetDialog() { return FDialog; }
 
-  TNotifyEvent & GetOnExit() { return FOnExit; }
-  void SetOnExit(TNotifyEvent Value) { FOnExit = Value; }
+  Classes::TNotifyEvent & GetOnExit() { return FOnExit; }
+  void SetOnExit(Classes::TNotifyEvent Value) { FOnExit = Value; }
   TFarMouseClickEvent & GetOnMouseClick() { return FOnMouseClick; }
   void SetOnMouseClick(TFarMouseClickEvent Value) { FOnMouseClick = Value; }
   bool GetFocused() const;
@@ -266,7 +266,7 @@ protected:
   FARDIALOGITEMTYPES FDefaultType;
   intptr_t FGroup;
   intptr_t FTag;
-  TNotifyEvent FOnExit;
+  Classes::TNotifyEvent FOnExit;
   TFarMouseClickEvent FOnMouseClick;
 
   explicit TFarDialogItem(TFarDialog * ADialog, FARDIALOGITEMTYPES AType);
@@ -288,7 +288,7 @@ protected:
   void SetContainer(TFarDialogContainer * Value);
   bool GetChecked() const;
   void SetChecked(bool Value);
-  void SetBounds(const TRect & Value);
+  void SetBounds(const Classes::TRect & Value);
   FARDIALOGITEMFLAGS GetFlags() const;
   void SetFlags(FARDIALOGITEMFLAGS Value);
   void UpdateFlags(FARDIALOGITEMFLAGS Value);
@@ -318,7 +318,7 @@ protected:
   virtual bool CloseQuery();
   virtual bool MouseMove(int X, int Y, MOUSE_EVENT_RECORD * Event);
   virtual bool MouseClick(MOUSE_EVENT_RECORD * Event);
-  TPoint MouseClientPosition(MOUSE_EVENT_RECORD * Event);
+  Classes::TPoint MouseClientPosition(MOUSE_EVENT_RECORD * Event);
   void Text(int X, int Y, const FarColor & Color, const UnicodeString & Str);
   void Redraw();
   virtual bool HotKey(char HotKey);
@@ -329,7 +329,7 @@ private:
 
 private:
   TFarDialog * FDialog;
-  TRect FBounds;
+  Classes::TRect FBounds;
   TFarDialogItem * FEnabledFollow;
   TFarDialogItem * FEnabledDependency;
   TFarDialogItem * FEnabledDependencyNegative;
@@ -340,7 +340,7 @@ private:
   uint32_t FColors;
   uint32_t FColorMask;
 };
-//---------------------------------------------------------------------------
+
 class TFarBox : public TFarDialogItem
 {
 public:
@@ -351,7 +351,7 @@ public:
   virtual bool GetDouble() const { return GetAlterType(DI_DOUBLEBOX); }
   virtual void SetDouble(bool Value) { SetAlterType(DI_DOUBLEBOX, Value); }
 };
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE2(TFarButtonClickEvent, void,
   TFarButton * /* Sender */, bool & /* Close */);
 enum TFarButtonBrackets
@@ -361,7 +361,7 @@ enum TFarButtonBrackets
   brSpace,
   brNormal
 };
-//---------------------------------------------------------------------------
+
 class TFarButton : public TFarDialogItem
 {
 NB_DECLARE_CLASS(TFarButton)
@@ -394,10 +394,10 @@ private:
   TFarButtonClickEvent FOnClick;
   TFarButtonBrackets FBrackets;
 };
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE3(TFarAllowChangeEvent, void,
   TFarDialogItem * /* Sender */, void * /* NewState */, bool & /* AllowChange */);
-//---------------------------------------------------------------------------
+
 class TFarCheckBox : public TFarDialogItem
 {
 public:
@@ -420,7 +420,7 @@ protected:
   virtual bool GetIsEmpty() const;
   virtual void SetData(const UnicodeString & Value);
 };
-//---------------------------------------------------------------------------
+
 class TFarRadioButton : public TFarDialogItem
 {
 public:
@@ -439,7 +439,7 @@ protected:
   virtual bool GetIsEmpty() const;
   virtual void SetData(const UnicodeString & Value);
 };
-//---------------------------------------------------------------------------
+
 class TFarEdit : public TFarDialogItem
 {
 NB_DECLARE_CLASS(TFarEdit)
@@ -473,7 +473,7 @@ private:
   UnicodeString GetHistoryMask(size_t Index) const;
   void SetHistoryMask(size_t Index, const UnicodeString & Value);
 };
-//---------------------------------------------------------------------------
+
 class TFarSeparator : public TFarDialogItem
 {
 public:
@@ -489,7 +489,7 @@ public:
 protected:
   virtual void ResetBounds();
 };
-//---------------------------------------------------------------------------
+
 class TFarText : public TFarDialogItem
 {
 NB_DECLARE_CLASS(TFarText)
@@ -506,12 +506,12 @@ public:
 protected:
   virtual void SetData(const UnicodeString & Value);
 };
-//---------------------------------------------------------------------------
+
 class TFarListBox;
 class TFarComboBox;
 class TFarLister;
-//---------------------------------------------------------------------------
-class TFarList : public TStringList
+
+class TFarList : public Classes::TStringList
 {
 friend TFarListBox;
 friend TFarLister;
@@ -522,7 +522,7 @@ public:
   explicit TFarList(TFarDialogItem * ADialogItem = nullptr);
   virtual ~TFarList();
 
-  virtual void Assign(const TPersistent * Source);
+  virtual void Assign(const Classes::TPersistent * Source);
 
   intptr_t GetSelected() const;
   void SetSelected(intptr_t Value);
@@ -560,14 +560,14 @@ private:
   TFarDialogItem * FDialogItem;
   bool FNoDialogUpdate;
 };
-//---------------------------------------------------------------------------
+
 enum TFarListBoxAutoSelect
 {
   asOnlyFocus,
   asAlways,
   asNever
 };
-//---------------------------------------------------------------------------
+
 class TFarListBox : public TFarDialogItem
 {
 NB_DISABLE_COPY(TFarListBox)
@@ -576,7 +576,7 @@ public:
   explicit TFarListBox(TFarDialog * ADialog);
   virtual ~TFarListBox();
 
-  void SetItems(TStrings * Value);
+  void SetItems(Classes::TStrings * Value);
 
   bool GetNoAmpersand() const { return GetFlag(DIF_LISTNOAMPERSAND); }
   void SetNoAmpersand(bool Value) { SetFlag(DIF_LISTNOAMPERSAND, Value); }
@@ -605,7 +605,7 @@ private:
   TFarListBoxAutoSelect FAutoSelect;
   bool FDenyClose;
 };
-//---------------------------------------------------------------------------
+
 class TFarComboBox : public TFarDialogItem
 {
 NB_DISABLE_COPY(TFarComboBox)
@@ -638,7 +638,7 @@ protected:
 private:
   TFarList * FList;
 };
-//---------------------------------------------------------------------------
+
 class TFarLister : public TFarDialogItem
 {
 NB_DISABLE_COPY(TFarLister)
@@ -646,8 +646,8 @@ public:
   explicit TFarLister(TFarDialog * ADialog);
   virtual ~TFarLister();
 
-  TStrings * GetItems() const;
-  void SetItems(const TStrings * Value);
+  Classes::TStrings * GetItems() const;
+  void SetItems(const Classes::TStrings * Value);
   intptr_t GetTopIndex() const { return FTopIndex; }
   void SetTopIndex(intptr_t Value);
   bool GetScrollBar() const;
@@ -657,12 +657,12 @@ protected:
   virtual void DoFocus();
 
 private:
-  void ItemsChange(TObject * Sender);
+  void ItemsChange(Classes::TObject * Sender);
 
 private:
-  TStringList * FItems;
+  Classes::TStringList * FItems;
   intptr_t FTopIndex;
 };
-//---------------------------------------------------------------------------
-inline TRect Rect(int Left, int Top, int Right, int Bottom);
-//---------------------------------------------------------------------------
+
+inline Classes::TRect Rect(int Left, int Top, int Right, int Bottom);
+

@@ -5,17 +5,15 @@
 #include <FileSystems.h>
 #include "Terminal.h"
 
-using namespace Sysutils;
-//------------------------------------------------------------------------------
 struct TListDataEntry;
 struct TFileTransferData;
-//------------------------------------------------------------------------------
+
 namespace webdav {
   struct session_t;
   typedef int error_t;
 } // namespace webdav
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
+
+
 class TWebDAVFileSystem : public TCustomFileSystem
 {
 friend class TWebDAVFileListHelper;
@@ -42,15 +40,15 @@ public:
   virtual void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties,
     TChmodSessionAction & Action);
-  virtual bool LoadFilesProperties(TStrings * FileList);
+  virtual bool LoadFilesProperties(Classes::TStrings * FileList);
   virtual void CalculateFilesChecksum(const UnicodeString & Alg,
-    TStrings * FileList, TStrings * Checksums,
+    Classes::TStrings * FileList, Classes::TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum);
-  virtual void CopyToLocal(const TStrings * AFilesToCopy,
+  virtual void CopyToLocal(const Classes::TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
-  virtual void CopyToRemote(const TStrings * AFilesToCopy,
+  virtual void CopyToRemote(const Classes::TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
@@ -74,7 +72,7 @@ public:
     const UnicodeString & NewName);
   virtual void CopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
-  virtual TStrings * GetFixedPaths();
+  virtual Classes::TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo() const;
@@ -218,12 +216,12 @@ private:
   size_t FFileTransferCPSLimit;
   size_t FLastReadDirectoryProgress;
   TFileOperationProgressType * FCurrentOperationProgress;
-  TCriticalSection FTransferStatusCriticalSection;
+  Sysutils::TCriticalSection FTransferStatusCriticalSection;
   apr_pool_t * webdav_pool;
   webdav::session_t * FSession;
 };
 
-//------------------------------------------------------------------------------
+
 void NeonInitialize();
 void NeonFinalize();
 

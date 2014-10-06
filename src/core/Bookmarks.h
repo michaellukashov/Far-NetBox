@@ -1,11 +1,11 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 class THierarchicalStorage;
 class TBookmarkList;
 class TShortCuts;
-//---------------------------------------------------------------------------
-class TBookmarks : public TObject
+
+class TBookmarks : public Classes::TObject
 {
 NB_DISABLE_COPY(TBookmarks)
 public:
@@ -27,13 +27,13 @@ private:
     intptr_t AIndex, TBookmarkList * BookmarkList);
 
 private:
-  TStringList * FBookmarkLists;
+  Classes::TStringList * FBookmarkLists;
   UnicodeString FSharedKey;
   static UnicodeString Keys[];
 };
-//---------------------------------------------------------------------------
+
 class TBookmark;
-class TBookmarkList : public TPersistent
+class TBookmarkList : public Classes::TPersistent
 {
 friend class TBookmarks;
 friend class TBookmark;
@@ -50,8 +50,8 @@ public:
   void MoveTo(TBookmark * ToBookmark, TBookmark * Bookmark, bool Before);
   void Delete(TBookmark *& Bookmark);
   TBookmark * FindByName(const UnicodeString & Node, const UnicodeString & Name);
-  TBookmark * FindByShortCut(TShortCut ShortCut);
-  virtual void Assign(const TPersistent * Source);
+  TBookmark * FindByShortCut(Classes::TShortCut ShortCut);
+  virtual void Assign(const Classes::TPersistent * Source);
   void LoadOptions(THierarchicalStorage * Storage);
   void SaveOptions(THierarchicalStorage * Storage);
   void ShortCuts(TShortCuts & ShortCuts);
@@ -69,12 +69,12 @@ protected:
   void SetModified(bool Value) { FModified = Value; }
 
 private:
-  TStringList * FBookmarks;
-  TStringList * FOpenedNodes;
+  Classes::TStringList * FBookmarks;
+  Classes::TStringList * FOpenedNodes;
   bool FModified;
 };
-//---------------------------------------------------------------------------
-class TBookmark : public TPersistent
+
+class TBookmark : public Classes::TPersistent
 {
 friend class TBookmarkList;
 NB_DISABLE_COPY(TBookmark)
@@ -82,7 +82,7 @@ NB_DECLARE_CLASS(TBookmark)
 public:
   TBookmark();
 
-  virtual void Assign(const TPersistent * Source);
+  virtual void Assign(const Classes::TPersistent * Source);
 
   UnicodeString GetName() const { return FName; }
   void SetName(const UnicodeString & Value);
@@ -92,8 +92,8 @@ public:
   void SetRemote(const UnicodeString & Value);
   UnicodeString GetNode() const { return FNode; }
   void SetNode(const UnicodeString & Value);
-  TShortCut GetShortCut() const { return FShortCut; }
-  void SetShortCut(TShortCut Value);
+  Classes::TShortCut GetShortCut() const { return FShortCut; }
+  void SetShortCut(Classes::TShortCut Value);
 
 protected:
   TBookmarkList * FOwner;
@@ -109,6 +109,6 @@ private:
   UnicodeString FLocal;
   UnicodeString FRemote;
   UnicodeString FNode;
-  TShortCut FShortCut;
+  Classes::TShortCut FShortCut;
 };
-//---------------------------------------------------------------------------
+

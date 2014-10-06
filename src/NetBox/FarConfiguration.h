@@ -1,13 +1,13 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <plugin.hpp>
 #include "GUIConfiguration.h"
-//---------------------------------------------------------------------------
+
 class TCustomFarPlugin;
 class TBookmarks;
 class TBookmarkList;
-//---------------------------------------------------------------------------
+
 class TFarConfiguration : public TGUIConfiguration
 {
 NB_DISABLE_COPY(TFarConfiguration)
@@ -126,6 +126,6 @@ private:
 private:
   intptr_t FarConfirmations() const;
 };
-//---------------------------------------------------------------------------
+
 TFarConfiguration * GetFarConfiguration();
-//---------------------------------------------------------------------------
+

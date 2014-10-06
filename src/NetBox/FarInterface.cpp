@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -8,49 +8,47 @@
 #include "WinSCPPlugin.h"
 #include "Queue.h"
 
-using namespace Sysutils;
-//---------------------------------------------------------------------------
 TConfiguration * CreateConfiguration()
 {
   return new TFarConfiguration(FarPlugin);
 }
-//---------------------------------------------------------------------------
-void ShowExtendedException(Exception * E)
+
+void ShowExtendedException(Sysutils::Exception * E)
 {
   assert(FarPlugin != nullptr);
   TWinSCPPlugin * WinSCPPlugin = NB_STATIC_DOWNCAST(TWinSCPPlugin, FarPlugin);
   assert(WinSCPPlugin != nullptr);
   WinSCPPlugin->ShowExtendedException(E);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString AppNameString()
 {
   return L"NetBox";
 }
 
-//---------------------------------------------------------------------------
+
 UnicodeString GetRegistryKey()
 {
   return L"NetBox 3"; // TODO: output MainGuid
 }
-//---------------------------------------------------------------------------
+
 void Busy(bool /*Start*/)
 {
   // nothing
 }
-//---------------------------------------------------------------------------
+
 UnicodeString SshVersionString()
 {
   return FORMAT(L"NetBox-FAR-release-%s", GetConfiguration()->GetVersion().c_str());
 }
 
-//---------------------------------------------------------------------------
+
 DWORD WINAPI threadstartroutine(void * Parameter)
 {
   TSimpleThread * SimpleThread = NB_STATIC_DOWNCAST(TSimpleThread, Parameter);
   return TSimpleThread::ThreadProc(SimpleThread);
 }
-//---------------------------------------------------------------------------
+
 HANDLE BeginThread(void * SecurityAttributes, DWORD StackSize,
   void * Parameter, DWORD CreationFlags,
   DWORD & ThreadId)
@@ -68,15 +66,15 @@ void EndThread(DWORD ExitCode)
   ::ExitThread(ExitCode);
 }
 
-//---------------------------------------------------------------------------
+
 HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
   void * Parameter, DWORD CreationFlags,
-  TThreadID & ThreadId)
+  Classes::TThreadID & ThreadId)
 {
   return BeginThread(SecurityAttributes, StackSize, Parameter,
     CreationFlags, ThreadId);
 }
-//---------------------------------------------------------------------------
+
 void CopyToClipboard(const UnicodeString & Text)
 {
   assert(FarPlugin != nullptr);

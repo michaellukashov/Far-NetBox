@@ -1,17 +1,17 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include <stdint.h>
 #include <FileSystems.h>
-//---------------------------------------------------------------------------
+
 class TSFTPPacket;
 struct TOverwriteFileParams;
 struct TSFTPSupport;
 class TSecureShell;
-//---------------------------------------------------------------------------
+
 //enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
 extern const intptr_t SFTPMaxVersion;
-//---------------------------------------------------------------------------
+
 class TSFTPFileSystem : public TCustomFileSystem
 {
 NB_DISABLE_COPY(TSFTPFileSystem)
@@ -44,15 +44,15 @@ public:
   virtual void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties,
     TChmodSessionAction & Action);
-  virtual bool LoadFilesProperties(TStrings * FileList);
+  virtual bool LoadFilesProperties(Classes::TStrings * FileList);
   virtual void CalculateFilesChecksum(const UnicodeString & Alg,
-    TStrings * FileList, TStrings * Checksums,
+    Classes::TStrings * FileList, Classes::TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum);
-  virtual void CopyToLocal(const TStrings * AFilesToCopy,
+  virtual void CopyToLocal(const Classes::TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
-  virtual void CopyToRemote(const TStrings * AFilesToCopy,
+  virtual void CopyToRemote(const Classes::TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
@@ -76,7 +76,7 @@ public:
     const UnicodeString & NewName);
   virtual void CopyFile(const UnicodeString & AFileName,
     const UnicodeString & ANewName);
-  virtual TStrings * GetFixedPaths();
+  virtual Classes::TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo() const;
@@ -94,18 +94,18 @@ protected:
   UnicodeString FDirectoryToChangeTo;
   UnicodeString FHomeDirectory;
   AnsiString FEOL;
-  TList * FPacketReservations;
+  Classes::TList * FPacketReservations;
   rde::vector<uintptr_t> FPacketNumbers;
   uint8_t FPreviousLoggedPacket;
   int FNotLoggedPackets;
   int FBusy;
   void * FBusyToken;
   bool FAvoidBusy;
-  TStrings * FExtensions;
+  Classes::TStrings * FExtensions;
   TSFTPSupport * FSupport;
   bool FUtfStrings;
   bool FSignedTS;
-  TStrings * FFixedPaths;
+  Classes::TStrings * FFixedPaths;
   uint32_t FMaxPacketSize;
   bool FSupportsStatVfsV2;
   uintptr_t FCodePage;
@@ -145,7 +145,7 @@ protected:
   bool SupportsExtension(const UnicodeString & Extension) const;
   void ResetConnection();
   void DoCalculateFilesChecksum(const UnicodeString & Alg,
-    TStrings * FileList, TStrings * Checksums,
+    Classes::TStrings * FileList, Classes::TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel);
   void DoDeleteFile(const UnicodeString & AFileName, uint8_t Type);
@@ -203,4 +203,4 @@ protected:
 private:
   const TSessionData * GetSessionData() const;
 };
-//---------------------------------------------------------------------------
+

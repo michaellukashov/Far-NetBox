@@ -1,10 +1,10 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <CoreDefs.hpp>
 #include <Masks.hpp>
 #include <Exceptions.h>
-//---------------------------------------------------------------------------
+
 class EFileMasksException : public Sysutils::Exception
 {
 public:
@@ -12,18 +12,18 @@ public:
   intptr_t ErrorStart;
   intptr_t ErrorLen;
 };
-//---------------------------------------------------------------------------
+
 extern const wchar_t IncludeExcludeFileMasksDelimiter;
 #define MASK_INDEX(DIRECTORY, INCLUDE) ((DIRECTORY ? 2 : 0) + (INCLUDE ? 0 : 1))
-//---------------------------------------------------------------------------
-class TFileMasks : public TObject
+
+class TFileMasks : public Classes::TObject
 {
 public:
-  struct TParams : public TObject
+  struct TParams : public Classes::TObject
   {
     TParams();
     int64_t Size;
-    TDateTime Modification;
+    Classes::TDateTime Modification;
 
     UnicodeString ToString() const;
   };
@@ -31,9 +31,9 @@ public:
   static bool IsMask(const UnicodeString & Mask);
   static UnicodeString NormalizeMask(const UnicodeString & Mask, const UnicodeString & AnyMask = L"");
   static UnicodeString ComposeMaskStr(
-    TStrings * IncludeFileMasksStr, TStrings * ExcludeFileMasksStr,
-    TStrings * IncludeDirectoryMasksStr, TStrings * ExcludeDirectoryMasksStr);
-  static UnicodeString ComposeMaskStr(TStrings * MasksStr, bool Directory);
+    Classes::TStrings * IncludeFileMasksStr, Classes::TStrings * ExcludeFileMasksStr,
+    Classes::TStrings * IncludeDirectoryMasksStr, Classes::TStrings * ExcludeDirectoryMasksStr);
+  static UnicodeString ComposeMaskStr(Classes::TStrings * MasksStr, bool Directory);
 
   TFileMasks();
   explicit TFileMasks(int ForceDirectoryMasks);
@@ -60,16 +60,16 @@ public:
   UnicodeString GetMasks() const { return FStr; }
   void SetMasks(const UnicodeString & Value);
 
-  TStrings * GetIncludeFileMasksStr() const { return GetMasksStr(MASK_INDEX(false, true)); }
-  TStrings * GetExcludeFileMasksStr() const { return GetMasksStr(MASK_INDEX(false, false)); }
-  TStrings * GetIncludeDirectoryMasksStr() const { return GetMasksStr(MASK_INDEX(true, true)); }
-  TStrings * GetExcludeDirectoryMasksStr() const { return GetMasksStr(MASK_INDEX(true, false)); }
+  Classes::TStrings * GetIncludeFileMasksStr() const { return GetMasksStr(MASK_INDEX(false, true)); }
+  Classes::TStrings * GetExcludeFileMasksStr() const { return GetMasksStr(MASK_INDEX(false, false)); }
+  Classes::TStrings * GetIncludeDirectoryMasksStr() const { return GetMasksStr(MASK_INDEX(true, true)); }
+  Classes::TStrings * GetExcludeDirectoryMasksStr() const { return GetMasksStr(MASK_INDEX(true, false)); }
 
 private:
   int FForceDirectoryMasks;
   UnicodeString FStr;
 
-  struct TMaskMask : public TObject
+  struct TMaskMask : public Classes::TObject
   {
     TMaskMask() :
       Kind(Any),
@@ -84,7 +84,7 @@ private:
     Masks::TMask * Mask;
   };
 
-  struct TMask : public TObject
+  struct TMask : public Classes::TObject
   {
     TMask() :
       HighSizeMask(None),
@@ -110,9 +110,9 @@ private:
     int64_t LowSize;
 
     TMaskBoundary HighModificationMask;
-    TDateTime HighModification;
+    Classes::TDateTime HighModification;
     TMaskBoundary LowModificationMask;
-    TDateTime LowModification;
+    Classes::TDateTime LowModification;
 
     UnicodeString MaskStr;
     UnicodeString UserStr;
@@ -120,7 +120,7 @@ private:
 
   typedef rde::vector<TMask> TMasks;
   TMasks FMasks[4];
-  mutable TStrings * FMasksStr[4];
+  mutable Classes::TStrings * FMasksStr[4];
 
 private:
   void SetStr(const UnicodeString & Value, bool SingleMask);
@@ -128,7 +128,7 @@ private:
     bool Ex, TMaskMask & MaskMask) const;
   void CreateMask(const UnicodeString & MaskStr, intptr_t MaskStart,
     intptr_t MaskEnd, bool Include);
-  TStrings * GetMasksStr(intptr_t Index) const;
+  Classes::TStrings * GetMasksStr(intptr_t Index) const;
 
 private:
   static UnicodeString MakeDirectoryMask(const UnicodeString & Str);
@@ -144,16 +144,16 @@ private:
   static inline bool IsAnyMask(const UnicodeString & Mask);
   void ThrowError(intptr_t Start, intptr_t End) const;
 };
-//---------------------------------------------------------------------------
+
 UnicodeString MaskFileName(const UnicodeString & AFileName, const UnicodeString & Mask);
 bool IsEffectiveFileNameMask(const UnicodeString & Mask);
 UnicodeString DelimitFileNameMask(const UnicodeString & Mask);
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE5(TCustomCommandPatternEvent, void,
   int /* Index */, const UnicodeString & /* Pattern */, void * /* Arg */, UnicodeString & /* Replacement */,
   bool & /* LastPass */);
-//---------------------------------------------------------------------------
-class TCustomCommand : public TObject
+
+class TCustomCommand : public Classes::TObject
 {
 friend class TInteractiveCustomCommand;
 
@@ -180,7 +180,7 @@ protected:
     UnicodeString & Replacement, bool & Delimit) = 0;
   virtual void DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
 };
-//---------------------------------------------------------------------------
+
 class TInteractiveCustomCommand : public TCustomCommand
 {
 NB_DISABLE_COPY(TInteractiveCustomCommand)
@@ -199,10 +199,10 @@ protected:
 private:
   TCustomCommand * FChildCustomCommand;
 };
-//---------------------------------------------------------------------------
+
 class TTerminal;
 class TSessionData;
-struct TCustomCommandData : public TObject
+struct TCustomCommandData : public Classes::TObject
 {
   TCustomCommandData();
   explicit TCustomCommandData(TTerminal * Terminal);
@@ -219,7 +219,7 @@ private:
     TSessionData * SessionData, const UnicodeString & AUserName,
     const UnicodeString & Password);
 };
-//---------------------------------------------------------------------------
+
 class TFileCustomCommand : public TCustomCommand
 {
 public:
@@ -249,6 +249,6 @@ private:
   UnicodeString FFileName;
   UnicodeString FFileList;
 };
-//---------------------------------------------------------------------------
+
 typedef TFileCustomCommand TRemoteCustomCommand;
-//---------------------------------------------------------------------------
+

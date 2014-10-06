@@ -26,7 +26,7 @@ TFar3Storage::~TFar3Storage()
 //---------------------------------------------------------------------------
 bool TFar3Storage::Copy(TFar3Storage * Storage)
 {
-  Error(SNotImplemented, 3014);
+  Classes::Error(SNotImplemented, 3014);
   bool Result = true;
   return Result;
 }
@@ -109,7 +109,7 @@ bool TFar3Storage::DeleteSubKey(const UnicodeString & SubKey)
   return false;
 }
 //---------------------------------------------------------------------------
-void TFar3Storage::GetSubKeyNames(TStrings * Strings)
+void TFar3Storage::GetSubKeyNames(Classes::TStrings * Strings)
 {
   FarSettingsEnum Settings = {sizeof(FarSettingsEnum),0,0,0};
   Settings.Root = FRoot;
@@ -125,7 +125,7 @@ void TFar3Storage::GetSubKeyNames(TStrings * Strings)
   }
 }
 //---------------------------------------------------------------------------
-void TFar3Storage::GetValueNames(TStrings * Strings) const
+void TFar3Storage::GetValueNames(Classes::TStrings * Strings) const
 {
   Strings->Clear();
   FarSettingsEnum Settings = {sizeof(FarSettingsEnum),0,0,0};
@@ -147,7 +147,7 @@ bool TFar3Storage::DeleteValue(const UnicodeString & Name)
 //---------------------------------------------------------------------------
 bool TFar3Storage::DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi)
 {
-  Error(SNotImplemented, 3011);
+  Classes::Error(SNotImplemented, 3011);
   UnicodeString K = PuttyMungeStr(SubKey);
   bool Result = true; // FPluginSettings.KeyExists(K);
   return Result;
@@ -170,9 +170,9 @@ bool TFar3Storage::ReadBool(const UnicodeString & Name, bool Default)
   return FPluginSettings.Get(FRoot, Name.c_str(), Default);
 }
 //---------------------------------------------------------------------------
-TDateTime TFar3Storage::ReadDateTime(const UnicodeString & Name, const TDateTime & Default)
+Classes::TDateTime TFar3Storage::ReadDateTime(const UnicodeString & Name, const Classes::TDateTime & Default)
 {
-  TDateTime Result;
+  Classes::TDateTime Result;
   double Val = 0.0;
   void * Value = reinterpret_cast<void *>(&Val);
   size_t Sz = sizeof(Val);
@@ -223,7 +223,7 @@ void TFar3Storage::WriteBool(const UnicodeString & Name, bool Value)
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
 //---------------------------------------------------------------------------
-void TFar3Storage::WriteDateTime(const UnicodeString & Name, const TDateTime & AValue)
+void TFar3Storage::WriteDateTime(const UnicodeString & Name, const Classes::TDateTime & AValue)
 {
   double Val = AValue.operator double();
   void * Value = reinterpret_cast<void *>(&Val);

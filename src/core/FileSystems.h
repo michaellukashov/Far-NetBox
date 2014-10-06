@@ -1,9 +1,9 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include <SessionInfo.h>
 #include "Exceptions.h"
-//---------------------------------------------------------------------------
+
 class TTerminal;
 class TRights;
 class TRemoteFile;
@@ -12,7 +12,7 @@ class TCopyParamType;
 struct TSpaceAvailable;
 class TFileOperationProgressType;
 class TRemoteProperties;
-//---------------------------------------------------------------------------
+
 enum TFSCommand
 {
   fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
@@ -22,11 +22,11 @@ enum TFSCommand
   fsHomeDirectory, fsUnset, fsUnalias, fsCreateLink, fsCopyFile,
   fsAnyCommand, fsReadSymlink, fsChangeProperties, fsMoveFile
 };
-//---------------------------------------------------------------------------
+
 const int dfNoRecursive = 0x01;
 const int dfAlternative = 0x02;
 const int dfForceDelete = 0x04;
-//---------------------------------------------------------------------------
+
 enum TOverwriteMode
 {
   omOverwrite,
@@ -34,12 +34,12 @@ enum TOverwriteMode
   omResume,
   omComplete
 };
-//---------------------------------------------------------------------------
+
 const int tfFirstLevel   = 0x01;
 const int tfAutoResume   = 0x02;
 const int tfNewDirectory = 0x04;
-//---------------------------------------------------------------------------
-struct TSinkFileParams : public TObject
+
+struct TSinkFileParams : public Classes::TObject
 {
 NB_DECLARE_CLASS(TSinkFileParams)
 public:
@@ -50,8 +50,8 @@ public:
   uintptr_t Flags;
   bool Skipped;
 };
-//---------------------------------------------------------------------------
-struct TFileTransferData : public TObject
+
+struct TFileTransferData : public Classes::TObject
 {
 NB_DISABLE_COPY(TFileTransferData)
 NB_DECLARE_CLASS(TFileTransferData)
@@ -67,13 +67,13 @@ public:
 
   UnicodeString FileName;
   const TCopyParamType * CopyParam;
-  TDateTime Modification;
+  Classes::TDateTime Modification;
   intptr_t Params;
   int OverwriteResult;
   bool AutoResume;
 };
-//---------------------------------------------------------------------------
-struct TOverwriteFileParams : public TObject
+
+struct TOverwriteFileParams : public Classes::TObject
 {
 NB_DECLARE_CLASS(TOverwriteFileParams)
 public:
@@ -86,13 +86,13 @@ public:
 
   int64_t SourceSize;
   int64_t DestSize;
-  TDateTime SourceTimestamp;
-  TDateTime DestTimestamp;
+  Classes::TDateTime SourceTimestamp;
+  Classes::TDateTime DestTimestamp;
   TModificationFmt SourcePrecision;
   TModificationFmt DestPrecision;
 };
-//---------------------------------------------------------------------------
-struct TOpenRemoteFileParams : public TObject
+
+struct TOpenRemoteFileParams : public Classes::TObject
 {
 NB_DISABLE_COPY(TOpenRemoteFileParams)
 NB_DECLARE_CLASS(TOpenRemoteFileParams)
@@ -123,7 +123,7 @@ public:
   TOverwriteFileParams * FileParams;
   bool Confirmed;
 };
-//---------------------------------------------------------------------------
+
 
 /** @brief Interface for custom filesystems
   *
@@ -137,8 +137,8 @@ public:
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) = 0;
 };
 
-//---------------------------------------------------------------------------
-class TCustomFileSystem : public TObject, public TFileSystemIntf
+
+class TCustomFileSystem : public Classes::TObject, public TFileSystemIntf
 {
 NB_DISABLE_COPY(TCustomFileSystem)
 NB_DECLARE_CLASS(TCustomFileSystem)
@@ -159,15 +159,15 @@ public:
   virtual void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties,
     TChmodSessionAction & Action) = 0;
-  virtual bool LoadFilesProperties(TStrings * FileList) = 0;
+  virtual bool LoadFilesProperties(Classes::TStrings * FileList) = 0;
   virtual void CalculateFilesChecksum(const UnicodeString & Alg,
-    TStrings * FileList, TStrings * Checksums,
+    Classes::TStrings * FileList, Classes::TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) = 0;
-  virtual void CopyToLocal(const TStrings * AFilesToCopy,
+  virtual void CopyToLocal(const Classes::TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
-  virtual void CopyToRemote(const TStrings * AFilesToCopy,
+  virtual void CopyToRemote(const Classes::TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
@@ -192,7 +192,7 @@ public:
     const UnicodeString & NewName) = 0;
   virtual void CopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName) = 0;
-  virtual TStrings * GetFixedPaths() = 0;
+  virtual Classes::TStrings * GetFixedPaths() = 0;
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable) = 0;
   virtual const TSessionInfo & GetSessionInfo() const = 0;
@@ -207,4 +207,4 @@ protected:
 
   explicit TCustomFileSystem(TTerminal * ATerminal);
 };
-//---------------------------------------------------------------------------
+

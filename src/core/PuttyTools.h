@@ -1,6 +1,6 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 enum TKeyType
 {
   ktUnopenable,
@@ -13,14 +13,14 @@ enum TKeyType
 
 TKeyType KeyType(const UnicodeString & AFileName);
 UnicodeString KeyTypeName(TKeyType KeyType);
-//---------------------------------------------------------------------------
+
 int64_t ParseSize(const UnicodeString & SizeStr);
-//---------------------------------------------------------------------------
+
 bool HasGSSAPI(const UnicodeString & CustomPath);
-//---------------------------------------------------------------------------
+
 void AES256EncodeWithMAC(char * Data, size_t Len, const char * Password,
   size_t PasswordLen, const char * Salt);
-//---------------------------------------------------------------------------
+
 UnicodeString NormalizeFingerprint(const UnicodeString & Fingerprint);
 UnicodeString KeyTypeFromFingerprint(const UnicodeString & Fingerprint);
-//---------------------------------------------------------------------------
+

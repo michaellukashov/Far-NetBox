@@ -1,25 +1,25 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include <Classes.hpp>
 #include <SysUtils.hpp>
 #include <SysInit.hpp>
 #include <System.hpp>
-//---------------------------------------------------------------------------
+
 bool ShouldDisplayException(Sysutils::Exception * E);
 bool ExceptionMessage(const Sysutils::Exception * E, UnicodeString & Message);
 bool ExceptionMessageFormatted(const Sysutils::Exception * E, UnicodeString & Message);
 UnicodeString LastSysErrorMessage();
-TStrings * ExceptionToMoreMessages(Sysutils::Exception * E);
+Classes::TStrings * ExceptionToMoreMessages(Sysutils::Exception * E);
 bool IsInternalException(const Sysutils::Exception * E);
-//---------------------------------------------------------------------------
+
 enum TOnceDoneOperation
 {
   odoIdle,
   odoDisconnect,
   odoShutDown
 };
-//---------------------------------------------------------------------------
+
 class ExtException : public Sysutils::Exception
 {
 NB_DECLARE_CLASS(ExtException)
@@ -31,9 +31,9 @@ public:
   // "copy the exception", just append message to the end
   explicit ExtException(const UnicodeString & Msg, Exception * E, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
-  explicit ExtException(const UnicodeString & Msg, TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(const UnicodeString & Msg, Classes::TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
   virtual ~ExtException(void) noexcept;
-  TStrings * GetMoreMessages() const { return FMoreMessages; }
+  Classes::TStrings * GetMoreMessages() const { return FMoreMessages; }
   UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
 
   explicit ExtException(const UnicodeString & Msg) : Sysutils::Exception(Msg), FMoreMessages(nullptr) {}
@@ -56,7 +56,7 @@ private:
   Classes::TStrings * FMoreMessages;
   UnicodeString FHelpKeyword;
 };
-//---------------------------------------------------------------------------
+
 #define DERIVE_EXT_EXCEPTION(NAME, BASE) \
   class NAME : public BASE \
   { \
@@ -67,14 +67,14 @@ private:
     explicit inline NAME(const UnicodeString & Msg, int AHelpContext) : BASE(Msg, AHelpContext) {} \
     virtual ExtException * Clone() { return new NAME(this, L""); } \
   };
-//---------------------------------------------------------------------------
+
 DERIVE_EXT_EXCEPTION(ESsh, ExtException)
 DERIVE_EXT_EXCEPTION(ETerminal, ExtException)
 DERIVE_EXT_EXCEPTION(ECommand, ExtException)
 DERIVE_EXT_EXCEPTION(EScp, ExtException) // SCP protocol fatal error (non-fatal in application context)
 DERIVE_EXT_EXCEPTION(ESkipFile, ExtException)
 DERIVE_EXT_EXCEPTION(EFileSkipped, ESkipFile)
-//---------------------------------------------------------------------------
+
 class EOSExtException : public ExtException
 {
 NB_DECLARE_CLASS(EOSExtException)
@@ -83,7 +83,7 @@ public:
   explicit EOSExtException(const UnicodeString & Msg);
   explicit EOSExtException(const UnicodeString & Msg, int LastError);
 };
-//---------------------------------------------------------------------------
+
 class EFatal : public ExtException
 {
 NB_DECLARE_CLASS(EFatal)
@@ -99,7 +99,7 @@ public:
 private:
   bool FReopenQueried;
 };
-//---------------------------------------------------------------------------
+
 #define DERIVE_FATAL_EXCEPTION(NAME, BASE) \
   class NAME : public BASE \
   { \
@@ -108,9 +108,9 @@ private:
     explicit inline NAME(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(E, Msg, HelpKeyword) {} \
     virtual ExtException * Clone() { return new NAME(this, L""); } \
   };
-//---------------------------------------------------------------------------
+
 DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal)
-//---------------------------------------------------------------------------
+
 // exception that closes application, but displays info message (not error message)
 // = close on completion
 class ESshTerminate : public EFatal
@@ -127,17 +127,17 @@ public:
 
   TOnceDoneOperation Operation;
 };
-//---------------------------------------------------------------------------
+
 class ECallbackGuardAbort : public Sysutils::EAbort
 {
 NB_DECLARE_CLASS(ECallbackGuardAbort)
 public:
   ECallbackGuardAbort();
 };
-//---------------------------------------------------------------------------
+
 Sysutils::Exception * CloneException(Sysutils::Exception * Exception);
 void RethrowException(Sysutils::Exception * E);
 UnicodeString GetExceptionHelpKeyword(Sysutils::Exception * E);
 UnicodeString MergeHelpKeyword(const UnicodeString & PrimaryHelpKeyword, const UnicodeString & SecondaryHelpKeyword);
 bool IsInternalErrorHelpKeyword(const UnicodeString & HelpKeyword);
-//---------------------------------------------------------------------------
+

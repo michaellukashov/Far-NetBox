@@ -5,15 +5,15 @@
 /**
  * File read/write wrapper
  */
-class CNBFile : public TObject
+class CNBFile : public Classes::TObject
 {
   NB_DISABLE_COPY(CNBFile)
   public:
     CNBFile() : m_File(INVALID_HANDLE_VALUE), m_LastError(0) {}
-  ~CNBFile()
-  {
-    Close();
-  }
+    ~CNBFile()
+    {
+      Close();
+    }
 
   /**
      * Open file for writing
@@ -82,4 +82,4 @@ private:
   DWORD   m_LastError;     ///< Last errno
 };
 
-//---------------------------------------------------------------------------
+

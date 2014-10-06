@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -12,11 +12,9 @@
 #include <SessionData.h>
 #include <Interface.h>
 
-using namespace Sysutils;
-//---------------------------------------------------------------------------
 extern const UnicodeString PageantTool = L"pageant.exe";
 extern const UnicodeString PuttygenTool = L"puttygen.exe";
-//---------------------------------------------------------------------------
+
 template<class TEditControl>
 void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int ForceDirectoryMasks)
 {
@@ -34,21 +32,21 @@ void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int Forc
     // as it re-selects whole text on exception in TCustomEdit.CMExit
 //    Edit->SelStart = E.ErrorStart - 1;
 //    Edit->SelLength = E.ErrorLen;
-    Abort();
+    Classes::Abort();
   }
 }
-//---------------------------------------------------------------------------
+
 void ValidateMaskEdit(TFarComboBox * Edit)
 {
   ValidateMaskEditT(Edit->GetText(), Edit, -1);
 }
-//---------------------------------------------------------------------------
+
 void ValidateMaskEdit(TFarEdit * Edit)
 {
   ValidateMaskEditT(Edit->GetText(), Edit, -1);
 }
 
-//---------------------------------------------------------------------------
+
 bool FindFile(UnicodeString & APath)
 {
   bool Result = Sysutils::FileExists(APath);
@@ -71,13 +69,13 @@ bool FindFile(UnicodeString & APath)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool FileExistsEx(const UnicodeString & APath)
 {
   UnicodeString LocalPath = APath;
   return FindFile(LocalPath);
 }
-//---------------------------------------------------------------------------
+
 void OpenSessionInPutty(const UnicodeString & PuttyPath,
   TSessionData * SessionData)
 {
@@ -155,15 +153,15 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
 
     if (!ExecuteShell(Program, Params))
     {
-      throw Exception(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
+      throw Sysutils::Exception(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
     }
   }
   else
   {
-    throw Exception(FMTLOAD(FILE_NOT_FOUND, Program.c_str()));
+    throw Sysutils::Exception(FMTLOAD(FILE_NOT_FOUND, Program.c_str()));
   }
 }
-//---------------------------------------------------------------------------
+
 bool FindTool(const UnicodeString & Name, UnicodeString & APath)
 {
   UnicodeString AppPath = Sysutils::IncludeTrailingBackslash(Sysutils::ExtractFilePath(GetConfiguration()->ModuleFileName()));
@@ -183,13 +181,13 @@ bool FindTool(const UnicodeString & Name, UnicodeString & APath)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params)
 {
   return ((intptr_t)::ShellExecute(nullptr, L"open", const_cast<wchar_t *>(APath.data()),
     const_cast<wchar_t *>(Params.data()), nullptr, SW_SHOWNORMAL) > 32);
 }
-//---------------------------------------------------------------------------
+
 bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params,
   HANDLE & Handle)
 {
@@ -209,7 +207,7 @@ bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params,
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool ExecuteShellAndWait(HINSTANCE /* Handle */, const UnicodeString & APath,
   const UnicodeString & Params, TProcessMessagesEvent ProcessMessages)
 {
@@ -233,7 +231,7 @@ bool ExecuteShellAndWait(HINSTANCE /* Handle */, const UnicodeString & APath,
         WaitResult = ::WaitForSingleObject(ExecuteInfo.hProcess, 200);
         if (WaitResult == WAIT_FAILED)
         {
-          throw Exception(LoadStr(DOCUMENT_WAIT_ERROR));
+          throw Sysutils::Exception(LoadStr(DOCUMENT_WAIT_ERROR));
         }
         ProcessMessages();
       }
@@ -246,7 +244,7 @@ bool ExecuteShellAndWait(HINSTANCE /* Handle */, const UnicodeString & APath,
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Command,
   TProcessMessagesEvent ProcessMessages)
 {
@@ -254,7 +252,7 @@ bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Command,
   SplitCommand(Command, Program, Params, Dir);
   return ExecuteShellAndWait(Handle, Program, Params, ProcessMessages);
 }
-//---------------------------------------------------------------------------
+
 bool SpecialFolderLocation(int PathID, UnicodeString & APath)
 {
   LPITEMIDLIST Pidl;
@@ -267,7 +265,7 @@ bool SpecialFolderLocation(int PathID, UnicodeString & APath)
   }
   return false;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString GetPersonalFolder()
 {
   UnicodeString Result;
@@ -312,7 +310,7 @@ UnicodeString GetPersonalFolder()
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   const UnicodeString & MultiItemsFormat, intptr_t Count, const UnicodeString & FirstItem)
 {
@@ -327,16 +325,16 @@ UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
-  const UnicodeString & MultiItemsFormat, const TStrings * Items)
+  const UnicodeString & MultiItemsFormat, const Classes::TStrings * Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
     Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
 }
-//---------------------------------------------------------------------------
+
 UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
-  const UnicodeString & MultiFilesFormat, const TStrings * Files, bool Remote)
+  const UnicodeString & MultiFilesFormat, const Classes::TStrings * Files, bool Remote)
 {
   assert(Files != nullptr);
   UnicodeString Item;
@@ -348,7 +346,7 @@ UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
     Files->GetCount(), Item);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & Identity,
   bool Mask)
 {
@@ -366,7 +364,7 @@ UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & I
 #if defined(__BORLANDC__)
       TempDir += ::IncludeTrailingBackslash(FormatDateTime(L"nnzzz", Now()));
 #else
-      TDateTime dt = Now();
+      Classes::TDateTime dt = Classes::Now();
       uint16_t H, M, S, MS;
       dt.DecodeTime(H, M, S, MS);
       TempDir += Sysutils::IncludeTrailingBackslash(FORMAT(L"%02d%03d", M, MS));
@@ -377,7 +375,7 @@ UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & I
 
   return TempDir;
 }
-//---------------------------------------------------------------------------
+
 bool DeleteDirectory(const UnicodeString & ADirName)
 {
   TSearchRecChecked SearchRec;
@@ -422,8 +420,8 @@ bool DeleteDirectory(const UnicodeString & ADirName)
   }
   return retval;
 }
-//---------------------------------------------------------------------------
-UnicodeString FormatDateTimeSpan(const UnicodeString & /* TimeFormat */, const TDateTime & DateTime)
+
+UnicodeString FormatDateTimeSpan(const UnicodeString & /* TimeFormat */, const Classes::TDateTime & DateTime)
 {
   UnicodeString Result;
   if (static_cast<int>(DateTime) > 0)
@@ -435,24 +433,24 @@ UnicodeString FormatDateTimeSpan(const UnicodeString & /* TimeFormat */, const T
 #if defined(__BORLANDC__)
   Result += FormatDateTime(TimeFormat, DateTime - int(DateTime));
 #else
-  TDateTime dt(DateTime - static_cast<int>(DateTime));
+  Classes::TDateTime dt(DateTime - static_cast<int>(DateTime));
   uint16_t H, M, S, MS;
   dt.DecodeTime(H, M, S, MS);
   Result += FORMAT(L"%02d:%02d:%02d", H, M, S);
 #endif
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TLocalCustomCommand::TLocalCustomCommand()
 {
 }
-//---------------------------------------------------------------------------
+
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
     const UnicodeString & APath) :
   TFileCustomCommand(Data, APath)
 {
 }
-//---------------------------------------------------------------------------
+
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
   const UnicodeString & APath, const UnicodeString & AFileName,
   const UnicodeString & LocalFileName, const UnicodeString & FileList) :
@@ -460,7 +458,7 @@ TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
 {
   FLocalFileName = LocalFileName;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TLocalCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index)
 {
   intptr_t Len = 0;
@@ -474,7 +472,7 @@ intptr_t TLocalCustomCommand::PatternLen(const UnicodeString & Command, intptr_t
   }
   return Len;
 }
-//---------------------------------------------------------------------------
+
 bool TLocalCustomCommand::PatternReplacement(const UnicodeString & Pattern,
   UnicodeString & Replacement, bool & Delimit)
 {
@@ -490,20 +488,20 @@ bool TLocalCustomCommand::PatternReplacement(const UnicodeString & Pattern,
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TLocalCustomCommand::DelimitReplacement(
   UnicodeString & /*Replacement*/, wchar_t /*Quote*/)
 {
   // never delimit local commands
 }
-//---------------------------------------------------------------------------
+
 bool TLocalCustomCommand::HasLocalFileName(const UnicodeString & Command)
 {
   return FindPattern(Command, L'^');
 }
-//---------------------------------------------------------------------------
+
 bool TLocalCustomCommand::IsFileCommand(const UnicodeString & Command)
 {
   return TFileCustomCommand::IsFileCommand(Command) || HasLocalFileName(Command);
 }
-//---------------------------------------------------------------------
+

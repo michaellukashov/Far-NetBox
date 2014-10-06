@@ -3,9 +3,9 @@
 
 #include <Common.h>
 #include "ProgParams.h"
-//------------------------------------------------------------------------------
+
 // unique_ptr-like class
-class TProgramParamsOwner : public TObject
+class TProgramParamsOwner : public Classes::TObject
 {
 public:
   TProgramParamsOwner() :
@@ -30,24 +30,24 @@ public:
 private:
   TProgramParams * FProgramParams;
 };
-//------------------------------------------------------------------------------
+
 // TProgramParamsOwner ProgramParamsOwner;
-//------------------------------------------------------------------------------
+
 // TProgramParams * TProgramParams::Instance()
 // {
   // return ProgramParamsOwner.Get();
 // }
-//---------------------------------------------------------------------------
+
 TProgramParams::TProgramParams()
 {
   Init(L"");
 }
-//---------------------------------------------------------------------------
+
 TProgramParams::TProgramParams(const UnicodeString & CmdLine)
 {
   Init(CmdLine);
 }
-//---------------------------------------------------------------------------
+
 void TProgramParams::Init(const UnicodeString & CmdLine)
 {
   UnicodeString CommandLine = CmdLine;

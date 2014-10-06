@@ -1,8 +1,8 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include <CoreDefs.hpp>
-//---------------------------------------------------------------------------
+
 // from shlobj.h
 #define CSIDL_DESKTOP                   0x0000        // <desktop>
 #define CSIDL_SENDTO                    0x0009        // <user name>\SendTo
@@ -11,14 +11,14 @@
 #define CSIDL_APPDATA                   0x001a        // <user name>\Application Data
 #define CSIDL_PROGRAM_FILES             0x0026        // C:\Program Files
 #define CSIDL_PERSONAL                  0x0005        // My Documents
-//---------------------------------------------------------------------------
+
 #include <FileMasks.H>
 #include <FarDialog.h>
-//---------------------------------------------------------------------------
+
 class TSessionData;
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE0(TProcessMessagesEvent, void);
-//---------------------------------------------------------------------------
+
 bool FindFile(UnicodeString & APath);
 bool FindTool(const UnicodeString & Name, UnicodeString & APath);
 bool FileExistsEx(const UnicodeString & APath);
@@ -36,14 +36,14 @@ UnicodeString GetPersonalFolder();
 UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   const UnicodeString & MultiItemsFormat, intptr_t Count, const UnicodeString & FirstItem);
 UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
-  const UnicodeString & MultiItemsFormat, const TStrings * Items);
+  const UnicodeString & MultiItemsFormat, const Classes::TStrings * Items);
 UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
-  const UnicodeString & MultiFileFormat, const TStrings * Files, bool Remote);
+  const UnicodeString & MultiFileFormat, const Classes::TStrings * Files, bool Remote);
 UnicodeString UniqTempDir(const UnicodeString & BaseDir,
   const UnicodeString & Identity, bool Mask = false);
 bool DeleteDirectory(const UnicodeString & ADirName);
-UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, const TDateTime & DateTime);
-//---------------------------------------------------------------------------
+UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, const Classes::TDateTime & DateTime);
+
 class TLocalCustomCommand : public TFileCustomCommand
 {
 public:
@@ -66,10 +66,10 @@ protected:
 private:
   UnicodeString FLocalFileName;
 };
-//---------------------------------------------------------------------------
+
 void ValidateMaskEdit(TFarComboBox * Edit);
 void ValidateMaskEdit(TFarEdit * Edit);
-//---------------------------------------------------------------------------
+
 extern const UnicodeString PageantTool;
 extern const UnicodeString PuttygenTool;
-//---------------------------------------------------------------------------
+

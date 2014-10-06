@@ -6,13 +6,13 @@
 #include "FarDialog.h"
 #include "Common.h"
 
-//---------------------------------------------------------------------------
-inline TRect Rect(int Left, int Top, int Right, int Bottom)
+
+inline Classes::TRect Rect(int Left, int Top, int Right, int Bottom)
 {
-  return TRect(Left, Top, Right, Bottom);
+  return Classes::TRect(Left, Top, Right, Bottom);
 }
 
-//---------------------------------------------------------------------------
+
 TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
   TObject(),
   FFarPlugin(AFarPlugin),
@@ -20,8 +20,8 @@ TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
   FFlags(0),
   FHelpTopic(),
   FVisible(false),
-  FItems(new TObjectList()),
-  FContainers(new TObjectList()),
+  FItems(new Classes::TObjectList()),
+  FContainers(new Classes::TObjectList()),
   FHandle(0),
   FDefaultButton(nullptr),
   FBorderBox(nullptr),
@@ -43,10 +43,10 @@ TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
   FSynchronizeObjects[1] = INVALID_HANDLE_VALUE;
 
   FBorderBox = new TFarBox(this);
-  FBorderBox->SetBounds(TRect(3, 1, -4, -2));
+  FBorderBox->SetBounds(Classes::TRect(3, 1, -4, -2));
   FBorderBox->SetDouble(true);
 }
-//---------------------------------------------------------------------------
+
 TFarDialog::~TFarDialog()
 {
   for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
@@ -66,8 +66,8 @@ TFarDialog::~TFarDialog()
     ::CloseHandle(FSynchronizeObjects[1]);
   }
 }
-//---------------------------------------------------------------------------
-void TFarDialog::SetBounds(const TRect & Value)
+
+void TFarDialog::SetBounds(const Classes::TRect & Value)
 {
   if (GetBounds() != Value)
   {
@@ -95,10 +95,10 @@ void TFarDialog::SetBounds(const TRect & Value)
     }
   }
 }
-//---------------------------------------------------------------------------
-TRect TFarDialog::GetClientRect() const
+
+Classes::TRect TFarDialog::GetClientRect() const
 {
-  TRect R;
+  Classes::TRect R;
   if (FBorderBox)
   {
     R = FBorderBox->GetBounds();
@@ -116,13 +116,13 @@ TRect TFarDialog::GetClientRect() const
   }
   return R;
 }
-//---------------------------------------------------------------------------
-TPoint TFarDialog::GetClientSize()
+
+Classes::TPoint TFarDialog::GetClientSize()
 {
-  TPoint S;
+  Classes::TPoint S;
   if (FBorderBox)
   {
-    TRect R = FBorderBox->GetActualBounds();
+    Classes::TRect R = FBorderBox->GetActualBounds();
     S.x = R.Width() + 1;
     S.y = R.Height() + 1;
     S.x -= S.x > 4 ? 4 : S.x;
@@ -134,15 +134,15 @@ TPoint TFarDialog::GetClientSize()
   }
   return S;
 }
-//---------------------------------------------------------------------------
-TPoint TFarDialog::GetMaxSize()
+
+Classes::TPoint TFarDialog::GetMaxSize()
 {
-  TPoint P = GetFarPlugin()->TerminalInfo();
+  Classes::TPoint P = GetFarPlugin()->TerminalInfo();
   P.x -= 2;
   P.y -= 3;
   return P;
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::SetHelpTopic(const UnicodeString & Value)
 {
   if (FHelpTopic != Value)
@@ -151,7 +151,7 @@ void TFarDialog::SetHelpTopic(const UnicodeString & Value)
     FHelpTopic = Value;
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::SetFlags(const FARDIALOGITEMFLAGS Value)
 {
   if (GetFlags() != Value)
@@ -160,39 +160,39 @@ void TFarDialog::SetFlags(const FARDIALOGITEMFLAGS Value)
     FFlags = Value;
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::SetCentered(bool Value)
 {
   if (GetCentered() != Value)
   {
     assert(!GetHandle());
-    TRect B = GetBounds();
+    Classes::TRect B = GetBounds();
     B.Left = Value ? -1 : 0;
     B.Top = Value ? -1 : 0;
     SetBounds(B);
   }
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialog::GetCentered()
 {
   return (GetBounds().Left < 0) && (GetBounds().Top < 0);
 }
-//---------------------------------------------------------------------------
-TPoint TFarDialog::GetSize()
+
+Classes::TPoint TFarDialog::GetSize()
 {
   if (GetCentered())
   {
-    return TPoint(GetBounds().Right, GetBounds().Bottom);
+    return Classes::TPoint(GetBounds().Right, GetBounds().Bottom);
   }
   else
   {
-    return TPoint(GetBounds().Width() + 1, GetBounds().Height() + 1);
+    return Classes::TPoint(GetBounds().Width() + 1, GetBounds().Height() + 1);
   }
 }
-//---------------------------------------------------------------------------
-void TFarDialog::SetSize(TPoint Value)
+
+void TFarDialog::SetSize(Classes::TPoint Value)
 {
-  TRect B = GetBounds();
+  Classes::TRect B = GetBounds();
   if (GetCentered())
   {
     B.Right = Value.x;
@@ -205,27 +205,27 @@ void TFarDialog::SetSize(TPoint Value)
   }
   SetBounds(B);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::SetWidth(intptr_t Value)
 {
-  SetSize(TPoint((int)Value, (int)GetHeight()));
+  SetSize(Classes::TPoint((int)Value, (int)GetHeight()));
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialog::GetWidth()
 {
   return GetSize().x;
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::SetHeight(intptr_t Value)
 {
-  SetSize(TPoint((int)GetWidth(), (int)Value));
+  SetSize(Classes::TPoint((int)GetWidth(), (int)Value));
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialog::GetHeight()
 {
   return GetSize().y;
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::SetCaption(const UnicodeString & Value)
 {
   if (GetCaption() != Value)
@@ -233,24 +233,24 @@ void TFarDialog::SetCaption(const UnicodeString & Value)
     FBorderBox->SetCaption(Value);
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TFarDialog::GetCaption()
 {
   return FBorderBox->GetCaption();
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialog::GetItemCount()
 {
   return FItems->GetCount();
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialog::GetItem(TFarDialogItem * Item) const
 {
   if (!Item)
     return -1;
   return Item->GetItem();
 }
-//---------------------------------------------------------------------------
+
 TFarDialogItem * TFarDialog::GetItem(intptr_t Index)
 {
   TFarDialogItem * DialogItem;
@@ -266,10 +266,10 @@ TFarDialogItem * TFarDialog::GetItem(intptr_t Index)
   }
   return DialogItem;
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::Add(TFarDialogItem * DialogItem)
 {
-  TRect R = GetClientRect();
+  Classes::TRect R = GetClientRect();
   intptr_t Left, Top;
   GetNextItemPosition(Left, Top);
   R.Left = static_cast<int>(Left);
@@ -299,15 +299,15 @@ void TFarDialog::Add(TFarDialogItem * DialogItem)
   DialogItem->SetBounds(R);
   DialogItem->SetGroup(GetDefaultGroup());
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::Add(TFarDialogContainer * Container)
 {
   FContainers->Add(Container);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::GetNextItemPosition(intptr_t & Left, intptr_t & Top)
 {
-  TRect R = GetClientRect();
+  Classes::TRect R = GetClientRect();
   Left = R.Left;
   Top = R.Top;
 
@@ -334,7 +334,7 @@ void TFarDialog::GetNextItemPosition(intptr_t & Left, intptr_t & Top)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 intptr_t WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, intptr_t Msg, intptr_t Param1, void * Param2)
 {
   TFarPluginEnvGuard Guard;
@@ -379,7 +379,7 @@ intptr_t WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, intptr_t Msg, intpt
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 {
 
@@ -555,13 +555,13 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialog::DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 {
   TFarEnvGuard Guard;
   return GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetHandle(), Msg, static_cast<int>(Param1), Param2);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialog::FailDialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 {
   intptr_t Result = 0;
@@ -577,12 +577,12 @@ intptr_t TFarDialog::FailDialogProc(intptr_t Msg, intptr_t Param1, void * Param2
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::Idle()
 {
   // nothing
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialog::MouseEvent(MOUSE_EVENT_RECORD * Event)
 {
   bool Result = true;
@@ -613,7 +613,7 @@ bool TFarDialog::MouseEvent(MOUSE_EVENT_RECORD * Event)
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
 {
   bool Result = false;
@@ -623,7 +623,7 @@ bool TFarDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialog::HotKey(uintptr_t Key, uintptr_t ControlState)
 {
   bool Result = false;
@@ -649,13 +649,13 @@ bool TFarDialog::HotKey(uintptr_t Key, uintptr_t ControlState)
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TFarDialogItem * TFarDialog::ItemAt(int X, int Y)
 {
   TFarDialogItem * Result = nullptr;
   for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
   {
-    TRect Bounds = GetItem(Index)->GetActualBounds();
+    Classes::TRect Bounds = GetItem(Index)->GetActualBounds();
     if ((Bounds.Left <= X) && (X <= Bounds.Right) &&
         (Bounds.Top <= Y) && (Y <= Bounds.Bottom))
     {
@@ -664,7 +664,7 @@ TFarDialogItem * TFarDialog::ItemAt(int X, int Y)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialog::CloseQuery()
 {
   bool Result = true;
@@ -677,7 +677,7 @@ bool TFarDialog::CloseQuery()
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::RefreshBounds()
 {
   SMALL_RECT Rect = {0};
@@ -687,7 +687,7 @@ void TFarDialog::RefreshBounds()
   FBounds.Right = Rect.Right;
   FBounds.Bottom = Rect.Bottom;
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::Init()
 {
   for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
@@ -699,7 +699,7 @@ void TFarDialog::Init()
 
   Change();
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialog::ShowModal()
 {
   FResult = -1;
@@ -724,7 +724,7 @@ intptr_t TFarDialog::ShowModal()
 
     {
       TFarEnvGuard Guard;
-      TRect Bounds = GetBounds();
+      Classes::TRect Bounds = GetBounds();
       PluginStartupInfo & Info = *GetFarPlugin()->GetStartupInfo();
       Handle = Info.DialogInit(
         &MainGuid, &MainGuid,
@@ -753,13 +753,13 @@ intptr_t TFarDialog::ShowModal()
 
   return FResult;
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::BreakSynchronize()
 {
   SetEvent(FSynchronizeObjects[1]);
 }
-//---------------------------------------------------------------------------
-void TFarDialog::Synchronize(TThreadMethod Event)
+
+void TFarDialog::Synchronize(Classes::TThreadMethod Event)
 {
   if (FSynchronizeObjects[0] == INVALID_HANDLE_VALUE)
   {
@@ -771,13 +771,13 @@ void TFarDialog::Synchronize(TThreadMethod Event)
   ::WaitForMultipleObjects(LENOF(FSynchronizeObjects),
     reinterpret_cast<HANDLE *>(&FSynchronizeObjects), false, INFINITE);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::Close(TFarButton * Button)
 {
   assert(Button != nullptr);
   SendDlgMessage(DM_CLOSE, Button->GetItem(), nullptr);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::Change()
 {
   if (FChangesLocked > 0)
@@ -786,7 +786,7 @@ void TFarDialog::Change()
   }
   else
   {
-    std::unique_ptr<TList> NotifiedContainers(new TList());
+    std::unique_ptr<Classes::TList> NotifiedContainers(new Classes::TList());
     for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
     {
       TFarDialogItem * DItem = GetItem(Index);
@@ -803,7 +803,7 @@ void TFarDialog::Change()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialog::SendDlgMessage(intptr_t Msg, intptr_t Param1, void * Param2)
 {
   if (GetHandle())
@@ -814,7 +814,7 @@ intptr_t TFarDialog::SendDlgMessage(intptr_t Msg, intptr_t Param1, void * Param2
   }
   return 0;
 }
-//---------------------------------------------------------------------------
+
 FarColor TFarDialog::GetSystemColor(PaletteColors colorId)
 {
     FarColor color = {0};
@@ -824,22 +824,22 @@ FarColor TFarDialog::GetSystemColor(PaletteColors colorId)
     }
     return color;
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::Redraw()
 {
   SendDlgMessage(DM_REDRAW, 0, nullptr);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::ShowGroup(intptr_t Group, bool Show)
 {
   ProcessGroup(Group, MAKE_CALLBACK(TFarDialog::ShowItem, this), &Show);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::EnableGroup(intptr_t Group, bool Enable)
 {
   ProcessGroup(Group, MAKE_CALLBACK(TFarDialog::EnableItem, this), &Enable);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::ProcessGroup(intptr_t Group, TFarProcessGroupEvent Callback,
   void * Arg)
 {
@@ -859,17 +859,17 @@ void TFarDialog::ProcessGroup(intptr_t Group, TFarProcessGroupEvent Callback,
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::ShowItem(TFarDialogItem * Item, void * Arg)
 {
   Item->SetVisible(*static_cast<bool *>(Arg));
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::EnableItem(TFarDialogItem * Item, void * Arg)
 {
   Item->SetEnabled(*static_cast<bool *>(Arg));
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::SetItemFocused(TFarDialogItem * Value)
 {
   if (Value != GetItemFocused())
@@ -878,12 +878,12 @@ void TFarDialog::SetItemFocused(TFarDialogItem * Value)
     Value->SetFocus();
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TFarDialog::GetMsg(intptr_t MsgId)
 {
   return FFarPlugin->GetMsg(MsgId);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::LockChanges()
 {
   assert(FChangesLocked < 10);
@@ -897,7 +897,7 @@ void TFarDialog::LockChanges()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarDialog::UnlockChanges()
 {
   assert(FChangesLocked > 0);
@@ -918,18 +918,18 @@ void TFarDialog::UnlockChanges()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialog::ChangesLocked()
 {
   return (FChangesLocked > 0);
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TFarDialogContainer::TFarDialogContainer(TFarDialog * ADialog) :
   TObject(),
   FLeft(0),
   FTop(0),
-  FItems(new TObjectList()),
+  FItems(new Classes::TObjectList()),
   FDialog(ADialog),
   FEnabled(true)
 {
@@ -938,17 +938,17 @@ TFarDialogContainer::TFarDialogContainer(TFarDialog * ADialog) :
   GetDialog()->Add(this);
   GetDialog()->GetNextItemPosition(FLeft, FTop);
 }
-//---------------------------------------------------------------------------
+
 TFarDialogContainer::~TFarDialogContainer()
 {
   SAFE_DESTROY(FItems);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TFarDialogContainer::GetMsg(int MsgId)
 {
   return GetDialog()->GetMsg(MsgId);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogContainer::Add(TFarDialogItem * Item)
 {
   assert(FItems->IndexOf(Item) == NPOS);
@@ -956,7 +956,7 @@ void TFarDialogContainer::Add(TFarDialogItem * Item)
   if (FItems->IndexOf(Item) == NPOS)
     FItems->Add(Item);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogContainer::Remove(TFarDialogItem * Item)
 {
   assert(FItems->IndexOf(Item) != NPOS);
@@ -967,7 +967,7 @@ void TFarDialogContainer::Remove(TFarDialogItem * Item)
     delete this;
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogContainer::SetPosition(intptr_t Index, intptr_t Value)
 {
   intptr_t & Position = Index ? FTop : FLeft;
@@ -980,11 +980,11 @@ void TFarDialogContainer::SetPosition(intptr_t Index, intptr_t Value)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogContainer::Change()
 {
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogContainer::SetEnabled(bool Value)
 {
   if (FEnabled != Value)
@@ -996,13 +996,13 @@ void TFarDialogContainer::SetEnabled(bool Value)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialogContainer::GetItemCount() const
 {
   return FItems->GetCount();
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TFarDialogItem::TFarDialogItem(TFarDialog * ADialog, FARDIALOGITEMTYPES AType) :
   TObject(),
   FDefaultType(AType),
@@ -1026,7 +1026,7 @@ TFarDialogItem::TFarDialogItem(TFarDialog * ADialog, FARDIALOGITEMTYPES AType) :
 
   GetDialogItem()->Type = AType;
 }
-//---------------------------------------------------------------------------
+
 TFarDialogItem::~TFarDialogItem()
 {
   assert(!GetDialog());
@@ -1040,14 +1040,14 @@ const FarDialogItem * TFarDialogItem::GetDialogItem() const
 {
   return const_cast<TFarDialogItem *>(this)->GetDialogItem();
 }
-//---------------------------------------------------------------------------
+
 FarDialogItem * TFarDialogItem::GetDialogItem()
 {
   assert(GetDialog());
   return &GetDialog()->FDialogItems[GetItem()];
 }
-//---------------------------------------------------------------------------
-void TFarDialogItem::SetBounds(const TRect & Value)
+
+void TFarDialogItem::SetBounds(const Classes::TRect & Value)
 {
   if (FBounds != Value)
   {
@@ -1055,21 +1055,21 @@ void TFarDialogItem::SetBounds(const TRect & Value)
     UpdateBounds();
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::Detach()
 {
   nb_free((void*)GetDialogItem()->Data);
   FDialog = nullptr;
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::DialogResized()
 {
   UpdateBounds();
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::ResetBounds()
 {
-  TRect B = FBounds;
+  Classes::TRect B = FBounds;
   FarDialogItem * DItem = GetDialogItem();
   #define BOUND(DIB, BB, DB, CB) DItem->DIB = B.BB >= 0 ? \
     (GetContainer() ? (int)GetContainer()->CB : 0) + B.BB : GetDialog()->GetSize().DB + B.BB
@@ -1079,14 +1079,14 @@ void TFarDialogItem::ResetBounds()
   BOUND(Y2, Bottom, y, GetTop());
   #undef BOUND
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::UpdateBounds()
 {
   ResetBounds();
 
   if (GetDialog()->GetHandle())
   {
-    TRect B = GetActualBounds();
+    Classes::TRect B = GetActualBounds();
     SMALL_RECT Rect = {0};
     Rect.Left = static_cast<short int>(B.Left);
     Rect.Top = static_cast<short int>(B.Top);
@@ -1095,12 +1095,12 @@ void TFarDialogItem::UpdateBounds()
     SendMessage(DM_SETITEMPOSITION, reinterpret_cast<void *>(&Rect));
   }
 }
-//---------------------------------------------------------------------------
+
 char TFarDialogItem::GetColor(intptr_t Index) const
 {
   return *((reinterpret_cast<const char *>(&FColors)) + Index);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetColor(intptr_t Index, char Value)
 {
   if (GetColor(Index) != Value)
@@ -1109,12 +1109,12 @@ void TFarDialogItem::SetColor(intptr_t Index, char Value)
     FColorMask |= (0xFF << (Index * 8));
   }
 }
-//---------------------------------------------------------------------------
+
 struct PluginStartupInfo * TFarDialogItem::GetStartupInfo()
 {
  return GetDialog()->GetFarPlugin()->GetStartupInfo();
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetFlags(FARDIALOGITEMFLAGS Value)
 {
   if (GetFlags() != Value)
@@ -1123,7 +1123,7 @@ void TFarDialogItem::SetFlags(FARDIALOGITEMFLAGS Value)
     UpdateFlags(Value);
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::UpdateFlags(FARDIALOGITEMFLAGS Value)
 {
   if (GetFlags() != Value)
@@ -1132,18 +1132,18 @@ void TFarDialogItem::UpdateFlags(FARDIALOGITEMFLAGS Value)
     DialogChange();
   }
 }
-//---------------------------------------------------------------------------
-TRect TFarDialogItem::GetActualBounds() const
+
+Classes::TRect TFarDialogItem::GetActualBounds() const
 {
-  return TRect(GetDialogItem()->X1, GetDialogItem()->Y1,
+  return Classes::TRect(GetDialogItem()->X1, GetDialogItem()->Y1,
                GetDialogItem()->X2, GetDialogItem()->Y2);
 }
-//---------------------------------------------------------------------------
+
 FARDIALOGITEMFLAGS TFarDialogItem::GetFlags() const
 {
   return GetDialogItem()->Flags;
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetDataInternal(const UnicodeString & Value)
 {
   UnicodeString FarData = Value.c_str();
@@ -1156,7 +1156,7 @@ void TFarDialogItem::SetDataInternal(const UnicodeString & Value)
 
   DialogChange();
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetData(const UnicodeString & Value)
 {
   if (GetData() != Value)
@@ -1164,7 +1164,7 @@ void TFarDialogItem::SetData(const UnicodeString & Value)
     SetDataInternal(Value);
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::UpdateData(const UnicodeString & Value)
 {
   UnicodeString FarData = Value.c_str();
@@ -1172,12 +1172,12 @@ void TFarDialogItem::UpdateData(const UnicodeString & Value)
   GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(FarData, true);
 
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TFarDialogItem::GetData() const
 {
   return const_cast<TFarDialogItem *>(this)->GetData();
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TFarDialogItem::GetData()
 {
   UnicodeString Result;
@@ -1187,7 +1187,7 @@ UnicodeString TFarDialogItem::GetData()
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetType(FARDIALOGITEMTYPES Value)
 {
   if (GetType() != Value)
@@ -1196,12 +1196,12 @@ void TFarDialogItem::SetType(FARDIALOGITEMTYPES Value)
     GetDialogItem()->Type = Value;
   }
 }
-//---------------------------------------------------------------------------
+
 FARDIALOGITEMTYPES TFarDialogItem::GetType() const
 {
   return static_cast<FARDIALOGITEMTYPES>(GetDialogItem()->Type);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetAlterType(FARDIALOGITEMTYPES Index, bool Value)
 {
   if (GetAlterType(Index) != Value)
@@ -1209,17 +1209,17 @@ void TFarDialogItem::SetAlterType(FARDIALOGITEMTYPES Index, bool Value)
     SetType(Value ? Index : FDefaultType);
   }
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialogItem::GetAlterType(FARDIALOGITEMTYPES Index) const
 {
   return const_cast<TFarDialogItem *>(this)->GetAlterType(Index);
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialogItem::GetAlterType(FARDIALOGITEMTYPES Index)
 {
   return (GetType() == Index);
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialogItem::GetFlag(FARDIALOGITEMFLAGS Index) const
 {
   bool Result = (GetFlags() & (Index & 0xFFFFFFFFFFFFFF00ULL)) != 0;
@@ -1230,7 +1230,7 @@ bool TFarDialogItem::GetFlag(FARDIALOGITEMFLAGS Index) const
     // bool Result = (GetFlags() & Index) != 0;
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetFlag(FARDIALOGITEMFLAGS Index, bool Value)
 {
   if (GetFlag(Index) != Value)
@@ -1282,7 +1282,7 @@ void TFarDialogItem::SetFlag(FARDIALOGITEMFLAGS Index, bool Value)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetEnabledFollow(TFarDialogItem * Value)
 {
   if (GetEnabledFollow() != Value)
@@ -1291,7 +1291,7 @@ void TFarDialogItem::SetEnabledFollow(TFarDialogItem * Value)
     Change();
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetEnabledDependency(TFarDialogItem * Value)
 {
   if (GetEnabledDependency() != Value)
@@ -1300,7 +1300,7 @@ void TFarDialogItem::SetEnabledDependency(TFarDialogItem * Value)
     Change();
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetEnabledDependencyNegative(TFarDialogItem * Value)
 {
   if (GetEnabledDependencyNegative() != Value)
@@ -1309,12 +1309,12 @@ void TFarDialogItem::SetEnabledDependencyNegative(TFarDialogItem * Value)
     Change();
   }
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialogItem::GetIsEmpty() const
 {
   return GetData().IsEmpty();
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialogItem::FailItemProc(intptr_t Msg, void * Param)
 {
   intptr_t Result = 0;
@@ -1330,7 +1330,7 @@ intptr_t TFarDialogItem::FailItemProc(intptr_t Msg, void * Param)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialogItem::ItemProc(intptr_t Msg, void * Param)
 {
   intptr_t Result = 0;
@@ -1369,11 +1369,11 @@ intptr_t TFarDialogItem::ItemProc(intptr_t Msg, void * Param)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::DoFocus()
 {
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::DoExit()
 {
   if (FOnExit)
@@ -1381,19 +1381,19 @@ void TFarDialogItem::DoExit()
     FOnExit(this);
   }
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialogItem::DefaultItemProc(intptr_t Msg, void * Param)
 {
   TFarEnvGuard Guard;
   return GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(GetItem()), Param);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialogItem::DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 {
   TFarEnvGuard Guard;
   return GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(Param1), Param2);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::Change()
 {
   if (GetEnabledFollow() || GetEnabledDependency() || GetEnabledDependencyNegative())
@@ -1401,7 +1401,7 @@ void TFarDialogItem::Change()
     UpdateEnabled();
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetEnabled(bool Value)
 {
   if (GetEnabled() != Value)
@@ -1410,7 +1410,7 @@ void TFarDialogItem::SetEnabled(bool Value)
     UpdateEnabled();
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::UpdateEnabled()
 {
   bool Value =
@@ -1428,23 +1428,23 @@ void TFarDialogItem::UpdateEnabled()
     SetFlag(DIF_DISABLE | DIF_INVERSE, GetIsEnabled());
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::DialogChange()
 {
   assert(GetDialog());
   GetDialog()->Change();
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialogItem::SendDialogMessage(intptr_t Msg, intptr_t Param1, void * Param2)
 {
   return GetDialog()->SendDlgMessage(Msg, Param1, Param2);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialogItem::SendMessage(intptr_t Msg, void * Param)
 {
   return GetDialog()->SendDlgMessage(Msg, GetItem(), Param);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetSelected(intptr_t Value)
 {
   if (GetSelected() != Value)
@@ -1456,7 +1456,7 @@ void TFarDialogItem::SetSelected(intptr_t Value)
     UpdateSelected(Value);
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::UpdateSelected(intptr_t Value)
 {
   if (GetSelected() != Value)
@@ -1465,35 +1465,35 @@ void TFarDialogItem::UpdateSelected(intptr_t Value)
     DialogChange();
   }
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialogItem::GetSelected() const
 {
   return static_cast<intptr_t>(GetDialogItem()->Selected);
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialogItem::GetFocused() const
 {
   return GetFlag(DIF_FOCUS);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetFocused(bool Value)
 {
   SetFlag(DIF_FOCUS, Value);
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialogItem::GetChecked() const
 {
   return GetSelected() == BSTATE_CHECKED;
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetChecked(bool Value)
 {
   SetSelected(Value ? BSTATE_CHECKED : BSTATE_UNCHECKED);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::Move(intptr_t DeltaX, intptr_t DeltaY)
 {
-  TRect R = GetBounds();
+  Classes::TRect R = GetBounds();
 
   R.Left += static_cast<int>(DeltaX);
   R.Right += static_cast<int>(DeltaX);
@@ -1502,34 +1502,34 @@ void TFarDialogItem::Move(intptr_t DeltaX, intptr_t DeltaY)
 
   SetBounds(R);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::MoveAt(intptr_t X, intptr_t Y)
 {
   Move(X - GetLeft(), Y - GetTop());
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetCoordinate(intptr_t Index, intptr_t Value)
 {
-  assert(sizeof(TRect) == sizeof(intptr_t) * 4);
-  TRect R = GetBounds();
+  assert(sizeof(Classes::TRect) == sizeof(intptr_t) * 4);
+  Classes::TRect R = GetBounds();
   intptr_t * D = reinterpret_cast<intptr_t *>(&R);
   D += Index;
   *D = static_cast<int>(Value);
   SetBounds(R);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialogItem::GetCoordinate(intptr_t Index) const
 {
-  assert(sizeof(TRect) == sizeof(intptr_t) * 4);
-  TRect R = GetBounds();
+  assert(sizeof(Classes::TRect) == sizeof(intptr_t) * 4);
+  Classes::TRect R = GetBounds();
   intptr_t * D = reinterpret_cast<intptr_t *>(&R);
   D += Index;
   return static_cast<intptr_t>(*D);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetWidth(intptr_t Value)
 {
-  TRect R = GetBounds();
+  Classes::TRect R = GetBounds();
   if (R.Left >= 0)
   {
     R.Right = R.Left + static_cast<int>(Value - 1);
@@ -1541,15 +1541,15 @@ void TFarDialogItem::SetWidth(intptr_t Value)
   }
   SetBounds(R);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialogItem::GetWidth() const
 {
   return static_cast<intptr_t>(GetActualBounds().Width() + 1);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetHeight(intptr_t Value)
 {
-  TRect R = GetBounds();
+  Classes::TRect R = GetBounds();
   if (R.Top >= 0)
   {
     R.Bottom = static_cast<int>(R.Top + Value - 1);
@@ -1561,12 +1561,12 @@ void TFarDialogItem::SetHeight(intptr_t Value)
   }
   SetBounds(R);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarDialogItem::GetHeight() const
 {
   return static_cast<intptr_t>(GetActualBounds().Height() + 1);
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialogItem::CanFocus() const
 {
   FARDIALOGITEMTYPES Type = GetType();
@@ -1575,19 +1575,19 @@ bool TFarDialogItem::CanFocus() const
      Type == DI_BUTTON || Type == DI_CHECKBOX || Type == DI_RADIOBUTTON ||
      Type == DI_COMBOBOX || Type == DI_LISTBOX || Type == DI_USERCONTROL);
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialogItem::Focused() const
 {
   return GetFocused();
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::UpdateFocused(bool Value)
 {
   SetFocused(Value);
   assert(GetDialog());
   GetDialog()->SetItemFocused(Value ? this : nullptr);
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetFocus()
 {
   assert(CanFocus());
@@ -1608,7 +1608,7 @@ void TFarDialogItem::SetFocus()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::Init()
 {
   if (GetFlag(DIF_CENTERGROUP))
@@ -1619,13 +1619,13 @@ void TFarDialogItem::Init()
     // at least for "text" item, returned item size is not correct (on 1.70 final)
     SendMessage(DM_GETITEMPOSITION, reinterpret_cast<void *>(&Rect));
 
-    TRect B = GetBounds();
+    Classes::TRect B = GetBounds();
     B.Left = Rect.Left;
     B.Right = Rect.Right;
     SetBounds(B);
   }
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialogItem::CloseQuery()
 {
   if (Focused() && (GetDialog()->GetResult() >= 0))
@@ -1634,23 +1634,23 @@ bool TFarDialogItem::CloseQuery()
   }
   return true;
 }
-//---------------------------------------------------------------------------
-TPoint TFarDialogItem::MouseClientPosition(MOUSE_EVENT_RECORD * Event)
+
+Classes::TPoint TFarDialogItem::MouseClientPosition(MOUSE_EVENT_RECORD * Event)
 {
-  TPoint Result;
+  Classes::TPoint Result;
   if (GetType() == DI_USERCONTROL)
   {
-    Result = TPoint(Event->dwMousePosition.X, Event->dwMousePosition.Y);
+    Result = Classes::TPoint(Event->dwMousePosition.X, Event->dwMousePosition.Y);
   }
   else
   {
-    Result = TPoint(
+    Result = Classes::TPoint(
       static_cast<int>(Event->dwMousePosition.X - GetDialog()->GetBounds().Left - GetLeft()),
       static_cast<int>(Event->dwMousePosition.Y - GetDialog()->GetBounds().Top - GetTop()));
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD * Event)
 {
   if (FOnMouseClick)
@@ -1662,7 +1662,7 @@ bool TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD * Event)
   memmove(&Rec.Event.MouseEvent, Event, sizeof(*Event));
   return DefaultItemProc(DN_CONTROLINPUT, static_cast<void *>(&Rec)) != 0;
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
   MOUSE_EVENT_RECORD * Event)
 {
@@ -1671,7 +1671,7 @@ bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
   memmove(&Rec.Event.MouseEvent, Event, sizeof(*Event));
   return DefaultDialogProc(DN_INPUT, 0, reinterpret_cast<void *>(&Rec)) != 0;
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::Text(int X, int Y, const FarColor & Color, const UnicodeString & Str)
 {
   TFarEnvGuard Guard;
@@ -1680,13 +1680,13 @@ void TFarDialogItem::Text(int X, int Y, const FarColor & Color, const UnicodeStr
     static_cast<int>(GetDialog()->GetBounds().Top + GetTop() + Y),
     &Color, Str.c_str());
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::Redraw()
 {
   // do not know how to force redraw of the item only
   GetDialog()->Redraw();
 }
-//---------------------------------------------------------------------------
+
 void TFarDialogItem::SetContainer(TFarDialogContainer * Value)
 {
   if (GetContainer() != Value)
@@ -1705,19 +1705,19 @@ void TFarDialogItem::SetContainer(TFarDialogContainer * Value)
     UpdateEnabled();
   }
 }
-//---------------------------------------------------------------------------
+
 bool TFarDialogItem::HotKey(char /*HotKey*/)
 {
   return false;
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TFarBox::TFarBox(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_SINGLEBOX)
 {
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TFarButton::TFarButton(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_BUTTON),
   FResult(0),
@@ -1725,7 +1725,7 @@ TFarButton::TFarButton(TFarDialog * ADialog) :
   FBrackets(brNormal)
 {
 }
-//---------------------------------------------------------------------------
+
 void TFarButton::SetDataInternal(const UnicodeString & Value)
 {
   UnicodeString AValue;
@@ -1767,7 +1767,7 @@ void TFarButton::SetDataInternal(const UnicodeString & Value)
     SetWidth(Margin + Sysutils::StripHotkey(AValue).GetLength() + Margin);
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TFarButton::GetData()
 {
   UnicodeString Result = TFarDialogItem::GetData();
@@ -1784,7 +1784,7 @@ UnicodeString TFarButton::GetData()
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TFarButton::SetDefault(bool Value)
 {
   if (GetDefault() != Value)
@@ -1806,12 +1806,12 @@ void TFarButton::SetDefault(bool Value)
     DialogChange();
   }
 }
-//---------------------------------------------------------------------------
+
 bool TFarButton::GetDefault() const
 {
   return GetFlag(DIF_DEFAULTBUTTON);
 }
-//---------------------------------------------------------------------------
+
 void TFarButton::SetBrackets(TFarButtonBrackets Value)
 {
   if (FBrackets != Value)
@@ -1822,7 +1822,7 @@ void TFarButton::SetBrackets(TFarButtonBrackets Value)
     SetDataInternal(AData);
   }
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarButton::ItemProc(intptr_t Msg, void * Param)
 {
   if (Msg == DN_BTNCLICK)
@@ -1846,7 +1846,7 @@ intptr_t TFarButton::ItemProc(intptr_t Msg, void * Param)
   }
   return TFarDialogItem::ItemProc(Msg, Param);
 }
-//---------------------------------------------------------------------------
+
 bool TFarButton::HotKey(char HotKey)
 {
   intptr_t P = GetCaption().Pos(L'&');
@@ -1869,14 +1869,14 @@ bool TFarButton::HotKey(char HotKey)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TFarCheckBox::TFarCheckBox(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_CHECKBOX),
   FOnAllowChange(nullptr)
 {
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarCheckBox::ItemProc(intptr_t Msg, void * Param)
 {
   if (Msg == DN_BTNCLICK)
@@ -1897,12 +1897,12 @@ intptr_t TFarCheckBox::ItemProc(intptr_t Msg, void * Param)
     return TFarDialogItem::ItemProc(Msg, Param);
   }
 }
-//---------------------------------------------------------------------------
+
 bool TFarCheckBox::GetIsEmpty() const
 {
   return GetChecked() != BSTATE_CHECKED;
 }
-//---------------------------------------------------------------------------
+
 void TFarCheckBox::SetData(const UnicodeString & Value)
 {
   TFarDialogItem::SetData(Value);
@@ -1911,14 +1911,14 @@ void TFarCheckBox::SetData(const UnicodeString & Value)
     SetWidth(4 + Sysutils::StripHotkey(Value).Length());
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TFarRadioButton::TFarRadioButton(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_RADIOBUTTON),
   FOnAllowChange(nullptr)
 {
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarRadioButton::ItemProc(intptr_t Msg, void * Param)
 {
   if (Msg == DN_BTNCLICK)
@@ -1942,12 +1942,12 @@ intptr_t TFarRadioButton::ItemProc(intptr_t Msg, void * Param)
     return TFarDialogItem::ItemProc(Msg, Param);
   }
 }
-//---------------------------------------------------------------------------
+
 bool TFarRadioButton::GetIsEmpty() const
 {
   return !GetChecked();
 }
-//---------------------------------------------------------------------------
+
 void TFarRadioButton::SetData(const UnicodeString & Value)
 {
   TFarDialogItem::SetData(Value);
@@ -1956,21 +1956,21 @@ void TFarRadioButton::SetData(const UnicodeString & Value)
     SetWidth(4 + Sysutils::StripHotkey(Value).Length());
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TFarEdit::TFarEdit(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_EDIT)
 {
   SetAutoSelect(false);
 }
-//---------------------------------------------------------------------------
+
 void TFarEdit::Detach()
 {
   nb_free((void*)GetDialogItem()->Mask);
   nb_free((void *)GetDialogItem()->History);
   TFarDialogItem::Detach();
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarEdit::ItemProc(intptr_t Msg, void * Param)
 {
   if (Msg == DN_EDITCHANGE)
@@ -1981,7 +1981,7 @@ intptr_t TFarEdit::ItemProc(intptr_t Msg, void * Param)
   }
   return TFarDialogItem::ItemProc(Msg, Param);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TFarEdit::GetHistoryMask(size_t Index) const
 {
   UnicodeString Result =
@@ -1989,7 +1989,7 @@ UnicodeString TFarEdit::GetHistoryMask(size_t Index) const
     ((Index == 1) && (GetFlags() & DIF_MASKEDIT)) ? GetDialogItem()->Mask : L"";
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TFarEdit::SetHistoryMask(size_t Index, const UnicodeString & Value)
 {
   if (GetHistoryMask(Index) != Value)
@@ -2027,7 +2027,7 @@ void TFarEdit::SetHistoryMask(size_t Index, const UnicodeString & Value)
     DialogChange();
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarEdit::SetAsInteger(intptr_t Value)
 {
   intptr_t Int = GetAsInteger();
@@ -2037,20 +2037,20 @@ void TFarEdit::SetAsInteger(intptr_t Value)
     DialogChange();
   }
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarEdit::GetAsInteger()
 {
   return Sysutils::StrToIntDef(Sysutils::Trim(GetText()), 0);
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TFarSeparator::TFarSeparator(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_TEXT)
 {
   SetLeft(-1);
   SetFlag(DIF_SEPARATOR, true);
 }
-//---------------------------------------------------------------------------
+
 void TFarSeparator::ResetBounds()
 {
   TFarDialogItem::ResetBounds();
@@ -2059,7 +2059,7 @@ void TFarSeparator::ResetBounds()
     GetDialogItem()->X1 = -1;
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarSeparator::SetDouble(bool Value)
 {
   if (GetDouble() != Value)
@@ -2069,31 +2069,31 @@ void TFarSeparator::SetDouble(bool Value)
     SetFlag(DIF_SEPARATOR2, Value);
   }
 }
-//---------------------------------------------------------------------------
+
 bool TFarSeparator::GetDouble()
 {
   return GetFlag(DIF_SEPARATOR2);
 }
-//---------------------------------------------------------------------------
+
 void TFarSeparator::SetPosition(intptr_t Value)
 {
-  TRect R = GetBounds();
+  Classes::TRect R = GetBounds();
   R.Top = static_cast<int>(Value);
   R.Bottom = static_cast<int>(Value);
   SetBounds(R);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarSeparator::GetPosition()
 {
   return GetBounds().Top;
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TFarText::TFarText(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_TEXT)
 {
 }
-//---------------------------------------------------------------------------
+
 void TFarText::SetData(const UnicodeString & Value)
 {
   TFarDialogItem::SetData(Value);
@@ -2102,8 +2102,8 @@ void TFarText::SetData(const UnicodeString & Value)
     SetWidth(Sysutils::StripHotkey(Value).Length());
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TFarList::TFarList(TFarDialogItem * ADialogItem) :
   TStringList()
 {
@@ -2115,7 +2115,7 @@ TFarList::TFarList(TFarDialogItem * ADialogItem) :
   FListItems->StructSize = sizeof(FarList);
   FNoDialogUpdate = false;
 }
-//---------------------------------------------------------------------------
+
 TFarList::~TFarList()
 {
   for (size_t Index = 0; Index < FListItems->ItemsNumber; ++Index)
@@ -2125,7 +2125,7 @@ TFarList::~TFarList()
   nb_free(FListItems->Items);
   nb_free(FListItems);
 }
-//---------------------------------------------------------------------------
+
 void TFarList::Assign(const TPersistent * Source)
 {
   TStringList::Assign(Source);
@@ -2139,7 +2139,7 @@ void TFarList::Assign(const TPersistent * Source)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarList::UpdateItem(intptr_t Index)
 {
   FarListItem * ListItem = &FListItems->Items[Index];
@@ -2153,7 +2153,7 @@ void TFarList::UpdateItem(intptr_t Index)
   ListUpdate.Item = *ListItem;
   GetDialogItem()->SendMessage(DM_LISTUPDATE, reinterpret_cast<void *>(&ListUpdate));
 }
-//---------------------------------------------------------------------------
+
 void TFarList::Put(intptr_t Index, const UnicodeString & S)
 {
   if ((GetDialogItem() != nullptr) && GetDialogItem()->GetDialog()->GetHandle())
@@ -2174,7 +2174,7 @@ void TFarList::Put(intptr_t Index, const UnicodeString & S)
     TStringList::SetString(Index, S);
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarList::Changed()
 {
   TStringList::Changed();
@@ -2237,7 +2237,7 @@ void TFarList::Changed()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarList::SetSelected(intptr_t Value)
 {
   assert(GetDialogItem() != nullptr);
@@ -2253,7 +2253,7 @@ void TFarList::SetSelected(intptr_t Value)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarList::UpdatePosition(intptr_t Position)
 {
   if (Position >= 0)
@@ -2271,7 +2271,7 @@ void TFarList::UpdatePosition(intptr_t Position)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarList::SetCurPos(intptr_t Position, intptr_t TopIndex)
 {
   assert(GetDialogItem() != nullptr);
@@ -2282,7 +2282,7 @@ void TFarList::SetCurPos(intptr_t Position, intptr_t TopIndex)
   ListPos.TopPos = TopIndex;
   GetDialogItem()->SendMessage(DM_LISTSETCURPOS, reinterpret_cast<void *>(&ListPos));
 }
-//---------------------------------------------------------------------------
+
 void TFarList::SetTopIndex(intptr_t Value)
 {
   if (Value != GetTopIndex())
@@ -2290,13 +2290,13 @@ void TFarList::SetTopIndex(intptr_t Value)
     SetCurPos(NPOS, Value);
   }
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarList::GetPosition() const
 {
   assert(GetDialogItem() != nullptr);
   return GetDialogItem()->SendMessage(DM_LISTGETCURPOS, 0);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarList::GetTopIndex() const
 {
   intptr_t Result = -1;
@@ -2311,7 +2311,7 @@ intptr_t TFarList::GetTopIndex() const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarList::GetMaxLength() const
 {
   intptr_t Result = 0;
@@ -2324,13 +2324,13 @@ intptr_t TFarList::GetMaxLength() const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarList::GetVisibleCount() const
 {
   assert(GetDialogItem() != nullptr);
   return GetDialogItem()->GetHeight() - (GetDialogItem()->GetFlag(DIF_LISTNOBOX) ? 0 : 2);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarList::GetSelectedInt(bool Init) const
 {
   intptr_t Result = NPOS;
@@ -2354,7 +2354,7 @@ intptr_t TFarList::GetSelectedInt(bool Init) const
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarList::GetSelected() const
 {
   intptr_t Result = GetSelectedInt(false);
@@ -2366,12 +2366,12 @@ intptr_t TFarList::GetSelected() const
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 LISTITEMFLAGS TFarList::GetFlags(intptr_t Index) const
 {
   return FListItems->Items[Index].Flags;
 }
-//---------------------------------------------------------------------------
+
 void TFarList::SetFlags(intptr_t Index, LISTITEMFLAGS Value)
 {
   if (FListItems->Items[Index].Flags != Value)
@@ -2383,22 +2383,22 @@ void TFarList::SetFlags(intptr_t Index, LISTITEMFLAGS Value)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 bool TFarList::GetFlag(intptr_t Index, LISTITEMFLAGS Flag) const
 {
   return FLAGSET(GetFlags(Index), Flag);
 }
-//---------------------------------------------------------------------------
+
 void TFarList::SetFlag(intptr_t Index, LISTITEMFLAGS Flag, bool Value)
 {
   SetFlags(Index, (GetFlags(Index) & ~Flag) | FLAGMASK(Value, Flag));
 }
-//---------------------------------------------------------------------------
+
 void TFarList::Init()
 {
   UpdatePosition(GetSelectedInt(true));
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarList::ItemProc(intptr_t Msg, void * Param)
 {
   assert(GetDialogItem() != nullptr);
@@ -2417,8 +2417,8 @@ intptr_t TFarList::ItemProc(intptr_t Msg, void * Param)
   }
   return 0;
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TFarListBox::TFarListBox(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_LISTBOX),
   FDenyClose(nullptr)
@@ -2427,12 +2427,12 @@ TFarListBox::TFarListBox(TFarDialog * ADialog) :
   GetDialogItem()->ListItems = FList->GetListItems();
   FAutoSelect = asOnlyFocus;
 }
-//---------------------------------------------------------------------------
+
 TFarListBox::~TFarListBox()
 {
   SAFE_DESTROY(FList);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarListBox::ItemProc(intptr_t Msg, void * Param)
 {
   intptr_t Result = 0;
@@ -2455,14 +2455,14 @@ intptr_t TFarListBox::ItemProc(intptr_t Msg, void * Param)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TFarListBox::Init()
 {
   TFarDialogItem::Init();
   GetItems()->Init();
   UpdateMouseReaction();
 }
-//---------------------------------------------------------------------------
+
 void TFarListBox::SetAutoSelect(TFarListBoxAutoSelect Value)
 {
   if (GetAutoSelect() != Value)
@@ -2474,28 +2474,28 @@ void TFarListBox::SetAutoSelect(TFarListBoxAutoSelect Value)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarListBox::UpdateMouseReaction()
 {
   SendMessage(DIF_LISTTRACKMOUSE, reinterpret_cast<void *>(GetAutoSelect()));
 }
-//---------------------------------------------------------------------------
-void TFarListBox::SetItems(TStrings * Value)
+
+void TFarListBox::SetItems(Classes::TStrings * Value)
 {
   FList->Assign(Value);
 }
-//---------------------------------------------------------------------------
+
 void TFarListBox::SetList(TFarList * Value)
 {
   SetItems(Value);
 }
-//---------------------------------------------------------------------------
+
 bool TFarListBox::CloseQuery()
 {
   return true;
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TFarComboBox::TFarComboBox(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_COMBOBOX)
 {
@@ -2503,17 +2503,17 @@ TFarComboBox::TFarComboBox(TFarDialog * ADialog) :
   GetDialogItem()->ListItems = FList->GetListItems();
   SetAutoSelect(false);
 }
-//---------------------------------------------------------------------------
+
 TFarComboBox::~TFarComboBox()
 {
   SAFE_DESTROY(FList);
 }
-//---------------------------------------------------------------------------
+
 void TFarComboBox::ResizeToFitContent()
 {
   SetWidth(FList->GetMaxLength());
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarComboBox::ItemProc(intptr_t Msg, void * Param)
 {
   if (Msg == DN_EDITCHANGE)
@@ -2532,27 +2532,27 @@ intptr_t TFarComboBox::ItemProc(intptr_t Msg, void * Param)
     return TFarDialogItem::ItemProc(Msg, Param);
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarComboBox::Init()
 {
   TFarDialogItem::Init();
   GetItems()->Init();
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TFarLister::TFarLister(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_USERCONTROL),
-  FItems(new TStringList()),
+  FItems(new Classes::TStringList()),
   FTopIndex(0)
 {
   FItems->SetOnChange(MAKE_CALLBACK(TFarLister::ItemsChange, this));
 }
-//---------------------------------------------------------------------------
+
 TFarLister::~TFarLister()
 {
   SAFE_DESTROY(FItems);
 }
-//---------------------------------------------------------------------------
+
 void TFarLister::ItemsChange(TObject * /*Sender*/)
 {
   FTopIndex = 0;
@@ -2561,12 +2561,12 @@ void TFarLister::ItemsChange(TObject * /*Sender*/)
     Redraw();
   }
 }
-//---------------------------------------------------------------------------
+
 bool TFarLister::GetScrollBar() const
 {
   return (GetItems()->GetCount() > GetHeight());
 }
-//---------------------------------------------------------------------------
+
 void TFarLister::SetTopIndex(intptr_t Value)
 {
   if (GetTopIndex() != Value)
@@ -2575,26 +2575,26 @@ void TFarLister::SetTopIndex(intptr_t Value)
     Redraw();
   }
 }
-//---------------------------------------------------------------------------
-TStrings * TFarLister::GetItems() const
+
+Classes::TStrings * TFarLister::GetItems() const
 {
   return FItems;
 }
-//---------------------------------------------------------------------------
-void TFarLister::SetItems(const TStrings * Value)
+
+void TFarLister::SetItems(const Classes::TStrings * Value)
 {
   if (!FItems->Equals(Value))
   {
     FItems->Assign(Value);
   }
 }
-//---------------------------------------------------------------------------
+
 void TFarLister::DoFocus()
 {
   TFarDialogItem::DoFocus();
   // TODO: hide cursor
 }
-//---------------------------------------------------------------------------
+
 intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
 {
   intptr_t Result = 0;
@@ -2731,7 +2731,7 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
       }
 
       MOUSE_EVENT_RECORD *Event = &Rec->Event.MouseEvent;
-      TPoint P = MouseClientPosition(Event);
+      Classes::TPoint P = MouseClientPosition(Event);
 
       if (FLAGSET(Event->dwEventFlags, DOUBLE_CLICK) &&
               (P.x < GetWidth() - 1))
@@ -2778,7 +2778,7 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 NB_IMPLEMENT_CLASS(TFarDialog, NB_GET_CLASS_INFO(TObject), nullptr)
 NB_IMPLEMENT_CLASS(TFarDialogItem, NB_GET_CLASS_INFO(TObject), nullptr)
 NB_IMPLEMENT_CLASS(TFarButton, NB_GET_CLASS_INFO(TFarDialogItem), nullptr)
@@ -2787,4 +2787,4 @@ NB_IMPLEMENT_CLASS(TFarEdit, NB_GET_CLASS_INFO(TFarDialogItem), nullptr)
 NB_IMPLEMENT_CLASS(TFarText, NB_GET_CLASS_INFO(TFarDialogItem), nullptr)
 NB_IMPLEMENT_CLASS(TFarList, NB_GET_CLASS_INFO(TStringList), nullptr)
 NB_IMPLEMENT_CLASS(TFarDialogContainer, NB_GET_CLASS_INFO(TObject), nullptr)
-//---------------------------------------------------------------------------
+
