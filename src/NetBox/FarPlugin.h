@@ -8,7 +8,6 @@
 
 #include "Common.h"
 
-
 class TCustomFarFileSystem;
 class TFarPanelModes;
 class TFarKeyBarTitles;

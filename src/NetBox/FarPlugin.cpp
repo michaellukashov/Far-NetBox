@@ -12,7 +12,6 @@
 #include "puttyexp.h"
 #include "plugin_version.hpp"
 
-
 TCustomFarPlugin * FarPlugin = nullptr;
 #define FAR_TITLE_SUFFIX L" - Far"
 
@@ -242,7 +241,6 @@ RECT TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
   }
   return Bounds;
 }
-
 
 TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
     HANDLE /* Plugin */)
@@ -915,7 +913,6 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
   }
   SetSize(S);
 }
-
 
 void TFarMessageDialog::Idle()
 {
@@ -1762,7 +1759,6 @@ void TCustomFarFileSystem::Init()
   FInstances++;
 }
 
-
 TCustomFarFileSystem::~TCustomFarFileSystem()
 {
   FInstances--;
@@ -2335,7 +2331,6 @@ void TFarKeyBarTitles::FillOpenPluginInfo(struct OpenPluginInfo * Info)
   FReferenced = true;
 }
 
-
 UnicodeString TCustomFarPanelItem::GetCustomColumnData(size_t /*Column*/)
 {
   assert(false);
@@ -2378,7 +2373,6 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   PanelItem->CustomColumnData = CustomColumnData;
 }
 
-
 TFarPanelItem::TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem):
   TCustomFarPanelItem(),
   FPanelItem(nullptr),
@@ -2395,7 +2389,6 @@ TFarPanelItem::~TFarPanelItem()
     nb_free(FPanelItem);
   FPanelItem = nullptr;
 }
-
 
 void TFarPanelItem::GetData(
   DWORD & /*Flags*/, UnicodeString & /*FileName*/, int64_t & /*Size*/,
@@ -2461,7 +2454,6 @@ bool TFarPanelItem::GetIsFile() const
   return (GetFileAttributes() & FILE_ATTRIBUTE_DIRECTORY) == 0;
 }
 
-
 THintPanelItem::THintPanelItem(const UnicodeString & AHint) :
   TCustomFarPanelItem()
 {
@@ -2477,7 +2469,6 @@ void THintPanelItem::GetData(
 {
   AFileName = FHint;
 }
-
 
 TFarPanelInfo::TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner):
   TObject(),
@@ -2673,7 +2664,6 @@ UnicodeString TFarPanelInfo::GetCurrDirectory() const
   return Result.c_str();
 }
 
-
 TFarMenuItems::TFarMenuItems() :
   TStringList()
 {
@@ -2768,7 +2758,6 @@ bool TFarMenuItems::GetFlag(intptr_t Index, uintptr_t Flag) const
   return (reinterpret_cast<uintptr_t>(GetObject(Index)) & Flag) > 0;
 }
 
-
 TFarEditorInfo::TFarEditorInfo(EditorInfo * Info) :
   FEditorInfo(Info)
 {
@@ -2796,7 +2785,6 @@ UnicodeString TFarEditorInfo::GetFileName()
   return Result.c_str();
 }
 
-
 TFarEnvGuard::TFarEnvGuard()
 {
   assert(FarPlugin != nullptr);
@@ -2817,7 +2805,6 @@ TFarEnvGuard::~TFarEnvGuard()
   }
   */
 }
-
 
 TFarPluginEnvGuard::TFarPluginEnvGuard()
 {
@@ -2886,7 +2873,6 @@ TGlobalFunctionsIntf * GetGlobalFunctions()
   }
   return GlobalFunctions;
 }
-
 
 HINSTANCE TGlobalFunctions::GetInstanceHandle() const
 {

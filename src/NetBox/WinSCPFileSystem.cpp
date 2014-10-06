@@ -195,7 +195,6 @@ void TRemoteFilePanelItem::SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles)
     FarPlugin->GetMsg(RENAME_FILE_KEYBAR));
 }
 
-
 class TFarInteractiveCustomCommand : public TInteractiveCustomCommand
 {
 public:
@@ -230,7 +229,6 @@ void TFarInteractiveCustomCommand::Prompt(const UnicodeString & Prompt, UnicodeS
     Classes::Abort();
   }
 }
-
 
 // Attempt to allow keepalives from background thread.
 // Not finished nor used.
@@ -287,7 +285,6 @@ void TKeepaliveThread::Execute()
   ::CloseHandle(FEvent);
 }
 
-
 TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   TCustomFarFileSystem(APlugin)
 {
@@ -327,7 +324,6 @@ void TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
   FEditorPendingSave = false;
   FOutputLog = false;
 }
-
 
 TWinSCPFileSystem::~TWinSCPFileSystem()
 {
@@ -407,7 +403,6 @@ void TWinSCPFileSystem::Close()
     }
   }
 }
-
 
 void TWinSCPFileSystem::GetOpenPluginInfoEx(DWORD & Flags,
   UnicodeString & /*HostFile*/, UnicodeString & CurDir, UnicodeString & Format,

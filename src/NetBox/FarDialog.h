@@ -5,9 +5,6 @@
 
 #define MAX_SIZE -1
 
-
-
-
 class TFarDialogContainer;
 class TFarDialogItem;
 class TFarButton;

@@ -416,7 +416,6 @@ void TXmlStorage::WriteBinaryData(const UnicodeString & Name,
   AddNewElement(Name, Sysutils::StrToHex(UnicodeString(reinterpret_cast<const wchar_t *>(Buffer), Size), true));
 }
 
-
 intptr_t TXmlStorage::GetFailed()
 {
   intptr_t Result = FFailed;

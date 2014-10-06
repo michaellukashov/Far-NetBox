@@ -23,7 +23,6 @@
 #include <farcolor.hpp>
 #include "plugin_version.hpp"
 
-
 enum TButtonResult
 {
   brCancel = -1,
@@ -96,7 +95,6 @@ void TWinSCPDialog::AddStandardButtons(int Shift, bool ButtonsOnly)
   CancelButton->SetResult(brCancel);
   CancelButton->SetCenterGroup(true);
 }
-
 
 class TTabButton;
 class TTabbedDialog : public TWinSCPDialog
@@ -266,7 +264,6 @@ bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
   return Result;
 }
 
-
 TTabButton::TTabButton(TTabbedDialog * Dialog) :
   TFarButton(Dialog),
   FTab(0)
@@ -295,7 +292,6 @@ void TTabButton::SetTabName(const UnicodeString & Value)
     FTabName = Sysutils::StripHotkey(Val);
   }
 }
-
 
 bool TWinSCPPlugin::ConfigurationDialog()
 {
@@ -769,7 +765,6 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
   return Result;
 }
 
-
 class TTransferEditorConfigurationDialog : public TWinSCPDialog
 {
 public:
@@ -1179,13 +1174,11 @@ void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
   ShellExecute(nullptr, L"open", const_cast<wchar_t *>(Address.c_str()), nullptr, nullptr, SW_SHOWNORMAL);
 }
 
-
 void TWinSCPPlugin::AboutDialog()
 {
   std::unique_ptr<TFarDialog> Dialog(new TAboutDialog(this));
   Dialog->ShowModal();
 }
-
 
 class TPasswordDialog : public TFarDialog
 {
@@ -1400,7 +1393,6 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
   return Result;
 }
 
-
 bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
   const UnicodeString & Banner, bool & NeverShowAgain, intptr_t Options)
 {
@@ -1453,7 +1445,6 @@ bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
   }
   return Result;
 }
-
 
 class TSessionDialog : public TTabbedDialog
 {
@@ -1684,7 +1675,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
     S.y = GetMaxSize().y;
   }
   SetSize(S);
-
 
   FTabs->SetOwnsObjects(false);
   FFirstVisibleTabIndex = 0;
@@ -4267,7 +4257,6 @@ intptr_t TSessionDialog::AddTab(intptr_t TabID, const wchar_t * TabCaption)
   return GetItem(Tab);
 }
 
-
 bool TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
   TSessionActionEnum & Action)
 {
@@ -4275,7 +4264,6 @@ bool TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
   bool Result = Dialog->Execute(SessionData, Action);
   return Result;
 }
-
 
 class TRightsContainer : public TFarDialogContainer
 {
@@ -4599,7 +4587,6 @@ void TRightsContainer::SetAllowUndef(bool Value)
   }
 }
 
-
 class TPropertiesDialog : public TFarDialog
 {
 NB_DISABLE_COPY(TPropertiesDialog)
@@ -4918,7 +4905,6 @@ bool TWinSCPFileSystem::PropertiesDialog(Classes::TStrings * FileList,
   bool Result = Dialog->Execute(Properties);
   return Result;
 }
-
 
 class TCopyParamsContainer : public TFarDialogContainer
 {
@@ -5392,7 +5378,6 @@ int TCopyParamsContainer::GetHeight()
   return 16;
 }
 
-
 class TCopyDialog : TFarDialog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -5716,7 +5701,6 @@ bool TWinSCPPlugin::CopyParamCustomDialog(TCopyParamType & CopyParam,
   return CopyParamDialog(GetMsg(COPY_PARAM_CUSTOM_TITLE), CopyParam, CopyParamAttrs);
 }
 
-
 class TLinkDialog : TFarDialog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -5814,7 +5798,6 @@ bool TLinkDialog::Execute(UnicodeString & AFileName, UnicodeString & PointTo,
   return Result;
 }
 
-
 bool TWinSCPFileSystem::LinkDialog(UnicodeString & AFileName,
   UnicodeString & PointTo, bool & Symbolic, bool Edit, bool AllowSymbolic)
 {
@@ -5822,7 +5805,6 @@ bool TWinSCPFileSystem::LinkDialog(UnicodeString & AFileName,
   bool Result = Dialog->Execute(AFileName, PointTo, Symbolic);
   return Result;
 }
-
 
 DEFINE_CALLBACK_TYPE3(TFeedFileSystemDataEvent, void,
   Classes::TObject * /* Control */, int /* Label */, const UnicodeString & /* Value */);
@@ -6370,7 +6352,6 @@ void TWinSCPFileSystem::FileSystemInfoDialog(
   Dialog->Execute(SessionInfo, FileSystemInfo, SpaceAvailablePath);
 }
 
-
 bool TWinSCPFileSystem::OpenDirectoryDialog(
   bool Add, UnicodeString & Directory, TBookmarkList * BookmarkList)
 {
@@ -6524,7 +6505,6 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
 
   return Result;
 }
-
 
 class TApplyCommandDialog : public TWinSCPDialog
 {
@@ -6693,7 +6673,6 @@ bool TWinSCPFileSystem::ApplyCommandDialog(UnicodeString & Command,
   bool Result = Dialog->Execute(Command, Params);
   return Result;
 }
-
 
 class TFullSynchronizeDialog : public TWinSCPDialog
 {
@@ -7125,7 +7104,6 @@ bool TWinSCPFileSystem::FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode
     CopyParams, SaveSettings, SaveMode);
   return Result;
 }
-
 
 class TSynchronizeChecklistDialog : public TWinSCPDialog
 {
@@ -7729,7 +7707,6 @@ bool TWinSCPFileSystem::SynchronizeChecklistDialog(
   return Result;
 }
 
-
 class TSynchronizeDialog : TFarDialog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -8175,7 +8152,6 @@ intptr_t TSynchronizeDialog::ActualCopyParamAttrs()
   return FCopyParamAttrs | cpaNoPreserveTime;
 }
 
-
 bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
   const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
   bool & SaveSettings, intptr_t Options, intptr_t CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions)
@@ -8185,7 +8161,6 @@ bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
   bool Result = Dialog->Execute(Params, CopyParams, SaveSettings);
   return Result;
 }
-
 
 bool TWinSCPFileSystem::RemoteTransferDialog(Classes::TStrings * FileList,
   UnicodeString & Target, UnicodeString & FileMask, bool Move)
@@ -8206,7 +8181,6 @@ bool TWinSCPFileSystem::RemoteTransferDialog(Classes::TStrings * FileList,
   return Result;
 }
 
-
 bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * AFile,
   UnicodeString & NewName)
 {
@@ -8214,7 +8188,6 @@ bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * AFile,
     FORMAT(GetMsg(RENAME_FILE).c_str(), AFile->GetFileName().c_str()), NewName, 0) &&
     !NewName.IsEmpty();
 }
-
 
 class TQueueDialog : TFarDialog
 {
