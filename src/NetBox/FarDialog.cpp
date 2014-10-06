@@ -763,7 +763,7 @@ void TFarDialog::Synchronize(Classes::TThreadMethod Event)
   }
   FSynchronizeMethod = Event;
   FNeedsSynchronize = true;
-  ::WaitForMultipleObjects(LENOF(FSynchronizeObjects),
+  ::WaitForMultipleObjects(_countof(FSynchronizeObjects),
     reinterpret_cast<HANDLE *>(&FSynchronizeObjects), false, INFINITE);
 }
 

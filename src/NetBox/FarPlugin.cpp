@@ -1299,7 +1299,7 @@ Classes::TPoint TCustomFarPlugin::TerminalInfo(Classes::TPoint * Size, Classes::
 HWND TCustomFarPlugin::GetConsoleWindow() const
 {
   wchar_t Title[1024];
-  ::GetConsoleTitle(Title, LENOF(Title));
+  ::GetConsoleTitle(Title, _countof(Title));
   HWND Result = ::FindWindow(nullptr, Title);
   return Result;
 }
@@ -1429,7 +1429,7 @@ public:
 void TCustomFarPlugin::ShowConsoleTitle(const UnicodeString & Title)
 {
   wchar_t SaveTitle[1024];
-  ::GetConsoleTitle(SaveTitle, LENOF(SaveTitle));
+  ::GetConsoleTitle(SaveTitle, _countof(SaveTitle));
   TConsoleTitleParam * Param = new TConsoleTitleParam();
   Param->Progress = FCurrentProgress;
   Param->Own = !FCurrentTitle.IsEmpty() && (FormatConsoleTitle() == SaveTitle);
@@ -2144,7 +2144,7 @@ TFarPanelModes::~TFarPanelModes()
 {
   if (!FReferenced)
   {
-    for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(FPanelModes)); ++Index)
+    for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FPanelModes)); ++Index)
     {
       ClearPanelMode(FPanelModes[Index]);
     }
@@ -2158,7 +2158,7 @@ void TFarPanelModes::SetPanelMode(size_t Mode, const UnicodeString & ColumnTypes
   const UnicodeString & StatusColumnWidths)
 {
   intptr_t ColumnTypesCount = !ColumnTypes.IsEmpty() ? CommaCount(ColumnTypes) + 1 : 0;
-  assert(Mode != NPOS && Mode < LENOF(FPanelModes));
+  assert(Mode != NPOS && Mode < _countof(FPanelModes));
   assert(!ColumnTitles || (ColumnTitles->GetCount() == ColumnTypesCount));
 
   ClearPanelMode(FPanelModes[Mode]);
@@ -2213,8 +2213,8 @@ void TFarPanelModes::ClearPanelMode(PanelMode & Mode)
 void TFarPanelModes::FillOpenPluginInfo(struct OpenPluginInfo * Info)
 {
   assert(Info);
-  Info->PanelModesNumber = LENOF(FPanelModes);
-  PanelMode * PanelModesArray = static_cast<PanelMode *>(nb_calloc(1, sizeof(PanelMode) * LENOF(FPanelModes)));
+  Info->PanelModesNumber = _countof(FPanelModes);
+  PanelMode * PanelModesArray = static_cast<PanelMode *>(nb_calloc(1, sizeof(PanelMode) * _countof(FPanelModes)));
   memmove(PanelModesArray, &FPanelModes, sizeof(FPanelModes));
   Info->PanelModesArray = PanelModesArray;
   FReferenced = true;
@@ -2272,7 +2272,7 @@ void TFarKeyBarTitles::ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
 void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   intptr_t FunctionKey, const UnicodeString & Title)
 {
-  assert(FunctionKey >= 1 && FunctionKey <= static_cast<intptr_t>(LENOF(FKeyBarTitles.Titles)));
+  assert(FunctionKey >= 1 && FunctionKey <= static_cast<intptr_t>(_countof(FKeyBarTitles.Titles)));
   wchar_t ** Titles = nullptr;
   switch (ShiftStatus)
   {
@@ -2309,7 +2309,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
 
 void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
 {
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(Titles.Titles)); ++Index)
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(Titles.Titles)); ++Index)
   {
     nb_free(Titles.Titles[Index]);
     nb_free(Titles.CtrlTitles[Index]);
@@ -2890,11 +2890,11 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
   wchar_t Path[MAX_PATH + 1];
   if (FarPlugin)
   {
-    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(LENOF(Path), Path);
+    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(_countof(Path), Path);
   }
   else
   {
-    ::GetCurrentDirectory(LENOF(Path), Path);
+    ::GetCurrentDirectory(_countof(Path), Path);
   }
   Result = Path;
   return Result;

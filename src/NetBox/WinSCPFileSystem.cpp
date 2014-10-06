@@ -3976,7 +3976,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     Aliases[2].Button = qaOK;
     Aliases[2].Alias = GetMsg(EDITOR_NEW_INSTANCE_RO);
     Params.Aliases = Aliases;
-    Params.AliasesCount = LENOF(Aliases);
+    Params.AliasesCount = _countof(Aliases);
     switch (MoreMessageDialog(FORMAT(GetMsg(EDITOR_ALREADY_LOADED).c_str(), FullFileName.c_str()),
           nullptr, qtConfirmation, qaYes | qaNo | qaOK | qaCancel, &Params))
     {

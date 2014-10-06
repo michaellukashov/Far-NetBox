@@ -2225,7 +2225,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_FTP_POST_LOGIN_COMMANDS));
 
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(PostLoginCommandsEdits)); ++Index)
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(PostLoginCommandsEdits)); ++Index)
   {
     TFarEdit * Edit = new TFarEdit(this);
     PostLoginCommandsEdits[Index] = Edit;
@@ -3250,7 +3250,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   std::unique_ptr<Classes::TStrings> PostLoginCommands(new Classes::TStringList());
   PostLoginCommands->SetText(SessionData->GetPostLoginCommands());
   for (intptr_t Index = 0; (Index < PostLoginCommands->GetCount()) &&
-       (Index < static_cast<intptr_t>(LENOF(PostLoginCommandsEdits))); ++Index)
+       (Index < static_cast<intptr_t>(_countof(PostLoginCommandsEdits))); ++Index)
   {
     PostLoginCommandsEdits[Index]->SetText(PostLoginCommands->GetString(Index));
   }
@@ -3547,7 +3547,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetFtpUndupFF(FtpUndupFFCheck->GetChecked());
     SessionData->SetSslSessionReuse(SslSessionReuseCheck->GetChecked());
     std::unique_ptr<Classes::TStrings> PostLoginCommands(new Classes::TStringList());
-    for (intptr_t Index = 0; Index < static_cast<intptr_t>(LENOF(PostLoginCommandsEdits)); ++Index)
+    for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(PostLoginCommandsEdits)); ++Index)
     {
       UnicodeString Text = PostLoginCommandsEdits[Index]->GetText();
       if (!Text.IsEmpty())
@@ -3957,7 +3957,7 @@ TLoginType TSessionDialog::GetLoginType() const
 
 TFSProtocol TSessionDialog::IndexToFSProtocol(intptr_t Index, bool AllowScpFallback) const
 {
-  bool InBounds = (Index >= 0) && (Index < static_cast<intptr_t>(LENOF(FSOrder)));
+  bool InBounds = (Index >= 0) && (Index < static_cast<intptr_t>(_countof(FSOrder)));
   assert(InBounds || (Index == -1));
   TFSProtocol Result = fsSFTP;
   if (InBounds)
@@ -4484,7 +4484,7 @@ void TRightsContainer::Change()
 
 TFarCheckBox * TRightsContainer::GetChecks(TRights::TRight Right)
 {
-  assert((Right >= 0) && (static_cast<size_t>(Right) < LENOF(FCheckBoxes)));
+  assert((Right >= 0) && (static_cast<size_t>(Right) < _countof(FCheckBoxes)));
   return FCheckBoxes[Right];
 }
 
@@ -4530,7 +4530,7 @@ TRights TRightsContainer::GetRights()
 {
   TRights Result;
   Result.SetAllowUndef(GetAllowUndef());
-  for (size_t Right = 0; Right < LENOF(FCheckBoxes); Right++)
+  for (size_t Right = 0; Right < _countof(FCheckBoxes); Right++)
   {
     Result.SetRightUndef(static_cast<TRights::TRight>(Right),
       GetStates(static_cast<TRights::TRight>(Right)));
@@ -4548,7 +4548,7 @@ void TRightsContainer::SetRights(const TRights & Value)
       GetDialog()->UnlockChanges();
     };
     SetAllowUndef(true); // temporarily
-    for (size_t Right = 0; Right < LENOF(FCheckBoxes); Right++)
+    for (size_t Right = 0; Right < _countof(FCheckBoxes); Right++)
     {
       SetStates(static_cast<TRights::TRight>(Right),
         Value.GetRightUndef(static_cast<TRights::TRight>(Right)));
@@ -4572,13 +4572,13 @@ void TRightsContainer::SetAddXToDirectories(bool Value)
 
 bool TRightsContainer::GetAllowUndef()
 {
-  assert(FCheckBoxes[LENOF(FCheckBoxes) - 1] != nullptr);
-  return FCheckBoxes[LENOF(FCheckBoxes) - 1]->GetAllowGrayed();
+  assert(FCheckBoxes[_countof(FCheckBoxes) - 1] != nullptr);
+  return FCheckBoxes[_countof(FCheckBoxes) - 1]->GetAllowGrayed();
 }
 
 void TRightsContainer::SetAllowUndef(bool Value)
 {
-  for (size_t Right = 0; Right < LENOF(FCheckBoxes); Right++)
+  for (size_t Right = 0; Right < _countof(FCheckBoxes); Right++)
   {
     if (FCheckBoxes[Right] != nullptr)
     {
@@ -7172,7 +7172,7 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
 
   UnicodeString Actions = GetMsg(CHECKLIST_ACTIONS);
   size_t Action = 0;
-  while (!Actions.IsEmpty() && (Action < LENOF(FActions)))
+  while (!Actions.IsEmpty() && (Action < _countof(FActions)))
   {
     FActions[Action] = CutToChar(Actions, '|', false);
     Action++;
@@ -7420,7 +7420,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * Check
   }
 
   intptr_t Action = static_cast<intptr_t>(ChecklistItem->Action - 1);
-  assert((Action != NPOS) && (Action < static_cast<intptr_t>(LENOF(FActions))));
+  assert((Action != NPOS) && (Action < static_cast<intptr_t>(_countof(FActions))));
   AddColumn(Line, FActions[Action], 4);
 
   if (ChecklistItem->Action == saDeleteLocal)
