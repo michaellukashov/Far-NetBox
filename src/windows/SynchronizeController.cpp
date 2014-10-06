@@ -12,8 +12,6 @@
 #include "TextsCore.h"
 #include "SynchronizeController.h"
 
-using namespace Sysutils;
-
 TSynchronizeController::TSynchronizeController(
   TSynchronizeEvent AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,
   TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories)

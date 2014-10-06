@@ -12,8 +12,6 @@
 #include <SessionData.h>
 #include <Interface.h>
 
-using namespace Sysutils;
-
 extern const UnicodeString PageantTool = L"pageant.exe";
 extern const UnicodeString PuttygenTool = L"puttygen.exe";
 

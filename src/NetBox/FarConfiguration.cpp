@@ -8,8 +8,6 @@
 #include "FarPlugin.h"
 #include "CoreMain.h"
 
-using namespace Sysutils;
-
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   TGUIConfiguration(),
   FFarPlugin(APlugin),
@@ -110,6 +108,7 @@ void TFarConfiguration::Saved()
 
 void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 {
+  using namespace Sysutils;
   TGUIConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
@@ -127,6 +126,7 @@ void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 
 void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
 {
+  using namespace Sysutils;
   TGUIConfiguration::LoadData(Storage);
 
   // duplicated from core\configuration.cpp

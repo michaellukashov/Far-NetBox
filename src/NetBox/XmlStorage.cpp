@@ -11,8 +11,6 @@ static const char * CONST_SESSION_NODE = "Session";
 static const char * CONST_VERSION_ATTR = "version";
 static const char * CONST_NAME_ATTR = "name";
 
-using namespace Sysutils;
-
 TXmlStorage::TXmlStorage(const UnicodeString & AStorage,
                          const UnicodeString & StoredSessionsSubKey) :
   THierarchicalStorage(ExcludeTrailingBackslash(AStorage)),

@@ -8,8 +8,6 @@
 #include "WinSCPPlugin.h"
 #include "Queue.h"
 
-using namespace Sysutils;
-
 TConfiguration * CreateConfiguration()
 {
   return new TFarConfiguration(FarPlugin);

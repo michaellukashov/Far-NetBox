@@ -11,8 +11,6 @@
 #include <CoreMain.h>
 #include <shlobj.h>
 
-using namespace Sysutils;
-
 const intptr_t ccLocal = ccUser;
 const intptr_t ccShowResults = ccUser << 1;
 const intptr_t ccCopyResults = ccUser << 2;

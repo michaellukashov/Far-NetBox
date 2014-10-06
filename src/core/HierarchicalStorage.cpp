@@ -9,8 +9,6 @@
 #include <TextsCore.h>
 #include <StrUtils.hpp>
 
-using namespace Sysutils;
-
 #define READ_REGISTRY(Method) \
   if (FRegistry->ValueExists(Name)) \
   try { return FRegistry->Method(Name); } catch (...) { FFailed++; return Default; } \

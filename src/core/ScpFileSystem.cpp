@@ -33,8 +33,6 @@ const int ecIgnoreWarnings = 2;
 const int ecReadProgress = 4;
 const int ecDefault = ecRaiseExcept;
 
-using namespace Sysutils;
-
 inline void ThrowFileSkipped(Exception * Exception, const UnicodeString & Message)
 {
   throw EFileSkipped(Exception, Message);

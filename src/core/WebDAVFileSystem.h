@@ -5,8 +5,6 @@
 #include <FileSystems.h>
 #include "Terminal.h"
 
-using namespace Sysutils;
-
 struct TListDataEntry;
 struct TFileTransferData;
 

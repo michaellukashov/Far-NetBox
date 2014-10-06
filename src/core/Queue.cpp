@@ -7,8 +7,6 @@
 #include "Queue.h"
 #include "Exceptions.h"
 
-using namespace Sysutils;
-
 class TBackgroundTerminal;
 
 class TUserAction : public Classes::TObject

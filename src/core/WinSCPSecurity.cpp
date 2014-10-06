@@ -9,8 +9,6 @@
 #define PWALG_SIMPLE_INTERNAL 0x00
 #define PWALG_SIMPLE_EXTERNAL 0x01
 
-using namespace Sysutils;
-
 int random(int range)
 {
   return static_cast<int>(ToDouble(rand()) / (ToDouble(RAND_MAX) / range));

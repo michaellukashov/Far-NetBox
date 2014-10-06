@@ -16,8 +16,6 @@
 #include "RemoteFiles.h"
 #include "SFTPFileSystem.h"
 
-using namespace Sysutils;
-
 enum TProxyType
 {
   pxNone,

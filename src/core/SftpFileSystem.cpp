@@ -18,8 +18,6 @@
 #include "HelpCore.h"
 #include "SecureShell.h"
 
-using namespace Sysutils;
-
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \

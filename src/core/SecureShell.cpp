@@ -18,8 +18,6 @@
 
 #define MAX_BUFSIZE 128 * 1024
 
-using namespace Sysutils;
-
 struct TPuttyTranslation
 {
   const wchar_t * Original;

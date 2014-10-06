@@ -6,8 +6,6 @@
 #include "Option.h"
 #include "TextsCore.h"
 
-using namespace Sysutils;
-
 TOptions::TOptions() :
   FSwitchMarks(L"-/"),
   FSwitchValueDelimiters(L":="),

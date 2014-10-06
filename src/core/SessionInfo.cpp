@@ -14,8 +14,6 @@
 #include "Exceptions.h"
 #include "TextsCore.h"
 
-using namespace Sysutils;
-
 static UnicodeString DoXmlEscape(const UnicodeString & Str, bool NewLine)
 {
   UnicodeString Result = Str;

@@ -15,10 +15,6 @@
 #include "FarDialog.h"
 #include "XmlStorage.h"
 
-using namespace Sysutils;
-
-
-
 TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
 {
   return new TWinSCPPlugin(HInst);
@@ -525,6 +521,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 
 void TWinSCPPlugin::ShowExtendedException(Sysutils::Exception * E)
 {
+  using namespace Sysutils;
   if (E && !E->Message.IsEmpty())
   {
     if (NB_STATIC_DOWNCAST(EAbort, E) == nullptr)

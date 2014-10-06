@@ -11,8 +11,6 @@
 #include "Terminal.h"
 #include <StrUtils.hpp>
 
-using namespace Sysutils;
-
 extern const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
 static UnicodeString FileMasksDelimiters = L";,";
 static UnicodeString AllFileMasksDelimiters = FileMasksDelimiters + IncludeExcludeFileMasksDelimiter;

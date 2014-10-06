@@ -8,8 +8,6 @@
 #include "FileInfo.h"
 #include "FileBuffer.h"
 
-using namespace Sysutils;
-
 #define DWORD_ALIGN( base, ptr ) \
     ( (LPBYTE)(base) + ((((LPBYTE)(ptr) - (LPBYTE)(base)) + 3) & ~3) )
 struct VS_VERSION_INFO_STRUCT32

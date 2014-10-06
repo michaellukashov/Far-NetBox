@@ -15,9 +15,6 @@
 #include "HelpCore.h"
 /* TODO 1 : Path class instead of UnicodeString (handle relativity...) */
 
-using namespace Sysutils;
-
-
 namespace core {
 
 bool IsUnixStyleWindowsPath(const UnicodeString & APath)

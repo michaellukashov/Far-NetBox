@@ -5,8 +5,6 @@
 #include "Common.h"
 #include "FileBuffer.h"
 
-using namespace Sysutils;
-
 char * EOLToStr(TEOLType EOLType)
 {
   switch (EOLType)
