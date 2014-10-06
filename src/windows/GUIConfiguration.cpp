@@ -258,7 +258,7 @@ void TCopyParamList::ValidateName(const UnicodeString & Name)
 {
   if (Name.LastDelimiter(FInvalidChars) > 0)
   {
-    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), FInvalidChars.c_str()));
+    throw Sysutils::Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), FInvalidChars.c_str()));
   }
 }
 
@@ -749,7 +749,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   // can take care of it.
   if ((FPuttyPath.SubString(1, 1) != L"\"") &&
       (CompareFileName(ExpandEnvironmentVariables(FPuttyPath), FDefaultPuttyPathOnly) ||
-       ::FileExists(ExpandEnvironmentVariables(FPuttyPath))))
+       Sysutils::FileExists(ExpandEnvironmentVariables(FPuttyPath))))
   {
     FPuttyPath = FormatCommand(FPuttyPath, L"");
   }
@@ -797,7 +797,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
         static_cast<wchar_t>(ALocale & ~AdditionaLanguageMask);
     }
 
-    Module = ChangeFileExt(Module, UnicodeString(L".") + LocaleName);
+    Module = Sysutils::ChangeFileExt(Module, UnicodeString(L".") + LocaleName);
     // Look for a potential language/country translation
     NewInstance = ::LoadLibraryEx(Module.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
     if (!NewInstance)
@@ -818,7 +818,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 
   if (!NewInstance && !Internal)
   {
-    throw Exception(FMTLOAD(LOCALE_LOAD_ERROR, static_cast<int>(ALocale)));
+    throw Sysutils::Exception(FMTLOAD(LOCALE_LOAD_ERROR, static_cast<int>(ALocale)));
   }
   else
   {
@@ -912,11 +912,11 @@ Classes::TStrings * TGUIConfiguration::GetLocales()
   Exts->SetSorted(true);
   Exts->SetCaseSensitive(false);
 
-  DWORD FindAttrs = faReadOnly | faArchive;
+  DWORD FindAttrs = Sysutils::faReadOnly | Sysutils::faArchive;
   TSearchRecChecked SearchRec;
   bool Found;
 
-  Found = (bool)(FindFirst(ChangeFileExt(ModuleFileName(), L".*"),
+  Found = (bool)(FindFirst(Sysutils::ChangeFileExt(ModuleFileName(), L".*"),
     FindAttrs, SearchRec) == 0);
   {
     SCOPE_EXIT
@@ -926,7 +926,7 @@ Classes::TStrings * TGUIConfiguration::GetLocales()
     UnicodeString Ext;
     while (Found)
     {
-      Ext = ExtractFileExt(SearchRec.Name).UpperCase();
+      Ext = Sysutils::ExtractFileExt(SearchRec.Name).UpperCase();
       if ((Ext.Length() >= 3) && (Ext != L".EXE") && (Ext != L".COM") &&
           (Ext != L".DLL") && (Ext != L".INI"))
       {
@@ -1000,10 +1000,10 @@ Classes::TStrings * TGUIConfiguration::GetLocales()
     {
       if ((Exts->GetObject(Index) == nullptr) &&
           (Exts->GetString(Index).Length() == 3) &&
-          SameText(Exts->GetString(Index).SubString(1, 2), AdditionaLanguagePrefix))
+          Sysutils::SameText(Exts->GetString(Index).SubString(1, 2), AdditionaLanguagePrefix))
       {
         UnicodeString LangName = GetFileFileInfoString(L"LangName",
-          ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetString(Index)));
+          Sysutils::ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetString(Index)));
         if (!LangName.IsEmpty())
         {
           FLocales->AddObject(LangName, reinterpret_cast<TObject *>(static_cast<size_t>(

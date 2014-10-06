@@ -175,7 +175,7 @@ void TSynchronizeController::SynchronizeChange(
       }
     }
   }
-  catch (Exception & E)
+  catch (Sysutils::Exception & E)
   {
     SynchronizeAbort(NB_STATIC_DOWNCAST(EFatal, &E) != nullptr);
   }
@@ -230,7 +230,7 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
 {
   if ((FOptions != nullptr) && (FOptions->Filter != nullptr))
   {
-    if (Sysutils::IncludeTrailingBackslash(::ExtractFilePath(DirectoryName)) ==
+    if (Sysutils::IncludeTrailingBackslash(Sysutils::ExtractFilePath(DirectoryName)) ==
         Sysutils::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory))
     {
       intptr_t FoundIndex;

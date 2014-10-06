@@ -153,12 +153,12 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
 
     if (!ExecuteShell(Program, Params))
     {
-      throw Exception(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
+      throw Sysutils::Exception(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
     }
   }
   else
   {
-    throw Exception(FMTLOAD(FILE_NOT_FOUND, Program.c_str()));
+    throw Sysutils::Exception(FMTLOAD(FILE_NOT_FOUND, Program.c_str()));
   }
 }
 
@@ -231,7 +231,7 @@ bool ExecuteShellAndWait(HINSTANCE /* Handle */, const UnicodeString & APath,
         WaitResult = ::WaitForSingleObject(ExecuteInfo.hProcess, 200);
         if (WaitResult == WAIT_FAILED)
         {
-          throw Exception(LoadStr(DOCUMENT_WAIT_ERROR));
+          throw Sysutils::Exception(LoadStr(DOCUMENT_WAIT_ERROR));
         }
         ProcessMessages();
       }
@@ -380,9 +380,9 @@ bool DeleteDirectory(const UnicodeString & ADirName)
 {
   TSearchRecChecked SearchRec;
   bool retval = true;
-  if (Sysutils::FindFirst(ADirName + L"\\*", faAnyFile, SearchRec) == 0) // VCL Function
+  if (Sysutils::FindFirst(ADirName + L"\\*", Sysutils::faAnyFile, SearchRec) == 0) // VCL Function
   {
-    if (FLAGSET(SearchRec.Attr, faDirectory))
+    if (FLAGSET(SearchRec.Attr, Sysutils::faDirectory))
     {
       if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
         retval = DeleteDirectory(ADirName + L"\\" + SearchRec.Name);
@@ -396,7 +396,7 @@ bool DeleteDirectory(const UnicodeString & ADirName)
     {
       while (FindNextChecked(SearchRec) == 0)
       { // VCL Function
-        if (FLAGSET(SearchRec.Attr, faDirectory))
+        if (FLAGSET(SearchRec.Attr, Sysutils::faDirectory))
         {
           if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
             retval = DeleteDirectory(ADirName + L"\\" + SearchRec.Name);
