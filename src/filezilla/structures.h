@@ -25,7 +25,7 @@
 
 class CServerPath;
 
-class t_directory : public TObject
+class t_directory : public Classes::TObject
 {
 public:
 	t_directory();
@@ -34,7 +34,7 @@ public:
 	t_server server;
 	CServerPath path;
 	int num;
-	class t_direntry : public TObject
+	class t_direntry : public Classes::TObject
 	{
 	public:
 		t_direntry();

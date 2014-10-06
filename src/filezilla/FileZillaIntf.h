@@ -260,7 +260,7 @@ enum ftp_capability_names_t
   rest_stream, // supports REST+STOR in addition to APPE
 };
 //---------------------------------------------------------------------------
-class TFTPServerCapabilities : public TObject
+class TFTPServerCapabilities : public Classes::TObject
 {
 public:
   TFTPServerCapabilities(){}

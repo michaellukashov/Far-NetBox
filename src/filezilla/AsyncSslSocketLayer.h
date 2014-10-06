@@ -206,7 +206,7 @@ private:
 	int m_nVerificationDepth;
 	
 
-	static struct t_SslLayerList : public TObject
+	static struct t_SslLayerList : public Classes::TObject
 	{
 		CAsyncSslSocketLayer *pLayer;
 		t_SslLayerList *pNext;
