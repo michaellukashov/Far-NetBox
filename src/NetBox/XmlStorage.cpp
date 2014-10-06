@@ -200,7 +200,7 @@ bool TXmlStorage::DeleteSubKey(const UnicodeString & SubKey)
   return Result;
 }
 
-void TXmlStorage::GetSubKeyNames(TStrings * Strings)
+void TXmlStorage::GetSubKeyNames(Classes::TStrings * Strings)
 {
   for (tinyxml2::XMLElement * Element = FCurrentElement->FirstChildElement();
        Element != nullptr; Element = Element->NextSiblingElement())
@@ -210,7 +210,7 @@ void TXmlStorage::GetSubKeyNames(TStrings * Strings)
   }
 }
 
-void TXmlStorage::GetValueNames(TStrings * /* Strings */) const
+void TXmlStorage::GetValueNames(Classes::TStrings * /* Strings */) const
 {
   Classes::Error(SNotImplemented, 3022);
   // FRegistry->GetValueNames(Strings);
@@ -342,10 +342,10 @@ bool TXmlStorage::ReadBool(const UnicodeString & Name, bool Default)
   }
 }
 
-TDateTime TXmlStorage::ReadDateTime(const UnicodeString & Name, const TDateTime & Default)
+Classes::TDateTime TXmlStorage::ReadDateTime(const UnicodeString & Name, const Classes::TDateTime & Default)
 {
   double Result = ReadFloat(Name, Default.GetValue());
-  return TDateTime(Result);
+  return Classes::TDateTime(Result);
 }
 
 double TXmlStorage::ReadFloat(const UnicodeString & Name, double Default)
@@ -382,7 +382,7 @@ void TXmlStorage::WriteBool(const UnicodeString & Name, bool Value)
   WriteString(Name, ::BooleanToEngStr(Value));
 }
 
-void TXmlStorage::WriteDateTime(const UnicodeString & Name, const TDateTime & Value)
+void TXmlStorage::WriteDateTime(const UnicodeString & Name, const Classes::TDateTime & Value)
 {
   WriteFloat(Name, Value);
 }

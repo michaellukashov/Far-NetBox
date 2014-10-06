@@ -71,7 +71,7 @@ void EndThread(DWORD ExitCode)
 
 HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
   void * Parameter, DWORD CreationFlags,
-  TThreadID & ThreadId)
+  Classes::TThreadID & ThreadId)
 {
   return BeginThread(SecurityAttributes, StackSize, Parameter,
     CreationFlags, ThreadId);

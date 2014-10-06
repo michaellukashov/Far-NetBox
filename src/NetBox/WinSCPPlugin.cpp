@@ -76,8 +76,8 @@ void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
 }
 
 void TWinSCPPlugin::GetPluginInfoEx(DWORD & Flags,
-  TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
-  TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
+  Classes::TStrings * DiskMenuStrings, Classes::TStrings * PluginMenuStrings,
+  Classes::TStrings * PluginConfigStrings, Classes::TStrings * CommandPrefixes)
 {
   Flags = PF_FULLCMDLINE;
   if (GetFarConfiguration()->GetDisksMenu())
@@ -277,7 +277,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
           {
             PanelSystem->RedrawPanel();
           }
-          Abort();
+          Classes::Abort();
         }
         // directory will be set by FAR itself
         Directory = L"";
@@ -289,12 +289,12 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
       std::unique_ptr<TSessionData> Session(StoredSessions->ParseUrl(CommandLine, Options.get(), DefaultsOnly));
       if (DefaultsOnly)
       {
-        Abort();
+        Classes::Abort();
       }
       if (!Session->GetCanLogin())
       {
         assert(false);
-        Abort();
+        Classes::Abort();
       }
       FileSystem->Connect(Session.get());
       if (!Directory.IsEmpty())
@@ -312,7 +312,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
             ImportStorage->HasSubKeys()))
       {
         assert(false);
-        Abort();
+        Classes::Abort();
       }
       UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw(L"Session", L""));
       std::unique_ptr<TSessionData> Session(new TSessionData(SessionName));
@@ -321,7 +321,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
       if (!Session->GetCanLogin())
       {
         assert(false);
-        Abort();
+        Classes::Abort();
       }
       FileSystem->Connect(Session.get());
     }
@@ -533,7 +533,7 @@ void TWinSCPPlugin::ShowExtendedException(Sysutils::Exception * E)
       Type = NB_STATIC_DOWNCAST(ESshTerminate, E) != nullptr ?
         qtInformation : qtError;
 
-      TStrings * MoreMessages = nullptr;
+      Classes::TStrings * MoreMessages = nullptr;
       if (NB_STATIC_DOWNCAST(ExtException, E) != nullptr)
       {
         MoreMessages = NB_STATIC_DOWNCAST(ExtException, E)->GetMoreMessages();
@@ -552,7 +552,7 @@ void TWinSCPPlugin::HandleException(Sysutils::Exception * E, int OpMode)
   }
 }
 
-struct TFarMessageData : public TObject
+struct TFarMessageData : public Classes::TObject
 {
 NB_DECLARE_CLASS(TFarMessageData)
 public:
@@ -590,12 +590,12 @@ void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
 }
 
 uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
-  TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
+  Classes::TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
   const TMessageParams * Params)
 {
   uintptr_t Result = 0;
   UnicodeString DialogStr = Str;
-  std::unique_ptr<TStrings> ButtonLabels(new TStringList());
+  std::unique_ptr<Classes::TStrings> ButtonLabels(new Classes::TStringList());
   uintptr_t Flags = 0;
 
   if (Params != nullptr)
@@ -792,5 +792,5 @@ void TWinSCPPlugin::CleanupConfiguration()
 }
 
 NB_IMPLEMENT_CLASS(TWinSCPPlugin, NB_GET_CLASS_INFO(TCustomFarPlugin), nullptr);
-NB_IMPLEMENT_CLASS(TFarMessageData, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TFarMessageData, NB_GET_CLASS_INFO(Classes::TObject), nullptr);
 
