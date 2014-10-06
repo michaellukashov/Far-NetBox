@@ -10,10 +10,10 @@ class CNBFile : public TObject
   NB_DISABLE_COPY(CNBFile)
   public:
     CNBFile() : m_File(INVALID_HANDLE_VALUE), m_LastError(0) {}
-  ~CNBFile()
-  {
-    Close();
-  }
+    ~CNBFile()
+    {
+      Close();
+    }
 
   /**
      * Open file for writing

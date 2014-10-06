@@ -503,7 +503,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
     PingIntervalSecs = Storage->ReadInteger(L"PingIntervalSec", GetPingInterval() % SecsPerMin);
   }
   SetPingInterval(
-    Storage->ReadInteger(L"PingInterval", GetPingInterval() / SecsPerMin)*SecsPerMin +
+    Storage->ReadInteger(L"PingInterval", GetPingInterval() / SecsPerMin) * SecsPerMin +
     PingIntervalSecs);
   if (GetPingInterval() == 0)
   {
@@ -2216,7 +2216,7 @@ void TSessionData::SetPingIntervalDT(const TDateTime & Value)
   uint16_t hour, min, sec, msec;
 
   Value.DecodeTime(hour, min, sec, msec);
-  SetPingInterval(hour*SecsPerHour + min*SecsPerMin + sec);
+  SetPingInterval(hour * SecsPerHour + min * SecsPerMin + sec);
 }
 
 TDateTime TSessionData::GetPingIntervalDT() const

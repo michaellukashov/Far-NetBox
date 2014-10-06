@@ -327,7 +327,7 @@ private:
 };
 
 
-TSessionAction::TSessionAction(TActionLog *Log, TLogAction Action)
+TSessionAction::TSessionAction(TActionLog * Log, TLogAction Action)
 {
   if (Log->FLogging)
   {
@@ -470,7 +470,7 @@ void TChmodSessionAction::Rights(const TRights & Rights)
 }
 
 TTouchSessionAction::TTouchSessionAction(
-    TActionLog * Log, const UnicodeString & AFileName, const TDateTime & Modification) :
+  TActionLog * Log, const UnicodeString & AFileName, const TDateTime & Modification) :
   TFileSessionAction(Log, laTouch, AFileName)
 {
   if (FRecord != nullptr)
