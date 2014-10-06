@@ -11,23 +11,18 @@
 #include <Sysutils.hpp>
 #include <rtlconsts.h>
 
-
-
 namespace Classes {
-
 
 void Abort()
 {
   throw Sysutils::EAbort(L"");
 }
 
-
 void Error(int ErrorID, intptr_t data)
 {
   UnicodeString Msg = FMTLOAD(ErrorID, data);
   throw ExtException((Sysutils::Exception *)nullptr, Msg);
 }
-
 
 bool TObject::IsKindOf(TObjectClassId ClassId) const
 {
@@ -39,7 +34,6 @@ bool TObject::IsKindOf(TObjectClassId ClassId) const
   TClassInfo * classInfo = TClassInfo::FindClass(ClassId);
   return thisInfo->IsKindOf(classInfo);
 }
-
 
 TPersistent::TPersistent()
 {}
@@ -74,7 +68,6 @@ void TPersistent::AssignError(const TPersistent * Source)
   (void)Source;
   throw Sysutils::Exception(L"Cannot assign");
 }
-
 
 TList::TList()
 {
@@ -271,7 +264,6 @@ void TList::Sort()
   Classes::Error(SNotImplemented, 15);
 }
 
-
 TObjectList::TObjectList() :
   FOwnsObjects(true)
 {
@@ -353,7 +345,6 @@ void TObjectList::Notify(void * Ptr, TListNotification Action)
   }
   TList::Notify(Ptr, Action);
 }
-
 
 const UnicodeString sLineBreak = L"\r\n";
 const intptr_t MonthsPerYear = 12;
@@ -767,7 +758,6 @@ void TStrings::SaveToStream(TStream * /*Stream*/) const
   Classes::Error(SNotImplemented, 12);
 }
 
-
 intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2)
 {
   intptr_t Result = List->CompareStrings(List->FStrings[Index1],
@@ -1137,14 +1127,11 @@ intptr_t TStringList::CompareStrings(const UnicodeString & S1, const UnicodeStri
   }
 }
 
-
-
 TDateTime::TDateTime(uint16_t Hour,
   uint16_t Min, uint16_t Sec, uint16_t MSec)
 {
   FValue = ::EncodeTimeVerbose(Hour, Min, Sec, MSec);
 }
-
 
 bool TDateTime::operator ==(const TDateTime & rhs)
 {
@@ -1159,7 +1146,6 @@ UnicodeString TDateTime::DateString() const
   return Result;
 }
 
-
 UnicodeString TDateTime::TimeString(bool Short) const
 {
   uint16_t H, N, S, MS;
@@ -1172,7 +1158,6 @@ UnicodeString TDateTime::TimeString(bool Short) const
   return Result;
 }
 
-
 UnicodeString TDateTime::FormatString(wchar_t * fmt) const
 {
   (void)fmt;
@@ -1181,7 +1166,6 @@ UnicodeString TDateTime::FormatString(wchar_t * fmt) const
   UnicodeString Result = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
   return Result;
 }
-
 
 void TDateTime::DecodeDate(uint16_t & Y,
   uint16_t & M, uint16_t & D) const
@@ -1194,7 +1178,6 @@ void TDateTime::DecodeTime(uint16_t & H,
 {
   Sysutils::DecodeTime(*this, H, N, S, MS);
 }
-
 
 TDateTime Now()
 {
@@ -1229,7 +1212,6 @@ int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen)
   Result = floor(MilliSecondSpan(ANow, AThen));
   return (int64_t)Result;
 }
-
 
 TSHFileInfo::TSHFileInfo()
 {
@@ -1302,7 +1284,6 @@ UnicodeString TSHFileInfo::GetFileType(const UnicodeString & StrFileName)
   return sfi.szTypeName;
 }
 
-
 class EStreamError : public ExtException
 {
 public:
@@ -1353,12 +1334,10 @@ void TStream::WriteBuffer(const void * Buffer, int64_t Count)
   }
 }
 
-
 void ReadError(const UnicodeString & Name)
 {
   throw Sysutils::Exception(FORMAT(L"InvalidRegType: %s", Name.c_str())); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
-
 
 THandleStream::THandleStream(HANDLE AHandle) :
   FHandle(AHandle)
@@ -1424,7 +1403,6 @@ void THandleStream::SetSize(const int64_t NewSize)
   // handleLastErrorImpl(_path);
   Sysutils::Win32Check(::SetEndOfFile(FHandle) > 0);
 }
-
 
 TMemoryStream::TMemoryStream() :
   FMemory(nullptr),
@@ -1587,8 +1565,6 @@ int64_t TMemoryStream::Write(const void * Buffer, int64_t Count)
   return Result;
 }
 
-
-
 bool IsRelative(const UnicodeString & Value)
 {
   return  !(!Value.IsEmpty() && (Value[1] == L'\\'));
@@ -1644,11 +1620,9 @@ DWORD RegDataToDataType(TRegDataType Value)
   return Result;
 }
 
-
 class ERegistryException : public std::exception
 {
 };
-
 
 TRegistry::TRegistry() :
   FCurrentKey(0),
@@ -2069,7 +2043,6 @@ bool TRegistry::GetKeyInfo(TRegKeyInfo & Value) const
   return Result;
 }
 
-
 TShortCut::TShortCut() : FValue(0)
 {
 }
@@ -2089,16 +2062,12 @@ bool TShortCut::operator < (const TShortCut & rhs) const
   return FValue < rhs.FValue;
 }
 
-
-
 void GetLocaleFormatSettings(int LCID, Sysutils::TFormatSettings & FormatSettings)
 {
   (void)LCID;
   (void)FormatSettings;
   Classes::Error(SNotImplemented, 1204);
 }
-
-
 
 TDateTime MinDateTime = TDateTime(-657434.0);
 

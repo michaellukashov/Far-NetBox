@@ -159,9 +159,7 @@ bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
   return FFileSystem->GetFileModificationTimeInUtc(FileName, Time);
 }
 
-
 static const wchar_t FtpsCertificateStorageKey[] = L"FtpsCertificates";
-
 
 class TFTPFileListHelper : public Classes::TObject
 {
@@ -3128,7 +3126,6 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
 
   return true;
 }
-
 
 static UnicodeString FormatContactList(const UnicodeString & Entry1, const UnicodeString & Entry2)
 {

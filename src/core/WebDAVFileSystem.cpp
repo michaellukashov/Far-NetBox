@@ -35,18 +35,13 @@
 #include "HelpCore.h"
 #include "FileZillaIntf.h"
 
-
-
-
 namespace webdav {
-
 
 struct auth_baton_t;
 struct vtable_t;
 struct stream_t;
 struct client_ctx_t;
 struct auth_iterstate_t;
-
 
 typedef enum tristate_t
 {
@@ -55,7 +50,6 @@ typedef enum tristate_t
   tristate_unknown
 } tristate_t;
 
-
 // Userdata for the `proxy_auth' function.
 struct proxy_auth_baton_t
 {
@@ -63,11 +57,9 @@ struct proxy_auth_baton_t
   const char * password; // Cannot be nullptr, but "" is okay.
 };
 
-
 // from svn_types.h
 
 typedef error_t (*cancel_func_t)(void * cancel_baton);
-
 
 // from svn_ra.h
 
@@ -98,7 +90,6 @@ typedef struct callback_baton_t
   apr_pool_t * pool;
 } callback_baton_t;
 
-
 // from svn_string.h
 
 // A simple counted string.
@@ -117,7 +108,6 @@ typedef struct stringbuf_t
   apr_size_t len;
   apr_size_t blocksize;
 } stringbuf_t;
-
 
 // from ra_neon.h
 
@@ -259,8 +249,6 @@ typedef struct list_func_baton_t
   apr_pool_t * pool;
 } list_func_baton_t;
 
-
-
 // timeout (in seconds)
 #define DEFAULT_HTTP_TIMEOUT 10
 
@@ -370,9 +358,6 @@ typedef struct list_func_baton_t
        }                                         \
    } while (0)
 
-
-
-
 // from error.c
 
 static void
@@ -444,7 +429,6 @@ error_wrap_apr(
   return err;
 }
 
-
 // from utils.c
 
 // a cleanup routine attached to the pool that contains the RA session
@@ -490,7 +474,6 @@ parse_ne_uri(
   apr_pool_cleanup_register(pool, *uri, cleanup_uri, apr_pool_cleanup_null);
   return WEBDAV_NO_ERROR;
 }
-
 
 // from svn_types.h
 
@@ -560,7 +543,6 @@ typedef enum depth_t
 
 } depth_t;
 
-
 // from utf.h
 
 static error_t
@@ -582,7 +564,6 @@ cstring_from_utf8(
   const char ** path_apr,
   const char * path_utf8,
   apr_pool_t * pool);
-
 
 // from ra_neon.h
 
@@ -707,14 +688,12 @@ typedef error_t (*neon_block_reader)(
   const char * data,
   size_t len);
 
-
 // from dirent_uri.h
 
 static bool
 dirent_is_root(
   const char * dirent,
   apr_size_t len);
-
 
 // from svn_props.h
 
@@ -726,7 +705,6 @@ neon_get_props_resource(
   const ne_propname * which_props,
   bool check_errors,
   apr_pool_t * pool);
-
 
 // from ra_loader.h
 
@@ -802,7 +780,6 @@ static error_t
 neon_init(
   const vtable_t ** vtable,
   apr_pool_t * pool);
-
 
 // from svn_ctype.h
 // Table of flags for character classification.
@@ -919,7 +896,6 @@ extern const apr_uint32_t * const ctype_table;
 
 static int
 ctype_casecmp(int a, int b);
-
 
 // from svn_string.c
 
@@ -1378,7 +1354,6 @@ cstring_split(
   return a;
 }
 
-
 // from ctype.c
 static const apr_uint32_t ctype_table_internal[256] =
 {
@@ -1673,7 +1648,6 @@ ctype_casecmp(int a, int b)
   return A - B;
 }
 
-
 // from svn_pool.c
 
 // Pool allocation handler which just aborts, since we aren't generally
@@ -1698,7 +1672,6 @@ pool_create_ex(
   apr_pool_create_ex(&pool, parent_pool, abort_on_pool_failure, allocator);
   return pool;
 }
-
 
 // from time.c
 
@@ -1857,7 +1830,6 @@ fail:
   *when = apr_time_now();
   return WEBDAV_NO_ERROR;
 }
-
 
 // from path.c
 
@@ -2225,7 +2197,6 @@ path_is_backpath_present(
   return (path[len - 3] == '/') && (path[len - 2] == '.') && (path[len - 1] == '.');
 }
 
-
 // from svn_client.h
 
 typedef error_t (*client_list_func_t)(
@@ -2246,7 +2217,6 @@ typedef struct client_ctx_t
   void * progress_baton;
   const char * client_name;
 } client_ctx_t;
-
 
 // from win32_xlate.c
 
@@ -2356,7 +2326,6 @@ utf8_to_unicode(
   return APR_SUCCESS;
 }
 
-
 // from utf.c
 
 // Verify that the sequence DATA of length LEN is valid UTF-8.
@@ -2462,7 +2431,6 @@ utf_cstring_from_utf8(
   return err;
 }
 
-
 // from xml.c
 
 static const char *
@@ -2481,7 +2449,6 @@ xml_get_attr_value(
   // Else no such attribute name seen.
   return nullptr;
 }
-
 
 // from apr_base64.c
 
@@ -2649,7 +2616,6 @@ apr_base64_decode(
   return len;
 }
 
-
 // from user.c
 
 // Get the current user's name from the OS
@@ -2695,7 +2661,6 @@ user_get_name(
   const char * username = get_os_username(pool);
   return utf8_or_nothing(username, pool);
 }
-
 
 // from sorts.c
 
@@ -2764,7 +2729,6 @@ sort_hash(apr_hash_t * ht,
   return ary;
 }
 
-
 // from svn_config.h
 
 #define WEBDAV_CONFIG_TRUE  "TRUE"
@@ -2780,7 +2744,6 @@ sort_hash(apr_hash_t * ht,
 #define WEBDAV_CONFIG_DEFAULT_OPTION_STORE_SSL_CLIENT_CERT_PP   true
 #define WEBDAV_CONFIG_DEFAULT_OPTION_STORE_SSL_CLIENT_CERT_PP_PLAINTEXT \
                                                              WEBDAV_CONFIG_ASK
-
 
 // from svn_auth.h
 
@@ -3036,7 +2999,6 @@ typedef error_t (*auth_username_prompt_func_t)(
   bool may_save,
   apr_pool_t * pool);
 
-
 // from config_auth.c
 
 #define CONST_FS_KEY "fs"
@@ -3108,7 +3070,6 @@ config_write_auth_data(
     StoragePtr->WriteString(UnicodeString(trusted_cert->data), UnicodeString(failstr->data));
   return WEBDAV_NO_ERROR;
 }
-
 
 // from simple_providers.c
 
@@ -3767,7 +3728,6 @@ auth_get_simple_prompt_provider(
   *provider = po;
 }
 
-
 // from ssl_client_cert_pw_providers.c
 
 // The keys that will be stored on disk.  These serve the same role as
@@ -4223,7 +4183,6 @@ auth_get_ssl_client_cert_pw_prompt_provider(
   po->provider_baton = pb;
   *provider = po;
 }
-
 
 // from win32_crypto.c
 
@@ -4691,7 +4650,6 @@ auth_get_windows_ssl_server_trust_provider(
   *provider = po;
 }
 
-
 // from username_providers.c
 
 // Username-only Provider
@@ -4965,7 +4923,6 @@ auth_get_username_prompt_provider(
   po->provider_baton = pb;
   *provider = po;
 }
-
 
 // from auth.c
 
@@ -5268,7 +5225,6 @@ auth_get_platform_specific_client_providers(
 
   return WEBDAV_NO_ERROR;
 }
-
 
 // from dirent_uri.c
 
@@ -6159,7 +6115,6 @@ dirent_get_absolute(
   return WEBDAV_NO_ERROR;
 }
 
-
 // from atomic.c
 
 #define atomic_t apr_uint32_t
@@ -6222,7 +6177,6 @@ atomic_init_once(
 
   return WEBDAV_NO_ERROR;
 }
-
 
 // from io.c
 
@@ -6545,7 +6499,6 @@ io_file_read_full2(
     pool);
 }
 
-
 // from svn_io.h
 
 // Read handler function for a generic stream. see stream_t.
@@ -6582,7 +6535,6 @@ typedef error_t (*stream_seek_fn_t)(
   const stream_mark_t * mark);
 
 typedef bool (*stream_is_buffered_fn_t)(void * baton);
-
 
 // from stream.c
 
@@ -6915,7 +6867,6 @@ stream_close(
     return WEBDAV_NO_ERROR;
   return stream->close_fn(stream->baton);
 }
-
 
 // from util.c
 
@@ -8381,7 +8332,6 @@ neon_add_response_body_reader(
   attach_ne_body_reader(req, accpt, body_reader_wrapper, b);
 }
 
-
 // from fetch.c
 
 typedef struct file_read_ctx_t
@@ -8482,8 +8432,6 @@ custom_get_request(
 
   return err;
 }
-
-
 
 static error_t
 get_file(
@@ -8691,8 +8639,6 @@ session_open(
   return WEBDAV_NO_ERROR;
 }
 
-
-
 // This implements the client_list_func_t API
 static error_t
 list_func(
@@ -8783,7 +8729,6 @@ list_func(
   return WEBDAV_NO_ERROR;
 }
 
-
 // from url.c
 
 static error_t
@@ -8810,7 +8755,6 @@ client_url_from_path2(
   return WEBDAV_NO_ERROR;
 }
 
-
 // from ctx.c
 
 static error_t
@@ -8821,7 +8765,6 @@ client_create_context(
   *ctx = static_cast<client_ctx_t *>(apr_pcalloc(pool, sizeof(client_ctx_t)));
   return WEBDAV_NO_ERROR;
 }
-
 
 // from auth.c
 
@@ -8876,7 +8819,6 @@ create_baton_open(
     }
   }
 }
-
 
 // from ssl_client_cert_providers.c
 
@@ -9052,7 +8994,6 @@ auth_get_ssl_client_cert_prompt_provider(
   po->provider_baton = pb;
   *provider = po;
 }
-
 
 // from ssl_server_trust_providers.c
 
@@ -9261,7 +9202,6 @@ auth_get_ssl_server_trust_prompt_provider(
   *provider = po;
 }
 
-
 // from cmdline.h
 
 typedef struct cmdline_prompt_baton2_t
@@ -9269,7 +9209,6 @@ typedef struct cmdline_prompt_baton2_t
   cancel_func_t cancel_func;
   void * cancel_baton;
 } cmdline_prompt_baton2_t;
-
 
 // from prompt.c
 
@@ -9610,7 +9549,6 @@ cmdline_auth_username_prompt(
   return WEBDAV_NO_ERROR;
 }
 
-
 // from cmdline.c
 
 static error_t
@@ -9771,7 +9709,6 @@ auth_baton_init(
   return WEBDAV_NO_ERROR;
 }
 
-
 // from main.c
 
 // A flag to see if we've been canceled by the client or not.
@@ -9786,7 +9723,6 @@ check_cancel(void * baton)
   else
     return WEBDAV_NO_ERROR;
 }
-
 
 // from ra.c
 
@@ -9891,7 +9827,6 @@ client_open_session_internal(
   return WEBDAV_NO_ERROR;
 }
 
-
 // from list.c
 
 static error_t
@@ -9959,7 +9894,6 @@ get_dir_contents(
   webdav_pool_destroy(iterpool);
   return WEBDAV_NO_ERROR;
 }
-
 
 // from options.c
 
@@ -10097,7 +10031,6 @@ cleanup:
 
   return err;
 }
-
 
 // from props.c
 
@@ -10614,8 +10547,6 @@ neon_get_props_resource(
   return WEBDAV_NO_ERROR;
 }
 
-
-
 static error_t
 client_list(
   session_t * session,
@@ -10924,7 +10855,6 @@ client_send_propfind_request(
     *response_code = code;
   return err;
 }
-
 
 // from session.c
 
@@ -12037,7 +11967,6 @@ neon_init(
 
 } // namespace webdav
 
-
 class TSessionData;
 
 class TWebDAVFileListHelper : public Classes::TObject
@@ -12065,7 +11994,6 @@ private:
   TRemoteFileList * FFileList;
   bool FIgnoreFileList;
 };
-
 
 #undef FILE_OPERATION_LOOP_EX
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
@@ -12104,8 +12032,6 @@ UnicodeString ExpatVersion()
 {
   return FORMAT(L"%d.%d.%d", XML_MAJOR_VERSION, XML_MINOR_VERSION, XML_MICRO_VERSION);
 }
-
-
 
 TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(ATerminal),
@@ -12289,7 +12215,6 @@ bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
   }
 }
 
-
 void TWebDAVFileSystem::EnsureLocation()
 {
   if (!FCachedDirectoryChange.IsEmpty())
@@ -12318,7 +12243,6 @@ void TWebDAVFileSystem::EnsureLocation()
   }
 }
 
-
 UnicodeString TWebDAVFileSystem::GetCurrDirectory()
 {
   return FCurrentDirectory;
@@ -12331,7 +12255,6 @@ void TWebDAVFileSystem::DoStartup()
   ReadCurrentDirectory();
   FTerminal->SetExceptionOnFail(false);
 }
-
 
 void TWebDAVFileSystem::LookupUsersGroups()
 {
@@ -12665,7 +12588,6 @@ bool TWebDAVFileSystem::ConfirmOverwrite(const UnicodeString & AFullFileName, Un
   return Result;
 }
 
-
 void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent)
 {
@@ -12758,7 +12680,6 @@ void TWebDAVFileSystem::CopyToRemote(const Classes::TStrings * AFilesToCopy,
     ++Index;
   }
 }
-
 
 void TWebDAVFileSystem::WebDAVSourceRobust(const UnicodeString & AFileName,
   const TRemoteFile * AFile,
@@ -13034,7 +12955,6 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
     }
   }
 }
-
 
 void TWebDAVFileSystem::CopyToLocal(const Classes::TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,

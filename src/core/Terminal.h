@@ -733,7 +733,6 @@ private:
   TChecklistItem();
 };
 
-
 class TSynchronizeChecklist : public Classes::TObject
 {
 friend class TTerminal;

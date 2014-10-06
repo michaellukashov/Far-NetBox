@@ -62,7 +62,6 @@ const UnicodeString UrlSaveParamName(L"save");
 const uintptr_t CONST_DEFAULT_CODEPAGE = CP_ACP;
 const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
 
-
 static Classes::TDateTime SecToDateTime(intptr_t Sec)
 {
   return Classes::TDateTime(double(Sec) / Classes::SecsPerDay);
@@ -381,7 +380,6 @@ void TSessionData::NonPersistant()
 #define META_PROPERTIES \
   PROPERTY(IsWorkspace); \
   PROPERTY(Link);
-
 
 void TSessionData::Assign(const TPersistent * Source)
 {
@@ -3055,7 +3053,6 @@ uintptr_t TSessionData::GetCodePageAsNumber() const
   return FCodePageAsNumber;
 }
 
-
 void TSessionData::SetCodePage(const UnicodeString & Value)
 {
   SET_SESSION_PROPERTY(CodePage);
@@ -3158,7 +3155,6 @@ TFtps TSessionData::TranslateFtpEncryptionNumber(intptr_t FtpEncryption)
   assert(Result != -1);
   return Result;
 }
-
 
 TStoredSessionList::TStoredSessionList(bool AReadOnly) :
   TNamedObjectList(),
@@ -3702,7 +3698,6 @@ const TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString & 
   return nullptr;
 }
 
-
 void TStoredSessionList::Load(const UnicodeString & AKey, bool UseDefaults)
 {
   std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(AKey));
@@ -3891,7 +3886,6 @@ bool TStoredSessionList::CanLogin(TSessionData * Data)
   return (Data != nullptr) && Data->GetCanLogin();
 }
 
-
 bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx)
 {
   if (!GetCPInfoEx(CodePage, 0, &CodePageInfoEx))
@@ -3926,7 +3920,6 @@ UnicodeString GetCodePageAsString(uintptr_t CodePage)
   }
   return Sysutils::IntToStr(CONST_DEFAULT_CODEPAGE);
 }
-
 
 UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSessionData * SessionData)
 {

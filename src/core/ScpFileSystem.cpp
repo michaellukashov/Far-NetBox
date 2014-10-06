@@ -20,7 +20,6 @@
   FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
     [&]() { OPERATION })
 
-
 const int coRaiseExcept = 1;
 const int coExpectNoOutput = 2;
 const int coWaitForLastLine = 4;
@@ -42,7 +41,6 @@ inline void ThrowScpEror(Sysutils::Exception * Exception, const UnicodeString & 
 {
   throw EScp(Exception, Message);
 }
-
 
 #define MaxShellCommand fsAnyCommand
 #define ShellCommandCount MaxShellCommand + 1

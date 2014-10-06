@@ -18,7 +18,6 @@
 
 using namespace Sysutils;
 
-
 #if defined(__MINGW32__)
 typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
 {
@@ -33,7 +32,6 @@ typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
   BOOLEAN    DynamicDaylightTimeDisabled;
 } DYNAMIC_TIME_ZONE_INFORMATION, *PDYNAMIC_TIME_ZONE_INFORMATION;
 #endif
-
 
 // TGuard
 
@@ -60,7 +58,6 @@ TUnguard::~TUnguard()
 {
   FCriticalSection.Enter();
 }
-
 
 const wchar_t EngShortMonthNames[12][4] =
 {
@@ -2370,7 +2367,6 @@ bool CheckWin32Version(int Major, int Minor)
   return (Win32MajorVersion >= Major) && (Win32MinorVersion >= Minor);
 }
 
-
 bool IsWinVista()
 {
   // Vista is 6.0
@@ -2543,5 +2539,3 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
   }
   return Result;
 }
-
-

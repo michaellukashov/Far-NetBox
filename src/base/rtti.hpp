@@ -3,8 +3,6 @@
 #include <string>
 #include <hash_map.h>
 
-
-
 namespace Classes {
   class TObject;
 }
@@ -76,14 +74,11 @@ public:                                       \
   TClassInfo * name::GetClassInfo() const             \
   { return &name::FClassInfo; }
 
-
-
 const Classes::TObject * NbStaticDownCastConst(TObjectClassId ClassId, const Classes::TObject * Object);
 Classes::TObject * NbStaticDownCast(TObjectClassId ClassId, Classes::TObject * Object);
 
 #define NB_STATIC_DOWNCAST_CONST(class_name, object) (static_cast<const class_name *>(NbStaticDownCastConst(OBJECT_CLASS_##class_name, static_cast<const Classes::TObject *>(object))))
 #define NB_STATIC_DOWNCAST(class_name, object) (static_cast<class_name *>(NbStaticDownCast(OBJECT_CLASS_##class_name, static_cast<Classes::TObject *>(object))))
-
 
 class THashTable : public rde::hash_map<int, const TClassInfo *>
 {
@@ -109,8 +104,6 @@ public:
   }
   size_t GetCount() const { return ancestor::size(); }
 };
-
-
 
 enum TObjectClassId
 {

@@ -71,7 +71,6 @@ static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
   return DoXmlEscape(Str, true);
 }
 
-
 class TSessionActionRecord : public Classes::TObject
 {
 NB_DECLARE_CLASS(TSessionActionRecord)
@@ -324,7 +323,6 @@ private:
   TRemoteFile * FFile;
 };
 
-
 TSessionAction::TSessionAction(TActionLog * Log, TLogAction Action)
 {
   if (Log->FLogging)
@@ -383,7 +381,6 @@ void TSessionAction::Cancel()
   }
 }
 
-
 TFileSessionAction::TFileSessionAction(TActionLog * Log, TLogAction Action) :
   TSessionAction(Log, Action)
 {
@@ -403,7 +400,6 @@ void TFileSessionAction::SetFileName(const UnicodeString & AFileName)
     FRecord->SetFileName(AFileName);
   }
 }
-
 
 TFileLocationSessionAction::TFileLocationSessionAction(
     TActionLog * Log, TLogAction Action) :
@@ -425,18 +421,15 @@ void TFileLocationSessionAction::Destination(const UnicodeString & Destination)
   }
 }
 
-
 TUploadSessionAction::TUploadSessionAction(TActionLog * Log) :
   TFileLocationSessionAction(Log, laUpload)
 {
 }
 
-
 TDownloadSessionAction::TDownloadSessionAction(TActionLog * Log) :
   TFileLocationSessionAction(Log, laDownload)
 {
 }
-
 
 TChmodSessionAction::TChmodSessionAction(
     TActionLog * Log, const UnicodeString & AFileName) :
@@ -541,7 +534,6 @@ void TLsSessionAction::FileList(TRemoteFileList * FileList)
   }
 }
 
-
 TStatSessionAction::TStatSessionAction(TActionLog * Log, const UnicodeString & AFileName) :
   TFileSessionAction(Log, laStat, AFileName)
 {
@@ -555,7 +547,6 @@ void TStatSessionAction::File(TRemoteFile * AFile)
   }
 }
 
-
 TSessionInfo::TSessionInfo()
 {
   LoginTime = Classes::Now();
@@ -565,7 +556,6 @@ TFileSystemInfo::TFileSystemInfo()
 {
   memset(&IsCapable, 0, sizeof(IsCapable));
 }
-
 
 FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * SessionData, bool Append, UnicodeString & NewFileName)
 {
@@ -585,7 +575,6 @@ FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * SessionData, b
   }
   return Result;
 }
-
 
 const wchar_t *LogLineMarks = L"<>!.*";
 TSessionLog::TSessionLog(TSessionUI * UI, TSessionData * SessionData,
@@ -1219,7 +1208,6 @@ intptr_t TSessionLog::GetCount() const
   return TStringList::GetCount();
 }
 
-
 TActionLog::TActionLog(TSessionUI * UI, TSessionData * SessionData,
   TConfiguration * Configuration) :
   FConfiguration(Configuration),
@@ -1423,7 +1411,6 @@ void TActionLog::SetEnabled(bool Value)
     ReflectSettings();
   }
 }
-
 
 NB_IMPLEMENT_CLASS(TSessionActionRecord, NB_GET_CLASS_INFO(TObject), nullptr);
 

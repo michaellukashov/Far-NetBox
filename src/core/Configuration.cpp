@@ -1331,7 +1331,6 @@ void TConfiguration::SetPermanentActionsLogFileName(const UnicodeString & Value)
   FPermanentActionsLogFileName = Value;
 }
 
-
 void TShortCuts::Add(const Classes::TShortCut & ShortCut)
 {
   FShortCuts.push_back(ShortCut);
@@ -1344,5 +1343,3 @@ bool TShortCuts::Has(const Classes::TShortCut & ShortCut) const
 }
 
 NB_IMPLEMENT_CLASS(TConfiguration, NB_GET_CLASS_INFO(TObject), nullptr);
-
-

@@ -100,7 +100,6 @@ TGUICopyParamType & TGUICopyParamType::operator =(const TGUICopyParamType & rhp)
   return *this;
 }
 
-
 void TCopyParamRuleData::Default()
 {
   HostName = L"";
@@ -108,7 +107,6 @@ void TCopyParamRuleData::Default()
   RemoteDirectory = L"";
   LocalDirectory = L"";
 }
-
 
 TCopyParamRule::TCopyParamRule()
 {
@@ -220,7 +218,6 @@ void TCopyParamRule::SetData(const TCopyParamRuleData & Value)
 {
   FData = Value;
 }
-
 
 UnicodeString TCopyParamList::FInvalidChars(L"/\\[]");
 
@@ -497,7 +494,6 @@ bool TCopyParamList::GetAnyRule() const
   return Result;
 }
 
-
 TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
   FLocale(0),
   FLocales(new Classes::TStringList()),
@@ -655,7 +651,6 @@ UnicodeString TGUIConfiguration::PropertyToKey(const UnicodeString & Property)
     KEY(Integer,  SessionReopenAutoIdle); \
   ); \
 
-
 void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 {
   TConfiguration::SaveData(Storage, All);
@@ -770,7 +765,6 @@ void TGUIConfiguration::Saved()
 
   FCopyParamList->Reset();
 }
-
 
 HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   UnicodeString * AFileName)

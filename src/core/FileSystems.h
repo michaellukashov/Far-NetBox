@@ -124,7 +124,6 @@ public:
   bool Confirmed;
 };
 
-
 /** @brief Interface for custom filesystems
   *
   */
@@ -136,7 +135,6 @@ public:
   virtual void Init(void *) = 0;
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) = 0;
 };
-
 
 class TCustomFileSystem : public Classes::TObject, public TFileSystemIntf
 {

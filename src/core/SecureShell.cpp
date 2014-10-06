@@ -2020,7 +2020,6 @@ TCipher TSecureShell::FuncToSsh2Cipher(const void * Cipher)
   return Result;
 }
 
-
 UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & KeyStr) const
 {
   UnicodeString Result = KeyStr;

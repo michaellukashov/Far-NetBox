@@ -4,8 +4,6 @@
 #include <StrUtils.hpp>
 #include <Sysutils.hpp>
 
-
-
 UnicodeString ReplaceStr(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat)
 {
   return Sysutils::StringReplace(Str, What, ByWhat, Classes::TReplaceFlags() << Classes::rfReplaceAll);

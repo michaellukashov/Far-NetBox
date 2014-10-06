@@ -52,7 +52,6 @@ void DeleteConfiguration()
   }
 }
 
-
 TQueryButtonAlias::TQueryButtonAlias() :
   Button(0),
   OnClick(nullptr),
@@ -189,7 +188,6 @@ void CoreMaintenanceTask()
   DontSaveRandomSeed();
 }
 
-
 TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
   FUseBusyCursor(UseBusyCursor),
   FToken(nullptr)
@@ -207,7 +205,6 @@ TOperationVisualizer::~TOperationVisualizer()
     BusyEnd(FToken);
   }
 }
-
 
 TInstantOperationVisualizer::TInstantOperationVisualizer() :
   TOperationVisualizer(true),

@@ -165,7 +165,6 @@ const intptr_t asOpUnsupported = 1 << SSH_FX_OP_UNSUPPORTED;
 const intptr_t asNoSuchFile =    1 << SSH_FX_NO_SUCH_FILE;
 const intptr_t asAll = 0xFFFF;
 
-
 #ifndef GET_32BIT
 #define GET_32BIT(cp) \
     (((uint32_t)(uint8_t)(cp)[0] << 24) | \
@@ -182,7 +181,6 @@ const intptr_t asAll = 0xFFFF;
 #endif
 
 #define SFTP_PACKET_ALLOC_DELTA 256
-
 
 struct TSFTPSupport : public Classes::TObject
 {
@@ -1772,7 +1770,6 @@ public:
 private:
   TSFTPFileSystem * FFileSystem;
 };
-
 
 TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(ATerminal),
@@ -5814,7 +5811,6 @@ void TSFTPFileSystem::SFTPSinkFile(const UnicodeString & AFileName,
     }
   }
 }
-
 
 NB_IMPLEMENT_CLASS(TSFTPPacket, NB_GET_CLASS_INFO(TObject), nullptr);
 NB_IMPLEMENT_CLASS(TSFTPQueuePacket, NB_GET_CLASS_INFO(TSFTPPacket), nullptr);

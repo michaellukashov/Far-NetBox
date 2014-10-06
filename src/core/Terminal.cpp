@@ -90,11 +90,9 @@ void TTerminal::CommandErrorAri(
   }
 }
 
-
 #define COMMAND_ERROR_ARI(MESSAGE, REPEAT) \
   CommandErrorAri(E, MESSAGE, \
     [&]() { REPEAT; })
-
 
 // Note that the action may already be canceled when RollbackAction is called
 void TTerminal::CommandErrorAriAction(
@@ -138,7 +136,6 @@ void TTerminal::CommandErrorAriAction(
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FileOperationLoopCustom(this, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
     [&]() { OPERATION })
-
 
 class TLoopDetector : public Classes::TObject
 {
@@ -185,7 +182,6 @@ bool TLoopDetector::IsUnvisitedDirectory(const TRemoteFile * AFile)
 
   return Result;
 }
-
 
 struct TMoveFileParams : public Classes::TObject
 {
@@ -253,7 +249,6 @@ TSpaceAvailable::TSpaceAvailable() :
 {
 }
 
-
 TChecklistItem::TChecklistItem() :
   Action(saNone), IsDirectory(false), ImageIndex(-1), Checked(true), RemoteFile(nullptr)
 {
@@ -284,7 +279,6 @@ const UnicodeString & TChecklistItem::GetFileName() const
     return Local.FileName;
   }
 }
-
 
 TSynchronizeChecklist::TSynchronizeChecklist()
 {
@@ -342,7 +336,6 @@ const TChecklistItem * TSynchronizeChecklist::GetItem(intptr_t Index) const
 {
   return NB_STATIC_DOWNCAST(TChecklistItem, FList.GetItem(Index));
 }
-
 
 class TTunnelThread : public TSimpleThread
 {
@@ -404,7 +397,6 @@ void TTunnelThread::Execute()
     // do not pass exception out of thread's proc
   }
 }
-
 
 class TTunnelUI : public TSessionUI
 {
@@ -524,7 +516,6 @@ void TTunnelUI::Closed()
   // noop
 }
 
-
 class TCallbackGuard : public Classes::TObject
 {
 NB_DISABLE_COPY(TCallbackGuard)
@@ -604,7 +595,6 @@ void TCallbackGuard::Verify()
     }
   }
 }
-
 
 TTerminal::TTerminal() :
   TObject(),
@@ -3526,7 +3516,6 @@ void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
     LocalFileName = AFile->GetFileName();
   }
 
-
   if (GetOperationProgress() && GetOperationProgress()->Operation == foCalculateSize)
   {
     if (GetOperationProgress()->Cancel != csContinue)
@@ -4074,7 +4063,6 @@ private:
   TCallSessionAction & FAction;
   TCaptureOutputEvent FOutputEvent;
 };
-
 
 void TTerminal::AnyCommand(const UnicodeString & Command,
   TCaptureOutputEvent OutputEvent)
@@ -5830,7 +5818,6 @@ void TTerminal::CacheCertificate(const UnicodeString & CertificateStorageKey,
     Storage->WriteString(GetSessionData()->GetSiteKey(), CertificateData);
   }
 }
-
 
 TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal) :
   TTerminal(),

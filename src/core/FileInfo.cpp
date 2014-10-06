@@ -149,7 +149,6 @@ void * CreateFileInfo(const UnicodeString & AFileName)
   uintptr_t Size;
   void * Result = nullptr;
 
-
   // Get file version info block size
   Size = GetFileVersionInfoSizeFix(AFileName.c_str(), &Handle);
   // If size is valid

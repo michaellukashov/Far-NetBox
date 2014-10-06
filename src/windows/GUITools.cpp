@@ -46,7 +46,6 @@ void ValidateMaskEdit(TFarEdit * Edit)
   ValidateMaskEditT(Edit->GetText(), Edit, -1);
 }
 
-
 bool FindFile(UnicodeString & APath)
 {
   bool Result = Sysutils::FileExists(APath);

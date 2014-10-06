@@ -506,13 +506,11 @@ int FakeFileImageIndex(const UnicodeString & /* AFileName */, uint32_t /* Attrs 
     Icon = -1;
   }
 
-
   return Icon;*/
   return -1;
 }
 
 } // namespace core
-
 
 TRemoteToken::TRemoteToken() :
   FID(0),
@@ -650,7 +648,6 @@ UnicodeString TRemoteToken::GetLogText() const
   return FORMAT(L"\"%s\" [%d]", FName.c_str(), static_cast<int>(FID));
 }
 
-
 TRemoteTokenList * TRemoteTokenList::Duplicate() const
 {
   std::unique_ptr<TRemoteTokenList> Result(new TRemoteTokenList());
@@ -780,7 +777,6 @@ const TRemoteToken * TRemoteTokenList::Token(intptr_t Index) const
   return &FTokens[Index];
 }
 
-
 TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile):
   TPersistent(),
   FDirectory(nullptr),
@@ -905,7 +901,6 @@ Boolean TRemoteFile::GetIsHidden() const
 
   return Result;
 }
-
 
 void TRemoteFile::SetIsHidden(bool Value)
 {
@@ -1541,7 +1536,6 @@ void TRemoteFile::SetFullFileName(const UnicodeString & Value)
   FFullFileName = Value;
 }
 
-
 TRemoteDirectoryFile::TRemoteDirectoryFile() : TRemoteFile()
 {
   SetModification(Classes::TDateTime(0.0));
@@ -1550,7 +1544,6 @@ TRemoteDirectoryFile::TRemoteDirectoryFile() : TRemoteFile()
   SetType(L'D');
   SetSize(0);
 }
-
 
 TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal)
   : TRemoteDirectoryFile()
@@ -1910,7 +1903,6 @@ void TRemoteDirectoryCache::Delete(intptr_t Index)
   TStringList::Delete(Index);
 }
 
-
 TRemoteDirectoryChangesCache::TRemoteDirectoryChangesCache(intptr_t MaxSize) :
   TStringList(),
   FMaxSize(MaxSize)
@@ -2113,7 +2105,6 @@ TRights::TRights(const TRights & Source)
 {
   Assign(&Source);
 }
-
 
 void TRights::Assign(const TRights * Source)
 {

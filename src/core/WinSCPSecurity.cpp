@@ -14,7 +14,6 @@ int random(int range)
   return static_cast<int>(ToDouble(rand()) / (ToDouble(RAND_MAX) / range));
 }
 
-
 RawByteString SimpleEncryptChar(uint8_t Ch)
 {
   Ch = (uint8_t)((~Ch) ^ PWALG_SIMPLE_MAGIC);

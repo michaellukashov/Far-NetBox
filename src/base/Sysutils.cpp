@@ -8,8 +8,6 @@
 #include "RemoteFiles.h"
 #include <Common.h>
 
-
-
 namespace Sysutils {
 
 intptr_t __cdecl debug_printf(const wchar_t * format, ...)
@@ -43,8 +41,6 @@ intptr_t __cdecl debug_printf2(const char * format, ...)
 #endif
   return len;
 }
-
-
 
 UnicodeString MB2W(const char * src, const UINT cp)
 {
@@ -83,7 +79,6 @@ AnsiString W2MB(const wchar_t * src, const UINT cp)
   return Result;
 }
 
-
 int RandSeed;
 const TDayTable MonthDays[] =
 {
@@ -91,14 +86,11 @@ const TDayTable MonthDays[] =
   { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
 };
 
-
-
 Exception::Exception(Exception * E) :
   std::runtime_error(E ? E->what() : ""),
   Message(E ? E->Message : L"")
 {
 }
-
 
 Exception::Exception(const UnicodeString & Msg) :
   std::runtime_error(""),
@@ -106,13 +98,11 @@ Exception::Exception(const UnicodeString & Msg) :
 {
 }
 
-
 Exception::Exception(const wchar_t * Msg) :
   std::runtime_error(""),
   Message(Msg)
 {
 }
-
 
 Exception::Exception(std::exception * E) :
   std::runtime_error(E ? E->what() : "")
@@ -139,7 +129,6 @@ Exception::Exception(int Ident) :
   Message = FMTLOAD(Ident);
 }
 
-
 UnicodeString IntToStr(intptr_t Value)
 {
   UnicodeString Result;
@@ -147,14 +136,12 @@ UnicodeString IntToStr(intptr_t Value)
   return Result;
 }
 
-
 UnicodeString Int64ToStr(int64_t Value)
 {
   UnicodeString Result;
   Result.sprintf(L"%lld", Value);
   return Result;
 }
-
 
 intptr_t StrToInt(const UnicodeString & Value)
 {
@@ -225,8 +212,6 @@ bool TryStrToInt(const UnicodeString & StrValue, int64_t & Value)
   return Result;
 }
 
-
-
 UnicodeString Trim(const UnicodeString & Str)
 {
   UnicodeString Result = TrimRight(TrimLeft(Str));
@@ -273,8 +258,6 @@ UnicodeString LowerCase(const UnicodeString & Str)
   return Result.c_str();
 }
 
-
-
 inline wchar_t UpCase(const wchar_t Ch)
 {
   return static_cast<wchar_t>(::toupper(Ch));
@@ -284,8 +267,6 @@ inline wchar_t LowCase(const wchar_t Ch)
 {
   return static_cast<wchar_t>(::tolower(Ch));
 }
-
-
 
 UnicodeString AnsiReplaceStr(const UnicodeString & Str, const UnicodeString & From,
   const UnicodeString & To)
@@ -362,8 +343,6 @@ intptr_t LastDelimiter(const UnicodeString & Delimiters, const UnicodeString & S
   return 0;
 }
 
-
-
 int StringCmp(const wchar_t * S1, const wchar_t * S2)
 {
   return ::CompareString(0, SORT_STRINGSORT, S1, -1, S2, -1) - 2;
@@ -373,8 +352,6 @@ int StringCmpI(const wchar_t * S1, const wchar_t * S2)
 {
   return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, S1, -1, S2, -1) - 2;
 }
-
-
 
 intptr_t CompareText(const UnicodeString & Str1, const UnicodeString & Str2)
 {
@@ -433,12 +410,10 @@ void RaiseLastOSError(DWORD LastError)
   throw EOSError(ErrorMsg, LastError);
 }
 
-
 double StrToFloat(const UnicodeString & Value)
 {
   return StrToFloatDef(Value, 0.0);
 }
-
 
 double StrToFloatDef(const UnicodeString & Value, double DefVal)
 {
@@ -453,7 +428,6 @@ double StrToFloatDef(const UnicodeString & Value, double DefVal)
   }
   return Result;
 }
-
 
 UnicodeString FormatFloat(const UnicodeString & /* Format */, double Value)
 {
@@ -476,8 +450,6 @@ Classes::TTimeStamp DateTimeToTimeStamp(const Classes::TDateTime & DateTime)
   Result.Date = static_cast<int>(intpart + Classes::DateDelta);
   return Result;
 }
-
-
 
 int64_t FileRead(HANDLE Handle, void * Buffer, int64_t Count)
 {
@@ -516,8 +488,6 @@ int64_t FileSeek(HANDLE Handle, int64_t Offset, DWORD Origin)
   low = ::SetFilePointer(Handle, low, &high, Origin);
   return ((_int64)high << 32) + low;
 }
-
-
 
 bool FileExists(const UnicodeString & AFileName)
 {
@@ -630,8 +600,6 @@ bool DeleteFile(const UnicodeString & AFileName)
   return !Sysutils::FileExists(AFileName);
 }
 
-
-
 UnicodeString Format(const wchar_t * Format, ...)
 {
   va_list Args;
@@ -640,8 +608,6 @@ UnicodeString Format(const wchar_t * Format, ...)
   va_end(Args);
   return Result.c_str();
 }
-
-
 
 UnicodeString Format(const wchar_t * Format, va_list Args)
 {
@@ -655,8 +621,6 @@ UnicodeString Format(const wchar_t * Format, va_list Args)
   return Result.c_str();
 }
 
-
-
 AnsiString Format(const char * Format, ...)
 {
   AnsiString Result(64, 0);
@@ -666,8 +630,6 @@ AnsiString Format(const char * Format, ...)
   va_end(Args);
   return Result.c_str();
 }
-
-
 
 AnsiString Format(const char * Format, va_list Args)
 {
@@ -680,7 +642,6 @@ AnsiString Format(const char * Format, va_list Args)
   }
   return Result.c_str();
 }
-
 
 UnicodeString FmtLoadStr(intptr_t Id, ...)
 {
@@ -704,7 +665,6 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
   }
   return Result;
 }
-
 
 // Returns the next available word, ignoring whitespace
 static const wchar_t *
@@ -740,7 +700,6 @@ NextWord(const wchar_t * Input)
 
   return buffer;
 }
-
 
 UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
 {
@@ -872,7 +831,6 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
   return Result;
 }
 
-
 UnicodeString TranslateExceptionMessage(Exception * E)
 {
   if (E)
@@ -891,7 +849,6 @@ UnicodeString TranslateExceptionMessage(Exception * E)
     return UnicodeString();
   }
 }
-
 
 void AppendWChar(UnicodeString & Str, const wchar_t Ch)
 {
@@ -916,8 +873,6 @@ void AppendPathDelimiterW(UnicodeString & Str)
     Str += L"\\";;
   }
 }
-
-
 
 UnicodeString ExpandEnvVars(const UnicodeString & Str)
 {
@@ -984,7 +939,6 @@ UnicodeString ExpandUNCFileName(const UnicodeString & AFileName)
   return Result;
 }
 
-
 static DWORD FindMatchingFile(TSearchRec & Rec)
 {
   TFileTime LocalFileTime = {0};
@@ -1008,7 +962,6 @@ static DWORD FindMatchingFile(TSearchRec & Rec)
   Result = ERROR_SUCCESS;
   return Result;
 }
-
 
 DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec)
 {
@@ -1066,7 +1019,6 @@ void InitPlatformId()
   }
 }
 
-
 bool Win32Check(bool RetVal)
 {
   if (!RetVal)
@@ -1075,8 +1027,6 @@ bool Win32Check(bool RetVal)
   }
   return RetVal;
 }
-
-
 
 UnicodeString SysErrorMessage(int ErrorCode)
 {
@@ -1165,8 +1115,6 @@ UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeStri
          Ext;
 }
 
-
-
 UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str)
 {
   UnicodeString Result = Str;
@@ -1222,7 +1170,6 @@ UnicodeString GetCurrentDir()
   return Result;
 }
 
-
 UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase, char Separator)
 {
   UnicodeString Result;
@@ -1236,7 +1183,6 @@ UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase, char Separator
   }
   return Result;
 }
-
 
 UnicodeString HexToStr(const UnicodeString & Hex)
 {
@@ -1263,7 +1209,6 @@ UnicodeString HexToStr(const UnicodeString & Hex)
   return UnicodeString(Result.c_str());
 }
 
-
 uintptr_t HexToInt(const UnicodeString & Hex, uintptr_t MinChars)
 {
   static std::wstring Digits = L"0123456789ABCDEF";
@@ -1288,7 +1233,6 @@ uintptr_t HexToInt(const UnicodeString & Hex, uintptr_t MinChars)
   return Result;
 }
 
-
 UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars)
 {
   UnicodeString Result;
@@ -1304,12 +1248,10 @@ UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars)
   return Result;
 }
 
-
 char HexToChar(const UnicodeString & Hex, uintptr_t MinChars)
 {
   return static_cast<char>(HexToInt(Hex, MinChars));
 }
-
 
 static void ConvertError(intptr_t ErrorID)
 {
@@ -1317,14 +1259,12 @@ static void ConvertError(intptr_t ErrorID)
   throw EConvertError(Msg);
 }
 
-
 static void DivMod(const uintptr_t Dividend, uintptr_t Divisor,
   uintptr_t & Result, uintptr_t & Remainder)
 {
   Result = Dividend / Divisor;
   Remainder = Dividend % Divisor;
 }
-
 
 static bool DecodeDateFully(const Classes::TDateTime & DateTime,
   uint16_t & Year, uint16_t & Month, uint16_t & Day,
@@ -1392,7 +1332,6 @@ static bool DecodeDateFully(const Classes::TDateTime & DateTime,
   return Result;
 }
 
-
 void DecodeDate(const Classes::TDateTime & DateTime, uint16_t & Year,
   uint16_t & Month, uint16_t & Day)
 {
@@ -1413,7 +1352,6 @@ void DecodeTime(const Classes::TDateTime & DateTime, uint16_t & Hour,
   Sec = static_cast<uint16_t>(S);
   MSec = static_cast<uint16_t>(MS);
 }
-
 
 static bool TryEncodeDate(int Year, int Month, int Day, Classes::TDateTime & Date)
 {
@@ -1441,7 +1379,6 @@ Classes::TDateTime EncodeDate(int Year, int Month, int Day)
   }
   return Result;
 }
-
 
 static bool TryEncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec,
   Classes::TDateTime & Time)
@@ -1495,8 +1432,6 @@ UnicodeString DateTimeToString(const Classes::TDateTime & DateTime)
   return DateTime.FormatString(L"");
 }
 
-
-
 // DayOfWeek returns the day of the week of the given date. The Result is an
 // integer between 1 and 7, corresponding to Sunday through Saturday.
 // This function is not ISO 8601 compliant, for that see the DateUtils unit.
@@ -1537,7 +1472,6 @@ Classes::TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime)
   return Result;
 }
 
-
 UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & APath)
 {
   UnicodeString Result = APath;
@@ -1548,13 +1482,10 @@ UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & APath)
   return Result;
 }
 
-
 void Randomize()
 {
   srand(static_cast<uint32_t>(time(nullptr)));
 }
-
-
 
 static void IncAMonth(Word & Year, Word & Month, Word & Day, Int64 NumberOfMonths = 1)
 {
@@ -1662,8 +1593,6 @@ Boolean IsLeapYear(Word Year)
   return (Year % 4 == 0) && ((Year % 100 != 0) || (Year % 400 == 0));
 }
 
-
-
 // TCriticalSection
 
 TCriticalSection::TCriticalSection() :
@@ -1672,13 +1601,11 @@ TCriticalSection::TCriticalSection() :
   InitializeCriticalSection(&FSection);
 }
 
-
 TCriticalSection::~TCriticalSection()
 {
   assert(FAcquired == 0);
   DeleteCriticalSection(&FSection);
 }
-
 
 void TCriticalSection::Enter() const
 {
@@ -1686,13 +1613,11 @@ void TCriticalSection::Enter() const
   FAcquired++;
 }
 
-
 void TCriticalSection::Leave() const
 {
   FAcquired--;
   ::LeaveCriticalSection(&FSection);
 }
-
 
 UnicodeString StripHotkey(const UnicodeString & AText)
 {

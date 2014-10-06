@@ -172,7 +172,6 @@ intptr_t TimeToMSec(const Classes::TDateTime & T);
 intptr_t TimeToSeconds(const Classes::TDateTime & T);
 intptr_t TimeToMinutes(const Classes::TDateTime & T);
 
-
 class TGuard : public Classes::TObject
 {
 NB_DISABLE_COPY(TGuard)

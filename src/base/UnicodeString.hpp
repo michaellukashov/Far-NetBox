@@ -6,8 +6,6 @@
 #include <nbglobals.h>
 #include "local.hpp"
 
-
-
 class RawByteString;
 class UnicodeString;
 class AnsiString;
@@ -67,8 +65,6 @@ private:
   typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, custom_nballocator_t<wchar_t> > wstring_t;
   wstring_t Data;
 };
-
-
 
 class UnicodeString
 {
@@ -201,7 +197,6 @@ private:
   wstring_t Data;
 };
 
-
 class RawByteString;
 
 class AnsiString
@@ -303,8 +298,6 @@ private:
   string_t Data;
 };
 
-
-
 class RawByteString
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -386,20 +379,17 @@ bool operator==(const S & lhs, const S & rhs)
   return lhs.Compare(rhs) == 0;
 }
 
-
 template<typename S>
 bool operator!=(const S & lhs, const S & rhs)
 {
   return !(lhs == rhs);
 }
 
-
 template<typename S>
 bool operator<(const S & lhs, const S & rhs)
 {
   return lhs.Compare(rhs) < 0;
 }
-
 
 template<typename S>
 bool operator>(const S & lhs, const S & rhs)
@@ -408,6 +398,4 @@ bool operator>(const S & lhs, const S & rhs)
 }
 
 }  // namespace rde
-
-
 

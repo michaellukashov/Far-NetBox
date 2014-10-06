@@ -123,7 +123,6 @@ UnicodeString DelimitFileNameMask(const UnicodeString & Mask)
   return Result;
 }
 
-
 TFileMasks::TParams::TParams() :
   Size(0)
 {
@@ -133,7 +132,6 @@ UnicodeString TFileMasks::TParams::ToString() const
 {
   return UnicodeString(L"[") + Sysutils::Int64ToStr(Size) + L"/" + Sysutils::DateTimeToString(Modification) + L"]";
 }
-
 
 bool TFileMasks::IsMask(const UnicodeString & Mask)
 {
@@ -778,7 +776,6 @@ void TFileMasks::SetStr(const UnicodeString & Str, bool SingleMask)
   }
 }
 
-
 #define TEXT_TOKEN L'\255'
 
 const wchar_t TCustomCommand::NoQuote = L'\0';
@@ -955,7 +952,6 @@ void TCustomCommand::ValidatePattern(const UnicodeString & /*Command*/,
 {
 }
 
-
 TInteractiveCustomCommand::TInteractiveCustomCommand(
   TCustomCommand * ChildCustomCommand)
 {
@@ -1054,7 +1050,6 @@ bool TInteractiveCustomCommand::PatternReplacement(const UnicodeString & Pattern
   return Result;
 }
 
-
 TCustomCommandData::TCustomCommandData()
 {
 }
@@ -1077,7 +1072,6 @@ void TCustomCommandData::Init(
   UserName = AUserName;
   Password = APassword;
 }
-
 
 TFileCustomCommand::TFileCustomCommand()
 {
