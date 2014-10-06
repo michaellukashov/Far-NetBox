@@ -912,7 +912,7 @@ Classes::TStrings * TGUIConfiguration::GetLocales()
   Exts->SetSorted(true);
   Exts->SetCaseSensitive(false);
 
-  DWORD FindAttrs = Sysutils::faReadOnly | Sysutils::faArchive;
+  DWORD FindAttrs = faReadOnly | faArchive;
   TSearchRecChecked SearchRec;
   bool Found;
 

@@ -12826,7 +12826,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
 
   OperationProgress->SetFileInProgress();
 
-  bool Dir = FLAGSET(LocalFileAttrs, Sysutils::faDirectory);
+  bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
   if (Dir)
   {
     Action.Cancel();
@@ -12887,10 +12887,10 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
       );
     }
   }
-  else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, Sysutils::faArchive))
+  else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
   {
     FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()),
-      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(AFileName), LocalFileAttrs & ~Sysutils::faArchive) == 0);
+      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(AFileName), LocalFileAttrs & ~faArchive) == 0);
     );
   }
 }
@@ -13026,10 +13026,10 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
     {
       FTerminal->RemoveLocalDirectory(ApiPath(DirectoryName));
     }
-    else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, Sysutils::faArchive))
+    else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
       FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DirectoryName), Attrs & ~Sysutils::faArchive) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DirectoryName), Attrs & ~faArchive) == 0);
       );
     }
   }
@@ -13191,7 +13191,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       {
         FILE_OPERATION_LOOP(FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
           DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
-          if (FLAGCLEAR(LocalFileAttrs, Sysutils::faDirectory))
+          if (FLAGCLEAR(LocalFileAttrs, faDirectory))
           {
             ThrowExtException();
           }
@@ -13270,7 +13270,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
       FILE_OPERATION_LOOP(FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
         LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
-        if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, Sysutils::faDirectory))
+        if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, faDirectory))
         {
           ThrowExtException();
         }
@@ -13314,7 +13314,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 
       if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
       {
-        LocalFileAttrs = Sysutils::faArchive;
+        LocalFileAttrs = faArchive;
       }
       DWORD NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
       if ((NewAttrs & LocalFileAttrs) != NewAttrs)

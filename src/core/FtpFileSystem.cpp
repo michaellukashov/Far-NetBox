@@ -1156,7 +1156,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     {
       FILE_OPERATION_LOOP(FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
         DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
-        if (FLAGCLEAR(LocalFileAttrs, Sysutils::faDirectory))
+        if (FLAGCLEAR(LocalFileAttrs, faDirectory))
         {
           ThrowExtException();
         }
@@ -1207,7 +1207,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
     FILE_OPERATION_LOOP(FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
-      if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, Sysutils::faDirectory))
+      if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, faDirectory))
       {
         ThrowExtException();
       }
@@ -1262,7 +1262,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
 
     if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
     {
-      LocalFileAttrs = Sysutils::faArchive;
+      LocalFileAttrs = faArchive;
     }
     DWORD NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
     if ((NewAttrs & LocalFileAttrs) != NewAttrs)
@@ -1442,7 +1442,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
 
   OperationProgress->SetFileInProgress();
 
-  bool Dir = FLAGSET(OpenParams->LocalFileAttrs, Sysutils::faDirectory);
+  bool Dir = FLAGSET(OpenParams->LocalFileAttrs, faDirectory);
   if (Dir)
   {
     Action.Cancel();
@@ -1543,10 +1543,10 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
       );
     }
   }
-  else if (CopyParam->GetClearArchive() && FLAGSET(OpenParams->LocalFileAttrs, Sysutils::faArchive))
+  else if (CopyParam->GetClearArchive() && FLAGSET(OpenParams->LocalFileAttrs, faArchive))
   {
     FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()),
-      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(AFileName, OpenParams->LocalFileAttrs & ~Sysutils::faArchive) == 0);
+      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(AFileName, OpenParams->LocalFileAttrs & ~faArchive) == 0);
     );
   }
 }
@@ -1562,7 +1562,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
 
   OperationProgress->SetFile(DirectoryName);
 
-  DWORD FindAttrs = Sysutils::faReadOnly | Sysutils::faHidden | Sysutils::faSysFile | Sysutils::faDirectory | Sysutils::faArchive;
+  DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   TSearchRecChecked SearchRec;
   bool FindOK = false;
 
@@ -1661,10 +1661,10 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
     {
       FTerminal->RemoveLocalDirectory(ApiPath(DirectoryName));
     }
-    else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, Sysutils::faArchive))
+    else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
       FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~Sysutils::faArchive) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~faArchive) == 0);
       );
     }
   }

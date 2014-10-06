@@ -1473,11 +1473,11 @@ intptr_t TRemoteFile::GetAttr() const
   intptr_t Result = 0;
   if (GetRights()->GetReadOnly())
   {
-    Result |= Sysutils::faReadOnly;
+    Result |= faReadOnly;
   }
   if (GetIsHidden())
   {
-    Result |= Sysutils::faHidden;
+    Result |= faHidden;
   }
   return Result;
 }

@@ -1698,7 +1698,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
   FTerminal->OpenLocalFile(AFileName, GENERIC_READ,
     &LocalFileHandle, &LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
 
-  bool Dir = FLAGSET(LocalFileAttrs, Sysutils::faDirectory);
+  bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
   std::unique_ptr<TSafeHandleStream> Stream(new TSafeHandleStream(LocalFileHandle));
   {
     SCOPE_EXIT
@@ -1958,10 +1958,10 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
       );
     }
   }
-  else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, Sysutils::faArchive))
+  else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
   {
     FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()),
-      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(AFileName, LocalFileAttrs & ~Sysutils::faArchive) == 0);
+      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(AFileName, LocalFileAttrs & ~faArchive) == 0);
     );
   }
 
@@ -2012,7 +2012,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
         SCPResponse();
       }
     };
-    DWORD FindAttrs = Sysutils::faReadOnly | Sysutils::faHidden | Sysutils::faSysFile | Sysutils::faDirectory | Sysutils::faArchive;
+    DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     TSearchRecChecked SearchRec;
     bool FindOK = false;
     FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
@@ -2080,10 +2080,10 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
       {
         FTerminal->RemoveLocalDirectory(ApiPath(DirectoryName));
       }
-      else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, Sysutils::faArchive))
+      else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
       {
         FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
-          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, LocalFileAttrs & ~Sysutils::faArchive) == 0);
+          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, LocalFileAttrs & ~faArchive) == 0);
         );
       }
     }
@@ -2446,7 +2446,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
         FileData.Exists = (FileData.LocalFileAttrs != INVALID_FILE_ATTRIBUTES);
         if (Dir)
         {
-          if (FileData.Exists && !(FileData.LocalFileAttrs & Sysutils::faDirectory))
+          if (FileData.Exists && !(FileData.LocalFileAttrs & faDirectory))
           {
             SCPError(FMTLOAD(NOT_DIRECTORY_ERROR, DestFileName.c_str()), false);
           }
@@ -2635,7 +2635,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
 
           if (FileData.LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
           {
-            FileData.LocalFileAttrs = Sysutils::faArchive;
+            FileData.LocalFileAttrs = faArchive;
           }
           DWORD NewAttrs = CopyParam->LocalFileAttrs(FileData.RemoteRights);
           if ((NewAttrs & FileData.LocalFileAttrs) != NewAttrs)

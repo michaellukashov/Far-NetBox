@@ -380,9 +380,9 @@ bool DeleteDirectory(const UnicodeString & ADirName)
 {
   TSearchRecChecked SearchRec;
   bool retval = true;
-  if (Sysutils::FindFirst(ADirName + L"\\*", Sysutils::faAnyFile, SearchRec) == 0) // VCL Function
+  if (Sysutils::FindFirst(ADirName + L"\\*", faAnyFile, SearchRec) == 0) // VCL Function
   {
-    if (FLAGSET(SearchRec.Attr, Sysutils::faDirectory))
+    if (FLAGSET(SearchRec.Attr, faDirectory))
     {
       if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
         retval = DeleteDirectory(ADirName + L"\\" + SearchRec.Name);
@@ -396,7 +396,7 @@ bool DeleteDirectory(const UnicodeString & ADirName)
     {
       while (FindNextChecked(SearchRec) == 0)
       { // VCL Function
-        if (FLAGSET(SearchRec.Attr, Sysutils::faDirectory))
+        if (FLAGSET(SearchRec.Attr, faDirectory))
         {
           if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
             retval = DeleteDirectory(ADirName + L"\\" + SearchRec.Name);

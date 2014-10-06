@@ -4374,7 +4374,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
   FTerminal->OpenLocalFile(AFileName, GENERIC_READ,
     &LocalFileHandle, &OpenParams.LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
 
-  bool Dir = FLAGSET(OpenParams.LocalFileAttrs, Sysutils::faDirectory);
+  bool Dir = FLAGSET(OpenParams.LocalFileAttrs, faDirectory);
 
   {
     SCOPE_EXIT
@@ -4785,10 +4785,10 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
       );
     }
   }
-  else if (CopyParam->GetClearArchive() && FLAGSET(OpenParams.LocalFileAttrs, Sysutils::faArchive))
+  else if (CopyParam->GetClearArchive() && FLAGSET(OpenParams.LocalFileAttrs, faArchive))
   {
     FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()),
-      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(AFileName), OpenParams.LocalFileAttrs & ~Sysutils::faArchive) == 0);
+      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(AFileName), OpenParams.LocalFileAttrs & ~faArchive) == 0);
     );
   }
 }
@@ -5096,7 +5096,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
     Flags |= tfNewDirectory;
   }
 
-  DWORD FindAttrs = Sysutils::faReadOnly | Sysutils::faHidden | Sysutils::faSysFile | Sysutils::faDirectory | Sysutils::faArchive;
+  DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   TSearchRecChecked SearchRec;
   bool FindOK = false;
 
@@ -5149,10 +5149,10 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
     {
       FTerminal->RemoveLocalDirectory(ApiPath(DirectoryName));
     }
-    else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, Sysutils::faArchive))
+    else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
     {
       FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, LocalFileAttrs & ~Sysutils::faArchive) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, LocalFileAttrs & ~faArchive) == 0);
       );
     }
   }
@@ -5305,7 +5305,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
     {
       FILE_OPERATION_LOOP(FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
         DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
-        if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && (LocalFileAttrs & Sysutils::faDirectory) == 0)
+        if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && (LocalFileAttrs & faDirectory) == 0)
         {
           ThrowExtException();
         }
@@ -5367,7 +5367,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
     DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
     FILE_OPERATION_LOOP(FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
-      if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && (LocalFileAttrs & Sysutils::faDirectory))
+      if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && (LocalFileAttrs & faDirectory))
       {
         ThrowExtException();
       }
@@ -5760,7 +5760,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
 
       if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
       {
-        LocalFileAttrs = Sysutils::faArchive;
+        LocalFileAttrs = faArchive;
       }
       DWORD NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
       if ((NewAttrs & LocalFileAttrs) != NewAttrs)

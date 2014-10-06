@@ -4154,9 +4154,9 @@ bool TTerminal::DoCreateFile(const UnicodeString & AFileName,
       int LastError = ::GetLastError();
       DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
       if (Sysutils::FileExists(ApiPath(AFileName)) &&
-        (((LocalFileAttrs = GetLocalFileAttributes(ApiPath(AFileName))) & (Sysutils::faReadOnly | Sysutils::faHidden)) != 0))
+        (((LocalFileAttrs = GetLocalFileAttributes(ApiPath(AFileName))) & (faReadOnly | faHidden)) != 0))
       {
-        if (FLAGSET(LocalFileAttrs, Sysutils::faReadOnly))
+        if (FLAGSET(LocalFileAttrs, faReadOnly))
         {
           if (OperationProgress->BatchOverwrite == boNone)
           {
@@ -4191,11 +4191,11 @@ bool TTerminal::DoCreateFile(const UnicodeString & AFileName,
         if (Result)
         {
           FlagsAndAttributes |=
-            FLAGMASK(FLAGSET(LocalFileAttrs, Sysutils::faHidden), FILE_ATTRIBUTE_HIDDEN) |
-            FLAGMASK(FLAGSET(LocalFileAttrs, Sysutils::faReadOnly), FILE_ATTRIBUTE_READONLY);
+            FLAGMASK(FLAGSET(LocalFileAttrs, faHidden), FILE_ATTRIBUTE_HIDDEN) |
+            FLAGMASK(FLAGSET(LocalFileAttrs, faReadOnly), FILE_ATTRIBUTE_READONLY);
 
           FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()),
-            if (!this->SetLocalFileAttributes(ApiPath(AFileName), LocalFileAttrs & ~(Sysutils::faReadOnly | Sysutils::faHidden)))
+            if (!this->SetLocalFileAttributes(ApiPath(AFileName), LocalFileAttrs & ~(faReadOnly | faHidden)))
             {
               Sysutils::RaiseLastOSError();
             }
@@ -4252,11 +4252,11 @@ void TTerminal::OpenLocalFile(const UnicodeString & AFileName,
     }
   );
 
-  if ((LocalFileAttrs & Sysutils::faDirectory) == 0)
+  if ((LocalFileAttrs & faDirectory) == 0)
   {
     bool NoHandle = false;
     if (!TryWriteReadOnly && (Access == GENERIC_WRITE) &&
-        ((LocalFileAttrs & Sysutils::faReadOnly) != 0))
+        ((LocalFileAttrs & faReadOnly) != 0))
     {
       Access = GENERIC_READ;
       NoHandle = true;
@@ -4385,7 +4385,7 @@ void TTerminal::MakeLocalFileList(const UnicodeString & AFileName,
 {
   TMakeLocalFileListParams & Params = *NB_STATIC_DOWNCAST(TMakeLocalFileListParams, Param);
 
-  bool Directory = FLAGSET(Rec.Attr, Sysutils::faDirectory);
+  bool Directory = FLAGSET(Rec.Attr, faDirectory);
   if (Directory && Params.Recursive)
   {
     ProcessLocalDirectory(AFileName, MAKE_CALLBACK(TTerminal::MakeLocalFileList, this), &Params);
@@ -4402,7 +4402,7 @@ void TTerminal::CalculateLocalFileSize(const UnicodeString & AFileName,
 {
   TCalculateSizeParams * AParams = NB_STATIC_DOWNCAST(TCalculateSizeParams, Params);
 
-  bool Dir = FLAGSET(Rec.Attr, Sysutils::faDirectory);
+  bool Dir = FLAGSET(Rec.Attr, faDirectory);
 
   bool AllowTransfer = (AParams->CopyParam == nullptr);
   // SearchRec.Size in C++B2010 is int64_t,
@@ -4468,7 +4468,7 @@ bool TTerminal::CalculateLocalFilesSize(const Classes::TStrings * AFileList,
       Sysutils::TSearchRec Rec;
       if (FileSearchRec(FileName, Rec))
       {
-        if (FLAGSET(Rec.Attr, Sysutils::faDirectory) && !AllowDirs)
+        if (FLAGSET(Rec.Attr, faDirectory) && !AllowDirs)
         {
           Result = false;
         }
@@ -4643,7 +4643,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
     Data.LocalFileList->SetCaseSensitive(false);
 
     FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
-      DWORD FindAttrs = Sysutils::faReadOnly | Sysutils::faHidden | Sysutils::faSysFile | Sysutils::faDirectory | Sysutils::faArchive;
+      DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
       Found = ::FindFirstChecked(Data.LocalDirectory + L"*.*", FindAttrs, SearchRec) == 0;
     );
 
@@ -4674,7 +4674,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
           UnicodeString FullLocalFileName = Data.LocalDirectory + FileName;
           if ((FileName != THISDIRECTORY) && (FileName != PARENTDIRECTORY) &&
               CopyParam->AllowTransfer(FullLocalFileName, osLocal,
-                FLAGSET(SearchRec.Attr, Sysutils::faDirectory), MaskParams) &&
+                FLAGSET(SearchRec.Attr, faDirectory), MaskParams) &&
               !FFileSystem->TemporaryTransferFile(FileName) &&
               (FLAGCLEAR(Flags, sfFirstLevel) ||
                (Options == nullptr) ||
@@ -4683,7 +4683,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
           {
             TSynchronizeFileData * FileData = new TSynchronizeFileData;
 
-            FileData->IsDirectory = FLAGSET(SearchRec.Attr, Sysutils::faDirectory);
+            FileData->IsDirectory = FLAGSET(SearchRec.Attr, faDirectory);
             FileData->Info.FileName = FileName;
             FileData->Info.Directory = Data.LocalDirectory;
             FileData->Info.Modification = Modification;

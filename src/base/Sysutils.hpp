@@ -7,6 +7,18 @@
 #include <Classes.hpp>
 #include <headers.hpp>
 
+enum FileAttributesEnum
+{
+  faReadOnly = 0x00000001,
+  faHidden = 0x00000002,
+  faSysFile = 0x00000004,
+  faVolumeId = 0x00000008,
+  faDirectory = 0x00000010,
+  faArchive = 0x00000020,
+  faSymLink = 0x00000040,
+  faAnyFile = 0x0000003f,
+};
+
 namespace Sysutils {
 
 
@@ -225,19 +237,6 @@ int64_t FileRead(HANDLE Handle, void * Buffer, int64_t Count);
 int64_t FileWrite(HANDLE Handle, const void * Buffer, int64_t Count);
 int64_t FileSeek(HANDLE Handle, int64_t Offset, DWORD Origin);
 
-
-
-enum FileAttributesEnum
-{
-  faReadOnly = 0x00000001,
-  faHidden = 0x00000002,
-  faSysFile = 0x00000004,
-  faVolumeId = 0x00000008,
-  faDirectory = 0x00000010,
-  faArchive = 0x00000020,
-  faSymLink = 0x00000040,
-  faAnyFile = 0x0000003f,
-};
 
 bool FileExists(const UnicodeString & AFileName);
 bool RenameFile(const UnicodeString & From, const UnicodeString & To);
