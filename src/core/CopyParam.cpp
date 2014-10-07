@@ -8,8 +8,6 @@
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"
 
-using namespace Sysutils;
-
 TCopyParamType::TCopyParamType()
 {
   Default();
@@ -579,12 +577,12 @@ bool TCopyParamType::ResumeTransfer(const UnicodeString & AFileName) const
     ALWAYS_TRUE(!FTransferResumeFile.IsEmpty());
 }
 
-Classes::TStrings * TCopyParamType::GetTransferSkipList() const
+TStrings * TCopyParamType::GetTransferSkipList() const
 {
   return FTransferSkipList.get();
 }
 
-void TCopyParamType::SetTransferSkipList(Classes::TStrings * Value)
+void TCopyParamType::SetTransferSkipList(TStrings * Value)
 {
   if ((Value == nullptr) || (Value->GetCount() == 0))
   {
@@ -592,7 +590,7 @@ void TCopyParamType::SetTransferSkipList(Classes::TStrings * Value)
   }
   else
   {
-    FTransferSkipList.reset(new Classes::TStringList());
+    FTransferSkipList.reset(new TStringList());
     FTransferSkipList->AddStrings(Value);
     FTransferSkipList->SetSorted(true);
   }

@@ -54,7 +54,7 @@ struct TUsableCopyParamAttrs
   int Download;
 };
 
-class TCopyParamType : public Classes::TObject
+class TCopyParamType : public TObject
 {
 NB_DECLARE_CLASS(TCopyParamType)
 public:
@@ -144,8 +144,8 @@ public:
   UnicodeString RestoreChars(const UnicodeString & AFileName) const;
   void DoGetInfoStr(const UnicodeString & Separator, intptr_t Options,
     UnicodeString & Result, bool & SomeAttrIncluded) const;
-  Classes::TStrings * GetTransferSkipList() const;
-  void SetTransferSkipList(Classes::TStrings * Value);
+  TStrings * GetTransferSkipList() const;
+  void SetTransferSkipList(TStrings * Value);
   UnicodeString GetTransferResumeFile() const { return FTransferResumeFile; }
   void SetTransferResumeFile(const UnicodeString & Value) { FTransferResumeFile = Value; }
 
@@ -167,7 +167,7 @@ private:
   bool FCalculateSize;
   UnicodeString FFileMask;
   TFileMasks FIncludeFileMask;
-  std::unique_ptr<Classes::TStringList> FTransferSkipList;
+  std::unique_ptr<TStringList> FTransferSkipList;
   UnicodeString FTransferResumeFile;
   bool FClearArchive;
   bool FRemoveCtrlZ;

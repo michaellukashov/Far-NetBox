@@ -62,9 +62,9 @@ const UnicodeString UrlSaveParamName(L"save");
 const uintptr_t CONST_DEFAULT_CODEPAGE = CP_ACP;
 const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
 
-static Classes::TDateTime SecToDateTime(intptr_t Sec)
+static TDateTime SecToDateTime(intptr_t Sec)
 {
-  return Classes::TDateTime(double(Sec) / Classes::SecsPerDay);
+  return TDateTime(double(Sec) / SecsPerDay);
 }
 
 TSessionData::TSessionData(const UnicodeString & AName) :
@@ -151,7 +151,7 @@ void TSessionData::Default()
   SetFSProtocol(CONST_DEFAULT_PROTOCOL);
   SetAddressFamily(afAuto);
   SetRekeyData(L"1G");
-  SetRekeyTime(Classes::MinsPerHour);
+  SetRekeyTime(MinsPerHour);
 
   // FS common
   SetLocalDirectory(L"");
@@ -181,7 +181,7 @@ void TSessionData::Default()
   SetListingCommand(L"ls -la");
   SetIgnoreLsWarnings(true);
   SetScp1Compatibility(false);
-  SetTimeDifference(Classes::TDateTime(0));
+  SetTimeDifference(TDateTime(0));
   SetSCPLsFullTime(asAuto);
   SetNotUtf(asOn); // asAuto
 
@@ -243,7 +243,7 @@ void TSessionData::Default()
   SetFtpAllowEmptyPassword(false);
 
   FNumberOfRetries = 0;
-  FSessionVersion = Sysutils::StrToVersionNumber(GetGlobalFunctions()->GetStrVersionNumber());
+  FSessionVersion = ::StrToVersionNumber(GetGlobalFunctions()->GetStrVersionNumber());
   // add also to TSessionLog::AddStartupInfo()
 }
 
@@ -420,7 +420,7 @@ void TSessionData::Assign(const TPersistent * Source)
   }
 }
 
-bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly, Classes::TStrings * DifferentProperties) const
+bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties) const
 {
   bool Result = true;
 #define PROPERTY(P) \
@@ -464,12 +464,12 @@ bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly) const
 
 bool TSessionData::IsInFolderOrWorkspace(const UnicodeString & AFolder) const
 {
-  return Sysutils::StartsText(core::UnixIncludeTrailingBackslash(AFolder), GetName());
+  return ::StartsText(core::UnixIncludeTrailingBackslash(AFolder), GetName());
 }
 
 void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword)
 {
-  SetSessionVersion(Sysutils::StrToVersionNumber(Storage->ReadString(L"Version", L"")));
+  SetSessionVersion(::StrToVersionNumber(Storage->ReadString(L"Version", L"")));
   // Make sure we only ever use methods supported by TOptionsStorage
   // (implemented by TOptionsIniFile)
 
@@ -496,10 +496,10 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   intptr_t PingIntervalSecs = Storage->ReadInteger(L"PingIntervalSecs", -1);
   if (PingIntervalSecs < 0)
   {
-    PingIntervalSecs = Storage->ReadInteger(L"PingIntervalSec", GetPingInterval() % Classes::SecsPerMin);
+    PingIntervalSecs = Storage->ReadInteger(L"PingIntervalSec", GetPingInterval() % SecsPerMin);
   }
   SetPingInterval(
-    Storage->ReadInteger(L"PingInterval", GetPingInterval() / Classes::SecsPerMin) * Classes::SecsPerMin +
+    Storage->ReadInteger(L"PingInterval", GetPingInterval() / SecsPerMin) * SecsPerMin +
     PingIntervalSecs);
   if (GetPingInterval() == 0)
   {
@@ -532,7 +532,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetRekeyData(Storage->ReadString(L"RekeyBytes", GetRekeyData()));
   SetRekeyTime(Storage->ReadInteger(L"RekeyTime", GetRekeyTime()));
 
-  if (GetSessionVersion() < Sysutils::GetVersionNumber2121())
+  if (GetSessionVersion() < ::GetVersionNumber2121())
   {
     SetFSProtocol(TranslateFSProtocolNumber(Storage->ReadInteger(L"FSProtocol", GetFSProtocol())));
   }
@@ -560,7 +560,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetIgnoreLsWarnings(Storage->ReadBool(L"IgnoreLsWarnings", GetIgnoreLsWarnings()));
   SetSCPLsFullTime(static_cast<TAutoSwitch>(Storage->ReadInteger(L"SCPLsFullTime", GetSCPLsFullTime())));
   SetScp1Compatibility(Storage->ReadBool(L"Scp1Compatibility", GetScp1Compatibility()));
-  SetTimeDifference(Classes::TDateTime(Storage->ReadFloat(L"TimeDifference", GetTimeDifference())));
+  SetTimeDifference(TDateTime(Storage->ReadFloat(L"TimeDifference", GetTimeDifference())));
   SetDeleteToRecycleBin(Storage->ReadBool(L"DeleteToRecycleBin", GetDeleteToRecycleBin()));
   SetOverwrittenToRecycleBin(Storage->ReadBool(L"OverwrittenToRecycleBin", GetOverwrittenToRecycleBin()));
   SetRecycleBinPath(Storage->ReadString(L"RecycleBinPath", GetRecycleBinPath()));
@@ -715,7 +715,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetCodePage(Storage->ReadString(L"CodePage", GetCodePage()));
   SetLoginType(static_cast<TLoginType>(Storage->ReadInteger(L"LoginType", GetLoginType())));
   SetFtpAllowEmptyPassword(Storage->ReadBool(L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword()));
-  if (GetSessionVersion() < Sysutils::GetVersionNumber2110())
+  if (GetSessionVersion() < ::GetVersionNumber2110())
   {
     SetFtps(TranslateFtpEncryptionNumber(Storage->ReadInteger(L"FtpEncryption", -1)));
   }
@@ -795,11 +795,11 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
 #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, MB_TEXT(#PROPERTY), Get ## PROPERTY(), )
 
-    Storage->WriteString(L"Version", Sysutils::VersionNumberToStr(Sysutils::GetCurrentVersionNumber()));
+    Storage->WriteString(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
     WRITE_DATA(String, HostName);
     WRITE_DATA(Integer, PortNumber);
-    WRITE_DATA_EX(Integer, L"PingInterval", GetPingInterval() / Classes::SecsPerMin, );
-    WRITE_DATA_EX(Integer, L"PingIntervalSecs", GetPingInterval() % Classes::SecsPerMin, );
+    WRITE_DATA_EX(Integer, L"PingInterval", GetPingInterval() / SecsPerMin, );
+    WRITE_DATA_EX(Integer, L"PingIntervalSecs", GetPingInterval() % SecsPerMin, );
     Storage->DeleteValue(L"PingIntervalSec"); // obsolete
     WRITE_DATA(Integer, PingType);
     WRITE_DATA(Integer, Timeout);
@@ -1306,7 +1306,7 @@ inline void MoveStr(UnicodeString & Source, UnicodeString * Dest, intptr_t Count
 bool TSessionData::DoIsProtocolUrl(
   const UnicodeString & Url, const UnicodeString & Protocol, intptr_t & ProtocolLen)
 {
-  bool Result = Sysutils::SameText(Url.SubString(1, Protocol.Length() + 1), Protocol + L":");
+  bool Result = ::SameText(Url.SubString(1, Protocol.Length() + 1), Protocol + L":");
   if (Result)
   {
     ProtocolLen = Protocol.Length() + 1;
@@ -1417,8 +1417,8 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       {
         TSessionData * AData = NB_STATIC_DOWNCAST(TSessionData, StoredSessions->GetItem(Index));
         if (// !AData->GetIsWorkspace() &&
-            Sysutils::AnsiSameText(AData->GetName(), DecodedUrl) ||
-            Sysutils::AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
+            ::AnsiSameText(AData->GetName(), DecodedUrl) ||
+            ::AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
         {
           Data = AData;
           break;
@@ -1432,7 +1432,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     {
       Assign(Data);
       intptr_t P = 1;
-      while (!Sysutils::AnsiSameText(DecodeUrlChars(url.SubString(1, P)), Data->GetName()))
+      while (!::AnsiSameText(DecodeUrlChars(url.SubString(1, P)), Data->GetName()))
       {
         P++;
         assert(P <= url.Length());
@@ -1502,7 +1502,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       // expanded from ?: operator, as it caused strange "access violation" errors
       if (!HostInfo.IsEmpty())
       {
-        SetPortNumber(Sysutils::StrToIntDef(DecodeUrlChars(HostInfo), -1));
+        SetPortNumber(::StrToIntDef(DecodeUrlChars(HostInfo), -1));
         PortNumberDefined = true;
       }
       else if (ProtocolDefined)
@@ -1523,7 +1523,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       {
         UnicodeString ConnectionParam = CutToChar(ConnectionParams, UrlParamSeparator, false);
         UnicodeString ConnectionParamName = CutToChar(ConnectionParam, UrlParamValueSeparator, false);
-        if (Sysutils::AnsiSameText(ConnectionParamName, UrlHostKeyParamName))
+        if (::AnsiSameText(ConnectionParamName, UrlHostKeyParamName))
         {
           SetHostKey(ConnectionParam);
           FOverrideCachedHostKey = false;
@@ -1545,9 +1545,9 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       {
         UnicodeString SessionParam = CutToChar(SessionParams, UrlParamSeparator, false);
         UnicodeString SessionParamName = CutToChar(SessionParam, UrlParamValueSeparator, false);
-        if (Sysutils::AnsiSameText(SessionParamName, UrlSaveParamName))
+        if (::AnsiSameText(SessionParamName, UrlSaveParamName))
         {
-          FSaveOnly = (Sysutils::StrToIntDef(SessionParam, 1) != 0);
+          FSaveOnly = (::StrToIntDef(SessionParam, 1) != 0);
         }
       }
 
@@ -1616,7 +1616,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     }
     if (Options->FindSwitch(L"timeout", Value))
     {
-      SetTimeout(static_cast<intptr_t>(Sysutils::StrToInt64(Value)));
+      SetTimeout(static_cast<intptr_t>(::StrToInt64(Value)));
     }
     if (Options->FindSwitch(L"hostkey", Value) ||
         Options->FindSwitch(L"certificate", Value))
@@ -1654,7 +1654,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     }
     if (Options->FindSwitch(L"rawsettings"))
     {
-      std::unique_ptr<Classes::TStrings> RawSettings(new Classes::TStringList());
+      std::unique_ptr<TStrings> RawSettings(new TStringList());
       std::unique_ptr<TRegistryStorage> OptionsStorage(nullptr);
       if (Options->FindSwitch(L"rawsettings", RawSettings.get()))
       {
@@ -1666,11 +1666,11 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     }
     if (Options->FindSwitch(L"allowemptypassword", Value))
     {
-      SetFtpAllowEmptyPassword((Sysutils::StrToIntDef(Value, 0) != 0));
+      SetFtpAllowEmptyPassword((::StrToIntDef(Value, 0) != 0));
     }
     if (Options->FindSwitch(L"explicitssl", Value))
     {
-      bool Enabled = (Sysutils::StrToIntDef(Value, 1) != 0);
+      bool Enabled = (::StrToIntDef(Value, 1) != 0);
       SetFtps(Enabled ? ftpsExplicitSsl : ftpsNone);
       if (!PortNumberDefined && Enabled)
       {
@@ -1690,7 +1690,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     }
     if (Options->FindSwitch(L"codepage", Value))
     {
-      intptr_t CodePage = Sysutils::StrToIntDef(Value, 0);
+      intptr_t CodePage = ::StrToIntDef(Value, 0);
       if (CodePage != 0)
       {
         SetCodePage(GetCodePageAsString(CodePage));
@@ -1742,7 +1742,7 @@ void TSessionData::ValidateName(const UnicodeString & Name)
   // keep consistent with MakeValidName
   if (Name.LastDelimiter(L"/") > 0)
   {
-    throw Sysutils::Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), L"/"));
+    throw ::Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), L"/"));
   }
 }
 
@@ -1769,7 +1769,7 @@ UnicodeString TSessionData::DecryptPassword(const RawByteString & Password, cons
   {
     Result = GetConfiguration()->DecryptPassword(Password, Key);
   }
-  catch (Sysutils::EAbort &)
+  catch (::EAbort &)
   {
     // silently ignore aborted prompts for master password and return empty password
   }
@@ -2142,7 +2142,7 @@ void TSessionData::SetEOLType(TEOLType Value)
   SET_SESSION_PROPERTY(EOLType);
 }
 
-Classes::TDateTime TSessionData::GetTimeoutDT()
+TDateTime TSessionData::GetTimeoutDT()
 {
   return SecToDateTime(GetTimeout());
 }
@@ -2207,15 +2207,15 @@ void TSessionData::SetPuttyProtocol(const UnicodeString & Value)
   SET_SESSION_PROPERTY(PuttyProtocol);
 }
 
-void TSessionData::SetPingIntervalDT(const Classes::TDateTime & Value)
+void TSessionData::SetPingIntervalDT(const TDateTime & Value)
 {
   uint16_t hour, min, sec, msec;
 
   Value.DecodeTime(hour, min, sec, msec);
-  SetPingInterval(hour * Classes::SecsPerHour + min * Classes::SecsPerMin + sec);
+  SetPingInterval(hour * SecsPerHour + min * SecsPerMin + sec);
 }
 
-Classes::TDateTime TSessionData::GetPingIntervalDT() const
+TDateTime TSessionData::GetPingIntervalDT() const
 {
   return SecToDateTime(GetPingInterval());
 }
@@ -2243,7 +2243,7 @@ void TSessionData::SetRekeyTime(uintptr_t Value)
 UnicodeString TSessionData::GetDefaultSessionName() const
 {
   UnicodeString Result;
-  UnicodeString HostName = Sysutils::TrimLeft(GetHostName());
+  UnicodeString HostName = ::TrimLeft(GetHostName());
   UnicodeString UserName = GetUserName();
   RemoveProtocolPrefix(HostName);
   // remove path
@@ -2361,7 +2361,7 @@ UnicodeString TSessionData::GetSessionUrl() const
   return Url;
 }
 
-void TSessionData::SetTimeDifference(const Classes::TDateTime & Value)
+void TSessionData::SetTimeDifference(const TDateTime & Value)
 {
   SET_SESSION_PROPERTY(TimeDifference);
 }
@@ -2567,7 +2567,7 @@ void TSessionData::PrepareProxyData() const
 void TSessionData::ParseIEProxyConfig() const
 {
   assert(FIEProxyConfig);
-  Classes::TStringList ProxyServerList;
+  TStringList ProxyServerList;
   ProxyServerList.SetDelimiter(L';');
   ProxyServerList.SetDelimitedText(FIEProxyConfig->Proxy);
   UnicodeString ProxyUrl;
@@ -2579,7 +2579,7 @@ void TSessionData::ParseIEProxyConfig() const
   for (intptr_t Index = 0; Index < ProxyServerList.GetCount(); ++Index)
   {
     UnicodeString ProxyServer = ProxyServerList.GetString(Index).Trim();
-    Classes::TStringList ProxyServerForScheme;
+    TStringList ProxyServerForScheme;
     ProxyServerForScheme.SetDelimiter(L'=');
     ProxyServerForScheme.SetDelimitedText(ProxyServer);
     UnicodeString ProxyScheme;
@@ -2887,7 +2887,7 @@ void TSessionData::SetFtpPingInterval(intptr_t Value)
   SET_SESSION_PROPERTY(FtpPingInterval);
 }
 
-Classes::TDateTime TSessionData::GetFtpPingIntervalDT() const
+TDateTime TSessionData::GetFtpPingIntervalDT() const
 {
   return SecToDateTime(GetFtpPingInterval());
 }
@@ -3061,7 +3061,7 @@ void TSessionData::SetCodePage(const UnicodeString & Value)
 
 void TSessionData::AdjustHostName(UnicodeString & HostName, const UnicodeString & Prefix) const
 {
-  if (Sysutils::LowerCase(HostName.SubString(1, Prefix.Length())) == Prefix)
+  if (::LowerCase(HostName.SubString(1, Prefix.Length())) == Prefix)
   {
     HostName.Delete(1, Prefix.Length());
   }
@@ -3080,7 +3080,7 @@ void TSessionData::RemoveProtocolPrefix(UnicodeString & HostName) const
 TFSProtocol TSessionData::TranslateFSProtocolNumber(intptr_t FSProtocol)
 {
   TFSProtocol Result = static_cast<TFSProtocol>(-1);
-  if (GetSessionVersion() >= Sysutils::GetVersionNumber2110())
+  if (GetSessionVersion() >= ::GetVersionNumber2110())
   {
     Result = static_cast<TFSProtocol>(FSProtocol);
   }
@@ -3131,7 +3131,7 @@ TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID)
 TFtps TSessionData::TranslateFtpEncryptionNumber(intptr_t FtpEncryption)
 {
   TFtps Result = GetFtps();
-  if ((GetSessionVersion() < Sysutils::GetVersionNumber2110()) &&
+  if ((GetSessionVersion() < ::GetVersionNumber2110()) &&
       (GetFSProtocol() == fsFTP) && (GetFtps() != ftpsNone))
   {
     switch (FtpEncryption)
@@ -3177,8 +3177,8 @@ TStoredSessionList::~TStoredSessionList()
 void TStoredSessionList::Load(THierarchicalStorage * Storage,
   bool AsModified, bool UseDefaults)
 {
-  std::unique_ptr<Classes::TStringList> SubKeys(new Classes::TStringList());
-  std::unique_ptr<Classes::TList> Loaded(new Classes::TList());
+  std::unique_ptr<TStringList> SubKeys(new TStringList());
+  std::unique_ptr<TList> Loaded(new TList());
   Storage->GetSubKeyNames(SubKeys.get());
   for (intptr_t Index = 0; Index < SubKeys->GetCount(); ++Index)
   {
@@ -3266,7 +3266,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
 }
 
 void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
-  bool All, bool RecryptPasswordOnly, Classes::TStrings * RecryptPasswordErrors)
+  bool All, bool RecryptPasswordOnly, TStrings * RecryptPasswordErrors)
 {
   std::unique_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
   DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults.get());
@@ -3277,7 +3277,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
     {
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults.get());
     }
-    catch (Sysutils::Exception & E)
+    catch (::Exception & E)
     {
       UnicodeString Message;
       if (RecryptPasswordOnly && ALWAYS_TRUE(RecryptPasswordErrors != nullptr) &&
@@ -3299,7 +3299,7 @@ void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
 }
 
 void TStoredSessionList::DoSave(bool All, bool Explicit,
-  bool RecryptPasswordOnly, Classes::TStrings * RecryptPasswordErrors)
+  bool RecryptPasswordOnly, TStrings * RecryptPasswordErrors)
 {
   std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(true));
   Storage->SetAccessMode(smReadWrite);
@@ -3317,7 +3317,7 @@ void TStoredSessionList::Save(bool All, bool Explicit)
   DoSave(All, Explicit, false, nullptr);
 }
 
-void TStoredSessionList::RecryptPasswords(Classes::TStrings * RecryptPasswordErrors)
+void TStoredSessionList::RecryptPasswords(TStrings * RecryptPasswordErrors)
 {
   DoSave(true, true, true, RecryptPasswordErrors);
 }
@@ -3366,7 +3366,7 @@ void TStoredSessionList::Saved()
 
 void TStoredSessionList::ImportFromFilezilla(const UnicodeString & /*AFileName*/)
 {
-  Classes::Error(SNotImplemented, 3004);
+  Error(SNotImplemented, 3004);
 /*
   const _di_IXMLDocument Document = interface_cast<Xmlintf::IXMLDocument>(new TXMLDocument(nullptr));
   Document->LoadFromFile(FileName);
@@ -3384,7 +3384,7 @@ void TStoredSessionList::ImportFromFilezilla(const UnicodeString & /*AFileName*/
 
 void TStoredSessionList::Export(const UnicodeString & /* AFileName */)
 {
-  Classes::Error(SNotImplemented, 3003);
+  Error(SNotImplemented, 3003);
 /*
   std::unique_ptr<THierarchicalStorage> Storage(new TIniFileStorage(FileName));
   Storage->SetAccessMode(smReadWrite);
@@ -3450,7 +3450,7 @@ void TStoredSessionList::Cleanup()
       Storage->RecursiveDeleteSubKey(GetConfiguration()->GetStoredSessionsSubKey());
     }
   }
-  catch (Sysutils::Exception & E)
+  catch (::Exception & E)
   {
     throw ExtException(&E, LoadStr(CLEANUP_SESSIONS_ERROR));
   }
@@ -3653,7 +3653,7 @@ void TStoredSessionList::ImportHostKeys(const UnicodeString & TargetKey,
 {
   std::unique_ptr<TRegistryStorage> SourceStorage(new TRegistryStorage(SourceKey));
   std::unique_ptr<TRegistryStorage> TargetStorage(new TRegistryStorage(TargetKey));
-  std::unique_ptr<Classes::TStringList> KeyList(new Classes::TStringList());
+  std::unique_ptr<TStringList> KeyList(new TStringList());
   TargetStorage->SetAccessMode(smReadWrite);
 
   if (SourceStorage->OpenRootKey(false) &&
@@ -3772,10 +3772,10 @@ void TStoredSessionList::GetFolderOrWorkspace(const UnicodeString & Name, TList 
   }
 }
 
-Classes::TStrings * TStoredSessionList::GetFolderOrWorkspaceList(
+TStrings * TStoredSessionList::GetFolderOrWorkspaceList(
   const UnicodeString & Name)
 {
-  std::unique_ptr<Classes::TStringList> Result(new Classes::TStringList());
+  std::unique_ptr<TStringList> Result(new TStringList());
 
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
@@ -3791,11 +3791,11 @@ Classes::TStrings * TStoredSessionList::GetFolderOrWorkspaceList(
   return Result.release();
 }
 
-Classes::TStrings * TStoredSessionList::GetWorkspaces()
+TStrings * TStoredSessionList::GetWorkspaces()
 {
-  std::unique_ptr<Classes::TStringList> Result(new Classes::TStringList());
+  std::unique_ptr<TStringList> Result(new TStringList());
   Result->SetSorted(true);
-  Result->SetDuplicates(Classes::dupIgnore);
+  Result->SetDuplicates(dupIgnore);
   Result->SetCaseSensitive(false);
 
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
@@ -3918,13 +3918,13 @@ UnicodeString GetCodePageAsString(uintptr_t CodePage)
   {
     return UnicodeString(cpInfoEx.CodePageName);
   }
-  return Sysutils::IntToStr(CONST_DEFAULT_CODEPAGE);
+  return ::IntToStr(CONST_DEFAULT_CODEPAGE);
 }
 
 UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSessionData * SessionData)
 {
   UnicodeString ANewFileName = StripPathQuotes(ExpandEnvironmentVariables(LogFileName));
-  Classes::TDateTime N = Classes::Now();
+  TDateTime N = Now();
   for (intptr_t Index = 1; Index < ANewFileName.Length(); ++Index)
   {
     if (ANewFileName[Index] == L'&')
@@ -3932,7 +3932,7 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
       UnicodeString Replacement;
       // keep consistent with TFileCustomCommand::PatternReplacement
       uint16_t Y, M, D, H, NN, S, MS;
-      Classes::TDateTime DateTime = N;
+      TDateTime DateTime = N;
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, NN, S, MS);
       switch (tolower(ANewFileName[Index + 1]))

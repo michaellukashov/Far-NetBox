@@ -331,7 +331,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
     }
   }
 
-  conf_set_int(conf, CONF_connect_timeout, static_cast<int>(Data->GetTimeout() * Classes::MSecsPerSec));
+  conf_set_int(conf, CONF_connect_timeout, static_cast<int>(Data->GetTimeout() * MSecsPerSec));
   conf_set_int(conf, CONF_sndbuf, static_cast<int>(Data->GetSendBuf()));
 
   // permanent settings
@@ -385,7 +385,7 @@ void TSecureShell::Open()
 
     CheckConnection(CONNECTION_FAILED);
   }
-  catch (Sysutils::Exception & E)
+  catch (::Exception & E)
   {
     if (FNoConnectionResponse && TryFtp())
     {
@@ -399,9 +399,9 @@ void TSecureShell::Open()
       throw;
     }
   }
-  FLastDataSent = Classes::Now();
+  FLastDataSent = Now();
 
-  FSessionInfo.LoginTime = Classes::Now();
+  FSessionInfo.LoginTime = Now();
 
   FAuthenticating = false;
   FAuthenticated = true;
@@ -525,7 +525,7 @@ void TSecureShell::Init()
       // unless this is tunnel session, it must be safe to send now
       assert(FBackend->sendok(FBackendHandle) || !FSessionData->GetTunnelPortFwd().IsEmpty());
     }
-    catch (Sysutils::Exception & E)
+    catch (::Exception & E)
     {
       if (FAuthenticating && !FAuthenticationLog.IsEmpty())
       {
@@ -537,7 +537,7 @@ void TSecureShell::Init()
       }
     }
   }
-  catch (Sysutils::Exception & E)
+  catch (::Exception & E)
   {
     if (FAuthenticating)
     {
@@ -585,7 +585,7 @@ void TSecureShell::PuttyLogEvent(const UnicodeString & Str)
 bool TSecureShell::PromptUser(bool /*ToServer*/,
   const UnicodeString & AName, bool /*NameRequired*/,
   const UnicodeString & Instructions, bool InstructionsRequired,
-  Classes::TStrings * Prompts, Classes::TStrings * Results)
+  TStrings * Prompts, TStrings * Results)
 {
   // there can be zero prompts!
 
@@ -721,11 +721,11 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 
   Name = Name.Trim();
 
-  UnicodeString Instructions2 = Sysutils::ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
-  Instructions2 = Sysutils::ReplaceStrAll(Instructions2, L"\x0A\x0D", L"\x01");
-  Instructions2 = Sysutils::ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
-  Instructions2 = Sysutils::ReplaceStrAll(Instructions2, L"\x0D", L"\x01");
-  Instructions2 = Sysutils::ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
+  UnicodeString Instructions2 = ::ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
+  Instructions2 = ::ReplaceStrAll(Instructions2, L"\x0A\x0D", L"\x01");
+  Instructions2 = ::ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
+  Instructions2 = ::ReplaceStrAll(Instructions2, L"\x0D", L"\x01");
+  Instructions2 = ::ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
   if (InstructionTranslation != nullptr)
   {
     TranslatePuttyMessage(InstructionTranslation, 1, Instructions2);
@@ -859,13 +859,13 @@ void TSecureShell::CWrite(const char * Data, intptr_t Length)
   }
 }
 
-void TSecureShell::RegisterReceiveHandler(Classes::TNotifyEvent Handler)
+void TSecureShell::RegisterReceiveHandler(TNotifyEvent Handler)
 {
   assert(FOnReceive == nullptr);
   FOnReceive = Handler;
 }
 
-void TSecureShell::UnregisterReceiveHandler(Classes::TNotifyEvent Handler)
+void TSecureShell::UnregisterReceiveHandler(TNotifyEvent Handler)
 {
   assert(FOnReceive == Handler);
   USEDPARAM(Handler);
@@ -1063,7 +1063,7 @@ UnicodeString TSecureShell::ReceiveLine()
   // We don't want end-of-line character
   Line.SetLength(Line.Length() - 1);
 
-  UnicodeString UnicodeLine = Sysutils::TrimRight(Sysutils::MB2W(Line.c_str(), (UINT)FSessionData->GetCodePageAsNumber()));
+  UnicodeString UnicodeLine = ::TrimRight(::MB2W(Line.c_str(), (UINT)FSessionData->GetCodePageAsNumber()));
   CaptureOutput(llOutput, UnicodeLine);
   return UnicodeLine;
 }
@@ -1074,7 +1074,7 @@ void TSecureShell::SendSpecial(int Code)
   CheckConnection();
   FBackend->special(FBackendHandle, static_cast<Telnet_Special>(Code));
   CheckConnection();
-  FLastDataSent = Classes::Now();
+  FLastDataSent = Now();
 }
 
 void TSecureShell::SendEOF()
@@ -1135,7 +1135,7 @@ void TSecureShell::SendBuffer(intptr_t & Result)
 
 void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
 {
-  Classes::TDateTime Start = Classes::Now();
+  TDateTime Start = Now();
   do
   {
     CheckConnection();
@@ -1152,14 +1152,14 @@ void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
       LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
     }
 
-    if (Classes::Now() - Start > FSessionData->GetTimeoutDT())
+    if (Now() - Start > FSessionData->GetTimeoutDT())
     {
       LogEvent(L"Waiting for dispatching send buffer timed out, asking user what to do.");
       uintptr_t Answer = TimeoutPrompt(MAKE_CALLBACK(TSecureShell::SendBuffer, this));
       switch (Answer)
       {
         case qaRetry:
-          Start = Classes::Now();
+          Start = Now();
           break;
 
         case qaOK:
@@ -1188,7 +1188,7 @@ void TSecureShell::Send(const uint8_t * Buf, intptr_t Length)
     LogEvent(FORMAT(L"Sent %d bytes", static_cast<int>(Length)));
     LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
   }
-  FLastDataSent = Classes::Now();
+  FLastDataSent = Now();
   // among other forces receive of pending data to free the servers's send buffer
   EventSelectLoop(0, false, nullptr);
 
@@ -1209,7 +1209,7 @@ void TSecureShell::SendNull()
 void TSecureShell::SendStr(const UnicodeString & Str)
 {
   CheckConnection();
-  AnsiString AnsiStr = Sysutils::W2MB(Str.c_str(), (UINT)FSessionData->GetCodePageAsNumber());
+  AnsiString AnsiStr = ::W2MB(Str.c_str(), (UINT)FSessionData->GetCodePageAsNumber());
   Send(reinterpret_cast<const uint8_t *>(AnsiStr.c_str()), AnsiStr.Length());
 }
 
@@ -1611,7 +1611,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, intptr_t & Result)
   }
 }
 
-class TPoolForDataEvent : public Classes::TObject
+class TPoolForDataEvent : public TObject
 {
 NB_DISABLE_COPY(TPoolForDataEvent)
 public:
@@ -1643,7 +1643,7 @@ void TSecureShell::WaitForData()
       LogEvent(L"Looking for incoming data");
     }
 
-    IncomingData = EventSelectLoop(FSessionData->GetTimeout() * Classes::MSecsPerSec, true, nullptr);
+    IncomingData = EventSelectLoop(FSessionData->GetTimeout() * MSecsPerSec, true, nullptr);
     if (!IncomingData)
     {
       assert(FWaitingForData == 0);
@@ -1911,7 +1911,7 @@ void TSecureShell::KeepAlive()
   else
   {
     // defer next keepalive attempt
-    FLastDataSent = Classes::Now();
+    FLastDataSent = Now();
   }
 }
 
@@ -2073,10 +2073,10 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   AnsiString AnsiStoredKeys(10240, '\0');
 
   if (retrieve_host_key(
-        Sysutils::W2MB(Host2.c_str(),
+        ::W2MB(Host2.c_str(),
              static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
         Port,
-        Sysutils::W2MB(KeyType.c_str(),
+        ::W2MB(KeyType.c_str(),
              static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
         const_cast<char *>(AnsiStoredKeys.c_str()), (int)AnsiStoredKeys.Length()) == 0)
   {
@@ -2212,7 +2212,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
 
       UnicodeString Message =
         ConfiguredKeyNotMatch ? FMTLOAD(CONFIGURED_KEY_NOT_MATCH, FSessionData->GetHostKey().c_str()) : LoadStr(KEY_NOT_VERIFIED);
-      std::unique_ptr<Sysutils::Exception> E(new Sysutils::Exception(MainInstructions(Message)));
+      std::unique_ptr<::Exception> E(new ::Exception(MainInstructions(Message)));
       FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, Fingerprint.c_str()));
     }
   }
@@ -2251,7 +2251,7 @@ void TSecureShell::AskAlg(const UnicodeString & AlgType,
 
   if (FUI->QueryUser(Msg, nullptr, qaYes | qaNo, nullptr, qtWarning) == qaNo)
   {
-    Classes::Abort();
+    Abort();
   }
 }
 

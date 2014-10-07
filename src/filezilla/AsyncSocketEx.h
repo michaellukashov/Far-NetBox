@@ -260,7 +260,7 @@ protected:
 	static CCriticalSectionWrapper m_sGlobalCriticalSection;
 
 	//Pointer to the data of the local thread
-	struct t_AsyncSocketExThreadData : public Classes::TObject
+	struct t_AsyncSocketExThreadData : public TObject
 	{
 		CAsyncSocketExHelperWindow *m_pHelperWindow;
 		int nInstanceCount;
@@ -269,7 +269,7 @@ protected:
 	} *m_pLocalAsyncSocketExThreadData;
 
 	//List of the data structures for all threads
-	static struct t_AsyncSocketExThreadDataList : public Classes::TObject
+	static struct t_AsyncSocketExThreadDataList : public TObject
 	{
 		t_AsyncSocketExThreadDataList *pNext;
 		t_AsyncSocketExThreadData *pThreadData;

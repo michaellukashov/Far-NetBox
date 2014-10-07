@@ -25,7 +25,7 @@
 
 class CServerPath;
 
-class t_directory : public Classes::TObject
+class t_directory : public TObject
 {
 public:
 	t_directory();
@@ -34,7 +34,7 @@ public:
 	t_server server;
 	CServerPath path;
 	int num;
-	class t_direntry : public Classes::TObject
+	class t_direntry : public TObject
 	{
 	public:
 		t_direntry();
@@ -48,7 +48,7 @@ public:
 		bool bUnsure; //Set by CControlSocket::FileTransfer when uploads fail after sending STOR/APPE
 		bool dir;
 		bool bLink;
-		class t_date : public Classes::TObject
+		class t_date : public TObject
 		{
 		public:
 			t_date();

@@ -222,9 +222,9 @@ void TCopyParamRule::SetData(const TCopyParamRuleData & Value)
 UnicodeString TCopyParamList::FInvalidChars(L"/\\[]");
 
 TCopyParamList::TCopyParamList() :
-  FRules(new Classes::TList()),
-  FCopyParams(new Classes::TList()),
-  FNames(new Classes::TStringList()),
+  FRules(new TList()),
+  FCopyParams(new TList()),
+  FNames(new TStringList()),
   FNameList(nullptr),
   FModified(false)
 {
@@ -255,7 +255,7 @@ void TCopyParamList::ValidateName(const UnicodeString & Name)
 {
   if (Name.LastDelimiter(FInvalidChars) > 0)
   {
-    throw Sysutils::Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), FInvalidChars.c_str()));
+    throw ::Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), FInvalidChars.c_str()));
   }
 }
 
@@ -402,7 +402,7 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
 {
   for (intptr_t Index = 0; Index < ACount; ++Index)
   {
-    UnicodeString Name = Sysutils::IntToStr(Index);
+    UnicodeString Name = ::IntToStr(Index);
     std::unique_ptr<TCopyParamRule> Rule(nullptr);
     std::unique_ptr<TCopyParamType> CopyParam(new TCopyParamType());
     if (Storage->OpenSubKey(Name, false))
@@ -433,7 +433,7 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
   Storage->ClearSubKeys();
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (Storage->OpenSubKey(Sysutils::IntToStr(Index), true))
+    if (Storage->OpenSubKey(::IntToStr(Index), true))
     {
       SCOPE_EXIT
       {
@@ -468,11 +468,11 @@ UnicodeString TCopyParamList::GetName(intptr_t Index) const
   return FNames->GetString(Index);
 }
 
-Classes::TStrings * TCopyParamList::GetNameList() const
+TStrings * TCopyParamList::GetNameList() const
 {
   if (FNameList == nullptr)
   {
-    FNameList = new Classes::TStringList();
+    FNameList = new TStringList();
 
     for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
@@ -496,7 +496,7 @@ bool TCopyParamList::GetAnyRule() const
 
 TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
   FLocale(0),
-  FLocales(new Classes::TStringList()),
+  FLocales(new TStringList()),
   FContinueOnError(false),
   FConfirmCommandSession(false),
   FPuttyPassword(false),
@@ -518,7 +518,6 @@ TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
   FSessionReopenAutoIdle(0)
 {
   FLastLocalesExts = L"*";
-  using namespace Classes;
   NB_STATIC_DOWNCAST(TStringList, FLocales)->SetSorted(true);
   NB_STATIC_DOWNCAST(TStringList, FLocales)->SetCaseSensitive(false);
   FCopyParamList = new TCopyParamList();
@@ -541,7 +540,7 @@ void TGUIConfiguration::Default()
   FCopyParamListDefaults = true;
   DefaultLocalized();
 
-  FIgnoreCancelBeforeFinish = Classes::TDateTime(0, 0, 3, 0);
+  FIgnoreCancelBeforeFinish = TDateTime(0, 0, 3, 0);
   FContinueOnError = false;
   FConfirmCommandSession = true;
   FSynchronizeParams = TTerminal::spNoConfirmation | TTerminal::spPreviewChanges;
@@ -556,7 +555,7 @@ void TGUIConfiguration::Default()
   FSessionRememberPassword = false;
   UnicodeString ProgramsFolder;
   SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
-  FDefaultPuttyPathOnly = Sysutils::IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
+  FDefaultPuttyPathOnly = ::IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
   FDefaultPuttyPath = FormatCommand(L"%PROGRAMFILES%\\PuTTY\\putty.exe", L"");
   FPuttyPath = FDefaultPuttyPath;
   SetPSftpPath(FormatCommand(L"%PROGRAMFILES%\\PuTTY\\psftp.exe", L""));
@@ -564,7 +563,7 @@ void TGUIConfiguration::Default()
   FTelnetForFtpInPutty = true;
   FPuttySession = L"WinSCP temporary session";
   FBeepOnFinish = false;
-  FBeepOnFinishAfter = Classes::TDateTime(0, 0, 30, 0);
+  FBeepOnFinishAfter = TDateTime(0, 0, 30, 0);
   FCopyParamCurrent = L"";
   FKeepUpToDateChangeDelay = 500;
   FChecksumAlg = L"md5";
@@ -744,7 +743,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   // can take care of it.
   if ((FPuttyPath.SubString(1, 1) != L"\"") &&
       (CompareFileName(ExpandEnvironmentVariables(FPuttyPath), FDefaultPuttyPathOnly) ||
-       Sysutils::FileExists(ExpandEnvironmentVariables(FPuttyPath))))
+       ::FileExists(ExpandEnvironmentVariables(FPuttyPath))))
   {
     FPuttyPath = FormatCommand(FPuttyPath, L"");
   }
@@ -791,7 +790,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
         static_cast<wchar_t>(ALocale & ~AdditionaLanguageMask);
     }
 
-    Module = Sysutils::ChangeFileExt(Module, UnicodeString(L".") + LocaleName);
+    Module = ::ChangeFileExt(Module, UnicodeString(L".") + LocaleName);
     // Look for a potential language/country translation
     NewInstance = ::LoadLibraryEx(Module.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
     if (!NewInstance)
@@ -812,13 +811,13 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 
   if (!NewInstance && !Internal)
   {
-    throw Sysutils::Exception(FMTLOAD(LOCALE_LOAD_ERROR, static_cast<int>(ALocale)));
+    throw ::Exception(FMTLOAD(LOCALE_LOAD_ERROR, static_cast<int>(ALocale)));
   }
   else
   {
     if (Internal)
     {
-      Classes::Error(SNotImplemented, 90);
+      Error(SNotImplemented, 90);
       NewInstance = 0; // FIXME  HInstance;
     }
   }
@@ -898,11 +897,11 @@ void TGUIConfiguration::SetLocaleSafe(LCID Value)
   }
 }
 
-Classes::TStrings * TGUIConfiguration::GetLocales()
+TStrings * TGUIConfiguration::GetLocales()
 {
-  Classes::Error(SNotImplemented, 93);
+  Error(SNotImplemented, 93);
   UnicodeString LocalesExts;
-  std::unique_ptr<Classes::TStringList> Exts(new Classes::TStringList());
+  std::unique_ptr<TStringList> Exts(new TStringList());
   Exts->SetSorted(true);
   Exts->SetCaseSensitive(false);
 
@@ -910,7 +909,7 @@ Classes::TStrings * TGUIConfiguration::GetLocales()
   TSearchRecChecked SearchRec;
   bool Found;
 
-  Found = (bool)(FindFirst(Sysutils::ChangeFileExt(ModuleFileName(), L".*"),
+  Found = (bool)(FindFirst(::ChangeFileExt(ModuleFileName(), L".*"),
     FindAttrs, SearchRec) == 0);
   {
     SCOPE_EXIT
@@ -920,7 +919,7 @@ Classes::TStrings * TGUIConfiguration::GetLocales()
     UnicodeString Ext;
     while (Found)
     {
-      Ext = Sysutils::ExtractFileExt(SearchRec.Name).UpperCase();
+      Ext = ::ExtractFileExt(SearchRec.Name).UpperCase();
       if ((Ext.Length() >= 3) && (Ext != L".EXE") && (Ext != L".COM") &&
           (Ext != L".DLL") && (Ext != L".INI"))
       {
@@ -994,10 +993,10 @@ Classes::TStrings * TGUIConfiguration::GetLocales()
     {
       if ((Exts->GetObject(Index) == nullptr) &&
           (Exts->GetString(Index).Length() == 3) &&
-          Sysutils::SameText(Exts->GetString(Index).SubString(1, 2), AdditionaLanguagePrefix))
+          ::SameText(Exts->GetString(Index).SubString(1, 2), AdditionaLanguagePrefix))
       {
         UnicodeString LangName = GetFileFileInfoString(L"LangName",
-          Sysutils::ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetString(Index)));
+          ::ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetString(Index)));
         if (!LangName.IsEmpty())
         {
           FLocales->AddObject(LangName, reinterpret_cast<TObject *>(static_cast<size_t>(

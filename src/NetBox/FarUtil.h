@@ -5,7 +5,7 @@
 /**
  * File read/write wrapper
  */
-class CNBFile : public Classes::TObject
+class CNBFile : public TObject
 {
   NB_DISABLE_COPY(CNBFile)
   public:

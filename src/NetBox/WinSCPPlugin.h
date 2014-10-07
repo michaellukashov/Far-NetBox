@@ -8,7 +8,7 @@
 class TWinSCPFileSystem;
 class TCopyParamType;
 
-struct TMessageParams : public Classes::TObject
+struct TMessageParams : public TObject
 {
 NB_DISABLE_COPY(TMessageParams)
 public:
@@ -48,19 +48,19 @@ public:
   virtual ~TWinSCPPlugin();
   virtual VersionInfo GetMinFarVersion();
 
-  virtual void HandleException(Sysutils::Exception * E, OPERATION_MODES OpMode = 0);
-  uintptr_t MoreMessageDialog(const UnicodeString & Str, Classes::TStrings * MoreMessages,
+  virtual void HandleException(::Exception * E, OPERATION_MODES OpMode = 0);
+  uintptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
     TQueryType Type, uintptr_t Answers, const TMessageParams * Params = nullptr);
-  void ShowExtendedException(Sysutils::Exception * E);
+  void ShowExtendedException(::Exception * E);
   bool CopyParamCustomDialog(TCopyParamType & CopyParam,
     intptr_t CopyParamAttrs);
   virtual void SetStartupInfo(const struct PluginStartupInfo * Info);
 
 protected:
   virtual bool HandlesFunction(THandlesFunction Function);
-  virtual void GetPluginInfoEx(PLUGIN_FLAGS & Flags, Classes::TStrings * DiskMenuStrings,
-    Classes::TStrings * PluginMenuStrings, Classes::TStrings * PluginConfigStrings,
-    Classes::TStrings * CommandPrefixes);
+  virtual void GetPluginInfoEx(PLUGIN_FLAGS & Flags, TStrings * DiskMenuStrings,
+    TStrings * PluginMenuStrings, TStrings * PluginConfigStrings,
+    TStrings * CommandPrefixes);
   virtual TCustomFarFileSystem * OpenPluginEx(OPENFROM OpenFrom, intptr_t Item);
   virtual bool ConfigureEx(const GUID * Guid);
   virtual intptr_t ProcessEditorEventEx(const struct ProcessEditorEventInfo * Info);

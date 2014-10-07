@@ -414,29 +414,29 @@ void UnicodeString::Init(const char * Str, intptr_t Length)
 
 UnicodeString & UnicodeString::Lower(intptr_t nStartPos, intptr_t nLength)
 {
-  Data = Sysutils::LowerCase(SubString(nStartPos, nLength)).c_str();
+  Data = ::LowerCase(SubString(nStartPos, nLength)).c_str();
   return *this;
 }
 
 UnicodeString & UnicodeString::Upper(intptr_t nStartPos, intptr_t nLength)
 {
-  Data = Sysutils::UpperCase(SubString(nStartPos, nLength)).c_str();
+  Data = ::UpperCase(SubString(nStartPos, nLength)).c_str();
   return *this;
 }
 
 intptr_t UnicodeString::Compare(const UnicodeString & Str) const
 {
-  return Sysutils::AnsiCompare(*this, Str);
+  return ::AnsiCompare(*this, Str);
 }
 
 intptr_t UnicodeString::CompareIC(const UnicodeString & Str) const
 {
-  return Sysutils::AnsiCompareIC(*this, Str);
+  return ::AnsiCompareIC(*this, Str);
 }
 
 intptr_t UnicodeString::ToInt() const
 {
-  return Sysutils::StrToIntDef(*this, 0);
+  return ::StrToIntDef(*this, 0);
 }
 
 UnicodeString & UnicodeString::Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str, intptr_t DataLen)
@@ -447,7 +447,7 @@ UnicodeString & UnicodeString::Replace(intptr_t Pos, intptr_t Len, const wchar_t
 
 UnicodeString & UnicodeString::Append(const char * lpszAdd, UINT CodePage)
 {
-  Data.append(Sysutils::MB2W(lpszAdd, CodePage).c_str());
+  Data.append(::MB2W(lpszAdd, CodePage).c_str());
   return *this;
 }
 
@@ -472,34 +472,34 @@ UnicodeString UnicodeString::SubStr(intptr_t Pos, intptr_t Len) const
 
 bool UnicodeString::IsDelimiter(const UnicodeString & Chars, intptr_t Pos) const
 {
-  return Sysutils::IsDelimiter(Chars, *this, Pos);
+  return ::IsDelimiter(Chars, *this, Pos);
 }
 
 intptr_t UnicodeString::LastDelimiter(const UnicodeString & Delimiters) const
 {
-  return Sysutils::LastDelimiter(Delimiters, *this);
+  return ::LastDelimiter(Delimiters, *this);
 }
 
 UnicodeString UnicodeString::Trim() const
 {
-  return Sysutils::Trim(*this);
+  return ::Trim(*this);
 }
 
 UnicodeString UnicodeString::TrimLeft() const
 {
-  return Sysutils::TrimLeft(*this);
+  return ::TrimLeft(*this);
 }
 
 UnicodeString UnicodeString::TrimRight() const
 {
-  return Sysutils::TrimRight(*this);
+  return ::TrimRight(*this);
 }
 
 void UnicodeString::sprintf(const wchar_t * fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
-  Data = Sysutils::Format(fmt, args).c_str();
+  Data = ::Format(fmt, args).c_str();
   va_end(args);
 }
 

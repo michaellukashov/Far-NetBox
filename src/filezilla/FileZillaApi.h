@@ -39,7 +39,7 @@
 //You don't have to fill this struct, you may use the command specific
 //functions which is easier.
 //See below for a list of supported commands and their parameters.
-struct t_command : public Classes::TObject
+struct t_command : public TObject
 {
 	int id; //Type of command, see below
 	CString param1; //Parameters for this command
@@ -126,7 +126,7 @@ struct t_command : public Classes::TObject
 #endif
 #define FZ_ASYNCREQUEST_NEEDPASS 10
 
-class CAsyncRequestData : public Classes::TObject
+class CAsyncRequestData : public TObject
 {
 public:
 	CAsyncRequestData();
@@ -296,7 +296,7 @@ public:
 
 class CMainThread;
 class CFileZillaTools;
-class CFileZillaApi : public Classes::TObject
+class CFileZillaApi : public TObject
 {
 public:
 	BOOL IsValid() const;

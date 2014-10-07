@@ -10,8 +10,6 @@
 #include "CoreMain.h"
 #include "Interface.h"
 
-using namespace Sysutils;
-
 static bool WellKnownException(
   const Exception * E, UnicodeString * AMessage, const wchar_t ** ACounterName, Exception ** AClone, bool Rethrow)
 {
@@ -161,13 +159,13 @@ bool ShouldDisplayException(Exception * E)
   return ExceptionMessageFormatted(E, Message);
 }
 
-Classes::TStrings * ExceptionToMoreMessages(Exception * E)
+TStrings * ExceptionToMoreMessages(Exception * E)
 {
-  Classes::TStrings * Result = nullptr;
+  TStrings * Result = nullptr;
   UnicodeString Message;
   if (ExceptionMessage(E, Message))
   {
-    Result = new Classes::TStringList();
+    Result = new TStringList();
     Result->Add(Message);
     ExtException * ExtE = NB_STATIC_DOWNCAST(ExtException, E);
     if ((ExtE != nullptr) && (ExtE->GetMoreMessages() != nullptr))
@@ -264,7 +262,7 @@ ExtException::ExtException(const UnicodeString & Msg, Exception * E, const Unico
     {
       if (FMoreMessages == nullptr)
       {
-        FMoreMessages = new Classes::TStringList();
+        FMoreMessages = new TStringList();
       }
       FMoreMessages->Append(UnformatMessage(Msg));
     }
@@ -284,7 +282,7 @@ ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & More
   }
 }
 
-ExtException::ExtException(const UnicodeString & Msg, Classes::TStrings * MoreMessages,
+ExtException::ExtException(const UnicodeString & Msg, TStrings * MoreMessages,
   bool Own, const UnicodeString & HelpKeyword) :
   Exception(Msg),
   FMoreMessages(nullptr),
@@ -296,7 +294,7 @@ ExtException::ExtException(const UnicodeString & Msg, Classes::TStrings * MoreMe
   }
   else
   {
-    FMoreMessages = new Classes::TStringList();
+    FMoreMessages = new TStringList();
     FMoreMessages->Assign(MoreMessages);
   }
 }
@@ -307,7 +305,7 @@ void ExtException::AddMoreMessages(const Exception * E)
   {
     if (FMoreMessages == nullptr)
     {
-      FMoreMessages = new Classes::TStringList();
+      FMoreMessages = new TStringList();
     }
 
     const ExtException * ExtE = NB_STATIC_DOWNCAST_CONST(ExtException, E);
@@ -367,7 +365,7 @@ UnicodeString SysErrorMessageForError(int LastError)
   if (LastError != 0)
   {
     //Result = FORMAT(L"System Error. Code: %d.\r\n%s", LastError, SysErrorMessage(LastError).c_str());
-    Result = FMTLOAD(SOSError, LastError, Sysutils::SysErrorMessage(LastError).c_str());
+    Result = FMTLOAD(SOSError, LastError, ::SysErrorMessage(LastError).c_str());
   }
   return Result;
 }

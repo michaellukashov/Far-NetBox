@@ -61,7 +61,7 @@ private:
   bool FQueueIndividually;
 };
 
-struct TCopyParamRuleData : public Classes::TObject
+struct TCopyParamRuleData : public TObject
 {
   UnicodeString HostName;
   UnicodeString UserName;
@@ -71,7 +71,7 @@ struct TCopyParamRuleData : public Classes::TObject
   void Default();
 };
 
-class TCopyParamRule : public Classes::TObject
+class TCopyParamRule : public TObject
 {
 NB_DECLARE_CLASS(TCopyParamRule)
 public:
@@ -101,7 +101,7 @@ private:
     const UnicodeString & Value, bool Path, bool Local = true) const;
 };
 
-class TCopyParamList : public Classes::TObject
+class TCopyParamList : public TObject
 {
 friend class TGUIConfiguration;
 public:
@@ -138,15 +138,15 @@ public:
   const TCopyParamRule * GetRule(intptr_t Index) const;
   const TCopyParamType * GetCopyParam(intptr_t Index) const;
   bool GetModified() const { return FModified; }
-  Classes::TStrings * GetNameList() const;
+  TStrings * GetNameList() const;
   bool GetAnyRule() const;
 
 private:
   static UnicodeString FInvalidChars;
-  Classes::TList * FRules;
-  Classes::TList * FCopyParams;
-  Classes::TStrings * FNames;
-  mutable Classes::TStrings * FNameList;
+  TList * FRules;
+  TList * FCopyParams;
+  TStrings * FNames;
+  mutable TStrings * FNameList;
   bool FModified;
 
   void Reset();
@@ -170,7 +170,7 @@ public:
     UnicodeString * AFileName = nullptr);
   HANDLE GetResourceModule();
   // virtual void SetResourceModule(HINSTANCE Instance);
-  Classes::TStrings * GetLocales();
+  TStrings * GetLocales();
   LCID InternalLocale() const;
   void FreeResourceModule(HANDLE Instance);
   void SetDefaultCopyParam(const TGUICopyParamType & Value);
@@ -235,13 +235,13 @@ public:
   void SetTelnetForFtpInPutty(bool Value) { FTelnetForFtpInPutty = Value; }
   UnicodeString GetPuttySession() const;
   void SetPuttySession(const UnicodeString & Value);
-  Classes::TDateTime GetIgnoreCancelBeforeFinish() const { return FIgnoreCancelBeforeFinish; }
-  void SetIgnoreCancelBeforeFinish(const Classes::TDateTime & Value) { FIgnoreCancelBeforeFinish = Value; }
+  TDateTime GetIgnoreCancelBeforeFinish() const { return FIgnoreCancelBeforeFinish; }
+  void SetIgnoreCancelBeforeFinish(const TDateTime & Value) { FIgnoreCancelBeforeFinish = Value; }
   TGUICopyParamType & GetDefaultCopyParam() { return FDefaultCopyParam; }
   bool GetBeepOnFinish() const { return FBeepOnFinish; }
   void SetBeepOnFinish(bool Value) { FBeepOnFinish = Value; }
-  Classes::TDateTime GetBeepOnFinishAfter() const { return FBeepOnFinishAfter; }
-  void SetBeepOnFinishAfter(const Classes::TDateTime & Value) { FBeepOnFinishAfter = Value; }
+  TDateTime GetBeepOnFinishAfter() const { return FBeepOnFinishAfter; }
+  void SetBeepOnFinishAfter(const TDateTime & Value) { FBeepOnFinishAfter = Value; }
   UnicodeString GetCopyParamCurrent() const;
   const TRemoteProperties & GetNewDirectoryProperties() const { return FNewDirectoryProperties; }
   intptr_t GetKeepUpToDateChangeDelay() const { return FKeepUpToDateChangeDelay; }
@@ -255,7 +255,7 @@ protected:
   mutable LCID FLocale;
 
 private:
-  Classes::TStrings * FLocales;
+  TStrings * FLocales;
   UnicodeString FLastLocalesExts;
   bool FContinueOnError;
   bool FConfirmCommandSession;
@@ -269,7 +269,7 @@ private:
   intptr_t FSynchronizeModeAuto;
   intptr_t FSynchronizeMode;
   intptr_t FMaxWatchDirectories;
-  Classes::TDateTime FIgnoreCancelBeforeFinish;
+  TDateTime FIgnoreCancelBeforeFinish;
   bool FQueueAutoPopup;
   bool FSessionRememberPassword;
   intptr_t FQueueTransfersLimit;
@@ -277,7 +277,7 @@ private:
   intptr_t FQueueKeepDoneItemsFor;
   TGUICopyParamType FDefaultCopyParam;
   bool FBeepOnFinish;
-  Classes::TDateTime FBeepOnFinishAfter;
+  TDateTime FBeepOnFinishAfter;
   UnicodeString FDefaultPuttyPathOnly;
   UnicodeString FDefaultPuttyPath;
   TCopyParamList * FCopyParamList;

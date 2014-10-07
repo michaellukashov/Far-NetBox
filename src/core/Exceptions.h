@@ -6,12 +6,12 @@
 #include <SysInit.hpp>
 #include <System.hpp>
 
-bool ShouldDisplayException(Sysutils::Exception * E);
-bool ExceptionMessage(const Sysutils::Exception * E, UnicodeString & Message);
-bool ExceptionMessageFormatted(const Sysutils::Exception * E, UnicodeString & Message);
+bool ShouldDisplayException(::Exception * E);
+bool ExceptionMessage(const ::Exception * E, UnicodeString & Message);
+bool ExceptionMessageFormatted(const ::Exception * E, UnicodeString & Message);
 UnicodeString LastSysErrorMessage();
-Classes::TStrings * ExceptionToMoreMessages(Sysutils::Exception * E);
-bool IsInternalException(const Sysutils::Exception * E);
+TStrings * ExceptionToMoreMessages(::Exception * E);
+bool IsInternalException(const ::Exception * E);
 
 enum TOnceDoneOperation
 {
@@ -20,7 +20,7 @@ enum TOnceDoneOperation
   odoShutDown
 };
 
-class ExtException : public Sysutils::Exception
+class ExtException : public ::Exception
 {
 NB_DECLARE_CLASS(ExtException)
 public:
@@ -31,16 +31,16 @@ public:
   // "copy the exception", just append message to the end
   explicit ExtException(const UnicodeString & Msg, Exception * E, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
-  explicit ExtException(const UnicodeString & Msg, Classes::TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(const UnicodeString & Msg, TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
   virtual ~ExtException(void) noexcept;
-  Classes::TStrings * GetMoreMessages() const { return FMoreMessages; }
+  TStrings * GetMoreMessages() const { return FMoreMessages; }
   UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
 
-  explicit ExtException(const UnicodeString & Msg) : Sysutils::Exception(Msg), FMoreMessages(nullptr) {}
-  explicit ExtException(int Ident) : Sysutils::Exception(Ident), FMoreMessages(nullptr) {}
-  explicit ExtException(const UnicodeString & Msg, int AHelpContext) : Sysutils::Exception(Msg, AHelpContext), FMoreMessages(nullptr) {}
+  explicit ExtException(const UnicodeString & Msg) : ::Exception(Msg), FMoreMessages(nullptr) {}
+  explicit ExtException(int Ident) : ::Exception(Ident), FMoreMessages(nullptr) {}
+  explicit ExtException(const UnicodeString & Msg, int AHelpContext) : ::Exception(Msg, AHelpContext), FMoreMessages(nullptr) {}
 
-  ExtException(const ExtException & E) : Sysutils::Exception(L""), FMoreMessages(nullptr)
+  ExtException(const ExtException & E) : ::Exception(L""), FMoreMessages(nullptr)
   { AddMoreMessages(&E); }
   ExtException & operator =(const ExtException &rhs)
   { Message = rhs.Message; AddMoreMessages(&rhs); return *this; }
@@ -53,7 +53,7 @@ protected:
   void AddMoreMessages(const Exception * E);
 
 private:
-  Classes::TStrings * FMoreMessages;
+  TStrings * FMoreMessages;
   UnicodeString FHelpKeyword;
 };
 
@@ -128,16 +128,16 @@ public:
   TOnceDoneOperation Operation;
 };
 
-class ECallbackGuardAbort : public Sysutils::EAbort
+class ECallbackGuardAbort : public ::EAbort
 {
 NB_DECLARE_CLASS(ECallbackGuardAbort)
 public:
   ECallbackGuardAbort();
 };
 
-Sysutils::Exception * CloneException(Sysutils::Exception * Exception);
-void RethrowException(Sysutils::Exception * E);
-UnicodeString GetExceptionHelpKeyword(Sysutils::Exception * E);
+::Exception * CloneException(::Exception * Exception);
+void RethrowException(::Exception * E);
+UnicodeString GetExceptionHelpKeyword(::Exception * E);
 UnicodeString MergeHelpKeyword(const UnicodeString & PrimaryHelpKeyword, const UnicodeString & SecondaryHelpKeyword);
 bool IsInternalErrorHelpKeyword(const UnicodeString & HelpKeyword);
 

@@ -11,17 +11,15 @@
 #include <Sysutils.hpp>
 #include <rtlconsts.h>
 
-namespace Classes {
-
 void Abort()
 {
-  throw Sysutils::EAbort(L"");
+  throw ::EAbort(L"");
 }
 
 void Error(int ErrorID, intptr_t data)
 {
   UnicodeString Msg = FMTLOAD(ErrorID, data);
-  throw ExtException((Sysutils::Exception *)nullptr, Msg);
+  throw ExtException((::Exception *)nullptr, Msg);
 }
 
 bool TObject::IsKindOf(TObjectClassId ClassId) const
@@ -66,7 +64,7 @@ TPersistent * TPersistent::GetOwner()
 void TPersistent::AssignError(const TPersistent * Source)
 {
   (void)Source;
-  throw Sysutils::Exception(L"Cannot assign");
+  throw ::Exception(L"Cannot assign");
 }
 
 TList::TList()
@@ -87,7 +85,7 @@ void TList::SetCount(intptr_t NewCount)
 {
   if (NewCount == NPOS)
   {
-    Classes::Error(SListCountError, NewCount);
+    Error(SListCountError, NewCount);
   }
   if (NewCount <= static_cast<intptr_t>(FList.size()))
   {
@@ -109,7 +107,7 @@ void TList::SetItem(intptr_t Index, void * Item)
 {
   if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FList.size())))
   {
-    Classes::Error(SListIndexError, Index);
+    Error(SListIndexError, Index);
   }
   FList[Index] = Item;
 }
@@ -149,7 +147,7 @@ void TList::Move(intptr_t CurIndex, intptr_t NewIndex)
   {
     if ((NewIndex == NPOS) || (NewIndex >= static_cast<intptr_t>(FList.size())))
     {
-      Classes::Error(SListIndexError, NewIndex);
+      Error(SListIndexError, NewIndex);
     }
     void * Item = GetItem(CurIndex);
     FList[CurIndex] = nullptr;
@@ -163,7 +161,7 @@ void TList::Delete(intptr_t Index)
 {
   if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FList.size())))
   {
-    Classes::Error(SListIndexError, Index);
+    Error(SListIndexError, Index);
   }
   void * Temp = GetItem(Index);
   FList.erase(FList.begin() + Index);
@@ -177,7 +175,7 @@ void TList::Insert(intptr_t Index, void * Item)
 {
   if ((Index == NPOS) || (Index > static_cast<intptr_t>(FList.size())))
   {
-    Classes::Error(SListIndexError, Index);
+    Error(SListIndexError, Index);
   }
   if (Index <= static_cast<intptr_t>(FList.size()))
   {
@@ -261,7 +259,7 @@ void TList::Sort()
 {
   // if (FList.size() > 1)
     // QuickSort(FList, 0, GetCount() - 1, Compare);
-  Classes::Error(SNotImplemented, 15);
+  Error(SNotImplemented, 15);
 }
 
 TObjectList::TObjectList() :
@@ -495,7 +493,7 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
 
 intptr_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const
 {
-  return static_cast<intptr_t>(Sysutils::AnsiCompareText(S1, S2));
+  return static_cast<intptr_t>(::AnsiCompareText(S1, S2));
 }
 
 void TStrings::Assign(const TPersistent * Source)
@@ -670,7 +668,7 @@ intptr_t TStrings::IndexOfName(const UnicodeString & Name) const
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     UnicodeString S = GetString(Index);
-    intptr_t P = Sysutils::AnsiPos(S, L'=');
+    intptr_t P = ::AnsiPos(S, L'=');
     if ((P > 0) && (CompareStrings(S.SubStr(1, P - 1), Name) == 0))
     {
       return Index;
@@ -686,13 +684,13 @@ const UnicodeString TStrings::GetName(intptr_t Index) const
 
 void TStrings::SetName(intptr_t /* Index */, const UnicodeString & /* Value */)
 {
-  Classes::Error(SNotImplemented, 2012);
+  Error(SNotImplemented, 2012);
 }
 
 UnicodeString TStrings::ExtractName(const UnicodeString & S) const
 {
   UnicodeString Result = S;
-  intptr_t P = Sysutils::AnsiPos(Result, L'=');
+  intptr_t P = ::AnsiPos(Result, L'=');
   if (P > 0)
   {
     Result.SetLength(P - 1);
@@ -755,7 +753,7 @@ void TStrings::Append(const UnicodeString & Value)
 
 void TStrings::SaveToStream(TStream * /*Stream*/) const
 {
-  Classes::Error(SNotImplemented, 12);
+  Error(SNotImplemented, 12);
 }
 
 intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2)
@@ -813,7 +811,7 @@ intptr_t TStringList::AddObject(const UnicodeString & S, TObject * AObject)
           return Result;
           break;
         case dupError:
-          Classes::Error(SDuplicateString, 2);
+          Error(SDuplicateString, 2);
           break;
       }
     }
@@ -877,11 +875,11 @@ void TStringList::SetString(intptr_t Index, const UnicodeString & S)
 {
   if (GetSorted())
   {
-    Classes::Error(SSortedListError, 0);
+    Error(SSortedListError, 0);
   }
   if ((Index == NPOS) || (Index > static_cast<intptr_t>(FStrings.size())))
   {
-    Classes::Error(SListIndexError, Index);
+    Error(SListIndexError, Index);
   }
   Changing();
   if (Index < static_cast<intptr_t>(FStrings.size()))
@@ -899,7 +897,7 @@ void TStringList::Delete(intptr_t Index)
 {
   if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FStrings.size())))
   {
-    Classes::Error(SListIndexError, Index);
+    Error(SListIndexError, Index);
   }
   Changing();
   FStrings.erase(FStrings.begin() + Index);
@@ -911,7 +909,7 @@ TObject * TStringList::GetObject(intptr_t Index) const
 {
   if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FObjects.size())))
   {
-    Classes::Error(SListIndexError, Index);
+    Error(SListIndexError, Index);
   }
   return FObjects[Index];
 }
@@ -920,11 +918,11 @@ void TStringList::InsertObject(intptr_t Index, const UnicodeString & Key, TObjec
 {
   if (GetSorted())
   {
-    Classes::Error(SSortedListError, 0);
+    Error(SSortedListError, 0);
   }
   if ((Index == NPOS) || (Index > GetCount()))
   {
-    Classes::Error(SListIndexError, Index);
+    Error(SListIndexError, Index);
   }
   InsertItem(Index, Key, AObject);
 }
@@ -933,7 +931,7 @@ void TStringList::InsertItem(intptr_t Index, const UnicodeString & S, TObject * 
 {
   if ((Index == NPOS) || (Index > GetCount()))
   {
-    Classes::Error(SListIndexError, Index);
+    Error(SListIndexError, Index);
   }
   Changing();
   if (Index == GetCount())
@@ -953,7 +951,7 @@ const UnicodeString & TStringList::GetString(intptr_t Index) const
 {
   if ((Index == NPOS) || (Index > static_cast<intptr_t>(FStrings.size())))
   {
-    Classes::Error(SListIndexError, Index);
+    Error(SListIndexError, Index);
   }
   if (Index == static_cast<intptr_t>(FStrings.size()))
   {
@@ -1007,7 +1005,7 @@ void TStringList::SetObject(intptr_t Index, TObject * AObject)
 {
   if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FObjects.size())))
   {
-    Classes::Error(SListIndexError, Index);
+    Error(SListIndexError, Index);
   }
   Changing();
   FObjects[Index] = AObject;
@@ -1119,11 +1117,11 @@ intptr_t TStringList::CompareStrings(const UnicodeString & S1, const UnicodeStri
 {
   if (GetCaseSensitive())
   {
-    return Sysutils::AnsiCompareStr(S1, S2);
+    return ::AnsiCompareStr(S1, S2);
   }
   else
   {
-    return Sysutils::AnsiCompareText(S1, S2);
+    return ::AnsiCompareText(S1, S2);
   }
 }
 
@@ -1135,7 +1133,7 @@ TDateTime::TDateTime(uint16_t Hour,
 
 bool TDateTime::operator ==(const TDateTime & rhs)
 {
-  return Sysutils::IsZero(FValue - rhs.FValue);
+  return ::IsZero(FValue - rhs.FValue);
 }
 
 UnicodeString TDateTime::DateString() const
@@ -1170,13 +1168,13 @@ UnicodeString TDateTime::FormatString(wchar_t * fmt) const
 void TDateTime::DecodeDate(uint16_t & Y,
   uint16_t & M, uint16_t & D) const
 {
-  Sysutils::DecodeDate(*this, Y, M, D);
+  ::DecodeDate(*this, Y, M, D);
 }
 
 void TDateTime::DecodeTime(uint16_t & H,
   uint16_t & N, uint16_t & S, uint16_t & MS) const
 {
-  Sysutils::DecodeTime(*this, H, N, S, MS);
+  ::DecodeTime(*this, H, N, S, MS);
 }
 
 TDateTime Now()
@@ -1184,8 +1182,8 @@ TDateTime Now()
   TDateTime Result(0.0);
   SYSTEMTIME SystemTime;
   ::GetLocalTime(&SystemTime);
-  Result = Sysutils::EncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay) +
-    Sysutils::EncodeTime(SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds);
+  Result = ::EncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay) +
+    ::EncodeTime(SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds);
   return Result;
 }
 
@@ -1322,7 +1320,7 @@ void TStream::ReadBuffer(void * Buffer, int64_t Count)
 {
   if ((Count != 0) && (Read(Buffer, Count) != Count))
   {
-    throw Sysutils::Exception(FMTLOAD(SReadError));
+    throw ::Exception(FMTLOAD(SReadError));
   }
 }
 
@@ -1330,13 +1328,13 @@ void TStream::WriteBuffer(const void * Buffer, int64_t Count)
 {
   if ((Count != 0) && (Write(Buffer, Count) != Count))
   {
-    throw Sysutils::Exception(FMTLOAD(SWriteError));
+    throw ::Exception(FMTLOAD(SWriteError));
   }
 }
 
 void ReadError(const UnicodeString & Name)
 {
-  throw Sysutils::Exception(FORMAT(L"InvalidRegType: %s", Name.c_str())); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
+  throw ::Exception(FORMAT(L"InvalidRegType: %s", Name.c_str())); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
 
 THandleStream::THandleStream(HANDLE AHandle) :
@@ -1352,7 +1350,7 @@ THandleStream::~THandleStream()
 
 int64_t THandleStream::Read(void * Buffer, int64_t Count)
 {
-  int64_t Result = Sysutils::FileRead(FHandle, Buffer, Count);
+  int64_t Result = ::FileRead(FHandle, Buffer, Count);
   if (Result == -1)
   {
     Result = 0;
@@ -1362,7 +1360,7 @@ int64_t THandleStream::Read(void * Buffer, int64_t Count)
 
 int64_t THandleStream::Write(const void * Buffer, int64_t Count)
 {
-  int64_t Result = Sysutils::FileWrite(FHandle, Buffer, Count);
+  int64_t Result = ::FileWrite(FHandle, Buffer, Count);
   if (Result == -1)
   {
     Result = 0;
@@ -1372,7 +1370,7 @@ int64_t THandleStream::Write(const void * Buffer, int64_t Count)
 
 int64_t THandleStream::Seek(int64_t Offset, int Origin)
 {
-  int64_t Result = Sysutils::FileSeek(FHandle, Offset, Origin);
+  int64_t Result = ::FileSeek(FHandle, Offset, Origin);
   return Result;
 }
 
@@ -1396,12 +1394,12 @@ int64_t THandleStream::Seek(const int64_t Offset, TSeekOrigin Origin)
 
 void THandleStream::SetSize(const int64_t NewSize)
 {
-  Seek(NewSize, Classes::soFromBeginning);
+  Seek(NewSize, soFromBeginning);
   // LARGE_INTEGER li;
   // li.QuadPart = size;
   // if (SetFilePointer(fh.get(), li.LowPart, &li.HighPart, FILE_BEGIN) == -1)
   // handleLastErrorImpl(_path);
-  Sysutils::Win32Check(::SetEndOfFile(FHandle) > 0);
+  ::Win32Check(::SetEndOfFile(FHandle) > 0);
 }
 
 TMemoryStream::TMemoryStream() :
@@ -1447,13 +1445,13 @@ int64_t TMemoryStream::Seek(const int64_t Offset, TSeekOrigin Origin)
 {
   switch (Origin)
   {
-    case Classes::soFromBeginning:
+    case soFromBeginning:
       FPosition = Offset;
       break;
-    case Classes::soFromCurrent:
+    case soFromCurrent:
       FPosition += Offset;
       break;
-    case Classes::soFromEnd:
+    case soFromEnd:
       FPosition = FSize + Offset;
       break;
   }
@@ -1473,7 +1471,7 @@ void TMemoryStream::SaveToFile(const UnicodeString & /* AFileName */)
 {
   // TFileStream Stream(FileName, fmCreate);
   // SaveToStream(Stream);
-  Classes::Error(SNotImplemented, 1203);
+  Error(SNotImplemented, 1203);
 }
 
 void TMemoryStream::Clear()
@@ -1490,7 +1488,7 @@ void TMemoryStream::SetSize(const int64_t NewSize)
   FSize = NewSize;
   if (OldPosition > NewSize)
   {
-    Seek(0, Classes::soFromEnd);
+    Seek(0, soFromEnd);
   }
 }
 
@@ -1709,7 +1707,7 @@ bool TRegistry::OpenKey(const UnicodeString & Key, bool CanCreate)
 {
   bool Result = false;
   UnicodeString S = Key;
-  bool Relative = Classes::IsRelative(S);
+  bool Relative = IsRelative(S);
 
   HKEY TempKey = 0;
   if (!CanCreate || S.IsEmpty())
@@ -1737,7 +1735,7 @@ bool TRegistry::DeleteKey(const UnicodeString & Key)
 {
   bool Result = false;
   UnicodeString S = Key;
-  bool Relative = Classes::IsRelative(S);
+  bool Relative = IsRelative(S);
   HKEY OldKey = GetCurrentKey();
   HKEY DeleteKey = GetKey(Key);
   if (DeleteKey != 0)
@@ -1858,7 +1856,7 @@ double TRegistry::ReadFloat(const UnicodeString & Name) const
   int Len = GetData(Name, &Result, sizeof(double), RegData);
   if ((RegData != rdBinary) || (Len != sizeof(double)))
   {
-    Classes::ReadError(Name);
+    ReadError(Name);
   }
   return Result;
 }
@@ -1870,7 +1868,7 @@ intptr_t TRegistry::ReadInteger(const UnicodeString & Name) const
   GetData(Name, &Result, sizeof(Result), RegData);
   if (RegData != rdInteger)
   {
-    Classes::ReadError(Name);
+    ReadError(Name);
   }
   return Result;
 }
@@ -1943,7 +1941,7 @@ int TRegistry::GetData(const UnicodeString & Name, void * Buffer,
   if (::RegQueryValueEx(GetCurrentKey(), Name.c_str(), nullptr, &DataType,
     reinterpret_cast<BYTE *>(Buffer), &bufSize) != ERROR_SUCCESS)
   {
-    throw Sysutils::Exception(L"RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
+    throw ::Exception(L"RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
   RegData = DataTypeToRegData(DataType);
   int Result = static_cast<int>(BufSize);
@@ -1953,11 +1951,11 @@ int TRegistry::GetData(const UnicodeString & Name, void * Buffer,
 void TRegistry::PutData(const UnicodeString & Name, const void * Buffer,
   intptr_t BufSize, TRegDataType RegData)
 {
-  int DataType = Classes::RegDataToDataType(RegData);
+  int DataType = RegDataToDataType(RegData);
   if (::RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType,
                     reinterpret_cast<const BYTE *>(Buffer), static_cast<DWORD>(BufSize)) != ERROR_SUCCESS)
   {
-    throw Sysutils::Exception(L"RegSetValueEx failed");    // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
+    throw ::Exception(L"RegSetValueEx failed");    // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
   }
 }
 
@@ -2028,7 +2026,7 @@ HKEY TRegistry::GetBaseKey(bool Relative)
 HKEY TRegistry::GetKey(const UnicodeString & Key)
 {
   UnicodeString S = Key;
-  bool Relative = Classes::IsRelative(S);
+  bool Relative = IsRelative(S);
   HKEY Result = 0;
   ::RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0, FAccess, &Result);
   return Result;
@@ -2062,11 +2060,11 @@ bool TShortCut::operator < (const TShortCut & rhs) const
   return FValue < rhs.FValue;
 }
 
-void GetLocaleFormatSettings(int LCID, Sysutils::TFormatSettings & FormatSettings)
+void GetLocaleFormatSettings(int LCID, ::TFormatSettings & FormatSettings)
 {
   (void)LCID;
   (void)FormatSettings;
-  Classes::Error(SNotImplemented, 1204);
+  Error(SNotImplemented, 1204);
 }
 
 TDateTime MinDateTime = TDateTime(-657434.0);
@@ -2078,4 +2076,3 @@ NB_IMPLEMENT_CLASS(TObjectList, NB_GET_CLASS_INFO(TList), nullptr)
 NB_IMPLEMENT_CLASS(TStrings, NB_GET_CLASS_INFO(TPersistent), nullptr)
 NB_IMPLEMENT_CLASS(TStringList, NB_GET_CLASS_INFO(TStrings), nullptr)
 
-} // namespace Classes

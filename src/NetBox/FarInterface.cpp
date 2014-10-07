@@ -13,7 +13,7 @@ TConfiguration * CreateConfiguration()
   return new TFarConfiguration(FarPlugin);
 }
 
-void ShowExtendedException(Sysutils::Exception * E)
+void ShowExtendedException(::Exception * E)
 {
   assert(FarPlugin != nullptr);
   TWinSCPPlugin * WinSCPPlugin = NB_STATIC_DOWNCAST(TWinSCPPlugin, FarPlugin);
@@ -66,7 +66,7 @@ void EndThread(DWORD ExitCode)
 
 HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
   void * Parameter, DWORD CreationFlags,
-  Classes::TThreadID & ThreadId)
+  TThreadID & ThreadId)
 {
   return BeginThread(SecurityAttributes, StackSize, Parameter,
     CreationFlags, ThreadId);

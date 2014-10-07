@@ -136,13 +136,13 @@ int GetUserpassInput(prompts_t * p, uint8_t * /*in*/, int /*inlen*/)
   assert(SecureShell != nullptr);
 
   int Result;
-  std::unique_ptr<Classes::TStrings> Prompts(new Classes::TStringList());
-  std::unique_ptr<Classes::TStrings> Results(new Classes::TStringList());
+  std::unique_ptr<TStrings> Prompts(new TStringList());
+  std::unique_ptr<TStrings> Results(new TStringList());
   {
     for (size_t Index = 0; Index < p->n_prompts; ++Index)
     {
       prompt_t * Prompt = p->prompts[Index];
-      Prompts->AddObject(Prompt->prompt, reinterpret_cast<Classes::TObject *>(static_cast<size_t>(FLAGMASK(Prompt->echo, pupEcho))));
+      Prompts->AddObject(Prompt->prompt, reinterpret_cast<TObject *>(static_cast<size_t>(FLAGMASK(Prompt->echo, pupEcho))));
       assert(Prompt->resultsize == 0);
       Results->Add(L"");
     }
