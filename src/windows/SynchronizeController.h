@@ -4,7 +4,7 @@
 #include <CoreDefs.hpp>
 #include <CopyParam.h>
 
-struct TSynchronizeParamType : public Classes::TObject
+struct TSynchronizeParamType : public TObject
 {
   UnicodeString LocalDirectory;
   UnicodeString RemoteDirectory;
@@ -16,9 +16,9 @@ class TSynchronizeController;
 struct TSynchronizeOptions;
 class TSynchronizeChecklist;
 DEFINE_CALLBACK_TYPE2(TSynchronizeAbortEvent, void,
-  Classes::TObject * /* Sender */, bool /* Close */);
+  TObject * /* Sender */, bool /* Close */);
 DEFINE_CALLBACK_TYPE2(TSynchronizeThreadsEvent, void,
-  Classes::TObject * /* Sender */, Classes::TThreadMethod /* Method */);
+  TObject * /* Sender */, TThreadMethod /* Method */);
 enum TSynchronizeLogEntry
 {
   slScan,
@@ -31,7 +31,7 @@ enum TSynchronizeLogEntry
 DEFINE_CALLBACK_TYPE3(TSynchronizeLogEvent, void,
   TSynchronizeController * /* Controller */, TSynchronizeLogEntry /* Entry */, const UnicodeString & /* Message */);
 DEFINE_CALLBACK_TYPE8(TSynchronizeStartStopEvent, void,
-  Classes::TObject * /* Sender */, bool /* Start */, const TSynchronizeParamType & /* Params */,
+  TObject * /* Sender */, bool /* Start */, const TSynchronizeParamType & /* Params */,
   const TCopyParamType & /* CopyParam */, TSynchronizeOptions * /* Options */,
   TSynchronizeAbortEvent /* OnAbort */, TSynchronizeThreadsEvent /* OnSynchronizeThreads */,
   TSynchronizeLogEvent /* OnSynchronizeLog */);
@@ -55,7 +55,7 @@ enum TSynchronizeOperation
   soDelete
 };
 
-class TSynchronizeController : public Classes::TObject
+class TSynchronizeController : public TObject
 {
 NB_DISABLE_COPY(TSynchronizeController)
 public:
@@ -64,7 +64,7 @@ public:
     TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories);
   virtual ~TSynchronizeController();
 
-  void StartStop(Classes::TObject * Sender, bool Start,
+  void StartStop(TObject * Sender, bool Start,
     const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
     TSynchronizeOptions * Options,
     TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
@@ -83,15 +83,15 @@ private:
   TSynchronizeLogEvent FSynchronizeLog;
   TCopyParamType FCopyParam;
 
-  void SynchronizeChange(Classes::TObject * Sender, const UnicodeString & Directory,
+  void SynchronizeChange(TObject * Sender, const UnicodeString & Directory,
     bool & SubdirsChanged);
   void SynchronizeAbort(bool Close);
   void SynchronizeLog(TSynchronizeLogEntry Entry, const UnicodeString & Message);
-  void SynchronizeInvalid(Classes::TObject * Sender, const UnicodeString & Directory,
+  void SynchronizeInvalid(TObject * Sender, const UnicodeString & Directory,
     const UnicodeString & ErrorStr);
-  void SynchronizeFilter(Classes::TObject * Sender, const UnicodeString & DirectoryName,
+  void SynchronizeFilter(TObject * Sender, const UnicodeString & DirectoryName,
     bool & Add);
-  void SynchronizeTooManyDirectories(Classes::TObject * Sender, intptr_t & MaxDirectories);
-  void SynchronizeDirectoriesChange(Classes::TObject * Sender, intptr_t Directories);
+  void SynchronizeTooManyDirectories(TObject * Sender, intptr_t & MaxDirectories);
+  void SynchronizeDirectoriesChange(TObject * Sender, intptr_t Directories);
 };
 

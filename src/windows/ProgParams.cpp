@@ -5,7 +5,7 @@
 #include "ProgParams.h"
 
 // unique_ptr-like class
-class TProgramParamsOwner : public Classes::TObject
+class TProgramParamsOwner : public TObject
 {
 public:
   TProgramParamsOwner() :

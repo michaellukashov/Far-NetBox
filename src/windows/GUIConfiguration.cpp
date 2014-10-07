@@ -222,9 +222,9 @@ void TCopyParamRule::SetData(const TCopyParamRuleData & Value)
 UnicodeString TCopyParamList::FInvalidChars(L"/\\[]");
 
 TCopyParamList::TCopyParamList() :
-  FRules(new Classes::TList()),
-  FCopyParams(new Classes::TList()),
-  FNames(new Classes::TStringList()),
+  FRules(new TList()),
+  FCopyParams(new TList()),
+  FNames(new TStringList()),
   FNameList(nullptr),
   FModified(false)
 {
@@ -468,11 +468,11 @@ UnicodeString TCopyParamList::GetName(intptr_t Index) const
   return FNames->GetString(Index);
 }
 
-Classes::TStrings * TCopyParamList::GetNameList() const
+TStrings * TCopyParamList::GetNameList() const
 {
   if (FNameList == nullptr)
   {
-    FNameList = new Classes::TStringList();
+    FNameList = new TStringList();
 
     for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
@@ -496,7 +496,7 @@ bool TCopyParamList::GetAnyRule() const
 
 TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
   FLocale(0),
-  FLocales(new Classes::TStringList()),
+  FLocales(new TStringList()),
   FContinueOnError(false),
   FConfirmCommandSession(false),
   FPuttyPassword(false),
@@ -518,7 +518,6 @@ TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
   FSessionReopenAutoIdle(0)
 {
   FLastLocalesExts = L"*";
-  using namespace Classes;
   NB_STATIC_DOWNCAST(TStringList, FLocales)->SetSorted(true);
   NB_STATIC_DOWNCAST(TStringList, FLocales)->SetCaseSensitive(false);
   FCopyParamList = new TCopyParamList();
@@ -541,7 +540,7 @@ void TGUIConfiguration::Default()
   FCopyParamListDefaults = true;
   DefaultLocalized();
 
-  FIgnoreCancelBeforeFinish = Classes::TDateTime(0, 0, 3, 0);
+  FIgnoreCancelBeforeFinish = TDateTime(0, 0, 3, 0);
   FContinueOnError = false;
   FConfirmCommandSession = true;
   FSynchronizeParams = TTerminal::spNoConfirmation | TTerminal::spPreviewChanges;
@@ -564,7 +563,7 @@ void TGUIConfiguration::Default()
   FTelnetForFtpInPutty = true;
   FPuttySession = L"WinSCP temporary session";
   FBeepOnFinish = false;
-  FBeepOnFinishAfter = Classes::TDateTime(0, 0, 30, 0);
+  FBeepOnFinishAfter = TDateTime(0, 0, 30, 0);
   FCopyParamCurrent = L"";
   FKeepUpToDateChangeDelay = 500;
   FChecksumAlg = L"md5";
@@ -818,7 +817,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   {
     if (Internal)
     {
-      Classes::Error(SNotImplemented, 90);
+      Error(SNotImplemented, 90);
       NewInstance = 0; // FIXME  HInstance;
     }
   }
@@ -898,11 +897,11 @@ void TGUIConfiguration::SetLocaleSafe(LCID Value)
   }
 }
 
-Classes::TStrings * TGUIConfiguration::GetLocales()
+TStrings * TGUIConfiguration::GetLocales()
 {
-  Classes::Error(SNotImplemented, 93);
+  Error(SNotImplemented, 93);
   UnicodeString LocalesExts;
-  std::unique_ptr<Classes::TStringList> Exts(new Classes::TStringList());
+  std::unique_ptr<TStringList> Exts(new TStringList());
   Exts->SetSorted(true);
   Exts->SetCaseSensitive(false);
 

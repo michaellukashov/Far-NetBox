@@ -36,13 +36,13 @@ UnicodeString GetPersonalFolder();
 UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   const UnicodeString & MultiItemsFormat, intptr_t Count, const UnicodeString & FirstItem);
 UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
-  const UnicodeString & MultiItemsFormat, const Classes::TStrings * Items);
+  const UnicodeString & MultiItemsFormat, const TStrings * Items);
 UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
-  const UnicodeString & MultiFileFormat, const Classes::TStrings * Files, bool Remote);
+  const UnicodeString & MultiFileFormat, const TStrings * Files, bool Remote);
 UnicodeString UniqTempDir(const UnicodeString & BaseDir,
   const UnicodeString & Identity, bool Mask = false);
 bool DeleteDirectory(const UnicodeString & ADirName);
-UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, const Classes::TDateTime & DateTime);
+UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, const TDateTime & DateTime);
 
 class TLocalCustomCommand : public TFileCustomCommand
 {
