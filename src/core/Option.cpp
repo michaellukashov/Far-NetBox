@@ -123,7 +123,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
     }
     else if (FOptions[Index].Type == otSwitch)
     {
-      if (Sysutils::AnsiSameText(FOptions[Index].Name, Switch))
+      if (::AnsiSameText(FOptions[Index].Name, Switch))
       {
         Found = true;
         Value = FOptions[Index].Value;
@@ -216,21 +216,21 @@ bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default, bool Defa
   {
     Result = Default;
   }
-  else if (Sysutils::SameText(Value, L"on"))
+  else if (::SameText(Value, L"on"))
   {
     Result = true;
   }
-  else if (Sysutils::SameText(Value, L"off"))
+  else if (::SameText(Value, L"off"))
   {
     Result = false;
   }
-  else if (Sysutils::TryStrToInt(Value, IntValue))
+  else if (::TryStrToInt(Value, IntValue))
   {
     Result = (IntValue != 0);
   }
   else
   {
-    throw Sysutils::Exception(FMTLOAD(URL_OPTION_BOOL_VALUE_ERROR, Value.c_str()));
+    throw ::Exception(FMTLOAD(URL_OPTION_BOOL_VALUE_ERROR, Value.c_str()));
   }
   return Result;
 }

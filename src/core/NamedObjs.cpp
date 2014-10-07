@@ -19,7 +19,7 @@ static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
   }
   else
   {
-    return Sysutils::AnsiCompareStr(
+    return ::AnsiCompareStr(
       NB_STATIC_DOWNCAST_CONST(TNamedObject, Item1)->GetName(),
       NB_STATIC_DOWNCAST_CONST(TNamedObject, Item2)->GetName());
   }
@@ -64,17 +64,17 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
       {
         try
         {
-          N = Sysutils::StrToInt64(Name.SubString(P + 1, Name.Length() - P - 1));
+          N = ::StrToInt64(Name.SubString(P + 1, Name.Length() - P - 1));
           Name.Delete(P, Name.Length() - P + 1);
           SetName(Name.TrimRight());
         }
-        catch (Sysutils::Exception & E)
+        catch (::Exception & E)
         {
           (void)E;
           N = 0;
         }
       }
-      SetName(Name + L" (" + Sysutils::Int64ToStr(N+1) + L")");
+      SetName(Name + L" (" + ::Int64ToStr(N+1) + L")");
     }
 }
 

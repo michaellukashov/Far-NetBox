@@ -128,7 +128,7 @@ UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
   }
   else
   {
-    return Sysutils::ExtractFilename(APath, L'\\');
+    return ::ExtractFilename(APath, L'\\');
   }
 }
 
@@ -136,7 +136,7 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath)
 {
   assert(AFiles->GetCount() > 0);
 
-  APath = Sysutils::ExtractFilePath(AFiles->GetString(0));
+  APath = ::ExtractFilePath(AFiles->GetString(0));
   bool Result = !APath.IsEmpty();
   if (Result)
   {
@@ -146,7 +146,7 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath)
         (AFiles->GetString(Index).SubString(1, APath.Length()) != APath))
       {
         intptr_t PrevLen = APath.Length();
-        APath = Sysutils::ExtractFilePath(Sysutils::ExcludeTrailingBackslash(APath));
+        APath = ::ExtractFilePath(::ExcludeTrailingBackslash(APath));
         if (APath.Length() == PrevLen)
         {
           APath = L"";
@@ -310,7 +310,7 @@ UnicodeString MinimizeName(const UnicodeString & AFileName, intptr_t MaxLen, boo
   }
   else
   {
-    Dir = Sysutils::ExtractFilePath(Result);
+    Dir = ::ExtractFilePath(Result);
     Name = core::ExtractFileName(Result, false);
 
     if (Dir.Length() >= 2 && Dir[2] == L':')
@@ -381,8 +381,8 @@ TDateTime ReduceDateTimePrecision(const TDateTime & DateTime,
   {
     uint16_t Y, M, D, H, N, S, MS;
 
-    Sysutils::DecodeDate(Result, Y, M, D);
-    Sysutils::DecodeTime(Result, H, N, S, MS);
+    ::DecodeDate(Result, Y, M, D);
+    ::DecodeTime(Result, H, N, S, MS);
     switch (Precision)
     {
       case mfMDHM:
@@ -569,7 +569,7 @@ intptr_t TRemoteToken::Compare(const TRemoteToken & rht) const
   {
     if (!rht.FName.IsEmpty())
     {
-      Result = Sysutils::AnsiCompareText(FName, rht.FName);
+      Result = ::AnsiCompareText(FName, rht.FName);
     }
     else
     {
@@ -635,7 +635,7 @@ UnicodeString TRemoteToken::GetDisplayText() const
   }
   else if (FIDValid)
   {
-    return Sysutils::IntToStr(FID);
+    return ::IntToStr(FID);
   }
   else
   {
@@ -909,7 +909,7 @@ void TRemoteFile::SetIsHidden(bool Value)
 
 Boolean TRemoteFile::GetIsDirectory() const
 {
-  return (Sysutils::UpCase(GetType()) == FILETYPE_DIRECTORY);
+  return (::UpCase(GetType()) == FILETYPE_DIRECTORY);
 }
 
 Boolean TRemoteFile::GetIsParentDirectory() const
@@ -929,12 +929,12 @@ Boolean TRemoteFile::GetIsInaccesibleDirectory() const
   {
     assert(GetTerminal());
     Result = !
-       (Sysutils::SameText(GetTerminal()->GetUserName(), L"root")) ||
+       (::SameText(GetTerminal()->GetUserName(), L"root")) ||
        (((GetRights()->GetRightUndef(TRights::rrOtherExec) != TRights::rsNo)) ||
         ((GetRights()->GetRight(TRights::rrGroupExec) != TRights::rsNo) &&
          GetTerminal()->GetMembership()->Exists(GetFileGroup().GetName())) ||
         ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
-         (Sysutils::SameText(GetTerminal()->GetUserName(), GetFileOwner().GetName()))));
+         (::SameText(GetTerminal()->GetUserName(), GetFileOwner().GetName()))));
   }
   else
   {
@@ -991,7 +991,7 @@ bool TRemoteFile::GetBrokenLink() const
 void TRemoteFile::ShiftTime(const TDateTime & Difference)
 {
   double D = Difference.GetValue();
-  if (!Sysutils::IsZero(D) && (FModificationFmt != mfMDY))
+  if (!::IsZero(D) && (FModificationFmt != mfMDY))
   {
     assert(static_cast<int>(FModification) != 0);
     FModification = FModification.GetValue() + D;
@@ -1052,7 +1052,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     auto GetNCol = [&]()
     {
       if (ListingStr.IsEmpty())
-        throw Sysutils::Exception(L"");
+        throw ::Exception(L"");
       intptr_t P = ListingStr.Pos(L' ');
       if (P)
       {
@@ -1069,7 +1069,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     auto GetCol = [&]()
     {
       GetNCol();
-      ListingStr = Sysutils::TrimLeft(ListingStr);
+      ListingStr = ::TrimLeft(ListingStr);
     };
 
     // Rights string may contain special permission attributes (S,t, ...)
@@ -1093,7 +1093,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     ListingStr = ListingStr.TrimLeft();
 
     GetCol();
-    if (!Sysutils::TryStrToInt(Col, FINodeBlocks))
+    if (!::TryStrToInt(Col, FINodeBlocks))
     {
       // if the column is not an integer, suppose it's owner
       // (Android BusyBox)
@@ -1118,7 +1118,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       // for devices etc.. there is additional column ending by comma, we ignore it
       if (Col[Col.Length()] == L',')
         GetCol();
-      ASize = Sysutils::StrToInt64Def(Col, -1);
+      ASize = ::StrToInt64Def(Col, -1);
       // if it's not a number (file size) we take it as part of group name
       // (at least on CygWin, there can be group with space in its name)
       if (ASize < 0)
@@ -1127,18 +1127,18 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     while (ASize < 0);
 
     // do not read modification time and filename if it is already set
-    if (Sysutils::IsZero(FModification.GetValue()) && GetFileName().IsEmpty())
+    if (::IsZero(FModification.GetValue()) && GetFileName().IsEmpty())
     {
       FSize = ASize;
 
       bool DayMonthFormat = false;
       Word Year = 0, Month = 0, Day = 0, Hour = 0, Min = 0, Sec = 0;
       Word CurrYear = 0, CurrMonth = 0, CurrDay = 0;
-      Sysutils::DecodeDate(Sysutils::Date(), CurrYear, CurrMonth, CurrDay);
+      ::DecodeDate(::Date(), CurrYear, CurrMonth, CurrDay);
 
       GetCol();
       // format dd mmm or mmm dd ?
-      Day = ::ToWord(Sysutils::StrToIntDef(Col, 0));
+      Day = ::ToWord(::StrToIntDef(Col, 0));
       if (Day > 0)
       {
         DayMonthFormat = true;
@@ -1169,7 +1169,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         Min = ToWord(Col.SubString(4, 2).ToInt());
         if (Col.Length() >= 8)
         {
-          Sec = ToWord(Sysutils::StrToInt64(Col.SubString(7, 2)));
+          Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
         }
         else
         {
@@ -1189,7 +1189,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         Min = ToWord(Col.SubString(4, 2).ToInt());
         if (Col.Length() >= 8)
         {
-          Sec = ToWord(Sysutils::StrToInt64(Col.SubString(7, 2)));
+          Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
         }
         else
         {
@@ -1218,7 +1218,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         if (Day == 0)
         {
           GetNCol();
-          Day = ToWord(Sysutils::StrToInt64(Col));
+          Day = ToWord(::StrToInt64(Col));
         }
         if ((Day < 1) || (Day > 31))
         {
@@ -1234,13 +1234,13 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           {
             Abort();
           }
-          Hour = ToWord(Sysutils::StrToInt64(Col.SubString(1, 2)));
-          Min = ToWord(Sysutils::StrToInt64(Col.SubString(4, 2)));
-          Sec = ToWord(Sysutils::StrToInt64(Col.SubString(7, 2)));
+          Hour = ToWord(::StrToInt64(Col.SubString(1, 2)));
+          Min = ToWord(::StrToInt64(Col.SubString(4, 2)));
+          Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
           FModificationFmt = mfFull;
           // do not trim leading space of filename
           GetNCol();
-          Year = ToWord(Sysutils::StrToInt64(Col));
+          Year = ToWord(::StrToInt64(Col));
         }
         else
         {
@@ -1264,14 +1264,14 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           intptr_t P;
           if ((P = ToWord(Col.Pos(L':'))) > 0)
           {
-            Hour = ToWord(Sysutils::StrToInt64(Col.SubString(1, P - 1)));
-            Min = ToWord(Sysutils::StrToInt64(Col.SubString(P + 1, Col.Length() - P)));
+            Hour = ToWord(::StrToInt64(Col.SubString(1, P - 1)));
+            Min = ToWord(::StrToInt64(Col.SubString(P + 1, Col.Length() - P)));
             if ((Hour > 23) || (Min > 59))
               Abort();
             // When we don't got year, we assume current year
             // with exception that the date would be in future
             // in this case we assume last year.
-            Sysutils::DecodeDate(Sysutils::Date(), Year, CurrMonth, CurrDay);
+            ::DecodeDate(::Date(), Year, CurrMonth, CurrDay);
             if ((Month > CurrMonth) ||
                 (Month == CurrMonth && Day > CurrDay))
             {
@@ -1282,7 +1282,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           }
           else
           {
-            Year = ToWord(Sysutils::StrToInt64(Col));
+            Year = ToWord(::StrToInt64(Col));
             if (Year > 10000)
               Abort();
             // When we don't got time we assume midnight
@@ -1310,7 +1310,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           GetTerminal()->GetSessionData()->GetDSTMode());
       }
 
-      if (Sysutils::IsZero(FLastAccess.GetValue()))
+      if (::IsZero(FLastAccess.GetValue()))
       {
         FLastAccess = FModification;
       }
@@ -1333,11 +1333,11 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             Abort();
           }
         }
-        FFileName = core::UnixExtractFileName(Sysutils::Trim(ListingStr));
+        FFileName = core::UnixExtractFileName(::Trim(ListingStr));
       }
     }
   }
-  catch (Sysutils::Exception & E)
+  catch (::Exception & E)
   {
     throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, Value.c_str()), HELP_LIST_LINE_ERROR);
   }
@@ -1402,7 +1402,7 @@ void TRemoteFile::FindLinkedFile()
       };
       GetTerminal()->ReadSymlink(this, FLinkedFile);
     }
-    catch (Sysutils::Exception & E)
+    catch (::Exception & E)
     {
       if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
       {
@@ -1425,9 +1425,9 @@ UnicodeString TRemoteFile::GetListingStr() const
   {
     LinkPart = UnicodeString(SYMLINKSTR) + GetLinkTo();
   }
-  return Sysutils::Format(L"%s%s %3s %-8s %-8s %9s %-12s %s%s",
-    GetType(), GetRights()->GetText().c_str(), Sysutils::Int64ToStr(FINodeBlocks).c_str(), GetFileOwner().GetName().c_str(),
-    GetFileGroup().GetName().c_str(), Sysutils::Int64ToStr(GetSize()).c_str(), GetModificationStr().c_str(), GetFileName().c_str(),
+  return ::Format(L"%s%s %3s %-8s %-8s %9s %-12s %s%s",
+    GetType(), GetRights()->GetText().c_str(), ::Int64ToStr(FINodeBlocks).c_str(), GetFileOwner().GetName().c_str(),
+    GetFileGroup().GetName().c_str(), ::Int64ToStr(GetSize()).c_str(), GetModificationStr().c_str(), GetFileName().c_str(),
     LinkPart.c_str());
 }
 
@@ -2251,7 +2251,7 @@ void TRights::SetText(const UnicodeString & Value)
         (!GetAllowUndef() && (Value.Pos(UndefSymbol) > 0)) ||
         (Value.Pos(L" ") > 0))
     {
-      throw Sysutils::Exception(FMTLOAD(RIGHTS_ERROR, Value.c_str()));
+      throw ::Exception(FMTLOAD(RIGHTS_ERROR, Value.c_str()));
     }
 
     FSet = 0;
@@ -2378,7 +2378,7 @@ void TRights::SetOctal(const UnicodeString & AValue)
 
     if (!Correct)
     {
-      throw Sysutils::Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, AValue.c_str()));
+      throw ::Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, AValue.c_str()));
     }
 
     SetNumber(static_cast<uint16_t>(

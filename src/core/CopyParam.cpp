@@ -8,8 +8,6 @@
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"
 
-using namespace Sysutils;
-
 TCopyParamType::TCopyParamType()
 {
   Default();

@@ -5,7 +5,7 @@
 #include <Masks.hpp>
 #include <Exceptions.h>
 
-class EFileMasksException : public Sysutils::Exception
+class EFileMasksException : public ::Exception
 {
 public:
   explicit EFileMasksException(const UnicodeString & AMessage, intptr_t ErrorStart, intptr_t ErrorLen);

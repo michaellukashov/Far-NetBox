@@ -74,14 +74,14 @@ public:
     TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual uintptr_t QueryUserException(const UnicodeString & Query,
-    Sysutils::Exception * E, uintptr_t Answers, const TQueryParams * Params,
+    ::Exception * E, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
     TStrings * Results) = 0;
   virtual void DisplayBanner(const UnicodeString & Banner) = 0;
-  virtual void FatalError(Sysutils::Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") = 0;
-  virtual void HandleExtendedException(Sysutils::Exception * E) = 0;
+  virtual void FatalError(::Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") = 0;
+  virtual void HandleExtendedException(::Exception * E) = 0;
   virtual void Closed() = 0;
 };
 
@@ -117,7 +117,7 @@ public:
   void Restart();
 
   void Commit();
-  void Rollback(Sysutils::Exception * E = nullptr);
+  void Rollback(::Exception * E = nullptr);
   void Cancel();
 
 protected:
@@ -236,7 +236,7 @@ public:
   HIDESBASE void Add(TLogLineType Type, const UnicodeString & Line);
   void AddSystemInfo();
   void AddStartupInfo();
-  void AddException(Sysutils::Exception * E);
+  void AddException(::Exception * E);
   void AddSeparator();
 
   virtual void Clear();
@@ -284,7 +284,7 @@ protected:
 private:
   TConfiguration * FConfiguration;
   TSessionLog * FParent;
-  Sysutils::TCriticalSection FCriticalSection;
+  ::TCriticalSection FCriticalSection;
   bool FLogging;
   void * FFile;
   UnicodeString FCurrentLogFileName;
@@ -309,7 +309,7 @@ public:
   virtual ~TActionLog();
 
   void ReflectSettings();
-  void AddFailure(Sysutils::Exception * E);
+  void AddFailure(::Exception * E);
   void AddFailure(TStrings * Messages);
   void BeginGroup(const UnicodeString & Name);
   void EndGroup();
@@ -330,7 +330,7 @@ protected:
 
 private:
   TConfiguration * FConfiguration;
-  Sysutils::TCriticalSection FCriticalSection;
+  ::TCriticalSection FCriticalSection;
   bool FLogging;
   void * FFile;
   UnicodeString FCurrentLogFileName;

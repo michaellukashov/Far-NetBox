@@ -43,8 +43,8 @@ RawByteString EncryptPassword(const UnicodeString & UnicodePassword, const Unico
   RawByteString Result("");
   intptr_t Shift, Index;
 
-  if (!Sysutils::RandSeed)
-    Sysutils::Randomize();
+  if (!::RandSeed)
+    ::Randomize();
   Password = Key + Password;
   Shift = (Password.Length() < PWALG_SIMPLE_MAXLEN) ?
     static_cast<uint8_t>(random(PWALG_SIMPLE_MAXLEN - static_cast<int>(Password.Length()))) : 0;

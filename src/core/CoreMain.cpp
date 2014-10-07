@@ -15,8 +15,6 @@
 #endif
 #include "WebDAVFileSystem.h"
 
-using namespace Sysutils;
-
 TStoredSessionList * StoredSessions = nullptr;
 
 TConfiguration * GetConfiguration()

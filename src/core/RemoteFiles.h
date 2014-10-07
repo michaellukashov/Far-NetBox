@@ -273,7 +273,7 @@ protected:
   virtual void Delete(intptr_t Index);
 
 private:
-  Sysutils::TCriticalSection FSection;
+  ::TCriticalSection FSection;
   void DoClearFileList(const UnicodeString & Directory, bool SubDirs);
 };
 

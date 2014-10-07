@@ -130,7 +130,7 @@ TFileMasks::TParams::TParams() :
 
 UnicodeString TFileMasks::TParams::ToString() const
 {
-  return UnicodeString(L"[") + Sysutils::Int64ToStr(Size) + L"/" + Sysutils::DateTimeToString(Modification) + L"]";
+  return UnicodeString(L"[") + ::Int64ToStr(Size) + L"/" + ::DateTimeToString(Modification) + L"]";
 }
 
 bool TFileMasks::IsMask(const UnicodeString & Mask)
@@ -440,10 +440,10 @@ bool TFileMasks::Matches(const UnicodeString & AFileName, bool Local,
   bool Result;
   if (Local)
   {
-    UnicodeString Path = Sysutils::ExtractFilePath(AFileName);
+    UnicodeString Path = ::ExtractFilePath(AFileName);
     if (!Path.IsEmpty())
     {
-      Path = core::ToUnixPath(Sysutils::ExcludeTrailingBackslash(Path));
+      Path = core::ToUnixPath(::ExcludeTrailingBackslash(Path));
     }
     Result = Matches(core::ExtractFileName(AFileName, false), Directory, Path, Params,
       ImplicitMatch);
@@ -570,7 +570,7 @@ void TFileMasks::CreateMask(
         Boundary = TMask::Open;
       }
 
-      Sysutils::TFormatSettings FormatSettings = Sysutils::TFormatSettings::Create(GetDefaultLCID());
+      ::TFormatSettings FormatSettings = ::TFormatSettings::Create(GetDefaultLCID());
       FormatSettings.DateSeparator = L'-';
       FormatSettings.TimeSeparator = L':';
       FormatSettings.ShortDateFormat = L"yyyy/mm/dd";
@@ -682,9 +682,9 @@ void TFileMasks::ReleaseMaskMask(TMaskMask & MaskMask)
 
 void TFileMasks::TrimEx(UnicodeString & Str, intptr_t & Start, intptr_t & End)
 {
-  UnicodeString Buf = Sysutils::TrimLeft(Str);
+  UnicodeString Buf = ::TrimLeft(Str);
   Start += Str.Length() - Buf.Length();
-  Str = Sysutils::TrimRight(Buf);
+  Str = ::TrimRight(Buf);
   End -= Buf.Length() - Str.Length();
 }
 
@@ -809,13 +809,13 @@ void TCustomCommand::GetToken(
 
     if (Len <= 0)
     {
-      throw Sysutils::Exception(FMTLOAD(CUSTOM_COMMAND_UNKNOWN, PatternCmd, Index));
+      throw ::Exception(FMTLOAD(CUSTOM_COMMAND_UNKNOWN, PatternCmd, Index));
     }
     else
     {
       if ((Command.Length() - Index + 1) < Len)
       {
-        throw Sysutils::Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, PatternCmd, Index));
+        throw ::Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, PatternCmd, Index));
       }
     }
   }
@@ -982,7 +982,7 @@ intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, in
       const wchar_t * PatternEnd = wcschr(Ptr + 1, L'!');
       if (PatternEnd == nullptr)
       {
-        throw Sysutils::Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
+        throw ::Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
       }
       Len = PatternEnd - Ptr + 1;
     }
@@ -994,7 +994,7 @@ intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, in
       const wchar_t * PatternEnd = wcschr(Ptr + 2, L'`');
       if (PatternEnd == nullptr)
       {
-        throw Sysutils::Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
+        throw ::Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
       }
       Len = PatternEnd - Ptr + 1;
     }
@@ -1124,11 +1124,11 @@ bool TFileCustomCommand::PatternReplacement(
   {
     Replacement = FData.HostName;
   }
-  else if (Sysutils::AnsiSameText(Pattern, L"!u"))
+  else if (::AnsiSameText(Pattern, L"!u"))
   {
     Replacement = FData.UserName;
   }
-  else if (Sysutils::AnsiSameText(Pattern, L"!p"))
+  else if (::AnsiSameText(Pattern, L"!p"))
   {
     Replacement = FData.Password;
   }
@@ -1157,7 +1157,7 @@ void TFileCustomCommand::Validate(const UnicodeString & Command)
   CustomValidate(Command, &Found);
   if ((Found[0] > 0) && (Found[1] > 0))
   {
-    throw Sysutils::Exception(FMTLOAD(CUSTOM_COMMAND_FILELIST_ERROR,
+    throw ::Exception(FMTLOAD(CUSTOM_COMMAND_FILELIST_ERROR,
       Found[1], Found[0]));
   }
 }

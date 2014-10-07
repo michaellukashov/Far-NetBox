@@ -223,8 +223,8 @@ private:
   };
 
   TFileZillaIntf * FFileZillaIntf;
-  Sysutils::TCriticalSection FQueueCriticalSection;
-  Sysutils::TCriticalSection FTransferStatusCriticalSection;
+  ::TCriticalSection FQueueCriticalSection;
+  ::TCriticalSection FTransferStatusCriticalSection;
   TMessageQueue FQueue;
   HANDLE FQueueEvent;
   TSessionInfo FSessionInfo;

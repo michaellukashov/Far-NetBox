@@ -16,8 +16,6 @@
 #include <shlwapi.h>
 #include <CoreMain.h>
 
-using namespace Sysutils;
-
 #if defined(__MINGW32__)
 typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
 {
@@ -213,11 +211,11 @@ UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
   intptr_t P;
   for (P = From; P <= Str.Length(); P++)
   {
-    if (Sysutils::IsDelimiter(Chs, Str, P))
+    if (::IsDelimiter(Chs, Str, P))
     {
       if (DoubleDelimiterEscapes &&
           (P < Str.Length()) &&
-          Sysutils::IsDelimiter(Chs, Str, P + 1))
+          ::IsDelimiter(Chs, Str, P + 1))
       {
         Result += Str[P];
         P++;

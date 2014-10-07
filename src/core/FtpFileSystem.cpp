@@ -1025,7 +1025,7 @@ void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   TOnceDoneOperation & OnceDoneOperation)
 {
   Params &= ~cpAppend;
-  UnicodeString FullTargetDir = Sysutils::IncludeTrailingBackslash(TargetDir);
+  UnicodeString FullTargetDir = ::IncludeTrailingBackslash(TargetDir);
 
   intptr_t Index = 0;
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
@@ -1041,11 +1041,11 @@ void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       };
       UnicodeString AbsoluteFilePath = AbsolutePath(FileName, false);
       UnicodeString TargetDirectory = FullTargetDir;
-      UnicodeString FileNamePath = Sysutils::ExtractFilePath(File->GetFileName());
+      UnicodeString FileNamePath = ::ExtractFilePath(File->GetFileName());
       if (!FileNamePath.IsEmpty())
       {
-        TargetDirectory = Sysutils::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
-        Sysutils::ForceDirectories(ApiPath(TargetDirectory));
+        TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
+        ::ForceDirectories(ApiPath(TargetDirectory));
       }
       try
       {
@@ -1085,7 +1085,7 @@ void TFTPFileSystem::SinkRobust(const UnicodeString & AFileName,
       Sink(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch (Sysutils::Exception & E)
+    catch (::Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -1161,11 +1161,11 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       );
 
       FILE_OPERATION_LOOP(FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
-        THROWOSIFFALSE(Sysutils::ForceDirectories(DestFullName));
+        THROWOSIFFALSE(::ForceDirectories(DestFullName));
       );
 
       TSinkFileParams SinkFileParams;
-      SinkFileParams.TargetDir = Sysutils::IncludeTrailingBackslash(DestFullName);
+      SinkFileParams.TargetDir = ::IncludeTrailingBackslash(DestFullName);
       SinkFileParams.CopyParam = CopyParam;
       SinkFileParams.Params = Params;
       SinkFileParams.OperationProgress = OperationProgress;
@@ -1242,7 +1242,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
         FileTransfer(AFileName, DestFullName, OnlyFileName,
           FilePath, true, AFile->GetSize(), TransferType, UserData, OperationProgress);
       }
-      catch (Sysutils::Exception &)
+      catch (::Exception &)
       {
         //::CloseHandle(LocalFileHandle);
         throw;
@@ -1256,7 +1256,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
     }
 
-    Action.Destination(Sysutils::ExpandUNCFileName(DestFullName));
+    Action.Destination(::ExpandUNCFileName(DestFullName));
 
     if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
     {
@@ -1344,7 +1344,7 @@ void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
-          if (Sysutils::DirectoryExists(ApiPath(Sysutils::ExtractFilePath(FileName))))
+          if (::DirectoryExists(ApiPath(::ExtractFilePath(FileName))))
           {
             FTerminal->DirectoryModified(FullTargetDir + FileNameOnly, true);
           }
@@ -1388,7 +1388,7 @@ void TFTPFileSystem::SourceRobust(const UnicodeString & AFileName,
       Source(AFileName, AFile, TargetDir, CopyParam, Params, &OpenParams, &FileParams, OperationProgress,
         Flags, Action);
     }
-    catch (Sysutils::Exception & E)
+    catch (::Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -1422,7 +1422,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
   TUploadSessionAction & Action)
 {
   UnicodeString RealFileName = AFile ? AFile->GetFileName() : AFileName;
-  Action.SetFileName(Sysutils::ExpandUNCFileName(AFileName));
+  Action.SetFileName(::ExpandUNCFileName(AFileName));
 
   OperationProgress->SetFile(RealFileName, false);
 
@@ -1444,7 +1444,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
   if (Dir)
   {
     Action.Cancel();
-    DirectorySource(Sysutils::IncludeTrailingBackslash(RealFileName), TargetDir,
+    DirectorySource(::IncludeTrailingBackslash(RealFileName), TargetDir,
       OpenParams->LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
   }
   else
@@ -1462,7 +1462,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
     OperationProgress->TransferingFile = false;
 
     TDateTime Modification;
-    // Inspired by SysUtils::FileAge
+    // Inspired by ::FileAge
     WIN32_FIND_DATA FindData;
     HANDLE Handle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
     if (Handle != INVALID_HANDLE_VALUE)
@@ -1537,7 +1537,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
     if (!Dir)
     {
       FILE_OPERATION_LOOP(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()),
-        THROWOSIFFALSE(Sysutils::DeleteFile(AFileName));
+        THROWOSIFFALSE(::DeleteFile(AFileName));
       );
     }
   }
@@ -1554,7 +1554,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
-    core::ExtractFileName(Sysutils::ExcludeTrailingBackslash(DirectoryName), false), osLocal,
+    core::ExtractFileName(::ExcludeTrailingBackslash(DirectoryName), false), osLocal,
     FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = core::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
 
@@ -1887,7 +1887,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
     }
     else
     {
-      throw Sysutils::Exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, ResponsePtr->GetText().c_str()));
+      throw ::Exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, ResponsePtr->GetText().c_str()));
     }
   }
 }
@@ -1965,7 +1965,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         // (e.g. before file transfer)
         FDoListAll = (FListAll == asOn);
       }
-      catch (Sysutils::Exception &)
+      catch (::Exception &)
       {
         FDoListAll = false;
         // reading the first directory has failed,
@@ -2058,7 +2058,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
   if (File == nullptr)
   {
     AFile = nullptr;
-    throw Sysutils::Exception(FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()));
+    throw ::Exception(FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()));
   }
 
   assert(File != nullptr);
@@ -2410,7 +2410,7 @@ void TFTPFileSystem::WaitForMessages()
   DWORD Result = ::WaitForSingleObject(FQueueEvent, INFINITE);
   if (Result != WAIT_OBJECT_0)
   {
-    FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", Sysutils::IntToStr(Result).c_str()));
+    FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", ::IntToStr(Result).c_str()));
   }
 }
 
@@ -2760,7 +2760,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
 
   bool HasCodePrefix =
     (Response.Length() >= 3) &&
-    Sysutils::TryStrToInt(Response.SubString(1, 3), Code) &&
+    ::TryStrToInt(Response.SubString(1, 3), Code) &&
     (Code >= 100) && (Code <= 599) &&
     ((Response.Length() == 3) || (Response[4] == L' ') || (Response[4] == L'-'));
 
@@ -3011,7 +3011,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
     return false;
   }
   UnicodeString DestFullName = Path1;
-  Sysutils::AppendPathDelimiterW(DestFullName);
+  ::AppendPathDelimiterW(DestFullName);
   DestFullName += FileName1;
   TFileTransferData & UserData = *(NB_STATIC_DOWNCAST(TFileTransferData, AUserData));
   if (UserData.OverwriteResult >= 0)
@@ -3049,7 +3049,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
     UnicodeString FullFileName = Path2;
     if (OperationProgress->Side == osLocal)
     {
-      FullFileName = Sysutils::IncludeTrailingBackslash(FullFileName);
+      FullFileName = ::IncludeTrailingBackslash(FullFileName);
     }
     else
     {
@@ -3198,7 +3198,7 @@ static bool VerifyNameMask(const UnicodeString & AName, const UnicodeString & AM
   while (Result && (Pos = Mask.Pos(L"*")) > 0)
   {
     // Pos will typically be 1 here, so not actual comparison is done
-    Result = Sysutils::SameText(Mask.SubString(1, Pos - 1), Name.SubString(1, Pos - 1));
+    Result = ::SameText(Mask.SubString(1, Pos - 1), Name.SubString(1, Pos - 1));
     if (Result)
     {
       Mask.Delete(1, Pos); // including *
@@ -3215,7 +3215,7 @@ static bool VerifyNameMask(const UnicodeString & AName, const UnicodeString & AM
 
   if (Result)
   {
-    Result = Sysutils::SameText(Mask, Name);
+    Result = ::SameText(Mask, Name);
   }
 
   return Result;
@@ -3243,7 +3243,7 @@ bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData & Data
     {
       UnicodeString Entry = CutToChar(SubjectAltName, L',', true);
       UnicodeString EntryName = CutToChar(Entry, L':', true);
-      if (Sysutils::SameText(EntryName, L"DNS"))
+      if (::SameText(EntryName, L"DNS"))
       {
         NoMask = false;
         Result = VerifyNameMask(HostName, Entry);
@@ -3617,11 +3617,11 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
 
         File->Complete();
       }
-      catch (Sysutils::Exception & E)
+      catch (::Exception & E)
       {
         UnicodeString EntryData =
           FORMAT(L"%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d",
-             Entry->Name, Entry->Permissions, Entry->OwnerGroup, Sysutils::Int64ToStr(Entry->Size).c_str(),
+             Entry->Name, Entry->Permissions, Entry->OwnerGroup, ::Int64ToStr(Entry->Size).c_str(),
              int(Entry->Dir), int(Entry->Link), Entry->Time.Year, Entry->Time.Month, Entry->Time.Day,
              Entry->Time.Hour, Entry->Time.Minute, int(Entry->Time.HasTime),
              int(Entry->Time.HasSeconds), int(Entry->Time.HasDate));
@@ -3718,7 +3718,7 @@ bool TFTPFileSystem::CheckError(intptr_t ReturnCode, const wchar_t * Context)
   else
   {
     FTerminal->FatalError(nullptr,
-      FMTLOAD(INTERNAL_ERROR, FORMAT(L"fz#%s", Context).c_str(), Sysutils::IntToHex(ReturnCode, 4).c_str()));
+      FMTLOAD(INTERNAL_ERROR, FORMAT(L"fz#%s", Context).c_str(), ::IntToHex(ReturnCode, 4).c_str()));
     FAIL;
   }
 

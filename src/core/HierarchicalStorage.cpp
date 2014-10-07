@@ -176,7 +176,7 @@ bool THierarchicalStorage::OpenSubKey(const UnicodeString & SubKey, bool CanCrea
     // hack to restore last opened key for registry storage
     if (!Result)
     {
-      FKeyHistory->Add(Sysutils::IncludeTrailingBackslash(GetCurrentSubKey() + MungedKey));
+      FKeyHistory->Add(::IncludeTrailingBackslash(GetCurrentSubKey() + MungedKey));
       CloseSubKey();
     }
   }
@@ -188,7 +188,7 @@ bool THierarchicalStorage::OpenSubKey(const UnicodeString & SubKey, bool CanCrea
 
   if (Result)
   {
-    FKeyHistory->Add(Sysutils::IncludeTrailingBackslash(GetCurrentSubKey() + MungedKey));
+    FKeyHistory->Add(::IncludeTrailingBackslash(GetCurrentSubKey() + MungedKey));
   }
 
   return Result;
@@ -197,7 +197,7 @@ bool THierarchicalStorage::OpenSubKey(const UnicodeString & SubKey, bool CanCrea
 void THierarchicalStorage::CloseSubKey()
 {
   if (FKeyHistory->GetCount() == 0)
-    throw Sysutils::Exception(L"");
+    throw ::Exception(L"");
   else
     FKeyHistory->Delete(FKeyHistory->GetCount() - 1);
 }
@@ -290,7 +290,7 @@ void THierarchicalStorage::WriteValues(TStrings * Strings,
       }
       else
       {
-        WriteString(Sysutils::IntToStr(Index), Strings->GetString(Index));
+        WriteString(::IntToStr(Index), Strings->GetString(Index));
       }
     }
   }
@@ -367,7 +367,7 @@ UnicodeString THierarchicalStorage::IncludeTrailingBackslash(const UnicodeString
   }
   else
   {
-    return Sysutils::IncludeTrailingBackslash(S);
+    return ::IncludeTrailingBackslash(S);
   }
 }
 
@@ -380,7 +380,7 @@ UnicodeString THierarchicalStorage::ExcludeTrailingBackslash(const UnicodeString
   }
   else
   {
-    return Sysutils::ExcludeTrailingBackslash(S);
+    return ::ExcludeTrailingBackslash(S);
   }
 }
 

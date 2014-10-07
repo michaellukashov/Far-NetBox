@@ -148,7 +148,7 @@ public:
             FLog->AddIndented(FORMAT(L"      <type value=\"%s\" />", XmlAttributeEscape(File->GetType()).c_str()));
             if (!File->GetIsDirectory())
             {
-              FLog->AddIndented(FORMAT(L"      <size value=\"%s\" />", Sysutils::Int64ToStr(File->GetSize()).c_str()));
+              FLog->AddIndented(FORMAT(L"      <size value=\"%s\" />", ::Int64ToStr(File->GetSize()).c_str()));
             }
             FLog->AddIndented(FORMAT(L"      <modification value=\"%s\" />", StandardTimestamp(File->GetModification()).c_str()));
             FLog->AddIndented(FORMAT(L"      <permissions value=\"%s\" />", XmlAttributeEscape(File->GetRights()->GetText()).c_str()));
@@ -162,7 +162,7 @@ public:
           FLog->AddIndented(FORMAT(L"    <type value=\"%s\" />", XmlAttributeEscape(FFile->GetType()).c_str()));
           if (!FFile->GetIsDirectory())
           {
-            FLog->AddIndented(FORMAT(L"    <size value=\"%s\" />", Sysutils::Int64ToStr(FFile->GetSize()).c_str()));
+            FLog->AddIndented(FORMAT(L"    <size value=\"%s\" />", ::Int64ToStr(FFile->GetSize()).c_str()));
           }
           FLog->AddIndented(FORMAT(L"    <modification value=\"%s\" />", StandardTimestamp(FFile->GetModification()).c_str()));
           FLog->AddIndented(FORMAT(L"    <permissions value=\"%s\" />", XmlAttributeEscape(FFile->GetRights()->GetText()).c_str()));
@@ -197,7 +197,7 @@ public:
     Close(Committed);
   }
 
-  void Rollback(Sysutils::Exception * E)
+  void Rollback(::Exception * E)
   {
     assert(FErrorMessages == nullptr);
     FErrorMessages = ExceptionToMoreMessages(E);
@@ -361,7 +361,7 @@ void TSessionAction::Commit()
   }
 }
 
-void TSessionAction::Rollback(Sysutils::Exception * E)
+void TSessionAction::Rollback(::Exception * E)
 {
   if (FRecord != nullptr)
   {
@@ -562,7 +562,7 @@ FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * SessionData, b
   FILE * Result;
   UnicodeString ANewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, SessionData));
   // Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
-  Result = _fsopen(Sysutils::W2MB(ApiPath(ANewFileName).c_str()).c_str(),
+  Result = _fsopen(::W2MB(ApiPath(ANewFileName).c_str()).c_str(),
     Append ? "a" : "w", SH_DENYWR); // _SH_DENYNO); //
   if (Result != nullptr)
   {
@@ -571,7 +571,7 @@ FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * SessionData, b
   }
   else
   {
-    throw Sysutils::Exception(FMTLOAD(LOG_OPENERROR, ANewFileName.c_str()));
+    throw ::Exception(FMTLOAD(LOG_OPENERROR, ANewFileName.c_str()));
   }
   return Result;
 }
@@ -711,7 +711,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
       }
     }
-    catch (Sysutils::Exception & E)
+    catch (::Exception & E)
     {
       // We failed logging, turn it off and notify user.
       FConfiguration->SetLogging(false);
@@ -719,7 +719,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
       {
         throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
       }
-      catch (Sysutils::Exception & E)
+      catch (::Exception & E)
       {
         AddException(&E);
         FUI->HandleExtendedException(&E);
@@ -728,7 +728,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
   }
 }
 
-void TSessionLog::AddException(Sysutils::Exception * E)
+void TSessionLog::AddException(::Exception * E)
 {
   if (E != nullptr)
   {
@@ -786,7 +786,7 @@ void TSessionLog::OpenLogFile()
     FCurrentLogFileName = FConfiguration->GetLogFileName();
     FFile = OpenFile(FCurrentLogFileName, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
   }
-  catch (Sysutils::Exception & E)
+  catch (::Exception & E)
   {
     // We failed logging to file, turn it off and notify user.
     FCurrentLogFileName = L"";
@@ -796,7 +796,7 @@ void TSessionLog::OpenLogFile()
     {
       throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
     }
-    catch (Sysutils::Exception & E)
+    catch (::Exception & E)
     {
       AddException(&E);
       FUI->HandleExtendedException(&E);
@@ -921,7 +921,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       DateTime.DecodeTime(H, N, S, MS);
       UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d", D, M, Y, H, N, S);
       // ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
-      ADF(L"Working directory: %s", Sysutils::GetCurrentDir().c_str());
+      ADF(L"Working directory: %s", ::GetCurrentDir().c_str());
       // ADF(L"Command-line: %s", CmdLine.c_str());
       // ADF(L"Time zone: %s", GetTimeZoneLogString().c_str());
       if (!AdjustClockForDSTEnabled())
@@ -1252,7 +1252,7 @@ void TActionLog::Add(const UnicodeString & Line)
         fwrite("\n", 1, 1, (FILE *)FFile);
       }
     }
-    catch (Sysutils::Exception & E)
+    catch (::Exception & E)
     {
       // We failed logging, turn it off and notify user.
       FConfiguration->SetLogActions(false);
@@ -1260,7 +1260,7 @@ void TActionLog::Add(const UnicodeString & Line)
       {
         throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
       }
-      catch (Sysutils::Exception & E)
+      catch (::Exception & E)
       {
         FUI->HandleExtendedException(&E);
       }
@@ -1280,7 +1280,7 @@ void TActionLog::AddFailure(TStrings * Messages)
   AddIndented(L"</failure>");
 }
 
-void TActionLog::AddFailure(Sysutils::Exception * E)
+void TActionLog::AddFailure(::Exception * E)
 {
   std::unique_ptr<TStrings> Messages(ExceptionToMoreMessages(E));
   if (Messages.get() != nullptr)
@@ -1348,7 +1348,7 @@ void TActionLog::OpenLogFile()
     FCurrentLogFileName = FConfiguration->GetActionsLogFileName();
     FFile = OpenFile(FCurrentLogFileName, FSessionData, false, FCurrentFileName);
   }
-  catch (Sysutils::Exception & E)
+  catch (::Exception & E)
   {
     // We failed logging to file, turn it off and notify user.
     FCurrentLogFileName = L"";
@@ -1358,7 +1358,7 @@ void TActionLog::OpenLogFile()
     {
       throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
     }
-    catch (Sysutils::Exception & E)
+    catch (::Exception & E)
     {
       FUI->HandleExtendedException(&E);
     }

@@ -382,7 +382,7 @@ error_create(
   error_t * child,
   const char * message)
 {
-  AnsiString Message = Sysutils::Format("Error, code: %d, message: %s", apr_err, message ? message : "");
+  AnsiString Message = ::Format("Error, code: %d, message: %s", apr_err, message ? message : "");
   DEBUG_PRINTF2("Message = %s", Message.c_str());
   return apr_err;
 }
@@ -400,11 +400,11 @@ error_createf(
   err = make_error_internal(apr_err, child);
 
   va_start(args, fmt);
-  AnsiString Message = Sysutils::Format(fmt, args);
+  AnsiString Message = ::Format(fmt, args);
   va_end(args);
 
-  AnsiString Message2 = Sysutils::Format("Error, code: %d, message: %s", apr_err, Message.c_str());
-  throw ExtException(UnicodeString(Message2.c_str()), (Sysutils::Exception *)nullptr);
+  AnsiString Message2 = ::Format("Error, code: %d, message: %s", apr_err, Message.c_str());
+  throw ExtException(UnicodeString(Message2.c_str()), (::Exception *)nullptr);
 
   return err;
 }
@@ -421,7 +421,7 @@ error_wrap_apr(
   err = make_error_internal(status, nullptr);
 
   va_start(args, fmt);
-  AnsiString Message = Sysutils::Format(fmt, args);
+  AnsiString Message = ::Format(fmt, args);
   va_end(args);
 
   err = error_create(err, nullptr, Message.c_str());
@@ -3039,7 +3039,7 @@ config_read_auth_data(
       string_create(AnsiString(Key).c_str(), pool));
     apr_hash_set(*hash, AUTHN_FAILURES_KEY, APR_HASH_KEY_STRING,
       string_createf(pool, "%lu", (uint32_t)
-        Sysutils::StrToIntDef(Value, 0)));
+        ::StrToIntDef(Value, 0)));
   }
   return WEBDAV_NO_ERROR;
 }
@@ -11094,7 +11094,7 @@ server_ssl_callback(
   apr_uint32_t * webdav_failures = static_cast<apr_uint32_t *>(apr_pcalloc(ras->pool, sizeof(*webdav_failures)));
 
   // Construct the realmstring, e.g. https://svn.collab.net:80
-  const char * realmstring = apr_pstrdup(ras->pool, Sysutils::Format("%s://%s:%d", ras->root.scheme,
+  const char * realmstring = apr_pstrdup(ras->pool, ::Format("%s://%s:%d", ras->root.scheme,
     ras->root.host, ras->root.port).c_str());
 
   *webdav_failures = convert_neon_failures(failures);
@@ -12122,7 +12122,7 @@ void TWebDAVFileSystem::Open()
   if (!FActive)
   {
     FTerminal->Closed();
-    throw Sysutils::Exception(LoadStr(CONNECTION_FAILED));
+    throw ::Exception(LoadStr(CONNECTION_FAILED));
   }
 }
 
@@ -12361,7 +12361,7 @@ void TWebDAVFileSystem::ReadDirectory(TRemoteFileList * FileList)
     {
       DoReadDirectory(FileList);
     }
-    catch (Sysutils::Exception &)
+    catch (::Exception &)
     {
       if (!FTerminal->GetActive())
       {
@@ -12659,7 +12659,7 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
-          if (Sysutils::DirectoryExists(ApiPath(Sysutils::ExtractFilePath(FileName))))
+          if (::DirectoryExists(ApiPath(::ExtractFilePath(FileName))))
           {
             FTerminal->DirectoryModified(FullTargetDir + FileNameOnly, true);
           }
@@ -12698,7 +12698,7 @@ void TWebDAVFileSystem::WebDAVSourceRobust(const UnicodeString & AFileName,
       WebDAVSource(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch (Sysutils::Exception & E)
+    catch (::Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -12729,7 +12729,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
   TUploadSessionAction & Action)
 {
   UnicodeString RealFileName = AFile ? AFile->GetFileName() : AFileName;
-  Action.SetFileName(Sysutils::ExpandUNCFileName(RealFileName));
+  Action.SetFileName(::ExpandUNCFileName(RealFileName));
 
   OperationProgress->SetFile(RealFileName, false);
 
@@ -12751,7 +12751,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
   if (Dir)
   {
     Action.Cancel();
-    WebDAVDirectorySource(Sysutils::IncludeTrailingBackslash(AFileName), TargetDir,
+    WebDAVDirectorySource(::IncludeTrailingBackslash(AFileName), TargetDir,
       LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
   }
   else
@@ -12821,7 +12821,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
   intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
-    core::ExtractFileName(Sysutils::ExcludeTrailingBackslash(DirectoryName), false), osLocal,
+    core::ExtractFileName(::ExcludeTrailingBackslash(DirectoryName), false), osLocal,
     FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = core::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
   // create DestFullName if it does not exist
@@ -12962,7 +12962,7 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   TOnceDoneOperation & OnceDoneOperation)
 {
   Params &= ~cpAppend;
-  UnicodeString FullTargetDir = Sysutils::IncludeTrailingBackslash(TargetDir);
+  UnicodeString FullTargetDir = ::IncludeTrailingBackslash(TargetDir);
 
   intptr_t Index = 0;
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
@@ -12979,11 +12979,11 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       };
       UnicodeString AbsoluteFilePath = AbsolutePath(FileName, false);
       UnicodeString TargetDirectory = FullTargetDir;
-      UnicodeString FileNamePath = ApiPath(Sysutils::ExtractFilePath(File->GetFileName()));
+      UnicodeString FileNamePath = ApiPath(::ExtractFilePath(File->GetFileName()));
       if (!FileNamePath.IsEmpty())
       {
-        TargetDirectory = Sysutils::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
-        Sysutils::ForceDirectories(ApiPath(TargetDirectory));
+        TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
+        ::ForceDirectories(ApiPath(TargetDirectory));
       }
       try
       {
@@ -13022,7 +13022,7 @@ void TWebDAVFileSystem::SinkRobust(const UnicodeString & AFileName,
       Sink(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch (Sysutils::Exception & E)
+    catch (::Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -13080,7 +13080,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
   if (AFile->GetIsDirectory())
   {
     bool CanProceed = true;
-    if (Sysutils::DirectoryExists(DestFullName))
+    if (::DirectoryExists(DestFullName))
     {
       uintptr_t Answer = 0;
       UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly.c_str());
@@ -13118,11 +13118,11 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
         );
 
         FILE_OPERATION_LOOP(FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
-          THROWOSIFFALSE(Sysutils::ForceDirectories(ApiPath(DestFullName)));
+          THROWOSIFFALSE(::ForceDirectories(ApiPath(DestFullName)));
         );
 
         TSinkFileParams SinkFileParams;
-        SinkFileParams.TargetDir = ApiPath(Sysutils::IncludeTrailingBackslash(DestFullName));
+        SinkFileParams.TargetDir = ApiPath(::IncludeTrailingBackslash(DestFullName));
         SinkFileParams.CopyParam = CopyParam;
         SinkFileParams.Params = Params;
         SinkFileParams.OperationProgress = OperationProgress;
@@ -13150,7 +13150,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
   {
     FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to local directory started.", AFileName.c_str()));
     bool CanProceed = true;
-    if (Sysutils::FileExists(ApiPath(DestFullName)))
+    if (::FileExists(ApiPath(DestFullName)))
     {
       int64_t Size = 0;
       int64_t MTime = 0;
@@ -13230,7 +13230,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
         LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
       }
 
-      Action.Destination(Sysutils::ExpandUNCFileName(DestFullName));
+      Action.Destination(::ExpandUNCFileName(DestFullName));
 
       if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
       {
@@ -13396,7 +13396,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
 
         File->Complete();
       }
-      catch (Sysutils::Exception & E)
+      catch (::Exception & E)
       {
         UnicodeString EntryData =
           FORMAT(L"%s/%s/%s/%lld/%d/%d/%d/%d/%d/%d/%d/%d/%d",

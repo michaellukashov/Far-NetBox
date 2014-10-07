@@ -10,8 +10,6 @@
 #include "CoreMain.h"
 #include "Interface.h"
 
-using namespace Sysutils;
-
 static bool WellKnownException(
   const Exception * E, UnicodeString * AMessage, const wchar_t ** ACounterName, Exception ** AClone, bool Rethrow)
 {
@@ -367,7 +365,7 @@ UnicodeString SysErrorMessageForError(int LastError)
   if (LastError != 0)
   {
     //Result = FORMAT(L"System Error. Code: %d.\r\n%s", LastError, SysErrorMessage(LastError).c_str());
-    Result = FMTLOAD(SOSError, LastError, Sysutils::SysErrorMessage(LastError).c_str());
+    Result = FMTLOAD(SOSError, LastError, ::SysErrorMessage(LastError).c_str());
   }
   return Result;
 }

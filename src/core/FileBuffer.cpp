@@ -81,7 +81,7 @@ int64_t TFileBuffer::ReadStream(TStream * Stream, const int64_t Len, bool ForceL
   }
   catch (EReadError &)
   {
-    Sysutils::RaiseLastOSError();
+    ::RaiseLastOSError();
   }
   return Result;
 }
@@ -229,7 +229,7 @@ void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
   }
   catch (EWriteError &)
   {
-    Sysutils::RaiseLastOSError();
+    ::RaiseLastOSError();
   }
 }
 
@@ -240,20 +240,20 @@ TSafeHandleStream::TSafeHandleStream(THandle AHandle) :
 
 int64_t TSafeHandleStream::Read(void * Buffer, int64_t Count)
 {
-  int64_t Result = Sysutils::FileRead(FHandle, Buffer, Count);
+  int64_t Result = ::FileRead(FHandle, Buffer, Count);
   if (Result == static_cast<int64_t>(-1))
   {
-    Sysutils::RaiseLastOSError();
+    ::RaiseLastOSError();
   }
   return Result;
 }
 
 int64_t TSafeHandleStream::Write(const void * Buffer, int64_t Count)
 {
-  int64_t Result = Sysutils::FileWrite(FHandle, Buffer, Count);
+  int64_t Result = ::FileWrite(FHandle, Buffer, Count);
   if (Result == -1)
   {
-    Sysutils::RaiseLastOSError();
+    ::RaiseLastOSError();
   }
   return Result;
 }

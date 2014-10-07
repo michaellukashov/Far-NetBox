@@ -6,9 +6,9 @@
 
 #include "Exceptions.h"
 
-inline void ThrowExtException() { throw ExtException((Sysutils::Exception *)nullptr, UnicodeString(L"")); }
+inline void ThrowExtException() { throw ExtException((::Exception *)nullptr, UnicodeString(L"")); }
 #define EXCEPTION throw ExtException(nullptr, L"")
-#define THROWOSIFFALSE(C) { if (!(C)) Sysutils::RaiseLastOSError(); }
+#define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
 #define NULL_TERMINATE(S) S[_countof(S) - 1] = L'\0'
@@ -18,8 +18,8 @@ inline void ThrowExtException() { throw ExtException((Sysutils::Exception *)null
     strncpy(dest, CopyBuf.c_str(), _countof(dest)); \
     dest[_countof(dest)-1] = '\0'; \
   }
-#define FORMAT(S, ...) Sysutils::Format(S, ##__VA_ARGS__)
-#define FMTLOAD(I, ...) Sysutils::FmtLoadStr(I, ##__VA_ARGS__)
+#define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
+#define FMTLOAD(I, ...) ::FmtLoadStr(I, ##__VA_ARGS__)
 //#define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
@@ -51,7 +51,7 @@ UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
   wchar_t * Delimiter = nullptr, bool DoubleDelimiterEscapes = false);
 UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars);
 UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote);
-UnicodeString ExceptionLogString(Sysutils::Exception *E);
+UnicodeString ExceptionLogString(::Exception *E);
 UnicodeString MainInstructions(const UnicodeString & S);
 UnicodeString MainInstructionsFirstParagraph(const UnicodeString & S);
 bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions);
@@ -124,13 +124,13 @@ UnicodeString ExtractFileBaseName(const UnicodeString & APath);
 TStringList * TextToStringList(const UnicodeString & Text);
 UnicodeString TrimVersion(const UnicodeString & Version);
 UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion);
-Sysutils::TFormatSettings GetEngFormatSettings();
+::TFormatSettings GetEngFormatSettings();
 //int ParseShortEngMonthName(const UnicodeString & MonthStr);
 
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
-  const UnicodeString & /* FileName */, const Sysutils::TSearchRec & /* Rec */, void * /* Param */);
-bool FileSearchRec(const UnicodeString & AFileName, Sysutils::TSearchRec & Rec);
-struct TSearchRecChecked : public Sysutils::TSearchRec
+  const UnicodeString & /* FileName */, const ::TSearchRec & /* Rec */, void * /* Param */);
+bool FileSearchRec(const UnicodeString & AFileName, ::TSearchRec & Rec);
+struct TSearchRecChecked : public ::TSearchRec
 {
   UnicodeString Path;
 };
@@ -176,25 +176,25 @@ class TGuard : public TObject
 {
 NB_DISABLE_COPY(TGuard)
 public:
-  explicit TGuard(const Sysutils::TCriticalSection & ACriticalSection);
+  explicit TGuard(const ::TCriticalSection & ACriticalSection);
   ~TGuard();
 
 private:
-  const Sysutils::TCriticalSection & FCriticalSection;
+  const ::TCriticalSection & FCriticalSection;
 };
 
 class TUnguard : public TObject
 {
 NB_DISABLE_COPY(TUnguard)
 public:
-  explicit TUnguard(Sysutils::TCriticalSection & ACriticalSection);
+  explicit TUnguard(::TCriticalSection & ACriticalSection);
   ~TUnguard();
 
 private:
-  Sysutils::TCriticalSection & FCriticalSection;
+  ::TCriticalSection & FCriticalSection;
 };
 
-#define MB_TEXT(x) const_cast<wchar_t *>(Sysutils::MB2W(x).c_str())
+#define MB_TEXT(x) const_cast<wchar_t *>(::MB2W(x).c_str())
 #define CALLSTACK
 #define CCALLSTACK(TRACING)
 #define TRACING

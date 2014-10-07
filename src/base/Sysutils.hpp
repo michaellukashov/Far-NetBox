@@ -19,18 +19,16 @@ enum FileAttributesEnum
   faAnyFile = 0x0000003f,
 };
 
-namespace Sysutils {
-
 intptr_t __cdecl debug_printf(const wchar_t * format, ...);
 intptr_t __cdecl debug_printf2(const char * format, ...);
 
 #ifdef NETBOX_DEBUG
 #if defined(_MSC_VER)
-#define DEBUG_PRINTF(format, ...) do { Sysutils::debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", Sysutils::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, Sysutils::MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
-#define DEBUG_PRINTF2(format, ...) do { Sysutils::debug_printf2("NetBox: [%s:%d] %s: "format "\n", W2MB(Sysutils::ExtractFilename(__FILEW__, '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
+#define DEBUG_PRINTF(format, ...) do { ::debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", ::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
+#define DEBUG_PRINTF2(format, ...) do { ::debug_printf2("NetBox: [%s:%d] %s: "format "\n", W2MB(::ExtractFilename(__FILEW__, '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
 #else
-#define DEBUG_PRINTF(format, ...) do { Sysutils::debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", Sysutils::ExtractFilename(MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, Sysutils::MB2W(__FUNCTION__).c_str(), ##__VA_ARGS__); } while (0)
-#define DEBUG_PRINTF2(format, ...) do { Sysutils::debug_printf2("NetBox: [%s:%d] %s: "format "\n", W2MB(Sysutils::ExtractFilename(MB2W(__FILE__).c_str(), '\\').c_str()).c_str(), __LINE__, __FUNCTION__, ##__VA_ARGS__); } while (0)
+#define DEBUG_PRINTF(format, ...) do { ::debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", ::ExtractFilename(MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), ##__VA_ARGS__); } while (0)
+#define DEBUG_PRINTF2(format, ...) do { ::debug_printf2("NetBox: [%s:%d] %s: "format "\n", W2MB(::ExtractFilename(MB2W(__FILE__).c_str(), '\\').c_str()).c_str(), __LINE__, __FUNCTION__, ##__VA_ARGS__); } while (0)
 #endif
 #else
 #define DEBUG_PRINTF(format, ...)
@@ -298,7 +296,7 @@ struct TSearchRec
   TFileName Name;
   Integer ExcludeAttr;
   THandle FindHandle;
-  Sysutils::TWin32FindData FindData;
+  ::TWin32FindData FindData;
 };
 
 DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec);
@@ -366,8 +364,6 @@ uintptr_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
 uintptr_t inline GetVersionNumber2121() { return MAKEVERSIONNUMBER(2,1,21); }
 uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobalFunctions()->GetStrVersionNumber()); }
 
-} // namespace Sysutils
-
 class ScopeExit
 {
 public:
@@ -383,5 +379,3 @@ private:
 #define SCOPE_EXIT \
   std::function<void()> SCOPE_EXIT_NAME(scope_exit_func_, __LINE__); \
   ScopeExit SCOPE_EXIT_NAME(scope_exit_, __LINE__) = SCOPE_EXIT_NAME(scope_exit_func_, __LINE__) = [&]() /* lambda body here */
-
-//using namespace Sysutils;
