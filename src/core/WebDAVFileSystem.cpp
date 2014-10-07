@@ -13503,7 +13503,7 @@ void TWebDAVFileSystem::FileTransfer(const UnicodeString & AFileName,
       Result = WebDAVPutFile(FullRemoteFileName.c_str(), LocalFile.c_str(), Size);
     }
     // if (!Result)
-      // EXCEPTION;
+      // ThrowExtException();
   );
 
   switch (FFileTransferAbort)
