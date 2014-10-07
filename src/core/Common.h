@@ -7,17 +7,17 @@
 #include "Exceptions.h"
 
 inline void ThrowExtException() { throw ExtException((::Exception *)nullptr, UnicodeString(L"")); }
-#define EXCEPTION throw ExtException(nullptr, L"")
+//#define EXCEPTION throw ExtException(nullptr, L"")
 #define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
-#define NULL_TERMINATE(S) S[_countof(S) - 1] = L'\0'
-#define ASCOPY(dest, source) \
-  { \
-    AnsiString CopyBuf = ::W2MB(source).c_str(); \
-    strncpy(dest, CopyBuf.c_str(), _countof(dest)); \
-    dest[_countof(dest)-1] = '\0'; \
-  }
+//#define NULL_TERMINATE(S) S[_countof(S) - 1] = L'\0'
+//#define ASCOPY(dest, source) \
+//  { \
+//    AnsiString CopyBuf = ::W2MB(source).c_str(); \
+//    strncpy(dest, CopyBuf.c_str(), _countof(dest)); \
+//    dest[_countof(dest)-1] = '\0'; \
+//  }
 #define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
 #define FMTLOAD(I, ...) ::FmtLoadStr(I, ##__VA_ARGS__)
 //#define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
@@ -195,29 +195,29 @@ private:
 };
 
 #define MB_TEXT(x) const_cast<wchar_t *>(::MB2W(x).c_str())
-#define CALLSTACK
-#define CCALLSTACK(TRACING)
-#define TRACING
-#undef TRACE
-#define TRACE(MESSAGE)
-#define TRACEFMT(MESSAGE, ...)
-#define CTRACE(TRACING, MESSAGE)
-#define CTRACEFMT(TRACING, MESSAGE, ...)
+//#define CALLSTACK
+//#define CCALLSTACK(TRACING)
+//#define TRACING
+//#undef TRACE
+//#define TRACE(MESSAGE)
+//#define TRACEFMT(MESSAGE, ...)
+//#define CTRACE(TRACING, MESSAGE)
+//#define CTRACEFMT(TRACING, MESSAGE, ...)
 
 #include <assert.h>
-#define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
+//#define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
 #ifndef _DEBUG
 #undef assert
 #define assert(p)   ((void)0)
 #define CHECK(p) p
 #define FAIL
-#define TRACE_EXCEPT_BEGIN
-#define TRACE_EXCEPT_END
-#define TRACE_CATCH_ALL catch (...)
-#define CLEAN_INLINE
-#define TRACEE_(E)
-#define TRACEE
-#define TRACE_EXCEPT
+//#define TRACE_EXCEPT_BEGIN
+//#define TRACE_EXCEPT_END
+//#define TRACE_CATCH_ALL catch (...)
+//#define CLEAN_INLINE
+//#define TRACEE_(E)
+//#define TRACEE
+//#define TRACE_EXCEPT
 #define ALWAYS_TRUE(p) p
 #define ALWAYS_FALSE(p) p
 #define NOT_NULL(P) P
