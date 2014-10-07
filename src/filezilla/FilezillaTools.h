@@ -5,7 +5,7 @@
 #include <ctime>
 #include <Classes.hpp>
 //---------------------------------------------------------------------------
-class CFileZillaTools : public Classes::TObject
+class CFileZillaTools : public TObject
 {
 public:
   virtual void PreserveDownloadFileTime(HANDLE Handle, void * UserData) = 0;

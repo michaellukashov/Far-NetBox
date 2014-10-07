@@ -27,7 +27,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class CApiLog : public Classes::TObject
+class CApiLog : public TObject
 {
 NB_DECLARE_CLASS(CApiLog)
 public:

@@ -69,7 +69,7 @@ to tim.kosse@gmx.de
 #endif // _MSC_VER > 1000
 
 class CAsyncSocketEx;
-class CAsyncSocketExLayer : public Classes::TObject
+class CAsyncSocketExLayer : public TObject
 {
 	friend CAsyncSocketEx;
 	friend CAsyncSocketExHelperWindow;
@@ -166,7 +166,7 @@ private:
 	CAsyncSocketExLayer *m_pNextLayer;
 	CAsyncSocketExLayer *m_pPrevLayer;
 
-	struct t_LayerNotifyMsg : public Classes::TObject
+	struct t_LayerNotifyMsg : public TObject
 	{
 		SOCKET hSocket;
 		CAsyncSocketExLayer *pLayer;
