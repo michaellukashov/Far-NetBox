@@ -128,7 +128,7 @@ void TClassInfo::Unregister()
   }
 }
 
-const Classes::TObject * NbStaticDownCastConst(TObjectClassId ClassId, const Classes::TObject * Object)
+const TObject * NbStaticDownCastConst(TObjectClassId ClassId, const TObject * Object)
 {
   if (Object != nullptr && Object->IsKindOf(ClassId))
     return Object;
@@ -136,7 +136,7 @@ const Classes::TObject * NbStaticDownCastConst(TObjectClassId ClassId, const Cla
     return nullptr;
 }
 
-Classes::TObject * NbStaticDownCast(TObjectClassId ClassId, Classes::TObject * Object)
+TObject * NbStaticDownCast(TObjectClassId ClassId, TObject * Object)
 {
   if (Object != nullptr && Object->IsKindOf(ClassId))
     return Object;

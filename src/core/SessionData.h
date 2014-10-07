@@ -123,7 +123,7 @@ extern const wchar_t UrlParamValueSeparator;
 extern const UnicodeString UrlHostKeyParamName;
 extern const UnicodeString UrlSaveParamName;
 
-struct TIEProxyConfig : public Classes::TObject
+struct TIEProxyConfig : public TObject
 {
   TIEProxyConfig() :
     AutoDetect(false),
@@ -181,10 +181,10 @@ public:
   void SetProtocolStr(const UnicodeString & Value);
   UnicodeString GetProtocolStr() const;
   bool GetCanLogin() const;
-  void SetPingIntervalDT(const Classes::TDateTime & Value);
-  Classes::TDateTime GetPingIntervalDT() const;
-  Classes::TDateTime GetFtpPingIntervalDT() const;
-  void SetTimeDifference(const Classes::TDateTime & Value);
+  void SetPingIntervalDT(const TDateTime & Value);
+  TDateTime GetPingIntervalDT() const;
+  TDateTime GetFtpPingIntervalDT() const;
+  void SetTimeDifference(const TDateTime & Value);
   void SetPingType(TPingType Value);
   UnicodeString GetSessionName() const;
   bool HasSessionName() const;
@@ -298,7 +298,7 @@ public:
   void SetHostKey(const UnicodeString & Value);
   UnicodeString GetNote() const { return FNote; }
   void SetNote(const UnicodeString & Value);
-  Classes::TDateTime GetTimeoutDT();
+  TDateTime GetTimeoutDT();
   void SavePasswords(THierarchicalStorage * Storage, bool PuttyExport);
   UnicodeString GetLocalName() const;
   UnicodeString GetFolderName() const;
@@ -340,7 +340,7 @@ public:
   void ConfigureTunnel(intptr_t PortNumber);
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
-  bool IsSame(const TSessionData * Default, bool AdvancedOnly, Classes::TStrings * DifferentProperties) const;
+  bool IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties) const;
   bool IsSame(const TSessionData * Default, bool AdvancedOnly) const;
   bool IsInFolderOrWorkspace(const UnicodeString & Name) const;
   static void ValidatePath(const UnicodeString & APath);
@@ -377,7 +377,7 @@ public:
   bool GetModified() const { return FModified; }
   void SetModified(bool Value) { FModified = Value; }
   bool GetClearAliases() const { return FClearAliases; }
-  Classes::TDateTime GetTimeDifference() const { return FTimeDifference; }
+  TDateTime GetTimeDifference() const { return FTimeDifference; }
   TPingType GetPingType() const { return FPingType; }
   UnicodeString GetLocalDirectory() const { return FLocalDirectory; }
   UnicodeString GetRemoteDirectory() const { return FRemoteDirectory; }
@@ -553,7 +553,7 @@ private:
   UnicodeString FCustomParam1;
   UnicodeString FCustomParam2;
   bool FResolveSymlinks;
-  Classes::TDateTime FTimeDifference;
+  TDateTime FTimeDifference;
   intptr_t FSFTPDownloadQueue;
   intptr_t FSFTPUploadQueue;
   intptr_t FSFTPListingQueue;
@@ -634,7 +634,7 @@ public:
   void Save(THierarchicalStorage * Storage, bool All = false);
   void SelectAll(bool Select);
   void Import(TStoredSessionList * From, bool OnlySelected, TList * Imported);
-  void RecryptPasswords(Classes::TStrings * RecryptPasswordErrors);
+  void RecryptPasswords(TStrings * RecryptPasswordErrors);
   void SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void Cleanup();
   void UpdateStaticUsage();
@@ -649,8 +649,8 @@ public:
   bool IsUrl(const UnicodeString & Url);
   bool CanLogin(TSessionData * Data);
   void GetFolderOrWorkspace(const UnicodeString & Name, TList * List);
-  Classes::TStrings * GetFolderOrWorkspaceList(const UnicodeString & Name);
-  Classes::TStrings * GetWorkspaces();
+  TStrings * GetFolderOrWorkspaceList(const UnicodeString & Name);
+  TStrings * GetWorkspaces();
   bool HasAnyWorkspace();
   const TSessionData * GetSession(intptr_t Index) const { return NB_STATIC_DOWNCAST_CONST(TSessionData, AtObject(Index)); }
   TSessionData * GetSession(intptr_t Index) { return NB_STATIC_DOWNCAST(TSessionData, AtObject(Index)); }
@@ -667,9 +667,9 @@ private:
   bool FReadOnly;
   void SetDefaultSettings(TSessionData * Value);
   void DoSave(THierarchicalStorage * Storage, bool All,
-    bool RecryptPasswordOnly, Classes::TStrings * RecryptPasswordErrors);
+    bool RecryptPasswordOnly, TStrings * RecryptPasswordErrors);
   void DoSave(bool All, bool Explicit, bool RecryptPasswordOnly,
-    Classes::TStrings * RecryptPasswordErrors);
+    TStrings * RecryptPasswordErrors);
   void DoSave(THierarchicalStorage * Storage,
     TSessionData * Data, bool All, bool RecryptPasswordOnly,
     TSessionData * FactoryDefaults);

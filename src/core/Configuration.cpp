@@ -154,7 +154,7 @@ THierarchicalStorage * TConfiguration::CreateStorage(bool /*SessionList*/)
   }
   else
   {
-    Classes::Error(SNotImplemented, 3005);
+    Error(SNotImplemented, 3005);
     assert(false);
   }
   return Result;
@@ -260,7 +260,7 @@ void TConfiguration::DoSave(bool All, bool Explicit)
 
 void TConfiguration::Export(const UnicodeString & /*AFileName*/)
 {
-  Classes::Error(SNotImplemented, 3004);
+  Error(SNotImplemented, 3004);
   /*
   std::unique_ptr<THierarchicalStorage> Storage(CreateScpStorage(false));
   std::unique_ptr<THierarchicalStorage> ExportStorage(nullptr);
@@ -283,7 +283,7 @@ void TConfiguration::Export(const UnicodeString & /*AFileName*/)
 
 void TConfiguration::Import(const UnicodeString & /* AFileName */)
 {
-  Classes::Error(SNotImplemented, 3005);
+  Error(SNotImplemented, 3005);
 /*
   std::unique_ptr<THierarchicalStorage> Storage(CreateScpStorage(false));
   std::unique_ptr<THierarchicalStorage> ImportStorage(new TIniFileStorage(FileName));
@@ -357,7 +357,7 @@ void TConfiguration::Load()
 void TConfiguration::CopyData(THierarchicalStorage * Source,
   THierarchicalStorage * Target)
 {
-  std::unique_ptr<Classes::TStrings > Names(new Classes::TStringList());
+  std::unique_ptr<TStrings > Names(new TStringList());
   if (Source->OpenSubKey(GetConfigurationSubKey(), false))
   {
     if (Target->OpenSubKey(GetConfigurationSubKey(), true))
@@ -664,7 +664,7 @@ intptr_t TConfiguration::GetCompoundVersion() const
 
 UnicodeString TConfiguration::ModuleFileName() const
 {
-  Classes::Error(SNotImplemented, 204);
+  Error(SNotImplemented, 204);
   return L"";
 }
 
@@ -1331,14 +1331,14 @@ void TConfiguration::SetPermanentActionsLogFileName(const UnicodeString & Value)
   FPermanentActionsLogFileName = Value;
 }
 
-void TShortCuts::Add(const Classes::TShortCut & ShortCut)
+void TShortCuts::Add(const TShortCut & ShortCut)
 {
   FShortCuts.push_back(ShortCut);
 }
 
-bool TShortCuts::Has(const Classes::TShortCut & ShortCut) const
+bool TShortCuts::Has(const TShortCut & ShortCut) const
 {
-  rde::vector<Classes::TShortCut>::iterator it = const_cast<TShortCuts *>(this)->FShortCuts.find(ShortCut);
+  rde::vector<TShortCut>::iterator it = const_cast<TShortCuts *>(this)->FShortCuts.find(ShortCut);
   return (it != FShortCuts.end());
 }
 

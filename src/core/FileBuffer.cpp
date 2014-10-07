@@ -17,7 +17,7 @@ char * EOLToStr(TEOLType EOLType)
 }
 
 TFileBuffer::TFileBuffer() :
-  FMemory(new Classes::TMemoryStream())
+  FMemory(new TMemoryStream())
 {
 }
 
@@ -44,7 +44,7 @@ int64_t TFileBuffer::GetPosition() const
   return FMemory->GetPosition();
 }
 
-void TFileBuffer::SetMemory(Classes::TMemoryStream * Value)
+void TFileBuffer::SetMemory(TMemoryStream * Value)
 {
   if (FMemory != Value)
   {
@@ -56,7 +56,7 @@ void TFileBuffer::SetMemory(Classes::TMemoryStream * Value)
   }
 }
 
-int64_t TFileBuffer::ReadStream(Classes::TStream * Stream, const int64_t Len, bool ForceLen)
+int64_t TFileBuffer::ReadStream(TStream * Stream, const int64_t Len, bool ForceLen)
 {
   int64_t Result = 0;
   try
@@ -77,18 +77,18 @@ int64_t TFileBuffer::ReadStream(Classes::TStream * Stream, const int64_t Len, bo
     {
       SetSize(GetSize() - Len + Result);
     }
-    FMemory->Seek(Len, Classes::soFromCurrent);
+    FMemory->Seek(Len, soFromCurrent);
   }
-  catch (Classes::EReadError &)
+  catch (EReadError &)
   {
     Sysutils::RaiseLastOSError();
   }
   return Result;
 }
 
-int64_t TFileBuffer::LoadStream(Classes::TStream * Stream, const int64_t Len, bool ForceLen)
+int64_t TFileBuffer::LoadStream(TStream * Stream, const int64_t Len, bool ForceLen)
 {
-  FMemory->Seek(0, Classes::soFromBeginning);
+  FMemory->Seek(0, soFromBeginning);
   return ReadStream(Stream, Len, ForceLen);
 }
 
@@ -219,21 +219,21 @@ void TFileBuffer::Delete(int64_t Index, size_t Len)
   SetSize(GetSize() - Len);
 }
 
-void TFileBuffer::WriteToStream(Classes::TStream * Stream, const int64_t Len)
+void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
 {
   assert(Stream);
   try
   {
     Stream->WriteBuffer(GetData() + GetPosition(), Len);
-    FMemory->Seek(Len, Classes::soFromCurrent);
+    FMemory->Seek(Len, soFromCurrent);
   }
-  catch (Classes::EWriteError &)
+  catch (EWriteError &)
   {
     Sysutils::RaiseLastOSError();
   }
 }
 
-TSafeHandleStream::TSafeHandleStream(Classes::THandle AHandle) :
+TSafeHandleStream::TSafeHandleStream(THandle AHandle) :
   THandleStream(AHandle)
 {
 }

@@ -58,7 +58,7 @@ void TFileOperationProgressType::Clear()
   FileInProgress = false;
   Cancel = csContinue;
   Count = 0;
-  StartTime = Classes::Now();
+  StartTime = Now();
   TotalTransfered = 0;
   TotalSkipped = 0;
   TotalSize = 0;
@@ -231,7 +231,7 @@ void TFileOperationProgressType::SetFile(const UnicodeString & AFileName, bool A
   }
   FileInProgress = AFileInProgress;
   ClearTransfer();
-  FFileStartTime = Classes::Now();
+  FFileStartTime = Now();
   DoProgress();
 }
 
@@ -294,7 +294,7 @@ uintptr_t TFileOperationProgressType::AdjustToCPSLimit(
     // we wait until the next second
     do
     {
-      uintptr_t Second = (GetTickCount() / Classes::MSecsPerSec);
+      uintptr_t Second = (GetTickCount() / MSecsPerSec);
 
       if (Second != FLastSecond)
       {
@@ -396,7 +396,7 @@ void TFileOperationProgressType::AddTransfered(int64_t ASize,
     uint32_t Ticks = static_cast<uint32_t>(GetTickCount());
     if (FTicks.empty() ||
         (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
-        ((Ticks - FTicks.back()) >= static_cast<uint32_t>(Classes::MSecsPerSec)))
+        ((Ticks - FTicks.back()) >= static_cast<uint32_t>(MSecsPerSec)))
     {
       FTicks.push_back(Ticks);
       FTotalTransferredThen.push_back(TotalTransfered);
@@ -459,9 +459,9 @@ void TFileOperationProgressType::SetResumeStatus(TResumeStatus AResumeStatus)
   DoProgress();
 }
 
-Classes::TDateTime TFileOperationProgressType::TimeElapsed() const
+TDateTime TFileOperationProgressType::TimeElapsed() const
 {
-  return Classes::Now() - StartTime;
+  return Now() - StartTime;
 }
 
 uintptr_t TFileOperationProgressType::CPS() const
@@ -492,53 +492,53 @@ uintptr_t TFileOperationProgressType::CPS() const
     else
     {
       int64_t Transferred = (TotalTransfered - FTotalTransferredThen.front());
-      Result = static_cast<uintptr_t>(Transferred * Classes::MSecsPerSec / TimeSpan);
+      Result = static_cast<uintptr_t>(Transferred * MSecsPerSec / TimeSpan);
     }
   }
   return Result;
 }
 
-Classes::TDateTime TFileOperationProgressType::TimeExpected() const
+TDateTime TFileOperationProgressType::TimeExpected() const
 {
   uintptr_t CurCps = CPS();
   if (CurCps)
   {
-    return Classes::TDateTime(ToDouble((ToDouble(TransferSize - TransferedSize)) / CurCps) / Classes::SecsPerDay);
+    return TDateTime(ToDouble((ToDouble(TransferSize - TransferedSize)) / CurCps) / SecsPerDay);
   }
   else
   {
-    return Classes::TDateTime(0.0);
+    return TDateTime(0.0);
   }
 }
 
-Classes::TDateTime TFileOperationProgressType::TotalTimeExpected() const
+TDateTime TFileOperationProgressType::TotalTimeExpected() const
 {
   assert(TotalSizeSet);
   uintptr_t CurCps = CPS();
   // sanity check
   if ((CurCps > 0) && (TotalSize > TotalSkipped))
   {
-    return Classes::TDateTime(ToDouble(ToDouble(TotalSize - TotalSkipped) / CurCps) /
-      Classes::SecsPerDay);
+    return TDateTime(ToDouble(ToDouble(TotalSize - TotalSkipped) / CurCps) /
+      SecsPerDay);
   }
   else
   {
-    return Classes::TDateTime(0.0);
+    return TDateTime(0.0);
   }
 }
 
-Classes::TDateTime TFileOperationProgressType::TotalTimeLeft() const
+TDateTime TFileOperationProgressType::TotalTimeLeft() const
 {
   assert(TotalSizeSet);
   uintptr_t CurCps = CPS();
   // sanity check
   if ((CurCps > 0) && (TotalSize > TotalSkipped + TotalTransfered))
   {
-    return Classes::TDateTime(ToDouble(ToDouble(TotalSize - TotalSkipped - TotalTransfered) / CurCps) /
-      Classes::SecsPerDay);
+    return TDateTime(ToDouble(ToDouble(TotalSize - TotalSkipped - TotalTransfered) / CurCps) /
+      SecsPerDay);
   }
   else
   {
-    return Classes::TDateTime(0.0);
+    return TDateTime(0.0);
   }
 }

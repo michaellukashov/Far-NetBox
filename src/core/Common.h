@@ -10,7 +10,7 @@ inline void ThrowExtException() { throw ExtException((Sysutils::Exception *)null
 #define EXCEPTION throw ExtException(nullptr, L"")
 #define THROWOSIFFALSE(C) { if (!(C)) Sysutils::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
-#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(Classes::TObject, OBJ)
+#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
 #define NULL_TERMINATE(S) S[_countof(S) - 1] = L'\0'
 #define ASCOPY(dest, source) \
   { \
@@ -112,7 +112,7 @@ bool IsWinVista();
 bool IsWin7();
 bool IsWine();
 int64_t Round(double Number);
-bool TryRelativeStrToDateTime(const UnicodeString & S, Classes::TDateTime & DateTime);
+bool TryRelativeStrToDateTime(const UnicodeString & S, TDateTime & DateTime);
 LCID GetDefaultLCID();
 UnicodeString DefaultEncodingName();
 UnicodeString WindowsProductName();
@@ -121,7 +121,7 @@ bool IsDirectoryWriteable(const UnicodeString & APath);
 UnicodeString FormatNumber(int64_t Size);
 UnicodeString FormatSize(int64_t Size);
 UnicodeString ExtractFileBaseName(const UnicodeString & APath);
-Classes::TStringList * TextToStringList(const UnicodeString & Text);
+TStringList * TextToStringList(const UnicodeString & Text);
 UnicodeString TrimVersion(const UnicodeString & Version);
 UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion);
 Sysutils::TFormatSettings GetEngFormatSettings();
@@ -147,32 +147,32 @@ enum TDSTMode
   dstmKeep = 2
 };
 bool UsesDaylightHack();
-Classes::TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day);
-Classes::TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec);
-Classes::TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime);
-Classes::TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode);
-Classes::TDateTime ConvertTimestampToUTC(const Classes::TDateTime & DateTime);
-Classes::TDateTime ConvertTimestampFromUTC(const Classes::TDateTime & DateTime);
-FILETIME DateTimeToFileTime(const Classes::TDateTime & DateTime, TDSTMode DSTMode);
-Classes::TDateTime AdjustDateTimeFromUnix(const Classes::TDateTime & DateTime, TDSTMode DSTMode);
-void UnifyDateTimePrecision(Classes::TDateTime & DateTime1, Classes::TDateTime & DateTime2);
-Classes::TDateTime FileTimeToDateTime(const FILETIME & FileTime);
+TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day);
+TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec);
+TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime);
+TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode);
+TDateTime ConvertTimestampToUTC(const TDateTime & DateTime);
+TDateTime ConvertTimestampFromUTC(const TDateTime & DateTime);
+FILETIME DateTimeToFileTime(const TDateTime & DateTime, TDSTMode DSTMode);
+TDateTime AdjustDateTimeFromUnix(const TDateTime & DateTime, TDSTMode DSTMode);
+void UnifyDateTimePrecision(TDateTime & DateTime1, TDateTime & DateTime2);
+TDateTime FileTimeToDateTime(const FILETIME & FileTime);
 int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
   TDSTMode DSTMode);
 int64_t ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode);
 UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format);
-UnicodeString StandardTimestamp(const Classes::TDateTime & DateTime);
+UnicodeString StandardTimestamp(const TDateTime & DateTime);
 UnicodeString StandardTimestamp();
 UnicodeString StandardDatestamp();
 UnicodeString GetTimeZoneLogString();
 bool AdjustClockForDSTEnabled();
-intptr_t CompareFileTime(const Classes::TDateTime & T1, const Classes::TDateTime & T2);
-intptr_t TimeToMSec(const Classes::TDateTime & T);
-intptr_t TimeToSeconds(const Classes::TDateTime & T);
-intptr_t TimeToMinutes(const Classes::TDateTime & T);
+intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2);
+intptr_t TimeToMSec(const TDateTime & T);
+intptr_t TimeToSeconds(const TDateTime & T);
+intptr_t TimeToMinutes(const TDateTime & T);
 
-class TGuard : public Classes::TObject
+class TGuard : public TObject
 {
 NB_DISABLE_COPY(TGuard)
 public:
@@ -183,7 +183,7 @@ private:
   const Sysutils::TCriticalSection & FCriticalSection;
 };
 
-class TUnguard : public Classes::TObject
+class TUnguard : public TObject
 {
 NB_DISABLE_COPY(TUnguard)
 public:
@@ -234,7 +234,7 @@ private:
 #endif
 
 template<class T>
-class TValueRestorer : public Classes::TObject
+class TValueRestorer : public TObject
 {
 public:
   inline explicit TValueRestorer(T & Target, const T & Value) :

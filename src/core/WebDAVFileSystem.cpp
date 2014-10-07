@@ -1759,7 +1759,7 @@ fail:
     exploded_time.tm_wday   = 0;
     exploded_time.tm_yday   = 0;
     exploded_time.tm_isdst  = 0;
-    exploded_time.tm_gmtoff = (gmt_shift == '-' ? -1 : 1) * gmt_hour * Classes::SecsPerHour + gmt_min * Classes::SecsPerMin;
+    exploded_time.tm_gmtoff = (gmt_shift == '-' ? -1 : 1) * gmt_hour * SecsPerHour + gmt_min * SecsPerMin;
     exploded_time.tm_usec = 0;
 
     apr_err = apr_time_exp_gmt_get(when, &exploded_time);
@@ -3029,7 +3029,7 @@ config_read_auth_data(
     return WEBDAV_ERR_BAD_PARAM;
 
   *hash = apr_hash_make(pool);
-  std::unique_ptr<Classes::TStrings> Keys(new Classes::TStringList());
+  std::unique_ptr<TStrings> Keys(new TStringList());
   StoragePtr->GetValueNames(Keys.get());
   for (intptr_t Index = 0; Index < Keys->GetCount(); ++Index)
   {
@@ -11969,7 +11969,7 @@ neon_init(
 
 class TSessionData;
 
-class TWebDAVFileListHelper : public Classes::TObject
+class TWebDAVFileListHelper : public TObject
 {
 NB_DISABLE_COPY(TWebDAVFileListHelper)
 public:
@@ -12081,7 +12081,7 @@ void TWebDAVFileSystem::Open()
 
   TSessionData * Data = FTerminal->GetSessionData();
 
-  FSessionInfo.LoginTime = Classes::Now();
+  FSessionInfo.LoginTime = Now();
   FSessionInfo.ProtocolBaseName = CONST_WEBDAV_PROTOCOL_BASE_NAME;
   FSessionInfo.ProtocolName = FSessionInfo.ProtocolBaseName;
 
@@ -12274,7 +12274,7 @@ void TWebDAVFileSystem::ReadCurrentDirectory()
 
 void TWebDAVFileSystem::HomeDirectory()
 {
-  Classes::Error(SNotImplemented, 1009);
+  Error(SNotImplemented, 1009);
 }
 
 void TWebDAVFileSystem::AnnounceFileListOperation()
@@ -12430,7 +12430,7 @@ void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
 void TWebDAVFileSystem::CopyFile(const UnicodeString & AFileName,
   const UnicodeString & NewName)
 {
-  Classes::Error(SNotImplemented, 1012);
+  Error(SNotImplemented, 1012);
 }
 
 void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
@@ -12439,7 +12439,7 @@ void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
   bool res = WebDAVMakeDirectory(FullDirName.c_str());
   if (!res)
   {
-    Classes::TStringList Strings;
+    TStringList Strings;
     Strings.SetDelimiter(L'/');
     Strings.SetDelimitedText(ADirName);
     UnicodeString CurDir;
@@ -12462,25 +12462,25 @@ void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
 void TWebDAVFileSystem::CreateLink(const UnicodeString & AFileName,
   const UnicodeString & PointTo, bool Symbolic)
 {
-  Classes::Error(SNotImplemented, 1014);
+  Error(SNotImplemented, 1014);
 }
 
 void TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
   const TRemoteFile * AFile, const TRemoteProperties * Properties,
   TChmodSessionAction & Action)
 {
-  Classes::Error(SNotImplemented, 1006);
+  Error(SNotImplemented, 1006);
   assert(Properties);
 }
 
-bool TWebDAVFileSystem::LoadFilesProperties(Classes::TStrings * /*FileList*/)
+bool TWebDAVFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
 {
   assert(false);
   return false;
 }
 
 void TWebDAVFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
-  Classes::TStrings * /*FileList*/, Classes::TStrings * /*Checksums*/,
+  TStrings * /*FileList*/, TStrings * /*Checksums*/,
   TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
 {
   assert(false);
@@ -12614,10 +12614,10 @@ void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
 void TWebDAVFileSystem::AnyCommand(const UnicodeString & Command,
   TCaptureOutputEvent OutputEvent)
 {
-  Classes::Error(SNotImplemented, 1008);
+  Error(SNotImplemented, 1008);
 }
 
-Classes::TStrings * TWebDAVFileSystem::GetFixedPaths()
+TStrings * TWebDAVFileSystem::GetFixedPaths()
 {
   return nullptr;
 }
@@ -12628,7 +12628,7 @@ void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & /*APath*/,
   assert(false);
 }
 
-void TWebDAVFileSystem::CopyToRemote(const Classes::TStrings * AFilesToCopy,
+void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
@@ -12956,7 +12956,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
   }
 }
 
-void TWebDAVFileSystem::CopyToLocal(const Classes::TStrings * AFilesToCopy,
+void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
@@ -13069,7 +13069,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     ThrowSkipFileNull();
   }
 
-  FTerminal->LogFileDetails(AFileName, Classes::TDateTime(), AFile->GetSize());
+  FTerminal->LogFileDetails(AFileName, TDateTime(), AFile->GetSize());
 
   OperationProgress->SetFile(FileNameOnly);
 
@@ -13284,7 +13284,7 @@ void TWebDAVFileSystem::SinkFile(const UnicodeString & AFileName,
 
     if (OperationProgress->Cancel)
     {
-      Classes::Abort();
+      Abort();
     }
   }
 }
@@ -13362,7 +13362,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
         if (Entry->Time.HasDate)
         {
           // should be the same as ConvertRemoteTimestamp
-          Classes::TDateTime Modification =
+          TDateTime Modification =
             EncodeDateVerbose(static_cast<uint16_t>(Entry->Time.Year), static_cast<uint16_t>(Entry->Time.Month),
               static_cast<uint16_t>(Entry->Time.Day));
           if (Entry->Time.HasTime)
@@ -13387,7 +13387,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
         else
         {
           // We estimate date to be today, if we have at least time
-          File->SetModification(Classes::TDateTime(0.0));
+          File->SetModification(TDateTime(0.0));
           File->SetModificationFmt(mfNone);
         }
         File->SetLastAccess(File->GetModification());
@@ -13512,7 +13512,7 @@ void TWebDAVFileSystem::FileTransfer(const UnicodeString & AFileName,
       ThrowSkipFile(nullptr, L"");
 
     case ftaCancel:
-      Classes::Abort();
+      Abort();
       break;
   }
 
@@ -14134,7 +14134,7 @@ webdav::error_t TWebDAVFileSystem::SimplePrompt(
   uintptr_t & RequestResult)
 {
   RequestResult = 0;
-  std::unique_ptr<Classes::TStrings> MoreMessages(new Classes::TStringList());
+  std::unique_ptr<TStrings> MoreMessages(new TStringList());
   MoreMessages->Add(UnicodeString(prompt_string));
   uintptr_t Answer = FTerminal->QueryUser(
     UnicodeString(prompt_text),

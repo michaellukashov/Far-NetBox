@@ -161,13 +161,13 @@ bool ShouldDisplayException(Exception * E)
   return ExceptionMessageFormatted(E, Message);
 }
 
-Classes::TStrings * ExceptionToMoreMessages(Exception * E)
+TStrings * ExceptionToMoreMessages(Exception * E)
 {
-  Classes::TStrings * Result = nullptr;
+  TStrings * Result = nullptr;
   UnicodeString Message;
   if (ExceptionMessage(E, Message))
   {
-    Result = new Classes::TStringList();
+    Result = new TStringList();
     Result->Add(Message);
     ExtException * ExtE = NB_STATIC_DOWNCAST(ExtException, E);
     if ((ExtE != nullptr) && (ExtE->GetMoreMessages() != nullptr))
@@ -264,7 +264,7 @@ ExtException::ExtException(const UnicodeString & Msg, Exception * E, const Unico
     {
       if (FMoreMessages == nullptr)
       {
-        FMoreMessages = new Classes::TStringList();
+        FMoreMessages = new TStringList();
       }
       FMoreMessages->Append(UnformatMessage(Msg));
     }
@@ -284,7 +284,7 @@ ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & More
   }
 }
 
-ExtException::ExtException(const UnicodeString & Msg, Classes::TStrings * MoreMessages,
+ExtException::ExtException(const UnicodeString & Msg, TStrings * MoreMessages,
   bool Own, const UnicodeString & HelpKeyword) :
   Exception(Msg),
   FMoreMessages(nullptr),
@@ -296,7 +296,7 @@ ExtException::ExtException(const UnicodeString & Msg, Classes::TStrings * MoreMe
   }
   else
   {
-    FMoreMessages = new Classes::TStringList();
+    FMoreMessages = new TStringList();
     FMoreMessages->Assign(MoreMessages);
   }
 }
@@ -307,7 +307,7 @@ void ExtException::AddMoreMessages(const Exception * E)
   {
     if (FMoreMessages == nullptr)
     {
-      FMoreMessages = new Classes::TStringList();
+      FMoreMessages = new TStringList();
     }
 
     const ExtException * ExtE = NB_STATIC_DOWNCAST_CONST(ExtException, E);

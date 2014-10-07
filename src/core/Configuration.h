@@ -27,7 +27,7 @@ enum TFtpEncryptionSwitch_219
   fesExplicitTLS
 };
 
-class TConfiguration : public Classes::TObject
+class TConfiguration : public TObject
 {
 NB_DECLARE_CLASS(TConfiguration)
 public:
@@ -169,8 +169,8 @@ public:
   bool GetLogActions() const { return FLogActions; }
   UnicodeString GetActionsLogFileName() const { return FActionsLogFileName; }
   intptr_t GetLogWindowLines() const { return FLogWindowLines; }
-  Classes::TNotifyEvent & GetOnChange() { return FOnChange; }
-  void SetOnChange(Classes::TNotifyEvent Value) { FOnChange = Value; }
+  TNotifyEvent & GetOnChange() { return FOnChange; }
+  void SetOnChange(TNotifyEvent Value) { FOnChange = Value; }
   intptr_t GetSessionReopenAuto() const { return FSessionReopenAuto; }
   intptr_t GetSessionReopenBackground() const { return FSessionReopenBackground; }
   intptr_t GetSessionReopenTimeout() const { return FSessionReopenTimeout; }
@@ -196,7 +196,7 @@ private:
   bool FDontSave;
   bool FChanged;
   intptr_t FUpdating;
-  Classes::TNotifyEvent FOnChange;
+  TNotifyEvent FOnChange;
 
   mutable void * FApplicationInfo;
   // TUsage * FUsage;
@@ -239,14 +239,14 @@ private:
   intptr_t FSessionReopenAutoMaximumNumberOfRetries;
 };
 
-class TShortCuts : public Classes::TObject
+class TShortCuts : public TObject
 {
 public:
-  void Add(const Classes::TShortCut & ShortCut);
-  bool Has(const Classes::TShortCut & ShortCut) const;
+  void Add(const TShortCut & ShortCut);
+  bool Has(const TShortCut & ShortCut) const;
 
 private:
-  rde::vector<Classes::TShortCut> FShortCuts;
+  rde::vector<TShortCut> FShortCuts;
 };
 
 extern const UnicodeString OriginalPuttyRegistryStorageKey;

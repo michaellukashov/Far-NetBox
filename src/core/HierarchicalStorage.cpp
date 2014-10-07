@@ -99,7 +99,7 @@ UnicodeString UnMungeIniName(const UnicodeString & Str)
 
 THierarchicalStorage::THierarchicalStorage(const UnicodeString & AStorage) :
   FStorage(AStorage),
-  FKeyHistory(new Classes::TStringList())
+  FKeyHistory(new TStringList())
 {
   SetAccessMode(smRead);
   SetExplicit(false);
@@ -204,7 +204,7 @@ void THierarchicalStorage::CloseSubKey()
 
 void THierarchicalStorage::ClearSubKeys()
 {
-  std::unique_ptr<Classes::TStringList> SubKeys(new Classes::TStringList());
+  std::unique_ptr<TStringList> SubKeys(new TStringList());
   GetSubKeyNames(SubKeys.get());
   for (intptr_t Index = 0; Index < SubKeys->GetCount(); ++Index)
   {
@@ -224,7 +224,7 @@ void THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString & Key)
 
 bool THierarchicalStorage::HasSubKeys()
 {
-  std::unique_ptr<Classes::TStrings> SubKeys(new Classes::TStringList());
+  std::unique_ptr<TStrings> SubKeys(new TStringList());
   GetSubKeyNames(SubKeys.get());
   bool Result = SubKeys->GetCount() > 0;
   return Result;
@@ -245,10 +245,10 @@ bool THierarchicalStorage::KeyExists(const UnicodeString & SubKey)
   return DoKeyExists(SubKey, GetForceAnsi());
 }
 
-void THierarchicalStorage::ReadValues(Classes::TStrings * Strings,
+void THierarchicalStorage::ReadValues(TStrings * Strings,
   bool MaintainKeys)
 {
-  std::unique_ptr<Classes::TStrings> Names(new Classes::TStringList());
+  std::unique_ptr<TStrings> Names(new TStringList());
   GetValueNames(Names.get());
   for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
   {
@@ -266,7 +266,7 @@ void THierarchicalStorage::ReadValues(Classes::TStrings * Strings,
 
 void THierarchicalStorage::ClearValues()
 {
-  std::unique_ptr<Classes::TStrings> Names(new Classes::TStringList());
+  std::unique_ptr<TStrings> Names(new TStringList());
   GetValueNames(Names.get());
   for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
   {
@@ -274,7 +274,7 @@ void THierarchicalStorage::ClearValues()
   }
 }
 
-void THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
+void THierarchicalStorage::WriteValues(TStrings * Strings,
   bool MaintainKeys)
 {
   ClearValues();
@@ -403,7 +403,7 @@ TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey
 void TRegistryStorage::Init()
 {
   FFailed = 0;
-  FRegistry = new Classes::TRegistry();
+  FRegistry = new TRegistry();
   FRegistry->SetAccess(KEY_READ);
 }
 
@@ -414,9 +414,9 @@ TRegistryStorage::~TRegistryStorage()
 
 bool TRegistryStorage::Copy(TRegistryStorage * Storage)
 {
-  Classes::TRegistry * Registry = Storage->FRegistry;
+  TRegistry * Registry = Storage->FRegistry;
   bool Result = true;
-  std::unique_ptr<Classes::TStrings> Names(new Classes::TStringList());
+  std::unique_ptr<TStrings> Names(new TStringList());
   rde::vector<uint8_t> Buffer(1024);
   Registry->GetValueNames(Names.get());
   intptr_t Index = 0;
@@ -505,7 +505,7 @@ bool TRegistryStorage::DeleteSubKey(const UnicodeString & SubKey)
   return FRegistry->DeleteKey(K);
 }
 
-void TRegistryStorage::GetSubKeyNames(Classes::TStrings * Strings)
+void TRegistryStorage::GetSubKeyNames(TStrings * Strings)
 {
   FRegistry->GetKeyNames(Strings);
   for (intptr_t Index = 0; Index < Strings->GetCount(); ++Index)
@@ -514,7 +514,7 @@ void TRegistryStorage::GetSubKeyNames(Classes::TStrings * Strings)
   }
 }
 
-void TRegistryStorage::GetValueNames(Classes::TStrings * Strings) const
+void TRegistryStorage::GetValueNames(TStrings * Strings) const
 {
   FRegistry->GetValueNames(Strings);
 }
@@ -548,7 +548,7 @@ bool TRegistryStorage::ReadBool(const UnicodeString & Name, bool Default)
   READ_REGISTRY(ReadBool);
 }
 
-Classes::TDateTime TRegistryStorage::ReadDateTime(const UnicodeString & Name, const Classes::TDateTime & Default)
+TDateTime TRegistryStorage::ReadDateTime(const UnicodeString & Name, const TDateTime & Default)
 {
   READ_REGISTRY(ReadDateTime);
 }
@@ -613,7 +613,7 @@ void TRegistryStorage::WriteBool(const UnicodeString & Name, bool Value)
   WRITE_REGISTRY(WriteBool);
 }
 
-void TRegistryStorage::WriteDateTime(const UnicodeString & Name, const Classes::TDateTime & Value)
+void TRegistryStorage::WriteDateTime(const UnicodeString & Name, const TDateTime & Value)
 {
   WRITE_REGISTRY(WriteDateTime);
 }

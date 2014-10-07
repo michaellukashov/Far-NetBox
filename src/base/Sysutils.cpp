@@ -292,7 +292,7 @@ intptr_t Pos(const UnicodeString & Str, const UnicodeString & Substr)
   return Result;
 }
 
-UnicodeString StringReplace(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To, const Classes::TReplaceFlags & /* Flags */)
+UnicodeString StringReplace(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To, const TReplaceFlags & /* Flags */)
 {
   return AnsiReplaceStr(Str, From, To);
 }
@@ -441,13 +441,13 @@ bool IsZero(double Value)
   return fabs(Value) < std::numeric_limits<double>::epsilon();
 }
 
-Classes::TTimeStamp DateTimeToTimeStamp(const Classes::TDateTime & DateTime)
+TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime)
 {
-  Classes::TTimeStamp Result = {0, 0};
+  TTimeStamp Result = {0, 0};
   double fractpart, intpart;
   fractpart = modf(DateTime, &intpart);
-  Result.Time = static_cast<int>(fractpart * Classes::MSecsPerDay + 0.5);
-  Result.Date = static_cast<int>(intpart + Classes::DateDelta);
+  Result.Time = static_cast<int>(fractpart * MSecsPerDay + 0.5);
+  Result.Date = static_cast<int>(intpart + DateDelta);
   return Result;
 }
 
@@ -1266,7 +1266,7 @@ static void DivMod(const uintptr_t Dividend, uintptr_t Divisor,
   Remainder = Dividend % Divisor;
 }
 
-static bool DecodeDateFully(const Classes::TDateTime & DateTime,
+static bool DecodeDateFully(const TDateTime & DateTime,
   uint16_t & Year, uint16_t & Month, uint16_t & Day,
   uint16_t & DOW)
 {
@@ -1332,14 +1332,14 @@ static bool DecodeDateFully(const Classes::TDateTime & DateTime,
   return Result;
 }
 
-void DecodeDate(const Classes::TDateTime & DateTime, uint16_t & Year,
+void DecodeDate(const TDateTime & DateTime, uint16_t & Year,
   uint16_t & Month, uint16_t & Day)
 {
   uint16_t Dummy = 0;
   DecodeDateFully(DateTime, Year, Month, Day, Dummy);
 }
 
-void DecodeTime(const Classes::TDateTime & DateTime, uint16_t & Hour,
+void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
   uint16_t & Min, uint16_t & Sec, uint16_t & MSec)
 {
   uintptr_t MinCount, MSecCount;
@@ -1353,7 +1353,7 @@ void DecodeTime(const Classes::TDateTime & DateTime, uint16_t & Hour,
   MSec = static_cast<uint16_t>(MS);
 }
 
-static bool TryEncodeDate(int Year, int Month, int Day, Classes::TDateTime & Date)
+static bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
 {
   const TDayTable * DayTable = &MonthDays[IsLeapYear(ToWord(Year))];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
@@ -1364,15 +1364,15 @@ static bool TryEncodeDate(int Year, int Month, int Day, Classes::TDateTime & Dat
       Day += (*DayTable)[Index - 1];
     }
     int Idx = Year - 1;
-    Date = Classes::TDateTime((double)(Idx * 365 + Idx / 4 - Idx / 100 + Idx / 400 + Day - Classes::DateDelta));
+    Date = TDateTime((double)(Idx * 365 + Idx / 4 - Idx / 100 + Idx / 400 + Day - DateDelta));
     return true;
   }
   return false;
 }
 
-Classes::TDateTime EncodeDate(int Year, int Month, int Day)
+TDateTime EncodeDate(int Year, int Month, int Day)
 {
-  Classes::TDateTime Result;
+  TDateTime Result;
   if (!TryEncodeDate(Year, Month, Day, Result))
   {
     Sysutils::ConvertError(SDateEncodeError);
@@ -1381,20 +1381,20 @@ Classes::TDateTime EncodeDate(int Year, int Month, int Day)
 }
 
 static bool TryEncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec,
-  Classes::TDateTime & Time)
+  TDateTime & Time)
 {
   bool Result = false;
   if ((Hour < 24) && (Min < 60) && (Sec < 60) && (MSec < 1000))
   {
-    Time = (Hour * 3600000 + Min * 60000 + Sec * 1000 + MSec) / ToDouble(Classes::MSecsPerDay);
+    Time = (Hour * 3600000 + Min * 60000 + Sec * 1000 + MSec) / ToDouble(MSecsPerDay);
     Result = true;
   }
   return Result;
 }
 
-Classes::TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec)
+TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec)
 {
-  Classes::TDateTime Result;
+  TDateTime Result;
   if (!TryEncodeTime(Hour, Min, Sec, MSec, Result))
   {
     Sysutils::ConvertError(STimeEncodeError);
@@ -1402,32 +1402,32 @@ Classes::TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_
   return Result;
 }
 
-Classes::TDateTime StrToDateTime(const UnicodeString & Value)
+TDateTime StrToDateTime(const UnicodeString & Value)
 {
   (void)Value;
-  Classes::Error(SNotImplemented, 145);
-  return Classes::TDateTime();
+  Error(SNotImplemented, 145);
+  return TDateTime();
 }
 
-bool TryStrToDateTime(const UnicodeString & StrValue, Classes::TDateTime & Value,
+bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value,
   TFormatSettings & FormatSettings)
 {
   (void)StrValue;
   (void)Value;
   (void)FormatSettings;
-  Classes::Error(SNotImplemented, 147);
+  Error(SNotImplemented, 147);
   return false;
 }
 
 UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
-  const Classes::TDateTime & DateTime)
+  const TDateTime & DateTime)
 {
   (void)Result;
   (void)Format;
   return DateTime.FormatString(L"");
 }
 
-UnicodeString DateTimeToString(const Classes::TDateTime & DateTime)
+UnicodeString DateTimeToString(const TDateTime & DateTime)
 {
   return DateTime.FormatString(L"");
 }
@@ -1435,38 +1435,38 @@ UnicodeString DateTimeToString(const Classes::TDateTime & DateTime)
 // DayOfWeek returns the day of the week of the given date. The Result is an
 // integer between 1 and 7, corresponding to Sunday through Saturday.
 // This function is not ISO 8601 compliant, for that see the DateUtils unit.
-uint32_t DayOfWeek(const Classes::TDateTime & DateTime)
+uint32_t DayOfWeek(const TDateTime & DateTime)
 {
   return Sysutils::DateTimeToTimeStamp(DateTime).Date % 7 + 1;
 }
 
-Classes::TDateTime Date()
+TDateTime Date()
 {
   SYSTEMTIME t;
   ::GetLocalTime(&t);
-  Classes::TDateTime Result = Sysutils::EncodeDate(t.wYear, t.wMonth, t.wDay);
+  TDateTime Result = Sysutils::EncodeDate(t.wYear, t.wMonth, t.wDay);
   return Result;
 }
 
-UnicodeString FormatDateTime(const UnicodeString & Fmt, const Classes::TDateTime & DateTime)
+UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & DateTime)
 {
   (void)Fmt;
   (void)DateTime;
   UnicodeString Result;
-  Classes::Error(SNotImplemented, 150);
+  Error(SNotImplemented, 150);
   return Result;
 }
 
-static Classes::TDateTime ComposeDateTime(const Classes::TDateTime & Date, const Classes::TDateTime & Time)
+static TDateTime ComposeDateTime(const TDateTime & Date, const TDateTime & Time)
 {
-  Classes::TDateTime Result = Classes::TDateTime((double)Date);
+  TDateTime Result = TDateTime((double)Date);
   Result += Time;
   return Result;
 }
 
-Classes::TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime)
+TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime)
 {
-  Classes::TDateTime Result(0.0);
+  TDateTime Result(0.0);
   Result = ComposeDateTime(EncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay),
     EncodeTime(SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds));
   return Result;
@@ -1507,25 +1507,25 @@ static void IncAMonth(Word & Year, Word & Month, Word & Day, Int64 NumberOfMonth
     Day = ToWord(*DayTable[Month]);
 }
 
-static void ReplaceTime(Classes::TDateTime & DateTime, const Classes::TDateTime & NewTime)
+static void ReplaceTime(TDateTime & DateTime, const TDateTime & NewTime)
 {
   DateTime = Trunc(DateTime);
   if (DateTime >= 0)
-    DateTime = DateTime + Classes::Abs(Frac(NewTime));
+    DateTime = DateTime + Abs(Frac(NewTime));
   else
-    DateTime = DateTime - Classes::Abs(Frac(NewTime));
+    DateTime = DateTime - Abs(Frac(NewTime));
 }
 
-Classes::TDateTime IncYear(const Classes::TDateTime & AValue, const Int64 ANumberOfYears)
+TDateTime IncYear(const TDateTime & AValue, const Int64 ANumberOfYears)
 {
-  Classes::TDateTime Result;
-  Result = IncMonth(AValue, ANumberOfYears * Classes::MonthsPerYear);
+  TDateTime Result;
+  Result = IncMonth(AValue, ANumberOfYears * MonthsPerYear);
   return Result;
 }
 
-Classes::TDateTime IncMonth(const Classes::TDateTime & AValue, const Int64 NumberOfMonths)
+TDateTime IncMonth(const TDateTime & AValue, const Int64 NumberOfMonths)
 {
-  Classes::TDateTime Result;
+  TDateTime Result;
   Word Year, Month, Day;
   DecodeDate(AValue, Year, Month, Day);
   IncAMonth(Year, Month, Day, NumberOfMonths);
@@ -1534,57 +1534,57 @@ Classes::TDateTime IncMonth(const Classes::TDateTime & AValue, const Int64 Numbe
   return Result;
 }
 
-Classes::TDateTime IncWeek(const Classes::TDateTime & AValue, const Int64 ANumberOfWeeks)
+TDateTime IncWeek(const TDateTime & AValue, const Int64 ANumberOfWeeks)
 {
-  Classes::TDateTime Result;
-  Result = AValue + ANumberOfWeeks * Classes::DaysPerWeek;
+  TDateTime Result;
+  Result = AValue + ANumberOfWeeks * DaysPerWeek;
   return Result;
 }
 
-Classes::TDateTime IncDay(const Classes::TDateTime & AValue, const Int64 ANumberOfDays)
+TDateTime IncDay(const TDateTime & AValue, const Int64 ANumberOfDays)
 {
-  Classes::TDateTime Result;
+  TDateTime Result;
   Result = AValue + ANumberOfDays;
   return Result;
 }
 
-Classes::TDateTime IncHour(const Classes::TDateTime & AValue, const Int64 ANumberOfHours)
+TDateTime IncHour(const TDateTime & AValue, const Int64 ANumberOfHours)
 {
-  Classes::TDateTime Result;
+  TDateTime Result;
   if (AValue > 0)
-    Result = ((AValue * Classes::HoursPerDay) + ANumberOfHours) / Classes::HoursPerDay;
+    Result = ((AValue * HoursPerDay) + ANumberOfHours) / HoursPerDay;
   else
-    Result = ((AValue * Classes::HoursPerDay) - ANumberOfHours) / Classes::HoursPerDay;
+    Result = ((AValue * HoursPerDay) - ANumberOfHours) / HoursPerDay;
   return Result;
 }
 
-Classes::TDateTime IncMinute(const Classes::TDateTime & AValue, const Int64 ANumberOfMinutes)
+TDateTime IncMinute(const TDateTime & AValue, const Int64 ANumberOfMinutes)
 {
-  Classes::TDateTime Result;
+  TDateTime Result;
   if (AValue > 0)
-    Result = ((AValue * Classes::MinsPerDay) + ANumberOfMinutes) / Classes::MinsPerDay;
+    Result = ((AValue * MinsPerDay) + ANumberOfMinutes) / MinsPerDay;
   else
-    Result = ((AValue * Classes::MinsPerDay) - ANumberOfMinutes) / Classes::MinsPerDay;
+    Result = ((AValue * MinsPerDay) - ANumberOfMinutes) / MinsPerDay;
   return Result;
 }
 
-Classes::TDateTime IncSecond(const Classes::TDateTime & AValue, const Int64 ANumberOfSeconds)
+TDateTime IncSecond(const TDateTime & AValue, const Int64 ANumberOfSeconds)
 {
-  Classes::TDateTime Result;
+  TDateTime Result;
   if (AValue > 0)
-    Result = ((AValue * Classes::SecsPerDay) + ANumberOfSeconds) / Classes::SecsPerDay;
+    Result = ((AValue * SecsPerDay) + ANumberOfSeconds) / SecsPerDay;
   else
-    Result = ((AValue * Classes::SecsPerDay) - ANumberOfSeconds) / Classes::SecsPerDay;
+    Result = ((AValue * SecsPerDay) - ANumberOfSeconds) / SecsPerDay;
   return Result;
 }
 
-Classes::TDateTime IncMilliSecond(const Classes::TDateTime & AValue, const Int64 ANumberOfMilliSeconds)
+TDateTime IncMilliSecond(const TDateTime & AValue, const Int64 ANumberOfMilliSeconds)
 {
-  Classes::TDateTime Result;
+  TDateTime Result;
   if (AValue > 0)
-    Result = ((AValue * Classes::MSecsPerDay) + ANumberOfMilliSeconds) / Classes::MSecsPerDay;
+    Result = ((AValue * MSecsPerDay) + ANumberOfMilliSeconds) / MSecsPerDay;
   else
-    Result = ((AValue * Classes::MSecsPerDay) - ANumberOfMilliSeconds) / Classes::MSecsPerDay;
+    Result = ((AValue * MSecsPerDay) - ANumberOfMilliSeconds) / MSecsPerDay;
   return Result;
 }
 

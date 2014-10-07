@@ -24,8 +24,6 @@ namespace Sysutils {
 class Exception;
 }
 
-namespace Classes {
-
 extern const UnicodeString sLineBreak;
 extern const intptr_t MonthsPerYear;
 extern const intptr_t DaysPerWeek;
@@ -127,12 +125,12 @@ NB_DECLARE_CLASS(TPersistent)
 public:
   TPersistent();
   virtual ~TPersistent();
-  virtual void Assign(const Classes::TPersistent * Source);
+  virtual void Assign(const TPersistent * Source);
 protected:
-  virtual void AssignTo(Classes::TPersistent * Dest) const;
+  virtual void AssignTo(TPersistent * Dest) const;
   virtual TPersistent * GetOwner();
 private:
-  void AssignError(const Classes::TPersistent * Source);
+  void AssignError(const TPersistent * Source);
 };
 
 enum TListNotification
@@ -189,7 +187,7 @@ public:
   void Move(intptr_t Index, intptr_t To);
   void Delete(intptr_t Index);
   void Insert(intptr_t Index, TObject * Value);
-  intptr_t IndexOf(const Classes::TObject * Value) const;
+  intptr_t IndexOf(const TObject * Value) const;
   virtual void Clear();
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
@@ -215,7 +213,7 @@ NB_DECLARE_CLASS(TStrings)
 public:
   TStrings();
   virtual ~TStrings();
-  intptr_t Add(const UnicodeString & S, Classes::TObject * AObject = nullptr);
+  intptr_t Add(const UnicodeString & S, TObject * AObject = nullptr);
   virtual void Delete(intptr_t Index) = 0;
   virtual UnicodeString GetTextStr() const;
   virtual void SetTextStr(const UnicodeString & Text);
@@ -224,13 +222,13 @@ public:
   virtual void SetUpdateState(bool Updating);
   intptr_t AddObject(const UnicodeString & S, TObject * AObject);
   virtual void InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
-  bool Equals(const Classes::TStrings * Value) const;
+  bool Equals(const TStrings * Value) const;
   virtual void Clear() = 0;
   void Move(intptr_t CurIndex, intptr_t NewIndex);
   intptr_t IndexOf(const UnicodeString & S) const;
   virtual intptr_t IndexOfName(const UnicodeString & Name) const;
   UnicodeString ExtractName(const UnicodeString & S) const;
-  void AddStrings(const Classes::TStrings * Strings);
+  void AddStrings(const TStrings * Strings);
   void Append(const UnicodeString & Value);
   virtual void Insert(intptr_t Index, const UnicodeString & AString, TObject * AObject = nullptr) = 0;
   void SaveToStream(TStream * Stream) const;
@@ -858,8 +856,6 @@ public:
   TCustomIniFile() {}
   virtual ~TCustomIniFile() {}
 };
-
-} // namespace Classes
 
 class TGlobalFunctionsIntf
 {

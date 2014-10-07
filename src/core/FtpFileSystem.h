@@ -26,7 +26,7 @@ struct message_t
   LPARAM lparam;
 };
 
-class TMessageQueue : public Classes::TObject, public rde::list<message_t> //  rde::vector<message_t>
+class TMessageQueue : public TObject, public rde::list<message_t> //  rde::vector<message_t>
 {
 public:
   typedef message_t value_type;
@@ -58,15 +58,15 @@ public:
   virtual void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties,
     TChmodSessionAction & Action);
-  virtual bool LoadFilesProperties(Classes::TStrings * FileList);
+  virtual bool LoadFilesProperties(TStrings * FileList);
   virtual void CalculateFilesChecksum(const UnicodeString & Alg,
-    Classes::TStrings * FileList, Classes::TStrings * Checksums,
+    TStrings * FileList, TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum);
-  virtual void CopyToLocal(const Classes::TStrings * AFilesToCopy,
+  virtual void CopyToLocal(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
-  virtual void CopyToRemote(const Classes::TStrings * AFilesToCopy,
+  virtual void CopyToRemote(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
@@ -91,7 +91,7 @@ public:
     const UnicodeString & NewName);
   virtual void CopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
-  virtual Classes::TStrings * GetFixedPaths();
+  virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo() const;
@@ -127,7 +127,7 @@ protected:
   void GotNonCommandReply(uintptr_t Reply);
   void GotReply(uintptr_t Reply, uintptr_t Flags = 0,
     const UnicodeString & Error = L"", uintptr_t * Code = nullptr,
-    Classes::TStrings ** Response = nullptr);
+    TStrings ** Response = nullptr);
   void ResetReply();
   void HandleReplyStatus(const UnicodeString & Response);
   void DoWaitForReply(uintptr_t &ReplyToAwait, bool WantLastCode);
@@ -202,9 +202,9 @@ protected:
     const UnicodeString & RemoteFile, const UnicodeString & RemotePath, bool Get,
     int64_t Size, intptr_t Type, TFileTransferData & UserData,
     TFileOperationProgressType * OperationProgress);
-  Classes::TDateTime ConvertLocalTimestamp(time_t Time);
+  TDateTime ConvertLocalTimestamp(time_t Time);
   void RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime & Source,
-    Classes::TDateTime & DateTime, TModificationFmt & ModificationFmt);
+    TDateTime & DateTime, TModificationFmt & ModificationFmt);
   void SetLastCode(intptr_t Code);
   void StoreLastResponse(const UnicodeString & Text);
   void SetCPSLimit(TFileOperationProgressType * OperationProgress);
@@ -240,11 +240,11 @@ private:
   intptr_t FLastReadDirectoryProgress;
   UnicodeString FTimeoutStatus;
   UnicodeString FDisconnectStatus;
-  Classes::TStrings * FLastResponse;
-  Classes::TStrings * FLastErrorResponse;
-  Classes::TStrings * FLastError;
+  TStrings * FLastResponse;
+  TStrings * FLastErrorResponse;
+  TStrings * FLastError;
   UnicodeString FSystem;
-  Classes::TStrings * FFeatures;
+  TStrings * FFeatures;
   UnicodeString FCurrentDirectory;
   UnicodeString FHomeDirectory;
   TRemoteFileList * FFileList;
@@ -271,7 +271,7 @@ private:
   TAutoSwitch FListAll;
   bool FDoListAll;
   TFTPServerCapabilities * FServerCapabilities;
-  Classes::TDateTime FLastDataSent;
+  TDateTime FLastDataSent;
   mutable UnicodeString FOptionScratch;
 };
 

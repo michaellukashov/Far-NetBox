@@ -13,11 +13,11 @@ enum TSessionStatus
   ssOpened
 };
 
-struct TSessionInfo : public Classes::TObject
+struct TSessionInfo : public TObject
 {
   TSessionInfo();
 
-  Classes::TDateTime LoginTime;
+  TDateTime LoginTime;
   UnicodeString ProtocolBaseName;
   UnicodeString ProtocolName;
   UnicodeString SecurityProtocolName;
@@ -52,7 +52,7 @@ enum TFSCapability
   fcCount,
 };
 
-struct TFileSystemInfo : public Classes::TObject
+struct TFileSystemInfo : public TObject
 {
   TFileSystemInfo();
 
@@ -71,14 +71,14 @@ public:
   virtual ~TSessionUI() {}
   virtual void Information(const UnicodeString & Str, bool Status) = 0;
   virtual uintptr_t QueryUser(const UnicodeString & Query,
-    Classes::TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
+    TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual uintptr_t QueryUserException(const UnicodeString & Query,
     Sysutils::Exception * E, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    const UnicodeString & Name, const UnicodeString & Instructions, Classes::TStrings * Prompts,
-    Classes::TStrings * Results) = 0;
+    const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
+    TStrings * Results) = 0;
   virtual void DisplayBanner(const UnicodeString & Banner) = 0;
   virtual void FatalError(Sysutils::Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") = 0;
   virtual void HandleExtendedException(Sysutils::Exception * E) = 0;
@@ -107,7 +107,7 @@ DEFINE_CALLBACK_TYPE3(TCalculatedChecksumEvent, void,
 class TSessionActionRecord;
 class TActionLog;
 
-class TSessionAction : public Classes::TObject
+class TSessionAction : public TObject
 {
 NB_DISABLE_COPY(TSessionAction)
 public:
@@ -171,7 +171,7 @@ class TTouchSessionAction : public TFileSessionAction
 {
 public:
   explicit TTouchSessionAction(TActionLog * Log, const UnicodeString & AFileName,
-    const Classes::TDateTime & Modification);
+    const TDateTime & Modification);
 };
 
 class TMkdirSessionAction : public TFileSessionAction
@@ -223,7 +223,7 @@ public:
 DEFINE_CALLBACK_TYPE2(TDoAddLogEvent, void,
   TLogLineType, const UnicodeString &);
 
-class TSessionLog : protected Classes::TStringList
+class TSessionLog : protected TStringList
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 friend class TSessionAction;
@@ -247,10 +247,10 @@ public:
   TSessionLog * GetParent();
   void SetParent(TSessionLog * Value);
   bool GetLogging() const;
-  Classes::TNotifyEvent & GetOnChange();
-  void SetOnChange(Classes::TNotifyEvent Value);
-  Classes::TNotifyEvent & GetOnStateChange();
-  void SetOnStateChange(Classes::TNotifyEvent Value);
+  TNotifyEvent & GetOnChange();
+  void SetOnChange(TNotifyEvent Value);
+  TNotifyEvent & GetOnStateChange();
+  void SetOnStateChange(TNotifyEvent Value);
   UnicodeString GetCurrentFileName() const;
   intptr_t GetTopIndex() const;
   UnicodeString GetName() const;
@@ -295,10 +295,10 @@ private:
   TSessionData * FSessionData;
   UnicodeString FName;
   bool FClosed;
-  Classes::TNotifyEvent FOnStateChange;
+  TNotifyEvent FOnStateChange;
 };
 
-class TActionLog : public Classes::TObject
+class TActionLog : public TObject
 {
 friend class TSessionAction;
 friend class TSessionActionRecord;
@@ -310,7 +310,7 @@ public:
 
   void ReflectSettings();
   void AddFailure(Sysutils::Exception * E);
-  void AddFailure(Classes::TStrings * Messages);
+  void AddFailure(TStrings * Messages);
   void BeginGroup(const UnicodeString & Name);
   void EndGroup();
 
@@ -326,7 +326,7 @@ protected:
   void RecordPendingActions();
   void Add(const UnicodeString & Line);
   void AddIndented(const UnicodeString & Line);
-  void AddMessages(const UnicodeString & Indent, Classes::TStrings * Messages);
+  void AddMessages(const UnicodeString & Indent, TStrings * Messages);
 
 private:
   TConfiguration * FConfiguration;
@@ -337,7 +337,7 @@ private:
   UnicodeString FCurrentFileName;
   TSessionUI * FUI;
   TSessionData * FSessionData;
-  Classes::TList * FPendingActions;
+  TList * FPendingActions;
   bool FClosed;
   bool FInGroup;
   bool FEnabled;

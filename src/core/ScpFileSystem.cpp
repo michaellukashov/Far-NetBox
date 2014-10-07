@@ -68,7 +68,7 @@ extern const wchar_t NationalVars[NationalVarCount][15];
 
 class TSessionData;
 
-class TCommandSet : public Classes::TObject
+class TCommandSet : public TObject
 {
 NB_DISABLE_COPY(TCommandSet)
 public:
@@ -91,7 +91,7 @@ public:
   void CopyFrom(TCommandSet * Source);
   UnicodeString Command(TFSCommand Cmd, ...) const;
   UnicodeString Command(TFSCommand Cmd, va_list args) const;
-  Classes::TStrings * CreateCommandList();
+  TStrings * CreateCommandList();
   UnicodeString FullCommand(TFSCommand Cmd, ...) const;
   UnicodeString FullCommand(TFSCommand Cmd, va_list args) const;
   static UnicodeString ExtractCommand(const UnicodeString & Command);
@@ -312,9 +312,9 @@ UnicodeString TCommandSet::ExtractCommand(const UnicodeString & Command)
   return Result;
 }
 
-Classes::TStrings * TCommandSet::CreateCommandList()
+TStrings * TCommandSet::CreateCommandList()
 {
-  Classes::TStrings * CommandList = new Classes::TStringList();
+  TStrings * CommandList = new TStringList();
   for (intptr_t Index = 0; Index < ShellCommandCount; ++Index)
   {
     UnicodeString Cmd = GetCommands(static_cast<TFSCommand>(Index));
@@ -345,7 +345,7 @@ void TSCPFileSystem::Init(void * Data)
   assert(FSecureShell);
   FCommandSet = new TCommandSet(FTerminal->GetSessionData());
   FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
-  FOutput = new Classes::TStringList();
+  FOutput = new TStringList();
   FProcessingCommand = false;
   FOnCaptureOutput = nullptr;
 
@@ -444,7 +444,7 @@ void TSCPFileSystem::Idle()
   // Keep session alive
   const TSessionData * Data = FTerminal->GetSessionData();
   if ((Data->GetPingType() != ptOff) &&
-      (Classes::Now() - FSecureShell->GetLastDataSent() > Data->GetPingIntervalDT()))
+      (Now() - FSecureShell->GetLastDataSent() > Data->GetPingIntervalDT()))
   {
     if ((Data->GetPingType() == ptDummyCommand) &&
         FSecureShell->GetReady())
@@ -860,7 +860,7 @@ void TSCPFileSystem::DetectReturnVar()
         if ((GetOutput()->GetCount() != 1) || Str.IsEmpty() || (Val > 255))
         {
           FTerminal->LogEvent(L"The response is not numerical exit code");
-          Classes::Abort();
+          Abort();
         }
       }
       catch (EFatal &)
@@ -914,7 +914,7 @@ void TSCPFileSystem::ClearAliases()
   {
     FTerminal->LogEvent(L"Clearing all aliases.");
     ClearAlias(TCommandSet::ExtractCommand(FTerminal->GetSessionData()->GetListingCommand()));
-    std::unique_ptr<Classes::TStrings> CommandList(FCommandSet->CreateCommandList());
+    std::unique_ptr<TStrings> CommandList(FCommandSet->CreateCommandList());
     for (intptr_t Index = 0; Index < CommandList->GetCount(); ++Index)
     {
       ClearAlias(CommandList->GetString(Index));
@@ -1026,7 +1026,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       {
         // Copy LS command output, because eventual symlink analysis would
         // modify FTerminal->Output
-        std::unique_ptr<Classes::TStringList> OutputCopy(new Classes::TStringList());
+        std::unique_ptr<TStringList> OutputCopy(new TStringList());
         OutputCopy->Assign(FOutput);
 
         // delete leading "total xxx" line
@@ -1267,14 +1267,14 @@ void TSCPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
   assert(!Properties->Valid.Contains(vpModification));
 }
 
-bool TSCPFileSystem::LoadFilesProperties(Classes::TStrings * /*FileList*/ )
+bool TSCPFileSystem::LoadFilesProperties(TStrings * /*FileList*/ )
 {
   FAIL;
   return false;
 }
 
 void TSCPFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
-  Classes::TStrings * /*FileList*/, Classes::TStrings * /*Checksums*/,
+  TStrings * /*FileList*/, TStrings * /*Checksums*/,
   TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
 {
   FAIL;
@@ -1338,7 +1338,7 @@ void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
   ExecCommand2(fsAnyCommand, ecDefault | ecIgnoreWarnings, Command.c_str());
 }
 
-Classes::TStrings * TSCPFileSystem::GetFixedPaths()
+TStrings * TSCPFileSystem::GetFixedPaths()
 {
   return nullptr;
 }
@@ -1363,13 +1363,13 @@ uintptr_t TSCPFileSystem::ConfirmOverwrite(
   Aliases[0].Button = qaAll;
   Aliases[0].Alias = LoadStr(YES_TO_NEWER_BUTTON);
   Aliases[0].GroupWith = qaYes;
-  Aliases[0].GrouppedShiftState = Classes::TShiftState() << Classes::ssCtrl;
+  Aliases[0].GrouppedShiftState = TShiftState() << ssCtrl;
   Aliases[1].Button = qaYesToAll;
   Aliases[1].GroupWith = qaYes;
-  Aliases[1].GrouppedShiftState = Classes::TShiftState() << Classes::ssShift;
+  Aliases[1].GrouppedShiftState = TShiftState() << ssShift;
   Aliases[2].Button = qaNoToAll;
   Aliases[2].GroupWith = qaNo;
-  Aliases[2].GrouppedShiftState = Classes::TShiftState() << Classes::ssShift;
+  Aliases[2].GrouppedShiftState = TShiftState() << ssShift;
   TQueryParams QueryParams(qpNeverAskAgainCheck);
   QueryParams.Aliases = Aliases;
   QueryParams.AliasesCount = _countof(Aliases);
@@ -1444,7 +1444,7 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
   }
 }
 
-void TSCPFileSystem::CopyToRemote(const Classes::TStrings * AFilesToCopy,
+void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
@@ -1727,7 +1727,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
       OperationProgress->SetTransferSize(OperationProgress->LocalSize);
       OperationProgress->TransferingFile = false;
 
-      Classes::TDateTime Modification = ::UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
+      TDateTime Modification = ::UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
 
       // Will we use ASCII of BINARY file transfer?
       TFileMasks::TParams MaskParams;
@@ -1777,7 +1777,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
             BlockBuf.Convert(FTerminal->GetConfiguration()->GetLocalEOLType(),
               FTerminal->GetSessionData()->GetEOLType(),
               ConvertParams, ConvertToken);
-            BlockBuf.GetMemory()->Seek(0, Classes::soFromBeginning);
+            BlockBuf.GetMemory()->Seek(0, soFromBeginning);
             AsciiBuf.ReadStream(BlockBuf.GetMemory(), BlockBuf.GetSize(), true);
             // We don't need it any more
             BlockBuf.GetMemory()->Clear();
@@ -2088,7 +2088,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   }
 }
 
-void TSCPFileSystem::CopyToLocal(const Classes::TStrings * AFilesToCopy,
+void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
@@ -2262,7 +2262,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
     DWORD LocalFileAttrs;
     bool Exists;
   } FileData;
-  Classes::TDateTime SourceTimestamp;
+  TDateTime SourceTimestamp;
 
   bool SkipConfirmed = false;
   bool Initialized = (Level > 0);
@@ -2469,7 +2469,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
           try
           {
             HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-            std::unique_ptr<Classes::TStream> FileStream;
+            std::unique_ptr<TStream> FileStream;
 
             /* TODO 1 : Turn off read-only attr */
 
