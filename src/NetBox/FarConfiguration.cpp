@@ -53,8 +53,8 @@ void TFarConfiguration::Default()
   SetApplyCommandCommand(L"");
   SetApplyCommandParams(0);
 
-  SetPuttygenPath(FormatCommand(Sysutils::ExtractFilePath(ModuleFileName()) + L"putty\\puttygen.exe", L""));
-  SetPageantPath(FormatCommand(Sysutils::ExtractFilePath(ModuleFileName()) + L"putty\\pageant.exe", L""));
+  SetPuttygenPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + L"putty\\puttygen.exe", L""));
+  SetPageantPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + L"putty\\pageant.exe", L""));
 
   FBookmarks->Clear();
 }
@@ -108,7 +108,6 @@ void TFarConfiguration::Saved()
 
 void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 {
-  using namespace Sysutils;
   TGUIConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
@@ -126,7 +125,6 @@ void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 
 void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
 {
-  using namespace Sysutils;
   TGUIConfiguration::LoadData(Storage);
 
   // duplicated from core\configuration.cpp

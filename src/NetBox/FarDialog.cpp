@@ -429,7 +429,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
           {
             Result = Item->ItemProc(Msg, Param2);
           }
-          catch (Sysutils::Exception & E)
+          catch (::Exception & E)
           {
             Handled = true;
             DEBUG_PRINTF(L"before GetFarPlugin()->HandleException");
@@ -543,7 +543,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
       Change();
     }
   }
-  catch (Sysutils::Exception & E)
+  catch (::Exception & E)
   {
     DEBUG_PRINTF(L"before GetFarPlugin()->HandleException");
     GetFarPlugin()->HandleException(&E);
@@ -1740,7 +1740,7 @@ void TFarButton::SetDataInternal(const UnicodeString & Value)
         Margin = 2;
         break;
     }
-    SetWidth(Margin + Sysutils::StripHotkey(AValue).GetLength() + Margin);
+    SetWidth(Margin + ::StripHotkey(AValue).GetLength() + Margin);
   }
 }
 
@@ -1883,7 +1883,7 @@ void TFarCheckBox::SetData(const UnicodeString & Value)
   TFarDialogItem::SetData(Value);
   if (GetLeft() >= 0 || GetRight() >= 0)
   {
-    SetWidth(4 + Sysutils::StripHotkey(Value).Length());
+    SetWidth(4 + ::StripHotkey(Value).Length());
   }
 }
 
@@ -1927,7 +1927,7 @@ void TFarRadioButton::SetData(const UnicodeString & Value)
   TFarDialogItem::SetData(Value);
   if (GetLeft() >= 0 || GetRight() >= 0)
   {
-    SetWidth(4 + Sysutils::StripHotkey(Value).Length());
+    SetWidth(4 + ::StripHotkey(Value).Length());
   }
 }
 
@@ -2002,14 +2002,14 @@ void TFarEdit::SetAsInteger(intptr_t Value)
   intptr_t Int = GetAsInteger();
   if (!Int || (Int != Value))
   {
-    SetText(Sysutils::IntToStr(Value));
+    SetText(::IntToStr(Value));
     DialogChange();
   }
 }
 
 intptr_t TFarEdit::GetAsInteger()
 {
-  return Sysutils::StrToIntDef(Sysutils::Trim(GetText()), 0);
+  return ::StrToIntDef(::Trim(GetText()), 0);
 }
 
 TFarSeparator::TFarSeparator(TFarDialog * ADialog) :
@@ -2066,7 +2066,7 @@ void TFarText::SetData(const UnicodeString & Value)
   TFarDialogItem::SetData(Value);
   if (GetLeft() >= 0 || GetRight() >= 0)
   {
-    SetWidth(Sysutils::StripHotkey(Value).Length());
+    SetWidth(::StripHotkey(Value).Length());
   }
 }
 
@@ -2575,7 +2575,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
         UnicodeString Value = GetItems()->GetString(Index).SubString(1, DisplayWidth - 1);
         Buf += Value;
       }
-      UnicodeString Value = Sysutils::StringOfChar(' ', DisplayWidth - Buf.Length());
+      UnicodeString Value = ::StringOfChar(' ', DisplayWidth - Buf.Length());
       Value.SetLength(DisplayWidth - Buf.Length());
       Buf += Value;
       if (AScrollBar)

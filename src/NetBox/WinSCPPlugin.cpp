@@ -64,7 +64,7 @@ void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
   {
     TCustomFarPlugin::SetStartupInfo(Info);
   }
-  catch (Sysutils::Exception & E)
+  catch (::Exception & E)
   {
     HandleException(&E);
   }
@@ -352,7 +352,7 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
   }
   CmdLine = CmdLine.SubString(Index, -1);
   // Parse params
-  intptr_t Pos = Sysutils::FirstDelimiter(Options->GetSwitchMarks(), CmdLine);
+  intptr_t Pos = ::FirstDelimiter(Options->GetSwitchMarks(), CmdLine);
   UnicodeString CommandLineParams;
   if (Pos > 0)
     CommandLineParams = CmdLine.SubString(Pos, -1);
@@ -518,9 +518,8 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   }
 }
 
-void TWinSCPPlugin::ShowExtendedException(Sysutils::Exception * E)
+void TWinSCPPlugin::ShowExtendedException(::Exception * E)
 {
-  using namespace Sysutils;
   if (E && !E->Message.IsEmpty())
   {
     if (NB_STATIC_DOWNCAST(EAbort, E) == nullptr)
@@ -540,7 +539,7 @@ void TWinSCPPlugin::ShowExtendedException(Sysutils::Exception * E)
   }
 }
 
-void TWinSCPPlugin::HandleException(Sysutils::Exception * E, int OpMode)
+void TWinSCPPlugin::HandleException(::Exception * E, int OpMode)
 {
   if (((OpMode & OPM_FIND) == 0) || (NB_STATIC_DOWNCAST(EFatal, E) != nullptr))
   {
@@ -777,12 +776,12 @@ void TWinSCPPlugin::CleanupConfiguration()
     else
     {
       UnicodeString Version = Storage->ReadString(L"Version", L"");
-      if (Sysutils::StrToVersionNumber(Version) < MAKEVERSIONNUMBER(2, 1, 19))
+      if (::StrToVersionNumber(Version) < MAKEVERSIONNUMBER(2, 1, 19))
       {
         Storage->DeleteSubKey(L"CDCache");
       }
     }
-    Storage->WriteStringRaw(L"Version", Sysutils::VersionNumberToStr(Sysutils::GetCurrentVersionNumber()));
+    Storage->WriteStringRaw(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
     Storage->CloseSubKey();
   }
 }
