@@ -102,7 +102,7 @@ bool TXmlStorage::WriteXml()
 
 bool TXmlStorage::Copy(TXmlStorage * /* Storage */)
 {
-  Classes::Error(SNotImplemented, 3020);
+  Error(SNotImplemented, 3020);
   bool Result = false;
   return Result;
 }
@@ -134,7 +134,7 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
 
 bool TXmlStorage::DoKeyExists(const UnicodeString & SubKey, bool /* ForceAnsi */)
 {
-  Classes::Error(SNotImplemented, 3024);
+  Error(SNotImplemented, 3024);
   UnicodeString K = PuttyMungeStr(SubKey);
   bool Result = false; // FRegistry->KeyExists(K);
   return Result;
@@ -198,7 +198,7 @@ bool TXmlStorage::DeleteSubKey(const UnicodeString & SubKey)
   return Result;
 }
 
-void TXmlStorage::GetSubKeyNames(Classes::TStrings * Strings)
+void TXmlStorage::GetSubKeyNames(TStrings * Strings)
 {
   for (tinyxml2::XMLElement * Element = FCurrentElement->FirstChildElement();
        Element != nullptr; Element = Element->NextSiblingElement())
@@ -208,9 +208,9 @@ void TXmlStorage::GetSubKeyNames(Classes::TStrings * Strings)
   }
 }
 
-void TXmlStorage::GetValueNames(Classes::TStrings * /* Strings */) const
+void TXmlStorage::GetValueNames(TStrings * /* Strings */) const
 {
-  Classes::Error(SNotImplemented, 3022);
+  Error(SNotImplemented, 3022);
   // FRegistry->GetValueNames(Strings);
 }
 
@@ -322,7 +322,7 @@ bool TXmlStorage::ValueExists(const UnicodeString & Value) const
 
 size_t TXmlStorage::BinaryDataSize(const UnicodeString & /* Name */)
 {
-  Classes::Error(SNotImplemented, 3026);
+  Error(SNotImplemented, 3026);
   size_t Result = 0; // FRegistry->GetDataSize(Name);
   return Result;
 }
@@ -340,10 +340,10 @@ bool TXmlStorage::ReadBool(const UnicodeString & Name, bool Default)
   }
 }
 
-Classes::TDateTime TXmlStorage::ReadDateTime(const UnicodeString & Name, const Classes::TDateTime & Default)
+TDateTime TXmlStorage::ReadDateTime(const UnicodeString & Name, const TDateTime & Default)
 {
   double Result = ReadFloat(Name, Default.GetValue());
-  return Classes::TDateTime(Result);
+  return TDateTime(Result);
 }
 
 double TXmlStorage::ReadFloat(const UnicodeString & Name, double Default)
@@ -370,7 +370,7 @@ UnicodeString TXmlStorage::ReadStringRaw(const UnicodeString & Name, const Unico
 size_t TXmlStorage::ReadBinaryData(const UnicodeString & /* Name */,
   void * /* Buffer */, size_t /* Size */)
 {
-  Classes::Error(SNotImplemented, 3028);
+  Error(SNotImplemented, 3028);
   size_t Result = 0;
   return Result;
 }
@@ -380,7 +380,7 @@ void TXmlStorage::WriteBool(const UnicodeString & Name, bool Value)
   WriteString(Name, ::BooleanToEngStr(Value));
 }
 
-void TXmlStorage::WriteDateTime(const UnicodeString & Name, const Classes::TDateTime & Value)
+void TXmlStorage::WriteDateTime(const UnicodeString & Name, const TDateTime & Value)
 {
   WriteFloat(Name, Value);
 }

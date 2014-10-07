@@ -8,7 +8,7 @@
 class TWinSCPFileSystem;
 class TCopyParamType;
 
-struct TMessageParams : public Classes::TObject
+struct TMessageParams : public TObject
 {
 NB_DISABLE_COPY(TMessageParams)
 public:
@@ -49,7 +49,7 @@ public:
   virtual intptr_t GetMinFarVersion();
 
   virtual void HandleException(Sysutils::Exception * E, int OpMode = 0);
-  uintptr_t MoreMessageDialog(const UnicodeString & Str, Classes::TStrings * MoreMessages,
+  uintptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
     TQueryType Type, uintptr_t Answers, const TMessageParams * Params = nullptr);
   void ShowExtendedException(Sysutils::Exception * E);
   bool CopyParamCustomDialog(TCopyParamType & CopyParam,
@@ -58,9 +58,9 @@ public:
 
 protected:
   virtual bool HandlesFunction(THandlesFunction Function);
-  virtual void GetPluginInfoEx(DWORD & Flags, Classes::TStrings * DiskMenuStrings,
-    Classes::TStrings * PluginMenuStrings, Classes::TStrings * PluginConfigStrings,
-    Classes::TStrings * CommandPrefixes);
+  virtual void GetPluginInfoEx(DWORD & Flags, TStrings * DiskMenuStrings,
+    TStrings * PluginMenuStrings, TStrings * PluginConfigStrings,
+    TStrings * CommandPrefixes);
   virtual TCustomFarFileSystem * OpenPluginEx(intptr_t OpenFrom, intptr_t Item);
   virtual bool ConfigureEx(intptr_t Item);
   virtual intptr_t ProcessEditorEventEx(intptr_t Event, void * Param);
