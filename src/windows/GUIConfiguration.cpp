@@ -255,7 +255,7 @@ void TCopyParamList::ValidateName(const UnicodeString & Name)
 {
   if (Name.LastDelimiter(FInvalidChars) > 0)
   {
-    throw Sysutils::Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), FInvalidChars.c_str()));
+    throw ::Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), FInvalidChars.c_str()));
   }
 }
 
@@ -402,7 +402,7 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
 {
   for (intptr_t Index = 0; Index < ACount; ++Index)
   {
-    UnicodeString Name = Sysutils::IntToStr(Index);
+    UnicodeString Name = ::IntToStr(Index);
     std::unique_ptr<TCopyParamRule> Rule(nullptr);
     std::unique_ptr<TCopyParamType> CopyParam(new TCopyParamType());
     if (Storage->OpenSubKey(Name, false))
@@ -433,7 +433,7 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
   Storage->ClearSubKeys();
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (Storage->OpenSubKey(Sysutils::IntToStr(Index), true))
+    if (Storage->OpenSubKey(::IntToStr(Index), true))
     {
       SCOPE_EXIT
       {
@@ -555,7 +555,7 @@ void TGUIConfiguration::Default()
   FSessionRememberPassword = false;
   UnicodeString ProgramsFolder;
   SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
-  FDefaultPuttyPathOnly = Sysutils::IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
+  FDefaultPuttyPathOnly = ::IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
   FDefaultPuttyPath = FormatCommand(L"%PROGRAMFILES%\\PuTTY\\putty.exe", L"");
   FPuttyPath = FDefaultPuttyPath;
   SetPSftpPath(FormatCommand(L"%PROGRAMFILES%\\PuTTY\\psftp.exe", L""));
@@ -743,7 +743,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   // can take care of it.
   if ((FPuttyPath.SubString(1, 1) != L"\"") &&
       (CompareFileName(ExpandEnvironmentVariables(FPuttyPath), FDefaultPuttyPathOnly) ||
-       Sysutils::FileExists(ExpandEnvironmentVariables(FPuttyPath))))
+       ::FileExists(ExpandEnvironmentVariables(FPuttyPath))))
   {
     FPuttyPath = FormatCommand(FPuttyPath, L"");
   }
@@ -790,7 +790,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
         static_cast<wchar_t>(ALocale & ~AdditionaLanguageMask);
     }
 
-    Module = Sysutils::ChangeFileExt(Module, UnicodeString(L".") + LocaleName);
+    Module = ::ChangeFileExt(Module, UnicodeString(L".") + LocaleName);
     // Look for a potential language/country translation
     NewInstance = ::LoadLibraryEx(Module.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
     if (!NewInstance)
@@ -811,7 +811,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 
   if (!NewInstance && !Internal)
   {
-    throw Sysutils::Exception(FMTLOAD(LOCALE_LOAD_ERROR, static_cast<int>(ALocale)));
+    throw ::Exception(FMTLOAD(LOCALE_LOAD_ERROR, static_cast<int>(ALocale)));
   }
   else
   {
@@ -909,7 +909,7 @@ TStrings * TGUIConfiguration::GetLocales()
   TSearchRecChecked SearchRec;
   bool Found;
 
-  Found = (bool)(FindFirst(Sysutils::ChangeFileExt(ModuleFileName(), L".*"),
+  Found = (bool)(FindFirst(::ChangeFileExt(ModuleFileName(), L".*"),
     FindAttrs, SearchRec) == 0);
   {
     SCOPE_EXIT
@@ -919,7 +919,7 @@ TStrings * TGUIConfiguration::GetLocales()
     UnicodeString Ext;
     while (Found)
     {
-      Ext = Sysutils::ExtractFileExt(SearchRec.Name).UpperCase();
+      Ext = ::ExtractFileExt(SearchRec.Name).UpperCase();
       if ((Ext.Length() >= 3) && (Ext != L".EXE") && (Ext != L".COM") &&
           (Ext != L".DLL") && (Ext != L".INI"))
       {
@@ -993,10 +993,10 @@ TStrings * TGUIConfiguration::GetLocales()
     {
       if ((Exts->GetObject(Index) == nullptr) &&
           (Exts->GetString(Index).Length() == 3) &&
-          Sysutils::SameText(Exts->GetString(Index).SubString(1, 2), AdditionaLanguagePrefix))
+          ::SameText(Exts->GetString(Index).SubString(1, 2), AdditionaLanguagePrefix))
       {
         UnicodeString LangName = GetFileFileInfoString(L"LangName",
-          Sysutils::ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetString(Index)));
+          ::ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetString(Index)));
         if (!LangName.IsEmpty())
         {
           FLocales->AddObject(LangName, reinterpret_cast<TObject *>(static_cast<size_t>(

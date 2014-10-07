@@ -117,10 +117,10 @@ void TSynchronizeController::SynchronizeChange(
   {
     UnicodeString RemoteDirectory;
     UnicodeString RootLocalDirectory;
-    RootLocalDirectory = Sysutils::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory);
+    RootLocalDirectory = ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory);
     RemoteDirectory = core::UnixIncludeTrailingBackslash(FSynchronizeParams.RemoteDirectory);
 
-    UnicodeString LocalDirectory = Sysutils::IncludeTrailingBackslash(Directory);
+    UnicodeString LocalDirectory = ::IncludeTrailingBackslash(Directory);
 
     assert(LocalDirectory.SubString(1, RootLocalDirectory.Length()) ==
       RootLocalDirectory);
@@ -129,7 +129,7 @@ void TSynchronizeController::SynchronizeChange(
         LocalDirectory.Length() - RootLocalDirectory.Length()));
 
     SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,
-      Sysutils::ExcludeTrailingBackslash(LocalDirectory).c_str()));
+      ::ExcludeTrailingBackslash(LocalDirectory).c_str()));
 
     if (FOnSynchronize != nullptr)
     {
@@ -175,7 +175,7 @@ void TSynchronizeController::SynchronizeChange(
       }
     }
   }
-  catch (Sysutils::Exception & E)
+  catch (::Exception & E)
   {
     SynchronizeAbort(NB_STATIC_DOWNCAST(EFatal, &E) != nullptr);
   }
@@ -230,8 +230,8 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
 {
   if ((FOptions != nullptr) && (FOptions->Filter != nullptr))
   {
-    if (Sysutils::IncludeTrailingBackslash(Sysutils::ExtractFilePath(DirectoryName)) ==
-        Sysutils::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory))
+    if (::IncludeTrailingBackslash(::ExtractFilePath(DirectoryName)) ==
+        ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory))
     {
       intptr_t FoundIndex;
       Add = FOptions->Filter->Find(core::ExtractFileName(DirectoryName, true), FoundIndex);
