@@ -883,7 +883,7 @@ void TSCPFileSystem::DetectReturnVar()
 
     if (NewReturnVar.IsEmpty())
     {
-      EXCEPTION;
+      ThrowExtException();
     }
     else
     {

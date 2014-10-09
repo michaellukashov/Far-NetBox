@@ -387,7 +387,7 @@ TFileSessionAction::TFileSessionAction(TActionLog * Log, TLogAction Action) :
 }
 
 TFileSessionAction::TFileSessionAction(
-    TActionLog * Log, TLogAction Action, const UnicodeString & AFileName) :
+  TActionLog * Log, TLogAction Action, const UnicodeString & AFileName) :
   TSessionAction(Log, Action)
 {
   SetFileName(AFileName);
@@ -402,13 +402,13 @@ void TFileSessionAction::SetFileName(const UnicodeString & AFileName)
 }
 
 TFileLocationSessionAction::TFileLocationSessionAction(
-    TActionLog * Log, TLogAction Action) :
+  TActionLog * Log, TLogAction Action) :
   TFileSessionAction(Log, Action)
 {
 }
 
 TFileLocationSessionAction::TFileLocationSessionAction(
-    TActionLog * Log, TLogAction Action, const UnicodeString & AFileName) :
+  TActionLog * Log, TLogAction Action, const UnicodeString & AFileName) :
   TFileSessionAction(Log, Action, AFileName)
 {
 }
@@ -432,7 +432,7 @@ TDownloadSessionAction::TDownloadSessionAction(TActionLog * Log) :
 }
 
 TChmodSessionAction::TChmodSessionAction(
-    TActionLog * Log, const UnicodeString & AFileName) :
+  TActionLog * Log, const UnicodeString & AFileName) :
   TFileSessionAction(Log, laChmod, AFileName)
 {
 }
@@ -446,7 +446,7 @@ void TChmodSessionAction::Recursive()
 }
 
 TChmodSessionAction::TChmodSessionAction(
-    TActionLog * Log, const UnicodeString & AFileName, const TRights & ARights) :
+  TActionLog * Log, const UnicodeString & AFileName, const TRights & ARights) :
   TFileSessionAction(Log, laChmod, AFileName)
 {
   Rights(ARights);
@@ -471,13 +471,13 @@ TTouchSessionAction::TTouchSessionAction(
 }
 
 TMkdirSessionAction::TMkdirSessionAction(
-    TActionLog * Log, const UnicodeString & AFileName) :
+  TActionLog * Log, const UnicodeString & AFileName) :
   TFileSessionAction(Log, laMkdir, AFileName)
 {
 }
 
 TRmSessionAction::TRmSessionAction(
-    TActionLog * Log, const UnicodeString & AFileName) :
+  TActionLog * Log, const UnicodeString & AFileName) :
   TFileSessionAction(Log, laRm, AFileName)
 {
 }
