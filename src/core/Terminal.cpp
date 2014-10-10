@@ -3252,12 +3252,12 @@ void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
   }
 }
 
-bool TTerminal::DeleteFiles(TStrings * FilesToDelete, intptr_t Params)
+bool TTerminal::DeleteFiles(TStrings * AFilesToDelete, intptr_t Params)
 {
   // TODO: avoid resolving symlinks while reading subdirectories.
   // Resolving does not work anyway for relative symlinks in subdirectories
   // (at least for SFTP).
-  return ProcessFiles(FilesToDelete, foDelete, MAKE_CALLBACK(TTerminal::RemoteDeleteFile, this), &Params);
+  return ProcessFiles(AFilesToDelete, foDelete, MAKE_CALLBACK(TTerminal::RemoteDeleteFile, this), &Params);
 }
 
 void TTerminal::DeleteLocalFile(const UnicodeString & AFileName,
@@ -3361,7 +3361,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & AFileName,
 }
 
 void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
-  intptr_t Params, TStrings * Files, TCaptureOutputEvent OutputEvent)
+  intptr_t Params, TStrings * AFiles, TCaptureOutputEvent OutputEvent)
 {
   if (!TRemoteCustomCommand().IsFileListCommand(Command))
   {
@@ -3369,14 +3369,14 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
     AParams.Command = Command;
     AParams.Params = Params;
     AParams.OutputEvent = OutputEvent;
-    ProcessFiles(Files, foCustomCommand, MAKE_CALLBACK(TTerminal::CustomCommandOnFile, this), &AParams);
+    ProcessFiles(AFiles, foCustomCommand, MAKE_CALLBACK(TTerminal::CustomCommandOnFile, this), &AParams);
   }
   else
   {
     UnicodeString FileList;
-    for (intptr_t Index = 0; Index < Files->GetCount(); ++Index)
+    for (intptr_t Index = 0; Index < AFiles->GetCount(); ++Index)
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, Files->GetObject(Index));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFiles->GetObject(Index));
       bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
 
       if (!Dir || FLAGSET(Params, ccApplyToDirectories))
@@ -3386,7 +3386,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
           FileList += L" ";
         }
 
-        FileList += L"\"" + ShellDelimitStr(Files->GetString(Index), L'"') + L"\"";
+        FileList += L"\"" + ShellDelimitStr(AFiles->GetString(Index), L'"') + L"\"";
       }
     }
 

@@ -227,13 +227,13 @@ public:
   void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
   void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile = nullptr, void * Params = nullptr);
-  bool DeleteFiles(TStrings * FilesToDelete, intptr_t Params = 0);
+  bool DeleteFiles(TStrings * AFilesToDelete, intptr_t Params = 0);
   bool DeleteLocalFiles(TStrings * FileList, intptr_t Params = 0);
   bool IsRecycledFile(const UnicodeString & AFileName);
   void CustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, void * AParams);
   void CustomCommandOnFiles(const UnicodeString & Command, intptr_t Params,
-    TStrings * Files, TCaptureOutputEvent OutputEvent);
+    TStrings * AFiles, TCaptureOutputEvent OutputEvent);
   void ChangeDirectory(const UnicodeString & Directory);
   void EndTransaction();
   void HomeDirectory();
