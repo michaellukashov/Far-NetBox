@@ -487,50 +487,50 @@ UnicodeString ValidLocalFileName(
   const UnicodeString & AFileName, wchar_t InvalidCharsReplacement,
   const UnicodeString & TokenizibleChars, const UnicodeString & ALocalInvalidChars)
 {
-  UnicodeString FileName2 = AFileName;
+  UnicodeString Result = AFileName;
   if (InvalidCharsReplacement != NoReplacement)
   {
     bool ATokenReplacement = (InvalidCharsReplacement == TokenReplacement);
     UnicodeString CharsStr = ATokenReplacement ? TokenizibleChars : ALocalInvalidChars;
     const wchar_t * Chars = CharsStr.c_str();
-    wchar_t * InvalidChar = const_cast<wchar_t *>(FileName2.c_str());
+    wchar_t * InvalidChar = const_cast<wchar_t *>(Result.c_str());
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != nullptr)
     {
-      intptr_t Pos = (InvalidChar - FileName2.c_str() + 1);
+      intptr_t Pos = (InvalidChar - Result.c_str() + 1);
       wchar_t Char;
       if (ATokenReplacement &&
           (*InvalidChar == TokenPrefix) &&
-          (((FileName2.Length() - Pos) <= 1) ||
-           (((Char = static_cast<wchar_t>(HexToByte(FileName2.SubString(Pos + 1, 2)))) == L'\0') ||
+          (((Result.Length() - Pos) <= 1) ||
+           (((Char = static_cast<wchar_t>(HexToByte(Result.SubString(Pos + 1, 2)))) == L'\0') ||
             (TokenizibleChars.Pos(Char) == 0))))
       {
         InvalidChar++;
       }
       else
       {
-        InvalidChar = ReplaceChar(FileName2, InvalidChar, InvalidCharsReplacement);
+        InvalidChar = ReplaceChar(Result, InvalidChar, InvalidCharsReplacement);
       }
     }
 
     // Windows trim trailing space or dot, hence we must encode it to preserve it
-    if (!FileName2.IsEmpty() &&
-        ((FileName2[FileName2.Length()] == L' ') ||
-         (FileName2[FileName2.Length()] == L'.')))
+    if (!Result.IsEmpty() &&
+        ((Result[Result.Length()] == L' ') ||
+         (Result[Result.Length()] == L'.')))
     {
-      ReplaceChar(FileName2, const_cast<wchar_t *>(FileName2.c_str() + FileName2.Length() - 1), InvalidCharsReplacement);
+      ReplaceChar(Result, const_cast<wchar_t *>(Result.c_str() + Result.Length() - 1), InvalidCharsReplacement);
     }
 
-    if (IsReservedName(FileName2))
+    if (IsReservedName(Result))
     {
-      intptr_t P = FileName2.Pos(L".");
+      intptr_t P = Result.Pos(L".");
       if (P == 0)
       {
-        P = FileName2.Length() + 1;
+        P = Result.Length() + 1;
       }
-      FileName2.Insert(L"%00", P);
+      Result.Insert(L"%00", P);
     }
   }
-  return FileName2;
+  return Result;
 }
 
 void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
