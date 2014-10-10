@@ -205,7 +205,7 @@ class AnsiString
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   AnsiString() {}
-  explicit AnsiString(const AnsiString & rht);
+  AnsiString(const AnsiString & rht);
   AnsiString(intptr_t Size, char Ch) : Data(Size, Ch) {}
   AnsiString(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
   AnsiString(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
