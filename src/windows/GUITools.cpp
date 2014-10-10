@@ -333,17 +333,17 @@ UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
 }
 
 UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
-  const UnicodeString & MultiFilesFormat, const TStrings * Files, bool Remote)
+  const UnicodeString & MultiFilesFormat, const TStrings * AFiles, bool Remote)
 {
-  assert(Files != nullptr);
+  assert(AFiles != nullptr);
   UnicodeString Item;
-  if (Files->GetCount() > 0)
+  if (AFiles->GetCount() > 0)
   {
-    Item = Remote ? core::UnixExtractFileName(Files->GetString(0)) :
-      core::ExtractFileName(Files->GetString(0), true);
+    Item = Remote ? core::UnixExtractFileName(AFiles->GetString(0)) :
+      core::ExtractFileName(AFiles->GetString(0), true);
   }
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
-    Files->GetCount(), Item);
+    AFiles->GetCount(), Item);
 }
 
 UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & Identity,

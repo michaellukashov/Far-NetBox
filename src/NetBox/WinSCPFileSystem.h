@@ -154,7 +154,7 @@ protected:
   void HomeDirectory();
   void ToggleSynchronizeBrowsing();
   bool IsSynchronizedBrowsing();
-  bool PropertiesDialog(TStrings * FileList,
+  bool PropertiesDialog(TStrings * AFileList,
     const UnicodeString & Directory,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
     TRemoteProperties * Properties, intptr_t AllowedChanges);
@@ -180,7 +180,7 @@ protected:
   bool SynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
     TTerminal::TSynchronizeMode Mode, intptr_t Params,
     const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory);
-  bool RemoteTransferDialog(TStrings * FileList, UnicodeString & Target,
+  bool RemoteTransferDialog(TStrings * AFileList, UnicodeString & Target,
     UnicodeString & FileMask, bool Move);
   bool RenameFileDialog(TRemoteFile * AFile, UnicodeString & NewName);
   uintptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
@@ -220,7 +220,7 @@ protected:
   TTerminalQueueStatus * ProcessQueue(bool Hidden);
   bool EnsureCommandSessionFallback(TFSCapability Capability);
   void ConnectTerminal(TTerminal * Terminal);
-  void TemporarilyDownloadFiles(TStrings * FileList,
+  void TemporarilyDownloadFiles(TStrings * AFileList,
     TCopyParamType & CopyParam, UnicodeString & TempDir);
   intptr_t UploadFiles(bool Move, OPERATION_MODES OpMode, bool Edit, UnicodeString & DestPath);
   void UploadOnSave(bool NoReload);

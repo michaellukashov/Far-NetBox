@@ -4588,7 +4588,7 @@ class TPropertiesDialog : public TFarDialog
 {
 NB_DISABLE_COPY(TPropertiesDialog)
 public:
-  explicit TPropertiesDialog(TCustomFarPlugin * AFarPlugin, TStrings * FileList,
+  explicit TPropertiesDialog(TCustomFarPlugin * AFarPlugin, TStrings * AFileList,
     const UnicodeString & Directory,
     // TStrings * GroupList, TStrings * UserList,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
@@ -4614,7 +4614,7 @@ private:
 };
 
 TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
-  TStrings * FileList, const UnicodeString & /*Directory*/,
+  TStrings * AFileList, const UnicodeString & /*Directory*/,
   const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
   intptr_t AAllowedChanges) :
   TFarDialog(AFarPlugin),
@@ -4626,11 +4626,11 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   RecursiveCheck(nullptr),
   OkButton(nullptr)
 {
-  assert(FileList->GetCount() > 0);
-  TRemoteFile * OnlyFile = NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObject(0));
+  assert(AFileList->GetCount() > 0);
+  TRemoteFile * OnlyFile = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObject(0));
   USEDPARAM(OnlyFile);
   assert(OnlyFile);
-  FMultiple = (FileList->GetCount() > 1);
+  FMultiple = (AFileList->GetCount() > 1);
 
   {
     std::unique_ptr<TStrings> UsedGroupList(nullptr);
@@ -4649,9 +4649,9 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     }
 
     intptr_t Directories = 0;
-    for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
+    for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObject(Index));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObject(Index));
       assert(File);
       if (UsedGroupList.get() && !File->GetFileGroup().GetName().IsEmpty())
       {
@@ -4685,13 +4685,13 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     Text = new TFarText(this);
     Text->SetCenterGroup(true);
-    if (FileList->GetCount() > 1)
+    if (AFileList->GetCount() > 1)
     {
-      Text->SetCaption(FORMAT(GetMsg(PROPERTIES_PROMPT_FILES).c_str(), FileList->GetCount()));
+      Text->SetCaption(FORMAT(GetMsg(PROPERTIES_PROMPT_FILES).c_str(), AFileList->GetCount()));
     }
     else
     {
-      Text->SetCaption(core::MinimizeName(FileList->GetString(0), static_cast<intptr_t>(GetClientSize().x), true));
+      Text->SetCaption(core::MinimizeName(AFileList->GetString(0), static_cast<intptr_t>(GetClientSize().x), true));
     }
 
     new TFarSeparator(this);
@@ -4892,12 +4892,12 @@ bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
   return Result;
 }
 
-bool TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
+bool TWinSCPFileSystem::PropertiesDialog(TStrings * AFileList,
   const UnicodeString & Directory,
   const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
   TRemoteProperties * Properties, intptr_t AllowedChanges)
 {
-  std::unique_ptr<TPropertiesDialog> Dialog(new TPropertiesDialog(FPlugin, FileList,
+  std::unique_ptr<TPropertiesDialog> Dialog(new TPropertiesDialog(FPlugin, AFileList,
     Directory, GroupList, UserList, AllowedChanges));
   bool Result = Dialog->Execute(Properties);
   return Result;
@@ -8173,12 +8173,12 @@ bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
   return Result;
 }
 
-bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * FileList,
+bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * AFileList,
   UnicodeString & Target, UnicodeString & FileMask, bool Move)
 {
   UnicodeString Prompt = FileNameFormatString(
     GetMsg(Move ? REMOTE_MOVE_FILE : REMOTE_COPY_FILE),
-    GetMsg(Move ? REMOTE_MOVE_FILES : REMOTE_COPY_FILES), FileList, true);
+    GetMsg(Move ? REMOTE_MOVE_FILES : REMOTE_COPY_FILES), AFileList, true);
 
   UnicodeString Value = core::UnixIncludeTrailingBackslash(Target) + FileMask;
   bool Result = FPlugin->InputBox(

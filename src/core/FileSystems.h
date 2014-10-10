@@ -157,9 +157,9 @@ public:
   virtual void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties,
     TChmodSessionAction & Action) = 0;
-  virtual bool LoadFilesProperties(TStrings * FileList) = 0;
+  virtual bool LoadFilesProperties(TStrings * AFileList) = 0;
   virtual void CalculateFilesChecksum(const UnicodeString & Alg,
-    TStrings * FileList, TStrings * Checksums,
+    TStrings * AFileList, TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) = 0;
   virtual void CopyToLocal(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,

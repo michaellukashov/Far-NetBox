@@ -227,21 +227,21 @@ public:
   void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
   void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile = nullptr, void * Params = nullptr);
-  bool DeleteFiles(TStrings * FilesToDelete, intptr_t Params = 0);
-  bool DeleteLocalFiles(TStrings * FileList, intptr_t Params = 0);
+  bool DeleteFiles(TStrings * AFilesToDelete, intptr_t Params = 0);
+  bool DeleteLocalFiles(TStrings * AFileList, intptr_t Params = 0);
   bool IsRecycledFile(const UnicodeString & AFileName);
   void CustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, void * AParams);
   void CustomCommandOnFiles(const UnicodeString & Command, intptr_t Params,
-    TStrings * Files, TCaptureOutputEvent OutputEvent);
+    TStrings * AFiles, TCaptureOutputEvent OutputEvent);
   void ChangeDirectory(const UnicodeString & Directory);
   void EndTransaction();
   void HomeDirectory();
   void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * AFile, /*const TRemoteProperties */ void * Properties);
-  void ChangeFilesProperties(TStrings * FileList,
+  void ChangeFilesProperties(TStrings * AFileList,
     const TRemoteProperties * Properties);
-  bool LoadFilesProperties(TStrings * FileList);
+  bool LoadFilesProperties(TStrings * AFileList);
   void TerminalError(const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   void TerminalError(::Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   void ReloadDirectory();
@@ -250,16 +250,16 @@ public:
   void TerminalRenameFile(const TRemoteFile * AFile, const UnicodeString & NewName, bool CheckExistence);
   void MoveFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     /* const TMoveFileParams */ void * Param);
-  bool MoveFiles(TStrings * FileList, const UnicodeString & Target,
+  bool MoveFiles(TStrings * AFileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
   void CopyFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     /* const TMoveFileParams */ void * Param);
-  bool CopyFiles(TStrings * FileList, const UnicodeString & Target,
+  bool CopyFiles(TStrings * AFileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
   bool CalculateFilesSize(const TStrings * AFileList, int64_t & Size,
     intptr_t Params, const TCopyParamType * CopyParam,
     bool AllowDirs, TCalculateSizeStats * Stats = nullptr);
-  void CalculateFilesChecksum(const UnicodeString & Alg, TStrings * FileList,
+  void CalculateFilesChecksum(const UnicodeString & Alg, TStrings * AFileList,
     TStrings * Checksums, TCalculatedChecksumEvent OnCalculatedChecksum);
   void ClearCaches();
   TSynchronizeChecklist * SynchronizeCollect(const UnicodeString & LocalDirectory,

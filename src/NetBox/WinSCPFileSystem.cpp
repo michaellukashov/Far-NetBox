@@ -1086,8 +1086,7 @@ void TWinSCPFileSystem::CreateLink()
   }
 }
 
-void TWinSCPFileSystem::TemporarilyDownloadFiles(
-  TStrings * FileList, TCopyParamType & CopyParam, UnicodeString & TempDir)
+void TWinSCPFileSystem::TemporarilyDownloadFiles(TStrings * AFileList, TCopyParamType & CopyParam, UnicodeString & TempDir)
 {
   CopyParam.SetFileNameCase(ncNoChange);
   CopyParam.SetPreserveReadOnly(false);
@@ -1107,7 +1106,7 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(
     };
     try
     {
-      FTerminal->CopyToLocal(FileList, TempDir, &CopyParam, cpTemporary);
+      FTerminal->CopyToLocal(AFileList, TempDir, &CopyParam, cpTemporary);
     }
     catch (...)
     {
@@ -4106,8 +4105,8 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
       FileList->AddObject(FullFileName, FileDuplicate.get());
       TemporarilyDownloadFiles(FileList.get(), CopyParam, TempDir);
     }
-
-    FLastMultipleEditFile = ::IncludeTrailingBackslash(TempDir) + NewFileName;
+    UnicodeString ValidLocalFileName = CopyParam.ValidLocalFileName(NewFileName);
+    FLastMultipleEditFile = ::IncludeTrailingBackslash(TempDir) + ValidLocalFileName;
     FLastMultipleEditFileTitle = AFileName;
     FLastMultipleEditDirectory = Directory;
 
