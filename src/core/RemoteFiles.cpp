@@ -2673,13 +2673,13 @@ bool TRemoteProperties::operator !=(const TRemoteProperties & rhp) const
   return !(*this == rhp);
 }
 
-TRemoteProperties TRemoteProperties::CommonProperties(TStrings * FileList)
+TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)
 {
   // TODO: Modification and LastAccess
   TRemoteProperties CommonProperties;
-  for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
+  for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
   {
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObject(Index));
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObject(Index));
     assert(File);
     if (!Index)
     {

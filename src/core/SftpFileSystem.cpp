@@ -1599,9 +1599,9 @@ public:
   }
   virtual ~TSFTPLoadFilesPropertiesQueue() {}
 
-  bool Init(uintptr_t QueueLen, TStrings * FileList)
+  bool Init(uintptr_t QueueLen, TStrings * AFileList)
   {
-    FFileList = FileList;
+    FFileList = AFileList;
 
     return TSFTPFixedLenQueue::Init(QueueLen);
   }
@@ -1679,10 +1679,10 @@ public:
   }
   virtual ~TSFTPCalculateFilesChecksumQueue() {}
 
-  bool Init(intptr_t QueueLen, const UnicodeString & Alg, TStrings * FileList)
+  bool Init(intptr_t QueueLen, const UnicodeString & Alg, TStrings * AFileList)
   {
     FAlg = Alg;
-    FFileList = FileList;
+    FFileList = AFileList;
 
     return TSFTPFixedLenQueue::Init(QueueLen);
   }
@@ -3710,14 +3710,14 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 
-bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
+bool TSFTPFileSystem::LoadFilesProperties(TStrings * AFileList)
 {
   bool Result = false;
   // without knowledge of server's capabilities, this all make no sense
   if (FSupport->Loaded)
   {
     TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK(TTerminal::DoFinished, FTerminal));
-    Progress.Start(foGetProperties, osRemote, FileList->GetCount());
+    Progress.Start(foGetProperties, osRemote, AFileList->GetCount());
 
     FTerminal->FOperationProgress = &Progress; //-V506
 
@@ -3730,7 +3730,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
         Progress.Stop();
       };
       static intptr_t LoadFilesPropertiesQueueLen = 5;
-      if (Queue.Init(LoadFilesPropertiesQueueLen, FileList))
+      if (Queue.Init(LoadFilesPropertiesQueueLen, AFileList))
       {
         TRemoteFile * File = nullptr;
         TSFTPPacket Packet(FCodePage);
@@ -3764,7 +3764,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
 }
 
 void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
-  TStrings * FileList, TStrings * Checksums,
+  TStrings * AFileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum,
   TFileOperationProgressType * OperationProgress, bool FirstLevel)
 {
@@ -3773,9 +3773,9 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
   // recurse into subdirectories only if we have callback function
   if (OnCalculatedChecksum != nullptr)
   {
-    for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
+    for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObject(Index));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObject(Index));
       assert(File != nullptr);
       if (File && File->GetIsDirectory() && !File->GetIsSymLink() &&
           !File->GetIsParentDirectory() && !File->GetIsThisDirectory())
@@ -3823,7 +3823,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
       Queue.DisposeSafe();
     };
     static intptr_t CalculateFilesChecksumQueueLen = 5;
-    if (Queue.Init(CalculateFilesChecksumQueueLen, Alg, FileList))
+    if (Queue.Init(CalculateFilesChecksumQueueLen, Alg, AFileList))
     {
       TSFTPPacket Packet(FCodePage);
       bool Next = false;
@@ -3883,11 +3883,11 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
 }
 
 void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
-  TStrings * FileList, TStrings * Checksums,
+  TStrings * AFileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
   TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK(TTerminal::DoFinished, FTerminal));
-  Progress.Start(foCalculateChecksum, osRemote, FileList->GetCount());
+  Progress.Start(foCalculateChecksum, osRemote, AFileList->GetCount());
 
   FTerminal->FOperationProgress = &Progress; //-V506
 
@@ -3897,7 +3897,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
       FTerminal->FOperationProgress = nullptr;
       Progress.Stop();
     };
-    DoCalculateFilesChecksum(Alg, FileList, Checksums, OnCalculatedChecksum,
+    DoCalculateFilesChecksum(Alg, AFileList, Checksums, OnCalculatedChecksum,
       &Progress, true);
   }
 }

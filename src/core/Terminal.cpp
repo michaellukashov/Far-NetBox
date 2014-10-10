@@ -3280,9 +3280,9 @@ void TTerminal::DeleteLocalFile(const UnicodeString & AFileName,
   }
 }
 
-bool TTerminal::DeleteLocalFiles(TStrings * FileList, intptr_t Params)
+bool TTerminal::DeleteLocalFiles(TStrings * AFileList, intptr_t Params)
 {
-  return ProcessFiles(FileList, foDelete, MAKE_CALLBACK(TTerminal::DeleteLocalFile, this), &Params, osLocal);
+  return ProcessFiles(AFileList, foDelete, MAKE_CALLBACK(TTerminal::DeleteLocalFile, this), &Params, osLocal);
 }
 
 void TTerminal::CustomCommandOnFile(const UnicodeString & AFileName,
@@ -3482,21 +3482,21 @@ void TTerminal::DoChangeFileProperties(const UnicodeString & AFileName,
   }
 }
 
-void TTerminal::ChangeFilesProperties(TStrings * FileList,
+void TTerminal::ChangeFilesProperties(TStrings * AFileList,
   const TRemoteProperties * Properties)
 {
   AnnounceFileListOperation();
-  ProcessFiles(FileList, foSetProperties, MAKE_CALLBACK(TTerminal::ChangeFileProperties, this), const_cast<void *>(static_cast<const void *>(Properties)));
+  ProcessFiles(AFileList, foSetProperties, MAKE_CALLBACK(TTerminal::ChangeFileProperties, this), const_cast<void *>(static_cast<const void *>(Properties)));
 }
 
-bool TTerminal::LoadFilesProperties(TStrings * FileList)
+bool TTerminal::LoadFilesProperties(TStrings * AFileList)
 {
   bool Result =
     GetIsCapable(fcLoadingAdditionalProperties) &&
-    FFileSystem->LoadFilesProperties(FileList);
+    FFileSystem->LoadFilesProperties(AFileList);
   if (Result && GetSessionData()->GetCacheDirectories() &&
-      (FileList->GetCount() > 0) &&
-      (NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObject(0))->GetDirectory() == FFiles))
+      (AFileList->GetCount() > 0) &&
+      (NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObject(0))->GetDirectory() == FFiles))
   {
     AddCachedFileList(FFiles);
   }
@@ -3617,10 +3617,10 @@ bool TTerminal::CalculateFilesSize(const TStrings * AFileList,
 }
 
 void TTerminal::CalculateFilesChecksum(const UnicodeString & Alg,
-  TStrings * FileList, TStrings * Checksums,
+  TStrings * AFileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
-  FFileSystem->CalculateFilesChecksum(Alg, FileList, Checksums, OnCalculatedChecksum);
+  FFileSystem->CalculateFilesChecksum(Alg, AFileList, Checksums, OnCalculatedChecksum);
 }
 
 void TTerminal::TerminalRenameFile(const UnicodeString & AFileName,
@@ -3720,7 +3720,7 @@ void TTerminal::MoveFile(const UnicodeString & AFileName,
   ReactOnCommand(fsMoveFile);
 }
 
-bool TTerminal::MoveFiles(TStrings * FileList, const UnicodeString & Target,
+bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
   const UnicodeString & FileMask)
 {
   TMoveFileParams Params;
@@ -3740,14 +3740,14 @@ bool TTerminal::MoveFiles(TStrings * FileList, const UnicodeString & Target,
         // this is just optimization to avoid checking existence of current
         // directory after each move operation.
         UnicodeString CurrentDirectory = this->GetCurrDirectory();
-        for (intptr_t Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); ++Index)
+        for (intptr_t Index = 0; !PossiblyMoved && (Index < AFileList->GetCount()); ++Index)
         {
           const TRemoteFile * File =
-            NB_STATIC_DOWNCAST_CONST(TRemoteFile, FileList->GetObject(Index));
+            NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFileList->GetObject(Index));
           // File can be nullptr, and filename may not be full path,
           // but currently this is the only way we can move (at least in GUI)
           // current directory
-          const UnicodeString & Str = FileList->GetString(Index);
+          const UnicodeString & Str = AFileList->GetString(Index);
           if ((File != nullptr) &&
               File->GetIsDirectory() &&
               ((CurrentDirectory.SubString(1, Str.Length()) == Str) &&
@@ -3772,7 +3772,7 @@ bool TTerminal::MoveFiles(TStrings * FileList, const UnicodeString & Target,
       }
       EndTransaction();
     };
-    Result = ProcessFiles(FileList, foRemoteMove, MAKE_CALLBACK(TTerminal::MoveFile, this), &Params);
+    Result = ProcessFiles(AFileList, foRemoteMove, MAKE_CALLBACK(TTerminal::MoveFile, this), &Params);
   }
   return Result;
 }
@@ -3827,14 +3827,14 @@ void TTerminal::CopyFile(const UnicodeString & AFileName,
   ReactOnCommand(fsCopyFile);
 }
 
-bool TTerminal::CopyFiles(TStrings * FileList, const UnicodeString & Target,
+bool TTerminal::CopyFiles(TStrings * AFileList, const UnicodeString & Target,
   const UnicodeString & FileMask)
 {
   TMoveFileParams Params;
   Params.Target = Target;
   Params.FileMask = FileMask;
   DirectoryModified(Target, true);
-  return ProcessFiles(FileList, foRemoteCopy, MAKE_CALLBACK(TTerminal::CopyFile, this), &Params);
+  return ProcessFiles(AFileList, foRemoteCopy, MAKE_CALLBACK(TTerminal::CopyFile, this), &Params);
 }
 
 void TTerminal::RemoteCreateDirectory(const UnicodeString & ADirName,
