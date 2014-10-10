@@ -1,5 +1,7 @@
-NetBox 2.1.39.329 05.10.2014
+NetBox 2.1.39.330 10.10.2014
 --------------------
+  * Bugfix: SCP, SFTP: cannot read/copy files if server uses KOI8-R filesystem encoding
+    (https://github.com/michaellukashov/Far-NetBox/issues/124)
   * Bugfix: WebDAV: do not try to create existing directory on remote server
     (http://forum.farmanager.com/viewtopic.php?p=122658#p122658)
   * Bugfix: "NetBox commands" -> "Open in Putty": fix open session using Putty 0.63
