@@ -2236,7 +2236,7 @@ subr_win32_xlate_to_stringbuf(// win32_xlate_t *handle,
     return APR_SUCCESS;
   }
   int from_page_id = CP_ACP;
-  retval = MultiByteToWideChar(from_page_id, // CP_UTF8, // handle->from_page_id,
+  retval = ::MultiByteToWideChar(from_page_id, // CP_UTF8, // handle->from_page_id,
     0, src_data, (int)src_length, nullptr, 0);
   if (retval == 0)
     return apr_get_os_error();
@@ -2253,14 +2253,14 @@ subr_win32_xlate_to_stringbuf(// win32_xlate_t *handle,
     wide_str = static_cast<WCHAR *>(apr_pcalloc(pool, wide_size * sizeof(WCHAR)));
   }
 
-  retval = MultiByteToWideChar(from_page_id, // handle->from_page_id,
+  retval = ::MultiByteToWideChar(from_page_id, // handle->from_page_id,
     0, src_data, (int)src_length, wide_str, wide_size);
 
   if (retval == 0)
     return apr_get_os_error();
 
   int to_page_id = CP_UTF8;
-  retval = WideCharToMultiByte(to_page_id, // handle->to_page_id,
+  retval = ::WideCharToMultiByte(to_page_id, // handle->to_page_id,
     0, wide_str, wide_size, nullptr, 0, nullptr, nullptr);
 
   if (retval == 0)
@@ -2271,7 +2271,7 @@ subr_win32_xlate_to_stringbuf(// win32_xlate_t *handle,
   *dest = stringbuf_create_ensure(retval + 1, pool);
   (*dest)->len = retval;
 
-  retval = WideCharToMultiByte(to_page_id, // handle->to_page_id,
+  retval = ::WideCharToMultiByte(to_page_id, // handle->to_page_id,
     0, wide_str, wide_size, (*dest)->data, (int)(*dest)->len, nullptr, nullptr);
   if (retval == 0)
     return apr_get_os_error();
@@ -2306,7 +2306,7 @@ utf8_to_unicode(
     return APR_SUCCESS;
   }
 
-  retval = MultiByteToWideChar(CP_UTF8, // handle->from_page_id,
+  retval = ::MultiByteToWideChar(CP_UTF8, // handle->from_page_id,
     0, srcstr, (int)src_length, nullptr, 0);
   if (retval == 0)
     return apr_get_os_error();
@@ -2315,7 +2315,7 @@ utf8_to_unicode(
 
   wide_str = static_cast<WCHAR *>(apr_pcalloc(pool, (wide_size + 1) * sizeof(WCHAR)));
 
-  retval = MultiByteToWideChar(CP_UTF8, // handle->from_page_id,
+  retval = ::MultiByteToWideChar(CP_UTF8, // handle->from_page_id,
     0, srcstr, (int)src_length, wide_str, wide_size);
 
   if (retval == 0)

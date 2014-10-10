@@ -47,12 +47,12 @@ UnicodeString MB2W(const char * src, const UINT cp)
     return UnicodeString(L"");
   }
 
-  intptr_t reqLength = MultiByteToWideChar(cp, 0, src, -1, nullptr, 0);
+  intptr_t reqLength = ::MultiByteToWideChar(cp, 0, src, -1, nullptr, 0);
   UnicodeString Result;
   if (reqLength)
   {
     Result.SetLength(reqLength);
-    MultiByteToWideChar(cp, 0, src, -1, const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
+    ::MultiByteToWideChar(cp, 0, src, -1, const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
     Result.SetLength(Result.Length() - 1);  //remove NULL character
   }
   return Result;
@@ -65,12 +65,12 @@ AnsiString W2MB(const wchar_t * src, const UINT cp)
     return AnsiString("");
   }
 
-  intptr_t reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, nullptr, nullptr);
+  intptr_t reqLength = ::WideCharToMultiByte(cp, 0, src, -1, 0, 0, nullptr, nullptr);
   AnsiString Result;
   if (reqLength)
   {
     Result.SetLength(reqLength);
-    WideCharToMultiByte(cp, 0, src, -1, const_cast<LPSTR>(Result.c_str()),
+    ::WideCharToMultiByte(cp, 0, src, -1, const_cast<LPSTR>(Result.c_str()),
       static_cast<int>(reqLength), nullptr, nullptr);
     Result.SetLength(Result.Length() - 1);  //remove NULL character
   }
