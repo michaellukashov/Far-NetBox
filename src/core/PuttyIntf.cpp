@@ -41,10 +41,10 @@ void PuttyInitialize()
 
   sk_init();
 
-  AnsiString VersionString = SshVersionString();
+  AnsiString VersionString = AnsiString(SshVersionString());
   assert(!VersionString.IsEmpty() && (static_cast<size_t>(VersionString.Length()) < _countof(sshver)));
   strcpy_s(sshver, sizeof(sshver), VersionString.c_str());
-  AnsiString AppName = AppNameString();
+  AnsiString AppName = AnsiString(AppNameString());
   assert(!AppName.IsEmpty() && (static_cast<size_t>(AppName.Length()) < _countof(appname_)));
   strcpy_s(appname_, sizeof(appname_), AppName.c_str());
 }
@@ -512,7 +512,7 @@ UnicodeString KeyTypeName(TKeyType KeyType)
 
 int64_t ParseSize(const UnicodeString & SizeStr)
 {
-  AnsiString AnsiSizeStr = SizeStr;
+  AnsiString AnsiSizeStr = AnsiString(SizeStr);
   return parse_blocksize(AnsiSizeStr.c_str());
 }
 

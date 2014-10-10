@@ -2825,7 +2825,7 @@ void TSFTPFileSystem::DoStartup()
 
       if (ExtensionName == SFTP_EXT_NEWLINE)
       {
-        FEOL = AnsiString(ExtensionData.c_str());
+        FEOL = AnsiString(ExtensionData);
         FTerminal->LogEvent(FORMAT(L"Server requests EOL sequence %s.",
           ExtensionDisplayData.c_str()));
         if (FEOL.Length() < 1 || FEOL.Length() > 2)
@@ -2965,7 +2965,7 @@ void TSFTPFileSystem::DoStartup()
       }
       else if (ExtensionName == SFTP_EXT_STATVFS)
       {
-        UnicodeString StatVfsVersion = UnicodeString(AnsiString(ExtensionData.c_str()));
+        UnicodeString StatVfsVersion = UnicodeString(ExtensionData.c_str());
         if (StatVfsVersion == SFTP_EXT_STATVFS_VALUE_V2)
         {
           FSupportsStatVfsV2 = true;
@@ -2978,7 +2978,7 @@ void TSFTPFileSystem::DoStartup()
       }
       else if (ExtensionName == SFTP_EXT_HARDLINK)
       {
-        UnicodeString HardlinkVersion = UnicodeString(AnsiString(ExtensionData.c_str()));
+        UnicodeString HardlinkVersion = UnicodeString(ExtensionData);
         if (HardlinkVersion == SFTP_EXT_HARDLINK_VALUE_V1)
         {
           FSupportsHardlink = true;

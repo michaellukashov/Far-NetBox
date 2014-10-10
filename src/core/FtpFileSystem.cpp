@@ -2697,7 +2697,7 @@ void TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
     }
     else
     {
-      throw ExtException(ErrorStr, MoreMessages.release(), true, HelpKeyword);
+      throw ExtException(ErrorStr, MoreMessages.release(), true, UnicodeString(HelpKeyword));
     }
   }
 
