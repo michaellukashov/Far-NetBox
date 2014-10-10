@@ -45,11 +45,6 @@ void AnsiString::Init(const uint8_t * Str, intptr_t Length)
   Data = Data.c_str();
 }
 
-AnsiString::operator UnicodeString() const
-{
-  return UnicodeString(Data.c_str(), Data.size());
-}
-
 intptr_t AnsiString::Pos(wchar_t Ch) const
 {
   AnsiString Str(&Ch, 1);

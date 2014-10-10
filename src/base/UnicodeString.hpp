@@ -216,7 +216,6 @@ public:
   AnsiString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
   ~AnsiString() {}
 
-  operator UnicodeString() const;
   const char * c_str() const { return Data.c_str(); }
   intptr_t Length() const { return Data.size(); }
   intptr_t GetLength() const { return Length(); }
