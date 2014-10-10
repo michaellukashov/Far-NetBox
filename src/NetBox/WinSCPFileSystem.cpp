@@ -4048,8 +4048,8 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
       FileList->AddObject(FullFileName, FileDuplicate.get());
       TemporarilyDownloadFiles(FileList.get(), CopyParam, TempDir);
     }
-
-    FLastMultipleEditFile = ::IncludeTrailingBackslash(TempDir) + NewFileName;
+    UnicodeString ValidLocalFileName = CopyParam.ValidLocalFileName(NewFileName);
+    FLastMultipleEditFile = ::IncludeTrailingBackslash(TempDir) + ValidLocalFileName;
     FLastMultipleEditFileTitle = AFileName;
     FLastMultipleEditDirectory = Directory;
 
