@@ -8,6 +8,11 @@ AnsiString::AnsiString(const AnsiString & rht)
   Init(rht.c_str(), rht.Length());
 }
 
+AnsiString::AnsiString(const RawByteString & Str)
+{
+   Init(Str.c_str(), Str.GetLength());
+}
+
 void AnsiString::Init(const wchar_t * Str, intptr_t Length)
 {
   intptr_t Size = WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0, nullptr, nullptr);
@@ -405,6 +410,11 @@ void UnicodeString::Init(const char * Str, intptr_t Length)
     Data[Size] = 0;
   }
   Data = Data.c_str();
+}
+
+UnicodeString::UnicodeString(const AnsiString & Str)
+{
+  Init(Str.c_str(), Str.GetLength());
 }
 
 UnicodeString & UnicodeString::Lower(intptr_t nStartPos, intptr_t nLength)
