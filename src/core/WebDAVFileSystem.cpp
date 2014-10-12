@@ -404,7 +404,7 @@ error_createf(
   va_end(args);
 
   AnsiString Message2 = ::Format("Error, code: %d, message: %s", apr_err, Message.c_str());
-  throw ExtException(UnicodeString(Message2.c_str()), (::Exception *)nullptr);
+  throw ExtException(UnicodeString(Message2.c_str()), (Exception *)nullptr);
 
   return err;
 }
@@ -12122,7 +12122,7 @@ void TWebDAVFileSystem::Open()
   if (!FActive)
   {
     FTerminal->Closed();
-    throw ::Exception(LoadStr(CONNECTION_FAILED));
+    throw Exception(LoadStr(CONNECTION_FAILED));
   }
 }
 
@@ -12361,7 +12361,7 @@ void TWebDAVFileSystem::ReadDirectory(TRemoteFileList * FileList)
     {
       DoReadDirectory(FileList);
     }
-    catch (::Exception &)
+    catch (Exception &)
     {
       if (!FTerminal->GetActive())
       {
@@ -12698,7 +12698,7 @@ void TWebDAVFileSystem::WebDAVSourceRobust(const UnicodeString & AFileName,
       WebDAVSource(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -13022,7 +13022,7 @@ void TWebDAVFileSystem::SinkRobust(const UnicodeString & AFileName,
       Sink(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -13396,7 +13396,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
 
         File->Complete();
       }
-      catch (::Exception & E)
+      catch (Exception & E)
       {
         UnicodeString EntryData =
           FORMAT(L"%s/%s/%s/%lld/%d/%d/%d/%d/%d/%d/%d/%d/%d",

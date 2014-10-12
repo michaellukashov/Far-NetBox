@@ -32,12 +32,12 @@ const int ecIgnoreWarnings = 2;
 const int ecReadProgress = 4;
 const int ecDefault = ecRaiseExcept;
 
-inline void ThrowFileSkipped(::Exception * Exception, const UnicodeString & Message)
+inline void ThrowFileSkipped(Exception * Exception, const UnicodeString & Message)
 {
   throw EFileSkipped(Exception, Message);
 }
 
-inline void ThrowScpEror(::Exception * Exception, const UnicodeString & Message)
+inline void ThrowScpEror(Exception * Exception, const UnicodeString & Message)
 {
   throw EScp(Exception, Message);
 }
@@ -617,7 +617,7 @@ bool TSCPFileSystem::IsLastLine(UnicodeString & Line)
   {
     Result = RemoveLastLine(Line, FReturnCode, FCommandSet->GetLastLine());
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     FTerminal->TerminalError(&E, LoadStr(CANT_DETECT_RETURN_CODE));
   }
@@ -795,7 +795,7 @@ void TSCPFileSystem::DoStartup()
     }
     FTerminal->SetExceptionOnFail(false);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     FTerminal->FatalError(&E, L"");
   }
@@ -813,7 +813,7 @@ void TSCPFileSystem::SkipStartupMessage()
     FTerminal->LogEvent(L"Skipping host startup message (if any).");
     ExecCommand2(fsNull, 0);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     FTerminal->CommandError(&E, LoadStr(SKIP_STARTUP_MESSAGE_ERROR), 0, HELP_SKIP_STARTUP_MESSAGE_ERROR);
   }
@@ -868,7 +868,7 @@ void TSCPFileSystem::DetectReturnVar()
         // if fatal error occurs, we need to exit ...
         throw;
       }
-      catch (::Exception &)
+      catch (Exception &)
       {
         // ...otherwise, we will try next variable (if any)
         Success = false;
@@ -892,7 +892,7 @@ void TSCPFileSystem::DetectReturnVar()
         FCommandSet->GetReturnVar().c_str()));
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     FTerminal->CommandError(&E, LoadStr(DETECT_RETURNVAR_ERROR));
   }
@@ -920,7 +920,7 @@ void TSCPFileSystem::ClearAliases()
       ClearAlias(CommandList->GetString(Index));
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     FTerminal->CommandError(&E, LoadStr(UNALIAS_ALL_ERROR));
   }
@@ -936,7 +936,7 @@ void TSCPFileSystem::UnsetNationalVars()
       ExecCommand2(fsUnset, 0, NationalVars[Index], false);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     FTerminal->CommandError(&E, LoadStr(UNSET_NATIONAL_ERROR));
   }
@@ -1083,7 +1083,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           FLsFullTime = asOn;
       }
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       if (FTerminal->GetActive())
       {
@@ -1498,7 +1498,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
             (Failed ? 0 : coRaiseExcept));
         }
       }
-      catch (::Exception & E)
+      catch (Exception & E)
       {
         // Only log error message (it should always succeed, but
         // some pending error maybe in queue) }
@@ -1514,10 +1514,10 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
     // It has never happened to me (return code is usually 127)
     if (GotLastLine)
     {
-      throw ::Exception(L"");
+      throw Exception(L"");
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     if (GotLastLine && FTerminal->GetActive())
     {
@@ -1850,7 +1850,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
                 OperationProgress->AddTransfered(BlockSize);
                 if (OperationProgress->Cancel == csCancelTransfer)
                 {
-                  throw ::Exception(MainInstructions(LoadStr(USER_TERMINATED)));
+                  throw Exception(MainInstructions(LoadStr(USER_TERMINATED)));
                 }
               }
             }
@@ -1876,7 +1876,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
           if ((OperationProgress->Cancel == csCancelTransfer) ||
               (OperationProgress->Cancel == csCancel && !OperationProgress->TransferingFile))
           {
-            throw ::Exception(MainInstructions(LoadStr(USER_TERMINATED)));
+            throw Exception(MainInstructions(LoadStr(USER_TERMINATED)));
           }
         }
         while (!OperationProgress->IsLocallyDone() || !OperationProgress->IsTransferDone());
@@ -1906,7 +1906,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
         // normally -> no fatal error
         OperationProgress->TransferingFile = false;
       }
-      catch (::Exception & E)
+      catch (Exception & E)
       {
         // EScpFileSkipped is derived from ESkipFile,
         // but is does not indicate file skipped by user here
@@ -2311,10 +2311,10 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
             coOnlyReturnCode | coIgnoreWarnings);
           if (!Initialized)
           {
-            throw ::Exception(L"");
+            throw Exception(L"");
           }
         }
-        catch (::Exception & E)
+        catch (Exception & E)
         {
           if (!Initialized && FTerminal->GetActive())
           {
@@ -2401,7 +2401,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
           OperationProgress->SetFile(AbsoluteFileName);
           OperationProgress->SetTransferSize(TSize);
         }
-        catch (::Exception & E)
+        catch (Exception & E)
         {
           {
             TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -2524,7 +2524,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
 
                 FileStream.reset(new TSafeHandleStream(LocalFileHandle));
               }
-              catch (::Exception & E)
+              catch (Exception & E)
               {
                 // In this step we can still cancel transfer, so we do it
                 SCPError(E.Message, false);
@@ -2578,13 +2578,13 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
 
                   if (OperationProgress->Cancel == csCancelTransfer)
                   {
-                    throw ::Exception(MainInstructions(LoadStr(USER_TERMINATED)));
+                    throw Exception(MainInstructions(LoadStr(USER_TERMINATED)));
                   }
                 }
                 while (!OperationProgress->IsLocallyDone() || !
                     OperationProgress->IsTransferDone());
               }
-              catch (::Exception & E)
+              catch (Exception & E)
               {
                 // Every exception during file transfer is fatal
                 FTerminal->FatalError(&E,
@@ -2618,7 +2618,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
               }
             }
           }
-          catch (::Exception & E)
+          catch (Exception & E)
           {
             if (SkipConfirmed)
             {

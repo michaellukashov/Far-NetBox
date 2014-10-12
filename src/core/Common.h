@@ -6,7 +6,7 @@
 
 #include "Exceptions.h"
 
-inline void ThrowExtException() { throw ExtException((::Exception *)nullptr, UnicodeString(L"")); }
+inline void ThrowExtException() { throw ExtException((Exception *)nullptr, UnicodeString(L"")); }
 //#define EXCEPTION throw ExtException(nullptr, L"")
 #define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
@@ -51,7 +51,7 @@ UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
   wchar_t * Delimiter = nullptr, bool DoubleDelimiterEscapes = false);
 UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars);
 UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote);
-UnicodeString ExceptionLogString(::Exception *E);
+UnicodeString ExceptionLogString(Exception *E);
 UnicodeString MainInstructions(const UnicodeString & S);
 UnicodeString MainInstructionsFirstParagraph(const UnicodeString & S);
 bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions);

@@ -48,10 +48,10 @@ public:
   virtual ~TWinSCPPlugin();
   virtual intptr_t GetMinFarVersion();
 
-  virtual void HandleException(::Exception * E, int OpMode = 0);
+  virtual void HandleException(Exception * E, int OpMode = 0);
   uintptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
     TQueryType Type, uintptr_t Answers, const TMessageParams * Params = nullptr);
-  void ShowExtendedException(::Exception * E);
+  void ShowExtendedException(Exception * E);
   bool CopyParamCustomDialog(TCopyParamType & CopyParam,
     intptr_t CopyParamAttrs);
   virtual void SetStartupInfo(const struct PluginStartupInfo * Info);

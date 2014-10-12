@@ -64,7 +64,7 @@ void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
   {
     TCustomFarPlugin::SetStartupInfo(Info);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     HandleException(&E);
   }
@@ -518,7 +518,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   }
 }
 
-void TWinSCPPlugin::ShowExtendedException(::Exception * E)
+void TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
   if (E && !E->Message.IsEmpty())
   {
@@ -539,7 +539,7 @@ void TWinSCPPlugin::ShowExtendedException(::Exception * E)
   }
 }
 
-void TWinSCPPlugin::HandleException(::Exception * E, int OpMode)
+void TWinSCPPlugin::HandleException(Exception * E, int OpMode)
 {
   if (((OpMode & OPM_FIND) == 0) || (NB_STATIC_DOWNCAST(EFatal, E) != nullptr))
   {

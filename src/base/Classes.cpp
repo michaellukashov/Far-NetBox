@@ -19,7 +19,7 @@ void Abort()
 void Error(int ErrorID, intptr_t data)
 {
   UnicodeString Msg = FMTLOAD(ErrorID, data);
-  throw ExtException((::Exception *)nullptr, Msg);
+  throw ExtException((Exception *)nullptr, Msg);
 }
 
 bool TObject::IsKindOf(TObjectClassId ClassId) const
@@ -64,7 +64,7 @@ TPersistent * TPersistent::GetOwner()
 void TPersistent::AssignError(const TPersistent * Source)
 {
   (void)Source;
-  throw ::Exception(L"Cannot assign");
+  throw Exception(L"Cannot assign");
 }
 
 TList::TList()
@@ -1320,7 +1320,7 @@ void TStream::ReadBuffer(void * Buffer, int64_t Count)
 {
   if ((Count != 0) && (Read(Buffer, Count) != Count))
   {
-    throw ::Exception(FMTLOAD(SReadError));
+    throw Exception(FMTLOAD(SReadError));
   }
 }
 
@@ -1328,13 +1328,13 @@ void TStream::WriteBuffer(const void * Buffer, int64_t Count)
 {
   if ((Count != 0) && (Write(Buffer, Count) != Count))
   {
-    throw ::Exception(FMTLOAD(SWriteError));
+    throw Exception(FMTLOAD(SWriteError));
   }
 }
 
 void ReadError(const UnicodeString & Name)
 {
-  throw ::Exception(FORMAT(L"InvalidRegType: %s", Name.c_str())); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
+  throw Exception(FORMAT(L"InvalidRegType: %s", Name.c_str())); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
 
 THandleStream::THandleStream(HANDLE AHandle) :
@@ -1941,7 +1941,7 @@ int TRegistry::GetData(const UnicodeString & Name, void * Buffer,
   if (::RegQueryValueEx(GetCurrentKey(), Name.c_str(), nullptr, &DataType,
     reinterpret_cast<BYTE *>(Buffer), &bufSize) != ERROR_SUCCESS)
   {
-    throw ::Exception(L"RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
+    throw Exception(L"RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
   RegData = DataTypeToRegData(DataType);
   int Result = static_cast<int>(BufSize);
@@ -1955,7 +1955,7 @@ void TRegistry::PutData(const UnicodeString & Name, const void * Buffer,
   if (::RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType,
                     reinterpret_cast<const BYTE *>(Buffer), static_cast<DWORD>(BufSize)) != ERROR_SUCCESS)
   {
-    throw ::Exception(L"RegSetValueEx failed");    // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
+    throw Exception(L"RegSetValueEx failed");    // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
   }
 }
 

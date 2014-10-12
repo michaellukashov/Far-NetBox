@@ -197,7 +197,7 @@ bool THierarchicalStorage::OpenSubKey(const UnicodeString & SubKey, bool CanCrea
 void THierarchicalStorage::CloseSubKey()
 {
   if (FKeyHistory->GetCount() == 0)
-    throw ::Exception(L"");
+    throw Exception(L"");
   else
     FKeyHistory->Delete(FKeyHistory->GetCount() - 1);
 }

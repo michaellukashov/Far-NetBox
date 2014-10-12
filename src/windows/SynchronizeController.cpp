@@ -175,7 +175,7 @@ void TSynchronizeController::SynchronizeChange(
       }
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     SynchronizeAbort(NB_STATIC_DOWNCAST(EFatal, &E) != nullptr);
   }

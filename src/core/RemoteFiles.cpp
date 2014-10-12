@@ -1052,7 +1052,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     auto GetNCol = [&]()
     {
       if (ListingStr.IsEmpty())
-        throw ::Exception(L"");
+        throw Exception(L"");
       intptr_t P = ListingStr.Pos(L' ');
       if (P)
       {
@@ -1337,7 +1337,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       }
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, Value.c_str()), HELP_LIST_LINE_ERROR);
   }
@@ -1402,7 +1402,7 @@ void TRemoteFile::FindLinkedFile()
       };
       GetTerminal()->ReadSymlink(this, FLinkedFile);
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
       {
@@ -2251,7 +2251,7 @@ void TRights::SetText(const UnicodeString & Value)
         (!GetAllowUndef() && (Value.Pos(UndefSymbol) > 0)) ||
         (Value.Pos(L" ") > 0))
     {
-      throw ::Exception(FMTLOAD(RIGHTS_ERROR, Value.c_str()));
+      throw Exception(FMTLOAD(RIGHTS_ERROR, Value.c_str()));
     }
 
     FSet = 0;
@@ -2378,7 +2378,7 @@ void TRights::SetOctal(const UnicodeString & AValue)
 
     if (!Correct)
     {
-      throw ::Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, AValue.c_str()));
+      throw Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, AValue.c_str()));
     }
 
     SetNumber(static_cast<uint16_t>(

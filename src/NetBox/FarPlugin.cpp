@@ -122,7 +122,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
               sizeof(FFarStandardFunctions) : Info->FSF->StructSize);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -176,7 +176,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
 
     memmove(Info, &FPluginInfo, sizeof(FPluginInfo));
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -289,7 +289,7 @@ intptr_t TCustomFarPlugin::Configure(intptr_t Item)
 
     return Result;
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -327,7 +327,7 @@ void * TCustomFarPlugin::OpenPlugin(int OpenFrom, intptr_t Item)
 
     return Result;
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -355,7 +355,7 @@ void TCustomFarPlugin::ClosePlugin(void * Plugin)
     // dlmalloc_trim(0); // 64 * 1024);
 #endif
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -363,7 +363,7 @@ void TCustomFarPlugin::ClosePlugin(void * Plugin)
 }
 
 void TCustomFarPlugin::HandleFileSystemException(
-  TCustomFarFileSystem * FarFileSystem, ::Exception * E, int OpMode)
+  TCustomFarFileSystem * FarFileSystem, Exception * E, int OpMode)
 {
   // This method is called as last-resort exception handler before
   // leaving plugin API. Especially for API functions that must update
@@ -393,7 +393,7 @@ void TCustomFarPlugin::GetOpenPluginInfo(HANDLE Plugin,
     TGuard Guard(FarFileSystem->GetCriticalSection());
     FarFileSystem->GetOpenPluginInfo(Info);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
@@ -414,7 +414,7 @@ intptr_t TCustomFarPlugin::GetFindData(HANDLE Plugin,
       return FarFileSystem->GetFindData(PanelItem, ItemsNumber, OpMode);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, OpMode);
@@ -436,7 +436,7 @@ void TCustomFarPlugin::FreeFindData(HANDLE Plugin,
       FarFileSystem->FreeFindData(PanelItem, ItemsNumber);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
@@ -464,7 +464,7 @@ intptr_t TCustomFarPlugin::ProcessHostFile(HANDLE Plugin,
       return 0;
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, OpMode);
@@ -493,7 +493,7 @@ intptr_t TCustomFarPlugin::ProcessKey(HANDLE Plugin, int Key,
       return 0;
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
@@ -531,7 +531,7 @@ intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * Param)
       return 0;
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
@@ -557,7 +557,7 @@ intptr_t TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t * Dir, int 
       return FarFileSystem->SetDirectory(Dir, OpMode);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, OpMode);
@@ -568,7 +568,7 @@ intptr_t TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t * Dir, int 
         TGuard Guard(FarFileSystem->GetCriticalSection());
         return FarFileSystem->SetDirectory(PrevCurrentDirectory.c_str(), OpMode);
       }
-      catch (::Exception &)
+      catch (Exception &)
       {
         return 0;
       }
@@ -590,7 +590,7 @@ intptr_t TCustomFarPlugin::MakeDirectory(HANDLE Plugin, const wchar_t ** Name, i
       return FarFileSystem->MakeDirectory(Name, OpMode);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, OpMode);
@@ -612,7 +612,7 @@ intptr_t TCustomFarPlugin::DeleteFiles(HANDLE Plugin,
       return FarFileSystem->DeleteFiles(PanelItem, ItemsNumber, OpMode);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, OpMode);
@@ -635,7 +635,7 @@ intptr_t TCustomFarPlugin::GetFiles(HANDLE Plugin,
       return FarFileSystem->GetFiles(PanelItem, ItemsNumber, Move, DestPath, OpMode);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     // display error even for OPM_FIND
@@ -658,7 +658,7 @@ intptr_t TCustomFarPlugin::PutFiles(HANDLE Plugin,
       return FarFileSystem->PutFiles(PanelItem, ItemsNumber, Move, srcPath, OpMode);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, OpMode);
@@ -674,7 +674,7 @@ intptr_t TCustomFarPlugin::ProcessEditorEvent(int Event, void * Param)
 
     return ProcessEditorEventEx(Event, Param);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -690,7 +690,7 @@ intptr_t TCustomFarPlugin::ProcessEditorInput(const INPUT_RECORD * Rec)
 
     return ProcessEditorInputEx(Rec);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -1218,7 +1218,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
         {
           OnValidate(Text);
         }
-        catch (::Exception & E)
+        catch (Exception & E)
         {
           DEBUG_PRINTF(L"before HandleException");
           HandleException(&E);
@@ -1535,7 +1535,7 @@ void TCustomFarPlugin::RestoreScreen(HANDLE & Screen)
   Screen = 0;
 }
 
-void TCustomFarPlugin::HandleException(::Exception * E, int /*OpMode*/)
+void TCustomFarPlugin::HandleException(Exception * E, int /*OpMode*/)
 {
   assert(E);
   Message(FMSG_WARNING | FMSG_MB_OK, L"", E ? E->Message : L"");
@@ -1766,7 +1766,7 @@ TCustomFarFileSystem::~TCustomFarFileSystem()
   ClearOpenPluginInfo(FOpenPluginInfo);
 }
 
-void TCustomFarFileSystem::HandleException(::Exception * E, int OpMode)
+void TCustomFarFileSystem::HandleException(Exception * E, int OpMode)
 {
   DEBUG_PRINTF(L"before FPlugin->HandleException");
   FPlugin->HandleException(E, OpMode);

@@ -63,7 +63,7 @@ void FileOperationLoopCustom(TTerminal * Terminal,
     {
       throw;
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       Terminal->FileOperationLoopQuery(
         E, OperationProgress, Message, AllowSkip, L"", HelpKeyword);
@@ -74,7 +74,7 @@ void FileOperationLoopCustom(TTerminal * Terminal,
 }
 
 void TTerminal::CommandErrorAri(
-  ::Exception & E,
+  Exception & E,
   const UnicodeString & Message,
   const std::function<void()> & Repeat)
 {
@@ -96,7 +96,7 @@ void TTerminal::CommandErrorAri(
 
 // Note that the action may already be canceled when RollbackAction is called
 void TTerminal::CommandErrorAriAction(
-  ::Exception & E,
+  Exception & E,
   const UnicodeString & Message,
   const std::function<void()> & Repeat,
   TSessionAction & Action)
@@ -106,7 +106,7 @@ void TTerminal::CommandErrorAriAction(
   {
     Result = CommandError(&E, Message, qaRetry | qaSkip | qaAbort);
   }
-  catch (::Exception & E2)
+  catch (Exception & E2)
   {
     RollbackAction(Action, nullptr, &E2);
     throw;
@@ -409,14 +409,14 @@ public:
     TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType);
   virtual uintptr_t QueryUserException(const UnicodeString & Query,
-    ::Exception * E, uintptr_t Answers, const TQueryParams * Params,
+    Exception * E, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType);
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
     TStrings * Results);
   virtual void DisplayBanner(const UnicodeString & Banner);
-  virtual void FatalError(::Exception * E, const UnicodeString & Msg, const UnicodeString & HelpContext);
-  virtual void HandleExtendedException(::Exception * E);
+  virtual void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpContext);
+  virtual void HandleExtendedException(Exception * E);
   virtual void Closed();
 
 private:
@@ -455,7 +455,7 @@ uintptr_t TTunnelUI::QueryUser(const UnicodeString & Query,
 }
 
 uintptr_t TTunnelUI::QueryUserException(const UnicodeString & Query,
-  ::Exception * E, uintptr_t Answers, const TQueryParams * Params,
+  Exception * E, uintptr_t Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
   uintptr_t Result;
@@ -498,12 +498,12 @@ void TTunnelUI::DisplayBanner(const UnicodeString & Banner)
   }
 }
 
-void TTunnelUI::FatalError(::Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
+void TTunnelUI::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
 {
   throw ESshFatal(E, Msg, HelpKeyword);
 }
 
-void TTunnelUI::HandleExtendedException(::Exception * E)
+void TTunnelUI::HandleExtendedException(Exception * E)
 {
   if (GetCurrentThreadId() == FTerminalThread)
   {
@@ -523,7 +523,7 @@ public:
   inline TCallbackGuard(TTerminal * FTerminal);
   inline ~TCallbackGuard();
 
-  void FatalError(::Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword);
+  void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword);
   inline void Verify();
   void Dismiss();
 
@@ -555,7 +555,7 @@ TCallbackGuard::~TCallbackGuard()
   SAFE_DESTROY(FFatalError);
 }
 
-void TCallbackGuard::FatalError(::Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
+void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
 {
   assert(FGuarding);
 
@@ -745,7 +745,7 @@ void TTerminal::Idle()
       {
         FCommandSession->Idle();
       }
-      catch (::Exception & E)
+      catch (Exception & E)
       {
         // If the secondary session is dropped, ignore the error and let
         // it be reconnected when needed.
@@ -876,7 +876,7 @@ void TTerminal::Open()
     // {
     //   throw;
     // }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       LogEvent(FORMAT(L"Got error: \"%s\"", E.Message.c_str()));
       // any exception while opening session is fatal
@@ -1035,7 +1035,7 @@ void TTerminal::InitFileSystem()
           FSecureShell->SetSimple(true);
           FSecureShell->Open();
         }
-        catch (::Exception & E)
+        catch (Exception & E)
         {
           assert(!FSecureShell->GetActive());
           if (!FSecureShell->GetActive() && !FTunnelError.IsEmpty())
@@ -1366,7 +1366,7 @@ uintptr_t TTerminal::QueryUser(const UnicodeString & Query,
 }
 
 uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
-  ::Exception * E, uintptr_t Answers, const TQueryParams * Params,
+  Exception * E, uintptr_t Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
   uintptr_t Result = 0;
@@ -1427,7 +1427,7 @@ void TTerminal::DisplayBanner(const UnicodeString & Banner)
   }
 }
 
-void TTerminal::HandleExtendedException(::Exception * E)
+void TTerminal::HandleExtendedException(Exception * E)
 {
   GetLog()->AddException(E);
   if (GetOnShowExtendedException() != nullptr)
@@ -1440,7 +1440,7 @@ void TTerminal::HandleExtendedException(::Exception * E)
   }
 }
 
-void TTerminal::ShowExtendedException(::Exception * E)
+void TTerminal::ShowExtendedException(Exception * E)
 {
   GetLog()->AddException(E);
   if (GetOnShowExtendedException() != nullptr)
@@ -1574,12 +1574,12 @@ void TTerminal::TerminalError(const UnicodeString & Msg, const UnicodeString & H
 }
 
 void TTerminal::TerminalError(
-  ::Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
+  Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
 {
   throw ETerminal(E, Msg, HelpKeyword);
 }
 
-bool TTerminal::DoQueryReopen(::Exception * E)
+bool TTerminal::DoQueryReopen(Exception * E)
 {
   EFatal * Fatal = NB_STATIC_DOWNCAST(EFatal, E);
   assert(Fatal != nullptr);
@@ -1622,7 +1622,7 @@ bool TTerminal::DoQueryReopen(::Exception * E)
   return Result;
 }
 
-bool TTerminal::QueryReopen(::Exception * E, intptr_t Params,
+bool TTerminal::QueryReopen(Exception * E, intptr_t Params,
   TFileOperationProgressType * OperationProgress)
 {
   TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -1639,7 +1639,7 @@ bool TTerminal::QueryReopen(::Exception * E, intptr_t Params,
         Reopen(Params);
         FSessionData->SetNumberOfRetries(0);
       }
-      catch (::Exception & E)
+      catch (Exception & E)
       {
         if (!GetActive())
         {
@@ -1660,7 +1660,7 @@ bool TTerminal::QueryReopen(::Exception * E, intptr_t Params,
   return Result;
 }
 
-bool TTerminal::FileOperationLoopQuery(::Exception & E,
+bool TTerminal::FileOperationLoopQuery(Exception & E,
   TFileOperationProgressType * OperationProgress, const UnicodeString & Message,
   bool AllowSkip, const UnicodeString & SpecialRetry, const UnicodeString & HelpKeyword)
 {
@@ -2079,7 +2079,7 @@ void TTerminal::SetExceptionOnFail(bool Value)
   else
   {
     if (FExceptionOnFail == 0)
-      throw ::Exception(L"ExceptionOnFail is already zero.");
+      throw Exception(L"ExceptionOnFail is already zero.");
     FExceptionOnFail--;
   }
 
@@ -2099,7 +2099,7 @@ void TTerminal::FatalAbort()
   FatalError(nullptr, L"");
 }
 
-void TTerminal::FatalError(::Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
+void TTerminal::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
 {
   bool SecureShellActive = (FSecureShell != nullptr) && FSecureShell->GetActive();
   if (GetActive() || SecureShellActive)
@@ -2134,12 +2134,12 @@ void TTerminal::FatalError(::Exception * E, const UnicodeString & Msg, const Uni
   }
 }
 
-void TTerminal::CommandError(::Exception * E, const UnicodeString & Msg)
+void TTerminal::CommandError(Exception * E, const UnicodeString & Msg)
 {
   CommandError(E, Msg, 0);
 }
 
-uintptr_t TTerminal::CommandError(::Exception * E, const UnicodeString & Msg,
+uintptr_t TTerminal::CommandError(Exception * E, const UnicodeString & Msg,
   uintptr_t Answers, const UnicodeString & HelpKeyword)
 {
   // may not be, particularly when TTerminal::Reopen is being called
@@ -2196,7 +2196,7 @@ uintptr_t TTerminal::CommandError(::Exception * E, const UnicodeString & Msg,
   return Result;
 }
 
-bool TTerminal::HandleException(::Exception * E)
+bool TTerminal::HandleException(Exception * E)
 {
   if (GetExceptionOnFail())
   {
@@ -2538,7 +2538,7 @@ void TTerminal::LogEvent(const UnicodeString & Str)
 }
 
 void TTerminal::RollbackAction(TSessionAction & Action,
-  TFileOperationProgressType * OperationProgress, ::Exception * E)
+  TFileOperationProgressType * OperationProgress, Exception * E)
 {
   // ESkipFile without "cancel" is file skip,
   // and we do not want to record skipped actions.
@@ -2622,7 +2622,7 @@ void TTerminal::ReadCurrentDirectory()
       DoChangeDirectory();
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     CommandError(&E, LoadStr(READ_CURRENT_DIR_ERROR));
   }
@@ -2695,7 +2695,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
         CustomReadDirectory(Files);
       }
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       CommandError(&E, FMTLOAD(LIST_DIR_ERROR, FFiles->GetDirectory().c_str()));
     }
@@ -2782,7 +2782,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & Director
       Action.FileList(FileList);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
@@ -2805,7 +2805,7 @@ TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & APath)
     ReadFile(APath, File);
     Action.File(File);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
@@ -2824,7 +2824,7 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(const UnicodeString & Di
   {
     FileList = DoReadDirectoryListing(Directory, UseCache);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI
     (
@@ -2922,7 +2922,7 @@ void TTerminal::ReadDirectory(TRemoteFileList * AFileList)
   {
     CustomReadDirectory(AFileList);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     CommandError(&E, FMTLOAD(LIST_DIR_ERROR, AFileList->GetDirectory().c_str()));
   }
@@ -2938,7 +2938,7 @@ void TTerminal::ReadSymlink(TRemoteFile * SymlinkFile,
     FFileSystem->ReadSymlink(SymlinkFile, File);
     ReactOnCommand(fsReadSymlink);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     CommandError(&E, FMTLOAD(READ_SYMLINK_ERROR, SymlinkFile->GetFileName().c_str()));
   }
@@ -2956,7 +2956,7 @@ void TTerminal::ReadFile(const UnicodeString & AFileName,
     ReactOnCommand(fsListFile);
     LogRemoteFile(AFile);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     if (AFile)
     {
@@ -3241,7 +3241,7 @@ void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
     // 'File' parameter: SFTPFileSystem needs to know if file is file or directory
     FFileSystem->RemoteDeleteFile(AFileName, AFile, Params, Action);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
@@ -3271,7 +3271,7 @@ void TTerminal::DeleteLocalFile(const UnicodeString & AFileName,
   {
     if (!RecursiveDeleteFile(AFileName, false))
     {
-      throw ::Exception(FMTLOAD(DELETE_FILE_ERROR, AFileName.c_str()));
+      throw Exception(FMTLOAD(DELETE_FILE_ERROR, AFileName.c_str()));
     }
   }
   else
@@ -3350,7 +3350,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & AFileName,
         Params, OutputEvent);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI
     (
@@ -3471,7 +3471,7 @@ void TTerminal::DoChangeFileProperties(const UnicodeString & AFileName,
     assert(FFileSystem);
     FFileSystem->ChangeFileProperties(AFileName, AFile, Properties, Action);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
@@ -3587,7 +3587,7 @@ void TTerminal::DoCalculateDirectorySize(const UnicodeString & AFileName,
   {
     ProcessDirectory(AFileName, MAKE_CALLBACK(TTerminal::CalculateFileSize, this), Params);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     if (!GetActive() || ((Params->Params & csIgnoreErrors) == 0))
     {
@@ -3685,7 +3685,7 @@ void TTerminal::DoRenameFile(const UnicodeString & AFileName,
     assert(FFileSystem);
     FFileSystem->RemoteRenameFile(AFileName, NewName);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
@@ -3796,7 +3796,7 @@ void TTerminal::DoCopyFile(const UnicodeString & AFileName,
       FCommandSession->FFileSystem->CopyFile(AFileName, NewName);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI
     (
@@ -3863,7 +3863,7 @@ void TTerminal::DoCreateDirectory(const UnicodeString & ADirName)
     assert(FFileSystem);
     FFileSystem->RemoteCreateDirectory(ADirName);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
@@ -3898,7 +3898,7 @@ void TTerminal::DoCreateLink(const UnicodeString & AFileName,
     assert(FFileSystem);
     FFileSystem->CreateLink(AFileName, PointTo, Symbolic);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     COMMAND_ERROR_ARI
     (
@@ -3917,7 +3917,7 @@ void TTerminal::HomeDirectory()
     FFileSystem->HomeDirectory();
     ReactOnCommand(fsHomeDirectory);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     CommandError(&E, LoadStr(CHANGE_HOMEDIR_ERROR));
   }
@@ -3950,7 +3950,7 @@ void TTerminal::ChangeDirectory(const UnicodeString & Directory)
     FLastDirectoryChange = DirectoryNormalized;
     ReactOnCommand(fsChangeDirectory);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     CommandError(&E, FMTLOAD(CHANGE_DIR_ERROR, DirectoryNormalized.c_str()));
   }
@@ -3977,7 +3977,7 @@ void TTerminal::LookupUsersGroups()
         FUsers.Log(this, L"users");
       }
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       if (!GetActive() || (GetSessionData()->GetLookupUserGroups() == asOn))
       {
@@ -4099,7 +4099,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
     }
     ReactOnCommand(fsAnyCommand);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     if (Action != nullptr)
     {
@@ -5309,7 +5309,7 @@ void TTerminal::SpaceAvailable(const UnicodeString & APath,
   {
     FFileSystem->SpaceAvailable(APath, ASpaceAvailable);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     CommandError(&E, FMTLOAD(SPACE_AVAILABLE_ERROR, APath.c_str()));
   }
@@ -5442,7 +5442,7 @@ bool TTerminal::CopyToRemote(const TStrings * AFilesToCopy,
       }
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     if (OperationProgress.Cancel != csCancel)
     {
@@ -5543,7 +5543,7 @@ bool TTerminal::CopyToLocal(const TStrings * AFilesToCopy,
         FFileSystem->CopyToLocal(AFilesToCopy, TargetDir, CopyParam, Params,
           &OperationProgress, OnceDoneOperation);
       }
-      catch (::Exception & E)
+      catch (Exception & E)
       {
         if (OperationProgress.Cancel != csCancel)
         {

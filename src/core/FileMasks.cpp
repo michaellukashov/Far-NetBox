@@ -809,13 +809,13 @@ void TCustomCommand::GetToken(
 
     if (Len <= 0)
     {
-      throw ::Exception(FMTLOAD(CUSTOM_COMMAND_UNKNOWN, PatternCmd, Index));
+      throw Exception(FMTLOAD(CUSTOM_COMMAND_UNKNOWN, PatternCmd, Index));
     }
     else
     {
       if ((Command.Length() - Index + 1) < Len)
       {
-        throw ::Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, PatternCmd, Index));
+        throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, PatternCmd, Index));
       }
     }
   }
@@ -982,7 +982,7 @@ intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, in
       const wchar_t * PatternEnd = wcschr(Ptr + 1, L'!');
       if (PatternEnd == nullptr)
       {
-        throw ::Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
+        throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
       }
       Len = PatternEnd - Ptr + 1;
     }
@@ -994,7 +994,7 @@ intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, in
       const wchar_t * PatternEnd = wcschr(Ptr + 2, L'`');
       if (PatternEnd == nullptr)
       {
-        throw ::Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
+        throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
       }
       Len = PatternEnd - Ptr + 1;
     }
@@ -1157,7 +1157,7 @@ void TFileCustomCommand::Validate(const UnicodeString & Command)
   CustomValidate(Command, &Found);
   if ((Found[0] > 0) && (Found[1] > 0))
   {
-    throw ::Exception(FMTLOAD(CUSTOM_COMMAND_FILELIST_ERROR,
+    throw Exception(FMTLOAD(CUSTOM_COMMAND_FILELIST_ERROR,
       Found[1], Found[0]));
   }
 }

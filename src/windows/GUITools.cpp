@@ -152,12 +152,12 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
 
     if (!ExecuteShell(Program, Params))
     {
-      throw ::Exception(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
+      throw Exception(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
     }
   }
   else
   {
-    throw ::Exception(FMTLOAD(FILE_NOT_FOUND, Program.c_str()));
+    throw Exception(FMTLOAD(FILE_NOT_FOUND, Program.c_str()));
   }
 }
 
@@ -230,7 +230,7 @@ bool ExecuteShellAndWait(HINSTANCE /* Handle */, const UnicodeString & APath,
         WaitResult = ::WaitForSingleObject(ExecuteInfo.hProcess, 200);
         if (WaitResult == WAIT_FAILED)
         {
-          throw ::Exception(LoadStr(DOCUMENT_WAIT_ERROR));
+          throw Exception(LoadStr(DOCUMENT_WAIT_ERROR));
         }
         ProcessMessages();
       }

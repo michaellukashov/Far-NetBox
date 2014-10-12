@@ -1742,7 +1742,7 @@ void TSessionData::ValidateName(const UnicodeString & Name)
   // keep consistent with MakeValidName
   if (Name.LastDelimiter(L"/") > 0)
   {
-    throw ::Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), L"/"));
+    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), L"/"));
   }
 }
 
@@ -3277,7 +3277,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
     {
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults.get());
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       UnicodeString Message;
       if (RecryptPasswordOnly && ALWAYS_TRUE(RecryptPasswordErrors != nullptr) &&
@@ -3450,7 +3450,7 @@ void TStoredSessionList::Cleanup()
       Storage->RecursiveDeleteSubKey(GetConfiguration()->GetStoredSessionsSubKey());
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     throw ExtException(&E, LoadStr(CLEANUP_SESSIONS_ERROR));
   }

@@ -385,7 +385,7 @@ void TSecureShell::Open()
 
     CheckConnection(CONNECTION_FAILED);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     if (FNoConnectionResponse && TryFtp())
     {
@@ -525,7 +525,7 @@ void TSecureShell::Init()
       // unless this is tunnel session, it must be safe to send now
       assert(FBackend->sendok(FBackendHandle) || !FSessionData->GetTunnelPortFwd().IsEmpty());
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       if (FAuthenticating && !FAuthenticationLog.IsEmpty())
       {
@@ -537,7 +537,7 @@ void TSecureShell::Init()
       }
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     if (FAuthenticating)
     {
@@ -2212,7 +2212,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
 
       UnicodeString Message =
         ConfiguredKeyNotMatch ? FMTLOAD(CONFIGURED_KEY_NOT_MATCH, FSessionData->GetHostKey().c_str()) : LoadStr(KEY_NOT_VERIFIED);
-      std::unique_ptr<::Exception> E(new ::Exception(MainInstructions(Message)));
+      std::unique_ptr<Exception> E(new Exception(MainInstructions(Message)));
       FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, Fingerprint.c_str()));
     }
   }

@@ -408,8 +408,8 @@ private:
   HANDLE FActionEvent;
   TUserAction * FUserAction;
 
-  ::Exception * FException;
-  ::Exception * FIdleException;
+  Exception * FException;
+  Exception * FIdleException;
   bool FCancel;
   bool FCancelled;
   bool FPendingIdle;
@@ -420,8 +420,8 @@ private:
   void WaitForUserAction(TUserAction * UserAction);
   void RunAction(TNotifyEvent Action);
 
-  static void SaveException(::Exception & E, ::Exception *& Exception);
-  static void Rethrow(::Exception *& Exception);
+  static void SaveException(Exception & E, Exception *& Exception);
+  static void Rethrow(Exception *& Exception);
   void FatalAbort();
   void CheckCancel();
 
@@ -436,7 +436,7 @@ private:
     const UnicodeString & Name, const UnicodeString & Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
   void TerminalShowExtendedException(TTerminal * Terminal,
-    ::Exception * E, void * Arg);
+    Exception * E, void * Arg);
   void TerminalDisplayBanner(TTerminal * Terminal,
     const UnicodeString & SessionName, const UnicodeString & Banner,
     bool & NeverShowAgain, intptr_t Options);

@@ -676,7 +676,7 @@ public:
       static wchar_t * Types = L"U-DLSUOCBF";
       if (FXType > (uint8_t)wcslen(Types))
       {
-        throw ::Exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, static_cast<int>(FXType)));
+        throw Exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, static_cast<int>(FXType)));
       }
       AFile->SetType(Types[FXType]);
     }
@@ -1106,7 +1106,7 @@ private:
   {
     if (Size > GetRemainingLength())
     {
-      throw ::Exception(FMTLOAD(SFTP_PACKET_ERROR, static_cast<int>(FPosition), static_cast<int>(Size), static_cast<int>(FLength)));
+      throw Exception(FMTLOAD(SFTP_PACKET_ERROR, static_cast<int>(FPosition), static_cast<int>(Size), static_cast<int>(FLength)));
     }
   }
 
@@ -1188,7 +1188,7 @@ public:
       {
         FFileSystem->ReceiveResponse(Request, Response);
       }
-      catch (::Exception & E)
+      catch (Exception & E)
       {
         if (FFileSystem->FTerminal->GetActive())
         {
@@ -2613,7 +2613,7 @@ UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & APath)
 
     FTerminal->LogEvent(FORMAT(L"Real path is '%s'", Result.c_str()));
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     if (FTerminal->GetActive())
     {
@@ -2795,7 +2795,7 @@ void TSFTPFileSystem::DoStartup()
   {
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_VERSION);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     FTerminal->FatalError(&E, LoadStr(SFTP_INITIALIZE_ERROR));
   }
@@ -2934,7 +2934,7 @@ void TSFTPFileSystem::DoStartup()
             }
           }
         }
-        catch (::Exception & E)
+        catch (Exception & E)
         {
           DEBUG_PRINTF(L"before FTerminal->HandleException");
           FFixedPaths->Clear();
@@ -3338,7 +3338,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
               core::UnixIncludeTrailingBackslash(FileList->GetDirectory()) + PARENTDIRECTORY, File);
           }
         }
-        catch (::Exception & E)
+        catch (Exception & E)
         {
           if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
           {
@@ -3857,7 +3857,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
 
             Success = true;
           }
-          catch (::Exception & E)
+          catch (Exception & E)
           {
             FTerminal->CommandError(&E, FMTLOAD(CHECKSUM_ERROR,
               File != nullptr ? File->GetFullFileName().c_str() : L""));
@@ -4314,7 +4314,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const UnicodeString & AFileName,
         OperationProgress,
         Flags, Action, ChildError);
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       Retry = FTerminal != nullptr;
       if (FTerminal && (FTerminal->GetActive() ||
@@ -4755,7 +4755,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
             }
           );
         }
-        catch (::Exception & E)
+        catch (Exception & E)
         {
           if (TouchAction.get() != nullptr)
           {
@@ -4890,7 +4890,7 @@ intptr_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
 
       Success = true;
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       if (!OpenParams->Confirmed && (OpenType & SSH_FXF_EXCL) && FTerminal->GetActive())
       {
@@ -5230,7 +5230,7 @@ void TSFTPFileSystem::SFTPSinkRobust(const UnicodeString & AFileName,
       SFTPSink(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action, ChildError);
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
