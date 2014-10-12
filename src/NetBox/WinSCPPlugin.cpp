@@ -20,17 +20,31 @@ TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
   return new TWinSCPPlugin(HInst);
 }
 
-TMessageParams::TMessageParams()
+TMessageParams::TMessageParams() :
+  Flags(0),
+  Aliases(nullptr),
+  AliasesCount(0),
+  Params(0),
+  Timer(0),
+  TimerEvent(nullptr),
+  TimerAnswers(0),
+  Timeout(0),
+  TimeoutAnswer(0)
 {
-  Flags = 0;
-  Aliases = nullptr;
-  AliasesCount = 0;
-  Params = 0;
-  Timer = 0;
-  TimerEvent = nullptr;
-  TimerAnswers = 0;
-  Timeout = 0;
-  TimeoutAnswer = 0;
+}
+
+void TMessageParams::Assign(const TMessageParams * AParams)
+{
+  Aliases = AParams->Aliases;
+  AliasesCount = AParams->AliasesCount;
+  Flags = AParams->Flags;
+  Params = AParams->Params;
+  Timer = AParams->Timer;
+  TimerEvent = AParams->TimerEvent;
+  TimerMessage = AParams->TimerMessage;
+  TimerAnswers = AParams->TimerAnswers;
+  Timeout = AParams->Timeout;
+  TimeoutAnswer = AParams->TimeoutAnswer;
 }
 
 TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) :

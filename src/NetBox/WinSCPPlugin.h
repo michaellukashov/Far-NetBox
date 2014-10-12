@@ -13,19 +13,7 @@ struct TMessageParams : public TObject
 NB_DISABLE_COPY(TMessageParams)
 public:
   TMessageParams();
-  void Assign(const TMessageParams * AParams)
-  {
-    Aliases = AParams->Aliases;
-    AliasesCount = AParams->AliasesCount;
-    Flags = AParams->Flags;
-    Params = AParams->Params;
-    Timer = AParams->Timer;
-    TimerEvent = AParams->TimerEvent;
-    TimerMessage = AParams->TimerMessage;
-    TimerAnswers = AParams->TimerAnswers;
-    Timeout = AParams->Timeout;
-    TimeoutAnswer = AParams->TimeoutAnswer;
-  }
+  void Assign(const TMessageParams * AParams);
 
   const TQueryButtonAlias * Aliases;
   uintptr_t AliasesCount;
