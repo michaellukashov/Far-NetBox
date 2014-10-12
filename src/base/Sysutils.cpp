@@ -77,7 +77,7 @@ AnsiString W2MB(const wchar_t * src, const UINT cp)
   return Result;
 }
 
-int RandSeed;
+int RandSeed = 0;
 const TDayTable MonthDays[] =
 {
   { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
