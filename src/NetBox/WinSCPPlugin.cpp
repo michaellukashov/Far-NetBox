@@ -615,11 +615,20 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   intptr_t TitleId = 0;
   switch (Type)
   {
-    case qtConfirmation: TitleId = MSG_TITLE_CONFIRMATION; break;
-    case qtInformation: TitleId = MSG_TITLE_INFORMATION; break;
-    case qtError: TitleId = MSG_TITLE_ERROR; Flags |= FMSG_WARNING; break;
-    case qtWarning: TitleId = MSG_TITLE_WARNING; Flags |= FMSG_WARNING; break;
-    default: assert(false);
+    case qtConfirmation:
+      TitleId = MSG_TITLE_CONFIRMATION;
+      break;
+    case qtInformation:
+      TitleId = MSG_TITLE_INFORMATION;
+      break;
+    case qtError:
+      TitleId = MSG_TITLE_ERROR; Flags |= FMSG_WARNING;
+      break;
+    case qtWarning:
+      TitleId = MSG_TITLE_WARNING; Flags |= FMSG_WARNING;
+      break;
+    default:
+      assert(false);
   }
   TFarMessageData Data;
   Data.Params = Params;

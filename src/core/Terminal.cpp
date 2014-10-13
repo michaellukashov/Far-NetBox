@@ -4162,10 +4162,16 @@ bool TTerminal::DoCreateFile(const UnicodeString & AFileName,
 
             switch (Answer)
             {
-              case qaYesToAll: OperationProgress->BatchOverwrite = boAll; break;
-              case qaCancel: OperationProgress->Cancel = csCancel; // continue on next case
-              case qaNoToAll: OperationProgress->BatchOverwrite = boNone;
-              case qaNo: Result = false; break;
+              case qaYesToAll:
+                OperationProgress->BatchOverwrite = boAll;
+                break;
+              case qaCancel:
+                OperationProgress->Cancel = csCancel; // continue on next case
+              case qaNoToAll:
+                OperationProgress->BatchOverwrite = boNone;
+              case qaNo:
+                Result = false;
+                break;
             }
           }
         }

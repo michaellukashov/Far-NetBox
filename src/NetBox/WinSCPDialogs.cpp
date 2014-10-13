@@ -1168,8 +1168,12 @@ void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
   UnicodeString Address;
   switch (Sender->GetTag())
   {
-    case 1: Address = GetMsg(ABOUT_URL) + L"eng/docs/far"; break;
-    case 2: Address = GetMsg(ABOUT_URL) + L"forum/"; break;
+    case 1:
+      Address = GetMsg(ABOUT_URL) + L"eng/docs/far";
+      break;
+    case 2:
+      Address = GetMsg(ABOUT_URL) + L"forum/";
+      break;
   }
   ShellExecute(nullptr, L"open", const_cast<wchar_t *>(Address.c_str()), nullptr, nullptr, SW_SHOWNORMAL);
 }
@@ -3330,9 +3334,15 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   ProxyLocalhostCheck->SetChecked(SessionData->GetProxyLocalhost());
   switch (SessionData->GetProxyDNS())
   {
-    case asOn: ProxyDNSOnButton->SetChecked(true); break;
-    case asOff: ProxyDNSOffButton->SetChecked(true); break;
-    default: ProxyDNSAutoButton->SetChecked(true); break;
+    case asOn:
+      ProxyDNSOnButton->SetChecked(true);
+      break;
+    case asOff:
+      ProxyDNSOffButton->SetChecked(true);
+      break;
+    default:
+      ProxyDNSAutoButton->SetChecked(true);
+      break;
   }
 
   // Tunnel tab
@@ -3360,10 +3370,18 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   switch (SessionData->GetSshProt())
   {
-    case ssh1only:  SshProt1onlyButton->SetChecked(true); break;
-    case ssh1:      SshProt1Button->SetChecked(true); break;
-    case ssh2:      SshProt2Button->SetChecked(true); break;
-    case ssh2only:  SshProt2onlyButton->SetChecked(true); break;
+    case ssh1only:
+      SshProt1onlyButton->SetChecked(true);
+      break;
+    case ssh1:
+      SshProt1Button->SetChecked(true);
+      break;
+    case ssh2:
+      SshProt2Button->SetChecked(true);
+      break;
+    case ssh2only:
+      SshProt2onlyButton->SetChecked(true);
+      break;
   }
 
   CipherListBox->GetItems()->BeginUpdate();
@@ -4515,9 +4533,15 @@ void TRightsContainer::SetStates(TRights::TRight Right,
   {
     switch (Value)
     {
-      case TRights::rsNo: CheckBox->SetSelected(BSTATE_UNCHECKED); break;
-      case TRights::rsYes: CheckBox->SetSelected(BSTATE_CHECKED); break;
-      case TRights::rsUndef: CheckBox->SetSelected(BSTATE_3STATE); break;
+      case TRights::rsNo:
+        CheckBox->SetSelected(BSTATE_UNCHECKED);
+        break;
+      case TRights::rsYes:
+        CheckBox->SetSelected(BSTATE_CHECKED);
+        break;
+      case TRights::rsUndef:
+        CheckBox->SetSelected(BSTATE_3STATE);
+        break;
     }
   }
   else

@@ -180,13 +180,26 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
     int pcipher = 0;
     switch (Data->GetCipher(c))
     {
-      case cipWarn: pcipher = CIPHER_WARN; break;
-      case cip3DES: pcipher = CIPHER_3DES; break;
-      case cipBlowfish: pcipher = CIPHER_BLOWFISH; break;
-      case cipAES: pcipher = CIPHER_AES; break;
-      case cipDES: pcipher = CIPHER_DES; break;
-      case cipArcfour: pcipher = CIPHER_ARCFOUR; break;
-      default: FAIL;
+      case
+        cipWarn: pcipher = CIPHER_WARN;
+        break;
+      case
+        cip3DES: pcipher = CIPHER_3DES;
+        break;
+      case
+        cipBlowfish: pcipher = CIPHER_BLOWFISH;
+        break;
+      case cipAES:
+        pcipher = CIPHER_AES;
+        break;
+      case cipDES:
+        pcipher = CIPHER_DES;
+        break;
+      case cipArcfour:
+        pcipher = CIPHER_ARCFOUR;
+        break;
+      default:
+        FAIL;
     }
     conf_set_int_int(conf, CONF_ssh_cipherlist, c, pcipher);
   }
@@ -196,11 +209,21 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
     int pkex = 0;
     switch (Data->GetKex(k))
     {
-      case kexWarn: pkex = KEX_WARN; break;
-      case kexDHGroup1: pkex = KEX_DHGROUP1; break;
-      case kexDHGroup14: pkex = KEX_DHGROUP14; break;
-      case kexDHGEx: pkex = KEX_DHGEX; break;
-      case kexRSA: pkex = KEX_RSA; break;
+      case kexWarn:
+        pkex = KEX_WARN;
+        break;
+      case kexDHGroup1:
+        pkex = KEX_DHGROUP1;
+        break;
+      case kexDHGroup14:
+        pkex = KEX_DHGROUP14;
+        break;
+      case kexDHGEx:
+        pkex = KEX_DHGEX;
+        break;
+      case kexRSA:
+        pkex = KEX_RSA;
+        break;
       default: FAIL;
     }
     conf_set_int_int(conf, CONF_ssh_kexlist, k, pkex);
