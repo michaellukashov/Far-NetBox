@@ -46,7 +46,7 @@ RawByteString EncryptPassword(const UnicodeString & UnicodePassword, const Unico
   if (!::RandSeed)
   {
     ::Randomize();
-    RandSeed = 1;
+    ::RandSeed = 1;
   }
   Password = Key + Password;
   Shift = (Password.Length() < PWALG_SIMPLE_MAXLEN) ?
