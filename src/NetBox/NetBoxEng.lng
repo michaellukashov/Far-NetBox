@@ -918,13 +918,6 @@
 "Unknown pattern '%s' starting at %d."
 "Cannot combine file name pattern (starting at %d) with file list pattern (starting at %d)."
 
-
-
-
-
-
-
-
 "Cannot determine status of socket (%d)."
 "Error deleting file '%s'. After resumable file upload the existing destination file must be deleted. If you do not have permissions to delete file destination file, you need to disable resumable file transfers."
 "Error decoding SFTP packet (%d, %d, %d)."
@@ -1073,33 +1066,6 @@
 "A&ppend"
 "Ne&wer only"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 "Ski&p all"
 
 "&Text"
@@ -1161,14 +1127,10 @@
 "&Add"
 "Preserve read-only"
 
-
-
 "Unlimited"
 "TLS/SSL Implicit encryption"
 "SSL Explicit encryption"
 "TLS Explicit encryption"
-
-
 
 "Host key fingerprint is %s."
 
@@ -1178,15 +1140,8 @@
 "WARNING! Giving up security and accepting any host key as configured!"
 "WARNING! Giving up security and accepting any certificate as configured!"
 
-
-
-
-
-
-
 "Remove EOF mark"
 "Remove BOM"
-
 
 "Build"
 "Dev Build"
@@ -1198,22 +1153,21 @@
 "SSH and SCP code based on PuTTY %s"
 "0.63"
 "Copyright © 1997-2013 Simon Tatham"
-
+""
 "FTP code based on FileZilla"
 "2.2.32"
 "Copyright © Tim Kosse"
-
+""
 "This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit %s."
 "Copyright © 1998-2014 The OpenSSL Project"
 "1.0.1i"
-
+""
 "WebDAV code based on neon library %s"
 "Copyright В© 1999-2013 Joe Orton"
-
 "eXpat library %s"
 "Copyright В© 1998-2012 Expat maintainers"
-
-
+""
+""
 "**"
 "$$"
 
