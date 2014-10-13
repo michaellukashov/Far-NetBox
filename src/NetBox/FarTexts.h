@@ -1195,4 +1195,26 @@ enum PluginString
   MSG_UNKNOWN_KEY3,
   MSG_DIFFERENT_KEY4,
   MSG_OLD_KEY,
+
+  // rtlconsts.rc
+  MSG_SDuplicateString,
+
+  MSG_SListCountError,
+  MSG_SListIndexError,
+
+  MSG_SMemoryStreamError,
+
+  MSG_SReadError,
+
+  MSG_SSortedListError,
+
+  MSG_STimeEncodeError,
+
+  MSG_SWriteError,
+
+  MSG_SNotImplemented,
+  MSG_SOSError,
+  MSG_SUnkOSError,
+
+  MSG_SDateEncodeError,
 };

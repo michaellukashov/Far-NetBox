@@ -380,5 +380,27 @@ const TFarPluginStrings FarPluginStrings[] =
   { UNKNOWN_KEY3, MSG_UNKNOWN_KEY3 },
   { DIFFERENT_KEY4, MSG_DIFFERENT_KEY4 },
   { OLD_KEY, MSG_OLD_KEY },
+
+  // rtlconsts.rc
+  { SDuplicateString, MSG_SDuplicateString },
+
+  { SListCountError, MSG_SListCountError },
+  { SListIndexError, MSG_SListIndexError },
+
+  { SMemoryStreamError, MSG_SMemoryStreamError },
+
+  { SReadError, MSG_SReadError },
+
+  { SSortedListError, MSG_SSortedListError },
+
+  { STimeEncodeError, MSG_STimeEncodeError },
+
+  { SWriteError, MSG_SWriteError },
+
+
+  { SOSError, MSG_SOSError },
+  { SUnkOSError, MSG_SUnkOSError },
+
+  { SDateEncodeError, MSG_SDateEncodeError },
   { 0, 0 }
 };
